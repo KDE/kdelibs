@@ -23,11 +23,11 @@
 #include <qtextbrowser.h>
 
 /**
- * An extended @ref QTextBrowser.
+ * An extended QTextBrowser.
  *
  * By default it will
  * invoke the system mailer or the system browser when a link is
- * activated, or it can emit the signal @ref urlClick() or @ref mailClick()
+ * activated, or it can emit the signal urlClick() or mailClick()
  * when a link is activated.
  *
  * \image html ktextbrowser.png "KDE Text Browser"
@@ -104,7 +104,7 @@ class KTextBrowser : public QTextBrowser
     void mailClick( const QString &name, const QString &address );
 
     /**
-     * Emitted if @ref mailClick() is not emitted and the widget has been
+     * Emitted if mailClick() is not emitted and the widget has been
      * configured to emit the signal.
      *
      * @param url The destination address.

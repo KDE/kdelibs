@@ -29,7 +29,7 @@ class KConfig;
  * @author Benjamin C Meyer <ben+kdelibs at meyerhome dot net>
  * 
  * The KAutoConfigDialog class provides an easy and uniform means of displaying
- * a settings dialog using @ref KDialogBase and @ref KAutoConfig.
+ * a settings dialog using KDialogBase and KAutoConfig.
  *
  * KAutoConfigDialog handles the enabling and disabling of buttons, creation
  * of the dialog, and deletion of the widgets.  Because of KAutoConfig, this
@@ -108,9 +108,9 @@ public:
    *
    * @param dialogButtons - Buttons that should show up on the dialog.
    *
-   * @param model - Because of the features of @ref KAutoConfig,
+   * @param model - Because of the features of KAutoConfig,
    * KAutoConfigDialog does not have to be modal.  To prevent more then one
-   * settings dialog from showing the static function @ref showDialog() can be
+   * settings dialog from showing the static function showDialog() can be
    * used in determining if the settings dialog already exists before creating
    * a new KAutoConfigDialog object.
    */ 
@@ -128,9 +128,9 @@ public:
   ~KAutoConfigDialog();
  
   /**
-   * Adds page to the dialog and to @ref KAutoConfig.  When an application is
-   * done adding pages @ref show() should be called to display the dialog.
-   * Note that after you call @ref show() you can not add any more pages
+   * Adds page to the dialog and to KAutoConfig.  When an application is
+   * done adding pages show() should be called to display the dialog.
+   * Note that after you call show() you can not add any more pages
    * to the dialog.
    * @param page - Pointer to the page that is to be added to the dialog.  
    * This object is reparented.
@@ -187,7 +187,7 @@ public:
    * configuration caption. This function is provided for dialogs other
    * then the normal application configuration such as plugin configurations.
    * Do not include the applications name as it will automaticly be added
-   * via the KDE rules. @ref KDialog::setCaption()
+   * via the KDE rules. KDialog::setCaption()
    * @param caption - The new name for the dialog's caption such as: 
    * "Configure Audio Plugin"
    **/

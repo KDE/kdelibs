@@ -33,7 +33,7 @@ class KAboutDataPrivate;
  * This structure is used to store information about a person or developer.
  * It can store the person's name, a task, an email address and a
  * link to a home page. This class is intended for use in the
- * @ref KAboutData class, but it can be used elsewhere as well.
+ * KAboutData class, but it can be used elsewhere as well.
  * Normally you should at least define the person's name.
 */
 class KAboutPerson
@@ -106,12 +106,12 @@ class KAboutTranslatorPrivate;
 /**
  * This structure is used to store information about a translator.
  * It can store the translator's name and an email address.
- * This class is intended for use in the @ref KAboutData class,
+ * This class is intended for use in the KAboutData class,
  * but it can be used elsewhere as well.
  * Normally you should at least define the translator's name.
  *
- * It's not possible to use @ref KAboutPerson for this, because
- * @ref KAboutPerson stores internally only const char* pointers, but the
+ * It's not possible to use KAboutPerson for this, because
+ * KAboutPerson stores internally only const char* pointers, but the
  * translator information is generated dynamically from the translation
  * of a dummy string.
 */
@@ -153,11 +153,11 @@ private:
  * This class is used to store information about a program. It can store
  * such values as version number, program name, home page, email address
  * for bug reporting, multiple authors and contributors
- * (using @ref KAboutPerson), license and copyright information.
+ * (using KAboutPerson), license and copyright information.
  *
  * Currently, the values set here are shown by the "About" box
- * (see @ref KAboutDialog), used by the bug report dialog (see @ref KBugReport),
- * and by the help shown on command line (see @ref KCmdLineArgs).
+ * (see KAboutDialog), used by the bug report dialog (see KBugReport),
+ * and by the help shown on command line (see KCmdLineArgs).
  *
  * @short Holds information needed by the "About" box and other
  * classes.
@@ -200,12 +200,12 @@ class KAboutData
      *        This string should be marked for translation.
      *        Example: I18N_NOOP("A simple text editor.")
      *
-     * @param licenseType The license identifier. Use @ref setLicenseText if
+     * @param licenseType The license identifier. Use setLicenseText if
      *        you use a license not predefined here.
      *
      * @param copyrightStatement A copyright statement, that can look like this:
      *        "(c) 1999-2000, Name". The string specified here is not modified
-     *        in any manner. The author information from @ref addAuthor is not
+     *        in any manner. The author information from addAuthor is not
      *        used.
      *
      * @param text Some free form text, that can contain any kind of
@@ -401,7 +401,7 @@ class KAboutData
 
     /**
      * Returns the license. If the licenseType argument of the constructor has been
-     * used, any text defined by @ref setLicenseText is ignored,
+     * used, any text defined by setLicenseText is ignored,
      * and the standard text for the chosen license will be returned.
      *
      * @return The license text.

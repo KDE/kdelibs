@@ -38,7 +38,7 @@
  * the delta milliseconds from the previous SpecialEvent, an ID, etc. 
  *
  * This struct is used as nodes for a linked list, which you can get using
- * @ref MidiPlayer::specialEvents().
+ * MidiPlayer::specialEvents().
  *
  * @short Struct used to store certain events
  * @version 0.9.5 17/01/2000
@@ -75,11 +75,11 @@ struct SpecialEvent
    * Type of event. This currently includes:
    *
    * @li 0 - Nothing, end of linked list.
-   * @li 1 - Text Event . See @ref #text.
-   * @li 3 - Change Tempo Event . See @ref #tempo.
-   * @li 5 - Lyrics Event . See @ref #text.
-   * @li 6 - Change number of beats per measure . See @ref #num and @ref den.
-   * @li 7 - Beat . See @ref #num and @ref #den.
+   * @li 1 - Text Event . See text.
+   * @li 3 - Change Tempo Event . See tempo.
+   * @li 5 - Lyrics Event . See text.
+   * @li 6 - Change number of beats per measure . See num and den.
+   * @li 7 - Beat . See num and den.
    *
    * The "Change number of beats per measure" and "beat" events are not really
    * in the midi file, but they are added to the linked list in case you have
@@ -115,7 +115,7 @@ struct SpecialEvent
    * the delta milliseconds from the previous SpecialEvent, an ID, etc. 
    *
    * This struct is used as nodes for a linked list, which you can get using
-   * @ref MidiPlayer::specialEvents().
+   * MidiPlayer::specialEvents().
    */
   struct SpecialEvent *next;
 
@@ -127,7 +127,7 @@ struct SpecialEvent
 
 
 /**
- * PlayerController is a struct that is used by the @ref MidiPlayer object
+ * PlayerController is a struct that is used by the MidiPlayer object
  * to tell other parts of the application about the status of the MIDI playing.
  *
  * @short Struct used to have control over the player engine
@@ -215,7 +215,7 @@ struct PlayerController
 
   /**
    * Force a given patch in each channel at "this" moment, as determined by
-   * @ref #forcepgm.
+   * forcepgm.
    */
   volatile int pgm[16];
 
@@ -236,19 +236,19 @@ struct PlayerController
 
 /**
  * MIDI file player routines . This class reads a MIDI file and
- * play it using a @ref DeviceManager object.
+ * play it using a DeviceManager object.
  *
- * To use it, just call @ref #loadSong() with the filename you want to play,
- * and then @ref #play().
+ * To use it, just call loadSong() with the filename you want to play,
+ * and then play().
  * 
- * Please have a look at the note in the @ref #play() documentation.
+ * Please have a look at the note in the play() documentation.
  *
  * MidiPlayer will write information about the playing process on a 
- * @ref PlayerController() structure that you must supply to the constructor
+ * PlayerController() structure that you must supply to the constructor
  *
  * Alternatively, if everything you want is to play a midi file in a game or
  * any other application that doesn't need to fine tune the midi playing, just
- * use the @ref kmidplay() function.
+ * use the kmidplay() function.
  *
  * @see KMidSimpleAPI
  *
@@ -284,8 +284,8 @@ class MidiPlayer
   public:
 
   /**
-   * Constructor . You must construct and pass a @ref DeviceManager object and a 
-   * @ref PlayerController structure. None of them will be destroyed by this
+   * Constructor . You must construct and pass a DeviceManager object and a 
+   * PlayerController structure. None of them will be destroyed by this
    * object, so you should do it after destroying the MidiPlayer object.
    */
   MidiPlayer(DeviceManager *midi_,PlayerController *pctl);
@@ -297,9 +297,9 @@ class MidiPlayer
 
   /**
    * Loads a Song, and parses it (it the parse wasn't disabled with 
-   * @ref #setParseSong() ) . It also generates the Beat events (see 
-   * @ref SpecialEvent::type() ) if you enabled this by using 
-   * @ref #setGenerateBeats() .
+   * setParseSong() ) . It also generates the Beat events (see 
+   * SpecialEvent::type() ) if you enabled this by using 
+   * setGenerateBeats() .
    */
   int loadSong(const char *filename);
 
@@ -311,13 +311,13 @@ class MidiPlayer
 
   /**
    * Returns true if there's a song already loaded (with a previous call to 
-   * @ref loadSong() ) and false if not.
+   * loadSong() ) and false if not.
    */
   int isSongLoaded(void) { return songLoaded; };
 
   /**
-   * Returns the linked list of @ref SpecialEvents objects . For this to work,
-   * the parse should be enabled (the default), by using @ref #setParseSong().
+   * Returns the linked list of SpecialEvents objects . For this to work,
+   * the parse should be enabled (the default), by using setParseSong().
    */
   SpecialEvent *specialEvents() { return spev; };
 
@@ -327,24 +327,24 @@ class MidiPlayer
    * the song.
    *
    * Returns an array of notes, (just note on and note off events), in the form
-   * of a @ref NoteArray object
+   * of a NoteArray object
    */
   NoteArray *noteArray(void) { return na; };
 
 
   /**
-   * Plays the song using the @ref DeviceManager object supplied in the
+   * Plays the song using the DeviceManager object supplied in the
    * constructor. It should be already configured, as play doesn't change the
    * volume, nor midi mapper, for example.
    *
    * Note: Calling this function will block the execution of your application
    * until the song finishes playing. The solution for this is simple, fork
-   * before calling it, and create the @ref PlayerController object on shared
+   * before calling it, and create the PlayerController object on shared
    * memory.
    *
    * As alternative, if everything you want is playing a midi file in a game or
    * any other application that doesn't need to fine tune the midi playing, just
-   * use the @ref KMidSimpleAPI::kMidPlay() function. 
+   * use the KMidSimpleAPI::kMidPlay() function. 
    *
    * @see KMidSimpleAPI::kMidInit
    * @see KMidSimpleAPI::kMidPlay
@@ -355,8 +355,8 @@ class MidiPlayer
 
   /**
    * Enables or disables the parsing of the song when loading it. This affects
-   * the SpecialEvents (@ref #specialEvents() ) and the NoteArray 
-   * (@ref #noteArray() ).
+   * the SpecialEvents ( specialEvents() ) and the NoteArray 
+   * ( noteArray() ).
    */
   void setParseSong(bool b = true);
 
@@ -376,9 +376,9 @@ class MidiPlayer
   /**
    * Sets the position in a song. 
    * @param gotomsec the number of milliseconds to go to . A subsequent call to
-   * @ref #play() will start playing the song from that moment, instead of the
+   * play() will start playing the song from that moment, instead of the
    * beginning.
-   * @param midistat a @ref MidiStatus object that will contain the status in
+   * @param midistat a MidiStatus object that will contain the status in
    * which the MIDI device would be if it would have arrived to this situation by
    * a normal playing of the song.
    */

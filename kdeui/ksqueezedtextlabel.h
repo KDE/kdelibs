@@ -40,7 +40,7 @@
  */
 
 /*
- * @ref QLabel
+ * QLabel
  */
 class KSqueezedTextLabel : public QLabel {
   Q_OBJECT

@@ -26,12 +26,12 @@ class KActionCollection;
 class KAction;
 
 /**
- * The KDCOPActionProxy class provides an easy way to publish a collection of @ref KAction objects
+ * The KDCOPActionProxy class provides an easy way to publish a collection of KAction objects
  * through DCOP. For the DCOP client the exported actions behave like full-fledged DCOP objects,
  * providing full access to the KAction object functionality in the server.
  *
  * This class can generate DCOP object ids for given action objects, which it automatically
- * processes, as being a @ref DCOPObjectProxy .
+ * processes, as being a DCOPObjectProxy .
  *
  * @short A proxy class publishing a DCOP interface for actions.
  */
@@ -40,14 +40,14 @@ class KDCOPActionProxy : public DCOPObjectProxy
 public:
   /**
    * Constructs a dcop action proxy, being able to export the actions of the provided
-   * @ref KActionCollection through DCOP, using the parent DCOPObject's object id to
+   * KActionCollection through DCOP, using the parent DCOPObject's object id to
    * generate unique object ids for the actions.
    */
   KDCOPActionProxy( KActionCollection *actionCollection, DCOPObject *parent );
   /**
    * Use this constructor if do not want to provide the exportable actions through a
-   * @ref KActionCollection . You have to reimplement the virtual @ref #actions() and
-   * @ref #action() methods if you use this constructor.
+   * KActionCollection . You have to reimplement the virtual actions() and
+   * action() methods if you use this constructor.
    */
   KDCOPActionProxy( DCOPObject *parent );
   /**
@@ -57,12 +57,12 @@ public:
 
   /**
    * Returns a list of exportable actions. The default implementation returns a list of actions
-   * provided by a @ref KActionCollection, if the first constructor has been used.
+   * provided by a KActionCollection, if the first constructor has been used.
    */
   virtual QValueList<KAction *> actions() const;
   /**
    * Returns an action object with the given name. The default implementation queries the action object
-   * from the @ref KActionCollection, if the first constructor has been used.
+   * from the KActionCollection, if the first constructor has been used.
    */
   virtual KAction *action( const char *name ) const;
 
@@ -87,7 +87,7 @@ public:
   virtual QMap<QCString,DCOPRef> actionMap( const QCString &appId = QCString() ) const;
 
   /**
-   * Internal reimplementation of @ref DCOPObjectProxy::process .
+   * Internal reimplementation of DCOPObjectProxy::process .
    */
   virtual bool process( const QCString &obj, const QCString &fun, const QByteArray &data,
                         QCString &replyType, QByteArray &replyData );

@@ -142,7 +142,7 @@ namespace KParts
  * \endcode
  *
  * You can do as many calls to write() as you wish.  There are two
- * @ref write() methods, one accepting a @ref QString and one accepting a
+ * write() methods, one accepting a QString and one accepting a
  * @p char @p * argument. You should use one or the other
  * (but not both) since the method using
  * the @p char @p * argument does an additional decoding step to convert the
@@ -199,11 +199,11 @@ public:
    * Constructs a new KHTMLPart.
    *
    * KHTML basically consists of two objects: The KHTMLPart itself,
-   * holding the document data (DOM document), and the @ref KHTMLView,
-   * derived from @ref QScrollView, in which the document content is
+   * holding the document data (DOM document), and the KHTMLView,
+   * derived from QScrollView, in which the document content is
    * rendered in. You can specify two different parent objects for a
    * KHTMLPart, one parent for the KHTMLPart document and on parent
-   * for the @ref KHTMLView. If the second @p parent argument is 0L, then
+   * for the KHTMLView. If the second @p parent argument is 0L, then
    * @p parentWidget is used as parent for both objects, the part and
    * the view.
    */
@@ -220,7 +220,7 @@ public:
   /**
    * Opens the specified URL @p url.
    *
-   * Reimplemented from @ref KParts::ReadOnlyPart::openURL .
+   * Reimplemented from KParts::ReadOnlyPart::openURL .
    */
   virtual bool openURL( const KURL &url );
 
@@ -253,7 +253,7 @@ public:
   DOM::Node activeNode() const;
 
   /**
-   * Returns a pointer to the @ref KParts::BrowserExtension.
+   * Returns a pointer to the KParts::BrowserExtension.
    */
   KParts::BrowserExtension *browserExtension() const;
   KParts::LiveConnectExtension *liveConnectExtension( const khtml::RenderPart *) const;
@@ -352,7 +352,7 @@ public:
    * Specifies whether images contained in the document should be loaded
    * automatically or not.
    *
-   * @note Request will be ignored if called before @ref begin().
+   * @note Request will be ignored if called before begin().
    */
   void setAutoloadImages( bool enable );
   /**
@@ -402,7 +402,7 @@ public:
   /**
    * Clears the widget and prepares it for new content.
    *
-   * If you want @ref url() to return
+   * If you want url() to return
    * for example "file:/tmp/test.html", you can use the following code:
    * <PRE>
    * view->begin( KURL("file:/tmp/test.html" ) );
@@ -438,8 +438,8 @@ public:
    * you're using isn't utf-16, you can safely leave out the length
    * parameter.
    *
-   * Attention: Don't mix calls to @ref write( const char *) with calls
-   * to @ref write( const QString & ).
+   * Attention: Don't mix calls to write( const char *) with calls
+   * to write( const QString & ).
    *
    * The result might not be what you want.
    */
@@ -455,7 +455,7 @@ public:
   virtual void write( const QString &str );
 
   /**
-   * Call this after your last call to @ref write().
+   * Call this after your last call to write().
    */
   virtual void end();
 
@@ -467,7 +467,7 @@ public:
   //    void print(QPainter *, int pageHeight, int pageWidth);
 
   /**
-   * Paints the HTML page to a QPainter. See @ref KHTMLView::paint for details
+   * Paints the HTML page to a QPainter. See KHTMLView::paint for details
    */
   void paint( QPainter *, const QRect &, int = 0, bool * = 0 );
 
@@ -600,7 +600,7 @@ public:
   /**
    * Has the user selected anything?
    *
-   *  Call @ref selectedText() to
+   *  Call selectedText() to
    * retrieve the selected text.
    *
    * @return @p true if there is text selected.
@@ -634,10 +634,10 @@ public:
 
   /**
    * Saves the KHTMLPart's complete state (including child frame
-   * objects) to the provided @ref QDataStream.
+   * objects) to the provided QDataStream.
    *
-   * This is called from the @ref saveState() method of the
-   *  @ref browserExtension().
+   * This is called from the saveState() method of the
+   * browserExtension().
    */
   virtual void saveState( QDataStream &stream );
   /**
@@ -646,8 +646,8 @@ public:
    *
    * @see saveState()
    *
-   * This is called from the @ref restoreState() method of the
-   * @ref browserExtension() .
+   * This is called from the restoreState() method of the
+   * browserExtension() .
    **/
   virtual void restoreState( QDataStream &stream );
 
@@ -692,7 +692,7 @@ public:
 
   /**
    * Returns whether a frame with the specified name is exists or not.
-   * In contrary to the @ref findFrame method this one also returns true
+   * In contrary to the findFrame method this one also returns true
    * if the frame is defined but no displaying component has been
    * found/loaded, yet.
    */
@@ -831,7 +831,7 @@ protected:
   virtual void guiActivateEvent( KParts::GUIActivateEvent *event );
 
   /**
-   * Internal empty reimplementation of @ref KParts::ReadOnlyPart::openFile .
+   * Internal empty reimplementation of KParts::ReadOnlyPart::openFile .
    */
   virtual bool openFile();
 
@@ -866,7 +866,7 @@ public slots:
    * receive focus in the same way that it would if the user had clicked on it or tabbed to it with the keyboard. For
    * most other types of elements, there is no visul indiction of whether or not they are focussed.
    *
-   * See @ref activeNode
+   * See activeNode
    *
    * @param node The node to focus
    */

@@ -69,7 +69,7 @@ public:
     virtual void remove( const QString& item );
 
     /**
-     * Clears the history. The @ref cleared() signal is emitted after clearing.
+     * Clears the history. The cleared() signal is emitted after clearing.
      */
     virtual void clear();
 

@@ -45,7 +45,7 @@ public:
     * Create an empty container for buttons.
     *
     * If @p _orientation is @p Vertical, the buttons inserted with 
-    * @ref addButton() are laid out from top to bottom, otherwise they 
+    * addButton() are laid out from top to bottom, otherwise they 
     * are laid out from left to right.
     */
   KButtonBox(QWidget *parent, Orientation _orientation = Horizontal,
@@ -73,7 +73,7 @@ public:
   virtual void resizeEvent(QResizeEvent *);
 
   /**
-    * Add a new @ref QPushButton.  
+    * Add a new QPushButton.  
     *
     * @param noexpand If @p noexpand is @p false, the width
     * of the button is adjusted to fit the other buttons (the maximum
@@ -85,7 +85,7 @@ public:
   QPushButton *addButton(const QString& text, bool noexpand = FALSE);
 
   /**
-    * Add a new @ref QPushButton.  
+    * Add a new QPushButton.  
     *
     * @param receiver An object to connect to.
     * @param slot A Qt slot to connect the 'clicked()' signal to.

@@ -36,8 +36,8 @@ class KToggleToolBarAction;
  * conform to the KDE UI Style Guide
  * @see http://developer.kde.org/documentation/standards/kde/style/basics/index.html .
  *
- * All of the documentation for @ref KAction holds for KStdAction
- * also.  When in doubt on how things work, check the @ref KAction
+ * All of the documentation for KAction holds for KStdAction
+ * also.  When in doubt on how things work, check the KAction
  * documention first.
  *
  * @sect Simple Example:
@@ -71,8 +71,8 @@ class KToggleToolBarAction;
  *
  * Basically, the XML building code matches names in the XML code with
  * the internal names of the actions.  You can find out the internal
- * names of each of the standard actions by using the @ref stdName
- * action like so: @ref KStdAction::stdName(KStdAction::Cut) would return
+ * names of each of the standard actions by using the stdName
+ * action like so: KStdAction::stdName(KStdAction::Cut) would return
  * 'edit_cut'.  The XML building code will match 'edit_cut' to the
  * attribute in the global XML file and place your action there.
  *
@@ -157,7 +157,7 @@ namespace KStdAction
 
 	/**
 	 * Creates an action corresponding to the
-	 * @ref KStdAction::StdAction enum.
+	 * KStdAction::StdAction enum.
 	 */
 	KAction* create( StdAction id, const char *name,
 		const QObject *recvr, const char *slot,
@@ -170,7 +170,7 @@ namespace KStdAction
 
 	/**
 	* @obsolete. Creates an action corresponding to the
-	* @ref KStdAction::StdAction enum.
+	* KStdAction::StdAction enum.
 	*/
 	inline KAction *action(StdAction act_enum,
 		const QObject *recvr, const char *slot,
@@ -186,7 +186,7 @@ namespace KStdAction
 	inline const char* stdName(StdAction act_enum) { return name( act_enum ); }
 
        /**
-         * Returns a list of all standard names. Used by @ref KAccelManager
+         * Returns a list of all standard names. Used by KAccelManager
          * to give those heigher weight.
 	 * @since 3.1
         */
@@ -475,7 +475,7 @@ namespace KStdAction
 	/**
 	* @obsolete. toolbar actions are created automatically now in the 
 	* Settings menu. Don't use this anymore.
-	* See: @ref KMainWindow::createStandardStatusBarAction()
+	* See: KMainWindow::createStandardStatusBarAction()
 	* Show/Hide the primary toolbar.
 	* @since 3.1
 	*/
@@ -484,7 +484,7 @@ namespace KStdAction
 	/**
 	* @obsolete. toolbar actions are created automatically now in the
 	* Settings menu. Don't use this anymore.
-	* See: @ref KMainWindow::setStandardToolBarMenuEnabled(bool);
+	* See: KMainWindow::setStandardToolBarMenuEnabled(bool);
 	* Show/Hide the primary toolbar.
 	*/
 	KToggleToolBarAction *showToolbar(const char* toolBarName,

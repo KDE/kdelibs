@@ -34,7 +34,7 @@ class KSpellDlg;
  *
  * A KDE programmer's interface to International ISpell 3.1. ASpell and
  * HSpell.
- * A static method, @ref modalCheck() is provided for convenient
+ * A static method, modalCheck() is provided for convenient
  *  access to the spellchecker.
  *
  * @author David Sweet <dsweet@kde.org>
@@ -53,8 +53,8 @@ public:
    *
    * @li @p Starting - After creation of KSpell.
    * @li @p Running - After the ready signal has been emitted.
-   * @li @p Cleaning - After @ref cleanUp() has been called.
-   * @li @p Finished - After @ref cleanUp() has been completed.
+   * @li @p Cleaning - After cleanUp() has been called.
+   * @li @p Finished - After cleanUp() has been completed.
    *
    * The following error states exist:
    *
@@ -81,14 +81,14 @@ public:
   /**
    * Starts the spellchecker.
    *
-   * KSpell emits @ref ready() when it has verified that
+   * KSpell emits ready() when it has verified that
    * ISpell/ASpell is working properly. Pass the name of a slot -- do not pass zero!
-   * Be sure to call @ref cleanUp() when you are done with KSpell.
+   * Be sure to call cleanUp() when you are done with KSpell.
    *
-   * If KSpell could not be started correctly, @ref death() is emitted.
+   * If KSpell could not be started correctly, death() is emitted.
    *
-   * @param parent      Parent of @ref KSpellConfig dialog..
-   * @param caption     Caption of @ref KSpellConfig dialog.
+   * @param parent      Parent of KSpellConfig dialog..
+   * @param caption     Caption of KSpellConfig dialog.
    * @param receiver    Receiver object for the ready(KSpell *) signal.
    * @param slot        Receiver's slot, will be connected to the ready(KSpell *) signal.
    * @param kcs         Configuration for KSpell.
@@ -102,14 +102,14 @@ public:
   /**
    * Starts the spellchecker.
    *
-   * KSpell emits @ref ready() when it has verified that
+   * KSpell emits ready() when it has verified that
    * ISpell/ASpell is working properly. Pass the name of a slot -- do not pass zero!
-   * Be sure to call @ref cleanUp() when you are done with KSpell.
+   * Be sure to call cleanUp() when you are done with KSpell.
    *
-   * If KSpell could not be started correctly, @ref death() is emitted.
+   * If KSpell could not be started correctly, death() is emitted.
    *
-   * @param parent      Parent of @ref KSpellConfig dialog..
-   * @param caption     Caption of @ref KSpellConfig dialog.
+   * @param parent      Parent of KSpellConfig dialog..
+   * @param caption     Caption of KSpellConfig dialog.
    * @param receiver    Receiver object for the ready(KSpell *) signal.
    * @param slot        Receiver's slot, will be connected to the ready(KSpell *) signal.
    * @param kcs         Configuration for KSpell.
@@ -132,14 +132,14 @@ public:
    * Cleans up ISpell.
    *
    * Write out the personal dictionary and close ISpell's
-   *  stdin.  A @ref death() signal will be emitted when the cleanup is
+   *  stdin.  A death() signal will be emitted when the cleanup is
    *  complete, but this method will return immediately.
    */
   virtual void cleanUp ();
 
   /**
    * Sets the auto-delete flag. If this is set, the KSpell object
-   * is automatically deleted after emitting @ref death().
+   * is automatically deleted after emitting death().
    */
   void setAutoDelete(bool _autoDelete) { autoDelete = _autoDelete; }
 
@@ -147,20 +147,20 @@ public:
    *  Spellchecks a buffer of many words in plain text
    *  format.
    *
-   * The @p _buffer is not modified.  The signal @ref done() will be
-   *  sent when @ref check() is finished and the argument will be a
+   * The @p _buffer is not modified.  The signal done() will be
+   *  sent when check() is finished and the argument will be a
    *  spell-corrected version of @p _buffer.
    *
    * The spell check may be stopped by the user before the entire buffer
-   *  has been checked.  You can check @ref lastPosition() to see how far
-   *  in @p _buffer @ref check() reached before stopping.
+   *  has been checked.  You can check lastPosition() to see how far
+   *  in @p _buffer check() reached before stopping.
    */
 
   virtual bool check (const QString &_buffer, bool usedialog = TRUE);
 
   /**
-   * Returns the position (when using @ref check())  or word
-   * number (when using @ref checkList()) of
+   * Returns the position (when using check())  or word
+   * number (when using checkList()) of
    * the last word checked.
    */
   int lastPosition() const
@@ -169,11 +169,11 @@ public:
   /**
    * Spellchecks a list of words.
    *
-   * @ref checkList() is more flexible than @ref check().  You could parse
+   * checkList() is more flexible than check().  You could parse
    *  any type
    *  of document (HTML, TeX, etc.) into a list of spell-checkable words
-   *  and send the list to @ref checkList().  Sending a marked-up document
-   *  to @ref check() would result in the mark-up tags being
+   *  and send the list to checkList().  Sending a marked-up document
+   *  to check() would result in the mark-up tags being
    *  spell checked.
    */
   virtual bool checkList (QStringList *_wordlist, bool usedialog = TRUE);
@@ -183,7 +183,7 @@ public:
    *
    * checkWord() is the most flexible function.  Some applications
    *  might need this flexibility but will sacrifice speed when
-   *  checking large numbers of words.  Consider @ref checkList() for
+   *  checking large numbers of words.  Consider checkList() for
    *  checking many words.
    *
    *  Use this method for implementing  "online" spellchecking (i.e.,
@@ -194,10 +194,10 @@ public:
    *
    * If @p usedialog is set to @p true, KSpell will open the standard
    *  dialog if the word is not found.  The dialog results can be queried
-   *  by using  @ref dlgResult() and @ref replacement().
+   *  by using dlgResult() and replacement().
    *
-   *  The signal @ref corrected() is emitted when the check is
-   *  complete.  You can look at @ref suggestions() to see what the
+   *  The signal corrected() is emitted when the check is
+   *  complete.  You can look at suggestions() to see what the
    *  suggested replacements were.
    */
   virtual bool checkWord (const QString &_buffer, bool usedialog = FALSE);
@@ -205,15 +205,15 @@ public:
   /**
    * Hides the dialog box.
    *
-   * You'll need to do this when you are done with @ref checkWord();
+   * You'll need to do this when you are done with checkWord();
    */
   void hide ();
 
   /**
    * Returns list of suggested word replacements.
    *
-   * After calling @ref checkWord() (an in response to
-   *  a @ref misspelled() signal you can
+   * After calling checkWord() (an in response to
+   *  a misspelled() signal you can
    *  use this to get the list of
    *  suggestions (if any were available).
    */
@@ -281,14 +281,14 @@ public:
   virtual bool addPersonal (const QString & word);
 
   /**
-   * @return the @ref KSpellConfig object being used by this KSpell instance.
+   * @return the KSpellConfig object being used by this KSpell instance.
    */
   KSpellConfig ksConfig () const;
 
   /**
-   * Sets the resolution (in percent) of the @ref progress() signals.
+   * Sets the resolution (in percent) of the progress() signals.
    *
-   * E.g. @ref setProgressResolution (10) instructs KSpell to send progress
+   * E.g. setProgressResolution (10) instructs KSpell to send progress
    *  signals (at most) every 10% (10%, 20%, 30%...).
    * The default is 10%.
    */
@@ -319,13 +319,13 @@ public:
   static int modalCheck( QString& text, KSpellConfig * kcs );
 
   /**
-   * Call @ref setIgnoreUpperWords(true) to tell the spell-checker to ignore
+   * Call setIgnoreUpperWords(true) to tell the spell-checker to ignore
    * words that are completely uppercase. They are spell-checked by default.
    */
   void setIgnoreUpperWords(bool b);
 
   /**
-   * Call @ref setIgnoreTitleCase(true) to tell the spell-checker to ignore
+   * Call setIgnoreTitleCase(true) to tell the spell-checker to ignore
    * words with a 'title' case, i.e. starting with an uppercase letter.
    * They are spell-checked by default.
    */
@@ -334,15 +334,15 @@ public:
 signals:
 
   /**
-   * Emitted whenever a misspelled word is found by @ref check() or
-   *   by @ref checkWord().
-   *  If it is emitted by @ref checkWord(), @p pos=0.
-   *  If it is emitted by @ref check(), then @p pos indicates the position of
+   * Emitted whenever a misspelled word is found by check() or
+   *   by checkWord().
+   *  If it is emitted by checkWord(), @p pos=0.
+   *  If it is emitted by check(), then @p pos indicates the position of
    *   the misspelled word in the (original) @p _buffer.
    *   (The first position is zero.)
-   *  If it is emitted by @ref checkList(), @p pos is the index to
+   *  If it is emitted by checkList(), @p pos is the index to
    *  the misspelled
-   *   word in the @ref QStringList passed to @ref checkList().
+   *   word in the QStringList passed to checkList().
    *  Note, that @p originalword can be only a word part, if it's
    *  word with hyphens.
    *
@@ -359,10 +359,10 @@ signals:
    * corrected without calling the dialog (i.e., the user previously chose
    * "Replace All" for this word).
    *
-   * Results from the dialog may be checked with @ref dlgResult()
-   *  and @ref replacement().
+   * Results from the dialog may be checked with dlgResult()
+   *  and replacement().
    *
-   * Note, that when using @ref checkList() this signal can occur
+   * Note, that when using checkList() this signal can occur
    * more then once with same list position, when checking a word with
    * hyphens. In this case @p originalword is the last replacement.
    *
@@ -405,23 +405,23 @@ signals:
   void ready(KSpell *);
 
   /**
-   * Emitted during a @ref check().
+   * Emitted during a check().
    * @p i is between 1 and 100.
    */
   void progress (unsigned int i);
 
   /**
-   * Emitted when @ref check() is done.
+   * Emitted when check() is done.
    *
    * Be sure to copy the results of @p buffer if you need them.
    *  You can only rely
    *  on the contents of buffer for the life of the slot which was signaled
-   *  by @ref done().
+   *  by done().
    */
   void done (const QString &buffer);
 
   /**
-   * Emitted when @ref checkList() is done.
+   * Emitted when checkList() is done.
    *
    * If the argument is
    * @p true, then you should update your text from the
@@ -434,7 +434,7 @@ signals:
    *
    * You can delete the KSpell object in this signal.
    *
-   * You can check @ref status() to see what caused the death:
+   * You can check status() to see what caused the death:
    * @li @p Error - KSpell could not start.
    * @li @p Crashed - KSpell encountered an unexpected error during execution.
    * @li @p Finished - Clean up finished.
@@ -462,22 +462,22 @@ protected slots:
 
 private slots:
   /**
-   * Used for @ref modalCheck().
+   * Used for modalCheck().
    */
   void slotModalReady();
 
   /**
-   * Used for @ref modalCheck().
+   * Used for modalCheck().
    */
   void slotModalDone( const QString & );
 
   /**
-   * Used for @ref modalCheck().
+   * Used for modalCheck().
    */
   void slotSpellCheckerCorrected( const QString & oldText, const QString & newText, unsigned int );
 
   /**
-   * Used for @ref modalCheck().
+   * Used for modalCheck().
    */
   void  slotModalSpellCheckerFinished( );
 
@@ -530,7 +530,7 @@ protected:
   unsigned int curprog;
 
   /**
-   * Used for @ref #modalCheck.
+   * Used for modalCheck.
    */
   bool modaldlg;
   static QString modaltext;

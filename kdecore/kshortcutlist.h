@@ -36,11 +36,11 @@ class KShortcut;
 
 /**
  * KShortcutList is an abstract base class for 
- * @ref KAccelShortcutList and @ref KStdAccel::ShortcutList. It gives
+ * KAccelShortcutList and KStdAccel::ShortcutList. It gives
  * you an unified interface for accessing the accelerator lists
- * of @ref KAccel (using @KAccelShortcutList), 
- * @ref KGlobalAccel (using @KAccelShortcutList), and 
- * @ref KStdAccel (using @ref KStdAccel::ShortcutList).
+ * of KAccel (using @KAccelShortcutList), 
+ * KGlobalAccel (using @KAccelShortcutList), and 
+ * KStdAccel (using KStdAccel::ShortcutList).
  *
  * @short Base class for accessing accelerator lists
  */
@@ -61,28 +61,28 @@ class KShortcutList
 
 	/**
 	 * Returns the name of the shortcut with the given @p index.
-	 * @param index the index of the shortcut (must be < @ref count())
+	 * @param index the index of the shortcut (must be < count())
 	 * @return the name of the shortcut
 	 */
 	virtual QString name( uint index ) const = 0;
 
 	/**
 	 * Returns the (i18n'd) label of the shortcut with the given @p index.
-	 * @param index the index of the shortcut (must be < @ref count())
+	 * @param index the index of the shortcut (must be < count())
 	 * @return the label (i18n'd) of the shortcut
 	 */
 	virtual QString label( uint index ) const = 0;
 
 	/**
 	 * Returns the (i18n'd) What's This text of the shortcut with the given @p index.
-	 * @param index the index of the shortcut (must be < @ref count())
+	 * @param index the index of the shortcut (must be < count())
 	 * @return the What's This text (i18n'd) of the shortcut
 	 */
 	virtual QString whatsThis( uint index ) const = 0;
 
 	/**
 	 * Returns the shortcut with the given @p index.
-	 * @param index the index of the shortcut (must be < @ref count())
+	 * @param index the index of the shortcut (must be < count())
 	 * @return the shortcut
 	 * @see shortcutDefault()
 	 */
@@ -90,7 +90,7 @@ class KShortcutList
 
 	/**
 	 * Returns default shortcut with the given @p index.
-	 * @param index the index of the shortcut (must be < @ref count())
+	 * @param index the index of the shortcut (must be < count())
 	 * @return the default shortcut
 	 * @see shortcut()
 	 */
@@ -98,14 +98,14 @@ class KShortcutList
 
 	/**
 	 * Checks whether the shortcut with the given @p index is configurable.
-	 * @param index the index of the shortcut (must be < @ref count())
+	 * @param index the index of the shortcut (must be < count())
 	 * @return true if configurable, false otherwise
 	 */
 	virtual bool isConfigurable( uint index ) const = 0;
 
 	/**
 	 * Sets the shortcut of the given entry
-	 * @param index the index of the shortcut (must be < @ref count())
+	 * @param index the index of the shortcut (must be < count())
 	 * @param shortcut the shortcut
 	 */
 	virtual bool setShortcut( uint index, const KShortcut &shortcut ) = 0;
@@ -113,7 +113,7 @@ class KShortcutList
 	/**
 	 * Checks whether the shortcut with the given @p index is saved in the
 	 * global configuration.
-	 * @param index the index of the shortcut (must be < @ref count())
+	 * @param index the index of the shortcut (must be < count())
 	 * @return true if global, false otherwise
 	 */
 	virtual bool isGlobal( uint index ) const;
@@ -188,29 +188,29 @@ class KAccelActions;
 class KGlobalAccel;
 
 /**
- * @ref KShortcutList implementation to access @ref KAccel and 
- * @ref KGlobalAccel lists.
+ * KShortcutList implementation to access KAccel and 
+ * KGlobalAccel lists.
  */
 class KAccelShortcutList : public KShortcutList
 {
  public:
         /**
-	 * Creates a new @ref KShortcutList that accesses the given KAccel.
+	 * Creates a new KShortcutList that accesses the given KAccel.
 	 * @param accel the accelerators to access
 	 */ 
 	KAccelShortcutList( KAccel* accel );
 
         /**
-	 * Creates a new @ref KShortcutList that accesses the given 
-	 * @ref KGlobalAccel.
+	 * Creates a new KShortcutList that accesses the given 
+	 * KGlobalAccel.
 	 * @param accel the accelerators to access
 	 */ 
 	KAccelShortcutList( KGlobalAccel* accel );
 
         /**
 	 * @internal
-	 * Creates a new @ref KShortcutList that accesses the given 
-	 * @ref KAccelActions collection.
+	 * Creates a new KShortcutList that accesses the given 
+	 * KAccelActions collection.
 	 * @param accel the actions to access
 	 * @param bGlobal true to save the actions in the global 
 	 *        configuration file
@@ -251,7 +251,7 @@ namespace KStdAccel {
 //---------------------------------------------------------------------
 
 /**
- * @ref KShortcutList implementation that accesses @ref KStdAccel
+ * KShortcutList implementation that accesses KStdAccel
  * actions.
  */
 class ShortcutList : public KShortcutList

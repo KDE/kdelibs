@@ -30,9 +30,9 @@ class QWidget;
 class QString;
 
 /**
- *  @ref QValidator for integers.
+ * QValidator for integers.
 
-  This can be used by @ref QLineEdit or subclass to provide validated
+  This can be used by QLineEdit or subclass to provide validated
   text entry.  Can be provided with a base value (default is 10), to allow
   the proper entry of hexadecimal, octal, or any other base numeric data.
 
@@ -93,11 +93,11 @@ class KIntValidator : public QValidator {
 class KFloatValidatorPrivate;
 
 /**
-  @obsolete Use @ref KDoubleValidator
+  @obsolete Use KDoubleValidator
 
-  @ref QValidator for floating point entry.
+ QValidator for floating point entry.
   Extends the QValidator class to properly validate double numeric data.
-  This can be used by @ref QLineEdit or subclass to provide validated
+  This can be used by QLineEdit or subclass to provide validated
   text entry.
 
   @author Glen Parker <glenebob@nwlink.com>
@@ -162,13 +162,13 @@ class KFloatValidator : public QValidator {
 };
 
 /**
-   KDoubleValidator extends @ref QDoubleValidator to be
+   KDoubleValidator extends QDoubleValidator to be
    locale-aware. That means that - subject to not being disabled -
-   @ref KLocale::decimalPoint(), @ref KLocale::thousandsSeparator()
-   and @ref KLocale::positiveSign() and @ref KLocale::negativeSign()
+ KLocale::decimalPoint(), KLocale::thousandsSeparator()
+   and KLocale::positiveSign() and KLocale::negativeSign()
    are respected.
 
-   @short A locale-aware @ref QDoubleValidator
+   @short A locale-aware QDoubleValidator
    @author Marc Mutz <mutz@kde.org>
    @version $Id$
    @see KIntValidator
@@ -180,7 +180,7 @@ class KDoubleValidator : public QDoubleValidator {
   Q_PROPERTY( bool acceptLocalizedNumbers READ acceptLocalizedNumbers WRITE setAcceptLocalizedNumbers )
 public:
   /** Constuct a locale-aware KDoubleValidator with default range
-      (whatever @ref QDoubleValidator uses for that) and parent @p
+      (whatever QDoubleValidator uses for that) and parent @p
       parent */
   KDoubleValidator( QObject * parent, const char * name=0 );
   /** Constuct a locale-aware KDoubleValidator for range [@p bottom,@p

@@ -32,11 +32,11 @@
  * Gravis Ultrasound synthesizer output class . This class is used to send midi
  * events to synthesizers on GUS cards.
  *
- * GUSOut inherits @ref MidiOut and supports the same simple API.
+ * GUSOut inherits MidiOut and supports the same simple API.
  *
- * The recommended way to use this class is by using a @ref DeviceManager
- * object, and use the @ref DeviceManager::setPatchesToUse() member which will
- * call the @ref #setPatchesToUse() member in this class.
+ * The recommended way to use this class is by using a DeviceManager
+ * object, and use the DeviceManager::setPatchesToUse() member which will
+ * call the setPatchesToUse() member in this class.
  *
  * @short Sends MIDI events to GUS synths
  * @version 0.9.5 17/01/2000
@@ -63,7 +63,7 @@ class GUSOut : public MidiOut
 
   public:
     /**
-     * Constructor. See @ref MidiOut::MidiOut() for more information.
+     * Constructor. See MidiOut::MidiOut() for more information.
      */
     GUSOut(int d=0,int total =12);
 
@@ -73,52 +73,52 @@ class GUSOut : public MidiOut
     ~GUSOut();
 
     /**
-     * See @ref MidiOut::openDev()
+     * See MidiOut::openDev()
      */
     virtual void openDev	(int sqfd);
 
     /**
-     * See @ref MidiOut::closeDev()
+     * See MidiOut::closeDev()
      */
     virtual void closeDev	(void);
 
     /**
-     * See @ref MidiOut::initDev()
+     * See MidiOut::initDev()
      */
     virtual void initDev	(void);
 
     /**
-     * See @ref MidiOut::noteOn()
+     * See MidiOut::noteOn()
      */
     virtual void noteOn		( uchar chn, uchar note, uchar vel );
 
     /**
-     * See @ref MidiOut::noteOff()
+     * See MidiOut::noteOff()
      */
     virtual void noteOff	( uchar chn, uchar note, uchar vel );
 
     /**
-     * See @ref MidiOut::keyPressure()
+     * See MidiOut::keyPressure()
      */
     virtual void keyPressure	( uchar chn, uchar note, uchar vel );
 
     /**
-     * See @ref MidiOut::chnPatchChange()
+     * See MidiOut::chnPatchChange()
      */
     virtual void chnPatchChange	( uchar chn, uchar patch );
 
     /**
-     * See @ref MidiOut::chnPressure()
+     * See MidiOut::chnPressure()
      */
     virtual void chnPressure	( uchar chn, uchar vel );
 
     /**
-     * See @ref MidiOut::chnPitchBender()
+     * See MidiOut::chnPitchBender()
      */
     virtual void chnPitchBender	( uchar chn, uchar lsb,  uchar msb );
 
     /**
-     * See @ref MidiOut::chnController()
+     * See MidiOut::chnController()
      */
     virtual void chnController	( uchar chn, uchar ctl , uchar v ); 
 
@@ -129,7 +129,7 @@ class GUSOut : public MidiOut
     virtual void sysex		( uchar *data,ulong size);
 
     /**
-     * See @ref DeviceManager::setPatchesToUse() . All the information about this
+     * See DeviceManager::setPatchesToUse() . All the information about this
      * member is explained there because it's (for now) just a simple call to this
      * function when the device used is a GUS device, and you're supposed to use
      * a DeviceManager object instead of a GUSOut object except in rare ocassions.

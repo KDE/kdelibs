@@ -38,7 +38,7 @@ class QPopupMenu;
 class QPainter;
 
 /**
- * A toolbar button. This is used internally by @ref KToolBar, use the
+ * A toolbar button. This is used internally by KToolBar, use the
  * KToolBar methods instead.
  * @internal
  */
@@ -95,7 +95,7 @@ public:
    * Set the pixmap directly for this button.  This pixmap should be
    * the active one... the dimmed and disabled pixmaps are constructed
    * based on this one.  However, don't use this function unless you
-   * are positive that you don't want to use @ref setIcon.
+   * are positive that you don't want to use setIcon.
    *
    * @param pixmap The active pixmap
    */
@@ -131,7 +131,7 @@ public:
 
   /**
    * Set the icon for this button. The icon will be loaded internally
-   * with the correct size. This function is preferred over @ref setIconSet
+   * with the correct size. This function is preferred over setIconSet
    *
    * @param icon The name of the icon
    */
@@ -154,8 +154,8 @@ public:
    * @deprecated
    * Set the active icon for this button.  The pixmap itself is loaded
    * internally based on the icon size...  .. the disabled and default
-   * pixmaps, however will only be constructed if @ref #generate is
-   * true.  This function is preferred over @ref setPixmap
+   * pixmaps, however will only be constructed if generate is
+   * true.  This function is preferred over setPixmap
    *
    * @param icon     The name of the active icon
    * @param generate If true, then the other icons are automagically
@@ -197,7 +197,7 @@ public:
   /**
    * Turn this button into a toggle button or disable the toggle
    * aspects of it.  This does not toggle the button itself.
-   * Use @ref toggle() for that.
+   * Use toggle() for that.
    *
    * @param toggle true or false
    */
@@ -216,7 +216,7 @@ public:
 
   /**
    * Give this button a popup menu.  There will not be a delay when
-   * you press the button.  Use @ref setDelayedPopup if you want that
+   * you press the button.  Use setDelayedPopup if you want that
    * behavior. 
    *
    * @param p The new popup menu
@@ -299,7 +299,7 @@ private:
 };
 
 /**
-* List of @ref KToolBarButton objects.
+* List of KToolBarButton objects.
 * @internal
 * @version $Id$
 */

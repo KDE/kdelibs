@@ -33,7 +33,7 @@ class QPopupMenu;
 
 /**
  * This class provides a bookmark toolbar.  Using this class is nearly
- * identical to using @ref KBookmarkMenu so follow the directions
+ * identical to using KBookmarkMenu so follow the directions
  * there.
  */
 class KBookmarkBar : public QObject

@@ -55,12 +55,12 @@ private:
  * a QTreeView showing files and/or directories in the file system.
  *
  * KFileTreeView is able to handle more than one URL, represented by
- * @ref KFileTreeBranch.
+ * KFileTreeBranch.
  *
  * Typical usage:
  * 1. create a KFileTreeView fitting in your layout and add columns to it
  * 2. call addBranch to create one or more branches
- * 3. retrieve the root item with @ref KFileTreeBranch::root() and set it open
+ * 3. retrieve the root item with KFileTreeBranch::root() and set it open
  *    if desired. That starts the listing.
  */
 class KFileTreeView : public KListView
@@ -114,7 +114,7 @@ public:
    virtual bool removeBranch( KFileTreeBranch *branch );
 
    /**
-    *  @returns a pointer to the @ref KFileTreeBranch in the KFileTreeView or zero on failure.
+    *  @returns a pointer to the KFileTreeBranch in the KFileTreeView or zero on failure.
     *  @param searchName is the name of a branch
     */
    KFileTreeBranch *branch( const QString& searchName );
@@ -127,12 +127,12 @@ public:
 
    /**
     *  set the directory mode for branches. If true is passed, only directories will be loaded.
-    *  @param branch is a pointer to a @ref KFileTreeBranch
+    *  @param branch is a pointer to a KFileTreeBranch
     */
    virtual void setDirOnlyMode( KFileTreeBranch *branch, bool );
 
    /**
-    * searches a branch for a @ref KFileTreeViewItem identified by the relative url given as
+    * searches a branch for a KFileTreeViewItem identified by the relative url given as
     * second parameter. The method adds the branches base url to the relative path and finds
     * the item.
     * @returns a pointer to the item or zero if the item does not exist.

@@ -34,7 +34,7 @@ class KMimeSourceFactory;
  * Access to KDE global objects for use in shared libraries.  In
  * practical terms, this class is used in KDE components.  This allows
  * components to store things that normally would be accessed by
- * @ref KGlobal.
+ * KGlobal.
  *
  * @author Torben Weis
  * @version $Id$
@@ -58,7 +58,7 @@ class KInstance
      *  Don't build a KAboutData on the stack in this case !
      *  Building a KAboutData on the stack is only ok for usage with
      *  KCmdLineArgs and KApplication (not destroyed until the app exits).
-     *  @param aboutData data about this instance (see @ref KAboutData)
+     *  @param aboutData data about this instance (see KAboutData)
      */
     KInstance( const KAboutData * aboutData );
 
@@ -116,7 +116,7 @@ class KInstance
     QCString          instanceName() const;
 
     /**
-     * Returns the @ref KMimeSourceFactory of the instance.
+     * Returns the KMimeSourceFactory of the instance.
      * Mainly added for API completeness and future extensibility.
      * @return the KMimeSourceFactory set as default for this application.
      */

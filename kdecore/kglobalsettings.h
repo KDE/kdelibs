@@ -52,9 +52,9 @@ class KGlobalSettings
      * to click on something but moved the mouse a bit while doing so.
      *
      * For this to work you must save the position of the mouse (oldPos)
-     * in the @ref QWidget::mousePressEvent().
+     * in the QWidget::mousePressEvent().
      * When the position of the mouse (newPos)
-     * in a  @ref QWidget::mouseMoveEvent() exceeds this threshold
+     * in a QWidget::mouseMoveEvent() exceeds this threshold
      * you may start a drag
      * which should originate from oldPos.
      *
@@ -110,7 +110,7 @@ class KGlobalSettings
     };
 
     /**
-     * Returns whether tear-off handles are inserted in @ref KPopupMenus.
+     * Returns whether tear-off handles are inserted in KPopupMenus.
      * @return whether tear-off handles are inserted in KPopupMenus.
      * @since 3.1
      **/
@@ -160,7 +160,7 @@ class KGlobalSettings
     static bool showContextMenusOnPress ();
 
     /**
-     * This enum describes the completion mode used for by the @ref KCompletion class.
+     * This enum describes the completion mode used for by the KCompletion class.
      * See <a href="http://developer.kde.org/documentation/standards/kde/style/keys/completion.html">
      * the styleguide</a>.
      **/
@@ -195,7 +195,7 @@ class KGlobalSettings
     /**
      * Returns the preferred completion mode setting.
      *
-     * @return @ref Completion.  Default is @p CompletionPopup.
+     * @return Completion.  Default is @p CompletionPopup.
      */
     static Completion completionMode();
 
@@ -317,8 +317,8 @@ class KGlobalSettings
     static QColor highlightColor();
 
     /**
-     * Returns the alternate background color used by @ref KListView with
-     * @ref KListViewItem. Any other list that uses alternating background
+     * Returns the alternate background color used by KListView with
+     * KListViewItem. Any other list that uses alternating background
      * colors should use this too, to obey to the user's preferences. Returns
      * an invalid color if the user doesn't want alternating backgrounds.
      * @return the alternate background color

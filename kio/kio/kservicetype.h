@@ -87,7 +87,7 @@ public:
    * Returns the icon associated with this service type. Some
    *         derived classes offer special functions which take for
    *         example an URL and returns a special icon for this
-   *         URL. An example is @ref KMimeType, @ref KFolderType and
+   *         URL. An example is KMimeType, KFolderType and
    *         others.
    * @return the name of the icon, can be QString::null.
    */
@@ -137,8 +137,8 @@ public:
 
   /**
    * Returns the requested property. Some often used properties
-   * have convenience access functions like @ref name(),
-   * @ref comment() etc.
+   * have convenience access functions like name(),
+   * comment() etc.
    *
    * @param _name the name of the property
    * @return the property, or invalid if not found

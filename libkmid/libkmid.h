@@ -36,14 +36,14 @@
  * Suppose you're developing a game and you want to play some background music
  * while the user is playing. You only have to call :
  * 
- * @li @ref #kMidInit();
- * @li @ref #kMidLoad("RideOfTheValkyries.mid");
- * @li @ref #kMidPlay();
+ * @li kMidInit();
+ * @li kMidLoad("RideOfTheValkyries.mid");
+ * @li kMidPlay();
  *
  * When the user decides to quit the game, use 
  *
- * @li @ref #kMidStop();
- * @li @ref #kMidDestruct();
+ * @li kMidStop();
+ * @li kMidDestruct();
  *
  * to stop the music and release the memory allocated by libkmid.
  *
@@ -71,19 +71,19 @@ class KMidSimpleAPI
     static int kMidInit(void);
 
     /**
-     * Loads a song that will be played with the next call to @ref kMidPlay().
+     * Loads a song that will be played with the next call to kMidPlay().
      */
     static int kMidLoad(const char *filename);
 
     /**
-     * Plays the song currently loaded with @ref kMidLoad().
+     * Plays the song currently loaded with kMidLoad().
      * kMidPlay forks in order to play the song in a different process, it
      * exits inmediately, so that the application can follow the normal
      * execution flow while the sone is played.
      *
      * If loop is 0 the song is played once and then the child process
      * finishes. If loop is 1, the song is played repeatedly until
-     * @ref #kMidStop() is called. You can call @ref #kMidStop() anytime you want
+     * kMidStop() is called. You can call kMidStop() anytime you want
      * (also if loop is 0) to stop the song and kill the child process.
      *
      * @see kMidStop
@@ -101,7 +101,7 @@ class KMidSimpleAPI
 
     /**
      * Releases the memory allocated by libkmid. To continue playing, you must
-     * first make a(nother) call to @ref #kMidInit().
+     * first make a(nother) call to kMidInit().
      */
     static void kMidDestruct(void);
 
@@ -122,9 +122,9 @@ class KMidSimpleAPI
 
     /**
      * Returns the name of the i-th device . In case libkmid wasn't yet
-     * initialized ( see @ref #kMidInit() ), the return value is NULL, and in
+     * initialized ( see kMidInit() ), the return value is NULL, and in
      * case the parameter has a value out of the valid range 
-     * ( see @ref #kMidDevices() ) it returns an empty string.
+     * ( see kMidDevices() ) it returns an empty string.
      *
      * @see #kMidDevices
      * @see #kMidType
@@ -133,9 +133,9 @@ class KMidSimpleAPI
 
     /**
      * Returns the type of the i-th device . In case libkmid wasn't yet
-     * initialized ( see @ref #kMidInit() ), the return value is NULL, and in
+     * initialized ( see kMidInit() ), the return value is NULL, and in
      * case the parameter has a value out of the valid range 
-     * ( see @ref #kMidDevices() ) it returns an empty string.
+     * ( see kMidDevices() ) it returns an empty string.
      *
      * @see kMidDevices
      * @see kMidName

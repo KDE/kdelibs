@@ -40,7 +40,7 @@ public:
 
   /**
    * Parses VFolder menu defintion and generates a menu layout.
-   * The @ref newService signals is used as callback to load
+   * The newService signals is used as callback to load
    * a specific service description.
    *
    * @param file Menu file to load

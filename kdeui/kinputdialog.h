@@ -34,7 +34,7 @@ class KInputDialogPrivate;
  * The KInputDialog class provides a simple dialog to get a single value
  * from the user. The value can be a string, a number (either an integer or
  * a float) or an item from a list. This class is designed to be source
- * compatible with @ref QInputDialog.
+ * compatible with QInputDialog.
  *
  * Four static convenience functions are provided: getText(), getInteger().
  * getFloat() and getItem().
@@ -94,8 +94,8 @@ class KInputDialog : public KDialogBase
      * If you provide a validator, the Ok button is disabled as long as
      * the validator doesn't return Acceptable. If there is no validator,
      * the Ok button is enabled whenever the line edit isn't empty. If you
-     * want to accept empty input, create a trivial @ref QValidator that
-     * always returns acceptable, e.g. @ref QRegExpValidator with a regexp
+     * want to accept empty input, create a trivial QValidator that
+     * always returns acceptable, e.g. QRegExpValidator with a regexp
      * of ".*".
      *
      * @param caption   Caption of the dialog
@@ -227,7 +227,7 @@ class KInputDialog : public KDialogBase
      * @param name     Name of the dialog widget
      *
      * @return List of selected items if multiple is true, else currently
-     *         selected item as a @ref QStringList
+     *         selected item as a QStringList
      */
     static QStringList getItemList( const QString &caption,
         const QString &label, const QStringList &list=QStringList(),

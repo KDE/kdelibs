@@ -61,12 +61,12 @@ public:
 
     /** 
      * Tests whether an effect has been configured for the given icon group.
-     * @param group the group to check, see @ref KIcon::Group
-     * @param state the state to check, see @ref KIcon::States
+     * @param group the group to check, see KIcon::Group
+     * @param state the state to check, see KIcon::States
      * @returns true if an effect is configured for the given @p group
      * in @p state, otherwise false.
      * @see KIcon::Group
-     * @ref KIcon::States
+     * KIcon::States
      */
     bool hasEffect(int group, int state) const;
 
@@ -74,8 +74,8 @@ public:
      * Returns a fingerprint for the effect by encoding
      * the given @p group and @p state into a QString. This 
      * is useful for caching.
-     * @param group the group, see @ref KIcon::Group
-     * @param state the state, see @ref KIcon::States
+     * @param group the group, see KIcon::Group
+     * @param state the state, see KIcon::States
      * @return the fingerprint of the given @p group+@p state
      */ 
      QString fingerprint(int group, int state) const;
@@ -84,8 +84,8 @@ public:
      * Applies an effect to an image. The effect to apply depends on the
      * @p group and @p state parameters, and is configured by the user.
      * @param src The image.
-     * @param group The group for the icon, see @ref KIcon::Group
-     * @param state The icon's state, see @ref KIcon::States
+     * @param group The group for the icon, see KIcon::Group
+     * @param state The icon's state, see KIcon::States
      * @return An image with the effect applied.
      */
     QImage apply(QImage src, int group, int state) const;
@@ -93,7 +93,7 @@ public:
     /**
      * Applies an effect to an image.
      * @param src The image.
-     * @param effect The effect to apply, one of @ref #KIconEffect::Effects.
+     * @param effect The effect to apply, one of KIconEffect::Effects.
      * @param value Strength of the effect. 0 <= @p value <= 1.
      * @param color Color parameter for effects that need one.
      * @param trans Add Transparency if trans = true.
@@ -104,8 +104,8 @@ public:
     /**
      * Applies an effect to a pixmap.
      * @param src The pixmap.
-     * @param group The group for the icon, see @ref KIcon::Group
-     * @param state The icon's state, see @ref KIcon::States
+     * @param group The group for the icon, see KIcon::Group
+     * @param state The icon's state, see KIcon::States
      * @return A pixmap with the effect applied.
      */
     QPixmap apply(QPixmap src, int group, int state) const;
@@ -113,7 +113,7 @@ public:
     /**
      * Applies an effect to a pixmap.
      * @param src The pixmap.
-     * @param effect The effect to apply, one of @ref #KIconEffect::Effects.
+     * @param effect The effect to apply, one of KIconEffect::Effects.
      * @param value Strength of the effect. 0 <= @p value <= 1.
      * @param color Color parameter for effects that need one.
      * @param trans Add Transparency if trans = true.

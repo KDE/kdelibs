@@ -32,7 +32,7 @@
  * @li improved handling of (), [] and {}
  * @li improved handling of '/' (e.g. for paths)
  *
- * Usage: call the static method, @ref formatText, with the text to
+ * Usage: call the static method, formatText, with the text to
  * wrap and the constraining rectangle etc., it will return an instance of KWordWrap
  * containing internal data, result of the word-wrapping.
  * From that instance you can retrieve the boundingRect, and invoke drawing.
@@ -45,7 +45,7 @@ class KWordWrap
 {
 public:
     /**
-     * Use this flag in @ref drawText() if you want to fade out the text if it does
+     * Use this flag in drawText() if you want to fade out the text if it does
      * not fit into the constraining rectangle.
      * @since 3.2
      */
@@ -67,7 +67,7 @@ public:
     /**
      * @return the bounding rect, calculated by formatText. The width is the
      *         width of the widest text line, and never wider than
-     *         the rectangle given to @ref formatText. The height is the
+     *         the rectangle given to formatText. The height is the
      *         text block. X and Y are always 0.
      */
     QRect boundingRect() const { return m_boundingRect; }
@@ -87,13 +87,13 @@ public:
 
     /**
      * Draw the text that has been previously wrapped, at position x,y.
-     * Flags are for alignment, e.g. @ref Qt::AlignHCenter. Default is
-     * @ref Qt::AlignAuto.
+     * Flags are for alignment, e.g. Qt::AlignHCenter. Default is
+     * Qt::AlignAuto.
      * @param painter the QPainter to use.
      * @param x the horizontal position of the text
      * @param y the vertical position of the text
-     * @param flags the ORed text alignment flags from the @ref Qt namespace,
-     *              ORed with @ref FadeOut if you want the text to fade out if it
+     * @param flags the ORed text alignment flags from the Qt namespace,
+     *              ORed with FadeOut if you want the text to fade out if it
      *              does not fit (the @p painter's background must be set
      *              accordingly)
      */

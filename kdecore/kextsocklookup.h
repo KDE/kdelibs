@@ -30,7 +30,7 @@
  * class to do the dirty work.
  *
  * @author Thiago Macieira <thiagom@mail.com>
- * @short internal lookup class used by @ref KExtendedSocket
+ * @short internal lookup class used by KExtendedSocket
  */
 class KExtendedSocketLookup: public QObject
 {

@@ -30,8 +30,8 @@
 namespace KIO {
 
 /*
- * A default implementation of the progress dialog @ref ProgressBase. 
- * @ref ProgressBase
+ * A default implementation of the progress dialog ProgressBase. 
+ * ProgressBase
  */
 class DefaultProgress : public ProgressBase {
 

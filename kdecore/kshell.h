@@ -31,7 +31,7 @@
 namespace KShell {
 
     /**
-     * Flags for @ref splitArgs().
+     * Flags for splitArgs().
      */
     enum Options {
         NoOptions = 0,
@@ -55,7 +55,7 @@ namespace KShell {
     };
 
     /**
-     * Status codes from @ref splitArgs()
+     * Status codes from splitArgs()
      */
     enum Errors {
         /**
@@ -81,9 +81,9 @@ namespace KShell {
      * meta characters it cannot process.
      *
      * @param cmd the command to split
-     * @param flags operation flags, see @ref Options
+     * @param flags operation flags, see Options
      * @param err if not NULL, a status code will be stored at the pointer
-     *  target, see @ref Errors
+     *  target, see Errors
      * @return a list of unquoted words or an empty list if an error occurred
      */
     QStringList splitArgs( const QString &cmd, int flags = 0, int *err = 0 );
@@ -98,7 +98,7 @@ namespace KShell {
 
     /**
      * Same as above, but $'' is used instead of '' for the quoting.
-     * The output is suitable for @ref splitArgs(), bash, zsh and possibly
+     * The output is suitable for splitArgs(), bash, zsh and possibly
      * other bourne-compatible shells, but not for plain sh. The advantage
      * is, that control characters (ASCII less than 32) are escaped into
      * human-readable strings.

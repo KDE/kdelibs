@@ -48,7 +48,7 @@ class KPreferencesModule : public QObject
 		 * @param parent    The parent of this object - the module will
 		 *                  automatically be deleted by Qt object model.
 		 *                  The parent object is used to find the
-		 *                  @ref KPreferencesDialog to be used for this module.
+		 * KPreferencesDialog to be used for this module.
 		 *                  Furhermore all modules belonging to the same
 		 *                  parent will be in the same group in the preferences
 		 *                  dialog.
@@ -64,7 +64,7 @@ class KPreferencesModule : public QObject
 		 * @param parent    The parent of this object - the module will
 		 *                  automatically be deleted by Qt object model.
 		 *                  The parent object is used to find the
-		 *                  @ref KPluginSelectorModule this plugin config page
+		 * KPluginSelectorModule this plugin config page
 		 *                  belongs to.
 		 *                  Furhermore all modules belonging to the same
 		 *                  parent will be in the same group in the preferences
@@ -94,7 +94,7 @@ class KPreferencesModule : public QObject
 		virtual void reset() = 0;
 
 		/**
-		 * Creates the modules page. The default values are already set. So @ref reset() won't
+		 * Creates the modules page. The default values are already set. So reset() won't
 		 * be called additionally.
 		 *
 		 * @param page      The parent for the dialog page. Put your widgets

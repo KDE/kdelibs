@@ -74,7 +74,7 @@ public:
   /**
    * The constructor creates a KabAPI object, but it does not load the
    * database itselfes, as you could not query if this could be done
-   * without failures. Thus you have to call @ref #init before you can
+   * without failures. Thus you have to call init before you can
    * use the database.
    * @param parent The QWidget pointer to the parent widget.
    */

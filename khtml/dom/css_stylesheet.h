@@ -93,7 +93,7 @@ public:
     bool disabled() const;
 
     /**
-     * see @ref disabled
+     * see disabled
      */
     void setDisabled( bool );
 
@@ -384,7 +384,7 @@ public:
     DOM::DOMString mediaText() const;
 
     /**
-     * see @ref mediaText
+     * see mediaText
      */
     void setMediaText(const DOM::DOMString &value);
 

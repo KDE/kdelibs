@@ -27,8 +27,8 @@ class QEvent;
 #include <klistbox.h>
 
 /**
- * A little utility class for "completion-widgets", like @ref KLineEdit or
- * @ref KComboBox. KCompletionBox is a listbox, displayed as a rectangle without
+ * A little utility class for "completion-widgets", like KLineEdit or
+ * KComboBox. KCompletionBox is a listbox, displayed as a rectangle without
  * any window decoration, usually directly under the lineedit or combobox.
  * It is filled with all possible matches for a completion, so the user
  * can select the one he wants.
@@ -122,7 +122,7 @@ public slots:
      * pick from the available matches.
      *
      * If the canceled text is not set through this function, the
-     * @ref userCancelled signal will not be emitted.
+     * userCancelled signal will not be emitted.
      *
      * @see userCancelled( const QString& )
      * @param txt  the text to be emitted if the user cancels this box
@@ -130,7 +130,7 @@ public slots:
     void setCancelledText( const QString& );
 
     /**
-     * @returns the text set via @ref setCancelledText() or QString::null.
+     * @returns the text set via setCancelledText() or QString::null.
      */
     QString cancelledText() const;
 
@@ -209,7 +209,7 @@ protected:
 protected slots:
     /**
      * Called when an item was activated. Emits
-     * @ref activated() with the item.
+     * activated() with the item.
      */
     virtual void slotActivated( QListBoxItem * );
 

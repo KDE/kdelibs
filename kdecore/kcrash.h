@@ -28,8 +28,8 @@
  * This class handles segmentation-faults.
  * By default it displays a  message-box saying the application crashed.
  * This default can be overridden by setting a custom crash handler with
- * @ref setCrashHandler().
- * If a function is specified with @ref setEmergencySaveFunction() it will
+ * setCrashHandler().
+ * If a function is specified with setEmergencySaveFunction() it will
  * be called by the default crash handler, giving the application a chance
  * to save its data.
  */

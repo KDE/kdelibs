@@ -327,7 +327,7 @@ private:
 
 /**
  * The KColorPatch widget is a (usually small) widget showing
- * a selected color e. g. in the @ref KColorDialog. It
+ * a selected color e. g. in the KColorDialog. It
  * automatically handles drag and drop from and on the widget.
  *
  * @short A color displayer.
@@ -384,7 +384,7 @@ private:
  * @li Direct input of HSV or RGB values.
  * @li Saving of custom colors
  *
- * In most cases, you will want to use the static method @ref KColorDialog::getColor().
+ * In most cases, you will want to use the static method KColorDialog::getColor().
  * This pops up the dialog (with an initial selection provided by you), lets the
  * user choose a color, and returns.
  *
@@ -401,13 +401,13 @@ private:
  *
  * The color dialog is really a collection of several widgets which can
  * you can also use separately: the quadratic plane in the top left of
- * the dialog is a @ref KXYSelector. Right next to it is a @ref KHSSelector
+ * the dialog is a KXYSelector. Right next to it is a KHSSelector
  * for choosing hue/saturation.
  *
- * On the right side of the dialog you see a @ref KPaletteTable showing
+ * On the right side of the dialog you see a KPaletteTable showing
  * up to 40 colors with a combo box which offers several predefined
  * palettes or a palette configured by the user. The small field showing
- * the currently selected color is a @ref KColorPatch.
+ * the currently selected color is a KColorPatch.
  *
  * @short A color selection dialog.
  **/
@@ -437,7 +437,7 @@ class KColorDialog : public KDialogBase
      *
      * The selected color is returned in the argument @p theColor.
      *
-     * @returns @ref QDialog::result().
+     * @returns QDialog::result().
      */
     static int getColor( QColor &theColor, QWidget *parent=0L );
 
@@ -451,7 +451,7 @@ class KColorDialog : public KDialogBase
      * selected by the "default color" checkbox. When this checkbox is checked,
      * the invalid color (QColor()) is returned into @p theColor.
      *
-     * @returns @ref QDialog::result().
+     * @returns QDialog::result().
      */
     static int getColor( QColor &theColor, const QColor& defaultColor, QWidget *parent=0L );
 

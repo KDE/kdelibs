@@ -39,7 +39,7 @@ class QTextCodec;
  * Basically, KProcIO gives you buffered I/O similar to fgets()/fputs().
  *
  * Aside from these, and the fact that start() takes different
- * parameters, use this class just like @ref KProcess.
+ * parameters, use this class just like KProcess.
  *
  * @version $Id$
  * @author David Sweet
@@ -63,10 +63,10 @@ public:
   ~KProcIO();
   
   /**
-   * Sets the communication mode to be passed to @ref KProcess::start()
-   * by @ref start(). The default communication mode is @ref KProcess::All.
+   * Sets the communication mode to be passed to KProcess::start()
+   * by start(). The default communication mode is KProcess::All.
    * You probably want to use this function in conjunction with
-   * @ref KProcess::setUsePty().
+   * KProcess::setUsePty().
    * @param comm the communication mode
    */
   void setComm (Communication comm);
@@ -80,7 +80,7 @@ public:
    *
    *  @param runmode For a detailed description of the
    *  various run modes, have a look at the
-   *  general description of the @ref KProcess class.
+   *  general description of the KProcess class.
    *  @param includeStderr If true, data from both stdout and stderr is 
    *  listened to. If false, only stdout is listened to.
    *  @return true on success, false on error. 
@@ -113,7 +113,7 @@ public:
   //I like fputs better -- it's the same as writeStdin
   //inline
   /**
-   * This function just calls @ref writeStdin().
+   * This function just calls writeStdin().
    * 
    * @param line Text to write.
    * @param AppendNewLine if true, a newline '\\n' is appended.
@@ -152,7 +152,7 @@ public:
   int readln (QString &line, bool autoAck=true, bool *partial=0);
 
   /**
-   * This function calls @ref readln().
+   * This function calls readln().
    * @param line is used to store the line that was read.
    * @param autoAck when true, ackRead() is called for you.
    * @param partial when provided the line is returned 
@@ -181,7 +181,7 @@ public:
   void ackRead ();
 
   /**
-   *  Turns @ref readReady() signals on and off.
+   *  Turns readReady() signals on and off.
    *   You can turn this off at will and not worry about losing any data.
    *   (as long as you turn it back on at some point...)
    * @param enable true to turn the signals on, false to turn them off

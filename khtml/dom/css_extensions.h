@@ -464,7 +464,7 @@ public:
     DOM::DOMString identifier() const;
 
     /**
-     * see @ref identifier
+     * see identifier
      * @exception DOMException
      * SYNTAX_ERR: Raised if the specified identifier has a syntax
      * error and is unparsable.
@@ -482,7 +482,7 @@ public:
     short increment() const;
 
     /**
-     * see @ref increment
+     * see increment
      * @exception DOMException
      * NO_MODIFICATION_ALLOWED_ERR: Raised if this identifier is
      * readonly.
@@ -520,7 +520,7 @@ public:
     DOM::DOMString identifier() const;
 
     /**
-     * see @ref identifier
+     * see identifier
      * @exception DOMException
      * SYNTAX_ERR: Raised if the specified identifier has a syntax
      * error and is unparsable.
@@ -538,7 +538,7 @@ public:
     short reset() const;
 
     /**
-     * see @ref reset
+     * see reset
      * @exception DOMException
      * NO_MODIFICATION_ALLOWED_ERR: Raised if this identifier is
      * readonly.
@@ -582,7 +582,7 @@ public:
     unsigned short cursorType() const;
 
     /**
-     * see @ref cursorType
+     * see cursorType
      */
     void setCursorType( const unsigned short  );
 
@@ -602,7 +602,7 @@ public:
     DOM::DOMString predefinedCursor() const;
 
     /**
-     * see @ref predefinedCursor
+     * see predefinedCursor
      * @exception DOMException
      * SYNTAX_ERR: Raised if the specified CSS string value has a
      * syntax error and is unparsable.
@@ -643,7 +643,7 @@ public:
     DOM::DOMString uri() const;
 
     /**
-     * see @ref uri
+     * see uri
      * @exception DOMException
      * SYNTAX_ERR: Raised if the specified CSS string value has a
      * syntax error and is unparsable.
@@ -668,7 +668,7 @@ public:
     DOM::DOMString fontFaceName() const;
 
     /**
-     * see @ref fontFaceName
+     * see fontFaceName
      * @exception DOMException
      * SYNTAX_ERR: Raised if the specified CSS string value has a
      * syntax error and is unparsable.
@@ -710,7 +710,7 @@ public:
     DOM::DOMString urange() const;
 
     /**
-     * see @ref urange
+     * see urange
      * @exception DOMException
      * SYNTAX_ERR: Raised if the specified CSS string value has a
      * syntax error and is unparsable.
@@ -919,7 +919,7 @@ public:
     DOM::DOMString playDuringIdentifier() const;
 
     /**
-     * see @ref playDuringIdentifier
+     * see playDuringIdentifier
      * @exception DOMException
      * SYNTAX_ERR: Raised if the specified CSS string value has a
      * syntax error and is unparsable.
@@ -938,7 +938,7 @@ public:
     DOM::DOMString uri() const;
 
     /**
-     * see @ref uri
+     * see uri
      * @exception DOMException
      * SYNTAX_ERR: Raised if the specified CSS string value has a
      * syntax error and is unparsable.
@@ -957,7 +957,7 @@ public:
     bool mix() const;
 
     /**
-     * see @ref mix
+     * see mix
      * @exception DOMException
      * NO_MODIFICATION_ALLOWED_ERR: Raised if this declaration is
      * readonly.
@@ -973,7 +973,7 @@ public:
     bool repeat() const;
 
     /**
-     * see @ref repeat
+     * see repeat
      * @exception DOMException
      * NO_MODIFICATION_ALLOWED_ERR: Raised if this declaration is
      * readonly.
@@ -1068,7 +1068,7 @@ public:
     DOM::DOMString azimuth() const;
 
     /**
-     * see @ref azimuth
+     * see azimuth
      */
     void setAzimuth( const DOM::DOMString & );
 
@@ -1081,7 +1081,7 @@ public:
     DOM::DOMString background() const;
 
     /**
-     * see @ref background
+     * see background
      */
     void setBackground( const DOM::DOMString & );
 
@@ -1094,7 +1094,7 @@ public:
     DOM::DOMString backgroundAttachment() const;
 
     /**
-     * see @ref backgroundAttachment
+     * see backgroundAttachment
      */
     void setBackgroundAttachment( const DOM::DOMString & );
 
@@ -1107,7 +1107,7 @@ public:
     DOM::DOMString backgroundColor() const;
 
     /**
-     * see @ref backgroundColor
+     * see backgroundColor
      */
     void setBackgroundColor( const DOM::DOMString & );
 
@@ -1120,7 +1120,7 @@ public:
     DOM::DOMString backgroundImage() const;
 
     /**
-     * see @ref backgroundImage
+     * see backgroundImage
      */
     void setBackgroundImage( const DOM::DOMString & );
 
@@ -1133,7 +1133,7 @@ public:
     DOM::DOMString backgroundPosition() const;
 
     /**
-     * see @ref backgroundPosition
+     * see backgroundPosition
      */
     void setBackgroundPosition( const DOM::DOMString & );
 
@@ -1146,7 +1146,7 @@ public:
     DOM::DOMString backgroundRepeat() const;
 
     /**
-     * see @ref backgroundRepeat
+     * see backgroundRepeat
      */
     void setBackgroundRepeat( const DOM::DOMString & );
 
@@ -1159,7 +1159,7 @@ public:
     DOM::DOMString border() const;
 
     /**
-     * see @ref border
+     * see border
      */
     void setBorder( const DOM::DOMString & );
 
@@ -1172,7 +1172,7 @@ public:
     DOM::DOMString borderCollapse() const;
 
     /**
-     * see @ref borderCollapse
+     * see borderCollapse
      */
     void setBorderCollapse( const DOM::DOMString & );
 
@@ -1185,7 +1185,7 @@ public:
     DOM::DOMString borderColor() const;
 
     /**
-     * see @ref borderColor
+     * see borderColor
      */
     void setBorderColor( const DOM::DOMString & );
 
@@ -1198,7 +1198,7 @@ public:
     DOM::DOMString borderSpacing() const;
 
     /**
-     * see @ref borderSpacing
+     * see borderSpacing
      */
     void setBorderSpacing( const DOM::DOMString & );
 
@@ -1211,7 +1211,7 @@ public:
     DOM::DOMString borderStyle() const;
 
     /**
-     * see @ref borderStyle
+     * see borderStyle
      */
     void setBorderStyle( const DOM::DOMString & );
 
@@ -1224,7 +1224,7 @@ public:
     DOM::DOMString borderTop() const;
 
     /**
-     * see @ref borderTop
+     * see borderTop
      */
     void setBorderTop( const DOM::DOMString & );
 
@@ -1237,7 +1237,7 @@ public:
     DOM::DOMString borderRight() const;
 
     /**
-     * see @ref borderRight
+     * see borderRight
      */
     void setBorderRight( const DOM::DOMString & );
 
@@ -1250,7 +1250,7 @@ public:
     DOM::DOMString borderBottom() const;
 
     /**
-     * see @ref borderBottom
+     * see borderBottom
      */
     void setBorderBottom( const DOM::DOMString & );
 
@@ -1263,7 +1263,7 @@ public:
     DOM::DOMString borderLeft() const;
 
     /**
-     * see @ref borderLeft
+     * see borderLeft
      */
     void setBorderLeft( const DOM::DOMString & );
 
@@ -1276,7 +1276,7 @@ public:
     DOM::DOMString borderTopColor() const;
 
     /**
-     * see @ref borderTopColor
+     * see borderTopColor
      */
     void setBorderTopColor( const DOM::DOMString & );
 
@@ -1289,7 +1289,7 @@ public:
     DOM::DOMString borderRightColor() const;
 
     /**
-     * see @ref borderRightColor
+     * see borderRightColor
      */
     void setBorderRightColor( const DOM::DOMString & );
 
@@ -1302,7 +1302,7 @@ public:
     DOM::DOMString borderBottomColor() const;
 
     /**
-     * see @ref borderBottomColor
+     * see borderBottomColor
      */
     void setBorderBottomColor( const DOM::DOMString & );
 
@@ -1315,7 +1315,7 @@ public:
     DOM::DOMString borderLeftColor() const;
 
     /**
-     * see @ref borderLeftColor
+     * see borderLeftColor
      */
     void setBorderLeftColor( const DOM::DOMString & );
 
@@ -1328,7 +1328,7 @@ public:
     DOM::DOMString borderTopStyle() const;
 
     /**
-     * see @ref borderTopStyle
+     * see borderTopStyle
      */
     void setBorderTopStyle( const DOM::DOMString & );
 
@@ -1341,7 +1341,7 @@ public:
     DOM::DOMString borderRightStyle() const;
 
     /**
-     * see @ref borderRightStyle
+     * see borderRightStyle
      */
     void setBorderRightStyle( const DOM::DOMString & );
 
@@ -1354,7 +1354,7 @@ public:
     DOM::DOMString borderBottomStyle() const;
 
     /**
-     * see @ref borderBottomStyle
+     * see borderBottomStyle
      */
     void setBorderBottomStyle( const DOM::DOMString & );
 
@@ -1367,7 +1367,7 @@ public:
     DOM::DOMString borderLeftStyle() const;
 
     /**
-     * see @ref borderLeftStyle
+     * see borderLeftStyle
      */
     void setBorderLeftStyle( const DOM::DOMString & );
 
@@ -1380,7 +1380,7 @@ public:
     DOM::DOMString borderTopWidth() const;
 
     /**
-     * see @ref borderTopWidth
+     * see borderTopWidth
      */
     void setBorderTopWidth( const DOM::DOMString & );
 
@@ -1393,7 +1393,7 @@ public:
     DOM::DOMString borderRightWidth() const;
 
     /**
-     * see @ref borderRightWidth
+     * see borderRightWidth
      */
     void setBorderRightWidth( const DOM::DOMString & );
 
@@ -1406,7 +1406,7 @@ public:
     DOM::DOMString borderBottomWidth() const;
 
     /**
-     * see @ref borderBottomWidth
+     * see borderBottomWidth
      */
     void setBorderBottomWidth( const DOM::DOMString & );
 
@@ -1419,7 +1419,7 @@ public:
     DOM::DOMString borderLeftWidth() const;
 
     /**
-     * see @ref borderLeftWidth
+     * see borderLeftWidth
      */
     void setBorderLeftWidth( const DOM::DOMString & );
 
@@ -1432,7 +1432,7 @@ public:
     DOM::DOMString borderWidth() const;
 
     /**
-     * see @ref borderWidth
+     * see borderWidth
      */
     void setBorderWidth( const DOM::DOMString & );
 
@@ -1445,7 +1445,7 @@ public:
     DOM::DOMString bottom() const;
 
     /**
-     * see @ref bottom
+     * see bottom
      */
     void setBottom( const DOM::DOMString & );
 
@@ -1458,7 +1458,7 @@ public:
     DOM::DOMString captionSide() const;
 
     /**
-     * see @ref captionSide
+     * see captionSide
      */
     void setCaptionSide( const DOM::DOMString & );
 
@@ -1471,7 +1471,7 @@ public:
     DOM::DOMString clear() const;
 
     /**
-     * see @ref clear
+     * see clear
      */
     void setClear( const DOM::DOMString & );
 
@@ -1484,7 +1484,7 @@ public:
     DOM::DOMString clip() const;
 
     /**
-     * see @ref clip
+     * see clip
      */
     void setClip( const DOM::DOMString & );
 
@@ -1497,7 +1497,7 @@ public:
     DOM::DOMString color() const;
 
     /**
-     * see @ref color
+     * see color
      */
     void setColor( const DOM::DOMString & );
 
@@ -1510,7 +1510,7 @@ public:
     DOM::DOMString content() const;
 
     /**
-     * see @ref content
+     * see content
      */
     void setContent( const DOM::DOMString & );
 
@@ -1523,7 +1523,7 @@ public:
     DOM::DOMString counterIncrement() const;
 
     /**
-     * see @ref counterIncrement
+     * see counterIncrement
      */
     void setCounterIncrement( const DOM::DOMString & );
 
@@ -1536,7 +1536,7 @@ public:
     DOM::DOMString counterReset() const;
 
     /**
-     * see @ref counterReset
+     * see counterReset
      */
     void setCounterReset( const DOM::DOMString & );
 
@@ -1549,7 +1549,7 @@ public:
     DOM::DOMString cue() const;
 
     /**
-     * see @ref cue
+     * see cue
      */
     void setCue( const DOM::DOMString & );
 
@@ -1562,7 +1562,7 @@ public:
     DOM::DOMString cueAfter() const;
 
     /**
-     * see @ref cueAfter
+     * see cueAfter
      */
     void setCueAfter( const DOM::DOMString & );
 
@@ -1575,7 +1575,7 @@ public:
     DOM::DOMString cueBefore() const;
 
     /**
-     * see @ref cueBefore
+     * see cueBefore
      */
     void setCueBefore( const DOM::DOMString & );
 
@@ -1588,7 +1588,7 @@ public:
     DOM::DOMString cursor() const;
 
     /**
-     * see @ref cursor
+     * see cursor
      */
     void setCursor( const DOM::DOMString & );
 
@@ -1601,7 +1601,7 @@ public:
     DOM::DOMString direction() const;
 
     /**
-     * see @ref direction
+     * see direction
      */
     void setDirection( const DOM::DOMString & );
 
@@ -1614,7 +1614,7 @@ public:
     DOM::DOMString display() const;
 
     /**
-     * see @ref display
+     * see display
      */
     void setDisplay( const DOM::DOMString & );
 
@@ -1627,7 +1627,7 @@ public:
     DOM::DOMString elevation() const;
 
     /**
-     * see @ref elevation
+     * see elevation
      */
     void setElevation( const DOM::DOMString & );
 
@@ -1640,7 +1640,7 @@ public:
     DOM::DOMString emptyCells() const;
 
     /**
-     * see @ref emptyCells
+     * see emptyCells
      */
     void setEmptyCells( const DOM::DOMString & );
 
@@ -1653,7 +1653,7 @@ public:
     DOM::DOMString cssFloat() const;
 
     /**
-     * see @ref cssFloat
+     * see cssFloat
      */
     void setCssFloat( const DOM::DOMString & );
 
@@ -1666,7 +1666,7 @@ public:
     DOM::DOMString font() const;
 
     /**
-     * see @ref font
+     * see font
      */
     void setFont( const DOM::DOMString & );
 
@@ -1679,7 +1679,7 @@ public:
     DOM::DOMString fontFamily() const;
 
     /**
-     * see @ref fontFamily
+     * see fontFamily
      */
     void setFontFamily( const DOM::DOMString & );
 
@@ -1692,7 +1692,7 @@ public:
     DOM::DOMString fontSize() const;
 
     /**
-     * see @ref fontSize
+     * see fontSize
      */
     void setFontSize( const DOM::DOMString & );
 
@@ -1705,7 +1705,7 @@ public:
     DOM::DOMString fontSizeAdjust() const;
 
     /**
-     * see @ref fontSizeAdjust
+     * see fontSizeAdjust
      */
     void setFontSizeAdjust( const DOM::DOMString & );
 
@@ -1718,7 +1718,7 @@ public:
     DOM::DOMString fontStretch() const;
 
     /**
-     * see @ref fontStretch
+     * see fontStretch
      */
     void setFontStretch( const DOM::DOMString & );
 
@@ -1731,7 +1731,7 @@ public:
     DOM::DOMString fontStyle() const;
 
     /**
-     * see @ref fontStyle
+     * see fontStyle
      */
     void setFontStyle( const DOM::DOMString & );
 
@@ -1744,7 +1744,7 @@ public:
     DOM::DOMString fontVariant() const;
 
     /**
-     * see @ref fontVariant
+     * see fontVariant
      */
     void setFontVariant( const DOM::DOMString & );
 
@@ -1757,7 +1757,7 @@ public:
     DOM::DOMString fontWeight() const;
 
     /**
-     * see @ref fontWeight
+     * see fontWeight
      */
     void setFontWeight( const DOM::DOMString & );
 
@@ -1770,7 +1770,7 @@ public:
     DOM::DOMString height() const;
 
     /**
-     * see @ref height
+     * see height
      */
     void setHeight( const DOM::DOMString & );
 
@@ -1783,7 +1783,7 @@ public:
     DOM::DOMString left() const;
 
     /**
-     * see @ref left
+     * see left
      */
     void setLeft( const DOM::DOMString & );
 
@@ -1796,7 +1796,7 @@ public:
     DOM::DOMString letterSpacing() const;
 
     /**
-     * see @ref letterSpacing
+     * see letterSpacing
      */
     void setLetterSpacing( const DOM::DOMString & );
 
@@ -1809,7 +1809,7 @@ public:
     DOM::DOMString lineHeight() const;
 
     /**
-     * see @ref lineHeight
+     * see lineHeight
      */
     void setLineHeight( const DOM::DOMString & );
 
@@ -1822,7 +1822,7 @@ public:
     DOM::DOMString listStyle() const;
 
     /**
-     * see @ref listStyle
+     * see listStyle
      */
     void setListStyle( const DOM::DOMString & );
 
@@ -1835,7 +1835,7 @@ public:
     DOM::DOMString listStyleImage() const;
 
     /**
-     * see @ref listStyleImage
+     * see listStyleImage
      */
     void setListStyleImage( const DOM::DOMString & );
 
@@ -1848,7 +1848,7 @@ public:
     DOM::DOMString listStylePosition() const;
 
     /**
-     * see @ref listStylePosition
+     * see listStylePosition
      */
     void setListStylePosition( const DOM::DOMString & );
 
@@ -1861,7 +1861,7 @@ public:
     DOM::DOMString listStyleType() const;
 
     /**
-     * see @ref listStyleType
+     * see listStyleType
      */
     void setListStyleType( const DOM::DOMString & );
 
@@ -1874,7 +1874,7 @@ public:
     DOM::DOMString margin() const;
 
     /**
-     * see @ref margin
+     * see margin
      */
     void setMargin( const DOM::DOMString & );
 
@@ -1887,7 +1887,7 @@ public:
     DOM::DOMString marginTop() const;
 
     /**
-     * see @ref marginTop
+     * see marginTop
      */
     void setMarginTop( const DOM::DOMString & );
 
@@ -1900,7 +1900,7 @@ public:
     DOM::DOMString marginRight() const;
 
     /**
-     * see @ref marginRight
+     * see marginRight
      */
     void setMarginRight( const DOM::DOMString & );
 
@@ -1913,7 +1913,7 @@ public:
     DOM::DOMString marginBottom() const;
 
     /**
-     * see @ref marginBottom
+     * see marginBottom
      */
     void setMarginBottom( const DOM::DOMString & );
 
@@ -1926,7 +1926,7 @@ public:
     DOM::DOMString marginLeft() const;
 
     /**
-     * see @ref marginLeft
+     * see marginLeft
      */
     void setMarginLeft( const DOM::DOMString & );
 
@@ -1939,7 +1939,7 @@ public:
     DOM::DOMString markerOffset() const;
 
     /**
-     * see @ref markerOffset
+     * see markerOffset
      */
     void setMarkerOffset( const DOM::DOMString & );
 
@@ -1952,7 +1952,7 @@ public:
     DOM::DOMString marks() const;
 
     /**
-     * see @ref marks
+     * see marks
      */
     void setMarks( const DOM::DOMString & );
 
@@ -1965,7 +1965,7 @@ public:
     DOM::DOMString maxHeight() const;
 
     /**
-     * see @ref maxHeight
+     * see maxHeight
      */
     void setMaxHeight( const DOM::DOMString & );
 
@@ -1978,7 +1978,7 @@ public:
     DOM::DOMString maxWidth() const;
 
     /**
-     * see @ref maxWidth
+     * see maxWidth
      */
     void setMaxWidth( const DOM::DOMString & );
 
@@ -1991,7 +1991,7 @@ public:
     DOM::DOMString minHeight() const;
 
     /**
-     * see @ref minHeight
+     * see minHeight
      */
     void setMinHeight( const DOM::DOMString & );
 
@@ -2004,7 +2004,7 @@ public:
     DOM::DOMString minWidth() const;
 
     /**
-     * see @ref minWidth
+     * see minWidth
      */
     void setMinWidth( const DOM::DOMString & );
 
@@ -2017,7 +2017,7 @@ public:
     DOM::DOMString orphans() const;
 
     /**
-     * see @ref orphans
+     * see orphans
      */
     void setOrphans( const DOM::DOMString & );
 
@@ -2030,7 +2030,7 @@ public:
     DOM::DOMString outline() const;
 
     /**
-     * see @ref outline
+     * see outline
      */
     void setOutline( const DOM::DOMString & );
 
@@ -2043,7 +2043,7 @@ public:
     DOM::DOMString outlineColor() const;
 
     /**
-     * see @ref outlineColor
+     * see outlineColor
      */
     void setOutlineColor( const DOM::DOMString & );
 
@@ -2056,7 +2056,7 @@ public:
     DOM::DOMString outlineStyle() const;
 
     /**
-     * see @ref outlineStyle
+     * see outlineStyle
      */
     void setOutlineStyle( const DOM::DOMString & );
 
@@ -2069,7 +2069,7 @@ public:
     DOM::DOMString outlineWidth() const;
 
     /**
-     * see @ref outlineWidth
+     * see outlineWidth
      */
     void setOutlineWidth( const DOM::DOMString & );
 
@@ -2082,7 +2082,7 @@ public:
     DOM::DOMString overflow() const;
 
     /**
-     * see @ref overflow
+     * see overflow
      */
     void setOverflow( const DOM::DOMString & );
 
@@ -2095,7 +2095,7 @@ public:
     DOM::DOMString padding() const;
 
     /**
-     * see @ref padding
+     * see padding
      */
     void setPadding( const DOM::DOMString & );
 
@@ -2108,7 +2108,7 @@ public:
     DOM::DOMString paddingTop() const;
 
     /**
-     * see @ref paddingTop
+     * see paddingTop
      */
     void setPaddingTop( const DOM::DOMString & );
 
@@ -2121,7 +2121,7 @@ public:
     DOM::DOMString paddingRight() const;
 
     /**
-     * see @ref paddingRight
+     * see paddingRight
      */
     void setPaddingRight( const DOM::DOMString & );
 
@@ -2134,7 +2134,7 @@ public:
     DOM::DOMString paddingBottom() const;
 
     /**
-     * see @ref paddingBottom
+     * see paddingBottom
      */
     void setPaddingBottom( const DOM::DOMString & );
 
@@ -2147,7 +2147,7 @@ public:
     DOM::DOMString paddingLeft() const;
 
     /**
-     * see @ref paddingLeft
+     * see paddingLeft
      */
     void setPaddingLeft( const DOM::DOMString & );
 
@@ -2160,7 +2160,7 @@ public:
     DOM::DOMString page() const;
 
     /**
-     * see @ref page
+     * see page
      */
     void setPage( const DOM::DOMString & );
 
@@ -2173,7 +2173,7 @@ public:
     DOM::DOMString pageBreakAfter() const;
 
     /**
-     * see @ref pageBreakAfter
+     * see pageBreakAfter
      */
     void setPageBreakAfter( const DOM::DOMString & );
 
@@ -2186,7 +2186,7 @@ public:
     DOM::DOMString pageBreakBefore() const;
 
     /**
-     * see @ref pageBreakBefore
+     * see pageBreakBefore
      */
     void setPageBreakBefore( const DOM::DOMString & );
 
@@ -2199,7 +2199,7 @@ public:
     DOM::DOMString pageBreakInside() const;
 
     /**
-     * see @ref pageBreakInside
+     * see pageBreakInside
      */
     void setPageBreakInside( const DOM::DOMString & );
 
@@ -2212,7 +2212,7 @@ public:
     DOM::DOMString pause() const;
 
     /**
-     * see @ref pause
+     * see pause
      */
     void setPause( const DOM::DOMString & );
 
@@ -2225,7 +2225,7 @@ public:
     DOM::DOMString pauseAfter() const;
 
     /**
-     * see @ref pauseAfter
+     * see pauseAfter
      */
     void setPauseAfter( const DOM::DOMString & );
 
@@ -2238,7 +2238,7 @@ public:
     DOM::DOMString pauseBefore() const;
 
     /**
-     * see @ref pauseBefore
+     * see pauseBefore
      */
     void setPauseBefore( const DOM::DOMString & );
 
@@ -2251,7 +2251,7 @@ public:
     DOM::DOMString pitch() const;
 
     /**
-     * see @ref pitch
+     * see pitch
      */
     void setPitch( const DOM::DOMString & );
 
@@ -2264,7 +2264,7 @@ public:
     DOM::DOMString pitchRange() const;
 
     /**
-     * see @ref pitchRange
+     * see pitchRange
      */
     void setPitchRange( const DOM::DOMString & );
 
@@ -2277,7 +2277,7 @@ public:
     DOM::DOMString playDuring() const;
 
     /**
-     * see @ref playDuring
+     * see playDuring
      */
     void setPlayDuring( const DOM::DOMString & );
 
@@ -2290,7 +2290,7 @@ public:
     DOM::DOMString position() const;
 
     /**
-     * see @ref position
+     * see position
      */
     void setPosition( const DOM::DOMString & );
 
@@ -2303,7 +2303,7 @@ public:
     DOM::DOMString quotes() const;
 
     /**
-     * see @ref quotes
+     * see quotes
      */
     void setQuotes( const DOM::DOMString & );
 
@@ -2316,7 +2316,7 @@ public:
     DOM::DOMString richness() const;
 
     /**
-     * see @ref richness
+     * see richness
      */
     void setRichness( const DOM::DOMString & );
 
@@ -2329,7 +2329,7 @@ public:
     DOM::DOMString right() const;
 
     /**
-     * see @ref right
+     * see right
      */
     void setRight( const DOM::DOMString & );
 
@@ -2342,7 +2342,7 @@ public:
     DOM::DOMString size() const;
 
     /**
-     * see @ref size
+     * see size
      */
     void setSize( const DOM::DOMString & );
 
@@ -2355,7 +2355,7 @@ public:
     DOM::DOMString speak() const;
 
     /**
-     * see @ref speak
+     * see speak
      */
     void setSpeak( const DOM::DOMString & );
 
@@ -2368,7 +2368,7 @@ public:
     DOM::DOMString speakHeader() const;
 
     /**
-     * see @ref speakHeader
+     * see speakHeader
      */
     void setSpeakHeader( const DOM::DOMString & );
 
@@ -2381,7 +2381,7 @@ public:
     DOM::DOMString speakNumeral() const;
 
     /**
-     * see @ref speakNumeral
+     * see speakNumeral
      */
     void setSpeakNumeral( const DOM::DOMString & );
 
@@ -2394,7 +2394,7 @@ public:
     DOM::DOMString speakPunctuation() const;
 
     /**
-     * see @ref speakPunctuation
+     * see speakPunctuation
      */
     void setSpeakPunctuation( const DOM::DOMString & );
 
@@ -2407,7 +2407,7 @@ public:
     DOM::DOMString speechRate() const;
 
     /**
-     * see @ref speechRate
+     * see speechRate
      */
     void setSpeechRate( const DOM::DOMString & );
 
@@ -2420,7 +2420,7 @@ public:
     DOM::DOMString stress() const;
 
     /**
-     * see @ref stress
+     * see stress
      */
     void setStress( const DOM::DOMString & );
 
@@ -2433,7 +2433,7 @@ public:
     DOM::DOMString tableLayout() const;
 
     /**
-     * see @ref tableLayout
+     * see tableLayout
      */
     void setTableLayout( const DOM::DOMString & );
 
@@ -2446,7 +2446,7 @@ public:
     DOM::DOMString textAlign() const;
 
     /**
-     * see @ref textAlign
+     * see textAlign
      */
     void setTextAlign( const DOM::DOMString & );
 
@@ -2459,7 +2459,7 @@ public:
     DOM::DOMString textDecoration() const;
 
     /**
-     * see @ref textDecoration
+     * see textDecoration
      */
     void setTextDecoration( const DOM::DOMString & );
 
@@ -2472,7 +2472,7 @@ public:
     DOM::DOMString textIndent() const;
 
     /**
-     * see @ref textIndent
+     * see textIndent
      */
     void setTextIndent( const DOM::DOMString & );
 
@@ -2485,7 +2485,7 @@ public:
     DOM::DOMString textShadow() const;
 
     /**
-     * see @ref textShadow
+     * see textShadow
      */
     void setTextShadow( const DOM::DOMString & );
 
@@ -2498,7 +2498,7 @@ public:
     DOM::DOMString textTransform() const;
 
     /**
-     * see @ref textTransform
+     * see textTransform
      */
     void setTextTransform( const DOM::DOMString & );
 
@@ -2511,7 +2511,7 @@ public:
     DOM::DOMString top() const;
 
     /**
-     * see @ref top
+     * see top
      */
     void setTop( const DOM::DOMString & );
 
@@ -2524,7 +2524,7 @@ public:
     DOM::DOMString unicodeBidi() const;
 
     /**
-     * see @ref unicodeBidi
+     * see unicodeBidi
      */
     void setUnicodeBidi( const DOM::DOMString & );
 
@@ -2537,7 +2537,7 @@ public:
     DOM::DOMString verticalAlign() const;
 
     /**
-     * see @ref verticalAlign
+     * see verticalAlign
      */
     void setVerticalAlign( const DOM::DOMString & );
 
@@ -2550,7 +2550,7 @@ public:
     DOM::DOMString visibility() const;
 
     /**
-     * see @ref visibility
+     * see visibility
      */
     void setVisibility( const DOM::DOMString & );
 
@@ -2563,7 +2563,7 @@ public:
     DOM::DOMString voiceFamily() const;
 
     /**
-     * see @ref voiceFamily
+     * see voiceFamily
      */
     void setVoiceFamily( const DOM::DOMString & );
 
@@ -2576,7 +2576,7 @@ public:
     DOM::DOMString volume() const;
 
     /**
-     * see @ref volume
+     * see volume
      */
     void setVolume( const DOM::DOMString & );
 
@@ -2589,7 +2589,7 @@ public:
     DOM::DOMString whiteSpace() const;
 
     /**
-     * see @ref whiteSpace
+     * see whiteSpace
      */
     void setWhiteSpace( const DOM::DOMString & );
 
@@ -2602,7 +2602,7 @@ public:
     DOM::DOMString widows() const;
 
     /**
-     * see @ref widows
+     * see widows
      */
     void setWidows( const DOM::DOMString & );
 
@@ -2615,7 +2615,7 @@ public:
     DOM::DOMString width() const;
 
     /**
-     * see @ref width
+     * see width
      */
     void setWidth( const DOM::DOMString & );
 
@@ -2628,7 +2628,7 @@ public:
     DOM::DOMString wordSpacing() const;
 
     /**
-     * see @ref wordSpacing
+     * see wordSpacing
      */
     void setWordSpacing( const DOM::DOMString & );
 
@@ -2641,7 +2641,7 @@ public:
     DOM::DOMString zIndex() const;
 
     /**
-     * see @ref zIndex
+     * see zIndex
      */
     void setZIndex( const DOM::DOMString & );
 };

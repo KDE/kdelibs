@@ -28,7 +28,7 @@ namespace KParts
 {
 
 /**
- * @ref KPreferencesModule for KParts plugins
+ * KPreferencesModule for KParts plugins
  *
  * @author Matthias Kretz <kretz@kde.org>
  * @version $Id$

@@ -30,7 +30,7 @@
  * a specific set of requirements.  This allows you to find an
  * application in real-time without you having to hard-code the name
  * and/or path of the application.  It is mostly used when you want to
- * do complex queries that @ref KServiceTypeProfile can't handle.
+ * do complex queries that KServiceTypeProfile can't handle.
  *
  * \paragraph examples Examples
  *
@@ -46,7 +46,7 @@
  * If you want the browser to run standalone, then you will limit the
  * query to search for all services that handle 'text/html' @em and,
  * furthermore, they must be applications (Type=Application).  You
- * then will use @ref KRun::run() to invoke the application.  In "trader-speak",
+ * then will use KRun::run() to invoke the application.  In "trader-speak",
  * this looks like so:
  * \code
  * KTrader::OfferList offers = KTrader::self()->query("text/html", "Type == 'Application'");
@@ -57,7 +57,7 @@
  * \endcode
  *
  * It should be noted that in the above example, using
- * @ref KServiceTypeProfile would be the better choice since you would
+ * KServiceTypeProfile would be the better choice since you would
  * probably want the preferred service and the trader doesn't take
  * this into account.  The trader does allow you to do more complex
  * things, though.  Say, for instance, you want to only choose
@@ -67,7 +67,7 @@
  * More the likely, though, you will only use the trader for such
  * things as finding components.  In our continuing example, we say
  * that we want to load any KParts component that can handle HTML.  We
- * will need to use the @ref KLibFactory and @ref KLibLoader to
+ * will need to use the KLibFactory and KLibLoader to
  * actually do something with our query, then.  Our code would look
  * like so:
  * \code
@@ -145,7 +145,7 @@ public:
 			     const QString& preferences = QString::null) const;
 
     /**
-     * A variant of @ref query(), that takes two service types as an input.
+     * A variant of query(), that takes two service types as an input.
      * It is not exactly the same as adding the second service type
      * in the constraints of the other query call, because this one
      * takes into account user preferences for this combination of service types.

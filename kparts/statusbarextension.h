@@ -58,7 +58,7 @@ namespace KParts
        * If you use this method instead of using statusBar() directly,
        * this extension will take care of removing the items when the parts GUI
        * is deactivated and will re-add them when it is reactivated.
-       * The parameters are the same as @ref QStatusBar::addWidget().
+       * The parameters are the same as QStatusBar::addWidget().
        *
        * Note that you can't use KStatusBar methods (inserting text items by id)
        * but you can create a KStatusBarLabel with a dummy id instead, and use

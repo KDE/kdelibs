@@ -109,7 +109,7 @@ k_dcop:
      * Specifies whether images contained in the document should be loaded
      * automatically or not.
      *
-     * @note Request will be ignored if called before @ref begin().
+     * @note Request will be ignored if called before begin().
      */
     void setAutoloadImages( bool enable );
 

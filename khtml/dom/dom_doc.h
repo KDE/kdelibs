@@ -789,7 +789,7 @@ public:
      * Introduced in DOM Level 3
      * This method is from the DocumentLS interface
      *
-     * see @ref async
+     * see async
      *
      * @exception DOMException
      * NOT_SUPPORTED_ERR: Raised if the implementation doesn't support the mode

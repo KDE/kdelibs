@@ -71,7 +71,7 @@ public:
 signals:
 	/**
 	 * Emitted when the color of the widget
-	 * is changed, either with @ref #setColor() or via user selection.
+	 * is changed, either with setColor() or via user selection.
 	 */
 	void changed( const QColor &newColor );
 

@@ -75,13 +75,13 @@ class VCardLine
 
     /**
      * Returns the values of a special parameter.
-     * You can get a list of all parameters with @ref paramList().
+     * You can get a list of all parameters with paramList().
      */
     QStringList parameters( const QString& param ) const;
 
     /**
      * Returns only the first value of a special parameter.
-     * You can get a list of all parameters with @ref paramList().
+     * You can get a list of all parameters with paramList().
      */
     QString parameter( const QString& param ) const;
 

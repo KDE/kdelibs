@@ -112,12 +112,12 @@ public:
    *
    * The save method stores the config information as shown
    * in the user interface in the config files. Don't forget to call
-   * @ref setChanged( false ) after saving.
+   * setChanged( false ) after saving.
    *
    * If necessary, this method also updates the running system,
    * e.g. by restarting applications. This normally does not apply for
-   * @ref KConfigureDialog modules where the updating is taken care of by
-   * @ref KCDDispatcher.
+   * KConfigureDialog modules where the updating is taken care of by
+   * KCDDispatcher.
    *
    * save is called when the user clicks "Apply" or "Ok".
    */
@@ -199,7 +199,7 @@ public:
    * Read whether the state of the modules contents has changed.
    *
    * This is a convenience function keeping the information around so that you
-   * don't have to connect to the @ref changed(bool) signal but may also ask for
+   * don't have to connect to the changed(bool) signal but may also ask for
    * the information when you need it.
    */
   bool changed() const;
@@ -215,7 +215,7 @@ signals:
    * shown in the module changes. It allows the control center to
    * keep track of unsaved changes.
    *
-   * Don't emit this signal yourself use @ref setChanged() instead.
+   * Don't emit this signal yourself use setChanged() instead.
    *
    * @see setChanged()
    */

@@ -30,8 +30,8 @@
 /**
  * KDE Style-able menubar.
  *
- * This is required since @ref QMenuBar is currently not handled by
- * @ref QStyle.
+ * This is required since QMenuBar is currently not handled by
+ * QStyle.
  *
  * @author Daniel "Mosfet" Duley.
  * @version $Id$

@@ -251,14 +251,14 @@ public:
      *
      * @return The next node, in document order
      *
-     * see @ref traversePreviousNode()
+     * see traversePreviousNode()
      */
     NodeImpl *traverseNextNode(NodeImpl *stayWithin = 0) const;
 
     /**
      * Does a reverse pre-order traversal to find the node that comes before the current one in document order
      *
-     * see @ref traverseNextNode()
+     * see traverseNextNode()
      */
     NodeImpl *traversePreviousNode() const;
 

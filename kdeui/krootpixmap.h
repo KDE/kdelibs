@@ -34,9 +34,9 @@ class KRootPixmapData;
  * are handled automatically.
  *
  * Instead of using the default behaviour, you can ask KRootPixmap
- * to emit a @ref backgroundUpdated(const QPixmap &) signal whenever
- * the background needs updating by using @ref setCustomPainting(bool).
- * Alternatively by reimplementing @ref updateBackground(KSharedPixmap*)
+ * to emit a backgroundUpdated(const QPixmap &) signal whenever
+ * the background needs updating by using setCustomPainting(bool).
+ * Alternatively by reimplementing updateBackground(KSharedPixmap*)
  * you can take complete control of the behaviour.
  *
  * @author Geert Jansen <jansen@kde.org>
@@ -92,7 +92,7 @@ public:
 
 #ifndef KDE_NO_COMPAT
     /**
-     * Deprecated, use @ref isAvailable() instead.
+     * Deprecated, use isAvailable() instead.
      * @deprecated
      */
     bool checkAvailable(bool) { return isAvailable(); }
@@ -149,7 +149,7 @@ public slots:
     /**
      * Enables custom handling of the background painting. If custom
      * painting is enabled then KRootPixmap will emit a
-     * @ref backgroundUpdated() signal when the background for the
+     * backgroundUpdated() signal when the background for the
      * target widget changes, instead of applying the new background.
      */
     void setCustomPainting( bool enable ) { m_bCustomPaint = enable; }
@@ -167,7 +167,7 @@ public slots:
 signals:
     /**
      * Emitted when the background needs updating and custom painting
-     * (see @ref setCustomPainting(bool) ) is enabled.
+     * (see setCustomPainting(bool) ) is enabled.
      *
      * @param pm A pixmap containing the new background.
      */
@@ -183,7 +183,7 @@ protected:
     /**
      * Called when the pixmap has been updated. The default implementation
      * applies the fade effect, then sets the target's background, or emits
-     * @ref backgroundUpdated(const QPixmap &) depending on the painting mode.
+     * backgroundUpdated(const QPixmap &) depending on the painting mode.
      */
     virtual void updateBackground( KSharedPixmap * );
 

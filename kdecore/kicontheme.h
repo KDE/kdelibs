@@ -249,14 +249,14 @@ public:
 
     /**
      * The default size of this theme for a certain icon group.
-     * @param group The icon group. See @ref #KIcon::Group.
+     * @param group The icon group. See KIcon::Group.
      * @return The default size in pixels for the given icon group.
      */
     int defaultSize(KIcon::Group group) const;
 
     /**
      * Query available sizes for a group.
-     * @param group The icon group. See @ref #KIcon::Group.
+     * @param group The icon group. See KIcon::Group.
      * @return a list of available sized for the given group
      */
     QValueList<int> querySizes(KIcon::Group group) const;

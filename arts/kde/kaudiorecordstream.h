@@ -44,7 +44,7 @@ class KAudioRecordStream : public QObject
 		~KAudioRecordStream();
 
 		/**
-		 * You can read @p size number of bytes. If @ref blockingIO() is set the method
+		 * You can read @p size number of bytes. If blockingIO() is set the method
 		 * will return as soon as it has all your data and could possibly block your
 		 * program. The method returns the number of bytes that are actually in the
 		 * buffer.
@@ -69,12 +69,12 @@ class KAudioRecordStream : public QObject
 		bool blockingIO() const;
 
 		/**
-		 * If you want to poll for data using @ref read() set this to true. If
-		 * you'd rather not poll use the @ref data() signal for asynchronous
-		 * I/O. If you set polling to true and don't call @ref read() or
-		 * @ref flush() the inputbuffer will grow endlessly.
+		 * If you want to poll for data using read() set this to true. If
+		 * you'd rather not poll use the data() signal for asynchronous
+		 * I/O. If you set polling to true and don't call read() or
+		 * flush() the inputbuffer will grow endlessly.
 		 *
-		 * The default is false (if you want to use @ref read() set this to true).
+		 * The default is false (if you want to use read() set this to true).
 		 */
 		void usePolling( bool );
 
@@ -100,7 +100,7 @@ class KAudioRecordStream : public QObject
 		/**
 		 * Attach to the soundserver and start getting data to read. This method
 		 * must be called as soon as you want to receive data. In any case you have
-		 * to call start() before @ref read()
+		 * to call start() before read()
 		 *
 		 * @param samplingRate  The sampling rate the stream should be resampled to. Use
 		 *                      a number between 500 and 2000000.

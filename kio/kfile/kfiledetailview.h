@@ -32,7 +32,7 @@ class QKeyEvent;
 
 /**
  * An item for the listiew, that has a reference to its corresponding
- * @ref KFileItem.
+ * KFileItem.
  */
 class KFileListViewItem : public KListViewItem
 {
@@ -99,8 +99,8 @@ private:
 };
 
 /**
- * A list-view capable of showing @ref KFileItem'. Used in the filedialog
- * for example. Most of the documentation is in @ref KFileView class.
+ * A list-view capable of showing KFileItem'. Used in the filedialog
+ * for example. Most of the documentation is in KFileView class.
  *
  * @see KDirOperator
  * @see KCombiView

@@ -162,7 +162,7 @@ protected:
      * Please note that unlike its deprecated counterpart, this
      * function allows you to disable any error message from being
      * sent back to the calling application!  You can then use the
-     * @ref connectResult() function to determine the result of the
+     * connectResult() function to determine the result of the
      * request for connection.
      *
      * @param host hostname
@@ -277,7 +277,7 @@ protected:
     /**
      * Returns the status of the connection.
      *
-     * This function allows you to invoke @ref ConnectToHost
+     * This function allows you to invoke ConnectToHost
      * with the @p sendError flag set to false so that you
      * can send the appropriate error message back to the
      * calling io-slave.
@@ -301,7 +301,7 @@ protected:
     /**
      * Sets the mode of the connection to blocking or non-blocking.
      *
-     * Be sure to call this function before calling @ref connectToHost.
+     * Be sure to call this function before calling connectToHost.
      * Otherwise, this setting will not have any effect until the next
      * @p connectToHost.
      *
@@ -313,7 +313,7 @@ protected:
      * Sets how long to wait for orignally connecting to
      * the requested before timinig out.
      *
-     * Be sure to call this function before calling @ref ConnectToHost,
+     * Be sure to call this function before calling ConnectToHost,
      * otherwise the setting will not take effect until the next call
      * to @p ConnectToHost.
      *

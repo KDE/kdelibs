@@ -27,11 +27,11 @@
 
 class KMimeSourceFactoryPrivate;
 /**
- * An extension to @ref QMimeSourceFactory that uses @ref KIconLoader to
+ * An extension to QMimeSourceFactory that uses KIconLoader to
  * find images.
  *
- * Normally you don't have to instantiate this class at all, @ref KApplication does that for
- * you automagically and sets @ref QMimeSourceFactory::setDefaultFactory.
+ * Normally you don't have to instantiate this class at all, KApplication does that for
+ * you automagically and sets QMimeSourceFactory::setDefaultFactory.
  *
  * @version $Id$
  * @author Peter Putzer <putzer@kde.org>

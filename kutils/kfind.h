@@ -117,7 +117,7 @@ public:
      */
     bool needData() const;
     /**
-     * Call this when needData returns true, before calling @ref find().
+     * Call this when needData returns true, before calling find().
      * @param data the text fragment (line)
      * @param startPos if set, the index at which the search should start.
      * This is only necessary for the very first call to setData usually,
@@ -162,7 +162,7 @@ public:
 
     /**
      * Return the number of matches found (i.e. the number of times
-     * the @ref highlight signal was emitted).
+     * the highlight signal was emitted).
      * If 0, can be used in a dialog box to tell the user "no match was found".
      * The final dialog does so already, unless you used setDisplayFinalDialog(false).
      */

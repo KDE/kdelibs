@@ -70,7 +70,7 @@ class KKeyButton: public QPushButton
  public slots:
 	/**
 	 * Call this method to capture a shortcut from the keyboard.
-	 * If it succeeds, the @ref capturedShortcut() will be emitted.
+	 * If it succeeds, the capturedShortcut() will be emitted.
 	 */
 	void captureShortcut();
 

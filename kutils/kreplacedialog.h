@@ -38,7 +38,7 @@ class QRect;
  *
  * @sect Detail
  *
- * This widget inherits from @ref KFindDialog and implements
+ * This widget inherits from KFindDialog and implements
  * the following additional functionalities:  a replacement string
  * object and an area for a user-defined widget to extend the dialog.
  *
@@ -76,7 +76,7 @@ public:
      *
      * @param parent The parent object of this widget
      * @param name The name of this widget
-     * @param options A bitfield of the @ref Options to be enabled.
+     * @param options A bitfield of the Options to be enabled.
      * @param hasSelection Whether a selection exists
      */
     KReplaceDialog( QWidget *parent = 0, const char *name = 0, long options = 0,
@@ -108,7 +108,7 @@ public:
     /**
      * Set the options which are enabled.
      *
-     * @param options The setting of the @ref Options.
+     * @param options The setting of the Options.
      */
     void setOptions( long options );
 

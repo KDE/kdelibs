@@ -41,7 +41,7 @@ class QListViewItem;
 
 /**
  * Provides a number of ready to use layouts (faces). It is used
- * as an internal widget in @ref KDialogBase, but can also used as a
+ * as an internal widget in KDialogBase, but can also used as a
  * widget of its own.
  *
  * It provides TreeList, IconList, Tabbed, Plain and Swallow layouts.
@@ -69,16 +69,16 @@ class QListViewItem;
  *
  * The Swallow face is provided in order to simplify the usage of existing
  * widgets and to allow changing the visible widget. You specify the widget
- * to be displayed by @ref #setSwallowedWidget(). Your widget will be
+ * to be displayed by setSwallowedWidget(). Your widget will be
  * reparented inside the widget. You can specify a Null (0) widget. A empty
  * space is then displayed.
  *
- * For all modes it is important that you specify the @ref QWidget::minimumSize()
+ * For all modes it is important that you specify the QWidget::minimumSize()
  * on the page, plain widget or the swallowed widget. If you use a QLayout
  * on the page, plain widget or the swallowed widget this will be taken care
  * of automatically. The size is used when the KJanusWidget determines its
  * own minimum size. You get the minimum size by using the
- * @ref #minimumSizeHint() or @ref #sizeHint() methods.
+ * minimumSizeHint() or sizeHint() methods.
  *
  * Pages that have been added in TreeList, IconList or Tabbed mode can be
  * removed by simply deleting the page. However, it would be preferable to use
@@ -137,7 +137,7 @@ class KJanusWidget : public QWidget
     ~KJanusWidget();
 
     /**
-     * Raises the page which was added by @ref addPage().
+     * Raises the page which was added by addPage().
      *
      * @param index The index of the page you want to raise.
      */
@@ -231,7 +231,7 @@ class KJanusWidget : public QWidget
     /**
      * Add a new page when the class is used in TreeList, IconList or Tabbed
      * mode. The returned widget is empty and you must add your widgets
-     * as children to this widget. The returned widget is a @ref QVBox
+     * as children to this widget. The returned widget is a QVBox
      * so it contains a QVBoxLayout layout that lines up the child widgets
      * are vertically.
      *
@@ -270,7 +270,7 @@ class KJanusWidget : public QWidget
     /**
      * Add a new page when the class is used in TreeList, IconList or Tabbed
      * mode. The returned widget is empty and you must add your widgets
-     * as children to this widget. The returned widget is a @ref QHBox
+     * as children to this widget. The returned widget is a QHBox
      * so it contains a QHBoxLayout layout that lines up the child widgets
      * are horizontally.
      *
@@ -310,7 +310,7 @@ class KJanusWidget : public QWidget
     /**
      * Add a new page when the class is used in either TreeList or Tabbed
      * mode. The returned widget is empty and you must add your widgets
-     * as children to this widget. The returned widget is a @ref QGrid
+     * as children to this widget. The returned widget is a QGrid
      * so it contains a QGridLayout layout that places up the child widgets
      * in a grid.
      *
@@ -353,29 +353,29 @@ class KJanusWidget : public QWidget
 			const QPixmap &pixmap=QPixmap() );
 
     /**
-     * @short Removes a page created with @ref addPage, @ref addVBoxPage,
-     * @ref addHBoxPage or @ref addGridPage. If the page has already
+     * @short Removes a page created with addPage, addVBoxPage,
+     * addHBoxPage or addGridPage. If the page has already
      * been deleted or has already been removed, nothing happens. The widget
      * itself is not deleted.
      *
-     * @param page The widget returned by @ref addPage , @ref addVBoxPage ,
-     *        @ref addHBoxPage or @ref addGridPage .
+     * @param page The widget returned by addPage , addVBoxPage ,
+     * addHBoxPage or addGridPage .
      */
     void removePage( QWidget *page );
 
 
     /**
-     * Returns the index of a page created with @ref addPage ,
-     * @ref addVBoxPage , @ref addHBoxPage or @ref addGridPage .
+     * Returns the index of a page created with addPage ,
+     * addVBoxPage , addHBoxPage or addGridPage .
      * You can can compare this index with the value returned from
-     * @ref activePageIndex if you need to do some page specific actions
+     * activePageIndex if you need to do some page specific actions
      * in your code.
      *
      * The returned index will never change so you can safely use this
      * function once and save the value.
      *
-     * @param widget The widget returned by @ref addPage , @ref addVBoxPage ,
-     *        @ref addHBoxPage or @ref addGridPage .
+     * @param widget The widget returned by addPage , addVBoxPage ,
+     * addHBoxPage or addGridPage .
      *
      * @return The index or -1 if the face is not Tabbed, TreeList or
      *         IconList
@@ -408,8 +408,8 @@ class KJanusWidget : public QWidget
     /**
      * This function has only effect in TreeList mode.
      *
-     * This tells the widgets whether the icons given in the @ref addPage,
-     * @ref addVBoxPage, @ref addHBoxPage, or @ref addGridPage methods should
+     * This tells the widgets whether the icons given in the addPage,
+     * addVBoxPage, addHBoxPage, or addGridPage methods should
      * be shown in the TreeList.
      *
      * Note: This method must be called before calling any of the methods
@@ -423,7 +423,7 @@ class KJanusWidget : public QWidget
      * This function has only effect in TreeList mode.
      *
      * This tells the widgets whether the root should be decorated.
-     * For details see @ref QListView::setRootIsDecorated
+     * For details see QListView::setRootIsDecorated
      *
      * @param state Root will be decorated if true.
      **/
@@ -467,7 +467,7 @@ class KJanusWidget : public QWidget
     /**
      * Returns the title string associated with a page index in TreeList or IconList mode.
      * @param index The index of the page or null if there is no such page.
-     * @see @ref #pageIndex()
+     * @see pageIndex()
      * @since 3.2
      */
     /*virtual*/ QString pageTitle(int index) const;
@@ -475,7 +475,7 @@ class KJanusWidget : public QWidget
      * Returns the page widget associated with a page index or null if there is
      * no such page.
      * @param index The index of the page.
-     * @see @ref #pageIndex()
+     * @see pageIndex()
      * @since 3.2
      */
     /*virtual*/ QWidget *pageWidget(int index) const;

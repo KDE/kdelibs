@@ -132,7 +132,7 @@ public:
 
 protected:
   /**
-   * Protected constructor - use @ref newDrag
+   * Protected constructor - use newDrag
    */
   KURLDrag( const QStrList & urls, const QMap<QString,QString>& metaData,
             QWidget * dragSource, const char* name ) :

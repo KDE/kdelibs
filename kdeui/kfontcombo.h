@@ -154,7 +154,7 @@ public:
 
 protected:
     /**
-     * Updated the combo's @ref listBox() to reflect changes made to the
+     * Updated the combo's listBox() to reflect changes made to the
      * fonts' attributed
      */
     void updateFonts();

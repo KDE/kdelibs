@@ -333,7 +333,7 @@ public:
    * need to share a single config file, e.g. http and https.
    *
    * This corresponds to the "config=" field in the protocol description file.
-   * The default is the protocol name, see @ref name()
+   * The default is the protocol name, see name()
    *
    * @param protocol the protocol to check
    * @return the config file, or null if unknown

@@ -21,16 +21,16 @@
 /**
  * Reference counting for shared objects.  If you derive your object
  * from this class, then you may use it in conjunction with
- * @ref KSharedPtr to control the lifetime of your object.
+ * KSharedPtr to control the lifetime of your object.
  *
  * Specifically, all classes that derive from KShared have an internal
  * counter keeping track of how many other objects have a reference to
- * their object.  If used with @ref KSharedPtr, then your object will
+ * their object.  If used with KSharedPtr, then your object will
  * not be deleted until all references to the object have been
  * released.
  *
  * You should probably not ever use any of the methods in this class
- * directly -- let the @ref KSharedPtr take care of that.  Just derive
+ * directly -- let the KSharedPtr take care of that.  Just derive
  * your class from KShared and forget about it.
  *
  * @author Waldo Bastian <bastian@kde.org>
@@ -81,7 +81,7 @@ private:
 
 /**
  * Can be used to control the lifetime of an object that has derived
- * @ref KShared. As long a someone holds a KSharedPtr on some @ref KShared
+ * KShared. As long a someone holds a KSharedPtr on some KShared
  * object it won't become deleted but is deleted once its reference
  * count is 0.  This struct emulates C++ pointers perfectly. So just
  * use it like a simple C++ pointer.

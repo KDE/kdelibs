@@ -81,12 +81,12 @@ public:
    * Run the directory lister on the given url.
    *
    * This method causes KDirLister to emit _all_ the items of @p _url, in any case.
-   * Depending on @p _keep either @ref clear() or @ref clear(const KURL &) will be
+   * Depending on @p _keep either clear() or clear(const KURL &) will be
    * emitted first.
    *
-   * The @ref newItems() signal may be emitted more than once to supply you
-   * with KFileItems, up until the signal @ref completed() is emitted
-   * (and @ref isFinished() returns true).
+   * The newItems() signal may be emitted more than once to supply you
+   * with KFileItems, up until the signal completed() is emitted
+   * (and isFinished() returns true).
    *
    * @param _url          the directory URL.
    * @param _keep         if true the previous directories aren't forgotten
@@ -104,8 +104,8 @@ public:
   /**
    * Stop listing all directories currently being listed.
    *
-   * Emits @ref canceled() if there was at least one job running.
-   * Emits @ref canceled( const KURL& ) for each stopped job if
+   * Emits canceled() if there was at least one job running.
+   * Emits canceled( const KURL& ) for each stopped job if
    * there are at least two dirctories being watched by KDirLister.
    */
   virtual void stop();
@@ -113,8 +113,8 @@ public:
   /**
    * Stop listing the given directory.
    *
-   * Emits @ref canceled() if the killed job was the last running one.
-   * Emits @ref canceled( const KURL& ) for the killed job if
+   * Emits canceled() if the killed job was the last running one.
+   * Emits canceled( const KURL& ) for the killed job if
    * there are at least two directories being watched by KDirLister.
    * No signal is emitted if there was no job running for @p _url.
    * @param _url the directory URL
@@ -166,7 +166,7 @@ public:
 
   /**
    * Changes the "is viewing dot files" setting.
-   * Calls @ref updateDirectory() if setting changed.
+   * Calls updateDirectory() if setting changed.
    * By default this option is disabled (hidden files will not be shown).
    * @param _showDotFiles true to enable showing hidden files, false to
    *        disable
@@ -191,8 +191,8 @@ public:
 
   /**
    * Returns the URL that is listed by this KDirLister.
-   * It might be different from the one given with @ref openURL().
-   * if there was a redirection. If you called @ref openURL() with
+   * It might be different from the one given with openURL().
+   * if there was a redirection. If you called openURL() with
    * @p _keep == true, this is the first url opened (in e.g. a treeview this is
    * the root).
    *
@@ -261,7 +261,7 @@ public:
   virtual void setNameFilter( const QString &filter );
 
   /**
-   * Returns the current name filter, as set via @ref setNameFilter()
+   * Returns the current name filter, as set via setNameFilter()
    * @return the current name filter, can be QString::null if filtering
    *         is turned off
    */
@@ -306,7 +306,7 @@ public:
   virtual void clearMimeFilter();
 
   /**
-   * Returns the list of mime based filters, as set via @ref setMimeFilter().
+   * Returns the list of mime based filters, as set via setMimeFilter().
    * @return the list of mime based filters. Empty, when no mime filter is set.
    */
   const QStringList& mimeFilters() const;
@@ -344,7 +344,7 @@ public:
   QWidget *mainWindow();
 
   /**
-   * Used by @ref items() and @ref itemsForDir() to specify whether you want
+   * Used by items() and itemsForDir() to specify whether you want
    * all items for a directory or just the filtered ones.
    */
   enum WhichItems
@@ -354,21 +354,21 @@ public:
   };
 
   /**
-   * Returns the items listed for the current @ref url().
+   * Returns the items listed for the current url().
    * This method will NOT start listing a directory, you should only call
-   * this when receiving the @ref finished() signal.
+   * this when receiving the finished() signal.
    *
-   * The items in the @ref KFileItemList are references to the items used
-   * by KDirLister, so e.g. an item gets destroyed when the @ref deleteItem()
+   * The items in the KFileItemList are references to the items used
+   * by KDirLister, so e.g. an item gets destroyed when the deleteItem()
    * signal is emitted.
    *
    * @param which specifies whether the returned list will contain all entries
-   *              or only the ones that passed the @ref nameFilter(),
-   *              @ref mimeFilter(), etc.
+   *              or only the ones that passed the nameFilter(),
+   * mimeFilter(), etc.
    *              Note that the latter causes iteration over all the items,
    *              filtering them. If this is too slow for you, use the
-   *              @ref newItems() signal, sending out filtered items in chunks.
-   * @return the items listed for the current @ref url().
+   * newItems() signal, sending out filtered items in chunks.
+   * @return the items listed for the current url().
    * @since 3.1
    */
   KFileItemList items( WhichItems which = FilteredItems ) const;
@@ -376,21 +376,21 @@ public:
   /**
    * Returns the items listed for the given @p dir.
    * This method will NOT start listing @p dir, you should only call
-   * this when receiving the @ref finished() signal.
+   * this when receiving the finished() signal.
    *
-   * The items in the @ref KFileItemList are references to the items used
-   * by KDirLister, so e.g. an item gets destroyed when the @ref deleteItem()
+   * The items in the KFileItemList are references to the items used
+   * by KDirLister, so e.g. an item gets destroyed when the deleteItem()
    * signal is emitted.
    *
    * @param dir specifies the url for which the items should be returned. This
    *            is only useful if you use KDirLister with multiple URLs
-   *            i.e. using bool keep = true in @ref openURL().
+   *            i.e. using bool keep = true in openURL().
    * @param which specifies whether the returned list will contain all entries
    *              or only the ones that passed the nameFilter, mimeFilter, etc.
    *              Note that the latter causes iteration over all the items,
    *              filtering them. If this is too slow for you, use the
-   *              @ref newItems() signal, sending out filtered items in chunks.
-   * @return the items listed for the current @ref url().
+   * newItems() signal, sending out filtered items in chunks.
+   * @return the items listed for the current url().
    * @since 3.1
    */
   KFileItemList itemsForDir( const KURL& dir,
@@ -477,10 +477,10 @@ signals:
   /**
    * Signal an item to remove.
    *
-   * ATTENTION: if @p _fileItem == @ref rootItem() the directory this lister
+   * ATTENTION: if @p _fileItem == rootItem() the directory this lister
    *            is holding was deleted and you HAVE to release especially the
-   *            @ref rootItem() of this lister, otherwise your app will CRASH!!
-   *            The @ref clear() signals have been emitted already.
+   * rootItem() of this lister, otherwise your app will CRASH!!
+   *            The clear() signals have been emitted already.
    * @param _fileItem the fileItem to delete
    */
   void deleteItem( KFileItem *_fileItem );
@@ -501,7 +501,7 @@ signals:
 
   /**
    * Progress signal showing the overall progress of the KDirLister.
-   * This allows using a progress bar very easily. (see @ref KProgress)
+   * This allows using a progress bar very easily. (see KProgress)
    * @param percent the progress in percent
    */
   void percent( int percent );
@@ -530,28 +530,28 @@ protected:
   };
 
   /**
-   * Called for every new item before emitting @ref newItems().
+   * Called for every new item before emitting newItems().
    * You may reimplement this method in a subclass to implement your own
    * filtering.
    * The default implementation filters out ".." and everything not matching
    * the name filter(s)
    * @return true if the item is "ok".
    *         false if the item shall not be shown in a view, e.g.
-   * files not matching a pattern *.cpp (@ref KFileItem::isHidden())
+   * files not matching a pattern *.cpp ( KFileItem::isHidden())
    * @see #matchesFilter
    * @see #setNameFilter
    */
   virtual bool matchesFilter( const KFileItem * ) const;
 
   /**
-   * Called for every new item before emitting @ref newItems().
+   * Called for every new item before emitting newItems().
    * You may reimplement this method in a subclass to implement your own
    * filtering.
    * The default implementation filters out ".." and everything not matching
    * the name filter(s)
    * @return true if the item is "ok".
    *         false if the item shall not be shown in a view, e.g.
-   * files not matching a pattern *.cpp (@ref KFileItem::isHidden())
+   * files not matching a pattern *.cpp ( KFileItem::isHidden())
    * @see #matchesMimeFilter
    * @see #setMimeFilter
    */
@@ -567,7 +567,7 @@ protected:
   virtual bool doNameFilter( const QString& name, const QPtrList<QRegExp>& filters ) const;
 
   /**
-   * Called by the public @ref matchesMimeFilter() to do the
+   * Called by the public matchesMimeFilter() to do the
    * actual filtering. Those methods may be reimplemented to customize
    * filtering.
    * @param mime the mime type to filter

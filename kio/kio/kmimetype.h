@@ -94,7 +94,7 @@ public:
    * Return the filename of the icon associated with the mimetype.
    *
    * The arguments are unused, but provided so that KMimeType-derived classes
-   * can use them (e.g. @ref KFolderType uses the URL to return one out of 2 icons)
+   * can use them (e.g. KFolderType uses the URL to return one out of 2 icons)
    *
    * @return The path to the icon associated with this MIME type.
    */
@@ -104,7 +104,7 @@ public:
    * Return the filename of the icon associated with the mimetype.
    *
    * The arguments are unused, but provided so that KMimeType-derived classes
-   * can use them (e.g. @ref KFolderType uses the URL to return one out of 2 icons)
+   * can use them (e.g. KFolderType uses the URL to return one out of 2 icons)
    *
    * @return The path to the icon associated with this MIME type.
    */
@@ -133,7 +133,7 @@ public:
   /**
    * Find the pixmap for a given file of this mimetype.
    *
-   * Convenience method that uses @ref icon(), but also locates and
+   * Convenience method that uses icon(), but also locates and
    * load the pixmap.
    *
    * @param _url URL for the file.
@@ -172,7 +172,7 @@ public:
 
 
   /**
-   * The same functionality as @ref pixmapForURL(), but this method returns the name
+   * The same functionality as pixmapForURL(), but this method returns the name
    * of the icon to load. You'll have to use KIconLoader to load the pixmap for it.
    * The advantage of this method is that you can store the result, and then use it
    * later on for any kind of size.
@@ -277,8 +277,8 @@ public:
    * If that does not help it
    * looks at the extension.  This is fine for FTP, FILE, TAR and
    * friends, but is not for HTTP ( cgi scripts! ). You should use
-   * @ref KRun instead, but this function returns immediately while
-   * @ref KRun is async. If no extension matches, then
+   * KRun instead, but this function returns immediately while
+   * KRun is async. If no extension matches, then
    * the file will be examined if the URL a local file or
    * "application/octet-stream" is returned otherwise.
    *
@@ -307,8 +307,8 @@ public:
    * If that does not help it
    * looks at the extension.  This is fine for FTP, FILE, TAR and
    * friends, but is not for HTTP ( cgi scripts! ). You should use
-   * @ref KRun instead, but this function returns immediately while
-   * @ref KRun is async. If no extension matches, then
+   * KRun instead, but this function returns immediately while
+   * KRun is async. If no extension matches, then
    * the file will be examined if the URL a local file or
    * "application/octet-stream" is returned otherwise.
    *

@@ -56,7 +56,7 @@ public:
    *        object will automatically become read-only if either the user does not have
    *        write permission to @p fileName or if no file was specified.
    * @param bUseKDEGlobals Toggle reading the global KDE configuration file.
-   * @param resType the place to look in (config, data, etc) See @ref KStandardDirs.
+   * @param resType the place to look in (config, data, etc) See KStandardDirs.
    */
   KConfig( const QString& fileName = QString::null,
           bool bReadOnly = false, bool bUseKDEGlobals = true, const char *resType="config");
@@ -74,7 +74,7 @@ public:
   /**
    * Clears all entries out of the @p dirtyEntryMap, so the
    * values will not be written to disk on a later call to
-   * @ref sync().
+   * sync().
    *
    * @param bDeep If true, the dirty map is actually emptied.
    *        otherwise, the config object's global dirty flag is set to
@@ -221,7 +221,7 @@ protected:
    * Contains all key,value entries, as well as some "special"
    * keys which indicate the start of a group of entries.
    *
-   * These special keys will have the .key portion of their @ref KEntryKey
+   * These special keys will have the .key portion of their KEntryKey
    * set to QString::null.
    */
   KEntryMap aEntryMap;

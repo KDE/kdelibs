@@ -43,7 +43,7 @@ class KCModule;
 *
 * Use this object if you require a more detailed information
 * about the URI you want to filter. Any application can create
-* an instance of this class and send it to @ref KURIFilter to
+* an instance of this class and send it to KURIFilter to
 * have the plugins fill out all possible information about the
 * URI.
 *
@@ -133,7 +133,7 @@ public:
     /**
      * This method has been deprecated and will always return
      * TRUE.  You should instead use the result from the
-     * @ref KURIFilter::filterURI() calls.
+     * KURIFilter::filterURI() calls.
      *
      * @deprecated
      */
@@ -145,7 +145,7 @@ public:
      * This function returns the filtered url if one
      * of the plugins successfully filtered the original
      * URL.  Otherwise, it returns the original URL.
-     * See @ref #hasBeenFiltered() and
+     * See hasBeenFiltered() and
      *
      * @return the filtered or original url.
      */
@@ -333,7 +333,7 @@ private:
  * class and provide a concrete implementation.
  *
  * All inheriting classes need to implement the pure virtual function
- * @ref filterURI.
+ * filterURI.
  *
  * @short Abstract class for URI filter plugins.
  */
@@ -462,7 +462,7 @@ private:
  * filtered version whenever possible. The filters are implemented using
  * plugins to provide easy extensibility of the filtering mechanism. New
  * filters can be added in the future by simply inheriting from
- * @ref KURIFilterPlugin and implementing the @ref KURIFilterPlugin::filterURI
+ * KURIFilterPlugin and implementing the KURIFilterPlugin::filterURI
  * method.
  *
  * Use of this plugin-manager class is straight forward.  Since it is a
@@ -516,7 +516,7 @@ private:
  * KURIFilter also allows richer data exchange through a simple
  * meta-object called @p KURIFilterData. Using this meta-object
  * you can find out more information about the URL you want to
- * filter. See @ref KURIFilterData for examples and details.
+ * filter. See KURIFilterData for examples and details.
  *
  * @short Filters a given URL into its proper format whenever possible.
  */
@@ -622,7 +622,7 @@ protected:
      *
      * This constructor creates a KURIFilter and
      * initializes all plugins it can find by invoking
-     * @ref loadPlugins.
+     * loadPlugins.
      */
     KURIFilter();
 

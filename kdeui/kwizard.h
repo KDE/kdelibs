@@ -33,8 +33,8 @@
 * "Cancel" and "Help" buttons. A wizard comes in handy for tutorials or
 * configuration dialogs with sequential steps.  
 * 
-* KWizard is just a wrapper for Qt's @ref QWizard class. See the
-* @ref QWizard documentation for a detailed description of available
+* KWizard is just a wrapper for Qt's QWizard class. See the
+* QWizard documentation for a detailed description of available
 * functions. The only added functionality is a KDE conformant translation
 * mechanism for the built-in buttons.
 *

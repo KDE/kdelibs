@@ -81,8 +81,8 @@ public:
     FindSelectionResult checkSelectionPoint(int _x, int _y, int _tx, int _ty, const Font *f, RenderText *text, int & offset, short lineheight);
 
     /**
-     * if this textslave was rendered @ref _ty pixels below the upper edge
-     * of a view, would the @ref _y -coordinate be inside the vertical range
+     * if this textslave was rendered _ty pixels below the upper edge
+     * of a view, would the _y -coordinate be inside the vertical range
      * of this object's representation?
      */
     bool checkVerticalPoint(int _y, int _ty, int _h, int height)

@@ -40,21 +40,21 @@ class BuildHelper;
 }
 
 /**
- * KXMLGUIFactory, together with @ref KXMLGUIClient objects, can be used to create
+ * KXMLGUIFactory, together with KXMLGUIClient objects, can be used to create
  * a GUI of container widgets (like menus, toolbars, etc.) and container items
  * (menu items, toolbar buttons, etc.) from an XML document and action objects.
  *
- * Each @ref KXMLGUIClient represents a part of the GUI, composed from containers and
- * actions. KXMLGUIFactory takes care of building (with the help of a @ref KXMLGUIBuilder)
+ * Each KXMLGUIClient represents a part of the GUI, composed from containers and
+ * actions. KXMLGUIFactory takes care of building (with the help of a KXMLGUIBuilder)
  * and merging the GUI from an unlimited number of clients.
  *
- * Each client provides XML through a @ref QDomDocument and actions through a
- * @ref KActionCollection . The XML document contains the rules for how to merge the
+ * Each client provides XML through a QDomDocument and actions through a
+ * KActionCollection . The XML document contains the rules for how to merge the
  * GUI.
  *
  * KXMLGUIFactory processes the DOM tree provided by a client and plugs in the client's actions,
  * according to the XML and the merging rules of previously inserted clients. Container widgets
- * are built via a @ref KXMLGUIBuilder , which has to be provided with the KXMLGUIFactory constructor.
+ * are built via a KXMLGUIBuilder , which has to be provided with the KXMLGUIFactory constructor.
  */
 class KXMLGUIFactory : public QObject
 {
@@ -62,7 +62,7 @@ class KXMLGUIFactory : public QObject
   Q_OBJECT
  public:
   /**
-   * Constructs a KXMLGUIFactory. The provided @p builder @ref KXMLGUIBuilder will be called
+   * Constructs a KXMLGUIFactory. The provided @p builder KXMLGUIBuilder will be called
    * for creating and removing container widgets, when clients are added/removed from the GUI.
    *
    * Note that the ownership of the given KXMLGUIBuilder object won't be transferred to this
@@ -142,7 +142,7 @@ class KXMLGUIFactory : public QObject
    * NOT touched at all, meaning no containers are deleted nor any actions unplugged. That is
    * something you have to do on your own. So use this method only if you know what you are doing :-)
    *
-   * (also note that this will call @ref KXMLGUIClient::setFactory( 0L ) for all inserted clients)
+   * (also note that this will call KXMLGUIClient::setFactory( 0L ) for all inserted clients)
    */
   void reset();
 
@@ -152,7 +152,7 @@ class KXMLGUIFactory : public QObject
    * specified container. The actual GUI is not touched, no containers are deleted or any actions
    * unplugged. Use this method only if you know what you are doing :-)
    *
-   * (also note that this will call @ref KXMLGUIClient::setFactory( 0L ) for all clients of the
+   * (also note that this will call KXMLGUIClient::setFactory( 0L ) for all clients of the
    * container)
    */
   void resetContainer( const QString &containerName, bool useTagName = false );

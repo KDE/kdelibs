@@ -20,7 +20,7 @@ class Test3;
 /**
  * This is a stupid comment that might help 
  * geiseri at some point in the near future.
- * @ref blah di blah
+ * blah di blah
  **/
 class Test : public MyNamespace::MyParentClass, virtual public DCOPObject,
              public QValueList<QString>

@@ -32,7 +32,7 @@
 /**
  * A stylized progress bar.
  *
- * KProgress is derived from @ref QProgressBar, so
+ * KProgress is derived from QProgressBar, so
  * you can use all the methods from that class. The only real difference
  * is that a signal is emitted on changes to the value and you do not need
  * to subclass KProgress just to change the format of the indicator text.
@@ -98,13 +98,13 @@ public:
 
   /**
    * @deprecated but kept for source compatibility with KDE2's KProgress.
-   * Use @ref setTotalSteps() instead
+   * Use setTotalSteps() instead
    */
   // ### Remove this KDE 4.0
   void setRange(int min, int max);
 
   /**
-   * @deprecated used @ref totalSteps() instead
+   * @deprecated used totalSteps() instead
    */
   // ### Remove this KDE 4.0
   int maxValue();
@@ -138,7 +138,7 @@ public slots:
   virtual void setProgress(int progress);
 
   /**
-    * @deprecated. Use @ref setProgress(int) instead
+    * @deprecated. Use setProgress(int) instead
     */
   // ### Remove this KDE 4.0
   void setValue(int progress);
@@ -148,7 +148,7 @@ public slots:
    *
    * This method is
    * provided for convenience and is equivalent with
-   * @ref setProgress(progress()+prog).
+   * setProgress(progress()+prog).
    */
   virtual void advance(int offset);
 
@@ -215,14 +215,14 @@ class KProgressDialog : public KDialogBase
         ~KProgressDialog();
 
         /**
-         * Returns the @ref KProgress used in this dialog.
+         * Returns the KProgress used in this dialog.
          * To set the number of steps or other progress bar related
          * settings, access the KProgress object directly via this method.
          */
         KProgress* progressBar();
 
         /**
-         * Returns the @ref KProgress used in this dialog.
+         * Returns the KProgress used in this dialog.
          * To set the number of steps or other progress bar related
          * settings, access the KProgress object directly via this method.
          */
@@ -271,7 +271,7 @@ class KProgressDialog : public KDialogBase
         bool allowCancel() const;
 
         /**
-         * Sets whether the cancel button is visible. @ref setAllowCancel(false)
+         * Sets whether the cancel button is visible. setAllowCancel(false)
          * implies showCancelButton(false)
          *
          * @param show Whether or not the cancel button should be shown

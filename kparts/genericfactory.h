@@ -50,14 +50,14 @@ namespace KParts
     /**
      * A template for a KParts::Factory implementation. It implements the pure virtual
      * createPartObject method by instantiating the template argument when requested
-     * through the className field. In addition it is a container for a part's @ref KInstance
+     * through the className field. In addition it is a container for a part's KInstance
      * object, by providing a static KInstance *instance() method.
      *
      * The template argument has to inherit from KParts::Part and has to implement two methods:
      *  1) There needs to be a public constructor with the following signature:
      *         MyPart( QWidget *parentWidget, const char *widgetName, QObject *parent, const char *name, const QStringList& args )
      *
-     *  2) It needs to provide one static method to create a @ref KAboutData object per
+     *  2) It needs to provide one static method to create a KAboutData object per
      *     request, holding information about the component's name, its authors, license, etc.
      *     The signature of that static method has to be
      *         KAboutData *createAboutData()

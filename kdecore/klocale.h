@@ -435,7 +435,7 @@ public:
   /**
    * @deprecated
    *
-   * Please use the @ref weekStartDay method instead.
+   * Please use the weekStartDay method instead.
    *
    * Use this to determine if the user wants the week to start on Monday.
    *
@@ -627,7 +627,7 @@ public:
   /**
    * Returns the language used by this object. The domain AND the
    * library translation must be available in this language.
-   * @ref defaultLanguage() is returned by default, if no other available.
+   * defaultLanguage() is returned by default, if no other available.
    *
    * @return The currently used language.
    */
@@ -635,7 +635,7 @@ public:
 
   /**
    * Returns the country code of the country where the user lives.
-   * @ref defaultCountry() is returned by default, if no other available.
+   * defaultCountry() is returned by default, if no other available.
    *
    * @return The country code for the user.
    */
@@ -777,7 +777,7 @@ public:
   /**
    * @deprecated
    *
-   * Please use @ref setWeekStartDay instead.
+   * Please use setWeekStartDay instead.
    *
    * Changes how KLocale defines the first day in week.
    *

@@ -37,20 +37,20 @@ class KBufferedIOPrivate;
  * the buffered data.
  *
  * This class was intentionally written to resemble QSocket, because
- * @ref KExtendedSocket is a subclass of this one. This is so that applications
- * written using @ref QSocket's buffering characteristics will be more easily
- * ported to the more powerful @ref KExtendedSocket class.
+ * KExtendedSocket is a subclass of this one. This is so that applications
+ * written using QSocket's buffering characteristics will be more easily
+ * ported to the more powerful KExtendedSocket class.
  *
  * KBufferedIO already provides a powerful internal buffering algorithm. However,
  * this does not include the I/O itself, which must be implemented in
  * derived classes. Thus, to implement a class that does some I/O, you must
- * override, in addition to the pure virtual @ref QIODevice methods, these two:
- * @li @ref closeNow()
- * @li @ref waitForMore()
+ * override, in addition to the pure virtual QIODevice methods, these two:
+ * @li closeNow()
+ * @li waitForMore()
  *
  * If your derived class reimplements the buffering algorithm, you must then
  * decide which buffering functions to override. For instance, you may want to
- * change the protected functions like @ref feedReadBuffer() and @ref consumeReadBuffer().
+ * change the protected functions like feedReadBuffer() and consumeReadBuffer().
  *
  * @author Thiago Macieira <thiagom@mail.com>
  * @version $Id$
@@ -66,7 +66,7 @@ protected:
 
 public:
   /**
-   * The modes for @ref closed() signal
+   * The modes for closed() signal
    */
   enum closeModes
   {
@@ -87,8 +87,8 @@ public:
    * Closes the stream now, discarding the contents of the
    * write buffer. That is, we won't try to flush that
    * buffer before closing. If you want that buffer to be
-   * flushed, you can call @ref QIODevice::flush(), which is blocking, and
-   * then closeNow, or you can call @ref QIODevice::close() for a delayed
+   * flushed, you can call QIODevice::flush(), which is blocking, and
+   * then closeNow, or you can call QIODevice::close() for a delayed
    * close.
    */
   virtual void closeNow() = 0;
@@ -139,7 +139,7 @@ public:
   /**
    * Checks whether there is enough data in the buffer to read a line
    *
-   * The default implementation reads directly from @ref inBuf, so if your
+   * The default implementation reads directly from inBuf, so if your
    * implementation changes the meaning of that member, then you must override
    * this function.
    * @return true when there is enough data in the buffer to read a line
@@ -201,7 +201,7 @@ signals:
    * @li delayed:	the stream was closed voluntarily by the user, but it
    *			happened only after the write buffer was emptied
    * @li closedNow:	the stream was closed voluntarily by the user, by
-   *			explicitly calling @ref closeNow, which means the
+   *			explicitly calling closeNow, which means the
    *			write buffer's contents may have been discarded
    * @param state the state (see function description)
    */

@@ -28,7 +28,7 @@ class KFilterBase;
  * A class for reading and writing compressed data onto a device
  * (e.g. file, but other usages are possible, like a buffer or a socket).
  *
- * To simply read/write compressed files, see @ref deviceForFile.
+ * To simply read/write compressed files, see deviceForFile.
  *
  * @author David Faure <faure@kde.org>
  */
@@ -101,7 +101,7 @@ private:
      * Call this to create the appropriate filter device for @p base
      * working on @p file . The returned QIODevice has to be deleted
      * after using.
-     * @deprecated. Use @ref deviceForFile instead.
+     * @deprecated. Use deviceForFile instead.
      * To be removed in KDE 3.0
      */
     static QIODevice* createFilterDevice(KFilterBase* base, QFile* file);
@@ -126,10 +126,10 @@ public:
      * @param fileName the name of the file to filter
      * @param mimetype the mime type of the file to filter, or QString::null if unknown
      * @param forceFilter if true, the function will always return a QIODevice. If no
-     *                    filter is available it will return a simple @ref QFile.
+     *                    filter is available it will return a simple QFile.
      *                    This can be useful if the file is usable without a filter.
      *                    If false, the function returns 0 if no filter is available
-     * @return if a filter has been found, the @ref QIODevice for the filter. If the
+     * @return if a filter has been found, the QIODevice for the filter. If the
      *         filter does not exist, the return value depends on @p forceFilter.
      *         The returned QIODevice has to be deleted after using
      */

@@ -62,8 +62,8 @@ public:
 
   /**
    * Sets a URL for the location of the picture file. When using this
-   * function, @ref isIntern() will return 'false' until you use
-   * @ref setData().
+   * function, isIntern() will return 'false' until you use
+   * setData().
    *
    * @param url  The location URL of the picture file.
    */
@@ -71,7 +71,7 @@ public:
 
   /**
    * Sets the raw data of the picture. When using this function,
-   * @ref isIntern() will return 'true' until you use @ref setUrl().
+   * isIntern() will return 'true' until you use setUrl().
    *
    * @param data  The raw data of the picture.
    */
@@ -85,9 +85,9 @@ public:
   /**
    * Returns whether the picture is described by a URL (extern) or
    * by the raw data (intern).
-   * When this method returns 'true' you can use @ref data() to
+   * When this method returns 'true' you can use data() to
    * get the raw data. Otherwise you can request the URL of this
-   * picture by @ref url() and load the raw data from that location.
+   * picture by url() and load the raw data from that location.
    */
   bool isIntern() const;
 

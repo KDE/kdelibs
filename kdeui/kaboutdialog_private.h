@@ -29,7 +29,7 @@ class QTabWidget;
 class QVBoxLayout;
 
 /**
- * Used internally by @ref KAboutContainerBase
+ * Used internally by KAboutContainerBase
  * @internal
  */
 class KImageTrackLabel : public QLabel
@@ -63,7 +63,7 @@ class KAboutContainer;
 class KAboutContainerBasePrivate;
 
 /**
- * Used internally by @ref KAboutDialog
+ * Used internally by KAboutDialog
  * @internal
  */
 class KAboutContainerBase : public QWidget

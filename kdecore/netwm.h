@@ -249,7 +249,7 @@ public:
        for Clients, it's the properties argument.
        
        Clients willing to find out all properties and protocols supported
-       by the WindowManager should use @ref supportedProperties().
+       by the WindowManager should use supportedProperties().
        
        @return an OR'ed list of protocols
 

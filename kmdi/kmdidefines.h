@@ -63,7 +63,7 @@ namespace KMdi
    };
 
    /**
-   * During @ref KMdiMainFrm::addWindow the enum AddWindowFlags is used to determine how the view is initialy being added to the MDI system
+   * During KMdiMainFrm::addWindow the enum AddWindowFlags is used to determine how the view is initialy being added to the MDI system
    */
    enum AddWindowFlags {
       /**

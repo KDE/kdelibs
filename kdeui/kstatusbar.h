@@ -61,14 +61,14 @@ signals:
  *
  *  You can insert text labels or custom widgets. Their geometry is managed
  *  internally. KStatusBar resizes itself, but positioning is left to
- *  @ref KMainWindow (or to you, if you don't use @ref KMainWindow ).
+ * KMainWindow (or to you, if you don't use KMainWindow ).
  *
  *  A special type of item is a message which is a temporary text-message
  *  displayed on top of other items in full-width. Messages are visible for
- *  specified time, or until you call the slot @ref QStatusBar::clear(). See
- *  @ref QStatusBar::message for details.
+ *  specified time, or until you call the slot QStatusBar::clear(). See
+ * QStatusBar::message for details.
  *
- *  KStatusBar inherits @ref QStatusBar, you can freely use all @ref QStatusBar
+ *  KStatusBar inherits QStatusBar, you can freely use all QStatusBar
  *  methods.
  *
  *  Empty text items are not visible. They will become visible when you change
@@ -91,7 +91,7 @@ public:
   enum BarStatus{ Toggle, Show, Hide };
   
   /**
-   *  Constructs a status bar. @p parent is usually @ref KMainWindow.
+   *  Constructs a status bar. @p parent is usually KMainWindow.
    */
   KStatusBar( QWidget* parent = 0L, const char* name = 0L );
 
@@ -105,14 +105,14 @@ public:
   /**
    *  Inserts a text label into the status bar.
    *  Paremeters @p stretch and  @p permanent are passed to
-   *  @ref QStatusBar::addWidget .
+   * QStatusBar::addWidget .
    *
    *  If @p permanent is true, then item will be placed on the far right of
-   *  the statusbar and will never be hidden by @ref QStatusBar::message.
+   *  the statusbar and will never be hidden by QStatusBar::message.
    *
    *  @param id id of item
-   *  @param stretch stretch passed to @ref QStatusBar::addWidget
-   *  @param permanent is item permanent or not (passed to @ref QStatusBar::addWidget )
+   *  @param stretch stretch passed to QStatusBar::addWidget
+   *  @param permanent is item permanent or not (passed to QStatusBar::addWidget )
    *
    *  @see QStatusbar::addWidget
    * 
@@ -122,7 +122,7 @@ public:
   /**
    *  Inserts a fixed width text label into status bar. The width will be set
    *  according to @p text, but will remain fixed even if you change text.
-   *  You can change fixed width by calling @ref setItemFixed.
+   *  You can change fixed width by calling setItemFixed.
    *  @param id id ov item
    *  @param permanent permanent flag passed to QStatusBar::addWidget
    */
@@ -148,7 +148,7 @@ public:
 
   /**
    * Sets the alignment of item @p id. By default all fields are aligned
-   * @p AlignHCenter | @p AlignVCenter. See @ref QLabel::setAlignment for details.
+   * @p AlignHCenter | @p AlignVCenter. See QLabel::setAlignment for details.
    * 
   */
   void setItemAlignment(int id, int align);

@@ -33,13 +33,13 @@ typedef QValueList<QCString> QCStringList;
  * command, without ever returning it to you, the user. The daemon should 
  * be installed setgid nogroup, in order to be able to act as an inaccessible, 
  * trusted 3rd party. 
- * See @ref #exec, @ref #setPass, @ref #delCommand.
+ * See exec, setPass, delCommand.
  *
  * @li For lower security passwords, like web and ftp passwords, it can act
  * as a persistent storage for string variables. These variables are
  * returned to the user, and the daemon doesn't need to be setgid nogroup
  * for this.
- * See @ref #setVar, @ref #delVar, @ref #delGroup.
+ * See setVar, delVar, delGroup.
  */
 
 class KDEsuClient {
@@ -49,7 +49,7 @@ public:
 
     /**
      * Lets kdesud execute a command. If the daemon does not have a password
-     * for this command, this will fail and you need to call @ref #setPass().
+     * for this command, this will fail and you need to call setPass().
      *
      * @param command The command to execute.
      * @param user The user to run the command as.
@@ -80,12 +80,12 @@ public:
     int setHost(const QCString &host);
 
     /**
-     * Set the desired priority (optional), see @ref #StubProcess.
+     * Set the desired priority (optional), see StubProcess.
      */
     int setPriority(int priority);
 
     /**
-     * Set the desired scheduler (optional), see @ref #StubProcess.
+     * Set the desired scheduler (optional), see StubProcess.
      */
     int setScheduler(int scheduler);
 
@@ -103,7 +103,7 @@ public:
      * @param value Its value.
      * @param timeout The timeout in seconds for this key. Zero means
      * no timeout.
-     * @param group Make the key part of a group. See @ref #delGroup.
+     * @param group Make the key part of a group. See delGroup.
      * @return zero on success, -1 on failure.
      */
     int setVar(const QCString &key, const QCString &value, int timeout=0, const QCString &group=0);
@@ -141,14 +141,14 @@ public:
     /**
      * Delete all persistent variables with the given key.
      *
-     * A specicalized variant of @ref delVar(QCString) that removes all
+     * A specicalized variant of delVar(QCString) that removes all
      * subsets of the cached varaibles given by @p key. In order for all
      * cached variables related to this key to be deleted properly, the
-     * value given to the @p group argument when the @ref setVar function
+     * value given to the @p group argument when the setVar function
      * was called, must be a subset of the argument given here and the key
      *
      * <u>NOTE:</u> Simply supplying the group key here WILL not necessarily
-     * work. If you only have a group key, then use @ref delGroup instead.
+     * work. If you only have a group key, then use delGroup instead.
      *
      * @param special_key the name of the variable.
      * @return zero on success, -1 on failure.
@@ -158,7 +158,7 @@ public:
     /**
      * Delete all persistent variables in a group.
      *
-     * @param group the group name. See @ref #setVar.
+     * @param group the group name. See setVar.
      * @return
      */
     int delGroup(const QCString &group);

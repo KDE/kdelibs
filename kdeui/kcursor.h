@@ -28,7 +28,7 @@
 class QWidget;
 
 /**
- * A wrapper around @ref QCursor that allows for "themed" cursors.
+ * A wrapper around QCursor that allows for "themed" cursors.
  *
  * Currently, the only themed cursor is a hand shaped cursor.
  *
@@ -137,7 +137,7 @@ public:
      * the cursor being hidden when
      * @li a key-event happens
      * @li there are no key-events for a configured time-frame (see
-     *     @ref setHideCursorDelay())
+     * setHideCursorDelay())
      *
      * The cursor will be shown again when the focus is lost or a mouse-event
      * happens.
@@ -152,7 +152,7 @@ public:
      *
      * If you want to use auto-hiding for widgets that don't take focus, e.g.
      * a QCanvasView, then you have to pass all key-events that should trigger
-     * auto-hiding to @ref autoHideEventFilter().
+     * auto-hiding to autoHideEventFilter().
      */
     static void setAutoHideCursor( QWidget *w, bool enable );
 
@@ -161,7 +161,7 @@ public:
      * on the widget you want to enable auto-cursor-hiding.
      *
      * In this case set @p customEventFilter to true and call
-     * @ref autoHideEventFilter() from the beginning of your eventFilter().
+     * autoHideEventFilter() from the beginning of your eventFilter().
      *
      * @see #autoHideEventFilter
      */

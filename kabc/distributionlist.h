@@ -173,7 +173,7 @@ class DistributionListManager
 /**
   @short Watchdog for distribution lists
  
-  This class provides a @ref changed() signal that i emitted when the
+  This class provides a changed() signal that i emitted when the
   distribution lists has changed in some way.
 
   Exapmle:

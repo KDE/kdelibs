@@ -68,7 +68,7 @@ public:
     DOMString href() const;
 
     /**
-     * see @ref href
+     * see href
      */
     void setHref( const DOMString & );
 
@@ -81,7 +81,7 @@ public:
     DOMString target() const;
 
     /**
-     * see @ref target
+     * see target
      */
     void setTarget( const DOMString & );
 };
@@ -123,7 +123,7 @@ public:
     bool disabled() const;
 
     /**
-     * see @ref disabled
+     * see disabled
      */
     void setDisabled( bool );
 
@@ -137,7 +137,7 @@ public:
     DOMString charset() const;
 
     /**
-     * see @ref charset
+     * see charset
      */
     void setCharset( const DOMString & );
 
@@ -150,7 +150,7 @@ public:
     DOMString href() const;
 
     /**
-     * see @ref href
+     * see href
      */
     void setHref( const DOMString & );
 
@@ -163,7 +163,7 @@ public:
     DOMString hreflang() const;
 
     /**
-     * see @ref hreflang
+     * see hreflang
      */
     void setHreflang( const DOMString & );
 
@@ -176,7 +176,7 @@ public:
     DOMString media() const;
 
     /**
-     * see @ref media
+     * see media
      */
     void setMedia( const DOMString & );
 
@@ -189,7 +189,7 @@ public:
     DOMString rel() const;
 
     /**
-     * see @ref rel
+     * see rel
      */
     void setRel( const DOMString & );
 
@@ -202,7 +202,7 @@ public:
     DOMString rev() const;
 
     /**
-     * see @ref rev
+     * see rev
      */
     void setRev( const DOMString & );
 
@@ -215,7 +215,7 @@ public:
     DOMString target() const;
 
     /**
-     * see @ref target
+     * see target
      */
     void setTarget( const DOMString & );
 
@@ -228,7 +228,7 @@ public:
     DOMString type() const;
 
     /**
-     * see @ref type
+     * see type
      */
     void setType( const DOMString & );
 
@@ -278,7 +278,7 @@ public:
     DOMString content() const;
 
     /**
-     * see @ref content
+     * see content
      */
     void setContent( const DOMString & );
 
@@ -291,7 +291,7 @@ public:
     DOMString httpEquiv() const;
 
     /**
-     * see @ref httpEquiv
+     * see httpEquiv
      */
     void setHttpEquiv( const DOMString & );
 
@@ -304,7 +304,7 @@ public:
     DOMString name() const;
 
     /**
-     * see @ref name
+     * see name
      */
     void setName( const DOMString & );
 
@@ -317,7 +317,7 @@ public:
     DOMString scheme() const;
 
     /**
-     * see @ref scheme
+     * see scheme
      */
     void setScheme( const DOMString & );
 };
@@ -355,7 +355,7 @@ public:
     DOMString text() const;
 
     /**
-     * see @ref text
+     * see text
      */
     void setText( const DOMString & );
 
@@ -366,7 +366,7 @@ public:
     DOMString htmlFor() const;
 
     /**
-     * see @ref htmlFor
+     * see htmlFor
      */
     void setHtmlFor( const DOMString & );
 
@@ -377,7 +377,7 @@ public:
     DOMString event() const;
 
     /**
-     * see @ref event
+     * see event
      */
     void setEvent( const DOMString & );
 
@@ -390,7 +390,7 @@ public:
     DOMString charset() const;
 
     /**
-     * see @ref charset
+     * see charset
      */
     void setCharset( const DOMString & );
 
@@ -404,7 +404,7 @@ public:
     bool defer() const;
 
     /**
-     * see @ref defer
+     * see defer
      */
     void setDefer( bool );
 
@@ -417,7 +417,7 @@ public:
     DOMString src() const;
 
     /**
-     * see @ref src
+     * see src
      */
     void setSrc( const DOMString & );
 
@@ -430,7 +430,7 @@ public:
     DOMString type() const;
 
     /**
-     * see @ref type
+     * see type
      */
     void setType( const DOMString & );
 };
@@ -469,7 +469,7 @@ public:
     bool disabled() const;
 
     /**
-     * see @ref disabled
+     * see disabled
      */
     void setDisabled( bool );
 
@@ -482,7 +482,7 @@ public:
     DOMString media() const;
 
     /**
-     * see @ref media
+     * see media
      */
     void setMedia( const DOMString & );
 
@@ -495,7 +495,7 @@ public:
     DOMString type() const;
 
     /**
-     * see @ref type
+     * see type
      */
     void setType( const DOMString & );
 
@@ -542,7 +542,7 @@ public:
     DOMString text() const;
 
     /**
-     * see @ref text
+     * see text
      */
     void setText( const DOMString & );
 };

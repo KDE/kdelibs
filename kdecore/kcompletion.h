@@ -41,20 +41,20 @@ class QPopupMenu;
 /**
  * This class offers easy use of "auto-completion", "manual-completion" or
  * "shell completion" on QString objects. A common use is completing filenames
- * or URLs (see @ref KURLCompletion()).
+ * or URLs (see KURLCompletion()).
  * But it is not limited to URL-completion -- everything should be completable!
  * The user should be able to complete email-addresses, telephone-numbers,
  * commands, SQL queries, ...
  * Every time your program knows what the user can type into an edit-field, you
  * should offer completion. With KCompletion, this is very easy, and if you are
- * using a line edit widget (@ref KLineEdit), it is even more easy.
+ * using a line edit widget ( KLineEdit), it is even more easy.
  * Basically, you tell a KCompletion object what strings should be completable
- * and whenever completion should be invoked, you call @ref makeCompletion().
+ * and whenever completion should be invoked, you call makeCompletion().
  * KLineEdit and (an editable) KComboBox even do this automatically for you.
  *
- * KCompletion offers the completed string via the signal @ref #match() and
+ * KCompletion offers the completed string via the signal match() and
  * all matching strings (when the result is ambiguous) via the method
- * @ref allMatches().
+ * allMatches().
  *
  * Notice: auto-completion, shell completion and manual completion work
  *         slightly differently:
@@ -62,7 +62,7 @@ class QPopupMenu;
  * @li auto-completion always returns a complete item as match.
  *     When more than one matching items are available, it will deliver just
  *     the first (depending on sorting order) item. Iterating over all matches
- *     is possible via @ref nextMatch() and @ref previousMatch().
+ *     is possible via nextMatch() and previousMatch().
  *
  * @li popup-completion works in the same way, the only difference being that
  *     the completed items are not put into the edit-widget, but into a
@@ -74,20 +74,20 @@ class QPopupMenu;
  *     of manual and auto-completion is therefore only visible in UI classes,
  *     KCompletion needs to know whether to deliver partial matches
  *     (shell completion) or whole matches (auto/manual completion), therefore
- *     @ref KGlobalSettings::CompletionMan and
- *     @ref KGlobalSettings::CompletionAuto have the exact same effect in
+ * KGlobalSettings::CompletionMan and
+ * KGlobalSettings::CompletionAuto have the exact same effect in
  *     KCompletion.
  *
  * @li shell completion works like how shells complete filenames:
  *     when multiple matches are available, the longest possible string of all
  *     matches is returned (i.e. only a partial item).
  *     Iterating over all matching items (complete, not partial) is possible
- *     via @ref nextMatch() and @ref previousMatch().
+ *     via nextMatch() and previousMatch().
  *
  * You don't have to worry much about that though, KCompletion handles
- * that for you, according to the setting @ref setCompletionMode().
+ * that for you, according to the setting setCompletionMode().
  * The default setting is globally configured by the user and read
- * from @ref KGlobalSettings::completionMode().
+ * from KGlobalSettings::completionMode().
  *
  * A short example:
  * \code
@@ -117,7 +117,7 @@ class QPopupMenu;
  * Note: KCompletion does not work with strings that contain 0x0 characters
  *       (unicode nul), as this is used internally as a delimiter.
  *
- * You may inherit from KCompletion and override @ref makeCompletion() in
+ * You may inherit from KCompletion and override makeCompletion() in
  * special cases (like reading directories/urls and then supplying the
  * contents to KCompletion, as KURLCompletion does), but generally, this is
  * not necessary.
@@ -164,9 +164,9 @@ public:
      * found.
      *
      * In the latter case, a sound will be issued, depending on
-     * @ref isSoundsEnabled().
+     * isSoundsEnabled().
      * If a match was found, it will also be emitted via the signal
-     * @ref #match().
+     * match().
      *
      * If this is called twice or more often with the same string while no
      * items were added or removed in the meantime, all available completions
@@ -194,7 +194,7 @@ public:
     /**
      * Returns the next item from the matching-items-list.
      * When reaching the beginning, the list is rotated so it will return the
-     * last match and a sound is issued (depending on @ref isSoundsEnabled()).
+     * last match and a sound is issued (depending on isSoundsEnabled()).
      * @return the next item from the matching-items-list.
      * When there is no match, QString::null is returned and
      * a sound is be issued.
@@ -206,7 +206,7 @@ public:
      * Returns the next item from the matching-items-list.
      * When reaching the last item, the list is rotated, so it will return
      * the first match and a sound is issued (depending on
-     * @ref isSoundsEnabled()).
+     * isSoundsEnabled()).
      * @return the next item from the matching-items-list.  When there is no
      * match, QString::null is returned and a sound is issued
      * @see #slotNextMatch
@@ -226,14 +226,14 @@ public:
      * if you need to save the state of a KCompletion object and restore it
      * later.
      *
-     * Important note: when @ref order() == Weighted, then every item in the
+     * Important note: when order() == Weighted, then every item in the
      * stringlist has its weight appended, delimited by a colon. E.g. an item
      * "www.kde.org" might look like "www.kde.org:4", where 4 is the weight.
      *
      * This is necessary so that you can save the items along with its
-     * weighting on disk and load them back with @ref setItems(), restoring its
+     * weighting on disk and load them back with setItems(), restoring its
      * weight as well. If you really don't want the appended weightings, call
-     * @ref setOrder( KCompletion::Insertion )
+     * setOrder( KCompletion::Insertion )
      * before calling items().
      *
      * @return a list of all items
@@ -245,7 +245,7 @@ public:
      * Sets the completion mode to Auto/Manual, Shell or None.
      * If you don't set the mode explicitly, the global default value
      * KGlobalSettings::completionMode() is used.
-     * @ref KGlobalSettings::CompletionNone disables completion.
+     * KGlobalSettings::CompletionNone disables completion.
      * @param mode the completion mode
      * @see #completionMode
      * @see #KGlobalSettings::completionMode
@@ -254,8 +254,8 @@ public:
 
     /**
      * Return the current completion mode.
-     * May be different from @ref KGlobalSettings::completionMode(), if you
-     * explicitly called @ref setCompletionMode().
+     * May be different from KGlobalSettings::completionMode(), if you
+     * explicitly called setCompletionMode().
      * @return the current completion mode
      * @see #setCompletionMode
      */
@@ -347,13 +347,13 @@ public:
 
     /**
      * Enables/disables playing a sound when
-     * @li @ref makeCompletion() can't find a match
+     * @li makeCompletion() can't find a match
      * @li there is a partial completion (= multiple matches in
      *     Shell-completion mode)
-     * @li @ref nextMatch() or @ref previousMatch() hit the last possible
+     * @li nextMatch() or previousMatch() hit the last possible
      *     match -> rotation
      *
-     * For playing the sounds, @ref KNotifyClient() is used.
+     * For playing the sounds, KNotifyClient() is used.
      *
      * @param enable true to enable sounds
      * @see #isSoundsEnabled
@@ -392,8 +392,8 @@ public:
 
 public slots:
     /**
-     * Attempts to complete "string" and emits the completion via @ref match().
-     * Same as @ref makeCompletion() (just as a slot).
+     * Attempts to complete "string" and emits the completion via match().
+     * Same as makeCompletion() (just as a slot).
      * @param string the string to complete
      * @see #makeCompletion
      */
@@ -402,8 +402,8 @@ public slots:
     }
 
     /**
-     * Searches the previous matching item and emits it via @ref match().
-     * Same as @ref previousMatch() (just as a slot).
+     * Searches the previous matching item and emits it via match().
+     * Same as previousMatch() (just as a slot).
      * @see #previousMatch
      */
     void slotPreviousMatch() {
@@ -411,8 +411,8 @@ public slots:
     }
 
     /**
-     * Searches the next matching item and emits it via @ref match().
-     * Same as @ref nextMatch() (just as a slot).
+     * Searches the next matching item and emits it via match().
+     * Same as nextMatch() (just as a slot).
      * @see #nextMatch
      */
     void slotNextMatch() {
@@ -421,7 +421,7 @@ public slots:
 
     /**
      * Inserts @p items into the list of possible completions.
-     * Does the same as @ref setItems(), but does not call @ref clear() before.
+     * Does the same as setItems(), but does not call clear() before.
      * @param items the items to insert
      */
     void insertItems( const QStringList& items );
@@ -445,7 +445,7 @@ public slots:
 
     /**
      * Adds an item to the list of available completions.
-     * Resets the current item-state (@ref previousMatch() and @ref nextMatch()
+     * Resets the current item-state ( previousMatch() and nextMatch()
      * won't work anymore).
      * @param item the item to add
      */
@@ -453,7 +453,7 @@ public slots:
 
     /**
      * Adds an item to the list of available completions.
-     * Resets the current item-state (@ref previousMatch() and @ref nextMatch()
+     * Resets the current item-state ( previousMatch() and nextMatch()
      * won't work anymore).
      *
      * Sets the weighting of the item to @p weight or adds it to the current
@@ -466,7 +466,7 @@ public slots:
 
     /**
      * Removes an item from the list of available completions.
-     * Resets the current item-state (@ref previousMatch() and @ref nextMatch()
+     * Resets the current item-state ( previousMatch() and nextMatch()
      * won't work anymore).
      * @param item the item to remove
      */
@@ -480,15 +480,15 @@ public slots:
 
 signals:
     /**
-     * The matching item. Will be emitted by @ref makeCompletion(),
-     * @ref previousMatch() or @ref nextMatch(). May be QString::null if there
+     * The matching item. Will be emitted by makeCompletion(),
+     * previousMatch() or nextMatch(). May be QString::null if there
      * is no matching item.
      * @param item the match, or QString::null if there is none
      */
     void match( const QString& item);
 
     /**
-     * All matching items. Will be emitted by @ref makeCompletion() in shell-
+     * All matching items. Will be emitted by makeCompletion() in shell-
      * completion-mode, when the same string is passed to makeCompletion twice
      * or more often.
      * @param matchlist the list of matches
@@ -496,7 +496,7 @@ signals:
     void matches( const QStringList& matchlist);
 
     /**
-     * This signal is emitted, when calling @ref makeCompletion() and more than
+     * This signal is emitted, when calling makeCompletion() and more than
      * one matching item is found.
      * @see #hasMultipleMatches
      */
@@ -507,7 +507,7 @@ protected:
      * This method is called after a completion is found and before the
      * matching string is emitted. You can override this method to modify the
      * string that will be emitted.
-     * This is necessary e.g. in @ref KURLCompletion(), where files with spaces
+     * This is necessary e.g. in KURLCompletion(), where files with spaces
      * in their names are shown escaped ("filename\ with\ spaces"), but stored
      * unescaped inside KCompletion.
      * Never delete that pointer!
@@ -521,7 +521,7 @@ protected:
     /**
      * This method is called before a list of all available completions is
      * emitted via #matches. You can override this method to modify the
-     * found items before @ref match() or #matches are emitted.
+     * found items before match() or #matches are emitted.
      * Never delete that pointer!
      *
      * Default implementation does nothing.
@@ -586,7 +586,7 @@ typedef KSortableValueList<QString> KCompletionMatchesList;
 class KCompletionMatchesPrivate;
 
 /**
- * This structure is returned by @ref KCompletion::allWeightedMatches .
+ * This structure is returned by KCompletion::allWeightedMatches .
  * It also keeps the weight of the matches, allowing
  * you to modify some matches or merge them with matches
  * from another call to allWeightedMatches(), and sort the matches
@@ -645,7 +645,7 @@ private:
  * This is a convenience class that provides the basic functions
  * needed to add text completion support into widgets.  All that
  * is required is an implementation for the pure virtual function
- * @ref setCompletedText.  Refer to @ref KLineEdit or @ref KComboBox
+ * setCompletedText.  Refer to KLineEdit or KComboBox
  * to see how easily such support can be added using this as a base
  * class.
  *
@@ -660,7 +660,7 @@ public:
     /**
      * Constants that represent the items whose short-cut
      * key-binding is programmable.  The default key-bindings
-     * for these items are defined in @ref KStdAccel.
+     * for these items are defined in KStdAccel.
      */
     enum KeyBindingType {
         /**
@@ -703,14 +703,14 @@ public:
      * here is used by default to handle the signals
      * internally.  It is also deleted when this object's
      * destructor is invoked.  If you do not want these
-     * default settings, use @ref setAutoDeleteCompletionObject
-     * and @ref setHandleSignals to change the behavior.
+     * default settings, use setAutoDeleteCompletionObject
+     * and setHandleSignals to change the behavior.
      * Alternatively, you can set the boolean parameter to
      * false to disable the automatic handling of the signals
      * by this object.  Note that the boolean argument will be
      * ignored if there already exists a completion object since
      * no new object needs to be created. You need to use either
-     * @ref setHandleSignals or @ref setCompletionObject for
+     * setHandleSignals or setCompletionObject for
      * such cases depending on your requirement.
      *
      * @param hsig if true, handles signals internally.
@@ -729,7 +729,7 @@ public:
      *
      * The object assigned through this method is not deleted
      * when this object's destructor is invoked unless you
-     * explicitly call @ref setAutoDeleteCompletionObject after
+     * explicitly call setAutoDeleteCompletionObject after
      * calling this method.  Also if you do not want the signals
      * to be handled by an internal implementation, be sure to
      * set the bool argument to false.
@@ -737,7 +737,7 @@ public:
      * This method is also called when a completion-object is created
      * automatically, when completionObject() is called the first time.
      *
-     * @param compObj a @ref KCompletion() or a derived child object.
+     * @param compObj a KCompletion() or a derived child object.
      * @param hsig if true, handles signals internally.
      */
     virtual void setCompletionObject( KCompletion* /*compObj*/, bool hsig = true );
@@ -760,7 +760,7 @@ public:
      * Returns true if the completion object is deleted
      * upon this widget's destruction.
      *
-     * See @ref setCompletionObject() and @ref enableCompletion()
+     * See setCompletionObject() and enableCompletion()
      * for details.
      *
      * @return true if the completion object will be deleted
@@ -793,16 +793,16 @@ public:
      * Invoking this function with @p enable set to @p false will
      * cause the completion & rotation signals not to be emitted.
      * However, unlike setting the completion object to @p NULL
-     * using @ref setCompletionObject, disabling the emition of
+     * using setCompletionObject, disabling the emition of
      * the signals through this method does not affect the current
      * completion object.
      *
      * There is no need to invoke this function by default.  When a
-     * completion object is created through @ref completionObject or
-     * @ref setCompletionObject, these signals are set to emit
+     * completion object is created through completionObject or
+     * setCompletionObject, these signals are set to emit
      * automatically.  Also note that disabling this signals will not
      * necessarily interfere with the objects ability to handle these
-     * events internally.  See @ref setHandleSignals.
+     * events internally.  See setHandleSignals.
      *
      * @param enable if false, disables the emition of completion & rotation signals.
      */
@@ -831,7 +831,7 @@ public:
      * Sets the type of completion to be used.
      *
      * The completion modes supported are those defined in
-     * @ref KGlobalSettings().  See below.
+     * KGlobalSettings().  See below.
      *
      * @param mode Completion type:
      *   @li CompletionNone:  Disables completion feature.
@@ -852,8 +852,8 @@ public:
     /**
      * Returns the current completion mode.
      *
-     * The return values are of type @ref KGlobalSettings::Completion.
-     * See @ref setCompletionMode() for details.
+     * The return values are of type KGlobalSettings::Completion.
+     * See setCompletionMode() for details.
      *
      * @return the completion mode.
      */
@@ -930,7 +930,7 @@ public:
      * implementations to set completed text appropriately.  It
      * is mostly relevant when the completion mode is set to
      * CompletionAuto and CompletionManual modes. See
-     * @ref KCompletionBase::setCompletedText.
+     * KCompletionBase::setCompletedText.
      * Does nothing in CompletionPopup mode, as all available
      * matches will be shown in the popup.
      *
@@ -948,7 +948,7 @@ public:
     /**
      * Returns a pointer to the completion object.
      *
-     * This method is only different from @ref completionObject()
+     * This method is only different from completionObject()
      * in that it does not create a new KCompletion object even if
      * the internal pointer is @p NULL. Use this method to get the
      * pointer to a completion object when inheriting so that you
@@ -962,7 +962,7 @@ protected:
     /**
      * Returns a key-binding map.
      *
-     * This method is the same as @ref getKeyBinding() except it
+     * This method is the same as getKeyBinding() except it
      * returns the whole keymap containing the key-bindings.
      *
      * @return the key-binding used for the feature given by @p item.

@@ -40,7 +40,7 @@ class KFileMetaInfoGroup;
 
 /**
  *  This class provides information about the capabilities that a
- *  @ref KFilePlugin for a given mimetype has. It includes a list of metainfo
+ * KFilePlugin for a given mimetype has. It includes a list of metainfo
  *  groups and items together with their type, a prefix, suffix and some other
  *  information about how to use, display or edit the items.
  * @short Represents the capabilities of a KFilePlugin for a given mimetype.
@@ -60,7 +60,7 @@ public:
 
     /**
      * This enum is used to specify some attributes that an item can have,
-     * which fit neither in the @ref Hint nor in the @ref Unit enum.
+     * which fit neither in the Hint nor in the Unit enum.
      */
     enum Attributes
     {
@@ -128,7 +128,7 @@ public:
     class ItemInfo;
 
     /**
-     *  This is the class for one group of items of a @ref KFileMimeTypeInfo.
+     *  This is the class for one group of items of a KFileMimeTypeInfo.
      *  It contains, among other things, the information about the group's name
      *  and a list of supported items.
      *  @short Information about a meta information group.
@@ -144,7 +144,7 @@ public:
          * the plugin knows about. No variable keys.
          * For a group that doesn't support variable keys, all keys that this
          * group may have are returned. For a group that does support them, the
-         * non-variable ones are returned. See @ref KFileMetaInfo about variable
+         * non-variable ones are returned. See KFileMetaInfo about variable
          * keys
          *
          * @return the list of keys supported for this mimetype
@@ -167,7 +167,7 @@ public:
 
         /**
          *  Use this method to get the string to display to the user as group
-         *  name. This may be different to @ref name() and it returns the
+         *  name. This may be different to name() and it returns the
          *  name in the user's language
          *
          *  @return the translated group name
@@ -179,15 +179,15 @@ public:
 
        /**
         *  A group object can contain sevaral item objects (of which you can
-        *  get the names with @ref supportedKeys() . With this method, you can
-        *  get one of those item objects. See @ref ItemInfo
+        *  get the names with supportedKeys() . With this method, you can
+        *  get one of those item objects. See ItemInfo
         *
         *  @return a pointer to the item info. Don't delete this object!
         */
         const ItemInfo * itemInfo( const QString& key ) const;
 
        /**
-        *  Get the attributes of this group (see @ref Attributes)
+        *  Get the attributes of this group (see Attributes)
         *
         *  @return the attributes
         */
@@ -239,8 +239,8 @@ public:
     };
 
     /**
-     *  This is the class for one item of a @ref KFileMimeTypeInfo.
-     *  It contains every information about a @ref KFileMetaInfoItem that this
+     *  This is the class for one item of a KFileMimeTypeInfo.
+     *  It contains every information about a KFileMetaInfoItem that this
      *  item has in common for each file of a specific mimetype.
      **/
     class ItemInfo
@@ -275,10 +275,10 @@ public:
         }
 
         /**
-         * The items for a file are stored as a @ref QVariant and this method
+         * The items for a file are stored as a QVariant and this method
          * can be used to get the data type of this item.
          *
-         * @return the @ref QVariant type
+         * @return the QVariant type
          */
         QVariant::Type type() const
         {
@@ -331,7 +331,7 @@ public:
 
         /**
          * Return the attributes of the item. See
-         * @ref KFileMimeTypeInfo::Attributes.
+         * KFileMimeTypeInfo::Attributes.
          * @return the attributes
          */
         uint attributes() const
@@ -341,7 +341,7 @@ public:
 
         /**
          * Return the hints for the item. See
-         * @ref KFileMimeTypeInfo::Hint
+         * KFileMimeTypeInfo::Hint
          * @return the hint
          */
         uint hint() const
@@ -351,7 +351,7 @@ public:
 
         /**
          * Return the unit of the item. See
-         * @ref KFileMimeTypeInfo::Unit
+         * KFileMimeTypeInfo::Unit
          * @return the unit
          */
         uint unit() const
@@ -483,7 +483,7 @@ protected:
 
 /**
  * This is one item of the meta information about a file (see
- * @ref KFileMetaInfo).
+ * KFileMetaInfo).
  * @short A meta information item about a file.
  */
 class KFileMetaInfoItem
@@ -579,7 +579,7 @@ public:
 
     /**
      * If you remove an item, it is only marked for removal for the file. On
-     * the next @ref KFileMetaInfo::applyChanges() , it will be removed from
+     * the next KFileMetaInfo::applyChanges() , it will be removed from
      * the file. With this method, you can ask if the item is marked for
      * removal.
      *
@@ -589,7 +589,7 @@ public:
 
     /**
      * If you change an item, it is marked as "dirty". On the next
-     * @ref KFileMetaInfo::applyChanges() , the change will be written to the
+     * KFileMetaInfo::applyChanges() , the change will be written to the
      * file. With this method, you can ask if this item is dirty.
      *
      * @return true if the item contains changes that have not yet been written
@@ -614,20 +614,20 @@ public:
     QString suffix() const;
 
     /**
-     * Returns the hint for this item. See @ref KFileMimeTypeInfo::Hint.
+     * Returns the hint for this item. See KFileMimeTypeInfo::Hint.
      * @return the hint
      **/
     uint hint() const;
 
     /**
-     * Returns the unit for this item. See @ref KFileMimeTypeInfo::Unit.
+     * Returns the unit for this item. See KFileMimeTypeInfo::Unit.
      * @return the unit
      **/
     uint unit() const;
 
     /**
      * Returns the atttributes for this item. See
-     * @ref KFileMimeTypeInfo::Attributes.
+     * KFileMimeTypeInfo::Attributes.
      * @return the attributes
      **/
     uint attributes() const;
@@ -635,7 +635,7 @@ public:
     /**
      * Return true if the item is valid, i.e. if it contains data, false
      * if it's invalid (created with the default constructor and not been
-     * assigned anything), or if @ref KFileMetaInfoGroup::item() didn't find
+     * assigned anything), or if KFileMetaInfoGroup::item() didn't find
      * your requested item).
      * @return true if valid, false if invalid
      */
@@ -658,7 +658,7 @@ protected:
 
 /**
  * This is one group of meta information items about a file (see
- * @ref KFileMetaInfo).
+ * KFileMetaInfo).
  * @short A group of meta information items about a file.
  */
 class KFileMetaInfoGroup
@@ -705,7 +705,7 @@ public:
     /**
      * Returns true if the item is valid, i.e. if it contains data, false
      * if it's invalid (created with the default constructor and not been
-     * assigned anything), or if @ref KFileMetaInfoGroup::item() didn't find
+     * assigned anything), or if KFileMetaInfoGroup::item() didn't find
      * your requested item).
      * @return true if valid, false if invalid
      */
@@ -727,7 +727,7 @@ public:
     bool isModified() const;
     
     /**
-     * Operator for convenience. It does the same as @ref item(),
+     * Operator for convenience. It does the same as item(),
      * but you cannot specify a group to search in
      */
     KFileMetaInfoItem operator[]( const QString& key ) const
@@ -766,7 +766,7 @@ public:
      * the plugin knows about. No variable keys.
      * For a group that doesn't support variable keys, all keys that this
      * group may have are returned. For a group that does support them, the
-     * non-variable ones are returned. See @ref KFileMetaInfo about variable
+     * non-variable ones are returned. See KFileMetaInfo about variable
      * keys
      *
      * @return the list of keys supported for this mimetype
@@ -821,7 +821,7 @@ public:
     /**
      * Remove this item from the meta info of the file. You cannot query
      * KFileMetaInfo for a removed object, but you can query for a list of
-     * removed items with @ref removedItems() if you need to.
+     * removed items with removedItems() if you need to.
      * If you re-add it, its value will be cleared.
      * @param key the key of the removed item
      * @return true if successful, false otherwise
@@ -864,10 +864,10 @@ protected:
 /**
  * This is the class for objects that hold meta information about a file.
  * The information is kept in form of a system of key/value pairs. See also
- * @ref KFileMetaInfoItem.
+ * KFileMetaInfoItem.
  * This information is retrieved from the file through a plugin system, and
  * this class is the main interface to it.
- * If you want to write your own plugin, have a look at @ref KFilePlugin.
+ * If you want to write your own plugin, have a look at KFilePlugin.
  * There are basically two different kinds of meta information: Fixed ones
  * that the plugin knows about (e.g. an mp3 id3v1 tag has a well defined
  * fixed list of fields), and variable keys that exist in mimetypes that
@@ -919,12 +919,12 @@ public:
      * the specified file.
      *
      * If no info is available, you'll get an empty (not invalid) object.
-     * You can test for it with the @ref isEmpty() method.
+     * You can test for it with the isEmpty() method.
      *
      *  @param path The file name. This must be the path to a local file.
      *  @param mimeType The name of the file's mimetype. If ommited, the
      *         mimetype is autodetected
-     *  @param what one or more of the @ref What enum values. It gives some
+     *  @param what one or more of the What enum values. It gives some
      *              hint to the plugin what information is desired. The plugin
      *              may still return more items.
      *
@@ -948,7 +948,7 @@ public:
 
     /**
      * Default constructor. This will create an invalid object (see
-     * @ref isValid().
+     * isValid().
      **/
     KFileMetaInfo();
 
@@ -1056,7 +1056,7 @@ public:
 
    /**
     * Try to add the specified group. This will only succeed if it is
-    * in the list of @ref editableGroups().
+    * in the list of editableGroups().
     * @note that all non-variable items that belong to this group are
     *  automatically added as empty item.
     * @param name the name of the group to add
@@ -1066,7 +1066,7 @@ public:
 
    /**
     * Remove the specified group. This will only succeed if it is
-    * in the list of @ref editableGroups(). Beware that this also
+    * in the list of editableGroups(). Beware that this also
     * removes all the items in that group, so always ask the user
     * before removing it!
     * @param name the name of the group to remove
@@ -1189,7 +1189,7 @@ private:
  *  \endcode
  *
  * and then just overwrite the methods your plugin supports. If your plugin
- * can only read data, it is sufficient to only write a @ref readInfo() method.
+ * can only read data, it is sufficient to only write a readInfo() method.
  * If you also want to support changing data and writing it back into the
  * file, you usually need all methods.
  **/
@@ -1211,10 +1211,10 @@ public:
 
     /**
      * Read the info from the file in this method and insert it into the
-     * provided @ref KFileMetaInfo object. You can get the path to
+     * provided KFileMetaInfo object. You can get the path to
      * the file with info.path()
      * @param info the information will be written here
-     * @param what defines what to read, see @ref KFileMetaInfo::What
+     * @param what defines what to read, see KFileMetaInfo::What
      * @return true if successful, false if it failed
      **/
     virtual bool readInfo( KFileMetaInfo& info,
@@ -1300,7 +1300,7 @@ private:
  * @internal
  *
  * Synchronous access to metadata of a local file. Ususally, you don't want
- * to use this class. Use @ref KFileMetaInfo directly.
+ * to use this class. Use KFileMetaInfo directly.
  **/
 class KFileMetaInfoProvider: QObject
 {

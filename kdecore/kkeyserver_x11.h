@@ -80,9 +80,9 @@ namespace KKeyServer
 
 		/**
 		 * Returns the mods that are required for this symbol as
-		 * ORed @ref KKey::ModFlag's. For example, Break requires a
+		 * ORed KKey::ModFlag's. For example, Break requires a
 		 * Ctrl to be valid.
-		 * @return the required @ref KKey::ModFlag's
+		 * @return the required KKey::ModFlag's
 		 * @see KKey::ModFlag
 		 */
 		uint getModsRequired() const;
@@ -127,7 +127,7 @@ namespace KKeyServer
 		uint m_sym;
 
 		/**
-		 * Initializes the key with a @ref KKey.
+		 * Initializes the key with a KKey.
 		 * @param key the key to get the data from
 		 * @param bQt true to take the Qt keycode, false
 		 *            for the native key code
@@ -177,7 +177,7 @@ namespace KKeyServer
 			{ m_code = CODE_FOR_QT; m_sym = keyQt; }
 
 		/**
-		 * Initializes this key with a @ref KKeyNative.
+		 * Initializes this key with a KKeyNative.
 		 * @return this key
 		 */
 		Key& operator =( const KKeyNative& key );
@@ -328,7 +328,7 @@ namespace KKeyServer
 
 	/**
 	 * Extracts the modifiers from the given Qt key and
-	 * converts them in a mask of ORed @ref KKey::ModFlag modifiers.
+	 * converts them in a mask of ORed KKey::ModFlag modifiers.
 	 * @param keyQt the qt key code
 	 * @param mod if successful, the modifiers will be written here
 	 * @return true if successful, false otherwise
@@ -347,9 +347,9 @@ namespace KKeyServer
 	bool symToKeyQt( uint sym, int& keyQt );
 
 	/**
-	 * Converts the mask of ORed @ref KKey::ModFlag modifiers to
+	 * Converts the mask of ORed KKey::ModFlag modifiers to
 	 * a mask of ORed Qt key code modifiers.
-	 * @param mod the mask of @ref KKey::ModFlag modifiers
+	 * @param mod the mask of KKey::ModFlag modifiers
 	 * @param modQt the mask of Qt key code modifiers will be written here,
 	 *        if successful
 	 * @return true if successful, false otherwise
@@ -359,9 +359,9 @@ namespace KKeyServer
 	bool modToModQt( uint mod, int& modQt );
 
 	/**
-	 * Converts the mask of ORed @ref KKey::ModFlag modifiers to
+	 * Converts the mask of ORed KKey::ModFlag modifiers to
 	 * a mask of ORed X11 modifiers.
-	 * @param mod the mask of @ref KKey::ModFlag modifiers
+	 * @param mod the mask of KKey::ModFlag modifiers
 	 * @param modX the mask of X11 modifiers will be written here,
 	 *        if successful
 	 * @return true if successful, false otherwise
@@ -382,9 +382,9 @@ namespace KKeyServer
 
 	/**
 	 * Converts the mask of ORed X11 modifiers to
-	 * a mask of ORed @ref KKey::ModFlag modifiers.
+	 * a mask of ORed KKey::ModFlag modifiers.
 	 * @param modX the mask of X11 modifiers
-	 * @param mod the mask of @ref KKey::ModFlag modifiers will be written here,
+	 * @param mod the mask of KKey::ModFlag modifiers will be written here,
 	 *        if successful
 	 * @return true if successful, false otherwise
 	 * @see KKey
@@ -410,9 +410,9 @@ namespace KKeyServer
 	QString modToStringInternal( uint mod );
 
 	/**
-	 * Converts the mask of ORed @ref KKey::ModFlag modifiers to a
+	 * Converts the mask of ORed KKey::ModFlag modifiers to a
 	 * user-readable string.
-	 * @param mod the mask of ORed @ref KKey::ModFlag modifiers
+	 * @param mod the mask of ORed KKey::ModFlag modifiers
 	 * @return the user-readable string
 	 */
 	QString modToStringUser( uint mod );

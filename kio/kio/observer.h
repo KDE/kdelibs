@@ -38,7 +38,7 @@ namespace KIO {
 }
 
 /**
- * Observer for @ref KIO::Job progress information.
+ * Observer for KIO::Job progress information.
  *
  * This class, of which there is always only one instance,
  * "observes" what jobs do and forwards this information
@@ -48,9 +48,9 @@ namespace KIO {
  * kill method when the user presses Cancel.
  *
  * Usually jobs are automatically registered by the
- * @ref KIO::Scheduler, so you do not have to care about that.
+ * KIO::Scheduler, so you do not have to care about that.
  *
- * @short Observer for @ref KIO::Job progress information
+ * @short Observer for KIO::Job progress information
  * @author David Faure <faure@kde.org>
  */
 class Observer : public QObject, public DCOPObject {
@@ -81,7 +81,7 @@ public:
   /**
    * Called by the job destructor, to tell the UI Server that
    * the job ended.
-   * @param progressId the progress ID of the job, as returned by @ref newJob()
+   * @param progressId the progress ID of the job, as returned by newJob()
    */
   void jobFinished( int progressId );
 
@@ -99,10 +99,10 @@ public:
   bool openPassDlg( KIO::AuthInfo& info );
 
   /**
-   * Popup a message box. See @ref KIO::SlaveBase.
+   * Popup a message box. See KIO::SlaveBase.
    * This doesn't use DCOP anymore, it shows the dialog in the application's process.
    * Otherwise, other apps would block when trying to communicate with UIServer.
-   * @param progressId the progress ID of the job, as returned by @ref newJob()
+   * @param progressId the progress ID of the job, as returned by newJob()
    * @param type the type of the message box
    * @param text the text to show
    * @param caption the window caption
@@ -140,13 +140,13 @@ public:
 k_dcop:
   /**
    * Called by the UI Server (using DCOP) if the user presses cancel.
-   * @param progressId the progress ID of the job, as returned by @ref newJob()
+   * @param progressId the progress ID of the job, as returned by newJob()
    */
   void killJob( int progressId );
 
   /**
    * Called by the UI Server (using DCOP) to get all the metadata of the job
-   * @param progressId the progress IDof the job, as returned by @ref newJob()
+   * @param progressId the progress IDof the job, as returned by newJob()
    */
   KIO::MetaData metadata( int progressId );
 

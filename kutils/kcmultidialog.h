@@ -29,9 +29,9 @@
 #include <kcmodule.h>
 
 /**
- * A class that offers a @ref KDialogBase containing arbitrary KControl Modules
+ * A class that offers a KDialogBase containing arbitrary KControl Modules
  *
- * @short A method that offers a @ref KDialogBase containing arbitrary
+ * @short A method that offers a KDialogBase containing arbitrary
  *        KControl Modules.
  *
  * @author Matthias Elter <elter@kde.org>, Daniel Molkentin <molkentin@kde.org>

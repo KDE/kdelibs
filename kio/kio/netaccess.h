@@ -40,8 +40,8 @@ namespace KIO {
    * Net Transparency.
    *
    * NetAccess allows you to do simple file operation (load, save,
-   * copy, delete..) without working with @ref KIO::Job directly.
-   * Whereas a @ref KIO::Job is asynchronous, meaning that the
+   * copy, delete..) without working with KIO::Job directly.
+   * Whereas a KIO::Job is asynchronous, meaning that the
    * developer has to connect slots for it, KIO::NetAccess provides
    * synchronous downloads and uploads, as well as temporary file
    * creation and removal. The functions appear to be blocking,
@@ -68,7 +68,7 @@ public:
      * If the argument
      * for @p target is an empty string, download will generate a
      * unique temporary filename in /tmp. Since @p target is a reference
-     * to @ref QString you can access this filename easily. Download will
+     * to QString you can access this filename easily. Download will
      * return true if the download was successful, otherwise false.
      *
      * Special case:
@@ -79,7 +79,7 @@ public:
      *
      * Download is synchronous. That means you can use it like
      * this, (assuming @p u is a string which represents a URL and your
-     * application has a @ref loadFile() function):
+     * application has a loadFile() function):
      *
      * \code
      * QString tmpFile;
@@ -98,7 +98,7 @@ public:
      *               file.  If you insert an empty string, it will
      *               return a location in a temporary spot. <B>Note:</B>
      *               you are responsible for the removal of this file when
-     *               you are finished reading it using @ref removeTempFile.
+     *               you are finished reading it using removeTempFile.
      * @param window main window associated with this job. This is used to
      *               automatically cache and discard authentication information
      *               as needed. If NULL, authentication information will be
@@ -117,8 +117,8 @@ public:
      * Removes the specified file if and only if it was created
      * by KIO::NetAccess as a temporary file for a former download.
      *
-     * Note: This means that if you created your temporary with @ref KTempFile,
-     * use @ref KTempFile::unlink() or @ref KTempFile::setAutoDelete() to have
+     * Note: This means that if you created your temporary with KTempFile,
+     * use KTempFile::unlink() or KTempFile::setAutoDelete() to have
      * it removed.
      *
      * @param name Path to temporary file to remove.  May not be
@@ -129,10 +129,10 @@ public:
     /**
      * Uploads file @p src to URL @p target.
      *
-     * Both must be specified, unlike @ref #download.
+     * Both must be specified, unlike download.
      * Note that this is assumed to be used for saving a file over
      * the network, so overwriting is set to true. This is not the
-     * case with @ref #copy.
+     * case with copy.
      *
      * @param src URL Referencing the file to upload.
      * @param target URL containing the final location of the file.
@@ -152,11 +152,11 @@ public:
     static bool upload(const QString& src, const KURL& target);
 
     /**
-     * Alternative to @ref upload for copying over the network.
+     * Alternative to upload for copying over the network.
      * Overwrite is false, so this will fail if @p target exists.
      *
      * This one takes two URLs and is a direct equivalent
-     * of @ref KIO::file_copy (not KIO::copy!).
+     * of KIO::file_copy (not KIO::copy!).
      * It will be renamed file_copy in KDE4, so better use file_copy.
      *
      * @param src URL Referencing the file to upload.
@@ -198,7 +198,7 @@ public:
      * Overwrite is false, so this will fail if @p target exists.
      *
      * This one takes two URLs and is a direct equivalent
-     * of @ref KIO::copy!.
+     * of KIO::copy!.
      * This means that it can copy files and directories alike
      * (it should have been named copy()).
      *
@@ -244,7 +244,7 @@ public:
      * @param url the url we are testing
      * @param source if true, we want to read from that URL.
      *               If false, we want to write to it.
-     * IMPORTANT: see documentation for @ref KIO::stat for more details about this.
+     * IMPORTANT: see documentation for KIO::stat for more details about this.
      * @param window main window associated with this job. This is used to
      *               automatically cache and discard authentication information
      *               as needed. If NULL, authentication information will be
@@ -273,12 +273,12 @@ public:
     /**
      * Tests whether a URL exists and return information on it.
      *
-     * This is a convenience function for @ref KIO::stat
+     * This is a convenience function for KIO::stat
      * (it saves creating a slot and testing for the job result).
      *
      * @param url The URL we are testing.
      * @param entry The result of the stat. Iterate over the list
-     * of atoms to get hold of name, type, size, etc., or use @ref KFileItem.
+     * of atoms to get hold of name, type, size, etc., or use KFileItem.
      * @param window main window associated with this job. This is used to
      *               automatically cache and discard authentication information
      *               as needed. If NULL, authentication information will be
@@ -296,7 +296,7 @@ public:
     /**
      * Deletes a file or a directory in an synchronous way.
      *
-     * This is a convenience function for @ref KIO::del
+     * This is a convenience function for KIO::del
      * (it saves creating a slot and testing for the job result).
      *
      * @param url The file or directory to delete.
@@ -362,10 +362,10 @@ public:
      *
      * Determines the mimetype of a given URL.
      *
-     * This is a convenience function for @ref KIO::mimetype.  You
-     * should call this only when really necessary.  @ref
+     * This is a convenience function for KIO::mimetype.  You
+     * should call this only when really necessary. 
      * KMimeType::findByURL can determine extension a lot faster, but
-     * less reliably for remote files. Only when @ref findByURL() returns
+     * less reliably for remote files. Only when findByURL() returns
      * unknown (application/octet-stream) then this one should be
      * used.
      *

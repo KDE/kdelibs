@@ -103,7 +103,7 @@ public:
     DOMString title() const;
 
     /**
-     * see @ref title
+     * see title
      */
     void setTitle( const DOMString & );
 
@@ -137,7 +137,7 @@ public:
     HTMLElement body() const;
 
     /**
-     * see @ref body
+     * see body
      */
     void setBody(const HTMLElement &);
 
@@ -193,7 +193,7 @@ public:
     DOMString cookie() const;
 
     /**
-     * see @ref cookie
+     * see cookie
      */
     void setCookie( const DOMString & );
 

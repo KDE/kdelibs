@@ -60,7 +60,7 @@ public:
 	KURLCompletion();
 	/**
 	 * This overloaded constructor allows you to set the Mode to ExeCompletion
-	 * or FileCompletion without using @ref setMode. Default is FileCompletion.
+	 * or FileCompletion without using setMode. Default is FileCompletion.
 	 */
 	KURLCompletion(Mode);
 	/**

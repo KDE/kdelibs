@@ -197,7 +197,7 @@ class KCmdLineArgsPrivate;
  *     myapp -I /usr/include -I /opt/kde/include -I /usr/X11/include
  *  \endcode
  *  When an application does this it should mention this in the description
- *  of the option. @ref getOptionList()
+ *  of the option. getOptionList()
  *
  *  Tips for end-users:
  *
@@ -231,7 +231,7 @@ public:
    *        should be marked for translation. Example: I18N_NOOP("KEdit")
    * @param _description A short description of what your application is about.
    * @param _version A version.
-   * @param noKApp Don't add commandline options for @ref QApplication/@ref KApplication
+   * @param noKApp Don't add commandline options for QApplication/ KApplication
    */
    static void init(int _argc, char **_argv, const char *_appname,
                     const char* programName, const char *_description,
@@ -251,7 +251,7 @@ public:
    * @param _argc As passed to @p main(...).
    * @param _argv As passed to @p main(...).
    * @param about A KAboutData object describing your program.
-   * @param noKApp Don't add commandline options for @ref QApplication / @ref KApplication
+   * @param noKApp Don't add commandline options for QApplication / KApplication
    */
   static void init(int _argc, char **_argv,
                    const KAboutData *about, bool noKApp = false);
@@ -379,7 +379,7 @@ public:
    * Enable i18n to be able to print a translated error message.
    *
    * N.B.: This function leaks memory, therefore you are expected to exit
-   * afterwards (e.g., by calling @ref usage()).
+   * afterwards (e.g., by calling usage()).
    **/
   static void enable_i18n();
 
@@ -450,7 +450,7 @@ public:
    *  Read out an argument.
    *
    *  @param n The argument to read. 0 is the first argument.
-   *           @ref count()-1 is the last argument.
+   * count()-1 is the last argument.
    *
    *  @return A @p const @p char @p * pointer to the n'th argument.
    */
@@ -465,7 +465,7 @@ public:
    *  @li a URL
    *
    *  @param n The argument to read. 0 is the first argument.
-   *           @ref count()-1 is the last argument.
+   * count()-1 is the last argument.
    *
    *  @return a URL representing the n'th argument.
    */
@@ -481,8 +481,8 @@ public:
 
   /**
    * Made public for apps that don't use KCmdLineArgs
-   * To be done before @ref makeURL, to set the current working
-   * directory in case @ref makeURL needs it.
+   * To be done before makeURL, to set the current working
+   * directory in case makeURL needs it.
    * @param cwd the new working directory
    */
   static void setCwd( char * cwd ) { mCwd = cwd; }
@@ -504,7 +504,7 @@ protected:
   /**
    *  @internal use only.
    *
-   *  Use @ref clear() if you want to free up some memory.
+   *  Use clear() if you want to free up some memory.
    *
    *  Destructor.
    */

@@ -33,7 +33,7 @@ class KAccelActions;
  * so do not hardcode the default behavior.
  *
  * If you want real configurable keybindings in your applications,
- * please checkout the class @ref KAccel in kaccel.h
+ * please checkout the class KAccel in kaccel.h
  * @see KAccelShortcutList
  */
 namespace KStdAccel
@@ -429,13 +429,13 @@ namespace KStdAccel
    * the value of the integer.
    *
    * If a modifier (Shift, Alt, Ctrl) key is present in
-   * @ref QKeyEvent, its sum with the actual key value
+   * QKeyEvent, its sum with the actual key value
    * is used for comparing it with the integer parameter.
    *
    * @param pEvent the key event to be used in the comparison.
    * @param keyQt the int value to be compared to the key event.
    *
-   * @return true if the int value matches the integer representation of the @ref QKeyEvent
+   * @return true if the int value matches the integer representation of the QKeyEvent
    */
   bool isEqual(const QKeyEvent* pEvent, int keyQt);
 #endif // !KDE_NO_COMPAT

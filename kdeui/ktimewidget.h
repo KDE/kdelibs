@@ -69,7 +69,7 @@ public slots:
 signals:
   /**
    * Emitted whenever the time of the widget
-   * is changed, either with @ref #setTime() or via user selection.
+   * is changed, either with setTime() or via user selection.
    */
   void valueChanged(const QTime & time);
 

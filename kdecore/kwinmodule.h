@@ -56,7 +56,7 @@ public:
     /**
      * Creates a KWinModule object and connects to the window
      * manager.
-     * @param parent the parent for the @ref QObject
+     * @param parent the parent for the QObject
      **/
     KWinModule( QObject* parent = 0 );
 
@@ -71,7 +71,7 @@ public:
      * indexes of this list: Whenever you enter Qt's event loop in your
      * application, it may happen that entries are removed or added.
      * Your module should perhaps work on a copy of this list and verify a
-     * window with @ref hasWId() before any operations.
+     * window with hasWId() before any operations.
      *
      * Iteration over this list can be done easily with
      * \code
@@ -236,7 +236,7 @@ signals:
     
     /**
      * Emitted when the stacking order of the window changed. The new order
-     * can be obtained with @ref stackingOrder().
+     * can be obtained with stackingOrder().
      */
     void stackingOrderChanged();
 

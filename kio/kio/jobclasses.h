@@ -77,7 +77,7 @@ namespace KIO {
          * Abort this job.
          * This kills all subjobs and deletes the job.
 	 *
-         * @param quietly if false, Job will emit signal @ref #result
+         * @param quietly if false, Job will emit signal result
          * and ask kio_uiserver to close the progress window.
          * @p quietly is set to true for subjobs. Whether applications
          * should call with true or false depends on whether they rely
@@ -87,9 +87,9 @@ namespace KIO {
 
         /**
 	 * Returns the error code, if there has been an error.
-         * Only call this method from the slot connected to @ref result().
+         * Only call this method from the slot connected to result().
          * @return the error code for this job, 0 if no error.
-         * Error codes are defined in @ref KIO::Error.
+         * Error codes are defined in KIO::Error.
          */
         int error() const { return m_error; }
 
@@ -101,11 +101,11 @@ namespace KIO {
 
         /**
 	 * Returns the error text if there has been an error.
-         * Only call if @ref #error is not 0.
+         * Only call if error is not 0.
          * This is really internal, better use errorString or errorDialog.
 	 *
          * @return a string to help understand the error, usually the url
-         * related to the error. Only valid if @ref error() is not 0.
+         * related to the error. Only valid if error() is not 0.
          */
         const QString & errorText() const { return m_errorText; }
 
@@ -120,11 +120,11 @@ namespace KIO {
          *   i18n( "Could not read\n%1" ).arg( errortext );
 	 * \endcode
          * Use this to display the error yourself, but for a dialog box
-         * use @ref Job::showErrorDialog. Do not call it if @ref error()
+         * use Job::showErrorDialog. Do not call it if error()
 	 * is not 0.
 	 * @return the error message. If there is on error, a message
 	 *         tellng the user that the app is broken, so check with
-	 *         @ref error() whether there is an error
+	 * error() whether there is an error
          */
         QString errorString() const;
 
@@ -144,8 +144,8 @@ namespace KIO {
         /**
          * Display a dialog box to inform the user of the error given by
          * this job.
-         * Only call if @ref #error is not 0, and only in the slot connected
-         * to @ref #result.
+         * Only call if error is not 0, and only in the slot connected
+         * to result.
          * @param parent the parent widget for the dialog box, can be 0 for
 	 *        top-level
          */
@@ -153,16 +153,16 @@ namespace KIO {
 
         /**
          * Enable or disable the automatic error handling. When automatic
-         * error handling is enabled and an error occurs, then @ref showErrorDialog()
+         * error handling is enabled and an error occurs, then showErrorDialog()
          * is called with the specified @p parentWidget (if supplied) , right before
          * the emission of the result signal.
          *
          * The default is false.
          *
-         * See also @ref #isAutoErrorHandlingEnabled , @ref #showErrorDialog
+         * See also isAutoErrorHandlingEnabled , showErrorDialog
          *
          * @param enable enable or disable automatic error handling
-         * @param parentWidget the parent widget, passed to @ref #showErrorDialog.
+         * @param parentWidget the parent widget, passed to showErrorDialog.
 	 *        Can be 0 for top-level
 	 * @see isAutoErrorHandlingEnabled()
          */
@@ -170,7 +170,7 @@ namespace KIO {
 
         /**
          * Returns whether automatic error handling is enabled or disabled.
-         * See also @ref #setAutoErrorHandlingEnabled .
+         * See also setAutoErrorHandlingEnabled .
 	 * @return true if automatic error handling is enabled
 	 * @see setAutoErrorHandlingEnabled()
          */
@@ -277,7 +277,7 @@ namespace KIO {
     signals:
         /**
          * Emitted when the job is finished, in any case (completed, canceled,
-         * failed...). Use @ref #error to know the result.
+         * failed...). Use error to know the result.
 	 * @param job the job that emitted this signal
          */
         void result( KIO::Job *job );
@@ -311,7 +311,7 @@ namespace KIO {
         /**
          * Progress signal showing the overall progress of the job
          * This is valid for any kind of job, and allows using a
-         * a progress bar very easily. (see @ref KProgress).
+         * a progress bar very easily. (see KProgress).
 	 * Note that this signal is not emitted for finished jobs.
 	 * @param job the job that emitted this signal
 	 * @param percent the percentage
@@ -345,7 +345,7 @@ namespace KIO {
         /**
          * Called whenever a subjob finishes.
          * Default implementation checks for errors and propagates
-         * to parent job, then calls @ref #removeSubjob.
+         * to parent job, then calls removeSubjob.
          * Override if you don't want subjobs errors to be propagated.
 	 * @param job the subjob
 	 * @see result()
@@ -482,7 +482,7 @@ namespace KIO {
         /**
          * Abort job.
          * This kills all subjobs and deletes the job.
-         * @param quietly if true, Job will emit signal @ref #result
+         * @param quietly if true, Job will emit signal result
          * Should only be set to false when the user kills the job
          * (from kio_uiserver), not when you want to abort a job.
          */
@@ -614,7 +614,7 @@ namespace KIO {
 
     public:
         /**
-	 * Do not use this constructor to create a StatJob, use @ref KIO::stat() instead.
+	 * Do not use this constructor to create a StatJob, use KIO::stat() instead.
 	 * @param url the url of the file or directory to check
 	 * @param command the command to issue
 	 * @param packedArgs the arguments
@@ -643,7 +643,7 @@ namespace KIO {
         void setDetails( short int details ) { m_details = details; }
 
         /**
-         * Call this in the slot connected to @ref #result,
+         * Call this in the slot connected to result,
          * and only after making sure no error happened.
 	 * @return the result of the stat
          */
@@ -696,7 +696,7 @@ namespace KIO {
 
     /**
      * The transfer job pumps data into and/or out of a Slave.
-     * Data is sent to the slave on request of the slave (@ref #dataReq).
+     * Data is sent to the slave on request of the slave ( dataReq).
      * If data coming from the slave can not be handled, the
      * reading of data from the slave should be suspended.
      */
@@ -705,7 +705,7 @@ namespace KIO {
 
     public:
        /**
-	* Do not create a TransferJob. Use @ref KIO::get() or @ref KIO::put() 
+	* Do not create a TransferJob. Use KIO::get() or KIO::put() 
 	* instead.
 	* @param url the url to get or put
 	* @param command the command to issue
@@ -761,8 +761,8 @@ namespace KIO {
         /**
          * Enable the async data mode.
          * When async data is enabled, data should be provided to the job by 
-         * calling @ref sendAsyncData() instead of returning data in the 
-         * @ref dataReq() signal.
+         * calling sendAsyncData() instead of returning data in the 
+         * dataReq() signal.
          * @since 3.2
          */
         void setAsyncDataEnabled(bool enabled);
@@ -799,7 +799,7 @@ namespace KIO {
          * @param data data received from the slave.
          * End of data (EOD) has been reached if data.size() == 0, however, you
          * should not be certain of data.size() ever happening and just use signal
-         * @ref result()
+         * result()
 		 */
         void data( KIO::Job *job, const QByteArray &data);
 
@@ -878,9 +878,9 @@ namespace KIO {
     };
 
     /**
-     * The MultiGetJob is a @ref TransferJob that allows you to get
+     * The MultiGetJob is a TransferJob that allows you to get
      * several files from a single server. Don't create directly,
-     * but use @ref KIO::multi_get() instead.
+     * but use KIO::multi_get() instead.
      * @see KIO::multi_get()
      */
     class MultiGetJob : public TransferJob {
@@ -888,7 +888,7 @@ namespace KIO {
 
     public:
         /**
-	 * Do not create a MultiGetJob directly, use @ref KIO::multi_get()
+	 * Do not create a MultiGetJob directly, use KIO::multi_get()
 	 * instead.
 	 *
 	 * @param url the first url to get
@@ -966,9 +966,9 @@ namespace KIO {
     };
 
     /**
-     * A MimetypeJob is a @ref TransferJob that  allows you to get
+     * A MimetypeJob is a TransferJob that  allows you to get
      * the mime type of an URL. Don't create directly,
-     * but use @ref KIO::mimetype() instead.
+     * but use KIO::mimetype() instead.
      * @see KIO::mimetype()
      */
     class MimetypeJob : public TransferJob {
@@ -976,7 +976,7 @@ namespace KIO {
 
     public:
        /**
-	* Do not create a MimetypeJob directly. Use @ref KIO::mimetype() 
+	* Do not create a MimetypeJob directly. Use KIO::mimetype() 
 	* instead.
 	* @param url the url to get
 	* @param command the command to issue
@@ -986,7 +986,7 @@ namespace KIO {
         MimetypeJob(const KURL& url, int command, const QByteArray &packedArgs, bool showProgressInfo);
 
         /**
-         * Call this in the slot connected to @ref #result,
+         * Call this in the slot connected to result,
          * and only after making sure no error happened.
 	 * @return the mimetype of the URL
          */
@@ -1018,8 +1018,8 @@ namespace KIO {
 
     public:
 	/**
-	* Do not create a FileCopyJob directly. Use @ref KIO::file_move() 
-	* or @ref KIO::file_copy() instead.
+	* Do not create a FileCopyJob directly. Use KIO::file_move() 
+	* or KIO::file_copy() instead.
 	* @param src the source URL
 	* @param dest the destination URL
 	* @param permissions the permissions of the resulting resource
@@ -1123,8 +1123,8 @@ namespace KIO {
 
     /**
      * A ListJob is allows you to get the get the content of a directory.
-     * Don't create the job directly, but use @ref KIO::listRecursive() or 
-     * @ref KIO::listDir() instead.
+     * Don't create the job directly, but use KIO::listRecursive() or 
+     * KIO::listDir() instead.
      * @see KIO::listRecursive()
      * @see KIO::listDir()
      */
@@ -1133,8 +1133,8 @@ namespace KIO {
 
     public:
        /**
-	* Do not create a ListJob directly. Use @ref KIO::listDir() or
-	* @ref KIO::listRecursive() instead.
+	* Do not create a ListJob directly. Use KIO::listDir() or
+	* KIO::listRecursive() instead.
 	* @param url the url of the directory
 	* @param showProgressInfo true to show progress information to the user
 	* @param recursive true to get the data recursively from child directories, 
@@ -1158,8 +1158,8 @@ namespace KIO {
         /**
          * This signal emits the entry found by the job while listing.
          * The progress signals aren't specific to ListJob. It simply
-         * uses SimpleJob's @ref #processedSize (number of entries listed) and
-         * @ref #totalSize (total number of entries, if known),
+         * uses SimpleJob's processedSize (number of entries listed) and
+         * totalSize (total number of entries, if known),
          * as well as percent.
 	 * @param job the job that emitted this signal
 	 * @param list the list of UDSEntries
@@ -1218,8 +1218,8 @@ namespace KIO {
 
     /**
      * CopyJob is used to move, copy or symlink files and directories.
-     * Don't create the job directly, but use @ref KIO::copy(), 
-     * @ref KIO::move(), @ref KIO::link() and friends.
+     * Don't create the job directly, but use KIO::copy(), 
+     * KIO::move(), KIO::link() and friends.
      *
      * @see KIO::copy()
      * @see KIO::copyAs()
@@ -1238,14 +1238,14 @@ namespace KIO {
         enum CopyMode{ Copy, Move, Link };
 
 	/**
-	 * Do not create a CopyJob directly. Use @ref KIO::copy(), 
-	 * @ref KIO::move(), @ref KIO::link() and friends instead.
+	 * Do not create a CopyJob directly. Use KIO::copy(), 
+	 * KIO::move(), KIO::link() and friends instead.
 	 *
 	 * @param src the list of source URLs
 	 * @param dest the destination URL
 	 * @param mode specifies whether the job should copy, move or link
-	 * @param asMethod if true, behaves like @ref KIO::copyAs(), 
-	 * @ref KIO::moveAs() or @ref KIO::linkAs()
+	 * @param asMethod if true, behaves like KIO::copyAs(), 
+	 * KIO::moveAs() or KIO::linkAs()
 	 * @param showProgressInfo true to show progress information to the user
 	 * @see KIO::copy()
 	 * @see KIO::copyAs()
@@ -1440,7 +1440,7 @@ namespace KIO {
 
     /**
      * A more complex Job to delete files and directories.
-     * Don't create the job directly, but use @ref KIO::del() instead.
+     * Don't create the job directly, but use KIO::del() instead.
      *
      * @see KIO::del()
      */
@@ -1449,7 +1449,7 @@ namespace KIO {
 
     public:
 	/**
-	 * Do not create a DeleteJob directly. Use @ref KIO::del() 
+	 * Do not create a DeleteJob directly. Use KIO::del() 
 	 * instead.
 	 *
 	 * @param src the list of URLs to delete

@@ -16,11 +16,11 @@
  * Interface to the KDE Image IO plugin architecture.
  *
  * This library allows KDE applications to read and write images in a
- * variety of formats, transparently via the @ref QImage and @ref QPixmap load
+ * variety of formats, transparently via the QImage and QPixmap load
  * and save methods.
  *
  * The image processing backends are written as image handlers compatible
- * with the @ref QImageIO handler format. The backends are loaded on demand
+ * with the QImageIO handler format. The backends are loaded on demand
  * when a particular format is requested. Each format can be identified
  * by a unique type id string.
  * 
@@ -37,7 +37,7 @@
  *
  * @sect Usage
  *
- * Simply call the @ref KImageIO::registerFormats() static method declared
+ * Simply call the KImageIO::registerFormats() static method declared
  * in kimgageio.h.
  * 
  * @sect Example
@@ -100,8 +100,8 @@ public:
   /**
    * Returns a list of patterns of all KImageIO supported formats. 
    *
-   * These patterns can be passed to @ref KFileDialog::getOpenFileName()
-   * or @ref KFileDialog::getSaveFileName(), for example.
+   * These patterns can be passed to KFileDialog::getOpenFileName()
+   * or KFileDialog::getSaveFileName(), for example.
    *
    * @param mode Tells whether to retrieve modes that can be read or written.
    * @return a space-separated list of file globs that describe the

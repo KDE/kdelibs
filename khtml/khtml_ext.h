@@ -9,7 +9,7 @@
 #include <kio/global.h>
 
 /**
- * This is the BrowserExtension for a @ref KHTMLPart document. Please see the KParts documentation for
+ * This is the BrowserExtension for a KHTMLPart document. Please see the KParts documentation for
  * more information about the BrowserExtension.
  */
 class KHTMLPartBrowserExtension : public KParts::BrowserExtension

@@ -86,7 +86,7 @@ class KAboutContainer : public QFrame
 class KAboutContributorPrivate;
 
 /**
- * Used internally by @ref KAboutWidget
+ * Used internally by KAboutWidget
  * @internal
  */
 class KAboutContributor : public QFrame
@@ -250,10 +250,10 @@ private:
 
 class KAboutDialogPrivate;
 /**
- * A @ref KDialogBase with predefined main widget.
+ * A KDialogBase with predefined main widget.
  *
- * As a @ref KDialogBase it uses your application wide settings
- * for @ref KDialogBase
+ * As a KDialogBase it uses your application wide settings
+ * for KDialogBase
  * objects (base frame tiles, main frame tiles etc).
  * To use it, simply create a KAboutDialog object, set all (or some) of its
  * properties and show it. Do not derive it to create your own about dialog
@@ -276,7 +276,7 @@ class KAboutDialogPrivate;
  * a person (developer) information field. The "About KDE" dialog box is
  * created with Constructor II.
  *
- * For the derived features, see the basic class @ref KDialogBase.
+ * For the derived features, see the basic class KDialogBase.
  * @author Mirko Boehm (mirko@kde.org) and Espen Sand (espensa@online.no)
  * @see KDialogBase
  */
@@ -307,8 +307,8 @@ class KAboutDialog : public KDialogBase
      * The standard Qt constructor (Constructor I).
      *
      * Add components with the following methods:
-     *  @ref setLogo(), @ref setAuthor(), @ref setMaintainer(),
-     *   @ref addContributor(), or @ref setVersion().
+     * setLogo(), setAuthor(), setMaintainer(),
+     * addContributor(), or setVersion().
      * The dialog will be laid out automatically.
      */
     KAboutDialog( QWidget *parent=0, const char *name=0, bool modal=true );
@@ -317,11 +317,11 @@ class KAboutDialog : public KDialogBase
     * The extended constructor. (Constructor II).
     *
     * Add components with the methods:
-    *  @ref setTitle(), @ref setImage(), @ref setImageBackgroundColor(),
-    *  @ref setImageFrame(), @ref setProduct(), @ref addTextPage(),
-    *  @ref addContainerPage(), @ref addContainer(), or @ref addPage().
+    * setTitle(), setImage(), setImageBackgroundColor(),
+    * setImageFrame(), setProduct(), addTextPage(),
+    * addContainerPage(), addContainer(), or addPage().
     *
-    * @param dialogLayout Use a mask of @ref LayoutType flags.
+    * @param dialogLayout Use a mask of LayoutType flags.
     * @param caption The dialog caption. The text you specify is prepended
     *        by i18n("About").
     * @param buttonMask Specifies what buttons will be visible.
@@ -350,7 +350,7 @@ class KAboutDialog : public KDialogBase
    *
    * You can call this method after you have set up all
    * the contents but it is not required. It is done automatically when
-   * @ref show() is executed.
+   * show() is executed.
    */
   void adjust();
 
@@ -358,8 +358,8 @@ class KAboutDialog : public KDialogBase
    * Makes a modeless (modal = false in constructor) dialog visible.
    *
    * If you reimplement this method make sure you run it
-   * in the new method (e.g., @ref show()). Reimplemented
-   * from @ref KDialogBase.
+   * in the new method (e.g., show()). Reimplemented
+   * from KDialogBase.
    */
   virtual void show( void );
 
@@ -367,7 +367,7 @@ class KAboutDialog : public KDialogBase
    * Makes a modeless (modal = false in constructor) dialog visible.
    *
    * If you reimplmement this method make sure you run it
-   * in the new method (i.e., @ref show( parent )).
+   * in the new method (i.e., show( parent )).
    *
    * @param centerParent Center the dialog with respect to this widget.
    */

@@ -34,15 +34,15 @@
  * events to external midi devices.
  *
  * MidiOut is inherited by other MIDI devices classes
- * (like @ref SynthOut or @ref FMOut) to support a common API.
+ * (like SynthOut or FMOut) to support a common API.
  *
  * In general, you don't want to use MidiOut directly, but within a
- * @ref DeviceManager object, which is the preferred way to generate music.
+ * DeviceManager object, which is the preferred way to generate music.
  *
  * If you want to add support for other devices (I don't think
  * there are any) you just have to create a class that inherits from MidiOut
  * and create one object of your new class in
- * @ref DeviceManager::initManager().
+ * DeviceManager::initManager().
  *
  * @short Sends MIDI events to external MIDI devices
  * @version 0.9.5 17/01/2000
@@ -86,20 +86,20 @@ class MidiOut
 
   /**
    * Constructor. After constructing a MidiOut device, you must open it
-   * (using @ref #openDev() ). Additionally you may want to initialize it
-   * (with @ref #initDev() ),
+   * (using openDev() ). Additionally you may want to initialize it
+   * (with initDev() ),
    */
   MidiOut(int d=0);
 
   /**
-   * Destructor. It doesn't matter if you close the device (@ref closeDev() )
+   * Destructor. It doesn't matter if you close the device ( closeDev() )
    * before you destruct the object because in other case, it will be closed
    * here.
    */
   virtual ~MidiOut();
 
   /**
-   * Opens the device. This is generally called from @ref DeviceManager , so you
+   * Opens the device. This is generally called from DeviceManager , so you
    * shouldn't call this yourself (except if you created the MidiOut object
    * yourself.
    * @param sqfd a file descriptor of /dev/sequencer
@@ -127,10 +127,10 @@ class MidiOut
    * inherited class that a given object is polymorphed to.
    * The returned value is one of these :
    *
-   * @li KMID_EXTERNAL_MIDI if it's a @ref MidiOut object
-   * @li KMID_SYNTH if it's a @ref SynthOut object (as an AWE device)
-   * @li KMID_FM if it's a @ref FMOut object
-   * @li KMID_GUS if it's a @ref GUSOut object
+   * @li KMID_EXTERNAL_MIDI if it's a MidiOut object
+   * @li KMID_SYNTH if it's a SynthOut object (as an AWE device)
+   * @li KMID_FM if it's a FMOut object
+   * @li KMID_GUS if it's a GUSOut object
    *
    * which are defined in midispec.h
    *
@@ -145,7 +145,7 @@ class MidiOut
   const char * deviceName (void) const;
 
   /**
-   * Sets a @ref MidiMapper object to be used to modify the midi events before
+   * Sets a MidiMapper object to be used to modify the midi events before
    * sending them.
    *
    * @param map the MidiMapper to use.
@@ -156,42 +156,42 @@ class MidiOut
   void setMidiMapper	( MidiMapper *map );
 
   /**
-   * See @ref DeviceManager::noteOn()
+   * See DeviceManager::noteOn()
    */
   virtual void noteOn	( uchar chn, uchar note, uchar vel );
 
   /**
-   * See @ref DeviceManager::noteOff()
+   * See DeviceManager::noteOff()
    */
   virtual void noteOff	( uchar chn, uchar note, uchar vel );
 
   /**
-   * See @ref DeviceManager::keyPressure()
+   * See DeviceManager::keyPressure()
    */
   virtual void keyPressure	( uchar chn, uchar note, uchar vel );
 
   /**
-   * See @ref DeviceManager::chnPatchChange()
+   * See DeviceManager::chnPatchChange()
    */
   virtual void chnPatchChange	( uchar chn, uchar patch );
 
   /**
-   * See @ref DeviceManager::chnPressure()
+   * See DeviceManager::chnPressure()
    */
   virtual void chnPressure	( uchar chn, uchar vel );
 
   /**
-   * See @ref DeviceManager::chnPitchBender()
+   * See DeviceManager::chnPitchBender()
    */
   virtual void chnPitchBender	( uchar chn, uchar lsb,  uchar msb );
 
   /**
-   * See @ref DeviceManager::chnController()
+   * See DeviceManager::chnController()
    */
   virtual void chnController	( uchar chn, uchar ctl , uchar v );
 
   /**
-   * See @ref DeviceManager::sysex()
+   * See DeviceManager::sysex()
    */
   virtual void sysex		( uchar *data,ulong size);
 
@@ -234,7 +234,7 @@ class MidiOut
   };
 
   /**
-   * Returns the path to the file where the current used @ref MidiMapper object
+   * Returns the path to the file where the current used MidiMapper object
    * reads the configuration from, or an empty string if there's no MidiMapper.
    */
   const char *midiMapFilename ();

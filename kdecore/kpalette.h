@@ -56,7 +56,7 @@ public:
    /**
     * KPalette constructor. Creates a KPalette from a file
     * the filename is derived from the name.
-    * @param name The name of palette as returned by @ref getPaletteList()
+    * @param name The name of palette as returned by getPaletteList()
     **/
    KPalette(const QString &name=QString::null);
 

@@ -151,7 +151,7 @@ public:
   { return isCoreEqual(*other); }
 
   /**
-   * Returns the node name of this socket, as @ref KExtendedSocket::lookup expects
+   * Returns the node name of this socket, as KExtendedSocket::lookup expects
    * as the first argument.
    * In the case of Internet sockets, this is the hostname.
    * The default implementation returns QString::null.
@@ -160,7 +160,7 @@ public:
   virtual QString nodeName() const;
 
   /**
-   * Returns the service name for this socket, as @ref KExtendedSocket::lookup expects
+   * Returns the service name for this socket, as KExtendedSocket::lookup expects
    * as the service argument.
    * In the case of Internet sockets, this is the port number.
    * The default implementation returns QString::null.
@@ -226,7 +226,7 @@ class KInetSocketAddressPrivate;
  *
  * This is an IPv4 or IPv6 address of the Internet
  *
- * This class inherits most of the functionality from @ref KSocketAddress, but
+ * This class inherits most of the functionality from KSocketAddress, but
  * is targeted specifically to Internet addresses
  *
  * @author Thiago Macieira <thiagom@mail.com>

@@ -42,7 +42,7 @@ public:
   enum { Unknown = (mode_t) - 1 };
 
   /**
-   * Creates an item representing a file, from a @ref UDSEntry.
+   * Creates an item representing a file, from a UDSEntry.
    * This is the preferred constructor when using KIO::listDir().
    *
    * @param _entry the KIO entry used to get the file, contains info about it
@@ -81,7 +81,7 @@ public:
   KFileItem( const KURL &url, const QString &mimeType, mode_t mode );
 
   /**
-   * Copy constructor. Note that extra-data set via @ref setExtraData() is not
+   * Copy constructor. Note that extra-data set via setExtraData() is not
    * deeply copied -- just the pointers are copied.
    */
   KFileItem( const KFileItem &item );
@@ -175,7 +175,7 @@ public:
   bool isReadable() const;
 
   /**
-   * Returns the link destination if @ref isLink() == true.
+   * Returns the link destination if isLink() == true.
    * @return the link destination. QString::null if the item is not a link
    */
   QString linkDest() const;
@@ -218,7 +218,7 @@ public:
 
   /**
    * Return the name of the file item (without a path).
-   * Similar to @ref text(), but unencoded, i.e. the original name.
+   * Similar to text(), but unencoded, i.e. the original name.
    * @param lowerCase if true, the name will be returned in lower case,
    * which is useful to speed up sorting by name, case insensitively.
    * @return the file's name
@@ -388,7 +388,7 @@ public:
    * Retrieves the extra data with the given @p key.
    * @param key the key of the extra data
    * @return the extra data associated to an item with @p key via
-   *         @ref setExtraData. 0L if nothing was associated with @p key.
+   * setExtraData. 0L if nothing was associated with @p key.
    * @see #extraData
    */
   virtual const void * extraData( const void *key ) const;
@@ -397,7 +397,7 @@ public:
    * Retrieves the extra data with the given @p key.
    * @param key the key of the extra data
    * @return the extra data associated to an item with @p key via
-   *         @ref setExtraData. 0L if nothing was associated with @p key.
+   * setExtraData. 0L if nothing was associated with @p key.
    * @see #extraData
    */
   virtual void * extraData( const void *key );
@@ -424,7 +424,7 @@ public:
 
   /**
    * Somewhat like an assignment operator, but more explicit.
-   * Note: extra-data set with @ref setExtraData() is not copied, so be careful
+   * Note: extra-data set with setExtraData() is not copied, so be careful
    * what you do!
    *
    * I.e. KDirLister uses it to update existing items from a fresh item.
@@ -443,13 +443,13 @@ protected:
   void init( bool _determineMimeTypeOnDemand );
 
   /**
-   * Parses the given permission set and provides it for @ref access()
+   * Parses the given permission set and provides it for access()
    */
   QString parsePermissions( mode_t perm ) const;
 
 private:
   /**
-   * We keep a copy of the UDSEntry since we need it for @ref #getStatusBarInfo
+   * We keep a copy of the UDSEntry since we need it for getStatusBarInfo
    */
   KIO::UDSEntry m_entry;
   /**
@@ -493,7 +493,7 @@ private:
   mode_t m_permissions;
 
   /**
-   * Marked : see @ref #mark()
+   * Marked : see mark()
    */
   bool m_bMarked:1;
   /**

@@ -54,13 +54,13 @@
  * To receive mouse clicks or mouse moves,
  * the class has to be overloaded.
  *
- * For performance reasons, the public methods don't call @ref QWidget::repaint().
+ * For performance reasons, the public methods don't call QWidget::repaint().
  * (Slots do, see documentation below.)
  * All the changed settings will be painted once after leaving
  * to the main event loop.
  * For performance painting the slot methods should be used,
- * they do a fast @ref QWidget::repaint() call after changing the values.
- * For setting multiple values like @ref minValue(), @ref maxValue(), @ref offset() etc.
+ * they do a fast QWidget::repaint() call after changing the values.
+ * For setting multiple values like minValue(), maxValue(), offset() etc.
  * using the public methods is recommended
  * so the widget will be painted only once when entering the main event loop.
  *
@@ -116,13 +116,13 @@ public:
    *
    * @p parent, @p name and @p f are passed to QFrame.
    * The default look is a raised widget
-   * but may be changed with the inherited @ref QFrame methods.
+   * but may be changed with the inherited QFrame methods.
    *
    * @param orient     Orientation of the ruler.
-   * @param parent     Will be handed over to @ref QFrame.
-   * @param name       Will be handed over to @ref QFrame.
-   * @param f          Will be handed over to @ref QFrame.
-   * @param allowLines Will be handed over to @ref QFrame.
+   * @param parent     Will be handed over to QFrame.
+   * @param name       Will be handed over to QFrame.
+   * @param f          Will be handed over to QFrame.
+   * @param allowLines Will be handed over to QFrame.
    *
    **/
   KRuler(Orientation orient, QWidget *parent=0, const char *name=0, 
@@ -134,14 +134,14 @@ public:
    * The width sets the fixed width of the widget. This is useful if you
    * want to draw the ruler bigger or smaller than the default size.
    * Note: The size of the marks doesn't change.
-   * @p parent, @p name and @p f are passed to @ref QFrame.
+   * @p parent, @p name and @p f are passed to QFrame.
    *
    * @param orient      Orientation of the ruler.
    * @param widgetWidth Fixed width of the widget.
-   * @param parent      Will be handed over to @ref QFrame.
-   * @param name        Will be handed over to @ref QFrame.
-   * @param f           Will be handed over to @ref QFrame.
-   * @param allowLines  Will be handed over to @ref QFrame.
+   * @param parent      Will be handed over to QFrame.
+   * @param name        Will be handed over to QFrame.
+   * @param f           Will be handed over to QFrame.
+   * @param allowLines  Will be handed over to QFrame.
    *
    */
   KRuler(Orientation orient, int widgetWidth, QWidget *parent=0, 
@@ -155,7 +155,7 @@ public:
   /**
    * Sets the minimal value of the ruler pointer (default is 0).
    *
-   * This method calls @ref update() so that the widget is painted after leaving
+   * This method calls update() so that the widget is painted after leaving
    * to the main event loop.
    *
    **/
@@ -169,7 +169,7 @@ public:
   /**
    * Sets the maximum value of the ruler pointer (default is 100).
    *
-   * This method calls @ref update() so that the widget is painted after leaving
+   * This method calls update() so that the widget is painted after leaving
    * to the main event loop.
    */
   void setMaxValue(int);
@@ -182,7 +182,7 @@ public:
   /**
    * Sets minimum and maximum values of the ruler pointer.
    *
-   * This method calls @ref update() so that the widget is painted after leaving
+   * This method calls update() so that the widget is painted after leaving
    * to the main event loop.
    */
   void setRange(int min, int max);
@@ -192,7 +192,7 @@ public:
    *
    * The value is indicated by painting the ruler pointer at the
    * corresponding position.
-   * This method calls @ref update() so that the widget is painted after leaving
+   * This method calls update() so that the widget is painted after leaving
    * to the main event loop.
    */
   void setValue(int);
@@ -339,7 +339,7 @@ public:
    *
    * Calling this method stretches or shrinks your ruler.
    *
-   * For pixel display (@ref MetricStyle) the value is 10.0 marks
+   * For pixel display ( MetricStyle) the value is 10.0 marks
    * per pixel ;-)
    * For English (inches) it is 9.0, and for centimetres ~2.835 -> 3.0 .
    * If you want to magnify your part of display, you have to
@@ -409,7 +409,7 @@ public:
   /**
    * Sets the ruler slide offset.
    *
-   * This is like @ref slideup() or @ref slidedown() with an absolute offset
+   * This is like slideup() or slidedown() with an absolute offset
    * from the start of the ruler.
    *
    * @param offset Number of pixel to move the ruler up or left from the beginning
@@ -429,7 +429,7 @@ public slots:
    * Sets the pointer to a new position.
    *
    * The offset is NOT updated.
-   * @ref QWidget::repaint() is called afterwards.
+   * QWidget::repaint() is called afterwards.
    **/
   void slotNewValue(int);
 
@@ -437,7 +437,7 @@ public slots:
    * Sets the ruler marks to a new position.
    *
    * The pointer is NOT updated.
-   * @ref QWidget::repaint() is called afterwards.
+   * QWidget::repaint() is called afterwards.
    **/
   void slotNewOffset(int);
 

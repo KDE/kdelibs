@@ -97,7 +97,7 @@ public:
     DOMString id() const;
 
     /**
-     * see @ref id
+     * see id
      */
     void setId( const DOMString & );
 
@@ -110,7 +110,7 @@ public:
     DOMString title() const;
 
     /**
-     * see @ref title
+     * see title
      */
     void setTitle( const DOMString & );
 
@@ -123,7 +123,7 @@ public:
     DOMString lang() const;
 
     /**
-     * see @ref lang
+     * see lang
      */
     void setLang( const DOMString & );
 
@@ -137,7 +137,7 @@ public:
     DOMString dir() const;
 
     /**
-     * see @ref dir
+     * see dir
      */
     void setDir( const DOMString & );
 
@@ -152,7 +152,7 @@ public:
     DOMString className() const;
 
     /**
-     * see @ref className
+     * see className
      */
     void setClassName( const DOMString & );
 

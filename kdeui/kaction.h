@@ -103,7 +103,7 @@ class KMainWindow;
  * If you are in the situation of wanting to map the activated()
  * signal of multiple action objects to one slot, with a special
  * argument bound to each action, then you might consider using
- * @ref QSignalMapper . A tiny example:
+ * QSignalMapper . A tiny example:
  *
  * <PRE>
  * QSignalMapper *desktopNumberMapper = new QSignalMapper( this );
@@ -176,7 +176,7 @@ class KMainWindow;
  *
  * Note: if you are using a "standard" action like "new", "paste",
  * "quit", or any other action described in the KDE UI Standards,
- * please use the methods in the @ref KStdAction class rather than
+ * please use the methods in the KStdAction class rather than
  * defining your own.
  *
  * @sect Usage Within the XML Framework:
@@ -184,7 +184,7 @@ class KMainWindow;
  * If you are using KAction within the context of the XML menu and
  * toolbar building framework, then there are a few tiny changes.  The
  * first is that you must insert your new action into an action
- * collection.  The action collection (a @ref KActionCollection) is,
+ * collection.  The action collection (a KActionCollection) is,
  * logically enough, a central collection of all of the actions
  * defined in your application.  The XML UI framework code in KXMLGUI
  * classes needs access to this collection in order to build up the
@@ -365,7 +365,7 @@ public:
      * used in "normal" application.  Typically, it would be used if
      * your application has several views or modes, each with a
      * completely different menu structure.  If you simply want to
-     * disable an action for a given period, use @ref setEnabled()
+     * disable an action for a given period, use setEnabled()
      * instead.
      *
      * @param w Remove the action from this GUI element.

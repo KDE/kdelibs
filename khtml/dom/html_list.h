@@ -74,7 +74,7 @@ public:
     bool compact() const;
 
     /**
-     * see @ref compact
+     * see compact
      */
     void setCompact( bool );
 };
@@ -114,7 +114,7 @@ public:
     bool compact() const;
 
     /**
-     * see @ref compact
+     * see compact
      */
     void setCompact( bool );
 };
@@ -154,7 +154,7 @@ public:
     DOMString type() const;
 
     /**
-     * see @ref type
+     * see type
      */
     void setType( const DOMString & );
 
@@ -168,7 +168,7 @@ public:
     long value() const;
 
     /**
-     * see @ref value
+     * see value
      */
     void setValue( long );
 };
@@ -209,7 +209,7 @@ public:
     bool compact() const;
 
     /**
-     * see @ref compact
+     * see compact
      */
     void setCompact( bool );
 };
@@ -248,7 +248,7 @@ public:
     bool compact() const;
 
     /**
-     * see @ref compact
+     * see compact
      */
     void setCompact( bool );
 
@@ -262,7 +262,7 @@ public:
     long start() const;
 
     /**
-     * see @ref start
+     * see start
      */
     void setStart( long );
 
@@ -276,7 +276,7 @@ public:
     DOMString type() const;
 
     /**
-     * see @ref type
+     * see type
      */
     void setType( const DOMString & );
 };
@@ -316,7 +316,7 @@ public:
     bool compact() const;
 
     /**
-     * see @ref compact
+     * see compact
      */
     void setCompact( bool );
 
@@ -330,7 +330,7 @@ public:
     DOMString type() const;
 
     /**
-     * see @ref type
+     * see type
      */
     void setType( const DOMString & );
 };

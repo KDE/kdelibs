@@ -31,7 +31,7 @@
  * controller settings, pitch bender value, etc.
  *
  * This is used to "play" with all those values and then send them to the
- * MIDI device just by using @ref #sendData() 
+ * MIDI device just by using sendData() 
  *
  * @short Stores the MIDI status.
  * @version 0.9.5 17/01/2000
@@ -131,7 +131,7 @@ class MidiStatus
 
 
     /**
-     * Sends the current MIDI state to the @ref DeviceManager object used as
+     * Sends the current MIDI state to the DeviceManager object used as
      * parameter (you should have already set the default device to the one you
      * want to use). The @p gm parameter specifies if the patches used follow
      * the GM standard (1), or follow the MT32 standard (0), in which case, they

@@ -29,7 +29,7 @@ class KShellCompletionPrivate;
 
 /**
  * This class does shell-like completion of file names.
- * A string passed to @ref makeCompletion() will be interpreted as a shell 
+ * A string passed to makeCompletion() will be interpreted as a shell 
  * command line. Completion will be done on the last argument on the line. 
  * Returned matches consist of the first arguments (uncompleted) plus the 
  * completed last argument.

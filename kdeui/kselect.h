@@ -31,7 +31,7 @@
  * KXYSelector is the base class for other widgets which
  * provides the ability to choose from a two-dimensional
  * range of values. The currently chosen value is indicated
- * by a cross. An example is the @ref KHSSelector which
+ * by a cross. An example is the KHSSelector which
  * allows to choose from a range of colors, and which is
  * used in KColorDialog.
  *
@@ -89,7 +89,7 @@ protected:
    * Override this function to draw the contents of the widget.
    * The default implementation does nothing.
    *
-   * Draw within @ref contentsRect() only.
+   * Draw within contentsRect() only.
    */
   virtual void drawContents( QPainter * );
   /**
@@ -141,7 +141,7 @@ private:
 /**
  * KSelector is the base class for other widgets which
  * provides the ability to choose from a one-dimensional
- * range of values. An example is the @ref KGradientSelector
+ * range of values. An example is the KGradientSelector
  * which allows to choose from a range of colors.
  *
  * A custom drawing routine for the widget surface has

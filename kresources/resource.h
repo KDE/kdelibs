@@ -53,10 +53,10 @@ class ConfigWidget;
  * in your application</li>
  * <li>If needed, override the doOpen() and doClose() methods.
  * <li> Provide a configuration possibility for resources in your
- * new family. You can use @ref ResourcesConfigPage to easily create a
+ * new family. You can use ResourcesConfigPage to easily create a
  * KControl applet</li>
- * <li>In your application, you can use @ref ResourceManager to keep track
- * of the resources in your family, and you can use @ref ResourceSelectDialog
+ * <li>In your application, you can use ResourceManager to keep track
+ * of the resources in your family, and you can use ResourceSelectDialog
  * to let the user select a single resource.</li>
  * </ul>
  *
@@ -222,10 +222,10 @@ link_DATA= resourceexample.desktop
  */
 
 /**
- * A @ref Resource  is a ...
+ * A Resource  is a ...
  *
  * A subclass should reimplement at least the constructor and the
- * @ref writeConfig method.
+ * writeConfig method.
  *
    */
 class Resource : public QObject
@@ -257,7 +257,7 @@ class Resource : public QObject
 
     /**
      * Open this resource, if it not already open. Increase the open
-     * count of this object, and open the resource by calling @ref doOpen().
+     * count of this object, and open the resource by calling doOpen().
      * This method may block while another thread is concurrently opening
      * or closing the resource.
      *
@@ -268,7 +268,7 @@ class Resource : public QObject
 
     /**
      * Decrease the open count of this object, and if the count reaches
-     * zero, close this resource by calling @ref doClose().
+     * zero, close this resource by calling doClose().
      * This method may block while another thread is concurrently closing
      * or opening the resource.
      */
@@ -340,7 +340,7 @@ class Resource : public QObject
      * Returns true if the resource was opened successfully;
      * returns false if the resource was not opened successfully.
      *
-     * The result of this call can be accessed later by @ref isOpen()
+     * The result of this call can be accessed later by isOpen()
      */
     virtual bool doOpen() { return true; }
 

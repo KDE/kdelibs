@@ -29,9 +29,9 @@ class QBitmap;
  * swap colors control.
  *
  * When the user clicks on the foreground or background rectangle the
- * rectangle is first sunken and the @ref currentChanged() signal is emitted.
- * Further clicks will present a color dialog and emit either the @ref fgChanged()
- * or @ref bgChanged() if a new color is selected.
+ * rectangle is first sunken and the currentChanged() signal is emitted.
+ * Further clicks will present a color dialog and emit either the fgChanged()
+ * or bgChanged() if a new color is selected.
  *
  * Note: With drag and drop when dropping a color the current selected color
  * will be set, while when dragging a color it will use whatever color

@@ -115,8 +115,8 @@ class AddressBook : public QObject
     /**
       Requests a ticket for saving the addressbook. Calling this function locks
       the addressbook for all other processes. If the address book is already
-      locked the function returns 0. You need the returned @ref Ticket object
-      for calling the @ref save() function.
+      locked the function returns 0. You need the returned Ticket object
+      for calling the save() function.
       
       @see save()
     */
@@ -129,9 +129,9 @@ class AddressBook : public QObject
 
     /**
       Save address book. The address book is saved to the file, the Ticket
-      object has been requested for by @ref requestSaveTicket().
+      object has been requested for by requestSaveTicket().
      
-      @param ticket a ticket object returned by @ref requestSaveTicket()
+      @param ticket a ticket object returned by requestSaveTicket()
     */
     bool save( Ticket *ticket );
 
@@ -173,8 +173,8 @@ class AddressBook : public QObject
     void removeAddressee( const Addressee & );
 
     /**
-      This is like @ref removeAddressee() just above, with the difference that
-      the first element is a iterator, returned by @ref begin().
+      This is like removeAddressee() just above, with the difference that
+      the first element is a iterator, returned by begin().
     */
     void removeAddressee( const Iterator & );
 
@@ -193,7 +193,7 @@ class AddressBook : public QObject
 
     /**
       Returns a list of all addressees in the address book. This list can
-      be sorted with @ref KABC::AddresseeList for example.
+      be sorted with KABC::AddresseeList for example.
     */
     Addressee::List allAddressees();
 
@@ -264,7 +264,7 @@ class AddressBook : public QObject
     QPtrList<Resource> resources();
 
     /**
-      Set the @p ErrorHandler, that is used by @ref error() to
+      Set the @p ErrorHandler, that is used by error() to
       provide GUI independent error messages.
     */
     void setErrorHandler( ErrorHandler * );

@@ -34,10 +34,10 @@ class KContextMenuManagerPrivate;
 @version $Id$
 
 KContextMenuManager manages configurable context popup menus.  Instead
-of reimplementing @ref QWidget::mousePressEvent() or
-@ref QWidget::mouseReleaseEvent() and/or @ref QWidget::keyPressEvent(), simply
+of reimplementing QWidget::mousePressEvent() or
+ QWidget::mouseReleaseEvent() and/or QWidget::keyPressEvent(), simply
 create the popup menu and insert it into the context menu manager with
-the static function @ref #insert().
+the static function insert().
 
 Example:
 \code
@@ -71,7 +71,7 @@ The shortcut key to invoke the context menu is defined in the standard
 The key can be configured with the standard keys module in the KDE control center.
 
 If the popup menu is invoked with the keyboard shortcut, it's shown at
-the position of the micro focus hint of the widget ( @ref QWidget::microFocusHint() ).
+the position of the micro focus hint of the widget ( QWidget::microFocusHint() ).
 */
 
 class KContextMenuManager : public QObject

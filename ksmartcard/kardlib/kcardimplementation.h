@@ -56,7 +56,7 @@ class KCardImplementation {
    *Default implementation returns -1
    *@param fileId contains the identifier of the file to be selected
    *@return 0 in case of success and -1 in case of error
-   *Use @ref lastErrorMessage to retrieve a readable explanation
+   *Use lastErrorMessage to retrieve a readable explanation
    */
 
   virtual int selectFile(const QString & fileId);
@@ -123,7 +123,7 @@ class KCardImplementation {
 
   /**
    *KPCSC object used internally to send APDU to the card through 
-   *@ref _kcardreader protected member
+   * _kcardreader protected member
    */
   KPCSC * pcscInt;
 

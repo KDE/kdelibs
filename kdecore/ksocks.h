@@ -37,7 +37,7 @@ struct sockaddr;
  * is able to provide full internet access behind a firewall.
  * KSocks is a singleton; there can only be one instance at any
  * given time. To obtain a reference to that instance, use
- * @ref self().
+ * self().
  *
  * @short Access to a SOCKS Proxy.
  */

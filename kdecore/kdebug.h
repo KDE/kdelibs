@@ -55,8 +55,8 @@ class kdbgstreamprivate;
 /**
  * kdbgstream is a text stream that allows you to print debug messages.
  * Using the overloaded "<<" operator you can send messages. Usually
- * you do not create the kdbgstream yourself, but use @ref kdDebug()
- * @ref kdWarning(), @ref kdError() or @ref kdFatal to obtain one.
+ * you do not create the kdbgstream yourself, but use kdDebug()
+ * kdWarning(), kdError() or kdFatal to obtain one.
  *
  * Example:
  * \code
@@ -357,7 +357,7 @@ inline kdbgstream &flush( kdbgstream &s) { s.flush(); return s; }
 kdbgstream &perror( kdbgstream &s);
 
 /**
- * kndbgstream is a dummy variant of @ref kdbgstream. All functions do
+ * kndbgstream is a dummy variant of kdbgstream. All functions do
  * nothing.
  * @see kndDebug()
  */

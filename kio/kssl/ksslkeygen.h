@@ -75,7 +75,7 @@ public:
 
 	/**
 	 *  Set the key size.
-	 *  @param idx an index into @ref supportedKeySizes()
+	 *  @param idx an index into supportedKeySizes()
 	 */
 	void setKeySize(int idx) { _idx = idx; }
 

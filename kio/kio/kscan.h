@@ -95,11 +95,11 @@ public:
 protected:
     /**
      * Constructs the scan dialog. If you implement an own dialog, you can
-     * customize it with the usual @ref KDialogBase flags.
+     * customize it with the usual KDialogBase flags.
      *
-     * @param dialogFace the @ref KDialogBase::DialogType
+     * @param dialogFace the KDialogBase::DialogType
      * @param buttonMask a ORed mask of all buttons (see 
-     *                   @ref KDialogBase::ButtonCode)
+     * KDialogBase::ButtonCode)
      * @param parent the QWidget's parent, or 0
      * @param name the name of the QObject, can be 0
      * @param modal if true the dialog is model
@@ -176,7 +176,7 @@ private:
 
 /**
  * A factory for creating a KScanDialog. You need to reimplement
- * @ref createDialog().
+ * createDialog().
  * @short Factory for creating KScanDialogs
  */
 class KScanDialogFactory : public KLibFactory
@@ -255,11 +255,11 @@ public:
 protected:
     /**
      * Constructs the OCR dialog. If you implement an own dialog, you can
-     * customize it with the usual @ref KDialogBase flags.
+     * customize it with the usual KDialogBase flags.
      *
-     * @param dialogFace the @ref KDialogBase::DialogType
+     * @param dialogFace the KDialogBase::DialogType
      * @param buttonMask a ORed mask of all buttons (see 
-     *                   @ref KDialogBase::ButtonCode)
+     * KDialogBase::ButtonCode)
      * @param parent the QWidget's parent, or 0
      * @param name the name of the QObject, can be 0
      * @param modal if true the dialog is model
@@ -312,7 +312,7 @@ private:
 
 /**
  * A factory for creating a KOCRDialog. You need to reimplement
- * @ref createDialog().
+ * createDialog().
  * @short Factory for creating KScanDialogs
  */
 class KOCRDialogFactory : public KLibFactory

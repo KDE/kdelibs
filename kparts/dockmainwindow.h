@@ -39,9 +39,9 @@ class DockMainWindowPrivate;
  * A KPart-aware main window with ability for docking widgets, whose user interface is described in XML.
  *
  * Inherit your main dock-window from this class
- * and don't forget to call @ref setXMLFile() in the inherited constructor.
+ * and don't forget to call setXMLFile() in the inherited constructor.
  *
- * It implements all internal interfaces in the case of a @ref KDockMainWindow as host:
+ * It implements all internal interfaces in the case of a KDockMainWindow as host:
  * the builder and servant interface (for menu merging).
  */
 class DockMainWindow : public KDockMainWindow, virtual public PartBase
@@ -49,7 +49,7 @@ class DockMainWindow : public KDockMainWindow, virtual public PartBase
   Q_OBJECT
  public:
   /**
-   * Constructor, same signature as @ref KDockMainWindow.
+   * Constructor, same signature as KDockMainWindow.
    */
   DockMainWindow( QWidget* parent = 0L, const char *name = 0L, WFlags f = WDestructiveClose );
   /**
@@ -64,7 +64,7 @@ protected slots:
    *
    * Called on startup and whenever the active part changes
    * For this you need to connect this slot to the
-   * @ref KPartManager::activePartChanged() signal
+   * KPartManager::activePartChanged() signal
    * @param part The active part (set to 0L if no part).
    */
   void createGUI( KParts::Part * part );

@@ -96,14 +96,14 @@ KInstance *KGenericFactoryBase<T>::instance()
 }
 
 /**
- * This template provides a generic implementation of a @ref KLibFactory ,
+ * This template provides a generic implementation of a KLibFactory ,
  * for use with shared library components. It implements the pure virtual
  * createObject method of KLibFactory and instantiates objects of the
  * specified class (template argument) when the class name argument of
  * createObject matches a class name in the given hierarchy.
  *
  * In case you are developing a KParts component, skip this file and
- * go directly to @ref KParts::GenericFactory .
+ * go directly to KParts::GenericFactory .
  *
  * Note that the class specified as template argument needs to provide
  * a certain constructor:
@@ -126,8 +126,8 @@ KInstance *KGenericFactoryBase<T>::instance()
  * that the caller passed to KLibFactory's create method.
  *
  * In addition upon instantiation this template provides a central 
- * @ref KInstance object for your component, accessible through the
- * static @ref instance() method. The instanceName argument of the
+ * KInstance object for your component, accessible through the
+ * static instance() method. The instanceName argument of the
  * KGenericFactory constructor is passed to the KInstance object.
  *
  * The creation of the KInstance object can be customized by inheriting
@@ -173,7 +173,7 @@ protected:
 };
 
 /**
- * This template provides a generic implementation of a @ref KLibFactory ,
+ * This template provides a generic implementation of a KLibFactory ,
  * for use with shared library components. It implements the pure virtual
  * createObject method of KLibFactory and instantiates objects of the
  * specified classes in the given typelist template argument when the class 
@@ -201,8 +201,8 @@ protected:
  * that the caller passed to KLibFactory's create method.
  *
  * In addition upon instantiation this template provides a central 
- * @ref KInstance object for your component, accessible through the
- * static @ref instance() method. The instanceName argument of the
+ * KInstance object for your component, accessible through the
+ * static instance() method. The instanceName argument of the
  * KGenericFactory constructor is passed to the KInstance object.
  *
  * The creation of the KInstance object can be customized by inheriting
@@ -260,7 +260,7 @@ protected:
 };
 
 /**
- * This template provides a generic implementation of a @ref KLibFactory ,
+ * This template provides a generic implementation of a KLibFactory ,
  * for use with shared library components. It implements the pure virtual
  * createObject method of KLibFactory and instantiates objects of the
  * specified classes in the given typelist template argument when the class 
@@ -288,8 +288,8 @@ protected:
  * that the caller passed to KLibFactory's create method.
  *
  * In addition upon instantiation this template provides a central 
- * @ref KInstance object for your component, accessible through the
- * static @ref instance() method. The instanceName argument of the
+ * KInstance object for your component, accessible through the
+ * static instance() method. The instanceName argument of the
  * KGenericFactory constructor is passed to the KInstance object.
  *
  * The creation of the KInstance object can be customized by inheriting

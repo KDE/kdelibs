@@ -73,7 +73,7 @@ public:
     DOMString aLink() const;
 
     /**
-     * see @ref aLink
+     * see aLink
      */
     void setALink( const DOMString & );
 
@@ -87,7 +87,7 @@ public:
     DOMString background() const;
 
     /**
-     * see @ref background
+     * see background
      */
     void setBackground( const DOMString & );
 
@@ -101,7 +101,7 @@ public:
     DOMString bgColor() const;
 
     /**
-     * see @ref bgColor
+     * see bgColor
      */
     void setBgColor( const DOMString & );
 
@@ -115,7 +115,7 @@ public:
     DOMString link() const;
 
     /**
-     * see @ref link
+     * see link
      */
     void setLink( const DOMString & );
 
@@ -129,7 +129,7 @@ public:
     DOMString text() const;
 
     /**
-     * see @ref text
+     * see text
      */
     void setText( const DOMString & );
 
@@ -143,7 +143,7 @@ public:
     DOMString vLink() const;
 
     /**
-     * see @ref vLink
+     * see vLink
      */
     void setVLink( const DOMString & );
 };
@@ -184,7 +184,7 @@ public:
     DOMString frameBorder() const;
 
     /**
-     * see @ref frameBorder
+     * see frameBorder
      */
     void setFrameBorder( const DOMString & );
 
@@ -198,7 +198,7 @@ public:
     DOMString longDesc() const;
 
     /**
-     * see @ref longDesc
+     * see longDesc
      */
     void setLongDesc( const DOMString & );
 
@@ -211,7 +211,7 @@ public:
     DOMString marginHeight() const;
 
     /**
-     * see @ref marginHeight
+     * see marginHeight
      */
     void setMarginHeight( const DOMString & );
 
@@ -224,7 +224,7 @@ public:
     DOMString marginWidth() const;
 
     /**
-     * see @ref marginWidth
+     * see marginWidth
      */
     void setMarginWidth( const DOMString & );
 
@@ -238,7 +238,7 @@ public:
     DOMString name() const;
 
     /**
-     * see @ref name
+     * see name
      */
     void setName( const DOMString & );
 
@@ -251,7 +251,7 @@ public:
     bool noResize() const;
 
     /**
-     * see @ref noResize
+     * see noResize
      */
     void setNoResize( bool );
 
@@ -265,7 +265,7 @@ public:
     DOMString scrolling() const;
 
     /**
-     * see @ref scrolling
+     * see scrolling
      */
     void setScrolling( const DOMString & );
 
@@ -278,7 +278,7 @@ public:
     DOMString src() const;
 
     /**
-     * see @ref src
+     * see src
      */
     void setSrc( const DOMString & );
 
@@ -330,7 +330,7 @@ public:
     DOMString cols() const;
 
     /**
-     * see @ref cols
+     * see cols
      */
     void setCols( const DOMString & );
 
@@ -343,7 +343,7 @@ public:
     DOMString rows() const;
 
     /**
-     * see @ref rows
+     * see rows
      */
     void setRows( const DOMString & );
 };
@@ -385,7 +385,7 @@ public:
     DOMString align() const;
 
     /**
-     * see @ref align
+     * see align
      */
     void setAlign( const DOMString & );
 
@@ -398,7 +398,7 @@ public:
     DOMString frameBorder() const;
 
     /**
-     * see @ref frameBorder
+     * see frameBorder
      */
     void setFrameBorder( const DOMString & );
 
@@ -411,7 +411,7 @@ public:
     DOMString height() const;
 
     /**
-     * see @ref height
+     * see height
      */
     void setHeight( const DOMString & );
 
@@ -425,7 +425,7 @@ public:
     DOMString longDesc() const;
 
     /**
-     * see @ref longDesc
+     * see longDesc
      */
     void setLongDesc( const DOMString & );
 
@@ -438,7 +438,7 @@ public:
     DOMString marginHeight() const;
 
     /**
-     * see @ref marginHeight
+     * see marginHeight
      */
     void setMarginHeight( const DOMString & );
 
@@ -451,7 +451,7 @@ public:
     DOMString marginWidth() const;
 
     /**
-     * see @ref marginWidth
+     * see marginWidth
      */
     void setMarginWidth( const DOMString & );
 
@@ -465,7 +465,7 @@ public:
     DOMString name() const;
 
     /**
-     * see @ref name
+     * see name
      */
     void setName( const DOMString & );
 
@@ -479,7 +479,7 @@ public:
     DOMString scrolling() const;
 
     /**
-     * see @ref scrolling
+     * see scrolling
      */
     void setScrolling( const DOMString & );
 
@@ -492,7 +492,7 @@ public:
     DOMString src() const;
 
     /**
-     * see @ref src
+     * see src
      */
     void setSrc( const DOMString & );
 
@@ -505,7 +505,7 @@ public:
     DOMString width() const;
 
     /**
-     * see @ref width
+     * see width
      */
     void setWidth( const DOMString & );
 
@@ -557,7 +557,7 @@ public:
     DOMString profile() const;
 
     /**
-     * see @ref profile
+     * see profile
      */
     void setProfile( const DOMString & );
 };
@@ -599,7 +599,7 @@ public:
     DOMString version() const;
 
     /**
-     * see @ref version
+     * see version
      */
     void setVersion( const DOMString & );
 };

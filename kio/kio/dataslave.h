@@ -67,7 +67,7 @@ namespace KIO {
 	 */
 	void setAllMetaData(const MetaData &);
 	/**
-	 * Sends metadata set with @ref #setAllMetaData
+	 * Sends metadata set with setAllMetaData
 	 * @internal
 	 */
 	void sendMetaData();

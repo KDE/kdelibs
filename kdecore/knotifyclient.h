@@ -79,7 +79,7 @@ namespace KNotifyClient
 	class InstanceStack;
 
     /**
-     * Makes it possible to use @ref KNotifyClient with a @ref KInstance
+     * Makes it possible to use KNotifyClient with a KInstance
      * that is not the application.
      *
      * Use like this:
@@ -88,20 +88,20 @@ namespace KNotifyClient
      * KNotifyClient::event("MyEvent");
      * \endcode
      *
-     * @short Enables @ref KNotifyClient to use a different @ref KInstance
+     * @short Enables KNotifyClient to use a different KInstance
      */
     class Instance
     {
     public:
         /**
-         * Constructs a @ref KNotifyClient::Instance to make @ref KNotifyClient use
-         * the specified @ref KInstance for the event configuration.
+         * Constructs a KNotifyClient::Instance to make KNotifyClient use
+         * the specified KInstance for the event configuration.
 	 * @param instance the instance for the event configuration
          */
         Instance(KInstance *instance);
         /**
-         * Destructs the KNotifyClient::Instance and resets @ref KNotifyClient
-         * to the previously used @ref KInstance.
+         * Destructs the KNotifyClient::Instance and resets KNotifyClient
+         * to the previously used KInstance.
          */
         ~Instance();
 	/**
@@ -111,7 +111,7 @@ namespace KNotifyClient
 	 */
 	bool useSystemBell() const;
         /**
-         * Returns the currently active @ref KInstance.
+         * Returns the currently active KInstance.
 	 * @return the active KInstance
          */
         static KInstance *current();

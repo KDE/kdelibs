@@ -32,8 +32,8 @@ class DCOPObject;
 class DCOPClient;
 
 /**
- * Represents the return value of a @ref DCOPRef:call() or
- * @ref DCOPRef:send() invocation.
+ * Represents the return value of a DCOPRef:call() or
+ * DCOPRef:send() invocation.
  *
  * @see DCOPRef
  * @see DCOPRef::call()
@@ -45,7 +45,7 @@ class DCOPReply
 public:
   /**
    * Casts the value to the type @p T. Requires that the
-   * type @p T suppports @ref QDataStream deserialisation
+   * type @p T suppports QDataStream deserialisation
    * and has a function dcopTypeName(T). This is true for most
    * basic types.
    */
@@ -62,7 +62,7 @@ public:
     }
   /**
    * Retrieves the value from the type @p T. Requires that the
-   * type @p T suppports @ref QDataStream deserialisation.
+   * type @p T suppports QDataStream deserialisation.
    * @param t the type will be written here, if successful
    * @param tname the signature type name
    * @return true if successful, false otherwise
@@ -77,7 +77,7 @@ public:
     }
   /**
    * Retrieves the value from the type @p T. Requires that the
-   * type @p T suppports @ref QDataStream deserialisation
+   * type @p T suppports QDataStream deserialisation
    * and has a function dcopTypeName(T). This is true for most
    * basic types.
    * @param t the type will be written here, if successful
@@ -110,7 +110,7 @@ private:
 /**
  * A generic DCOP argument.
  * This class allows you to use user-defined argument types for
- * @ref DCOPRef::call() or @ref DCOPRef::send().
+ * DCOPRef::call() or DCOPRef::send().
  *
  * @see DCOPRef::call()
  * @see DCOPRef
@@ -120,9 +120,9 @@ private:
 class DCOPArg  {
 public:
     /**
-     * Creates a DCOPArg for @ref DCOPRef::call().
+     * Creates a DCOPArg for DCOPRef::call().
      * @param t the data that will be written to a QDataStream. It must
-     *          overload writing to a @ref QDataStream using the "<<"
+     *          overload writing to a QDataStream using the "<<"
      *          operator
      * @param tname_arg the name of the data that will appear in the
      *        function's signature
@@ -134,9 +134,9 @@ public:
 	    ds << t;
 	}
     /**
-     * Creates a DCOPArg for @ref DCOPRef::call().
+     * Creates a DCOPArg for DCOPRef::call().
      * @param t the data that will be written to a QDataStream. It must
-     *          overload writing to a @ref QDataStream using the "<<"
+     *          overload writing to a QDataStream using the "<<"
      *          operator. The name of the type will be determined by
      *          calling the function dcopTypeName(T) that must be provided
      *          by you.
@@ -210,7 +210,7 @@ inline QDataStream & operator << (QDataStream & str, const DCOPArg& arg )
  * \endcode
  *
  * Note that you must pass a QString for the first argument. If you use a
- * regular char pointer, it will be converted to a @ref QCString.
+ * regular char pointer, it will be converted to a QCString.
  *
  * For curiosity, here is how you would achieve the exactly same
  * functionality by using DCOPClient::call() directly:
@@ -354,7 +354,7 @@ public:
 
     /**
      * Changes the referenced object. Resets the type to unknown (null).
-     * The type is not needed for @ref call() and @ref send().
+     * The type is not needed for call() and send().
      * @param app the application id.
      * @param obj the object id
      */
@@ -408,7 +408,7 @@ public:
      *            only the function's name (e.g. "setName"). In the
      *            latter case the exact signature will be guessed from
      *            the arguments
-     * @return the @ref DCOPReply object. Is invalid (@ref DCOPReply::isValid())
+     * @return the DCOPReply object. Is invalid ( DCOPReply::isValid())
      *         when an error occurred.
      * @see send()
      * @see DCOPArg
@@ -446,8 +446,8 @@ public:
      *            latter case the exact signature will be guessed from
      *            the arguments
      * @param t1 the first argument of the function. This can be a
-     *           supported base type or a @ref DCOPArg object.
-     * @return the @ref DCOPReply object. Is invalid (@ref DCOPReply::isValid())
+     *           supported base type or a DCOPArg object.
+     * @return the DCOPReply object. Is invalid ( DCOPReply::isValid())
      *         when an error occurred.
      * @see send()
      * @see DCOPArg
@@ -476,7 +476,7 @@ public:
      *            latter case the exact signature will be guessed from
      *            the arguments
      * @param t1 the first argument of the function. This can be a
-     *           supported base type or a @ref DCOPArg object.
+     *           supported base type or a DCOPArg object.
      * @since 3.2
      */
     template <class T1>
@@ -500,10 +500,10 @@ public:
      *            latter case the exact signature will be guessed from
      *            the arguments
      * @param t1 the first argument of the function. This can be a
-     *           supported base type or a @ref DCOPArg object.
+     *           supported base type or a DCOPArg object.
      * @param t2 the second argument of the function. This can be a
-     *           supported base type or a @ref DCOPArg object.
-     * @return the @ref DCOPReply object. Is invalid (@ref DCOPReply::isValid())
+     *           supported base type or a DCOPArg object.
+     * @return the DCOPReply object. Is invalid ( DCOPReply::isValid())
      *         when an error occurred.
      * @see send()
      * @see DCOPArg
@@ -535,9 +535,9 @@ public:
      *            latter case the exact signature will be guessed from
      *            the arguments
      * @param t1 the first argument of the function. This can be a
-     *           supported base type or a @ref DCOPArg object.
+     *           supported base type or a DCOPArg object.
      * @param t2 the second argument of the function. This can be a
-     *           supported base type or a @ref DCOPArg object.
+     *           supported base type or a DCOPArg object.
      * @since 3.2
      */
     template <class T1, class T2>
@@ -563,12 +563,12 @@ public:
      *            latter case the exact signature will be guessed from
      *            the arguments
      * @param t1 the first argument of the function. This can be a
-     *           supported base type or a @ref DCOPArg object.
+     *           supported base type or a DCOPArg object.
      * @param t2 the second argument of the function. This can be a
-     *           supported base type or a @ref DCOPArg object.
+     *           supported base type or a DCOPArg object.
      * @param t3 the third argument of the function. This can be a
-     *           supported base type or a @ref DCOPArg object.
-     * @return the @ref DCOPReply object. Is invalid (@ref DCOPReply::isValid())
+     *           supported base type or a DCOPArg object.
+     * @return the DCOPReply object. Is invalid ( DCOPReply::isValid())
      *         when an error occurred.
      * @see send()
      * @see DCOPArg
@@ -601,11 +601,11 @@ public:
      *            latter case the exact signature will be guessed from
      *            the arguments
      * @param t1 the first argument of the function. This can be a
-     *           supported base type or a @ref DCOPArg object.
+     *           supported base type or a DCOPArg object.
      * @param t2 the second argument of the function. This can be a
-     *           supported base type or a @ref DCOPArg object.
+     *           supported base type or a DCOPArg object.
      * @param t3 the third argument of the function. This can be a
-     *           supported base type or a @ref DCOPArg object.
+     *           supported base type or a DCOPArg object.
      * @param timeout timeout for the call in miliseconds, or -1 for no timeout
      * @since 3.2
      */
@@ -634,14 +634,14 @@ public:
      *            latter case the exact signature will be guessed from
      *            the arguments
      * @param t1 the first argument of the function. This can be a
-     *           supported base type or a @ref DCOPArg object.
+     *           supported base type or a DCOPArg object.
      * @param t2 the second argument of the function. This can be a
-     *           supported base type or a @ref DCOPArg object.
+     *           supported base type or a DCOPArg object.
      * @param t3 the third argument of the function. This can be a
-     *           supported base type or a @ref DCOPArg object.
+     *           supported base type or a DCOPArg object.
      * @param t4 the fourth argument of the function. This can be a
-     *           supported base type or a @ref DCOPArg object.
-     * @return the @ref DCOPReply object. Is invalid (@ref DCOPReply::isValid())
+     *           supported base type or a DCOPArg object.
+     * @return the DCOPReply object. Is invalid ( DCOPReply::isValid())
      *         when an error occurred.
      * @see send()
      * @see DCOPArg
@@ -677,13 +677,13 @@ public:
      *            the arguments
      * @param timeout timeout for the call in miliseconds, or -1 for no timeout
      * @param t1 the first argument of the function. This can be a
-     *           supported base type or a @ref DCOPArg object.
+     *           supported base type or a DCOPArg object.
      * @param t2 the second argument of the function. This can be a
-     *           supported base type or a @ref DCOPArg object.
+     *           supported base type or a DCOPArg object.
      * @param t3 the third argument of the function. This can be a
-     *           supported base type or a @ref DCOPArg object.
+     *           supported base type or a DCOPArg object.
      * @param t4 the fourth argument of the function. This can be a
-     *           supported base type or a @ref DCOPArg object.
+     *           supported base type or a DCOPArg object.
      * @since 3.2
      */
     template <class T1,class T2,class T3,class T4>
@@ -713,16 +713,16 @@ public:
      *            latter case the exact signature will be guessed from
      *            the arguments
      * @param t1 the first argument of the function. This can be a
-     *           supported base type or a @ref DCOPArg object.
+     *           supported base type or a DCOPArg object.
      * @param t2 the second argument of the function. This can be a
-     *           supported base type or a @ref DCOPArg object.
+     *           supported base type or a DCOPArg object.
      * @param t3 the third argument of the function. This can be a
-     *           supported base type or a @ref DCOPArg object.
+     *           supported base type or a DCOPArg object.
      * @param t4 the fourth argument of the function. This can be a
-     *           supported base type or a @ref DCOPArg object.
+     *           supported base type or a DCOPArg object.
      * @param t5 the fifth argument of the function. This can be a
-     *           supported base type or a @ref DCOPArg object.
-     * @return the @ref DCOPReply object. Is invalid (@ref DCOPReply::isValid())
+     *           supported base type or a DCOPArg object.
+     * @return the DCOPReply object. Is invalid ( DCOPReply::isValid())
      *         when an error occurred.
      * @see send()
      * @see DCOPArg
@@ -760,15 +760,15 @@ public:
      *            the arguments
      * @param timeout timeout for the call in miliseconds, or -1 for no timeout
      * @param t1 the first argument of the function. This can be a
-     *           supported base type or a @ref DCOPArg object.
+     *           supported base type or a DCOPArg object.
      * @param t2 the second argument of the function. This can be a
-     *           supported base type or a @ref DCOPArg object.
+     *           supported base type or a DCOPArg object.
      * @param t3 the third argument of the function. This can be a
-     *           supported base type or a @ref DCOPArg object.
+     *           supported base type or a DCOPArg object.
      * @param t4 the fourth argument of the function. This can be a
-     *           supported base type or a @ref DCOPArg object.
+     *           supported base type or a DCOPArg object.
      * @param t5 the fifth argument of the function. This can be a
-     *           supported base type or a @ref DCOPArg object.
+     *           supported base type or a DCOPArg object.
      * @since 3.2
      */
     template <class T1,class T2,class T3,class T4,class T5>
@@ -800,18 +800,18 @@ public:
      *            latter case the exact signature will be guessed from
      *            the arguments
      * @param t1 the first argument of the function. This can be a
-     *           supported base type or a @ref DCOPArg object.
+     *           supported base type or a DCOPArg object.
      * @param t2 the second argument of the function. This can be a
-     *           supported base type or a @ref DCOPArg object.
+     *           supported base type or a DCOPArg object.
      * @param t3 the third argument of the function. This can be a
-     *           supported base type or a @ref DCOPArg object.
+     *           supported base type or a DCOPArg object.
      * @param t4 the fourth argument of the function. This can be a
-     *           supported base type or a @ref DCOPArg object.
+     *           supported base type or a DCOPArg object.
      * @param t5 the fifth argument of the function. This can be a
-     *           supported base type or a @ref DCOPArg object.
+     *           supported base type or a DCOPArg object.
      * @param t6 the sixth argument of the function. This can be a
-     *           supported base type or a @ref DCOPArg object.
-     * @return the @ref DCOPReply object. Is invalid (@ref DCOPReply::isValid())
+     *           supported base type or a DCOPArg object.
+     * @return the DCOPReply object. Is invalid ( DCOPReply::isValid())
      *         when an error occurred.
      * @see send()
      * @see DCOPArg
@@ -851,17 +851,17 @@ public:
      *            the arguments
      * @param timeout timeout for the call in miliseconds, or -1 for no timeout
      * @param t1 the first argument of the function. This can be a
-     *           supported base type or a @ref DCOPArg object.
+     *           supported base type or a DCOPArg object.
      * @param t2 the second argument of the function. This can be a
-     *           supported base type or a @ref DCOPArg object.
+     *           supported base type or a DCOPArg object.
      * @param t3 the third argument of the function. This can be a
-     *           supported base type or a @ref DCOPArg object.
+     *           supported base type or a DCOPArg object.
      * @param t4 the fourth argument of the function. This can be a
-     *           supported base type or a @ref DCOPArg object.
+     *           supported base type or a DCOPArg object.
      * @param t5 the fifth argument of the function. This can be a
-     *           supported base type or a @ref DCOPArg object.
+     *           supported base type or a DCOPArg object.
      * @param t6 the sixth argument of the function. This can be a
-     *           supported base type or a @ref DCOPArg object.
+     *           supported base type or a DCOPArg object.
      * @since 3.2
      */
     template <class T1,class T2,class T3,class T4,class T5,class T6>
@@ -894,20 +894,20 @@ public:
      *            latter case the exact signature will be guessed from
      *            the arguments
      * @param t1 the first argument of the function. This can be a
-     *           supported base type or a @ref DCOPArg object.
+     *           supported base type or a DCOPArg object.
      * @param t2 the second argument of the function. This can be a
-     *           supported base type or a @ref DCOPArg object.
+     *           supported base type or a DCOPArg object.
      * @param t3 the third argument of the function. This can be a
-     *           supported base type or a @ref DCOPArg object.
+     *           supported base type or a DCOPArg object.
      * @param t4 the fourth argument of the function. This can be a
-     *           supported base type or a @ref DCOPArg object.
+     *           supported base type or a DCOPArg object.
      * @param t5 the fifth argument of the function. This can be a
-     *           supported base type or a @ref DCOPArg object.
+     *           supported base type or a DCOPArg object.
      * @param t6 the sixth argument of the function. This can be a
-     *           supported base type or a @ref DCOPArg object.
+     *           supported base type or a DCOPArg object.
      * @param t7 the seventh argument of the function. This can be a
-     *           supported base type or a @ref DCOPArg object.
-     * @return the @ref DCOPReply object. Is invalid (@ref DCOPReply::isValid())
+     *           supported base type or a DCOPArg object.
+     * @return the DCOPReply object. Is invalid ( DCOPReply::isValid())
      *         when an error occurred.
      * @see send()
      * @see DCOPArg
@@ -949,19 +949,19 @@ public:
      *            the call blocks too long
      * @param timeout timeout for the call in miliseconds, or -1 for no timeout
      * @param t1 the first argument of the function. This can be a
-     *           supported base type or a @ref DCOPArg object.
+     *           supported base type or a DCOPArg object.
      * @param t2 the second argument of the function. This can be a
-     *           supported base type or a @ref DCOPArg object.
+     *           supported base type or a DCOPArg object.
      * @param t3 the third argument of the function. This can be a
-     *           supported base type or a @ref DCOPArg object.
+     *           supported base type or a DCOPArg object.
      * @param t4 the fourth argument of the function. This can be a
-     *           supported base type or a @ref DCOPArg object.
+     *           supported base type or a DCOPArg object.
      * @param t5 the fifth argument of the function. This can be a
-     *           supported base type or a @ref DCOPArg object.
+     *           supported base type or a DCOPArg object.
      * @param t6 the sixth argument of the function. This can be a
-     *           supported base type or a @ref DCOPArg object.
+     *           supported base type or a DCOPArg object.
      * @param t7 the seventh argument of the function. This can be a
-     *           supported base type or a @ref DCOPArg object.
+     *           supported base type or a DCOPArg object.
      * @since 3.2
      */
     template <class T1,class T2,class T3,class T4,class T5,class T6,class T7>
@@ -997,22 +997,22 @@ public:
      *            latter case the exact signature will be guessed from
      *            the arguments
      * @param t1 the first argument of the function. This can be a
-     *           supported base type or a @ref DCOPArg object.
+     *           supported base type or a DCOPArg object.
      * @param t2 the second argument of the function. This can be a
-     *           supported base type or a @ref DCOPArg object.
+     *           supported base type or a DCOPArg object.
      * @param t3 the third argument of the function. This can be a
-     *           supported base type or a @ref DCOPArg object.
+     *           supported base type or a DCOPArg object.
      * @param t4 the fourth argument of the function. This can be a
-     *           supported base type or a @ref DCOPArg object.
+     *           supported base type or a DCOPArg object.
      * @param t5 the fifth argument of the function. This can be a
-     *           supported base type or a @ref DCOPArg object.
+     *           supported base type or a DCOPArg object.
      * @param t6 the sixth argument of the function. This can be a
-     *           supported base type or a @ref DCOPArg object.
+     *           supported base type or a DCOPArg object.
      * @param t7 the seventh argument of the function. This can be a
-     *           supported base type or a @ref DCOPArg object.
+     *           supported base type or a DCOPArg object.
      * @param t8 the eigth argument of the function. This can be a
-     *           supported base type or a @ref DCOPArg object.
-     * @return the @ref DCOPReply object. Is invalid (@ref DCOPReply::isValid())
+     *           supported base type or a DCOPArg object.
+     * @return the DCOPReply object. Is invalid ( DCOPReply::isValid())
      *         when an error occurred.
      * @see send()
      * @see DCOPArg
@@ -1051,21 +1051,21 @@ public:
      *            the call blocks too long
      * @param timeout timeout for the call in miliseconds, or -1 for no timeout
      * @param t1 the first argument of the function. This can be a
-     *           supported base type or a @ref DCOPArg object.
+     *           supported base type or a DCOPArg object.
      * @param t2 the second argument of the function. This can be a
-     *           supported base type or a @ref DCOPArg object.
+     *           supported base type or a DCOPArg object.
      * @param t3 the third argument of the function. This can be a
-     *           supported base type or a @ref DCOPArg object.
+     *           supported base type or a DCOPArg object.
      * @param t4 the fourth argument of the function. This can be a
-     *           supported base type or a @ref DCOPArg object.
+     *           supported base type or a DCOPArg object.
      * @param t5 the fifth argument of the function. This can be a
-     *           supported base type or a @ref DCOPArg object.
+     *           supported base type or a DCOPArg object.
      * @param t6 the sixth argument of the function. This can be a
-     *           supported base type or a @ref DCOPArg object.
+     *           supported base type or a DCOPArg object.
      * @param t7 the seventh argument of the function. This can be a
-     *           supported base type or a @ref DCOPArg object.
+     *           supported base type or a DCOPArg object.
      * @param t8 the eigth argument of the function. This can be a
-     *           supported base type or a @ref DCOPArg object.
+     *           supported base type or a DCOPArg object.
      * @param fun the name of the DCOP function. This can be either the
      *            full function signature (e.g. "setName(QString)") or
      *            only the function's name (e.g. "setName"). In the
@@ -1102,13 +1102,13 @@ public:
 
     /**
      * Calls the function @p fun on the object referenced by this reference.
-     * Unlike @ref call() this method does not expect a return value.
+     * Unlike call() this method does not expect a return value.
      * @param fun the name of the DCOP function. This can be either the
      *            full function signature (e.g. "setName(QString)") or
      *            only the function's name (e.g. "setName"). In the
      *            latter case the exact signature will be guessed from
      *            the arguments
-     * @return the @ref DCOPReply object. Is invalid (@ref DCOPReply::isValid())
+     * @return the DCOPReply object. Is invalid ( DCOPReply::isValid())
      *         when an error occurred.
      * @see call()
      * @since 3.1
@@ -1120,15 +1120,15 @@ public:
 
     /**
      * Calls the function @p fun on the object referenced by this reference.
-     * Unlike @ref call() this method does not expect a return value.
+     * Unlike call() this method does not expect a return value.
      * @param fun the name of the DCOP function. This can be either the
      *            full function signature (e.g. "setName(QString)") or
      *            only the function's name (e.g. "setName"). In the
      *            latter case the exact signature will be guessed from
      *            the arguments
      * @param t1 the first argument of the function. This can be a
-     *           supported base type or a @ref DCOPArg object.
-     * @return the @ref DCOPReply object. Is invalid (@ref DCOPReply::isValid())
+     *           supported base type or a DCOPArg object.
+     * @return the DCOPReply object. Is invalid ( DCOPReply::isValid())
      *         when an error occurred.
      * @see call()
      * @see DCOPArg
@@ -1146,17 +1146,17 @@ public:
     }
     /**
      * Calls the function @p fun on the object referenced by this reference.
-     * Unlike @ref call() this method does not expect a return value.
+     * Unlike call() this method does not expect a return value.
      * @param fun the name of the DCOP function. This can be either the
      *            full function signature (e.g. "setName(QString)") or
      *            only the function's name (e.g. "setName"). In the
      *            latter case the exact signature will be guessed from
      *            the arguments
      * @param t1 the first argument of the function. This can be a
-     *           supported base type or a @ref DCOPArg object.
+     *           supported base type or a DCOPArg object.
      * @param t2 the second argument of the function. This can be a
-     *           supported base type or a @ref DCOPArg object.
-     * @return the @ref DCOPReply object. Is invalid (@ref DCOPReply::isValid())
+     *           supported base type or a DCOPArg object.
+     * @return the DCOPReply object. Is invalid ( DCOPReply::isValid())
      *         when an error occurred.
      * @see call()
      * @see DCOPArg
@@ -1177,19 +1177,19 @@ public:
     }
     /**
      * Calls the function @p fun on the object referenced by this reference.
-     * Unlike @ref call() this method does not expect a return value.
+     * Unlike call() this method does not expect a return value.
      * @param fun the name of the DCOP function. This can be either the
      *            full function signature (e.g. "setName(QString)") or
      *            only the function's name (e.g. "setName"). In the
      *            latter case the exact signature will be guessed from
      *            the arguments
      * @param t1 the first argument of the function. This can be a
-     *           supported base type or a @ref DCOPArg object.
+     *           supported base type or a DCOPArg object.
      * @param t2 the second argument of the function. This can be a
-     *           supported base type or a @ref DCOPArg object.
+     *           supported base type or a DCOPArg object.
      * @param t3 the third argument of the function. This can be a
-     *           supported base type or a @ref DCOPArg object.
-     * @return the @ref DCOPReply object. Is invalid (@ref DCOPReply::isValid())
+     *           supported base type or a DCOPArg object.
+     * @return the DCOPReply object. Is invalid ( DCOPReply::isValid())
      *         when an error occurred.
      * @see call()
      * @see DCOPArg
@@ -1212,21 +1212,21 @@ public:
     }
     /**
      * Calls the function @p fun on the object referenced by this reference.
-     * Unlike @ref call() this method does not expect a return value.
+     * Unlike call() this method does not expect a return value.
      * @param fun the name of the DCOP function. This can be either the
      *            full function signature (e.g. "setName(QString)") or
      *            only the function's name (e.g. "setName"). In the
      *            latter case the exact signature will be guessed from
      *            the arguments
      * @param t1 the first argument of the function. This can be a
-     *           supported base type or a @ref DCOPArg object.
+     *           supported base type or a DCOPArg object.
      * @param t2 the second argument of the function. This can be a
-     *           supported base type or a @ref DCOPArg object.
+     *           supported base type or a DCOPArg object.
      * @param t3 the third argument of the function. This can be a
-     *           supported base type or a @ref DCOPArg object.
+     *           supported base type or a DCOPArg object.
      * @param t4 the fourth argument of the function. This can be a
-     *           supported base type or a @ref DCOPArg object.
-     * @return the @ref DCOPReply object. Is invalid (@ref DCOPReply::isValid())
+     *           supported base type or a DCOPArg object.
+     * @return the DCOPReply object. Is invalid ( DCOPReply::isValid())
      *         when an error occurred.
      * @see call()
      * @see DCOPArg
@@ -1251,23 +1251,23 @@ public:
     }
     /**
      * Calls the function @p fun on the object referenced by this reference.
-     * Unlike @ref call() this method does not expect a return value.
+     * Unlike call() this method does not expect a return value.
      * @param fun the name of the DCOP function. This can be either the
      *            full function signature (e.g. "setName(QString)") or
      *            only the function's name (e.g. "setName"). In the
      *            latter case the exact signature will be guessed from
      *            the arguments
      * @param t1 the first argument of the function. This can be a
-     *           supported base type or a @ref DCOPArg object.
+     *           supported base type or a DCOPArg object.
      * @param t2 the second argument of the function. This can be a
-     *           supported base type or a @ref DCOPArg object.
+     *           supported base type or a DCOPArg object.
      * @param t3 the third argument of the function. This can be a
-     *           supported base type or a @ref DCOPArg object.
+     *           supported base type or a DCOPArg object.
      * @param t4 the fourth argument of the function. This can be a
-     *           supported base type or a @ref DCOPArg object.
+     *           supported base type or a DCOPArg object.
      * @param t5 the fifth argument of the function. This can be a
-     *           supported base type or a @ref DCOPArg object.
-     * @return the @ref DCOPReply object. Is invalid (@ref DCOPReply::isValid())
+     *           supported base type or a DCOPArg object.
+     * @return the DCOPReply object. Is invalid ( DCOPReply::isValid())
      *         when an error occurred.
      * @see call()
      * @see DCOPArg
@@ -1294,25 +1294,25 @@ public:
     }
     /**
      * Calls the function @p fun on the object referenced by this reference.
-     * Unlike @ref call() this method does not expect a return value.
+     * Unlike call() this method does not expect a return value.
      * @param fun the name of the DCOP function. This can be either the
      *            full function signature (e.g. "setName(QString)") or
      *            only the function's name (e.g. "setName"). In the
      *            latter case the exact signature will be guessed from
      *            the arguments
      * @param t1 the first argument of the function. This can be a
-     *           supported base type or a @ref DCOPArg object.
+     *           supported base type or a DCOPArg object.
      * @param t2 the second argument of the function. This can be a
-     *           supported base type or a @ref DCOPArg object.
+     *           supported base type or a DCOPArg object.
      * @param t3 the third argument of the function. This can be a
-     *           supported base type or a @ref DCOPArg object.
+     *           supported base type or a DCOPArg object.
      * @param t4 the fourth argument of the function. This can be a
-     *           supported base type or a @ref DCOPArg object.
+     *           supported base type or a DCOPArg object.
      * @param t5 the fifth argument of the function. This can be a
-     *           supported base type or a @ref DCOPArg object.
+     *           supported base type or a DCOPArg object.
      * @param t6 the sixth argument of the function. This can be a
-     *           supported base type or a @ref DCOPArg object.
-     * @return the @ref DCOPReply object. Is invalid (@ref DCOPReply::isValid())
+     *           supported base type or a DCOPArg object.
+     * @return the DCOPReply object. Is invalid ( DCOPReply::isValid())
      *         when an error occurred.
      * @see call()
      * @see DCOPArg
@@ -1341,27 +1341,27 @@ public:
     }
     /**
      * Calls the function @p fun on the object referenced by this reference.
-     * Unlike @ref call() this method does not expect a return value.
+     * Unlike call() this method does not expect a return value.
      * @param fun the name of the DCOP function. This can be either the
      *            full function signature (e.g. "setName(QString)") or
      *            only the function's name (e.g. "setName"). In the
      *            latter case the exact signature will be guessed from
      *            the arguments
      * @param t1 the first argument of the function. This can be a
-     *           supported base type or a @ref DCOPArg object.
+     *           supported base type or a DCOPArg object.
      * @param t2 the second argument of the function. This can be a
-     *           supported base type or a @ref DCOPArg object.
+     *           supported base type or a DCOPArg object.
      * @param t3 the third argument of the function. This can be a
-     *           supported base type or a @ref DCOPArg object.
+     *           supported base type or a DCOPArg object.
      * @param t4 the fourth argument of the function. This can be a
-     *           supported base type or a @ref DCOPArg object.
+     *           supported base type or a DCOPArg object.
      * @param t5 the fifth argument of the function. This can be a
-     *           supported base type or a @ref DCOPArg object.
+     *           supported base type or a DCOPArg object.
      * @param t6 the sixth argument of the function. This can be a
-     *           supported base type or a @ref DCOPArg object.
+     *           supported base type or a DCOPArg object.
      * @param t7 the seventh argument of the function. This can be a
-     *           supported base type or a @ref DCOPArg object.
-     * @return the @ref DCOPReply object. Is invalid (@ref DCOPReply::isValid())
+     *           supported base type or a DCOPArg object.
+     * @return the DCOPReply object. Is invalid ( DCOPReply::isValid())
      *         when an error occurred.
      * @see call()
      * @see DCOPArg
@@ -1392,29 +1392,29 @@ public:
     }
     /**
      * Calls the function @p fun on the object referenced by this reference.
-     * Unlike @ref call() this method does not expect a return value.
+     * Unlike call() this method does not expect a return value.
      * @param fun the name of the DCOP function. This can be either the
      *            full function signature (e.g. "setName(QString)") or
      *            only the function's name (e.g. "setName"). In the
      *            latter case the exact signature will be guessed from
      *            the arguments
      * @param t1 the first argument of the function. This can be a
-     *           supported base type or a @ref DCOPArg object.
+     *           supported base type or a DCOPArg object.
      * @param t2 the second argument of the function. This can be a
-     *           supported base type or a @ref DCOPArg object.
+     *           supported base type or a DCOPArg object.
      * @param t3 the third argument of the function. This can be a
-     *           supported base type or a @ref DCOPArg object.
+     *           supported base type or a DCOPArg object.
      * @param t4 the fourth argument of the function. This can be a
-     *           supported base type or a @ref DCOPArg object.
+     *           supported base type or a DCOPArg object.
      * @param t5 the fifth argument of the function. This can be a
-     *           supported base type or a @ref DCOPArg object.
+     *           supported base type or a DCOPArg object.
      * @param t6 the sixth argument of the function. This can be a
-     *           supported base type or a @ref DCOPArg object.
+     *           supported base type or a DCOPArg object.
      * @param t7 the seventh argument of the function. This can be a
-     *           supported base type or a @ref DCOPArg object.
+     *           supported base type or a DCOPArg object.
      * @param t8 the eigth argument of the function. This can be a
-     *           supported base type or a @ref DCOPArg object.
-     * @return the @ref DCOPReply object. Is invalid (@ref DCOPReply::isValid())
+     *           supported base type or a DCOPArg object.
+     * @return the DCOPReply object. Is invalid ( DCOPReply::isValid())
      *         when an error occurred.
      * @see call()
      * @see DCOPArg

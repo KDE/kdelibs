@@ -52,7 +52,7 @@ class KKeyNative
 
 	/**
 	 * Creates a new native key for the given KKey code.
-	 * @param key the @ref KKey that contains the generic key
+	 * @param key the KKey that contains the generic key
 	 */
 	KKeyNative( const KKey& key );
 
@@ -83,7 +83,7 @@ class KKeyNative
 
 	/**
 	 * Creates a new native key for the given KKey code.
-	 * @param key the @ref KKey that contains the generic key
+	 * @param key the KKey that contains the generic key
 	 * @return true if successful, false otherwise
 	 */
 	bool init( const KKey& key );
@@ -143,7 +143,7 @@ class KKeyNative
 	uint sym() const;
 
 	/**
-	 * Returns true if the key is null (after @ref clear() or empty
+	 * Returns true if the key is null (after clear() or empty
 	 * constructor).
 	 * @return true if the key is null
 	 * @see clear()

@@ -76,20 +76,20 @@ class AlsaOut : public MidiOut
 
   /**
    * Constructor. After constructing a MidiOut device, you must open it
-   * (using @ref #openDev() ). Additionally you may want to initialize it
-   * (with @ref #initDev() ),
+   * (using openDev() ). Additionally you may want to initialize it
+   * (with initDev() ),
    */
   AlsaOut(int d, int client=64, int port=0, const char *cname="", const char *pname="");
 
   /**
-   * Destructor. It doesn't matter if you close the device (@ref closeDev() )
+   * Destructor. It doesn't matter if you close the device ( closeDev() )
    * before you destruct the object because in other case, it will be closed
    * here.
    */
   virtual ~AlsaOut();
 
   /**
-   * Opens the device. This is generally called from @ref DeviceManager , so you
+   * Opens the device. This is generally called from DeviceManager , so you
    * shouldn't call this yourself (except if you created the MidiOut object
    * yourself.
    * @param sqfd a file descriptor of /dev/sequencer
@@ -117,10 +117,10 @@ class AlsaOut : public MidiOut
    * inherited class that a given object is polymorphed to.
    * The returned value is one of these :
    *
-   * @li KMID_EXTERNAL_MIDI if it's a @ref MidiOut object
-   * @li KMID_SYNTH if it's a @ref SynthOut object (as an AWE device)
-   * @li KMID_FM if it's a @ref FMOut object
-   * @li KMID_GUS if it's a @ref GUSOut object
+   * @li KMID_EXTERNAL_MIDI if it's a MidiOut object
+   * @li KMID_SYNTH if it's a SynthOut object (as an AWE device)
+   * @li KMID_FM if it's a FMOut object
+   * @li KMID_GUS if it's a GUSOut object
    *
    * which are defined in midispec.h
    *
@@ -140,42 +140,42 @@ class AlsaOut : public MidiOut
   int  rate    (void) { return m_rate; };
 
   /**
-   * See @ref DeviceManager::noteOn()
+   * See DeviceManager::noteOn()
    */
   virtual void noteOn	( uchar chn, uchar note, uchar vel );
 
   /**
-   * See @ref DeviceManager::noteOff()
+   * See DeviceManager::noteOff()
    */
   virtual void noteOff	( uchar chn, uchar note, uchar vel );
 
   /**
-   * See @ref DeviceManager::keyPressure()
+   * See DeviceManager::keyPressure()
    */
   virtual void keyPressure	( uchar chn, uchar note, uchar vel );
 
   /**
-   * See @ref DeviceManager::chnPatchChange()
+   * See DeviceManager::chnPatchChange()
    */
   virtual void chnPatchChange	( uchar chn, uchar patch );
 
   /**
-   * See @ref DeviceManager::chnPressure()
+   * See DeviceManager::chnPressure()
    */
   virtual void chnPressure	( uchar chn, uchar vel );
 
   /**
-   * See @ref DeviceManager::chnPitchBender()
+   * See DeviceManager::chnPitchBender()
    */
   virtual void chnPitchBender	( uchar chn, uchar lsb,  uchar msb );
 
   /**
-   * See @ref DeviceManager::chnController()
+   * See DeviceManager::chnController()
    */
   virtual void chnController	( uchar chn, uchar ctl , uchar v );
 
   /**
-   * See @ref DeviceManager::sysex()
+   * See DeviceManager::sysex()
    */
   virtual void sysex		( uchar *data,ulong size);
 

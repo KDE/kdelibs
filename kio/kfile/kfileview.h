@@ -89,7 +89,7 @@ signals:
   * make a file view working.
   *
   * Since this class is not a widget, but it's meant to be added to other
-  * widgets, its most important function is @ref #widget. This should return
+  * widgets, its most important function is widget. This should return
   * a pointer to the implemented widget.
   *
   * @short A base class for views of the KDE file selector
@@ -317,7 +317,7 @@ public:
      * This gives us the opportunity to do both.
      *
      * Every view has to decide when to call select( item ) when a file was
-     * single-clicked, based on @ref onlyDoubleClickSelectsFiles().
+     * single-clicked, based on onlyDoubleClickSelectsFiles().
      */
     void setOnlyDoubleClickSelectsFiles( bool enable ) {
 	myOnlyDoubleClickSelectsFiles = enable;
@@ -361,7 +361,7 @@ public:
 	AutoOpenDirs  = 1
     };
     /**
-     * Specify DND options. See @ref DropOptions for details.
+     * Specify DND options. See DropOptions for details.
      * All options are disabled by default.
      * @since 3.2
      */
@@ -370,7 +370,7 @@ public:
     
     /**
      * Returns the DND options in effect.
-     * See @ref DropOptions for details.
+     * See DropOptions for details.
      * @since 3.2
      */
     int dropOptions();

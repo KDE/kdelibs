@@ -71,7 +71,7 @@ public:
     DOMString align() const;
 
     /**
-     * see @ref align
+     * see align
      */
     void setAlign( const DOMString & );
 };
@@ -112,7 +112,7 @@ public:
     long cellIndex() const;
 
     /**
-     * see @ref cellIndex
+     * see cellIndex
      *
      * This function is obsolete - the cellIndex property is actually supposed to be read-only
      * (http://www.w3.org/DOM/updates/REC-DOM-Level-1-19981001-errata.html)
@@ -128,7 +128,7 @@ public:
     DOMString abbr() const;
 
     /**
-     * see @ref abbr
+     * see abbr
      */
     void setAbbr( const DOMString & );
 
@@ -141,7 +141,7 @@ public:
     DOMString align() const;
 
     /**
-     * see @ref align
+     * see align
      */
     void setAlign( const DOMString & );
 
@@ -154,7 +154,7 @@ public:
     DOMString axis() const;
 
     /**
-     * see @ref axis
+     * see axis
      */
     void setAxis( const DOMString & );
 
@@ -168,7 +168,7 @@ public:
     DOMString bgColor() const;
 
     /**
-     * see @ref bgColor
+     * see bgColor
      */
     void setBgColor( const DOMString & );
 
@@ -181,7 +181,7 @@ public:
     DOMString ch() const;
 
     /**
-     * see @ref ch
+     * see ch
      */
     void setCh( const DOMString & );
 
@@ -194,7 +194,7 @@ public:
     DOMString chOff() const;
 
     /**
-     * see @ref chOff
+     * see chOff
      */
     void setChOff( const DOMString & );
 
@@ -207,7 +207,7 @@ public:
     long colSpan() const;
 
     /**
-     * see @ref colSpan
+     * see colSpan
      */
     void setColSpan( long  );
 
@@ -221,7 +221,7 @@ public:
     DOMString headers() const;
 
     /**
-     * see @ref headers
+     * see headers
      */
     void setHeaders( const DOMString & );
 
@@ -235,7 +235,7 @@ public:
     DOMString height() const;
 
     /**
-     * see @ref height
+     * see height
      */
     void setHeight( const DOMString & );
 
@@ -249,7 +249,7 @@ public:
     bool noWrap() const;
 
     /**
-     * see @ref noWrap
+     * see noWrap
      */
     void setNoWrap( bool );
 
@@ -262,7 +262,7 @@ public:
     long rowSpan() const;
 
     /**
-     * see @ref rowSpan
+     * see rowSpan
      */
     void setRowSpan( long );
 
@@ -275,7 +275,7 @@ public:
     DOMString scope() const;
 
     /**
-     * see @ref scope
+     * see scope
      */
     void setScope( const DOMString & );
 
@@ -288,7 +288,7 @@ public:
     DOMString vAlign() const;
 
     /**
-     * see @ref vAlign
+     * see vAlign
      */
     void setVAlign( const DOMString & );
 
@@ -302,7 +302,7 @@ public:
     DOMString width() const;
 
     /**
-     * see @ref width
+     * see width
      */
     void setWidth( const DOMString & );
 };
@@ -345,7 +345,7 @@ public:
     DOMString align() const;
 
     /**
-     * see @ref align
+     * see align
      */
     void setAlign( const DOMString & );
 
@@ -358,7 +358,7 @@ public:
     DOMString ch() const;
 
     /**
-     * see @ref ch
+     * see ch
      */
     void setCh( const DOMString & );
 
@@ -371,7 +371,7 @@ public:
     DOMString chOff() const;
 
     /**
-     * see @ref chOff
+     * see chOff
      */
     void setChOff( const DOMString & );
 
@@ -385,7 +385,7 @@ public:
     long span() const;
 
     /**
-     * see @ref span
+     * see span
      */
     void setSpan( long  );
 
@@ -398,7 +398,7 @@ public:
     DOMString vAlign() const;
 
     /**
-     * see @ref vAlign
+     * see vAlign
      */
     void setVAlign( const DOMString & );
 
@@ -411,7 +411,7 @@ public:
     DOMString width() const;
 
     /**
-     * see @ref width
+     * see width
      */
     void setWidth( const DOMString & );
 };
@@ -462,7 +462,7 @@ public:
     HTMLTableCaptionElement caption() const;
 
     /**
-     * see @ref caption
+     * see caption
      */
     void setCaption( const HTMLTableCaptionElement & );
 
@@ -474,7 +474,7 @@ public:
     HTMLTableSectionElement tHead() const;
 
     /**
-     * see @ref tHead
+     * see tHead
      */
     void setTHead( const HTMLTableSectionElement & );
 
@@ -486,7 +486,7 @@ public:
     HTMLTableSectionElement tFoot() const;
 
     /**
-     * see @ref tFoot
+     * see tFoot
      */
     void setTFoot( const HTMLTableSectionElement & );
 
@@ -515,7 +515,7 @@ public:
     DOMString align() const;
 
     /**
-     * see @ref align
+     * see align
      */
     void setAlign( const DOMString & );
 
@@ -529,7 +529,7 @@ public:
     DOMString bgColor() const;
 
     /**
-     * see @ref bgColor
+     * see bgColor
      */
     void setBgColor( const DOMString & );
 
@@ -542,7 +542,7 @@ public:
     DOMString border() const;
 
     /**
-     * see @ref border
+     * see border
      */
     void setBorder( const DOMString & );
 
@@ -556,7 +556,7 @@ public:
     DOMString cellPadding() const;
 
     /**
-     * see @ref cellPadding
+     * see cellPadding
      */
     void setCellPadding( const DOMString & );
 
@@ -570,7 +570,7 @@ public:
     DOMString cellSpacing() const;
 
     /**
-     * see @ref cellSpacing
+     * see cellSpacing
      */
     void setCellSpacing( const DOMString & );
 
@@ -583,7 +583,7 @@ public:
     DOMString frame() const;
 
     /**
-     * see @ref frame
+     * see frame
      */
     void setFrame( const DOMString & );
 
@@ -596,7 +596,7 @@ public:
     DOMString rules() const;
 
     /**
-     * see @ref rules
+     * see rules
      */
     void setRules( const DOMString & );
 
@@ -610,7 +610,7 @@ public:
     DOMString summary() const;
 
     /**
-     * see @ref summary
+     * see summary
      */
     void setSummary( const DOMString & );
 
@@ -623,7 +623,7 @@ public:
     DOMString width() const;
 
     /**
-     * see @ref width
+     * see width
      */
     void setWidth( const DOMString & );
 
@@ -751,7 +751,7 @@ public:
     long rowIndex() const;
 
     /**
-     * see @ref rowIndex
+     * see rowIndex
      *
      * This function is obsolete - the rowIndex property is actually supposed to be read-only
      * (http://www.w3.org/DOM/updates/REC-DOM-Level-1-19981001-errata.html)
@@ -767,7 +767,7 @@ public:
     long sectionRowIndex() const;
 
     /**
-     * see @ref sectionRowIndex
+     * see sectionRowIndex
      *
      * This function is obsolete - the sectionRowIndex property is actually supposed to be read-only
      * (http://www.w3.org/DOM/updates/REC-DOM-Level-1-19981001-errata.html)
@@ -781,7 +781,7 @@ public:
     HTMLCollection cells() const;
 
     /**
-     * see @ref cells
+     * see cells
      *
      * This function is obsolete - the cells property is actually supposed to be read-only
      * (http://www.w3.org/DOM/updates/REC-DOM-Level-1-19981001-errata.html)
@@ -798,7 +798,7 @@ public:
     DOMString align() const;
 
     /**
-     * see @ref align
+     * see align
      */
     void setAlign( const DOMString & );
 
@@ -812,7 +812,7 @@ public:
     DOMString bgColor() const;
 
     /**
-     * see @ref bgColor
+     * see bgColor
      */
     void setBgColor( const DOMString & );
 
@@ -825,7 +825,7 @@ public:
     DOMString ch() const;
 
     /**
-     * see @ref ch
+     * see ch
      */
     void setCh( const DOMString & );
 
@@ -838,7 +838,7 @@ public:
     DOMString chOff() const;
 
     /**
-     * see @ref chOff
+     * see chOff
      */
     void setChOff( const DOMString & );
 
@@ -851,7 +851,7 @@ public:
     DOMString vAlign() const;
 
     /**
-     * see @ref vAlign
+     * see vAlign
      */
     void setVAlign( const DOMString & );
 
@@ -919,7 +919,7 @@ public:
     DOMString align() const;
 
     /**
-     * see @ref align
+     * see align
      */
     void setAlign( const DOMString & );
 
@@ -932,7 +932,7 @@ public:
     DOMString ch() const;
 
     /**
-     * see @ref ch
+     * see ch
      */
     void setCh( const DOMString & );
 
@@ -945,7 +945,7 @@ public:
     DOMString chOff() const;
 
     /**
-     * see @ref chOff
+     * see chOff
      */
     void setChOff( const DOMString & );
 
@@ -957,7 +957,7 @@ public:
     DOMString vAlign() const;
 
     /**
-     * see @ref vAlign
+     * see vAlign
      */
     void setVAlign( const DOMString & );
 

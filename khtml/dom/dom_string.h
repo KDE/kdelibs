@@ -36,7 +36,7 @@ class DOMStringImpl;
  *
  * All DOMStrings are explicitly shared (they behave like pointers), meaning
  * that modifications to one instance will also modify all others. If you
- * wish to get a DOMString that is independent, use @ref copy().
+ * wish to get a DOMString that is independent, use copy().
  */
 class DOMString
 {

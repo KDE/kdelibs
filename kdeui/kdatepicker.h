@@ -32,7 +32,7 @@ class KDateTable;
  *
  *     Different from the
  *     previous versions, it now emits two types of signals, either
- *     @ref dateSelected() or @ref dateEntered() (see documentation for both
+ * dateSelected() or dateEntered() (see documentation for both
  *     signals).
  *
  *     A line edit has been added in the newer versions to allow the user

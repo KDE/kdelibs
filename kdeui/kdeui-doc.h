@@ -13,30 +13,30 @@
 * certainly link to libkdeui.
 *
 * Most applications with single or multiple toplevel widgets
-* should use the @ref KMainWindow class in this library, which
+* should use the KMainWindow class in this library, which
 * automatically provides features like session management and simplified
 * toolbar/menubar/statusbar creation.
 *
 * A spell-checker library is also provided.
-* @ref KSpell offers easy access to International ISpell or ASpell
+* KSpell offers easy access to International ISpell or ASpell
 *  (at the user's option) as well as a spell-checker GUI
 *  ("Add", "Replace", etc.).
 *
-* You can use @ref KSpell to
+* You can use KSpell to
 *  automatically spell-check an ASCII file as well as to implement
 *  online spell-checking and to spell-check proprietary format and
 *  marked up (e.g. HTML, TeX) documents.  The relevant methods for
-*  these three procedures are @ref check(), @ref checkWord(), and
-*  @ref checkList(), respectively.
+*  these three procedures are check(), checkWord(), and
+* checkList(), respectively.
 *
-* @ref KSpellConfig holds configuration information about @ref KSpell as well
+* KSpellConfig holds configuration information about KSpell as well
 *  as acting as an options-setting dialog.
 *
 * KSpell usually works asynchronously. If you do not need that, you should
-* simply use @ref KSpell::modalCheck(). It won't return until the
+* simply use KSpell::modalCheck(). It won't return until the
 * passed string is processed or the spell checking canceled.
 * During modal spell checking your GUI is still repainted, but the user may
-* only interact with the @ref KSpell dialog.
+* only interact with the KSpell dialog.
 *
 * @see KSpell, KSpellConfig
 */

@@ -34,7 +34,7 @@ class QLabel;
 
 /**
  * An item for the iconview, that has a reference to its corresponding
- * @ref KFileItem.
+ * KFileItem.
  */
 class KFileIconViewItem : public KIconViewItem
 {
@@ -72,8 +72,8 @@ namespace KIO {
 }
 
 /**
- * An icon-view capable of showing @ref KFileItem's. Used in the filedialog
- * for example. Most of the documentation is in @ref KFileView class.
+ * An icon-view capable of showing KFileItem's. Used in the filedialog
+ * for example. Most of the documentation is in KFileView class.
  *
  * @see KDirOperator
  * @see KCombiView
@@ -113,12 +113,12 @@ public:
     virtual KFileItem * prevItem( const KFileItem * ) const;
 
     /**
-     * Sets the size of the icons to show. Defaults to @ref KIcon::SizeSmall.
+     * Sets the size of the icons to show. Defaults to KIcon::SizeSmall.
      */
     void setIconSize( int size );
 
     /**
-     * Sets the size of the previews. Defaults to @ref KIcon::SizeLarge.
+     * Sets the size of the previews. Defaults to KIcon::SizeLarge.
      */
     void setPreviewSize( int size );
 

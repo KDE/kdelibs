@@ -37,10 +37,10 @@
  *
  * These entries are automatically generated .desktop files pointing
  * to the current application and document.  You should call the
- * static @ref add() method whenever the user opens or saves a new
+ * static add() method whenever the user opens or saves a new
  * document if you want it to show up in the menu.
  *
- * You don't have to worry about this if you are using any @ref
+ * You don't have to worry about this if you are using any 
  * KFileDialog derived class to open and save documents, as it
  * already calls this class.  User defined limits on the maximum
  * number of documents to save, etc... are all automatically handled.

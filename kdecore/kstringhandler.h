@@ -28,12 +28,12 @@
 /**
  * This class contains utility functions for handling strings.
  *
- * This class is @em not a substitute for the @ref QString class. What
+ * This class is @em not a substitute for the QString class. What
  * I tried to do with this class is provide an easy way to
  * cut/slice/splice words inside sentences in whatever order desired.
  * While the main focus of this class are words (ie characters
- * separated by spaces/tabs), the two core functions here (@ref split()
- * and @ref join() ) will function given any char to use as a separator.
+ * separated by spaces/tabs), the two core functions here ( split()
+ * and join() ) will function given any char to use as a separator.
  * This will make it easy to redefine what a 'word' means in the
  * future if needed.
  *
@@ -43,7 +43,7 @@
  *
  * The ranges are a fairly powerful way of getting/stripping words from
  * a string. These ranges function, for the large part, as they would in
- * python. See the @ref word(const QString&, int) and @ref remword(const QString&, int) functions for more detail.
+ * python. See the word(const QString&, int) and remword(const QString&, int) functions for more detail.
  *
  * This class contains no data members of it own. All strings are cut
  * on the fly and returned as new qstrings/qstringlists.

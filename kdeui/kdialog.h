@@ -29,20 +29,20 @@ class QLayoutItem;
  * Dialog with extended nonmodal support and methods for KDE standard
  * compliance.
  *
- * Generally, you should not use this class directly, but @ref KDialogBase
+ * Generally, you should not use this class directly, but KDialogBase
  * which inherits KDialog.
  *
  * If the dialog is non-modal and has a parent, the default keybindings
  * (@p escape = @p reject(), @p enter = @p accept(), etc.) are disabled.
  *
- * The @ref marginHint() and @ref spacingHint() sizes shall be used
+ * The marginHint() and spacingHint() sizes shall be used
  * whenever you layout the interior of a dialog. One special note. If
  * you make your own action buttons (OK, Cancel etc), the space
- * beteween the buttons shall be @ref spacingHint(), whereas the space
- * above, below, to the right and to the left shall be @ref marginHint().
+ * beteween the buttons shall be spacingHint(), whereas the space
+ * above, below, to the right and to the left shall be marginHint().
  * If you add a separator line above the buttons, there shall be a
- * @ref marginHint() between the buttons and the separator and a
- * @ref marginHint() above the separator as well.
+ * marginHint() between the buttons and the separator and a
+ * marginHint() above the separator as well.
  *
  * @see KDialogBase
  * @author Thomas Tanghus <tanghus@earthling.net>, Espen Sand <espensa@online.no>
@@ -57,7 +57,7 @@ class KDialog : public QDialog
     /**
      * Constructor.
      *
-     * Takes the same arguments as @ref QDialog.
+     * Takes the same arguments as QDialog.
      */
     KDialog(QWidget *parent = 0, const char *name = 0,
 	    bool modal = false, WFlags f = 0);
@@ -106,7 +106,7 @@ class KDialog : public QDialog
      * Places @p widget so that it doesn't cover a certain @p area of the screen.
      * This is typically used by the "find dialog" so that the match it finds can
      * be read.
-     * For @p screen, see @ref centerOnScreen
+     * For @p screen, see centerOnScreen
      * @return true on success (widget doesn't cover area anymore, or never did),
      * false on failure (not enough space found)
      * @since 3.2
@@ -150,7 +150,7 @@ class KDialog : public QDialog
      * Emitted when the margin size and/or spacing size
      * have changed.
      *
-     * Use @ref marginHint() and  @ref spacingHint() in your slot
+     * Use marginHint() and spacingHint() in your slot
      * to get the new values.
      */
     void layoutHintChanged();
@@ -177,7 +177,7 @@ class KDialog : public QDialog
   * The disadvantage is that you will not be able to get any information from
   * the dialog, so it can currently only be used for simple dialogs.
   *
-  * You probably want to use @ref KMessageBox::queueMessageBox() instead
+  * You probably want to use KMessageBox::queueMessageBox() instead
   * of this class directly.
   *
   * @author Waldo Bastian <bastian@kde.org>

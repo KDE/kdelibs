@@ -163,7 +163,7 @@ class KKey
 
  // Query methods.
 	/**
-	 * Returns true if the key is null (after @ref clear() or empty
+	 * Returns true if the key is null (after clear() or empty
 	 * constructor).
 	 * @return true if the key is null
 	 * @see clear()
@@ -332,7 +332,7 @@ class KKeySequence
 	/**
 	 * Creates a new key sequence that contains the given key sequence. 
 	 * The description consists of comma-separated keys as
-	 * required by @ref KKey::KKey(const QString&).
+	 * required by KKey::KKey(const QString&).
 	 * @param keySeq the description of the key
 	 * @see KKeyServer::Sym::init()
 	 * @see KKey::KKey(const QString&)
@@ -379,7 +379,7 @@ class KKeySequence
 	/**
 	 * Initializes this key sequence to contain the given key sequence.
 	 * The description consists of comma-separated keys as
-	 * required by @ref KKey::KKey(const QString&).
+	 * required by KKey::KKey(const QString&).
 	 * @param key the description of the key
 	 * @return true if successful, false otherwise
 	 * @see KKeyServer::Sym::init()
@@ -404,7 +404,7 @@ class KKeySequence
 	 * Return the @p i'th key of this sequence, or a null key if there
 	 * are less then i keys.
 	 * @param i the key to retrieve
-	 * @return the @p i'th key, or @ref KKey::null() if there are less
+	 * @return the @p i'th key, or KKey::null() if there are less
 	 *         than i keys
 	 * @see MAX_KEYS
 	 */
@@ -417,9 +417,9 @@ class KKeySequence
 
 	/**
 	 * Sets the @p i'th key of the sequence. You can not introduce gaps
-	 * in a sequence, so you must use an @p i <= @ref count(). Also note that
-	 * the maximum length of a key sequence is @ref MAX_KEYS.
-	 * @param i the position of the new key (<= @ref count(), <= @ref MAX_KEYS)
+	 * in a sequence, so you must use an @p i <= count(). Also note that
+	 * the maximum length of a key sequence is MAX_KEYS.
+	 * @param i the position of the new key (<= count(), <= MAX_KEYS)
 	 * @param key the key to set
 	 * @return true if successful, false otherwise
 	 */
@@ -431,7 +431,7 @@ class KKeySequence
 	void setTriggerOnRelease( bool );
 
 	/**
-	 * Returns true if the key sequence is null (after @ref clear() or empty
+	 * Returns true if the key sequence is null (after clear() or empty
 	 * constructor).
 	 * @return true if the key sequence is null
 	 * @see clear()
@@ -498,7 +498,7 @@ class KKeySequence
 
 	/**
 	 * Returns the key sequence as a number of key presses as
-	 * returned by @ref KKey::toString(), separated by commas.
+	 * returned by KKey::toString(), separated by commas.
 	 * @return the string represenation of this key sequence
 	 * @see KKey::toString()
 	 */
@@ -591,7 +591,7 @@ class KShortcut
 	/**
 	 * Creates a new key sequence that contains the given key sequence.
 	 * The description consists of semicolon-separated keys as
-	 * used in @ref KKeySequence::KKeySequence(const QString&).
+	 * used in KKeySequence::KKeySequence(const QString&).
 	 * @param shortcut the description of the key
 	 * @see KKeySequence::KKeySequence(const QString&)
 	 */
@@ -600,7 +600,7 @@ class KShortcut
 	/**
 	 * Creates a new key sequence that contains the given key sequence.
 	 * The description consists of semicolon-separated keys as
-	 * used in @ref KKeySequence::KKeySequence(const QString&).
+	 * used in KKeySequence::KKeySequence(const QString&).
 	 * @param shortcut the description of the key
 	 * @see KKeySequence::KKeySequence(const QString&)
 	 */
@@ -649,7 +649,7 @@ class KShortcut
 	/**
 	 * Initializes the key sequence with the given key sequence.
 	 * The description consists of semicolon-separated keys as
-	 * used in @ref KKeySequence::KKeySequence(const QString&).
+	 * used in KKeySequence::KKeySequence(const QString&).
 	 * @param shortcut the description of the key
 	 * @see KKeySequence::KKeySequence(const QString&)
 	 */
@@ -665,16 +665,16 @@ class KShortcut
 	 * Returns the number of sequences that are in this
 	 * shortcut.
 	 * @return the number of sequences
-	 * @ref MAX_SEQUENCES
+	 * MAX_SEQUENCES
 	 */
 	uint count() const;
 
 	/**
 	 * Returns the @p i'th key sequence of this shortcut.
 	 * @param i the number of the key sequence to retrieve
-	 * @return the @p i'th sequence or @ref KKeySequence::null() if
+	 * @return the @p i'th sequence or KKeySequence::null() if
 	 *         there are less than @p i key sequences
-	 * @ref MAX_SEQUENCES
+	 * MAX_SEQUENCES
 	 */
 	const KKeySequence& seq( uint i ) const;
 
@@ -688,7 +688,7 @@ class KShortcut
 	int keyCodeQt() const;
 
 	/**
-	 * Returns true if the shortcut is null (after @ref clear() or empty
+	 * Returns true if the shortcut is null (after clear() or empty
 	 * constructor).
 	 * @return true if the shortcut is null
 	 * @see clear()
@@ -757,10 +757,10 @@ class KShortcut
 
 	/**
 	 * Sets the @p i'th key sequence of the shortcut. You can not introduce 
-	 * gaps in the list of sequences, so you must use an @i <= @ref count(). 
-	 * Also note that the maximum number of key sequences is @ref MAX_SEQUENCES.
-	 * @param i the position of the new key sequence(<= @ref count(), 
-	 *          <= @ref MAX_SEQUENCES)
+	 * gaps in the list of sequences, so you must use an @i <= count(). 
+	 * Also note that the maximum number of key sequences is MAX_SEQUENCES.
+	 * @param i the position of the new key sequence(<= count(), 
+	 *          <= MAX_SEQUENCES)
 	 * @param keySeq the key sequence to set
 	 * @return true if successful, false otherwise
 	 */
@@ -802,7 +802,7 @@ class KShortcut
 
 	/**
 	 * Returns a description of the shortcut as semicolon-separated
-	 * ket sequences, as returned by @ref KKeySequence::toString().
+	 * ket sequences, as returned by KKeySequence::toString().
 	 * @return the string represenation of this shortcut
 	 * @see KKey::toString()
 	 * @see KKeySequence::toString()

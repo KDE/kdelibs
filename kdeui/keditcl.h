@@ -255,8 +255,8 @@ public:
      * Retrieve the actual column number the cursor is on.
      *
      *  This call differs
-     *    from @ref QMultiLineEdit::getCursorPosition() in that it returns the actual cursor
-     *    position and not the character position. Use @ref currentLine() and @ref currentColumn()
+     *    from QMultiLineEdit::getCursorPosition() in that it returns the actual cursor
+     *    position and not the character position. Use currentLine() and currentColumn()
      *    if you want to display the current line or column in the status bar for
      *    example.
      */
@@ -275,7 +275,7 @@ public:
 
     /**
      * Allow the user to toggle between insert mode and overwrite mode with
-     * the "Insert" key. See also @ref toggle_overwrite_signal();
+     * the "Insert" key. See also toggle_overwrite_signal();
      *
      * The default is false: the user can not toggle.
      */
@@ -285,7 +285,7 @@ public:
 
 signals:
     /** This signal is emitted if the user dropped a URL over the text editor
-      * @ref QMultiLineEdit widget.
+      * QMultiLineEdit widget.
       *
       *  Note that the user can drop also Text on it, but
       * this is already handled internally by QMultiLineEdit.
@@ -294,7 +294,7 @@ signals:
 
     /** This signal is emitted whenever the cursor position changes.
      *
-     * Use this in conjunction with @ref currentLine(), @ref currentColumn()
+     * Use this in conjunction with currentLine(), currentColumn()
      * if you need to know the cursor position.
      */
     void 	CursorPositionChanged();
@@ -305,7 +305,7 @@ signals:
      *
      * The user can do so by pressing the "Insert" button on a PC keyboard.
      *
-     * This feature must be activated by calling @ref setOverwriteEnabled(true)
+     * This feature must be activated by calling setOverwriteEnabled(true)
      * first.
      */
     void 	toggle_overwrite_signal();

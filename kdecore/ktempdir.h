@@ -44,7 +44,7 @@ class KTempDirPrivate;
  *
  * KTempFile does not create any missing directories, but locateLocal() does.
  *
- * See also @ref KStandardDirs
+ * See also KStandardDirs
  *
  * @author Joseph Wenninger <jowenn@kde.org>
  */
@@ -95,7 +95,7 @@ public:
    
    
    /**
-    * Returns the @ref QDir* of the temporary directory.
+    * Returns the QDir* of the temporary directory.
     * @return QDir directory information of the directory or 0 if their is no managed directory
     * The caller has to free the pointer open for writing to the 
     **/

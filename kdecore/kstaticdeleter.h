@@ -27,8 +27,8 @@
 
 /**
  * Static deleters are used to manage static resources. They can register 
- * themselves with @KGlobal. KGlobal will call @ref destructObject() when 
- * @ref KGlobal::deleteStaticDeleters() is called or when it the process 
+ * themselves with @KGlobal. KGlobal will call destructObject() when 
+ * KGlobal::deleteStaticDeleters() is called or when it the process 
  * finishes.
  *
  * @see KStaticDeleter

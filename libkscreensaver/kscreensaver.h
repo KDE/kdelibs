@@ -102,7 +102,7 @@ public:
     /**
      * Blank a widget using the specified effect.
      * Some blanking effects take some time, so you should connect to
-     * @ref doneBlank() to know when the blanking is complete.
+     * doneBlank() to know when the blanking is complete.
      *
      * @param w The widget to blank.
      * @param effect The type of effect to use.

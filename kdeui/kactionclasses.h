@@ -436,7 +436,7 @@ public:
     QPopupMenu* popupMenu() const;
 
     /**
-     * Deprecated. See @ref setMenuAccelsEnabled .
+     * Deprecated. See setMenuAccelsEnabled .
      * @since 3.1
      */
     void setRemoveAmpersandsInCombo( bool b );
@@ -635,8 +635,8 @@ private:
 /**
  *  This class is an action to handle a recent files submenu.
  *  The best way to create the action is to use KStdAction::openRecent.
- *  Then you simply need to call @ref loadEntries on startup, @ref saveEntries
- *  on shutdown, @ref addURL when your application loads/saves a file.
+ *  Then you simply need to call loadEntries on startup, saveEntries
+ *  on shutdown, addURL when your application loads/saves a file.
  *
  *  @author Michael Koch
  *  @short Recent files action
@@ -961,7 +961,7 @@ public:
 
     /**
      * Returns true if this action creates a sticky popup menu.
-     * See @ref setStickyMenu.
+     * See setStickyMenu.
      */
     bool stickyMenu() const;
     /**
@@ -1074,7 +1074,7 @@ public:
     void setDelayed(bool delayed);
     /**
      * Returns true if this action creates a sticky popup menu.
-     * See @ref setStickyMenu.
+     * See setStickyMenu.
      */
     bool stickyMenu() const;
     /**

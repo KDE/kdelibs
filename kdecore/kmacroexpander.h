@@ -27,7 +27,7 @@
 #include <qmap.h>
 
 /**
- * Abstract base class for the worker classes behind the @ref KMacroExpander namespace.
+ * Abstract base class for the worker classes behind the KMacroExpander namespace.
  * @internal
  *
  * @since 3.1.3

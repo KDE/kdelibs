@@ -56,7 +56,7 @@ namespace KIO { class Job; }
  * If you use this class by itself, then it will use KDE defaults for
  * everything -- the bookmark path, bookmark editor, bookmark launcher..
  * everything.  These defaults reside in the classes
- * @ref KBookmarkOwner (editing bookmarks) and @ref KBookmarkManager
+ * KBookmarkOwner (editing bookmarks) and KBookmarkManager
  * (almost everything else).  If you wish to change the defaults in
  * any way, you must reimplement and instantiate those classes
  * <em>before</em> this class is ever called.

@@ -68,7 +68,7 @@ public:
 
   /**
    * Connects to a ftp server and logs us in
-   * @ref m_bLoggedOn is set to true if logging on was successful.
+   * m_bLoggedOn is set to true if logging on was successful.
    * It is set to false if the connection becomes closed.
    *
    */
@@ -118,15 +118,15 @@ private:
   void ftpAutoLoginMacro ();
 
   /**
-   * Called by @ref openConnection. It opens the control connection to the ftp server.
+   * Called by openConnection. It opens the control connection to the ftp server.
    *
    * @return true on success.
    */
   bool connect( const QString & host, unsigned short int port = 0 );
 
   /**
-   * Called by @ref openConnection. It logs us in.
-   * @ref m_initialPath is set to the current working directory
+   * Called by openConnection. It logs us in.
+   * m_initialPath is set to the current working directory
    * if logging on was successful.
    *
    * @return true on success.
@@ -154,9 +154,9 @@ private:
 
   /**
    * Runs a command on the ftp server like "list" or "retr". In contrast to
-   * @ref ftpSendCmd a data connection is opened. The corresponding socket
-   * @ref sData is available for reading/writing on success.
-   * The connection must be closed afterwards with @ref ftpCloseCommand.
+   * ftpSendCmd a data connection is opened. The corresponding socket
+   * sData is available for reading/writing on success.
+   * The connection must be closed afterwards with ftpCloseCommand.
    *
    * @param mode is 'A' or 'I'. 'A' means ASCII transfer, 'I' means binary transfer.
    * @param errorcode the command-dependent error code to emit on error
@@ -167,7 +167,7 @@ private:
                        int errorcode, unsigned long offset = 0 );
 
   /**
-   * The counterpart to @ref openCommand.
+   * The counterpart to openCommand.
    * Closes data sockets and then reads line sent by server at
    * end of command.
    * @return false on error (line doesn't start with '2')
@@ -179,19 +179,19 @@ private:
   //void ftpAbortTransfer();
 
   /**
-   * Used by @ref openCommand
+   * Used by openCommand
    */
   bool ftpOpenPASVDataConnection();
   /**
-   * Used by @ref openCommand
+   * Used by openCommand
    */
   bool ftpOpenEPSVDataConnection();
   /**
-   * Used by @ref openCommand
+   * Used by openCommand
    */
   bool ftpOpenEPRTDataConnection();
   /**
-   * Used by @ref openCommand
+   * Used by openCommand
    */
   bool ftpOpenDataConnection();
   /**

@@ -92,7 +92,7 @@ namespace KJS {
      * Converts a Value into an Object. If the value's type is not ObjectType,
      * a null object will be returned (i.e. one with it's internal pointer set
      * to 0). If you do not know for sure whether the value is of type
-     * ObjectType, you should check the @ref isValid() methods afterwards before
+     * ObjectType, you should check the isValid() methods afterwards before
      * calling any methods on the Object.
      *
      * @return The value converted to an object
@@ -224,7 +224,7 @@ namespace KJS {
      * this is discouraged.
      *
      * If an error occurs during construction, the execution state's exception
-     * will be set. This can be tested for with @ref ExecState::hadException().
+     * will be set. This can be tested for with ExecState::hadException().
      * Under some circumstances, the exception object may also be returned.
      *
      * Note: This function should not be called if implementsConstruct() returns
@@ -382,7 +382,7 @@ namespace KJS {
     /**
      * A pointer to a ClassInfo struct for this class. This provides a basic
      * facility for run-time type information, and can be used to check an
-     * object's class an inheritance (see @ref inherits()). This should
+     * object's class an inheritance (see inherits()). This should
      * always return a statically declared pointer, or 0 to indicate that
      * there is no class information.
      *
@@ -428,7 +428,7 @@ namespace KJS {
      *   }
      *
      * If you have a handle to a statically declared ClassInfo, such as in the
-     * @ref classInfo() example, you can check for inheritance without needing
+     * classInfo() example, you can check for inheritance without needing
      * an instance of the other class:
      *
      *   if (obj1->inherits(FooImp::info)) {
@@ -458,8 +458,8 @@ namespace KJS {
      * Objects)
      *
      * The default implementation uses classInfo().
-     * You should either implement @ref classInfo(), or
-     * if you simply need a classname, you can reimplement @ref className()
+     * You should either implement classInfo(), or
+     * if you simply need a classname, you can reimplement className()
      * instead.
      *
      * @see Object::className()
@@ -626,7 +626,7 @@ namespace KJS {
                          int sourceId = -1);
 
     /**
-     * Array of error names corresponding to @ref ErrorType
+     * Array of error names corresponding to ErrorType
      */
     static const char * const * const errorNames;
   };

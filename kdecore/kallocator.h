@@ -66,30 +66,30 @@ public:
     void* allocate(size_t _size);
 
     /**
-     * Gives back a block returned by @ref allocate() to the zone
+     * Gives back a block returned by allocate() to the zone
      * allocator, and possibly deallocates the block holding it (when it's
-     * empty).  The first @ref deallocate() after many @ref allocate() calls
+     * empty).  The first deallocate() after many allocate() calls
      * (or the first at all) builds an internal data structure for speeding
      * up deallocation.  The consistency of that structure is maintained
-     * from then on (by @ref allocate() and @ref deallocate()) unless many
+     * from then on (by allocate() and deallocate()) unless many
      * more objects are allocated without any intervening deallocation, in
-     * which case it's thrown away and rebuilt at the next @ref deallocate().
+     * which case it's thrown away and rebuilt at the next deallocate().
      *
-     * The effect of this is, that such initial @ref deallocate() calls take
+     * The effect of this is, that such initial deallocate() calls take
      * more time then the normal calls, and that after this list is built, i.e.
-     * generally if @ref deallocate() is used at all, also allocate() is a
+     * generally if deallocate() is used at all, also allocate() is a
      * little bit slower.  This means, that if you want to squeeze out the last
      * bit performance you would want to use KZoneAllocator as an obstack, i.e.
-     * just use the functions @ref allocate() and @ref free_since().  All the
+     * just use the functions allocate() and free_since().  All the
      * remaining memory is returned to the system if the zone allocator
      * is destroyed.
-     * @param ptr Pointer as returned by @ref allocate().
+     * @param ptr Pointer as returned by allocate().
      */
     void deallocate(void *ptr);
 
     /**
      * Deallocate many objects at once.
-     * @ref free_since() deallocates all objects allocated after @p ptr, 
+     * free_since() deallocates all objects allocated after @p ptr, 
      * @em including @p ptr itself.
      *
      * The intended use is something along the lines of:
@@ -101,9 +101,9 @@ public:
      * alloc.free_since (remember_me);
      * \endcode
      * Note, that we don't need to remember all the pointers to the 12-byte
-     * objects for freeing them.  The @ref free_since() does deallocate them
+     * objects for freeing them.  The free_since() does deallocate them
      * all at once.
-     * @param ptr Pointer as returned by @ref allocate().  It acts like
+     * @param ptr Pointer as returned by allocate().  It acts like
      * a kind of mark of a certain position in the stack of all objects,
      * off which you can throw away everything above that mark.
      */

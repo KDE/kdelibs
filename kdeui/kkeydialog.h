@@ -46,11 +46,11 @@ class KKeyChooserItem;
  * KGlobalAccel.
  *
  * The class takes care of all aspects of configuration, including
- * handling key conflicts internally. Connect to the @ref allDefault()
+ * handling key conflicts internally. Connect to the allDefault()
  * slot if you want to set all configurable shortcuts to their
  * default values.
  *
- * @short Widget for configuration of @ref KAccel and @ref KGlobalAccel.
+ * @short Widget for configuration of KAccel and KGlobalAccel.
  * @see KKeyDialog
  * @version $Id$
  * @author Nicolas Hadacek <hadacek@via.ecp.fr>
@@ -217,7 +217,7 @@ typedef KKeyChooser KKeyChooser;
  * KKeyDialog::configure( actionCollection() );
  * \endcode
  *
- * @short Dialog for configuration of @ref KActionCollection, @ref KAccel, and @ref KGlobalAccel.
+ * @short Dialog for configuration of KActionCollection, KAccel, and KGlobalAccel.
  * @version $Id$
  * @author Nicolas Hadacek <hadacek@via.ecp.fr>
  */
@@ -256,7 +256,7 @@ public:
 	 * Simply call insert with the action collections of each one in turn.
          *
          * @param title the title associated with the collection (if null, the
-         *        @ref KAboutData::progName() of the collection's instance is used)
+         * KAboutData::progName() of the collection's instance is used)
          * @return true :)
 	 * @since 3.1
 	 */
@@ -316,19 +316,19 @@ public:
 
 	/**
 	 * @deprecated Obsolete.
-	 * Please use @ref KKeyDialog::configure instead
+	 * Please use KKeyDialog::configure instead
 	 */
 	static int configureKeys( KAccel* keys, bool save_settings = true, QWidget* parent = 0 )
 		{ return configure( keys, parent, save_settings ); }
 	/**
 	 * @deprecated Obsolete.
-	 * Please use @ref KKeyDialog::configure instead
+	 * Please use KKeyDialog::configure instead
 	 */
 	static int configureKeys( KGlobalAccel* keys, bool save_settings = true, QWidget* parent = 0 )
 		{ return configure( keys, parent, save_settings ); }
 	/**
 	 * @deprecated Obsolete.
-	 * Please use @ref KKeyDialog::configure instead
+	 * Please use KKeyDialog::configure instead
 	 */
 	static int configureKeys( KActionCollection* coll, const QString& /*xmlfile*/,
 		bool save_settings = true, QWidget* parent = 0 )

@@ -39,13 +39,13 @@ public:
   /**
    * Create a dialog that asks for a single line of text. _value is
    * the initial value of the line. _text appears as label on top of
-   * the entry box. If the internal line edit has an associated @ref
+   * the entry box. If the internal line edit has an associated 
    * QValidator set, the OK button is disabled as long as the
    * validator doesn't return Acceptable. If there's no validator, the
    * OK button is enabled whenever the line edit isn't empty.
    *
    * If you want to accept empty input, make a trivial QValidator that
-   * always returns Acceptable, e.g. @ref QRegExpValidator with a
+   * always returns Acceptable, e.g. QRegExpValidator with a
    * regexp of ".*".
    *
    * @param _text      Text of the label
@@ -100,7 +100,7 @@ public slots:
 protected slots:
   /** 
    * Enables and disables the OK button depending on the state
-   * returned by the lineedit's @ref QValidator.
+   * returned by the lineedit's QValidator.
    */
   void slotTextChanged( const QString& );
 

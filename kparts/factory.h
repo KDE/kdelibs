@@ -32,7 +32,7 @@ class Part;
 /**
  * A generic factory object to create a Part.
  *
- * Factory is an abstract class. Reimplement the @ref
+ * Factory is an abstract class. Reimplement the 
  * createPartObject() method to give it functionality.
  *
  * @see KLibFactory.
@@ -66,7 +66,7 @@ public:
      *
      * @returns the newly created part.
      *
-     * createPart() automatically emits a signal @ref KLibFactory::objectCreated to tell
+     * createPart() automatically emits a signal KLibFactory::objectCreated to tell
      * the library about its newly created object.  This is very
      * important for reference counting, and allows unloading the
      * library automatically once all its objects have been destroyed.
@@ -100,7 +100,7 @@ protected:
     virtual Part *createPartObject( QWidget *parentWidget = 0, const char *widgetName = 0, QObject *parent = 0, const char *name = 0, const char *classname = "KParts::Part", const QStringList &args = QStringList() ) = 0;
     
     /**
-     * Reimplemented from KLibFactory. Calls @ref createPart()
+     * Reimplemented from KLibFactory. Calls createPart()
      */
     virtual QObject *createObject( QObject *parent = 0, const char *name = 0, const char *classname = "QObject", const QStringList &args = QStringList() );
 };

@@ -87,7 +87,7 @@ public:
      *
      * @param pixmap The pixmap to process.
      * @param ratio The ratio to use. Use negative value to dim.
-     * @return Returns The @ref pixmap(), provided for convenience.
+     * @return Returns The pixmap(), provided for convenience.
      */
     static KPixmap& intensity(KPixmap& pixmap, float ratio);
 
@@ -97,7 +97,7 @@ public:
      * @param pixmap The pixmap to process.
      * @param ratio value. Use negative value to dim.
      * @param channel Which channel(s) should be modified
-     * @return Returns the @ref pixmap(), provided for convenience.
+     * @return Returns the pixmap(), provided for convenience.
      */
     static KPixmap& channelIntensity(KPixmap& pixmap, float ratio,
                                     RGBComponent channel);
@@ -117,7 +117,7 @@ public:
      *                  with concentric blending effects).
      * @param ncols The number of colors to dither the pixmap to. Only
      *                  used for 8 bpp pixmaps.
-     * @return Returns the @ref pixmap(), provided for convenience.
+     * @return Returns the pixmap(), provided for convenience.
      */
     static KPixmap& blend(KPixmap& pixmap, float initial_intensity,
                          const QColor &bgnd, GradientType eff,
@@ -131,7 +131,7 @@ public:
      * @param spacing How many unmodified pixels inbetween hashes.
      * @param ncols The number of colors to dither the pixmap to.
      * Only used for 8 bpp pixmaps.
-     * @return Returns The @ref pixmap(), provided for convenience.
+     * @return Returns The pixmap(), provided for convenience.
      */
     static KPixmap& hash(KPixmap& pixmap, Lighting lite=NorthLite,
                         unsigned int spacing=0, int ncols=3);
@@ -161,7 +161,7 @@ public:
      * @param pixmap The pixmap to process.
      * @param val The strength of the effect. 0 <= val <= 1.
      * @param color The color to blend to.
-     * @return Returns the @ref pixmap(), provided for convenience.
+     * @return Returns the pixmap(), provided for convenience.
      */
     static KPixmap& fade(KPixmap& pixmap, double val, const QColor &color);
 
@@ -171,7 +171,7 @@ public:
      * @param pixmap The pixmap to process.
      * @param fast Set to @p true in order to use a faster but non-photographic
      * quality algorithm. Appropriate for things such as toolbar icons.
-     * @return Returns the @ref pixmap(), provided for convenience.
+     * @return Returns the pixmap(), provided for convenience.
      */
     static KPixmap& toGray(KPixmap& pixmap, bool fast=false);
 
@@ -180,7 +180,7 @@ public:
      *
      * @param pixmap The pixmap to process.
      * @param desat A value between 0 and 1 setting the degree of desaturation
-     * @return Returns The @ref pixmap(), provided for convenience.
+     * @return Returns The pixmap(), provided for convenience.
      */
     static KPixmap& desaturate(KPixmap& pixmap, float desat = 0.3);
 
@@ -189,7 +189,7 @@ public:
      *
      * @param pixmap The pixmap to process.
      * @param c A contrast value between -255 and 255.
-     * @return Returns the @ref pixmap(), provided for convenience.
+     * @return Returns the pixmap(), provided for convenience.
      */
     static KPixmap& contrast(KPixmap& pixmap, int c);
 
@@ -200,7 +200,7 @@ public:
      * @param pixmap The pixmap to process.
      * @param palette The color palette to use.
      * @param size The size of the palette.
-     * @return Returns the @ref pixmap(), provided for convenience.
+     * @return Returns the pixmap(), provided for convenience.
      */
     static KPixmap& dither(KPixmap &pixmap, const QColor *palette, int size);
 

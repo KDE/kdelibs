@@ -37,8 +37,8 @@ class KConfigBase;
  * @internal
  * A KAccelAction prepresents an action that can be executed using 
  * an accelerator key. Each KAccelAction has a name, a label, a 
- * "What's this" string and a @ref KShortcut. The user can configure and 
- * enable/disable them using @ref KKeyDialog. 
+ * "What's this" string and a KShortcut. The user can configure and 
+ * enable/disable them using KKeyDialog. 
  *
  * \code
  *	1) KAccelAction = "Run Command"
@@ -93,7 +93,7 @@ class KAccelAction
 	 * @param pObjSlot the receiver of a signal when the key has been 
 	 *                 pressed
 	 * @param psMethodSlot the slot to connect for key presses. Receives
-	 *                     an int, as set by @ref setID(), as only argument
+	 *                     an int, as set by setID(), as only argument
 	 * @param bConfigurable if true the user can configure the shortcut
 	 * @param bEnabled true if the accelerator should be enabled
 	 */
@@ -118,7 +118,7 @@ class KAccelAction
 	 * @param pObjSlot the receiver of a signal when the key has been 
 	 *                 pressed
 	 * @param psMethodSlot the slot to connect for key presses. Receives
-	 *                     an int, as set by @ref setID(), as only argument
+	 *                     an int, as set by setID(), as only argument
 	 * @param bConfigurable if true the user can configure the shortcut
 	 * @param bEnabled true if the accelerator should be enabled
 	 * @return true if successful, false otherwise
@@ -259,7 +259,7 @@ class KAccelAction
 	void setEnabled( bool enable );
 
 	/**
-	 * Retrieves the id set using @ref setID.
+	 * Retrieves the id set using setID.
 	 * @return the id of the accelerator action
 	 */
 	int getID() const   { return m_nIDAccel; }
@@ -269,7 +269,7 @@ class KAccelAction
 	 * signal's argument.
 	 *
 	 * @param n the new id
-	 * @see @ref getID()
+	 * @see getID()
 	 */
 	void setID( int n ) { m_nIDAccel = n; }
 
@@ -358,7 +358,7 @@ class KAccelAction
 
 /**
  * @internal
- * This class represents a collection of @ref KAccelAction objects.
+ * This class represents a collection of KAccelAction objects.
  *
  * @short A collection of accelerator actions
  * @see KAccelAction
@@ -486,7 +486,7 @@ class KAccelActions
 	 * @param pObjSlot the receiver of a signal when the key has been 
 	 *                 pressed
 	 * @param psMethodSlot the slot to connect for key presses. Receives
-	 *                     an int, as set by @ref setID(), as only argument
+	 *                     an int, as set by setID(), as only argument
 	 * @param bConfigurable if true the user can configure the shortcut
 	 * @param bEnabled true if the accelerator should be enabled
 	 * @return the new action

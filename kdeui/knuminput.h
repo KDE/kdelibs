@@ -104,7 +104,7 @@ public:
 
     /**
      * Specifies that this widget may stretch horizontally, but is
-     * fixed vertically (like @ref QSpinBox itself).
+     * fixed vertically (like QSpinBox itself).
      */
     QSizePolicy sizePolicy() const;
 
@@ -155,7 +155,7 @@ private:
 /* ------------------------------------------------------------------------ */
 
 /**
- * KIntNumInput combines a @ref QSpinBox and optionally a @ref QSlider
+ * KIntNumInput combines a QSpinBox and optionally a QSlider
  * with a label to make an easy to use control for setting some integer
  * parameter. This is especially nice for configuration dialogs,
  * which can have many such combinated controls.
@@ -170,7 +170,7 @@ private:
  * QSpinBox (the remaining portion is used by the slider). This makes
  * it very simple to have all the sliders in a column be the same size.
  *
- * It uses @ref KIntValidator validator class. KIntNumInput enforces the
+ * It uses KIntValidator validator class. KIntNumInput enforces the
  * value to be in the given range, and can display it in any base
  * between 2 and 36.
  * 
@@ -243,7 +243,7 @@ public:
     int value() const;
 
     /**
-     * @return the curent value in units of the @ref referencePoint.
+     * @return the curent value in units of the referencePoint.
      * @since 3.1
      */
     double relativeValue() const;
@@ -322,13 +322,13 @@ public slots:
     void setValue(int);
 
     /** 
-     * Sets the value in units of the @ref referencePoint
+     * Sets the value in units of the referencePoint
      * @since 3.1
      */
     void setRelativeValue(double);
 
     /**
-     * Sets the reference point for @ref relativeValue.
+     * Sets the reference point for relativeValue.
      * @since 3.1
      */
     void setReferencePoint(int);
@@ -361,14 +361,14 @@ public slots:
 
 signals:
     /**
-     * Emitted every time the value changes (by calling @ref setValue() or
+     * Emitted every time the value changes (by calling setValue() or
      * by user interaction).
      */
     void valueChanged(int);
 
     /**
-     * Emitted whenever @ref #valueChanged is. Contains the change
-     * relative to the @ref referencePoint.
+     * Emitted whenever valueChanged is. Contains the change
+     * relative to the referencePoint.
      * @since 3.1
      */
     void relativeValueChanged(double);
@@ -406,7 +406,7 @@ private:
 class KDoubleLine;
 
 /**
- * KDoubleNumInput combines a @ref QSpinBox and optionally a @ref QSlider
+ * KDoubleNumInput combines a QSpinBox and optionally a QSlider
  * with a label to make an easy to use control for setting some float
  * parameter. This is especially nice for configuration dialogs,
  * which can have many such combinated controls.
@@ -421,9 +421,9 @@ class KDoubleLine;
  * QSpinBox (the remaining portion is used by the slider). This makes
  * it very simple to have all the sliders in a column be the same size.
  *
- * It uses the @ref KDoubleValidator validator class. KDoubleNumInput
+ * It uses the KDoubleValidator validator class. KDoubleNumInput
  * enforces the value to be in the given range, but see the class
- * documentation of @ref KDoubleSpinBox for the tricky
+ * documentation of KDoubleSpinBox for the tricky
  * interrelationship of precision and values. All of what is said
  * there applies here, too.
  *
@@ -568,13 +568,13 @@ public:
     void setPrecision(int precision);
 
     /**
-     * @return the reference point for @ref #relativeValue calculation
+     * @return the reference point for relativeValue calculation
      * @since 3.1
      */
     double referencePoint() const;
 
     /**
-     * @return the current value in units of @ref #referencePoint.
+     * @return the current value in units of referencePoint.
      * @since 3.1
      */
     double relativeValue() const;
@@ -582,7 +582,7 @@ public:
     /**
      * Sets the special value text. If set, the spin box will display
      * this text instead of the numeric value whenever the current
-     * value is equal to @ref #minVal(). Typically this is used for indicating
+     * value is equal to minVal(). Typically this is used for indicating
      * that the choice has a special (default) meaning.
      */
     void setSpecialValueText(const QString& text);
@@ -607,14 +607,14 @@ public slots:
     void setValue(double);
 
     /**
-     * Sets the value in units of @ref #referencePoint.
+     * Sets the value in units of referencePoint.
      * @since 3.1
      */
     void setRelativeValue(double);
 
     /**
      * Sets the reference Point to @p ref. It @p ref == 0, emitting of
-     * @ref #relativeValueChanged is blocked and @ref #relativeValue
+     * relativeValueChanged is blocked and relativeValue
      * just returns 0.
      * @since 3.1
      */
@@ -639,7 +639,7 @@ public slots:
 
 signals:
     /**
-     * Emitted every time the value changes (by calling @ref setValue() or
+     * Emitted every time the value changes (by calling setValue() or
      * by user interaction).
      */
     void valueChanged(double);
@@ -647,7 +647,7 @@ signals:
      * This is an overloaded member function, provided for
      * convenience. It essentially behaves like the above function.
      *
-     * Contains the value in units of @ref #referencePoint.
+     * Contains the value in units of referencePoint.
      * @since 3.1
      */
     void relativeValueChanged(double);
@@ -700,13 +700,13 @@ private:
 /* ------------------------------------------------------------------------ */
 
 /**
- *  A @ref QSpinBox with support for arbitrary base numbers
+ *  A QSpinBox with support for arbitrary base numbers
  *  (e.g. hexadecimal).
  *
  *  The class provides an easy interface to use other
  *  numeric systems than the decimal.
  *
- *  @short A @ref QSpinBox with support for arbitrary base numbers.
+ *  @short A QSpinBox with support for arbitrary base numbers.
  */
 class KIntSpinBox : public QSpinBox
 {
@@ -844,12 +844,12 @@ class KDoubleSpinBox : public QSpinBox {
   Q_PROPERTY( int precision READ precision WRITE setPrecision )
 
 public:
-  /** Constructs a @ref KDoubleSpinBox with parent @p parent and
-      default values for range and value (whatever @ref QRangeControl
+  /** Constructs a KDoubleSpinBox with parent @p parent and
+      default values for range and value (whatever QRangeControl
       uses) and precision (2). */
   KDoubleSpinBox( QWidget * parent=0, const char * name=0 );
-  /** Constructs a @ref KDoubleSpinBox with parent @p parent, range
-      [@p lower,@p upper], @ref lineStep @p step, @ref precision @p
+  /** Constructs a KDoubleSpinBox with parent @p parent, range
+      [@p lower,@p upper], lineStep @p step, precision @p
       precision and initial value @p value. */
   KDoubleSpinBox( double lower, double upper, double step, double value,
 		  int precision=2, QWidget * parent=0, const char * name=0 );
@@ -859,7 +859,7 @@ public:
   /** @return whether the spinbox uses localized numbers */
   bool acceptLocalizedNumbers() const;
   /** Sets whether to use and accept localized numbers as returned by
-      @ref KLocale::formatNumber() */
+ KLocale::formatNumber() */
   virtual void setAcceptLocalizedNumbers( bool accept );
 
   /** Sets a new range for the spin box values. Note that @p lower, @p
@@ -869,7 +869,7 @@ public:
 
   /** @return the current number of decimal points displayed. */
   int precision() const;
-  /** Equivalent to @ref setPrecsion( @p precison, @p false ); Needed
+  /** Equivalent to setPrecsion( @p precison, @p false ); Needed
       since Qt's moc doesn't ignore trailing parameters with default
       args when searching for a property setter method. */
   void setPrecision( int precision );
@@ -883,7 +883,7 @@ public:
              minimum and maximum values can't be represented
              anymore. Disabling is useful if you don't want to keep
              the current min and max values anyway. This is what
-             e.g. @ref setRange() does.
+             e.g. setRange() does.
   **/
   virtual void setPrecision( int precision, bool force );
 
@@ -920,7 +920,7 @@ public:
   void setValidator( const QValidator * );
 
 signals:
-  /** Emitted whenever @ref QSpinBox::valueChanged( int ) is emitted. */
+  /** Emitted whenever QSpinBox::valueChanged( int ) is emitted. */
   void valueChanged( double value );
 
 public slots:

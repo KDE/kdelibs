@@ -31,7 +31,7 @@ namespace KParts
 
 /**
  * A plugin is the way to add actions to an existing KParts application,
- * or to a @ref Part.
+ * or to a Part.
  *
  * The XML of those plugins looks exactly like of the shell or parts,
  * with one small difference: The document tag should have an additional
@@ -78,7 +78,7 @@ public:
      * Load the plugin libraries from the directories appropriate
      * to @p instance and make the Plugin objects children of @p parent.
      *
-     * It is recommended to use the last @ref loadPlugins method instead,
+     * It is recommended to use the last loadPlugins method instead,
      * to support enabling and disabling of plugins.
      */
     static void loadPlugins( QObject *parent, const KInstance * instance );
@@ -87,7 +87,7 @@ public:
      * Load the plugin libraries specified by the list @p docs and make the
      * Plugin objects children of @p parent .
      *
-     * It is recommended to use the last @ref loadPlugins method instead,
+     * It is recommended to use the last loadPlugins method instead,
      * to support enabling and disabling of plugins.
      */
     static void loadPlugins( QObject *parent, const QValueList<PluginInfo> &pluginInfos );
@@ -96,7 +96,7 @@ public:
      * Load the plugin libraries specified by the list @p pluginInfos, make the
      * Plugin objects children of @p parent, and use the given @p instance.
      *
-     * It is recommended to use the last @ref loadPlugins method instead,
+     * It is recommended to use the last loadPlugins method instead,
      * to support enabling and disabling of plugins.
      */
     static void loadPlugins( QObject *parent, const QValueList<PluginInfo> &pluginInfos, const KInstance * instance );
@@ -120,7 +120,7 @@ public:
 
     /**
      * Returns a list of plugin objects loaded for @p parent. This
-     * functions basically calls the @ref queryList method of @ref
+     * functions basically calls the queryList method of 
      * QObject to retrieve the list of child objects inheriting
      * KParts::Plugin .
      **/
@@ -130,7 +130,7 @@ protected:
     /**
      * Look for plugins in the @p instance's "data" directory (+"/kpartplugins")
      *
-     * @return A list of @ref QDomDocument s, containing the parsed xml documents returned by plugins.
+     * @return A list of QDomDocument s, containing the parsed xml documents returned by plugins.
      */
     static QValueList<Plugin::PluginInfo> pluginInfos( const KInstance * instance );
 

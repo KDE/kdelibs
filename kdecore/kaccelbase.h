@@ -40,16 +40,16 @@ class QWidget;
  *
  * Allow an user to configure
  * key bindings through application configuration files or through the
- * @ref KKeyChooser GUI.
+ * KKeyChooser GUI.
  *
- * A @ref KAccel contains a list of accelerator items. Each accelerator item
+ * A KAccel contains a list of accelerator items. Each accelerator item
  * consists of an action name and a keyboard code combined with modifiers
  * (Shift, Ctrl and Alt.)
  *
  * For example, "Ctrl+P" could be a shortcut for printing a document. The key
  * codes are listed in ckey.h. "Print" could be the action name for printing.
  * The action name identifies the key binding in configuration files and the
- * @ref KKeyChooser GUI.
+ * KKeyChooser GUI.
  *
  * When pressed, an accelerator key calls the slot to which it has been
  * connected. Accelerator items can be connected so that a key will activate
@@ -71,7 +71,7 @@ class QWidget;
  * It is possible for a user to choose to have no key associated with
  * an action.
  *
- * The translated first argument for @ref insertItem() is used only
+ * The translated first argument for insertItem() is used only
  * in the configuration dialog.
  *\code
  * KAccel *a = new KAccel( myWindow );
@@ -89,7 +89,7 @@ class QWidget;
  *\endcode
  *
  * If a shortcut has a menu entry as well, you could insert them like
- * this. The example is again the @ref KStdAccel::Print from above.
+ * this. The example is again the KStdAccel::Print from above.
  *
  * \code
  * int id;
@@ -112,7 +112,7 @@ class QWidget;
  * \endcode
  *
  * Please keep the order right:  First insert all functions in the
- * acceleratior, then call a -> @ref readSettings() and @em then build your
+ * acceleratior, then call a -> readSettings() and @em then build your
  * menu structure.
  *
  * @short Configurable key binding support.
@@ -167,10 +167,10 @@ class KAccelBase
 	/**
 	 * Read all key associations from @p config, or (if @p config
 	 * is zero) from the application's configuration file
-	 * @ref KGlobal::config().
+	 * KGlobal::config().
 	 *
 	 * The group in which the configuration is stored can be
-	 * set with @ref setConfigGroup().
+	 * set with setConfigGroup().
 	 */
 	void readSettings( KConfigBase* pConfig = 0 );
 

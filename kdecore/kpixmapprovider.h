@@ -25,11 +25,11 @@
 
 /**
  * A tiny abstract class with just one method:
- * @ref pixmapFor()
+ * pixmapFor()
  *
  * It will be called whenever an icon is searched for @p text.
  *
- * Used e.g. by @ref KHistoryCombo
+ * Used e.g. by KHistoryCombo
  *
  * @author Carsten Pfeiffer <pfeiffer@kde.org>
  * @short an abstract interface for looking up icons
@@ -42,7 +42,7 @@ public:
      * You may subclass this and return a pixmap of size @p size for @p text.
      * @param text the text that is associated with the pixmap
      * @param size the size of the icon in pixels, 0 for defaylt size.
-     *             See @ref KIcon::StdSize.
+     *             See KIcon::StdSize.
      * @return the pixmap for the arguments, or null if there is none
      */
     virtual QPixmap pixmapFor( const QString& text, int size = 0 ) = 0;

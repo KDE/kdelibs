@@ -40,10 +40,10 @@ class KHelpMenuPrivate;
  * This class provides the standard KDE help menu with the default "about"
  * dialog boxes and help entry.
  *
- * This class is used in @ref KMainWindow so
+ * This class is used in KMainWindow so
  * normally you don't need to use this class yourself. However, if you
  * need the help menu or any of its dialog boxes in your code that is
- * not subclassed from @ref KMainWindow you should use this class.
+ * not subclassed from KMainWindow you should use this class.
  *
  * The usage is simple:
  *
@@ -60,9 +60,9 @@ class KHelpMenuPrivate;
  * \endcode
  *
  * IMPORTANT:
- * The first time you use @ref KHelpMenu::menu(), a @ref KPopupMenu object is
+ * The first time you use KHelpMenu::menu(), a KPopupMenu object is
  * allocated. Only one object is created by the class so if you call
- * @ref KHelpMenu::menu() twice or more, the same pointer is returned. The class
+ * KHelpMenu::menu() twice or more, the same pointer is returned. The class
  * will destroy the popupmenu in the destructor so do not delete this
  * pointer yourself.
  *
@@ -86,7 +86,7 @@ class KHelpMenuPrivate;
  * with no text argument If the text is missing the default dialog box
  * will not be displayed:
  *
- * Example 1 Using @ref showAboutApplication signal (preferred)
+ * Example 1 Using showAboutApplication signal (preferred)
  * \code
  *
  * void MyClass::myFunc()
@@ -148,7 +148,7 @@ class KHelpMenu : public QObject
      * @param aboutAppText User definable string that is used in the
      *        application specific dialog box. Note: The help menu will
      *        not open this dialog box if you don't define a string. See
-     *        @ref showAboutApplication() for more information.
+     * showAboutApplication() for more information.
      * @param showWhatsThis Decides whether a "Whats this" entry will be
      *        added to the dialog.
      *
@@ -172,7 +172,7 @@ class KHelpMenu : public QObject
     /**
      * Destructor
      *
-     * Destroys dialogs and the menu pointer retuned by @ref #menu
+     * Destroys dialogs and the menu pointer retuned by menu
      */
     ~KHelpMenu();
 
@@ -201,7 +201,7 @@ class KHelpMenu : public QObject
     /**
      * Opens an application specific dialog box. The dialog box will display
      * the string that was defined in the constructor. If that string was
-     * empty the @ref showAboutApplication() is emitted instead.
+     * empty the showAboutApplication() is emitted instead.
      */
     void aboutApplication();
 
@@ -232,16 +232,16 @@ class KHelpMenu : public QObject
     /**
      * This slot will delete a dialog (about kde or bug report) if the
      * dialog pointer is not zero and the the dialog is not visible. This
-     * slot is activated by a one shot timer started in @ref dialogHidden
+     * slot is activated by a one shot timer started in dialogHidden
      */
     void timerExpired();
 
   signals:
     /**
-     * This signal is emitted from @ref aboutApplication() if no
+     * This signal is emitted from aboutApplication() if no
      * "about application" string has been defined. The standard
      * application specific dialog box that is normally activated in
-     * @ref aboutApplication() will not be displayed when this signal
+     * aboutApplication() will not be displayed when this signal
      * is emitted.
      */
     void showAboutApplication();

@@ -47,7 +47,7 @@ class KTempFilePrivate;
  *
  * KTempFile does not create any missing directories, but locateLocal() does.
  *
- * See also @ref KStandardDirs
+ * See also KStandardDirs
  *
  * @author Waldo Bastian <bastian@kde.org>
  */
@@ -135,21 +135,21 @@ public:
    FILE *fstream();
 
    /**
-    * Returns the @ref QTextStream for writing.
+    * Returns the QTextStream for writing.
     * @return QTextStream open for writing to the file, or 0
     *         if opening the file failed
     **/
    QTextStream *textStream();
 
    /**
-    * Returns a @ref QDataStream for writing.
+    * Returns a QDataStream for writing.
     * @return QDataStream open for writing to the file, or 0 
     *         if opening the file failed
     **/
    QDataStream *dataStream();
 
    /**
-    * Returns a @ref QFile.
+    * Returns a QFile.
     * @return A QFile open for writing to the file, or 0 if 
     *         opening the file failed.
     **/
@@ -164,7 +164,7 @@ public:
    /**
     * Closes the file.
     * 
-    * See @ref #status() for details about errors.
+    * See status() for details about errors.
     * @return true if successful, or false if an error has occurred.
     **/
    bool close();

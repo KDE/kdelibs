@@ -31,11 +31,11 @@
  * Synth (AWE) device output class . SynthOut is used to send MIDI events to
  * a general synthesizer, such as AWE synth.
  *
- * SynthOut inherits @ref MidiOut and supports the same simple API.
+ * SynthOut inherits MidiOut and supports the same simple API.
  *
  * The preferred way to use this class is by selecting a synth (or AWE)
- * device with @ref MidiManager::setDefaultDevice(), and use a 
- * @ref MidiManager object.
+ * device with MidiManager::setDefaultDevice(), and use a 
+ * MidiManager object.
  *
  * @short Sends MIDI events to AWE synthesizers
  * @version 0.9.5 17/01/2000
@@ -49,7 +49,7 @@ class SynthOut : public MidiOut
 
   public:
     /**
-     * Constructor. See @ref MidiOut::MidiOut() for more information.
+     * Constructor. See MidiOut::MidiOut() for more information.
      */
     SynthOut(int d=0);
 
@@ -59,52 +59,52 @@ class SynthOut : public MidiOut
     ~SynthOut();
 
     /**
-     * See @ref MidiOut::openDev()
+     * See MidiOut::openDev()
      */
     void openDev	(int sqfd);
 
     /**
-     * See @ref MidiOut::closeDev()
+     * See MidiOut::closeDev()
      */
     void closeDev(void);
 
     /**
-     * See @ref MidiOut::initDev()
+     * See MidiOut::initDev()
      */
     void initDev	(void);
 
     /**
-     * See @ref MidiOut::noteOn()
+     * See MidiOut::noteOn()
      */
     void noteOn		( uchar chn, uchar note, uchar vel );
 
     /**
-     * See @ref MidiOut::noteOff()
+     * See MidiOut::noteOff()
      */
     void noteOff	( uchar chn, uchar note, uchar vel );
 
     /**
-     * See @ref MidiOut::keyPressure()
+     * See MidiOut::keyPressure()
      */
     void keyPressure	( uchar chn, uchar note, uchar vel );
 
     /**
-     * See @ref MidiOut::chnPatchChange()
+     * See MidiOut::chnPatchChange()
      */
     void chnPatchChange	( uchar chn, uchar patch );
 
     /**
-     * See @ref MidiOut::chnPressure()
+     * See MidiOut::chnPressure()
      */
     void chnPressure	( uchar chn, uchar vel );
 
     /**
-     * See @ref MidiOut::chnPitchBender()
+     * See MidiOut::chnPitchBender()
      */
     void chnPitchBender	( uchar chn, uchar lsb,  uchar msb );
 
     /**
-     * See @ref MidiOut::chnController()
+     * See MidiOut::chnController()
      */
     void chnController	( uchar chn, uchar ctl , uchar v ); 
 

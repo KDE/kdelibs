@@ -26,7 +26,7 @@ class KArrowButtonPrivate;
  * Draws a button which shows an arrow pointing into a certain direction. The
  * arrow's alignment on the button depends on the direction it's pointing to,
  * e.g. a left arrow is aligned at the left border, a upwards arrow at the top
- * border. This class honours the currently configured @ref KStyle when drawing
+ * border. This class honours the currently configured KStyle when drawing
  * the arrow.
  * @short Draws a button with an arrow.
  * @author Frerich Raabe
@@ -52,7 +52,7 @@ class KArrowButton : public QPushButton
 		virtual ~KArrowButton();
 
 		/**
-		 * Reimplemented from @ref QPushButton.
+		 * Reimplemented from QPushButton.
 		 */
 		virtual QSize sizeHint() const;
 
@@ -67,7 +67,7 @@ class KArrowButton : public QPushButton
 
 	protected:
 		/**
-		 * Reimplemented from @ref QPushButton.
+		 * Reimplemented from QPushButton.
 		 */
 		virtual void drawButton(QPainter *);
 

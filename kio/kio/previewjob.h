@@ -61,7 +61,7 @@ namespace KIO {
 
         /**
          * Removes an item from preview processing. Use this if you passed
-         * an item to @ref filePreview and want to delete it now.
+         * an item to filePreview and want to delete it now.
          *
          * @param item the item that should be removed from the preview queue
          */
@@ -122,7 +122,7 @@ namespace KIO {
     };
 
     /**
-     * Creates a @ref PreviewJob to generate or retrieve a preview image 
+     * Creates a PreviewJob to generate or retrieve a preview image 
      * for the given URL.
      *
      * @param items files to get previews for
@@ -144,7 +144,7 @@ namespace KIO {
     PreviewJob *filePreview( const KFileItemList &items, int width, int height = 0, int iconSize = 0, int iconAlpha = 70, bool scale = true, bool save = true, const QStringList *enabledPlugins = 0 );
 
     /**
-     * Creates a @ref PreviewJob to generate or retrieve a preview image 
+     * Creates a PreviewJob to generate or retrieve a preview image 
      * for the given URL.
      *
      * @param items files to get previews for

@@ -110,22 +110,22 @@ private:
  * specified font in a table
  *
  * You can specify the font whose characters should be displayed via
- * @ref setFont(). Using @ref enableFontCombo() you can allow the
+ * setFont(). Using enableFontCombo() you can allow the
  * user to choose the font from a combob-box. As only 256 characters
  * are displayed at once in the table, using the spinbox on the top
  * the user can choose starting from which character the table
  * displays them. This spinbox also can be enabled or disabled using
- * @ref enableTableSpinBox().
+ * enableTableSpinBox().
  *
  * KCharSelect supports keyboard and mouse navigation. Click+Move
  * always selects the character below the mouse cursor. Using the
  * arrow keys moves the focus mark around and pressing RETURN
  * or SPACE selects the cell which contains the focus mark.
  *
- * To get the current selected character, use the @ref chr()
+ * To get the current selected character, use the chr()
  * method. You can set the character which should be displayed with
- * @ref setChar() and the table number which should be displayed with
- * @ref setTableNum().
+ * setChar() and the table number which should be displayed with
+ * setTableNum().
  *
  * @short Character-Selection Widget
  * @version $Id$

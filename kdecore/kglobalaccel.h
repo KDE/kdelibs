@@ -33,7 +33,7 @@ class KGlobalAccelPrivate;
 
 /**
 * KGlobalAccel allows you to have global accelerators that are independent of
-* the focused window. Unlike @ref KAccel it does not matter which window is 
+* the focused window. Unlike KAccel it does not matter which window is 
 * currently active.
 *
 * @see KAccel
@@ -47,8 +47,8 @@ class KGlobalAccel : public QObject
 	Q_OBJECT
  public:
 	/**
-	 * Creates a new KGlobalAccel object with the given @ref pParent and
-	 * @ref psName.
+	 * Creates a new KGlobalAccel object with the given pParent and
+	 * psName.
 	 * @param pParent the parent of the QObject
 	 * @param psName the name of the QObject
 	 */
@@ -80,7 +80,7 @@ class KGlobalAccel : public QObject
 	 *
 	 * @param sAction The internal name of the action.
 	 * @param sLabel An i18n'ized short description of the action displayed when
-	 *  using @ref KKeyChooser to reconfigure the shortcuts.
+	 *  using KKeyChooser to reconfigure the shortcuts.
 	 * @param sWhatsThis An extended description of the action.
 	 * @param cutDef3 The default 3 modifier scheme shortcut.
 	 * @param cutDef4 The default 4 modifier scheme shortcut.
@@ -164,7 +164,7 @@ class KGlobalAccel : public QObject
 	/**
 	 * Read all shortcuts from @p pConfig, or (if @p pConfig
 	 * is zero) from the application's configuration file
-	 * @ref KGlobal::config().
+	 * KGlobal::config().
 	 * @param pConfig the configuration file to read from, or 0 for the application
 	 *                 configuration file
 	 * @return true if successful, false otherwise

@@ -27,12 +27,12 @@
  * Change Cursor over Link.
  *
  * There is a new signal executed(). It gets connected to either
- * @ref QIconView::clicked() or @ref QIconView::doubleClicked() depending on the KDE
+ * QIconView::clicked() or QIconView::doubleClicked() depending on the KDE
  * wide Single Click/Double Click settings. It is strongly recommended that
  * you use this signal instead of the above mentioned. This way you don´t
  * need to care about the current settings.
  * If you want to get informed when the user selects something connect to the
- * @ref QIconView::selectionChanged() signal.
+ * QIconView::selectionChanged() signal.
  *
  * @short A variant of QIconView that honors KDE's system-wide settings.
  **/
@@ -87,7 +87,7 @@ signals:
    * setting the user clicked or double clicked on that item.
    * @param item is the pointer to the executed iconview item.
    *
-   * Note that you may not delete any @ref QIconViewItem objects in slots
+   * Note that you may not delete any QIconViewItem objects in slots
    * connected to this signal.
    */
   void executed( QIconViewItem *item );
@@ -99,7 +99,7 @@ signals:
    * @param item is the pointer to the executed iconview item.
    * @param pos is the position where the user has clicked
    *
-   * Note that you may not delete any @ref QIconViewItem objects in slots
+   * Note that you may not delete any QIconViewItem objects in slots
    * connected to this signal.
    */
   void executed( QIconViewItem *item, const QPoint &pos );
@@ -110,12 +110,12 @@ signals:
    * @param item is the pointer to the clicked iconview item.
    * @param pos is the position where the user has clicked, and
    *
-   * Note that you may not delete any @ref QIconViewItem objects in slots
+   * Note that you may not delete any QIconViewItem objects in slots
    * connected to this signal.
    *
    * This signal is more or less here for the sake of completeness.
    * You should normally not need to use this. In most cases it´s better
-   * to use @ref #executed() instead.
+   * to use executed() instead.
    */
   void doubleClicked( QIconViewItem *item, const QPoint &pos );
 

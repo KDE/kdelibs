@@ -121,7 +121,7 @@ public:
 
     /**
      * Alternative method for writing: call prepareWriting(), then feed the data
-     * in small chunks using @ref writeData(), and call doneWriting() when done.
+     * in small chunks using writeData(), and call doneWriting() when done.
      * @param name can include subdirs e.g. path/to/the/file
      * @param user the user owning the file
      * @param group the group owning the file
@@ -143,7 +143,7 @@ public:
                         uint size, mode_t perm, time_t atime, time_t mtime,
                         time_t ctime, const char* data );
     /**
-     * Write data to a file that has been created using @ref prepareWriting().
+     * Write data to a file that has been created using prepareWriting().
      * @param data a pointer to the data
      * @param size the size of the chunk
      * @return true if successful, false otherwise
@@ -151,7 +151,7 @@ public:
     bool writeData( const char* data, uint size ); // TODO make virtual
 
     /**
-     * Write data to a file that has been created using @ref prepareWriting().
+     * Write data to a file that has been created using prepareWriting().
      * @param size the size of the file
      * @return true if successful, false otherwise
      */

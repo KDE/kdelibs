@@ -73,7 +73,7 @@ class KCardGsmImplementation:public KCardImplementation{
    *   @param fileID For GSM cards this fileID is a two byte identifier
    *   @returns Returns -1 in case of error, and 0 if the file has been
    *   successfully selected.
-   *   In error case use @ref lastErrorMessage to retrieve a human readable
+   *   In error case use lastErrorMessage to retrieve a human readable
    *   error explanation.
    *   
    */
@@ -87,7 +87,7 @@ class KCardGsmImplementation:public KCardImplementation{
    *   
    *   @returns a string containing the the last selected file information header or 
    *   QString::null if there is no a current selected file.
-   *   In error case use @ref lastErrorMessage to retrieve a human readable
+   *   In error case use lastErrorMessage to retrieve a human readable
    *   error explanation.
    */
   
@@ -100,7 +100,7 @@ class KCardGsmImplementation:public KCardImplementation{
    *  @param fileContent will contain the file content after the reading operation
    *
    *  @returns -1 in case of error and 0 if the file content has been read
-   *  In error case use @ref lastErrorMessage to retrieve a human readable
+   *  In error case use lastErrorMessage to retrieve a human readable
    *  error explanation.
    *
    *  @see readBinary 
@@ -118,7 +118,7 @@ class KCardGsmImplementation:public KCardImplementation{
    *  @param lenght contains the length of the data to be read
    *
    *  @returns -1 in case of error and 0 if the file content has been read
-   *  In error case use @ref lastErrorMessage to retrieve a human readable
+   *  In error case use lastErrorMessage to retrieve a human readable
    *  error explanation.
    *
    *  @see readBinary 
@@ -136,7 +136,7 @@ class KCardGsmImplementation:public KCardImplementation{
    *  @param length contains the length of the data to write, this may be different from 'newContent' length value.
    *
    *  @returns -1 in case of error and 0 if the file content has been updated
-   *  In error case use @ref lastErrorMessage to retrieve a human readable
+   *  In error case use lastErrorMessage to retrieve a human readable
    *  error explanation.
    *
    */
@@ -151,7 +151,7 @@ class KCardGsmImplementation:public KCardImplementation{
    *  This function copies the number of bytes in 'newContent' corresponding to the  the transparent file length (from left to right)
    *
    *  @returns -1 in case of error and 0 if the file content has been updated
-   *  In error case use @ref lastErrorMessage to retrieve a human readable
+   *  In error case use lastErrorMessage to retrieve a human readable
    *  error explanation.
    *
    */
@@ -169,7 +169,7 @@ class KCardGsmImplementation:public KCardImplementation{
    *  @param recordNumber will contain the record number to read if accessMode is set to 'absolute'
    *  
    *  @returns -1 in case of error and 0 if the file content has been read
-   *  In error case use @ref lastErrorMessage to retrieve a human readable
+   *  In error case use lastErrorMessage to retrieve a human readable
    *  error explanation.
    */
 
@@ -184,7 +184,7 @@ class KCardGsmImplementation:public KCardImplementation{
    *  @param mode contains the access mode use to update the record
    *  This function copies the number of bytes from 'recordContent' QString corresponding to the record length (from left to right)
    *  @returns -1 in case of error and 0 if the file content has been updated
-   *  In error case use @ref lastErrorMessage to retrieve a human readable
+   *  In error case use lastErrorMessage to retrieve a human readable
    *  error explanation.
    **/
 
@@ -200,7 +200,7 @@ class KCardGsmImplementation:public KCardImplementation{
    * @param recordNumber will contain the record where the patter is found or -1 if no pattern was found
    * Type 2 search is used by default (see ETSI 11.11); so the pointer in the record file will be set to the record were the patter is found.
    *  @returns -1 in case of error and 0 if the search was successful
-   *  In error case use @ref lastErrorMessage to retrieve a human readable
+   *  In error case use lastErrorMessage to retrieve a human readable
    *  error explanation.
    */
 
@@ -212,7 +212,7 @@ class KCardGsmImplementation:public KCardImplementation{
    * @param CHV1 contains the value to be presented to the card
    *
    *  @returns -1 in case of error and 0 if the code was successfully verified
-   *  In error case use @ref lastErrorMessage to retrieve a human readable
+   *  In error case use lastErrorMessage to retrieve a human readable
    *  error explanation.
    *
    */
@@ -224,7 +224,7 @@ class KCardGsmImplementation:public KCardImplementation{
    * @param CHV1 contains the value to be presented to the card
    *
    *  @returns -1 in case of error and 0 if the code was successfully verified
-   *  In error case use @ref lastErrorMessage to retrieve a human readable
+   *  In error case use lastErrorMessage to retrieve a human readable
    *  error explanation.
    *
    */
@@ -238,7 +238,7 @@ class KCardGsmImplementation:public KCardImplementation{
    *
    *Those secret codes length is fixed to of 8 bytes, so only the first 8 bytes of both QString parameters  will be presented to the card.
    *  @returns -1 in case of error and 0 if the code was successfully unblocked
-   *  In error case use @ref lastErrorMessage to retrieve a human readable
+   *  In error case use lastErrorMessage to retrieve a human readable
    *  error explanation.
    *
    */
@@ -252,7 +252,7 @@ class KCardGsmImplementation:public KCardImplementation{
    *
    *Those secret codes length is fixed to of 8 bytes, so only the first 8 bytes of both QString parameters  will be presented to the card.
    *  @returns -1 in case of error and 0 if the code was successfully unblocked
-   *  In error case use @ref lastErrorMessage to retrieve a human readable
+   *  In error case use lastErrorMessage to retrieve a human readable
    *  error explanation.
    *
    */
@@ -265,7 +265,7 @@ class KCardGsmImplementation:public KCardImplementation{
    * @param CHV1 contains the value to be presented to the card
    *
    *  @returns -1 in case of error and 0 if the code was successfully disabled
-   *  In error case use @ref lastErrorMessage to retrieve a human readable
+   *  In error case use lastErrorMessage to retrieve a human readable
    *  error explanation.
    *
    */
@@ -276,7 +276,7 @@ class KCardGsmImplementation:public KCardImplementation{
    * @param CHV1 contains the value to be presented to the card
    *
    *  @returns -1 in case of error and 0 if the code was successfully enabled
-   *  In error case use @ref lastErrorMessage to retrieve a human readable
+   *  In error case use lastErrorMessage to retrieve a human readable
    *  error explanation.
    *
    */
@@ -290,7 +290,7 @@ class KCardGsmImplementation:public KCardImplementation{
    *
    *Those secret codes length is fixed to of 8 bytes, so only the first 8 bytes of both QString parameters  will be presented to the card.
    *  @returns -1 in case of error and 0 if the code was successfully unblocked
-   *  In error case use @ref lastErrorMessage to retrieve a human readable
+   *  In error case use lastErrorMessage to retrieve a human readable
    *  error explanation.
    *
    */
@@ -304,7 +304,7 @@ class KCardGsmImplementation:public KCardImplementation{
    *
    *Those secret codes length is fixed to of 8 bytes, so only the first 8 bytes of both QString parameters  will be presented to the card.
    *  @returns -1 in case of error and 0 if the code was successfully unblocked
-   *  In error case use @ref lastErrorMessage to retrieve a human readable
+   *  In error case use lastErrorMessage to retrieve a human readable
    *  error explanation.
    *
    */
@@ -315,7 +315,7 @@ class KCardGsmImplementation:public KCardImplementation{
    *This method invalidates the currently selected file. No check is done if access conditions are fulfilled
    *
    *  @returns -1 in case of error and 0 if the code was successfully unblocked
-   *  In error case use @ref lastErrorMessage to retrieve a human readable
+   *  In error case use lastErrorMessage to retrieve a human readable
    *  error explanation.
    */
 
@@ -325,7 +325,7 @@ class KCardGsmImplementation:public KCardImplementation{
    *This method rehabilitates the currently selected file. No check is done if access conditions are fulfilled
    *
    *  @returns -1 in case of error and 0 if the code was successfully unblocked
-   *  In error case use @ref lastErrorMessage to retrieve a human readable
+   *  In error case use lastErrorMessage to retrieve a human readable
    *  error explanation.
    */
 
@@ -335,7 +335,7 @@ class KCardGsmImplementation:public KCardImplementation{
 
   /**
    * Provides a text describing the last error appeared while accessing the card. This error may be due to problems communicating with the card or more high level problems as trying to update a record on a transparent files.
-   This second kind of errors can be differentiated looking @ref lastStatus
+   This second kind of errors can be differentiated looking lastStatus
    */
 
   QString lastErrorMessage () const {return _errorMessage;};

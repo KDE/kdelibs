@@ -27,7 +27,7 @@
 class QSocketNotifier;
 
 /**
- * @short Used internally by @ref KProcess
+ * @short Used internally by KProcess
  * @internal
  * @author Christian Czezatke <e9025461@student.tuwien.ac.at>
  *
@@ -82,14 +82,14 @@ public:
 
   /**
    * Call this function to defer processing of the data that became available
-   * on @ref notifierFd().
+   * on notifierFd().
    * @since 3.2
    */
   void unscheduleCheck();
 
   /**
    * This function @em must be called at some point after calling
-   * @ref unscheduleCheck().
+   * unscheduleCheck().
    * @since 3.2
    */
   void rescheduleCheck();

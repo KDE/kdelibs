@@ -49,7 +49,7 @@ public:
    * styles. This is only useful to applications that do not display a GUI
    * normally. If you do create an application with @p allowStyles set to false
    * it normally runs in the background but under special circumstances
-   * displays widgets.  Call @ref KApplication::enableStyles() before 
+   * displays widgets.  Call KApplication::enableStyles() before 
    * displaying any widgets.
    * @param GUIenabled Set to false to disable all GUI stuff. This implies
    * no styles either.
@@ -72,7 +72,7 @@ public:
   /**
    * Forks and registers with dcop.
    *
-   * The command line arguments are being sent via DCOP to @ref newInstance()
+   * The command line arguments are being sent via DCOP to newInstance()
    * and will be received once the application enters the event loop.
    *
    * Typically this is used like:
@@ -91,7 +91,7 @@ public:
    *    a.exec();
    * }
    * \endcode
-   * Note that it's not necessary to call @ref start() explicitly. It will be
+   * Note that it's not necessary to call start() explicitly. It will be
    * called automatically before creating KUniqueApplication if it hasn't
    * been called yet, without any performance impact.
    *
@@ -109,7 +109,7 @@ public:
    * Dispatches any incoming DCOP message for a new instance.
    *
    * If it is not a request for a new instance, return false.
-   * Overloaded from @ref DCOPObject to make sure that the application
+   * Overloaded from DCOPObject to make sure that the application
    * stays unique.
    * @param fun DCOP function signature
    * @param data the data for the arguments

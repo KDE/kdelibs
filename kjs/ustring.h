@@ -105,8 +105,8 @@ namespace KJS {
   /**
    * @short Dynamic reference to a string character.
    *
-   * UCharReference is the dynamic counterpart of @ref UChar. It's used when
-   * characters retrieved via index from a @ref UString are used in an
+   * UCharReference is the dynamic counterpart of UChar. It's used when
+   * characters retrieved via index from a UString are used in an
    * assignment expression (and therefore can't be treated as being const):
    * \code
    * UString s("hello world");
@@ -114,7 +114,7 @@ namespace KJS {
    * \endcode
    *
    * If that sounds confusing your best bet is to simply forget about the
-   * existence of this class and treat is as being identical to @ref UChar.
+   * existence of this class and treat is as being identical to UChar.
    */
   class UCharReference {
     friend class UString;
@@ -261,7 +261,7 @@ namespace KJS {
      */
     UString(const QString &);
     /**
-     * Convenience declaration only ! See @ref UString(const QString&).
+     * Convenience declaration only ! See UString(const QString&).
      */
     UString(const DOM::DOMString &);
     /**
@@ -297,7 +297,7 @@ namespace KJS {
     UString &append(const UString &);
 
     /**
-     * @return The string converted to the 8-bit string type @ref CString().
+     * @return The string converted to the 8-bit string type CString().
      */
     CString cstring() const;
     /**
@@ -346,7 +346,7 @@ namespace KJS {
     /**
      * Use this if you want to make sure that this string is a plain ASCII
      * string. For example, if you don't want to lose any information when
-     * using @ref cstring() or @ref ascii().
+     * using cstring() or ascii().
      *
      * @return True if the string doesn't contain any non-ASCII characters.
      */

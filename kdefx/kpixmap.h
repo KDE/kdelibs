@@ -144,10 +144,10 @@ public:
 	 * specified (default), the loader reads a few bytes from the
 	 * header to guess the file format.
 	 *
-	 * See the @ref convertFromImage() documentation for a description
+	 * See the convertFromImage() documentation for a description
 	 * of the conversion_flags argument.
 	 *
-	 * The @ref QImageIO documentation lists the supported image
+	 * The QImageIO documentation lists the supported image
 	 * formats and explains how to add extra formats.
 	 *
 	 * @return @p true if successful, or false if the pixmap

@@ -39,7 +39,7 @@ namespace KMediaPlayer
  *
  * There are two servicetypes for Player:  KMediaPlayer/Player and
  * KMediaPlayer/Engine.  KMediaPlayer/Player provides a widget (accessable
- * through @ref view as well as XML GUI KActions.  KMediaPlayer/Engine omits
+ * through view as well as XML GUI KActions.  KMediaPlayer/Engine omits
  * the user interface facets, for those who wish to provide their own
  * interface.
  */
@@ -60,7 +60,7 @@ public:
 
 	virtual ~Player(void);
 
-	/** A convenience function returning a pointer to the @ref View for this
+	/** A convenience function returning a pointer to the View for this
 	 * Player, or 0 if this Player has no GUI.
 	 */
 	virtual View *view(void) = 0;

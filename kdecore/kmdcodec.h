@@ -387,7 +387,7 @@ class KMD5Private;
  * </PRE>
  *
  * To cut down on the unnecessary overhead of creating multiple KMD5
- * objects, you can simply invoke @ref reset() to reuse the same object
+ * objects, you can simply invoke reset() to reuse the same object
  * in making another calculation:
  *
  * <PRE>

@@ -63,8 +63,8 @@ public:
 
   /**
    * Sets a URL for the location of the sound file. When using this
-   * function, @ref isIntern() will return 'false' until you use
-   * @ref setData().
+   * function, isIntern() will return 'false' until you use
+   * setData().
    *
    * @param url  The location URL of the sound file.
    */
@@ -72,7 +72,7 @@ public:
 
   /**
    * Sets the raw data of the sound. When using this function,
-   * @ref isIntern() will return 'true' until you use @ref setUrl().
+   * isIntern() will return 'true' until you use setUrl().
    *
    * @param data  The raw data of the sound.
    */
@@ -81,9 +81,9 @@ public:
   /**
    * Returns whether the sound is described by a URL (extern) or
    * by the raw data (intern).
-   * When this method returns 'true' you can use @ref data() to
+   * When this method returns 'true' you can use data() to
    * get the raw data. Otherwise you can request the URL of this
-   * sound by @ref url() and load the raw data from that location.
+   * sound by url() and load the raw data from that location.
    */
   bool isIntern() const;
 

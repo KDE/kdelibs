@@ -34,7 +34,7 @@ namespace KIO {
 enum RenameDlg_Mode { M_OVERWRITE = 1, M_OVERWRITE_ITSELF = 2, M_SKIP = 4, M_SINGLE = 8, M_MULTI = 16, M_RESUME = 32, M_NORENAME = 64 };
 
 /**
- * The result of @ref open_RenameDlg().
+ * The result of open_RenameDlg().
  */
 enum RenameDlg_Result { R_RESUME = 6, R_RESUME_ALL = 7, R_OVERWRITE = 4, R_OVERWRITE_ALL = 5, R_SKIP = 2, R_AUTO_SKIP = 3, R_RENAME = 1, R_CANCEL = 0 };
 
@@ -109,13 +109,13 @@ private:
    * \relate KIO::RenameDlg
    * Construct a modal, parent-less "rename" dialog, and return
    * a result code, as well as the new dest. Much easier to use than the
-   * class @ref RenameDlg directly.
+   * class RenameDlg directly.
 
    * @param caption the caption for the dialog box
    * @param src the file/dir we're trying to copy, as it's part of the text message
    * @param dest the destination file/dir, i.e. the one that already exists
    * @param mode parameters for the dialog (which buttons to show...),
-   *             see @ref RenameDlg_Mode
+   *             see RenameDlg_Mode
    * @param newDest the new destination path, valid if R_RENAME was returned.
    * @param sizeSrc size of source file
    * @param sizeDest size of destination file

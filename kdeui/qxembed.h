@@ -41,19 +41,19 @@ class QXEmbedData;
  * There are two different ways of using QXEmbed, from the embedder's
  * or from the client's side.  When using it from the embedder's side,
  * you already know the window identifier of the window that should be
- * embedded. Simply call @ref #embed() with this identifier as parameter.
+ * embedded. Simply call embed() with this identifier as parameter.
  *
  * Embedding from the client's side requires that the client knows the
  * window identifier of the respective embedder widget. Use either
- * @ref #embedClientIntoWindow() or the high-level wrapper
- * @ref #processClientCmdline().
+ * embedClientIntoWindow() or the high-level wrapper
+ * processClientCmdline().
  * 
- * If a window has been embedded successfully, @ref #embeddedWinId() returns
+ * If a window has been embedded successfully, embeddedWinId() returns
  * its id.
  * 
- * Reimplement the change handler @ref #windowChanged() to catch embedding or
+ * Reimplement the change handler windowChanged() to catch embedding or
  * the destruction of embedded windows. In the latter case, the
- * embedder also emits a signal @ref #embeddedWindowDestroyed() for
+ * embedder also emits a signal embeddedWindowDestroyed() for
  * convenience.
  *
  * @short The QXEmbed widget is a graphical socket that can embed an external X-Window.
@@ -81,9 +81,9 @@ public:
     /**
      * Embedded applications should call this function to make sure 
      * they support the XEMBED protocol. It is called automatically
-     * when you use @ref #embedClientIntoWindow() or 
-     * @ref #processClientCmdline(). Clients might have to call it
-     * manually when you use @ref #embed().
+     * when you use embedClientIntoWindow() or 
+     * processClientCmdline(). Clients might have to call it
+     * manually when you use embed().
      */
     static void initialize();
 
@@ -120,7 +120,7 @@ public:
      * that should be embedded.  Often it is vice versa: the client knows
      * about its target embedder. In that case, it is not necessary to call
      * embed(). Instead, the client will call the static function
-     * @ref #embedClientIntoWindow().
+     * embedClientIntoWindow().
      *
      * @param w the identifier of the window to embed
      * @param proto is the embedding protocol to use
@@ -171,7 +171,7 @@ public:
 
     /**
      * Specifies that this widget can use additional space, and that it can
-     * survive on less than @ref #sizeHint().
+     * survive on less than sizeHint().
     */
     QSizePolicy sizePolicy() const;
 
@@ -206,7 +206,7 @@ protected:
     /**
      * A change handler that indicates that the embedded window has been
      * changed.  The window handle can also be retrieved with
-     * @ref #embeddedWinId().
+     * embeddedWinId().
      *
      * @param w the handle of the window that changed
      */

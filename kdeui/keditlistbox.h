@@ -110,7 +110,7 @@ public:
       /**
        * Another constructor, which allows to use a custom editing widget
        * instead of the standard KLineEdit widget. E.g. you can use a 
-       * @ref KURLRequester or a @ref KComboBox as input widget. The custom
+       * KURLRequester or a KComboBox as input widget. The custom
        * editor must consist of a lineedit and optionally another widget that
        * is used as representation. A KComboBox or a KURLRequester have a
        * KLineEdit as child-widget for example, so the KComboBox is used as
@@ -152,27 +152,27 @@ public:
       QPushButton* downButton() const     { return servDownButton; }
 
       /**
-       * See @ref QListBox::count()
+       * See QListBox::count()
        */
       int count() const   { return int(m_listBox->count()); }
       /**
-       * See @ref QListBox::insertStringList()
+       * See QListBox::insertStringList()
        */
       void insertStringList(const QStringList& list, int index=-1);
       /**
-       * See @ref QListBox::insertStringList()
+       * See QListBox::insertStringList()
        */
       void insertStrList(const QStrList* list, int index=-1);
       /**
-       * See @ref QListBox::insertStrList()
+       * See QListBox::insertStrList()
        */
       void insertStrList(const QStrList& list, int index=-1);
       /**
-       * See @ref QListBox::insertStrList()
+       * See QListBox::insertStrList()
        */
       void insertStrList(const char ** list, int numStrings=-1, int index=-1);
       /**
-       * See @ref QListBox::insertItem()
+       * See QListBox::insertItem()
        */
       void insertItem(const QString& text, int index=-1) {m_listBox->insertItem(text,index);}
       /**
@@ -180,15 +180,15 @@ public:
        */
       void clear();
       /**
-       * See @ref QListBox::text()
+       * See QListBox::text()
        */
       QString text(int index) const { return m_listBox->text(index); }
       /**
-       * See @ref QListBox::currentItem()
+       * See QListBox::currentItem()
        */
       int currentItem() const;
       /**
-       * See @ref QListBox::currentText()
+       * See QListBox::currentText()
        */
       QString currentText() const  { return m_listBox->currentText(); }
 

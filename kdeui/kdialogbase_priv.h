@@ -25,7 +25,7 @@
 #include <kpushbutton.h>
 
 /**
- * Used internally by @ref KDialogBase.
+ * Used internally by KDialogBase.
  * @internal
  */
 class KDialogBaseButton : public KPushButton
@@ -42,7 +42,7 @@ class KDialogBaseButton : public KPushButton
 };
 
 /**
- * Used internally by @ref KDialogBase.
+ * Used internally by KDialogBase.
  * @internal
  */
 class KDialogBaseTile : public QObject

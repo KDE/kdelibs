@@ -256,7 +256,7 @@ class Manager : private ManagerImplListener
       if resource type doesn't exist.
      
       @param type   The type of the resource, one of those returned 
-                    by @ref resourceTypeNames()
+                    by resourceTypeNames()
     */
     T *createResource( const QString& type )
     {

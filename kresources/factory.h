@@ -69,7 +69,7 @@ class Factory
      * Returns the config widget for the given resource type,
      * or a null pointer if resource type doesn't exist.
      *
-     * @param type   The type of the resource, returned by @ref resources()
+     * @param type   The type of the resource, returned by resources()
      * @param resource The resource to be editted.
      * @param parent The parent widget
      */
@@ -79,7 +79,7 @@ class Factory
      * Returns a pointer to a resource object or a null pointer
      * if resource type doesn't exist.
      *
-     * @param type   The type of the resource, returned by @ref resources()
+     * @param type   The type of the resource, returned by resources()
      * @param ab     The address book, the resource should belong to
      * @param config The config object where the resource get it settings from, or 0 if a new resource should be created.
      */

@@ -51,7 +51,7 @@
  *
  * NOTE: fixup isn't yet implemented.
  *
- * @short A @ref QValidator to (dis)allow certain strings
+ * @short A QValidator to (dis)allow certain strings
  * @author Marc Mutz <mutz@kde.org>
  **/
 class KStringListValidator : public QValidator {
@@ -106,7 +106,7 @@ private:
  *
  * The fixup will simply remove all non-token characters.
  *
- * @short A @ref QValidator for mime types.
+ * @short A QValidator for mime types.
  * @author Marc Mutz <mutz@kde.org>
  **/
 class KMimeTypeValidator : public QValidator

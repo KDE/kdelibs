@@ -31,17 +31,17 @@ class KDirWatchPrivate;
   * The watched directories or files don't have to exist yet.
   *
   * When a watched directory is changed, i.e. when files therein are
-  * created or deleted, KDirWatch will emit the signal @ref dirty().
+  * created or deleted, KDirWatch will emit the signal dirty().
   *
   * When a watched, but previously not existing directory gets created,
-  * KDirWatch will emit the signal @ref created().
+  * KDirWatch will emit the signal created().
   *
   * When a watched directory gets deleted, KDirWatch will emit the
-  * signal @ref deleted(). The directory is still watched for new
+  * signal deleted(). The directory is still watched for new
   * creation.
   *
   * When a watched file is changed, i.e. attributes changed or written
-  * to, KDirWatch will emit the signal @ref dirty().
+  * to, KDirWatch will emit the signal dirty().
   *
   * Scanning of particular directories or files can be stopped temporarily
   * and restarted. The whole class can be stopped and restarted.
@@ -132,7 +132,7 @@ class KDirWatch : public QObject
     * The @p path is not deleted from the interal just, it is just skipped.
     * Call this function when you perform an huge operation
     * on this directory (copy/move big files or many files). When finished,
-    * call @ref restartDirScan(path).
+    * call restartDirScan(path).
     *
     * @param path the path to skip
     * @return true if the @p path is being watched, otherwise false
@@ -158,7 +158,7 @@ class KDirWatch : public QObject
    /**
     * Starts scanning of all dirs in list.
     *
-    * @param notify If true, all changed directories (since @ref
+    * @param notify If true, all changed directories (since 
     * stopScan() call) will be notified for refresh. If notify is
     * false, all ctimes will be reset (except those who are stopped,
     * but only if @p skippedToo is false) and changed dirs won't be
@@ -167,7 +167,7 @@ class KDirWatch : public QObject
     * directories 
     * in list will be notified.  
     * @param skippedToo if true, the skipped directoris (scanning of which was
-    * stopped with @ref stopDirScan() ) will be reset and notified
+    * stopped with stopDirScan() ) will be reset and notified
     * for change. Otherwise, stopped directories will continue to be
     * unnotified.
     */
@@ -201,17 +201,17 @@ class KDirWatch : public QObject
    static void statistics();
 
    /** 
-    * Emits @ref created().
+    * Emits created().
     * @param path the path of the file or directory
     */
    void setCreated( const QString &path );
    /** 
-    * Emits @ref dirty().
+    * Emits dirty().
     * @param path the path of the file or directory
     */
    void setDirty( const QString &path );
    /** 
-    * Emits @ref deleted().
+    * Emits deleted().
     * @param path the path of the file or directory
     */
    void setDeleted( const QString &path );

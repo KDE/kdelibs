@@ -93,7 +93,7 @@ public:
     const KArchiveDirectory* directory() const;
 
     /**
-     * Writes a local file into the archive. The main difference with @ref writeFile,
+     * Writes a local file into the archive. The main difference with writeFile,
      * is that this method minimizes memory usage, by not loading the whole file
      * into memory in one go.
      *
@@ -209,8 +209,8 @@ public:
 
     /**
      * Here's another way of writing a file into an archive:
-     * Call @ref prepareWriting, then call @ref writeData()
-     * as many times as wanted then call @ref doneWriting( totalSize ).
+     * Call prepareWriting, then call writeData()
+     * as many times as wanted then call doneWriting( totalSize ).
      * For tar.gz files, you need to know the size before hand, it is needed in the header!
      * For zip files, size isn't used.
      * @param name the name of the file
@@ -224,8 +224,8 @@ public:
 
     /**
      * Here's another way of writing a file into an archive:
-     * Call @ref prepareWriting, then call @ref writeData()
-     * as many times as wanted then call @ref doneWriting( totalSize ).
+     * Call prepareWriting, then call writeData()
+     * as many times as wanted then call doneWriting( totalSize ).
      * For tar.gz files, you need to know the size before hand, it is needed in the header!
      * For zip files, size isn't used.
      *
@@ -248,13 +248,13 @@ public:
        			time_t atime, time_t mtime, time_t ctime );
 
     /**
-     * Write data into the current file - to be called after calling @ref prepareWriting
+     * Write data into the current file - to be called after calling prepareWriting
      * // TODO(BIC) make virtual. For now virtual_hook allows reimplementing it.
      */
     bool writeData( const char* data, uint size );
 
     /**
-     * Call @ref doneWriting after writing the data.
+     * Call doneWriting after writing the data.
      * @param size the size of the file
      * @see prepareWriting()
      */
@@ -263,14 +263,14 @@ public:
 protected:
     /**
      * Opens an archive for reading or writing.
-     * Called by @ref #open.
+     * Called by open.
      * @param mode may be IO_ReadOnly or IO_WriteOnly
      */
     virtual bool openArchive( int mode ) = 0;
 
     /**
      * Closes the archive.
-     * Called by @ref #close.
+     * Called by close.
      */
     virtual bool closeArchive() = 0;
 

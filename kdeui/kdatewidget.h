@@ -65,7 +65,7 @@ public:
 signals:
   /**
    * Emitted whenever the date of the widget
-   * is changed, either with @ref #setDate() or via user selection.
+   * is changed, either with setDate() or via user selection.
    */
    void changed(QDate);
 

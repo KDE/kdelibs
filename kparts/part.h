@@ -70,7 +70,7 @@ public:
   virtual ~PartBase();
 
   /**
-   *  Internal method. Called by @ref KParts::Part to specify the parent object for plugin objects.
+   *  Internal method. Called by KParts::Part to specify the parent object for plugin objects.
    *
    * @internal
    */
@@ -79,7 +79,7 @@ public:
 
 protected:
   /**
-   * Set the instance (@ref KInstance) for this part.
+   * Set the instance ( KInstance) for this part.
    *
    * Call this *first* in the inherited class constructor,
    * because it loads the i18n catalogues.
@@ -87,7 +87,7 @@ protected:
   virtual void setInstance( KInstance *instance );
 
   /**
-   * Set the instance (@ref KInstance) for this part.
+   * Set the instance ( KInstance) for this part.
    *
    * Call this *first* in the inherited class constructor,
    * because it loads the i18n catalogues.
@@ -125,17 +125,17 @@ private:
  * (menubars, toolbars... ).
  *
  * @sect About the widget
- * Note that KParts::Part does not inherit @ref QWidget.
+ * Note that KParts::Part does not inherit QWidget.
  * This is due to the fact that the "visual representation"
- * will probably not be a mere @ref QWidget, but an elaborate one.
+ * will probably not be a mere QWidget, but an elaborate one.
  * That's why when implementing your KParts::Part (or derived)
  * you should call KParts::Part::setWidget() in your constructor.
  *
  * @sect About the GUI elements
- * Those elements trigger actions, defined by the part (@ref action()).
- * The layout of the actions in the GUI is defined by an XML file (@ref setXMLFile()).
+ * Those elements trigger actions, defined by the part ( action()).
+ * The layout of the actions in the GUI is defined by an XML file ( setXMLFile()).
  *
- * See also @ref ReadOnlyPart and @ref ReadWritePart, which define the
+ * See also ReadOnlyPart and ReadWritePart, which define the
  * framework for a "viewer" part and for an "editor"-like part.
  * Use Part directly only if your part doesn't fit into those.
  */
@@ -162,9 +162,9 @@ public:
      * Embed this part into a host widget.
      *
      * You don't need to do this if you created the widget with the
-     * correct parent widget - this is just a @ref QWidget::reparent().
-     * Note that the @ref Part is still the holder
-     * of the @ref QWidget, meaning that if you delete the @ref Part,
+     * correct parent widget - this is just a QWidget::reparent().
+     * Note that the Part is still the holder
+     * of the QWidget, meaning that if you delete the Part,
      * then the widget gets destroyed as well, and vice-versa.
      * This method is not recommended since creating the widget with the correct
      * parent is simpler anyway.
@@ -172,7 +172,7 @@ public:
     virtual void embed( QWidget * parentWidget );
 
     /**
-     * @return The widget defined by this part, set by @ref setWidget().
+     * @return The widget defined by this part, set by setWidget().
      */
     virtual QWidget *widget();
 
@@ -229,30 +229,30 @@ protected:
     virtual void customEvent( QCustomEvent *event );
 
     /**
-     * Convenience method which is called when the Part received a @ref PartActivateEvent .
-     * Reimplement this if you don't want to reimplement @ref event and test for the event yourself
+     * Convenience method which is called when the Part received a PartActivateEvent .
+     * Reimplement this if you don't want to reimplement event and test for the event yourself
      * or even install an event filter.
      */
     virtual void partActivateEvent( PartActivateEvent *event );
 
     /**
      * Convenience method which is called when the Part received a
-     * @ref PartSelectEvent .
-     * Reimplement this if you don't want to reimplement @ref event and
+     * PartSelectEvent .
+     * Reimplement this if you don't want to reimplement event and
      * test for the event yourself or even install an event filter.
      */
     virtual void partSelectEvent( PartSelectEvent *event );
 
     /**
      * Convenience method which is called when the Part received a
-     * @ref GUIActivateEvent .
-     * Reimplement this if you don't want to reimplement @ref event and
+     * GUIActivateEvent .
+     * Reimplement this if you don't want to reimplement event and
      * test for the event yourself or even install an event filter.
      */
     virtual void guiActivateEvent( GUIActivateEvent *event );
 
     /**
-     * Convenience method for @ref KXMLGUIFactory::container.
+     * Convenience method for KXMLGUIFactory::container.
      * @return a container widget owned by the Part's GUI.
      */
     QWidget *hostContainer( const QString &containerName );
@@ -277,16 +277,16 @@ class ReadOnlyPartPrivate;
  * This class takes care of network transparency for you,
  * in the simplest way (synchronously).
  * To use the built-in network transparency, you only need to implement
- * @ref openFile(), not @ref openURL().
+ * openFile(), not openURL().
  * To prevent network transparency, or to implement it another way
  * (e.g. asynchronously), override openURL().
  *
  * KParts Application can use the signals to show feedback while the URL is being loaded.
  *
  * ReadOnlyPart handles the window caption by setting it to the current URL
- * (set in @ref #openURL(), and each time the part is activated).
- * If you want another caption, set it in @ref openFile() and
- * (if the part might ever be used with a part manager) in @ref guiActivateEvent()
+ * (set in openURL(), and each time the part is activated).
+ * If you want another caption, set it in openFile() and
+ * (if the part might ever be used with a part manager) in guiActivateEvent()
  */
 class ReadOnlyPart : public Part
 {
@@ -295,7 +295,7 @@ class ReadOnlyPart : public Part
 public:
   /**
    * Constructor
-   * See also @ref Part for the setXXX methods to call.
+   * See also Part for the setXXX methods to call.
    */
   ReadOnlyPart( QObject *parent = 0, const char *name = 0 );
 
@@ -309,7 +309,7 @@ public:
    * the internal KIO job. Use this if you provide another way
    * of displaying progress info (e.g. a statusbar), using the
    * signals emitted by this class, and/or those emitted by
-   * the Job given by @ref started.
+   * the Job given by started.
    */
   void setProgressInfoEnabled( bool show );
 
@@ -326,7 +326,7 @@ public:
 public slots:
   /**
    * Only reimplement openURL if you don't want synchronous network transparency
-   * Otherwise, reimplement @ref openFile() only .
+   * Otherwise, reimplement openFile() only .
    *
    * If you reimplement it, don't forget to set the caption, usually with
    * emit setWindowCaption( url.prettyURL() );
@@ -343,7 +343,7 @@ public:
 
   /**
    * Called when closing the current url (e.g. document), for instance
-   * when switching to another url (note that @ref #openURL() calls it
+   * when switching to another url (note that openURL() calls it
    * automatically in this case).
    * If the current URL is not fully loaded yet, aborts loading.
    * Deletes the temporary file used when the url is remote.
@@ -358,23 +358,23 @@ public:
    * to load the data itself, and send it progressively to the part.
    *
    * @param url the URL representing this data. Although not directly used,
-   * every ReadOnlyPart has a URL (see @ref url()), so this simply sets it.
+   * every ReadOnlyPart has a URL (see url()), so this simply sets it.
    * @param mimeType the type of data that is going to be sent to this part.
    * @return true if the part supports progressive loading and accepts data, false otherwise.
    */
   bool openStream( const QString& mimeType, const KURL& url );
 
   /**
-   * Send some data to the part. @ref openStream must have been called previously,
+   * Send some data to the part. openStream must have been called previously,
    * and must have returned true.
    * @return true if the data was accepted by the part. If false is returned,
-   * the application should stop sending data, and doesn't have to call @ref closeStream.
+   * the application should stop sending data, and doesn't have to call closeStream.
    */
   bool writeStream( const QByteArray& data );
 
   /**
    * Terminate the sending of data to the part.
-   * With some data types (text, html...) @ref closeStream might never actually be called,
+   * With some data types (text, html...) closeStream might never actually be called,
    * in the case of continuous streams, for instance plain text or HTML data.
    */
   bool closeStream();
@@ -382,7 +382,7 @@ public:
 private: // Makes no sense for inherited classes to call those. But make it protected there.
 
   /**
-   * Called by @ref openStream to initiate sending of data.
+   * Called by openStream to initiate sending of data.
    * Parts which implement progress loading should check the @p mimeType
    * parameter, and return true if they can accept a data stream of that type.
    */
@@ -390,12 +390,12 @@ private: // Makes no sense for inherited classes to call those. But make it prot
   /**
    * Receive some data from the hosting application.
    * In this method the part should attempt to display the data progressively.
-   * With some data types (text, html...) @ref closeStream might never actually be called,
+   * With some data types (text, html...) closeStream might never actually be called,
    * in the case of continuous streams. This can't happen with e.g. images.
    */
   virtual bool doWriteStream( const QByteArray& /*data*/ ) { return false; }
   /**
-   * This is called by @ref closeStream(), to indicate that all the data has been sent.
+   * This is called by closeStream(), to indicate that all the data has been sent.
    * Parts should ensure that all of the data is displayed at this point.
    * @return whether the data could be displayed correctly.
    */
@@ -438,7 +438,7 @@ protected slots:
 
 protected:
   /**
-   * If the part uses the standard implementation of @ref #openURL(),
+   * If the part uses the standard implementation of openURL(),
    * it must reimplement this, to open @p m_file.
    * Otherwise simply define it to { return false; }
    */
@@ -485,13 +485,13 @@ private:
  * Anything that can open a URL, allow modifications, and save
  * (to the same URL or a different one).
  *
- * A read-write part can be set to read-only mode, using @ref setReadWrite().
+ * A read-write part can be set to read-only mode, using setReadWrite().
  *
  * Part writers :
- * Any part inheriting ReadWritePart should check @ref isReadWrite
+ * Any part inheriting ReadWritePart should check isReadWrite
  * before allowing any action that modifies the part.
- * The part probably wants to reimplement @ref setReadWrite, disable those
- * actions. Don't forget to call the parent @ref setReadWrite.
+ * The part probably wants to reimplement setReadWrite, disable those
+ * actions. Don't forget to call the parent setReadWrite.
  */
 class ReadWritePart : public ReadOnlyPart
 {
@@ -505,9 +505,9 @@ public:
   /**
    * Destructor
    * Applications using a ReadWritePart should make sure, before
-   * destroying it, to call @ref #closeURL().
-   * In @ref KMainWindow::queryClose(), for instance, they should allow
-   * closing only if the return value of @ref #closeURL() was true.
+   * destroying it, to call closeURL().
+   * In KMainWindow::queryClose(), for instance, they should allow
+   * closing only if the return value of closeURL() was true.
    * This allows to cancel.
    */
   virtual ~ReadWritePart();
@@ -530,8 +530,8 @@ public:
 
   /**
    * If the document has been modified, ask the user to save changes.
-   * This method is meant to be called from @ref KMainWindow::queryClose().
-   * It will also be called from @ref closeURL().
+   * This method is meant to be called from KMainWindow::queryClose().
+   * It will also be called from closeURL().
    *
    * @return true if closeURL() can be called without the user losing
    * important data, false if the user chooses to cancel.
@@ -543,12 +543,12 @@ public:
 
   /**
    * Called when closing the current url (e.g. document), for instance
-   * when switching to another url (note that @ref openURL() calls it
+   * when switching to another url (note that openURL() calls it
    * automatically in this case).
    *
    * If the current URL is not fully loaded yet, aborts loading.
    *
-   * If @ref isModified(), @ref queryClose() will be called.
+   * If isModified(), queryClose() will be called.
    *
    * @return false on cancel
    */
@@ -556,11 +556,11 @@ public:
 
   /**
    * Call this method instead of the above if you need control if
-   * the save prompt is shown. For example, if you call @ref queryClose()
-   * from @ref KMainWindow::queryClose(), you would not want to prompt
+   * the save prompt is shown. For example, if you call queryClose()
+   * from KMainWindow::queryClose(), you would not want to prompt
    * again when closing the url.
    *
-   * Equivalent to promptToSave ? @ref closeURL() : @ref ReadOnlyPart::closeURL()
+   * Equivalent to promptToSave ? closeURL() : ReadOnlyPart::closeURL()
    *
    * @since 3.2
    */
@@ -570,7 +570,7 @@ public:
   /**
    * Save the file to a new location.
    *
-   * Calls @ref save(), no need to reimplement
+   * Calls save(), no need to reimplement
    */
   virtual bool saveAs( const KURL &url );
 
@@ -581,7 +581,7 @@ public:
 
 public slots:
   /**
-   * Call @ref setModified() whenever the contents get modified.
+   * Call setModified() whenever the contents get modified.
    * This is a slot for convenience, so that you can connect it
    * to a signal, like textChanged().
    */
@@ -590,13 +590,13 @@ public slots:
   /**
    * Save the file in the location from which it was opened.
    * You can connect this to the "save" action.
-   * Calls @ref saveFile() and @ref saveToURL(), no need to reimplement.
+   * Calls saveFile() and saveToURL(), no need to reimplement.
    */
   virtual bool save();
 
   /**
    * Waits for any pending upload job to finish and returns whether the
-   * last @ref save() action was successful.
+   * last save() action was successful.
    */
   bool waitSaveComplete();
 
@@ -609,7 +609,7 @@ protected:
    * @return true on success, false on failure.
    * On failure the function should inform the user about the
    * problem with an appropriate message box. Standard error 
-   * messages can be constructed using @ref KIO::buildErrorString()
+   * messages can be constructed using KIO::buildErrorString()
    * in combination with the error codes defined in kio/global.h
    */
   virtual bool saveFile() = 0;
@@ -618,7 +618,7 @@ protected:
    * Save the file.
    *
    * Uploads the file, if @p m_url is remote.
-   * This will emit @ref started(), and either @ref completed() or @ref canceled(),
+   * This will emit started(), and either completed() or canceled(),
    * in case you want to provide feedback.
    * @return true on success, false on failure.
    */

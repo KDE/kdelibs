@@ -31,7 +31,7 @@ class KProtocolInfoPrivate;
 
 /**
  * KProtocolInfoFactory is a factory for getting 
- * @ref KProtocolInfo. The factory is a singleton 
+ * KProtocolInfo. The factory is a singleton 
  * (only one instance can exist).
  *
  * @short Factory for KProtocolInfo

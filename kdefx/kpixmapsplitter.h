@@ -62,7 +62,7 @@ public:
     void setPixmap( const QPixmap& pixmap );
 
     /**
-     * @returns the pixmap that has been set via @ref setPixmap().
+     * @returns the pixmap that has been set via setPixmap().
      */
     const QPixmap& pixmap() const { return m_pixmap; }
 

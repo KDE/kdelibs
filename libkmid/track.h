@@ -59,12 +59,12 @@ struct MidiEvent
   uchar   vel;
 
   /**
-   * Patch (if @ref #command was a change patch command)
+   * Patch (if command was a change patch command)
    */
   uchar   patch;
 
   /**
-   * Patch (if @ref #command was a controller command)
+   * Patch (if command was a controller command)
    */
   uchar   ctl;
 
@@ -99,7 +99,7 @@ struct MidiEvent
   uchar   d6;
 
   /**
-   * Length of the generic @ref #data variable
+   * Length of the generic data variable
    */
   ulong	length;
 
@@ -116,8 +116,8 @@ struct MidiEvent
  * The data types used to store the track is similar to how events are
  * stored on a MIDI file, but used in a way that allows for faster parses.
  * 
- * This class is used on @ref MidiPlayer::loadSong() to load the song and
- * later play it with @ref MidiPlayer::play().
+ * This class is used on MidiPlayer::loadSong() to load the song and
+ * later play it with MidiPlayer::play().
  *
  * @short Stores a MIDI track with a simple API
  * @version 0.9.5 17/01/2000
@@ -181,7 +181,7 @@ class MidiTrack
      *
      * @return 0 if OK, and 1 if you didn't handle this track well and you
      * forgot to take an event (thing that will never happen if you use
-     * @ref MidiPlayer::play() ).
+     * MidiPlayer::play() ).
      */ 
     int	ticksPassed (ulong ticks); 
 
@@ -190,7 +190,7 @@ class MidiTrack
      *
      * @return 0 if OK, and 1 if you didn't handle this track well and you
      * forgot to take an event (thing that will never happen if you use
-     * @ref MidiPlayer::play() ).
+     * MidiPlayer::play() ).
      */
     int	msPassed    (ulong ms);
 

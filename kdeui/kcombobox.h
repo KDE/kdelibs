@@ -39,36 +39,36 @@ class KURL;
  *
  * @sect Detail
  *
- * This widget inherits from @ref QComboBox and implements the following
+ * This widget inherits from QComboBox and implements the following
  * additional functionalities:  a completion object that provides both automatic
  * and manual text completion as well as text rotation features, configurable
  * key-bindings to activate these features, and a popup-menu item that can be
  * used to allow the user to change the text completion mode on the fly.
  *
  * To support these new features KComboBox emits a few additional signals
- * such as @ref completion( const QString& ) and @ref textRotation( KeyBindgingType ).
+ * such as completion( const QString& ) and textRotation( KeyBindgingType ).
  * The completion signal can be connected to a slot that will assist the user in
  * filling out the remaining text while the rotation signal can be used to traverse
  * through all possible matches whenever text completion results in multiple matches.
- * Additionally, a @ref returnPressed() and a @ref returnPressed( const QString& )
+ * Additionally, a returnPressed() and a returnPressed( const QString& )
  * signals are emitted when the user presses the Enter/Return key.
  *
  * KCombobox by default creates a completion object when you invoke the
- * @ref completionObject( bool ) member function for the first time or
- * explicitly use @ref setCompletionObject( KCompletion*, bool ) to assign your
+ * completionObject( bool ) member function for the first time or
+ * explicitly use setCompletionObject( KCompletion*, bool ) to assign your
  * own completion object.  Additionally, to make this widget more functional,
  * KComboBox will by default handle text rotation and completion events
  * internally whenever a completion object is created through either one of the
  * methods mentioned above.  If you do not need this functionality, simply use
- * @ref KCompletionBase::setHandleSignals(bool) or alternatively set the boolean
+ * KCompletionBase::setHandleSignals(bool) or alternatively set the boolean
  * parameter in the @p setCompletionObject call to FALSE.
  *
  * The default key-bindings for completion and rotation is determined from the
- * global settings in @ref KStdAccel. These values, however, can be overridden
- * locally by invoking @ref KCompletionBase::setKeyBinding(). The values can
+ * global settings in KStdAccel. These values, however, can be overridden
+ * locally by invoking KCompletionBase::setKeyBinding(). The values can
  * easily be reverted back to the default setting, by simply calling
- * @ref useGlobalSettings(). An alternate method would be to default individual
- * key-bindings by usning @ref setKeyBinding() with the default second argument.
+ * useGlobalSettings(). An alternate method would be to default individual
+ * key-bindings by usning setKeyBinding() with the default second argument.
  *
  * In non-editable (select-only) mode only one completion mode, @p CompletionAuto,
  * is available. All the other modes are simply ignored. Moreover, the CompletionAuto
@@ -154,14 +154,14 @@ public:
 
     /**
      * Sets @p url into the edit field of the combobox. It uses
-     * @ref KURL::prettyURL() so that the url is properly decoded for
+     * KURL::prettyURL() so that the url is properly decoded for
      * displaying.
      */
     void setEditURL( const KURL& url );
 
     /**
      * Inserts @p url at position @p index into the combobox. The item will
-     * be appended if @p index is negative. @ref KURL::prettyURL() is used
+     * be appended if @p index is negative. KURL::prettyURL() is used
      * so that the url is properly decoded for displaying.
      */
     void insertURL( const KURL& url, int index = -1 );
@@ -169,21 +169,21 @@ public:
     /**
      * Inserts @p url with the pixmap &p pixmap at position @p index into
      * the combobox. The item will be appended if @p index is negative.
-     * @ref KURL::prettyURL() is used so that the url is properly decoded
+     * KURL::prettyURL() is used so that the url is properly decoded
      * for displaying.
      */
     void insertURL( const QPixmap& pixmap, const KURL& url, int index = -1 );
 
     /**
      * Replaces the item at position @p index with @p url.
-     * @ref KURL::prettyURL() is used so that the url is properly decoded
+     * KURL::prettyURL() is used so that the url is properly decoded
      * for displaying.
      */
     void changeURL( const KURL& url, int index );
 
     /**
      * Replaces the item at position @p index with @p url and pixmap @p pixmap.
-     * @ref KURL::prettyURL() is used so that the url is properly decoded
+     * KURL::prettyURL() is used so that the url is properly decoded
      * for displaying.
      */
     void changeURL( const QPixmap& pixmap, const KURL& url, int index );
@@ -199,12 +199,12 @@ public:
     int cursorPosition() const { return ( lineEdit() ) ? lineEdit()->cursorPosition() : -1; }
 
     /**
-    * Re-implemented from @ref QComboBox.
+    * Re-implemented from QComboBox.
     *
     * If @p true, the completion mode will be set to automatic.
     * Otherwise, it is defaulted to the global setting.  This
     * method has been replaced by the more comprehensive
-    * @ref setCompletionMode().
+    * setCompletionMode().
     *
     * @param autocomplete Flag to enable/disable automatic completion mode.
     */
@@ -215,7 +215,7 @@ public:
     *
     * Returns @p true if the current completion mode is set
     * to automatic.  See its more comprehensive replacement
-    * @ref completionMode().
+    * completionMode().
     *
     * @return @p true when completion mode is automatic.
     */
@@ -231,7 +231,7 @@ public:
     * menu.  It does nothing if invoked for a none-editable
     * combo-box.  Note that by default the mode changer item
     * is made visiable whenever the context menu is enabled.
-    * Use @ref hideModechanger() if you want to hide this
+    * Use hideModechanger() if you want to hide this
     * item.    Also by default, the context menu is created if
     * this widget is editable. Call this function with the
     * argument set to false to disable the popup menu.
@@ -274,7 +274,7 @@ public:
     /**
      * By default, KComboBox recognizes Key_Return and Key_Enter
      * and emits
-     * the @ref returnPressed() signals, but it also lets the event pass,
+     * the returnPressed() signals, but it also lets the event pass,
      * for example causing a dialog's default-button to be called.
      *
      * Call this method with @p trap equal to true to make KComboBox
@@ -304,9 +304,9 @@ public:
 
     /**
      * @returns the completion-box, that is used in completion mode
-     * @ref KGlobalSettings::CompletionPopup and @ref KGlobalSettings::CompletionPopupAuto.
+     * KGlobalSettings::CompletionPopup and KGlobalSettings::CompletionPopupAuto.
      * This method will create a completion-box by calling
-     * @ref KLineEdit::completionBox, if none is there, yet.
+     * KLineEdit::completionBox, if none is there, yet.
      *
      * @param create Set this to false if you don't want the box to be created
      *               i.e. to test if it is available.
@@ -333,7 +333,7 @@ signals:
     * Emitted when the user presses the Enter key.
     *
     * The argument is the current text being edited.  This signal is just like
-    * @ref returnPressed() except it contains the current text as its argument.
+    * returnPressed() except it contains the current text as its argument.
     *
     * Note that this signal is only emitted when the
     * widget is editable.
@@ -360,7 +360,7 @@ signals:
     *
     * The argument indicates which key-binding was pressed. In this case this
     * can be either one of four values: @p PrevCompletionMatch,
-    * @p NextCompletionMatch, @p RotateUp or @p RotateDown. See @ref
+    * @p NextCompletionMatch, @p RotateUp or @p RotateDown. See 
     * KCompletionBase::setKeyBinding() for details.
     *
     * Note that this signal is @em NOT emitted if the completion
@@ -410,12 +410,12 @@ public slots:
      * Sets the completed text in the line-edit appropriately.
      *
      * This function is an implementation for
-     * @ref KCompletionBase::setCompletedText.
+     * KCompletionBase::setCompletedText.
      */
     virtual void setCompletedText( const QString& );
 
     /**
-     * Sets @p items into the completion-box if @ref completionMode() is
+     * Sets @p items into the completion-box if completionMode() is
      * CompletionPopup. The popup will be shown immediately.
      */
     void setCompletedItems( const QStringList& items );
@@ -502,7 +502,7 @@ class KPixmapProvider;
  *
  * KHistoryCombo obeys the HISTCONTROL environment variable to determine
  * whether duplicates in the history should be tolerated in
- * @ref addToHistory() or not. During construction of KHistoryCombo,
+ * addToHistory() or not. During construction of KHistoryCombo,
  * duplicates will be disabled when HISTCONTROL is set to "ignoredups" or
  * "ignoreboth". Otherwise, duplicates are enabled by default.
  *
@@ -521,7 +521,7 @@ public:
      * Completion will be used automatically for the items in the combo.
      *
      * The insertion-policy is set to NoInsertion, you have to add the items
-     * yourself via the slot @ref addToHistory. If you want every item added,
+     * yourself via the slot addToHistory. If you want every item added,
      * use
      *
      * \code
@@ -529,7 +529,7 @@ public:
      *          combo, SLOT( addToHistory( const QString& )));
      * \endcode
      *
-     * Use @ref QComboBox::setMaxCount() to limit the history.
+     * Use QComboBox::setMaxCount() to limit the history.
      *
      * @p parent the parent object of this widget.
      * @p name the name of this widget.
@@ -553,7 +553,7 @@ public:
 
     /**
      * Inserts @p items into the combobox. @p items might get
-     * truncated if it is longer than @ref maxCount()
+     * truncated if it is longer than maxCount()
      *
      * @see #historyItems
      */
@@ -563,7 +563,7 @@ public:
 
     /**
      * Inserts @p items into the combobox. @p items might get
-     * truncated if it is longer than @ref maxCount()
+     * truncated if it is longer than maxCount()
      *
      * Set @p setCompletionList to true, if you don't have a list of
      * completions. This tells KHistoryCombo to use all the items for the
@@ -623,11 +623,11 @@ public:
 
     /**
      * Sets a pixmap provider, so that items in the combobox can have a pixmap.
-     * @ref KPixmapProvider is just an abstract class with the one pure virtual
-     * method @ref KPixmapProvider::pixmapFor(). This method is called whenever
+     * KPixmapProvider is just an abstract class with the one pure virtual
+     * method KPixmapProvider::pixmapFor(). This method is called whenever
      * an item is added to the KHistoryComboBox. Implement it to return your
-     * own custom pixmaps, or use the @ref KURLPixmapProvider from libkio,
-     * which uses @ref KMimeType::pixmapForURL to resolve icons.
+     * own custom pixmaps, or use the KURLPixmapProvider from libkio,
+     * which uses KMimeType::pixmapForURL to resolve icons.
      *
      * Set @p prov to 0L if you want to disable pixmaps. Default no pixmaps.
      *
@@ -644,20 +644,20 @@ public:
 
     /**
      * Resets the current position of the up/down history. Call this
-     * when you manually call @ref setCurrentItem() or @ref clearEdit().
+     * when you manually call setCurrentItem() or clearEdit().
      */
     void reset() { slotReset(); }
 
 public slots:
     /**
      * Adds an item to the end of the history list and to the completion list.
-     * If @ref maxCount() is reached, the first item of the list will be
+     * If maxCount() is reached, the first item of the list will be
      * removed.
      *
      * If the last inserted item is the same as @p item, it will not be
      * inserted again.
      *
-     * If @ref duplicatesEnabled() is false, any equal existing item will be
+     * If duplicatesEnabled() is false, any equal existing item will be
      * removed before @p item is added.
      *
      * Note: By using this method and not the Q and KComboBox insertItem()
@@ -693,12 +693,12 @@ protected:
     virtual void wheelEvent( QWheelEvent *ev );
 
     /**
-     * Inserts @p items into the combo, honouring @ref pixmapProvider()
+     * Inserts @p items into the combo, honouring pixmapProvider()
      * Does not update the completionObject.
      *
-     * Note: @ref duplicatesEnabled() is not honored here.
+     * Note: duplicatesEnabled() is not honored here.
      *
-     * Called from @ref setHistoryItems() and @ref setPixmapProvider()
+     * Called from setHistoryItems() and setPixmapProvider()
      */
     void insertItems( const QStringList& items );
 

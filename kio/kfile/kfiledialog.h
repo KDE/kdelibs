@@ -58,11 +58,11 @@ struct KFileDialogPrivate;
  * select files and directories.
  *
  * The widget can be used as a drop in replacement for the
- * @ref  QFileDialog widget, but has greater functionality and a nicer GUI.
+ * QFileDialog widget, but has greater functionality and a nicer GUI.
  *
  * You will usually want to use one of the static methods
- * @ref getOpenFileName(), @ref getSaveFileName(), @ref getOpenURL()
- * or for multiple files @ref getOpenFileNames() or @ref getOpenURLs().
+ * getOpenFileName(), getSaveFileName(), getOpenURL()
+ * or for multiple files getOpenFileNames() or getOpenURLs().
  *
  * The dialog has been designed to allow applications to customise it
  * by subclassing. It uses geometry management to ensure that subclasses
@@ -83,7 +83,7 @@ public:
      * Defines some default behavior of the filedialog.
      * E.g. in mode @p Opening and @p Saving, the selected files/urls will
      * be added to the "recent documents" list. The Saving mode also implies
-     * @ref setKeepLocation() being set.
+     * setKeepLocation() being set.
      *
      * @p Other means that no default actions are performed.
      *
@@ -109,7 +109,7 @@ public:
       *
       * @param filter A shell glob or a mime-type-filter that specifies
                       which files to display.
-      * See @ref setFilter() for details on how to use this argument.
+      * See setFilter() for details on how to use this argument.
       *
       */
     KFileDialog(const QString& startDir, const QString& filter,
@@ -140,7 +140,7 @@ public:
       *
       * @param filter A shell glob or a mime-type-filter that specifies
       *               which files to display.
-      * See @ref setFilter() for details on how to use this argument.
+      * See setFilter() for details on how to use this argument.
       *
       * @param acceptURLs If set to @p false, the dialog will
       * just accept files on the local filesystem.
@@ -206,12 +206,12 @@ public:
     /**
      * Sets the operational mode of the filedialog to @p Saving, @p Opening
      * or @p Other. This will set some flags that are specific to loading
-     * or saving files. E.g. @ref setKeepLocation() makes mostly sense for
+     * or saving files. E.g. setKeepLocation() makes mostly sense for
      * a save-as dialog. So setOperationMode( KFileDialog::Saving ); sets
      * setKeepLocation for example.
      *
      * The mode @p Saving, together with a default filter set via
-     * @ref setMimeFilter() will make the filter combobox read-only.
+     * setMimeFilter() will make the filter combobox read-only.
      *
      * The default mode is @p Opening.
      *
@@ -236,7 +236,7 @@ public:
      * This is for example useful when having a predefined filename where
      * the full path for that file is searched.
      *
-     * This is implicitly set when @ref operationMode() is KFileDialog::Saving
+     * This is implicitly set when operationMode() is KFileDialog::Saving
      *
      * getSaveFileName() and getSaveURL() set this to true by default, so that
      * you can type in the filename and change the directory without having
@@ -288,7 +288,7 @@ public:
 
     /**
      * Returns the current filter as entered by the user or one of the
-     * predefined set via @ref setFilter().
+     * predefined set via setFilter().
      *
      * @see setFilter()
      * @see filterChanged()
@@ -302,7 +302,7 @@ public:
      * @param types a list of mimetypes that can be used as output format
      * @param defaultType the default mimetype to use as output format.
      *
-     * Do not use in conjunction with @ref setFilter()
+     * Do not use in conjunction with setFilter()
      * @deprecated
      */
     void setFilterMimeType(const QString &label, const KMimeType::List &types, const KMimeType::Ptr &defaultType);
@@ -310,7 +310,7 @@ public:
     /**
      * Returns the mimetype for the desired output format.
      *
-     * This is only valid if @ref setFilterMimeType() has been called
+     * This is only valid if setFilterMimeType() has been called
      * previously.
      *
      * @see setFilterMimeType()
@@ -326,7 +326,7 @@ public:
      * Otherwise, a first item showing all the mimetypes will be created.
      * Typically, @p defaultType should be empty for loading and set for saving.
      *
-     * Do not use in conjunction with @ref setFilter()
+     * Do not use in conjunction with setFilter()
      */
     void setMimeFilter( const QStringList& types,
                         const QString& defaultType = QString::null );
@@ -334,7 +334,7 @@ public:
     /**
      * The mimetype for the desired output format.
      *
-     * This is only valid if @ref setMimeFilter() has been called
+     * This is only valid if setMimeFilter() has been called
      * previously.
      *
      * @see setMimeFilter()
@@ -352,8 +352,8 @@ public:
      *
      * In this mode
      * the dialog is split and the right part contains your widget.
-     * This widget has to inherit @ref QWidget and it has to implement
-     * a slot @ref showPreview(const KURL &); which is called
+     * This widget has to inherit QWidget and it has to implement
+     * a slot showPreview(const KURL &); which is called
      * every time the file changes. You may want to look at
      * koffice/lib/kofficecore/koFilterManager.cc for some hints :)
      *
@@ -395,7 +395,7 @@ public:
      *             same keyword.
      * @param filter This is a space separated list of shell globs.
      * You can set the text to be displayed for the glob, and
-     * provide multiple globs.  See @ref setFilter() for details on
+     * provide multiple globs.  See setFilter() for details on
      * how to do this...
      * @param parent The widget the dialog will be centered on initially.
      * @param caption The name of the dialog widget.
@@ -426,7 +426,7 @@ public:
      *             same keyword.
      * @param filter This is a space separated list of shell globs.
      * You can set the text to be displayed for the glob, and
-     * provide multiple globs.  See @ref setFilter() for details on
+     * provide multiple globs.  See setFilter() for details on
      * how to do this...
      * @param parent The widget the dialog will be centered on initially.
      * @param caption The name of the dialog widget.
@@ -456,7 +456,7 @@ public:
      *             same keyword.
      * @param filter This is a space separated list of shell globs.
      * You can set the text to be displayed for the glob, and
-     * provide multiple globs.  See @ref setFilter() for details on
+     * provide multiple globs.  See setFilter() for details on
      * how to do this...
      * @param parent The widget the dialog will be centered on initially.
      * @param caption The name of the dialog widget.
@@ -487,7 +487,7 @@ public:
      *             same keyword.
      * @param filter This is a space separated list of shell globs.
      * You can set the text to be displayed for the glob, and
-     * provide multiple globs.  See @ref setFilter() for details on
+     * provide multiple globs.  See setFilter() for details on
      * how to do this...
      * @param parent The widget the dialog will be centered on initially.
      * @param caption The name of the dialog widget.
@@ -519,7 +519,7 @@ public:
      *             same keyword.
      * @param filter This is a space separated list of shell globs.
      * You can set the text to be displayed for the glob, and
-     * provide multiple globs.  See @ref setFilter() for details on
+     * provide multiple globs.  See setFilter() for details on
      * how to do this...
      * @param parent The widget the dialog will be centered on initially.
      * @param caption The name of the dialog widget.
@@ -551,7 +551,7 @@ public:
      *             same keyword.
      * @param filter This is a space separated list of shell globs.
      * You can set the text to be displayed for the glob, and
-     * provide multiple globs.  See @ref setFilter() for details on
+     * provide multiple globs.  See setFilter() for details on
      * how to do this...
      * @param parent The widget the dialog will be centered on initially.
      * @param caption The name of the dialog widget.
@@ -586,7 +586,7 @@ public:
      * Creates a modal file dialog and returns the selected
      * directory or an empty string if none was chosen.
      *
-     * Contrary to @ref getExistingDirectory(), this method allows the
+     * Contrary to getExistingDirectory(), this method allows the
      * selection of a remote directory.
      *
      * @param startDir This can either be
@@ -634,7 +634,7 @@ public:
     virtual void show();
 
     /**
-     * @deprecated use @ref setMode( unsigned int ) instead
+     * @deprecated use setMode( unsigned int ) instead
      */
     void setMode( KFile::Mode m );
 
@@ -719,9 +719,9 @@ public:
      * to be listed. E.g. the documents direcory, home directory or a recently
      * used directory.
      * @param startDir A url/directory, to be used. May use the ':' and '::' syntax
-     *        as documented in the @ref KFileDialog() constructor.
+     *        as documented in the KFileDialog() constructor.
      * @param recentDirClass If the ':' or '::' syntax is used, recentDirClass
-     *        will contain the string to be used later for @ref KRecentDir::dir()
+     *        will contain the string to be used later for KRecentDir::dir()
      * @return The URL that should be listed by default (e.g. by KFileDialog or
      *         KDirSelectDialog).
      * @since 3.1
@@ -734,8 +734,8 @@ signals:
       * Emitted when the user selects a file. It is only emitted in single-
       * selection mode. The best way to get notified about selected file(s)
       * is to connect to the okClicked() signal inherited from KDialogBase
-      * and call @ref selectedFile(), @ref selectedFiles(),
-      * @ref selectedURL() or @ref selectedURLs().
+      * and call selectedFile(), selectedFiles(),
+      * selectedURL() or selectedURLs().
       */
     void fileSelected(const QString&);
 
@@ -747,7 +747,7 @@ signals:
     /**
      * Emitted when the user hilights one or more files in multiselection mode.
      *
-     * Note: @ref fileHighlighted() or @ref fileSelected() are @em not
+     * Note: fileHighlighted() or fileSelected() are @em not
      * emitted in multiselection mode. You may use selectedItems() to
      * ask for the current highlighted items.
      * @see #fileSelected
@@ -756,7 +756,7 @@ signals:
 
     /**
      * Emitted when the filter changed, i.e. the user entered an own filter
-     * or chose one of the predefined set via @ref setFilter().
+     * or chose one of the predefined set via setFilter().
      *
      * @param filter contains the new filter (only the extension part,
      * not the explanation), i.e. "*.cpp" or "*.cpp *.cc".

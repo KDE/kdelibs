@@ -51,7 +51,7 @@ class QPixmap;
  * In this example, the text "My homepage" would be displayed
  * as blue, underlined text.  When the mouse passed over it, 
  * it would "glow" red.  When the user clicks on the text, the
- * signal @ref leftClickedURL() would be emitted with "http://www.home.com/~me"
+ * signal leftClickedURL() would be emitted with "http://www.home.com/~me"
  * as its argument.
  *
  * \image html kurllabel.png "KDE URL Label"
@@ -77,7 +77,7 @@ public:
   /**
    * Default constructor.
    *
-   * Use @ref #setURL() and @ref #setText() or @ref QListView::setPixmap()
+   * Use setURL() and setText() or QListView::setPixmap()
    * to set the resp. properties.
    */
   KURLLabel (QWidget* parent = 0L, const char* name = 0L);
@@ -89,7 +89,7 @@ public:
    * @param text is the displayed string. If it's equal to QString::null
    * the @p url will be used instead.
    *
-   * @p parent and @p name are passed to @ref QLabel.
+   * @p parent and @p name are passed to QLabel.
    */
   KURLLabel (const QString& url, const QString& text = QString::null,
               QWidget* parent = 0L, const char* name = 0L);

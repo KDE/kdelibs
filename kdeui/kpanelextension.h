@@ -54,7 +54,7 @@ class KPanelExtensionPrivate;
  *
  * @sect X-KDE-UniqueExtension
  *
- * Similar to @ref KApplication and @ref KUniqueApplication there are
+ * Similar to KApplication and KUniqueApplication there are
  * two types of panel extensions. Use unique extensions when it makes no
  * sence to run more than one instance of an extension in the panel. A
  * good example for unique extensions is the taskbar extension.  Use normal
@@ -111,8 +111,8 @@ public:
      * Constructs a KPanelExtension just like any other widget.
      *
      * @param configFile The configFile handed over in the factory function.
-     * @param Type The extension @ref type().
-     * @param actions Standard RMB menu actions supported by the extension (see @ref action() ).
+     * @param Type The extension type().
+     * @param actions Standard RMB menu actions supported by the extension (see action() ).
      * @param parent The pointer to the parent widget handed over in the factory function.
      * @param name A Qt object name for your extension.
      **/
@@ -136,7 +136,7 @@ public:
     virtual QSize sizeHint(Position /*p*/, QSize maxsize) const { return maxsize; }
 
     /**
-     * Always use this @ref KConfig object to save/load your extensions configuration.
+     * Always use this KConfig object to save/load your extensions configuration.
      *
      * For unique extensions this config object will write to a config file called
      * <extensionname>rc in the users local KDE directory.
@@ -148,7 +148,7 @@ public:
 
     /**
      * @return Type indicating the extensions type.
-     * @ref Type
+     * Type
      **/
     Type type() const { return _type; }
 

@@ -111,7 +111,7 @@ public:
    *             This means that if you have a usual UNIX like path you
    *             should not use this constructor.
    *             Instead create an empty url and set the path by using
-   *             @ref setPath().
+   * setPath().
    * @param encoding_hint MIB of original encoding of URL.
    *             @see QTextCodec::mibEnum()
    */
@@ -142,7 +142,7 @@ public:
    */
   KURL( const KURL& u );
   /**
-   * Converts from a @ref QUrl.
+   * Converts from a QUrl.
    * @param u the QUrl
    */
   KURL( const QUrl &u );
@@ -196,7 +196,7 @@ public:
    **/
   QString pass() const { return m_strPass; }
   /**
-   * Sets the password (corresponding to @ref user()) included in the URL.
+   * Sets the password (corresponding to user()) included in the URL.
    *
    * Special characters in the password will appear encoded in the URL.
    * Note that a password can only appear in a URL string if you also set
@@ -400,7 +400,7 @@ public:
    * Sets the HTML-style reference.
    *
    * @param _ref The new reference. This is considered to be @em not encoded in
-   *         contrast to @ref setRef(). Use QString::null to remove it.
+   *         contrast to setRef(). Use QString::null to remove it.
    * @see htmlRef()
    */
   void setHTMLRef( const QString& _ref );
@@ -447,7 +447,7 @@ public:
   QString fileEncoding() const;
 
   /**
-   * Checks whether the URL has any sub URLs. See @ref #split()
+   * Checks whether the URL has any sub URLs. See split()
    * for examples for sub URLs.
    * @return true if the file has at least one sub URL.
    * @see #split
@@ -479,7 +479,7 @@ public:
   QString queryItem( const QString& _item, int encoding_hint ) const;
 
   /**
-   * Options for @ref #queryItems. Currently, only one option is
+   * Options for queryItems. Currently, only one option is
    * defined:
    *
    * @param CaseInsensitiveKeys normalize query keys to lowercase.
@@ -491,7 +491,7 @@ public:
   /**
    * Returns the list of query items as a map mapping keys to values.
    *
-   * @param options any of @ref QueryItemsOptions <em>or</or>ed together.
+   * @param options any of QueryItemsOptions <em>or</or>ed together.
    * @param encoding_hint MIB of encoding of query.
    *
    * @return the map of query items or the empty map if the url has no
@@ -505,7 +505,7 @@ public:
   /**
    * Add an additional query item.
    * To replace an existing query item, the item should first be
-   * removed with @ref removeQueryItem()
+   * removed with removeQueryItem()
    *
    * @param _item Name of item to add
    * @param _value Value of item to add
@@ -523,7 +523,7 @@ public:
 
   /**
    * Sets the filename of the path.
-   * In comparison to @ref addPath() this function does not assume that the current
+   * In comparison to addPath() this function does not assume that the current
    * path is a directory. This is only assumed if the current path ends with '/'.
    *
    * Any reference is reset.
@@ -587,9 +587,9 @@ public:
    * encoded in a given charset.
    * This is used in particular for encoding URLs in UTF-8 before using them
    * in a drag and drop operation.
-   * Please note that the string returned by @ref url() will include
+   * Please note that the string returned by url() will include
    * the password of the URL. If you want to show the URL to the 
-   * user, use @ref prettyURL(). 
+   * user, use prettyURL(). 
    *
    * @param _trailing This may be ( -1, 0 +1 ). -1 strips a trailing '/' from the path, +1 adds
    *                  a trailing '/' if there is none yet and 0 returns the
@@ -646,7 +646,7 @@ public:
 
   /**
    * This function is useful to implement the "Up" button in a file manager for example.
-   * @ref cd() never strips a sub-protocol. That means that if you are in
+   * cd() never strips a sub-protocol. That means that if you are in
    * file:/home/x.tgz#gzip:/#tar:/ and hit the up button you expect to see
    * file:/home. The algorithm tries to go up on the right-most URL. If that is not
    * possible it strips the right most URL. It continues stripping URLs.
@@ -729,7 +729,7 @@ public:
   static List split( const KURL& _url );
 
   /**
-   * Reverses @ref #split(). Only the first URL may have a reference. This reference
+   * Reverses split(). Only the first URL may have a reference. This reference
    * is considered to be HTML-like and is appended at the end of the resulting
    * joined URL.
    * @param _list the list to join
@@ -868,7 +868,7 @@ bool urlcmp( const QString& _url1, const QString& _url2 );
  * are nevertheless considered to be unequal.
  * That means no malformed URL equals anything else.
  *
- * @param _ignore_trailing Described in @ref KURL::cmp
+ * @param _ignore_trailing Described in KURL::cmp
  * @param _ignore_ref If true, disables comparison of HTML-style references.
  */
 bool urlcmp( const QString& _url1, const QString& _url2, bool _ignore_trailing, bool _ignore_ref );

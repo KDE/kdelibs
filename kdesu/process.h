@@ -37,8 +37,8 @@ public:
 
     /**
      * Forks off and execute a command. The command's standard in and output 
-     * are connected to the pseudo tty. They are accessible with @ref #readLine 
-     * and @ref #writeLine.
+     * are connected to the pseudo tty. They are accessible with readLine 
+     * and writeLine.
      * @param command The command to execute.
      * @param args The arguments to the command.
      */
@@ -68,12 +68,12 @@ public:
 
     /**
      * Sets the exit string. If a line of program output matches this,
-     * @ref #waitForChild() will terminate the program and return.
+     * waitForChild() will terminate the program and return.
      */
     void setExitString(const QCString &exit) { m_Exit = exit; }
 
     /**
-     * Waits for the child to exit. See also @ref #setExitString.
+     * Waits for the child to exit. See also setExitString.
      */
     int waitForChild();
 

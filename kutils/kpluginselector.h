@@ -69,7 +69,7 @@ class KPluginInfo
 		 * plugin @see type().
 		 *
 		 * In the "X-KDE Plugin Info" section you may add further entries which
-		 * will be available using @ref property(). The Website,Type,Require
+		 * will be available using property(). The Website,Type,Require
 		 * keys are optional.
 		 */
 		KPluginInfo( const QString & filename );
@@ -110,7 +110,7 @@ class KPluginInfo
 		const QString & property( const QString & key ) const { return m_propertymap[ key ]; }
 
 		/**
-		 * This is the same as @ref property(). It is provided for convenience.
+		 * This is the same as property(). It is provided for convenience.
 		 *
 		 * @return The string associated with the @p key.
 		 *
@@ -254,7 +254,7 @@ class KPluginSelector : public QWidget
 		 * types of plugins use the following constructor.
 		 * Using this constructor the Type field will be ignored.
 		 *
-		 * @param plugininfos  A list of @ref KPluginInfo objects containing the
+		 * @param plugininfos  A list of KPluginInfo objects containing the
 		 *                     necessary information for the plugins you want to
 		 *                     add the selector's list.
 		 */
@@ -264,7 +264,7 @@ class KPluginSelector : public QWidget
 		/**
 		 * Create a new Plugin Selector widget for non-KParts plugins.
 		 *
-		 * @param plugininfos  A list of @ref KPluginInfo objects containing the
+		 * @param plugininfos  A list of KPluginInfo objects containing the
 		 *                     necessary information for the plugins you want to
 		 *                     add the selector's list.
 		 * @param types        A list of strings identifying the possible types
@@ -300,7 +300,7 @@ class KPluginSelector : public QWidget
 	protected:
 		/**
 		 * Reimplement in your subclass if you have special needs: The standard
-		 * implementation looks at the @ref KPluginInfo objects to find the
+		 * implementation looks at the KPluginInfo objects to find the
 		 * needed information. But if, for some reason, your program doesn't
 		 * work with that here's your chance to get it working.
 		 *

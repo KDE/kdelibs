@@ -26,11 +26,11 @@
 
 /**
  * This class provides the standard "About KDE" dialog box that is used
- * @ref KHelpMenu Normally you should not use this class directly but 
- * rather the @ref KHelpMenu class or even better just subclass your 
- * toplevel window from @ref KMainWindow. If you do the latter, the help
+ * KHelpMenu Normally you should not use this class directly but 
+ * rather the KHelpMenu class or even better just subclass your 
+ * toplevel window from KMainWindow. If you do the latter, the help
  * menu and thereby this dialog box is available through the 
- * @ref KMainWindow::helpMenu() function.
+ * KMainWindow::helpMenu() function.
  *
  * @short Standard "About KDE" dialog box,
  * @author Espen Sand (espen@kde.org)
@@ -42,7 +42,7 @@ class KAboutKDE : public KAboutDialog
   public:
     /**
      * Constructor. Creates a fully featured "About KDE" dialog box. 
-     * Note that this dialog is made modeless in the @ref KHelpMenu class so 
+     * Note that this dialog is made modeless in the KHelpMenu class so 
      * the users may expect a modeless dialog.
      *
      * @param parent The parent of the dialog box. You should use the 
@@ -50,8 +50,8 @@ class KAboutKDE : public KAboutDialog
      * @param name Internal name of the widget. This name in not used in the
      *        caption.
      * @param modal If false, this widget will be modeless and must be 
-     *        made visible using @ref QWidget::show(). Otherwise it will be 
-     *        modal and must be made visible using @ref QWidget::exec()
+     *        made visible using QWidget::show(). Otherwise it will be 
+     *        modal and must be made visible using QWidget::exec()
      */
     KAboutKDE( QWidget *parent=0, const char *name=0, bool modal=true );
 };

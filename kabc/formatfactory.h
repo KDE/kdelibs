@@ -72,7 +72,7 @@ class FormatFactory
      * Returns a pointer to a format object or a null pointer
      * if format type doesn't exist.
      *
-     * @param type   The type of the format, returned by @ref formats()
+     * @param type   The type of the format, returned by formats()
      */
     FormatPlugin *format( const QString &type );
 

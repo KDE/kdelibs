@@ -155,7 +155,7 @@ public:
     DOMString value() const;
 
     /**
-     * see @ref value
+     * see value
      */
     void setValue( const DOMString & );
 

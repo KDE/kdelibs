@@ -98,8 +98,8 @@ private:
 
 /**
  * This dialog asks the user to enter a password. The functions you're
- * probably interested in are the static methods, @ref #getPassword() and
- * @ref #getNewPassword().
+ * probably interested in are the static methods, getPassword() and
+ * getNewPassword().
  *
  * @sect Usage example
  *
@@ -115,12 +115,12 @@ private:
  * Keeping passwords in memory can be a potential security hole. You should
  * handle this situation with care.
  *
- * @li You may want to use @ref #disableCoreDump() to disable core dumps.
+ * @li You may want to use disableCoreDump() to disable core dumps.
  * Core dumps are dangerous because they are an image of the process memory,
  * and thus include any passwords that were in memory.
  *
  * @li You should delete passwords as soon as they are not needed anymore.
- * The functions @ref #getPassword() and @ref #getNewPassword() return the
+ * The functions getPassword() and getNewPassword() return the
  * password as a QCString. I believe this is safer than a QString. A QString
  * stores its characters internally as 16-bit wide values, so conversions are
  * needed, both for creating the QString and by using it. The temporary
@@ -161,7 +161,7 @@ public:
      *        and possible typos are detected immediately.
      * @param enableKeep: if true, a check box is shown in the dialog
      *        which allows the user to keep his password input for later.
-     * @param extraBttn: allows to show additional buttons, @ref KDialogBase.
+     * @param extraBttn: allows to show additional buttons, KDialogBase.
      *
      * @version New in 3.0
      */

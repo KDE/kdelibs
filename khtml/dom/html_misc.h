@@ -69,7 +69,7 @@ public:
     DOMString color() const;
 
     /**
-     * see @ref color
+     * see color
      */
     void setColor( const DOMString & );
 
@@ -83,7 +83,7 @@ public:
     DOMString face() const;
 
     /**
-     * see @ref face
+     * see face
      */
     void setFace( const DOMString & );
 
@@ -97,7 +97,7 @@ public:
     long getSize() const;
 
      /**
-      * see @ref size
+      * see size
       */
     void setSize( long );
 

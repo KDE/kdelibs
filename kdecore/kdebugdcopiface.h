@@ -24,7 +24,7 @@
 #include <dcopref.h>
 
 /**
- * @short DCOP interface to @ref KDebug.
+ * @short DCOP interface to KDebug.
  **/
 class KDebugDCOPIface : virtual public DCOPObject
 {
@@ -36,7 +36,7 @@ public:
 k_dcop:
 	/**
 	 * The kdebugrc has been changed and should be reparsed now.
-	 * This will simply call @ref kdClearDebugConfig
+	 * This will simply call kdClearDebugConfig
 	 **/
 	void notifyKDebugConfigChanged();
 };

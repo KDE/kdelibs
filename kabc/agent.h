@@ -73,8 +73,8 @@ public:
   
   /**
    * Sets a URL for the location of the agent file. When using this
-   * function, @ref isIntern() will return 'false' until you use
-   * @ref setAddressee().
+   * function, isIntern() will return 'false' until you use
+   * setAddressee().
    *
    * @param url  The location URL of the agent file.
    */
@@ -82,7 +82,7 @@ public:
 
   /**
    * Sets the addressee of the agent. When using this function,
-   * @ref isIntern() will return 'true' until you use @ref setUrl().
+   * isIntern() will return 'true' until you use setUrl().
    *
    * @param addressee  The addressee object of the agent.
    */
@@ -91,9 +91,9 @@ public:
   /**
    * Returns whether the agent is described by a URL (extern) or
    * by a addressee (intern).
-   * When this method returns 'true' you can use @ref addressee() to
-   * get a @ref Addressee object. Otherwise you can request the URL
-   * of this agent by @ref url() and load the data from that location.
+   * When this method returns 'true' you can use addressee() to
+   * get a Addressee object. Otherwise you can request the URL
+   * of this agent by url() and load the data from that location.
    */
   bool isIntern() const;
 

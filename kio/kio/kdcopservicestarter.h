@@ -43,11 +43,11 @@ public:
      * The trader is queried to find the preferred application for this serviceType,
      * with the constraint that its X-DCOP-ServiceName property must be defined.
      * Then the DCOP server is checked. If the service is not available,
-     * this method will call @ref startServiceFor to start it.
+     * this method will call startServiceFor to start it.
      *
      * @param serviceType the type of service we're looking for
-     * @param constraint see @ref KTrader
-     * @param preferences see @ref KTrader
+     * @param constraint see KTrader
+     * @param preferences see KTrader
      * @param error On failure, @p error contains a description of the error
      *         that occurred. If the pointer is 0, the argument will be
      *         ignored
@@ -74,8 +74,8 @@ public:
      * an in-process way of loading the implementation for this service type.
      *
      * @param serviceType the type of service we're looking for
-     * @param constraint see @ref KTrader
-     * @param preferences see @ref KTrader
+     * @param constraint see KTrader
+     * @param preferences see KTrader
      * @param error On failure, @p error contains a description of the error
      *         that occurred. If the pointer is 0, the argument will be
      *         ignored

@@ -42,7 +42,7 @@ class KIntNumInput;
  * While KFontChooser as an ordinary widget can be embedded in
  * custom dialogs and therefore is very flexible, in most cases
  * it is preferable to use the convenience functions in
- * @ref KFontDialog.
+ * KFontDialog.
  *
  * @short A font selection widget.
  * @author Preston Brown <pbrown@kde.org>, Bernd Wuebben <wuebben@kde.org>
@@ -201,7 +201,7 @@ public:
   }
 
   /**
-   * Converts a @ref QFont into the corresponding X Logical Font
+   * Converts a QFont into the corresponding X Logical Font
    * Description (XLFD).
    *
    * @param theFont The font to convert.
@@ -297,9 +297,9 @@ private:
 
 /**
  * The KFontDialog provides a dialog for interactive font selection.
- * It is basically a thin wrapper around the @ref KFontChooser widget,
+ * It is basically a thin wrapper around the KFontChooser widget,
  * which can also be used standalone. In most cases, the simplest
- * use of this class is the static method @ref KFontDialog::getFont(),
+ * use of this class is the static method KFontDialog::getFont(),
  * which pops up the dialog, allows the user to select a font, and
  * returns when the dialog is closed.
  *
@@ -398,7 +398,7 @@ public:
    *        *sizeIsRelativeState and user choice will be returned
    *        therein.
    *
-   * @return @ref QDialog::result().
+   * @return QDialog::result().
    */
   static int getFont( QFont &theFont, bool onlyFixed = false,
 		      QWidget *parent = 0L, bool makeFrame = true,
@@ -434,7 +434,7 @@ public:
    *        *sizeIsRelativeState and user choice will be returned
    *        therein.
    *
-   * @returns @ref QDialog::result().
+   * @returns QDialog::result().
    */
   static int getFontDiff( QFont &theFont, int &diffFlags, bool onlyFixed = false,
 		      QWidget *parent = 0L, bool makeFrame = true,

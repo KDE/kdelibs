@@ -74,7 +74,7 @@ public:
     DOMString align() const;
 
     /**
-     * see @ref align
+     * see align
      */
     void setAlign( const DOMString & );
 
@@ -89,7 +89,7 @@ public:
     DOMString alt() const;
 
     /**
-     * see @ref alt
+     * see alt
      */
     void setAlt( const DOMString & );
 
@@ -103,7 +103,7 @@ public:
     DOMString archive() const;
 
     /**
-     * see @ref archive
+     * see archive
      */
     void setArchive( const DOMString & );
 
@@ -117,7 +117,7 @@ public:
     DOMString code() const;
 
     /**
-     * see @ref code
+     * see code
      */
     void setCode( const DOMString & );
 
@@ -131,7 +131,7 @@ public:
     DOMString codeBase() const;
 
     /**
-     * see @ref codeBase
+     * see codeBase
      */
     void setCodeBase( const DOMString & );
 
@@ -145,7 +145,7 @@ public:
     DOMString height() const;
 
     /**
-     * see @ref height
+     * see height
      */
     void setHeight( const DOMString & );
 
@@ -160,7 +160,7 @@ public:
     long getHspace() const;
 
      /**
-      * see @ref hspace
+      * see hspace
       */
     void setHspace( long );
 
@@ -184,7 +184,7 @@ public:
     DOMString name() const;
 
     /**
-     * see @ref name
+     * see name
      */
     void setName( const DOMString & );
 
@@ -198,7 +198,7 @@ public:
     DOMString object() const;
 
     /**
-     * see @ref object
+     * see object
      */
     void setObject( const DOMString & );
 
@@ -213,7 +213,7 @@ public:
     long getVspace() const;
 
      /**
-      * see @ref vspace
+      * see vspace
       */
     void setVspace( long );
 
@@ -237,7 +237,7 @@ public:
     DOMString width() const;
 
     /**
-     * see @ref width
+     * see width
      */
     void setWidth( const DOMString & );
 };
@@ -287,7 +287,7 @@ public:
     DOMString code() const;
 
     /**
-     * see @ref code
+     * see code
      */
     void setCode( const DOMString & );
 
@@ -302,7 +302,7 @@ public:
     DOMString align() const;
 
     /**
-     * see @ref align
+     * see align
      */
     void setAlign( const DOMString & );
 
@@ -315,7 +315,7 @@ public:
     DOMString archive() const;
 
     /**
-     * see @ref archive
+     * see archive
      */
     void setArchive( const DOMString & );
 
@@ -329,7 +329,7 @@ public:
     DOMString border() const;
 
     /**
-     * see @ref border
+     * see border
      */
     void setBorder( const DOMString & );
 
@@ -343,7 +343,7 @@ public:
     DOMString codeBase() const;
 
     /**
-     * see @ref codeBase
+     * see codeBase
      */
     void setCodeBase( const DOMString & );
 
@@ -357,7 +357,7 @@ public:
     DOMString codeType() const;
 
     /**
-     * see @ref codeType
+     * see codeType
      */
     void setCodeType( const DOMString & );
 
@@ -370,7 +370,7 @@ public:
     DOMString data() const;
 
     /**
-     * see @ref data
+     * see data
      */
     void setData( const DOMString & );
 
@@ -384,7 +384,7 @@ public:
     bool declare() const;
 
     /**
-     * see @ref declare
+     * see declare
      */
     void setDeclare( bool );
 
@@ -397,7 +397,7 @@ public:
     DOMString height() const;
 
     /**
-     * see @ref height
+     * see height
      */
     void setHeight( const DOMString & );
 
@@ -412,7 +412,7 @@ public:
     long getHspace() const;
 
      /**
-      * see @ref hspace
+      * see hspace
       */
     void setHspace( long );
 
@@ -436,7 +436,7 @@ public:
     DOMString name() const;
 
     /**
-     * see @ref name
+     * see name
      */
     void setName( const DOMString & );
 
@@ -449,7 +449,7 @@ public:
     DOMString standby() const;
 
     /**
-     * see @ref standby
+     * see standby
      */
     void setStandby( const DOMString & );
 
@@ -463,7 +463,7 @@ public:
     long tabIndex() const;
 
     /**
-     * see @ref tabIndex
+     * see tabIndex
      */
     void setTabIndex( long );
 
@@ -477,7 +477,7 @@ public:
     DOMString type() const;
 
     /**
-     * see @ref type
+     * see type
      */
     void setType( const DOMString & );
 
@@ -490,7 +490,7 @@ public:
     DOMString useMap() const;
 
     /**
-     * see @ref useMap
+     * see useMap
      */
     void setUseMap( const DOMString & );
 
@@ -505,7 +505,7 @@ public:
     long getVspace() const;
 
      /**
-      * see @ref vspace
+      * see vspace
       */
     void setVspace( long );
 
@@ -528,7 +528,7 @@ public:
     DOMString width() const;
 
     /**
-     * see @ref width
+     * see width
      */
     void setWidth( const DOMString & );
 
@@ -579,7 +579,7 @@ public:
     DOMString name() const;
 
     /**
-     * see @ref name
+     * see name
      */
     void setName( const DOMString & );
 
@@ -593,7 +593,7 @@ public:
     DOMString type() const;
 
     /**
-     * see @ref type
+     * see type
      */
     void setType( const DOMString & );
 
@@ -606,7 +606,7 @@ public:
     DOMString value() const;
 
     /**
-     * see @ref value
+     * see value
      */
     void setValue( const DOMString & );
 
@@ -620,7 +620,7 @@ public:
     DOMString valueType() const;
 
     /**
-     * see @ref valueType
+     * see valueType
      */
     void setValueType( const DOMString & );
 };

@@ -33,21 +33,21 @@ class KLineEdit;
  * ChangeCursorOverLink (TM).
  *
  * There is a new signal executed(). It gets connected to either
- * @ref QListView::clicked() or  @ref QListView::doubleClicked() depending on the KDE
+ * QListView::clicked() or QListView::doubleClicked() depending on the KDE
  * wide Single Click/Double Click settings. It is strongly recommended that
  * you use this signal instead of the above mentioned. This way you don´t
  * need to care about the current settings.
  * If you want to get informed when the user selects something connect to the
  * QListView::selectionChanged() signal.
  *
- * Drag-and-Drop is supported with the signal @ref #dropped(), just @ref #setAcceptDrops(true)
+ * Drag-and-Drop is supported with the signal dropped(), just setAcceptDrops(true)
  * and connect it to a suitable slot.
- * To see where you are dropping, @ref setDropVisualizer(true).
- * And also you'll need @ref acceptDrag(QDropEvent*)
+ * To see where you are dropping, setDropVisualizer(true).
+ * And also you'll need acceptDrag(QDropEvent*)
  *
  * KListView is drag-enabled, too: to benefit from that you've got derive from it.
- * Reimplement @ref dragObject() and (possibly) @ref startDrag(),
- * and @ref setDragEnabled(true).
+ * Reimplement dragObject() and (possibly) startDrag(),
+ * and setDragEnabled(true).
  */
 class KListView : public QListView
 {
@@ -111,7 +111,7 @@ public:
    * Constructor.
    *
    * The parameters @p parent and @p name are handled by
-   * @ref QListView, as usual.
+   * QListView, as usual.
    */
   KListView (QWidget *parent = 0, const char *name = 0);
 
@@ -131,9 +131,9 @@ public:
 
   /**
    * This function determines whether the given coordinates are within the
-   * execute area. The execute area is the part of a @ref QListViewItem where mouse
-   * clicks or double clicks respectively generate a @ref #executed() signal.
-   * Depending on @ref QListView::allColumnsShowFocus() this is either the
+   * execute area. The execute area is the part of a QListViewItem where mouse
+   * clicks or double clicks respectively generate a executed() signal.
+   * Depending on QListView::allColumnsShowFocus() this is either the
    * whole item or only the first column.
    * @return true if point is inside execute area of an item, false in all
    * other cases including the case that it is over the viewport.
@@ -177,7 +177,7 @@ public:
 
   /**
    * @return the lineedit used for inline renaming.
-   * Use that to setup a @ref KCompletion or @ref QValidator for the lineedit
+   * Use that to setup a KCompletion or QValidator for the lineedit
    *
    * @since 3.2
    */
@@ -336,15 +336,15 @@ public:
    * Saves the list view's layout (column widtsh, column order, sort column)
    * to a KConfig group
    *
-   * @param config the @ref KConfig object to write to
+   * @param config the KConfig object to write to
    * @param group the config group to use
    */
   void saveLayout(KConfig *config, const QString &group) const;
   /**
    * Reads the list view's layout from a KConfig group as stored with
-   * @ref #saveLayout
+   * saveLayout
    *
-   * @param config the @ref KConfig object to read from
+   * @param config the KConfig object to read from
    * @param group the config group to use
    */
   void restoreLayout(KConfig *config, const QString &group);
@@ -374,7 +374,7 @@ signals:
    * setting the user clicked or double clicked on that item.
    * @param item is the pointer to the executed listview item.
    *
-   * Note that you may not delete any @ref QListViewItem objects in slots
+   * Note that you may not delete any QListViewItem objects in slots
    * connected to this signal.
    */
   void executed( QListViewItem *item );
@@ -387,7 +387,7 @@ signals:
    * @param pos is the position where the user has clicked
    * @param c is the column into which the user clicked.
    *
-   * Note that you may not delete any @ref QListViewItem objects in slots
+   * Note that you may not delete any QListViewItem objects in slots
    * connected to this signal.
    */
   void executed( QListViewItem *item, const QPoint &pos, int c );
@@ -399,12 +399,12 @@ signals:
    * @param pos is the position where the user has clicked, and
    * @param c is the column into which the user clicked.
    *
-   * Note that you may not delete any @ref QListViewItem objects in slots
+   * Note that you may not delete any QListViewItem objects in slots
    * connected to this signal.
    *
    * This signal is more or less here for the sake of completeness.
    * You should normally not need to use this. In most cases it´s better
-   * to use @ref #executed() instead.
+   * to use executed() instead.
    */
   // KDE 4: Remove this signal...already in QListView
   void doubleClicked( QListViewItem *item, const QPoint &pos, int c );
@@ -485,8 +485,8 @@ signals:
    * DnD.
    * If more than one item is moved at the same time, @p afterFirst and
    * @p afterNow will reflect what was true before the move.
-   * This differs from @ref moved(), so be careful. All the items will have been
-   * moved before @ref moved() is emitted, which is not true in this method. // FIXME
+   * This differs from moved(), so be careful. All the items will have been
+   * moved before moved() is emitted, which is not true in this method. // FIXME
    * @param item the item that was moved
    * @param afterFirst the item that parameter item was in before the move, in the list
    * @param afterNow the item it's currently after.
@@ -519,11 +519,11 @@ signals:
    * This signal is emitted when the shortcut key for popup-menus is pressed.
    *
    * Normally you should not use this, just connect a slot to signal
-   * @ref contextMenu (KListView*, QListViewItem*, const QPoint&) to correctly
+   * contextMenu (KListView*, QListViewItem*, const QPoint&) to correctly
    * handle showing context menus regardless of settings.
    *
    * @param list is this listview.
-   * @param item is the @ref currentItem() at the time the key was pressed. May be 0L.
+   * @param item is the currentItem() at the time the key was pressed. May be 0L.
    */
   void menuShortCutPressed (KListView* list, QListViewItem* item);
 
@@ -550,7 +550,7 @@ public slots:
    *
    * If you want more intelligent (dynamic) selection,
    * you'll have to derive from KListView,
-   * and override @ref rename() and call only call it
+   * and override rename() and call only call it
    * if you want the item to be renamed.
    */
   void setRenameable (int column, bool yesno=true);
@@ -622,7 +622,7 @@ public slots:
   /**
    * Set the selection mode.
    *
-   * A different name was chosen to avoid API-clashes with @ref QListView::setSelectionMode().
+   * A different name was chosen to avoid API-clashes with QListView::setSelectionMode().
    */
   void setSelectionModeExt (SelectionModeExt mode);
 
@@ -673,7 +673,7 @@ protected:
   virtual bool event( QEvent * );
 
   /**
-   * Emit signal @ref #executed.
+   * Emit signal executed.
    * @internal
    */
   void emitExecute( QListViewItem *item, const QPoint &pos, int c );
@@ -819,7 +819,7 @@ protected:
   virtual QRect drawItemHighlighter(QPainter *painter, QListViewItem *item);
 
   /**
-   * This method calls @ref dragObject() and starts the drag.
+   * This method calls dragObject() and starts the drag.
    *
    * Reimplement it to do fancy stuff like setting a pixmap or
    * using a non-default DragMode
@@ -887,12 +887,12 @@ protected slots:
   void cleanItemHighlighter();
 
   /**
-   * Emit the @ref contextMenu signal. This slot is for mouse actions.
+   * Emit the contextMenu signal. This slot is for mouse actions.
    */
   void emitContextMenu (QListViewItem*, const QPoint&, int);
 
   /**
-   * Emit the @ref #contextMenu signal. This slot is for key presses.
+   * Emit the contextMenu signal. This slot is for key presses.
    */
   void emitContextMenu (KListView*, QListViewItem*);
 
@@ -957,7 +957,7 @@ private:
 
 /**
  * A listview item with support for alternate background colours. It is
- * a drop-in replacement for @ref QListViewItem
+ * a drop-in replacement for QListViewItem
  *
  * @short listview item with alternate background colour support
  */
@@ -965,8 +965,8 @@ class KListViewItem : public QListViewItem
 {
 public:
   /**
-   * constructors. The semantics remain as in @ref QListViewItem.
-   * Although they accept a @ref QListViewItem as parent, please
+   * constructors. The semantics remain as in QListViewItem.
+   * Although they accept a QListViewItem as parent, please
    * don't mix KListViewItem (or subclasses) with QListViewItem
    * (or subclasses).
    */

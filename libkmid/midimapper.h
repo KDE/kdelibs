@@ -49,7 +49,7 @@
  *
  * The usage of this class is quite simple, just create an object with
  * a correct filename in the constructor and then use this object as
- * parameter for @ref DeviceManager::setMidiMap().
+ * parameter for DeviceManager::setMidiMap().
  *
  * @short Midi Mapper
  * @version 0.9.5 17/01/2000
@@ -118,7 +118,7 @@ class MidiMapper
 
     /**
      * @internal
-     * Map or not the Pitch Bender using @ref #pitchBenderRatio()
+     * Map or not the Pitch Bender using pitchBenderRatio()
      */
     int mapPitchBender;
 

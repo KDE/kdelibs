@@ -31,7 +31,7 @@ class KRootPropPrivate;
 /**
 * Access KDE desktop resources stored on the root window.
 *
-* A companion to the @ref KConfig class.
+* A companion to the KConfig class.
 *
 * The KRootProp class is used for reading and writing configuration entries
 * to properties on the root window.
@@ -109,7 +109,7 @@ public:
  int readNumEntry( const QString& rKey, int nDefault = 0 ) const;
  
  /**
-  * Reads a @ref QFont value.
+  * Reads a QFont value.
   *
   * Reads the value of an entry specified by @p rKey in the current property
   * and interpret it as a font object.
@@ -122,7 +122,7 @@ public:
 		      const QFont* pDefault = 0 ) const;
  
  /**
-  * Reads a @ref QColor.
+  * Reads a QColor.
   *
   * Reads the value of an entry specified by @p rKey in the current property
   * and interprets it as a color.
@@ -140,7 +140,7 @@ public:
   * Writes a (key/value) pair.
   *
   * This is stored to the current property when destroying the
-  * config object or when calling @ref sync().
+  * config object or when calling sync().
   *
   * @param rKey		The key to write.
   * @param rValue		The value to write.
@@ -190,7 +190,7 @@ public:
 
   /**
    * Returns a list of all keys.
-   * @return A @ref QStringList containing all the keys.
+   * @return A QStringList containing all the keys.
    **/
   QStringList listEntries() const;
 

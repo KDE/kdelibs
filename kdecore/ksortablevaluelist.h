@@ -24,7 +24,7 @@
 #include <qvaluelist.h>
 
 /**
- * KSortableItem is a @ref QPair that provides several operators
+ * KSortableItem is a QPair that provides several operators
  * for sorting.
  * @see KSortableValueList
  */
@@ -122,8 +122,8 @@ public:
 
 
 /**
- * KSortableValueList is a special @ref QValueList for 
- * @ref KSortableItem. It includes convenience operators
+ * KSortableValueList is a special QValueList for 
+ * KSortableItem. It includes convenience operators
  * to get the first value of the KSortableItem and a method
  * to sort all items.
  */

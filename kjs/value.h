@@ -276,7 +276,7 @@ namespace KJS {
      * Converts a Value into an Undefined. If the value's type is not
      * UndefinedType, a null object will be returned (i.e. one with it's
      * internal pointer set to 0). If you do not know for sure whether the
-     * value is of type UndefinedType, you should check the @ref isValid()
+     * value is of type UndefinedType, you should check the isValid()
      * methods afterwards before calling any methods on the returned value.
      *
      * @return The value converted to an Undefined
@@ -301,7 +301,7 @@ namespace KJS {
      * Converts a Value into an Null. If the value's type is not NullType,
      * a null object will be returned (i.e. one with it's internal pointer set
      * to 0). If you do not know for sure whether the value is of type
-     * NullType, you should check the @ref isValid() methods afterwards before
+     * NullType, you should check the isValid() methods afterwards before
      * calling any methods on the returned value.
      *
      * @return The value converted to a Null
@@ -323,7 +323,7 @@ namespace KJS {
      * Converts a Value into an Boolean. If the value's type is not BooleanType,
      * a null object will be returned (i.e. one with it's internal pointer set
      * to 0). If you do not know for sure whether the value is of type
-     * BooleanType, you should check the @ref isValid() methods afterwards before
+     * BooleanType, you should check the isValid() methods afterwards before
      * calling any methods on the returned value.
      *
      * @return The value converted to a Boolean
@@ -347,7 +347,7 @@ namespace KJS {
      * Converts a Value into an String. If the value's type is not StringType,
      * a null object will be returned (i.e. one with it's internal pointer set
      * to 0). If you do not know for sure whether the value is of type
-     * StringType, you should check the @ref isValid() methods afterwards before
+     * StringType, you should check the isValid() methods afterwards before
      * calling any methods on the returned value.
      *
      * @return The value converted to a String
@@ -385,7 +385,7 @@ namespace KJS {
      * Converts a Value into an Number. If the value's type is not NumberType,
      * a null object will be returned (i.e. one with it's internal pointer set
      * to 0). If you do not know for sure whether the value is of type
-     * NumberType, you should check the @ref isNull() methods afterwards before
+     * NumberType, you should check the isNull() methods afterwards before
      * calling any methods on the returned value.
      *
      * @return The value converted to a Number

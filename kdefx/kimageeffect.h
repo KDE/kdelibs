@@ -38,7 +38,7 @@ class QPoint;
 class QRect;
 
 /**
- * This class includes various @ref QImage based graphical effects.
+ * This class includes various QImage based graphical effects.
  *
  * Everything is
  * static, so there is no need to create an instance of this class. You can
@@ -90,7 +90,7 @@ public:
      * @param type The type of gradient.
      * @param xfactor The x decay length. Use a value between -200 and 200.
      * @param yfactor The y decay length.
-     * @param ncols The number of colors. See @ref KImageEffect:gradient.
+     * @param ncols The number of colors. See KImageEffect:gradient.
      */
     static QImage unbalancedGradient(const QSize &size, const QColor &ca,
 	    const QColor &cb, GradientType type, int xfactor = 100,
@@ -284,7 +284,7 @@ public:
      * @param image The QImage to process.
      * @param val   The strength of the effect. 0 <= val <= 1.
      * @param color The background color.
-     * @return Returns the @ref image(), provided for convenience.
+     * @return Returns the image(), provided for convenience.
      */
     static QImage& fade(QImage &image, float val, const QColor &color);
 
@@ -303,12 +303,12 @@ public:
            const QColor &cb, int ncols=0);
 
     /**
-     * Build a hash on any given @ref QImage
+     * Build a hash on any given QImage
      *
      * @param image The QImage to process
      * @param lite The hash faces the indicated lighting (cardinal poles).
      * @param spacing How many unmodified pixels inbetween hashes.
-     * @return Returns the @ref image(), provided for convenience.
+     * @return Returns the image(), provided for convenience.
      */
     static QImage& hash(QImage &image, Lighting lite=NorthLite,
                         unsigned int spacing=0);
@@ -324,7 +324,7 @@ public:
      * @author Benjamin Roe (ben@benroe.com)
      * @param image The QImage to process.
      * @param percent The percent value. Use a negative value to dim.
-     * @return Returns The @ref image(), provided for convenience.
+     * @return Returns The image(), provided for convenience.
      */
     static QImage& intensity(QImage &image, float percent);
 
@@ -337,7 +337,7 @@ public:
      * @param type The modulation Type to use.
      * @param factor The modulation amplitude; with 0 no effect [-200;200].
      * @param channel The RBG channel of image2 to use for modulation.
-     * @return Returns the @ref image(), provided for convenience.
+     * @return Returns the image(), provided for convenience.
      */
     static QImage& modulate(QImage &image, QImage &modImage, bool reverse,
 		ModulationType type, int factor, RGBComponent channel);
@@ -346,10 +346,10 @@ public:
      * Convert an image to grayscale.
      *
      * @author Daniel M. Duley (mosfet)
-     * @param image The @ref QImage to process.
+     * @param image The QImage to process.
      * @param fast Set to @p true in order to use a faster but non-photographic
      * quality algorithm. Appropriate for things such as toolbar icons.
-     * @return Returns the @ref image(), provided for convenience.
+     * @return Returns the image(), provided for convenience.
      */
     static QImage& toGray(QImage &image, bool fast = false);
 
@@ -358,7 +358,7 @@ public:
      *
      * @param image The QImage to process.
      * @param desat A value between 0 and 1 setting the degree of desaturation
-     * @return Returns the @ref image(), provided for convenience.
+     * @return Returns the image(), provided for convenience.
      */
     static QImage& desaturate(QImage &image, float desat = 0.3);
 
@@ -368,7 +368,7 @@ public:
      * @author Daniel M. Duley (mosfet)
      * @param image The QImage to process.
      * @param c A contrast value between -255 to 255.
-     * @return The @ref image(), provided for convenience.
+     * @return The image(), provided for convenience.
      */
     static QImage& contrast(QImage &image, int c);
 
@@ -379,7 +379,7 @@ public:
      * @param image The QImage to process.
      * @param palette The color palette to use
      * @param size The size of the palette
-     * @return Returns the @ref image(), provided for convenience.
+     * @return Returns the image(), provided for convenience.
      */
     static QImage& dither(QImage &image, const QColor *palette, int size);
 

@@ -37,13 +37,13 @@
  *
  * The usual usage is to create a KXErrorHandler instance right before starting
  * operations that might cause X errors, and checking if there was an error
- * by calling @ref error() after the operations are finished. The handlers
+ * by calling error() after the operations are finished. The handlers
  * may be nested, but must be destroyed in reverse order they were created.
  *
  * There's no need to do X sync before creating an instance, every instance
  * will handle only errors for request issued after the instance was created.
  * Errors for older requests will be passed to previous error handler.
- * When checking for error by calling @ref error() at the end, it is necessary
+ * When checking for error by calling error() at the end, it is necessary
  * to sync with X, to catch all errors that were caused by requests issued
  * before the call to error(). This can be done by passing true to error()
  * to cause explicit XSync(), however, if the last X request needed a roundtrip

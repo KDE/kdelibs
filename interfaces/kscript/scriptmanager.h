@@ -60,7 +60,7 @@ class ScriptInfo;
 		bool removeScript( const QString &scriptName );
 		/**
 		*	Access the names of script instances from the script engine.
-		*	@returns a @ref QStringList of the current scripts.
+		*	@returns a QStringList of the current scripts.
 		*/
 		QStringList scripts();
 		/**
@@ -91,8 +91,8 @@ class ScriptInfo;
 		void progress( int percent ) {emit scriptProgress(percent);}
 		/**
 		*	This function will allow feedback on completion of the script.
-		*	It turns the result as a @ref KScriptInteface::Result, and a return
-		*	value as a @ref QVariant
+		*	It turns the result as a KScriptInteface::Result, and a return
+		*	value as a QVariant
 		*/
 		void done( KScriptClientInterface::Result result, const QVariant &returned )  {emit scriptDone(result, returned);}
 

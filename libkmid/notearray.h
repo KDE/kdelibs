@@ -135,7 +135,7 @@ class NoteArray
   void next(void);
 
   /**
-   * Calls @ref #next() until the next event is over ms milliseconds
+   * Calls next() until the next event is over ms milliseconds
    * and puts in @p pgm[16] the instruments used at this moment.
    */
   void moveIteratorTo(ulong ms,int *pgm=NULL);

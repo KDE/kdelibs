@@ -29,7 +29,7 @@ namespace KIO {
 /**
  * A dialog for requesting a login and a password from the end user.
  *
- * KIO-Slave authors are encouraged to use @ref SlaveBase::openPassDlg
+ * KIO-Slave authors are encouraged to use SlaveBase::openPassDlg
  * instead of directly instantiating this dialog.
  * @short dialog for requesting login and password from the end user
  */
@@ -103,7 +103,7 @@ public:
     void setUserReadOnly( bool readOnly );
 
     /**
-     * @deprecated. Use @ref setUserReadOnly(bool).
+     * @deprecated. Use setUserReadOnly(bool).
      */
     void setEnableUserField( bool enable, bool=false ) {
 	setUserReadOnly( !enable );

@@ -80,7 +80,7 @@ struct URLArgs
    */
   int xOffset;
   /**
-   * @p yOffset vertical scrolling position, @ref xOffset.
+   * @p yOffset vertical scrolling position, xOffset.
    */
   int yOffset;
   /**
@@ -269,7 +269,7 @@ class BrowserExtensionPrivate;
   *
   *
   * The selection-dependent actions are disabled by default and the view should
-  * enable them when the selection changes, emitting @ref enableAction().
+  * enable them when the selection changes, emitting enableAction().
   *
   * The normal actions do not depend on the selection.
   * You need to enable 'print' when printing is possible - you can even do that
@@ -346,7 +346,7 @@ public:
 
   /**
    * Returns whether url drop handling is enabled.
-   * See @ref setURLDropHandlingEnabled for more information about this
+   * See setURLDropHandlingEnabled for more information about this
    * property.
    */
   bool isURLDropHandlingEnabled() const;
@@ -439,7 +439,7 @@ signals:
    * Asks the host (browser) to open @p url.
    * To set a reload, the x and y offsets, the service type etc., fill in the
    * appropriate fields in the @p args structure.
-   * Hosts should not connect to this signal but to @ref openURLRequestDelayed.
+   * Hosts should not connect to this signal but to openURLRequestDelayed.
    */
   void openURLRequest( const KURL &url, const KParts::URLArgs &args = KParts::URLArgs() );
 
@@ -453,18 +453,18 @@ signals:
 
   /**
    * Tells the hosting browser that the part opened a new URL (which can be
-   * queried via @ref KParts::Part::url().
+   * queried via KParts::Part::url().
    *
    * This helps the browser to update/create an entry in the history.
-   * The part may @em not emit this signal together with @ref openURLRequest().
-   * Emit @ref openURLRequest() if you want the browser to handle a URL the user
+   * The part may @em not emit this signal together with openURLRequest().
+   * Emit openURLRequest() if you want the browser to handle a URL the user
    * asked to open (from within your part/document). This signal however is
    * useful if you want to handle URLs all yourself internally, while still
    * telling the hosting browser about new opened URLs, in order to provide
    * a proper history functionality to the user.
    * An example of usage is a html rendering component which wants to emit
    * this signal when a child frame document changed its URL.
-   * Conclusion: you probably want to use @ref openURLRequest() instead.
+   * Conclusion: you probably want to use openURLRequest() instead.
    */
   void openURLNotify();
 
@@ -498,11 +498,11 @@ signals:
                         const KParts::WindowArgs &windowArgs, KParts::ReadOnlyPart *&part );
 
   /**
-   * Since the part emits the jobid in the @ref started() signal,
+   * Since the part emits the jobid in the started() signal,
    * progress information is automatically displayed.
    *
-   * However, if you don't use a @ref KIO::Job in the part,
-   * you can use @ref loadingProgress() and @ref speedProgress()
+   * However, if you don't use a KIO::Job in the part,
+   * you can use loadingProgress() and speedProgress()
    * to display progress information.
    */
   void loadingProgress( int percent );
@@ -657,7 +657,7 @@ public:
 
   /**
    * Opens the given url in a hosted child frame. The frame name is specified in the
-   * frameName variable in the urlArgs argument structure (see @ref KParts::URLArgs ) .
+   * frameName variable in the urlArgs argument structure (see KParts::URLArgs ) .
    */
   virtual bool openURLInFrame( const KURL &url, const KParts::URLArgs &urlArgs );
 

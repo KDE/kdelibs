@@ -68,7 +68,7 @@ public:
     DOMString accessKey() const;
 
     /**
-     * see @ref accessKey
+     * see accessKey
      */
     void setAccessKey( const DOMString & );
 
@@ -81,7 +81,7 @@ public:
     DOMString charset() const;
 
     /**
-     * see @ref charset
+     * see charset
      */
     void setCharset( const DOMString & );
 
@@ -96,7 +96,7 @@ public:
     DOMString coords() const;
 
     /**
-     * see @ref coords
+     * see coords
      */
     void setCoords( const DOMString & );
 
@@ -109,7 +109,7 @@ public:
     DOMString href() const;
 
     /**
-     * see @ref href
+     * see href
      */
     void setHref( const DOMString & );
 
@@ -122,7 +122,7 @@ public:
     DOMString hreflang() const;
 
     /**
-     * see @ref hreflang
+     * see hreflang
      */
     void setHreflang( const DOMString & );
 
@@ -135,7 +135,7 @@ public:
     DOMString name() const;
 
     /**
-     * see @ref name
+     * see name
      */
     void setName( const DOMString & );
 
@@ -148,7 +148,7 @@ public:
     DOMString rel() const;
 
     /**
-     * see @ref rel
+     * see rel
      */
     void setRel( const DOMString & );
 
@@ -161,7 +161,7 @@ public:
     DOMString rev() const;
 
     /**
-     * see @ref rev
+     * see rev
      */
     void setRev( const DOMString & );
 
@@ -175,7 +175,7 @@ public:
     DOMString shape() const;
 
     /**
-     * see @ref shape
+     * see shape
      */
     void setShape( const DOMString & );
 
@@ -189,7 +189,7 @@ public:
     long tabIndex() const;
 
     /**
-     * see @ref tabIndex
+     * see tabIndex
      */
     void setTabIndex( long );
 
@@ -202,7 +202,7 @@ public:
     DOMString target() const;
 
     /**
-     * see @ref target
+     * see target
      */
     void setTarget( const DOMString & );
 
@@ -215,7 +215,7 @@ public:
     DOMString type() const;
 
     /**
-     * see @ref type
+     * see type
      */
     void setType( const DOMString & );
 
@@ -272,7 +272,7 @@ public:
     DOMString clear() const;
 
     /**
-     * see @ref clear
+     * see clear
      */
     void setClear( const DOMString & );
 };
@@ -315,7 +315,7 @@ public:
     DOMString color() const;
 
     /**
-     * see @ref color
+     * see color
      */
     void setColor( const DOMString & );
 
@@ -329,7 +329,7 @@ public:
     DOMString face() const;
 
     /**
-     * see @ref face
+     * see face
      */
     void setFace( const DOMString & );
 
@@ -343,7 +343,7 @@ public:
     DOMString size() const;
 
     /**
-     * see @ref size
+     * see size
      */
     void setSize( const DOMString & );
 };
@@ -384,7 +384,7 @@ public:
     DOMString cite() const;
 
     /**
-     * see @ref cite
+     * see cite
      */
     void setCite( const DOMString & );
 
@@ -397,7 +397,7 @@ public:
     DOMString dateTime() const;
 
     /**
-     * see @ref dateTime
+     * see dateTime
      */
     void setDateTime( const DOMString & );
 };
@@ -443,7 +443,7 @@ public:
     DOMString cite() const;
 
     /**
-     * see @ref cite
+     * see cite
      */
     void setCite( const DOMString & );
 };

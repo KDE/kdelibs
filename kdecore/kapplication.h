@@ -55,20 +55,20 @@ class KApplicationPrivate;
 * Controls and provides information to all KDE applications.
 *
 * Only one object of this class can be instantiated in a single app.
-* This instance is always accessible via the @ref kApplication() method.
+* This instance is always accessible via the kApplication() method.
 *
 * This class provides the following services to all KDE applications.
 *
-* @li It controls the event queue (see @ref QApplication ).
+* @li It controls the event queue (see QApplication ).
 * @li It provides the application with KDE resources such as
-* accelerators, common menu entries, a @ref KConfig object. session
+* accelerators, common menu entries, a KConfig object. session
 * management events, help invocation etc.
 * @li Installs a signal handler for the SIGCHLD signal in order to
 * avoid zombie children. If you want to catch this signal yourself or
 * don't want it to be caught at all, you have set a new signal handler
 * (or SIG_IGN) after KApplication's constructor has run.
 * @li Installs an empty signal handler for the SIGPIPE signal using
-* @ref installSigpipeHandler(). If you want to catch this signal
+* installSigpipeHandler(). If you want to catch this signal
 * yourself, you have set a new signal handler after KApplication's
 * constructor has run.
 * @li It can start new services
@@ -101,13 +101,13 @@ public:
 
   /**
    * This constructor takes aboutData and command line
-   *  arguments from @ref KCmdLineArgs.
+   *  arguments from KCmdLineArgs.
    *
    * @param allowStyles Set to false to disable the loading on plugin based
    * styles. This is only useful to applications that do not display a GUI
    * normally. If you do create an application with @p allowStyles set to false
    * it normally runs in the background but under special circumstances
-   * displays widgets.  Call @ref enableStyles() before displaying any widgets.
+   * displays widgets.  Call enableStyles() before displaying any widgets.
    *
    * @param GUIenabled Set to false to disable all GUI stuff. This implies
    * no styles either.
@@ -134,7 +134,7 @@ public:
    * styles. This is only useful to applications that do not display a GUI
    * normally. If you do create an application with @p allowStyles set to false
    * that normally runs in the background but under special circumstances
-   * displays widgets call @ref enableStyles() before displaying any widgets.
+   * displays widgets call enableStyles() before displaying any widgets.
    *
    * @param GUIenabled Set to false to disable all GUI stuff. This implies
    * no styles either.
@@ -162,7 +162,7 @@ public:
    * styles. This is only useful to applications that do not display a GUI
    * normally. If you do create an application with @p allowStyles set to false
    * that normally runs in the background but under special circumstances
-   * displays widgets call @ref enableStyles() before displaying any widgets.
+   * displays widgets call enableStyles() before displaying any widgets.
    *
    * @param GUIenabled Set to false to disable all GUI stuff. This implies
    * no styles either.
@@ -180,7 +180,7 @@ public:
   /**
    * Returns the current application object.
    *
-   * This is similar to the global @ref QApplication pointer qApp. It
+   * This is similar to the global QApplication pointer qApp. It
    * allows access to the single global KApplication object, since
    * more than one cannot be created in the same application. It
    * saves you the trouble of having to pass the pointer explicitly
@@ -193,7 +193,7 @@ public:
    * Returns the application session config object.
    *
    * @return A pointer to the application's instance specific
-   * @ref KConfig object.
+   * KConfig object.
    * @see KConfig
    */
   KConfig* sessionConfig();
@@ -203,7 +203,7 @@ public:
    *
    * @return If true, this application was restored by the session manager.
    *    Note that this may mean the config object returned by
-   * @ref sessionConfig() contains data saved by a session closedown.
+   * sessionConfig() contains data saved by a session closedown.
    * @see #sessionConfig()
    */
   bool isRestored() const { return QApplication::isSessionRestored(); }
@@ -218,7 +218,7 @@ public:
 
   /**
    * Enables again session management for this application, formerly
-   * disabled by calling @ref disableSessionManagement(). You usually
+   * disabled by calling disableSessionManagement(). You usually
    * shouldn't call this function, as the session management is enabled
    * by default.
    */
@@ -300,9 +300,9 @@ public:
    * will work with any session manager compliant with it.
    *
    * @param confirm Whether to ask the user if he really wants to log out.
-   *   @ref ShutdownConfirm
-   * @param sdtype The action to take after logging out. @ref ShutdownType
-   * @param sdmode If/When the action should be taken. @ref ShutdownMode
+   * ShutdownConfirm
+   * @param sdtype The action to take after logging out. ShutdownType
+   * @param sdmode If/When the action should be taken. ShutdownMode
    * @return true on success, false if the session manager could not be
    * contacted.
    */
@@ -327,7 +327,7 @@ public:
 
     /*
      * Reimplemented for internal purposes, mainly the highlevel
-     *  handling of session management with @ref KSessionManaged.
+     *  handling of session management with KSessionManaged.
      * @internal
      */
   void commitData( QSessionManager& sm );
@@ -351,7 +351,7 @@ public:
   bool sessionSaving() const;
 
   /**
-   * Returns a pointer to a @ref DCOPClient for the application.
+   * Returns a pointer to a DCOPClient for the application.
    * If a client does not exist yet, it is created when this
    * function is called.
    * @return the DCOPClient for the application
@@ -365,7 +365,7 @@ public:
   static void disableAutoDcopRegistration();
 
   /**
-   * Returns a @ref QPixmap with the application icon.
+   * Returns a QPixmap with the application icon.
    * @return the application icon
    */
   QPixmap icon() const;
@@ -377,7 +377,7 @@ public:
   QString iconName() const;
 
   /**
-   * Returns the mini-icon for the application as a @ref QPixmap.
+   * Returns the mini-icon for the application as a QPixmap.
    * @return the application's mini icon
    */
   QPixmap miniIcon() const;
@@ -392,7 +392,7 @@ public:
    *  Sets the top widget of the application.
    *  This means basically applying the right window caption and
    *  icon. An application may have several top widgets. You don't
-   *  need to call this function manually when using @ref KMainWindow.
+   *  need to call this function manually when using KMainWindow.
    *
    *  @param topWidget A top widget of the application.
    *
@@ -704,7 +704,7 @@ public:
   /**
    * Starts a program via kdeinit and wait for it to finish.
    *
-   * Like @ref kdeinitExec(), but it waits till the program is finished.
+   * Like kdeinitExec(), but it waits till the program is finished.
    * As such it behaves similar to the system(...) function.
    *
    * @param name Name of the program to start
@@ -796,7 +796,7 @@ public:
    *
    * Current style plugins do not get unloaded.
    *
-   * This is only useful when used in combination with @ref enableStyles().
+   * This is only useful when used in combination with enableStyles().
    */
   void disableStyles();
 
@@ -804,7 +804,7 @@ public:
    *  Installs widget filter as global X11 event filter.
    *
    * The widget
-   *  filter receives XEvents in its standard @ref QWidget::x11Event() function.
+   *  filter receives XEvents in its standard QWidget::x11Event() function.
    *
    *  Warning: Only do this when absolutely necessary. An installed X11 filter
    *  can slow things down.
@@ -813,7 +813,7 @@ public:
 
   /**
    * Removes global X11 event filter previously installed by
-   * @ref installX11EventFilter().
+   * installX11EventFilter().
    */
   void removeX11EventFilter( const QWidget* filter );
 
@@ -834,7 +834,7 @@ public:
    * Adds a message type to the KIPC event mask. You can only add "system
    * messages" to the event mask. These are the messages with id < 32.
    * Messages with id >= 32 are user messages.
-   * @param id The message id. See @ref KIPC::Message.
+   * @param id The message id. See KIPC::Message.
    * @see KIPC
    * @see removeKipcEventMask()
    * @see kipcMessage()
@@ -842,7 +842,7 @@ public:
   void addKipcEventMask(int id);
 
   /**
-   * Removes a message type from the @ref KIPC event mask. This message will
+   * Removes a message type from the KIPC event mask. This message will
    * not be handled anymore.
    * @param id The message id.
    * @see KIPC
@@ -922,7 +922,7 @@ public:
   /**
    * Returns the currently pressed keyboard modifiers (e.g. shift, control, etc.)
    * Usually you simply want to test for those in key events, in which case
-   * @ref QKeyEvent::state() does the job (or @ref QKeyEvent::key() to
+   * QKeyEvent::state() does the job (or QKeyEvent::key() to
    * notice when a modifier is pressed alone).
    * But it can be useful to query for the status of the modifiers at another moment
    * (e.g. some KDE apps do that upon a drop event).
@@ -940,9 +940,9 @@ public:
   /**
    * Returns the currently pressed mouse buttons.
    * Usually you simply want to test for those in mouse events, in which case
-   * @ref QMouseEvent::button() does the job (or @ref QMouseEvent::state()).
+   * QMouseEvent::button() does the job (or QMouseEvent::state()).
    * But it can be useful to query for the status of the mouse buttons at another moment.
-   * To query for the mouse pointer position, use @ref QCursor::pos().
+   * To query for the mouse pointer position, use QCursor::pos().
    * @return the currently pressed mouse buttons
    * @since 3.1
    */
@@ -1135,7 +1135,7 @@ signals:
    * using explicit fonts.
    *
    * Note: If you derive from a QWidget-based class, a faster method is to
-   *       reimplement @ref QWidget::fontChange(). This is the preferred way
+   *       reimplement QWidget::fontChange(). This is the preferred way
    *       to get informed about font updates.
    */
   void kdisplayFontChanged();
@@ -1188,14 +1188,14 @@ signals:
       Session management asks you to save the state of your application.
 
      This signal is provided for compatibility only. For new
-     applications, simply use KMainWindow. By reimplementing @ref
-     KMainWindow::queryClose(), @ref KMainWindow::saveProperties() and
-     @ref KMainWindow::readProperties() you can simply handle session
+     applications, simply use KMainWindow. By reimplementing 
+     KMainWindow::queryClose(), KMainWindow::saveProperties() and
+ KMainWindow::readProperties() you can simply handle session
      management for applications with multiple toplevel windows.
 
      For purposes without KMainWindow, create an instance of
-     KSessionManaged and reimplement the functions @ref
-     KSessionManaged::commitData() and/or @ref
+     KSessionManaged and reimplement the functions 
+     KSessionManaged::commitData() and/or 
      KSessionManaged::saveState()
 
      If you still want to use this signal, here is what you should do:
@@ -1204,7 +1204,7 @@ signals:
      manipulate the UI in that slot, it is blocked by the session
      manager.
 
-     Use the @ref sessionConfig() KConfig object to store all your
+     Use the sessionConfig() KConfig object to store all your
      instance specific data.
 
      Do not do any closing at this point! The user may still select
@@ -1268,13 +1268,13 @@ class KSessionManagedPrivate;
    base.
 
    KSessionManaged makes it possible to provide implementations for
-   @ref QApplication::commitData() and @ref QApplication::saveState(), without
+ QApplication::commitData() and QApplication::saveState(), without
    subclassing KApplication. KMainWindow internally makes use of this.
 
    You don't need to do anything with this class when using
-   KMainWindow. Instead, use @ref KMainWindow::saveProperties(),
-   @ref KMainWindow::readProperties(), @ref KMainWindow::queryClose(),
-   @ref KMainWindow::queryExit() and friends.
+   KMainWindow. Instead, use KMainWindow::saveProperties(),
+ KMainWindow::readProperties(), KMainWindow::queryClose(),
+ KMainWindow::queryExit() and friends.
 
   @short Highlevel access to session management.
   @author Matthias Ettrich <ettrich@kde.org>
@@ -1286,7 +1286,7 @@ public:
   virtual ~KSessionManaged();
 
     /**
-       See @ref QApplication::saveState() for documentation.
+       See QApplication::saveState() for documentation.
 
        This function is just a convenience version to avoid subclassing KApplication.
 
@@ -1296,7 +1296,7 @@ public:
      */
   virtual bool saveState( QSessionManager& sm );
     /**
-       See @ref QApplication::commitData() for documentation.
+       See QApplication::commitData() for documentation.
 
        This function is just a convenience version to avoid subclassing KApplication.
 

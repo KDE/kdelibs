@@ -25,7 +25,7 @@ extern "C" { // bug with some libc5 distributions
 class KRegExpDataPtr;
 
 /**
- * Used internally by @ref KRegExp.
+ * Used internally by KRegExp.
  * @internal
  *
  * @author Torben Weis <weis@kde.org>

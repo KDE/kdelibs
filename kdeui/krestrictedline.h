@@ -28,14 +28,14 @@
 #include <klineedit.h>
 
 /** 
- * The KRestrictedLine widget is a variant of @ref QLineEdit which
+ * The KRestrictedLine widget is a variant of QLineEdit which
  * accepts only a restricted set of characters as input. 
- * All other characters will be discarded and the signal @ref #invalidChar() 
+ * All other characters will be discarded and the signal invalidChar() 
  * will be emitted for each of them.
  *
  * Valid characters can be passed as a QString to the constructor
- * or set afterwards via @ref #setValidChars().
- * The default key bindings of @ref QLineEdit are still in effect.
+ * or set afterwards via setValidChars().
+ * The default key bindings of QLineEdit are still in effect.
  *
  * @short A line editor for restricted character sets.
  * @author Michael Wiedmann <mw@miwie.in-berlin.de>
@@ -50,7 +50,7 @@ public:
 
   /**
    * Constructor: This contructor takes three - optional - arguments.
-   *  The first two parameters are simply passed on to @ref QLineEdit.
+   *  The first two parameters are simply passed on to QLineEdit.
    *  @param parent   pointer to the parent widget
    *  @param name     pointer to the name of this widget
    *  @param valid    pointer to set of valid characters 

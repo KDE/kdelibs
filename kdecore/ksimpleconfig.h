@@ -29,7 +29,7 @@ class KSimpleConfigPrivate;
 /**
  * KDE Configuration entries
  *
- * This is a trivial extension of @ref KConfig for applications that need
+ * This is a trivial extension of KConfig for applications that need
  * only one configuration file and no default system.
  * A difference with KConfig is that when the data in memory is written back
  * it is not merged with what is on disk.

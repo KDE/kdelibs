@@ -71,7 +71,7 @@ public slots:
 signals:
   /**
    * Emitted whenever the date or time of the widget
-   * is changed, either with @ref #setDateTime() or via user selection.
+   * is changed, either with setDateTime() or via user selection.
    */
   void valueChanged(const QDateTime & datetime);
 

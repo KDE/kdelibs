@@ -32,7 +32,7 @@ class KConfig;
 class KURLBar;
 
 /**
- * An item to be used in @ref KURLBar / @ref KURLBarListBox. All the properties
+ * An item to be used in KURLBar / KURLBarListBox. All the properties
  * (url, icon, descroption, tooltip) can be changed dynamically.
  *
  * @author Carsten Pfeiffer <pfeiffer@kde.org>
@@ -50,7 +50,7 @@ public:
      * If description is empty, it will try to use the filename/directory
      * of @p url, which will be shown as text of the item.
      * @p url will be used as tooltip, unless you set a different tip with
-     * @ref setToolTip()
+     * setToolTip()
      */
     KURLBarItem( KURLBar *parent, const KURL& url,
                  const QString& description = QString::null,
@@ -68,7 +68,7 @@ public:
      */
     void setURL( const KURL& url );
     /**
-     * @p sets the icon for this item. See @ref KIconLoader for a description
+     * @p sets the icon for this item. See KIconLoader for a description
      * of the icon groups.
      * @see #icon
      */
@@ -135,7 +135,7 @@ public:
      */
     void setApplicationLocal( bool local )      { m_appLocal = local; }
     /**
-     * returns whether this is a global item or a local one. @ref KURLBar
+     * returns whether this is a global item or a local one. KURLBar
      * can differentiate between global and local items (only for the current
      * application) for easy extensiblity.
      * @see #setApplicationLocal
@@ -175,11 +175,11 @@ class KURLBarListBox;
 /**
  * KURLBar is a widget that displays icons together with a description. They
  * can be arranged either horizontally or vertically. Clicking on an item
- * will make the @ref activated() signal being emitted. The user can edit
+ * will make the activated() signal being emitted. The user can edit
  * existing items by choosing "Edit entry" in the contextmenu. He can also
  * remove or add new entries (via drag&drop or the context menu).
  *
- * KURLBar offers the methods @ref readConfig() and @ref writeConfig() to
+ * KURLBar offers the methods readConfig() and writeConfig() to
  * read and write the configuration of all the entries. It can differentiate
  * between global and local entries -- global entries will be saved in the
  * global configuration (kdeglobals), while local entries will be saved in
@@ -213,7 +213,7 @@ public:
 
     /**
      * Inserts a new item into the KURLBar and returns the created
-     * @ref KURLBarItem.
+     * KURLBarItem.
      *
      * @p url the url of the item
      * @p description the description of the item (shown in the view)
@@ -246,20 +246,20 @@ public:
      */
     virtual void setListBox( KURLBarListBox * );
     /**
-     * @returns the @ref KURLBarListBox that is used.
+     * @returns the KURLBarListBox that is used.
      * @see #setListBox
      */
     KURLBarListBox *listBox() const { return m_listBox; }
 
     /**
      * Sets the default iconsize to be used for items inserted with
-     * @ref insertItem. By default KIcon::SizeMedium.
+     * insertItem. By default KIcon::SizeMedium.
      * @see #iconsize
      */
     virtual void setIconSize( int size );
     /**
      * @returns the default iconsize used for items inserted with
-     * @ref insertItem. By default KIcon::SizeMedium
+     * insertItem. By default KIcon::SizeMedium
      * @see setIconSize
      */
     int iconSize() const { return m_iconSize; }
@@ -283,24 +283,24 @@ public:
     /**
      * Call this method to read a saved configuration from @p config,
      * inside the group @p itemGroup. All items in there will be restored.
-     * The reading of every item is delegated to the @ref readItem() method.
+     * The reading of every item is delegated to the readItem() method.
      */
     virtual void readConfig(  KConfig *config, const QString& itemGroup );
     /**
      * Call this method to save the current configuration into @p config,
-     * inside the group @p iconGroup. The @ref writeItem() method is used
+     * inside the group @p iconGroup. The writeItem() method is used
      * to save each item.
      */
     virtual void writeConfig( KConfig *config, const QString& itemGroup );
 
     /**
-     * Called from @ref readConfig() to read the i'th from @p config.
+     * Called from readConfig() to read the i'th from @p config.
      * After reading a KURLBarItem is created and initialized with the read
      * values (as well as the given @p applicationLocal).
      */
     virtual void readItem( int i, KConfig *config, bool applicationLocal );
     /**
-     * Called from @ref writeConfig() to save the KURLBarItem @p item as the
+     * Called from writeConfig() to save the KURLBarItem @p item as the
      * i'th entry in the config-object.
      * @p global tell whether it should be saved in the global configuration
      * or not (using KConfig::writeEntry( key, value, true, global ) ).
@@ -324,7 +324,7 @@ public:
     /**
      * @returns true when the urlbar was modified by the user (e.g. by
      * editing/adding/removing one or more entries). Will be reset to false
-     * after calling @ref writeConfig().
+     * after calling writeConfig().
      */
     bool isModified() const             { return m_isModified; }
 
@@ -356,14 +356,14 @@ signals:
 
 protected:
     /**
-     * Pops up a @ref KURLBarItemDialog to let the user add a new item.
-     * Uses @ref editItem() to do the job.
+     * Pops up a KURLBarItemDialog to let the user add a new item.
+     * Uses editItem() to do the job.
      * @returns false if the user aborted the dialog and no item is added.
      */
     virtual bool addNewItem();
     /**
-     * Pops up a @ref KURLBarItemDialog to let the user edit the properties
-     * of @p item. Invoked e.g. by @ref addNewItem(), when the user drops
+     * Pops up a KURLBarItemDialog to let the user edit the properties
+     * of @p item. Invoked e.g. by addNewItem(), when the user drops
      * a url  onto the bar or from the contextmenu.
      * @returns false if the user aborted the dialog and @p item is not
      * changed.
@@ -400,14 +400,14 @@ protected slots:
      */
     virtual void slotContextMenuRequested( QListBoxItem *, const QPoint& pos );
     /**
-     * Called when an item has been selected. Emits the @ref activated()
+     * Called when an item has been selected. Emits the activated()
      * signal.
      */
     virtual void slotSelected( QListBoxItem * );
 
     /**
      * Called when a url was dropped onto the bar to show a
-     * @ref KURLBarItemDialog.
+     * KURLBarItemDialog.
      */
     virtual void slotDropped( QDropEvent * );
 
@@ -438,7 +438,7 @@ class KURLBarToolTip;
  * This is the listbox used in KURLBar. It is a subclass of KListBox to support
  * drag & drop and to set up the row / column mode.
  *
- * The widget has just one row or one column, depending on @ref orientation().
+ * The widget has just one row or one column, depending on orientation().
  *
  * @author Carsten Pfeiffer <pfeiffer@kde.org>
  */
@@ -479,7 +479,7 @@ signals:
 
 protected:
     /**
-     * @returns a suitable @ref QDragObject when an item is dragged.
+     * @returns a suitable QDragObject when an item is dragged.
      */
     virtual QDragObject * dragObject();
 
@@ -508,9 +508,9 @@ class KLineEdit;
 class KURLRequester;
 
 /**
- * A dialog that allows editing entries of a @ref KURLBar (@ref KURLBarItem).
+ * A dialog that allows editing entries of a KURLBar ( KURLBarItem).
  * The dialog offers to configure a given url, description and icon.
- * See the class-method @ref getInformation() for easy usage.
+ * See the class-method getInformation() for easy usage.
  *
  * @author Carsten Pfeiffer <pfeiffer@kde.org>
  */
@@ -524,7 +524,7 @@ public:
      * properties via the given parameters. The parameters are used to
      * initialize the dialog and then return the user-configured values.
      *
-     * See the @ref KURLBarItem constructor for the parameter description.
+     * See the KURLBarItem constructor for the parameter description.
      */
     static bool getInformation( bool allowGlobal, KURL& url,
                                 QString& description, QString& icon,
@@ -582,19 +582,19 @@ public:
 
 protected:
     /**
-     * The @ref KURLRequester used for editing the url
+     * The KURLRequester used for editing the url
      */
     KURLRequester * m_urlEdit;
     /**
-     * The @ref KLineEdit used for editing the description
+     * The KLineEdit used for editing the description
      */
     KLineEdit     * m_edit;
     /**
-     * The @ref KIconButton to configure the icon
+     * The KIconButton to configure the icon
      */
     KIconButton   * m_iconButton;
     /**
-     * The @ref QCheckBox to modify the local/global setting
+     * The QCheckBox to modify the local/global setting
      */
     QCheckBox     * m_appLocal;
 

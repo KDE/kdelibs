@@ -55,7 +55,7 @@ public:
      * WARNING: don't assume that giving a QFile here will decompress the file,
      * in case it's compressed!
      * @param dev the device to read from. If the source is compressed, the
-     *            @ref QIODevice must take care of decompression
+     * QIODevice must take care of decompression
      */
     KTar( QIODevice * dev );
 

@@ -39,13 +39,13 @@ class DrPageSize;
 /**
  * This class is the main interface to access the KDE print framework. It allows KDE
  * applications to easily access the print system, through an interface that is compatible
- * with @ref QPrinter. So that the porting of an existing application should be as easy as
- * replacing any occurrence of @ref QPrinter by KPrinter. However applications that explicitly
- * used the @ref QPrintDialog class must be changed to the standard KPrinter way of accessing
+ * with QPrinter. So that the porting of an existing application should be as easy as
+ * replacing any occurrence of QPrinter by KPrinter. However applications that explicitly
+ * used the QPrintDialog class must be changed to the standard KPrinter way of accessing
  * the print dialog.
  *
  * Basically, a KDE application will use the KPrinter object as a paint device, and will draw
- * on it using @ref QPainter. In a standard application, the use of the KPrinter class will
+ * on it using QPainter. In a standard application, the use of the KPrinter class will
  * look like this:
  * \code
  * #include <kprinter.h>
@@ -75,7 +75,7 @@ class DrPageSize;
  *
  * The KPrinter interface also allows some more advanced possibilities, like the customization
  * of the print dialog to integrate application specific print options. This is done by subclassing
- * @ref KPrintDialogPage and adding the page using @ref addDialogPage().
+ * KPrintDialogPage and adding the page using addDialogPage().
  *
  * When compiling an application that uses KPrinter, you must link to -lkdeprint, which when
  * using the standard KDE build framework can be done by adding $(LIB_KDEPRINT) to _LDADD.
@@ -213,87 +213,87 @@ public:
 
 	// QPrinter interface (+ some extensions)
 	/**
-	 * See @ref QPrinter::newPage().
+	 * See QPrinter::newPage().
 	 */
 	bool newPage();
 	/**
-	 * See @ref QPrinter::abort().
+	 * See QPrinter::abort().
 	 */
 	bool abort();
 	/**
-	 * See @ref QPrinter::aborted(.)
+	 * See QPrinter::aborted(.)
 	 */
 	bool aborted() const;
 	/**
-	 * See @ref QPrinter::outputToFile().
+	 * See QPrinter::outputToFile().
 	 */
 	bool outputToFile() const;
 	/**
-	 * See @ref QPrinter::setOutputToFile().
+	 * See QPrinter::setOutputToFile().
 	 */
 	void setOutputToFile(bool);
 	/**
-	 * See @ref QPrinter::outputFileName().
+	 * See QPrinter::outputFileName().
 	 */
 	QString outputFileName() const;
 	/**
-	 * See @ref QPrinter::setOutputFileName().
+	 * See QPrinter::setOutputFileName().
 	 */
 	void setOutputFileName(const QString&);
 	/**
-	 * See @ref QPrinter::docName().
+	 * See QPrinter::docName().
 	 */
 	QString docName() const;
 	/**
-	 * See @ref QPrinter::setDocName().
+	 * See QPrinter::setDocName().
 	 */
 	void setDocName(const QString&);
 	/**
-	 * See @ref QPrinter::creator().
+	 * See QPrinter::creator().
 	 */
 	QString creator() const;
 	/**
-	 * See @ref QPrinter::setCreator().
+	 * See QPrinter::setCreator().
 	 */
 	void setCreator(const QString&);
 	/**
-	 * See @ref QPrinter::fullPage().
+	 * See QPrinter::fullPage().
 	 */
 	bool fullPage() const;
 	/**
-	 * See @ref QPrinter::setFullPage().
+	 * See QPrinter::setFullPage().
 	 */
 	void setFullPage(bool);
 	/**
-	 * See @ref QPrinter::colorMode().
+	 * See QPrinter::colorMode().
 	 */
 	ColorMode colorMode() const;
 	/**
-	 * See @ref QPrinter::setColorMode().
+	 * See QPrinter::setColorMode().
 	 */
 	void setColorMode(ColorMode);
 	/**
-	 * See @ref QPrinter::numCopies().
+	 * See QPrinter::numCopies().
 	 */
 	int numCopies() const;
 	/**
-	 * See @ref QPrinter::setNumCopies().
+	 * See QPrinter::setNumCopies().
 	 */
 	void setNumCopies(int n);
 	/**
-	 * See @ref QPrinter::orientation().
+	 * See QPrinter::orientation().
 	 */
 	Orientation orientation() const;
 	/**
-	 * See @ref QPrinter::setOrientation().
+	 * See QPrinter::setOrientation().
 	 */
 	void setOrientation(Orientation);
 	/**
-	 * See @ref QPrinter::pageOrder().
+	 * See QPrinter::pageOrder().
 	 */
 	PageOrder pageOrder() const;
 	/**
-	 * See @ref QPrinter::setPageOrder().
+	 * See QPrinter::setPageOrder().
 	 */
 	void setPageOrder(PageOrder);
 	/**
@@ -305,21 +305,21 @@ public:
 	 */
 	void setCollate(CollateType type);
 	/**
-	 * See @ref QPrinter::minPage().
+	 * See QPrinter::minPage().
 	 */
 	int minPage() const;
 	/**
-	 * See @ref QPrinter::maxPage().
+	 * See QPrinter::maxPage().
 	 */
 	int maxPage() const;
 	/**
-	 * See @ref QPrinter::setMinMax().
+	 * See QPrinter::setMinMax().
 	 */
 	void setMinMax(int, int);
 	/**
 	 * Returns the first page to be printed.
          * @deprecated Applications
-	 * should use @ref pageList() instead, which takes into account all options: collate,
+	 * should use pageList() instead, which takes into account all options: collate,
 	 * page order, ranges, page set, ...
 	 *
 	 * @see pageList()
@@ -328,34 +328,34 @@ public:
 	/**
 	 * Returns the last page to be printed.
          * @deprecated Applications
-	 * should use @ref pageList() instead, which takes into account all options: collate,
+	 * should use pageList() instead, which takes into account all options: collate,
 	 * page order, ranges, page set, ...
 	 *
 	 * @see pageList()
 	 */
 	int toPage() const;
 	/**
-	 * Sets the first and last page to be printed. See @ref QPrinter::setFromTo().
+	 * Sets the first and last page to be printed. See QPrinter::setFromTo().
 	 */
 	void setFromTo(int, int);
 	/**
-	 * See @ref QPrinter::pageSize().
+	 * See QPrinter::pageSize().
 	 */
 	PageSize pageSize() const;
 	/**
-	 * See @ref QPrinter::setPageSize().
+	 * See QPrinter::setPageSize().
 	 */
 	void setPageSize(PageSize);
 	/**
-	 * See @ref QPrinter::printerName().
+	 * See QPrinter::printerName().
 	 */
 	QString printerName() const;
 	/**
-	 * See @ref QPrinter::setPrinterName().
+	 * See QPrinter::setPrinterName().
 	 */
 	void setPrinterName(const QString&);
 	/**
-	 * Returns the print program as set by @ref setPrintProgram() or by the print dialog
+	 * Returns the print program as set by setPrintProgram() or by the print dialog
 	 * if a special printer has been selected.
 	 * @return the print command line
 	 * @see setPrintProgram()
@@ -368,8 +368,8 @@ public:
 	 * tags:
 	 * @li %in : the input file to the print program. It is required and automatically
 	 *           appended at the end of the command line if not present.
-	 * @li %out : the output file. Use this tag in conjunction with @ref setOutputToFile()
-	 *            and @ref setOutputFileName()
+	 * @li %out : the output file. Use this tag in conjunction with setOutputToFile()
+	 *            and setOutputFileName()
 	 * @li %psl : the page size in lower case. This may be useful with some
 	 *            programs like gs.
 	 * \code
@@ -391,11 +391,11 @@ public:
 	 */
 	void setPrintProgram(const QString& cmd);
 	/**
-	 * See @ref QPrinter::printerSelectionOption(). Unused.
+	 * See QPrinter::printerSelectionOption(). Unused.
 	 */
 	QString printerSelectionOption() const;
 	/**
-	 * See @ref QPrinter::setPrinterSelectionOption(). Unused
+	 * See QPrinter::setPrinterSelectionOption(). Unused
 	 */
 	void setPrinterSelectionOption(const QString&);
 	/**
@@ -407,7 +407,7 @@ public:
 	 * Sets the current page number. This page number will be used if the user
 	 * selected "current page" in the print dialog. This option will only be
 	 * enabled if the application does page selection itself and the application
-	 * has called @ref setCurrentPage() before opening the print dialog:
+	 * has called setCurrentPage() before opening the print dialog:
 	 * \code
 	 * MyClass::MyClass()
 	 * {
@@ -444,7 +444,7 @@ public:
 	 */
 	bool setup(QWidget *parent = 0, const QString& caption = QString::null, bool forceExpand = false);
 	/**
-	 * See @ref QPrinter::margins().
+	 * See QPrinter::margins().
 	 */
 	QSize margins() const;
 	/**
@@ -548,7 +548,7 @@ public:
 	 * Prints the files given in argument. This will first filter the files accorsing to the filtering
 	 * options selected by the user in the print dialog, then send the filtered files to the printer
 	 * with the print options selected. This function is called automatically when calling
-	 * @ref QPainter::end() for a painter object constructed on KPrinter. In normal use, you don't need
+	 * QPainter::end() for a painter object constructed on KPrinter. In normal use, you don't need
 	 * this use this function explicitly.
 	 */
 	bool printFiles(const QStringList& files, bool removeafter = false, bool startviewer = true);
@@ -556,8 +556,8 @@ public:
 	/**
 	 * Adds a customized page to the print dialog. The pages will appear in a tab widget in the
 	 * bottom half of the dialog, along with the standard "Copies" page. The page must be created
-	 * and added each time you want open a print dialog with @ref setup(). If you correctly
-	 * reimplemented @ref KPrintDialogPage::setOptions(), the settings will be restored from call
+	 * and added each time you want open a print dialog with setup(). If you correctly
+	 * reimplemented KPrintDialogPage::setOptions(), the settings will be restored from call
 	 * to call, you don't have to worry about state saving/restoration.
 	 * @param _page the page to add
 	 * @see KPrintDialogPage::setOptions()
@@ -613,7 +613,7 @@ public:
 	//static int addPrinterWizard(QWidget *parent = 0);
 
 	/**
-	 * The KPrinter object stores all its settings in an internal @ref QMap structure on @ref
+	 * The KPrinter object stores all its settings in an internal QMap structure on 
 	 * QString. This allows to store any property. This method allows an application to access
 	 * any print option from the KPrinter object, using the option name. For example if your
 	 * application add a customized page to the print dialog, this page will saves its settings
@@ -645,7 +645,7 @@ public:
 	const QString& option(const QString& key) const;
 	/**
 	 * Adds or modifies an option in the KPrinter object. You probably don't need to use this function
-	 * explicitly. This will be done implicitely for example when reimplementing @ref
+	 * explicitly. This will be done implicitely for example when reimplementing 
 	 * KPrintDialogPage::getOptions().
 	 * @param key the option name
 	 * @param value the option value
@@ -665,7 +665,7 @@ public:
 	 */
 	void setOptions(const QMap<QString,QString>& opts);
 	/**
-	 * For internal use only. Does a similar job as @ref setOption(), except that all possible
+	 * For internal use only. Does a similar job as setOption(), except that all possible
 	 * internal printers are initialized with the option if it has the form "kde-...".
 	 * @param opts the option set
 	 * @see setOptions()

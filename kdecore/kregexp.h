@@ -27,13 +27,13 @@ class KRegExpPrivate;
  * Regular expression (regexp) matching with back-references.
  *
  * This was implemented
- * because @ref QRegExp did not support back-references. It now does and
+ * because QRegExp did not support back-references. It now does and
  * is recommended over KRegExp because of the unicode support and the
  * more powerful API.
  *
  * Back-references are parts of a regexp grouped with parentheses. If a
  * string matches the regexp, you can access the text that matched each
- * group with the @ref group method. This is similar to regular expressions 
+ * group with the group method. This is similar to regular expressions 
  * in Perl.
  *
  * Example:
@@ -100,7 +100,7 @@ public:
    *         In this case 0 is returned. Otherwise you may @em not
    *         delete or modify the returned value. In addition the
    *         returned value becomes invalid after the KRegExp instance
-   *         is deleted or after @ref match() was called again.
+   *         is deleted or after match() was called again.
    */
   const char *group( int _grp );
 

@@ -34,7 +34,7 @@ class Job;
 /**
 * This is a special IO progress widget.
 *
-* Similarly to @ref #DefaultProgress,
+* Similarly to DefaultProgress,
 * it's purpose is to show a progress of the IO operation.
 *
 * Instead of creating a separate window, this is only a widget that can be
@@ -67,7 +67,7 @@ public:
    * Creates a new StatusbarProgress.
    * @param parent the parent of this widget
    * @param button true to add an abort button. The button will be
-   *               connected to @ref ProgressBase::slotStop()
+   *               connected to ProgressBase::slotStop()
    */
   StatusbarProgress( QWidget* parent, bool button = true );
   ~StatusbarProgress() {}

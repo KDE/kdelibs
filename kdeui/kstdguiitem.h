@@ -71,7 +71,7 @@ public:
      * By default the arrow points in the Western 'back' direction (i.e.
      * to the left). This is because usually you only want the Bidi aware
      * GUI item if you also want the 'forward' item. Those two are available
-     * in the separate @ref backAndForward() method.
+     * in the separate backAndForward() method.
      */
     static KGuiItem back( BidiMode useBidi = IgnoreRTL );
     
@@ -83,7 +83,7 @@ public:
      * By default the arrow points in the Western 'forward' direction (i.e.
      * to the right). This is because usually you only want the Bidi aware
      * GUI item if you also want the 'back' item. Those two are available
-     * in the separate @ref backAndForward() method.
+     * in the separate backAndForward() method.
      */
     static KGuiItem forward( BidiMode useBidi = IgnoreRTL );
 
@@ -91,7 +91,7 @@ public:
      * Return both a back and a forward item. This function always returns
      * items that are aware of the Right-to-Left setting for Arab and Hebrew
      * locales. If you have a reason for wanting the 'Western' back/forward
-     * buttons, please use the @ref back() and @ref forward() items instead.
+     * buttons, please use the back() and forward() items instead.
      */
     static QPair<KGuiItem, KGuiItem> backAndForward();
 

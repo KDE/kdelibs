@@ -72,16 +72,16 @@ class DCOPObject;
  * not supported.
 *
  * KMainWindow will set icon, mini icon and caption, which it gets
- * from @ref KApplication. It provides full session management, and
+ * from KApplication. It provides full session management, and
  * will save its position, geometry and positions of toolbars and
  * menubar on logout. If you want to save additional data, reimplement
- * @ref saveProperties() and (to read them again on next login) @ref
+ * saveProperties() and (to read them again on next login) 
  * readProperties(). To save special data about your data, reimplement
- * @ref saveGlobalProperties(). To warn user that application or
- * windows have unsaved data on close or logout, reimplement @ref
- * queryClose() and/or @ref queryExit().
+ * saveGlobalProperties(). To warn user that application or
+ * windows have unsaved data on close or logout, reimplement 
+ * queryClose() and/or queryExit().
  *
- * There are also @ref kRestoreMainWindows convenience functions which
+ * There are also kRestoreMainWindows convenience functions which
  * can restore all your windows on next login.
  *
  *  Note that a KMainWindow per-default is created with the
@@ -168,7 +168,7 @@ public:
      *
      * @param aboutAppText The string that is used in the application
      *        specific dialog box. If you leave this string empty the
-     *        information in the global @ref KAboutData of the
+     *        information in the global KAboutData of the
      *        application will be used to make a standard dialog box.
      *
      * @param showWhatsThis Set this to false if you do not want to include
@@ -188,7 +188,7 @@ public:
      * and an "About KDE" dialog box. You must create the application
      * specific dialog box yourself. When the "About application"
      * menu entry is activated, a signal will trigger the
-     * @ref showAboutApplication slot. See @ref showAboutApplication for more
+     * showAboutApplication slot. See showAboutApplication for more
      * information.
      *
      * Example (adding a help menu to your application):
@@ -223,13 +223,13 @@ public:
      * // create default application as usual
      * }
      * \endcode
-     * Note that @ref QWidget::show() is called implicitly in restore.
+     * Note that QWidget::show() is called implicitly in restore.
      *
      * With this you can easily restore all toplevel windows of your
      * application.
      *
      * If your application uses different kinds of toplevel
-     * windows, then you can use @ref KMainWindow::classNameOfToplevel(n)
+     * windows, then you can use KMainWindow::classNameOfToplevel(n)
      * to determine the exact type before calling the childMW
      * constructor in the example from above.
      *
@@ -249,8 +249,8 @@ public:
      * less code to write.
      *
      * For new code or if you have more than one kind of toplevel
-     * widget (each derived from @ref KMainWindow, of course), you can
-     * use the templated @ref kRestoreMainWindows global functions:
+     * widget (each derived from KMainWindow, of course), you can
+     * use the templated kRestoreMainWindows global functions:
      *
      * \code
      * if (kapp->isRestored())
@@ -262,7 +262,7 @@ public:
      *
      * Currently, these functions are provided for up to three
      * template arguments. If you need more, tell us. To help you in
-     * deciding whether or not you can use @ref kRestoreMainWindows, a
+     * deciding whether or not you can use kRestoreMainWindows, a
      * define KDE_RESTORE_MAIN_WINDOWS_NUM_TEMPLATE_ARGS is provided.
      *
      * @see restore()
@@ -272,7 +272,7 @@ public:
     static bool canBeRestored( int number );
 
     /**
-     * Returns the @ref className() of the @p number of the toplevel window which
+     * Returns the className() of the @p number of the toplevel window which
      * should be restored.
      *
      *  This is only useful if your application uses
@@ -298,7 +298,7 @@ public:
      *
      * Returns @p false if this
      * fails, otherwise returns @p true and shows the window.
-     * You should call @ref canBeRestored() first.
+     * You should call canBeRestored() first.
      * If @p show is true (default), this widget will be shown automatically.
      */
     bool restore( int number, bool show = TRUE );
@@ -321,8 +321,8 @@ public:
      *
      * @param xmlfile The local xmlfile (relative or absolute)
      * @param _conserveMemory Specify whether createGUI() should call
-     *     @ref KXMLGuiClient::conserveMemory() to free all memory
-     *     allocated by the @ref QDomDocument and by the KXMLGUIFactory.
+     * KXMLGuiClient::conserveMemory() to free all memory
+     *     allocated by the QDomDocument and by the KXMLGUIFactory.
      */
     void createGUI( const QString &xmlfile = QString::null, bool _conserveMemory = TRUE );
 
@@ -455,7 +455,7 @@ public:
 
     /**
      * Sets whether KMainWindow should provide a menu that allows showing/hiding
-     * the available toolbars ( using @ref KToggleToolBarAction ) . In case there
+     * the available toolbars ( using KToggleToolBarAction ) . In case there
      * is only one toolbar configured a simple 'Show <toolbar name here>' menu item
      * is shown.
      *
@@ -478,7 +478,7 @@ public:
 
     /**
      * Sets whether KMainWindow should provide a menu that allows showing/hiding
-     * of the statusbar ( using @ref KToggleStatusBarAction ).
+     * of the statusbar ( using KToggleStatusBarAction ).
      *
      * The menu / menu item is implemented using xmlgui. It will be inserted
      * in your menu structure in the 'Settings' menu.
@@ -532,12 +532,12 @@ public:
      *
      * You normally don't need this, the recommended way to achieve a
      * certain central widget size is as follows:
-     * @li Override @ref sizeHint() in the central widget so that it
+     * @li Override sizeHint() in the central widget so that it
      * returns the desired size.
-     * @li Call @ref updateGeometry() in the central widget whenever the
+     * @li Call updateGeometry() in the central widget whenever the
      * desired size changes. This ensures that the new sizeHint() is properly
      * propagated to any parent layout.
-     * @li Now call @ref adjustSize() in the mainwindow to resize the
+     * @li Now call adjustSize() in the mainwindow to resize the
      * mainwindow such that the central widget will become the desired size.
      */
     QSize sizeForCentralWidgetSize(QSize size);
@@ -578,7 +578,7 @@ public slots:
      * to open <appName>/index.html.
      *
      * This method is intended for use by a help button in the toolbar or
-     * components outside the regular help menu. Use @ref helpMenu() when you
+     * components outside the regular help menu. Use helpMenu() when you
      * want to provide access to the help system from the help menu.
      *
      * Example (adding a help button to the first toolbar):
@@ -639,9 +639,9 @@ protected:
     /**
      * Reimplemented to call the queryClose() and queryExit() handlers.
      *
-     * We recommend that you reimplement the handlers rather than @ref closeEvent().
+     * We recommend that you reimplement the handlers rather than closeEvent().
      * If you do it anyway, ensure to call the base implementation to keep
-     * @ref queryExit() running.
+     * queryExit() running.
      */
     virtual void closeEvent ( QCloseEvent *);
 
@@ -662,18 +662,18 @@ protected:
 
        It is not recommended to do any user interaction in this
        function other than indicating severe errors. Better ask the
-       user on @ref queryClose() (see below).
+       user on queryClose() (see below).
 
-       A typical usage of @ref queryExit() is to write configuration data back.
-       Note that the application may continue to run after @ref queryExit()
+       A typical usage of queryExit() is to write configuration data back.
+       Note that the application may continue to run after queryExit()
        (the user may have canceled a shutdown), so you should not do any cleanups
-       here. The purpose of @ref queryExit() is purely to prepare the application
+       here. The purpose of queryExit() is purely to prepare the application
        (with possible user interaction) so it can safely be closed later (without
        user interaction).
 
        If you need to do serious things on exit (like shutting a
        dial-up connection down), connect to the signal
-       @ref KApplication::shutDown().
+ KApplication::shutDown().
 
        Default implementation returns @p true. Returning @p false will
        cancel the exiting. In the latter case, the last window will
@@ -746,7 +746,7 @@ protected:
      * invoked when the session manager requests your application
      * to save its state.
      *
-     * This function is similar to @ref saveProperties() but is only called for
+     * This function is similar to saveProperties() but is only called for
      * the very first main window, regardless how many main window are open.
 
      * Override it if you need to save other data about your documents on
@@ -760,7 +760,7 @@ protected:
     virtual void saveGlobalProperties( KConfig* sessionConfig );
 
     /**
-     * The counterpart of @ref saveGlobalProperties().
+     * The counterpart of saveGlobalProperties().
      *
      * Read the application-specific properties in again.
      */
@@ -799,7 +799,7 @@ protected slots:
     * It must be reimplemented if you want
     * to use a custom About Application dialog box. This slot is
     * connected to the About Application entry in the menu returned
-    * by @ref customHelpMenu.
+    * by customHelpMenu.
     *
     * Example:
     * \code
@@ -853,7 +853,7 @@ private:
     number of template arguments) are a replacement for the RESTORE
     macro provided in earlier versions of KDE. The old RESTORE macro
     is still provided for backwards compatibility. See
-    @ref KMainWindow documentation for more.
+ KMainWindow documentation for more.
  **/
 template <typename T>
 inline void kRestoreMainWindows() {
@@ -870,7 +870,7 @@ inline void kRestoreMainWindows() {
     number of template arguments) are a replacement for the RESTORE
     macro provided in earlier versions of KDE. The old RESTORE macro
     is still provided for backwards compatibility. See
-    @ref KMainWindow documentation for more.
+ KMainWindow documentation for more.
  **/
 template <typename T0, typename T1>
 inline void kRestoreMainWindows() {
@@ -892,7 +892,7 @@ inline void kRestoreMainWindows() {
     number of template arguments) are a replacement for the RESTORE
     macro provided in earlier versions of KDE. The old RESTORE macro
     is still provided for backwards compatibility. See
-    @ref KMainWindow documentation for more.
+ KMainWindow documentation for more.
  **/
 template <typename T0, typename T1, typename T2>
 inline void kRestoreMainWindows() {

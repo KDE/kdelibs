@@ -85,7 +85,7 @@ namespace KIO {
         QString configData(const QString &protocol, const QString &host, const QString &key);
 
         /**
-         * Undo any changes made by calls to @ref setConfigData.
+         * Undo any changes made by calls to setConfigData.
          */
         void reset();
     signals:
@@ -94,7 +94,7 @@ namespace KIO {
          * with @p host for the first time.
          *
          * Your application can use this signal to make some last minute
-         * configuration changes with @ref setConfigData based on the
+         * configuration changes with setConfigData based on the
          * host.
          */
         void configNeeded(const QString &protocol, const QString &host);

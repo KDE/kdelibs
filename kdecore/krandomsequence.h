@@ -29,7 +29,7 @@ class QGList;
  *
  * In general, you should instantiate a KRandomSequence object and
  * pass along your seed number in the constructor.  From then on,
- * simply call @ref getDouble or @ref getLong to obtain the next
+ * simply call getDouble or getLong to obtain the next
  * number in the sequence.
  *
  * @author Sean Harmer <sh@astro.keele.ac.uk>
@@ -48,7 +48,7 @@ public:
    * 
    * @param lngSeed Seed to initialize the sequence with.
    * If lngSeed is 0, the sequence is initialized with a value from
-   * @ref KApplication::random().
+   * KApplication::random().
    */
   KRandomSequence( long lngSeed = 0 );
 
@@ -71,7 +71,7 @@ public:
    * Restart the sequence based on lngSeed.
    * @param lngSeed Seed to initialize the sequence with.
    * If lngSeed is 0, the sequence is initialized with a value from
-   * @ref KApplication::random().
+   * KApplication::random().
    */
   void setSeed( long lngSeed = 1 );
 

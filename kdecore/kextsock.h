@@ -50,19 +50,19 @@ class KExtendedSocketPrivate;
 /**
  * The extended socket class.
  *
- * This class should be used instead of @ref KSocket whenever the user needs
+ * This class should be used instead of KSocket whenever the user needs
  * fine-grained control over the socket being created. Unlike KSocket, which
  * does everything at once, without much intervention, KExtendedSocket allows
  * intervention at every step of the process and the setting of parameters.
  *
  * This class allows for the creation of both server and client sockets. The
  * only difference is that the passiveSocket flag must be passed either to
- * the constructor or to @ref setSocketFlags(). If passiveSocket is used, the class will
- * enable functions @ref listen() and @ref accept() and related signals, and will
- * also disable @ref readBlock() and @ref writeBlock().
+ * the constructor or to setSocketFlags(). If passiveSocket is used, the class will
+ * enable functions listen() and accept() and related signals, and will
+ * also disable readBlock() and writeBlock().
  *
  * To create a Unix socket, one would pass flag unixSocket to the constructor
- * or @ref setSocketFlags(). The hostname and service/port can be set to whatever is
+ * or setSocketFlags(). The hostname and service/port can be set to whatever is
  * necessary. If no hostname is given, but a service/port is, the socket created
  * will be implementation dependant (usually in /tmp). In any other case, the
  * fields will be concatenated.
@@ -520,11 +520,11 @@ public:
    * After successful connection (return value 0), the socket will be ready
    * for I/O operations. Note, however, that not all signals may be enabled
    * for emission by this socket:
-   * @li @ref readyRead and @ref readyWrite signals will be enabled only if
-   *    @ref enableRead or @ref enableWrite were called. You can still enable
+   * @li readyRead and readyWrite signals will be enabled only if
+   * enableRead or enableWrite were called. You can still enable
    *    them by calling those functions, of course.
    * @li #closed() will only be sent if we are indeed reading from the input
-   *    stream. That is, if this socket is buffering the input. See @ref setBufferSize
+   *    stream. That is, if this socket is buffering the input. See setBufferSize
    *
    * Note that, in general, functions inherited/overridden from KBufferedIO will only
    * work on buffered sockets, like bytesAvailable and bytesToWrite.
@@ -551,8 +551,8 @@ public:
    * call this.  Otherwise you will have crashes.
    *
    * @return 0 on successful queueing of the connect or -1 on error. 
-   *         If this function returns 0, then the @ref connectionSuccess() or the 
-   *         @ref connectionFailed() signals will be emitted.
+   *         If this function returns 0, then the connectionSuccess() or the 
+   * connectionFailed() signals will be emitted.
    */
   virtual int startAsyncConnect();
 
@@ -562,7 +562,7 @@ public:
   virtual void cancelAsyncConnect();
 
   /**
-   * Implementation of @ref QIODevice::open() pure virtual function.
+   * Implementation of QIODevice::open() pure virtual function.
    * This depends on the target host address already being there.
    * If this is a passiveSocket, this is identical to call listen(); else, if
    * this is not a passiveSocket and no connection attempt is in progress, this
@@ -577,8 +577,8 @@ public:
    * Closes the socket. If we have data still in the write buffer yet to be
    * sent, the socket won't be closed right now. It'll be closed after we managed
    * to send everything out.
-   * If you want to close the socket now, you may want to call @ref flush() first,
-   * and then @ref closeNow().
+   * If you want to close the socket now, you may want to call flush() first,
+   * and then closeNow().
    */
   virtual void close();
 
@@ -621,7 +621,7 @@ public:
    * ready to receive data, it will block, unless this is a non-blocking socket.
    *
    * This function does not touch the read buffer. You can empty it by calling
-   * @ref readBlock() with a null destination buffer.
+   * readBlock() with a null destination buffer.
    */
   virtual void flush();
 
@@ -660,7 +660,7 @@ public:
    *
    * If the socket is not buffered, this function will simply call the underlying
    * read method. This function will block if the socket is not on non-blocking mode
-   * (see @ref setBlockingMode) and there is not enough data to be read in the
+   * (see setBlockingMode) and there is not enough data to be read in the
    * Operating System yet. If we are in non-blocking operation, the call will
    * fail in this case.
    *
@@ -736,7 +736,7 @@ public:
   virtual int unreadBlock(const char *data, uint len);
 
   /**
-   * Returns the number of available bytes yet to be read via @ref readBlock
+   * Returns the number of available bytes yet to be read via readBlock
    * and family of functions. 
    *
    * Note: as of now, this only works on input-buffered sockets. This will
@@ -902,20 +902,20 @@ public:
   /**
    * Performs lookup on the given hostname/port combination and returns a list
    * of matching addresses.
-   * The error code can be transformed into string by @ref KExtendedSocket::strError()
+   * The error code can be transformed into string by KExtendedSocket::strError()
    * with code of IO_LookupError.
    *
-   * IMPORTANT: the result values of the @ref QPtrList must be deleted after use. So,
-   * if you don't copy the @ref KAddressInfo objects, the best way to assure that
+   * IMPORTANT: the result values of the QPtrList must be deleted after use. So,
+   * if you don't copy the KAddressInfo objects, the best way to assure that
    * is to call setAutoDelete(true) on the list right after this function
    * returns. If you do copy the results out, you must assure that the objects
    * get deleted when they are not needed any more.
    *
    * @param host	the hostname to look up
    * @param port	the port/service to look up
-   * @param flags	flags to be used when looking up, @ref Flags
+   * @param flags	flags to be used when looking up, Flags
    * @param error	pointer to a variable holding the error code
-   * @return a list of @ref KAddressInfos
+   * @return a list of KAddressInfos
    */
   static QPtrList<KAddressInfo> lookup(const QString& host, const QString& port, int flags = 0, int *error = 0);
 
@@ -985,7 +985,7 @@ public:
   ~KAddressInfo();
 
   /**
-   * Returns the KAddressInfo's @ref KSocketAddress.
+   * Returns the KAddressInfo's KSocketAddress.
    * Only valid as long as the KAddressInfo exists.
    */
   inline operator const KSocketAddress*() const
@@ -1005,7 +1005,7 @@ public:
   { return ai; }
 
   /**
-   * Returns the KAddressInfo's @ref KSocketAddress.
+   * Returns the KAddressInfo's KSocketAddress.
    * Only valid as long as the KAddressInfo exists.
    * @return the KAddressInfo's KSocketAddress.
    */

@@ -25,10 +25,10 @@
 #include <kpixmap.h>
 
 /**
- * Title widget for use in @ref KPopupMenu.
+ * Title widget for use in KPopupMenu.
  *
  * You usually don't have to create this manually since
- * @ref KPopupMenu::insertTitle will do it for you, but it is allowed if
+ * KPopupMenu::insertTitle will do it for you, but it is allowed if
  * you wish to customize it's look.
  *
  * @author Daniel M. Duley <mosfet@kde.org>

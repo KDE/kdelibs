@@ -30,7 +30,7 @@ class KXMLGUIClient;
 
 /**
  * Abstract interface for a "GUI builder", used by the GUIFactory
- * This interface is implemented by @ref KMainWindow for the case where
+ * This interface is implemented by KMainWindow for the case where
  * the toplevel widget is a KMainWindow. Other implementations may appear
  * in the future (dialogs for instance)
  */
@@ -66,20 +66,20 @@ class KXMLGUIBuilder
    *                attributes or child elements)
    * @param containerStateBuffer A buffer which possibibly contains
    *                             previously saved container state
-   *                             information, return via @ref
+   *                             information, return via 
    *                             removeContainer .
    */
   virtual QWidget *createContainer( QWidget *parent, int index,
           const QDomElement &element, int &id );
 
   /**
-   * Removes the given (and previously via @ref createContainer )
+   * Removes the given (and previously via createContainer )
    * created container.
    *
    * @return A buffer containing state information about the deleted
    *         container (like the last position of a toolbar container
    *         for example). The buffer is passed again to
-   *         @ref createContainer when the same container is about to be
+   * createContainer when the same container is about to be
    *         created again later.
    */
   virtual void removeContainer( QWidget *container, QWidget *parent,

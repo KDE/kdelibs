@@ -111,7 +111,7 @@ class KMacroCommand : public KNamedCommand
 {
 public:
     /**
-     * Creates a macro command. You will then need to call @ref addCommand
+     * Creates a macro command. You will then need to call addCommand
      * for each subcommand to be added to this macro command.
      * @param name the name of this command, translated, since it will appear
      * in the menus.
@@ -233,7 +233,7 @@ public slots:
      * Remembers when you saved the document.
      * Call this right after saving the document. As soon as
      * the history reaches the current index again (via some
-     * undo/redo operations) it will emit @ref documentRestored
+     * undo/redo operations) it will emit documentRestored
      * If you implemented undo/redo properly the document is
      * the same you saved before.
      */
@@ -254,7 +254,7 @@ signals:
     void commandExecuted();
     /**
      * Emitted every time we reach the index where you
-     * saved the document for the last time. See @ref documentSaved
+     * saved the document for the last time. See documentSaved
      */
     void documentRestored();
 

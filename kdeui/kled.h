@@ -202,7 +202,7 @@ public:
 
   /**
    * Sets the factor to darken the LED in OFF state.
-   * Same as @ref QColor::dark().
+   * Same as QColor::dark().
    * "darkfactor should be greater than 100, else the LED gets lighter
    * in OFF state.
    * Defaults to 300.

@@ -78,12 +78,12 @@ class Address
 
     /**
       Constructor that creates an empty Address, which is initialized
-      with a unique id (see @ref id()).
+      with a unique id (see id()).
     */
     Address();
   
     /**
-      This is like @ref Address() just above, with the difference
+      This is like Address() just above, with the difference
       that you can specify the type.
     */
     Address( int );

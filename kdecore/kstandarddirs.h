@@ -46,7 +46,7 @@ class KStandardDirsPrivate;
  * and applications always refer to a file with a resource type
  * (e.g. icon) and a filename (e.g. khexdit.xpm). In an ideal world
  * the application would make no assumption where this file is and
- * leave it up to @ref KStandardDirs::findResource("apps", "Home.desktop")
+ * leave it up to KStandardDirs::findResource("apps", "Home.desktop")
  * to apply this knowledge to return /opt/kde/share/applnk/Home.desktop
  * or ::locate("data", "kgame/background.jpg") to return
  * /opt/kde/share/apps/kgame/background.jpg
@@ -74,11 +74,11 @@ class KStandardDirsPrivate;
  * @li cgi - CGIs to run from kdehelp.
  * @li config - Configuration files.
  * @li data - Where applications store data.
- * @li exe - Executables in $prefix/bin. @ref findExe() for a function that takes $PATH into account.
+ * @li exe - Executables in $prefix/bin. findExe() for a function that takes $PATH into account.
  * @li html - HTML documentation.
- * @li icon - Icons, see @ref KIconLoader.
+ * @li icon - Icons, see KIconLoader.
  * @li lib - Libraries.
- * @li locale - Translation files for @ref KLocale.
+ * @li locale - Translation files for KLocale.
  * @li mime - Mime types.
  * @li module - Module (dynamically loaded library).
  * @li qtplugins - Qt plugins (dynamically loaded objects for Qt)
@@ -91,13 +91,13 @@ class KStandardDirsPrivate;
  * @li tmp - Temporary files (specific for both current host and current user)
  * @li socket - UNIX Sockets (specific for both current host and current user)
  *
- * A type that is added by the class @ref KApplication if you use it, is
+ * A type that is added by the class KApplication if you use it, is
  * appdata. This one makes the use of the type data a bit easier as it
  * appends the name of the application.
  * So while you had to ::locate("data", "appname/filename") so you can
  * also write ::locate("appdata", "filename") if your KApplication instance
  * is called "appname" (as set via KApplication's constructor or KAboutData, if
- * you use the global KStandardDirs object @ref KGlobal::dirs()).
+ * you use the global KStandardDirs object KGlobal::dirs()).
  * Please note though that you cannot use the "appdata"
  * type if you intend to use it in an applet for Kicker because 'appname' would
  * be "Kicker" instead of the applet's name. Therefore, for applets, you've got
@@ -169,7 +169,7 @@ public:
 	 *
 	 * You may add as many as you need, but it is advised that there
 	 * is exactly one to make writing definite.
-	 * All basic types (@ref kde_default) are added by @ref addKDEDefaults(),
+	 * All basic types ( kde_default) are added by addKDEDefaults(),
 	 * but for those you can add more relative paths as well.
 	 *
 	 * The later a suffix is added, the higher its priority. Note, that the
@@ -279,7 +279,7 @@ public:
 
 	/**
 	 * Tries to find the directory the file is in.
-	 * It works the same as @ref findResource(), but it doesn't
+	 * It works the same as findResource(), but it doesn't
 	 * return the filename but the name of the directory.
 	 *
 	 * This way the application can access a couple of files
@@ -309,7 +309,7 @@ public:
 	 *
 	 * @param type The type of resource to locate directories for.
 	 * @param filter Only accept filenames that fit to filter. The filter
-	 *        may consist of an optional directory and a @ref QRegExp
+	 *        may consist of an optional directory and a QRegExp
 	 *        wildcard expression. E.g. "images\*.jpg". Use QString::null
 	 *        if you do not want a filter.
 	 * @param recursive Specifies if the function should decend
@@ -334,7 +334,7 @@ public:
 	 *
 	 * @param type The type of resource to locate directories for.
 	 * @param filter Only accept filenames that fit to filter. The filter
-	 *        may consist of an optional directory and a @ref QRegExp
+	 *        may consist of an optional directory and a QRegExp
 	 *        wildcard expression. E.g. "images\*.jpg". Use QString::null
 	 *        if you do not want a filter.
 	 * @param recursive Specifies if the function should decend
@@ -401,16 +401,16 @@ public:
 	 * This function adds the defaults that are used by the current
 	 * KDE version.
 	 *
-	 * It's a series of @ref addResourceTypes()
-	 * and @ref addPrefix() calls.
+	 * It's a series of addResourceTypes()
+	 * and addPrefix() calls.
 	 * You normally wouldn't call this function because it's called
-	 * for you from @ref KGlobal.
+	 * for you from KGlobal.
 	 */
 	void addKDEDefaults();
 
 	/**
 	 * Reads customized entries out of the given config object and add
-	 * them via @ref addResourceDirs().
+	 * them via addResourceDirs().
 	 *
 	 * @param config The object the entries are read from. This should
 	 *        contain global config files

@@ -25,9 +25,9 @@
 #include <kmimetype.h>
 
 /**
- * Implementation of @ref KPixmapProvider.
+ * Implementation of KPixmapProvider.
  *
- * Uses @ref KMimeType::pixmapForURL() to resolve icons.
+ * Uses KMimeType::pixmapForURL() to resolve icons.
  *
  * Instatiate this class and supply it to the desired class, e.g.
  * \code
@@ -44,7 +44,7 @@ class KURLPixmapProvider : public KPixmapProvider
 public:
     /**
      * Returns a pixmap for @p url with size @p size.
-     * Uses @ref KMimeType::pixmapForURL().
+     * Uses KMimeType::pixmapForURL().
      * @param url the URL to fetch a pixmap for
      * @param size the size of the pixmap in pixels, or 0 for default.
      * @return the resulting pixmap

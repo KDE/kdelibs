@@ -59,10 +59,10 @@ namespace KJS {
    * An execution context contains information about the current state of the
    * script - the scope for variable lookup, the value of "this", etc. A new
    * execution context is entered whenever global code is executed (e.g. with
-   * @ref Interpreter::evaluate()), a function is called (see @ref
+   * Interpreter::evaluate()), a function is called (see 
    * Object::call()), or the builtin "eval" function is executed.
    *
-   * Most inheritable functions in the KJS api take a @ref ExecState pointer as
+   * Most inheritable functions in the KJS api take a ExecState pointer as
    * their first parameter. This can be used to obtain a handle to the current
    * execution context.
    *
@@ -112,8 +112,8 @@ namespace KJS {
 
     /**
      * Returns the context from which the current context was invoked. For
-     * global code this will be a null context (i.e. one for which @ref
-     * isNull() returns true). You should check @ref isNull() on the returned
+     * global code this will be a null context (i.e. one for which 
+     * isNull() returns true). You should check isNull() on the returned
      * value before calling any of it's methods.
      *
      * @return The calling execution context

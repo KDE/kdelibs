@@ -50,7 +50,7 @@ namespace KIO {
         Q_OBJECT
     public:
 	/**
-	 * Create new ChmodJobs using the @ref KIO::chmod() function.
+	 * Create new ChmodJobs using the KIO::chmod() function.
 	 */
         ChmodJob( const KFileItemList & lstItems,  int permissions, int mask,
                   int newOwner, int newGroup,

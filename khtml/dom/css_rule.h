@@ -93,7 +93,7 @@ public:
     DOM::DOMString cssText() const;
 
     /**
-     * see @ref cssText
+     * see cssText
      * @exception DOMException
      *
      *  HIERARCHY_REQUEST_ERR: Raised if the rule cannot be inserted
@@ -169,7 +169,7 @@ public:
     DOM::DOMString encoding() const;
 
     /**
-     * see @ref encoding
+     * see encoding
      * @exception CSSException
      * SYNTAX_ERR: Raised if the specified encoding value has a syntax
      * error and is unparsable.
@@ -382,7 +382,7 @@ public:
     DOM::DOMString selectorText() const;
 
     /**
-     * see @ref selectorText
+     * see selectorText
      * @exception CSSException
      * SYNTAX_ERR: Raised if the specified CSS string value has a
      * syntax error and is unparsable.
@@ -433,7 +433,7 @@ public:
     DOM::DOMString selectorText() const;
 
     /**
-     * see @ref selectorText
+     * see selectorText
      * @exception CSSException
      * SYNTAX_ERR: Raised if the specified CSS string value has a
      * syntax error and is unparsable.

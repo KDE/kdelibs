@@ -54,7 +54,7 @@ class QPopupMenu;
  *
  * @sect X-KDE-UniqueApplet
  *
- * Similar to @ref KApplication and @ref KUniqueApplication there are
+ * Similar to KApplication and KUniqueApplication there are
  * two types of panel applets. Use unique applets when it makes no
  * sence to run more than one instance of a applet in the panel. A
  * good example for unique applets is the taskbar applet.  Use normal
@@ -119,8 +119,8 @@ public:
      * Constructs a KPanelApplet just like any other widget.
      *
      * @param configFile The configFile handed over in the factory function.
-     * @param Type The applet @ref type().
-     * @param actions Standard RMB menu actions supported by the applet (see @ref action() ).
+     * @param Type The applet type().
+     * @param actions Standard RMB menu actions supported by the applet (see action() ).
      * @param parent The pointer to the parent widget handed over in the factory function.
      * @param name A Qt object name for your applet.
      **/
@@ -143,7 +143,7 @@ public:
      * The exact values of the fixed size component depend on the panel size.
      *
      * On a horizontal panel the applet height is fixed, the panel will
-     * call @ref widthForHeight(int height) with @p height
+     * call widthForHeight(int height) with @p height
      * equal to 'the fixed applet height'
      * when laying out the applets.
      *
@@ -164,7 +164,7 @@ public:
      * The exact values of the fixed size component depend on the panel size.
      *
      * On a vertical panel the applet width is fixed, the panel will
-     * call @ref heightForWidth(int width) with @p width
+     * call heightForWidth(int width) with @p width
      * equal to 'the fixed applet width'
      * when layint out the applets.
      *
@@ -176,7 +176,7 @@ public:
     virtual int heightForWidth(int width) const { return width; }
 
     /**
-     * Always use this @ref KConfig object to save/load your applets configuration.
+     * Always use this KConfig object to save/load your applets configuration.
      *
      * For unique applets this config object will write to a config file called
      * <appletname>rc in the users local KDE directory.
@@ -188,13 +188,13 @@ public:
 
     /**
      * @return Type indicating the applet's type.
-     * @ref Type
+     * Type
      **/
     Type type() const { return _type; }
 
     /**
      * @return int indicating the supported RMB menu actions.
-     * @ref Action
+     * Action
      **/
     int actions() const { return _actions; }
 
@@ -212,7 +212,7 @@ public:
 
     /**
      * @return the applet's custom menu, usually the same as the context menu, or 0 if none
-     * see @ref setCustomMenu(QPopupMenu*)
+     * see setCustomMenu(QPopupMenu*)
      */
     const QPopupMenu* customMenu() const;
 
@@ -254,7 +254,7 @@ protected:
      * Reimplement this function to launch a about dialog.
      *
      * Note that this is called only when your applet supports the About action.
-     * See @ref Action and KPanelApplet().
+     * See Action and KPanelApplet().
      **/
     virtual void about() {}
 
@@ -263,7 +263,7 @@ protected:
      * Reimplement this function to launch a manual or help page.
      *
      * Note that this is called only when your applet supports the Help action.
-     * See @ref Action and KPanelApplet().
+     * See Action and KPanelApplet().
      **/
     virtual void help() {}
 
@@ -272,7 +272,7 @@ protected:
      * Reimplement this function to launch a preferences dialog or kcontrol module.
      *
      * Note that this is called only when your applet supports the preferences action.
-     * See @ref Action and KPanelApplet().
+     * See Action and KPanelApplet().
      **/
     virtual void preferences() {}
  
@@ -282,7 +282,7 @@ protected:
      *
      * Note that this is called only when your applet supports the ReportBug
      * action.
-     * See @ref Action and KPanelApplet()
+     * See Action and KPanelApplet()
      **/
    virtual void reportBug() {}
 
@@ -336,7 +336,7 @@ protected:
     /**
      * You may need this if you want to popup menus at the right position.
      *
-     * See @ref  popupDirectionChange()
+     * See popupDirectionChange()
      *
      * @deprecated Use position() instead.
      **/

@@ -31,7 +31,7 @@ class KAsyncIOPrivate;
  * Asynchronous I/O Support
  *
  * This abstract class provides basic functionality for asynchronous I/O
- * support on top of @ref QIODevice.
+ * support on top of QIODevice.
  *
  * @author Thiago Macieira <thiagom@mail.com>
  * @version $Id$
@@ -51,18 +51,18 @@ private:
 
 public:
   /**
-   * Toggles the emission of the @ref readyRead() signal whenever the device
+   * Toggles the emission of the readyRead() signal whenever the device
    * is ready for reading. This is useful if you want to know the first time
    * the device is ready for reading and you don't want to read it now.
-   * @param enable true to enable, false to disable the @ref readyRead() signal
+   * @param enable true to enable, false to disable the readyRead() signal
    */
   virtual void enableRead(bool enable) = 0;
 
   /**
-   * Toggles the emission of the @ref readyWrite() signal whenever the device
+   * Toggles the emission of the readyWrite() signal whenever the device
    * is ready for writing. This is useful if you want to know the first time
    * the device is ready for writing and you don't want to write to it now.
-   * @param enable true to enable, false to disable the @ref readyWrite() signal
+   * @param enable true to enable, false to disable the readyWrite() signal
    */
   virtual void enableWrite(bool enable) = 0;
 

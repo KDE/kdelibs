@@ -34,7 +34,7 @@ class KXMLGUIBuilder;
 
 /**
  *
- * A KXMLGUIClient can be used with @ref KXMLGUIFactory to create a
+ * A KXMLGUIClient can be used with KXMLGUIFactory to create a
  * GUI from actions and an XML document, and can be dynamically merged
  * with other KXMLGUIClients.
  */
@@ -44,13 +44,13 @@ class KXMLGUIClient
 public:
   /**
    * Constructs a KXMLGUIClient which can be used with a
-   * @ref KXMLGUIFactory to create a GUI from actions and an XML document, and
+   * KXMLGUIFactory to create a GUI from actions and an XML document, and
    * which can be dynamically merged with other KXMLGUIClients.
    */
   KXMLGUIClient();
 
   /**
-   * Constructs a KXMLGUIClient which can be used with a @ref KXMLGUIFactory
+   * Constructs a KXMLGUIClient which can be used with a KXMLGUIFactory
    * to create a GUI from actions and an XML document,
    * and which can be dynamically merged with other KXMLGUIClients.
    *
@@ -69,13 +69,13 @@ public:
 
   /**
    * Retrieves an action of the client by name.  If not found, it looks in its child clients.
-   * This method is provided for convenience, as it uses @ref #actionCollection()
+   * This method is provided for convenience, as it uses actionCollection()
    * to get the action object.
    */
   KAction* action( const char* name ) const;
 
   /**
-   * Retrieves an action for a given @ref QDomElement. The default
+   * Retrieves an action for a given QDomElement. The default
    * implementation uses the "name" attribute to query the action
    * object via the other action() method.
    */
@@ -87,20 +87,20 @@ public:
   virtual KActionCollection* actionCollection() const;
 
   /**
-   * @return The instance (@ref KInstance) for this part.
+   * @return The instance ( KInstance) for this part.
    */
   virtual KInstance *instance() const;
 
   /**
-   * @return The parsed XML in a @ref QDomDocument, set by @ref
-   * setXMLFile() or @ref setXML().
+   * @return The parsed XML in a QDomDocument, set by 
+   * setXMLFile() or setXML().
    * This document describes the layout of the GUI.
    */
   virtual QDomDocument domDocument() const;
 
   /**
-   * This will return the name of the XML file as set by @ref #setXMLFile().
-   * If @ref #setXML() is used directly, then this will return NULL.
+   * This will return the name of the XML file as set by setXMLFile().
+   * If setXML() is used directly, then this will return NULL.
    *
    * The filename that this returns is obvious for components as each
    * component has exactly one XML file.  In non-components, however,
@@ -125,12 +125,12 @@ public:
   QDomDocument xmlguiBuildDocument() const;
 
   /**
-   * This method is called by the @ref KXMLGUIFactory as soon as the client
+   * This method is called by the KXMLGUIFactory as soon as the client
    * is added to the KXMLGUIFactory's GUI.
    */
   void setFactory( KXMLGUIFactory *factory );
   /**
-   * Retrieves a pointer to the @ref KXMLGUIFactory this client is
+   * Retrieves a pointer to the KXMLGUIFactory this client is
    * associated with (will return 0L if the client's GUI has not been built
    * by a KXMLGUIFactory.
    */
@@ -162,9 +162,9 @@ public:
   const QPtrList<KXMLGUIClient> *childClients();
 
   /**
-   * A client can have an own @ref KXMLGUIBuilder.
+   * A client can have an own KXMLGUIBuilder.
    * Use this method to assign your builder instance to the client (so that the
-   * @ref KXMLGUIFactory can use it when building the client's GUI)
+   * KXMLGUIFactory can use it when building the client's GUI)
    *
    * Client specific guibuilders are useful if you want to create
    * custom container widgets for your GUI.
@@ -173,7 +173,7 @@ public:
 
   /**
    * Retrieves the client's GUI builder or 0L if no client specific
-   * builder has been assigned via @ref #setClientBuilder()
+   * builder has been assigned via setClientBuilder()
    */
   KXMLGUIBuilder *clientBuilder() const;
 
@@ -192,7 +192,7 @@ public:
    * menu file whose contents depend on the mimetype of the file that
    * is selected, then you can achieve this using ActionLists. It
    * works as follows:
-   * In your xxxui.rc file ( the one that you set in @ref setXMLFile()
+   * In your xxxui.rc file ( the one that you set in setXMLFile()
    * ), you put an <ActionList name="xxx"> tag.  E.g.
    * \verbatim
    * <kpartgui name="xxx_part" version="1">
@@ -263,10 +263,10 @@ protected:
   //bool addSuperClient( KXMLGUIClient * );
 
   /**
-   * Sets the instance (@ref KInstance) for this part.
+   * Sets the instance ( KInstance) for this part.
    *
    * Call this first in the inherited class constructor.
-   * (At least before @ref setXMLFile().)
+   * (At least before setXMLFile().)
    */
   virtual void setInstance( KInstance *instance );
 
@@ -290,7 +290,7 @@ protected:
    * Sets the XML for the part.
    *
    * Call this in the Part-inherited class constructor if you
-   *  don't call @ref setXMLFile().
+   *  don't call setXMLFile().
    **/
   virtual void setXML( const QString &document, bool merge = false );
 
@@ -298,7 +298,7 @@ protected:
    * Sets the Document for the part, describing the layout of the GUI.
    *
    * Call this in the Part-inherited class constructor if you don't call
-   * @ref setXMLFile or @ref setXML .
+   * setXMLFile or setXML .
    */
   virtual void setDOMDocument( const QDomDocument &document, bool merge = false );
 

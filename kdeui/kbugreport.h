@@ -32,9 +32,9 @@ class KBugReportPrivate;
  * A dialog box for sending bug reports.
  * All the information needed by the dialog box
  * (program name, version, bug-report address, etc.)
- * comes from the @ref KAboutData class.
+ * comes from the KAboutData class.
  * Make sure you create an instance of KAboutData and pass it
- * to @ref KCmdLineArgs.
+ * to KCmdLineArgs.
  *
  * @short A dialog box for sending bug reports.
  * @author David Faure <faure@kde.org>
@@ -46,7 +46,7 @@ public:
   /**
    * Creates a bug-report dialog.
    * Note that you shouldn't have to do this manually,
-   * since @ref KHelpMenu takes care of the menu item
+   * since KHelpMenu takes care of the menu item
    * for "Report Bug..." and of creating a KBugReport dialog.
    */
   KBugReport( QWidget * parent = 0L, bool modal=true, const KAboutData *aboutData = 0L );

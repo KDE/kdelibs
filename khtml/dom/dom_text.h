@@ -81,7 +81,7 @@ public:
     DOMString data() const;
 
     /**
-     * see @ref data
+     * see data
      * @exception DOMException
      * NO_MODIFICATION_ALLOWED_ERR: Raised when the node is readonly.
      *

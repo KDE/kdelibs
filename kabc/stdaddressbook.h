@@ -31,7 +31,7 @@ namespace KABC {
   This class provides access to the standard KDE address book shared by all
   applications.
  
-  It's implemented as a singleton. Use @ref self() to get the address book
+  It's implemented as a singleton. Use self() to get the address book
   object. On the first self() call the address book also gets loaded.
   
   Example:
@@ -97,20 +97,20 @@ class StdAddressBook : public AddressBook
     /**
       Set the automatic save property of the address book.
       If @p enable is TRUE (default) the address book is saved at
-      destruction time otherwise you have to call @ref save() to
+      destruction time otherwise you have to call save() to
       explicitly save it.
      */
     static void setAutomaticSave( bool enable );
 
     /**
-      Closes the address book. Depending on @ref automaticSave() it will
+      Closes the address book. Depending on automaticSave() it will
       save the address book first.
     */
     static void close();
 
     /**
       Returns whether the address book is saved at destruction time.
-      See also @ref setAutomaticSave().
+      See also setAutomaticSave().
      */
     static bool automaticSave();
 
@@ -122,7 +122,7 @@ class StdAddressBook : public AddressBook
     Addressee whoAmI();
 
     /**
-      Sets the users contact. See @ref whoAmI() for more information.
+      Sets the users contact. See whoAmI() for more information.
 
       @param uid The uid of the users contact.
      */

@@ -35,7 +35,7 @@ class KFileTreeItem;
 
 
 /**
- * An item for a @ref KFileTreeView that knows about its own @ref KFileItem.
+ * An item for a KFileTreeView that knows about its own KFileItem.
  */
 class KFileTreeViewItem : public KListViewItem
 {
@@ -45,12 +45,12 @@ public:
    ~KFileTreeViewItem();
 
    /**
-    * @return the @ref KFileTreeBranch the item is sorted in.
+    * @return the KFileTreeBranch the item is sorted in.
     */
    KFileTreeBranch* branch() const     { return m_branch; }
 
    /**
-    * @return the @ref KFileItem the viewitem is representing.
+    * @return the KFileItem the viewitem is representing.
     */
    KFileItem *fileItem() const         { return m_kfileitem; }
 
@@ -60,7 +60,7 @@ public:
    QString path() const;
 
    /**
-    * @return the items @ref KURL
+    * @return the items KURL
     */
    KURL    url() const;
 
@@ -70,7 +70,7 @@ public:
    bool    isDir() const;
 
    /**
-    * @return if this directory was already seen by a @ref KDirLister.
+    * @return if this directory was already seen by a KDirLister.
     */
    bool    alreadyListed() const;
 

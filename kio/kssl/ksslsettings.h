@@ -82,7 +82,7 @@ public:
 	bool warnOnUnencrypted() const;
 
 	/**
-	 *  Change the user's @ref warnOnUnencrypted() setting
+	 *  Change the user's warnOnUnencrypted() setting
 	 *  @param x true if the user is to be warned
 	 *  @see #warnOnUnencrypted
 	 */

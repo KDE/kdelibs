@@ -85,7 +85,7 @@ class SlaveInterfacePrivate;
 
 /**
  * There are two classes that specifies the protocol between application
- * (@ref KIO::Job) and kioslave. SlaveInterface is the class to use on the application
+ * ( KIO::Job) and kioslave. SlaveInterface is the class to use on the application
  * end, SlaveBase is the one to use on the slave end.
  *
  * A call to foo() results in a call to slotFoo() on the other end.
@@ -198,20 +198,20 @@ protected:
     * in a return value of @p false, if the UIServer could not
     * be started for whatever reason.
      *
-     * @param       info See @ref AuthInfo.
+     * @param       info See AuthInfo.
      * @return      TRUE if user clicks on "OK", FALSE otherwsie.
      */
     void openPassDlg( KIO::AuthInfo& info );
 
    /**
-    * @deprecated. Use @ref openPassDlg( AuthInfo& ) instead.
+    * @deprecated. Use openPassDlg( AuthInfo& ) instead.
     */
     void openPassDlg( const QString& prompt, const QString& user,
                       const QString& caption, const QString& comment,
                       const QString& label, bool readOnly );
 
    /**
-    * @deprecated. Use @ref openPassDlg( AuthInfo& ) instead.
+    * @deprecated. Use openPassDlg( AuthInfo& ) instead.
     */
     void openPassDlg( const QString& prompt, const QString& user, bool readOnly );
 

@@ -43,7 +43,7 @@ class KURL;
  *
  * @sect Detail
  *
- * This widget inherits from @ref QLineEdit and implements the following
+ * This widget inherits from QLineEdit and implements the following
  * additional functionalities: a completion object that provides both
  * automatic and manual text completion as well as multiple match iteration
  * features, configurable key-bindings to activate these features and a
@@ -51,38 +51,38 @@ class KURL;
  * modes on the fly based on their preference.
  *
  * To support these new features KLineEdit also emits a few more
- * additional signals.  These are: @ref completion( const QString& ),
- * textRotation( KeyBindingType ), and @ref returnPressed( const QString& ).
+ * additional signals.  These are: completion( const QString& ),
+ * textRotation( KeyBindingType ), and returnPressed( const QString& ).
  * The completion signal can be connected to a slot that will assist the
  * user in filling out the remaining text.  The text rotation signal is
  * intended to be used to iterate through the list of all possible matches
  * whenever there is more than one match for the entered text.  The
- * @p returnPressed( const QString& ) signals are the same as @ref QLineEdit's
+ * @p returnPressed( const QString& ) signals are the same as QLineEdit's
  * except it provides the current text in the widget as its argument whenever
  * appropriate.
  *
  * This widget by default creates a completion object when you invoke
- * the @ref completionObject( bool ) member function for the first time or
- * use @ref setCompletionObject( KCompletion*, bool ) to assign your own
+ * the completionObject( bool ) member function for the first time or
+ * use setCompletionObject( KCompletion*, bool ) to assign your own
  * completion object.  Additionally, to make this widget more functional,
  * KLineEdit will by default handle the text rotation and completion
  * events internally when a completion object is created through either one
  * of the methods mentioned above.  If you do not need this functionality,
- * simply use @ref KCompletionBase::setHandleSignals( bool ) or set the
+ * simply use KCompletionBase::setHandleSignals( bool ) or set the
  * boolean parameter in the above functions to FALSE.
  *
  * The default key-bindings for completion and rotation is determined
- * from the global settings in @ref KStdAccel.  These values, however,
- * can be overridden locally by invoking @ref KCompletionBase::setKeyBinding().
+ * from the global settings in KStdAccel.  These values, however,
+ * can be overridden locally by invoking KCompletionBase::setKeyBinding().
  * The values can easily be reverted back to the default setting, by simply
- * calling @ref useGlobalSettings(). An alternate method would be to default
- * individual key-bindings by usning @ref setKeyBinding() with the default
+ * calling useGlobalSettings(). An alternate method would be to default
+ * individual key-bindings by usning setKeyBinding() with the default
  * second argument.
  *
  * NOTE that if the @p EchoMode for this widget is set to something other
  * than @p QLineEdit::Normal, the completion mode will always be defaulted
- * to @ref KGlobalSettings::CompletionNone.  This is done purposefully to guard
- * against protected entries such as passwords being cached in @ref KCompletion's
+ * to KGlobalSettings::CompletionNone.  This is done purposefully to guard
+ * against protected entries such as passwords being cached in KCompletion's
  * list. Hence, if the @p EchoMode is not QLineEdit::Normal, the completion
  * mode is automatically disabled.
  *
@@ -170,7 +170,7 @@ public:
     virtual ~KLineEdit ();
 
     /**
-     * Sets @p url into the lineedit. It uses @ref KURL::prettyURL() so
+     * Sets @p url into the lineedit. It uses KURL::prettyURL() so
      * that the url is properly decoded for displaying.
      */
     void setURL( const KURL& url );
@@ -178,21 +178,21 @@ public:
     /**
      * Puts the text cursor at the end of the string.
      *
-     * This method is deprecated.  Use @ref QLineEdit::end()
+     * This method is deprecated.  Use QLineEdit::end()
      * instead.
      *
      * @deprecated
-     * @ref QLineEdit::end()
+     * QLineEdit::end()
      */
     void cursorAtEnd() { end( false ); }
 
     /**
-     * Re-implemented from @ref KCompletionBase for internal reasons.
+     * Re-implemented from KCompletionBase for internal reasons.
      *
      * This function is re-implemented in order to make sure that
      * the EchoMode is acceptable before we set the completion mode.
      *
-     * See @ref KCompletionBase::setCompletionMode
+     * See KCompletionBase::setCompletionMode
      */
     virtual void setCompletionMode( KGlobalSettings::Completion mode );
 
@@ -202,7 +202,7 @@ public:
     * Note that when this function is invoked with its argument
     * set to @p true, then both the context menu and the completion
     * menu item are enabled.  If you do not want to the completion
-    * item to be visible simply invoke @ref hideModechanger() right
+    * item to be visible simply invoke hideModechanger() right
     * after calling this method.  Also by default, the context
     * menu is automatically created if this widget is editable. Thus
     * you need to call this function with the argument set to false
@@ -233,7 +233,7 @@ public:
 
     /**
      * By default, KLineEdit recognizes @p Key_Return and @p Key_Enter and emits
-     * the @ref returnPressed() signals, but it also lets the event pass,
+     * the returnPressed() signals, but it also lets the event pass,
      * for example causing a dialog's default-button to be called.
      *
      * Call this method with @p trap = @p true to make @p KLineEdit stop these
@@ -260,7 +260,7 @@ public:
 
     /**
      * @returns the completion-box, that is used in completion mode
-     * @ref KGlobalSettings::CompletionPopup.
+     * KGlobalSettings::CompletionPopup.
      * This method will create a completion-box if none is there, yet.
      *
      * @param create Set this to false if you don't want the box to be created
@@ -314,8 +314,8 @@ signals:
      *
      * The argument indicates which key-binding was pressed.
      * In KLineEdit's case this can be either one of two values:
-     * @ref PrevCompletionMatch or @ref NextCompletionMatch. See
-     * @ref KCompletionBase::setKeyBinding for details.
+     * PrevCompletionMatch or NextCompletionMatch. See
+     * KCompletionBase::setKeyBinding for details.
      *
      * Note that this signal is @em not emitted if the completion
      * mode is set to @p KGlobalSettings::CompletionNone or @p echoMode() is @em not  normal.
@@ -362,12 +362,12 @@ public slots:
     void rotateText( KCompletionBase::KeyBindingType /* type */ );
 
     /**
-     * See @ref KCompletionBase::setCompletedText.
+     * See KCompletionBase::setCompletedText.
      */
     virtual void setCompletedText( const QString& );
 
     /**
-     * Sets @p items into the completion-box if @ref completionMode() is
+     * Sets @p items into the completion-box if completionMode() is
      * CompletionPopup. The popup will be shown immediately.
      */
     void setCompletedItems( const QStringList& items );
@@ -410,42 +410,42 @@ protected:
     /**
     * Re-implemented for internal reasons.  API not affected.
     *
-    * See @ref QLineEdit::resizeEvent().
+    * See QLineEdit::resizeEvent().
     */
     virtual void resizeEvent( QResizeEvent * );
 
     /**
     * Re-implemented for internal reasons.  API not affected.
     *
-    * See @ref QLineEdit::keyPressEvent().
+    * See QLineEdit::keyPressEvent().
     */
     virtual void keyPressEvent( QKeyEvent * );
 
     /**
     * Re-implemented for internal reasons.  API not affected.
     *
-    * See @ref QLineEdit::mousePressEvent().
+    * See QLineEdit::mousePressEvent().
     */
     virtual void mousePressEvent( QMouseEvent * );
 
     /**
     * Re-implemented for internal reasons.  API not affected.
     *
-    * See @ref QWidget::mouseDoubleClickEvent().
+    * See QWidget::mouseDoubleClickEvent().
     */
     virtual void mouseDoubleClickEvent( QMouseEvent * );
 
     /**
     * Re-implemented for internal reasons.  API not affected.
     *
-    * See @ref QLineEdit::createPopupMenu().
+    * See QLineEdit::createPopupMenu().
     */
     virtual QPopupMenu *createPopupMenu();
 
     /**
     * Re-implemented to handle URI drops.
     *
-    * See @ref QLineEdit::dropEvent().
+    * See QLineEdit::dropEvent().
     */
     virtual void dropEvent( QDropEvent * );
 

@@ -29,7 +29,7 @@ class KSSL;
  * KDE SSL Connection Information
  *
  * This class contains the information about an SSL connection.  It is
- * generally referenced through @ref KSSL.
+ * generally referenced through KSSL.
  *
  * @author George Staikos <staikos@kde.org>
  * @see KSSL

@@ -68,7 +68,7 @@ public:
 
   /**
    * Tries to open the file and checks for the proper format.
-   * This method should be called before @ref load().
+   * This method should be called before load().
    */
   virtual bool doOpen();
 
@@ -78,7 +78,7 @@ public:
   virtual void doClose();
   
   /**
-   * Requests a save ticket, that is used by @ref save()
+   * Requests a save ticket, that is used by save()
    */
   virtual Ticket *requestSaveTicket();
 
@@ -92,7 +92,7 @@ public:
    * Saves all addresses from address book to file.
    * Returns true if all addressees could be saved otherwise false.
    *
-   * @param ticket  The ticket returned by @ref requestSaveTicket()
+   * @param ticket  The ticket returned by requestSaveTicket()
    */
   virtual bool save( Ticket *ticket );
 

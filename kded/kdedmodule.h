@@ -116,7 +116,7 @@ public slots:
   /**
    * Called whenever the last referenced object gets dereferenced.
    *
-   * See also @ref setIdleTimeout()
+   * See also setIdleTimeout()
    *
    * You may delete the module from this slot.
    */

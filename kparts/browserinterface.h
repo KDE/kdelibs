@@ -15,7 +15,7 @@ namespace KParts
  * KParts::BrowserExtension object.
  *
  * This interface looks not very rich, but the main functionality is
- * implemented using the @ref callMethod method for part->shell
+ * implemented using the callMethod method for part->shell
  * communication and using Qt properties for allowing a part to
  * to explicitly query information from the shell.
  *

@@ -32,9 +32,9 @@ class DrMain;
  * This class is intended to be used as base class for customized print dialog page. One of
  * the feature of the KDE print framework is to allow to customize the print dialog to
  * add some application specific print options. This is done by subclassing KPrintDialogPage
- * and reimplementing the 3 virtual functions @ref getOptions, @ref setOptions and @ref
+ * and reimplementing the 3 virtual functions getOptions, setOptions and 
  * isValid(). The print options will be stored in the KPrinter object, and will be
- * accessible via @ref KPrinter::option(). The option name should follow the form
+ * accessible via KPrinter::option(). The option name should follow the form
  * "kde-appname-optionname" for internal reasons.
  *
  * \code

@@ -33,7 +33,7 @@ class KFileItem;
 
 /**
  * A KFileFilter is a simple base class for file filters. Just
- * reimplement @ref passesFilter().
+ * reimplement passesFilter().
  * @short Base class for file filters.
  */
 class KFileFilter
@@ -144,7 +144,7 @@ public:
      */
     virtual void setModeFilter( mode_t mode );
     /**
-     * Returns the mode filter, as set by @ref setModeFilter().
+     * Returns the mode filter, as set by setModeFilter().
      * @return the mode filter, 0 if disabled
      * @see setModeFilter
      */

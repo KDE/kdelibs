@@ -110,21 +110,21 @@ public:
 	bool reInitialize();
 
 	/**
-	 *  Trigger a reread of KSSL configuration and @ref reInitialize() KSSL.
+	 *  Trigger a reread of KSSL configuration and reInitialize() KSSL.
 	 *
 	 *  @return true on successful reinitalizations
 	 *
-	 *  If you @ref setAutoReconfig() to false, then this will simply
-	 *  @ref reInitialize() and not read in the new configuration.
+	 *  If you setAutoReconfig() to false, then this will simply
+	 * reInitialize() and not read in the new configuration.
 	 *  @see #setAutoReconfig
 	 */
 	bool reconfig();
 
 	/**
-	 *  Enable or disable automatic reconfiguration on @ref initialize().
+	 *  Enable or disable automatic reconfiguration on initialize().
 	 *
 	 *  @param ar Set to false in order to disable auto-reloading of the
-	 *         KSSL configuration during @ref initialize().
+	 *         KSSL configuration during initialize().
 	 *
 	 *  By default, KSSL will read its configuration on initialize().  You
 	 *  might want to disable this for performance reasons.
@@ -152,7 +152,7 @@ public:
 
 	/**
 	 *  One is built by the constructor, so this will only return a NULL
-	 *  pointer if you set one with @ref setSettings().
+	 *  pointer if you set one with setSettings().
 	 *
 	 *  @return the current settings instance
 	 */

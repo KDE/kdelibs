@@ -37,7 +37,7 @@ class KMimeMagic; // see below (read this one first)
 /**
  * @deprecated Use KMimeType::findByContent() instead
  * May be removed in KDE 4.0.
- * Returned by @ref KMimeMagic @p find...Type methods.
+ * Returned by KMimeMagic @p find...Type methods.
  *
  * It contains the mimetype and the encoding of
  * the file or buffer read.
@@ -91,11 +91,11 @@ protected:
  * See kmimemagic.cpp for a full discussion on this issue.
  *
  * The basic usage of KMimeMagic is :
- * @li Get a pointer to it, using @ref KMimeMagic::self().
+ * @li Get a pointer to it, using KMimeMagic::self().
  * @li Use it for any file or buffer you want, using one of the three
  * @p find...Type() methods.
  *
- * The result is contained in the class @ref KMimeMagicResult.
+ * The result is contained in the class KMimeMagicResult.
  */
 class KMimeMagic
 {
@@ -169,7 +169,7 @@ public:
   KMimeMagicResult* findBufferType( const QByteArray &p );
 
   /**
-   * Same functionality as @ref findBufferType() but with
+   * Same functionality as findBufferType() but with
    * additional capability of distinguishing between
    * C-headers and C-Source.
    *

@@ -64,7 +64,7 @@ public:
   /**
    * Change the misspelled word and suggested replacements
    *  and enable the disabled buttons on the dialog box.
-   * (Buttons are disabled by @ref standby().)
+   * (Buttons are disabled by standby().)
    **/
   void init (const QString& _word, QStringList *_sugg);
 

@@ -64,17 +64,17 @@ class KServerSocketPrivate;
  * You can connect this socket to any Internet address.
  *
  * This class is deprecated and will be removed in the future. For new
- * programs, please use @ref KExtendedSocket class.
+ * programs, please use KExtendedSocket class.
  *
  * The socket gives you three signals: When ready for reading,
  * ready for writing or if the connection is broken.
- * Using @ref socket() you get a file descriptor
- * which you can use with the usual UNIX function like @ref write() or
- *  @ref read().
+ * Using socket() you get a file descriptor
+ * which you can use with the usual UNIX function like write() or
+ * read().
  * If you have already such a socket identifier you can construct a KSocket
  * on this identifier.
  *
- * If @ref socket() delivers a value of -1 or less, the connection
+ * If socket() delivers a value of -1 or less, the connection
  * was not successful.
  *
  * @author Torben Weis <weis@uni-frankfurt.de>
@@ -119,7 +119,7 @@ public:
      * Enables the socket for reading.
      *
      * If you enable read mode, the socket will emit the signal
-     * @ref readEvent() whenever there is something to read out of this
+     * readEvent() whenever there is something to read out of this
      * socket.
      * @param enable true to enable reading signals
      */
@@ -129,7 +129,7 @@ public:
      * Enables the socket for writing.
      *
      * If you enable write mode, the socket will emit the signal
-     * @ref writeEvent() whenever the socket is ready for writing.
+     * writeEvent() whenever the socket is ready for writing.
      *
      * Warning: If you forget to call enableWrite(false) when you are
      * not ready to send data, you will get lots of writeEvent() signals,
@@ -143,7 +143,7 @@ public:
     /**
      * Return address.
      * This function is dumb. Don't ever use it
-     * if you need the peer address of this socket, use @ref KExtendedSocket::peerAddress(int)
+     * if you need the peer address of this socket, use KExtendedSocket::peerAddress(int)
      * instead
      * @deprecated
      */
@@ -162,7 +162,7 @@ signals:
     /**
      * Data has arrived for reading.
      *
-     * This signal will only be raised if @ref enableRead( @p true ) was called
+     * This signal will only be raised if enableRead( @p true ) was called
      * first.
      * @param s the KSocket that triggered the event
      */
@@ -171,7 +171,7 @@ signals:
     /**
      * Socket is ready for writing.
      *
-     * This signal will only be raised if @ref enableWrite( @p true ) was
+     * This signal will only be raised if enableWrite( @p true ) was
      * called first.
      *
      * Warning: If you forget to call enableWrite(false) when you are
@@ -228,7 +228,7 @@ private:
 /**
  * @deprecated
  * This class is deprecated and will be removed in the future. For new
- * programs, please use @ref KExtendedSocket class.
+ * programs, please use KExtendedSocket class.
  *
  * You can use a KServerSocket to listen on a port for incoming
  * connections. When a connection arrived in the port, a KSocket
@@ -249,7 +249,7 @@ public:
     /**
      * Constructor.
      * @param _port	the port number to monitor for incoming connections.
-     * @param _bind     if false you need to call @ref bindAndListen yourself.
+     * @param _bind     if false you need to call bindAndListen yourself.
      *                  This gives you the opportunity to set options on the
      *                  socket.
      */
@@ -258,7 +258,7 @@ public:
     /**
      * Creates a UNIX domain server socket.
      * @param _path     path used for the socket.
-     * @param _bind     if false you need to call @ref bindAndListen yourself.
+     * @param _bind     if false you need to call bindAndListen yourself.
      *                  This gives you the opportunity to set options on the
      *                  socket.
      */
@@ -280,7 +280,7 @@ public:
     /**
      * Returns the file descriptor associated with the socket.
      * @return the file descriptor, -1 when an error occurred during
-     *         construction or @ref bindAndListen
+     *         construction or bindAndListen
      */
     int socket() const { return sock; }
 
@@ -295,7 +295,7 @@ public:
     /**
      * The address.
      * This is dumb. Don't use it
-     * Refer to @ref KExtendedSocket::localAddress(int)
+     * Refer to KExtendedSocket::localAddress(int)
      * @deprecated
      */
     unsigned long ipv4_addr();

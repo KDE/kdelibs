@@ -165,15 +165,15 @@ public:
     ///////////
 
     /**
-     * Call this in @ref #get and @ref #copy, to give the total size
+     * Call this in get and copy, to give the total size
      * of the file
-     * Call in @ref listDir too, when you know the total number of items.
+     * Call in listDir too, when you know the total number of items.
      */
     void totalSize( KIO::filesize_t _bytes );
     /**
-     * Call this during @ref #get and @ref #copy, once in a while,
+     * Call this during get and copy, once in a while,
      * to give some info about the current state.
-     * Don't emit it in @ref #listDir, @ref #listEntries speaks for itself.
+     * Don't emit it in listDir, listEntries speaks for itself.
      */
     void processedSize( KIO::filesize_t _bytes );
 
@@ -184,14 +184,14 @@ public:
      *
      * STUB ! Currently unimplemented. Here now for binary compatibility.
      *
-     * Call this during @ref #get and @ref #copy, once in a while,
+     * Call this during get and copy, once in a while,
      * to give some info about the current state.
-     * Don't emit it in @ref listDir, @ref listEntries speaks for itself.
+     * Don't emit it in listDir, listEntries speaks for itself.
      */
     void processedPercent( float percent );
 
     /**
-     * Call this in @ref #get and @ref #copy, to give the current transfer
+     * Call this in get and copy, to give the current transfer
      * speed, but only if it can't be calculated out of the size you
      * passed to processedSize (in most cases you don't want to call it)
      */
@@ -211,8 +211,8 @@ public:
     void errorPage();
 
     /**
-     * Call this in @ref #mimetype, when you know the mimetype.
-     * See @ref #mimetype about other ways to implement it.
+     * Call this in mimetype, when you know the mimetype.
+     * See mimetype about other ways to implement it.
      */
     void mimeType( const QString &_type );
 
@@ -337,7 +337,7 @@ public:
      * get, aka read.
      * @param url the full url for this request. Host, port and user of the URL
      *        can be assumed to be the same as in the last setHost() call.
-     * The slave emits the data through @ref #data
+     * The slave emits the data through data
      */
     virtual void get( const KURL& url );
 
@@ -354,7 +354,7 @@ public:
 
     /**
      * Finds all details for one file or directory.
-     * The information returned is the same as what @ref #listDir returns,
+     * The information returned is the same as what listDir returns,
      * but only for one file or directory.
      */
     virtual void stat( const KURL& url );
@@ -366,7 +366,7 @@ public:
      * should send a block of data big enough to be able
      * to determine the mimetype.
      *
-     * If the slave doesn't reimplement it, a @ref #get will
+     * If the slave doesn't reimplement it, a get will
      * be issued, i.e. the whole file will be downloaded before
      * determining the mimetype on it - this is obviously not a
      * good thing in most cases.
@@ -377,7 +377,7 @@ public:
      * Lists the contents of @p url.
      * The slave should emit ERR_CANNOT_ENTER_DIRECTORY if it doesn't exist,
      * if we don't have enough permissions, or if it is a file
-     * It should also emit @ref #totalFiles as soon as it knows how many
+     * It should also emit totalFiles as soon as it knows how many
      * files it will list.
      */
     virtual void listDir( const KURL& url );
@@ -529,7 +529,7 @@ public:
     virtual void dispatch( int command, const QByteArray &data );
 
     /**
-     * Read data send by the job, after a @ref #dataReq
+     * Read data send by the job, after a dataReq
      *
      * @param buffer buffer where data is stored
      * @return 0 on end of data,
@@ -596,7 +596,7 @@ public:
      * NOTE: A call to this function can fail and return @p false,
      * if the UIServer could not be started for whatever reason.
      *
-     * @param info  See @ref AuthInfo.
+     * @param info  See AuthInfo.
      * @param errorMsg Error message to show
      * @return      @p TRUE if user clicks on "OK", @p FALSE otherwsie.
      * @since 3.1
@@ -633,7 +633,7 @@ public:
      * }
      * \endcode
      *
-     * @param       See @ref AuthInfo.
+     * @param       See AuthInfo.
      * @return      @p true if cached Authorization is found, false otherwise.
      */
     bool checkCachedAuthentication( AuthInfo& info );
@@ -653,7 +653,7 @@ public:
     bool pingCacheDaemon() const;
 
     /**
-     * @obsolete as of 3.1. Use @ref openPassDlg instead.
+     * @obsolete as of 3.1. Use openPassDlg instead.
      * TODO: Remove before KDE 4.0
      * Creates a basic key to be used to cache the password.
      * @param url   the url from which the key is supposed to be generated
@@ -661,7 +661,7 @@ public:
     QString createAuthCacheKey( const KURL& url );
 
     /**
-     * @obsolete as of 3.1. Use @ref openPassDlg instead.
+     * @obsolete as of 3.1. Use openPassDlg instead.
      * TODO: Remove before KDE 4.0
      *
      * Cache authentication information is now stored automatically
@@ -670,7 +670,7 @@ public:
     void sendAuthenticationKey( const QCString& gKey, const QCString& key, bool keep );
 
     /**
-     * @obsolete as of 3.1. Use @ref openPassDlg instead.
+     * @obsolete as of 3.1. Use openPassDlg instead.
      * TODO: Remove before KDE 4.0
      *
      * Cached authentication information is now session based and
@@ -680,13 +680,13 @@ public:
     void delCachedAuthentication( const QString& key );
 
     /**
-     * @obsolete as of 3.1. Use @ref openPassDlg instead.
+     * @obsolete as of 3.1. Use openPassDlg instead.
      * TODO: Remove before KDE 4.0
      */
     void setMultipleAuthCaching( bool ) {};
 
     /**
-     * @obsolete as of 3.1. Use @ref openPassDlg instead.
+     * @obsolete as of 3.1. Use openPassDlg instead.
      * TODO: Remove before KDE 4.0
      */
     bool multipleAuthCaching() const { return false; }
@@ -694,9 +694,9 @@ public:
     /**
      * Used by the slave to check if it can connect
      * to a given host. This should be called where the slave is ready
-     * to do a ::connect() on a socket. For each call to @ref
+     * to do a ::connect() on a socket. For each call to 
      * requestNetwork must exist a matching call to
-     * @ref dropNetwork, or the system will stay online until
+     * dropNetwork, or the system will stay online until
      * KNetMgr gets closed (or the SlaveBase gets destructed)!
      *
      * If KNetMgr is not running, then this is a no-op and returns true
@@ -713,8 +713,8 @@ public:
 
     /**
      * Used by the slave to withdraw a connection requested by
-     * @ref requestNetwork. This function cancels the last call to
-     * @ref requestNetwork. If a client uses more than one internet
+     * requestNetwork. This function cancels the last call to
+     * requestNetwork. If a client uses more than one internet
      * connection, it must use dropNetwork(host) to
      * stop each request.
      *

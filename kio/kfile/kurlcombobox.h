@@ -32,8 +32,8 @@
  * This combobox shows a number of recent URLs/directories, as well as some
  * default directories.
  * It will manage the default dirs root-directory, home-directory and
- * Desktop-directory, as well as a number of URLs set via @ref setURLs()
- * and one additional entry to be set via @ref setURL().
+ * Desktop-directory, as well as a number of URLs set via setURLs()
+ * and one additional entry to be set via setURL().
  *
  * @short A combo box showing a number of recent URLs/directories
  * @author Carsten Pfeiffer <pfeiffer@kde.org>
@@ -50,8 +50,8 @@ public:
      */
     enum Mode { Files = -1, Directories = 1, Both = 0 };
     /**
-     * This Enumeration is used in @ref setURL() to determine which items
-     * will be removed when the given list is larger than @ref maxItems().
+     * This Enumeration is used in setURL() to determine which items
+     * will be removed when the given list is larger than maxItems().
      *
      * @li RemoveTop means that items will be removed from top
      * @li RemoveBottom means, that items will be removed from the bottom
@@ -80,7 +80,7 @@ public:
 
     /**
      * Sets the current url. This combo handles exactly one url additionally
-     * to the default items and those set via @ref setURLs(). So you can call
+     * to the default items and those set via setURLs(). So you can call
      * setURL() as often as you want, it will always replace the previous one
      * set via setURL().
      * If @p url is already in the combo, the last item will stay there
@@ -94,7 +94,7 @@ public:
 
     /**
      * Inserts @p urls into the combobox below the "default urls" (see
-     * @ref addDefaultURL).
+     * addDefaultURL).
      *
      * If the list of urls contains more items than maxItems, the first items
      * will be stripped.
@@ -103,7 +103,7 @@ public:
 
     /**
      * Inserts @p urls into the combobox below the "default urls" (see
-     * @ref addDefaultURL).
+     * addDefaultURL).
      *
      * If the list of urls contains more items than maxItems, the @p remove
      * parameter determines whether the first or last items will be stripped.
@@ -112,10 +112,10 @@ public:
 
     /**
      * @returns a list of all urls currently handled. The list contains at most
-     * @ref maxItems() items.
+     * maxItems() items.
      * Use this to save the list of urls in a config-file and reinsert them
-     * via @ref setURLs() next time.
-     * Note that all default urls set via @ref addDefaultURL() are not
+     * via setURLs() next time.
+     * Note that all default urls set via addDefaultURL() are not
      * returned, they will automatically be set via setURLs() or setURL().
      * You will always get fully qualified urls, i.e. with protocol like
      * file:/
@@ -136,28 +136,28 @@ public:
 
     /**
      * Adds a url that will always be shown in the combobox, it can't be
-     * "rotated away". Default urls won't be returned in @ref urls() and don't
-     * have to be set via @ref setURLs().
+     * "rotated away". Default urls won't be returned in urls() and don't
+     * have to be set via setURLs().
      * If you want to specify a special pixmap, use the overloaded method with
      * the pixmap parameter.
-     * Default URLs will be inserted into the combobox by @ref setDefaults()
+     * Default URLs will be inserted into the combobox by setDefaults()
      */
     void addDefaultURL( const KURL& url, const QString& text = QString::null );
 
     /**
      * Adds a url that will always be shown in the combobox, it can't be
-     * "rotated away". Default urls won't be returned in @ref urls() and don't
-     * have to be set via @ref setURLs().
+     * "rotated away". Default urls won't be returned in urls() and don't
+     * have to be set via setURLs().
      * If you don't need to specify a pixmap, use the overloaded method without
      * the pixmap parameter.
-     * Default URLs will be inserted into the combobox by @ref setDefaults()
+     * Default URLs will be inserted into the combobox by setDefaults()
      */
     void addDefaultURL( const KURL& url, const QPixmap& pix,
 			const QString& text = QString::null );
 
     /**
      * Clears all items and inserts the default urls into the combo. Will be
-     * called implicitly upon the first call to @ref setURLs() or @ref setURL()
+     * called implicitly upon the first call to setURLs() or setURL()
      * @see #addDefaultURL
      */
     void setDefaults();

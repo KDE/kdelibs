@@ -46,7 +46,7 @@ class QTimer;
  * the current working directory, or the last directory where a file has been
  * selected.
  *
- * You can change this behavior by using @ref setMode() or @ref setFilter().
+ * You can change this behavior by using setMode() or setFilter().
  * 
  * \image html kurlrequester.png "KDE URL Requester"
  * 
@@ -92,7 +92,7 @@ public:
 
     /**
      * Enables/disables showing file:/ in the lineedit, when a local file has
-     * been selected in the filedialog or was set via @ref setURL().
+     * been selected in the filedialog or was set via setURL().
      * Default is false, not showing file:/
      * @see #showLocalProtocol
      */
@@ -131,7 +131,7 @@ public:
      * special one, if you used the special constructor.
      *
      * It is provided so that you can e.g. set an own completion object
-     * (e.g. @ref KShellCompletion) into it.
+     * (e.g. KShellCompletion) into it.
      */
     KLineEdit * lineEdit() const;
 
@@ -168,7 +168,7 @@ public:
 public slots:
     /**
      * Sets the url in the lineedit to @p url. Depending on the state of
-     * @ref showLocalProtocol(), file:/ on local files will be shown or not.
+     * showLocalProtocol(), file:/ on local files will be shown or not.
      * @since 3.1
      */
     void setURL( const QString& url );
@@ -238,7 +238,7 @@ private:
 protected slots:
     /**
      * Called when the button is pressed to open the filedialog.
-     * Also called when @ref KStdAccel::Open (default is Ctrl-O) is pressed.
+     * Also called when KStdAccel::Open (default is Ctrl-O) is pressed.
      */
     void slotOpenDialog();
 

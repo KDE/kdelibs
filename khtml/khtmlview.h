@@ -67,7 +67,7 @@ class KHTMLPart;
 class KHTMLViewPrivate;
 
 /**
- * Renders and displays HTML in a @ref QScrollView.
+ * Renders and displays HTML in a QScrollView.
  *
  * Suitable for use as an application's main view.
  **/

@@ -80,7 +80,7 @@ public:
     DOMString accessKey() const;
 
     /**
-     * see @ref accessKey
+     * see accessKey
      */
     void setAccessKey( const DOMString & );
 
@@ -93,7 +93,7 @@ public:
     bool disabled() const;
 
     /**
-     * see @ref disabled
+     * see disabled
      */
     void setDisabled( bool );
 
@@ -107,7 +107,7 @@ public:
     DOMString name() const;
 
     /**
-     * see @ref name
+     * see name
      */
     void setName( const DOMString & );
 
@@ -121,7 +121,7 @@ public:
     long tabIndex() const;
 
     /**
-     * see @ref tabIndex
+     * see tabIndex
      */
     void setTabIndex( long );
 
@@ -142,7 +142,7 @@ public:
     DOMString value() const;
 
     /**
-     * see @ref value
+     * see value
      */
     void setValue( const DOMString & );
 };
@@ -236,7 +236,7 @@ public:
     DOMString name() const;
 
     /**
-     * see @ref name
+     * see name
      */
     void setName( const DOMString & );
 
@@ -249,7 +249,7 @@ public:
     DOMString acceptCharset() const;
 
     /**
-     * see @ref acceptCharset
+     * see acceptCharset
      */
     void setAcceptCharset( const DOMString & );
 
@@ -262,7 +262,7 @@ public:
     DOMString action() const;
 
     /**
-     * see @ref action
+     * see action
      */
     void setAction( const DOMString & );
 
@@ -276,7 +276,7 @@ public:
     DOMString enctype() const;
 
     /**
-     * see @ref enctype
+     * see enctype
      */
     void setEnctype( const DOMString & );
 
@@ -289,7 +289,7 @@ public:
     DOMString method() const;
 
     /**
-     * see @ref method
+     * see method
      */
     void setMethod( const DOMString & );
 
@@ -302,7 +302,7 @@ public:
     DOMString target() const;
 
     /**
-     * see @ref target
+     * see target
      */
     void setTarget( const DOMString & );
 
@@ -357,7 +357,7 @@ public:
     DOMString defaultValue() const;
 
     /**
-     * see @ref defaultValue
+     * see defaultValue
      */
     void setDefaultValue( const DOMString & );
 
@@ -370,7 +370,7 @@ public:
     bool defaultChecked() const;
 
     /**
-     * see @ref defaultChecked
+     * see defaultChecked
      */
     void setDefaultChecked( bool );
 
@@ -389,7 +389,7 @@ public:
     DOMString accept() const;
 
     /**
-     * see @ref accept
+     * see accept
      */
     void setAccept( const DOMString & );
 
@@ -403,7 +403,7 @@ public:
     DOMString accessKey() const;
 
     /**
-     * see @ref accessKey
+     * see accessKey
      */
     void setAccessKey( const DOMString & );
 
@@ -418,7 +418,7 @@ public:
     DOMString align() const;
 
     /**
-     * see @ref align
+     * see align
      */
     void setAlign( const DOMString & );
 
@@ -432,7 +432,7 @@ public:
     DOMString alt() const;
 
     /**
-     * see @ref alt
+     * see alt
      */
     void setAlt( const DOMString & );
 
@@ -448,7 +448,7 @@ public:
     bool checked() const;
 
     /**
-     * see @ref checked
+     * see checked
      */
     void setChecked( bool );
 
@@ -461,7 +461,7 @@ public:
     bool disabled() const;
 
     /**
-     * see @ref disabled
+     * see disabled
      */
     void setDisabled( bool );
 
@@ -475,7 +475,7 @@ public:
     long maxLength() const;
 
     /**
-     * see @ref maxLength
+     * see maxLength
      */
     void setMaxLength( long );
 
@@ -489,7 +489,7 @@ public:
     DOMString name() const;
 
     /**
-     * see @ref name
+     * see name
      */
     void setName( const DOMString & );
 
@@ -504,7 +504,7 @@ public:
 
     // ### remove in 4.0
     /**
-     * see @ref readOnly
+     * see readOnly
      */
     void setReadOnly( bool );
 
@@ -528,7 +528,7 @@ public:
     long getSize() const;
 
     /**
-     * see @ref getSize
+     * see getSize
      */
     void setSize( long );
 
@@ -543,7 +543,7 @@ public:
     DOMString src() const;
 
     /**
-     * see @ref src
+     * see src
      */
     void setSrc( const DOMString & );
 
@@ -557,7 +557,7 @@ public:
     long tabIndex() const;
 
     /**
-     * see @ref tabIndex
+     * see tabIndex
      */
     void setTabIndex( long );
 
@@ -570,7 +570,7 @@ public:
     DOMString type() const;
 
     /**
-     * see @ref type
+     * see type
      */
     void setType(const DOMString&);
 
@@ -583,7 +583,7 @@ public:
     DOMString useMap() const;
 
     /**
-     * see @ref useMap
+     * see useMap
      */
     void setUseMap( const DOMString & );
 
@@ -597,7 +597,7 @@ public:
     DOMString value() const;
 
     /**
-     * see @ref value
+     * see value
      */
     void setValue( const DOMString & );
 
@@ -664,7 +664,7 @@ public:
     DOMString accessKey() const;
 
     /**
-     * see @ref accessKey
+     * see accessKey
      */
     void setAccessKey( const DOMString & );
 
@@ -678,7 +678,7 @@ public:
     DOMString htmlFor() const;
 
     /**
-     * see @ref htmlFor
+     * see htmlFor
      */
     void setHtmlFor( const DOMString & );
 };
@@ -724,7 +724,7 @@ public:
     DOMString accessKey() const;
 
     /**
-     * see @ref accessKey
+     * see accessKey
      */
     void setAccessKey( const DOMString & );
 
@@ -738,7 +738,7 @@ public:
     DOMString align() const;
 
     /**
-     * see @ref align
+     * see align
      */
     void setAlign( const DOMString & );
 };
@@ -777,7 +777,7 @@ public:
     bool disabled() const;
 
     /**
-     * see @ref disabled
+     * see disabled
      */
     void setDisabled( bool );
 
@@ -790,7 +790,7 @@ public:
     DOMString label() const;
 
     /**
-     * see @ref label
+     * see label
      */
     void setLabel( const DOMString & );
 };
@@ -837,7 +837,7 @@ public:
     long selectedIndex() const;
 
     /**
-     * see @ref selectedIndex
+     * see selectedIndex
      */
     void setSelectedIndex( long );
 
@@ -848,7 +848,7 @@ public:
     DOMString value() const;
 
     /**
-     * see @ref value
+     * see value
      */
     void setValue( const DOMString & );
 
@@ -879,7 +879,7 @@ public:
     bool disabled() const;
 
     /**
-     * see @ref disabled
+     * see disabled
      */
     void setDisabled( bool );
 
@@ -893,7 +893,7 @@ public:
     bool multiple() const;
 
     /**
-     * see @ref multiple
+     * see multiple
      */
     void setMultiple( bool );
 
@@ -907,7 +907,7 @@ public:
     DOMString name() const;
 
     /**
-     * see @ref name
+     * see name
      */
     void setName( const DOMString & );
 
@@ -920,7 +920,7 @@ public:
     long size() const;
 
     /**
-     * see @ref size
+     * see size
      */
     void setSize( long );
 
@@ -934,7 +934,7 @@ public:
     long tabIndex() const;
 
     /**
-     * see @ref tabIndex
+     * see tabIndex
      */
     void setTabIndex( long );
 
@@ -1006,7 +1006,7 @@ public:
     DOMString defaultValue() const;
 
     /**
-     * see @ref defaultValue
+     * see defaultValue
      */
     void setDefaultValue( const DOMString & );
 
@@ -1025,7 +1025,7 @@ public:
     DOMString accessKey() const;
 
     /**
-     * see @ref accessKey
+     * see accessKey
      */
     void setAccessKey( const DOMString & );
 
@@ -1038,7 +1038,7 @@ public:
     long cols() const;
 
     /**
-     * see @ref cols
+     * see cols
      */
     void setCols( long );
 
@@ -1051,7 +1051,7 @@ public:
     bool disabled() const;
 
     /**
-     * see @ref disabled
+     * see disabled
      */
     void setDisabled( bool );
 
@@ -1065,7 +1065,7 @@ public:
     DOMString name() const;
 
     /**
-     * see @ref name
+     * see name
      */
     void setName( const DOMString & );
 
@@ -1078,7 +1078,7 @@ public:
     bool readOnly() const;
 
     /**
-     * see @ref readOnly
+     * see readOnly
      */
     void setReadOnly( bool );
 
@@ -1091,7 +1091,7 @@ public:
     long rows() const;
 
     /**
-     * see @ref rows
+     * see rows
      */
     void setRows( long );
 
@@ -1105,7 +1105,7 @@ public:
     long tabIndex() const;
 
     /**
-     * see @ref tabIndex
+     * see tabIndex
      */
     void setTabIndex( long );
 
@@ -1124,7 +1124,7 @@ public:
     DOMString value() const;
 
     /**
-     * see @ref value
+     * see value
      */
     void setValue( const DOMString & );
 
@@ -1182,7 +1182,7 @@ public:
     bool defaultSelected() const;
 
     /**
-     * see @ref defaultSelected
+     * see defaultSelected
      */
     void setDefaultSelected( bool );
 
@@ -1200,7 +1200,7 @@ public:
     long index() const;
 
     /**
-     * see @ref index
+     * see index
      *
      * This function is obsolete - the index property is actually supposed to be read-only
      * (http://www.w3.org/DOM/updates/REC-DOM-Level-1-19981001-errata.html)
@@ -1216,7 +1216,7 @@ public:
     bool disabled() const;
 
     /**
-     * see @ref disabled
+     * see disabled
      */
     void setDisabled( bool );
 
@@ -1229,7 +1229,7 @@ public:
     DOMString label() const;
 
     /**
-     * see @ref label
+     * see label
      */
     void setLabel( const DOMString & );
 
@@ -1242,7 +1242,7 @@ public:
     bool selected() const;
 
     /**
-     * see @ref selected
+     * see selected
      */
     void setSelected( bool );
 
@@ -1255,7 +1255,7 @@ public:
     DOMString value() const;
 
     /**
-     * see @ref value
+     * see value
      */
     void setValue( const DOMString & );
 };
@@ -1304,7 +1304,7 @@ public:
     DOMString prompt() const;
 
     /**
-     * see @ref prompt
+     * see prompt
      */
     void setPrompt( const DOMString & );
 };

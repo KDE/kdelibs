@@ -72,7 +72,7 @@ public:
    *        If this parameter is set to @p false then @p url is
    *        examined to find out whether it is a local URL or
    *        not. This flag is just used to improve speed, since the
-   *        function @ref KURL::isLocalFile is a bit slow.
+   *        function KURL::isLocalFile is a bit slow.
    *
    * @param showProgressInfo
    *        Whether to show progress information when determining the
@@ -196,14 +196,14 @@ public:
    *
    * This function is used after the mime type
    * is found out. It will search for all services which can handle
-   * the mime type and call @ref run() afterwards.
+   * the mime type and call run() afterwards.
    * @param _url the URL to open
    * @param _mimetype the mime type of the resource
    * @param tempFile if true and _url is a local file, it will be deleted
    *        when the launched application exits.
    * @param runExecutables if false then local .desktop files, 
    *        executables and shell scripts will not be run.
-   *        See also @ref isExecutable().
+   *        See also isExecutable().
    * @return the process id, or 0 on error
    */
   static pid_t runURL( const KURL& _url, const QString& _mimetype, bool tempFile, bool runExecutables);
@@ -229,7 +229,7 @@ public:
   static pid_t runCommand( QString cmd );
 
   /**
-   * Same as the other @ref runCommand(), but it also takes the name of the
+   * Same as the other runCommand(), but it also takes the name of the
    * binary, to display an error message in case it couldn't find it.
    *
    * @p _cmd must be a shell command. You must not append "&"
@@ -319,7 +319,7 @@ protected:
   /**
    * Called if the mimetype has been detected. The function checks
    * whether the document and appends the gzip protocol to the
-   * URL. Otherwise @ref #runURL is called to finish the job.
+   * URL. Otherwise runURL is called to finish the job.
    */
   virtual void foundMimeType( const QString& _type );
 
@@ -335,14 +335,14 @@ protected:
 
   /**
    * Used to indicate that the next action is to scan the file.
-   * This action is invoked from @ref #slotTimeout.
+   * This action is invoked from slotTimeout.
    */
   bool m_bScanFile;
   bool m_bIsDirectory;
 
   /**
    * USed to indicate that the next action is to initialize.
-   * This action is invoked from @ref #slotTimeout
+   * This action is invoked from slotTimeout
    */
   bool m_bInit;
 

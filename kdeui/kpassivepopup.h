@@ -18,7 +18,7 @@ class QVBox;
 
 /**
  * A dialog-like popup that displays messages without interupting the user.
- * The simplest uses of KPassivePopup are by using the various @ref message() static
+ * The simplest uses of KPassivePopup are by using the various message() static
  * methods. The position the popup appears at depends on the type of the parent window:
  *
  * @li Normal Windows: The popup is placed adjacent to the icon of the window.
@@ -36,7 +36,7 @@ class QVBox;
  *    px.load( &quot;hi32-app-logtracker.png&quot; );
  *    KPassivePopup::message( &quot;Some title&quot;, &quot;This is the main text&quot;, px, this );
  * \endcode
- * For more control over the popup, you can use the @ref setView(QWidget *) method
+ * For more control over the popup, you can use the setView(QWidget *) method
  * to create a custom popup.
  * \code
  *    KPassivePopup *pop = new KPassivePopup( parent );
@@ -82,12 +82,12 @@ public:
     void setView( QWidget *child );
 
     /**
-     * Creates a standard view then calls @ref #setView(QWidget*) .
+     * Creates a standard view then calls setView(QWidget*) .
      */
     void setView( const QString &caption, const QString &text = QString::null );
 
     /**
-     * Creates a standard view then calls @ref #setView(QWidget*) .
+     * Creates a standard view then calls setView(QWidget*) .
      */
     virtual void setView( const QString &caption, const QString &text, const QPixmap &icon );
 
@@ -97,7 +97,7 @@ public:
      * You can use the returned widget to customize the passivepopup while 
      * keeping the look similar to the "standard" passivepopups.
      *
-     * After customizing the widget, pass it to @ref setView( QWidget* )
+     * After customizing the widget, pass it to setView( QWidget* )
      *
      * @param parent The parent widget used for the returned QVBox. If left 0L,
      * then "this", i.e. the passive popup object will be used.
@@ -176,7 +176,7 @@ public slots:
     /**
      * Sets the delay for the popup is removed automatically. Setting the delay to 0
      * disables the #timeout, if you're doing this, you may want to connect the
-     * @ref clicked() signal to the hide() slot.
+     * clicked() signal to the hide() slot.
 	 * Setting the delay to -1 makes it use the default value.
      */
     void setTimeout( int delay );
@@ -204,7 +204,7 @@ protected:
     virtual void positionSelf();
 
     /**
-     * Reimplemented to destroy the object when @ref autoDelete() is
+     * Reimplemented to destroy the object when autoDelete() is
      * enabled.
      */
     virtual void hideEvent( QHideEvent * );
@@ -221,10 +221,10 @@ protected:
 
     /**
      * If no relative window (e.g. taskbar button, system tray window) is
-     * available, use this rectangle (pass it to @ref moveNear()).
+     * available, use this rectangle (pass it to moveNear()).
      * Basically KWinModule::workArea() with width and height set to 0
      * so that moveNear uses the upper-left position.
-     * @return The QRect to be passed to @ref moveNear() ifno other is
+     * @return The QRect to be passed to moveNear() ifno other is
      * available.
      */
     QRect defaultArea() const;

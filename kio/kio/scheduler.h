@@ -115,7 +115,7 @@ namespace KIO {
         /**
          * Register @p job with the scheduler. 
          * The default is to create a new slave for the job if no slave
-         * is available. This can be changed by calling @ref scheduleJob.
+         * is available. This can be changed by calling scheduleJob.
 	 * @param job the job to register
          */
         static void doJob(SimpleJob *job)
@@ -193,7 +193,7 @@ namespace KIO {
          * This function should be called immediately after creating a Job.
          *
          * @param slave The slave to use. The slave must have been obtained
-         *              with a call to @ref getConnectedSlave and must not
+         *              with a call to getConnectedSlave and must not
          *              be currently assigned to any other job.
          * @param job The job to do.
          *
@@ -211,7 +211,7 @@ namespace KIO {
          * Disconnects @p slave.
          *
          * @param slave The slave to disconnect. The slave must have been
-         *              obtained with a call to @ref getConnectedSlave
+         *              obtained with a call to getConnectedSlave
          *              and must not be assigned to any job.
          *
          * @return true is successful, false otherwise.
@@ -228,7 +228,7 @@ namespace KIO {
          * the that was started.
          * Register the mainwindow @p wid with the KIO subsystem
          * Do not call this, it is called automatically from
-         * @ref void KIO::Job::setWindow(QWidget*).
+         * void KIO::Job::setWindow(QWidget*).
 	 * @param wid the window to register
 	 * @since 3.1
          */
@@ -237,7 +237,7 @@ namespace KIO {
         
         /**
          * @internal
-         * Unregisters the window registered by @ref registerWindow().
+         * Unregisters the window registered by registerWindow().
          */
         static void unregisterWindow(QObject *wid)
         { self()->slotUnregisterWindow(wid); }

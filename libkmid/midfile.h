@@ -84,10 +84,10 @@ double metronomeTempoToTempo(ulong x);
  * Reads a midi file.
  * 
  * @param name the filename of the midi file to load.
- * @param info a pointer to the @ref MidiFileInfo struct that will be
+ * @param info a pointer to the MidiFileInfo struct that will be
  *     filled with the information of the loaded file.
  * @param ok return status.
- * @return an array of @ref MidiTrack objects with the contents of the file.
+ * @return an array of MidiTrack objects with the contents of the file.
  */ 
 MidiTrack **readMidiFile( const char *name, MidiFileInfo *info, int &ok);
 

@@ -38,10 +38,10 @@ class MainWindowPrivate;
  * A KPart-aware main window, whose user interface is described in XML.
  *
  * Inherit your main window from this class
- * and don't forget to call @ref setXMLFile() in the inherited constructor.
+ * and don't forget to call setXMLFile() in the inherited constructor.
  *
  * It implements all internal interfaces in the case of a
- * @ref KMainWindow as host: the builder and servant interface (for menu
+ * KMainWindow as host: the builder and servant interface (for menu
  * merging).
  */
 class MainWindow : public KMainWindow, virtual public PartBase
@@ -49,7 +49,7 @@ class MainWindow : public KMainWindow, virtual public PartBase
   Q_OBJECT
  public:
   /**
-   * Constructor, same signature as @ref KMainWindow.
+   * Constructor, same signature as KMainWindow.
    */
   MainWindow( QWidget* parent,  const char *name = 0L, WFlags f = WType_TopLevel | WDestructiveClose );
   /**
@@ -57,7 +57,7 @@ class MainWindow : public KMainWindow, virtual public PartBase
    */
   MainWindow( const char *name = 0L, WFlags f = WDestructiveClose );
   /**
-   * Constructor with creation flags, see @ref KMainWindow.
+   * Constructor with creation flags, see KMainWindow.
    * @since 3.2
    */
   MainWindow( int cflags, QWidget* parent,  const char *name = 0L, WFlags f = WType_TopLevel | WDestructiveClose );
@@ -74,7 +74,7 @@ protected slots:
    *
    * In a main window with multiple parts being shown (e.g. as in Konqueror)
    * you need to connect this slot to the
-   * @ref KPartManager::activePartChanged() signal
+   * KPartManager::activePartChanged() signal
    *
    * @param part The active part (set to 0L if no part).
    */

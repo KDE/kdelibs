@@ -40,18 +40,18 @@ typedef QValueList<QCString> QCStringList;
  * for KDE applications.
  *
  * This class provides IPC and RPC for KDE applications.  Usually you
- * will not have to instantiate one yourself because @ref KApplication
+ * will not have to instantiate one yourself because KApplication
  * contains a method to return a pointer to a DCOPClient object which
  * can be used for your whole application.
  *
  * Before being able to send or receive any DCOP messages, you will have
  * to attach your client object to the DCOP server, and then register
- * your application with a specific name. See @ref attach()
- * and @ref registerAs() for
+ * your application with a specific name. See attach()
+ * and registerAs() for
  * more information.
  *
- * Data to be sent should be serialized into a @ref QDataStream which was
- * initialized with the @ref QByteArray that you actually intend to send
+ * Data to be sent should be serialized into a QDataStream which was
+ * initialized with the QByteArray that you actually intend to send
  * the data in.  An example of how you might do this:
  *
  * \code
@@ -109,9 +109,9 @@ class DCOPClient : public QObject
 
   /**
    * @internal
-   * Internal function for @ref KUniqueApplication to register the @ref DCOPClient
+   * Internal function for KUniqueApplication to register the DCOPClient
    * with the application in case the application didn't exist at the
-   * time the @ref DCOPClient was created.
+   * time the DCOPClient was created.
    */
   void bindToApp();
 
@@ -169,7 +169,7 @@ class DCOPClient : public QObject
    * Registers at the DCOP server.
    *
    * If the application was already registered,
-   * the registration will be re-done with the new @ref appId.
+   * the registration will be re-done with the new appId.
    *
    * @p appId is a @p unique application/program id that the server
    * will use to associate requests with. If there is already an application
@@ -179,9 +179,9 @@ class DCOPClient : public QObject
    *
    * Registration is necessary if you want to allow other clients to talk
    * to you.  They can do so using your @p appId as first parameter
-   * for @ref send() or @ref call(). If you just want to talk to
+   * for send() or call(). If you just want to talk to
    *  other clients, you
-   * do not need to register at the server. In that case @ref attach() is
+   * do not need to register at the server. In that case attach() is
    * enough.
    * It will implicitly register you as "anonymous".
    *
@@ -255,7 +255,7 @@ class DCOPClient : public QObject
 
   /**
    * This function acts exactly the same as the above, but the data
-   * parameter can be specified as a @ref QString for convenience.
+   * parameter can be specified as a QString for convenience.
    *
    * @param remApp The remote application id.
    * @param remObj The name of the remote object.
@@ -271,7 +271,7 @@ class DCOPClient : public QObject
    * Performs a synchronous send and receive.
    *
    *  The parameters are the same as for send, with the exception of
-   *  another @ref QByteArray being provided for results to be
+   *  another QByteArray being provided for results to be
    *  (optionally) returned in.
    *
    * A call blocks the application until the process receives the
@@ -466,10 +466,10 @@ class DCOPClient : public QObject
   /**
    * Reimplement this function to handle app-wide function calls unassociated w/an object.
    *
-   * Note that @p fun is normalized. See @ref normalizeFunctionSignature().
+   * Note that @p fun is normalized. See normalizeFunctionSignature().
    *
    * If you do not want to reimplement this function for whatever reason,
-   * you can also use a default object  or a @ref DCOPObjectProxy.
+   * you can also use a default object  or a DCOPObjectProxy.
    *
    * @param fun the normalized function signature
    * @param data the received data
@@ -483,18 +483,18 @@ class DCOPClient : public QObject
 
   /**
    * Delays the reply of the current function call
-   * until @ref endTransaction() is called.
+   * until endTransaction() is called.
    *
    * This allows a server to queue requests.
    *
-   * Note: Should be called from inside @ref process() only!
+   * Note: Should be called from inside process() only!
    * @see endTransaction()
    */
   DCOPClientTransaction *beginTransaction( );
 
   /**
    * Sends the delayed reply of a function call.
-   * @param t the transaction as received from @ref beginTransaction()
+   * @param t the transaction as received from beginTransaction()
    * @param replyType write the reply type in this string
    * @param replyData write the reply data in this array
    * @see beginTransaction()
@@ -504,7 +504,7 @@ class DCOPClient : public QObject
   /**
    * Test whether the current function call is delayed.
    *
-   * Note: Should be called from inside @ref process() only!
+   * Note: Should be called from inside process() only!
    * @return The ID of the current transaction or
    *         0 if no transaction is going on.
    * @see process()
@@ -599,7 +599,7 @@ class DCOPClient : public QObject
    *   "someFunction(QString,int)"
    * \endcode
    *
-   * When using @ref send() or @ref call(), normalization is done
+   * When using send() or call(), normalization is done
    * automatically for you.
    *
    * @param fun the function signature to normalize
@@ -636,8 +636,8 @@ class DCOPClient : public QObject
   QCString defaultObject() const;
 
   /**
-   * Enables / disables the @ref applicationRegistered() /
-   * @ref applicationRemoved() signals.
+   * Enables / disables the applicationRegistered() /
+   * applicationRemoved() signals.
    * Note that a counter is maintained about how often this method
    * was called. If this method is called twice with @p enabled set to
    * true, notifications will be enabled until it was called with
@@ -717,7 +717,7 @@ signals:
    * Indicates that the application @p appId has been registered with
    * the server we are attached to.
    *
-   * You need to call @ref setNotifications() first, to tell the DCOP server
+   * You need to call setNotifications() first, to tell the DCOP server
    * that you want to get these events.
    * @param appId the id of the new application
    */
@@ -726,7 +726,7 @@ signals:
    * Indicates that the formerly registered application @p appId has
    * been removed.
    *
-   * You need to call @ref setNotifications() first, to tell the
+   * You need to call setNotifications() first, to tell the
    * DCOP server that you want to get these events.
    * @param appId the id of the removed application
    */
@@ -751,7 +751,7 @@ signals:
    * synchronous call. In that case, it will enter a local event
    * loop to keep the GUI updated until finally an answer arrives.
    *
-   * In KDE, the @ref KApplication object connects to this signal to be
+   * In KDE, the KApplication object connects to this signal to be
    * able to block any user input (i.e. mouse and key events) while
    * we are waiting for an answer. If we did not do this, the
    * application might end up in an illegal state, as a keyboard

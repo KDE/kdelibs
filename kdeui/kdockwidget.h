@@ -91,7 +91,7 @@ class KDockContainer;
 
 /**
  * An abstract base clase for all dockwidget headers (and member of the dockwidget class set).
- * See the class description of @ref KDockWidgetHeader!
+ * See the class description of KDockWidgetHeader!
  * More or less a minor helper class for the dockwidget class set.
  *
  * @author Max Judin (documentation: Falk Brettschneider).
@@ -140,7 +140,7 @@ private:
 
 /**
  * An abstract class for all dockwidget drag-panels of a dockwidgets (and member of the dockwidget class set).
- * See the class description of @ref KDockWidgetHeaderDrag!
+ * See the class description of KDockWidgetHeaderDrag!
  * More or less a minor helper class for the dockwidget class set.
  *
  * @author Max Judin (documentation: Falk Brettschneider).
@@ -185,7 +185,7 @@ private:
 /**
  * This special widget is the panel one can grip with the mouses (and member of the dockwidget class set).
  * The widget for dragging, so to speak.
- * Usually it is located in the @ref KDockWidgetHeader.
+ * Usually it is located in the KDockWidgetHeader.
  * More or less a minor helper class for the dockwidget class set.
  *
  * @author Max Judin (documentation: Falk Brettschneider).
@@ -225,7 +225,7 @@ private:
 };
 
 /**
- * The header (additional bar) for a @ref KDockWidget s (and member of the dockwidget class set).
+ * The header (additional bar) for a KDockWidget s (and member of the dockwidget class set).
  * It have got the buttons located there. And it is for recording and reading the button states.
  * More or less a minor helper class for the dockwidget class set.
  *
@@ -344,7 +344,7 @@ private:
 /**
  * It just hides the special implementation of a dockwidget tab groups (and is member of the dockwidget class set).
  * An abstraction what it is currently.
- * In general it is like @ref QTabWidget but is more useful for the dockwidget class set.
+ * In general it is like QTabWidget but is more useful for the dockwidget class set.
  * More or less a minor helper class for the dockwidget class set.
  *
  * @author Max Judin (documentation: Falk Brettschneider).
@@ -386,9 +386,9 @@ private:
  * KDockWidget.
  *
  * If you want to use this kind of widget, your main application
- * window has to be a @ref KDockMainWindow.  That is because it has
+ * window has to be a KDockMainWindow.  That is because it has
  * got several additional dock management features, for instance a
- * @ref KDockManager that has an overview over all dockwidgets and and
+ * KDockManager that has an overview over all dockwidgets and and
  * a dockmovemanager (internal class) that handles the dock process.
  *
  * Usually you create an KDockWidget that covers the actual widget in this way:
@@ -404,7 +404,7 @@ private:
  * ...
  * </PRE>
  *
- * See @ref KDockMainWindow how a dockwidget is docked in.
+ * See KDockMainWindow how a dockwidget is docked in.
  *
  *
  * @author Max Judin (documentation: Falk Brettschneider).
@@ -462,7 +462,7 @@ public:
   /**
    * This is a key method of this class! Use it to dock dockwidgets to
    * another dockwidget at the right position within its
-   * @ref KDockMainWindow or a toplevel dockwidget.
+   * KDockMainWindow or a toplevel dockwidget.
    *
    *
    * If the target is null, it will become a toplevel dockwidget at position pos;
@@ -523,7 +523,7 @@ public:
   /**
    * Sets the header of this dockwidget.
    *
-   * A @ref QLayout takes care about proper resizing, automatically.
+   * A QLayout takes care about proper resizing, automatically.
    * The header contains the drag panel, the close button and the stay button.
    *
    * @param ah A base class pointer to the dockwidget header
@@ -548,7 +548,7 @@ public:
    * There are reasons that it's impossible:
    * @li It is a (tab) group.
    * @li It is already invisible ;-)
-   * @li The parent of this is the @ref KDockMainWindow.
+   * @li The parent of this is the KDockMainWindow.
    * @li It isn't able to dock to another widget.
    */
   bool mayBeHide() const;
@@ -601,12 +601,12 @@ public:
   const QString& tabPageLabel() const { return tabPageTitle; };
 
   /**
-   * Catches and processes some @ref QWidget events that are interesting for dockwidgets.
+   * Catches and processes some QWidget events that are interesting for dockwidgets.
    */
   virtual bool event( QEvent * );
 
   /**
-   * Add dockwidget management actions to @ref QWidget::show.
+   * Add dockwidget management actions to QWidget::show.
    */
   virtual void show();
   /**
@@ -741,12 +741,12 @@ signals:
   void setDockDefaultPos();
 
   /**
-   * Emitted when the close button of the panel (@ref KDockWidgetHeader) has been clicked.
+   * Emitted when the close button of the panel ( KDockWidgetHeader) has been clicked.
    */
   void headerCloseButtonClicked();
 
   /**
-   * Emitted when the dockback button of the panel (@ref KDockWidgetHeader) has been clicked.
+   * Emitted when the dockback button of the panel ( KDockWidgetHeader) has been clicked.
    */
   void headerDockbackButtonClicked();
 
@@ -868,10 +868,10 @@ private:
 /**
  * The manager that knows all dockwidgets and handles the dock process (and member of the dockwidget class set).
  * More or less a helper class for the KDockWidget class set but of interest for some functionality
- * that can be called within a @ref KDockMainWindow or a @ref KDockWidget .
+ * that can be called within a KDockMainWindow or a KDockWidget .
  *
  * An important feature is the ability to read or save the current state of all things concerning to
- * dockwidgets to @ref KConfig .
+ * dockwidgets to KConfig .
  *
  * The dockmanager is also often used when a certain dockwidget or a child of such dockwidget must be found.
  *
@@ -1210,13 +1210,13 @@ private:
 };
 
 /**
- * A special kind of @ref KMainWindow that is able to have dockwidget child widgets (and member of the dockwidget class set).
+ * A special kind of KMainWindow that is able to have dockwidget child widgets (and member of the dockwidget class set).
  *
- * The main widget should be a @ref KDockWidget where other @ref KDockWidget can be docked to
+ * The main widget should be a KDockWidget where other KDockWidget can be docked to
  * the left, right, top, bottom or to the middle.
  * Note: dock to the middle means to drop on a dockwidget and to unite them to a new widget, a tab control.
  *
- * Furthermore, the KDockMainWindow has got the @ref KDockManager and some data about the dock states.
+ * Furthermore, the KDockMainWindow has got the KDockManager and some data about the dock states.
  *
  * If you've got some dockwidgets, you can dock them to the dockmainwindow to initialize a start scene:
  * Here an example:
@@ -1278,7 +1278,7 @@ public:
   virtual ~KDockMainWindow();
 
   /**
-   * Returns the dockmanager of this. (see @ref KDockManager)
+   * Returns the dockmanager of this. (see KDockManager)
    * @return pointer to the wanted dockmanager
    */
   KDockManager* manager() const { return dockManager; }

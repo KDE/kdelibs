@@ -62,7 +62,7 @@ public:
   virtual void doClose();
 
   /**
-   * Request a ticket, you have to pass through @ref save() to
+   * Request a ticket, you have to pass through save() to
    * allow locking.
    */
   virtual Ticket *requestSaveTicket();
@@ -75,7 +75,7 @@ public:
   /**
    * Save all addressees to the addressbook.
    *
-   * @param ticket The ticket you get by @ref requestSaveTicket()
+   * @param ticket The ticket you get by requestSaveTicket()
    */
   virtual bool save( Ticket *ticket );
 

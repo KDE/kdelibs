@@ -37,7 +37,7 @@ class KPixmapIOPrivate;
  * \endcode
  *
  * It also has functionality for partially updating/saving pixmaps, see
- * @ref #putImage and @ref #getImage.
+ * putImage and getImage.
  *
  * @sect KPixmapIO vs. Qt speed comparison
  *
@@ -61,7 +61,7 @@ class KPixmapIOPrivate;
  * will not use shared memory and fall back on the Qt routines.
  *
  * When the policy is @p ShmKeepAndGrow, the threshold is taken at
- * 2.000 pixels. Using this policy, you might want to use @ref #preAllocShm
+ * 2.000 pixels. Using this policy, you might want to use preAllocShm
  * to pre-allocate a certain amount of shared memory, in order to avoid
  * resizes. This allocation policy makes sense in a multimedia type
  * application where you are constantly updating the screen.

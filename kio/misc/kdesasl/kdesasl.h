@@ -100,7 +100,7 @@ public:
    */
   QCString method() const;
   /**
-   * @param numCalls number of times @ref #getResponse() has been called.
+   * @param numCalls number of times getResponse() has been called.
    * @return whether the challenge/response dialog has completed
    *
    * @since 3.2
@@ -134,7 +134,7 @@ public:
    * challenge-respinse dialog with an initial response (which most
    * protocols can transfer alongside the authentication command as an
    * optional second parameter). This method relieves the sasl user
-   * from knowing details about the mechanism. If true, use @ref
+   * from knowing details about the mechanism. If true, use 
    * #getResponse() with a null challenge.
    *
    * @since 3.2

@@ -37,7 +37,7 @@ class KToolBarRadioGroupPrivate;
   * Take toggle buttons which you already inserted into toolbar,
   * create KToolBarRadioGroup instance and add them here.
   * All buttons will emit signals toggled (bool) (or you can
-  * use sitgnal @ref #toggled (int id) from toolbar). When one button is set
+  * use sitgnal toggled (int id) from toolbar). When one button is set
   * down, all others are unset. All buttons emit signals - those who
   * "go down" and those who "go up".
   *
@@ -50,7 +50,7 @@ class KToolBarRadioGroup : public QObject
 
 public:
   /**
-   * Constructor. Parent must be @ref KToolBar .
+   * Constructor. Parent must be KToolBar .
    */
   KToolBarRadioGroup (KToolBar *_parent, const char *_name=0);
   /**

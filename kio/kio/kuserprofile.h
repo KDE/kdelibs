@@ -31,7 +31,7 @@
  * This class holds the user-specific preferences of a service
  * (whether it can be a default offer or not, how big is the preference
  * for this offer, ...). Basically it is a reference to a 
- * @ref KService, a number that represents the user's preference (bigger
+ * KService, a number that represents the user's preference (bigger
  * is better) and a flag whether the KService can be used as default.
  *
  * @see KService
@@ -47,13 +47,13 @@ public:
   
   /**
    * Copy constructor.
-   * Shallow copy (the @ref KService will not be copied).
+   * Shallow copy (the KService will not be copied).
    */
   KServiceOffer( const KServiceOffer& );
 
   /**
    * Creates a new KServiceOffer.
-   * @param _service a pointer to the @ref KService
+   * @param _service a pointer to the KService
    * @param _pref the user's preference value, must be positive, 
    *              bigger is better
    * @param _default true if the service should be used as
@@ -105,8 +105,8 @@ private:
  * of a service type.
  * It consists of a list of services (service offers) for the service type 
  * that is sorted by the user's preference. 
- * @ref KTrader uses KServiceTypeProfile to sort its results, so usually
- * you can just use @ref KTrader to find the user's preferred service.
+ * KTrader uses KServiceTypeProfile to sort its results, so usually
+ * you can just use KTrader to find the user's preferred service.
  *
  * @see KService
  * @see KServiceType
@@ -139,7 +139,7 @@ public:
   /**
    * Returns the list of all service offers for the service types
    * that are represented by this profile.
-   * @return the list of @ref KServiceOffer instances
+   * @return the list of KServiceOffer instances
    */
   OfferList offers() const;
 
@@ -166,12 +166,12 @@ public:
 
   /**
    * Returns the offers associated with a given servicetype, sorted by preference.
-   * This is what @ref KTrader uses to get the list of offers, before applying the
+   * This is what KTrader uses to get the list of offers, before applying the
    * constraints and preferences.
    *
    * If @p genericServiceType is specified, a list is returned with 
    * the offers associated with the combination of the two service types.
-   * This is almost like an "foo in ServiceTypes" constraint in the @ref KTrader,
+   * This is almost like an "foo in ServiceTypes" constraint in the KTrader,
    * but the difference is that to order the offers, we will look at entries
    * specifically for those two service types. Typically, this is used for
    * getting the list of embeddable components that can handle a given mimetype.

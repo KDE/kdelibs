@@ -42,7 +42,7 @@ class KFileTreeView;
  * lists the files under the root. Every branch uses its own dirlister and can
  * have its own filter etc.
  *
- * @short Branch object for @ref KFileTreeView object.
+ * @short Branch object for KFileTreeView object.
  *
  */
 
@@ -70,7 +70,7 @@ public:
    KURL 	rootUrl() const { return( m_startURL ); }
 
    /**
-    * sets a @ref KFileTreeViewItem as root widget for the branch.
+    * sets a KFileTreeViewItem as root widget for the branch.
     * That must be created outside of the branch. All KFileTreeViewItems
     * the branch is allocating will become children of that object.
     * @param r the KFileTreeViewItem to become the root item.
@@ -100,18 +100,18 @@ public:
    const QPixmap& pixmap(){ return(m_rootIcon); }
 
    /*
-    * returns the current root item pixmap set by @ref setOpenPixmap()
+    * returns the current root item pixmap set by setOpenPixmap()
     * which is displayed if the branch is expanded.
     * The root item pixmap defaults to the icon for directories.
     * @see pixmap()
-    * Note that it depends on @ref KFileTreeView::showFolderOpenPximap weather
+    * Note that it depends on KFileTreeView::showFolderOpenPximap weather
     * open pixmap are displayed or not.
     */
    const QPixmap& openPixmap() { return(m_openRootIcon); }
 
    /**
     * @returns whether the items in the branch show their file extensions in the
-    * tree or not. See @ref setShowExtensions for more information.
+    * tree or not. See setShowExtensions for more information.
     */
    bool showExtensions( ) const;
 
@@ -126,7 +126,7 @@ public:
     * child directories of a just opened directory are not listed internally.
     * That means that it can not be determined if the sub directories are
     * expandable or not. If this is switched off there will be no call to
-    * @ref #setExpandable.
+    * setExpandable.
     * @param t set to true to switch on child recursion
     */
    void setChildRecurse( bool t=true );
@@ -141,7 +141,7 @@ public:
 public slots:
    /**
     * populates a branch. This method must be called after a branch was added
-    * to  a @ref KFileTreeView using method @ref addBranch.
+    * to  a KFileTreeView using method addBranch.
     * @param url is the url of the root item where the branch starts.
     * @param currItem is the current parent.
     */
@@ -159,7 +159,7 @@ public slots:
 
 protected:
    /**
-    * allocates a @ref KFileTreeViewItem for the branch
+    * allocates a KFileTreeViewItem for the branch
     * for new items.
     */
    virtual KFileTreeViewItem *createTreeViewItem( KFileTreeViewItem *parent,
@@ -178,7 +178,7 @@ signals:
    void populateFinished( KFileTreeViewItem * );
 
    /**
-    * emitted with a list of new or updated @ref KFileTreeViewItem which were
+    * emitted with a list of new or updated KFileTreeViewItem which were
     * found in a branch. Note that this signal is emitted very often and may slow
     * down the performance of the treeview !
     */

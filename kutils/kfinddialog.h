@@ -37,7 +37,7 @@ class QCheckBox;
  *
  * @sect Detail
  *
- * This widget inherits from @ref KDialogBase and implements
+ * This widget inherits from KDialogBase and implements
  * the following additional functionalities:  a find string
  * object and an area for a user-defined widget to extend the dialog.
  *
@@ -66,7 +66,7 @@ class QCheckBox;
  * Don't forget to delete and reset m_findDia when closed.
  * (But do NOT delete your KFind object at that point, it's needed for "Find Next")
  *
- * To use your own extensions: see @ref findExtension().
+ * To use your own extensions: see findExtension().
  *
  */
 class KFindDialog:
@@ -95,8 +95,8 @@ public:
      *
      * @param parent The parent object of this widget.
      * @param name The name of this widget.
-     * @param options A bitfield of the @ref Options to be enabled.
-     * @param findStrings The find history, see @ref findHistory()
+     * @param options A bitfield of the Options to be enabled.
+     * @param findStrings The find history, see findHistory()
      * @param hasSelection Whether a selection exists
      */
     KFindDialog( QWidget *parent = 0, const char *name = 0, long options = 0,
@@ -108,8 +108,8 @@ public:
      * @param modal set to false to get a non-modal dialog
      * @param parent The parent object of this widget.
      * @param name The name of this widget.
-     * @param options A bitfield of the @ref Options to be enabled.
-     * @param findStrings The find history, see @ref findHistory()
+     * @param options A bitfield of the Options to be enabled.
+     * @param findStrings The find history, see findHistory()
      * @param hasSelection Whether a selection exists
      */
     KFindDialog( bool modal, QWidget *parent = 0, const char *name = 0, long options = 0,
@@ -157,7 +157,7 @@ public:
     /**
      * Set the options which are enabled.
      *
-     * @param options The setting of the @ref Options.
+     * @param options The setting of the Options.
      */
     void setOptions( long options );
 

@@ -36,21 +36,21 @@ class KAccelPrivate;
  *
  * Allow a user to configure shortcuts
  * through application configuration files or through the
- * @ref KKeyChooser GUI. 
+ * KKeyChooser GUI. 
  *
  * A KAccel contains a list of accelerator actions.
  *
  * For example, CTRL+Key_P could be a shortcut for printing a document. The key
  * codes are listed in qnamespace.h. "Print" could be the action name for printing.
  * The action name identifies the shortcut in configuration files and the
- * @ref KKeyChooser GUI.
+ * KKeyChooser GUI.
  *
  * A KAccel object handles key events sent to its parent widget and to all
  * children of this parent widget.  The most recently created KAccel object
  * has precedence over any KAccel objects created before it.
  * When a shortcut pressed, KAccel calls the slot to which it has been
  * connected. If you want to set global accelerators, independent of the window
- * which has the focus, use @ref KGlobalAccel.
+ * which has the focus, use KGlobalAccel.
  *
  * Reconfiguration of a given shortcut can be prevented by specifying
  * that an accelerator item is not configurable when it is inserted. A special
@@ -65,7 +65,7 @@ class KAccelPrivate;
  * It is possible for a user to choose to have no key associated with
  * an action.
  *
- * The translated first argument for @ref insertItem() is used only
+ * The translated first argument for insertItem() is used only
  * in the configuration dialog.
  *\code
  * KAccel* pAccel = new KAccel( this );
@@ -151,7 +151,7 @@ class KAccel : public QAccel
 	 * are automatically disconnected when you disable an action, and
 	 * re-enabled when you enable it. By default auto update is turned 
 	 * on. If you disable auto-update, you need to call 
-	 * @ref updateConnections() after changing actions.
+	 * updateConnections() after changing actions.
 	 *
 	 * @param bAuto true to enable, false to disable
 	 * @return the value of the flag before this call
@@ -171,7 +171,7 @@ class KAccel : public QAccel
 	 *
 	 * @param sAction The internal name of the action.
 	 * @param sLabel An i18n'ized short description of the action displayed when
-	 *  using @ref KKeyChooser to reconfigure the shortcuts.
+	 *  using KKeyChooser to reconfigure the shortcuts.
 	 * @param sWhatsThis An extended description of the action.
 	 * @param cutDef The default shortcut.
 	 * @param pObjSlot Pointer to the slot object.
@@ -184,7 +184,7 @@ class KAccel : public QAccel
 	                 const QObject* pObjSlot, const char* psMethodSlot,
 	                 bool bConfigurable = true, bool bEnabled = true );
 	/**
-	 * Same as first @ref insert(), but with separate shortcuts defined for
+	 * Same as first insert(), but with separate shortcuts defined for
 	 * 3- and 4- modifier defaults.
 	 */
 	KAccelAction* insert( const QString& sAction, const QString& sLabel, const QString& sWhatsThis,
@@ -208,7 +208,7 @@ class KAccel : public QAccel
 	                 const QObject* pObjSlot, const char* psMethodSlot,
 	                 bool bConfigurable = true, bool bEnabled = true );
 	/**
-	 * Similar to the first @ref insert() method, but with the action
+	 * Similar to the first insert() method, but with the action
 	 * name, short description, help text, and default shortcuts all
 	 * set according to one of the standard accelerators.
 	 * @see KStdAccel.
@@ -292,10 +292,10 @@ class KAccel : public QAccel
 	/**
 	 * Read all shortcuts from @p pConfig, or (if @p pConfig
 	 * is zero) from the application's configuration file
-	 * @ref KGlobal::config().
+	 * KGlobal::config().
 	 *
 	 * The group in which the configuration is stored can be
-	 * set with @ref setConfigGroup().
+	 * set with setConfigGroup().
 	 * @param pConfig the configuration file, or 0 for the application
 	 *         configuration file
 	 * @return true if successful, false otherwise
@@ -312,7 +312,7 @@ class KAccel : public QAccel
 	bool writeSettings( KConfigBase* pConfig = 0 ) const;
 
 	/**
-	 * Emits the @ref keycodeChanged() signal.
+	 * Emits the keycodeChanged() signal.
 	 */
 	void emitKeycodeChanged();
 

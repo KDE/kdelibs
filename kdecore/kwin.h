@@ -40,8 +40,8 @@ class NETWinInfo;
  * project).  The full specification can be found at
  * www.freedesktop.org/standards/wm-spec .
  *
- * To access features of the NET-protocol, use the classes @ref NETRootInfo
- * and @ref NETWinInfo.
+ * To access features of the NET-protocol, use the classes NETRootInfo
+ * and NETWinInfo.
  *
  * The purpose of this class is to to provide easy access to the
  * most-commonly used NET-features with a simpler, KDEish interface.
@@ -63,7 +63,7 @@ public:
      * Requests that window @p is activated.
      *
      * There are two ways how to activate a window, by calling
-     * activateWindow() and @ref setActiveWindow(). Generally,
+     * activateWindow() and setActiveWindow(). Generally,
      * applications shouldn't make attempts to explicitly activate
      * their windows, and instead let the user to activate them.
      * In the special cases where this may be needed, applications
@@ -71,7 +71,7 @@ public:
      * this request wouldn't result in focus stealing, which
      * would be obtrusive, and may refuse the request.
      *
-     * The usage of @ref setActiveWindow() is meant only for pagers
+     * The usage of setActiveWindow() is meant only for pagers
      * and similar tools, which represent direct user actions.
      * Except for rare cases, this request will be always honoured,
      * and normal applications are forbidden to use it.
@@ -88,7 +88,7 @@ public:
      * shouldn't force themselves or other windows to be the active
      * window. Generally, this call should used only by pagers
      * and similar tools. See the explanation in description
-     * of @ref activateWindow().
+     * of activateWindow().
      *
      * @param win the if of the window to make active
      * @param time X server timestamp of the user activity that
@@ -108,7 +108,7 @@ public:
      * the user about it, it can call demandAttention(). Instead
      * of activating the window, which could be obtrusive, the window
      * will be marked specially as demanding user's attention.
-     * See also explanation in description of @ref activateWindow().
+     * See also explanation in description of activateWindow().
      *
      * Note that it's usually better to use KNotifyClient.
      *
@@ -209,7 +209,7 @@ public:
      * You should usually prefer the simpler variant which tries all possibilities to get
      * an icon.
      *
-     * @param icon OR-ed flags from the @ref IconSource enum
+     * @param icon OR-ed flags from the IconSource enum
      */
     static QPixmap icon( WId win, int width, int height, bool scale, int flags );
 
@@ -289,13 +289,13 @@ public:
     static void setStrut( WId win, int left, int right, int top, int bottom );
 
     /**
-     * Convenience function to access the current desktop.  See @ref NETRootInfo.
+     * Convenience function to access the current desktop.  See NETRootInfo.
      * @return the number of the current desktop
      */
     static int currentDesktop();
 
     /**
-     * Convenience function to access the number of desktops. See @ref
+     * Convenience function to access the number of desktops. See 
      * NETRootInfo.
      * @return the number of desktops
      */
@@ -303,7 +303,7 @@ public:
 
     /**
      * Convenience function to set the current desktop to @p desktop.
-     * See @ref NETRootInfo.
+     * See NETRootInfo.
      * @param desktop the number of the new desktop
      */
     static void setCurrentDesktop( int desktop );
@@ -393,7 +393,7 @@ private:
 #endif
     /**
      * @deprecated
-     * Use @ref KStartupInfo::appStarted
+     * Use KStartupInfo::appStarted
      */
     static void appStarted();
 };

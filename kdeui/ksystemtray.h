@@ -43,7 +43,7 @@ class KSystemTrayPrivate;
  * Docking happens magically when calling show(). The window undocks
  * with either hide() or when it is destroyed.
  *
- * KSystemTray inherits methods such as @ref setPixmap() and @ref setMovie() to
+ * KSystemTray inherits methods such as setPixmap() and setMovie() to
  * specify an icon or movie (animated icon) respectively. It is
  * designed to be usable "as is", without the need to subclass it. In
  * case you need to provide something special (such as an additional

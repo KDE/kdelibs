@@ -60,7 +60,7 @@ class KFileFilterCombo : public KComboBox
     /**
      * This method allows you to set a default-filter, that is used when an
      * empty filter is set. Make sure you call this before calling
-     * @ref setFilter().
+     * setFilter().
      *
      * By default, this is set to i18n("*|All Files")
      * @see #defaultFilter

@@ -21,19 +21,19 @@
 #include <qlistbox.h>
 
 /**
- * Extends the functionality of @ref QListBox to honor the system
+ * Extends the functionality of QListBox to honor the system
  * wide settings for Single Click/Double Click mode, Auto Selection and
  * Change Cursor over Link.
  *
- * There is a new signal @ref executed(). It gets connected to either
- * @ref QListBox::clicked() or @ref QListBox::doubleClicked()
+ * There is a new signal executed(). It gets connected to either
+ * QListBox::clicked() or QListBox::doubleClicked()
  * depending on the KDE wide Single Click/Double Click settings. It is
  * strongly recommended that you use this signal instead of the above
  * mentioned. This way you don't need to care about the current
  * settings.  If you want to get informed when the user selects
- * something connect to the @ref QListBox::selectionChanged() signal.
+ * something connect to the QListBox::selectionChanged() signal.
  * 
- * @short A variant of @ref QListBox that honors KDE's system-wide settings.
+ * @short A variant of QListBox that honors KDE's system-wide settings.
  **/
 class KListBox : public QListBox
 {
@@ -51,7 +51,7 @@ signals:
    * setting the user clicked or double clicked on that item.
    * @param item is the pointer to the executed listbox item. 
    *
-   * Note that you may not delete any @ref QListBoxItem objects in slots 
+   * Note that you may not delete any QListBoxItem objects in slots 
    * connected to this signal.
    */
   void executed( QListBoxItem *item );
@@ -64,7 +64,7 @@ signals:
    * @param item is the pointer to the executed listbox item. 
    * @param pos is the position where the user has clicked
    *
-   * Note that you may not delete any @ref QListBoxItem objects in slots 
+   * Note that you may not delete any QListBoxItem objects in slots 
    * connected to this signal.
    */
   void executed( QListBoxItem *item, const QPoint &pos );
@@ -76,12 +76,12 @@ signals:
    * @param item The pointer to the clicked listbox item. 
    * @param pos The position where the user has clicked.
    *
-   * Note that you may not delete any @ref QListBoxItem objects in slots
+   * Note that you may not delete any QListBoxItem objects in slots
    * connected to this signal.  
    *
    * This signal is more or less here for the sake of completeness.
    * You should normally not need to use this. In most cases it's better
-   * to use @ref executed() instead.
+   * to use executed() instead.
    */
   void doubleClicked( QListBoxItem *item, const QPoint &pos );
 

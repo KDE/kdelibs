@@ -36,7 +36,7 @@ class KStaticDeleterList;
  * Access to the KDE global objects.
  * KGlobal provides you with pointers of many central
  * objects that exist only once in the process. It is also
- * responsible for managing instances of @ref KStaticDeleterBase.
+ * responsible for managing instances of KStaticDeleterBase.
  *
  * @see KStaticDeleterBase
  * @author Sirtaj Singh Kang (taj@kde.org)
@@ -165,15 +165,15 @@ public:
     static  KInstance           *_activeInstance;
 };
 
-/** @ref KGlobal
+/** KGlobal
  * A typesafe function to find the minimum of the two arguments.
  */
 #define KMIN(a,b)	kMin(a,b)
-/** @ref KGlobal
+/** KGlobal
  * A typesafe function to find the maximum of the two arguments.
  */
 #define KMAX(a,b)	kMax(a,b)
-/** @ref KGlobal
+/** KGlobal
  * A typesafe function to determine the absolute value of the argument.
  */
 #define KABS(a)	kAbs(a)
@@ -211,7 +211,7 @@ inline T kAbs (const T& a) { return a < 0 ? -a : a; }
  * of other (but no less important) things.
  *
  * All KDE applications should link to the kdecore library. Also, using a
- * @ref KApplication derived class instead of @ref QApplication is almost
+ * KApplication derived class instead of QApplication is almost
  * mandatory if you expect your application to behave nicely within the
  * KDE environment.
  */

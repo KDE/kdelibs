@@ -31,7 +31,7 @@ namespace KABC {
   
   This class provides phone number information. A phone number is classified by
   a type. The following types are available, it's possible to use multiple types
-  @ref Types for a number by combining them through a logical or.
+ Types for a number by combining them through a logical or.
 */
 class PhoneNumber
 {

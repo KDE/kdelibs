@@ -39,11 +39,11 @@ class QIconViewItem;
  * i.e. on the files.
  *
  * After creating the KCombiView, you need to supply the view shown in the
- * right, (see @ref setRight()). Available KFileView implementations are
- * @ref KFileIconView and @ref KFileDetailView.
+ * right, (see setRight()). Available KFileView implementations are
+ * KFileIconView and KFileDetailView.
  *
  * Most of the below methods are just implementations of the baseclass
- * @ref KFileView, so look there for documentation.
+ * KFileView, so look there for documentation.
  *
  * @see KFileView
  * @see KFileIconView

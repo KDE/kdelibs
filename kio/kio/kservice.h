@@ -202,8 +202,8 @@ public:
   enum DCOPServiceType_t { DCOP_None = 0, DCOP_Unique, DCOP_Multi, DCOP_Wait };
 
   /**
-   * Returns the @ref DCOPServiceType supported by this service.
-   * @return the @ref DCOPServiceType supported by this service
+   * Returns the DCOPServiceType supported by this service.
+   * @return the DCOPServiceType supported by this service
    */
   DCOPServiceType_t DCOPServiceType() const { return m_DCOPServiceType; }
 
@@ -313,10 +313,10 @@ public:
 
   /**
    * Returns the requested property. Some often used properties
-   * have convenience access functions like @ref exec(),
-   * @ref serviceTypes etc.
+   * have convenience access functions like exec(),
+   * serviceTypes etc.
    *
-   * It depends upon the @ref serviceTypes() of this service which
+   * It depends upon the serviceTypes() of this service which
    * properties a service can have.
    * 
    * @param _name the name of the property

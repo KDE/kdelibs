@@ -70,7 +70,7 @@ public:
     DOMString cite() const;
 
     /**
-     * see @ref cite
+     * see cite
      */
     void setCite( const DOMString & );
 };
@@ -112,7 +112,7 @@ public:
     DOMString align() const;
 
     /**
-     * see @ref align
+     * see align
      */
     void setAlign( const DOMString & );
 };
@@ -154,7 +154,7 @@ public:
     DOMString align() const;
 
     /**
-     * see @ref align
+     * see align
      */
     void setAlign( const DOMString & );
 
@@ -169,7 +169,7 @@ public:
     bool noShade() const;
 
     /**
-     * see @ref noShade
+     * see noShade
      */
     void setNoShade( bool );
 
@@ -183,7 +183,7 @@ public:
     DOMString size() const;
 
     /**
-     * see @ref size
+     * see size
      */
     void setSize( const DOMString & );
 
@@ -197,7 +197,7 @@ public:
     DOMString width() const;
 
     /**
-     * see @ref width
+     * see width
      */
     void setWidth( const DOMString & );
 };
@@ -238,7 +238,7 @@ public:
     DOMString align() const;
 
     /**
-     * see @ref align
+     * see align
      */
     void setAlign( const DOMString & );
 };
@@ -279,7 +279,7 @@ public:
     DOMString align() const;
 
     /**
-     * see @ref align
+     * see align
      */
     void setAlign( const DOMString & );
 };
@@ -320,7 +320,7 @@ public:
     long width() const;
 
     /**
-     * see @ref width
+     * see width
      */
     void setWidth( long );
 };

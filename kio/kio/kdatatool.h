@@ -36,11 +36,11 @@ class KInstance;
 // class definition, KDataTool.
 
 /**
- * This is a convenience class for @ref KService. You can use it if you have
- * a KService describing a @ref KDataTool. In this case the KDataToolInfo class
+ * This is a convenience class for KService. You can use it if you have
+ * a KService describing a KDataTool. In this case the KDataToolInfo class
  * is more convenient to work with.
  *
- * Especially useful is the method @ref #createTool which creates the datatool
+ * Especially useful is the method createTool which creates the datatool
  * described by the service.
  * @see KDataTool
  */
@@ -75,7 +75,7 @@ public:
     QString dataType() const;
     /**
      * Returns a list of mime type that will be accepted by the DataTool.
-     * The mimetypes are only used if the @ref #dataType can be used to store
+     * The mimetypes are only used if the dataType can be used to store
      * different mimetypes. For example in a "QString" you could save "text/plain"
      * or "text/html" or "text/xml".
      *
@@ -88,7 +88,7 @@ public:
 
     /**
      * Checks whether the DataTool is read-only.
-     * @return TRUE if the DataTool does not modify the data passed to it by @ref KDataTool::run.
+     * @return TRUE if the DataTool does not modify the data passed to it by KDataTool::run.
      */
     bool isReadOnly() const;
 
@@ -118,21 +118,21 @@ public:
      * (so that it can be translated).
      *
      * Each of the strings returned corresponds to a string in the list returned by
-     * @ref #commands.
+     * commands.
      *
      * @return a list of strings that you can put in a QPopupMenu item
      */
     QStringList userCommands() const;
     /**
      * Returns the list of commands the DataTool can execute. The application
-     * passes the command to the @ref KDataTool::run method.
+     * passes the command to the KDataTool::run method.
      *
      * This list comes from the Commands field of the tool's desktop file.
      *
      * Each of the strings returned corresponds to a string in the list returned by
-     * @ref #userCommands.
+     * userCommands.
      * @return the list of commands the DataTool can execute, suitable for 
-     *         the @ref KDataTool::run method.
+     *         the KDataTool::run method.
      */
     QStringList commands() const;
 
@@ -157,14 +157,14 @@ public:
     KInstance* instance() const { return m_instance; }
 
     /**
-     * A DataToolInfo may be invalid if the @ref KService passed to its constructor does
+     * A DataToolInfo may be invalid if the KService passed to its constructor does
      * not feature the service type "KDataTool".
      * @return true if valid, false otherwise
      */
     bool isValid() const;
 
     /**
-     * Queries the @ref KTrader about installed @ref KDataTool implementations.
+     * Queries the KTrader about installed KDataTool implementations.
      * @param datatype a type that the application can 'export' to the tools (e.g. QString)
      * @param mimetype the mimetype of the data (e.g. text/plain)
      * @param instance the application (or the part)'s instance (to check if a tool is excluded from this part,
@@ -199,7 +199,7 @@ public:
      * Constructs a new KDataToolAction.
      *
      * @param text The text that will be displayed.
-     * @param info the corresponding @ref KDataToolInfo
+     * @param info the corresponding KDataToolInfo
      * @param command the command of the action
      * @param parent This action's parent.
      * @param name An internal name for this action.
@@ -208,12 +208,12 @@ public:
 
     /**
      * Creates a list of actions from a list of information about data-tools.
-     * The slot must have a signature corresponding to the @ref #toolActivated signal.
+     * The slot must have a signature corresponding to the toolActivated signal.
      *
      * Note that it's the caller's responsibility to delete the actions when they're not needed anymore.
      * @param tools the list of data tool descriptions
-     * @param receiver the receiver for @ref toolActivated() signals
-     * @param slot the slot that will receive the @ref toolActivated() signals
+     * @param receiver the receiver for toolActivated() signals
+     * @param slot the slot that will receive the toolActivated() signals
      * @return the KActions
      */
     static QPtrList<KAction> dataToolActionList( const QValueList<KDataToolInfo> & tools, const QObject *receiver, const char* slot );

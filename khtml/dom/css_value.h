@@ -77,7 +77,7 @@ public:
     DOM::DOMString cssText() const;
 
     /**
-     * see @ref cssText
+     * see cssText
      * @exception CSSException
      * SYNTAX_ERR: Raised if the specified CSS string value has a
      * syntax error and is unparsable.
@@ -266,7 +266,7 @@ public:
     DOM::DOMString cssText() const;
 
     /**
-     * see @ref cssText
+     * see cssText
      * @exception CSSException
      * SYNTAX_ERR: Raised if the specified CSS string value has a
      * syntax error and is unparsable.

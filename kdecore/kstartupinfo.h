@@ -117,7 +117,7 @@ class KStartupInfo
         static bool sendStartup( const KStartupInfoId& id, const KStartupInfoData& data );
 
 	/**
-	 * Like @ref sendStartup , uses dpy instead of qt_x11display() for sending the info.
+	 * Like sendStartup , uses dpy instead of qt_x11display() for sending the info.
 	 * @param dpy the display of the application.
 	 * @param id the id of the application
 	 * @param data the application's data
@@ -139,7 +139,7 @@ class KStartupInfo
         static bool sendChange( const KStartupInfoId& id, const KStartupInfoData& data );
 
 	/**
-	 * Like @ref sendChange , uses dpy instead of qt_x11display() for sending the info.
+	 * Like sendChange , uses dpy instead of qt_x11display() for sending the info.
 	 * @param dpy the display of the application.
 	 * @param id the id of the application
 	 * @param data the application's data
@@ -156,7 +156,7 @@ class KStartupInfo
         static bool sendFinish( const KStartupInfoId& id );
 
 	/**
-	 * Like @ref sendFinish , uses dpy instead of qt_x11display() for sending the info.
+	 * Like sendFinish , uses dpy instead of qt_x11display() for sending the info.
 	 * @param dpy the display of the application.
 	 * @param id the id of the application
 	 * @return true if successful, false otherwise
@@ -173,7 +173,7 @@ class KStartupInfo
         static bool sendFinish( const KStartupInfoId& id, const KStartupInfoData& data );
 
 	/**
-	 * Like @ref sendFinish , uses dpy instead of qt_x11display() for sending the info.
+	 * Like sendFinish , uses dpy instead of qt_x11display() for sending the info.
 	 * @param dpy the display of the application.
 	 * @param id the id of the application
 	 * @param data the application's data
@@ -185,7 +185,7 @@ class KStartupInfo
 	/**
 	 * Returns the current startup notification identification for the current
 	 * startup notification environment variable. Note that KApplication constructor
-	 * unsets the variable and you have to use @ref KApplication::startupId .
+	 * unsets the variable and you have to use KApplication::startupId .
 	 * @return the current startup notification identification
 	 */
         static KStartupInfoId currentStartupIdEnv();

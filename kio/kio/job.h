@@ -54,7 +54,7 @@ namespace KIO {
 
     /**
      * Changes permissions on a file or directory.
-     * See the other @ref #chmod below for changing many files
+     * See the other chmod below for changing many files
      * or directories.
      *
      * @param url The URL of file or directory.
@@ -179,7 +179,7 @@ namespace KIO {
     /**
      * Get (a.k.a. read).
      *
-     * The slave emits the data through @ref data().
+     * The slave emits the data through data().
      * @param url the URL of the file
      * @param reload true to reload the file, false if it can be taken from the cache
      * @param showProgressInfo true to show progress information
@@ -257,8 +257,8 @@ namespace KIO {
     /**
      * Copy a single file.
      *
-     * Uses either @ref SlaveBase::copy() if the slave supports that
-     * or @ref get() and @ref put() otherwise.
+     * Uses either SlaveBase::copy() if the slave supports that
+     * or get() and put() otherwise.
      * @param src Where to get the file.
      * @param dest Where to put the file.
      * @param permissions May be -1. In this case no special permission mode is set.
@@ -274,8 +274,8 @@ namespace KIO {
     /**
      * Move a single file.
      *
-     * Use either @ref SlaveBase::rename() if the slave supports that,
-     * or @ref copy() and @ref del() otherwise, or eventually get() & put() & del()
+     * Use either SlaveBase::rename() if the slave supports that,
+     * or copy() and del() otherwise, or eventually get() & put() & del()
      * @param src Where to get the file.
      * @param dest Where to put the file.
      * @param permissions May be -1. In this case no special permission mode is set.
@@ -426,7 +426,7 @@ namespace KIO {
     CopyJob *link( const KURL::List& src, const KURL& destDir, bool showProgressInfo = true );
 
     /**
-     * Create a link. Unlike @ref link() this operation will fail when the directory already 
+     * Create a link. Unlike link() this operation will fail when the directory already 
      * exists.
      * If the protocols and hosts are the same, a Unix symlink will be created.
      * Otherwise, a .desktop file of Type Link and pointing to the src URL will be created.

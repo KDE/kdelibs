@@ -42,7 +42,7 @@ class KLibraryPrivate;
  * @short Represents a dynamically loaded library.
  *
  * KLibrary allows you to look up symbols of the shared library.
- * Use @ref KLibLoader to create a new instance of KLibrary.
+ * Use KLibLoader to create a new instance of KLibrary.
  *
  * @see KLibLoader
  * @author Torben Weis <weis@kde.org>
@@ -56,7 +56,7 @@ class KLibrary : public QObject
 public:
     /**
      * @internal
-     * Don't create KLibrary objects on your own. Instead use @ref KLibLoader.
+     * Don't create KLibrary objects on your own. Instead use KLibLoader.
      */
     KLibrary( const QString& libname, const QString& filename, void * handle );
 
@@ -81,7 +81,7 @@ public:
     /**
      * Looks up a symbol from the library. This is a very low level
      * function that you usually don't want to use. Usually you should
-     * check using @ref hasSymbol() whether the symbol actually exists,
+     * check using hasSymbol() whether the symbol actually exists,
      * otherwise a warning will be printed.
      * @param name the name of the symbol to look up
      * @return the address of the symbol, or 0 if it does not exist
@@ -92,7 +92,7 @@ public:
     /**
      * Looks up a symbol from the library. This is a very low level
      * function that you usually don't want to use.
-     * Unlike @ref symbol(), this method doesn't warn if the symbol doesn't exist,
+     * Unlike symbol(), this method doesn't warn if the symbol doesn't exist,
      * so if the symbol might or might not exist, better use hasSymbol() before symbol().
      * @param name the name of the symbol to check
      * @return true if the symbol exists
@@ -115,7 +115,7 @@ private slots:
 private:
     /**
      * @internal
-     * Don't destruct KLibrary objects yourself. Instead use @ref unload() instead.
+     * Don't destruct KLibrary objects yourself. Instead use unload() instead.
      */
     ~KLibrary();
 
@@ -135,7 +135,7 @@ class KLibWrapPrivate;
  * Dependent libraries are loaded automatically.
  *
  * KLibLoader follows the singleton pattern. You can not create multiple
- * instances. Use @ref self() to get a pointer to the loader.
+ * instances. Use self() to get a pointer to the loader.
  *
  * @see KLibrary
  * @author Torben Weis <weis@kde.org>
@@ -169,7 +169,7 @@ public:
      *                 You can, however, give a library name ending in ".so"
      *                 (or whatever is used on your platform), and the library
      *                 will be loaded without resolving dependencies. USE WITH CARE :)
-     * @return the @ref KLibFactory, or 0 if the library does not exist or it does
+     * @return the KLibFactory, or 0 if the library does not exist or it does
      *         not have a factory
      * @see #library
      */
@@ -190,7 +190,7 @@ public:
      *                 You can, however, give a library name ending in ".so"
      *                 (or whatever is used on your platform), and the library
      *                 will be loaded without resolving dependencies. USE WITH CARE :)
-     * @return @ref KLibrary is invalid (0) when the library couldn't be dlopened. in such
+     * @return KLibrary is invalid (0) when the library couldn't be dlopened. in such
      * a case you can retrieve the error message by calling KLibLoader::lastErrorMessage()
      *
      * @see #factory
@@ -223,7 +223,7 @@ public:
 
     /*
      * Returns an error message that can be useful to debug the problem.
-     * Returns QString::null if the last call to @ref #library() was successful.
+     * Returns QString::null if the last call to library() was successful.
      * You can call this function more than once. The error message is only
      * reset by a new call to library().
      * @return the last error message, or QString::null if there was no error
@@ -304,26 +304,26 @@ private:
  * The first macro argument is the name of your library, the second specifies the name
  * of your factory.
  *
- * In the constructor of your factory you should create an instance of @ref KInstance
+ * In the constructor of your factory you should create an instance of KInstance
  * like this:
  * \code
  *     s_global = new KInstance( "kspread" );
  * \endcode
- * This @ref KInstance is comparable to @ref KGlobal used by normal applications.
+ * This KInstance is comparable to KGlobal used by normal applications.
  * It allows you to find resource files (images, XML, sound etc.) belonging
  * to the library.
  *
- * If you want to load a library, use @ref KLibLoader. You can query @ref KLibLoader
- * directly for a pointer to the libraries factory by using the @ref KLibLoader::factory()
+ * If you want to load a library, use KLibLoader. You can query KLibLoader
+ * directly for a pointer to the libraries factory by using the KLibLoader::factory()
  * function.
  *
  * The KLibFactory is used to create the components, the library has to offer.
  * The factory of KSpread for example will create instances of KSpreadDoc,
  * while the Konqueror factory will create KonqView widgets.
- * All objects created by the factory must be derived from @ref QObject, since @ref QObject
+ * All objects created by the factory must be derived from QObject, since QObject
  * offers type safe casting.
  *
- * KLibFactory is an abstract class. Reimplement the @ref
+ * KLibFactory is an abstract class. Reimplement the 
  * createObject() method to give it functionality.
  *
  * @author Torben Weis <weis@kde.org>
@@ -350,7 +350,7 @@ public:
      * if asked for a "QWidget", it could create a wrapper widget,
      * that encapsulates the Koffice specific features.
      *
-     * create() automatically emits a signal @ref objectCreated to tell
+     * create() automatically emits a signal objectCreated to tell
      * the library about its newly created object.  This is very
      * important for reference counting, and allows unloading the
      * library automatically once all its objects have been destroyed.

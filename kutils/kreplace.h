@@ -105,7 +105,7 @@ public:
 
     /**
      * Return the number of replacements made (i.e. the number of times
-     * the @ref replace signal was emitted).
+     * the replace signal was emitted).
      * Can be used in a dialog box to tell the user how many replacements were made.
      * The final dialog does so already, unless you used setDisplayFinalDialog(false).
      */
@@ -190,7 +190,7 @@ signals:
      * operation.
      *
      * Extra care must be taken to properly implement the "no prompt-on-replace" case.
-     * For instance @ref highlight isn't emitted in that case (some code might rely on it),
+     * For instance highlight isn't emitted in that case (some code might rely on it),
      * and for performance reasons one should repaint after replace() ONLY if
      * prompt-on-replace was selected.
      *

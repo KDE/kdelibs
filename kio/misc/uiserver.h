@@ -52,7 +52,7 @@ struct ListProgressColumnConfig
 };
 
 /**
-* List view in the @ref #UIServer.
+* List view in the UIServer.
 * @internal
 */
 class ListProgress : public KListView {
@@ -100,7 +100,7 @@ protected:
 };
 
 /**
-* One item in the @ref #ListProgress
+* One item in the ListProgress
 * @internal
 */
 class ProgressItem : public QObject, public QListViewItem {
@@ -203,7 +203,7 @@ class UIServerSystemTray;
  * All IO operations ( jobs ) are displayed in this window, one line per operation.
  * User can cancel operations with Cancel button on toolbar.
  *
- * Double clicking an item in the list opens a small download window ( @ref #DefaultProgress ).
+ * Double clicking an item in the list opens a small download window ( DefaultProgress ).
  *
  * @short Graphical server for progress information with an optional all-in-one progress window.
  * @author David Faure <faure@kde.org>

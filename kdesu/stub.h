@@ -93,25 +93,25 @@ protected:
 
     /** 
      * This virtual function can be overloaded when special behaviour is
-     * desired. By default, it returns the value returned by @ref #KCookie.
+     * desired. By default, it returns the value returned by KCookie.
      */
     virtual QCString display() { return m_pCookie->display(); }
 #ifdef Q_WS_X11
     /**
-     * See @ref #display.
+     * See display.
      */
     virtual QCString displayAuth() { return m_pCookie->displayAuth(); }
 #endif
     /**
-     * See @ref #display.
+     * See display.
      */
     virtual QCString dcopServer() { return m_pCookie->dcopServer(); }
     /**
-     * See @ref #display.
+     * See display.
      */
     virtual QCString dcopAuth() { return m_pCookie->dcopAuth(); }
     /**
-     * See @ref #display.
+     * See display.
      */
     virtual QCString iceAuth() { return m_pCookie->iceAuth(); }
 

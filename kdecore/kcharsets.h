@@ -47,7 +47,7 @@ class KCharsets
 
 protected:
     /** Protected constructor. If you need the kcharsets object, use
-        @ref KGlobal::charsets() instead.
+ KGlobal::charsets() instead.
     */
     KCharsets();
 
@@ -84,7 +84,7 @@ public:
     static QChar fromEntity(const QString &str);
     /**
      * Overloaded member function. Tries to find an entity in the
-     * @ref QString str.
+     * QString str.
      * @param str the string containing entified
      * @param len is a return value, that gives the length of the decoded
      * entity.

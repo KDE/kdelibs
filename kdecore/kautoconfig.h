@@ -34,7 +34,7 @@ class QWidget;
  * settings have been changed (settings were saved) or modified (the
  * user changes a checkbox from on to off).
  *
- * When told to retrieve settings (@ref retrieveSettings()) KAutoConfig 
+ * When told to retrieve settings ( retrieveSettings()) KAutoConfig 
  * will traverse the specified widgets building a list of all known widgets
  * that have a name and havn't been marked to be ignored.
  * If a setting is marked immutable the value is loaded and the widget is
@@ -44,20 +44,20 @@ class QWidget;
  * value of the widget also is the default value when the widget is reset.
  * If the widget does not have a name then it is ignored.
  *
- * When @ref saveSettings() or @ref resetSettings() is called KAutoConfig
+ * When saveSettings() or resetSettings() is called KAutoConfig
  * goes through the list of known widgets and performs the operation on each
  * of them.
  *
  * If one of the widgets needs special treatment it can be specified to be
- * ignored using the @ref ignoreSubWidget() function.  
+ * ignored using the ignoreSubWidget() function.  
  *
  * <hr>
  * 
- * KAutoConfig uses the @ref QSqlPropertyMap class to determine if it can do
+ * KAutoConfig uses the QSqlPropertyMap class to determine if it can do
  * anything to a widget.  Note that KAutoConfig doesn't  require a database,
  * it simply uses the functionality that is built into the QSqlPropertyMap
  * class.  New widgets can be added to the map using  
- * @ref QSqlPropertyMap::installDefaultMap(). 
+ * QSqlPropertyMap::installDefaultMap(). 
  * 
  * For example (note that KColorButton is already added and it doesn't need to  
  * manually added):
@@ -69,7 +69,7 @@ class QWidget;
  * \endcode
  *
  * If you add a new widget to the QSqlPropertyMap and wish to be notified when
- * it is modified you should add its signal using @ref addWidgetChangedSignal().
+ * it is modified you should add its signal using addWidgetChangedSignal().
  *
  * @see KAutoConfigDialog
  * @since 3.2
@@ -81,24 +81,24 @@ Q_OBJECT
 signals:
   /**
    * One or more of the settings have been saved (such as when the user
-   * clicks on the Apply button).  This is only emitted by @ref saveSettings()
+   * clicks on the Apply button).  This is only emitted by saveSettings()
    * whenever one or more setting were changed and consequently saved.
    */ 
   void settingsChanged();
 
   /**
    * One or more of the settings have been changed.
-   * @param widget - The widget group (pass in via @ref addWidget()) that
+   * @param widget - The widget group (pass in via addWidget()) that
    * contains the one or more modified setting.
    * @see settingsChanged()
    */
   void settingsChanged( QWidget *widget );
 	
   /**
-   * If @ref retrieveSettings() was told to track changes then if
+   * If retrieveSettings() was told to track changes then if
    * any known setting was changed this signal will be emitted.  Note
    * that a settings can be modified several times and might go back to the 
-   * original saved state.  @ref hasChanged() will tell you if anything has
+   * original saved state. hasChanged() will tell you if anything has
    * actually changed from the saved values.
    */
   void widgetModified();
@@ -130,7 +130,7 @@ public:
   
   /**
    * Adds a widget to the list of widgets that should be parsed for any 
-   * children that KAutoConfig might know when @ref retrieveSettings() is
+   * children that KAutoConfig might know when retrieveSettings() is
    * called.
    * @param widget - Pointer to the widget to add.
    * @param group - Name of the group from which all of the settings for this
@@ -142,7 +142,7 @@ public:
 
   /**
    * Ignore the specified child widget when performing an action.  Doesn't
-   * effect widgets that were added with @ref addWidget() only their children.
+   * effect widgets that were added with addWidget() only their children.
    * @param widget - Pointer to the widget that should be ignored.
    * Note: Widgets that don't have a name are ignored automatically.
    **/ 
@@ -150,7 +150,7 @@ public:
 
   /**
    * Traverse the specified widgets to see if anything is different then the
-   * current settings.  @ref retrieveSettings() must be called before this 
+   * current settings. retrieveSettings() must be called before this 
    * function to build the list of known widgets and default values.
    * @return bool - True if any settings are different then the stored values.
    */
@@ -158,7 +158,7 @@ public:
 
   /**
    * Traverse the specified widgets to see if anything is different then the
-   * default.  @ref retrieveSettings() must be called before this function to
+   * default. retrieveSettings() must be called before this function to
    * build the list of known widgets and default values.
    * @return bool - True if all of the settings are their default values.
    */
@@ -166,7 +166,7 @@ public:
 
   /**
    * Adds a widget and its signal to the internal list so that when
-   * KAutoConfig finds widgetName in @ref retrieveSettings() it will know
+   * KAutoConfig finds widgetName in retrieveSettings() it will know
    * how to connect its signal that it has changed to KAutoConfig's signal
    * widgetModified().  This function should be called before 
    *
@@ -192,7 +192,7 @@ public slots:
    * Traverse the specified widgets, retrieving the settings for all known
    * widgets that aren't being ignored and storing the default values.
    * @param trackChanges - If any changes by the widgets should be tracked
-   * set true.  This causes the emitting the @ref modified() signal when
+   * set true.  This causes the emitting the modified() signal when
    * something changes.
    * @return bool - True if any setting was changed from the default.
    */ 
@@ -200,7 +200,7 @@ public slots:
   
   /**
    * Traverse the specified widgets, saving the settings for all known
-   * widgets that aren't being ignored.  @ref retrieveSettings() must be called
+   * widgets that aren't being ignored. retrieveSettings() must be called
    * before this function to build the list of known widgets and default values.
    * @return bool - True if any settings were changed.
    */ 
@@ -209,7 +209,7 @@ public slots:
   /**
    * Traverse the specified widgets, reseting the settings to their default
    * values for all known widgets that aren't being ignored.
-   * @ref retrieveSettings() must be called before this function to build
+   * retrieveSettings() must be called before this function to build
    * the list of known widgets and default values.
    */
   void resetSettings(); 

@@ -119,7 +119,7 @@ class VoiceManager
     void deallocateVoice(int id);
 
     /**
-     * initSearch() must be called always before @ref #search() to initialize
+     * initSearch() must be called always before search() to initialize
      * internal variables.
      * 
      * @see search

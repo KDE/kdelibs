@@ -414,7 +414,7 @@ public:
     DOMString nodeValue() const;
 
     /**
-     * see @ref nodeValue
+     * see nodeValue
      * @exception DOMException
      * NO_MODIFICATION_ALLOWED_ERR: Raised when the node is readonly.
      *
@@ -716,7 +716,7 @@ public:
     DOMString prefix(  ) const;
 
     /**
-     * see @ref prefix
+     * see prefix
      *
      * @exception DOMException
      * INVALID_CHARACTER_ERR: Raised if the specified prefix contains an

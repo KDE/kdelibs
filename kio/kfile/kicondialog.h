@@ -111,7 +111,7 @@ public:
 
     /**
      * Sets a strict icon size policy for allowed icons. When true,
-     * only icons of the specified group's size in @ref getIcon() are shown.
+     * only icons of the specified group's size in getIcon() are shown.
      * When false, icons not available at the desired group's size will
      * also be selectable.
      */
@@ -134,7 +134,7 @@ public:
     void setIconSize(int size);
 
     /**
-     * Returns the iconsize set via @ref setIconSize() or 0, if the default
+     * Returns the iconsize set via setIconSize() or 0, if the default
      * iconsize will be used.
      */
     int iconSize() const;
@@ -149,7 +149,7 @@ public:
 
     /**
      * Allows you to set the same parameters as in the class method
-     * @ref getIcon().
+     * getIcon().
      */
     void setup( KIcon::Group group,
                 KIcon::Context context = KIcon::Application,
@@ -284,7 +284,7 @@ public:
     void setIconSize( int size );
 
     /**
-     * Returns the iconsize set via @ref setIconSize() or 0, if the default
+     * Returns the iconsize set via setIconSize() or 0, if the default
      * iconsize will be used.
      */
     int iconSize() const;

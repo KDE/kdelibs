@@ -287,9 +287,9 @@ protected:
 
     // Used to store the code of a srcipting sequence
     QChar *scriptCode;
-    // Size of the script sequenze stored in @ref #scriptCode
+    // Size of the script sequenze stored in scriptCode
     int scriptCodeSize;
-    // Maximal size that can be stored in @ref #scriptCode
+    // Maximal size that can be stored in scriptCode
     int scriptCodeMaxSize;
     // resync point of script code size
     int scriptCodeResync;

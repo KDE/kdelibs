@@ -43,14 +43,14 @@ class KTextEdit : public QTextEdit
 
 public:
     /**
-     * Constructs a KTextEdit object. See @ref QTextEdit::QTextEdit
+     * Constructs a KTextEdit object. See QTextEdit::QTextEdit
      * for details.
      */
     KTextEdit( const QString& text,
                const QString& context = QString::null,
                QWidget * parent = 0, const char *name = 0 );
     /**
-     * Constructs a KTextEdit object. See @ref QTextEdit::QTextEdit
+     * Constructs a KTextEdit object. See QTextEdit::QTextEdit
      * for details.
      */
 

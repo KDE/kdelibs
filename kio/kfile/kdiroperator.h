@@ -49,17 +49,17 @@ namespace KIO {
 
 /**
  * This widget works as a network transparent filebrowser. You specify a URL
- * to display and this url will be loaded via @ref KDirLister. The user can
+ * to display and this url will be loaded via KDirLister. The user can
  * browse through directories, highlight and select files, delete or rename
  * files.
  *
- * It supports different views, e.g. a detailed view (see @ref KFileDetailView),
- * a simple icon view (see @ref KFileIconView), a combination of two views,
- * separating directories and files (@ref KCombiView).
+ * It supports different views, e.g. a detailed view (see KFileDetailView),
+ * a simple icon view (see KFileIconView), a combination of two views,
+ * separating directories and files ( KCombiView).
  *
- * Additionally, a preview view is available (see @ref KFilePreview), which can
+ * Additionally, a preview view is available (see KFilePreview), which can
  * show either a simple or detailed view and additionally a preview widget
- * (see @ref setPreviewWidget()). @ref KImageFilePreview is one implementation
+ * (see setPreviewWidget()). KImageFilePreview is one implementation
  * of a preview widget, that displays previews for all supported filetypes
  * utilizing KIO::PreviewJob.
  *
@@ -111,10 +111,10 @@ class KDirOperator : public QWidget
                        AllActions = 15 };
     /**
      * Constructs the KDirOperator with no initial view. As the views are
-     * configurable, call @ref readConfig() to load the user's configuration
-     * and then @ref setView to explicitly set a view.
+     * configurable, call readConfig() to load the user's configuration
+     * and then setView to explicitly set a view.
      *
-     * This constructor doesn't start loading the url, @ref setView will do it.
+     * This constructor doesn't start loading the url, setView will do it.
      */
     KDirOperator(const KURL& urlName = KURL(),
 		 QWidget *parent = 0, const char* name = 0);
@@ -141,7 +141,7 @@ class KDirOperator : public QWidget
 
     /**
      * Sets a filter like "*.cpp *.h *.o". Only files matching that filter
-     * will be shown. Call @ref updateDir() to apply it.
+     * will be shown. Call updateDir() to apply it.
      *
      * @see KDirLister::setNameFilter
      * @see #nameFilter
@@ -166,7 +166,7 @@ class KDirOperator : public QWidget
      * \endcode
      *
      * Node: Without the mimetype inode/directory, only files would be shown.
-     * Call @ref updateDir() to apply it.
+     * Call updateDir() to apply it.
      *
      * @see KDirLister::setMimeFilter
      * @see #mimeFilter
@@ -180,7 +180,7 @@ class KDirOperator : public QWidget
 
     /**
      * Clears both the namefilter and mimetype filter, so that all files and
-     * directories will be shown. Call @ref updateDir() to apply it.
+     * directories will be shown. Call updateDir() to apply it.
      *
      * @see #setMimeFilter
      * @see #setNameFilter
@@ -208,7 +208,7 @@ class KDirOperator : public QWidget
 
     /**
      * Sets a new KFileView to be used for showing and browsing files.
-     * Note: this will read the current @ref url() to fill the view.
+     * Note: this will read the current url() to fill the view.
      *
      * @see KFileView
      * @see KFileIconView
@@ -320,10 +320,10 @@ class KDirOperator : public QWidget
     /**
      * @returns a KCompletion object, containing all filenames and
      * directories of the current directory/URL.
-     * You can use it to insert it into a @ref KLineEdit or @ref KComboBox
-     * Note: it will only contain files, after @ref prepareCompletionObjects()
-     * has been called. It will be implicitly called from @ref makeCompletion()
-     * or @ref makeDirCompletion()
+     * You can use it to insert it into a KLineEdit or KComboBox
+     * Note: it will only contain files, after prepareCompletionObjects()
+     * has been called. It will be implicitly called from makeCompletion()
+     * or makeDirCompletion()
      */
     KCompletion * completionObject() const {
 	return const_cast<KCompletion *>( &myCompletion );
@@ -332,10 +332,10 @@ class KDirOperator : public QWidget
     /**
      * @returns a KCompletion object, containing only all directories of the
      * current directory/URL.
-     * You can use it to insert it into a @ref KLineEdit or @ref KComboBox
+     * You can use it to insert it into a KLineEdit or KComboBox
      * Note: it will only contain directories, after
-     * @ref prepareCompletionObjects() has been called. It will be implicitly
-     * called from @ref makeCompletion() or @ref makeDirCompletion()
+     * prepareCompletionObjects() has been called. It will be implicitly
+     * called from makeCompletion() or makeDirCompletion()
      */
     KCompletion *dirCompletionObject() const {
 	return const_cast<KCompletion *>( &myDirCompletion );
@@ -391,7 +391,7 @@ class KDirOperator : public QWidget
     /**
      * Sets the config object and the to be used group in KDirOperator. This
      * will be used to store the view's configuration via 
-     * @ref KFileView::writeConfig() (and for @ref KFileView::readConfig()).
+     * KFileView::writeConfig() (and for KFileView::readConfig()).
      * If you don't set this, the views cannot save and restore their 
      * configuration.
      *
@@ -481,7 +481,7 @@ class KDirOperator : public QWidget
     bool mkdir( const QString& directory, bool enterDirectory = true );
 
     /**
-     * Starts and returns a @ref KIO::DeleteJob to delete the given @p items.
+     * Starts and returns a KIO::DeleteJob to delete the given @p items.
      *
      * @param items the list of items to be deleted
      * @param ask specifies whether a confirmation dialog should be shown
@@ -492,7 +492,7 @@ class KDirOperator : public QWidget
                           bool ask = true, bool showProgress = true );
 
     /**
-     * Starts and returns a @ref KIO::DeleteJob to delete the given @p items.
+     * Starts and returns a KIO::DeleteJob to delete the given @p items.
      *
      * @param parent the parent widget used for the confirmation dialog
      * @param ask specifies whether a confirmation dialog should be shown
@@ -541,7 +541,7 @@ class KDirOperator : public QWidget
 
     /**
      * Sets up the action menu.
-     * @param whichActions is an value of OR'd @ref ActionTypes that controls which actions to show in the action menu
+     * @param whichActions is an value of OR'd ActionTypes that controls which actions to show in the action menu
      */
     void setupMenu(int whichActions);
 
@@ -561,11 +561,11 @@ class KDirOperator : public QWidget
 
 protected:
     /**
-     * A view factory for creating predefined fileviews. Called internally by @ref #setView
+     * A view factory for creating predefined fileviews. Called internally by setView
 	 * , but you can also call it directly. Reimplement this if you depend on self defined fileviews.
-	 * @param parent is the  @ref QWidget to be set as parent
+	 * @param parent is the QWidget to be set as parent
 	 * @param view is the predefined view to be set, note: this can be several ones OR:ed together.
-	 * @returns the created @ref KFileView
+	 * @returns the created KFileView
      * @see KFileView
      * @see KCombiView
      * @see KFileDetailView
@@ -615,14 +615,14 @@ protected:
      * Synchronizes the completion objects with the entries of the
      * currently listed url.
      *
-     * Automatically called from @ref makeCompletion() and
-     * @ref makeDirCompletion()
+     * Automatically called from makeCompletion() and
+     * makeDirCompletion()
      */
     void prepareCompletionObjects();
 
     /**
-     * Checks if there support from @ref KIO::PreviewJob for the currently
-     * shown files, taking @ref mimeFilter() and @ref nameFilter() into account
+     * Checks if there support from KIO::PreviewJob for the currently
+     * shown files, taking mimeFilter() and nameFilter() into account
      * Enables/disables the preview-action accordingly.
      */
     bool checkPreviewSupport();
@@ -700,7 +700,7 @@ protected slots:
     void resetCursor();
 
     /**
-     * Called after @ref setURL() to load the directory, update the history,
+     * Called after setURL() to load the directory, update the history,
      * etc.
      */
     void pathChanged();
@@ -782,7 +782,7 @@ signals:
 
     /**
      * Emitted whenever the current fileview is changed, either by an explicit
-     * call to @ref setView() or by the user selecting a different view thru
+     * call to setView() or by the user selecting a different view thru
      * the GUI.
      */
     void viewChanged( KFileView * newView );
@@ -790,14 +790,14 @@ signals:
     /**
      * Emitted when a file is highlighted or generally the selection changes in
      * multiselection mode. In the latter case, @p item is 0L. You can access
-     * the selected items with @ref selectedItems().
+     * the selected items with selectedItems().
      */
     void fileHighlighted( const KFileItem *item );
     void dirActivated( const KFileItem *item );
     void fileSelected( const KFileItem *item );
     /**
      * Emitted when files are dropped. Dropping files is disabled by
-     * default. You need to enable it with @ref setAcceptDrops()
+     * default. You need to enable it with setAcceptDrops()
      * @param item the item on which the drop occurred or 0.
      * @param event the drop event itself.
      * @param urls the urls that where dropped.

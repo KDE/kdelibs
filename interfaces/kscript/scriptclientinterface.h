@@ -57,8 +57,8 @@ class QString;
 		virtual void progress( int percent ) =0;
 		/**
 		*	This function will allow feedback on completion of the script.
-		*	It turns the result as a @ref KScriptInteface::Result, and a return
-		*	value as a @ref QVariant
+		*	It turns the result as a KScriptInteface::Result, and a return
+		*	value as a QVariant
 		*/
 		virtual void done( KScriptClientInterface::Result result, const QVariant &returned )  =0;
 		/**

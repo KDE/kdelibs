@@ -64,7 +64,7 @@ public:
    /**
     * Canonical name of the device where the filesystem got mounted from.
     * (Or empty, if not a device)
-    * Only available when the @ref NeedRealDeviceName flag was set.
+    * Only available when the NeedRealDeviceName flag was set.
     */
    QString realDeviceName() const { return m_device; }
 
@@ -80,7 +80,7 @@ public:
    
    /**
     * Options used to mount the filesystem.
-    * Only available when the @ref NeedMountOptions flag was set.
+    * Only available when the NeedMountOptions flag was set.
     */
    QStringList mountOptions() const { return m_mountOptions; }
 

@@ -51,7 +51,7 @@ private:
  *
  * This class provides an interface for receiving DCOP messages.  To use it,
  * simply multiply-inherit from DCOPObject and from some other class, and
- * then implement the @ref DCOPObject::process() method.  Because this method is
+ * then implement the DCOPObject::process() method.  Because this method is
  * pure virtual, you must implement the method.
  *
  * Note that it is usually more convenient to mark a section in the class with
@@ -72,7 +72,7 @@ public:
   DCOPObject();
   /**
    * Creates a DCOPObject and calculates the object id
-   * using @ref QObject::name().
+   * using QObject::name().
    * @param obj the object to extract the name from
    */
   DCOPObject(QObject *obj);
@@ -108,7 +108,7 @@ public:
    * compiler to automatically generate an implementation for
    * this function.
    *
-   * If this function returns false, then @ref processDynamic()
+   * If this function returns false, then processDynamic()
    * is called.
    *
    * Note to implementators: remember to call the baseclasses
@@ -138,7 +138,7 @@ public:
 
   /**
    * This function is of interest when you used an IDL compiler
-   * to generate the implementation for @ref process() but
+   * to generate the implementation for process() but
    * you still want to dispatch some functions dynamically.
    * Dynamically means that methods may appear and vanish
    * during runtime.
@@ -163,7 +163,7 @@ public:
 
    /**
    * This function is of interest when you used an IDL compiler
-   * to generate the implementation for @ref functions() but
+   * to generate the implementation for functions() but
    * you still want to list some functions dynamically.
    * Dynamically means that the methods may appear and vanish
    * during runtime.
@@ -176,7 +176,7 @@ public:
 
     /**
    * This function is of interest when you used an IDL compiler
-   * to generate the implementation for @ref interfaces() but
+   * to generate the implementation for interfaces() but
    * you still want to list some interfaces dynamically.
    * Dynamically means that they may appear and vanish
    * during runtime.
@@ -272,7 +272,7 @@ public:
                              const QCString &slot);
 
   /**
-   * Returns the @ref DCOPClient responsible for making the call. 
+   * Returns the DCOPClient responsible for making the call. 
    * Only call this function while you are handling a DCOP call.
    * @return the DCOPClient responsible for making the call. 
    * This information is only guaranteed to be correct when 
@@ -282,7 +282,7 @@ public:
   DCOPClient *callingDcopClient();
 
   /**
-   * @internal Sets DCOPClient returned by @ref callingDcopClient()
+   * @internal Sets DCOPClient returned by callingDcopClient()
    * @since 3.1
    */
   void setCallingDcopClient(DCOPClient *);
@@ -292,13 +292,13 @@ public:
    * @return true if an object with the questionable @p objId is
    *         known in this process. This query does not ask proxies.
    *
-   * @ref DCOPObjectProxy
+   * DCOPObjectProxy
    */
   static bool hasObject(const QCString &objId);
 
   /**
    * Try to find a dcop object with the given id.
-   * This function does not query the @ref DCOPObjectProxy.
+   * This function does not query the DCOPObjectProxy.
    * @param objId the object id to search
    * @return the  DCOPObject for the id @p objId.
    */
@@ -318,7 +318,7 @@ public:
 
   /**
    * Creates an object id for the QObject @p obj. This is done
-   * using the @ref QObject::name() function.
+   * using the QObject::name() function.
    * @param obj the object whose name will be used
    * @return the created object id
    */
@@ -340,7 +340,7 @@ private:
 class DCOPObjectProxyPrivate;
 /**
  * You must use a proxy if you want to dispatch method calls for
- * object IDs which dont have (yet) a corresponding @ref DCOPObject.
+ * object IDs which dont have (yet) a corresponding DCOPObject.
  * This is somewhat like virtual object references in CORBA.
  *
  * @see DCOPObject
@@ -371,9 +371,9 @@ public:
     /**
      * Reimplement this method to dispatch method calls.
      *
-     * This method is called of all proxies if the @ref DCOPClient
+     * This method is called of all proxies if the DCOPClient
      * knows no object with the id @p obj. If the first proxy returns
-     * @p true, the @ref DCOPClient will no longer call other proxies.
+     * @p true, the DCOPClient will no longer call other proxies.
      *
      * The object id @p obj may be empty for app-wide function calls no
      * associated with any object.

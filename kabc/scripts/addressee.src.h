@@ -151,7 +151,7 @@ class Addressee
 
     /**
       Return preferred email address. This is the first email address or the
-      last one added with @ref insertEmail() with a set preferred parameter.
+      last one added with insertEmail() with a set preferred parameter.
      */
     QString preferredEmail() const;
 

@@ -33,9 +33,9 @@ class MidiMapper;
  * send MIDI events to any device, as it creates and manages the *Out classes.
  *
  * This class is usually used by creating a DeviceManager object, then call
- * @ref #openDev() and @ref #initDev() . Then, use @ref #numberOfMidiPorts(),
- * @ref #numberOfSynthDevices(), @ref #name() and @ref #type() to choose which
- * device to play MIDI events to and then use @ref defaultDevice() to set the
+ * openDev() and initDev() . Then, use numberOfMidiPorts(),
+ * numberOfSynthDevices(), name() and type() to choose which
+ * device to play MIDI events to and then use defaultDevice() to set the
  * MIDI device to play.
  *
  * @short Manages all MIDI devices and redirects MIDI events to each one as
@@ -163,15 +163,15 @@ class DeviceManager
   public:
     /**
      * Constructor. It just initializes internal variables, before playing any
-     * music, you should call @ref #initManager(), @ref #setMidiMap()
-     * (optional), @ref #openDev(), @ref #initDev(), @ref #setPatchesToUse()
+     * music, you should call initManager(), setMidiMap()
+     * (optional), openDev(), initDev(), setPatchesToUse()
      * (not required, unless you're playing to a GUS device, which must load
-     * the patches), @ref #tmrStart(), and finally, play the music.
+     * the patches), tmrStart(), and finally, play the music.
      */
     DeviceManager(int def=-1);
 
     /**
-     * Destructor. It closes the device (calling @ref #closeDev() ) if it wasn't
+     * Destructor. It closes the device (calling closeDev() ) if it wasn't
      * closed before.
      */
     ~DeviceManager(void);
@@ -246,7 +246,7 @@ class DeviceManager
      * device, as it will be set to an external synth by default, if available).
      *
      * Then /dev/sequencer is opened and the MIDI devices are opened
-     * (calling @ref MidiOut::openDev() ).
+     * (calling MidiOut::openDev() ).
      * @see #ok() to check if there was any problem
      * @see #closeDev()
      * @see #initDev()
@@ -261,7 +261,7 @@ class DeviceManager
     void closeDev       (void);
 
     /**
-     * Calls @ref MidiOut::initDev() in turn in each of the available devices.
+     * Calls MidiOut::initDev() in turn in each of the available devices.
      *
      * @see MidiOut::initDev()
      */
@@ -374,12 +374,12 @@ class DeviceManager
      void tmrSetTempo(int v);
 
     /**
-     * Starts the timer. You must call tmrStart before using @ref #wait()
+     * Starts the timer. You must call tmrStart before using wait()
      */
     void tmrStart(long int tpcn);
 
     /**
-     * Stops the timer. This will be called by @ref #closeDev() before closing
+     * Stops the timer. This will be called by closeDev() before closing
      * the device
      */
     void tmrStop(void);
@@ -397,7 +397,7 @@ class DeviceManager
 
     /**
      * Synchronizes with the MIDI buffer. Midi events are put into a buffer,
-     * along with timer delays (see @ref #wait() ). sync returns when the buffer
+     * along with timer delays (see wait() ). sync returns when the buffer
      * is empty.
      *
      * @param f if false, it syncronizes by waiting for the buffer to be sent.
@@ -430,8 +430,8 @@ class DeviceManager
     /**
      * Sets the device to send the MIDI events to.
      *
-     * By using @ref #midiPorts(), @ref #synthDevices(), @ref #name() and
-     * @ref #type(), you should choose which device to use (note that they are
+     * By using midiPorts(), synthDevices(), name() and
+     * type(), you should choose which device to use (note that they are
      * numbered with midi ports being first and synth devices next)
      *
      * @see #defaultDevice()
@@ -440,7 +440,7 @@ class DeviceManager
 
     /**
      * Loads the patches you're going to use . This has effect only for GUS
-     * cards, although, if you use this function when @ref defaultDevice() is
+     * cards, although, if you use this function when defaultDevice() is
      * not a GUS device, it will be ignored.
      *
      * The parameter is an int [256] array, which contain the following:
@@ -477,8 +477,8 @@ class DeviceManager
     const char *midiMapFilename(void);
 
     /**
-     * Sets a @ref MidiMapper object to use. This object should already have
-     * loaded the configuration. See the description of @ref MidiMapper for
+     * Sets a MidiMapper object to use. This object should already have
+     * loaded the configuration. See the description of MidiMapper for
      * more information.
      *
      * @see MidiMapper::MidiMapper()
@@ -515,9 +515,9 @@ class DeviceManager
 
     /**
      * Returns the name of the @p i-th device . In case the DeviceManager wasn't
-     * yet initialized ( see @ref #checkInit() ), the return value is NULL, and
+     * yet initialized ( see checkInit() ), the return value is NULL, and
      * in case the parameter has a value out of the valid range ( 0 to
-     * @ref midiPorts() + @ref synthDevices() ) it returns an empty string.
+     * midiPorts() + synthDevices() ) it returns an empty string.
      */
     const char *name(int i);
 

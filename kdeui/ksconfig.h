@@ -57,16 +57,16 @@ enum KSpellClients {
 };
 
 /**
- * A configuration class/dialog for @ref KSpell.
+ * A configuration class/dialog for KSpell.
  *
  * It contains all of the options settings.The options are set to default
  * values by the constructor and can be reset either by using the
  * public interface or by using KSpellConfig as a widget in a dialog
- * (or, preferably a tabbed dialog using @ref KDialogBase) and letting
+ * (or, preferably a tabbed dialog using KDialogBase) and letting
  * the user change the settings. This way an application that uses
- * @ref KSpell can either rely on the default settings (in the simplest
- * case), offer a dialog to configure @ref KSpell, or offer a dialog to
- * configure @ref KSpell _for_this_app_only_ (in which case, the application
+ * KSpell can either rely on the default settings (in the simplest
+ * case), offer a dialog to configure KSpell, or offer a dialog to
+ * configure KSpell _for_this_app_only_ (in which case, the application
  * should save the settings for use next time it is run).
  * This last option might be useful in an email program, for example, where
  * people may be writing in a language different from that used for
@@ -90,7 +90,7 @@ class KSpellConfig : public QWidget
      * @param spellConfig Predefined configuration. If this parameter
      *        is 0, a default configuration will be used.
      * @param addHelpButton Enabled or hides a help button. See
-     *        @ref activateHelp for more information.
+     * activateHelp for more information.
      *
      */
     KSpellConfig( QWidget *parent=0, const char *name=0,
@@ -108,9 +108,9 @@ class KSpellConfig : public QWidget
 
     /**
      *
-     * The @p _ignorelist contains words you'd like @ref KSpell
+     * The @p _ignorelist contains words you'd like KSpell
      * to ignore when it is spellchecking.  When you get a KSpellConfig
-     * object back from @ref KSpell (using @ref KSpell::kcConfig()),
+     * object back from KSpell (using KSpell::kcConfig()),
      * the @p _ignorelist contains whatever was put in by you plus
      * any words the user has chosen to ignore via the dialog box.
      * It may be useful to save this list with the document being

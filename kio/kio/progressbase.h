@@ -47,8 +47,8 @@ namespace KIO
 * Add your GUI code to the constructor and implemement those virtual
 * methods which you need in order to display progress.
 *
-* E.g. @ref #StatusbarProgress only implements @ref #slotTotalSize(),
-* @ref #slotPercent() and @ref #slotSpeed().
+* E.g. StatusbarProgress only implements slotTotalSize(),
+* slotPercent() and slotSpeed().
 *
 * Custom progress dialog will be used like this :
 * \code
@@ -62,7 +62,7 @@ namespace KIO
 * ...
 * \endcode
 *
-* There is a special method @ref #setStopOnClose() that controls the behavior of
+* There is a special method setStopOnClose() that controls the behavior of
 * the dialog.
 * @short Base class for IO progress dialogs.
 * @author Matej Koss <koss@miesto.sk>
@@ -103,12 +103,12 @@ public:
   // should we delete the dialog or just clean it when the job is finished ?
   /**
    * This controls whether the dialog should be deleted or only cleaned when
-   * the @ref KIO::Job is finished (or canceled).
+   * the KIO::Job is finished (or canceled).
    *
    * If your dialog is an embedded widget and not a separate window, you should
    * setOnlyClean(true) in the constructor of your custom dialog.
    *
-   * @param onlyClean If true the dialog will only call method @ref slotClean.
+   * @param onlyClean If true the dialog will only call method slotClean.
    * If false the dialog will be deleted.
    * @see onlyClean()
    */
@@ -116,7 +116,7 @@ public:
 
   /**
    * Checks whether the dialog should be deleted or cleaned.
-   * @return true if the dialog only calls @ref slotClean, false if it will be
+   * @return true if the dialog only calls slotClean, false if it will be
    *         deleted
    * @see setOnlyClean()
    */

@@ -88,7 +88,7 @@ public:
      * @param the KStandardDirs object to use. If null the global one is used
      *
      * Usually, you use the default iconloader, which can be accessed via
-     * @ref KGlobal::iconLoader(), so you hardly ever have to create an
+     * KGlobal::iconLoader(), so you hardly ever have to create an
      * iconloader object yourself. That one is the current KInstance's 
      * (typically KApplication's) iconloader.
      * @see KGlobal::iconLoader()
@@ -118,7 +118,7 @@ public:
      * @param group The icon group. This will specify the size of and effects to
      * be applied to the icon.
      * @param size If nonzero, this overrides the size specified by @p group.
-     *             See @ref KIcon::StdSizes.
+     *             See KIcon::StdSizes.
      * @param state The icon state: @p DefaultState, @p ActiveState or
      * @p DisabledState. Depending on the user's preferences, the iconloader
      * may apply a visual effect to hint about its state.
@@ -134,13 +134,13 @@ public:
 
     /**
      * Creates an icon set, that will do on-demand loading of the icon.
-     * Loading itself is done by calling @ref loadIcon .
+     * Loading itself is done by calling loadIcon .
      *
      * @param name The name of the icon, without extension.
      * @param group The icon group. This will specify the size of and effects to
      * be applied to the icon.
      * @param size If nonzero, this overrides the size specified by @p group.
-     *             See @ref KIcon::StdSizes.
+     *             See KIcon::StdSizes.
      * @param canReturnNull Can return a null iconset? If false, iconset
      * containing the "unknown" pixmap is returned when no appropriate icon has
      * been found.
@@ -154,13 +154,13 @@ public:
     // KDE4 merge as (const QString&,KIcon::Group,int=0,bool=false);
     /**
      * Creates an icon set, that will do on-demand loading of the icon.
-     * Loading itself is done by calling @ref loadIcon .
+     * Loading itself is done by calling loadIcon .
      *
      * @param name The name of the icon, without extension.
      * @param group The icon group. This will specify the size of and effects to
      * be applied to the icon.
      * @param size If nonzero, this overrides the size specified by @p group.
-     *             See @ref KIcon::StdSizes.
+     *             See KIcon::StdSizes.
      * @return the icon set. Can be null when not found
      */
     QIconSet loadIconSet(const QString& name, KIcon::Group group, int size=0);
@@ -173,7 +173,7 @@ public:
      * @param group_or_size If positive, search icons whose size is
      * specified by the icon group @p group_or_size. If negative, search
      * icons whose size is - @p group_or_size.
-     *             See @ref KIcon::Group and @ref KIcon::StdSizes
+     *             See KIcon::Group and KIcon::StdSizes
      * @param canReturnNull Can return a null string? If not, a path to the
      *                      "unknown" icon will be returned.
      * @return the path of an icon, can be null or the "unknown" icon when
@@ -185,9 +185,9 @@ public:
     /**
      * Loads an animated icon.
      * @param name The name of the icon.
-     * @param group The icon group. See @ref loadIcon().
+     * @param group The icon group. See loadIcon().
      * @param size Override the default size for @p group.
-     *             See @ref KIcon::StdSizes.
+     *             See KIcon::StdSizes.
      * @return A QMovie object. Can be null if not found.
      */
     QMovie loadMovie(const QString& name, KIcon::Group group, int size=0) const;
@@ -195,9 +195,9 @@ public:
     /**
      * Returns the path to an animated icon.
      * @param name The name of the icon.
-     * @param group The icon group. See @ref loadIcon().
+     * @param group The icon group. See loadIcon().
      * @param size Override the default size for @p group.
-     *             See @ref KIcon::StdSizes.
+     *             See KIcon::StdSizes.
      * @return the full path to the movie, ready to be passed to QMovie's constructor.
      * Empty string if not found.
      */
@@ -205,11 +205,11 @@ public:
 
     /**
      * Loads an animated icon as a series of still frames. If you want to load
-     * a .mng animation as QMovie instead, please use @ref loadMovie() instead.
+     * a .mng animation as QMovie instead, please use loadMovie() instead.
      * @param name The name of the icon.
-     * @param group The icon group. See @ref loadIcon().
+     * @param group The icon group. See loadIcon().
      * @param size Override the default size for @p group.
-     *             See @ref KIcon::StdSizes.
+     *             See KIcon::StdSizes.
      * @return A QStringList containing the absolute path of all the frames
      * making up the animation.
      */
@@ -221,7 +221,7 @@ public:
      * @param group_or_size If positive, search icons whose size is
      * specified by the icon group @p group_or_size. If negative, search
      * icons whose size is - @p group_or_size.
-     *             See @ref KIcon::Group and @ref KIcon::StdSizes
+     *             See KIcon::Group and KIcon::StdSizes
      * @param context The icon context.
      * @return a list of all icons
      */
@@ -232,8 +232,8 @@ public:
      * @param group_or_size The icon preferred group or size. If available
      * at this group or size, those icons will be returned, in other case,
      * icons of undefined size will be returned. Positive numbers are groups,
-     * negative numbers are negated sizes. See @ref KIcon::Group and
-     *    @ref KIcon::StdSizes
+     * negative numbers are negated sizes. See KIcon::Group and
+     * KIcon::StdSizes
      * @param context The icon context.
      * @return A QStringList containing the icon names
      * available for that context
@@ -274,7 +274,7 @@ public:
      * Called by KInstance::newIconLoader to reconfigure the icon loader.
      * @param _appname the new application name
      * @param _dirs the new standard directories. If 0, the directories
-     *              from @ref KGlobal will be taken.
+     *              from KGlobal will be taken.
      */
     void reconfigure( const QString& _appname, KStandardDirs *_dirs );
 
@@ -309,18 +309,18 @@ public:
     bool extraDesktopThemesAdded() const;
 
     /**
-     * Enables on-demand icon loading for QIconSets using @ref QIconFactory.
-     * Icons loaded via @ref loadIconSet() will be loaded as soon as they
+     * Enables on-demand icon loading for QIconSets using QIconFactory.
+     * Icons loaded via loadIconSet() will be loaded as soon as they
      * need to be displayed, not earlier.
      *
-     * Note that enabling or disabling this only affects @ref loadIconSet()
+     * Note that enabling or disabling this only affects loadIconSet()
      * calls after this setting is changed.
      *
      * The default is disabled, as the iconloader object must not be 
      * destroyed before all those iconsets are destroyed.
      *
      * (Some broken applications use temporary KIconLoader objects).
-     * Every @ref KInstance 's iconloader has this feature enabled.
+     * Every KInstance 's iconloader has this feature enabled.
      *
      * @param enable true to enable delayed icon loading, false to disable
      * @see isDelayedIconSetLoadingEnabled()
@@ -330,7 +330,7 @@ public:
     void enableDelayedIconSetLoading( bool enable );
 
     /**
-     * Checks whether delayed loading for @ref QIconSet is enabled.
+     * Checks whether delayed loading for QIconSet is enabled.
      * @return whether icons for QIconSets will be loaded on demand.
      * @see enableDelayedIconSetLoading()
      * @see QIconFactory

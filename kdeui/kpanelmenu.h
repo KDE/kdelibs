@@ -39,8 +39,8 @@ class KPanelMenuPrivate;
  * in shared libraries that will be loaded at runtime by Kicker (the KDE panel).
  *
  * To build such a menu, you have to inherit this class and implement the pure virtual
- * functions #initialize() and @ref slotExec(). You also have to provide a factory
- * object in your library, see @ref KLibFactory. This factory is only used to construct
+ * functions #initialize() and slotExec(). You also have to provide a factory
+ * object in your library, see KLibFactory. This factory is only used to construct
  * the menu object.
  *
  * Finally, you also have to provide a desktop file describing your dynamic menu. The
@@ -143,9 +143,9 @@ protected slots:
     virtual void slotExec(int id) = 0;
     /**
      * This slots is called to initialize the menu. It is called automatically by
-     * @ref slotAboutToShow(). By re-implementing this functions, you can reconstruct
+     * slotAboutToShow(). By re-implementing this functions, you can reconstruct
      * the menu before it is being shown. At the end of this function, you should
-     * call @ref setInitialize() with true to tell the system that the menu is OK.
+     * call setInitialize() with true to tell the system that the menu is OK.
      * You applet must re-implement this function.
      * @see slotAboutToShow(), initialized(), setInitialized()
      */

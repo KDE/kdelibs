@@ -39,10 +39,10 @@ class PartManagerPrivate;
  *
  * Applications that want to embed parts without merging GUIs
  * only use a KParts::PartManager. Those who want to merge GUIs use a
- * @ref KParts::MainWindow for example, in addition to a part manager.
+ * KParts::MainWindow for example, in addition to a part manager.
  *
  * Parts know about the part manager to add nested parts to it.
- * See also @ref KParts::Part::manager() and @ref KParts::Part::setManager().
+ * See also KParts::Part::manager() and KParts::Part::setManager().
  */
 class PartManager : public QObject
 {
@@ -91,7 +91,7 @@ public:
    * default we assume that the shell cannot handle nested
    * parts. However in case of a KOffice shell for example we allow
    * nested parts.  A Part is nested (a child part) if its parent
-   * object inherits @ref KParts::Part.  If a child part is activated and
+   * object inherits KParts::Part.  If a child part is activated and
    * nested parts are not allowed/handled, then the top parent part in
    * the tree is activated.
    */
@@ -141,14 +141,14 @@ public:
   /**
    * Removes a part from the manager (this does not delete the object) .
    *
-   * Sets the active part to 0 if @p part is the @ref activePart() .
+   * Sets the active part to 0 if @p part is the activePart() .
    */
   virtual void removePart( Part *part );
 
   /**
    * Replaces @p oldPart with @p newPart, and sets @p newPart as active if
    * @p setActive is true.
-   * This is an optimised version of @ref removePart + @ref addPart
+   * This is an optimised version of removePart + addPart
    */
   virtual void replacePart( Part * oldPart, Part * newPart, bool setActive = true );
 
@@ -168,7 +168,7 @@ public:
   virtual Part *activePart() const;
 
   /**
-   * Returns the active widget of the current active part (see @ref activePart ).
+   * Returns the active widget of the current active part (see activePart ).
    */
   virtual QWidget *activeWidget() const;
 
@@ -188,7 +188,7 @@ public:
   virtual Part *selectedPart() const;
 
   /**
-   * Returns the selected widget of the current selected part (see @ref selectedPart ).
+   * Returns the selected widget of the current selected part (see selectedPart ).
    */
   virtual QWidget *selectedWidget() const;
 

@@ -132,7 +132,7 @@ public:
     * This field allows you to display a short (no more than
     * 80 characters) extra description in the password prompt
     * dialog.  For example, this field along with the
-    * @ref commentLabel can be used to describe the server that
+    * commentLabel can be used to describe the server that
     * requested the authentication:
     *
     *  \code
@@ -154,7 +154,7 @@ public:
     * comment when prompting the user for password.
     *
     * This setting is @em optional and only applicable when
-    * the @ref #comment field is also set.
+    * the comment field is also set.
     */
    QString commentLabel;
 
@@ -284,7 +284,7 @@ public:
    * @param userealnetrc if true, use $HOME/.netrc fle
    * @param type the type of the login. If null, the @p url's protocol
    *        will be taken
-   * @param mode the @ref LookUpMode flags (ORed) for the query
+   * @param mode the LookUpMode flags (ORed) for the query
    */
   bool lookup( const KURL& url, AutoLogin& login, bool userealnetrc = false,
                QString type = QString::null,

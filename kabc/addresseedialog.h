@@ -32,7 +32,7 @@
 namespace KABC {
 
 /**
-  @short Special ListViewItem, that is used by the @ref AddresseeDialog.
+  @short Special ListViewItem, that is used by the AddresseeDialog.
 */
 class AddresseeItem : public QListViewItem
 {
@@ -71,7 +71,7 @@ class AddresseeItem : public QListViewItem
   @short Dialog for selecting address book entries.
  
   This class provides a dialog for selecting entries from the standard KDE
-  address book. Use the @ref getAddressee() function to open a modal dialog,
+  address book. Use the getAddressee() function to open a modal dialog,
   returning an address book entry.
  
   In the dialog you can select an entry from the list with the mouse or type in

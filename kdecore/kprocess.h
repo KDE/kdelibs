@@ -54,7 +54,7 @@ class KPty;
  * child and the parent process run concurrently.
  *
  * When the child process exits, the KProcess instance
- * corresponding to it emits the Qt signal @ref processExited().
+ * corresponding to it emits the Qt signal processExited().
  * Since this signal is @em not emitted from within a UN*X
  * signal handler, arbitrary function calls can be made.
  *
@@ -65,7 +65,7 @@ class KPty;
  *
  * @li  OwnGroup -- like NotifyOnExit, but the child process is started
  * in an own process group (and an own session, FWIW). The behaviour of
- * @ref kill() changes to killing the whole process group - this makes
+ * kill() changes to killing the whole process group - this makes
  * this mode useful for implementing primitive job management. It can be
  * used to work around broken wrapper scripts that don't propagate signals
  * to the "real" program. However, use this with care, as you disturb the
@@ -107,15 +107,15 @@ class KPty;
  * process or sending data to the child's stdin (For more information,
  * have a look at the documentation of each function):
  *
- * @li @ref writeStdin()
+ * @li writeStdin()
  *  -- Transmit data to the child process' stdin. When all data was sent, the
- * signal @ref wroteStdin() is emitted.
+ * signal wroteStdin() is emitted.
  *
- * @li When data arrives at stdout or stderr, the signal @ref receivedStdout()
- * resp. @ref receivedStderr() is emitted.
+ * @li When data arrives at stdout or stderr, the signal receivedStdout()
+ * resp. receivedStderr() is emitted.
  *
  * @li You can shut down individual communication channels with
- * @ref closeStdin(), @ref closeStdout(), and @ref closeStderr(), resp.
+ * closeStdin(), closeStdout(), and closeStderr(), resp.
  *
  * @author Christian Czezatke e9025461@student.tuwien.ac.at
  *
@@ -136,7 +136,7 @@ public:
    *
    * If @p NoRead is specified in conjunction with @p Stdout,
    * no data is actually read from @p Stdout but only
-   * the signal @ref receivedStdout(int fd, int &len) is emitted.
+   * the signal receivedStdout(int fd, int &len) is emitted.
    */
   enum Communication {
        NoCommunication = 0,
@@ -192,7 +192,7 @@ public:
 
   /**
      @deprecated
-     Use @ref operator<< instead.
+     Use operator<< instead.
 
 	 Sets the executable to be started with this KProcess object.
 	 Returns false if the process is currently running (in that
@@ -239,7 +239,7 @@ public:
 
   /**
    * Clear a command line argument list that has been set by using
-   * @ref operator<<.
+   * operator<<.
   */
   void clearArguments();
 
@@ -248,7 +248,7 @@ public:
    *  For a detailed description of the
    *  various run modes and communication semantics, have a look at the
    *  general description of the KProcess class. Note that if you use
-   *  @ref setUsePty( Stdout | Stderr, <bool> ), you cannot use Stdout | Stderr
+   * setUsePty( Stdout | Stderr, <bool> ), you cannot use Stdout | Stderr
    *  here - instead, use Stdout only to receive the mixed output.
    *
    *  The following problems could cause this function to
@@ -300,7 +300,7 @@ public:
 
   /**
    * @deprecated
-   * Use @ref pid() instead.
+   * Use pid() instead.
    */
   pid_t getPid() const { return pid(); }
 
@@ -336,7 +336,7 @@ public:
    * Returns the exit status of the process.
    *
    * @return the exit status of the process. Note that this value
-   * is not valid if @ref normalExit() returns false.
+   * is not valid if normalExit() returns false.
    */
   int exitStatus() const;
 
@@ -348,24 +348,24 @@ public:
    *
    *     @li The process is not currently running.
    *
-   *     @li Communication to stdin has not been requested in the @ref start() call.
+   *     @li Communication to stdin has not been requested in the start() call.
    *
    *     @li Transmission of data to the child process by a previous call to
-   *        @ref writeStdin() is still in progress.
+   * writeStdin() is still in progress.
    *
    * Please note that the data is sent to the client asynchronously,
    * so when this function returns, the data might not have been
    * processed by the child process.
    *
    * If all the data has been sent to the client, the signal
-   * @ref wroteStdin() will be emitted.
+   * wroteStdin() will be emitted.
    *
-   * Please note that you must not free @p buffer or call @ref writeStdin()
-   * again until either a @ref wroteStdin() signal indicates that the
-   * data has been sent or a @ref processExited() signal shows that
+   * Please note that you must not free @p buffer or call writeStdin()
+   * again until either a wroteStdin() signal indicates that the
+   * data has been sent or a processExited() signal shows that
    * the child process is no longer alive...
    * @param buffer the buffer to write. Do not free or modify it until
-   * you got a @ref wroteStdin() or @ref processExited() signal
+   * you got a wroteStdin() or processExited() signal
    * @return false if an error has occurred
    **/
   bool writeStdin(const char *buffer, int buflen);
@@ -496,7 +496,7 @@ public:
    *
    * @param comm for which stdio handles to use a pty. Note that it is not
    *  allowed to specify Stdout and Stderr at the same time both here and to
-   *  @ref start (there is only one pty, so they cannot be distinguished).
+   * start (there is only one pty, so they cannot be distinguished).
    * @param addUtmp true if a utmp entry should be created for the pty
    * @since 3.2
    */
@@ -504,7 +504,7 @@ public:
 
   /**
    * Obtains the pty object used by this process. The return value is
-   * valid only after @ref setUsePty() was used to associate at least one
+   * valid only after setUsePty() was used to associate at least one
    * standard I/O stream to a pty. The pty is open only while the process
    * is running.
    * @return a pointer to the pty object
@@ -530,7 +530,7 @@ signals:
   /**
    * Emitted after the process has terminated when
    * the process was run in the @p NotifyOnExit  (==default option to
-   * @ref start() ) or the @ref Block mode.
+   * start() ) or the Block mode.
    * @param proc a pointer to the process that has exited
    **/
   void processExited(KProcess *proc);
@@ -541,7 +541,7 @@ signals:
    * been received on stdout.
    *
    * To actually get this signal, the Stdout communication link
-   * has to be turned on in @ref start().
+   * has to be turned on in start().
    *
    * @param proc a pointer to the process that has received the output
    * @param buffer The data received.
@@ -561,7 +561,7 @@ signals:
    * been received on stdout.
    *
    * To actually get this signal, the Stdout communication link
-   * has to be turned on in @ref start() and the
+   * has to be turned on in start() and the
    * NoRead flag must have been passed.
    *
    * You will need to explicitly call resume() after your call to start()
@@ -582,7 +582,7 @@ signals:
    * been received on stderr.
    *
    * To actually get this signal, the Stderr communication link
-   * has to be turned on in @ref start().
+   * has to be turned on in start().
    *
    * You should copy the information contained in @p buffer to your private
    * data structures before returning from the slot.
@@ -595,7 +595,7 @@ signals:
 
   /**
    * Emitted after all the data that has been
-   * specified by a prior call to @ref writeStdin() has actually been
+   * specified by a prior call to writeStdin() has actually been
    * written to the child process.
    * @param proc a pointer to the process
    **/
@@ -606,14 +606,14 @@ protected slots:
 
  /**
   * This slot gets activated when data from the child's stdout arrives.
-  * It usually calls @ref childOutput().
+  * It usually calls childOutput().
   * @param the file descriptor for the output
   */
   void slotChildOutput(int fdno);
 
  /**
   * This slot gets activated when data from the child's stderr arrives.
-  * It usually calls @ref childError().
+  * It usually calls childError().
   * @param the file descriptor for the output
   */
   void slotChildError(int fdno);
@@ -621,7 +621,7 @@ protected slots:
   /**
    * Called when another bulk of data can be sent to the child's
    * stdin. If there is no more data to be sent to stdin currently
-   * available, this function must disable the QSocketNotifier @ref innot.
+   * available, this function must disable the QSocketNotifier innot.
    * @param dummy ignore this argument
    */
   void slotSendData(int dummy);	// KDE 4: remove dummy
@@ -630,7 +630,7 @@ protected:
 
   /**
    * Sets up the environment according to the data passed via
-   * @ref setEnvironment()
+   * setEnvironment()
    */
   void setupEnvironment();
 
@@ -647,7 +647,7 @@ protected:
   /**
    * true if the process is currently running. You should not
    * modify this data member directly from derived classes. Please use
-   * @ref isRunning() for reading the value of this data member since it
+   * isRunning() for reading the value of this data member since it
    * will probably be made private in later versions of KProcess.
    */
   bool runs;
@@ -664,7 +664,7 @@ protected:
   /**
    * The process' exit status as returned by waitpid(). You should not
    * modify the value of this data member from derived classes. You should
-   * rather use @ref exitStatus() than accessing this data member directly
+   * rather use exitStatus() than accessing this data member directly
    * since it will probably be made private in further versions of
    * KProcess.
    */
@@ -679,9 +679,9 @@ protected:
   bool keepPrivs;
 
   /**
-   * This function is called from @ref start() right before a fork() takes
+   * This function is called from start() right before a fork() takes
    * place. According to the @p comm parameter this function has to initialize
-   * the @ref in, @ref out and @ref err data members of KProcess.
+   * the in, out and err data members of KProcess.
    *
    * This function should return 1 if setting the needed communication channels
    * was successful.
@@ -694,11 +694,11 @@ protected:
 
   /**
    * Called right after a (successful) fork() on the parent side. This function
-   * will usually do some communications cleanup, like closing @ref in[0],
-   * @ref out[1] and @ref out[1].
+   * will usually do some communications cleanup, like closing in[0],
+   * out[1] and out[1].
    *
-   * Furthermore, it must also create the QSocketNotifiers @ref innot,
-   * @ref outnot and @ref errnot and connect their Qt signals to the respective
+   * Furthermore, it must also create the QSocketNotifiers innot,
+   * outnot and errnot and connect their Qt signals to the respective
    * KProcess slots.
    *
    * For a more detailed explanation, it is best to have a look at the default
@@ -708,43 +708,43 @@ protected:
 
   /**
    * Called right after a (successful) fork(), but before an exec() on the child
-   * process' side. It usually duplicates the @ref in[0], @ref out[1] and
-   * @ref err[1] file handles to the respective standard I/O handles.
+   * process' side. It usually duplicates the in[0], out[1] and
+   * err[1] file handles to the respective standard I/O handles.
    */
   virtual int commSetupDoneC();
 
 
   /**
    * Immediately called after a successfully started process in NotifyOnExit
-   * mode has exited. This function normally calls @ref commClose()
-   * and emits the @ref processExited() signal.
+   * mode has exited. This function normally calls commClose()
+   * and emits the processExited() signal.
    * @param state the exit code of the process as returned by waitpid()
    */
   virtual void processHasExited(int state);
 
   /**
    * Cleans up the communication links to the child after it has exited.
-   * This function should act upon the values of @ref pid() and @ref runs.
+   * This function should act upon the values of pid() and runs.
    * See the kprocess.cpp source for details.
-   * @li If @ref pid() returns zero, the communication links should be closed
+   * @li If pid() returns zero, the communication links should be closed
    *  only.
-   * @li if @ref pid() returns non-zero and @ref runs is false, all data
+   * @li if pid() returns non-zero and runs is false, all data
    *  immediately available from the communication links should be processed
    *  before closing them.
-   * @li if @ref pid() returns non-zero and @ref runs is true, the communication
+   * @li if pid() returns non-zero and runs is true, the communication
    *  links should be monitored for data until the file handle returned by
    *  KProcessController::theKProcessController->notifierFd() becomes ready
-   *  for reading - when it triggers, @ref runs should be reset to false, and
+   *  for reading - when it triggers, runs should be reset to false, and
    *  the function should be immediately left without closing anything.
    *
    * The previous semantics of this function are forward-compatible, but should
    * be avoided, as they are prone to race conditions and can cause KProcess
    * (and thus the whole program) to lock up under certain circumstances. At the
    * end the function closes the communication links in any case. Additionally
-   * @li if @ref runs is true, the communication links are monitored for data
+   * @li if runs is true, the communication links are monitored for data
    *  until all of them have returned EOF. Note that if any system function is
    *  interrupted (errno == EINTR) the polling loop should be aborted.
-   * @li if @ref runs is false, all data immediately available from the
+   * @li if runs is false, all data immediately available from the
    *  communication links is processed.
    */
   virtual void commClose();
@@ -797,16 +797,16 @@ protected:
   Communication communication;
 
   /**
-   * Called by @ref slotChildOutput() this function copies data arriving from
+   * Called by slotChildOutput() this function copies data arriving from
    * the child process' stdout to the respective buffer and emits the signal
-   * @ref receivedStdout().
+   * receivedStdout().
    */
   int childOutput(int fdno);
 
   /**
-   * Called by @ref slotChildError() this function copies data arriving from
+   * Called by slotChildError() this function copies data arriving from
    * the child process' stderr to the respective buffer and emits the signal
-   * @ref receivedStderr().
+   * receivedStderr().
    */
   int childError(int fdno);
 
@@ -824,7 +824,7 @@ protected:
   int input_total;
 
   /**
-   * @ref KProcessController is a friend of KProcess because it has to have
+   * KProcessController is a friend of KProcess because it has to have
    * access to various data members.
    */
   friend class KProcessController;
@@ -840,9 +840,9 @@ class KShellProcessPrivate;
 /**
 * @obsolete
 *
-* Use KProcess and @ref KProcess::setUseShell(true) instead.
+* Use KProcess and KProcess::setUseShell(true) instead.
 *
-*   @short A class derived from @ref KProcess to start child
+*   @short A class derived from KProcess to start child
 *   	processes through a shell.
 *   @author Christian Czezatke <e9025461@student.tuwien.ac.at>
 *   @version $Id$

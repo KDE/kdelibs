@@ -45,8 +45,8 @@ class KConfigGroup;
  *
  * This class forms the base for all KDE configuration. It is an
  * abstract base class, meaning that you cannot directly instantiate
- * objects of this class. Either use @ref KConfig (for usual KDE
- * configuration) or @ref KSimpleConfig (for special needs as in ksamba), or
+ * objects of this class. Either use KConfig (for usual KDE
+ * configuration) or KSimpleConfig (for special needs as in ksamba), or
  * even KSharedConfig (stores values in shared memory).
  *
  * All configuration entries are key, value pairs.  Each entry also
@@ -90,7 +90,7 @@ public:
    * Specifies the group in which keys will be read and written.
    *
    *  Subsequent
-   * calls to @ref readEntry() and @ref writeEntry() will be aplied only in the
+   * calls to readEntry() and writeEntry() will be aplied only in the
    * activated group.
    *
    * Switch back to the default group by passing a null string.
@@ -464,7 +464,7 @@ public:
   double readDoubleNumEntry( const char *pKey, double nDefault = 0.0 ) const;
 
   /**
-   * Reads a @ref QFont value.
+   * Reads a QFont value.
    *
    * Read the value of an entry specified by @p pKey in the current group
    * and interpret it as a font object.
@@ -477,7 +477,7 @@ public:
   QFont readFontEntry( const QString& pKey, const QFont* pDefault = 0L ) const;
 
   /**
-   * Reads a @ref QFont value.
+   * Reads a QFont value.
    *
    * Read the value of an entry specified by @p pKey in the current group
    * and interpret it as a font object.
@@ -516,10 +516,10 @@ public:
   bool readBoolEntry( const char *pKey, const bool bDefault = false ) const;
 
   /**
-   * Reads a @ref QRect entry.
+   * Reads a QRect entry.
    *
    * Read the value of an entry specified by pKey in the current group
-   * and interpret it as a @ref QRect object.
+   * and interpret it as a QRect object.
    *
    * @param pKey The key to search for
    * @param pDefault A default value (null QRect by default) returned if the
@@ -529,10 +529,10 @@ public:
   QRect readRectEntry( const QString& pKey, const QRect* pDefault = 0L ) const;
 
   /**
-   * Reads a @ref QRect entry.
+   * Reads a QRect entry.
    *
    * Read the value of an entry specified by pKey in the current group
-   * and interpret it as a @ref QRect object.
+   * and interpret it as a QRect object.
    *
    * @param pKey The key to search for
    * @param pDefault A default value (null QRect by default) returned if the
@@ -542,10 +542,10 @@ public:
   QRect readRectEntry( const char *pKey, const QRect* pDefault = 0L ) const;
 
   /**
-   * Reads a @ref QPoint entry.
+   * Reads a QPoint entry.
    *
    * Read the value of an entry specified by @p pKey in the current group
-   * and interpret it as a @ref QPoint object.
+   * and interpret it as a QPoint object.
    *
    * @param pKey The key to search for
    * @param pDefault A default value (null QPoint by default) returned if the
@@ -555,10 +555,10 @@ public:
   QPoint readPointEntry( const QString& pKey, const QPoint* pDefault = 0L ) const;
 
   /**
-   * Reads a @ref QPoint entry.
+   * Reads a QPoint entry.
    *
    * Read the value of an entry specified by @p pKey in the current group
-   * and interpret it as a @ref QPoint object.
+   * and interpret it as a QPoint object.
    *
    * @param pKey The key to search for
    * @param pDefault A default value (null QPoint by default) returned if the
@@ -568,10 +568,10 @@ public:
   QPoint readPointEntry( const char *pKey, const QPoint* pDefault = 0L ) const;
 
   /**
-   * Reads a @ref QSize entry.
+   * Reads a QSize entry.
    *
    * Read the value of an entry specified by @p pKey in the current group
-   * and interpret it as a @ref QSize object.
+   * and interpret it as a QSize object.
    *
    * @param pKey The key to search for
    * @param pDefault A default value (null QSize by default) returned if the
@@ -581,10 +581,10 @@ public:
   QSize readSizeEntry( const QString& pKey, const QSize* pDefault = 0L ) const;
 
   /**
-   * Reads a @ref QSize entry.
+   * Reads a QSize entry.
    *
    * Read the value of an entry specified by @p pKey in the current group
-   * and interpret it as a @ref QSize object.
+   * and interpret it as a QSize object.
    *
    * @param pKey The key to search for
    * @param pDefault A default value (null QSize by default) returned if the
@@ -595,7 +595,7 @@ public:
 
 
   /**
-   * Reads a @ref QColor entry.
+   * Reads a QColor entry.
    *
    * Read the value of an entry specified by @p pKey in the current group
    * and interpret it as a color.
@@ -608,7 +608,7 @@ public:
   QColor readColorEntry( const QString& pKey, const QColor* pDefault = 0L ) const;
 
   /**
-   * Reads a @ref QColor entry.
+   * Reads a QColor entry.
    *
    * Read the value of an entry specified by @p pKey in the current group
    * and interpret it as a color.
@@ -621,13 +621,13 @@ public:
   QColor readColorEntry( const char *pKey, const QColor* pDefault = 0L ) const;
 
   /**
-   * Reads a @ref QDateTime entry.
+   * Reads a QDateTime entry.
    *
    * Read the value of an entry specified by @p pKey in the current group
    * and interpret it as a date and time.
    *
    * @param pKey The key to search for.
-   * @param pDefault A default value (@ref currentDateTime() by default)
+   * @param pDefault A default value ( currentDateTime() by default)
    * returned if the key was not found or if the read value cannot be
    * interpreted.
    * @return The value for this key.
@@ -635,13 +635,13 @@ public:
   QDateTime readDateTimeEntry( const QString& pKey, const QDateTime* pDefault = 0L ) const;
 
   /**
-   * Reads a @ref QDateTime entry.
+   * Reads a QDateTime entry.
    *
    * Read the value of an entry specified by @p pKey in the current group
    * and interpret it as a date and time.
    *
    * @param pKey The key to search for.
-   * @param pDefault A default value (@ref currentDateTime() by default)
+   * @param pDefault A default value ( currentDateTime() by default)
    * returned if the key was not found or if the read value cannot be
    * interpreted.
    * @return The value for this key.
@@ -674,7 +674,7 @@ public:
    * Writes a key/value pair.
    *
    * This is stored in the most specific config file when destroying the
-   * config object or when calling @ref sync().
+   * config object or when calling sync().
    *
    * @param pKey         The key to write.
    * @param pValue       The value to write.
@@ -695,7 +695,7 @@ public:
    * Writes a key/value pair.
    *
    * This is stored in the most specific config file when destroying the
-   * config object or when calling @ref sync().
+   * config object or when calling sync().
    *
    * @param pKey         The key to write.
    * @param pValue       The value to write.
@@ -713,9 +713,9 @@ public:
                       bool bNLS = false );
 
   /**
-   * @ref writeEntry() Overridden to accept a property.
+   * writeEntry() Overridden to accept a property.
    *
-   * Note: Unlike the other @ref writeEntry() functions, the old value is
+   * Note: Unlike the other writeEntry() functions, the old value is
    * _not_ returned here!
    *
    * @param pKey The key to write
@@ -735,9 +735,9 @@ public:
                     bool bPersistent = true, bool bGlobal = false,
                     bool bNLS = false );
   /**
-   * @ref writeEntry() Overridden to accept a property.
+   * writeEntry() Overridden to accept a property.
    *
-   * Note: Unlike the other @ref writeEntry() functions, the old value is
+   * Note: Unlike the other writeEntry() functions, the old value is
    * _not_ returned here!
    *
    * @param pKey The key to write
@@ -758,9 +758,9 @@ public:
                     bool bNLS = false );
 
   /**
-   * @ref writeEntry() overridden to accept a list of strings.
+   * writeEntry() overridden to accept a list of strings.
    *
-   * Note: Unlike the other @ref writeEntry() functions, the old value is
+   * Note: Unlike the other writeEntry() functions, the old value is
    * _not_ returned here!
    *
    * @param pKey The key to write
@@ -779,9 +779,9 @@ public:
   void writeEntry( const QString& pKey, const QStrList &rValue,
 		   char sep = ',', bool bPersistent = true, bool bGlobal = false, bool bNLS = false );
   /**
-   * @ref writeEntry() overridden to accept a list of strings.
+   * writeEntry() overridden to accept a list of strings.
    *
-   * Note: Unlike the other @ref writeEntry() functions, the old value is
+   * Note: Unlike the other writeEntry() functions, the old value is
    * _not_ returned here!
    *
    * @param pKey The key to write
@@ -801,9 +801,9 @@ public:
 		   char sep = ',', bool bPersistent = true, bool bGlobal = false, bool bNLS = false );
 
   /**
-   * @ref writeEntry() overridden to accept a list of strings.
+   * writeEntry() overridden to accept a list of strings.
    *
-   * Note: Unlike the other @ref writeEntry() functions, the old value is
+   * Note: Unlike the other writeEntry() functions, the old value is
    * _not_ returned here!
    *
    * @param pKey The key to write
@@ -822,9 +822,9 @@ public:
   void writeEntry( const QString& pKey, const QStringList &rValue,
 		   char sep = ',', bool bPersistent = true, bool bGlobal = false, bool bNLS = false );
   /**
-   * @ref writeEntry() overridden to accept a list of strings.
+   * writeEntry() overridden to accept a list of strings.
    *
-   * Note: Unlike the other @ref writeEntry() functions, the old value is
+   * Note: Unlike the other writeEntry() functions, the old value is
    * _not_ returned here!
    *
    * @param pKey The key to write
@@ -845,9 +845,9 @@ public:
 
 
  /**
-   * @ref writeEntry() overridden to accept a list of Integers.
+   * writeEntry() overridden to accept a list of Integers.
    *
-   * Note: Unlike the other @ref writeEntry() functions, the old value is
+   * Note: Unlike the other writeEntry() functions, the old value is
    * _not_ returned here!
    *
    * @param pKey The key to write
@@ -866,9 +866,9 @@ public:
   void writeEntry( const QString& pKey, const QValueList<int>& rValue,
 		   bool bPersistent = true, bool bGlobal = false, bool bNLS = false );
  /**
-   * @ref writeEntry() overridden to accept a list of Integers.
+   * writeEntry() overridden to accept a list of Integers.
    *
-   * Note: Unlike the other @ref writeEntry() functions, the old value is
+   * Note: Unlike the other writeEntry() functions, the old value is
    * _not_ returned here!
    *
    * @param pKey The key to write
@@ -891,7 +891,7 @@ public:
    * Write a (key/value) pair.
    *
    * This is stored to the most specific config file when destroying the
-   * config object or when calling @ref sync().
+   * config object or when calling sync().
    *
    *  @param pKey               The key to write.
    *  @param pValue     The value to write.
@@ -912,7 +912,7 @@ public:
    * Write a (key/value) pair.
    *
    * This is stored to the most specific config file when destroying the
-   * config object or when calling @ref sync().
+   * config object or when calling sync().
    *
    *  @param pKey               The key to write.
    *  @param pValue     The value to write.
@@ -1191,7 +1191,7 @@ public:
    * Writes a (key/value) pair.
    * Same as above, but write a color entry.
    *
-   * Note: Unlike the other @ref writeEntry() functions, the old value is
+   * Note: Unlike the other writeEntry() functions, the old value is
    * _not_ returned here!
    *
    * @param pKey The key to write.
@@ -1211,7 +1211,7 @@ public:
    * Writes a (key/value) pair.
    * Same as above, but write a color entry.
    *
-   * Note: Unlike the other @ref writeEntry() functions, the old value is
+   * Note: Unlike the other writeEntry() functions, the old value is
    * _not_ returned here!
    *
    * @param pKey The key to write.
@@ -1232,7 +1232,7 @@ public:
    * Writes a (key/value) pair.
    * Same as above, but writes a date and time entry.
    *
-   * Note: Unlike the other @ref writeEntry() functions, the old value is
+   * Note: Unlike the other writeEntry() functions, the old value is
    * @em not returned here!
    *
    * @param pKey The key to write.
@@ -1252,7 +1252,7 @@ public:
    * Writes a (key/value) pair.
    * Same as above, but writes a date and time entry.
    *
-   * Note: Unlike the other @ref writeEntry() functions, the old value is
+   * Note: Unlike the other writeEntry() functions, the old value is
    * @em not returned here!
    *
    * @param pKey The key to write.
@@ -1274,7 +1274,7 @@ public:
    * Writes a (key/value) pair.
    * Same as above, but writes a rectangle.
    *
-   * Note: Unlike the other @ref writeEntry() functions, the old value is
+   * Note: Unlike the other writeEntry() functions, the old value is
    * _not_ returned here!
    *
    * @param pKey The key to write.
@@ -1294,7 +1294,7 @@ public:
    * Writes a (key/value) pair.
    * Same as above, but writes a rectangle.
    *
-   * Note: Unlike the other @ref writeEntry() functions, the old value is
+   * Note: Unlike the other writeEntry() functions, the old value is
    * _not_ returned here!
    *
    * @param pKey The key to write.
@@ -1315,7 +1315,7 @@ public:
    * Writes a (key/value) pair.
    * Same as above, but writes a point.
    *
-   * Note: Unlike the other @ref writeEntry() functions, the old value is
+   * Note: Unlike the other writeEntry() functions, the old value is
    * _not_ returned here!
    *
    * @param pKey The key to write.
@@ -1335,7 +1335,7 @@ public:
    * Writes a (key/value) pair.
    * Same as above, but writes a point.
    *
-   * Note: Unlike the other @ref writeEntry() functions, the old value is
+   * Note: Unlike the other writeEntry() functions, the old value is
    * _not_ returned here!
    *
    * @param pKey The key to write.
@@ -1356,7 +1356,7 @@ public:
    * Writes a (key/value) pair.
    * Same as above, but writes a size.
    *
-   * Note: Unlike the other @ref writeEntry() functions, the old value is
+   * Note: Unlike the other writeEntry() functions, the old value is
    * _not_ returned here!
    *
    * @param pKey The key to write.
@@ -1376,7 +1376,7 @@ public:
    * Writes a (key/value) pair.
    * Same as above, but writes a size.
    *
-   * Note: Unlike the other @ref writeEntry() functions, the old value is
+   * Note: Unlike the other writeEntry() functions, the old value is
    * _not_ returned here!
    *
    * @param pKey The key to write.
@@ -1398,7 +1398,7 @@ public:
    *
    * It is checked whether the path is located under $HOME. If so the
    * path is written out with the user's home-directory replaced with
-   * $HOME. The path should be read back with @ref readPathEntry()
+   * $HOME. The path should be read back with readPathEntry()
    *
    * @param pKey The key to write.
    * @param path The path to write.
@@ -1418,7 +1418,7 @@ public:
    *
    * It is checked whether the path is located under $HOME. If so the
    * path is written out with the user's home-directory replaced with
-   * $HOME. The path should be read back with @ref readPathEntry()
+   * $HOME. The path should be read back with readPathEntry()
    *
    * @param pKey The key to write.
    * @param path The path to write.
@@ -1435,11 +1435,11 @@ public:
                        bool bNLS = false );
 
   /**
-   * @ref writePathEntry() overridden to accept a list of paths (strings).
+   * writePathEntry() overridden to accept a list of paths (strings).
    *
    * It is checked whether the paths are located under $HOME. If so each of 
    * the paths are written out with the user's home-directory replaced with
-   * $HOME. The paths should be read back with @ref readPathListEntry()
+   * $HOME. The paths should be read back with readPathListEntry()
    *
    * @param pKey The key to write
    * @param rValue The list to write
@@ -1459,11 +1459,11 @@ public:
   void writePathEntry( const QString& pKey, const QStringList &rValue,
 		   char sep = ',', bool bPersistent = true, bool bGlobal = false, bool bNLS = false );
   /**
-   * @ref writePathEntry() overridden to accept a list of paths (strings).
+   * writePathEntry() overridden to accept a list of paths (strings).
    *
    * It is checked whether the paths are located under $HOME. If so each of 
    * the paths are written out with the user's home-directory replaced with
-   * $HOME. The paths should be read back with @ref readPathListEntry()
+   * $HOME. The paths should be read back with readPathListEntry()
    *
    * @param pKey The key to write
    * @param rValue The list to write
@@ -1545,12 +1545,12 @@ public:
    * Mark the config object as "clean," i.e. don't write dirty entries
    * at destruction time. If @p bDeep is false, only the global dirty
    * flag of the KConfig object gets cleared. If you then call
-   * @ref writeEntry() again, the global dirty flag is set again and all
-   * dirty entries will be written at a subsequent @ref sync() call.
+   * writeEntry() again, the global dirty flag is set again and all
+   * dirty entries will be written at a subsequent sync() call.
    *
    * Classes that derive from KConfigBase should override this
    * method and implement storage-specific behavior, as well as
-   * calling the @ref KConfigBase::rollback() explicitly in the initializer.
+   * calling the KConfigBase::rollback() explicitly in the initializer.
    *
    * @param bDeep If true, the dirty flags of all entries are cleared,
    *        as well as the global dirty flag.
@@ -1563,7 +1563,7 @@ public:
    * written to the most specific file available.
    *
    * Asks the back end to flush out all pending writes, and then calls
-   * @ref rollback().  No changes are made if the object has @p readOnly
+   * rollback().  No changes are made if the object has @p readOnly
    * status.
    *
    * You should call this from your destructor in derivative classes.
@@ -1582,7 +1582,7 @@ public:
    * Sets the config object's read-only status.
    *
    * @param _ro If true, the config object will not write out any
-   *        changes to disk even if it is destroyed or @ref sync() is called.
+   *        changes to disk even if it is destroyed or sync() is called.
    *
    */
   virtual void setReadOnly(bool _ro) { bReadOnly = _ro; }
@@ -1624,7 +1624,7 @@ public:
    * appends the default group.
    *
    * Derivative classes should clear any internal data structures and
-   * then simply call @ref parseConfigFiles() when implementing this
+   * then simply call parseConfigFiles() when implementing this
    * method.
    *
    * @see  parseConfigFiles()
@@ -1654,7 +1654,7 @@ public:
   bool entryIsImmutable(const QString &key) const;
 
   /**
-   * Possible return values for @ref getConfigState().
+   * Possible return values for getConfigState().
    *
    * @see  getConfigState()
    */
@@ -1736,7 +1736,7 @@ protected:
   /**
    * Reads the locale and put in the configuration data struct.
    * Note that this should be done in the constructor, but this is not
-   * possible due to some mutual dependencies in @ref KApplication::init()
+   * possible due to some mutual dependencies in KApplication::init()
    */
   void setLocale();
 
@@ -1811,7 +1811,7 @@ protected:
    *
    * @param _key The key to look up  It contains information both on
    *        the group of the key and the entry's key itself.
-   * @return The @ref KEntry value (data) found for the key.  @p KEntry.aValue
+   * @return The KEntry value (data) found for the key.  @p KEntry.aValue
    * will be the null string if nothing was located.
    * @internal
    */
@@ -1863,11 +1863,11 @@ private:
 class KConfigGroupSaverPrivate;
 
 /**
-  * Helper class to facilitate working with @ref KConfig / @ref KSimpleConfig
+  * Helper class to facilitate working with KConfig / KSimpleConfig
   * groups.
   *
   * Careful programmers always set the group of a
-  * @ref KConfig @ref KSimpleConfig object to the group they want to read from
+  * KConfig KSimpleConfig object to the group they want to read from
   * and set it back to the old one of afterwards. This is usually
   * written as:
   * \code

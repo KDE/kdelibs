@@ -365,7 +365,7 @@ public slots:
 signals:
   /**
    * Emit this signal when the user changed anything in the plugin's tabs.
-   * The hosting PropertiesDialog will call @ref applyChanges only if the
+   * The hosting PropertiesDialog will call applyChanges only if the
    * PropsPlugin has emitted this signal before.
    */
   void changed();

@@ -29,8 +29,8 @@ class KURLRequester;
 class KFileDialog;
 /**
  * Dialog in which a user can enter a filename or url. It is a dialog
- * encapsulating @ref KURLRequester. The API is derived from
- * @ref KFileDialog.
+ * encapsulating KURLRequester. The API is derived from
+ * KFileDialog.
  *
  * @short Simple dialog to enter a filename/url.
  * @author Wilco Greven <greven@kde.org>
