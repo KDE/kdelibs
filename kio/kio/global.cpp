@@ -722,7 +722,7 @@ QByteArray KIO::rawErrorDetail(int errorCode, const QString &errorText,
 
     case  KIO::ERR_CYCLIC_LINK:
       errorName = i18n( "Cyclic Link Detected" );
-      description = i18n( "Unix environments are commonly able to link a file or "
+      description = i18n( "UNIX environments are commonly able to link a file or "
         "directory to a separate name and/or location. KDE detected a link or "
         "series of links that results in an infinite loop - i.e., the file was "
         "(perhaps in a roundabout way) linked to itself." );
@@ -743,7 +743,7 @@ QByteArray KIO::rawErrorDetail(int errorCode, const QString &errorText,
 
     case  KIO::ERR_CYCLIC_COPY:
       errorName = i18n( "Cyclic Link Detected During Copy" );
-      description = i18n( "Unix environments are commonly able to link a file or "
+      description = i18n( "UNIX environments are commonly able to link a file or "
         "directory to a separate name and/or location. During the requested copy "
         "operation, KDE detected a link or series of links that results in an "
         "infinite loop - i.e., the file was (perhaps in a roundabout way) linked "

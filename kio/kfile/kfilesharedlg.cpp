@@ -138,7 +138,7 @@ void KFileSharePropsPlugin::init()
                 m_rbUnShare->setChecked(true);
 
             // Some help text
-            QLabel *label = new QLabel( i18n("Sharing this directory makes it available under Linux/Unix (NFS) and Windows (Samba).") , m_widget );
+            QLabel *label = new QLabel( i18n("Sharing this directory makes it available under Linux/UNIX (NFS) and Windows (Samba).") , m_widget );
             label->setAlignment( Qt::AlignAuto | Qt::AlignVCenter | Qt::WordBreak );
             vbox->addWidget( label, 0 );
 

@@ -850,7 +850,7 @@ QString KUnixSocketAddress::pretty() const
 {
   QCString pname = pathname();
   if (pname.isEmpty())
-    return i18n("<empty Unix socket>");
+    return i18n("<empty UNIX socket>");
   return QFile::decodeName(pathname());
 }
 
