@@ -81,22 +81,16 @@
   <xsl:if test="$suppress.navigation = '0'">
     <div class="navfooter">
        <table width="100%" border="0" cellpading="0" cellspacing="0">
-	 <colgroup>
-	   <col width="*"></col><col width="227"></col>
-	 </colgroup>
 	 <tbody>
 	  <tr>
-	   <td class="end" width="100%">
-	     <img src="common/bottom1.png" alt="Bottom" height="59"></img>
+	   <td class="end">
+	     <img src="common/bottom1.png" alt="Bottom" height="59" width="100%"></img>
 	   </td>
-	   <td>
+	   <td width="227">
 	    <a href="http://www.kde.org/">
-	     <img src="common/bottom1.png" alt="KDE Logo" width="227" border="0" height="59"></img>
+	     <img src="common/bottom2.png" alt="KDE Logo" width="227" border="0" height="59"></img>
 	    </a>
 	   </td>
-	  </tr>
-	  <tr>
-	   <td height="50%" colspan="2"><xsl:text>&#160;</xsl:text></td>
 	  </tr>
          </tbody>
 	</table>
@@ -141,6 +135,32 @@
                 <xsl:call-template name="gentext.nav.next"/>
               </a>
             </xsl:if>
+          </td>
+        </tr>
+
+        <tr>
+          <td width="33%" align="left">
+            <xsl:apply-templates select="$prev" mode="title.ref"/>
+            <xsl:text>&#160;</xsl:text>
+          </td>
+          <td width="34%" align="center">
+            <xsl:choose>
+              <xsl:when test="count($up)>0">
+                <a>
+                  <xsl:attribute name="href">
+                    <xsl:call-template name="href.target">
+                      <xsl:with-param name="object" select="$up"/>
+                    </xsl:call-template>
+                  </xsl:attribute>
+                  <xsl:call-template name="gentext.nav.up"/>
+                </a>
+              </xsl:when>
+              <xsl:otherwise>&#160;</xsl:otherwise>
+            </xsl:choose>
+          </td>
+          <td width="33%" align="right">
+            <xsl:text>&#160;</xsl:text>
+            <xsl:apply-templates select="$next" mode="title.ref"/>
           </td>
         </tr>
 
