@@ -68,7 +68,7 @@ class HighContrastStylePlugin : public QStylePlugin
 		}
 };
 
-Q_EXPORT_PLUGIN (HighContrastStylePlugin)
+KDE_Q_EXPORT_PLUGIN (HighContrastStylePlugin)
 // ---------------------------------------------------
 
 
