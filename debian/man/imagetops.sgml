@@ -26,8 +26,8 @@ manpage.1: manpage.sgml
   <!ENTITY dhsection   "<manvolnum>1</manvolnum>">
   <!ENTITY dhemail     "<email>ccheney@debian.org</email>">
   <!ENTITY dhusername  "Chris Cheney">
-  <!ENTITY dhucpackage "<refentrytitle>KDB2HTML</refentrytitle>">
-  <!ENTITY dhpackage   "kdb2html">
+  <!ENTITY dhucpackage "<refentrytitle>IMAGETOPS</refentrytitle>">
+  <!ENTITY dhpackage   "imagetops">
 
   <!ENTITY debian      "<productname>Debian</productname>">
   <!ENTITY gnu         "<acronym>GNU</acronym>">
@@ -56,11 +56,14 @@ manpage.1: manpage.sgml
   <refnamediv>
     <refname>&dhpackage;</refname>
 
-    <refpurpose>deprecated</refpurpose>
+    <refpurpose>Generic Image to PS Filter</refpurpose>
   </refnamediv>
   <refsynopsisdiv>
     <cmdsynopsis>
       <command>&dhpackage;</command>
+
+      <arg><option>-gray<replaceable></replaceable></option></arg>
+      <arg><option><replaceable>filename</replaceable></option></arg>
 
     </cmdsynopsis>
   </refsynopsisdiv>
@@ -70,8 +73,23 @@ manpage.1: manpage.sgml
     <para>This manual page documents briefly the
       <command>&dhpackage;</command> command.</para>
 
-    <para><command>&dhpackage;</command> is deprecated.</para>
+    <para><command>&dhpackage;</command> is a generic image to ps filter.</para>
 
+  </refsect1>
+  <refsect1>
+    <title>OPTIONS</title>
+
+    <para>A summary of options is included below.</para>
+
+    <variablelist>
+      <varlistentry>
+        <term><option>-gray</option>
+        </term>
+        <listitem>
+          <para>Convert image to grayscale.</para>
+        </listitem>
+      </varlistentry>
+    </variablelist>
   </refsect1>
   <refsect1>
     <title>AUTHOR</title>
