@@ -300,15 +300,6 @@ short RenderSubmitButton::baselinePosition( bool f ) const
 
 // -------------------------------------------------------------------------------
 
-RenderImageButton::RenderImageButton(HTMLInputElementImpl *element)
-    : RenderImage(element)
-{
-    // ### support DOMActivate event when clicked
-}
-
-
-// -------------------------------------------------------------------------------
-
 RenderResetButton::RenderResetButton(HTMLInputElementImpl *element)
     : RenderSubmitButton(element)
 {
@@ -321,11 +312,6 @@ QString RenderResetButton::defaultLabel() {
 
 // -------------------------------------------------------------------------------
 
-RenderPushButton::RenderPushButton(HTMLInputElementImpl *element)
-    : RenderSubmitButton(element)
-{
-}
-
 QString RenderPushButton::defaultLabel()
 {
     return QString::null;
@@ -333,19 +319,16 @@ QString RenderPushButton::defaultLabel()
 
 // -------------------------------------------------------------------------------
 
-LineEditWidget::LineEditWidget(QWidget *parent)
-        : KLineEdit(parent)
+LineEditWidget::LineEditWidget(DOM::HTMLInputElementImpl* input, KHTMLView* view, QWidget* parent)
+    : KLineEdit(parent), m_input(input), m_view(view), m_spell(0)
 {
-    m_spell = 0L;
     setMouseTracking(true);
 }
 
 LineEditWidget::~LineEditWidget()
 {
     delete m_spell;
-    m_spell=0L;
 }
-
 
 void LineEditWidget::slotCheckSpelling()
 {
@@ -353,11 +336,8 @@ void LineEditWidget::slotCheckSpelling()
     m_spell = new KSpell( this, i18n( "Spell Checking" ), this, SLOT( slotSpellCheckReady( KSpell *) ), 0, true, true);
 
     connect( m_spell, SIGNAL( death() ),this, SLOT( spellCheckerFinished() ) );
-
     connect( m_spell, SIGNAL( misspelling( const QString &, const QStringList &, unsigned int ) ),this, SLOT( spellCheckerMisspelling( const QString &, const QStringList &, unsigned int ) ) );
-
     connect( m_spell, SIGNAL( corrected( const QString &, const QString &, unsigned int ) ),this, SLOT( spellCheckerCorrected( const QString &, const QString &, unsigned int ) ) );
-
 }
 
 void LineEditWidget::spellCheckerMisspelling( const QString &_text, const QStringList &, unsigned int pos)
@@ -405,15 +385,21 @@ QPopupMenu *LineEditWidget::createPopupMenu()
     connect( popup, SIGNAL( activated( int ) ),
              this, SLOT( extendedMenuActivated( int ) ) );
 
-    popup->insertSeparator();
-    popup->insertItem( i18n("Clear &History"), ClearHistory );
+    if (m_input->autoComplete()) {
+        popup->insertSeparator();
+        int id = popup->insertItem( i18n("Clear &History"), ClearHistory );
+        if (!completionObject())
+            popup->setItemEnabled( id, false);
+    }
 
-    popup->insertSeparator();
+    if (echoMode() == QLineEdit::Normal &&
+        !isReadOnly()) {
+        popup->insertSeparator();
+        int id = popup->insertItem( SmallIcon( "spellcheck" ), i18n( "Check Spelling" ), this, SLOT( slotCheckSpelling() ) );
+        if( text().isEmpty() )
+            popup->setItemEnabled( id, false );
+    }
 
-    int id = popup->insertItem( SmallIcon( "spellcheck" ), i18n( "Check Spelling" ), this, SLOT( slotCheckSpelling() ) );
-
-    if( text().isEmpty() )
-	popup->setItemEnabled( id, false );
     return popup;
 }
 
@@ -422,18 +408,12 @@ void LineEditWidget::extendedMenuActivated( int id)
     switch ( id )
     {
     case ClearHistory:
-        clearMenuHistory();
-        break;
+        m_view->clearCompletionHistory(m_input->name().string());
+        completionObject()->clear();
     default:
         break;
     }
 }
-
-void LineEditWidget::clearMenuHistory()
-{
-    emit clearCompletionHistory();
-}
-
 
 bool LineEditWidget::event( QEvent *e )
 {
@@ -465,12 +445,11 @@ bool LineEditWidget::event( QEvent *e )
 RenderLineEdit::RenderLineEdit(HTMLInputElementImpl *element)
     : RenderFormElement(element)
 {
-    LineEditWidget *edit = new LineEditWidget(view()->viewport());
+    LineEditWidget *edit = new LineEditWidget(element, view(), view()->viewport());
     connect(edit,SIGNAL(returnPressed()), this, SLOT(slotReturnPressed()));
     connect(edit,SIGNAL(textChanged(const QString &)),this,SLOT(slotTextChanged(const QString &)));
     connect(edit,SIGNAL(pressed()), this, SLOT(slotPressed()));
     connect(edit,SIGNAL(released()), this, SLOT(slotReleased()));
-    connect(edit, SIGNAL(clearCompletionHistory()), this, SLOT( slotClearCompletionHistory()));
     if(element->inputType() == HTMLInputElementImpl::PASSWORD)
         edit->setEchoMode( QLineEdit::Password );
 
@@ -490,14 +469,6 @@ void RenderLineEdit::highLightWord( unsigned int length, unsigned int pos )
     LineEditWidget* w = static_cast<LineEditWidget*>(m_widget);
     if ( w )
         w->highLightWord( length, pos );
-}
-
-void RenderLineEdit::slotClearCompletionHistory()
-{
-    if ( element()->autoComplete() ) {
-        view()->clearCompletionHistory(element()->name().string());
-        static_cast<LineEditWidget*>(m_widget)->completionObject()->clear();
-    }
 }
 
 void RenderLineEdit::slotReturnPressed()
@@ -744,7 +715,7 @@ RenderFileButton::RenderFileButton(HTMLInputElementImpl *element)
     // this sucks, it creates a grey background
     QHBox *w = new QHBox(view()->viewport());
 
-    m_edit = new LineEditWidget(w);
+    m_edit = new LineEditWidget(element, view(), w);
 
     connect(m_edit, SIGNAL(returnPressed()), this, SLOT(slotReturnPressed()));
     connect(m_edit, SIGNAL(textChanged(const QString &)),this,SLOT(slotTextChanged(const QString &)));

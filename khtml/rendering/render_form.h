@@ -176,7 +176,8 @@ private:
 class RenderImageButton : public RenderImage
 {
 public:
-    RenderImageButton(DOM::HTMLInputElementImpl *element);
+    RenderImageButton(DOM::HTMLInputElementImpl *element)
+        : RenderImage(element) {}
 
     virtual const char *renderName() const { return "RenderImageButton"; }
 };
@@ -199,7 +200,8 @@ public:
 class RenderPushButton : public RenderSubmitButton
 {
 public:
-    RenderPushButton(DOM::HTMLInputElementImpl *element);
+    RenderPushButton(DOM::HTMLInputElementImpl *element)
+        : RenderSubmitButton(element) {}
 
     virtual QString defaultLabel();
 };
@@ -227,7 +229,6 @@ public:
 public slots:
     void slotReturnPressed();
     void slotTextChanged(const QString &string);
-    void slotClearCompletionHistory();
 protected:
     virtual void handleFocusOut();
 
@@ -241,18 +242,17 @@ class LineEditWidget : public KLineEdit
 {
     Q_OBJECT
 public:
-    LineEditWidget(QWidget *parent);
+    LineEditWidget(DOM::HTMLInputElementImpl* input,
+                   KHTMLView* view, QWidget* parent);
     ~LineEditWidget();
     void highLightWord( unsigned int length, unsigned int pos );
 
 protected:
     virtual bool event( QEvent *e );
-    void clearMenuHistory();
     virtual QPopupMenu *createPopupMenu();
 signals:
     void pressed();
     void released();
-    void clearCompletionHistory();
 private slots:
     void extendedMenuActivated( int id);
     void slotCheckSpelling();
@@ -266,6 +266,8 @@ private:
     enum LineEditMenuID {
         ClearHistory
     };
+    DOM::HTMLInputElementImpl* m_input;
+    KHTMLView* m_view;
     KSpell *m_spell;
 };
 
