@@ -78,6 +78,8 @@ public:
     virtual void detach();
     virtual void layout( );
 
+    virtual void updateFromElement();
+
     QWidget *widget() const { return m_widget; }
     KHTMLView* view() const { return m_view; }
 
