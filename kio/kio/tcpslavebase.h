@@ -351,18 +351,20 @@ protected:
     // Did the user abort (as the reason for connectToHost returning false)
     bool userAborted() const;
 
+protected:
     int m_iSock;
     bool m_bIsSSL;
-    unsigned short int m_iPort, m_iDefaultPort;
+    unsigned short int m_iPort;
+    unsigned short int m_iDefaultPort;
     QCString m_sServiceName;
     FILE *fp;
-
-    class TcpSlaveBasePrivate;
-    TcpSlaveBasePrivate *d;
 
 private:
     bool doSSLHandShake( bool sendError );
 
+private:
+    class TcpSlaveBasePrivate;
+    TcpSlaveBasePrivate *d;
 };
 
 };

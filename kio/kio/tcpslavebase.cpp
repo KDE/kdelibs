@@ -1171,7 +1171,7 @@ bool TCPSlaveBase::doSSLHandShake( bool sendError )
 
     d->status = d->kssl->connect(m_iSock);
     if (d->status < 0) {
-        CloseDescriptor();
+        closeDescriptor();
         if ( sendError )
             error( ERR_COULD_NOT_CONNECT, msgHost);
         return false;
@@ -1182,7 +1182,7 @@ bool TCPSlaveBase::doSSLHandShake( bool sendError )
     int rc = verifyCertificate();
     if ( rc != 1 ) {
         d->status = -1;
-        CloseDescriptor();
+        closeDescriptor();
         if ( sendError )
             error( ERR_COULD_NOT_CONNECT, msgHost);
         return false;
