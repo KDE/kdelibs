@@ -334,39 +334,6 @@ QString whatstr;
   
   connect(cwcb, SIGNAL(activated(int)), SLOT(slotSelectCipher(int)));
 
-  //
-  //  Settings for the EGD
-  //
-  QFrame *eFrame = new QFrame(tabSSL);
-  QVBoxLayout *egrid = new QVBoxLayout(eFrame);
-  mUseEGD = new QCheckBox(i18n("Use EGD"), eFrame);
-  connect(mUseEGD, SIGNAL(clicked()), SLOT(slotUseEGD()));
-  mUseEFile = new QCheckBox(i18n("Use entropy file"), eFrame);
-  connect(mUseEFile, SIGNAL(clicked()), SLOT(slotUseEFile()));
-  grid->addWidget(eFrame, 4, 0);
-  egrid->addWidget(mUseEGD);
-  egrid->addWidget(mUseEFile);
-  QFrame *egdframe = new QFrame(tabSSL);
-  QGridLayout *grid2 = new QGridLayout(egdframe, 2, 2, KDialog::marginHint(),
-                                                       KDialog::spacingHint());
-  mEGDLabel = new QLabel(i18n("Path to EGD:"), egdframe);
-  grid2->addWidget(mEGDLabel, 0, 0);
-  mEGDPath = new KURLRequester(egdframe);
-  grid2->addWidget(mEGDPath, 0, 1);
-  connect(mEGDPath, SIGNAL(textChanged(const QString&)), SLOT(configChanged()));
-  grid->addWidget(egdframe, 4, 1);
-  whatstr = i18n("If selected, OpenSSL will be asked to use the entropy gathering"
-          " daemon (EGD) for initializing the pseudo-random number generator.");
-  QWhatsThis::add(mUseEGD, whatstr);
-  whatstr = i18n("If selected, OpenSSL will be asked to use the given file"
-          " as entropy for initializing the pseudo-random number generator.");
-  QWhatsThis::add(mUseEFile, whatstr);
-  whatstr = i18n("Enter the path to the socket created by the entropy gathering"
-                " daemon (or the entropy file) here.");
-  QWhatsThis::add(mEGDPath, whatstr);
-  whatstr = i18n("Click here to browse for the EGD socket file.");
-  QWhatsThis::add(mEGDPath, whatstr);
-
 
 
 
@@ -416,10 +383,43 @@ QString whatstr;
   oPath->setMode(KFile::Directory);
   oTest = new QPushButton(i18n("&Test"), oInfo);
   connect(oTest, SIGNAL(clicked()), SLOT(slotTestOSSL()));
-  vbox->addStretch();
 
   connect(oPath, SIGNAL(textChanged(const QString&)), SLOT(configChanged()));
 
+  //
+  //  Settings for the EGD
+  //
+  QFrame *eFrame = new QFrame(tabOSSL);
+  QVBoxLayout *egrid = new QVBoxLayout(eFrame);
+  mUseEGD = new QCheckBox(i18n("Use EGD"), eFrame);
+  connect(mUseEGD, SIGNAL(clicked()), SLOT(slotUseEGD()));
+  mUseEFile = new QCheckBox(i18n("Use entropy file"), eFrame);
+  connect(mUseEFile, SIGNAL(clicked()), SLOT(slotUseEFile()));
+  vbox->addWidget(eFrame);
+  egrid->addWidget(mUseEGD);
+  egrid->addWidget(mUseEFile);
+  QFrame *egdframe = new QFrame(tabOSSL);
+  QGridLayout *grid2 = new QGridLayout(egdframe, 2, 2, KDialog::marginHint(),
+                                                       KDialog::spacingHint());
+  mEGDLabel = new QLabel(i18n("Path to EGD:"), egdframe);
+  grid2->addWidget(mEGDLabel, 0, 0);
+  mEGDPath = new KURLRequester(egdframe);
+  grid2->addWidget(mEGDPath, 0, 1);
+  connect(mEGDPath, SIGNAL(textChanged(const QString&)), SLOT(configChanged()));
+  vbox->addWidget(egdframe);
+  whatstr = i18n("If selected, OpenSSL will be asked to use the entropy gathering"
+          " daemon (EGD) for initializing the pseudo-random number generator.");
+  QWhatsThis::add(mUseEGD, whatstr);
+  whatstr = i18n("If selected, OpenSSL will be asked to use the given file"
+          " as entropy for initializing the pseudo-random number generator.");
+  QWhatsThis::add(mUseEFile, whatstr);
+  whatstr = i18n("Enter the path to the socket created by the entropy gathering"
+                " daemon (or the entropy file) here.");
+  QWhatsThis::add(mEGDPath, whatstr);
+  whatstr = i18n("Click here to browse for the EGD socket file.");
+  QWhatsThis::add(mEGDPath, whatstr);
+
+  vbox->addStretch();
 #endif
 
 
