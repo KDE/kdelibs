@@ -36,6 +36,8 @@
 class KJavaEmbedPrivate
 {
 friend class KJavaEmbed;
+public:
+  QPoint lastPos;
 };
 
 QString getQtEventName( QEvent* e )
@@ -249,6 +251,15 @@ bool KJavaEmbed::eventFilter( QObject* o, QEvent* e)
             case QEvent::WindowDeactivate:
     	        break;
 
+            case QEvent::Move:
+               {
+                    QPoint globalPos = mapToGlobal(QPoint(0,0));
+                    if (globalPos != d->lastPos) {
+                        d->lastPos = globalPos;
+                        sendSyntheticConfigureNotifyEvent();
+                    }
+                }                    
+                break;
             default:
                 break;
         }
@@ -396,6 +407,23 @@ KJavaEmbed::KJavaEmbed( QWidget *parent, const char *name, WFlags f )
     setAcceptDrops( TRUE );
 
     window = 0;
+    // we are interested in SubstructureNotify
+    XSelectInput(qt_xdisplay(), winId(),
+                 KeyPressMask | KeyReleaseMask |
+                 ButtonPressMask | ButtonReleaseMask |
+                 KeymapStateMask |
+                 ButtonMotionMask |
+                 PointerMotionMask | // may need this, too
+                 EnterWindowMask | LeaveWindowMask |
+                 FocusChangeMask |
+                 ExposureMask |
+                 StructureNotifyMask |
+                 SubstructureRedirectMask |
+                 SubstructureNotifyMask
+                 );
+
+    topLevelWidget()->installEventFilter( this );
+    qApp->installEventFilter( this );
 }
 
 /*!
@@ -429,7 +457,10 @@ bool  KJavaEmbed::event( QEvent* e)
     switch( e->type() )
     {
         case QEvent::ShowWindowRequest:
-            XMapRaised( qt_xdisplay(), window );
+            if (window != 0) {
+                XMapRaised( qt_xdisplay(), window );
+                QApplication::syncX();
+            }
             break;
 
         default:
@@ -575,11 +606,42 @@ bool KJavaEmbed::x11Event( XEvent* e)
             }
             break;
 
+        case ConfigureRequest:
+            if (e->xconfigurerequest.window == window 
+                && e->xconfigurerequest.value_mask == (CWX|CWY)) 
+            {
+                    sendSyntheticConfigureNotifyEvent();
+            }
+            break;
         default:
 	        break;
     }
 
     return false;
+}
+/*!
+    Internal: Sends an X configure notify event with the coordinates of the
+    current embedder widget.
+*/
+void KJavaEmbed::sendSyntheticConfigureNotifyEvent() {
+    QPoint globalPos = mapToGlobal(QPoint(0,0));
+    if (window) {
+        XConfigureEvent c;
+        memset(&c, 0, sizeof(c));
+        c.type = ConfigureNotify;
+        c.display = qt_xdisplay();
+        c.send_event = True;
+        c.event = window;
+        c.window = winId();
+        c.x = globalPos.x();
+        c.y = globalPos.y();
+        c.width = width();
+        c.height = height();
+        c.border_width = 0;
+        c.above = None;
+        c.override_redirect = 0;
+        XSendEvent( qt_xdisplay(), c.event, TRUE, StructureNotifyMask, (XEvent*)&c );
+    }
 }
 
 /*!

@@ -69,6 +69,7 @@ protected:
     bool focusNextPrevChild( bool next );
 
 private:
+    void sendSyntheticConfigureNotifyEvent();
     WId window;
     KJavaEmbedPrivate* d;
 };
