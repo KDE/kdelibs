@@ -38,7 +38,6 @@
 #include <qptrlist.h>
 #include <qrect.h>
 #include <qapplication.h>
-#include <qdom.h>
 #include <qguardedptr.h>
 
 #include <kmdi/global.h>
@@ -46,6 +45,7 @@
 class QTimer;
 class QPopupMenu;
 class QMenuBar;
+
 #include <kmdi/toolviewaccessor.h>
 
 class QToolButton;
@@ -64,24 +64,17 @@ class MainWindow : public KParts::DockMainWindow
 {
    Q_OBJECT
 
-   friend class KMdiToolViewAccessor;
+   friend class KMDI::ToolViewAccessor;
+
 // attributes
 protected:
-   KMdi::MdiMode           m_mdiMode;
-   QMap<QWidget*,KMdiToolViewAccessor*> *m_pToolViews;
+   KMDI::MdiMode           m_mdiMode;
+   QMap<QWidget*,KMDI::ToolViewAccessor*> *m_pToolViews;
    QPopupMenu              *m_pWindowPopup;
    QPopupMenu              *m_pTaskBarPopup;
-   QPopupMenu              *m_pWindowMenu;
    QPopupMenu              *m_pDockMenu;
    QPopupMenu              *m_pMdiModeMenu;
    QPopupMenu              *m_pPlacingMenu;
-   KMenuBar                *m_pMainMenuBar;
-   QWidget                 *m_centralView;
-
-   QPixmap                 *m_pUndockButtonPixmap;
-   QPixmap                 *m_pMinButtonPixmap;
-   QPixmap                 *m_pRestoreButtonPixmap;
-   QPixmap                 *m_pCloseButtonPixmap;
 
    QToolButton             *m_pUndock;
    QToolButton             *m_pMinimize;
@@ -92,10 +85,9 @@ protected:
    int                     m_oldMainFrmHeight;
    int                     m_oldMainFrmMinHeight;
    int                     m_oldMainFrmMaxHeight;
-   static KMdi::FrameDecor m_frameDecoration;
+   static KMDI::FrameDecor m_frameDecoration;
    bool                    m_bSDIApplication;
    KDockWidget*         m_pDockbaseAreaOfDocumentViews;
-   QDomDocument*           m_pTempDockSession;
    bool                    m_bClearingOfWindowMenuBlocked;
 
    QTimer*                 m_pDragEndTimer;
@@ -115,12 +107,11 @@ private:
 
 // methods
 public:
-   QWidget *centralWidget () { return m_centralView; };
-
    /**
    * Constructor.
    */
    MainWindow( QWidget* parentWidget, const char* name = "", WFlags flags = WType_TopLevel | WDestructiveClose);
+
    /**
    * Destructor.
    */
@@ -131,9 +122,9 @@ public:
    void setManagedDockPositionModeEnabled(bool enabled);
 
    /**
-   * Returns the MDI mode. This can be one of the enumerations KMdi::MdiMode.
+   * Returns the MDI mode. This can be one of the enumerations KMDI::MdiMode.
    */
-   KMdi::MdiMode mdiMode() { return m_mdiMode; };
+   KMDI::MdiMode mdiMode() { return m_mdiMode; };
 
    /**
    * Returns whether this MDI child view is under MDI control (using addWindow() ) or not.
@@ -141,23 +132,10 @@ public:
    enum ExistsAs {DocumentView,ToolView,AnyView};
 
    /**
-   * If there's a main menubar given, it will create the 4 maximize mode buttons there (undock, minimize, restore, close).
-   */
-   virtual void setSysButtonsAtMenuPosition();
-
-   /**
    * Sets an offset value that is used on detachWindow() . The undocked window
    * is visually moved on the desktop by this offset.
    */
    virtual void setUndockPositioningOffset( QPoint offset) { m_undockPositioningOffset = offset; };
-
-   /**
-   * Returns a popup menu that contains the MDI controlled view list.
-   * Additionally, this menu provides some placing actions for these views.
-   * Usually, you insert this popup menu in your main menubar as "Window" menu.
-   */
-   QPopupMenu* windowMenu() const { return m_pWindowMenu; };
-
 
    /**
    * Do nothing when in Toplevel mode
@@ -186,20 +164,14 @@ public slots:
    * Usually called from addWindow() when adding a tool view window. It reparents the given widget
    * as toplevel and stay-on-top on the application's main widget.
    */
-   virtual KMdiToolViewAccessor *addToolWindow( QWidget* pWnd, KDockWidget::DockPosition pos = KDockWidget::DockNone, QWidget* pTargetWnd = 0L, int percent = 50, const QString& tabToolTip = 0, const QString& tabCaption = 0);
+   virtual KMDI::ToolViewAccessor *addToolWindow( QWidget* pWnd, KDockWidget::DockPosition pos = KDockWidget::DockNone, QWidget* pTargetWnd = 0L, int percent = 50, const QString& tabToolTip = 0, const QString& tabCaption = 0);
    virtual void deleteToolWindow( QWidget* pWnd);
-   virtual void deleteToolWindow( KMdiToolViewAccessor *accessor);
+   virtual void deleteToolWindow( KMDI::ToolViewAccessor *accessor);
    /**
     * Using this method you have to use the setWidget method of the access object, and it is very recommendet, that you use
     * the widgetContainer() method for the parent of your newly created widget
     */
-   KMdiToolViewAccessor *createToolWindow();
-
-   /**
-    * Docks all view windows. Toolviews use dockcontainers
-    */
-   void switchToIDEAlMode();
-   void finishIDEAlMode();
+   KMDI::ToolViewAccessor *createToolWindow();
    /**
     * Sets the appearance of the IDEAl mode. See KMultiTabBar styles for the first 3 bits.
     * @deprecated use setToolviewStyle(int flags) instead
@@ -208,15 +180,10 @@ public slots:
    //KDE4: Get rid of the above.
    /**
     * Sets the appearance of the toolview tabs.
-    * @param flags See KMdi::ToolviewStyle.
+    * @param flags See KMDI::ToolviewStyle.
     * @since 3.3
     */
    void setToolviewStyle(int flags);
-
-   /**
-   * Update of the window menu contents.
-   */
-   virtual void fillWindowMenu();
 
 private:
    void setupToolViewsForIDEALMode();
@@ -239,9 +206,6 @@ protected:
 
    void findToolViewsDockedToMain(QPtrList<KDockWidget>* list,KDockWidget::DockPosition dprtmw);
    void dockToolViewsIntoContainers(QPtrList<KDockWidget>& widgetsToReparent,KDockWidget *container);
-   QStringList prepareIdealToTabs(KDockWidget* container);
-   void idealToolViewsToStandardTabs(QStringList widgetNames,KDockWidget::DockPosition pos,int sizee);
-
 
 protected slots: // Protected slots
    signals:
@@ -263,8 +227,6 @@ protected slots: // Protected slots
    void childViewIsDetachedNow(QWidget*);
 
    void collapseOverlapContainers();
-
-   void mdiModeHasBeenChangedTo(KMdi::MdiMode);
 
 public slots:
    void prevToolViewInDock();

@@ -35,16 +35,16 @@
 #define KMDI_CHILDFRM_MIN_WIDTH 130
 
 //----------------------------------------------------------------------------
-/** 
+/**
 * @short A namespace for the KMDI library
 */
-namespace KMdi
+namespace KMDI
 {
    /** extent Qt events
       @see QCustomEvent, QEvent::User
       \code
       bool B_MyWidget::event( QEvent* e) {
-         if( e->type() == QEvent::Type(QEvent::User + int(KMdi::EV_Move))) {
+         if( e->type() == QEvent::Type(QEvent::User + int(KMDI::EV_Move))) {
             ...
          }
          ...
@@ -106,9 +106,9 @@ namespace KMdi
    enum ToolviewStyle {
    /** Show only icons on the toolview tabs. The visible toolviews contain both the icon and text. */
       IconOnly	= 0,
-   /** Show only the text description on the toolview tabs. */       
+   /** Show only the text description on the toolview tabs. */
       TextOnly	= 1,
-   /** Show both the icon and description on the toolview tabs. */      
+   /** Show both the icon and description on the toolview tabs. */
       TextAndIcon = 3
    };
 } //namespace

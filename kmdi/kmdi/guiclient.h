@@ -28,9 +28,10 @@
 
 class KMainWindow;
 class KToolBar;
-class KMdiToolViewAccessor;
+
 namespace KMDI {
   class MainWindow;
+  class ToolViewAccessor;
     }
 class KDockWidget;
 
@@ -44,14 +45,13 @@ public:
     KMDIGUIClient( KMDI::MainWindow *mdiMainFrm, bool showMDIModeAction, const char *name = 0 );
     virtual ~KMDIGUIClient();
 
-    void addToolView(KMdiToolViewAccessor*);
+    void addToolView(KMDI::ToolViewAccessor*);
 
 private slots:
     void clientAdded( KXMLGUIClient *client );
     void setupActions();
-    void changeViewMode(int id);
     void actionDeleted(QObject*);
-    void mdiModeHasBeenChangedTo(KMdi::MdiMode);
+    void mdiModeHasBeenChangedTo(KMDI::MdiMode);
 signals:
     void toggleTop();
     void toggleLeft();
@@ -61,7 +61,7 @@ signals:
 private:
     class KMDIGUIClientPrivate;
     KMDIGUIClientPrivate *d;
-    KMdi::MdiMode m_mdiMode;
+    KMDI::MdiMode m_mdiMode;
 
     QGuardedPtr<KMDI::MainWindow> m_mdiMainFrm;
     QPtrList<KAction> m_toolViewActions;

@@ -36,16 +36,14 @@ namespace KMDIPrivate {
 class KMdiToolViewAccessorPrivate;
 
 namespace KMDI {
-  class MainWindow;
-}
 
+class MainWindow;
 
-class KMdiToolViewAccessor : public QObject
+class ToolViewAccessor : public QObject
 {
    Q_OBJECT
 
-
-       friend class KMDI::MainWindow;
+   friend class KMDI::MainWindow;
    friend class KMDIPrivate::KMDIGUIClient;
 
 private:
@@ -65,10 +63,10 @@ private:
    bool m_bFocusInEventIsPending;
 
 private:
-	KMdiToolViewAccessor( KMDI::MainWindow *parent , QWidget *widgetToWrap, const QString& tabToolTip = 0, const QString& tabCaption = 0);
-	KMdiToolViewAccessor( KMDI::MainWindow *parent);
+	ToolViewAccessor( KMDI::MainWindow *parent , QWidget *widgetToWrap, const QString& tabToolTip = 0, const QString& tabCaption = 0);
+	ToolViewAccessor( KMDI::MainWindow *parent);
 public:
-	~KMdiToolViewAccessor();
+	~ToolViewAccessor();
 	QWidget *wrapperWidget();
 	QWidget *wrappedWidget();
 	void place(KDockWidget::DockPosition pos = KDockWidget::DockNone, QWidget* pTargetWnd = 0L,int percent = 50);
@@ -85,5 +83,6 @@ protected:
 	bool eventFilter(QObject *o, QEvent *e);
 };
 
+}
 
 #endif //_KMDITOOLVIEWACCESSOR_H_

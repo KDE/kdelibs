@@ -35,8 +35,8 @@ public:
 	virtual void insertTab ( QWidget * child, QTab * tab, int index = -1 );
 	virtual void removePage ( QWidget * w );
 
-	KMdi::TabWidgetVisibility tabWidgetVisibility();
-	void setTabWidgetVisibility( KMdi::TabWidgetVisibility );
+	KMDI::TabWidgetVisibility tabWidgetVisibility();
+	void setTabWidgetVisibility( KMDI::TabWidgetVisibility );
 
 private slots:
 	void closeTab(QWidget* w);
@@ -45,7 +45,7 @@ public slots:
 	void updateCaptionInView(QWidget*,const QString&);
 private:
 	void maybeShow();
-	KMdi::TabWidgetVisibility m_visibility;
+	KMDI::TabWidgetVisibility m_visibility;
 };
 
 }

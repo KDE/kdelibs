@@ -18,7 +18,7 @@ namespace KMDI
 
 TabWidget::TabWidget(QWidget* parent, const char* name):KTabWidget(parent,name)
 {
-	m_visibility = KMdi::ShowWhenMoreThanOneTab;
+	m_visibility = KMDI::ShowWhenMoreThanOneTab;
 	tabBar()->hide();
 	setHoverCloseButton(true);
         connect(this, SIGNAL(closeRequest(QWidget*)), this, SLOT(closeTab(QWidget*)));
@@ -86,7 +86,7 @@ void TabWidget::updateCaptionInView( QWidget *w, const QString &caption )
 
 void TabWidget::maybeShow()
 {
-	if ( m_visibility == KMdi::AlwaysShowTabs )
+	if ( m_visibility == KMDI::AlwaysShowTabs )
 	{
 		tabBar()->show();
                 if (cornerWidget())
@@ -98,7 +98,7 @@ void TabWidget::maybeShow()
                 }
 	}
 
-	if ( m_visibility == KMdi::ShowWhenMoreThanOneTab )
+	if ( m_visibility == KMDI::ShowWhenMoreThanOneTab )
 	{
 		if (count()<2) tabBar()->hide();
 		if (count()>1) tabBar()->show();
@@ -111,19 +111,19 @@ void TabWidget::maybeShow()
                 }
 	}
 
-	if ( m_visibility == KMdi::NeverShowTabs )
+	if ( m_visibility == KMDI::NeverShowTabs )
 	{
 		tabBar()->hide();
 	}
 }
 
-void TabWidget::setTabWidgetVisibility( KMdi::TabWidgetVisibility visibility )
+void TabWidget::setTabWidgetVisibility( KMDI::TabWidgetVisibility visibility )
 {
 	m_visibility = visibility;
 	maybeShow();
 }
 
-KMdi::TabWidgetVisibility TabWidget::tabWidgetVisibility( )
+KMDI::TabWidgetVisibility TabWidget::tabWidgetVisibility( )
 {
 	return m_visibility;
 }

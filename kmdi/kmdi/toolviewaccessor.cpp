@@ -30,7 +30,10 @@
 
 #include "toolviewaccessor_p.h"
 
-KMdiToolViewAccessor::KMdiToolViewAccessor( KMDI::MainWindow *parent, QWidget *widgetToWrap, const QString& tabToolTip, const QString& tabCaption)
+namespace KMDI
+{
+
+ToolViewAccessor::ToolViewAccessor( KMDI::MainWindow *parent, QWidget *widgetToWrap, const QString& tabToolTip, const QString& tabCaption)
 : QObject(parent)
 {
 	mdiMainFrm=parent;
@@ -68,32 +71,32 @@ KMdiToolViewAccessor::KMdiToolViewAccessor( KMDI::MainWindow *parent, QWidget *w
 	d->widget->installEventFilter(this);
 }
 
-KMdiToolViewAccessor::KMdiToolViewAccessor( KMDI::MainWindow *parent) {
+ToolViewAccessor::ToolViewAccessor( KMDI::MainWindow *parent) {
 	mdiMainFrm=parent;
 	d=new KMdiToolViewAccessorPrivate();
 }
 
-KMdiToolViewAccessor::~KMdiToolViewAccessor() {
+ToolViewAccessor::~ToolViewAccessor() {
 	if (mdiMainFrm->m_pToolViews)
 		mdiMainFrm->m_pToolViews->remove(d->widget);
 	delete d;
 
 }
 
-QWidget *KMdiToolViewAccessor::wrapperWidget() {
+QWidget *ToolViewAccessor::wrapperWidget() {
 	if (!d->widgetContainer) {
-		d->widgetContainer=mdiMainFrm->createDockWidget( "KMdiToolViewAccessor::null",QPixmap());
+		d->widgetContainer=mdiMainFrm->createDockWidget( "ToolViewAccessor::null",QPixmap());
 		connect(d->widgetContainer,SIGNAL(widgetSet(QWidget*)),this,SLOT(setWidgetToWrap(QWidget*)));
 	}
 	return d->widgetContainer;
 }
 
-QWidget *KMdiToolViewAccessor::wrappedWidget() {
+QWidget *ToolViewAccessor::wrappedWidget() {
 	return d->widget;
 }
 
 
-void KMdiToolViewAccessor::setWidgetToWrap(QWidget *widgetToWrap, const QString& tabToolTip, const QString& tabCaption)
+void ToolViewAccessor::setWidgetToWrap(QWidget *widgetToWrap, const QString& tabToolTip, const QString& tabCaption)
 {
 	Q_ASSERT(!(d->widget));
 	Q_ASSERT(!widgetToWrap->inherits("KDockWidget"));
@@ -143,19 +146,19 @@ void KMdiToolViewAccessor::setWidgetToWrap(QWidget *widgetToWrap, const QString&
 }
 
 
-bool KMdiToolViewAccessor::eventFilter(QObject *o, QEvent *e) {
+bool ToolViewAccessor::eventFilter(QObject *o, QEvent *e) {
 	if (e->type()==QEvent::IconChange) {
 		d->widgetContainer->setPixmap(d->widget->icon()?(*d->widget->icon()):QPixmap());
 	}
 	return false;
 }
 
-void KMdiToolViewAccessor::placeAndShow(KDockWidget::DockPosition pos, QWidget* pTargetWnd ,int percent)
+void ToolViewAccessor::placeAndShow(KDockWidget::DockPosition pos, QWidget* pTargetWnd ,int percent)
 {
 	place(pos,pTargetWnd,percent);
 	show();
 }
-void KMdiToolViewAccessor::place(KDockWidget::DockPosition pos, QWidget* pTargetWnd ,int percent)
+void ToolViewAccessor::place(KDockWidget::DockPosition pos, QWidget* pTargetWnd ,int percent)
 {
     Q_ASSERT(d->widgetContainer);
     if (!d->widgetContainer) return;
@@ -209,15 +212,16 @@ void KMdiToolViewAccessor::place(KDockWidget::DockPosition pos, QWidget* pTarget
     }
 }
 
-void KMdiToolViewAccessor::hide() {
+void ToolViewAccessor::hide() {
 	Q_ASSERT(d->widgetContainer);
 	if (!d->widgetContainer) return;
 	d->widgetContainer->undock();
 }
 
-void KMdiToolViewAccessor::show() {
+void ToolViewAccessor::show() {
 	Q_ASSERT(d->widgetContainer);
 	if (!d->widgetContainer) return;
 	d->widgetContainer->makeDockVisible();
 }
 
+}
