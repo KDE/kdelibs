@@ -966,6 +966,14 @@ bool DCOPClient::findObject(const QCString &remApp, const QCString &remObj,
                             QCString &foundApp, QCString &foundObj,
                             bool useEventLoop)
 {
+    return findObject( remApp, remObj, remFun, data, foundApp, foundObj, useEventLoop, -1 );
+}
+
+bool DCOPClient::findObject(const QCString &remApp, const QCString &remObj,
+                            const QCString &remFun, const QByteArray &data,
+                            QCString &foundApp, QCString &foundObj,
+                            bool useEventLoop, int timeout)
+{
     QCStringList appList;
     QCString app = remApp;
     if (app.isEmpty())
@@ -1001,7 +1009,7 @@ bool DCOPClient::findObject(const QCString &remApp, const QCString &remObj,
         QCString replyType;
         QByteArray replyData;
         if (callInternal((*it), remObj, remFun, data,
-                     replyType, replyData, useEventLoop, DCOPFind))
+                     replyType, replyData, useEventLoop, timeout, DCOPFind))
         {
            if (replyType == "DCOPRef")
            {
@@ -1537,6 +1545,14 @@ bool DCOPClient::call(const QCString &remApp, const QCString &remObjId,
 		      QCString& replyType, QByteArray &replyData,
                       bool useEventLoop)
 {
+    return call( remApp, remObjId, remFun, data, replyType, replyData, useEventLoop, -1 );
+}
+
+bool DCOPClient::call(const QCString &remApp, const QCString &remObjId,
+		      const QCString &remFun, const QByteArray &data,
+		      QCString& replyType, QByteArray &replyData,
+                      bool useEventLoop, int timeout)
+{
     if (remApp.isEmpty())
        return false;
     DCOPClient *localClient = findLocalClient( remApp );
@@ -1547,13 +1563,13 @@ bool DCOPClient::call(const QCString &remApp, const QCString &remObjId,
     }
 
     return callInternal(remApp, remObjId, remFun, data,
-                         replyType, replyData, useEventLoop, DCOPCall);
+                         replyType, replyData, useEventLoop, timeout, DCOPCall);
 }
 
 bool DCOPClient::callInternal(const QCString &remApp, const QCString &remObjId,
 		      const QCString &remFun, const QByteArray &data,
 		      QCString& replyType, QByteArray &replyData,
-                      bool useEventLoop, int minor_opcode)
+                      bool useEventLoop, int timeout, int minor_opcode)
 {
     if ( !isAttached() )
 	return false;
@@ -1596,10 +1612,16 @@ bool DCOPClient::callInternal(const QCString &remApp, const QCString &remObjId,
     Bool readyRet = False;
     IceProcessMessagesStatus s;
 
-    do {
-	if ( useEventLoop && d->notifier ) { // we have a socket notifier and a qApp
+    timeval time_start;
+    if( timeout >= 0 )
+        gettimeofday( &time_start, NULL );
+    for(;;) {
+	bool timed_out = false;
+	if ( d->notifier && ( useEventLoop || timeout >= 0 )) { // we have a socket notifier and a qApp
 
-	    int msecs = 100; // timeout for the GUI refresh
+	    int msecs = useEventLoop
+		? 100  // timeout for the GUI refresh
+		: timeout; // timeout for the whole call
 	    fd_set fds;
 	    struct timeval tv;
 	    FD_ZERO( &fds );
@@ -1607,33 +1629,47 @@ bool DCOPClient::callInternal(const QCString &remApp, const QCString &remObjId,
 	    tv.tv_sec = msecs / 1000;
 	    tv.tv_usec = (msecs % 1000) * 1000;
 	    if ( select( socket() + 1, &fds, 0, 0, &tv ) <= 0 ) {
-		// nothing was available, we got a timeout. Reactivate
-		// the GUI in blocked state.
-		bool old_lock = d->non_blocking_call_lock;
-		if ( !old_lock ) {
-		    d->non_blocking_call_lock = true;
-		    emit blockUserInput( true );
+		if( useEventLoop ) {
+		    // nothing was available, we got a timeout. Reactivate
+		    // the GUI in blocked state.
+		    bool old_lock = d->non_blocking_call_lock;
+		    if ( !old_lock ) {
+		        d->non_blocking_call_lock = true;
+			emit blockUserInput( true );
+		    }
+	    	    qApp->enter_loop();
+		    if ( !old_lock ) {
+			d->non_blocking_call_lock = false;
+			emit blockUserInput( false );
+		    }
 		}
-		qApp->enter_loop();
-		if ( !old_lock ) {
-		    d->non_blocking_call_lock = false;
-		    emit blockUserInput( false );
-		}
+		else
+		    timed_out = true;
 	    }
 	}
         if (!d->iceConn)
             return false;
 
-	// something is available
-	s = IceProcessMessages(d->iceConn, &waitInfo,
-			       &readyRet);
-	if (s == IceProcessMessagesIOError) {
-            detach();
-	    d->currentKey = oldCurrentKey;
-	    return false;
+	if( !timed_out ) { // something is available
+	    s = IceProcessMessages(d->iceConn, &waitInfo,
+				    &readyRet);
+	    if (s == IceProcessMessagesIOError) {
+        	detach();
+		d->currentKey = oldCurrentKey;
+		return false;
+	    }
 	}
-
-    } while (!readyRet);
+    
+	if( readyRet )
+	    break;
+	if( timeout < 0 )
+	    continue;
+	timeval time_now;
+	gettimeofday( &time_now, NULL );
+	if( time_start.tv_sec * 1000000 + time_start.tv_usec + timeout * 1000
+	     < time_now.tv_sec * 1000000 + time_now.tv_usec ) // timeout
+	     break;
+    }
 
     d->currentKey = oldCurrentKey;
     return replyStruct.status == ReplyStruct::Ok;

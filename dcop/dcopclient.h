@@ -289,9 +289,21 @@ class DCOPClient : public QObject
    * @param replyData the data of the reply will be written here
    * @param useEventLoop if true the event loop will be started when
    *         the call blocks too long
+   * @param timeout timeout for the call in miliseconds, or -1 for no timeout
    * @return true if successful, false otherwise
+   *
+   * @since 3.2
+   *
    * @see send()
    */
+  bool call(const QCString &remApp, const QCString &remObj,
+	    const QCString &remFun, const QByteArray &data,
+	    QCString& replyType, QByteArray &replyData,
+	    bool useEventLoop/*=false*/, int timeout/*=-1*/);
+  /**
+   * @deprecated
+   */
+  // KDE4 merge with above
   bool call(const QCString &remApp, const QCString &remObj,
 	    const QCString &remFun, const QByteArray &data,
 	    QCString& replyType, QByteArray &replyData,
@@ -325,10 +337,23 @@ class DCOPClient : public QObject
    * @param foundObj The remote object that matched the criteria.
    * @param useEventLoop if true the event loop will be started when
    *         the call blocks too long
+   * @param timeout timeout for the call in miliseconds, or -1 for no timeout
    * @return true is returned when an object was found for which @p remFun
    *         returned true. If no such object is the function returns false.
+   *
+   * @since 3.2
+   *
    * @see send()
    */
+  bool findObject(const QCString &remApp, const QCString &remObj,
+	    const QCString &remFun, const QByteArray &data,
+	    QCString &foundApp, QCString &foundObj,
+	    bool useEventLoop/*=false*/, int timeout/*=-1*/);
+
+  /**
+   * @deprecated
+   */
+  // KDE4 merge with above
   bool findObject(const QCString &remApp, const QCString &remObj,
 	    const QCString &remFun, const QByteArray &data,
 	    QCString &foundApp, QCString &foundObj,
@@ -720,7 +745,7 @@ private:
   bool callInternal(const QCString &remApp, const QCString &remObj,
 	    const QCString &remFun, const QByteArray &data,
 	    QCString& replyType, QByteArray &replyData,
-	    bool useEventLoop, int minor_opcode);
+	    bool useEventLoop, int timeout, int minor_opcode);
 protected:
   virtual void virtual_hook( int id, void* data );
 private:

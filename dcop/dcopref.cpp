@@ -39,7 +39,14 @@ bool DCOPReply::typeCheck( const char* t )
     return FALSE;
 }
 
+// this has to stay BC too even if private, because it's called from inlines
 DCOPReply DCOPRef::callInternal( const QCString& fun, const QCString& args, const QByteArray& data )
+{
+    return callInternal( fun, args, data, false, -1 );
+}
+
+DCOPReply DCOPRef::callInternal( const QCString& fun, const QCString& args, const QByteArray& data,
+				 bool useEventLoop, int timeout )
 {
     DCOPReply reply;
     if ( isNull() ) {
@@ -60,7 +67,7 @@ DCOPReply DCOPRef::callInternal( const QCString& fun, const QCString& args, cons
 	qWarning( "DCOPRef::call():  no DCOP client or client not attached error" );
 	return reply;
     }
-    dc->call( m_app, m_obj, sig, data, reply.type, reply.data );
+    dc->call( m_app, m_obj, sig, data, reply.type, reply.data, useEventLoop, timeout );
     return reply;
 }
 
