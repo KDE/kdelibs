@@ -69,7 +69,6 @@ union kthemeKey{
 void KThemeBase::readWidgetConfig(int i, KConfig *config, QString *pixnames,
                                   QString *brdnames, bool *loadArray)
 {
-    warning("reading config for %s", widgetEntries[i]);
     if(loadArray[i] == true){
         return; // already been preloaded.
     }
@@ -106,8 +105,6 @@ void KThemeBase::readWidgetConfig(int i, KConfig *config, QString *pixnames,
     int tmp;
     for(tmp = DisArrowUp; tmp <= DisArrowRight; ++tmp){
         if(tmp == i){
-            warning("Comparing %s to %s", widgetEntries[tmp],
-                    widgetEntries[ArrowUp+(tmp-DisArrowUp)]);
             if(config->readEntry("Pixmap", "").isEmpty()){
                 copyWidgetConfig(ArrowUp+(tmp-DisArrowUp), i, pixnames,
                                  brdnames);
@@ -396,8 +393,6 @@ void KThemeBase::generateBorderPix(int i)
 void KThemeBase::copyWidgetConfig(int sourceID, int destID, QString *pixnames,
                                  QString *brdnames)
 {
-    warning("copying config for %s to %s", widgetEntries[sourceID],
-           widgetEntries[destID]);
     scaleHints[destID] = scaleHints[sourceID];
     gradients[destID] = gradients[sourceID];
     blends[destID] = blends[sourceID];
