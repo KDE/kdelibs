@@ -30,14 +30,15 @@ class KFontStructList;
 class KGlobal;
 
 /**
- * @ref KCharsets is a small class for to help you solve some charset
- * related problems.
+ * Charset font and encoder/decoder handling.
  * 
- * It provides an en-/decoder for character entities, and let's you set
- * fonts to a certain charset. This is needed, because Qt's font matching 
- * algorithm gives the font family a higher priority than the charset.
- * For many applications this is not acceptable, since it can totally 
- * obscure the output, in languages which use non iso-8859-1 charsets.
+ * This is needed, because Qt's font matching algorithm gives the font
+ * family a higher priority than the charset.  For many applications
+ * this is not acceptable, since it can totally obscure the output,
+ * in languages which use non iso-8859-1 charsets.
+ *
+ * @author Lars Knoll <knoll@kde.org>
+ * @version $Id$
  */ 
 class KCharsets
 {
