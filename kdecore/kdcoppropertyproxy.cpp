@@ -117,7 +117,7 @@ QValueList<QCString> KDCOPPropertyProxy::functions( QObject *object )
     {
       QCString setName = it.current();
       setName[ 0 ] = toupper( setName[ 0 ] );
-      setName = "bool set" + setName + "(" + metaProp->type() + " " + it.current() + ")";
+      setName = "void set" + setName + "(" + metaProp->type() + " " + it.current() + ")";
       res << setName;
     }
   }
