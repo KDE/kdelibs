@@ -1,3 +1,7 @@
+2003-12-10  Dirk Mueller  <mueller@kde.org>
+
+	* rendering/render_list.cpp: fix toLetter, based on Safari patch.
+
 2003-12-09  Dirk Mueller  <mueller@kde.org>
 
 	* html/html_formimpl.cpp (submit): don't ask over and over again the same question.
