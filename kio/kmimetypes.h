@@ -1,6 +1,7 @@
 #ifndef __kmimetypes_h__
 #define __kmimetypes_h__
 
+#include <sys/types.h>
 #include <sys/stat.h>
 
 #include <qstring.h>
