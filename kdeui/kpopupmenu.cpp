@@ -308,10 +308,11 @@ QPixmap KPopupMenu::titlePixmap(int id) const
 /**
  * This is re-implemented for keyboard navigation.
  */
-void KPopupMenu::closeEvent(QCloseEvent*)
+void KPopupMenu::closeEvent(QCloseEvent*e)
 {
     if (d->shortcuts)
         resetKeyboardVars();
+    QPopupMenu::closeEvent(e);
 }
 
 void KPopupMenu::keyPressEvent(QKeyEvent* e)
