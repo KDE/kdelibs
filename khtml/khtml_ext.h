@@ -63,6 +63,7 @@ public slots:
     void copy();
     void paste();
     void searchProvider();
+    void openSelection();
     void reparseConfiguration();
     void print();
 

@@ -270,6 +270,20 @@ void KHTMLPartBrowserExtension::searchProvider()
     emit m_part->browserExtension()->openURLRequest( data.uri(), args );
 }
 
+void KHTMLPartBrowserExtension::openSelection()
+{
+    if ( m_extensionProxy )
+    {
+        callExtensionProxyMethod( "openSelection()" );
+        return;
+    }
+
+    KParts::URLArgs args;
+    args.frameName = "_blank";
+
+    emit m_part->browserExtension()->openURLRequest( m_part->selectedText(), args );
+}
+
 void KHTMLPartBrowserExtension::paste()
 {
     if ( m_extensionProxy )
@@ -444,6 +458,10 @@ KHTMLPopupGUIClient::KHTMLPopupGUIClient( KHTMLPart *khtml, const QString &doc, 
 
       new KAction( i18n( "Search '%1' at %2" ).arg( selectedText ).arg( name ), icon, 0, d->m_khtml->browserExtension(),
                      SLOT( searchProvider() ), actionCollection(), "searchProvider" );
+
+      if ( selectedText.contains("://") && KURL(selectedText).isValid() )
+         new KAction( i18n( "Open '%1'" ).arg( selectedText ), "window_new", 0, 
+         d->m_khtml->browserExtension(), SLOT( openSelection() ), actionCollection(), "openSelection" );
     }
     else
     {
