@@ -8,16 +8,16 @@
      The default values of the parameter entities is IGNORE. -->
 <![%FDLIS;[
 <!ENTITY FDLISTitles "LISTNING AF TITLER"><!-- keep capitals -->
-<!ENTITY FDLInvariantSections "De Invariante Sektioner er &FDLISTitles;">
+<!ENTITY FDLInvariantSections "De invariante afsnit er &FDLISTitles;">
  ]]>
-<!ENTITY FDLInvariantSections "Ingen Invariante Sektioner">
+<!ENTITY FDLInvariantSections "uden invariante afsnit">
 <![%FDLFCT;[
 <!ENTITY FDLFCTTitles "LIST"><!-- keep capitals -->
 <!ENTITY FDLFrontCoverText "Forsidetekster er &FDLFCTTitles;">
  ]]>
-<!ENTITY FDLFrontCoverText "Ingen forsidetekster">
+<!ENTITY FDLFrontCoverText "uden forsidetekster">
 <![%FDLBCT;[
 <!ENTITY FDLBCTTitles "LIST THEIR TITLES"><!-- keep capitals -->
 <!ENTITY FDLBackCoverText "Bagsidetekster er &FDLBCTTitles;">
  ]]>
-<!ENTITY FDLBackCoverText "Ingen bagsidetekster">
+<!ENTITY FDLBackCoverText "uden bagsidetekster">

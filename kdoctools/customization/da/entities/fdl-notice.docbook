@@ -1,8 +1,8 @@
 <para>Hermed er tilladelse givet til at kopiere videregive og/eller ændre dette
 dokument under betingelserne i GNU Fri Dokumentation Licens,
 Version 1.1 eller en vilkårlig senere version  publiceret af Free Software
-Foundation; med &FDLInvariantSections;, med &FDLFrontCoverText;, og
-med &FDLBackCoverText;.  En kopi af licensen er inkluderet i <xref linkend="gnu-fdl"/>.</para>
+Foundation;  &FDLInvariantSections;, &FDLFrontCoverText;, og
+ &FDLBackCoverText;.  En kopi af licensen er inkluderet i <xref linkend="gnu-fdl"/>.</para>
 <!--
 Local variables:
 mode: sgml
