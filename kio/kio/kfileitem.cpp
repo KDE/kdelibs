@@ -483,9 +483,10 @@ QPixmap KFileItem::pixmap( int _size, int _state ) const
   // See also the relevant code in overlays, which adds the zip overlay.
   if ( mime->name() == "application/x-gzip" && m_url.fileName().right(3) == ".gz" )
   {
-      QString subFileName = m_url.path().left( m_url.path().length() - 3 );
+      KURL sf;
+      sf.setPath( m_url.path().left( m_url.path().length() - 3 ) );
       //kdDebug() << "KFileItem::pixmap subFileName=" << subFileName << endl;
-      mime = KMimeType::findByURL( subFileName, 0, m_bIsLocalURL );
+      mime = KMimeType::findByURL( sf, 0, m_bIsLocalURL );
   }
 
   QPixmap p = mime->pixmap( m_url, KIcon::Desktop, _size, _state );
