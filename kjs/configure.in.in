@@ -17,7 +17,7 @@ AC_CHECK_LIB(m, isnan, [
 AC_DEFUN(AC_CHECK_PCREPOSIX,
 [
   dnl define the configure option that disables pcre
-  AC_ARG_ENABLE(pcre, [  --disable-pcre     don't require libpcre (poor RegExp support in Javascript)],
+  AC_ARG_ENABLE(pcre, [  --disable-pcre          don't require libpcre (poor RegExp support in Javascript)],
       with_pcre=$enableval, with_pcre=yes)
 
  if test "$with_pcre" = "yes"; then
