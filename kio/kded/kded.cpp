@@ -79,9 +79,9 @@ void Kded::build()
   m_pDirWatch = new KDirWatch;
 
   QObject::connect( m_pDirWatch, SIGNAL(dirty(const QString&)),
-	   this, SLOT(update(const QString&)));
+           this, SLOT(update(const QString&)));
   QObject::connect( m_pDirWatch, SIGNAL(deleted(const QString&)),
-	   this, SLOT(dirDeleted(const QString&)));
+           this, SLOT(dirDeleted(const QString&)));
 
   // It is very important to build the servicetype one first
   // Both are registered in KSycoca, no need to keep the pointers
@@ -149,7 +149,7 @@ void Kded::update(const QString& )
 }
 
 bool Kded::process(const QCString &fun, const QByteArray &/*data*/,
-			   QCString &replyType, QByteArray &/*replyData*/)
+                           QCString &replyType, QByteArray &/*replyData*/)
 {
   if (fun == "recreate()") {
     kdDebug() << "got a recreate signal!" << endl;
@@ -275,13 +275,13 @@ int main(int argc, char *argv[])
      KUniqueApplication k( false, false ); // No styles, no GUI
 
      // During startup kdesktop waits for KDED to finish.
-     // Send a databaseChanged signal even if the database hasn't
+     // Send a notifyDatabaseChanged signal even if the database hasn't
      // changed.
      // If the database changed, kbuildsycoca's signal didn't go anywhere
      // anyway, because it was too early, so let's send this signal
      // unconditionnally (David)
      QByteArray data;
-     kapp->dcopClient()->send( "*", "ksycoca", "databaseChanged()", data );
+     kapp->dcopClient()->send( "*", "ksycoca", "notifyDatabaseChanged()", data );
 
      return k.exec(); // keep running
 }

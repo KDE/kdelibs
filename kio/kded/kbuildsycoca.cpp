@@ -129,7 +129,7 @@ void KBuildSycoca::build(KSycocaEntryListList *allEntries)
      myEntryDict *entryDict = entryDictList->first();
      for (KSycocaFactory *factory = m_lstFactories->first();
           factory;
-          factory = m_lstFactories->next(), 
+          factory = m_lstFactories->next(),
           entryDict = entryDictList->next() )
      {
         // For each resource the factory deals with
@@ -149,14 +149,14 @@ void KBuildSycoca::build(KSycocaEntryListList *allEntries)
                 ++it3 )
            {
                // Check if file matches filter
-	       if (res.filter.match(*it3) == -1) continue;
-	
-	       // Check if file is accessible
-	       if (::access(QFile::encodeName(
-		   KGlobal::dirs()->findResource(resource, *it3)), R_OK)) {
-		   kdDebug() << "skipping resource " << *it3 << ", not readable\n";
-		   continue;
-	       }
+               if (res.filter.match(*it3) == -1) continue;
+
+               // Check if file is accessible
+               if (::access(QFile::encodeName(
+                   KGlobal::dirs()->findResource(resource, *it3)), R_OK)) {
+                   kdDebug() << "skipping resource " << *it3 << ", not readable\n";
+                   continue;
+               }
 
                KSycocaEntry* entry = 0;
                if (entryDict)
@@ -164,12 +164,12 @@ void KBuildSycoca::build(KSycocaEntryListList *allEntries)
                    Q_UINT32 timeStamp = 0;
                    struct stat buff;
                    if(::stat(QFile::encodeName(
-		         KGlobal::dirs()->findResource(resource, *it3)), &buff) == 0)
+                         KGlobal::dirs()->findResource(resource, *it3)), &buff) == 0)
                    {
                       timeStamp = (Q_UINT32) buff.st_ctime;
                    }
                    if (!timeStamp || (timeStamp < oldTimestamp))
-                   {    
+                   {
                       // Re-use old entry
                       entry = entryDict->find(*it3);
                    }
@@ -306,7 +306,7 @@ int main(int argc, char **argv)
    //time_t Time1 = time(0);
    KAboutData d(appName, I18N_NOOP("KBuildSycoca"), appVersion,
                 I18N_NOOP("Rebuilds the system configuration cache."),
-		KAboutData::License_GPL, "(c) 1999,2000 David Faure");
+                KAboutData::License_GPL, "(c) 1999,2000 David Faure");
    d.addAuthor("David Faure", I18N_NOOP("Author"), "faure@kde.org");
 
    KCmdLineArgs::init(argc, argv, &d);
@@ -377,7 +377,7 @@ int main(int argc, char **argv)
    {
      // Notify ALL applications that have a ksycoca object, using a broadcast
      QByteArray data;
-     dcopClient->send( "*", "ksycoca", "databaseChanged()", data );
+     dcopClient->send( "*", "ksycoca", "notifyDatabaseChanged()", data );
    }
 }
 

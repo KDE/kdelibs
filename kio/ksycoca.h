@@ -42,6 +42,8 @@ class KSycocaFactoryList;
 class KSycoca : public QObject, public DCOPObject
 {
   Q_OBJECT
+  K_DCOP
+
 protected:
    /**
     * @internal
@@ -62,12 +64,6 @@ public:
    static KSycoca *self();
 
    virtual ~KSycoca();
-
-   /**
-    * slot for receiving kded's signal, when the sycoca file changes
-    */
-   bool process(const QCString &fun, const QByteArray &data,
-                QCString &replyType, QByteArray &replyData);
 
    /**
     * @internal - called by factories in read-only mode
@@ -107,11 +103,17 @@ public:
     */
    static QString determineRelativePath( const QString & _fullpath, const char *_resource );
 
+k_dcop:
+   /**
+    * internal function for receiving kded/kbuildsycoca's signal, when the sycoca file changes
+    */
+   void notifyDatabaseChanged();
+
 signals:
    /**
-	* Connect to this to get notified when the database changes
-	* (Usually apps showing icons do a 'refresh' to take into account the new mimetypes)
-	*/
+        * Connect to this to get notified when the database changes
+        * (Usually apps showing icons do a 'refresh' to take into account the new mimetypes)
+        */
    void databaseChanged();
 
 protected:

@@ -78,8 +78,8 @@ bool KSycoca::openDatabase( bool openDummyIfNotFound )
      m_sycoca_size = database->size();
 #ifdef HAVE_MMAP
      m_sycoca_mmap = (const char *) mmap(0, m_sycoca_size,
-				PROT_READ, MAP_SHARED,
-				database->handle(), 0);
+                                PROT_READ, MAP_SHARED,
+                                database->handle(), 0);
      if (!m_sycoca_mmap)
      {
 #endif
@@ -186,11 +186,9 @@ void KSycoca::addFactory( KSycocaFactory *factory )
    m_lstFactories->append(factory);
 }
 
-bool KSycoca::process(const QCString &fun, const QByteArray &/*data*/,
-                      QCString &replyType, QByteArray &/*replyData*/)
+void KSycoca::notifyDatabaseChanged()
 {
-  if (fun == "databaseChanged()") {
-    //kdDebug(7011) << "got a databaseChanged signal !" << endl;
+    //kdDebug(7011) << "got a notifyDatabaseChanged signal !" << endl;
     // kded tells us the database file changed
     // Close the database and forget all about what we knew
     // The next call to any public method will recreate
@@ -201,13 +199,6 @@ bool KSycoca::process(const QCString &fun, const QByteArray &/*data*/,
 
     // Now notify applications
     emit databaseChanged();
-
-    replyType = "void";
-    return true;
-  } else {
-    kdWarning(7011) << QString("unknown function call to KSycoca::process() : %1").arg(fun) << endl;
-    return false;
-  }
 }
 
 QDataStream * KSycoca::findEntry(int offset, KSycocaType &type)

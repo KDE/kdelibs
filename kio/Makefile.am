@@ -44,7 +44,8 @@ libksycoca_la_SOURCES = \
 	kdirwatch.cpp kurifilter.cpp \
 	kautomount.cpp krun.cpp \
 	kfileitem.cpp kdirlister.cpp kimageio.cpp \
-	yacc.c lex.c kprotocolinfo.cpp kprotocolinfofactory.cpp
+	yacc.c lex.c kprotocolinfo.cpp kprotocolinfofactory.cpp \
+	ksycoca.skel
 
 include_HEADERS = ksycoca.h ksycocaentry.h ksycocatype.h \
         kservicetype.h kmimetype.h kmimemagic.h kservice.h \
