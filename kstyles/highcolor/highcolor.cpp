@@ -8,7 +8,7 @@
  * Drawing routines adapted from the KDE2 HCStyle,
  * Copyright (C) 2000 Daniel M. Duley       <mosfet@kde.org>
  *           (C) 2000 Dirk Mueller          <mueller@kde.org>
- *           (C) 2001 Martijn Klingens      <mklingens@yahoo.com>
+ *           (C) 2001 Martijn Klingens      <klingens@kde.org>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -192,6 +192,8 @@ void HighColorStyle::polish(QWidget* widget)
 		widget->installEventFilter(this);
 	} else if (widget->inherits("QMenuBar") || widget->inherits("QPopupMenu")) {
 		widget->setBackgroundMode(QWidget::NoBackground);
+	} else if (type == HighColor && widget->inherits("QToolBarExtensionWidget")) {
+		widget->installEventFilter(this);
 	}
 
 	KStyle::polish( widget );
@@ -205,6 +207,8 @@ void HighColorStyle::unPolish(QWidget* widget)
 	}
 	else if (widget->inherits("QMenuBar") || widget->inherits("QPopupMenu")) {
 		widget->setBackgroundMode(QWidget::PaletteBackground);
+	} else if (type == HighColor && widget->inherits("QToolBarExtensionWidget")) {
+		widget->removeEventFilter(this);
 	}
 
 	KStyle::unPolish( widget );
@@ -1576,14 +1580,31 @@ void HighColorStyle::drawComplexControl( ComplexControl control,
 					QPixmap pixmap = *(toolbutton->parentWidget()->backgroundPixmap());
 					p->drawTiledPixmap( r, pixmap, toolbutton->pos() );
 				}
-				else if (widget->parent() && widget->parent()->inherits("QToolBar"))
+				else if (widget->parent())
 				{
-					QToolBar* parent = (QToolBar*)widget->parent();
-					QRect pr = parent->rect();
+					if (widget->parent()->inherits("QToolBar"))
+					{
+						QToolBar* parent = (QToolBar*)widget->parent();
+						QRect pr = parent->rect();
 
-					renderGradient( p, r, cg.button(),
+						renderGradient( p, r, cg.button(),
 									parent->orientation() == Qt::Vertical,
 									r.x(), r.y(), pr.width()-2, pr.height()-2);
+					}
+					else if (widget->parent()->inherits("QToolBarExtensionWidget"))
+					{
+						QWidget* parent = (QWidget*)widget->parent();
+						QToolBar* toolbar = (QToolBar*)parent->parent();
+						QRect tr = toolbar->rect();
+
+						if ( toolbar->orientation() == Qt::Horizontal ) {
+							renderGradient( p, r, cg.button(), false, r.x(), r.y(),
+									r.width(), tr.height() );
+						} else {
+							renderGradient( p, r, cg.button(), true, r.x(), r.y(),
+									tr.width(), r.height() );
+						}
+					}
 				}
 			}
 
@@ -1831,6 +1852,8 @@ bool HighColorStyle::eventFilter( QObject *object, QEvent *event )
 	if (KStyle::eventFilter( object, event ))
 		return true;
 
+	QToolBar* toolbar;
+
 	// Handle push button hover effects.
 	QPushButton* button = dynamic_cast<QPushButton*>(object);
 	if ( button )
@@ -1844,6 +1867,27 @@ bool HighColorStyle::eventFilter( QObject *object, QEvent *event )
 				  (object == hoverWidget) ) {
 			hoverWidget = 0L;
 			button->repaint( false );
+		}
+	} else if ( object->parent() &&
+			(toolbar = dynamic_cast<QToolBar*>(object->parent())) )
+	{
+		// We need to override the paint event to draw a 
+		// gradient on a QToolBarExtensionWidget.
+		if ( event->type() == QEvent::Paint ) {
+			QWidget *widget = static_cast<QWidget*>(object);
+			QRect wr = widget->rect(), tr = toolbar->rect();
+			QPainter p( widget );
+			renderGradient(&p, wr, toolbar->colorGroup().button(),
+					toolbar->orientation() == Qt::Vertical,
+					wr.x(), wr.y(), tr.width() - 2, tr.height() - 2);
+			
+			p.setPen( toolbar->colorGroup().dark() );
+			if ( toolbar->orientation() == Qt::Horizontal )
+				p.drawLine( wr.width()-1, 0, wr.width()-1, wr.height()-1 );
+			else
+				p.drawLine( 0, wr.height()-1, wr.width()-1, wr.height()-1 );
+			
+			return true;
 		}
 	}
 	
