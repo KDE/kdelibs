@@ -136,41 +136,41 @@ embed {
 H1 {
 	display: block;
 	font-size: 1.7em;
-	margin: .67__qem auto .67em auto;
+	margin: .67__qem 0 .67em 0;
 	font-weight: bolder;
 }
 
 H2 {
 	display: block;
 	font-size: 1.4em;
-	margin: .83__qem auto .83em auto;
+	margin: .83__qem 0 .83em 0;
 	font-weight: bolder;
 }
 
 H3 {
 	display: block;
 	font-size: 1.17em;
-	margin: 1__qem auto 1em auto;
+	margin: 1__qem 0 1em 0;
 	font-weight: bolder;
 }
 
 H4 {
 	display: block;
-	margin: 1.33__qem auto 1.33em auto;
+	margin: 1.33__qem 0 1.33em 0;
 	font-weight: bolder;
 }
 
 H5 {
 	display: block;
 	font-size: .83em;
-	margin: 1.67__qem auto 1.67em auto;
+	margin: 1.67__qem 0 1.67em 0;
 	font-weight: bolder;
 }
 
 H6 {
 	display: block;
 	font-size: .67em;
-	margin: 2.33__qem auto 2.33em auto;
+	margin: 2.33__qem 0 2.33em 0;
 	font-weight: bolder;
 }
 
