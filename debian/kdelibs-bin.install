@@ -5,6 +5,7 @@ debian/tmp/usr/bin/dcop
 debian/tmp/usr/bin/dcopclient
 debian/tmp/usr/bin/dcopfind
 debian/tmp/usr/bin/dcopobject
+debian/tmp/usr/bin/dcopquit
 debian/tmp/usr/bin/dcopref
 debian/tmp/usr/bin/dcopserver
 debian/tmp/usr/bin/dcopserver_shutdown
