@@ -68,8 +68,11 @@ public:
 
     void setValue(QChar *_s, int _l) {
 	if(v) v->deref();
-        v = new DOMStringImpl(_s, _l);
-        v->ref();
+        if ( _l >= 0 )
+        {
+            v = new DOMStringImpl(_s, _l);
+            v->ref();
+        }
     }
     void setValue( DOMString s ) {
 	if(v) v->deref();
