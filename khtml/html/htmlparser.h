@@ -61,7 +61,6 @@ public:
 
     /**
      * parses one token delivered by the tokenizer
-     * Caution: the parser deletes the token after use!
      */
     void parseToken(khtml::Token *_t);
 
@@ -104,7 +103,7 @@ protected:
     void freeBlock( void);
 
     void createHead();
-    
+
     ushort *forbiddenTag;
 
     /*
