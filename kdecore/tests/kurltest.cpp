@@ -662,6 +662,11 @@ int main(int argc, char *argv[])
   check("user()?", baseURL.user(), "mlc");
   check("pass()?", baseURL.pass(), "usb");
 
+  weird = "ftp://user%40host.com@ftp.host.com/var/www/";
+  check("user()?", weird.user(), "user@host.com" );
+  check("host()?", weird.host(), "ftp.host.com" );
+  check("KURL::upURL()", weird.upURL().url(), "ftp://user%40host.com@ftp.host.com/var/");
+
   printf("\nTest OK !\n");
 }
 
