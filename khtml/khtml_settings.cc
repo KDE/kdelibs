@@ -36,6 +36,7 @@ class KHTMLSettingsPrivate
 {
 public:
     bool m_bChangeCursor : 1;
+    bool m_bBackRightClick : 1;
     bool m_underlineLink : 1;
     bool m_hoverLink : 1;
     bool enforceCharset : 1;
@@ -168,6 +169,13 @@ void KHTMLSettings::init()
 void KHTMLSettings::init( KConfig * config, bool reset )
 {
   QString group_save = config->group();
+  if (reset || config->hasGroup("MainView Settings"))
+  {
+    config->setGroup( "MainView Settings" );
+    if ( reset || config->hasKey( "BackRightClick" ) )
+        d->m_bBackRightClick = config->readBoolEntry( "BackRightClick", false );
+  }
+  
   if (reset || config->hasGroup("HTML Settings"))
   {
     config->setGroup( "HTML Settings" );
@@ -394,6 +402,11 @@ static bool lookup_hostname_policy(const QString& hostname,
 
   // No domain-specific entry, or was dunno: use global setting
   return default_retval;
+}
+
+bool KHTMLSettings::isBackRightClickEnabled()
+{
+  return d->m_bBackRightClick;
 }
 
 bool KHTMLSettings::isJavaEnabled( const QString& hostname )

@@ -72,6 +72,7 @@ using namespace DOM;
 #include <kglobalsettings.h>
 #include <kurldrag.h>
 #include <kapplication.h>
+#include <kparts/browserinterface.h>
 #if !defined(QT_NO_DRAGANDDROP)
 #include <kmultipledrag.h>
 #endif
@@ -166,6 +167,7 @@ void KHTMLPart::init( KHTMLView *view, GUIProfile prof )
   d->m_bSecurityInQuestion = false;
   d->m_paLoadImages = 0;
   d->m_bMousePressed = false;
+  d->m_bRightMousePressed = false;
   d->m_paViewDocument = new KAction( i18n( "View Document Source" ), 0, this, SLOT( slotViewDocumentSource() ), actionCollection(), "viewDocumentSource" );
   d->m_paViewFrame = new KAction( i18n( "View Frame Source" ), 0, this, SLOT( slotViewFrameSource() ), actionCollection(), "viewFrameSource" );
   d->m_paViewInfo = new KAction( i18n( "View Document Information" ), 0, this, SLOT( slotViewPageInfo() ), actionCollection(), "viewPageInfo" );
@@ -204,6 +206,7 @@ void KHTMLPart::init( KHTMLView *view, GUIProfile prof )
       d->m_paSelectAll->setShortcut( KShortcut() ); // avoid clashes
 
   // set the default java(script) flags according to the current host.
+  d->m_bBackRightClick = KHTMLFactory::defaultHTMLSettings()->isBackRightClickEnabled();
   d->m_bJScriptEnabled = KHTMLFactory::defaultHTMLSettings()->isJavaScriptEnabled();
   d->m_bJScriptDebugEnabled = KHTMLFactory::defaultHTMLSettings()->isJavaScriptDebugEnabled();
   d->m_bJavaEnabled = KHTMLFactory::defaultHTMLSettings()->isJavaEnabled();
@@ -3726,6 +3729,7 @@ void KHTMLPart::reparseConfiguration()
   if (d->m_doc)
      d->m_doc->docLoader()->setShowAnimations( settings->showAnimations() );
 
+  d->m_bBackRightClick = settings->isBackRightClickEnabled();
   d->m_bJScriptEnabled = settings->isJavaScriptEnabled(m_url.host());
   d->m_bJScriptDebugEnabled = settings->isJavaScriptDebugEnabled();
   d->m_bJavaEnabled = settings->isJavaEnabled(m_url.host());
@@ -3877,7 +3881,10 @@ void KHTMLPart::khtmlMousePressEvent( khtml::MousePressEvent *event )
 #endif
   }
 
-  if ( _mouse->button() == RightButton )
+  if ( _mouse->button() == RightButton && parentPart() != 0 && d->m_bBackRightClick )
+  {
+    d->m_bRightMousePressed = true;
+  } else if ( _mouse->button() == RightButton )
   {
     popupMenu( d->m_strSelectedURL );
     d->m_strSelectedURL = d->m_strSelectedURLTarget = QString::null;
@@ -3893,6 +3900,12 @@ void KHTMLPart::khtmlMouseMoveEvent( khtml::MouseMoveEvent *event )
   QMouseEvent *_mouse = event->qmouseEvent();
   DOM::Node innerNode = event->innerNode();
 
+  if( d->m_bRightMousePressed && parentPart() != 0 && d->m_bBackRightClick )
+  {
+    popupMenu( d->m_strSelectedURL );
+    d->m_strSelectedURL = d->m_strSelectedURLTarget = QString::null;
+    d->m_bRightMousePressed = false;
+  }
 #ifndef QT_NO_DRAGANDDROP
   if( d->m_bMousePressed && (!d->m_strSelectedURL.isEmpty() || (!innerNode.isNull() && innerNode.elementId() == ID_IMG) ) &&
       ( d->m_dragStartPos - _mouse->pos() ).manhattanLength() > KGlobalSettings::dndEventDelay() &&
@@ -4069,8 +4082,16 @@ void KHTMLPart::khtmlMouseReleaseEvent( khtml::MouseReleaseEvent *event )
   // the mouse is pressed again.
   d->m_bMousePressed = false;
 
-#ifndef QT_NO_CLIPBOARD
   QMouseEvent *_mouse = event->qmouseEvent();
+  if ( _mouse->button() == RightButton && parentPart() != 0 && d->m_bBackRightClick )
+  {
+    d->m_bRightMousePressed = false;
+    KParts::BrowserInterface *tmp_iface = d->m_extension->browserInterface();
+    if( tmp_iface ) {
+      tmp_iface->callMethod( "goHistory(int)", -1 );
+    }
+  } 
+#ifndef QT_NO_CLIPBOARD
   if ((d->m_guiProfile == BrowserViewGUI) && (_mouse->button() == MidButton) && (event->url().isNull()))
   {
     QClipboard *cb = QApplication::clipboard();

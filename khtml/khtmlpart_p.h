@@ -205,6 +205,7 @@ public:
   KJSProxy *m_jscript;
   KLibrary *m_kjs_lib;
   int m_runningScripts;
+  bool m_bBackRightClick :1;
   bool m_bJScriptEnabled :1;
   bool m_bJScriptDebugEnabled :1;
   bool m_bJavaEnabled :1;
@@ -308,6 +309,7 @@ public:
   SubmitForm *m_submitForm;
 
   bool m_bMousePressed;
+  bool m_bRightMousePressed;
   DOM::Node m_mousePressNode; //node under the mouse when the mouse was pressed (set in the mouse handler)
 
   DOM::Node m_selectionStart;

@@ -104,6 +104,8 @@ public:
     // Autoload images
     bool autoLoadImages() const;
 
+    bool isBackRightClickEnabled();
+
     // Java and JavaScript
     bool isJavaEnabled( const QString& hostname = QString::null );
     bool isJavaScriptEnabled( const QString& hostname = QString::null );
