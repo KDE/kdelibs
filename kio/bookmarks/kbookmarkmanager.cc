@@ -215,7 +215,7 @@ bool KBookmarkManager::save( bool toolbarCache ) const
 
 bool KBookmarkManager::saveAs( const QString & filename, bool toolbarCache ) const
 {
-    //kdDebug(7043) << "KBookmarkManager::save " << filename << endl;
+    kdDebug(7043) << "KBookmarkManager::save " << filename << endl;
 
     // Save the bookmark toolbar folder for quick loading 
     // but only when it will actually make things quicker
@@ -343,7 +343,7 @@ void KBookmarkManager::emitChanged( KBookmarkGroup & group )
     save();
 
     // Tell the other processes too
-    //kdDebug(7043) << "KBookmarkManager::emitChanged : broadcasting change " << group.address() << endl;
+    // kdDebug(7043) << "KBookmarkManager::emitChanged : broadcasting change " << group.address() << endl;
     QCString objId( "KBookmarkManager-" );
     objId += m_bookmarksFile.utf8();
     DCOPRef( "*", objId ).send( "notifyChanged", group.address() );
@@ -467,7 +467,7 @@ QValueList<KBookmark> KBookmarkMap::find( const KURL &url ) const
          ? m_bk_map[url.url()] : QValueList<KBookmark>();
 }
 
-void KBookmarkManager::updateAccessMetadata( const QString & url, bool emitSignal )
+bool KBookmarkManager::updateAccessMetadata( const QString & url, bool emitSignal )
 {
     if (!s_bk_map) 
         s_bk_map = new KBookmarkMap(this);
@@ -475,7 +475,7 @@ void KBookmarkManager::updateAccessMetadata( const QString & url, bool emitSigna
     
     QValueList<KBookmark> list = s_bk_map->find(url);
     if ( list.count() == 0 )
-        return;
+        return false;
 
     for ( QValueList<KBookmark>::iterator it = list.begin(); 
           it != list.end(); ++it )
@@ -483,6 +483,8 @@ void KBookmarkManager::updateAccessMetadata( const QString & url, bool emitSigna
    
     if (emitSignal)
         emit notifier().updatedAccessMetadata( path(), url );
+
+    return true;
 }
 
 void KBookmarkManager::updateFavicon( const QString &url, const QString &faviconurl, bool emitSignal )

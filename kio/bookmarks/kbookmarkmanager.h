@@ -97,8 +97,9 @@ public:
      * @param url the viewed url
      * @emitSignal iff true emit KBookmarkNotifier signal
      * @since 3.2
+     * @return true if any metadata was modified (bookmarks file is not saved automatically)
      */
-    void updateAccessMetadata( const QString &url, bool emitSignal = true );
+    bool updateAccessMetadata( const QString &url, bool emitSignal = true );
 
     /*
      * Update favicon url for a given url.
