@@ -4,6 +4,7 @@
 #include <kdebug.h>
 #include <kconfig.h>
 #include <qstrlist.h>
+#include <kwm.h>
 //#include <qobjcoll.h>
 
 // a static pointer (too bad we cannot have static objects in libraries)
@@ -16,6 +17,10 @@ KTopLevelWidget::KTopLevelWidget( const char *name )
     kmainwidget = NULL;
     kstatusbar = NULL;
     borderwidth = 0;
+
+    // set the specified icons
+    KWM::setIcon(winId(), kapp->getIcon());
+    KWM::setMiniIcon(winId(), kapp->getMiniIcon());
 
     kmainwidgetframe = new QFrame( this );
     CHECK_PTR( kmainwidgetframe );
