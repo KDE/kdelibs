@@ -1288,7 +1288,7 @@ void KApplication::parseCommandLine( )
         QString config = QString::fromLocal8Bit(args->getOption("config"));
         setConfigName(config);
     }
-    
+
     if (args->isSet("style"))
     {
 
@@ -1693,6 +1693,17 @@ void KApplication::kdisplaySetPalette()
     QColor link = config->readColorEntry( "linkColor", &blue );
     QColor visitedLink = config->readColorEntry( "visitedLinkColor", &magenta );
 
+
+    /*
+     * WARNING WARNING WARNING
+     *
+     * For reasons I do not understand the code below is duplicated in
+     * kdebase/kcontrol/krdb/krdb.cpp
+     *
+     * If you change it here, change it there as well
+     */
+
+
     int highlightVal, lowlightVal;
     highlightVal = 100 + (2*contrast_+4)*16/10;
     lowlightVal = 100 + (2*contrast_+4)*10;
@@ -1710,6 +1721,7 @@ void KApplication::kdisplaySetPalette()
     else
 	// black fg - use darkgrey disabled fg
 	disfg = Qt::darkGray;
+
 
     QColorGroup disabledgrp(disfg, background,
                             background.light(highlightVal),
@@ -1735,7 +1747,20 @@ void KApplication::kdisplaySetPalette()
     colgrp.setColor(QColorGroup::LinkVisited, visitedLink);
 
     disabledgrp.setColor(QColorGroup::Button, button);
-    disabledgrp.setColor(QColorGroup::ButtonText, buttonText);
+
+    QColor disbtntext = buttonText;
+    disbtntext.hsv( &h, &s, &v );
+    if (v > 128)
+	// dark button, light buttonText - need a darker disabled buttonText
+	disbtntext = disbtntext.dark(lowlightVal);
+    else if (disbtntext != black)
+	// light buttonText, dark button - need a lighter disabled buttonText - but only if !black
+	disbtntext = disbtntext.light(highlightVal);
+    else
+	// black button - use darkgrey disabled buttonText
+	disbtntext = Qt::darkGray;
+
+    disabledgrp.setColor(QColorGroup::ButtonText, disbtntext);
     disabledgrp.setColor(QColorGroup::Midlight, background.light(110));
     disabledgrp.setColor(QColorGroup::Link, link);
     disabledgrp.setColor(QColorGroup::LinkVisited, visitedLink);
