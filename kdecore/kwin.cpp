@@ -43,6 +43,7 @@
 #include <kdatastream.h>
 #include <klocale.h>
 #include <dcopclient.h>
+#include <kstartupinfo.h>
 
 #include <X11/Xlib.h>
 #include <X11/Xatom.h>
@@ -452,21 +453,7 @@ void KWin::deIconifyWindow( WId win, bool animation )
 
 void KWin::appStarted()
 {
-  if (!kapp->dcopClient()->isAttached())
-    kapp->dcopClient()->attach();
-
-  QByteArray params;
-  QDataStream d(params, IO_WriteOnly);
-
-  char * KDE_APP_START_PID = getenv("KDE_APP_START_PID");
-
-  if (NULL != KDE_APP_START_PID)
-    d << pid_t(QString::fromUtf8(KDE_APP_START_PID).toLong());
-  else
-    d << getpid();
-
-  // Argh. Where did clientMapped() go ?
-  kapp->dcopClient()->send("kicker", "TaskbarApplet", "clientDied(pid_t)", params);
+    KStartupInfo::appStarted();
 }
 
 // Fix for --enable-final. This gets defined at the top of this file.

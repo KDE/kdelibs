@@ -60,6 +60,14 @@ class KStartupInfo
             const KStartupInfoData& data );
         static KStartupInfoId currentStartupIdEnv();
         static void resetStartupEnv();
+    /**
+     * Manual notification that the application has started.
+     * If you do not map a (toplevel) window, then startup
+     * notification will not disappear for the application
+     * until a timeout. You can use this as an alternative
+     * method in this case.
+     */
+        static void appStarted();
         enum startup_t { NoMatch, Match, CantDetect };
         startup_t checkStartup( WId w );
         startup_t checkStartup( WId w, KStartupInfoId& id );

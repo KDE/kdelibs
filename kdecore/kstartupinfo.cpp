@@ -303,6 +303,17 @@ bool KStartupInfo::sendFinishX( Display* disp_P, const KStartupInfoId& id_P,
     return KXMessages::broadcastMessageX( disp_P, KDE_STARTUP_INFO, msg );
     }
 
+void KStartupInfo::appStarted()
+    {
+    KStartupInfoId id;
+    if( kapp != NULL ) // KApplication constructor unsets the env. variable
+        id.initId( kapp->startupId());
+    else
+        id = KStartupInfo::currentStartupIdEnv();
+    if( !id.none())
+        KStartupInfo::sendFinish( id );
+    }
+
 KStartupInfo::startup_t KStartupInfo::checkStartup( WId w_P, KStartupInfoId& id_O,
     KStartupInfoData& data_O )
     {

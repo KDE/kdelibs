@@ -206,12 +206,8 @@ public:
     static void deIconifyWindow( WId win, bool animation = true );
 
     /**
-     * Manual notification that a window has mapped. You can use
-     * this to control app-starting notification. Usually, items
-     * appear in kicker's taskbar to show that an application is
-     * starting up. If you do not map a (toplevel) window, then
-     * this notification 'button' will not disappear. You can
-     * use this as an alternative method in this case.
+     * @deprecated
+     * Use @ref KStartupInfo::appStarted
      */
     static void appStarted();
 };
