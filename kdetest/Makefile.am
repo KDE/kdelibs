@@ -37,7 +37,8 @@ check_PROGRAMS = kconfigtest kledlamptest kprogresstest \
 		kgradienttest \
 		kunbalancedgrdtest kcolortest knuminputtest kblendtest \
 		kdualcolortest kpalettetest kmessageboxtest khashtest ktartest \
-		kruntest
+		kruntest kspelltest
+
 
 noinst_HEADERS = \
 		ktabctltest.h kiconloadertestmain.h	\
@@ -102,6 +103,8 @@ kunbalancedgrdtest_SOURCES = kunbalancedgrdtest.cpp
 kblendtest_SOURCES = kblendtest.cpp
 kdualcolortest_SOURCES = kdualcolortest.cpp
 kpalettetest_SOURCES = kpalettetest.cpp
+kspelltest_SOURCES = kspelltest.cpp
+kspelltest_LDADD = $(top_builddir)/kspell/libkspell.la
 ktartest_SOURCES = ktartest.cpp
 ktartest_LDADD = $(LIB_KIO)
 kruntest_SOURCES = kruntest.cpp
