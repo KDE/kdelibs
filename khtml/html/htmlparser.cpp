@@ -300,6 +300,7 @@ void KHTMLParser::parseToken(Token *t)
 
     if(inBody && !headLoaded && !document->headLoaded())
     {
+	printf("enqueunig %d\n", t->id);
 	tokenQueue.enqueue(t);
 	return;
     }
@@ -397,6 +398,8 @@ void KHTMLParser::insertNode(NodeImpl *n)
 	    current = newNode;
 	    if(!block && current->blocking())
 		block = current;
+	    if(n->id() == ID_BODY)
+		document->createSelector();
 	    n->attach(HTMLWidget);
 	    if(current->isInline()) _inline = true;
 	}
@@ -977,7 +980,7 @@ void KHTMLParser::processCloseTag(Token *t)
 	// this one is to get the right style on the body element
 	break;
     case ID_HEAD+ID_CLOSE_TAG:
-	inBody = true;
+	//inBody = true;
 	document->createSelector();
 	break;
     default:

@@ -31,6 +31,7 @@
 
 #include "rendering/render_frames.h"
 #include "css/cssstyleselector.h"
+#include "css/css_stylesheetimpl.h"
 #include "css/cssproperties.h"
 #include "misc/loader.h"
 #include "misc/htmlhashes.h"
@@ -43,10 +44,12 @@ using namespace DOM;
 HTMLBodyElementImpl::HTMLBodyElementImpl(DocumentImpl *doc)
     : HTMLElementImpl(doc)
 {
+    m_style = 0;
 }
 
 HTMLBodyElementImpl::~HTMLBodyElementImpl()
 {
+    delete m_style;
 }
 
 const DOMString HTMLBodyElementImpl::nodeName() const
@@ -73,7 +76,7 @@ void HTMLBodyElementImpl::parseAttribute(Attribute *attr)
     case ATTR_MARGINWIDTH:
     {
 	QString str;
-	str += attr->value().string() += "px";
+	str += attr->value().string() + "px";
         addCSSProperty(CSS_PROP_PADDING_LEFT, str, false);
         addCSSProperty(CSS_PROP_PADDING_RIGHT, str, false);
 	break;	
@@ -81,7 +84,7 @@ void HTMLBodyElementImpl::parseAttribute(Attribute *attr)
     case ATTR_MARGINHEIGHT:
     {
 	QString str;
-	str += attr->value().string() += "px";    
+	str += attr->value().string() + "px";
         addCSSProperty(CSS_PROP_PADDING_TOP, str, false);
         addCSSProperty(CSS_PROP_PADDING_BOTTOM, str, false);
 	break;
@@ -93,6 +96,13 @@ void HTMLBodyElementImpl::parseAttribute(Attribute *attr)
 	addCSSProperty(CSS_PROP_COLOR, attr->value(), false);
 	break;
     case ATTR_LINK:
+    {
+	printf("ATTR_LINK\n");
+	if(!m_style) m_style = new CSSStyleSheetImpl(this);
+	QString aStr = "a[href] { color: " + attr->value().string() + "; }";
+	m_style->parseString(aStr);
+	break;
+    }
     case ATTR_VLINK:
 	// ### has to be added as stylesheet
     case ATTR_ALINK:

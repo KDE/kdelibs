@@ -27,6 +27,7 @@
 #include "css_valueimpl.h"
 #include "csshelper.h"
 #include "html/html_documentimpl.h"
+#include "html/html_baseimpl.h"
 #include "dom/css_rule.h"
 #include "dom/css_value.h"
 using namespace khtml;
@@ -93,7 +94,20 @@ CSSStyleSelector::CSSStyleSelector(HTMLDocumentImpl *doc)
 	}
 	test = test->nextSibling();
     }
+
+    HTMLElementImpl *e = doc->body();
+    if(e && e->id() == ID_BODY)
+    {
+	printf("found body element\n");
+	HTMLBodyElementImpl *body = static_cast<HTMLBodyElementImpl *>(e);
+	if(body->sheet())
+	{
+	    printf("body has style sheet\n");
+	    authorStyle->append(body->sheet());
+	}
+    }
 }
+
 CSSStyleSelector::CSSStyleSelector(StyleSheetImpl *sheet)
 {
     if(!defaultStyle) loadDefaultStyle();

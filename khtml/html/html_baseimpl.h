@@ -31,9 +31,11 @@
 
 class KHTMLView;
 
+
 namespace DOM {
 
 class DOMString;
+    class CSSStyleSheetImpl;
 
 class HTMLBodyElementImpl : public HTMLElementImpl
 {
@@ -49,6 +51,9 @@ public:
 
     virtual void parseAttribute(Attribute *);
 
+    CSSStyleSheetImpl *sheet() const { return m_style; }
+protected:
+    CSSStyleSheetImpl *m_style;
 };
 
 // -------------------------------------------------------------------------
