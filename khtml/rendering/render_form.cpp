@@ -1027,6 +1027,10 @@ void RenderSelect::layout( )
             height = kMax(height, p->height(p->listBox()));
             p = p->next();
         }
+        if ( !height )
+            height = w->fontMetrics().height();
+        if ( !width )
+            width = w->fontMetrics().width( 'x' );
 
         int size = m_size;
         // check if multiple and size was not given or invalid
@@ -1179,8 +1183,8 @@ void RenderSelect::updateSelection()
         // if multi-select, we select only the new selected index
         KListBox *listBox = static_cast<KListBox*>(m_widget);
         for (i = 0; i < int(listItems.size()); i++)
-	listBox->setSelected(i,listItems[i]->id() == ID_OPTION &&
-	                                static_cast<HTMLOptionElementImpl*>(listItems[i])->selected());
+            listBox->setSelected(i,listItems[i]->id() == ID_OPTION &&
+                                 static_cast<HTMLOptionElementImpl*>(listItems[i])->selected());
     }
     else {
         bool found = false;
