@@ -277,6 +277,8 @@ protected:
 
     bool brokenServer;
 
+    bool brokenScript;
+
     // name of an unknown attribute
     QString attrName;
 
