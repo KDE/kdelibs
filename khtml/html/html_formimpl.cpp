@@ -1287,7 +1287,7 @@ void HTMLInputElementImpl::setValue(DOMString val)
 void HTMLInputElementImpl::defaultEventHandler(EventImpl *evt)
 {
     if (evt->isMouseEvent() &&
-        evt->id() == EventImpl::CLICK_EVENT &&
+        ( evt->id() == EventImpl::KHTML_CLICK_EVENT || evt->id() == EventImpl::KHTML_DBLCLICK_EVENT ) &&
         m_type == IMAGE
         && m_render) {
         // record the mouse position for when we get the DOMActivate event
@@ -1303,6 +1303,7 @@ void HTMLInputElementImpl::defaultEventHandler(EventImpl *evt)
             dispatchUIEvent(EventImpl::DOMACTIVATE_EVENT,2);
         else
             dispatchUIEvent(EventImpl::DOMACTIVATE_EVENT,1);
+
 	me->setDefaultHandled();
     }
 
