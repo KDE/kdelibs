@@ -1,3 +1,6 @@
+#ifndef __KDEBUG2_H__
+#define __KDEBUG2_H__
+
 #include <iostream>
 #include <qstring.h>
 #include <kdebug.h>
@@ -50,8 +53,8 @@ class kdbgstream {
     bool print;
 };
 
-kdbgstream &endl( kdbgstream &s) { s << "\n"; return s; }
-kdbgstream &flush( kdbgstream &s) { s.flush(); return s; }
+inline kdbgstream &endl( kdbgstream &s) { s << "\n"; return s; }
+inline kdbgstream &flush( kdbgstream &s) { s.flush(); return s; }
 kdbgstream &perror( kdbgstream &s);
 
 class kndbgstream {
@@ -65,9 +68,9 @@ class kndbgstream {
     kndbgstream& operator<<(KNDBGFUNC) { return *this; }
 };
 
-kndbgstream &endl( kndbgstream & s) { return s; }
-kndbgstream &flush( kndbgstream & s) { return s; }
-kndbgstream &perror( kndbgstream & s) { return s; }
+inline kndbgstream &endl( kndbgstream & s) { return s; }
+inline kndbgstream &flush( kndbgstream & s) { return s; }
+inline kndbgstream &perror( kndbgstream & s) { return s; }
 
 #ifndef NDEBUG
 kdbgstream kdDebug(int area = 0);
@@ -77,3 +80,5 @@ kndbgstream kdDebug(int = 0) { return kndbgstream(); }
 kndbgstream kdDebug(bool , int  = 0) { return kndbgstream(); }
 #endif
 kdbgstream kdError(int area = 0);
+
+#endif
