@@ -60,10 +60,6 @@ public:
   KLocale::MeasureSystem measureSystem;
 };
 
-#if QT_VERSION < 300
-extern void qt_set_locale_codec( QTextCodec *codec );
-#endif
-
 KLocale::KLocale( const QString & catalogue, KConfig * config )
 {
   d = new KLocalePrivate;
@@ -1514,11 +1510,7 @@ void KLocale::initInstance()
     KGlobal::_locale = new KLocale(QString::fromLatin1(app->instanceName()));
 
     // only do this for the global instance
-#if QT_VERSION < 300
-    qt_set_locale_codec(KGlobal::_locale->codecForEncoding());
-#else
     QTextCodec::setCodecForLocale(KGlobal::_locale->codecForEncoding());
-#endif
   }
   else
     kdDebug(173) << "no app name available using KLocale - nothing to do\n";

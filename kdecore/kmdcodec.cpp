@@ -1041,11 +1041,7 @@ void KMD5::transform( Q_UINT8 block[64] )
 
     decode (x, block, 64);
     //memcpy( x, block, 64 );
-#if QT_VERSION < 300
-    ASSERT(!m_finalized);  // not just a user error, since the method is private
-#else
     Q_ASSERT(!m_finalized);  // not just a user error, since the method is private
-#endif
 
     /* Round 1 */
     FF (a, b, c, d, x[ 0], KMD5_S11, 0xd76aa478); /* 1 */

@@ -290,11 +290,7 @@ static void lookupDirectory(const QString& path, const QString &relPart,
       if (fn == _dot || fn == _dotdot || fn.at(fn.length() - 1).latin1() == '~')
 	continue;
 
-#if QT_VERSION < 300
-      if (!recursive && (regexp.match(fn) == -1))
-#else
       if (!recursive && (regexp.search(fn) == -1))
-#endif
 	continue; // No match
 
       QString pathfn = path + fn;
@@ -306,11 +302,7 @@ static void lookupDirectory(const QString& path, const QString &relPart,
 	if ( S_ISDIR( buff.st_mode )) {
 	  lookupDirectory(pathfn + '/', relPart + fn + '/', regexp, list, relList, recursive, uniq);
 	}
-#if QT_VERSION < 300
-	if (regexp.match(fn) == -1)
-#else
         if (regexp.search(fn) == -1)
-#endif
 
 	  continue; // No match
       }
@@ -390,11 +382,7 @@ static void lookupPrefix(const QString& prefix, const QString& relpath,
 		if (fn == "." || fn == ".." || fn.at(fn.length() - 1) == '~')
 		    continue;
 
-#if QT_VERSION < 300
-		if (pathExp.match(fn) == -1)
-#else
 		if (pathExp.search(fn) == -1)
-#endif
 		    continue; // No match
 		QString rfn = relPart+fn;
 		fn = prefix + fn;

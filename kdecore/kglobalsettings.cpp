@@ -282,10 +282,6 @@ QFont KGlobalSettings::generalFont()
     KConfig *c = KGlobal::config();
     KConfigGroupSaver cgs( c, QString::fromLatin1("General") );
     *_generalFont = c->readFontEntry("font", _generalFont);
-#if QT_VERSION < 300
-    if ( c->readEntry("fontCharset","default") == "default" )
-        KGlobal::charsets()->setQFont(*_generalFont, KGlobal::locale()->charset());
-#endif
 
     return *_generalFont;
 }
@@ -302,12 +298,6 @@ QFont KGlobalSettings::fixedFont()
     KConfig *c = KGlobal::config();
     KConfigGroupSaver cgs( c, QString::fromLatin1("General") );
     *_fixedFont = c->readFontEntry("fixed", _fixedFont);
-#if QT_VERSION < 300
-    // Resolve "default" charset. Note that if the charset is anything else,
-    // then calling setQFont is not necessary, the above already sets the charset.
-    if ( c->readEntry("fixedCharset","default") == "default" )
-        KGlobal::charsets()->setQFont(*_fixedFont, KGlobal::locale()->charset());
-#endif
 
     return *_fixedFont;
 }
@@ -324,10 +314,6 @@ QFont KGlobalSettings::toolBarFont()
     KConfig *c = KGlobal::config();
     KConfigGroupSaver cgs( c, QString::fromLatin1("General") );
     *_toolBarFont = c->readFontEntry("toolBarFont", _toolBarFont);
-#if QT_VERSION < 300
-    if ( c->readEntry("toolBarFontCharset","default") == "default" )
-        KGlobal::charsets()->setQFont(*_toolBarFont, KGlobal::locale()->charset());
-#endif
 
     return *_toolBarFont;
 }
@@ -344,10 +330,6 @@ QFont KGlobalSettings::menuFont()
     KConfig *c = KGlobal::config();
     KConfigGroupSaver cgs( c, QString::fromLatin1("General") );
     *_menuFont = c->readFontEntry("menuFont", _menuFont);
-#if QT_VERSION < 300
-    if ( c->readEntry("menuFontCharset","default") == "default" )
-        KGlobal::charsets()->setQFont(*_menuFont, KGlobal::locale()->charset());
-#endif
 
     return *_menuFont;
 }
@@ -364,10 +346,6 @@ QFont KGlobalSettings::windowTitleFont()
     KConfig *c = KGlobal::config();
     KConfigGroupSaver cgs( c, QString::fromLatin1("WM") );
     *_windowTitleFont = c->readFontEntry("activeFont", _windowTitleFont); // inconsistency
-#if QT_VERSION < 300
-    if ( c->readEntry("windowTitleFontCharset","default") == "default" )
-        KGlobal::charsets()->setQFont(*_windowTitleFont, KGlobal::locale()->charset());
-#endif
 
     return *_windowTitleFont;
 }
@@ -384,10 +362,6 @@ QFont KGlobalSettings::taskbarFont()
     KConfig *c = KGlobal::config();
     KConfigGroupSaver cgs( c, QString::fromLatin1("General") );
     *_taskbarFont = c->readFontEntry("taskbarFont", _taskbarFont);
-#if QT_VERSION < 300
-    if ( c->readEntry("taskbarFontCharset","default") == "default" )
-        KGlobal::charsets()->setQFont(*_taskbarFont, KGlobal::locale()->charset());
-#endif
 
     return *_taskbarFont;
 }

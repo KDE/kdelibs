@@ -35,19 +35,7 @@
 
 static QTextCodec * codecForHint( int encoding_hint /* not 0 ! */ )
 {
-#if QT_VERSION < 300
-    // Get the charset name from encoding_hint - but KCharsets doesn't
-    // know about "unicode"
-    QString charsetName =
-        (encoding_hint == QFont::Unicode) ? QString::fromLatin1("utf8") :
-        KGlobal::charsets()->name( (QFont::CharSet) encoding_hint );
-
-    bool ok;
-    QTextCodec * textCodec = KGlobal::charsets()->codecForName( charsetName, ok );
-    return ok ? textCodec : 0L;
-#else
     return QTextCodec::codecForMib( encoding_hint );
-#endif
 }
 
 static QString encode( const QString& segment, bool encode_slash, int encoding_hint )

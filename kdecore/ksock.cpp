@@ -243,13 +243,8 @@ bool KSocket::initSockaddr (ksockaddr_in *server_name, const char *hostname, uns
   if (domain != PF_INET)
     return false;
 
-#if QT_VERSION < 300
-  QList<KAddressInfo> list = KExtendedSocket::lookup(hostname, QString::number(port),
-						     KExtendedSocket::ipv4Socket);
-#else
   QPtrList<KAddressInfo> list = KExtendedSocket::lookup(hostname, QString::number(port),
                                                         KExtendedSocket::ipv4Socket);
-#endif
   list.setAutoDelete(true);
 
   if (list.isEmpty())

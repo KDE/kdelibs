@@ -68,14 +68,6 @@ public:
      */
     QTextCodec *codecForName(const QString &n, bool &ok) const;
 
-#if QT_VERSION < 300
-    /**
-     * overloaded member function. Usually you don't mind getting unicode charsets, so
-     * this method should rarely be needed.
-     */
-    QFont::CharSet charsetForEncoding(const QString &encoding, bool noUnicode = false ) const;
-#endif
-
     /**
      * converts an entity to a character. The string must contain only the
      * entity without the trailing ';'.
@@ -98,25 +90,10 @@ public:
      */
     QString toEntity(const QChar &ch) const;
 
-#if QT_VERSION < 300
     /**
-     * lists all available charsets for a given family.
-     * if family is omitted, it will return all charsets available.
-     *
-     * It is the resonsability of the caller to delete the items in the list.
+     * Lists all available encodings as names.
      */
-    QList<QFont::CharSet> availableCharsets(QString family = QString::null);
-    
-    /**
-     * as above, but returns the names of the charsets
-     */
-    QStringList availableCharsetNames(QString family = QString::null);
-#endif
-
-        /**
-         * Lists all available encodings as names.
-         */
-        QStringList availableEncodingNames();
+    QStringList availableEncodingNames();
 
     /**
      * Lists the available encoding names together with a more descriptive language.
@@ -143,91 +120,6 @@ public:
      */
     QString encodingForName( const QString &descriptiveName );
 	    
-#if QT_VERSION < 300
-    /**
-     * @returns a QFont, which can print the character given, and is closest
-     * to the font given. if no mathing font could be found, the returned font
-     * will have the charset @ref QFont::Any.
-     */
-    QFont fontForChar( const QChar &ch, const QFont &f ) const;
-
-    //FIXME: setQfont without ecnod arg should return charsetforlocale
-    // or unicode...
-
-    /**
-     * @returns all families that have a font in the give charset
-     */
-    QStringList availableFamilies( QFont::CharSet ch );
-    /**
-     * sets the @ref QFont f to the charset given in charset.
-     * Opposed to @ref QFont's setCharset() function, this function will do
-     * it's best to find a font which can display the given charset. It might
-     * change the font's family for this purpose, but care is taken to find
-     * a family which is as close as possible to the font given.
-     */
-    void setQFont(QFont &f, QFont::CharSet charset = QFont::Unicode) const;
-
-    /**
-     * overloaded member function. Provided for convenience.
-     */
-    void setQFont(QFont &f, QString charset) const;
-
-
-    /**
-     * @returns the name of the charset f is set to.
-     */
-    QString name(const QFont &f);
-
-    /**
-     * @returns the name of the Charset c.
-     */
-    QString name(QFont::CharSet c);
-
-    /**
-     * is a font with the given charset available?
-     */
-    bool isAvailable(QFont::CharSet charset);
-    /**
-     * overloaded member function. Provided for convenience.
-     */
-    bool isAvailable(const QString &charset);
-
-    /**
-     * @returns the charset for the locale.
-     */
-    QFont::CharSet charsetForLocale();
-
-    /**
-     * does the given font family have a unicode encoding?
-     */
-    bool hasUnicode(QString family) const;
-    /**
-     * does given font exist with a unicode encoding?
-     */
-    bool hasUnicode(QFont &font) const;
-
-    /**
-     * does the give font support the script given by charset?
-     * This can return tru in two cases: Either the font is in the
-     * right charset  or it is a unicode font containing glyphs to display
-     * this charset.
-     *
-     * There are some exceptions. A 8859-6 font will return false if asked
-     * if it supports the 8859-6 charset, because we need a unicode font
-     * to properly display arabic.
-     */
-    bool supportsScript( const QFont &f, QFont::CharSet charset );
-    
-    enum FixedType { FixedUnknown, Fixed, Proportional };
-    enum WeightType { WeightUnknown, Medium, Bold };
-    enum SlantType { SlantUnknown, Normal, Italic };
-
-public:
-    QString xCharsetName(QFont::CharSet) const;
-    QFont::CharSet nameToID(QString name) const;
-    QFont::CharSet xNameToID(QString name) const;
-#endif
-
 private:
     KCharsetsPrivate *d;
 };

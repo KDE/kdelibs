@@ -680,21 +680,6 @@ QFont KConfigBase::readFontEntry( const char *pKey, const QFont* pDefault ) cons
 
       QString chStr=aValue.mid( nOldIndex+1,
                                 nIndex-nOldIndex-1 );
-#if QT_VERSION < 300
-      bool chOldEntry;
-      QFont::CharSet chId=(QFont::CharSet)aValue.mid( nOldIndex+1,
-                                                      nIndex-nOldIndex-1 ).toUInt(&chOldEntry);
-      if (chOldEntry)
-        aRetFont.setCharSet( chId );
-      else if (kapp) {
-        if (chStr == QString::fromLatin1("default"))
-          if (KGlobal::locale())
-            chStr = KGlobal::locale()->charset();
-          else chStr = "iso-8859-1";
-        KGlobal::charsets()->setQFont(aRetFont,chStr);
-      }
-#endif
-
       // find fifth part (weight)
       nOldIndex = nIndex;
       nIndex = aValue.find( ',', nOldIndex+1 );

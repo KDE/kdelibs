@@ -285,14 +285,9 @@ public:
 		QWidget *w = static_cast<QWidget *>(o);
 		if ( w->inherits( "QMenuBar" ) )
 		    mbar = static_cast<QMenuBar *>(w);
-#if QT_VERSION < 300
-		const QMetaProperty* text = w->metaObject()->property( "text", TRUE );
-		const QMetaProperty* title = w->metaObject()->property( "title", TRUE );
-#else
 		QMetaObject *mo = w->metaObject();
 		const QMetaProperty* text = mo->property( mo->findProperty( "text", TRUE ), TRUE );
 		const QMetaProperty* title = mo->property( mo->findProperty( "title", TRUE ), TRUE );
-#endif
 		if ( text )
 		    findAccel( w->className(), w->property( "text" ).toString(), accels );
 		if ( title )

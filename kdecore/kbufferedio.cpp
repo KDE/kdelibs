@@ -128,11 +128,7 @@ bool KBufferedIO::canReadLine() const
   QByteArray* buf;
 
   // scan each QByteArray for the occurence of '\n'
-#if QT_VERSION < 300
-  QList<QByteArray> &buflist = ((KBufferedIO*)this)->inBuf;
-#else
   QPtrList<QByteArray> &buflist = ((KBufferedIO*)this)->inBuf;
-#endif
   buf = buflist.first();
   char *p = buf->data() + inBufIndex;
   while (buf != NULL)

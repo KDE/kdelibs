@@ -1526,11 +1526,7 @@ void KExtendedSocket::flush()
 }
 
 
-#if QT_VERSION < 300
-int KExtendedSocket::readBlock(char *data, uint maxlen)
-#else
 Q_LONG KExtendedSocket::readBlock(char *data, Q_ULONG maxlen)
-#endif
 {
   cleanError();
   if (m_status < connected || m_flags & passiveSocket)
@@ -1573,11 +1569,7 @@ Q_LONG KExtendedSocket::readBlock(char *data, Q_ULONG maxlen)
   return retval;
 }
 
-#if QT_VERSION < 300
-int KExtendedSocket::writeBlock(const char *data, uint len)
-#else
 Q_LONG KExtendedSocket::writeBlock(const char *data, Q_ULONG len)
-#endif
 {
   cleanError();
   if (m_status < connected || m_status >= closing || m_flags & passiveSocket)
@@ -2074,22 +2066,13 @@ int KExtendedSocket::resolve(KSocketAddress *sock, QString &host, QString &port,
   return resolve(sock->data, sock->datasize, host, port, flags);
 }
 
-#if QT_VERSION < 300
-QList<KAddressInfo> KExtendedSocket::lookup(const QString& host, const QString& port,
-					    int flags, int *error)
-#else
 QPtrList<KAddressInfo> KExtendedSocket::lookup(const QString& host, const QString& port,
 					    int flags, int *error)
-#endif
 {
   int err;
   addrinfo hint, *p;
   kde_addrinfo *res;
-#if QT_VERSION < 300
-  QList<KAddressInfo> l;
-#else
   QPtrList<KAddressInfo> l;
-#endif
 
   memset(&hint, 0, sizeof(hint));
   if (!process_flags(flags, hint))
