@@ -125,7 +125,11 @@ QString KXMLGUIFactory::readConfigFile( const QString &filename, bool never_null
     }
 
     QByteArray buffer(file.readAll());
-    return QString::fromUtf8(buffer.data(), buffer.size());
+    // Null-terminate, because QString::fromUtf8 will call strlen
+    uint sz = buffer.size();
+    buffer.resize( sz + 1 );
+    buffer[ sz ] = '\0';
+    return QString::fromUtf8(buffer.data(), sz);
 }
 
 bool KXMLGUIFactory::saveConfigFile( const QDomDocument& doc,
