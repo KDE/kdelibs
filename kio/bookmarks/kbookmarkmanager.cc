@@ -284,15 +284,17 @@ bool KBookmarkManager::saveAs( const QString & filename, bool toolbarCache ) con
 
     static int hadSaveError = false;
     file.abort();
-    if ( !hadSaveError )
-        KMessageBox::error( 
-            0L, i18n("Couldn't save bookmarks in %1. Reported error was: %2."
-                     "This error message will only be shown once, please fix the "
-                     "possible cause of the error as quickly as possible, "
-                     "the most likely cause is that of a full harddrive")
-                .arg(filename)
-                .arg(strerror(file.status())) 
-        );
+    if ( !hadSaveError ) {
+        QString error = i18n("Couldn't save bookmarks in %1. Reported error was: %2."
+                             "This error message will only be shown once, please fix the"
+                             "possible cause of the error as quickly as possible,"
+                             "the most likely cause is that of a full harddrive")
+                        .arg(filename).arg(strerror(file.status()));
+        if (qApp->type() != QApplication::Tty)
+            KMessageBox::error( 0L, error );
+        else 
+            kdError() << error << endl;
+    }
     hadSaveError = true;
     return false;
 }
