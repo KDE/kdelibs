@@ -506,8 +506,12 @@ void HTMLGenericFormElementImpl::parseAttribute(AttributeImpl *attr)
         setDisabled( attr->val() != 0 );
         break;
     case ATTR_READONLY:
+    {
+        bool m_oldreadOnly = m_readOnly;
         m_readOnly = attr->val() != 0;
+        if (m_oldreadOnly != m_readOnly) setChanged();
         break;
+    }
     default:
         HTMLElementImpl::parseAttribute(attr);
     }
@@ -578,8 +582,7 @@ void HTMLGenericFormElementImpl::setDisabled( bool _disabled )
 {
     if ( m_disabled != _disabled ) {
         m_disabled = _disabled;
-        if ( m_render && m_render->isWidget() && m_render->layouted() )
-            static_cast<RenderWidget *>(m_render)->widget()->setEnabled( !m_disabled );
+        setChanged();
     }
 }
 
