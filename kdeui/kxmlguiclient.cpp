@@ -127,7 +127,7 @@ void KXMLGUIClient::setInstance( KInstance *instance )
   d->m_instance = instance;
   d->m_actionCollection.setInstance( instance );
   if ( d->m_builder )
-    d->m_builder->setBuilderInstance( instance );
+    d->m_builder->setBuilderClient( this );
 }
 
 void KXMLGUIClient::setXMLFile( const QString& _file, bool merge )

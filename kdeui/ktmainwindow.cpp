@@ -261,7 +261,7 @@ int KTMainWindow::addToolBar( KToolBar *toolbar, int index )
     // since the xmlgui code (suprisingly) doesn't really have all
     // that much knowledge of the xml file itself
     if ( !xmlFile().isNull() )
-        toolbar->setXML( xmlFile(), domDocument() );
+      toolbar->setXMLGUIClient( this );
 
     if ( index == -1 )
 	toolbars.append( toolbar );

@@ -40,6 +40,7 @@ class KAnimWidget;
 class KPopupMenu;
 class KInstance;
 class KComboBox;
+class KXMLGUIClient;
 
 class KToolBarPrivate;
 
@@ -256,7 +257,7 @@ public:
    *
    * Can be writable, but cannot contain
    * pixmaps. By default inserting policy is AtBottom, i.e. typed items
-   * are placed at the bottom of the list. Can be autosized. If the size 
+   * are placed at the bottom of the list. Can be autosized. If the size
    * argument is specified as -1, the width of the combobox is automatically
    * computed.
    *
@@ -277,7 +278,7 @@ public:
    *
    * Can be writable, but cannot contain
    * pixmaps. By default inserting policy is AtBottom, i.e. typed items
-   * are placed at the bottom of the list. Can be autosized. If the size 
+   * are placed at the bottom of the list. Can be autosized. If the size
    * argument is specified as -1, the width of the combobox is automatically
    * computed.
    *
@@ -883,7 +884,9 @@ public:
    * @param xmlfile The XML-GUI resource file to write to
    * @param xml     The DOM document for the XML-GUI building
    */
-  void setXML(const QString& xmlfile, const QDomDocument& xml);
+  //  void setXML(const QString& xmlfile, const QDomDocument& xml);
+  /* @internal */
+  void setXMLGUIClient( KXMLGUIClient *client );
 
   void show();
 

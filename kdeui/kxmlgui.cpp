@@ -94,7 +94,7 @@ public:
     static QString defaultMergingName = QString::fromLatin1( "<default>" );
     static QString actionList = QString::fromLatin1( "actionlist" );
     static QString name = QString::fromLatin1( "name" );
-    
+
     m_rootNode = new KXMLGUIContainerNode( 0L, QString::null, 0L );
     m_defaultMergingName = defaultMergingName;
     m_clientBuilder = 0L;
@@ -140,19 +140,34 @@ KXMLGUIContainerNode::KXMLGUIContainerNode( QWidget *_container, const QString &
     parent->children.append( this );
 }
 
+QString KXMLGUIFactory::readConfigFile( const QString &filename, bool never_null )
+{
+  return readConfigFile( filename, never_null, KGlobal::instance() ); 
+} 
+
 QString KXMLGUIFactory::readConfigFile( const QString &filename )
 {
-  return readConfigFile( filename, false );
+  return readConfigFile( filename, KGlobal::instance() ); 
 }
 
-QString KXMLGUIFactory::readConfigFile( const QString &filename, bool never_null )
+bool KXMLGUIFactory::saveConfigFile( const QDomDocument& doc, const QString& filename)
+{
+  return saveConfigFile( doc, filename, KGlobal::instance() ); 
+} 
+
+QString KXMLGUIFactory::readConfigFile( const QString &filename, KInstance *instance )
+{
+  return readConfigFile( filename, false, instance );
+}
+
+QString KXMLGUIFactory::readConfigFile( const QString &filename, bool never_null, KInstance *instance )
 {
   QString xml_file;
 
   if (filename[0] == '/')
     xml_file = filename;
   else
-    xml_file = locate("data", QString::fromLatin1(KGlobal::instance()->instanceName() + '/' ) + filename);
+    xml_file = locate("data", QString::fromLatin1(instance->instanceName() + '/' ) + filename);
 
   QFile file( xml_file );
   if ( !file.open( IO_ReadOnly ) )
@@ -177,12 +192,12 @@ QString KXMLGUIFactory::readConfigFile( const QString &filename, bool never_null
 }
 
 bool KXMLGUIFactory::saveConfigFile( const QDomDocument& doc,
-                                     const QString& filename)
+                                     const QString& filename, KInstance *instance )
 {
   QString xml_file(filename);
 
   if (xml_file[0] != '/')
-    xml_file = locateLocal("data", QString::fromLatin1( KGlobal::instance()->instanceName() + '/' ) + filename);
+    xml_file = locateLocal("data", QString::fromLatin1( instance->instanceName() + '/' ) + filename);
 
   QFile file( xml_file );
   if ( !file.open( IO_WriteOnly ) )
@@ -860,15 +875,15 @@ QWidget *KXMLGUIFactory::createContainer( QWidget *parent, int index, const QDom
     }
   }
 
-  KInstance *old = m_builder->builderInstance();
+  KInstance *oldInstance = m_builder->builderInstance();
+  KXMLGUIClient *oldClient = m_builder->builderClient();
 
-  KInstance *clientInst = m_client->instance();
-  if ( clientInst )
-    m_builder->setBuilderInstance( clientInst );
+  m_builder->setBuilderClient( m_client );
 
   res = m_builder->createContainer( parent, index, element, containerStateBuffer, id );
 
-  m_builder->setBuilderInstance( old );
+  m_builder->setBuilderInstance( oldInstance );
+  m_builder->setBuilderClient( oldClient );
 
   if ( res )
     *builder = m_builder;

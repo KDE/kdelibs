@@ -91,7 +91,8 @@ public:
     m_approxItemSize = 0;
     m_enableContext  = true;
 
-    m_xmlFile        = QString::null;
+    //    m_xmlFile        = QString::null;
+    m_xmlguiClient   = 0;
     m_stateChanged   = false;
   }
   ~KToolBarPrivate()
@@ -118,8 +119,9 @@ public:
   int m_approxItemSize;
   bool m_enableContext;
 
-  QString      m_xmlFile;
-  QDomDocument m_xml;
+//  QString      m_xmlFile;
+//  QDomDocument m_xml;
+  KXMLGUIClient *m_xmlguiClient;
   bool         m_stateChanged;
   QString      m_sText;
 };
@@ -1246,8 +1248,10 @@ void KToolBar::slotHotSpot(int hs)
   }
   kdDebug() << "slotHotSpot : saving" << endl;
   d->m_stateChanged = true;
-  // why call saveState() here ? Let's better do it in mouseReleaseEvent to avoid unnecessary disk access (Simon)
-  //  saveState();
+  // calling saveState() here does, for some strange reason, not save the correct state
+  // of the toolbar when using the xmlgui stuff (Simon)
+  if ( !d->m_xmlguiClient )
+    saveState();
 }
 
 void KToolBar::resizeEvent(QResizeEvent*)
@@ -2821,9 +2825,10 @@ void KToolBar::saveState()
   }
 
   // first, try to save to the xml file
-  if ( d->m_xmlFile != QString::null )
+  //  if ( d->m_xmlFile != QString::null )
+  if ( d->m_xmlguiClient && !d->m_xmlguiClient->xmlFile().isEmpty() )
   {
-    QDomElement elem = d->m_xml.documentElement().toElement();
+    QDomElement elem = d->m_xmlguiClient->domDocument().documentElement().toElement();
 
     // go down one level to get to the right tags
     elem = elem.firstChild().toElement();
@@ -2859,7 +2864,7 @@ void KToolBar::saveState()
       return;
 
     // now we load in the (non-merged) local file
-    QString local_xml(KXMLGUIFactory::readConfigFile(d->m_xmlFile, true));
+    QString local_xml(KXMLGUIFactory::readConfigFile(d->m_xmlguiClient->xmlFile(), true, d->m_xmlguiClient->instance()));
     QDomDocument local;
     local.setContent(local_xml);
 
@@ -2885,7 +2890,7 @@ void KToolBar::saveState()
     if (just_append)
       local.documentElement().appendChild( current );
 
-    KXMLGUIFactory::saveConfigFile(local, d->m_xmlFile);
+    KXMLGUIFactory::saveConfigFile(local, d->m_xmlguiClient->xmlFile(), d->m_xmlguiClient->instance() );
 
     return;
   }
@@ -2905,12 +2910,17 @@ void KToolBar::saveState()
 
   config->sync();
 }
-
+/*
 void KToolBar::setXML(const QString& xmlfile, const QDomDocument& xml)
 {
   d->m_xmlFile = xmlfile;
   d->m_xml     = xml;
 }
+*/
+void KToolBar::setXMLGUIClient( KXMLGUIClient *client )
+{
+  d->m_xmlguiClient = client; 
+} 
 
 void KToolBar::setText( const QString & txt )
 {

@@ -62,6 +62,7 @@ public:
   QString attrIconSize;
 
   KInstance *m_instance;
+  KXMLGUIClient *m_client;
 };
 
 KXMLGUIBuilder::KXMLGUIBuilder( QWidget *widget )
@@ -89,8 +90,9 @@ KXMLGUIBuilder::KXMLGUIBuilder( QWidget *widget )
   d->attrPosition = QString::fromLatin1( "position" );
   d->attrIconText = QString::fromLatin1( "iconText" );
   d->attrIconSize = QString::fromLatin1( "iconSize" );
-  
+
   d->m_instance = 0;
+  d->m_client = 0;
 }
 
 KXMLGUIBuilder::~KXMLGUIBuilder()
@@ -191,7 +193,12 @@ QWidget *KXMLGUIBuilder::createContainer( QWidget *parent, int index, const QDom
       bar->setText( i18n( text ) );
 
     if ( d->m_widget->inherits( "KTMainWindow" ) )
-      static_cast<KTMainWindow *>(d->m_widget)->addToolBar( bar );
+    {
+      KTMainWindow *mw = static_cast<KTMainWindow *>( d->m_widget );
+      mw->addToolBar( bar );
+      if ( d->m_client && !d->m_client->xmlFile().isEmpty() )
+        bar->setXMLGUIClient( d->m_client );
+    }
 
     QCString attrFullWidth = element.attribute( d->attrFullWidth ).lower().latin1();
     QCString attrPosition = element.attribute( d->attrPosition ).lower().latin1();
@@ -285,7 +292,9 @@ QByteArray KXMLGUIBuilder::removeContainer( QWidget *container, QWidget *parent,
   {
     QDataStream stream( stateBuff, IO_WriteOnly );
     stream << container->property( "iconText" ) << container->property( "barPos" ) << container->property( "fullSize" ) << container->property( "iconSize" );
-    delete (KToolBar *)container;
+    KToolBar *tb = static_cast<KToolBar *>( container );
+    tb->saveState();
+    delete tb;
   }
   else if ( container->inherits( "KStatusBar" ) )
   {
@@ -356,6 +365,18 @@ void KXMLGUIBuilder::removeCustomElement( QWidget *parent, int id )
   else if ( parent->inherits( "KToolBar" ) )
     static_cast<KToolBar *>(parent)->removeItem( id );
 }
+
+KXMLGUIClient *KXMLGUIBuilder::builderClient() const
+{
+  return d->m_client; 
+}
+
+void KXMLGUIBuilder::setBuilderClient( KXMLGUIClient *client )
+{
+  d->m_client = client;
+  if ( client )
+    setBuilderInstance( client->instance() );
+} 
 
 KInstance *KXMLGUIBuilder::builderInstance() const
 {

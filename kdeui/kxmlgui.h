@@ -32,6 +32,7 @@ class KXMLGUIClient;
 class KXMLGUIBuilder;
 class KXMLGUIContainerNode;
 class KXMLGUIContainerClient;
+class KInstance;
 
 /**
  * KXMLGUIFactory, together with @ref KXMLGUIClient objects, can be used to create
@@ -69,6 +70,11 @@ class KXMLGUIFactory : public QObject
   static QString readConfigFile( const QString &filename, bool never_null );
   static QString readConfigFile( const QString &filename );
   static bool saveConfigFile( const QDomDocument& doc, const QString& filename);
+
+  // BCI: merge!
+  static QString readConfigFile( const QString &filename, bool never_null, KInstance *instance );
+  static QString readConfigFile( const QString &filename, KInstance *instance );
+  static bool saveConfigFile( const QDomDocument& doc, const QString& filename, KInstance *instance );
 
   static QString documentToXML( const QDomDocument& doc );
   static QString elementToXML( const QDomElement& elem );
