@@ -20,23 +20,20 @@
  *
  * $Id$
  */
-#include "dom_stringimpl.h"
-#include "css_stylesheet.h"
-#include "css_stylesheetimpl.h"
-#include "css_rule.h"
-
-#include "dom_node.h"
-#include "dom_exception.h"
-
-#include "misc/htmlhashes.h"
-#include "html/html_headimpl.h"
-#include "xml/dom_docimpl.h"
+#include "dom/dom_exception.h"
+#include "dom/css_rule.h"
 #include "dom/dom_doc.h"
+
+#include "xml/dom_docimpl.h"
+
+#include "html/html_headimpl.h"
+
+#include "css/css_stylesheetimpl.h"
+#include "misc/htmlhashes.h"
 
 #include <stdio.h>
 
 using namespace DOM;
-
 
 StyleSheet::StyleSheet()
 {

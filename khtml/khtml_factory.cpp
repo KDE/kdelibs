@@ -30,7 +30,6 @@
 #include <kinstance.h>
 #include <kaboutdata.h>
 #include <klocale.h>
-#include <kparts/historyprovider.h>
 
 #include <assert.h>
 

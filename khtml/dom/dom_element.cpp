@@ -21,11 +21,10 @@
  * $Id$
  */
 
-#include "dom_string.h"
-#include "dom_element.h"
-#include "dom_elementimpl.h"
-#include "dom_node.h"
-#include "dom_exception.h"
+#include "dom/dom_exception.h"
+
+#include "xml/dom_elementimpl.h"
+
 using namespace DOM;
 
 Attr::Attr() : Node()
@@ -233,7 +232,7 @@ DOMString Element::getAttributeNS( const DOMString &namespaceURI,
 }
 
 void Element::setAttributeNS( const DOMString &namespaceURI,
-                              const DOMString &qualifiedName, 
+                              const DOMString &qualifiedName,
                               const DOMString &value)
 {
     if (!impl)

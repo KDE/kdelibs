@@ -4,7 +4,7 @@
 #include "kjavadownloader.h"
 
 #include <kconfig.h>
-#include <kstddirs.h>
+#include <kstandarddirs.h>
 #include <kdebug.h>
 #include <klocale.h>
 #include <kio/kprotocolmanager.h>

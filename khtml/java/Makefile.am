@@ -1,4 +1,4 @@
-KDE_CXXFLAGS = -UQT_NO_COMPAT
+KDE_CXXFLAGS = $(WOVERLOADED_VIRTUAL)
 
 lib_LTLIBRARIES = libkjava.la
 libkjava_la_SOURCES = kjavaapplet.cpp kjavaappletcontext.cpp \

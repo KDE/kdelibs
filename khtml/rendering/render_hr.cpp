@@ -26,14 +26,9 @@
 
 #include "render_hr.h"
 
-#include <qpixmap.h>
-#include <qdrawutil.h>
-#include <qpalette.h>
-#include <qtextstream.h>
 
 #include <kdebug.h>
 
-#include "rendering/render_style.h"
 #include "rendering/render_flow.h"
 
 using namespace DOM;

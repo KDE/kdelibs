@@ -22,13 +22,11 @@
  */
 // --------------------------------------------------------------------------
 
-#include "dom_string.h"
+#include "dom/html_misc.h"
+#include "html/html_miscimpl.h"
+#include "misc/htmlhashes.h"
 
-#include "html_misc.h"
-#include "html_miscimpl.h"
 using namespace DOM;
-
-#include "htmlhashes.h"
 
 HTMLBaseFontElement::HTMLBaseFontElement() : HTMLElement()
 {

@@ -26,11 +26,10 @@
 #include <kdebug.h>
 
 #include "render_applet.h"
-#include "../khtmlview.h"
-#include "../khtml_part.h"
+#include "khtmlview.h"
+#include "khtml_part.h"
 
 #include <qlabel.h>
-#include <qscrollview.h>
 
 #ifndef Q_WS_QWS // We don't have Java in Qt Embedded
 

@@ -24,11 +24,7 @@
 #include "render_list.h"
 
 #include <qpainter.h>
-#include <qcolor.h>
-#include <qfontmetrics.h>
-#include <qnamespace.h>
 
-#include "rendering/render_style.h"
 #include "misc/helper.h"
 
 #include <kdebug.h>

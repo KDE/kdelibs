@@ -24,33 +24,18 @@
 // -------------------------------------------------------------------------
 //#define DEBUG_LAYOUT
 
-#include "dom_string.h"
 
 #include <qpainter.h>
-#include <qfontmetrics.h>
-#include <qstack.h>
-#include <qtextstream.h>
 
-#include "dom_node.h"
-#include "dom_textimpl.h"
-#include "dom_stringimpl.h"
-#include "dom_exception.h"
 
-#include "misc/helper.h"
-#include "htmlhashes.h"
-#include "khtmlview.h"
 
 #include "render_box.h"
-#include "render_style.h"
-#include "render_object.h"
-#include "render_text.h"
 #include "render_replaced.h"
 #include "render_root.h"
 
 #include <kdebug.h>
 #include <assert.h>
 
-#include "misc/loader.h"
 
 using namespace DOM;
 using namespace khtml;

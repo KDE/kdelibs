@@ -22,7 +22,7 @@
  */
 
 #include <stdlib.h>
-#include <kapp.h>
+#include <kapplication.h>
 #include <qfile.h>
 // to be able to delete a static protected member pointer in kbrowser...
 // just for memory debugging

@@ -22,15 +22,15 @@
  */
 // --------------------------------------------------------------------------
 
-#include "dom_string.h"
-#include "dom_doc.h"
-#include "html_image.h"
-#include "html_imageimpl.h"
-#include "html_misc.h"
-#include "html_miscimpl.h"
-using namespace DOM;
+#include "dom/dom_doc.h"
+#include "dom/html_image.h"
+#include "dom/html_misc.h"
 
-#include "htmlhashes.h"
+#include "html/html_imageimpl.h"
+#include "html/html_miscimpl.h"
+#include "misc/htmlhashes.h"
+
+using namespace DOM;
 
 HTMLAreaElement::HTMLAreaElement() : HTMLElement()
 {

@@ -22,7 +22,6 @@
  */
 
 #include "xml/dom_stringimpl.h"
-#include "misc/loader.h"
 
 #include "render_style.h"
 

@@ -21,7 +21,6 @@
  * Boston, MA 02111-1307, USA.
  */
 #include "khtml_run.h"
-#include "khtml_part.h"
 #include <kio/job.h>
 #include <kdebug.h>
 #include <kuserprofile.h>

@@ -26,15 +26,12 @@
 
 #include "render_image.h"
 
-#include <qpixmap.h>
 #include <qdrawutil.h>
-#include <qpalette.h>
 #include <qpainter.h>
 
 #include <kapplication.h>
 #include <kdebug.h>
 
-#include "rendering/render_style.h"
 #include "misc/helper.h"
 #include "misc/htmlattrs.h"
 #include "html/html_elementimpl.h"

@@ -27,7 +27,6 @@
 #include "render_frames.h"
 #include "html_baseimpl.h"
 #include "html_objectimpl.h"
-#include "htmltokenizer.h"
 #include "misc/htmlattrs.h"
 #include "dom2_eventsimpl.h"
 #include "htmltags.h"
@@ -41,13 +40,9 @@
 #include <kdebug.h>
 #include <qtimer.h>
 
-#include <qlabel.h>
-#include <qstringlist.h>
-#include <qtextstream.h>
 #include <qcursor.h>
 
 #include <assert.h>
-#include <kdebug.h>
 
 using namespace khtml;
 using namespace DOM;

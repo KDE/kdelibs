@@ -26,8 +26,6 @@
 #include "xml/dom_docimpl.h"
 #include "khtmlview.h"
 
-#include <qpainter.h>
-#include <qscrollview.h>
 
 #include <kdebug.h>
 

@@ -24,10 +24,8 @@
 #include "khtmldefaults.h"
 #include <kglobalsettings.h>
 #include <kconfig.h>
-#include <kapplication.h>
 #include <kglobal.h>
 #include <klocale.h>
-#include <kcharsets.h>
 #include <kdebug.h>
 
 #define MAXFONTSIZES 15

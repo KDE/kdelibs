@@ -20,11 +20,12 @@
  *
  * $Id$
  */
-#include "css_rule.h"
-#include "css_value.h"
-#include "css_valueimpl.h"
-#include "dom_exception.h"
-#include "dom_string.h"
+
+#include "dom/css_rule.h"
+#include "dom/dom_exception.h"
+
+#include "css/css_valueimpl.h"
+
 using namespace DOM;
 
 CSSStyleDeclaration::CSSStyleDeclaration()

@@ -25,11 +25,8 @@
 #include "render_root.h"
 
 #include <assert.h>
-#include <qscrollview.h>
-#include <qtextstream.h>
 #include <qpainter.h>
 
-#include "misc/helper.h"
 #include "khtmlview.h"
 
 using namespace khtml;

@@ -21,15 +21,13 @@
  * $Id$
  */
 
-#include "dom_node.h"
-#include "dom_doc.h"
-#include "dom_exception.h"
-#include "dom_string.h"
-#include "dom_nodeimpl.h"
-#include "dom_elementimpl.h"
-#include "dom2_events.h"
-#include <qstring.h>
+#include "dom/dom_doc.h"
+#include "dom/dom_exception.h"
+#include "xml/dom_elementimpl.h"
+#include "dom/dom2_events.h"
+
 #include <qrect.h>
+
 using namespace DOM;
 
 // ### eventually we should get these methods to throw NOT_FOUND_ERR

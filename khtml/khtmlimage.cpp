@@ -18,7 +18,6 @@
 */
 
 #include "khtmlimage.h"
-#include "khtml_part.h"
 #include "khtmlview.h"
 #include "khtml_ext.h"
 #include "xml/dom_docimpl.h"
@@ -29,11 +28,8 @@
 #include <qvbox.h>
 #include <qtimer.h>
 
-#include <kparts/factory.h>
 #include <kio/job.h>
-#include <kglobal.h>
 #include <kinstance.h>
-#include <kaction.h>
 #include <kmimetype.h>
 #include <klocale.h>
 

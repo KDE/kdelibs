@@ -1,21 +1,15 @@
 
 #include <assert.h>
-#include "kapplication.h"
 #include "khtml_ext.h"
 #include "khtmlview.h"
 #include "khtml_pagecache.h"
 #include "rendering/render_form.h"
 #include "dom/html_form.h"
 #include "dom/html_image.h"
-#include <qapplication.h>
 #include <qclipboard.h>
 #include <qpopupmenu.h>
-#include <qlineedit.h>
 #include <qmetaobject.h>
-#include <qregexp.h>
-#if QT_VERSION >= 300
 #include <private/qucomextra_p.h>
-#endif
 
 #include <kdebug.h>
 #include <klocale.h>
@@ -23,13 +17,13 @@
 #include <kio/job.h>
 #include <ktoolbarbutton.h>
 #include <ktoolbar.h>
-#include <ktempfile.h>
 #include <ksavefile.h>
 #include <kurldrag.h>
 #include <kstringhandler.h>
+#include <kapplication.h>
 
-#include <dom/dom_element.h>
-#include <misc/htmltags.h>
+#include "dom/dom_element.h"
+#include "misc/htmltags.h"
 
 KHTMLPartBrowserExtension::KHTMLPartBrowserExtension( KHTMLPart *parent, const char *name )
 : KParts::BrowserExtension( parent, name )
@@ -205,21 +199,12 @@ void KHTMLPartBrowserExtension::callExtensionProxyMethod( const char *method )
     if ( !m_extensionProxy )
         return;
 
-#if QT_VERSION < 300
-    QMetaData *metaData = m_extensionProxy->metaObject()->slot( method );
-    if ( !metaData )
-        return;
-
-    KParts::BrowserExtension *ext = static_cast<KParts::BrowserExtension *>( m_extensionProxy );
-    (ext->*(metaData->ptr))();
-#else
     int slot = m_extensionProxy->metaObject()->findSlot( method );
     if ( slot == -1 )
         return;
 
     QUObject o[ 1 ];
     m_extensionProxy->qt_invoke( slot, o );
-#endif
 }
 
 void KHTMLPartBrowserExtension::updateEditActions()
@@ -243,9 +228,9 @@ void KHTMLPartBrowserExtension::updateEditActions()
     bool hasSelection = false;
 
     if ( m_editableFormWidget->inherits( "QLineEdit" ) )
-        hasSelection = static_cast<QLineEdit *>( &(*m_editableFormWidget) )->hasMarkedText();
+        hasSelection = static_cast<QLineEdit *>( &(*m_editableFormWidget) )->hasSelectedText();
     else if ( m_editableFormWidget->inherits( "khtml::TextAreaWidget" ) )
-        hasSelection = static_cast<khtml::TextAreaWidget *>( &(*m_editableFormWidget) )->hasMarkedText();
+        hasSelection = static_cast<khtml::TextAreaWidget *>( &(*m_editableFormWidget) )->hasSelectedText();
 
     enableAction( "copy", hasSelection );
     enableAction( "cut", hasSelection );
@@ -495,11 +480,7 @@ QStringList KHTMLPartBrowserHostExtension::frameNames() const
   return m_part->frameNames();
 }
 
-#if QT_VERSION < 300
-const QList<KParts::ReadOnlyPart> KHTMLPartBrowserHostExtension::frames() const
-#else
 const QPtrList<KParts::ReadOnlyPart> KHTMLPartBrowserHostExtension::frames() const
-#endif
 {
   return m_part->frames();
 }

@@ -30,7 +30,6 @@
 #include <qvbuttongroup.h>
 #include <kregexpeditorinterface.h>
 #include <kparts/componentfactory.h>
-#include <qvariant.h>
 #include <assert.h>
 
 KHTMLFind::KHTMLFind( KHTMLPart *part, QWidget *parent, const char *name )

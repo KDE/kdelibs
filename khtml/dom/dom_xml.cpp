@@ -22,13 +22,12 @@
  */
 
 
-#include "dom_xml.h"
-#include "dom_string.h"
-#include "dom_textimpl.h"
-#include "dom_xmlimpl.h"
-#include "dom_exception.h"
-using namespace DOM;
+#include "dom/dom_xml.h"
+#include "dom/dom_exception.h"
+#include "xml/dom_textimpl.h"
+#include "xml/dom_xmlimpl.h"
 
+using namespace DOM;
 
 CDATASection::CDATASection()
 {

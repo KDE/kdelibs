@@ -37,9 +37,9 @@
 #include <qlist.h>
 #include <qpalette.h>
 #include <qapplication.h>
-#include "dom/dom_misc.h"
 
-#include <khtmllayout.h>
+#include "dom/dom_misc.h"
+#include "misc/khtmllayout.h"
 
 #include <assert.h>
 

@@ -21,13 +21,11 @@
  * $Id$
  */
 
-#include "dom_exception.h"
-#include "dom_string.h"
+#include "dom/dom_exception.h"
+#include "dom/dom_text.h"
+#include "xml/dom_textimpl.h"
 
-#include "dom_text.h"
-#include "dom_textimpl.h"
 using namespace DOM;
-
 
 CharacterData::CharacterData() : Node()
 {

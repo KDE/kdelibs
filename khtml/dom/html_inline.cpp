@@ -22,14 +22,13 @@
  */
 // --------------------------------------------------------------------------
 
-#include "dom_string.h"
-#include "html_inline.h"
-#include "html_inlineimpl.h"
-#include "html_baseimpl.h"
-#include "dom_docimpl.h"
-using namespace DOM;
+#include "dom/html_inline.h"
+#include "html/html_inlineimpl.h"
+#include "html/html_baseimpl.h"
+#include "xml/dom_docimpl.h"
+#include "misc/htmlhashes.h"
 
-#include "htmlhashes.h"
+using namespace DOM;
 
 HTMLAnchorElement::HTMLAnchorElement() : HTMLElement()
 {

@@ -24,32 +24,23 @@
  */
 
 #include <kdebug.h>
-#include <kurl.h>
 #include <klocale.h>
 #include <kfiledialog.h>
 #include <kcompletionbox.h>
 #include <kcursor.h>
 
-#include <qcombobox.h>
 #include <qstyle.h>
 #include "misc/helper.h"
 
-#include "dom_nodeimpl.h"
-#include "dom_textimpl.h"
-#include "dom_docimpl.h"
 #include "dom2_eventsimpl.h"
 
 #include "html/html_formimpl.h"
-#include "html/html_documentimpl.h"
 #include "misc/htmlhashes.h"
 
 #include "rendering/render_form.h"
-#include "rendering/render_style.h"
-#include "rendering/render_root.h"
 #include <assert.h>
 
 #include "khtmlview.h"
-#include "khtml_part.h"
 #include "khtml_ext.h"
 
 using namespace khtml;
@@ -331,13 +322,9 @@ void RenderCheckBox::calcMinMaxWidth()
 {
     if ( minMaxKnown() ) return;
 
-#if QT_VERSION < 300
-    QSize s = static_cast<QCheckBox*>( m_widget )->style().indicatorSize();
-#else
     QCheckBox *cb = static_cast<QCheckBox *>( m_widget );
     QSize s( cb->style().pixelMetric( QStyle::PM_IndicatorWidth ),
              cb->style().pixelMetric( QStyle::PM_IndicatorHeight ) );
-#endif
     setIntrinsicWidth( s.width() );
     setIntrinsicHeight( s.height() );
 
@@ -390,13 +377,9 @@ void RenderRadioButton::calcMinMaxWidth()
 {
     if ( minMaxKnown() ) return;
 
-#if QT_VERSION < 300
-    QSize s = static_cast<QRadioButton*>( m_widget )->style().exclusiveIndicatorSize();
-#else
     QRadioButton *rb = static_cast<QRadioButton *>( m_widget );
     QSize s( rb->style().pixelMetric( QStyle::PM_ExclusiveIndicatorWidth ),
              rb->style().pixelMetric( QStyle::PM_ExclusiveIndicatorHeight ) );
-#endif
     setIntrinsicWidth( s.width() );
     setIntrinsicHeight( s.height() );
 
@@ -432,9 +415,6 @@ void RenderSubmitButton::calcMinMaxWidth()
 
     QString value = static_cast<HTMLInputElementImpl*>(m_element)->value().isEmpty() ?
         defaultLabel() : static_cast<HTMLInputElementImpl*>(m_element)->value().string();
-#if QT_VERSION < 300
-    value = value.visual();
-#endif
     value = value.stripWhiteSpace();
     QString raw;
     for(unsigned int i = 0; i < value.length(); i++) {
@@ -452,13 +432,8 @@ void RenderSubmitButton::calcMinMaxWidth()
     QSize ts = fm.size( ShowPrefix, raw );
     int h = ts.height() + 8;
     int w = ts.width() + 2*fm.width( ' ' );
-#if QT_VERSION < 300
-    if ( m_widget->style().guiStyle() == Qt::WindowsStyle && h < 26 )
-        h = 22;
-#else
     if ( m_widget->style().styleHint(QStyle::SH_GUIStyle) == Qt::WindowsStyle && h < 26 )
         h = 22;
-#endif
     QSize s = QSize( w + 8, h ).expandedTo( m_widget->minimumSizeHint()).expandedTo( QApplication::globalStrut() );
 
     setIntrinsicWidth( s.width() );
@@ -613,13 +588,8 @@ void RenderLineEdit::calcMinMaxWidth()
         // the only reason that made me including this thingie is
         // that I cannot get a sizehint for a specific number of characters
         // in the lineedit from it. It's not my fault, it's Qt's. Dirk
-#if QT_VERSION < 300
-        if ( m_widget->style().guiStyle() == Qt::WindowsStyle && h < 26 )
-            h = 22;
-#else
         if ( m_widget->style().styleHint(QStyle::SH_GUIStyle) == Qt::WindowsStyle && h < 26 )
             h = 22;
-#endif
         s = QSize( w + 8, h ).expandedTo( QApplication::globalStrut() );
     } else
 	s = QSize( w + 4, h + 4 ).expandedTo( QApplication::globalStrut() );
@@ -638,11 +608,7 @@ void RenderLineEdit::layout()
     HTMLInputElementImpl *input = static_cast<HTMLInputElementImpl*>(m_element);
     edit->blockSignals(true);
     int pos = edit->cursorPosition();
-#if QT_VERSION < 300
-    edit->setText(static_cast<HTMLInputElementImpl*>(m_element)->value().string().visual());
-#else
     edit->setText(static_cast<HTMLInputElementImpl*>(m_element)->value().string());
-#endif
     edit->setCursorPosition(pos);
     edit->blockSignals(false);
 
@@ -715,13 +681,8 @@ void RenderFileButton::calcMinMaxWidth()
 
     if ( m_edit->frame() ) {
         h += 8;
-#if QT_VERSION < 300
-        if ( m_widget->style().guiStyle() == Qt::WindowsStyle && h < 26 )
-            h = 22;
-#else
         if ( m_widget->style().styleHint(QStyle::SH_GUIStyle) == Qt::WindowsStyle && h < 26 )
             h = 22;
-#endif
         s = QSize( w + 8, h );
     } else
         s = QSize( w + 4, h + 4 );
@@ -928,11 +889,7 @@ void RenderSelect::layout( )
 
     // update contents listbox/combobox based on options in m_element
     if ( m_optionsChanged ) {
-#if QT_VERSION < 300
-        QArray<HTMLGenericFormElementImpl*> listItems = select->listItems();
-#else
         QMemArray<HTMLGenericFormElementImpl*> listItems = select->listItems();
-#endif
         int listIndex;
 
         if(m_useListBox)
@@ -947,23 +904,14 @@ void RenderSelect::layout( )
                     text = "";
 
                 if(m_useListBox) {
-#if QT_VERSION < 300
-                    QListBoxText *item = new QListBoxText(QString(text.implementation()->s, text.implementation()->l).visual());
-#else
                     QListBoxText *item = new QListBoxText(QString(text.implementation()->s, text.implementation()->l));
-#endif
                     static_cast<KListBox*>(m_widget)
                         ->insertItem(item, listIndex);
                     item->setSelectable(false);
                 }
                 else
-#if QT_VERSION < 300
-                    static_cast<KComboBox*>(m_widget)
-                        ->insertItem(QString(text.implementation()->s, text.implementation()->l).visual(), listIndex);
-#else
                     static_cast<KComboBox*>(m_widget)
                         ->insertItem(QString(text.implementation()->s, text.implementation()->l), listIndex);
-#endif
             }
             else if (listItems[listIndex]->id() == ID_OPTION) {
                 DOMString text = static_cast<HTMLOptionElementImpl*>(listItems[listIndex])->text();
@@ -973,19 +921,11 @@ void RenderSelect::layout( )
                     text = DOMString("    ")+text;
 
                 if(m_useListBox)
-#if QT_VERSION < 300
-                    static_cast<KListBox*>(m_widget)
-                        ->insertItem(QString(text.implementation()->s, text.implementation()->l).visual(), listIndex);
-                else
-                    static_cast<KComboBox*>(m_widget)
-                        ->insertItem(QString(text.implementation()->s, text.implementation()->l).visual(), listIndex);
-#else
                     static_cast<KListBox*>(m_widget)
                         ->insertItem(QString(text.implementation()->s, text.implementation()->l), listIndex);
                 else
                     static_cast<KComboBox*>(m_widget)
                         ->insertItem(QString(text.implementation()->s, text.implementation()->l), listIndex);
-#endif
             }
             else
                 assert(false);
@@ -1037,11 +977,7 @@ void RenderSelect::layout( )
     RenderFormElement::layout();
 
     // and now disable the widget in case there is no <option> given
-#if QT_VERSION < 300
-    QArray<HTMLGenericFormElementImpl*> listItems = select->listItems();
-#else
     QMemArray<HTMLGenericFormElementImpl*> listItems = select->listItems();
-#endif
 
     bool foundOption = false;
     for (uint i = 0; i < listItems.size() && !foundOption; i++)
@@ -1074,11 +1010,7 @@ void RenderSelect::slotSelected(int index)
 
     assert( !m_useListBox );
 
-#if QT_VERSION < 300
-    QArray<HTMLGenericFormElementImpl*> listItems = static_cast<HTMLSelectElementImpl*>(m_element)->listItems();
-#else
     QMemArray<HTMLGenericFormElementImpl*> listItems = static_cast<HTMLSelectElementImpl*>(m_element)->listItems();
-#endif
     if(index >= 0 && index < int(listItems.size()))
     {
         bool found = ( listItems[index]->id() == ID_OPTION );
@@ -1124,11 +1056,7 @@ void RenderSelect::slotSelectionChanged()
 {
     if ( m_ignoreSelectEvents ) return;
 
-#if QT_VERSION < 300
-    QArray<HTMLGenericFormElementImpl*> listItems = static_cast<HTMLSelectElementImpl*>(m_element)->listItems();
-#else
     QMemArray<HTMLGenericFormElementImpl*> listItems = static_cast<HTMLSelectElementImpl*>(m_element)->listItems();
-#endif
     for ( unsigned i = 0; i < listItems.count(); i++ )
         // don't use setSelected() here because it will cause us to be called
         // again with updateSelection.
@@ -1169,11 +1097,7 @@ ComboBoxWidget *RenderSelect::createComboBox()
 
 void RenderSelect::updateSelection()
 {
-#if QT_VERSION < 300
-    QArray<HTMLGenericFormElementImpl*> listItems = static_cast<HTMLSelectElementImpl*>(m_element)->listItems();
-#else
     QMemArray<HTMLGenericFormElementImpl*> listItems = static_cast<HTMLSelectElementImpl*>(m_element)->listItems();
-#endif
     int i;
     if (m_useListBox) {
         // if multi-select, we select only the new selected index
@@ -1209,17 +1133,6 @@ void RenderSelect::updateSelection()
 TextAreaWidget::TextAreaWidget(int wrap, QWidget* parent)
     : KEdit(parent)
 {
-#if QT_VERSION < 300
-    if(wrap != DOM::HTMLTextAreaElementImpl::ta_NoWrap) {
-        setWordWrap(QMultiLineEdit::WidgetWidth);
-        clearTableFlags(Tbl_autoScrollBars);
-        setTableFlags(Tbl_vScrollBar);
-    }
-    else {
-        clearTableFlags(Tbl_autoScrollBars);
-        setTableFlags(Tbl_vScrollBar | Tbl_hScrollBar);
-    }
-#else
     // ### correct scrollbar modes?
     if(wrap != DOM::HTMLTextAreaElementImpl::ta_NoWrap) {
         setWordWrap(QMultiLineEdit::WidgetWidth);
@@ -1230,7 +1143,6 @@ TextAreaWidget::TextAreaWidget(int wrap, QWidget* parent)
         setHScrollBarMode( Auto );
         setVScrollBarMode( Auto );
     }
-#endif
     KCursor::setAutoHideCursor(this, true);
     setAutoMask(true);
     setMouseTracking(true);
@@ -1319,11 +1231,7 @@ void RenderTextArea::layout( )
 	w->blockSignals(true);
 	int line, col;
 	w->getCursorPosition( &line, &col );
-#if QT_VERSION < 300
-	w->setText(f->value().string().visual());
-#else
 	w->setText(f->value().string());
-#endif
 	w->setCursorPosition( line, col );
 	w->blockSignals(false);
         w->setEdited(false);

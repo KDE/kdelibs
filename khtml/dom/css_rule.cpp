@@ -20,14 +20,9 @@
  *
  * $Id$
  */
-#include "css_ruleimpl.h"
 
-#include "css_stylesheet.h"
-#include "css_value.h"
-#include "dom_exception.h"
-#include "dom_string.h"
+#include "css/css_ruleimpl.h"
 
-#include "css_rule.h"
 using namespace DOM;
 
 CSSRule::CSSRule()

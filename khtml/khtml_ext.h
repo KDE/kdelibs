@@ -64,12 +64,8 @@ public:
 
   virtual QStringList frameNames() const;
 
-#if QT_VERSION < 300  
-  virtual const QList<KParts::ReadOnlyPart> frames() const;
-#else  
   virtual const QPtrList<KParts::ReadOnlyPart> frames() const;
-#endif
-  
+
   virtual bool openURLInFrame( const KURL &url, const KParts::URLArgs &urlArgs );
 private:
   KHTMLPart *m_part;

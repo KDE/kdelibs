@@ -60,17 +60,13 @@ using namespace DOM;
 #include <assert.h>
 #include <unistd.h>
 
-#include <kglobal.h>
 #include <kstandarddirs.h>
 #include <kio/job.h>
-#include <kparts/historyprovider.h>
-#include <kmimetype.h>
 #include <kdebug.h>
 #include <kiconloader.h>
 #include <klocale.h>
 #include <kcharsets.h>
 #include <kmessagebox.h>
-#include <kaction.h>
 #include <kstdaction.h>
 #include <kfiledialog.h>
 #include <ktrader.h>
@@ -86,18 +82,11 @@ using namespace DOM;
 #include <kmultipledrag.h>
 #endif
 
-#include <kssl.h>
 #include <ksslcertchain.h>
 #include <ksslinfodlg.h>
-#include <ksslsettings.h>
 
-#include <qtextcodec.h>
 
-#include <qstring.h>
-#include <qfile.h>
 #include <qclipboard.h>
-#include <qapplication.h>
-#include <qdragobject.h>
 #include <qmetaobject.h>
 #include <private/qucomextra_p.h>
 

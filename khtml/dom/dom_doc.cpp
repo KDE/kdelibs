@@ -21,25 +21,18 @@
  * $Id$
  */
 
-#include "dom_string.h"
-#include "dom_doc.h"
-#include "dom_docimpl.h"
-#include "dom_node.h"
-#include "dom_nodeimpl.h"
-#include "dom_exception.h"
-#include "dom_element.h"
-#include "dom_elementimpl.h"
-#include "dom_text.h"
-#include "dom_xml.h"
-#include "dom2_range.h"
-#include "dom2_traversal.h"
-#include "dom2_events.h"
-#include "dom2_views.h"
-#include "css_value.h"
+#include "dom/dom_exception.h"
+#include "dom/dom_xml.h"
+#include "dom/dom2_range.h"
+#include "dom/dom2_events.h"
+#include "dom/dom2_views.h"
+
+#include "xml/dom_docimpl.h"
+#include "xml/dom_elementimpl.h"
+
 #include <kdebug.h>
 
 using namespace DOM;
-
 
 DOMImplementation::DOMImplementation()
 {
@@ -81,7 +74,7 @@ bool DOMImplementation::hasFeature( const DOMString &feature, const DOMString &v
 }
 
 DocumentType DOMImplementation::createDocumentType ( const DOMString &qualifiedName,
-                                                     const DOMString &publicId, 
+                                                     const DOMString &publicId,
                                                      const DOMString &systemId )
 {
     if (!impl)

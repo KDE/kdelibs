@@ -22,16 +22,17 @@
  */
 // --------------------------------------------------------------------------
 
-#include "html_form.h"
-#include "html_formimpl.h"
-#include "dom_doc.h"
-#include "dom_string.h"
-#include "html_miscimpl.h"
-#include "dom_exception.h"
-#include "dom_docimpl.h"
-using namespace DOM;
+#include "dom/html_form.h"
+#include "dom/dom_exception.h"
+#include "dom/dom_doc.h"
 
-#include "htmlhashes.h"
+#include "html/html_formimpl.h"
+#include "html/html_miscimpl.h"
+
+#include "xml/dom_docimpl.h"
+#include "misc/htmlhashes.h"
+
+using namespace DOM;
 
 HTMLButtonElement::HTMLButtonElement() : HTMLElement()
 {

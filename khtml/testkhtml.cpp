@@ -2,28 +2,19 @@
 
 #include <stdlib.h>
 #include "decoder.h"
-#include "kapp.h"
-#include <qfile.h>
+#include "kapplication.h"
 #include "html_document.h"
 #include "htmltokenizer.h"
 // to be able to delete a static protected member pointer in kbrowser...
 // just for memory debugging
 #define protected public
-#include "khtmlview.h"
 #include "khtml_part.h"
 #undef protected
-#include <qpushbutton.h>
 #include "testkhtml.h"
 #include "testkhtml.moc"
 #include "misc/loader.h"
 #include <qcursor.h>
-#include <qcolor.h>
 #include <dom_string.h>
-#include <qstring.h>
-#include <qobject.h>
-#include <qscrollview.h>
-#include <qwidget.h>
-#include <qvaluelist.h>
 #include "dom/dom2_range.h"
 #include "dom/html_document.h"
 #include "dom/dom_exception.h"
@@ -70,13 +61,13 @@ int main(int argc, char *argv[])
 
     doc->openURL( args->url(0) );
 
-    DOMTreeView * dtv = new DOMTreeView(0, doc, "DomTreeView");
-    dtv->show();
+//     DOMTreeView * dtv = new DOMTreeView(0, doc, "DomTreeView");
+//     dtv->show();
 
     toplevel->setCentralWidget( doc->widget() );
     toplevel->resize( 640, 800);
 
-    dtv->resize(toplevel->width()/2, toplevel->height());
+//     dtv->resize(toplevel->width()/2, toplevel->height());
 
     QDomDocument d = doc->domDocument();
     QDomElement viewMenu = d.documentElement().firstChild().childNodes().item( 2 ).toElement();

@@ -24,20 +24,13 @@
 
 #include "html_document.h"
 
-#include "dom_node.h"
-#include "dom_element.h"
-#include "dom_doc.h"
-#include "dom_string.h"
-#include "dom_textimpl.h"
-#include "html_misc.h"
-#include "html_element.h"
-#include "html_documentimpl.h"
-#include "html_elementimpl.h"
-#include "html_miscimpl.h"
-#include "htmlhashes.h"
-#include "khtmlview.h"
-using namespace DOM;
+#include "dom/html_misc.h"
+#include "xml/dom_textimpl.h"
+#include "html/html_documentimpl.h"
+#include "html/html_miscimpl.h"
+#include "misc/htmlhashes.h"
 
+using namespace DOM;
 
 HTMLDocument::HTMLDocument() : Document(false) // create the impl here
 {
@@ -194,7 +187,7 @@ void HTMLDocument::setCookie( const DOMString & value )
 {
    if (impl)
         ((HTMLDocumentImpl *)impl)->setCookie(value);
-        
+
 }
 
 void HTMLDocument::open(  )

@@ -21,8 +21,6 @@
  * along with this library; see the file COPYING.LIB.  If not, write to
  * the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
  * Boston, MA 02111-1307, USA.
- *
- * $Id$
  */
 
 //#define TABLE_DEBUG
@@ -30,36 +28,18 @@
 //#define DEBUG_LAYOUT
 //#define BOX_DEBUG
 
-#include "render_table.h"
+#include "rendering/render_table.h"
 
-#if QT_VERSION < 300
-#include <qlist.h>
-#else
-#include <qptrlist.h>
-#endif
 
-#include <qstack.h>
-#include <qbrush.h>
-#include <qpainter.h>
-#include <qpalette.h>
-#include <qdrawutil.h>
-#include <qtextstream.h>
 #include <kglobal.h>
-#include "dom_string.h"
 
-#include "misc/helper.h"
-#include "misc/khtmllayout.h"
 
 #include <kdebug.h>
 #include <assert.h>
 
 using namespace khtml;
 
-#if QT_VERSION < 300
-template class QArray<LengthType>;
-#else
 template class QMemArray<LengthType>;
-#endif
 
 #define FOR_EACH_CELL(r,c,cell) \
     for ( unsigned int r = 0; r < totalRows; r++ )                    \

@@ -20,15 +20,14 @@
  *
  * $Id$
  */
-#include "dom_string.h"
-#include "html_element.h"
-#include "html_elementimpl.h"
-#include "html_misc.h" // HTMLCollection
-#include "html_miscimpl.h" // HTMLCollectionImpl
-#include "dom_exception.h"
-using namespace DOM;
+#include "dom/dom_exception.h"
+#include "dom/html_misc.h"
 
-#include "htmlhashes.h"
+#include "html/html_miscimpl.h" // HTMLCollectionImpl
+
+#include "misc/htmlhashes.h"
+
+using namespace DOM;
 
 HTMLElement::HTMLElement() : Element()
 {

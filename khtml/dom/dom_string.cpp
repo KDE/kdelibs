@@ -21,10 +21,9 @@
  * $Id$
  */
 
-#include "dom_string.h"
-#include "dom_stringimpl.h"
+#include "dom/dom_string.h"
+#include "xml/dom_stringimpl.h"
 
-#include <kglobal.h>
 
 using namespace DOM;
 

@@ -21,8 +21,6 @@
  * $Id$
  */
 #include "render_br.h"
-#include "dom_stringimpl.h"
-#include "qfontmetrics.h"
 
 using namespace khtml;
 

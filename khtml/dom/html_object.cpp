@@ -20,16 +20,12 @@
  *
  * $Id$
  */
-#include "html_object.h"
 
-#include "dom_string.h"
-#include "html_misc.h"
-#include "html_miscimpl.h"
-#include "html_objectimpl.h"
-#include "html_element.h"
-#include "html_elementimpl.h"
+#include "dom/html_object.h"
 
-#include "htmlhashes.h"
+#include "html/html_objectimpl.h"
+
+#include "misc/htmlhashes.h"
 
 HTMLAppletElement::HTMLAppletElement() : HTMLElement()
 {
