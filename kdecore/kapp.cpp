@@ -156,7 +156,6 @@ void KApplication::x11FilterDestroyed()
 }
 
 
-
 // the help class for session management communication
 static QList<KSessionManaged>* sessionClients()
 {
@@ -261,7 +260,7 @@ void KApplication::init(bool GUIenabled)
   if (GUIenabled)
   {
     // this is important since we fork() to launch the help (Matthias)
-    fcntl(ConnectionNumber(qt_xdisplay()), F_SETFD, 1);
+    fcntl(ConnectionNumber(qt_xdisplay()), F_SETFD, FD_CLOEXEC);
     // set up the fancy (=robust and error ignoring ) KDE xio error handlers (Matthias)
     XSetErrorHandler( kde_x_errhandler );
     XSetIOErrorHandler( kde_xio_errhandler );
@@ -509,7 +508,8 @@ void KApplication::saveState( QSessionManager& sm )
     if ( pSessionConfig ) {
 	pSessionConfig->sync();
 	QStringList discard;
-	discard  << ( "rm "+aLocalFileName ); // only one argument  due to broken xsm
+//	discard  << ( "rm "+aLocalFileName ); // only one argument  due to broken xsm
+        discard  << "rm" << aLocalFileName; // WABA: Screw xsm
 	sm.setDiscardCommand( discard );
     }
 
@@ -1659,6 +1659,5 @@ QString KApplication::randomString(int length)
    delete [] string;
    return str;
 }
-
 
 #include "kapp.moc"
