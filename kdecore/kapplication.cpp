@@ -2528,11 +2528,17 @@ void KApplication::initUrlActionRestrictions()
   }
 }
 
-bool KApplication::authorizeURLAction(const QString &action, const KURL &baseURL, const KURL &destURL)
+bool KApplication::authorizeURLAction(const QString &action, const KURL &_baseURL, const KURL &_destURL)
 {
   bool result = false;
   if (d->urlActionRestrictions.isEmpty())
      initUrlActionRestrictions();
+  
+  KURL baseURL(_baseURL);
+  baseURL.setPath(QDir::cleanDirPath(baseURL.path()));
+  KURL destURL(_destURL);
+  destURL.setPath(QDir::cleanDirPath(destURL.path()));
+     
   for(KApplicationPrivate::URLActionRule *rule = d->urlActionRestrictions.first();
       rule; rule = d->urlActionRestrictions.next())
   {
