@@ -503,6 +503,13 @@ void KKeyChooser::init( KKeyEntryMap *aKeyMap, KKeyMapOrder *pMapOrder,
 	//  next development phase where API changes are not so sensitive. -- ellis
 	QListViewItem *pProgramItem, *pGroupItem = 0, *pParentItem, *pItem;
 
+	// Initially set all of the keys to not-configurable, and then only
+	//  let those which are to be displayed be configured (set below).
+	//  This is so that the call to KAccel::writeKeyMap() will only write
+	//  those which we are editing.
+	for( KKeyEntryMap::Iterator it = aKeyMap->begin(); it != aKeyMap->end(); ++it )
+		(*it).bConfigurable = false;
+
 	pParentItem = pProgramItem = pItem = new QListViewItem( d->wList, "Shortcuts" );
 	pParentItem->setExpandable( true );
 	pParentItem->setOpen( true );
@@ -528,9 +535,11 @@ void KKeyChooser::init( KKeyEntryMap *aKeyMap, KKeyMapOrder *pMapOrder,
 				delete pGroupItem;
 			pGroupItem = pParentItem = pItem;
 		} else {
+			(*it).aConfigKeyCode = (*it).aCurrentKeyCode;
 			pItem = new QListViewItem( pParentItem, pItem, (*it).descr,
 					KAccel::keyToString( (*it).aConfigKeyCode, true ) );
 			d->actionMap[pItem] = it;
+			(*it).bConfigurable = true;
 		}
 	}
 	if( !pProgramItem->firstChild() )
@@ -717,20 +726,21 @@ void KKeyChooser::toChange( QListViewItem *item )
     d->bKeyIntercept = false;
     releaseKeyboard();
 
-    if ( !item )
+    if ( !item || !d->actionMap.contains( item ) )
     {
         // if nothing is selected -> disable radio boxes
         d->kbGroup->find(NoKey)->setEnabled( false );
         d->kbGroup->find(DefaultKey)->setEnabled( false );
         d->kbGroup->find(CustomKey)->setEnabled( false );
 	d->bChange->setEnabled( false );
-    } else if( d->actionMap.contains( item ) ) {
+    } else {
         /* get the entry */
         KKeyEntryMap::Iterator it = d->actionMap[item];
+	int keyDefault = d->bPreferFourModifierKeys ? (*it).aDefaultKeyCode4 : (*it).aDefaultKeyCode;
 
 	// Set key strings
 	QString keyStrCfg = KAccel::keyToString( (*it).aConfigKeyCode, true );
-	QString keyStrDef = KAccel::keyToString( (d->bPreferFourModifierKeys ? (*it).aDefaultKeyCode4 : (*it).aDefaultKeyCode), true );
+	QString keyStrDef = KAccel::keyToString( keyDefault, true );
 
         d->bChange->setKey( (*it).aConfigKeyCode );
         item->setText( 1, keyStrCfg );
@@ -738,7 +748,7 @@ void KKeyChooser::toChange( QListViewItem *item )
 
 	// Select the appropriate radio button.
 	int index = ((*it).aConfigKeyCode == 0) ? NoKey
-			: ((*it).aConfigKeyCode == (*it).aDefaultKeyCode) ? DefaultKey
+			: ((*it).aConfigKeyCode == keyDefault) ? DefaultKey
 			: CustomKey;
         ((QRadioButton *)d->kbGroup->find(NoKey))->setChecked( index == NoKey );
         ((QRadioButton *)d->kbGroup->find(DefaultKey))->setChecked( index == DefaultKey );
@@ -747,7 +757,7 @@ void KKeyChooser::toChange( QListViewItem *item )
 	// Enable buttons if this key is configurable.
 	// The 'Default Key' button must also have a default key.
 	((QRadioButton *)d->kbGroup->find(NoKey))->setEnabled( (*it).bConfigurable );
-	((QRadioButton *)d->kbGroup->find(DefaultKey))->setEnabled( (*it).bConfigurable && (*it).aDefaultKeyCode != 0 );
+	((QRadioButton *)d->kbGroup->find(DefaultKey))->setEnabled( (*it).bConfigurable && keyDefault != 0 );
 	((QRadioButton *)d->kbGroup->find(CustomKey))->setEnabled( (*it).bConfigurable );
 	d->bChange->setEnabled( (*it).bConfigurable );
     }
@@ -819,7 +829,7 @@ void KKeyChooser::defaultKey()
 
 void KKeyChooser::allDefault()
 {
-	allDefault( KAccel::useFourModifierKeys() );
+	allDefault( d->bPreferFourModifierKeys );
 }
 
 void KKeyChooser::allDefault( bool useFourModifierKeys )
@@ -831,7 +841,7 @@ void KKeyChooser::allDefault( bool useFourModifierKeys )
     	itit != d->actionMap.end(); ++itit ) {
 	KKeyEntryMap::Iterator it = *itit;
         QListViewItem *at = itit.key();
-	    kdDebug(125) << QString( "allDefault: %1 3:%2 4:%3\n" ).arg(it.key()).arg((*it).aDefaultKeyCode).arg((*it).aDefaultKeyCode4);
+	    //kdDebug(125) << QString( "allDefault: %1 3:%2 4:%3\n" ).arg(it.key()).arg((*it).aDefaultKeyCode).arg((*it).aDefaultKeyCode4);
             if ( (*it).bConfigurable ) {
                 (*it).aCurrentKeyCode = (*it).aConfigKeyCode =
                     (useFourModifierKeys) ? (*it).aDefaultKeyCode4 : (*it).aDefaultKeyCode;
@@ -874,7 +884,7 @@ void KKeyChooser::listSync()
                 item->setText(1, KAccel::keyToString((*it).aConfigKeyCode, true));
         }
 
-        item = item->nextSibling();
+        item = item->itemBelow();
     }
     updateAction( d->wList->currentItem() );
 }
