@@ -817,7 +817,7 @@ WebStyle::drawComboButton
   QRect
 WebStyle::comboButtonRect(int x, int y, int w, int h)
 {
-  return QRect(x, y, w, h);
+  return QRect(x + 2, y + 2, w - 20, h - 4);
 }
 
   QRect
@@ -1397,9 +1397,9 @@ WebStyle::drawTab
         p->setPen(g.dark());
         p->drawLine(r.left(), r.top(), r.right(), r.top());
       }
-      p->drawLine(r.left(), r.top(), r.right(), r.bottom());
+      p->drawLine(r.left(), r.top(), r.left(), r.bottom());
+      p->drawLine(r.left(), r.bottom(), r.right(), r.bottom());
       p->drawLine(r.right(), r.top(), r.right(), r.bottom());
-      p->drawLine(r.left(), r.bottom(), r.top(), r.bottom());
       break;
   }
 
