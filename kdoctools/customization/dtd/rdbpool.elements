@@ -74,7 +74,7 @@
  -->
 <!ENTITY % lang.attrib
         "lang           (af|ar|az|be|bg|bn|bo|br|bs|ca|cs|cy|da|de|el|en|en-GB
-                        |en-US|eo|es|et|eu|fa|fi|fo|fr|ga|gl|gu|he|hi|hr|hu|id
+                        |en-US|eo|es|et|eu|fa|fi|fo|fr|fy|ga|gl|gu|he|hi|hr|hu|id
                         |is|it|ja|kn|km|ko|ku|lo|lt|lv|mi|mk|mr|mt|nl|no|nb|nn|nso
                         |oc|pl|pt|pt-BR|pt-PT|ro|ru|si|sk|sl|sq|sr|st|sv|ta|te
                         |tg|th|tr|uk|ven|vi|wa|xh|zh|zh-CN|zh-TW|zu)
@@ -106,6 +106,7 @@ fa      Farsi (? ok if = Persian)
 fi      Finnish
 fo      Faroese
 fr      French
+fy      Frisian
 ga      Irish
 gl	Gallegan
 gu	Gujarati
