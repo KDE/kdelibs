@@ -1069,7 +1069,9 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
     }
     case CSS_PROP_CUE_AFTER:
     case CSS_PROP_CUE_BEFORE:
+	break;
     case CSS_PROP_LIST_STYLE_IMAGE:
+	break;
 
 // length
     case CSS_PROP_BORDER_TOP_WIDTH:
@@ -1434,8 +1436,8 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
 	    style->setZIndex(e->parentNode()->style()->zIndex());
 	    return;
 	}
-	if(!primitiveValue || 
-	   primitiveValue->primitiveType() != CSSPrimitiveValue::CSS_NUMBER) 
+	if(!primitiveValue ||
+	   primitiveValue->primitiveType() != CSSPrimitiveValue::CSS_NUMBER)
 	    return;
 	style->setZIndex((int)primitiveValue->getFloatValue(CSSPrimitiveValue::CSS_NUMBER));
 	return;
