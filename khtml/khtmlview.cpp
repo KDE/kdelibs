@@ -534,11 +534,12 @@ void KHTMLView::drawContents( QPainter *p, int ex, int ey, int ew, int eh )
 static int cnt=0;
 	ex = contentsX(); ey = contentsY();
 	ew = visibleWidth(); eh = visibleHeight();
-	kdDebug() << "[" << ++cnt << "]" << " clip region: " << QRect(ex,ey,ew,eh) << endl;
+	QRect pr(ex,ey,ew,eh);
+	kdDebug() << "[" << ++cnt << "]" << " clip region: " << pr << endl;
 //	p->setClipRegion(QRect(0,0,ew,eh));
 //        p->translate(-ex, -ey);
         p->fillRect(ex, ey, ew, eh, palette().active().brush(QColorGroup::Base));
-        m_part->xmlDocImpl()->renderer()->layer()->paint(p, ex, ey, ew, eh, 0, 0);
+        m_part->xmlDocImpl()->renderer()->layer()->paint(p, pr);
 #endif // DEBUG_NO_PAINT_BUFFER
 
 #ifndef KHTML_NO_CARET
