@@ -23,9 +23,9 @@
 #ifndef RESOURCEDLG_H
 #define RESOURCEDLG_H
 
-#include <qdialog.h>
 #include <qmap.h>
 
+#include <kdialog.h>
 #include <klistbox.h>
 
 #include "addressbook.h"
@@ -33,7 +33,7 @@
 
 namespace KABC {
 
-class ResourceDlg : QDialog
+class ResourceDlg : KDialog
 {
     Q_OBJECT
 public:

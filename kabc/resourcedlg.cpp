@@ -31,12 +31,13 @@
 using namespace KABC;
 
 ResourceDlg::ResourceDlg( AddressBook *ab, QWidget *parent, const char *name )
-    : QDialog( parent, name, true )
+    : KDialog( parent, name, true )
 {
     setCaption( i18n( "Resource Selection" ) );
     resize( 300, 200 );
 
     QVBoxLayout *mainLayout = new QVBoxLayout( this );
+    mainLayout->setMargin( marginHint() );
     
     QGroupBox *groupBox = new QGroupBox( 2, Qt::Horizontal,  this );
     groupBox->setTitle( i18n( "Resources" ) );
