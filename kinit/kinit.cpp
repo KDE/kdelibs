@@ -840,12 +840,14 @@ static void kdeinit_library_path()
       if (dir[dir.length()-1] == '/') dir.truncate(dir.length()-1);
       if (ltdl_library_path.find(dir) == -1)
       {
-         ltdl_library_path += ":";
+         if ( !ltdl_library_path.isEmpty())
+             ltdl_library_path += ":";
          ltdl_library_path += dir;
       }
       if (ld_library_path.find(dir) == -1)
       {
-         ld_library_path += ":";
+         if ( !ld_library_path.isEmpty())
+             ld_library_path += ":";
          ld_library_path += dir;
       }
    }
