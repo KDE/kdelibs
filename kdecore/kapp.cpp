@@ -81,6 +81,7 @@
 #endif
 
 #include <X11/Xlib.h>
+#include <X11/Xutil.h>
 #include <X11/Xatom.h>
 
 // defined by X11 headers
@@ -1348,6 +1349,22 @@ void KApplication::setTopWidget( QWidget *topWidget )
 {
   if( topWidget != 0 )
   {
+    Window leader = topWidget->winId();
+
+    char * argv = strdup(static_cast<const char *>(instanceName()));
+
+    XSetCommand(display, leader, &argv, 1);
+
+    XClassHint hint;
+    hint.res_name = strdup(instanceName());
+    hint.res_class = "toplevel";
+    XSetClassHint(display, leader, &hint);
+
+    XWMHints * hints = XAllocWMHints();
+    hints->window_group = leader;
+    hints->flags = WindowGroupHint;
+    XSetWMHints(display, leader, hints);
+
     // set the specified caption
     topWidget->setCaption( caption() );
     // set the specified icons
