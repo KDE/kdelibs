@@ -388,7 +388,7 @@ void KKeyChooser::buildListView( uint iList )
 {
 	KShortcutList* pList = d->rgpLists[iList];
 
-	d->pList->setSorting( -1 );
+	//d->pList->setSorting( -1 );
 	KListViewItem *pProgramItem, *pGroupItem = 0, *pParentItem, *pItem;
 
 	pParentItem = pProgramItem = pItem = new KListViewItem( d->pList, i18n("Shortcuts") );
@@ -677,6 +677,19 @@ void KKeyChooser::setShortcut( const KShortcut& cut )
 	}
 }
 
+// Returns iSeq index if cut2 has a sequence of equal or higher priority to a sequence in cut.
+// else -1
+static int keyConflict( const KShortcut& cut, const KShortcut& cut2 )
+{
+	for( uint iSeq = 0; iSeq < cut.count(); iSeq++ ) {
+		for( uint iSeq2 = 0; iSeq2 <= iSeq && iSeq2 < cut2.count(); iSeq2++ ) {
+			if( cut.seq(iSeq) == cut2.seq(iSeq2) )
+				return iSeq;
+		}
+	}
+	return -1;
+}
+
 bool KKeyChooser::isKeyPresent( const KShortcut& cut, bool bWarnUser )
 {
 	KKeyChooserItem* pItem = dynamic_cast<KKeyChooserItem*>(d->pList->currentItem());
@@ -688,7 +701,8 @@ bool KKeyChooser::isKeyPresent( const KShortcut& cut, bool bWarnUser )
 			const KKeySequence& seq = cut.seq(i);
 
 			KStdAccel::StdAccel id = KStdAccel::findStdAccel( seq );
-			if( id != KStdAccel::AccelNone ) {
+			if( id != KStdAccel::AccelNone
+			    && keyConflict( cut, KStdAccel::shortcut( id ) ) > -1 ) {
 				if( bWarnUser )
 					_warning( seq, KStdAccel::label(id), i18n("Conflict with Standard Application Shortcut") );
 				return true;
@@ -698,28 +712,25 @@ bool KKeyChooser::isKeyPresent( const KShortcut& cut, bool bWarnUser )
 
 	QMap<QString, KShortcut>::ConstIterator it;
 	for( it = d->mapGlobals.begin(); it != d->mapGlobals.end(); ++it ) {
-		for( uint iSeq = 0; iSeq < cut.count(); iSeq++ ) {
-			const KKeySequence& seq = cut.seq(iSeq);
-			if( (*it).contains( seq ) ) {
-				if( m_type != Global || it.key() != pItem->actionName() ) {
-					if( bWarnUser )
-						_warning( seq, it.key(), i18n("Conflict with Global Shortcuts") );
-					return true;
-				}
+		int iSeq = keyConflict( cut, (*it) );
+		if( iSeq > -1 ) {
+			if( m_type != Global || it.key() != pItem->actionName() ) {
+				if( bWarnUser )
+					_warning( cut.seq(iSeq), it.key(), i18n("Conflict with Global Shortcuts") );
+				return true;
 			}
 		}
 	}
 
 	// Search for shortcut conflicts with other actions in the
 	//  lists we're configuring.
-	for( uint iList = 0; iList < d->rgpLists.count(); iList++ ) {
-		KShortcutList* pList = d->rgpLists[iList];
-		for( uint iSeq = 0; iSeq < cut.count(); iSeq++ ) {
-			const KKeySequence& seq = cut.seq(iSeq);
-			int iAction = pList->index( seq );
-			if( iAction > -1 && pList->name(iAction) != pItem->actionName() ) {
+	for( QListViewItemIterator it( d->pList ); it.current(); ++it ) {
+		KKeyChooserItem* pItem2 = dynamic_cast<KKeyChooserItem*>(it.current());
+		if( pItem2 && pItem2 != pItem ) {
+			int iSeq = keyConflict( cut, pItem2->shortcut() );
+			if( iSeq > -1 ) {
 				if( bWarnUser )
-					_warning( seq, pList->label(iAction), i18n("Key Conflict") );
+					_warning( cut.seq(iSeq), pItem2->text(0), i18n("Key Conflict") );
 				return true;
 			}
 		}
@@ -785,8 +796,16 @@ void KKeyChooserItem::commitChanges()
 
 QString KKeyChooserItem::text( int iCol ) const
 {
-	if( iCol == 0 )
-		return m_pList->label(m_iAction);
+	if( iCol == 0 ) {
+		// Quick HACK to get rid of '&'s.
+		// TODO: convert '&&' => '&' and leave it in.
+		QString s = m_pList->label(m_iAction);
+		QString s2;
+		for( uint i = 0; i < s.length(); i++ )
+			if( s[i] != '&' )
+				s2 += s[i];
+		return s2;
+	}
 	else if( iCol <= (int) m_cut.count() )
 		return m_cut.seq(iCol-1).toString();
 	else
@@ -838,91 +857,6 @@ void KKeyDialog::commitChanges()
 {
 	m_pKeyChooser->commitChanges();
 }
-
-/*int KKeyDialog::configure( KAccelActions& actions, QWidget* parent, KKeyChooser::ActionType type )
-{
-	KKeyDialog kd( parent, type );
-	int retcode = kd.exec();
-	if( retcode == Accepted )
-		kd.commitChanges();
-	return retcode;
-}
-
-int KKeyDialog::configure( KAccelActions& actions, const QString& sXmlFile, QWidget* parent, bool bSaveSettings )
-{
-	kdDebug(125) << "KKeyDialog::configureKeys( KaccelActions&, " << sXmlFile << ", " << bSaveSettings << " )" << endl;
-
-	int retcode = configure( actions, parent, KKeyChooser::Application );
-	if( retcode != Accepted || !bSaveSettings || sXmlFile.isEmpty() )
-		return retcode;
-
-	// let's start saving this info
-	QString raw_xml( KXMLGUIFactory::readConfigFile( sXmlFile ) );
-	QDomDocument doc;
-	doc.setContent( raw_xml );
-
-	QString tagActionProp = QString::fromLatin1("ActionProperties");
-	QString tagAction     = QString::fromLatin1("Action");
-	QString attrName      = QString::fromLatin1("name");
-	QString attrShortcut  = QString::fromLatin1("shortcut");
-	// Depricated attribute
-	QString attrAccel     = QString::fromLatin1("accel");
-
-	// first, lets see if we have existing properties
-	QDomElement elem;
-	QDomElement it = doc.documentElement();
-	KXMLGUIFactory::removeDOMComments( it );
-	it = it.firstChild().toElement();
-	for( ; !it.isNull(); it = it.nextSibling().toElement() ) {
-		if( it.tagName() == tagActionProp ) {
-			elem = it;
-			break;
-		}
-	}
-
-	// if there was none, create one
-	if( elem.isNull() )
-	{
-		elem = doc.createElement( tagActionProp );
-		doc.firstChild().appendChild(elem);
-	}
-
-	// now, iterate through our actions
-	for( uint i = 0; i < actions.count(); i++ )
-	{
-		KAccelAction* pAction = actions.actionPtr( i );
-
-		// now see if this element already exists
-		QDomElement act_elem;
-		for( it = elem.firstChild().toElement(); !it.isNull(); it = it.nextSibling().toElement() ) {
-			if( it.attribute( attrName ) == pAction->name() ) {
-				act_elem = it;
-				break;
-			}
-		}
-
-		// nope, create a new one
-		if( act_elem.isNull() ) {
-			act_elem = doc.createElement( tagAction );
-			act_elem.setAttribute( attrName, pAction->name() );
-		} else
-			// Get rid of depricated attribute if it exists.
-			act_elem.removeAttribute( attrAccel );
-
-		if( pAction->shortcut() != pAction->shortcutDefault() )
-			act_elem.setAttribute( attrShortcut, pAction->shortcut().toStringInternal() );
-		else
-			act_elem.removeAttribute( attrShortcut );
-
-		elem.appendChild( act_elem );
-	}
-
-	kdDebug(125) << "calling KXMLGUIFactory::saveConfigFile()" << endl;
-	// finally, write out the result
-	KXMLGUIFactory::saveConfigFile( doc, sXmlFile );
-
-	return retcode;
-}*/
 
 int KKeyDialog::configure( KAccel* keys, QWidget *parent, bool bSaveSettings )
 {
