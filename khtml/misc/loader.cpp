@@ -625,6 +625,7 @@ void CachedImage::movieStatus(int status)
 
                 // monochrome alphamasked images are usually about 10000 times
                 // faster to draw, so this is worth the hack
+#if QT_VERSION >= 300
                 if ( p && monochrome && p->depth() > 1 ) {
                     QPixmap* pix = new QPixmap;
                     pix->convertFromImage( p->convertToImage().convertDepth( 1 ), MonoOnly|AvoidDither );
@@ -634,6 +635,7 @@ void CachedImage::movieStatus(int status)
                     p = pix;
                     monochrome = false;
                 }
+#endif
             }
 
 	    CachedObjectClient *c;
