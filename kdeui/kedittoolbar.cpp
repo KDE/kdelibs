@@ -245,7 +245,7 @@ KEditToolbarWidget::KEditToolbarWidget(KActionCollection *collection,
   // reusable vars
   QDomElement elem;
 
-  // first, get all of the necessary info for our local xml 
+  // first, get all of the necessary info for our local xml
   XmlData local;
   local.m_xmlFile = d->xmlFile(file);
   local.m_type    = XmlData::Local;
@@ -258,7 +258,7 @@ KEditToolbarWidget::KEditToolbarWidget(KActionCollection *collection,
   XmlData merge;
   merge.m_xmlFile  = QString::null;
   merge.m_type     = XmlData::Merged;
-  merge.m_document = document();
+  merge.m_document = domDocument();
   elem = merge.m_document.documentElement().toElement();
   merge.m_barList  = d->findToolbars(elem);
   d->m_xmlFiles.append(merge);
@@ -747,7 +747,7 @@ void KEditToolbarWidget::slotToolbarSelected(const QString& _text)
         QString doc_name((*xit).m_document.documentElement().attribute( attrName ));
         name += " <" + doc_name + ">";
       }
-      
+
       // is this our toolbar?
       if ( name == _text )
       {
@@ -755,7 +755,7 @@ void KEditToolbarWidget::slotToolbarSelected(const QString& _text)
         d->m_currentXmlData     = (*xit);
         d->m_currentToolbarElem = (*it);
 
-        // load in our values 
+        // load in our values
         loadActionList(d->m_currentToolbarElem);
 
         // we do not want to load in the styles for parts
@@ -822,9 +822,9 @@ void KEditToolbarWidget::slotInsertButton()
   QDomElement new_item;
   // let's handle the separator specially
   if (item->text(1) == "-----")
-    new_item = document().createElement(tagSeparator);
+    new_item = domDocument().createElement(tagSeparator);
   else
-    new_item = document().createElement(tagAction);
+    new_item = domDocument().createElement(tagAction);
   new_item.setAttribute(attrName, item->internalName());
 
   if (m_activeList->currentItem())
@@ -964,7 +964,7 @@ void KEditToolbarWidget::slotDownButton()
                                            item->itemBelow(),
                                            item->internalName());
       clone->setText(1, item->text(1));
-      
+
       // only set new pixmap if exists
       if( item->pixmap(0) )
         clone->setPixmap(0, *item->pixmap(0));
@@ -1110,7 +1110,7 @@ void KEditToolbarWidget::updateLocal(QDomElement& elem)
       return;
     }
 
-    // just append it 
+    // just append it
     QDomElement toolbar = (*xit).m_document.documentElement().toElement();
     toolbar.appendChild(elem);
   }

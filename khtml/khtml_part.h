@@ -53,6 +53,12 @@ namespace khtml
   class RenderPart;
   class RenderPartObject;
   struct ChildFrame;
+  class MouseEvent;
+  class MousePressEvent;
+  class MouseDoubleClickEvent;
+  class MouseMoveEvent;
+  class MouseReleaseEvent;
+  class DrawContentsEvent;
 };
 
 namespace KJS {
@@ -367,13 +373,11 @@ public:
 
   /**
    * Sets the cursor to use when the cursor is on a link.
-   * (convenience function, just calls htmlWidget->setURLCursor() )
    */
   void setURLCursor( const QCursor &c );
 
   /**
    * Returns the cursor which is used when the cursor is on a link.
-   * (convenience function, just cals htmlWidget->urlCursor() )
    */
   const QCursor& urlCursor() const;
 
@@ -469,6 +473,15 @@ signals:
   void popupMenu(const QString &url, const QPoint &point);
 
 protected:
+
+  virtual bool event( QEvent *event );
+
+  virtual void khtmlMousePressEvent( khtml::MousePressEvent *event );
+  virtual void khtmlMouseDoubleClickEvent( khtml::MouseDoubleClickEvent * );
+  virtual void khtmlMouseMoveEvent( khtml::MouseMoveEvent *event );
+  virtual void khtmlMouseReleaseEvent( khtml::MouseReleaseEvent *event );
+  virtual void khtmlDrawContentsEvent( khtml::DrawContentsEvent * );
+
   /**
    * Internal empty reimplementation of @ref KParts::ReadOnlyPart::openFile .
    */
@@ -504,36 +517,6 @@ protected:
   virtual KParts::ReadOnlyPart *createPart( QWidget *parentWidget, const char *widgetName, QObject *parent, const char *name,
 					    const QString &mimetype, QString &serviceName, QStringList &serviceTypes,
 					    const QStringList &params);
-
-  /**
-   * derived classes can use this hook to filter out key events from the KHTMLView.
-   */
-  virtual bool keyPressHook(QKeyEvent *) { return false; }
-  /**
-   * derived classes can use this hook to filter out key events from the KHTMLView.
-   */
-  virtual bool keyReleaseHook(QKeyEvent*) { return false; }
-
-  /**
-   * derived classes can use this hook to filter out mouse events from the KHTMLView.
-   */
-  virtual bool mousePressHook( QMouseEvent *, int, int,DOM::DOMString, DOM::Node, long ){ return false; }
-  /**
-   * derived classes can use this hook to filter out mouse events from the KHTMLView.
-   */
-  virtual bool mouseDoubleClickHook( QMouseEvent *, int, int, DOM::DOMString, DOM::Node, long ){ return false; }
-  /**
-   * derived classes can use this hook to filter out mouse events from the KHTMLView.
-   */
-  virtual bool mouseMoveHook(QMouseEvent *, int, int, DOM::DOMString, DOM::Node, long){ return false; }
-  /**
-   * derived classes can use this hook to filter out mouse events from the KHTMLView.
-   */
-  virtual bool mouseReleaseHook(QMouseEvent *, int, int, DOM::DOMString, DOM::Node, long){ return false; }
-  /**
-   * derived classes can use this hook to process paint events from the KHTMLView.
-   */
-  virtual void drawContentsHook(QPainter *) {}
 
   /**
    * Internal. Called by the @ref BrowserExtension .

@@ -251,7 +251,7 @@ void KTMainWindow::shuttingDown()
   KToolBar *toolbar;
   for (toolbar = toolbars.first(); toolbar != 0; toolbar = toolbars.next())
     toolbar->saveState();
- 
+
   // call the virtual queryExit
   queryExit();
 }
@@ -262,7 +262,7 @@ int KTMainWindow::addToolBar( KToolBar *toolbar, int index )
     // since the xmlgui code (suprisingly) doesn't really have all
     // that much knowledge of the xml file itself
     if ( !xmlFile().isNull() )
-        toolbar->setXML( xmlFile(), document() );
+        toolbar->setXML( xmlFile(), domDocument() );
 
     if ( index == -1 )
 	toolbars.append( toolbar );

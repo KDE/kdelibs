@@ -87,7 +87,7 @@ public:
    * setXMLFile() or @ref setXML().
    * This document describes the layout of the GUI.
    */
-  virtual QDomDocument document() const;
+  virtual QDomDocument domDocument() const;
 
   /**
    * This will return the XML file as set by @ref setXMLFile.  If
@@ -227,7 +227,7 @@ protected:
    * Call this in the Part-inherited class constructor if you don't call
    * @ref setXMLFile or @ref setXML .
    */
-  virtual void setDocument( const QDomDocument &document, bool merge = false );
+  virtual void setDOMDocument( const QDomDocument &document, bool merge = false );
 
   /**
    * This function will attempt to give up some memory after the GUI

@@ -76,17 +76,6 @@ public:
     bool gotoPrevLink();
     void toggleActLink(bool);
 
-    /**
-     * Sets the cursor to use when the cursor is on a link.
-     */
-    void setURLCursor( const QCursor &c )
-       { linkCursor = c; }
-
-    /**
-     * Returns the cursor which is used when the cursor is on a link.
-     */
-    const QCursor& urlCursor() const { return linkCursor; }
-
     /*
      * set a margin in x direction
      */
@@ -105,21 +94,11 @@ public:
      */
     int marginHeight() { return _marginHeight; }
 
-    QString selectedText() const;
-
-    bool hasSelection() const;
-
     void print();
 
     void layout(bool force = false);
 
-    void setDNDEnabled( bool b );
-    bool dndEnabled() const;
-
     static const QList<KHTMLView> *viewList() { return lstViews; }
-
-signals:
-    void selectionChanged();
 
 protected:
     void clear();
@@ -165,21 +144,8 @@ private:
      */
     static QList<KHTMLView> *lstViews;
 
-    /**
-     * This is just a temporary variable. It stores the URL the user clicked
-     * on, until he releases the mouse again.
-     *
-     * @ref #mouseMoveHook
-     * @ref #mousePressedHook
-     */
-    QString m_strSelectedURL;
-
     DOM::NodeImpl *nodeUnderMouse() const;
 
-    QCursor linkCursor;
-
-    bool pressed;
-    QString overURL;
     int _width;
     int _height;
 

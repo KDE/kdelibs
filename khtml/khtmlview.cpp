@@ -22,6 +22,7 @@
 
 #include "khtmlview.moc"
 #include "khtml_part.h"
+#include "khtml_events.h"
 
 #include "misc/loader.h"
 #include "html/html_documentimpl.h"
@@ -74,11 +75,6 @@ class KHTMLViewPrivate {
 public:
     KHTMLViewPrivate()
     {
-	selectionStart = 0;
-	selectionEnd = 0;
-	startOffset = 0;
-	endOffset = 0;
-	startBeforeEnd = true;
 	underMouse = 0;
 	linkPressed = false;
 	currentNode = 0;
@@ -86,11 +82,6 @@ public:
  	tabIndex=-1;
 
     }
-    NodeImpl *selectionStart;
-    int startOffset;
-    NodeImpl *selectionEnd;
-    int endOffset;
-    bool startBeforeEnd;
     NodeImpl *underMouse;
 
     NodeImpl *currentNode;
@@ -98,10 +89,6 @@ public:
 
     bool linkPressed;
     short tabIndex;
-
-    QPoint m_dragStartPos;
-
-    bool m_bDnd;
 };
 
 
@@ -120,7 +107,6 @@ KHTMLView::KHTMLView( KHTMLPart *part, QWidget *parent, const char *name)
     KImageIO::registerFormats();
 
     setCursor(arrowCursor);
-    linkCursor = KCursor::handCursor();
     init();
 
     viewport()->show();
@@ -129,7 +115,6 @@ KHTMLView::KHTMLView( KHTMLPart *part, QWidget *parent, const char *name)
     setHScrollBarMode(Auto);
 
     d = new KHTMLViewPrivate;
-    d->m_bDnd = true;
 }
 
 KHTMLView::~KHTMLView()
@@ -169,15 +154,9 @@ void KHTMLView::clear()
 {
     resizeContents(clipper()->width(), clipper()->height());
 
-    pressed = false;
-
     //setVScrollBarMode(Auto);
     //setHScrollBarMode(Auto);
 
-    d->selectionStart = 0;
-    d->selectionEnd = 0;
-    d->startOffset = 0;
-    d->endOffset = 0;
     d->underMouse = 0;
     d->currentNode = 0;
     d->linkPressed = false;
@@ -351,8 +330,6 @@ void KHTMLView::viewportMousePressEvent( QMouseEvent *_mouse )
 {
     if(!m_part->docImpl()) return;
 
-    d->m_dragStartPos = _mouse->pos();
-
     int xm, ym;
     viewportToContents(_mouse->x(), _mouse->y(), xm, ym);
 
@@ -373,48 +350,8 @@ void KHTMLView::viewportMousePressEvent( QMouseEvent *_mouse )
     long offset=0;
     m_part->docImpl()->mouseEvent( xm, ym, _mouse->stateAfter(), DOM::NodeImpl::MousePress, 0, 0, url, innerNode, offset );
 
-    kdDebug( 6000 ) << "Her har vi long'n: " << offset << " " << endl;
-    if(m_part->mousePressHook(_mouse, xm, ym, url, Node(innerNode), offset)) return;
-
-    if(url != 0)
-    {
-	//kdDebug( 6000 ) << "mouseEvent: overURL " << url.string() << endl;
-	m_strSelectedURL = url.string();
-    }
-    else
-	m_strSelectedURL = QString::null;
-
-    if ( _mouse->button() == LeftButton || _mouse->button() == MidButton )
-    {
-    	pressed = TRUE;
-	if(_mouse->button() == LeftButton) {
-    	    if(innerNode) {
-		d->selectionStart = innerNode;
-		d->startOffset = offset;
-		d->selectionEnd = innerNode;
-		d->endOffset = offset;
-		m_part->docImpl()->clearSelection();
-		kdDebug( 6000 ) << "setting start of selection to " << innerNode << "/" << offset << endl;
-	    } else {
-		d->selectionStart = 0;
-		d->selectionEnd = 0;
-	    }
-	    // ### emit some signal
-	    emit selectionChanged();
-	}
-    }
-
-    if( _mouse->button() == RightButton )
-    {
-	m_part->popupMenu( m_strSelectedURL );
-    }
-    else if ( _mouse->button() == MidButton && !m_strSelectedURL.isEmpty() )
-    {
-      KURL u( m_part->url(), m_strSelectedURL );
-      if ( !u.isMalformed() )
-        emit m_part->browserExtension()->createNewWindow( u );
-      m_strSelectedURL = QString::null; //reset it, in order to avoid opening the url in the current window! (in mouseReleaseEvent) (Simon)
-    }
+    khtml::MousePressEvent event( _mouse, xm, ym, url, Node(innerNode), offset );
+    QApplication::sendEvent( m_part, &event );
 }
 
 void KHTMLView::viewportMouseDoubleClickEvent( QMouseEvent *_mouse )
@@ -431,7 +368,8 @@ void KHTMLView::viewportMouseDoubleClickEvent( QMouseEvent *_mouse )
     long offset=0;
     m_part->docImpl()->mouseEvent( xm, ym, _mouse->stateAfter(), DOM::NodeImpl::MouseDblClick, 0, 0, url, innerNode, offset );
 
-    if(m_part->mouseDoubleClickHook(_mouse, xm, ym, url, Node(innerNode), offset)) return;
+    khtml::MouseDoubleClickEvent event( _mouse, xm, ym, url, Node(innerNode), offset );
+    QApplication::sendEvent( m_part, &event );
 
     // ###
     //if ( url.length() )
@@ -452,94 +390,9 @@ void KHTMLView::viewportMouseMoveEvent( QMouseEvent * _mouse )
     m_part->docImpl()->mouseEvent( xm, ym, _mouse->stateAfter(), DOM::NodeImpl::MouseMove, 0, 0, url, innerNode, offset );
 
     d->underMouse = innerNode;
-    if(m_part->mouseMoveHook(_mouse, xm, ym, url, Node(innerNode), offset)) return;
-
-    // drag of URL
-
-    if(pressed && !m_strSelectedURL.isEmpty() &&
-       ( d->m_dragStartPos - _mouse->pos() ).manhattanLength() > KGlobalSettings::dndEventDelay() &&
-       d->m_bDnd )
-    {
-	QStringList uris;
-	KURL u( m_part->completeURL( m_strSelectedURL) );
-	uris.append( u.url() );
-	QUriDrag *drag = new QUriDrag( viewport() );
-	drag->setUnicodeUris( uris );
 	
-	QPixmap p = KMimeType::pixmapForURL(u, 0, KIcon::SizeMedium);
-	
-	if ( !p.isNull() )
-    	  drag->setPixmap(p);
-	else
-	  kdDebug( 6000 ) << "null pixmap" << endl;
- 	
-	drag->drag();
-
-	// when we finish our drag, we need to undo our mouse press
-	pressed = false;
-        m_strSelectedURL = "";
-	return;
-    }
-
-
-
-    if ( !pressed && url.length() )
-    {
-	QString surl = url.string();
-	if ( overURL.isEmpty() )
-	{
-	    setCursor( linkCursor );
-	    overURL = surl;
-	    m_part->overURL( overURL );
-	}
-	else if ( overURL != surl )
-	{
-	    m_part->overURL( overURL );
-	    overURL = surl;
-	}
-	return;
-    }
-    else if( overURL.length() && !url.length() )
-    {
-	setCursor( arrowCursor );
-	m_part->overURL( QString::null );
-	overURL = "";
-    }
-
-    // selection stuff
-    if( pressed && innerNode && innerNode->isTextNode()) {
-	d->selectionEnd = innerNode;
-	d->endOffset = offset;
-	kdDebug( 6000 ) << "setting end of selection to " << innerNode << "/" << offset << endl;
-
-	// we have to get to know if end is before start or not...
-	NodeImpl *n = d->selectionStart;
-	d->startBeforeEnd = false;
-	while(n) {
-	    if(n == d->selectionEnd) {
-		d->startBeforeEnd = true;
-		break;
-	    }
-	    NodeImpl *next = n->firstChild();
-	    if(!next) next = n->nextSibling();
-	    while( !next && (n = n->parentNode()) ) {
-		next = n->nextSibling();
-	    }
-	    n = next;
-	    //viewport()->repaint(false);
-	}
-	
-	if (d->selectionEnd == d->selectionStart && d->endOffset < d->startOffset)
-	     m_part->docImpl()
-	    	->setSelection(d->selectionStart,d->endOffset,d->selectionEnd,d->startOffset);
-	else if (d->startBeforeEnd)
-	    m_part->docImpl()
-	    	->setSelection(d->selectionStart,d->startOffset,d->selectionEnd,d->endOffset);
-	else
-	    m_part->docImpl()
-	    	->setSelection(d->selectionEnd,d->endOffset,d->selectionStart,d->startOffset);
-	
-    }
+    khtml::MouseMoveEvent event( _mouse, xm, ym, url, Node(innerNode), offset );
+    QApplication::sendEvent( m_part, &event );
 }
 
 void KHTMLView::viewportMouseReleaseEvent( QMouseEvent * _mouse )
@@ -556,126 +409,13 @@ void KHTMLView::viewportMouseReleaseEvent( QMouseEvent * _mouse )
     long offset;
     m_part->docImpl()->mouseEvent( xm, ym, _mouse->stateAfter(), DOM::NodeImpl::MouseRelease, 0, 0, url, innerNode, offset );
 
-    if(m_part->mouseReleaseHook(_mouse, xm, ym, url, Node(innerNode), offset)) return;
-
-
-    if ( pressed )
-    {
-	// in case we started an autoscroll in MouseMove event
-	// ###
-	//stopAutoScrollY();
-	//disconnect( this, SLOT( slotUpdateSelectText(int) ) );
-    }
-
-    // Used to prevent mouseMoveEvent from initiating a drag before
-    // the mouse is pressed again.
-    pressed = false;
-
-
-    if ( !m_strSelectedURL.isEmpty() && _mouse->button() != RightButton )
-    {
-	KURL u(m_strSelectedURL);
-	QString pressedTarget;
-	if(u.protocol() == "target")
-	{
-	    m_strSelectedURL = u.ref();
-	    pressedTarget = u.host();
-	}	
-	kdDebug( 6000 ) << "m_strSelectedURL='" << m_strSelectedURL << "' target=" << pressedTarget << endl;
-
-	m_part->urlSelected( m_strSelectedURL, _mouse->button(), _mouse->state(), pressedTarget );
-   }
-	//###: is this neccessary? m_part->openURL(u);
-
-    if(innerNode && innerNode->isTextNode()) {
-	kdDebug( 6000 ) << "final range of selection to " << d->selectionStart << "/" << d->startOffset << " --> " << innerNode << "/" << offset << endl;
-	d->selectionEnd = innerNode;
-	d->endOffset = offset;
-    }
-
-    // delete selection in case start and end position are at the same point
-    if(d->selectionStart == d->selectionEnd && d->startOffset == d->endOffset) {
-	d->selectionStart = 0;
-	d->selectionEnd = 0;
-	d->startOffset = 0;
-	d->endOffset = 0;
-	emit selectionChanged();
-    } else {
-	// we have to get to know if end is before start or not...
-	NodeImpl *n = d->selectionStart;
-	d->startBeforeEnd = false;
-	while(n) {
-	    if(n == d->selectionEnd) {
-		d->startBeforeEnd = true;
-		break;
-	    }
-	    NodeImpl *next = n->firstChild();
-	    if(!next) next = n->nextSibling();
-	    while( !next && (n = n->parentNode()) ) {
-		next = n->nextSibling();
-	    }	
-	    n = next;
-	}
-	if(!d->startBeforeEnd)
-	{
-	    NodeImpl *tmpNode = d->selectionStart;
-	    int tmpOffset = d->startOffset;
-	    d->selectionStart = d->selectionEnd;
-	    d->startOffset = d->endOffset;
-	    d->selectionEnd = tmpNode;
-	    d->endOffset = tmpOffset;
-	    d->startBeforeEnd = true;
-	}
-	// get selected text and paste to the clipboard
-	QString text = selectedText();
-	QClipboard *cb = QApplication::clipboard();
-	cb->setText(text);
-	//kdDebug( 6000 ) << "selectedText = " << text << endl;
-	emit selectionChanged();
-    }
-}
-
-QString KHTMLView::selectedText() const
-{
-    QString text;
-    NodeImpl *n = d->selectionStart;
-    while(n) {
-	if(n->isTextNode()) {
-	    QString str = static_cast<TextImpl *>(n)->data().string();
-	    if(n == d->selectionStart && n == d->selectionEnd)
-		text = str.mid(d->startOffset, d->endOffset - d->startOffset);
-	    else if(n == d->selectionStart)
-		text = str.mid(d->startOffset);
-	    else if(n == d->selectionEnd)
-		text += str.left(d->endOffset);
-	    else
-		text += str;
-	}
-	else if(n->id() == ID_BR)
-	    text += "\n";
-	else if(n->id() == ID_P || n->id() == ID_TD)
-	    text += "\n\n";
-	if(n == d->selectionEnd) break;
-	NodeImpl *next = n->firstChild();
-	if(!next) next = n->nextSibling();
-	while( !next && (n = n->parentNode()) ) {
-	    next = n->nextSibling();
-	}
-
-	n = next;
-    }
-    return text;
-}
-
-bool KHTMLView::hasSelection() const
-{
-  return ( d->selectionStart != 0 && d->selectionEnd != 0 );
+    khtml::MouseReleaseEvent event( _mouse, xm, ym, url, Node(innerNode), offset );
+    QApplication::sendEvent( m_part, &event );
 }
 
 void KHTMLView::keyPressEvent( QKeyEvent *_ke )
 {
-    if(m_part->keyPressHook(_ke)) return;
-
+//    if(m_part->keyPressHook(_ke)) return;
 
     int offs = (clipper()->height() < 30) ? clipper()->height() : 30;
     switch ( _ke->key() )
@@ -723,7 +463,7 @@ void KHTMLView::keyPressEvent( QKeyEvent *_ke )
 
 void KHTMLView::keyReleaseEvent( QKeyEvent *_ke )
 {
-    if(m_part->keyReleaseHook(_ke)) return;
+//    if(m_part->keyReleaseHook(_ke)) return;
      switch(_ke->key())
        {
        case Key_Enter:
@@ -742,7 +482,9 @@ bool KHTMLView::focusNextPrevChild( bool next )
 
 void KHTMLView::drawContents ( QPainter * p, int clipx, int clipy, int clipw, int cliph )
 {
-    m_part->drawContentsHook(p);
+//    m_part->drawContentsHook(p);
+  khtml::DrawContentsEvent event( p, clipx, clipy, clipw, cliph );
+  QApplication::sendEvent( m_part, &event );
 }
 
 
@@ -977,17 +719,6 @@ void KHTMLView::print()
     }
     delete printer;
 }
-
-void KHTMLView::setDNDEnabled( bool b )
-{
-  d->m_bDnd = b;
-}
-
-bool KHTMLView::dndEnabled() const
-{
-  return d->m_bDnd;
-}
-
 
 void KHTMLView::toggleActLink(bool actState)
 {

@@ -53,7 +53,7 @@ Plugin::Plugin( QObject* parent, const char* name )
 
 Plugin::~Plugin()
 {
-//  delete d; 
+//  delete d;
 }
 
 //static
@@ -104,7 +104,7 @@ void Plugin::loadPlugins( QObject *parent, const QValueList<QDomDocument> &docs 
      Plugin *plugin = Plugin::loadPlugin( parent, library.latin1() );
 
      if ( plugin )
-       plugin->setDocument( *pIt );
+       plugin->setDOMDocument( *pIt );
    }
 }
 

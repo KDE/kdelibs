@@ -112,7 +112,7 @@ KInstance *KXMLGUIClient::instance() const
   return d->m_instance;
 }
 
-QDomDocument KXMLGUIClient::document() const
+QDomDocument KXMLGUIClient::domDocument() const
 {
   return d->m_doc;
 }
@@ -170,10 +170,10 @@ void KXMLGUIClient::setXML( const QString &document, bool merge )
 {
   QDomDocument doc;
   doc.setContent( document );
-  setDocument( doc, merge );
+  setDOMDocument( doc, merge );
 }
 
-void KXMLGUIClient::setDocument( const QDomDocument &document, bool merge )
+void KXMLGUIClient::setDOMDocument( const QDomDocument &document, bool merge )
 {
   if ( merge )
   {
@@ -547,7 +547,7 @@ void KXMLGUIClient::plugActionList( const QString &name, const QList<KAction> &a
 {
   if ( !d->m_factory )
     return;
-  
+
   d->m_factory->plugActionList( this, name, actionList );
 }
 
@@ -555,6 +555,6 @@ void KXMLGUIClient::unplugActionList( const QString &name )
 {
   if ( !d->m_factory )
     return;
-  
+
   d->m_factory->unplugActionList( this, name );
 }

@@ -151,7 +151,7 @@ QString KXMLGUIFactory::readConfigFile( const QString &filename, bool never_null
     kdError(1000) << "No such XML file " << filename.local8Bit().data() << endl;
     if ( never_null )
       return "<!DOCTYPE kpartgui>\n<kpartgui name=\"empty\">\n</kpartgui>";
-    else 
+    else
       return QString::null;
   }
 
@@ -236,7 +236,7 @@ void KXMLGUIFactory::addClient( KXMLGUIClient *client )
   if ( d->m_clients.contains( client ) == 0 )
     d->m_clients.append( client );
 
-  QDomElement docElement = client->document().documentElement();
+  QDomElement docElement = client->domDocument().documentElement();
 
   d->m_rootNode->index = -1;
   d->m_clientName = docElement.attribute( "name" );
@@ -323,7 +323,7 @@ void KXMLGUIFactory::removeClient( KXMLGUIClient *client )
 
   kdDebug(1002) << "KXMLGUIFactory::removeServant, calling removeRecursive" << endl;
   m_client = client;
-  d->m_clientName = client->document().documentElement().attribute( "name" );
+  d->m_clientName = client->domDocument().documentElement().attribute( "name" );
   d->m_clientBuilder = client->clientBuilder();
   client->setFactory( 0L );
   removeRecursive( d->m_rootNode );
@@ -845,7 +845,7 @@ void KXMLGUIFactory::plugActionList( KXMLGUIClient *client, const QString &name,
   m_client = client;
   d->m_actionListName = name;
   d->m_actionList = actionList;
-  d->m_clientName = client->document().documentElement().attribute( "name" );
+  d->m_clientName = client->domDocument().documentElement().attribute( "name" );
 
   plugActionListRecursive( d->m_rootNode );
 
@@ -859,7 +859,7 @@ void KXMLGUIFactory::unplugActionList( KXMLGUIClient *client, const QString &nam
 {
   m_client = client;
   d->m_actionListName = name;
-  d->m_clientName = client->document().documentElement().attribute( "name" );
+  d->m_clientName = client->domDocument().documentElement().attribute( "name" );
 
   unplugActionListRecursive( d->m_rootNode );
 
