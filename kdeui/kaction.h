@@ -1506,8 +1506,9 @@ public:
 private:
     class KToolBarMenuActionPrivate;
     KToolBarMenuActionPrivate *d;
-public slots:
-    void internalActivated();
+protected slots:
+    virtual void slotActivated();
+
 
 };
 

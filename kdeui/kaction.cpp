@@ -6,6 +6,7 @@
               (C) 2000 Michael Koch <koch@kde.org>
 	      (C) 2001 Holger Freyther <freyther@kde.org>
               (C) 2002 Ellis Whitehead <ellis@kde.org>
+              (C) 2002 Joseph Wenninger <jowenn@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -2767,6 +2768,7 @@ void KToolBarMenuAction::addToolbar(KToolBar *bar)
 	d->toolbarActionMap.insert(bar,act=new KToggleToolBarAction(
                 bar->name(), i18n("Show %1").arg(bar->label()),
                 0, 0));
+	connect(act,SIGNAL(activated()),this,SLOT(slotActivated()));
 	if (oldcount==0)
 	{
 		setText(i18n("Show %1").arg(d->toolbarActionMap.begin().key()->label()));
@@ -2853,8 +2855,9 @@ int KToolBarMenuAction::plug( QWidget* widget, int index )
   } else return -1;
 }
 
-void KToolBarMenuAction::internalActivated()
+void KToolBarMenuAction::slotActivated()
 {
+	emit activated();
 }
 
 ////////
