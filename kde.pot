@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2002-03-21 12:39+0100\n"
+"POT-Creation-Date: 2002-09-11 02:59+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -107,15 +107,15 @@ msgid "Move"
 msgstr ""
 
 #: common_texts.cpp:47
-msgid "Select all"
+msgid "Select All"
 msgstr ""
 
 #: common_texts.cpp:48
-msgid "Delete all"
+msgid "Delete All"
 msgstr ""
 
 #: common_texts.cpp:49
-msgid "Clear all"
+msgid "Clear All"
 msgstr ""
 
 #: common_texts.cpp:50
@@ -319,7 +319,7 @@ msgid "Open"
 msgstr ""
 
 #: common_texts.cpp:100
-msgid "Open a file"
+msgid "Open a File"
 msgstr ""
 
 #: common_texts.cpp:101
@@ -367,11 +367,11 @@ msgid "Save As"
 msgstr ""
 
 #: common_texts.cpp:112
-msgid "Save as..."
+msgid "Save As..."
 msgstr ""
 
 #: common_texts.cpp:113
-msgid "S&ave as..."
+msgid "S&ave As..."
 msgstr ""
 
 #: common_texts.cpp:114
