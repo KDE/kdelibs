@@ -1263,7 +1263,20 @@ QString KURL::encodedPathAndQuery( int _trailing, bool _no_empty_path, int encod
      tmp = path( _trailing );
      if ( _no_empty_path && tmp.isEmpty() )
         tmp = "/";
-     tmp = encode( tmp, false, encoding_hint );
+     if (m_iUriMode == Mailto)
+     {
+        int atIndex = tmp.findRev('@');
+        if (atIndex == -1)
+           tmp = encode( tmp, false, encoding_hint );
+        else
+           tmp = encode( tmp.left(atIndex), false, encoding_hint) +
+                 '@' + 
+                 encode( tmp.mid(atIndex+1), false, encoding_hint);
+     }
+     else
+     {
+        tmp = encode( tmp, false, encoding_hint );
+     }
   }
 
   // TODO apply encoding_hint to the query
@@ -1508,7 +1521,21 @@ QString KURL::prettyURL( int _trailing ) const
     }
   }
 
-  u += trailingSlash( _trailing, lazy_encode( m_strPath ) );
+  if (m_iUriMode == Mailto)
+  {
+     int atIndex = m_strPath.findRev('@');
+     if (atIndex == -1)
+        u += lazy_encode( m_strPath );
+     else
+        u += lazy_encode( m_strPath.left(atIndex) ) +
+             '@' + 
+             lazy_encode( m_strPath.mid(atIndex+1) );
+  }
+  else
+  {
+     u += trailingSlash( _trailing, lazy_encode( m_strPath ) );
+  }
+
   if (!m_strQuery_encoded.isNull())
       u += '?' + m_strQuery_encoded;
 
