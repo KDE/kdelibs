@@ -42,6 +42,7 @@
 
 #include <kcursor.h>
 #include <ksimpleconfig.h>
+#include <kstringhandler.h>
 #include <kstandarddirs.h>
 #include <kprinter.h>
 
@@ -982,7 +983,7 @@ void KHTMLView::print()
         printer->setCreator("KDE 3.0 HTML Library");
         QString docname = m_part->xmlDocImpl()->URL();
         if ( !docname.isEmpty() )
-	    printer->setDocName(docname);
+	    printer->setDocName(KStringHandler::csqueeze(docname, 80));
 
         QPainter *p = new QPainter;
         p->begin( printer );
