@@ -187,6 +187,11 @@ KeyValueMap::~KeyValueMap()
   // ###########################################################################
 }
 
+bool KeyValueMap::invariant()
+{
+  return true;
+}
+
 unsigned int 
 KeyValueMap::size() const 
 {
@@ -1826,6 +1831,11 @@ QConfigDB::~QConfigDB()
       unlock();
     }
   // ############################################################################
+}
+
+bool QConfigDB::invariant()
+{
+  return true;
 }
 
 bool 
