@@ -21,7 +21,8 @@ Shell::Shell( QWidget* parent, const char* name )
     m_selectedView = 0;
     m_selectedPart = 0;
     m_statusBar = 0;
-
+    m_bDoPartActivation = TRUE;
+    
     qApp->installEventFilter( this );
 }
 
@@ -340,9 +341,9 @@ void Shell::createMenuBar( const QDomElement& shell, const QDomElement& part )
 		    if ( a )
 		    {
 		      //Simon: now we're getting *rude*...
-		      
+		
 		      QMenuBar *qbar = (QMenuBar *)menuBar()->child( 0L, "QMenuBar" );
-		      
+		
 		      if ( qbar )
 		       a->plug( qbar );
 		    }
@@ -511,7 +512,9 @@ bool Shell::eventFilter( QObject* obj, QEvent* ev )
 	return FALSE;
     }
 
-    if ( ( ev->type() == QEvent::MouseButtonPress /*|| ev->type() == QEvent::MouseButtonDblClick*/ ) && m_policy == TriState )
+    if ( ( ev->type() == QEvent::MouseButtonPress || 
+	   ( ev->type() == QEvent::MouseButtonDblClick && m_bDoPartActivation ) ) 
+	 && m_policy == TriState )
     {
 	if ( obj->inherits("Frame") )
 	    return FALSE;

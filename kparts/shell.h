@@ -56,6 +56,13 @@ public:
     KToolBar *viewToolBar( const char *name );
     KMenuBar *viewMenuBar( const char *name );
 
+    virtual void setDoPartActivation( bool b ) {
+	m_bDoPartActivation = b;
+    }
+    bool doPartActivation() const {
+	return m_bDoPartActivation;
+    }
+    
 protected:
     void createToolBars( const QDomElement& element );
     void createMenuBar( const QDomElement& shell, const QDomElement& part );
@@ -96,6 +103,8 @@ private:
     SelectionPolicy m_policy;
 
     KStatusBar *m_statusBar;
+
+    bool m_bDoPartActivation;
 };
 
 #endif
