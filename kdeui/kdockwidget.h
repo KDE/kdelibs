@@ -130,7 +130,6 @@ private:
  * More or less a minor helper class for the dockwidget class set.
  *
  * @author Max Judin (documentation: Falk Brettschneider).
- * @version $Id$
  */
 class KDockWidgetAbstractHeaderDrag : public QFrame
 {
@@ -171,7 +170,6 @@ private:
  * More or less a minor helper class for the dockwidget class set.
  *
  * @author Max Judin (documentation: Falk Brettschneider).
- * @version $Id$
  */
 class KDockWidgetHeaderDrag : public KDockWidgetAbstractHeaderDrag
 {
@@ -211,7 +209,6 @@ private:
  * More or less a minor helper class for the dockwidget class set.
  *
  * @author Max Judin (documentation: Falk Brettschneider).
- * @version $Id$
  */
 class KDockWidgetHeader : public KDockWidgetAbstractHeader
 {
@@ -292,7 +289,6 @@ private:
  * More or less a minor helper class for the dockwidget class set.
  *
  * @author Max Judin (documentation: Falk Brettschneider).
- * @version $Id$
  */
 class EXPORT_DOCKCLASS KDockTabGroup : public KDockTabCtl
 {
@@ -348,7 +344,6 @@ private:
  *
  *
  * @author Max Judin (documentation: Falk Brettschneider).
- * @version $Id$
  */
 class EXPORT_DOCKCLASS KDockWidget: public QWidget
 {
@@ -717,7 +712,6 @@ private:
  * The dockmanager is also often used when a certain dockwidget or a child of such dockwidget must be found.
  *
  * @author Max Judin (documentation: Falk Brettschneider).
- * @version $Id$
  */
 class EXPORT_DOCKCLASS KDockManager: public QObject
 {
@@ -1047,7 +1041,6 @@ private:
  * of this class and insert it to your main menu bar or anywhere else.
  *
  * @author Max Judin (documentation: Falk Brettschneider).
- * @version $Id$
  */
 class EXPORT_DOCKCLASS KDockMainWindow : public KMainWindow
 {
