@@ -21,7 +21,7 @@ INCLUDES= $(all_includes)
 SUBDIRS = . klauncher kded file tests
 
 lib_LTLIBRARIES = libkio.la
-libkio_la_LDFLAGS = -version-info 3:0
+libkio_la_LDFLAGS = -version-info 3:0 -no-undefined
 libkio_la_LIBADD = ../kdeui/libkdeui.la
 
 libkio_la_SOURCES = \

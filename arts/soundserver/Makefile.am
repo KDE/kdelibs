@@ -17,24 +17,10 @@ lib_LTLIBRARIES = libsoundserver_idl.la libkmedia2_idl.la
 
 libsoundserver_idl_la_LIBADD = libkmedia2_idl.la \
                           $(top_builddir)/arts/flow/libartsflow_idl.la
+libsoundserver_idl_la_LDFLAGS = -no-undefined
 libsoundserver_idl_la_SOURCES = soundserver.cc
 libkmedia2_idl_la_SOURCES = kmedia2.cc
-
-###### -frepo closure (experimental)
-
-EXTRA_PROGRAMS = closure_kmedia2_idl closure_soundserver_idl
-
-closure_main.cc:
-	@echo "int main() {}" > closure_main.cc
-
-closure_kmedia2_idl_SOURCES = closure_main.cc
-closure_kmedia2_idl_LDADD = $(libkmedia2_idl_la_OBJECTS)
-
-closure_soundserver_idl_SOURCES = closure_main.cc
-closure_soundserver_idl_LDADD = $(libsoundserver_idl_la_OBJECTS) \
-                                $(libsoundserver_idl_la_LIBADD)
-
-closure: closure_kmedia2_idl closure_soundserver_idl
+libkmedia2_idl_la_LDFLAGS = -no-undefined
 
 ###### "real" programs
 

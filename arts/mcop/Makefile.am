@@ -12,6 +12,7 @@ libmcop_la_SOURCES = buffer.cc connection.cc core.cc dispatcher.cc \
 	 factory.cc idlfilereg.cc ifacerepo_impl.cc mcoputils.cc \
 	 startupmanager.cc md5.c md5auth.cc referenceclean.cc
 libmcop_la_LIBADD = $(LIBSOCKET)
+libmcop_la_LDFLAGS = -no-undefined 
 
 artsincludedir = $(includedir)/arts
 artsinclude_HEADERS = buffer.h common.h connection.h core.h dispatcher.h \
@@ -23,12 +24,3 @@ artsinclude_HEADERS = buffer.h common.h connection.h core.h dispatcher.h \
 core: $(top_srcdir)/arts/mcop/core.idl $(MCOPIDL)
 	$(MCOPIDL) $(top_srcdir)/arts/mcop/core.idl
 
-#
-# -frepo closure (experimental)
-#
-closure: $(libmcop_la_OBJECTS)
-	@echo "Building -frepo compliant library closure"
-	@echo "int main() {}" > closure.cc
-	$(CXXLINK) -o closure $(libmcop_la_OBJECTS) closure.cc
-	@echo "closure timestamp" > closure
-	@rm -f closure.cc
