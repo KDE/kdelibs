@@ -455,7 +455,6 @@ public:
 
     // Special objects are objects that are neither really inline nor blocklevel
     bool isSpecial() const { return (isFloating() || isPositioned()); };
-    virtual bool containsSpecial() { return false; }
     virtual bool hasOverhangingFloats() { return false; }
 
     // positioning of inline childs (bidi)
@@ -485,7 +484,7 @@ public:
     // unused: void invalidateLayout();
 
     virtual void calcVerticalMargins() {}
-    void removeFromSpecialObjects();
+    void removeFromFloatingObjects();
 
     virtual void detach( RenderArena * );
 
@@ -501,7 +500,7 @@ protected:
 
     virtual QRect viewRect() const;
     void remove() {
-        removeFromSpecialObjects();
+        removeFromFloatingObjects();
 
         if ( parent() )
             //have parent, take care of the tree integrity

@@ -1035,8 +1035,6 @@ void RenderFlow::layoutInlineChildren( bool relayoutChildren )
                     o->setLayouted(false);
                 if( !o->layouted() )
                     o->layout();
-                if(o->isPositioned())
-                    static_cast<RenderFlow*>(o->containingBlock())->insertSpecialObject(o);
             }
             else if(o->isText())
                 static_cast<RenderText *>(o)->deleteSlaves( renderArena() );
@@ -1123,20 +1121,16 @@ BidiIterator RenderFlow::findNextLineBreak(BidiIterator &start)
 	      ( start.current() == ' ' || start.obj->isSpecial() )
 #endif
 	      ) {
-		if( start.obj->isSpecial() ) {
-		    RenderObject *o = start.obj;
-		    // add to special objects...
-		    if(o->isFloating()) {
-			insertSpecialObject(o);
-			// check if it fits in the current line.
-			// If it does, position it now, otherwise, position
-			// it after moving to next line (in newLine() func)
-			if (o->width()+o->marginLeft()+o->marginRight()+w+tmpW <= width) {
-			    positionNewFloats();
-			    width = lineWidth(m_height);
-			}
-		    } else if(o->isPositioned()) {
-			static_cast<RenderFlow*>(o->containingBlock())->insertSpecialObject(o);
+		RenderObject *o = start.obj;
+		// add to floating objects...
+		if(o->isFloating()) {
+		    insertFloatingObject(o);
+		    // check if it fits in the current line.
+		    // If it does, position it now, otherwise, position
+		    // it after moving to next line (in newLine() func)
+		    if (o->width()+o->marginLeft()+o->marginRight()+w+tmpW <= width) {
+			positionNewFloats();
+			width = lineWidth(m_height);
 		    }
 		}
 
@@ -1166,7 +1160,7 @@ BidiIterator RenderFlow::findNextLineBreak(BidiIterator &start)
             }
             goto end;
         } else if(o->isFloating()) {
-            insertSpecialObject(o);
+            insertFloatingObject(o);
             // check if it fits in the current line.
             // If it does, position it now, otherwise, position
             // it after moving to next line (in newLine() func)
@@ -1175,7 +1169,7 @@ BidiIterator RenderFlow::findNextLineBreak(BidiIterator &start)
                 width = lineWidth(m_height);
             }
         } else if(o->isPositioned()) {
-            static_cast<RenderFlow*>(o->containingBlock())->insertSpecialObject(o);
+            // ignore
         } else if ( o->isText() ) {
 	    RenderText *t = static_cast<RenderText *>(o);
 	    int strlen = t->stringLength();

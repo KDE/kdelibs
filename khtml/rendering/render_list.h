@@ -80,7 +80,6 @@ public:
     virtual void setStyle(RenderStyle *style);
 
     virtual bool isListItem() const { return true; }
-    virtual bool containsSpecial() { return (specialObjects != 0 && specialObjects->count() > 1 ); }
 
     long value() const { return m_marker->m_value; }
     void setValue( long v ) { predefVal = v; }

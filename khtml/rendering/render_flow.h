@@ -24,7 +24,7 @@
 #ifndef RENDER_FLOW_H
 #define RENDER_FLOW_H
 
-#include <qsortedlist.h>
+#include <qptrlist.h>
 
 #include "render_box.h"
 #include "bidi.h"
@@ -102,7 +102,7 @@ protected:
 
     void layoutBlockChildren( bool relayoutChildren );
     void layoutInlineChildren( bool relayoutChildren );
-    void layoutSpecialObjects( bool relayoutChildren );
+    void layoutPositionedObjects( bool relayoutChildren );
 
 public:
     int floatBottom() const;
@@ -110,14 +110,14 @@ public:
     inline int rightBottom();
     bool checkClear(RenderObject *child);
 
-    void insertSpecialObject(RenderObject *o);
-    void removeSpecialObject(RenderObject *o);
+    void insertFloatingObject(RenderObject *o);
+    void removeFloatingObject(RenderObject *o);
     // called from lineWidth, to position the floats added in the last line.
     void positionNewFloats();
     void clearFloats();
     virtual void calcMinMaxWidth();
 
-    virtual bool containsSpecial() { return specialObjects!=0; }
+    virtual bool containsFloating() { return floatingObjects!=0; }
     virtual bool hasOverhangingFloats() { return floatBottom() > m_height; }
 
     void addOverHangingFloats( RenderFlow *flow, int xoffset, int yoffset, bool child = false );
@@ -136,21 +136,19 @@ public:
 
 protected:
 
-    struct SpecialObject {
+    struct FloatingObject {
         enum Type {
             FloatLeft,
-            FloatRight,
-            Positioned
+            FloatRight
 	};
 
-        SpecialObject(Type _type) {
+        FloatingObject(Type _type) {
 	    node = 0;
 	    startY = 0;
 	    endY = 0;
 	    type = _type;
 	    left = 0;
 	    width = 0;
-            count = 0;
             noPaint = false;
 
         }
@@ -159,18 +157,11 @@ protected:
         int endY;
         short left;
         short width;
-        short count;
-        Type type : 2; // left or right aligned
+        Type type : 1; // left or right aligned
         bool noPaint : 1;
-
-        bool operator==(const SpecialObject& ) const
-        {
-            return false;
-        }
-        bool operator<(const SpecialObject& o) const;
     };
 
-    QSortedList<SpecialObject>* specialObjects;
+    QPtrList<FloatingObject>* floatingObjects;
 
 private:
     // width/height of overflowing contents

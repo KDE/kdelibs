@@ -985,13 +985,13 @@ RenderObject *RenderObject::container() const
     return o;
 }
 
-void RenderObject::removeFromSpecialObjects()
+void RenderObject::removeFromFloatingObjects()
 {
-    if (isPositioned() || isFloating()) {
+    if ( isFloating()) {
 	RenderObject *p;
 	for (p = parent(); p; p = p->parent()) {
 	    if (p->isFlow())
-		static_cast<RenderFlow*>(p)->removeSpecialObject(this);
+		static_cast<RenderFlow*>(p)->removeFloatingObject(this);
 	}
     }
 }
