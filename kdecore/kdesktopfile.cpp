@@ -115,6 +115,7 @@ QString KDesktopFile::readURL() const
 	    QFile f( fstabFile );
 	    f.open( IO_ReadOnly );
 	    QTextStream stream( &f );
+	    stream.setEncoding( QTextStream::Latin1 );
 	    while ( !stream.eof() ) {
 		QString line = stream.readLine();
 		line = line.simplifyWhiteSpace();
