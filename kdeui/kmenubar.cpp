@@ -72,7 +72,6 @@ KMenuBar::KMenuBar(QWidget *parent, const char *name)
     d = new KMenuBarPrivate;
 
     mouseActive = false;
-    setFont(KGlobalSettings::menuFont());
 
     connect( kapp, SIGNAL(appearanceChanged()), this, SLOT(slotReadConfig()));
 
@@ -87,7 +86,7 @@ KMenuBar::~KMenuBar()
 void KMenuBar::setTopLevelMenu(bool top_level)
 {
     if ( isTopLevelMenu() == top_level )
-	return;
+        return;
   d->topLevel = top_level;
   if ( isTopLevelMenu() ) {
       bool wasVisible = isVisibleTo( 0 );
@@ -96,12 +95,12 @@ void KMenuBar::setTopLevelMenu(bool top_level)
       KWin::setType( winId(), NET::Menu );
       KWin::setOnAllDesktops( winId(), true );
       if ( wasVisible )
-	  show();
+          show();
   } else {
       if ( parentWidget() ) {
-	  reparent( parentWidget(), QPoint(0,0), TRUE );
-	  setBackgroundMode( PaletteButton );
-	  installEventFilter( topLevelWidget() );
+          reparent( parentWidget(), QPoint(0,0), TRUE );
+          setBackgroundMode( PaletteButton );
+          installEventFilter( topLevelWidget() );
       }
   }
 }
@@ -119,6 +118,8 @@ void KMenuBar::slotReadConfig()
   KConfig *config = KGlobal::config();
   KConfigGroupSaver saver( config, grpKDE );
   setTopLevelMenu( config->readBoolEntry( keyMac, false ) );
+
+  setFont(KGlobalSettings::menuFont());
 }
 
 void KMenuBar::drawContents(QPainter *p)
@@ -181,13 +182,13 @@ bool KMenuBar::eventFilter(QObject *obj, QEvent *ev)
 {
 
     if ( d->topLevel && parentWidget() && obj == parentWidget()->topLevelWidget()  ) {
-	if ( ev->type() == QEvent::Show  && testWState( WState_ForceHide ) )
-	    show();
-	else if ( ev->type() == QEvent::WindowActivate )
-	    raise();
+        if ( ev->type() == QEvent::Show  && testWState( WState_ForceHide ) )
+            show();
+        else if ( ev->type() == QEvent::WindowActivate )
+            raise();
     }
     if ( d->topLevel && ev->type() == QEvent::Resize )
-	return FALSE; // hinder QMenubar to adjust its size
+        return FALSE; // hinder QMenubar to adjust its size
 
   return QMenuBar::eventFilter( obj, ev );
 }
@@ -195,19 +196,19 @@ bool KMenuBar::eventFilter(QObject *obj, QEvent *ev)
 void KMenuBar::showEvent( QShowEvent* )
 {
     if ( d->topLevel ) {
-	QRect area = QApplication::desktop()->geometry();
-	setGeometry(area.left(), -frameWidth()-2, area.width(), heightForWidth( area.width() ) );
-	KWin::setStrut( winId(), 0, 0, height() - frameWidth() - 2, 0 );
-	if ( parentWidget() ) {
-	    QObjectList   *accelerators = queryList( "QAccel" );
-	    QObjectListIt it( *accelerators );
-	    for ( ; it.current(); ++it ) {
-		QObject *obj = it.current();
-		parentWidget()->topLevelWidget()->removeEventFilter(obj);
-		parentWidget()->topLevelWidget()->installEventFilter(obj);
-	    }	
-	    delete accelerators;
-	}
+        QRect area = QApplication::desktop()->geometry();
+        setGeometry(area.left(), -frameWidth()-2, area.width(), heightForWidth( area.width() ) );
+        KWin::setStrut( winId(), 0, 0, height() - frameWidth() - 2, 0 );
+        if ( parentWidget() ) {
+            QObjectList   *accelerators = queryList( "QAccel" );
+            QObjectListIt it( *accelerators );
+            for ( ; it.current(); ++it ) {
+                QObject *obj = it.current();
+                parentWidget()->topLevelWidget()->removeEventFilter(obj);
+                parentWidget()->topLevelWidget()->installEventFilter(obj);
+            }
+            delete accelerators;
+        }
     }
 }
 
