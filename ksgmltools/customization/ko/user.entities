@@ -5,4 +5,4 @@
      Please keep the entities sorted on the name: it will avoid duplicate
      names (which if they occur will cost you a _lot_ of time)
  -->
-
+<!ENTITY KdeKoTeam "KDE 번역 한국말 모임<email>kde-i18n@kldp.org</email>">
