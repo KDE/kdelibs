@@ -269,10 +269,14 @@ private:
    */
   QCString ident;
 
+protected:
+  virtual void virtual_hook( int id, void* data );
+private:
   class DCOPObjectPrivate;
   DCOPObjectPrivate *d;
 };
 
+class DCOPObjectProxyPrivate;
 /**
  * You must use a proxy if you want to dispatch method calls for
  * object IDs which dont have (yet) a corresponding @ref DCOPObject.
@@ -319,6 +323,10 @@ private:
     void* unused_too;
     friend class DCOPClient;
     static QPtrList<DCOPObjectProxy>* proxies;
+protected:
+    virtual void virtual_hook( int id, void* data );
+private:
+    DCOPObjectProxyPrivate* d;
 };
 
 

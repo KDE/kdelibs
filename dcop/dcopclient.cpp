@@ -1829,5 +1829,8 @@ DCOPClient::postMortemFunction()
    return dcop_main_client->d->function.data();
 }
 
+void DCOPClient::virtual_hook( int, void* )
+{ /*BASE::virtual_hook( id, data );*/ }
+
 #include <dcopclient.moc>
 

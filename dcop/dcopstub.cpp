@@ -88,3 +88,5 @@ QCString DCOPStub::obj() const
     return m_obj;
 }
 
+void DCOPStub::virtual_hook( int, void* )
+{ /*BASE::virtual_hook( id, data );*/ }

@@ -265,3 +265,8 @@ bool DCOPObjectProxy::process( const QCString& /*obj*/,
     return FALSE;
 }
 
+void DCOPObject::virtual_hook( int, void* )
+{ /*BASE::virtual_hook( id, data );*/ }
+
+void DCOPObjectProxy::virtual_hook( int, void* )
+{ /*BASE::virtual_hook( id, data );*/ }

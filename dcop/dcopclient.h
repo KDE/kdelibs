@@ -602,7 +602,6 @@ private slots:
 protected:
 
 private:
-  DCOPClientPrivate *d;
 
   bool attachInternal( bool registerAsAnonymous = TRUE );
 
@@ -610,6 +609,10 @@ private:
 	    const QCString &remFun, const QByteArray &data,
 	    QCString& replyType, QByteArray &replyData,
 	    bool useEventLoop, int minor_opcode);
+protected:
+  virtual void virtual_hook( int id, void* data );
+private:
+  DCOPClientPrivate *d;
 };
 
 #endif

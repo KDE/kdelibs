@@ -99,6 +99,9 @@ private:
     QCString m_obj;
     Status m_status;
 
+protected:
+    virtual	void virtual_hook( int id, void* data );
+private:
     DCOPStubPrivate *d;
 };
 
