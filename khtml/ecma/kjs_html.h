@@ -94,6 +94,7 @@ namespace KJS {
     virtual bool toBoolean(ExecState *) const { return true; }
     virtual bool hasProperty(ExecState *exec, const UString &p, bool recursive) const;
     enum { Item, NamedItem, Tags };
+    Value getNamedItems(ExecState *exec, const UString &propertyName) const;
     DOM::HTMLCollection toCollection() const { return collection; }
   protected:
     DOM::HTMLCollection collection;
@@ -108,6 +109,14 @@ namespace KJS {
   private:
     DOM::Element dummyElement();
     DOM::HTMLSelectElement element;
+  };
+
+  class HTMLNamedItemsCollection : public DOMObject {
+  public:
+    HTMLNamedItemsCollection(ExecState *exec, QValueList<DOM::Node>& nodes );
+    virtual Value tryGet(ExecState *exec, const UString &propertyName) const;
+  private:
+    QValueList<DOM::Node> m_nodes;
   };
 
   ////////////////////// Option Object ////////////////////////

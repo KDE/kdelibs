@@ -56,7 +56,12 @@ KJS::HTMLDocFunction::HTMLDocFunction(ExecState *exec, DOM::HTMLDocument d, int 
 
 Value KJS::HTMLDocFunction::tryGet(ExecState *exec, const UString &p) const
 {
-  // Support for document.images.length, .item, etc.
+#ifdef KJS_VERBOSE
+  kdDebug(6070) << "KJS::HTMLDocFunction::tryGet id=" << id << " p=" << p.qstring() << endl;
+#endif
+  // Support for document.images.length,
+  // document.all.<index>, document.all['<index>'], etc.
+  // document.all.<name>, document.all['<name>'], etc.
   DOM::HTMLCollection coll;
 
   switch (id) {
@@ -89,7 +94,6 @@ Value KJS::HTMLDocFunction::tryGet(ExecState *exec, const UString &p) const
 
 Value KJS::HTMLDocFunction::tryCall(ExecState *exec, Object &, const List &args)
 {
-  Value result;
   String s;
   DOM::HTMLElement element;
   DOM::HTMLCollection coll;
@@ -118,14 +122,12 @@ Value KJS::HTMLDocFunction::tryCall(ExecState *exec, Object &, const List &args)
   case HTMLDocument::Open:
     // this is just a dummy function,  has no purpose anymore
     //doc.open();
-    result = Undefined();
-    break;
+    return Undefined();
   case HTMLDocument::Close:
     // this is just a dummy function,  has no purpose
     // see khtmltests/ecma/tokenizer-script-recursion.html
     // doc.close();
-    result = Undefined();
-    break;
+    return Undefined();
   case HTMLDocument::Write:
   case HTMLDocument::WriteLn: {
     // DOM only specifies single string argument, but NS & IE allow multiple
@@ -135,31 +137,49 @@ Value KJS::HTMLDocFunction::tryCall(ExecState *exec, Object &, const List &args)
     if (id == HTMLDocument::WriteLn)
       str += "\n";
     doc.write(str.string());
-    result = Undefined();
-    break;
+    return Undefined();
   }
   case HTMLDocument::GetElementById:
-    result = getDOMNode(exec,doc.getElementById(v.toString(exec).string()));
-    break;
+    return getDOMNode(exec,doc.getElementById(v.toString(exec).string()));
   case HTMLDocument::GetElementsByName:
-    result = getDOMNodeList(exec,doc.getElementsByName(v.toString(exec).string()));
-    break;
+    return getDOMNodeList(exec,doc.getElementsByName(v.toString(exec).string()));
   }
 
   // retrieve element from collection. Either by name or indexed.
   if (id == HTMLDocument::Images || id == HTMLDocument::Applets || id == HTMLDocument::Links ||
       id == HTMLDocument::Forms || id == HTMLDocument::Anchors || id == HTMLDocument::All) {
+    // i.e. support for document.images('<name>'), document.all(<index>) etc.
     bool ok;
     UString s = args[0].toString(exec);
     unsigned int u = s.toULong(&ok);
-    if (ok)
+    if (ok) {
       element = coll.item(u);
-    else
-      element = coll.namedItem(s.string());
-    result = getDOMNode(exec,element);
+      return getDOMNode(exec,element);
+    }
+    else {
+      if (args.size() == 1) {
+        HTMLCollection c(exec,coll);
+        return c.getNamedItems(exec,s);
+      }
+      else if (args.size() >= 1) // the second arg, if set, is the index of the item we want
+      {
+        unsigned int u = args[1].toString(exec).toULong(&ok);
+        if (ok)
+        {
+          DOM::DOMString pstr = s.string();
+          DOM::Node node = coll.namedItem(pstr);
+          while (!node.isNull()) {
+            if (!u)
+              return getDOMNode(exec,node);
+            node = coll.nextNamedItem(pstr);
+            --u;
+          }
+        }
+      }
+    }
   }
 
-  return result;
+  return Undefined();
 }
 
 const ClassInfo KJS::HTMLDocument::info =
@@ -443,8 +463,11 @@ Value KJS::HTMLElement::tryGet(ExecState *exec, const UString &p) const
     break;
     case ID_FORM: {
       DOM::HTMLFormElement form = element;
-      DOM::Node n = form.elements().namedItem(p.string());
-      if(!n.isNull())  return getDOMNode(exec,n);
+      KJS::HTMLCollection coll(exec,form.elements());
+      Value namedItems = coll.getNamedItems(exec, p);
+      if (namedItems.type() != UndefinedType)
+        return namedItems;
+
       else if (p == "elements")        return getHTMLCollection(exec,form.elements());
       else if (p == "length")          return Number(form.length());
       else if (p == "name")            return getString(form.name());
@@ -515,16 +538,6 @@ Value KJS::HTMLElement::tryGet(ExecState *exec, const UString &p) const
       else if (p == "alt")             return getString(input.alt());
       else if (p == "checked")         return Boolean(input.checked());
       else if (p == "disabled")        return Boolean(input.disabled());
-
-      else if (p == "length") {
-        // SLOOOOOOW
-        DOM::HTMLCollection c( input.form().elements() );
-        unsigned long len = 0;
-        for ( unsigned long i = 0; i < c.length(); i++ )
-          if ( static_cast<DOM::Element>( c.item( i ) ).getAttribute( "name" ) == input.name() )
-            len++;
-        return Number(len);
-      }
       else if (p == "maxLength")       return Number(input.maxLength());
       else if (p == "name")            return getString(input.name());
       else if (p == "readOnly")        return Boolean(input.readOnly());
@@ -539,18 +552,6 @@ Value KJS::HTMLElement::tryGet(ExecState *exec, const UString &p) const
       else if (p == "focus")           return lookupOrCreateFunction<HTMLElementFunction>(exec,p,this,HTMLElementFunction::Focus,0,DontDelete|Function);
       else if (p == "select")          return lookupOrCreateFunction<HTMLElementFunction>(exec,p,this,HTMLElementFunction::Select,0,DontDelete|Function);
       else if (p == "click")           return lookupOrCreateFunction<HTMLElementFunction>(exec,p,this,HTMLElementFunction::Click,0,DontDelete|Function);
-      else {
-        // ### SLOOOOOOOW
-        bool ok;
-        uint u = p.toULong(&ok);
-        if ( !ok ) break;
-
-        DOM::HTMLCollection c( input.form().elements() );
-         for ( unsigned long i = 0; i < c.length(); i++ )
-           if ( static_cast<DOM::Element>( c.item( i ) ).getAttribute( "name" ) == input.name() )
-             if ( u-- == 0 )
-               return getDOMNode(exec, c.item( i ) );
-      }
     }
     break;
     case ID_TEXTAREA: {
@@ -1790,20 +1791,40 @@ Value KJS::HTMLCollection::tryGet(ExecState *exec, const UString &propertyName) 
     if (!proto.isNull() && proto.hasProperty(exec,propertyName))
       return proto.get(exec,propertyName);
 
-    DOM::Node node;
-    DOM::HTMLElement element;
 
     // name or index ?
     bool ok;
     unsigned int u = propertyName.toULong(&ok);
-    if (ok)
-      node = collection.item(u);
+    if (ok) {
+      DOM::Node node = collection.item(u);
+      return getDOMNode(exec,node);
+    }
     else
-      node = collection.namedItem(propertyName.string());
-
-    element = node;
-    return getDOMNode(exec,element);
+      return getNamedItems(exec,propertyName);
   }
+}
+
+Value KJS::HTMLCollection::getNamedItems(ExecState *exec, const UString &propertyName) const
+{
+  DOM::DOMString pstr = propertyName.string();
+  DOM::Node node = collection.namedItem(pstr);
+  if(!node.isNull())
+  {
+    DOM::Node next = collection.nextNamedItem(pstr);
+    if (next.isNull()) // single item
+      return getDOMNode(exec,node);
+    else // multiple items, return a collection
+    {
+      QValueList<DOM::Node> nodes;
+      nodes.append(node);
+      do {
+        nodes.append(next);
+        next = collection.nextNamedItem(pstr);
+      } while (!next.isNull());
+      return new HTMLNamedItemsCollection(exec,nodes);
+    }
+  }
+  return Undefined();
 }
 
 Value KJS::HTMLCollectionProtoFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
@@ -1819,7 +1840,7 @@ Value KJS::HTMLCollectionProtoFunc::tryCall(ExecState *exec, Object &thisObj, co
     return getDOMNodeList(exec, e.getElementsByTagName(args[0].toString(exec).string()));
   }
   case KJS::HTMLCollection::NamedItem:
-    return getDOMNode(exec,coll.namedItem(args[0].toString(exec).string()));
+    return static_cast<HTMLCollection *>(thisObj.imp())->getNamedItems(exec,args[0].toString(exec).string());
   default:
     return Undefined();
   }
@@ -1896,6 +1917,29 @@ void KJS::HTMLSelectCollection::tryPut(ExecState *exec, const UString &propertyN
   }
   // finally add the new element
   element.add(option, before);
+}
+
+// Such a collection is usually very short-lived, it only exists
+// for constructs like document.forms.<name>[1],
+// so it shouldn't be a problem that it's storing all the nodes (with the same name). (David)
+HTMLNamedItemsCollection::HTMLNamedItemsCollection(ExecState *, QValueList<DOM::Node>& nodes )
+  : DOMObject(), m_nodes(nodes)
+{
+  // Maybe we should ref (and deref in the dtor) the nodes, though ?
+}
+
+Value HTMLNamedItemsCollection::tryGet(ExecState *exec, const UString &propertyName) const
+{
+  if (propertyName == "length")
+    return Number(m_nodes.count());
+  // index?
+  bool ok;
+  unsigned int u = propertyName.toULong(&ok);
+  if (ok) {
+    DOM::Node node = m_nodes[u];
+    return getDOMNode(exec,node);
+  }
+  return DOMObject::tryGet(exec,propertyName);
 }
 
 ////////////////////// Option Object ////////////////////////
