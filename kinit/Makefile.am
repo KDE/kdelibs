@@ -15,7 +15,7 @@
 #    the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
 #    Boston, MA 02111-1307, USA.
 
-INCLUDES = -I$(srcdir)/../libltdl/ $(all_includes) -Wall
+INCLUDES = -I$(srcdir)/../libltdl/ -I$(srcdir)/../kio/klauncher/ $(all_includes) -Wall
 
 SUBDIRS = .
 
