@@ -145,10 +145,6 @@ void RenderImage::printReplaced(QPainter *p, int _tx, int _ty)
 			(float)(cHeight)/pix.height() );
 		resizeCache = pix.xForm( matrix );
                 scaledrect = matrix.map(scaledrect);
-                if(image->valid_rect().size() != image->pixmap_size())
-                    // not yet completely loaded, the rectangle mapping
-                    // might be a big bogus, so try to be sure
-                    scaledrect.setBottom(QMAX(scaledrect.bottom()-2, 0));
 	    }
 //            qDebug("scaled paint rect %d/%d/%d/%d", scaledrect.x(), scaledrect.y(), scaledrect.width(), scaledrect.height());
 	    p->drawPixmap( QPoint( _tx + leftBorder, _ty + topBorder ), resizeCache, scaledrect );
