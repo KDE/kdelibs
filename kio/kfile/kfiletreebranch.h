@@ -36,12 +36,12 @@ class KFileTreeView;
 
 
 /**
- *  This is the branch class of the KFileTreeViewWidget, which represents one
- *  branch in the treeview. Every branch has a root, which is an Url and lists
- *  the files unter the root. Every branch uses its own dirlister and can have
- *  its own filter etc, different from other branches in the treeview.
+ * This is the branch class of the KFileTreeViewWidget, which represents one
+ * branch in the treeview. Every branch has a root, which is an Url and lists
+ * the files unter the root. Every branch uses its own dirlister and can have
+ * its own filter etc, different from other branches in the treeview.
  *
- *  @short Branch object for @ref KFileTreeView object.
+ * @short Branch object for @ref KFileTreeView object.
  *
  */
 
@@ -68,7 +68,7 @@ public:
     * sets a @ref KFileTreeViewItem as root widget for the branch.
     * That must be created outside of the branch. All KFileTreeViewItems
     * the branch is allocating will become children of that object.
-    * @param the KFileTreeViewItem to become the root item.
+    * @param the KFileTreeViewItem to become the root item.
     */
    void 	setRoot( KFileTreeViewItem *r ){ m_root = r; };
 
@@ -97,20 +97,20 @@ public:
    
 public slots:
    /**
-    *  populates a branch. This method must be called after a branch was added
-    *  to  a @ref KFileTreeView using method @ref addBranch.
-    *  @param url is the url of the root item where the branch starts.
-    *  @param currItem is the current parent.
+    * populates a branch. This method must be called after a branch was added
+    * to  a @ref KFileTreeView using method @ref addBranch.
+    * @param url is the url of the root item where the branch starts.
+    * @param currItem is the current parent.
     */
    void populate( const KURL &url, KFileTreeViewItem* currItem );
 
    void populate( );
 
    /**
-    *  sets printing of the file extensions on or off. If you pass false to this
-    *  slot, all items of this branch will not show their file extensions in the
-    *  tree.
-    *  @param visible flags if the extensions should be visible or not.
+    * sets printing of the file extensions on or off. If you pass false to this
+    * slot, all items of this branch will not show their file extensions in the
+    * tree.
+    * @param visible flags if the extensions should be visible or not.
     */
    void setShowExtensions( bool visible = true );
    

@@ -147,7 +147,8 @@ class KAccel : public QAccel
 	/**
 	 * Similar to the first insertAction() method, but with the action
 	 * name, short description, help text, and default shortcuts all
-	 * set according to one of the standard accelerators.  @see KStdAccel.
+	 * set according to one of the standard accelerators.  
+	 * @see KStdAccel.
 	 */
 	KAccelAction* insertAction( KStdAccel::StdAccel id,
 	                 const QObject* pObjSlot, const char* psMethodSlot,

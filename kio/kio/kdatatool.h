@@ -197,7 +197,7 @@ private:
  * a single word or paragraph, a KSpread cell, an image, etc.)
  *
  * The application has some generic code for presenting the tools in a popupmenu
- * (@see KDataToolAction), and for activating a tool, passing it the data
+ * @see KDataToolAction, and for activating a tool, passing it the data
  * (and possibly getting modified data from it).
  */
 class KDataTool : public QObject

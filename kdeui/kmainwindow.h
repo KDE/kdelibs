@@ -381,7 +381,7 @@ public:
 
     /**
      * @return the size the mainwindow should have so that the central 
-     * widget will be of @param size.
+     * widget will be of @p size.
      */
     QSize sizeForCentralWidgetSize(QSize size);
 

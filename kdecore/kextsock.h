@@ -750,7 +750,7 @@ public:
    *
    * @param host	the hostname to look up
    * @param port	the port/service to look up
-   * @param flags	flags to be used when looking up, @see Flags
+   * @param flags	flags to be used when looking up, @ref Flags
    * @param error	pointer to a variable holding the error code
    */
   static QPtrList<KAddressInfo> lookup(const QString& host, const QString& port, int flags = 0, int *error = 0);
