@@ -8,8 +8,8 @@ What you need
 
 Make sure you get the following stuff from CVS:
 
-qt-copy (This is qt-2.2.0-beta1)
-kdesupport (mimelib and odbc are the only things really needed from here)
+qt-copy (This is qt-2.3.1)
+kdesupport (if you don't have a recent libxml)
 kdelibs
 kdebase (strongly recommended but not strictly necessary)
 <any other package you are interested in>
