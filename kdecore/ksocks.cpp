@@ -77,7 +77,7 @@ static int     (*F_accept)      (int, struct sockaddr *, ksocklen_t *) = 0L;
 static int     (*F_select)      (int, fd_set *, fd_set *, fd_set *, 
                                                      struct timeval *) = 0L;
 static int     (*F_listen)      (int, int) = 0L;
-static int     (*F_bind)        (int, struct sockaddr *, ksocklen_t) = 0L;
+static int     (*F_bind)        (int, const struct sockaddr *, ksocklen_t) = 0L;
 }
 
 
@@ -379,7 +379,7 @@ KSocks::KSocks(KConfigBase *config) : _socksLib(0L), _st(0L) {
                       _socksLib->symbol(it.data().latin1());
           break;
          case S_bind:
-           F_bind = (int (*)(int, struct sockaddr *, ksocklen_t))
+           F_bind = (int (*)(int, const struct sockaddr *, ksocklen_t))
                     _socksLib->symbol(it.data().latin1());
           break;
          default:
@@ -564,6 +564,12 @@ int KSocks::listen (int s, int backlog) {
    else return ::listen(s, backlog);
 }
 
+
+int KSocks::bind (int sockfd, const sockaddr *my_addr, ksocklen_t addrlen) {
+   if (_useSocks && F_bind)
+      return (*F_bind)(sockfd, my_addr, addrlen);
+   else return ::bind(sockfd, my_addr, (socklen_t)addrlen);
+}
 
 int KSocks::bind (int sockfd, sockaddr *my_addr, ksocklen_t addrlen) {
    if (_useSocks && F_bind)

@@ -148,11 +148,14 @@ public:
     * name. Read the appropriate man page.
     */
     int     listen      (int s, int backlog);
+
    /**
     * This is the re-implementation of libc's function of the same
     * name. Read the appropriate man page.
     */
     int     bind        (int sockfd, sockaddr *my_addr, 
+                                     ksocklen_t addrlen);
+    int     bind        (int sockfd, const sockaddr *my_addr, 
                                      ksocklen_t addrlen);
 
     /**
