@@ -59,6 +59,7 @@ public:
 	kwin_net_create_atoms();
 	kapp->installX11EventFilter( this );
 	(void ) kapp->desktop(); //trigger desktop widget creation to select root window events
+        activate();
 	updateStackingOrder();
     }
     ~KWinModulePrivate()
@@ -88,10 +89,8 @@ public:
 KWinModule::KWinModule( QObject* parent )
     : QObject( parent, "kwin_module" )
 {
-    if ( !static_d ) {
+    if ( !static_d )
 	static_d = new KWinModulePrivate;
-	static_d->activate();
-    }
     d = static_d;
     d->modules.append( this );
 
