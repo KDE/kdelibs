@@ -1,7 +1,8 @@
 
 #include <ktopwidget.h>
 
-#include "ktopwidget.moc"
+#include <ktopwidget.moc>
+
 
 KTopLevelWidget::KTopLevelWidget( const char *name = NULL )
 	: QWidget( 0L, name )
@@ -9,12 +10,13 @@ KTopLevelWidget::KTopLevelWidget( const char *name = NULL )
 	kmenubar = NULL;
 	kmainwidget = NULL;
 	kstatusbar = NULL;
+	borderwidth = 0;
 
 	kmainwidgetframe = new QFrame( this );
 	CHECK_PTR( kmainwidgetframe );
 	kmainwidgetframe ->setFrameStyle( QFrame::Panel | QFrame::Sunken);
 	kmainwidgetframe ->setLineWidth(2);
-    kmainwidgetframe ->hide();
+	kmainwidgetframe ->hide();
 }
 
 KTopLevelWidget::~KTopLevelWidget()
@@ -23,22 +25,37 @@ KTopLevelWidget::~KTopLevelWidget()
 
 int KTopLevelWidget::addToolBar( KToolBar *toolbar, int index )
 {
-	if ( index == -1 )
-		toolbars.append( toolbar );
-	else
-		toolbars.insert( index, toolbar );
-	index = toolbars.at();
-	connect ( toolbar, SIGNAL( moved (Position) ),
-		this, SLOT( updateRects() ) );
-	updateRects();
-	return index;
+   if ( index == -1 )
+     toolbars.append( toolbar );
+   else
+     toolbars.insert( index, toolbar );
+   index = toolbars.at();
+   connect ( toolbar, SIGNAL( moved (Position) ),
+	    this, SLOT( updateRects() ) );  
+   updateRects();
+   return index;
 }
 
 void KTopLevelWidget::setView( QWidget *view, bool show_frame )
 {
 	kmainwidget = view;
-	if( show_frame )
-		kmainwidgetframe->show();
+	if( show_frame ){
+
+	  // Set a default frame borderwidth, for a toplevelwidget with 
+	  // frame. 
+
+	  if(borderwidth == 0 )
+	    setFrameBorderWidth(1);
+	  
+	  kmainwidgetframe->show();
+	}
+
+        // In the case setView(...,TRUE),
+	// we leave the default frame borderwith at 0 so that we don't get
+	// an unwanted border -- after all we didn't request a frame. If you
+	// still want a border ( though no frame, call setFrameBorderWidth()
+	// before setView(...,FALSE).
+	  
 }
 
 void KTopLevelWidget::setMenu( KMenuBar *menu )
@@ -179,13 +196,25 @@ void KTopLevelWidget::updateRects()
 	//view_bottom);
 	
 	if ( kmainwidget ) {
-		kmainwidgetframe->setGeometry( view_left, view_top,
-							view_right - view_left,
-							view_bottom - view_top );
-		kmainwidget->setGeometry( view_left + 2, view_top + 2,
-							view_right - view_left - 4,
-							view_bottom - view_top - 4 );
+
+	 
+	  kmainwidgetframe->setGeometry( view_left, view_top,
+					 view_right - view_left,
+					 view_bottom - view_top );
+
+					 
+	  kmainwidget->setGeometry( view_left + borderwidth, view_top + borderwidth,
+				    view_right - view_left - 2 * borderwidth,
+				    view_bottom - view_top - 2 * borderwidth );
+
+
 	}
+}
+
+void KTopLevelWidget::setFrameBorderWidth(int size){
+
+  borderwidth = size;
+
 }
 
 void KTopLevelWidget::resizeEvent( QResizeEvent * )
