@@ -35,6 +35,7 @@
 #include <qfile.h>
 #include <qtextstream.h>
 #include <qtextedit.h>
+#include <qregexp.h>
 #include <kdebug.h>
 #include <kapplication.h>
 #include <klocale.h>
@@ -51,6 +52,7 @@
 
 void extractMaticData(QString& buf, const QString& filename);
 QString printerURI(KMPrinter *p, bool useExistingURI = false);
+QString downloadDriver(KMPrinter *p);
 
 //*****************************************************************************************************
 
@@ -210,7 +212,7 @@ bool KMCupsManager::completePrinter(KMPrinter *p)
 	if (completePrinterShort(p))
 	{
 		// driver informations
-		QString	ppdname = cupsGetPPD(p->printerName().local8Bit().data());
+		QString	ppdname = downloadDriver(p);
 		ppd_file_t	*ppd = (ppdname.isEmpty() ? NULL : ppdOpenFile(ppdname.local8Bit()));
 		if (ppd)
 		{
@@ -229,7 +231,8 @@ bool KMCupsManager::completePrinter(KMPrinter *p)
 			p->setDriverInfo(QString::fromLocal8Bit(ppd->nickname));
 			ppdClose(ppd);
 		}
-		QFile::remove(ppdname);
+		if (!ppdname.isEmpty())
+			QFile::remove(ppdname);
 
 		return true;
 	}
@@ -435,7 +438,7 @@ DrMain* KMCupsManager::loadPrinterDriver(KMPrinter *p, bool)
 	if (p->isClass(true))
 		return NULL;
 
-	QString	fname = cupsGetPPD(p->printerName().local8Bit());
+	QString	fname = downloadDriver(p);
 	DrMain	*driver(0);
 	if (!fname.isEmpty())
 	{
@@ -443,6 +446,7 @@ DrMain* KMCupsManager::loadPrinterDriver(KMPrinter *p, bool)
 		if (driver)
 			driver->set("temporary",fname);
 	}
+
 	return driver;
 }
 
@@ -664,7 +668,7 @@ bool KMCupsManager::savePrinterDriver(KMPrinter *p, DrMain *d)
 	bool		result(false);
 
 	req.setOperation(CUPS_ADD_PRINTER);
-	uri = printerURI(p);
+	uri = printerURI(p, true);
 	req.addURI(IPP_TAG_OPERATION,"printer-uri",uri);
 	result = req.doFileRequest("/admin/",tmpfilename);
 
@@ -859,6 +863,38 @@ QString printerURI(KMPrinter *p, bool use)
 	else
 		uri = QString("ipp://%1:%2/%4/%3").arg(CupsInfos::self()->host()).arg(CupsInfos::self()->port()).arg(p->printerName()).arg((p->isClass(false) ? "classes" : "printers"));
 	return uri;
+}
+
+QString downloadDriver(KMPrinter *p)
+{
+	QString	driverfile, prname = p->printerName();
+	bool	changed(false);
+
+	if (!p->uri().isEmpty())
+	{
+		// try to load the driver from the host:port
+		// specified in its URI. Doing so may also change
+		// the printer name to use. Note that for remote
+		// printer, this operation is read-only, no counterpart
+		// for saving operation.
+		cupsSetServer(p->uri().host().local8Bit());
+		ippSetPort(p->uri().port());
+		// strip any "@..." from the printer name
+		prname = prname.replace(QRegExp("@.*"), "");
+		changed = true;
+	}
+
+	// download driver
+	driverfile = cupsGetPPD(prname.local8Bit());
+
+	// restore host:port (if they have changed)
+	if (changed)
+	{
+		cupsSetServer(CupsInfos::self()->host().local8Bit());
+		ippSetPort(CupsInfos::self()->port());
+	}
+
+	return driverfile;
 }
 
 #include "kmcupsmanager.moc"

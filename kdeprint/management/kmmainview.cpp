@@ -263,7 +263,7 @@ void KMMainView::slotPrinterSelected(KMPrinter *p)
 		int 	mask = (m_manager->hasManagement() ? m_manager->printerOperationMask() : 0);
 		bool	sp = !(p && p->isSpecial());
 		m_actions->action("printer_remove")->setEnabled(!sp || ((mask & KMManager::PrinterRemoval) && p && p->isLocal() && !p->isImplicit()));
-		m_actions->action("printer_configure")->setEnabled(!sp || ((mask & KMManager::PrinterConfigure) && p && !p->isClass(true) && p->isLocal()));
+		m_actions->action("printer_configure")->setEnabled(!sp || ((mask & KMManager::PrinterConfigure) && p && !p->isClass(true) /*&& p->isLocal()*/));
 		m_actions->action("printer_hard_default")->setEnabled((sp && (mask & KMManager::PrinterDefault) && p && !p->isClass(true) && !p->isHardDefault() && p->isLocal()));
 		m_actions->action("printer_soft_default")->setEnabled((sp && p && !p->isSoftDefault()));
 		m_actions->action("printer_test")->setEnabled((sp && (mask & KMManager::PrinterTesting) && p && !p->isClass(true)));
@@ -332,7 +332,10 @@ void KMMainView::slotRightButtonClicked(KMPrinter *printer, const QPoint& p)
 		else
 		{
 			if (!printer->isClass(true))
+			{
+				m_actions->action("printer_configure")->plug(m_pop);
 				m_actions->action("printer_test")->plug(m_pop);
+			}
 			m_pop->insertSeparator();
 		}
 		if (!printer->isSpecial())
@@ -434,6 +437,9 @@ void KMMainView::slotConfigure()
 				KMDriverDialog	dlg(this);
 				dlg.setCaption(i18n("Configure %1").arg(m_current->printerName()));
 				dlg.setDriver(driver);
+				// disable OK button for remote printer (read-only dialog)
+				if (m_current->isRemote())
+					dlg.enableButtonOK(false);
 				if (dlg.exec())
 					if (!m_manager->savePrinterDriver(m_current,driver))
 						showErrorMsg(i18n("Unable to modify settings of printer <b>%1</b>.").arg(m_current->printerName()));
