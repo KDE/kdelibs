@@ -72,7 +72,7 @@ class KToolBarPrivate
 public:
   KToolBarPrivate()
   {
-    m_iconSize     = KIconLoader::Medium;
+    m_iconSize     = 0;
     m_iconText     = KToolBar::IconOnly;
     m_position     = KToolBar::Top;
     m_highlight    = true;
@@ -89,14 +89,14 @@ public:
     m_maxHorWidth   = -1;
     m_maxVerHeight  = -1;
 
-    m_approxItemSize = 22;
+    m_approxItemSize = 0;
     m_enableContext  = true;
   }
   ~KToolBarPrivate()
   {
     delete m_items; m_items = 0;
   }
-  KIconLoader::Size m_iconSize;
+  int m_iconSize;
   QString m_title;
   KToolBar::IconText    m_iconText;
   KToolBar::BarPosition m_position;
@@ -219,7 +219,7 @@ void KToolBar::slotReadConfig()
   bool highlight;
   int transparent;
   IconText icontext;
-  KIconLoader::Size iconsize;
+  int iconsize;
 
   // this is the first iteration
   QString grpToolbar(QString::fromLatin1("Toolbar style"));
@@ -238,10 +238,10 @@ void KToolBar::slotReadConfig()
 
   // now get the size conditionally
   if (d->m_honorStyle || name() == "mainToolBar")
-    iconsize = (KIconLoader::Size)config->readNumEntry(attrSize,
-                                                       KIconLoader::Medium);
+    iconsize = KGlobal::instance()->iconLoader()->currentSize( KIcon::MainToolbar );
+      //(KIconLoader::Size)config->readNumEntry(attrSize, KIconLoader::Medium);
   else
-    iconsize = KIconLoader::Medium;
+    iconsize = KGlobal::instance()->iconLoader()->currentSize( KIcon::Toolbar );
 
   // okay, that's done.  now we look for a toolbar specific entry
   grpToolbar = name() + QString::fromLatin1(" Toolbar style");
@@ -257,23 +257,7 @@ void KToolBar::slotReadConfig()
     icontext = (IconText)config->readNumEntry(attrIconText, icontext);
 
     // now get the size
-    iconsize = (KIconLoader::Size)config->readNumEntry(attrSize, iconsize);
-  }
-
-  // the actual size of the toolbar will be dependent on the buttons..
-  // but we can make some guesses now
-  switch (iconsize)
-  {
-  case KIconLoader::Medium:
-  default:
-    d->m_approxItemSize = 28;
-    break;
-  case KIconLoader::Large:
-    d->m_approxItemSize = 38;
-    break;
-  case KIconLoader::Small:
-    d->m_approxItemSize = 22;
-    break;
+    iconsize = config->readNumEntry(attrSize, iconsize);
   }
 
   // revert back to the old group
@@ -1575,10 +1559,12 @@ int KToolBar::insertAnimatedWidget( int id, QObject *receiver,
 {
   KAnimWidget *anim;
 
-  if ( d->m_honorStyle || name() == "mainToolBar" )
-    anim = new KAnimWidget(icons, KIconLoader::Default, this);
-  else
-    anim = new KAnimWidget(icons, KIconLoader::Medium, this);
+  //if ( d->m_honorStyle || name() == "mainToolBar" )
+  //  anim = new KAnimWidget(icons, KIconLoader::Default, this);
+  //else
+  //  anim = new KAnimWidget(icons, KIconLoader::Medium, this);
+  anim = new KAnimWidget( icons, d->m_iconSize, this );
+
   if ( receiver )
     connect( anim, SIGNAL(clicked()), receiver, signal);
 
@@ -2273,7 +2259,7 @@ void KToolBar::enableFloating (bool arrrrrrgh)
 
 void KToolBar::setIconText(IconText icontext)
 {
-  setIconText(icontext, true);
+  setIconText( icontext, true );
 }
 
 void KToolBar::setIconText(IconText icontext, bool update)
@@ -2327,12 +2313,12 @@ KToolBar::IconText KToolBar::iconText() const
   return d->m_iconText;
 }
 
-void KToolBar::setIconSize(KIconLoader::Size size)
+void KToolBar::setIconSize(int size)
 {
-  setIconSize(size, true);
+  setIconSize( size, true );
 }
 
-void KToolBar::setIconSize(KIconLoader::Size size, bool update)
+void KToolBar::setIconSize(int size, bool update)
 {
   bool doUpdate=false;
 
@@ -2342,9 +2328,12 @@ void KToolBar::setIconSize(KIconLoader::Size size, bool update)
     d->m_maxItemHeight = 0;
 
     d->m_iconSize = size;
+    d->m_approxItemSize = size; // Instead of always 22, let's try making it == m_iconSize (David)
     doUpdate=true;
   }
 
+  /*
+    TODO: use mpTheme->querySizes(i), see kcontrol/display/icons.cpp
   if (context)
   {
     for(int i = CONTEXT_SMALL; i <= CONTEXT_LARGE; ++i)
@@ -2364,6 +2353,7 @@ void KToolBar::setIconSize(KIconLoader::Size size, bool update)
       break;
     }
   }
+  */
 
   if (update == false)
     return;
@@ -2375,9 +2365,9 @@ void KToolBar::setIconSize(KIconLoader::Size size, bool update)
     updateRects(true);
 }
 
-KIconLoader::Size KToolBar::iconSize() const
+int KToolBar::iconSize() const
 {
-  return d->m_iconSize;
+    return d->m_iconSize;
 }
 
 void KToolBar::setEnableContextMenu(bool enable)
@@ -2510,6 +2500,8 @@ void KToolBar::ContextCallback( int )
     case CONTEXT_TEXTUNDER:
       setIconText( IconTextBottom );
       break;
+      /*
+        Needs to be dynamic
     case CONTEXT_SMALL:
       setIconSize( KIconLoader::Small );
       break;
@@ -2519,6 +2511,7 @@ void KToolBar::ContextCallback( int )
     case CONTEXT_LARGE:
       setIconSize( KIconLoader::Large );
       break;
+      */
     }
 
   mouseEntered=false;

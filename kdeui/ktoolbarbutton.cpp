@@ -67,7 +67,7 @@ public:
     m_text        = QString::null;
     m_iconName    = QString::null;
     m_iconText    = KToolBar::IconOnly;
-    m_iconSize    = KIconLoader::Small;
+    m_iconSize    = 0;
     m_delayTimer  = 0L;
     m_popup       = 0L;
 
@@ -105,7 +105,7 @@ public:
 
   KToolBar *m_parent;
   KToolBar::IconText m_iconText;
-  KIconLoader::Size  m_iconSize;
+  int m_iconSize;
 
   QTimer     *m_delayTimer;
   QPopupMenu *m_popup;
@@ -283,21 +283,21 @@ void KToolBarButton::setIcon( const QString &icon, bool generate )
 {
   d->m_iconName = icon;
   d->m_iconSize = d->m_parent->iconSize();
-  setPixmap( BarIcon(icon, d->m_parent->iconSize()), generate );
+  setPixmap( KGlobal::instance()->iconLoader()->loadIcon(icon, -d->m_iconSize), generate );
 }
 
 void KToolBarButton::setDisabledIcon( const QString &icon )
 {
   d->m_disabledIconName = icon;
   d->m_iconSize         = d->m_parent->iconSize();
-  setDisabledPixmap( BarIcon(icon, d->m_parent->iconSize()) );
+  setDisabledPixmap( KGlobal::instance()->iconLoader()->loadIcon(icon, -d->m_iconSize) );
 }
 
 void KToolBarButton::setDefaultIcon( const QString &icon )
 {
   d->m_defaultIconName = icon;
   d->m_iconSize        = d->m_parent->iconSize();
-  setDefaultPixmap( BarIcon(icon, d->m_parent->iconSize()) );
+  setDefaultPixmap( KGlobal::instance()->iconLoader()->loadIcon(icon, -d->m_iconSize) );
 }
 
 void KToolBarButton::setPixmap( const QPixmap &pixmap )

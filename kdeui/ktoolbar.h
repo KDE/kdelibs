@@ -333,9 +333,8 @@ public:
 
   /**
    * Insert an animated widget.  A @ref KAnimWidget will be created
-   * internally using the icon list you provide.  The icon size will
-   * come from the toolbar icon size so you don't need to set it
-   * directly.  This will emit a signal (clicked()) whenever the
+   * internally using the icon list you provide.
+   * This will emit a signal (clicked()) whenever the
    * animation widget is clicked.
    *
    * @see animatedWidget()
@@ -756,12 +755,14 @@ public:
    * @li TextOnly (only text),
    * @li IconTextBottom (icons and text, text is under icons).
    * @see IconText
-   **/
+   *
+   */
   void setIconText(IconText it);
+  // Note: don't merge with the next one, it breaks Qt properties
 
   /**
    * Similar to @ref setIconText(IconText it) but allows you to
-   * disable or enable updating.  If @ref #update is false, then the
+   * disable or enable updating.  If @p update is false, then the
    * buttons will not be updated.  This is useful only if you know
    * that you will be forcing an update later.
    */
@@ -773,14 +774,16 @@ public:
   IconText iconText() const;
 
   /**
-   * Set the icon size to load.  This is either Large, Medium, or
-   * Small.  By default, the toolbar will load Medium icons.
-   *
-   * @see KIconLoader::Size
+   * Set the icon size to load. Usually you should not call
+   * this, the icon size is taken care of by KIconLoader
+   * and globally configured.
+   * By default, the toolbar will load icons of size 32 for main
+   * toolbars and 22 for other toolbars (@see KIconLoader).
    *
    * @param size The size to use
    */
-  void setIconSize(KIconLoader::Size size);
+  void setIconSize(int size);
+  // Note: don't merge with the next one, it breaks Qt properties
 
   /**
    * Same as @ref setIconText(KIconLoader::Size size) but allows you
@@ -790,12 +793,12 @@ public:
    * @param update If true, then the toolbar will be updated after
    *               this
    */
-  void setIconSize(KIconLoader::Size size, bool update);
+  void setIconSize(int size, bool update);
 
   /**
    * @return The current icon size for buttons.
    */
-  KIconLoader::Size iconSize() const;
+  int iconSize() const;
 
   /**
    * This allows you to enable or disable the context menu.

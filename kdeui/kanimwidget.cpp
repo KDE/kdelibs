@@ -21,25 +21,26 @@
 #include <qtimer.h>
 #include <qpainter.h>
 #include <ktoolbar.h>
+#include <kdebug.h>
 
 class KAnimWidget::KAnimWidgetPrivate
 {
 public:
   KAnimWidgetPrivate()
   {
-    size = KIconLoader::Default;
+    size = -1;
   }
 
   QStringList            icons;
   QTimer                 timer;
-  KIconLoader::Size      size;
+  int                    size;
   QPixmap                pixmap;
 
   QValueList<QPixmap>           pixmaps;
   QValueList<QPixmap>::Iterator iter;
 };
 
-KAnimWidget::KAnimWidget( const QStringList& icons, KIconLoader::Size size,
+KAnimWidget::KAnimWidget( const QStringList& icons, int size,
                           QWidget *parent, const char *name )
   : QFrame( parent, name ),
     d(new KAnimWidgetPrivate)
@@ -49,6 +50,7 @@ KAnimWidget::KAnimWidget( const QStringList& icons, KIconLoader::Size size,
   if (parent->inherits( "KToolBar" ))
     connect(parent, SIGNAL(modechange()), this, SLOT(updateIcons()));
 
+  d->size = size;
   setIcons( icons );
 //  setFrameStyle( WinPanel | Raised );
   setFrameStyle( NoFrame );
@@ -76,7 +78,7 @@ void KAnimWidget::stop()
   repaint();
 }
 
-void KAnimWidget::setSize( KIconLoader::Size size )
+void KAnimWidget::setSize( int size )
 {
   if ( d->size == size )
     return;
@@ -146,7 +148,7 @@ void KAnimWidget::updateIcons()
 {
   if (parent()->inherits( "KToolBar" ))
   {
-    if ( d->size != ((KToolBar*)parent())->iconSize() )
+    if ( d->size == 0 )
       d->size = ((KToolBar*)parent())->iconSize();
   }
 
@@ -154,7 +156,10 @@ void KAnimWidget::updateIcons()
 
   QStringList::Iterator it = d->icons.begin();
   for( ; it != d->icons.end(); ++it)
-    d->pixmaps.append( BarIcon( *it, d->size ) );
+  {
+    kdDebug() << "loading icon " << *it << " with size " << d->size << endl;
+    d->pixmaps.append( KGlobal::instance()->iconLoader()->loadIcon( *it, -d->size ) );
+  }
 
   d->iter   = d->pixmaps.begin();
   d->pixmap = *d->iter;

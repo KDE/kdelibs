@@ -64,11 +64,13 @@ public:
    *
    * @param icons  The icons to use for the animation
    * @param size   The size to load
+   *         You don't have to set it if the parent is a KToolBar; in this case
+   *         it will use the toolbar's size.
    * @param parent The standard parent
    * @param name   The standard internal name
    */
   KAnimWidget( const QStringList& icons,
-               KIconLoader::Size size = KIconLoader::Default,
+               int size = 0,
                QWidget *parent = 0L, const char *name = 0L );
 
   /**
@@ -96,12 +98,11 @@ public:
   void stop();
 
   /**
-   * Set the size of the icons.  By default, it will be
-   * KIconLoader::Default.
+   * Set the size of the icons.
    *
    * @param size The size of the icons
    */
-  void setSize( KIconLoader::Size size );
+  void setSize( int size );
 
   /**
    * Set the list of icons to use for the animation.  They will all be
