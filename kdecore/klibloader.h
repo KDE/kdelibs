@@ -55,6 +55,9 @@ class KLibraryPrivate;
  * This @ref KInstance is compareable to @ref KGlobal used by normal applications.
  * It allows you to find ressource files (images, XML, sound etc.) belonging
  * to the library.
+ * Furthermore if you provide any QObject derived classes, you must call
+ * @ref setMocClasses() with an array of names of these classes. To generate
+ * that list automatically use am_edit.
  *
  * If you want to load a library, use @ref KLibLoader. You can query @ref KLibLoader
  * directly for a pointer to the libraries factory by using the @ref KLibLoader::factory()
@@ -97,6 +100,18 @@ public:
      */
 
     virtual QObject* create( QObject* parent = 0, const char* name = 0, const char* classname = "QObject", const QStringList &args = QStringList() ) = 0;
+
+    /**
+     * Tells the libloading system, which QObject derived classes are
+     * provided by the library.  This is necessary for unloading, to remove
+     * any references to the meta objects created by Qt's object system.
+     *
+     * @p names an array of class names, for which this library provides
+     * meta classes; the end of array is indicated by a 0 element
+     */
+    void setMocClasses(const char **names);
+    
+    void destroyMocClasses() const;
 
 signals:
     /**

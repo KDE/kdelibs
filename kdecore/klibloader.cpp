@@ -23,14 +23,41 @@
 template class QAsciiDict<KLibrary>;
 
 #include <qtimer.h>
+#include <qobjectdict.h>
+
+class KLibFactoryPrivate {
+public:
+    const char **m_mocClasses;
+};
 
 KLibFactory::KLibFactory( QObject* parent, const char* name )
     : QObject( parent, name )
 {
+    d = new KLibFactoryPrivate;
+    d->m_mocClasses = 0;
 }
 
 KLibFactory::~KLibFactory()
 {
+}
+
+void KLibFactory::setMocClasses( const char **names )
+{
+    d->m_mocClasses = names;
+}
+
+void KLibFactory::destroyMocClasses() const
+{
+    if (objectDict && d->m_mocClasses) {
+        const char **n = d->m_mocClasses;
+	kdDebug(150) << "KLibFactory: removing references to meta classes" << endl;
+	for (; *n; n++) {
+	    kdDebug(150) << "KLibFactory: removing metaclass for " << *n << endl;
+	    /* Because objectDict was set to AutoDelete the following does the
+	       right thing. */
+	    while (objectDict->remove(*n)) ;
+	}
+    }
 }
 
 // -----------------------------------------------
@@ -49,8 +76,10 @@ KLibrary::~KLibrary()
     if ( m_timer && m_timer->isActive() )
       m_timer->stop();
 
-    if ( m_factory )
+    if ( m_factory ) {
+      m_factory->destroyMocClasses();
       delete m_factory;
+    }
 
     lt_dlclose( m_handle );
 }
@@ -87,10 +116,8 @@ KLibFactory* KLibrary::factory()
 	return 0;
     }
 
-    // disable unloading of shared library for beta2. re-enable when michael matz
-    // comitted his am_edit-qmetaobject-magic stuff :-) (Simon)
-    //    connect( m_factory, SIGNAL( objectCreated( QObject * ) ),
-    //             this, SLOT( slotObjectCreated( QObject * ) ) );
+    connect( m_factory, SIGNAL( objectCreated( QObject * ) ),
+             this, SLOT( slotObjectCreated( QObject * ) ) );
 
     return m_factory;
 }
@@ -127,7 +154,8 @@ void KLibrary::slotObjectDestroyed()
 
   if ( m_objs.count() == 0 )
   {
-    kdDebug(150) << "KLibrary: shutdown timer started!" << endl;
+    kdDebug(150) << "KLibrary: shutdown timer for " << name() << " started!"
+                 << endl;
 
     if ( !m_timer )
     {
@@ -137,6 +165,7 @@ void KLibrary::slotObjectDestroyed()
     }
 
     m_timer->start( 1000*60, true );
+    //m_timer->start( 1000*10, true );
   }
 }
 
