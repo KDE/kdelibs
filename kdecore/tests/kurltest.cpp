@@ -168,6 +168,9 @@ int main(int argc, char *argv[])
   carsten.setPath("/home/gis/src/kde/kdelibs/kfile/.#kfiledetailview.cpp.1.18");
   check("KURL::path()", carsten.path(), "/home/gis/src/kde/kdelibs/kfile/.#kfiledetailview.cpp.1.18");
 
+  KURL charles("file:/home/charles/foo%20moo");
+  check("KURL::path()", charles.path(), "/home/charles/foo moo");
+
   KURL udir;
   printf("\n* Empty URL\n");
   check("KURL::url()", udir.url(), QString::null);
