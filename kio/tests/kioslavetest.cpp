@@ -199,6 +199,7 @@ void KioslaveTest::startJob() {
 
   pbStart->setEnabled( false );
   job = new KIOJob;
+  job->cacheToPool(true);
 
   switch ( progressMode ) {
   case ProgressSimple:

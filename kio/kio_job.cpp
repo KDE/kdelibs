@@ -760,12 +760,12 @@ void KIOJob::slotSpeed( unsigned long _bytes_per_second ) {
   } else {
     m_bStalled = false;
 
-    unsigned long secs = ( m_iTotalSize - m_iProcessedSize ) / _bytes_per_second;
-    int hr = secs / ( 60 * 60 );
-    int mn = ( secs - hr * 60 * 60 ) / 60;
-    int sc = ( secs - hr * 60 * 60 - mn * 60 );
+    if (m_iTotalSize >= m_iProcessedSize)
+    {
+       int secs = ( m_iTotalSize - m_iProcessedSize ) / _bytes_per_second;
 
-    m_RemainingTime.setHMS( hr, mn, sc );
+       m_RemainingTime = QTime().addSecs(secs);
+    }
   }
 
   emit sigSpeed( m_id, _bytes_per_second );
