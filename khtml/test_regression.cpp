@@ -690,7 +690,7 @@ bool RegressionTest::runTests(QString relPath, bool mustExist, int known_failure
 	m_currentTest = filename;
         m_known_failures = known_failure;
 	if ( filename.endsWith(".html") || filename.endsWith( ".htm" ) || filename.endsWith( ".xhtml" ) ) {
-            if ( relPath.startswith( "domts/" && !m_runJS ) )
+            if ( relPath.startsWith( "domts/" && !m_runJS ) )
                 return true;
             if ( m_runHTML )
                 testStaticFile(relPath);
