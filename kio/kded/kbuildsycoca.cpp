@@ -184,7 +184,7 @@ void KBuildSycoca::recreate( KSycocaEntryListList *allEntries )
      kdError(7021) << "Error writing database to " << database.name() << endl;
      return;
   }
-fprintf(stderr, "Build = %d Save = %d\n", Time2-Time1, Time3-Time2);
+  kdDebug() << "Build = " << Time2-Time1 << "s Save = " << Time3-Time2 << "s" << endl;
 }
 
 void KBuildSycoca::save()
@@ -258,7 +258,7 @@ static const char *appVersion = "1.0";
 
 int main(int argc, char **argv)
 {
-   time_t Time1 = time(0);
+   //time_t Time1 = time(0);
    KAboutData d(appName, I18N_NOOP("KBuildSycoca"), appVersion,
                 I18N_NOOP("Rebuilds the system configuration cache."),
 		KAboutData::License_GPL, "(c) 1999,2000 David Faure");
