@@ -1342,19 +1342,22 @@ void KEditToolbarWidget::slotProcessExited( KProcess* )
   }
 
   ToolbarItem *item = (ToolbarItem*)m_activeList->currentItem();
-  item->setPixmap(0, BarIcon(icon, 16));
+  if(item){
+    item->setPixmap(0, BarIcon(icon, 16));
 
-  d->m_currentXmlData.m_isModified = true;
+    d->m_currentXmlData.m_isModified = true;
 
-  // Get hold of ActionProperties tag
-  QDomElement elem = KXMLGUIFactory::actionPropertiesElement( d->m_currentXmlData.m_document );
-  // Find or create an element for this action
-  QDomElement act_elem = KXMLGUIFactory::findActionByName( elem, item->internalName(), true /*create*/ );
-  Q_ASSERT( !act_elem.isNull() );
-  act_elem.setAttribute( "icon", icon );
+    // Get hold of ActionProperties tag
+    QDomElement elem = KXMLGUIFactory::actionPropertiesElement( d->m_currentXmlData.m_document );
+    // Find or create an element for this action
+    QDomElement act_elem = KXMLGUIFactory::findActionByName( elem, item->internalName(), true /*create*/ );
+    Q_ASSERT( !act_elem.isNull() );
+    act_elem.setAttribute( "icon", icon );
 
-  // we're modified, so let this change
-  emit enableOk(true);
+    // we're modified, so let this change
+    emit enableOk(true);
+  }
+  
   delete d->m_kdialogProcess;
   d->m_kdialogProcess = 0;
 }
