@@ -18,15 +18,7 @@
 #    Boston, MA 02111-1307, USA.
 
 
-SUBDIRS = kdecore kdeui jscript khtmlw kfmlib kfile mediatool po doc toolbar
-
-DISTCLEANFILES = kdedoc/Makefile kdetest/Makefile
-
-tests:
-	(cd kdetest && $(MAKE) all)
-
-distclean-local:
-	(cd kdetest && $(MAKE) distclean)
+SUBDIRS = kdecore kdeui jscript khtmlw kfmlib kfile mediatool po doc toolbar kdetest
 
 acinclude.m4: acinclude.m4.in libtool.m4.in
 	cat acinclude.m4.in libtool.m4.in   > acinclude.m4

@@ -1,6 +1,6 @@
 #	This file is part of the KDE libraries
 #    Copyright (C) 1996-1997 Matthias Kalle Dalheimer (kalle@kde.org)
-#              (C) 1997 Stephan Kulow (coolo@kde.org)
+#              (C) 1997-1998 Stephan Kulow (coolo@kde.org)
 
 #    This library is free software; you can redistribute it and/or
 #    modify it under the terms of the GNU Library General Public
@@ -24,24 +24,24 @@ LDADD = -L$(topdir)/kdecore/.libs -lkdecore -L$(topdir)/kdeui/.libs -lkdeui $(QT
 
 DISTCLEANFILES = $(BUILT_SOURCES)
 
-noinst_PROGRAMS = kconfigtest kledlamptest kprogresstest \
+check_PROGRAMS = kconfigtest kledlamptest kprogresstest \
 		kcolordlgtest kdatepicktest kfontdialogtest	\
 		kmsgboxtest kpopuptest ktabctltest ktreelisttest	\
 		kkeyconfigtest kseparatortest kiconloadertest		\
 		kwindowtest klinetest kstatusbartest kspinboxtest	\
 		kprocesstest kpannertest kbuttonboxtest ksimpleconfigtest \
-		kcharsetstest kledtest
+		kcharsetstest kledtest kcontainertest
 
 noinst_HEADERS = kdatepicktestdlg.h kmsgboxtest.h ktreelisttest.h \
 		kkeyconfigtest.h ktabctltest.h kiconloadertestmain.h	\
-		kwindowtest.h klinetest.h kstatusbartest.h kspinboxtest.h	\
-		kprocesstest.h kcharsetstest.h kledtest.h
+		kwindowtest.h klinetest.h kstatusbartest.h kspinboxtest.h \
+		kprocesstest.h kcharsetstest.h kledtest.h kcontainertest.h
 
 BUILT_SOURCES = ktabctltest.moc kmsgboxtest.moc kdatepicktestdlg.moc \
 		ktreelisttest.moc kkeyconfigtest.moc kiconloadertestmain.moc \
 		kconfigtest.moc kpannertest.moc kwindowtest.moc klinetest.moc \
-		kstatusbartest.moc kspinboxtest.moc kprocesstest.moc kcharsetstest.moc\
-		kledtest.h
+		kstatusbartest.moc kspinboxtest.moc kprocesstest.moc \
+		kcharsetstest.moc kledtest.h kcontainertest.moc
 
 ktabctltest.cpp: ktabctltest.moc
 kiconloadertestmain.cpp: kiconloadertestmain.moc
@@ -58,6 +58,7 @@ kspinboxtest.cpp: kspinboxtest.moc
 kprocesstest.cpp: kprocesstest.moc
 kcharsetstest.cpp: kcharsetstest.moc
 kledtest.cpp: kledtest.moc
+kcontainertest.cpp: kcontainertest.moc
 
 kconfigtest_SOURCES = kconfigtest.cpp
 kledlamptest_SOURCES = kledlamptest.cpp
@@ -82,6 +83,7 @@ kbuttonboxtest_SOURCES = kbuttonboxtest.cpp
 ksimpleconfigtest_SOURCES = ksimpleconfigtest.cpp
 kcharsetstest_SOURCES = kcharsetstest.cpp
 kledtest_SOURCES = kledtest.cpp
+kcontainertest_SOURCES = kcontainertest.cpp
 
 klinetest.moc: klinetest.h
 	$(MOC) klinetest.h -o klinetest.moc
@@ -127,3 +129,6 @@ kcharsetstest.moc: kcharsetstest.h
 
 kledtest.moc: kledtest.h
 	$(MOC) kledtest.h -o kledtest.moc
+
+kcontainertest.moc: kcontainertest.h
+	$(MOC) kcontainertest.h -o kcontainertest.moc
