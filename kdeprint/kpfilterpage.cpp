@@ -18,7 +18,6 @@
  **/
 
 #include "kpfilterpage.h"
-#include "kprintfilter.h"
 #include "kmfactory.h"
 #include "kxmlcommand.h"
 

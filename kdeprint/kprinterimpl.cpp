@@ -28,7 +28,6 @@
 #include "kmspecialmanager.h"
 #include "kmthreadjob.h"
 #include "kmprinter.h"
-#include "kprintfilter.h"
 #include "driver.h"
 
 #include <qfile.h>
@@ -331,14 +330,14 @@ int KPrinterImpl::doFilterFiles(KPrinter *printer, QStringList& files, const QSt
 	kdDebug(500) << "kdeprint: filter command: " << filtercmd << endl;
 
 	QRegExp	rin("%in"), rout("%out"), rpsl("%psl"), rpsu("%psu");
-	QString	ps = pageSizeToPageName(printer->pageSize());
+	QString	ps = pageSizeToPageName( printer->option( "kde-printsize" ).isEmpty() ? printer->pageSize() : ( KPrinter::PageSize )printer->option( "kde-printsize" ).toInt() );
 	for (QStringList::Iterator it=files.begin(); it!=files.end(); ++it)
 	{
 		QString	mime = KMimeMagic::self()->findFileType(*it)->mimeType();
 		if (inputMimeTypes.find(mime) == inputMimeTypes.end())
 		{
 			if (KMessageBox::warningContinueCancel(0,
-				i18n("The MIME type %1 is not supported as input of the filter chain "
+				"<p>" + i18n("The MIME type %1 is not supported as input of the filter chain "
 				     "(this may happen with non-CUPS spoolers when performing page selection "
 				     "on a non-PostScript file). Do you want KDE to convert the file to a supported "
 				     "format?</p>").arg(mime),
@@ -481,7 +480,7 @@ bool KPrinterImpl::setupSpecialCommand(QString& cmd, KPrinter *p, const QStringL
 
 	s = KMFactory::self()->specialManager()->setupCommand(s, p->options());
 
-	QString	ps = pageSizeToPageName(p->pageSize());
+	QString	ps = pageSizeToPageName( p->option( "kde-printsize" ).isEmpty() ? p->pageSize() : ( KPrinter::PageSize )p->option( "kde-printsize" ).toInt() );
 	s.replace(QRegExp("%out"), quote(p->outputFileName()));
 	s.replace(QRegExp("%psl"), ps.lower());
 	s.replace(QRegExp("%psu"), ps);
