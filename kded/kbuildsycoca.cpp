@@ -19,6 +19,7 @@
 
 #include <qdir.h>
 #include <qeventloop.h>
+#include <config.h>
 
 #include "kbuildsycoca.h"
 #include "kresourcelist.h"
