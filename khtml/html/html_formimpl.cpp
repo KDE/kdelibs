@@ -24,7 +24,7 @@
  */
 
 #undef FORMS_DEBUG
-#define FORMS_DEBUG
+//#define FORMS_DEBUG
 
 #include "html/html_formimpl.h"
 
@@ -248,7 +248,7 @@ QByteArray HTMLFormElementImpl::formData(bool& ok)
 
         if (!current->disabled() && current->encoding(codec, lst, m_multipart))
         {
-            kdDebug(6030) << "adding name '" << current->name().string() << "'" << endl;
+            //kdDebug(6030) << "adding name '" << current->name().string() << "'" << endl;
             khtml::encodingList::Iterator it;
             for( it = lst.begin(); it != lst.end(); ++it )
             {
