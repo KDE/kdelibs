@@ -164,8 +164,9 @@ void KJavaAppletWidget::setWindow( WId w )
     //make sure that this window has the right name, if so, embed it...
     KWin::Info w_info = KWin::info( w );
 
-    if ( swallowTitle == w_info.name )
-    {
+    if ( swallowTitle == w_info.name ||
+	 swallowTitle == w_info.visibleName )
+      {
         // disconnect from KWM events
         disconnect( kwm, SIGNAL( windowAdded( WId ) ),
                     this, SLOT( setWindow( WId ) ) );
@@ -173,11 +174,6 @@ void KJavaAppletWidget::setWindow( WId w )
         embed( w );
         setFocus();
     }
-}
-
-void KJavaAppletWidget::swallowWindow( WId w )
-{
-    embed( w );
 }
 
 void KJavaAppletWidget::resize( int w, int h)

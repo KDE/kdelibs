@@ -151,7 +151,6 @@ protected slots:
      void setWindow( WId w );
 
 protected:
-    void swallowWindow( WId w );
     void uniqueTitle();
 
 private:
