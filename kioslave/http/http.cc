@@ -2460,15 +2460,19 @@ bool HTTPProtocol::readHeader()
         // 303 See Other
         if (m_request.method != HTTP_HEAD && m_request.method != HTTP_GET)
         {
+           // Reset the POST buffer to avoid a double submit 
+           // on redirection
+           if (m_request.method == HTTP_POST)
+              m_bufPOST.resize(0);
+              
            // NOTE: This is wrong according to RFC 2616.  However,
            // because most other existing user agent implementations
            // treat a 301/302 response as a 303 response and preform
            // a GET action regardless of what the previous method was,
            // many servers have simply adapted to this way of doing
            // things!!  Thus, we are forced to do the same thing or we
-           // won't be able to retrieve these pages correctly!!  This
-           // implementation is therefore only correct for a 303 response
-           // according to RFC 2616 section 10.3.2/3/4/8
+           // won't be able to retrieve these pages correctly!! See RFC 
+           // 2616 sections 10.3.[2/3/4/8]
            m_request.method = HTTP_GET; // Force a GET
         }
         m_bCachedWrite = false; // Don't put in cache
@@ -3005,7 +3009,7 @@ bool HTTPProtocol::readHeader()
 
     kdDebug(7113) << "(" << m_pid << ") Requesting redirection to: " << u.url()
                   << endl;
-
+                  
     redirection(u.url());
     m_bCachedWrite = false; // Turn off caching on re-direction (DA)
     mayCache = false;
@@ -3281,14 +3285,15 @@ bool HTTPProtocol::sendBody()
   bool sendOk = (write(c_buffer, strlen(c_buffer)) == (ssize_t) strlen(c_buffer));
   if (!sendOk)
   {
-    kdDebug(7113) << "(" << m_pid << ") Connection broken when sending content length: ("
-                  << m_state.hostname << ")" << endl;
+    kdDebug( 7113 ) << "(" << m_pid << ") Connection broken when sending "
+                                       "content length: (" << m_state.hostname 
+                                    << ")" << endl;
     error( ERR_CONNECTION_BROKEN, m_state.hostname );
     return false;
   }
 
   // Send the data...
-  //kdDebug() << "POST DATA: " << QCString(m_bufPOST) << endl;
+  kdDebug( 7113 ) << "POST DATA: " << QCString(m_bufPOST) << endl;
   sendOk = (write(m_bufPOST.data(), m_bufPOST.size()) == (ssize_t) m_bufPOST.size());
   if (!sendOk)
   {
