@@ -12,8 +12,11 @@
  */
 
 #include "addressbook.h"
+#ifdef KAB_DEBUG
 #include "debug.h"
+#endif
 #include <kapp.h>
+#include "debug.h"
 
 extern "C" {
 #include <sys/types.h>

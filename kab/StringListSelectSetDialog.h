@@ -20,7 +20,6 @@
 #include "DialogBase.h"
 #include <qstring.h>
 #include <qstrlist.h> 
-#include <debug.h>
 
 class QListBox;
 

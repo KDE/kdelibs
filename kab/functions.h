@@ -18,7 +18,6 @@
 
 #include "stl_headers.h"
 #include <fstream.h>
-#include "debug.h"
 
 /** Read a line, ignore comments. */
 string ReadLineFromStream(ifstream&);

@@ -49,7 +49,6 @@
 
 #include "stl_headers.h"
 #include <fstream.h>
-#include "debug.h"
 
 // forward declaration needed to avoid duplicate declaration 
 // of global specifiers "red" and "black" in

@@ -20,7 +20,6 @@
 #include <qpushbutton.h>
 #include <qframe.h>
 #include <qsize.h>
-#include "debug.h"
 
 class SearchResults : public QWidget
 {

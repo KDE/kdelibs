@@ -17,7 +17,6 @@
 #include "DialogBase.h"
 #include "SearchDialogMainWidget.h"
 #include "stl_headers.h"
-#include "debug.h"
 
 class SearchDialog : public DialogBase
 {

@@ -7,7 +7,6 @@
 #include "StringListEditWidgetData.h"
 #include <qstrlist.h>
 #include "stl_headers.h"
-#include "debug.h"
 
 class StringListEditWidget : public StringListEditWidgetData
 {

@@ -35,7 +35,6 @@
 #include "stl_headers.h"
 #include "DialogBaseData.h"
 #include <qsize.h>
-#include "debug.h"
 
 class QPixmap;
 

@@ -16,7 +16,6 @@
 
 #include <qdialog.h>
 #include "kab.h"
-#include "debug.h"
 
 class QPushButton;
 class QFrame;
