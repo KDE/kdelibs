@@ -100,10 +100,10 @@ public:
       *         @li QString::null to start in the current working
       *		    directory, or the last directory where a file has been
       *		    selected.
-      *         @li ':<keyword>' to start in the directory last used
+      *         @li ':&lt;keyword&gt;' to start in the directory last used
       *             by a filedialog in the same application that specified
       *             the same keyword.
-      *         @li '::<keyword' to start in the direcotry last used
+      *         @li '::&lt;keyword&gt;' to start in the direcotry last used
       *             by a filedialog in any application that specified the
       *             same keyword.
       *
@@ -133,10 +133,10 @@ public:
       *         @li QString::null to start in the current working
       *		    directory, or the last directory where a file has been
       *		    selected.
-      *         @li ':<keyword>' to start in the directory last used
+      *         @li ':&lt;keyword&gt;' to start in the directory last used
       *             by a filedialog in the same application that specified
       *             the same keyword.
-      *         @li '::<keyword' to start in the direcotry last used
+      *         @li '::&lt;keyword&gt;' to start in the direcotry last used
       *             by a filedialog in any application that specified the
       *             same keyword.
       *
@@ -387,10 +387,10 @@ public:
      *         @li QString::null to start in the current working
      *		    directory, or the last directory where a file has been
      *		    selected.
-     *         @li ':<keyword>' to start in the directory last used
+     *         @li ':&lt;keyword&gt;' to start in the directory last used
      *             by a filedialog in the same application that specified
      *             the same keyword.
-     *         @li '::<keyword' to start in the direcotry last used
+     *         @li '::&lt;keyword&gt;' to start in the direcotry last used
      *             by a filedialog in any application that specified the
      *             same keyword.
      * @param filter This is a space seperated list of shell globs.
@@ -418,10 +418,10 @@ public:
      *         @li QString::null to start in the current working
      *		    directory, or the last directory where a file has been
      *		    selected.
-     *         @li ':<keyword>' to start in the directory last used
+     *         @li ':&lt;keyword&gt;' to start in the directory last used
      *             by a filedialog in the same application that specified
      *             the same keyword.
-     *         @li '::<keyword' to start in the direcotry last used
+     *         @li '::&lt;keyword&gt;' to start in the direcotry last used
      *             by a filedialog in any application that specified the
      *             same keyword.
      * @param filter This is a space seperated list of shell globs.
@@ -448,10 +448,10 @@ public:
      *         @li QString::null to start in the current working
      *		    directory, or the last directory where a file has been
      *		    selected.
-     *         @li ':<keyword>' to start in the directory last used
+     *         @li ':&lt;keyword&gt;' to start in the directory last used
      *             by a filedialog in the same application that specified
      *             the same keyword.
-     *         @li '::<keyword' to start in the direcotry last used
+     *         @li '::&lt;keyword&gt;' to start in the direcotry last used
      *             by a filedialog in any application that specified the
      *             same keyword.
      * @param filter This is a space seperated list of shell globs.
@@ -479,10 +479,10 @@ public:
      *         @li QString::null to start in the current working
      *		    directory, or the last directory where a file has been
      *		    selected.
-     *         @li ':<keyword>' to start in the directory last used
+     *         @li ':&lt;keyword&gt;' to start in the directory last used
      *             by a filedialog in the same application that specified
      *             the same keyword.
-     *         @li '::<keyword>' to start in the direcotry last used
+     *         @li '::&lt;keyword&gt;' to start in the direcotry last used
      *             by a filedialog in any application that specified the
      *             same keyword.
      * @param filter This is a space seperated list of shell globs.
@@ -511,10 +511,10 @@ public:
      *         @li QString::null to start in the current working
      *		    directory, or the last directory where a file has been
      *		    selected.
-     *         @li ':<keyword>' to start in the directory last used
+     *         @li ':&lt;keyword&gt;' to start in the directory last used
      *             by a filedialog in the same application that specified
      *             the same keyword.
-     *         @li '::<keyword' to start in the direcotry last used
+     *         @li '::&lt;keyword&gt;' to start in the direcotry last used
      *             by a filedialog in any application that specified the
      *             same keyword.
      * @param filter This is a space seperated list of shell globs.
@@ -543,10 +543,10 @@ public:
      *         @li QString::null to start in the current working
      *		    directory, or the last directory where a file has been
      *		    selected.
-     *         @li ':<keyword>' to start in the directory last used
+     *         @li ':&lt;keyword&gt;' to start in the directory last used
      *             by a filedialog in the same application that specified
      *             the same keyword.
-     *         @li '::<keyword' to start in the direcotry last used
+     *         @li '::&lt;keyword&gt;' to start in the direcotry last used
      *             by a filedialog in any application that specified the
      *             same keyword.
      * @param filter This is a space seperated list of shell globs.
@@ -572,10 +572,10 @@ public:
      *         @li QString::null to start in the current working
      *		    directory, or the last directory where a file has been
      *		    selected.
-     *         @li ':<keyword>' to start in the directory last used
+     *         @li ':&lt;keyword&gt;' to start in the directory last used
      *             by a filedialog in the same application that specified
      *             the same keyword.
-     *         @li '::<keyword' to start in the direcotry last used
+     *         @li '::&lt;keyword&gt;' to start in the direcotry last used
      *             by a filedialog in any application that specified the
      *             same keyword.
      * @param parent The widget the dialog will be centered on initially.
@@ -594,10 +594,10 @@ public:
      *         @li QString::null to start in the current working
      *		    directory, or the last directory where a file has been
      *		    selected.
-     *         @li ':<keyword>' to start in the directory last used
+     *         @li ':&lt;keyword&gt;' to start in the directory last used
      *             by a filedialog in the same application that specified
      *             the same keyword.
-     *         @li '::<keyword' to start in the direcotry last used
+     *         @li '::&lt;keyword&gt;' to start in the direcotry last used
      *             by a filedialog in any application that specified the
      *             same keyword.
      * @param parent The widget the dialog will be centered on initially.
