@@ -363,7 +363,7 @@ void KDirLister::slotUpdateResult( KIO::Job * job )
               (*kit)->assign( *item );
               (*kit)->mark(); // just in case
               lstRefreshItems.append( (*kit) );
-              //kdDebug(7003) << "slotUpdateFinished : This file has changed : " << (*kit)->name() << endl;
+              kdDebug(7003) << "slotUpdateFinished : This file has changed : " << (*kit)->name() << endl;
           }
           delete item;
       }
@@ -649,6 +649,7 @@ void KDirLister::FilesRemoved( const KURL::List & fileList )
 
 void KDirLister::FilesChanged( const KURL::List & fileList )
 {
+  KURL::List dirs;
   QListIterator<KFileItem> kit ( m_lstFileItems );
   KURL::List::ConstIterator it = fileList.begin();
   for ( ; it != fileList.end() ; ++it )
@@ -662,8 +663,22 @@ void KDirLister::FilesChanged( const KURL::List & fileList )
           KFileItemList lst;
           lst.append( *kit );
           emit refreshItems( lst );
+          KURL dir(*it);
+          dir.setPath( (*it).directory() );
+          if ( !dirs.contains( dir ) )
+              dirs.append(dir);
       }
     }
+  }
+  // Tricky. If an update is running at the same time, it might have
+  // listed those files before, and emit outdated info (reverting this method's work)
+  // So we need to abort any running update, and relaunch it.
+  if ( d->autoUpdate && !m_bComplete )
+  {
+      stop();
+      KURL::List::ConstIterator it = dirs.begin();
+      for ( ; it != dirs.end() ; ++it )
+          updateDirectory( (*it ) );
   }
 }
 
