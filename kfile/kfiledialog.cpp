@@ -139,10 +139,8 @@ KFileDialog::KFileDialog(const QString& dirName, const QString& filter,
     d->mainWidget = new QWidget( this, "KFileDialog::mainWidget");
     setMainWidget( d->mainWidget );
     d->okButton = new QPushButton( i18n("&OK"), d->mainWidget );
-    //    d->okButton->setAutoDefault( false );
     d->okButton->setDefault( true );
     d->cancelButton = new QPushButton( i18n("&Cancel"), d->mainWidget );
-    //    d->cancelButton->setAutoDefault( false );
     connect( d->okButton, SIGNAL( clicked() ), SLOT( slotOk() ));
     connect( d->cancelButton, SIGNAL( clicked() ), SLOT( slotCancel() ));
 
@@ -263,9 +261,11 @@ KFileDialog::KFileDialog(const QString& dirName, const QString& filter,
     locationEdit = new KFileComboBox(true, d->mainWidget, "LocationEdit");
     locationEdit->setInsertionPolicy(QComboBox::NoInsertion);
     locationEdit->setFocus();
-    //    locationEdit->adjustSize();
     locationEdit->setCompletionObject( ops->completionObject(), false );
 
+    connect( locationEdit, SIGNAL( returnPressed() ), SLOT( slotOk()));
+    connect(locationEdit, SIGNAL( activated( const QString&  )),
+	    this,  SLOT( locationActivated( const QString& ) ));
     connect( locationEdit, SIGNAL( completion( const QString& )),
     	     SLOT( fileCompletion( const QString& )));
     connect( locationEdit, SIGNAL( textRotation(KCompletionBase::KeyBindingType) ),
@@ -284,30 +284,14 @@ KFileDialog::KFileDialog(const QString& dirName, const QString& filter,
     connect( d->pathCombo, SIGNAL( textRotation(KCompletionBase::KeyBindingType) ),
     	     d->pathCombo, SLOT( rotateText(KCompletionBase::KeyBindingType) ));
 	
-    d->locationLabel = new QLabel(locationEdit, i18n("&Location:"),
-				  d->mainWidget);
-    //    d->locationLabel->adjustSize();
-    //    d->locationLabel->setMinimumSize(d->locationLabel->width(),
-    //				     locationEdit->height());
-    //    locationEdit->setFixedHeight(d->locationLabel->height());
-
-    connect( locationEdit, SIGNAL( returnPressed() ),
-    	     SLOT( slotOk()));
-    connect(locationEdit, SIGNAL( activated( const QString&  )),
-	    this,  SLOT( locationActivated( const QString& ) ));
-
     d->filterLabel = new QLabel(i18n("&Filter:"), d->mainWidget);
-    //    d->filterLabel->adjustSize();
-    //    d->filterLabel->setMinimumWidth(d->filterLabel->width());
+    d->locationLabel = new QLabel(locationEdit, i18n("&Location:"), 
+				  d->mainWidget);
 
     filterWidget = new KFileFilter(d->mainWidget, "KFileDialog::filterwidget");
     filterWidget->setFilter(filter);
     d->filterLabel->setBuddy(filterWidget);
-    //    filterWidget->adjustSize();
-    //    filterWidget->setMinimumWidth(100);
-    //    filterWidget->setFixedHeight(filterWidget->height());
-    connect(filterWidget, SIGNAL(filterChanged()),
-	    SLOT(slotFilterChanged()));
+    connect(filterWidget, SIGNAL(filterChanged()), SLOT(slotFilterChanged()));
     ops->setNameFilter(filterWidget->currentFilter());
 
     // Get the config object
@@ -321,7 +305,6 @@ KFileDialog::KFileDialog(const QString& dirName, const QString& filter,
     initGUI(); // activate GM
 
     readRecentFiles( KGlobal::config() );
-
 
     adjustSize();
     readConfig( kc, ConfigGroup );
@@ -339,7 +322,8 @@ void KFileDialog::setLocationLabel(const QString& text)
     d->locationLabel->setText(text);
 }
 
-void KFileDialog::cleanup() {
+void KFileDialog::cleanup()
+{
     delete lastDirectory;
     lastDirectory = 0;
 }
@@ -632,8 +616,9 @@ void KFileDialog::pathComboChanged( const QString& txt )
     if ( d->completionLock )
 	return;
 
+    KURLComboBox *combo = d->pathCombo;
     QString text = txt;
-    QString newText = text.left(d->pathCombo->cursorPosition() -1);
+    QString newText = text.left(combo->cursorPosition() -1);
     if ( text.at( 0 ) == '/' )
 	text.prepend(QString::fromLatin1("file:"));
 
@@ -647,6 +632,13 @@ void KFileDialog::pathComboChanged( const QString& txt )
         return;
     }
 
+    // when editing somewhere in the middle of the text, don't complete or
+    // follow directories
+    if ( combo->cursorPosition() != combo->currentText().length() ) {
+        d->completionHack = newText;
+	return;
+    }
+    
     // the user is backspacing -> don't annoy him with completions
     if ( autoDirectoryFollowing && d->completionHack.find( newText ) == 0 ) {
         // but we can follow the directories, if configured so
@@ -660,12 +652,12 @@ void KFileDialog::pathComboChanged( const QString& txt )
 
 	if ( !newLocation.isMalformed() && newLocation != ops->url() ) {
 	    setURL(newLocation, true);
-	    d->pathCombo->setEditText(text);
+	    combo->setEditText(text);
 	}
     }
 
     // typing forward, ending with a / -> cd into the directory
-    else if ( autoDirectoryFollowing &&
+    else if ( autoDirectoryFollowing && 
 	      text.at(text.length()-1) == '/' && ops->url() != text ) {
 	d->selection = QString::null;
         setURL( text, false );
