@@ -140,7 +140,7 @@ void KCombiView::setCurrentItem(QString &item, const KFileInfo *i)
 {
     if (item != 0) {
 	i = 0;
-	debugC("setCurrentItem %s",(char *)item.local8Bit());
+	debugC("setCurrentItem %s",item.local8Bit().data());
 	for (uint j = 0; j < count(); j++)
 	    if (at(j)->fileName() == item)
 		i = at(j);
@@ -152,9 +152,9 @@ void KCombiView::setCurrentItem(QString &item, const KFileInfo *i)
     }
 
     if (i->isDir())
-	dirList->setCurrentItem(0, i);
+	dirList->setCurrentItem(QString::null, i);
     else
-	fileList->setCurrentItem(0, i);
+	fileList->setCurrentItem(QString::null, i);
     
 }
 

@@ -124,7 +124,7 @@ public:
       * file. Since this is faster, this way is used in case a view has
       * other child views.
       **/
-    virtual void setCurrentItem(QString &filename, 
+    virtual void setCurrentItem(const QString &filename, 
 				const KFileInfo * entry = 0);
     
     /**
