@@ -700,14 +700,13 @@ void HTMLTableCellElementImpl::attach()
 
     if(p) {
         HTMLTableElementImpl* table = static_cast<HTMLTableElementImpl*>(p);
-	/*
+	//
         if(table->m_noBorder && getAttribute(ATTR_BORDER).isNull()) {
             addCSSProperty(CSS_PROP_BORDER_TOP_WIDTH, "0");
             addCSSProperty(CSS_PROP_BORDER_RIGHT_WIDTH, "0");
             addCSSProperty(CSS_PROP_BORDER_BOTTOM_WIDTH, "0");
             addCSSProperty(CSS_PROP_BORDER_LEFT_WIDTH, "0");
 	}
-	*/
         if(!table->getAttribute(ATTR_BORDERCOLOR).isNull()) {
             addCSSProperty(CSS_PROP_BORDER_TOP_STYLE, CSS_VAL_SOLID);
             addCSSProperty(CSS_PROP_BORDER_RIGHT_STYLE, CSS_VAL_SOLID);
