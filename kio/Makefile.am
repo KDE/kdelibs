@@ -61,5 +61,5 @@ messages:
 	rm -f rc.cpp
 
 DOXYGEN_REFERENCES = kdecore kdefx kjs dcop kdeui
-DOXYGEN_EXCLUDE = kssl/kssl/*
+DOXYGEN_EXCLUDE = kssl/kssl
 include ../admin/Doxyfile.am
