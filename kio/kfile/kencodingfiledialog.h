@@ -77,7 +77,7 @@ public:
     KEncodingFileDialog (const QString& startDir = QString::null,
                     const QString& encoding = QString::null,
 		    const QString& filter = QString::null,
-		    const QString& caption = QString::null, int type = KFileDialog::Opening, 
+		    const QString& caption = QString::null, KFileDialog::OperationMode type = KFileDialog::Opening, 
                     QWidget *parent= 0, const char *name="", bool modal = true);
     /**
      * Destructs the file dialog.

@@ -37,12 +37,14 @@ struct KEncodingFileDialogPrivate
 };
 
 KEncodingFileDialog::KEncodingFileDialog(const QString& startDir, const QString& encoding , const QString& filter,
-			 const QString& caption, int type, QWidget *parent, const char* name, bool modal)
+			 const QString& caption, KFileDialog::OperationMode type, QWidget *parent, const char* name, bool modal)
    : KFileDialog(startDir,filter,parent,name,modal), d(new KEncodingFileDialogPrivate)
 {
   Q_UNUSED(type)
   setCaption(caption);
-
+  
+  setOperationMode( type );
+    
   KToolBar *tb = toolBar();
   int index = tb->insertCombo(QStringList(), -1 /*id*/, false /*writable*/, 0 /*signal*/, 0 /*receiver*/, 0 /*slot*/ );
   d->encoding = tb->getCombo( tb->idAt( index ) );
