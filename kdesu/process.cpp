@@ -54,7 +54,7 @@
 #include "pty.h"
 #include "kcookie.h"
 
-#ifdef __GNUC__
+#if defined(__GNUC__) && !defined(ID)
 #define ID __PRETTY_FUNCTION__ << ": "
 #else
 #define ID "PtyProcess: "

@@ -129,6 +129,17 @@ class kdbgstream {
 	output += QString::fromLatin1(i ? "true" : "false");
 	return *this;
     }
+    kdbgstream &operator<<(char i)  {
+	if (!print) return *this;
+	QString tmp; tmp.setNum(i); output += tmp;
+	return *this;
+    }
+    kdbgstream &operator<<(unsigned char i) {
+        if (!print) return *this;
+        QString tmp; tmp.setNum(i); output += tmp;
+        return *this;
+    }    
+
     kdbgstream &operator<<(int i)  {
 	if (!print) return *this;
 	QString tmp; tmp.setNum(i); output += tmp;
