@@ -21,8 +21,8 @@ $(BUILDDIR)/build-stamp:
 	test -d $(BUILDDIR) || mkdir $(BUILDDIR) ;\
 	cd $(BUILDDIR) ;\
 	$$PWD/../configure $(configkde) \
-	--libdir=/$(kde_libdir) --includedir=/$(kde_includedir) \
-	--without-ssl
+	--libdir=/$(kde_libdir) --includedir=/$(kde_includedir) 
+
 	make -C $(BUILDDIR)
 
 	touch $(BUILDDIR)/build-stamp
