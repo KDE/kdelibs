@@ -495,7 +495,7 @@ void KApplication::commitData( QSessionManager& sm )
         bool cancelled = FALSE;
         QWidget* w = list->first();
         while ( !cancelled && w ) {
-            if ( !w->testWState( WState_ForceHide ) && !w->inherits("KTMainWindow") ) {
+            if ( !w->testWState( WState_ForceHide ) && !w->inherits("KMainWindow") ) {
                 QCloseEvent e;
                 sendEvent( w, &e );
                 cancelled = !e.isAccepted();
