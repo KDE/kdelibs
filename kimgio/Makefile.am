@@ -7,7 +7,7 @@ endif
 kde_module_LTLIBRARIES= kimg_eps.la kimg_xview.la kimg_krl.la \
 	         $(KIMGIO_TIFF_MODULES) kimg_ico.la
 
-KIMGIO_PLUGIN = -avoid-version -no-undefined -export-symbols-regex 'kimgio_.*_(read|write)'
+KIMGIO_PLUGIN = -avoid-version -export-symbols-regex 'kimgio_.*_(read|write)'
 
 kimg_tiff_la_SOURCES = tiffr.cpp
 kimg_tiff_la_LDFLAGS = -module $(USER_LDFLAGS) $(KIMGIO_PLUGIN)
