@@ -32,7 +32,7 @@ namespace KJS {
 /**
 * Defines a Javascript reference.
 */
-  class Reference : public Value {
+  class KJS_EXPORT Reference : public Value {
 // fixme
 /*   class Reference : private Value { */
     friend class ReferenceList;

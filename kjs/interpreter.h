@@ -70,7 +70,7 @@ namespace KJS {
    * KJS ContextImp type. When one context variable is assigned to another, it
    * is still referencing the same internal object.
    */
-  class Context {
+  class KJS_EXPORT Context {
   public:
     Context(ContextImp *i) : rep(i) { }
 
@@ -170,7 +170,7 @@ namespace KJS {
    * evaluation, and also provides access to built-in properties such as
    * " Object" and "Number".
    */
-  class Interpreter {
+  class KJS_EXPORT Interpreter {
   public:
     /**
      * Creates a new interpreter. The supplied object will be used as the global
@@ -436,7 +436,7 @@ namespace KJS {
    * obtain a handle the interpreter that is currently executing the script,
    * and also the current execution state context.
    */
-  class ExecState {
+  class KJS_EXPORT ExecState {
     friend class InterpreterImp;
     friend class FunctionImp;
     friend class GlobalFuncImp;

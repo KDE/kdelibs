@@ -49,7 +49,7 @@ namespace KJS {
    * anticipated that at some stage the interface will be frozen and made
    * available for general use.
    */
-  class Debugger {
+  class KJS_EXPORT Debugger {
   public:
 
     /**

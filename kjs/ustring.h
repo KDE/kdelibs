@@ -48,7 +48,7 @@ namespace KJS {
    * representation is compatible to XChar2b and QChar. It's therefore
    * possible to exchange data with X and Qt with shallow copies.
    */
-  struct UChar {
+  struct KJS_EXPORT UChar {
     /**
      * Construct a character with uninitialized value.
      */
@@ -116,7 +116,7 @@ namespace KJS {
    * If that sounds confusing your best bet is to simply forget about the
    * existence of this class and treat is as being identical to UChar.
    */
-  class UCharReference {
+  class KJS_EXPORT UCharReference {
     friend class UString;
     UCharReference(UString *s, unsigned int off) : str(s), offset(off) { }
   public:
@@ -162,7 +162,7 @@ namespace KJS {
   /**
    * @short 8 bit char based string class
    */
-  class CString {
+  class KJS_EXPORT CString {
   public:
     CString() : data(0L), length(0) { }
     CString(const char *c);
@@ -186,7 +186,7 @@ namespace KJS {
   /**
    * @short Unicode string class
    */
-  class UString {
+  class KJS_EXPORT UString {
     friend bool operator==(const UString&, const UString&);
     friend class UCharReference;
     friend class Identifier;
@@ -195,7 +195,7 @@ namespace KJS {
     /**
      * @internal
      */
-    struct Rep {
+    struct KJS_EXPORT Rep {
       friend class UString;
       friend bool operator==(const UString&, const UString&);
 
@@ -424,7 +424,7 @@ namespace KJS {
     /**
      * Static instance of a null string.
      */
-    static UString null;
+    KJS_EXPORT static UString null;
 #ifdef KJS_DEBUG_MEM
     /**
      * Clear statically allocated resources.

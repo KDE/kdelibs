@@ -34,6 +34,12 @@
 #define KJS_PACKED
 #endif
 
+#if __GNUC__ - 0 > 3 || (__GNUC__ - 0 == 3 && __GNUC_MINOR__ - 0 > 4)
+#define KJS_EXPORT __attribute__ ((visibility("default")))
+#else
+#define KJS_EXPORT
+#endif
+
 #ifndef NDEBUG // protection against problems if committing with KJS_VERBOSE on
 
 // Uncomment this to enable very verbose output from KJS

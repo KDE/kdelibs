@@ -29,7 +29,7 @@ namespace KJS {
   /**
    * Represents an Identifier for a Javascript object.
    */
-    class Identifier {
+    class KJS_EXPORT Identifier {
         friend class PropertyMap;
     public:
 	/** 
@@ -137,17 +137,17 @@ namespace KJS {
     inline bool operator==(const Identifier &a, const char *b)
         { return Identifier::equal(a, b); }
 
-    extern const Identifier argumentsPropertyName;
-    extern const Identifier calleePropertyName;
-    extern const Identifier constructorPropertyName;
-    extern const Identifier lengthPropertyName;
-    extern const Identifier messagePropertyName;
-    extern const Identifier namePropertyName;
-    extern const Identifier prototypePropertyName;
-    extern const Identifier specialPrototypePropertyName;
-    extern const Identifier toLocaleStringPropertyName;
-    extern const Identifier toStringPropertyName;
-    extern const Identifier valueOfPropertyName;
+    KJS_EXPORT extern const Identifier argumentsPropertyName;
+    KJS_EXPORT extern const Identifier calleePropertyName;
+    KJS_EXPORT extern const Identifier constructorPropertyName;
+    KJS_EXPORT extern const Identifier lengthPropertyName;
+    KJS_EXPORT extern const Identifier messagePropertyName;
+    KJS_EXPORT extern const Identifier namePropertyName;
+    KJS_EXPORT extern const Identifier prototypePropertyName;
+    KJS_EXPORT extern const Identifier specialPrototypePropertyName;
+    KJS_EXPORT extern const Identifier toLocaleStringPropertyName;
+    KJS_EXPORT extern const Identifier toStringPropertyName;
+    KJS_EXPORT extern const Identifier valueOfPropertyName;
 
 }
 

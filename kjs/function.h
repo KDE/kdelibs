@@ -38,7 +38,7 @@ namespace KJS {
    * Constructors and prototypes of internal objects (implemented in C++) directly inherit from this.
    * FunctionImp also does, for functions implemented in JS.
    */
-  class InternalFunctionImp : public ObjectImp {
+  class KJS_EXPORT InternalFunctionImp : public ObjectImp {
   public:
     /**
      * Constructor. For C++-implemented functions, @p funcProto is usually

@@ -77,7 +77,7 @@ namespace KJS {
    * only (all of which are provided internally by KJS). Instead, inherit from
    * ObjectImp.
    */
-  class ValueImp {
+  class KJS_EXPORT ValueImp {
     friend class Collector;
     friend class Value;
     friend class ContextImp;
@@ -166,7 +166,7 @@ namespace KJS {
    * be returned (where possible), and the execution state's exception
    * will be set appropriately.
    */
-  class Value {
+  class KJS_EXPORT Value {
   public:
     Value() : rep(0) { }
     explicit Value(ValueImp *v);
@@ -268,7 +268,7 @@ namespace KJS {
    * share the same implementation object, so == will always return true
    * for any comparison between two Undefined objects.
    */
-  class Undefined : public Value {
+  class KJS_EXPORT Undefined : public Value {
   public:
     Undefined();
 
@@ -293,7 +293,7 @@ namespace KJS {
    * share the same implementation object, so == will always return true
    * for any comparison between two Null objects.
    */
-  class Null : public Value {
+  class KJS_EXPORT Null : public Value {
   public:
     Null();
 
@@ -315,7 +315,7 @@ namespace KJS {
   /**
    * Represents an primitive Boolean value
    */
-  class Boolean : public Value {
+  class KJS_EXPORT Boolean : public Value {
   public:
     Boolean(bool b = false);
 
@@ -339,7 +339,7 @@ namespace KJS {
   /**
    * Represents an primitive String value
    */
-  class String : public Value {
+  class KJS_EXPORT String : public Value {
   public:
     String(const UString &s = "");
 
@@ -366,7 +366,7 @@ namespace KJS {
   /**
    * Represents an primitive Number value
    */
-  class Number : public Value {
+  class KJS_EXPORT Number : public Value {
     friend class ValueImp;
   public:
     Number(int i);

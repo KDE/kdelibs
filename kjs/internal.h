@@ -440,7 +440,7 @@ namespace KJS {
     FunctionBodyNode *body;
 
     virtual const ClassInfo *classInfo() const { return &info; }
-    static const ClassInfo info;
+    KJS_EXPORT static const ClassInfo info;
   private:
     virtual void processVarDecls(ExecState *exec);
   };

@@ -99,7 +99,7 @@ namespace KJS {
   /**
    * @short Fast keyword lookup.
    */
-  class Lookup {
+  class KJS_EXPORT Lookup {
   public:
     /**
      * Find an entry in the table, and return its value (i.e. the value field of HashEntry)

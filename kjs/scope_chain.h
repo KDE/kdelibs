@@ -22,6 +22,8 @@
 #ifndef KJS_SCOPE_CHAIN_H
 #define KJS_SCOPE_CHAIN_H
 
+#include <global.h>
+
 namespace KJS {
 
     class ObjectImp;
@@ -29,7 +31,7 @@ namespace KJS {
 /**
 * A scope chain node.
 */
-    class ScopeChainNode {
+    class KJS_EXPORT ScopeChainNode {
     public:
         ScopeChainNode(ScopeChainNode *n, ObjectImp *o)
             : next(n), object(o), refCount(1) { }
@@ -42,7 +44,7 @@ namespace KJS {
 /**
 * A scope chain object.
 */
-    class ScopeChain {
+    class KJS_EXPORT ScopeChain {
     public:
         ScopeChain() : _node(0) { }
         ~ScopeChain() { deref(); }

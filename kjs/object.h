@@ -78,7 +78,7 @@ namespace KJS {
   /**
    * Represents an Object. This is a wrapper for ObjectImp
    */
-  class Object : public Value {
+  class KJS_EXPORT Object : public Value {
   public:
     Object() { }
     explicit Object(ObjectImp *v);
@@ -356,7 +356,7 @@ namespace KJS {
 
   inline Object Value::toObject(ExecState *exec) const { return rep->dispatchToObject(exec); }
 
-  class ObjectImp : public ValueImp {
+  class KJS_EXPORT ObjectImp : public ValueImp {
     friend class ObjectProtoFuncImp;
   public:
     /**
@@ -622,7 +622,7 @@ namespace KJS {
   /**
    * @short Factory methods for error objects.
    */
-  class Error {
+  class KJS_EXPORT Error {
   public:
     /**
      * Factory method for error objects.
