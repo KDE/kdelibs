@@ -149,9 +149,9 @@ protected:
   /**
    * Set the buttons to display.
    *
-   * The control center displays 6 buttons:
+   * The control center displays 7 buttons:
    *
-   * Help, Default, Reset, Cancel, Apply, Ok
+   * Help, Default, Reset, Cancel, Apply, Ok, System defaults
    *
    * Not all of these make sense for all modules, so you
    * can use this method to set the buttons to be enabled when
