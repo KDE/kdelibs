@@ -63,7 +63,6 @@ KFileItem::KFileItem( const KIO::UDSEntry& _entry, const KURL& _url,
   m_bMimeTypeKnown( false ),
   d(0L)
 {
-
   bool UDS_URL_seen = false;
   // extract the mode and the filename from the KIO::UDS Entry
   KIO::UDSEntry::ConstIterator it = m_entry.begin();
@@ -142,15 +141,18 @@ KFileItem::KFileItem( const KURL &url, const QString &mimeType, mode_t mode )
 :  m_url( url ),
   m_strName( url.fileName() ),
   m_strText( KIO::decodeFileName( m_strName ) ),
+  m_pMimeType( 0 ),
   m_fileMode( mode ),
   m_permissions( KFileItem::Unknown ),
   m_bMarked( false ),
   m_bLink( false ),
   m_bIsLocalURL( url.isLocalFile() ),
-  m_bMimeTypeKnown( false ),
+  m_bMimeTypeKnown( !mimeType.isEmpty() ),
   d(0L)
 {
-  m_pMimeType = KMimeType::mimeType( mimeType );
+  if (m_bMimeTypeKnown)
+    m_pMimeType = KMimeType::mimeType( mimeType );
+
   init( false );
 }
 
