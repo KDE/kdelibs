@@ -1234,7 +1234,9 @@ void HTTPProtocol::slotGetSize(const char *_url)
 
 const char *HTTPProtocol::getUserAgentString ()
 {
-  QString user_agent("kio_http ($Revision$)");
+  // This is kio_http, but what we want to show the world
+  // is probably more "Konqueror".
+  QString user_agent("Konqueror ($Revision$)");
 #ifdef DO_MD5
   user_agent+="; Supports MD5-Digest";
 #endif
