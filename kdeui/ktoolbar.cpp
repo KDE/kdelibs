@@ -796,6 +796,9 @@ bool KToolBar::isItemRight (QWidget *w)
     case ITEM_COMBO:
       return ((KToolBarCombo *) w)->isRight();
       break;
+    case ITEM_FRAME:
+      return ((KToolBarFrame *) w)->isRight();
+      break;
    }
   return FALSE;
 }
