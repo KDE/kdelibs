@@ -92,9 +92,13 @@ binary-arch:  build
 		--includedir=/usr/include/kde
 	make -C arts/ DESTDIR=`pwd`/debian/libarts-alsa/ install
 	make -C libkmid/ DESTDIR=`pwd`/debian/libarts-alsa/ install
-	-rm -f debian/tmp/usr/share/doc/kde/HTML/default 
+	-rm -f debian/tmp/usr/share/doc/kde/HTML/default
+	# messy cleanup
 	-rm -rf debian/libarts-alsa/usr/include \
-		debian/libarts-alsa/usr/bin/knotify build-stamp
+		debian/libarts-alsa/usr/bin/knotify build-stamp \
+		debian/libarts-alsa/usr/lib/libq* \
+		libarts-alsa/usr/share/services/knotify.desktop \
+		debian/libarts-alsa/usr/lib/k*
 	-rm -f `find debian/libarts-alsa/usr/lib -type l -name "*.so"`
 	cp debian/kdelibs3.override debian/tmp/usr/share/lintian/overrides/kdelibs3
 	cp debian/libarts.override debian/tmp/usr/share/lintian/overrides/libarts

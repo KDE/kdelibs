@@ -9,7 +9,6 @@ usr/lib/libksycoca.so
 usr/lib/libkfile.so
 usr/lib/libkparts.so
 usr/lib/libkjs.so
-usr/lib/libkmid.so
 usr/lib/libktexteditor.so
 usr/lib/libkab.so
 usr/lib/libkjava.so
