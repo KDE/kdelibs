@@ -120,8 +120,16 @@ KIconTheme::KIconTheme(const QString& name, const QString& appName)
         return;
     }
 
-    KSimpleConfig cfg(mDir + "index.desktop");
-    cfg.setGroup("KDE Icon Theme");
+    QString fileName, mainSection;
+    if(QFile::exists(mDir + "index.desktop")) {
+	fileName = mDir + "index.desktop";
+	mainSection="KDE Icon Theme";
+    } else {
+	fileName = mDir + "index.theme";
+	mainSection="Icon Theme";
+    }
+    KSimpleConfig cfg(fileName);
+    cfg.setGroup(mainSection);
     mName = cfg.readEntry("Name");
     mDesc = cfg.readEntry("Comment");
     mDepth = cfg.readNumEntry("DisplayDepth", 32);
@@ -164,7 +172,7 @@ KIconTheme::KIconTheme(const QString& name, const QString& appName)
     groups += "Small";
     groups += "Panel";
     const int defDefSizes[] = { 32, 22, 22, 16, 32 };
-    cfg.setGroup("KDE Icon Theme");
+    cfg.setGroup(mainSection);
     for (it=groups.begin(), i=0; it!=groups.end(); it++, i++)
     {
         mDefSize[i] = cfg.readNumEntry(*it + "Default", defDefSizes[i]);
