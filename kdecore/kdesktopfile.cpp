@@ -75,14 +75,16 @@ bool KDesktopFile::isAuthorizedDesktopFile(const QString& path)
   
   if (path[0] != '/')
      return true; // Relative paths are ok.
-     
+
   KStandardDirs *dirs = KGlobal::dirs();
-  if (dirs->relativeLocation("applnk", path)[0] != '/')
+     
+  if (dirs->relativeLocation("apps", path)[0] != '/')
      return true;
   if (dirs->relativeLocation("services", path)[0] != '/')
      return true;
   if (dirs->relativeLocation("data", path).startsWith("kdesktop/Desktop"))
      return true;
+     
   return false;
 }
 
@@ -216,21 +218,24 @@ bool KDesktopFile::tryExec() const
     if (te[0] == '/') {
       if (::access(QFile::encodeName(te), R_OK & X_OK))
 	return false;
-      else
-	return true;
     } else {
       // !!! Sergey A. Sukiyazov <corwin@micom.don.ru> !!!
       // Environment PATH may contain filenames in 8bit locale cpecified
       // encoding (Like a filenames).
       QStringList dirs = QStringList::split(':', QFile::decodeName(::getenv("PATH")));
       QStringList::Iterator it(dirs.begin());
+      bool match = false;
       for (; it != dirs.end(); ++it) {
 	QString fName = *it + "/" + te;
 	if (::access(QFile::encodeName(fName), R_OK & X_OK) == 0)
-	  return true;
+	{
+	  match = true;
+	  break;
+	}
       }
       // didn't match at all
-      return false;
+      if (!match)
+        return false;
     }
   }
   QStringList list = readListEntry("X-KDE-AuthorizeAction");
