@@ -722,7 +722,7 @@ void KTMainWindow::savePropertiesInternal (KConfig* config, int number)
         }
         toolKey.setNum(n);
         toolKey.prepend("ToolBar");
-        config->writeEntry(toolKey.data(), entryList, ';');
+        config->writeEntry(toolKey, entryList, ';');
         entryList.clear();
         n++;
     }
