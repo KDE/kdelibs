@@ -441,12 +441,13 @@ void DockContainer::setPixmap(KDockWidget* widget ,const QPixmap& pixmap)
 
 void DockContainer::save(KConfig* cfg,const QString& group_or_prefix)
 {
+  // group name
   QString grp=cfg->group();
   cfg->deleteGroup(group_or_prefix+QString("::%1").arg(parent()->name()));
   cfg->setGroup(group_or_prefix+QString("::%1").arg(parent()->name()));
 
-  if (isOverlapMode()) cfg->writeEntry("overlapMode","true");
-    else cfg->writeEntry("overlapMode","false");
+  // save overlap mode
+  cfg->writeEntry("overlapMode",isOverlapMode());
 
   // try to save the splitter position
   if ( parentDockWidget() && parentDockWidget()->parent() )
@@ -478,9 +479,8 @@ void DockContainer::save(KConfig* cfg,const QString& group_or_prefix)
       cfg->writeEntry(m_ws->widget(it.current()->id())->name(),true);
   ++i;
   }
-  cfg->sync();
-  cfg->setGroup(grp);
 
+  cfg->setGroup(grp);
 }
 
 void DockContainer::load(KConfig* cfg,const QString& group_or_prefix)
@@ -488,7 +488,7 @@ void DockContainer::load(KConfig* cfg,const QString& group_or_prefix)
   QString grp=cfg->group();
   cfg->setGroup(group_or_prefix+QString("::%1").arg(parent()->name()));
 
-  if (cfg->readEntry("overlapMode")!="false")
+  if (cfg->readBoolEntry("overlapMode"))
     activateOverlapMode(m_tb->width());
   else
     deactivateOverlapMode();
