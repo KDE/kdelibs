@@ -1272,7 +1272,7 @@ KMimeMagic::process(const char * fn)
 		 * if (sb.st_mode & 0002) addResult("writable, ");
 		 * if (sb.st_mode & 0111) addResult("executable, ");
 		 */
-		kdError(7018) << "can't read `" << fn << "' (" << strerror(errno) << ")." << endl;
+		kdDebug(7018) << "can't read `" << fn << "' (" << strerror(errno) << ")." << endl;
 		resultBuf += MIME_BINARY_UNREADABLE;
 		return;
 	}
