@@ -706,8 +706,11 @@ void RenderText::setText(DOMStringImpl *text)
 int RenderText::height() const
 {
     if(m_lines.count())
-         return m_lines[m_lines.count()-1]->m_y+m_contentHeight +
-             style()->borderTopWidth() + style()->borderBottomWidth();
+    {
+	kdDebug()<<"RenderText::height(): height will be:"<< (m_lines[m_lines.count()-1]->m_y+m_contentHeight + style()->borderTopWidth() + style()->borderBottomWidth()) << endl;
+	return m_lines[m_lines.count()-1]->m_y+m_contentHeight +
+	    style()->borderTopWidth() + style()->borderBottomWidth();
+    }
     else
         return m_contentHeight + style()->borderTopWidth() + style()->borderBottomWidth();
 
