@@ -76,6 +76,10 @@ public:
 
     KDB::Handler *query(const QString &SQL) ;
 
+    void beginTransaction() ;
+    void commit() ;
+    void rollback() ;
+
     QString oidToTypeName(Oid oid);
 protected:
 

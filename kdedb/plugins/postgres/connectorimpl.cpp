@@ -360,3 +360,20 @@ ConnectorImpl::oidToTypeName(Oid oid)
 }
 
 
+void 
+ConnectorImpl::beginTransaction()
+{
+    execute("BEGIN TRANSACTION");
+}
+
+void 
+ConnectorImpl::commit()
+{
+    execute("COMMIT");
+}
+
+void 
+ConnectorImpl::rollback() 
+{
+    execute("ROLLBACK");
+}

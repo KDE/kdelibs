@@ -197,13 +197,13 @@ RecordsetIterator::operator --()
 }
 
 RecordPtr
-RecordsetIterator::findFirst(const QString &field, const QString &val)
+RecordsetIterator::findFirst(const QString &field, const Value &val)
 {
     //kdDebug(20000) << "RecordsetIterator::findFirst" << " field=" << field << " val=" << val << endl;
     moveFirst();    
     RecordPtr p = current();
     do {
-        if (val == p->field(field)->toString()) {
+        if (val == p->field(field).value()) {
             break;
         }
     } while (p = operator++());
@@ -212,12 +212,12 @@ RecordsetIterator::findFirst(const QString &field, const QString &val)
 }
 
 RecordPtr
-RecordsetIterator::findNext(const QString &field, const QString &val)
+RecordsetIterator::findNext(const QString &field, const Value &val)
 {
     //kdDebug(20000) << "RecordsetIterator::findNext" << " field=" << field << " val=" << val << endl;
     RecordPtr p;
     while (p = operator++()) {
-        if (val == p->field(field)->toString()) {
+        if (val == p->field(field).value()) {
             break;
         }
     } 
@@ -227,12 +227,12 @@ RecordsetIterator::findNext(const QString &field, const QString &val)
 }
 
 RecordPtr
-RecordsetIterator::findPrevious(const QString &field, const QString &val)
+RecordsetIterator::findPrevious(const QString &field, const Value &val)
 {
     //kdDebug(20000) << "RecordsetIterator::findPrevious" << " field=" << field << " val=" << val << endl;
     RecordPtr p;
     while (p = operator--()) {
-        if (val == p->field(field)->toString()) {
+        if (val == p->field(field).value()) {
             break;
         }
     } 
@@ -242,13 +242,13 @@ RecordsetIterator::findPrevious(const QString &field, const QString &val)
 }
 
 RecordPtr
-RecordsetIterator::findLast(const QString &field, const QString &val)
+RecordsetIterator::findLast(const QString &field, const Value &val)
 {
     //kdDebug(20000) << "RecordsetIterator::findLast" << " field=" << field << " val=" << val << endl;
     moveLast();    
     RecordPtr p = current();
     do {
-        if (val == p->field(field)->toString()) {
+        if (val == p->field(field).value()) {
             break;
         }
     } while (p = operator--());

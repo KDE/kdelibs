@@ -83,6 +83,13 @@ Value::Value (const QString& str )
 {
 }
 
+Value::Value (const char *str )
+    : QVariant(QString(str)),
+      t(Invalid),
+      ptr(0L)
+{
+}
+
 Value::Value (int i )
     : QVariant(i),
       t(Invalid),

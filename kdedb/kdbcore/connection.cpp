@@ -317,5 +317,21 @@ Connection::slotDeleteYourself()
 }
 
 
+void
+Connection::beginTransaction()
+{
+    connector->beginTransaction();
+}
 
+void
+Connection::commit()
+{
+    connector->commit();
+}
+
+void
+Connection::rollback()
+{
+    connector->rollback();
+}
 

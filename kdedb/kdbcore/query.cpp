@@ -38,7 +38,7 @@ Query::Query( Connector * conn, QObject *parent, const char *name, const QString
     if (tab) {
         RecordsetPtr set = tab->openRecordset();
         RecordsetIterator iter = set->begin();
-        RecordPtr rec = iter.findFirst("Name",name);
+        RecordPtr rec = iter.findFirst("Name",QString(name));
         if (rec) {
             // load the query def here
             ;

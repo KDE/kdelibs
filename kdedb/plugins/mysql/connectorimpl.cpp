@@ -472,6 +472,23 @@ ConnectorImpl::dropTable(const QString & name)
     return true;
 }
 
+void 
+ConnectorImpl::beginTransaction()
+{
+    DBENGINE->pushError(new KDB::UnsupportedCapability("Transactions not supported by DBMS"));
+}
+
+void 
+ConnectorImpl::commit()
+{
+    DBENGINE->pushError(new KDB::UnsupportedCapability("Transactions not supported by DBMS"));
+}
+
+void 
+ConnectorImpl::rollback() 
+{
+    DBENGINE->pushError(new KDB::UnsupportedCapability("Transactions not supported by DBMS"));
+}
 /*
   TINYINT
   SMALLINT

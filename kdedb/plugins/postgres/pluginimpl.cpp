@@ -63,6 +63,7 @@ PluginImpl::provides(KDB::capability cap)
     bool ret = false;
     switch (cap) {
     case KDB::CONFIG:
+    case KDB::TRANSACTIONS:
         ret = true;
         break;
     default:

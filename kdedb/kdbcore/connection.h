@@ -177,6 +177,28 @@ class Connection : public Object {
      */
     void saveToConfig( KConfigBase *config, int number = 0);
 
+    /**
+     * start a transaction for the current connection
+     * an error is raised if the underlying DBMS does not support
+     * transactions
+     */
+    void beginTransaction();
+
+    /**
+     * end the current transaction and save all the changes to the
+     * database.
+     * an error is raised if the underlying DBMS does not support
+     * transactions or if there isn't any transaction started
+     */
+    void commit();
+
+    /**
+     * end the current transaction and drop all changes made up to now.
+     * an error is raised if the underlying DBMS does not support
+     * transactions or if there isn't any transaction started
+     */
+    void rollback();
+      
  public slots:
     void slotDeleteYourself();
         

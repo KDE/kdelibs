@@ -91,6 +91,7 @@ class Value :public QVariant {
     Value (const QTime& );
     Value (const QDateTime& );
     Value (const QString&);
+    Value (const char *);
     Value (long);
     Value (int);
     Value (KDB_ULONG);

@@ -27,6 +27,7 @@
 #include "record.h"
 #include "handler.h"
 #include "field.h"
+#include "value.h"
 
 namespace KDB {
 
@@ -63,10 +64,10 @@ class RecordsetIterator: public Object {
     RecordPtr operator --(int);
     RecordPtr operator --();
 
-    RecordPtr findFirst(const QString &field, const QString &val);
-    RecordPtr findNext(const QString &field, const QString &val);
-    RecordPtr findPrevious(const QString &field, const QString &val); 
-    RecordPtr findLast(const QString &field, const QString &val);
+    RecordPtr findFirst(const QString &field, const Value &val);
+    RecordPtr findNext(const QString &field, const Value &val);
+    RecordPtr findPrevious(const QString &field, const Value &val); 
+    RecordPtr findLast(const QString &field, const Value &val);
     void moveFirst();
     void moveLast();
     void moveTo(KDB_ULONG pos);

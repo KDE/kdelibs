@@ -83,18 +83,18 @@ Record::field(int index)
 }
 
 Field &
-Record::field(const QString &name)
+Record::field(const QString &n)
 {
     FieldIterator it = begin();
 
     while ( it.current() ) {
-        if (it.current()->name() == name)
+        if (it.current()->name() == n)
             break;
         ++it;
     }
 
     if (!it.current()) {
-        pushError(new ObjectNotFound(name));
+        pushError(new ObjectNotFound(n));
     }
     
     return *(it.current());

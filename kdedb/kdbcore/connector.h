@@ -152,6 +152,28 @@ class Connector {
      */
     virtual Handler *query(const QString &SQL) = 0;
 
+    /**
+     * start a transaction for the current connection
+     * an error is raised if the underlying DBMS does not support
+     * transactions
+     */
+    virtual void beginTransaction() = 0;
+
+    /**
+     * end the current transaction and save all the changes to the
+     * database.
+     * an error is raised if the underlying DBMS does not support
+     * transactions or if there isn't any transaction started
+     */
+    virtual void commit() = 0;
+
+    /**
+     * end the current transaction and drop all changes made up to now.
+     * an error is raised if the underlying DBMS does not support
+     * transactions or if there isn't any transaction started
+     */
+    virtual void rollback() = 0;
+
 
     // nonvirtual methods
     /// @internal
