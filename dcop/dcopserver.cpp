@@ -39,6 +39,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include <signal.h>
 #include <unistd.h>
 #include <fcntl.h>
+#include <errno.h>
 #ifdef HAVE_LIMITS_H
 #include <limits.h>
 #endif
@@ -53,6 +54,11 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include <dcopserver.h>
 #include <dcopsignals.h>
 #include <dcopglobal.h>
+
+// We don't do tcp in the first place.
+// #define HAVE_KDE_ICETRANSNOLISTEN 1
+
+// #define DCOP_DEBUG
 
 template class QDict<DCOPConnection>;
 template class QPtrDict<DCOPConnection>;
@@ -72,6 +78,7 @@ static Bool HostBasedAuthProc ( char* /*hostname*/)
     return only_local; // no host based authentication
 }
 
+#ifdef XSM_HACK
 // SM DUMMY
 #include <X11/SM/SMlib.h>
 
@@ -89,6 +96,238 @@ static void registerXSM()
 	{
 	    qFatal("register xsm failed");
 	}
+}
+#endif
+extern "C" {
+extern IceWriteHandler _KDE_IceWriteHandler;
+extern IceIOErrorHandler _KDE_IceIOErrorHandler;
+void DCOPIceWriteChar(register IceConn iceConn, unsigned long nbytes, char *ptr);
+}
+
+static unsigned long writeIceData(IceConn iceConn, unsigned long nbytes, char *ptr)
+{
+    int fd = IceConnectionNumber(iceConn);
+    unsigned long nleft = nbytes;
+    while (nleft > 0)
+    {
+	int nwritten;
+
+	if (iceConn->io_ok)
+	    nwritten = write(fd, ptr, (int) nleft);
+	else
+	    return 0;
+
+	if (nwritten <= 0)
+	{
+            if (errno == EINTR) 
+               continue;
+
+            if (errno == EAGAIN)
+               return nleft;
+
+	    /*
+	     * Fatal IO error.  First notify each protocol's IceIOErrorProc
+	     * callback, then invoke the application IO error handler.
+	     */
+
+	    iceConn->io_ok = False;
+
+	    if (iceConn->connection_status == IceConnectPending)
+	    {
+		/*
+		 * Don't invoke IO error handler if we are in the
+		 * middle of a connection setup.
+		 */
+
+		return 0;
+	    }
+
+	    if (iceConn->process_msg_info)
+	    {
+		int i;
+
+		for (i = iceConn->his_min_opcode;
+		     i <= iceConn->his_max_opcode; i++)
+		{
+		    _IceProcessMsgInfo *process;
+
+		    process = &iceConn->process_msg_info[
+			i - iceConn->his_min_opcode];
+
+		    if (process->in_use)
+		    {
+			IceIOErrorProc IOErrProc = process->accept_flag ?
+			    process->protocol->accept_client->io_error_proc :
+			    process->protocol->orig_client->io_error_proc;
+
+			if (IOErrProc)
+			    (*IOErrProc) (iceConn);
+		    }
+		}
+	    }
+
+	    (*_KDE_IceIOErrorHandler) (iceConn);
+	    return 0;
+	}
+
+	nleft -= nwritten;
+	ptr   += nwritten;
+    }
+    return 0;
+}
+
+void DCOPIceWriteChar(register IceConn iceConn, unsigned long nbytes, char *ptr)
+{
+    DCOPConnection* conn = the_server->findConn( iceConn );
+#ifdef DCOP_DEBUG
+qWarning("DCOPServer: DCOPIceWriteChar() Writing %d bytes to %d [%s]", nbytes, fd, conn ? conn->appId.data() : "<unknown>");
+#endif
+
+    if (conn)
+    {
+       if (conn->outputBlocked)
+       {
+          QByteArray _data(nbytes);
+          memcpy(_data.data(), ptr, nbytes);
+#ifdef DCOP_DEBUG
+qWarning("DCOPServer: _IceWrite() outputBlocked. Queuing %d bytes.", _data.size());
+#endif
+          conn->outputBuffer.append(_data);
+          return;
+       }
+       // assert(conn->outputBuffer.isEmpty());
+    }
+
+    unsigned long nleft = writeIceData(iceConn, nbytes, ptr);
+    if ((nleft > 0) && conn)
+    {
+        QByteArray _data(nleft);
+        memcpy(_data.data(), ptr, nleft);
+        conn->waitForOutputReady(_data, 0);
+        return;
+    }
+}
+
+static void DCOPIceWrite(IceConn iceConn, const QByteArray &_data)
+{
+    DCOPConnection* conn = the_server->findConn( iceConn );
+#ifdef DCOP_DEBUG
+qWarning("DCOPServer: DCOPIceWrite() Writing %d bytes to %d [%s]", _data.size(), fd, conn ? conn->appId.data() : "<unknown>");
+#endif
+    if (conn)
+    {
+       if (conn->outputBlocked)
+       {
+#ifdef DCOP_DEBUG
+qWarning("DCOPServer: DCOPIceWrite() outputBlocked. Queuing %d bytes.", _data.size());
+#endif
+          conn->outputBuffer.append(_data);
+          return;
+       }
+       // assert(conn->outputBuffer.isEmpty());
+    }
+
+    unsigned long nleft = writeIceData(iceConn, _data.size(), _data.data());
+    if ((nleft > 0) && conn)
+    {
+        conn->waitForOutputReady(_data, _data.size() - nleft);
+        return;
+    }    
+}
+
+void DCOPConnection::waitForOutputReady(const QByteArray &_data, int start)
+{
+#ifdef DCOP_DEBUG
+qWarning("DCOPServer: waitForOutputReady fd = %d datasize = %d start = %d", socket(), _data.size(), start);
+#endif
+   outputBlocked = true;
+   outputBuffer.append(_data);
+   outputBufferStart = start;
+   if (!outputBufferNotifier)
+   {
+      outputBufferNotifier = new QSocketNotifier(socket(), Write);
+      connect(outputBufferNotifier, SIGNAL(activated(int)),
+              the_server, SLOT(slotOutputReady(int)));
+   }
+   outputBufferNotifier->setEnabled(true);
+   return;
+}
+
+void DCOPServer::slotOutputReady(int socket)
+{
+#ifdef DCOP_DEBUG
+qWarning("DCOPServer: slotOutputReady fd = %d", socket);
+#endif
+   // Find out connection.
+   DCOPConnection *conn = fd_clients.find(socket);
+   //assert(conn);
+   //assert(conn->outputBlocked);
+   //assert(conn->socket() == socket);
+   // Forward
+   conn->slotOutputReady();
+}
+
+
+void DCOPConnection::slotOutputReady()
+{
+   //assert(outputBlocked);
+   //assert(!outputBuffer.isEmpty());
+
+   QByteArray data = outputBuffer.first();
+
+   int fd = socket();
+
+   long fd_fl = fcntl(fd, F_GETFL, 0);
+   fcntl(fd, F_SETFL, fd_fl | O_NDELAY);	
+   int nwritten = write(fd, data.data()+outputBufferStart, data.size()-outputBufferStart);
+   int e = errno;
+   fcntl(fd, F_SETFL, fd_fl);		
+
+#ifdef DCOP_DEBUG
+qWarning("DCOPServer: slotOutputReady() %d bytes written", nwritten);
+#endif
+
+   if (nwritten < 0)
+   {
+      if ((e == EINTR) || (e == EAGAIN))
+         return;
+      (*_KDE_IceIOErrorHandler) (iceConn);
+      return;
+   }
+   outputBufferStart += nwritten;
+
+   if (outputBufferStart == data.size())
+   {
+      outputBufferStart = 0;
+      outputBuffer.remove(outputBuffer.begin());
+      if (outputBuffer.isEmpty())
+      {
+#ifdef DCOP_DEBUG
+qWarning("DCOPServer: slotOutputRead() all data transmitted.");
+#endif
+         outputBlocked = false;
+         outputBufferNotifier->setEnabled(false);
+      }
+#ifdef DCOP_DEBUG
+else
+{
+qWarning("DCOPServer: slotOutputRead() more data to send.");
+}
+#endif
+   }
+}
+
+static void DCOPIceSendData(register IceConn _iceConn, 
+                            const QByteArray &_data)
+{
+   if (_iceConn->outbufptr > _iceConn->outbuf)
+   {
+#ifdef DCOP_DEBUG
+qWarning("DCOPServer: Flushing data, fd = %d", IceConnectionNumber(_iceConn));      
+#endif
+      IceFlush( _iceConn );
+   }
+   DCOPIceWrite(_iceConn, _data);
 }
 
 QCString dcopServerFile()
@@ -143,11 +382,15 @@ DCOPConnection::DCOPConnection( IceConn conn )
     notifyRegister = false;
     _signalConnectionList = 0;
     daemon = false;
+    outputBlocked = false;
+    outputBufferNotifier = 0;
+    outputBufferStart = 0;
 }
 
 DCOPConnection::~DCOPConnection()
 {
     delete _signalConnectionList;
+    delete outputBufferNotifier;
 }
 
 DCOPSignalConnectionList *
@@ -463,12 +706,20 @@ void DCOPServer::processMessage( IceConn iceConn, int opcode,
                        qWarning("DCOPServer::DCOPReplyDelayed for client who wasn't waiting on one!");
 	    }
 	    if ( target ) {
+#ifdef DCOP_DEBUG
+if (opcode == DCOPSend)
+{
+   QCString obj, fun;
+   ds >> obj >> fun;
+   qWarning("Sending %d bytes from %s to %s. DCOPSend %s", length, fromApp.data(), toApp.data(), fun.data());
+}
+#endif
 		IceGetHeader( target->iceConn, majorOpcode, opcode,
 			      sizeof(DCOPMsg), DCOPMsg, pMsg );
 		pMsg->key = key;
 		pMsg->length += datalen;
 		_DCOPIceSendBegin( target->iceConn );
-		IceSendData(target->iceConn, datalen, (char *) ba.data());
+		DCOPIceSendData(target->iceConn, ba);
                 _DCOPIceSendEnd();
 	    } else if ( toApp == "DCOPServer" ) {
 		QCString obj, fun;
@@ -480,6 +731,14 @@ void DCOPServer::processMessage( IceConn iceConn, int opcode,
 		    qWarning("%s failure: object '%s' has no function '%s'", toApp.data(), obj.data(), fun.data() );
 		}
 	    } else if ( toApp[toApp.length()-1] == '*') {
+#ifdef DCOP_DEBUG
+if (opcode == DCOPSend)
+{
+   QCString obj, fun;
+   ds >> obj >> fun;
+   qWarning("Sending %d bytes from %s to %s. DCOPSend %s", length, fromApp.data(), toApp.data(), fun.data());
+}
+#endif
 		// handle a multicast.
 		QAsciiDictIterator<DCOPConnection> aIt(appIds);
 		int l = toApp.length()-1;
@@ -492,7 +751,7 @@ void DCOPServer::processMessage( IceConn iceConn, int opcode,
 			    pMsg->key = key;
 			    pMsg->length += datalen;
 			    _DCOPIceSendBegin( client->iceConn );
-			    IceSendData(client->iceConn, datalen, const_cast<char *>(ba.data()) );
+			    DCOPIceSendData(client->iceConn, ba);
                             _DCOPIceSendEnd();
 			}
 		}
@@ -514,6 +773,14 @@ void DCOPServer::processMessage( IceConn iceConn, int opcode,
 	    int datalen = ba.size();
 
 	    if ( target ) {
+#ifdef DCOP_DEBUG
+if (opcode == DCOPCall)
+{
+   QCString obj, fun;
+   ds >> obj >> fun;
+   qWarning("Sending %d bytes from %s to %s. DCOPCall %s", length, fromApp.data(), toApp.data(), fun.data());
+}
+#endif
 		target->waitingForReply.append( iceConn );
                 conn->waitingOnReply.append( target->iceConn);
 
@@ -522,8 +789,7 @@ void DCOPServer::processMessage( IceConn iceConn, int opcode,
 		pMsg->key = key;
 		pMsg->length += datalen;
 		_DCOPIceSendBegin( target->iceConn );
-		IceSendData(target->iceConn, datalen, const_cast<char *>(ba.data()) );
- 		IceFlush( target->iceConn );
+		DCOPIceSendData(target->iceConn, ba);
                 _DCOPIceSendEnd();
 	    } else {
 		QCString replyType;
@@ -552,8 +818,8 @@ void DCOPServer::processMessage( IceConn iceConn, int opcode,
 			pMsg->key = serverKey++;
 		    pMsg->length += replylen;
                     _DCOPIceSendBegin( iceConn );
-		    IceSendData( iceConn, reply.size(), const_cast<char *>(reply.data()) );
-		    IceSendData( iceConn, replyData.size(), const_cast<char *>(replyData.data()) );
+		    DCOPIceSendData( iceConn, reply);
+		    DCOPIceSendData( iceConn, replyData);
                     _DCOPIceSendEnd();
 		} else {
 		    QByteArray reply;
@@ -567,7 +833,7 @@ void DCOPServer::processMessage( IceConn iceConn, int opcode,
 			pMsg->key = serverKey++;
 		    pMsg->length += reply.size();
                     _DCOPIceSendBegin( iceConn );
-		    IceSendData( iceConn, reply.size(), const_cast<char *>(reply.data()) );
+		    DCOPIceSendData( iceConn, reply );
                     _DCOPIceSendEnd();
 		}
 	    }
@@ -607,7 +873,7 @@ void DCOPServer::processMessage( IceConn iceConn, int opcode,
 		pMsg->key = key;
 		pMsg->length += datalen;
                 _DCOPIceSendBegin( connreply->iceConn );
-		IceSendData(connreply->iceConn, datalen, const_cast<char *>(ba.data()) );
+		DCOPIceSendData(connreply->iceConn, ba);
                 _DCOPIceSendEnd();
 	    }
 	}
@@ -691,8 +957,8 @@ static void sighandler(int sig)
     //exit(0);
 }
 
-#ifdef HAVE__ICETRANSNOLISTEN
-extern "C" int _IceTransNoListen(const char *protocol);
+#ifdef HAVE_KDE_ICETRANSNOLISTEN
+extern "C" int _KDE_IceTransNoListen(const char *protocol);
 #endif
 
 DCOPServer::DCOPServer(bool _only_local)
@@ -702,18 +968,20 @@ DCOPServer::DCOPServer(bool _only_local)
 
     only_local = _only_local;
 
-#ifdef HAVE__ICETRANSNOLISTEN
+#ifdef HAVE_KDE_ICETRANSNOLISTEN
     if (only_local)
-	_IceTransNoListen("tcp");
+	_KDE_IceTransNoListen("tcp");
 #else
     only_local = false;
 #endif
 
     dcopSignals = new DCOPSignals;
 
-    extern int _IceLastMajorOpcode; // from libICE
-    if (_IceLastMajorOpcode < 1 )
+#ifdef XSM_HACK
+    extern int _KDE_IceLastMajorOpcode; // from libICE
+    if (_KDE_IceLastMajorOpcode < 1 )
 	registerXSM();
+#endif
 
     the_server = this;
     if (( majorOpcode = IceRegisterForProtocolReply (const_cast<char *>("DCOP"),
@@ -769,6 +1037,7 @@ DCOPServer::DCOPServer(bool _only_local)
     }
 
     IceAddConnectionWatch (DCOPWatchProc, static_cast<IcePointer>(this));
+    _IceWriteHandler = DCOPIceWriteChar;
 
     listener.setAutoDelete( TRUE );
     DCOPListener* con;
@@ -881,6 +1150,7 @@ void* DCOPServer::watchConnection( IceConn iceConn )
     connect( con, SIGNAL( activated(int) ), this, SLOT( processData(int) ) );
 
     clients.insert(iceConn, con );
+    fd_clients.insert( IceConnectionNumber(iceConn), con);
 
     return static_cast<void*>(con);
 }
@@ -892,6 +1162,7 @@ void DCOPServer::removeConnection( void* data )
     dcopSignals->removeConnections(conn);
 
     clients.remove(conn->iceConn );
+    fd_clients.remove( IceConnectionNumber(conn->iceConn) );
 
     // Send DCOPReplyFailed to all in conn->waitingForReply
     while (!conn->waitingForReply.isEmpty()) {
@@ -906,7 +1177,7 @@ void DCOPServer::removeConnection( void* data )
 	    pMsg->key = 1;
 	    pMsg->length += reply.size();
             _DCOPIceSendBegin( iceConn );
-	    IceSendData( iceConn, reply.size(), const_cast<char *>(reply.data()));
+	    DCOPIceSendData(iceConn, reply);
             _DCOPIceSendEnd();
             if (!target)
                qWarning("DCOP Error: unknown target in waitingForReply");
@@ -928,7 +1199,7 @@ void DCOPServer::removeConnection( void* data )
 	    pMsg->key = 1;
 	    pMsg->length += reply.size();
             _DCOPIceSendBegin( iceConn );
-	    IceSendData( iceConn, reply.size(), const_cast<char *>(reply.data()));
+	    DCOPIceSendData( iceConn, reply );
             _DCOPIceSendEnd();
             if (!target)
                qWarning("DCOP Error: unknown target in waitingForDelayedReply");
@@ -986,7 +1257,7 @@ void DCOPServer::removeConnection( void* data )
 		pMsg->key = 1;
 		pMsg->length += datalen;
                 _DCOPIceSendBegin(c->iceConn);
-		IceSendData(c->iceConn, datalen, const_cast<char *>(ba.data()));
+		DCOPIceSendData(c->iceConn, ba);
                 _DCOPIceSendEnd();
 	    }
 	}
@@ -1007,6 +1278,16 @@ void DCOPServer::slotTerminate()
 #endif
     QByteArray data;
     dcopSignals->emitSignal(0L /* dcopserver */, "terminateKDE()", data, false);
+    disconnect( m_timer, SIGNAL(timeout()), this, SLOT(slotTerminate()) );
+    connect( m_timer, SIGNAL(timeout()), this, SLOT(slotSuicide()) );
+}
+
+void DCOPServer::slotSuicide()
+{
+#ifndef NDEBUG
+    fprintf( stderr, "DCOPServer : slotSuicide() -> exit.\n" );
+#endif
+    exit(0);
 }
 
 bool DCOPServer::receive(const QCString &/*app*/, const QCString &obj,
@@ -1132,8 +1413,7 @@ bool DCOPServer::receive(const QCString &/*app*/, const QCString &obj,
 				      sizeof(DCOPMsg), DCOPMsg, pMsg );
 			pMsg->length += datalen;
                         _DCOPIceSendBegin(c->iceConn);
-			IceWriteData( c->iceConn, datalen, const_cast<char *>(ba.data()));
-			IceFlush( c->iceConn );
+			DCOPIceSendData( c->iceConn, ba );
                         _DCOPIceSendEnd();
 		    }
 		}
@@ -1224,7 +1504,7 @@ DCOPServer::sendMessage(DCOPConnection *conn, const QCString &sApp,
    pMsg->length += datalen;
    pMsg->key = 1; // important!
    _DCOPIceSendBegin( conn->iceConn );
-   IceSendData(conn->iceConn, datalen, const_cast<char *>(ba.data()));
+   DCOPIceSendData(conn->iceConn, ba);
    _DCOPIceSendEnd();
 }
 

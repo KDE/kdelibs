@@ -26,15 +26,15 @@
 #define INT32 QINT32
 #include <X11/Xlib.h>
 #include <X11/Xmd.h>
-#include <X11/ICE/ICElib.h>
+#include <KDE-ICE/ICElib.h>
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-#include <X11/ICE/ICEutil.h>
-#include <X11/ICE/ICEmsg.h>
-#include <X11/ICE/ICEproto.h>
+#include <KDE-ICE/ICEutil.h>
+#include <KDE-ICE/ICEmsg.h>
+#include <KDE-ICE/ICEproto.h>
 
 #ifdef __cplusplus
 }
@@ -100,13 +100,13 @@ const char *DCOPAuthNames[] = {"MIT-MAGIC-COOKIE-1"};
 #ifdef __cplusplus
 extern "C" {
 #endif
-extern IcePoAuthStatus _IcePoMagicCookie1Proc (IceConn, void **, int, int, int, void *, int *, void **, char **);
-extern IcePaAuthStatus _IcePaMagicCookie1Proc (IceConn, void **, int, int, void *, int *, void **, char **);
+extern IcePoAuthStatus _KDE_IcePoMagicCookie1Proc (IceConn, void **, int, int, int, void *, int *, void **, char **);
+extern IcePaAuthStatus _KDE_IcePaMagicCookie1Proc (IceConn, void **, int, int, void *, int *, void **, char **);
 #ifdef __cplusplus
 }
 #endif
-IcePoAuthProc DCOPClientAuthProcs[] = {_IcePoMagicCookie1Proc};
-IcePaAuthProc DCOPServerAuthProcs[] = {_IcePaMagicCookie1Proc};
+IcePoAuthProc DCOPClientAuthProcs[] = {_KDE_IcePoMagicCookie1Proc};
+IcePaAuthProc DCOPServerAuthProcs[] = {_KDE_IcePaMagicCookie1Proc};
 
 /**
  * @internal

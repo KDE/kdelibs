@@ -21,7 +21,7 @@
 # AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 # CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-SUBDIRS = . dcopidl dcopidl2cpp client
+SUBDIRS = KDE-ICE . dcopidl dcopidl2cpp client
 KDE_OPTIONS = qtonly
 
 INCLUDES=  $(all_includes)
@@ -31,8 +31,7 @@ bin_PROGRAMS = dcopserver
 check_PROGRAMS = testdcop testdcopc
 
 lib_LTLIBRARIES  = libDCOP.la dcopserver.la
-#LIB_QT already includes LIBSM (and thereby -lSM -lICE)
-libDCOP_la_LIBADD = $(LIB_QT)
+libDCOP_la_LIBADD = KDE-ICE/libkICE.la $(LIB_QT)
 libDCOP_la_LDFLAGS = -version-info 1:0 $(all_libraries) -no-undefined
 
 include_HEADERS = dcopclient.h dcopobject.h dcopstub.h dcopref.h
@@ -50,17 +49,8 @@ dcopserver_la_SOURCES = dcopserver.cpp dcopsignals.cpp
 dcopserver_la_LIBADD   = libDCOP.la
 
 dcopserver_LDFLAGS = $(KDE_RPATH)
-dcopserver_SOURCES = dcopserver.cpp dcopsignals.cpp
-dcopserver_LDADD   = libDCOP.la
-
-# Following two dependencies are for the incorrent dependency tracking code
-# in automake, if sources are in normal program _and_ libtool programs.
-# If the .o file is generated first, the .deps/x.P file only contains the
-# dependency for the .o file, the .lo file is missing. So we sometimes
-# got a new dcopsignals.o but an old dcopsignals.lo, and this mismatch
-# caused many crashes
-dcopserver.lo: dcopserver.o
-dcopsignals.lo: dcopsignals.o
+dcopserver_SOURCES = dummy.cpp
+dcopserver_LDADD   = dcopserver.la
 
 testdcop_SOURCES = testdcop.cpp
 testdcop_LDADD = ../kdecore/libkdecore.la
@@ -69,3 +59,6 @@ testdcopc_SOURCES = testdcopc.c dcopc.c
 testdcopc_LDADD = $(LIBSM)
 
 EXTRA_DIST = HOWTO ICE
+
+dummy.cpp:
+	echo > dummy.cpp

@@ -35,11 +35,11 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #define INT32 QINT32
 #include <X11/Xlib.h>
 #include <X11/Xmd.h>
-#include <X11/ICE/ICElib.h>
+#include <KDE-ICE/ICElib.h>
 extern "C" {
-#include <X11/ICE/ICEutil.h>
-#include <X11/ICE/ICEmsg.h>
-#include <X11/ICE/ICEproto.h>
+#include <KDE-ICE/ICEutil.h>
+#include <KDE-ICE/ICEmsg.h>
+#include <KDE-ICE/ICEproto.h>
 }
 
 class DCOPConnection;
@@ -61,6 +61,14 @@ public:
 
     DCOPSignalConnectionList *signalConnectionList();
 
+    // Add the data from offset @p start in @p _data to the output 
+    // buffer and schedule it for later transmission.
+    void waitForOutputReady(const QByteArray &_data, int start);
+
+    // Called from DCOPServer::slotOutputReady()
+    // Flush the output buffer.
+    void slotOutputReady();
+
     QCString appId;
     QCString plainAppId;
     IceConn iceConn;
@@ -81,6 +89,10 @@ public:
     QList <_IceConn> waitingForDelayedReply;
     DCOPSignalConnectionList *_signalConnectionList;
     bool daemon;
+    bool outputBlocked;
+    QValueList <QByteArray> outputBuffer;
+    unsigned long outputBufferStart;
+    QSocketNotifier *outputBufferNotifier;
 };
 
 
@@ -104,7 +116,9 @@ public:
                  QCString& replyType, QByteArray &replyData, IceConn iceConn);
 
     DCOPConnection *findApp(const QCString &appId);
-
+    DCOPConnection *findConn(IceConn iceConn)
+       { return clients.find(iceConn); }
+       
     void sendMessage(DCOPConnection *conn, const QCString &sApp,
                      const QCString &rApp, const QCString &rObj,
                      const QCString &rFun, const QByteArray &data);
@@ -113,14 +127,17 @@ private slots:
     void newClient( int socket );
     void processData( int socket );
     void slotTerminate();
+    void slotSuicide();
     void slotCleanDeadConnections();
+    void slotOutputReady(int socket );
 
 private:
     int majorOpcode;
     CARD32 serverKey;
     QList<DCOPListener> listener;
-    QAsciiDict<DCOPConnection> appIds;
-    QPtrDict<DCOPConnection> clients;
+    QAsciiDict<DCOPConnection> appIds; // index on app id
+    QPtrDict<DCOPConnection> clients; // index on iceConn
+    QIntDict<DCOPConnection> fd_clients; // index on fd
     DCOPSignals *dcopSignals;
     int currentClientNumber;
     QTimer *m_timer;
