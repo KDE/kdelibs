@@ -1,10 +1,6 @@
 INCLUDES=$(all_includes) $(PCSC_INCLUDES) -I$(top_srcdir)/kio -I../kardimpl
 
 
-bin_PROGRAMS = testkdepcsc
-testkdepcsc_SOURCES = teste.cc
-testkdepcsc_LDADD = $(LIB_KDEUI) -lksmartcard
-
 lib_LTLIBRARIES = libksmartcard.la
 METASOURCES= AUTO
 
@@ -32,4 +28,8 @@ libksmartcard_la_DEPENDENCIES = $(LIB_KDEUI) $(LIB_KIO)
 libksmartcard_la_METASOURCES = AUTO
 
 SUBDIRS = 
+
+bin_PROGRAMS = testkdepcsc
+testkdepcsc_SOURCES = teste.cc
+testkdepcsc_LDADD = $(LIB_KDEUI) -lksmartcard
 
