@@ -1246,9 +1246,9 @@ StoredTransferJob::StoredTransferJob(const KURL& url, int command,
       m_uploadOffset( 0 )
 {
     connect( this, SIGNAL( data( KIO::Job *, const QByteArray & ) ),
-             SLOT( slotData( KIO::Job *, const QByteArray & ) ) );
+             SLOT( slotStoredData( KIO::Job *, const QByteArray & ) ) );
     connect( this, SIGNAL( dataReq( KIO::Job *, QByteArray & ) ),
-             SLOT( slotDataReq( KIO::Job *, QByteArray & ) ) );
+             SLOT( slotStoredDataReq( KIO::Job *, QByteArray & ) ) );
 }
 
 void StoredTransferJob::setData( const QByteArray& arr )
@@ -1258,7 +1258,7 @@ void StoredTransferJob::setData( const QByteArray& arr )
     m_data = arr;
 }
 
-void StoredTransferJob::slotData( KIO::Job *, const QByteArray &data )
+void StoredTransferJob::slotStoredData( KIO::Job *, const QByteArray &data )
 {
   // check for end-of-data marker:
   if ( data.size() == 0 )
@@ -1268,7 +1268,7 @@ void StoredTransferJob::slotData( KIO::Job *, const QByteArray &data )
   memcpy( m_data.data() + oldSize, data.data(), data.size() );
 }
 
-void StoredTransferJob::slotDataReq( KIO::Job *, QByteArray &data )
+void StoredTransferJob::slotStoredDataReq( KIO::Job *, QByteArray &data )
 {
   // Inspired from kmail's KMKernel::byteArrayToRemoteFile
   // send the data in 64 KB chunks

@@ -977,8 +977,8 @@ namespace KIO {
         QByteArray data() const { return m_data; }
 
     private slots:
-        void slotData( KIO::Job *job, const QByteArray &data );
-        void slotDataReq( KIO::Job *job, QByteArray &data );
+        void slotStoredData( KIO::Job *job, const QByteArray &data );
+        void slotStoredDataReq( KIO::Job *job, QByteArray &data );
     private:
         QByteArray m_data;
         int m_uploadOffset;
