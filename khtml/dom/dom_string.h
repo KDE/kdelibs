@@ -70,7 +70,7 @@ public:
     void insert(DOMString str, uint pos);
 
     /**
-     * The character at position i of the DOMString. If i > length(), the
+     * The character at position i of the DOMString. If i >= length(), the
      * character returned will be 0.
      */
     const QChar &operator [](unsigned int i) const;
