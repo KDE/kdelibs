@@ -1,3 +1,8 @@
+2003-10-25  David Faure  <faure@kde.org>
+
+	* xml/dom_docimpl.cpp (DOMImplementationImpl::createDocument):
+	DOM3 now says a null qualifiedName is allowed in createDocument.
+
 2003-10-24  Dirk Mueller  <mueller@kde.org>
 
 	* css/html4.css (marquee): don't set display: none, it might
