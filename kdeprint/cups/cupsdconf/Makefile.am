@@ -32,7 +32,3 @@ noinst_HEADERS = cupsdconf.h cupsdoption.h cupsdpage.h cupsdserverdirpage.h cups
 # Data
 cupsdconfdata_DATA = kde_logo.png cups_logo.png cupsd.conf.template
 cupsdconfdatadir   = $(kde_datadir)/kdeprint
-
-# Translations
-messages:
-	$(XGETTEXT) $(libcupsdconf_la_SOURCES) main.cpp -o $(podir)/cupsdconf.pot
