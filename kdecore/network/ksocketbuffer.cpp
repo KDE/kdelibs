@@ -102,8 +102,7 @@ QCString KSocketBuffer::readLine()
   for ( ; it != end; ++it)
     {
       int posnl = (*it).find('\n', offset);
-      int poscr = (*it).find('\r', offset);
-      if (posnl == -1 && poscr == -1)
+      if (posnl == -1)
 	{
 	  // not found in this one
 	  newline += (*it).size();
@@ -112,29 +111,12 @@ QCString KSocketBuffer::readLine()
 	}
 
       // we found it
-      if (posnl < poscr)
-	newline += posnl;
-      else
-	newline += poscr;
+      newline += posnl;
       break;
     }
 
-  QCString result(newline);
-  consumeBuffer(result.data(), newline);
-
-  if (result[newline] == '\r')
-    {
-      // last char was \r
-      // check to see if next is \n
-      char c;
-      consumeBuffer(&c, 1, false);
-      if (c == '\n')
-	// consume it too
-	consumeBuffer(&c, 1, true);
-    }
-
-  // discard the terminator
-  result.truncate(newline - 1);
+  QCString result(newline + 2 - m_offset);
+  consumeBuffer(result.data(), newline + 1 - m_offset);
   return result;
 }
 
