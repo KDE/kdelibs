@@ -21,6 +21,7 @@
 #include <fcntl.h>
 #include <unistd.h>
 #include <errno.h>
+#include <config.h>
 
 
 #define	LONGTOIN(x)	(*(struct in_addr*)(&(x)))
@@ -147,8 +148,8 @@ bool KMWSocketUtil::checkPrinter(unsigned long IP, int port)
 			if (::select(sock+1,0,&wfd,0,&tout) <= 0)
 				goto end;
 			int	res;
-			socklen_t	len(sizeof(res));
-			getsockopt(sock,SOL_SOCKET,SO_ERROR,&res,&len);
+			ksize_t	len(sizeof(res));
+			getsockopt(sock,SOL_SOCKET,SO_ERROR,(char *)&res,&len);
 			if (res != 0) goto end;
 		}
 		else goto end;

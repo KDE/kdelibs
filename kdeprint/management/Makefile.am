@@ -1,4 +1,4 @@
-INCLUDES= -I$(top_srcdir)/kdeprint $(all_includes)
+INCLUDES= -I$(top_srcdir)/kdeprint -I$(top_builddir)/kdeprint $(all_includes)
 
 lib_LTLIBRARIES = libkdeprint_management.la
 

@@ -40,8 +40,8 @@ testpagedir = $(kde_datadir)/kdeprint
 $(srcdir)/maticparser.cpp: matic.h maticparser.yy
 	bison -d -p matic $(srcdir)/maticparser.yy -o $(srcdir)/maticparser.cpp
 
-maticscanner.cpp: matic.h maticparser.cpp maticscanner.ll
-	flex -omaticscanner.cpp -Pmatic maticscanner.ll
+maticscanner.cpp: matic.h maticparser.cpp $(srcdir)/maticscanner.ll
+	flex -omaticscanner.cpp -Pmatic $(srcdir)/maticscanner.ll
 
 noinst_DATA = kdeprint
 
