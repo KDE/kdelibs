@@ -14,6 +14,7 @@ class KACLPlugin
 {
 public:
 	KACLPlugin (KPropertiesDialog *_props);
+        virtual ~KACLPlugin();
 	static bool supports (KFileItemList _items);
 
 protected:
@@ -29,9 +30,9 @@ class KACLPluginFactory : public KLibFactory
 public:
 	KACLPluginFactory( QObject *parent = 0, const char *name = 0 );
 	~KACLPluginFactory();
-	virtual QObject *create( QObject *parent = 0, const char *name = 0,
-				 const char *classname = "QObject",
-				 const QStringList &args = QStringList() );
+	virtual QObject *createObject( QObject *parent = 0, const char *name = 0,
+				       const char *classname = "QObject",
+				       const QStringList &args = QStringList() );
 };
 
 

@@ -90,6 +90,11 @@ KACLPlugin::KACLPlugin (KPropertiesDialog *props)
 	LoadACL();
 }
 
+KACLPlugin::~KACLPlugin ()
+{
+        delete pr;
+}
+
 void KACLPlugin::LoadACL()
 {
 	pr->acl.SetPath(pr->props->item()->url().path().latin1());
@@ -129,7 +134,7 @@ KACLPluginFactory::~KACLPluginFactory()
 {
 }
 
-QObject *KACLPluginFactory::create (QObject *parent, const char *name, const char *classname, const QStringList &)
+QObject *KACLPluginFactory::createObject (QObject *parent, const char *name, const char *classname, const QStringList &)
 {
 	kdDebug() << "KACLPluginFactory::create" << endl;
 	if ( strcmp( classname, "KPropsDlgPlugin" ) == 0 ) {
@@ -139,7 +144,6 @@ QObject *KACLPluginFactory::create (QObject *parent, const char *name, const cha
 			return 0L;
 		}
 		QObject *obj = new KACLPlugin (static_cast<KPropertiesDialog *>( parent ));
-		emit objectCreated( obj );
 		return obj;
 	}
 	return 0L;
