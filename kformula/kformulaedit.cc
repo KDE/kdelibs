@@ -56,8 +56,8 @@ QString KFormulaEdit::clipText;
 //Plain vanilla constructor--just initialization
 
 KFormulaEdit::KFormulaEdit(QWidget * parent, const char *name,
-			   WFlags f, bool r) :
-  QWidget(parent, name, f)
+			   WFlags flags, bool r) :
+  QWidget(parent, name, flags)
 {
   restricted = r;
   form = new KFormula(r);
