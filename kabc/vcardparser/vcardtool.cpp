@@ -75,6 +75,14 @@ QString VCardTool::createVCards( Addressee::List list, VCard::Version version )
     for ( Address::List::Iterator it = addresses.begin(); it != addresses.end(); ++it ) {
       QStringList address;
 
+      bool isEmpty = ( (*it).postOfficeBox().isEmpty() &&
+                     (*it).extended().isEmpty() &&
+                     (*it).street().isEmpty() &&
+                     (*it).locality().isEmpty() &&
+                     (*it).region().isEmpty() &&
+                     (*it).postalCode().isEmpty() &&
+                     (*it).country().isEmpty() );
+
       address.append( (*it).postOfficeBox().replace( ';', "\\;" ) );
       address.append( (*it).extended().replace( ';', "\\;" ) );
       address.append( (*it).street().replace( ';', "\\;" ) );
@@ -96,7 +104,8 @@ QString VCardTool::createVCards( Addressee::List list, VCard::Version version )
         }
       }
 
-      card.addLine( adrLine );
+      if ( !isEmpty )
+        card.addLine( adrLine );
       if ( hasLabel )
         card.addLine( labelLine );
     }
@@ -370,13 +379,22 @@ Addressee::List VCardTool::parseVCards( const QString& vcard )
           if ( !type )
             type = Address::Home;
 
+          bool available = false;
           KABC::Address::List addressList = addr.addresses();
           KABC::Address::List::Iterator it;
           for ( it = addressList.begin(); it != addressList.end(); ++it ) {
             if ( (*it).type() == type ) {
               (*it).setLabel( (*lineIt).value().asString() );
               addr.insertAddress( *it );
+              available = true;
+              break;
             }
+          }
+          
+          if ( !available ) { // a standalone LABEL tag
+            KABC::Address address( type );
+            address.setLabel( (*lineIt).value().asString() );
+            addr.insertAddress( address );
           }
         }
 
