@@ -124,7 +124,7 @@ class RegressionTest : public QObject
 public:
 
     RegressionTest(KHTMLPart *part, const QString &baseDir,
-		   bool _genOutput);
+		   bool _genOutput, bool runJS, bool runHTML);
     ~RegressionTest();
 
     enum OutputType { DOMTree, RenderTree };
@@ -154,6 +154,8 @@ public:
     QPixmap* m_paintBuffer;
 
     bool m_getOutput;
+    bool m_runJS;
+    bool m_runHTML;
     int m_passes_work;
     int m_passes_fail;
     int m_failures_work;

@@ -3,6 +3,7 @@
  *
  * Copyright (C) 2001,2003 Peter Kelly (pmk@post.com)
  * Copyright (C) 2003,2004 Stephan Kulow (coolo@kde.org)
+ * Copyright (C) 2004 Dirk Mueller ( mueller@kde.org ) 
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -337,6 +338,8 @@ static KCmdLineOptions options[] =
   { "show", "Show the window while running tests", 0 } ,
   { "t", 0, 0 } ,
   { "test <filename>", "Run only a single test", 0 } ,
+  { "js",  "Only run .js tests", 0 },
+  { "html", "Only run .html tests", 0},
   { "+base_dir", "Directory containing tests,basedir and output directories", 0 } ,
   KCmdLineLastOption
 };
@@ -414,7 +417,7 @@ int main(int argc, char *argv[])
 
     if (!getenv("KDE_DEBUG")) {
         // set ulimits
-        rlimit vmem_limit = { 128*1024*1024, RLIM_INFINITY };	// 64Mb Memory should suffice
+        rlimit vmem_limit = { 256*1024*1024, RLIM_INFINITY };	// 256Mb Memory should suffice
         setrlimit(RLIMIT_AS, &vmem_limit);
         rlimit stack_limit = { 8*1024*1024, RLIM_INFINITY };	// 8Mb Memory should suffice
         setrlimit(RLIMIT_STACK, &stack_limit);
@@ -423,7 +426,9 @@ int main(int argc, char *argv[])
     // run the tests
     RegressionTest *regressionTest = new RegressionTest(part,
                                                         args->arg(0),
-                                                        args->isSet("genoutput"));
+                                                        args->isSet("genoutput"),
+                                                        !args->isSet( "html" ),
+                                                        !args->isSet( "js" ));
     QObject::connect(part->browserExtension(), SIGNAL(openURLRequest(const KURL &, const KParts::URLArgs &)),
 		     regressionTest, SLOT(slotOpenURL(const KURL&, const KParts::URLArgs &)));
     QObject::connect(part->browserExtension(), SIGNAL(resizeTopLevelWidget( int, int )),
@@ -493,7 +498,7 @@ int main(int argc, char *argv[])
 RegressionTest *RegressionTest::curr = 0;
 
 RegressionTest::RegressionTest(KHTMLPart *part, const QString &baseDir,
-			       bool _genOutput)
+			       bool _genOutput, bool runJS, bool runHTML)
   : QObject(part)
 {
     m_part = part;
@@ -502,6 +507,8 @@ RegressionTest::RegressionTest(KHTMLPart *part, const QString &baseDir,
     if ( m_baseDir.endsWith( "/" ) )
         m_baseDir = m_baseDir.left( m_baseDir.length() - 1 );
     m_genOutput = _genOutput;
+    m_runJS = runJS;
+    m_runHTML =  runHTML;
     m_passes_work = m_passes_fail = 0;
     m_failures_work = m_failures_fail = 0;
     m_errors = 0;
@@ -605,11 +612,13 @@ bool RegressionTest::runTests(QString relPath, bool mustExist, int known_failure
 	m_currentCategory = relativeDir;
 	m_currentTest = filename;
         m_known_failures = known_failure;
-	if (filename.endsWith(".html") || filename.endsWith( ".htm" )) {
-	    testStaticFile(relPath);
+	if ( filename.endsWith(".html") || filename.endsWith( ".htm" ) ) {
+            if ( m_runHTML )
+	      testStaticFile(relPath);
 	}
 	else if (filename.endsWith(".js")) {
-	    testJSFile(relPath);
+            if ( m_runJS )
+              testJSFile(relPath);
 	}
 	else if (mustExist) {
 	    fprintf(stderr,"%s: Not a valid test file (must be .htm(l) or .js)\n",relPath.latin1());
@@ -775,7 +784,7 @@ QImage RegressionTest::renderToImage()
             QImage chunk = m_paintBuffer->convertToImage();
             assert( chunk.depth() == 32 );
             for ( int y = 0; y < 128 && py + y < eh; ++y )
-                memcpy( &img.scanLine( py+y )[px*4], chunk.scanLine( y ), kMin( 512, ew-px )*4 );
+                memcpy( img.scanLine( py+y ) + px*4, chunk.scanLine( y ), kMin( 512, ew-px )*4 );
         }
     }
 #else
@@ -803,21 +812,26 @@ bool RegressionTest::imageEqual( const QImage &lhsi, const QImage &rhsi )
         kdDebug() << "dimensions different " << lhsi.size() << " " << rhsi.size() << endl;
         return false;
     }
-
+    int w = lhsi.width();
+    int h = lhsi.height();
     int bytes = lhsi.bytesPerLine();
-    if ( bytes != rhsi.bytesPerLine() ) {
-        kdDebug() << "different number of bytes per line\n";
-        return false;
-    }
 
-    for ( int y = 0; y < lhsi.height(); ++y )
+    for ( int y = 0; y < h; ++y )
     {
-        if ( memcmp( lhsi.scanLine( y ), rhsi.scanLine( y ), bytes ) ) {
-            for ( int x = 0; x < rhsi.width(); ++x ) {
-                if ( lhsi.pixel ( x, y ) != rhsi.pixel( x, y ) ) {
-                    kdDebug() << "pixel (" << x << ", " << y << ") is different " << QColor( lhsi.pixel ( x, y ) ) << " " << QColor( rhsi.pixel ( x, y ) ) << endl;
-                    return false;
-                }
+        QRgb* ls = ( QRgb* ) lhsi.scanLine( y );
+        QRgb* rs = ( QRgb* ) rhsi.scanLine( y );
+        if ( memcmp( ls, rs, bytes ) ) {
+            for ( int x = 0; x < w; ++x ) {
+                QRgb l = ls[x];
+                QRgb r = rs[x];
+                if ( abs( qRed( l ) - qRed(r ) ) < 2 )
+                    continue;
+                if ( abs( qGreen( l ) - qGreen(r ) ) < 2 )
+                    continue;
+                if ( abs( qBlue( l ) - qBlue(r ) ) < 2 )
+                    continue;
+                 kdDebug() << "pixel (" << x << ", " << y << ") is different " << QColor(  lhsi.pixel (  x, y ) ) << " " << QColor(  rhsi.pixel (  x, y ) ) << endl;
+                return false;
             }
         }
     }
@@ -877,15 +891,16 @@ void RegressionTest::doFailureReport( const QSize& baseSize, const QSize& outSiz
                    "</style>\n" );
 
     cl += QString( "<body onload=\"m(1); runSlideShow();\" text=black bgcolor=gray>"
+                   "<h1>%3</h1>\n"
                    "<span id=b1 class=buttondown onclick=doflicker=1;show();m(1)>FLICKER</span>&nbsp;"
                    "<span id=b2 class=button onclick=doflicker=0;t=0;show();m(2)>BASE</span>&nbsp;"
                    "<span id=b3 class=button onclick=doflicker=0;t=1;show();m(3)>OUT</span>&nbsp;"
-                   "<a class=button href=\"%5\">HTML</a>&nbsp;"
+                   "<a class=button href=\"%2\">HTML</a>&nbsp;"
                    "<hr>"
-                   "<img style='border: solid 5px gray' width='%3' height='%4' src=\"%1\" id='image'></html>" )
+                   "<img style='border: solid 5px gray' src=\"%1\" id='image'></html>" )
          .arg( relpath+"/baseline/"+test+"-dump.png" )
-         .arg( baseSize.width() ).arg( baseSize.height() )
-         .arg( relpath+"/tests/"+test );
+         .arg( relpath+"/tests/"+test )
+         .arg( test );
 
     compare.writeBlock( cl.latin1(), cl.length() );
     compare.close();
@@ -1056,6 +1071,10 @@ bool RegressionTest::checkPaintdump(const QString &filename)
     }
     bool result = false;
 
+    if ( ( m_known_failures & AllFailure ) || 
+         ( m_known_failures & PaintFailure ) )
+       return false;
+ 
     QImage baseline;
     baseline.load( absFilename, "PNG");
     QImage output = renderToImage();
@@ -1140,7 +1159,7 @@ bool RegressionTest::reportResult(bool passed, const QString & description)
     if (m_genOutput)
 	return true;
 
-    if (passed) {
+   if (passed) {
         if ( m_known_failures & AllFailure ) {
             printf("PASS (unexpected!): ");
             m_passes_fail++;
@@ -1222,10 +1241,8 @@ bool RegressionTest::cvsIgnored( const QString &filename )
     QTextStream ignoreStream(&ignoreFile);
     QString line;
     while (!(line = ignoreStream.readLine()).isNull()) {
-        if ( line == fi.fileName() ) {
-            kdDebug() << filename << " is ignored\n";
+        if ( line == fi.fileName() )
             return true;
-        }
     }
     ignoreFile.close();
     return false;
