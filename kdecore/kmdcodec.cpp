@@ -845,8 +845,8 @@ void KMD5::finalize ()
         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
     };
 
-    //encode (bits, m_count, 8);
-    memcpy( bits, m_count, 8 );
+    encode (bits, m_count, 8);
+    //memcpy( bits, m_count, 8 );
 
     // Pad out to 56 mod 64.
     index = static_cast<Q_UINT32>((m_count[0] >> 3) & 0x3f);
@@ -857,8 +857,8 @@ void KMD5::finalize ()
     update (reinterpret_cast<const char*>(bits), 8);
 
     // Store state in digest
-    //encode (m_digest, m_state, 16);
-    memcpy( m_digest, m_state, 16 );
+    encode (m_digest, m_state, 16);
+    //memcpy( m_digest, m_state, 16 );
 
     // Fill sensitive information with zero's
     memset ( (void *)m_buffer, 0, sizeof(*m_buffer));
