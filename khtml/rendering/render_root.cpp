@@ -266,10 +266,14 @@ void RenderRoot::setSelection(RenderObject *s, int sp, RenderObject *e, int ep)
     if ( !changedSelectionBorder && m_selectionStartPos == sp && m_selectionEndPos == ep )
         return;
 
-    if ( changedSelectionBorder )
+    if ( changedSelectionBorder ) {
         clearSelection();
-    else if( m_selectionStart )
-        m_selectionStart->repaint();
+     } else {
+	if( m_selectionStartPos != sp )
+	    m_selectionStart->repaint();
+	if( m_selectionEndPos != ep )
+	    m_selectionEnd->repaint();
+    }
 
     // set selection start
     if (m_selectionStart)
@@ -288,7 +292,7 @@ void RenderRoot::setSelection(RenderObject *s, int sp, RenderObject *e, int ep)
     m_selectionEndPos = ep;
 
     // update selection status of all objects between m_selectionStart and m_selectionEnd
-    if (  s && changedSelectionBorder ) {
+    if (  changedSelectionBorder ) {
         for( RenderObject* o = s; o != e; ) {
             o->setSelectionState(SelectionInside);
             o->repaint();

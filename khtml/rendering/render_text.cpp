@@ -153,8 +153,8 @@ void TextSlave::paintBoxDecorations(QPainter *pt, RenderStyle* style, RenderText
 
 FindSelectionResult TextSlave::checkSelectionPoint(int _x, int _y, int _tx, int _ty, const Font *f, RenderText *text, int & offset, short lineHeight)
 {
-//      kdDebug(6040) << "TextSlave::checkSelectionPoint " << this << " _x=" << _x << " _y=" << _y
-//                    << " _tx+m_x=" << _tx+m_x << " _ty+m_y=" << _ty+m_y << endl;
+//       kdDebug(6040) << "TextSlave::checkSelectionPoint " << this << " _x=" << _x << " _y=" << _y
+//                     << " _tx+m_x=" << _tx+m_x << " _ty+m_y=" << _ty+m_y << endl;
     offset = 0;
 
     if ( _y < _ty + m_y )
@@ -403,8 +403,8 @@ bool RenderText::nodeAtPoint(NodeInfo& info, int _x, int _y, int _tx, int _ty)
 
 FindSelectionResult RenderText::checkSelectionPoint(int _x, int _y, int _tx, int _ty, DOM::NodeImpl*& node, int &offset)
 {
-//      kdDebug(6040) << "RenderText::checkSelectionPoint " << this << " _x=" << _x << " _y=" << _y
-//                    << " _tx=" << _tx << " _ty=" << _ty << endl;
+//       kdDebug(6040) << "RenderText::checkSelectionPoint " << this << " _x=" << _x << " _y=" << _y
+//                     << " _tx=" << _tx << " _ty=" << _ty << endl;
     TextSlave *lastPointAfterInline=0;
 
     for(unsigned int si = 0; si < m_lines.count(); si++)
@@ -782,18 +782,12 @@ int RenderText::minXPos() const
 
 int RenderText::xPos() const
 {
-    if (m_lines.count())
-	return m_lines[0]->m_x;
-    else
-	return 0;
+    return 0;
 }
 
 int RenderText::yPos() const
 {
-    if (m_lines.count())
-        return m_lines[0]->m_y;
-    else
-        return 0;
+    return 0;
 }
 
 const QFont &RenderText::font()
