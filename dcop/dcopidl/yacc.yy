@@ -845,6 +845,7 @@ member
 	| T_STATIC type T_IDENTIFIER default T_SEMICOLON {}
 	| T_MUTABLE type T_IDENTIFIER default T_SEMICOLON {}
 	| type T_IDENTIFIER T_ARRAY_OPEN int_expression T_ARRAY_CLOSE T_SEMICOLON {}
+	| T_STATIC type T_IDENTIFIER T_ARRAY_OPEN int_expression T_ARRAY_CLOSE T_SEMICOLON {}
 	;
 
 %%
