@@ -300,8 +300,10 @@ KJSO KJSO::getValue()
     return *this;
   }
   KJSO o = getBase();
-  if (o.isNull() || o.isA(NullType))
-    return Error::create(ReferenceError);
+  if (o.isNull() || o.isA(NullType)) {
+    UString m = I18N_NOOP("Can't find variable: ") + getPropertyName();
+    return Error::create(ReferenceError, m.ascii());
+  }
 
   return o.get(getPropertyName());
 }
@@ -941,10 +943,11 @@ Object Error::createObject(ErrorType e, const char *m, int l)
   }
 
 #ifndef NDEBUG
+  char *msg = err.get("message").toString().value().ascii();
   if (l >= 0)
-      fprintf(stderr, "JS: %s at line %d.\n", estr, l);
+      fprintf(stderr, "JS: %s at line %d. %s\n", estr, l, msg);
   else
-      fprintf(stderr, "JS: %s.\n", estr);
+      fprintf(stderr, "JS: %s. %s\n", estr, msg);
 #endif
 
   return err;

@@ -42,9 +42,19 @@ ErrorObject::ErrorObject(const Object& proto, ErrorType t)
   const char *n = errName[errType];
 
   put("name", String(n));
-  put("message", String("bla bla"));
 }
-      
+
+ErrorObject::ErrorObject(const Object& proto, ErrorType t,
+			 const char *m, int l)
+  : ConstructorImp(proto, 1), errType(t)
+{
+  const char *n = errName[errType];
+
+  put("name", String(n));
+  put("message", String(m));
+  put("line", Number(l));
+}
+
 // ECMA 15.9.2
 Completion ErrorObject::execute(const List &args)
 {
@@ -55,19 +65,19 @@ Completion ErrorObject::execute(const List &args)
 // ECMA 15.9.3
 Object ErrorObject::construct(const List &args)
 {
-  if (args.isEmpty() == 1 || args[0].isA(UndefinedType))
+  if (args.isEmpty() == 1 || !args[0].isDefined())
     return Object::create(ErrorClass, Undefined());
 
   String message = args[0].toString();
   return Object::create(ErrorClass, message);
 }
 
-Object ErrorObject::create(ErrorType e, const char *, int)
+Object ErrorObject::create(ErrorType e, const char *m, int l)
 {
   Global global(Global::current());
   KJSO prot = Global::current().get("[[Error.prototype]]");
   assert(prot.isObject());
-  Imp *d = new ErrorObject(Object(prot.imp()), e);
+  Imp *d = new ErrorObject(Object(prot.imp()), e, m, l);
 
   return Object(d);
 }
@@ -100,7 +110,7 @@ Completion ErrorProtoFunc::execute(const List &)
 {
   // toString()
   const char *s = "Error message.";
-  
+
   return Completion(Normal, String(s));
 }
 
