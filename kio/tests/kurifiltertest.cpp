@@ -10,11 +10,13 @@
 #include "kurifilter.h"
 #include <qdir.h>
 
-void filter( const char* u, const char * expectedResult = 0, QStringList list = QStringList() )
+void filter( const char* u, const char * expectedResult = 0, QStringList list = QStringList(), const char * abs_path = 0 )
 {
     QString a = QString::fromLatin1( u );
     KURIFilterData * m_filterData = new KURIFilterData;
     m_filterData->setData( a );
+    if( abs_path )
+      m_filterData->setAbsolutePath( QString::fromLatin1( abs_path ) );
     kdDebug() << "Filtering: " << a << endl;
     if (KURIFilter::self()->filterURI(*m_filterData, list))
     {
@@ -66,7 +68,7 @@ int main(int argc, char **argv) {
     filter( "mosfet.org", "http://mosfet.org" );
     filter( "/", "file:/" );
     filter( "/", "file:/", "kshorturifilter" );
-    filter( "~/.kde", QCString("file:")+QDir::homeDirPath().local8Bit()+"/.kde", "kshorturifilter" );
+    filter( "~/.kderc", QCString("file:")+QDir::homeDirPath().local8Bit()+"/.kderc", "kshorturifilter" );
 
     // SMB share test with a specific filter chosen
     filter( "\\\\THUNDER\\", "smb:/THUNDER/", "kshorturifilter" );
@@ -78,14 +80,12 @@ int main(int argc, char **argv) {
     filter( "smb:/", "smb:/", "kshorturifilter" ); // use specific filter.
 
     // IKWS test
-    filter( "KDE", "http://navigation.realnames.com/resolver.dll?action=navigation&realname=KDE&charset=utf-8&providerid=180&fallbackuri=http%3A//google.com/search%3Fq%3D%5C1" );
-    filter( "GNOME", "http://navigation.realnames.com/resolver.dll?action=navigation&realname=GNOME&charset=utf-8&providerid=180&fallbackuri=http%3A//google.com/search%3Fq%3D%5C1" );
+    filter( "KDE" );
+    filter( "GNOME" );
 
-    // Executable tests
+    // Executable tests - No IKWS in minicli
     filter( "kppp", "kppp", minicliFilters );
     filter( "xemacs", "xemacs", minicliFilters );
-
-    // No IKWS in minicli
     filter( "KDE", "KDE", minicliFilters );
     filter( "I/dont/exist", "I/dont/exist", minicliFilters );
 
@@ -117,7 +117,11 @@ int main(int argc, char **argv) {
     // Search Engine tests
     filter( "gg:foo bar" );
     filter( "ya:foo bar was here" );
+    filter( "gg:www.kde.org" );
 
+    // Absolute Path tests for kshorturifilter
+    filter( "../../index.html", "http://www.kde.org/index.html", "kshorturifilter", "http://www.kde.org/tes1/tes2/" );
+    filter( "./", QCString("file:")+home+"/.kde/share", "kshorturifilter", QCString("file:")+home+"/.kde/share/" );
     return 0;
 }
 
