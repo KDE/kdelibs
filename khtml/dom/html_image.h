@@ -424,6 +424,6 @@ public:
     void setName( const DOMString & );
 };
 
-}; //namespace
+} //namespace
 
 #endif

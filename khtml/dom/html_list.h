@@ -335,6 +335,6 @@ public:
     void setType( const DOMString & );
 };
 
-}; //namespace
+} //namespace
 
 #endif

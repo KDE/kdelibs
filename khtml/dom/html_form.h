@@ -1309,6 +1309,6 @@ public:
     void setPrompt( const DOMString & );
 };
 
-}; //namespace
+} //namespace
 
 #endif

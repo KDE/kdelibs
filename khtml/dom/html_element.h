@@ -215,6 +215,6 @@ protected:
     void assignOther( const Node &other, int elementId );
 };
 
-}; //namespace
+} //namespace
 
 #endif

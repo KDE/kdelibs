@@ -121,25 +121,6 @@ bool StyleSheet::isCSSStyleSheet() const
     return ((StyleSheetImpl *)impl)->isCSSStyleSheet();
 }
 
-#if 0 // FIXME_SAFARI
-DOMString DocumentStyle::preferredStylesheetSet()
-{
-    return doc->preferredStylesheetSet();
-}
-
-void DocumentStyle::setSelectedStylesheetSet( const DOMString& aStr )
-{
-    return doc->setSelectedStylesheetSet( aStr );
-}
-
-DOMString DocumentStyle::selectedStylesheetSet()
-{
-    return doc->selectedStylesheetSet();
-}
-
-#endif
-
-
 CSSStyleSheet::CSSStyleSheet() : StyleSheet()
 {
 }

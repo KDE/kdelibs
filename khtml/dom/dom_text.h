@@ -308,5 +308,5 @@ protected:
 
 };
 
-}; //namespace
+} //namespace
 #endif

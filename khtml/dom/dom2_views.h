@@ -86,5 +86,5 @@ protected:
 };
 
 
-}; //namespace
+} //namespace
 #endif

@@ -119,14 +119,14 @@ protected:
 bool operator==( const DOMString &a, const DOMString &b );
 bool operator==( const DOMString &a, const QString &b );
 bool operator==( const DOMString &a, const char *b );
-inline bool operator!=( const DOMString &a, const DOMString &b ) { return !(a==b); };
-inline bool operator!=( const DOMString &a, const QString &b ) { return !(a==b); };
-inline bool operator!=( const DOMString &a, const char *b )  { return !(a==b); };
+inline bool operator!=( const DOMString &a, const DOMString &b ) { return !(a==b); }
+inline bool operator!=( const DOMString &a, const QString &b ) { return !(a==b); }
+inline bool operator!=( const DOMString &a, const char *b )  { return !(a==b); }
 inline bool strcmp( const DOMString &a, const DOMString &b ) { return a != b; }
 
 // returns false when equal, true otherwise (ignoring case)
 bool strcasecmp( const DOMString &a, const DOMString &b );
 bool strcasecmp( const DOMString& a, const char* b );
 
-};
+}
 #endif

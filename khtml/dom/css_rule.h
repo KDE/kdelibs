@@ -530,6 +530,6 @@ protected:
 };
 
 
-}; // namespace
+} // namespace
 
 #endif

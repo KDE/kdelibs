@@ -848,5 +848,5 @@ protected:
 
 
 
-}; //namespace
+} //namespace
 #endif

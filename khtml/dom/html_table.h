@@ -991,6 +991,6 @@ public:
     void deleteRow ( long index );
 };
 
-}; //namespace
+} //namespace
 
 #endif

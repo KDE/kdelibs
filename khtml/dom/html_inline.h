@@ -448,6 +448,6 @@ public:
     void setCite( const DOMString & );
 };
 
-}; //namespace
+} //namespace
 
 #endif
