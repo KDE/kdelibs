@@ -62,6 +62,7 @@ class KUniqueApplicationPrivate {
 public:
    QList <DCOPRequest> requestList;
    bool processingRequest;
+   bool firstInstance;
 };
 
 DCOPClient *
@@ -295,6 +296,7 @@ KUniqueApplication::KUniqueApplication(bool allowStyles, bool GUIenabled)
   s_DCOPClient->bindToApp(); // Make sure we get events from the DCOPClient.
   d = new KUniqueApplicationPrivate;
   d->processingRequest = false;
+  d->firstInstance = true;
 
   if (s_nofork)
     // Can't call newInstance directly from the constructor since it's virtual...
@@ -363,8 +365,12 @@ KUniqueApplication::processDelayed()
 
 int KUniqueApplication::newInstance()
 {
-  if ( mainWidget() )
-      KWin::setActiveWindow(mainWidget()->winId());
+  if (!d->firstInstance)
+  {
+     if ( mainWidget() )
+        KWin::setActiveWindow(mainWidget()->winId());
+  }
+  d->firstInstance = false;
   return 0; // do nothing in default implementation
 }
 
