@@ -61,6 +61,9 @@
 	* - <a href="knewstuff/html/index.html"><b>knewstuff</b></a>
         *   (<a href="knewstuff/html/classes.html">classes</a>)\n
 	*   <i>Upload and download of application data.</i>
+	* - <a href="dnssd/html/index.html"><b>kdnssd</b></a>
+        *   (<a href="dnssd/html/classes.html">classes</a>)\n
+	*   <i>Network sevices publishing and discovery.</i>
 	*
 	* More information about the KDE architecture in form of tutorials, HOWTOs,
 	* and FAQs can be found at

@@ -57,10 +57,10 @@ class KDNSSD_EXPORT PublicService : public QObject, public ServiceBase
 	Q_OBJECT
 public:
 	/**
-	@param n_name Service name. If set to QString::null, computer name will be used and will be
+	@param name Service name. If set to QString::null, computer name will be used and will be
 	available via serviceName() after successful registration
-	@param n_type Service type. Has to be in form _sometype._udp or _sometype._tcp
-	@param port Port number.
+	@param type Service type. Has to be in form _sometype._udp or _sometype._tcp
+	@param port Port number. Set to 0 to "reserve" service name. 
 	@param domain Domain name. If left as QString:null, user configuration will be used. "local."
 		means local LAN
 	 */
@@ -70,19 +70,19 @@ public:
 	~PublicService();
 	
 	/**
-	Stop publishing or abort incomplete publish request. Useful when you want disable service 
-	for some time
+	Stops publishing or abort incomplete publish request. Useful when you want to disable service 
+	for some time.
 	 */
 	void stop();
 	
 	/**
-	Synchrounous publish. Your application will be freezed until publishing is complete.
+	Synchrounous publish. Application will be freezed until publishing is complete.
 	@return true if successfull.
 	 */
 	bool publish();
 	
 	/**
-	Return true is currently published
+	Returns true is currently published
 	 */
 	bool isPublished() const;
 	
@@ -94,26 +94,30 @@ public:
 	void publishAsync();
 
 	/**
-	Sets new text data. If services is already published, it will be re-announced with new data.
+	Sets new text properties. If services is already published, it will be re-announced with new data.
 	*/
 	void setTextData(const QMap<QString,QString>& textData);
 	
 	/**
-	Set name of the service.  If service is currently published, it will be re-announced with new data.
+	Sets name of the service.  If service is currently published, it will be re-announced with new data.
 	 */
 	void setServiceName(const QString& serviceName);
 	
 	/**
-	Set type of service. It has to in form of _type._udp or _type._tcp.  If service is 
+	Sets type of service. It has to in form of _type._udp or _type._tcp.  If service is 
 	currently published, it will be re-announced with new data.
 	 */
 	void setType(const QString& type);
 
 	/** 
-	Set port. If service is currently published, it will be re-announced with new data.
+	Sets port. If service is currently published, it will be re-announced with new data.
 	 */
 	void setPort(unsigned short port); 
 	
+	/**
+	Sets domain where service is published. "local." means local LAN. If service is currently 
+	published, it will be re-announced with new data.
+	 */
 	void setDomain(const QString& domain);
 
 signals:

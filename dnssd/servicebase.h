@@ -41,8 +41,8 @@ public:
 	typedef KSharedPtr<ServiceBase> Ptr;
 			
 	/**
-	@param n_name Service name - empty for metaservices
-	@param n_type Service type - empty for domains
+	@param name Service name - empty for metaservices
+	@param type Service type - empty for domains
 	 */
 	ServiceBase(const QString& name=QString::null,const QString& type=QString::null,
 		    const QString& domain=QString::null, const QString& host=QString::null,

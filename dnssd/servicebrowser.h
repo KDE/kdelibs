@@ -58,7 +58,7 @@ public:
 	/**
 	ServiceBrowser constructor.
 	 
-	@param _type  Type of services to browse for (example: "_http._tcp"). 
+	@param type  Type of services to browse for (example: "_http._tcp"). 
 	Can also be DNSSD::ServicesBrowser::AllServices to specify "metaquery" for all service types 
 	present on network
 	@param domains  DomainBrowser object used to specify domains to browse. You do not have to connect 
@@ -81,18 +81,19 @@ public:
 	~ServiceBrowser();
 
 	/**
-	Returns list of services
+	Returns list of services 
 	 */
 	QValueList<RemoteService::Ptr> services() const;
 
 	/**
-	Start browsing for services.
+	Starts browsing for services.
 	To stop it just destroy the object.
 	 */
 	virtual void startBrowse();
 
 	/**
-	Special service type to search for all available service types
+	Special service type to search for all available service types. Pass it as "type"
+	parameter to ServiceBrowser constructor.
 	 */
 	static const QString AllServices;
 
@@ -116,8 +117,7 @@ signals:
 	services later. This signal can be emitted many time: for example if new host 
 	has been connected to network and is announcing some services interesting to
 	this ServiceBrowser, they will be reported by several serviceAdded() signals and
-	whole batch will be concluded by finished(). Warning: for local-link network
-	this signal is emitted after 100ms of no activity (adding/removing services). 
+	whole batch will be concluded by finished(). 
 	 */
 	void finished();
 

@@ -44,21 +44,21 @@ public:
 	typedef KSharedPtr<RemoteService> Ptr;
 	
 	/**
-	Create unresolved service from given label
+	Creates unresolved service from given DNS label
 	@param label Data returned by PTR query - it is decoded into name, type and 
 	domain
 	 */
 	RemoteService(const QString& label);
 	
 	/**
-	Create unresolved remote service with given name, type and domain.
+	Creates unresolved remote service with given name, type and domain.
 	 */
 	RemoteService(const QString& name,const QString& type,const QString& domain);
 	
 	virtual ~RemoteService();
 	
 	/**
-	Resolve host name and port of service. Host name is not resolved into numeric
+	Resolves host name and port of service. Host name is not resolved into numeric
 	address - use KResolver for that. Signal resolved(bool) will be emitted 
 	when finished or even before return of this function - in case of immediate failure.
 	 */

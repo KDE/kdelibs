@@ -35,7 +35,7 @@ namespace DNSSD
 class DomainBrowserPrivate;
 
 /**
-@short Class used to provide current list of browsing domains.
+@short Class used to provide current list of domains for browsing.
 @author Jakub Stachowski
 */
 class KDNSSD_EXPORT DomainBrowser : public QObject
@@ -55,7 +55,7 @@ public:
 	@param domain List of domains 
 	@param recursive TRUE - specified domains will be recursively browsed to
 	discover more domains. This means that every domain (specified in constructor,
-	global config or found by query) will be queried for list of more browsing domains. 
+	or found by query) will be queried for list of more browsing domains. 
 	This process is recursive.
 	 */
 	DomainBrowser(const QStringList& domains, bool recursive=false, QObject *parent=0);
@@ -63,7 +63,7 @@ public:
 	~DomainBrowser();
 	
 	/**
-	Current list of domains to browse
+	Current list of domains to browse.
 	 */
 	const QStringList& domains() const;
 	

@@ -43,8 +43,8 @@ public:
 	/**
 	Creates new query. 
 
-	@param _type Type of services to browse for
-	@param _domain Domain name - if set to "local." multicast query will be performed,
+	@param type Type of services to browse for
+	@param domain Domain name - if set to "local." multicast query will be performed,
 			otherwise unicast
 	 */
 	Query(const QString& type, const QString& domain);
