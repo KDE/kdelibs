@@ -723,9 +723,11 @@ void RenderLayer::paintLayer(RenderLayer* rootLayer, QPainter *p,
         }
     }
 
+#ifdef BOX_DEBUG
     p->setPen(QPen(QColor("yellow"), 1, Qt::DotLine));
     p->setBrush( Qt::NoBrush );
     p->drawRect(m_x, m_y, width(), height());
+#endif
 
 #ifdef APPLE_CHANGES
     // End our transparency layer
