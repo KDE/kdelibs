@@ -124,6 +124,11 @@ void RenderFrameSet::layout( )
              if(m_rows->at(i)->type == Fixed || m_rows->at(i)->type == Percent)
             {
                 m_rowHeight[i] = QMAX(m_rows->at(i)->width(heightAvailable), 14);
+		if( m_rowHeight[i] > remainingHeight )
+		    m_rowHeight[i] = remainingHeight;
+                 remainingHeight -= m_rowHeight[i];
+		if( m_rows->at(i)->type == Percent)
+		    rowsPercent++;
                  remainingHeight -= m_rowHeight[i];
 		if( m_rows->at(i)->type == Percent)
 		    rowsPercent++;
@@ -183,6 +188,8 @@ void RenderFrameSet::layout( )
             if(m_cols->at(i)->type == Fixed || m_cols->at(i)->type == Percent)
             {
                 m_colWidth[i] = QMAX(m_cols->at(i)->width(widthAvailable), 14);
+		if( m_colWidth[i] > remainingWidth )
+		    m_colWidth[i] = remainingWidth;
                 remainingWidth -= m_colWidth[i];
 		if( m_cols->at(i)->type == Percent)
 		    colsPercent++;
