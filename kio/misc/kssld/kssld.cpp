@@ -418,6 +418,9 @@ QStringList KSSLD::cacheGetHostList(KSSLCertificate cert) {
 bool KSSLD::cacheAddHost(KSSLCertificate cert, QString host) {
   KSSLCNode *node;
 
+  if (host.isEmpty())
+	return true;
+
   for (node = certList.first(); node; node = certList.next()) {
     if (cert == *(node->cert)) {
       if (!node->permanent && node->expires < QDateTime::currentDateTime()) {
@@ -427,7 +430,8 @@ bool KSSLD::cacheAddHost(KSSLCertificate cert, QString host) {
         cacheSaveToDisk();
         return false;
       }
-      node->hosts << host;
+      if (!node->hosts.contains(host))
+         node->hosts << host;
       certList.remove(node);
       certList.prepend(node);
       cacheSaveToDisk();

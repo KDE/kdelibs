@@ -507,9 +507,13 @@ KSSLCertificateHome::KSSLAuthAction aa;
         }
   }
 
+  QString ourHost;
+  if (d->realHost.length() > 0)
+     ourHost = d->realHost;
+  else ourHost = d->host;
 
   // Look for a certificate on a per-host basis as an override
-  QString tmpcn = KSSLCertificateHome::getDefaultCertificateName(d->host, &aa);
+  QString tmpcn = KSSLCertificateHome::getDefaultCertificateName(ourHost, &aa);
   if (aa != KSSLCertificateHome::AuthNone) {   // we must override
     switch (aa) {
         case KSSLCertificateHome::AuthSend:
@@ -571,7 +575,7 @@ KSSLCertificateHome::KSSLAuthAction aa;
      QByteArray data, retval;
      QCString rettype;
      QDataStream arg(data, IO_WriteOnly);
-     arg << d->host+":"+QString::number(m_iPort);
+     arg << ourHost+":"+QString::number(m_iPort);
      arg << certs;
      bool rc = d->dcc->call("kio_uiserver", "UIServer",
                                "showSSLCertDialog(QString, QStringList)",
@@ -593,7 +597,7 @@ KSSLCertificateHome::KSSLAuthAction aa;
     // but to save the choice
   if (!send) {
      if (save) {
-            KSSLCertificateHome::setDefaultCertificate(certname, d->host,
+            KSSLCertificateHome::setDefaultCertificate(certname, ourHost,
                                                        false, false);
      }
      return;
@@ -661,7 +665,7 @@ KSSLCertificateHome::KSSLAuthAction aa;
          kdDebug(7029) << "Client SSL certificate is being used." << endl;
          setMetaData("ssl_using_client_cert", "TRUE");
          if (save) {
-                KSSLCertificateHome::setDefaultCertificate(certname, d->host,
+                KSSLCertificateHome::setDefaultCertificate(certname, ourHost,
                                                            true, false);
          }
       }
@@ -685,10 +689,16 @@ int TCPSlaveBase::verifyCertificate()
     int rc = 0;
     bool permacache = false;
     bool isChild = false;
-    QString theurl = QString(m_sServiceName)+"://"+d->host+":"+QString::number(m_iPort);
     bool _IPmatchesCN = false;
     int result;
     bool doAddHost = false;
+    QString ourHost;
+
+    if (d->realHost.length() > 0)
+        ourHost = d->realHost;
+    else ourHost = d->host;
+
+    QString theurl = QString(m_sServiceName)+"://"+ourHost+":"+QString::number(m_iPort);
 
    if (!hasMetaData("ssl_militant") || metaData("ssl_militant") == "FALSE")
 	   d->militantSSL = false;
@@ -733,7 +743,7 @@ int TCPSlaveBase::verifyCertificate()
 
    _IPmatchesCN = d->kssl->peerInfo().certMatchesAddress();
    if (!_IPmatchesCN && !d->militantSSL) {  // force this if the user wants it
-      if (d->cc->getHostList(pc).contains(d->host))
+      if (d->cc->getHostList(pc).contains(ourHost))
          _IPmatchesCN = true;
    }
 
@@ -783,7 +793,7 @@ int TCPSlaveBase::verifyCertificate()
                                            "does not match the one the "
                                            "certificate was issued to.");
                    result = messageBox( WarningYesNoCancel,
-                              msg.arg(d->host),
+                              msg.arg(ourHost),
                               i18n("Server Authentication"),
                               i18n("&Details..."),
                               i18n("Co&ntinue") );
@@ -791,7 +801,7 @@ int TCPSlaveBase::verifyCertificate()
                    QString msg = i18n("The server certificate failed the "
                                       "authenticity test (%1).");
                    result = messageBox( WarningYesNoCancel,
-                              msg.arg(d->host),
+                              msg.arg(ourHost),
                               i18n("Server Authentication"),
                               i18n("&Details..."),
                               i18n("Co&ntinue") );
@@ -846,7 +856,7 @@ int TCPSlaveBase::verifyCertificate()
 
       //  - cache the results
       d->cc->addCertificate(pc, cp, permacache);
-      if (doAddHost) d->cc->addHost(pc, d->host);
+      if (doAddHost) d->cc->addHost(pc, ourHost);
     } else {    // Child frame
       //  - Read from cache and see if there is a policy for this
       KSSLCertificateCache::KSSLCertificatePolicy cp =
@@ -898,7 +908,7 @@ int TCPSlaveBase::verifyCertificate()
              if (result == KMessageBox::Yes) {
                rc = 1;
                setMetaData("ssl_action", "accept");
-               d->cc->addHost(pc, d->host);
+               d->cc->addHost(pc, ourHost);
              } else {
                rc = -1;
                setMetaData("ssl_action", "reject");
@@ -914,7 +924,7 @@ int TCPSlaveBase::verifyCertificate()
              QString msg = i18n("The server certificate failed the "
                                 "authenticity test (%1).");
              result = messageBox(WarningYesNoCancel,
-                                 msg.arg(d->host),
+                                 msg.arg(ourHost),
                                  i18n("Server Authentication"),
                                  i18n("&Details..."),
                                  i18n("Co&ntinue"));
@@ -937,7 +947,7 @@ int TCPSlaveBase::verifyCertificate()
              setMetaData("ssl_action", "accept");
              rc = 1;
              cp = KSSLCertificateCache::Accept;
-             d->cc->addHost(pc, d->host);
+             d->cc->addHost(pc, ourHost);
                 result = messageBox( WarningYesNo,
                                i18n("Would you like to accept this "
                                     "certificate forever without "
@@ -1135,11 +1145,13 @@ void TCPSlaveBase::setRealHost( const QString& realHost )
 bool TCPSlaveBase::doSSLHandShake( bool sendError )
 {
     kdDebug(7029) << "TCPSlaveBase::doSSLHandShake: " << endl;
+    QString msgHost = d->host;
 
     if ( !d->realHost.isNull() )
     {
       kdDebug(7029) << "Setting real hostname: " << d->realHost << endl;
       d->kssl->setPeerHost(d->realHost);
+      msgHost = d->realHost;
     }
 
     d->kssl->reInitialize();
@@ -1148,7 +1160,7 @@ bool TCPSlaveBase::doSSLHandShake( bool sendError )
     if (d->status < 0) {
         CloseDescriptor();
         if ( sendError )
-            error( ERR_COULD_NOT_CONNECT, d->host);
+            error( ERR_COULD_NOT_CONNECT, msgHost);
         return false;
     }
     setMetaData("ssl_in_use", "TRUE");
@@ -1157,7 +1169,7 @@ bool TCPSlaveBase::doSSLHandShake( bool sendError )
         d->status = -1;
         CloseDescriptor();
         if ( sendError )
-            error( ERR_COULD_NOT_CONNECT, d->host);
+            error( ERR_COULD_NOT_CONNECT, msgHost);
         return false;
     }
     d->needSSLHandShake = false;
