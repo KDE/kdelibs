@@ -170,7 +170,7 @@ int KMainWindowInterface::height()
 }
 void KMainWindowInterface::resize(int newX, int newY)
 {
-
+	m_MainWindow->resize(newX, newY);
 }
 int KMainWindowInterface::Xpos()
 {
@@ -182,11 +182,11 @@ int KMainWindowInterface::Ypos()
 }
 void KMainWindowInterface::move(int newX, int newY)
 {
-
+	m_MainWindow->move(newX, newY);
 }
 void KMainWindowInterface::setGeometry(int newX, int newY, int newWidth, int newHeight)
 {
-
+	m_MainWindow->setGeometry(newX, newY, newWidth, newHeight);
 }
 void KMainWindowInterface::raise()
 {
@@ -197,8 +197,12 @@ void KMainWindowInterface::lower()
 	m_MainWindow->lower();
 }
 
-void KMainWindowInterface::reparent(int WindowID)
+void KMainWindowInterface::restore()
 {
-
+	m_MainWindow->showNormal();
+}
+void KMainWindowInterface::show()
+{
+	m_MainWindow->show();
 }
 

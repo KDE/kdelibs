@@ -136,7 +136,8 @@ k_dcop:
 	void setGeometry(int newX, int newY, int newWidth, int newHeight);
 	void raise();
 	void lower();
-	void reparent(int WindowID);
+	void restore();
+	void show();
 
 private:
 	KMainWindow *m_MainWindow;
