@@ -2215,7 +2215,7 @@ void KLegacyStyle::drawPushButton(QPushButton *btn, QPainter *p) {
 	key.data.shadow = KLegacy::In;
     } else {
 	key.data.state = ((btn->isEnabled()) ?
-			  ((btn == priv->lastWidget) ? KLegacy::Prelight : KLegacy::Normal) :
+			  ((static_cast<QWidget *>( btn ) == priv->lastWidget) ? KLegacy::Prelight : KLegacy::Normal) :
 			  KLegacy::Insensitive);
 	key.data.shadow = ((btn->isOn() || btn->isDown()) ?
 			   KLegacy::In : KLegacy::Out);
