@@ -773,7 +773,7 @@ QImage& KImageEffect::modulate(QImage &image, QImage &modImage, bool reverse,
 	      if (g<0) g=0; if (g>255) g=255;
 	      if (b<0) b=0; if (b>255) b=255;
 	      a = qAlpha(*data1);
-	      *data1 = qRgb(r, g, b) | ((uint)(a & 0xff) << 24);
+	      *data1 = qRgba(r, g, b, a);
 	  }
 	  else if (type == Saturation || type == HueShift) {
 	      clr.setRgb(color1);
@@ -883,7 +883,7 @@ QImage& KImageEffect::blend(QImage &image, float initial_intensity,
                 if (g > 255) g = 255; if (g < 0 ) g = 0;
                 if (b > 255) b = 255; if (b < 0 ) b = 0;
                 a = qAlpha(data[ind]);
-                data[ind] = qRgb(r, g, b) | ((uint)(a & 0xff) << 24);
+                data[ind] = qRgba(r, g, b, a);
             }
         }
     }
@@ -907,7 +907,7 @@ QImage& KImageEffect::blend(QImage &image, float initial_intensity,
                 if (g > 255) g = 255; if (g < 0 ) g = 0;
                 if (b > 255) b = 255; if (b < 0 ) b = 0;
                 a = qAlpha(data[ind]);
-                data[ind] = qRgb(r, g, b) | ((uint)(a & 0xff) << 24);
+                data[ind] = qRgba(r, g, b, a);
             }
         }
     }
@@ -940,7 +940,7 @@ QImage& KImageEffect::blend(QImage &image, float initial_intensity,
                 if (g > 255) g = 255; if (g < 0 ) g = 0;
                 if (b > 255) b = 255; if (b < 0 ) b = 0;
                 a = qAlpha(data[ind]);
-                data[ind] = qRgb(r, g, b) | ((uint)(a & 0xff) << 24);
+                data[ind] = qRgba(r, g, b, a);
 
                 //NE
                 ind = image.width() - x - 1 + image.width()  * y ;
@@ -954,7 +954,7 @@ QImage& KImageEffect::blend(QImage &image, float initial_intensity,
                 if (g > 255) g = 255; if (g < 0 ) g = 0;
                 if (b > 255) b = 255; if (b < 0 ) b = 0;
                 a = qAlpha(data[ind]);
-                data[ind] = qRgb(r, g, b) | ((uint)(a & 0xff) << 24);
+                data[ind] = qRgba(r, g, b, a);
             }
         }
 
@@ -984,7 +984,7 @@ QImage& KImageEffect::blend(QImage &image, float initial_intensity,
                 if (g > 255) g = 255; if (g < 0 ) g = 0;
                 if (b > 255) b = 255; if (b < 0 ) b = 0;
                 a = qAlpha(data[ind]);
-                data[ind] = qRgb(r, g, b) | ((uint)(a & 0xff) << 24);
+                data[ind] = qRgba(r, g, b, a);
 
                 //SE
                 ind = image.width()-x-1 + image.width() * (image.height() - y - 1) ;
@@ -998,7 +998,7 @@ QImage& KImageEffect::blend(QImage &image, float initial_intensity,
                 if (g > 255) g = 255; if (g < 0 ) g = 0;
                 if (b > 255) b = 255; if (b < 0 ) b = 0;
                 a = qAlpha(data[ind]);
-                data[ind] = qRgb(r, g, b) | ((uint)(a & 0xff) << 24);
+                data[ind] = qRgba(r, g, b, a);
             }
         }
     }
@@ -1084,7 +1084,7 @@ QImage& KImageEffect::blend(QImage &image1, QImage &image2,
 	  b = (a*qBlue(data1[ind1]) + (256-a)*qBlue(data2[ind2]))/256;
 
 	  a = qAlpha(data1[ind1]);
-	  data1[ind1] = qRgb(r, g, b) | ((uint)(a & 0xff) << 24);
+	  data1[ind1] = qRgba(r, g, b, a);
 	
 	  ind1++; ind2++; ind3++; x++;
 	  if ( (x%x2) ==0) ind2 -= x2;
@@ -1109,7 +1109,7 @@ unsigned int KImageEffect::lHash(unsigned int c)
     ng =(g >> 1) + (g >> 2); ng = ng > g ? 0 : ng;
     nb =(b >> 1) + (b >> 2); nb = nb > b ? 0 : nb;
 
-    return qRgb(nr, ng, nb) | (uint) ((0xff & a) << 24);
+    return qRgba(nr, ng, nb, a);
 }
 
 
@@ -1123,7 +1123,7 @@ unsigned int KImageEffect::uHash(unsigned int c)
     ng = g + (g >> 3); ng = ng < g ? ~0 : ng;
     nb = b + (b >> 3); nb = nb < b ? ~0 : nb;
 
-    return qRgb(nr, ng, nb) | (uint) ((0xff & a) << 24);
+    return qRgba(nr, ng, nb, a);
 }
 
 
