@@ -261,7 +261,8 @@ void KMenuBar::leaveEvent (QEvent *e){
 
 	  QBrush b;
 	  if (ev->type() == Event_Enter)
-		b = QColor(100,100,200);
+               b = kapp->selectColor; // this is much more logical then
+                                      // the hardwired value used before!!
 	  else
 		b = QWidget::backgroundColor();
       qDrawShadePanel( &paint, 0, 0, 9, handle->height(),

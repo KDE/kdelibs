@@ -165,9 +165,12 @@ void KToolBarButton::on(bool flag)
   init();
 void KToolBarButton::drawButton( QPainter *_painter )
 {
+#if 0 /* Don't ask why, but the widget works without it prefectly! */
   QColorGroup g = QWidget::colorGroup();
+  
   if (isOn())
     qDrawShadePanel(_painter, 0, 0, width(), height(), g , true, 2);
+#endif  
   KButton::drawButton(_painter);
 }
 
@@ -224,7 +227,7 @@ void KToolBarButton::makeDisabledPixmap()
   p.begin( &disabledPixmap );
   p.setPen( g.light() );
   p.drawPixmap(1, 1, pm);
-  p.setPen( g.text() );
+  p.setPen( g.mid() );
   p.drawPixmap(0, 0, pm);
   p.end();
 }
@@ -426,7 +429,7 @@ void KToolBar::layoutHorizontal ()
          }
         else // Not right
          {
-           int myWidth;
+           int myWidth = 0;
            if (isItemAutoSized(b) == true)
             {
               autoSize = b;
@@ -440,8 +443,14 @@ void KToolBar::layoutHorizontal ()
               yOffset += item_size;
               toolbarHeight += item_size;
             }
+           // Put it *really* *really* there!
+           // This is a workaround for a Qt-1.32 bug.
+           XMoveWindow(qt_xdisplay(), b->winId(), offset, yOffset);
+           
+           // This is what *should* be sufficient
            b->move( offset, yOffset );
-           offset+=myWidth+3;
+           
+           offset += myWidth + 3;
          }
       }
      else // Not fullwidth, autosize
@@ -585,7 +594,8 @@ void KToolBar::paintEvent(QPaintEvent *)
     // Took higlighting handle from kmenubar - sven 040198
     QBrush b;
     if (mouseEntered)
-      b = QColor(100,100,200);
+      b = kapp->selectColor; // this is much more logical then
+                            // the hardwired value used before!!
     else
       b = QWidget::backgroundColor();
 
@@ -1284,7 +1294,7 @@ void KToolBar::setBarPos(BarPosition bpos)
         setMouseTracking(true);
         mouseEntered = false;
         fullWidth=wasFullWidth;
-        //updateRects (true);
+        // updateRects (true);
         emit moved (bpos); // another bar::updateRects (damn)
         return;
       }

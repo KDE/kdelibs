@@ -519,6 +519,14 @@ KTreeList::~KTreeList()
   delete treeRoot;
 }
 
+// This is needed to make the apply button of kcontroll's 
+// color setup working (Marcin Dalecki)
+void KTreeList::paletteChange(const QPalette &)
+{
+    setBackgroundColor(colorGroup().base());
+    repaint(true);
+}
+
 // appends a child to the item at the given index with the given text
 // and pixmap
 void KTreeList::addChildItem(const char *theText,

@@ -83,8 +83,8 @@ void KButton::paint( QPainter *painter )
       int dx = ( width() - pixmap()->width() ) / 2;
       int dy = ( height() - pixmap()->height() ) / 2;
       if ( isDown() && style() == WindowsStyle ) {
-	dx++;
-	dy++;
+       ++dx;
+       ++dy;
       }
       painter->drawPixmap( dx, dy, *pixmap() );
     }

@@ -667,6 +667,7 @@ public:
   void highlighted(int index);
   void selected(int index);
 protected:
+  void paletteChange(const QPalette &);
   void addChildItem(KTreeListItem *theParent,
 					KTreeListItem *theChild);
   virtual int cellHeight(int row);
