@@ -818,7 +818,8 @@ protected slots:
     virtual void slotCancel();
 
     void addToRecentDocuments();
-    
+    void initSpeedbar();
+
 private:
     KFileDialog(const KFileDialog&);
     KFileDialog operator=(const KFileDialog&);

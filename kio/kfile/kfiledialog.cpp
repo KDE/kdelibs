@@ -114,6 +114,7 @@ struct KFileDialogPrivate
     KURLComboBox *pathCombo;
     KPushButton *okButton, *cancelButton;
     KURLBar *urlBar;
+    QHBoxLayout *urlBarLayout;
     QWidget *customWidget;
 
     QPtrList<KIO::StatJob> statJobs;
@@ -173,15 +174,19 @@ KFileDialog::~KFileDialog()
 
     KConfig *config = KGlobal::config();
 
-    if ( d->initializeSpeedbar && d->urlBar->isModified() ) {
-        QString oldGroup = config->group();
-        config->setGroup( ConfigGroup );
-        // write to kdeglobals
-        config->writeEntry( "Set speedbar defaults", false, true, true );
-        config->setGroup( oldGroup );
-    }
+    if (d->urlBar)
+    {
+        if ( d->initializeSpeedbar && d->urlBar->isModified() ) 
+        {
+            QString oldGroup = config->group();
+            config->setGroup( ConfigGroup );
+            // write to kdeglobals
+            config->writeEntry( "Set speedbar defaults", false, true, true );
+            config->setGroup( oldGroup );
+        }
 
-    d->urlBar->writeConfig( config, "KFileDialog Speedbar" );
+        d->urlBar->writeConfig( config, "KFileDialog Speedbar" );
+    }
     config->sync();
 
     delete ops;
@@ -651,46 +656,12 @@ void KFileDialog::init(const QString& startDir, const QString& filter, QWidget* 
     d->cancelButton = new KPushButton(KStdGuiItem::cancel(), d->mainWidget);
     connect( d->okButton, SIGNAL( clicked() ), SLOT( slotOk() ));
     connect( d->cancelButton, SIGNAL( clicked() ), SLOT( slotCancel() ));
-    d->urlBar = new KURLBar( true, d->mainWidget, "url bar" );
-    connect( d->urlBar, SIGNAL( activated( const KURL& )),
-             SLOT( enterURL( const KURL& )) );
     d->customWidget = widget;
-
+    d->urlBar = 0; // delayed loading
     KConfig *config = KGlobal::config();
     KConfigGroupSaver cs( config, ConfigGroup );
     d->initializeSpeedbar = config->readBoolEntry( "Set speedbar defaults",
                                                    true );
-    d->urlBar->readConfig( config, "KFileDialog Speedbar" );
-
-    if ( d->initializeSpeedbar ) {
-        KURL u;
-        u.setPath( KGlobalSettings::desktopPath() );
-        d->urlBar->insertItem( u, i18n("Desktop"), false );
-
-        if (KGlobalSettings::documentPath() != QDir::homeDirPath())
-        {
-            u.setPath( KGlobalSettings::documentPath() );
-            d->urlBar->insertItem( u, i18n("Documents"), false, "document" );
-        }
-        
-        u.setPath( QDir::homeDirPath() );
-        d->urlBar->insertItem( u, i18n("Home Directory"), false,
-                               "folder_home" );
-        u = "floppy:/";
-        if ( KProtocolInfo::isKnownProtocol( u ) )
-            d->urlBar->insertItem( u, i18n("Floppy"), false,
-                                   KProtocolInfo::icon( "floppy" ) );
-        QStringList tmpDirs = KGlobal::dirs()->resourceDirs( "tmp" );
-        u.setProtocol( "file" );
-        u.setPath( tmpDirs.isEmpty() ? QString("/tmp") : tmpDirs.first() );
-        d->urlBar->insertItem( u, i18n("Temporary Files"), false,
-                               "file_temporary" );
-        u = "lan:/";
-        if ( KProtocolInfo::isKnownProtocol( u ) )
-            d->urlBar->insertItem( u, i18n("Network"), false,
-                                   "network_local" );
-    }
-
     d->completionLock = false;
     
     QtMsgHandler oldHandler = qInstallMsgHandler( silenceQToolBar );
@@ -955,6 +926,45 @@ void KFileDialog::init(const QString& startDir, const QString& filter, QWidget* 
     d->completionLock = true;
     readConfig( config, ConfigGroup );
     d->completionLock = false;
+}
+
+void KFileDialog::initSpeedbar()
+{
+    d->urlBar = new KURLBar( true, d->mainWidget, "url bar" );
+    connect( d->urlBar, SIGNAL( activated( const KURL& )),
+             SLOT( enterURL( const KURL& )) );
+    
+    d->urlBar->readConfig( KGlobal::config(), "KFileDialog Speedbar" );
+
+    if ( d->initializeSpeedbar ) {
+        KURL u;
+        u.setPath( KGlobalSettings::desktopPath() );
+        d->urlBar->insertItem( u, i18n("Desktop"), false );
+
+        if (KGlobalSettings::documentPath() != QDir::homeDirPath())
+        {
+            u.setPath( KGlobalSettings::documentPath() );
+            d->urlBar->insertItem( u, i18n("Documents"), false, "document" );
+        }
+        
+        u.setPath( QDir::homeDirPath() );
+        d->urlBar->insertItem( u, i18n("Home Directory"), false,
+                               "folder_home" );
+        u = "floppy:/";
+        if ( KProtocolInfo::isKnownProtocol( u ) )
+            d->urlBar->insertItem( u, i18n("Floppy"), false,
+                                   KProtocolInfo::icon( "floppy" ) );
+        QStringList tmpDirs = KGlobal::dirs()->resourceDirs( "tmp" );
+        u.setProtocol( "file" );
+        u.setPath( tmpDirs.isEmpty() ? QString("/tmp") : tmpDirs.first() );
+        d->urlBar->insertItem( u, i18n("Temporary Files"), false,
+                               "file_temporary" );
+        u = "lan:/";
+        if ( KProtocolInfo::isKnownProtocol( u ) )
+            d->urlBar->insertItem( u, i18n("Network"), false,
+                                   "network_local" );
+    }
+
 
     // need to set the current url of the urlbar manually (not via urlEntered()
     // here, because the initial url of KDirOperator might be the same as the
@@ -963,6 +973,8 @@ void KFileDialog::init(const QString& startDir, const QString& filter, QWidget* 
     if ( d->urlBar )
         d->urlBar->setCurrentItem( d->url );
     setSelection(d->url.url()); // ### move that into show() as well?
+    
+    d->urlBarLayout->insertWidget( 0, d->urlBar );
 }
 
 void KFileDialog::initGUI()
@@ -972,10 +984,8 @@ void KFileDialog::initGUI()
     d->boxLayout = new QVBoxLayout( d->mainWidget, 0, KDialog::spacingHint());
     d->boxLayout->addWidget(toolbar, AlignTop);
 
-    QBoxLayout *horiz = new QHBoxLayout( d->boxLayout );
-    horiz->addWidget( d->urlBar );
-
-    QVBoxLayout *vbox = new QVBoxLayout( horiz );
+    d->urlBarLayout = new QHBoxLayout( d->boxLayout ); // needed for the urlBar that may appear
+    QVBoxLayout *vbox = new QVBoxLayout( d->urlBarLayout );
 
     vbox->addWidget(ops, 4);
     vbox->addSpacing(3);
@@ -1374,8 +1384,8 @@ KURL KFileDialog::getImageOpenURL( const QString& startDir, QWidget *parent,
                                    const QString& caption)
 {
     KFileDialog dlg(startDir,
-		    KImageIO::pattern( KImageIO::Reading ),
-		    parent, "filedialog", true);
+                    KImageIO::pattern( KImageIO::Reading ),
+                    parent, "filedialog", true);
     dlg.setOperationMode( Opening );
     dlg.setCaption( caption.isNull() ? i18n("Open") : caption );
     dlg.setMode( KFile::File );
@@ -1615,21 +1625,20 @@ void KFileDialog::readConfig( KConfig *kc, const QString& group )
                                                 DefaultDirectoryFollowing );
 
     KGlobalSettings::Completion cm = (KGlobalSettings::Completion)
-			   kc->readNumEntry( PathComboCompletionMode,
-					     KGlobalSettings::CompletionAuto );
+                                      kc->readNumEntry( PathComboCompletionMode,
+                                      KGlobalSettings::CompletionAuto );
     if ( cm != KGlobalSettings::completionMode() )
-	combo->setCompletionMode( cm );
+        combo->setCompletionMode( cm );
 
     cm = (KGlobalSettings::Completion)
          kc->readNumEntry( LocationComboCompletionMode,
                            KGlobalSettings::CompletionAuto );
     if ( cm != KGlobalSettings::completionMode() )
-	locationEdit->setCompletionMode( cm );
+        locationEdit->setCompletionMode( cm );
 
-    bool showSpeedbar = kc->readBoolEntry(ShowSpeedbar, true);
-    toggleSpeedbar( showSpeedbar );
-    ((KToggleAction *) actionCollection()->action("toggleSpeedbar"))->setChecked( showSpeedbar );
-
+    // show or don't show the speedbar
+    toggleSpeedbar( kc->readBoolEntry(ShowSpeedbar, true) );
+    
     int w1 = minimumSize().width();
     int w2 = toolbar->sizeHint().width() + 10;
     if (w1 < w2)
@@ -1653,7 +1662,7 @@ void KFileDialog::writeConfig( KConfig *kc, const QString& group )
     saveDialogSize( group, true );
     kc->writeEntry( PathComboCompletionMode, static_cast<int>(d->pathCombo->completionMode()) );
     kc->writeEntry(LocationComboCompletionMode, static_cast<int>(locationEdit->completionMode()) );
-    kc->writeEntry( ShowSpeedbar, !d->urlBar->isHidden() );
+    kc->writeEntry( ShowSpeedbar, d->urlBar && !d->urlBar->isHidden() );
 
     ops->writeConfig( kc, group );
     kc->setGroup( oldGroup );
@@ -1754,9 +1763,35 @@ KActionCollection * KFileDialog::actionCollection() const
 void KFileDialog::toggleSpeedbar( bool show )
 {
     if ( show )
+    {
+        if ( !d->urlBar )
+            initSpeedbar();
+
         d->urlBar->show();
+            
+        // check to see if they have a home item defined, if not show the home button
+        KURLBarItem *urlItem = static_cast<KURLBarItem*>( d->urlBar->listBox()->firstItem() );
+        while ( urlItem )
+        {
+            if ( urlItem->url().path(-1) == QDir::homeDirPath() )
+            {
+                ops->actionCollection()->action( "home" )->unplug( toolbar );
+                break;
+            }
+
+            urlItem = static_cast<KURLBarItem*>( urlItem->next() );
+        }
+    }
     else
-        d->urlBar->hide();
+    {
+        if (d->urlBar)
+            d->urlBar->hide();
+        
+        if ( !ops->actionCollection()->action( "home" )->isPlugged( toolbar ) )
+            ops->actionCollection()->action( "home" )->plug( toolbar, 3 );
+    }
+    
+    static_cast<KToggleAction *>(actionCollection()->action("toggleSpeedbar"))->setChecked( show );
 }
 
 int KFileDialog::pathComboIndex()
