@@ -211,6 +211,7 @@ AC_OUTPUT(Makefile \
 	mimetypes/audio/Makefile \
 	mimetypes/image/Makefile \
 	mimetypes/inode/Makefile \
+	mimetypes/message/Makefile \
 	mimetypes/text/Makefile \
 	mimetypes/video/Makefile \
 	kstyles/Makefile \
