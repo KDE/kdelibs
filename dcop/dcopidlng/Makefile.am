@@ -1,5 +1,4 @@
-dcopidlngbin_SCRIPTS = dcopidlng
-dcopidlngbindir = $(KDEDIR)/bin
+bin_SCRIPTS = dcopidlng
 
 dcopidlnglib_DATA = kalyptus Ast.pm Iter.pm kalyptusCxxToDcopIDL.pm kdocAstUtil.pm kdocLib.pm kdocParseDoc.pm kdocUtil.pm kalyptusDataDict.pm
-dcopidlnglibdir = $(KDEDIR)/share/apps/dcopidlng
+dcopidlnglibdir = $(kde_datadir)/dcopidlng
