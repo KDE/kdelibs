@@ -88,9 +88,9 @@ CSSStyleSelector::CSSStyleSelector(DocumentImpl * doc)
     for (; it.current(); ++it)
 	authorStyle->append(it.current());
 
-//     kdDebug() << "CSSStyleSelector: author style has " << authorStyle->count() << " elements"<< endl; 
+//     kdDebug() << "CSSStyleSelector: author style has " << authorStyle->count() << " elements"<< endl;
 //     if ( userStyle )
-//     kdDebug() << "CSSStyleSelector: user style has " << userStyle->count() << " elements"<< endl; 
+//     kdDebug() << "CSSStyleSelector: user style has " << userStyle->count() << " elements"<< endl;
 
     KURL u = doc->view()->part()->baseURL();
     u.setQuery( QString::null );
@@ -105,7 +105,7 @@ CSSStyleSelector::CSSStyleSelector(DocumentImpl * doc)
     u.setPath( QString::null );
     encodedurl.host = u.url();
 
-    //kdDebug() << "CSSStyleSelector::CSSStyleSelector encoded url " << encodedurl.path << endl; 
+    //kdDebug() << "CSSStyleSelector::CSSStyleSelector encoded url " << encodedurl.path << endl;
 }
 
 CSSStyleSelector::CSSStyleSelector(StyleSheetImpl *sheet)
@@ -157,7 +157,7 @@ void CSSStyleSelector::loadDefaultStyle(const KHTMLSettings *s)
 
     defaultStyle = new CSSStyleSelectorList();
     defaultStyle->append(defaultSheet);
-    //kdDebug() << "CSSStyleSelector: default style has " << defaultStyle->count() << " elements"<< endl; 
+    //kdDebug() << "CSSStyleSelector: default style has " << defaultStyle->count() << " elements"<< endl;
 }
 
 void CSSStyleSelector::clear()
@@ -234,7 +234,7 @@ RenderStyle *CSSStyleSelector::styleForElement(ElementImpl *e, int state)
 	    applyRule(pseudoStyle, ordprop->prop, e);
     }
     }
-    
+
     delete pseudoProps;
     }
     delete propsToApply;
@@ -245,7 +245,7 @@ RenderStyle *CSSStyleSelector::styleForElement(ElementImpl *e, int state)
 	style->setHasFocus();
     if ( usedDynamicStates & StyleSelector::Active )
 	style->setHasActive();
-    
+
     return style;
 }
 
@@ -333,14 +333,16 @@ bool CSSOrderedRule::checkSelector(DOM::ElementImpl *e)
 static void cleanpath(QString &path)
 {
     int pos;
-    
     while ( (pos = path.find( "/../" )) != -1 ) {
-	int prev;
+	int prev = 0;
 	if ( pos > 0 )
 	    prev = path.findRev( "/", pos -1 );
-	else 
-	    prev = 0;
-	path.remove( prev, pos- prev + 3 );
+        // don't remove the host, i.e. http://foo.org/../foo.html
+        if (prev > 3 && path.findRev("://", prev-1) == prev-2)
+            path.remove( pos, 3);
+        else if(prev >= 0)
+            // matching directory found ?
+            path.remove( prev, pos- prev + 3 );
     }
     pos = 0;
     while ( (pos = path.find( "//", pos )) != -1) {
@@ -349,10 +351,9 @@ static void cleanpath(QString &path)
 	else
 	    pos += 2;
     }
-    while ( (pos = path.find( "/./" )) != -1) {
+    while ( (pos = path.find( "/./" )) != -1)
 	path.remove( pos, 2 );
-    }
-    //kdDebug() << "checkPseudoState " << path << endl; 
+    //kdDebug() << "checkPseudoState " << path << endl;
 }
 
 static void checkPseudoState( DOM::ElementImpl *e )
@@ -466,7 +467,7 @@ bool CSSOrderedRule::checkOneSelector(DOM::CSSSelector *sel, DOM::ElementImpl *e
 	    selectorState |= StyleSelector::Hover;
 	    // dynamic pseudos have to be sorted out in checkSelector, so we if it could in some state apply
 	    // to the element.
-	    return true; 
+	    return true;
 	} else if ( sel->value == ":focus" ) {
 	    selectorState |= StyleSelector::Focus;
 	    return true;
@@ -2005,7 +2006,7 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
 		family = available.mid( pos1, pos - pos1 );
 		f.setFamily( family );
 		KGlobal::charsets()->setQFont(f, s->charset() );
-		//kdDebug() << "font charset is " << f.charSet() << " script = " << s->script() << endl; 
+		//kdDebug() << "font charset is " << f.charSet() << " script = " << s->script() << endl;
 		if ( s->charset() == s->script() || KGlobal::charsets()->supportsScript( f, s->script() ) ) {
 		    //kdDebug() << "=====> setting font family to " << family << endl;
 		    style->setFont(f);
