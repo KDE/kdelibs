@@ -74,6 +74,17 @@ PropertiesDialog::PropertiesDialog( const char *_url, mode_t _mode ) : QObject()
     if ( kurl->isMalformed() )
 	delete this;
 
+    if ( mode == (mode_t) -1 )
+    {
+      if ( kurl->isLocalFile() )
+      {
+          struct stat buf;
+          stat( kurl->path(), &buf );
+          mode = buf.st_mode;
+      }
+      else mode = 0;
+    }
+
     tab = new QTabDialog( 0L, 0L );
 
     // Matthias: let the dialog look like a modal dialog
@@ -1311,15 +1322,15 @@ void DirPropsPage::drawWallPaper()
 	return;
     }
     
-    const char *text = wallBox->text( i );
-    if ( strcmp( text, i18n( "(Default)" ) ) == 0 )
+    QString text = wallBox->text( i );
+    if ( text == i18n( "(Default)" ) )
     {
 	erase( imageX, imageY, imageW, imageH );
 	return;
     }
 
     QString file;
-    if (text[0]!='/') { // absolute path
+    if (text.left(0) == "/") { // absolute path
       file = kapp->kde_wallpaperdir().copy();
       file += "/";
       file += text;
@@ -1328,8 +1339,8 @@ void DirPropsPage::drawWallPaper()
     if ( file != wallFile )
     {
 	// debugT("Loading WallPaper '%s'\n",file.data());
-	wallFile = file.data();
-	wallPixmap.load( file.data() );
+	wallFile = file;
+	wallPixmap.load( file );
     }
     
     if ( wallPixmap.isNull() )

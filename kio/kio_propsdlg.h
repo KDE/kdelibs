@@ -61,8 +61,11 @@ class PropertiesDialog : public QObject
 {
     Q_OBJECT
 public:
-    /// Bring up a dialog for the given URL.
-    PropertiesDialog( const char *_url, mode_t _mode );
+    /** Bring up a Properties dialog. Only works for local files currently.
+     * @param _url the URL whose properties should be displayed
+     * @param _mode the mode, as returned by stat(). Don't set if unknown.
+     */
+    PropertiesDialog( const char *_url, mode_t _mode = -1);
     ~PropertiesDialog();
 
     /// Returns a parsed URL
