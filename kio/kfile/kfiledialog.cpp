@@ -801,7 +801,7 @@ void KFileDialog::accept()
     config->setForceGlobal( true );
     writeConfig( config, ConfigGroup );
     config->setForceGlobal( false );
-    
+
     saveRecentFiles( config );
     config->sync();
 
@@ -1652,7 +1652,6 @@ void KFileDialog::writeConfig( KConfig *kc, const QString& group )
     if ( !group.isEmpty() )
         kc->setGroup( group );
 
-    QWidget *desk = QApplication::desktop();
     kc->writeEntry( RecentURLs, d->pathCombo->urls() );
     saveDialogSize( group, true );
     kc->writeEntry( PathComboCompletionMode, d->pathCombo->completionMode() );
