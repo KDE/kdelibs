@@ -2464,6 +2464,9 @@ bool KHTMLView::placeCaret(InlineBox *hintBox)
   caretOff();
   recalcAndStoreCaretPos(hintBox);
 
+  ensureVisible(cv->x, cv->y, cv->width, cv->height);
+  d->scrollBarMoved = false;
+
   cv->origX = cv->x;
 
   NodeImpl *caretNode = m_part->d->caretNode().handle();
