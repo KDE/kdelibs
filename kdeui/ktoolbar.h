@@ -97,7 +97,6 @@ private:
   * construction. It will reread this config group on a
   * KApplication::appearanceChanged() signal.
   *
-  * @version $Id$
   * @author Reginald Stadlbauer <reggie@kde.org>, Stephan Kulow <coolo@kde.org>, Sven Radej <radej@kde.org>.
   */
 
