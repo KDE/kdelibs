@@ -281,7 +281,7 @@ void Ftp::openConnection()
   infoMessage( i18n("Connected to host <b>%1</b>").arg(m_host) );
   kdDebug(7102) << "Connected ...." << endl;
 
-  m_bLoggedOn = ftpLogin( m_user );
+  m_bLoggedOn = ftpLogin();
   if ( !m_bLoggedOn )
     return; // error emitted by ftpLogin
 
@@ -358,7 +358,7 @@ bool Ftp::connect( const QString &host, unsigned short int port )
  *
  * @return true on success.
  */
-bool Ftp::ftpLogin( const QString & )
+bool Ftp::ftpLogin()
 {
   kdDebug(7102) << "ftpLogin " << m_user << endl;
   infoMessage( i18n("Sending login information") );

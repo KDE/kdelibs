@@ -113,7 +113,7 @@ private:
    *
    * @return true on success.
    */
-  bool ftpLogin( const QString & user );
+  bool ftpLogin();
 
   /**
    * ftpSendCmd - send a command (@p cmd) and read response
