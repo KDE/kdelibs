@@ -122,7 +122,7 @@ private:
  * functionality as the C-implementation while the other three 
  * constructors are used to perform quick digest calculations whenever
  * the message to be does not require subsequent updating.  Additionally,
- * you can obtain either the result in a 16-byte binary format or 
+ * you can obtain either the result in a 16-byte binary format or
  * 33-byte hexidecimal by invoking @ref rawDigest and @ref hexDigest
  * respectivelly.  NOTE the extra byte in the latter format is is a
  * NULL character to terminate the string.
@@ -137,15 +137,17 @@ private:
  *  printf ( "Raw Digest output: %s", static_cast<char*>(context.rawDigest() );
  *  printf ( "Hex Digest output: %s", context.hexDigest() );
  * </PRE>
- * 
+ *
  * You can then invoke @ref reset() to re-use the same class to perform
  * another digest.
  *
- * context.reset();
- * context.update( QCString("TWO") );
- * context.update( QCString("THREE") );
- * printf ( "Raw Digest output: %s", static_cast<char*>(context.rawDigest() );
- * printf ( "Hex Digest output: %s", context.hexDigest() );
+ * <PRE>
+ *  context.reset();
+ *  context.update( QCString("TWO") );
+ *  context.update( QCString("THREE") );
+ *  printf ( "Raw Digest output: %s", static_cast<char*>(context.rawDigest() );
+ *  printf ( "Hex Digest output: %s", context.hexDigest() );
+ * </PRE>
  *
  * Note that once you invoke @ref reset(), the previouly calculated
  * digest value will be lost.  Thus, be sure you copy the result if
@@ -161,7 +163,7 @@ private:
  *  KMD5 context;
  *  context.update(QCString("ONE"));
  *  context.update(QCString("TWO"));
- *  context.update(QCString("THREE")); 
+ *  context.update(QCString("THREE"));
  *  context.finalize();
  *  printf ( "Raw Digest output: %s", static_cast<char*>(context.rawDigest() );
  *  printf ( "Hex Digest output: %s", context.hexDigest() );
