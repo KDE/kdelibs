@@ -43,14 +43,14 @@ KPlayObject *KPlayObjectFactory::createPlayObject(KURL url, bool createBUS)
 		if(mimetype->name() == "application/octet-stream")
 		{
 			Arts::KIOInputStream instream;
-			instream.openURL(url.path().latin1());
+			instream.openURL(url.prettyURL().latin1());
 	    
 			// TODO: what else than hardcoding audio/x-mp3 ?
 			return new KPlayObject(m_server.createPlayObjectForStream(instream, string("audio/x-mp3"), createBUS), true);
 		}
 		else
 			return new KPlayObject(m_server.createPlayObjectForURL(string(url.path().latin1()), string(mimetype->name().latin1()), createBUS), false);
-		}
+	}
 	else
 	{
 		return new KPlayObject();
