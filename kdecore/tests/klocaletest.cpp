@@ -20,6 +20,22 @@
 
 #include "klocaletest.h"
 
+bool check(QString txt, QString a, QString b)
+{
+  if (a.isEmpty())
+     a = QString::null;
+  if (b.isEmpty())
+     b = QString::null;
+  if (a == b) {
+    kdDebug() << txt << " : checking '" << a << "' against expected value '" << b << "'... " << "ok" << endl;
+  }
+  else {
+    kdDebug() << txt << " : checking '" << a << "' against expected value '" << b << "'... " << "KO !" << endl;
+    exit(1);
+  }
+  return true;
+}
+
 Test::Test( QWidget *parent, const char *name )
   : QWidget( parent, name )
 {
@@ -76,6 +92,22 @@ int main( int argc, char ** argv )
   KLocale::setMainCatalogue("kdelibs");
   KApplication a( argc, argv, "klocaletest" );
 
+  KGlobal::locale()->setLanguage(QString::fromLatin1("en_US"));
+  KGlobal::locale()->setCountry(QString::fromLatin1("C"));
+  KGlobal::locale()->setThousandsSeparator(QString::fromLatin1(","));
+  double num;
+  bool ok;
+  num = KGlobal::locale()->readNumber( "12,1", &ok ); check("readNumber(12,1)",ok?"yes":"no","no");
+  num = KGlobal::locale()->readNumber( "12,100", &ok ); check("readNumber(12,100)",ok?"yes":"no","yes");
+  num = KGlobal::locale()->readNumber( "12,100000,000", &ok ); check("readNumber(12,100000,000)",ok?"yes":"no","no");
+  num = KGlobal::locale()->readNumber( "12,100000000", &ok ); check("readNumber(12,100000000)",ok?"yes":"no","no");
+  num = KGlobal::locale()->readNumber( "12,100000,000", &ok ); check("readNumber(12,100000,000)",ok?"yes":"no","no");
+  num = KGlobal::locale()->readNumber( "12,,100,000", &ok ); check("readNumber(12,,100,000)",ok?"yes":"no","no");
+  num = KGlobal::locale()->readNumber( "12,1000,000", &ok ); check("readNumber(12,1000,000)",ok?"yes":"no","no");
+  num = KGlobal::locale()->readNumber( "12,0000000,000", &ok ); check("readNumber(12,0000000,000)",ok?"yes":"no","no");
+  num = KGlobal::locale()->readNumber( "12,0000000", &ok ); check("readNumber(12,0000000)",ok?"yes":"no","no");
+  num = KGlobal::locale()->readNumber( "12,146,131.12", &ok ); check("readNumber(12,146,131.12)",ok?"yes":"no","yes");
+
   kdDebug() << "setLanguage C\n";
   KGlobal::locale()->setLanguage(QString::fromLatin1("C"));
   kdDebug() << "C: " << i18n("yes") << " " << i18n("QAccel", "Space") << endl;
@@ -83,10 +115,9 @@ int main( int argc, char ** argv )
   kdDebug() << "setLanguage de\n";
   KGlobal::locale()->setLanguage(QString::fromLatin1("de"));
   kdDebug() << "de: " << i18n("yes") << " " << i18n("QAccel", "Space") << endl;
+
   Test m;
-
   a.setMainWidget( &m );
-
   m.show();
 
   return a.exec();
