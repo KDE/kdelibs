@@ -8,8 +8,6 @@ AC_INIT(acinclude.m4) dnl a source file from your sub dir
 dnl This is so we can use kde-common
 AC_CONFIG_AUX_DIR(admin)
 
-UIC_NOT_NEEDED=true
-
 KDE_SET_PREFIX
 
 AC_CANONICAL_SYSTEM
