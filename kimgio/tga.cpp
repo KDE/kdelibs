@@ -176,7 +176,7 @@ namespace {	// Private.
 	
 
 
-	static bool LoadTGA( QDataStream & s, const TgaHeader & tga, QImage img )
+	static bool LoadTGA( QDataStream & s, const TgaHeader & tga, QImage &img )
 	{
 		// Create image.
 		if( !img.create( tga.width, tga.height, 32 )) {
