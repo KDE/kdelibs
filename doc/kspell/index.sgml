@@ -1,0 +1,83 @@
+<!doctype linuxdoc system>
+
+<!-- The KSpell Handbook -->
+
+<article>
+
+<!-- Title information -->
+
+<title>The KSpell Handbook
+<author>David Sweet, <tt/mailto:dsweet@chaos.umd.edu/
+<date>Last updated 6 May 1999
+<abstract>
+KSpell is the spelling checker used in KMail, KEdit, KWrite, and KRN. It is a
+GUI frontend to International ISpell. (If you do not have Ispell installed you
+can obtain it in RPM format from the <htmlurl url="http://ftp.redhat.com"
+name="Red Hat FTP site">, or in source form from
+the <htmlurl url="http://fmg-www.cs.ucla.edu/geoff/ispell.html"
+name="International ISpell home page">.)
+
+<!-- Table of contents -->
+
+<toc>
+
+<!-- Begin the document -->
+
+<sect>Misspelled Word Dialog
+
+<sect1>General Use 
+<p>
+The top line in the dialog displays a misspelled word which was found in your
+document. KSpell attempts to find an appropriate replacement word. One or
+several may be found. The best guess is shown to the right of <em/Replacement:./
+To accept this replacement, click on <bf/Replace./ You may also choose a word
+from the list of <bf/Suggestions/ then click <bf/Replace/ to replace the
+misspelled word with the chosen word.
+
+To keep your original spelling, click on <bf/Ignore./
+
+To stop the spell checking -- keeping the changes you've already made -- click
+on <bf/Stop./
+
+To stop the spell checking and cancel the changes you've already made, click on
+<bf/Cancel./
+
+<sect1>Other Functions
+<p>
+Clicking on <bf/Replace All/ will initially perform the same function as
+clicking on <bf/Replace,/ but will automatically replace the misspelled word
+with the chosen replacement word if it appears again (at a later point) in your
+document.
+
+The <bf/Ignore All/ button ignores this and all future occurrences of the
+misspelled word.
+
+Clicking on <bf/Add/ will add the misspelled word to your personal dictionary
+(this is distinct from the original system dictionary, so the additions you make
+will not be seen by other users).
+
+<sect>Configuration Dialog 
+<p>
+You can choose the dictionary to use for spell checking from the list of
+installed dictionaries.
+
+If you choose <em/Latin1/ as your <em/Encoding,/ then accented (or otherwise
+decorated characters) are recognized by KSpell. If you choose
+<em>7-Bit/ASCII</em>, then it is assumed that decorated characters were entered
+into your document as two-character combinations. For example (in Spanish), in
+the word "espa'nol", the "'n" character combination is treated as an "n" with a
+tilde over it.
+
+It is recommend that you do not change the first two options unless you have
+read the Interational ISpell man page.
+
+<sect>Contact Information
+<p>
+For more information about KSpell, visit the <htmlurl
+url="http://www.chaos.umd.edu/~dsweet/KDE/KSpell" name="KSpell Home Page">. In
+particular, you will find information about programmng the KSpell C++ class.
+
+You mail email the author/maintainer with questions and/or comments at
+<htmlurl url="mailto:dsweet@chaos.umd.edu" name="dsweet@chaos.umd.edu">.
+
+</article>
