@@ -83,23 +83,31 @@ public:
        obeyed.
     */
     static void setActiveWindow( WId win);
-    
-    
+
+
     /**
-       Registers the window @p dockWin as docking window for window 
+       Registers the window @p dockWin as docking window for window
        @p forWin.
-       
+
        This is a xlowlevel API. See @ref KDockWindow in libkdeui for
        easier usage.
      */
     static void setDockWindow(WId dockWin, WId forWin  = 0 );
-    
+
     /**
        Returns whether the window @p dockWin is a docking window.  If
        @p forWin is specified, forWin returns the window dockWin is
        docking for.
      */
     static bool isDockWindow( WId dockWin, WId *forWin = 0 );
+    
+    
+    enum WindowState { WithdrawnState = 0, NormalState = 1, IconicState = 3 };
+    /**
+       Returns the state of the window @p win. Possible states are
+       NormalState, IconicState and WithdrawnState
+     */
+    static WindowState windowState( WId win );
 
 };
 

@@ -28,6 +28,10 @@
 #include <X11/Xatom.h>
 #include <X11/Xutil.h>
 
+#undef WithdrawnState
+#undef IconicState
+#undef NormalState
+
 #ifdef HAVE_CONFIG_H
 #include <config.h>
 #endif
@@ -47,6 +51,8 @@ static Atom net_number_of_desktops;
 static Atom net_current_desktop;
 static Atom net_active_window;
 static Atom net_kde_docking_window_for;
+
+extern Atom qt_wm_state;
 
 static void createAtoms() {
     if (!atoms){
@@ -181,6 +187,24 @@ bool KWin::isDockWindow( WId dockWin, WId *forWin )
 		*forWin = ( (WId*)data)[0];
 	    XFree( data );
 	}
+    }
+    return result;
+}
+
+KWin::WindowState KWin::windowState( WId win )
+{
+    Atom type;
+    int format;
+    unsigned long length, after;
+    unsigned char *data;
+    WindowState result = KWin::WithdrawnState;
+    int r = XGetWindowProperty( qt_xdisplay(), win, qt_wm_state, 0, 2,
+				FALSE, AnyPropertyType, &type, &format,
+				&length, &after, &data );
+    if ( r == Success && data && format == 32 ) {
+	Q_UINT32 *wstate = (Q_UINT32*)data;
+	result = (WindowState) *wstate;
+	XFree( (char *)data );
     }
     return result;
 }
