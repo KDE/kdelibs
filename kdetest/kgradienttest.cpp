@@ -11,7 +11,7 @@ void KGradientWidget::paintEvent(QPaintEvent *ev)
     int it, ft;
     QString say;
  
-    pix.resize(width()/2, height()/2);
+    pix.resize(width()/2, height()/3);
     QPainter p(this);
     p.setPen(Qt::white);
 
@@ -25,31 +25,53 @@ void KGradientWidget::paintEvent(QPaintEvent *ev)
     ft = time.elapsed();
     say.setNum( ft - it); say += " ms";
     p.drawPixmap(0, 0, pix);
-    p.drawText(30, 30, say);
+    p.drawText(5, 15, say);
 
     // horizontal
     it = time.elapsed();
     pix.gradientFill(Qt::black, Qt::red, KPixmap::Horizontal);
-    ft = time.elapsed();
-    say.setNum( ft - it); say += " ms";
-    p.drawPixmap(0, height()/2, pix);
-    p.drawText(30, 30+height()/2, say);
-
-    //diagonal
-    it = time.elapsed();
-    pix.gradientFill(Qt::black, Qt::red, KPixmap::Diagonal);
     ft = time.elapsed() ;
     say.setNum( ft - it); say += " ms";
     p.drawPixmap(width()/2, 0, pix);
-    p.drawText(30+width()/2, 30, say);
+    p.drawText(5+width()/2, 15, say);
 
-    //pyramidal
+
+    // diagonal
     it = time.elapsed();
-    KPixmapEffect::pyramidGradient(pix, Qt::black, Qt::red);
+    pix.gradientFill(Qt::black, Qt::red, KPixmap::Diagonal);
     ft = time.elapsed();
     say.setNum( ft - it); say += " ms";
-    p.drawPixmap(width()/2, height()/2, pix);
-    p.drawText(30+width()/2, 30+height()/2, say);
+    p.drawPixmap(0, height()/3, pix);
+    p.drawText(5, 15+height()/3, say);
+
+    debug ("get here?");
+
+
+    // crossdiagonal
+    it = time.elapsed();
+    pix.gradientFill(Qt::black, Qt::red, KPixmap::CrossDiagonal);
+    ft = time.elapsed();
+    say.setNum( ft - it); say += " ms";
+    p.drawPixmap(width()/2, height()/3, pix);
+    p.drawText(5+width()/2, 15+height()/3, say);
+
+    // pyramidal
+    it = time.elapsed();
+    KPixmapEffect::apply(pix, Qt::black, Qt::red, 
+			 KPixmapEffect::PyramidGradient);
+    ft = time.elapsed();
+    say.setNum( ft - it); say += " ms";
+    p.drawPixmap(0, 2*height()/3, pix);
+    p.drawText(5, 15+2*height()/3, say);
+
+    // rectangular
+    it = time.elapsed();
+    KPixmapEffect::apply(pix, Qt::black, Qt::red, 
+			 KPixmapEffect::RectangleGradient);
+    ft = time.elapsed();
+    say.setNum( ft - it); say += " ms";
+    p.drawPixmap(0+width()/2, 2*height()/3, pix);
+    p.drawText(5+width()/2, 15+2*height()/3, say);
 
 }
 
@@ -57,7 +79,7 @@ int main(int argc, char **argv)
 {
     KApplication *app = new KApplication(argc, argv);
     KGradientWidget w;
-    w.resize(600, 600);
+    w.resize(500, 750);
     app->setMainWidget(&w);
     w.show();
     return(app->exec());
