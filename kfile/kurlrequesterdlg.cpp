@@ -70,13 +70,20 @@ void KURLRequesterDlg::initDialog(const QString &text,const QString &urlName)
     urlRequester_->setMinimumWidth( urlRequester_->sizeHint().width() * 3 );
     topLayout->addWidget( urlRequester_ );
     urlRequester_->setFocus();
-
+    connect( urlRequester_->lineEdit(), SIGNAL(textChanged(const QString&)),
+             SLOT(slotTextChanged(const QString&)) );
+    enableButtonOK( !urlName.isEmpty() );
     /*
     KFile::Mode mode = static_cast<KFile::Mode>( KFile::File |
             KFile::ExistingOnly );
 	urlRequester_->fileDialog()->setMode( mode );
     */
     connect( this, SIGNAL( user1Clicked() ), SLOT( slotClear() ) );
+}
+
+void KURLRequesterDlg::slotTextChanged(const QString & text)
+{
+    enableButtonOK( !text.isEmpty() );
 }
 
 void KURLRequesterDlg::slotClear()
