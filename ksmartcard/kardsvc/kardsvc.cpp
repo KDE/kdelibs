@@ -35,11 +35,15 @@
 #include <kpcsc.h>
 #include <kcardreader.h>
 
+#include <qapplication.h>       // for beep();
+
 
 extern "C" {
    KDEDModule *create_kardsvc(const QCString &name) {
 	   return new KardSvc(name);
    }
+
+   const bool __kde_do_unload = false;
 }
 
 
@@ -114,12 +118,15 @@ QStringList newReaders = _pcsc->listReaders(&err);
 				_states[*s] = 1;
 				kdDebug() << "kardsvc: card inserted in slot " 
 					  << *s << endl;
+				QApplication::beep();
 			}
 		} else {
 			if (_states.contains(*s) && _states[*s] == 1) {
 				_states[*s] = 0;
 				kdDebug() << "kardsvc: card removed from slot " 
 					  << *s << endl;
+				QApplication::beep();
+				QApplication::beep();
 			}
 		}
 		
