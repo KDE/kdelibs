@@ -33,7 +33,7 @@ class KInetSocketAddress;
 /**
  * KDE SSL Peer Data
  *
- * This class contains data about hte peer of an SSL connection.
+ * This class contains data about the peer of an SSL connection.
  *
  * @author George Staikos <staikos@kde.org>
  * @see KSSL
