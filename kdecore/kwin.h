@@ -339,6 +339,12 @@ public:
      * Returns true if the WM announces which actions it allows for windows.
      */
     static bool allowedActionsSupported();
+    
+    /**
+     * Function that reads and returns the contents of the given text
+     * property (WM_NAME, WM_ICON_NAME,...).
+     */
+    static QString readNameProperty( WId window, unsigned long atom );
 
     /**
      * @deprecated

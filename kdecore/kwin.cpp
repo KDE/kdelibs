@@ -587,28 +587,21 @@ KWin::WindowInfo::WindowInfo( WId win, unsigned long properties, unsigned long p
     d->info = new NETWinInfo( qt_xdisplay(), win, qt_xrootwin(), props, 2 );
     d->win_ = win;
     if( properties & NET::WMName ) {
-        if( d->info->name()) {
+        if( d->info->name())
 	    d->name_ = QString::fromUtf8( d->info->name() );
-        } else {
-	    char* c = 0;
-	    if ( XFetchName( qt_xdisplay(), win, &c ) != 0 ) {
-	        d->name_ = QString::fromLocal8Bit( c );
-	        XFree( c );
-	    }
-        }
+        else
+            d->name_ = readNameProperty( win, XA_WM_NAME );
+    }
+    if( properties & NET::WMIconName ) {
+        if( d->info->iconName())
+            d->iconic_name_ = QString::fromUtf8( d->info->iconName());
+        else
+            d->iconic_name_ = readNameProperty( win, XA_WM_ICON_NAME );
     }
     if( properties & NET::WMGeometry ) {
         NETRect frame, geom;
         d->info->kdeGeometry( frame, geom );
         d->geometry_.setRect( geom.pos.x, geom.pos.y, geom.size.width, geom.size.height );
-    }
-    if( properties & NET::WMIconName ) {
-	char* c = 0;
-	if ( XGetIconName( qt_xdisplay(), win, &c ) != 0 ) {
-    	    d->iconic_name_ = QString::fromLocal8Bit( c );
-	    XFree( c );
-        } else
-            d->iconic_name_ = "";
     }
     d->valid = !handler.error( false ); // no sync - NETWinInfo did roundtrips
 }
@@ -863,6 +856,26 @@ bool KWin::allowedActionsSupported()
         wm_supports_allowed_actions = info.isSupported( NET::WM2AllowedActions ) ? yes : no;
     }
     return wm_supports_allowed_actions == yes;
+}
+
+QString KWin::readNameProperty( WId win, Atom atom )
+{
+    XTextProperty tp;
+    char **text = NULL;
+    int count;
+    QString result;
+    if ( XGetTextProperty( qt_xdisplay(), win, &tp, atom ) != 0 && tp.value != NULL ) {
+        if ( tp.encoding == XA_STRING )
+            result = QString::fromLocal8Bit( (const char*) tp.value );
+        else if ( XmbTextPropertyToTextList( qt_xdisplay(), &tp, &text, &count) == Success &&
+                  text != NULL && count > 0 ) {
+            result = QString::fromLocal8Bit( text[0] );
+        }
+        if( text != NULL )
+            XFreeStringList( text );
+        XFree( tp.value );
+    }
+    return result;
 }
 
 #endif
