@@ -54,15 +54,14 @@ public:
 
     void setShade(bool shd) { shade = shd; }
     void setRulerWidth(short sz) { size = sz; }
-    
+
     virtual short intrinsicWidth() const;
-    virtual int intrinsicHeight() const;    
+    virtual int intrinsicHeight() const;
 
 protected:
-
-    bool shade;
-    short size;
     int length;
+    short size;
+    bool shade;
 };
 
 

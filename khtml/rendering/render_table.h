@@ -53,23 +53,23 @@ class RenderTable : public RenderBox
 {
 public:
     enum Rules {
-	None    = 0x00,
-	RGroups = 0x01,
-	CGroups = 0x02,
-	Groups  = 0x03,
-	Rows    = 0x05,
-	Cols    = 0x0a,
-	All     = 0x0f
+        None    = 0x00,
+        RGroups = 0x01,
+        CGroups = 0x02,
+        Groups  = 0x03,
+        Rows    = 0x05,
+        Cols    = 0x0a,
+        All     = 0x0f
     };
     enum Frame {
-	Void   = 0x00,
-	Above  = 0x01,
-	Below  = 0x02,
-	Lhs    = 0x04,
-	Rhs    = 0x08,
-	Hsides = 0x03,
-	Vsides = 0x0c,
-	Box    = 0x0f
+        Void   = 0x00,
+        Above  = 0x01,
+        Below  = 0x02,
+        Lhs    = 0x04,
+        Rhs    = 0x08,
+        Hsides = 0x03,
+        Vsides = 0x0c,
+        Box    = 0x0f
     };
 
     RenderTable();
@@ -85,10 +85,10 @@ public:
     virtual bool isTable() const { return true; }
 
     int getColumnPos(int col)
-	{ return columnPos[col]; }
+        { return columnPos[col]; }
     int getColumnWidth(int col)
-	{ if(!actColWidth.size() < col) return 0; return actColWidth[col]; }
-	
+        { if(!actColWidth.size() < col) return 0; return actColWidth[col]; }
+
     int cellSpacing() { return spacing; }
 
     Rules getRules() { return rules; }
@@ -103,15 +103,15 @@ public:
     void  addColInfo(RenderTableCol *colel);
 
     void addColInfo(int _startCol, int _colSpan,
-		    int _minSize, int _maxSize, khtml::Length _width,
-		    RenderTableCell* _cell);
+                    int _minSize, int _maxSize, khtml::Length _width,
+                    RenderTableCell* _cell);
 
     // overrides
     virtual void addChild(RenderObject *child, RenderObject *beforeChild = 0);
     virtual void print( QPainter *, int x, int y, int w, int h,
-			int tx, int ty);
+                        int tx, int ty);
     virtual void printBorders( QPainter *, int x, int y, int w, int h,
-			int tx, int ty);
+                        int tx, int ty);
     virtual void layout();
     virtual void calcMinMaxWidth();
     virtual void close();
@@ -149,26 +149,26 @@ public:
      */
     struct ColInfo
     {
-    	ColInfo()
-	{
-	    min=0;
-	    max=0;
-    	    type=khtml::Undefined;
-	    value=0;
-	    minCell=0;
-	    maxCell=0;
-	}
-	void update();
-	
-    	int     span;
-	int     start;	
-	int     min;
-	int     max;
-	RenderTableCell* minCell;
-	RenderTableCell* maxCell;
-	khtml::LengthType 	type;
-	int 	value;
-	int 	percentage;
+        ColInfo()
+        {
+            min=0;
+            max=0;
+            type=khtml::Undefined;
+            value=0;
+            minCell=0;
+            maxCell=0;
+        }
+        void update();
+
+        int     span;
+        int     start;
+        int     min;
+        int     max;
+        RenderTableCell* minCell;
+        RenderTableCell* maxCell;
+        khtml::LengthType       type;
+        int     value;
+        int     percentage;
     };
 
 protected:
@@ -190,12 +190,12 @@ protected:
     class ColInfoLine : public QVector<ColInfo>
     {
     public:
-	ColInfoLine() : QVector<ColInfo>()
-	{ setAutoDelete(true); }
-	ColInfoLine(int i) : QVector<ColInfo>(i)
-	{ setAutoDelete(true); }
-	ColInfoLine(const QVector<ColInfo> &v) : QVector<ColInfo>(v)
-	{ setAutoDelete(true); }
+        ColInfoLine() : QVector<ColInfo>()
+        { setAutoDelete(true); }
+        ColInfoLine(int i) : QVector<ColInfo>(i)
+        { setAutoDelete(true); }
+        ColInfoLine(const QVector<ColInfo> &v) : QVector<ColInfo>(v)
+        { setAutoDelete(true); }
     };
 
     QVector<ColInfoLine> colInfos;
@@ -206,7 +206,7 @@ protected:
     void spreadSpanMinMax(int col, int span, int min, int max, khtml::LengthType type);
     int distributeWidth(int distrib, khtml::LengthType type, int typeCols );
     int distributeMinWidth(int distrib, khtml::LengthType distType,
-    	    khtml::LengthType toType, int start, int span, bool minlimit );
+            khtml::LengthType toType, int start, int span, bool minlimit );
     int distributeRest(int distrib, khtml::LengthType type, int divider );
 
     int maxColSpan;
@@ -237,20 +237,16 @@ protected:
     RenderTableSection *foot;
     RenderTableSection *firstBody;
 
-    int spacing;
-
     Frame frame;
     Rules rules;
-
-    bool incremental;
-    bool collapseBorders;
-
-    short _lastParentWidth;
+    QTime updateTimer;
 
     RenderTableCol *_oldColElem;
     int _currentCol; // keeps track of current col for col/colgroup stuff
-
-    QTime updateTimer;
+    int spacing;
+    short _lastParentWidth;
+    bool incremental;
+    bool collapseBorders;
 };
 
 // -------------------------------------------------------------------------
@@ -369,7 +365,7 @@ public:
     RenderTable *table() const { return m_table; }
 
     virtual void print( QPainter* p, int x, int y,
-			int w, int h, int tx, int ty);
+                        int w, int h, int tx, int ty);
 
     virtual void updateSize();
     virtual void close();
@@ -380,23 +376,23 @@ public:
     virtual void repaintRectangle(int x, int y, int w, int h);
     virtual void repaintObject(RenderObject *o, int x, int y);
     virtual void absolutePosition(int &xPos, int &yPos);
-    	
+
 
 protected:
     RenderTable *m_table;
 
     virtual void printBoxDecorations(QPainter *p,int _x, int _y,
-				     int _w, int _h, int _tx, int _ty);
+                                     int _w, int _h, int _tx, int _ty);
 
     int _row;
     int _col;
     int rSpan;
     int cSpan;
-    bool nWrap;
     int _id;
     int rowHeight;
     int _topExtra;
     int _bottomExtra;
+    bool nWrap;
 
     virtual int borderTopExtra() { return _topExtra; }
     virtual int borderBottomExtra() { return _bottomExtra; }
@@ -437,15 +433,14 @@ public:
 
 protected:
     RenderTable *table;
+    int _span;
+    int _currentCol;
+    int _startCol;
 
     // could be ID_COL or ID_COLGROUP ... The DOM is not quite clear on
     // this, but since both elements work quite similar, we use one
     // DOMElement for them...
     ushort _id;
-    int _span;
-
-    int _currentCol;
-    int _startCol;
 };
 
 // -------------------------------------------------------------------------

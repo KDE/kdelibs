@@ -104,14 +104,14 @@ public:
     bool isAnonymousBox() const { return m_isAnonymous; }
     void setIsAnonymousBox(bool b) { m_isAnonymous = b; }
 
-    bool isFloating() const { return m_floating; }
+    inline bool isFloating() const { return m_floating; }
     bool isPositioned() const { return m_positioned; } // absolute or fixed positioning
     bool isRelPositioned() const { return m_relPositioned; } // relative positioning
     bool layouted() const   { return m_layouted; }
     bool parsing() const    { return m_parsing;     }
     bool minMaxKnown() const{ return m_minMaxKnown; }
     bool containsPositioned() const { return m_containsPositioned; }
-    	// absolute relative or fixed positioning
+        // absolute relative or fixed positioning
 
     void setContainsPositioned(bool p);
 
@@ -127,7 +127,7 @@ public:
      * rectangle given by x,y,w,h. (tx|ty) is parents position.
      */
     virtual void print( QPainter *p, int x, int y,
-			int w, int h, int tx, int ty)
+                        int w, int h, int tx, int ty)
     { printObject(p, x, y, w, h, tx, ty); }
 
     /**
@@ -135,7 +135,7 @@ public:
      * prints only this object without calling print for the children.
      */
     virtual void printObject( QPainter */*p*/, int /*x*/, int /*y*/,
-			int /*w*/, int /*h*/, int /*tx*/, int /*ty*/) {}
+                        int /*w*/, int /*h*/, int /*tx*/, int /*ty*/) {}
 
 
     /**
@@ -295,10 +295,10 @@ public:
     virtual RenderStyle* style() const { return m_style; }
 
     enum BorderSide {
-	BSTop, BSBottom, BSLeft, BSRight
+        BSTop, BSBottom, BSLeft, BSRight
     };
     void drawBorder(QPainter *p, int x1, int y1, int x2, int y2, int width, BorderSide s,
-		    const QColor &c, EBorderStyle style);
+                    const QColor &c, EBorderStyle style);
 
     virtual void setTable(RenderTable*) {};
 
@@ -321,11 +321,11 @@ public:
     virtual void position(int, int, int, int, int, bool) {}
 
     enum SelectionState {
-    	SelectionNone,
-    	SelectionStart,
-	SelectionInside,
-    	SelectionEnd,
-	SelectionBoth
+        SelectionNone,
+        SelectionStart,
+        SelectionInside,
+        SelectionEnd,
+        SelectionBoth
     };
 
     virtual SelectionState selectionState() const { return SelectionNone;}
@@ -347,6 +347,15 @@ protected:
 
     virtual QRect viewRect() const;
 
+    RenderStyle *m_style;
+    RenderObject *m_parent;
+    RenderObject *m_previous;
+    RenderObject *m_next;
+    RenderObject *m_first;
+    RenderObject *m_last;
+
+    CachedImage *m_bgImage;
+
     bool m_layouted       : 1;
     bool m_parsing        : 1;
     bool m_minMaxKnown    : 1;
@@ -357,21 +366,12 @@ protected:
     bool m_printSpecial   : 1; // if the box has something special to print (background, border, etc)
     bool m_isAnonymous    : 1;
     bool m_visible : 1;
-    
-    RenderStyle *m_style;
-    RenderObject *m_parent;
-    RenderObject *m_previous;
-    RenderObject *m_next;
-    RenderObject *m_first;
-    RenderObject *m_last;
-
-    CachedImage *m_bgImage;
 };
 
 
     enum VerticalPositionHint {
-	PositionTop = -1,
-	PositionBottom = -2
+        PositionTop = -1,
+        PositionBottom = -2
     };
 
 

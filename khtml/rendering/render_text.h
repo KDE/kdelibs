@@ -106,13 +106,14 @@ public:
 
     DOM::DOMString data() const { return str; }
     DOM::DOMStringImpl *string() const { return str; }
-     
+
     virtual void layout() {assert(false);}
 
     bool checkPoint(int _x, int _y, int _tx, int _ty, int &off);
 
     virtual unsigned int length() const { return str->l; }
-    virtual QChar *text() const { return str->s; }
+    // no need for this to be virtual, however length needs to be!
+    inline QChar *text() const { return str->s; }
     virtual void position(int x, int y, int from, int len, int width, bool reverse);
     virtual unsigned int width( int from, int len) const;
 
@@ -135,9 +136,9 @@ public:
 
     virtual const QFont &font();
     const QFontMetrics *metrics() const { return fm; }
-    
+
     bool isFixedWidthFont() const;
-    
+
     void setText(DOM::DOMStringImpl *text);
 
     TextSlave *first() { return m_first; }
@@ -153,16 +154,17 @@ public:
 
     virtual void repaint();
 protected:
-    short m_minWidth;
-    short m_maxWidth;
-    int m_contentHeight;
-
-    SelectionState m_selectionState : 3 ;
 
     QFontMetrics *fm;
     DOM::DOMStringImpl *str;
     TextSlave *m_first;
     TextSlave *m_last;
+
+    int m_contentHeight;
+    short m_minWidth;
+    short m_maxWidth;
+
+    SelectionState m_selectionState : 3 ;
 };
 
 

@@ -36,34 +36,34 @@ namespace khtml
     class RenderListMarker : public RenderBox
     {
     public:
-	RenderListMarker();
-	~RenderListMarker();
+        RenderListMarker();
+        ~RenderListMarker();
 
-	virtual void setStyle(RenderStyle *style);
-	
-	virtual const char *renderName() const { return "RenderListMarker"; }
-	virtual bool isInline() const { return true; }
-	// so the marker gets to layout itself. Only needed for
-	// list-style-position: inside
-	virtual bool isReplaced() const { return true; }
+        virtual void setStyle(RenderStyle *style);
 
-	virtual void print(QPainter *p, int x, int y, int w, int h,
-			   int xoff, int yoff);
-	virtual void printObject(QPainter *p, int x, int y, int w, int h,
-				 int xoff, int yoff);
-	virtual void layout( );
-	virtual void calcMinMaxWidth();
+        virtual const char *renderName() const { return "RenderListMarker"; }
+        virtual bool isInline() const { return true; }
+        // so the marker gets to layout itself. Only needed for
+        // list-style-position: inside
+        virtual bool isReplaced() const { return true; }
 
-	virtual short baselineOffset() const;
-	virtual short verticalPositionHint() const;
+        virtual void print(QPainter *p, int x, int y, int w, int h,
+                           int xoff, int yoff);
+        virtual void printObject(QPainter *p, int x, int y, int w, int h,
+                                 int xoff, int yoff);
+        virtual void layout( );
+        virtual void calcMinMaxWidth();
 
-	virtual void setPixmap( const QPixmap &, const QRect&, CachedImage *, bool *manualUpdate=0);	
-	
-	virtual void calcWidth();
+        virtual short baselineOffset() const;
+        virtual short verticalPositionHint() const;
 
-	long int val;
-	QString item;
-	CachedImage *listImage;
+        virtual void setPixmap( const QPixmap &, const QRect&, CachedImage *, bool *manualUpdate=0);
+
+        virtual void calcWidth();
+
+        QString item;
+        long int val;
+        CachedImage *listImage;
     };
 
 
@@ -86,9 +86,9 @@ public:
     bool checkChildren() const;
 
     virtual void print(QPainter *p, int x, int y, int w, int h,
-		       int xoff, int yoff);
+                       int xoff, int yoff);
     virtual void printObject(QPainter *p, int x, int y, int w, int h,
-		       int xoff, int yoff);
+                       int xoff, int yoff);
 
     virtual void layout( );
 
