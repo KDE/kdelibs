@@ -89,46 +89,48 @@ Completion StringObjectFunc::execute(const List &args)
 }
 
 // ECMA 15.5.4
-StringPrototype::StringPrototype(const Object& proto)
+StringPrototype::StringPrototype(const Object& proto, const Object &funcProto)
   : ObjectImp(StringClass, String(""), proto)
 {
   // The constructor will be added later in StringObject's constructor
+//  setPrototype(Global::current().get("[[Function.prototype]]"));
 
-  put("toString",    new StringProtoFunc(StringProtoFunc::ToString,    0), DontEnum);
-  put("valueOf",     new StringProtoFunc(StringProtoFunc::ValueOf,     0), DontEnum);
-  put("charAt",      new StringProtoFunc(StringProtoFunc::CharAt,      1), DontEnum);
-  put("charCodeAt",  new StringProtoFunc(StringProtoFunc::CharCodeAt,  1), DontEnum);
-  put("indexOf",     new StringProtoFunc(StringProtoFunc::IndexOf,     2), DontEnum);
-  put("lastIndexOf", new StringProtoFunc(StringProtoFunc::LastIndexOf, 2), DontEnum);
-  put("match",       new StringProtoFunc(StringProtoFunc::Match,       1), DontEnum);
-  put("replace",     new StringProtoFunc(StringProtoFunc::Replace,     2), DontEnum);
-  put("search",      new StringProtoFunc(StringProtoFunc::Search,      1), DontEnum);
-  put("slice",       new StringProtoFunc(StringProtoFunc::Slice,       0), DontEnum);
-  put("split",       new StringProtoFunc(StringProtoFunc::Split,       1), DontEnum);
-  put("substr",      new StringProtoFunc(StringProtoFunc::Substr,      2), DontEnum);
-  put("substring",   new StringProtoFunc(StringProtoFunc::Substring,   2), DontEnum);
-  put("toLowerCase", new StringProtoFunc(StringProtoFunc::ToLowerCase, 0), DontEnum);
-  put("toUpperCase", new StringProtoFunc(StringProtoFunc::ToUpperCase, 0), DontEnum);
+  put("toString",    new StringProtoFunc(funcProto,StringProtoFunc::ToString,    0), DontEnum);
+  put("valueOf",     new StringProtoFunc(funcProto,StringProtoFunc::ValueOf,     0), DontEnum);
+  put("charAt",      new StringProtoFunc(funcProto,StringProtoFunc::CharAt,      1), DontEnum);
+  put("charCodeAt",  new StringProtoFunc(funcProto,StringProtoFunc::CharCodeAt,  1), DontEnum);
+  put("indexOf",     new StringProtoFunc(funcProto,StringProtoFunc::IndexOf,     2), DontEnum);
+  put("lastIndexOf", new StringProtoFunc(funcProto,StringProtoFunc::LastIndexOf, 2), DontEnum);
+  put("match",       new StringProtoFunc(funcProto,StringProtoFunc::Match,       1), DontEnum);
+  put("replace",     new StringProtoFunc(funcProto,StringProtoFunc::Replace,     2), DontEnum);
+  put("search",      new StringProtoFunc(funcProto,StringProtoFunc::Search,      1), DontEnum);
+  put("slice",       new StringProtoFunc(funcProto,StringProtoFunc::Slice,       0), DontEnum);
+  put("split",       new StringProtoFunc(funcProto,StringProtoFunc::Split,       1), DontEnum);
+  put("substr",      new StringProtoFunc(funcProto,StringProtoFunc::Substr,      2), DontEnum);
+  put("substring",   new StringProtoFunc(funcProto,StringProtoFunc::Substring,   2), DontEnum);
+  put("toLowerCase", new StringProtoFunc(funcProto,StringProtoFunc::ToLowerCase, 0), DontEnum);
+  put("toUpperCase", new StringProtoFunc(funcProto,StringProtoFunc::ToUpperCase, 0), DontEnum);
 #ifndef KJS_PURE_ECMA
-  put("big",         new StringProtoFunc(StringProtoFunc::Big,         0), DontEnum);
-  put("small",       new StringProtoFunc(StringProtoFunc::Small,       0), DontEnum);
-  put("blink",       new StringProtoFunc(StringProtoFunc::Blink,       0), DontEnum);
-  put("bold",        new StringProtoFunc(StringProtoFunc::Bold,        0), DontEnum);
-  put("fixed",       new StringProtoFunc(StringProtoFunc::Fixed,       0), DontEnum);
-  put("italics",     new StringProtoFunc(StringProtoFunc::Italics,     0), DontEnum);
-  put("strike",      new StringProtoFunc(StringProtoFunc::Strike,      0), DontEnum);
-  put("sub",         new StringProtoFunc(StringProtoFunc::Sub,         0), DontEnum);
-  put("sup",         new StringProtoFunc(StringProtoFunc::Sup,         0), DontEnum);
-  put("fontcolor",   new StringProtoFunc(StringProtoFunc::Fontcolor,   1), DontEnum);
-  put("fontsize",    new StringProtoFunc(StringProtoFunc::Fontsize,    1), DontEnum);
-  put("anchor",      new StringProtoFunc(StringProtoFunc::Anchor,      1), DontEnum);
-  put("link",        new StringProtoFunc(StringProtoFunc::Link,        1), DontEnum);
+  put("big",         new StringProtoFunc(funcProto,StringProtoFunc::Big,         0), DontEnum);
+  put("small",       new StringProtoFunc(funcProto,StringProtoFunc::Small,       0), DontEnum);
+  put("blink",       new StringProtoFunc(funcProto,StringProtoFunc::Blink,       0), DontEnum);
+  put("bold",        new StringProtoFunc(funcProto,StringProtoFunc::Bold,        0), DontEnum);
+  put("fixed",       new StringProtoFunc(funcProto,StringProtoFunc::Fixed,       0), DontEnum);
+  put("italics",     new StringProtoFunc(funcProto,StringProtoFunc::Italics,     0), DontEnum);
+  put("strike",      new StringProtoFunc(funcProto,StringProtoFunc::Strike,      0), DontEnum);
+  put("sub",         new StringProtoFunc(funcProto,StringProtoFunc::Sub,         0), DontEnum);
+  put("sup",         new StringProtoFunc(funcProto,StringProtoFunc::Sup,         0), DontEnum);
+  put("fontcolor",   new StringProtoFunc(funcProto,StringProtoFunc::Fontcolor,   1), DontEnum);
+  put("fontsize",    new StringProtoFunc(funcProto,StringProtoFunc::Fontsize,    1), DontEnum);
+  put("anchor",      new StringProtoFunc(funcProto,StringProtoFunc::Anchor,      1), DontEnum);
+  put("link",        new StringProtoFunc(funcProto,StringProtoFunc::Link,        1), DontEnum);
 #endif
 }
 
-StringProtoFunc::StringProtoFunc(int i, int len)
+StringProtoFunc::StringProtoFunc(const Object &funcProto, int i, int len)
   : id(i)
 {
+  setPrototype(funcProto);
   put("length",Number(len),DontDelete|ReadOnly|DontEnum);
 }
 
@@ -145,6 +147,8 @@ Completion StringProtoFunc::execute(const List &args)
       result = Error::create(TypeError);
       return Completion(ReturnValue, result);
     }
+
+    return Completion(ReturnValue,thisObj.internalValue().toString());
   }
 
   String s2;
@@ -152,8 +156,12 @@ Completion StringProtoFunc::execute(const List &args)
   UString u, u2, u3;
   int pos, p0, i;
   double d, d2;
-  KJSO v = thisObj.internalValue();
-  String s = v.toString();
+  List emptyList;
+
+
+  KJSO tv = thisValue();
+  String s = tv.toString();
+
   int len = s.value().size();
   KJSO a0 = args[0];
   KJSO a1 = args[1];
@@ -161,7 +169,7 @@ Completion StringProtoFunc::execute(const List &args)
   switch (id) {
   case ToString:
   case ValueOf:
-    result = v.toString();
+    // handled above
     break;
   case CharAt:
     n = a0.toInteger();
@@ -330,17 +338,29 @@ Completion StringProtoFunc::execute(const List &args)
       d2 = min(max(m.value(), 0), len - d);
     result = String(s.value().substr((int)d, (int)d2));
     break;
-  case Substring:
+  case Substring: {
     n = a0.toInteger();
     m = a1.toInteger();
-    d = min(max(n.value(), 0), len);
+    double nvalue = n.value();
+    double mvalue = m.value();
+    if (KJS::isNaN(nvalue))
+      nvalue = 0;
+    if (KJS::isNaN(mvalue))
+      mvalue = 0;
+    if (nvalue > mvalue) {
+      double temp = mvalue;
+      mvalue = nvalue;
+      nvalue = temp;
+    }
+    d = min(max(nvalue, 0), len);
     if (a1.isA(UndefinedType))
       d2 = len - d;
     else {
-      d2 = min(max(m.value(), 0), len);
+      d2 = min(max(mvalue, 0), len);
       d2 = max(d2-d, 0);
     }
     result = String(s.value().substr((int)d, (int)d2));
+    }
     break;
   case ToLowerCase:
     u = UString(s.value());

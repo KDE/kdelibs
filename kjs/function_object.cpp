@@ -121,6 +121,12 @@ Object FunctionObject::construct(const List &args)
   return ret;
 }
 
+// a hack to avoid returning "(Internal function)"
+String FunctionObject::toString() const
+{
+  return FunctionImp::toString();
+}
+
 FunctionPrototype::FunctionPrototype(const Object &p)
     : FunctionImp()
 {

@@ -37,6 +37,7 @@ namespace KJS {
     FunctionObject(const Object &funcProto);
     Completion execute(const List &);
     Object construct(const List &);
+    virtual String toString() const;
   };
 
 }; // namespace

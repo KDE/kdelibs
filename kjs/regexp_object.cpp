@@ -72,18 +72,19 @@ Object RegExpObject::construct(const List &args)
 }
 
 // ECMA 15.9.4
-RegExpPrototype::RegExpPrototype(const Object& proto)
+RegExpPrototype::RegExpPrototype(const Object& proto, const Object &funcProto)
   : ObjectImp(RegExpClass, String(""), proto)
 {
   // The constructor will be added later in RegExpObject's constructor
 
-  put("exec",     new RegExpProtoFunc(RegExpProtoFunc::Exec,     0), DontEnum);
-  put("test",     new RegExpProtoFunc(RegExpProtoFunc::Test,     0), DontEnum);
-  put("toString", new RegExpProtoFunc(RegExpProtoFunc::ToString, 0), DontEnum);
+  put("exec",     new RegExpProtoFunc(funcProto,RegExpProtoFunc::Exec,     0), DontEnum);
+  put("test",     new RegExpProtoFunc(funcProto,RegExpProtoFunc::Test,     0), DontEnum);
+  put("toString", new RegExpProtoFunc(funcProto,RegExpProtoFunc::ToString, 0), DontEnum);
 }
 
-RegExpProtoFunc::RegExpProtoFunc(int i, int len) : id(i)
+RegExpProtoFunc::RegExpProtoFunc(const Object &funcProto, int i, int len) : id(i)
 {
+  setPrototype(funcProto);
   put("length",Number(len),DontDelete|ReadOnly|DontEnum);
 }
 

@@ -63,7 +63,7 @@ Object NumberObject::construct(const List &args)
 
 class NumberProtoFunc : public InternalFunctionImp {
 public:
-  NumberProtoFunc(int i) : id (i) { }
+  NumberProtoFunc(const Object &funcProto, int i) : id (i) { setPrototype(funcProto); }
   Completion execute(const List &);
   enum { ToString, ToLocaleString, ValueOf };
 private:
@@ -99,12 +99,12 @@ Completion NumberProtoFunc::execute(const List &)
 }
 
 // ECMA 15.7.4
-NumberPrototype::NumberPrototype(const Object& proto)
+NumberPrototype::NumberPrototype(const Object& proto, const Object &funcProto)
   : ObjectImp(NumberClass, Number(0), proto)
 {
   // The constructor will be added later in NumberObject's constructor
 
-  put("toString",       new NumberProtoFunc(NumberProtoFunc::ToString),       DontEnum);
-  put("toLocaleString", new NumberProtoFunc(NumberProtoFunc::ToLocaleString), DontEnum);
-  put("valueOf",        new NumberProtoFunc(NumberProtoFunc::ValueOf),        DontEnum);
+  put("toString",       new NumberProtoFunc(funcProto,NumberProtoFunc::ToString),       DontEnum);
+  put("toLocaleString", new NumberProtoFunc(funcProto,NumberProtoFunc::ToLocaleString), DontEnum);
+  put("valueOf",        new NumberProtoFunc(funcProto,NumberProtoFunc::ValueOf),        DontEnum);
 }

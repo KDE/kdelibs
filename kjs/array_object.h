@@ -34,12 +34,12 @@ namespace KJS {
 
   class ArrayPrototype : public ObjectImp {
   public:
-    ArrayPrototype(const Object& proto);
+    ArrayPrototype(const Object& proto, const Object &funcProto);
   };
 
   class ArrayProtoFunc : public InternalFunctionImp {
   public:
-    ArrayProtoFunc(int i, int len);
+    ArrayProtoFunc(const Object &funcProto, int i, int len);
     Completion execute(const List &);
     enum { ToString, ToLocaleString, Concat, Join, Pop, Push,
 	   Reverse, Shift, Slice, Sort, Splice, UnShift };

@@ -40,12 +40,12 @@ namespace KJS {
 
   class ErrorPrototype : public ObjectImp {
   public:
-    ErrorPrototype(const Object& proto);
+    ErrorPrototype(const Object& proto, const Object &funcProto);
   };
 
   class ErrorProtoFunc : public InternalFunctionImp {
   public:
-    ErrorProtoFunc();
+    ErrorProtoFunc(const Object &funcProto);
     Completion execute(const List &);
   };
 

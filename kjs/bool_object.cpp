@@ -58,18 +58,19 @@ Object BooleanObject::construct(const List &args)
 }
 
 // ECMA 15.6.4
-BooleanPrototype::BooleanPrototype(const Object& proto)
+BooleanPrototype::BooleanPrototype(const Object& proto, const Object &funcProto)
   : ObjectImp(BooleanClass, Boolean(false), proto)
 {
   // The constructor will be added later in BooleanObject's constructor
 
-  put("toString", new BooleanProtoFunc(ToString,0), DontEnum);
-  put("valueOf",  new BooleanProtoFunc(ValueOf,0),  DontEnum);
+  put("toString", new BooleanProtoFunc(funcProto,ToString,0), DontEnum);
+  put("valueOf",  new BooleanProtoFunc(funcProto,ValueOf,0),  DontEnum);
 }
 
-BooleanProtoFunc::BooleanProtoFunc(int i, int len)
+BooleanProtoFunc::BooleanProtoFunc(const Object &funcProto, int i, int len)
   : id(i)
 {
+  setPrototype(funcProto);
   put("length",Number(len),DontDelete|ReadOnly|DontEnum);
 }
 

@@ -34,13 +34,13 @@ namespace KJS {
 
   class BooleanPrototype : public ObjectImp {
   public:
-    BooleanPrototype(const Object& proto);
+    BooleanPrototype(const Object& proto, const Object &funcProto);
     enum { ToString, ValueOf };
   };
 
   class BooleanProtoFunc : public InternalFunctionImp {
   public:
-    BooleanProtoFunc(int i, int len);
+    BooleanProtoFunc(const Object &funcProto, int i, int len);
     Completion execute(const List &);
   private:
     int id;

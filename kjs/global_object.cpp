@@ -151,13 +151,16 @@ GlobalImp::GlobalImp()
   // constructor properties. prototypes as Global's member variables first.
   Object objProto = new ObjectPrototype();
   Object funcProto = new FunctionPrototype(objProto);
-  Object arrayProto(new ArrayPrototype(objProto));
-  Object stringProto(new StringPrototype(objProto));
-  Object booleanProto(new BooleanPrototype(objProto));
-  Object numberProto(new NumberPrototype(objProto));
-  Object dateProto(new DatePrototype(objProto));
-  Object regexpProto(new RegExpPrototype(objProto));
-  Object errorProto(new ErrorPrototype(objProto));
+  Object arrayProto(new ArrayPrototype(objProto,funcProto));
+  Object stringProto(new StringPrototype(objProto,funcProto));
+  Object booleanProto(new BooleanPrototype(objProto,funcProto));
+  Object numberProto(new NumberPrototype(objProto,funcProto));
+  Object dateProto(new DatePrototype(objProto,funcProto));
+  Object regexpProto(new RegExpPrototype(objProto,funcProto));
+  Object errorProto(new ErrorPrototype(objProto,funcProto));
+
+  objProto.get("toString").setPrototype(funcProto);
+  objProto.get("valueOf").setPrototype(funcProto);
 
   put("[[Object.prototype]]", objProto);
   put("[[Function.prototype]]", funcProto);

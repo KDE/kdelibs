@@ -40,12 +40,12 @@ namespace KJS {
 
   class StringPrototype : public ObjectImp {
   public:
-    StringPrototype(const Object& proto);
+    StringPrototype(const Object& proto, const Object &funcProto);
   };
 
   class StringProtoFunc : public InternalFunctionImp {
   public:
-    StringProtoFunc(int i, int len);
+    StringProtoFunc(const Object &funcProto, int i, int len);
     Completion execute(const List &);
 
     enum { ToString, ValueOf, CharAt, CharCodeAt, IndexOf, LastIndexOf,

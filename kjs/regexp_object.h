@@ -34,12 +34,12 @@ namespace KJS {
 
   class RegExpPrototype : public ObjectImp {
   public:
-    RegExpPrototype(const Object& proto);
+    RegExpPrototype(const Object& proto, const Object &funcProto);
   };
 
   class RegExpProtoFunc : public InternalFunctionImp {
   public:
-    RegExpProtoFunc(int i, int len);
+    RegExpProtoFunc(const Object &funcProto, int i, int len);
     Completion execute(const List &);
     enum { Exec, Test, ToString };
   private:

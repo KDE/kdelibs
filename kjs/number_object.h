@@ -34,7 +34,7 @@ namespace KJS {
 
   class NumberPrototype : public ObjectImp {
   public:
-    NumberPrototype(const Object& proto);
+    NumberPrototype(const Object& proto, const Object &funcProto);
   };
 
 }; // namespace

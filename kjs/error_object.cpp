@@ -92,7 +92,7 @@ Object ErrorObject::create(ErrorType e, const char *m, int l)
 }
 
 // ECMA 15.9.4
-ErrorPrototype::ErrorPrototype(const Object& proto)
+ErrorPrototype::ErrorPrototype(const Object& proto, const Object &funcProto)
   : ObjectImp(ErrorClass, Undefined(), proto)
 {
   // The constructor will be added later in ErrorObject's constructor
@@ -100,11 +100,12 @@ ErrorPrototype::ErrorPrototype(const Object& proto)
   // ### are these values & attributes correct?
   put("name",     String("Error"),          DontEnum);
   put("message",  String("Error message."), DontEnum);
-  put("toString", new ErrorProtoFunc(),    DontEnum);
+  put("toString", new ErrorProtoFunc(funcProto),    DontEnum);
 }
 
-ErrorProtoFunc::ErrorProtoFunc()
+ErrorProtoFunc::ErrorProtoFunc(const Object &funcProto)
 {
+  setPrototype(funcProto);
   put("length",Number(0),DontDelete|ReadOnly|DontEnum);
 }
 

@@ -66,29 +66,30 @@ Object ArrayObject::construct(const List &args)
 }
 
 // ECMA 15.6.4
-ArrayPrototype::ArrayPrototype(const Object& proto)
+ArrayPrototype::ArrayPrototype(const Object& proto, const Object &funcProto)
   : ObjectImp(ArrayClass, Null(), proto)
 {
   // The constructor will be added later in ArrayObject's constructor
 
   put("length", 0u, DontEnum | DontDelete);
 
-  put("toString",       new ArrayProtoFunc(ArrayProtoFunc::ToString,      0), DontEnum);
-  put("toLocaleString", new ArrayProtoFunc(ArrayProtoFunc::ToLocaleString,0), DontEnum);
-  put("concat",         new ArrayProtoFunc(ArrayProtoFunc::Concat,        0), DontEnum);
-  put("join",           new ArrayProtoFunc(ArrayProtoFunc::Join,          1), DontEnum);
-  put("pop",            new ArrayProtoFunc(ArrayProtoFunc::Pop,           0), DontEnum);
-  put("push",           new ArrayProtoFunc(ArrayProtoFunc::Push,          1), DontEnum);
-  put("reverse",        new ArrayProtoFunc(ArrayProtoFunc::Reverse,       0), DontEnum);
-  put("shift",          new ArrayProtoFunc(ArrayProtoFunc::Shift,         0), DontEnum);
-  put("slice",          new ArrayProtoFunc(ArrayProtoFunc::Slice,         0), DontEnum);
-  put("sort",           new ArrayProtoFunc(ArrayProtoFunc::Sort,          1), DontEnum);
-  put("splice",         new ArrayProtoFunc(ArrayProtoFunc::Splice,        1), DontEnum);
-  put("unshift",        new ArrayProtoFunc(ArrayProtoFunc::UnShift,       1), DontEnum);
+  put("toString",       new ArrayProtoFunc(funcProto,ArrayProtoFunc::ToString,      0), DontEnum);
+  put("toLocaleString", new ArrayProtoFunc(funcProto,ArrayProtoFunc::ToLocaleString,0), DontEnum);
+  put("concat",         new ArrayProtoFunc(funcProto,ArrayProtoFunc::Concat,        0), DontEnum);
+  put("join",           new ArrayProtoFunc(funcProto,ArrayProtoFunc::Join,          1), DontEnum);
+  put("pop",            new ArrayProtoFunc(funcProto,ArrayProtoFunc::Pop,           0), DontEnum);
+  put("push",           new ArrayProtoFunc(funcProto,ArrayProtoFunc::Push,          1), DontEnum);
+  put("reverse",        new ArrayProtoFunc(funcProto,ArrayProtoFunc::Reverse,       0), DontEnum);
+  put("shift",          new ArrayProtoFunc(funcProto,ArrayProtoFunc::Shift,         0), DontEnum);
+  put("slice",          new ArrayProtoFunc(funcProto,ArrayProtoFunc::Slice,         0), DontEnum);
+  put("sort",           new ArrayProtoFunc(funcProto,ArrayProtoFunc::Sort,          1), DontEnum);
+  put("splice",         new ArrayProtoFunc(funcProto,ArrayProtoFunc::Splice,        1), DontEnum);
+  put("unshift",        new ArrayProtoFunc(funcProto,ArrayProtoFunc::UnShift,       1), DontEnum);
 }
 
-ArrayProtoFunc::ArrayProtoFunc(int i, int len) : id(i)
+ArrayProtoFunc::ArrayProtoFunc(const Object &funcProto, int i, int len) : id(i)
 {
+  setPrototype(funcProto);
   put("length",Number(len),DontDelete|ReadOnly|DontEnum);
 }
 

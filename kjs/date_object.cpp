@@ -63,7 +63,7 @@ namespace KJS {
 
   class DateProtoFunc : public InternalFunctionImp {
   public:
-    DateProtoFunc(int i, bool u, int len);
+    DateProtoFunc(const Object &funcProto, int i, bool u, int len);
     Completion execute(const List &);
     enum { ToString, ToDateString, ToTimeString, ToLocaleString,
 	   ToLocaleDateString, ToLocaleTimeString, ValueOf, GetTime,
@@ -232,61 +232,62 @@ Completion DateObjectFunc::execute(const List &args)
 }
 
 // ECMA 15.9.4
-DatePrototype::DatePrototype(const Object& proto)
+DatePrototype::DatePrototype(const Object& proto, const Object &funcProto)
   : ObjectImp(DateClass, Number(NaN), proto)
 {
   // The constructor will be added later in DateObject's constructor
 
-  put("toString",           new DateProtoFunc(DateProtoFunc::ToString,false,           0), DontEnum);
-  put("toUTCString",        new DateProtoFunc(DateProtoFunc::ToString,true,            0), DontEnum);
-  put("toDateString",       new DateProtoFunc(DateProtoFunc::ToDateString,false,       0), DontEnum);
-  put("toTimeString",       new DateProtoFunc(DateProtoFunc::ToTimeString,false,       0), DontEnum);
-  put("toLocaleString",     new DateProtoFunc(DateProtoFunc::ToLocaleString,false,     0), DontEnum);
-  put("toLocaleDateString", new DateProtoFunc(DateProtoFunc::ToLocaleDateString,false, 0), DontEnum);
-  put("toLocaleTimeString", new DateProtoFunc(DateProtoFunc::ToLocaleTimeString,false, 0), DontEnum);
-  put("valueOf",            new DateProtoFunc(DateProtoFunc::ValueOf,false,            0), DontEnum);
-  put("getTime",            new DateProtoFunc(DateProtoFunc::GetTime,false,            0), DontEnum);
-  put("getFullYear",        new DateProtoFunc(DateProtoFunc::GetFullYear,false,        0), DontEnum);
-  put("getUTCFullYear",     new DateProtoFunc(DateProtoFunc::GetFullYear,true,         0), DontEnum);
-  put("toGMTString",        new DateProtoFunc(DateProtoFunc::ToGMTString,false,        0), DontEnum);
-  put("getMonth",           new DateProtoFunc(DateProtoFunc::GetMonth,false,           0), DontEnum);
-  put("getUTCMonth",        new DateProtoFunc(DateProtoFunc::GetMonth,true,            0), DontEnum);
-  put("getDate",            new DateProtoFunc(DateProtoFunc::GetDate,false,            0), DontEnum);
-  put("getUTCDate",         new DateProtoFunc(DateProtoFunc::GetDate,true,             0), DontEnum);
-  put("getDay",             new DateProtoFunc(DateProtoFunc::GetDay,false,             0), DontEnum);
-  put("getUTCDay",          new DateProtoFunc(DateProtoFunc::GetDay,true,              0), DontEnum);
-  put("getHours",           new DateProtoFunc(DateProtoFunc::GetHours,false,           0), DontEnum);
-  put("getUTCHours",        new DateProtoFunc(DateProtoFunc::GetHours,true,            0), DontEnum);
-  put("getMinutes",         new DateProtoFunc(DateProtoFunc::GetMinutes,false,         0), DontEnum);
-  put("getUTCMinutes",      new DateProtoFunc(DateProtoFunc::GetMinutes,true,          0), DontEnum);
-  put("getSeconds",         new DateProtoFunc(DateProtoFunc::GetSeconds,false,         0), DontEnum);
-  put("getUTCSeconds",      new DateProtoFunc(DateProtoFunc::GetSeconds,true,          0), DontEnum);
-  put("getMilliseconds",    new DateProtoFunc(DateProtoFunc::GetMilliSeconds,false,    0), DontEnum);
-  put("getUTCMilliseconds", new DateProtoFunc(DateProtoFunc::GetMilliSeconds,true,     0), DontEnum);
-  put("getTimezoneOffset",  new DateProtoFunc(DateProtoFunc::GetTimezoneOffset,false,  0), DontEnum);
-  put("setTime",            new DateProtoFunc(DateProtoFunc::SetTime,false,            1), DontEnum);
-  put("setMilliseconds",    new DateProtoFunc(DateProtoFunc::SetMilliSeconds,false,    1), DontEnum);
-  put("setUTCMilliseconds", new DateProtoFunc(DateProtoFunc::SetMilliSeconds,true,     1), DontEnum);
-  put("setSeconds",         new DateProtoFunc(DateProtoFunc::SetSeconds,false,         2), DontEnum);
-  put("setUTCSeconds",      new DateProtoFunc(DateProtoFunc::SetSeconds,true,          2), DontEnum);
-  put("setMinutes",         new DateProtoFunc(DateProtoFunc::SetMinutes,false,         3), DontEnum);
-  put("setUTCMinutes",      new DateProtoFunc(DateProtoFunc::SetMinutes,true,          3), DontEnum);
-  put("setHours",           new DateProtoFunc(DateProtoFunc::SetHours,false,           4), DontEnum);
-  put("setUTCHours",        new DateProtoFunc(DateProtoFunc::SetHours,true,            4), DontEnum);
-  put("setDate",            new DateProtoFunc(DateProtoFunc::SetDate,false,            1), DontEnum);
-  put("setUTCDate",         new DateProtoFunc(DateProtoFunc::SetDate,true,             1), DontEnum);
-  put("setMonth",           new DateProtoFunc(DateProtoFunc::SetMonth,false,           2), DontEnum);
-  put("setUTCMonth",        new DateProtoFunc(DateProtoFunc::SetMonth,true,            2), DontEnum);
-  put("setFullYear",        new DateProtoFunc(DateProtoFunc::SetFullYear,false,        3), DontEnum);
-  put("setUTCFullYear",     new DateProtoFunc(DateProtoFunc::SetFullYear,true,         3), DontEnum);
-  put("setYear",            new DateProtoFunc(DateProtoFunc::SetYear,false,            1), DontEnum);
+  put("toString",           new DateProtoFunc(funcProto,DateProtoFunc::ToString,false,           0), DontEnum);
+  put("toUTCString",        new DateProtoFunc(funcProto,DateProtoFunc::ToString,true,            0), DontEnum);
+  put("toDateString",       new DateProtoFunc(funcProto,DateProtoFunc::ToDateString,false,       0), DontEnum);
+  put("toTimeString",       new DateProtoFunc(funcProto,DateProtoFunc::ToTimeString,false,       0), DontEnum);
+  put("toLocaleString",     new DateProtoFunc(funcProto,DateProtoFunc::ToLocaleString,false,     0), DontEnum);
+  put("toLocaleDateString", new DateProtoFunc(funcProto,DateProtoFunc::ToLocaleDateString,false, 0), DontEnum);
+  put("toLocaleTimeString", new DateProtoFunc(funcProto,DateProtoFunc::ToLocaleTimeString,false, 0), DontEnum);
+  put("valueOf",            new DateProtoFunc(funcProto,DateProtoFunc::ValueOf,false,            0), DontEnum);
+  put("getTime",            new DateProtoFunc(funcProto,DateProtoFunc::GetTime,false,            0), DontEnum);
+  put("getFullYear",        new DateProtoFunc(funcProto,DateProtoFunc::GetFullYear,false,        0), DontEnum);
+  put("getUTCFullYear",     new DateProtoFunc(funcProto,DateProtoFunc::GetFullYear,true,         0), DontEnum);
+  put("toGMTString",        new DateProtoFunc(funcProto,DateProtoFunc::ToGMTString,false,        0), DontEnum);
+  put("getMonth",           new DateProtoFunc(funcProto,DateProtoFunc::GetMonth,false,           0), DontEnum);
+  put("getUTCMonth",        new DateProtoFunc(funcProto,DateProtoFunc::GetMonth,true,            0), DontEnum);
+  put("getDate",            new DateProtoFunc(funcProto,DateProtoFunc::GetDate,false,            0), DontEnum);
+  put("getUTCDate",         new DateProtoFunc(funcProto,DateProtoFunc::GetDate,true,             0), DontEnum);
+  put("getDay",             new DateProtoFunc(funcProto,DateProtoFunc::GetDay,false,             0), DontEnum);
+  put("getUTCDay",          new DateProtoFunc(funcProto,DateProtoFunc::GetDay,true,              0), DontEnum);
+  put("getHours",           new DateProtoFunc(funcProto,DateProtoFunc::GetHours,false,           0), DontEnum);
+  put("getUTCHours",        new DateProtoFunc(funcProto,DateProtoFunc::GetHours,true,            0), DontEnum);
+  put("getMinutes",         new DateProtoFunc(funcProto,DateProtoFunc::GetMinutes,false,         0), DontEnum);
+  put("getUTCMinutes",      new DateProtoFunc(funcProto,DateProtoFunc::GetMinutes,true,          0), DontEnum);
+  put("getSeconds",         new DateProtoFunc(funcProto,DateProtoFunc::GetSeconds,false,         0), DontEnum);
+  put("getUTCSeconds",      new DateProtoFunc(funcProto,DateProtoFunc::GetSeconds,true,          0), DontEnum);
+  put("getMilliseconds",    new DateProtoFunc(funcProto,DateProtoFunc::GetMilliSeconds,false,    0), DontEnum);
+  put("getUTCMilliseconds", new DateProtoFunc(funcProto,DateProtoFunc::GetMilliSeconds,true,     0), DontEnum);
+  put("getTimezoneOffset",  new DateProtoFunc(funcProto,DateProtoFunc::GetTimezoneOffset,false,  0), DontEnum);
+  put("setTime",            new DateProtoFunc(funcProto,DateProtoFunc::SetTime,false,            1), DontEnum);
+  put("setMilliseconds",    new DateProtoFunc(funcProto,DateProtoFunc::SetMilliSeconds,false,    1), DontEnum);
+  put("setUTCMilliseconds", new DateProtoFunc(funcProto,DateProtoFunc::SetMilliSeconds,true,     1), DontEnum);
+  put("setSeconds",         new DateProtoFunc(funcProto,DateProtoFunc::SetSeconds,false,         2), DontEnum);
+  put("setUTCSeconds",      new DateProtoFunc(funcProto,DateProtoFunc::SetSeconds,true,          2), DontEnum);
+  put("setMinutes",         new DateProtoFunc(funcProto,DateProtoFunc::SetMinutes,false,         3), DontEnum);
+  put("setUTCMinutes",      new DateProtoFunc(funcProto,DateProtoFunc::SetMinutes,true,          3), DontEnum);
+  put("setHours",           new DateProtoFunc(funcProto,DateProtoFunc::SetHours,false,           4), DontEnum);
+  put("setUTCHours",        new DateProtoFunc(funcProto,DateProtoFunc::SetHours,true,            4), DontEnum);
+  put("setDate",            new DateProtoFunc(funcProto,DateProtoFunc::SetDate,false,            1), DontEnum);
+  put("setUTCDate",         new DateProtoFunc(funcProto,DateProtoFunc::SetDate,true,             1), DontEnum);
+  put("setMonth",           new DateProtoFunc(funcProto,DateProtoFunc::SetMonth,false,           2), DontEnum);
+  put("setUTCMonth",        new DateProtoFunc(funcProto,DateProtoFunc::SetMonth,true,            2), DontEnum);
+  put("setFullYear",        new DateProtoFunc(funcProto,DateProtoFunc::SetFullYear,false,        3), DontEnum);
+  put("setUTCFullYear",     new DateProtoFunc(funcProto,DateProtoFunc::SetFullYear,true,         3), DontEnum);
+  put("setYear",            new DateProtoFunc(funcProto,DateProtoFunc::SetYear,false,            1), DontEnum);
   // non-normative
-  put("getYear",            new DateProtoFunc(DateProtoFunc::GetYear,false,            0), DontEnum);
-  put("toGMTString",        new DateProtoFunc(DateProtoFunc::ToGMTString,false,        0), DontEnum);
+  put("getYear",            new DateProtoFunc(funcProto,DateProtoFunc::GetYear,false,            0), DontEnum);
+  put("toGMTString",        new DateProtoFunc(funcProto,DateProtoFunc::ToGMTString,false,        0), DontEnum);
 }
 
-DateProtoFunc::DateProtoFunc(int i, bool u, int len) : id(i), utc(u)
+DateProtoFunc::DateProtoFunc(const Object &funcProto, int i, bool u, int len) : id(i), utc(u)
 {
+  setPrototype(funcProto);
   put("length",Number(len),DontDelete|ReadOnly|DontEnum);
 }
 

@@ -34,7 +34,7 @@ namespace KJS {
 
   class DatePrototype : public ObjectImp {
   public:
-    DatePrototype(const Object& proto);
+    DatePrototype(const Object& proto, const Object &funcProto);
   };
 
 }; // namespace
