@@ -53,6 +53,8 @@ ResourceManagerImpl::ResourceManagerImpl( const QString &family,
   else
     mConfigLocation = config;
 
+  kdDebug() << "ResourceManagerImpl(): config: " << mConfigLocation << endl;
+
   // Register with DCOP
   if ( !kapp->dcopClient()->isRegistered() ) {
     kapp->dcopClient()->registerAs( "resourcemanager" );
@@ -298,6 +300,8 @@ void ResourceManagerImpl::load()
 Resource* ResourceManagerImpl::loadResource( const QString& identifier,
                                              bool checkActive )
 {
+  kdDebug() << "ResourceManagerImpl::loadResource() " << identifier << endl;
+
   if ( !mConfig ) mConfig = new KConfig( mConfigLocation );
   mConfig->setGroup( "Resource_" + identifier );
 
