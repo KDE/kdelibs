@@ -213,13 +213,7 @@ bool KBuildSycoca::build(KSycocaEntryListList *allEntries,
                Q_UINT32 timeStamp = ctimeInfo->ctime(*it3);
                if (!timeStamp)
                {
-                   QCString file = QFile::encodeName(
-                       KGlobal::dirs()->findResource(resource, *it3));
-                   struct stat buff;
-                   if(::stat(file, &buff) == 0)
-                   {
-                       timeStamp = (Q_UINT32) buff.st_ctime;
-                   }
+                   timeStamp = KGlobal::dirs()->calcResourceHash( resource, *it3, true);
                }
                KSycocaEntry* entry = 0;
                if (allEntries)
