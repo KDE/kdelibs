@@ -149,7 +149,7 @@ QString KConfigBase::locale() const
 
 void KConfigBase::setGroup( const QString& group )
 {
-  if ( group.isNull() )
+  if ( group.isEmpty() )
     mGroup = "<default>";
   else
     mGroup = group.utf8();
