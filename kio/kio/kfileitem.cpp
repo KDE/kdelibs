@@ -131,7 +131,7 @@ KFileItem::KFileItem( const KURL &url, const QString &mimeType, mode_t mode )
   m_strName( url.fileName() ),
   m_strText( KIO::decodeFileName( m_strName ) ),
   m_fileMode( mode ),
-  m_permissions( 0 ),
+  m_permissions( KFileItem::Unknown ),
   m_bMarked( false ),
   m_bLink( false ),
   m_bIsLocalURL( url.isLocalFile() ),
