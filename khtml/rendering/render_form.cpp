@@ -42,7 +42,6 @@
 #include "khtmlview.h"
 #include "khtml_ext.h"
 #include "xml/dom_docimpl.h"
-//include "xml/dom_nodeimpl.h"
 
 #include <kdebug.h>
 
@@ -494,7 +493,7 @@ void RenderLineEdit::calcMinMaxWidth()
     int size = element()->size();
 
     int h = fm.lineSpacing();
-    int w = fm.width( 'x' ) * (size > 0 ? size : 17); // "some"
+    int w = fm.width( 'x' ) * (size > 0 ? size+1 : 17); // "some"
     s = QSize(w + 2 + 2*widget()->frameWidth(),
               QMAX(h, 14) + 2 + 2*widget()->frameWidth())
         .expandedTo(QApplication::globalStrut());
@@ -695,7 +694,7 @@ void RenderFieldset::printBorderMinusLegend(QPainter *p, int _tx, int _ty, int w
     }
 }
 
-// ------------------------parent()->borderTop()-------------------------------------------------
+// -------------------------------------------------------------------------
 
 RenderFileButton::RenderFileButton(HTMLInputElementImpl *element)
     : RenderFormElement(element)
@@ -787,7 +786,6 @@ void RenderFileButton::select()
 {
     m_edit->selectAll();
 }
-
 
 // -------------------------------------------------------------------------
 
