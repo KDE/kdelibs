@@ -2,7 +2,7 @@
  *  This file is part of the KDE libraries
  *  Copyright (c) 2001 Michael Goffioul <goffioul@imec.be>
  *
- *  $Id:  $
+ *  $Id$
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
@@ -36,7 +36,7 @@ KMWInfoPage::KMWInfoPage(QWidget *parent, const char *name)
 	QLabel	*m_label = new QLabel(this);
 	m_label->setText(i18n("<p>Welcome,</p><br>"
 		"<p>This wizard will help to install a new printer on your computer. "
-		"It will guides you through the various steps of the process of installing "
+		"It will guide you through the various steps of the process of installing "
 		"and configuring a printer for your printing system. At each step, you "
 		"can always go back using the <b>Back</b> button.</p><br>"
 		"<p>We hope you'll enjoy this tool !</p><br>"
