@@ -1446,12 +1446,14 @@ void KHTMLWidget::saveState( QDataStream &stream )
 {
     if(!document || !document->body()) return;
     int id = document->body()->id();
-    
+
     stream << url(); // need this to reconstruct the correct URL to show in the locationbar
     stream << id; // id of the body/frameset element
 
     if(id  == ID_FRAMESET)
     {	
+	printf("------------------ saving frame --------------------------\n");
+	
 	// handling for framesets...
 	HTMLFrameSetElementImpl *f = static_cast<HTMLFrameSetElementImpl *>(document->body());
 	stream << *f; // save attributes
@@ -1463,6 +1465,7 @@ void KHTMLWidget::saveState( QDataStream &stream )
 	{
 	    if(!current)
 	    {
+		printf("pop\n");
 		if(nodeStack.isEmpty()) break;
 		current = nodeStack.pop();
 		current = current->nextSibling();
@@ -1474,6 +1477,7 @@ void KHTMLWidget::saveState( QDataStream &stream )
 		{
 		case ID_FRAME:
 		{
+		    printf("frame\n");
 		    HTMLFrameElementImpl *f = static_cast<HTMLFrameElementImpl *>(current);
 		    stream << (int)current->id();
 		    stream << *f;
@@ -1482,6 +1486,7 @@ void KHTMLWidget::saveState( QDataStream &stream )
 		}
 		case ID_FRAMESET:
 		{
+		    printf("frameset\n");
 		    HTMLFrameSetElementImpl *f = static_cast<HTMLFrameSetElementImpl *>(current);
 		    stream << (int)current->id();
 		    stream << *f; // save attributes
@@ -1495,6 +1500,7 @@ void KHTMLWidget::saveState( QDataStream &stream )
 		NodeImpl *child = current->firstChild();
 		if(child)
 		{	
+		    printf("push\n");
 		    nodeStack.push(current);
 		    current = child;
 		    stream << -2; // push
@@ -1512,31 +1518,40 @@ void KHTMLWidget::saveState( QDataStream &stream )
 	stream << (Q_INT32)contentsX() << (Q_INT32)contentsY();
 	// ### Fixme: handle forms....
     }
-    else 
+    else
 	printf("error in KHTMLWidget::saveState()\n");
-    // end marker
-    stream << (Q_INT32)-1;
 }
 
 void KHTMLWidget::restoreState( QDataStream &stream )
 {
-    unsigned short id;
-    stream >> m_strURL >> id;
-    
+    int id;
+    QString u;
+    stream >> u;
+    stream >> id;
+
     if(id == ID_BODY)
     {
+	printf("restoring non framed page\n");
 	Q_INT32 xOfs, yOfs;
 	stream >> xOfs >> yOfs;
-	openURL( m_strURL, false, xOfs, yOfs );
+	openURL( u, false, xOfs, yOfs );
 	// ### forms...
     }
     else if (id == ID_FRAMESET)
     {
+	printf("restoring framed page\n");
+	m_strURL = u;
+	// ### FIXME
+	setTitle(m_strURL);
+	
 	// ### Simple one... we should use a more intelligent approach, reducing flicker, etc...
 	NodeImpl *current;
 	
-	document->detach();
-	document->deref();
+	if(document)
+	{
+	    document->detach();
+	    document->deref();
+	}
 	document = new HTMLDocumentImpl(this, cache);
 	document->ref();
 	current = new HTMLHtmlElementImpl(document);
@@ -1545,7 +1560,7 @@ void KHTMLWidget::restoreState( QDataStream &stream )
 	
 	ElementImpl *e = new HTMLFrameSetElementImpl(document);
 	stream >> *e; // restore attributes
-	
+	current->addChild(e);
 	current = e;
 	current->attach(this);
 	
@@ -1554,9 +1569,11 @@ void KHTMLWidget::restoreState( QDataStream &stream )
 	    stream >> id;
 	    if(id == -111) break;
 
+	    printf("current=%d id=%d\n", current->id(), id);
 	    switch(id)
 	    {	
 	    case -1: // pop
+		current->close();
 		current = current->parentNode();
 		break;
 	    case -2: // push
@@ -1566,6 +1583,7 @@ void KHTMLWidget::restoreState( QDataStream &stream )
 	    {
 		HTMLFrameElementImpl *f = new HTMLFrameElementImpl(document);
 		stream >> *f;
+		current->addChild(f);
 		f->attach(this);
 		f->view->restoreState(stream);
 		break;
@@ -1574,6 +1592,7 @@ void KHTMLWidget::restoreState( QDataStream &stream )
 	    {
 		HTMLFrameSetElementImpl *f = new HTMLFrameSetElementImpl(document);
 		stream >> *f;
+		current->addChild(f);
 		f->attach(this);
 		break;
 	    }
@@ -1584,6 +1603,8 @@ void KHTMLWidget::restoreState( QDataStream &stream )
     }
     else
 	printf("error in KHTMLWidget::restoreState()\n");
+
+    layout();
 }
 
 bool KHTMLWidget::isFrameSet()

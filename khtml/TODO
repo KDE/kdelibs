@@ -16,7 +16,7 @@ StyleSheets:
 	  and probably some hints for layouting()
 	* Style sheets shouldn't affect performance.
 	* each StyleSheetElement should use as few memory as possible.
-	  One could make a generic class for them, and derive a couple of 
+	  One could make a generic class for them, and derive a couple of
           specific styleSheetElements for specific tasks.
 
 DOM:
@@ -64,7 +64,7 @@ address		done
 applet		mostly done
 area		done
 b		done
-base
+base		done
 basefont
 bdo
 big		done
@@ -144,7 +144,7 @@ textarea	mostly done
 tfoot		partly
 th		done
 thead		partly
-title
+title		done
 tr		done
 tt		done
 u		done
@@ -162,30 +162,31 @@ align2.html             ok
 anchor1.html		ok
 anchor2.html		ok
 badpages.html		ok
-color.html
-forms.html
-image.gif
+color.html		ok
+forms.html		ok
 image_map.html	    	ok
 layout.html 	    	ok
-listing.html		mostly ok
-nbsp.html
-notitle.html
+listing.html		ok
+nbsp.html		ok
+notitle.html		ok
 parser1.html		ok
 parser2.html		ok
 parser3.html		ok
 parser4.html		ok
-parser_ext1.html	mostly, italic doen't work for me
+parser_ext1.html	ok
 recursive_frames.html
 recursive_frames2.html
-supsub.html
+supsub.html		ok
 table1.html		ok
-table2.html		slow
+table2.html		ok
 table3.html		ok
 table4.html		ok
 table5.html		ok
 table6.html		ok
+table7.html		ok
+table8.html		ok
 tag_br.html		mostly
-tag_hr.html		positioning a bit wrong
-textarea.html
-title.html
+tag_hr.html		ok
+textarea.html		
+title.html		ok
 unicode.html		ok

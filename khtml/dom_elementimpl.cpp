@@ -333,6 +333,7 @@ QDataStream &DOM::operator>>( QDataStream &stream, ElementImpl &e )
 	ushort id;
 	QString v;
 	stream >> id >> v;
+	printf("restoring attribute: %d=%s\n", id, v.ascii());
 	e.setAttribute(id, DOMString(v));
-    }    
+    }
 }

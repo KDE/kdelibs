@@ -518,6 +518,7 @@ void HTMLFrameSetElementImpl::attach(KHTMLWidget *w)
     // ensure the htmlwidget knows we have a frameset, and adjusts the width accordingly
     w->layout();
     view = w;
+    NodeBaseImpl::attach(w);
 }
 
 NodeImpl *HTMLFrameSetElementImpl::addChild(NodeImpl *child)
