@@ -126,6 +126,9 @@ public:
 
     m_restored = false;
 
+    m_focusNodeNumber = -1;
+    m_focusNodeRestored = false;
+
     m_bJScriptForce = false;
     m_bJScriptOverride = false;
     m_bJavaForce = false;
