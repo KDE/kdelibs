@@ -874,7 +874,7 @@ static KStaticDeleter<KFileMetaInfoProvider> sd;
 KFileMetaInfoProvider * KFileMetaInfoProvider::self()
 {
     if ( !s_self )
-        s_self = sd.setObject( new KFileMetaInfoProvider() );
+        s_self = sd.setObject( s_self, new KFileMetaInfoProvider() );
 
     return s_self;
 }
@@ -887,7 +887,6 @@ KFileMetaInfoProvider::KFileMetaInfoProvider()
 
 KFileMetaInfoProvider::~KFileMetaInfoProvider()
 {
-    s_self = 0;
     sd.setObject( 0 );
 }
 

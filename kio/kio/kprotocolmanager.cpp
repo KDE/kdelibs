@@ -52,14 +52,16 @@ public:
    QString proxy;
    QString modifiers;
    QString useragent;
+   static KProtocolManagerPrivate *globalRef;
 };
 
+KProtocolManagerPrivate *KProtocolManagerPrivate::globalRef = 0;
 static KStaticDeleter<KProtocolManagerPrivate> kpmpksd;
 
 KProtocolManagerPrivate::KProtocolManagerPrivate()
                         :config(0), http_config(0), init_busy(false)
 {
-   kpmpksd.setObject(this);
+   globalRef = kpmpksd.setObject(globalRef, this);
 }
 
 KProtocolManagerPrivate::~KProtocolManagerPrivate()

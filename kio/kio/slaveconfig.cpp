@@ -139,7 +139,7 @@ KStaticDeleter<SlaveConfig> slaveconfigsd;
 SlaveConfig *SlaveConfig::self()
 {
    if (!_self)
-      _self = slaveconfigsd.setObject(new SlaveConfig);
+      _self = slaveconfigsd.setObject(_self, new SlaveConfig);
    return _self;
 }
 

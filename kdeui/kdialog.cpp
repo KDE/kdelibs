@@ -268,7 +268,7 @@ KDialogQueue *KDialogQueue::_self=0;
 KDialogQueue* KDialogQueue::self()
 {
    if (!_self)
-      _self = ksdkdq.setObject(new KDialogQueue);
+      _self = ksdkdq.setObject(_self, new KDialogQueue);
    return _self;
 }
 

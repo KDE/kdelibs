@@ -36,7 +36,7 @@ KMimeMagic* KMimeMagic::self()
 
 void KMimeMagic::initStatic()
 {
-  s_pSelf = kmimemagicsd.setObject( new KMimeMagic() );
+  s_pSelf = kmimemagicsd.setObject( s_pSelf, new KMimeMagic() );
   s_pSelf->setFollowLinks( TRUE );
 }
 

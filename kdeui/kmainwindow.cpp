@@ -184,7 +184,7 @@ void KMainWindow::initKMainWindow(const char *name, int cflags)
         memberList = new QPtrList<KMainWindow>;
 
     if ( !ksm )
-        ksm = ksmd.setObject(new KMWSessionManaged());
+        ksm = ksmd.setObject(ksm, new KMWSessionManaged());
     // set a unique object name. Required by session management.
     QCString objname;
     QCString s;

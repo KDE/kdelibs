@@ -527,8 +527,7 @@ BrowserExtension::ActionSlotMap * BrowserExtension::actionSlotMapPtr()
 void BrowserExtension::createActionSlotMap()
 {
     assert(!s_actionSlotMap);
-    s_actionSlotMap = new ActionSlotMap;
-    actionSlotMapsd.setObject( s_actionSlotMap );
+    s_actionSlotMap = actionSlotMapsd.setObject( s_actionSlotMap, new ActionSlotMap );
 
     s_actionSlotMap->insert( "cut", SLOT( cut() ) );
     s_actionSlotMap->insert( "copy", SLOT( copy() ) );
@@ -547,8 +546,7 @@ void BrowserExtension::createActionSlotMap()
 
     // Create the action-number map
     assert(!s_actionNumberMap);
-    s_actionNumberMap = new ActionNumberMap;
-    actionNumberMapsd.setObject( s_actionNumberMap );
+    s_actionNumberMap = actionNumberMapsd.setObject( s_actionNumberMap, new ActionNumberMap );
     ActionSlotMap::ConstIterator it = s_actionSlotMap->begin();
     ActionSlotMap::ConstIterator itEnd = s_actionSlotMap->end();
     for ( int i=0 ; it != itEnd ; ++it, ++i )

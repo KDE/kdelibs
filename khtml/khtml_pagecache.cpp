@@ -121,7 +121,7 @@ KHTMLPageCache *
 KHTMLPageCache::self()
 {
   if (!_self)
-     _self = pageCacheDeleter.setObject(new KHTMLPageCache);
+     _self = pageCacheDeleter.setObject(_self, new KHTMLPageCache);
   return _self;
 }
 

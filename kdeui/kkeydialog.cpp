@@ -407,7 +407,7 @@ void KKeyChooser::initGUI( ActionType type, bool bAllowLetterShortcuts )
   //  readStdKeys();
   connect( kapp, SIGNAL( settingsChanged( int )), SLOT( slotSettingsChanged( int )));
   if( allChoosers == NULL )
-        allChoosers = allChoosersDeleter.setObject( new QValueList< KKeyChooser* > );
+        allChoosers = allChoosersDeleter.setObject( allChoosers, new QValueList< KKeyChooser* > );
   allChoosers->append( this );
 }
 

@@ -60,7 +60,7 @@ static KStaticDeleter<KFileSharePrivate> kstFileShare;
 KFileSharePrivate* KFileSharePrivate::self()
 {
    if (!_self)
-      _self = kstFileShare.setObject(new KFileSharePrivate());
+      _self = kstFileShare.setObject(_self, new KFileSharePrivate());
    return _self;
 }
 

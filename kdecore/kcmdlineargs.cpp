@@ -181,7 +181,7 @@ KCmdLineArgs::init(int _argc, char **_argv, const KAboutData *_about, bool noKAp
 
    about = _about;
    parsed = false;
-   mCwd = mCwdd.setObject(new char [PATH_MAX+1], true);
+   mCwd = mCwdd.setObject(mCwd, new char [PATH_MAX+1], true);
    getcwd(mCwd, PATH_MAX);
    if (!noKApp)
       KApplication::addCmdLineOptions();
@@ -276,7 +276,7 @@ KCmdLineArgs::loadAppArgs( QDataStream &ds)
    if (mCwd)
       delete [] mCwd;
 
-   mCwd = mCwdd.setObject(new char[qCwd.length()+1], true);
+   mCwd = mCwdd.setObject(mCwd, new char[qCwd.length()+1], true);
    strncpy(mCwd, qCwd.data(), qCwd.length()+1);
 
    uint count;

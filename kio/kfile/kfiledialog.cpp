@@ -2116,7 +2116,7 @@ void KFileDialog::initStatic()
     if ( lastDirectory )
         return;
 
-    lastDirectory = ldd.setObject(new KURL());
+    lastDirectory = ldd.setObject(lastDirectory, new KURL());
 }
 
 // static

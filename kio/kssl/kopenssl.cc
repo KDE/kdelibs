@@ -583,7 +583,7 @@ KOpenSSLProxy::~KOpenSSLProxy() {
 KOpenSSLProxy *KOpenSSLProxy::self() {
 #ifdef KSSL_HAVE_SSL
    if (!_me) {
-      _me = med.setObject(new KOpenSSLProxy);
+      _me = med.setObject(_me, new KOpenSSLProxy);
    }
 #endif
    return _me;

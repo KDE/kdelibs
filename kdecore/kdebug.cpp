@@ -196,8 +196,7 @@ static void kDebugBackend( unsigned short nLevel, unsigned int nArea, const char
       // create the dcop interface if it has not been created yet
       if (!kDebugDCOPIface)
       {
-          kDebugDCOPIface = new KDebugDCOPIface();
-          dcopsd.setObject(kDebugDCOPIface);
+          kDebugDCOPIface = dcopsd.setObject(kDebugDCOPIface, new KDebugDCOPIface);
       }
   }
 
