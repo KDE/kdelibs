@@ -100,18 +100,18 @@ void KDialog::polish()
 void KDialog::setCaption( const QString &_caption )
 {
   QString caption = kapp ? kapp->makeStdCaption( _caption ) : _caption;
-  QDialog::setCaption( caption );
-
-#ifdef Q_WS_X11 //FIXME(E) Implement for Qt/E
-  NETWinInfo info( qt_xdisplay(), winId(), qt_xrootwin(), 0 );
-  info.setName( caption.utf8().data() );
-#endif
+  setPlainCaption( caption );
 }
 
 
 void KDialog::setPlainCaption( const QString &caption )
 {
   QDialog::setCaption( caption );
+
+#ifdef Q_WS_X11 //FIXME(E) Implement for Qt/E
+  NETWinInfo info( qt_xdisplay(), winId(), qt_xrootwin(), 0 );
+  info.setName( caption.utf8().data() );
+#endif
 }
 
 
