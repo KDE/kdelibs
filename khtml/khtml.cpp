@@ -45,6 +45,7 @@
 #include <X11/Xlib.h>
 
 #include "khtml.h"
+#include <stdio.h>
 #include "khtmldata.h"
 #include "htmlhashes.h"
 
