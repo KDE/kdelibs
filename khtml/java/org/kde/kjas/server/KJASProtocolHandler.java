@@ -235,7 +235,7 @@ public class KJASProtocolHandler
             
             String id = getArg( command );
             String code = getArg( command );
-            Main.debug( "URLData received(" + id + ") code:" + code );
+            Main.debug( "KIO URLData received(" + id + ") code:" + code );
 
             //rest of the command should be the data...
             byte[] data = null;
@@ -243,21 +243,7 @@ public class KJASProtocolHandler
                 data = new byte[ cmd_length - cmd_index ];
                 System.arraycopy( command, cmd_index, data, 0, data.length );
             }
-            synchronized (KIOConnection.jobs) {
-                KIOConnection job = (KIOConnection) KIOConnection.jobs.get(id);
-                if (job == null)
-                    Main.info("KJASHttpURLConnection gone (timedout/closed)");
-                else {
-                    job.setData(Integer.parseInt(code), data);
-                    if (job.thread != null) {
-                        try {
-                            job.thread.interrupt();
-                        } catch (SecurityException sex) {}
-                        job.thread = null;
-                    }
-                }
-            }
-            Thread.currentThread().yield();
+            KIOConnection.setData(id, Integer.parseInt(code), data);
         } else
         if (cmd_code_value == GetMember)
         {
