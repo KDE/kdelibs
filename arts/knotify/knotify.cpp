@@ -1,6 +1,7 @@
 /*
    Copyright (c) 1997 Christian Esken (esken@kde.org)
-   Copyright (c) 2000 Charles Samuels (charles@kde.org)
+                 2000 Charles Samuels (charles@kde.org)
+                 2000 Stefan Schimanski (1Stein@gmx.de)
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -49,175 +50,208 @@
  * and race conditions
  */
 
-Arts::SimpleSoundServer server;
+Arts::SimpleSoundServer g_soundServer;
+
 
 bool connectSoundServer()
 {
-	/*
-	 * obtain an object reference to the soundserver - retry sometimes, so
-	 * it will work during the startup sequence, even if artsd is started
-	 * some time after the first process requests knotify to do some
-	 * notifications
-	 */
-	for(int tries = 0; tries < 8; tries++)
-	{
-		server = Arts::Reference("global:Arts_SimpleSoundServer");
-		if(!server.isNull()) return true;
-		sleep(1);
-	}
+    /*
+     * obtain an object reference to the soundserver - retry sometimes, so
+     * it will work during the startup sequence, even if artsd is started
+     * some time after the first process requests knotify to do some
+     * notifications
+     */
+    for( int tries=0; tries<8; tries++ )
+    {
+        g_soundServer = Arts::Reference("global:Arts_SimpleSoundServer");
+        if( !g_soundServer.isNull() ) return true;
+        sleep( 1 );
+    }
 
-	return false;
+    return false;
 }
+
 
 int main(int argc, char **argv)
 {
-	KAboutData aboutdata("knotify", I18N_NOOP("KNotify"),
-	                     "2.0pre", I18N_NOOP("KDE Notification Server"),
-	                     KAboutData::License_GPL, "(C) 1997-2000, KDE Developers");
-	aboutdata.addAuthor("Christian Esken",0,"esken@kde.org");
-	aboutdata.addAuthor("Stefan Westerfeld",I18N_NOOP("Sound support"),"stefan@space.twc.de");
-	aboutdata.addAuthor("Charles Samuels",I18N_NOOP("Current Maintainer"),"charles@kde.org");
-	
-	KCmdLineArgs::init( argc, argv, &aboutdata );
-//	KCmdLineArgs::addCmdLineOptions( options );
-	KUniqueApplication::addCmdLineOptions();
-	
-	if (!KUniqueApplication::start())
-		exit(0);
-	
-	KUniqueApplication app;
-	app.disableSessionManagement();
-	
-	
-	// setup mcop communication
-	Arts::QIOManager qiomanager;
-	Arts::Dispatcher dispatcher(&qiomanager);
+    KAboutData aboutdata("knotify", I18N_NOOP("KNotify"),
+                         "2.0pre", I18N_NOOP("KDE Notification Server"),
+                         KAboutData::License_GPL, "(C) 1997-2000, KDE Developers");
+    aboutdata.addAuthor("Christian Esken",0,"esken@kde.org");
+    aboutdata.addAuthor("Stefan Westerfeld",I18N_NOOP("Sound support"),"stefan@space.twc.de");
+    aboutdata.addAuthor("Charles Samuels",I18N_NOOP("Current Maintainer"),"charles@kde.org");
 
-	if(!connectSoundServer())
-		cerr << "artsd is not running, there will be no sound notifications.\n";
-	// get the PID of artsd and check if it disconnects
-	
+    KCmdLineArgs::init( argc, argv, &aboutdata );
+    KUniqueApplication::addCmdLineOptions();
 
-	(void) new KNotify;
+    // initialize application
+    if ( !KUniqueApplication::start() ) {
+        kdDebug() << "Running knotify found" << endl;
+        return 0;
+    }
 
-//	signal(SIGCLD, SIG_IGN); // don't wait() for fork
-	return app.exec();
+    KUniqueApplication app;
+    app.disableSessionManagement();
+
+    // setup mcop communication
+    Arts::QIOManager qiomanager;
+    Arts::Dispatcher dispatcher(&qiomanager);
+
+    if( !connectSoundServer() )
+        kdDebug() << "artsd is not running, there will be no sound notifications." << endl;
+
+    // start notify service
+    KNotify notify;
+    return app.exec();
 }
 
-KNotify::KNotify() : QObject(), DCOPObject("Notify")
+
+KNotify::KNotify()
+    : QObject(), DCOPObject("Notify")
 {
 }
+
 
 void KNotify::notify(const QString &event, const QString &fromApp,
                      const QString &text, QString sound, QString file,
                      int present, int level)
 {
-	static bool eventRunning=true;
-	
-	if (event.length())
-	{
-		KConfig *eventsfile;
-		if (isGlobal(event))
-			eventsfile=new KConfig(locate("config", "eventsrc"), true, false);
-		else
-			eventsfile=new KConfig(locate("data", fromApp+"/eventsrc"),true,false);
-			
-		eventsfile->setGroup(event);
-	
-		if (present==-1)
-			present=eventsfile->readNumEntry("presentation", -1);
-		if (present==-1)
-			present=eventsfile->readNumEntry("default_presentation", 0);
-		
-		sound=eventsfile->readEntry("soundfile", 0);
-		if (sound.isNull())
-			sound=eventsfile->readEntry("default_sound", "");
-			
-		file=eventsfile->readEntry("logfile", 0);
-		if (file.isNull())
-			file=eventsfile->readEntry("default_logfile", "");
-		
-		level=eventsfile->readNumEntry("level", 0);
-			
-		delete eventsfile;
-	}
-	
-	eventRunning=true;
-	if ((present & KNotifyClient::Sound)/* && (QFile(sound).isReadable())*/)
-		notifyBySound(sound);
-	if (present & KNotifyClient::Messagebox)
-		notifyByMessagebox(text,level);
-	if (present & KNotifyClient::Logfile/* && (QFile(file).isWritable())*/)
-		notifyByLogfile(text, file);
-	if (present & KNotifyClient::Stderr)
-		notifyByStderr(text);
-	eventRunning=false;
+//    kdDebug() << "event=" << event << " fromApp=" << fromApp << " text=" << text << " sound=" << sound <<
+//        " file=" << file << " present=" << present << " level=" << level << endl;
+
+    // check for valid events
+    if ( event.length()>0 )     {
+
+        // get config file
+        KConfig *eventsFile;
+        if ( isGlobal(event) )
+            eventsFile = new KConfig( locate("config", "eventsrc"), true, false );
+        else
+            eventsFile = new KConfig( locate("data", fromApp+"/eventsrc"), true, false );
+
+        eventsFile->setGroup( event );
+
+        // get event presentation
+        if ( present==-1 )
+            present = eventsFile->readNumEntry( "presentation", -1 );
+        if ( present==-1 )
+            present = eventsFile->readNumEntry( "default_presentation", 0 );
+
+        // get sound file name
+        sound = eventsFile->readEntry( "soundfile" );
+        if ( sound.length()==0 )
+            sound = eventsFile->readEntry( "default_sound" );
+
+        // get log file name
+        file = eventsFile->readEntry( "logfile" );
+        if ( file.length()==0 )
+            file = eventsFile->readEntry( "default_logfile" );
+
+        // get default event level
+        level = eventsFile->readNumEntry( "level", 0 );
+
+        delete eventsFile;
+    }
+
+    // emit event
+    if ( present & KNotifyClient::Sound ) // && QFile(sound).isReadable()
+        notifyBySound( sound );
+
+    if ( present & KNotifyClient::Messagebox )
+        notifyByMessagebox( text, level );
+
+    if ( present & KNotifyClient::Logfile ) // && QFile(file).isWritable()
+        notifyByLogfile( text, file );
+
+    if ( present & KNotifyClient::Stderr )
+        notifyByStderr( text );
 }
 
-bool KNotify::notifyBySound(const QString &sound)
+
+bool KNotify::notifyBySound( const QString &sound )
 {
-	// Oh dear! we seem to have lost our connection to artsd!
-	if(server.error())
-		connectSoundServer();
-	
-	QString f(sound);
-	if (QFileInfo(sound).isRelative())
-		f=locate("sound", sound);
+    // Oh dear! we seem to have lost our connection to artsd!
+    if( g_soundServer.isNull() || g_soundServer.error() )
+        connectSoundServer();
 
-	kdDebug() << "KNotify::notifyBySound - Trying to play file " << sound << endl;
-	if(!server.isNull()) server.play(QFile::encodeName(f).data());
-	
-	return true;
+    if ( !g_soundServer.isNull() && !g_soundServer.error() ) {
+
+        // get file name
+        QString soundFile(sound);
+        if ( QFileInfo(sound).isRelative() )
+            soundFile = locate( "sound", sound );
+
+        // play sound finally
+        kdDebug() << "KNotify::notifyBySound - trying to play file " << soundFile << endl;
+        g_soundServer.play( QFile::encodeName(soundFile).data() );
+
+        return true;
+    } else {
+        kdDebug() << "KNotify::notifyBySound - can't connect to aRts daemon" << endl;
+        return false;
+    }
 }
+
 
 bool KNotify::notifyByMessagebox(const QString &text, int level)
 {
-	if ( text.isEmpty() )
-		return false;
-	
-	switch(level)
-	{
-	default:
-	case(KNotifyClient::Notification):
-		KMessageBox::information(0, text, i18n("Notification"), 0, false);
-		break;
-	case(KNotifyClient::Warning):
-		KMessageBox::sorry(0, text, i18n("Warning"), false);
-		break;
-	case(KNotifyClient::Error):
-		KMessageBox::error(0, text, i18n("Error"), false);
-		break;
-	case(KNotifyClient::Catastrophe):
-		KMessageBox::error(0, text, i18n("Catastrophe!"), false);
-	}
-	
-	return true;
+    // ignore empty messages
+    if ( text.isEmpty() )
+        return false;
+
+    // display message box for specified event level
+    switch( level ) {
+    default:
+    case KNotifyClient::Notification:
+        KMessageBox::information( 0, text, i18n("Notification"), 0, false );
+        break;
+    case KNotifyClient::Warning:
+        KMessageBox::sorry( 0, text, i18n("Warning"), false );
+        break;
+    case KNotifyClient::Error:
+        KMessageBox::error( 0, text, i18n("Error"), false );
+        break;
+    case KNotifyClient::Catastrophe:
+        KMessageBox::error( 0, text, i18n("Catastrophe!"), false );
+        break;
+    }
+
+    return true;
 }
+
 
 bool KNotify::notifyByLogfile(const QString &text, const QString &file)
 {
-	QFile f(file);
-	if (!f.open(IO_WriteOnly | IO_Append)) return false;
-	QTextStream t(&f);
+    // open file in append mode
+    QFile logFile(file);
+    if ( !logFile.open(IO_WriteOnly | IO_Append) ) return false;
 
-	t<< "=======================================\n";
-	t<< "KNotify: " << QDateTime::currentDateTime().toString() << '\n';
-	t<< text<< "\n\n";
-	f.close();
-	return true;
+    // append msg
+    QTextStream strm( &logFile );
+    strm << "- KNotify " << QDateTime::currentDateTime().toString() << ": ";
+    strm << text << endl;
+
+    // close file
+    logFile.close();
+    return true;
 }
 
 bool KNotify::notifyByStderr(const QString &text)
 {
-	QTextStream t(stderr, IO_WriteOnly);
+    // open stderr for output
+    QTextStream strm( stderr, IO_WriteOnly );
 
-	t<< "KNotify: " << QDateTime::currentDateTime().toString() << '\n';
-	t<< text<< "\n\n";
-	return true;
+    // output msg
+    strm << "KNotify " << QDateTime::currentDateTime().toString() << ": ";
+    strm << text << endl;
+
+    return true;
 }
+
 
 bool KNotify::isGlobal(const QString &eventname)
 {
-	KConfig c(locate("config", "eventsrc"), true, false);
-	return c.hasGroup(eventname);
+    // it's global if there is a config group with the event's name
+    KConfig config( locate("config", "eventsrc"), true, false );
+    return config.hasGroup( eventname );
 }
