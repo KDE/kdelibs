@@ -974,13 +974,13 @@ private:
    * @deprecated
    * @return True
    */
-  bool setCharset(const QString & charset) { Q_UNUSED(charset); return true; }
+  bool setCharset(const QString & charset);
 
   /**
    * @deprecated
    * @see encoding
    */
-  QString charset() const { return QString::fromLatin1("UTF-8"); }
+  QString charset() const;
 
 protected:
   /**

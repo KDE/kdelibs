@@ -2109,3 +2109,7 @@ KLocale & KLocale::operator=(const KLocale & rhs)
 
   return *this;
 }
+
+bool KLocale::setCharset(const QString & charset) { return true; }
+QString KLocale::charset() const { return "UTF-8"; }
+
