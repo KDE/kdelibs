@@ -121,6 +121,8 @@ StyleBaseImpl::parseSpace(const QChar *curP, const QChar *endP)
 const QChar *
 StyleBaseImpl::parseToChar(const QChar *curP, const QChar *endP, QChar c, bool chkws)
 {
+    //printf("parsetochar: \"%s\" searching %c ws=%d\n", QString(curP, endP-curP).latin1(), c.latin1(), chkws);
+
     bool sq = false; /* in single quote? */
     bool dq = false; /* in double quote? */
     bool esc = false; /* escape mode? */
@@ -131,9 +133,9 @@ StyleBaseImpl::parseToChar(const QChar *curP, const QChar *endP, QChar c, bool c
             esc = false;
         else if (*curP == '\\')
             esc = true;
-        else if (dq && (*curP != '"'))
+        else if (dq && (*curP == '"'))
             dq = false;
-        else if (sq && (*curP != '\''))
+        else if (sq && (*curP == '\''))
             sq = false;
         else if (*curP == '"')
             dq = true;
@@ -252,9 +254,17 @@ printf("selectString = \"%s\"\n", selecString.ascii());
             {
 		// ### FIXME
                 tag = QString( startP, curP - startP );
-                QString tmp( curP, endP - curP );
-                cs->value = tmp;
-                break;
+		printf("tag = %s\n", tag.ascii());
+		const QChar *equal = parseToChar(curP, endP, '=', false);
+		if(!equal)
+		{
+		    QString attr( curP, endP - curP );
+		    cs->attr = getAttrID(attr.ascii(), attr.length());
+		    break;
+		}
+		// check relation: = / ~= / |=
+		printf("Attribute name = %s  equal = %c\n", QString(curP, equal-curP).ascii(), equal->latin1());
+
             }
             else
             {
@@ -282,6 +292,8 @@ printf("selectString = \"%s\"\n", selecString.ascii());
 CSSSelector *
 StyleBaseImpl::parseSelector1(const QChar *curP, const QChar *endP)
 {
+    //printf("selector1 is \'%s\'\n", QString(curP, endP-curP).latin1());
+
     CSSSelector *selecStack=0;
 
     curP = parseSpace(curP, endP);
@@ -337,6 +349,8 @@ StyleBaseImpl::parseSelector1(const QChar *curP, const QChar *endP)
 QList<CSSSelector> *
 StyleBaseImpl::parseSelector(const QChar *curP, const QChar *endP)
 {
+    //printf("selector is \'%s\'\n", QString(curP, endP-curP).latin1());
+
     QList<CSSSelector> *slist  = 0;
     const QChar *startP;
 
@@ -917,6 +931,8 @@ StyleBaseImpl::parseUnit(const QChar * curP, const QChar *endP, int allowedUnits
 CSSStyleRuleImpl *
 StyleBaseImpl::parseStyleRule(const QChar *&curP, const QChar *endP)
 {
+    printf("style rule is \'%s\'\n", QString(curP, endP-curP).latin1());
+
     const QChar *startP;
     QList<CSSSelector> *slist;
     QList<CSSProperty> *plist;
@@ -925,6 +941,7 @@ StyleBaseImpl::parseStyleRule(const QChar *&curP, const QChar *endP)
     curP = parseToChar(startP, endP, '{', false);
     if (!curP)
         return(0);
+    printf("selector is \'%s\'\n", QString(curP, endP-curP).latin1());
 
     slist = parseSelector(startP, curP );
 
