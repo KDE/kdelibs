@@ -277,13 +277,13 @@ int KCalendarSystemHijri::weekNumber(const QDate& date, int * yearNum) const
 QString KCalendarSystemHijri::monthName(const QDate& date,
                                         bool shortName) const
 {
-  return monthName(month(date), shortName);
+  return monthName(month(date), year(date), shortName);
 }
 
 QString KCalendarSystemHijri::monthNamePossessive(const QDate& date,
                                                   bool shortName) const
 {
-  return monthNamePossessive(month(date), shortName);
+  return monthNamePossessive(month(date), year(date), shortName);
 }
 
 QString KCalendarSystemHijri::monthName(int month, int year, bool shortName)

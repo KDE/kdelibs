@@ -448,10 +448,10 @@ QString KCalendarSystemJalali::monthName(int month, int year, bool shortName)
 QString KCalendarSystemJalali::monthName(const QDate& date, bool shortName)
   const
 {
-int mon;
-gregorianToJalali(date,0,&mon,0);
-//SDATE *sd = gregorianToJalali(date.year(),date.month(),date.day());
-  return (monthName(mon,shortName));
+  int mon;
+  gregorianToJalali(date,0,&mon,0);
+  //SDATE *sd = gregorianToJalali(date.year(),date.month(),date.day());
+  return (monthName(mon, 0, shortName));
 }
 
 QString KCalendarSystemJalali::monthNamePossessive(const QDate& date,
