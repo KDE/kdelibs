@@ -408,7 +408,7 @@ int KAction::plug( QWidget *w, int index )
     KToolBar *bar = (KToolBar *)w;
 
     int id_ = getToolButtonID();
-    if ( (d->m_iconName == QString::null) && d->m_bIconSet )
+    if ( d->m_iconName.isEmpty() && d->m_bIconSet )
     {
       bar->insertButton( iconSet().pixmap(), id_, SIGNAL( clicked() ), this,
                          SLOT( slotActivated() ),
@@ -417,8 +417,9 @@ int KAction::plug( QWidget *w, int index )
     else
     {
       KInstance *instance;
-      if ( parent() && parent()->inherits( "KActionCollection" ) )
-        instance = static_cast<KActionCollection*>(parent())->instance();
+      KActionCollection *coll = parentCollection();
+      if ( coll )
+        instance = coll->instance();
       else
         instance = KGlobal::instance();
 
@@ -588,8 +589,9 @@ void KAction::setIcon( const QString &icon )
   // We used to use SmallIcon for this, but that's wrong since the
   // Small group may *not* be 16x16 and we *need* 16x16
   KInstance *instance;
-  if ( parent() && parent()->inherits( "KActionCollection" ) )
-    instance = static_cast<KActionCollection*>(parent())->instance();
+  KActionCollection *coll = parentCollection();
+  if ( coll )
+    instance = coll->instance();
   else
     instance = KGlobal::instance();
   setIconSet( SmallIcon( icon, 16, KIcon::DefaultState, instance ) );
@@ -2111,9 +2113,24 @@ int KActionMenu::plug( QWidget* widget, int index )
     KToolBar *bar = (KToolBar *)widget;
 
     int id_ = KAction::getToolButtonID();
-    bar->insertButton( iconSet().pixmap(), id_, SIGNAL( clicked() ), this,
-                       SLOT( slotActivated() ), isEnabled(), plainText(),
-                       index );
+
+    if ( iconName().isEmpty() && !iconSet().isNull() )
+      bar->insertButton( iconSet().pixmap(), id_, SIGNAL( clicked() ), this,
+                         SLOT( slotActivated() ), isEnabled(), plainText(),
+                         index );
+    else
+    {
+      KInstance *instance;
+      KActionCollection *coll = parentCollection();
+      if ( coll )
+        instance = coll->instance();
+      else
+        instance = KGlobal::instance();
+
+      bar->insertButton( iconName(), id_, SIGNAL( clicked() ), this,
+                         SLOT( slotActivated() ), isEnabled(), plainText(),
+                         index, instance );
+    }
 
     addContainer( bar, id_ );
 
