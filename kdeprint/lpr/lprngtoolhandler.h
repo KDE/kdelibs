@@ -36,6 +36,7 @@ public:
 	DrMain* loadDbDriver(const QString&);
 	PrintcapEntry* createEntry(KMPrinter*);
 	bool savePrinterDriver(KMPrinter*, PrintcapEntry*, DrMain*, bool* = 0);
+	QString printOptions(KPrinter*);
 
 protected:
 	QMap<QString,QString> parseXferOptions(const QString&);
@@ -43,11 +44,11 @@ protected:
 	QValueList< QPair<QString,QStringList> > loadChoiceDict(const QString&);
 	QMap<QString,QString> parseZOptions(const QString&);
 	QString filterDir();
+	QString driverDirInternal();
 
 
 private:
 	QValueList< QPair<QString,QStringList> >	m_dict;
-	QString	m_filterdir;
 };
 
 #endif

@@ -392,7 +392,16 @@ QString KMLprManager::driverDbCreationProgram()
 
 QString KMLprManager::driverDirectory()
 {
-	QString	dbDirs = "/usr/share/foomatic/db/source";
+	QPtrListIterator<LprHandler>	it(m_handlerlist);
+	QString	dbDirs;
+	for (; it.current(); ++it)
+	{
+		QString	dir = it.current()->driverDirectory();
+		if (!dir.isEmpty())
+			dbDirs.append(dir).append(":");
+	}
+	if (!dbDirs.isEmpty())
+		dbDirs.truncate(dbDirs.length()-1);
 	return dbDirs;
 }
 

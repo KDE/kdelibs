@@ -444,3 +444,8 @@ QString MaticHandler::printOptions(KPrinter *printer)
 		str.prepend("-J '").append("'");
 	return str;
 }
+
+QString MaticHandler::driverDirInternal()
+{
+	return locateDir("foomatic/db/source", "/usr/share:/usr/local/share:/opt/share");
+}

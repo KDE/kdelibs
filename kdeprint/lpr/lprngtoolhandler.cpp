@@ -24,6 +24,7 @@
 #include "lprsettings.h"
 #include "driver.h"
 #include "kmmanager.h"
+#include "kprinter.h"
 
 #include <qfile.h>
 #include <qtextstream.h>
@@ -172,6 +173,9 @@ DrMain* LPRngToolHandler::loadDriver(KMPrinter *prt, PrintcapEntry *entry, bool 
 		QMap<QString,QString>	opts = parseZOptions(entry->field("prefix_z"));
 		opts["lpr"] = entry->field("lpr");
 		driver->setOptions(opts);
+		// if not configuring, don't show the "lpr" options
+		if (!config)
+			driver->removeOptionGlobally("lpr");
 	}
 	return driver;
 }
@@ -256,13 +260,12 @@ QMap<QString,QString> LPRngToolHandler::parseZOptions(const QString& optstr)
 
 QString LPRngToolHandler::filterDir()
 {
-	if (m_filterdir.isEmpty())
-	{
-		m_filterdir = KStandardDirs::findExe("ifhp", "/usr/libexec/filters:/usr/local/libexec/filters:/opt/libexec", true);
-		if (!m_filterdir.isEmpty())
-			m_filterdir.truncate(m_filterdir.length()-5);
-	}
-	return m_filterdir;
+	return driverDirectory();
+}
+
+QString LPRngToolHandler::driverDirInternal()
+{
+	return locateDir("filters", "/usr/lib:/usr/local/lib:/opt/lib:/usr/libexec:/usr/local/libexec:/opt/libexec");
 }
 
 PrintcapEntry* LPRngToolHandler::createEntry(KMPrinter *prt)
@@ -324,12 +327,15 @@ PrintcapEntry* LPRngToolHandler::createEntry(KMPrinter *prt)
 		QString	optstr;
 		driver->getOptions(opts, false);
 		for (QMap<QString,QString>::ConstIterator it=opts.begin(); it!=opts.end(); ++it)
-			optstr.append(*it).append(",");
+			if (it.key() != "lpr")
+				optstr.append(*it).append(",");
 		if (!optstr.isEmpty())
 		{
 			optstr.truncate(optstr.length()-1);
 			entry->addField("prefix_z", Field::String, optstr);
 		}
+		if (!opts["lpr"].isEmpty())
+			entry->addField("lpr", Field::String, opts["lpr"]);
 	}
 
 	entry->addField("lp", Field::String, lp);
@@ -345,13 +351,33 @@ bool LPRngToolHandler::savePrinterDriver(KMPrinter*, PrintcapEntry *entry, DrMai
 	QString	optstr;
 	driver->getOptions(opts, false);
 	for (QMap<QString,QString>::ConstIterator it=opts.begin(); it!=opts.end(); ++it)
-		optstr.append(*it).append(",");
+		if (it.key() != "lpr")
+			optstr.append(*it).append(",");
 	if (!optstr.isEmpty())
 		optstr.truncate(optstr.length()-1);
 	// save options in any case, otherwise nothing will happen whn
 	// options are reset to their default value
 	entry->addField("prefix_z", Field::String, optstr);
+	entry->addField("lpr", Field::String, opts["lpr"]);
 	if (mustSave)
 		*mustSave = true;
 	return true;
+}
+
+QString LPRngToolHandler::printOptions(KPrinter *printer)
+{
+	QString	optstr;
+	QMap<QString,QString>	opts = printer->options();
+	for (QMap<QString,QString>::ConstIterator it=opts.begin(); it!=opts.end(); ++it)
+	{
+		if (it.key().startsWith("kde") || it.key().startsWith("_kde") || it.key() == "lpr")
+			continue;
+		optstr.append(*it).append(",");
+	}
+	if (!optstr.isEmpty())
+	{
+		optstr.truncate(optstr.length()-1);
+		optstr.prepend("-Z '").append("'");
+	}
+	return optstr;
 }

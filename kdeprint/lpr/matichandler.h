@@ -41,6 +41,9 @@ public:
 	bool removePrinter(KMPrinter*, PrintcapEntry*);
 	QString printOptions(KPrinter*);
 
+protected:
+	QString driverDirInternal();
+
 private:
 	MaticBlock* loadMaticData(const QString&);
 	DrMain* loadMaticDriver(const QString&);

@@ -47,13 +47,19 @@ public:
 
 	QString name() const;
 	KMManager* manager() const;
+	QString driverDirectory();
 
 protected:
 	DrMain* loadToolDriver(const QString&);
+	QString locateDir(const QString& dirname, const QString& paths);
+	QString cachedDriverDir() const;
+	void setCachedDriverDir(const QString&);
+	virtual QString driverDirInternal();
 
 protected:
 	QString	m_name;
 	KMManager	*m_manager;
+	QString	m_cacheddriverdir;
 };
 
 inline QString LprHandler::name() const
@@ -61,5 +67,11 @@ inline QString LprHandler::name() const
 
 inline KMManager* LprHandler::manager() const
 { return m_manager; }
+
+inline QString LprHandler::cachedDriverDir() const
+{ return m_cacheddriverdir; }
+
+inline void LprHandler::setCachedDriverDir(const QString& s)
+{ m_cacheddriverdir = s; }
 
 #endif

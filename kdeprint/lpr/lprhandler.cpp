@@ -29,6 +29,8 @@
 #include <qvaluestack.h>
 #include <klocale.h>
 
+#include <unistd.h>
+
 LprHandler::LprHandler(const QString& name, KMManager *mgr)
 : m_name(name), m_manager(mgr)
 {
@@ -229,4 +231,28 @@ DrMain* LprHandler::loadToolDriver(const QString& filename)
 		return driver;
 	}
 	return NULL;
+}
+
+QString LprHandler::driverDirectory()
+{
+	if (m_cacheddriverdir.isEmpty())
+		m_cacheddriverdir = driverDirInternal();
+	return m_cacheddriverdir;
+}
+
+QString LprHandler::driverDirInternal()
+{
+	return QString::null;
+}
+
+QString LprHandler::locateDir(const QString& dirname, const QString& paths)
+{
+	QStringList	pathlist = QStringList::split(':', paths, false);
+	for (QStringList::ConstIterator it=pathlist.begin(); it!=pathlist.end(); ++it)
+	{
+		QString	testpath = *it + "/" + dirname;
+		if (::access(QFile::encodeName(testpath), F_OK) == 0)
+			return testpath;
+	}
+	return QString::null;
 }

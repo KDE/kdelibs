@@ -128,7 +128,12 @@ QString ApsHandler::sysconfDir()
 
 QString ApsHandler::shareDir()
 {
-	return QFile::encodeName("/usr/share/apsfilter");
+	return driverDirectory();
+}
+
+QString ApsHandler::driverDirInternal()
+{
+	return locateDir("apsfilter", "/usr/share:/usr/local/share:/opt/share");
 }
 
 QMap<QString,QString> ApsHandler::loadResources(PrintcapEntry *entry)

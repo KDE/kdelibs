@@ -6,10 +6,6 @@
 #include <stdlib.h>
 #include <unistd.h>
 
-#define FOOMATIC_BASE	"/usr/share/foomatic/db/source"
-#define APS_BASE		"/usr/share/apsfilter/setup"
-#define IFHP_BASE		"/usr/libexec/filters"
-
 char	**files;
 int	nfiles, maxfiles;
 
@@ -75,14 +71,14 @@ void readValue(FILE *f, char *value, int len)
 	value[p] = 0;
 }
 
-int getMaticPrinterInfos(const char *id, char *make, char *model)
+int getMaticPrinterInfos(const char *base, const char *id, char *make, char *model)
 {
 	char	filePath[256];
 	FILE	*xmlFile;
 	char	tag[32] = {0};
 	int	n = 0;
 
-	snprintf(filePath, 256, "%s/%s.xml", FOOMATIC_BASE, id);
+	snprintf(filePath, 256, "%s/%s.xml", base, id);
 	xmlFile = fopen(filePath, "r");
 	if (xmlFile == NULL)
 		return 0;
@@ -113,10 +109,14 @@ int parseMaticDriverFile(char *driver, FILE *output)
 	FILE	*drFile;
 	char	name[32] = {0}, make[64] = {0}, model[64] = {0}, tag[32] = {0};
 	char	id[128];
+	char	path[256], *c;
 
 	drFile = fopen(driver, "r");
 	if (drFile == NULL)
 		return 0;
+	strncpy(path, driver, 255);
+	if ((c = strstr(path, "/driver/")) != NULL)
+		*c = 0;
 	while (!feof(drFile))
 	{
 		tag[0] = 0;
@@ -131,7 +131,7 @@ int parseMaticDriverFile(char *driver, FILE *output)
 				fprintf(output, "FILE=foomatic/%s/%s\n", id+8, name);
 				make[0] = 0;
 				model[0] = 0;
-				getMaticPrinterInfos(id, make, model);
+				getMaticPrinterInfos(path, id, make, model);
 				fprintf(output, "MANUFACTURER=%s\n", make);
 				fprintf(output, "MODELNAME=%s\n", model);
 				fprintf(output, "MODEL=%s\n", model);
@@ -146,7 +146,7 @@ int parseMaticDriverFile(char *driver, FILE *output)
 	return 1;
 }
 
-int initMatic(void)
+int initMatic(const char *base)
 {
 	char	drPath[256];
 	char	drFile[256];
@@ -155,7 +155,10 @@ int initMatic(void)
 	struct stat	st;
 	int	n = 0;
 
-	snprintf(drPath, 256, "%s/driver", FOOMATIC_BASE);
+	if (strstr(base, "foomatic") == NULL)
+		return 0;
+
+	snprintf(drPath, 256, "%s/driver", base);
 	foodir = opendir(drPath);
 	if (foodir == NULL)
 		return 0;
@@ -216,14 +219,17 @@ void parseApsFile(char *filename, FILE *output)
 	fclose(apsfile);
 }
 
-int initAps(void)
+int initAps(const char *base)
 {
 	char	drFile[256];
 	DIR	*apsdir;
 	struct dirent	*d;
 	int	n = 0, gsversion = 0;
 
-	apsdir = opendir(APS_BASE);
+	if (strstr(base, "apsfilter") == NULL)
+		return 0;
+
+	apsdir = opendir(base);
 	if (apsdir == NULL)
 		return 0;
 	while ((d = readdir(apsdir)) != NULL)
@@ -236,7 +242,7 @@ int initAps(void)
 				continue;
 			gsversion = 1;
 		}
-		snprintf(drFile, 256, "apsfilter:%s/%s", APS_BASE, d->d_name);
+		snprintf(drFile, 256, "apsfilter:%s/%s", base, d->d_name);
 		checkSize();
 		files[nfiles++] = strdup(drFile);
 		n++;
@@ -300,8 +306,8 @@ void parseIfhpFile(const char *filename, FILE *output)
 					simplifyModel(modelname);
 					fprintf(output, "FILE=lprngtool/%s\n", model);
 					fprintf(output, "MANUFACTURER=%s\n", make);
-					fprintf(output, "MODEL=%s\n", d);
-					fprintf(output, "MODELNAME=%s\n", d);
+					fprintf(output, "MODEL=%s\n", modelname);
+					fprintf(output, "MODELNAME=%s\n", modelname);
 					fprintf(output, "DESCRIPTION=%s (IFHP + %s)\n", d, model);
 					fprintf(output, "\n");
 				}
@@ -317,11 +323,11 @@ void parseIfhpFile(const char *filename, FILE *output)
 	fclose(in);
 }
 
-int initIfhp()
+int initIfhp(const char *base)
 {
 	char	path[256];
 
-	snprintf(path, 255, "lprngtool:%s/printerdb", IFHP_BASE);
+	snprintf(path, 255, "lprngtool:%s/printerdb", base);
 	if (access(path+10, R_OK) == 0)
 	{
 		checkSize();
@@ -351,6 +357,7 @@ int main(int argc, char **argv)
 {
 	FILE	*dbFile;
 	int	n = 0;
+	char	*c, *d;
 
 	if (argc < 2 || argc > 3)
 	{
@@ -369,10 +376,19 @@ int main(int argc, char **argv)
 	else
 		dbFile = stdout;
 	initFiles();
-	n += initMatic();
-	n += initAps();
-	n += initIfhp();
-	/* do it for other handlers */
+	c = argv[1];
+	do
+	{
+		d = strchr(c, ':');
+		if (d != NULL)
+			*d = 0;
+		n += initMatic(c);
+		n += initAps(c);
+		n += initIfhp(c);
+		/* do it for other handlers */
+		if (d != NULL)
+			c = d+1;
+	} while (d && *c);
 
 	fprintf(stdout, "%d\n", n);
 	fflush(stdout);

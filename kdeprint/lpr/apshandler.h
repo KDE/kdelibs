@@ -40,6 +40,9 @@ public:
 	bool removePrinter(KMPrinter*, PrintcapEntry*);
 	QString printOptions(KPrinter*);
 
+protected:
+	QString driverDirInternal();
+
 private:
 	QMap<QString,QString> loadResources(PrintcapEntry*);
 	QMap<QString,QString> loadVarFile(const QString&);
