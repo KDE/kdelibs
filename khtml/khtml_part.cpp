@@ -182,6 +182,7 @@ void KHTMLPart::init( KHTMLView *view, GUIProfile prof )
       d->m_paSaveDocument->setShortcut( KShortcut() ); // avoid clashes
   d->m_paSaveFrame = new KAction( i18n( "Save &Frame As..." ), 0, this, SLOT( slotSaveFrame() ), actionCollection(), "saveFrame" );
   d->m_paSecurity = new KAction( i18n( "Security..." ), "decrypted", 0, this, SLOT( slotSecurity() ), actionCollection(), "security" );
+  d->m_paDebugScript = new KAction( "Script debugger", 0, this, SLOT( slotDebugScript() ), actionCollection(), "debugScript" );
   d->m_paDebugRenderTree = new KAction( "Print Rendering Tree to STDOUT", 0, this, SLOT( slotDebugRenderTree() ), actionCollection(), "debugRenderTree" );
   d->m_paDebugDOMTree = new KAction( "Print DOM Tree to STDOUT", 0, this, SLOT( slotDebugDOMTree() ), actionCollection(), "debugDOMTree" );
 
@@ -821,6 +822,12 @@ void KHTMLPart::slotDebugDOMTree()
 {
   if ( d->m_doc && d->m_doc->firstChild() )
     qDebug("%s", d->m_doc->firstChild()->toHTML().latin1());
+}
+
+void KHTMLPart::slotDebugScript()
+{
+  if (jScript())
+    jScript()->showDebugWindow();
 }
 
 void KHTMLPart::slotDebugRenderTree()
@@ -2920,6 +2927,8 @@ void KHTMLPart::updateActions()
     bgURL = static_cast<HTMLDocumentImpl*>(d->m_doc)->body()->getAttribute( ATTR_BACKGROUND ).string();
 
   d->m_paSaveBackground->setEnabled( !bgURL.isEmpty() );
+
+  d->m_paDebugScript->setEnabled( d->m_jscript && d->m_bJScriptDebugEnabled );
 }
 
 KParts::LiveConnectExtension *KHTMLPart::liveConnectExtension( const khtml::RenderPart *frame) const {

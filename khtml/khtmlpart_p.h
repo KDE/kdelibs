@@ -284,6 +284,7 @@ public:
   KAction *m_paFindNext;
   KAction *m_paPrintFrame;
   KAction *m_paSelectAll;
+  KAction *m_paDebugScript;
   KAction *m_paDebugDOMTree;
   KAction *m_paDebugRenderTree;
 

@@ -56,6 +56,7 @@ public:
   virtual KJS::Interpreter *interpreter() = 0;
 
   virtual void setDebugEnabled(bool enabled) = 0;
+  virtual void showDebugWindow(bool show=true) = 0;
   virtual bool paused() const = 0;
   virtual void setSourceFile(QString url, QString code) = 0;
   virtual void appendSourceFile(QString url, QString code) = 0;

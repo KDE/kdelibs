@@ -52,6 +52,7 @@ public:
   virtual KJS::ScriptInterpreter *interpreter();
 
   virtual void setDebugEnabled(bool enabled);
+  virtual void showDebugWindow(bool show=true);
   virtual bool paused() const;
   virtual void setSourceFile(QString url, QString code);
   virtual void appendSourceFile(QString url, QString code);
@@ -262,6 +263,16 @@ void KJSProxyImpl::setDebugEnabled(bool enabled)
   }
 #else
   Q_UNUSED(enabled);
+#endif
+}
+
+void KJSProxyImpl::showDebugWindow(bool show)
+{
+#ifdef KJS_DEBUGGER
+  if (KJSDebugWin::instance())
+    KJSDebugWin::instance()->show();
+#else
+  Q_UNUSED(show);
 #endif
 }
 

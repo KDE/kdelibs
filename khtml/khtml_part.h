@@ -866,6 +866,10 @@ private slots:
   /**
    * @internal
    */
+  void slotDebugScript();
+  /**
+   * @internal
+   */
   void slotDebugDOMTree();
   /**
    * @internal

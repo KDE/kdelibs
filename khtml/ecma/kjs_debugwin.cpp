@@ -242,7 +242,7 @@ KJSDebugWin *KJSDebugWin::createInstance()
 {
   assert(!kjs_html_debugger);
   kjs_html_debugger = new KJSDebugWin();
-  kjs_html_debugger->show();
+  //kjs_html_debugger->show();
   return kjs_html_debugger;
 }
 
@@ -444,6 +444,8 @@ bool KJSDebugWin::atStatement(KJS::ExecState *exec, int sourceId,
   if (haveBreakpoint(sourceId,firstLine, lastLine)) {
     m_mode = Next;
     m_frames.last()->next = true;
+    if (!isVisible())
+      show();
   }
 
   m_frames.last()->sourceId = sourceId;
@@ -521,9 +523,6 @@ void KJSDebugWin::setCode(const QString &code, int sourceId)
 
 void KJSDebugWin::highLight(int sourceId, int line)
 {
-  if (!isVisible())
-    show();
-
   SourceFragment *source = m_sourceFragments[sourceId];
   if (!source)
     return;
@@ -578,10 +577,13 @@ void KJSDebugWin::enterSession()
   // program to continue while the script is stopped. We have to be a bit careful here,
   // i.e. make sure the user can't quite the app, and not executing more js code
   assert(!m_inSession);
-  m_fakeModal.enable(this);
-  m_inSession = true;
   m_mode = Continue;
 
+  if (!isVisible())
+    return;
+
+  m_inSession = true;
+  m_fakeModal.enable(this);
   m_nextButton->setEnabled(true);
   m_stepButton->setEnabled(true);
   m_continueButton->setEnabled(true);
