@@ -4350,14 +4350,15 @@ bool QIconView::eventFilter( QObject * o, QEvent * e )
     if ( !o || !e )
 	return FALSE;
 
-    QFocusEvent * fe = (QFocusEvent *)e;
-
     switch( e->type() ) {
     case QEvent::FocusIn:
-	focusInEvent( fe );
+	focusInEvent( (QFocusEvent*)e );
 	return TRUE;
     case QEvent::FocusOut:
-	focusOutEvent( fe );
+	focusOutEvent( (QFocusEvent*)e );
+	return TRUE;
+    case QEvent::Enter:
+	enterEvent( e );
 	return TRUE;
     default:
 	// nothing
@@ -4769,6 +4770,16 @@ QSize QIconView::sizeHint() const
 void QIconView::updateContents()
 {
     viewport()->repaint( FALSE );
+}
+
+/*!
+  \reimp
+*/
+
+void QIconView::enterEvent( QEvent *e )
+{
+    QScrollView::enterEvent( e );
+    emit onViewport();
 }
 
 #include "qiconview.moc"
