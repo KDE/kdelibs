@@ -30,6 +30,8 @@
    in RFC 2045, section 6.7. is by Rik Hemsley (C) 2001.
 */
 
+#include <config.h>
+
 #include <string.h>
 #include <stdlib.h>
 
