@@ -24,7 +24,7 @@
 // KColorDialog::getColor() so that in contains a parent argument. This
 // improves centering capability.
 //
-// layout managment added Oct 1997 by Mario Weilguni 
+// layout managment added Oct 1997 by Mario Weilguni
 // <mweilguni@sime.com>
 //
 
@@ -42,9 +42,10 @@
 #include "kcolordlg.h"
 #include "kcolordlg.h"
 #include "kcolordrag.h"
+#include <qvalidator.h>
 
 #include <dither.h>
-#include <klined.h>
+#include <qlineedit.h>
 #include <klocale.h>
 #include <kapp.h>
 
@@ -194,7 +195,7 @@ KColorCells::KColorCells( QWidget *parent, int rows, int cols )
 
 	selected = 0;
         inMouse = false;
-        
+
 	// Drag'n'Drop
 	setAcceptDrops( true);
 }
@@ -253,7 +254,7 @@ int KColorCells::posToCell(const QPoint &pos, bool ignoreBorders)
            (y < border) || (y > cellHeight()-border))
          return -1;
    }
-   return cell;   
+   return cell;
 }
 
 void KColorCells::mouseMoveEvent( QMouseEvent *e )
@@ -377,7 +378,7 @@ void KColorPatch::dropEvent( QDropEvent *event)
 KColorDialog::KColorDialog( QWidget *parent, const char *name, bool modal )
   :KDialogBase( parent, name, modal, i18n("Select Color"), Help|Ok|Cancel,
 		Ok, true )
-{ 
+{
   setHelp( "kcolordialog.html", QString::null, QString::null );
   setResizeMode( ResizeFixed ); // Comment if resizeable
   connect( this, SIGNAL(okClicked(void)),this,SLOT(slotWriteSettings(void)));
@@ -469,7 +470,7 @@ KColorDialog::KColorDialog( QWidget *parent, const char *name, bool modal )
   //
   sysColorCells->setColor( 30, QColor(0,  64,  64 ));
   sysColorCells->setColor( 31, QColor(0, 192, 192 ));
-  
+
   //
   // Yellows
   //
@@ -481,7 +482,7 @@ KColorDialog::KColorDialog( QWidget *parent, const char *name, bool modal )
   //
   sysColorCells->setColor(34,   QColor(0,  64,   0 ));
   sysColorCells->setColor(35,   QColor(0, 192,   0 ));
-  
+
   //
   // Purples
   //
@@ -514,7 +515,7 @@ KColorDialog::KColorDialog( QWidget *parent, const char *name, bool modal )
   connect( custColorCells, SIGNAL( colorSelected( int ) ),
 	   SLOT( slotCustColorSelected( int ) ) );
   l_left->addWidget(custColorCells, 10);
-  
+
   //
   // a little space between
   //
@@ -541,14 +542,14 @@ KColorDialog::KColorDialog( QWidget *parent, const char *name, bool modal )
   QHBoxLayout *l_rtop = new QHBoxLayout();
   l_right->addLayout(l_rtop);
   QGridLayout *l_rbot = new QGridLayout(3, 6);
-  l_right->addLayout(l_rbot);  
+  l_right->addLayout(l_rbot);
 
   //
   // the palette and value selector go into the H-box
   //
   palette = new KHSSelector( page );
   palette->setMinimumSize(140, 70);
-  l_rtop->addWidget(palette, 8);  
+  l_rtop->addWidget(palette, 8);
   connect( palette, SIGNAL( valueChanged( int, int ) ),
 	   SLOT( slotHSChanged( int, int ) ) );
 	
@@ -575,21 +576,24 @@ KColorDialog::KColorDialog( QWidget *parent, const char *name, bool modal )
   label = new QLabel( "H:", page );
   label->setAlignment(AlignRight | AlignVCenter);
   l_rbot->addWidget(label, 0, 2);
-  hedit = new KLineEdit( page );
+  hedit = new QLineEdit( page );
+  hedit->setValidator( new QIntValidator( hedit ) );
   l_rbot->addWidget(hedit, 0, 3);
   connect( hedit, SIGNAL( returnPressed() ),SLOT( slotHSVChanged() ) );
 	
   label = new QLabel( "S:", page );
   label->setAlignment(AlignRight | AlignVCenter);
   l_rbot->addWidget(label, 1, 2);
-  sedit = new KLineEdit( page );
+  sedit = new QLineEdit( page );
+  sedit->setValidator( new QIntValidator( sedit ) );
   l_rbot->addWidget(sedit, 1, 3);
   connect( sedit, SIGNAL( returnPressed() ),SLOT( slotHSVChanged() ) );
 	
   label = new QLabel( "V:", page );
   label->setAlignment(AlignRight | AlignVCenter);
   l_rbot->addWidget(label, 2, 2);
-  vedit = new KLineEdit( page );
+  vedit = new QLineEdit( page );
+  vedit->setValidator( new QIntValidator( vedit ) );
   l_rbot->addWidget(vedit, 2, 3);
   connect( vedit, SIGNAL( returnPressed() ),SLOT( slotHSVChanged() ) );
 	
@@ -599,21 +603,24 @@ KColorDialog::KColorDialog( QWidget *parent, const char *name, bool modal )
   label = new QLabel( "R:", page );
   label->setAlignment(AlignRight | AlignVCenter);
   l_rbot->addWidget(label, 0, 4);
-  redit = new KLineEdit( page );
+  redit = new QLineEdit( page );
+  redit->setValidator( new QIntValidator( redit ) );
   l_rbot->addWidget(redit, 0, 5);
   connect( redit, SIGNAL( returnPressed() ), SLOT( slotRGBChanged() ) );
 	
   label = new QLabel( "G:", page );
   label->setAlignment(AlignRight | AlignVCenter);
   l_rbot->addWidget( label, 1, 4);
-  gedit = new KLineEdit( page );
+  gedit = new QLineEdit( page );
+  gedit->setValidator( new QIntValidator( gedit ) );
   l_rbot->addWidget(gedit, 1, 5);
   connect( gedit, SIGNAL( returnPressed() ), SLOT( slotRGBChanged() ) );
 	
   label = new QLabel( "B:", page );
   label->setAlignment(AlignRight | AlignVCenter);
   l_rbot->addWidget(label, 2, 4);
-  bedit = new KLineEdit( page );
+  bedit = new QLineEdit( page );
+  bedit->setValidator( new QIntValidator( bedit ) );
   l_rbot->addWidget(bedit, 2, 5);
   connect( bedit, SIGNAL( returnPressed() ), SLOT( slotRGBChanged() ) );
 
@@ -635,7 +642,7 @@ KColorDialog::KColorDialog( QWidget *parent, const char *name, bool modal )
   readSettings();
   setRgbEdit();
   setHsvEdit();
-  
+
   palette->setValues( h, s );
   valuePal->setValue( v );
 }
@@ -701,7 +708,7 @@ void KColorDialog::slotRGBChanged( void )
   valuePal->drawPalette();
   valuePal->repaint( FALSE );
   valuePal->setValue( v );
-  
+
   emit colorSelected( selColor );
 }
 
@@ -833,7 +840,7 @@ void KColorDialog::slotWriteSettings( void )
     else
        config->writeEntry( key, "", true, true );
   }
- 
+
   config->setGroup( oldgroup );
 }
 
@@ -843,7 +850,7 @@ void KColorDialog::readSettings( void )
   QString key;
 
   KConfig* config = KGlobal::config();
-  
+
   QString oldgroup = config->group();
   config->setGroup( "Custom Colors");
 
@@ -877,7 +884,7 @@ void KColorDialog::setHsvEdit( void )
   int h, s, v;
   selColor.hsv( &h, &s, &v );
   QString num;
-  
+
   num.setNum( h );
   hedit->setText( num );
   num.setNum( s );
@@ -936,7 +943,7 @@ void KColorCombo::slotActivated( int index )
 			QBrush brush( customColor );
 			painter.fillRect( rect, brush );
 			painter.setPen( pen );
-			painter.drawText( 2, 18, 
+			painter.drawText( 2, 18,
 					  i18n("Custom...") );
 			painter.end();
 
