@@ -676,8 +676,10 @@ void RenderPartObject::updateWidget()
           }
           if(serviceType.isEmpty() && !objbase->classId.isEmpty()) {
 
+#if 0
               // We have a clsid, means this is activex (Niko)
               serviceType = "application/x-activex-handler";
+#endif
 
               if(objbase->classId.find(QString::fromLatin1("D27CDB6E-AE6D-11cf-96B8-444553540000")) >= 0) {
                   // It is ActiveX, but the nsplugin system handling
