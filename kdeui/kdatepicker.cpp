@@ -27,8 +27,9 @@
 #include <qpainter.h>
 #include <qdialog.h>
 #include <qtoolbutton.h>
+#include <qtooltip.h>
 #include <qfont.h>
-#include <qlineedit.h>
+#include <klineedit.h>
 #include <qvalidator.h>
 #include <kdebug.h>
 #include <knotifyclient.h>
@@ -52,12 +53,20 @@ KDatePicker::KDatePicker(QWidget *parent, QDate dt, const char *name)
     monthBackward(new QToolButton(this)),
     selectMonth(new QToolButton(this)),
     selectYear(new QToolButton(this)),
-    line(new QLineEdit(this)),
+    line(new KLineEdit(this)),
     val(new KDateValidator(this)),
     table(new KDateTable(this)),
     fontsize(10)
 {
   d = new KDatePickerPrivate();
+
+  QToolTip::add(yearForward, i18n("Next year"));
+  QToolTip::add(yearBackward, i18n("Previous year"));
+  QToolTip::add(monthForward, i18n("Next month"));
+  QToolTip::add(monthBackward, i18n("Previous month"));
+  QToolTip::add(selectMonth, i18n("Select a month"));
+  QToolTip::add(selectYear, i18n("Select a year"));
+  QToolTip::add(d->closeButton, i18n("Close"));
 
   // -----
   setFontSize(10);
