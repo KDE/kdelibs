@@ -1,0 +1,9 @@
+[Desktop Entry]
+Encoding=UTF-8
+Type=MimeType
+MimeType=application/x-kde-wallet
+Icon=kwallet
+Comment=KDE Wallet File
+Patterns=*.kwl
+X-KDE-AutoEmbed=false
+
