@@ -216,6 +216,19 @@
 >>18	string		application/x-kivio\004\006	application/x-kivio
 >>18	string		application/x-karbon\004\006	application/x-karbon
 
+#KOffice documents post v1.1 (may 1 2002) using zip as a wrapper
+0    string   PK\003\004                  application/x-zip 
+>30  string   mimetype
+>>38 string   application/x-kchart        application/x-kchart
+>>38 string   application/x-kformula      application/x-kformula
+>>38 string   application/x-kontour       application/x-kontour
+>>38 string   application/x-kpresenter    application/x-kpresenter
+>>38 string   application/x-kspread       application/x-kspread
+>>38 string   application/x-krita         application/x-krita
+>>38 string   application/x-kword         application/x-kword
+>>38 string   application/x-kivio         application/x-kivio
+>>38 string   application/x-karbon        application/x-karbon
+
 # BZIP2
 0	string          BZh             application/x-bzip2
 
