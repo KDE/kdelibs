@@ -216,17 +216,9 @@ void RenderBox::printBoxDecorations(QPainter *p,int, int _y,
 void RenderBox::printBackground(QPainter *p, const QColor &c, CachedImage *bg, int clipy, int cliph, int _tx, int _ty, int w, int h)
 {
 
-    if(c.isValid()) {
+    if(c.isValid())
         // workaround for Qt problem filling a rect of more than 32000 pixels height...
-        int my = QMAX( _ty, clipy );
-        int mh;
-        if ( _ty < clipy )
-            mh= QMAX( 0, h - (clipy - _ty) );
-        else
-            mh = QMIN( cliph, h );
-        //kdDebug( 6040 ) << "printing bgcolor" << endl;
-        p->fillRect(_tx, my, w, mh, c);
-    }
+        p->fillRect(_tx, clipy, w, cliph, c);
 
     // no progressive loading of the background image
     if(m_bgImage && m_bgImage->pixmap_size() == m_bgImage->valid_rect().size()) {
