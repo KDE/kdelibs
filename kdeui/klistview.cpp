@@ -119,7 +119,7 @@ public:
   QTimer dragExpand;
   QListViewItem* dragOverItem;
   QPoint dragOverPoint;
-  
+
   QPoint startDragPos;
   int dragDelay;
 
@@ -943,9 +943,9 @@ void KListView::contentsDragMoveEvent(QDragMoveEvent *event)
     //Clean up the view
 
     findDrop(event->pos(), d->parentItemDrop, d->afterItemDrop);
-    QPoint vp = contentsToViewport( event->pos() ); 
+    QPoint vp = contentsToViewport( event->pos() );
     QListViewItem *item = isExecuteArea( vp ) ? itemAt( vp ) : 0L;
-    
+
     if ( item != d->dragOverItem )
     {
       d->dragExpand.stop();
@@ -2082,7 +2082,7 @@ void KListViewItem::paintCell(QPainter *p, const QColorGroup &cg, int column, in
         p->setBrushOrigin( o.x()-listView()->contentsX(), o.y()-listView()->contentsY() );
   }
   else if (isAlternate())
-       if (listView()->viewport()->backgroundMode()==Qt::TransparentMode)
+       if (p->backgroundMode()==Qt::TransparentMode)
             _cg.setColor(QColorGroup::Background, static_cast< KListView* >(listView())->alternateBackground());
        else
         _cg.setColor(QColorGroup::Base, static_cast< KListView* >(listView())->alternateBackground());
