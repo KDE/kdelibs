@@ -74,7 +74,7 @@ bool KRun::runURL( const char *_url, const char *_mimetype )
   lst.append( _url );
 
   KService::Ptr offer = KServiceTypeProfile::preferredService( _mimetype );
-  
+
   if ( !offer )
   {
     KOpenWithDlg l( lst, i18n("Open With:"), "", (QWidget *)0L );
@@ -90,7 +90,7 @@ bool KRun::runURL( const char *_url, const char *_mimetype )
     }
     return false;
   }
-  
+
   return KRun::run( *offer, lst );
 }
 
@@ -281,7 +281,7 @@ bool KRun::runOldApplication( const QString& , QStringList& _urls, bool _allow_m
 
   // find kfmexec in $PATH
   QString kfmexec = KStandardDirs::findExe( "kfmexec" );
-  
+
   if ( _allow_multiple )
   {
     argv = new char*[ _urls.count() + 3 ];
@@ -348,8 +348,31 @@ void KRun::init()
 {
   kdebug( KDEBUG_INFO, 7010, "INIT called" );
 
+  if ( m_strURL.left( 7 ) == "mailto:" )
+  {
+    emit finished();
+ 
+    QString addr = m_strURL.mid( 7 );
+    KURL::decode( addr );
+    QString subj;
+    
+    int subjPos = addr.find( "?subject=" );
+    if ( subjPos != -1 )
+    {
+      subj = addr.mid( subjPos + 9 );
+      addr.truncate( subjPos );
+    }
+    
+    kapp->invokeMailer( addr, subj );
+    
+    if ( m_bAutoDelete )
+      delete this;
+    
+    return;
+  }
+  
   KURL url( m_strURL );
-
+  
   if ( !m_bIsLocalFile && url.isLocalFile() )
     m_bIsLocalFile = true;
 
@@ -592,7 +615,7 @@ void KRun::foundMimeType( const char *_type )
     m_bFinished = true;
     m_bFault = true;
   }
-  
+
   m_timer.start( 0, true );
 }
 
