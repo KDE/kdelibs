@@ -314,6 +314,9 @@ QImage KImageEffect::unbalancedGradient(const QSize &size, const QColor &ca,
 
     QImage image(size, 32);
 
+    if (size.width() == 0 || size.height() == 0)
+      return image;
+
     register int x, y;
     unsigned int *scanline;
 
@@ -528,6 +531,9 @@ QImage KImageEffect::unbalancedGradient(const QSize &size, const QColor &ca,
 
 QImage& KImageEffect::intensity(QImage &image, float percent)
 {
+    if (image.width() == 0 || image.height() == 0)
+      return image;
+
     int i, tmp, r, g, b;
     int segColors = image.depth() > 8 ? 256 : image.numColors();
     unsigned char *segTbl = new unsigned char[segColors];
@@ -587,6 +593,9 @@ QImage& KImageEffect::intensity(QImage &image, float percent)
 QImage& KImageEffect::channelIntensity(QImage &image, float percent,
                                        RGBComponent channel)
 {
+    if (image.width() == 0 || image.height() == 0)
+      return image;
+
     int i, tmp, c;
     int segColors = image.depth() > 8 ? 256 : image.numColors();
     unsigned char *segTbl = new unsigned char[segColors];
@@ -672,6 +681,10 @@ QImage& KImageEffect::channelIntensity(QImage &image, float percent,
 QImage& KImageEffect::modulate(QImage &image, QImage &modImage, bool reverse,
 	ModulationType type, int factor, RGBComponent channel)
 {
+    if (image.width() == 0 || image.height() == 0 ||
+        modImage.width() == 0 || modImage.height() == 0)
+      return image;
+
     int r, g, b, h, s, v, a;
     QColor clr;
     int mod=0;
@@ -793,6 +806,9 @@ QImage& KImageEffect::blend(QImage &image, float initial_intensity,
                             const QColor &bgnd, GradientType eff,
                             bool anti_dir)
 {
+    if (image.width() == 0 || image.height() == 0)
+      return image;
+
     int r_bgnd = bgnd.red(), g_bgnd = bgnd.green(), b_bgnd = bgnd.blue();
     int r, g, b;
     int ind;
@@ -984,6 +1000,10 @@ QImage& KImageEffect::blend(QImage &image, float initial_intensity,
 QImage& KImageEffect::blend(QImage &image1, QImage &image2,
 			    GradientType gt, int xf, int yf)
 {
+  if (image1.width() == 0 || image1.height() == 0 ||
+      image2.width() == 0 || image2.height() == 0)
+    return image1;
+
   QImage image3;
 
   image3 = KImageEffect::unbalancedGradient(image1.size(),
@@ -998,6 +1018,11 @@ QImage& KImageEffect::blend(QImage &image1, QImage &image2,
 QImage& KImageEffect::blend(QImage &image1, QImage &image2,
 			    QImage &blendImage, RGBComponent channel)
 {
+  if (image1.width() == 0 || image1.height() == 0 ||
+      image2.width() == 0 || image2.height() == 0 ||
+      blendImage.width() == 0 || blendImage.height() == 0)
+    return image1;
+
     int r, g, b;
     int ind1, ind2, ind3;
 
@@ -1091,6 +1116,9 @@ unsigned int KImageEffect::uHash(unsigned int c)
 
 QImage& KImageEffect::hash(QImage &image, Lighting lite, unsigned int spacing)
 {
+    if (image.width() == 0 || image.height() == 0)
+      return image;
+
     register int x, y;
     unsigned int *data =  (unsigned int *)image.bits();
     unsigned int ind;
@@ -1166,6 +1194,9 @@ QImage& KImageEffect::hash(QImage &image, Lighting lite, unsigned int spacing)
 QImage& KImageEffect::flatten(QImage &img, const QColor &ca,
                             const QColor &cb, int ncols)
 {
+    if (img.width() == 0 || img.height() == 0)
+      return img;
+
     // a bitmap is easy...
     if (img.depth() == 1) {
 	img.setColor(0, ca.rgb());
@@ -1261,6 +1292,9 @@ QImage& KImageEffect::flatten(QImage &img, const QColor &ca,
 
 QImage& KImageEffect::fade(QImage &img, float val, const QColor &color)
 {
+    if (img.width() == 0 || img.height() == 0)
+      return img;
+
     // We don't handle bitmaps
     if (img.depth() == 1)
 	return img;
@@ -1340,6 +1374,9 @@ QImage& KImageEffect::fade(QImage &img, float val, const QColor &color)
 // algorithm, false for the higher quality one (mosfet).
 QImage& KImageEffect::toGray(QImage &img, bool fast)
 {
+    if (img.width() == 0 || img.height() == 0)
+      return img;
+
     if(fast){
         if (img.depth() == 32) {
             register uchar * r(img.bits());
@@ -1387,6 +1424,8 @@ QImage& KImageEffect::toGray(QImage &img, bool fast)
 // CT 29Jan2000 - desaturation algorithms
 QImage& KImageEffect::desaturate(QImage &img, float desat)
 {
+    if (img.width() == 0 || img.height() == 0)
+      return img;
 
     if (desat < 0) desat = 0.;
     if (desat > 1) desat = 1.;
@@ -1408,6 +1447,9 @@ QImage& KImageEffect::desaturate(QImage &img, float desat)
 // Contrast stuff (mosfet)
 QImage& KImageEffect::contrast(QImage &img, int c)
 {
+    if (img.width() == 0 || img.height() == 0)
+      return img;
+
     if(c > 255)
         c = 255;
     if(c < -255)
@@ -1455,8 +1497,9 @@ QImage& KImageEffect::contrast(QImage &img, int c)
 //      Marv Luse, Addison-Wesley Publishing, 1993.
 QImage& KImageEffect::dither(QImage &img, const QColor *palette, int size)
 {
-    if ( img.depth() <= 8 )
-        return img;
+    if (img.width() == 0 || img.height() == 0 ||
+        palette == 0 || img.depth() <= 8)
+      return img;
 
     QImage dImage( img.width(), img.height(), 8, size );
     int i;
@@ -1541,6 +1584,9 @@ QImage& KImageEffect::dither(QImage &img, const QColor *palette, int size)
 
 int KImageEffect::nearestColor( int r, int g, int b, const QColor *palette, int size )
 {
+    if (palette == 0)
+      return 0;
+
     int dr = palette[0].red() - r;
     int dg = palette[0].green() - g;
     int db = palette[0].blue() - b;
