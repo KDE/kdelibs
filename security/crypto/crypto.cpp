@@ -34,6 +34,7 @@
 #include <qfile.h>
 #include <qlayout.h>
 #include <qvbox.h>
+#include <qvgroupbox.h>
 #include <qlabel.h>
 #include <qbuttongroup.h>
 #include <qhbuttongroup.h>
@@ -248,7 +249,7 @@ QString whatstr;
   tabSSL = new QFrame(this);
   grid = new QGridLayout(tabSSL, 7, 2, KDialog::marginHint(),
                                        KDialog::spacingHint() );
-  mUseTLS = new QCheckBox(i18n("Enable &TLS support if supported by the server."), tabSSL);
+  mUseTLS = new QCheckBox(i18n("Enable &TLS support if supported by the server"), tabSSL);
   connect(mUseTLS, SIGNAL(clicked()), SLOT(configChanged()));
   grid->addWidget(mUseTLS, 0, 0);
   whatstr = i18n("TLS is the newest revision of the SSL protocol."
@@ -342,7 +343,7 @@ QString whatstr;
   QVBoxLayout *egrid = new QVBoxLayout(eFrame);
   mUseEGD = new QCheckBox(i18n("Use EGD"), eFrame);
   connect(mUseEGD, SIGNAL(clicked()), SLOT(slotUseEGD()));
-  mUseEFile = new QCheckBox(i18n("Use Entropy File"), eFrame);
+  mUseEFile = new QCheckBox(i18n("Use entropy file"), eFrame);
   connect(mUseEFile, SIGNAL(clicked()), SLOT(slotUseEFile()));
   grid->addWidget(eFrame, 4, 0);
   egrid->addWidget(mUseEGD);
@@ -518,7 +519,7 @@ QString whatstr;
   grid = new QGridLayout(tabAuth, 20, 6, KDialog::marginHint(), KDialog::spacingHint());
 
   grid->addMultiCellWidget(new QLabel(i18n("Default Authentication Certificate"), tabAuth), 0, 0, 0, 2);
-  defCertBG = new QVButtonGroup(i18n("Default Action..."), tabAuth);
+  defCertBG = new QVButtonGroup(i18n("Default Action"), tabAuth);
   defSend = new QRadioButton(i18n("&Send"), defCertBG);
   defPrompt = new QRadioButton(i18n("&Prompt"), defCertBG);
   defDont = new QRadioButton(i18n("D&on't send"), defCertBG);
@@ -530,7 +531,7 @@ QString whatstr;
   grid->addMultiCellWidget(new KSeparator(KSeparator::HLine, tabAuth), 4, 4, 0, 5);
 
 
-  grid->addMultiCellWidget(new QLabel(i18n("Host Authentication"), tabAuth), 5, 5, 0, 1);
+  grid->addMultiCellWidget(new QLabel(i18n("Host Authentication:"), tabAuth), 5, 5, 0, 1);
   hostAuthList = new QListView(tabAuth);
   grid->addMultiCellWidget(hostAuthList, 6, 13, 0, 5);
   hostAuthList->addColumn(i18n("Host"));
@@ -545,7 +546,7 @@ QString whatstr;
   hostCertBox = new KComboBox(false, tabAuth);
   grid->addMultiCellWidget(hostCertBox, 15, 15, 1, 4);
 
-  hostCertBG = new QHButtonGroup(i18n("Action..."), tabAuth);
+  hostCertBG = new QHButtonGroup(i18n("Action"), tabAuth);
   hostSend = new QRadioButton(i18n("Send"), hostCertBG);
   hostPrompt = new QRadioButton(i18n("Prompt"), hostCertBG);
   hostDont = new QRadioButton(i18n("Don't Send"), hostCertBG);
@@ -631,8 +632,12 @@ QString whatstr;
   whatstr = i18n("This is the information known about the issuer of the certificate.");
   QWhatsThis::add(oIssuer, whatstr);
 
-  grid->addWidget(new QLabel(i18n("Valid From:"), tabOtherSSLCert), 14, 0);
-  grid->addWidget(new QLabel(i18n("Valid Until:"), tabOtherSSLCert), 15, 0);
+  fromLabel = new QLabel(i18n("Valid From:"), tabOtherSSLCert);
+  untilLabel = new QLabel(i18n("Valid Until:"), tabOtherSSLCert);
+  grid->addWidget(fromLabel, 14, 0);
+  grid->addWidget(untilLabel, 15, 0);
+  fromLabel->setEnabled(false);
+  untilLabel->setEnabled(false);
   validFrom = new QLabel(tabOtherSSLCert);
   grid->addWidget(validFrom, 14, 1);
   validUntil = new QLabel(tabOtherSSLCert);
@@ -642,19 +647,19 @@ QString whatstr;
   whatstr = i18n("The certificate is valid until this date.");
   QWhatsThis::add(validUntil, whatstr);
 
-  grid->addWidget(new QLabel(i18n("Cache..."), tabOtherSSLCert), 16, 0);
-  cachePerm = new QRadioButton(i18n("Permanentl&y"), tabOtherSSLCert);
-  cacheUntil = new QRadioButton(i18n("&Until..."), tabOtherSSLCert);
+  cacheGroup = new QVButtonGroup(i18n("Cache"), tabOtherSSLCert);
+  cachePerm = new QRadioButton(i18n("Permanentl&y"), cacheGroup);
+  cacheUntil = new QRadioButton(i18n("&Until..."), cacheGroup);
+  untilDate = new KURLLabel(QString::null, QString::null, cacheGroup);
+  cacheGroup->setEnabled(false);
+  grid->addMultiCellWidget(cacheGroup, 16, 19, 0, 2);
+
   cachePerm->setEnabled(false);
   cacheUntil->setEnabled(false);
-  grid->addWidget(cachePerm, 17, 0);
-  grid->addWidget(cacheUntil, 18, 0);
+  untilDate->setEnabled(false);
   connect(cachePerm, SIGNAL(clicked()), SLOT(slotPermanent()));
   connect(cacheUntil, SIGNAL(clicked()), SLOT(slotUntil()));
-  untilDate = new KURLLabel(QString::null, QString::null, tabOtherSSLCert);
-  grid->addWidget(untilDate, 18, 1);
   connect(untilDate, SIGNAL(leftClickedURL()), SLOT(slotDatePick()));
-  untilDate->setEnabled(false);
   whatstr = i18n("Select here to make the cache entry permanent.");
   QWhatsThis::add(cachePerm, whatstr);
   whatstr = i18n("Select here to make the cache entry temporary.");
@@ -667,7 +672,7 @@ QString whatstr;
   policyReject = new QRadioButton(i18n("Re&ject"), policyGroup);
   policyPrompt = new QRadioButton(i18n("&Prompt"), policyGroup);
   policyGroup->setEnabled(false);
-  grid->addMultiCellWidget(policyGroup, 14, 17, 3, 5);
+  grid->addMultiCellWidget(policyGroup, 16, 19, 3, 5);
   connect(policyGroup, SIGNAL(clicked(int)), SLOT(slotPolicyChanged(int)));
   whatstr = i18n("Select this to always accept this certificate.");
   QWhatsThis::add(policyAccept, whatstr);
@@ -690,13 +695,13 @@ QString whatstr;
   tabSSLCA = new QFrame(this);
 
 #ifdef HAVE_SSL
-  grid = new QGridLayout(tabSSLCA, 18, 8, KDialog::marginHint(), KDialog::spacingHint());
+  grid = new QGridLayout(tabSSLCA, 10, 8, KDialog::marginHint(), KDialog::spacingHint());
 
   caList = new QListView(tabSSLCA);
   whatstr = i18n("This list box shows which certificate authorities KDE"
                  " knows about. You can easily manage them from here.");
   QWhatsThis::add(caList, whatstr);
-  grid->addMultiCellWidget(caList, 0, 7, 0, 6);
+  grid->addMultiCellWidget(caList, 0, 3, 0, 6);
   caList->addColumn(i18n("Organization"));
   caList->addColumn(i18n("Organizational Unit"));
   caList->addColumn(i18n("Common Name"));
@@ -717,18 +722,18 @@ QString whatstr;
 
   caSubject = KSSLInfoDlg::certInfoWidget(tabSSLCA, QString(QString::null));
   caIssuer = KSSLInfoDlg::certInfoWidget(tabSSLCA, QString(QString::null));
-  grid->addMultiCellWidget(caSubject, 8, 14, 0, 3);
-  grid->addMultiCellWidget(caIssuer, 8, 14, 4, 7);
+  grid->addMultiCellWidget(caSubject, 4, 6, 0, 3);
+  grid->addMultiCellWidget(caIssuer, 4, 6, 4, 7);
 
   // Accept for Web Site Signing, Email Signing, Code Signing
   caSite = new QCheckBox(i18n("Accept for site signing"), tabSSLCA);
   caEmail = new QCheckBox(i18n("Accept for email signing"), tabSSLCA);
   caCode = new QCheckBox(i18n("Accept for code signing"), tabSSLCA);
-  grid->addMultiCellWidget(caSite, 15, 15, 0, 4);
+  grid->addMultiCellWidget(caSite, 7, 7, 0, 3);
   connect(caSite, SIGNAL(clicked()), SLOT(slotCAChecked()));
-  grid->addMultiCellWidget(caEmail, 16, 16, 0, 4);
+  grid->addMultiCellWidget(caEmail, 8, 8, 0, 3);
   connect(caEmail, SIGNAL(clicked()), SLOT(slotCAChecked()));
-  grid->addMultiCellWidget(caCode, 17, 17, 0, 4);
+  grid->addMultiCellWidget(caCode, 9, 9, 0, 3);
   connect(caCode, SIGNAL(clicked()), SLOT(slotCAChecked()));
   caSite->setEnabled(false);
   caEmail->setEnabled(false);
@@ -1458,7 +1463,11 @@ QString iss = QString::null;
       otherSSLExport->setEnabled(true);
       otherSSLVerify->setEnabled(true);
       otherSSLRemove->setEnabled(true);
+
+      fromLabel->setEnabled(true);
+      untilLabel->setEnabled(true);
       policyGroup->setEnabled(true);
+      cacheGroup->setEnabled(true);
       cachePerm->setEnabled(true);
       cacheUntil->setEnabled(true);
       policies->setGroup(x->getSub());
@@ -1514,7 +1523,10 @@ QString iss = QString::null;
       otherSSLExport->setEnabled(false);
       otherSSLVerify->setEnabled(false);
       otherSSLRemove->setEnabled(false);
+      fromLabel->setEnabled(false);
+      untilLabel->setEnabled(false);
       policyGroup->setEnabled(false);
+      cacheGroup->setEnabled(false);
       cachePerm->setChecked(false);
       cacheUntil->setChecked(false);
       policyAccept->setChecked(false);
