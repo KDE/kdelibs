@@ -222,7 +222,7 @@ void LightStyleV3::drawPrimitive( PrimitiveElement pe,
     switch (pe) {
     case PE_HeaderSection:
 	// don't draw any headers sunken
-	//	flags = ((flags | Style_Sunken) ^ Style_Sunken) | Style_Raised;
+	flags = ((flags | Style_Sunken) ^ Style_Sunken) | Style_Raised;
 
 	p->setPen( cg.background() );
 	// hard border at the bottom/right of the header
@@ -237,13 +237,21 @@ void LightStyleV3::drawPrimitive( PrimitiveElement pe,
 	// draw the header ( just an etching )
 	if ( ! br.isValid() )
 	    break;
-	drawLightEtch( p, br, cg.button(), false );
+	drawLightEtch( p, br, ( ( flags & Style_Down ) ? 
+                                cg.midlight() : cg.button() ), 
+                       ( flags & Style_Down ) );
 	br.addCoords( 1, 1, -1, -1 );
 
 	// fill the header
 	if ( ! br.isValid() )
 	    break;
-	p->fillRect( br, cg.brush( QColorGroup::Button ) );
+	p->fillRect( br, cg.brush( ( flags & Style_Down ) ?
+				   QColorGroup::Midlight : QColorGroup::Button ) );
+
+	// the taskbuttons in kicker seem to allow the style to set the pencolor
+	// here, which will be used to draw the text for focused window buttons...
+	// how utterly silly
+	p->setPen( cg.buttonText() );
 	break;
 
     case PE_ButtonCommand:
