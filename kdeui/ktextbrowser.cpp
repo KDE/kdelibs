@@ -21,6 +21,10 @@
 ****************************************************************************
 *
 * $Log$
+* Revision 1.11  2002/03/04 00:51:51  lunakl
+* Keep BC changes (the patch is almost 100KiB of boring stuff
+* ... anybody willing to review? ;) ).
+*
 * Revision 1.10  2001/11/24 01:19:04  pfeiffer
 * make the wheelmouse work the same way as in KDE2, i.e. Ctrl-Wheel
 * scrolls faster, instead of zooming. Do we need to make this configurable?
@@ -55,6 +59,7 @@
 
 
 #include <kapplication.h>
+#include <kglobalsettings.h>
 #include <ktextbrowser.h>
 #include <kcursor.h>
 
@@ -144,7 +149,10 @@ void KTextBrowser::viewportMouseMoveEvent( QMouseEvent* e)
 
 void KTextBrowser::contentsWheelEvent( QWheelEvent *e )
 {
-    QScrollView::contentsWheelEvent( e );
+    if ( KGlobalSettings::wheelMouseZooms() )
+        QTextBrowser::contentsWheelEvent( e );
+    else // thanks, we don't want to zoom, so skip QTextEdit's impl.
+        QScrollView::contentsWheelEvent( e );
 }
 
 void KTextBrowser::virtual_hook( int, void* )
