@@ -284,8 +284,9 @@ UString &UString::operator=(const char *c)
 
 UString &UString::operator=(const UString &str)
 {
+  str.rep->ref();
   release();
-  attach(str.rep);
+  rep = str.rep;  
 
   return *this;
 }
@@ -470,7 +471,6 @@ void UString::release()
     delete [] rep->dat;
     delete rep;
   }
-  rep = 0L;
 }
 
 bool KJS::operator==(const UChar &c1, const UChar &c2)
