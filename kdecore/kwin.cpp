@@ -227,12 +227,10 @@ KWin::Info KWin::info( WId win )
 
 QPixmap KWin::icon( WId win, int width, int height, bool scale )
 {
-    qDebug("KWin::icon %d %d ", width, height );
     QPixmap result;
     NETWinInfo info( qt_xdisplay(), win, qt_xrootwin(), NET::WMIcon );
     NETIcon ni = info.icon( width, height );
     if ( ni.data && ni.size.width > 0 && ni.size.height > 0 ) {
-	qDebug("got a net icon: %d %d ", ni.size.width, ni.size.height );
 	QImage img( (uchar*) ni.data, (int) ni.size.width, (int) ni.size.height, 32, 0, 0, QImage::IgnoreEndian );
 	img.setAlphaBuffer( TRUE );
 	if ( scale && width > 0 && height > 0 &&img.size() != QSize( width, height ) )
