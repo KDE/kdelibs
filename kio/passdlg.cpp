@@ -279,8 +279,15 @@ int PasswordDialog::getNameAndPassword( QString& user, QString& pass, bool* keep
     if ( ret == Accepted )
     {
         user = dlg->username();
+        if ( user.isNull() )
+          user = "";
+
         pass = dlg->password();
-        if ( keep ) { (*keep) = dlg->keepPassword(); }
+        if ( pass.isNull() )
+          pass = "";
+
+        if ( keep )
+          (*keep) = dlg->keepPassword();
     }
     delete dlg;
     return ret;
