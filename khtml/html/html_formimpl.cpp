@@ -781,7 +781,6 @@ HTMLInputElementImpl::HTMLInputElementImpl(DocumentPtr *doc, HTMLFormElementImpl
     m_maxLen = -1;
     m_size = 20;
     m_clicked = false;
-    m_defaultChecked = false;
     m_checked = false;
 
     m_filename = "";
@@ -931,10 +930,8 @@ void HTMLInputElementImpl::parseAttribute(AttributeImpl *attr)
         }
         break;
     case ATTR_VALUE:
-        m_value = attr->value();
-        break;
     case ATTR_CHECKED:
-        setChecked(attr->val() != 0);
+        // these are the defaults, don't change them
         break;
     case ATTR_MAXLENGTH:
         m_maxLen = attr->val() ? attr->val()->toInt() : -1;
@@ -1007,9 +1004,8 @@ void HTMLInputElementImpl::init()
     case IMAGE:
         break;
     };
-
-    m_defaultChecked = m_checked;
-    m_defaultValue = m_value;
+    m_value = getAttribute(ATTR_VALUE);
+    m_checked = (getAttribute(ATTR_CHECKED) != 0);
 }
 
 void HTMLInputElementImpl::attach()
@@ -1191,8 +1187,8 @@ bool HTMLInputElementImpl::encoding(const QTextCodec* codec, khtml::encodingList
 
 void HTMLInputElementImpl::reset()
 {
-    setValue(m_defaultValue);
-    setChecked(m_defaultChecked);
+    setValue(getAttribute(ATTR_VALUE));
+    setChecked(getAttribute(ATTR_CHECKED) != 0);
 }
 
 void HTMLInputElementImpl::setChecked(bool _checked)

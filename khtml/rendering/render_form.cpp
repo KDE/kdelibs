@@ -257,7 +257,7 @@ void RenderRadioButton::updateFromElement()
 
 void RenderRadioButton::slotClicked()
 {
-    element()->setAttribute(ATTR_CHECKED,"");
+    element()->setChecked(widget()->isChecked());
 
     // emit mouseClick event etc
     RenderButton::slotClicked();

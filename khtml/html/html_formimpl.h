@@ -282,7 +282,6 @@ protected:
 
     DOMString m_value;
     DOMString m_filename;
-    DOMString m_defaultValue;
     int       xPos;
     short     m_maxLen;
     short     m_size;
@@ -290,7 +289,6 @@ protected:
 
     typeEnum m_type : 4;
     bool m_clicked : 1 ;
-    bool m_defaultChecked : 1;
     bool m_checked : 1;
     bool m_haveType : 1;
     bool m_activeSubmit : 1;
