@@ -467,7 +467,7 @@ KDockWidgetHeaderDrag::KDockWidgetHeaderDrag( KDockWidgetAbstractHeader* parent,
 {
 }
 
-void KDockWidgetHeaderDrag::paintEvent( QPaintEvent* e )
+void KDockWidgetHeaderDrag::paintEvent( QPaintEvent* )
 {
   QPixmap drawBuffer( width(), height() );
   QPainter paint;

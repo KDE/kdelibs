@@ -437,7 +437,7 @@ void KDockTabBarPainter::paintEvent( QPaintEvent* )
   }
 }
 
-void KDockTabBarPainter::resizeEvent( QResizeEvent *e )
+void KDockTabBarPainter::resizeEvent( QResizeEvent * )
 {
   delete buffer;
   switch ( ((KDockTabBar*)parent())->tabPos )

@@ -53,7 +53,7 @@ KDockMoveManager::~KDockMoveManager()
   stop();
 }
 
-void KDockMoveManager::doMove (bool hot_static, bool _dynamic, bool dontmove)
+void KDockMoveManager::doMove (bool /*hot_static*/, bool /*_dynamic*/, bool /*dontmove*/)
 {
   if (working) return;
 
