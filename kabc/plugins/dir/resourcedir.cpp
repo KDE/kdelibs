@@ -101,23 +101,24 @@ Ticket *ResourceDir::requestSaveTicket()
 bool ResourceDir::doOpen()
 {
   QDir dir( mPath );
-  if ( !dir.exists() ) // no directory available
+  if ( !dir.exists() ) { // no directory available
     return dir.mkdir( dir.path() );
+  } else {
+    QString testName = dir.entryList( QDir::Files )[0];
+    if ( testName.isNull() || testName.isEmpty() ) // no file in directory
+      return true;
 
-  QString testName = dir.entryList( QDir::Files )[0];
-  if ( testName.isNull() || testName.isEmpty() ) // no file in directory
-    return true;
+    QFile file( mPath + "/" + testName );
+    if ( file.open( IO_ReadOnly ) )
+      return true;
 
-  QFile file( mPath + "/" + testName );
-  if ( !file.open( IO_ReadOnly ) )
-    return true;
+    if ( file.size() == 0 )
+      return true;
 
-  if ( file.size() == 0 )
-    return true;
-
-  bool ok = mFormat->checkFormat( &file );
-  file.close();
-  return ok;
+    bool ok = mFormat->checkFormat( &file );
+    file.close();
+    return ok;
+  }
 }
 
 void ResourceDir::doClose()
