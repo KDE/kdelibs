@@ -264,8 +264,8 @@ public:
     void setParsing(bool b) { m_bParsing = b; }
     bool parsing() const { return m_bParsing; }
 
-    void setTextColor( DOMString color ) { m_textColor = color; }
-    DOMString textColor() const { return m_textColor; }
+    void setTextColor( QColor color ) { m_textColor = color; }
+    QColor textColor() const { return m_textColor; }
 
     // internal
     NodeImpl *findElement( Id id );
@@ -398,7 +398,7 @@ protected:
     ParseMode pMode;
     HTMLMode hMode;
 
-    DOMString m_textColor;
+    QColor m_textColor;
     NodeImpl *m_focusNode;
 
     // ### replace me with something more efficient

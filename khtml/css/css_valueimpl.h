@@ -151,8 +151,7 @@ public:
     CSSPrimitiveValueImpl(const DOMString &str, CSSPrimitiveValue::UnitTypes type);
     CSSPrimitiveValueImpl(const Counter &c);
     CSSPrimitiveValueImpl( RectImpl *r);
-    CSSPrimitiveValueImpl(const RGBColor &rgb);
-    CSSPrimitiveValueImpl(const QColor &color);
+    CSSPrimitiveValueImpl(QRgb color);
 
     virtual ~CSSPrimitiveValueImpl();
 
@@ -199,7 +198,7 @@ public:
 	return ( m_type != CSSPrimitiveValue::CSS_RECT ? 0 : m_value.rect );
     }
 
-    RGBColor *getRGBColorValue () const {
+    QRgb getRGBColorValue () const {
 	return ( m_type != CSSPrimitiveValue::CSS_RGBCOLOR ? 0 : m_value.rgbcolor );
     }
 
@@ -219,7 +218,7 @@ protected:
 	DOM::DOMStringImpl *string;
 	CounterImpl *counter;
 	RectImpl *rect;
-	RGBColor *rgbcolor;
+        QRgb rgbcolor;
     } m_value;
 };
 

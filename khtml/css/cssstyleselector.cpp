@@ -328,9 +328,9 @@ RenderStyle *CSSStyleSelector::styleForElement(ElementImpl *e, int state)
 
     }
 
-    //qDebug( "styleForElement( %s )", e->tagName().string().latin1() );
-    //qDebug( "%d selectors, %d checked,  %d match,  %d properties ( of %d )",
-    //selectors_size, schecked, smatch, propsToApply->count(), properties_size );
+//    qDebug( "styleForElement( %s )", e->tagName().string().latin1() );
+//     qDebug( "%d selectors, %d checked,  %d match,  %d properties ( of %d )",
+//             selectors_size, schecked, smatch, (*propsToApply)->count(), properties_size );
 
     // inline style declarations, after all others. non css hints
     // count as author rules, and come before all other style sheets, see hack in append()
@@ -346,7 +346,7 @@ RenderStyle *CSSStyleSelector::styleForElement(ElementImpl *e, int state)
     else
 	parentStyle = style;
 
-    //qDebug("applying properties, count=%d", propsToApply->count() );
+//    qDebug("applying properties, count=%d", numPropsToApply );
 
     // we can't apply style rules without a view() and a part. This
     // tends to happen on delayed destruction of widget Renderobjects
@@ -370,7 +370,7 @@ RenderStyle *CSSStyleSelector::styleForElement(ElementImpl *e, int state)
 
         if ( numPseudoProps ) {
 	    fontDirty = false;
-            //qDebug("%d applying %d pseudo props", e->cssTagId(), pseudoProps->count() );
+            //qDebug("%d applying %d pseudo props", cssTagId, numPseudoProps);
             for (unsigned int i = 0; i < numPseudoProps; ++i) {
 		if ( fontDirty && pseudoProps[i]->priority >= (1 << 30) ) {
 		    // we are past the font properties, time to update to the
@@ -618,9 +618,13 @@ static void checkPseudoState( DOM::ElementImpl *e )
 
 bool CSSStyleSelector::checkOneSelector(DOM::CSSSelector *sel, DOM::ElementImpl *e)
 {
-
     if(!e)
         return false;
+
+    qDebug("element: %d", e->id());
+
+    sel->print();
+
 
     if((e->id() & NodeImpl::IdLocalMask) != uint(sel->tag) && sel->tag != -1) return false;
 
@@ -714,7 +718,7 @@ bool CSSStyleSelector::checkOneSelector(DOM::CSSSelector *sel, DOM::ElementImpl 
         // elements for the moment
 	QConstString cstr( sel->value.implementation()->s, sel->value.implementation()->l );
 	const QString& value = cstr.string();
-	//	kdDebug() << "CSSOrderedRule::pseudo " << value << endl;
+	kdDebug() << "CSSOrderedRule::pseudo " << value << endl;
 	switch( *( value.unicode() ) ) {
 	case 'f':
 	    if(value == "first-child") {
@@ -724,9 +728,9 @@ bool CSSStyleSelector::checkOneSelector(DOM::CSSSelector *sel, DOM::ElementImpl 
 		    n = n->nextSibling();
 		if( n == e )
 		    return true;
-	    } else if ( value == "first-line" && subject ) {
-		dynamicPseudo=RenderStyle::FIRST_LINE;
-		return true;
+	    } else if ( value == "first-line" && subject) {
+                dynamicPseudo=RenderStyle::FIRST_LINE;
+                return true;
 	    } else if ( value == "first-letter" && subject ) {
 		dynamicPseudo=RenderStyle::FIRST_LETTER;
 		return true;
@@ -1771,11 +1775,11 @@ void CSSStyleSelector::applyRule( DOM::CSSProperty *prop )
             return;
         }
         } else {
-        if(!primitiveValue) return;
-        if(primitiveValue->primitiveType() == CSSPrimitiveValue::CSS_RGBCOLOR)
-            col = primitiveValue->getRGBColorValue()->color();
-        else
-            return;
+            if(!primitiveValue || primitiveValue->primitiveType() != CSSPrimitiveValue::CSS_RGBCOLOR) return;
+            if(qAlpha(primitiveValue->getRGBColorValue()))
+                col.setRgb(primitiveValue->getRGBColorValue());
+            if (primitiveValue->getRGBColorValue() == khtml::defaultTextColor)
+                col = element->getDocument()->textColor();
 	}
         //kdDebug( 6080 ) << "applying color " << col.isValid() << endl;
         switch(prop->m_id)

@@ -346,15 +346,9 @@ CSSPrimitiveValueImpl::CSSPrimitiveValueImpl( RectImpl *r)
     m_type = CSSPrimitiveValue::CSS_RECT;
 }
 
-CSSPrimitiveValueImpl::CSSPrimitiveValueImpl(const RGBColor &rgb)
+CSSPrimitiveValueImpl::CSSPrimitiveValueImpl(QRgb color)
 {
-    m_value.rgbcolor = new RGBColor(rgb);
-    m_type = CSSPrimitiveValue::CSS_RGBCOLOR;
-}
-
-CSSPrimitiveValueImpl::CSSPrimitiveValueImpl(const QColor &color)
-{
-    m_value.rgbcolor = new RGBColor(color);
+    m_value.rgbcolor = color;
     m_type = CSSPrimitiveValue::CSS_RGBCOLOR;
 }
 
@@ -365,16 +359,21 @@ CSSPrimitiveValueImpl::~CSSPrimitiveValueImpl()
 
 void CSSPrimitiveValueImpl::cleanup()
 {
-    if(m_type == CSSPrimitiveValue::CSS_RGBCOLOR)
-	delete m_value.rgbcolor;
-    else if(m_type < CSSPrimitiveValue::CSS_STRING || m_type == CSSPrimitiveValue::CSS_IDENT)
-    { }
-    else if(m_type < CSSPrimitiveValue::CSS_COUNTER)
+    switch(m_type) {
+    case CSSPrimitiveValue::CSS_STRING:
+    case CSSPrimitiveValue::CSS_URI:
+    case CSSPrimitiveValue::CSS_ATTR:
 	if(m_value.string) m_value.string->deref();
-    else if(m_type == CSSPrimitiveValue::CSS_COUNTER)
+        break;
+    case CSSPrimitiveValue::CSS_COUNTER:
 	m_value.counter->deref();
-    else if(m_type == CSSPrimitiveValue::CSS_RECT)
+        break;
+    case CSSPrimitiveValue::CSS_RECT:
 	m_value.rect->deref();
+    default:
+        break;
+    }
+
     m_type = 0;
 }
 
@@ -562,7 +561,7 @@ DOM::DOMString CSSPrimitiveValueImpl::cssText() const
 	    // ###
 	    break;
 	case CSSPrimitiveValue::CSS_RGBCOLOR:
-	    text = m_value.rgbcolor->color().name();
+	    text = QColor(m_value.rgbcolor).name();
 	    break;
 	default:
 	    break;

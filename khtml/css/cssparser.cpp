@@ -1566,9 +1566,8 @@ bool StyleBaseImpl::parseValue( const QChar *curP, const QChar *endP, int propId
 	  kdDebug( 6080 ) << "CSS_PROP_OUTLINE_COLOR: " << val << endl;
 #endif
 	  // outline has "invert" as additional keyword. we handle
-	  // it as invalid color and add a special case during rendering
 	  if (cssval && cssval->id == CSS_VAL_INVERT) {
-            parsedValue = new CSSPrimitiveValueImpl( QColor() );
+            parsedValue = new CSSPrimitiveValueImpl( khtml::invertedColor );
             break;
 	  }
 	  // Break is explictly missing, looking for <color>
@@ -1579,7 +1578,7 @@ bool StyleBaseImpl::parseValue( const QChar *curP, const QChar *endP, int propId
 	  kdDebug( 6080 ) << "CSS_PROP_BACKGROUND_COLOR: " << val << endl;
 #endif
 	  if (cssval && cssval->id == CSS_VAL_TRANSPARENT) {
-            parsedValue = new CSSPrimitiveValueImpl( QColor() );
+            parsedValue = new CSSPrimitiveValueImpl( khtml::transparentColor );
             break;
 	  }
 	  // Break is explictly missing, looking for <color>
@@ -1601,10 +1600,8 @@ bool StyleBaseImpl::parseValue( const QChar *curP, const QChar *endP, int propId
 	{
 	  const QString val2( value.stripWhiteSpace() );
 	  //kdDebug(6080) << "parsing color " << val2 << endl;
-	  QColor c;
-               khtml::EColorType ct;
-               khtml::setNamedColor(c, ct, val2, !m_bnonCSSHint);
-	  if(!c.isValid() && (val2 != "transparent" ) && !val2.isEmpty() ) return false;
+	  QRgb c = khtml::parseColor(val2, !m_bnonCSSHint);
+	  if(c == khtml::invalidColor) return false;
 	  //kdDebug( 6080 ) << "color is: " << c.red() << ", " << c.green() << ", " << c.blue() << endl;
 	  parsedValue = new CSSPrimitiveValueImpl(c);
 	  break;
@@ -2395,7 +2392,7 @@ CSSValueImpl* StyleBaseImpl::parseContent(const QChar *curP, const QChar *endP)
 			if ( str[i+1] == '\n' )
 		            i++;
 		    }
-		    else if ( isHexadecimal( nextChar ) ) { 
+		    else if ( isHexadecimal( nextChar ) ) {
 			int initial=i;
 			QString hex;
 			bool ok;
@@ -2404,7 +2401,7 @@ CSSValueImpl* StyleBaseImpl::parseContent(const QChar *curP, const QChar *endP)
 			    i++;
 			    nextChar = str[i+1];
 		        }
-			    
+
 		        strstr += QChar( hex.toInt(&ok, 16) );
 		        if ( i<l-1 && nextChar.isSpace() ) {
 			    i++;
@@ -2418,7 +2415,7 @@ CSSValueImpl* StyleBaseImpl::parseContent(const QChar *curP, const QChar *endP)
                         strstr += nextChar;
 		    }
                 }
-		else 
+		else
 		    strstr += str[i];
             }
             parsedValue = new CSSPrimitiveValueImpl(DOMString(strstr), CSSPrimitiveValue::CSS_STRING);
@@ -2433,7 +2430,7 @@ CSSValueImpl* StyleBaseImpl::parseContent(const QChar *curP, const QChar *endP)
     return values;
 }
 
-bool StyleBaseImpl::isHexadecimal( QChar &c ) 
+bool StyleBaseImpl::isHexadecimal( QChar &c )
 {
     return  ( c >= '0' && c <= '9' ) ||
             ( c >= 'a' && c <= 'f' ) ||

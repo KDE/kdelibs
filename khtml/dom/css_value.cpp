@@ -463,7 +463,7 @@ RGBColor::RGBColor(const RGBColor &other)
     m_color = other.m_color;
 }
 
-RGBColor::RGBColor(const QColor &color)
+RGBColor::RGBColor(QRgb color)
 {
     m_color = color;
 }
@@ -480,17 +480,17 @@ RGBColor::~RGBColor()
 
 CSSPrimitiveValue RGBColor::red() const
 {
-    return new CSSPrimitiveValueImpl((float)m_color.red(), CSSPrimitiveValue::CSS_DIMENSION);
+    return new CSSPrimitiveValueImpl(float(qAlpha(m_color) ? qRed(m_color) : 0), CSSPrimitiveValue::CSS_DIMENSION);
 }
 
 CSSPrimitiveValue RGBColor::green() const
 {
-    return new CSSPrimitiveValueImpl((float)m_color.green(), CSSPrimitiveValue::CSS_DIMENSION);
+    return new CSSPrimitiveValueImpl(float(qAlpha(m_color) ? qGreen(m_color) : 0), CSSPrimitiveValue::CSS_DIMENSION);
 }
 
 CSSPrimitiveValue RGBColor::blue() const
 {
-    return new CSSPrimitiveValueImpl((float)m_color.blue(), CSSPrimitiveValue::CSS_DIMENSION);
+    return new CSSPrimitiveValueImpl(float(qAlpha(m_color) ? qBlue(m_color) : 0), CSSPrimitiveValue::CSS_DIMENSION);
 }
 
 

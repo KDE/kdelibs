@@ -581,7 +581,7 @@ class RGBColor
 public:
     RGBColor();
     RGBColor(const RGBColor &other);
-    RGBColor(const QColor &color);
+    RGBColor(QRgb color);
 
     RGBColor & operator = (const RGBColor &other);
 
@@ -605,10 +605,8 @@ public:
      */
     CSSPrimitiveValue blue() const;
 
-    const QColor &color() const { return m_color; }
-
 protected:
-    QColor m_color;
+    QRgb m_color;
 };
 
 class RectImpl;

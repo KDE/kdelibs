@@ -46,7 +46,7 @@ void RenderBody::setStyle(RenderStyle* style)
 {
 //     qDebug("RenderBody::setStyle()");
     RenderFlow::setStyle(style);
-    element()->getDocument()->setTextColor( DOMString( style->color().name() ) );
+    element()->getDocument()->setTextColor( style->color() );
     scrollbarsStyled = false;
 }
 
