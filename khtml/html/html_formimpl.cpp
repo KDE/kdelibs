@@ -86,6 +86,9 @@ HTMLFormElementImpl::~HTMLFormElementImpl()
     QPtrListIterator<HTMLGenericFormElementImpl> it(formElements);
     for (; it.current(); ++it)
         it.current()->m_form = 0;
+    QPtrListIterator<HTMLImageElementImpl> it2(imgElements);
+    for (; it2.current(); ++it2)
+        it2.current()->m_form = 0;
 }
 
 NodeImpl::Id HTMLFormElementImpl::id() const
@@ -496,6 +499,16 @@ void HTMLFormElementImpl::registerFormElement(HTMLGenericFormElementImpl *e)
 void HTMLFormElementImpl::removeFormElement(HTMLGenericFormElementImpl *e)
 {
     formElements.remove(e);
+}
+
+void HTMLFormElementImpl::registerImgElement(HTMLImageElementImpl *e)
+{
+    imgElements.append(e);
+}
+
+void HTMLFormElementImpl::removeImgElement(HTMLImageElementImpl *e)
+{
+    imgElements.remove(e);
 }
 
 // -------------------------------------------------------------------------
