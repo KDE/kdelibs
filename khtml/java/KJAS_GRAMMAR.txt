@@ -19,7 +19,8 @@ KJAS Grammar
                     <setFTPProxy>    |
                     <showURLInFrame> |
                     <showDocument>   |
-                    <showStatus>
+                    <showStatus>     |
+                    <resizeApplet>
 
 <createContext>  -> <1 byte equal to 1 when cast as int><SEP><ContextID><END>
 
