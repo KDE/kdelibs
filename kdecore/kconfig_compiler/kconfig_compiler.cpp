@@ -452,7 +452,7 @@ int main( int argc, char **argv )
     return 1;
   }
   QString baseName = args->url( 1 ).fileName();
-  baseName = baseName.left(baseName.length() - 13);
+  baseName = baseName.left(baseName.length() - 6);
 
   KSimpleConfig codegenConfig( codegenFilename, true );
   

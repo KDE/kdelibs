@@ -13,3 +13,6 @@ ClassName=ExamplePrefsBase
 ### It can be used to add extra functions and variables to the
 ### class.
 # CustomAdditions=true
+#
+### Provide setFooBar(int) style functions
+Mutators=true

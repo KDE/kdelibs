@@ -15,7 +15,7 @@
       <label>Another option</label>
       <default>5</default>
     </entry>
-    <entry name="ListOption" type="int">
+    <entry name="ListOption" type="Enum">
       <values>
         <value>One</value>
         <value>Two</value>
