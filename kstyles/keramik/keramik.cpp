@@ -1123,6 +1123,7 @@ void KeramikStyle::drawControl( ControlElement element,
 		{
 			const QPushButton* button = static_cast<const QPushButton *>( widget );
 			bool active = button->isOn() || button->isDown();
+			bool cornArrow = false;
 
 			// Shift button contents if pushed.
 			if ( active )
@@ -1136,9 +1137,17 @@ void KeramikStyle::drawControl( ControlElement element,
 			if ( button->isMenuButton() )
 			{
 				int dx = pixelMetric( PM_MenuButtonIndicator, widget );
-				drawPrimitive( PE_ArrowDown, p, visualRect( QRect(x + w - dx - 8, y + 2, dx, h - 4), r ),
+				if ( button->iconSet() && !button->iconSet()->isNull()  && 
+					(dx + button->iconSet()->pixmap (QIconSet::Small, QIconSet::Normal, QIconSet::Off ).width()) >= w )
+				{
+					cornArrow = true; //To little room. Draw the arrow in the corner, don't adjust the widget
+				}
+				else
+				{
+					drawPrimitive( PE_ArrowDown, p, visualRect( QRect(x + w - dx - 8, y + 2, dx, h - 4), r ),
 							   cg, flags, opt );
-				w -= dx;
+					w -= dx;
+				}
 			}
 
 			// Draw the icon if there is one
@@ -1159,6 +1168,12 @@ void KeramikStyle::drawControl( ControlElement element,
 									pixmap );
 				else
 					p->drawPixmap( x + 4, y + h / 2 - pixmap.height() / 2, pixmap );
+					
+				if (cornArrow) //Draw over the icon
+					drawPrimitive( PE_ArrowDown, p, visualRect( QRect(x + w - 6, x + h - 6, 7, 7), r ),
+							   cg, flags, opt );
+
+					
 				int  pw = pixmap.width();
 				x += pw + 4;
 				w -= pw + 4;
@@ -1168,6 +1183,8 @@ void KeramikStyle::drawControl( ControlElement element,
 			drawItem( p, QRect(x, y, w, h), AlignCenter | ShowPrefix, button->colorGroup(),
 						button->isEnabled(), button->pixmap(), button->text(), -1,
 						&button->colorGroup().buttonText() );
+						
+
 
 			if ( flags & Style_HasFocus )
 				drawPrimitive( PE_FocusRect, p,
