@@ -983,14 +983,16 @@ void RenderFlow::calcMinMaxWidth()
     KHTMLAssert( !minMaxKnown() );
 
 #ifdef DEBUG_LAYOUT
-    kdDebug( 6040 ) << renderName() << "(RenderBox)::calcMinMaxWidth() known=" << minMaxKnown() << endl;
+    kdDebug( 6040 ) << renderName() << "(RenderBox)::calcMinMaxWidth() this=" << this << endl;
 #endif
 
     m_minWidth = 0;
     m_maxWidth = 0;
 
-    if (isInline())
+    if (isInline()) {
+	setMinMaxKnown();
         return;
+    }
 
     int cw = containingBlock()->contentWidth();
 

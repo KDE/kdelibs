@@ -524,7 +524,7 @@ void RenderObject::printTree(int indent) const
     for(RenderObject* c = firstChild(); c; c = c->nextSibling())
         childcount++;
 
-    if (!isInline() )
+    //if (!isInline() )
     kdDebug()    << ind << renderName()
                  << (childcount ?
                      (QString::fromLatin1("[") + QString::number(childcount) + QString::fromLatin1("]"))
@@ -888,7 +888,7 @@ void RenderObject::recalcMinMaxWidths()
     KHTMLAssert( m_recalcMinMax );
 
 #ifdef DEBUG_LAYOUT
-    kdDebug( 6040 ) << renderName() << " recalcMinMaxWidths()" <<endl;
+    kdDebug( 6040 ) << renderName() << " recalcMinMaxWidths() this=" << this <<endl;
 #endif
 
     RenderObject *child = firstChild();
@@ -908,6 +908,12 @@ void RenderObject::recalcMinMaxWidths()
 	    m_minMaxKnown = false;
 	child = child->nextSibling();
     }
+
+    // we need to recalculate, if the contains inline children, as the change could have 
+    // happened somewhere deep inside the child tree
+    if ( !isInline() && childrenInline() )
+	m_minMaxKnown = false;
+
     if ( !m_minMaxKnown )
 	calcMinMaxWidth();
     m_recalcMinMax = false;
