@@ -214,8 +214,8 @@ QStringList KIconTheme::queryIcons(int size, int context)
     {
 	if ((context != KIcon::Any) && (context != dir->context()))
 	    continue;
-	dw = abs(dir->size() - size);
-	if (dw >= QMIN(7,delta))
+	dw = dir->size() - size;
+	if ((dw > 6) || (abs(dw) >= abs(delta)))
 	    continue;
 	delta = dw;
 	best = dir;
