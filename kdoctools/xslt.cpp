@@ -310,9 +310,10 @@ static bool readCache( const QString &filename,
                        const QString &cache, QString &output)
 {
     kdDebug() << "verifyCache " << filename << " " << cache << endl;
-    if ( !KStandardDirs::exists( cache ) )
+    if ( !compareTimeStamps( filename, cache ) )
         return false;
-    // TODO check time stamps
+    if ( !compareTimeStamps( locate( "dtd", "customization/kde-chunk.xsl"), cache ) )
+        return false;
 
     QFile raw(cache);
     KFilterBase *f = ::findFilterByFileName(cache);
