@@ -702,6 +702,7 @@ void RenderTableSection::addCell( RenderTableCell *cell )
     }
 }
 
+
 void RenderTableSection::setCellWidths()
 {
 #ifdef DEBUG_LAYOUT
@@ -716,8 +717,8 @@ void RenderTableSection::setCellWidths()
 	RenderTableCell *lastCell = 0;
 	int lastCol = 0;
 	for ( int j = 0; j < cols; j++ ) {
-	    //	    qDebug("row(%d/%d) is %x",  i,  j,  row[j] );
-	    if ( row[j] == lastCell )
+	    //qDebug("row(%d/%d) is %p, lastCell: %p",  i,  j,  row[j], lastCell );
+	    if ( !row[j] || row[j] == lastCell )
 		continue;
 	    if ( lastCell ) {
 		int w = columnPos[j]-columnPos[lastCol] - table()->cellSpacing();
