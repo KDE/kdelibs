@@ -913,6 +913,14 @@ void LightStyleV3::drawControl( ControlElement control,
 	    // item column
 	    ir.setCoords(cr.right() + 4, r.top(), tr.right() - 4, r.bottom());
 
+	    bool reverse = QApplication::reverseLayout();
+	    if ( reverse ) {
+		cr = visualRect( cr, r );
+		sr = visualRect( sr, r );
+		tr = visualRect( tr, r );
+		ir = visualRect( ir, r );
+	    }
+	    
 	    if (mi->isChecked() &&
 		! (flags & Style_Active) &
 		(flags & Style_Enabled))
@@ -976,30 +984,31 @@ void LightStyleV3::drawControl( ControlElement control,
 
 		// draw accelerator/tab-text
 		if (t >= 0) {
+		    int alignFlag = AlignVCenter | ShowPrefix | DontClip | SingleLine;
+		    alignFlag |= ( reverse ? AlignLeft : AlignRight );
 		    if (! (flags & Style_Enabled)) {
 			p->setPen(embosscolor);
 			tr.moveBy(1, 1);
-			p->drawText(tr, (AlignVCenter | AlignRight | ShowPrefix |
-					 DontClip | SingleLine), text.mid(t + 1));
+			p->drawText(tr, alignFlag, text.mid(t + 1));
 			tr.moveBy(-1, -1);
 			p->setPen(textcolor);
 		    }
 
-		    p->drawText(tr, (AlignVCenter | AlignRight | ShowPrefix |
-				     DontClip | SingleLine), text.mid(t + 1));
+		    p->drawText(tr, alignFlag, text.mid(t + 1));
 		}
+
+		int alignFlag = AlignVCenter | ShowPrefix | DontClip | SingleLine;
+		alignFlag |= ( reverse ? AlignRight : AlignLeft );
 
 		if (! (flags & Style_Enabled)) {
 		    p->setPen(embosscolor);
 		    ir.moveBy(1, 1);
-		    p->drawText(ir, AlignVCenter | ShowPrefix | DontClip | SingleLine,
-				text, t);
+		    p->drawText(ir, alignFlag, text, t);
 		    ir.moveBy(-1, -1);
 		    p->setPen(textcolor);
 		}
 
-		p->drawText(ir, AlignVCenter | ShowPrefix | DontClip | SingleLine,
-			    text, t);
+		p->drawText(ir, alignFlag, text, t);
 	    } else if (mi->pixmap()) {
 		QPixmap pixmap = *mi->pixmap();
 		if (pixmap.depth() == 1)
@@ -1010,7 +1019,8 @@ void LightStyleV3::drawControl( ControlElement control,
 	    }
 
 	    if (mi->popup())
-		drawPrimitive(PE_ArrowRight, p, sr, cg, flags);
+		drawPrimitive( (QApplication::reverseLayout() ? PE_ArrowLeft : PE_ArrowRight),
+			       p, sr, cg, flags);
 	    break;
 	}
 
@@ -1157,11 +1167,9 @@ void LightStyleV3::drawComplexControl( ComplexControl control,
 
 	    frame = querySubControlMetrics(CC_SpinWidget, widget,
 					   SC_SpinWidgetFrame, data);
-	    up = querySubControlMetrics(CC_SpinWidget, widget,
-					SC_SpinWidgetUp, data);
-	    down = querySubControlMetrics(CC_SpinWidget, widget,
-					  SC_SpinWidgetDown, data);
-
+	    up = spinwidget->upRect();
+	    down = spinwidget->downRect();
+	    
 	    if ((controls & SC_SpinWidgetFrame) && frame.isValid())
 		drawPrimitive( PE_Panel, p, frame, cg, flags | Style_Sunken );
 
