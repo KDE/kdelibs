@@ -311,10 +311,10 @@ void KFontChooser::charset_chosen_slot(const QString& chset)
 {
   KCharsets *charsets = KGlobal::charsets();
   if (chset == i18n("default")) {
-    charsets->setQFont(selFont, KGlobal::locale()->charset());
+    selFont.setCharSet(charsets->nameToID(KGlobal::locale()->charset()));
   } else {
     kdDebug() << "KFontChooser::charset_chosen_slot chset=" << chset << endl;
-    charsets->setQFont(selFont, chset);
+    selFont.setCharSet(charsets->nameToID(chset));
   }
 
   emit fontSelected(selFont);
@@ -577,6 +577,11 @@ int KFontDialog::getFontAndText( QFont &theFont, QString &theString,
 ****************************************************************************
 *
 * $Log$
+* Revision 1.63  2001/07/01 20:10:30  faure
+* Fixed BC breakage (Michael H's commit added a member var to the KFontChooser
+* class). Just got a crash when using KWord compiled against 2.1 running
+* against 2.2-cvs. Don't forget KFontChooser is part of the public API too :)
+*
 * Revision 1.62  2001/05/22 13:05:26  faure
 * There was no objection, so I'm committing the patch for changing the color
 * of the text in the preview.
