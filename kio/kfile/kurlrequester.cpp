@@ -333,15 +333,18 @@ KPushButton * KURLRequester::button() const
 
 KEditListBox::CustomEditor KURLRequester::customEditor()
 {
+    setSizePolicy(QSizePolicy( QSizePolicy::Preferred, 
+                               QSizePolicy::Fixed));
+    
     KLineEdit *edit = d->edit;
     if ( !edit && d->combo )
         edit = dynamic_cast<KLineEdit*>( d->combo->lineEdit() );
-    
+
 #ifndef NDEBUG
     if ( !edit )
         kdWarning() << "KURLRequester's lineedit is not a KLineEdit!??\n";
 #endif
-    
+
     KEditListBox::CustomEditor editor( this, edit );
     return editor;
 }
