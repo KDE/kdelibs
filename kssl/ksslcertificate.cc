@@ -145,11 +145,36 @@ QString rc = "";
   ASN1_INTEGER *aint = d->kossl->X509_get_serialNumber(d->m_cert);
   if (aint) {
     rc = ASN1_INTEGER_QString(aint);
-    //d->kossl->OPENSSL_free(aint);
+    // d->kossl->ASN1_INTEGER_free(aint);   this makes the sig test fail
   }
 #endif
 return rc;
 }
+
+
+QString KSSLCertificate::getMD5DigestText() const {
+QString rc = "";
+
+#ifdef HAVE_SSL
+   unsigned int n;
+   unsigned char md[EVP_MAX_MD_SIZE];
+   char hv[] = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'};
+ 
+   if (!d->kossl->X509_digest(d->m_cert, d->kossl->EVP_md5(), md, &n)) {
+      return rc;
+   }
+                                
+   for (unsigned int j = 0; j < n; j++) {
+      if (j > 0) rc += ":";
+      rc.append(hv[(md[j]&0xf0)>>4]);
+      rc.append(hv[md[j]&0x0f]);
+   }
+
+#endif
+
+return rc;
+}
+
 
 
 QString KSSLCertificate::getKeyType() const {
@@ -194,8 +219,8 @@ char *x = NULL;
       rc += i18n("Modulus: ");
       rc = rc.arg(strlen(x)*4);
       for (unsigned int i = 0; i < strlen(x); i++) {
-        if (i%60 != 0 && i%2 == 0) rc += ":";
-        else if (i%60 == 0) rc += "\n          ";
+        if (i%40 != 0 && i%2 == 0) rc += ":";
+        else if (i%40 == 0) rc += "\n          ";
         rc += x[i];
       }
       rc += "\n";
@@ -214,8 +239,8 @@ char *x = NULL;
       rc += i18n("Prime: ");
       rc = rc.arg(strlen(x)*4);  // hack - this may not be always accurate
       for (unsigned int i = 0; i < strlen(x); i++) {
-        if (i%60 != 0 && i%2 == 0) rc += ":";
-        else if (i%60 == 0) rc += "\n          ";
+        if (i%40 != 0 && i%2 == 0) rc += ":";
+        else if (i%40 == 0) rc += "\n          ";
         rc += x[i];
       }
       rc += "\n";
@@ -224,8 +249,8 @@ char *x = NULL;
       x = d->kossl->BN_bn2hex(pkey->pkey.dsa->q);
       rc += i18n("160 bit Prime Factor: ");
       for (unsigned int i = 0; i < strlen(x); i++) {
-        if (i%60 != 0 && i%2 == 0) rc += ":";
-        else if (i%60 == 0) rc += "\n          ";
+        if (i%40 != 0 && i%2 == 0) rc += ":";
+        else if (i%40 == 0) rc += "\n          ";
         rc += x[i];
       }
       rc += "\n";
@@ -234,8 +259,8 @@ char *x = NULL;
       x = d->kossl->BN_bn2hex(pkey->pkey.dsa->g);
       rc += QString("g: ");
       for (unsigned int i = 0; i < strlen(x); i++) {
-        if (i%60 != 0 && i%2 == 0) rc += ":";
-        else if (i%60 == 0) rc += "\n          ";
+        if (i%40 != 0 && i%2 == 0) rc += ":";
+        else if (i%40 == 0) rc += "\n          ";
         rc += x[i];
       }
       rc += "\n";
@@ -244,8 +269,8 @@ char *x = NULL;
       x = d->kossl->BN_bn2hex(pkey->pkey.dsa->pub_key);
       rc += i18n("Public Key: ");
       for (unsigned int i = 0; i < strlen(x); i++) {
-        if (i%60 != 0 && i%2 == 0) rc += ":";
-        else if (i%60 == 0) rc += "\n          ";
+        if (i%40 != 0 && i%2 == 0) rc += ":";
+        else if (i%40 == 0) rc += "\n          ";
         rc += x[i];
       }
       rc += "\n";

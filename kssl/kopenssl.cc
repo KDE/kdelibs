@@ -104,6 +104,9 @@ static EVP_PKEY *(*K_X509_get_pubkey)(X509 *) = NULL;
 static int (*K_i2d_PublicKey)(EVP_PKEY *, unsigned char **) = NULL;
 static int (*K_X509_check_private_key)(X509 *, EVP_PKEY *) = NULL;
 static char * (*K_BN_bn2hex)(const BIGNUM *) = NULL;
+static int (*K_X509_digest)(const X509 *,const EVP_MD *, unsigned char *, unsigned int *) = NULL;
+static EVP_MD* (*K_EVP_md5)() = NULL;
+static void (*K_ASN1_INTEGER_free)(ASN1_INTEGER *) = NULL;
 #endif    
 };
 
@@ -221,6 +224,9 @@ KConfig *cfg;
       K_i2d_PublicKey = (int (*)(EVP_PKEY *, unsigned char **)) _cryptoLib->symbol("i2d_PublicKey");
       K_X509_check_private_key = (int (*)(X509 *, EVP_PKEY *)) _cryptoLib->symbol("X509_check_private_key");
       K_BN_bn2hex = (char *(*)(const BIGNUM *)) _cryptoLib->symbol("BN_bn2hex");
+      K_X509_digest = (int (*)(const X509 *,const EVP_MD *, unsigned char *, unsigned int *)) _cryptoLib->symbol("X509_digest");
+      K_EVP_md5 = (EVP_MD *(*)()) _cryptoLib->symbol("EVP_md5");
+      K_ASN1_INTEGER_free = (void (*)(ASN1_INTEGER *)) _cryptoLib->symbol("ASN1_INTEGER_free");
 #endif
    }
 
@@ -750,6 +756,25 @@ char *KOpenSSLProxy::BN_bn2hex(const BIGNUM *a) {
    if (K_BN_bn2hex) return (K_BN_bn2hex)(a);
    else return NULL;
 }
+
+
+int KOpenSSLProxy::X509_digest(const X509 *x,const EVP_MD *t, unsigned char *md, unsigned int *len) {
+   if (K_X509_digest) return (K_X509_digest)(x, t, md, len);
+   else return -1;
+}
+
+
+EVP_MD *KOpenSSLProxy::EVP_md5() {
+   if (K_EVP_md5) return (K_EVP_md5)();
+   return NULL;
+}
+
+
+void KOpenSSLProxy::ASN1_INTEGER_free(ASN1_INTEGER *a) {
+   if (K_ASN1_INTEGER_free) (K_ASN1_INTEGER_free)(a);
+}
+
+
 
 #endif
 

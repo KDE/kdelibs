@@ -502,6 +502,23 @@ public:
    char *BN_bn2hex(const BIGNUM *a);
 
 
+   /*
+    *  Compute the digest of an X.509
+    */
+   int X509_digest(const X509 *x,const EVP_MD *t, unsigned char *md, unsigned int *len);
+
+
+   /*
+    *  EVP_md5
+    */
+   EVP_MD *EVP_md5();
+
+
+   /*
+    *  ASN1_INTEGER free
+    */
+   void ASN1_INTEGER_free(ASN1_INTEGER *x);
+
 
 #endif
 

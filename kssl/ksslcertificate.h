@@ -97,6 +97,7 @@ public:
   QString getSerialNumber() const;
   QString getKeyType() const;
   QString getPublicKeyText() const;
+  QString getMD5DigestText() const;
 
   bool isValid();
   KSSLValidation validate();
