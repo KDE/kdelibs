@@ -85,7 +85,6 @@ void Observer::killJob( int progressId )
     if (!job)
     {
         kdWarning() << "Can't find job to kill ! There is no job with progressId=" << progressId << " in this process" << endl;
-        m_dctJobs.remove( progressId );
         return;
     }
     job->kill( false /* not quietly */ );
