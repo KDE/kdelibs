@@ -1069,7 +1069,7 @@ void KKeyChooser::setKey( uint kCode)
 void KKeyChooser::editKey()
 {
 	bChange->setEnabled( FALSE ); //eKey->setEnabled( TRUE );
-	lInfo->setText( i18n("Return to end edition") );
+	lInfo->setText( i18n("Press 'Return' to quit editing") );
 }
 
 void KKeyChooser::editEnd()
