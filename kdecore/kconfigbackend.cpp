@@ -33,6 +33,7 @@
 #include <kglobal.h>
 #include <kstddirs.h>
 #include <ksavefile.h>
+#include <kurl.h>
 
 #ifdef HAVE_UNISTD_H
 #include <unistd.h>
@@ -251,6 +252,14 @@ void KConfigINIBackEnd::sync(bool bMerge)
        aLocalFileName = fileName;
     } else {
        aLocalFileName = KGlobal::dirs()->saveLocation(resType.latin1()) + fileName;
+    }
+
+    // Create the containing dir if needed
+    if ((resType!="config") && aLocalFileName[0]=='/')
+    {
+       KURL path(aLocalFileName);
+       QString dir=path.directory();
+       KStandardDirs::makeDir(dir);
     }
 
     // Can we allow the write? We can, if the program
