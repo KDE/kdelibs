@@ -443,7 +443,8 @@ void RenderObject::setStyle(RenderStyle *style)
     m_positioned = false;
     m_relPositioned = false;
     m_printSpecial = false;
-    m_inline = true;
+    // ### no support for changing the display type dynamically...
+    //m_inline = true;
     m_visible = true;
 
     // deletion of styles is handled by the DOM elements
