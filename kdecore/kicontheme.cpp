@@ -265,9 +265,10 @@ KIcon KIconTheme::iconPath(const QString& name, int size, int match) const
 {
     KIcon icon;
     QString path;
-    int delta = 1000;
+    int delta = 1000, dw;
     KIconThemeDir *dir;
 
+    dw = 1000; // shut up, gcc
     QListIterator<KIconThemeDir> dirs(mDirs);
     for ( ; dirs.current(); ++dirs)
     {
@@ -282,11 +283,9 @@ KIcon KIconTheme::iconPath(const QString& name, int size, int match) const
               continue;
         } else
         {
-            int dw = dir->size() - size;
-            if ((dw > 6) || (abs(dw) >= abs(delta)))
+            dw = dir->size() - size;
+            if ((dw > 7) || (abs(dw) >= abs(delta)))
                 continue;
-
-            delta = dw;
         }
 
         path = dir->iconPath(name);
@@ -300,6 +299,8 @@ KIcon KIconTheme::iconPath(const QString& name, int size, int match) const
         // if we got in MatchExact that far, we find no better
         if (match == KIcon::MatchExact)
             return icon;
+	else
+	    delta = dw;
     }
     return icon;
 }
