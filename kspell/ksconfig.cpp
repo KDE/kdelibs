@@ -37,6 +37,13 @@
 
 KSpellConfig::KSpellConfig (const KSpellConfig &_ksc)
   : QWidget(0, 0), nodialog(true)
+  , kc(0)
+  , cb1(0)
+  , cb2(0)
+  , dictlist(0)
+  , dictcombo(0)
+  , encodingcombo(0)
+  , clientcombo(0)
 {  
   setNoRootAffix (_ksc.noRootAffix());
   setRunTogether (_ksc.runTogether());
@@ -52,6 +59,13 @@ KSpellConfig::KSpellConfig (const KSpellConfig &_ksc)
 KSpellConfig::KSpellConfig( QWidget *parent, const char *name,
 			    KSpellConfig *_ksc, bool addHelpButton ) 
   : QWidget (parent, name), nodialog(false)
+  , kc(0)
+  , cb1(0)
+  , cb2(0)
+  , dictlist(0)
+  , dictcombo(0)
+  , encodingcombo(0)
+  , clientcombo(0)
 {
   kc = KGlobal::config();
   if( _ksc == 0 )
@@ -273,7 +287,7 @@ KSpellConfig::dictFromList () const
 bool
 KSpellConfig::readGlobalSettings ()
 {
-  kc->setGroup ("KSpell");
+  KConfigGroupSaver cs(kc,"KSpell");
 
   setNoRootAffix   (kc->readNumEntry ("KSpell_NoRootAffix", 0));
   setRunTogether   (kc->readNumEntry ("KSpell_RunTogether", 0));
@@ -289,7 +303,7 @@ KSpellConfig::readGlobalSettings ()
 bool
 KSpellConfig::writeGlobalSettings ()
 {
-  kc->setGroup ("KSpell");
+  KConfigGroupSaver cs(kc,"KSpell");
   kc->writeEntry ("KSpell_NoRootAffix",(int) noRootAffix (), TRUE, TRUE);
   kc->writeEntry ("KSpell_RunTogether", (int) runTogether (), TRUE, TRUE);
   kc->writeEntry ("KSpell_Dictionary", dictionary (), TRUE, TRUE);
@@ -434,7 +448,8 @@ KSpellConfig::fillInDialog ()
 	      langfnames.remove ( langfnames.begin() );
 	      langfnames.prepend ( fname );
 
-	      hname="Default - "+hname+"("+fname+")";
+	      hname=i18n("default spelling dictionary"
+						  ,"Default - %1 (%2)").arg(hname).arg(fname);
 	      
 	      dictcombo->changeItem (hname,0);
 	    }
@@ -487,18 +502,28 @@ void
 KSpellConfig::setClient (int c)
 {
   iclient = c;
+  
+  if(clientcombo)
+	  clientcombo->setCurrentItem(c);
 }
 
 void
 KSpellConfig::setNoRootAffix (bool b)
 {
   bnorootaffix=b;
+
+
+  if(cb1)
+	  cb1->setChecked(b);
 }
 
 void
 KSpellConfig::setRunTogether(bool b)
 {
   bruntogether=b;
+
+  if(cb2)
+	  cb2->setChecked(b);
 }
 
 void
@@ -510,7 +535,26 @@ KSpellConfig::setDictionary (const QString s)
     if ((signed)qsdict.find(".aff")==(signed)qsdict.length()-4)
       qsdict.remove (qsdict.length()-4,4);
 
-  //  kdebug (KDEBUG_INFO, 750, "setdictionary: [%s]",qsdict.data());
+
+  if(dictcombo)
+  {
+    int whichelement=-1;
+    if (dictFromList())
+    {
+      for (unsigned int i=0;i<langfnames.count();i++)
+      {
+         if (langfnames[i] == s)
+           whichelement=i;
+      }
+
+      if(whichelement >= 0)
+      {
+        dictcombo->setCurrentItem(whichelement);
+      }
+    }
+  }
+
+
 }
 
 void
@@ -531,6 +575,9 @@ void
 KSpellConfig::setEncoding (int enctype)
 {
   enc=enctype;
+
+  if(encodingcombo)
+    encodingcombo->setCurrentItem(enctype);
 }
 
 /*
