@@ -680,7 +680,7 @@ public class KJASProtocolHandler
         String width_str = String.valueOf( width );
         String height_str = String.valueOf( height );
 
-        //lenght = length of args plus code, 4 seps, end
+        //length = length of args plus code, 4 seps, end
         int length = contextID.length() + appletID.length() + width_str.length() +
                      height_str.length() + 6;
         char[] chars = new char[ length + 8 ]; //for length of message

@@ -116,7 +116,7 @@ public:
      */
     virtual ~KHTMLSettings();
 
-    // Behaviour settings
+    // Behavior settings
     bool changeCursor() const;
     bool underlineLink() const;
     bool hoverLink() const;

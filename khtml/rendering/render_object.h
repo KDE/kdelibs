@@ -495,7 +495,7 @@ public:
     bool isSpecial() const { return (isFloating() || isPositioned()); };
     virtual bool hasOverhangingFloats() { return false; }
 
-    // positioning of inline childs (bidi)
+    // positioning of inline children (bidi)
     virtual void position(InlineBox*, int, int, bool, int) {}
 //    virtual void position(int, int, int, int, int, bool, bool, int) {}
 

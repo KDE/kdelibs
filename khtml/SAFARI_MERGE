@@ -14,7 +14,7 @@ in the khtml sourcecode.
 
 - the font changes (except for the konq-body property) are still not merged.
  They are partly not easily portable and I don't understand some parts of them.
- a small part is merged but still unused (seperate font sizes for fixed fonts)
+ a small part is merged but still unused (separate font sizes for fixed fonts)
 
 - The Apple specific parts with their DPI settings.
 

@@ -1214,7 +1214,7 @@ void Loader::cancelRequests( DocLoader* dl )
         if ( pIt.current()->m_docLoader == dl )
         {
 #ifdef CACHE_DEBUG
-            kdDebug( 6060 ) << "cancelling pending request for " << pIt.current()->object->url().string() << endl;
+            kdDebug( 6060 ) << "canceling pending request for " << pIt.current()->object->url().string() << endl;
 #endif
             //emit requestFailed( dl, pIt.current()->object );
             Cache::removeCacheEntry( pIt.current()->object );
@@ -1231,7 +1231,7 @@ void Loader::cancelRequests( DocLoader* dl )
     {
         if ( lIt.current()->m_docLoader == dl )
         {
-            //kdDebug( 6060 ) << "cancelling loading request for " << lIt.current()->object->url().string() << endl;
+            //kdDebug( 6060 ) << "canceling loading request for " << lIt.current()->object->url().string() << endl;
             KIO::Job *job = static_cast<KIO::Job *>( lIt.currentKey() );
             Cache::removeCacheEntry( lIt.current()->object );
             m_requestsLoading.remove( lIt.currentKey() );

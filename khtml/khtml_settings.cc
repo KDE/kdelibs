@@ -326,7 +326,7 @@ void KHTMLSettings::init( KConfig * config, bool reset )
     if ( reset || config->hasKey( "EnforceDefaultCharset" ) )
         d->enforceCharset = config->readBoolEntry( "EnforceDefaultCharset", false );
 
-    // Behaviour
+    // Behavior
     if ( reset || config->hasKey( "ChangeCursor" ) )
         d->m_bChangeCursor = config->readBoolEntry( "ChangeCursor", KDE_DEFAULT_CHANGECURSOR );
 

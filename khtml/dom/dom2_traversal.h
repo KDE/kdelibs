@@ -264,7 +264,7 @@ protected:
 /**
  * CustomNodeFilter can be used to define your own NodeFilter for use
  * with NodeIterators and TreeWalkers. You can create a custom filter
- * by doing the follwing:
+ * by doing the following:
  *
  * class MyCustomNodeFilter {
  *  .....

@@ -82,7 +82,7 @@ namespace khtml
     public:
 	StyleSelector() {};
 
-	/* as noone has implemented a second style selector up to now comment out
+	/* as nobody has implemented a second style selector up to now comment out
 	   the virtual methods until then, so the class has no vptr.
 	*/
 // 	virtual ~StyleSelector() {};

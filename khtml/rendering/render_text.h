@@ -85,7 +85,7 @@ public:
     { if((_ty + m_y > _y + _h) || (_ty + m_y + m_baseline + height < _y)) return false; return true; }
 
     /**
-     * determines the offset into the DOMString of the charater the given
+     * determines the offset into the DOMString of the character the given
      * coordinate points to.
      * The returned offset is never out of range.
      * @param _x given coordinate (relative to containing block)

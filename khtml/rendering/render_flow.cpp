@@ -545,7 +545,7 @@ void RenderFlow::layoutBlockChildren( bool relayoutChildren )
     if(isTableCell() ) {
         prevMargin = TABLECELLMARGIN;
     } else if ( m_height == 0 ) {
-        // the elements and childs margin collapse if there is no border and padding.
+        // the elements and children margin collapse if there is no border and padding.
         prevMargin = marginTop();
         if ( parent() )
             prevMargin = collapseMargins( prevMargin, parent()->marginTop() );

@@ -1,4 +1,4 @@
-// programm to test the new khtml implementation
+// program to test the new khtml implementation
 
 #include <stdlib.h>
 #include "decoder.h"

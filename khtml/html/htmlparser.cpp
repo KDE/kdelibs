@@ -1106,7 +1106,7 @@ void KHTMLParser::processCloseTag(Token *t)
     }
 
 #ifdef PARSER_DEBUG
-    kdDebug( 6035 ) << "added the following childs to " << current->nodeName().string() << endl;
+    kdDebug( 6035 ) << "added the following children to " << current->nodeName().string() << endl;
     NodeImpl *child = current->firstChild();
     while(child != 0)
     {

@@ -522,7 +522,7 @@ public:
   virtual void end();
 
   /*
-   * Prints the current HTML page layed out for the printer.
+   * Prints the current HTML page laid out for the printer.
    *
    * (not implemented at the moment)
    */
@@ -967,9 +967,9 @@ protected:
 public slots:
 
   /**
-   * Sets the focussed node of the document to the specified node. If the node is a form control, the control will
+   * Sets the focused node of the document to the specified node. If the node is a form control, the control will
    * receive focus in the same way that it would if the user had clicked on it or tabbed to it with the keyboard. For
-   * most other types of elements, there is no visul indiction of whether or not they are focussed.
+   * most other types of elements, there is no visul indiction of whether or not they are focused.
    *
    * See activeNode
    *

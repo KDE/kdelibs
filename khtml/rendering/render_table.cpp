@@ -255,7 +255,7 @@ void RenderTable::layout()
     //int oldWidth = m_width;
     calcWidth();
 
-    // the optimisation below doesn't work since the internal table
+    // the optimization below doesn't work since the internal table
     // layout could have changed.  we need to add a flag to the table
     // layout that tells us if something has changed in the min max
     // calculations to do it correctly.
@@ -1407,7 +1407,7 @@ FindSelectionResult RenderTableSection::checkSelectionPoint( int _x, int _y, int
     FindSelectionResult pos = SelectionPointBefore;
 
     RenderTableCell *cell = seekCell(this, row_idx, col_idx);
-    // ### dunno why cell can be 0, maybe due to wierd spans? (LS)
+    // ### dunno why cell can be 0, maybe due to weird spans? (LS)
     if (cell) {
         SelPointState localState;
         pos = cell->checkSelectionPoint(_x, _y, _tx, _ty, node, offset, localState);

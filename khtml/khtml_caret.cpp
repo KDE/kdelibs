@@ -343,7 +343,7 @@ static InlineFlowBox* findFlowBox(DOM::NodeImpl *node, long offset,
   // runs and return the root line box (saves much time for long blocks).
   // This should be the case 99% of the time.
   // (B) Otherwise, we iterate linearly through all line boxes in order to find
-  // the renderer. (A reverse mapping would be favourable, but needs memory)
+  // the renderer. (A reverse mapping would be favorable, but needs memory)
   if (r->isText()) do {
     RenderText *t = static_cast<RenderText *>(r);
     int dummy;

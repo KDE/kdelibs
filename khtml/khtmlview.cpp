@@ -2284,7 +2284,7 @@ void KHTMLView::recalcAndStoreCaretPos(InlineBox *hintBox)
 	d->m_caretViewContext->y = absy + hintBox->yPos()
 				+ hintBox->baseline() - fm.ascent();
 	d->m_caretViewContext->width = 1;
-	// ### firstline not regarded. But I think it can be savely neglected
+	// ### firstline not regarded. But I think it can be safely neglected
 	// as hint boxes are only used for empty lines.
 	d->m_caretViewContext->height = fm.height();
     }/*end if*/

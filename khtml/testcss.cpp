@@ -1,4 +1,4 @@
-// programm to test the CSS implementation
+// program to test the CSS implementation
 
 #include <kapplication.h>
 #include <kdebug.h>

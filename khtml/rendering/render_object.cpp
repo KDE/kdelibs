@@ -1418,7 +1418,7 @@ void RenderObject::recalcMinMaxWidths()
     RenderObject *child = firstChild();
     while( child ) {
         // gcc sucks. if anybody knows a trick to get rid of the
-        // warning without adding an extra (unneeded) initialisation,
+        // warning without adding an extra (unneeded) initialization,
         // go ahead
         int cmin, cmax;
         bool test = false;

@@ -673,7 +673,7 @@ bool DOM::checkChild(ushort tagID, ushort childID)
     case ID_LABEL:
         // LABEL: _0 * - LABEL
         return check_array(childID, tag_list_0);
-        // KEYGEN does not really allow any childs
+        // KEYGEN does not really allow any children
         // from outside, just need this to be able
         // to add the keylengths ourself
         // Yes, consider it a hack (Dirk)
