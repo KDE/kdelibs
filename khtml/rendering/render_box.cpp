@@ -84,6 +84,9 @@ void RenderBox::setStyle(RenderStyle *_style)
     case INLINE_TABLE:
         setInline(true);
         break;
+    case RUN_IN:
+        if (isInline() && parent() && parent()->childrenInline()) 
+            break;
     default:
         setInline(false);
     }
