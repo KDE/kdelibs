@@ -230,10 +230,13 @@ class KDECORE_EXPORT KGlobalSettings
     static QString autostartPath() { initStatic(); return *s_autostartPath; }
 
     /**
-     * The path to the trash directory of the current user.
-     * @return the path of the trash directory
+     * DEPRECATED (starting from kde-3.4).
+     * This isn't where the trash contents is, anymore.
+     * Use KIO::trash() to trash files, "trash:/" to list the trash contents.
      */
     static QString trashPath() { initStatic(); return *s_trashPath; }
+    // KDE4: if you want to remove the above, move it to kdesktop/init.cc, which needs
+    // to know the old location of the trash
 
     /**
      * The path where documents are stored of the current user.
