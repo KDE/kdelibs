@@ -359,7 +359,7 @@ void KConfigINIBackEnd::parseSingleConfigFile(QFile &rFile,
 #endif
    //using kdDebug() here leads to an infinite loop
    //remove this for the release, aleXXX
-   cout<<"******** parsed "<<rFile.name().latin1()<<endl;
+   cerr<<"******** parsed "<<rFile.name().latin1()<<endl;
 }
 
 
