@@ -60,7 +60,7 @@ ConnectorImpl::ConnectorImpl(const ConnectorImpl &c)
 ConnectorImpl::~ConnectorImpl()
 {
 #ifndef NDEBUG
-    qDebug("ConnectorImpl::~ConnectorImpl");
+    //    qDebug("ConnectorImpl::~ConnectorImpl");
 #endif
 }
 
@@ -195,14 +195,14 @@ ConnectorImpl::fields(const QString & tableName)
         QString type = cur[1].asString();
         int idx;
                 
-        kdDebug(20012) << "Start type = " << type << endl;
+        //kdDebug(20012) << "Start type = " << type << endl;
 
         if ((idx = type.find('(') ) != -1 )
             norm = type.left(idx).upper();
         else
             norm = type.upper();
         
-        kdDebug(20012) << "Normalized type = " << norm << endl;
+        //kdDebug(20012) << "Normalized type = " << norm << endl;
 
         r << Value(norm);
         

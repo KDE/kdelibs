@@ -19,6 +19,9 @@
 */
 #include "handlerimpl.h"
 #include "connectorimpl.h"
+
+#include <math.h>
+
 #include <kdb/exception.h>
 #include <kdb/dbengine.h>
 
@@ -86,25 +89,41 @@ HandlerImpl::rows() const
                     // ???
                     break;
                 case FIELD_TYPE_DECIMAL:
-                    // need to interpret?
-                    v = QVariant(v.toString().toDouble());
-                    //kdDebug(20012) << "To Double: " << v.toDouble() << endl;
-                    break;
                 case FIELD_TYPE_DOUBLE:
                 case FIELD_TYPE_FLOAT:
-                    v = QVariant(v.toString().toDouble());
-                    //kdDebug(20012) << "To Double: " << v.toDouble() << endl;
-                    break;
+                    {
+                        QStringList lst = QStringList::split(".",v.toString());
+                        double d = lst[0].toDouble();
+                        if (lst.count() > 1) {
+                            d += (lst[1].toDouble() / pow(10,lst[1].length()));
+                        }
+                        v = QVariant(d);
+                        break;
+                    }
                 case FIELD_TYPE_TIMESTAMP:
+                    // must be rewritten
                     v.asDateTime();
                     break;
                 case FIELD_TYPE_DATE:
-                    v.asDate();
-                    break;
+                    {
+                        QString str = v.toString();
+                        QStringList lst = QStringList::split("-",str);
+                        if (lst.count() == 3) { // date has correct format                            
+                            int y = lst[0].toInt();
+                            int m = lst[1].toInt();
+                            int d = lst[2].toInt();
+                            v = Value(QDate(y,m,d));
+                        } else {
+                            v = Value(QString());
+                        }
+                        break;
+                    }
                 case FIELD_TYPE_TIME:
+                    // must be rewritten
                     v.asTime();
                     break;
                 case FIELD_TYPE_DATETIME:
+                    // must be rewritten
                     v.asDateTime();
                     break;
                 case FIELD_TYPE_YEAR:
@@ -114,9 +133,11 @@ HandlerImpl::rows() const
                 case FIELD_TYPE_BLOB:
                     break;
                 case FIELD_TYPE_SET:
+                    // must be rewritten
                     v.asStringList();
                     break;
                 case FIELD_TYPE_ENUM:
+                    // must be rewritten
                     v.asStringList();
                     break;
                 default:

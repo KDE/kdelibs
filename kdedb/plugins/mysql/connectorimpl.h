@@ -40,7 +40,7 @@ struct connRep : public KShared {
     MYSQL *conn;
 
     ~connRep() {
-        qDebug("~connRep");
+        //qDebug("~connRep");
         mysql_close(conn);
     }
 
