@@ -49,6 +49,9 @@
 #include <qtooltip.h>
 #include <qpushbutton.h>
 #include <qstylefactory.h>
+#ifndef QT_NO_SQL
+#include <qsqlpropertymap.h>
+#endif
 
 #undef QT_NO_TRANSLATION
 #include <kapplication.h>
@@ -1757,6 +1760,26 @@ void KApplication::propagateSettings(SettingsCategory arg)
     emit settingsChanged(arg);
 }
 
+void KApplication::installKDEPropertyMap()
+{
+#ifndef QT_NO_SQL
+    // QSqlPropertyMap takes ownership of the new default map.
+    QSqlPropertyMap *kdeMap = new QSqlPropertyMap;
+    kdeMap->insert( "KComboBox", "currentItem" );
+    kdeMap->insert( "KDatePicker", "getDate" );
+    kdeMap->insert( "KEditListBox", "currentItem" );
+    kdeMap->insert( "KFontCombo", "currentFont" );
+    kdeMap->insert( "KHistoryCombo", "currentItem" );
+    kdeMap->insert( "KListBox", "currentItem" );
+    kdeMap->insert( "KLineEdit", "text" );
+    kdeMap->insert( "KPasswordEdit", "text" );
+    kdeMap->insert( "KRestrictedLine", "text" );
+    kdeMap->insert( "KSqueezedTextLabel", "text" );
+    kdeMap->insert( "KTextBrowser", "source" );
+    kdeMap->insert( "KURLRequester", "url" );
+    QSqlPropertyMap::installDefaultMap( kdeMap );
+#endif
+}
 
 void KApplication::invokeHelp( const QString& anchor,
                                const QString& _appname) const

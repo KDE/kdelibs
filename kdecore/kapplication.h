@@ -661,6 +661,12 @@ public:
     */
   QString geometryArgument() const;
 
+  /**
+   * Install a Qt SQL property map with entries for all KDE widgets
+   * Call this in any application using KDE widgets in QSqlForm or QDataView.
+   */
+  void installKDEPropertyMap();
+
 public slots:
   /**
    * Tells KApplication about one more operation that should be finished
