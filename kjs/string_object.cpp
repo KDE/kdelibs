@@ -215,8 +215,17 @@ Completion StringProtoFunc::execute(const List &args)
   case Match:
   case Search:
     u = s.value();
-    if (a0.isA(ObjectType) && a0.toObject().getClass() == RegExpClass) {
+    if (a0.isA(ObjectType) && a0.toObject().getClass() == RegExpClass)
       s2 = a0.get("source").toString();
+    else if (a0.isA(StringType))
+      s2 = a0.toString();
+    else
+    {
+      printf("KJS: Match/Search. Argument is not a RegExp nor a String - returning Undefined\n");
+      result = Undefined(); // No idea what to do here
+      break;
+    }
+    {
       RegExp reg(s2.value());
       UString mstr = reg.match(u, -1, &pos);
       if (id == Search) {
@@ -224,15 +233,11 @@ Completion StringProtoFunc::execute(const List &args)
         break;
       }
       if (mstr.isNull()) {
-	result = Null();
-	break;
+        result = Null();
+      break;
       }
       /* TODO return an array, with the matches, etc. */
       result = String(mstr);
-    } else
-    {
-      printf("KJS: Match/Search. Argument is not a RegExp - returning Undefined\n");
-      result = Undefined(); // No idea what to do here
     }
     break;
   case Replace:
@@ -250,11 +255,11 @@ Completion StringProtoFunc::execute(const List &args)
       len = u2.size();
     }
     if (pos == -1)
-	result = s;
+        result = s;
     else {
-	u3 = u.substr(0, pos) + a1.toString().value() +
-	     u.substr(pos + len);
-	result = String(u3);
+        u3 = u.substr(0, pos) + a1.toString().value() +
+             u.substr(pos + len);
+        result = String(u3);
     }
     break;
   case Slice: // http://developer.netscape.com/docs/manuals/js/client/jsref/string.htm#1194366
