@@ -2,16 +2,6 @@ dnl put here things which have to be done as very last part of configure
 
 all_tests=fine
 
-if test "x$arts_audiolib_found" = "xno"; then
-  echo ""
-  echo "You're missing libaudiofile. KDE won't be able to play"
-  echo "any sounds without it, so please install it."
-  echo "You can find a copy of libaudiofile at http://oss.sgi.com/projects/audiofile"
-  echo "Developers may like to use the copy in the kdesupport module, for convenience."
-  echo ""
-  all_tests=bad
-fi
-
 if test "x$have_ssl" != xyes; then
   echo ""
   echo "You're missing openSSL, or your version is too old (before 0.9.5a)."
