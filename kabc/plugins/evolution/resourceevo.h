@@ -18,5 +18,6 @@ namespace KABC {
         void removeAddressee( const Addressee& );
     private:
         Evolution::DBWrapper *mWrap;
+        bool m_isOpen : 1;
     };
 }
