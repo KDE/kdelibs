@@ -21,6 +21,11 @@
 #ifndef VCARD_DEFINES_H
 #define VCARD_DEFINES_H
 
+#include <kdebug.h>
+
+#define vDebug(a) kdDebug(5710) << a << endl;
+
+#if 0
 #ifndef NDEBUG
 #	include <qcstring.h>
 #	include <iostream.h>
@@ -33,6 +38,7 @@
 #	endif
 #else
 #	define vDebug(a)
+#endif
 #endif
 
 #endif // Included this file
