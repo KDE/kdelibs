@@ -105,17 +105,17 @@ testWindow::testWindow (QWidget *, const char *name)
 
     
     // First four  buttons
-    pix = ICON("filenew.xpm");
+    pix = BarIcon("filenew.xpm");
     toolBar->insertButton(pix, 0, SIGNAL(clicked()), this, SLOT(slotNew()),
                          TRUE, "Create.. (toggles upper button)");
-    pix = ICON("fileopen.xpm");
+    pix = BarIcon("fileopen.xpm");
     toolBar->insertButton(pix, 1, SIGNAL(clicked()), this, SLOT(slotOpen()),
                          false, "Open");
-    pix = ICON("filefloppy.xpm");
+    pix = BarIcon("filefloppy.xpm");
     toolBar->insertButton(pix, 2, SIGNAL(clicked()), this, SLOT(slotSave()),
                           TRUE, "Save (beep or delayed popup)");
     toolBar->setDelayedPopup(2, itemsMenu);
-    pix = ICON("fileprint.xpm");
+    pix = BarIcon("fileprint.xpm");
     toolBar->insertButton(pix, 3, SIGNAL(clicked()), this, SLOT(slotPrint()),
                          TRUE, "Print (enables/disables open)");
 
@@ -147,7 +147,7 @@ testWindow::testWindow (QWidget *, const char *name)
     toolBar->addConnection(5, SIGNAL(rotation()), this, SLOT(slotCompletion()));
 
     // Now add another button and align it right
-    pix = ICON("exit.xpm");
+    pix = BarIcon("exit.xpm");
     toolBar->insertButton(pix, 6, SIGNAL(clicked()), KApplication::getKApplication(),
                           SLOT( quit() ), TRUE, "Exit");
     toolBar->alignItemRight (6);
@@ -156,40 +156,40 @@ testWindow::testWindow (QWidget *, const char *name)
     tb1 = new KToolBar (this); // this one is normal and has separators
 
 
-    pix = ICON("filenew.xpm");
+    pix = BarIcon("filenew.xpm");
     tb1->insertButton(pix, 0, TRUE, "Create new file2 (Toggle)");
     tb1->setToggle(0);
     tb1->addConnection (0, SIGNAL(toggled(bool)), this, SLOT(slotToggle(bool)));
 
-    pix = ICON("fileopen.xpm");
+    pix = BarIcon("fileopen.xpm");
     tb1->insertButton(pix, 1, SIGNAL(clicked()), this, SLOT(slotOpen()),
                           TRUE, "Open (starts progres in sb)");
 
     tb1->insertSeparator ();
     
-    pix = ICON("filefloppy.xpm");
+    pix = BarIcon("filefloppy.xpm");
     tb1->insertButton(pix, 2, SIGNAL(clicked()), this, SLOT(slotSave()),
                       TRUE, "Save file2 (autorepeat)");
     tb1->setAutoRepeat(2);
     
-    pix = ICON("fileprint.xpm");
+    pix = BarIcon("fileprint.xpm");
     tb1->insertButton(pix, 3, itemsMenu, true, "Print (pops menu)");
     
     tb1->insertSeparator ();
     /**** RADIO BUTTONS */
-    pix = ICON("filenew.xpm");
+    pix = BarIcon("filenew.xpm");
     tb1->insertButton(pix, 4, true, "Radiobutton1");
     tb1->setToggle(4);
 
-    pix = ICON("fileopen.xpm");
+    pix = BarIcon("fileopen.xpm");
     tb1->insertButton(pix, 5, true, "Radiobutton2");
     tb1->setToggle(5);
     
-    pix = ICON("filefloppy.xpm");
+    pix = BarIcon("filefloppy.xpm");
     tb1->insertButton(pix, 6, true, "Radiobutton3");
     tb1->setToggle(6);
     
-    pix = ICON("fileprint.xpm");
+    pix = BarIcon("fileprint.xpm");
     tb1->insertButton(pix, 7, true, "Radiobutton4");
     tb1->setToggle(7);
 
@@ -415,7 +415,7 @@ void testWindow::slotExit ()
   else
    {
      QPixmap pix;
-     pix = ICON("exit.xpm");
+     pix = BarIcon("exit.xpm");
      toolBar->insertButton(pix, 6, SIGNAL(clicked()), KApplication::getKApplication(),
                            SLOT( quit() ), TRUE, "Exit");
      toolBar->alignItemRight (6);

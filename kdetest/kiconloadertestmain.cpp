@@ -15,7 +15,7 @@ MyMain::MyMain()
 {
   icon_sel = new KIconLoaderDialog;
   test = new QPushButton("test", this);
-  test->setPixmap(ICON("exit.xpm"));
+  test->setPixmap(BarIcon("exit.xpm"));
   test->setGeometry(0,0,50,50);
   connect(test, SIGNAL(clicked()), this, SLOT(changePix()));
   le_dir = new QLineEdit(this);
