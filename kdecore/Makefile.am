@@ -51,7 +51,7 @@ include_HEADERS = kconfig.h kconfigdata.h ksimpleconfig.h kconfigbase.h \
 	kurldrag.h kmimesourcefactory.h kmdcodec.h ksocks.h \
 	ksycoca.h ksycocaentry.h ksycocatype.h kxmessages.h kstartupinfo.h \
 	klargefile.h kmultipledrag.h kgenericfactory.h kgenericfactory.tcc ktypelist.h \
-	ksortablevaluelist.h kdebugclasses.h kclipboard.h
+	ksortablevaluelist.h kdebugclasses.h kclipboard.h kcalendarsystem.h
 
 libkdefakes_la_SOURCES = fakes.c vsnprintf.c
 libkdefakes_la_LDFLAGS = -version-info 6:0:2
