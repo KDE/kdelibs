@@ -1202,7 +1202,7 @@ bool DCOPClient::receive(const QCString &/*app*/, const QCString &objId,
 	// fall through and send to object proxies
     }
 
-    if (objId[objId.length()-1] == '*') {
+    if (!objId.isEmpty() && objId[objId.length()-1] == '*') {
 	// handle a multicast to several objects.
 	// doesn't handle proxies currently.  should it?
 	QList<DCOPObject> matchList =
