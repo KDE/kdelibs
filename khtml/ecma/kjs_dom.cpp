@@ -633,7 +633,7 @@ void DOMAttr::putValue(ExecState *exec, int token, const Value& value, int /*att
   createAttribute DOMDocument::CreateAttribute                 DontDelete|Function 1
   createEntityReference DOMDocument::CreateEntityReference     DontDelete|Function 1
   getElementsByTagName  DOMDocument::GetElementsByTagName      DontDelete|Function 1
-#  importNode           DOMDocument::ImportNode                 DontDelete|Function ?
+  importNode           DOMDocument::ImportNode                 DontDelete|Function 2
   createElementNS      DOMDocument::CreateElementNS            DontDelete|Function 2
   createAttributeNS    DOMDocument::CreateAttributeNS          DontDelete|Function 2
   getElementsByTagNameNS  DOMDocument::GetElementsByTagNameNS  DontDelete|Function 2
@@ -641,7 +641,7 @@ void DOMAttr::putValue(ExecState *exec, int token, const Value& value, int /*att
   createRange        DOMDocument::CreateRange                  DontDelete|Function 0
   createNodeIterator DOMDocument::CreateNodeIterator           DontDelete|Function 3
   createTreeWalker   DOMDocument::CreateTreeWalker             DontDelete|Function 4
-#  defaultView        DOMDocument::DefaultView                  DontDelete|Function ?
+  defaultView        DOMDocument::DefaultView                  DontDelete|Function 0
   createEvent        DOMDocument::CreateEvent                  DontDelete|Function 1
   getOverrideStyle   DOMDocument::GetOverrideStyle             DontDelete|Function 2
 @end
@@ -762,13 +762,14 @@ Value DOMDocumentProtoFunc::tryCall(ExecState *exec, Object &thisObj, const List
   case DOMDocument::CreateEvent:
     return getDOMEvent(exec,doc.createEvent(s));
   case DOMDocument::GetOverrideStyle: {
-      DOM::Node arg0 = toNode(args[0]);
-      if (arg0.nodeType() != DOM::Node::ELEMENT_NODE)
-        return Undefined(); // throw exception?
-      else
-        return getDOMCSSStyleDeclaration(exec,doc.getOverrideStyle(static_cast<DOM::Element>(arg0),args[1].toString(exec).string()));
-    }
-// case DOMDocument::DefaultView // TODO
+    DOM::Node arg0 = toNode(args[0]);
+    if (arg0.nodeType() != DOM::Node::ELEMENT_NODE)
+      return Undefined(); // throw exception?
+    else
+      return getDOMCSSStyleDeclaration(exec,doc.getOverrideStyle(static_cast<DOM::Element>(arg0),args[1].toString(exec).string()));
+  }
+  case DOMDocument::DefaultView: // DOM2
+    return getDOMAbstractView(exec,doc.defaultView());
   default:
     break;
   }

@@ -119,7 +119,7 @@ namespace KJS {
 const struct HashEntry DOMDocumentProtoTableEntries[] = {
    { "createCDATASection", DOMDocument::CreateCDATASection, DontDelete|Function, 1, 0 },
    { 0, 0, 0, 0, 0 },
-   { "createDocumentFragment", DOMDocument::CreateDocumentFragment, DontDelete|Function, 1, &DOMDocumentProtoTableEntries[29] },
+   { "createDocumentFragment", DOMDocument::CreateDocumentFragment, DontDelete|Function, 1, &DOMDocumentProtoTableEntries[28] },
    { 0, 0, 0, 0, 0 },
    { "getElementsByTagName", DOMDocument::GetElementsByTagName, DontDelete|Function, 1, &DOMDocumentProtoTableEntries[25] },
    { 0, 0, 0, 0, 0 },
@@ -132,24 +132,25 @@ const struct HashEntry DOMDocumentProtoTableEntries[] = {
    { "createAttribute", DOMDocument::CreateAttribute, DontDelete|Function, 1, &DOMDocumentProtoTableEntries[24] },
    { "createTextNode", DOMDocument::CreateTextNode, DontDelete|Function, 1, 0 },
    { "createEntityReference", DOMDocument::CreateEntityReference, DontDelete|Function, 1, &DOMDocumentProtoTableEntries[26] },
-   { "createProcessingInstruction", DOMDocument::CreateProcessingInstruction, DontDelete|Function, 1, &DOMDocumentProtoTableEntries[28] },
+   { "createProcessingInstruction", DOMDocument::CreateProcessingInstruction, DontDelete|Function, 1, &DOMDocumentProtoTableEntries[29] },
    { 0, 0, 0, 0, 0 },
    { "createComment", DOMDocument::CreateComment, DontDelete|Function, 1, &DOMDocumentProtoTableEntries[27] },
    { 0, 0, 0, 0, 0 },
    { 0, 0, 0, 0, 0 },
    { "createNodeIterator", DOMDocument::CreateNodeIterator, DontDelete|Function, 3, 0 },
    { 0, 0, 0, 0, 0 },
-   { 0, 0, 0, 0, 0 },
+   { "importNode", DOMDocument::ImportNode, DontDelete|Function, 2, 0 },
    { "createElementNS", DOMDocument::CreateElementNS, DontDelete|Function, 2, 0 },
    { "createAttributeNS", DOMDocument::CreateAttributeNS, DontDelete|Function, 2, 0 },
    { "getElementsByTagNameNS", DOMDocument::GetElementsByTagNameNS, DontDelete|Function, 2, 0 },
    { "getElementById", DOMDocument::GetElementById, DontDelete|Function, 1, 0 },
    { "createRange", DOMDocument::CreateRange, DontDelete|Function, 0, 0 },
+   { "defaultView", DOMDocument::DefaultView, DontDelete|Function, 0, &DOMDocumentProtoTableEntries[30] },
    { "createEvent", DOMDocument::CreateEvent, DontDelete|Function, 1, 0 },
    { "getOverrideStyle", DOMDocument::GetOverrideStyle, DontDelete|Function, 2, 0 }
 };
 
-const struct HashTable DOMDocumentProtoTable = { 2, 30, DOMDocumentProtoTableEntries, 23 };
+const struct HashTable DOMDocumentProtoTable = { 2, 31, DOMDocumentProtoTableEntries, 23 };
 
 }; // namespace
 
