@@ -871,7 +871,7 @@ QVariant KHTMLPart::executeScript( const DOM::Node &n, const QString &script )
   if (!proxy || proxy->paused())
     return QVariant();
   d->m_runningScripts++;
-  QVariant ret = proxy->evaluate( "(unknown file)", 0, script, n );
+  QVariant ret = proxy->evaluate( QString::null, 0, script, n );
   d->m_runningScripts--;
   if (!d->m_runningScripts && d->m_doc && !d->m_doc->parsing() && d->m_submitForm )
       submitFormAgain();
