@@ -192,7 +192,7 @@ namespace
 	    return;
 
 	  case NO_RECOVERY:
-	    results.results.setError(KResolver::NonRecoverable);
+	    results.setError(KResolver::NonRecoverable);
 	    return;
 
 	  case NO_ADDRESS:
