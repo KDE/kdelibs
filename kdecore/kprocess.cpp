@@ -157,20 +157,10 @@ static int kprocess_chownpty(int fd, bool grant)
 // param grant: true to grant, false to revoke
 // returns 1 on success 0 on fail
 {
-  struct sigaction newsa, oldsa;
-  newsa.sa_handler = SIG_DFL;
-  newsa.sa_mask = sigset_t();
-  newsa.sa_flags = 0;
-  sigaction(SIGCHLD, &newsa, &oldsa);
-
   pid_t pid = fork();
   if (pid < 0)
-  {
-    // restore previous SIGCHLD handler
-    sigaction(SIGCHLD, &oldsa, NULL);
-
     return 0;
-  }
+
   if (pid == 0)
   {
     /* We pass the master pseudo terminal as file descriptor PTY_FILENO. */
@@ -188,13 +178,48 @@ retry:
     if ((rc == -1) && (errno == EINTR))
       goto retry;
 
-    // restore previous SIGCHLD handler
-    sigaction(SIGCHLD, &oldsa, NULL);
-
     return (rc != -1 && WIFEXITED(w) && WEXITSTATUS(w) == 0);
   }
 
   return 0; //dummy.
+}
+
+static void kprocess_updateTTYSettings(int fd, bool bXonXoff)
+{
+    // without the '::' some version of HP-UX thinks, this declares
+    // the struct in this class, in this method, and fails to find 
+    // the correct t[gc]etattr 
+    static struct ::termios ttmode;
+
+#if defined (__FreeBSD__) || defined (__NetBSD__) || defined (__OpenBSD__) || defined (__bsdi__) || defined(__APPLE__)
+    ioctl(fd,TIOCGETA,(char *)&ttmode);
+#else
+# if defined (_HPUX_SOURCE) || defined(__Lynx__)
+    tcgetattr(fd, &ttmode);
+# else
+    ioctl(fd,TCGETS,(char *)&ttmode);
+# endif
+#endif
+
+#undef CTRL
+#define CTRL(c) ((c) - '@')
+    if (!bXonXoff)
+      ttmode.c_iflag &= ~(IXOFF | IXON);
+    else
+      ttmode.c_iflag |= (IXOFF | IXON);
+    ttmode.c_cc[VINTR] = CTRL('C');
+    ttmode.c_cc[VQUIT] = CTRL('\\');
+    ttmode.c_cc[VERASE] = 0177;
+
+#if defined (__FreeBSD__) || defined (__NetBSD__) || defined (__OpenBSD__) || defined (__bsdi__) || defined(__APPLE__)
+    ioctl(fd,TIOCSETA,(char *)&ttmode);
+#else
+# ifdef _HPUX_SOURCE
+    tcsetattr(fd, TCSANOW, &ttmode);
+# else
+    ioctl(fd,TCSETS,(char *)&ttmode);
+# endif
+#endif
 }
 
 
@@ -459,10 +484,6 @@ bool KProcess::start(RunMode runmode, Communication comm)
         if (fd[0] >= 0)
            close(fd[0]);
 
-        // The child process
-        if(!commSetupDoneC())
-          kdDebug(175) << "Could not finish comm setup in child!" << endl;
-
         // reset all signal handlers
         for (int sig = 1; sig < NSIG; sig++)
         {
@@ -473,6 +494,10 @@ bool KProcess::start(RunMode runmode, Communication comm)
           act.sa_flags = 0;
           sigaction(sig, &act, 0L);
         }
+
+        // The child process
+        if(!commSetupDoneC())
+          kdDebug(175) << "Could not finish comm setup in child!" << endl;
 
         if (!runPrivileged())
         {
@@ -743,26 +768,28 @@ void KProcess::setPtySize(int lines, int columns)
 void KProcess::setPtyXonXoff(bool useXonXoff)
 {
   d->ptyXonXoff = useXonXoff;
+  if(d->ptyMasterFd < 0) return;
+  kprocess_updateTTYSettings(d->ptyMasterFd, d->ptyXonXoff);
 }
 
 const char *KProcess::ptyMasterName()
 {
-    return d ? d->ptyMasterName.data() : 0;
+    return d->ptyMasterName.data();
 }
 
 const char *KProcess::ptySlaveName()
 {
-    return d ? d->ptySlaveName.data() : 0;
+    return d->ptySlaveName.data();
 }
 
 int KProcess::ptyMasterFd()
 {
-    return d ? d->ptyMasterFd : -1;
+    return d->ptyMasterFd;
 }
 
 int KProcess::ptySlaveFd()
 {
-    return d ? d->ptySlaveFd : -1;
+    return d->ptySlaveFd;
 }
 
 QString KProcess::quote(const QString &arg)
@@ -971,7 +998,7 @@ void KProcess::openMasterPty()
   {
     kdWarning(175) << "chownpty failed for device " << d->ptyMasterName << 
                    "::" << d->ptySlaveName << endl;
-    kdWarning(175) << "This mean the communication can be eavesdropped." << endl;
+    kdWarning(175) << "This means the communication can be eavesdropped." << endl;
   }
 
   fcntl(d->ptyMasterFd,F_SETFL,O_NDELAY);
@@ -1191,39 +1218,7 @@ int KProcess::commSetupDoneC()
     setpgid(0,0);
     // End event propagation //
 
-
-    // without the '::' some version of HP-UX thinks, this declares
-    // the struct in this class, in this method, and fails to find 
-    // the correct t[gc]etattr 
-    static struct ::termios ttmode;
-
-#if defined (__FreeBSD__) || defined (__NetBSD__) || defined (__OpenBSD__) || defined (__bsdi__) || defined(__APPLE__)
-    ioctl(0,TIOCGETA,(char *)&ttmode);
-#else
-# if defined (_HPUX_SOURCE) || defined(__Lynx__)
-    tcgetattr(0, &ttmode);
-# else
-    ioctl(0,TCGETS,(char *)&ttmode);
-# endif
-#endif
-
-#undef CTRL
-#define CTRL(c) ((c) - '@')
-    if (!d->ptyXonXoff)
-      ttmode.c_iflag &= ~(IXOFF | IXON);
-    ttmode.c_cc[VINTR] = CTRL('C');
-    ttmode.c_cc[VQUIT] = CTRL('\\');
-    ttmode.c_cc[VERASE] = 0177;
-
-#if defined (__FreeBSD__) || defined (__NetBSD__) || defined (__OpenBSD__) || defined (__bsdi__) || defined(__APPLE__)
-    ioctl(0,TIOCSETA,(char *)&ttmode);
-#else
-# ifdef _HPUX_SOURCE
-    tcsetattr(0, TCSANOW, &ttmode);
-# else
-    ioctl(0,TCSETS,(char *)&ttmode);
-# endif
-#endif
+    kprocess_updateTTYSettings(STDIN_FILENO, d->ptyXonXoff);
 
     // set screen size
     ioctl(0,TIOCSWINSZ,(char *)&(d->ptySize));  
