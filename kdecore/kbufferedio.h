@@ -23,8 +23,12 @@
 #ifndef KBUFFEREDIO_H
 #define KBUFFEREDIO_H
 
-#include <qlist.h>
 #include <qcstring.h>
+#if QT_VERSION < 300
+#include <qlist.h>
+#else
+#include <qptrlist.h>
+#endif
 #include "kasyncio.h"
 
 /**
@@ -208,8 +212,14 @@ protected:
    * at the top of kbufferedio.cpp
    */
 
+#if QT_VERSION < 300  
   QList<QByteArray> inBuf;
   QList<QByteArray> outBuf;
+#else
+  QPtrList<QByteArray> inBuf;
+  QPtrList<QByteArray> outBuf;
+#endif  
+  
   unsigned inBufIndex, outBufIndex;
 
   /**

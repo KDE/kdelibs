@@ -146,8 +146,6 @@ void KLocale::initLanguage(KConfig * config, bool useEnv)
 
 void KLocale::doBindInit()
 {
-  kdDebug(173) << "KLocale::doBindInit" << endl;
-
   for ( QValueList<KCatalogue>::Iterator it = d->catalogues.begin();
 	it != d->catalogues.end();
 	++it )

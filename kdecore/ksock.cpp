@@ -243,8 +243,13 @@ bool KSocket::initSockaddr (ksockaddr_in *server_name, const char *hostname, uns
   if (domain != PF_INET)
     return false;
 
+#if QT_VERSION < 300
   QList<KAddressInfo> list = KExtendedSocket::lookup(hostname, QString::number(port),
 						     KExtendedSocket::ipv4Socket);
+#else
+  QPtrList<KAddressInfo> list = KExtendedSocket::lookup(hostname, QString::number(port),
+                                                        KExtendedSocket::ipv4Socket);
+#endif
   list.setAutoDelete(true);
 
   if (list.isEmpty())
@@ -272,7 +277,7 @@ KSocket::~KSocket()
   }
 }
 
-class KServerSocketPrivate 
+class KServerSocketPrivate
 {
 public:
    bool bind;
@@ -349,7 +354,7 @@ bool KServerSocket::init( unsigned short int _port )
   if (d->bind)
     return bindAndListen();
   return true;
-}  
+}
 
 bool KServerSocket::bindAndListen()
 {
@@ -407,7 +412,7 @@ unsigned long KServerSocket::ipv4_addr()
   if (d == NULL || d->ks == NULL || sock == -1)
     return 0;
   const KSocketAddress *sa = d->ks->localAddress();
-  
+
   const sockaddr_in *sin = (sockaddr_in*)sa->address();
 
   if (sin->sin_family == PF_INET)
@@ -436,7 +441,7 @@ void KServerSocket::slotAccept( int )
         kdWarning(170) << "Error accepting\n";
         return;
     }
-  
+
   int new_sock = s->fd();
   s->release();			// we're getting rid of the KExtendedSocket
   delete s;

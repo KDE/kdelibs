@@ -193,7 +193,7 @@ static QString decode( const QString& segment, bool *keepEncoded=0, int encoding
     unsigned int character = segment[ i++ ].unicode();
     if ((character == ' ') || (character > 255))
        bKeepEncoded = false;
-    if (character == '%' ) 
+    if (character == '%' )
     {
       char a = i+1 < old_length ? hex2int( segment[i].latin1() ) : -1;
       char b = i+1 < old_length ? hex2int( segment[i+1].latin1() ) : -1;
@@ -270,7 +270,7 @@ static QString cleanpath(const QString &path, bool cleanDirSeparator=true)
   // RFC 2396!! (dA)
   QString result;
   int cdUp, orig_pos, pos;
-  
+
   cdUp = 0;
   pos = orig_pos = len;
   while ( pos && (pos = path.findRev('/',--pos)) != -1 )
@@ -283,7 +283,7 @@ static QString cleanpath(const QString &path, bool cleanDirSeparator=true)
       // Ignore any occurances of '.' This includes entries
       // that simply do not make sense like /..../
       if ( (len!=0 || !cleanDirSeparator) && (len != 1 || path[pos+1] != '.') )
-      {	    
+      {
         if ( !cdUp )
           result = path.mid(pos, len+1) + result;
         else
@@ -292,10 +292,10 @@ static QString cleanpath(const QString &path, bool cleanDirSeparator=true)
     }
     orig_pos = pos;
   }
-    
+
   if ( result.isEmpty() )
     result = "/";
-  
+
   // Restore the trailing '/'
   len = result.length();
   if ( len > 0 && result.right(1)[0] != '/' && slash )
@@ -408,6 +408,7 @@ QDataStream & operator>> (QDataStream & s, KURL & a)
     return s;
 }
 
+#ifndef QT_NO_NETWORKPROTOCOL
 KURL::KURL( const QUrl &u )
 {
   m_strProtocol = u.protocol();
@@ -421,6 +422,7 @@ KURL::KURL( const QUrl &u )
   m_bIsMalformed = !u.isValid();
   m_iPort = u.port();
 }
+#endif
 
 KURL::KURL( const KURL& _u, const QString& _rel_url, int encoding_hint )
 {
@@ -571,10 +573,10 @@ void KURL::parse( const QString& _url, int encoding_hint )
 
   // Node 4: Accept any amount of characters.
   if (buf[pos] == '[')     // An IPv6 host follows.
-      goto Node8;  
+      goto Node8;
   // Terminate on / or @ or ? or #
   x = buf[pos];
-  while( (x != ':') && (x != '@') && (x != '/') && (x != '?') && (x != '#') && (pos < len) ) 
+  while( (x != ':') && (x != '@') && (x != '/') && (x != '?') && (x != '#') && (pos < len) )
      x = buf[++pos];
   if ( pos == len )
     {
@@ -610,9 +612,9 @@ void KURL::parse( const QString& _url, int encoding_hint )
   start = pos++;
 
   // Node 6: Read everything until @, /, ? or #
-  while( (pos < len) && 
-		(buf[pos] != '@') && 
-		(buf[pos] != '/') && 
+  while( (pos < len) &&
+		(buf[pos] != '@') &&
+		(buf[pos] != '/') &&
 		(buf[pos] != '?') &&
 		(buf[pos] != '#')) pos++;
   // If we now have a '@' the ':' seperates user and password.
@@ -652,8 +654,8 @@ void KURL::parse( const QString& _url, int encoding_hint )
     if (pos < len) pos++; // Skip ']'
     if (pos == len)
        goto NodeOk;
-  } 
-  else 
+  }
+  else
   {
     // Non IPv6 address
     start = pos++;
@@ -664,7 +666,7 @@ void KURL::parse( const QString& _url, int encoding_hint )
     {
        m_strHost = decode(QString( buf + start, pos - start ), 0, encoding_hint);
        goto NodeOk;
-    } 
+    }
     m_strHost = decode(QString( buf + start, pos - start ), 0, encoding_hint);
   }
   x = buf[pos];
@@ -775,6 +777,7 @@ KURL& KURL::operator=( const char * _url )
   return *this;
 }
 
+#ifndef QT_NO_NETWORKPROTOCOL
 KURL& KURL::operator=( const QUrl & u )
 {
   m_strProtocol = u.protocol();
@@ -790,6 +793,7 @@ KURL& KURL::operator=( const QUrl & u )
 
   return *this;
 }
+#endif
 
 KURL& KURL::operator=( const KURL& _u )
 {
@@ -1068,7 +1072,7 @@ QString KURL::url( int _trailing, int encoding_hint ) const
       u += "@";
     }
     bool IPv6 = (m_strHost.find(':') != -1);
-    if (IPv6) 
+    if (IPv6)
        u += '[' + m_strHost + ']';
     else
        u += encode(m_strHost, true, encoding_hint);
@@ -1113,7 +1117,7 @@ QString KURL::prettyURL( int _trailing ) const
       u += "@";
     }
     bool IPv6 = (m_strHost.find(':') != -1);
-    if (IPv6) 
+    if (IPv6)
        u += '[' + m_strHost + ']';
     else
        u += lazy_encode(m_strHost);
@@ -1275,7 +1279,7 @@ QString KURL::directory( bool _strip_trailing_slash_from_result,
 
   int i = result.findRev( "/" );
   // If ( i == -1 ) => the first character is not a '/'
-  // So it's some URL like file:blah.tgz, with no path 
+  // So it's some URL like file:blah.tgz, with no path
   if ( i == -1 )
     return QString::null;
 

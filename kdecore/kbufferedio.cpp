@@ -67,7 +67,7 @@
  * that buffer, copy data into it and then call the OS, which will likely just
  * copy data out of it.
  *
- * Instead, we found it better to leave it to you to access outBuf member 
+ * Instead, we found it better to leave it to you to access outBuf member
  * variable directly and use the buffers there. Should you want to copy that
  * into a larger buffer before sending, that's up to you.
  *
@@ -128,7 +128,11 @@ bool KBufferedIO::canReadLine() const
   QByteArray* buf;
 
   // scan each QByteArray for the occurence of '\n'
+#if QT_VERSION < 300
   QList<QByteArray> &buflist = ((KBufferedIO*)this)->inBuf;
+#else
+  QPtrList<QByteArray> &buflist = ((KBufferedIO*)this)->inBuf;
+#endif
   buf = buflist.first();
   char *p = buf->data() + inBufIndex;
   while (buf != NULL)

@@ -24,7 +24,11 @@
 
 #include <qobject.h>
 #include <qstring.h>
+#if QT_VERSION < 300
 #include <qlist.h>
+#else
+#include <qptrlist.h>
+#endif
 #include <qiodevice.h>
 #include <qsocketnotifier.h>
 
@@ -756,7 +760,7 @@ public:
    * The error code can be transformed into string by @ref KExtendedSocket::strError
    * with code of IO_LookupError.
    *
-   * IMPORTANT: the result values of the QList must be deleted after use. So,
+   * IMPORTANT: the result values of the QPtrList must be deleted after use. So,
    * if you don't copy the KAddressInfo objects, the best way to assure that
    * is to call setAutoDelete(true) on the list right after this function 
    * returns. If you do copy the results out, you must assure that the objects
@@ -767,8 +771,11 @@ public:
    * @param flags	flags to be used when looking up
    * @param error	pointer to a variable holding the error code
    */
+#if QT_VERSION < 300
   static QList<KAddressInfo> lookup(const QString& host, const QString& port, int flags = 0, int *error = 0);
-
+#else  
+  static QPtrList<KAddressInfo> lookup(const QString& host, const QString& port, int flags = 0, int *error = 0);
+#endif
   /**
    * Returns the local socket address
    * Remember to delete the returned object when it is no longer needed.

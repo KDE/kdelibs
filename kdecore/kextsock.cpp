@@ -103,12 +103,12 @@ public:
   QSocketNotifier *qsnIn, *qsnOut;
   int inMaxSize, outMaxSize;
   bool emitRead, emitWrite;
-  
+
   KExtendedSocketLookup *dns, *dnsLocal;
 
   KExtendedSocketPrivate() :
     host(QString::null), service(QString::null), localhost(QString::null), localservice(QString::null),
-    resolution(0), bindres(0), current(0), local(0), peer(0), 
+    resolution(0), bindres(0), current(0), local(0), peer(0),
     qsnIn(0), qsnOut(0), inMaxSize(-1), outMaxSize(-1), emitRead(false), emitWrite(false),
     dns(0), dnsLocal(0)
   {
@@ -456,8 +456,8 @@ bool KExtendedSocket::setHost(const QString& host)
  * returns the hostname
  */
 QString KExtendedSocket::host() const
-{ 
-  return d->host; 
+{
+  return d->host;
 }
 
 /*
@@ -482,29 +482,29 @@ bool KExtendedSocket::setPort(const QString& service)
  * returns the service port number
  */
 QString KExtendedSocket::port() const
-{ 
-  return d->service; 
+{
+  return d->service;
 }
 
 /*
  * sets the address
  */
 bool KExtendedSocket::setAddress(const QString& host, int port)
-{ 
-  return setHost(host) && setPort(port); 
+{
+  return setHost(host) && setPort(port);
 }
 
 /*
  * the same
  */
 bool KExtendedSocket::setAddress(const QString& host, const QString& serv)
-{ 
-  return setHost(host) && setPort(serv); 
+{
+  return setHost(host) && setPort(serv);
 }
 
 /*
  * Sets the bind hostname
- * This is only valid in the 'nothing' state and if this is a 
+ * This is only valid in the 'nothing' state and if this is a
  * passiveSocket socket
  */
 bool KExtendedSocket::setBindHost(const QString& host)
@@ -616,8 +616,8 @@ bool KExtendedSocket::setTimeout(int secs, int usecs)
  * returns the timeout
  */
 timeval KExtendedSocket::timeout() const
-{ 
-  return d->timeout; 
+{
+  return d->timeout;
 }
 
 /*
@@ -1428,7 +1428,7 @@ void KExtendedSocket::closeNow()
   if (sockfd != -1)
     ::close(sockfd);
 
-  emit closed(closedNow | 
+  emit closed(closedNow |
 	      (readBufferSize() != 0 ? availRead : 0) |
 	      (writeBufferSize() != 0 ? dirtyWrite : 0));
 }
@@ -2015,7 +2015,7 @@ void KExtendedSocket::connectionEvent()
   // if we got here, it means that there are no more options to connect
   emit connectionFailed(errcode);
   m_status = lookupDone;	// go back
-}  
+}
 
 void KExtendedSocket::dnsResultsReady()
 {
@@ -2074,13 +2074,22 @@ int KExtendedSocket::resolve(KSocketAddress *sock, QString &host, QString &port,
   return resolve(sock->data, sock->datasize, host, port, flags);
 }
 
+#if QT_VERSION < 300
 QList<KAddressInfo> KExtendedSocket::lookup(const QString& host, const QString& port,
 					    int flags, int *error)
+#else
+QPtrList<KAddressInfo> KExtendedSocket::lookup(const QString& host, const QString& port,
+					    int flags, int *error)
+#endif
 {
   int err;
   addrinfo hint, *p;
   kde_addrinfo *res;
+#if QT_VERSION < 300
   QList<KAddressInfo> l;
+#else
+  QPtrList<KAddressInfo> l;
+#endif
 
   memset(&hint, 0, sizeof(hint));
   if (!process_flags(flags, hint))
