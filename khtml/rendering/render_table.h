@@ -127,12 +127,12 @@ public:
     	_htmlBorder=w;
     }
     short htmlBorder() { return _htmlBorder; }
-    
+
     virtual void calcWidth();
 
     virtual int borderTopExtra();
     virtual int borderBottomExtra();
-    
+
 public:
     /*
      * For each table element with a different width a ColInfo struct is
@@ -351,7 +351,7 @@ public:
 
     long rowSpan() const { return rSpan; }
     void setRowSpan( long r ) { rSpan = r; }
-    
+
     bool noWrap() const { return nWrap; }
     void setNoWrap(bool nw) { nWrap = nw; }
 
@@ -375,7 +375,7 @@ public:
 
     virtual void setTable(RenderTable *t) { m_table = t; }
     RenderTable *table() const { return m_table; }
-    
+
     virtual void print( QPainter* p, int x, int y,
 			int w, int h, int tx, int ty);
 
@@ -392,6 +392,9 @@ public:
 
 protected:
     RenderTable *m_table;
+
+    virtual void printBoxDecorations(QPainter *p,int _x, int _y,
+				     int _w, int _h, int _tx, int _ty);
 
     int _row;
     int _col;

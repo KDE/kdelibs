@@ -1737,6 +1737,41 @@ void RenderTableCell::print(QPainter *p, int _x, int _y,
     printObject(p, _x, _y, _w, _h, _tx, _ty);
 }
 
+void RenderTableCell::printBoxDecorations(QPainter *p,int, int _y,
+				       int, int _h, int _tx, int _ty)
+{
+    //kdDebug( 6040 ) << renderName() << "::printDecorations()" << endl;
+
+    int w = width();
+    int h = height() + borderTopExtra() + borderBottomExtra();	
+    _ty -= borderTopExtra();
+
+    int my = QMAX(_ty,_y);
+    int mh;
+    if (_ty<_y)
+    	mh= QMAX(0,h-(_y-_ty));
+    else
+    	mh = QMIN(_h,h);
+
+    QColor c = m_style->backgroundColor();
+    if ( !c.isValid() && parent() ) // take from row
+	c = parent()->style()->backgroundColor();
+    if ( !c.isValid() && parent() && parent()->parent() ) // take from rowgroup
+    	c = parent()->parent()->style()->backgroundColor();
+    // ### col is missing...
+
+    // ### get offsets right in case the bgimage is inherited.
+    CachedImage *bg = m_bgImage;
+    if ( !bg && parent() )
+	bg = parent()->backgroundImage();
+    if ( !bg && parent() && parent()->parent() )
+	bg = parent()->parent()->backgroundImage();
+    
+    printBackground(p, c, bg, my, mh, _tx, _ty, w, h);
+
+    if(m_style->hasBorder())
+	printBorder(p, _tx, _ty, w, h);
+}
 
 // -------------------------------------------------------------------------
 

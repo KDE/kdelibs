@@ -26,7 +26,7 @@
       	    	    	border-collapse: separate;
 			vertical-align: middle;
                         text-align: justify;
-			border-spacing: 2px;                        
+			border-spacing: 2px;
 			border-left-color: #eeeeee;
 			border-top-color: #eeeeee;
 			border-bottom-color: #666666;
@@ -55,7 +55,6 @@
 			    border-bottom-color: #eeeeee;
 			    border-right-color: #eeeeee;
       	    	    	    text-align: inherit;
-                            background-color: inherit; /* ### hack */
 			 }
       TABLE[align="center"] { margin-left: auto; margin-right: auto }
       TD[align="center"] > * { margin-left: auto; margin-right: auto; text-align: justify; }
