@@ -33,6 +33,7 @@ COMPATIBLE. THIS HEADER IS ONLY INSTALLED, BECAUSE IT IS NEEDED IN
 ************************************************************************
 ***********************************************************************/
 
+
 // Add some describing comment !!
 class EXPORT_DOCKCLASS KDockContainer
 {
