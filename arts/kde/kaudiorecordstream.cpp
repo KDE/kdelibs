@@ -24,8 +24,8 @@
 #include "kaudiorecordstream_p.h"
 #include "kartsserver.h"
 
-#include <arts/artsflow.h>
-#include <arts/soundserver.h>
+#include <artsflow.h>
+#include <soundserver.h>
 
 #include <kglobal.h>
 #include <kdebug.h>
