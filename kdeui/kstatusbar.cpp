@@ -80,6 +80,7 @@ KStatusBar::~KStatusBar ()
 void KStatusBar::insertItem( const QString& text, int id, int stretch, bool permanent)
 {
   KStatusBarLabel *l = new KStatusBarLabel (text, id, this);
+  l->setFixedHeight(fontMetrics().height()+2);
   items.insert(id, l);
   addWidget (l, stretch, permanent);
   l->show();
