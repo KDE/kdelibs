@@ -135,6 +135,13 @@ QSize KProgress::sizeHint() const
   return s;
 }
 
+QSizePolicy KProgress::sizePolicy() const
+{
+	if ( orientation()==KProgress::Vertical )
+		return QSizePolicy( QSizePolicy::Fixed, QSizePolicy::Expanding );
+	else
+		return QSizePolicy( QSizePolicy::Expanding, QSizePolicy::Fixed );
+}
 
 KProgress::Orientation KProgress::orientation() const
 {
@@ -283,3 +290,27 @@ void KProgress::drawContents(QPainter *p)
 		
 }			
 #include "kprogress.moc"
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

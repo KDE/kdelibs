@@ -243,8 +243,6 @@ KKeyDialog::KKeyDialog( QDict<KKeyEntry> *aKeyDict, QWidget *parent,
 	bbox->layout();
 	topLayout->addWidget( bbox );
 	
-	topLayout->activate();
-	
 	resize( 400, 350 );
 }
 
@@ -488,7 +486,6 @@ KKeyChooser::KKeyChooser( QDict<KKeyEntry> *aKeyDict, QWidget *parent ,
 	if (check_against_std_keys)
 	  readStdKeys();
 	wList->setCurrentItem( 0 );
-	topLayout->activate();
 }
 
 KKeyChooser::~KKeyChooser()
@@ -817,10 +814,6 @@ void KKeyChooser::listSync()
 	wList->update();
 	wList->setCurrentItem( 0 );
 }
-
-#define MAX_FCTN_LENGTH 50
-#define MAX_KEY_LENGTH 15
-#define MAX_KEY_MODIFIER_LENGTH 15
 
 const QString KKeyChooser::item( uint keyCode, const QString& entryKey )
 {

@@ -26,14 +26,18 @@ sed -n '/enum Key/!d
 # write header file
 begin_line="// This file has been automatically genrated by \"generate_keys.sh\""
 echo -e $begin_line \
+		"\n#ifndef KCKEY_H" \
+		"\n#define KCKEY_H" \
 		"\n\ntypedef struct {" \
 		"\n\tconst char *name;" \
 		"\n\tint code;" \
 		"\n} KKeys;" \
 		"\n\n#define MAX_KEY_LENGTH           15   // should be calculated (gawk ?)" \
-		"\n#define MAX_KEY_MODIFIER_LENGTH   5   // SHIFT CRTL ALT" \
+		"\n#define MAX_KEY_MODIFIER_LENGTH   21  // \"SHIFT + CRTL + ALT + \" : " \
+		"\n#define MAX_FCTN_LENGTH           50  // arbitrary limit" \
 		"\n#define NB_KEYS                " `cat kckey_a | wc -l` \
 		"\nextern const KKeys KKEYS[NB_KEYS];" \
+		"\n\n#endif" \
 > kckey.h
 
 # write source file

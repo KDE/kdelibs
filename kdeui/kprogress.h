@@ -122,8 +122,9 @@ public:
    * the recommended height for vertical progress bars
    */
   virtual QSize sizeHint() const;
-	
-		
+
+  virtual QSizePolicy sizePolicy() const;
+			
 public slots:
 	void setValue(int);
 	void advance(int);
