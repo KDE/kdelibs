@@ -391,9 +391,9 @@ void KBookmarkManager::setShowNSBookmarks( bool show )
 {
     m_showNSBookmarks = show;
     DynMenuInfo info;
-    info.type = "netscape";
     info.location = KNSBookmarkImporter::netscapeBookmarksFile();
     info.show = show;
+    info.type = "netscape";
     info.name = i18n("Netscape Bookmarks");
     setDynamicBookmarks(info.type, info);
 }
@@ -587,7 +587,7 @@ void KBookmarkManager::setDynamicBookmarks(const QString &id, const DynMenuInfo 
    // make sure list includes type
    config.setGroup("Bookmarks");
    if (elist.contains(DYNMENUCONFIGPREFIX + id) < 1) {
-      elist << (DYNMENUCONFIGPREFIX + id);
+      elist << id;
       config.writeEntry("DynamicMenus", elist);
    }
 
