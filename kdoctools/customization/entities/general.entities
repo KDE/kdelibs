@@ -161,6 +161,7 @@
 <!ENTITY kamera "<application>Kamera</application>">
 <!ENTITY kandy        "<application>Kandy</application>">
 <!ENTITY kappfinder	"<application>Kappfinder</application>">
+<!ENTITY kaphorism	"<application>KAphorism</application>">
 <!ENTITY karm	"<application>KArm</application>">
 <!ENTITY kasteroids	"<application>KAsteroids</application>">
 <!ENTITY kate	"<application>Kate</application>">
