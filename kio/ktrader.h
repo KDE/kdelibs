@@ -75,6 +75,18 @@
  *   part = static_cast<KParts::ReadOnlyPart *>(factory->create(this, ptr->name(), "KParts::ReadOnlyPart"));
  * </PRE>
  *
+ * Please note that when including property names containing arithmetic operators like - or +, then you have
+ * to put brackets around the property name, in order to correctly separate arithmetic operations from
+ * the name. So for example a constraint expression like
+ *  X-KDE-Blah < 4 
+ * needs to be written as
+ * [X-KDE-Blah] < 4
+ * otherwise it could also be interpreted as
+ * Substract the numeric value of the property "KDE" and "Blah" from the property "X" and make sure it
+ * is less than 4.
+ * Instead of the other meaning
+ * Make sure that the numeric value of "X-KDE-Blah" is less than 4.
+ *
  * @short Provides a way to query the KDE infrastructure for specific
  *        applications or components
  * @author Torben Weis <weis@kde.org>
