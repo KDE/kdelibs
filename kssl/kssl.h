@@ -40,6 +40,8 @@ public:
 
   ~KSSL();
 
+  static bool doesSSLWork();
+
   bool initialize();
   void close();
   bool reInitialize();
@@ -59,6 +61,7 @@ private:
   SSL_CTX *m_ctx;
   SSL_METHOD *m_meth;
 #endif
+  static bool m_bSSLWorks;
   bool m_bInit;
   bool m_bAutoReconfig;
   KSSLSettings *m_cfg;

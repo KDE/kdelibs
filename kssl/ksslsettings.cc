@@ -28,7 +28,7 @@
 //                      and do not store them in memory.  This should change.
 //
 
-KSSLSettings::KSSLSettings(bool readConfig = true) {
+KSSLSettings::KSSLSettings(bool readConfig) {
   m_cfg = new KConfig("cryptodefaults");
   if (readConfig) load();
 }

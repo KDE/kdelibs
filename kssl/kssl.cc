@@ -23,7 +23,7 @@
 
 #include <kdebug.h>
 
-KSSL::KSSL(bool init = true) {
+KSSL::KSSL(bool init) {
   m_bInit = false;
   m_bAutoReconfig = true;
   m_cfg = new KSSLSettings();
@@ -144,4 +144,14 @@ bool KSSL::setSettings(KSSLSettings *settings) {
   return reconfig();
 }
 
+
+#ifdef HAVE_SSL
+bool KSSL::m_bSSLWorks = true;
+#else
+bool KSSL::m_bSSLWorks = false;
+#endif
+
+bool KSSL::doesSSLWork() {
+  return m_bSSLWorks;
+}
 
