@@ -550,14 +550,12 @@ static QPtrList<KSessionManaged>* sessionClients()
 /*
   Auxiliary function to calculate a a session config name used for the
   instance specific config object.
-  Syntax:  "<appname>:<sessionId>"
+  Syntax:  "<appname>_<sessionId>"
  */
 static QString sessionConfigName()
 {
-  QString aSessionConfigName;
-  QTextOStream ts( &aSessionConfigName );
-  ts << qApp->name() << ":" << qApp->sessionId();
-  return aSessionConfigName;
+  QString tmp = QString::fromLatin1(qApp->name());
+  return tmp + "_" + qApp->sessionId();
 }
 
 #ifndef Q_WS_QWS
@@ -898,6 +896,9 @@ void KApplication::propagateSessionManager()
     QCString display = ::getenv(DISPLAY);
     // strip the screen number from the display
     display.replace(QRegExp("\\.[0-9]+$"), "");
+    int i;
+    while( (i = display.find(':')) >= 0)
+       display[i] = '_';
 
     fName += "-"+display;
     QCString smEnv = ::getenv("SESSION_MANAGER");
