@@ -326,6 +326,17 @@ public:
      * @internal
      */
   void saveState( QSessionManager& sm );
+  
+  /**
+   * Returns true if the application is currently saving its session
+   * data (most probably before KDE logout). This is intended for use
+   * mainly in KMainWindow::queryClose() and KMainWindow::queryExit().
+   *
+   * @see KMainWindow::queryClose
+   * @see KMainWindow::queryExit
+   * @since 3.2
+   */
+  bool sessionSaving() const;
 
   /**
    * Returns a pointer to a @ref DCOPClient for the application.

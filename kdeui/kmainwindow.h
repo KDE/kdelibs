@@ -594,6 +594,9 @@ protected:
     // And saving configuration in something called queryExit()? IMHO
     // one can e.g. use KApplication::shutDown(), which if nothing else
     // has at least better fitting name.
+    // See also KApplication::sessionSaving().
+    // This stuff should get changed somehow, so that it at least doesn't
+    // mess with session management.
     /**
        Called before the very last window is closed, either by the
        user or indirectly by the session manager.
@@ -615,9 +618,11 @@ protected:
 
        Default implementation returns @p true. Returning @p false will
        cancel the exiting. In the latter case, the last window will
-       remain visible.
+       remain visible. If KApplication::sessionSaving() is true, refusing
+       the exit will also cancel KDE logout.
 
        @see queryClose()
+       @see KApplication::sessionSaving()
      */
     virtual bool queryExit();
 
@@ -629,7 +634,8 @@ protected:
        safe to close it, i.e. without the user losing some data.
 
        Default implementation returns true. Returning @p false will cancel
-       the closing.
+       the closing, and, if KApplication::sessionSaving() is true, it will also
+       cancel KDE logout.
 
        Reimplement this function to prevent the user from losing data.
        Example:
@@ -648,6 +654,7 @@ protected:
     </pre>
 
    @see queryExit()
+   @see KApplication::sessionSaving()
 
     */
     virtual bool queryClose();
