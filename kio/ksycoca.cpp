@@ -49,7 +49,7 @@ KSycoca::KSycoca()
    }
 }
 
-bool KSycoca::openDatabase( bool abortOnError )
+bool KSycoca::openDatabase( bool ignoreErrors )
 {
    QString path = KGlobal::dirs()->saveLocation("config") + "ksycoca";
    QFile *database = new QFile(path);
@@ -63,7 +63,7 @@ bool KSycoca::openDatabase( bool abortOnError )
      // No database file
 
      bNoDatabase = true;
-     if (!abortOnError)  // misnamed argument ?
+     if (!ignoreErrors)  // misnamed argument ?
        return false;
 
      // We open a dummy database instead.
@@ -222,7 +222,15 @@ QString KSycoca::kfsstnd_prefixes()
    // We now point to the header
    QString prefixes;
    (*m_str) >> prefixes;
+   (*m_str) >> m_timeStamp;
    return prefixes;
+}
+
+Q_UINT32 KSycoca::timeStamp()
+{
+   if (!m_timeStamp)
+      (void) kfsstnd_prefixes();
+   return m_timeStamp;
 }
 
 QString KSycoca::determineRelativePath( const QString & _fullpath, const char *_resource )

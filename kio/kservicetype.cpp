@@ -34,6 +34,7 @@ template QDataStream& operator>> <QString, QVariant::Type>(QDataStream&, QMap<QS
 template QDataStream& operator<< <QString, QVariant::Type>(QDataStream&, const QMap<QString, QVariant::Type>&);
 
 KServiceType::KServiceType( const QString & _fullpath)
+ : KSycocaEntry(_fullpath)
 {
   KDesktopFile config( _fullpath );
 
@@ -41,6 +42,7 @@ KServiceType::KServiceType( const QString & _fullpath)
 }
 
 KServiceType::KServiceType( KDesktopFile *config )
+ : KSycocaEntry(config->filename())
 {
   init(config);
 }
@@ -48,8 +50,6 @@ KServiceType::KServiceType( KDesktopFile *config )
 void
 KServiceType::init( KDesktopFile *config)
 {
-  m_strDesktopEntryPath = config->filename();
-
   // Is it a mimetype ?
   m_strName = config->readEntry( "MimeType" );
 
@@ -94,15 +94,16 @@ KServiceType::init( KDesktopFile *config)
 
 KServiceType::KServiceType( const QString & _fullpath, const QString& _type,
                             const QString& _icon, const QString& _comment )
+ : KSycocaEntry(_fullpath)
 {
-  m_strDesktopEntryPath = _fullpath;
   m_strName = _type;
   m_strIcon = _icon;
   m_strComment = _comment;
   m_bValid = !m_strName.isEmpty();
 }
 
-KServiceType::KServiceType( QDataStream& _str, int offset ) : KSycocaEntry( _str, offset )
+KServiceType::KServiceType( QDataStream& _str, int offset ) 
+ : KSycocaEntry( _str, offset )
 {
   load( _str);
 }
@@ -112,7 +113,7 @@ KServiceType::load( QDataStream& _str )
 {
   Q_INT8 b;
   _str >> m_strName >> m_strIcon >> m_strComment >> m_mapProps >> m_mapPropDefs
-       >> b >> m_strDesktopEntryPath;
+       >> b;
   m_bValid = b;
 }
 
@@ -124,7 +125,7 @@ KServiceType::save( QDataStream& _str )
   // You may add new fields at the end. Make sure to update the version
   // number in ksycoca.h
   _str << m_strName << m_strIcon << m_strComment << m_mapProps << m_mapPropDefs
-       << (Q_INT8)m_bValid << m_strDesktopEntryPath;
+       << (Q_INT8)m_bValid;
 }
 
 KServiceType::~KServiceType()

@@ -67,8 +67,8 @@ public:
   /**
    * Name used for indexing.
    */
-  virtual QString name() const { return m_strRelPath; }
-  virtual QString relPath() const { return m_strRelPath; }
+  virtual QString name() const { return entryPath(); }
+  virtual QString relPath() const { return entryPath(); }
 
   /**
    * @return the caption of this group
@@ -112,7 +112,6 @@ protected:
    */
   void addEntry( KSycocaEntry *entry);
 
-  QString m_strRelPath; // name()  (Indexed)
   QString m_strCaption;
   QString m_strIcon;
   QString m_strComment;

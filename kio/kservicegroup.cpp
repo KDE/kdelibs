@@ -26,8 +26,8 @@
 #include "ksycoca.h"
 
 KServiceGroup::KServiceGroup( const QString &configFile, const QString & _relpath )
+ : KSycocaEntry(_relpath)
 {
-  m_strRelPath = _relpath;
   m_bDeleted = false;
 
   if (!configFile.isEmpty())
@@ -70,7 +70,7 @@ void KServiceGroup::load( QDataStream& s )
 {
   QStringList groupList;
 
-  s >> m_strRelPath >> m_strCaption >> m_strIcon >>
+  s >> m_strCaption >> m_strIcon >>
        m_strComment >> groupList;
 
   if (m_bDeep)
@@ -125,7 +125,7 @@ void KServiceGroup::save( QDataStream& s )
      }
   }
 
-  s << m_strRelPath << m_strCaption << m_strIcon << 
+  s << m_strCaption << m_strIcon << 
        m_strComment << groupList;
 }
 

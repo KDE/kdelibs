@@ -43,6 +43,7 @@
 #include <kdesktopfile.h>
 
 KService::KService( const QString & _fullpath )
+ : KSycocaEntry( _fullpath)
 {
   KDesktopFile config( _fullpath );
 
@@ -50,6 +51,7 @@ KService::KService( const QString & _fullpath )
 }
 
 KService::KService( KDesktopFile *config )
+ : KSycocaEntry( config->filename())
 {
   init(config);
 }
@@ -59,15 +61,13 @@ KService::init( KDesktopFile *config )
 {
   m_bValid = true;
 
-  m_strDesktopEntryPath = config->filename();
-
-  bool absPath = (m_strDesktopEntryPath[0] == '/');
+  bool absPath = (entryPath()[0] == '/');
 
   config->setDesktopGroup();
   m_strType = config->readEntry( "Type" );
   if ( m_strType.isEmpty() )
   {
-    /*kdWarning(7012) << "The desktop entry file " << m_strDesktopEntryPath
+    /*kdWarning(7012) << "The desktop entry file " << entryPath()
                     << " has no Type=... entry."
                     << " It should be \"Application\" or \"Service\"" << endl;
     m_bValid = false;
@@ -75,7 +75,7 @@ KService::init( KDesktopFile *config )
     m_strType = "Application";
   } else if ( m_strType != "Application" && m_strType != "Service" )
   {
-    kdWarning(7012) << "The desktop entry file " << m_strDesktopEntryPath
+    kdWarning(7012) << "The desktop entry file " << entryPath()
                     << " has Type=" << m_strType
                     << " instead of \"Application\" or \"Service\"" << endl;
     m_bValid = false;
@@ -88,7 +88,7 @@ KService::init( KDesktopFile *config )
        (resource != "apps") &&
        !absPath)
   {
-    kdWarning(7012) << "The desktop entry file " << m_strDesktopEntryPath
+    kdWarning(7012) << "The desktop entry file " << entryPath()
            << " has Type=" << m_strType << "but is located under \"" << resource
            << "\" instead of \"apps\"" << endl;
     m_bValid = false;
@@ -100,7 +100,7 @@ KService::init( KDesktopFile *config )
        (resource != "services") &&
        !absPath)
   {
-    kdWarning(7012) << "The desktop entry file " << m_strDesktopEntryPath
+    kdWarning(7012) << "The desktop entry file " << entryPath()
            << " has Type=" << m_strType << "but is located under \"" << resource
            << "\" instead of \"services\"" << endl;
     m_bValid = false;
@@ -111,7 +111,7 @@ KService::init( KDesktopFile *config )
   m_strName = config->readEntry( "Name" );
   if ( m_strName.isEmpty() )
   {
-    kdWarning(7012) << "The desktop entry file " << m_strDesktopEntryPath
+    kdWarning(7012) << "The desktop entry file " << entryPath()
                     <<  " has no Name" << endl;
     m_bValid = false;
     return;
@@ -148,7 +148,7 @@ KService::init( KDesktopFile *config )
   else
      m_DCOPServiceType = DCOP_None;
 
-  QString name = m_strDesktopEntryPath;
+  QString name = entryPath();
   int pos = name.findRev('/');
   if (pos != -1)
      name = name.mid(pos+1);
@@ -211,7 +211,7 @@ void KService::load( QDataStream& s )
     >> m_strPath >> m_strComment >> m_lstServiceTypes >> def >> m_mapProps
     >> m_strLibrary >> m_libraryMajor >> m_libraryMinor
     >> dst
-    >> m_strDesktopEntryPath >> m_strDesktopEntryName
+    >> m_strDesktopEntryName
     >> dummy1 >> dummyStr1 >> initpref >> dummyStr2 >> dummy2;
 
   m_bAllowAsDefault = def;
@@ -239,7 +239,7 @@ void KService::save( QDataStream& s )
     << m_strPath << m_strComment << m_lstServiceTypes << def << m_mapProps
     << m_strLibrary << m_libraryMajor << m_libraryMinor
     << dst
-    << m_strDesktopEntryPath << m_strDesktopEntryName
+    << m_strDesktopEntryName
     << dummy1 << dummyStr1 << initpref << dummyStr2 << dummy2;
 }
 

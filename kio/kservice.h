@@ -140,7 +140,7 @@ public:
    * It is a full path if the desktop entry originates from another
    * location.
    */
-  QString desktopEntryPath() const { return m_strDesktopEntryPath; }
+  QString desktopEntryPath() const { return entryPath(); }
 
   /**
    * @return the filename of the service desktop entry without any
@@ -284,7 +284,6 @@ private:
   bool m_bTerminal;
   //bool m_bSuid;
   //QString m_strUsername;
-  QString m_strDesktopEntryPath;
   QString m_strDesktopEntryName;
   //QString m_docPath;
   //bool m_bHideFromPanel;

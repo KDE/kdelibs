@@ -121,7 +121,7 @@ void Kded::recreate()
    // Using KLauncher here is difficult since we might not have a
    // database
 
-   system("kbuildsycoca");
+   system("kbuildsycoca --incremental");
    build();
 }
 

@@ -45,19 +45,29 @@ public: // KDoc seems to barf on those typedefs and generates no docs after them
    /**
     * Default constructor
     */
-   KSycocaEntry() : mOffset(0), m_bDeleted(false) { }
+   KSycocaEntry(const QString &path) : mOffset(0), m_bDeleted(false), mPath(path) { }
 
    /**
     * @internal
     * Restores itself from a stream.
     */
-   KSycocaEntry( QDataStream &/*_str*/, int offset ) : 
-              mOffset( offset ), m_bDeleted(false) { /* Nothing to do here */ }
+   KSycocaEntry( QDataStream &_str, int offset ) : 
+              mOffset( offset ), m_bDeleted(false) 
+   { 
+     _str >> mPath;
+   }
 
    /**
     * @return the name of this entry
     */
    virtual QString name() const = 0;
+
+   /**
+    * @return the path of this entry 
+    * The path can be aboslute or relative.
+    * The corresponding factory should know relative to what.
+    */
+   QString entryPath() const { return mPath; }
   
    /**
     * @return true if valid
@@ -83,7 +93,7 @@ public: // KDoc seems to barf on those typedefs and generates no docs after them
    virtual void save(QDataStream &s)
      {
        mOffset = s.device()->at(); // store position in member variable
-       s << (Q_INT32) sycocaType();
+       s << (Q_INT32) sycocaType() << mPath;
      }
 
    /**
@@ -96,6 +106,7 @@ private:
    int mOffset;
 protected:
    bool m_bDeleted;
+   QString mPath;   
 };
 
 #endif

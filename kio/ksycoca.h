@@ -83,6 +83,14 @@ public:
    QString kfsstnd_prefixes();
 
    /**
+    * @internal - returns timestamp of database
+    *
+    * The database contains all changes made _before_ this time and
+    * _might_ contain changes made after that.
+    */
+   Q_UINT32 timeStamp();
+
+   /**
     * @internal - add a factory
     */
    void addFactory( KSycocaFactory * );
@@ -107,12 +115,13 @@ signals:
 
 protected:
    bool checkVersion(bool abortOnError=true);
-   bool openDatabase(bool abortOnError=true);
+   bool openDatabase(bool ignoreErrors=true);
    void closeDatabase();
    KSycocaFactoryList *m_lstFactories;
    QDataStream *m_str;
    static KSycoca *_self;
    bool bNoDatabase;
+   Q_UINT32 m_timeStamp;
 };
 
 #endif

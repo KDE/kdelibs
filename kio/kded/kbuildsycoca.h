@@ -47,7 +47,7 @@ protected:
    /**
     * Build the whole system cache, from .desktop files
     */
-   void build();
+   void build(KSycocaEntryListList *);
    
    /**
     * Save the ksycoca file

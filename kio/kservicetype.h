@@ -98,7 +98,7 @@ public:
    *         this servicetype.
    * For instance inode/directory.desktop, or kpart.desktop
    */
-  QString desktopEntryPath() const { return m_strDesktopEntryPath; }
+  QString desktopEntryPath() const { return entryPath(); }
 
   virtual QVariant property( const QString& _name ) const;
   virtual QStringList propertyNames() const;
@@ -152,7 +152,6 @@ protected:
   QString m_strComment;
   QMap<QString,QVariant> m_mapProps;
   QMap<QString,QVariant::Type> m_mapPropDefs;
-  QString m_strDesktopEntryPath;
 
   bool m_bValid;
 };

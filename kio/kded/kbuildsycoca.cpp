@@ -48,6 +48,9 @@
 #include <stdlib.h>
 #include <unistd.h>
 
+static Q_UINT32 newTimestamp = 0;
+static Q_UINT32 oldTimestamp = 0;
+
 KBuildSycoca::KBuildSycoca()
   : KSycoca( true )
 {
@@ -57,8 +60,34 @@ KBuildSycoca::~KBuildSycoca()
 {
 }
 
-void KBuildSycoca::build()
+void KBuildSycoca::build(KSycocaEntryListList *allEntries)
 {
+  typedef QDict<KSycocaEntry> myEntryDict;
+  typedef QList<myEntryDict> myEntryDictList;
+  myEntryDictList *entryDictList = 0;
+
+  entryDictList = new myEntryDictList();
+  // Convert for each factory the entryList to a Dict.
+  int i = 0;
+  // For each factory
+  for (KSycocaFactory *factory = m_lstFactories->first();
+       factory;
+       factory = m_lstFactories->next() )
+  {
+     myEntryDict *entryDict = new myEntryDict();
+     if (allEntries)
+     {
+         KSycocaEntry::List list = (*allEntries)[i++];
+         for( KSycocaEntry::List::Iterator it = list.begin();
+            it != list.end();
+            ++it)
+         {
+            entryDict->insert( (*it)->entryPath(), static_cast<KSycocaEntry *>(*it));
+         }
+     }
+     entryDictList->append(entryDict);
+  }
+
   QStringList allResources;
   // For each factory
   for (KSycocaFactory *factory = m_lstFactories->first();
@@ -96,9 +125,11 @@ void KBuildSycoca::build()
 
      // Now find all factories that use this resource....
      // For each factory
+     myEntryDict *entryDict = entryDictList->first();
      for (KSycocaFactory *factory = m_lstFactories->first();
           factory;
-          factory = m_lstFactories->next() )
+          factory = m_lstFactories->next(), 
+          entryDict = entryDictList->next() )
      {
         // For each resource the factory deals with
         const KSycocaResourceList *list = factory->resourceList();
@@ -126,10 +157,33 @@ void KBuildSycoca::build()
 		   continue;
 	       }
 
-              // Create a new entry
-              KSycocaEntry* entry = factory->createEntry( *it3, resource );
-              if ( entry && entry->isValid() )
-                 factory->addEntry( entry );
+               KSycocaEntry* entry = 0;
+               if (entryDict)
+               {
+                   Q_UINT32 timeStamp = 0;
+                   struct stat buff;
+                   if(::stat(QFile::encodeName(
+		         KGlobal::dirs()->findResource(resource, *it3)), &buff) == 0)
+                   {
+                      timeStamp = (Q_UINT32) buff.st_ctime;
+                   }
+                   if (!timeStamp || (timeStamp < oldTimestamp))
+                   {    
+                      // Re-use old entry
+                      entry = entryDict->find(*it3);
+                   }
+                   else if (oldTimestamp)
+                   {
+                      kdDebug() << "modified: " << (*it3) << endl;
+                   }
+               }
+               if (!entry)
+               {
+                   // Create a new entry
+                   entry = factory->createEntry( *it3, resource );
+               }
+               if ( entry && entry->isValid() )
+                  factory->addEntry( entry );
            }
         }
      }
@@ -161,27 +215,7 @@ void KBuildSycoca::recreate( KSycocaEntryListList *allEntries )
   (void) new KBuildImageIOFactory();
 
   time_t Time1 = time(0);
-  if (allEntries)
-  {
-     int i = 0;
-     // For each factory
-     for (KSycocaFactory *factory = m_lstFactories->first();
-          factory;
-          factory = m_lstFactories->next() )
-     {
-         KSycocaEntry::List list = (*allEntries)[i++];
-         for( KSycocaEntry::List::Iterator it = list.begin();
-            it != list.end();
-            ++it)
-         {
-            factory->addEntry(static_cast<KSycocaEntry *>(*it));
-         }
-     }
-  }
-  else
-  {
-     build(); // Parse dirs
-  }
+  build(allEntries); // Parse dirs
   time_t Time2 = time(0);
   save(); // Save database
   time_t Time3 = time(0);
@@ -221,6 +255,7 @@ void KBuildSycoca::save()
    (*m_str) << (Q_INT32) 0; // No more factories.
    // Write KDEDIRS
    (*m_str) << KGlobal::dirs()->kfsstnd_prefixes();
+   (*m_str) << newTimestamp;
 
    // Write factory data....
    for(KSycocaFactory *factory = m_lstFactories->first();
@@ -257,7 +292,7 @@ void KBuildSycoca::save()
 
 static KCmdLineOptions options[] = {
    { "nosignal", I18N_NOOP("Don't signal applications."), 0 },
-   { "incremental", I18N_NOOP("Incremental update (do not use!)."), 0 },
+   { "incremental", I18N_NOOP("Incremental update."), 0 },
    { 0, 0, 0 }
 };
 
@@ -307,6 +342,7 @@ int main(int argc, char **argv)
    KBuildSycoca::KSycocaEntryListList *allEntries = 0;
    if (incremental)
    {
+      oldTimestamp = KSycoca::self()->timeStamp();
       KSycoca *oldSycoca = KSycoca::self();
       KSycocaFactoryList *factories = new KSycocaFactoryList;
       allEntries = new KBuildSycoca::KSycocaEntryListList;
@@ -329,6 +365,8 @@ int main(int argc, char **argv)
       delete factories; factories = 0;
       delete oldSycoca;
    }
+
+   newTimestamp = (Q_UINT32) time(0);
 
    KBuildSycoca *sycoca= new KBuildSycoca; // Build data base
    sycoca->recreate(allEntries);

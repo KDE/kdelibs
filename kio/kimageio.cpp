@@ -31,6 +31,7 @@
 #include <qimage.h>
 
 KImageIOFormat::KImageIOFormat( const QString &path)
+  : KSycocaEntry(path)
 {
    bLibLoaded = false;
    mReadFunc = 0;
