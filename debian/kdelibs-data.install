@@ -3,7 +3,8 @@ debian/tmp/etc/kde3
 debian/tmp/usr/share/autostart
 debian/tmp/usr/share/applnk
 debian/tmp/usr/share/apps
-debian/tmp/usr/share/doc/kde/HTML
+debian/tmp/usr/share/doc/kde/HTML/common
+debian/tmp/usr/share/doc/kde/HTML/kspell
 debian/tmp/usr/share/icons
 debian/tmp/usr/share/locale
 debian/tmp/usr/share/mimelnk
