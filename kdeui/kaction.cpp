@@ -40,6 +40,7 @@
 #include <kmainwindow.h>
 #include <kglobalsettings.h>
 #include <kcombobox.h>
+#include <kfontcombo.h>
 #include <kdebug.h>
 #include <assert.h>
 
@@ -1898,12 +1899,26 @@ void KFontAction::setFont( const QString &family )
 
 int KFontAction::plug( QWidget *w, int index )
 {
-  int container = KSelectAction::plug( w, index );
+  if ( w->inherits("KToolBar") )
+  {
+    KToolBar* bar = static_cast<KToolBar*>( w );
+    int id_ = KAction::getToolButtonID();
+    KFontCombo *cb = new KFontCombo( items(), bar );
+    connect( cb, SIGNAL( activated( const QString & ) ),
+             SLOT( slotActivated( const QString & ) ) );
+    cb->setEnabled( isEnabled() );
+    bar->insertWidget( id_, comboWidth(), cb, index );
+    cb->setMinimumWidth( cb->sizeHint().width() );
 
-  if ( container != -1 && w->inherits( "KToolBar" ) )
-    static_cast<KToolBar *>( w )->getCombo( itemId( container ) )->setAutoCompletion( TRUE );
+    addContainer( bar, id_ );
 
-  return container;
+    connect( bar, SIGNAL( destroyed() ), this, SLOT( slotDestroyed() ) );
+
+    setCurrentItem( containerCount() - 1, currentItem() );
+
+    return containerCount() - 1;
+  }
+  else return KSelectAction::plug( w, index );
 }
 
 class KFontSizeAction::KFontSizeActionPrivate

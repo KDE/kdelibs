@@ -44,7 +44,15 @@ public:
      * @param parent The parent widget
      * @param name The object name for the widget
      */
-    KFontCombo(QWidget *parent = 0, const char *name = 0);
+    KFontCombo(QWidget *parent, const char *name = 0);
+    /**
+     * Constructor that takes an already initialzed font list
+     *
+     * @param fonts A list of fonts to show
+     * @param parent The parent widget
+     * @param name The object name for the widget
+     */
+    KFontCombo(const QStringList &fonts, QWidget *parent, const char *name = 0);
     /**
      * Destructor
      */
@@ -120,6 +128,12 @@ public:
     static bool displayFonts();
 
 protected:
+    /**
+     * Initializes the combobox with the given font list
+     *
+     * @param fonts the fonts to display
+     */
+    void init(const QStringList &fonts);
     /**
      * Updated the combo's @ref listBox() to reflect changes made to the
      * fonts' attributed

@@ -157,14 +157,25 @@ void KFontListItem::createFont()
 }
 
 KFontCombo::KFontCombo(QWidget *parent, const char *name)
-    : KComboBox(parent, name)
+    : KComboBox(true, parent, name)
+{
+    QFontDatabase fontdb;
+    init(fontdb.families(false));
+}
+
+KFontCombo::KFontCombo(const QStringList &fonts, QWidget *parent, const char *name)
+    : KComboBox(true, parent, name)
+{
+    init(fonts);
+}
+
+void KFontCombo::init(const QStringList &fonts)
 {
     d = new KFontComboPrivate;
     d->displayFonts = displayFonts();
     setInsertionPolicy(NoInsertion);
+    setAutoCompletion(true);
     setSize(12);
-    QFontDatabase fontdb;
-    QStringList fonts = fontdb.families(false);
     for (QStringList::ConstIterator it = fonts.begin(); it != fonts.end(); ++it)
         new KFontListItem(*it, this);
 }
