@@ -45,6 +45,8 @@
 #include <qrect.h>
 #include <kdebug.h>
 
+#include <assert.h>
+
 using namespace khtml;
 using namespace DOM;
 
@@ -621,6 +623,7 @@ unsigned int RenderText::width( int from, int len) const
 #ifndef NO_COMPOSE
     s.compose();
 #endif
+    assert(fm);
     int w = fm->width(s);
     // ### add margins and support for RTL
 

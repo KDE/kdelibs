@@ -491,9 +491,9 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
     case CSS_PROP_BACKGROUND_ATTACHMENT:
 	if(value->valueType() == CSSValue::CSS_INHERIT)
 	{
-	    // ###
-	    //style->setBackgroundAttachment(e->parentNode->style()->backgroundAttachment());
-	    break;
+	    if(!e->parentNode()) return;
+	    style->setBackgroundAttachment(e->parentNode()->style()->backgroundAttachment());
+	    return;
 	}
 	if(!primitiveValue) break;
 	switch(primitiveValue->getIdent())
@@ -509,10 +509,9 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
 	}	
     case CSS_PROP_BACKGROUND_REPEAT:
     {
-	if(value->valueType() == CSSValue::CSS_INHERIT)
-	{
-	    // ###
-	    //style->setDisplay(e->parentNode->style()->display());
+	if(value->valueType() == CSSValue::CSS_INHERIT) {
+	    if(!e->parentNode()) return;
+	    style->setBackgroundRepeat(e->parentNode()->style()->backgroundRepeat());
 	    return;
 	}
 	if(!primitiveValue) return;
@@ -537,8 +536,8 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
     case CSS_PROP_BORDER_COLLAPSE:
 	if(value->valueType() == CSSValue::CSS_INHERIT)
 	{
-	    // ###
-	    //style->setBackgroundAttachment(e->parentNode->style()->backgroundAttachment());
+	    if(!e->parentNode()) return;
+	    style->setBorderCollapse(e->parentNode()->style()->borderCollapse());
 	    break;
 	}
 	if(!primitiveValue) break;
@@ -559,7 +558,6 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
     case CSS_PROP_BORDER_BOTTOM_STYLE:
     case CSS_PROP_BORDER_LEFT_STYLE:
     {
-	//kdDebug( 6080 ) << "applying border style!" << endl;
 	if(value->valueType() == CSSValue::CSS_INHERIT)
 	{
 	    if(!e->parentNode()) return;
@@ -936,6 +934,7 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
     {
 	if(value->valueType() == CSSValue::CSS_INHERIT)
 	{
+	    if(!e->parentNode()) return;
 	    style->setPosition(e->parentNode()->style()->position());
 	    return;
 	}
@@ -967,7 +966,14 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
     case CSS_PROP_UNICODE_BIDI:
     case CSS_PROP_VISIBILITY:
 	break;
+
     case CSS_PROP_WHITE_SPACE:
+	if(value->valueType() == CSSValue::CSS_INHERIT) {
+	    if(!e->parentNode()) return;
+	    style->setWhiteSpace(e->parentNode()->style()->whiteSpace());
+	    return;
+	}
+
         if(!primitiveValue->getIdent()) return;
 
         EWhiteSpace s;
@@ -1117,8 +1123,23 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
     {
 	if(value->valueType() == CSSValue::CSS_INHERIT)
 	{
-	    // ###
-	    break;
+	    switch(prop->m_id)
+	    {
+	    case CSS_PROP_BORDER_TOP_WIDTH:
+		style->setBorderTopWidth(e->parentNode()->style()->borderTopWidth()); break;
+	    case CSS_PROP_BORDER_RIGHT_WIDTH:
+		style->setBorderRightWidth(e->parentNode()->style()->borderRightWidth()); break;
+	    case CSS_PROP_BORDER_BOTTOM_WIDTH:
+		style->setBorderBottomWidth(e->parentNode()->style()->borderBottomWidth()); break;
+	    case CSS_PROP_BORDER_LEFT_WIDTH:
+		style->setBorderLeftWidth(e->parentNode()->style()->borderLeftWidth()); break;
+	    case CSS_PROP_OUTLINE_WIDTH:
+		// ###
+	    default:
+		// ###
+		break;
+	    }
+	    return;
 	}
 	if(!primitiveValue) break;
 	short width = 3; // medium is default value
@@ -1167,6 +1188,24 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
     case CSS_PROP_LETTER_SPACING:
     case CSS_PROP_WORD_SPACING:
     {
+	if(value->valueType() == CSSValue::CSS_INHERIT)
+	{
+	    if(!e->parentNode()) return;
+	    switch(prop->m_id)
+	    {
+	    case CSS_PROP_MARKER_OFFSET:
+		// ###
+		break;
+	    case CSS_PROP_LETTER_SPACING:
+		style->setLetterSpacing(e->parentNode()->style()->letterSpacing()); break;
+	    case CSS_PROP_WORD_SPACING:
+		style->setWordSpacing(e->parentNode()->style()->wordSpacing()); break;
+	    default:
+		// ###
+		break;
+	    }
+	    return;
+	}
 	if(!primitiveValue) return;
 	int width = computeLength(primitiveValue, style);
 // reason : letter or word spacing may be negative.
@@ -1215,13 +1254,46 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
     case CSS_PROP_TEXT_INDENT:
 	// +inherit
     {
-	if(value->valueType() == CSSValue::CSS_INHERIT)
-	{
-	    // ###
-	    //l = e->parentNode->style()->....());
-	}
-	if(primitiveValue && !apply)
-	{
+	if(value->valueType() == CSSValue::CSS_INHERIT) {
+	    if(!e->parentNode()) return;
+	    switch(prop->m_id)
+		{
+		case CSS_PROP_MAX_WIDTH:
+		    style->setMaxWidth(e->parentNode()->style()->maxWidth()); break;
+		case CSS_PROP_BOTTOM:
+		    style->setBottom(e->parentNode()->style()->bottom()); break;
+		case CSS_PROP_TOP:
+		    style->setTop(e->parentNode()->style()->top()); break;
+		case CSS_PROP_LEFT:
+		    style->setLeft(e->parentNode()->style()->left()); break;
+		case CSS_PROP_RIGHT:
+		    style->setRight(e->parentNode()->style()->right()); break;
+		case CSS_PROP_WIDTH:
+		    style->setWidth(e->parentNode()->style()->width()); break;
+		case CSS_PROP_MIN_WIDTH:
+		    style->setMinWidth(e->parentNode()->style()->minWidth()); break;
+		case CSS_PROP_PADDING_TOP:
+		    style->setPaddingTop(e->parentNode()->style()->paddingTop()); break;
+		case CSS_PROP_PADDING_RIGHT:
+		    style->setPaddingRight(e->parentNode()->style()->paddingRight()); break;
+		case CSS_PROP_PADDING_BOTTOM:
+		    style->setPaddingBottom(e->parentNode()->style()->paddingBottom()); break;
+		case CSS_PROP_PADDING_LEFT:
+		    style->setPaddingLeft(e->parentNode()->style()->paddingLeft()); break;
+		case CSS_PROP_MARGIN_TOP:
+		    style->setMarginTop(e->parentNode()->style()->marginTop()); break;
+		case CSS_PROP_MARGIN_RIGHT:
+		    style->setMarginRight(e->parentNode()->style()->marginRight()); break;
+		case CSS_PROP_MARGIN_BOTTOM:
+		    style->setMarginBottom(e->parentNode()->style()->marginBottom()); break;
+		case CSS_PROP_MARGIN_LEFT:
+		    style->setMarginLeft(e->parentNode()->style()->marginLeft()); break;
+		case CSS_PROP_TEXT_INDENT:
+		    style->setTextIndent(e->parentNode()->style()->textIndent()); break;
+		default:
+		    return;
+		}
+	} else if(primitiveValue && !apply) {
 	    int type = primitiveValue->primitiveType();
 	    if(type > CSSPrimitiveValue::CSS_PERCENTAGE && type < CSSPrimitiveValue::CSS_DEG)
 		l = Length(computeLength(primitiveValue, style), Fixed);
@@ -1233,42 +1305,42 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
 	}
 	if(!apply) return;
 	switch(prop->m_id)
-	{
-	case CSS_PROP_MAX_WIDTH:
-	    style->setMaxWidth(l); break;
-	case CSS_PROP_BOTTOM:
-	    style->setBottom(l); break;
-	case CSS_PROP_TOP:
-	    style->setTop(l); break;
-	case CSS_PROP_LEFT:
-	    style->setLeft(l); break;
-	case CSS_PROP_RIGHT:
-	    style->setRight(l); break;
-	case CSS_PROP_WIDTH:
-	    style->setWidth(l); break;
-	case CSS_PROP_MIN_WIDTH:
-	    style->setMinWidth(l); break;
-	case CSS_PROP_PADDING_TOP:
-	    style->setPaddingTop(l); break;
-	case CSS_PROP_PADDING_RIGHT:
-	    style->setPaddingRight(l); break;
-	case CSS_PROP_PADDING_BOTTOM:
-	    style->setPaddingBottom(l); break;
-	case CSS_PROP_PADDING_LEFT:
-	    style->setPaddingLeft(l); break;
-	case CSS_PROP_MARGIN_TOP:
-	    style->setMarginTop(l); break;
-	case CSS_PROP_MARGIN_RIGHT:
-	    style->setMarginRight(l); break;
-	case CSS_PROP_MARGIN_BOTTOM:
-	    style->setMarginBottom(l); break;
-	case CSS_PROP_MARGIN_LEFT:
-	    style->setMarginLeft(l); break;
-	case CSS_PROP_TEXT_INDENT:
-	    style->setTextIndent(l); break;
-	default:
-	    return;
-	}
+	    {
+	    case CSS_PROP_MAX_WIDTH:
+		style->setMaxWidth(l); break;
+	    case CSS_PROP_BOTTOM:
+		style->setBottom(l); break;
+	    case CSS_PROP_TOP:
+		style->setTop(l); break;
+	    case CSS_PROP_LEFT:
+		style->setLeft(l); break;
+	    case CSS_PROP_RIGHT:
+		style->setRight(l); break;
+	    case CSS_PROP_WIDTH:
+		style->setWidth(l); break;
+	    case CSS_PROP_MIN_WIDTH:
+		style->setMinWidth(l); break;
+	    case CSS_PROP_PADDING_TOP:
+		style->setPaddingTop(l); break;
+	    case CSS_PROP_PADDING_RIGHT:
+		style->setPaddingRight(l); break;
+	    case CSS_PROP_PADDING_BOTTOM:
+		style->setPaddingBottom(l); break;
+	    case CSS_PROP_PADDING_LEFT:
+		style->setPaddingLeft(l); break;
+	    case CSS_PROP_MARGIN_TOP:
+		style->setMarginTop(l); break;
+	    case CSS_PROP_MARGIN_RIGHT:
+		style->setMarginRight(l); break;
+	    case CSS_PROP_MARGIN_BOTTOM:
+		style->setMarginBottom(l); break;
+	    case CSS_PROP_MARGIN_LEFT:
+		style->setMarginLeft(l); break;
+	    case CSS_PROP_TEXT_INDENT:
+		style->setTextIndent(l); break;
+	    default:
+		return;
+	    }
     }
 
     case CSS_PROP_MAX_HEIGHT:
@@ -1283,8 +1355,19 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
 	    apply = true;
 	if(value->valueType() == CSSValue::CSS_INHERIT)
 	{
-	    // ###
-	    //l = e->parentNode->style()->....());
+	    if(!e->parentNode()) return;
+	    switch(prop->m_id)
+		{
+		case CSS_PROP_MAX_HEIGHT:
+		    style->setMaxHeight(e->parentNode()->style()->maxHeight()); break;
+		case CSS_PROP_HEIGHT:
+		    style->setHeight(e->parentNode()->style()->height()); break;
+		case CSS_PROP_MIN_HEIGHT:
+		    style->setMinHeight(e->parentNode()->style()->minHeight()); break;
+		defualt: 
+		    return;
+		}
+	    return;
 	}
 	if(primitiveValue && !apply)
 	{
@@ -1467,6 +1550,7 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
     case CSS_PROP_SPEECH_RATE:
     case CSS_PROP_STRESS:
     case CSS_PROP_WIDOWS:
+	break;
     case CSS_PROP_Z_INDEX:
     {
 	if(value->valueType() == CSSValue::CSS_INHERIT)
@@ -1514,6 +1598,8 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
 // frequency
     case CSS_PROP_PITCH:
 
+	break;
+	
 // string
     case CSS_PROP_TEXT_ALIGN:
     {
@@ -1556,6 +1642,7 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
 	// list of CSS2CounterIncrement
     case CSS_PROP_COUNTER_RESET:
 	// list of CSS2CounterReset
+	break;
     case CSS_PROP_FONT_FAMILY:
 	// list of strings and ids
     {
@@ -1649,7 +1736,6 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
 	
 // shorthand properties
     case CSS_PROP_BACKGROUND:
-	// ### inherit
 	if(value->valueType() != CSSValue::CSS_INHERIT || !e->parentNode()) return;	
 	style->setBackgroundColor(e->parentNode()->style()->backgroundColor());
 	style->setBackgroundImage(e->parentNode()->style()->backgroundImage());

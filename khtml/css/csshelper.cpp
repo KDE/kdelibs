@@ -29,6 +29,8 @@
 #include "css_valueimpl.h"
 #include "dom/css_value.h"
 
+#include "kdebug.h"
+
 using namespace DOM;
 using namespace khtml;
 
@@ -43,8 +45,8 @@ int khtml::computeLength(DOM::CSSPrimitiveValueImpl *val, RenderStyle *style, Me
     {
 	if(type == CSSPrimitiveValue::CSS_EMS)
 	{
-	    QFontInfo fi(style->font());
-	    factor = fi.pointSize();
+	    QFontMetrics fm(style->font());
+	    factor = fm.height();
 	    //kdDebug( 6080 ) << "EM = " << factor << endl;
 	}
 	else
@@ -106,12 +108,12 @@ DOMString khtml::parseURL(const DOMString &url)
     {
 	u = u.mid(4, u.length()-5);
     }
-    
+
     if (u[0] == ' ')
     	u = u.mid(1, u.length()-1);
     if (u[u.length()-1] == ' ')
-    	u = u.mid(0, u.length()-1); 
-	   
+    	u = u.mid(0, u.length()-1);
+	
     if(u[0] == '\"' && u[u.length()-1] == '\"')
 	u = u.mid(1, u.length()-2);
 	

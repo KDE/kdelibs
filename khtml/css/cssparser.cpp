@@ -348,13 +348,14 @@ StyleBaseImpl::parseSelector2(const QChar *curP, const QChar *endP)
 		    delete cs;
 		    return 0;
 		}
-		//kdDebug( 6080 ) << "tag = " << tag << endl;
+		kdDebug( 6080 ) << "tag = " << tag << endl;
 		const QChar *equal = parseToChar(curP, endP, '=', false);
 		QString attr;
 		if(!equal)
 		{
 		    attr = QString( curP, endP - curP - 1 );
-		    //kdDebug( 6080 ) << "attr = '" << attr << "'" << endl;
+		    attr = attr.stripWhiteSpace();
+		    kdDebug( 6080 ) << "attr = '" << attr << "'" << endl;
 		    cs->match = CSSSelector::Set;
 		}
 		else
@@ -376,10 +377,13 @@ StyleBaseImpl::parseSelector2(const QChar *curP, const QChar *endP)
 			cs->match = CSSSelector::Exact;
 		    }
 		}
+		attr = attr.stripWhiteSpace();
 		cs->attr = khtml::getAttrID(attr.ascii(), attr.length());
 		if(equal)
 		{
 		    equal++;
+		    while(equal < endP && *equal == ' ')
+			equal++;
 		    if(equal >= endP ) {
 			delete cs;
 			return 0;
@@ -1459,7 +1463,7 @@ QString StyleBaseImpl::preprocess(const QString &str)
     bool comment = false;
     bool escape = false;
     bool firstChar = false;
-
+    
     const QChar *ch = str.unicode();
     const QChar *last = str.unicode()+str.length();
     while(ch <= last) {
