@@ -34,11 +34,14 @@
  KMainWindow).
  */
 
+static int itemId = 0;
+
 testWindow::testWindow (QWidget *parent, const char *name)
     : KMainWindow (parent,name)
 {
     ena=false;
     setCaption("test window");
+setAutoSaveSettings();
     /******************************/
     /* First, we setup setup Menus */
     /******************************/
@@ -109,8 +112,8 @@ testWindow::testWindow (QWidget *parent, const char *name)
     
     // First four  buttons
     pix = BarIcon("filenew");
-    tb->insertButton(pix, 0, SIGNAL(clicked()), this, SLOT(slotNew()),
-                         TRUE, "Create.. (toggles upper button)");
+    itemId = tb->insertButton(pix, 0, SIGNAL(clicked()), this, SLOT(slotNew()),
+                         TRUE, "Create.. (toggles upper button)", 50);
     pix = BarIcon("fileopen");
     tb->insertButton(pix, 1, SIGNAL(clicked()), this, SLOT(slotOpen()),
                          false, "Open");
@@ -141,13 +144,6 @@ testWindow::testWindow (QWidget *parent, const char *name)
     // Auto size is valid only for fullWidth toolbars.
 
     tb->setItemAutoSized (5);
-
-    // Now add connection for Lined (ID 4) signal "completion" (ctrl-d pressed)
-    // arguments: id, signal, object, slot
-    tb->addConnection(5, SIGNAL(completion()), this, SLOT(slotCompletion()));
-    // Add signal rotation also (ctrl-s)
-
-    tb->addConnection(5, SIGNAL(rotation()), this, SLOT(slotCompletion()));
 
     // Now add another button and align it right
     pix = BarIcon("exit");
@@ -267,6 +263,7 @@ void testWindow::slotInsertClock()
 void testWindow::slotNew()
 {
  tb1->toggleButton(0);
+ toolBar()->removeItem( itemId );
 }
 void testWindow::slotOpen()
 {

@@ -27,6 +27,8 @@ KLineEditTest::KLineEditTest (QWidget* widget, const char* name )
     lineedit->setFixedSize(500,30);
     lineedit->setFocus();
     connect( lineedit, SIGNAL( returnPressed() ), SLOT( slotReturnPressed() ) );
+    connect( lineedit, SIGNAL( returnPressed(const QString&) ), 
+             SLOT( slotReturnPressed(const QString&) ) );
 
     button = new QPushButton( "E&xit", this );
     button->setFixedSize(100,30);
@@ -45,6 +47,11 @@ void KLineEditTest::quitApp()
 void KLineEditTest::slotReturnPressed()
 {
     kdDebug() << "Return pressed" << endl;
+}
+
+void KLineEditTest::slotReturnPressed( const QString& text )
+{
+    kdDebug() << "-- Return pressed " << text << endl;
 }
 
 void KLineEditTest::resultOutput( const QString& text )

@@ -21,6 +21,7 @@ public:
 private slots:
    void quitApp();
    void slotReturnPressed();
+   void slotReturnPressed(const QString&);
    void resultOutput( const QString& );
 
 protected:
