@@ -381,34 +381,29 @@ RenderObject* RenderObject::offsetParent() const
     return curr;
 }
 
-// More IE extensions.  clientWidth and clientHeight represent the interior of an object
-// excluding border and scrollbar.
-short
-RenderObject::clientWidth() const
+// IE extensions.
+// clientWidth and clientHeight represent the interior of an object
+short RenderObject::clientWidth() const
 {
     return width() - borderLeft() - borderRight() -
         (layer() ? layer()->verticalScrollbarWidth() : 0);
 }
 
-short
-RenderObject::clientHeight() const
+int RenderObject::clientHeight() const
 {
     return height() - borderTop() - borderBottom() -
       (layer() ? layer()->horizontalScrollbarHeight() : 0);
 }
 
-// scrollWidth/scrollHeight will be the same as clientWidth/clientHeight unless the
-// object has overflow:hidden/scroll/auto specified and also has overflow.
-short
-RenderObject::scrollWidth() const
+// scrollWidth/scrollHeight is the size including the overflow area
+short RenderObject::scrollWidth() const
 {
-    return (style()->hidesOverflow() && layer()) ? layer()->scrollWidth() : clientWidth();
+    return (style()->hidesOverflow() && layer()) ? layer()->scrollWidth() : overflowWidth();
 }
 
-short
-RenderObject::scrollHeight() const
+int RenderObject::scrollHeight() const
 {
-    return (style()->hidesOverflow() && layer()) ? layer()->scrollHeight() : clientHeight();
+    return (style()->hidesOverflow() && layer()) ? layer()->scrollHeight() : overflowHeight();
 }
 
 void RenderObject::setLayouted(bool b)

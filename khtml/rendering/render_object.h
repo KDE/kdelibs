@@ -436,16 +436,10 @@ public:
     virtual int offsetLeft() const;
     virtual int offsetTop() const;
     virtual RenderObject* offsetParent() const;
-
-    // More IE extensions.  clientWidth and clientHeight represent the interior of an object
-    // excluding border and scrollbar.
     short clientWidth() const;
-    short clientHeight() const;
-
-    // scrollWidth/scrollHeight will be the same as clientWidth/clientHeight unless the
-    // object has overflow:hidden/scroll/auto specified and also has overflow.
+    int clientHeight() const;
     short scrollWidth() const;
-    short scrollHeight() const;
+    int scrollHeight() const;
 
     virtual short marginTop() const { return 0; }
     virtual short marginBottom() const { return 0; }
