@@ -41,7 +41,7 @@ public:
 
     ~HTMLBlockquoteElementImpl();
 
-    virtual ushort id() const;
+    virtual NodeImpl::Id id() const;
 
     void attach();
 };
@@ -57,7 +57,7 @@ public:
 
     ~HTMLDivElementImpl();
 
-    virtual ushort id() const;
+    virtual NodeImpl::Id id() const;
 
     void parseAttribute(AttrImpl *token);
 };
@@ -71,7 +71,7 @@ public:
 
     ~HTMLHRElementImpl();
 
-    virtual ushort id() const;
+    virtual NodeImpl::Id id() const;
 
     virtual void parseAttribute(AttrImpl *);
 
@@ -82,17 +82,10 @@ protected:
 
 // -------------------------------------------------------------------------
 
-class HTMLHeadingElementImpl : public HTMLElementImpl
+class HTMLHeadingElementImpl : public HTMLGenericElementImpl
 {
 public:
     HTMLHeadingElementImpl(DocumentPtr *doc, ushort _tagid);
-
-    ~HTMLHeadingElementImpl();
-
-    virtual ushort id() const;
-
-protected:
-    ushort _id;
 };
 
 // -------------------------------------------------------------------------
@@ -108,27 +101,18 @@ class HTMLParagraphElementImpl : public HTMLElementImpl
 public:
     HTMLParagraphElementImpl(DocumentPtr *doc);
 
-    ~HTMLParagraphElementImpl();
-
-    virtual ushort id() const;
+    virtual NodeImpl::Id id() const;
 };
 
 // -------------------------------------------------------------------------
 
-class HTMLPreElementImpl : public HTMLElementImpl
+class HTMLPreElementImpl : public HTMLGenericElementImpl
 {
 public:
     HTMLPreElementImpl(DocumentPtr *doc, ushort _tagid);
 
-    ~HTMLPreElementImpl();
-
     long width() const;
     void setWidth( long w );
-
-    virtual ushort id() const;
-
-protected:
-    ushort _id;
 };
 
 // -------------------------------------------------------------------------
@@ -139,7 +123,7 @@ public:
     HTMLLayerElementImpl( DocumentPtr *doc );
     ~HTMLLayerElementImpl();
 
-    virtual ushort id() const;
+    virtual NodeImpl::Id id() const;
 
     virtual void parseAttribute(AttrImpl *);
 

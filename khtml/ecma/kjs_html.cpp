@@ -18,31 +18,29 @@
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include <khtml_part.h>
-#include <misc/loader.h>
-#include <dom/html_block.h>
-#include <dom/html_head.h>
-#include <dom/html_image.h>
-#include <dom/html_inline.h>
-#include <dom/html_list.h>
-#include <dom/html_table.h>
-#include <dom/html_object.h>
-#include <dom_exception.h>
+#include "misc/loader.h"
+#include "dom/html_block.h"
+#include "dom/html_head.h"
+#include "dom/html_image.h"
+#include "dom/html_inline.h"
+#include "dom/html_list.h"
+#include "dom/html_table.h"
+#include "dom/html_object.h"
 
 // ### HACK
-#include <html/html_baseimpl.h>
-#include <html/html_documentimpl.h>
-#include <xml/dom2_eventsimpl.h>
-#include <khtmlview.h>
-//#include <kjs/internal.h> // for printInfo
+#include "html/html_baseimpl.h"
+#include "html/html_documentimpl.h"
 
-#include "kjs_css.h"
-#include "kjs_html.h"
-#include "kjs_window.h"
-#include "kjs_events.h"
-#include "kjs_html.lut.h"
+#include "khtml_part.h"
+#include "khtmlview.h"
 
-#include <htmltags.h>
+#include "ecma/kjs_css.h"
+#include "ecma/kjs_html.h"
+#include "ecma/kjs_window.h"
+#include "ecma/kjs_html.lut.h"
+
+#include "misc/htmltags.h"
+
 #include <kdebug.h>
 
 using namespace KJS;
@@ -621,7 +619,7 @@ const ClassInfo* KJS::HTMLElement::classInfo() const
   size		KJS::HTMLElement::InputSize		DontDelete
   src		KJS::HTMLElement::InputSrc		DontDelete
   tabIndex	KJS::HTMLElement::InputTabIndex		DontDelete
-  type		KJS::HTMLElement::InputType		DontDelete|ReadOnly
+  type		KJS::HTMLElement::InputType		DontDelete
   useMap	KJS::HTMLElement::InputUseMap		DontDelete
   value		KJS::HTMLElement::InputValue		DontDelete
   blur		KJS::HTMLElement::InputBlur		DontDelete|Function 0
@@ -754,8 +752,7 @@ const ClassInfo* KJS::HTMLElement::classInfo() const
   blur		KJS::HTMLElement::AnchorBlur		DontDelete|Function 0
   focus		KJS::HTMLElement::AnchorFocus		DontDelete|Function 0
 @end
-@begin HTMLImageElementTable 13
-  lowSrc	KJS::HTMLElement::ImageLowSrc		DontDelete
+@begin HTMLImageElementTable 12
   name		KJS::HTMLElement::ImageName		DontDelete
   align		KJS::HTMLElement::ImageAlign		DontDelete
   alt		KJS::HTMLElement::ImageAlt		DontDelete
@@ -769,25 +766,26 @@ const ClassInfo* KJS::HTMLElement::classInfo() const
   vspace	KJS::HTMLElement::ImageVspace		DontDelete
   width		KJS::HTMLElement::ImageWidth		DontDelete
 @end
-@begin HTMLObjectElementTable 19
-  form		KJS::HTMLElement::ObjectForm		DontDelete|ReadOnly
-  code		KJS::HTMLElement::ObjectCode		DontDelete
-  align		KJS::HTMLElement::ObjectAlign		DontDelete
-  archive	KJS::HTMLElement::ObjectArchive		DontDelete
-  border	KJS::HTMLElement::ObjectBorder		DontDelete
-  codeBase	KJS::HTMLElement::ObjectCodeBase	DontDelete
-  codeType	KJS::HTMLElement::ObjectCodeType	DontDelete
-  data		KJS::HTMLElement::ObjectData		DontDelete
-  declare	KJS::HTMLElement::ObjectDeclare		DontDelete
-  height	KJS::HTMLElement::ObjectHeight		DontDelete
-  hspace	KJS::HTMLElement::ObjectHspace		DontDelete
-  name		KJS::HTMLElement::ObjectName		DontDelete
-  standby	KJS::HTMLElement::ObjectStandby		DontDelete
-  tabIndex	KJS::HTMLElement::ObjectTabIndex	DontDelete
-  type		KJS::HTMLElement::ObjectType		DontDelete
-  useMap	KJS::HTMLElement::ObjectUseMap		DontDelete
-  vspace	KJS::HTMLElement::ObjectVspace		DontDelete
-  width		KJS::HTMLElement::ObjectWidth		DontDelete
+@begin HTMLObjectElementTable 20
+  form		  KJS::HTMLElement::ObjectForm		  DontDelete|ReadOnly
+  code		  KJS::HTMLElement::ObjectCode		  DontDelete
+  align		  KJS::HTMLElement::ObjectAlign		  DontDelete
+  archive	  KJS::HTMLElement::ObjectArchive	  DontDelete
+  border	  KJS::HTMLElement::ObjectBorder	  DontDelete
+  codeBase	  KJS::HTMLElement::ObjectCodeBase	  DontDelete
+  codeType	  KJS::HTMLElement::ObjectCodeType	  DontDelete
+  contentDocument KJS::HTMLElement::ObjectContentDocument DontDelete|ReadOnly
+  data		  KJS::HTMLElement::ObjectData		  DontDelete
+  declare	  KJS::HTMLElement::ObjectDeclare	  DontDelete
+  height	  KJS::HTMLElement::ObjectHeight	  DontDelete
+  hspace	  KJS::HTMLElement::ObjectHspace	  DontDelete
+  name		  KJS::HTMLElement::ObjectName		  DontDelete
+  standby	  KJS::HTMLElement::ObjectStandby	  DontDelete
+  tabIndex	  KJS::HTMLElement::ObjectTabIndex	  DontDelete
+  type		  KJS::HTMLElement::ObjectType		  DontDelete
+  useMap	  KJS::HTMLElement::ObjectUseMap	  DontDelete
+  vspace	  KJS::HTMLElement::ObjectVspace	  DontDelete
+  width		  KJS::HTMLElement::ObjectWidth		  DontDelete
 @end
 @begin HTMLParamElementTable 4
   name		KJS::HTMLElement::ParamName		DontDelete
@@ -915,32 +913,31 @@ const ClassInfo* KJS::HTMLElement::classInfo() const
   cols		KJS::HTMLElement::FrameSetCols			DontDelete
   rows		KJS::HTMLElement::FrameSetRows			DontDelete
 @end
-@begin HTMLFrameElementTable 8
-###document?
-  frameBorder	KJS::HTMLElement::FrameFrameBorder		DontDelete
-  longDesc	KJS::HTMLElement::FrameLongDesc			DontDelete
-  marginHeight	KJS::HTMLElement::FrameMarginHeight		DontDelete
-  marginWidth	KJS::HTMLElement::FrameMarginWidth		DontDelete
-  name		KJS::HTMLElement::FrameName			DontDelete
-  noResize	KJS::HTMLElement::FrameNoResize			DontDelete
-  scrolling	KJS::HTMLElement::FrameScrolling		DontDelete
-  src		KJS::HTMLElement::FrameSrc			DontDelete
-  location	KJS::HTMLElement::FrameLocation			DontDelete
-### new in DOM2: contentDocument
+@begin HTMLFrameElementTable 9
+  contentDocument KJS::HTMLElement::FrameContentDocument        DontDelete|ReadOnly
+  frameBorder     KJS::HTMLElement::FrameFrameBorder		DontDelete
+  longDesc	  KJS::HTMLElement::FrameLongDesc		DontDelete
+  marginHeight	  KJS::HTMLElement::FrameMarginHeight		DontDelete
+  marginWidth	  KJS::HTMLElement::FrameMarginWidth		DontDelete
+  name		  KJS::HTMLElement::FrameName			DontDelete
+  noResize	  KJS::HTMLElement::FrameNoResize		DontDelete
+  scrolling	  KJS::HTMLElement::FrameScrolling		DontDelete
+  src		  KJS::HTMLElement::FrameSrc			DontDelete
+  location	  KJS::HTMLElement::FrameLocation		DontDelete
 @end
-@begin HTMLIFrameElementTable 11
-  align		KJS::HTMLElement::IFrameAlign			DontDelete
-  document	KJS::HTMLElement::IFrameDocument		DontDelete|ReadOnly
-  frameBorder	KJS::HTMLElement::IFrameFrameBorder		DontDelete
-  height	KJS::HTMLElement::IFrameHeight			DontDelete
-  longDesc	KJS::HTMLElement::IFrameLongDesc		DontDelete
-  marginHeight	KJS::HTMLElement::IFrameMarginHeight		DontDelete
-  marginWidth	KJS::HTMLElement::IFrameMarginWidth		DontDelete
-  name		KJS::HTMLElement::IFrameName			DontDelete
-  scrolling	KJS::HTMLElement::IFrameScrolling		DontDelete
-  src		KJS::HTMLElement::IFrameSrc			DontDelete
-  width		KJS::HTMLElement::IFrameWidth			DontDelete
-### new in DOM2: contentDocument
+@begin HTMLIFrameElementTable 12
+  align		  KJS::HTMLElement::IFrameAlign			DontDelete
+  contentDocument KJS::HTMLElement::IFrameContentDocument       DontDelete|ReadOnly
+  document	  KJS::HTMLElement::IFrameDocument		DontDelete|ReadOnly
+  frameBorder	  KJS::HTMLElement::IFrameFrameBorder		DontDelete
+  height	  KJS::HTMLElement::IFrameHeight		DontDelete
+  longDesc	  KJS::HTMLElement::IFrameLongDesc		DontDelete
+  marginHeight	  KJS::HTMLElement::IFrameMarginHeight		DontDelete
+  marginWidth	  KJS::HTMLElement::IFrameMarginWidth		DontDelete
+  name		  KJS::HTMLElement::IFrameName			DontDelete
+  scrolling	  KJS::HTMLElement::IFrameScrolling		DontDelete
+  src		  KJS::HTMLElement::IFrameSrc			DontDelete
+  width		  KJS::HTMLElement::IFrameWidth			DontDelete
 @end
 */
 
@@ -1378,19 +1375,18 @@ Value KJS::HTMLElement::getValue(ExecState *exec, int token) const
   case ID_IMG: {
     DOM::HTMLImageElement image = element;
     switch (token) {
-    case ImageLowSrc:          return getString(image.lowSrc());
     case ImageName:            return getString(image.name());
     case ImageAlign:           return getString(image.align());
     case ImageAlt:             return getString(image.alt());
-    case ImageBorder:          return getString(image.border());
-    case ImageHeight:          return getString(image.height());
-    case ImageHspace:          return getString(image.hspace());
+    case ImageBorder:          return Number(image.border());
+    case ImageHeight:          return Number(image.height());
+    case ImageHspace:          return Number(image.hspace());
     case ImageIsMap:           return Boolean(image.isMap());
     case ImageLongDesc:        return getString(image.longDesc());
     case ImageSrc:             return getString(image.src());
     case ImageUseMap:          return getString(image.useMap());
-    case ImageVspace:          return getString(image.vspace());
-    case ImageWidth:           return getString(image.width());
+    case ImageVspace:          return Number(image.vspace());
+    case ImageWidth:           return Number(image.width());
     }
   }
   break;
@@ -1404,6 +1400,7 @@ Value KJS::HTMLElement::getValue(ExecState *exec, int token) const
     case ObjectBorder:          return getString(object.border());
     case ObjectCodeBase:        return getString(object.codeBase());
     case ObjectCodeType:        return getString(object.codeType());
+    case ObjectContentDocument: return getDOMNode(exec, object.contentDocument());
     case ObjectData:            return getString(object.data());
     case ObjectDeclare:         return Boolean(object.declare());
     case ObjectHeight:          return getString(object.height());
@@ -1415,8 +1412,6 @@ Value KJS::HTMLElement::getValue(ExecState *exec, int token) const
     case ObjectUseMap:          return getString(object.useMap());
     case ObjectVspace:          return getString(object.vspace());
     case ObjectWidth:           return getString(object.width());
-    //case ObjectContentDocument: // new for DOM2 - not yet in khtml
-    //return getDOMNode(exec,object.contentDocument()); // type Document
     }
   }
   break;
@@ -1595,7 +1590,7 @@ Value KJS::HTMLElement::getValue(ExecState *exec, int token) const
   case ID_FRAME: {
     DOM::HTMLFrameElement frameElement = element;
     switch (token) {
-    // case FrameDocument ?
+    case FrameContentDocument: return getDOMNode(exec, frameElement.contentDocument());
     case FrameFrameBorder:     return getString(frameElement.frameBorder());
     case FrameLongDesc:        return getString(frameElement.longDesc());
     case FrameMarginHeight:    return getString(frameElement.marginHeight());
@@ -1604,8 +1599,6 @@ Value KJS::HTMLElement::getValue(ExecState *exec, int token) const
     case FrameNoResize:        return Boolean(frameElement.noResize());
     case FrameScrolling:       return getString(frameElement.scrolling());
     case FrameSrc:             return getString(frameElement.src());
-    //case FrameContentDocument: // new for DOM2 - not yet in khtml
-    //return getDOMNode(exec,frameElement.contentDocument()); // type Document
     }
   }
   break;
@@ -1614,12 +1607,8 @@ Value KJS::HTMLElement::getValue(ExecState *exec, int token) const
     switch (token) {
     case IFrameAlign:                return getString(iFrame.align());
       // ### security check ?
-    case IFrameDocument: {
-      if ( !iFrame.isNull() )
-        return getDOMNode(exec, static_cast<DOM::HTMLIFrameElementImpl*>(iFrame.handle() )->frameDocument() );
-
-      return Undefined();
-    }
+    case IFrameDocument: // non-standard, mapped to contentDocument
+    case IFrameContentDocument:      return getDOMNode(exec, iFrame.contentDocument());
     case IFrameFrameBorder:     return getString(iFrame.frameBorder());
     case IFrameHeight:          return getString(iFrame.height());
     case IFrameLongDesc:        return getString(iFrame.longDesc());
@@ -1629,12 +1618,11 @@ Value KJS::HTMLElement::getValue(ExecState *exec, int token) const
     case IFrameScrolling:       return getString(iFrame.scrolling());
     case IFrameSrc:             return getString(iFrame.src());
     case IFrameWidth:           return getString(iFrame.width());
-    //case IFrameContentDocument: // new for DOM2 - not yet in khtml
-    //return getDOMNode(exec,iFrame.contentDocument); // type Document
     }
     break;
   }
   } // xemacs (or arnt) could be a bit smarter when it comes to indenting switch()es ;)
+  // its not arnt to blame - its the original Stroustrup style we like :) (Dirk)
 
   // generic properties
   switch (token) {
@@ -1903,7 +1891,7 @@ void KJS::HTMLElement::tryPut(ExecState *exec, const UString &propertyName, cons
 
 void KJS::HTMLElement::putValue(ExecState *exec, int token, const Value& value, int)
 {
-  DOM::DOMString str = value.isA(NullType) ? DOM::DOMString(0) : value.toString(exec).string();
+  DOM::DOMString str = value.isA(NullType) ? DOM::DOMString() : value.toString(exec).string();
   DOM::Node n = (new DOMNode(exec, KJS::toNode(value)))->toNode();
   DOM::HTMLElement element = static_cast<DOM::HTMLElement>(node);
 #ifdef KJS_VERBOSE
@@ -2083,7 +2071,7 @@ void KJS::HTMLElement::putValue(ExecState *exec, int token, const Value& value, 
       case InputSize:            { input.setSize(str); return; }
       case InputSrc:             { input.setSrc(str); return; }
       case InputTabIndex:        { input.setTabIndex(value.toInteger(exec)); return; }
-      // read-only: type
+      case InputType:            { input.setType(str); return; }
       case InputUseMap:          { input.setUseMap(str); return; }
       case InputValue:           { input.setValue(str); return; }
       }
@@ -2300,19 +2288,18 @@ void KJS::HTMLElement::putValue(ExecState *exec, int token, const Value& value, 
     case ID_IMG: {
       DOM::HTMLImageElement image = element;
       switch (token) {
-      case ImageLowSrc:          { image.setLowSrc(str); return; }
       case ImageName:            { image.setName(str); return; }
       case ImageAlign:           { image.setAlign(str); return; }
       case ImageAlt:             { image.setAlt(str); return; }
-      case ImageBorder:          { image.setBorder(str); return; }
-      case ImageHeight:          { image.setHeight(str); return; }
-      case ImageHspace:          { image.setHspace(str); return; }
+      case ImageBorder:          { image.setBorder(value.toInteger(exec)); return; }
+      case ImageHeight:          { image.setHeight(value.toInteger(exec)); return; }
+      case ImageHspace:          { image.setHspace(value.toInteger(exec)); return; }
       case ImageIsMap:           { image.setIsMap(value.toBoolean(exec)); return; }
       case ImageLongDesc:        { image.setLongDesc(str); return; }
       case ImageSrc:             { image.setSrc(str); return; }
       case ImageUseMap:          { image.setUseMap(str); return; }
-      case ImageVspace:          { image.setVspace(str); return; }
-      case ImageWidth:           { image.setWidth(str); return; }
+      case ImageVspace:          { image.setVspace(value.toInteger(exec)); return; }
+      case ImageWidth:           { image.setWidth(value.toInteger(exec)); return; }
       }
     }
     break;
@@ -2326,6 +2313,7 @@ void KJS::HTMLElement::putValue(ExecState *exec, int token, const Value& value, 
       case ObjectBorder:          { object.setBorder(str); return; }
       case ObjectCodeBase:        { object.setCodeBase(str); return; }
       case ObjectCodeType:        { object.setCodeType(str); return; }
+      // read-only: ObjectContentDocument
       case ObjectData:            { object.setData(str); return; }
       case ObjectDeclare:         { object.setDeclare(value.toBoolean(exec)); return; }
       case ObjectHeight:          { object.setHeight(str); return; }
@@ -2337,8 +2325,6 @@ void KJS::HTMLElement::putValue(ExecState *exec, int token, const Value& value, 
       case ObjectUseMap:          { object.setUseMap(str); return; }
       case ObjectVspace:          { object.setVspace(str); return; }
       case ObjectWidth:           { object.setWidth(str); return; }
-      //case ObjectContentDocument: // new for DOM2 - not yet in khtml
-      //return getDOMNode(exec,object.contentDocument()); // type Document
       }
     }
     break;
@@ -2503,6 +2489,7 @@ void KJS::HTMLElement::putValue(ExecState *exec, int token, const Value& value, 
     case ID_FRAME: {
       DOM::HTMLFrameElement frameElement = element;
       switch (token) {
+       // read-only: FrameContentDocument:
       case FrameFrameBorder:     { frameElement.setFrameBorder(str); return; }
       case FrameLongDesc:        { frameElement.setLongDesc(str); return; }
       case FrameMarginHeight:    { frameElement.setMarginHeight(str); return; }
@@ -2515,8 +2502,6 @@ void KJS::HTMLElement::putValue(ExecState *exec, int token, const Value& value, 
                                    static_cast<DOM::HTMLFrameElementImpl *>(frameElement.handle())->setLocation(str);
                                    return;
                                  }
-      //case FrameContentDocument: // new for DOM2 - not yet in khtml
-      //return getDOMNode(exec,frameElement.contentDocument()); // type Document
       }
     }
     break;
@@ -2524,6 +2509,7 @@ void KJS::HTMLElement::putValue(ExecState *exec, int token, const Value& value, 
       DOM::HTMLIFrameElement iFrame = element;
       switch (token) {
       case IFrameAlign:           { iFrame.setAlign(str); return; }
+      // read-only: IFrameContentDocument
       case IFrameFrameBorder:     { iFrame.setFrameBorder(str); return; }
       case IFrameHeight:          { iFrame.setHeight(str); return; }
       case IFrameLongDesc:        { iFrame.setLongDesc(str); return; }
@@ -2533,8 +2519,6 @@ void KJS::HTMLElement::putValue(ExecState *exec, int token, const Value& value, 
       case IFrameScrolling:       { iFrame.setScrolling(str); return; }
       case IFrameSrc:             { iFrame.setSrc(str); return; }
       case IFrameWidth:           { iFrame.setWidth(str); return; }
-      //case IFrameContentDocument: // new for DOM2 - not yet in khtml
-      //return getDOMNode(exec,iFrame.contentDocument); // type Document
       }
       break;
     }

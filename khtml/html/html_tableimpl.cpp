@@ -21,18 +21,15 @@
  * along with this library; see the file COPYING.LIB.  If not, write to
  * the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
  * Boston, MA 02111-1307, USA.
- *
- * $Id$
  */
-#include "html_tableimpl.h"
 
-#include "dom_exception.h"
-#include "html_documentimpl.h"
-#include "dom_node.h"
+#include "html/html_documentimpl.h"
+#include "html/html_tableimpl.h"
 
-using namespace DOM;
+#include "dom/dom_exception.h"
+#include "dom/dom_node.h"
 
-#include "htmlhashes.h"
+#include "misc/htmlhashes.h"
 #include "khtmlview.h"
 #include "khtml_part.h"
 
@@ -42,9 +39,11 @@ using namespace DOM;
 #include "css/csshelper.h"
 
 #include "rendering/render_table.h"
-using namespace khtml;
 
 #include <kdebug.h>
+
+using namespace khtml;
+using namespace DOM;
 
 HTMLTableElementImpl::HTMLTableElementImpl(DocumentPtr *doc)
   : HTMLElementImpl(doc)
@@ -75,7 +74,7 @@ HTMLTableElementImpl::~HTMLTableElementImpl()
 {
 }
 
-ushort HTMLTableElementImpl::id() const
+NodeImpl::Id HTMLTableElementImpl::id() const
 {
     return ID_TABLE;
 }
@@ -532,7 +531,7 @@ HTMLTableSectionElementImpl::~HTMLTableSectionElementImpl()
     nrows = 0;
 }
 
-ushort HTMLTableSectionElementImpl::id() const
+NodeImpl::Id HTMLTableSectionElementImpl::id() const
 {
     return _id;
 }
@@ -586,7 +585,7 @@ HTMLTableRowElementImpl::~HTMLTableRowElementImpl()
 {
 }
 
-ushort HTMLTableRowElementImpl::id() const
+NodeImpl::Id HTMLTableRowElementImpl::id() const
 {
     return ID_TR;
 }
@@ -776,7 +775,7 @@ HTMLTableColElementImpl::~HTMLTableColElementImpl()
 {
 }
 
-ushort HTMLTableColElementImpl::id() const
+NodeImpl::Id HTMLTableColElementImpl::id() const
 {
     return _id;
 }
@@ -841,7 +840,7 @@ HTMLTableCaptionElementImpl::~HTMLTableCaptionElementImpl()
 {
 }
 
-ushort HTMLTableCaptionElementImpl::id() const
+NodeImpl::Id HTMLTableCaptionElementImpl::id() const
 {
     return ID_CAPTION;
 }

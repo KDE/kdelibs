@@ -33,10 +33,9 @@
 
 #include <stdio.h>
 #include <kjs/kjs.h>
-#include <dom_doc.h>
-#include "kjs_dom.h"
-
-#include <dom_string.h>
+#include "dom/dom_doc.h"
+#include "dom/dom_string.h"
+#include "ecma/kjs_dom.h"
 
 using namespace KJS;
 

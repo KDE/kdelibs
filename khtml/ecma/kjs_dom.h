@@ -21,12 +21,12 @@
 #ifndef _KJS_DOM_H_
 #define _KJS_DOM_H_
 
-#include <dom_node.h>
-#include <dom_doc.h>
-#include <dom_element.h>
-#include <dom_xml.h>
+#include "dom/dom_node.h"
+#include "dom/dom_doc.h"
+#include "dom/dom_element.h"
+#include "dom/dom_xml.h"
 
-#include "kjs_binding.h"
+#include "ecma/kjs_binding.h"
 
 namespace KJS {
 
@@ -156,7 +156,7 @@ namespace KJS {
     virtual const ClassInfo* classInfo() const { return &info; }
     virtual bool toBoolean(ExecState *) const { return true; }
     static const ClassInfo info;
-    enum { HasFeature, CreateDocumentType, CreateDocument, CreateCSSStyleSheet };
+    enum { HasFeature, CreateDocumentType, CreateDocument, CreateCSSStyleSheet, CreateHTMLDocument };
     DOM::DOMImplementation toImplementation() const { return implementation; }
   private:
     DOM::DOMImplementation implementation;

@@ -18,12 +18,12 @@
  * along with this library; see the file COPYING.LIB.  If not, write to
  * the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
  * Boston, MA 02111-1307, USA.
- *
- * $Id$
  */
-#include "html_imageimpl.h"
 
-#include "htmlhashes.h"
+#include "html/html_imageimpl.h"
+#include "html/html_documentimpl.h"
+
+#include "misc/htmlhashes.h"
 #include "khtmlview.h"
 #include "khtml_part.h"
 
@@ -36,13 +36,12 @@
 #include "css/cssproperties.h"
 #include "css/cssvalues.h"
 #include "css/csshelper.h"
-#include "html_documentimpl.h"
 #include "xml/dom2_eventsimpl.h"
 
 #include <qstring.h>
 #include <qpoint.h>
 #include <qregion.h>
-#include <qstack.h>
+#include <qptrstack.h>
 #include <qimage.h>
 #include <qpointarray.h>
 
@@ -68,7 +67,7 @@ HTMLImageElementImpl::~HTMLImageElementImpl()
 
 // DOM related
 
-ushort HTMLImageElementImpl::id() const
+NodeImpl::Id HTMLImageElementImpl::id() const
 {
     return ID_IMG;
 }
@@ -263,7 +262,7 @@ HTMLMapElementImpl::~HTMLMapElementImpl()
         static_cast<HTMLDocumentImpl*>(ownerDocument())->mapMap.remove(name);
 }
 
-ushort HTMLMapElementImpl::id() const
+NodeImpl::Id HTMLMapElementImpl::id() const
 {
     return ID_MAP;
 }
@@ -274,7 +273,7 @@ HTMLMapElementImpl::mapMouseEvent(int x_, int y_, int width_, int height_,
 {
     //cout << "map:mapMouseEvent " << endl;
     //cout << x_ << " " << y_ <<" "<< width_ <<" "<< height_ << endl;
-    QStack<NodeImpl> nodeStack;
+    QPtrStack<NodeImpl> nodeStack;
 
     NodeImpl *current = firstChild();
     while(1)
@@ -312,6 +311,9 @@ void HTMLMapElementImpl::parseAttribute(AttrImpl *attr)
 {
     switch (attr->attrId)
     {
+    case ATTR_ID:
+        if (getDocument()->htmlMode() != DocumentImpl::XHtml) break;
+        // fall through
     case ATTR_NAME:
     {
         DOMString s = attr->value();
@@ -344,7 +346,7 @@ HTMLAreaElementImpl::~HTMLAreaElementImpl()
     delete coords;
 }
 
-ushort HTMLAreaElementImpl::id() const
+NodeImpl::Id HTMLAreaElementImpl::id() const
 {
     return ID_AREA;
 }
@@ -443,7 +445,7 @@ QRegion HTMLAreaElementImpl::getRegion(int width_, int height_) const
         int xx = 0, yy = 0; // shut up egcs...
         int i=0;
 
-        QListIterator<Length> it(*coords);
+        QPtrListIterator<Length> it(*coords);
         QPointArray points(it.count()/2);
         for ( ; it.current(); ++it ) {
             Length* len = it.current();

@@ -20,7 +20,6 @@
 
 #include "kjs_traversal.h"
 #include "kjs_traversal.lut.h"
-#include "kjs_window.h"
 #include "kjs_proxy.h"
 #include <dom/dom_node.h>
 #include <xml/dom_nodeimpl.h>

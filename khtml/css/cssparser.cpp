@@ -24,23 +24,24 @@
  * $Id$
  */
 
-//#define CSS_DEBUG
+#define CSS_DEBUG
 //#define CSS_AURAL
 //#define CSS_DEBUG_BCKGR
 
 #include <assert.h>
 
-#include "css_stylesheetimpl.h"
-#include "css_stylesheet.h"
-#include "css_rule.h"
-#include "css_ruleimpl.h"
-#include "css_valueimpl.h"
-#include "csshelper.h"
+#include "css/css_stylesheetimpl.h"
+#include "css/css_ruleimpl.h"
+#include "css/css_valueimpl.h"
+#include "css/csshelper.h"
 
-#include "dom_string.h"
+#include "dom/css_stylesheet.h"
+#include "dom/css_rule.h"
+#include "dom/dom_string.h"
+#include "dom/dom_exception.h"
+
 #include "xml/dom_nodeimpl.h"
 #include "html/html_documentimpl.h"
-#include "dom_exception.h"
 #include "khtml_part.h"
 #include "khtmlview.h"
 
@@ -51,7 +52,7 @@ using namespace DOM;
 #include <kglobalsettings.h> // For system fonts
 #include <kapplication.h>
 
-#include "htmlhashes.h"
+#include "misc/htmlhashes.h"
 #include "misc/helper.h"
 
 //
@@ -501,21 +502,15 @@ StyleBaseImpl::parseSelector2(const QChar *curP, const QChar *endP,
                 root = root->parent();
             if (root->isCSSStyleSheet())
                 doc = static_cast<CSSStyleSheetImpl*>(root)->doc();
-            if ( doc && !doc->isHTMLDocument() ) {
-                const DOMString s = tag;
-                cs->tag = doc->cssTagId(s.implementation());
+
+            if ( doc ) {
+                if (doc->isHTMLDocument())
+                    tag = tag.lower();
+                const DOMString dtag(tag);
+                cs->tag = doc->tagId(dtag.implementation(), 0);
             }
-            else {
-                int tagID = khtml::getTagID(tag.lower().ascii(), tag.length());
-                if (tagID) {
-                    cs->tag = tagID;
-                } else if (doc && !(tag.isEmpty())) {
-                    const DOMString s = tag;
-                    cs->tag = doc->cssTagId(s.implementation());
-                } else {
-                    kdWarning() << "Error in CSS" << endl;
-                }
-            }
+            else
+                cs->tag = khtml::getTagID(tag.lower().ascii(), tag.length());
         }
    }
 #ifdef CSS_DEBUG
@@ -607,14 +602,14 @@ StyleBaseImpl::parseSelector1(const QChar *curP, const QChar *endP)
     return(selecStack);
 }
 
-QList<CSSSelector> *
+QPtrList<CSSSelector> *
 StyleBaseImpl::parseSelector(const QChar *curP, const QChar *endP)
 {
 #ifdef CSS_DEBUG
     kdDebug( 6080 ) << "selector is \'" << QString(curP, endP-curP) << "\'" << endl;
 #endif
 
-    QList<CSSSelector> *slist  = 0;
+    QPtrList<CSSSelector> *slist  = 0;
     const QChar *startP;
 
     while (curP < endP)
@@ -629,7 +624,7 @@ StyleBaseImpl::parseSelector(const QChar *curP, const QChar *endP)
         {
             if (!slist)
             {
-                slist = new QList<CSSSelector>;
+                slist = new QPtrList<CSSSelector>;
                 slist->setAutoDelete(true);
             }
             slist->append(selector);
@@ -734,9 +729,9 @@ void StyleBaseImpl::parseProperty(const QChar *curP, const QChar *endP)
     }
 }
 
-QList<CSSProperty> *StyleBaseImpl::parseProperties(const QChar *curP, const QChar *endP)
+QPtrList<CSSProperty> *StyleBaseImpl::parseProperties(const QChar *curP, const QChar *endP)
 {
-    m_propList = new QList<CSSProperty>;
+    m_propList = new QPtrList<CSSProperty>;
     m_propList->setAutoDelete(true);
     while (curP < endP)
     {
@@ -1097,7 +1092,7 @@ bool StyleBaseImpl::parseFont(const QChar *curP, const QChar *endP)
 // ---------------- end font property --------------------------
 
 bool StyleBaseImpl::parseValue( const QChar *curP, const QChar *endP, int propId,
-                                bool important, bool nonCSSHint, QList<CSSProperty> *propList)
+                                bool important, bool nonCSSHint, QPtrList<CSSProperty> *propList)
 {
   m_bImportant = important;
   m_bnonCSSHint = nonCSSHint;
@@ -2195,7 +2190,7 @@ bool StyleBaseImpl::parseAuralValue( const QChar *curP, const QChar *endP, int p
 #endif
 
 void StyleBaseImpl::setParsedValue(int propId, const CSSValueImpl *parsedValue,
-				   bool important, bool nonCSSHint, QList<CSSProperty> *propList)
+				   bool important, bool nonCSSHint, QPtrList<CSSProperty> *propList)
 {
   m_bImportant = important;
   m_bnonCSSHint = nonCSSHint;
@@ -2205,7 +2200,7 @@ void StyleBaseImpl::setParsedValue(int propId, const CSSValueImpl *parsedValue,
 
 void StyleBaseImpl::setParsedValue( int propId, const CSSValueImpl *parsedValue)
 {
-    QListIterator<CSSProperty> propIt(*m_propList);
+    QPtrListIterator<CSSProperty> propIt(*m_propList);
     propIt.toLast(); // just remove the top one - not sure what should happen if we have multiple instances of the property
     while (propIt.current() &&
            ( propIt.current()->m_id != propId || propIt.current()->nonCSSHint != m_bnonCSSHint ||
@@ -2320,10 +2315,10 @@ bool StyleBaseImpl::parseBackgroundPosition(const QChar *curP, const QChar *&nex
     return found;
 }
 
-QList<QChar> StyleBaseImpl::splitShorthandProperties(const QChar *curP, const QChar *endP)
+QPtrList<QChar> StyleBaseImpl::splitShorthandProperties(const QChar *curP, const QChar *endP)
 {
     bool last = false;
-    QList<QChar> list;
+    QPtrList<QChar> list;
     while(!last) {
         const QChar *nextP = curP;
         while(!(nextP->isSpace())) {
@@ -2352,7 +2347,7 @@ QList<QChar> StyleBaseImpl::splitShorthandProperties(const QChar *curP, const QC
 // used for shorthand properties xxx{1,2}
 bool StyleBaseImpl::parse2Values( const QChar *curP, const QChar *endP, const int *properties)
 {
-    QList<QChar> list = splitShorthandProperties(curP, endP);
+    QPtrList<QChar> list = splitShorthandProperties(curP, endP);
     switch(list.count())
     {
     case 2:
@@ -2380,7 +2375,7 @@ bool StyleBaseImpl::parse4Values( const QChar *curP, const QChar *endP, const in
      * right, bottom, and left, respectively.
      */
 
-    QList<QChar> list = splitShorthandProperties(curP, endP);
+    QPtrList<QChar> list = splitShorthandProperties(curP, endP);
     switch(list.count())
     {
     case 2:
@@ -2574,8 +2569,8 @@ StyleBaseImpl::parseStyleRule(const QChar *&curP, const QChar *endP)
     //kdDebug( 6080 ) << "style rule is \'" << QString(curP, endP-curP) << "\'" << endl;
 
     const QChar *startP;
-    QList<CSSSelector> *slist;
-    QList<CSSProperty> *plist;
+    QPtrList<CSSSelector> *slist;
+    QPtrList<CSSProperty> *plist;
 
     startP = curP;
     curP = parseToChar(startP, endP, '{', false);

@@ -17,7 +17,7 @@
 #    the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
 #    Boston, MA 02111-1307, USA.
 
-KDE_CXXFLAGS = -UQT_NO_COMPAT
+KDE_CXXFLAGS = $(WOVERLOADED_VIRTUAL)
 
 noinst_LTLIBRARIES = libkhtmlhtml.la
 libkhtmlhtml_la_SOURCES = \
@@ -40,11 +40,7 @@ noinst_HEADERS = \
 	html_formimpl.h      html_objectimpl.h
 
 INCLUDES = -I$(top_srcdir)/kimgio -I$(top_srcdir)/kio -I$(top_srcdir)/dcop \
- -I$(top_srcdir)/kjs -I$(top_srcdir)/khtml/java \
- -I$(top_srcdir)/khtml -I$(top_srcdir)/khtml/misc -I$(top_srcdir)/khtml/css \
- -I$(top_srcdir)/khtml/dom -I$(top_srcdir)/khtml/xml -I$(top_srcdir)/khtml/html \
- -I$(top_srcdir) \
- $(all_includes)
+ -I$(top_srcdir)/kjs -I$(top_srcdir)/khtml -I$(top_srcdir) $(all_includes)
 
 SRCDOC_DEST=$(kde_htmldir)/en/kdelibs/khtml
 

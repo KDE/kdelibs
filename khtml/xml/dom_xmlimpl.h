@@ -24,7 +24,7 @@
 #ifndef _DOM_XmlImpl_h_
 #define _DOM_XmlImpl_h_
 
-#include "dom_nodeimpl.h"
+#include "xml/dom_nodeimpl.h"
 #include "css/css_stylesheetimpl.h"
 #include "misc/loader.h"
 #include "misc/loader_client.h"
@@ -53,7 +53,7 @@ public:
 
     // DOM methods overridden from  parent classes
 
-    virtual const DOMString nodeName() const;
+    virtual DOMString nodeName() const;
     virtual unsigned short nodeType() const;
     virtual DOMString namespaceURI() const;
     virtual NodeImpl *cloneNode ( bool deep, int &exceptioncode );
@@ -79,7 +79,7 @@ public:
 
     // DOM methods overridden from  parent classes
 
-    virtual const DOMString nodeName() const;
+    virtual DOMString nodeName() const;
     virtual unsigned short nodeType() const;
     virtual DOMString namespaceURI() const;
     virtual NodeImpl *cloneNode ( bool deep, int &exceptioncode );
@@ -106,7 +106,7 @@ public:
 
     // DOM methods overridden from  parent classes
 
-    virtual const DOMString nodeName() const;
+    virtual DOMString nodeName() const;
     virtual unsigned short nodeType() const;
     virtual DOMString namespaceURI() const;
     virtual NodeImpl *cloneNode ( bool deep, int &exceptioncode );
@@ -136,7 +136,7 @@ public:
 
     // DOM methods overridden from  parent classes
 
-    virtual const DOMString nodeName() const;
+    virtual DOMString nodeName() const;
     virtual unsigned short nodeType() const;
     virtual DOMString namespaceURI() const;
     virtual DOMString nodeValue() const;

@@ -18,19 +18,14 @@
  * along with this library; see the file COPYING.LIB.  If not, write to
  * the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
  * Boston, MA 02111-1307, USA.
- *
- * $Id$
  */
 
+#include "dom/dom2_views.h"
 
-#include "dom2_eventsimpl.h"
-#include "dom2_views.h"
-#include "dom2_viewsimpl.h"
-#include "dom_string.h"
-#include "dom_stringimpl.h"
-#include "khtml_part.h"
+#include "xml/dom2_eventsimpl.h"
+#include "xml/dom_stringimpl.h"
 
-#include <qnamespace.h>
+
 
 using namespace DOM;
 

@@ -211,14 +211,15 @@ const struct HashTable DOMElementTable = { 2, 3, DOMElementTableEntries, 3 };
 namespace KJS {
 
 const struct HashEntry DOMDOMImplementationProtoTableEntries[] = {
-   { "hasFeature", DOMDOMImplementation::HasFeature, DontDelete|Function, 2, 0 },
-   { "createDocumentType", DOMDOMImplementation::CreateDocumentType, DontDelete|Function, 3, 0 },
+   { "createCSSStyleSheet", DOMDOMImplementation::CreateCSSStyleSheet, DontDelete|Function, 2, 0 },
    { 0, 0, 0, 0, 0 },
-   { "createCSSStyleSheet", DOMDOMImplementation::CreateCSSStyleSheet, DontDelete|Function, 2, &DOMDOMImplementationProtoTableEntries[4] },
-   { "createDocument", DOMDOMImplementation::CreateDocument, DontDelete|Function, 3, 0 }
+   { "hasFeature", DOMDOMImplementation::HasFeature, DontDelete|Function, 2, &DOMDOMImplementationProtoTableEntries[5] },
+   { "createHTMLDocument", DOMDOMImplementation::CreateHTMLDocument, DontDelete|Function, 1, 0 },
+   { "createDocument", DOMDOMImplementation::CreateDocument, DontDelete|Function, 3, 0 },
+   { "createDocumentType", DOMDOMImplementation::CreateDocumentType, DontDelete|Function, 3, 0 }
 };
 
-const struct HashTable DOMDOMImplementationProtoTable = { 2, 5, DOMDOMImplementationProtoTableEntries, 4 };
+const struct HashTable DOMDOMImplementationProtoTable = { 2, 6, DOMDOMImplementationProtoTableEntries, 5 };
 
 }; // namespace
 

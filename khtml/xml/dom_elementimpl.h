@@ -4,6 +4,7 @@
  * Copyright (C) 1999 Lars Knoll (knoll@kde.org)
  *           (C) 1999 Antti Koivisto (koivisto@kde.org)
  *           (C) 2001 Peter Kelly (pmk@post.com)
+ *           (C) 2001 Dirk Mueller (mueller@kde.org)
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -58,7 +59,7 @@ public:
     virtual void setValue( const DOMString &v, int &exceptioncode );
 
     // DOM methods overridden from  parent classes
-    virtual const DOMString nodeName() const;
+    virtual DOMString nodeName() const;
     virtual unsigned short nodeType() const;
     virtual DOMString namespaceURI() const;
     virtual DOMString prefix() const;
@@ -81,17 +82,25 @@ public:
 protected:
     AttrImpl(const DOMString &name, const DOMString &value, DocumentPtr *doc);
     AttrImpl(int _id, const DOMString &value, DocumentPtr *doc);
-
     void setName(const DOMString &n);
 
-    DOMStringImpl *_name;
-    DOMStringImpl *_value;
-    DOMStringImpl *_namespaceURI;
-
     ElementImpl *_element;
-public:
-    unsigned char attrId;
 
+#if 0
+    NodeImpl::Id m_id;
+//     DOMStringImpl *_name;
+     DOMStringImpl *_value;
+//     DOMStringImpl *_namespaceURI;
+
+//    unsigned short m_prefixId;
+#else
+    DOMStringImpl* _name;
+    DOMStringImpl* _value;
+    DOMStringImpl* _namespaceURI;
+
+public:
+     unsigned short attrId;
+#endif
 };
 
 
@@ -107,7 +116,7 @@ public:
 
     // DOM methods & attributes for Element
 
-    virtual DOMString tagName() const = 0;
+    virtual DOMString tagName() const;
     virtual DOMString getAttribute ( const DOMString &name, int &exceptioncode ) const;
     virtual void setAttribute ( const DOMString &name, const DOMString &value, int &exceptioncode );
     virtual void removeAttribute ( const DOMString &name, int &exceptioncode );
@@ -132,7 +141,7 @@ public:
 
     // DOM methods overridden from  parent classes
     virtual NodeImpl *cloneNode ( bool deep, int &exceptioncode );
-    virtual const DOMString nodeName() const;
+    virtual DOMString nodeName() const;
     virtual DOMString prefix() const;
     virtual void setPrefix(const DOMString &_prefix, int &exceptioncode );
 
@@ -149,7 +158,7 @@ public:
 
     virtual bool isHTMLElement() const { return false; }
 
-    virtual NamedNodeMapImpl *attributes();
+    virtual NamedNodeMapImpl *attributes() const;
     virtual bool hasAttributes() const;
 
     /**
@@ -198,7 +207,7 @@ public:
 protected: // member variables
 
     friend class NodeImpl;
-    NamedAttrMapImpl *namedAttrMap;
+    mutable NamedAttrMapImpl *namedAttrMap;
 
     // map of default attributes. derived element classes are responsible
     // for setting this according to the corresponding element description
@@ -219,23 +228,16 @@ public:
 
     // DOM methods overridden from  parent classes
 
-    DOMString tagName() const;
-    virtual const DOMString nodeName() const;
     virtual DOMString namespaceURI() const;
     virtual DOMString localName() const;
     virtual NodeImpl *cloneNode ( bool deep, int &exceptioncode );
 
     // Other methods (not part of DOM)
-
-    virtual unsigned int cssTagId() const { return m_cssTagId; };
-    virtual bool isXMLElementNode() const;
+    virtual bool isXMLElementNode() const { return true; }
+    virtual Id id() const { return m_id; }
 
 protected:
-    DOMStringImpl *m_namespaceURI;
-    DOMStringImpl *m_tagName;
-    DOMStringImpl *m_localName;
-
-    unsigned short m_cssTagId;
+    Id m_id;
 };
 
 

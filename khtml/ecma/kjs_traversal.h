@@ -21,8 +21,8 @@
 #ifndef _KJS_TRAVERSAL_H_
 #define _KJS_TRAVERSAL_H_
 
-#include "kjs_dom.h"
-#include <dom2_traversal.h>
+#include "ecma/kjs_dom.h"
+#include "dom/dom2_traversal.h"
 
 namespace KJS {
 

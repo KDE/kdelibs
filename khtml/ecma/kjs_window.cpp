@@ -32,7 +32,6 @@
 #include <kconfig.h>
 #include <assert.h>
 
-#include <kjs/lookup.h>
 #include <kjs/collector.h>
 #include "kjs_proxy.h"
 #include "kjs_window.h"
@@ -833,7 +832,7 @@ JSEventListener *Window::getJSEventListener(const Value& val, bool html)
   if (obj.isNull())
     return 0;
 
-  QListIterator<JSEventListener> it(jsEventListeners);
+  QPtrListIterator<JSEventListener> it(jsEventListeners);
 
   for (; it.current(); ++it)
     if (it.current()->listenerObj().imp() == obj.imp())
@@ -895,9 +894,7 @@ Value WindowFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
     part->xmlDocImpl()->updateRendering();
     if (args.size() >= 2)
       str2 = QInputDialog::getText("Konqueror: Prompt", QStyleSheet::convertFromPlainText(str),
-#if QT_VERSION >= 300
                                    QLineEdit::Normal,
-#endif
                                    args[1].toString(exec).qstring());
     else
       str2 = QInputDialog::getText("Konqueror: Prompt", QStyleSheet::convertFromPlainText(str));
@@ -1309,7 +1306,7 @@ Value FrameArray::get(ExecState *exec, const UString &p) const
   if (part.isNull())
     return Undefined();
 
-  QList<KParts::ReadOnlyPart> frames = part->frames();
+  QPtrList<KParts::ReadOnlyPart> frames = part->frames();
   int len = frames.count();
   if (p == "length")
     return Number(len);

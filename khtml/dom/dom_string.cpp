@@ -17,8 +17,6 @@
  * along with this library; see the file COPYING.LIB.  If not, write to
  * the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
  * Boston, MA 02111-1307, USA.
- *
- * $Id$
  */
 
 #include "dom/dom_string.h"
@@ -29,11 +27,6 @@ using namespace DOM;
 
 
 DOMString::DOMString()
-{
-    impl = 0;
-}
-
-DOMString::DOMString(int)
 {
     impl = 0;
 }

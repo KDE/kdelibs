@@ -3,6 +3,7 @@
  *
  * Copyright (C) 1999 Lars Knoll (knoll@kde.org)
  *           (C) 1999 Antti Koivisto (koivisto@kde.org)
+ *           (C) 2001 Dirk Mueller (mueller@kde.org)
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -18,70 +19,48 @@
  * along with this library; see the file COPYING.LIB.  If not, write to
  * the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
  * Boston, MA 02111-1307, USA.
- *
- * $Id$
  */
 
-#include "dom_docimpl.h"
+#include "dom/dom_exception.h"
 
-#include "dom_node.h"
-#include "dom_elementimpl.h"
-#include "dom_textimpl.h"
-#include "dom_exception.h"
-#include "dom_xmlimpl.h"
-#include "dom2_rangeimpl.h"
-#include "dom2_traversalimpl.h"
-#include "dom2_viewsimpl.h"
-#include "dom2_eventsimpl.h"
+#include "xml/dom_textimpl.h"
+#include "xml/dom_xmlimpl.h"
+#include "xml/dom2_rangeimpl.h"
+#include "xml/dom2_eventsimpl.h"
+#include "xml/xml_tokenizer.h"
 
-#include "css/cssstyleselector.h"
-#include "css/css_stylesheetimpl.h"
-#include "misc/helper.h"
 #include "css/csshelper.h"
-
+#include "css/cssstyleselector.h"
+#include "misc/htmlhashes.h"
+#include "misc/helper.h"
 #include "ecma/kjs_proxy.h"
 
-#include <qstring.h>
-#include <qstack.h>
-#include <qlist.h>
+#include <qptrstack.h>
 #include <qpaintdevicemetrics.h>
-#include "misc/htmlhashes.h"
-#include "misc/loader.h"
 #include <kdebug.h>
 #include <kstaticdeleter.h>
 
-#include "htmltokenizer.h"
-#include "xml_tokenizer.h"
-
-#include "rendering/render_object.h"
 #include "rendering/render_root.h"
-#include "rendering/render_style.h"
 
 #include "khtmlview.h"
 #include "khtml_part.h"
 
-#include <kglobal.h>
-#include <kcharsets.h>
 #include <kglobalsettings.h>
 #include "khtml_settings.h"
 
-#include "html_baseimpl.h"
-#include "html_blockimpl.h"
-#include "html_documentimpl.h"
-#include "html_elementimpl.h"
-#include "html_formimpl.h"
-#include "html_headimpl.h"
-#include "html_imageimpl.h"
-#include "html_inlineimpl.h"
-#include "html_listimpl.h"
-#include "html_miscimpl.h"
-#include "html_tableimpl.h"
-#include "html_objectimpl.h"
+#include "html/html_baseimpl.h"
+#include "html/html_blockimpl.h"
+#include "html/html_documentimpl.h"
+#include "html/html_formimpl.h"
+#include "html/html_headimpl.h"
+#include "html/html_imageimpl.h"
+#include "html/html_listimpl.h"
+#include "html/html_miscimpl.h"
+#include "html/html_tableimpl.h"
+#include "html/html_objectimpl.h"
 
 using namespace DOM;
 using namespace khtml;
-
-//template class QStack<DOM::NodeImpl>; // needed ?
 
 DOMImplementationImpl *DOMImplementationImpl::m_instance = 0;
 
@@ -128,9 +107,11 @@ DocumentTypeImpl *DOMImplementationImpl::createDocumentType( const DOMString &qu
     return new DocumentTypeImpl(this,0,qualifiedName,publicId,systemId);
 }
 
-KStaticDeleter< QList<DocumentImpl> > s_changedDocumentsDeleter;
-QList<DocumentImpl> * DocumentImpl::changedDocuments = 0;
-
+DOMImplementationImpl* DOMImplementationImpl::getInterface(const DOMString& feature) const
+{
+    // ###
+    return 0;
+}
 
 DocumentImpl *DOMImplementationImpl::createDocument( const DOMString &namespaceURI, const DOMString &qualifiedName,
                                                      const DocumentType &doctype, int &exceptioncode )
@@ -232,6 +213,9 @@ DOMImplementationImpl *DOMImplementationImpl::instance()
 
 // ------------------------------------------------------------------------
 
+KStaticDeleter< QPtrList<DocumentImpl> > s_changedDocumentsDeleter;
+QPtrList<DocumentImpl> * DocumentImpl::changedDocuments = 0;
+
 // KHTMLView might be 0
 DocumentImpl::DocumentImpl(DOMImplementationImpl *_implementation, DocumentTypeImpl *_doctype, KHTMLView *v)
     : NodeBaseImpl( new DocumentPtr() )
@@ -262,10 +246,17 @@ DocumentImpl::DocumentImpl(DOMImplementationImpl *_implementation, DocumentTypeI
     m_implementation = _implementation;
     m_implementation->ref();
     pMode = Strict;
+    hMode = XHtml;
     m_textColor = "#000000";
     m_elementNames = 0;
     m_elementNameAlloc = 0;
     m_elementNameCount = 0;
+    m_namespaceURIAlloc = 4;
+    m_namespaceURICount = 1;
+    QString xhtml(XHTML_NAMESPACE);
+    m_namespaceURIs = new DOMStringImpl* [m_namespaceURIAlloc];
+    m_namespaceURIs[0] = new DOMStringImpl(xhtml.unicode(), xhtml.length());
+    m_namespaceURIs[0]->ref();
     m_focusNode = 0;
     m_defaultView = new AbstractViewImpl(this);
     m_defaultView->ref();
@@ -294,12 +285,13 @@ DocumentImpl::~DocumentImpl()
     delete m_paintDeviceMetrics;
 
     if (m_elementNames) {
-        unsigned short id;
-        for (id = 0; id < m_elementNameCount; id++) {
+        for (unsigned short id = 0; id < m_elementNameCount; id++)
             m_elementNames[id]->deref();
-        }
         delete [] m_elementNames;
     }
+    for (unsigned short id = 0; id < m_namespaceURICount; ++id)
+        m_namespaceURIs[id]->deref();
+    delete [] m_namespaceURIs;
     m_defaultView->deref();
     m_styleSheets->deref();
 }
@@ -386,11 +378,14 @@ ElementImpl *DocumentImpl::createElementNS( const DOMString &_namespaceURI, cons
         // (elements not in this namespace are treated as normal XML elements)
         QString qName = _qualifiedName.string();
         int colonPos = qName.find(':',0);
-        e = createHTMLElement(colonPos ? qName.mid(colonPos+1) : qName);
+        e = createHTMLElement(qName.mid(colonPos+1));
+        int exceptioncode = 0;
+        if (colonPos >= 0)
+            e->setPrefix(qName.left(colonPos),  exceptioncode);
     }
     if (!e)
         e = new XMLElementImpl( document, _qualifiedName.implementation(), _namespaceURI.implementation() );
-    // note that if _namespaceURI is null, the element will have no namespace
+
     return e;
 }
 
@@ -411,7 +406,7 @@ NodeListImpl *DocumentImpl::getElementsByTagNameNS( const DOMString &/*namespace
 
 ElementImpl *DocumentImpl::getElementById( const DOMString &elementId ) const
 {
-    QStack<NodeImpl> nodeStack;
+    QPtrStack<NodeImpl> nodeStack;
     NodeImpl *current = _first;
 
     while(1)
@@ -448,7 +443,7 @@ ElementImpl *DocumentImpl::getElementById( const DOMString &elementId ) const
     return 0;
 }
 
-const DOMString DocumentImpl::nodeName() const
+DOMString DocumentImpl::nodeName() const
 {
     return "#document";
 }
@@ -781,10 +776,10 @@ TreeWalkerImpl *DocumentImpl::createTreeWalker(Node /*root*/, unsigned long /*wh
     return new TreeWalkerImpl;
 }
 
-void DocumentImpl::setDocumentChanged(bool b) 
+void DocumentImpl::setDocumentChanged(bool b)
 {
     if (!changedDocuments)
-        changedDocuments = s_changedDocumentsDeleter.setObject( new QList<DocumentImpl>() );
+        changedDocuments = s_changedDocumentsDeleter.setObject( new QPtrList<DocumentImpl>() );
 
     if (b && !m_docChanged)
         changedDocuments->append(this);
@@ -813,6 +808,7 @@ void DocumentImpl::applyChanges(bool,bool force)
     // ### if updateSize() changes any size, it will already force a
     // repaint, so we might do double work here...
     m_render->repaint();
+
     setChanged(false);
 }
 
@@ -853,9 +849,6 @@ void DocumentImpl::recalcStyle()
             size = settings->minFontSize();
 
         khtml::setFontSize( f, int(size),  settings, paintDeviceMetrics() );
-#if QT_VERSION < 300
-        KGlobal::charsets()->setQFont(f, settings->charset());
-#endif
     }
 
     //kdDebug() << "DocumentImpl::attach: setting to charset " << settings->charset() << endl;
@@ -882,7 +875,7 @@ void DocumentImpl::updateRendering()
     kdDebug() << "UPDATERENDERING: "<<o<<endl;
 
     int a=0;
-    QListIterator<NodeImpl> it(changedNodes);
+    QPtrListIterator<NodeImpl> it(changedNodes);
     for (; it.current(); ) {
         // applyChanges removes current from the list
         NodeImpl* t = it.current();
@@ -894,7 +887,7 @@ void DocumentImpl::updateRendering()
             t=t->parentNode();
         }
 
-        kdDebug() << n << ": " << n->nodeName().string() << ": applyChanges opt=" << (n!=it.current()) << endl;
+        //kdDebug() << n << ": " << n->nodeName().string() << ": applyChanges opt=" << (n!=it.current()) << endl;
 	n->applyChanges( true, true );
         a++;
     }
@@ -908,11 +901,8 @@ void DocumentImpl::updateDocumentsRendering()
 {
     if (!changedDocuments)
         return;
-    //for (QListIterator<DocumentImpl> it(*changedDocuments); it.current(); ++it )
-    //    if (it.current()->isDocumentChanged())
-    //     [dangerous approach]
-    while ( !changedDocuments->isEmpty() )
-    {
+
+    while ( !changedDocuments->isEmpty() ) {
         DocumentImpl* it = changedDocuments->first();
         if (it->isDocumentChanged())
             it->updateRendering(); // always removes 'it' from changedDocuments
@@ -929,8 +919,10 @@ void DocumentImpl::attach(KHTMLView *w)
         setPaintDevice( m_view );
     }
 
+#if 1 // Nonsense! (Dirk)
     // Create a style selector based on all of the stylesheets in the document
-    updateStyleSheets();
+    updateStyleSelector();
+#endif
 
     // Create the rendering tree
     m_render = new RenderRoot(w);
@@ -989,9 +981,8 @@ void DocumentImpl::open(  )
 {
     if (parsing()) return;
 
-    if (m_tokenizer) {
+    if (m_tokenizer)
         close();
-    }
 
     clear();
     m_tokenizer = createTokenizer();
@@ -1065,7 +1056,7 @@ void DocumentImpl::setStyleSheet(const DOM::DOMString &url, const DOM::DOMString
     m_sheet->parseString(sheet);
     m_loadingSheet = false;
 
-    updateStyleSheets();
+    updateStyleSelector();
 }
 
 void DocumentImpl::setUserStyleSheet( const QString& sheet )
@@ -1094,9 +1085,9 @@ void DocumentImpl::determineParseMode( const QString &/*str*/ )
 
 // Please see if there`s a possibility to merge that code
 // with the next function and getElementByID().
-NodeImpl *DocumentImpl::findElement( int id )
+NodeImpl *DocumentImpl::findElement( Id id )
 {
-    QStack<NodeImpl> nodeStack;
+    QPtrStack<NodeImpl> nodeStack;
     NodeImpl *current = _first;
 
     while(1)
@@ -1369,37 +1360,50 @@ NodeImpl *DocumentImpl::cloneNode ( bool /*deep*/, int &exceptioncode )
     return 0;
 }
 
-unsigned short DocumentImpl::cssTagId(DOMStringImpl *_name)
+NodeImpl::Id DocumentImpl::tagId(DOMStringImpl *_name, DOMStringImpl* _namespaceURI)
 {
     // Each document maintains a mapping of tag name -> id for every tag name encountered
-    // in the document. This is used for CSS style calculations for performance reasons,
-    // as comparisons can be done on integer ids rather than strings.
-    //
-    // For tag names that are lowercase and correspond to a HTML element name, the value
-    // defined in misc/htmltags.h is used. These are the same values that are returned by
-    // cssTagId() for HTML elements.
-    //
-    // For uppercase or non-html tag names, the value corresponding to the position in the
-    // m_elementNames array is used.
-    //
-    // Note: namespaces are not taken into account when assigning these ids, as namespaces
-    // are not currently supported by CSS (see http://www.w3.org/TR/css3-namespace/).
-    //
-    // This function determines the css tag id for the given element name (adding to the
-    // m_elementNames array if necessary), and returns the new id.
+    // in the document.
+    // For tag names without a prefix (no qualified element name) and without / matching
+    // namespace, the value defined in misc/htmltags.h is used.
+    NodeImpl::Id id = 0;
 
-    unsigned short id = 0;
-
-    // First see if it's lowercase and a HTML element name
-    if (_name->isLower())
-        id = khtml::getTagID(DOMString(_name).string().ascii(), _name->l);
-    if (id)
+    // First see if it's a HTML element name
+    if (!_namespaceURI &&
+        (id = khtml::getTagID(DOMString(_name).string().ascii(), _name->l) ) )
         return id;
+
+    // now lets find out the namespace
+    if (_namespaceURI) {
+        DOMString nsU(_namespaceURI);
+        bool found = false;
+        for (unsigned short ns = 0; ns < m_namespaceURICount; ++ns)
+            if (nsU == DOMString(m_namespaceURIs[ns])) {
+                id |= ns << 16;
+                found = true;
+                break;
+            }
+
+        if (!found) {
+            // something new, add it
+            if (m_namespaceURICount >= m_namespaceURIAlloc) {
+                m_namespaceURIAlloc += 32;
+                DOMStringImpl **newURIs = new DOMStringImpl* [m_namespaceURIAlloc];
+                for (unsigned short i = 0; i < m_namespaceURICount; i++)
+                    newURIs[i] = m_namespaceURIs[i];
+                delete [] m_namespaceURIs;
+                m_namespaceURIs = newURIs;
+            }
+            m_namespaceURIs[m_namespaceURICount++] = _namespaceURI;
+            _namespaceURI->ref();
+            id |= (m_namespaceURICount) << 16;
+        }
+    }
 
     // Look in the m_elementNames array for the name
     for (id = 0; id < m_elementNameCount; id++)
-        if (!strcmp(m_elementNames[id],_name))
-            return id+1000;
+        if (DOMString(m_elementNames[id]) == DOMString(_name))
+            return ID_LAST_TAG+id;
 
     // Name not found in m_elementNames, so let's add it
     if (m_elementNameCount+1 > m_elementNameAlloc) {
@@ -1418,25 +1422,36 @@ unsigned short DocumentImpl::cssTagId(DOMStringImpl *_name)
     m_elementNames[id] = _name;
     _name->ref();
 
-    // we add 1000 to the XML element id to avoid clashes with HTML element ids
-    return id+1000;
+    return ID_LAST_TAG+id;
 }
 
-DOMStringImpl *DocumentImpl::cssTagName(unsigned short _id) const
+DOMString DocumentImpl::tagName(NodeImpl::Id _id) const
 {
-    if (_id >= 1000)
-        return m_elementNames[_id-1000];
+    if (_id >= ID_LAST_TAG)
+        return m_elementNames[_id-ID_LAST_TAG];
     else
-        return getTagName(_id).implementation()->lower();
+        // ### put them in a cache
+        return getTagName(_id);
 }
 
+DOMStringImpl* DocumentImpl::namespaceURI(NodeImpl::Id _id) const
+{
+    if (_id < ID_LAST_TAG)
+        return htmlMode() == XHtml ? m_namespaceURIs[0] : 0;
+
+    unsigned short ns = _id >> 16;
+
+    if (!ns) return 0;
+
+    return m_namespaceURIs[ns-1];
+}
 
 StyleSheetListImpl* DocumentImpl::styleSheets()
 {
     return m_styleSheets;
 }
 
-void DocumentImpl::updateStyleSheets()
+void DocumentImpl::updateStyleSelector()
 {
     // Called when one or more stylesheets in the document may have been added, removed or changed.
     //
@@ -1449,13 +1464,13 @@ void DocumentImpl::updateStyleSheets()
 
     if ( !m_render || !attached() ) return;
 
-    QList<StyleSheetImpl> oldStyleSheets = m_styleSheets->styleSheets;
+    QPtrList<StyleSheetImpl> oldStyleSheets = m_styleSheets->styleSheets;
     m_styleSheets->styleSheets.clear();
     NodeImpl *n;
     for (n = this; n; n = n->traverseNextNode()) {
     	StyleSheetImpl *sheet = 0;
 
-    	if (n->nodeType() == Node::PROCESSING_INSTRUCTION_NODE)
+        if (n->nodeType() == Node::PROCESSING_INSTRUCTION_NODE)
         {
             // Processing instruction (XML documents only)
             ProcessingInstructionImpl* pi = static_cast<ProcessingInstructionImpl*>(n);
@@ -1483,33 +1498,33 @@ void DocumentImpl::updateStyleSheets()
             }
 
         }
-    	else if (n->id() == ID_LINK) {
+        else if (n->id() == ID_LINK) {
             // <LINK> element
 	    sheet = static_cast<HTMLLinkElementImpl*>(n)->sheet();
         }
-    	else if (n->id() == ID_STYLE) {
+        else if (n->id() == ID_STYLE) {
             // <STYLE> element
 	    sheet = static_cast<HTMLStyleElementImpl*>(n)->sheet();
         }
-    	else if (n->id() == ID_BODY) {
+        else if (n->id() == ID_BODY) {
             // <BODY> element (doesn't contain styles as such but vlink="..." and friends
             // are treated as style declarations)
 	    sheet = static_cast<HTMLBodyElementImpl*>(n)->sheet();
         }
 
-	if (sheet) {
-	    sheet->ref();
-	    m_styleSheets->styleSheets.append(sheet);
-	}
+        if (sheet) {
+            sheet->ref();
+            m_styleSheets->styleSheets.append(sheet);
+        }
 
         // For HTML documents, stylesheets are not allowed within/after the <BODY> tag. So we
         // can stop searching here.
-	if (isHTMLDocument() && n->id() == ID_BODY)
-	    break;
+        if (isHTMLDocument() && n->id() == ID_BODY)
+            break;
     }
 
     // De-reference all the stylesheets in the old list
-    QListIterator<StyleSheetImpl> it(oldStyleSheets);
+    QPtrListIterator<StyleSheetImpl> it(oldStyleSheets);
     for (; it.current(); ++it)
 	it.current()->deref();
 
@@ -1577,7 +1592,7 @@ void DocumentImpl::detachNodeIterator(NodeIteratorImpl *ni)
 
 void DocumentImpl::notifyBeforeNodeRemoval(NodeImpl *n)
 {
-    QListIterator<NodeIteratorImpl> it(m_nodeIterators);
+    QPtrListIterator<NodeIteratorImpl> it(m_nodeIterators);
     for (; it.current(); ++it)
         it.current()->notifyBeforeNodeRemoval(n);
 }
@@ -1611,8 +1626,8 @@ CSSStyleDeclarationImpl *DocumentImpl::getOverrideStyle(ElementImpl */*elt*/, DO
 void DocumentImpl::defaultEventHandler(EventImpl *evt)
 {
     // if any html event listeners are registered on the window, then dispatch them here
-    QListIterator<RegisteredEventListener> it(m_windowEventListeners);
-    Event ev = evt;
+    QPtrListIterator<RegisteredEventListener> it(m_windowEventListeners);
+    Event ev(evt);
     for (; it.current(); ++it) {
         if (it.current()->id == evt->id()) {
             it.current()->listener->handleEvent(ev);
@@ -1636,7 +1651,7 @@ void DocumentImpl::setWindowEventListener(int id, EventListener *listener)
 
 EventListener *DocumentImpl::getWindowEventListener(int id)
 {
-    QListIterator<RegisteredEventListener> it(m_windowEventListeners);
+    QPtrListIterator<RegisteredEventListener> it(m_windowEventListeners);
     for (; it.current(); ++it) {
 	if (it.current()->id == id) {
 	    return it.current()->listener;
@@ -1648,7 +1663,7 @@ EventListener *DocumentImpl::getWindowEventListener(int id)
 
 void DocumentImpl::removeWindowEventListener(int id)
 {
-    QListIterator<RegisteredEventListener> it(m_windowEventListeners);
+    QPtrListIterator<RegisteredEventListener> it(m_windowEventListeners);
     for (; it.current(); ++it) {
 	if (it.current()->id == id) {
 	    m_windowEventListeners.removeRef(it.current());
@@ -1673,7 +1688,7 @@ DocumentFragmentImpl::DocumentFragmentImpl(const DocumentFragmentImpl &other)
 {
 }
 
-const DOMString DocumentFragmentImpl::nodeName() const
+DOMString DocumentFragmentImpl::nodeName() const
 {
   return "#document-fragment";
 }
@@ -1787,7 +1802,7 @@ DOMString DocumentTypeImpl::internalSubset() const
     return DOMString();
 }
 
-const DOMString DocumentTypeImpl::nodeName() const
+DOMString DocumentTypeImpl::nodeName() const
 {
     return name();
 }

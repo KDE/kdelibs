@@ -2,6 +2,7 @@
  * This file is part of the DOM implementation for KDE.
  *
  * (C) 1999 Lars Knoll (knoll@kde.org)
+ * (C) 2001 Dirk mueller (mueller@kde.org)
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -22,6 +23,7 @@
  */
 // --------------------------------------------------------------------------
 
+#include "dom/dom_doc.h"
 #include "dom/html_inline.h"
 #include "html/html_inlineimpl.h"
 #include "html/html_baseimpl.h"
@@ -467,6 +469,12 @@ DOMString HTMLIFrameElement::width() const
 void HTMLIFrameElement::setWidth( const DOMString &value )
 {
     if(impl) ((ElementImpl *)impl)->setAttribute(ATTR_WIDTH, value);
+}
+
+Document HTMLIFrameElement::contentDocument() const
+{
+    if (impl) return static_cast<HTMLIFrameElementImpl*>(impl)->contentDocument();
+    return Document();
 }
 
 // --------------------------------------------------------------------------

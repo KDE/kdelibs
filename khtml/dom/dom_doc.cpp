@@ -101,6 +101,14 @@ Document DOMImplementation::createDocument ( const DOMString &namespaceURI,
     return r;
 }
 
+DOMImplementation DOMImplementation::getInterface(const DOMString &feature) const
+{
+    if (!impl)
+        throw DOMException(DOMException::NOT_FOUND_ERR);
+
+    return impl->getInterface(feature);
+}
+
 CSSStyleSheet DOMImplementation::createCSSStyleSheet(const DOMString &title, const DOMString &media)
 {
     if (!impl)
@@ -128,10 +136,9 @@ bool DOMImplementation::isNull() const
 
 Document::Document() : Node()
 {
-    // we always wan't an implementation
+    // we always want an implementation
     impl = DOMImplementationImpl::instance()->createDocument();
     impl->ref();
-//    kdDebug(6090) << "Document::Document()" << endl;
 }
 
 Document::Document(bool create) : Node()

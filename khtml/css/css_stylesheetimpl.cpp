@@ -23,18 +23,18 @@
 
 //#define CSS_STYLESHEET_DEBUG
 
-#include "css_stylesheetimpl.h"
+#include "dom/dom_string.h"
+#include "dom/dom_exception.h"
+#include "dom/css_stylesheet.h"
+#include "dom/css_rule.h"
 
-#include "css_stylesheet.h"
-#include "css_rule.h"
-#include "css_ruleimpl.h"
-#include "css_valueimpl.h"
-#include "cssparser.h"
+#include "css/css_ruleimpl.h"
+#include "css/css_valueimpl.h"
+#include "css/cssparser.h"
+#include "css/css_stylesheetimpl.h"
 
-#include "dom_string.h"
-#include "dom_exception.h"
-#include "dom_nodeimpl.h"
-#include "html_documentimpl.h"
+#include "xml/dom_nodeimpl.h"
+#include "html/html_documentimpl.h"
 #include "misc/loader.h"
 
 #include <kdebug.h>
@@ -125,7 +125,7 @@ void StyleSheetImpl::setMedia( MediaListImpl *media )
         m_media->deref();
     m_media = media;
     if( m_media )
-        m_media->ref();    
+        m_media->ref();
 }
 
 // -----------------------------------------------------------------------
@@ -134,7 +134,7 @@ void StyleSheetImpl::setMedia( MediaListImpl *media )
 CSSStyleSheetImpl::CSSStyleSheetImpl(CSSStyleSheetImpl *parentSheet, DOMString href)
     : StyleSheetImpl(parentSheet, href)
 {
-    m_lstChildren = new QList<StyleBaseImpl>;
+    m_lstChildren = new QPtrList<StyleBaseImpl>;
     m_doc = 0;
     m_implicit = false;
 }
@@ -142,7 +142,7 @@ CSSStyleSheetImpl::CSSStyleSheetImpl(CSSStyleSheetImpl *parentSheet, DOMString h
 CSSStyleSheetImpl::CSSStyleSheetImpl(DOM::NodeImpl *parentNode, DOMString href, bool _implicit)
     : StyleSheetImpl(parentNode, href)
 {
-    m_lstChildren = new QList<StyleBaseImpl>;
+    m_lstChildren = new QPtrList<StyleBaseImpl>;
     m_doc = parentNode->nodeType() == Node::DOCUMENT_NODE ? static_cast<DocumentImpl*>(parentNode) : m_doc = parentNode->ownerDocument();
     m_implicit = _implicit;
 }
@@ -150,7 +150,7 @@ CSSStyleSheetImpl::CSSStyleSheetImpl(DOM::NodeImpl *parentNode, DOMString href, 
 CSSStyleSheetImpl::CSSStyleSheetImpl(CSSRuleImpl *ownerRule, DOMString href)
     : StyleSheetImpl(ownerRule, href)
 {
-    m_lstChildren = new QList<StyleBaseImpl>;
+    m_lstChildren = new QPtrList<StyleBaseImpl>;
     m_doc = 0;
     m_implicit = false;
 }
@@ -158,7 +158,7 @@ CSSStyleSheetImpl::CSSStyleSheetImpl(CSSRuleImpl *ownerRule, DOMString href)
 CSSStyleSheetImpl::CSSStyleSheetImpl(DOM::NodeImpl *parentNode, CSSStyleSheetImpl *orig)
     : StyleSheetImpl(parentNode, orig->m_strHref)
 {
-    m_lstChildren = new QList<StyleBaseImpl>;
+    m_lstChildren = new QPtrList<StyleBaseImpl>;
     StyleBaseImpl *rule;
     for ( rule = orig->m_lstChildren->first(); rule != 0; rule = orig->m_lstChildren->next() )
     {
@@ -172,7 +172,7 @@ CSSStyleSheetImpl::CSSStyleSheetImpl(DOM::NodeImpl *parentNode, CSSStyleSheetImp
 CSSStyleSheetImpl::CSSStyleSheetImpl(CSSRuleImpl *ownerRule, CSSStyleSheetImpl *orig)
     : StyleSheetImpl(ownerRule, orig->m_strHref)
 {
-    m_lstChildren = new QList<StyleBaseImpl>;
+    m_lstChildren = new QPtrList<StyleBaseImpl>;
     StyleBaseImpl *rule;
     for ( rule = orig->m_lstChildren->first(); rule != 0; rule = orig->m_lstChildren->next() )
     {
@@ -321,7 +321,7 @@ StyleSheetListImpl::StyleSheetListImpl()
 
 StyleSheetListImpl::~StyleSheetListImpl()
 {
-    for ( QListIterator<StyleSheetImpl> it ( styleSheets ); it.current(); ++it )
+    for ( QPtrListIterator<StyleSheetImpl> it ( styleSheets ); it.current(); ++it )
         it.current()->deref();
 }
 
@@ -343,7 +343,7 @@ unsigned long StyleSheetListImpl::length() const
 {
     // hack so implicit BODY stylesheets don't get counted here
     unsigned long l = 0;
-    QListIterator<StyleSheetImpl> it(styleSheets);
+    QPtrListIterator<StyleSheetImpl> it(styleSheets);
     for (; it.current(); ++it) {
         if (!it.current()->isCSSStyleSheet() || !static_cast<CSSStyleSheetImpl*>(it.current())->implicit())
             l++;
@@ -354,7 +354,7 @@ unsigned long StyleSheetListImpl::length() const
 StyleSheetImpl *StyleSheetListImpl::item ( unsigned long index )
 {
     unsigned long l = 0;
-    QListIterator<StyleSheetImpl> it(styleSheets);
+    QPtrListIterator<StyleSheetImpl> it(styleSheets);
     for (; it.current(); ++it) {
         if (!it.current()->isCSSStyleSheet() || !static_cast<CSSStyleSheetImpl*>(it.current())->implicit()) {
             if (l == index)

@@ -23,9 +23,9 @@
 #ifndef _CSS_css_valueimpl_h_
 #define _CSS_css_valueimpl_h_
 
-#include <css_value.h>
-#include "dom_string.h"
-#include "cssparser.h"
+#include "dom/css_value.h"
+#include "dom/dom_string.h"
+#include "css/cssparser.h"
 #include "misc/loader_client.h"
 
 #include <qintdict.h>

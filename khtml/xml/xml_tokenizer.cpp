@@ -17,26 +17,19 @@
  * along with this library; see the file COPYING.LIB.  If not, write to
  * the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
  * Boston, MA 02111-1307, USA.
- *
- * $Id$
  */
 
-#include "xml_tokenizer.h"
 
-#include "dom_docimpl.h"
-#include "dom_node.h"
-#include "dom_elementimpl.h"
-#include "dom_textimpl.h"
-#include "dom_xmlimpl.h"
+#include "xml_tokenizer.h"
+#include "xml/dom_docimpl.h"
+#include "xml/dom_textimpl.h"
+#include "xml/dom_xmlimpl.h"
 #include "html/html_headimpl.h"
 #include "rendering/render_object.h"
-#include "css/css_stylesheetimpl.h"
 
-#include "misc/loader.h"
 
 #include "khtmlview.h"
 #include "khtml_part.h"
-#include <qtextstream.h>
 #include <qvariant.h>
 #include <kdebug.h>
 #include <klocale.h>
@@ -101,7 +94,7 @@ bool XMLHandler::startElement( const QString& namespaceURI, const QString& /*loc
         return false;
     }
 
-    // ### DOM spec states: "f there is no markup inside an element's content, the text is contained in a
+    // ### DOM spec states: "if there is no markup inside an element's content, the text is contained in a
     // single object implementing the Text interface that is the only child of the element."... do we
     // need to ensure that empty elements always have an empty text child?
 }
@@ -202,13 +195,13 @@ bool XMLHandler::processingInstruction(const QString &target, const QString &dat
 
 QString XMLHandler::errorString()
 {
-    return "the document is not in the correct file format";
+    return i18n("the document is not in the correct file format");
 }
 
 
 bool XMLHandler::fatalError( const QXmlParseException& exception )
 {
-    errorProt += QString( "fatal parsing error: %1 in line %2, column %3" )
+    errorProt += i18n( "fatal parsing error: %1 in line %2, column %3" )
         .arg( exception.message() )
         .arg( exception.lineNumber() )
         .arg( exception.columnNumber() );
@@ -320,6 +313,7 @@ void XMLTokenizer::end()
 
 void XMLTokenizer::finish()
 {
+    kdDebug() << kdBacktrace() << endl;
     // parse xml file
     XMLHandler handler(m_doc,m_view);
     QXmlInputSource source;
@@ -394,7 +388,7 @@ void XMLTokenizer::finish()
         // Parsing was successful. Now locate all html <script> tags in the document and execute them
         // one by one
         addScripts(m_doc->document());
-        m_scriptsIt = new QListIterator<HTMLScriptElementImpl>(m_scripts);
+        m_scriptsIt = new QPtrListIterator<HTMLScriptElementImpl>(m_scripts);
         executeScripts();
     }
 
@@ -453,8 +447,7 @@ void XMLTokenizer::executeScripts()
 
     // All scripts have finished executing, so calculate the style for the document and close
     // the last element
-    m_doc->document()->updateStyleSheets();
-    m_doc->document()->renderer()->close();
+    m_doc->document()->updateStyleSelector();
 
     // We are now finished parsing
     end();

@@ -33,7 +33,7 @@ using namespace DOM;
 
 using namespace khtml;
 
-ushort HTMLUListElementImpl::id() const
+NodeImpl::Id HTMLUListElementImpl::id() const
 {
     return ID_UL;
 }
@@ -57,7 +57,7 @@ void HTMLUListElementImpl::attach()
 
 // -------------------------------------------------------------------------
 
-ushort HTMLDirectoryElementImpl::id() const
+NodeImpl::Id HTMLDirectoryElementImpl::id() const
 {
     return ID_DIR;
 }
@@ -69,7 +69,7 @@ void HTMLDirectoryElementImpl::attach()
 
 // -------------------------------------------------------------------------
 
-ushort HTMLMenuElementImpl::id() const
+NodeImpl::Id HTMLMenuElementImpl::id() const
 {
     return ID_MENU;
 }
@@ -81,7 +81,7 @@ void HTMLMenuElementImpl::attach()
 
 // -------------------------------------------------------------------------
 
-ushort HTMLOListElementImpl::id() const
+NodeImpl::Id HTMLOListElementImpl::id() const
 {
     return ID_OL;
 }
@@ -116,7 +116,7 @@ void HTMLOListElementImpl::attach()
 
 // -------------------------------------------------------------------------
 
-ushort HTMLLIElementImpl::id() const
+NodeImpl::Id HTMLLIElementImpl::id() const
 {
     return ID_LI;
 }
@@ -180,7 +180,7 @@ void HTMLLIElementImpl::attach()
 // -------------------------------------------------------------------------
 
 
-ushort HTMLDListElementImpl::id() const
+NodeImpl::Id HTMLDListElementImpl::id() const
 {
     return ID_DL;
 }

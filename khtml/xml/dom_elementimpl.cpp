@@ -4,6 +4,7 @@
  * Copyright (C) 1999 Lars Knoll (knoll@kde.org)
  *           (C) 1999 Antti Koivisto (koivisto@kde.org)
  *           (C) 2001 Peter Kelly (pmk@post.com)
+ *           (C) 2001 Dirk Mueller (mueller@kde.org)
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -19,28 +20,28 @@
  * along with this library; see the file COPYING.LIB.  If not, write to
  * the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
  * Boston, MA 02111-1307, USA.
- *
- * $Id$
  */
-//#define EVENT_DEBUG
-#include "dom_elementimpl.h"
-#include "dom_exception.h"
-#include "dom_node.h"
-#include "dom_textimpl.h"
-#include "dom_docimpl.h"
-#include "dom2_eventsimpl.h"
-#include "dtd.h"
 
-#include "css/cssstyleselector.h"
+//#define EVENT_DEBUG
+#include "dom/dom_exception.h"
+#include "dom/dom_node.h"
+#include "xml/dom_textimpl.h"
+#include "xml/dom_docimpl.h"
+#include "xml/dom2_eventsimpl.h"
+#include "xml/dom_elementimpl.h"
+
+#include "html/dtd.h"
+#include "html/htmlparser.h"
+
 #include "rendering/render_object.h"
 #include "misc/htmlhashes.h"
-#include <kdebug.h>
-#include "css_valueimpl.h"
-#include "css_stylesheetimpl.h"
-#include "html/htmlparser.h"
+#include "css/css_valueimpl.h"
+#include "css/css_stylesheetimpl.h"
+#include "css/cssstyleselector.h"
 #include "xml/dom_xmlimpl.h"
 
 #include <qtextstream.h>
+#include <kdebug.h>
 
 using namespace DOM;
 using namespace khtml;
@@ -56,44 +57,44 @@ using namespace khtml;
 
 AttrImpl::AttrImpl()
     : NodeImpl(0),
-      _name(0),
-      _value(0),
-      _namespaceURI(0),
-      _element(0),
-      attrId(0)
+     _element(0),
+    _name(0),
+    _value(0),
+    _namespaceURI(0),
+    attrId(0)
 {
 }
 
 
 AttrImpl::AttrImpl(DocumentPtr *doc, const DOMString &name)
     : NodeImpl(doc),
-      _name(0),
-      _value(0),
-      _namespaceURI(0),
-      _element(0),
-      attrId(0)
+    _element(0),
+    _name(0),
+    _value(0),
+    _namespaceURI(0),
+    attrId(0)
 {
     setName(name);
 }
 
 AttrImpl::AttrImpl(DocumentPtr *doc, int id)
     : NodeImpl(doc),
-      _name(0),
-      _value(0),
-      _namespaceURI(0),
-      _element(0),
-      attrId(id)
+    _element(0),
+    _name(0),
+    _value(0),
+    _namespaceURI(0),
+    attrId(id)
 {
 }
 
 AttrImpl::AttrImpl(DocumentPtr *doc, const DOMString &/*namespaceURI*/,
                    const DOMString &/*qualifiedName*/)
     : NodeImpl(doc),
-      _name(0),
-      _value(0),
-      _namespaceURI(0),
-      _element(0),
-      attrId(0)
+    _element(0),
+    _name(0),
+    _value(0),
+    _namespaceURI(0),
+    attrId(0)
 {
     // ### implement properly!
 }
@@ -126,7 +127,6 @@ AttrImpl &AttrImpl::operator = (const AttrImpl &other)
     _namespaceURI = other._namespaceURI;
     if (_namespaceURI) _namespaceURI->ref();
     attrId = other.attrId;
-
     return *this;
 }
 
@@ -137,7 +137,7 @@ AttrImpl::~AttrImpl()
     if(_namespaceURI) _namespaceURI->deref();
 }
 
-const DOMString AttrImpl::nodeName() const
+DOMString AttrImpl::nodeName() const
 {
     return name();
 }
@@ -175,10 +175,12 @@ Element AttrImpl::ownerElement() const
 
 DOMString AttrImpl::name() const
 {
+    // For XML/XHTML documents, XHTML attribute names are all lowercase and case sensitive.
+    // For HTML documents,attribute names are case-insensitive but are stored using
+    // their uppercase form
+
     if(attrId) {
-        // For XML documents, XHTML attribute names are all lowercase. For HTML documents,
-        // attribute names are case-insensitive but are stored using their uppercase form
-        if (ownerDocument()->isHTMLDocument())
+        if (ownerDocument()->htmlMode() != DocumentImpl::XHtml)
             return getAttrName(attrId);
         else
             return getAttrName(attrId).lower();
@@ -193,7 +195,10 @@ void AttrImpl::setName(const DOMString &n)
 {
     if(_name) _name->deref();
     _name = n.implementation();
-    if(!_name) return;
+    if(!_name) {
+        attrId = 0;
+        return;
+    }
 
     // ### this will break for XML! we need to store the actual name
     attrId = khtml::getAttrID(QConstString(_name->s, _name->l).string().lower().ascii(), _name->l);
@@ -256,18 +261,19 @@ AttrImpl::AttrImpl(const DOMString &name, const DOMString &value, DocumentPtr *d
     if (_value) _value->ref();
     _namespaceURI = 0;
     _element = 0;
-    m_specified = 1;
+    m_specified = true;
 }
 
-AttrImpl::AttrImpl(int _id, const DOMString &value, DocumentPtr *doc) : NodeImpl(doc)
+AttrImpl::AttrImpl(int _id, const DOMString &value, DocumentPtr *doc)
+    : NodeImpl(doc)
 {
-  attrId = _id;
-  _name = 0;
-  _value = value.implementation();
-  if (_value) _value->ref();
-  _namespaceURI = 0;
-  _element = 0;
-  m_specified = false;
+    attrId = _id;
+    _name = 0;
+    _value = value.implementation();
+    if (_value) _value->ref();
+    _namespaceURI = 0;
+    _element = 0;
+    m_specified = false;
 }
 
 NodeImpl *AttrImpl::parentNode() const
@@ -384,7 +390,7 @@ void ElementImpl::setAttribute( const DOMString &name, const DOMString &value, i
         namedAttrMap->ref();
     }
 
-    // Special case: if the value is null, remove the attribute - ### is this correct?
+    // Special case: if the value is null, remove the attribute
     if (value.isNull())
         namedAttrMap->removeNamedItem(name,exceptioncode);
     else {
@@ -704,12 +710,21 @@ NodeImpl *ElementImpl::cloneNode ( bool deep, int &exceptioncode )
     return clone;
 }
 
-const DOMString ElementImpl::nodeName() const
+DOMString ElementImpl::nodeName() const
 {
+    return tagName();
+}
+
+DOMString ElementImpl::tagName() const
+{
+    DOMString tn = ownerDocument()->tagName(id());
+    if (ownerDocument()->htmlMode() == DocumentImpl::XHtml)
+        tn = tn.lower();
+
     if (m_prefix)
-        return DOMString(m_prefix)+":"+tagName();
-    else
-        return tagName();
+        return DOMString(m_prefix) + ":" + tn;
+
+    return tn;
 }
 
 DOMString ElementImpl::prefix() const
@@ -730,10 +745,10 @@ void ElementImpl::setPrefix( const DOMString &_prefix, int &exceptioncode )
         m_prefix->ref();
 }
 
-NamedNodeMapImpl *ElementImpl::attributes()
+NamedNodeMapImpl *ElementImpl::attributes() const
 {
     if(!namedAttrMap) {
-        namedAttrMap = new NamedAttrMapImpl(this);
+        namedAttrMap = new NamedAttrMapImpl(const_cast<ElementImpl*>(this));
         namedAttrMap->ref();
     }
     return namedAttrMap;
@@ -813,13 +828,13 @@ void ElementImpl::recalcStyle()
     if ( m_active )
         dynamicState |= StyleSelector::Active;
 
-    setStyle( ownerDocument()->styleSelector()->styleForElement(this, dynamicState) );
+    setStyle(ownerDocument()->styleSelector()->styleForElement(this, dynamicState));
 
     if (oldDisplay != m_style->display()) {
 	detach();
 	attach();
     }
-    if( m_render && m_style )
+    if( m_render)
         m_render->setStyle(m_style);
     NodeImpl *n;
     for (n = _first; n; n = n->nextSibling())
@@ -980,111 +995,59 @@ void ElementImpl::dump(QTextStream *stream, QString ind) const
 
 // -------------------------------------------------------------------------
 
-XMLElementImpl::XMLElementImpl(DocumentPtr *doc, DOMStringImpl *_tagName) : ElementImpl(doc)
+XMLElementImpl::XMLElementImpl(DocumentPtr *doc, DOMStringImpl *_tagName)
+    : ElementImpl(doc)
 {
-    m_tagName = _tagName;
-    if (m_tagName)
-        m_tagName->ref();
-    // nodeName == tagName
-    m_localName = 0;
-    m_prefix = 0;
-    m_namespaceURI = 0;
-
-    // Get the CSS tag ID for this element (maintained in the document's local name -> css tag id map)
-    m_cssTagId = ownerDocument()->cssTagId(_tagName);
+    m_id = doc->document()->tagId(_tagName, 0 /* no namespace */);
 }
 
-XMLElementImpl::XMLElementImpl(DocumentPtr *doc, DOMStringImpl *_qualifiedName, DOMStringImpl *_namespaceURI) : ElementImpl(doc)
+XMLElementImpl::XMLElementImpl(DocumentPtr *doc, DOMStringImpl *_qualifiedName, DOMStringImpl *_namespaceURI)
+    : ElementImpl(doc)
 {
     int colonpos = -1;
-    uint i;
-    for (i = 0; i < _qualifiedName->l && colonpos < 0; i++) {
-        if ((*_qualifiedName)[i] == ':')
+    for (uint i = 0; i < _qualifiedName->l; ++i)
+        if (_qualifiedName->s[i] == ':') {
             colonpos = i;
-    }
+            break;
+        }
 
-    // nodeName == qualifiedName == tagName
-    m_tagName = _qualifiedName;
-    m_tagName->ref();
-    m_namespaceURI = _namespaceURI;
-    if (m_namespaceURI)
-        m_namespaceURI->ref();
     if (colonpos >= 0) {
         // we have a prefix
-        m_localName = _qualifiedName->copy();
-        m_localName->ref();
-        m_localName->remove(0,colonpos+1);
+        DOMStringImpl* localName = _qualifiedName->copy();
+        localName->ref();
+        localName->remove(0,colonpos+1);
+        m_id = doc->document()->tagId(localName, _namespaceURI);
+        localName->deref();
         m_prefix = _qualifiedName->copy();
         m_prefix->ref();
         m_prefix->truncate(colonpos);
     }
     else {
         // no prefix
-        m_localName = _qualifiedName;
-        m_localName->ref();
+        m_id = doc->document()->tagId(_qualifiedName, _namespaceURI);
         m_prefix = 0;
     }
-
-    // Get the CSS tag ID for this element (maintained in the document's local name -> css tag id map)
-    m_cssTagId = ownerDocument()->cssTagId(m_localName);
 }
 
 XMLElementImpl::~XMLElementImpl()
 {
-    if (m_namespaceURI)
-        m_namespaceURI->deref();
-    if (m_tagName)
-        m_tagName->deref();
-    if (m_localName)
-        m_localName->deref();
 }
 
-DOMString XMLElementImpl::tagName() const
-{
-    return m_tagName;
-}
-
-const DOMString XMLElementImpl::nodeName() const
-{
-    if (m_localName) {
-        // we were created with createElementNS... m_tagName is the qualified name
-        // and possibly includes a colon
-        if (m_prefix)
-            return DOMString(m_prefix)+":"+DOMString(m_localName);
-        else
-            return m_localName;
-    }
-    else {
-        // we were created with createElement... m_tagName does not include a colon
-        // and we have no m_localName set
-        if (m_prefix)
-            return DOMString(m_prefix)+":"+DOMString(m_tagName);
-        else
-            return m_tagName;
-    }
-}
 
 DOMString XMLElementImpl::namespaceURI() const
 {
-    // ### make sure it is copied properly during a clone
-    return m_namespaceURI;
+    return ownerDocument()->namespaceURI(m_id);
 }
 
 DOMString XMLElementImpl::localName() const
 {
-    return m_localName;
+    return ownerDocument()->tagName(m_id);
 }
 
 NodeImpl *XMLElementImpl::cloneNode ( bool deep, int &exceptioncode )
 {
-    XMLElementImpl *clone = new XMLElementImpl(docPtr(),m_tagName);
-
-    clone->m_namespaceURI = m_namespaceURI;
-    if (clone->m_namespaceURI)
-        clone->m_namespaceURI->ref();
-    clone->m_localName = m_localName;
-    if (clone->m_localName)
-        clone->m_localName->ref();
+    XMLElementImpl *clone = new XMLElementImpl(docPtr(), ownerDocument()->tagName(m_id).implementation());
+    clone->m_id = m_id;
 
     // clone attributes
     if(namedAttrMap)
@@ -1096,14 +1059,10 @@ NodeImpl *XMLElementImpl::cloneNode ( bool deep, int &exceptioncode )
     return clone;
 }
 
-bool XMLElementImpl::isXMLElementNode() const
-{
-    return true;
-}
-
 // -------------------------------------------------------------------------
 
-NamedAttrMapImpl::NamedAttrMapImpl(ElementImpl *e) : element(e)
+NamedAttrMapImpl::NamedAttrMapImpl(ElementImpl *e)
+    : element(e)
 {
     attrs = 0;
     len = 0;

@@ -21,10 +21,9 @@
  * $Id$
  */
 
+#include "dom/dom_doc.h"
 #include "dom/html_object.h"
-
 #include "html/html_objectimpl.h"
-
 #include "misc/htmlhashes.h"
 
 HTMLAppletElement::HTMLAppletElement() : HTMLElement()
@@ -418,6 +417,12 @@ DOMString HTMLObjectElement::width() const
 void HTMLObjectElement::setWidth( const DOMString &value )
 {
     if(impl) ((ElementImpl *)impl)->setAttribute(ATTR_WIDTH, value);
+}
+
+Document HTMLObjectElement::contentDocument() const
+{
+    if (impl) return static_cast<HTMLObjectElementImpl*>(impl)->contentDocument();
+    return Document();
 }
 
 // --------------------------------------------------------------------------

@@ -17,18 +17,9 @@
 #    the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
 #    Boston, MA 02111-1307, USA.
 
+KDE_CXXFLAGS = $(WOVERLOADED_VIRTUAL)
 
-
-#AM_CXXFLAGS += -DTABLE_DEBUG
-#AM_CXXFLAGS += -DDEBUG_LAYOUT
-#AM_CXXFLAGS += -DDEBUG_EVENTS
-#AM_CXXFLAGS += -DTOKEN_DEBUG
-#AM_CXXFLAGS += -DPARSER_DEBUG
-#AM_CXXFLAGS += -DCACHE_DEBUG
-
-KDE_CXXFLAGS = -UQT_NO_COMPAT
-
-SUBDIRS = misc dom css xml html rendering pics @DOJAVA@ . ecma
+SUBDIRS = misc dom css xml html rendering pics $(DOJAVA) ecma .
 
 lib_LTLIBRARIES = libkhtml.la libkhtmlimage.la
 libkhtml_la_SOURCES = khtmlview.cpp khtml_part.cpp khtml_run.cpp khtml_factory.cpp khtml_settings.cc \
@@ -44,7 +35,7 @@ noinst_HEADERS = design.h testkhtml.h testrender.h test_regression.h khtml_find.
 libkhtml_la_LDFLAGS = -version-info 4:0 -module -no-undefined $(all_libraries)
 libkhtml_la_LIBADD = ./xml/libkhtmlxml.la ./html/libkhtmlhtml.la \
 	./rendering/libkhtmlrender.la ./css/libkhtmlcss.la \
-	./misc/libkhtmlmisc.la ./dom/libkhtmldom.la @LIBKJAVA@ \
+	./misc/libkhtmlmisc.la ./dom/libkhtmldom.la $(LIBKJAVA) \
 	../kio/libkio.la \
 	$(top_builddir)/kparts/libkparts.la \
 	$(top_builddir)/kfile/libkfile.la \

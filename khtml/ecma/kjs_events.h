@@ -21,9 +21,9 @@
 #ifndef _KJS_EVENTS_H_
 #define _KJS_EVENTS_H_
 
-#include "kjs_dom.h"
-#include <dom2_events.h>
-#include <dom_misc.h>
+#include "ecma/kjs_dom.h"
+#include "dom/dom2_events.h"
+#include "dom/dom_misc.h"
 
 namespace KJS {
 

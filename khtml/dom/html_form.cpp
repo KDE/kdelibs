@@ -516,6 +516,12 @@ DOMString HTMLInputElement::type() const
     return ((HTMLInputElementImpl *)impl)->type();
 }
 
+void HTMLInputElement::setType(const DOMString& _type)
+{
+    if (!impl) return;
+    static_cast<HTMLInputElementImpl*>(impl)->setType(_type);
+}
+
 DOMString HTMLInputElement::useMap() const
 {
     if(!impl) return DOMString();

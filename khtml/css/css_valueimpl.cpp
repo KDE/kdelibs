@@ -17,24 +17,24 @@
  * along with this library; see the file COPYING.LIB.  If not, write to
  * the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
  * Boston, MA 02111-1307, USA.
- *
- * $Id$
  */
-#include "css_valueimpl.h"
-#include "css_value.h"
-#include "css_ruleimpl.h"
-#include "css_stylesheetimpl.h"
-#include "cssparser.h"
-#include "dom_exception.h"
-#include "dom_string.h"
-#include "dom_stringimpl.h"
-#include "dom_nodeimpl.h"
+
+#include "dom/css_value.h"
+#include "dom/dom_exception.h"
+#include "dom/dom_string.h"
+
+#include "css/css_valueimpl.h"
+#include "css/css_ruleimpl.h"
+#include "css/css_stylesheetimpl.h"
+#include "css/cssparser.h"
+#include "css/cssvalues.h"
+
+#include "xml/dom_stringimpl.h"
+#include "xml/dom_nodeimpl.h"
 
 #include "misc/loader.h"
 
 #include <kdebug.h>
-
-#include "cssvalues.h"
 
 // Hack for debugging purposes
 extern DOM::DOMString getPropertyName(unsigned short id);
@@ -48,7 +48,7 @@ CSSStyleDeclarationImpl::CSSStyleDeclarationImpl(CSSRuleImpl *parent)
     m_node = 0;
 }
 
-CSSStyleDeclarationImpl::CSSStyleDeclarationImpl(CSSRuleImpl *parent, QList<CSSProperty> *lstValues)
+CSSStyleDeclarationImpl::CSSStyleDeclarationImpl(CSSRuleImpl *parent, QPtrList<CSSProperty> *lstValues)
     : StyleBaseImpl(parent)
 {
     m_lstValues = lstValues;
@@ -99,7 +99,7 @@ CSSValueImpl *CSSStyleDeclarationImpl::getPropertyCSSValue( int propertyID )
 
 bool CSSStyleDeclarationImpl::removeProperty( int propertyID, bool onlyNonCSSHints )
 {
-    QListIterator<CSSProperty> lstValuesIt(*m_lstValues);
+    QPtrListIterator<CSSProperty> lstValuesIt(*m_lstValues);
     lstValuesIt.toLast();
     while (lstValuesIt.current() &&
            ( lstValuesIt.current()->m_id != propertyID || onlyNonCSSHints != lstValuesIt.current()->nonCSSHint) )
@@ -127,7 +127,7 @@ DOMString CSSStyleDeclarationImpl::removeProperty(int id)
     if(!m_lstValues) return DOMString();
     DOMString value;
 
-    QListIterator<CSSProperty> lstValuesIt(*m_lstValues);
+    QPtrListIterator<CSSProperty> lstValuesIt(*m_lstValues);
     lstValuesIt.toLast();
     while (lstValuesIt.current() && lstValuesIt.current()->m_id != id)
         --lstValuesIt;
@@ -185,7 +185,7 @@ void CSSStyleDeclarationImpl::setProperty(const DOMString &propName, const DOMSt
 void CSSStyleDeclarationImpl::setProperty(int id, const DOMString &value, bool important, bool nonCSSHint)
 {
     if(!m_lstValues) {
-	m_lstValues = new QList<CSSProperty>;
+	m_lstValues = new QPtrList<CSSProperty>;
 	m_lstValues->setAutoDelete(true);
     }
     if ( !removeProperty(id, nonCSSHint ) )
@@ -204,7 +204,7 @@ void CSSStyleDeclarationImpl::setProperty(int id, const DOMString &value, bool i
 void CSSStyleDeclarationImpl::setProperty(int id, int value, bool important, bool nonCSSHint)
 {
     if(!m_lstValues) {
-	m_lstValues = new QList<CSSProperty>;
+	m_lstValues = new QPtrList<CSSProperty>;
 	m_lstValues->setAutoDelete(true);
     }
     if ( !removeProperty(id, nonCSSHint ) )
@@ -220,7 +220,7 @@ void CSSStyleDeclarationImpl::setProperty(int id, int value, bool important, boo
 void CSSStyleDeclarationImpl::setProperty ( const DOMString &propertyString)
 {
     DOMString ppPropertyString = preprocess(propertyString.string(),true);
-    QList<CSSProperty> *props = parseProperties(ppPropertyString.unicode(),
+    QPtrList<CSSProperty> *props = parseProperties(ppPropertyString.unicode(),
 						ppPropertyString.unicode()+ppPropertyString.length());
     if(!props || !props->count())
     {
@@ -232,7 +232,7 @@ void CSSStyleDeclarationImpl::setProperty ( const DOMString &propertyString)
 
     unsigned int i = 0;
     if(!m_lstValues) {
-	m_lstValues = new QList<CSSProperty>;
+	m_lstValues = new QPtrList<CSSProperty>;
 	m_lstValues->setAutoDelete( true );
     }
     while(i < props->count())

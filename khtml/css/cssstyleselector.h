@@ -57,7 +57,7 @@ namespace khtml
 
     /*
      * to remember the source where a rule came from. Differntiates between
-     * important and not important rules. This is ordered in the order they have to be applied 
+     * important and not important rules. This is ordered in the order they have to be applied
      * to the RenderStyle.
      */
     enum Source {
@@ -82,9 +82,9 @@ namespace khtml
     public:
 	StyleSelector() {};
 	virtual ~StyleSelector() {};
-	
+
 	virtual RenderStyle *styleForElement(DOM::ElementImpl *e, int = None) = 0;
-	
+
 	enum State {
 	    None = 0x00,
 	    Hover = 0x01,
@@ -116,14 +116,14 @@ namespace khtml
 	CSSStyleSelector( DOM::CSSStyleSheetImpl *sheet );
 
 	virtual ~CSSStyleSelector();
-	
+
 	void addSheet( DOM::CSSStyleSheetImpl *sheet );
-        
+
 	static void loadDefaultStyle(const KHTMLSettings *s = 0);
 	static void clear();
-	
+
 	virtual RenderStyle *styleForElement(DOM::ElementImpl *e, int state = None );
-	
+
 	bool strictParsing;
 	struct Encodedurl {
 	    QString host; //also contains protocol
@@ -144,14 +144,14 @@ namespace khtml
 
 	void addInlineDeclarations(DOM::CSSStyleDeclarationImpl *decl,
 				   CSSOrderedPropertyList *list );
-	
+
 	static DOM::CSSStyleSheetImpl *defaultSheet;
 	static CSSStyleSelectorList *defaultStyle;
 	static CSSStyleSelectorList *defaultPrintStyle;
 	CSSStyleSelectorList *authorStyle;
         CSSStyleSelectorList *userStyle;
         DOM::CSSStyleSheetImpl *userSheet;
-	
+
     public: // we need to make the enum public for SelectorCache
 	enum SelectorState {
 	    Unknown = 0,
@@ -159,6 +159,18 @@ namespace khtml
 	    AppliesPseudo,
 	    Invalid
 	};
+
+        enum SelectorMedia {
+            MediaAural = 1,
+            MediaBraille,
+            MediaEmboss,
+            MediaHandheld,
+            MediaPrint,
+            MediaProjection,
+            MediaScreen,
+            MediaTTY,
+            MediaTV
+        };
     protected:
 
         struct SelectorCache {
@@ -166,14 +178,14 @@ namespace khtml
             unsigned int props_size;
             int *props;
         };
-            
+
 	unsigned int selectors_size;
 	DOM::CSSSelector **selectors;
 	SelectorCache *selectorCache;
 	unsigned int properties_size;
 	CSSOrderedProperty **properties;
-	QArray<CSSOrderedProperty> inlineProps;
-	QString mMedium;
+	QMemArray<CSSOrderedProperty> inlineProps;
+        QString m_medium;
     };
 
     /*
@@ -186,9 +198,9 @@ namespace khtml
      */
     class CSSOrderedProperty
     {
-    public:	
-	CSSOrderedProperty(DOM::CSSProperty *_prop, uint _selector, 
-			   bool first, Source source, unsigned int specificity, 
+    public:
+	CSSOrderedProperty(DOM::CSSProperty *_prop, uint _selector,
+			   bool first, Source source, unsigned int specificity,
 			   unsigned int _position )
 	    : prop ( _prop ), pseudoId( RenderStyle::NOPSEUDO ), selector( _selector ),
 	      position( _position )
@@ -200,7 +212,7 @@ namespace khtml
 	RenderStyle::PseudoId pseudoId;
 	unsigned int selector;
 	unsigned int position;
-	
+
 	Q_UINT32 priority;
     };
 
@@ -211,8 +223,8 @@ namespace khtml
     class CSSOrderedPropertyList : public QPtrList<CSSOrderedProperty>
     {
     public:
-	virtual int compareItems(QCollection::Item i1, QCollection::Item i2);
-	void append(DOM::CSSStyleDeclarationImpl *decl, uint selector, uint specificity, 
+	virtual int compareItems(QPtrCollection::Item i1, QPtrCollection::Item i2);
+	void append(DOM::CSSStyleDeclarationImpl *decl, uint selector, uint specificity,
 		    Source regular, Source important );
     };
 
@@ -221,7 +233,7 @@ namespace khtml
     public:
 	CSSOrderedRule(DOM::CSSStyleRuleImpl *r, DOM::CSSSelector *s, int _index);
 	~CSSOrderedRule();
-	
+
 	DOM::CSSSelector *selector;
 	DOM::CSSStyleRuleImpl *rule;
 	int index;
@@ -232,10 +244,10 @@ namespace khtml
     public:
 	CSSStyleSelectorList();
 	virtual ~CSSStyleSelectorList();
-	
+
 	void append( DOM::CSSStyleSheetImpl *sheet,
                  const DOM::DOMString &medium = "screen" );
-	
+
 	void collect( QPtrList<DOM::CSSSelector> *selectorList, CSSOrderedPropertyList *propList,
 		      Source regular, Source important );
     };

@@ -44,7 +44,7 @@ public:
 
     ~HTMLAppletElementImpl();
 
-    virtual ushort id() const;
+    virtual Id id() const;
 
     virtual void parseAttribute(AttrImpl *token);
 
@@ -52,11 +52,6 @@ public:
     virtual void detach();
 
 protected:
-    DOMStringImpl *codeBase;
-    DOMStringImpl *name;
-    DOMStringImpl *code;
-    DOMStringImpl *archive;
-
     KHTMLView *view;
     khtml::VAlign valign;
 };
@@ -70,7 +65,7 @@ public:
 
     ~HTMLEmbedElementImpl();
 
-    virtual ushort id() const;
+    virtual Id id() const;
 
     virtual void parseAttribute(AttrImpl *attr);
 
@@ -93,7 +88,7 @@ public:
 
     ~HTMLObjectElementImpl();
 
-    virtual ushort id() const;
+    virtual Id id() const;
 
     HTMLFormElementImpl *form() const;
 
@@ -103,6 +98,8 @@ public:
     virtual void detach();
 
     virtual void applyChanges(bool = true, bool = true);
+
+    DocumentImpl* contentDocument() const;
 
     QString serviceType;
     QString url;
@@ -120,7 +117,7 @@ public:
 
     ~HTMLParamElementImpl();
 
-    virtual ushort id() const;
+    virtual Id id() const;
 
     virtual void parseAttribute(AttrImpl *token);
 

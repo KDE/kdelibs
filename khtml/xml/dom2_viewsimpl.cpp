@@ -22,7 +22,6 @@
  */
 
 #include "dom2_viewsimpl.h"
-#include "dom_docimpl.h"
 
 using namespace DOM;
 

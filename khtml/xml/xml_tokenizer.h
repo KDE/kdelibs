@@ -36,8 +36,6 @@ namespace DOM {
     class HTMLScriptElementImpl;
 }
 
-
-
 class XMLHandler : public QXmlDefaultHandler
 {
 public:
@@ -121,8 +119,6 @@ protected:
     QPtrList<HTMLScriptElementImpl> m_scripts;
     QPtrListIterator<HTMLScriptElementImpl> *m_scriptsIt;
     khtml::CachedScript *m_cachedScript;
-
-
 };
 
 #endif

@@ -17,21 +17,20 @@
  * along with this library; see the file COPYING.LIB.  If not, write to
  * the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
  * Boston, MA 02111-1307, USA.
- *
- * $Id$
  */
-#include "css_ruleimpl.h"
-#include "css_rule.h"
-#include "css_stylesheet.h"
-#include "css_stylesheetimpl.h"
-#include "css_valueimpl.h"
-#include "cssparser.h"
+#include "dom/css_rule.h"
+#include "dom/css_stylesheet.h"
+#include "dom/dom_exception.h"
+#include "dom/dom_string.h"
+
+#include "css/css_stylesheetimpl.h"
+#include "css/css_valueimpl.h"
+#include "css/cssparser.h"
+#include "css/css_ruleimpl.h"
 
 #include "misc/loader.h"
 #include "xml/dom_docimpl.h"
 
-#include "dom_exception.h"
-#include "dom_string.h"
 using namespace DOM;
 
 #include <kdebug.h>
@@ -360,7 +359,7 @@ bool CSSStyleRuleImpl::parseString( const DOMString &/*string*/, bool )
     return false;
 }
 
-void CSSStyleRuleImpl::setSelector( QList<CSSSelector> *selector)
+void CSSStyleRuleImpl::setSelector( QPtrList<CSSSelector> *selector)
 {
     m_selector = selector;
 }

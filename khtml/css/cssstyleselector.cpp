@@ -17,15 +17,14 @@
  * along with this library; see the file COPYING.LIB.  If not, write to
  * the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
  * Boston, MA 02111-1307, USA.
- *
- * $Id$
  */
-#include "cssstyleselector.h"
+
+#include "css/cssstyleselector.h"
 #include "rendering/render_style.h"
-#include "css_stylesheetimpl.h"
-#include "css_ruleimpl.h"
-#include "css_valueimpl.h"
-#include "csshelper.h"
+#include "css/css_stylesheetimpl.h"
+#include "css/css_ruleimpl.h"
+#include "css/css_valueimpl.h"
+#include "css/csshelper.h"
 #include "html/html_documentimpl.h"
 #include "xml/dom_elementimpl.h"
 #include "dom/css_rule.h"
@@ -34,8 +33,8 @@
 using namespace khtml;
 using namespace DOM;
 
-#include "cssproperties.h"
-#include "cssvalues.h"
+#include "css/cssproperties.h"
+#include "css/cssvalues.h"
 
 #include "misc/khtmllayout.h"
 #include "khtml_settings.h"
@@ -45,7 +44,6 @@ using namespace DOM;
 
 #include "khtmlview.h"
 #include "khtml_part.h"
-#include "khtml_settings.h"
 
 #include <kstandarddirs.h>
 #include <kcharsets.h>
@@ -81,7 +79,7 @@ CSSStyleSelector::CSSStyleSelector( KHTMLView *view, QString userStyleSheet, Sty
 {
     strictParsing = _strictParsing;
     if(!defaultStyle) loadDefaultStyle(view ? view->part()->settings() : 0);
-    mMedium = view ? view->mediaType() : "all";
+    m_medium = view ? view->mediaType() : "all";
 
     selectors = 0;
     selectorCache = 0;
@@ -94,18 +92,18 @@ CSSStyleSelector::CSSStyleSelector( KHTMLView *view, QString userStyleSheet, Sty
         userSheet->parseString( DOMString( userStyleSheet ) );
 
         userStyle = new CSSStyleSelectorList();
-        userStyle->append( userSheet, mMedium );
+        userStyle->append( userSheet, m_medium );
     }
 
     // add stylesheets from document
     authorStyle = new CSSStyleSelectorList();
 
 
-    QListIterator<StyleSheetImpl> it( styleSheets->styleSheets );
+    QPtrListIterator<StyleSheetImpl> it( styleSheets->styleSheets );
     for ( ; it.current(); ++it ) {
         if ( it.current()->isCSSStyleSheet() ) {
             authorStyle->append( static_cast<CSSStyleSheetImpl*>( it.current() ),
-                                 mMedium );
+                                 m_medium );
         }
     }
 
@@ -134,10 +132,10 @@ CSSStyleSelector::CSSStyleSelector( KHTMLView *view, QString userStyleSheet, Sty
 CSSStyleSelector::CSSStyleSelector( CSSStyleSheetImpl *sheet )
 {
     if(!defaultStyle) loadDefaultStyle();
-    mMedium = sheet->doc()->view()->mediaType();
+    m_medium = sheet->doc()->view()->mediaType();
 
     authorStyle = new CSSStyleSelectorList();
-    authorStyle->append( sheet, mMedium );
+    authorStyle->append( sheet, m_medium );
 }
 
 CSSStyleSelector::~CSSStyleSelector()
@@ -150,8 +148,8 @@ CSSStyleSelector::~CSSStyleSelector()
 
 void CSSStyleSelector::addSheet( CSSStyleSheetImpl *sheet )
 {
-    mMedium = sheet->doc()->view()->mediaType();
-    authorStyle->append( sheet, mMedium );
+    m_medium = sheet->doc()->view()->mediaType();
+    authorStyle->append( sheet, m_medium );
 }
 
 void CSSStyleSelector::loadDefaultStyle(const KHTMLSettings *s)
@@ -208,7 +206,8 @@ RenderStyle *CSSStyleSelector::styleForElement(ElementImpl *e, int state)
     CSSOrderedPropertyList *pseudoProps = new CSSOrderedPropertyList;
 
     // try to sort out most style rules as early as possible.
-    int cssTagId = e->cssTagId();
+    // ### implement CSS3 namespace support
+    int cssTagId = (e->id() & NodeImpl::IdLocalMask);
     int smatch = 0;
     int schecked = 0;
 
@@ -225,11 +224,11 @@ RenderStyle *CSSStyleSelector::styleForElement(ElementImpl *e, int state)
 		//qDebug("adding property" );
 		for ( unsigned int p = 0; p < selectorCache[i].props_size; p += 2 )
 		    for ( unsigned int j = 0; j < (unsigned int )selectorCache[i].props[p+1]; ++j )
-			static_cast<QList<CSSOrderedProperty>*>(propsToApply)->append( properties[selectorCache[i].props[p]+j] );
+			static_cast<QPtrList<CSSOrderedProperty>*>(propsToApply)->append( properties[selectorCache[i].props[p]+j] );
 	    } else if ( selectorCache[i].state == AppliesPseudo ) {
 		for ( unsigned int p = 0; p < selectorCache[i].props_size; p += 2 )
 		    for ( unsigned int j = 0; j < (unsigned int) selectorCache[i].props[p+1]; ++j ) {
-			static_cast<QList<CSSOrderedProperty>*>(pseudoProps)->append(  properties[selectorCache[i].props[p]+j] );
+			static_cast<QPtrList<CSSOrderedProperty>*>(pseudoProps)->append(  properties[selectorCache[i].props[p]+j] );
 			properties[selectorCache[i].props[p]+j]->pseudoId = (RenderStyle::PseudoId) selectors[i]->pseudoId;
 		    }
 	    }
@@ -310,7 +309,7 @@ RenderStyle *CSSStyleSelector::styleForElement(ElementImpl *e, int state)
 void CSSStyleSelector::addInlineDeclarations(DOM::CSSStyleDeclarationImpl *decl,
 					     CSSOrderedPropertyList *list )
 {
-    QList<CSSProperty> *values = decl->values();
+    QPtrList<CSSProperty> *values = decl->values();
     if(!values) return;
     int len = values->count();
 
@@ -348,7 +347,7 @@ void CSSStyleSelector::addInlineDeclarations(DOM::CSSStyleDeclarationImpl *decl,
 	array->selector = 0;
 	array->position = i;
 	array->priority = (!first << 30) | (source << 24);
-	static_cast<QList<CSSOrderedProperty>*>(list)->append( array );
+	static_cast<QPtrList<CSSOrderedProperty>*>(list)->append( array );
 	array++;
     }
 }
@@ -501,7 +500,7 @@ bool CSSStyleSelector::checkOneSelector(DOM::CSSSelector *sel, DOM::ElementImpl 
     if(!e)
         return false;
 
-    if(e->cssTagId() != uint(sel->tag) && sel->tag != -1) return false;
+    if((e->id() & NodeImpl::IdLocalMask) != uint(sel->tag) && sel->tag != -1) return false;
 
     if(sel->attr)
     {
@@ -633,10 +632,10 @@ void CSSStyleSelector::buildLists()
     clearLists();
     // collect all selectors and Properties in lists. Then transer them to the array for faster lookup.
 
-    QList<CSSSelector> selectorList;
+    QPtrList<CSSSelector> selectorList;
     CSSOrderedPropertyList propertyList;
 
-    if(mMedium == "print" && defaultPrintStyle)
+    if(m_medium == "print" && defaultPrintStyle)
       defaultPrintStyle->collect( &selectorList, &propertyList, Default,
         Default );
     else if(defaultStyle) defaultStyle->collect( &selectorList, &propertyList,
@@ -751,7 +750,7 @@ CSSOrderedRule::~CSSOrderedRule()
 // -----------------------------------------------------------------
 
 CSSStyleSelectorList::CSSStyleSelectorList()
-    : QList<CSSOrderedRule>()
+    : QPtrList<CSSOrderedRule>()
 {
     setAutoDelete(true);
 }
@@ -777,11 +776,11 @@ void CSSStyleSelectorList::append( CSSStyleSheetImpl *sheet,
         if(item->isStyleRule())
         {
             CSSStyleRuleImpl *r = static_cast<CSSStyleRuleImpl *>(item);
-            QList<CSSSelector> *s = r->selector();
+            QPtrList<CSSSelector> *s = r->selector();
             for(int j = 0; j < (int)s->count(); j++)
             {
                 CSSOrderedRule *rule = new CSSOrderedRule(r, s->at(j), count());
-		QList<CSSOrderedRule>::append(rule);
+		QPtrList<CSSOrderedRule>::append(rule);
                 //kdDebug( 6080 ) << "appending StyleRule!" << endl;
             }
         }
@@ -823,12 +822,12 @@ void CSSStyleSelectorList::append( CSSStyleSheetImpl *sheet,
                         CSSStyleRuleImpl *styleRule =
                                 static_cast<CSSStyleRuleImpl *>( childItem );
 
-                        QList<CSSSelector> *s = styleRule->selector();
+                        QPtrList<CSSSelector> *s = styleRule->selector();
                         for( int j = 0; j < ( int ) s->count(); j++ )
                         {
                             CSSOrderedRule *orderedRule = new CSSOrderedRule(
                                             styleRule, s->at( j ), count() );
-                	    QList<CSSOrderedRule>::append( orderedRule );
+                	    QPtrList<CSSOrderedRule>::append( orderedRule );
                         }
                     }
                     else
@@ -849,7 +848,7 @@ void CSSStyleSelectorList::append( CSSStyleSheetImpl *sheet,
 }
 
 
-void CSSStyleSelectorList::collect( QList<CSSSelector> *selectorList, CSSOrderedPropertyList *propList,
+void CSSStyleSelectorList::collect( QPtrList<CSSSelector> *selectorList, CSSOrderedPropertyList *propList,
 				    Source regular, Source important )
 {
     CSSOrderedRule *r = first();
@@ -873,7 +872,7 @@ void CSSStyleSelectorList::collect( QList<CSSSelector> *selectorList, CSSOrdered
 
 // -------------------------------------------------------------------------
 
-int CSSOrderedPropertyList::compareItems(QCollection::Item i1, QCollection::Item i2)
+int CSSOrderedPropertyList::compareItems(QPtrCollection::Item i1, QPtrCollection::Item i2)
 {
     int diff =  static_cast<CSSOrderedProperty *>(i1)->priority
         - static_cast<CSSOrderedProperty *>(i2)->priority;
@@ -884,7 +883,7 @@ int CSSOrderedPropertyList::compareItems(QCollection::Item i1, QCollection::Item
 void CSSOrderedPropertyList::append(DOM::CSSStyleDeclarationImpl *decl, uint selector, uint specificity,
 				    Source regular, Source important )
 {
-    QList<CSSProperty> *values = decl->values();
+    QPtrList<CSSProperty> *values = decl->values();
     if(!values) return;
     int len = values->count();
     for(int i = 0; i < len; i++)
@@ -911,7 +910,7 @@ void CSSOrderedPropertyList::append(DOM::CSSStyleDeclarationImpl *decl, uint sel
             break;
         }
 
-	QList<CSSOrderedProperty>::append(new CSSOrderedProperty(prop, selector,
+	QPtrList<CSSOrderedProperty>::append(new CSSOrderedProperty(prop, selector,
 								 first, source, specificity,
 								 count() ));
     }

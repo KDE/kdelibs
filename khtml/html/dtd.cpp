@@ -20,8 +20,9 @@
  *
  * $Id$
  */
-#include "dtd.h"
-#include "htmlhashes.h"
+
+#include "html/dtd.h"
+#include "misc/htmlhashes.h"
 
 using namespace DOM;
 

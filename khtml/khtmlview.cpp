@@ -40,15 +40,9 @@
 #include <kstandarddirs.h>
 #include <kprinter.h>
 
-#include <qpixmap.h>
 #include <qtooltip.h>
-#include <qstring.h>
 #include <qpainter.h>
-#include <qpalette.h>
-#include <qevent.h>
-#include <qdatetime.h>
 #include <qpaintdevicemetrics.h>
-#include <qtimer.h>
 #include <kapplication.h>
 
 #include <kimageio.h>
@@ -910,7 +904,7 @@ void KHTMLView::print()
         m_part->xmlDocImpl()->setPaintDevice( printer );
         QString oldMediaType = mediaType();
         setMediaType( "print" );
-        m_part->xmlDocImpl()->updateStyleSheets();
+        m_part->xmlDocImpl()->updateStyleSelector();
 
         QPaintDeviceMetrics metrics( printer );
 
@@ -979,7 +973,7 @@ void KHTMLView::print()
         root->setPrintingMode(false);
         khtml::setPrintPainter( 0 );
         setMediaType( oldMediaType );
-        m_part->xmlDocImpl()->updateStyleSheets();
+        m_part->xmlDocImpl()->updateStyleSelector();
         m_part->xmlDocImpl()->setPaintDevice( this );
         m_part->setFontSizes(oldSizes);
         m_part->xmlDocImpl()->applyChanges();

@@ -21,8 +21,8 @@
 #ifndef _KJS_RANGE_H_
 #define _KJS_RANGE_H_
 
-#include "kjs_dom.h"
-#include <dom2_range.h>
+#include "ecma/kjs_dom.h"
+#include "dom/dom2_range.h"
 
 namespace KJS {
 

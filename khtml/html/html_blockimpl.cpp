@@ -45,7 +45,7 @@ HTMLBlockquoteElementImpl::~HTMLBlockquoteElementImpl()
 {
 }
 
-ushort HTMLBlockquoteElementImpl::id() const
+NodeImpl::Id HTMLBlockquoteElementImpl::id() const
 {
     return ID_BLOCKQUOTE;
 }
@@ -66,7 +66,7 @@ HTMLDivElementImpl::~HTMLDivElementImpl()
 {
 }
 
-ushort HTMLDivElementImpl::id() const
+NodeImpl::Id HTMLDivElementImpl::id() const
 {
     return ID_DIV;
 }
@@ -99,7 +99,7 @@ HTMLHRElementImpl::~HTMLHRElementImpl()
 {
 }
 
-ushort HTMLHRElementImpl::id() const
+NodeImpl::Id HTMLHRElementImpl::id() const
 {
     return ID_HR;
 }
@@ -172,18 +172,9 @@ void HTMLHRElementImpl::attach()
 
 // -------------------------------------------------------------------------
 
-HTMLHeadingElementImpl::HTMLHeadingElementImpl(DocumentPtr *doc, ushort _tagid) : HTMLElementImpl(doc)
+HTMLHeadingElementImpl::HTMLHeadingElementImpl(DocumentPtr *doc, ushort _tagid)
+    : HTMLGenericElementImpl(doc, _tagid)
 {
-    _id = _tagid;
-}
-
-HTMLHeadingElementImpl::~HTMLHeadingElementImpl()
-{
-}
-
-ushort HTMLHeadingElementImpl::id() const
-{
-    return _id;
 }
 
 // -------------------------------------------------------------------------
@@ -193,30 +184,16 @@ HTMLParagraphElementImpl::HTMLParagraphElementImpl(DocumentPtr *doc)
 {
 }
 
-HTMLParagraphElementImpl::~HTMLParagraphElementImpl()
-{
-}
-
-ushort HTMLParagraphElementImpl::id() const
+NodeImpl::Id HTMLParagraphElementImpl::id() const
 {
     return ID_P;
 }
 
 // -------------------------------------------------------------------------
 
-HTMLPreElementImpl::HTMLPreElementImpl(DocumentPtr *doc, ushort _tagid)
-    : HTMLElementImpl(doc)
+HTMLPreElementImpl::HTMLPreElementImpl(DocumentPtr *doc, unsigned short _tagid)
+    : HTMLGenericElementImpl(doc, _tagid)
 {
-    _id = _tagid;
-}
-
-HTMLPreElementImpl::~HTMLPreElementImpl()
-{
-}
-
-ushort HTMLPreElementImpl::id() const
-{
-    return _id;
 }
 
 long HTMLPreElementImpl::width() const
@@ -243,7 +220,7 @@ HTMLLayerElementImpl::~HTMLLayerElementImpl()
 {
 }
 
-ushort HTMLLayerElementImpl::id() const
+NodeImpl::Id HTMLLayerElementImpl::id() const
 {
     return ID_LAYER;
 }

@@ -18,10 +18,9 @@
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include "kjs_views.h"
-#include "kjs_views.lut.h"
-#include "kjs_css.h"
-#include <dom2_events.h>
+#include "ecma/kjs_views.h"
+#include "ecma/kjs_views.lut.h"
+#include "ecma/kjs_css.h"
 
 using namespace KJS;
 

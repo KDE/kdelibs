@@ -16,13 +16,9 @@
 #    the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
 #    Boston, MA 02111-1307, USA.
 
-INCLUDES = -I$(top_srcdir) \
- -I$(top_srcdir)/kio -I$(top_srcdir)/khtml -I$(top_srcdir)/khtml/misc \
- -I$(top_srcdir)/khtml/css -I$(top_srcdir)/khtml/dom -I$(top_srcdir)/khtml/xml\
- -I$(top_srcdir)/khtml/html \
- $(all_includes)
+INCLUDES = -I$(top_srcdir) -I$(top_srcdir)/kio -I$(top_srcdir)/khtml $(all_includes)
 
-KDE_CXXFLAGS = $(USE_EXCEPTIONS) -UQT_NO_COMPAT
+KDE_CXXFLAGS = $(USE_EXCEPTIONS) $(WOVERLOADED_VIRTUAL)
 
 kde_module_LTLIBRARIES = kjs_html.la
 
@@ -36,7 +32,7 @@ kjs_html_la_SOURCES = kjs_binding.cpp kjs_dom.cpp kjs_html.cpp kjs_window.cpp \
 	kjs_css.cpp kjs_range.cpp kjs_traversal.cpp kjs_events.cpp \
 	kjs_views.cpp kjs_debugwin.cpp
 kjs_html_la_LDFLAGS = -module -avoid-version $(all_libraries)
-kjs_html_la_LIBADD = $(top_builddir)/kjs/libkjs.la ../libkhtml.la
+kjs_html_la_LIBADD = $(top_builddir)/kjs/libkjs.la
 kjs_html_la_METASOURCES = AUTO
 
 hashtables:

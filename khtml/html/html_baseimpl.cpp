@@ -2,8 +2,9 @@
  * This file is part of the DOM implementation for KDE.
  *
  * Copyright (C) 1999 Lars Knoll (knoll@kde.org)
- *           (C) 1999 Antti Koivisto (koivisto@kde.org))
- *           (C) 2000 Simon Hausmann <hausmann@kde.org>
+ *           (C) 1999 Antti Koivisto (koivisto@kde.org)
+ *           (C) 2000 Simon Hausmann (hausmann@kde.org)
+ *           (C) 2001 Dirk Mueller (mueller@kde.org)
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -19,13 +20,11 @@
  * along with this library; see the file COPYING.LIB.  If not, write to
  * the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
  * Boston, MA 02111-1307, USA.
- *
- * $Id$
  */
 // -------------------------------------------------------------------------
-#include "html_baseimpl.h"
 
-#include "html_documentimpl.h"
+#include "html/html_baseimpl.h"
+#include "html/html_documentimpl.h"
 
 #include "khtmlview.h"
 #include "khtml_part.h"
@@ -41,6 +40,7 @@
 #include "misc/loader.h"
 #include "misc/htmlhashes.h"
 #include "dom/dom_string.h"
+#include "dom/dom_doc.h"
 #include "xml/dom2_eventsimpl.h"
 
 #include <kurl.h>
@@ -61,7 +61,7 @@ HTMLBodyElementImpl::~HTMLBodyElementImpl()
     if(m_styleSheet) m_styleSheet->deref();
 }
 
-ushort HTMLBodyElementImpl::id() const
+NodeImpl::Id HTMLBodyElementImpl::id() const
 {
     return ID_BODY;
 }
@@ -122,7 +122,7 @@ void HTMLBodyElementImpl::parseAttribute(AttrImpl *attr)
         m_styleSheet->parseString(aStr);
         m_styleSheet->setNonCSSHints();
         if (attached())
-            getDocument()->updateStyleSheets();
+            getDocument()->updateStyleSelector();
         break;
     }
     case ATTR_ONLOAD:
@@ -172,9 +172,8 @@ void HTMLBodyElementImpl::attach()
 //     if ( m_bgSet && !m_fgSet )
 //         addCSSProperty(CSS_PROP_COLOR, "black");
 
-    ownerDocument()->updateStyleSheets();
-
-    setStyle(ownerDocument()->styleSelector()->styleForElement( this ));
+    ownerDocument()->updateStyleSelector();
+    setStyle(ownerDocument()->styleSelector()->styleForElement(this));
 
     khtml::RenderObject *r = _parent->renderer();
 
@@ -217,7 +216,7 @@ HTMLFrameElementImpl::~HTMLFrameElementImpl()
 {
 }
 
-ushort HTMLFrameElementImpl::id() const
+NodeImpl::Id HTMLFrameElementImpl::id() const
 {
     return ID_FRAME;
 }
@@ -229,6 +228,9 @@ void HTMLFrameElementImpl::parseAttribute(AttrImpl *attr)
     case ATTR_SRC:
         url = khtml::parseURL(attr->val());
         break;
+    case ATTR_ID:
+        if (getDocument()->htmlMode() != DocumentImpl::XHtml) break;
+        // fall through
     case ATTR_NAME:
         name = attr->value();
         break;
@@ -263,14 +265,14 @@ void HTMLFrameElementImpl::parseAttribute(AttrImpl *attr)
 
 void HTMLFrameElementImpl::attach()
 {
-    setStyle(ownerDocument()->styleSelector()->styleForElement( this ));
-
     KHTMLView* w = ownerDocument()->view();
     // limit to how deep we can nest frames
     KHTMLPart *part = w->part();
     int depth = 0;
     while ((part = part->parentPart()))
         depth++;
+
+    setStyle(ownerDocument()->styleSelector()->styleForElement(this));
 
     if (depth > 6) {
         style()->setDisplay( NONE );
@@ -348,6 +350,19 @@ void HTMLFrameElementImpl::setFocus(bool received)
     else
         renderFrame->m_widget->clearFocus();
 }
+
+DocumentImpl* HTMLFrameElementImpl::contentDocument() const
+{
+    if ( !m_render ) return 0;
+
+    RenderPartObject* render = static_cast<RenderPartObject*>( m_render );
+
+    if(render->m_widget && render->m_widget->inherits("KHTMLView"))
+        return static_cast<KHTMLView*>( render->m_widget )->part()->xmlDocImpl();
+
+    return 0;
+}
+
 // -------------------------------------------------------------------------
 
 HTMLFrameSetElementImpl::HTMLFrameSetElementImpl(DocumentPtr *doc)
@@ -375,7 +390,7 @@ HTMLFrameSetElementImpl::~HTMLFrameSetElementImpl()
     delete m_cols;
 }
 
-ushort HTMLFrameSetElementImpl::id() const
+NodeImpl::Id HTMLFrameSetElementImpl::id() const
 {
     return ID_FRAMESET;
 }
@@ -442,7 +457,7 @@ void HTMLFrameSetElementImpl::attach()
         node = static_cast<HTMLElementImpl*>(node->parentNode());
     }
 
-    setStyle(ownerDocument()->styleSelector()->styleForElement( this ));
+    setStyle(ownerDocument()->styleSelector()->styleForElement(this));
     view = w;
     khtml::RenderObject *r = _parent->renderer();
 
@@ -541,15 +556,16 @@ HTMLHeadElementImpl::~HTMLHeadElementImpl()
 {
 }
 
-ushort HTMLHeadElementImpl::id() const
+NodeImpl::Id HTMLHeadElementImpl::id() const
 {
     return ID_HEAD;
 }
 
 void HTMLHtmlElementImpl::attach()
 {
-    setStyle(ownerDocument()->styleSelector()->styleForElement( this ));
     khtml::RenderObject *r = _parent->renderer();
+
+    setStyle(ownerDocument()->styleSelector()->styleForElement(this));
 
     // ignore display: none for this element!
     if ( !r )
@@ -574,7 +590,7 @@ HTMLHtmlElementImpl::~HTMLHtmlElementImpl()
 {
 }
 
-ushort HTMLHtmlElementImpl::id() const
+NodeImpl::Id HTMLHtmlElementImpl::id() const
 {
     return ID_HTML;
 }
@@ -594,7 +610,7 @@ HTMLIFrameElementImpl::~HTMLIFrameElementImpl()
 {
 }
 
-ushort HTMLIFrameElementImpl::id() const
+NodeImpl::Id HTMLIFrameElementImpl::id() const
 {
     return ID_IFRAME;
 }
@@ -620,8 +636,6 @@ void HTMLIFrameElementImpl::parseAttribute(AttrImpl *attr )
 
 void HTMLIFrameElementImpl::attach()
 {
-  setStyle(ownerDocument()->styleSelector()->styleForElement( this ));
-
   KHTMLView* w = ownerDocument()->view();
   // limit to how deep we can nest frames
   KHTMLPart *part = w->part();
@@ -634,6 +648,8 @@ void HTMLIFrameElementImpl::attach()
   }
 
   khtml::RenderObject *r = _parent->renderer();
+
+  setStyle(ownerDocument()->styleSelector()->styleForElement(this));
 
   if(r && m_style->display() != NONE) {
 
@@ -664,14 +680,3 @@ void HTMLIFrameElementImpl::applyChanges(bool top, bool force)
     HTMLElementImpl::applyChanges(top,force);
 }
 
-DocumentImpl* HTMLIFrameElementImpl::frameDocument() const
-{
-    if ( !m_render ) return 0;
-
-    RenderPartObject* render = static_cast<RenderPartObject*>( m_render );
-
-    if(render->m_widget && render->m_widget->inherits("KHTMLView"))
-        return static_cast<KHTMLView*>( render->m_widget )->part()->xmlDocImpl();
-
-    return 0;
-}

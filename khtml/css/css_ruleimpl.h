@@ -23,11 +23,9 @@
 #ifndef _CSS_css_ruleimpl_h_
 #define _CSS_css_ruleimpl_h_
 
-#include <dom_string.h>
-//#include <css_stylesheetimpl.h>
-#include <css_rule.h>
-
-#include "cssparser.h"
+#include "dom/dom_string.h"
+#include "dom/css_rule.h"
+#include "css/cssparser.h"
 #include "misc/loader_client.h"
 
 namespace khtml {
@@ -195,7 +193,7 @@ public:
     CSSStyleDeclarationImpl *declaration() { return m_style; }
 
     void setNonCSSHints();
-    
+
 protected:
     CSSStyleDeclarationImpl *m_style;
     QPtrList<CSSSelector> *m_selector;
@@ -222,11 +220,11 @@ public:
 
     unsigned long length() const;
     CSSRuleImpl *item ( unsigned long index );
-   
+
     /* not part of the DOM */
     unsigned long insertRule ( CSSRuleImpl *rule, unsigned long index );
     void deleteRule ( unsigned long index );
-    
+
 protected:
     QPtrList<CSSRuleImpl> m_lstCSSRules;
 };

@@ -906,12 +906,13 @@ Value DOMElementProtoFunc::tryCall(ExecState *exec, Object &thisObj, const List 
 // -------------------------------------------------------------------------
 
 /* Source for DOMDOMImplementationProtoTable. Use "make hashtables" to regenerate.
-@begin DOMDOMImplementationProtoTable 4
+@begin DOMDOMImplementationProtoTable 5
   hasFeature		DOMDOMImplementation::HasFeature		DontDelete|Function 2
 # DOM2
   createCSSStyleSheet	DOMDOMImplementation::CreateCSSStyleSheet	DontDelete|Function 2
   createDocumentType	DOMDOMImplementation::CreateDocumentType	DontDelete|Function 3
   createDocument	DOMDOMImplementation::CreateDocument		DontDelete|Function 3
+  createHTMLDocument    DOMDOMImplementation::CreateHTMLDocument        DontDelete|Function 1
 @end
 */
 DEFINE_PROTOTYPE("DOMImplementation",DOMDOMImplementationProto)
@@ -946,6 +947,8 @@ Value DOMDOMImplementationProtoFunc::tryCall(ExecState *exec, Object &thisObj, c
     return getDOMNode(exec,implementation.createDocument(args[0].toString(exec).string(),args[1].toString(exec).string(),toNode(args[2])));
   case DOMDOMImplementation::CreateCSSStyleSheet: // DOM2
     return getDOMStyleSheet(exec,implementation.createCSSStyleSheet(args[0].toString(exec).string(),args[1].toString(exec).string()));
+  case DOMDOMImplementation::CreateHTMLDocument: // DOM2-HTML
+    return getDOMNode(exec, implementation.createHTMLDocument(args[0].toString(exec).string()));
   default:
     break;
   }

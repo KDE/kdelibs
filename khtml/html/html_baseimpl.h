@@ -26,9 +26,10 @@
 #ifndef HTML_BASEIMPL_H
 #define HTML_BASEIMPL_H
 
-#include "dtd.h"
-#include "html_elementimpl.h"
+#include "html/dtd.h"
+#include "html/html_elementimpl.h"
 #include "misc/khtmllayout.h"
+
 #include <qscrollview.h>
 
 class KHTMLView;
@@ -42,7 +43,8 @@ namespace khtml {
 namespace DOM {
 
 class DOMString;
-    class CSSStyleSheetImpl;
+class CSSStyleSheetImpl;
+class HTMLFrameElement;
 
 class HTMLBodyElementImpl : public HTMLElementImpl
 {
@@ -50,7 +52,7 @@ public:
     HTMLBodyElementImpl(DocumentPtr *doc);
     ~HTMLBodyElementImpl();
 
-    virtual ushort id() const;
+    virtual Id id() const;
 
     virtual void parseAttribute(AttrImpl *);
     void attach();
@@ -73,12 +75,13 @@ class HTMLFrameElementImpl : public HTMLElementImpl
 {
     friend class khtml::RenderFrame;
     friend class khtml::RenderPartObject;
+
 public:
     HTMLFrameElementImpl(DocumentPtr *doc);
 
     ~HTMLFrameElementImpl();
 
-    virtual ushort id() const;
+    virtual Id id() const;
 
     virtual void parseAttribute(AttrImpl *);
     virtual void attach();
@@ -89,6 +92,8 @@ public:
 
     virtual bool isSelectable() const;
     virtual void setFocus(bool);
+
+    DocumentImpl* contentDocument() const;
 
 protected:
     DOMString url;
@@ -115,7 +120,7 @@ public:
 
     ~HTMLFrameSetElementImpl();
 
-    virtual ushort id() const;
+    virtual Id id() const;
 
     virtual void parseAttribute(AttrImpl *);
     virtual void attach();
@@ -162,7 +167,7 @@ public:
 
     ~HTMLHeadElementImpl();
 
-    virtual ushort id() const;
+    virtual Id id() const;
 };
 
 // -------------------------------------------------------------------------
@@ -174,7 +179,7 @@ public:
 
     ~HTMLHtmlElementImpl();
 
-    virtual ushort id() const;
+    virtual Id id() const;
 
     virtual void attach();
 
@@ -190,13 +195,12 @@ public:
 
     ~HTMLIFrameElementImpl();
 
-    virtual ushort id() const;
+    virtual Id id() const;
 
     virtual void parseAttribute(AttrImpl *attr);
     virtual void attach();
     virtual void applyChanges(bool = true, bool = true);
 
-    DOM::DocumentImpl* frameDocument() const;
 protected:
     bool needWidgetUpdate;
 };

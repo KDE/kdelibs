@@ -21,8 +21,8 @@
 #ifndef _KJS_VIEWS_H_
 #define _KJS_VIEWS_H_
 
-#include "kjs_dom.h"
-#include <dom2_views.h>
+#include "ecma/kjs_dom.h"
+#include "dom/dom2_views.h"
 
 namespace KJS {
 

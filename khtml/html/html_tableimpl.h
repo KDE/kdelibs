@@ -27,7 +27,7 @@
 #ifndef HTML_TABLEIMPL_H
 #define HTML_TABLEIMPL_H
 
-#include "html_elementimpl.h"
+#include "html/html_elementimpl.h"
 
 namespace DOM {
 
@@ -72,7 +72,7 @@ public:
     HTMLTableElementImpl(DocumentPtr *doc);
     ~HTMLTableElementImpl();
 
-    virtual ushort id() const;
+    virtual Id id() const;
 
     HTMLTableCaptionElementImpl *caption() const { return tCaption; }
     NodeImpl *setCaption( HTMLTableCaptionElementImpl * );
@@ -142,7 +142,7 @@ public:
 
     ~HTMLTableSectionElementImpl();
 
-    virtual ushort id() const;
+    virtual Id id() const;
 
     HTMLElementImpl *insertRow ( long index );
     void deleteRow ( long index );
@@ -163,7 +163,7 @@ public:
 
     ~HTMLTableRowElementImpl();
 
-    virtual ushort id() const;
+    virtual Id id() const;
 
     long rowIndex() const;
     long sectionRowIndex() const;
@@ -184,7 +184,7 @@ public:
 
     ~HTMLTableCellElementImpl();
 
-    virtual ushort id() const { return _id; }
+    virtual Id id() const { return _id; }
 
     // ### FIX these two...
     long cellIndex() const { return 0; }
@@ -218,7 +218,7 @@ public:
 
     ~HTMLTableColElementImpl();
 
-    virtual ushort id() const;
+    virtual Id id() const;
 
     void setTable(HTMLTableElementImpl *t) { table = t; }
 
@@ -245,7 +245,7 @@ public:
 
     ~HTMLTableCaptionElementImpl();
 
-    virtual ushort id() const;
+    virtual Id id() const;
 
     virtual void parseAttribute(AttrImpl *attr);
 };

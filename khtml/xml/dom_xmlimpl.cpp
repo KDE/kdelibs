@@ -17,18 +17,13 @@
  * along with this library; see the file COPYING.LIB.  If not, write to
  * the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
  * Boston, MA 02111-1307, USA.
- *
- * $Id$
  */
 
+#include "dom/dom_exception.h"
 
-#include "dom/dom_text.h"
-#include "dom_xmlimpl.h"
-#include "dom_docimpl.h"
-#include "dom_stringimpl.h"
-#include "dom_exception.h"
-#include "dom_elementimpl.h"
-#include "dom_textimpl.h"
+#include "xml/dom_xmlimpl.h"
+#include "xml/dom_docimpl.h"
+#include "xml/dom_stringimpl.h"
 
 using namespace DOM;
 
@@ -92,7 +87,7 @@ DOMString EntityImpl::notationName() const
     return m_notationName;
 }
 
-const DOMString EntityImpl::nodeName() const
+DOMString EntityImpl::nodeName() const
 {
     return m_name;
 }
@@ -154,7 +149,7 @@ EntityReferenceImpl::~EntityReferenceImpl()
         m_entityName->deref();
 }
 
-const DOMString EntityReferenceImpl::nodeName() const
+DOMString EntityReferenceImpl::nodeName() const
 {
     return m_entityName;
 }
@@ -240,7 +235,7 @@ DOMString NotationImpl::systemId() const
     return m_systemId;
 }
 
-const DOMString NotationImpl::nodeName() const
+DOMString NotationImpl::nodeName() const
 {
     return m_name;
 }
@@ -335,7 +330,7 @@ void ProcessingInstructionImpl::setData( const DOMString &_data, int &exceptionc
         m_data->ref();
 }
 
-const DOMString ProcessingInstructionImpl::nodeName() const
+DOMString ProcessingInstructionImpl::nodeName() const
 {
     return m_target;
 }
@@ -410,8 +405,8 @@ void ProcessingInstructionImpl::checkStyleSheet()
             else
             {
                 // ### some validation on the URL?
-	        // ### FIXME charset
-	        if (m_cachedSheet) m_cachedSheet->deref(this);
+                // ### FIXME charset
+                if (m_cachedSheet) m_cachedSheet->deref(this);
                 m_cachedSheet = ownerDocument()->docLoader()->requestStyleSheet(getDocument()->completeURL(href.string()), QString::null);
                 if (m_cachedSheet)
                     m_cachedSheet->ref( this );
@@ -431,13 +426,13 @@ void ProcessingInstructionImpl::setStyleSheet(const DOM::DOMString &url, const D
     if (m_sheet)
 	m_sheet->deref();
     m_sheet = new CSSStyleSheetImpl(ownerDocument(), url);
-    m_sheet->parseString(sheet);
     m_sheet->ref();
+    m_sheet->parseString(sheet);
     if (m_cachedSheet)
 	m_cachedSheet->deref(this);
     m_cachedSheet = 0;
 
-    getDocument()->updateStyleSheets();
+    getDocument()->updateStyleSelector();
 }
 
 void ProcessingInstructionImpl::setStyleSheet(CSSStyleSheetImpl* sheet)

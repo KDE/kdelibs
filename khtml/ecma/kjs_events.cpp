@@ -16,7 +16,6 @@
  *  You should have received a copy of the GNU Lesser General Public
  *  License along with this library; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
- *
  */
 
 #include "kjs_window.h"
@@ -24,13 +23,11 @@
 #include "kjs_events.lut.h"
 #include "kjs_views.h"
 #include "kjs_proxy.h"
-#include "kjs_debugwin.h"
-#include <qptrlist.h>
+#include "xml/dom_nodeimpl.h"
+#include "xml/dom_docimpl.h"
+#include "rendering/render_object.h"
+
 #include <kdebug.h>
-#include <xml/dom_nodeimpl.h>
-#include <xml/dom_docimpl.h>
-#include <khtml_part.h>
-#include <rendering/render_object.h>
 
 using namespace KJS;
 

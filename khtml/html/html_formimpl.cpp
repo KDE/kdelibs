@@ -26,13 +26,13 @@
 #undef FORMS_DEBUG
 //#define FORMS_DEBUG
 
-#include "html_formimpl.h"
+#include "html/html_formimpl.h"
 
 #include "khtmlview.h"
 #include "khtml_part.h"
-#include "html_documentimpl.h"
+#include "html/html_documentimpl.h"
 #include "khtml_settings.h"
-#include "htmlhashes.h"
+#include "misc/htmlhashes.h"
 
 #include "css/cssstyleselector.h"
 #include "css/cssproperties.h"
@@ -80,12 +80,12 @@ HTMLFormElementImpl::HTMLFormElementImpl(DocumentPtr *doc)
 
 HTMLFormElementImpl::~HTMLFormElementImpl()
 {
-    QListIterator<HTMLGenericFormElementImpl> it(formElements);
+    QPtrListIterator<HTMLGenericFormElementImpl> it(formElements);
     for (; it.current(); ++it)
         it.current()->setForm(0);
 }
 
-ushort HTMLFormElementImpl::id() const
+NodeImpl::Id HTMLFormElementImpl::id() const
 {
     return ID_FORM;
 }
@@ -93,7 +93,7 @@ ushort HTMLFormElementImpl::id() const
 long HTMLFormElementImpl::length() const
 {
     int len = 0;
-    QListIterator<HTMLGenericFormElementImpl> it(formElements);
+    QPtrListIterator<HTMLGenericFormElementImpl> it(formElements);
     for (; it.current(); ++it)
 	if (it.current()->isEnumeratable())
 	    ++len;
@@ -172,6 +172,8 @@ void HTMLFormElementImpl::i18nData()
     QString foo5 = i18n("Your data submission is redirected to\n"
                         "an insecure site. The data is sent unencrypted.\n\n"
                         "Do you want to continue?");
+    QString foo6 = i18n("The page contents expired. You can repost the form"
+                        "data by using <a href=\"javascript:go(0);\">Reload</b>");
 }
 
 
@@ -436,6 +438,7 @@ void HTMLFormElementImpl::parseAttribute(AttrImpl *attr)
         setHTMLEventListener(EventImpl::RESET_EVENT,
 	    ownerDocument()->createHTMLEventListener(attr->value().string()));
         break;
+    case ATTR_ID:
     case ATTR_NAME:
 	break;
     default:
@@ -549,6 +552,9 @@ DOMString HTMLGenericFormElementImpl::name() const
 {
     if (m_name) return m_name;
 
+// ###
+//     DOMString n = getDocument()->htmlMode() != DocumentImpl::XHtml ?
+//                   getAttribute(ATTR_NAME) : getAttribute(ATTR_ID);
     DOMString n = getAttribute(ATTR_NAME);
     if (n.isNull())
         return new DOMStringImpl("");
@@ -701,7 +707,7 @@ HTMLButtonElementImpl::~HTMLButtonElementImpl()
 {
 }
 
-ushort HTMLButtonElementImpl::id() const
+NodeImpl::Id HTMLButtonElementImpl::id() const
 {
     return ID_BUTTON;
 }
@@ -791,7 +797,7 @@ HTMLFieldSetElementImpl::~HTMLFieldSetElementImpl()
 {
 }
 
-ushort HTMLFieldSetElementImpl::id() const
+NodeImpl::Id HTMLFieldSetElementImpl::id() const
 {
     return ID_FIELDSET;
 }
@@ -838,9 +844,14 @@ HTMLInputElementImpl::~HTMLInputElementImpl()
     if ( ownerDocument() ) ownerDocument()->removeElement(this);
 }
 
-ushort HTMLInputElementImpl::id() const
+NodeImpl::Id HTMLInputElementImpl::id() const
 {
     return ID_INPUT;
+}
+
+void HTMLInputElementImpl::setType(const DOMString& /*t*/)
+{
+    // ###
 }
 
 DOMString HTMLInputElementImpl::type() const
@@ -1391,7 +1402,7 @@ HTMLLabelElementImpl::~HTMLLabelElementImpl()
 {
 }
 
-ushort HTMLLabelElementImpl::id() const
+NodeImpl::Id HTMLLabelElementImpl::id() const
 {
     return ID_LABEL;
 }
@@ -1437,7 +1448,7 @@ HTMLLegendElementImpl::~HTMLLegendElementImpl()
 {
 }
 
-ushort HTMLLegendElementImpl::id() const
+NodeImpl::Id HTMLLegendElementImpl::id() const
 {
     return ID_LEGEND;
 }
@@ -1464,7 +1475,7 @@ HTMLSelectElementImpl::HTMLSelectElementImpl(DocumentPtr *doc, HTMLFormElementIm
     m_minwidth = 0;
 }
 
-ushort HTMLSelectElementImpl::id() const
+NodeImpl::Id HTMLSelectElementImpl::id() const
 {
     return ID_SELECT;
 }
@@ -1560,7 +1571,7 @@ void HTMLSelectElementImpl::setValue(DOMStringImpl* /*value*/)
 QString HTMLSelectElementImpl::state( )
 {
     QString state;
-    QArray<HTMLGenericFormElementImpl*> items = listItems();
+    QMemArray<HTMLGenericFormElementImpl*> items = listItems();
 
     int l = items.count();
 
@@ -1582,7 +1593,7 @@ void HTMLSelectElementImpl::restoreState(const QString &_state)
         state[0] = 'X';
     }
 
-    QArray<HTMLGenericFormElementImpl*> items = listItems();
+    QMemArray<HTMLGenericFormElementImpl*> items = listItems();
 
     int l = items.count();
     for(int i = 0; i < l; i++) {
@@ -1844,7 +1855,7 @@ void HTMLKeygenElementImpl::init(DocumentPtr* doc)
 }
 
 
-ushort HTMLKeygenElementImpl::id() const
+NodeImpl::Id HTMLKeygenElementImpl::id() const
 {
     return ID_KEYGEN;
 }
@@ -1897,7 +1908,7 @@ HTMLOptGroupElementImpl::~HTMLOptGroupElementImpl()
 {
 }
 
-ushort HTMLOptGroupElementImpl::id() const
+NodeImpl::Id HTMLOptGroupElementImpl::id() const
 {
     return ID_OPTGROUP;
 }
@@ -1970,7 +1981,7 @@ HTMLOptionElementImpl::HTMLOptionElementImpl(DocumentPtr *doc)
     m_selected = false;
 }
 
-ushort HTMLOptionElementImpl::id() const
+NodeImpl::Id HTMLOptionElementImpl::id() const
 {
     return ID_OPTION;
 }
@@ -2000,7 +2011,7 @@ long HTMLOptionElementImpl::index() const
 {
     // Let's do this dynamically. Might be a bit slow, but we're sure
     // we won't forget to update a member variable in some cases...
-    QArray<HTMLGenericFormElementImpl*> items = getSelect()->listItems();
+    QMemArray<HTMLGenericFormElementImpl*> items = getSelect()->listItems();
     int l = items.count();
     int optionIndex = 0;
     for(int i = 0; i < l; i++) {
@@ -2099,7 +2110,7 @@ HTMLTextAreaElementImpl::HTMLTextAreaElementImpl(DocumentPtr *doc, HTMLFormEleme
     m_dirtyvalue = true;
 }
 
-ushort HTMLTextAreaElementImpl::id() const
+NodeImpl::Id HTMLTextAreaElementImpl::id() const
 {
     return ID_TEXTAREA;
 }
@@ -2256,12 +2267,12 @@ DOMString HTMLTextAreaElementImpl::defaultValue()
 void HTMLTextAreaElementImpl::setDefaultValue(DOMString _defaultValue)
 {
     // there may be comments - remove all the text nodes and replace them with one
-    QList<NodeImpl> toRemove;
+    QPtrList<NodeImpl> toRemove;
     NodeImpl *n;
     for (n = firstChild(); n; n = n->nextSibling())
         if (n->isTextNode())
             toRemove.append(n);
-    QListIterator<NodeImpl> it(toRemove);
+    QPtrListIterator<NodeImpl> it(toRemove);
     int exceptioncode = 0;
     for (; it.current(); ++it) {
         removeChild(it.current(), exceptioncode);
@@ -2288,7 +2299,7 @@ HTMLIsIndexElementImpl::~HTMLIsIndexElementImpl()
 {
 }
 
-ushort HTMLIsIndexElementImpl::id() const
+NodeImpl::Id HTMLIsIndexElementImpl::id() const
 {
     return ID_ISINDEX;
 }

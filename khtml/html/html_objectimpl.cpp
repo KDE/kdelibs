@@ -19,14 +19,12 @@
  * along with this library; see the file COPYING.LIB.  If not, write to
  * the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
  * Boston, MA 02111-1307, USA.
- *
- * $Id$
  */
-#include "html_objectimpl.h"
+#include "html/html_objectimpl.h"
 
 #include "khtml_part.h"
-#include "dom_string.h"
-#include "htmlhashes.h"
+#include "dom/dom_string.h"
+#include "misc/htmlhashes.h"
 #include "khtmlview.h"
 #include <qstring.h>
 #include <qmap.h>
@@ -49,21 +47,13 @@ using namespace khtml;
 HTMLAppletElementImpl::HTMLAppletElementImpl(DocumentPtr *doc)
   : HTMLElementImpl(doc)
 {
-    codeBase = 0;
-    code = 0;
-    name = 0;
-    archive = 0;
 }
 
 HTMLAppletElementImpl::~HTMLAppletElementImpl()
 {
-    if(codeBase) codeBase->deref();
-    if(code) code->deref();
-    if(name) name->deref();
-    if(archive) archive->deref();
 }
 
-ushort HTMLAppletElementImpl::id() const
+NodeImpl::Id HTMLAppletElementImpl::id() const
 {
     return ID_APPLET;
 }
@@ -73,24 +63,12 @@ void HTMLAppletElementImpl::parseAttribute(AttrImpl *attr)
     switch( attr->attrId )
     {
     case ATTR_CODEBASE:
-        codeBase = attr->val();
-        codeBase->ref();
-        break;
     case ATTR_ARCHIVE:
-        archive = attr->val();
-        archive->ref();
-        break;
     case ATTR_CODE:
-        code = attr->val();
-        code->ref();
-        break;
     case ATTR_OBJECT:
-        break;
     case ATTR_ALT:
-        break;
+    case ATTR_ID:
     case ATTR_NAME:
-        name = attr->val();
-        name->ref();
         break;
     case ATTR_WIDTH:
         addCSSLength(CSS_PROP_WIDTH, attr->value());
@@ -109,13 +87,11 @@ void HTMLAppletElementImpl::parseAttribute(AttrImpl *attr)
 void HTMLAppletElementImpl::attach()
 {
   setStyle(ownerDocument()->styleSelector()->styleForElement(this));
-  if(!code)
-      return;
 
   khtml::RenderObject *r = _parent->renderer();
   RenderWidget *f = 0;
 
-  if(r && m_style->display() != NONE) {
+  if(r && m_style->display() != NONE && !getAttribute(ATTR_CODE).isNull()) {
       view = ownerDocument()->view();
 
 #ifndef Q_WS_QWS // FIXME(E)? I don't think this is possible with Qt Embedded...
@@ -123,13 +99,17 @@ void HTMLAppletElementImpl::attach()
       {
           QMap<QString, QString> args;
 
-          args.insert( "code", QString(code->s, code->l));
-          if(codeBase)
-              args.insert( "codeBase", QString(codeBase->s, codeBase->l) );
-          if(name)
-              args.insert( "name", QString(name->s, name->l) );
-          if(archive)
-              args.insert( "archive", QString(archive->s, archive->l) );
+          args.insert( "code", getAttribute(ATTR_CODE).string());
+          DOMString codeBase = getAttribute(ATTR_CODEBASE);
+          if(!codeBase.isNull())
+              args.insert( "codeBase", codeBase.string() );
+          DOMString name = getDocument()->htmlMode() != DocumentImpl::XHtml ?
+                           getAttribute(ATTR_NAME) : getAttribute(ATTR_ID);
+          if(!name.isNull())
+              args.insert( "name", name.string() );
+          DOMString archive = getAttribute(ATTR_ARCHIVE);
+          if(!archive.isNull())
+              args.insert( "archive", archive.string() );
 
           args.insert( "baseURL", ownerDocument()->baseURL() );
           f = new RenderApplet(view, args, this);
@@ -167,7 +147,7 @@ HTMLEmbedElementImpl::~HTMLEmbedElementImpl()
 {
 }
 
-ushort HTMLEmbedElementImpl::id() const
+NodeImpl::Id HTMLEmbedElementImpl::id() const
 {
     return ID_EMBED;
 }
@@ -278,7 +258,7 @@ HTMLObjectElementImpl::~HTMLObjectElementImpl()
 {
 }
 
-ushort HTMLObjectElementImpl::id() const
+NodeImpl::Id HTMLObjectElementImpl::id() const
 {
     return ID_OBJECT;
 }
@@ -327,6 +307,12 @@ void HTMLObjectElementImpl::parseAttribute(AttrImpl *attr)
     default:
       HTMLElementImpl::parseAttribute( attr );
   }
+}
+
+DocumentImpl* HTMLObjectElementImpl::contentDocument() const
+{
+    // ###
+    return 0;
 }
 
 void HTMLObjectElementImpl::attach()
@@ -384,7 +370,7 @@ HTMLParamElementImpl::~HTMLParamElementImpl()
     if(m_value) m_value->deref();
 }
 
-ushort HTMLParamElementImpl::id() const
+NodeImpl::Id HTMLParamElementImpl::id() const
 {
     return ID_PARAM;
 }
@@ -393,13 +379,16 @@ void HTMLParamElementImpl::parseAttribute(AttrImpl *attr)
 {
     switch( attr->attrId )
     {
+    case ATTR_ID:
+        if (getDocument()->htmlMode() != DocumentImpl::XHtml) break;
+        // fall through
     case ATTR_NAME:
         m_name = attr->val();
-        m_name->ref();
+        if (m_name) m_name->ref();
         break;
     case ATTR_VALUE:
         m_value = attr->val();
-        m_value->ref();
+        if (m_value) m_value->ref();
         break;
     }
 }

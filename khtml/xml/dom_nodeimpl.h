@@ -3,6 +3,7 @@
  *
  * Copyright (C) 1999 Lars Knoll (knoll@kde.org)
  *           (C) 1999 Antti Koivisto (koivisto@kde.org)
+ *           (C) 2001 Dirk Mueller (mueller@kde.org)
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -31,9 +32,8 @@
 // The namespace used for XHTML elements
 #define XHTML_NAMESPACE "http://www.w3.org/1999/xhtml"
 
-#include <qptrlist.h>
-
 class QPainter;
+template <class type> class QPtrList;
 class KHTMLView;
 class QRect;
 class QMouseEvent;
@@ -88,7 +88,7 @@ public:
     virtual ~NodeImpl();
 
     // DOM methods & attributes for Node
-    virtual const DOMString nodeName() const;
+    virtual DOMString nodeName() const;
     virtual DOMString nodeValue() const;
     virtual void setNodeValue( const DOMString &_nodeValue, int &exceptioncode );
     virtual unsigned short nodeType() const;
@@ -98,7 +98,7 @@ public:
     virtual NodeImpl *lastChild() const;
     virtual NodeImpl *previousSibling() const;
     virtual NodeImpl *nextSibling() const;
-    virtual NamedNodeMapImpl *attributes();
+    virtual NamedNodeMapImpl *attributes() const;
     virtual DocumentImpl *ownerDocument() const { return document->document(); }
     virtual NodeImpl *insertBefore ( NodeImpl *newChild, NodeImpl *refChild, int &exceptioncode );
     virtual NodeImpl *replaceChild ( NodeImpl *newChild, NodeImpl *oldChild, int &exceptioncode );
@@ -137,8 +137,24 @@ public:
     // appendChild(), and returns the node into which will be parsed next.
     virtual NodeImpl *addChild(NodeImpl *newChild);
 
-    virtual unsigned short id() const { return 0; };
-    virtual unsigned int cssTagId() const { return 0; };
+    typedef Q_UINT32 Id;
+    static const Q_UINT32 IdNSMask    = 0xffff0000;
+    static const Q_UINT32 IdLocalMask = 0x0000ffff;
+    // id() is used to easily and exactly identify a node. It
+    // is optimized for quick comparison and low memory consumption.
+    // its value depends on the ownerDocument() of the node and is
+    // categorized in the following way:
+    // 1..ID_LAST_TAG: the node inherits HTMLElementImpl and is
+    //                 part of the HTML namespace.
+    //                 The HTML namespace is either the global
+    //                 one (no namespace) or the XHTML namespace
+    //                 depending on the ownerDocument's doctype
+    // ID_LAST_TAG..0xffff: non-HTML elements in the global namespace
+    // others          non-HTML elements in a namespace.
+    //                 the upper 16 bit identify the namespace
+    //                 the lower 16 bit identify the local part of the
+    //                 qualified element name.
+    virtual Id id() const { return 0; };
 
     enum MouseEventType {
         MousePress,
@@ -252,7 +268,7 @@ public:
 
     virtual unsigned long nodeIndex() const;
 
-    virtual DocumentImpl *getDocument()
+    virtual DocumentImpl* getDocument()
         { return document->document(); } // different from ownerDocument() in that it is never null
 
     void addEventListener(int id, EventListener *listener, const bool useCapture);
@@ -307,6 +323,11 @@ public:
 protected:
     DocumentPtr *document;
     khtml::RenderObject *m_render;
+    QPtrList<RegisteredEventListener> *m_regdListeners;
+
+    short m_tabindex : 16;
+    bool m_hasTabindex  : 1;
+
     bool m_complexText : 1;
     bool m_hasEvents : 1;
     bool m_hasId : 1;
@@ -320,12 +341,6 @@ protected:
     bool m_focused : 1;
     bool m_active : 1;
     bool m_styleElement : 1; // contains stylesheet text
-
-    // used in elementimpl. Defined here to save a few bytes in the data structures.
-    bool m_hasTabindex  : 1;
-    short m_tabindex : 16;
-
-    QPtrList<RegisteredEventListener> *m_regdListeners;
 };
 
 // this class implements nodes, which can have a parent but no children:
@@ -412,7 +427,7 @@ public:
 protected:
     NodeImpl *_first;
     NodeImpl *_last;
-    khtml::RenderStyle *m_style;
+    khtml::RenderStyle* m_style;
 
     // helper functions for inserting children:
 

@@ -22,16 +22,18 @@
  * $Id$
  */
 // -------------------------------------------------------------------------
-#include "html_miscimpl.h"
-#include "html_formimpl.h"
+#include "html/html_miscimpl.h"
+#include "html/html_formimpl.h"
 
-#include "htmlhashes.h"
-#include "dom_node.h"
+#include "misc/htmlhashes.h"
+#include "dom/dom_node.h"
+
 using namespace DOM;
 
 #include <kdebug.h>
 
-HTMLBaseFontElementImpl::HTMLBaseFontElementImpl(DocumentPtr *doc) : HTMLElementImpl(doc)
+HTMLBaseFontElementImpl::HTMLBaseFontElementImpl(DocumentPtr *doc)
+    : HTMLElementImpl(doc)
 {
 }
 
@@ -39,7 +41,7 @@ HTMLBaseFontElementImpl::~HTMLBaseFontElementImpl()
 {
 }
 
-ushort HTMLBaseFontElementImpl::id() const
+NodeImpl::Id HTMLBaseFontElementImpl::id() const
 {
     return ID_BASEFONT;
 }
@@ -455,7 +457,7 @@ NodeImpl *HTMLCollectionImpl::nextNamedItemInternal( const DOMString &name ) con
 
 unsigned long HTMLFormCollectionImpl::calcLength(NodeImpl*) const
 {
-    QList<HTMLGenericFormElementImpl> l = static_cast<HTMLFormElementImpl*>( base )->formElements;
+    QPtrList<HTMLGenericFormElementImpl> l = static_cast<HTMLFormElementImpl*>( base )->formElements;
 
     int len = 0;
     for ( unsigned i = 0; i < l.count(); i++ )
@@ -467,7 +469,7 @@ unsigned long HTMLFormCollectionImpl::calcLength(NodeImpl*) const
 
 NodeImpl* HTMLFormCollectionImpl::getItem(NodeImpl *, int index, int&) const
 {
-    QList<HTMLGenericFormElementImpl> l = static_cast<HTMLFormElementImpl*>( base )->formElements;
+    QPtrList<HTMLGenericFormElementImpl> l = static_cast<HTMLFormElementImpl*>( base )->formElements;
 
     for ( unsigned i = 0; i < l.count(); i++ ) {
 

@@ -19,18 +19,14 @@
  * along with this library; see the file COPYING.LIB.  If not, write to
  * the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
  * Boston, MA 02111-1307, USA.
- *
- * $Id$
  */
 // -------------------------------------------------------------------------
-#include "html_inlineimpl.h"
-#include "html_imageimpl.h"
-#include "html_documentimpl.h"
-using namespace DOM;
 
-#include <kdebug.h>
+#include "html/html_inlineimpl.h"
+#include "html/html_imageimpl.h"
+#include "html/html_documentimpl.h"
 
-#include "htmlhashes.h"
+#include "misc/htmlhashes.h"
 #include "khtmlview.h"
 #include "khtml_part.h"
 #include "css/csshelper.h"
@@ -41,7 +37,10 @@ using namespace DOM;
 #include "rendering/render_br.h"
 #include "rendering/render_image.h"
 
+#include <kdebug.h>
+
 using namespace khtml;
+using namespace DOM;
 
 HTMLAnchorElementImpl::HTMLAnchorElementImpl(DocumentPtr *doc)
     : HTMLElementImpl(doc)
@@ -56,7 +55,7 @@ HTMLAnchorElementImpl::~HTMLAnchorElementImpl()
     if( target ) target->deref();
 }
 
-ushort HTMLAnchorElementImpl::id() const
+NodeImpl::Id HTMLAnchorElementImpl::id() const
 {
     return ID_A;
 }
@@ -206,7 +205,7 @@ HTMLBRElementImpl::~HTMLBRElementImpl()
 {
 }
 
-ushort HTMLBRElementImpl::id() const
+NodeImpl::Id HTMLBRElementImpl::id() const
 {
     return ID_BR;
 }
@@ -252,7 +251,7 @@ HTMLFontElementImpl::~HTMLFontElementImpl()
 {
 }
 
-ushort HTMLFontElementImpl::id() const
+NodeImpl::Id HTMLFontElementImpl::id() const
 {
     return ID_FONT;
 }
@@ -339,7 +338,7 @@ HTMLModElementImpl::~HTMLModElementImpl()
 {
 }
 
-ushort HTMLModElementImpl::id() const
+NodeImpl::Id HTMLModElementImpl::id() const
 {
     return _id;
 }
@@ -355,7 +354,7 @@ HTMLQuoteElementImpl::~HTMLQuoteElementImpl()
 {
 }
 
-ushort HTMLQuoteElementImpl::id() const
+NodeImpl::Id HTMLQuoteElementImpl::id() const
 {
     return ID_Q;
 }

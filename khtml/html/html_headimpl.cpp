@@ -18,31 +18,31 @@
  * along with this library; see the file COPYING.LIB.  If not, write to
  * the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
  * Boston, MA 02111-1307, USA.
- *
- * $Id$
  */
 // -------------------------------------------------------------------------
-#include "html_headimpl.h"
-#include "dom_textimpl.h"
-#include "html_documentimpl.h"
+
+#include "html/html_headimpl.h"
+#include "html/html_documentimpl.h"
+
+#include "xml/dom_textimpl.h"
 
 #include "khtmlview.h"
 #include "khtml_part.h"
-#include "htmlhashes.h"
 
+#include "misc/htmlhashes.h"
 #include "misc/loader.h"
 #include "misc/helper.h"
 
 #include "css/cssstyleselector.h"
 #include "css/css_stylesheetimpl.h"
 #include "css/csshelper.h"
-using namespace khtml;
 
 #include <kurl.h>
 #include <kstringhandler.h>
 #include <kio/job.h>
-
 #include <kdebug.h>
+
+using namespace khtml;
 
 HTMLBaseElementImpl::HTMLBaseElementImpl(DocumentPtr *doc)
     : HTMLElementImpl(doc)
@@ -53,7 +53,7 @@ HTMLBaseElementImpl::~HTMLBaseElementImpl()
 {
 }
 
-ushort HTMLBaseElementImpl::id() const
+NodeImpl::Id HTMLBaseElementImpl::id() const
 {
     return ID_BASE;
 }
@@ -102,7 +102,7 @@ HTMLLinkElementImpl::~HTMLLinkElementImpl()
     if(m_cachedSheet) m_cachedSheet->deref(this);
 }
 
-ushort HTMLLinkElementImpl::id() const
+NodeImpl::Id HTMLLinkElementImpl::id() const
 {
     return ID_LINK;
 }
@@ -132,13 +132,13 @@ void HTMLLinkElementImpl::attach()
     }
     HTMLElementImpl::attach();
 
-    getDocument()->updateStyleSheets();
+    getDocument()->updateStyleSelector();
 }
 
 void HTMLLinkElementImpl::detach()
 {
     if ( sheet() )
-        getDocument()->updateStyleSheets();
+        getDocument()->updateStyleSelector();
 
     HTMLElementImpl::detach();
 }
@@ -172,18 +172,18 @@ void HTMLLinkElementImpl::setStyleSheet(const DOM::DOMString &url, const DOM::DO
 {
 //    kdDebug( 6030 ) << "HTMLLinkElement::setStyleSheet()" << endl;
 //    kdDebug( 6030 ) << "**** current medium: " << m_media << endl;
-    
+
     if( m_sheet ) return;
     m_sheet = new CSSStyleSheetImpl(this, url);
     m_sheet->ref();
     m_sheet->parseString(sheetStr);
-    
+
     MediaListImpl *media = new MediaListImpl( m_sheet, m_media );
     m_sheet->setMedia( media );
-    
+
     m_loading = false;
 
-    getDocument()->updateStyleSheets();
+    getDocument()->updateStyleSelector();
 }
 
 bool HTMLLinkElementImpl::isLoading() const
@@ -197,7 +197,7 @@ bool HTMLLinkElementImpl::isLoading() const
 
 void HTMLLinkElementImpl::sheetLoaded()
 {
-    getDocument()->updateStyleSheets();
+    getDocument()->updateStyleSelector();
 }
 
 StyleSheetImpl *HTMLLinkElementImpl::sheet() const
@@ -218,7 +218,7 @@ HTMLMetaElementImpl::~HTMLMetaElementImpl()
 {
 }
 
-ushort HTMLMetaElementImpl::id() const
+NodeImpl::Id HTMLMetaElementImpl::id() const
 {
     return ID_META;
 }
@@ -317,7 +317,7 @@ HTMLScriptElementImpl::~HTMLScriptElementImpl()
 {
 }
 
-ushort HTMLScriptElementImpl::id() const
+NodeImpl::Id HTMLScriptElementImpl::id() const
 {
     return ID_SCRIPT;
 }
@@ -334,7 +334,7 @@ HTMLStyleElementImpl::~HTMLStyleElementImpl()
     if(m_sheet) m_sheet->deref();
 }
 
-ushort HTMLStyleElementImpl::id() const
+NodeImpl::Id HTMLStyleElementImpl::id() const
 {
     return ID_STYLE;
 }
@@ -380,7 +380,7 @@ bool HTMLStyleElementImpl::isLoading() const
 
 void HTMLStyleElementImpl::sheetLoaded()
 {
-    getDocument()->updateStyleSheets();
+    getDocument()->updateStyleSelector();
 }
 
 void HTMLStyleElementImpl::reparseSheet()
@@ -399,18 +399,18 @@ void HTMLStyleElementImpl::reparseSheet()
     m_sheet = new CSSStyleSheetImpl(this);
     m_sheet->ref();
     m_sheet->parseString( text, (ownerDocument()->parseMode() == DocumentImpl::Strict) );
-    getDocument()->updateStyleSheets();
+    getDocument()->updateStyleSelector();
 }
 
 void HTMLStyleElementImpl::attach()
 {
-    if (m_sheet) getDocument()->updateStyleSheets();
+    if (m_sheet) getDocument()->updateStyleSelector();
     HTMLElementImpl::attach();
 }
 
 void HTMLStyleElementImpl::detach()
 {
-    if (m_sheet) getDocument()->updateStyleSheets();
+    if (m_sheet) getDocument()->updateStyleSelector();
     HTMLElementImpl::detach();
 }
 
@@ -425,7 +425,7 @@ HTMLTitleElementImpl::~HTMLTitleElementImpl()
 {
 }
 
-ushort HTMLTitleElementImpl::id() const
+NodeImpl::Id HTMLTitleElementImpl::id() const
 {
     return ID_TITLE;
 }
@@ -440,9 +440,5 @@ void HTMLTitleElementImpl::setTitle()
 
     HTMLDocumentImpl *d = static_cast<HTMLDocumentImpl *>(ownerDocument());
     if ( !d->view()->part()->parentPart() )
-#if QT_VERSION < 300
-        emit d->view()->part()->setWindowCaption( s.visual() );
-#else
         emit d->view()->part()->setWindowCaption( s );
-#endif
 }

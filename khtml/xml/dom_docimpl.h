@@ -2,6 +2,8 @@
  * This file is part of the DOM implementation for KDE.
  *
  * Copyright (C) 1999 Lars Knoll (knoll@kde.org)
+ *           (C) 1999 Antti Koivisto (koivisto@kde.org)
+ *           (C) 2001 Dirk Mueller (mueller@kde.org)
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -23,11 +25,11 @@
 #ifndef _DOM_DocumentImpl_h_
 #define _DOM_DocumentImpl_h_
 
-#include "dom_nodeimpl.h"
-#include "dom2_traversalimpl.h"
+#include "xml/dom_nodeimpl.h"
+#include "xml/dom2_traversalimpl.h"
 
 #include <qstringlist.h>
-#include <qlist.h>
+#include <qptrlist.h>
 #include <qobject.h>
 #include <qdict.h>
 #include <qmap.h>
@@ -86,13 +88,16 @@ public:
     DocumentImpl *createDocument( const DOMString &namespaceURI, const DOMString &qualifiedName,
                                   const DocumentType &doctype, int &exceptioncode );
 
+    DOMImplementationImpl* getInterface(const DOMString& feature) const;
+
     // From the DOMImplementationCSS interface
     CSSStyleSheetImpl *createCSSStyleSheet(DOMStringImpl *title, DOMStringImpl *media, int &exceptioncode);
 
+    // From the HTMLDOMImplementation interface
+    HTMLDocumentImpl* createHTMLDocument( const DOMString& title);
+
     // Other methods (not part of DOM)
-
     DocumentImpl *createDocument( KHTMLView *v = 0 );
-
     HTMLDocumentImpl *createHTMLDocument( KHTMLView *v = 0 );
 
     // Returns the static instance of this class - only one instance of this class should
@@ -136,7 +141,7 @@ public:
 
     // DOM methods overridden from  parent classes
 
-    virtual const DOMString nodeName() const;
+    virtual DOMString nodeName() const;
     virtual unsigned short nodeType() const;
     virtual DOMString namespaceURI() const;
 
@@ -152,7 +157,7 @@ public:
 
 
     khtml::CSSStyleSelector *styleSelector() { return m_styleSelector; }
-    void updateStyleSheets();
+    void updateStyleSelector();
 
     // Used to maintain list of all elements in the document
     // that want to save and restore state.
@@ -227,6 +232,12 @@ public:
     QPaintDevice *paintDevice() const { return m_paintDevice; }
     void setPaintDevice( QPaintDevice *dev );
 
+    enum HTMLMode {
+        Html3 = 0,
+        Html4 = 1,
+        XHtml = 2
+    };
+
     enum ParseMode {
         Unknown,
         Compat,
@@ -237,6 +248,9 @@ public:
     void setParseMode( ParseMode m ) { pMode = m; }
     ParseMode parseMode() const { return pMode; }
 
+    void setHTMLMode( HTMLMode m ) { hMode = m; }
+    HTMLMode htmlMode() const { return hMode; }
+
     void setParsing(bool b) { m_bParsing = b; }
     bool parsing() const { return m_bParsing; }
 
@@ -244,7 +258,7 @@ public:
     DOMString textColor() const { return m_textColor; }
 
     // internal
-    NodeImpl *findElement( int id );
+    NodeImpl *findElement( Id id );
 
     /**
      * find next link for keyboard traversal.
@@ -262,17 +276,19 @@ public:
     virtual bool childTypeAllowed( unsigned short nodeType );
     virtual NodeImpl *cloneNode ( bool deep, int &exceptioncode );
 
-    unsigned short cssTagId(DOMStringImpl *_name);
-    DOMStringImpl *cssTagName(unsigned short _id) const;
+    NodeImpl::Id tagId(DOMStringImpl *_name, DOMStringImpl* _namespaceURI);
+    DOMString tagName(NodeImpl::Id _id) const;
+
+    DOMStringImpl* namespaceURI(NodeImpl::Id _id) const;
 
     StyleSheetListImpl* styleSheets();
 
     ElementImpl *focusNode();
     void setFocusNode(ElementImpl *);
 
-    virtual DocumentImpl *getDocument()
+    virtual DocumentImpl* getDocument()
         { return this; }
-    virtual bool isDocumentChanged() 
+    virtual bool isDocumentChanged()
 	{ return m_docChanged; }
     virtual void setDocumentChanged(bool);
     void attachNodeIterator(NodeIteratorImpl *ni);
@@ -282,7 +298,7 @@ public:
     EventImpl *createEvent(const DOMString &eventType, int &exceptioncode);
 
     // keep track of what types of event listeners are registered, so we don't
-    // dispatch events un-necessarily
+    // dispatch events unnecessarily
     enum ListenerType {
         DOMSUBTREEMODIFIED_LISTENER          = 0x01,
         DOMNODEINSERTED_LISTENER             = 0x02,
@@ -293,7 +309,7 @@ public:
         DOMCHARACTERDATAMODIFIED_LISTENER    = 0x40
     };
 
-    bool hasListenerType(ListenerType listenerType) { return (m_listenerTypes & listenerType); }
+    bool hasListenerType(ListenerType listenerType) const { return (m_listenerTypes & listenerType); }
     void addListenerType(ListenerType listenerType) { m_listenerTypes = m_listenerTypes | listenerType; }
 
     CSSStyleDeclarationImpl *getOverrideStyle(ElementImpl *elt, DOMStringImpl *pseudoElt);
@@ -343,11 +359,17 @@ protected:
     QPaintDevice *m_paintDevice;
     QPaintDeviceMetrics *m_paintDeviceMetrics;
     ParseMode pMode;
+    HTMLMode hMode;
 
     DOMString m_textColor;
+
     DOMStringImpl **m_elementNames;
     unsigned short m_elementNameAlloc;
     unsigned short m_elementNameCount;
+
+    DOMStringImpl** m_namespaceURIs;
+    unsigned short m_namespaceURIAlloc;
+    unsigned short m_namespaceURICount;
 
     ElementImpl *m_focusNode;
     QPtrList<NodeIteratorImpl> m_nodeIterators;
@@ -371,7 +393,7 @@ public:
     DocumentFragmentImpl(const DocumentFragmentImpl &other);
 
     // DOM methods overridden from  parent classes
-    virtual const DOMString nodeName() const;
+    virtual DOMString nodeName() const;
     virtual unsigned short nodeType() const;
     virtual DOMString namespaceURI() const;
     virtual NodeImpl *cloneNode ( bool deep, int &exceptioncode );
@@ -398,7 +420,7 @@ public:
     virtual DOMString internalSubset() const;
 
     // DOM methods overridden from  parent classes
-    virtual const DOMString nodeName() const;
+    virtual DOMString nodeName() const;
     virtual unsigned short nodeType() const;
     virtual DOMString namespaceURI() const;
 

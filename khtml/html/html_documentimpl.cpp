@@ -19,25 +19,25 @@
  * the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
  * Boston, MA 02111-1307, USA.
  *
- * $Id$
  */
-#include "html_documentimpl.h"
+
+#include "html/html_documentimpl.h"
+#include "html/html_imageimpl.h"
+#include "html/html_headimpl.h"
+#include "html/html_baseimpl.h"
+#include "html/htmltokenizer.h"
+#include "html/html_miscimpl.h"
 
 #include "khtmlview.h"
 #include "khtml_part.h"
 #include "khtml_settings.h"
 #include "misc/htmlattrs.h"
+#include "misc/htmlhashes.h"
 
-#include "htmltokenizer.h"
-#include "xml_tokenizer.h"
-#include "htmlhashes.h"
-#include "html_imageimpl.h"
-#include "html_headimpl.h"
-#include "html/html_baseimpl.h"
-#include "dom2_eventsimpl.h"
+#include "xml/xml_tokenizer.h"
+#include "xml/dom2_eventsimpl.h"
 
 #include "khtml_factory.h"
-#include "html_miscimpl.h"
 #include "rendering/render_object.h"
 
 #include <dcopclient.h>
@@ -51,9 +51,9 @@
 #include "css/cssstyleselector.h"
 #include "css/css_stylesheetimpl.h"
 #include <stdlib.h>
-#include <qstack.h>
+#include <qptrstack.h>
 
-template class QStack<DOM::NodeImpl>;
+template class QPtrStack<DOM::NodeImpl>;
 
 using namespace DOM;
 using namespace khtml;
@@ -270,11 +270,6 @@ void HTMLDocumentImpl::close()
     }
 }
 
-enum HTMLMode {
-    Html3 = 0,
-    Html4 = 1,
-    XHtml = 2
-};
 
 void HTMLDocumentImpl::determineParseMode( const QString &str )
 {
@@ -284,10 +279,10 @@ void HTMLDocumentImpl::determineParseMode( const QString &str )
 
     // default parsing mode is Loose
     pMode = Compat;
+    hMode = Html3;
 
     ParseMode systemId = Unknown;
     ParseMode publicId = Unknown;
-    HTMLMode htmlMode = Html3;
 
     int pos = 0;
     int doctype = str.find("!doctype", 0, false);
@@ -331,13 +326,13 @@ void HTMLDocumentImpl::determineParseMode( const QString &str )
                 pos = val.find("//dtd", 0, false );
                 if ( pos != -1 ) {
                     if( val.find( "xhtml", pos+6, false ) != -1 ) {
-                        htmlMode = XHtml;
+                        hMode = XHtml;
                         if( isTransitional( val, pos ) )
                             publicId = Transitional;
                         else
                             publicId = Strict;
                     } else if ( val.find( "15445:1999", pos+6 ) != -1 ) {
-                        htmlMode = Html4;
+                        hMode = Html4;
                         publicId = Strict;
                     } else {
                         int tagPos = val.find( "html", pos+6, false );
@@ -348,7 +343,7 @@ void HTMLDocumentImpl::determineParseMode( const QString &str )
                             int version = val.mid( tagPos, 1 ).toInt();
                             //kdDebug() << "DocumentImpl::determineParseMode tagPos = " << tagPos << " version=" << version << endl;
                             if( version > 3 ) {
-                                htmlMode = Html4;
+                                hMode = Html4;
                                 publicId = isTransitional( val, tagPos ) ? Transitional : Strict;
                             }
                         }
@@ -361,20 +356,17 @@ void HTMLDocumentImpl::determineParseMode( const QString &str )
         if( systemId == publicId )
             pMode = publicId;
         else if ( systemId == Unknown )
-            pMode = htmlMode == Html4 ? Compat : publicId;
+            pMode = hMode == Html4 ? Compat : publicId;
         else if ( publicId == Transitional && systemId == Strict ) {
-            if ( htmlMode == Html3 )
-                pMode = Compat;
-            else
-                pMode = Strict;
+            pMode = hMode == Html3 ? Compat : Strict;
         } else
             pMode = Compat;
 
-        if ( htmlMode == XHtml )
+        if ( hMode == XHtml )
             pMode = Strict;
     }
     //kdDebug() << "DocumentImpl::determineParseMode: publicId =" << publicId << " systemId = " << systemId << endl;
-    //kdDebug() << "DocumentImpl::determineParseMode: htmlMode = " << htmlMode<< endl;
+    kdDebug() << "DocumentImpl::determineParseMode: htmlMode = " << hMode<< endl;
     if( pMode == Strict )
         kdDebug(6020) << " using strict parseMode" << endl;
     else if (pMode == Compat )

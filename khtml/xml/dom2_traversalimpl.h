@@ -26,10 +26,10 @@
 #ifndef _DOM2_TraversalImpl_h_
 #define _DOM2_TraversalImpl_h_
 
-#include "dom_nodeimpl.h"
+#include "xml/dom_nodeimpl.h"
 #include "dom/dom_node.h"
 #include "dom/dom_misc.h"
-#include "dom2_traversal.h"
+#include "dom/dom2_traversal.h"
 
 namespace DOM {
 

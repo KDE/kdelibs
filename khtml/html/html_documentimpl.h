@@ -29,6 +29,7 @@
 #include "misc/loader_client.h"
 
 #include <qmap.h>
+
 class KHTMLView;
 class QString;
 
@@ -76,7 +77,7 @@ public:
     virtual void determineParseMode( const QString &str );
 
     virtual void close();
-    
+
 
 protected:
     HTMLElementImpl *bodyElement;

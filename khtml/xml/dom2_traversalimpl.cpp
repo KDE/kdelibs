@@ -19,16 +19,10 @@
  * along with this library; see the file COPYING.LIB.  If not, write to
  * the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
  * Boston, MA 02111-1307, USA.
- *
- * $Id$
  */
 
-#include "dom2_traversal.h"
-#include "dom_node.h"
-#include "dom_exception.h"
-#include "dom2_traversalimpl.h"
-#include "dom_docimpl.h"
-
+#include "dom/dom_exception.h"
+#include "xml/dom_docimpl.h"
 
 using namespace DOM;
 

@@ -39,7 +39,7 @@ public:
 
     ~HTMLBaseFontElementImpl();
 
-    virtual ushort id() const;
+    virtual Id id() const;
 };
 
 // -------------------------------------------------------------------------

@@ -996,8 +996,8 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
                         // end of attribute
                         AttrImpl* a;
 
-                        if(*buffer)
-                            a = new AttrImpl(parser->docPtr(), (int)*buffer);
+                        if(buffer->unicode())
+                            a = new AttrImpl(parser->docPtr(), buffer->unicode());
                         else
                             a = new AttrImpl(parser->docPtr(), DOMString(attrName));
 

@@ -24,7 +24,7 @@
 #ifndef HTML_IMAGEIMPL_H
 #define HTML_IMAGEIMPL_H
 
-#include "html_inlineimpl.h"
+#include "html/html_inlineimpl.h"
 #include "misc/khtmllayout.h"
 
 #include <qregion.h>
@@ -41,7 +41,7 @@ public:
 
     ~HTMLImageElementImpl();
 
-    virtual ushort id() const;
+    virtual Id id() const;
 
     virtual void parseAttribute(AttrImpl *);
 
@@ -79,7 +79,7 @@ public:
     HTMLAreaElementImpl(DocumentPtr *doc);
     ~HTMLAreaElementImpl();
 
-    virtual ushort id() const;
+    virtual Id id() const;
 
     virtual void parseAttribute(AttrImpl *attr);
 
@@ -110,7 +110,7 @@ public:
 
     ~HTMLMapElementImpl();
 
-    virtual ushort id() const;
+    virtual Id id() const;
 
     virtual DOMString getName() const { return name; }
 

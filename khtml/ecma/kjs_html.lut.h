@@ -289,7 +289,7 @@ const struct HashEntry HTMLInputElementTableEntries[] = {
    { "tabIndex", KJS::HTMLElement::InputTabIndex, DontDelete, 0, 0 },
    { 0, 0, 0, 0, 0 },
    { "value", KJS::HTMLElement::InputValue, DontDelete, 0, &HTMLInputElementTableEntries[30] },
-   { "type", KJS::HTMLElement::InputType, DontDelete|ReadOnly, 0, 0 },
+   { "type", KJS::HTMLElement::InputType, DontDelete, 0, 0 },
    { 0, 0, 0, 0, 0 },
    { "focus", KJS::HTMLElement::InputFocus, DontDelete|Function, 0, 0 },
    { "maxLength", KJS::HTMLElement::InputMaxLength, DontDelete, 0, 0 },
@@ -623,61 +623,59 @@ namespace KJS {
 
 const struct HashEntry HTMLImageElementTableEntries[] = {
    { 0, 0, 0, 0, 0 },
-   { "name", KJS::HTMLElement::ImageName, DontDelete, 0, &HTMLImageElementTableEntries[13] },
    { 0, 0, 0, 0, 0 },
-   { "align", KJS::HTMLElement::ImageAlign, DontDelete, 0, &HTMLImageElementTableEntries[16] },
-   { "hspace", KJS::HTMLElement::ImageHspace, DontDelete, 0, 0 },
+   { "border", KJS::HTMLElement::ImageBorder, DontDelete, 0, &HTMLImageElementTableEntries[14] },
+   { 0, 0, 0, 0, 0 },
+   { "hspace", KJS::HTMLElement::ImageHspace, DontDelete, 0, &HTMLImageElementTableEntries[15] },
+   { 0, 0, 0, 0, 0 },
    { "vspace", KJS::HTMLElement::ImageVspace, DontDelete, 0, 0 },
+   { "align", KJS::HTMLElement::ImageAlign, DontDelete, 0, &HTMLImageElementTableEntries[16] },
    { 0, 0, 0, 0, 0 },
+   { "name", KJS::HTMLElement::ImageName, DontDelete, 0, &HTMLImageElementTableEntries[12] },
    { 0, 0, 0, 0, 0 },
-   { "useMap", KJS::HTMLElement::ImageUseMap, DontDelete, 0, 0 },
-   { "alt", KJS::HTMLElement::ImageAlt, DontDelete, 0, &HTMLImageElementTableEntries[14] },
-   { "lowSrc", KJS::HTMLElement::ImageLowSrc, DontDelete, 0, 0 },
-   { "width", KJS::HTMLElement::ImageWidth, DontDelete, 0, 0 },
-   { "isMap", KJS::HTMLElement::ImageIsMap, DontDelete, 0, 0 },
-   { "border", KJS::HTMLElement::ImageBorder, DontDelete, 0, 0 },
-   { "height", KJS::HTMLElement::ImageHeight, DontDelete, 0, &HTMLImageElementTableEntries[15] },
    { "longDesc", KJS::HTMLElement::ImageLongDesc, DontDelete, 0, 0 },
-   { "src", KJS::HTMLElement::ImageSrc, DontDelete, 0, 0 }
+   { "alt", KJS::HTMLElement::ImageAlt, DontDelete, 0, &HTMLImageElementTableEntries[13] },
+   { "height", KJS::HTMLElement::ImageHeight, DontDelete, 0, 0 },
+   { "isMap", KJS::HTMLElement::ImageIsMap, DontDelete, 0, 0 },
+   { "src", KJS::HTMLElement::ImageSrc, DontDelete, 0, &HTMLImageElementTableEntries[17] },
+   { "useMap", KJS::HTMLElement::ImageUseMap, DontDelete, 0, 0 },
+   { "width", KJS::HTMLElement::ImageWidth, DontDelete, 0, 0 }
 };
 
-const struct HashTable HTMLImageElementTable = { 2, 17, HTMLImageElementTableEntries, 13 };
+const struct HashTable HTMLImageElementTable = { 2, 18, HTMLImageElementTableEntries, 12 };
 
 }; // namespace
 
 namespace KJS {
 
 const struct HashEntry HTMLObjectElementTableEntries[] = {
-   { 0, 0, 0, 0, 0 },
-   { "hspace", KJS::HTMLElement::ObjectHspace, DontDelete, 0, 0 },
-   { 0, 0, 0, 0, 0 },
-   { 0, 0, 0, 0, 0 },
-   { 0, 0, 0, 0, 0 },
-   { 0, 0, 0, 0, 0 },
-   { "height", KJS::HTMLElement::ObjectHeight, DontDelete, 0, 0 },
-   { 0, 0, 0, 0, 0 },
-   { 0, 0, 0, 0, 0 },
-   { 0, 0, 0, 0, 0 },
-   { "align", KJS::HTMLElement::ObjectAlign, DontDelete, 0, 0 },
-   { "border", KJS::HTMLElement::ObjectBorder, DontDelete, 0, &HTMLObjectElementTableEntries[19] },
-   { "code", KJS::HTMLElement::ObjectCode, DontDelete, 0, &HTMLObjectElementTableEntries[20] },
-   { "type", KJS::HTMLElement::ObjectType, DontDelete, 0, 0 },
+   { "declare", KJS::HTMLElement::ObjectDeclare, DontDelete, 0, 0 },
    { 0, 0, 0, 0, 0 },
    { "vspace", KJS::HTMLElement::ObjectVspace, DontDelete, 0, 0 },
-   { "archive", KJS::HTMLElement::ObjectArchive, DontDelete, 0, &HTMLObjectElementTableEntries[23] },
-   { "declare", KJS::HTMLElement::ObjectDeclare, DontDelete, 0, &HTMLObjectElementTableEntries[24] },
-   { "form", KJS::HTMLElement::ObjectForm, DontDelete|ReadOnly, 0, &HTMLObjectElementTableEntries[22] },
+   { "align", KJS::HTMLElement::ObjectAlign, DontDelete, 0, 0 },
+   { "width", KJS::HTMLElement::ObjectWidth, DontDelete, 0, 0 },
+   { 0, 0, 0, 0, 0 },
+   { 0, 0, 0, 0, 0 },
+   { 0, 0, 0, 0, 0 },
+   { "hspace", KJS::HTMLElement::ObjectHspace, DontDelete, 0, 0 },
+   { "codeType", KJS::HTMLElement::ObjectCodeType, DontDelete, 0, 0 },
    { "codeBase", KJS::HTMLElement::ObjectCodeBase, DontDelete, 0, &HTMLObjectElementTableEntries[21] },
-   { "codeType", KJS::HTMLElement::ObjectCodeType, DontDelete, 0, &HTMLObjectElementTableEntries[26] },
-   { "data", KJS::HTMLElement::ObjectData, DontDelete, 0, &HTMLObjectElementTableEntries[25] },
-   { "name", KJS::HTMLElement::ObjectName, DontDelete, 0, 0 },
-   { "standby", KJS::HTMLElement::ObjectStandby, DontDelete, 0, 0 },
+   { "code", KJS::HTMLElement::ObjectCode, DontDelete, 0, 0 },
+   { 0, 0, 0, 0, 0 },
+   { "height", KJS::HTMLElement::ObjectHeight, DontDelete, 0, 0 },
+   { "contentDocument", KJS::HTMLElement::ObjectContentDocument, DontDelete|ReadOnly, 0, 0 },
    { "tabIndex", KJS::HTMLElement::ObjectTabIndex, DontDelete, 0, 0 },
+   { "form", KJS::HTMLElement::ObjectForm, DontDelete|ReadOnly, 0, 0 },
+   { "name", KJS::HTMLElement::ObjectName, DontDelete, 0, &HTMLObjectElementTableEntries[22] },
+   { "archive", KJS::HTMLElement::ObjectArchive, DontDelete, 0, &HTMLObjectElementTableEntries[20] },
    { "useMap", KJS::HTMLElement::ObjectUseMap, DontDelete, 0, 0 },
-   { "width", KJS::HTMLElement::ObjectWidth, DontDelete, 0, 0 }
+   { "border", KJS::HTMLElement::ObjectBorder, DontDelete, 0, 0 },
+   { "data", KJS::HTMLElement::ObjectData, DontDelete, 0, &HTMLObjectElementTableEntries[23] },
+   { "standby", KJS::HTMLElement::ObjectStandby, DontDelete, 0, 0 },
+   { "type", KJS::HTMLElement::ObjectType, DontDelete, 0, 0 }
 };
 
-const struct HashTable HTMLObjectElementTable = { 2, 27, HTMLObjectElementTableEntries, 19 };
+const struct HashTable HTMLObjectElementTable = { 2, 24, HTMLObjectElementTableEntries, 20 };
 
 }; // namespace
 
@@ -925,21 +923,21 @@ const struct HashTable HTMLFrameSetElementTable = { 2, 3, HTMLFrameSetElementTab
 namespace KJS {
 
 const struct HashEntry HTMLFrameElementTableEntries[] = {
-   { "src", KJS::HTMLElement::FrameSrc, DontDelete, 0, 0 },
-   { "frameBorder", KJS::HTMLElement::FrameFrameBorder, DontDelete, 0, &HTMLFrameElementTableEntries[9] },
    { 0, 0, 0, 0, 0 },
-   { 0, 0, 0, 0, 0 },
-   { 0, 0, 0, 0, 0 },
-   { "scrolling", KJS::HTMLElement::FrameScrolling, DontDelete, 0, 0 },
+   { "contentDocument", KJS::HTMLElement::FrameContentDocument, DontDelete|ReadOnly, 0, &HTMLFrameElementTableEntries[9] },
+   { "location", KJS::HTMLElement::FrameLocation, DontDelete, 0, 0 },
+   { "name", KJS::HTMLElement::FrameName, DontDelete, 0, 0 },
+   { "frameBorder", KJS::HTMLElement::FrameFrameBorder, DontDelete, 0, &HTMLFrameElementTableEntries[11] },
+   { "longDesc", KJS::HTMLElement::FrameLongDesc, DontDelete, 0, 0 },
+   { "marginHeight", KJS::HTMLElement::FrameMarginHeight, DontDelete, 0, 0 },
    { "marginWidth", KJS::HTMLElement::FrameMarginWidth, DontDelete, 0, 0 },
-   { "longDesc", KJS::HTMLElement::FrameLongDesc, DontDelete, 0, &HTMLFrameElementTableEntries[8] },
-   { "marginHeight", KJS::HTMLElement::FrameMarginHeight, DontDelete, 0, &HTMLFrameElementTableEntries[10] },
-   { "name", KJS::HTMLElement::FrameName, DontDelete, 0, &HTMLFrameElementTableEntries[11] },
-   { "noResize", KJS::HTMLElement::FrameNoResize, DontDelete, 0, 0 },
-   { "location", KJS::HTMLElement::FrameLocation, DontDelete, 0, 0 }
+   { 0, 0, 0, 0, 0 },
+   { "noResize", KJS::HTMLElement::FrameNoResize, DontDelete, 0, &HTMLFrameElementTableEntries[10] },
+   { "scrolling", KJS::HTMLElement::FrameScrolling, DontDelete, 0, 0 },
+   { "src", KJS::HTMLElement::FrameSrc, DontDelete, 0, 0 }
 };
 
-const struct HashTable HTMLFrameElementTable = { 2, 12, HTMLFrameElementTableEntries, 8 };
+const struct HashTable HTMLFrameElementTable = { 2, 12, HTMLFrameElementTableEntries, 9 };
 
 }; // namespace
 
@@ -947,24 +945,25 @@ namespace KJS {
 
 const struct HashEntry HTMLIFrameElementTableEntries[] = {
    { 0, 0, 0, 0, 0 },
-   { "longDesc", KJS::HTMLElement::IFrameLongDesc, DontDelete, 0, 0 },
+   { "frameBorder", KJS::HTMLElement::IFrameFrameBorder, DontDelete, 0, &HTMLIFrameElementTableEntries[15] },
    { 0, 0, 0, 0, 0 },
-   { 0, 0, 0, 0, 0 },
-   { 0, 0, 0, 0, 0 },
-   { "document", KJS::HTMLElement::IFrameDocument, DontDelete|ReadOnly, 0, &HTMLIFrameElementTableEntries[14] },
-   { "align", KJS::HTMLElement::IFrameAlign, DontDelete, 0, &HTMLIFrameElementTableEntries[11] },
-   { "frameBorder", KJS::HTMLElement::IFrameFrameBorder, DontDelete, 0, &HTMLIFrameElementTableEntries[12] },
-   { 0, 0, 0, 0, 0 },
-   { "src", KJS::HTMLElement::IFrameSrc, DontDelete, 0, 0 },
-   { "name", KJS::HTMLElement::IFrameName, DontDelete, 0, 0 },
-   { "height", KJS::HTMLElement::IFrameHeight, DontDelete, 0, &HTMLIFrameElementTableEntries[13] },
    { "marginHeight", KJS::HTMLElement::IFrameMarginHeight, DontDelete, 0, 0 },
+   { "src", KJS::HTMLElement::IFrameSrc, DontDelete, 0, &HTMLIFrameElementTableEntries[16] },
+   { 0, 0, 0, 0, 0 },
+   { 0, 0, 0, 0, 0 },
+   { "align", KJS::HTMLElement::IFrameAlign, DontDelete, 0, 0 },
+   { 0, 0, 0, 0, 0 },
+   { "height", KJS::HTMLElement::IFrameHeight, DontDelete, 0, &HTMLIFrameElementTableEntries[14] },
+   { "contentDocument", KJS::HTMLElement::IFrameContentDocument, DontDelete|ReadOnly, 0, &HTMLIFrameElementTableEntries[13] },
+   { "document", KJS::HTMLElement::IFrameDocument, DontDelete|ReadOnly, 0, &HTMLIFrameElementTableEntries[12] },
+   { "longDesc", KJS::HTMLElement::IFrameLongDesc, DontDelete, 0, 0 },
    { "marginWidth", KJS::HTMLElement::IFrameMarginWidth, DontDelete, 0, 0 },
-   { "scrolling", KJS::HTMLElement::IFrameScrolling, DontDelete, 0, &HTMLIFrameElementTableEntries[15] },
+   { "name", KJS::HTMLElement::IFrameName, DontDelete, 0, 0 },
+   { "scrolling", KJS::HTMLElement::IFrameScrolling, DontDelete, 0, 0 },
    { "width", KJS::HTMLElement::IFrameWidth, DontDelete, 0, 0 }
 };
 
-const struct HashTable HTMLIFrameElementTable = { 2, 16, HTMLIFrameElementTableEntries, 11 };
+const struct HashTable HTMLIFrameElementTable = { 2, 17, HTMLIFrameElementTableEntries, 12 };
 
 }; // namespace
 

@@ -27,19 +27,21 @@
 //#define PAR_DEBUG
 //#define EVENT_DEBUG
 //#define UNSUPPORTED_ATTR
-#include "dtd.h"
-#include "html_elementimpl.h"
-#include "html_documentimpl.h"
-#include "htmltokenizer.h"
 
-#include "htmlhashes.h"
+#include "html/dtd.h"
+#include "html/html_elementimpl.h"
+#include "html/html_documentimpl.h"
+#include "html/htmltokenizer.h"
+
+#include "misc/htmlhashes.h"
+
 #include "khtmlview.h"
 #include "khtml_part.h"
 
 #include "rendering/render_object.h"
 #include "rendering/render_replaced.h"
 #include "css/css_valueimpl.h"
-#include "css_stylesheetimpl.h"
+#include "css/css_stylesheetimpl.h"
 #include "css/cssproperties.h"
 #include "css/cssvalues.h"
 #include "xml/dom_textimpl.h"
@@ -50,20 +52,13 @@
 using namespace DOM;
 using namespace khtml;
 
-HTMLElementImpl::HTMLElementImpl(DocumentPtr *doc) : ElementImpl(doc)
+HTMLElementImpl::HTMLElementImpl(DocumentPtr *doc)
+    : ElementImpl(doc)
 {
 }
 
 HTMLElementImpl::~HTMLElementImpl()
 {
-}
-
-DOMString HTMLElementImpl::tagName() const
-{
-    if (ownerDocument()->isHTMLDocument())
-        return getTagName(id());
-    else
-        return getTagName(id()).lower();
 }
 
 void HTMLElementImpl::parseAttribute(AttrImpl *attr)

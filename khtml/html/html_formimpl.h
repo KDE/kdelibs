@@ -25,13 +25,13 @@
 #ifndef HTML_FORMIMPL_H
 #define HTML_FORMIMPL_H
 
-#include "html_elementimpl.h"
-#include "html_element.h"
+#include "html/html_elementimpl.h"
+#include "dom/html_element.h"
 
 #include <qvaluelist.h>
 #include <qptrlist.h>
 #include <qcstring.h>
-#include <qarray.h>
+#include <qmemarray.h>
 
 class KHTMLView;
 class QTextCodec;
@@ -59,7 +59,7 @@ public:
     HTMLFormElementImpl(DocumentPtr *doc);
     virtual ~HTMLFormElementImpl();
 
-    virtual ushort id() const;
+    virtual Id id() const;
 
     long length() const;
 
@@ -197,7 +197,7 @@ public:
         BUTTON
     };
 
-    virtual ushort id() const;
+    virtual Id id() const;
 
     DOMString type() const;
 
@@ -228,7 +228,7 @@ public:
 
     virtual ~HTMLFieldSetElementImpl();
 
-    virtual ushort id() const;
+    virtual Id id() const;
 };
 
 // -------------------------------------------------------------------------
@@ -256,7 +256,7 @@ public:
     HTMLInputElementImpl(DocumentPtr *doc, HTMLFormElementImpl *f);
     virtual ~HTMLInputElementImpl();
 
-    virtual ushort id() const;
+    virtual Id id() const;
 
     virtual bool isEnumeratable() const { return inputType() != IMAGE; }
 
@@ -267,6 +267,7 @@ public:
     long maxLength() const { return m_maxLen; }
     int size() const { return m_size; }
     DOMString type() const;
+    void setType(const DOMString& t);
 
     DOMString value() const;
     void setValue(DOMString val);
@@ -329,7 +330,7 @@ public:
     HTMLLabelElementImpl(DocumentPtr *doc);
     virtual ~HTMLLabelElementImpl();
 
-    virtual ushort id() const;
+    virtual Id id() const;
 
     virtual void parseAttribute(AttrImpl *attr);
 
@@ -350,7 +351,7 @@ public:
     HTMLLegendElementImpl(DocumentPtr *doc, HTMLFormElementImpl *f);
     virtual ~HTMLLegendElementImpl();
 
-    virtual ushort id() const;
+    virtual Id id() const;
 };
 
 
@@ -362,7 +363,7 @@ public:
     HTMLSelectElementImpl(DocumentPtr *doc);
     HTMLSelectElementImpl(DocumentPtr *doc, HTMLFormElementImpl *f);
 
-    virtual ushort id() const;
+    virtual Id id() const;
 
     DOMString type() const;
 
@@ -422,7 +423,7 @@ public:
     HTMLKeygenElementImpl(DocumentPtr *doc);
     HTMLKeygenElementImpl(DocumentPtr *doc, HTMLFormElementImpl *f);
 
-    virtual ushort id() const;
+    virtual Id id() const;
 
     DOMString type() const;
 
@@ -448,7 +449,7 @@ public:
     HTMLOptGroupElementImpl(DocumentPtr *doc, HTMLFormElementImpl *f);
     virtual ~HTMLOptGroupElementImpl();
 
-    virtual ushort id() const;
+    virtual Id id() const;
 
     virtual NodeImpl *insertBefore ( NodeImpl *newChild, NodeImpl *refChild, int &exceptioncode );
     virtual NodeImpl *replaceChild ( NodeImpl *newChild, NodeImpl *oldChild, int &exceptioncode );
@@ -472,7 +473,7 @@ public:
     HTMLOptionElementImpl(DocumentPtr *doc);
     HTMLOptionElementImpl(DocumentPtr *doc, HTMLFormElementImpl *f);
 
-    virtual ushort id() const;
+    virtual Id id() const;
 
     DOMString text() const;
 
@@ -511,7 +512,7 @@ public:
     HTMLTextAreaElementImpl(DocumentPtr *doc);
     HTMLTextAreaElementImpl(DocumentPtr *doc, HTMLFormElementImpl *f);
 
-    virtual ushort id() const;
+    virtual Id id() const;
 
     long cols() const { return m_cols; }
 
@@ -556,7 +557,7 @@ public:
 
     ~HTMLIsIndexElementImpl();
 
-    virtual ushort id() const;
+    virtual Id id() const;
 
     virtual void parseAttribute(AttrImpl *attr);
     virtual void attach();

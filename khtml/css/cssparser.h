@@ -24,9 +24,9 @@
 #ifndef _CSS_cssparser_h_
 #define _CSS_cssparser_h_
 
-#include "dom_string.h"
-#include "dom_misc.h"
-#include <qdatetime.h> 
+#include "dom/dom_string.h"
+#include "dom/dom_misc.h"
+#include <qdatetime.h>
 #include <qptrlist.h>
 
 namespace DOM {
@@ -56,7 +56,7 @@ public:
 
     // checks if the 2 selectors (including sub selectors) agree.
     bool operator == ( const CSSSelector &other );
-    
+
     // tag == -1 means apply to all elements (Selector = *)
 
     /* how the attribute value has to match.... Default is Exact */
@@ -141,9 +141,9 @@ public:
 	QPtrList<CSSProperty> *parseProperties(const QChar *curP, const QChar *endP);
 
 	/* parses generic CSSValues, return true, if it found a valid value */
-	bool parseValue(const QChar *curP, const QChar *endP, int propId);	
-	bool parseValue(const QChar *curP, const QChar *endP, int propId, 
-			bool important, bool nonCSSHint, QPtrList<CSSProperty> *propList);	
+	bool parseValue(const QChar *curP, const QChar *endP, int propId);
+	bool parseValue(const QChar *curP, const QChar *endP, int propId,
+			bool important, bool nonCSSHint, QPtrList<CSSProperty> *propList);
 	bool parseFont(const QChar *curP, const QChar *endP);
 	bool parse4Values(const QChar *curP, const QChar *endP, const int *properties);
 	bool parseShortHand(const QChar *curP, const QChar *endP, const int *properties, int num);
@@ -152,7 +152,7 @@ public:
 			    bool important, bool nonCSSHint, QPtrList<CSSProperty> *propList);
 	QPtrList<QChar> splitShorthandProperties(const QChar *curP, const QChar *endP);
 	bool parseBackgroundPosition(const QChar *curP, const QChar *&nextP, const QChar *endP);
-	
+
 	/* define CSS_AURAL in cssparser.cpp if you want to parse CSS2 Aural properties */
 	bool parse2Values(const QChar *curP, const QChar *endP, const int *properties);
 	bool parseAuralValue(const QChar *curP, const QChar *endP, int propId);

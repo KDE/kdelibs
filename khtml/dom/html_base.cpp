@@ -17,11 +17,10 @@
  * along with this library; see the file COPYING.LIB.  If not, write to
  * the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
  * Boston, MA 02111-1307, USA.
- *
- * $Id$
  */
 // --------------------------------------------------------------------------
 
+#include "dom/dom_doc.h"
 #include "dom/html_base.h"
 #include "html/html_baseimpl.h"
 #include "misc/htmlhashes.h"
@@ -254,6 +253,12 @@ DOMString HTMLFrameElement::src() const
 void HTMLFrameElement::setSrc( const DOMString &value )
 {
     if(impl) ((ElementImpl *)impl)->setAttribute(ATTR_SRC, value);
+}
+
+Document HTMLFrameElement::contentDocument() const
+{
+    if (impl) return static_cast<HTMLFrameElementImpl*>(impl)->contentDocument();
+    return Document();
 }
 
 // --------------------------------------------------------------------------

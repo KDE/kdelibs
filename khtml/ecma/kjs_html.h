@@ -21,14 +21,14 @@
 #ifndef _KJS_HTML_H_
 #define _KJS_HTML_H_
 
-#include <html_document.h>
-#include <html_base.h>
-#include <html_misc.h>
-#include <html_form.h>
+#include "dom/html_document.h"
+#include "dom/html_base.h"
+#include "dom/html_misc.h"
+#include "dom/html_form.h"
 #include "misc/loader_client.h"
 
-#include "kjs_binding.h"
-#include "kjs_dom.h"
+#include "ecma/kjs_binding.h"
+#include "ecma/kjs_dom.h"
 
 class KHTMLPart;
 class HTMLElement;
@@ -114,7 +114,7 @@ namespace KJS {
            ImageLongDesc, ImageSrc, ObjectHspace, ObjectHeight, ObjectAlign,
            ObjectBorder, ObjectCode, ObjectType, ObjectVspace, ObjectArchive,
            ObjectDeclare, ObjectForm, ObjectCodeBase, ObjectCodeType, ObjectData,
-           ObjectName, ObjectStandby, ObjectTabIndex, ObjectUseMap, ObjectWidth,
+           ObjectName, ObjectStandby, ObjectTabIndex, ObjectUseMap, ObjectWidth, ObjectContentDocument,
            ParamName, ParamType, ParamValueType, ParamValue, AppletArchive,
            AppletAlt, AppletCode, AppletWidth, AppletAlign, AppletCodeBase,
            AppletName, AppletHeight, AppletHspace, AppletObject, AppletVspace,
@@ -139,10 +139,10 @@ namespace KJS {
            TableCellCh, TableCellVAlign, TableCellRowSpan, TableCellHeaders,
            TableCellAlign, TableCellAxis, TableCellScope, FrameSetCols,
            FrameSetRows, FrameSrc, FrameLocation, FrameFrameBorder, FrameScrolling,
-           FrameMarginWidth, FrameLongDesc, FrameMarginHeight, FrameName,
+           FrameMarginWidth, FrameLongDesc, FrameMarginHeight, FrameName, FrameContentDocument,
            FrameNoResize, IFrameLongDesc, IFrameDocument, IFrameAlign,
            IFrameFrameBorder, IFrameSrc, IFrameName, IFrameHeight,
-           IFrameMarginHeight, IFrameMarginWidth, IFrameScrolling, IFrameWidth,
+           IFrameMarginHeight, IFrameMarginWidth, IFrameScrolling, IFrameWidth, IFrameContentDocument,
            ElementInnerHTML, ElementTitle, ElementId, ElementDir, ElementLang,
            ElementClassName, ElementInnerText, ElementDocument, ElementChildren };
 

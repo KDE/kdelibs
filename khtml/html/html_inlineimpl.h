@@ -38,7 +38,7 @@ public:
 
     virtual ~HTMLAnchorElementImpl();
 
-    virtual ushort id() const;
+    virtual Id id() const;
 
     DOMString areaHref() const { return href; }
     DOMString targetRef() const { return target; }
@@ -67,7 +67,7 @@ public:
 
     ~HTMLBRElementImpl();
 
-    virtual ushort id() const;
+    virtual Id id() const;
 
     virtual void parseAttribute(AttrImpl *attr);
 
@@ -83,7 +83,7 @@ public:
 
     ~HTMLFontElementImpl();
 
-    virtual ushort id() const;
+    virtual Id id() const;
 
     virtual void parseAttribute(AttrImpl *attr);
     void attach();
@@ -98,15 +98,13 @@ public:
 
     ~HTMLModElementImpl();
 
-    virtual ushort id() const;
+    virtual Id id() const;
 
 protected:
     ushort _id;
 };
 
 // -------------------------------------------------------------------------
-
-class DOMString;
 
 class HTMLQuoteElementImpl : public HTMLElementImpl
 {
@@ -115,7 +113,7 @@ public:
 
     ~HTMLQuoteElementImpl();
 
-    virtual ushort id() const;
+    virtual Id id() const;
 };
 
 }; //namespace

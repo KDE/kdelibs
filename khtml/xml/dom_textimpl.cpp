@@ -18,23 +18,16 @@
  * along with this library; see the file COPYING.LIB.  If not, write to
  * the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
  * Boston, MA 02111-1307, USA.
- *
- * $Id$
  */
-#include "dom_textimpl.h"
 
-#include "dom_stringimpl.h"
-#include "dom_exception.h"
+#include "dom/dom_exception.h"
 
-#include "dom/dom_string.h"
-#include "dom_docimpl.h"
-#include "dom2_eventsimpl.h"
+#include "xml/dom2_eventsimpl.h"
+#include "xml/dom_textimpl.h"
 
-#include "dom/dom_node.h"
 #include "misc/htmlhashes.h"
 #include "rendering/render_text.h"
 
-#include <qtextstream.h>
 #include <kdebug.h>
 
 using namespace DOM;
@@ -253,7 +246,7 @@ CommentImpl::~CommentImpl()
 {
 }
 
-const DOMString CommentImpl::nodeName() const
+DOMString CommentImpl::nodeName() const
 {
     return "#comment";
 }
@@ -275,7 +268,7 @@ NodeImpl *CommentImpl::cloneNode(bool /*deep*/, int &/*exceptioncode*/)
     return ownerDocument()->createComment( str );
 }
 
-ushort CommentImpl::id() const
+NodeImpl::Id CommentImpl::id() const
 {
     return ID_COMMENT;
 }
@@ -345,7 +338,7 @@ TextImpl *TextImpl::splitText( const unsigned long offset, int &exceptioncode )
     return newText;
 }
 
-const DOMString TextImpl::nodeName() const
+DOMString TextImpl::nodeName() const
 {
   return "#text";
 }
@@ -424,7 +417,7 @@ khtml::FindSelectionResult TextImpl::findSelectionNode( int _x, int _y, int _tx,
     return static_cast<RenderText *>(m_render)->checkSelectionPoint(_x, _y, _tx, _ty, offset);
 }
 
-ushort TextImpl::id() const
+NodeImpl::Id TextImpl::id() const
 {
     return ID_TEXT;
 }
@@ -461,7 +454,7 @@ CDATASectionImpl::~CDATASectionImpl()
 {
 }
 
-const DOMString CDATASectionImpl::nodeName() const
+DOMString CDATASectionImpl::nodeName() const
 {
   return "#cdata-section";
 }

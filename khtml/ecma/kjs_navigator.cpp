@@ -56,11 +56,11 @@ namespace KJS {
             QString name;
             QString file;
             QString desc;
-            QList<MimeClassInfo> mimes;
+            QPtrList<MimeClassInfo> mimes;
         };
 
-        static QList<PluginInfo> *plugins;
-        static QList<MimeClassInfo> *mimes;
+        static QPtrList<PluginInfo> *plugins;
+        static QPtrList<MimeClassInfo> *mimes;
 
     private:
         static int m_refCount;
@@ -119,8 +119,8 @@ namespace KJS {
 };
 
 
-QList<PluginBase::PluginInfo> *KJS::PluginBase::plugins = 0;
-QList<PluginBase::MimeClassInfo> *KJS::PluginBase::mimes = 0;
+QPtrList<PluginBase::PluginInfo> *KJS::PluginBase::plugins = 0;
+QPtrList<PluginBase::MimeClassInfo> *KJS::PluginBase::mimes = 0;
 int KJS::PluginBase::m_refCount = 0;
 
 const ClassInfo Navigator::info = { "Navigator", 0, &NavigatorTable, 0 };
@@ -227,8 +227,8 @@ PluginBase::PluginBase(ExecState *exec)
   : ObjectImp(exec->interpreter()->builtinObjectPrototype() )
 {
     if ( !plugins ) {
-        plugins = new QList<PluginInfo>;
-        mimes = new QList<MimeClassInfo>;
+        plugins = new QPtrList<PluginInfo>;
+        mimes = new QPtrList<MimeClassInfo>;
         plugins->setAutoDelete( true );
         mimes->setAutoDelete( true );
 

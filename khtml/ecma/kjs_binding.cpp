@@ -21,12 +21,12 @@
 #include "kjs_binding.h"
 #include "kjs_dom.h"
 #include <kjs/internal.h> // for InterpreterImp
-#include <dom_exception.h>
-#include <dom2_events.h>
-#include <dom2_range.h>
-#include <qvariant.h>
-#include <kdebug.h>
+
+#include "dom/dom_exception.h"
+#include "dom/dom2_range.h"
 #include "xml/dom2_eventsimpl.h"
+
+#include <kdebug.h>
 
 using namespace KJS;
 

@@ -3,6 +3,7 @@
  *
  * Copyright (C) 1999 Lars Knoll (knoll@kde.org)
  *           (C) 1999 Antti Koivisto (koivisto@kde.org)
+ *           (C) 2001 Dirk Mueller (mueller@kde.org)
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -18,32 +19,25 @@
  * along with this library; see the file COPYING.LIB.  If not, write to
  * the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
  * Boston, MA 02111-1307, USA.
- *
  */
-#include "dom_nodeimpl.h"
 
-#include "dom_node.h"
-#include "dom_exception.h"
-#include "htmlattrs.h"
 
-#include "dom_elementimpl.h"
-#include "dom_docimpl.h"
-#include "dom_textimpl.h"
-#include "dom2_eventsimpl.h"
+#include "dom/dom_exception.h"
+#include "misc/htmlattrs.h"
 
+#include "xml/dom_elementimpl.h"
+#include "xml/dom_textimpl.h"
+#include "xml/dom2_eventsimpl.h"
+
+#include <kglobal.h>
 #include <kdebug.h>
 
-#include "rendering/render_object.h"
 #include "rendering/render_text.h"
 
 #include "ecma/kjs_proxy.h"
 #include "khtmlview.h"
 #include "khtml_part.h"
 
-#include <qrect.h>
-#include <qevent.h>
-#include <qnamespace.h>
-#include <qtextstream.h>
 
 using namespace DOM;
 using namespace khtml;
@@ -51,6 +45,7 @@ using namespace khtml;
 NodeImpl::NodeImpl(DocumentPtr *doc)
     : document(doc),
       m_render(0),
+      m_regdListeners( 0 ),
       m_complexText( false ),
       m_hasEvents( false ),
       m_hasId( false ),
@@ -63,8 +58,7 @@ NodeImpl::NodeImpl(DocumentPtr *doc)
       m_specified( false ),
       m_focused( false ),
       m_active( false ),
-      m_styleElement( false ),
-      m_regdListeners( 0 )
+      m_styleElement( false )
 {
     m_hasTabindex=false;
     m_tabindex=0;
@@ -98,7 +92,7 @@ void NodeImpl::setNodeValue( const DOMString &/*_nodeValue*/, int &exceptioncode
     // be default nodeValue is null, so setting it has no effect
 }
 
-const DOMString NodeImpl::nodeName() const
+DOMString NodeImpl::nodeName() const
 {
   return DOMString();
 }
@@ -138,7 +132,7 @@ NodeImpl *NodeImpl::nextSibling() const
   return 0;
 }
 
-NamedNodeMapImpl *NodeImpl::attributes()
+NamedNodeMapImpl *NodeImpl::attributes() const
 {
   return 0;
 }
@@ -233,14 +227,13 @@ DOMString NodeImpl::prefix() const
 void NodeImpl::setPrefix(const DOMString &/*_prefix*/, int &exceptioncode )
 {
     // The spec says that for nodes other than elements and attributes, prefix is always null.
-    // It does not say what do so when the user tries to set the prefix on another type of
+    // It does not say what to do when the user tries to set the prefix on another type of
     // node, however mozilla throws a NAMESPACE_ERR exception
     exceptioncode = DOMException::NAMESPACE_ERR;
 }
 
 DOMString NodeImpl::localName() const
 {
-    // ### implement
     return DOMString();
 }
 
@@ -405,12 +398,10 @@ void NodeImpl::printTree(int indent)
     QString s;
     ind.fill(' ', indent);
 
-    // ### find out why this isn't working
-    if(isElementNode())
-    {
-        s = ind + "<" + nodeName().string();
+    if(isElementNode()) {
+        s = ind + "<" + nodeName().string() + "[" + QString::number(id()) + "]";
 
-        ElementImpl *el = const_cast<ElementImpl*>(static_cast<const ElementImpl *>(this));
+        const ElementImpl *el = const_cast<ElementImpl*>(static_cast<const ElementImpl *>(this));
         AttrImpl *attr;
         NamedNodeMapImpl *attrs = el->attributes();
         unsigned long lmap = attrs->length();
@@ -424,6 +415,8 @@ void NodeImpl::printTree(int indent)
         else
             s += ">";
     }
+    else if (!isTextNode())
+        s = ind + "<?" + nodeName().string() + " " + nodeValue().string() + "?>";
     else
         s = ind + "'" + nodeValue().string() + "'";
 
@@ -474,7 +467,7 @@ void NodeImpl::addEventListener(int id, EventListener *listener, const bool useC
 
     RegisteredEventListener *rl = new RegisteredEventListener(static_cast<EventImpl::EventId>(id),listener,useCapture);
     if (!m_regdListeners) {
-        m_regdListeners = new QList<RegisteredEventListener>;
+        m_regdListeners = new QPtrList<RegisteredEventListener>;
 	m_regdListeners->setAutoDelete(true);
     }
 
@@ -497,7 +490,7 @@ void NodeImpl::removeEventListener(int id, EventListener *listener, bool useCapt
 
     RegisteredEventListener rl(static_cast<EventImpl::EventId>(id),listener,useCapture);
 
-    QListIterator<RegisteredEventListener> it(*m_regdListeners);
+    QPtrListIterator<RegisteredEventListener> it(*m_regdListeners);
     for (; it.current(); ++it)
         if (*(it.current()) == rl) {
             m_regdListeners->removeRef(it.current());
@@ -517,7 +510,7 @@ void NodeImpl::removeHTMLEventListener(int id)
     if (!m_regdListeners) // nothing to remove
         return;
 
-    QListIterator<RegisteredEventListener> it(*m_regdListeners);
+    QPtrListIterator<RegisteredEventListener> it(*m_regdListeners);
     for (; it.current(); ++it)
         if (it.current()->id == id &&
             it.current()->listener->eventListenerType() == "_khtml_HTMLEventListener") {
@@ -544,7 +537,7 @@ EventListener *NodeImpl::getHTMLEventListener(int id)
     if (!m_regdListeners)
         return 0;
 
-    QListIterator<RegisteredEventListener> it(*m_regdListeners);
+    QPtrListIterator<RegisteredEventListener> it(*m_regdListeners);
     for (; it.current(); ++it)
         if (it.current()->id == id &&
             it.current()->listener->eventListenerType() == "_khtml_HTMLEventListener") {
@@ -578,7 +571,7 @@ bool NodeImpl::dispatchGenericEvent( EventImpl *evt, int &/*exceptioncode */)
     // ### check that type specified
 
     // work out what nodes to send event to
-    QList<NodeImpl> nodeChain;
+    QPtrList<NodeImpl> nodeChain;
     NodeImpl *n;
     for (n = this; n; n = n->parentNode()) {
         n->ref();
@@ -587,7 +580,7 @@ bool NodeImpl::dispatchGenericEvent( EventImpl *evt, int &/*exceptioncode */)
 
     // trigger any capturing event handlers on our way down
     evt->setEventPhase(Event::CAPTURING_PHASE);
-    QListIterator<NodeImpl> it(nodeChain);
+    QPtrListIterator<NodeImpl> it(nodeChain);
     for (; it.current() && it.current() != this && !evt->propagationStopped(); ++it) {
         evt->setCurrentTarget(it.current());
         it.current()->handleLocalEvents(evt,true);
@@ -793,7 +786,7 @@ void NodeImpl::handleLocalEvents(EventImpl *evt, bool useCapture)
     if (!m_regdListeners)
         return;
 
-    QListIterator<RegisteredEventListener> it(*m_regdListeners);
+    QPtrListIterator<RegisteredEventListener> it(*m_regdListeners);
     Event ev = evt;
     for (; it.current(); ++it) {
         if (it.current()->id == evt->id() && it.current()->useCapture == useCapture)
@@ -1131,7 +1124,8 @@ bool NodeWParentImpl::prepareMouseEvent( int _x, int _y,
 
 //-------------------------------------------------------------------------
 
-NodeBaseImpl::NodeBaseImpl(DocumentPtr *doc) : NodeWParentImpl(doc)
+NodeBaseImpl::NodeBaseImpl(DocumentPtr *doc)
+    : NodeWParentImpl(doc)
 {
     _first = _last = 0;
     m_style = 0;
@@ -1537,12 +1531,12 @@ NodeImpl *NodeBaseImpl::addChild(NodeImpl *newChild)
 
 void NodeBaseImpl::applyChanges(bool top, bool force)
 {
-    if (!attached()) {
+    if (!m_render) {
         setChanged(false);
         return;
     }
 
-    int ow = (m_style?m_style->outlineWidth():0);
+    unsigned short ow = m_style->outlineWidth();
 
     if (top)
         recalcStyle();
@@ -1573,7 +1567,7 @@ void NodeBaseImpl::applyChanges(bool top, bool force)
         }
         else {
             // ### FIX ME
-            if (m_style) ow = QMAX(ow, m_style->outlineWidth());
+            ow = kMax(ow, m_style->outlineWidth());
             RenderObject *cb = m_render->containingBlock();
             if (cb && cb != m_render)
                 cb->repaintRectangle(-ow, -ow, cb->width()+2*ow, cb->height()+2*ow);
@@ -1985,7 +1979,7 @@ NamedNodeMapImpl::~NamedNodeMapImpl()
 GenericRONamedNodeMapImpl::GenericRONamedNodeMapImpl() : NamedNodeMapImpl()
 {
     // not sure why this doesn't work as a normal object
-    m_contents = new QList<NodeImpl>;
+    m_contents = new QPtrList<NodeImpl>;
 }
 
 GenericRONamedNodeMapImpl::~GenericRONamedNodeMapImpl()
@@ -1998,7 +1992,7 @@ GenericRONamedNodeMapImpl::~GenericRONamedNodeMapImpl()
 
 NodeImpl *GenericRONamedNodeMapImpl::getNamedItem ( const DOMString &name, int &/*exceptioncode*/ ) const
 {
-    QListIterator<NodeImpl> it(*m_contents);
+    QPtrListIterator<NodeImpl> it(*m_contents);
     for (; it.current(); ++it)
         if (it.current()->nodeName() == name)
             return it.current();
@@ -2040,7 +2034,7 @@ NodeImpl *GenericRONamedNodeMapImpl::getNamedItemNS( const DOMString &namespaceU
                                                      const DOMString &localName,
                                                      int &/*exceptioncode*/ ) const
 {
-    QListIterator<NodeImpl> it(*m_contents);
+    QPtrListIterator<NodeImpl> it(*m_contents);
     for (; it.current(); ++it)
         if (it.current()->nodeName() == localName &&
             it.current()->namespaceURI() == namespaceURI)

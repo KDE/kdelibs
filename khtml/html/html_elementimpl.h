@@ -40,9 +40,7 @@ public:
 
     virtual bool isHTMLElement() const { return true; }
 
-    DOMString tagName() const;
-    virtual ushort id() const = 0;
-    virtual unsigned int cssTagId() const { return id(); };
+    virtual Id id() const = 0;
 
     virtual void parseAttribute(AttrImpl *token);
 
@@ -74,7 +72,7 @@ public:
 
     virtual ~HTMLGenericElementImpl();
 
-    virtual ushort id() const { return _id; };
+    virtual Id id() const { return _id; };
 
 protected:
     ushort _id;

@@ -24,8 +24,8 @@
 #ifndef _DOM_CharacterDataImpl_h_
 #define _DOM_CharacterDataImpl_h_
 
-#include "dom_nodeimpl.h"
-#include "dom_string.h"
+#include "xml/dom_nodeimpl.h"
+#include "dom/dom_string.h"
 
 namespace khtml {
     class RenderStyle;
@@ -82,15 +82,14 @@ public:
     virtual ~CommentImpl();
 
     // DOM methods overridden from  parent classes
-
-    virtual const DOMString nodeName() const;
+    virtual DOMString nodeName() const;
     virtual unsigned short nodeType() const;
     virtual DOMString namespaceURI() const;
     virtual NodeImpl *cloneNode(bool deep, int &exceptioncode);
 
     // Other methods (not part of DOM)
 
-    virtual ushort id() const;
+    virtual Id id() const;
     virtual bool childTypeAllowed( unsigned short type );
 };
 
@@ -108,8 +107,7 @@ public:
     TextImpl *splitText ( const unsigned long offset, int &exceptioncode );
 
     // DOM methods overridden from  parent classes
-
-    virtual const DOMString nodeName() const;
+    virtual DOMString nodeName() const;
     virtual unsigned short nodeType() const;
     virtual DOMString namespaceURI() const;
     virtual NodeImpl *cloneNode(bool deep, int &exceptioncode);
@@ -117,7 +115,7 @@ public:
     // Other methods (not part of DOM)
 
     virtual bool isTextNode() const { return true; }
-    virtual ushort id() const;
+    virtual Id id() const;
     virtual khtml::RenderStyle *style() const;
     virtual void attach();
     virtual void detach();
@@ -142,8 +140,7 @@ public:
     virtual ~CDATASectionImpl();
 
     // DOM methods overridden from  parent classes
-
-    virtual const DOMString nodeName() const;
+    virtual DOMString nodeName() const;
     virtual unsigned short nodeType() const;
     virtual DOMString namespaceURI() const;
     virtual NodeImpl *cloneNode(bool deep, int &exceptioncode);

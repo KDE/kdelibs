@@ -49,11 +49,11 @@ class HTMLTokenizer;
 #include <qobject.h>
 #include <qptrqueue.h>
 
-#include "stringit.h"
-#include "loader_client.h"
-#include "xml/dom_elementimpl.h"
+#include "misc/loader_client.h"
 #include "misc/htmltags.h"
+#include "misc/stringit.h"
 #include "xml/dom_stringimpl.h"
+#include "xml/dom_elementimpl.h"
 
 class KHTMLParser;
 class KHTMLView;

@@ -48,7 +48,7 @@ public:
 
     ~HTMLBaseElementImpl();
 
-    virtual ushort id() const;
+    virtual Id id() const;
 
     virtual void parseAttribute(AttrImpl *attr);
     virtual void attach();
@@ -69,7 +69,7 @@ public:
 
     ~HTMLLinkElementImpl();
 
-    virtual ushort id() const;
+    virtual Id id() const;
 
     StyleSheetImpl *sheet() const;
 
@@ -103,7 +103,7 @@ public:
 
     ~HTMLMetaElementImpl();
 
-    virtual ushort id() const;
+    virtual Id id() const;
 
     virtual void parseAttribute(AttrImpl *attr);
     virtual void attach();
@@ -122,7 +122,7 @@ public:
 
     ~HTMLScriptElementImpl();
 
-    virtual ushort id() const;
+    virtual Id id() const;
 };
 
 // -------------------------------------------------------------------------
@@ -134,7 +134,7 @@ public:
 
     ~HTMLStyleElementImpl();
 
-    virtual ushort id() const;
+    virtual Id id() const;
 
     StyleSheetImpl *sheet() const { return m_sheet; }
 
@@ -165,7 +165,7 @@ public:
 
     ~HTMLTitleElementImpl();
 
-    virtual ushort id() const;
+    virtual Id id() const;
     virtual void setTitle();
 };
 

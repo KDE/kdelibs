@@ -24,7 +24,7 @@
 #include <qobject.h>
 #include <qguardedptr.h>
 #include <qmap.h>
-#include <qlist.h>
+#include <qptrlist.h>
 
 #include "kjs_binding.h"
 
@@ -99,7 +99,7 @@ namespace KJS {
     // Set the current "event" object
     void setCurrentEvent( DOM::Event *evt );
 
-    QList<JSEventListener> jsEventListeners;
+    QPtrList<JSEventListener> jsEventListeners;
     virtual const ClassInfo* classInfo() const { return &info; }
     static const ClassInfo info;
     enum { Closed, Crypto, DefaultStatus, Status, Document, Node, Range,

@@ -25,8 +25,6 @@
 
 #include "dom_stringimpl.h"
 
-#include <qstring.h>
-#include <qlist.h>
 #include <kdebug.h>
 
 #include <string.h>
@@ -37,7 +35,7 @@ using namespace khtml;
 #define QT_ALLOC_QCHAR_VEC( N ) (QChar*) new char[ sizeof(QChar)*( N ) ]
 #define QT_DELETE_QCHAR_VEC( P ) delete[] ((char*)( P ))
 
-template class QList<Length>;
+template class QPtrList<Length>;
 
 DOMStringImpl::DOMStringImpl(const QChar *str, uint len)
 {
@@ -211,7 +209,7 @@ Length DOMStringImpl::toLength() const
     return parseLength(s,l);
 }
 
-QList<Length> *DOMStringImpl::toLengthList() const
+QPtrList<Length> *DOMStringImpl::toLengthList() const
 {
     QString str(s, l);
     int pos = 0;
@@ -229,7 +227,7 @@ QList<Length> *DOMStringImpl::toLengthList() const
     }
     str = str.simplifyWhiteSpace();
 
-    QList<Length> *list = new QList<Length>;
+    QPtrList<Length> *list = new QPtrList<Length>;
     list->setAutoDelete(true);
     while((pos2 = str.find(' ', pos)) != -1)
     {
