@@ -280,6 +280,11 @@ int main(int argc, char *argv[])
 
   KURL ulong("https://swww.gad.de:443/servlet/CookieAccepted?MAIL=s@gad.de&VER=25901");
   check("host",ulong.host(),"swww.gad.de");
+  // UTF8 tests
+  KURL uloc("/home/dfaure/konqtests/Matériel");
+  check("locale8bit",uloc.url(),"file:/home/dfaure/konqtests/Matériel"); // escaping the letter would be correct too
+  check("pretty",uloc.prettyURL(),"file:/home/dfaure/konqtests/Matériel"); // escaping the letter would be correct too
+  check("UTF8",uloc.url(0, QFont::Unicode),"file:/home/dfaure/konqtests/Mat%C3%A9riel");
 
   printf("\nTest OK !\n");
 }
