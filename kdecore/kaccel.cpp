@@ -45,7 +45,7 @@ KAccelPrivate::KAccelPrivate( KAccel* pParent )
 void KAccelPrivate::setEnabled( bool bEnabled )
 {
 	m_bEnabled = bEnabled;
-	m_pAccel->setEnabled( bEnabled );
+	((QAccel*)m_pAccel)->setEnabled( bEnabled );
 }
 
 bool KAccelPrivate::removeAction( const QString& sAction )
