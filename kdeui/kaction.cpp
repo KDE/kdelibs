@@ -159,7 +159,7 @@ void KAction::unplug( QWidget *w )
 
 void KAction::plugAccel(KAccel *kacc, const QString &name, bool configurable)
 {
-	ASSERT( kacc==0 );
+    if (kaccel) unplugAccel();
 	kaccel = kacc;
 	actionName = name;
 	kaccel->insertItem(plainText(), name, accel(), configurable);
@@ -179,6 +179,8 @@ void KAction::unplugAccel()
 {
 	if ( kaccel==0 ) return;
 	kaccel->removeItem(actionName);
+	kaccel->disconnect(this);
+	kaccel = 0;
 }
 
 void KAction::setEnabled(bool enable)
@@ -206,7 +208,7 @@ void KAction::setText( const QString& text )
 
 void KAction::setIconSet(const QIconSet &iconSet)
 {
-	// it seems its needed (gcc dumbness ??)
+	// it seems it's needed (gcc dumbness ??)
 	QAction::setIconSet(iconSet);
 }
 
@@ -344,7 +346,7 @@ void KToggleAction::setChecked( bool c )
     {
 	QWidget *w = container( i );
 	if ( w->inherits( "KToolBar" ) ) {
-	    	QWidget* r = ( (KToolBar*)w )->getButton( menuId( i ) );
+		QWidget* r = ( (KToolBar*)w )->getButton( menuId( i ) );
 		if ( r->inherits( "KToolBarButton" ) )
 		    ( (KToolBar*)w )->setButton( menuId( i ), c );
 	} else if ( w->inherits( "QPopupMenu" ) )
