@@ -625,10 +625,10 @@ MkdirJob::MkdirJob( const KURL& url, int command,
 
 void MkdirJob::start(Slave *slave)
 {
-    SimpleJob::start(slave);
-
     connect( slave, SIGNAL( redirection(const KURL &) ),
              SLOT( slotRedirection(const KURL &) ) );
+    
+    SimpleJob::start(slave);
 }
 
 // Slave got a redirection request
@@ -752,12 +752,12 @@ void StatJob::start(Slave *slave)
     m_outgoingMetaData.replace( "statSide", m_bSource ? "source" : "dest" );
     m_outgoingMetaData.replace( "details", QString::number(m_details) );
 
-    SimpleJob::start(slave);
-
-    connect( m_slave, SIGNAL( statEntry( const KIO::UDSEntry& ) ),
+    connect( slave, SIGNAL( statEntry( const KIO::UDSEntry& ) ),
              SLOT( slotStatEntry( const KIO::UDSEntry & ) ) );
     connect( slave, SIGNAL( redirection(const KURL &) ),
              SLOT( slotRedirection(const KURL &) ) );
+
+    SimpleJob::start(slave);
 }
 
 void StatJob::slotStatEntry( const KIO::UDSEntry & entry )
