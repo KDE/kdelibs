@@ -88,7 +88,7 @@ void HTMLDivElementImpl::parseAttribute(AttrImpl *attr)
     {
         DOMString v = attr->value();
         if ( strcasecmp( attr->value(), "center" ) == 0 )
-            v = "konq-center";
+            v = "-konq-center";
         addCSSProperty(CSS_PROP_TEXT_ALIGN, v);
         break;
     }
