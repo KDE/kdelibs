@@ -62,9 +62,16 @@ inline bool operator <(const KEntryKey &k1, const KEntryKey &k2)
 {
   if (k1.mGroup != k2.mGroup)
     return k1.mGroup < k2.mGroup;
-  if (k1.bLocal != k2.bLocal)
-    return k2.bLocal;
-  return (strcmp(k1.c_key, k2.c_key) < 0);
+
+  if (!k1.c_key && k2.c_key)
+    return true;
+
+  int result = 0;
+  if (k1.c_key && k2.c_key)
+     result = strcmp(k1.c_key, k2.c_key);
+  if (result != 0)
+     return result < 0;
+  return (!k1.bLocal && k2.bLocal);
 }
 
 /**
