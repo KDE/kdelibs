@@ -110,7 +110,7 @@ int main(int argc, char **argv) {
     filter( "~/.kderc", QDir::homeDirPath().local8Bit()+"/.kderc", KURIFilterData::LOCAL_FILE, "kshorturifilter" );
     filter( "~", QDir::homeDirPath().local8Bit(), KURIFilterData::LOCAL_DIR, "kshorturifilter", "/tmp" );
     filter( "~foobar", 0, KURIFilterData::ERROR, "kshorturifilter" );
-    filter( "user@host", "mailto:user@host", KURIFilterData::NET_PROTOCOL ); // new in KDE-3.2
+    filter( "user@host.domain", "mailto:user@host.domain", KURIFilterData::NET_PROTOCOL ); // new in KDE-3.2
 
     // SMB share test with a specific filter chosen
     // #### Those fail - I see no specific code for them in kshorturifilter !?
