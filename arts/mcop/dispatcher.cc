@@ -1,7 +1,7 @@
     /*
 
-    Copyright (C) 2000 Stefan Westerfeld
-                       stefan@space.twc.de
+    Copyright (C) 2000-2001 Stefan Westerfeld
+                            stefan@space.twc.de
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -934,8 +934,8 @@ void Dispatcher::handleConnectionClose(Connection *connection)
 	 * be changing due to the other _disconnectRemote calls we make, so we
 	 * enumerate() the objects manually
 	 */
-	unsigned long l, max;
-	for(l=0, max = objectPool.max(); l<max; l++)
+	unsigned long l;
+	for(l=0; l<objectPool.max(); l++)
 	{
 		Object_skel *skel = objectPool[l]; 
 		if(skel) skel->_disconnectRemote(connection);

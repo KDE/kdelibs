@@ -71,10 +71,6 @@ void ReferenceClean::clean()
 	 * that if an object disappears, ten other objects might cease to exist
 	 * as well (as they are dependant), which would break a list which we
 	 * could obtain via enumerate() and would probably lead to a crash
-	 *
-	 * we don't particularily care about missing an object, because
-	 * reference cleaning is called periodically (so they will be processed
-	 * on next invocation)
 	 */
 	unsigned long l;
 
