@@ -491,6 +491,7 @@ NodeImpl* HTMLFormCollectionImpl::getNamedFormItem(int attr_id, const DOMString&
     if(base->nodeType() == Node::ELEMENT_NODE)
     {
         HTMLElementImpl* e = static_cast<HTMLElementImpl*>(base);
+        bool foundInputElements = false;
         if(e->id() == ID_FORM)
         {
             HTMLGenericFormElementImpl* element;
@@ -502,11 +503,16 @@ NodeImpl* HTMLFormCollectionImpl::getNamedFormItem(int attr_id, const DOMString&
                     if (!duplicateNumber)
                         return element;
                     --duplicateNumber;
+                    foundInputElements = true;
                 }
         }
-        NodeImpl* retval = getNamedImgItem( base->firstChild(), attr_id, name, duplicateNumber );
-        if ( retval )
-            return retval;
+        // IE looks at <img> only if no <input> has the same name
+        if ( !foundInputElements )
+        {
+            NodeImpl* retval = getNamedImgItem( base->firstChild(), attr_id, name, duplicateNumber );
+            if ( retval )
+                return retval;
+        }
     }
     return 0;
 }
@@ -514,7 +520,8 @@ NodeImpl* HTMLFormCollectionImpl::getNamedFormItem(int attr_id, const DOMString&
 NodeImpl* HTMLFormCollectionImpl::getNamedImgItem(NodeImpl* current, int attr_id, const DOMString& name, int& duplicateNumber) const
 {
     // strange case. IE and NS allow to get hold of <img> tags,
-    // but they don't include them in the elements() collection.
+    // only _if_ there is no input tag with the same name
+    // and they don't include them in the elements() collection.
     while ( current )
     {
         if(current->nodeType() == Node::ELEMENT_NODE)
