@@ -257,7 +257,6 @@ void SlaveInterface::openPassDlg( const QString& prompt, const QString& user, bo
     info.username = user;
     info.readOnly = readOnly;
     openPassDlg( info );
-    return;
 }
 
 void SlaveInterface::openPassDlg( const QString& prompt, const QString& user,
