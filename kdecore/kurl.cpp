@@ -507,6 +507,12 @@ KURL::KURL( const KURL& _u, const QString& _rel_url, int encoding_hint )
   {
     KURL tmp( rUrl, encoding_hint);
     *this = tmp;
+    // Preserve userinfo if applicable.
+    if (!_u.m_strUser.isEmpty() && m_strUser.isEmpty() && (_u.m_strHost == m_strHost) && (_u.m_strProtocol == m_strProtocol))
+    {
+       m_strUser = _u.m_strUser;
+       m_strPass = _u.m_strPass;
+    }
   }
 }
 
