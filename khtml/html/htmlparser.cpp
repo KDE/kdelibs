@@ -37,7 +37,7 @@
 #undef Color
 #endif
 
-#include "khtmlparser.h"
+#include "htmlparser.h"
 
 #include "dom_nodeimpl.h"
 #include "dom_exception.h"
@@ -55,10 +55,10 @@
 #include "html_objectimpl.h"
 #include "dom_textimpl.h"
 
-#include "khtmltags.h"
-#include "khtmltoken.h"
+#include "htmlhashes.h"
+#include "htmltoken.h"
 #include "khtmlfont.h"
-#include "khtmlattrs.h"
+#include "htmlhashes.h"
 #include "khtmlstyle.h"
 #include "khtmldata.h"
 #include "khtml.h"
@@ -71,7 +71,7 @@
 //
 // priority of tags. Closing tags of higher priority close tags of lower
 // priority.
-// Update this list, whenever you change khtmltags.*
+// Update this list, whenever you change htmltags.*
 //
 // 0 elements with forbidden close tag and text. They don't get pushed
 //   to the stack.

@@ -32,7 +32,7 @@
 using namespace DOM;
 
 #include "khtml.h"
-#include "khtmlattrs.h"
+#include "htmlhashes.h"
 #include <stdio.h>
 #include <kurl.h>
 

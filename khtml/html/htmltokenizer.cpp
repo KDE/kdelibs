@@ -34,8 +34,8 @@
 #include "config.h"
 #endif
 
-#include "khtmltokenizer.h"
-#include "khtmltoken.h"
+#include "htmltokenizer.h"
+#include "htmltoken.h"
 #include "khtml.h"
 #include "dtd.h"
 #include "htmlhashes.h"
@@ -598,15 +598,14 @@ void HTMLTokenizer::parseTag(HTMLStringIt &src)
 		    if(*(dest-1) == '/' && len > 1) len--;
 		
 		    QConstString tmp(ptr, len);
-		    const struct tags *tagPtr = findTag(tmp.string().ascii(), len);
-		    if (!tagPtr) {
+		    uint tagID = getTagID(tmp.string().ascii(), len);
+		    if (!tagID) {
 			printf("Unknown tag: \"%s\"\n", tmp.string().ascii());
 			dest = buffer;
 			tag = SearchEnd; // ignore the tag
 		    }
 		    else
 		    {
-			uint tagID = tagPtr->id;
 #ifdef TOKEN_DEBUG
 			printf("found tag id=%d\n", tagID);
 #endif
@@ -666,7 +665,7 @@ void HTMLTokenizer::parseTag(HTMLStringIt &src)
 		    // beginning of name
 		    QChar *ptr = buffer;
 		    QConstString tmp(ptr, dest-buffer);
-		    const struct attrs *a = findAttr(tmp.string().ascii(),
+		    uint a = getAttrID(tmp.string().ascii(),
 						     dest-buffer);
 		    dest = buffer;
 		    if (!a) {
@@ -681,7 +680,7 @@ void HTMLTokenizer::parseTag(HTMLStringIt &src)
 			printf("Known attribute: \"%s\"\n",
 			       tmp.string().ascii());
 #endif
-			*dest++ = a->id;
+			*dest++ = a;
 		    }		
 		    tag = SearchEqual;
 		    discard = SpaceDiscard; // discard spaces before '='

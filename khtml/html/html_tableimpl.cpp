@@ -52,7 +52,7 @@
 #include "html_documentimpl.h"
 using namespace DOM;
 
-#include "khtmlattrs.h"
+#include "htmlhashes.h"
 #include "khtmlstyle.h"
 #include "khtmltext.h"
 

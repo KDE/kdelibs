@@ -30,7 +30,7 @@
 
 #include "dtd.h"
 #include "dom_elementimpl.h"
-#include "khtmltags.h"
+#include "htmlhashes.h"
 #include "khtmlstyle.h"
 
 

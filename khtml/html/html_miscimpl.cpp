@@ -27,8 +27,8 @@
 
 #include "html_miscimpl.h"
 #include "dom_node.h"
-#include "khtmltags.h"
-#include "khtmlattrs.h"
+#include "htmlhashes.h"
+#include "htmlhashes.h"
 using namespace DOM;
 
 #include <stdio.h>

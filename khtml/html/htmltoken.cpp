@@ -25,9 +25,8 @@
 // KDE HTML Widget - Tokenizers
 // $Id$
 
-#include "khtmltoken.h"
-#include "khtmltags.h"
-#include "khtmlattrs.h"
+#include "htmltoken.h"
+#include "htmlhashes.h"
 
 // defined in khtmltokenizer
 int getAttrID(const char *tagStr, int len);

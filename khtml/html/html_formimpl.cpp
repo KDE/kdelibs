@@ -44,7 +44,7 @@
 #include "dom_textimpl.h"
 #include "html_documentimpl.h"
 
-#include "khtmlattrs.h"
+#include "htmlhashes.h"
 
 using namespace DOM;
 

@@ -21,8 +21,8 @@
  * $Id$
  */
 #include "dtd.h"
-#include "khtmltags.h"
-#include "khtmlattrs.h"
+#include "htmlhashes.h"
+#include "htmlhashes.h"
 #include "dom_string.h"
 using namespace DOM;
 

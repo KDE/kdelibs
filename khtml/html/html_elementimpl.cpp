@@ -43,11 +43,11 @@
 #include "dom_stringimpl.h"
 #include "dom_exception.h"
 
-#include "khtmltags.h"
+#include "htmlhashes.h"
 #include "khtmlstyle.h"
 #include "khtmlfont.h"
 #include "khtmltext.h"
-#include "khtmlattrs.h"
+#include "htmlhashes.h"
 #include "khtml.h"
 
 #include <stdio.h>

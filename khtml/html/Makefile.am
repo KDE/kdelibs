@@ -39,8 +39,6 @@ noinst_HEADERS = \
 	html_elementimpl.h   html_miscimpl.h \
 	html_formimpl.h      html_objectimpl.h
 
-libkhtmlhtml_la_LDFLAGS = -version-info 3:0
-
 INCLUDES = -I$(srcdir)/kjs -I$(top_srcdir)/kimgio -I$(top_srcdir)/kio \
 	-I$(srcdir)/java -I$(top_srcdir)/dcop \
 	 -I.. -I. -I../misc -I../css -I../xml -I../html $(all_includes)

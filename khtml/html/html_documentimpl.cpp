@@ -24,13 +24,13 @@
 
 #include <qstack.h>
 
-#include "khtmlparser.h"
-#include "khtmltokenizer.h"
+#include "htmlparser.h"
+#include "htmltokenizer.h"
 #include "khtmlfont.h"
 #include "khtmldata.h"
 #include "khtmlio.h"
 #include "khtml.h"
-#include "khtmlattrs.h"
+#include "htmlhashes.h"
 
 #include "html_misc.h"
 #include "dom_node.h"

@@ -26,8 +26,8 @@
 #include "dom_nodeimpl.h"
 #include "java/kjavaappletwidget.h"
 #include "dom_string.h"
-#include "khtmlattrs.h"
-#include "khtmltags.h"
+#include "htmlhashes.h"
+#include "htmlhashes.h"
 #include "khtml.h"
 #include <qstring.h>
 

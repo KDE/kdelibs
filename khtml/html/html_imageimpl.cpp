@@ -28,7 +28,7 @@
 #include <qpalette.h>
 #include <qstack.h>
 
-#include "khtmlattrs.h"
+#include "htmlhashes.h"
 #include "khtmlio.h"
 
 #include "html_image.h"

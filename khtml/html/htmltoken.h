@@ -31,7 +31,7 @@
 
 #include <qstring.h>
 
-#include "khtmlstring.h"
+#include "stringit.h"
 #include "dom_stringimpl.h"
 
 /**

@@ -46,9 +46,9 @@ class HTMLTokenizer;
 
 #include <qstring.h>
 
-#include "khtmlstring.h"
-#include "khtmltoken.h"
-#include "khtmlparser.h"
+#include "stringit.h"
+#include "htmltoken.h"
+#include "htmlparser.h"
 
 class KHTMLParser;
 class KHTMLWidget;

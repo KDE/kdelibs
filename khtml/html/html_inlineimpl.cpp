@@ -36,9 +36,9 @@
 #include "html_inlineimpl.h"
 using namespace DOM;
 
-#include "khtmlattrs.h"
+#include "htmlhashes.h"
 #include "khtmlstyle.h"
-#include "khtmltokenizer.h"
+#include "htmlhashes.h"
 
 HTMLAnchorElementImpl::HTMLAnchorElementImpl(DocumentImpl *doc)
 : HTMLAreaElementImpl(doc)

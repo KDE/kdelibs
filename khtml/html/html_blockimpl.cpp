@@ -33,7 +33,7 @@
 #include "html_blockimpl.h"
 using namespace DOM;
 
-#include "khtmlattrs.h"
+#include "htmlhashes.h"
 #include "khtmlstyle.h"
 
 #include <stdio.h>
