@@ -11,5 +11,6 @@ function sum(a, b)
 
 s = sum(10, sum(20, 30));
 print("s = " + s);
+i(1);
 print("i = " + i);
 
