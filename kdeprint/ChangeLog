@@ -143,3 +143,13 @@ Since 2.2 release, Michael Goffioul <goffioul@imec.be>
 12/11/2001 Michael Goffioul <goffioul@imec.be>
   * CUPS: redesigned the "cups-add-smb" dialog to make it more
     user-driendly.
+
+13/11/2001 Michael GOffioul <goffioul@imec.be>
+  * general: implementation of a KActiveLabel class to embed active
+    links in labels. Clicking on it "exec" the associated URL.
+  * general: make use of KActiveLabel in the first page of the
+    "add-printer" wizard.
+  * CUPS: make use of KActiveLabel in the "cups-add-smb" wizard.
+  * wizard: SMB printers with space in their name are now shown
+    correctly when scanning the network (however it should be
+    avoided as smbspool seems to be unable to handle it).
