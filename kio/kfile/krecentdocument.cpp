@@ -114,7 +114,7 @@ void KRecentDocument::add(const KURL& url, const QString& desktopEntryName)
 
     QDir dir(path);
     // check for max entries, delete oldest files if exceeded
-    QStringList list = dir.entryList(QDir::Files, QDir::Time | QDir::Reversed);
+    QStringList list = dir.entryList(QDir::Files | QDir::Hidden, QDir::Time | QDir::Reversed);
     i = list.count();
     if(i > maxEntries-1){
         QStringList::Iterator it;
