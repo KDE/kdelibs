@@ -33,7 +33,7 @@ class KTempFilePrivate;
 /**
  * The KTempFile class creates and opens a unique file for temporary use.
  *
- * This is especially usefull if you need to create a file in a world
+ * This is especially useful if you need to create a file in a world
  * writable directory like /tmp without being vulnerable to so called
  * symlink attacks.
  *
@@ -59,8 +59,10 @@ public:
     * Create a temporary file with the name:
     *  <filePrefix><some number><fileExtension>
     *
-    * The default filePrefix is "$KDEHOME/tmp-$HOST/appname"
-    * The default fileExtension is ".tmp"
+    * The default @p filePrefix is "$KDEHOME/tmp-$HOST/appname"
+    * The default @p fileExtension is ".tmp"
+    *
+    * Note that the use of 'X' is forbidden in @p fileExtension
     **/
    KTempFile(QString filePrefix=QString::null, 
              QString fileExtension=QString::null, 
