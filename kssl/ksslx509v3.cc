@@ -19,12 +19,21 @@
  */
 
 #include "ksslx509v3.h"
+#include <config.h>
+#include <kopenssl.h>
+
+#ifdef HAVE_SSL
+#ifndef V1_ROOT
+#define V1_ROOT (EXFLAG_V1|EXFLAG_SS)
+#endif
+#endif
 
 
 KSSLX509V3::KSSLX509V3() {
-	_sslCAType = false;
-	_emailCAType = false;
-	_codeCAType = false;
+	_flags = 0;
+	_keyUsage = 0;
+	_xKeyUsage = 0;
+	_nsCert = 0;
 }
 
 
@@ -33,27 +42,136 @@ KSSLX509V3::~KSSLX509V3() {
 }
 
 
+bool KSSLX509V3::trustCompatible() {
+#ifdef HAVE_SSL
+	return (_flags & EXFLAG_SS);
+#endif
+	return false;
+}
+
+
+bool KSSLX509V3::certTypeCA() {
+#ifdef HAVE_SSL
+	return (((_flags & EXFLAG_CA) && (_flags & EXFLAG_BCONS)) || ((_flags & V1_ROOT) == V1_ROOT) || (_flags & EXFLAG_KUSAGE)) ? true : false;
+#endif
+	return false;
+}
+
+
 bool KSSLX509V3::certTypeSSLCA() {
-	return _sslCAType;
+#ifdef HAVE_SSL
+	return (certTypeCA() &&
+		(!(_flags & EXFLAG_NSCERT) || _nsCert & NS_SSL_CA) &&
+		(!(_flags & EXFLAG_XKUSAGE) || _xKeyUsage & (XKU_SSL_SERVER|XKU_SSL_CLIENT))) ? true : false;
+#endif
+	return false;
 }
 
 
 bool KSSLX509V3::certTypeEmailCA() {
-	return _emailCAType;
+#ifdef HAVE_SSL
+	return (certTypeCA() &&
+		(!(_flags & EXFLAG_NSCERT) || _nsCert & NS_SMIME_CA) &&
+		(!(_flags & EXFLAG_XKUSAGE) ||_xKeyUsage & XKU_SMIME)) ? true : false;
+#endif
+	return false;
 }
 
 
 bool KSSLX509V3::certTypeCodeCA() {
-	return _codeCAType;
+#ifdef HAVE_SSL
+	return (certTypeCA() &&
+		(!(_flags & EXFLAG_NSCERT) || _nsCert & NS_OBJSIGN_CA) &&
+		(!(_flags & EXFLAG_XKUSAGE) || _xKeyUsage & XKU_CODE_SIGN)) ? true : false;
+#endif
+	return false;
 }
 
 
-void KSSLX509V3::setCAType(bool ssl, bool email, bool code) {
-	_sslCAType = ssl;
-	_emailCAType = email;
-	_codeCAType = code;
+bool KSSLX509V3::certTypeSSLClient() {
+#ifdef HAVE_SSL
+	return ((!(_flags & EXFLAG_XKUSAGE) || (_xKeyUsage & XKU_SSL_CLIENT)) ||
+		((!certTypeCA() || certTypeSSLCA()) &&
+		 (!(_flags & EXFLAG_KUSAGE) || (_keyUsage & X509v3_KU_DIGITAL_SIGNATURE)) &&
+		 (!(_flags & EXFLAG_NSCERT) || (_nsCert & NS_SSL_CLIENT))));
+#endif
+	return false;
 }
 
+
+bool KSSLX509V3::certTypeSSLServer() {
+#ifdef HAVE_SSL
+	return ((!(_flags & EXFLAG_XKUSAGE) || (_xKeyUsage & (XKU_SSL_SERVER|XKU_SGC))) ||
+		((!certTypeCA() || certTypeSSLCA()) &&
+		 (!(_flags & EXFLAG_NSCERT) || (_nsCert & NS_SSL_SERVER)) &&
+		 (!(_flags & EXFLAG_KUSAGE) || (_keyUsage & (X509v3_KU_DIGITAL_SIGNATURE|X509v3_KU_KEY_ENCIPHERMENT)))
+		));
+#endif
+	return false;
+}
+
+
+bool KSSLX509V3::certTypeNSSSLServer() {
+#ifdef HAVE_SSL
+	return (certTypeSSLServer() &&
+		!certTypeCA() &&
+		(!(_flags & EXFLAG_KUSAGE) || (_keyUsage & X509v3_KU_KEY_ENCIPHERMENT)));
+#endif
+	return false;
+}
+
+
+bool KSSLX509V3::certTypeSMIME() {
+#ifdef HAVE_SSL
+	return ((!(_flags & EXFLAG_XKUSAGE) || (_xKeyUsage & XKU_SMIME)) &&
+		(!certTypeCA() || 
+		 (!(_flags & EXFLAG_NSCERT) || (_nsCert & NS_SMIME_CA))) &&
+		(!(_flags & EXFLAG_NSCERT) || (_nsCert & (NS_SMIME|NS_SSL_CLIENT))));
+#endif
+	return false;
+}
+
+
+bool KSSLX509V3::certTypeSMIMEEncrypt() {
+#ifdef HAVE_SSL
+	return (!certTypeCA() && 
+		certTypeSMIME() &&
+		(!(_flags & EXFLAG_KUSAGE) || (_keyUsage & X509v3_KU_KEY_ENCIPHERMENT)));
+#endif
+	return false;
+}
+
+
+bool KSSLX509V3::certTypeSMIMESign() {
+#ifdef HAVE_SSL
+	return (!certTypeCA() && 
+		certTypeSMIME() &&
+		(!(_flags & EXFLAG_KUSAGE) || (_keyUsage & (X509v3_KU_DIGITAL_SIGNATURE|X509v3_KU_NON_REPUDIATION))));
+#endif
+	return false;
+}
+
+
+bool KSSLX509V3::certTypeCRLSign() {
+#ifdef HAVE_SSL
+	return (certTypeCA() ||
+		(!(_flags & EXFLAG_KUSAGE) || (_keyUsage & X509v3_KU_CRL_SIGN)));
+#endif
+	return false;
+}
+
+
+
+
+void KSSLX509V3::setFlags(unsigned long flags,
+		          unsigned long keyUsage,
+		          unsigned long extendedKeyUsage,
+		          unsigned long nsCert) {
+	_flags = flags;
+	_keyUsage = keyUsage;
+	_xKeyUsage = extendedKeyUsage;
+	_nsCert = nsCert;
+}
 
 
 

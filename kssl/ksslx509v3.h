@@ -30,19 +30,30 @@ friend class KSSLCertificatePrivate;
 public:
   ~KSSLX509V3();
 
+  bool certTypeCA();
   bool certTypeSSLCA();
   bool certTypeEmailCA();
   bool certTypeCodeCA();
-
-  void setCAType(bool ssl, bool email, bool code);
+  bool certTypeSSLClient();
+  bool certTypeSSLServer();
+  bool certTypeNSSSLServer();
+  bool certTypeSMIME();
+  bool certTypeSMIMEEncrypt();
+  bool certTypeSMIMESign();
+  bool certTypeCRLSign();
+  bool trustCompatible();
 
 private:
   class KSSLX509V3Private;
   KSSLX509V3Private *d;
-  bool _sslCAType, _emailCAType, _codeCAType;
+  unsigned long _flags, _keyUsage, _xKeyUsage, _nsCert;
 
 protected:
   KSSLX509V3();
+  void setFlags(unsigned long flags,
+		unsigned long keyUsage,
+		unsigned long extendedKeyUsage,
+		unsigned long nsCert);
 };
 
 #endif

@@ -118,6 +118,8 @@ static X509_EXTENSION *(*K_X509_delete_ext)(X509*, int) = NULL;
 static int (*K_X509_add_ext)(X509*, X509_EXTENSION*, int) = NULL;
 static void *(*K_X509_get_ext_d2i)(X509*, int, int*, int*) = NULL;
 static char *(*K_i2s_ASN1_OCTET_STRING)(X509V3_EXT_METHOD*, ASN1_OCTET_STRING*) = NULL;
+static int (*K_ASN1_BIT_STRING_get_bit)(ASN1_BIT_STRING*, int) = NULL;
+static int (*K_X509_check_purpose)(X509*, int, int) = NULL;
 #endif
 };
 
@@ -312,7 +314,8 @@ KConfig *cfg;
       K_X509_add_ext = (int (*)(X509*,X509_EXTENSION*,int)) _cryptoLib->symbol("X509_add_ext");
       K_X509_get_ext_d2i = (void* (*)(X509*,int,int*,int*)) _cryptoLib->symbol("X509_get_ext_d2i");
       K_i2s_ASN1_OCTET_STRING = (char *(*)(X509V3_EXT_METHOD*,ASN1_OCTET_STRING*)) _cryptoLib->symbol("i2s_ASN1_OCTET_STRING");
-
+      K_ASN1_BIT_STRING_get_bit = (int (*)(ASN1_BIT_STRING*,int)) _cryptoLib->symbol("ASN1_BIT_STRING_get_bit");
+      K_X509_check_purpose = (int (*)(X509*, int, int)) _cryptoLib->symbol("X509_check_purpose");
 #endif
    }
 
@@ -934,6 +937,17 @@ char *KOpenSSLProxy::i2s_ASN1_OCTET_STRING(X509V3_EXT_METHOD *method, ASN1_OCTET
    else return NULL;
 }
 
+
+int KOpenSSLProxy::ASN1_BIT_STRING_get_bit(ASN1_BIT_STRING *a, int n) {
+   if (K_ASN1_BIT_STRING_get_bit) return (K_ASN1_BIT_STRING_get_bit)(a,n);
+   else return -1;
+}
+
+
+int KOpenSSLProxy::X509_check_purpose(X509 *x, int id, int ca) {
+   if (K_X509_check_purpose) return (K_X509_check_purpose)(x,id,ca);
+   else return -1;
+}
 
 
 #endif

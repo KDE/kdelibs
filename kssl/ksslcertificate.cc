@@ -358,7 +358,10 @@ void KSSLCertificate::setCert(X509 *c) {
 #ifdef HAVE_SSL
   d->m_cert = c;
   if (c) {
-	  int cnt = d->kossl->X509_get_ext_count(c);
+	d->kossl->X509_check_purpose(c, -1, 0);    // setup the fields (!!)
+
+#if 0
+	int cnt = d->kossl->X509_get_ext_count(c);
 	  for (int i = 0; i < cnt; i++) {
 		  X509_EXTENSION *ext = d->kossl->X509_get_ext(c,i);
 		  // FIXME: delete ext?  delete thisval?
@@ -366,8 +369,39 @@ void KSSLCertificate::setCert(X509 *c) {
 		  thisobj = d->kossl->OBJ_nid2ln(d->kossl->OBJ_obj2nid(ext->object));
 		  thisval = d->kossl->i2s_ASN1_OCTET_STRING(ext->method, ext->value);
 		  kdDebug(7029) << "SSL Certificate: found extension " << thisobj << " = " << thisval << endl;
-		  
+//		  d->kossl->ASN1_OBJECT_free(thisobj);
 	  }
+#endif
+
+	if (c->ex_flags & EXFLAG_KUSAGE)
+		kdDebug(7029) << "     --- Key Usage extensions found" << endl;
+	if (c->ex_flags & EXFLAG_XKUSAGE)
+		kdDebug(7029) << "     --- Extended key usage extensions found" << endl;
+	if (c->ex_flags & EXFLAG_NSCERT)
+		kdDebug(7029) << "     --- NS extensions found" << endl;
+	d->_extensions.setFlags(c->ex_flags, c->ex_kusage, c->ex_xkusage, c->ex_nscert);
+	if (d->_extensions.certTypeSSLCA())
+		kdDebug(7029) << "NOTE: this is an SSL CA file." << endl;
+	if (d->_extensions.certTypeEmailCA())
+		kdDebug(7029) << "NOTE: this is an EMAIL CA file." << endl;
+	if (d->_extensions.certTypeCodeCA())
+		kdDebug(7029) << "NOTE: this is a CODE CA file." << endl;
+	if (d->_extensions.trustCompatible())
+		kdDebug(7029) << "NOTE: this is trust compatible." << endl;
+	if (d->_extensions.certTypeSSLClient())
+		kdDebug(7029) << "NOTE: this is an SSL client." << endl;
+	if (d->_extensions.certTypeSSLServer())
+		kdDebug(7029) << "NOTE: this is an SSL server." << endl;
+	if (d->_extensions.certTypeNSSSLServer())
+		kdDebug(7029) << "NOTE: this is a NETSCAPE SSL server." << endl;
+	if (d->_extensions.certTypeSMIME())
+		kdDebug(7029) << "NOTE: this is an SMIME certificate." << endl;
+	if (d->_extensions.certTypeSMIMEEncrypt())
+		kdDebug(7029) << "NOTE: this is an SMIME encrypt cert." << endl;
+	if (d->_extensions.certTypeSMIMESign())
+		kdDebug(7029) << "NOTE: this is an SMIME sign cert." << endl;
+	if (d->_extensions.certTypeCRLSign())
+		kdDebug(7029) << "NOTE: this is a CRL signer." << endl;
   }
 #endif
   d->m_stateCached = false;

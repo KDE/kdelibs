@@ -576,7 +576,15 @@ public:
     */
    char *i2s_ASN1_OCTET_STRING(X509V3_EXT_METHOD *method, ASN1_OCTET_STRING *ia5);
 
+   /*
+    *
+    */
+   int ASN1_BIT_STRING_get_bit(ASN1_BIT_STRING *a, int n);
 
+   /*
+    *
+    */
+   int X509_check_purpose(X509 *x, int id, int ca);
 
 
 #endif
