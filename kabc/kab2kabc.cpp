@@ -363,6 +363,7 @@ void importKab( KABC::AddressBook *ab, bool override )
     QStringList::ConstIterator phoneIt;
     for( phoneIt = entry.telephone.begin(); phoneIt != entry.telephone.end(); ++phoneIt ) {
       int kabType = (*phoneIt++).toInt();
+      if( phoneIt == entry.telephone.end() ) break;
       QString number = *phoneIt;
       int type = 0;
       if ( kabType == ::AddressBook::Fixed ) type = PhoneNumber::Voice;
