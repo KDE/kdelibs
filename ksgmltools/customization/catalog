@@ -75,3 +75,18 @@ PUBLIC "-//GNU//DOCUMENT GNU Free Documentation License V1.1 (HTML)//EN"
        "entities/fdl-license.html"
 PUBLIC "-//KDE//DOCUMENT GNU Free Documentation Notice//EN"
        "entities/fdl-notice.docbook"
+
+-- Added by Lauri W --
+
+PUBLIC "-//KDE//DOCUMENT X11 License for KDE//EN"
+       "entities/x11-license.docbook"
+PUBLIC "-//KDE//DOCUMENT X11 License for KDE (HTML)//EN"
+       "entities/x11-license.html"
+PUBLIC "-//KDE//DOCUMENT BSD License for KDE//EN"
+       "entities/bsd-license.docbook"
+PUBLIC "-//KDE//DOCUMENT BSD License for KDE (HTML)//EN"
+       "entities/bsd-license.html"
+PUBLIC "-//KDE//DOCUMENT Artistic License for KDE//EN"
+       "entities/artistic-license.docbook"
+PUBLIC "-//KDE//DOCUMENT Artistic License for KDE (HTML)//EN"
+       "entities/artistic-license.html"

@@ -96,3 +96,21 @@
   "-//KDE//ENTITIES GNU FDL 1.1 Notice Entities//EN"             >
 %FDLNotice;
                              <!-- the level of &FDLNotice; is para -->
+
+<!-- Added by Lauri W -->
+
+<!ENTITY bsdlicense-links   SYSTEM
+   "../entities/bsdlicense-links.docbook"		          >
+<!ENTITY artisticlicense-links   SYSTEM
+   "../entities/artisticlicense-links.docbook"		          >
+<!ENTITY x11license-links   SYSTEM
+   "../entities/x11license-links.docbook"		          >
+<!ENTITY qpllicense-links   SYSTEM
+   "../entities/qpllicense-links.docbook"			  >
+<!ENTITY gpllicense-links   SYSTEM
+  "../entities/license-links.docbook"               -- level: para -->
+
+
+
+
+

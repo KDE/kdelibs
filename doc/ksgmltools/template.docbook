@@ -5,7 +5,8 @@
   <!ENTITY % ents PUBLIC "-//KDE//ENTITIES Application-Variable Entities V1.0//EN">
   %ents;
 ]>
-<!-- kdoctemplate v0.8 October 1 1999 -->
+<!-- kdoctemplate v0.8 October 1 1999 
+     Minor update to "Credits and Licenses" section on August 24, 2000   -->
 
 <!--
 This template was designed by: David Rugge davidrugge@mindspring.com
@@ -520,7 +521,16 @@ Translations done by:
 </itemizedlist>
 </para>
 
-&license-links;
+<!-- Determine which license your application is licensed under, and delete all the remaining licenses below:
+
+(NOTE:  All documentation will be licensed under the FDL, reguardless of what license the documentation uses) -->
+
+&gpllicense-links;        <!-- GPL License -->
+&bsdlicense-links;        <!-- BSD License -->
+&artisticlicense-links;   <!-- BSD Artistic License -->
+&x11license-links;        <!-- X11 License  -->
+&qpllicense-links;	  <!-- QPL License -->
+
 </chapter>
 
 <![ %addindex; [ &kdedocindex; ]]>
