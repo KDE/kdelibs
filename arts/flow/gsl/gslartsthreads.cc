@@ -3,68 +3,74 @@
 #include "gslglib.h"
 #include <pthread.h>
 
-gpointer
+#if defined(__DECCXX)
+#define EXTC extern "C"
+#else
+#define EXTC
+#endif
+
+EXTC gpointer
 gsl_arts_mutex_new ()
 {
   return new Arts::Mutex;
 }
 
-void
+EXTC void
 gsl_arts_mutex_free (gpointer mutex)
 {
   Arts::Mutex *m = static_cast<Arts::Mutex *>(mutex);
   delete m;
 }
 
-void
+EXTC void
 gsl_arts_mutex_lock (gpointer mutex)
 {
   Arts::Mutex *m = static_cast<Arts::Mutex *>(mutex);
   m->lock();
 }
 
-gboolean
+EXTC gboolean
 gsl_arts_mutex_trylock (gpointer mutex)
 {
   Arts::Mutex *m = static_cast<Arts::Mutex *>(mutex);
   return m->tryLock();
 }
 
-void
+EXTC void
 gsl_arts_mutex_unlock (gpointer mutex)
 {
   Arts::Mutex *m = static_cast<Arts::Mutex *>(mutex);
   m->unlock();
 }
 
-gpointer
+EXTC gpointer
 gsl_arts_cond_new ()
 {
   return new Arts::ThreadCondition;
 }
 
-void
+EXTC void
 gsl_arts_cond_free (gpointer cond)
 {
   Arts::ThreadCondition *c = static_cast<Arts::ThreadCondition *>(cond);
   delete c;
 }
 
-void
+EXTC void
 gsl_arts_cond_signal (gpointer cond)
 {
   Arts::ThreadCondition *c = static_cast<Arts::ThreadCondition *>(cond);
   c->wakeOne();
 }
 
-void
+EXTC void
 gsl_arts_cond_broadcast (gpointer cond)
 {
   Arts::ThreadCondition *c = static_cast<Arts::ThreadCondition *>(cond);
   c->wakeAll();
 }
 
-void
+EXTC void
 gsl_arts_cond_wait (gpointer cond, gpointer mutex)
 {
   Arts::ThreadCondition *c = static_cast<Arts::ThreadCondition *>(cond);
@@ -116,7 +122,7 @@ extern "C" {
 typedef gpointer (*t_func)(gpointer data2);
 }
 
-GThread* gsl_arts_thread_create_full(gpointer (*func)(gpointer data),
+EXTC GThread* gsl_arts_thread_create_full(gpointer (*func)(gpointer data),
                                   gpointer               data,
                                   gulong                 stack_size,
                                   gboolean               joinable,
@@ -128,7 +134,7 @@ GThread* gsl_arts_thread_create_full(gpointer (*func)(gpointer data),
   return &thread->gthread;
 }
 
-gpointer
+EXTC gpointer
 gsl_arts_thread_self ()
 {
   GslArtsThread *current = static_cast<GslArtsThread *>(Arts::SystemThreads::the()->getCurrentThread());
@@ -137,7 +143,7 @@ gsl_arts_thread_self ()
   return &current->gthread;
 }
 
-void 
+EXTC void 
 gsl_arts_thread_init (gpointer arg)
 {
   // FIXME: what to do about apps which are not threaded but nevertheless
