@@ -1403,7 +1403,8 @@ void KSelectAction::slotActivated( const QString &text )
   if ( isEditable() )
   {
     QStringList lst = items();
-    lst.append( text );
+    if(lst.contains(text)==0)
+        lst.append( text );
     setItems( lst );
   }
 
