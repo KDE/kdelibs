@@ -601,10 +601,7 @@ void HTMLGenericFormElementImpl::setParent(NodeImpl *parent)
 
 bool HTMLGenericFormElementImpl::isSelectable() const
 {
-    if (m_disabled)
-        return false;
-    else
-        return HTMLElementImpl::isSelectable();
+    return  !m_disabled && HTMLElementImpl::isSelectable();
 }
 
 void HTMLGenericFormElementImpl::defaultEventHandler(EventImpl *evt)

@@ -630,8 +630,8 @@ void HTMLIFrameElementImpl::parseAttribute(AttributeImpl *attr )
 void HTMLIFrameElementImpl::attach()
 {
     assert(!attached());
+    assert(!m_render);
     assert(parentNode());
-    assert(parentNode()->renderer());
 
     KHTMLView* w = getDocument()->view();
     // limit to how deep we can nest frames
@@ -640,7 +640,7 @@ void HTMLIFrameElementImpl::attach()
     while ((part = part->parentPart()))
 	depth++;
 
-    if (depth < 7) {
+    if (depth < 7 && parentNode()->renderer()) {
         m_render = new RenderPartObject(this);
         m_render->setStyle(getDocument()->styleSelector()->styleForElement(this));
         parentNode()->renderer()->addChild(m_render, nextRenderer());
