@@ -1300,7 +1300,10 @@ static int initXconnection()
     fprintf(stderr, "kdeinit: opened connection to %s\n", DisplayString(X11display));
 #endif
     net_current_desktop = XInternAtom( X11display, "_NET_CURRENT_DESKTOP", False );
-    return XConnectionNumber( X11display );
+    int fd = XConnectionNumber( X11display );
+    int on = 1;
+    (void) setsockopt(fd, SOL_SOCKET, SO_KEEPALIVE, (char *) &on, (int) sizeof(on));
+    return fd;
   } else
     fprintf(stderr, "kdeinit: Can't connect to the X Server.\n" \
      "kdeinit: Might not terminate at end of session.\n");
