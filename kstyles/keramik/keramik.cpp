@@ -1992,10 +1992,13 @@ QSize KeramikStyle::sizeFromContents( ContentsType contents,
 			}
 		}
 
-		case CT_ComboBox:
-			return QSize( contentSize.width() + 8 + loader.size( keramik_ripple ).width() + 26,
-			              contentSize.height() + 10 );
-
+		case CT_ComboBox: {
+			int arrow = 11 + loader.size( keramik_ripple ).width();
+			const QComboBox *cb = static_cast<const QComboBox*>( widget );
+			return QSize( contentSize.width() + arrow + (cb->editable() ? 26 : 22),
+					contentSize.height() + 10 );
+		}
+						  
 		// POPUPMENU ITEM SIZE
 		// -----------------------------------------------------------------
 		case CT_PopupMenuItem: {
@@ -2097,7 +2100,7 @@ QRect KeramikStyle::querySubControlMetrics( ComplexControl control,
 					if ( widget->width() < 36 || widget->height() < 22 )
 						return QRect( 4, 3, widget->width() - arrow - 20, widget->height() - 6 );
 					else if ( static_cast< const QComboBox* >( widget )->editable() )
-						return QRect( 7, 4, widget->width() - arrow - 26, widget->height() - 11 );
+						return QRect( 8, 4, widget->width() - arrow - 26, widget->height() - 11 );
 					else
 						return QRect( 6, 4, widget->width() - arrow - 22, widget->height() - 9 );
 				}
