@@ -1728,7 +1728,8 @@ void KListView::restoreLayout(KConfig *config, const QString &group)
   i = 0;
   for (QStringList::ConstIterator it = cols.begin(); it != cols.end(); ++it)
     header()->moveSection(i++, (*it).toInt());
-  setSorting(config->readNumEntry("SortColumn"), config->readBoolEntry("SortAscending", true));
+  if (config->hasKey("SortColumn"))
+    setSorting(config->readNumEntry("SortColumn"), config->readBoolEntry("SortAscending", true));
 }
 
 void KListView::setSorting(int column, bool ascending)
