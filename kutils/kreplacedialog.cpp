@@ -136,10 +136,10 @@ void KReplaceDialog::slotOk()
                 KMessageBox::information( this, i18n(
                         "Your replacement string is referencing a capture greater than '\\%1', ").arg( caps ) +
                     ( caps ?
-                        i18n("but your pattern only defines %1 capture.\n",
-                             "but your pattern only defines %1 captures.\n", caps ) :
-                        i18n("but your pattern defines no captures.\n") ) +
-                    i18n("Please correct.") );
+                        i18n("but your pattern only defines %1 capture.",
+                             "but your pattern only defines %1 captures.", caps ) :
+                        i18n("but your pattern defines no captures.") ) +
+                    i18n("\nPlease correct.") );
                 return; // abort OKing
             }
             p += check.matchedLength();
