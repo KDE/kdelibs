@@ -161,7 +161,7 @@ public:
    * Use only when you know the full command line. Otherwise use the other
    * static methods, or KRun's constructor.
    */
-  static pid_t runCommand( const QString& cmd );
+  static pid_t runCommand( QString cmd );
 
   /**
    * Same as the other runCommand, but it also takes the name of the
