@@ -47,7 +47,7 @@ using namespace DOM;
 
 RenderFrameSet::RenderFrameSet( HTMLFrameSetElementImpl *frameSet, KHTMLView *view,
                                 QList<khtml::Length> *rows, QList<khtml::Length> *cols )
-: RenderBox()
+    : RenderBox()
 {
   // init RenderObject attributes
     setInline(false);
