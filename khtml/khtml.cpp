@@ -523,10 +523,10 @@ void KHTMLWidget::mouseMoveEvent( QMouseEvent * _mouse )
 		return;
 	}
 	
-	QStrList urls;
-	urls.append(pressedURL.data());
+	QStrList uris;
+	uris.append(pressedURL.data());
 
-	QUrlDrag *ud = new QUrlDrag(urls, this);
+	QUriDrag *ud = new QUriDrag(uris, this);
 	ud->setPixmap(dndDefaultPixmap);
 	ud->dragCopy();
     }
