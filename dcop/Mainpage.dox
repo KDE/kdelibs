@@ -440,6 +440,51 @@ data: length + string[length]
 \endcode
 \note This happens automatically when using QCString on a QDataStream.
 
+\section Deadlock protection and reentrancy
+
+When a DCOP call is made, the dcop client will be monitoring the
+dcop connection for the reply on the call. When an incoming call is
+received in this period, it will normally not be processed but queued
+until the outgoing call has been fully handled.
+
+However, the above scenario would cause deadlock if the incoming call
+was directly or indirectly a result of the outgoing call and the reply
+on the outgoing call is waiting for the result of the incoming call.
+(E.g. a circular call such as client A calling client B, with client B
+calling client A)
+
+To prevent deadlock in this case, DCOP has a call tracing mechanism that
+detects circular calls. When it detects an incoming circular call that
+would otherwise be queued and as a result cause deadlock, it will handle
+the incoming call immediately instead of queueing it. This means that the
+incoming call may be processed at a point in the code where an outgoing
+DCOP call is made. An application should be aware of this kind of
+reentrancy. A special case of this is when a DCOP client makes a call
+to itself, such calls are always handled directly.
+
+Call tracing works by appending a key to each outgoing call. When a client
+receives an incoming call while waiting for a response on an outgoing call,
+it will check if the key of the incoming call is equal to the key used for
+the last outgoing call. If the keys are equal a circular call has been 
+detected.
+
+The key used by clients is 0 if they have not yet received any key. In this
+case the server will send them back a unique key that they should use in
+further calls. If a client makes an outgoing call in response to an incoming
+call it will use the key of the incoming call for the outgoing call instead
+of the key that was received from the server.
+
+A key value of 1 has a special meaning and is used for non-call messages
+such as DCOPSend, DCOPReplyFailed and DCOP signals.
+
+A key value of 2 has a special meaning and is used for priority calls.
+When a dcop clien is in priority call mode, it will only handle incoming
+calls that have a key value of 2.
+
+NOTE: If client A and client B would call each other simultaneously there
+is still a risk of deadlock because both calls would have unique keys and
+both clients would decide to queue the incoming call until they receive
+a response on their outgoing call.
 
 \section dcop_signals DCOP Signals:
 
