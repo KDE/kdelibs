@@ -1902,7 +1902,9 @@ void doInterfaceRepoSource(FILE *source, string prefix)
 
 void exit_usage(char *name)
 {
-	fprintf(stderr,"usage: %s <filename>\n",name);
+	fprintf(stderr,"usage: %s [ <options> ] <filename>\n",name);
+	fprintf(stderr,"\nOptions:\n");
+	fprintf(stderr,"  -I <directory>     search in <directory> for includes\n");
 	exit(1);
 }
 extern void mcopidlParse(const char *code);
@@ -2068,8 +2070,7 @@ int main(int argc, char **argv)
 		{
 			case 'I': includePath.push_back(optarg);
 				break;
-			default: fprintf(stderr,"unknown option\n");
-					 exit_usage(argv[0]);
+			default: exit_usage(argv[0]);
 				break;
 		}
 	}
