@@ -157,10 +157,10 @@ KPopupMenu* KHelpMenu::menu()
     QString appName = (aboutData)? aboutData->programName() : QString::fromLatin1(kapp->name());
 
     mMenu->insertItem( kapp->miniIcon(),
-      i18n( "&About %1..." ).arg(appName), menuAboutApp );
+      i18n( "&About %1" ).arg(appName), menuAboutApp );
     mMenu->connectItem( menuAboutApp, this, SLOT( aboutApplication() ) );
 
-    mMenu->insertItem( SmallIcon("go"), i18n( "About &KDE..." ), menuAboutKDE );
+    mMenu->insertItem( SmallIcon("go"), i18n( "About &KDE" ), menuAboutKDE );
     mMenu->connectItem( menuAboutKDE, this, SLOT( aboutKDE() ) );
   }
 
