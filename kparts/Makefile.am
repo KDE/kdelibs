@@ -14,14 +14,15 @@ check-local:
 
 lib_LTLIBRARIES = libkparts.la
 
-libkparts_la_SOURCES = part.cpp plugin.cpp partmanager.cpp mainwindow.cpp event.cpp browserextension.cpp factory.cpp
+libkparts_la_SOURCES = part.cpp plugin.cpp partmanager.cpp mainwindow.cpp event.cpp browserextension.cpp factory.cpp metaview.cpp
 
 kpartsincludedir = $(includedir)/kparts
 kpartsinclude_HEADERS = part.h plugin.h partmanager.h mainwindow.h event.h \
-	browserextension.h factory.h
+	browserextension.h factory.h metaview.h
 
 libkparts_la_METASOURCES = AUTO
 
-servicetype_DATA = kpart.desktop krop.desktop krwp.desktop browserview.desktop
+servicetype_DATA = kpart.desktop krop.desktop krwp.desktop browserview.desktop kmetaview.desktop \
+                   kmetadataprovider.desktop
 servicetypedir = $(kde_servicetypesdir)
 
