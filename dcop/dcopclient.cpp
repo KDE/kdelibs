@@ -1641,8 +1641,7 @@ bool DCOPClient::callInternal(const QCString &remApp, const QCString &remObjId,
 
 void DCOPClient::processSocketData(int fd)
 {
-// Remove this! Testing only!
-#if 1
+    // Make sure there is data to read!
     fd_set fds;
     timeval timeout;
     timeout.tv_sec = 0;
@@ -1651,10 +1650,7 @@ void DCOPClient::processSocketData(int fd)
     FD_SET(fd, &fds);
     int result = select(fd+1, &fds, 0, 0, &timeout);
     if (result == 0)
-    {
-        qWarning("DCOPClient::processSocketData() triggered but nothing to read!");
-    }
-#endif
+        return;
 
     if ( d->non_blocking_call_lock ) {
 	qApp->exit_loop();
