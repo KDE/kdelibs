@@ -32,7 +32,7 @@
  * All methods are static here so no need to instantiate.
  *
  * @author Geert Jansen <g.t.jansen@stud.tue.nl>
- * @version $Id: $
+ * @version $Id$
  */ 
 
 class KIPC
@@ -43,24 +43,24 @@ public:
      *
      * @param Atom The X Atom identifying the message.
      * @param Window The Window ID of the target window.
+     * @param data You can pass one in of data throught this.
      */
-    static void sendMessage(Atom msg, Window w);
+    static void sendMessage(Atom msg, Window w, int data=0);
 
     /**
      * Send a message to a window.
      *
      * @param msg A pointer to a null terminated array of chars containing 
      * the message.
-     * @param Window The Window ID of the target window.
      */
-    static void sendMessage(const char *msg, Window w);
+    static void sendMessage(const char *msg, Window w, int data=0);
 
     /**
      * Send a message to all KDE windows.
      *
      * @param Atom The X Atom identifying the message.
      */
-    static void sendMessage(Atom msg);
+    static void sendMessageAll(Atom msg, int data=0);
 
     /**
      * Send a message to all KDE windows.
@@ -68,7 +68,7 @@ public:
      * @param msg A pointer to a null terminated array of chars containing 
      * the message.
      */
-    static void sendMessage(const char *msg);
+    static void sendMessageAll(const char *msg, int data=0);
 
     /**
      * Used internally

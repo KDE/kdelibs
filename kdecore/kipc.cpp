@@ -22,7 +22,7 @@
 /*
  * kipc.cpp: Send a message to all KDE apps.
  *
- * $Id: $
+ * $Id$
  */
 
 #include <qwindowdefs.h>
@@ -56,7 +56,7 @@ long KIPC::getSimpleProperty(Window w, Atom a)
 }
 
 
-void KIPC::sendMessage(Atom msg, Window w)
+void KIPC::sendMessage(Atom msg, Window w, int data)
 {
     XEvent ev;
     ev.xclient.type = ClientMessage;
@@ -64,18 +64,19 @@ void KIPC::sendMessage(Atom msg, Window w)
     ev.xclient.window = w;
     ev.xclient.message_type = msg;
     ev.xclient.format = 32;
+    ev.xclient.data.l[0] = data;
     XSendEvent(qt_xdisplay(), w, False, 0L, &ev);
 }
 
 
-void KIPC::sendMessage(const char *msg, Window w)
+void KIPC::sendMessage(const char *msg, Window w, int data)
 {
     Atom a = XInternAtom(qt_xdisplay(), msg, False);
-    sendMessage(a, w);
+    sendMessage(a, w, data);
 }
 
 
-void KIPC::sendMessage(Atom msg)
+void KIPC::sendMessageAll(Atom msg, int data)
 {
     XEvent ev;
     unsigned int i, nrootwins;
@@ -99,6 +100,7 @@ void KIPC::sendMessage(Atom msg)
             ev.xclient.window = rootwins[i];
             ev.xclient.message_type = msg;
             ev.xclient.format = 32;
+	    ev.xclient.data.l[0] = data;
             XSendEvent(dpy, rootwins[i], False, 0L, &ev);
         }
     }
@@ -109,8 +111,8 @@ void KIPC::sendMessage(Atom msg)
 }
 
 
-void KIPC::sendMessage(const char *msg)
+void KIPC::sendMessageAll(const char *msg, int data)
 {
     Atom a = XInternAtom(qt_xdisplay(), msg, False);
-    sendMessage(a);
+    sendMessageAll(a, data);
 }
