@@ -55,7 +55,7 @@ using namespace DOM;
 #include "kjserrordlg.h"
 
 #include <kjs/function.h>
-#include <kjs/internal.h>
+#include <kjs/interpreter.h>
 
 #include "htmlpageinfo.h"
 
