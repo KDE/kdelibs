@@ -96,7 +96,9 @@ public:
      * @param src URL Reference to the file to download.
      * @param target String containing the final local location of the
      *               file.  If you insert an empty string, it will
-     *               return a location in a temporary spot.
+     *               return a location in a temporary spot. <B>Note:</B> 
+     *               you are responsible for the removal of this file when
+     *               you are finished reading it using @ref removeTempFile.
      * @param window main window associated with this job. This is used to
      *               automatically cache and discard authentication information
      *               as needed. If NULL, authentication information will be
