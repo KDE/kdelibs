@@ -281,7 +281,7 @@ bool KPty::open()
   struct stat st;
   if (stat(d->ttyName.data(), &st))
     return false; // this just cannot happen ... *cough*
-  d->needGrantPty = st.st_uid != getuid() || (st.st_mode & S_IRGRP|S_IXGRP|S_IROTH|S_IWOTH|S_IXOTH);
+  d->needGrantPty = st.st_uid != getuid() || (st.st_mode & (S_IRGRP|S_IXGRP|S_IROTH|S_IWOTH|S_IXOTH));
 
 #ifdef BSD
   revoke(d->ttyName.data());
