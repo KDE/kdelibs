@@ -134,7 +134,7 @@ void KPanelMenu::setInitialized(bool on)
 void KPanelMenu::reinitialize()
 {
     slotClear();
-    initialize();
+    setInitialized(false);
 }
 
 void KPanelMenu::virtual_hook( int id, void* data )
