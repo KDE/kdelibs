@@ -124,7 +124,7 @@ void khtml::setNamedColor(QColor &color, const QString &_name)
     }
 }
 
-static QPainter *printpainter = 0;
+QPainter *khtml::printpainter = 0;
 
 void khtml::setPrintPainter( QPainter *printer )
 {

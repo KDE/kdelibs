@@ -31,6 +31,8 @@ class QPainter;
 namespace khtml
 {
     void setNamedColor(QColor &color, const QString &name);
+
+    extern QPainter *printpainter;
     void setPrintPainter( QPainter *printer );
     QFontMetrics fontMetrics( const QFont &f );
 };
