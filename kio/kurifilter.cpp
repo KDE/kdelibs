@@ -186,14 +186,14 @@ bool KURIFilter::filterURI( KURIFilterData& data, const QStringList& filters )
     bool filtered = false;
     KURIFilterPluginList use_plugins;
 
-    // If we have don't have a filter list, only include the
-    // once that were specified.  Otherwise use all available
-    // filters...
+    // If we have a filter list, only include the once
+    // explicitly specified by it.  Otherwise use all 
+    // available filters...
     if( filters.isEmpty() )
         use_plugins = m_lstPlugins;  // Use everything that is loaded...
     else
     {
-        kdDebug() << "Named plugins requested..."  << endl;
+        //kdDebug() << "Named plugins requested..."  << endl;
         for( QStringList::ConstIterator lst = filters.begin(); lst != filters.end(); ++lst )
         {
             QListIterator<KURIFilterPlugin> it( m_lstPlugins );
@@ -201,7 +201,7 @@ bool KURIFilter::filterURI( KURIFilterData& data, const QStringList& filters )
             {
                 if( (*lst) == it.current()->name() )
                 {
-                    kdDebug() << "Will use filter plugin named: " << it.current()->name() << endl;
+                    //kdDebug() << "Will use filter plugin named: " << it.current()->name() << endl;
                     use_plugins.append( it.current() );
                     break;  // We already found it ; so lets test the next named filter...
                 }
@@ -210,10 +210,11 @@ bool KURIFilter::filterURI( KURIFilterData& data, const QStringList& filters )
     }
 
     QListIterator<KURIFilterPlugin> it( use_plugins );
-    kdDebug() << "Using " << use_plugins.count() << " out of the " << m_lstPlugins.count() << " avaliable plugins" << endl;
+    //kdDebug() << "Using " << use_plugins.count() << " out of the "
+    //          << m_lstPlugins.count() << " avaliable plugins" << endl;
     for (; it.current() && !filtered; ++it)
     {
-        kdDebug() << "Using a filter plugin named: " << it.current()->name() << endl;
+        //kdDebug() << "Using a filter plugin named: " << it.current()->name() << endl;
         filtered |= it.current()->filterURI( data );
     }
     return filtered;
@@ -266,7 +267,8 @@ void KURIFilter::loadPlugins()
         if ((*it)->library().isEmpty()) { continue; }
         KLibFactory *factory = KLibLoader::self()->factory((*it)->library().latin1());
         if (!factory) { continue; }
-        KURIFilterPlugin *plugin = (KURIFilterPlugin *) factory->create(0, (*it)->desktopEntryName().latin1(), "KURIFilterPlugin");
+        KURIFilterPlugin *plugin = static_cast<KURIFilterPlugin *> (factory->create(0,
+                                   (*it)->desktopEntryName().latin1(), "KURIFilterPlugin"));
         if ( plugin ) { m_lstPlugins.append( plugin ); }
     }
      // NOTE: Plugin priority is now determined by
