@@ -14,6 +14,7 @@
 #include <qdialog.h>
 #include <qpushbutton.h>
 #include <kcombiview.h>
+#include <kfilepreview.h>
 #include <kfileiconview.h>
 #include <kfiledetailview.h>
 #include <kprogress.h>
@@ -31,6 +32,10 @@ KDirOperator::KDirOperator(const QString& dirName,
 			   QWidget *parent, const char* _name)
     : QWidget(parent, _name), fileList(0), oldList(0), progress(0)
 {
+
+
+    _mode=KFileDialog::Files;
+
     if (dirName.isEmpty()) // no dir specified -> current dir
 	lastDirectory = new QString(QDir::currentDirPath());
     else
@@ -109,24 +114,24 @@ void KDirOperator::activatedMenu( const KFileViewItem *item )
 	id = p->insertItem(BarIcon(QString::fromLatin1("up")),
 			   i18n("Up"), this, SLOT(cdUp()));
 	p->setItemEnabled(id, !isRoot());
-	
+
 	id = p->insertItem(BarIcon(QString::fromLatin1("back")),
 			   i18n("Back"), this, SLOT(back()));
 	p->setItemEnabled(id, !backStack.isEmpty());
-	
+
 	id = p->insertItem(BarIcon(QString::fromLatin1("forward")),
 			   i18n("Forward"), this, SLOT(forward()));
 	p->setItemEnabled(id, !forwardStack.isEmpty());
-	
+
 	id = p->insertItem(BarIcon(QString::fromLatin1("home")),
 			   i18n("Home"), this, SLOT(home()));
-	
+
 	p->insertSeparator();
 
 	id = p->insertItem(i18n("New Folder..."),
 		      this, SLOT(mkdir()));
 	p->setItemEnabled(id, dir->isLocalFile());
-	
+
 	if (viewKind) {
 	    p->insertSeparator();
 
@@ -139,11 +144,11 @@ void KDirOperator::activatedMenu( const KFileViewItem *item )
 	    id = views->insertItem(i18n("Show Hidden Files"),
 			       this, SLOT(toggleHidden()));
 	    views->setItemChecked(id, showHiddenFiles());
-	
+
 	    id = views->insertItem(i18n("Separate Directories"),
 				   this, SLOT(toggleMixDirsAndFiles()));
-	    views->setItemChecked(id, (viewKind & 128) == 128);
-	
+	    views->setItemChecked(id, (viewKind & SeparateDirs) == SeparateDirs);
+
 	    id = p->insertItem(i18n("View"), views);
 	}
 
@@ -154,12 +159,12 @@ void KDirOperator::activatedMenu( const KFileViewItem *item )
 
 void KDirOperator::detailedView()
 {
-    setView(Detail, (viewKind & 128) == 128);
+    setView(Detail, (viewKind & SeparateDirs) == SeparateDirs);
 }
 
 void KDirOperator::simpleView()
 {
-    setView(Simple, (viewKind & 128) == 128);
+    setView(Simple, (viewKind & SeparateDirs) == SeparateDirs);
 }
 
 int KDirOperator::numDirs() const
@@ -179,14 +184,14 @@ void KDirOperator::toggleHidden()
 
 void KDirOperator::toggleMixDirsAndFiles()
 {
-    setView(static_cast<FileView>(viewKind & ~128), (viewKind & 128) != 128);
+    setView(static_cast<FileView>(viewKind & ~SeparateDirs), (viewKind & SeparateDirs) != SeparateDirs);
 }
 
 void KDirOperator::mkdir()
 {
     if (!dir->isLocalFile())
 	return;
-	
+
     // Modal widget asking the user the name of a new directory
     //
     QDialog *lMakeDir;
@@ -488,7 +493,7 @@ void KDirOperator::setView(FileView view, bool separateDirs)
     if (view == Default) {
 	KConfig *c= KGlobal::config();
 	KConfigGroupSaver sc(c, ConfigGroup);
-	
+
 	if ( c->readEntry( QString::fromLatin1("ViewStyle"),
 			   DefaultViewStyle) ==
 	     QString::fromLatin1("DetailView") ) {
@@ -496,15 +501,16 @@ void KDirOperator::setView(FileView view, bool separateDirs)
 	} else {
 	    view = Simple;
 	}
-	
+
 	separateDirs = ! c->readBoolEntry( QString::fromLatin1("MixDirsAndFiles"), DefaultMixDirsAndFiles );
     }
 
     // if only directories separating makes only limited sense :)
-    if ( mode() == KFileDialog::Directory )
-	separateDirs = false;
+    if ( (mode() & KFileDialog::Directory) == KFileDialog::Directory ||
+         (mode() & KFileDialog::Preview) == KFileDialog::Preview )
+        separateDirs = false;
 
-    viewKind = static_cast<int>(view) | (separateDirs ? 128 : 0);
+    viewKind = static_cast<int>(view) | (separateDirs ? SeparateDirs : 0);
 
     KFileView *myFileView = 0;
 
@@ -518,14 +524,15 @@ void KDirOperator::setView(FileView view, bool separateDirs)
 		setRight(new KFileDetailView( combi, "detail view" ));
 	myFileView = combi;
     } else {
-	
 	if (view == Simple)
 	    myFileView = new KFileIconView( this, "simple view" );
-	else
+	else if (view == Detail)
 	    myFileView = new KFileDetailView( this, "detail view" );
+    else
+        myFileView = new KFilePreview(this, "preview");
     }
 
-    if (mode() == KFileDialog::Directory)
+    if ( (mode() & KFileDialog::Directory) )
 	myFileView->setViewMode(KFileView::Directories);
     else
 	myFileView->setViewMode(KFileView::All);
@@ -568,6 +575,10 @@ void KDirOperator::connectView(KFileView *view)
 	fileList->setViewMode( KFileView::All );
 	fileList->setSelectMode( KFileView::Multi );
     }
+    else if( _mode == KFileDialog::Preview ) {
+    fileList->setViewMode( KFileView::All );
+    fileList->setSelectMode( KFileView::Single );
+    }
 
     dir->listContents();
     fileList->widget()->show();
@@ -587,14 +598,14 @@ void KDirOperator::setMode(KFileDialog::Mode m)
     _mode = m;
 
     // reset the view with the different mode
-    setView(static_cast<FileView>(viewKind & ~128), (viewKind & 128) == 128);
+    setView(static_cast<FileView>(viewKind & ~SeparateDirs), (viewKind & SeparateDirs) == SeparateDirs);
 }
 
 void KDirOperator::setView(KFileView *view)
 {
     connectView(view);
     // TODO: this is a hack! It should be 0
-    viewKind = Simple + 128;
+    viewKind = Simple | SeparateDirs;
 }
 
 void KDirOperator::setFileReader( KFileReader *reader )
@@ -757,3 +768,4 @@ void KDirOperator::resizeEvent( QResizeEvent * )
 }
 
 #include "kdiroperator.moc"
+
