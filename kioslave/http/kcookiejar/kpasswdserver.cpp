@@ -73,7 +73,7 @@ KPasswdServer::~KPasswdServer()
 }
 
 KIO::AuthInfo 
-KPasswdServer::checkCachedAuthInfo(KIO::AuthInfo info, long windowId)
+KPasswdServer::checkAuthInfo(KIO::AuthInfo info, long windowId)
 {
     QString key = createCacheKey(info);
 
@@ -128,6 +128,18 @@ KPasswdServer::queryAuthInfo(KIO::AuthInfo info, QString errorMsg, long windowId
        QTimer::singleShot(0, this, SLOT(processRequest()));
 
     return info;
+}
+
+void
+KPasswdServer::addAuthInfo(KIO::AuthInfo info, long windowId)
+{
+    kdDebug() << "KPasswdServer::addAuthInfo: User= " << info.username
+              << ", RealmValue= " << info.realmValue << endl;
+    QString key = createCacheKey(info);
+
+    m_seqNr++;
+
+    addAuthInfoItem(key, info, windowId, m_seqNr, false);
 }
 
 void
@@ -338,14 +350,13 @@ KPasswdServer::findAuthInfoItem(const QString &key, const KIO::AuthInfo &info)
        if (info.verifyPath)
        {
           QString path1 = current->directory;
-// qWarning("Comparing %s with %s", path2.latin1(), path1.latin1());
           if (path2.startsWith(path1))
              return current;
        }
        else
        {
           if (current->realmValue == info.realmValue)
-             return current;
+             return current; // TODO: Update directory info, 
        }
           
        current = authList->next();
@@ -402,6 +413,7 @@ KPasswdServer::addAuthInfoItem(const QString &key, const KIO::AuthInfo &info, lo
    if (!current)
    {
       current = new AuthInfo;
+      current->expire = AuthInfo::expTime;
    }
 
    current->url = info.url;
@@ -417,15 +429,14 @@ KPasswdServer::addAuthInfoItem(const QString &key, const KIO::AuthInfo &info, lo
    {
       current->expire = AuthInfo::expNever;
    }
-   else if (windowId)
+   else if (windowId && (current->expire != AuthInfo::expNever))
    {
       current->expire = AuthInfo::expWindowClose;
       if (!current->windowList.contains(windowId))
          current->windowList.append(windowId);
    }
-   else
+   else if (current->expire == AuthInfo::expTime)
    {
-      current->expire = AuthInfo::expTime;
       current->expireTime = time(0)+10;
    }
    
@@ -433,14 +444,17 @@ KPasswdServer::addAuthInfoItem(const QString &key, const KIO::AuthInfo &info, lo
    authList->inSort(current);
    
    // Update mWindowIdList
-   QStringList *keysChanged = mWindowIdList.find(windowId);
-   if (!keysChanged)
+   if (windowId)
    {
-      keysChanged = new QStringList;
-      mWindowIdList.insert(windowId, keysChanged);
+      QStringList *keysChanged = mWindowIdList.find(windowId);
+      if (!keysChanged)
+      {
+         keysChanged = new QStringList;
+         mWindowIdList.insert(windowId, keysChanged);
+      }
+      if (!keysChanged->contains(key))
+         keysChanged->append(key);
    }
-   if (!keysChanged->contains(key))
-      keysChanged->append(key);
 }
 
 void

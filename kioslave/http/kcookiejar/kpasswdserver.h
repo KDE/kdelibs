@@ -46,8 +46,9 @@ public:
   void removeAuthForWindowId(long windowId);
 
 k_dcop:
-  KIO::AuthInfo checkCachedAuthInfo(KIO::AuthInfo, long);
+  KIO::AuthInfo checkAuthInfo(KIO::AuthInfo, long);
   KIO::AuthInfo queryAuthInfo(KIO::AuthInfo, QString, long, long);
+  void addAuthInfo(KIO::AuthInfo, long);
 
 public slots:
   void processRequest();
