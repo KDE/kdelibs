@@ -280,13 +280,11 @@ KLauncher::process(const QCString &fun, const QByteArray &data,
       QString host;
       QString app_socket;
       stream >> protocol >> host >> app_socket;
-      kdDebug(7016) << "requestSlave " << protocol << " "<< host << endl;
       replyType = "QString";
       QString error;
       pid_t pid = requestSlave(protocol, host, app_socket, error);
       QDataStream stream2(replyData, IO_WriteOnly);
       stream2 << pid << error;;
-      kdDebug(7016) << "requestSlave got pid " << pid << endl;
       return true;
    }
    else if (fun == "setLaunchEnv(QCString,QCString)")
@@ -1068,7 +1066,6 @@ KLauncher::requestSlave(const QString &protocol,
                         const QString &host,
                         const QString &app_socket, QString &error)
 {
-    kdDebug(7016) << "KLauncher::requestSlave for " << protocol << ": looking for a slave handling " << protocol << endl;
     IdleSlave *slave;
     for(slave = mSlaveList.first(); slave; slave = mSlaveList.next())
     {
@@ -1093,7 +1090,6 @@ KLauncher::requestSlave(const QString &protocol,
     }
     if (slave)
     {
-       kdDebug(7016) << "KLauncher::requestSlave : found such a slave" << endl;
        mSlaveList.removeRef(slave);
        slave->connect(app_socket);
        return slave->pid();
@@ -1115,7 +1111,7 @@ KLauncher::requestSlave(const QString &protocol,
     arg_list.append(arg2);
     arg_list.append(arg3);
 
-    kdDebug(7016) << "KLauncher: launching new slave " << _name << " with protocol=" << protocol << endl;
+//    kdDebug(7016) << "KLauncher: launching new slave " << _name << " with protocol=" << protocol << endl;
     if (mSlaveDebug == arg1)
     {
        klauncher_header request_header;
@@ -1137,7 +1133,7 @@ KLauncher::requestSlave(const QString &protocol,
     requestStart(request);
     pid_t pid = request->pid;
 
-    kdDebug(7016) << "Slave launched, pid = " << pid << endl;
+//    kdDebug(7016) << "Slave launched, pid = " << pid << endl;
 
     // We don't care about this request any longer....
     requestDone(request);

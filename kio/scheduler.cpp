@@ -188,7 +188,7 @@ QCStringList Scheduler::functions()
 void Scheduler::_doJob(SimpleJob *job) {
     JobData *jobData = new JobData;
     jobData->protocol = KProtocolManager::slaveProtocol(job->url(), jobData->proxy);
-    kdDebug(7006) << "Scheduler::_doJob protocol=" << jobData->protocol << endl;
+//    kdDebug(7006) << "Scheduler::_doJob protocol=" << jobData->protocol << endl;
     extraJobData->replace(job, jobData);
     newJobs.append(job);
     slaveTimer.start(0, true);
@@ -203,7 +203,7 @@ void Scheduler::_scheduleJob(SimpleJob *job) {
     return;
 }
     QString protocol = jobData->protocol;
-    kdDebug(7006) << "Scheduler::_scheduleJob protocol=" << protocol << endl;
+//    kdDebug(7006) << "Scheduler::_scheduleJob protocol=" << protocol << endl;
     ProtocolInfo *protInfo = protInfoDict->get(protocol);
     protInfo->joblist.append(job);
     
@@ -511,7 +511,7 @@ Slave *Scheduler::findIdleSlave(ProtocolInfo *, SimpleJob *job, bool &exact)
             bCanReuse = (resume.isEmpty() || resume == "0");
           }
        }
-       kdDebug(7006) << "bCanReuse = " << bCanReuse << endl;
+//       kdDebug(7006) << "bCanReuse = " << bCanReuse << endl;
        if (bCanReuse)
        {
           if (job->url() == urlOnHold)
@@ -573,17 +573,9 @@ Slave *Scheduler::createSlave(ProtocolInfo *protInfo, SimpleJob *job, const KURL
    return slave;
 }
 
-#if 0
-void Scheduler::slotSlaveStatus(pid_t pid, const QCString &protocol, const QString &host, bool connected) {
-    Slave *slave = (Slave*)sender();
-    kdDebug(7006) << "Slave = " << slave << " (PID = " << pid
-                  << ") protocol = " << protocol.data() << " host = "
-                  << ( !host.isNull() ? host : QString::fromLatin1("[None]") ) << " "
-                  << ( connected ? "Connected" : "Not connected" ) << endl;
+void Scheduler::slotSlaveStatus(pid_t, const QCString &, const QString &, bool) 
+{
 }
-#else
-void Scheduler::slotSlaveStatus(pid_t, const QCString &, const QString &, bool) {}
-#endif
 
 void Scheduler::_jobFinished(SimpleJob *job, Slave *slave)
 {
@@ -758,7 +750,7 @@ Scheduler::_getConnectedSlave(const KURL &url, const KIO::MetaData &config )
                 SLOT(slotSlaveError(int, const QString &)));
 
     coSlaves.insert(slave, new QList<SimpleJob>());
-    kdDebug(7006) << "_getConnectedSlave( " << slave << ")" << endl;
+//    kdDebug(7006) << "_getConnectedSlave( " << slave << ")" << endl;
     return slave;
 }
 
@@ -777,7 +769,7 @@ Scheduler::slotScheduleCoSlave()
         {
            SimpleJob *job = list->take(0);
            coIdleSlaves->removeRef(slave);
-           kdDebug(7006) << "scheduler: job started " << job << endl;
+//           kdDebug(7006) << "scheduler: job started " << job << endl;
 
            assert(!coIdleSlaves->contains(slave));
 
@@ -808,7 +800,7 @@ void
 Scheduler::slotSlaveConnected()
 {
     Slave *slave = (Slave *)sender();
-    kdDebug(7006) << "slotSlaveConnected( " << slave << ")" << endl;
+//    kdDebug(7006) << "slotSlaveConnected( " << slave << ")" << endl;
     slave->setConnected(true);
     emit slaveConnected(slave);
     assert(!coIdleSlaves->contains(slave));
@@ -830,12 +822,12 @@ Scheduler::slotSlaveError(int errorNr, const QString &errorMsg)
 bool
 Scheduler::_assignJobToSlave(KIO::Slave *slave, SimpleJob *job)
 {
-    kdDebug(7006) << "_assignJobToSlave( " << job << ", " << slave << ")" << endl;
+//    kdDebug(7006) << "_assignJobToSlave( " << job << ", " << slave << ")" << endl;
     if ((slave->slaveProtocol() != KProtocolManager::slaveProtocol( job->url().protocol() ))
         ||
         (!newJobs.removeRef(job)))
     {
-        kdDebug(7006) << "ERROR, nonmatching or unknown job." << endl;
+        kdDebug(7006) << "_assignJobToSlave(): ERROR, nonmatching or unknown job." << endl;
         job->kill();
         return false;
     }
@@ -844,7 +836,7 @@ Scheduler::_assignJobToSlave(KIO::Slave *slave, SimpleJob *job)
     assert(list);
     if (!list)
     {
-        kdDebug(7006) << "ERROR, unknown slave." << endl;
+        kdDebug(7006) << "_assignJobToSlave(): ERROR, unknown slave." << endl;
         job->kill();
         return false;
     }
@@ -859,7 +851,7 @@ Scheduler::_assignJobToSlave(KIO::Slave *slave, SimpleJob *job)
 bool
 Scheduler::_disconnectSlave(KIO::Slave *slave)
 {
-    kdDebug(7006) << "_disconnectSlave( " << slave << ")" << endl;
+//    kdDebug(7006) << "_disconnectSlave( " << slave << ")" << endl;
     JobList *list = coSlaves.take(slave);
     assert(list);
     if (!list)
