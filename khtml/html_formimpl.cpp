@@ -854,7 +854,7 @@ void HTMLInputElementImpl::attach(KHTMLWidget *_view)
     {
 	QPushButton *b = new QPushButton(view->viewport());
 	w = b;
-	b->setText("IMG");
+	b->setPixmap(QPixmap());
 	if(_src != 0)
 	    _src = document->requestImage(this, _src);
 	QObject::connect(b, SIGNAL(clicked()), this, SLOT(slotSubmit()));
@@ -1362,6 +1362,13 @@ void HTMLSelectElementImpl::layout( bool )
 
     setLayouted();
     setBlocking(false);
+
+    if(availableWidth && minWidth > availableWidth)
+    {
+	printf("========================>> updating parents size!!!\n");
+	if(_parent) _parent->updateSize();
+    }
+
 }
 
 void HTMLSelectElementImpl::calcMinMaxWidth()
@@ -1669,6 +1676,13 @@ void HTMLTextAreaElementImpl::layout( bool )
 
     setLayouted();
     setBlocking(false);
+
+    if(availableWidth && minWidth > availableWidth)
+    {
+	printf("========================>> updating parents size!!!\n");
+	if(_parent) _parent->updateSize();
+    }
+
 }
 
 void HTMLTextAreaElementImpl::calcMinMaxWidth()
@@ -1687,7 +1701,10 @@ void HTMLTextAreaElementImpl::calcMinMaxWidth()
     maxWidth = minWidth;
 
     if(availableWidth && minWidth > availableWidth)
+    {
+	printf("========================>> updating parents size!!!\n");
 	if(_parent) _parent->updateSize();
+    }
 }
 
 void HTMLTextAreaElementImpl::reset()

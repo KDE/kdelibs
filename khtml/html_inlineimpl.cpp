@@ -181,7 +181,7 @@ void HTMLAnchorElementImpl::getAnchorPosition(int &xPos, int &yPos)
 	    {
 		TextImpl *t = static_cast<TextImpl *>(current);
 		if(!t->first) return;
-		printf("text is at: %d/%d\n", t->first->x, t->first->y);
+		//printf("text is at: %d/%d\n", t->first->x, t->first->y);
 		xPos += t->first->x;
 		yPos += t->first->y;
 	    }
@@ -295,7 +295,7 @@ void HTMLFontElementImpl::setStyle(CSSStyle *currentStyle)
     s = attributeMap.valueForId(ATTR_FACE);
     if(s != 0)
     {
-	printf("setting face\n");
+      //printf("setting face\n");
 	QString str = s.string();
 	str.replace(QRegExp("[ ,]+"), ",");
 	// try to find a matching font in the font list.
@@ -308,11 +308,11 @@ void HTMLFontElementImpl::setStyle(CSSStyle *currentStyle)
 	    fname = fname.lower();
 	    QFont tryFont( fname.data() );
 	    QFontInfo fi( tryFont );
-	    printf("trying \"%s\": getting %s\n", tryFont.family().ascii(), fi.family().ascii());
+	    //printf("trying \"%s\": getting %s\n", tryFont.family().ascii(), fi.family().ascii());
 	    if ( strcmp( tryFont.family(), fi.family() ) == 0 )
 	    {
 		// we found a matching font
-		printf("found mathing face!\n");
+	      //printf("found mathing face!\n");
 		currentStyle->font.family = fname;
 		break;
 	    }

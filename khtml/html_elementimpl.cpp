@@ -266,7 +266,7 @@ void HTMLElementImpl::close()
 
 void HTMLElementImpl::updateSize()
 {
-    printf("element::updateSize()\n");
+  //    printf("element::updateSize()\n");
     setLayouted(false);
     calcMinMaxWidth();
     if(_parent)
