@@ -473,15 +473,20 @@ QTextCodec *KCharsets::codecForName(const QString &n, bool &ok) const
     if((codec = d->codecForNameDict[n.isEmpty() ? "->locale<-" : n.latin1()]))
         return codec; // cache hit, return
 
+    if (n.isEmpty()) {
+        codec = KGlobal::locale()->codecForEncoding();
+        d->codecForNameDict.replace("->locale<-", codec);
+        return codec;
+    }
+
     QCString name = n.lower().latin1();
     QCString key = name;
     if (name.right(8) == "_charset")
        name.truncate(name.length()-8);
 
-    if (n.isEmpty()) {
-        codec = KGlobal::locale()->codecForEncoding();
-        d->codecForNameDict.replace("->locale<-", codec);
-        return codec;
+    if (name.isEmpty()) {
+      ok = false;
+      return QTextCodec::codecForName("iso8859-1");
     }
 
     codec = QTextCodec::codecForName(name);
@@ -495,7 +500,7 @@ QTextCodec *KCharsets::codecForName(const QString &n, bool &ok) const
     // so QTextCodec did not recognise it.
     QCString cname = kcharsets_array_search< Builtin, const char* >( builtin, name.data());
 
-    if(!cname.isEmpty() && !cname.isNull())
+    if(!cname.isEmpty())
         codec = QTextCodec::codecForName(cname);
 
     if(codec)
@@ -515,7 +520,7 @@ QTextCodec *KCharsets::codecForName(const QString &n, bool &ok) const
     // is available in the charmap directory.
     cname = kcharsets_array_search< Aliases, const char* >( aliases, name.data());
 
-    if(cname.isNull() || cname.isEmpty())
+    if(cname.isEmpty())
         cname = name;
     cname = cname.upper();
 
@@ -531,7 +536,7 @@ QTextCodec *KCharsets::codecForName(const QString &n, bool &ok) const
     cname = cname.lower();
     cname = kcharsets_array_search< ConversionHints, const char* >( conversion_hints, cname );
 
-    if(!cname.isEmpty() && !cname.isNull())
+    if(!cname.isEmpty())
         codec = QTextCodec::codecForName(cname);
 
     if(codec) {
