@@ -10,13 +10,12 @@ CATEGORIES=	x11 kde
 
 MAINTAINER=	garbanzo@hooked.net
 
-BUILD_DEPENDS=	moc:${PORTSDIR}/x11/qt \
-		autoconf:${PORTSDIR}/devel/autoconf \
+BUILD_DEPENDS=	autoconf:${PORTSDIR}/devel/autoconf \
 		automake:${PORTSDIR}/devel/automake
 INSTALL_ROOT=	${.CURDIR}/${PKGNAME}
-LIB_DEPENDS=	qt\\.1\\.3[0-9]:${PORTSDIR}/x11/qt133 \
-		gif\\.[23]\\.:${PORTSDIR}/graphics/giflib \
-		jpeg\\.9\\.:${PORTSDIR}/graphics/jpeg
+USE_QT=		yes
+LIB_DEPENDS=	gif.3:${PORTSDIR}/graphics/giflib \
+		jpeg.9:${PORTSDIR}/graphics/jpeg
 NO_MTREE=	yup
 USE_GMAKE=	"without a doubt"
 NO_WRKDIR=	"Cause, you've obviously got the source in the parent directory"
