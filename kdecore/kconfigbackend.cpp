@@ -32,6 +32,7 @@
 #include <kglobal.h>
 #include <kstddirs.h>
 #include <ksavefile.h>
+#include <klocale.h>
 
 #ifdef HAVE_UNISTD_H
 #include <unistd.h>
@@ -180,6 +181,7 @@ void KConfigINIBackEnd::parseSingleConfigFile(QFile &rFile,
   // reset the stream's device
   rFile.at(0);
   QTextStream aStream( &rFile );
+  if (KGlobal::_locale) aStream.setCodec(KGlobal::_locale->codec());
   while (!aStream.atEnd()) {
     aCurrentLine = aStream.readLine();
 
@@ -356,6 +358,7 @@ bool KConfigINIBackEnd::writeConfigFile(QString filename, bool bGlobal,
      return bEntriesLeft;
 
   QTextStream *pStream = rConfigFile.textStream();
+  if (KGlobal::_locale) pStream->setCodec(KGlobal::_locale->codec());
 
   // write back -- start with the default group
   KEntryMapConstIterator aWriteIt;
