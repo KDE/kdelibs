@@ -2,6 +2,8 @@ METASOURCES = AUTO
 
 AM_CPPFLAGS = -I$(top_srcdir)/kspell2 -I$(top_srcdir) $(all_includes)
 
+AM_LDFLAGS = $(LDFLAGS_AS_NEEDED)
+
 kde_module_LTLIBRARIES = kspell_aspell.la
 
 kspell_aspell_la_SOURCES = kspell_aspellclient.cpp kspell_aspelldict.cpp

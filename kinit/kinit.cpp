@@ -163,6 +163,13 @@ int kdeinit_x_errhandler( Display *, XErrorEvent *err );
 }
 #endif
 
+/* These are to link libkparts even if 'smart' linker is used */
+#include <kparts/plugin.h>
+extern "C" KParts::Plugin* _kinit_init_kparts() { return new KParts::Plugin(); }
+/* These are to link libkio even if 'smart' linker is used */
+#include <kio/authinfo.h>
+extern "C" KIO::AuthInfo* _kioslave_init_kio() { return new KIO::AuthInfo(); }
+
 /*
  * Close fd's which are only useful for the parent process.
  * Restore default signal handlers.

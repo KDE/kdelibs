@@ -26,6 +26,8 @@ kdeinit_LTLIBRARIES = klauncher.la
 kdeinit_SOURCES = kinit.cpp setproctitle.cpp
 
 # NOTE: We link against all common libraries even if we don't need them ourselves.
+AM_LDFLAGS = $(LDFLAGS_AS_NEEDED)
+
 kdeinit_LDFLAGS = $(KDE_MT_LDFLAGS) $(QT_LDFLAGS) $(X_LDFLAGS) $(USER_LDFLAGS) \
                   $(KDE_RPATH)
 kdeinit_LDADD = $(LIB_KPARTS) 

@@ -1,6 +1,8 @@
 
 INCLUDES =  -I$(srcdir)/.. $(all_includes)
 
+AM_LDFLAGS = $(LDFLAGS_AS_NEEDED)
+
 libkmidincludedir = $(includedir)/libkmid
 libkmidinclude_HEADERS = midiout.h player.h track.h midimapper.h \
 	midfile.h dattypes.h midistat.h deviceman.h synthout.h \

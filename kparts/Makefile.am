@@ -1,5 +1,7 @@
 ####### General stuff
 
+AM_LDFLAGS = $(LDFLAGS_AS_NEEDED)
+
 INCLUDES= -I$(srcdir)/../ -I$(top_srcdir)/kio/ -I$(top_srcdir)/libltdl \
 	-I$(top_srcdir)/kfile $(all_includes)
 libkparts_la_LDFLAGS = $(KDE_MT_LDFLAGS) -version-info 3:0:1 -no-undefined

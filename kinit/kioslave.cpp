@@ -47,6 +47,10 @@
 # endif
 #endif
 
+/* These are to link libkio even if 'smart' linker is used */
+#include <kio/authinfo.h>
+extern "C" KIO::AuthInfo* _kioslave_init_kio() { return new KIO::AuthInfo(); }
+
 int main(int argc, char **argv)
 {
      if (argc < 5)

@@ -22,6 +22,8 @@ SUBDIRS = . kdetrayproxy tests
 
 INCLUDES= -I$(top_srcdir)/kdefx -I$(top_srcdir)/interfaces $(all_includes)
 
+AM_LDFLAGS = $(LDFLAGS_AS_NEEDED)
+
 lib_LTLIBRARIES = libkdeui.la libkspell.la
 libkdeui_la_LDFLAGS = $(KDE_MT_LDFLAGS) -no-undefined -version-info 6:0:2
 libkdeui_la_LIBADD = ../kdecore/libkdecore.la
