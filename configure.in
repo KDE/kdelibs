@@ -208,6 +208,8 @@ AC_OUTPUT(Makefile \
 	kfile/Makefile \
 	kio/Makefile \
 	kio/file/Makefile \
+	kio/kded/Makefile \
+	kio/tests/Makefile \
 	corba/Makefile \
 	corba/cuteidl/Makefile \
 	corba/cuteidl/sti/Makefile \
