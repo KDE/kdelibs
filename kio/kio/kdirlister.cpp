@@ -675,9 +675,6 @@ void KDirListerCache::FileRenamed( const KURL &src, const KURL &dst )
 
 void KDirListerCache::emitRefreshItem( KFileItem* fileitem )
 {
-  KFileItemList refreshList;
-  refreshList.append( fileitem );
-
   // Look whether this item was shown in any view, i.e. held by any dirlister
   KURL parentDir( fileitem->url() );
   parentDir.setPath( parentDir.directory() );
@@ -685,13 +682,19 @@ void KDirListerCache::emitRefreshItem( KFileItem* fileitem )
   QPtrList<KDirLister> *listers = urlsCurrentlyHeld[parentDirURL];
   if ( listers )
     for ( KDirLister *kdl = listers->first(); kdl; kdl = listers->next() )
-      emit kdl->refreshItems( refreshList );
+    {
+      kdl->addRefreshItem( fileitem );
+      kdl->emitItems();
+    }
 
   // Also look in urlsCurrentlyListed, in case the user manages to rename during a listing
   listers = urlsCurrentlyListed[parentDirURL];
   if ( listers )
     for ( KDirLister *kdl = listers->first(); kdl; kdl = listers->next() )
-      emit kdl->refreshItems( refreshList );
+    {
+      kdl->addRefreshItem( fileitem );
+      kdl->emitItems();
+    }
 }
 
 KDirListerCache* KDirListerCache::self()
