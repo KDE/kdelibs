@@ -1,6 +1,6 @@
 Source: kdelibs
-Build-Depends: automake, libtool, debhelper, libjpeg62-dev, libqt2.2-dev (>= 2:2.2.0-20000906-0), libpng2-dev, libtiff3g-dev, zlib1g-dev, xlib6g-dev | xlibs, libaudiofile-dev, qt2.2-doc, jade, sgml-base, kdoc, docbook, libgl-dev, libmng-dev, docbook-stylesheets
-Build-Conflicts: kdelibs3, kdelibs3-nossl, libssl095a-dev, libssl09-dev
+Build-Depends: automake, libtool, debhelper, libjpeg62-dev, libqt2.2-dev (>= 2:2.2.0-20000906-7), libpng2-dev, libtiff3g-dev, zlib1g-dev, xlib6g-dev | xlibs, libaudiofile-dev, qt2.2-doc, jade, sgml-base, kdoc, docbook, libmng-dev, docbook-stylesheets
+Build-Conflicts: kdelibs3-nossl, libssl09-dev
 Section: libs
 Priority: optional
 Maintainer: Ivan E. Moore II <rkrusty@debian.org>
@@ -12,7 +12,7 @@ Section: libs
 Replaces: kdelibs3-cvs, kdelibs3-nossl
 Depends: ${shlibs:Depends}
 Suggests: kdelibs3-crypto
-Conflicts: kdelibs3-nossl, kdebase (<= 4:2.0-20001015-0)
+Conflicts: kdelibs3-nossl, kdebase (<= 4:2.0-final-0)
 Description: KDE core libraries (runtime files)
  KDE core libraries.
  You need these files to run kde applications.
@@ -31,7 +31,7 @@ Package: kdelibs3-dev
 Architecture: any
 Section: devel
 Replaces: kdelibs-dev, kdelibs2g-dev, kdelibs3-nossl-dev
-Depends: kdelibs3 (= ${Source-Version}), libmng-dev, libqt2.2-dev, libjpeg62-dev, xlib6g-dev | xlibs, libgl-dev
+Depends: kdelibs3 (= ${Source-Version}), libmng-dev, libqt2.2-dev, libjpeg62-dev, xlib6g-dev | xlibs, libc6-dev
 Conflicts: kdelibs0-dev, kdelibs2g-dev, kdelibs3-nossl-dev
 Suggests: kdelibs3-doc
 Provides: kdelibs-dev
