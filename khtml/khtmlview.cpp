@@ -526,25 +526,18 @@ void KHTMLView::keyReleaseEvent( QKeyEvent *_ke )
 
 bool KHTMLView::focusNextPrevChild( bool next )
 {
-    if (!m_part->docImpl())
-	return false;
-    if (!m_part->docImpl()->body())
-	return false;
-    kdDebug(6000)<<"KHTMLView("<<name()<<"): body nodeName="<<m_part->docImpl()->body()->nodeName().string()<<endl;
-    if (m_part->docImpl()->body()->id()==ID_FRAMESET)
-	return QWidget::focusNextPrevChild( next );
-    if (gotoLink(next))
+    if (focusWidget()!=this)
+	setFocus();
+    if (m_part->xmlDocImpl() && gotoLink(next))
 	return true;
-    else kdDebug(6000)<<"KHTMLView("<<name()<<"): gotoLink("<<(next?"true":"false")
-		      <<") returned false. giving up.\n";
+    if (m_part->parentPart() && m_part->parentPart()->view())
+	return m_part->parentPart()->view()->focusNextPrevChild(next);
     m_part->overURL(QString(), 0);
 
     if (!QWidget::focusNextPrevChild( next ))
 	return false;
     if (focusWidget()==viewport())
 	return QWidget::focusNextPrevChild( next );
-
-    kdDebug(6000)<<"KHTMLView("<<name()<<"): QScrollview set new FocusWidget to:"<<focusWidget()->name()<<endl;
     return true;
 }
 
