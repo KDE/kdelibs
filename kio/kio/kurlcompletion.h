@@ -74,25 +74,25 @@ public:
 	 * The completion is done asyncronously if KIO is used.
 	 *
 	 * Returns the first match for user, environment, and local dir completion
-	 * and QString::null for asynchronous completion (KIO).
+	 * and QString::null for asynchronous completion (KIO or threaded).
 	 *
 	 * @param text the text to complete
 	 * @return the first match, or QString::null if not found
 	 */
-	virtual QString makeCompletion(const QString &text);
+	virtual QString makeCompletion(const QString &text); // KDE4: remove return value, it's often null due to threading
 
 	/**
 	 * Sets the current directory (used as base for completion).
 	 * Default = $HOME.
 	 * @param dir the current directory
 	 */
-	virtual void setDir(const QString &dir);
+	virtual void setDir(const QString &dir); // TODO KDE4: use KURL
 
 	/**
 	 * Returns the current directory.
 	 * @return the current directory
 	 */
-	virtual QString dir() const;
+	virtual QString dir() const; // TODO KDE4: use KURL
 
 	/**
 	 * Check whether asynchronous completion is in progress.
