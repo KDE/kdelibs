@@ -86,6 +86,11 @@ public class KJASAppletStub implements AppletStub
         return docBase;
     }
 
+    public String getAppletName()
+    {
+        return name;
+    }
+
     /**
      * Get the value of the named parameter.
      */

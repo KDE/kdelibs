@@ -11,24 +11,48 @@ import java.io.*;
 
 public class Main
 {
-    public static final boolean debug;
-
     //We need to save a reference to the original stdout
     //for sending messages back
-    public static final PrintStream protocol_stdout;
+    public  static final PrintStream         protocol_stdout;
+    public  static final KJASProtocolHandler protocol;
+    public  static final KJASConsole         console;
+    private static final boolean             show_console;
+    public  static final boolean             debug;
+    public  static final boolean             log;
+    private static boolean                   good_jdk;
 
-    public static KJASProtocolHandler protocol;
-    public static KJASConsole console;
-    private static boolean show_console;
-
+    /**************************************************************************
+     * Initialization
+     **************************************************************************/
     static
     {
-        debug = System.getProperty("kjas.debug") != null;
-        protocol_stdout = System.out;
+        debug        = System.getProperty( "kjas.debug" ) != null;
+        show_console = System.getProperty( "kjas.showConsole" ) != null;
+        log          = System.getProperty( "kjas.log" ) != null;
 
-        console = new KJASConsole();
+        protocol_stdout = System.out;
+        console         = new KJASConsole();
+        protocol        = new KJASProtocolHandler( System.in, protocol_stdout );
+
+        Main.kjas_debug( "JVM version = " + System.getProperty( "java.version" ) );
+        String version = System.getProperty("java.version").substring( 0, 3 );
+        Main.kjas_debug( "JVM numerical version = " + version );
+        try
+        {
+            float java_version = Float.parseFloat( version );
+            if( java_version >= 1.2 )
+                good_jdk = true;
+            else
+                good_jdk = false;
+        } catch( NumberFormatException e )
+        {
+            good_jdk = false;
+        }
     }
 
+    /**************************************************************************
+     * Public Utility functions available to the KJAS framework
+     **************************************************************************/
     public static void kjas_debug( String msg )
     {
         if( debug )
@@ -61,47 +85,21 @@ public class Main
             console.setVisible( false );
     }
 
-    private static boolean checkForJavaVersion()
-    {
-        String version  = System.getProperty("java.version");;
-        return version.startsWith("1.1");	
-    }
 
+    /**************************************************************************
+     * Main- create the command loop
+     **************************************************************************/
     public static void main( String[] args )
     {
-        // Check for Java version. We do not support Java 1.1
-        boolean bad_jdk = checkForJavaVersion();
-
-        if( bad_jdk || System.getProperty("kjas.showConsole") != null )
-            console.setVisible( true );
-	
-        if( bad_jdk )
+        if( !good_jdk )
         {
+            console.setVisible( true );
             System.err.println( "ERROR: This version of Java is not supported for security reasons." );
             System.err.println( "       Please use Java version 1.2 or higher." );
             return;
         }
 
-        KJASAppletRunner runner = new KJASAppletRunner();
-        protocol = new KJASProtocolHandler( System.in, protocol_stdout,
-                                            runner, "friend" );
-
-        while( true )
-        {
-            try
-            {
-                protocol.commandLoop();
-            }
-            catch ( IOException e )
-            {
-                kjas_err( "IO Error: " + e, e );
-            }
-            catch ( Throwable t )
-            {
-                kjas_err( "Serious error: " + t, t );
-            }
-        }
+        protocol.commandLoop();
     }
-
 
 }

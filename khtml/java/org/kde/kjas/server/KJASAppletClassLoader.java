@@ -9,17 +9,17 @@ import java.security.*;
 /**
  * ClassLoader used to download and instantiate Applets.
  * <P>
- * NOTE: The class loader extends Java 1.2 specific class. 
+ * NOTE: The class loader extends Java 1.2 specific class.
  */
-
-
 public class KJASAppletClassLoader
-   extends URLClassLoader
+    extends URLClassLoader
 {
-    public static KJASAppletClassLoader createLoader( URL url )
+    public static KJASAppletClassLoader createLoader( URL codeBase )
     {
+        Main.kjas_debug( "createLoader with: " + codeBase );
+
         URL[] urls = new URL[1];
-        urls[0] = url;
+        urls[0] = codeBase;
 
         return new KJASAppletClassLoader( urls );
     }
@@ -112,6 +112,52 @@ public class KJASAppletClassLoader
         }
     }
 
+    protected PermissionCollection getPermissions( CodeSource cs )
+    {
+        //get the permissions from the SecureClassLoader
+        final PermissionCollection perms = super.getPermissions( cs );
+        final URL url = cs.getLocation();
+
+        //first add permission to connect back to originating host
+        perms.add(new SocketPermission(url.getHost(), "connect,accept"));
+
+        //add ability to read from it's own directory...
+        if ( url.getProtocol().equals("file") )
+        {
+            String path = url.getFile().replace('/', File.separatorChar);
+
+	        if (!path.endsWith(File.separator))
+            {
+                int endIndex = path.lastIndexOf(File.separatorChar);
+		        if (endIndex != -1)
+                {
+			        path = path.substring(0, endIndex+1) + "-";
+			        perms.add(new FilePermission(path, "read"));
+                }
+	        }
+
+            AccessController.doPrivileged(
+                new PrivilegedAction()
+                {
+                    public Object run()
+                    {
+                        try
+                        {
+                            if (InetAddress.getLocalHost().equals(InetAddress.getByName(url.getHost())))
+                            {
+                                perms.add(new SocketPermission("localhost", "connect,accept"));
+                            }
+                        } catch (UnknownHostException uhe)
+                        {}
+                        return null;
+                    }
+                }
+            );
+        }
+
+        return perms;
+    }
+
     public static void main( String[] args )
     {
         System.out.println( "num args = " + args.length );
@@ -130,7 +176,7 @@ public class KJASAppletClassLoader
             Class foo = loader.loadClass( args[1] );
 
             System.out.println( "loaded class: " + foo );
-        } 
+        }
             catch( Exception e )
         {
             System.out.println( "Couldn't load class " + args[1] );

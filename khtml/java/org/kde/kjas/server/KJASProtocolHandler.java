@@ -5,79 +5,77 @@ import java.util.*;
 import java.awt.*;
 
 /**
- * Encapsulates the KJAS protocol.
+ * Encapsulates the KJAS protocol and manages the contexts
  *
  */
-
 public class KJASProtocolHandler
 {
+    //Command codes
     private static final int CreateContextCode  = 1;
     private static final int DestroyContextCode = 2;
+
     private static final int CreateAppletCode   = 3;
     private static final int DestroyAppletCode  = 4;
     private static final int StartAppletCode    = 5;
     private static final int StopAppletCode     = 6;
-    private static final int ShowAppletCode     = 7;
 
     private static final int ShutdownServerCode = 9;
-
     private static final int ShowDocumentCode   = 12;
     private static final int ShowURLInFrameCode = 13;
     private static final int ShowStatusCode     = 14;
     private static final int ResizeAppletCode   = 15;
 
-    private KJASAppletRunner  runner;
+    //Holds contexts
+    private Hashtable contexts;
 
-    //Stream for reading in commands
-    private PushbackInputStream commands;
-
-    //Stream for writing out callbacks
-    private PrintStream       signals;
+    private PushbackInputStream commands;    //Stream for reading in commands
+    private PrintStream       signals;       //Stream for writing out callbacks
 
     //used for parsing each command as it comes in
     private int cmd_index;
 
     public KJASProtocolHandler( InputStream  _commands,
-                                OutputStream _signals,
-                                KJASAppletRunner _runner,
-                                String password )
+                                OutputStream _signals )
     {
         commands = new PushbackInputStream( _commands );
-
         signals = new PrintStream( _signals );
-
-        runner = _runner;
+        contexts = new Hashtable();
     }
 
     public void commandLoop()
-        throws IOException
     {
-        /*  The calls to commands.read will block and not return, so we don't need to
-         *  sleep, etc.
-         */
-
-        while( true )
+        Main.kjas_debug( "Start commandLoop" );
+        try
         {
-            Main.kjas_debug( "Start commandLoop" );
-            try
+            while( true )
             {
-                int cmd_length = readPaddedLength( 8 );
-
-                char[] cmd = new char[cmd_length];
-                for( int i = 0; i < cmd_length; i++ )
+                try
                 {
-                    cmd[i] = (char) commands.read();
+                    int cmd_length = readPaddedLength( 8 );
+
+                    char[] cmd = new char[cmd_length];
+                    for( int i = 0; i < cmd_length; i++ )
+                    {
+                        cmd[i] = (char) commands.read();
+                    }
+
+                    //parse the rest of the command and execute it
+                    processCommand( cmd );
                 }
-
-                //parse the rest of the command and execute it
-                processCommand( cmd );
+                catch( NumberFormatException e )
+                {
+                    Main.kjas_err( "Could not parse out message length", e );
+                    System.exit( 1 );
+                }
+                catch( Throwable t )
+                {
+                }
             }
-            catch( NumberFormatException e )
-            {
-                Main.kjas_err( "Could not parse out message length", e );
-                System.exit( 1 );
-            }
-
+        }
+        catch( Exception i )
+        {
+            Main.kjas_err( "exception: ", i );
+            System.exit( 1 );
         }
     }
 
@@ -97,37 +95,43 @@ public class KJASProtocolHandler
         {
             //parse out contextID- 1 argument
             String contextID = getArg( command );
-
             Main.kjas_debug( "createContext, id = " + contextID );
 
-            runner.createContext( contextID );
+            KJASAppletContext context = new KJASAppletContext( contextID );
+            contexts.put( contextID, context );
+            Main.showConsole();
         } else
         if( cmd_code_value == DestroyContextCode )
         {
             //parse out contextID- 1 argument
             String contextID = getArg( command );
-
             Main.kjas_debug( "destroyContext, id = " + contextID );
 
-            runner.destroyContext( contextID );
+            KJASAppletContext context = (KJASAppletContext) contexts.get( contextID );
+            if ( contexts != null )
+            {
+                context.destroy();
+                contexts.remove( contextID );
+                if( contexts.size() == 0 )
+                    Main.hideConsole();
+            }
         } else
         if( cmd_code_value == CreateAppletCode )
         {
             //9 arguments- this order is important...
-            String contextID = getArg( command );
-            String appletID = getArg( command );
+            String contextID  = getArg( command );
+            String appletID   = getArg( command );
             String appletName = getArg( command );
-            String className = getArg( command );
-            String baseURL = getArg( command );
-            String codeBase = getArg( command );
-            String archives = getArg( command );
-            String width = getArg( command );
-            String height = getArg( command );
-
+            String className  = getArg( command );
+            String baseURL    = getArg( command );
+            String codeBase   = getArg( command );
+            String archives   = getArg( command );
+            String width      = getArg( command );
+            String height     = getArg( command );
+            String title      = getArg( command );
             //get the number of parameter pairs...
             String str_params = getArg( command );
             int num_params = Integer.parseInt( str_params.trim() );
-
             Hashtable params = new Hashtable();
             for( int i = 0; i < num_params; i++ )
             {
@@ -139,7 +143,7 @@ public class KJASProtocolHandler
                 if( value == null )
                     value = new String();
 
-                Main.kjas_debug( "put parameter, name = " + name + ", value = " + value );
+                Main.kjas_debug( "parameter, name = " + name + ", value = " + value );
                 params.put( name, value );
             }
 
@@ -148,56 +152,49 @@ public class KJASProtocolHandler
             Main.kjas_debug( "              baseURL = " + baseURL + ", codeBase = " + codeBase );
             Main.kjas_debug( "              archives = " + archives + ", width = " + width + ", height = " + height );
 
-            runner.createApplet( contextID, appletID, appletName, className,
-                                 baseURL, codeBase, archives,
-                                 new Dimension( Integer.parseInt(width), Integer.parseInt(height) ),
-                                 params );
+            KJASAppletContext context = (KJASAppletContext) contexts.get( contextID );
+            if( context != null )
+                context.createApplet( appletID, appletName, className,
+                                      baseURL, codeBase, archives,
+                                      new Dimension( Integer.parseInt(width), Integer.parseInt(height) ),
+                                      title, params );
         } else
         if( cmd_code_value == DestroyAppletCode )
         {
             //2 arguments
             String contextID = getArg( command );
             String appletID = getArg( command );
-
             Main.kjas_debug( "destroyApplet, context = " + contextID + ", applet = " + appletID );
 
-            runner.destroyApplet( contextID, appletID );
+            KJASAppletContext context = (KJASAppletContext) contexts.get( contextID );
+            if ( context != null )
+                context.destroyApplet( appletID );
         } else
         if( cmd_code_value == StartAppletCode )
         {
             //2 arguments
             String contextID = getArg( command );
             String appletID = getArg( command );
-
             Main.kjas_debug( "startApplet, context = " + contextID + ", applet = " + appletID );
 
-            runner.startApplet( contextID, appletID );
+            KJASAppletContext context = (KJASAppletContext) contexts.get( contextID );
+            if ( context != null )
+                context.startApplet( appletID );
         } else
         if( cmd_code_value == StopAppletCode )
         {
             //2 arguments
             String contextID = getArg( command );
             String appletID = getArg( command );
-
             Main.kjas_debug( "stopApplet, context = " + contextID + ", applet = " + appletID );
 
-            runner.startApplet( contextID, appletID );
-        } else
-        if( cmd_code_value == ShowAppletCode )
-        {
-            //3 arguments
-            String contextID = getArg( command );
-            String appletID = getArg( command );
-            String title = getArg( command );
-
-            Main.kjas_debug( "showApplet, context = " + contextID + ", applet = " + appletID );
-
-            runner.showApplet( contextID, appletID, title );
+            KJASAppletContext context = (KJASAppletContext) contexts.get( contextID );
+            if ( context != null )
+                context.stopApplet( appletID );
         } else
         if( cmd_code_value == ShutdownServerCode )
         {
             Main.kjas_debug( "shutDownServer" );
-
             System.exit( 1 );
         }
         else

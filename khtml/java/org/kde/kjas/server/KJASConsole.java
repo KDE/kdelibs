@@ -20,11 +20,9 @@ public class KJASConsole
         Panel btns = new Panel(new BorderLayout());
 
         Button clear = new Button("Clear");
-        Button save  = new Button("Save");
         Button close = new Button("Close");
         
         btns.add(clear, "West");
-        btns.add(save, "Center");
         btns.add(close, "East");
 
         main.add(txt, "Center");
@@ -37,25 +35,6 @@ public class KJASConsole
             new ActionListener() {
                 public void actionPerformed(ActionEvent e) {
                     txt.setText("");
-                }
-            }
-        );
-
-        save.addActionListener
-        (
-            new ActionListener() {
-                public void actionPerformed(ActionEvent e) {
-                    try
-                    {
-                        //dump the console's contents to a file
-                        String all_text = txt.getText();
-                        FileOutputStream output = new FileOutputStream( "/tmp/kjas.log", false );
-                        output.write( all_text.getBytes() );
-                    }
-                    catch( IOException ex )
-                    {
-                        Main.kjas_debug( "could not save output stream" );
-                    }
                 }
             }
         );
@@ -94,11 +73,19 @@ public class KJASConsole
 class KJASConsoleStream
     extends OutputStream
 {
-    TextArea txt;
+    private TextArea txt;
+    private FileOutputStream dbg_log;
 
     public KJASConsoleStream( TextArea _txt )
     {
         txt = _txt;
+
+        try
+        {
+            if( Main.log )
+                dbg_log = new FileOutputStream( "/tmp/kjas.log" );
+        }
+        catch( FileNotFoundException e ) {}
     }
 
     public void close() {}
@@ -118,6 +105,11 @@ class KJASConsoleStream
                 int old_pos = txt.getCaretPosition();
                 txt.append(msg);
                 txt.setCaretPosition( old_pos + length );
+
+                if( Main.log && dbg_log != null )
+                {
+                    dbg_log.write( msg.getBytes() );
+                }
             }
         }
         catch(Throwable t) {}
