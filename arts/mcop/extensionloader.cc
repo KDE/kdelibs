@@ -53,6 +53,7 @@ ExtensionLoader::ExtensionLoader(const string& filename) :handle(0)
 
 		for(i = startupClasses.begin(); i != startupClasses.end(); i++)
 			(*i)->startup();
+		needShutdown = true;
 	}
 }
 
@@ -61,16 +62,24 @@ bool ExtensionLoader::success()
 	return (handle != 0);
 }
 
-ExtensionLoader::~ExtensionLoader()
+void ExtensionLoader::shutdown()
 {
-	if(handle)
+	if(handle && needShutdown)
 	{
 		/* shutdown the loaded extension properly */
-
 		list<StartupClass *>::iterator i;
 
 		for(i = startupClasses.begin(); i != startupClasses.end(); i++)
 			(*i)->shutdown();
+		needShutdown = false;
+	}
+}
+
+ExtensionLoader::~ExtensionLoader()
+{
+	if(handle)
+	{
+		shutdown();
 		lt_dlclose(handle);
 
 		/*

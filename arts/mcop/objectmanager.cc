@@ -159,6 +159,14 @@ ObjectManager *ObjectManager::the()
 	return _instance;
 }
 
+void ObjectManager::shutdownExtensions()
+{
+	// shuts down all dynamically loaded extensions
+	list<ExtensionLoader *>::iterator i;
+	for(i=d->extensions.begin(); i != d->extensions.end(); i++)
+		(*i)->shutdown();
+}
+
 void ObjectManager::removeExtensions()
 {
 	// unloads all dynamically loaded extensions

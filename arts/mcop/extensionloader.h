@@ -41,12 +41,14 @@ class ExtensionLoader {
 protected:
 	std::list<class StartupClass *> startupClasses;
 	lt_dlhandle handle;
+	bool needShutdown;
 
 public:
 	ExtensionLoader(const std::string& path);
 	~ExtensionLoader();
 
 	bool success();
+	void shutdown();
 
 	void addStartupClass(class StartupClass *sc);
 };

@@ -59,6 +59,7 @@ public:
 	std::string getGlobalReference(std::string name);
 	void removeGlobalReferences();
 	void removeExtensions();
+	void shutdownExtensions();
 
 	void registerFactory(Factory *factory);
 	void removeFactory(Factory *factory);
