@@ -212,6 +212,10 @@ KJSO Window::get(const UString &p) const
     return Function(new WindowFunc(this, WindowFunc::Blur));
   else if (p == "close")
     return Function(new WindowFunc(this, WindowFunc::Close));
+  else if (p == "setInterval")
+    return Function(new WindowFunc(this, WindowFunc::SetInterval));
+  else if (p == "clearInterval")
+    return Function(new WindowFunc(this, WindowFunc::ClearInterval));
 
   KJSO v = Imp::get(p);
   if (v.isDefined())
@@ -255,12 +259,12 @@ Boolean Window::toBoolean() const
   return Boolean(!part.isNull());
 }
 
-int Window::installTimeout(const UString &handler, int t)
+int Window::installTimeout(const UString &handler, int t, bool singleShot)
 {
   if (!winq)
     winq = new WindowQObject(this);
 
-  return winq->installTimeout(handler, t);
+  return winq->installTimeout(handler, t, singleShot);
 }
 
 void Window::clearTimeout(int timerId)
@@ -388,12 +392,21 @@ Completion WindowFunc::tryExecute(const List &args)
   case SetTimeout:
     if (args.size() == 2 && v.isA(StringType)) {
       int i = args[1].toInt32();
-      int r = (const_cast<Window*>(window))->installTimeout(s.value(), i);
+      int r = (const_cast<Window*>(window))->installTimeout(s.value(), i, true /*single shot*/);
+      result = Number(r);
+    } else
+      result = Undefined();
+    break;
+  case SetInterval:
+    if (args.size() == 2 && v.isA(StringType)) {
+      int i = args[1].toInt32();
+      int r = (const_cast<Window*>(window))->installTimeout(s.value(), i, false);
       result = Number(r);
     } else
       result = Undefined();
     break;
   case ClearTimeout:
+  case ClearInterval:
     result = Undefined();
     (const_cast<Window*>(window))->clearTimeout(v.toInt32());
     break;
@@ -433,7 +446,7 @@ WindowQObject::~WindowQObject()
   delete timer;
 }
 
-int WindowQObject::installTimeout(const UString &handler, int t)
+int WindowQObject::installTimeout(const UString &handler, int t, bool singleShot)
 {
   /* TODO: multiple timers */
   if (!timer) {
@@ -441,7 +454,7 @@ int WindowQObject::installTimeout(const UString &handler, int t)
     connect(timer, SIGNAL(timeout()), SLOT(timeout()));
   }
   timeoutHandler = handler;
-  timer->start(t, true);
+  timer->start(t, singleShot);
 
   return 0;
 }

@@ -47,7 +47,7 @@ namespace KJS {
     virtual KJSO get(const UString &p) const;
     virtual void put(const UString &p, const KJSO& v);
     virtual Boolean toBoolean() const;
-    int installTimeout(const UString &handler, int t);
+    int installTimeout(const UString &handler, int t, bool singleShot);
     void clearTimeout(int timerId);
   private:
     QGuardedPtr<KHTMLPart> part;
@@ -67,7 +67,7 @@ namespace KJS {
     WindowFunc(const Window *w, int i) : window(w), id(i) { };
     Completion tryExecute(const List &);
     enum { Alert, Confirm, Prompt, Open, SetTimeout, ClearTimeout, Focus, Blur, Close,
-           ScrollBy, ScrollTo };
+           ScrollBy, ScrollTo, SetInterval, ClearInterval };
     static void setStatusBarText(KHTMLPart *, const QString &);
     static void initJScript(KHTMLPart *);
   private:
@@ -80,7 +80,7 @@ namespace KJS {
   public:
     WindowQObject(Window *w);
     ~WindowQObject();
-    int installTimeout(const UString &handler, int t);
+    int installTimeout(const UString &handler, int t, bool singleShot);
     void clearTimeout(int timerId);
   public slots:
     void timeout();
