@@ -131,7 +131,7 @@ void SmbView::setOpen(QListViewItem *item, bool on)
 			*m_proc << "smbclient -N -L ";
                         *m_proc << KProcess::quote(item->text(0));
                         *m_proc << " -W ";
-                        *m_proc << KProcess::quote(item->text(0));
+                        *m_proc << KProcess::quote(item->parent()->text(0));
 			startProcess(ShareListing);
 		}
 	}
