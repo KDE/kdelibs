@@ -25,7 +25,6 @@
 #include "kmainwindow.h"
 #include <klocale.h>
 #include <kiconloader.h>
-#include <kglobalsettings.h>
 #include <kdebug.h>
 #include <qobjectlist.h>
 

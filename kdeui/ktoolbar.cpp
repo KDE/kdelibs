@@ -1517,8 +1517,8 @@ void KToolBar::applySettings(KConfig *config, const QString &_configGroup)
     /*
       Let's explain this a bit more in details.
       The order in which we apply settings is :
-       Global config / App specific config                         if no XMLGUI is used
-       Global config / App-XML attributess / App specific config   if XMLGUI is used
+       Global config / <appnamerc> user settings                        if no XMLGUI is used
+       Global config / App-XML attributes / <appnamerc> user settings   if XMLGUI is used
 
       So in the first case, we simply read everything from KConfig as below,
       but in the second case we don't do anything here if there is no app-specific config,
