@@ -27,34 +27,41 @@
 
 
 /**
-  Simple point class.
+  Simple point class for @ref NET classes.
 
   This class is a convenience class defining a point x, y.  The existence of
   this class is to keep the implementation from being dependant on a
   separate framework/library.
+
+  NETPoint is only used by the @ref NET API. Usually @ref QPoint is the 
+  appropriate class for representing a point.
 
   @author Bradley T. Hughes <bhughes@trolltech.com>
 **/
 
 struct NETPoint {
     /**
-       Constructor to initialize this point to 0,0
+       Constructor to initialize this point to 0,0.
     **/
     NETPoint() : x(0), y(0) { }
 
-    /**
+    /*
        Public data member.
     **/
-    int x, y;
+    int x, ///< x coordinate.
+      y;   ///< y coordinate
 };
 
 
 /**
-  Simple size class.
+  Simple size class for @ref NET classes.
 
   This class is a convenience class defining a size width by height.  The
   existence of this class is to keep the implementation from being dependant
   on a separate framework/library.
+
+  NETSize is only used by the @ref NET API. Usually @ref QSize is the 
+  appropriate class for representing a size.
 
   @author Bradley T. Hughes <bhughes@trolltech.com>
 **/
@@ -65,18 +72,22 @@ struct NETSize {
     **/
     NETSize() : width(0), height(0) { }
 
-    /**
+    /*
        Public data member.
     **/
-    int width, height;
+    int width,  ///< Width.
+      height;   ///< Height.
 };
 
 /**
-   Simple rectangle class.
+   Simple rectangle class for @ref NET classes.
 
    This class is a convenience class defining a rectangle as a point x,y with a
    size width by height.  The existence of this class is to keep the implementation
    from being dependant on a separate framework/library;
+
+   NETRect is only used by the @ref NET API. Usually @ref QRect is the 
+   appropriate class for representing a rectangle.
 **/
 struct NETRect {
     /**
@@ -96,11 +107,14 @@ struct NETRect {
 
 
 /**
-   Simple icon class.
+   Simple icon class for @ref NET classes.
 
    This class is a convenience class defining an icon of size width by height.
    The existence of this class is to keep the implementation from being
    dependant on a separate framework/library.
+
+   NETIcon is only used by the @ref NET API. Usually @ref QIcon is the 
+   appropriate class for representing an icon.
 **/
 
 struct NETIcon {
@@ -126,7 +140,7 @@ struct NETIcon {
 
 
 /**
-   Simple strut class.
+   Simple strut class for @ref NET classes.
 
    This class is a convenience class defining a strut with left, right, top and
    bottom border values.  The existence of this class is to keep the implementation
@@ -164,8 +178,13 @@ struct NETStrut {
 /**
   Base namespace class.
 
-  This class is the base class for the NETRootInfo and NETWinInfo classes.  To keep
+  The NET API is an implementation of the NET Window Manager Specification.
+
+  This class is the base class for the NETRootInfo and NETWinInfo classes, which
+  are used to retrieve and modify the properties of windows. To keep
   the namespace relatively clean, all enums are defined here.
+  
+  @see http://www.freedesktop.org/standards/wm-spec/
  **/
 
 class NET {
