@@ -54,10 +54,16 @@ KFileSpeedBar::KFileSpeedBar( QWidget *parent, const char *name )
         u.setPath( QDir::homeDirPath() );
         insertItem( u, i18n("Home Directory"), false,
                                "folder_home" );
+
         u = "floppy:/";
         if ( KProtocolInfo::isKnownProtocol( u ) )
             insertItem( u, i18n("Floppy"), false,
                                    KProtocolInfo::icon( "floppy" ) );
+        u = "devices:/";
+        if ( KProtocolInfo::isKnownProtocol( u ) )
+            insertItem( u, i18n("Devices"), false,
+                                   KProtocolInfo::icon( "devices" ) );
+
         QStringList tmpDirs = KGlobal::dirs()->resourceDirs( "tmp" );
         u.setProtocol( "file" );
         u.setPath( tmpDirs.isEmpty() ? QString("/tmp") : tmpDirs.first() );
