@@ -25,6 +25,8 @@
 #include <qstrlist.h>
 #include <qcursor.h>
 
+#include <kwin.h>
+
 #ifndef NO_KDE2
 #include <kapp.h>
 #include <kconfig.h>
@@ -404,9 +406,8 @@ void KDockWidget::applyToWidget( QWidget* s, const QPoint& p )
 
   if ( !s ){
     move(p);
-#ifndef NO_KDE2    
-//    KWin::setType( winId(), NET::Tool );
-#endif    
+
+   KWin::setType( winId(), d->windowType );
   }
   updateHeader();
 }
@@ -425,6 +426,11 @@ void KDockWidget::show()
     } else {
      QWidget::show();
     }
+}
+
+void KDockWidget::setDockWindowType (NET::WindowType windowType)
+{
+  d->windowType = windowType;
 }
 
 bool KDockWidget::event( QEvent *event )

@@ -281,6 +281,7 @@ KDockWidgetPrivate::KDockWidgetPrivate()
   ,pendingFocusInEvent(false)
   ,blockHasUndockedSignal(false)
 {
+  windowType = NET::Normal;
 }
 
 KDockWidgetPrivate::~KDockWidgetPrivate()

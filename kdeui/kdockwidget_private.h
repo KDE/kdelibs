@@ -20,6 +20,7 @@
 
 #include <qwidget.h>
 #include <qpushbutton.h>
+#include <netwm_def.h>
 
 class QFrame;
 
@@ -103,6 +104,7 @@ public:
   int splitPosInPercent;
   bool pendingFocusInEvent;
   bool blockHasUndockedSignal;
+  NET::WindowType windowType;
 };
 
 #endif

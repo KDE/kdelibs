@@ -44,6 +44,8 @@
 #include <qframe.h>
 #include <qdom.h>
 
+#include <netwm_def.h>
+
 #ifndef NO_KDE2
 #include <kmainwindow.h>
 #undef  EXPORT_DOCKCLASS
@@ -543,6 +545,13 @@ public:
    * @return the parent widget of this if it inherits class KDockTabGroup
    */
   KDockTabGroup* parentDockTabGroup() { return parentTabGroup(); };
+
+    /**
+   * Sets the type of the dock window
+   *
+   * @param windowType is type of dock window
+   */
+  void setDockWindowType (NET::WindowType windowType);
 
 public slots:
   /** Docks a dockwidget back to the dockwidget that was the neighbor widget before the current dock position. */
