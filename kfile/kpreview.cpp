@@ -32,6 +32,9 @@
 #include <kdir.h>
 #include <kapp.h>
 
+static void cleanUpHandlers();
+static void initHandlers();
+
 static const int cMaxLines = 20;
 static const int cMaxColumns = 79;
 
@@ -54,7 +57,7 @@ bool previewTextFile( const KFileInfo *, const QString inFilename,
         loaded = true;
     }
     return loaded;
-};
+}
 
 bool previewXVPicFile( const KFileInfo *i, const QString inFilename,
                        QString &, QPixmap &outPixmap )
@@ -73,7 +76,7 @@ bool previewXVPicFile( const KFileInfo *i, const QString inFilename,
         loaded = true;
     }
     return loaded;
-};
+}
 
 /*
  *
@@ -101,6 +104,33 @@ KPreviewObject::KPreviewObject ( const char *inFormat,
 static QDict<KPreviewObject> *myTextPreviewerStorage = 0;
 static QDict<KPreviewObject> *myPicturePreviewerStorage = 0;
 
+static void cleanUpHandlers()
+{
+    delete myTextPreviewerStorage;
+    delete myPicturePreviewerStorage;
+    
+    myTextPreviewerStorage = 0L;
+    myPicturePreviewerStorage = 0L;
+
+}
+
+static void initHandlers()
+{
+    if ( myTextPreviewerStorage )
+        return;
+        
+    myTextPreviewerStorage = new QDict<KPreviewObject>;
+    myPicturePreviewerStorage = new QDict<KPreviewObject>;
+
+    myTextPreviewerStorage->setAutoDelete( true );
+    myPicturePreviewerStorage->setAutoDelete( true );
+
+    qAddPostRoutine(cleanUpHandlers);
+    
+    KPreview::registerPreviewModule( "TEXT", previewTextFile, PreviewText);    
+    KPreview::registerPreviewModule( "XVPIC", previewXVPicFile, PreviewPixmap);    
+}
+
 //
 // NOTE: was static, not sure if it has t be static or not ...
 //       commented it out for now
@@ -125,14 +155,7 @@ KPreview *KPreview::getKPreview()
 
 
 KPreview::~KPreview()
-{
-    if ( myTextPreviewerStorage ) {
-        delete myTextPreviewerStorage;
-        myTextPreviewerStorage = 0;
-        delete myPicturePreviewerStorage;
-        myPicturePreviewerStorage = 0;
-    }
-}
+{}
 
 KPreview::KPreview( const KDir *inDir, QWidget *parent, const char *name)
     : QWidget(parent,name), myDir(inDir), showedText(false)
@@ -140,8 +163,8 @@ KPreview::KPreview( const KDir *inDir, QWidget *parent, const char *name)
 
     QImageIO::defineIOHandler( "XV", "^P7 332", 0, read_xv_file, 0L );
 
-    registerPreviewModule( "TEXT", previewTextFile, PreviewText);    
-    registerPreviewModule( "XVPIC", previewXVPicFile, PreviewPixmap);    
+    if ( !myTextPreviewerStorage )
+        initHandlers();
     
     QHBoxLayout *top = new QHBoxLayout( this, 0, 5, "_top" );
 
@@ -234,8 +257,7 @@ void KPreview::registerPreviewModule(const char * format, PreviewHandler readPre
 {   
     // debug("registering preview module (%s)",format);
     if ( !myTextPreviewerStorage ) {
-        myTextPreviewerStorage = new QDict<KPreviewObject>;
-        myPicturePreviewerStorage = new QDict<KPreviewObject>;
+	initHandlers();
     }
 
     KPreviewObject *po;
@@ -252,6 +274,9 @@ void KPreview::registerPreviewModule(const char * format, PreviewHandler readPre
 
 void KPreview::previewFile(const KFileInfo *i)
 {   
+    if ( !myTextPreviewerStorage )
+        initHandlers();
+        
     // upper text part
     //
     bool isRegularFile = !i->isDir(); 
