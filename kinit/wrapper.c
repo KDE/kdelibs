@@ -93,6 +93,8 @@ static int openSocket()
 #define MAX_SOCK_FILE 255
   char sock_file[MAX_SOCK_FILE];
   char *home_dir = getenv("HOME");
+  char *display;
+
   if (!home_dir || !home_dir[0])
   {
      fprintf(stderr, "Aborting. $HOME not set!");
@@ -115,6 +117,21 @@ static int openSocket()
      perror("Aborting. Could not determine hostname: ");
      exit(255);
   }
+
+  /* append $DISPLAY */
+  display = getenv("DISPLAY");
+  if (!display) 
+  {
+     fprintf(stderr, "Aborting. $DISPLAY is not set.\n");
+     exit(255);
+  }
+  if (strlen(sock_file)+strlen(display)+2 > MAX_SOCK_FILE)
+  {
+     fprintf(stderr, "Aborting. Socket name will be too long.\n");
+     exit(255);
+  }
+  strcat(sock_file, "-");
+  strcat(sock_file, display);
 
   if (strlen(sock_file) >= sizeof(server.sun_path))
   {
