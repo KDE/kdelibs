@@ -1062,6 +1062,7 @@ void RenderFlow::calcMinMaxWidth()
     }
 
     int cw = containingBlock()->contentWidth();
+    bool tableCell = isTableCell();
 
     // non breaking space
     const QChar nbsp = 0xa0;
@@ -1115,7 +1116,7 @@ void RenderFlow::calcMinMaxWidth()
 			noBreak = true;
                     }
 // 		    qDebug("noBreak = %d, currentMin = %d", noBreak,  currentMin );
-                } else if (noBreak ||
+                } else if (noBreak || tableCell ||
 		    (prevchild && prevchild->isFloating() && child->isFloating())) {
                     currentMin += childMin;
                     noBreak = false;
