@@ -162,17 +162,7 @@ namespace
             colorTable[ i ] = qRgb( rgb[ 2 ], rgb[ 1 ], rgb[ 0 ] );
         }
 
-        unsigned bpl;
-        switch ( header.biBitCount )
-        {
-            // 8-bit aligned
-            case 1: bpl = ( rec.width + 7 ) >> 3; break;
-            case 4: bpl = ( rec.width + 1 ) >> 1; break;
-            case 8: bpl = rec.width; break;
-            // 32-bit aligned
-            case 24: bpl = ( ( rec.width * 3 + 3 ) >> 2 ) << 2; break;
-            case 32: bpl = rec.width << 2; break;
-        }
+        unsigned bpl = ( rec.width * header.biBitCount + 31 ) / 32 * 4;
         unsigned char* buf = new unsigned char[ bpl ];
         unsigned char** lines = icon.jumpTable();
         for ( unsigned y = rec.height; y--; )
@@ -185,12 +175,12 @@ namespace
                 case 1:
                     for ( unsigned x = 0; x < rec.width; ++x )
                         *p++ = colorTable[
-                            ( pixel[ x >> 3 ] >> ( 7 - ( x & 0x07 ) ) ) & 1 ];
+                            ( pixel[ x / 8 ] >> ( 7 - ( x & 0x07 ) ) ) & 1 ];
                     break;
                 case 4:
                     for ( unsigned x = 0; x < rec.width; ++x )
-                        if ( x & 1 ) *p++ = colorTable[ pixel[ x >> 1 ] >> 4 ];
-                        else *p++ = colorTable[ pixel[ x >> 1 ] & 0x0f ];
+                        if ( x & 1 ) *p++ = colorTable[ pixel[ x / 2 ] >> 4 ];
+                        else *p++ = colorTable[ pixel[ x / 2 ] & 0x0f ];
                     break;
                 case 8:
                     for ( unsigned x = 0; x < rec.width; ++x )
@@ -216,14 +206,14 @@ namespace
         if ( header.biBitCount < 32 )
         {
             // Traditional 1-bit mask
-            bpl = ( rec.width + 7 ) >> 3;
+            bpl = ( rec.width + 31 ) / 32 * 4;
             buf = new unsigned char[ bpl ];
             for ( unsigned y = rec.height; y--; )
             {
                 stream.readRawBytes( reinterpret_cast< char* >( buf ), bpl );
                 QRgb* p = reinterpret_cast< QRgb* >( lines[ y ] );
                 for ( unsigned x = 0; x < rec.width; ++x, ++p )
-                    if ( ( ( buf[ x >> 3 ] >> ( 7 - ( x & 0x07 ) ) ) & 1 ) )
+                    if ( ( ( buf[ x / 8 ] >> ( 7 - ( x & 0x07 ) ) ) & 1 ) )
                         *p &= RGB_MASK;
             }
             delete[] buf;

@@ -1,6 +1,6 @@
 [Image Format]
 Type=ICO
-Header=^\001\001
+Header=^\001\001[\001|\002]\001
 Name=MSWindows Icons
 Name[af]=Mswindows Ikoone
 Name[ar]=أيقونات ويندوز
