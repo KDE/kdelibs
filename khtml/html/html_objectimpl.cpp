@@ -345,14 +345,14 @@ void HTMLObjectElementImpl::detach()
   dispatchHTMLEvent(EventImpl::UNLOAD_EVENT,false,false);
 }
 
-void HTMLObjectElementImpl::applyChanges(bool top, bool force)
+void HTMLObjectElementImpl::recalcStyle( StyleChange ch )
 {
     if (needWidgetUpdate) {
         if(m_render && strcmp( m_render->renderName(),  "RenderPartObject" ) == 0 )
             static_cast<RenderPartObject*>(m_render)->updateWidget();
         needWidgetUpdate = false;
     }
-    HTMLElementImpl::applyChanges(top,force);
+    HTMLElementImpl::recalcStyle( ch );
 }
 
 // -------------------------------------------------------------------------

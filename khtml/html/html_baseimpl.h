@@ -141,7 +141,7 @@ public:
     int border() const { return m_border; }
     virtual void detach();
 
-    virtual void applyChanges(bool = true, bool = true);
+    virtual void recalcStyle( StyleChange ch );
 
 protected:
     QPtrList<khtml::Length> *m_rows;
@@ -199,7 +199,7 @@ public:
 
     virtual void parseAttribute(AttrImpl *attr);
     virtual void attach();
-    virtual void applyChanges(bool = true, bool = true);
+    virtual void recalcStyle( StyleChange ch );
 
 protected:
     bool needWidgetUpdate;

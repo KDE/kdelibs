@@ -226,7 +226,7 @@ void HTMLDocumentImpl::slotHistoryChanged()
     if ( true || !m_render ) // disabled for now
         return;
 
-    recalcStyle();
+    recalcStyle( Force );
     m_render->repaint();
 }
 

@@ -380,7 +380,7 @@ void XMLTokenizer::finish()
         pre->renderer()->close();
         body->renderer()->close();
 
-        m_doc->document()->applyChanges();
+        m_doc->document()->recalcStyle( NodeImpl::Inherit );
         m_doc->document()->updateRendering();
 
         end();

@@ -790,42 +790,77 @@ void ElementImpl::detach()
     m_render = 0;
 }
 
-void ElementImpl::recalcStyle()
+void ElementImpl::recalcStyle( StyleChange change )
 {
-    if(!m_style) return;
-    EDisplay oldDisplay = m_style->display();
+    if ( m_style ) {
+	// ### should go away and be done in renderobject
+	bool needsUpdate = false;
+// 	qDebug("recalcStyle(%p: %s)", this, tagName().string().latin1());
+	if ( change >= Inherit || changed() ) {
+	    EDisplay oldDisplay = m_style ? m_style->display() : INLINE;
+	
+	    int dynamicState = StyleSelector::None;
+	    if ( m_mouseInside )
+		dynamicState |= StyleSelector::Hover;
+	    if ( m_focused )
+		dynamicState |= StyleSelector::Focus;
+	    if ( m_active )
+		dynamicState |= StyleSelector::Active;
 
-    int dynamicState = StyleSelector::None;
-    if ( m_mouseInside )
-        dynamicState |= StyleSelector::Hover;
-    if ( m_focused )
-        dynamicState |= StyleSelector::Focus;
-    if ( m_active )
-        dynamicState |= StyleSelector::Active;
+	    RenderStyle *newStyle = ownerDocument()->styleSelector()->styleForElement(this, dynamicState);
+	    StyleChange ch = diff( m_style, newStyle );
+	    if ( ch != NoChange ) {
+		setStyle( newStyle );
 
-    setStyle(ownerDocument()->styleSelector()->styleForElement(this, dynamicState));
+		if (oldDisplay != m_style->display()) {
+		    // ### doesn't this already take care of changing the style
+		    // for all children?
+		    detach();
+		    attach();
+		    needsUpdate = true;
+		}
+		if( m_render && m_style ) {
+// 		    qDebug("--> setting style on render element bgcolor=%s", m_style->backgroundColor().name().latin1());
+		    m_render->setStyle(m_style);
+		    needsUpdate = true;
+		}
+	    }
+	    if ( change != Force )
+		change = ch;
+	}
 
-    if (oldDisplay != m_style->display()) {
-	detach();
-	attach();
-    }
-    if( m_render)
-        m_render->setStyle(m_style);
-    NodeImpl *n;
-    for (n = _first; n; n = n->nextSibling())
-        n->recalcStyle();
+	NodeImpl *n;
+	for (n = _first; n; n = n->nextSibling()) {
+// 	    qDebug("    (%p) calling recalcStyle on child %s, change=%d", this, n->isElementNode() ? ((ElementImpl *)n)->tagName().string().latin1() : n->isTextNode() ? "text" : "unknown", change );
+	    if ( change >= Inherit || n->isTextNode() ||
+		 n->hasChangedChild() || n->changed() )
+		n->recalcStyle( change );
+	}
+
+	// ### should go away and be done by the renderobjects in
+	// a more intelligent way
+	if ( m_render && needsUpdate && !parentNode()->changed() ) {
+	    RenderObject *r = m_render;
+	    if ( m_render->isInline() )
+		r = m_render->containingBlock();
+	    r->updateSize();
+	    r->repaint();
+	}
+    }    
+    setChanged( false );
+    setHasChangedChild( false );
 }
 
 void ElementImpl::setFocus(bool received)
 {
     NodeBaseImpl::setFocus(received);
-    applyChanges(true, false);
+    recalcStyle( Inherit );
 }
 
 void ElementImpl::setActive(bool down)
 {
     NodeBaseImpl::setActive(down);
-    applyChanges(true, false);
+    recalcStyle( Inherit );
 }
 
 khtml::FindSelectionResult ElementImpl::findSelectionNode( int _x, int _y, int _tx, int _ty, DOM::Node & node, int & offset )

@@ -960,7 +960,7 @@ void KHTMLView::print()
         for ( int i = 0; printFontSizes[i] != 0; i++ )
             fontSizes << printFontSizes[ i ];
         m_part->setFontSizes(fontSizes);
-        m_part->xmlDocImpl()->applyChanges();
+        m_part->xmlDocImpl()->recalcStyle( NodeImpl::Force );
 
         root->updateSize();
 
@@ -1010,7 +1010,7 @@ void KHTMLView::print()
         m_part->xmlDocImpl()->updateStyleSelector();
         m_part->xmlDocImpl()->setPaintDevice( this );
         m_part->setFontSizes(oldSizes);
-        m_part->xmlDocImpl()->applyChanges();
+        m_part->xmlDocImpl()->recalcStyle( NodeImpl::Force );
         QApplication::restoreOverrideCursor();
     }
     delete printer;
@@ -1027,7 +1027,7 @@ void KHTMLView::slotPaletteChanged()
     NodeImpl *body = static_cast<HTMLDocumentImpl*>(document)->body();
     if(!body) return;
     body->setChanged(true);
-    body->applyChanges();
+    body->recalcStyle( NodeImpl::Force );
 }
 
 void KHTMLView::paint(QPainter *p, const QRect &rc, int yOff, bool *more)

@@ -588,6 +588,7 @@ void RenderObject::setStyle(RenderStyle *style)
     if (m_style == style)
 	return;
 
+//     qDebug("new style!");
     // reset style flags
     m_floating = false;
     m_positioned = false;

@@ -216,13 +216,10 @@ void HTMLImageElementImpl::attach()
     HTMLElementImpl::attach();
 }
 
-void HTMLImageElementImpl::applyChanges(bool top, bool force)
+void HTMLImageElementImpl::recalcStyle( StyleChange ch )
 {
-    if(force || changed()) {
-        recalcStyle();
-    }
 
-    HTMLElementImpl::applyChanges(top,force);
+    HTMLElementImpl::recalcStyle( ch );
     // ### perhaps not the most appropriate place for this.... here so it get's called after
     // a script has executed
     if (m_render) {
@@ -230,13 +227,6 @@ void HTMLImageElementImpl::applyChanges(bool top, bool force)
         renderImage->setImageUrl(m_imageURL, ownerDocument()->docLoader());
         renderImage->setAlt(altText());
     }
-
-    setChanged(false);
-}
-
-void HTMLImageElementImpl::recalcStyle()
-{
-    HTMLElementImpl::recalcStyle();
 }
 
 QImage HTMLImageElementImpl::currentImage() const

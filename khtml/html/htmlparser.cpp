@@ -393,7 +393,7 @@ bool KHTMLParser::insertNode(NodeImpl *n)
                         changed = true;
                     }
                 if ( changed )
-                    doc()->applyChanges();
+                    doc()->recalcStyle( NodeImpl::Inherit );
                 noRealBody = false;
             } else if ( current->isDocumentNode() )
                 break;
@@ -1011,8 +1011,6 @@ NodeImpl *KHTMLParser::getElement(Token* t)
 // text
     case ID_TEXT:
         n = new TextImpl(document, t->text);
-        if (t->complexText )
-            n->setComplexText(true);
         break;
     case ID_COMMENT:
 #ifdef COMMENTS_IN_DOM

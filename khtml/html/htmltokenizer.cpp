@@ -1459,8 +1459,10 @@ void HTMLTokenizer::write( const QString &str, bool appendData )
                 prePos++;
             }
             unsigned char row = src->row();
+#if QT_VERSION < 300	    
             if ( row > 0x05 && row < 0x10 || row > 0xfd )
                     currToken.complexText = true;
+#endif
             *dest = *src;
             fixUpChar( *dest );
             ++dest;
@@ -1550,6 +1552,7 @@ void HTMLTokenizer::processToken()
         }
 
 #endif
+#if QT_VERSION < 300
         if ( currToken.complexText ) {
             // ### we do too much QString copying here, but better here than in RenderText...
             // anyway have to find a better solution in the long run (lars)
@@ -1557,7 +1560,9 @@ void HTMLTokenizer::processToken()
             s.compose();
             currToken.text = new DOMStringImpl( s.unicode(), s.length() );
             currToken.text->ref();
-        } else {
+        } else 
+#endif
+	{
             currToken.text = new DOMStringImpl( buffer, dest - buffer );
             currToken.text->ref();
         }

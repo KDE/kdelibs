@@ -150,8 +150,6 @@ public:
 
     virtual bool isHTMLDocument() const { return false; }
 
-    virtual void applyChanges(bool top=true, bool force=true);
-
     virtual ElementImpl *createHTMLElement ( const DOMString &tagName );
 
 
@@ -182,10 +180,8 @@ public:
     TreeWalkerImpl *createTreeWalker(Node root, unsigned long whatToShow, NodeFilter &filter,
                             bool entityReferenceExpansion);
 
-    QPtrList<NodeImpl> changedNodes;
+    virtual void recalcStyle( StyleChange = NoChange );
     static QPtrList<DocumentImpl> * changedDocuments;
-    virtual void setChanged(bool b=true);
-    virtual void recalcStyle();
     virtual void updateRendering();
     static void updateDocumentsRendering();
     khtml::DocLoader *docLoader() { return m_docLoader; }
@@ -280,7 +276,7 @@ public:
 
     virtual DocumentImpl* getDocument()
         { return this; }
-    virtual bool isDocumentChanged()
+    bool isDocumentChanged()
 	{ return m_docChanged; }
     virtual void setDocumentChanged(bool);
     void attachNodeIterator(NodeIteratorImpl *ni);

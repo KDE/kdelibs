@@ -176,7 +176,7 @@ public:
 
     virtual void attach();
     virtual void detach();
-    virtual void recalcStyle();
+    virtual void recalcStyle( StyleChange = NoChange );
 
     virtual void setFocus(bool = true);
     virtual void setActive(bool = true);

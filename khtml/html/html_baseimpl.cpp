@@ -535,14 +535,14 @@ void HTMLFrameSetElementImpl::detach()
     dispatchHTMLEvent(EventImpl::UNLOAD_EVENT,false,false);
 }
 
-void HTMLFrameSetElementImpl::applyChanges(bool top, bool force)
+void HTMLFrameSetElementImpl::recalcStyle( StyleChange ch )
 {
     if (changed() && m_render) {
         m_render->setLayouted(false);
         m_render->layout();
         setChanged(false);
     }
-    HTMLElementImpl::applyChanges(top,force);
+    HTMLElementImpl::recalcStyle( ch );
 }
 
 
@@ -672,12 +672,12 @@ void HTMLIFrameElementImpl::attach()
   HTMLElementImpl::attach();
 }
 
-void HTMLIFrameElementImpl::applyChanges(bool top, bool force)
+void HTMLIFrameElementImpl::recalcStyle( StyleChange ch )
 {
     if (needWidgetUpdate) {
         if(m_render)  static_cast<RenderPartObject*>(m_render)->updateWidget();
         needWidgetUpdate = false;
     }
-    HTMLElementImpl::applyChanges(top,force);
+    HTMLElementImpl::recalcStyle( ch );
 }
 

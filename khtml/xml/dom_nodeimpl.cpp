@@ -20,9 +20,7 @@
  * the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
  * Boston, MA 02111-1307, USA.
  */
-
 #include "xml/dom_nodeimpl.h"
-
 
 #include "dom/dom_exception.h"
 #include "misc/htmlattrs.h"
@@ -49,7 +47,6 @@ NodeImpl::NodeImpl(DocumentPtr *doc)
       m_render(0),
       m_regdListeners( 0 ),
       m_tabIndex( 0 ),
-      m_complexText( false ),
       m_hasEvents( false ),
       m_hasId( false ),
       m_hasClass( false ),
@@ -58,6 +55,7 @@ NodeImpl::NodeImpl(DocumentPtr *doc)
       m_mouseInside( false ),
       m_attached( false ),
       m_changed( false ),
+      m_hasChangedChild( false ),
       m_specified( false ),
       m_focused( false ),
       m_active( false ),
@@ -69,8 +67,6 @@ NodeImpl::NodeImpl(DocumentPtr *doc)
 
 NodeImpl::~NodeImpl()
 {
-    if (document && document->document())
-        document->document()->changedNodes.remove(this);
     if (m_regdListeners)
         delete m_regdListeners;
     if (document)
@@ -359,11 +355,6 @@ QString NodeImpl::recursive_toHTML(bool start) const
     return me;
 }
 
-void NodeImpl::applyChanges(bool, bool)
-{
-    setChanged(false);
-}
-
 void NodeImpl::getCursor(int offset, int &_x, int &_y, int &height)
 {
     if(m_render) m_render->cursorPos(offset, _x, _y, height);
@@ -383,14 +374,19 @@ void NodeImpl::setChanged(bool b)
 {
     if (b && !attached()) // changed compared to what?
         return;
-    if (b && !changed() && ownerDocument())
-    {
-        ownerDocument()->changedNodes.append(this);
-	ownerDocument()->setDocumentChanged(b);
-    }
-    else if (!b && changed() && ownerDocument())
-        ownerDocument()->changedNodes.remove(this);
+
     m_changed = b;
+    if ( b ) {
+	NodeImpl *p = parentNode();
+	NodeImpl *doc = p;
+	while ( p ) {
+	    p->setHasChangedChild( true );
+	    doc = p;
+	    p = p->parentNode();
+	}
+	if ( doc->isDocumentNode() )
+	    ((DocumentImpl *)doc)->setDocumentChanged( true );
+    }
 }
 
 void NodeImpl::printTree(int indent)
@@ -961,11 +957,22 @@ bool NodeImpl::childAllowed( NodeImpl *newChild )
     return childTypeAllowed(newChild->nodeType());
 }
 
+NodeImpl::StyleChange NodeImpl::diff( khtml::RenderStyle *s1, khtml::RenderStyle *s2 ) const
+{
+    StyleChange ch = NoInherit;
+    if ( !s1 || !s2 ) 
+	ch = Inherit;
+    else if ( *s1 == *s2 )
+	ch = NoChange;
+    else if ( s1->inheritedNotEqual( s2 ) )
+	ch = Inherit;
+    return ch;
+}
+
 void NodeImpl::dump(QTextStream *stream, QString ind) const
 {
     // ### implement dump() for all appropriate subclasses
 
-    if (m_complexText) { *stream << " complexText"; }
     if (m_hasEvents) { *stream << " hasEvents"; }
     if (m_hasId) { *stream << " hasId"; }
     if (m_hasClass) { *stream << " hasClass"; }
@@ -1557,6 +1564,7 @@ NodeImpl *NodeBaseImpl::addChild(NodeImpl *newChild)
     return this;
 }
 
+#if 0
 void NodeBaseImpl::applyChanges(bool top, bool force)
 {
     if (!m_render) {
@@ -1606,6 +1614,7 @@ void NodeBaseImpl::applyChanges(bool top, bool force)
 
     setChanged(false);
 }
+#endif
 
 bool NodeBaseImpl::prepareMouseEvent( int _x, int _y,
                                      int _tx, int _ty,
@@ -1628,7 +1637,7 @@ bool NodeBaseImpl::prepareMouseEvent( int _x, int _y,
 
     if ( (oldinside != inside && m_style->hasHover()) ||
 	 ( oldactive != m_active && m_style->hasActive() ) )
-        applyChanges(true, false);
+        recalcStyle( Inherit );
 
     return inside;
 }

@@ -106,36 +106,38 @@ StyleVisualData::StyleVisualData(const StyleVisualData& o ) : SharedData()
 void
 RenderStyle::setBitDefaults()
 {
-    _border_collapse = true;
-    _empty_cells = SHOW;
-    _caption_side = CAPTOP;
-    _list_style_type = DISC;
-    _list_style_position = OUTSIDE;
-    _visiblity = VISIBLE;
-    _text_align = JUSTIFY;
-    _text_transform = TTNONE;
-    _direction = LTR;
-    _text_decoration = TDNONE;
-    _white_space = NORMAL;
-    _font_variant = FVNORMAL;
-
-    _vertical_align = BASELINE;
-    _clear = CNONE;
-    _overflow = OVISIBLE;
-    _table_layout = TAUTO;
-    _position = STATIC;
-    _floating = FNONE;
-    _bg_repeat = REPEAT;
-    _bg_attachment = SCROLL;
+    inherited_flags._border_collapse = true;
+    inherited_flags._empty_cells = SHOW;
+    inherited_flags._caption_side = CAPTOP;
+    inherited_flags._list_style_type = DISC;
+    inherited_flags._list_style_position = OUTSIDE;
+    inherited_flags._visiblity = VISIBLE;
+    inherited_flags._text_align = JUSTIFY;
+    inherited_flags._text_transform = TTNONE;
+    inherited_flags._direction = LTR;
+    inherited_flags._white_space = NORMAL;
+    inherited_flags._text_decoration = TDNONE;
+    inherited_flags._cursor_style = CURSOR_AUTO;
+    inherited_flags._font_variant = FVNORMAL;
 
     _visuallyOrdered = false;
-    _direction = LTR;
-    _cursor_style = CURSOR_AUTO;
-
     _htmlHacks=false;
+
+    _display = INLINE;
+    
+    _overflow = OVISIBLE;
+    _vertical_align = BASELINE;
+    _clear = CNONE;
+    _table_layout = TAUTO;
+    _bg_repeat = REPEAT;
+    _bg_attachment = SCROLL;
+    _position = STATIC;
+    _floating = FNONE;
+
     _noLineBreak=false;
     _flowAroundFloats=false;
 
+    _styleType = NOPSEUDO;
     _hasHover = false;
     _hasFocus = false;
     _hasActive = false;
@@ -158,10 +160,7 @@ RenderStyle::RenderStyle()
 
     setBitDefaults();
 
-    _styleType=NOPSEUDO;
     pseudoStyle = 0;
-
-    _display = INLINE;
 
 }
 
@@ -178,35 +177,21 @@ RenderStyle::RenderStyle(bool)
     inherited.init();
     inherited.access()->setDefaultValues();
 
-    _styleType=NOPSEUDO;
     pseudoStyle = 0;
-
 }
 
 RenderStyle::RenderStyle(const RenderStyle& other)
     : DOM::DomShared() // shut up, compiler
 {
 
+    inherited_flags = other.inherited_flags;
+
+    _visuallyOrdered = other._visuallyOrdered;
+    _htmlHacks = other._htmlHacks;
+
     _display = other._display;
 
-    _border_collapse = other._border_collapse;
-    _empty_cells = other._empty_cells;
-    _caption_side = other._caption_side;
-    _list_style_type = other._list_style_type;
-    _list_style_position = other._list_style_position;
-    _visiblity = other._visiblity;
-    _text_align = other._text_align;
-    _text_transform = other._text_transform;
-    _direction = other._direction;
-    _white_space = other._white_space;
-    _text_decoration = other._text_decoration;
-    _visuallyOrdered = other._visuallyOrdered;
-    _cursor_style = other._cursor_style;
-    _font_variant = other._font_variant;
-
-    _htmlHacks = other._htmlHacks;
-    _noLineBreak = other._noLineBreak;
-
+    
     _overflow = other._overflow;
     _vertical_align = other._vertical_align;
     _clear = other._clear;
@@ -216,9 +201,13 @@ RenderStyle::RenderStyle(const RenderStyle& other)
     _position = other._position;
     _floating = other._floating;
 
+    _noLineBreak = other._noLineBreak;
     _flowAroundFloats = other._flowAroundFloats;
 
     _styleType=NOPSEUDO;
+    _hasHover = other._hasHover;
+    _hasFocus = other._hasFocus;
+    _hasActive = other._hasActive;
 
     box = other.box;
     visual = other.visual;
@@ -227,36 +216,17 @@ RenderStyle::RenderStyle(const RenderStyle& other)
 
     inherited = other.inherited;
 
-    _hasHover = other._hasHover;
-    _hasFocus = other._hasFocus;
-    _hasActive = other._hasActive;
-
     pseudoStyle=0;
-
 }
 
 void RenderStyle::inheritFrom(const RenderStyle* inheritParent)
 {
 
     inherited = inheritParent->inherited;
+    inherited_flags = inheritParent->inherited_flags;
 
-    _border_collapse = inheritParent->_border_collapse;
-    _empty_cells = inheritParent->_empty_cells;
-    _caption_side = inheritParent->_caption_side;
-    _list_style_type = inheritParent->_list_style_type;
-    _list_style_position = inheritParent->_list_style_position;
-    _visiblity = inheritParent->_visiblity;
-    _text_align = inheritParent->_text_align;
-    _text_transform = inheritParent->_text_transform;
-    _direction = inheritParent->_direction;
-    _text_decoration = inheritParent->_text_decoration;
-    _white_space = inheritParent->_white_space;
     _visuallyOrdered = inheritParent->_visuallyOrdered;
-    _cursor_style = inheritParent->_cursor_style;
-    _font_variant = inheritParent->_font_variant;
-
     _htmlHacks = inheritParent->_htmlHacks;
-
 }
 
 RenderStyle::~RenderStyle()
@@ -275,7 +245,6 @@ RenderStyle::~RenderStyle()
     }
 }
 
-/*
 bool RenderStyle::operator==(const RenderStyle& o) const
 {
 // compare everything except the pseudoStyle pointer
@@ -284,35 +253,21 @@ bool RenderStyle::operator==(const RenderStyle& o) const
             *background.get() == *o.background.get() &&
             *surround.get() == *o.surround.get() &&
             *inherited.get() == *o.inherited.get() &&
-            _display == o._display);// &&
-//             _border_collapse == o._border_collapse &&
-//             _empty_cells == o._empty_cells &&
-//             _caption_side == o._caption_side &&
-//             _list_style_type == o._list_style_type &&
-//             _list_style_position == o._list_style_position &&
-//             _visiblity == o._visiblity &&
-//             _text_align == o._text_align &&
-//             _direction == o._direction &&
-//             _white_space == o._white_space &&
-//             _text_decoration == o._text_decoration &&
-//             _visuallyOrdered == o._visuallyOrdered &&
-//               cursor_style == o.cursor_style &&
-//             _htmlHacks == o._htmlHacks &&
-//             _overflow == o._overflow &&
-//             _vertical_align == o._vertical_align &&
-//             _clear == o._clear &&
-//             _table_layout && o._table_layout &&
-//             _bg_repeat == o._bg_repeat &&
-//             _bg_attachment == o._bg_attachment &&
-//             _position == o._position &&
-//             _floating == o._floating &&
-//             _flowAroundFloats == o._flowAroundFloats &&
-//             _styleType == o._styleType);
-
-//             _hasHover == o._hasHover &&
-//             _hasFocus == o._hasFocus &&
-//             _hasActive == o._hasActive);
-}*/
+	    inherited_flags == o.inherited_flags &&
+            _display == o._display &&
+            _visuallyOrdered == o._visuallyOrdered &&
+            _htmlHacks == o._htmlHacks &&
+            _overflow == o._overflow &&
+            _vertical_align == o._vertical_align &&
+            _clear == o._clear &&
+            _table_layout && o._table_layout &&
+            _bg_repeat == o._bg_repeat &&
+            _bg_attachment == o._bg_attachment &&
+            _position == o._position &&
+            _floating == o._floating &&
+            _flowAroundFloats == o._flowAroundFloats &&
+            _styleType == o._styleType);
+}
 
 RenderStyle* RenderStyle::getPseudoStyle(PseudoId pid)
 {
@@ -368,6 +323,19 @@ void RenderStyle::removePseudoStyle(PseudoId pid)
     }
 }
 
+
+bool RenderStyle::inheritedNotEqual( RenderStyle *other ) const
+{
+    return 
+	( 
+	    inherited_flags != other->inherited_flags ||
+
+	    _visuallyOrdered != other->_visuallyOrdered ||
+	    _htmlHacks != other->_htmlHacks ||
+	    
+	    *inherited.get() != *other->inherited.get() 
+	    );
+}
 
 
 RenderStyle* RenderStyle::_default = 0;

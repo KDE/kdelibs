@@ -79,7 +79,9 @@ namespace khtml {
     public:
         Token() {
             id = 0;
+#if QT_VERSION < 300
             complexText = false;
+#endif	    
             attrs = 0;
             text = 0;
             //qDebug("new token, creating %08lx", attrs);
@@ -103,7 +105,9 @@ namespace khtml {
                 attrs = 0;
             }
             id = 0;
+#if QT_VERSION < 300
             complexText = false;
+#endif	    
             if(text) {
                 text->deref();
                 text = 0;
@@ -112,7 +116,9 @@ namespace khtml {
         DOM::NamedAttrMapImpl* attrs;
         ushort id;
         DOMStringImpl* text;
+#if QT_VERSION < 300
         bool complexText;
+#endif	
     };
 };
 

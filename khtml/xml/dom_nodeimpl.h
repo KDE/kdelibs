@@ -221,9 +221,8 @@ public:
     bool mouseInside() const { return m_mouseInside; }
     bool attached() const   { return m_attached; }
     bool changed() const    { return m_changed; }
-    bool complexText() const { return m_complexText; }
+    bool hasChangedChild() const { return m_hasChangedChild; }
     bool styleElement() const { return m_styleElement; }
-    void setComplexText(bool b=true) { m_complexText = b; }
     void setHasEvents(bool b=true) { m_hasEvents = b; }
     void setHasID(bool b=true) { m_hasId = b; }
     void setHasClass(bool b=true) { m_hasClass = b; }
@@ -231,6 +230,7 @@ public:
     void setPressed(bool b=true) { m_pressed = b; }
     void setMouseInside(bool b=true) { m_mouseInside = b; }
     void setAttached(bool b=true) { m_attached = b; }
+    void setHasChangedChild( bool b = true ) { m_hasChangedChild = b; }
     virtual void setFocus(bool b=true) { m_focused = b; }
     virtual void setActive(bool b=true) { m_active = b; }
     virtual void setChanged(bool b=true);
@@ -259,12 +259,13 @@ public:
     virtual QString toHTML() const;
     QString recursive_toHTML(bool start = false) const;
 
-    virtual void applyChanges(bool top = true, bool force = true);
     virtual void getCursor(int offset, int &_x, int &_y, int &height);
     virtual QRect getRect() const;
 
-    virtual void recalcStyle() {}
-
+    enum StyleChange { NoChange, NoInherit, Inherit, Force };
+    virtual void recalcStyle( StyleChange = NoChange ) {}
+    StyleChange diff( khtml::RenderStyle *s1, khtml::RenderStyle *s2 ) const;
+    
     virtual unsigned long nodeIndex() const;
 
     virtual DocumentImpl* getDocument()
@@ -320,6 +321,7 @@ public:
 
     virtual void dump(QTextStream *stream, QString ind = "") const;
 
+
 protected:
     DocumentPtr *document;
     khtml::RenderObject *m_render;
@@ -328,7 +330,6 @@ protected:
     unsigned short m_tabIndex : 15;
     bool m_hasTabIndex  : 1;
 
-    bool m_complexText : 1;
     bool m_hasEvents : 1;
     bool m_hasId : 1;
     bool m_hasClass : 1;
@@ -337,6 +338,7 @@ protected:
     bool m_mouseInside : 1;
     bool m_attached : 1;
     bool m_changed : 1;
+    bool m_hasChangedChild : 1;
     bool m_specified : 1; // used in AttrImpl. Accessor functions there
     bool m_focused : 1;
     bool m_active : 1;
@@ -420,7 +422,6 @@ public:
 
     virtual void setFocus(bool=true);
     virtual void setActive(bool=true);
-    virtual void applyChanges(bool top = true, bool force = true);
     virtual unsigned long childNodeCount();
     virtual NodeImpl *childNode(unsigned long index);
 

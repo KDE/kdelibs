@@ -385,16 +385,6 @@ void TextImpl::detach()
     m_render = 0;
 }
 
-void TextImpl::applyChanges(bool,bool force)
-{
-    if (force || changed()) {
-        recalcStyle();
-        if (m_render && m_render->isText())
-            static_cast<RenderText*>(m_render)->setText(str);
-    }
-    setChanged(false);
-}
-
 khtml::RenderStyle *TextImpl::style() const
 {
     return _parent ? _parent->style() : 0;
@@ -423,11 +413,17 @@ NodeImpl::Id TextImpl::id() const
     return ID_TEXT;
 }
 
-void TextImpl::recalcStyle()
+void TextImpl::recalcStyle( StyleChange change )
 {
-    if (!parentNode())
-        return;
-    if(m_render) m_render->setStyle(parentNode()->style());
+//     qDebug("textImpl::recalcStyle");
+    if (change != NoChange && parentNode()) {
+// 	qDebug("DomText::recalcStyle");
+	if(m_render)
+	    m_render->setStyle(parentNode()->style());
+    }
+    if ( changed() && m_render && m_render->isText() )
+	static_cast<RenderText*>(m_render)->setText(str);
+    setChanged( false );
 }
 
 // DOM Section 1.1.1

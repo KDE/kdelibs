@@ -1467,7 +1467,7 @@ void KHTMLPart::write( const char *str, int len )
   //kdDebug(6050) << "KHTMLPart::write haveEnc = " << d->m_haveEncoding << endl;
       // ### this is still quite hacky, but should work a lot better than the old solution
       if(d->m_decoder->visuallyOrdered()) d->m_doc->setVisuallyOrdered();
-      d->m_doc->applyChanges(true, true);
+      d->m_doc->recalcStyle( NodeImpl::Force );
   }
 
   if (jScript())
@@ -3557,7 +3557,7 @@ void KHTMLPart::updateFontSize( int add )
   setFontSizes( sizes );
 
   QApplication::setOverrideCursor( waitCursor );
-  if(d->m_doc) d->m_doc->applyChanges();
+  if(d->m_doc) d->m_doc->recalcStyle( NodeImpl::Force );
   QApplication::restoreOverrideCursor();
 }
 
@@ -3590,7 +3590,7 @@ void KHTMLPart::reparseConfiguration()
   d->m_settings = new KHTMLSettings(*KHTMLFactory::defaultHTMLSettings());
 
   QApplication::setOverrideCursor( waitCursor );
-  if(d->m_doc) d->m_doc->applyChanges();
+  if(d->m_doc) d->m_doc->recalcStyle( NodeImpl::Force );
   QApplication::restoreOverrideCursor();
 }
 

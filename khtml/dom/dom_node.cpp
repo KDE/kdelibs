@@ -558,7 +558,7 @@ void Node::applyChanges()
 	return; // ### enable	throw DOMException(DOMException::NOT_FOUND_ERR);
 
     int exceptioncode = 0;
-    impl->applyChanges();
+    impl->recalcStyle( NodeImpl::Inherit );
     if (exceptioncode)
 	throw DOMException(exceptioncode);
 }

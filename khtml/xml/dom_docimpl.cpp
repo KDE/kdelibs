@@ -780,113 +780,84 @@ void DocumentImpl::setDocumentChanged(bool b)
     m_docChanged = b;
 }
 
-void DocumentImpl::applyChanges(bool,bool force)
+void DocumentImpl::recalcStyle( StyleChange change )
 {
-    if ( !m_render && attached() ) return;
+//     qDebug("recalcStyle(%p)", this);
+    if ( change == Force ) {
+	RenderStyle *oldStyle = m_style;
+	if ( oldStyle ) oldStyle->ref();
+    
+	//QTime qt;
+	//qt.start();
+	if( !m_render ) return;
+	setStyle(new RenderStyle());
+	m_style->setDisplay(BLOCK);
+	m_style->setVisuallyOrdered( visuallyOrdered );
+	// ### make the font stuff _really_ work!!!!
 
-    recalcStyle();
+	QFont f = KGlobalSettings::generalFont();
+	if (m_view)
+	{
+	    const KHTMLSettings *settings = m_view->part()->settings();
+	    f.setFamily(settings->stdFontName());
 
-    // a style change can influence the children, so we just go
-    // through them and trigger an appplyChanges there too
-    NodeImpl *n = _first;
-    while(n) {
-        n->applyChanges(false,force || changed());
-        n = n->nextSibling();
+	    QValueList<int> fs = settings->fontSizes();
+	    float dpiY = 72.; // fallback
+	    if ( !khtml::printpainter )
+		dpiY = paintDeviceMetrics()->logicalDpiY();
+	    if ( !khtml::printpainter && dpiY < 96 )
+		dpiY = 96.;
+	    float size = fs[3] * dpiY / 72.;
+	    if(size < settings->minFontSize())
+		size = settings->minFontSize();
+
+	    khtml::setFontSize( f, int(size),  settings, paintDeviceMetrics() );
+#if QT_VERSION < 300
+	    KGlobal::charsets()->setQFont(f, settings->charset());
+#endif
+	}
+
+	//kdDebug() << "DocumentImpl::attach: setting to charset " << settings->charset() << endl;
+	m_style->setFont(f);
+
+	if ( parseMode() != Strict )
+	    m_style->setHtmlHacks(true); // enable html specific rendering tricks
+	StyleChange ch = diff( m_style, oldStyle );
+	if(m_render && ch != NoChange)
+	    m_render->setStyle(m_style);
+	if ( change != Force )
+	    change = ch;
     }
-
-    // force a relayout of this part of the document
-    m_render->layout();
-    // force a repaint of this part.
-    // ### if updateSize() changes any size, it will already force a
-    // repaint, so we might do double work here...
-    m_render->repaint();
-
-    setChanged(false);
-}
-
-void DocumentImpl::setChanged(bool b)
-{
-    if (b)
-        changedNodes.append(this);
-    else
-        changedNodes.remove(this);
-
-    NodeBaseImpl::setChanged(b);
-}
-
-void DocumentImpl::recalcStyle()
-{
-    //QTime qt;
-    //qt.start();
-    if( !m_render ) return;
-    setStyle(new RenderStyle());
-    m_style->setDisplay(BLOCK);
-    m_style->setVisuallyOrdered( visuallyOrdered );
-    // ### make the font stuff _really_ work!!!!
-
-    QFont f = KGlobalSettings::generalFont();
-    if (m_view)
-    {
-        const KHTMLSettings *settings = m_view->part()->settings();
-        f.setFamily(settings->stdFontName());
-
-        QValueList<int> fs = settings->fontSizes();
-        float dpiY = 72.; // fallback
-        if ( !khtml::printpainter )
-            dpiY = paintDeviceMetrics()->logicalDpiY();
-        if ( !khtml::printpainter && dpiY < 96 )
-            dpiY = 96.;
-        float size = fs[3] * dpiY / 72.;
-        if(size < settings->minFontSize())
-            size = settings->minFontSize();
-
-        khtml::setFontSize( f, int(size),  settings, paintDeviceMetrics() );
-    }
-
-    //kdDebug() << "DocumentImpl::attach: setting to charset " << settings->charset() << endl;
-    m_style->setFont(f);
-
-    if ( parseMode() != Strict )
-        m_style->setHtmlHacks(true); // enable html specific rendering tricks
-    if(m_render)
-        m_render->setStyle(m_style);
 
     NodeImpl *n;
     for (n = _first; n; n = n->nextSibling())
-        n->recalcStyle();
+	if ( change>= Inherit || n->hasChangedChild() || n->changed() )
+	    n->recalcStyle( change );
     //kdDebug( 6020 ) << "TIME: recalcStyle() dt=" << qt.elapsed() << endl;
+
+    // ### should be done by the rendering tree itself,
+    // this way is rather crude and CPU intensive
+    if ( changed() ) {
+	renderer()->updateSize();
+	renderer()->repaint();
+    }
+
+    setChanged( false );
+    setHasChangedChild( false );
+    setDocumentChanged( false );
 }
 
 void DocumentImpl::updateRendering()
 {
-    int o=changedNodes.count();
-    if (!o) {
-        setDocumentChanged(false);
-        return;
-    }
-    kdDebug() << "UPDATERENDERING: "<<o<<endl;
+    if (!hasChangedChild()) return;
 
-    int a=0;
-    QPtrListIterator<NodeImpl> it(changedNodes);
-    for (; it.current(); ) {
-        // applyChanges removes current from the list
-        NodeImpl* t = it.current();
-        NodeImpl* n = t;
-        while (t)
-        {
-            if (t->changed())
-                n=t;
-            t=t->parentNode();
-        }
+    QTime time;
+    time.start();
+    kdDebug() << "UPDATERENDERING: "<<endl;
 
-        //kdDebug() << n << ": " << n->nodeName().string() << ": applyChanges opt=" << (n!=it.current()) << endl;
-	n->applyChanges( true, true );
-        a++;
-    }
-    kdDebug() << "UPDATERENDERING orig="<<o<<" actual="<<a<<endl;
-    changedNodes.clear();
-    setChanged(false);
-    setDocumentChanged(false);
+    recalcStyle( NoChange );
+
+    kdDebug() << "UPDATERENDERING time used="<<time.elapsed()<<endl;
 }
 
 void DocumentImpl::updateDocumentsRendering()
@@ -918,7 +889,7 @@ void DocumentImpl::attach(KHTMLView *w)
 
     // Create the rendering tree
     m_render = new RenderRoot(w);
-    recalcStyle();
+    recalcStyle( Force );
 
     NodeBaseImpl::attach();
 }
@@ -1055,7 +1026,7 @@ void DocumentImpl::setUserStyleSheet( const QString& sheet )
 {
     if ( m_usersheet != sheet ) {
         m_usersheet = sheet;
-        applyChanges();
+        recalcStyle( Force );
     }
 }
 
@@ -1568,7 +1539,7 @@ void DocumentImpl::updateStyleSelector()
     m_styleSelector = new CSSStyleSelector( m_view, m_usersheet, m_styleSheets, m_url,
                                             pMode == Strict );
 
-    applyChanges(true,true);
+    recalcStyle( Force );
 }
 
 void DocumentImpl::setFocusNode(NodeImpl *newFocusNode)

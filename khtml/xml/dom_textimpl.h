@@ -119,10 +119,9 @@ public:
     virtual khtml::RenderStyle *style() const;
     virtual void attach();
     virtual void detach();
-    virtual void applyChanges(bool top=true, bool force=true);
     virtual khtml::FindSelectionResult findSelectionNode( int _x, int _y, int _tx, int _ty,
                                                    DOM::Node & node, int & offset );
-    virtual void recalcStyle();
+    virtual void recalcStyle( StyleChange = NoChange );
     virtual bool childTypeAllowed( unsigned short type );
 
 protected:

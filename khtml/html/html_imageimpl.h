@@ -50,8 +50,7 @@ public:
                                     MouseEvent *ev );
 
     virtual void attach();
-    virtual void applyChanges(bool top=true, bool force=true);
-    virtual void recalcStyle();
+    virtual void recalcStyle( StyleChange ch );
 
     bool isServerMap() const { return ( ismap && !usemap.length() );  }
     QImage currentImage() const;

@@ -97,7 +97,7 @@ public:
     virtual void attach();
     virtual void detach();
 
-    virtual void applyChanges(bool = true, bool = true);
+    virtual void recalcStyle( StyleChange ch );
 
     DocumentImpl* contentDocument() const;
 

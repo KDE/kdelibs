@@ -285,7 +285,7 @@ public:
     virtual void parseAttribute(AttrImpl *attr);
 
     virtual void attach();
-    virtual void applyChanges(bool top=true, bool force=true);
+    virtual void recalcStyle( StyleChange );
     virtual bool encoding(const QTextCodec*, khtml::encodingList&, bool);
 
     typeEnum inputType() const { return m_type; }

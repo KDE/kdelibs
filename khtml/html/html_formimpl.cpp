@@ -1137,9 +1137,9 @@ DOMString HTMLInputElementImpl::altText() const
     return alt;
 }
 
-void HTMLInputElementImpl::applyChanges(bool top, bool force)
+void HTMLInputElementImpl::recalcStyle( StyleChange ch )
 {
-    HTMLGenericFormElementImpl::applyChanges( top, force );
+    HTMLGenericFormElementImpl::recalcStyle( ch );
     if (m_render && m_type == IMAGE) {
         RenderImage* renderImage = static_cast<RenderImage*>( m_render );
         renderImage->setImageUrl(m_src,static_cast<HTMLDocumentImpl *>(ownerDocument())->docLoader());
