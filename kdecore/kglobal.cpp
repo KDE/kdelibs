@@ -19,31 +19,40 @@
 
 #include <qfont.h>
 
+#ifndef NDEBUG
+#define MYASSERT(x) if (!x) \
+   fatal("Fatal error: you need to have a KInstance object before\n" \
+         "you do anything that requires it! Examples of this are config\n" \
+         "objects, standard directories or translations.");
+#else
+#define MYASSERT(x) /* nope */
+#endif
+
 KStandardDirs *KGlobal::dirs()
 {
-    ASSERT (_instance);
-    
+    MYASSERT(_instance);
+
     return _instance->dirs();
 }
 
 KConfig	*KGlobal::config()
 {
-    ASSERT(_instance);
-    
+    MYASSERT(_instance);
+
     return _instance->config();
 }
 
 KIconLoader *KGlobal::iconLoader()
 {
-    ASSERT(_instance);
-    
+    MYASSERT(_instance);
+
     return _instance->iconLoader();
 }
 
-KInstance *KGlobal::instance() 
+KInstance *KGlobal::instance()
 {
-    ASSERT(_instance);
-    
+    MYASSERT(_instance);
+
     return _instance;
 }
 
@@ -53,7 +62,7 @@ KLocale	*KGlobal::locale()
         // will set _locale if it works - otherwise 0 is returned
         KLocale::initInstance();
     }
-    
+
     return _locale;
 }
 
@@ -62,7 +71,7 @@ KCharsets *KGlobal::charsets()
     if( _charsets == 0 ) {
         _charsets =new KCharsets();
     }
-    
+
     return _charsets;
 }
 
@@ -70,7 +79,7 @@ QFont KGlobal::generalFont()
 {
     if(_generalFont)
         return *_generalFont;
-    
+
     _generalFont = new QFont("helvetica", 12, QFont::Normal);
     charsets()->setQFont(*_generalFont, charsets()->charsetForLocale());
     KConfig *c = KGlobal::config();
@@ -129,7 +138,7 @@ bool KGlobal::useDoubleClicks()
 KGlobal::Completion KGlobal::completionMode()
 {
     static int completion = -1;
-    
+
     if (completion == -1)
     {
         KConfig *c = KGlobal::config();
