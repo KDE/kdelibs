@@ -934,7 +934,12 @@ QString KURL::prettyURL() const
     }
   }
   else
-    u += ":";
+  {
+    if (u == QString::fromLatin1("file"))
+      u = QString::null; // Remove "file:"
+    else
+      u += ":";
+  }
 
   u += lazy_encode( m_strPath );
 
