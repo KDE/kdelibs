@@ -35,13 +35,14 @@ check_PROGRAMS = kconfigtest kledlamptest kprogresstest \
 		kledtest kcontainertest klocaletest krulertest \
 		kwizardtest kquickhelptest kurltest kformulatest \
 		kcharselecttest kstddirstest khtmltest \
-		kopenwithtest kaboutdialogtest kgradienttest
+		kopenwithtest kaboutdialogtest kgradienttest kcolortest
 
 noinst_HEADERS = kdatepicktestdlg.h kmsgboxtest.h \
 		ktabctltest.h kiconloadertestmain.h	\
 		kwindowtest.h klinetest.h kstatusbartest.h \
 		kprocesstest.h kledtest.h kcontainertest.h \
-		klocaletest.h krulertest.h kconfigtest.h kpannertest.h kgradienttest.h
+		klocaletest.h krulertest.h kconfigtest.h kpannertest.h kgradienttest.h \
+		kcolortest.h
 
 METASOURCES = kconfigtest.moc \
 	kcontainertest.moc kdatepicktestdlg.moc \
@@ -91,5 +92,6 @@ kstddirstest_SOURCES = kstddirstest.cpp
 kstddirstest_LDADD = $(LIB_KDECORE)
 khtmltest_SOURCES = khtmltest.cpp
 khtmltest_LDADD = $(LIB_KHTML)
+kcolortest_SOURCES = kcolortest.cpp
 kgradienttest_SOURCES = kgradienttest.cpp
 
