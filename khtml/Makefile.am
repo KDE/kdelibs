@@ -105,16 +105,12 @@ parser:
 
 ## test program
 check_PROGRAMS 	= testkhtml
-EXTRA_PROGRAMS = testcss testrender testkhtml_static test_regression
+EXTRA_PROGRAMS = testkhtml_static test_regression
 testkhtml_SOURCES = testkhtml.cpp domtreeview.cpp
 testkhtml_LDADD = libkhtml.la 
 testkhtml_static_SOURCES = testkhtml.cpp domtreeview.cpp 
 testkhtml_static_LDADD = libkhtml.la
 testkhtml_static_LDFLAGS = -static
-testcss_SOURCES = testcss.cpp
-testcss_LDADD = libkhtml.la
-testrender_SOURCES = testrender.cpp
-testrender_LDADD = libkhtml.la
 test_regression_SOURCES = test_regression.cpp test_regression_fontoverload.cpp
 test_regression_LDADD = libkhtml.la ecma/libkjs_html.la $(top_builddir)/kjs/libkjs.la
 
