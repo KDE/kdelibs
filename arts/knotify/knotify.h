@@ -43,7 +43,7 @@ k_dcop:
 	void notify(const QString &event, const QString &fromApp,
                          const QString &text, QString sound, QString file,
                          int present, int level);
-    
+
 	void reconfigure();
 	void setVolume( int volume );
 
@@ -56,6 +56,7 @@ protected:
 	bool notifyByExecute(const QString &command);
 	
 	void connectSoundServer();
+	bool isPlaying( const QString& soundFile ) const;
 	
 public:
 	/**
@@ -65,7 +66,7 @@ public:
 
 private slots:
     void playTimeout();
-    
+
 private:
     KNotifyPrivate* d;
     void loadConfig();

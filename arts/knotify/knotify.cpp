@@ -286,9 +286,10 @@ bool KNotify::notifyBySound( const QString &sound, const QString &appname )
         if ( soundFile.isEmpty() )
             soundFile = locate( "sound", sound );
     }
-    if ( soundFile.isEmpty() )
+    if ( soundFile.isEmpty() || isPlaying( soundFile ) )
         return false;
 
+    
     // Oh dear! we seem to have lost our connection to artsd!
     if( !external && (d->soundServer.isNull() || d->soundServer.error()) )
         connectSoundServer();
@@ -354,7 +355,7 @@ bool KNotify::notifyBySound( const QString &sound, const QString &appname )
         if (proc->isRunning())
            return false; // Skip
         proc->clearArguments();
-        (*proc) << d->externalPlayer << soundFile;
+        (*proc) << d->externalPlayer << QFile::encodeName( soundFile );
         proc->start(KProcess::DontCare);
         return true;
     }
@@ -401,16 +402,16 @@ bool KNotify::notifyByPassivePopup( const QString &text, const QString &appName 
             // kdDebug( ) << "found " << obj << endl;
             QCString replyType;
             QByteArray data, replyData;
-            
+
             if ( kapp->dcopClient()->call(senderId, obj, "getWinID()", data, replyType, replyData) ) {
 		QDataStream answer(replyData, IO_ReadOnly);
 		if (replyType == "int") {
 		    answer >> senderWinId;
-		    // kdDebug() << "SUCCESS, found getWinID(): type='" << QString(replyType) 
+		    // kdDebug() << "SUCCESS, found getWinID(): type='" << QString(replyType)
                     //      << "' senderWinId=" << senderWinId << endl;
 		}
             }
-            
+
         }
     }
     if (senderWinId != 0) {
@@ -440,10 +441,10 @@ bool KNotify::notifyByLogfile(const QString &text, const QString &file)
     // ignore empty messages
     if ( text.isEmpty() )
         return true;
-    
+
     // open file in append mode
     QFile logFile(file);
-    if ( !logFile.open(IO_WriteOnly | IO_Append) ) 
+    if ( !logFile.open(IO_WriteOnly | IO_Append) )
         return false;
 
     // append msg
@@ -526,4 +527,19 @@ void KNotify::playTimeout()
     }
     if ( !d->playObjects.count() )
         d->playTimer->stop();
+}
+
+bool KNotify::isPlaying( const QString& soundFile ) const
+{
+    // in local encoding, as passed to the PlayObjectFactory
+    string filename = QFile::encodeName( soundFile ).data();
+    
+    for ( QValueList< Arts::PlayObject >::Iterator it = d->playObjects.begin();
+          it != d->playObjects.end(); it++ )
+    {
+        if ( (*it).mediaName() == filename )
+            return true;
+    }
+    
+    return false;
 }
