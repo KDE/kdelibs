@@ -2193,13 +2193,12 @@ void KApplication::invokeMailer(const QString &to, const QString &cc, const QStr
        || command.endsWith("/kmail"))
      command = QString::fromLatin1("kmail --composer -s %s -c %c -b %b --body %B --attach %A -- %t");
 
-   // TODO: Take care of the preferred terminal app (instead of hardcoding
-   // Konsole), this will probably require a rewrite of the configurable
-   // terminal client option because the placeholder for the program which
-   // has to be executed by the terminal has to be supplied (e.g. something
-   // like '/opt/kde2/bin/konsole -e %p'). - Frerich
    if (config.readBoolEntry("TerminalClient", false))
-      command = "konsole -e " + command;
+   {
+     KConfigGroup confGroup( KGlobal::config(), "General" );
+     QString preferredTerminal = confGroup.readEntry("TerminalApplication","konsole");
+     command = preferredTerminal + " -e " + command;
+   }
 
    QStringList cmdTokens = KShell::splitArgs(command);
    QString cmd = cmdTokens[0];
