@@ -259,8 +259,10 @@ void RenderFlow::setXPos( int xPos )
 
 void RenderFlow::layout( bool deep )
 {
-//    kdDebug( 6040 ) << renderName() << " " << this << "::layout() start" << endl;
-
+    //kdDebug( 6040 ) << renderName() << " " << this << "::layout() start" << endl;
+    //QTime t;
+    //t.start();
+    
     assert(!isInline());
 
     int oldWidth = m_width;
@@ -343,6 +345,7 @@ void RenderFlow::layout( bool deep )
 
 
     setLayouted();
+    //kdDebug( 6040 ) << renderName() << " " << this << "::layout() elapsed" << t.elapsed() << endl;
 }
 
 static int getIndent(RenderObject *child)

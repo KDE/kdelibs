@@ -22,7 +22,7 @@
     pages from the web. It has a memory cache for these objects.
 */
 
-#define CACHE_DEBUG
+//#define CACHE_DEBUG
 
 #include "loader.h"
 
@@ -409,10 +409,11 @@ fixBackground(QPixmap &bgPixmap)
        bgPixmap = newPixmap;
        w = w * factor;
    }
-   else
-   {
+#ifdef CACHE_DEBUG
+   else {
        kdDebug( 6060 ) << "Not scaling in X-dir" << endl;
    }
+#endif
    if (h < BGMINHEIGHT)
    {
        int factor = ((BGMINHEIGHT+h-1) / h);
@@ -435,10 +436,11 @@ fixBackground(QPixmap &bgPixmap)
        bgPixmap = newPixmap;
        h = h * factor;
    }
-   else
-   {
+#ifdef CACHE_DEBUG
+   else {
        kdDebug( 6060 ) << "Not scaling in Y-dir" << endl;
    }
+#endif
    return true;
 }
 
@@ -509,16 +511,14 @@ void CachedImage::notify( CachedObjectClient *c )
 	CachedObjectClient *c;
         for ( c = m_clients.first(); c != 0; c = m_clients.next() ) {
 #ifdef CACHE_DEBUG	
-	    kdDebug( 6060 ) << "CachedImage::setPixmap() " << endl;
-#endif
 	    kdDebug( 6060 ) << "CachedImage: manually setting pixmap (" << c << ")" << endl;
+#endif
             bool manualUpdate = false; // set the pixmap, dont update yet.
 	    c->setPixmap( pixmap, this, &manualUpdate );
             if (manualUpdate)
                updateList.append(c);
 	}
         for ( c = updateList.first(); c != 0; c = updateList.next() ) {
-	    kdDebug( 6060 ) << "CachedImage: manually updating size (" << c << ")" << endl;
             bool manualUpdate = true; // Update!
             // Actually we want to do c->updateSize()
             // This is a terrible hack which does the same.
@@ -539,16 +539,14 @@ void CachedImage::movieUpdated( const QRect & )
     CachedObjectClient *c;
     for ( c = m_clients.first(); c != 0; c = m_clients.next() ) {
 #ifdef CACHE_DEBUG	
-	kdDebug(6060) << "setting pixmap" << endl;
-#endif
         kdDebug( 6060 ) << "CachedImage: manually setting pixmap (" << c << ")" << endl;
+#endif
         bool manualUpdate = false; // set the pixmap, dont update yet.
         c->setPixmap( pixmap, this, &manualUpdate );
         if (manualUpdate)
            updateList.append(c);
     }
     for ( c = updateList.first(); c != 0; c = updateList.next() ) {
-        kdDebug( 6060 ) << "CachedImage: manually updating size (" << c << ")" << endl;
         bool manualUpdate = true; // Update!
         // Actually we want to do c->updateSize()
         // This is a terrible hack which does the same.
