@@ -118,11 +118,6 @@ void RenderFlow::print(QPainter *p, int _x, int _y, int _w, int _h,
 
     if(!isInline())
     {
-/*    	if (!layouted())
-	{
-	    printf ("!layouted %x\n",this);
-	    return;
-	}*/
 	_tx += m_x;
 	_ty += m_y;
     }
@@ -142,7 +137,7 @@ void RenderFlow::printObject(QPainter *p, int _x, int _y,
 				       int _w, int _h, int _tx, int _ty)
 {
 #ifdef DEBUG_LAYOUT
-    printf("%s(RenderFlow)::printObject() w/h = (%d/%d)\n", renderName(), width(), height());
+    printf("%s(RenderFlow) %x ::printObject() w/h = (%d/%d)\n", renderName(), this, width(), height());
 #endif
 
 
@@ -224,7 +219,7 @@ void RenderFlow::layout( bool deep )
 	    nextSibling()->setLayouted(false);
 
 #ifdef DEBUG_LAYOUT
-    printf("%s(RenderFlow)::layout(%d) width=%d, layouted=%d\n", renderName(), deep, m_width, layouted());
+    printf("%s(RenderFlow) %x ::layout(%d) width=%d, layouted=%d\n", renderName(), this, deep, m_width, layouted());
     if(containingBlock() == static_cast<RenderObject *>(this))
     	printf("%s: containingBlock == this\n", renderName());
 #endif
@@ -332,6 +327,8 @@ void RenderFlow::layoutBlockChildren(bool deep)
 	margin = collapseMargins(margin, prevMargin);
 	
 	m_height += margin;
+	
+	child->setYPos(m_height);
 
 	if(deep) child->layout(deep);
 	else if (!child->layouted())
@@ -339,9 +336,9 @@ void RenderFlow::layoutBlockChildren(bool deep)
 
     	// html blocks flow around floats	
     	if (style()->htmlHacks() && child->style()->flowAroundFloats() ) 	
-	    child->setPos(leftMargin(m_height) + getIndent(child), m_height);
+	    child->setXPos(leftMargin(m_height) + getIndent(child));
 	else
-	    child->setPos(xPos + getIndent(child), m_height);
+	    child->setXPos(xPos + getIndent(child));
 
 
 	m_height += child->height();
@@ -720,16 +717,16 @@ RenderFlow::clearFloats()
     }
 
     // add overhanging special objects from the previous RenderFlow
-
     if(!prev->isFlow()) return;
     RenderFlow * flow = static_cast<RenderFlow *>(prev);
     if(!flow->specialObjects) return;
     if(style()->htmlHacks() && style()->flowAroundFloats())
     	return; //html tables and lists flow as blocks
+
     if(flow->floatBottom() > offset)
     {
 #ifdef DEBUG_LAYOUT
-	printf("adding overhanging floats\n");
+	printf("%x: adding overhanging floats\n",this);
 #endif
 	
 	// we have overhanging floats

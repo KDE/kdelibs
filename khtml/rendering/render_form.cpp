@@ -371,6 +371,7 @@ void RenderImageButton::setPixmap( const QPixmap &p )
     static_cast<QPushButton *>(m_widget)->setPixmap(p);
     // Image dimensions have been changed, recalculate layout
     layout(false);
+    calcMinMaxWidth();
     m_widget->resize(m_width, m_height);
 
     if(m_parent) m_parent->updateSize();	
