@@ -1,6 +1,6 @@
 ## Makefile.am of kdebase/kioslave/file
 
-INCLUDES=	$(all_includes)
+INCLUDES=	$(top_srcdir)/kio $(all_includes)
 LDFLAGS =       $(all_libraries) $(KDE_RPATH)
 LDADD	=	$(LIB_KIO)
 
