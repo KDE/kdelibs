@@ -211,6 +211,11 @@ KJSO Navigator::get(const UString &p) const
 }
 
 
+String Navigator::toString() const
+{
+  return UString("[object Navigator]");
+}
+
 /*******************************************************************/
 
 PluginBase::PluginBase()

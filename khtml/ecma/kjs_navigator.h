@@ -34,6 +34,7 @@ namespace KJS {
     Navigator(KHTMLPart *p) : part(p) { }
     virtual KJSO get(const UString &p) const;
     virtual bool hasProperty(const UString &p, bool recursive) const;
+    virtual String toString() const;
   private:
     KHTMLPart *part;
   };
