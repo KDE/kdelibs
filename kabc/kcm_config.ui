@@ -1,5 +1,10 @@
 <!DOCTYPE UI><UI version="3.0" stdsetdef="1">
 <class>ConfigPage</class>
+<include>klistbox.h</include>
+<include>klineedit.h</include>
+<include>kpushbutton.h</include>
+<include>kcombobox.h</include>
+
 <widget class="QWidget">
     <property name="name">
         <cstring>ConfigPage</cstring>

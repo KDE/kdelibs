@@ -1,5 +1,8 @@
 <!DOCTYPE UI><UI version="3.0" stdsetdef="1">
 <class>ResourceSqlConfig</class>
+<include>klineedit.h</include>
+<include>kurlrequester.h</include>
+
 <widget class="QDialog">
     <property name="name">
         <cstring>ResourceSqlConfig</cstring>
