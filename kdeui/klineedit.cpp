@@ -108,7 +108,7 @@ void KLineEdit::setCompletionMode( KGlobalSettings::Completion mode )
     if ( echoMode() != QLineEdit::Normal )
         mode = KGlobalSettings::CompletionNone; // Override the request.
 
-    if ( !kapp->authorize("lineedit_text_completion") )
+    if ( kapp && !kapp->authorize("lineedit_text_completion") )
         mode = KGlobalSettings::CompletionNone;
     
     KCompletionBase::setCompletionMode( mode );
