@@ -39,6 +39,7 @@ class KOpenSSLProxyPrivate;
 #include <openssl/asn1.h>
 #include <openssl/pkcs7.h>
 #include <openssl/pkcs12.h>
+#include <openssl/evp.h>
 #undef crypt
 #endif
 
@@ -383,6 +384,19 @@ public:
     *   Destroy that PKCS#12 that you created!
     */
    void PKCS12_free(PKCS12 *a);
+
+
+   /* 
+    *   Parse the PKCS#12 
+    */
+   int PKCS12_parse(PKCS12 *p12, const char *pass, EVP_PKEY **pkey,
+                    X509 **cert, STACK_OF(X509) **ca);
+
+
+   /* 
+    *   Free the Private Key
+    */
+   void EVP_PKEY_free(EVP_PKEY *x);
 
 
 #endif

@@ -79,14 +79,15 @@ static ASN1_METHOD* (*K_X509_asn1_meth) (void) = NULL;
 static int (*K_ASN1_i2d_fp)(int (*)(),FILE *,unsigned char *) = NULL;
 static int (*K_i2d_ASN1_HEADER)(ASN1_HEADER *, unsigned char **) = NULL;
 static int (*K_X509_print_fp)  (FILE *, X509*) = NULL;
-#else
-struct PKCS12;
-#endif    
 static int (*K_i2d_PKCS12_fp)  (FILE *, PKCS12*) = NULL;
 static int (*K_PKCS12_newpass) (PKCS12*, char*, char*) = NULL;
 static PKCS12* (*K_d2i_PKCS12_fp) (FILE*, PKCS12**) = NULL;
 static PKCS12* (*K_PKCS12_new) (void) = NULL;
 static void (*K_PKCS12_free) (PKCS12 *) = NULL;
+static int (*K_PKCS12_parse) (PKCS12*, const char *, EVP_PKEY**, 
+                                             X509**, STACK_OF(X509)**) = NULL;
+static void (*K_EVP_PKEY_free) (EVP_PKEY *) = NULL;
+#endif    
 };
 
 
@@ -175,12 +176,15 @@ KConfig *cfg;
       K_ASN1_i2d_fp = (int (*)(int (*)(), FILE*, unsigned char *)) _cryptoLib->symbol("ASN1_i2d_fp");
       K_i2d_ASN1_HEADER = (int (*)(ASN1_HEADER *, unsigned char **)) _cryptoLib->symbol("i2d_ASN1_HEADER");
       K_X509_print_fp = (int (*)(FILE*, X509*)) _cryptoLib->symbol("X509_print_fp");
-#endif
       K_i2d_PKCS12_fp = (int (*)(FILE *, PKCS12*)) _cryptoLib->symbol("i2d_PKCS12_fp");
       K_PKCS12_newpass = (int (*)(PKCS12*, char*, char*)) _cryptoLib->symbol("PKCS12_newpass");
       K_d2i_PKCS12_fp = (PKCS12* (*)(FILE*, PKCS12**)) _cryptoLib->symbol("d2i_PKCS12_fp");
       K_PKCS12_new = (PKCS12* (*)()) _cryptoLib->symbol("PKCS12_new");
       K_PKCS12_free = (void (*)(PKCS12 *)) _cryptoLib->symbol("PKCS12_free");
+      K_PKCS12_parse = (int (*)(PKCS12*, const char *, EVP_PKEY**,
+                X509**, STACK_OF(X509)**)) _cryptoLib->symbol("PKCS12_parse");
+      K_EVP_PKEY_free = (void (*) (EVP_PKEY *)) _cryptoLib->symbol("EVP_PKEY_free");
+#endif
    }
 
    for (QStringList::Iterator it = libpaths.begin();
@@ -589,9 +593,20 @@ PKCS12 *KOpenSSLProxy::PKCS12_new(void) {
 
 
 void KOpenSSLProxy::PKCS12_free(PKCS12 *a) {
-   if (K_PKCS12_free) (PKCS12_free)(a);
+   if (K_PKCS12_free) (K_PKCS12_free)(a);
 }
 
+
+int KOpenSSLProxy::PKCS12_parse(PKCS12 *p12, const char *pass, EVP_PKEY **pkey,
+                    X509 **cert, STACK_OF(X509) **ca) {
+   if (K_PKCS12_parse) return (K_PKCS12_parse) (p12, pass, pkey, cert, ca);
+   else return -1;
+}
+
+
+void KOpenSSLProxy::EVP_PKEY_free(EVP_PKEY *x) {
+   if (K_EVP_PKEY_free) (K_EVP_PKEY_free)(x);
+}
 
 #endif
 

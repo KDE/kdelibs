@@ -51,6 +51,7 @@ friend class KSSLCertificateHome;
 friend class KSSLCertificateFactory;
 friend class KSSLCertificateCache;
 friend class KSSLPeerInfo;
+friend class KSSLPKCS12;
 
 public:
   ~KSSLCertificate();
