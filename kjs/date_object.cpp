@@ -17,13 +17,27 @@
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include "kjs.h"
-#include "date_object.h"
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
 
+#if TIME_WITH_SYS_TIME
+# include <sys/time.h>
+# include <time.h>
+#else
+#if HAVE_SYS_TIME_H
 #include <sys/time.h>
+#else
+#  include <time.h>
+# endif
+#endif
+
 #include <unistd.h>
 #include <math.h>
 #include <string.h>
+
+#include "kjs.h"
+#include "date_object.h"
 
 namespace KJS {
 
