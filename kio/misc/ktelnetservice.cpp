@@ -63,7 +63,17 @@ int main(int argc, char **argv)
 		cmd << "-l";
 		cmd << url.user();
 	}
-	cmd << url.host();
+
+	host = url.host();
+
+        if (host.isEmpty() || host.startsWith("-"))
+        {
+            kdError() << "Invalid hostname " << host << endl;
+            return 2;
+        }
+
+        cmd << host;
+
 	if (url.port())
 		cmd << QString::number(url.port());
 
