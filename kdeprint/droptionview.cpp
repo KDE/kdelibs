@@ -33,6 +33,7 @@
 #include <qapplication.h>
 
 #include <kcursor.h>
+#include <kdialog.h>
 #include <klocale.h>
 
 OptionBaseView::OptionBaseView(QWidget *parent, const char *name)
@@ -279,7 +280,6 @@ void OptionBooleanView::slotSelected(int ID)
 DrOptionView::DrOptionView(QWidget *parent, const char *name)
 : QGroupBox(parent,name)
 {
-	//setFixedHeight(150);
 	m_stack = new QWidgetStack(this);
 
 	OptionBaseView	*w = new OptionListView(m_stack);
@@ -305,8 +305,10 @@ DrOptionView::DrOptionView(QWidget *parent, const char *name)
 	m_stack->raiseWidget(w);
 	setTitle(i18n("No Option Selected"));
 
-	QVBoxLayout	*main_ = new QVBoxLayout(this, 10, 10);
-	main_->addSpacing(10);
+	setColumnLayout(0, Qt::Vertical );
+	layout()->setSpacing( KDialog::spacingHint() );
+	layout()->setMargin( KDialog::marginHint() );
+	QVBoxLayout	*main_ = new QVBoxLayout(layout(), KDialog::marginHint());
 	main_->addWidget(m_stack);
 
 	m_item = 0;
@@ -353,8 +355,4 @@ void DrOptionView::slotValueChanged(const QString& val)
 	}
 }
 
-QSize DrOptionView::sizeHint() const
-{
-	return QSize(200,140);
-}
 #include "droptionview.moc"

@@ -117,7 +117,6 @@ class DrOptionView : public QGroupBox
 	Q_OBJECT
 public:
 	DrOptionView(QWidget *parent = 0, const char *name = 0);
-	QSize sizeHint() const;
 	void setAllowFixed(bool on) 	{ m_allowfixed = on; }
 
 signals:
