@@ -12,6 +12,8 @@
 #include <qstring.h>
 #include <kapplication.h>
 #include <ktempfile.h>
+//#include <kdebug.h>
+//#include <qdatetime.h> // for QTime
 
 #include "eps.h"
 
@@ -22,111 +24,135 @@
 
 int bbox ( QImageIO *imageio, int *x1, int *y1, int *x2, int *y2)
 {
-	int ret = FALSE;
+        int ret = FALSE;
         char buf[BUFLEN+1];
         char dummy[BUFLEN+1];
 
-	while (imageio->ioDevice()->readLine(buf, BUFLEN) != -1)
+        while (imageio->ioDevice()->readLine(buf, BUFLEN) != -1)
         {
-		if (strncmp (buf, BBOX, BBOX_LEN) == 0)
-		{
-			// Some EPS files have non-integer values for the bbox
-			// We don't support that currently, but at least we parse it
-			float _x1, _y1, _x2, _y2;
-			if ( sscanf (buf, "%s %f %f %f %f", dummy,
-				&_x1, &_y1, &_x2, &_y2) == 5) {
-				*x1=(int)_x1; *y1=(int)_y1; *x2=(int)_x2; *y2=(int)_y2;
-				ret = TRUE;
-				break;
-			}
-		}
-	}
+                if (strncmp (buf, BBOX, BBOX_LEN) == 0)
+                {
+                        // Some EPS files have non-integer values for the bbox
+                        // We don't support that currently, but at least we parse it
+                        float _x1, _y1, _x2, _y2;
+                        if ( sscanf (buf, "%s %f %f %f %f", dummy,
+                                &_x1, &_y1, &_x2, &_y2) == 5) {
+                                *x1=(int)_x1; *y1=(int)_y1; *x2=(int)_x2; *y2=(int)_y2;
+                                ret = TRUE;
+                                break;
+                        }
+                }
+        }
 
-	return ret;
+        return ret;
 }
 
 void kimgio_eps_read (QImageIO *image)
 {
-	FILE * ghostfd;
-	int x1, y1, x2, y2;
+        FILE * ghostfd;
+        int x1, y1, x2, y2;
+        //QTime dt;
+        //dt.start();
 
-	QString cmdBuf;
-	QString tmp;
+        QString cmdBuf;
+        QString tmp;
 
-	// find bounding box
-	if ( bbox (image, &x1, &y1, &x2, &y2) == 0 ) {
-	    return;
-	}
+        // find bounding box
+        if ( bbox (image, &x1, &y1, &x2, &y2) == 0 ) {
+            return;
+        }
 
         KTempFile tmpFile;
         tmpFile.setAutoDelete(true);
 
-	if( tmpFile.status() != 0 ) {
-	    return;
-	}
+        if( tmpFile.status() != 0 ) {
+            return;
+        }
         tmpFile.close(); // Close the file, we just want the filename
 
-	// x1, y1 -> translation
-	// x2, y2 -> new size
+        // x1, y1 -> translation
+        // x2, y2 -> new size
 
-	x2 -= x1;
-	y2 -= y1;
+        x2 -= x1;
+        y2 -= y1;
+        //kdDebug() << "origin point: " << x1 << "," << y1 << "  size:" << x2 << "," << y2 << endl;
+        double xScale = 1.0;
+        double yScale = 1.0;
+	bool needsScaling = false;
+        int wantedWidth = x2;
+        int wantedHeight = y2;
 
-	// create GS command line
+        if (image->parameters())
+        {
+            // Size forced by the caller
+            QStringList params = QStringList::split(':', image->parameters());
+            if (params.count() >= 2 && x2 != 0.0 && y2 != 0.0)
+            {
+                wantedWidth = params[0].toInt();
+                xScale = (double)wantedWidth / (double)x2;
+                wantedHeight = params[1].toInt();
+                yScale = (double)wantedHeight / (double)y2;
+                //kdDebug() << "wanted size:" << wantedWidth << "x" << wantedHeight << endl;
+                //kdDebug() << "scaling:" << xScale << "," << yScale << endl;
+		needsScaling = true;
+            }
+        }
 
-	cmdBuf = "gs -sOutputFile=";
-	cmdBuf += tmpFile.name();
-	cmdBuf += " -q -g";
-	tmp.setNum( x2 );
-	cmdBuf += tmp;
-	tmp.setNum( y2 );
-	cmdBuf += "x";
-	cmdBuf += tmp;
-	cmdBuf += " -dNOPAUSE -sDEVICE=ppm -c "
-		"0 0 moveto "
-		"1000 0 lineto "
-		"1000 1000 lineto "
-		"0 1000 lineto "
-		"1 1 254 255 div setrgbcolor fill "
-		"0 0 0 setrgbcolor - -c showpage quit";
+        // create GS command line
 
-	// run ghostview
+        cmdBuf = "gs -sOutputFile=";
+        cmdBuf += tmpFile.name();
+        cmdBuf += " -q -g";
+        tmp.setNum( wantedWidth );
+        cmdBuf += tmp;
+        tmp.setNum( wantedHeight );
+        cmdBuf += "x";
+        cmdBuf += tmp;
+        cmdBuf += " -dNOPAUSE -sDEVICE=ppm -c "
+                "0 0 moveto "
+                "1000 0 lineto "
+                "1000 1000 lineto "
+                "0 1000 lineto "
+                "1 1 254 255 div setrgbcolor fill "
+                "0 0 0 setrgbcolor - -c showpage quit";
 
-	ghostfd = popen (QFile::encodeName(cmdBuf), "w");
+        // run ghostview
 
-	if ( ghostfd == 0 ) {
-		return;
-	}
+        ghostfd = popen (QFile::encodeName(cmdBuf), "w");
 
-	fprintf (ghostfd, "\n%d %d translate\n", -x1, -y1);
+        if ( ghostfd == 0 ) {
+            return;
+        }
 
-	// write image to gs
+        fprintf (ghostfd, "\n%d %d translate\n", -qRound(x1*xScale), -qRound(y1*yScale));
+        if ( needsScaling )
+            fprintf (ghostfd, "%g %g scale\n", xScale, yScale);
+
+        // write image to gs
 
         QByteArray buffer = image->ioDevice()->readAll();
         fwrite(buffer.data(), sizeof(char), buffer.size(), ghostfd);
         buffer.resize(0);
 
-	pclose ( ghostfd );
+        pclose ( ghostfd );
 
-	// load image
-	QImage myimage;
-	bool loadstat = myimage.load (tmpFile.name());
+        // load image
+        QImage myimage;
+        if( myimage.load (tmpFile.name()) ) {
+                myimage.createHeuristicMask();
+                image->setImage (myimage);
+                image->setStatus (0);
+        }
 
-	if( loadstat ) {
-		myimage.createHeuristicMask();
-
-		image->setImage (myimage);
-		image->setStatus (0);
-	}
-
-	return;
+        //kdDebug() << "Loading EPS took " << (float)(dt.elapsed()) / 1000 << " seconds" << endl;
+        return;
 }
 
 // Sven Wiegand <SWiegand@tfh-berlin.de> -- eps output filter (from KSnapshot)
 void kimgio_eps_write( QImageIO *imageio )
 {
-  QPrinter	 psOut;
-  QPainter	 p;
+  QPrinter psOut;
+  QPainter p;
 
   // making some definitions (papersize, output to file, filename):
   psOut.setCreator( "KDE " KDE_VERSION_STRING  );
@@ -149,7 +175,7 @@ void kimgio_eps_write( QImageIO *imageio )
   p.end();
 
   // write BoundingBox to File
-  QFile	inFile(tmpFile.name());
+  QFile inFile(tmpFile.name());
   QString szBoxInfo;
 
   szBoxInfo.sprintf("%sBoundingBox: 0 0 %d %d\n", "%%",
