@@ -706,6 +706,7 @@ static void writeEntries(FILE *pStream, const KEntryMap& entryMap, bool defaultG
   } // for loop
 }
 
+/* antlarr: KDE 4.0:  make the first parameter "const QString &" */
 bool KConfigINIBackEnd::writeConfigFile(QString filename, bool bGlobal,
 					bool bMerge)
 {

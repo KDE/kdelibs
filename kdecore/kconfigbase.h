@@ -1766,11 +1766,13 @@ public:
    * Constructor. You pass a pointer to the KConfigBase-derived
    * object you want to work with and a string indicating the _new_
    * group.
+   *
    * @param config The KConfigBase-derived object this
    *               KConfigGroupSaver works on.
    * @param group  The new group that the config object should switch to.
    */
   KConfigGroupSaver( KConfigBase* config, QString group )
+      /* KDE 4 : make the second parameter const QString & */
       : _config(config), _oldgroup(config->group())
         { _config->setGroup( group ); }
 
