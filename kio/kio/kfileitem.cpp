@@ -215,7 +215,7 @@ void KFileItem::refresh()
   m_group = QString::null;
   m_access = QString::null;
   m_size = (KIO::filesize_t) -1;
-//  metaInfo = KFileMetaInfo();
+  m_metaInfo = KFileMetaInfo();
   for ( int i = 0; i < NumFlags; i++ )
       m_time[i] = (time_t) -1;
 
