@@ -20,8 +20,8 @@ build:
 		kde_bindir=/usr/X11R6/bin \
 		kde_partsdir=/usr/lib/parts \
 		CFLAGS="-O2 -Wall -g" \
-		CXXFLAGS="-O2 -Wall -g" \
-		 ./configure --prefix=/usr --enable-debug \
+		CXXFLAGS="-O2 -Wall -Wno-uninitialized -g" \
+		 ./configure --prefix=/usr --enable-debug --enable-new-stuff \
 		  	     --disable-rpath \
 		             --includedir="\$$(prefix)/include/kde" \
 			     --libdir="\$$(prefix)/X11R6/lib" )
