@@ -60,6 +60,7 @@ Object ObjectObject::construct(const List &args)
   case StringType:
   case BooleanType:
   case NumberType:
+  case HostType:
     return arg.toObject();
   default:
     assert(!"unhandled switch case in ObjectConstructor");
