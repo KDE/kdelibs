@@ -23,6 +23,7 @@
 #include <kdecore/kdelibs_export.h>
 
 #define strncasecmp strnicmp
+#define strcasecmp stricmp
 
 #include <sys/types.h>
 
