@@ -22,7 +22,6 @@
 
 #include <qstring.h>
 
-class QStrList;
 class QStringList;
 class QTextCodec;
 class QDate;
@@ -873,17 +872,7 @@ private:
   QString m_dateFormat;
   QString m_dateFormatShort;
 
-  // #### HPB: Remove in KDE 3
-  QStrList *m_cataloguesNOTUSED;
-  // #### HPB: Remove in KDE 3
-  bool m_initedNOTUSED;
-
-  // #### HPB: Remove in KDE 3
-  QCString m_langNOTUSED;
-  // #### HPB: Remove in KDE 3
-  QTextCodec * m_codecNOTUSED; // Codec used for translations
-  // #### HPB: Remove in KDE 3
-  QString m_langsNOTUSED;
+  QString m_language;
   QString m_country;
 
   KLocalePrivate *d;

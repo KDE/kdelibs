@@ -47,7 +47,6 @@ class KLocalePrivate
 {
 public:
   int plural_form;
-  QString language;
   QStringList languageList;
   QValueList<KCatalogue> catalogues;
   QString encoding;
@@ -371,7 +370,7 @@ bool KLocale::setLanguage(const QString & language)
 
   if ( bRes )
     {
-      d->language = language;
+      m_language = language;
 
       doBindInit();
     }
@@ -441,7 +440,7 @@ void KLocale::splitLocale(const QString & aStr,
 
 QString KLocale::language() const
 {
-  return d->language;
+  return m_language;
 }
 
 QString KLocale::country() const
@@ -1781,6 +1780,7 @@ KLocale & KLocale::operator=(const KLocale & rhs)
   m_dateFormat = rhs.m_dateFormat;
   m_dateFormatShort = rhs.m_dateFormatShort;
 
+  m_language = rhs.m_language;
   m_country = rhs.m_country;
 
   // the assignment operator works here
