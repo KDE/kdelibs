@@ -394,6 +394,7 @@ KIconButton::KIconButton(QWidget *parent, const char *name)
     // arbitrary
     mGroup = KIcon::Desktop;
     mContext = KIcon::Application;
+    mbUser = false;
 
     mpLoader = KGlobal::iconLoader();
     mpDialog = 0L;
@@ -407,6 +408,7 @@ KIconButton::KIconButton(KIconLoader *loader,
     d = new KIconButtonPrivate;
     mGroup = KIcon::Desktop;
     mContext = KIcon::Application;
+    mbUser = false;
 
     mpLoader = loader;
     mpDialog = 0L;
