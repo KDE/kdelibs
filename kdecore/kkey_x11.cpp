@@ -592,10 +592,10 @@ static void readModifierMapping()
 		uint keySymX = XKeycodeToKeysym( qt_xdisplay(), xmk->modifiermap[xmk->max_keypermod * i], 0 );
 		int j = -1;
 		switch( keySymX ) {
-			//case XK_Alt_L:
-			//case XK_Alt_R:		j = 3; break;	// Normally Mod1Mask
 			case XK_Num_Lock:	j = 4; break;	// Normally Mod2Mask
 			case XK_Mode_switch:	j = 5; break;	// Normally Mod3Mask
+			case XK_Super_L:
+			case XK_Super_R:
 			case XK_Meta_L:
 			case XK_Meta_R:		j = 6; break;	// Normally Mod4Mask
 			case XK_Scroll_Lock:	j = 7; break;	// Normally Mod5Mask
@@ -609,7 +609,7 @@ static void readModifierMapping()
 	for( int i = Mod1MapIndex; i < 8; i++ )
 		kdDebug(125) << QString( "%1: keyModMaskX = 0x%2\n" ).arg(g_aModKeys[i].keyName).arg(g_aModKeys[i].keyModMaskX, 0, 16);
 
-	XFreeModifiermap(xmk);
+	XFreeModifiermap( xmk );
 }
 
 static void readKeyMappingSub( uchar keyCodeX, uint keySymX, uint keyModX )

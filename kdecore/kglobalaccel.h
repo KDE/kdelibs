@@ -1,5 +1,5 @@
 /* This file is part of the KDE libraries
-    Copyright (C) 2001 Ellis Whitehead <ellis@kde.org>
+    Copyright (C) 2001,2002 Ellis Whitehead <ellis@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -36,55 +36,73 @@ class KGlobalAccel : public QObject
 	KGlobalAccel( QObject* pParent, const char* psName = 0 );
 	virtual ~KGlobalAccel();
 
-	void clearActions();
+	//void clearActions();
 
 	KAccelActions& actions();
 	const KAccelActions& actions() const;
 
-	KAccelAction* insertAction( const QString& sAction, const QString& sDesc, const QString& sHelp,
+	bool isEnabled();
+	void setEnabled( bool bEnabled );
+
+	/**
+	 * Create an accelerator action.
+	 *
+	 * Usage:
+	 *<pre>
+	 * insert( "Do Something", i18n("Do Something"),
+	 *   i18n("This action allows you to do something really great with this program to "
+	 *        "the currently open document."),
+	 *   ALT+Key_D, this, SLOT(slotDoSomething()) );
+	 *</pre>
+	 *
+	 * @param sAction The internal name of the action.
+	 * @param sLabel An i18n'ized short description of the action displayed when
+	 *  using @ref KKeyChooser to reconfigure the shortcuts.
+	 * @param sWhatsThis An extended description of the action.
+	 * @param cutDef3 The default 3 modifier scheme shortcut.
+	 * @param cutDef3 The default 4 modifier scheme shortcut.
+	 * @param pObjSlot Pointer to the slot object.
+	 * @param psMethodSlot Pointer to the slot method.
+	 * @param bConfigurable Allow the user to change this shortcut if set to 'true'.
+	 * @param bEnabled The action will be activated by the shortcut if set to 'true'.
+	 */
+	KAccelAction* insert( const QString& sAction, const QString& sLabel, const QString& sWhatsThis,
 	                 const KShortcut& cutDef3, const KShortcut& cutDef4,
 	                 const QObject* pObjSlot, const char* psMethodSlot,
 	                 bool bConfigurable = true, bool bEnabled = true );
-	KAccelAction* insertAction( const QString& sAction, const QString& sDesc, const QString& sHelp,
-	                 const char* cutDef3, const char* cutDef4,
-	                 const QObject* pObjSlot, const char* psMethodSlot,
-	                 bool bConfigurable = true, bool bEnabled = true );
-	bool insertLabel( const QString& sName, const QString& sDesc );
+	/**
+	 * Use this to insert a label into the action list.  This will be
+	 * displayed when the user configures shortcuts.
+	 */
+	KAccelAction* insert( const QString& sName, const QString& sLabel );
 
 	bool updateConnections();
 
+	/** Set the shortcut to be associated with the action named by @p sAction. */
 	const KShortcut& shortcut( const QString& sAction ) const;
-
+	/** Set the shortcut to be associated with the action named by @p sAction. */
 	bool setShortcut( const QString& sAction, const KShortcut& );
+	/** Set the slot to be called when the shortcut of the action named
+	  * by @p sAction is pressed. */
 	bool setSlot( const QString& sAction, const QObject* pObjSlot, const char* psMethodSlot );
+	/** Enable or disable the action named by @p sAction. */
+	bool setEnabled( const QString& sAction, bool bEnabled );
 
+	/**
+	 * Read all shortcuts from @p pConfig, or (if @p pConfig
+	 * is zero) from the application's configuration file
+	 * @ref KGlobal::config().
+	 */
 	void readSettings( KConfig* pConfig = 0 );
+	/**
+	 * Write the current shortcuts to @p pConfig,
+	 * or (if @p pConfig is zero) to the application's
+	 * configuration file.
+	 */
 	void writeSettings( KConfig* pConfig = 0 ) const;
-
-	// Functions which mimic QAccel somewhat:
-	//virtual bool insertItem( const QString& sDesc, const QString& sAction,
-	//                 KShortcuts rgCutDefaults3,
-	//                 int nIDMenu = 0, QPopupMenu* pMenu = 0, bool bConfigurable = true );
-
- protected:
-	// Attempts to make a passive X server grab/ungrab of the specified key.
-	//  Return true if successful.
-	// Modifications with NumLock, CapsLock, ScrollLock, and ModeSwitch are
-	//  also grabbed.
-	bool grabKey( const QString& action, bool bGrab );
 
  private:
 	class KGlobalAccelPrivate* d;
-
- public:
-	// Setting this to false shuts off processing of KeyPress events in
-	//  x11EventFilter(). It will still be called, but won't act on them.
-	// This is a more efficient means for briefly suspending processing
-	//  than setEnabled(false) ... setEnabled(true).
-	// These functions should be implemented in kglobalaccel_x11/emb.cpp
-	static void setKeyEventsEnabled( bool enabled );
-	static bool areKeyEventsEnabled();
-
 	friend class KGlobalAccelPrivate;
 };
 

@@ -1,5 +1,5 @@
 /* This file is part of the KDE libraries
-    Copyright (C) 2001 Ellis Whitehead <ellis@kde.org>
+    Copyright (C) 2001,2002 Ellis Whitehead <ellis@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -24,14 +24,18 @@
 #include <qstring.h>
 
 class QKeyEvent;
-typedef union  _XEvent XEvent;
 
 class KKey;
 class KKeyNative;
-class KKeyVariations;
 class KKeySequence;
 class KShortcut;
 
+/**
+ * A KKey object represents a single key with possible modifiers
+ * (Shift, Ctrl, Alt, Win).  It can represent both keys which are
+ * understood by Qt as well as those which are additionally supported
+ * by the underlying system (e.g. X11).
+ */
 class KKey
 {
  public:
@@ -60,24 +64,23 @@ class KKey
 	bool init( const KKey& );
 	bool init( const QString& );
 
-	KKey& operator =( const KKey& spec )
-		{ init( spec ); return *this; }
+	KKey& operator =( const KKey& key )
+		{ init( key ); return *this; }
 
  // Query methods.
 	bool isNull() const;
-	bool isSetAndValid() const;
 
 	int key() const;
 	int modFlags() const;
 
  // Comparison Methods
 	int compare( const KKey& ) const;
-	bool operator == ( const KKey& spec ) const
-		{ return compare( spec ) == 0; }
-	bool operator != ( const KKey& spec ) const
-		{ return compare( spec ) != 0; }
-	bool operator < ( const KKey& spec ) const
-		{ return compare( spec ) < 0; }
+	bool operator == ( const KKey& key ) const
+		{ return compare( key ) == 0; }
+	bool operator != ( const KKey& key ) const
+		{ return compare( key ) != 0; }
+	bool operator < ( const KKey& key ) const
+		{ return compare( key ) < 0; }
 
  // Conversion methods.
 	int keyCodeQt() const;
@@ -87,11 +90,6 @@ class KKey
 	static KKey& null();
 
  protected:
-	enum StatusFlag {
-		SET = 0x01,
-		VALID = 0x02
-	};
-
 	/**
 	 * Under X11, m_key will hold an X11 key symbol.
 	 * For Qt/Embedded, it will hold the Qt key code.
@@ -99,14 +97,6 @@ class KKey
 	int m_key;
 
 	int m_mod;
-
-	/**
-	 * Contains the StatusFlags --
-	 *  SET | VALID   A valid value has been set
-	 *  SET           A setting was attempted which resulted in an error
-	 *  <null>        Object has not yet been initialized
-	 */
-	int m_flags;
 
  private:
 	class KKeyPrivate* d;
@@ -117,124 +107,10 @@ class KKey
 	friend class KKeyNative;
 };
 
-// Representation of a key in the format native the windowing system (i.e. X11).
-class KKeyNative
-{
- public:
-	KKeyNative();
-	KKeyNative( const XEvent* );
-	KKeyNative( const KKey& );
-	KKeyNative( const KKeyNative& );
-	~KKeyNative();
-
-	void clear();
-	bool init( const XEvent* );
-	bool init( const KKey& );
-	bool init( const KKeyNative& );
-
-	KKeyNative& operator =( const KKeyNative& key )
-		{ init( key ); return *this; }
-
-	int keyCodeQt() const;
-	// BCI: remove KKey spec() const --ellis, 12/31/01
-	KKey spec() const;
-	KKey key() const;
-	operator KKey() const     { return key(); }
-
-	int code() const;
-	int mod() const;
-	int sym() const;
-
-	bool isNull() const;
-	int compare( const KKeyNative& ) const;
-	bool operator == ( const KKeyNative& key ) const
-		{ return compare( key ) == 0; }
-	bool operator != ( const KKeyNative& key ) const
-		{ return compare( key ) != 0; }
-	bool operator < ( const KKeyNative& key ) const
-		{ return compare( key ) < 0; }
-
-	static KKeyNative& null();
-
-	// General query functions. //
-	static bool keyboardHasMetaKey();
-
-	/**
-	 * This function is used by KKey to get the native equivalent
-	 *  to Qt keycodes.
-	 */
-	static bool keyQtToSym( int keyQt, int& sym );
-	static bool symToKeyQt( int sym, int& keyQt );
-
-	static bool keyToVariations( const KKey& spec, KKeyVariations& key );
-	static QString symToStringInternal( int sym );
-	static QString symToString( int sym );
-
-	static bool stringToSym( const QString& sKey, int& sym, int& mod );
-
-	static int modX( int modSpec );
-
- protected:
-	int m_code, m_mod, m_sym;
-
- private:
-	class KKeyNativePrivate* d;
-};
-
-// All variations of a given key.
-// Ex: Ctrl+Plus => { Ctrl+Plus, Ctrl+KP_Plus }
-class KKeyVariations
-{
- public:
-	enum { MAX_VARIATIONS = 4 };
-
-	KKeyVariations();
-	KKeyVariations( const KKey& );
-	KKeyVariations( const KKeyVariations& );
-	~KKeyVariations();
-
-	void clear();
-	bool init( const KKey& );
-	bool init( const KKeyVariations& );
-
-	KKeyVariations& operator =( const KKeyVariations& key )
-		{ init( key ); return *this; }
-
-	// BCI: remove KKey spec() const --ellis, 12/31/01
-	const KKey& spec() const;
-	const KKey& key() const;
-	uint variationCount() const;
-	uint variationNativeCount() const;
-	const int variation( uint i ) const;
-	const KKeyNative& variationNative( uint i ) const;
-
-	bool isNull() const;
-	int compare( const KKeyVariations& ) const;
-	bool operator == ( const KKeyVariations& key ) const
-		{ return compare( key ) == 0; }
-	bool operator != ( const KKeyVariations& key ) const
-		{ return compare( key ) != 0; }
-	bool operator < ( const KKeyVariations& key ) const
-		{ return compare( key ) < 0; }
-
-	QString toString() const;
-	QString toStringInternal() const;
-
-	static KKeyVariations& null();
-
- protected:
-	KKey m_key;
-	uint m_nVariationsNative, m_nVariationsQt;
-	KKeyNative m_rgkeyNative[MAX_VARIATIONS];
-	int m_rgkeyQt[MAX_VARIATIONS];
-	uint m_fSet;
-
- private:
-	class KKeyPrivate* d;
-	friend class KKeyNative;
-};
-
-// Ex: Ctrl+X,I
+/**
+ * A KKeySequence object holds a sequence of up to 4 keys.
+ * Ex: Ctrl+X,I
+ */
 class KKeySequence
 {
  public:
@@ -244,7 +120,6 @@ class KKeySequence
 	KKeySequence( const QKeySequence& );
 	KKeySequence( const KKey& );
 	KKeySequence( const KKeyNative& );
-	KKeySequence( const KKeyVariations& );
 	KKeySequence( const KKeySequence& );
 	KKeySequence( const QString& );
 	~KKeySequence();
@@ -253,7 +128,6 @@ class KKeySequence
 	bool init( const QKeySequence& );
 	bool init( const KKey& );
 	bool init( const KKeyNative& );
-	bool init( const KKeyVariations& );
 	bool init( const KKeySequence& );
 	bool init( const QString& );
 
@@ -261,8 +135,8 @@ class KKeySequence
 		{ init( seq ); return *this; }
 
 	uint count() const;
-	const KKeyVariations& key( uint i ) const;
-	bool isTriggerOnRelease() const { return m_bTriggerOnRelease; }
+	const KKey& key( uint i ) const;
+	bool isTriggerOnRelease() const;
 
 	bool setKey( uint i, const KKey& );
 	void setTriggerOnRelease( bool );
@@ -278,22 +152,29 @@ class KKeySequence
 		{ return compare( seq ) < 0; }
 
 	QKeySequence qt() const;
+	int keyCodeQt() const;
 	QString toString() const;
 	QString toStringInternal() const;
 
 	static KKeySequence& null();
 
  protected:
-	uint m_nKeys;
-	KKeyVariations m_rgvar[MAX_KEYS];
-	bool m_bTriggerOnRelease;
+	uchar m_nKeys;
+	uchar m_bTriggerOnRelease;
+	KKey m_rgvar[MAX_KEYS];
 
  private:
 	class KKeySequencePrivate* d;
 	friend class KKeyNative;
 };
 
-// Ex: Ctrl+V;Shift+Insert
+/**
+ * The KShortcut class is used to represent a keyboard shortcut to an action.
+ * A shortcut is normally a single key with modifiers, such as Ctrl+V.
+ * A KShortcut object may also contain an alternate key which will also
+ * activate the action it's associated to, as long as no other actions have
+ * defined that key as their primary key.  Ex: Ctrl+V;Shift+Insert.
+ */
 class KShortcut
 {
  public:
@@ -303,9 +184,9 @@ class KShortcut
 	KShortcut( int keyQt );
 	KShortcut( const QKeySequence& );
 	KShortcut( const KKey& );
-	KShortcut( const KKeyVariations& );
 	KShortcut( const KKeySequence& );
 	KShortcut( const KShortcut& );
+	KShortcut( const char* );
 	KShortcut( const QString& );
 	~KShortcut();
 
@@ -313,7 +194,6 @@ class KShortcut
 	bool init( int keyQt );
 	bool init( const QKeySequence& );
 	bool init( const KKey& );
-	bool init( const KKeyVariations& );
 	bool init( const KKeySequence& );
 	bool init( const KShortcut& );
 	bool init( const QString& );
@@ -324,8 +204,6 @@ class KShortcut
 	uint count() const;
 	const KKeySequence& seq( uint i ) const;
 	int keyCodeQt() const;
-	QKeySequence keyPrimaryQt() const;
-	KKeyNative keyPrimaryNative() const;
 
 	bool isNull() const;
 	int compare( const KShortcut& ) const;
@@ -337,6 +215,7 @@ class KShortcut
 		{ return compare( cut ) < 0; }
 
 	bool contains( const KKey& ) const;
+	bool contains( const KKeyNative& ) const;
 	bool contains( const KKeySequence& ) const;
 	bool setSeq( uint i, const KKeySequence& );
 	bool append( const KKeySequence& );
@@ -359,10 +238,6 @@ class KShortcut
  public:
 	operator int () const    { return keyCodeQt(); }
 #endif
-// BCI: Remove --ellis, 12/31/01
-public:
-	KKeySequence& seq( uint i );
-	bool insert( const KKeySequence& );
 };
 
 #endif // __KSHORTCUT_H

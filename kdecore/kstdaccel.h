@@ -1,6 +1,7 @@
 /* This file is part of the KDE libraries
     Copyright (C) 1997 Stefan Taferner (taferner@kde.org)
     Copyright (C) 2000 Nicolas Hadacek (hadacek@kde.org)
+    Copyright (C) 2001,2002 Ellis Whitehead (ellis@kde.org)
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -23,6 +24,7 @@
 #include <kshortcut.h>
 
 class QKeyEvent;
+class KAccelActions;
 
 /**
  * Convenient methods for access to the common accelerator keys in
@@ -37,8 +39,9 @@ namespace KStdAccel
 {
   // Always add new std-accels to the end of this enum, never in the middle!
   enum StdAccel {
+    AccelNone,
     // File menu
-    Open=0, New, Close, Save, Print, Quit,
+    Open, New, Close, Save, Print, Quit,
     // Edit menu
     Undo, Redo, Cut, Copy, Paste, SelectAll, Deselect, DeleteWordBack,
     DeleteWordForward, Find, FindNext, FindPrev, Replace,
@@ -49,8 +52,9 @@ namespace KStdAccel
     Help, WhatsThis,
     // Text completion
     TextCompletion, PrevCompletion, NextCompletion, SubstringCompletion,
-    RotateUp, RotateDown,
-    NB_STD_ACCELS
+    RotateUp, RotateDown
+
+    //NB_STD_ACCELS
 #ifndef KDE_NO_COMPAT
     , WhatThis = WhatsThis
 #endif
@@ -62,17 +66,29 @@ namespace KStdAccel
   /** Returns a unique name for the given @p accel. */
   QString name(StdAccel id);
 
-  /** Returns a localized description of @p accel. */
-  QString desc(StdAccel id);
+  /** Returns a localized label for user-visible display. */
+  QString label(StdAccel id);
+
+  /** Returns an extended WhatsThis description for the given accelerator. */
+  QString whatsThis(StdAccel id);
 
   /**
-   * @internal
-   * Returns the hardcoded default keybinding for @p accel.
+   * Returns the hardcoded default shortcut for @p id.
    * This does not take into account the user's configuration.
    */
   KShortcut shortcutDefault(StdAccel id);
+  /**
+   * Returns the hardcoded default 3 modifier shortcut for @p id.
+   * This does not take into account the user's configuration.
+   */
   KShortcut shortcutDefault3(StdAccel id);
+  /**
+   * Returns the hardcoded default 4 modifier shortcut for @p id.
+   * This does not take into account the user's configuration.
+   */
   KShortcut shortcutDefault4(StdAccel id);
+
+  void createAccelActions( KAccelActions& );
 
   /** Open file. Default: Ctrl-o */
   const KShortcut& open();

@@ -66,23 +66,15 @@ class KAccelAction
  public:
 	KAccelAction();
 	KAccelAction( const KAccelAction& );
-	KAccelAction( const QString& sName, const QString& sDesc, const QString& sHelp,
-			const char* rgCutDefaults3, const char* rgCutDefaults4,
-			const QObject* pObjSlot, const char* psMethodSlot,
-			bool bConfigurable, bool bEnabled );
-	KAccelAction( const QString& sName, const QString& sDesc, const QString& sHelp,
-			const KShortcut& rgCutDefaults3, const KShortcut& rgCutDefaults4,
+	KAccelAction( const QString& sName, const QString& sLabel, const QString& sWhatsThis,
+			const KShortcut& cutDef3, const KShortcut& cutDef4,
 			const QObject* pObjSlot, const char* psMethodSlot,
 			bool bConfigurable, bool bEnabled );
 	~KAccelAction();
 
 	void clear();
-	bool init( const QString& sName, const QString& sDesc, const QString& sHelp,
-			const char* rgCutDefaults3, const char* rgCutDefaults4,
-			const QObject* pObjSlot, const char* psMethodSlot,
-			bool bConfigurable, bool bEnabled );
-	bool init( const QString& sName, const QString& sDesc, const QString& sHelp,
-			const KShortcut& rgCutDefaults3, const KShortcut& rgCutDefaults4,
+	bool init( const QString& sName, const QString& sLabel, const QString& sWhatsThis,
+			const KShortcut& cutDef3, const KShortcut& cutDef4,
 			const QObject* pObjSlot, const char* psMethodSlot,
 			bool bConfigurable, bool bEnabled );
 
@@ -90,8 +82,8 @@ class KAccelAction
 
 	uint sequenceCount() const;
 	const QString& name() const                { return m_sName; }
-	const QString& desc() const                { return m_sDesc; }
-	const QString& helpText() const            { return m_sHelp; }
+	const QString& desc() const                { return m_sLabel; }
+	const QString& whatsThis() const           { return m_sWhatsThis; }
 	const KShortcut& shortcut() const          { return m_cut; }
 	const KShortcut& shortcutDefault() const;
 	const KShortcut& shortcutDefault3() const  { return m_cutDefault3; }
@@ -126,8 +118,8 @@ class KAccelAction
 
  protected:
 	QString m_sName,
-	        m_sDesc,
-	        m_sHelp;
+	        m_sLabel,
+	        m_sWhatsThis;
 	KShortcut m_cutDefault3, m_cutDefault4;
 	const QObject* m_pObjSlot;
 	const char* m_psMethodSlot;
@@ -175,17 +167,12 @@ class KAccelActions
 	KAccelAction& operator []( uint );
 	const KAccelAction& operator []( uint ) const;
 
-	bool insertLabel( const QString& sName, const QString& sDesc );
-	KAccelAction* insertAction(
-	                 const QString& sAction, const QString& sDesc, const QString& sHelp,
-	                 const char* rgCutDefaults3, const char* rgCutDefaults4,
-	                 const QObject* pObjSlot = 0, const char* psMethodSlot = 0,
-	                 bool bConfigurable = true, bool bEnabled = true );
-	KAccelAction* insertAction( const QString& sAction, const QString& sDesc, const QString& sHelp,
+	KAccelAction* insert( const QString& sAction, const QString& sLabel, const QString& sWhatsThis,
 	                 const KShortcut& rgCutDefaults3, const KShortcut& rgCutDefaults4,
 	                 const QObject* pObjSlot = 0, const char* psMethodSlot = 0,
 	                 bool bConfigurable = true, bool bEnabled = true );
-	bool removeAction( const QString& sAction );
+	KAccelAction* insert( const QString& sName, const QString& sLabel );
+	bool remove( const QString& sAction );
 
 	void readActions( const QString& sConfigGroup, KConfigBase* pConfig = 0 );
         void writeActions( const QString& sGroup, KConfig *config = 0,
@@ -193,10 +180,7 @@ class KAccelActions
 
 	void emitKeycodeChanged();
 
-	bool hasChanged() const;
-	void setChanged( bool );
-
-	uint size() const               { return m_nSize; }
+	uint count() const;
 
  protected:
 	KAccelBase* m_pKAccelBase;
@@ -204,7 +188,7 @@ class KAccelActions
 	uint m_nSizeAllocated, m_nSize;
 
 	void resize( uint );
-	void insertActionPtr( KAccelAction* );
+	void insertPtr( KAccelAction* );
 
  private:
 	class KAccelActionsPrivate* d;

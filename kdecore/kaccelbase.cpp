@@ -30,6 +30,7 @@
 #include <kdebug.h>
 #include <kglobal.h>
 #include <kglobalsettings.h>
+#include <kkeynative.h>
 #include <klocale.h>
 
 //----------------------------------------------------
@@ -58,7 +59,7 @@ KAccelBase::~KAccelBase()
 	delete d;
 }
 
-uint KAccelBase::actionCount() const { return m_rgActions.size(); }
+uint KAccelBase::actionCount() const { return m_rgActions.count(); }
 KAccelActions& KAccelBase::actions() { return m_rgActions; }
 bool KAccelBase::isEnabled() const { return m_bEnabled; }
 
@@ -108,12 +109,6 @@ bool KAccelBase::setActionEnabled( const QString& sAction, bool bEnable )
 	}
 }*/
 
-void KAccelBase::setEnabled( bool bActivate )
-{
-	kdDebug(125) << "setEnabled( " << bActivate << " )" << endl;
-	m_bEnabled = bActivate;
-}
-
 bool KAccelBase::setAutoUpdate( bool bAuto )
 {
 	bool b = m_bAutoUpdate;
@@ -128,16 +123,13 @@ void KAccelBase::clearActions()
 	m_rgActions.clear();
 }
 
-bool KAccelBase::insertLabel( const QString& sName, const QString& sDesc )
-	{ return m_rgActions.insertLabel( sName, sDesc ); }
-
-KAccelAction* KAccelBase::insertAction( const QString& sAction, const QString& sDesc, const QString& sHelp,
+KAccelAction* KAccelBase::insert( const QString& sAction, const QString& sDesc, const QString& sHelp,
 			const KShortcut& rgCutDefaults3, const KShortcut& rgCutDefaults4,
 			const QObject* pObjSlot, const char* psMethodSlot,
 			bool bConfigurable, bool bEnabled )
 {
-	//kdDebug(125) << "KAccelBase::insertAction() begin" << endl;
-	KAccelAction* pAction = m_rgActions.insertAction(
+	//kdDebug(125) << "KAccelBase::insert() begin" << endl;
+	KAccelAction* pAction = m_rgActions.insert(
 		sAction, sDesc, sHelp,
 		rgCutDefaults3, rgCutDefaults4,
 		pObjSlot, psMethodSlot,
@@ -146,14 +138,17 @@ KAccelAction* KAccelBase::insertAction( const QString& sAction, const QString& s
 	if( pAction && m_bAutoUpdate )
 		insertConnection( *pAction );
 
-	//kdDebug(125) << "KAccelBase::insertAction() end" << endl;
+	//kdDebug(125) << "KAccelBase::insert() end" << endl;
 	return pAction;
 }
 
-bool KAccelBase::removeAction( const QString& sAction )
+KAccelAction* KAccelBase::insert( const QString& sName, const QString& sDesc )
+	{ return m_rgActions.insert( sName, sDesc ); }
+
+bool KAccelBase::remove( const QString& sAction )
 {
 	kdDebug(125) << "KAccelBase::removeAction( \"" << sAction << "\" ) this = " << this << endl;
-	return m_rgActions.removeAction( sAction );
+	return m_rgActions.remove( sAction );
 }
 
 void KAccelBase::slotRemoveAction( KAccelAction* pAction )
@@ -162,7 +157,7 @@ void KAccelBase::slotRemoveAction( KAccelAction* pAction )
 	removeConnection( *pAction );
 }
 
-// BCI: make virtual ASAP, and then make changes to KAccel::connectItem()
+// BCI: make virtual ASAP, and then make changes to KAccel::connectItem() ???
 bool KAccelBase::setActionSlot( const QString& sAction, const QObject* pObjSlot, const char* psMethodSlot )
 {
 	kdDebug(125) << "KAccelBase::setActionSlot()\n";
@@ -430,8 +425,6 @@ bool KAccelBase::updateConnections()
 			<< (((*it).pAction) ? (*it).pAction->name() : QString::null) << "'" << endl;
 	}
 
-	// Indicate that the connections are up-to-date.
-	actions().setChanged( false );
 	return true;
 }
 
@@ -443,25 +436,17 @@ void KAccelBase::createKeyList( QValueVector<X>& rgKeys )
 
 	// create the list
 	// For each action
-	for( uint iAction = 0; iAction < m_rgActions.size(); iAction++ ) {
+	for( uint iAction = 0; iAction < m_rgActions.count(); iAction++ ) {
 		KAccelAction* pAction = m_rgActions.actionPtr( iAction );
 		if( pAction && pAction->m_bEnabled && pAction->m_pObjSlot && pAction->m_psMethodSlot ) {
 			// For each key sequence associated with action
 			for( uint iSeq = 0; iSeq < pAction->sequenceCount(); iSeq++ ) {
 				const KKeySequence& seq = pAction->seq(iSeq);
 				if( seq.count() > 0 ) {
-					const KKeyVariations& key = seq.key(0);
-					if( m_bNativeKeys ) {
-						for( uint iVari = 0; iVari < key.variationNativeCount(); iVari++ ) {
-							KKey vari = key.variationNative( iVari );
-							rgKeys.push_back( X( iAction, iSeq, iVari, vari ) );
-						}
-					} else {
-						for( uint iVari = 0; iVari < key.variationCount(); iVari++ ) {
-							KKey vari = key.variation( iVari );
-							rgKeys.push_back( X( iAction, iSeq, iVari, vari ) );
-						}
-					}
+					KKeyNative::Variations vars;
+					vars.init( seq.key(0), !m_bNativeKeys );
+					for( uint iVari = 0; iVari < vars.count(); iVari++ )
+						rgKeys.push_back( X( iAction, iSeq, iVari, vars.key( iVari ) ) );
 				}
 			}
 		}
@@ -481,31 +466,28 @@ bool KAccelBase::insertConnection( KAccelAction& action )
 	// For each sequence associated with the given action:
 	for( uint iSeq = 0; iSeq < action.sequenceCount(); iSeq++ ) {
 		// Get the first key of the sequence.
-		const KKeyVariations& key = action.seq(iSeq).key(0);
-		// For each variation on this key:
-		uint nVariations = (m_bNativeKeys) ? key.variationNativeCount() : key.variationCount();
-		for( uint iVari = 0; iVari < nVariations; iVari++ ) {
-			KKey spec = (m_bNativeKeys)
-				? KKey( key.variationNative( iVari ) )
-				: KKey( key.variation( iVari ) );
+		KKeyNative::Variations vars;
+		vars.init( action.seq(iSeq).key(0), !m_bNativeKeys );
+		for( uint iVari = 0; iVari < vars.count(); iVari++ ) {
+			KKey key = vars.key( iVari );
 
-			if( !spec.isNull() ) {
-				if( !m_mapKeyToAction.contains( spec ) ) {
+			if( !key.isNull() ) {
+				if( !m_mapKeyToAction.contains( key ) ) {
 					if( action.seq(iSeq).count() == 1 ) {
-						m_mapKeyToAction[spec] = ActionInfo( &action, iSeq, iVari );
-						if( connectKey( action, spec ) )
+						m_mapKeyToAction[key] = ActionInfo( &action, iSeq, iVari );
+						if( connectKey( action, key ) )
 							action.incConnections();
 					} else {
-						m_mapKeyToAction[spec] = ActionInfo( 0, iSeq, iVari );
-						if( connectKey( spec ) )
+						m_mapKeyToAction[key] = ActionInfo( 0, iSeq, iVari );
+						if( connectKey( key ) )
 							action.incConnections();
 					}
 				} else {
 					// There is a key conflict.  A full update
 					//  check is necessary.
 					// TODO: make this more efficient where possible.
-					if( m_mapKeyToAction[spec].pAction != &action
-					    && m_mapKeyToAction[spec].pAction != 0 ) {
+					if( m_mapKeyToAction[key].pAction != &action
+					    && m_mapKeyToAction[key].pAction != 0 ) {
 						kdDebug(125) << "Key conflict: call updateConnections()" << endl;
 						return updateConnections();
 					}
@@ -540,20 +522,17 @@ bool KAccelBase::removeConnection( KAccelAction& action )
 	// For each sequence associated with the given action:
 	for( uint iSeq = 0; iSeq < action.sequenceCount(); iSeq++ ) {
 		// Get the first key of the sequence.
-		const KKeyVariations& key = action.seq(iSeq).key(0);
-		// For each variation on the first key of the sequence:
-		uint nVariations = (m_bNativeKeys) ? key.variationNativeCount() : key.variationCount();
-		for( uint iVari = 0; iVari < nVariations; iVari++ ) {
-			KKey spec = (m_bNativeKeys)
-				? KKey( key.variationNative( iVari ) )
-				: KKey( key.variation( iVari ) );
+		KKeyNative::Variations vars;
+		vars.init( action.seq(iSeq).key(0), !m_bNativeKeys );
+		for( uint iVari = 0; iVari < vars.count(); iVari++ ) {
+			const KKey& key = vars.key( iVari );
 
-			if( m_mapKeyToAction.contains( spec ) ) {
-				if( m_mapKeyToAction[spec].pAction == &action ) {
-					m_mapKeyToAction.remove( spec );
-					disconnectKey( action, spec );
+			if( m_mapKeyToAction.contains( key ) ) {
+				if( m_mapKeyToAction[key].pAction == &action ) {
+					m_mapKeyToAction.remove( key );
+					disconnectKey( action, key );
 					action.decConnections();
-				} else if( m_mapKeyToAction[spec].pAction == 0 )
+				} else if( m_mapKeyToAction[key].pAction == 0 )
 					return updateConnections();
 			}
 		}

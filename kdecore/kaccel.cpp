@@ -4,7 +4,7 @@
 #include <qpopupmenu.h>
 #include <qstring.h>
 #include <qtimer.h>
-#include <qwidget.h>
+//#include <qwidget.h>
 #include <kaccelbase.h>
 #include <kapplication.h>
 #include <kdebug.h>
@@ -38,7 +38,7 @@ bool KAccelPrivate::removeAction( const QString& sAction )
 	if( pAction ) {
 		int nID = pAction->getID();
 		//bool b = actions().removeAction( sAction );
-		bool b = KAccelBase::removeAction( sAction );
+		bool b = KAccelBase::remove( sAction );
 		((QAccel*)m_pAccel)->removeItem( nID );
 		return b;
 	} else
@@ -153,78 +153,39 @@ bool KAccel::isEnabled()                  { return d->isEnabled(); }
 void KAccel::setEnabled( bool bEnabled )  { d->setEnabled( bEnabled ); }
 bool KAccel::setAutoUpdate( bool bAuto )  { return d->setAutoUpdate( bAuto ); }
 
-KAccelAction* KAccel::insertAction( const QString& sAction, const QString& sDesc, const QString& sHelp,
-		const KShortcut& cutDef3, const KShortcut& cutDef4,
-		const QObject* pObjSlot, const char* psMethodSlot,
-		bool bConfigurable, bool bEnabled )
-{
-	return d->insertAction( sAction, sDesc, sHelp,
-		cutDef3, cutDef4,
-		pObjSlot, psMethodSlot,
-		bConfigurable, bEnabled );
-}
-
-KAccelAction* KAccel::insertAction( const QString& sAction, const QString& sDesc, const QString& sHelp,
+KAccelAction* KAccel::insert( const QString& sAction, const QString& sLabel, const QString& sWhatsThis,
 		const KShortcut& cutDef,
 		const QObject* pObjSlot, const char* psMethodSlot,
 		bool bConfigurable, bool bEnabled )
 {
-	return d->insertAction( sAction, sDesc, sHelp,
+	return d->insert( sAction, sLabel, sWhatsThis,
 		cutDef, cutDef,
 		pObjSlot, psMethodSlot,
 		bConfigurable, bEnabled );
 }
 
-KAccelAction* KAccel::insertAction( const QString& sAction, const QString& sDesc, const QString& sHelp,
-		const char* cutDef3, const char* cutDef4,
+KAccelAction* KAccel::insert( const QString& sAction, const QString& sLabel, const QString& sWhatsThis,
+		const KShortcut& cutDef3, const KShortcut& cutDef4,
 		const QObject* pObjSlot, const char* psMethodSlot,
 		bool bConfigurable, bool bEnabled )
 {
-	return d->insertAction( sAction, sDesc, sHelp,
-		KShortcut(cutDef3), KShortcut(cutDef4),
+	return d->insert( sAction, sLabel, sWhatsThis,
+		cutDef3, cutDef4,
 		pObjSlot, psMethodSlot,
 		bConfigurable, bEnabled );
 }
 
-KAccelAction* KAccel::insertAction( const QString& sAction, const QString& sDesc, const QString& sHelp,
-		const char* cutDef,
+KAccelAction* KAccel::insert( const char* psAction, const KShortcut& cutDef,
 		const QObject* pObjSlot, const char* psMethodSlot,
 		bool bConfigurable, bool bEnabled )
 {
-	KShortcut cut( cutDef );
-	return d->insertAction( sAction, sDesc, sHelp,
-		cut, cut,
+	return d->insert( psAction, i18n(psAction), QString::null,
+		cutDef, cutDef,
 		pObjSlot, psMethodSlot,
 		bConfigurable, bEnabled );
 }
 
-KAccelAction* KAccel::insertAction( const char* psAction, const char* psShortcuts,
-		const QObject* pObjSlot, const char* psMethodSlot,
-		bool bConfigurable, bool bEnabled )
-{
-	KShortcut cut( psShortcuts );
-	return d->insertAction( psAction, i18n(psAction), QString::null,
-		cut, cut,
-		pObjSlot, psMethodSlot,
-		bConfigurable, bEnabled );
-}
-
-/*bool KAccel::insertAction( const QString& sAction, KShortcuts rgCutDefaults,
-		const QObject* pObjSlot, const char* psMethodSlot,
-		int nIDMenu, QPopupMenu *,
-		bool bConfigurable, bool bEnabled )
-{
-	KAccelShortcuts cuts( rgCutDefaults.m_s );
-	bool b = d->insertAction( sAction, i18n(sAction.latin1()),
-		cuts, cuts,
-		pObjSlot, psMethodSlot,
-		nIDMenu, bConfigurable, bEnabled );
-	if( m_bAutoUpdate )
-		updateConnections();
-	return b;
-}*/
-
-KAccelAction* KAccel::insertAction( KStdAccel::StdAccel id,
+KAccelAction* KAccel::insert( KStdAccel::StdAccel id,
 		const QObject* pObjSlot, const char* psMethodSlot,
 		bool bConfigurable, bool bEnabled )
 {
@@ -232,7 +193,7 @@ KAccelAction* KAccel::insertAction( KStdAccel::StdAccel id,
 	if( sAction.isEmpty() )
 		return 0;
 
-	KAccelAction* pAction = d->insertAction( sAction, KStdAccel::desc( id ), QString::null,
+	KAccelAction* pAction = d->insert( sAction, KStdAccel::label( id ), KStdAccel::whatsThis( id ),
 		KStdAccel::shortcutDefault3( id ), KStdAccel::shortcutDefault4( id ),
 		pObjSlot, psMethodSlot,
 		bConfigurable, bEnabled );
@@ -242,7 +203,7 @@ KAccelAction* KAccel::insertAction( KStdAccel::StdAccel id,
 	return pAction;
 }
 
-bool KAccel::removeAction( const QString& sAction )
+bool KAccel::remove( const QString& sAction )
 	{ return d->removeAction( sAction ); }
 bool KAccel::updateConnections()
 	{ return d->updateConnections(); }
@@ -305,25 +266,25 @@ void KAccel::emitKeycodeChanged()
 // Obsolete methods -- for backward compatibility
 //------------------------------------------------------------
 
-bool KAccel::insertItem( const QString& sDesc, const QString& sAction,
+bool KAccel::insertItem( const QString& sLabel, const QString& sAction,
 		const char* cutsDef,
 		int nIDMenu, QPopupMenu *, bool bConfigurable )
 {
 	KShortcut cut( cutsDef );
-	bool b = d->insertAction( sAction, sDesc, QString::null,
+	bool b = d->insert( sAction, sLabel, QString::null,
 		cut, cut,
 		0, 0,
 		nIDMenu, bConfigurable ) != 0;
 	return b;
 }
 
-bool KAccel::insertItem( const QString& sDesc, const QString& sAction,
+bool KAccel::insertItem( const QString& sLabel, const QString& sAction,
 		int key,
 		int nIDMenu, QPopupMenu*, bool bConfigurable )
 {
 	KShortcut cut;
 	cut.init( QKeySequence(key) );
-	KAccelAction* pAction = d->insertAction( sAction, sDesc, QString::null,
+	KAccelAction* pAction = d->insert( sAction, sLabel, QString::null,
 		cut, cut,
 		0, 0,
 		nIDMenu, bConfigurable );
@@ -331,9 +292,9 @@ bool KAccel::insertItem( const QString& sDesc, const QString& sAction,
 }
 
 // Used in kdeutils/kjots
-bool KAccel::insertStdItem( KStdAccel::StdAccel id, const QString& sDesc )
+bool KAccel::insertStdItem( KStdAccel::StdAccel id, const QString& sLabel )
 {
-	KAccelAction* pAction = d->insertAction( KStdAccel::action( id ), sDesc, QString::null,
+	KAccelAction* pAction = d->insert( KStdAccel::action( id ), sLabel, QString::null,
 		KStdAccel::shortcutDefault3( id ), KStdAccel::shortcutDefault4( id ),
 		0, 0 );
 	if( pAction )
@@ -403,9 +364,8 @@ int KAccel::currentKey( const QString& sAction ) const
 {
 	KAccelAction* pAction = d->actionPtr( sAction );
 	if( pAction )
-		return pAction->shortcut().keyPrimaryQt();
-	else
-		return 0;
+		return pAction->shortcut().keyCodeQt();
+	return 0;
 }
 
 QString KAccel::findKey( int key ) const

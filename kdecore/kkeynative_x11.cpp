@@ -22,7 +22,7 @@
 
 #ifdef Q_WS_X11	// Only compile this module if we're compiling for X11
 
-#include "kshortcut.h"
+#include "kkeynative.h"
 #include "kkey_x11.h"
 
 #include <qmap.h>
@@ -73,6 +73,38 @@ static int getModsRequiredForSym( int sym );
 static int getSym( int code, int mod );
 
 //---------------------------------------------------------------------
+// KKeyNative::Variations
+//---------------------------------------------------------------------
+
+KKeyNative::Variations::~Variations()
+{
+}
+
+void KKeyNative::Variations::init( const KKey& key, bool bQt )
+{
+	KKeyNative::keyToVariations( key, *this );
+	if( bQt ) {
+		for( uint i = 0; i < m_nVariations; i++ )
+			m_rgkey[i].init( m_rgkey[i].keyCodeQt() );
+
+		// Two different native codes may produce a single
+		//  Qt code.  Search for duplicates.
+		for( uint i = 1; i < m_nVariations; i++ ) {
+			for( uint j = 0; j < i; j++ ) {
+				// If key is already present in list, then remove it.
+				if( m_rgkey[i] == m_rgkey[j] ) {
+					for( uint k = i; k < m_nVariations - 1; k++ )
+						m_rgkey[k] = m_rgkey[k+1];
+					m_nVariations--;
+					i--;
+					break;
+				}
+			}
+		}
+	}
+}
+
+//---------------------------------------------------------------------
 // KKeyNative
 //---------------------------------------------------------------------
 
@@ -93,15 +125,15 @@ void KKeyNative::clear()
 bool KKeyNative::init( const XEvent* pEvent )
 {
 	m_code = pEvent->xkey.keycode;
-	m_mod = pEvent->xkey.state;
+	m_mod = pEvent->xkey.state & KKeyX11::accelModMaskX();
 	XLookupString( (XKeyEvent*) pEvent, 0, 0, (KeySym*) &m_sym, 0 );
 	return true;
 }
 
-bool KKeyNative::init( const KKey& spec )
+bool KKeyNative::init( const KKey& key )
 {
-	modSpecToModX( spec.modFlags(), m_mod );
-	m_sym = spec.key();
+	modSpecToModX( key.modFlags(), m_mod );
+	m_sym = key.key();
 
 	m_mod |= getModsRequiredForSym( m_sym );
 	m_code = XKeysymToKeycode( qt_xdisplay(), (uint) m_sym );
@@ -156,8 +188,6 @@ bool KKeyNative::symToKeyQt( int sym, int& keyQt )
 	return true;
 }
 
-KKey KKeyNative::spec() const
-	{ return key(); }
 KKey KKeyNative::key() const
 {
 	int modSpec;
@@ -195,26 +225,22 @@ QString KKeyNative::symToStringInternal( int symNative )
 }
 
 // Returns true if X has the Meta key assigned to a modifier bit
-bool KKeyNative::keyboardHasMetaKey()
+// FIXME: use the settings in kdeglobals for Meta/Super/Hyper
+bool KKeyNative::keyboardHasWinKey()
 {
 	return KKeySequenceOld::keyboardHasMetaKey();
 }
 
 // TODO: allow for sym to have variations, such as Plus => { Plus, KP_Add }
-bool KKeyNative::keyToVariations( const KKey& key, KKeyVariations& var )
+bool KKeyNative::keyToVariations( const KKey& key, Variations& var )
 {
 	if( key.isNull() ) {
-		var.clear();
+		var.m_nVariations = 0;
 		return true;
 	}
 
-	var.m_key = key;
-
-	var.m_nVariationsNative = 1;
-	var.m_rgkeyNative[0].init( key );
-
-	var.m_nVariationsQt = 1;
-	var.m_rgkeyQt[0] = key.keyCodeQt();
+	var.m_nVariations = 1;
+	var.m_rgkey[0].init( key );
 
 	return true;
 }

@@ -26,8 +26,8 @@ KGlobalAccel::~KGlobalAccel()
 	delete d;
 }
 
-void KGlobalAccel::clearActions()
-	{ d->clearActions(); }
+//void KGlobalAccel::clearActions()
+//	{ d->clearActions(); }
 
 KAccelActions& KGlobalAccel::actions()
 	{ return d->actions(); }
@@ -35,30 +35,25 @@ KAccelActions& KGlobalAccel::actions()
 const KAccelActions& KGlobalAccel::actions() const
 	{ return d->actions(); }
 
-KAccelAction* KGlobalAccel::insertAction( const QString& sAction, const QString& sDesc, const QString& sHelp,
+bool KGlobalAccel::isEnabled()
+	{ return ((KAccelBase*)d)->isEnabled(); }
+
+void KGlobalAccel::setEnabled( bool bEnabled )
+	{ d->setEnabled( bEnabled ); }
+
+KAccelAction* KGlobalAccel::insert( const QString& sAction, const QString& sDesc, const QString& sHelp,
 		const KShortcut& cutDef3, const KShortcut& cutDef4,
 		const QObject* pObjSlot, const char* psMethodSlot,
 		bool bConfigurable, bool bEnabled )
 {
-	return d->insertAction( sAction, sDesc, sHelp,
+	return d->insert( sAction, sDesc, sHelp,
 		cutDef3, cutDef4,
 		pObjSlot, psMethodSlot,
 		bConfigurable, bEnabled );
 }
 
-KAccelAction* KGlobalAccel::insertAction( const QString& sAction, const QString& sDesc, const QString& sHelp,
-		const char* cutDef3, const char* cutDef4,
-		const QObject* pObjSlot, const char* psMethodSlot,
-		bool bConfigurable, bool bEnabled )
-{
-	return d->insertAction( sAction, sDesc, sHelp,
-		KShortcut(cutDef3), KShortcut(cutDef4),
-		pObjSlot, psMethodSlot,
-		bConfigurable, bEnabled );
-}
-
-bool KGlobalAccel::insertLabel( const QString& sName, const QString& sDesc )
-	{ return d->insertLabel( sName, sDesc ); }
+KAccelAction* KGlobalAccel::insert( const QString& sName, const QString& sDesc )
+	{ return d->insert( sName, sDesc ); }
 bool KGlobalAccel::updateConnections()
 	{ return d->updateConnections(); }
 

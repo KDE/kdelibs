@@ -1,9 +1,26 @@
 #ifndef _KGLOBALACCEL_X11_H
 #define _KGLOBALACCEL_X11_H
 
+#include <qmap.h>
+#include <qwidget.h>
+
 #include "kaccelbase.h"
 #include "kshortcut.h"
-#include <qwidget.h>
+
+class CodeMod
+{
+ public:
+	uchar code;
+	uint mod;
+
+	bool operator < ( const CodeMod& b ) const
+	{
+		if( code < b.code ) return true;
+		if( code == b.code && mod < b.mod ) return true;
+		return false;
+	}
+};
+typedef QMap<CodeMod, KAccelAction*> CodeModMap;
 
 class KGlobalAccelPrivate : public QWidget, public KAccelBase
 {
@@ -26,9 +43,12 @@ class KGlobalAccelPrivate : public QWidget, public KAccelBase
 	void activated( const QString& sAction, const QString& sDesc, const KKeySequence& seq );
 
  protected:
- 	static bool gm_bKeyEventsEnabled;
+	CodeModMap m_rgCodeModToAction;
 
-	bool grabKey( const KKey&, bool );
+	/**
+	 * @param bGrab Set to true to grab key, false to ungrab key.
+	 */
+	bool grabKey( const KKey&, bool bGrab, KAccelAction* );
 
 	/**
 	 * Filters X11 events ev for key bindings in the accelerator dictionary.

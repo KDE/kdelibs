@@ -9,6 +9,7 @@
 #include <qwidget.h>
 #include <kapplication.h>
 #include <kdebug.h>
+#include <kkeynative.h>
 #include <kkey_x11.h>
 #include <kshortcut.h>
 
@@ -76,20 +77,6 @@ static void calculateGrabMasks()
 
 //----------------------------------------------------
 
-void KGlobalAccel::setKeyEventsEnabled( bool bEnabled )
-{
-	KGlobalAccelPrivate::gm_bKeyEventsEnabled = bEnabled;
-}
-
-bool KGlobalAccel::areKeyEventsEnabled()
-{
-	return KGlobalAccelPrivate::gm_bKeyEventsEnabled;
-}
-
-//----------------------------------------------------
-
-bool KGlobalAccelPrivate::gm_bKeyEventsEnabled = true;
-
 KGlobalAccelPrivate::KGlobalAccelPrivate()
 : KAccelBase( KAccelBase::NATIVE_KEYS )
 {
@@ -99,8 +86,8 @@ KGlobalAccelPrivate::KGlobalAccelPrivate()
 
 void KGlobalAccelPrivate::setEnabled( bool bEnable )
 {
-	KAccelBase::setEnabled( bEnable );
-	updateConnections();
+	m_bEnabled = bEnable;
+	//updateConnections();
 };
 
 bool KGlobalAccelPrivate::emitSignal( Signal )
@@ -108,31 +95,31 @@ bool KGlobalAccelPrivate::emitSignal( Signal )
 	return false;
 }
 
-bool KGlobalAccelPrivate::connectKey( KAccelAction& action, const KKey& spec )
+bool KGlobalAccelPrivate::connectKey( KAccelAction& action, const KKey& key )
 {
-	kdDebug(125) << "KGlobalAccel::connectKey( " << action.name() << ", " << spec.toString() << " )" << endl;
-	return grabKey( spec, true );
+	kdDebug(125) << "KGlobalAccel::connectKey( " << action.name() << ", " << key.toString() << " )" << endl;
+	return grabKey( key, true, &action );
 }
 
 bool KGlobalAccelPrivate::connectKey( const KKey& spec )
 {
 	kdDebug(125) << "KGlobalAccel::connectKey( " << spec.toString() << " )" << endl;
-	return grabKey( spec, true );
+	return grabKey( spec, true, 0 );
 }
 
-bool KGlobalAccelPrivate::disconnectKey( KAccelAction& action, const KKey& spec )
+bool KGlobalAccelPrivate::disconnectKey( KAccelAction& action, const KKey& key )
 {
-	kdDebug(125) << "KGlobalAccel::disconnectKey( " << action.name() << ", " << spec.toString() << " )" << endl;
-	return grabKey( spec, false );
+	kdDebug(125) << "KGlobalAccel::disconnectKey( " << action.name() << ", " << key.toString() << " )" << endl;
+	return grabKey( key, false, &action );
 }
 
 bool KGlobalAccelPrivate::disconnectKey( const KKey& spec )
 {
 	kdDebug(125) << "KGlobalAccel::disconnectKey( " << spec.toString() << " )" << endl;
-	return grabKey( spec, false );
+	return grabKey( spec, false, 0 );
 }
 
-bool KGlobalAccelPrivate::grabKey( const KKey& spec, bool bGrab )
+bool KGlobalAccelPrivate::grabKey( const KKey& spec, bool bGrab, KAccelAction* pAction )
 {
 	KKeyNative key( spec );
 	if( !key.code() )
@@ -153,6 +140,8 @@ bool KGlobalAccelPrivate::grabKey( const KKey& spec, bool bGrab )
 		.arg( spec.toString() ).arg( bGrab )
 		.arg( keyCodeX, 0, 16 ).arg( keyModX, 0, 16 );
 #endif
+	if( !keyCodeX )
+		return false;
 
 	// We want to catch only our own errors
 	g_bGrabFailed = false;
@@ -191,6 +180,15 @@ bool KGlobalAccelPrivate::grabKey( const KKey& spec, bool bGrab )
 	XSync( qt_xdisplay(), 0 );
 	XSetErrorHandler( savedErrorHandler );
 
+	if( !g_bGrabFailed ) {
+		CodeMod codemod;
+		codemod.code = keyCodeX;
+		codemod.mod = keyModX;
+		if( bGrab )
+			m_rgCodeModToAction.insert( codemod, pAction );
+		else
+			m_rgCodeModToAction.remove( codemod );
+	}
 	return !g_bGrabFailed;
 }
 
@@ -225,44 +223,46 @@ void KGlobalAccelPrivate::x11MappingNotify()
 
 bool KGlobalAccelPrivate::x11KeyPress( const XEvent *pEvent )
 {
-    
 	 // do not change this line unless you really really know what you do (Matthias)
 	if ( !QWidget::keyboardGrabber() && !QApplication::activePopupWidget() )
 	    XUngrabKeyboard( qt_xdisplay(), pEvent->xkey.time );
-    
-	if( !gm_bKeyEventsEnabled )
+
+	if( !m_bEnabled )
 	    return false;
 
-	// TODO: Don't do conversion -- search in m_mapKeyToAction directly.
-	KKeyNative key( pEvent );
-	uint keySymX = key.sym();
-	uint keyModX = key.mod() & g_keyModMaskXAccel;
-	KKey spec = key;
+	CodeMod codemod;
+	codemod.code = pEvent->xkey.keycode;
+	codemod.mod = pEvent->xkey.state & g_keyModMaskXAccel;
 
-	kdDebug(125) << "x11KeyPress: seek " << spec.toString()
-		<< QString( " keyCodeX: %1 state: %2 keySym: %3 keyMod: %4\n" )
-			.arg( pEvent->xkey.keycode, 0, 16 ).arg( pEvent->xkey.state, 0, 16 ).arg( keySymX, 0, 16 ).arg( keyModX, 0, 16 );
-	if( keySymX == 0 )
-		return false;
+	KKeyNative keyNative( pEvent );
+	KKey key = keyNative;
+
+	kdDebug(125) << "x11KeyPress: seek " << key.toString()
+		<< QString( " keyCodeX: %1 state: %2 keyModX: %3" )
+			.arg( codemod.code, 0, 16 ).arg( pEvent->xkey.state, 0, 16 ).arg( codemod.mod, 0, 16 ) << endl;
 
 	// Search for which accelerator activated this event:
-	if( !m_mapKeyToAction.contains( spec ) )
+	if( !m_rgCodeModToAction.contains( codemod ) ) {
+		for( CodeModMap::ConstIterator it = m_rgCodeModToAction.begin(); it != m_rgCodeModToAction.end(); ++it ) {
+			KAccelAction* pAction = *it;
+			kdDebug(125) << "\tcode: " << QString::number(it.key().code, 16) << " mod: " << QString::number(it.key().mod, 16)
+			<< (pAction ? QString(" name: \"%1\" shortcut: %2").arg(pAction->name()).arg(pAction->shortcut().toStringInternal()) : QString::null)
+			<< endl;
+		}
 		return false;
-
-	KAccelAction* pAction = m_mapKeyToAction[spec].pAction;
+	}
+	KAccelAction* pAction = m_rgCodeModToAction[codemod];
 
 	if( !pAction ) {
-		KKeySequence seq( spec );
-		QPopupMenu* pMenu = createPopupMenu( 0, seq );
+		QPopupMenu* pMenu = createPopupMenu( 0, KKeySequence(key) );
 		connect( pMenu, SIGNAL(activated(int)), this, SLOT(slotActivated(int)) );
 		pMenu->exec();
 		disconnect( pMenu, SIGNAL(activated(int)), this, SLOT(slotActivated(int)));
 		delete pMenu;
-	} else if( !pAction->objSlotPtr() || !pAction->isEnabled() ) {
-		kdDebug(125) << "KGlobalAccel::x11EventFilter(): Key has been grabbed(" << KKeyX11::keySymXToString( keySymX, keyModX, false ) << ") which doesn't have an associated action or was disabled.\n";
+	} else if( !pAction->objSlotPtr() || !pAction->isEnabled() )
 		return false;
-	} else
-		activate( pAction, KKeySequence(spec) );
+	else
+		activate( pAction, KKeySequence(key) );
 
 	return true;
 }

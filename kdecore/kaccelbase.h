@@ -141,15 +141,15 @@ class KAccelBase
 	bool setAutoUpdate( bool bAuto );
 
 // Procedures for manipulating Actions.
-	virtual void clearActions();
+	void clearActions();
 
-	virtual bool insertLabel( const QString& sName, const QString& sDesc );
-	virtual KAccelAction* insertAction(
+	KAccelAction* insert( const QString& sName, const QString& sDesc );
+	KAccelAction* insert(
 	                 const QString& sAction, const QString& sDesc, const QString& sHelp,
 	                 const KShortcut& rgCutDefaults3, const KShortcut& rgCutDefaults4,
 	                 const QObject* pObjSlot, const char* psMethodSlot,
 			 bool bConfigurable = true, bool bEnabled = true );
-	virtual bool removeAction( const QString& sAction );
+	bool remove( const QString& sAction );
 	bool setActionSlot( const QString& sAction, const QObject* pObjSlot, const char* psMethodSlot );
 
 	//bool disconnectItem( const QString& sAction,
