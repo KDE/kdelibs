@@ -21,6 +21,9 @@
  * $Id$
  *
  * $Log$
+ * Revision 1.16  2000/08/24 12:44:48  porten
+ * "friend class" patches from Thomas Kunert <kunert@physik.tu-dresden.de>
+ *
  * Revision 1.15  2000/08/17 16:44:44  reggie
  * Don't crash
  *
@@ -152,6 +155,12 @@ KLed::~KLed()
 void
 KLed::paintEvent(QPaintEvent *)
 {
+#ifdef PAINT_BENCH
+  const int rounds = 1000;
+  QTime t;
+  t.start();
+  for (int i=0; i<rounds; i++) {
+#endif
   switch(led_shape)
     {
     case Rectangular:
@@ -190,252 +199,249 @@ KLed::paintEvent(QPaintEvent *)
       qWarning("%s: in class KLed: no KLed::Shape set",kapp->argv()[0]);
       break;
     }
+#ifdef PAINT_BENCH
+  }
+  int ready = t.elapsed();
+  qWarning("elapsed: %d msec. for %d rounds", ready, rounds);
+#endif
 }
 
 void
 KLed::paintFlat() // paint a ROUND FLAT led lamp
 {
-  QPainter p(this);
-  int w=width(), h=height();
+	QPainter paint;
+	QColor color;
+	QBrush brush;
+	QPen pen;
 
-  // round the ellipse
-  if (w > h)
-    w = h;
-  else if (h > w)
-    h = w;
+	// Initialize coordinates, width, and height of the LED
+	//
+	int width = this->width();
+	// Make sure the LED is round!
+	if (width > this->height())
+		width = this->height();
+	width -= 2; // leave one pixel border
+	if (width < 0)
+	  width = 0;
 
-  QColor c;
 
-  // draw light grey upper left circle
-  c.setRgb(0xCFCFCF);
-  p.setPen(c);
-  //  p.drawArc(x,y,w,h, 45*16, 180*16);
-  p.drawArc(0,0,w,h, 45*16, -180*16);
+	// start painting widget
+	//
+	paint.begin( this );
 
-  // draw white upper left circle
-  c.setRgb(0xFFFFFF);
-  p.setPen(c);
-  //  p.drawArc(x,y,w,h, 90*16, 90*16);
-  p.drawArc(0,0,w,h, 0, -90*16);
+	// Set the color of the LED according to given parameters
+   	color = ( led_state ) ? led_color : d->offcolor;
 
-  // draw dark grey lower right circle
-  c.setRgb(0xA0A0A0);
-  p.setPen(c);
-  //  p.drawArc(x,y,w,h, 45*16, -180*16);
-  p.drawArc(0,0,w,h, 45*16, 180*16);
+	// Set the brush to SolidPattern, this fills the entire area
+	// of the ellipse which is drawn with a thin grey "border" (pen)
+	brush.setStyle( QBrush::SolidPattern );
+	brush.setColor( color );
 
-  // draw black lower right circle
-  c.setRgb(0x000000);
-  p.setPen(c);
-  //  p.drawArc(x,y,w,h, 0, -90*16);
-  p.drawArc(0,0,w,h, 90*16, 90*16);
+	pen.setWidth( 1 );
+	color.setRgb( 170, 170, 170 );		// This is a grey color value
+	pen.setColor( color );			// Set the pen accordingly
 
-  // make led smaller for shading
-  w-=2; h-=2;
+	paint.setPen( pen );			// Select pen for drawing
+	paint.setBrush( brush );		// Assign the brush to the painter
 
-  // draw the flat led grounding
-  c = (led_state==On) ? led_color : d->offcolor;
-  p.setPen(c);
-  p.setBrush(c);
-  p.drawPie(1,1,w,h,0,5760);
+	// Draws a "flat" LED with the given color:
+	paint.drawEllipse( 1, 1, width, width );
+
+	paint.end();
+	//
+	// painting done
 }
 
 void
 KLed::paintRound() // paint a ROUND RAISED led lamp
 {
-  QPainter p(this);
-  int x, y, w=width(), h=height();
+    QPainter paint;
+    QColor color;
+    QBrush brush;
+    QPen pen;
 
-  // round the ellipse
-  if (w > h)
-    w = h;
-  else if (h > w)
-    h = w;
+    // Initialize coordinates, width, and height of the LED
+    int width = this->width();
 
-  //  QRect ring1(x,y,w,h);
-  QColor c;
+    // Make sure the LED is round!
+    if (width > this->height())
+      width = this->height();
+    width -= 2; // leave one pixel border
+    if (width < 0) 
+      width = 0;
 
-  // draw light grey upper left circle
-  c.setRgb(0xCFCFCF);
-  p.setPen(c);
-  //  p.drawArc(x,y,w,h, 45*16, 180*16);
-  p.drawArc(0,0,w,h, 45*16, -180*16);
+    // start painting widget
+    //
+    paint.begin( this );
 
-  // draw white upper left circle
-  c.setRgb(0xFFFFFF);
-  p.setPen(c);
-  //  p.drawArc(x,y,w,h, 90*16, 90*16);
-  p.drawArc(0,0,w,h, 0, -90*16);
+    // Set the color of the LED according to given parameters
+    color = ( led_state ) ? led_color : d->offcolor;
 
-  // draw dark grey lower right circle
-  c.setRgb(0xA0A0A0);
-  p.setPen(c);
-  //  p.drawArc(x,y,w,h, 45*16, -180*16);
-  p.drawArc(0,0,w,h, 45*16, 180*16);
+    // Set the brush to SolidPattern, this fills the entire area
+    // of the ellipse which is drawn first
+    brush.setStyle( QBrush::SolidPattern );
+    brush.setColor( color );
+    paint.setBrush( brush );		// Assign the brush to the painter
 
-  // draw black lower right circle
-  c.setRgb(0x000000);
-  p.setPen(c);
-  //  p.drawArc(x,y,w,h, 0, -90*16);
-  p.drawArc(0,0,w,h, 90*16, 90*16);
+    // Draws a "flat" LED with the given color:
+    paint.drawEllipse( 1, 1, width, width );
 
-  // make led smaller for shading
-  w-=2; h-=2;
-  //x++; y++;
-  // draw the flat led grounding
-  c = ( led_state ) ? led_color : d->offcolor;
+    // Draw the bright light spot of the LED now, using modified "old"
+    // painter routine taken from KDEUI큦 KLed widget:
 
-  p.setPen(c);
-  p.setBrush(c);
-  p.drawPie(1,1,w,h,0,5760);
+    // Setting the new width of the pen is essential to avoid "pixelized"
+    // shadow like it can be observed with the old LED code
+    pen.setWidth( 2 );
 
-  // shrink the light on 2/3 the size
-  // x := x+ ( w - w*2/3)/2
-  x=w/6 +1;
-  y=w/6 +1;
-  // w := w*2/3
-  w*=2;
-  w/=3;
-  h=w;
+    // shrink the light on the LED to a size about 2/3 of the complete LED
+    int pos = width/5 + 1;
+    int light_width = width;
+    light_width *= 2;
+    light_width /= 3;
 
-  // now draw the bright spot on the led
-  if ( w == 0 )
-      w = 1;
-  int light_quote = (100*3/w)+100;
-  while (w) {
-    c = c.light(light_quote);
-    p.setPen( c );
-    p.drawEllipse(x,y,w,h);
-    w--; h--;
-    if (!w)
-      break;
-    p.drawEllipse(x,y,w,h);
-    w--; h--;
-    if (!w)
-      break;
-    p.drawEllipse(x,y,w,h);
-    x++; y++; w--;h--;
-  }
+    // Calculate the LED큦 "light factor":
+    int light_quote = (130*2/(light_width?light_width:1))+100;
 
-  /*
-   * ?? what's this use for ??
-  QPainter p(this);
-  KPixmap pix;
-  QColor c;
-  // -----
-  c.setRgb(qRed(led_color.rgb())/2, qGreen(led_color.rgb())/2, qBlue(led_color.rgb())/2);
-  if(led_state==On)
-    {
-      KPixmapEffect::gradient(pix, led_color, c, KPixmapEffect::EllipticGradient, 2^24);
-    } else {
-      KPixmapEffect::gradient(pix, c, led_color, KPixmapEffect::EllipticGradient, 2^24);
+    // Now draw the bright spot on the LED:
+    while (light_width) {
+    	color = color.light( light_quote );			// make color lighter
+	pen.setColor( color );				// set color as pen color
+	paint.setPen( pen );				// select the pen for drawing
+	paint.drawEllipse( pos, pos, light_width, light_width );	// draw the ellipse (circle)
+	light_width--;
+   	if (!light_width)
+     		 break;
+	paint.drawEllipse( pos, pos, light_width, light_width );
+	light_width--;
+	if (!light_width)
+  		break;
+	paint.drawEllipse( pos, pos, light_width, light_width );
+	pos++; light_width--;
     }
-  */
-}
 
+    // Drawing of bright spot finished, now draw a thin grey border
+    // around the LED; it looks nicer that way. We do this here to
+    // avoid that the border can be erased by the bright spot of the LED
+
+    pen.setWidth( 1 );
+    color.setRgb( 170, 170, 170 );		// This is a grey color value
+    pen.setColor( color );			// Set the pen accordingly
+    paint.setPen( pen );			// Select pen for drawing
+    brush.setStyle( QBrush::NoBrush );		// Switch off the brush
+    paint.setBrush( brush );			// This avoids filling of the ellipse
+
+    paint.drawEllipse( 1, 1, width, width );
+
+    paint.end();
+    //
+    // painting done
+}
 
 void
 KLed::paintSunken() // paint a ROUND SUNKEN led lamp
 {
-  QPainter p(this);
-  //int x=this->x(), y=this->y(), w=width(), h=height();
-  int x=0, y=0, w=width(), h=height();
+    QPainter paint;
+    QColor color;
+    QBrush brush;
+    QPen pen;
+				
+    // First of all we want to know what area should be updated
+    // Initialize coordinates, width, and height of the LED
+    int	width = this->width();
 
-  // round the ellipse
-  if (w > h)
-    w = h;
-  else if (h > w)
-    h = w;
+    // Make sure the LED is round!
+    if (width > this->height())
+      width = this->height();
+    width -= 2; // leave one pixel border
+    if (width < 0) 
+      width = 0;
 
-  // 3 rings of shade
-  QRect ring1(x,y,w,h);
-  x++,y++;
-  w-=2;h-=2;
-  QRect ring2(x,y,w,h);
-  x++,y++;
-  w-=2;h-=2;
-  QRect ring3(x,y,w,h);
-  x++,y++;
-  w-=2;h-=2;
+    // maybe we could stop HERE, if width <=0 ?
 
-  QColor c;
+    // start painting widget
+    //
+    paint.begin( this );
 
-  // look from upper left
-#define ARC_BLACK_RING1 15
-#define ARC_BLACK_RING2 25
-#define ARC_BLACK_RING3 45
-#define ARC_DGRAY_RING1 55
-#define ARC_DGRAY_RING2 80
-#define ARC_DGRAY_RING3 90
-  // look from lower right
-#define ARC_LGRAY_RING1 (180-ARC_DGRAY_RING1)
-#define ARC_LGRAY_RING2 (180-ARC_DGRAY_RING2)
-#define ARC_LGRAY_RING3 (180-ARC_DGRAY_RING3)
-#define ARC_WHITE_RING1 80
-#define ARC_WHITE_RING2 55
-#define ARC_WHITE_RING3 40
+    // Set the color of the LED according to given parameters
+    color = ( led_state ) ? led_color : d->offcolor;
 
-  // draw upper left darkgray arc
-  c.setRgb(0xA0A0A0);
-  p.setPen(c);
-  p.drawArc(ring1, (135-ARC_DGRAY_RING1)*16, 2*ARC_DGRAY_RING1*16);
-  p.drawArc(ring2, (135-ARC_DGRAY_RING2)*16, 2*ARC_DGRAY_RING2*16);
-  p.drawArc(ring3, (135-ARC_DGRAY_RING3)*16, 2*ARC_DGRAY_RING3*16);
+    // Set the brush to SolidPattern, this fills the entire area
+    // of the ellipse which is drawn first
+    brush.setStyle( QBrush::SolidPattern );
+    brush.setColor( color );
+    paint.setBrush( brush );                // Assign the brush to the painter
 
-  // draw upper left black arc above the darkgrey arc
-  c.setRgb(0x000000);
-  p.setPen(c);
-  p.drawArc(ring1, (135-ARC_BLACK_RING1)*16, 2*ARC_BLACK_RING1*16);
-  p.drawArc(ring2, (135-ARC_BLACK_RING2)*16, 2*ARC_BLACK_RING2*16);
-  p.drawArc(ring3, (135-ARC_BLACK_RING3)*16, 2*ARC_BLACK_RING3*16);
+    // Draws a "flat" LED with the given color:
+    paint.drawEllipse( 1, 1, width, width );
 
-  // draw lower right light gray arc
-  c.setRgb(0xCFCFCF);
-  p.setPen(c);
-  p.drawArc(ring1, (-45+ARC_LGRAY_RING1)*16, -2*ARC_LGRAY_RING1*16);
-  p.drawArc(ring2, (-45+ARC_LGRAY_RING2)*16, -2*ARC_LGRAY_RING2*16);
-  p.drawArc(ring3, (-45+ARC_LGRAY_RING3)*16, -2*ARC_LGRAY_RING3*16);
+    // Draw the bright light spot of the LED now, using modified "old"
+    // painter routine taken from KDEUI큦 KLed widget:
 
-  // draw lower right white arc
-  c.setRgb(0xFFFFFF);
-  p.setPen(c);
-  p.drawArc(ring1, (-45+ARC_WHITE_RING1)*16, -2*ARC_WHITE_RING1*16);
-  p.drawArc(ring2, (-45+ARC_WHITE_RING2)*16, -2*ARC_WHITE_RING2*16);
-  p.drawArc(ring3, (-45+ARC_WHITE_RING3)*16, -2*ARC_WHITE_RING3*16);
+    // Setting the new width of the pen is essential to avoid "pixelized"
+    // shadow like it can be observed with the old LED code
+    pen.setWidth( 2 );
 
-  // draw the flat led grounding
-  c= (led_state==On) ? led_color : d->offcolor;
-  p.setPen(c);
-  p.setBrush(c);
-  p.drawPie(x,y,w,h,0,5760);
+    // shrink the light on the LED to a size about 2/3 of the complete LED
+    int pos = width/5 + 1;
+    int light_width = width;
+    light_width *= 2;
+    light_width /= 3;
+	
+    // Calculate the LED큦 "light factor":
+    int light_quote = (130*2/(light_width?light_width:1))+100;
 
-  // shrink the light on 2/3 the size
-  // x := x+ ( w - w*2/3)/2
-  x+=w/6;
-  y+=w/6;
-  // w := w*2/3
-  w*=2;
-  w/=3;
-  h=w;
+    // Now draw the bright spot on the LED:
+    while (light_width) {
+	color = color.light( light_quote );                      // make color lighter
+	pen.setColor( color );                                   // set color as pen color
+	paint.setPen( pen );                                     // select the pen for drawing
+	paint.drawEllipse( pos, pos, light_width, light_width ); // draw the ellipse (circle)
+	light_width--;
+	if (!light_width)
+		break;
+	paint.drawEllipse( pos, pos, light_width, light_width );
+	light_width--;
+	if (!light_width)
+		break;
+	paint.drawEllipse( pos, pos, light_width, light_width );
+	pos++; light_width--;
+    }
 
-  // now draw the bright spot on the led
-  if ( w == 0 )
-      w = 1;
-  int light_quote = (100*3/w)+100;
-  while (w) {
-    c = c.light(light_quote);
-    p.setPen( c );
-    p.drawEllipse(x,y,w,h);
-    w--; h--;
-    if (!w)
-      break;
-    p.drawEllipse(x,y,w,h);
-    w--; h--;
-    if (!w)
-      break;
-    p.drawEllipse(x,y,w,h);
-    x++; y++; w--;h--;
-  }
+    // Drawing of bright spot finished, now draw a thin border
+    // around the LED which resembles a shadow with light coming
+    // from the upper left.
+
+    pen.setWidth( 3 );
+    brush.setStyle( QBrush::NoBrush );              // Switch off the brush
+    paint.setBrush( brush );                        // This avoids filling of the ellipse
+
+    // Set the initial color value to 200 (bright) and start
+    // drawing the shadow border at 45� (45*16 = 720).
+
+    int shadow_color = 200, angle;
+    
+    for ( angle = 720; angle < 6480; angle += 240 ) {
+      color.setRgb( shadow_color, shadow_color, shadow_color );
+      pen.setColor( color );
+      paint.setPen( pen );
+      paint.drawArc( 1, 1, width, width, angle, 240 );
+      if ( angle < 2320 ) {
+	shadow_color -= 25;			// set color to a darker value
+	if ( shadow_color < 100 ) shadow_color = 100;
+      }
+      else if ( ( angle > 2320 ) && ( angle < 5760 ) ) {
+	shadow_color += 25;			// set color to a brighter value
+	if ( shadow_color > 255 ) shadow_color = 255;
+      }
+      else {
+	shadow_color -= 25;			// set color to a darker value again
+	if ( shadow_color < 100 ) shadow_color = 100;
+      }	// end if ( angle < 2320 )
+    }	// end for ( angle = 720; angle < 6480; angle += 160 )
+
+    paint.end();
+    //
+    // painting done
 }
 
 void
