@@ -205,6 +205,8 @@ void TraderHelper::addDirectory(const string& directory, const string& iface)
 {
 	cout << "addDirectory(" << directory << "," << iface << ");" << endl;
 	DIR *dir = opendir(directory.c_str());
+	if(!dir) return;
+
 	struct dirent *de;
 	while((de = readdir(dir)) != 0)
 	{
