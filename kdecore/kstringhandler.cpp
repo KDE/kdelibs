@@ -382,7 +382,7 @@ QString KStringHandler::lsqueeze( const QString & str, uint maxlen )
 
 QString KStringHandler::csqueeze( const QString & str, uint maxlen )
 {
-  if (str.length() > maxlen) {
+  if (str.length() > maxlen && maxlen > 3) {
     int part = (maxlen-3)/2;
     return QString(str.left(part) + "..." + str.right(part));
   }
