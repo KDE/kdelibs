@@ -453,7 +453,6 @@ void RenderBlock::layoutBlock(bool relayoutChildren)
         return;
     }
 
-
     int oldWidth = m_width;
 
     calcWidth();
@@ -511,7 +510,7 @@ void RenderBlock::layoutBlock(bool relayoutChildren)
         // does painting or event handling.
         m_layer->moveScrollbarsAside();
     }
-
+ 
     // A quirk that has become an unfortunate standard.  Positioned elements, floating elements
     // and table cells don't ever collapse their margins with either themselves or their
     // children.
@@ -524,8 +523,11 @@ void RenderBlock::layoutBlock(bool relayoutChildren)
         layoutBlockChildren( relayoutChildren );
 
     // Expand our intrinsic height to encompass floats.
+    int toAdd = borderBottom() + paddingBottom();
+    if (m_layer && style()->scrollsOverflow() && style()->height().isVariable())
+        toAdd += m_layer->horizontalScrollbarHeight();                
     if ( hasOverhangingFloats() && (isInlineBlockOrInlineTable() || isFloatingOrPositioned() || style()->hidesOverflow()) )
-        m_height = floatBottom() + borderBottom() + paddingBottom();
+        m_height = floatBottom() + toAdd;
 
     int oldHeight = m_height;
     calcHeight();
@@ -611,6 +613,9 @@ void RenderBlock::layoutBlockChildren( bool relayoutChildren )
         xPos = m_width - paddingRight() - borderRight();
 
     int toAdd = borderBottom() + paddingBottom();
+    if (m_layer && style()->scrollsOverflow() && style()->height().isVariable())
+        toAdd += m_layer->horizontalScrollbarHeight();
+
     m_height = borderTop() + paddingTop();
 
     // Fieldsets need to find their legend and position it inside the border of the object.

@@ -1272,10 +1272,8 @@ void RenderBlock::layoutInlineChildren(bool relayoutChildren)
 
     m_height = borderTop() + paddingTop();
     int toAdd = borderBottom() + paddingBottom();
-#ifdef APPLE_CHANGES
-    if (includeScrollbarSize())
+    if (m_layer && style()->scrollsOverflow() && style()->height().isVariable())
         toAdd += m_layer->horizontalScrollbarHeight();
-#endif
 
     // Clear out our line boxes.
     deleteInlineBoxes();

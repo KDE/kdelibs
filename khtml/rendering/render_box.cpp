@@ -216,6 +216,9 @@ short RenderBox::contentWidth() const
     short w = m_width - style()->borderLeftWidth() - style()->borderRightWidth();
     w -= paddingLeft() + paddingRight();
 
+    if (m_layer && style()->scrollsOverflow())
+        w -= m_layer->verticalScrollbarWidth();
+
     //kdDebug( 6040 ) << "RenderBox::contentWidth(2) = " << w << endl;
     return w;
 }
@@ -224,6 +227,9 @@ int RenderBox::contentHeight() const
 {
     int h = m_height - style()->borderTopWidth() - style()->borderBottomWidth();
     h -= paddingTop() + paddingBottom();
+
+    if (m_layer && style()->scrollsOverflow())
+        h -= m_layer->horizontalScrollbarHeight();
 
     return h;
 }
