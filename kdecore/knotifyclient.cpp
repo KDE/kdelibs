@@ -49,6 +49,11 @@ static int sendNotifyEvent(const QString &message, const QString &text,
 
   int uniqueId = kMax( 1, kapp->random() ); // must not be 0 -- means failure!
 
+  // knotify daemon needs toplevel window
+  QWidget* widget = QWidget::find( winId );
+  if( widget )
+    winId = widget->topLevelWidget()->winId();
+
   QByteArray data;
   QDataStream ds(data, IO_WriteOnly);
   QString appname = KNotifyClient::instance()->instanceName();
