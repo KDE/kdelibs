@@ -5,8 +5,8 @@
    based on the KDE3 HighColor Style
 
    Copyright (C) 2001-2002 Karol Szwed      <gallium@kde.org>
-             (C) 2001-2002 Fredrik Höglund  <fredrik@kde.org> 
- 
+             (C) 2001-2002 Fredrik Höglund  <fredrik@kde.org>
+
    Drawing routines adapted from the KDE2 HCStyle,
    Copyright (C) 2000 Daniel M. Duley       <mosfet@kde.org>
              (C) 2000 Dirk Mueller          <mueller@kde.org>
@@ -53,7 +53,7 @@ enum KeramikTileType
 	KeramikTileTR = 2,
 	KeramikTileCL = 3,
 	KeramikTileCC = 4,
-	KeramikTileCR = 5,	
+	KeramikTileCR = 5,
 	KeramikTileRL = 6,
 	KeramikTileRC = 7,
 	KeramikTileRR = 8,
@@ -63,7 +63,7 @@ enum KeramikTileType
 	KeramikSlider3 = 64,
 	KeramikSlider4 = 80,
 	KeramikGroove1 = 96,
-	KeramikGroove2 = 112,
+	KeramikGroove2 = 112
 };
 
 #endif

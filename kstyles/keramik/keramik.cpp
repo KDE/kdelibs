@@ -1137,7 +1137,7 @@ void KeramikStyle::drawControl( ControlElement element,
 		
 		case CE_ToolButtonLabel:
 		{
-			const QToolButton *toolbutton = static_cast<const QToolButton * >(widget);
+		    //const QToolButton *toolbutton = static_cast<const QToolButton * >(widget);
 			bool onToolbar = widget->parentWidget() && widget->parentWidget()->inherits( "QToolBar" );
 			QRect nr = r;
 			
@@ -1182,6 +1182,13 @@ void KeramikStyle::drawControl( ControlElement element,
 			break;
 		}
 
+#if (QT_VERSION-0 >= 0x030100)
+		case CE_MenuBarBackground:
+		{
+			Keramik::GradientPainter::renderGradient( p, r, cg.button(), true, true);
+			break;
+		}
+#endif
 		// MENUBAR ITEM (sunken panel on mouse over)
 		// -------------------------------------------------------------------
 		case CE_MenuBarItem:
