@@ -222,7 +222,7 @@ void KMultiTabBarInternal::resizeEvent(QResizeEvent *ev) {
 
 			setFixedHeight(lines*24);
 			box->setFixedHeight(lines*24);
-			m_lines=lines=height()/24-1;
+			m_lines=height()/24-1;
 			lines=0;
 			CALCDIFF(m_tabs,diff,0)
 			tmp=-diff;
