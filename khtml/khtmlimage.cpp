@@ -116,6 +116,7 @@ bool KHTMLImage::openURL( const KURL &url )
     m_mimeType = args.serviceType;
 
     m_khtml->begin( m_url, args.xOffset, args.yOffset );
+    m_khtml->setAutoloadImages( true );
 
     DOM::DocumentImpl *impl = dynamic_cast<DOM::DocumentImpl *>( m_khtml->document().handle() ); // ### hack ;-)
     if ( impl && m_ext->urlArgs().reload )
