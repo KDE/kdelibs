@@ -91,7 +91,7 @@ protected:
 typedef WId Window;
 #endif
 
-int main(int argc, char *argv[])
+KDE_EXPORT int main(int argc, char *argv[])
 {
     KLocale::setMainCatalogue("libkscreensaver");
     KCmdLineArgs::init(argc, argv, kss_applicationName, kss_description, kss_version);

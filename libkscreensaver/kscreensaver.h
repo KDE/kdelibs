@@ -23,6 +23,8 @@
 
 #include <qwidget.h>
 
+#include <kdelibs_export.h>
+
 class QTimer;
 class KScreenSaverPrivate;
 class KBlankEffectPrivate;
@@ -54,7 +56,7 @@ class KBlankEffectPrivate;
 * @short Provides a QWidget for a screensaver to draw into.
 * @author Martin R. Jones <mjones@kde.org>
 */
-class KScreenSaver : public QWidget
+class KDE_EXPORT KScreenSaver : public QWidget
 {
 	Q_OBJECT
 public:
