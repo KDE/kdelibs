@@ -20,7 +20,6 @@
 */
 
 #include <qobject.h>
-#include <qcstring.h>
 #include <qstring.h>
 #include <qsocketnotifier.h>
 #include <qlist.h>

@@ -56,7 +56,6 @@
 //
 
 #include "kconfigtest.h"
-#include "kconfigtest.h"
 //
 // Construct the KConfigTestView with buttons
 //

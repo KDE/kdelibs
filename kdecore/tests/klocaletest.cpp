@@ -7,7 +7,6 @@
 
 #include <stdlib.h>
 
-#include "klocaletest.h"
 #include <kglobal.h>
 #include <klocale.h>
 #include <kapp.h>

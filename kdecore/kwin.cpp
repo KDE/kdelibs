@@ -21,7 +21,6 @@
  */
 
 #include "kwin.h"
-#include <unistd.h>
 #include <qwmatrix.h>
 #include <qbitmap.h>
 #include <X11/Xlib.h>

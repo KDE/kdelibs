@@ -4,7 +4,6 @@
 
 #include "StringListSelectOneDialog.h" 
 #include <qwidget.h>
-#include <qcombobox.h>
 #include <qlayout.h>
 #include <qlabel.h>
 #include <qpushbutton.h>
