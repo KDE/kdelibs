@@ -48,6 +48,7 @@
 
 #include "debug.h"
 #include "audiosubsys.h"
+#include "audioio.h"
 
 #define DEFAULT_DEVICE_NAME "/dev/dsp"
 
@@ -73,9 +74,8 @@ void AudioSubSystemStart::shutdown()
 class Arts::AudioSubSystemPrivate
 {
 public:
-	int requestedFragmentCount;
-	int requestedFragmentSize;
-	string deviceName;
+	AudioIO *audioIO;
+	string audioIOName;
 };
 
 //--- AudioSubSystem implementation
@@ -90,20 +90,18 @@ const char *AudioSubSystem::error()
 	return _error.c_str();
 }
 
-AudioSubSystem::AudioSubSystem() :_samplingRate(44100), _channels(2),
-								  _fullDuplex(false)
+AudioSubSystem::AudioSubSystem()
 {
 	d = new AudioSubSystemPrivate;
-
-	deviceName(DEFAULT_DEVICE_NAME);
-	fragmentCount(7);
-	fragmentSize(1024);
-
+	d->audioIO = 0;
+	
 	_running = false;
 	usageCount = 0;
 	consumer = 0;
 	producer = 0;
 	fragment_buffer = 0;
+
+	audioIO("oss");		/* default to oss style audio I/O */
 }
 
 AudioSubSystem::~AudioSubSystem()
@@ -145,64 +143,103 @@ void AudioSubSystem::detachConsumer()
 	if(_running) close();
 }
 
+void AudioSubSystem::audioIO(const string& audioIO)
+{
+	if(d->audioIO)
+		delete d->audioIO;
+
+	d->audioIOName = audioIO;
+	d->audioIO = AudioIO::createAudioIO(audioIO.c_str());
+}
+
+string AudioSubSystem::audioIO()
+{
+	return d->audioIOName;
+}
+
 void AudioSubSystem::deviceName(const string& deviceName)
 {
-	d->deviceName = deviceName;
+	if(!d->audioIO) return;
+
+	d->audioIO->setParamStr(AudioIO::deviceName, deviceName.c_str());
 }
 
 string AudioSubSystem::deviceName()
 {
-	return d->deviceName;
+	if(!d->audioIO) return "";
+
+	return d->audioIO->getParamStr(AudioIO::deviceName);
 }
 
 void AudioSubSystem::fragmentCount(int fragmentCount)
 {
-	d->requestedFragmentCount = _fragmentCount = fragmentCount;
+	if(!d->audioIO) return;
+
+	d->audioIO->setParam(AudioIO::fragmentCount, fragmentCount);
 }
 
 int AudioSubSystem::fragmentCount()
 {
-	return _fragmentCount;
+	if(!d->audioIO) return 0;
+
+	return d->audioIO->getParam(AudioIO::fragmentCount);
 }
 
 void AudioSubSystem::fragmentSize(int fragmentSize)
 {
-	d->requestedFragmentSize = _fragmentSize = fragmentSize;
+	if(!d->audioIO) return;
+
+	d->audioIO->setParam(AudioIO::fragmentSize, fragmentSize);
 }
 
 int AudioSubSystem::fragmentSize()
 {
-	return _fragmentSize;
+	if(!d->audioIO) return 0;
+
+	return d->audioIO->getParam(AudioIO::fragmentSize);
 }
 
 void AudioSubSystem::samplingRate(int samplingRate)
 {
-	_samplingRate = samplingRate;
+	if(!d->audioIO) return;
+
+	d->audioIO->setParam(AudioIO::samplingRate, samplingRate);
 }
 
 int AudioSubSystem::samplingRate()
 {
-	return _samplingRate;
+	if(!d->audioIO) return 0;
+
+	return d->audioIO->getParam(AudioIO::samplingRate);
 }
 
 void AudioSubSystem::channels(int channels)
 {
-	_channels = channels;
+	if(!d->audioIO) return;
+
+	d->audioIO->setParam(AudioIO::channels, channels);
 }
 
 int AudioSubSystem::channels()
 {
-	return _channels;
+	if(!d->audioIO) return 0;
+
+	return d->audioIO->getParam(AudioIO::channels);
 }
 
 void AudioSubSystem::fullDuplex(bool fullDuplex)
 {
-	_fullDuplex = fullDuplex;
+	if(!d->audioIO) return;
+
+	int direction = fullDuplex?3:2;
+	d->audioIO->setParam(AudioIO::direction, direction);
 }
 
 bool AudioSubSystem::fullDuplex()
 {
-	return _fullDuplex;
+	if(!d->audioIO) return false;
+
+	return d->audioIO->getParam(AudioIO::direction) == 3;
 }
 
 
@@ -217,247 +254,51 @@ bool AudioSubSystem::check()
 
 int AudioSubSystem::open()
 {
-#ifdef HAVE_SYS_SOUNDCARD_H
-	int mode;
+	assert(!_running);
 
-	if(_fullDuplex)
-		mode = O_RDWR|O_NDELAY;
+	if(!d->audioIO)
+	{
+		_error = "unable to select '" + d->audioIOName + "' style audio I/O";
+		audio_fd = -1;
+		return audio_fd;
+	}
+
+	int encoding = 16;
+	d->audioIO->setParam(AudioIO::encoding, encoding);
+
+	if(d->audioIO->open())
+	{
+		_running = true;
+
+		_fragmentSize = d->audioIO->getParam(AudioIO::fragmentSize);
+		_fragmentCount = d->audioIO->getParam(AudioIO::fragmentCount);
+
+		// allocate global buffer to do I/O
+		assert(fragment_buffer == 0);
+		fragment_buffer = new char[_fragmentSize];
+
+		audio_fd = d->audioIO->getParam(AudioIO::selectFD);
+	}
 	else
-		mode = O_WRONLY|O_NDELAY;
-
-	audio_fd = ::open(d->deviceName.c_str(), mode, 0);
-
-	if(audio_fd == -1)
 	{
-		_error = "device ";
-		_error += d->deviceName.c_str();
-		_error += " can't be opened (";
-		_error += strerror(errno);
-		_error += ")";
-		return -1;
+		_error = d->audioIO->getParamStr(AudioIO::lastError);
+		audio_fd = -1;
 	}
-	// this is required here since we'll use close to close down the
-	// audio subsystem again if anything else goes wrong
-	_running = true;
-
-	/*
-	 * check device capabilities
-	 */
-	int device_caps;
-	if(ioctl(audio_fd,SNDCTL_DSP_GETCAPS,&device_caps) == -1)
-            device_caps=0;
-
-	string caps = "";
-	if(device_caps & DSP_CAP_DUPLEX) caps += "duplex ";
-	if(device_caps & DSP_CAP_REALTIME) caps += "realtime ";
-	if(device_caps & DSP_CAP_BATCH) caps += "batch ";
-	if(device_caps & DSP_CAP_COPROC) caps += "coproc ";
-	if(device_caps & DSP_CAP_TRIGGER) caps += "trigger ";
-	if(device_caps & DSP_CAP_MMAP) caps += "mmap ";
-	artsdebug("device capabilities: revision%d %s",
-					device_caps & DSP_CAP_REVISION, caps.c_str());
-
-	int format = AFMT_S16_LE;  
-	if (ioctl(audio_fd, SNDCTL_DSP_SETFMT, &format)==-1)  
-	{
-		_error = "SNDCTL_DSP_SETFMT failed - ";
-		_error += strerror(errno);
-
-		close();
-		return -1;
-	}  
-
-	if (format != AFMT_S16_LE)  
-	{  
-		_error = "Can't set 16bit (AFMT_S16_LE) playback";
-
-		close();
-		return -1;
-	} 
-
-	int stereo=-1;     /* 0=mono, 1=stereo */
-
-	if(_channels == 1)
-	{
-		stereo = 0;
-	}
-	if(_channels == 2)
-	{
-		stereo = 1;
-	}
-
-	if(stereo == -1)
-	{
-		_error = "internal error; set channels to 1 (mono) or 2 (stereo)";
-
-		close();
-		return -1;
-	}
-
-	int requeststereo = stereo;
-
-	if (ioctl(audio_fd, SNDCTL_DSP_STEREO, &stereo)==-1)
-	{
-		_error = "SNDCTL_DSP_STEREO failed - ";
-		_error += strerror(errno);
-
-		close();
-		return -1;
-	}
-
-	if (requeststereo != stereo)
-	{
-		_error = "audio device doesn't support number of requested channels";
-
-		close();
-		return -1;
-	}
-
-	int speed = _samplingRate;
-
-	if (ioctl(audio_fd, SNDCTL_DSP_SPEED, &speed)==-1)  
-	{
-		_error = "SNDCTL_DSP_SPEED failed - ";
-		_error += strerror(errno);
-
-		close();
-		return -1;
-	}  
-
-    /*
-	 * Some soundcards seem to be able to only supply "nearly" the requested
-	 * sampling rate, especially PAS 16 cards seem to quite radical supplying
-	 * something different than the requested sampling rate ;)
-	 *
-	 * So we have a quite large tolerance here (when requesting 44100 Hz, it
-	 * will accept anything between 38690 Hz and 49510 Hz). Most parts of the
-	 * aRts code will do resampling where appropriate, so it shouldn't affect
-	 * sound quality.
-	 */
-    int tolerance = _samplingRate/10+1000;
-
-	if (abs(speed-_samplingRate) > tolerance)
-	{  
-		_error = "can't set requested samplingrate";
-
-		char details[80];
-		sprintf(details," (requested rate %d, got rate %d)",
-			_samplingRate, speed);
-		_error += details;
-
-		close();
-		return -1;
-	} 
-
-	/*
-	 * set the fragment settings to what the user requested
-	 */
-	
-	_fragmentSize = d->requestedFragmentSize;
-	_fragmentCount = d->requestedFragmentCount;
-
-	/*
-	 * lower 16 bits are the fragment size (as 2^S)
-	 * higher 16 bits are the number of fragments
-	 */
-	int frag_arg = 0;
-
-	int size = _fragmentSize;
-	while(size > 1) { size /= 2; frag_arg++; }
-	frag_arg += (_fragmentCount << 16);
-	if(ioctl(audio_fd, SNDCTL_DSP_SETFRAGMENT, &frag_arg) == -1)
-	{
-		char buffer[1024];
-		_error = "can't set requested fragments settings";
-		sprintf(buffer,"size%d:count%d\n",_fragmentSize,_fragmentCount);
-		close();
-		return -1;
-	}
-
-	/*
-	 * now see what we really got as cards aren't required to supply what
-	 * we asked for
-	 */
-	audio_buf_info info;
-	if(ioctl(audio_fd,SNDCTL_DSP_GETOSPACE, &info) == -1)
-	{
-		_error = "can't retrieve fragment settings";
-		close();
-		return -1;
-	}
-
-	// update fragment settings with what we got
-	_fragmentSize = info.fragsize;
-	_fragmentCount = info.fragstotal;
-
-	artsdebug("buffering: %d fragments with %d bytes "
-		"(audio latency is %1.1f ms)", _fragmentCount, _fragmentSize,
-		(float)(_fragmentSize*_fragmentCount) /
-		(float)(2.0 * _samplingRate * _channels)*1000.0);
-
-	// allocate global buffer to do I/O
-	assert(fragment_buffer == 0);
-	fragment_buffer = new char[_fragmentSize];
-
-	/*
-	 * Workaround for broken kernel drivers: usually filling up the audio
-	 * buffer is _only_ required if _fullDuplex is true. However, there
-	 * are kernel drivers around (especially everything related to ES1370/1371)
-	 * which will not trigger select()ing the file descriptor unless we have
-	 * written something first.
-	 */
-	char *zbuffer = (char *)calloc(sizeof(char), _fragmentSize);
-	for(int fill = 0; fill < _fragmentCount; fill++)
-	{
-		int len = ::write(audio_fd,zbuffer,_fragmentSize);
-		assert(len == _fragmentSize);
-	}
-	free(zbuffer);
-
-	/*
-	 * Triggering - the original aRts code did this for full duplex:
-	 *
-	 *  - stop audio i/o using SETTRIGGER(~(PCM_ENABLE_INPUT|PCM_ENABLE_OUTPUT))
-	 *  - fill buffer (see zbuffer code two lines above
-	 *  - start audio i/o using SETTRIGGER(PCM_ENABLE_INPUT|PCM_ENABLE_OUTPUT)
-	 *
-	 * this should guarantee synchronous start of input/output. Today, it
-	 * seems there are too many broken drivers around for this.
-	 */
-
-	if(device_caps & DSP_CAP_TRIGGER)
-	{
-		int enable_bits = PCM_ENABLE_OUTPUT;
-
-		if(_fullDuplex) enable_bits |= PCM_ENABLE_INPUT;
-
-		if(ioctl(audio_fd,SNDCTL_DSP_SETTRIGGER, &enable_bits) == -1)
-		{
-			_error = "can't start of sound i/o operation";
-
-			close();
-			return -1;
-		}
-	}
-
 	return audio_fd;
-#else
-	cerr << "Sorry: arts doesn't support sound I/O on non Voxware-esque systems, yet";
-	return -1;
-#endif
 }
 
 void AudioSubSystem::close()
 {
 	assert(_running);
+	assert(d->audioIO);
 
-	::close(audio_fd);
+	d->audioIO->close();
 
 	wBuffer.clear();
 	rBuffer.clear();
 
 	_running = false;
-	audio_fd = 0;
+	audio_fd = -1;
 
 	if(fragment_buffer)
 	{
@@ -473,15 +314,14 @@ bool AudioSubSystem::running()
 
 void AudioSubSystem::handleIO(int type)
 {
-#ifdef HAVE_SYS_SOUNDCARD_H
+	assert(d->audioIO);
+
 	if(type & ioRead)
 	{
-		int len = ::read(audio_fd,fragment_buffer,_fragmentSize);
+		int len = d->audioIO->read(fragment_buffer,_fragmentSize);
 
 		if(len > 0)
-		{
 			rBuffer.write(len,fragment_buffer);
-		}
 	}
 
 	if(type & ioWrite)
@@ -506,46 +346,56 @@ void AudioSubSystem::handleIO(int type)
 				return;
 			}
 		}
+
 		/*
 		 * look how much we really can write without blocking
 		 */
-		audio_buf_info info;
-		ioctl(audio_fd, SNDCTL_DSP_GETOSPACE, &info);
+		int space = d->audioIO->getParam(AudioIO::canWrite);
+		int can_write = min(space, _fragmentSize);
 
-		int can_write = min(info.bytes, _fragmentSize);
-
-		/*
-		 * ok, so write it (as we checked that our buffer has enough data
-		 * to do so and the soundcardbuffer has enough data to handle this
-		 * write, nothing can go wrong here)
-		 */
-		int rSize = wBuffer.read(can_write,fragment_buffer);
-		assert(rSize == can_write);
-
-		int len = ::write(audio_fd,fragment_buffer,can_write);
-		assert(len == can_write);
+		if(can_write > 0)
+		{
+			/*
+			 * ok, so write it (as we checked that our buffer has enough data
+			 * to do so and the soundcardbuffer has enough data to handle this
+			 * write, nothing can go wrong here)
+			 */
+			int rSize = wBuffer.read(can_write,fragment_buffer);
+			assert(rSize == can_write);
+	
+			int len = d->audioIO->write(fragment_buffer,can_write);
+			assert(len == can_write);
+		}
 	}
 
 	assert((type & ioExcept) == 0);
-#endif
 }
 
 void AudioSubSystem::read(void *buffer, int size)
 {
 	while(rBuffer.size() < size)
 	{
-		fd_set readfds;
-		timeval select_timeout;
-		long selectabs = 50000;	// 50 ms
-		select_timeout.tv_sec = selectabs / 1000000;
-		select_timeout.tv_usec = selectabs % 1000000;
+		int rc;
+		do
+		{
+			fd_set readfds;
+			timeval select_timeout;
+			long selectabs = 50000;	// 50 ms
+			select_timeout.tv_sec = selectabs / 1000000;
+			select_timeout.tv_usec = selectabs % 1000000;
 
-		FD_ZERO(&readfds);
-		FD_SET(audio_fd,&readfds);
+			FD_ZERO(&readfds);
+			FD_SET(audio_fd,&readfds);
 
-		int rc = select(audio_fd+1,&readfds,NULL,NULL,&select_timeout);
+			rc = select(audio_fd+1,&readfds,NULL,NULL,&select_timeout);
+		} while(rc == -1 && errno == EINTR);
+
 		if(rc <= 0)
-			arts_info("full duplex: timeout occured");
+		{
+			arts_info("full duplex: timeout occured (ospace=%d, ispace=%d)",
+				d->audioIO->getParam(AudioIO::canWrite),
+				d->audioIO->getParam(AudioIO::canRead));
+		}
 		handleIO(ioRead);
 	}
 	int rSize = rBuffer.read(size,buffer);

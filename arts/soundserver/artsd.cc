@@ -52,15 +52,22 @@ static void initSignals()
 static void exitUsage(const char *progname)
 {
 	fprintf(stderr,"usage: %s [ options ]\n",progname);
-	fprintf(stderr,"-r <samplingrate>   set samplingrate to use\n");
-	fprintf(stderr,"-h                  display this help and exit\n");
+	fprintf(stderr,"\n");
+	fprintf(stderr,"server/network options:\n");
 	fprintf(stderr,"-n                  enable network transparency\n");
 	fprintf(stderr,"-p <port>           set TCP port to use (implies -n)\n");
 	fprintf(stderr,"-u                  public, no authentication (dangerous!)\n");
+	fprintf(stderr,"\n");
+	fprintf(stderr,"audio options:\n");
+	fprintf(stderr,"-a <audioiomethod>  select audio i/o method (oss, alsa, ...)\n");
+	fprintf(stderr,"-r <samplingrate>   set samplingrate to use\n");
 	fprintf(stderr,"-d                  enable full duplex operation\n");
 	fprintf(stderr,"-D <devicename>     audio device (usually /dev/dsp)\n");
 	fprintf(stderr,"-F <fragments>      number of fragments\n");
 	fprintf(stderr,"-S <size>           fragment size in bytes\n");
+	fprintf(stderr,"\n");
+	fprintf(stderr,"misc options:\n");
+	fprintf(stderr,"-h                  display this help and exit\n");
 	fprintf(stderr,"-l <level>          information level\n");
 	fprintf(stderr,"  3: quiet, 2: warnings, 1: info, 0: debug\n");
 	exit(1);	
@@ -74,18 +81,21 @@ static int  					cfgPort			= 0;
 static int  					cfgDebugLevel	= 1;
 static bool  					cfgFullDuplex	= 0;
 static const char			   *cfgDeviceName   = 0;
+static const char              *cfgAudioIO      = 0;
 
 static void handleArgs(int argc, char **argv)
 {
 	int optch;
-	while((optch = getopt(argc,argv,"r:p:nuF:S:hD:dl:")) > 0)
+	while((optch = getopt(argc,argv,"r:p:nuF:S:hD:dl:a:")) > 0)
 	{
 		switch(optch)
 		{
-			case 'r': cfgSamplingRate = atoi(optarg);
-				break;
 			case 'p': cfgPort = atoi(optarg); // setting a port => network transparency
 			case 'n': cfgServers = static_cast<Dispatcher::StartServer>( cfgServers | Dispatcher::startTCPServer);
+				break;
+			case 'a': cfgAudioIO = optarg;
+				break;
+			case 'r': cfgSamplingRate = atoi(optarg);
 				break;
 			case 'F': cfgFragmentCount = atoi(optarg);
 				break;
@@ -179,6 +189,7 @@ int main(int argc, char **argv)
 	initSignals();
 
 	/* apply configuration */
+	if(cfgAudioIO)       AudioSubSystem::the()->audioIO(cfgAudioIO);
 	if(cfgSamplingRate)  AudioSubSystem::the()->samplingRate(cfgSamplingRate);
 	if(cfgFragmentCount) AudioSubSystem::the()->fragmentCount(cfgFragmentCount);
 	if(cfgFragmentSize)  AudioSubSystem::the()->fragmentSize(cfgFragmentSize);

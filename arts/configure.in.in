@@ -16,7 +16,7 @@ AC_DEFUN(AC_CHECK_LIBAUDIOFILE,
   [
     AC_CHECK_LIB(audiofile,afOpenFile,[
       dnl LDFLAGS in case it's in KDEDIR/lib
-      LIBAUDIOFILE="$LDFLAGS -laudiofile"
+      LIBAUDIOFILE="-laudiofile"
       AC_DEFINE(HAVE_LIBAUDIOFILE, 1,
         [Define if you have libaudiofile (required for playing wavs with aRts)])
       arts_audiolib_found=yes
@@ -179,6 +179,21 @@ AC_CHECK_X86_FLOAT_INT
 AC_CHECK_ARTSDSP_STDIO_EMU
 KDE_CHECK_THREADING
 
+AC_ARG_WITH(alsa, [  --with-alsa             enable aRts ALSA support],
+[
+  if test $withval = "yes"; then
+    arts_with_alsa=yes
+  else
+    arts_with_alsa=no
+  fi
+], arts_with_alsa=no)
+
+if test "$arts_with_alsa" = "yes"; then
+  AC_DEFINE(HAVE_ALSA, 1, [Define if you have Alsa support])
+  LIBASOUND="-lasound"
+fi
+AC_SUBST(LIBASOUND)
+ 
 dnl Don't remove !
 dnl AC_OUTPUT(arts/artsc/artsc-config)
 

@@ -11,7 +11,7 @@ lib_LTLIBRARIES = libartsflow_idl.la libartsflow.la
 libartsflow_idl_la_SOURCES = artsflow.cc
 libartsflow_idl_la_LDFLAGS = -no-undefined
 
-libartsflow_la_LIBADD = libartsflow_idl.la $(LIBAUDIOFILE) -lm
+libartsflow_la_LIBADD = libartsflow_idl.la $(LIBAUDIOFILE) $(LIBASOUND) -lm
 libartsflow_la_LDFLAGS = -no-undefined
 libartsflow_la_SOURCES =  synth_play_impl.cc \
   synthschedule.cc audiosubsys.cc \
@@ -20,7 +20,8 @@ libartsflow_la_SOURCES =  synth_play_impl.cc \
   synth_play_wav_impl.cc stdsynthmodule.cc cache.cc asyncschedule.cc \
   bytestreamtoaudio_impl.cc stereovolumecontrol_impl.cc \
   stereoeffectstack_impl.cc fft.c stereofftscope_impl.cc virtualports.cc \
-  bus.cc audiomanager_impl.cc synth_record_impl.cc resample.cc
+  bus.cc audiomanager_impl.cc synth_record_impl.cc resample.cc \
+  audioio.cc audioiooss.cc audioioalsa.cc
 
 artsincludedir = $(includedir)/arts
 artsinclude_HEADERS = artsflow.h audiosubsys.h cache.h \

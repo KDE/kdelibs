@@ -118,6 +118,14 @@ public:
 	void detachProducer();
 	void detachConsumer();
 
+	/*
+	 * can be used to select the AudioIO class to use, reasonable choices
+	 * may be "oss" or "alsa" at this point in time - you need to choose
+	 * this before doing anything else
+	 */
+	void audioIO(const std::string& audioIO);
+	std::string audioIO();
+
 	// which device to use for audio output (default /dev/dsp)
 	void deviceName(const std::string& deviceName);
 	std::string deviceName();
