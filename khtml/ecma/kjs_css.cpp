@@ -42,6 +42,7 @@ static QString cssPropertyName( const Identifier &p, bool& hadPixelPrefix )
     }
 
     prop = prop.lower();
+    hadPixelPrefix = false;
 
     if (prop.startsWith("css-")) {
         prop = prop.mid(4);
