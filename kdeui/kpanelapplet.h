@@ -213,7 +213,7 @@ public:
    * current panel layout.
    **/
   void updateLayout();
-   
+
   /**
    * Request keyboard focus from the panel.
    **/
@@ -265,6 +265,13 @@ public:
    **/
   Orientation orientation() const { return _orient; }
 
+    
+  /**
+    * The orientation changed to @p orientation. Reimplement this
+    * change handler in order to adjust the look of your applet.
+    **/
+  virtual void orientationChange( Orientation /* orientation*/) {}
+
   /**
    * You may need this if you want to popup menus at the right position.
    *
@@ -274,10 +281,11 @@ public:
 
 
     /**
-     * The popup direction changed tp @p direction. Reimplement this
+     * The popup direction changed to @p direction. Reimplement this
      * change handler in order to adjust the look of your applet.
      **/
   virtual void popupDirectionChange( Direction /*direction*/ ) {}
+    
 
 
  private:

@@ -52,7 +52,9 @@ KPanelApplet::~KPanelApplet()
 void KPanelApplet::slotSetOrientation(Orientation o)
 {
   _orient = o;
-  resizeEvent(0);
+  orientationChange( o );
+  QResizeEvent e( size(), size() );
+  resizeEvent( &e );
 }
 
 void KPanelApplet::slotSetPopupDirection(Direction d)
