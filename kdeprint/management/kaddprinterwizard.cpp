@@ -11,7 +11,7 @@ static KCmdLineOptions options[] =
 	{0, 0, 0}
 };
 
-int main(int argc, char *argv[])
+extern "C" int kdemain(int argc, char *argv[])
 {
 	KCmdLineArgs::init(argc, argv, "kaddprinterwizard",
 			I18N_NOOP("Start the add printer wizard"),
