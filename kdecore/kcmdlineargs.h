@@ -120,7 +120,7 @@ class KAboutData;
  *     { "+file", I18N_NOOP("A required argument 'file'.), 0 },
  *     { "+[arg1]", I18N_NOOP("An optional argument 'arg1'."), 0 },
  *     { 0, 0, 0 } // End of options.
- *  }
+ *  };
  *  </pre>
  *
  *  The I18N_NOOP macro is used to indicate that these strings should be
