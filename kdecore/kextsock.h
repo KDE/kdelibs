@@ -372,7 +372,8 @@ public:
    * This function returns true if the value was set correctly. That is NOT
    * the result of the set.
    * @param enable	if true, set address reusable
-   * @return true on success, false if this is not possible in this state
+   * @return true on success, false on failure. If the socket was not yet created,
+   * the value is only remembered. In this case the return value is always true.
    */
   bool setAddressReusable(bool enable);
 
@@ -914,6 +915,17 @@ public:
    * @return the text for the given error code
    */
   static QString strError(int code, int syserr);
+
+  /**
+   * Sets/unsets address reusing flag for this socket.
+   *
+   * This function returns true if the value was set correctly. That is NOT
+   * the result of the set.
+   * @param fd	the file descriptor
+   * @param enable	if true, set address reusable
+   * @return true on success, false on failure.
+   */
+  static bool setAddressReusable(int fd, bool enable);
 
 protected:
   virtual void virtual_hook( int id, void* data );

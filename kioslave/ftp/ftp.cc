@@ -1724,7 +1724,10 @@ FtpEntry* Ftp::ftpParseDir( char* buffer )
                     }
                     else
                       de.link = QString::null;
-
+                      
+                    if (strchr(p_name, '/'))
+                       return 0L; // Don't trick us!
+                    
                     de.access = 0;
                     de.type = S_IFREG;
                     switch ( p_access[0] ) {

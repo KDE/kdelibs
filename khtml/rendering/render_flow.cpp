@@ -75,7 +75,6 @@ RenderFlow::RenderFlow(DOM::NodeImpl* node)
     m_childrenInline = true;
     m_pre = false;
     firstLine = false;
-    m_blockBidi = false;
     m_clearStatus = CNONE;
 
     specialObjects = 0;
@@ -178,12 +177,12 @@ FindSelectionResult RenderFlow::checkSelectionPoint( int _x, int _y, int _tx, in
     return SelectionPointAfter;
 }
 
-void RenderFlow::print(QPainter *p, int _x, int _y, int _w, int _h,
+void RenderFlow::paint(QPainter *p, int _x, int _y, int _w, int _h,
                                  int _tx, int _ty)
 {
 
 #ifdef DEBUG_LAYOUT
-//    kdDebug( 6040 ) << renderName() << "(RenderFlow) " << this << " ::print() x/y/w/h = ("  << xPos() << "/" << yPos() << "/" << width() << "/" << height()  << ")" << endl;
+//    kdDebug( 6040 ) << renderName() << "(RenderFlow) " << this << " ::paint() x/y/w/h = ("  << xPos() << "/" << yPos() << "/" << width() << "/" << height()  << ")" << endl;
 #endif
 
     if(!isInline())
@@ -204,15 +203,14 @@ void RenderFlow::print(QPainter *p, int _x, int _y, int _w, int _h,
         }
     }
 
-    printObject(p, _x, _y, _w, _h, _tx, _ty);
+    paintObject(p, _x, _y, _w, _h, _tx, _ty);
 }
 
-void RenderFlow::printObject(QPainter *p, int _x, int _y,
+void RenderFlow::paintObject(QPainter *p, int _x, int _y,
                                        int _w, int _h, int _tx, int _ty)
 {
     if(isRelPositioned())
         relativePositionOffset(_tx, _ty);
-
 
     bool clipped = false;
     // overflow: hidden
@@ -221,22 +219,18 @@ void RenderFlow::printObject(QPainter *p, int _x, int _y,
 	clipped = true;
     }
 
-    // 1. print background, borders etc
+    // 1. paint background, borders etc
     if(hasSpecialObjects() && !isInline() && style()->visibility() == VISIBLE )
-        printBoxDecorations(p, _x, _y, _w, _h, _tx, _ty);
+        paintBoxDecorations(p, _x, _y, _w, _h, _tx, _ty);
 
-    // 2. print contents
-    RenderObject *child = firstChild();
-    while(child != 0)
-    {
-        if(!child->isFloating() && !child->isPositioned())
-            child->print(p, _x, _y, _w, _h, _tx, _ty);
-        child = child->nextSibling();
-    }
+    // 2. paint contents
+    for ( RenderObject* child = firstChild(); child; child = child->nextSibling() )
+        if(!child->isSpecial())
+            child->paint(p, _x, _y, _w, _h, _tx, _ty);
 
-    // 3. print floats and other non-flow objects
+    // 3. paint floats and other non-flow objects
     if(specialObjects)
-	printSpecialObjects( p,  _x, _y, _w, _h, _tx , _ty);
+	paintSpecialObjects( p,  _x, _y, _w, _h, _tx , _ty);
 
     // overflow: hidden
     // restore clip region
@@ -245,7 +239,7 @@ void RenderFlow::printObject(QPainter *p, int _x, int _y,
     }
 
     if(!isInline() && !childrenInline() && style()->outlineWidth())
-        printOutline(p, _tx, _ty, width(), height(), style());
+        paintOutline(p, _tx, _ty, width(), height(), style());
 
 #ifdef BOX_DEBUG
     if ( style() && style()->visibility() == VISIBLE ) {
@@ -260,17 +254,17 @@ void RenderFlow::printObject(QPainter *p, int _x, int _y,
 
 }
 
-void RenderFlow::printSpecialObjects( QPainter *p, int x, int y, int w, int h, int tx, int ty)
+void RenderFlow::paintSpecialObjects( QPainter *p, int x, int y, int w, int h, int tx, int ty)
 {
     SpecialObject* r;
     QPtrListIterator<SpecialObject> it(*specialObjects);
     for ( ; (r = it.current()); ++it ) {
-        // A special object may be registered with several different objects... so we only print the
+        // A special object may be registered with several different objects... so we only paint the
         // object if we are its containing block
        if (r->node->isPositioned() && r->node->containingBlock() == this) {
-           r->node->print(p, x, y, w, h, tx , ty);
+           r->node->paint(p, x, y, w, h, tx , ty);
        } else if ( ( r->node->isFloating() && !r->noPaint ) ) {
-	    r->node->print(p, x, y, w, h, tx + r->left - r->node->xPos() + r->node->marginLeft(),
+	    r->node->paint(p, x, y, w, h, tx + r->left - r->node->xPos() + r->node->marginLeft(),
 			   ty + r->startY - r->node->yPos() + r->node->marginTop() );
  	}
 #ifdef FLOAT_DEBUG
@@ -332,11 +326,8 @@ void RenderFlow::layout()
     m_clearStatus = CNONE;
 
 //    kdDebug( 6040 ) << "childrenInline()=" << childrenInline() << endl;
-    if(childrenInline()) {
-        // ### make bidi resumeable so that we can get rid of this ugly hack
-         if (!m_blockBidi)
-            layoutInlineChildren( relayoutChildren );
-    }
+    if(childrenInline())
+        layoutInlineChildren( relayoutChildren );
     else
         layoutBlockChildren( relayoutChildren );
 
@@ -493,22 +484,27 @@ void RenderFlow::layoutBlockChildren( bool relayoutChildren )
                 prevFlow=0;
         }
 
-        child->setPos(child->xPos(), m_height);
-	if ( !child->layouted() )
-	    child->layout();
-
-        int chPos = xPos + child->marginLeft();
+	// #### ugly and hacky, as we calculate width twice, but works for now.
+	// really need to fix this after 3.1
+	int owidth = child->width();
+	child->calcWidth();
+        int chPos = xPos;
 
         if(style()->direction() == LTR) {
             // html blocks flow around floats
             if ( ( style()->htmlHacks() || child->isTable() ) && child->style()->flowAroundFloats() )
-              chPos = leftOffset(m_height) + child->marginLeft();
+		chPos = leftOffset(m_height);
+	    chPos += child->marginLeft();
         } else {
-            chPos -= child->width() + child->marginLeft() + child->marginRight();
             if ( ( style()->htmlHacks() || child->isTable() ) && child->style()->flowAroundFloats() )
-                chPos = rightOffset(m_height) - child->marginRight() - child->width();
+                chPos = rightOffset(m_height);
+            chPos -= child->width() + child->marginRight();
         }
-        child->setPos(chPos, child->yPos());
+	child->setWidth( owidth );
+        child->setPos(chPos, m_height);
+
+	if ( !child->layouted() )
+	    child->layout();
 
         m_height += child->height();
 
@@ -1281,9 +1277,6 @@ void RenderFlow::calcMinMaxWidth()
 
 void RenderFlow::close()
 {
-    // ### get rid of me
-    m_blockBidi = false;
-
     if(lastChild() && lastChild()->isAnonymousBox()) {
         lastChild()->close();
     }
@@ -1302,18 +1295,12 @@ void RenderFlow::addChild(RenderObject *newChild, RenderObject *beforeChild)
 
     bool madeBoxesNonInline = FALSE;
 
-    if ( newChild->isPositioned() ) {
-	m_blockBidi = false;
-    }
-    if (m_blockBidi)
-	    newChild->setBlockBidi();
-
     RenderStyle* pseudoStyle=0;
     if ( !isInline() && ( !firstChild() || firstChild() == beforeChild )
 	&& ( pseudoStyle=style()->getPseudoStyle(RenderStyle::FIRST_LETTER) ) )
     {
 
-        if (newChild->isText()) {
+        if (newChild->isText() && !newChild->isBR()) {
 	    RenderText* newTextChild = static_cast<RenderText*>(newChild);
 
 	    //kdDebug( 6040 ) << "first letter" << endl;
@@ -1333,15 +1320,13 @@ void RenderFlow::addChild(RenderObject *newChild, RenderObject *beforeChild)
 			( (oldText->s+length)->isSpace() || (oldText->s+length)->isPunct() ) )
 		    length++;
 		length++;
-		//kdDebug( 6040 ) << "letter= '" << DOMString(oldText->substring(0,length)).string() << "'" << endl;
-		newTextChild->setText(oldText->substring(length,oldText->l-length));
-
 		RenderText* letter = new RenderText(0 /* anonymous object */, oldText->substring(0,length));
 		RenderStyle* newStyle = new RenderStyle();
 		newStyle->inheritFrom(pseudoStyle);
 		letter->setStyle(newStyle);
                 letter->setIsAnonymousBox(true);
 		firstLetter->addChild(letter);
+		newTextChild->setText(oldText->substring(length,oldText->l-length));
 	    }
 	    firstLetter->close();
 
@@ -1395,7 +1380,7 @@ void RenderFlow::addChild(RenderObject *newChild, RenderObject *beforeChild)
         }
     }
 
-    // prevent non-layouted elements from getting printed by pushing them far above the top of the
+    // prevent non-layouted elements from getting painted by pushing them far above the top of the
     // page
     if (!newChild->isInline())
         newChild->setPos(newChild->xPos(), -500000);
@@ -1595,8 +1580,6 @@ bool RenderFlow::nodeAtPoint(NodeInfo& info, int _x, int _y, int _tx, int _ty)
 void RenderFlow::printTree(int indent) const
 {
     RenderBox::printTree(indent);
-
-//     KHTMLAssert(!m_blockBidi);
 
     if(specialObjects)
     {

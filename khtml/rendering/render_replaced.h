@@ -44,9 +44,9 @@ public:
 
     virtual void calcMinMaxWidth();
 
-    virtual void print( QPainter *, int x, int y, int w, int h,
+    virtual void paint( QPainter *, int x, int y, int w, int h,
                         int tx, int ty);
-    virtual void printObject(QPainter *p, int x, int y, int w, int h, int tx, int ty) = 0;
+    virtual void paintObject(QPainter *p, int x, int y, int w, int h, int tx, int ty) = 0;
 
     virtual short intrinsicWidth() const { return m_intrinsicWidth; }
     virtual int intrinsicHeight() const { return m_intrinsicHeight; }
@@ -56,7 +56,7 @@ public:
 
     virtual void position(int x, int y, int from, int len, int width, bool reverse, bool firstLine, int);
 
-private:
+protected:
     short m_intrinsicWidth;
     short m_intrinsicHeight;
 };
@@ -71,7 +71,7 @@ public:
 
     virtual void setStyle(RenderStyle *style);
 
-    virtual void printObject(QPainter *p, int x, int y, int w, int h, int tx, int ty);
+    virtual void paintObject(QPainter *p, int x, int y, int w, int h, int tx, int ty);
 
     virtual bool isWidget() const { return true; };
 
@@ -89,10 +89,11 @@ public slots:
 
 protected:
     virtual void handleFocusOut() {}
+    bool event( QEvent *e );
 
     bool eventFilter(QObject* /*o*/, QEvent* e);
     void setQWidget(QWidget *widget);
-    void resizeWidget( QWidget *widget, int w, int h );
+    void resizeWidget( int w, int h );
 
     QWidget *m_widget;
     KHTMLView* m_view;

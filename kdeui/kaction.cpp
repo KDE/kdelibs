@@ -204,7 +204,7 @@ KAction::KAction( const KGuiItem& item, const KShortcut& cut,
 	setWhatsThis( item.whatsThis() );
 }
 
-#if KDE_VERSION < 400
+#if KDE_VERSION < KDE_MAKE_VERSION( 4,0,0 )
 KAction::KAction( const QString& text, const KShortcut& cut,
                   QObject* parent, const char* name )
  : QObject( parent, name )
@@ -263,7 +263,7 @@ KAction::KAction( QObject* parent, const char* name )
 {
     initPrivate( QString::null, KShortcut(), 0, 0 );
 }
-#endif // KDE_VERSION < 400
+#endif // KDE_VERSION < 4.0.0
 
 KAction::~KAction()
 {
@@ -470,7 +470,7 @@ bool KAction::setShortcut( const KShortcut& cut )
     insertKAccel( kaccel );
 
   if( bChanged ) {
-#if KDE_VERSION < 400
+#if KDE_VERSION < KDE_MAKE_VERSION( 4,0,0 )
     if ( d->m_kaccel )
       d->m_kaccel->setShortcut( name(), cut );
 #endif
@@ -483,6 +483,10 @@ bool KAction::setShortcut( const KShortcut& cut )
 
 bool KAction::updateKAccelShortcut( KAccel* kaccel )
 {
+  // Check if action is permitted
+  if (kapp && !kapp->authorizeKAction(name()))
+    return false;
+
   bool b = true;
 
   if ( !kaccel->actions().actionPtr( name() ) ) {
@@ -530,7 +534,7 @@ void KAction::removeKAccel( KAccel* kaccel )
   }
 }
 
-#if KDE_VERSION < 400
+#if KDE_VERSION < KDE_MAKE_VERSION( 4,0,0 )
 void KAction::setAccel( int keyQt )
 {
   setShortcut( KShortcut(keyQt) );
@@ -847,7 +851,7 @@ void KAction::setEnabled(bool enable)
   if ( enable == d->isEnabled() )
     return;
 
-#if KDE_VERSION < 400
+#if KDE_VERSION < KDE_MAKE_VERSION( 4,0,0 )
   if (d->m_kaccel)
     d->m_kaccel->setEnabled(name(), enable);
 #endif
@@ -883,7 +887,7 @@ void KAction::setShortcutConfigurable( bool b )
 
 void KAction::setText( const QString& text )
 {
-#if KDE_VERSION < 400
+#if KDE_VERSION < KDE_MAKE_VERSION( 4,0,0 )
   if (d->m_kaccel) {
     KAccelAction* pAction = d->m_kaccel->actions().actionPtr(name());
     if (pAction)
@@ -1112,7 +1116,7 @@ void KAction::slotDestroyed()
   kdDebug(129) << "KAction::slotDestroyed(): this = " << this << ", name = \"" << name() << "\", sender = " << sender() << endl;
   const QObject* o = sender();
 
-#if KDE_VERSION < 400
+#if KDE_VERSION < KDE_MAKE_VERSION( 4,0,0 )
   if ( o == d->m_kaccel )
   {
     d->m_kaccel = 0;
@@ -2968,6 +2972,7 @@ int KWidgetAction::plug( QWidget* w, int index )
 
   addContainer( toolBar, id );
 
+  connect( toolBar, SIGNAL( toolbarDestroyed() ), this, SLOT( slotToolbarDestroyed() ) );
   connect( toolBar, SIGNAL( destroyed() ), this, SLOT( slotDestroyed() ) );
 
   return containerCount() - 1;
@@ -2976,12 +2981,26 @@ int KWidgetAction::plug( QWidget* w, int index )
 void KWidgetAction::unplug( QWidget *w )
 {
   // ### shouldn't this method check if w == m_widget->parent() ? (Simon)
-  if( !m_widget )
+  if( !m_widget || !isPlugged() )
     return;
+
+  KToolBar* toolBar = (KToolBar*)m_widget->parent();
+  disconnect( toolBar, SIGNAL( toolbarDestroyed() ), this, SLOT( slotToolbarDestroyed() ) );
 
   m_widget->reparent( 0L, QPoint(), false /*showIt*/ );
 
   KAction::unplug( w );
+}
+
+void KWidgetAction::slotToolbarDestroyed()
+{
+  Q_ASSERT( m_widget );
+  Q_ASSERT( isPlugged() );
+  if( !m_widget || !isPlugged() )
+    return;
+
+  // Don't let a toolbar being destroyed, delete my widget.
+  m_widget->reparent( 0L, QPoint(), false /*showIt*/ );
 }
 
 ////////
@@ -3097,7 +3116,7 @@ KActionCollection::KActionCollection( QWidget *watch, QObject* parent, const cha
   setInstance( instance );
 }
 
-#if KDE_VERSION < 400
+#if KDE_VERSION < KDE_MAKE_VERSION( 4,0,0 )
 KActionCollection::KActionCollection( QObject *parent, const char *name,
                                       KInstance *instance )
   : QObject( parent, name )
@@ -3299,11 +3318,18 @@ const KAccel* KActionCollection::kaccel() const
 
 void KActionCollection::_insert( KAction* action )
 {
-  KAction *a = d->m_actionDict[ action->name() ];
+  char unnamed_name[100];
+  const char *name = action->name();
+  if( qstrcmp( name, "unnamed" ) == 0 )
+  {
+     sprintf(unnamed_name, "unnamed-%p", (void *)action);
+     name = unnamed_name;
+  }
+  KAction *a = d->m_actionDict[ name ];
   if ( a == action )
       return;
 
-  d->m_actionDict.insert( action->name(), action );
+  d->m_actionDict.insert( name, action );
 
   emit inserted( action );
 }
@@ -3315,7 +3341,15 @@ void KActionCollection::_remove( KAction* action )
 
 KAction* KActionCollection::_take( KAction* action )
 {
-  KAction *a = d->m_actionDict.take( action->name() );
+  char unnamed_name[100];
+  const char *name = action->name();
+  if( qstrcmp( name, "unnamed" ) == 0 )
+  {
+     sprintf(unnamed_name, "unnamed-%p", (void *) action);
+     name = unnamed_name;
+  }
+
+  KAction *a = d->m_actionDict.take( name );
   if ( !a || a != action )
       return 0;
 
@@ -3592,7 +3626,7 @@ KAction *KActionCollection::findAction( QWidget *container, int id )
   return 0;
 }
 
-#if KDE_VERSION < 400
+#if KDE_VERSION < KDE_MAKE_VERSION( 4,0,0 )
 KActionCollection KActionCollection::operator+(const KActionCollection &c ) const
 {
   kdWarning(129) << "KActionCollection::operator+(): function is severely deprecated." << endl;

@@ -51,16 +51,6 @@ using namespace khtml;
 
 // -------------------------------------------------------------------------
 
-HTMLImageElementImpl::HTMLImageElementImpl(DocumentPtr *doc)
-    : HTMLElementImpl(doc)
-{
-    ismap = false;
-}
-
-HTMLImageElementImpl::~HTMLImageElementImpl()
-{
-}
-
 NodeImpl::Id HTMLImageElementImpl::id() const
 {
     return ID_IMG;

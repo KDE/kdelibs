@@ -93,13 +93,11 @@ class HTMLEmbedElementImpl : public LiveConnectElementImpl
 {
 public:
     HTMLEmbedElementImpl(DocumentPtr *doc);
-
     ~HTMLEmbedElementImpl();
 
     virtual Id id() const;
 
     virtual void parseAttribute(AttributeImpl *attr);
-
     virtual void attach();
 
     QString url;
@@ -130,10 +128,13 @@ public:
 
     DocumentImpl* contentDocument() const;
 
+    void renderAlternative();
+
     QString serviceType;
     QString url;
     QString classId;
     bool needWidgetUpdate;
+    bool m_renderAlternative;
 };
 
 // -------------------------------------------------------------------------
@@ -142,20 +143,18 @@ class HTMLParamElementImpl : public HTMLElementImpl
 {
     friend class HTMLAppletElementImpl;
 public:
-    HTMLParamElementImpl(DocumentPtr *doc);
-
-    ~HTMLParamElementImpl();
+    HTMLParamElementImpl(DocumentPtr* _doc) : HTMLElementImpl(_doc) {}
 
     virtual Id id() const;
 
     virtual void parseAttribute(AttributeImpl *token);
 
-    QString name() const { if(!m_name) return QString::null; return QConstString(m_name->s, m_name->l).string(); }
-    QString value() const { if(!m_value) return QString::null; return QConstString(m_value->s, m_value->l).string(); }
+    QString name() const { return m_name; }
+    QString value() const { return m_value; }
 
  protected:
-    DOMStringImpl *m_name;
-    DOMStringImpl *m_value;
+    QString m_name;
+    QString m_value;
 };
 
 };

@@ -87,8 +87,6 @@ void KComboBox::init()
     // Permanently set some parameters in the parent object.
     QComboBox::setAutoCompletion( false );
 
-    m_trapReturnKey = false;
-
     // Enable context menu by default if widget
     // is editable.
     setContextMenuEnabled( true );
@@ -96,7 +94,10 @@ void KComboBox::init()
     // for wheelscrolling
     installEventFilter( this );
     if ( lineEdit() )
-        lineEdit()->installEventFilter( this );
+    {
+        connect( lineEdit(), SIGNAL( returnPressed() ),
+                 this, SIGNAL( returnPressed() ));
+    }
 }
 
 
@@ -183,47 +184,23 @@ void KComboBox::rotateText( KCompletionBase::KeyBindingType type )
         d->klineEdit->rotateText( type );
 }
 
+// not needed anymore
 bool KComboBox::eventFilter( QObject* o, QEvent* ev )
 {
-    QLineEdit *edit = lineEdit();
-
-    int type = ev->type();
-
-    if ( o == edit )
-    {
-        if ( editable() )
-            KCursor::autoHideEventFilter( edit, ev );
-
-        if ( type == QEvent::KeyPress )
-        {
-            QKeyEvent *e = static_cast<QKeyEvent *>( ev );
-
-            if ( e->key() == Key_Return || e->key() == Key_Enter)
-            {
-                // On Return pressed event, emit both
-                // returnPressed(const QString&) and returnPressed() signals
-                emit returnPressed();
-                emit returnPressed( currentText() );
-                if ( d->klineEdit && d->klineEdit->completionBox(false) &&
-                     d->klineEdit->completionBox()->isVisible() )
-                    d->klineEdit->completionBox()->hide();
-
-                return m_trapReturnKey;
-            }
-        }
-    }
-
     return QComboBox::eventFilter( o, ev );
 }
 
 void KComboBox::setTrapReturnKey( bool grab )
 {
-    m_trapReturnKey = grab;
+    if ( d->klineEdit )
+        d->klineEdit->setTrapReturnKey( grab );
+    else
+        qWarning("KComboBox::setTrapReturnKey not supported with a non-KLineEdit.");
 }
 
 bool KComboBox::trapReturnKey() const
 {
-    return m_trapReturnKey;
+    return d->klineEdit && d->klineEdit->trapReturnKey();
 }
 
 
@@ -280,13 +257,37 @@ void KComboBox::wheelEvent( QWheelEvent *ev )
 
 void KComboBox::setLineEdit( QLineEdit *edit )
 {
+    if ( !editable() && edit &&
+         qstrcmp( edit->className(), "QLineEdit" ) == 0 )
+    {
+        // uic generates code that creates a read-only QComboBox and then
+        // calls combo->setEditable( true ), which causes QComboBox to set up
+        // a dumb QLineEdit instead of our nice KLineEdit.
+        // As some KComboBox features rely on the KLineEdit, we reject
+        // this order here.
+        delete edit;
+        edit = new KLineEdit( this, "combo edit" );
+    }
+
     QComboBox::setLineEdit( edit );
     d->klineEdit = dynamic_cast<KLineEdit*>( edit );
     setDelegate( d->klineEdit );
 
-    // forward some signals. We only emit returnPressed() ourselves.
+    // forward some signals.
+    if ( edit )
+        connect( edit, SIGNAL( returnPressed() ), SIGNAL( returnPressed() ));
+
     if ( d->klineEdit )
     {
+        // someone calling KComboBox::setEditable( false ) destroys our
+        // lineedit without us noticing. And KCompletionBase::delegate would
+        // be a dangling pointer then, so prevent that. Note: only do this
+        // when it is a KLineEdit!
+        connect( edit, SIGNAL( destroyed() ), SLOT( lineEditDeleted() ));
+        
+        connect( d->klineEdit, SIGNAL( returnPressed( const QString& )),
+                 SIGNAL( returnPressed( const QString& ) ));
+
         connect( d->klineEdit, SIGNAL( completion( const QString& )),
                  SIGNAL( completion( const QString& )) );
 
@@ -333,6 +334,18 @@ void KComboBox::setCurrentItem( const QString& item, bool insert, int index )
             sel = count() - 1;
     }
     setCurrentItem(sel);
+}
+
+void KComboBox::lineEditDeleted()
+{
+    // yes, we need those ugly casts due to the multiple inheritance
+    // sender() is guaranteed to be a KLineEdit (see the connect() to the
+    // destroyed() signal
+    const KCompletionBase *base = static_cast<const KCompletionBase*>( static_cast<const KLineEdit*>( sender() ));
+
+    // is it our delegate, that is destroyed?
+    if ( base == delegate() )
+        setDelegate( 0L );
 }
 
 // *********************************************************************

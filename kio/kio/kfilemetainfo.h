@@ -641,6 +641,7 @@ public:
 
 protected:
     void setAdded();
+    void setRemoved();
 
     void ref();
     void deref();
@@ -707,6 +708,14 @@ public:
      */
     bool isEmpty() const;
 
+    /**
+     * Returns true if an item as added or removed from the group.
+     * @return true if an item was added or removed from the group, otherwise
+     * false.
+     * @since 3.1
+     */
+    bool isModified() const;
+    
     /**
      * operator for convenience. It does the same as @ref item(),
      * but you cannot specify a group to search in
@@ -1170,7 +1179,7 @@ public:
 
     QStringList preferredKeys( const QString& mimeType ) const;
     QStringList preferredGroups( const QString& mimeType ) const;
-    
+
     /// @since 3.1
     QStringList supportedMimeTypes() const;
 

@@ -34,6 +34,7 @@
 #include <string.h>
 #include <sys/param.h>
 #include <stdlib.h>
+#include <limits.h>
 #include "midispec.h"
 #ifdef HAVE_CONFIG_H
 #include <config.h>
@@ -62,7 +63,7 @@ FMOut::~FMOut()
   delete vm;
   if (deleteFMPatchesDirectory)
   {
-    delete FMPatchesDirectory;
+    free((char *)FMPatchesDirectory);
     deleteFMPatchesDirectory = 0;
     FMPatchesDirectory="/etc";
   }
@@ -126,8 +127,8 @@ void FMOut::initDev (void)
 void FMOut::loadFMPatches(void)
 {
 #ifdef HAVE_OSS_SUPPORT
-  char patchesfile[120];
-  char drumsfile[120];
+  char patchesfile[PATH_MAX];
+  char drumsfile[PATH_MAX];
   int size;
   struct sbi_instrument instr;
   char tmp[60];
@@ -140,12 +141,12 @@ void FMOut::loadFMPatches(void)
 
   if (opl==3)
   {
-    sprintf(patchesfile,"%s/std.o3",FMPatchesDirectory);
+    snprintf(patchesfile, PATH_MAX, "%s/std.o3",FMPatchesDirectory);
     size=60;
   }
   else
   {
-    sprintf(patchesfile,"%s/std.sb",FMPatchesDirectory);
+    snprintf(patchesfile, PATH_MAX, "%s/std.sb",FMPatchesDirectory);
     size=52;
   }
   fh=fopen(patchesfile,"rb");
@@ -170,11 +171,11 @@ void FMOut::loadFMPatches(void)
 
   if (opl==3)
   {
-    sprintf(drumsfile,"%s/drums.o3",FMPatchesDirectory);
+    snprintf(drumsfile, PATH_MAX, "%s/drums.o3",FMPatchesDirectory);
   }
   else
   {
-    sprintf(drumsfile,"%s/drums.sb",FMPatchesDirectory);
+    snprintf(drumsfile, PATH_MAX, "%s/drums.sb",FMPatchesDirectory);
   }
 
   fh=fopen(drumsfile,"rb");
@@ -325,10 +326,11 @@ void FMOut::sysex(uchar *, ulong )
 void FMOut::setFMPatchesDirectory(const char *dir)
 {
   if ((dir==NULL)||(dir[0]==0)) return;
-  if (deleteFMPatchesDirectory) delete FMPatchesDirectory;
-  char *FMPatchesDirectory2=new char[strlen(dir)+1];
-  strcpy(FMPatchesDirectory2,dir);
-  FMPatchesDirectory = FMPatchesDirectory2;
+  if (deleteFMPatchesDirectory)
+  	free((char *)FMPatchesDirectory);
+
+  FMPatchesDirectory = strdup(dir);
+
   deleteFMPatchesDirectory=1;
 }
 

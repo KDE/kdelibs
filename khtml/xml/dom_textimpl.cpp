@@ -35,29 +35,16 @@ using namespace DOM;
 using namespace khtml;
 
 
-CharacterDataImpl::CharacterDataImpl(DocumentPtr *doc)
+CharacterDataImpl::CharacterDataImpl(DocumentPtr *doc, DOMStringImpl* _text)
     : NodeImpl(doc)
 {
-    str = 0;
-}
-
-CharacterDataImpl::CharacterDataImpl(DocumentPtr *doc, const DOMString &_text)
-    : NodeImpl(doc)
-{
-    str = _text.impl;
-
-	if(str)
-	    str->ref();
+    str = _text ? _text : new DOMStringImpl( 0, 0 );
+    str->ref();
 }
 
 CharacterDataImpl::~CharacterDataImpl()
 {
     if(str) str->deref();
-}
-
-DOMString CharacterDataImpl::data() const
-{
-    return str;
 }
 
 void CharacterDataImpl::setData( const DOMString &_data, int &exceptioncode )
@@ -237,20 +224,6 @@ void CharacterDataImpl::dump(QTextStream *stream, QString ind) const
 
 // ---------------------------------------------------------------------------
 
-CommentImpl::CommentImpl(DocumentPtr *doc, const DOMString &_text)
-    : CharacterDataImpl(doc, _text)
-{
-}
-
-CommentImpl::CommentImpl(DocumentPtr *doc)
-    : CharacterDataImpl(doc)
-{
-}
-
-CommentImpl::~CommentImpl()
-{
-}
-
 DOMString CommentImpl::nodeName() const
 {
     return "#comment";
@@ -278,22 +251,6 @@ bool CommentImpl::childTypeAllowed( unsigned short /*type*/ )
 }
 
 // ---------------------------------------------------------------------------
-
-// ### allow having children in text nodes for entities, comments etc.
-
-TextImpl::TextImpl(DocumentPtr *doc, const DOMString &_text)
-    : CharacterDataImpl(doc, _text)
-{
-}
-
-TextImpl::TextImpl(DocumentPtr *doc)
-    : CharacterDataImpl(doc)
-{
-}
-
-TextImpl::~TextImpl()
-{
-}
 
 TextImpl *TextImpl::splitText( const unsigned long offset, int &exceptioncode )
 {
@@ -398,18 +355,6 @@ TextImpl *TextImpl::createNew(DOMStringImpl *_str)
 }
 
 // ---------------------------------------------------------------------------
-
-CDATASectionImpl::CDATASectionImpl(DocumentPtr *impl, const DOMString &_text) : TextImpl(impl,_text)
-{
-}
-
-CDATASectionImpl::CDATASectionImpl(DocumentPtr *impl) : TextImpl(impl)
-{
-}
-
-CDATASectionImpl::~CDATASectionImpl()
-{
-}
 
 DOMString CDATASectionImpl::nodeName() const
 {

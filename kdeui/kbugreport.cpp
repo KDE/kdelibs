@@ -21,7 +21,6 @@
 #include <qpushbutton.h>
 #include <qlabel.h>
 #include <qlayout.h>
-#include <qlineedit.h>
 #include <qmultilineedit.h>
 #include <qradiobutton.h>
 #include <qwhatsthis.h>
@@ -31,6 +30,7 @@
 #include <kaboutdata.h>
 #include <kconfig.h>
 #include <kstandarddirs.h>
+#include <klineedit.h>
 #include <klocale.h>
 #include <kurl.h>
 #include <kmessagebox.h>
@@ -222,7 +222,7 @@ KBugReport::KBugReport( QWidget * parentw, bool modal, const KAboutData *aboutDa
     QHBoxLayout * hlay = new QHBoxLayout( lay );
     tmpLabel = new QLabel( i18n("S&ubject: "), parent );
     hlay->addWidget( tmpLabel );
-    m_subject = new QLineEdit( parent );
+    m_subject = new KLineEdit( parent );
     m_subject->setFocus();
     tmpLabel->setBuddy(m_subject);
     hlay->addWidget( m_subject );
@@ -477,7 +477,7 @@ QString KBugReport::text() const
      bodyText += line;
   }
 
-  if (severity == QString::fromLatin1("i18n") && KGlobal::locale()->language() != QString::fromLatin1("C")) {
+  if (severity == QString::fromLatin1("i18n") && KGlobal::locale()->language() != KLocale::defaultLanguage()) {
       // Case 1 : i18n bug
       QString package = QString::fromLatin1("i18n_%1").arg(KGlobal::locale()->language());
       package = package.replace(QRegExp("_"), QString::fromLatin1("-"));

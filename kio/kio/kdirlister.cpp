@@ -482,8 +482,11 @@ void KDirListerCache::forgetDirs( KDirLister *lister, const KURL& url, bool noti
         kdDebug(7004) << k_funcinfo << lister << " item moved into cache: " << url << endl;
         itemsCached.insert( urlStr, item ); // TODO: may return false!!
 
-        // watch cached directories
-        item->incAutoUpdate();
+        // watch cached directories if not manually mounted, otherwise set to "dirty"
+        if ( !KIO::manually_mounted( item->url.directory( false ) + item->url.fileName() ) )
+          item->incAutoUpdate();
+        else
+          item->complete = false;
       }
       else {
         delete item;
@@ -1880,6 +1883,9 @@ void KDirLister::handleError( KIO::Job *job )
 void KDirLister::addNewItem( const KFileItem *item )
 {
   bool isNameFilterMatch = (d->dirOnlyMode && !item->isDir()) || !matchesFilter( item );
+  if (isNameFilterMatch)
+     return; // No reason to continue... bailing out here prevents a mimetype scan.
+     
   bool isMimeFilterMatch = !matchesMimeFilter( item );
 
   if ( !isNameFilterMatch && !isMimeFilterMatch )

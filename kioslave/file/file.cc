@@ -39,6 +39,7 @@
 #include <qstrlist.h>
 #include "file.h"
 #include <limits.h>
+#include <kprocess.h>
 
 #ifdef HAVE_VOLMGT
 	#include <volmgt.h>
@@ -995,16 +996,6 @@ void FileProtocol::slotInfoMessage( const QString & msg )
   infoMessage( msg );
 }
 
-#ifndef HAVE_VOLMGT
-static QString shellQuote( const QString &_str )
-{
-    // Credits to Walter, says Bernd G. :)
-    QString str(_str);
-    str.replace(QRegExp(QString::fromLatin1("'")), QString::fromLatin1("'\"'\"'"));
-    return QString::fromLatin1("'")+str+'\'';
-}
-#endif /* ! HAVE_VOLMGT */
-
 void FileProtocol::mount( bool _ro, const char *_fstype, const QString& _dev, const QString& _point )
 {
     kdDebug(7101) << "FileProtocol::mount _fstype=" << _fstype << endl;
@@ -1041,30 +1032,32 @@ void FileProtocol::mount( bool _ro, const char *_fstype, const QString& _dev, co
     KTempFile tmpFile;
     QCString tmpFileC = QFile::encodeName(tmpFile.name());
     const char *tmp = tmpFileC.data();
-    QCString dev = QFile::encodeName( shellQuote(_dev) ); // get those ready to be given to a shell
-    QCString point = QFile::encodeName( shellQuote(_point) );
-    QCString fstype = _fstype;
+    QCString dev = QFile::encodeName( KProcess::quote(_dev) ); // get those ready to be given to a shell
+    QCString point = QFile::encodeName( KProcess::quote(_point) );
+    bool fstype_empty = !_fstype || !*_fstype;
+    QCString fstype = KProcess::quote(_fstype).latin1(); // good guess
     QCString readonly = _ro ? "-r" : "";
-    QString path = getenv("PATH") + QString::fromLatin1(":/usr/sbin:/sbin");
+    QString epath = QString::fromLatin1(getenv("PATH"));
+    QString path = QString::fromLatin1("/sbin:/bin");
+    if(!epath.isEmpty())
+        path += QString::fromLatin1(":") + epath;
     QString mountProg = KGlobal::dirs()->findExe("mount", path);
-
-    if (mountProg.isEmpty()) {
+    if (mountProg.isEmpty()) 
         mountProg = "mount";
-    }
 
     // Two steps, in case mount doesn't like it when we pass all options
     for ( int step = 0 ; step <= 1 ; step++ )
     {
         // Mount using device only if no fstype nor mountpoint (KDE-1.x like)
-        if ( !_dev.isEmpty() && _point.isEmpty() && fstype.isEmpty() )
+        if ( !_dev.isEmpty() && _point.isEmpty() && fstype_empty )
             buffer.sprintf( "%s %s 2>%s", mountProg.latin1(), dev.data(), tmp );
         else
           // Mount using the mountpoint, if no fstype nor device (impossible in first step)
-          if ( !_point.isEmpty() && _dev.isEmpty() && fstype.isEmpty() )
+          if ( !_point.isEmpty() && _dev.isEmpty() && fstype_empty )
             buffer.sprintf( "%s %s 2>%s", mountProg.latin1(), point.data(), tmp );
           else
             // mount giving device + mountpoint but no fstype
-            if ( !_point.isEmpty() && !_dev.isEmpty() && fstype.isEmpty() )
+            if ( !_point.isEmpty() && !_dev.isEmpty() && fstype_empty )
               buffer.sprintf( "%s %s %s %s 2>%s", mountProg.latin1(), readonly.data(), dev.data(), point.data(), tmp );
             else
               // mount giving device + mountpoint + fstype
@@ -1111,6 +1104,7 @@ void FileProtocol::mount( bool _ro, const char *_fstype, const QString& _dev, co
                     kdDebug(7101) << err << endl;
                     kdDebug(7101) << "Mounting with those options didn't work, trying with only mountpoint" << endl;
                     fstype = "";
+                    fstype_empty = true;
                     dev = "";
                     // The reason for trying with only mountpoint (instead of
                     // only device) is that some people (hi Malte!) have the
@@ -1194,8 +1188,9 @@ void FileProtocol::unmount( const QString& _point )
 		 */
 		ptr = strrchr( devname, '/' );
 		*ptr = '\0';
-		buffer.sprintf( "/usr/bin/eject %s 2>%s", devname, tmp );
-		kdDebug(7101) << "VOLMGT: eject " << devname << endl;
+                QCString qdevname(QFile::encodeName(KProcess::quote(QFile::decodeName(QCString(devname)))).data());
+		buffer.sprintf( "/usr/bin/eject %s 2>%s", qdevname.data(), tmp );
+		kdDebug(7101) << "VOLMGT: eject " << qdevname << endl;
 
 		/*
 		 *  from eject(1): exit status == 0 => need to manually eject
@@ -1224,14 +1219,15 @@ void FileProtocol::unmount( const QString& _point )
 		return;
 	}
 #else
-    QString path = getenv("PATH");
-    path.append(":/usr/sbin:/sbin");
+    QString epath = getenv("PATH");
+    QString path = QString::fromLatin1("/sbin:/bin");
+    if (!epath.isEmpty())
+       path += ":" + epath;
     QString umountProg = KGlobal::dirs()->findExe("umount", path);
 
-    if (umountProg.isEmpty()) {
+    if (umountProg.isEmpty()) 
         umountProg = "umount";
-    }
-    buffer.sprintf( "%s %s 2>%s", umountProg.latin1(), QFile::encodeName(_point).data(), tmp );
+    buffer.sprintf( "%s %s 2>%s", umountProg.latin1(), QFile::encodeName(KProcess::quote(_point)).data(), tmp );
     system( buffer.data() );
 #endif /* HAVE_VOLMGT */
 

@@ -52,7 +52,7 @@ RenderReplaced::RenderReplaced(DOM::NodeImpl* node)
     m_intrinsicHeight = 150;
 }
 
-void RenderReplaced::print( QPainter *p, int _x, int _y, int _w, int _h,
+void RenderReplaced::paint( QPainter *p, int _x, int _y, int _w, int _h,
                             int _tx, int _ty)
 {
     // not visible or nont even once layouted?
@@ -70,9 +70,9 @@ void RenderReplaced::print( QPainter *p, int _x, int _y, int _w, int _h,
 	clipped = true;
     }
 
-    if(hasSpecialObjects()) printBoxDecorations(p, _x, _y, _w, _h, _tx, _ty);
+    if(hasSpecialObjects()) paintBoxDecorations(p, _x, _y, _w, _h, _tx, _ty);
 
-    printObject(p, _x, _y, _w, _h, _tx, _ty);
+    paintObject(p, _x, _y, _w, _h, _tx, _ty);
 
     // overflow: hidden
     // restore clip region
@@ -89,13 +89,12 @@ void RenderReplaced::calcMinMaxWidth()
     kdDebug( 6040 ) << "RenderReplaced::calcMinMaxWidth() known=" << minMaxKnown() << endl;
 #endif
 
-    bool isPercent = false;
-    int width = calcReplacedWidth(&isPercent);
+    int width = calcReplacedWidth();
 
     if (!isWidget())
         width += paddingLeft() + paddingRight() + borderLeft() + borderRight();
 
-    if ( isPercent ) {
+    if ( style()->width().isPercent() || style()->height().isPercent() ) {
         m_minWidth = 0;
         m_maxWidth = width;
     }
@@ -164,20 +163,40 @@ RenderWidget::~RenderWidget()
     }
 }
 
-void  RenderWidget::resizeWidget( QWidget *widget, int w, int h )
+class QWidgetResizeEvent : public QEvent
+{
+public:
+    enum { Type = 0xfeedabee };
+    QWidgetResizeEvent( int _w,  int _h ) :
+	QEvent( (QEvent::Type)Type ),  w( _w ), h( _h ) {}
+    int w;
+    int h;
+};
+
+void  RenderWidget::resizeWidget( int w, int h )
 {
     // ugly hack to limit the maximum size of the widget (as X11 has problems i
     h = QMIN( h, 3072 );
     w = QMIN( w, 2000 );
 
-    if (widget->width() != w || widget->height() != h) {
+    if (m_widget->width() != w || m_widget->height() != h) {
         ref();
         element()->ref();
-        widget->resize( w, h );
+	QApplication::postEvent( this, new QWidgetResizeEvent( w, h ) );
         element()->deref();
         deref();
     }
 }
+
+bool RenderWidget::event( QEvent *e )
+{
+    if ( m_widget && (e->type() == (int)QWidgetResizeEvent::Type) ) {
+	QWidgetResizeEvent *re = static_cast<QWidgetResizeEvent *>(e);
+	m_widget->resize( re->w,  re->h );
+    }
+    return true;
+}
+
 
 void RenderWidget::setQWidget(QWidget *widget)
 {
@@ -199,8 +218,7 @@ void RenderWidget::setQWidget(QWidget *widget)
             // widget immediately
             if (layouted()) {
 		// ugly hack to limit the maximum size of the widget (as X11 has problems if it's bigger)
-		resizeWidget( m_widget,
-			      m_width-borderLeft()-borderRight()-paddingLeft()-paddingRight(),
+		resizeWidget( m_width-borderLeft()-borderRight()-paddingLeft()-paddingRight(),
 			      m_height-borderTop()-borderBottom()-paddingTop()-paddingBottom() );
             }
             else
@@ -216,8 +234,7 @@ void RenderWidget::layout( )
     KHTMLAssert( !layouted() );
     KHTMLAssert( minMaxKnown() );
     if ( m_widget ) {
-	resizeWidget( m_widget,
-		      m_width-borderLeft()-borderRight()-paddingLeft()-paddingRight(),
+	resizeWidget( m_width-borderLeft()-borderRight()-paddingLeft()-paddingRight(),
 		      m_height-borderTop()-borderBottom()-paddingTop()-paddingBottom() );
     }
 
@@ -313,7 +330,7 @@ void RenderWidget::setStyle(RenderStyle *_style)
     setSpecialObjects(false);
 }
 
-void RenderWidget::printObject(QPainter* /*p*/, int, int, int, int, int _tx, int _ty)
+void RenderWidget::paintObject(QPainter* /*p*/, int, int, int, int, int _tx, int _ty)
 {
     if (!m_widget || !m_view)
 	return;

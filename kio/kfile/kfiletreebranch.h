@@ -165,6 +165,7 @@ protected:
    virtual KFileTreeViewItem *createTreeViewItem( KFileTreeViewItem *parent,
 						  KFileItem *fileItem );
 
+public:
    /**
     * find the according KFileTreeViewItem by an url
     */

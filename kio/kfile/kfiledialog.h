@@ -272,11 +272,14 @@ public:
      * want to show the suffix to select by a specific filter, you must
      * repeat it.
      *
-     * If the filter contains a '/', a mimetype-filter is assumed. You can
-     * specify multiple mimetypes like this (separated with space):
+     * If the filter contains an unescaped '/', a mimetype-filter is assumed.
+     * If you would like a '/' visible in your filter it can be escaped with
+     * a '\'. You can specify multiple mimetypes like this (separated with
+     * space):
      *
      * <code>
      * kfile->setFilter( "image/png text/html text/plain" );
+     * kfile->setFilter( "*.cue|CUE\\/BIN Files (*.cue)" );
      * </code>
      *
      * @see #filterChanged
@@ -715,6 +718,21 @@ public:
      */
     int pathComboIndex();
 
+    /**
+     * This method implements the logic to determine the user's default directory
+     * to be listed. E.g. the documents direcory, home directory or a recently 
+     * used directory.
+     * @param startDir A url/directory, to be used. May use the ':' and '::' syntax 
+     *        as documented in the @ref KFileDialog() constructor.
+     * @param recentDirClass If the ':' or '::' syntax is used, recentDirClass
+     *        will contain the string to be used later for @ref KRecentDir::dir()
+     * @return The URL that should be listed by default (e.g. by KFileDialog or
+     *         KDirSelectDialog).
+     * @since 3.1
+     */
+    static KURL getStartURL( const QString& startDir, QString& recentDirClass );
+
+
 signals:
     /**
       * Emitted when the user selects a file. It is only emitted in single-
@@ -853,6 +871,7 @@ protected slots:
 private:
     KFileDialog(const KFileDialog&);
     KFileDialog operator=(const KFileDialog&);
+    static void initStatic();
 
 protected:
     KDirOperator *ops;

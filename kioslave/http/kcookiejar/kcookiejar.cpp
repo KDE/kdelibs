@@ -184,10 +184,23 @@ bool KHttpCookie::match(const QString &fqdn, const QStringList &domains,
     }
 
     // Cookie path match check
-    if( !path.isEmpty() && !path.startsWith(mPath) )
-        return false; // Path of URL does not start with cookie-path
+    if (mPath.isEmpty())
+        return true;
 
-    return true;
+    // According to the netscape spec both http://www.acme.com/foobar,
+    // http://www.acme.com/foo.bar and http://www.acme.com/foo/bar 
+    // match http://www.acme.com/foo.
+    // We only match http://www.acme.com/foo/bar
+    
+    if( path.startsWith(mPath) &&
+        (
+         (path.length() == mPath.length() ) || 	// Paths are exact match
+         (path[mPath.length()-1] == '/') || 	// mPath ended with a slash
+         (path[mPath.length()] == '/')		// A slash follows.
+         ))
+        return true; // Path of URL starts with cookie-path
+
+    return false;
 }
 
 // KHttpCookieList
@@ -276,6 +289,17 @@ QString KCookieJar::findCookies(const QString &_url, bool useDOMFormat, long win
 
           if( cookie->isSecure() && !secureRequest )
              continue;
+             
+          // Do not send expired cookies.
+          if ( cookie->isExpired (time(0)) )
+          {
+             // Note there is no need to actually delete the cookie here
+             // since the cookieserver will invoke ::saveCookieJar because
+             // of the state change below. This will then do the job of 
+             // deleting the cookie for us.
+             m_cookiesChanged = true;
+             continue;
+          }
 
           if (windowId && (cookie->windowIds().find(windowId) == cookie->windowIds().end()))
           {
@@ -503,6 +527,14 @@ void KCookieJar::extractDomains(const QString &_fqdn,
           QCString t = partList[0].lower().utf8();
           if ((t == "com") || (t == "net") || (t == "org") || (t == "gov") || (t == "edu") || (t == "mil") || (t == "int")) 
               break;
+              
+          // The .name domain uses <name>.<surname>.name
+          // Although the TLD is striclty speaking .name, for our purpose
+          // it should be <surname>.name since people should not be able
+          // to set cookies for everyone with the same surname.
+          // Matches <surname>.name
+          if (partList[1].lower() == "name")
+              break;
        }
        QString domain = partList.join(".");
        _domains.append("." + domain);
@@ -576,9 +608,11 @@ KHttpCookieList KCookieJar::makeCookies(const QString &_url,
         }
         else if (lastCookie && (strncasecmp(cookieStr, "Set-Cookie2:", 12) == 0))
         {
-            // What the fuck is this?
             // Does anyone invent his own headers these days?
             // Read the fucking RFC guys! This header is not there!
+            //
+            // Update: rfc2965 defines Set-Cookie2: You wonder why they
+            // didn't use the version field instead.
             cookieStr +=12;
             // Continue with lastCookie
         }
@@ -821,7 +855,7 @@ KCookieAdvice KCookieJar::cookieAdvice(KHttpCookiePtr cookiePtr)
           cookiePtr->fixDomain(QString::null);
        }
     }
-
+    
     KCookieAdvice advice = KCookieDunno;
 
     QStringList::Iterator it = domains.fromLast(); // Start with FQDN which is last in the list.

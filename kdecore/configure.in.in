@@ -148,6 +148,12 @@ AC_CHECK_FUNC(getaddrinfo,
     AC_DEFINE(GETADDRINFO_RETURNS_UNIX, 1, [Define if getaddrinfo returns AF_UNIX sockets])
   ]
 )
+case "$target" in
+  *-*-openbsd*)
+    dnl OpenBSD's getaddrinfo is not thread-safe up to 3.2
+    AC_DEFINE(HAVE_BROKEN_GETADDRINFO, 1, [Define if getaddrinfo is broken and should be replaced])
+    ;;
+esac
 LIBS="$my_LIBS"
 
 AC_MSG_CHECKING([if struct sockaddr has member sa_len])
@@ -281,4 +287,3 @@ AC_TRY_LINK(dnl
       ],
       AC_MSG_RESULT(no)
 )
-

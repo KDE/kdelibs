@@ -27,7 +27,6 @@
 
 
 
-
 class KJavaAppletPrivate
 {
 public:
@@ -62,7 +61,7 @@ KJavaApplet::KJavaApplet( KJavaAppletWidget* _parent,
         context = new KJavaAppletContext();
 
     d->reallyExists = false;
-    id = -1;
+    context->registerApplet(this);
 }
 
 KJavaApplet::~KJavaApplet()
@@ -302,7 +301,7 @@ void KJavaApplet::setFailed() {
     d->failed = true;
 }
 
-bool KJavaApplet::isAlive() {
+bool KJavaApplet::isAlive() const {
    return (
         !d->failed 
         && d->state >= INSTANCIATED
@@ -310,11 +309,11 @@ bool KJavaApplet::isAlive() {
    ); 
 }
 
-KJavaApplet::AppletState KJavaApplet::state() {
+KJavaApplet::AppletState KJavaApplet::state() const {
     return d->state;
 }
 
-bool KJavaApplet::failed() {
+bool KJavaApplet::failed() const {
     return d->failed;
 }
 

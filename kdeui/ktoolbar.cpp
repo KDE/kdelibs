@@ -194,6 +194,7 @@ KToolBar::KToolBar( QMainWindow *parentWindow, QWidget *dock, bool newLine, cons
 
 KToolBar::~KToolBar()
 {
+    emit toolbarDestroyed();
     delete d;
 }
 
@@ -1828,7 +1829,7 @@ KPopupMenu *KToolBar::contextMenu()
   if ( context )
     return context;
 
-  // Construct our context popup menu. Name it qt_dockwidget_internal so it 
+  // Construct our context popup menu. Name it qt_dockwidget_internal so it
   // won't be deleted by QToolBar::clear().
   context = new KPopupMenu( this, "qt_dockwidget_internal" );
   context->insertTitle(i18n("Toolbar Menu"));

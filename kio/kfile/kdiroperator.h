@@ -381,6 +381,43 @@ class KDirOperator : public QWidget
     KActionCollection * actionCollection() const { return myActionCollection; }
 
     /**
+     * Sets the config object and the to be used group in KDirOperator. This
+     * will be used to store the view's configuration via 
+     * @ref KFileView::writeConfig() (and for @ref KFileView::readConfig()).
+     * If you don't set this, the views cannot save and restore their 
+     * configuration.
+     *
+     * Usually you call this right after KDirOperator creation so that the view
+     * instantiation can make use of it already.
+     *
+     * Note that KDirOperator does NOT take ownership of that object (typically
+     * it's KGlobal::config() anyway.
+     *
+     * @see #viewConfig
+     * @see #viewConfigGroup
+     * @since 3.1
+     */
+    void setViewConfig( KConfig *config, const QString& group );
+    
+    /**
+     * Returns the KConfig object used for saving and restoring view's
+     * configuration.
+     * @returns the KConfig object used for saving and restoring view's
+     * configuration.
+     * @since 3.1
+     */
+    KConfig *viewConfig();
+
+    /**
+     * Returns the group name used for saving and restoring view's
+     * configuration.
+     * @returns the group name used for saving and restoring view's
+     * configuration.
+     * @since 3.1
+     */
+    QString viewConfigGroup() const;
+    
+    /**
      * Reads the default settings for a view, i.e. the default KFile::FileView.
      * Also reads the sorting and whether hidden files should be shown.
      * Note: the default view will not be set - you have to call
@@ -390,6 +427,7 @@ class KDirOperator : public QWidget
      * to apply it.
      *
      * @see setView
+     * @see #setViewConfig
      * @see #writeConfig
      */
     virtual void readConfig( KConfig *, const QString& group = QString::null );
@@ -398,6 +436,7 @@ class KDirOperator : public QWidget
      * Saves the current settings like sorting, simple or detailed view.
      *
      * @see #readConfig
+     * @see #setViewConfig
      */
     virtual void writeConfig( KConfig *, const QString& group = QString::null );
 

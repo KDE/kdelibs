@@ -49,8 +49,10 @@
 #include <kaction.h>
 #include <kdialogbase.h>
 #include <kextendedsocket.h>
+#include <kprocess.h>
 #include <cups/cups.h>
 #include <cups/ppd.h>
+#include <math.h>
 
 #define ppdi18n(s)	i18n(QString::fromLocal8Bit(s).utf8())
 
@@ -523,7 +525,12 @@ DrMain* KMCupsManager::loadMaticDriver(const QString& drname)
 
 	KPipeProcess	in;
 	QFile		out(tmpFile);
-	if (in.open(exe + " -t cups -d " + comps[2] + " -p " + comps[1]) && out.open(IO_WriteOnly))
+	QString cmd = KProcess::quote(exe);
+	cmd += " -t cups -d ";
+	cmd += KProcess::quote(comps[2]);
+	cmd += " -p ";
+	cmd += KProcess::quote(comps[1]);
+	if (in.open(cmd) && out.open(IO_WriteOnly))
 	{
 		QTextStream	tin(&in), tout(&out);
 		QString	line;
@@ -625,7 +632,10 @@ DrMain* KMCupsManager::loadDriverFile(const QString& fname)
 			for (int i=0; i<ppd->num_sizes; i++)
 			{
 				ppd_size_t	*sz = ppd->sizes+i;
-				driver->addPageSize(new DrPageSize(QString::fromLatin1(sz->name),(int)sz->width,(int)sz->length,(int)sz->left,(int)sz->bottom,(int)sz->right,(int)sz->top));
+				//kdDebug( 500 ) << "PageSize " << sz->name << ", " << sz->width << ", " << sz->length << ", " << sz->left << ", "
+				//	<< sz->bottom << ", " << sz->right << ", " << sz->top << endl;
+				driver->addPageSize(new DrPageSize(QString::fromLatin1(sz->name),(int)sz->width,(int)sz->length,(int)ceil( sz->left ),(int)ceil( sz->bottom ),
+							(int)ceil( sz->width - sz->right ),(int)ceil( sz->length - sz->top )));
 			}
 
 			ppdClose(ppd);
@@ -756,7 +766,11 @@ void KMCupsManager::saveDriverFile(DrMain *driver, const QString& filename)
 			{
 				int	p = line.find(':',8);
 				keyword = line.mid(8,p-8);
-				DrBase	*bopt = driver->findOption((keyword == "PageRegion" ? QString::fromLatin1("PageSize") : keyword));
+				DrBase *bopt = 0;
+				if ( keyword == "PageRegion" || keyword == "ImageableArea" || keyword == "PaperDimension" )
+					bopt = driver->findOption( QString::fromLatin1( "PageSize" ) );
+				else
+					bopt = driver->findOption( keyword );
 				if (bopt)
 					switch (bopt->type())
 					{

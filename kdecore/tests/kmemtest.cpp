@@ -165,9 +165,9 @@ int main(int argc, char *argv[])
      char buf[200];
   
      if (argc >=3)
-        sprintf(buf, "%s &", argv[2]);
+        snprintf(buf, 200, "%s &", argv[2]);
      else
-        sprintf(buf, "%s &", argv[0]);
+        snprintf(buf, 200, "%s &", argv[0]);
 
      printf("Waiting for memory usage to settle down....\n");
      long prev = showTotalMem();

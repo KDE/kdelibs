@@ -196,8 +196,14 @@ void KPassivePopup::positionSelf()
             target = defaultArea();
         }
         else {
-            NETRect r = ni.iconGeometry();
-            target.setRect( r.pos.x, r.pos.y, r.size.width, r.size.height );
+                NETRect r = ni.iconGeometry();
+                target.setRect( r.pos.x, r.pos.y, r.size.width, r.size.height);
+                if ( target.isNull() ) { // bogus value, use the exact position
+                    NETRect dummy;
+                    ni.kdeGeometry( dummy, r );
+                    target.setRect( r.pos.x, r.pos.y, 
+                                    r.size.width, r.size.height);
+                }
         }
     }
 
@@ -220,6 +226,9 @@ void KPassivePopup::moveNear( QRect target )
     // It's apparently trying to go off screen, so display it ALL at the bottom.
     if ( (y + h) > qApp->desktop()->height() )
 	y = qApp->desktop()->height() - h;
+
+    if ( y < 0 )
+        y = 0;
 
 #ifdef OLD_BITS
     if ( (x - w) >= 0  )

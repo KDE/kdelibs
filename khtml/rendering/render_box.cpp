@@ -63,11 +63,6 @@ void RenderBox::setStyle(RenderStyle *_style)
 {
     RenderObject::setStyle(_style);
 
-    // ### move this into the parser. --> should work. Lars
-    // if only horizontal position was defined, vertical should be 50%
-    //if(!_style->backgroundXPosition().isVariable() && _style->backgroundYPosition().isVariable())
-    //style()->setBackgroundYPosition(Length(50, Percent));
-
     switch(_style->position())
     {
     case ABSOLUTE:
@@ -76,7 +71,7 @@ void RenderBox::setStyle(RenderStyle *_style)
         break;
     default:
         setPositioned(false);
-        if(_style->isFloating()) {
+        if(!isTableCell() && _style->isFloating()) {
             setFloating(true);
         } else {
             if(_style->position() == RELATIVE)
@@ -123,9 +118,9 @@ int RenderBox::height() const
 }
 
 
-// --------------------- printing stuff -------------------------------
+// --------------------- painting stuff -------------------------------
 
-void RenderBox::print(QPainter *p, int _x, int _y, int _w, int _h,
+void RenderBox::paint(QPainter *p, int _x, int _y, int _w, int _h,
                                   int _tx, int _ty)
 {
     _tx += m_x;
@@ -135,7 +130,7 @@ void RenderBox::print(QPainter *p, int _x, int _y, int _w, int _h,
     RenderObject *child = firstChild();
     while(child != 0)
     {
-        child->print(p, _x, _y, _w, _h, _tx, _ty);
+        child->paint(p, _x, _y, _w, _h, _tx, _ty);
         child = child->nextSibling();
     }
 }
@@ -147,10 +142,10 @@ void RenderBox::setPixmap(const QPixmap &, const QRect&, CachedImage *image)
 }
 
 
-void RenderBox::printBoxDecorations(QPainter *p,int, int _y,
+void RenderBox::paintBoxDecorations(QPainter *p,int, int _y,
                                        int, int _h, int _tx, int _ty)
 {
-    //kdDebug( 6040 ) << renderName() << "::printDecorations()" << endl;
+    //kdDebug( 6040 ) << renderName() << "::paintDecorations()" << endl;
 
     int w = width();
     int h = height() + borderTopExtra() + borderBottomExtra();
@@ -160,13 +155,13 @@ void RenderBox::printBoxDecorations(QPainter *p,int, int _y,
     int end = QMIN( _y + _h,  _ty + h );
     int mh = end - my;
 
-    printBackground(p, style()->backgroundColor(), style()->backgroundImage(), my, mh, _tx, _ty, w, h);
+    paintBackground(p, style()->backgroundColor(), style()->backgroundImage(), my, mh, _tx, _ty, w, h);
 
     if(style()->hasBorder())
-        printBorder(p, _tx, _ty, w, h, style());
+        paintBorder(p, _tx, _ty, w, h, style());
 }
 
-void RenderBox::printBackground(QPainter *p, const QColor &c, CachedImage *bg, int clipy, int cliph, int _tx, int _ty, int w, int h)
+void RenderBox::paintBackground(QPainter *p, const QColor &c, CachedImage *bg, int clipy, int cliph, int _tx, int _ty, int w, int h)
 {
     if ( cliph < 0 )
 	return;
@@ -175,7 +170,7 @@ void RenderBox::printBackground(QPainter *p, const QColor &c, CachedImage *bg, i
         p->fillRect(_tx, clipy, w, cliph, c);
     // no progressive loading of the background image
     if(bg && bg->pixmap_size() == bg->valid_rect().size() && !bg->isTransparent() && !bg->isErrorImage()) {
-        //kdDebug( 6040 ) << "printing bgimage at " << _tx << "/" << _ty << endl;
+        //kdDebug( 6040 ) << "painting bgimage at " << _tx << "/" << _ty << endl;
         // ### might need to add some correct offsets
         // ### use paddingX/Y
 
@@ -594,86 +589,36 @@ void RenderBox::calcHeight()
     }
 }
 
-short RenderBox::calcReplacedWidth(bool* ieHack) const
+short RenderBox::calcReplacedWidth() const
 {
     Length w = style()->width();
-    short width;
-    if ( ieHack )
-        *ieHack = style()->height().isPercent() || w.isPercent();
 
     switch( w.type ) {
-    case Variable:
-    {
-        Length h = style()->height();
-        int ih = intrinsicHeight();
-        if ( ih > 0 && ( h.isPercent() || h.isFixed() ) )
-            width = ( ( h.isPercent() ? calcReplacedHeight() : h.value )*intrinsicWidth() ) / ih;
-        else
-            width = intrinsicWidth();
-        break;
-    }
+    case Fixed:
+        return w.value;
     case Percent:
     {
-        //RenderObject* p = parent();
-        int cw = containingBlockWidth();
-        if ( cw )
-            width = w.minWidth( cw );
-        else
-            width = intrinsicWidth();
-        break;
+        const int cw = containingBlockWidth();
+        if (cw > 0)
+            return w.minWidth(cw);
     }
-    case Fixed:
-        width = w.value;
-        break;
+    // fall through
     default:
-        width = intrinsicWidth();
-        break;
-    };
-
-    return width;
+        return intrinsicWidth();
+    }
 }
 
 int RenderBox::calcReplacedHeight() const
 {
-    Length h = style()->height();
-    short height;
-
+    const Length& h = style()->height();
     switch( h.type ) {
-    case Variable:
-    {
-        Length w = style()->width();
-        int iw = intrinsicWidth();
-        if( iw > 0 && ( w.isFixed() || w.isPercent() ))
-            height = (( w.isPercent() ? calcReplacedWidth() : w.value ) * intrinsicHeight()) / iw;
-        else
-            height = intrinsicHeight();
-    }
-    break;
     case Percent:
-    {
-        RenderObject* p = parent();
-        while (p && !p->isTableCell()) p = p->parent();
-        bool doIEHack = !p;
-        RenderObject* cb = containingBlock();
-        if ( !cb->isTableCell() && doIEHack)
-            height = h.minWidth(availableHeight());
-        else {
-            if (!doIEHack)
-                cb = cb->containingBlock();
-
-	    Length h = cb->style()->height();
-            height = h.minWidth(availableHeight());
-        }
-    }
-    break;
+        return availableHeight();
     case Fixed:
-        height = h.value;
-        break;
+        return h.value;
     default:
-        height = intrinsicHeight();
+        return intrinsicHeight();
     };
-
-    return height;
 }
 
 int RenderBox::availableHeight() const
@@ -721,12 +666,12 @@ void RenderBox::calcAbsoluteHorizontal()
     int pab = borderLeft()+ borderRight()+ paddingLeft()+ paddingRight();
 
     l=r=ml=mr=w=AUTO;
-    cw = containingBlockWidth()+cb->paddingLeft() +cb->paddingRight();
+    cw = containingBlock()->width();
 
     if(!style()->left().isVariable())
         l = style()->left().width(cw) + cb->borderLeft();
     if(!style()->right().isVariable())
-        r = style()->right().width(cw) - cb->borderRight();
+        r = style()->right().width(cw) + cb->borderRight();
     if(!style()->width().isVariable())
         w = style()->width().width(cw);
     else if (isReplaced())
@@ -875,8 +820,8 @@ void RenderBox::calcAbsoluteVertical()
 
     Length hl = cb->style()->height();
     if (hl.isFixed())
-        ch = hl.value + cb->paddingTop()
-             + cb->paddingBottom();
+        ch = hl.value + cb->paddingTop() + cb->paddingBottom()
+	     + cb->borderTop() + cb->borderBottom();
     else if (cb->isHtml())
         ch = cb->availableHeight();
     else
@@ -885,7 +830,7 @@ void RenderBox::calcAbsoluteVertical()
     if(!style()->top().isVariable())
         t = style()->top().width(ch) + cb->borderTop();
     if(!style()->bottom().isVariable())
-        b = style()->bottom().width(ch) - cb->borderBottom();
+        b = style()->bottom().width(ch) + cb->borderBottom();
     if(!style()->height().isVariable())
     {
         h = style()->height().width(ch);
@@ -1003,7 +948,7 @@ void RenderBox::calcAbsoluteVertical()
     m_marginBottom = mb;
     m_y = t + mt;
 
-    //printf("v: h=%d, t=%d, b=%d, mt=%d, mb=%d, m_y=%d\n",h,t,b,mt,mb,m_y);
+    //paintf("v: h=%d, t=%d, b=%d, mt=%d, mb=%d, m_y=%d\n",h,t,b,mt,mb,m_y);
 
 }
 

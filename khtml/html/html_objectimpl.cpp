@@ -39,6 +39,7 @@
 #include "css/cssvalues.h"
 #include "rendering/render_applet.h"
 #include "rendering/render_frames.h"
+#include "rendering/render_image.h"
 #include "xml/dom2_eventsimpl.h"
 
 #ifndef Q_WS_QWS // We don't have Java in Qt Embedded
@@ -187,14 +188,20 @@ void HTMLAppletElementImpl::attach()
 
     KHTMLView *view = getDocument()->view();
 
-#ifndef Q_WS_QWS // FIXME(E)? I don't think this is possible with Qt Embedded...
-    if( view->part()->javaEnabled() )
+#ifndef Q_WS_QWS // FIXME?
+    KURL url = getDocument()->baseURL();
+    DOMString codeBase = getAttribute( ATTR_CODEBASE );
+    DOMString code = getAttribute( ATTR_CODE );
+    if ( !codeBase.isEmpty() )
+        url = KURL( url, codeBase.string() );
+    if ( !code.isEmpty() )
+        url = KURL( url, code.string() );
+
+    if( view->part()->javaEnabled() && isURLAllowed( url.url() ) )
     {
 	QMap<QString, QString> args;
 
-        DOMString code = getAttribute(ATTR_CODE);
 	args.insert( "code", code.string());
-	DOMString codeBase = getAttribute(ATTR_CODEBASE);
 	if(!codeBase.isNull())
 	    args.insert( "codeBase", codeBase.string() );
 	DOMString name = getDocument()->htmlMode() != DocumentImpl::XHtml ?
@@ -239,7 +246,8 @@ NodeImpl::Id HTMLEmbedElementImpl::id() const
 void HTMLEmbedElementImpl::parseAttribute(AttributeImpl *attr)
 {
   DOM::DOMStringImpl *stringImpl = attr->val();
-  QString val = QConstString( stringImpl->s, stringImpl->l ).string();
+  QConstString cv( stringImpl->s, stringImpl->l );
+  QString val = cv.string();
 
   int pos;
   switch ( attr->id() )
@@ -303,17 +311,18 @@ void HTMLEmbedElementImpl::attach()
 
     if (parentNode()->renderer()) {
         KHTMLView* w = getDocument()->view();
-        if (w->part()->pluginsEnabled()) {
-            if (parentNode()->id() != ID_OBJECT)
-                m_render = new RenderPartObject(this);
-        }
+        RenderStyle* _style = getDocument()->styleSelector()->styleForElement( this );
+        _style->ref();
 
-        if (m_render) {
-            m_render->setStyle(getDocument()->styleSelector()->styleForElement(this));
+        if (w->part()->pluginsEnabled() && isURLAllowed( url ) &&
+            parentNode()->id() != ID_OBJECT && _style->display() != NONE ) {
+            m_render = new RenderPartObject(this);
+            m_render->setStyle(_style );
             parentNode()->renderer()->addChild(m_render, nextRenderer());
             static_cast<RenderPartObject*>(m_render)->updateWidget();
             setLiveConnect(w->part()->liveConnectExtension(static_cast<RenderPartObject*>(m_render)));
         }
+        _style->deref();
     }
 
     NodeBaseImpl::attach();
@@ -324,6 +333,7 @@ void HTMLEmbedElementImpl::attach()
 HTMLObjectElementImpl::HTMLObjectElementImpl(DocumentPtr *doc) : HTMLElementImpl(doc)
 {
     needWidgetUpdate = false;
+    m_renderAlternative = false;
 }
 
 HTMLObjectElementImpl::~HTMLObjectElementImpl()
@@ -348,6 +358,7 @@ void HTMLObjectElementImpl::parseAttribute(AttributeImpl *attr)
   switch ( attr->id() )
   {
     case ATTR_TYPE:
+    case ATTR_CODETYPE:
       serviceType = val.lower();
       pos = serviceType.find( ";" );
       if ( pos!=-1 )
@@ -355,7 +366,7 @@ void HTMLObjectElementImpl::parseAttribute(AttributeImpl *attr)
       needWidgetUpdate = true;
       break;
     case ATTR_DATA:
-      url = khtml::parseURL(  val ).string();
+      url = khtml::parseURL( val ).string();
       needWidgetUpdate = true;
       break;
     case ATTR_WIDTH:
@@ -397,31 +408,37 @@ void HTMLObjectElementImpl::attach()
     assert(!m_render);
 
     KHTMLView* w = getDocument()->view();
-    bool loadplugin = w->part()->pluginsEnabled();
-    if (!loadplugin) {
+    if ( !w->part()->pluginsEnabled() ||
+         ( url.isEmpty() && classId.isEmpty() ) ||
+         m_renderAlternative || !isURLAllowed( url ) ) {
         // render alternative content
         ElementImpl::attach();
         return;
     }
 
-    KURL u = getDocument()->completeURL(url);
-    for (KHTMLPart* part = w->part()->parentPart(); part; part = part->parentPart())
-        if (part->url() == u) {
-            loadplugin = false;
-            break;
-        }
+    RenderStyle* _style = getDocument()->styleSelector()->styleForElement(this);
+    _style->ref();
 
-    if (loadplugin && parentNode()->renderer()) {
-        needWidgetUpdate = false;
-        m_render = new RenderPartObject(this);
-        m_render->setStyle(getDocument()->styleSelector()->styleForElement(this));
+    if (parentNode()->renderer() && _style->display() != NONE) {
+        needWidgetUpdate=false;
+        bool imagelike = serviceType.startsWith("image/");
+        if (imagelike)
+            m_render = new RenderImage(this);
+        else
+            m_render = new RenderPartObject(this);
+
+        m_render->setStyle(_style);
         parentNode()->renderer()->addChild(m_render, nextRenderer());
+        if (imagelike)
+            m_render->updateFromElement();
     }
+
+    _style->deref();
 
     NodeBaseImpl::attach();
 
-  // ### do this when we are actually finished loading instead
-  dispatchHTMLEvent(EventImpl::LOAD_EVENT,false,false);
+    // ### do this when we are actually finished loading instead
+    if (m_render)  dispatchHTMLEvent(EventImpl::LOAD_EVENT,false,false);
 }
 
 void HTMLObjectElementImpl::detach()
@@ -431,6 +448,20 @@ void HTMLObjectElementImpl::detach()
         dispatchHTMLEvent(EventImpl::UNLOAD_EVENT,false,false);
 
   HTMLElementImpl::detach();
+}
+
+void HTMLObjectElementImpl::renderAlternative()
+{
+    // an unbelievable hack. FIXME!!
+
+    if ( m_renderAlternative ) return;
+
+    if ( attached() )
+        detach();
+
+    m_renderAlternative = true;
+
+    attach();
 }
 
 void HTMLObjectElementImpl::recalcStyle( StyleChange ch )
@@ -445,19 +476,6 @@ void HTMLObjectElementImpl::recalcStyle( StyleChange ch )
 
 // -------------------------------------------------------------------------
 
-HTMLParamElementImpl::HTMLParamElementImpl(DocumentPtr *doc)
-    : HTMLElementImpl(doc)
-{
-    m_name = 0;
-    m_value = 0;
-}
-
-HTMLParamElementImpl::~HTMLParamElementImpl()
-{
-    if(m_name) m_name->deref();
-    if(m_value) m_value->deref();
-}
-
 NodeImpl::Id HTMLParamElementImpl::id() const
 {
     return ID_PARAM;
@@ -471,12 +489,10 @@ void HTMLParamElementImpl::parseAttribute(AttributeImpl *attr)
         if (getDocument()->htmlMode() != DocumentImpl::XHtml) break;
         // fall through
     case ATTR_NAME:
-        m_name = attr->val();
-        if (m_name) m_name->ref();
+        m_name = attr->value().string();
         break;
     case ATTR_VALUE:
-        m_value = attr->val();
-        if (m_value) m_value->ref();
+        m_value = attr->value().string();
         break;
     }
 }

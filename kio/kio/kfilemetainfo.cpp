@@ -44,7 +44,10 @@ public:
         : QShared(),
           mimeTypeInfo( mti ),
           key( _key ),
-          value( _value )
+          value( _value ),
+          dirty( false ),
+          added( false ),
+          removed( false )
     {}
 
     // we use this one for the streaming operators
@@ -136,6 +139,9 @@ bool KFileMetaInfoItem::setValue( const QVariant& value )
 
 //    kdDebug(7033) << key() << ".setValue()\n";
 
+    if ( d->value == value )
+        return true;
+
     d->dirty = true;
     d->value = value;
     // If we don't cast (and test for canCast in the above if), QVariant is
@@ -223,6 +229,11 @@ bool KFileMetaInfoItem::isValid() const
 void KFileMetaInfoItem::setAdded()
 {
     d->added = true;
+}
+
+void KFileMetaInfoItem::setRemoved()
+{
+    d->removed = true;
 }
 
 void KFileMetaInfoItem::ref()
@@ -488,17 +499,23 @@ bool KFileMetaInfo::applyChanges()
 
     // look up if we need to write to the file
     QMapConstIterator<QString, KFileMetaInfoGroup> it;
-    for (it = d->groups.begin(); it!=d->groups.end(); ++it)
+    for (it = d->groups.begin(); it!=d->groups.end() && !doit; ++it)
+    {
+        if ( (*it).isModified() )
+            doit = true;
+
+        else
     {
         QStringList keys = it.data().keys();
-        for (QStringList::Iterator it2 = keys.begin(); it2!=keys.end(); ++it)
+            for (QStringList::Iterator it2 = keys.begin(); it2!=keys.end(); ++it2)
         {
-            if ((*it)[*it2].isModified());
+                if ( (*it)[*it2].isModified() )
             {
                 doit = true;
                 break;
             }
         }
+    }
     }
 
     if (!doit)
@@ -982,7 +999,9 @@ public:
     Data(const QString& _name)
         : QShared(),
           name(_name),
-          mimeTypeInfo(0L)
+          mimeTypeInfo(0L),
+          dirty( false ),
+          added( false )
     {}
 
     // we use this one for the streaming operators
@@ -998,7 +1017,6 @@ public:
     QStringList                         removedItems;
     bool                                dirty   :1;
     bool                                added   :1;
-    bool                                removed :1;
 
     static Data* null;
     static Data* makeNull();
@@ -1152,6 +1170,11 @@ void KFileMetaInfoGroup::setAdded()
     d->added = true;
 }
 
+bool KFileMetaInfoGroup::isModified() const
+{
+    return d->dirty;
+}
+
 void KFileMetaInfoGroup::ref()
 {
     if (d != Data::null) d->ref();
@@ -1226,8 +1249,10 @@ bool KFileMetaInfoGroup::removeItem( const QString& key )
         return false;
     }
 
+    (*it).setRemoved();
     d->items.remove(it);
     d->removedItems.append(key);
+    d->dirty = true;
     return true;
 }
 

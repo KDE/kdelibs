@@ -188,6 +188,9 @@ public:
       point.  */
   KDoubleValidator( double bottom, double top, int decimals,
 		    QObject * parent, const char * name=0 );
+  /** Destructs the validator.
+   */
+  virtual ~KDoubleValidator();
 
   /** Overloaded for internal reasons. The API is not affected. */
   virtual QValidator::State validate( QString & input, int & pos ) const;

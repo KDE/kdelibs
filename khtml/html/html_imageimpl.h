@@ -38,9 +38,8 @@ class HTMLImageElementImpl
     : public HTMLElementImpl
 {
 public:
-    HTMLImageElementImpl(DocumentPtr *doc);
-
-    ~HTMLImageElementImpl();
+    HTMLImageElementImpl(DocumentPtr *doc)
+        : HTMLElementImpl(doc), ismap(false) {}
 
     virtual Id id() const;
 

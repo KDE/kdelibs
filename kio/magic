@@ -572,6 +572,9 @@
 # RTF - Rich Text Format
 0	string		{\\rtf		text/rtf
 
+# UTF16 (UTF16 docs are not MP3s - see the next audio/x-mp3 check :))
+0  beshort		0xfffe		text/plain
+
 #------------------------------------------------------------------------------
 # animation:  file(1) magic for animation/movie formats
 #

@@ -452,6 +452,7 @@ void HTMLInputElement::setReadOnly( bool _readOnly )
 	static_cast<ElementImpl*>(impl)->setAttribute(ATTR_READONLY, _readOnly ? "" : 0);
 }
 
+/* The next two are provided for backwards compatibility. */
 DOMString HTMLInputElement::size() const
 {
     if(!impl) return DOMString();
@@ -461,6 +462,17 @@ DOMString HTMLInputElement::size() const
 void HTMLInputElement::setSize( const DOMString &value )
 {
     if(impl) static_cast<ElementImpl*>(impl)->setAttribute(ATTR_SIZE, value);
+}
+
+long HTMLInputElement::getSize() const
+{
+    if(!impl) return 0;
+    return static_cast<ElementImpl*>(impl)->getAttribute(ATTR_SIZE).toInt();
+}
+
+void HTMLInputElement::setSize( long value )
+{
+    if(impl) static_cast<ElementImpl*>(impl)->setAttribute(ATTR_SIZE, QString::number(value));
 }
 
 DOMString HTMLInputElement::src() const

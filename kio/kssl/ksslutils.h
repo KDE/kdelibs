@@ -20,12 +20,10 @@
 #ifndef _INCLUDE_KSSLUTILS_H
 #define _INCLUDE_KSSLUTILS_H
 
-#ifdef HAVE_CONFIG_H
-#include <config.h>
-#endif
+#include "ksslconfig.h"
 
 #include <unistd.h>
-#ifdef HAVE_SSL
+#ifdef KSSL_HAVE_SSL
 #define crypt _openssl_crypt
 #include <openssl/x509.h>
 #undef crypt
@@ -34,7 +32,7 @@ class QString;
 class QDateTime;
 
 
-#ifdef HAVE_SSL
+#ifdef KSSL_HAVE_SSL
 // This functionality is missing in OpenSSL
 QString ASN1_UTCTIME_QString(ASN1_UTCTIME *tm);
 QDateTime ASN1_UTCTIME_QDateTime(ASN1_UTCTIME *tm, int *isGmt);

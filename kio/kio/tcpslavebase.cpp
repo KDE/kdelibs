@@ -298,7 +298,8 @@ bool TCPSlaveBase::connectToHost( const QString &host,
     d->userAborted = false;
 
     //  - leaving SSL - warn before we even connect
-    if (metaData("ssl_activate_warnings") == "TRUE" &&
+    if (metaData("main_frame_request") == "TRUE" &&
+               metaData("ssl_activate_warnings") == "TRUE" &&
                metaData("ssl_was_in_use") == "TRUE" &&
         !m_bIsSSL) {
        KSSLSettings kss;
@@ -343,7 +344,10 @@ bool TCPSlaveBase::connectToHost( const QString &host,
 
     // store the IP for later
     const KSocketAddress *sa = ks.peerAddress();
-    d->ip = sa->nodeName();
+    if (sa)
+      d->ip = sa->nodeName();
+    else
+      d->ip = "";
 
     ks.release(); // KExtendedSocket no longer applicable
 

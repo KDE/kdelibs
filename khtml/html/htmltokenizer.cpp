@@ -6,7 +6,8 @@
               (C) 1998 Waldo Bastian (bastian@kde.org)
               (C) 1999 Lars Knoll (knoll@kde.org)
               (C) 1999 Antti Koivisto (koivisto@kde.org)
-              (C) 2001 Dirk Mueller (mueller@kde.org)
+              (C) 2001-2003 Dirk Mueller (mueller@kde.org)
+              (C) 2002 Apple Computer, Inc.
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -225,8 +226,6 @@ void HTMLTokenizer::begin()
     tquote = NoQuote;
     searchCount = 0;
     Entity = NoEntity;
-    scriptSrc = "";
-    pendingSrc = "";
     noMoreData = false;
     brokenComments = false;
     brokenServer = false;
@@ -419,7 +418,7 @@ void HTMLTokenizer::scriptHandler()
 
             setSrc(QString::null);
             scriptCodeSize = scriptCodeResync = 0;
-            scriptExecution( exScript, QString(), scriptStartLineno );
+            scriptExecution( exScript, QString::null, tagStartLineno /*scriptStartLineno*/ );
         }
     }
 
@@ -431,7 +430,7 @@ void HTMLTokenizer::scriptHandler()
         QString newStr = QString(src.current(), src.length());
         newStr += pendingSrc;
         setSrc(newStr);
-        pendingSrc = "";
+        pendingSrc = QString::null;
     }
     else if ( !prependingSrc.isEmpty() )
         write( prependingSrc, false );
@@ -751,10 +750,14 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
                         // Found '<!--' sequence
                         ++src;
                         dest = buffer; // ignore the previous part of this tag
-                        comment = true;
                         tag = NoTag;
-                        parseComment(src);
 
+                        comment = true;
+                        // push what we parsed so far upon the stack. helps for <!-->
+                        checkScriptBuffer();
+                        scriptCode[0] = scriptCode[1] = '-';
+                        scriptCodeSize = 2;
+                        parseComment(src);
                         return; // Finished parsing tag!
                     }
                     // cuts of high part, is okay
@@ -1066,7 +1069,7 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
                 tagID -= ID_CLOSE_TAG;
             else if ( beginTag && tagID == ID_SCRIPT ) {
                 AttributeImpl* a = 0;
-                scriptSrc = scriptSrcCharset = "";
+                scriptSrc = scriptSrcCharset = QString::null;
                 if ( currToken.attrs && /* potentially have a ATTR_SRC ? */
                      parser->doc()->view()->part()->jScriptEnabled() && /* jscript allowed at all? */
                      view /* are we a regular tokenizer or just for innerHTML ? */
@@ -1447,7 +1450,7 @@ void HTMLTokenizer::write( const QString &str, bool appendData )
             ++src;
         }
     }
-    _src = QString();
+    _src = QString::null;
 
     if (noMoreData && cachedScript.isEmpty() && !m_executingScript )
         end(); // this actually causes us to be deleted
@@ -1570,6 +1573,8 @@ void HTMLTokenizer::processToken()
 
     if ( currToken.flat && currToken.id != ID_TEXT && !parser->noSpaces() )
 	discard = NoneDiscard;
+    else if ( parser->selectMode() )
+        discard = AllDiscard;
 
     currToken.reset();
     if (jsProxy)
@@ -1601,7 +1606,7 @@ void HTMLTokenizer::enlargeScriptBuffer(int len)
     scriptCodeMaxSize = newsize;
 }
 
-void HTMLTokenizer::notifyFinished(CachedObject */*finishedObj*/)
+void HTMLTokenizer::notifyFinished(CachedObject* /*finishedObj*/)
 {
     assert(!cachedScript.isEmpty());
     bool done = false;
@@ -1629,7 +1634,7 @@ void HTMLTokenizer::notifyFinished(CachedObject */*finishedObj*/)
         // of 'scriptOutput'.
         if ( !script ) {
             QString rest = pendingSrc;
-            pendingSrc = "";
+            pendingSrc = QString::null;
             write(rest, false);
             // we might be deleted at this point, do not
             // access any members.
@@ -1637,7 +1642,7 @@ void HTMLTokenizer::notifyFinished(CachedObject */*finishedObj*/)
     }
 }
 
-void HTMLTokenizer::setSrc(QString source)
+void HTMLTokenizer::setSrc(const QString& source)
 {
     lineno += src.lineCount();
     _src = source;

@@ -334,13 +334,15 @@ HTMLModElement::HTMLModElement(HTMLElementImpl *_impl)
 
 HTMLModElement &HTMLModElement::operator = (const Node &other)
 {
-    if( other.elementId() != ID_INS &&
-	other.elementId() != ID_DEL )
-    {
-	if ( impl ) impl->deref();
-	impl = 0;
-    } else {
-    Node::operator = (other);
+    if (other.handle() != handle()) {
+        if( other.elementId() != ID_INS &&
+            other.elementId() != ID_DEL )
+        {
+            if ( impl ) impl->deref();
+            impl = 0;
+        } else {
+            Node::operator = (other);
+        }
     }
     return *this;
 }

@@ -17,7 +17,7 @@ mostrant les pàgines d'ajuda de &kappname;. (aquest document).</para>
 <varlistentry>
 <term><menuchoice>
 <shortcut>
-<keycombo action="simul">&Shift;<keycap>F1</keycap></keycombo>
+<keycombo action="simul">&Maj;<keycap>F1</keycap></keycombo>
 </shortcut>
 <guimenu>Ajuda</guimenu>
 <guimenuitem>Què és això?</guimenuitem>

@@ -93,6 +93,7 @@ namespace KJS {
     void closeNow();
     void delayedGoHistory(int steps);
     void goHistory(int steps);
+    void goURL(ExecState* exec, const QString& url, bool lockHistory = true);
     Value openWindow(ExecState *exec, const List &args);
     void resizeTo(QWidget* tl, int width, int height);
     void afterScriptExecution();
@@ -114,9 +115,11 @@ namespace KJS {
            InnerWidth, Length, _Location, Name, _Navigator, _Konqueror, ClientInformation,
            OffscreenBuffering, Opener, OuterHeight, OuterWidth, PageXOffset, PageYOffset,
            Parent, Personalbar, ScreenX, ScreenY, Scrollbars, Scroll, ScrollBy,
-           ScrollTo, MoveBy, MoveTo, ResizeBy, ResizeTo, Self, _Window, Top, _Screen,
+           ScreenTop, ScreenLeft,
+           ScrollTo, ScrollX, ScrollY, MoveBy, MoveTo, ResizeBy, ResizeTo, Self, _Window, Top, _Screen,
            Image, Option, Alert, Confirm, Prompt, Open, SetTimeout, ClearTimeout,
-           Focus, Blur, Close, SetInterval, ClearInterval, CaptureEvents, Print,
+           Focus, Blur, Close, SetInterval, ClearInterval, CaptureEvents, ReleaseEvents,
+           Print, AddEventListener, RemoveEventListener,
            Onabort, Onblur,
            Onchange, Onclick, Ondblclick, Ondragdrop, Onerror, Onfocus,
            Onkeydown, Onkeypress, Onkeyup, Onload, Onmousedown, Onmousemove,

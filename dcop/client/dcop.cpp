@@ -143,11 +143,11 @@ void queryFunctions( const char* app, const char* obj )
     if ( !ok )
     {
 	qWarning( "object '%s' in application '%s' not accessible", obj, app );
-        exit(1);
+	exit( 1 );
     }
 }
 
-void callFunction( const char* app, const char* obj, const char* func, const QCStringList args )
+int callFunction( const char* app, const char* obj, const char* func, const QCStringList args )
 {
     QString f = func; // Qt is better with unicode strings, so use one.
     int left = f.find( '(' );
@@ -156,7 +156,7 @@ void callFunction( const char* app, const char* obj, const char* func, const QCS
     if ( right <  left )
     {
 	qWarning( "parentheses do not match" );
-        exit(1);
+	return( 1 );
     }
 
     if ( left < 0 ) {
@@ -169,7 +169,7 @@ void callFunction( const char* app, const char* obj, const char* func, const QCS
 	if ( !ok )
         {
 	    qWarning( "object not accessible" );
-            exit(1);
+	    return( 1 );
         }
 	for ( QCStringList::Iterator it = funcs.begin(); it != funcs.end(); ++it ) {
 	    int l = (*it).find( '(' );
@@ -189,8 +189,7 @@ void callFunction( const char* app, const char* obj, const char* func, const QCS
 	if ( realfunc.isEmpty() )
 	{
 	    qWarning("no such function");
-//            exit(1);
-	    return;
+	    return( 1 );
 	}
 	f = realfunc;
 	left = f.find( '(' );
@@ -279,12 +278,12 @@ void callFunction( const char* app, const char* obj, const char* func, const QCS
     if ( i != args.count() )
     {
 	qWarning( "arguments do not match" );
-	exit(1);
+	return( 1 );
     }
 
     if ( !dcop->call( app, obj, f.latin1(),  data, replyType, replyData) ) {
 	qWarning( "call failed");
-        exit(1);
+	return( 1 );
     } else {
 	QDataStream reply(replyData, IO_ReadOnly);
 
@@ -294,6 +293,7 @@ void callFunction( const char* app, const char* obj, const char* func, const QCS
             printf( "%s\n", replyString.data() );
         }
     }
+    return 0;
 }
 
 /**
@@ -405,7 +405,7 @@ QStringList dcopSessionList( const QString &user, const QString &home )
 /**
  * Do the actual DCOP call
  */
-void runDCOP( QCStringList args, UserList users, Session session,
+int runDCOP( QCStringList args, UserList users, Session session,
               const QString sessionName, bool readStdin )
 {
     bool DCOPrefmode=false;
@@ -414,6 +414,7 @@ void runDCOP( QCStringList args, UserList users, Session session,
     QCString function;
     QCStringList params;
     DCOPClient *client = 0L;
+    int retval = 0;
     if ( !args.isEmpty() && args[ 0 ].find( "DCOPRef(" ) == 0 )
     {
 	int delimPos = args[ 0 ].findRev( ',' );
@@ -670,14 +671,18 @@ void runDCOP( QCStringList args, UserList users, Session session,
 			    *replaceArg = buf.local8Bit();
 
 			if( !buf.isNull() )
-			    callFunction( app, objid, function, params );
+			{
+			    int res = callFunction( app, objid, function, params );
+			    retval = QMAX( retval, res );
+			}
 		    }
 		}
 		else
 		{
 		    // Just call function
 //		    cout_ << "call " << app << ", " << objid << ", " << function << ", (params)" << endl;
-		    callFunction( app, objid, function, params );
+		    int res = callFunction( app, objid, function, params );
+		    retval = QMAX( retval, res );
 		}
 		break;
 	    }
@@ -690,6 +695,8 @@ void runDCOP( QCStringList args, UserList users, Session session,
 	if( it == users.end() )
 	    break;
     }
+
+    return retval;
 }
 
 
@@ -821,9 +828,9 @@ int main( int argc, char** argv )
     else if( !user.isEmpty() )
 	users[ user ] = userList()[ user ];
 
-    runDCOP( args, users, session, sessionName, readStdin );
+    int retval = runDCOP( args, users, session, sessionName, readStdin );
 
-    return 0;
+    return retval;
 }
 
 // vim: set ts=8 sts=4 sw=4 noet:

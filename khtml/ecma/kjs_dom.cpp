@@ -69,12 +69,12 @@ IMPLEMENT_PROTOTYPE(DOMNodeProto,DOMNodeProtoFunc)
 
 const ClassInfo DOMNode::info = { "Node", 0, &DOMNodeTable, 0 };
 
-DOMNode::DOMNode(ExecState *exec, DOM::Node n)
+DOMNode::DOMNode(ExecState *exec, const DOM::Node& n)
   : DOMObject(DOMNodeProto::self(exec)), node(n)
 {
 }
 
-DOMNode::DOMNode(Object proto, DOM::Node n)
+DOMNode::DOMNode(const Object& proto, const DOM::Node& n)
   : DOMObject(proto), node(n)
 {
 }
@@ -198,9 +198,9 @@ Value DOMNode::getValueProperty(ExecState *exec, int token) const
   case OnChange:
     return getListener(DOM::EventImpl::CHANGE_EVENT);
   case OnClick:
-    return getListener(DOM::EventImpl::KHTML_CLICK_EVENT);
+    return getListener(DOM::EventImpl::KHTML_ECMA_CLICK_EVENT);
   case OnDblClick:
-    return getListener(DOM::EventImpl::KHTML_DBLCLICK_EVENT);
+    return getListener(DOM::EventImpl::KHTML_ECMA_DBLCLICK_EVENT);
   case OnDragDrop:
     return getListener(DOM::EventImpl::KHTML_DRAGDROP_EVENT);
   case OnError:
@@ -255,48 +255,58 @@ Value DOMNode::getValueProperty(ExecState *exec, int token) const
     KHTMLView* v = 0;
     if ( docimpl ) {
       v = docimpl->view();
-      docimpl->updateRendering();
-      if ( v )
+      // Only do a layout if changes have occurred that make it necessary.
+      if ( v && docimpl->renderer() && !docimpl->renderer()->layouted() )
+      {
+        docimpl->updateRendering();
         docimpl->view()->layout();
+      }
 
       // refetch in case the renderer changed
       rend = node.handle() ? node.handle()->renderer() : 0L;
     }
 
+    if (rend && rend->isBody())
+      rend = rend->root();
+
     switch (token) {
-    case OffsetLeft: {
-      if ( !rend )
+    case OffsetLeft:
+      if ( rend )
+        return Number(rend->xPos()); // TODO offsetLeft()
+      else
         return Undefined();
-      //return Number(rend->xPos());
-      int x, y;
-      if ( rend->absolutePosition( x, y ) )
-        return Number(x);
-    }
     case OffsetTop:
-      if ( !rend )
+      if ( rend )
+        return Number(rend->yPos()); // TODO offsetTop()
+      else
         return Undefined();
-      //return Number(rend->yPos());
-      int x, y;
-      if ( rend->absolutePosition( x, y ) )
-        return Number(y);
     case OffsetWidth:
-      return rend ? static_cast<Value>(Number(rend->width()) ) : Value(Undefined());
+      if ( rend )
+        return Number(rend->width());
+      else
+        return Undefined();
     case OffsetHeight:
-      return rend ? static_cast<Value>(Number(rend->height() ) ) : Value(Undefined());
-    case OffsetParent:
-      return getDOMNode(exec,node.parentNode()); // not necessarily correct
+      if ( rend )
+        return Number(rend->height());
+      else
+        return Undefined();
+    case OffsetParent: {
+      khtml::RenderObject* par = rend ? rend->parent() : 0; // TODO offsetParent
+      if ( par )
+        return getDOMNode(exec, par->element() );
+      else
+        return Undefined();
+    }
     case ClientWidth:
       if (!rend)
         return Undefined();
-      else
-        // "Width of the object including padding, but not including margin, border, or scroll bar."
-        return Number(rend->width() - rend->borderLeft() - rend->borderRight() );
+      // "Width of the object including padding, but not including margin, border, or scroll bar."
+      return Number(rend->width() - rend->borderLeft() - rend->borderRight() );
     case ClientHeight:
       if (!rend)
         return Undefined();
-      else
-        // "Height of the object including padding, but not including margin, border, or scroll bar."
-        return Number(rend->height() - rend->borderTop() - rend->borderBottom() );
+      // "Height of the object including padding, but not including margin, border, or scroll bar."
+      return Number(rend->height() - rend->borderTop() - rend->borderBottom() );
     case ScrollLeft: {
       int x, y;
       if ( rend && v && rend->absolutePosition( x, y ) )
@@ -364,10 +374,10 @@ void DOMNode::putValueProperty(ExecState *exec, int token, const Value& value, i
     setListener(exec,DOM::EventImpl::CHANGE_EVENT,value);
     break;
   case OnClick:
-    setListener(exec,DOM::EventImpl::KHTML_CLICK_EVENT,value);
+    setListener(exec,DOM::EventImpl::KHTML_ECMA_CLICK_EVENT,value);
     break;
   case OnDblClick:
-    setListener(exec,DOM::EventImpl::KHTML_DBLCLICK_EVENT,value);
+    setListener(exec,DOM::EventImpl::KHTML_ECMA_DBLCLICK_EVENT,value);
     break;
   case OnDragDrop:
     setListener(exec,DOM::EventImpl::KHTML_DRAGDROP_EVENT,value);
@@ -451,7 +461,7 @@ UString DOMNode::toString(ExecState *) const
   return "[object " + s + "]";
 }
 
-void DOMNode::setListener(ExecState *exec, int eventId, Value func) const
+void DOMNode::setListener(ExecState *exec, int eventId, const Value& func) const
 {
   node.handle()->setHTMLEventListener(eventId,Window::retrieveActive(exec)->getJSEventListener(func,true));
 }
@@ -525,7 +535,7 @@ Value DOMNodeProtoFunc::tryCall(ExecState *exec, Object &thisObj, const List &ar
 
 const ClassInfo DOMNodeList::info = { "NodeList", 0, 0, 0 };
 
-DOMNodeList::DOMNodeList(ExecState *exec, DOM::NodeList l)
+DOMNodeList::DOMNodeList(ExecState *exec, const DOM::NodeList& l)
  : DOMObject(exec->interpreter()->builtinObjectPrototype()), list(l) { }
 
 DOMNodeList::~DOMNodeList()
@@ -729,11 +739,16 @@ const ClassInfo DOMDocument::info = { "Document", &DOMNode::info, &DOMDocumentTa
 @end
 */
 
-DOMDocument::DOMDocument(ExecState *exec, DOM::Document d)
+DOMDocument::DOMDocument(ExecState *exec, const DOM::Document& d)
   : DOMNode(DOMDocumentProto::self(exec), d) { }
 
-DOMDocument::DOMDocument(Object proto, DOM::Document d)
+DOMDocument::DOMDocument(const Object& proto, const DOM::Document& d)
   : DOMNode(proto, d) { }
+
+DOMDocument::~DOMDocument()
+{
+  //ScriptInterpreter::forgetDOMObject(node.handle());
+}
 
 Value DOMDocument::tryGet(ExecState *exec, const UString &propertyName) const
 {
@@ -894,10 +909,10 @@ const ClassInfo DOMElement::info = { "Element", &DOMNode::info, &DOMElementTable
   style		DOMElement::Style                           DontDelete|ReadOnly
 @end
 */
-DOMElement::DOMElement(ExecState *exec, DOM::Element e)
+DOMElement::DOMElement(ExecState *exec, const DOM::Element& e)
   : DOMNode(DOMElementProto::self(exec), e) { }
 
-DOMElement::DOMElement(Object proto, DOM::Element e)
+DOMElement::DOMElement(const Object& proto, const DOM::Element& e)
   : DOMNode(proto, e) { }
 
 Value DOMElement::tryGet(ExecState *exec, const UString &propertyName) const
@@ -998,7 +1013,7 @@ IMPLEMENT_PROTOTYPE(DOMDOMImplementationProto,DOMDOMImplementationProtoFunc)
 
 const ClassInfo DOMDOMImplementation::info = { "DOMImplementation", 0, 0, 0 };
 
-DOMDOMImplementation::DOMDOMImplementation(ExecState *exec, DOM::DOMImplementation i)
+DOMDOMImplementation::DOMDOMImplementation(ExecState *exec, const DOM::DOMImplementation& i)
   : DOMObject(DOMDOMImplementationProto::self(exec)), implementation(i) { }
 
 DOMDOMImplementation::~DOMDOMImplementation()
@@ -1043,7 +1058,7 @@ const ClassInfo DOMDocumentType::info = { "DocumentType", &DOMNode::info, &DOMDo
   internalSubset	DOMDocumentType::InternalSubset	DontDelete|ReadOnly
 @end
 */
-DOMDocumentType::DOMDocumentType(ExecState *exec, DOM::DocumentType dt)
+DOMDocumentType::DOMDocumentType(ExecState *exec, const DOM::DocumentType& dt)
   : DOMNode( /*### no proto yet*/exec, dt ) { }
 
 Value DOMDocumentType::tryGet(ExecState *exec, const UString &propertyName) const
@@ -1093,7 +1108,7 @@ IMPLEMENT_PROTOTYPE(DOMNamedNodeMapProto,DOMNamedNodeMapProtoFunc)
 
 const ClassInfo DOMNamedNodeMap::info = { "NamedNodeMap", 0, 0, 0 };
 
-DOMNamedNodeMap::DOMNamedNodeMap(ExecState *exec, DOM::NamedNodeMap m)
+DOMNamedNodeMap::DOMNamedNodeMap(ExecState *exec, const DOM::NamedNodeMap& m)
   : DOMObject(DOMNamedNodeMapProto::self(exec)), map(m) { }
 
 DOMNamedNodeMap::~DOMNamedNodeMap()
@@ -1253,7 +1268,17 @@ Value DOMEntity::getValueProperty(ExecState *, int token) const
 
 // -------------------------------------------------------------------------
 
-Value KJS::getDOMNode(ExecState *exec, DOM::Node n)
+bool KJS::checkNodeSecurity(ExecState *exec, const DOM::Node& n)
+{
+  // Check to see if the currently executing interpreter is allowed to access the specified node
+  KHTMLView *view = n.handle()->getDocument()->view();
+  Window* win = view && view->part() ? Window::retrieveWindow(view->part()) : 0L;
+  if ( !win || !win->isSafeScript(exec) )
+    return false;
+  return true;
+}
+
+Value KJS::getDOMNode(ExecState *exec, const DOM::Node& n)
 {
   DOMObject *ret = 0;
   if (n.isNull())
@@ -1311,17 +1336,17 @@ Value KJS::getDOMNode(ExecState *exec, DOM::Node n)
   return Value(ret);
 }
 
-Value KJS::getDOMNamedNodeMap(ExecState *exec, DOM::NamedNodeMap m)
+Value KJS::getDOMNamedNodeMap(ExecState *exec, const DOM::NamedNodeMap& m)
 {
   return Value(cacheDOMObject<DOM::NamedNodeMap, KJS::DOMNamedNodeMap>(exec, m));
 }
 
-Value KJS::getDOMNodeList(ExecState *exec, DOM::NodeList l)
+Value KJS::getDOMNodeList(ExecState *exec, const DOM::NodeList& l)
 {
   return Value(cacheDOMObject<DOM::NodeList, KJS::DOMNodeList>(exec, l));
 }
 
-Value KJS::getDOMDOMImplementation(ExecState *exec, DOM::DOMImplementation i)
+Value KJS::getDOMDOMImplementation(ExecState *exec, const DOM::DOMImplementation& i)
 {
   return Value(cacheDOMObject<DOM::DOMImplementation, KJS::DOMDOMImplementation>(exec, i));
 }
@@ -1487,7 +1512,7 @@ const ClassInfo KJS::DOMNamedNodesCollection::info = { "DOMNamedNodesCollection"
 // Such a collection is usually very short-lived, it only exists
 // for constructs like document.forms.<name>[1],
 // so it shouldn't be a problem that it's storing all the nodes (with the same name). (David)
-DOMNamedNodesCollection::DOMNamedNodesCollection(ExecState *exec, QValueList<DOM::Node>& nodes )
+DOMNamedNodesCollection::DOMNamedNodesCollection(ExecState *exec, const QValueList<DOM::Node>& nodes )
   : DOMObject(exec->interpreter()->builtinObjectPrototype()),
   m_nodes(nodes)
 {
@@ -1502,7 +1527,7 @@ Value DOMNamedNodesCollection::tryGet(ExecState *exec, const UString &propertyNa
   // index?
   bool ok;
   unsigned int u = propertyName.toULong(&ok);
-  if (ok) {
+  if (ok && u < m_nodes.count()) {
     DOM::Node node = m_nodes[u];
     return getDOMNode(exec,node);
   }
@@ -1530,10 +1555,10 @@ DEFINE_PROTOTYPE("DOMCharacterData",DOMCharacterDataProto)
 IMPLEMENT_PROTOFUNC_DOM(DOMCharacterDataProtoFunc)
 IMPLEMENT_PROTOTYPE_WITH_PARENT(DOMCharacterDataProto,DOMCharacterDataProtoFunc, DOMNodeProto)
 
-DOMCharacterData::DOMCharacterData(ExecState *exec, DOM::CharacterData d)
+DOMCharacterData::DOMCharacterData(ExecState *exec, const DOM::CharacterData& d)
  : DOMNode(DOMCharacterDataProto::self(exec), d) {}
 
-DOMCharacterData::DOMCharacterData(Object proto, DOM::CharacterData d)
+DOMCharacterData::DOMCharacterData(const Object& proto, const DOM::CharacterData& d)
  : DOMNode(proto, d) {}
 
 Value DOMCharacterData::tryGet(ExecState *exec, const UString &p) const
@@ -1607,7 +1632,7 @@ DEFINE_PROTOTYPE("DOMText",DOMTextProto)
 IMPLEMENT_PROTOFUNC_DOM(DOMTextProtoFunc)
 IMPLEMENT_PROTOTYPE_WITH_PARENT(DOMTextProto,DOMTextProtoFunc,DOMCharacterDataProto)
 
-DOMText::DOMText(ExecState *exec, DOM::Text t)
+DOMText::DOMText(ExecState *exec, const DOM::Text& t)
   : DOMCharacterData(DOMTextProto::self(exec), t) { }
 
 Value DOMText::tryGet(ExecState *exec, const UString &p) const

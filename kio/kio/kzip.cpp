@@ -172,7 +172,7 @@ bool KZip::openArchive( int mode )
 
         if (n < 4)
         {
-            kdWarning(7040) << "Invalid ZIP file. Unexpected end of file." << endl;
+            kdWarning(7040) << "Invalid ZIP file. Unexpected end of file. (#1)" << endl;
 
             return false;
         }
@@ -189,7 +189,7 @@ bool KZip::openArchive( int mode )
             // the file and we look for the signature 'PK\7\8'.
 
             dev->readBlock( buffer, 2 );
-            if ( buffer[0] && 8 )
+            if ( buffer[0] & 8 )
             {
                 bool foundSignature = false;
 
@@ -198,7 +198,7 @@ bool KZip::openArchive( int mode )
                     n = dev->readBlock( buffer, 1 );
                     if (n < 1)
                     {
-                        kdWarning(7040) << "Invalid ZIP file. Unexpected end of file." << endl;
+                        kdWarning(7040) << "Invalid ZIP file. Unexpected end of file. (#2)" << endl;
                         return false;
                     }
 
@@ -208,7 +208,7 @@ bool KZip::openArchive( int mode )
                     n = dev->readBlock( buffer, 3 );
                     if (n < 3)
                     {
-                        kdWarning(7040) << "Invalid ZIP file. Unexpected end of file." << endl;
+                        kdWarning(7040) << "Invalid ZIP file. Unexpected end of file. (#3)" << endl;
                         return false;
                     }
 

@@ -45,6 +45,7 @@ bool KPACDownloader::download(const KURL &url)
     }
     m_working = true;
     KIO::TransferJob *job = KIO::get(url, false /* no reload */, false /* no GUI */);
+    job->addMetaData ("UseProxy", QString::null);
     connect(job, SIGNAL(data(KIO::Job *, const QByteArray &)), SLOT(slotData(KIO::Job *, const QByteArray &)));
     connect(job, SIGNAL(result(KIO::Job *)), SLOT(slotResult(KIO::Job *)));
     while (m_working)

@@ -36,6 +36,8 @@ static bool sendNotifyEvent(const QString &message, const QString &text,
                  int present, int level, const QString &sound,
                  const QString &file)
 {
+  if (!kapp) return false;
+
   DCOPClient *client=kapp->dcopClient();
   if (!client->isAttached())
   {
@@ -164,7 +166,7 @@ bool KNotifyClient::startDaemon()
 
 void KNotifyClient::beep(const QString& reason)
 {
-  if ( KNotifyClient::Instance::currentInstance()->useSystemBell() ) {
+  if ( !kapp || KNotifyClient::Instance::currentInstance()->useSystemBell() ) {
     QApplication::beep();
     return;
   }

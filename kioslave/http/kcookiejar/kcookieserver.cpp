@@ -356,7 +356,8 @@ bool KCookieServer::cookieMatches( KHttpCookiePtr c,
        ((hasDomain && c->domain() == domain) ||
         fqdn == c->host()) &&
        (c->path()   == path)   &&
-       (c->name()   == name);
+       (c->name()   == name) &&
+       (!c->isExpired(time(0)));
     }
     return false;
 }
@@ -383,7 +384,13 @@ KCookieServer::findCookies(QString url, long windowId)
       mRequestList->append( request );
       return QString::null; // Talk to you later :-)
    }
-   return mCookieJar->findCookies(url, false, windowId);
+   
+   QString cookies = mCookieJar->findCookies(url, false, windowId);
+   
+   if (mCookieJar->changed() && !mTimer)
+      saveCookieJar();
+   
+   return cookies;
 }
 
 // DCOP function

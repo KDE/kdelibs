@@ -2,19 +2,11 @@
 #include <unistd.h>
 #include <stdio.h>
 #include <qimage.h>
-#include <qiodevice.h>
-#include <qdatastream.h>
-#include <qtextstream.h>
 #include <qfile.h>
 #include <qpainter.h>
 #include <qprinter.h>
-#include <qpaintdevicemetrics.h>
-#include <qstring.h>
 #include <kapplication.h>
 #include <ktempfile.h>
-//#include <kdebug.h>
-//#include <qdatetime.h> // for QTime
-
 #include "eps.h"
 
 #define BUFLEN 200
@@ -26,7 +18,6 @@ bool bbox ( QImageIO *imageio, int *x1, int *y1, int *x2, int *y2)
 {
         int ret = false;
         char buf[BUFLEN+1];
-        char dummy[BUFLEN+1];
 
         while (imageio->ioDevice()->readLine(buf, BUFLEN) > 0)
         {
@@ -35,7 +26,7 @@ bool bbox ( QImageIO *imageio, int *x1, int *y1, int *x2, int *y2)
                         // Some EPS files have non-integer values for the bbox
                         // We don't support that currently, but at least we parse it
                         float _x1, _y1, _x2, _y2;
-                        if ( sscanf (buf, "%s %f %f %f %f", dummy,
+                        if ( sscanf (buf, "%*s %f %f %f %f", 
                                 &_x1, &_y1, &_x2, &_y2) == 5) {
                                 *x1=(int)_x1; *y1=(int)_y1; *x2=(int)_x2; *y2=(int)_y2;
                                 ret = true;
@@ -177,7 +168,7 @@ void kimgio_eps_write( QImageIO *imageio )
   QFile inFile(tmpFile.name());
   QString szBoxInfo;
 
-  szBoxInfo.sprintf("%sBoundingBox: 0 0 %d %d\n", "%%",
+  szBoxInfo.sprintf("%%%%BoundingBox: 0 0 %d %d\n", 
                     imageio->image().width(),
                     imageio->image().height());
 

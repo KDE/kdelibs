@@ -15,7 +15,7 @@ public class JSObject extends netscape.javascript.JSObject {
     /* JavaScript code:
      * __lc=[[JS objects],call func(index,script,appletname,isglobal)]
      */
-    private final String decls = "if(!__lc) __lc=[[window],function(i,s,a,g){var r;var len=__lc[0].length;if(i>=len)r='E ';else{try{r=eval((g?'':'__lc[0][i]')+s);}catch(e){r='E ';}finally{var t=typeof r;var v;if(t=='undefined')v='V ';else if(t=='number')v='N '+r;else if(t=='string')if(r=='E ')v='E ';else v='S '+r;else{__lc[0][len]=r;v=''+len+' '+(r==__lc?'[array]':r);}}}document.applets[a].__lc_ret=v},0]";
+    private final String decls = "if(!window.__lc) window.__lc=[[window],function(i,s,a,g){var r;var len=window.__lc[0].length;if(i>=len)r='E ';else{try{r=eval((g?'':'window.__lc[0][i]')+s);}catch(e){r='E ';}finally{var t=typeof r;var v;if(t=='undefined')v='V ';else if(t=='number')v='N '+r;else if(t=='string')if(r=='E ')v='E ';else v='S '+r;else{window.__lc[0][len]=r;v=''+len+' '+(r==window.__lc?'[array]':r);}}}document.applets[a].__lc_ret=v},0]";
 
     public JSObject(Applet a, String name, int _id) {
         Main.info("JSObject.ctor: " + name);
@@ -64,7 +64,7 @@ public class JSObject extends netscape.javascript.JSObject {
         String appletname = kc.getAppletName(appletID);
         thread = Thread.currentThread();
 
-        kc.evaluateJavaScript("__lc[1](" + id + ",\\\"" + script + "\\\",\\\"" + appletname + "\\\"" + (global ? ",true)" : ")"), appletID, this);
+        kc.evaluateJavaScript("window.__lc[1](" + id + ",\\\"" + script + "\\\",\\\"" + appletname + "\\\"" + (global ? ",true)" : ")"), appletID, this);
         boolean timedout = true;
         try {
             Thread.currentThread().sleep(30000);
@@ -122,7 +122,7 @@ public class JSObject extends netscape.javascript.JSObject {
         if (o instanceof java.lang.Number || o instanceof java.lang.Boolean)
             return o.toString();
         if (o instanceof netscape.javascript.JSObject)
-            return new String("__lc[0][" + ((JSObject)o).getId() + "]");
+            return new String("window.__lc[0][" + ((JSObject)o).getId() + "]");
         return new String("'" + o.toString() + "'");
     }
     public Object call(String func, Object [] args) throws netscape.javascript.JSException {

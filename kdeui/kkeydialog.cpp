@@ -800,11 +800,10 @@ QString KKeyChooserItem::text( int iCol ) const
 {
 	if( iCol == 0 ) {
 		// Quick HACK to get rid of '&'s.
-		// TODO: convert '&&' => '&' and leave it in.
 		QString s = m_pList->label(m_iAction);
 		QString s2;
 		for( uint i = 0; i < s.length(); i++ )
-			if( s[i] != '&' )
+			if( s[i] != '&' || ( i+1<s.length() && s[i+1] == '&' ) )
 				s2 += s[i];
 		return s2;
 	}

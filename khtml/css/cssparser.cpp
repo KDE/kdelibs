@@ -65,9 +65,9 @@ using namespace DOM;
 #include "cssvalues.c"
 
 
-static QPtrList<CSSProperty>* m_propList = 0;
-static bool m_bImportant = FALSE;
-static bool m_bnonCSSHint = FALSE;
+static QPtrList<CSSProperty>* m_propList;
+static bool m_bImportant;
+static bool m_bnonCSSHint;
 
 int DOM::getPropertyID(const char *tagStr, int len)
 {
@@ -2880,11 +2880,7 @@ const QString StyleBaseImpl::preprocess(const QString &str, bool justOneRule)
 	  comment = true;
 	} else {
 	  processed += '/';
-	  if (curlyBracket > 0) {
-	    processed += ch->lower();
-	  } else {
-	    processed += *ch;
-	  }
+	  processed += *ch;
 	  space = ch->isSpace();
 	}
 	firstChar = false;
@@ -2925,11 +2921,7 @@ const QString StyleBaseImpl::preprocess(const QString &str, bool justOneRule)
       if (ch->isSpace()) {
 	processed += QChar(' '); // Normalize whitespace
       } else {
-	if (curlyBracket > 0 || justOneRule) {
-	  processed += ch->lower();
-	} else {
 	  processed += *ch;
-	}
       }
     }
     space = ch->isSpace();
