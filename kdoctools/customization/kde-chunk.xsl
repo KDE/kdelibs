@@ -4,6 +4,7 @@
 <xsl:import href="../docbook/xsl/html/docbook.xsl"/>
 <xsl:include href="kde-navig.xsl"/>
 <xsl:include href="kde-ttlpg.xsl"/>
+<xsl:include href="kde-style.xsl"/>
 
 <xsl:template name="make-relative-filename">
   <xsl:param name="base.dir" select="'./'"/>
