@@ -20,6 +20,12 @@
 ****************************************************************************
 *
 * $Log$
+* Revision 1.5  1999/09/30 21:29:42  espensa
+* KLineEditDlg now descends from KDialogBase with proper caption,
+* std margins and action button layout. Hmm, KLineEditDlg should not be
+* in kdeui since it can not use the KDE file dialog. kfile is a better
+* location.
+*
 * 
 *
 ****************************************************************************
@@ -63,6 +69,7 @@ KLineEditDlg::KLineEditDlg( const QString&_text, const QString& _value,
   
   connect( this, SIGNAL(user1Clicked()), edit, SLOT(doClear()) );
   edit->setText( _value );
+  edit->setCursorPosition(0);
   edit->setFocus();
 
   topLayout->activate();
@@ -133,6 +140,7 @@ KLineEditDlg::KLineEditDlg( const QString&_text, const QString& _value,
   layout->activate();
 
   edit->setText( _value );
+  edit->setCursorPosition(0);
   edit->setFocus();
 }
 #endif
