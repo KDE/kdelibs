@@ -197,6 +197,17 @@ KListView::KListView( QWidget *parent, const char *name )
 
   connect(&d->autoSelect, SIGNAL( timeout() ),
 		  this, SLOT( slotAutoSelect() ) );
+
+  // context menu handling
+  if (d->showContextMenusOnPress)
+	connect (this, SIGNAL (rightMouseButtonPressed (QListViewItem*, const QPoint&, int)),
+			 this, SLOT (emitContextMenu (QListViewItem*, const QPoint&, int)));
+  else
+	connect (this, SIGNAL (rightMouseButtonClicked (QListViewItem*, const QPoint&, int)),
+			 this, SLOT (emitContextMenu (QListViewItem*, const QPoint&, int)));
+
+  connect (this, SIGNAL (menuShortCutPressed (QListViewItem*)),
+		   this, SLOT (emitContextMenu (QListViewItem*)));
 }
 
 
@@ -283,6 +294,23 @@ void KListView::slotSettingsChanged(int category)
   // context menu settings
   d->contextMenuKey = KGlobalSettings::contextMenuKey ();
   d->showContextMenusOnPress = KGlobalSettings::showContextMenusOnPress ();
+
+  if (d->showContextMenusOnPress)
+	{
+	  disconnect (this, SIGNAL (rightMouseButtonClicked (QListViewItem*, const QPoint&, int)),
+				  this, SLOT (emitContextMenu (QListViewItem*, const QPoint&, int)));
+
+	  connect (this, SIGNAL (rightMouseButtonPressed (QListViewItem*, const QPoint&, int)),
+			   this, SLOT (emitContextMenu (QListViewItem*, const QPoint&, int)));
+	}
+  else
+	{
+	  disconnect (this, SIGNAL (rightMouseButtonPressed (QListViewItem*, const QPoint&, int)),
+				  this, SLOT (emitContextMenu (QListViewItem*, const QPoint&, int)));
+
+	  connect (this, SIGNAL (rightMouseButtonClicked (QListViewItem*, const QPoint&, int)),
+			   this, SLOT (emitContextMenu (QListViewItem*, const QPoint&, int)));
+	}
 }
 
 void KListView::slotAutoSelect()
@@ -1043,6 +1071,23 @@ void KListView::setSelectionModeExt (SelectionModeExt mode)
 KListView::SelectionModeExt KListView::selectionModeExt () const
 {
   return d->selectionMode;
+}
+
+void KListView::emitContextMenu (QListViewItem* i)
+{
+  QPoint p;
+
+  if (i)
+	p = viewport()->mapToGlobal(itemRect(i).center());
+  else
+	p = mapToGlobal(rect().center());
+
+  emit contextMenu (this, i, p);
+}
+
+void KListView::emitContextMenu (QListViewItem* i, const QPoint& p, int)
+{
+  emit contextMenu (this, i, p);
 }
 
 #include "klistviewlineedit.moc"

@@ -256,10 +256,24 @@ signals:
   /**
    * This signal is emitted when the shortcut key for popup-menus is pressed.
    *
+   * Normally you should not use this, just connect a slot to signal
+   * @ref contextMenu (KListView*, QListViewItem*, const QPoint&) to correctly
+   * handle showing context menus regardless of settings.
+   *
    * @param list is this listview.
    * @param item is the @ref currentItem() at the time the key was pressed. May be 0L.
    */
   void menuShortCutPressed (KListView* list, QListViewItem* item);
+
+  /**
+   * This signal is emitted whenever a context-menu should be shown for item @p i.
+   * It automatically adjusts for all settings involved (Menu key, showMenuOnPress/Click).
+   *
+   * @param l is this listview.
+   * @param i is the item for which the menu should be shown. May be 0L.
+   * @param p is the point at which the menu should be shown.
+   */
+  void contextMenu (KListView* l, QListViewItem* i, const QPoint& p);
 
 public slots:
   /**
@@ -344,15 +358,6 @@ public slots:
    * A different name was chosen to avoid API-clashes with @ref QListView::setSelectionMode().
    */
   void setSelectionModeExt (SelectionModeExt mode);
-
-protected slots:
-  /**
-   * Update internal settings whenever the global ones change.
-   * @internal
-   */
-  void slotSettingsChanged(int);
-
-
 
 protected:
   /**
@@ -539,6 +544,12 @@ protected:
   virtual void keyPressEvent (QKeyEvent*);
 
 private slots:
+  /**
+   * Update internal settings whenever the global ones change.
+   * @internal
+   */
+  void slotSettingsChanged(int);
+
   void slotMouseButtonClicked( int btn, QListViewItem *item, const QPoint &pos, int c );
   void doneEditing(QListViewItem *item, int row);
   /**
@@ -552,6 +563,16 @@ private slots:
    * @deprecated
    */
   void cleanItemHighlighter ();
+
+  /**
+   * Emit the @ref contextMenu signal. This slot is for mouse actions.
+   */
+  void emitContextMenu (QListViewItem*, const QPoint&, int);
+
+  /**
+   * Emit the @ref contextMenu signal. This slot is for key presses.
+   */
+  void emitContextMenu (QListViewItem*);
 
   /**
    * Accessory slot for AutoSelect
@@ -570,8 +591,6 @@ private slots:
    * @internal
    */
   void slotAutoSelect();
-
-
 
 private:
   /**
