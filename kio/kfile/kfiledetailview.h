@@ -149,9 +149,32 @@ public:
     void determineIcon( KFileListViewItem *item );
     QScrollView *scrollWidget() const { return (QScrollView*) this; }
 
+signals:
+    /**
+     * The user dropped something.
+     * @p fileItem points to the item dropped on or can be 0 if the 
+     * user dropped on empty space.
+     * @since 3.2
+     */
+    void dropped(QDropEvent *event, KFileItem *fileItem);
+    /**
+     * The user dropped the URLs @p urls.
+     * @p url points to the item dropped on or can be empty if the
+     * user dropped on empty space.
+     * @since 3.2
+     */
+    void dropped(QDropEvent *event, const KURL::List &urls, const KURL &url);
 
 protected:
     virtual void keyPressEvent( QKeyEvent * );
+
+    // DND support
+    virtual QDragObject *dragObject();
+    virtual void contentsDragEnterEvent( QDragEnterEvent *e );
+    virtual void contentsDragMoveEvent( QDragMoveEvent *e );
+    virtual void contentsDragLeaveEvent( QDragLeaveEvent *e );
+    virtual void contentsDropEvent( QDropEvent *ev );
+    virtual bool acceptDrag(QDropEvent* e ) const;
 
     int m_sortingCol;
 
@@ -164,6 +187,7 @@ private slots:
     void slotActivate( QListViewItem *item );
     void highlighted( QListViewItem *item );
     void slotActivateMenu ( QListViewItem *item, const QPoint& pos );
+    void slotAutoOpen();
 
 private:
     virtual void insertItem(QListViewItem *i) { KListView::insertItem(i); }

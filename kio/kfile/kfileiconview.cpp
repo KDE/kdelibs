@@ -33,11 +33,11 @@
 #include <klocale.h>
 #include <kfileitem.h>
 #include <kglobalsettings.h>
+#include <kurldrag.h>
 #include <kio/previewjob.h>
 
 #include "kfileiconview.h"
 #include "config-kfile.h"
-
 
 KFileIconViewItem::~KFileIconViewItem()
 {
@@ -49,7 +49,8 @@ class KFileIconView::KFileIconViewPrivate
 public:
     KFileIconViewPrivate( KFileIconView *parent ) {
         previewIconSize = 60;
-        job = 0L;
+        job = 0;
+        dropItem = 0;
 
         noArrangement = false;
 	smallColumns = new KRadioAction( i18n("Small Icons"), 0, parent,
@@ -80,13 +81,13 @@ public:
         connect( previews, SIGNAL( toggled( bool )),
                  parent, SLOT( slotPreviewsToggled( bool )));
 
-        previewTimer = new QTimer;
-        connect( previewTimer, SIGNAL( timeout() ),
+        connect( &previewTimer, SIGNAL( timeout() ),
                  parent, SLOT( showPreviews() ));
+        connect( &autoOpenTimer, SIGNAL( timeout() ),
+                 parent, SLOT( slotAutoOpen() ));
     }
 
     ~KFileIconViewPrivate() {
-        delete previewTimer;
         if ( job )
             job->kill();
     }
@@ -95,7 +96,9 @@ public:
     KAction *zoomIn, *zoomOut;
     KToggleAction *previews;
     KIO::PreviewJob *job;
-    QTimer *previewTimer;
+    KFileIconViewItem *dropItem;
+    QTimer previewTimer;
+    QTimer autoOpenTimer;
     QStringList previewMimeTypes;
     int previewIconSize;
     bool noArrangement :1;
@@ -740,7 +743,7 @@ void KFileIconView::initItem( KFileIconViewItem *item, const KFileItem *i,
     //qDebug("** key for: %s: %s", i->text().latin1(), item->key().latin1());
 
     if ( d->previews->isChecked() )
-        d->previewTimer->start( 10, true );
+        d->previewTimer.start( 10, true );
 }
 
 void KFileIconView::arrangeItemsInGrid( bool update )
@@ -766,6 +769,135 @@ void KFileIconView::zoomIn()
 void KFileIconView::zoomOut()
 {
     setPreviewSize( d->previewIconSize - 30 );
+}
+
+QDragObject *KFileIconView::dragObject()
+{
+    // create a list of the URL:s that we want to drag
+    KURL::List urls;
+    KFileItemListIterator it( * KFileView::selectedItems() );
+    for ( ; it.current(); ++it ){
+        urls.append( (*it)->url() );
+    }
+    QPixmap pixmap;
+    if( urls.count() > 1 )
+        pixmap = DesktopIcon( "kmultiple", iconSize() );
+    if( pixmap.isNull() )
+        pixmap = currentFileItem()->pixmap( iconSize() );	
+
+    QPoint hotspot;
+    hotspot.setX( pixmap.width() / 2 );
+    hotspot.setY( pixmap.height() / 2 );
+    QDragObject* myDragObject = KURLDrag::newDrag( urls, widget() );
+    myDragObject->setPixmap( pixmap, hotspot );
+    return myDragObject;
+}
+
+void KFileIconView::slotAutoOpen()
+{
+    d->autoOpenTimer.stop();
+    if( !d->dropItem )
+        return;
+    
+    KFileItem *fileItem = d->dropItem->fileInfo();
+    if (!fileItem)
+        return;
+        
+    if( fileItem->isFile() )
+        return;
+    
+    if ( fileItem->isDir() || fileItem->isLink())
+        sig->activate( fileItem );
+}
+
+bool KFileIconView::acceptDrag(QDropEvent* e) const
+{
+   return KURLDrag::canDecode( e ) &&
+       (e->source()!=viewport()) &&
+       ( e->action() == QDropEvent::Copy
+      || e->action() == QDropEvent::Move
+      || e->action() == QDropEvent::Link );
+}
+
+void KFileIconView::contentsDragEnterEvent( QDragEnterEvent *e )
+{
+    if ( ! acceptDrag( e ) ) { // can we decode this ?
+        e->ignore();            // No
+        return;
+    }
+    e->acceptAction();     // Yes
+
+    if ((dropOptions() & AutoOpenDirs) == 0)
+       return;
+
+    KFileIconViewItem *item = dynamic_cast<KFileIconViewItem*>(findItem( contentsToViewport( e->pos() ) ));
+    if ( item ) {  // are we over an item ?
+       d->dropItem = item;
+       d->autoOpenTimer.start( autoOpenDelay() ); // restart timer
+    }
+    else
+    {
+       d->dropItem = 0;
+       d->autoOpenTimer.stop();
+    }
+}
+
+void KFileIconView::contentsDragMoveEvent( QDragMoveEvent *e )
+{
+    if ( ! acceptDrag( e ) ) { // can we decode this ?
+        e->ignore();            // No
+        return;
+    }
+    e->acceptAction();     // Yes
+
+    if ((dropOptions() & AutoOpenDirs) == 0)
+       return;
+
+    KFileIconViewItem *item = dynamic_cast<KFileIconViewItem*>(findItem( contentsToViewport( e->pos() ) ));
+    if ( item ) {  // are we over an item ?
+       if (d->dropItem != item)
+       {
+           d->dropItem = item;
+           d->autoOpenTimer.start( autoOpenDelay() ); // restart timer
+       }
+    }
+    else
+    {
+       d->dropItem = 0;
+       d->autoOpenTimer.stop();
+    }
+}
+
+void KFileIconView::contentsDragLeaveEvent( QDragLeaveEvent * )
+{
+    d->dropItem = 0;
+    d->autoOpenTimer.stop();
+}
+
+void KFileIconView::contentsDropEvent( QDropEvent *e )
+{
+    d->dropItem = 0;
+    d->autoOpenTimer.stop();
+
+    if ( ! acceptDrag( e ) ) { // can we decode this ?
+        e->ignore();            // No
+        return;
+    }
+    e->acceptAction();     // Yes
+
+    KFileIconViewItem *item = dynamic_cast<KFileIconViewItem*>(findItem( contentsToViewport( e->pos() ) ));
+    KFileItem * fileItem = 0;
+    if (item)
+        fileItem = item->fileInfo();
+       
+    emit dropped(e, fileItem);
+    
+    KURL::List urls;
+    if (KURLDrag::decode( e, urls ) && !urls.isEmpty())
+    {
+        emit dropped(e, urls, fileItem ? fileItem->url() : KURL());
+        sig->dropURLs(fileItem, e, urls);
+    }
 }
 
 void KFileIconView::virtual_hook( int id, void* data )

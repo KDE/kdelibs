@@ -44,6 +44,7 @@ public:
     KFileViewPrivate()
     {
         actions = 0;
+        dropOptions = 0;
     }
 
     ~KFileViewPrivate()
@@ -55,6 +56,7 @@ public:
     }
 
     QGuardedPtr<KActionCollection> actions;
+    int dropOptions;
 };
 
 
@@ -100,6 +102,8 @@ void KFileView::setParentView(KFileView *parent)
                             parent->sig,SIGNAL(fileHighlighted(const KFileItem*)));
         QObject::connect(sig, SIGNAL( sortingChanged( QDir::SortSpec ) ),
                             parent->sig, SIGNAL(sortingChanged( QDir::SortSpec)));
+        QObject::connect(sig, SIGNAL( dropped(const KFileItem *, QDropEvent*, const KURL::List&) ),
+                            parent->sig, SIGNAL(dropped(const KFileItem *, QDropEvent*, const KURL::List&)));
     }
 }
 
@@ -390,7 +394,36 @@ QString KFileView::sortingKey( KIO::filesize_t value, bool isDir, int sortSpec)
     return KIO::number( value ).rightJustify( 24, '0' ).prepend( start );
 }
 
-void KFileView::virtual_hook( int, void* )
-{ /*BASE::virtual_hook( id, data );*/ }
+void KFileView::setDropOptions(int options)
+{
+    virtual_hook(VIRTUAL_SET_DROP_OPTIONS, &options); // Virtual call
+}
+
+void KFileView::setDropOptions_impl(int options)
+{
+    d->dropOptions = options;
+}
+
+int KFileView::dropOptions()
+{
+    return d->dropOptions;
+}
+
+int KFileView::autoOpenDelay()
+{
+    return (QApplication::startDragTime() * 3) / 2;
+}
+
+void KFileView::virtual_hook( int id, void* data)
+{ 
+    switch(id) {
+      case VIRTUAL_SET_DROP_OPTIONS: 
+         setDropOptions_impl(*(int *)data);
+         break;
+      default:
+         /*BASE::virtual_hook( id, data );*/
+         break;
+    }
+}
 
 #include "kfileview.moc"

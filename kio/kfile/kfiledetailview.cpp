@@ -29,9 +29,11 @@
 #include <kfileitem.h>
 #include <kglobal.h>
 #include <kglobalsettings.h>
+#include <kiconloader.cpp>
 #include <kicontheme.h>
 #include <klocale.h>
 #include <kdebug.h>
+#include <kurldrag.h>
 
 #include "kfiledetailview.h"
 #include "config-kfile.h"
@@ -43,8 +45,18 @@
 #define COL_OWNER 4
 #define COL_GROUP 5
 
+class KFileDetailView::KFileDetailViewPrivate
+{
+public:
+   KFileDetailViewPrivate() : dropItem(0)
+   { }
+   
+   KFileListViewItem *dropItem;
+   QTimer autoOpenTimer;
+};
+
 KFileDetailView::KFileDetailView(QWidget *parent, const char *name)
-    : KListView(parent, name), KFileView()
+    : KListView(parent, name), KFileView(), d(new KFileDetailViewPrivate())
 {
     m_sortingCol = COL_NAME;
     m_blockSortingSignal = false;
@@ -58,6 +70,7 @@ KFileDetailView::KFileDetailView(QWidget *parent, const char *name)
     addColumn( i18n( "Group" ) );
     setShowSortIndicator( TRUE );
     setAllColumnsShowFocus( TRUE );
+    setDragEnabled(true);
 
     connect( header(), SIGNAL( sectionClicked(int)),
              SLOT(slotSortingChanged(int) ));
@@ -99,9 +112,12 @@ KFileDetailView::KFileDetailView(QWidget *parent, const char *name)
     else
 	connect( this, SIGNAL( selectionChanged( QListViewItem * ) ),
 		 SLOT( highlighted( QListViewItem * ) ));
+		 
+    // DND
+    connect( &(d->autoOpenTimer), SIGNAL( timeout() ),
+             this, SLOT( slotAutoOpen() ));
 
     setSorting( sorting() );
-
 
     m_resolver =
         new KMimeTypeResolver<KFileListViewItem,KFileDetailView>( this );
@@ -110,6 +126,7 @@ KFileDetailView::KFileDetailView(QWidget *parent, const char *name)
 KFileDetailView::~KFileDetailView()
 {
     delete m_resolver;
+    delete d;
 }
 
 void KFileDetailView::setSelected( const KFileItem *info, bool enable )
@@ -502,6 +519,137 @@ void KFileDetailView::listingCompleted()
 {
     m_resolver->start();
 }
+
+QDragObject *KFileDetailView::dragObject()
+{
+    // create a list of the URL:s that we want to drag
+    KURL::List urls;
+    KFileItemListIterator it( * KFileView::selectedItems() );
+    for ( ; it.current(); ++it ){
+        urls.append( (*it)->url() );
+    }
+    QPixmap pixmap;
+    if( urls.count() > 1 )
+        pixmap = DesktopIcon( "kmultiple", 16 );
+    if( pixmap.isNull() )
+        pixmap = currentFileItem()->pixmap( 16 );	
+
+    QPoint hotspot;
+    hotspot.setX( pixmap.width() / 2 );
+    hotspot.setY( pixmap.height() / 2 );
+    QDragObject* myDragObject = KURLDrag::newDrag( urls, widget() );
+    myDragObject->setPixmap( pixmap, hotspot );
+    return myDragObject;
+}
+
+void KFileDetailView::slotAutoOpen()
+{
+    d->autoOpenTimer.stop();
+    if( !d->dropItem )
+        return;
+    
+    KFileItem *fileItem = d->dropItem->fileInfo();
+    if (!fileItem)
+        return;
+        
+    if( fileItem->isFile() )
+        return;
+    
+    if ( fileItem->isDir() || fileItem->isLink())
+        sig->activate( fileItem );
+}
+
+bool KFileDetailView::acceptDrag(QDropEvent* e) const
+{
+   return KURLDrag::canDecode( e ) &&
+       (e->source()!=viewport()) &&
+       ( e->action() == QDropEvent::Copy
+      || e->action() == QDropEvent::Move
+      || e->action() == QDropEvent::Link );
+}
+
+void KFileDetailView::contentsDragEnterEvent( QDragEnterEvent *e )
+{
+    if ( ! acceptDrag( e ) ) { // can we decode this ?
+        e->ignore();            // No
+        return;
+    }
+    e->acceptAction();     // Yes
+
+    if ((dropOptions() & AutoOpenDirs) == 0)
+       return;
+
+    KFileListViewItem *item = dynamic_cast<KFileListViewItem*>(itemAt( contentsToViewport( e->pos() ) ));
+    if ( item ) {  // are we over an item ?
+       d->dropItem = item;
+       d->autoOpenTimer.start( autoOpenDelay() ); // restart timer
+    }
+    else
+    {
+       d->dropItem = 0;
+       d->autoOpenTimer.stop();
+    }
+}
+
+void KFileDetailView::contentsDragMoveEvent( QDragMoveEvent *e )
+{
+    if ( ! acceptDrag( e ) ) { // can we decode this ?
+        e->ignore();            // No
+        return;
+    }
+    e->acceptAction();     // Yes
+
+    if ((dropOptions() & AutoOpenDirs) == 0)
+       return;
+
+    KFileListViewItem *item = dynamic_cast<KFileListViewItem*>(itemAt( contentsToViewport( e->pos() ) ));
+    if ( item ) {  // are we over an item ?
+       if (d->dropItem != item)
+       {
+           d->dropItem = item;
+           d->autoOpenTimer.start( autoOpenDelay() ); // restart timer
+       }
+    }
+    else
+    {
+       d->dropItem = 0;
+       d->autoOpenTimer.stop();
+    }
+}
+
+void KFileDetailView::contentsDragLeaveEvent( QDragLeaveEvent * )
+{
+    d->dropItem = 0;
+    d->autoOpenTimer.stop();
+}
+
+void KFileDetailView::contentsDropEvent( QDropEvent *e )
+{
+    d->dropItem = 0;
+    d->autoOpenTimer.stop();
+
+    if ( ! acceptDrag( e ) ) { // can we decode this ?
+        e->ignore();            // No
+        return;
+    }
+    e->acceptAction();     // Yes
+
+    KFileListViewItem *item = dynamic_cast<KFileListViewItem*>(itemAt( contentsToViewport( e->pos() ) ));
+    KFileItem * fileItem = 0;
+    if (item)
+        fileItem = item->fileInfo();
+       
+    emit dropped(e, fileItem);
+    
+    KURL::List urls;
+    if (KURLDrag::decode( e, urls ) && !urls.isEmpty())
+    {
+        emit dropped(e, urls, fileItem ? fileItem->url() : KURL());
+        sig->dropURLs(fileItem, e, urls);
+    }
+}
+
+
 /////////////////////////////////////////////////////////////////
 
 

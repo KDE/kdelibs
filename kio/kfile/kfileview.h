@@ -62,6 +62,10 @@ public:
     void changeSorting( QDir::SortSpec sorting ) {
         emit sortingChanged( sorting );
     }
+    
+    void dropURLs(const KFileItem *i, QDropEvent*e, const KURL::List&urls) {
+        emit dropped(i, e, urls);
+    }
 
 signals:
     void dirActivated(const KFileItem*);
@@ -75,6 +79,7 @@ signals:
     void fileHighlighted(const KFileItem*);
     void fileSelected(const KFileItem*);
     void activatedMenu( const KFileItem *i, const QPoint& );
+    void dropped(const KFileItem *, QDropEvent*, const KURL::List&);
 };
 
 /**
@@ -344,6 +349,31 @@ public:
     virtual void writeConfig( KConfig *, const QString& group = QString::null);
 
     /**
+     * Various options for drag and drop support. 
+     * These values can be or'd together.
+     * @li @p AutoOpenDirs Automatically open directory after hovering above it 
+     * for a short while while dragging.
+     * @since 3.2
+     */
+    enum DropOptions {
+	AutoOpenDirs  = 1
+    };
+    /**
+     * Specify DND options. See @ref DropOptions for details.
+     * All options are disabled by default.
+     * @since 3.2
+     */
+    // KDE 4: Make virtual
+    void setDropOptions(int options);
+    
+    /**
+     * Returns the DND options in effect.
+     * See @ref DropOptions for details.
+     * @since 3.2
+     */
+    int dropOptions();
+    
+    /**
      * This method calculates a QString from the given parameters, that is
      * suitable for sorting with e.g. QIconView or QListView. Their
      * Item-classes usually have a setKey( const QString& ) method or a virtual
@@ -367,6 +397,12 @@ public:
     static QString sortingKey( KIO::filesize_t value, bool isDir,int sortSpec);
 
 protected:
+    /**
+     * @internal
+     * delay before auto opening a directory
+     */
+    int autoOpenDelay();
+
     /**
      * @internal
      * class to distribute the signals
@@ -396,6 +432,9 @@ private:
 
 protected:
     virtual void virtual_hook( int id, void* data );
+    /* @internal for virtual_hook */
+    enum { VIRTUAL_SET_DROP_OPTIONS = 1 };
+    void setDropOptions_impl(int options);
 private:
     class KFileViewPrivate;
     KFileViewPrivate *d;

@@ -138,6 +138,11 @@ public:
     void mimeTypeDeterminationFinished();
     void determineIcon( KFileIconViewItem *item );
     QScrollView *scrollWidget() const { return (QScrollView*) this; }
+    void setAcceptDrops(bool b) 
+    {  
+      KIconView::setAcceptDrops(b); 
+      viewport()->setAcceptDrops(b);
+    }
 
 public slots:
     /**
@@ -177,6 +182,16 @@ protected:
 
     virtual bool eventFilter( QObject *o, QEvent *e );
 
+    // DND support
+    virtual QDragObject *dragObject();
+    virtual void contentsDragEnterEvent( QDragEnterEvent *e );
+    virtual void contentsDragMoveEvent( QDragMoveEvent *e );
+    virtual void contentsDragLeaveEvent( QDragLeaveEvent *e );
+    virtual void contentsDropEvent( QDropEvent *ev );
+
+    // KDE4: Make virtual
+    bool acceptDrag(QDropEvent* e ) const;
+
 private slots:
     void selected( QIconViewItem *item );
     void slotActivate( QIconViewItem * );
@@ -192,6 +207,23 @@ private slots:
 
     void slotPreviewResult( KIO::Job * );
     void gotPreview( const KFileItem *item, const QPixmap& pix );
+    void slotAutoOpen();
+
+signals:
+    /**
+     * The user dropped something.
+     * @p fileItem points to the item dropped on or can be 0 if the 
+     * user dropped on empty space.
+     * @since 3.2
+     */
+    void dropped(QDropEvent *event, KFileItem *fileItem);
+    /**
+     * The user dropped the URLs @p urls.
+     * @p url points to the item dropped on or can be empty if the
+     * user dropped on empty space.
+     * @since 3.2
+     */
+    void dropped(QDropEvent *event, const KURL::List &urls, const KURL &url);
 
 private:
     KMimeTypeResolver<KFileIconViewItem,KFileIconView> *m_resolver;

@@ -74,6 +74,7 @@ public:
         progressDelayTimer = 0L;
         dirHighlighting = false;
         config = 0L;
+        dropOptions = 0;
     }
 
     ~KDirOperatorPrivate() {
@@ -85,6 +86,7 @@ public:
     bool onlyDoubleClickSelectsFiles;
     QTimer *progressDelayTimer;
     KActionSeparator *viewActionSeparator;
+    int dropOptions;
 
     KConfig *config;
     QString configGroup;
@@ -820,13 +822,26 @@ KFileView* KDirOperator::createView( QWidget* parent, KFile::FileView view )
     }
     else /* if ( KFile::isSimpleView( view ) && !preview ) */ {
         KFileIconView *iconView =  new KFileIconView( parent, "simple view");
-        iconView->setAcceptDrops(false);
-        iconView->viewport()->setAcceptDrops(false);
         new_view = iconView;
         new_view->setViewName( i18n("Short View") );
     }
 
+    new_view->widget()->setAcceptDrops(acceptDrops());
     return new_view;
+}
+
+void KDirOperator::setAcceptDrops(bool b)
+{
+    if (m_fileView)
+       m_fileView->widget()->setAcceptDrops(b);
+    QWidget::setAcceptDrops(b);
+}
+
+void KDirOperator::setDropOptions(int options)
+{
+    d->dropOptions = options;
+    if (m_fileView)
+       m_fileView->setDropOptions(options);
 }
 
 void KDirOperator::setView( KFile::FileView view )
@@ -931,6 +946,7 @@ void KDirOperator::connectView(KFileView *view)
     }
 
     m_fileView = view;
+    m_fileView->setDropOptions(d->dropOptions);
     viewActionCollection = 0L;
     KFileViewSignaler *sig = view->signaler();
 
@@ -944,6 +960,8 @@ void KDirOperator::connectView(KFileView *view)
             this, SLOT( highlightFile(const KFileItem*) ));
     connect(sig, SIGNAL( sortingChanged( QDir::SortSpec ) ),
             this, SLOT( slotViewSortingChanged( QDir::SortSpec )));
+    connect(sig, SIGNAL( dropped(const KFileItem *, QDropEvent*, const KURL::List&) ),
+            this, SIGNAL( dropped(const KFileItem *, QDropEvent*, const KURL::List&)) );
 
     if ( reverseAction->isChecked() != m_fileView->isReversed() )
         slotSortReversed();

@@ -17,6 +17,7 @@
    Boston, MA 02111-1307, USA.
 */
 
+#include <qapplication.h>
 #include <qheader.h>
 #include <qtimer.h>
 #include <kdebug.h>
@@ -36,9 +37,6 @@
 #include "kfiletreeview.h"
 #include "kfiletreebranch.h"
 #include "kfiletreeviewitem.h"
-
-static const int autoOpenTimeout = 750;
-
 
 KFileTreeView::KFileTreeView( QWidget *parent, const char *name )
     : KListView( parent, name ),
@@ -107,7 +105,7 @@ void KFileTreeView::contentsDragEnterEvent( QDragEnterEvent *ev )
    if( item )
    {
       m_dropItem = item;
-      m_autoOpenTimer->start( autoOpenTimeout );
+      m_autoOpenTimer->start( (QApplication::startDragTime() * 3) / 2 );
    }
    else
    {
@@ -139,7 +137,7 @@ void KFileTreeView::contentsDragMoveEvent( QDragMoveEvent *e )
       if( item != m_dropItem ) {
 	 m_autoOpenTimer->stop();
 	 m_dropItem = item;
-	 m_autoOpenTimer->start( autoOpenTimeout );
+	 m_autoOpenTimer->start( (QApplication::startDragTime() * 3) / 2 );
       }
    }
    else

@@ -54,6 +54,7 @@ KCombiView::KCombiView( QWidget *parent, const char *name)
     left->KFileView::setViewMode( Directories );
     left->setArrangement( QIconView::LeftToRight );
     left->setParentView( this );
+    left->setAcceptDrops(false);
 
     connect( sig, SIGNAL( sortingChanged( QDir::SortSpec ) ),
              SLOT( slotSortingChanged( QDir::SortSpec ) ));
@@ -77,7 +78,10 @@ void KCombiView::setRight(KFileView *view)
     setResizeMode( left, QSplitter::KeepSize );
 
     right->setParentView( this );
+    right->widget()->setAcceptDrops(acceptDrops());
+    right->setDropOptions(dropOptions());
 }
+
 
 void KCombiView::insertItem( KFileItem *item )
 {
@@ -319,9 +323,32 @@ KActionCollection * KCombiView::actionCollection() const
     return focusView( right )->actionCollection();
 }
 
-void KCombiView::virtual_hook( int id, void* data )
-{ KFileView::virtual_hook( id, data ); }
+void KCombiView::setAcceptDrops(bool b)
+{
+    left->setAcceptDrops(b);
+    if (right)
+       right->widget()->setAcceptDrops(b);
+    QSplitter::setAcceptDrops(b);
+}
 
+void KCombiView::setDropOptions_impl(int options)
+{
+    KFileView::setDropOptions_impl(options);
+    left->setDropOptions(options);
+    if (right)
+       right->setDropOptions(options);
+}
+
+void KCombiView::virtual_hook( int id, void* data )
+{ 
+    switch(id) {
+      case VIRTUAL_SET_DROP_OPTIONS: 
+         setDropOptions_impl(*(int *)data);
+         break;
+      default:
+         KFileView::virtual_hook( id, data );
+    }
+}
 
 #include "kcombiview.moc"
 

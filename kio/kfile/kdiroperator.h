@@ -531,6 +531,18 @@ class KDirOperator : public QWidget
      */
     void setupMenu(int whichActions);
 
+    /**
+     * Reimplemented - allow dropping of files if @p b is true
+     */
+    virtual void setAcceptDrops(bool b);
+
+    /**
+     * Sets the options for dropping files.
+     * @see KFileView::DropOptions
+     * @since 3.2
+     */
+    void setDropOptions(int options);
+
 protected:
     /**
      * A view factory for creating predefined fileviews. Called internally by @ref #setView
@@ -758,7 +770,15 @@ signals:
     void fileHighlighted( const KFileItem *item );
     void dirActivated( const KFileItem *item );
     void fileSelected( const KFileItem *item );
-
+    /**
+     * Emitted when files are dropped. Dropping files is disabled by
+     * default. You need to enable it with @ref setAcceptDrops()
+     * @param item the item on which the drop occured or 0.
+     * @param event the drop event itself.
+     * @param urls the urls that where dropped.
+     * @since 3.2
+     */
+    void dropped(const KFileItem *item, QDropEvent*event, const KURL::List&urls);
 private:
     /**
      * Contains all URLs you can reach with the back button.
