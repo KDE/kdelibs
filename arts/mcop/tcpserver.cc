@@ -135,7 +135,7 @@ bool TCPServer::initSocket()
         close(theSocket);
 		return false;
 	}
-	return &socket_addr;
+	return true;
 }
 
 string TCPServer::url()
