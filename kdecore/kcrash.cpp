@@ -30,6 +30,8 @@
 #include <stdlib.h>
 #include <unistd.h>
 
+#include <kapp.h>
+
 #include "kcrash.h"
 
 static int CrashRecursionCounter;	// If a crash occurs in our crash handler procedure, we can handle it :)
@@ -106,7 +108,9 @@ defaultCrashHandler (int signal)
     {
       printf ("Would start dr. konqi here\n");
 
-      execlp ("xmessage", "xmessage", "An application crashed!",
+      execlp ("drkonqi", "drkonqi", 
+              "--appname", kapp->name(),
+              "--signal", QCString().sprintf("%d", signal).data(),
 	      NULL);
     }
 
