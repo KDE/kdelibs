@@ -16,8 +16,9 @@
     the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
     Boston, MA 02111-1307, USA.
 */
+
 #ifndef MEDIATOOL_H
-#define MEDIATOOL_H
+#define MEDIATOOL_H "$Id$"
 
 typedef signed char    int8;
 typedef unsigned char  uint8;
@@ -311,8 +312,3 @@ typedef struct
 				   /* "PSID single-file"		*/
 
 #endif /* MEDIATOOL_H */
-
-
-
-
-
