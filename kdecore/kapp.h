@@ -303,6 +303,22 @@ public:
   static QCString launcher();
 
   /**
+   * The way a service gets started depends on the 'X-DCOP-ServiceType'
+   * entry in the desktop file of the service:
+   *
+   * There are three possibilities:
+   * @li X-DCOP-ServiceType=None (default)
+   *    Always start a new service, 
+   *    don't wait till the service registers with dcop.
+   * @li X-DCOP-ServiceType=Multi
+   *    Always start a new service, 
+   *    wait until the service has registered with dcop.
+   * @li X-DCOP-ServiceType=Unique
+   *    Only start the service if it isn't already running, 
+   *    wait until the service has registered with dcop.
+   */
+   
+  /**
    * Starts a service based on the (translated) name of the service.
    * E.g. "Web Browser"
    *
@@ -723,6 +739,10 @@ public:
 #endif
 
 // $Log$
+// Revision 1.145  2000/05/01 23:32:43  waba
+// WABA: startServiceBy... now takes a list of URLs as argument as well.
+// Rearranged the other parameters in a way that makes more sense.
+//
 // Revision 1.144  2000/04/27 10:48:30  elter
 // Add a global setting for popupmenu tear-off handles.
 // A tear-off handle is a special menu item, that - when selected - creates a copy of the menu. This "torn off" copy lives in a separate window. It contains the same choices as the original menu, with the exception of the tear-off handle.
