@@ -457,6 +457,12 @@ EventListener *NodeImpl::getHTMLEventListener(int id)
 
 bool NodeImpl::dispatchEvent(EventImpl *evt, int &exceptioncode, bool tempEvent)
 {
+    // Not mentioned in spec: throw NOT_FOUND_ERR if evt is null
+    if (!evt) {
+        exceptioncode = DOMException::NOT_FOUND_ERR;
+        return false;
+    }
+
     evt->setTarget(this);
 
     // Since event handling code could cause this object to be deleted, grab a reference to the view now
@@ -624,9 +630,9 @@ bool NodeImpl::dispatchMouseEvent(QMouseEvent *_mouse, int overrideId, int overr
         default:
             break;
     }
-    bool ctrlKey = (_mouse->state() & Qt::ControlButton);
-    bool altKey = (_mouse->state() & Qt::AltButton);
-    bool shiftKey = (_mouse->state() & Qt::ShiftButton);
+    bool ctrlKey = (_mouse->state() & Qt::ControlButton) == Qt::ControlButton;
+    bool altKey = (_mouse->state() & Qt::AltButton) == Qt::AltButton;
+    bool shiftKey = (_mouse->state() & Qt::ShiftButton) == Qt::ShiftButton;
     bool metaKey = false; // ### qt support?
 
     EventImpl *evt = new MouseEventImpl(evtId,true,cancelable,getDocument()->defaultView(),
