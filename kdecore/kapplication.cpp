@@ -1157,6 +1157,8 @@ static const KCmdLineOptions kde_options[] =
    { "geometry <geometry>", I18N_NOOP("sets the client geometry of the main widget."), 0},
 #if QT_VERSION < 0x030100
    { "smkey <sessionKey>", I18N_NOOP("Define a 'sessionKey' for the session id. Only valid with -session"), 0},
+#else
+   { "smkey <sessionKey>", I18N_NOOP("This option is unused and exists for backwards compatibility reason only"), 0},
 #endif
    { 0, 0, 0 }
 };
