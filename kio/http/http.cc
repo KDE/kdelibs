@@ -845,6 +845,12 @@ bool HTTPProtocol::http_open()
      header += "Referer: "+referrer+"\r\n";
   }
 
+  QString acceptHeader = metaData("accept");
+  if (!acceptHeader.isEmpty())
+  {
+     header += "Accept: "+acceptHeader+"\r\n";
+  }
+
   if ( m_request.offset > 0 ) {
     sprintf(c_buffer, "Range: bytes=%li-\r\n", m_request.offset);
     header += c_buffer;
