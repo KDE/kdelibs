@@ -118,7 +118,7 @@ bool KTarBase::open( int mode )
           nm = name.mid( pos + 1 );
 
         // read access
-        buffer[ 0x6a ] = 0;
+        buffer[ 0x6b ] = 0;
         char *dummy;
         const char* p = buffer + 0x64;
         while( *p == ' ' ) ++p;
