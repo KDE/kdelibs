@@ -264,6 +264,9 @@ Value DOMNode::getValueProperty(ExecState *exec, int token) const
       rend = node.handle() ? node.handle()->renderer() : 0L;
     }
 
+    if (rend && rend->isBody())
+      rend = rend->root();
+
     switch (token) {
     case OffsetLeft: {
       if ( !rend )
@@ -289,15 +292,13 @@ Value DOMNode::getValueProperty(ExecState *exec, int token) const
     case ClientWidth:
       if (!rend)
         return Undefined();
-      else
-        // "Width of the object including padding, but not including margin, border, or scroll bar."
-        return Number(rend->width() - rend->borderLeft() - rend->borderRight() );
+      // "Width of the object including padding, but not including margin, border, or scroll bar."
+      return Number(rend->width() - rend->borderLeft() - rend->borderRight() );
     case ClientHeight:
       if (!rend)
         return Undefined();
-      else
-        // "Height of the object including padding, but not including margin, border, or scroll bar."
-        return Number(rend->height() - rend->borderTop() - rend->borderBottom() );
+      // "Height of the object including padding, but not including margin, border, or scroll bar."
+      return Number(rend->height() - rend->borderTop() - rend->borderBottom() );
     case ScrollLeft: {
       int x, y;
       if ( rend && v && rend->absolutePosition( x, y ) )
