@@ -348,6 +348,7 @@ protected:
   bool itemVisible (int idx) { return lbox.rowIsVisible(idx); }
   void updateItem (int idx, bool clear = TRUE);
   bool needsUpdate (int id);
+
   /// Internal method called by keyPressEvent.
   void setCItem  (int idx);
   /// Adjust the number in the number check boxes.
