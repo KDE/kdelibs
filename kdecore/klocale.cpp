@@ -701,6 +701,9 @@ QDate KLocale::readDate(const QString &str) const
 			continue;
 		}
 
+		// remove all spaces at the begining
+		while (str.length() > strpos && str.at(strpos).isSpace()) strpos++;
+
 		c = fmt.at(fmtpos++);
 		switch (c) {
 		case 'd':
