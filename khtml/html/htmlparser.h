@@ -103,6 +103,8 @@ protected:
 
     void freeBlock( void);
 
+    void createHead();
+    
     ushort *forbiddenTag;
 
     /*
