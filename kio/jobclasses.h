@@ -552,6 +552,9 @@ namespace KIO {
     public:
         CopyJob( const KURL::List& src, const KURL& dest, bool move, bool asMethod, bool showProgressInfo );
 
+        KURL::List srcURLs() const { return m_srcList; } 
+        KURL destURL() const { return m_dest; } 
+
     signals:
 
         void totalFiles( KIO::Job *, unsigned long files );
@@ -635,6 +638,8 @@ namespace KIO {
 
     public:
         DeleteJob( const KURL::List& src, bool shred, bool showProgressInfo );
+
+        KURL::List urls() const { return m_srcList; } 
 
     signals:
 
