@@ -54,8 +54,8 @@ public:
    * @param bReadOnly Set the config object's read-only status.
    * @param bUseKderc Toggle reading the global KDE configuration file.
    */
-  KConfig( const QString& pGlobalFileName = QString::null, 
-	   const QString& pLocalFileName = QString::null,
+  KConfig( const QString& pGlobalFileName = QString(),
+	   const QString& pLocalFileName = QString(),
 	   bool bReadOnly = false, bool bUseKderc = true);
 
   /** 
@@ -236,7 +236,7 @@ inline bool KConfig::hasGroup(const QString &_pGroup) const
 {
   //  cacheCheck();
 
-  KEntryKey groupKey = { _pGroup, QString::null };
+  KEntryKey groupKey = { _pGroup, QString() };
   return aEntryMap.contains(groupKey);
 }
 
@@ -247,7 +247,7 @@ inline void KConfig::putData(const KEntryKey &_key, const KEntry &_data)
   // check to see if the special group key is present,
   // and if not, put it in.
   if (!hasGroup(_key.group)) {
-    KEntryKey groupKey = { _key.group, QString::null };
+    KEntryKey groupKey = { _key.group, QString() };
     aEntryMap.insert(groupKey, KEntry());
   }
 

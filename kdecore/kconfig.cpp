@@ -96,7 +96,7 @@ KConfig::KConfig( const QString& pGlobalFileName,
   backEnd = aBackEnd;
 
   // add the "default group" marker to the map
-  KEntryKey groupKey = { "<default>", QString::null };
+  KEntryKey groupKey = { "<default>", QString() };
   aEntryMap.insert(groupKey, KEntry());
 
   // need to set this before we actually parse so as to avoid
@@ -142,7 +142,7 @@ QStringList KConfig::groupList() const
 
   KEntryMapConstIterator aIt;
   for (aIt = aEntryMap.begin(); aIt != aEntryMap.end(); ++aIt)
-    if (aIt.key().key == QString::null)
+    if (aIt.key().key == QString())
       retList.append(aIt.key().group);
 
   return retList;
@@ -182,7 +182,7 @@ QMap<QString, QString> KConfig::entryMap(const QString &pGroup) const
   QMap<QString, QString> tmpMap;
   KEntryMapConstIterator aIt;
   KEntry aEntry;
-  KEntryKey groupKey = { pGroup, QString::null };
+  KEntryKey groupKey = { pGroup, QString() };
 
   //  cacheCheck();
 
@@ -202,7 +202,7 @@ void KConfig::reparseConfiguration()
   aEntryMap.clear();
 
   // add the "default group" marker to the map
-  KEntryKey groupKey = { "<default>", QString::null };
+  KEntryKey groupKey = { "<default>", QString() };
   aEntryMap.insert(groupKey, KEntry());
 
   parseConfigFiles();
@@ -212,7 +212,7 @@ KEntryMap KConfig::internalEntryMap(const QString &pGroup) const
 {
   KEntry aEntry;
   KEntryMapConstIterator aIt;
-  KEntryKey aKey = { pGroup, QString::null };
+  KEntryKey aKey = { pGroup, QString() };
   KEntryMap tmpEntryMap;
 
   //  cacheCheck();
@@ -252,7 +252,7 @@ void KConfig::flushCache()
     // no I/O within the timeout period.  Flush the cache.
     isCached = false;
     aEntryMap.clear();
-    KEntryKey groupKey = { "<default>", QString::null };
+    KEntryKey groupKey = { "<default>", QString() };
     aEntryMap.insert(groupKey, KEntry());
     // reset the interval to 30 second checks
     flushInterval = 30;
