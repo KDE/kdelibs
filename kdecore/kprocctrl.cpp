@@ -126,10 +126,20 @@ void KProcessController::removeKProcess( KProcess* p )
   sigprocmask( SIG_SETMASK, &oldset, 0 );
 }
 
+//using a struct which contains both the pid and the status makes it easier to write
+//and read the data into the pipe
+//especially this solves a problem which appeared on my box where slotDoHouseKeeping() received
+//only 4 bytes (with some debug output around the write()'s it received all 8 bytes)
+//don't know why this happened, but when writing all 8 bytes at once it works here, aleXXX
+struct waitdata
+{
+  pid_t pid;
+  int status;
+};
+
 void KProcessController::theSigCHLDHandler(int arg)
 {
-  int status;
-  pid_t this_pid;
+  struct waitdata wd;
   int saved_errno;
 
   saved_errno = errno;
@@ -145,10 +155,9 @@ void KProcessController::theSigCHLDHandler(int arg)
       {
         if( !(*it)->isRunning())
             continue;
-        this_pid = waitpid( (*it)->pid(), &status, WNOHANG );
-        if ( this_pid > 0 ) {
-          ::write(theKProcessController->fd[1], &this_pid, sizeof(this_pid));
-          ::write(theKProcessController->fd[1], &status, sizeof(status));
+        wd.pid = waitpid( (*it)->pid(), &wd.status, WNOHANG );
+        if ( wd.pid > 0 ) {
+          ::write(theKProcessController->fd[1], &wd, sizeof(wd));
           found = true;
         }
       }
@@ -158,10 +167,8 @@ void KProcessController::theSigCHLDHandler(int arg)
         oldChildHandlerData.sa_handler( arg ); // call the old handler
   // handle the rest
   if( theKProcessController != 0 ) {
-      pid_t dummy_pid = 0; // delayed waitpid()
-      int dummy_status = 0;
-      ::write(theKProcessController->fd[1], &dummy_pid, sizeof(dummy_pid));
-      ::write(theKProcessController->fd[1], &dummy_status, sizeof(dummy_status));
+     static const struct waitdata dwd = { 0, 0 }; // delayed waitpid()
+     ::write(theKProcessController->fd[1], &dwd, sizeof(dwd));
   } else {
       int dummy;
       while( waitpid( -1, &dummy, WNOHANG ) > 0 )
@@ -175,15 +182,12 @@ void KProcessController::theSigCHLDHandler(int arg)
 
 void KProcessController::slotDoHousekeeping(int )
 {
-  int bytes_read = 0;
-
+  unsigned int bytes_read = 0;
+  unsigned int errcnt=0;
   // read pid and status from the pipe.
-
-  const int len = sizeof(pid_t) + sizeof(int);
-  int errcnt = 0;
-  unsigned char buf[len];
-  while (bytes_read < len && errcnt < 50) {
-      int r = ::read(fd[0], buf + bytes_read, len - bytes_read);
+  struct waitdata wd;
+  while ((bytes_read < sizeof(wd)) && (errcnt < 50)) {
+    int r = ::read(fd[0], ((char *)&wd) + bytes_read, sizeof(wd) - bytes_read);
       if (r > 0) bytes_read += r;
       else if (r < 0) errcnt++;
   }
@@ -193,16 +197,13 @@ void KProcessController::slotDoHousekeeping(int )
                "exceeded in KProcessController::slotDoHousekeeping\n");
 	return;           // it makes no sense to continue here!
   }
-  if (bytes_read != len) {
+  if (bytes_read != sizeof(wd)) {
 	fprintf(stderr,
 	       "Error: Could not read info from signal handler %d <> %d!\n",
-	       bytes_read, len);
+	       bytes_read, sizeof(wd));
 	return;           // it makes no sense to continue here!
   }
-  pid_t pid    = *reinterpret_cast<pid_t *>(buf);
-  int status = *reinterpret_cast<int *>(buf + sizeof(pid_t));
-
-  if( pid == 0 ) { // special case, see delayedChildrenCleanup()
+  if (wd.pid==0) { // special case, see delayedChildrenCleanup()
       delayedChildrenCleanupTimer.start( 1000, true );
       return;
   }
@@ -211,16 +212,16 @@ void KProcessController::slotDoHousekeeping(int )
        it != processList.end();
        ++it ) {
         KProcess* proc = *it;
-	if (proc->pid() == pid) {
+	if (proc->pid() == wd.pid) {
 	  // process has exited, so do emit the respective events
 	  if (proc->run_mode == KProcess::Block) {
 	    // If the reads are done blocking then set the status in proc
 	    // but do nothing else because KProcess will perform the other
 	    // actions of processHasExited.
-	    proc->status = status;
+	    proc->status = wd.status;
             proc->runs = false;
 	  } else {
-	    proc->processHasExited(status);
+	    proc->processHasExited(wd.status);
 	  }
         return;
 	}
@@ -232,18 +233,16 @@ void KProcessController::slotDoHousekeeping(int )
 // handler, popen()'s waitpid() call would fail
 void KProcessController::delayedChildrenCleanup()
 {
-  int status;
-  pid_t pid;
-  while(( pid = waitpid( -1, &status, WNOHANG ) ) > 0 ) {
+  struct waitdata wd;
+  while(( wd.pid = waitpid( -1, &wd.status, WNOHANG ) ) > 0 ) {
       for( QValueList<KProcess*>::ConstIterator it = processList.begin();
            it != processList.end();
            ++it )
       {
-        if( !(*it)->isRunning() || (*it)->pid() != pid )
+        if( !(*it)->isRunning() || (*it)->pid() != wd.pid )
             continue;
         // it's KProcess, handle it
-          ::write(fd[1], &pid, sizeof(pid));
-          ::write(fd[1], &status, sizeof(status));
+          ::write(fd[1], &wd, sizeof(wd));
         break;
       }
   }
