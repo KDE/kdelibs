@@ -538,9 +538,9 @@ Value DOMNodeList::call(ExecState *exec, Object &thisObj, const List &args)
   return val;
 }
 
-Value DOMNodeList::tryCall(ExecState *exec, Object &thisObj, const List &args)
+Value DOMNodeList::tryCall(ExecState *exec, Object &, const List &args)
 {
-  Q_ASSERT( thisObj.imp() == this ); // tell me if this is triggered (David)
+  // Do not use thisObj here. See HTMLCollection.
   UString s = args[0].toString(exec);
   bool ok;
   unsigned int u = s.toULong(&ok);
