@@ -32,6 +32,7 @@
 #include <klocale.h>
 #include <klistview.h>
 #include <kiconloader.h>
+#include <kdebug.h>
 
 KMWOther::KMWOther(QWidget *parent, const char *name)
 : KMWizardPage(parent,name)
@@ -112,8 +113,9 @@ void KMWOther::initPrinter(KMPrinter *p)
 
 void KMWOther::updatePrinter(KMPrinter *p)
 {
-	QString	dev = m_uri->text();
-	p->setDevice(KURL(dev));
+	KURL dev( m_uri->text() );
+	p->setDevice( dev );
+	p->setOption( "device-string", m_uri->text() );
 }
 
 void KMWOther::slotPressed( QListViewItem *item )

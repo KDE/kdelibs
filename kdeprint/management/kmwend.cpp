@@ -94,7 +94,10 @@ void KMWEnd::initPrinter(KMPrinter *p)
 			default:
 				// double decoding in case the printer name contains chars like '#' that are
 				// not decoded by "prettyURL".
-				txt.append(s.arg(i18n("URI")).arg(KURL::decode_string(url.prettyURL())));
+				if ( p->hasOption( "device-string" ) )
+					txt.append(s.arg(i18n("URI")).arg(p->option( "device-string" )));
+				else
+					txt.append(s.arg(i18n("URI")).arg(KURL::decode_string(url.prettyURL())));
 				break;
 		}
 		txt.append("</ul><br>");

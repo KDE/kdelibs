@@ -153,7 +153,12 @@ bool KMCupsManager::createPrinter(KMPrinter *p)
 			if (p->device().protocol() == "smb")
 				req.addURI(IPP_TAG_PRINTER, "device-uri", urlToSmb(p->device()));
 			else
-				req.addURI(IPP_TAG_PRINTER,"device-uri",p->device().url());
+			{
+				if ( p->hasOption( "device-string" ) )
+					req.addURI( IPP_TAG_PRINTER, "device-uri", p->option( "device-string" ) );
+				else
+					req.addURI(IPP_TAG_PRINTER,"device-uri",p->device().url());
+			}
 		}
 		if (!p->option("kde-banners").isEmpty())
 		{
