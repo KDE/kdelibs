@@ -25,6 +25,7 @@ class KJScriptLock;
 
 namespace KJS {
   class UChar;
+  class UString;
   class KJSLexer;
   class KJSContext;
   class KJSGlobal;
@@ -66,6 +67,12 @@ public:
    * @param length of the string.
    */
   bool evaluate(const KJS::UChar *code, unsigned int length);
+  /**
+   * Added for convenience in case you have the code in available in
+   * internal representation already.
+   * @param code is an Unicode string containing the code to be executed.
+   */
+  bool evaluate(const KJS::UString &code);
 public:
   static KJScript *current() { return curr; }
   void setCurrent(KJScript *c) { curr = c; }

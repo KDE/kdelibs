@@ -347,11 +347,11 @@ bool KJS::operator==(const UChar &c1, const UChar &c2)
 
 bool KJS::operator==(const UString& s1, const UString& s2)
 {
-  if (s1.size() != s2.size())
+  if (s1.rep->len != s2.rep->len)
     return false;
 
-  return (memcmp(s1.data(), s2.data(),
-		 s1.size() * sizeof(UChar)) == 0);
+  return (memcmp(s1.rep->dat, s2.rep->dat,
+		 s1.rep->len * sizeof(UChar)) == 0);
 }
 
 UString KJS::operator+(const UString& s1, const UString& s2)

@@ -42,18 +42,21 @@ int kjsyylex()
   return KJScript::lexer()->lex();
 }
 
-KJSLexer::KJSLexer(const UString &c)
+KJSLexer::KJSLexer(const UChar *c, unsigned int len)
   : yylineno(0),
     size8(128), size16(128),
     pos8(0), pos16(0), stackToken(0), pos(0),
-    code(c)
+    code(c), length(len)
 {
   // allocate space for read buffers
   buffer8 = new char[size8];
   buffer16 = new UChar[size16];
 
   // read first characters
-  shift(0);
+  current = (length > 0) ? code[0].unicode() : 0;
+  next1 = (length > 1) ? code[1].unicode() : 0;
+  next2 = (length > 2) ? code[2].unicode() : 0;
+  next3 = (length > 3) ? code[3].unicode() : 0;
 }
 
 KJSLexer::~KJSLexer()
@@ -64,12 +67,13 @@ KJSLexer::~KJSLexer()
 
 void KJSLexer::shift(unsigned int p)
 {
-  pos += p;
-  current = code[pos].unicode();
-  // TODO: cycle these values
-  next1 = code[pos+1].unicode();
-  next2 = code[pos+2].unicode();
-  next3 = code[pos+3].unicode();
+  while (p--) {
+    pos++;
+    current = next1;
+    next1 = next2;
+    next2 = next3;
+    next3 = (pos + 3 < length) ? code[pos+3].unicode() : 0;
+  }
 }
 
 void KJSLexer::setDone(State s)
@@ -396,6 +400,7 @@ bool KJSLexer::isLineTerminator() const
 
 bool KJSLexer::isIdentLetter() const
 {
+  /* TODO: allow other legitimate unicode chars */
   return (current >= 'a' && current <= 'z' ||
 	  current >= 'A' && current <= 'Z' ||
 	  current == '$' || current == '_');

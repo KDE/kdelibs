@@ -53,6 +53,7 @@ namespace KJS {
 
   class UStringData {
     friend UString;
+    friend bool operator==(const UString&, const UString&);
   public:
     UStringData() : dat(0L), len(0), rc(1) { }
     UStringData(UChar *d, unsigned int l) : dat(d), len(l), rc(1) { }
@@ -71,6 +72,7 @@ namespace KJS {
   };
 
   class UString {
+    friend bool operator==(const UString&, const UString&);
   public:
     UString();
     UString(char c);

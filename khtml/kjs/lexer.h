@@ -30,7 +30,7 @@ namespace KJS {
 
   class KJSLexer {
   public:
-    KJSLexer(const UString &c);
+    KJSLexer(const UChar *c, unsigned int len);
     ~KJSLexer();
 
     int lex();
@@ -103,7 +103,8 @@ namespace KJS {
     void record16(unsigned char c);
     void record16(UChar c);
 
-    UString code;
+    const UChar *code;
+    unsigned int length;
     int yycolumn;
 
     // current and following unicode characters
