@@ -187,6 +187,8 @@ void KLocale::doBindInit()
 	d->plural_form = 9;
       else if ( pf == "Maltese" )
 	d->plural_form = 10;
+      else if ( pf == "Arabic" )
+	d->plural_form = 11;
       else {
 	kdWarning(173) << "Definition of PluralForm is none of "
 		       << "NoPlural/"
@@ -199,6 +201,7 @@ void KLocale::doBindInit()
 		       << "Lithuanian/"
 		       << "Czech/"
 		       << "Slovak/"
+		       << "Arabic/"
 		       << "Maltese: " << pf << endl;
 	exit(1);
       }
@@ -711,6 +714,16 @@ QString KLocale::translate( const char *singular, const char *plural,
       return put_n_in( forms[2], n );
     else
       return put_n_in( forms[3], n );
+  case 11: // Arabic
+    EXPECT_LENGTH( 4 );
+    if (n == 1)
+      return put_n_in(forms[0], n);
+    else if (n == 2)
+      return put_n_in(forms[1], n);
+    else if ( n < 11)
+      return put_n_in(forms[2], n);
+    else  
+      return put_n_in(forms[3], n);
   }
   kdFatal() << "The function should have been returned in another way\n";
 
