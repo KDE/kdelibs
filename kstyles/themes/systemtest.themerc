@@ -231,6 +231,7 @@ Name[sl]=Preizkus
 Name[sv]=Testar
 Name[ta]=ேசாதைன
 Name[tr]=Deneme
+Name[uk]=Жест
 Comment=Unstable development style
 Comment[ca]=Estil desenvolupament inestable
 Comment[cs]=Nedokončený styl v přípravě
@@ -259,6 +260,7 @@ Comment[sr]=Nestabilan razvojni stil
 Comment[sv]=Ostabil utvecklingsstil
 Comment[ta]=Unstable உருவாகஂக பாநஂதமஂ
 Comment[tr]=Oturmamış geliştirme stili
+Comment[uk]=Незавершений стиль
 ScrollBarExtent=14
 
 [General]

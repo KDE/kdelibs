@@ -19,7 +19,7 @@ Comment[ja]=CDEスタイル
 Comment[mk]=Вграден CDE стил (без тема)
 Comment[nl]=Ingebouwde, themaloze CDE-stijl
 Comment[no]=Innebygget CDE-stil uten tema
-Comment[no_NY]=Innebygd CDE-stil
+Comment[no_NY]=Innebygd CDE-stil utan tema
 Comment[pl]=Wbudowany styl CDE, bez motywów
 Comment[pt]=Estilo embutido CDE
 Comment[ro]=Stil CDE fără temă, intern
@@ -29,5 +29,6 @@ Comment[sr]=UgraÄ�eni, bez teme, CDE stil
 Comment[sv]=Inbyggd otemad CDE-stil
 Comment[ta]=உளஂளைம CDE பாநஂதமஂ
 Comment[tr]=Yerleşik, temasız CDE stili
+Comment[uk]=Чстроєний стиль CDE без теми
 [KDE]
 widgetStyle=CDE

@@ -21,7 +21,7 @@ Comment[ja]=Beosスタイル
 Comment[mk]=Beos стил (без тема)
 Comment[nl]=themaloze BeOS-stijl
 Comment[no]=Beos-lignende stil uten tema
-Comment[no_NY]=BeOS-aktig stil
+Comment[no_NY]=BeOS-aktig stil utan tema
 Comment[pl]=Styl podobny do Beosa, bez motywów
 Comment[pt]=Estilo tipo Beos
 Comment[ro]=Stil BeOS fără temă
@@ -30,5 +30,6 @@ Comment[sl]=Netematski slog, podoben Beosu
 Comment[sr]=Bez teme, nalik na BeOS stil
 Comment[sv]=Otemad Beos-liknande stil
 Comment[tr]=Beos benzeri temasız stil
+Comment[uk]=Птиль BeOS (без теми)
 [KDE]
 widgetStyle=beosstyle.la

@@ -26,6 +26,7 @@ Name[sl]=Številne barve privzete
 Name[sr]=Podrazumevani HighColor
 Name[ta]=உயரஂவணஂணமஂ ெகாடாநிைல
 Name[tr]=Yüksek Renk Öntanımlı
+Name[uk]=Жиповий (64K кольорів)
 Comment=Highcolor version of the default style
 Comment[ca]=Versió Highcolor de l'estil per omissió
 Comment[cs]=Mnohobarevný implicitní styl
@@ -53,5 +54,6 @@ Comment[sl]=Raznobarvna različica privzetega sloga
 Comment[sr]=HighColor verzija podrazumevanog stila
 Comment[ta]=உயரஂநிறமஂ உளஂள ெகாடாநிைல பாநஂதமஂ
 Comment[tr]=Öntanımlı stilin yüksek renk versiyonu
+Comment[uk]=Черсія типового стилю для 64К кольорів
 [KDE]
 widgetStyle=hcstyle.la

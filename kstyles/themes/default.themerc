@@ -28,6 +28,7 @@ Name[sr]=KDE podrazumevana
 Name[sv]=KDE förinställd
 Name[ta]=KDE ெகாடாநிைல
 Name[tr]=KDE öntanımlı
+Name[uk]=Жиповий для KDE
 Comment=Default KDE style
 Comment[ca]=Estil KDE per omissió
 Comment[cs]=Implicitní styl pro KDE
@@ -57,6 +58,7 @@ Comment[sr]=Podrazumevani KDE stil
 Comment[sv]=Förinställd KDE-stil
 Comment[ta]=ெகாடாநிைல KDE பாநஂதமஂ
 Comment[tr]=Öntanımlı KDE stili
+Comment[uk]=Жиповий стиль KDE
 Highcolor=hcstyle.la
 InactiveShading=true
 [KDE]
