@@ -654,6 +654,10 @@ int main(int argc, char *argv[])
   KURL local_file_4("file:///my/file");
   check("local_file_4.isLocalFile()", local_file_4.isLocalFile() ? "true" : "false", "true");
 
+  KURL local_file_5;
+  local_file_5.setPath("/foo?bar");
+  check("local_file_5.url()", local_file_5.url() == QString::fromLatin1("file:/foo%3Fbar") ? "true" : "false", "true");
+
   QString basePath = "/home/bastian";
   
   check("relativePath(\"/home/bastian\", \"/home/bastian\")", KURL::relativePath(basePath, "/home/bastian"), "./");
