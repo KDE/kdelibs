@@ -1,3 +1,6 @@
+#include <klistview.h>
+#include "main.h"
+
 #ifndef TEST_H
 #define TEST_H
 
@@ -6,17 +9,10 @@
 // skel:
 // - non "CLASS" main elements
 // - namespacing stuff in skel
-// - no functions
-// - ASYNC
-// - lack of SUPER, is that even possible?, don't you *need* DCOPObject???
 // - qual / const
 // - does dispatcher cope with unnamed args?
 // stub:
-// - INCLUDE's
-// - non "DCOPObject" SUPER
 // - includes to super relationship, a bit much to test, needs multiple files?
-// stubimpl:
-// - isIntType return types / void return types
 
 // test for k_dcop 
 // NOTE - non hashing test, therefore use < 7 function
@@ -26,13 +22,43 @@ class DefaultTest : public QObject, virtual public DCOPObject
    K_DCOP
 public:
    DefaultTest();
+   void nonDcopFunction( QString filename, QString url, QString text, QString address, QString icon );
 k_dcop:
    void noArgsTest();
    void argsTest( QString filename, QString url );
    void unNamedArgsTest( QString, QString );
 
+   void voidReturnType( QString filename, QString url, QString text, QString address, QString icon );
+   QString nonVoidReturnType( QString filename, QString text, QString address );
+   int intReturnType( QString filename, QString text, QString address );
+
+   ASYNC asyncTest( QString filename, QString text, QString address );
+};
+
+class NoSuper
+{
+   K_DCOP
+public:
+   NoSuper();
+k_dcop:
    void function1( QString filename, QString url, QString text, QString address, QString icon );
-   void function2( QString filename, QString text, QString address );
+};
+
+class NonDCOPObject : public MyDCOPObjectBase
+{
+   K_DCOP
+public:
+   NonDCOPObject();
+k_dcop:
+   void function1( QString filename, QString url, QString text, QString address, QString icon );
+};
+
+class NoFunctions : public DCOPObject
+{
+   K_DCOP
+public:
+   NonDCOPObject();
+   void nonDcopFunction( QString filename, QString url, QString text, QString address, QString icon );
 };
 
 // test for useHashing
