@@ -424,6 +424,7 @@ KFontStructList KCharsets::getFontList(KFontStruct mask) const
     fontNames = XListFonts(kde_display, maskStr.latin1(), 32767, &numFonts);
 
     KFontStructList lst;
+    lst.setAutoDelete(true);
 
     for(int i = 0; i < numFonts; i++){
 	KFontStruct *f = new KFontStruct;
