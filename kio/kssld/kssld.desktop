@@ -1,7 +1,20 @@
 [Desktop Entry]
 Type=Service
+ServiceTypes=KDEDModule
 X-KDE-ModuleType=Library
 X-KDE-Library=kssld
 X-KDE-FactoryName=kssld
+X-KDE-Kded-autoload=false
+X-KDE-Kded-load-on-demand=true
 Name=KSSL Daemon Module
+Name[da]=KSSL Dæmonmodul
+Name[he]=מודול תהליך שירות ה-SSL
+Name[hu]=KSSL szolgáltatásmodul
+Name[sv]=KSSL-demonmodul
+Name[zh_TW.Big5]=KSSL 服務程式模組
 Comment=KSSL Daemon Module for KDED
+Comment[da]=KSSL Dæmon modul for KDED
+Comment[he]=מודול תהליך שירות SSL ל-KDED
+Comment[hu]=KSSL szolgáltatásmodul a KDED-hez
+Comment[sv]=KSSL-demonmodul för KDED
+Comment[zh_TW.Big5]=KDED 使用的 SSL 服務程式模組
