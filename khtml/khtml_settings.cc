@@ -42,7 +42,8 @@ struct KPerDomainSettings {
     KHTMLSettings::KJSWindowFocusPolicy m_windowFocusPolicy : 1;
     KHTMLSettings::KJSWindowMovePolicy m_windowMovePolicy : 1;
     KHTMLSettings::KJSWindowResizePolicy m_windowResizePolicy : 1;
-
+    
+#ifdef DEBUG_SETTINGS
     void dump(const QString &infix = QString::null) const {
       kdDebug() << "KPerDomainSettings " << infix << " @" << this << ":" << endl;
       kdDebug() << "  m_bEnableJava: " << m_bEnableJava << endl;
@@ -54,6 +55,7 @@ struct KPerDomainSettings {
       kdDebug() << "  m_windowMovePolicy: " << m_windowMovePolicy << endl;
       kdDebug() << "  m_windowResizePolicy: " << m_windowResizePolicy << endl;
     }
+#endif
 };
 
 typedef QMap<QString,KPerDomainSettings> PolicyMap;
@@ -383,7 +385,9 @@ void KHTMLSettings::init( KConfig * config, bool reset )
 
     // Read options from the global "domain"
     readDomainSettings(config,reset,true,d->global);
+#ifdef DEBUG_SETTINGS
     d->global.dump("init global");
+#endif
 
     // The domain-specific settings.
 
@@ -416,7 +420,9 @@ void KHTMLSettings::init( KConfig * config, bool reset )
       QString domain = it.key();
       config->setGroup(domain);
       readDomainSettings(config,reset,false,d->domainPolicy[domain]);
+#ifdef DEBUG_SETTINGS
       d->domainPolicy[domain].dump("init "+domain);
+#endif
     }
     config->setGroup(js_group_save);
 
@@ -435,7 +441,9 @@ void KHTMLSettings::init( KConfig * config, bool reset )
         splitDomainAdvice(*it, domain, javaAdvice, javaScriptAdvice);
         setup_per_domain_policy(d,domain).m_bEnableJava =
 		javaAdvice == KJavaScriptAccept;
+#ifdef DEBUG_SETTINGS
 	setup_per_domain_policy(d,domain).dump("JavaDomainSettings 4 "+domain);
+#endif
       }
     }
 
@@ -454,7 +462,9 @@ void KHTMLSettings::init( KConfig * config, bool reset )
         splitDomainAdvice(*it, domain, javaAdvice, javaScriptAdvice);
         setup_per_domain_policy(d,domain).m_bEnableJavaScript =
 			javaScriptAdvice == KJavaScriptAccept;
+#ifdef DEBUG_SETTINGS
 	setup_per_domain_policy(d,domain).dump("ECMADomainSettings 4 "+domain);
+#endif
       }
     }
 
@@ -476,7 +486,9 @@ void KHTMLSettings::init( KConfig * config, bool reset )
         if( check_old_ecma )
           setup_per_domain_policy(d,domain).m_bEnableJavaScript =
 	  		javaScriptAdvice == KJavaScriptAccept;
+#ifdef DEBUG_SETTINGS
 	setup_per_domain_policy(d,domain).dump("JavaScriptDomainAdvice 4 "+domain);
+#endif
       }
 
       //save all the settings into the new keywords if they don't exist
@@ -523,7 +535,9 @@ static const KPerDomainSettings &lookup_hostname_policy(
 {
   kdDebug() << "lookup_hostname_policy(" << hostname << ")" << endl;
   if (hostname.isEmpty()) {
+#ifdef DEBUG_SETTINGS
     d->global.dump("global");
+#endif
     return d->global;
   }
 
@@ -533,7 +547,9 @@ static const KPerDomainSettings &lookup_hostname_policy(
   PolicyMap::const_iterator it = d->domainPolicy.find(hostname);
   if( it != notfound ) {
     kdDebug() << "perfect match" << endl;
+#ifdef DEBUG_SETTINGS
     (*it).dump(hostname);
+#endif
     // yes, use it (unless dunno)
     return *it;
   }
@@ -548,7 +564,9 @@ static const KPerDomainSettings &lookup_hostname_policy(
     Q_ASSERT(notfound == d->domainPolicy.end());
     if( it != notfound ) {
       kdDebug() << "partial match" << endl;
+#ifdef DEBUG_SETTINGS
       (*it).dump(host_part);
+#endif
       return *it;
     }
     // assert(host_part[0] == QChar('.'));
@@ -557,7 +575,9 @@ static const KPerDomainSettings &lookup_hostname_policy(
 
   // No domain-specific entry: use global domain
   kdDebug() << "no match" << endl;
+#ifdef DEBUG_SETTINGS
   d->global.dump("global");
+#endif
   return d->global;
 }
 
