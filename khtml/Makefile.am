@@ -60,6 +60,13 @@ kcssprop_DIST = kcssprop.c kcssprop.h kcssprop.in
 EXTRA_DIST = $(khtmltags_DIST) makeprop maketags test $(data_DATA) \
 	CHANGES DESIGN README.HTMLWidget README.tags $(kcssprop_DIST)
 
+parser:
+	cd $(srcdir) && \
+	perl makeattrs && \
+	bash maketags && \
+	bash makeprop && \
+	perl makeentities
+
 #bin_PROGRAMS = debugkhtml
 #debugkhtml_LDADD = -lkhtml -lkdecore -lqt
 #

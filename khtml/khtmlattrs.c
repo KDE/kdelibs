@@ -5,7 +5,7 @@
 /* Copyright 1999 Lars Knoll */
 #include "khtmlattrs.h"
 struct attrs {
-    char *name;
+    const char *name;
     int id;
 };
 /* maximum key range = 954, duplicates = 0 */

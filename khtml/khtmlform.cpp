@@ -50,7 +50,7 @@
 
 QString HTMLElement::encodeString( HTMLString e )
 {
-	static char *safe = "$-._!*(),"; /* RFC 1738 */
+	static const char *safe = "$-._!*(),"; /* RFC 1738 */
 	unsigned pos = 0;
 	QString encoded;
 	char buffer[5];

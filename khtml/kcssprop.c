@@ -4,7 +4,7 @@
 /* Copyright 1999 W. Bastian */
 #include "kcssprop.h"
 struct props {
-    char *name;
+    const char *name;
     int id;
 };
 /* maximum key range = 222, duplicates = 0 */
