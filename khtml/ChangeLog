@@ -1,5 +1,7 @@
 2004-02-25  Dirk Mueller  <mueller@kde.org>
 
+	* misc/htmlattrs.h: don't export getAttrName symbol.
+
 	* rendering/render_object.h (class RenderObject): move background
 	repaint handling over here, since TableSections don't inherit RenderBox,
 	but still have a background.

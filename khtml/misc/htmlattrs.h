@@ -6,6 +6,7 @@ htmlattrs.in by makeattrs, do not edit */
 #define HTML_ATTRS_H
 
 #include "dom/dom_string.h"
+#include <kdemacros.h>
 using namespace DOM;
 
 #define ATTR_ABBR 1
@@ -154,6 +155,6 @@ using namespace DOM;
 #define ATTR_WRAP 144
 #define ATTR_Z_INDEX 145
 #define ATTR_LAST_ATTR 145
-const char* getAttrName(unsigned short id);
+const char* getAttrName(unsigned short id) KDE_NO_EXPORT;
 
 #endif
