@@ -181,7 +181,8 @@ Completion WindowFunc::tryExecute(const List &args)
   QString str, str2;
   int i;
 
-  KHTMLView *widget = window->part->view();
+  KHTMLPart *part = window->part;
+  KHTMLView *widget = part->view();
   KJSO v = args[0];
   String s = v.toString();
   str = s.value().qstring();
@@ -244,15 +245,21 @@ Completion WindowFunc::tryExecute(const List &args)
     }
 
     // prepare arguments
-    KURL url(str);
+    KURL url;
+    if (!str.isEmpty()) {
+	if (part->baseURL().isEmpty())
+	    url = KURL(part->url(), str);
+	else
+	    url = KURL(part->baseURL(), str);
+    }
     KParts::URLArgs uargs;
     uargs.frameName = args[1].toString().value().qstring();
     uargs.serviceType = "text/html";
 
     // request new window
     KParts::ReadOnlyPart *newPart = 0L;
-    emit widget->part()->browserExtension()->createNewWindow(url, uargs,
-                                                             winargs, newPart);
+    emit part->browserExtension()->createNewWindow(url, uargs,
+						   winargs,newPart);
     if (newPart && newPart->inherits("KHTMLPart"))
         result = newWindow(static_cast<KHTMLPart*>(newPart));
     else
