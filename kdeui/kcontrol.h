@@ -31,10 +31,10 @@
 // forward declarations
 class KControlApplication;
 
-/** 
+/**
  *  Tab dialog used internally by control-center apps.
  *  @internal
- *  @see KConfigWidget, KControlApplication 
+ *  @see KConfigWidget, KControlApplication
  */
 class KControlDialog : public QTabDialog
 {
@@ -131,7 +131,7 @@ public:
    *
    *  @param argc  Number of commandline arguments
    *  @param argv  Commandline arguments
-   *  @param _name Name of the application 
+   *  @param _name Name of the application
    */
    KControlApplication( int& argc, char** argv, const QCString& _name );
 
@@ -140,6 +140,17 @@ public:
    */
   ~KControlApplication();
 
+    
+    
+    /** 
+     * Starts the application if runGUI() is enabled, otherwise calls init()
+     *
+     * Control modules should use this function instead of QApplication::exec().
+     * Keep in mind that exec() is not virtual.
+     */
+    int exec();
+    
+    
   /**
    *  Sets the title of the dialog.
    *
@@ -156,25 +167,10 @@ public:
    *
    *  The setup dialog has to be run if the application has not been
    *  invoked with a single commandline argument containing "-init".
-   *
-   *  Due to the fact the QApplication::exec() is not virtual, this
-   *  construction has to be used to execute a KControlApplication:
-   *
-   *  <pre>
-   *  KControlApplication app(argc, argv, "name", "title");
-   *  app.createPages();
-   *
-   *  if (app.runGUI())
-   *    return app.exec();
-   *  else
-   *    return 0;
-   *  </pre>
-   *
-   *  Just running app.exec() will fail if "-init" has been requested.  
    */
   bool runGUI() { return !justInit; };
 
-  /** 
+  /**
    *  Returns the tabbed dialog object, normally a @ref KControlDialog
    *  object.
    *
@@ -185,7 +181,7 @@ public:
    *  Returns the list of pages to show.
    *
    *  @return Pointer to a QStrList obejct or NULL if no special pages
-   *  choosen.  
+   *  choosen.
    */
   QStrList* getPageList() { return pages; };
 
@@ -201,14 +197,19 @@ public:
 public slots:
 
   /**
-   *  This function is called at startup to initialize the settings.
-   *   
-   *  This function must be overriden by all setup application that
-   *  want to have persistent settings.  
+      This function is called at startup of the KDE desktop to
+      initialize persistent settings of the module.
+
+      This function must be overriden by all setup application that
+      want to have persistent settings. 
+      
+      Do not forget to add a line "Init=yourControlModule -init" tn
+      the dotdesktop file of your module. Otherwise the system can't
+      find you.
    */
   virtual void init() {};
 
-  /** 
+  /**
    *  This function is called to apply the settings currently selected
    *  in the dialog.
    *
@@ -217,7 +218,7 @@ public slots:
 
   /**
    *  This function is called when the help button is pressed.
-   *   
+   *
    *  The default behaviour is to call
    *
    *  kapp->invokeHTMLHelp("kcontrol/$(appname)/$(help_name).html","");

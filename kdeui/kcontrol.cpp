@@ -42,7 +42,7 @@ void KControlDialog::done(int result)
 }
 
 KControlApplication::KControlApplication(int &argc, char **argv, const QCString &name)
-  : KApplication(argc, argv, name, 
+  : KApplication(argc, argv, name,
 	!(argc == 2 && strcmp("-init", argv[1]) == 0))
 {
   dialog = 0;
@@ -68,10 +68,10 @@ KControlApplication::KControlApplication(int &argc, char **argv, const QCString 
   connect(dialog, SIGNAL(applyButtonPressed()), this, SLOT(apply()));
   connect(dialog, SIGNAL(helpButtonPressed()), this, SLOT(help()));
   connect(dialog, SIGNAL(defaultButtonPressed()), this, SLOT(defaultValues()));
-  
+
   // set dialog as main widget
   setMainWidget(dialog);
-  
+
   // detect, if swallowing
   int start=1;
   if (argc >= 3 && strcmp(argv[1],"-swallow") == 0)
@@ -130,6 +130,15 @@ void KControlApplication::help()
     name = helpNames.at(dialog->tabBar()->currentTab());
 
   kapp->invokeHTMLHelp(QString("kcontrol/")+kapp->name()+"/"+name, "");
+}
+
+
+int KControlApplication::exec()
+{
+    if ( runGUI() )
+	KApplication::exec();
+    else
+	init();
 }
 
 #include "kcontrol.moc"
