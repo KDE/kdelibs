@@ -259,16 +259,16 @@ taken from that reference and shortened a bit for readability. -->
 <date>4 March 1996</date>
 </refsynopsisdivinfo>
 <synopsis>
-void XtUnmanageChildren(<replaceable parameter>children</replaceable>, <replaceable parameter>num_children</replaceable>)
-    WidgetList <replaceable parameter>children</replaceable>;
-    Cardinal <replaceable parameter>num_children</replaceable>;
+void XtUnmanageChildren(<replaceable class="parameter">children</replaceable>, <replaceable class="parameter">num_children</replaceable>)
+    WidgetList <replaceable class="parameter">children</replaceable>;
+    Cardinal <replaceable class="parameter">num_children</replaceable>;
 </synopsis>
 
 <refsect2 id="r2-1007-unmanagechildren-1">
 <title>Inputs</title>
 <variablelist>
 <varlistentry>
-<term><replaceable parameter>children</replaceable>
+<term><replaceable class="parameter">children</replaceable>
 </term>
 <listitem>
 <para>Specifies an array of child widgets. Each child must be of
@@ -277,10 +277,10 @@ class RectObj or any subclass thereof.
 </listitem>
 </varlistentry>
 <varlistentry>
-<term><replaceable parameter>num_children</replaceable>
+<term><replaceable class="parameter">num_children</replaceable>
 </term>
 <listitem>
-<para>Specifies the number of elements in <replaceable parameter>children</replaceable>.
+<para>Specifies the number of elements in <replaceable class="parameter">children</replaceable>.
 </para>
 </listitem>
 </varlistentry>
@@ -296,7 +296,7 @@ The widgets will disappear from the screen, and (depending
 on its parent) may no longer have screen space allocated for
 them.
 </para>
-<para>Each of the widgets in the <replaceable parameter>children</replaceable> array must have
+<para>Each of the widgets in the <replaceable class="parameter">children</replaceable> array must have
 the same parent.
 </para>
 <para>See the &ldquo;Algorithm&rdquo; section below for full details of the
