@@ -231,6 +231,11 @@ signals:
       */
     void historyUpdate(bool, bool);
 
+    /**
+     * Emitted when in preview mode and the user selects a file
+     */
+    void showPreview(const KURL &url);
+
 protected:
     KToolBar *toolbar;
 
@@ -294,6 +299,7 @@ private:
     static void cleanup();
     KFileDialog(const KFileDialog&);
     KFileDialog operator=(const KFileDialog&);
+    bool previewMode;
 
 
 protected:

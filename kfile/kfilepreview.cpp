@@ -22,8 +22,8 @@
 #include <kfilepreview.h>
 #include <kfilepreview.moc>
 
-KFilePreview::KFilePreview(KDirOperator *parent, const char *name) :
-                           QSplitter(parent, name), KFileView(), preview(0L), p(parent) {
+KFilePreview::KFilePreview(QWidget *parent, const char *name) :
+                           QSplitter(parent, name), KFileView() {
 
     // only default stuff for now
     KFileIconView *files = new KFileIconView((QSplitter*)this, "left");
@@ -31,34 +31,41 @@ KFilePreview::KFilePreview(KDirOperator *parent, const char *name) :
     left=files;
     files->setOperator(this);
 
-    preview=new QWidget((QSplitter*)this, "preview");
+    previewBase=new QWidget((QSplitter*)this, "previewBase");
+    preview=new QWidget(previewBase, "preview");
     QString tmp=i18n("Sorry, no preview available.");
     QLabel *l=new QLabel(tmp, preview);
     l->setMinimumSize(l->sizeHint());
     l->move(10, 5);
-    preview->setMinimumWidth(l->sizeHint().width()+20);
+    //preview->setMinimumWidth(l->sizeHint().width()+20);
     setResizeMode(preview, QSplitter::KeepSize);
     deleted=false;
+    previewBase->hide();
 }
 
 KFilePreview::~KFilePreview() {
-    if(!deleted && preview)
+    if(!deleted && preview) {
         delete preview;
+        preview=0L;
+    }
+    delete previewBase;
+    previewBase=0L;
 }
 
 void KFilePreview::setPreviewWidget(const QWidget *w) {
 
-    if(!w)
+    if(w==0L) {
+        previewBase->hide();
         return;
+    }
     if(preview) {
         deleted=true;
         delete preview;
     }
-
     preview=const_cast<QWidget*>(w);
-    connect(this, SIGNAL(showPreview(const KURL &)),
-            preview, SLOT(showPreview(const KURL &)));
-    preview->recreate((QSplitter*)this, 0, QPoint(0, 0), true);
+    preview->recreate(previewBase, 0, QPoint(0, 0), true);
+    preview->resize(preview->sizeHint());
+    previewBase->show();
 }
 
 void KFilePreview::insertItem(KFileViewItem *item) {
@@ -110,8 +117,6 @@ void KFilePreview::highlightFile(const KFileViewItem* item) {
 
 void KFilePreview::selectFile(const KFileViewItem* item) {
     sig->activateFile(item);
-    debug("------------ showPreview()");
-    emit showPreview(p->url());
 }
 
 void KFilePreview::activatedMenu(const KFileViewItem *item) {

@@ -168,7 +168,11 @@ void KDirOperator::simpleView()
 }
 
 void KDirOperator::setPreviewWidget(const QWidget *w) {
-    _mode=static_cast<KFileDialog::Mode>(_mode | KFileDialog::Preview);
+
+    if(w!=0L)
+        _mode=static_cast<KFileDialog::Mode>(_mode | KFileDialog::Preview);
+    else
+        _mode=static_cast<KFileDialog::Mode>(_mode & ~KFileDialog::Preview);
     preview=const_cast<QWidget*>(w);
     setView(Simple, false);
 }
@@ -528,9 +532,9 @@ void KDirOperator::setView(FileView view, bool separateDirs)
             combi->setRight(new KFileDetailView( combi, "detail view" ));
         myFileView = combi;
     } else {
-        if (view == Simple)
+        if (view == Simple && (mode() & KFileDialog::Preview)==0)
             myFileView = new KFileIconView( this, "simple view" );
-        else if (view == Detail)
+        else if (view == Detail && (mode() & KFileDialog::Preview)==0)
             myFileView = new KFileDetailView( this, "detail view" );
         else {
             KFilePreview *tmp=new KFilePreview(this, "preview");
