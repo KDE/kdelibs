@@ -71,9 +71,17 @@
 <!ENTITY unsupported	"toetuseta">
 <!ENTITY xrefto		"xref to">
 <!ENTITY unexpectedelementname	"Ootamatu elemendi nimi">
+<!ENTITY Revisedby      "Revised by: ">
 
 <!ENTITY ListofTables "Tabelite nimekiri">
 <!ENTITY ListofExamples "Näidiste nimekiri">
 <!ENTITY ListofFigures "Jooniste nimekiri">
 <!ENTITY ListofEquations "Võrrandite nimekiri">
 <!ENTITY ListofUnknown "Tundmatute nimekiri">
+
+<!ENTITY nav-prev		"Eelmine">
+<!ENTITY nav-prev-sibling		"Kiiresti tagasi">
+<!ENTITY nav-next-sibling		"Kiiresti edasi">
+<!ENTITY nav-next		"Järgmine">
+<!ENTITY nav-up		"Üles">
+<!ENTITY nav-home		"Koju">
