@@ -776,7 +776,7 @@ KLauncher::slotSlaveGone()
 void
 KLauncher::idleTimeout()
 {
-    kdDebug(7016) << "SlavePool: idle, slave list count: " << mSlaveList.count() << endl;
+//    kdDebug(7016) << "SlavePool: idle, slave list count: " << mSlaveList.count() << endl;
     time_t now = time(0);
     IdleSlave *slave;
     for(slave = mSlaveList.first(); slave; slave = mSlaveList.next())
