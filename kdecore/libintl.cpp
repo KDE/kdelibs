@@ -64,13 +64,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.  */
 # include <sys/mman.h>
 #endif
 
-#if defined HAVE_ARGZ_H
-#undef __cplusplus
-extern "C" {
-# include <argz.h>
-}
-#define __cplusplus
-#endif
 #include <ctype.h>
 
 /* Amount to increase buffer size by in each try.  */
@@ -87,6 +80,18 @@ extern "C" {
 /* Don't include sys/param.h if it already has been.  */
 #if defined(HAVE_SYS_PARAM_H) && !defined(PATH_MAX) && !defined(MAXPATHLEN)
 # include <sys/param.h>
+#endif
+
+#if defined HAVE_ARGZ_H
+#ifdef __BEGIN_DECLS
+#undef __BEGIN_DECLS
+#define __BEGIN_DECLS
+#endif
+# include <argz.h>
+#undef __BEGIN_DECLS
+#ifdef HAVE_SYS_CDEFS_H
+#include <sys/cdefs.h>
+#endif
 #endif
 
 #if !defined(PATH_MAX) && defined(MAXPATHLEN)
