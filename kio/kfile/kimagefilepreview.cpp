@@ -39,15 +39,17 @@ KImageFilePreview::KImageFilePreview( QWidget *parent )
     KConfigGroupSaver cs( config, ConfigGroup );
     autoMode = config->readBoolEntry( "Automatic Preview", true );
 
-    QVBoxLayout *vb = new QVBoxLayout( this, 0, KDialog::spacingHint() );
+    QGridLayout *vb = new QGridLayout( this, 2, 2, 0, KDialog::spacingHint() );
+    vb->setColSpacing( 0, KDialog::marginHint() );
 
     imageLabel = new QLabel( this );
     imageLabel->setFrameStyle( QFrame::Panel | QFrame::Sunken );
     imageLabel->setAlignment( Qt::AlignHCenter | Qt::AlignVCenter );
     imageLabel->setSizePolicy( QSizePolicy( QSizePolicy::Preferred, QSizePolicy::Preferred ) );
-    vb->addWidget( imageLabel, 1 );
+    vb->addWidget( imageLabel, 0, 1 );
 
-    QHBoxLayout *hb = new QHBoxLayout( vb );
+    QHBoxLayout *hb = new QHBoxLayout( 0 );
+    vb->addLayout( hb, 1, 1 );
 
     autoPreview = new QCheckBox( i18n("&Automatic preview"), this );
     autoPreview->setChecked( autoMode );
