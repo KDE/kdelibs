@@ -59,7 +59,7 @@ int main()
 	}
 
 	Synth_PLAY play = DynamicCast(obj);
-	if(play.isNull())
+	if(!play.isNull())
 	{
 		cerr << "remote dynamic casting doesn't do proper checks" << endl;
 		exit(1);
