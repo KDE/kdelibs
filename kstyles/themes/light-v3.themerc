@@ -4,11 +4,14 @@ Name[es]=Estilo Ligero, 3era revisión
 Name[fr]=Style lumière, 3ème version
 Name[hu]=Light stílus, 3. változat
 Name[lv]=Gaismas Stils, 3-ā revīzija
+Name[sk]=Štýl Light, 3. revízia
+Name[sv]=Lätt stil, tredje revisionen
 Comment=Third revision of the simple and elegant 'Light' widget style.
 Comment[da]=Tredje revision af den simple og elegante 'Light' dims-stil.
 Comment[es]=Tercera revisión del elegante estilo de widgets 'Ligero'.
 Comment[fr]=Troisième version du style graphique «Lumière», simple et élégant
 Comment[hu]=Az egyszerű, de elegáns 'Light' elemstílus 3. változata.
 Comment[lv]= Vienkāršā un elegantā 'Gaismas' vidžeta stila trešā revīzija.
+Comment[sk]=Tretia revízia jednoduchého a elegantného štýlu prvkov 'Light'.
 [KDE]
 WidgetStyle=Light, 3rd revision

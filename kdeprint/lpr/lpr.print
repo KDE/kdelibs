@@ -2,9 +2,13 @@
 PrintSystem=lpr
 Comment=LPR/LPRng print system
 Comment[da]=LPR/LPRng udskriftssystem
+Comment[de]=LPR/LPRng-Drucksystem
 Comment[es]=Sistema de impresión LPR/LPRNg
 Comment[fr]=Système d'impression LPR / LPRng
+Comment[he]=מערכת ההדפסה LPR/LPRng
 Comment[hu]=LPR/LPRng nyomtatási rendszer
 Comment[lv]=LPR/LPRng drukas sistēma
+Comment[sk]=Tlačový systém LPR/LPRng
+Comment[sv]=LPR/LPRNG-skrivarsystem
 DetectUris=service:/printer
 DetectPrecedence=0
