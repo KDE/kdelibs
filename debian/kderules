@@ -193,8 +193,8 @@ foreach $file (@lnkfiles) {
 	print MENU "	section=$sect{$prog}\\\n" ;
 	print MENU "	title=\"$kdelnk{Name}\"\\\n" ;
 	print MENU "	command=$prog\\\n" ;
-	print MENU "	icon=\"$icon\"\\\n" ;
-	print MENU "	kdelnk=$kdelnk\n\n" ;
+	print MENU "	icon=\"$icon\"\n" ;
+#	print MENU "	kdelnk=$kdelnk\n\n" ;
 
 }
 
