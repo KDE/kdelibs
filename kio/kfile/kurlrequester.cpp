@@ -198,13 +198,18 @@ void KURLRequester::init()
     connect( myButton, SIGNAL( pressed() ), SLOT( slotUpdateURL() ));
 
     setSpacing( KDialog::spacingHint() );
-    myButton->setFixedSize( myButton->sizeHint().width(),
-    			    myButton->sizeHint().width() );
 
     QWidget *widget = d->combo ? (QWidget*) d->combo : (QWidget*) d->edit;
     setFocusProxy( widget );
-    widget->setMinimumHeight( QMAX( widget->minimumHeight(), 
+    
+    // This is really weird, but seems to be the only way to get the button
+    // to not grow to some weird big size and the lineedit take the same
+    // height. Note: order is important here. As I said, weird.
+    myButton->setFixedHeight( myButton->sizeHint().height() );
+    myButton->setFixedWidth( myButton->sizeHint().width() );
+    widget->setMinimumHeight( QMAX( widget->minimumHeight(),
                                     myButton->height() ));
+
 
     d->connectSignals( this );
     connect( myButton, SIGNAL( clicked() ), this, SLOT( slotOpenDialog() ));
