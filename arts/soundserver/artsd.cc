@@ -30,7 +30,6 @@
 #include "soundserver.h"
 #include "audiosubsys.h"
 #include "audioio.h"
-#include "synthschedule.h"
 #include "tcpserver.h"
 #include "cpuusage.h"
 #include "debug.h"
