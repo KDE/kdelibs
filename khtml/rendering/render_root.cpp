@@ -266,7 +266,8 @@ void RenderRoot::printObject(QPainter *p, int _x, int _y,
     int h = m_view->visibleHeight();	
 
     if(c.isValid())
-	p->fillRect(_tx, _ty, w, h, c);
+	p->fillRect(_tx + m_view->contentsX(), 
+	    _ty + m_view->contentsY(), w, h, c);
 
     RenderFlow::printObject(p,_x,_y,_w,_h,_tx,_ty);
 }
