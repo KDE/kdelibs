@@ -3122,7 +3122,7 @@ void KActionCollection::unplugShortcuts( KAccel* kaccel )
   }
 
   for( uint i = 0; i < d->m_docList.count(); i++ )
-    unplugShortcuts( kaccel );
+    d->m_docList[i]->unplugShortcuts( kaccel );
 }
 
 /*void KActionCollection::addWidget( QWidget* w )
@@ -3260,17 +3260,29 @@ const KAccel* KActionCollection::accel() const      { return kaccel(); }
 
 KAction* KActionCollection::action( const char* name, const char* classname ) const
 {
+  KAction* pAction = 0;
+  
   if ( !classname && name )
-    return d->m_actionDict[ name ];
+    pAction = d->m_actionDict[ name ];
 
-  QAsciiDictIterator<KAction> it( d->m_actionDict );
-  for( ; it.current(); ++it )
-  {
-    if ( ( !name || strcmp( it.current()->name(), name ) == 0 ) &&
-        ( !classname || strcmp( it.current()->className(), classname ) == 0 ) )
-      return it.current();
+  else {
+    QAsciiDictIterator<KAction> it( d->m_actionDict );
+    for( ; it.current(); ++it )
+    {
+      if ( ( !name || strcmp( it.current()->name(), name ) == 0 ) &&
+          ( !classname || strcmp( it.current()->className(), classname ) == 0 ) ) {
+        pAction = it.current();
+        break;
+      }
+    }
   }
-  return 0;
+  
+  if( !pAction ) {
+    for( uint i = 0; i < d->m_docList.count() && !pAction; i++ )
+      pAction = d->m_docList[i]->action( name, classname );
+  }
+  
+  return pAction;
 }
 
 KAction* KActionCollection::action( int index ) const
