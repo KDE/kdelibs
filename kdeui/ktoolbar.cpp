@@ -1509,12 +1509,9 @@ void KToolBar::applyAppearanceSettings(KConfig *config, const QString &_configGr
 
     KConfig *gconfig = KGlobal::config();
 
-    static const QString &grpKDE     = KGlobal::staticQString("KDE");
-
     static const QString &attrIconText  = KGlobal::staticQString("IconText");
     static const QString &attrHighlight = KGlobal::staticQString("Highlighting");
     static const QString &attrTrans     = KGlobal::staticQString("TransparentMoving");
-    static const QString &attrIconStyle = KGlobal::staticQString("KDEIconStyle");
     static const QString &attrSize      = KGlobal::staticQString("IconSize");
 
     // we actually do this in two steps.
