@@ -43,6 +43,8 @@ using namespace DOM;
 
 #include <kdebug.h>
 #include <kglobal.h>
+#include <kglobalsettings.h> // For system fonts
+#include <kapp.h>
 
 #include "htmlhashes.h"
 #include "misc/helper.h"
@@ -777,275 +779,287 @@ static const QChar *getNext( const QChar *curP, const QChar *endP, bool &last )
   Written by Jasmin Blanchette (jasmin@trolltech.com) on 2000-08-16.
 */
 
-#include <qstring.h>
-#include <qstringlist.h>
-
-
 class FontParser {
 public:
-    enum { Tok_None, Tok_Eoi, Tok_Slash, Tok_Comma, Tok_String, Tok_Symbol };
+    enum { TOK_NONE, TOK_EOI, TOK_SLASH, TOK_COMMA, TOK_STRING, TOK_SYMBOL };
 
-    QChar yyCh;
-    QString yyIn;
-    unsigned int yyPos;
-    QString yyStr;
+    QChar m_yyChar;
+    QString m_yyIn, m_yyStr;
+    unsigned int m_yyPos;
+    int m_yyTok;
     bool strictParsing;
 
     int getChar() {
-        return ( yyPos == yyIn.length() ) ? QChar('\0') : QChar(yyIn[yyPos++]);
+      return ( m_yyPos == m_yyIn.length() ) ? QChar('\0') : QChar(m_yyIn[m_yyPos++]);
     }
 
     void startTokenizer( const QString& str, bool _strictParsing ) {
-        yyIn = str.simplifyWhiteSpace();
-        yyPos = 0;
-        yyCh = getChar();
-        strictParsing = _strictParsing;
-        yyTok = Tok_None;
+      m_yyIn = str.simplifyWhiteSpace();
+//#ifdef CSS_DEBUG
+      kdDebug( 6080 ) << "startTokenizer: [" << m_yyIn << "]" << endl;
+//#endif
+      m_yyPos = 0;
+      m_yyChar = getChar();
+      strictParsing = _strictParsing;
+      m_yyTok = TOK_NONE;
     }
 
     int getToken()
     {
-        yyStr = QString::null;
+      m_yyStr = QString::null;
 
-        if ( yyCh == '\0' )
-            return Tok_Eoi;
-        if ( yyCh == QChar(' ') )
-            yyCh = getChar();
+      if ( m_yyChar == '\0' )
+	return TOK_EOI;
+      if ( m_yyChar == QChar(' ') )
+	m_yyChar = getChar();
 
-        if ( yyCh == QChar('/') ) {
-            yyCh = getChar();
-            return Tok_Slash;
-        } else if ( yyCh == QChar(',') ) {
-            yyCh = getChar();
-            return Tok_Comma;
-        } else if ( yyCh == QChar('"') ) {
-            yyCh = getChar();
-            while ( yyCh != QChar('"') && yyCh != '\0' ) {
-                yyStr += yyCh;
-                yyCh = getChar();
-            }
-            yyCh = getChar();
-            return Tok_String;
-        } else if ( yyCh == QChar('\'') ) {
-            yyCh = getChar();
-            while ( yyCh != QChar('\'') && yyCh != '\0' ) {
-                yyStr += yyCh;
-                yyCh = getChar();
-            }
-            yyCh = getChar();
-            return Tok_String;
-        } else {
-            while ( yyCh != '/' && yyCh != ',' && yyCh != '\0' && yyCh != ' ') {
-                yyStr += yyCh;
-                yyCh = getChar();
-            }
-            return Tok_Symbol;
-        }
+      if ( m_yyChar == QChar('/') ) {
+	m_yyChar = getChar();
+	return TOK_SLASH;
+      } else if ( m_yyChar == QChar(',') ) {
+	m_yyChar = getChar();
+	return TOK_COMMA;
+      } else if ( m_yyChar == QChar('"') ) {
+	m_yyChar = getChar();
+	while ( m_yyChar != QChar('"') && m_yyChar != '\0' ) {
+	  m_yyStr += m_yyChar;
+	  m_yyChar = getChar();
+	}
+	m_yyChar = getChar();
+	return TOK_STRING;
+      } else if ( m_yyChar == QChar('\'') ) {
+	m_yyChar = getChar();
+	while ( m_yyChar != QChar('\'') && m_yyChar != '\0' ) {
+	  m_yyStr += m_yyChar;
+	  m_yyChar = getChar();
+	}
+	m_yyChar = getChar();
+	return TOK_STRING;
+      } else {
+	while ( m_yyChar != '/' && m_yyChar != ',' && m_yyChar != '\0' && m_yyChar != ' ') {
+	  m_yyStr += m_yyChar;
+	  m_yyChar = getChar();
+	}
+	return TOK_SYMBOL;
+      }
     }
-
-    int yyTok;
-
 
     bool match( int tok )
     {
-        bool matched = ( yyTok == tok );
-        if ( matched )
-            yyTok = getToken();
-        return matched;
+      if ( m_yyTok == tok ) {
+	m_yyTok = getToken();
+	return true;
+      }
+      return false;
     }
 
     bool matchFontStyle( QString *fstyle )
     {
-        bool matched = ( yyTok == Tok_Symbol &&
-                         (yyStr == "normal" || yyStr == "italic" ||
-                          yyStr == "oblique" || yyStr == "inherit") );
-        if ( matched ) {
-            *fstyle = yyStr;
-            yyTok = getToken();
-        }
-        return matched;
+      if ( m_yyTok == TOK_SYMBOL ) {
+	const struct css_value *cssval = findValue(m_yyStr.latin1(), m_yyStr.length());
+	if (cssval) {
+	  int id = cssval->id;
+	  if ( id == CSS_VAL_NORMAL || id == CSS_VAL_ITALIC || 
+	       id == CSS_VAL_OBLIQUE || id == CSS_VAL_INHERIT ) {
+	    *fstyle = m_yyStr;
+	    m_yyTok = getToken();
+	    return true;
+	  }
+	}
+      }
+      return false;
     }
 
     bool matchFontVariant( QString *fvariant )
     {
-        bool matched = ( yyTok == Tok_Symbol &&
-                         (yyStr == "normal" || yyStr == "small-caps"
-                          || yyStr == "inherit") );
-        if ( matched ) {
-            *fvariant = yyStr;
-            yyTok = getToken();
+      if ( m_yyTok == TOK_SYMBOL ) {
+	const struct css_value *cssval = findValue(m_yyStr.latin1(), m_yyStr.length());
+	if (cssval) {
+	  int id = cssval->id;
+	  if (id == CSS_VAL_NORMAL || id == CSS_VAL_SMALL_CAPS || id == CSS_VAL_INHERIT) {
+	    *fvariant = m_yyStr;
+	    m_yyTok = getToken();
+	    return true;
+	  }
         }
-        return matched;
+      }
+      return false;
     }
 
     bool matchFontWeight( QString *fweight )
     {
-        bool matched = ( yyTok == Tok_Symbol );
-        if ( matched ) {
-            if ( yyStr.length() == 3 ) {
-                matched = ( yyStr[0].unicode() >= '1' &&
-                            yyStr[0].unicode() <= '9' &&
-                            yyStr.right(2) == QString::fromLatin1("00") );
-            } else {
-                matched = ( yyStr == "normal" || yyStr == "bold" ||
-                            yyStr == "bolder" || yyStr == "lighter" ||
-                            yyStr == "inherit" );
-            }
-        }
-        if ( matched ) {
-            *fweight = yyStr;
-            yyTok = getToken();
-        }
-        return matched;
+      if ( m_yyTok == TOK_SYMBOL ) {
+	const struct css_value *cssval = findValue(m_yyStr.latin1(), m_yyStr.length());
+	if (cssval) {
+	  int id = cssval->id;
+	  if ((id >= CSS_VAL_NORMAL && id <= CSS_VAL_900) || id == CSS_VAL_INHERIT ) {
+	    *fweight = m_yyStr;
+	    m_yyTok = getToken();
+	    return true;
+	  }
+	}
+      }
+      return false ;
     }
 
     bool matchFontSize( QString *fsize )
     {
-        bool matched = ( yyTok == Tok_Symbol );
-        if ( matched ) {
-            *fsize = yyStr;
-            yyTok = getToken();
-        }
-        return matched;
+      if ( m_yyTok == TOK_SYMBOL ) {
+	*fsize = m_yyStr;
+	m_yyTok = getToken();
+	return true;
+      }
+      return false;
     }
 
     bool matchLineHeight( QString *lheight )
     {
-        bool matched = ( yyTok == Tok_Symbol );
-        if ( matched ) {
-            *lheight = yyStr;
-            yyTok = getToken();
-        }
-        return matched;
+      if ( m_yyTok == TOK_SYMBOL ) {
+	*lheight = m_yyStr;
+	m_yyTok = getToken();
+	return true;
+      }
+      return false;
     }
 
     bool matchNameFamily( QString *ffamily )
     {
-        bool matched = false;
-        if ( yyTok == Tok_Symbol || ( yyTok == Tok_String && !strictParsing ) ) {
-            // accept quoted "serif" only in non strict mode.
-            *ffamily = yyStr;
-            // unquoted courier new should return courier new
-            while( (yyTok = getToken()) == Tok_Symbol )
-                *ffamily += " " + yyStr;
-            matched = true;
-        } else if ( yyTok == Tok_String ) {
-            if ( yyStr != "serif" && yyStr != "sans-serif" &&
-                 yyStr != "cursive" && yyStr != "fantasy" &&
-                 yyStr != "monospace" ) {
-                *ffamily = yyStr;
-                yyTok = getToken();
-                matched = true;
-            }
-        }
-        return matched;
+      kdDebug( 6080 ) << "matchNameFamily: [" << *ffamily << "]" << endl;       kdDebug( 6080 ) << "matchNameFamily: [" << *ffamily << "]" << endl;       
+      bool matched = false;
+      if ( m_yyTok == TOK_SYMBOL || ( m_yyTok == TOK_STRING && !strictParsing ) ) {
+	// accept quoted "serif" only in non strict mode.
+	*ffamily = m_yyStr;
+	// unquoted courier new should return courier new
+	while( (m_yyTok = getToken()) == TOK_SYMBOL ) {
+	  *ffamily += " " + m_yyStr;
+	}
+	matched = true;
+      } else if ( m_yyTok == TOK_STRING ) {
+	kdDebug( 6080 ) << "[" << m_yyStr << "]" << endl;
+	const struct css_value *cssval = findValue(m_yyStr.latin1(), m_yyStr.length());
+	if (!cssval || !(cssval->id >= CSS_VAL_SERIF && cssval->id <= CSS_VAL_MONOSPACE)) {
+	  *ffamily = m_yyStr;
+	  m_yyTok = getToken();
+	  matched = true;
+	}
+      }
+      return matched;
     }
 
     bool matchFontFamily( QString *ffamily )
-    {
-        QStringList t;
-        if ( !matchFontFamily( &t ) )
-            return false;
+    { 
+      kdDebug( 6080 ) << "matchFontFamily: [" << *ffamily << "]" << endl; 
+      QStringList t;
+      if ( !matchFontFamily( &t ) )
+	return false;
 
-        *ffamily = t.join(", ");
-        return TRUE;
+      *ffamily = t.join(", ");
+      return TRUE;
     }
 
     bool matchFontFamily ( QStringList *ffamily )
     {
-        if ( yyTok == Tok_None )
-            yyTok = getToken();
+      if ( m_yyTok == TOK_NONE )
+	m_yyTok = getToken();
 #if 0
-        // ###
-        if ( yyTok == Tok_String && yyStr == "inherit" ) {
-            ffamily->clear();
-            yyTok = getToken();
-            return TRUE;
-        }
+      // ###
+      if ( m_yyTok == TOK_STRING && m_yyStr == "inherit" ) {
+	ffamily->clear();
+	m_yyTok = getToken();
+	return TRUE;
+      }
 #endif
 
-        QString name;
-        do {
-            if ( !matchNameFamily(&name) )
-                return FALSE;
-            ffamily->append( name );
-        } while ( match(Tok_Comma) );
+      QString name;
+      do {
+	if ( !matchNameFamily(&name) )
+	  return FALSE;
+	ffamily->append( name );
+      } while ( match(TOK_COMMA) );
 
-        return true;
+      return true;
     }
 
     bool matchRealFont( QString *fstyle, QString *fvariant, QString *fweight,
-                               QString *fsize, QString *lheight, QString *ffamily )
+			QString *fsize, QString *lheight, QString *ffamily )
     {
-        bool metFstyle = matchFontStyle( fstyle );
-        bool metFvariant = matchFontVariant( fvariant );
-        matchFontWeight( fweight );
-        if ( !metFstyle )
-            metFstyle = matchFontStyle( fstyle );
-        if ( !metFvariant )
-            matchFontVariant( fvariant );
-        if ( !metFstyle )
-            matchFontStyle( fstyle );
+      kdDebug( 6080 ) << "matchRealFont(..)" << endl;     
+      bool metFstyle = matchFontStyle( fstyle );
+      bool metFvariant = matchFontVariant( fvariant );
+      matchFontWeight( fweight );
+      if ( !metFstyle )
+	metFstyle = matchFontStyle( fstyle );
+      if ( !metFvariant )
+	matchFontVariant( fvariant );
+      if ( !metFstyle )
+	matchFontStyle( fstyle );
 
-        if ( !matchFontSize(fsize) )
-            return FALSE;
-        if ( match(Tok_Slash) ) {
-            if ( !matchLineHeight(lheight) )
-                return FALSE;
-        }
-        if ( !matchFontFamily(ffamily) )
-            return FALSE;
-        return true;
+      if ( !matchFontSize(fsize) )
+	return FALSE;
+      if ( match(TOK_SLASH) ) {
+	if ( !matchLineHeight(lheight) )
+	  return FALSE;
+      }
+      if ( !matchFontFamily(ffamily) )
+	return FALSE;
+      return true;
     }
 };
 
 bool StyleBaseImpl::parseFont(const QChar *curP, const QChar *endP)
 {
     QString str( curP, endP - curP );
-    QString fstyle;
-    QString fvariant;
-    QString fweight;
-    QString fsize;
-    QString lheight;
-    QString ffamily;
+    QString fstyle, fvariant, fweight, fsize, lheight, ffamily;
 
-    FontParser f;
-    f.startTokenizer( str, strictParsing );
+    FontParser fontParser;
+    fontParser.startTokenizer( str, strictParsing );
 
     //qDebug( "%s", str.latin1() );
-
-    if ( f.yyIn == "caption" || f.yyIn == "icon" || f.yyIn == "menu" ||
-         f.yyIn == "message-box" || f.yyIn == "small-caption" ||
-         f.yyIn == "status-bar" || f.yyIn == "inherit" ) {
-        kdDebug( 6080 ) << "system font requested..." << endl;
+    const struct css_value *cssval = findValue(fontParser.m_yyIn.latin1(), fontParser.m_yyIn.length());
+  
+    //### What is the correct mapping here? / Where is this info stored?
+    //    How to set this properties efficently? (Reparsing is slow)
+    //    Will have to get the infrastructure in place first - schlpbch
+    if (cssval) {
+      switch (cssval->id) 
+	{ 
+	case CSS_VAL_MENU: 
+	  {
+	    QFont menuFont = KGlobalSettings::menuFont();
+	  }   
+	case CSS_VAL_CAPTION:
+	  {
+	    QFont generalFont = KGlobalSettings::generalFont();
+	  }
+	case CSS_VAL_STATUS_BAR:
+	case CSS_VAL_ICON:
+	case CSS_VAL_MESSAGE_BOX:
+	case CSS_VAL_SMALL_CAPTION:
+	  {	
+	    kdDebug( 6080 ) << "system font requested..." << endl;
+	    break;
+	  }
+	}
     } else {
-        f.yyTok = f.getToken();
-        if ( f.matchRealFont(&fstyle, &fvariant, &fweight, &fsize, &lheight,
-                           &ffamily) ) {
-//          qDebug( "  %s %s %s %s / %s", fstyle.latin1(),
-//                     fvariant.latin1(), fweight.latin1(), fsize.latin1(),
-//                     lheight.latin1() );
-            if(!fstyle.isNull())
-                parseValue(fstyle.unicode(), fstyle.unicode()+fstyle.length(),
-                           CSS_PROP_FONT_STYLE);
-            if(!fvariant.isNull())
-                parseValue(fvariant.unicode(), fvariant.unicode()+fvariant.length(),
-                           CSS_PROP_FONT_VARIANT);
-            if(!fweight.isNull())
-                parseValue(fweight.unicode(), fweight.unicode()+fweight.length(),
-                           CSS_PROP_FONT_WEIGHT);
-            if(!fsize.isNull())
-                parseValue(fsize.unicode(), fsize.unicode()+fsize.length(),
-                           CSS_PROP_FONT_SIZE);
-            if(!lheight.isNull())
-                parseValue(lheight.unicode(), lheight.unicode()+lheight.length(),
-                           CSS_PROP_LINE_HEIGHT);
-            if(!ffamily.isNull())
-                parseValue(ffamily.unicode(), ffamily.unicode()+ffamily.length(),
-                           CSS_PROP_FONT_FAMILY);
-
-            return true;
-        }
+      fontParser.m_yyTok = fontParser.getToken();
+      if ( fontParser.matchRealFont(&fstyle, &fvariant, &fweight, &fsize, &lheight, &ffamily) ) {
+	qDebug( "  %s %s %s %s / %s", fstyle.latin1(), fvariant.latin1(), 
+		fweight.latin1(), fsize.latin1(), lheight.latin1() );
+	
+	if(!fstyle.isNull())
+	  parseValue(fstyle.unicode(), fstyle.unicode()+fstyle.length(), CSS_PROP_FONT_STYLE);
+	if(!fvariant.isNull())
+	  parseValue(fvariant.unicode(), fvariant.unicode()+fvariant.length(), CSS_PROP_FONT_VARIANT);
+	if(!fweight.isNull())
+	  parseValue(fweight.unicode(), fweight.unicode()+fweight.length(), CSS_PROP_FONT_WEIGHT);
+	if(!fsize.isNull())
+	  parseValue(fsize.unicode(), fsize.unicode()+fsize.length(), CSS_PROP_FONT_SIZE);
+	if(!lheight.isNull())
+	  parseValue(lheight.unicode(), lheight.unicode()+lheight.length(), CSS_PROP_LINE_HEIGHT);
+	if(!ffamily.isNull())
+	  parseValue(ffamily.unicode(), ffamily.unicode()+ffamily.length(), CSS_PROP_FONT_FAMILY);
+	return true;
+      }
     }
     return false;
 }
@@ -1062,8 +1076,11 @@ bool StyleBaseImpl::parseValue( const QChar *curP, const QChar *endP, int propId
 
 bool StyleBaseImpl::parseValue( const QChar *curP, const QChar *endP, int propId)
 {
-   QString value(curP, endP - curP);
+   QString value(curP, endP - curP);    
    value = value.lower().stripWhiteSpace();
+#ifdef CSS_DEBUG
+   kdDebug( 6080 ) << "id [" << getPropertyName(propId).string() << "] parseValue [" << value << "]" << endl;
+#endif
    int len = value.length();
    const char *val = value.latin1();
 
@@ -1263,7 +1280,7 @@ bool StyleBaseImpl::parseValue( const QChar *curP, const QChar *endP, int propId
         if (cssval) {
             int id = cssval->id;
             if (id) {
-	        	if (id >= CSS_VAL_NORMAL && id <= CSS_VAL_LIGHTER) {
+	         if (id >= CSS_VAL_NORMAL && id <= CSS_VAL_LIGHTER) {
 		    		// Allready correct id
 				} else if (id >= CSS_VAL_100 && id <= CSS_VAL_500) {
 		    		id = CSS_VAL_NORMAL;

@@ -26,17 +26,14 @@ ridge
 inset
 outset
 #
-# CSS_PROP_FONT_SIZE: 
+# CSS_PROP_FONT:
 #
-xx-small
-x-small
-small
-medium
-large
-x-large
-xx-large
-smaller
-larger
+caption
+icon
+menu
+message-box
+small-caption
+status-bar
 #
 # CSS_PROP_FONT_STYLE:
 #
@@ -64,6 +61,41 @@ lighter
 700
 800
 900
+#
+# CSS_PROP_FONT_SIZE: 
+#
+xx-small
+x-small
+small
+medium
+large
+x-large
+xx-large
+smaller
+larger
+#
+# CSS_PROP_FONT_STRETCH:
+#
+#normal
+wider
+narrower
+ultra-condensed
+extra-condensed
+condensed
+semi-condensed
+semi-expanded
+expanded
+extra-expanded
+ultra-expanded
+#
+# CSS_PROP_GENERIC_FONT_FAMILY:
+#
+serif
+sans-serif
+cursive
+fantasy
+monospace
+#
 #
 # CSS_PROP_BACKGROUND_COLOR:
 #
@@ -184,6 +216,8 @@ visible
 #hidden
 collapse
 #
+# Unordered rest
+#
 above
 absolute
 always
@@ -192,30 +226,21 @@ below
 bidi-override
 blink
 both
-caption
 close-quote
-condensed
 crop
 cross
 embed
-expanded
-extra-condensed
-extra-expanded
 fixed
 hand
 hide
 higher
-icon
 invert
 landscape
 level
 line-through
 loud
 lower
-menu
-message-box
 mix
-narrower
 no-close-quote
 no-open-quote
 nowrap
@@ -225,20 +250,13 @@ portrait
 pre
 relative
 scroll
-semi-condensed
-semi-expanded
 separate
 show
-small-caption
 static
 static-position
-status-bar
 thick
 thin
-ultra-condensed
-ultra-expanded
 underline
-wider
 # CSS_PROP__KONQ_FLOW_MODE
 -konq-normal
 -konq-around-floats
