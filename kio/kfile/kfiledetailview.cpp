@@ -50,7 +50,7 @@ class KFileDetailView::KFileDetailViewPrivate
 public:
    KFileDetailViewPrivate() : dropItem(0)
    { }
-   
+
    KFileListViewItem *dropItem;
    QTimer autoOpenTimer;
 };
@@ -58,7 +58,8 @@ public:
 KFileDetailView::KFileDetailView(QWidget *parent, const char *name)
     : KListView(parent, name), KFileView(), d(new KFileDetailViewPrivate())
 {
-    m_sortingCol = COL_NAME;
+    // this is always the static section, not the index depending on column order
+    m_sortingCol = COL_NAME; 
     m_blockSortingSignal = false;
     setViewName( i18n("Detailed View") );
 
@@ -112,7 +113,7 @@ KFileDetailView::KFileDetailView(QWidget *parent, const char *name)
     else
 	connect( this, SIGNAL( selectionChanged( QListViewItem * ) ),
 		 SLOT( highlighted( QListViewItem * ) ));
-		 
+		
     // DND
     connect( &(d->autoOpenTimer), SIGNAL( timeout() ),
              this, SLOT( slotAutoOpen() ));
@@ -127,6 +128,16 @@ KFileDetailView::~KFileDetailView()
 {
     delete m_resolver;
     delete d;
+}
+
+void KFileDetailView::readConfig( KConfig *config, const QString& group )
+{
+    restoreLayout( config, group );
+}
+
+void KFileDetailView::writeConfig( KConfig *config, const QString& group )
+{
+    saveLayout( config, group );
 }
 
 void KFileDetailView::setSelected( const KFileItem *info, bool enable )
@@ -340,9 +351,11 @@ void KFileDetailView::removeItem( const KFileItem *i )
 
 void KFileDetailView::slotSortingChanged( int col )
 {
+    // col is the section here, not the index!
+    
     QDir::SortSpec sort = sorting();
     int sortSpec = -1;
-    bool reversed = col == m_sortingCol && (sort & QDir::Reversed) == 0;
+    bool reversed = (col == m_sortingCol) && (sort & QDir::Reversed) == 0;
     m_sortingCol = col;
 
     switch( col ) {
@@ -444,7 +457,7 @@ void KFileDetailView::ensureItemVisible( const KFileItem *i )
         return;
 
     KFileListViewItem *item = (KFileListViewItem*) i->extraData( this );
-        
+
     if ( item )
         KListView::ensureItemVisible( item );
 }
@@ -547,14 +560,14 @@ void KFileDetailView::slotAutoOpen()
     d->autoOpenTimer.stop();
     if( !d->dropItem )
         return;
-    
+
     KFileItem *fileItem = d->dropItem->fileInfo();
     if (!fileItem)
         return;
-        
+
     if( fileItem->isFile() )
         return;
-    
+
     if ( fileItem->isDir() || fileItem->isLink())
         sig->activate( fileItem );
 }
@@ -638,9 +651,9 @@ void KFileDetailView::contentsDropEvent( QDropEvent *e )
     KFileItem * fileItem = 0;
     if (item)
         fileItem = item->fileInfo();
-       
+
     emit dropped(e, fileItem);
-    
+
     KURL::List urls;
     if (KURLDrag::decode( e, urls ) && !urls.isEmpty())
     {

@@ -149,10 +149,13 @@ public:
     void determineIcon( KFileListViewItem *item );
     QScrollView *scrollWidget() const { return (QScrollView*) this; }
 
+    virtual void readConfig( KConfig *, const QString& group = QString::null );
+    virtual void writeConfig( KConfig *, const QString& group = QString::null);
+
 signals:
     /**
      * The user dropped something.
-     * @p fileItem points to the item dropped on or can be 0 if the 
+     * @p fileItem points to the item dropped on or can be 0 if the
      * user dropped on empty space.
      * @since 3.2
      */

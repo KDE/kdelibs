@@ -918,7 +918,7 @@ void KDirOperator::connectView(KFileView *view)
     else
         view->setSelectionMode( KFile::Single );
 
-    if (m_fileView) 
+    if (m_fileView)
     {
         if ( d->config ) // save and restore the views' configuration
         {
