@@ -147,7 +147,9 @@ public:
     m_ssl_in_use = false;
     m_javaContext = 0;
     m_bJScriptForce = false;
+    m_bJScriptOverride = false;
     m_bJavaForce = false;
+    m_bJavaOverride = false;
   }
   ~KHTMLPartPrivate()
   {
@@ -177,8 +179,10 @@ public:
   KLibrary *m_kjs_lib;
   bool m_bJScriptEnabled;
   bool m_bJavaEnabled;
-    bool m_bJScriptForce;
-    bool m_bJavaForce;
+  bool m_bJScriptForce;
+  bool m_bJScriptOverride;
+  bool m_bJavaForce;
+  bool m_bJavaOverride;
   KJavaAppletContext *m_javaContext;
 
   bool keepCharset;
@@ -460,7 +464,6 @@ bool KHTMLPart::restoreURL( const KURL &url )
   d->m_bJScriptEnabled = KHTMLFactory::defaultHTMLSettings()->isJavaScriptEnabled(url.host());
   d->m_bJavaEnabled = KHTMLFactory::defaultHTMLSettings()->isJavaEnabled(url.host());
 
-
   KHTMLPageCache::self()->fetchData( d->m_cacheId, this, SLOT(slotRestoreData(const QByteArray &)));
 
   emit started( 0L );
@@ -604,18 +607,22 @@ KHTMLView *KHTMLPart::view() const
 void KHTMLPart::enableJScript( bool enable )
 {
   d->m_bJScriptForce = enable;
+  d->m_bJScriptOverride = true;
 }
 
 bool KHTMLPart::jScriptEnabled() const
 {
-  if ( d->m_bJScriptForce )
-      return true;
+  if ( d->m_bJScriptOverride )
+      return d->m_bJScriptForce;
   return d->m_bJScriptEnabled;
 }
 
 KJSProxy *KHTMLPart::jScript()
 {
-  if ( !d->m_bJScriptEnabled && !d->m_bJScriptForce )
+  if ( d->m_bJScriptOverride && !d->m_bJScriptForce)
+    return 0;
+
+  if ( !d->m_bJScriptEnabled )
     return 0;
 
   if ( !d->m_jscript )
@@ -685,12 +692,13 @@ bool KHTMLPart::executeScheduledScript()
 void KHTMLPart::enableJava( bool enable )
 {
   d->m_bJavaForce = enable;
+  d->m_bJavaOverride = true;
 }
 
 bool KHTMLPart::javaEnabled() const
 {
-  if( d->m_bJavaForce )
-      return true;
+  if( d->m_bJavaOverride )
+      return d->m_bJavaForce;
   return d->m_bJavaEnabled;
 }
 
@@ -1057,7 +1065,7 @@ void KHTMLPart::write( const char *str, int len )
 
   if(decoded.isEmpty()) return;
 
-  //kdDebug() << "KHTMLPart::write haveEnc = " << d->m_haveEncoding << endl; 
+  //kdDebug() << "KHTMLPart::write haveEnc = " << d->m_haveEncoding << endl;
   if(!d->m_haveEncoding) {
       // ### this is still quite hacky, but should work a lot better than the old solution
       if(d->m_decoder->visuallyOrdered()) d->m_doc->setVisuallyOrdered();
@@ -1283,8 +1291,7 @@ bool KHTMLPart::setCharset( const QString &name, bool override )
   QFont f(settings()->stdFontName());
   KGlobal::charsets()->setQFont(f, KGlobal::charsets()->charsetForEncoding(name) );
 
-  QFontInfo fi(f);
-  //kdDebug(6005) << "setting to charset " << (int)f.charSet() <<" " << override << " should be " << name << endl;
+  //kdDebug(6005) << "setting to charset " << (int)QFontInfo(f).charSet() <<" " << override << " should be " << name << endl;
 
   d->m_settings->setCharset( f.charSet() );
   d->keepCharset = override;
@@ -2621,7 +2628,7 @@ void KHTMLPart::reparseConfiguration()
   d->m_bJavaEnabled = settings->isJavaEnabled();
   delete d->m_settings;
   d->m_settings = new KHTMLSettings(*KHTMLFactory::defaultHTMLSettings());
-  
+
   QApplication::setOverrideCursor( waitCursor );
   if(d->m_doc) d->m_doc->applyChanges();
   QApplication::restoreOverrideCursor();

@@ -189,7 +189,10 @@ public:
   KHTMLView *view() const;
 
   /**
-   * Enable/disable Javascript support.
+   * Enable/disable Javascript support. Note that this will
+   * in either case permanently override the default usersetting.
+   * If you want to have the default UserSettings, don't call this
+   * method.
    */
   void enableJScript( bool enable );
 
@@ -215,7 +218,10 @@ public:
   bool dndEnabled() const;
 
   /**
-   * Enable/disable Java applet support.
+   * Enable/disable Java applet support. Note that calling this function
+   * will permanently override the User settings about Java applet support.
+   * Not calling this function is the only way to let the default settings
+   * apply.
    */
   void enableJava( bool enable );
 
