@@ -121,6 +121,10 @@ RenderCheckBox::RenderCheckBox(HTMLInputElementImpl *element)
     b->setAutoMask(true);
     b->setMouseTracking(true);
     setQWidget(b);
+
+    // prevent firing toggled() signals on initialization
+    b->setChecked(element->checked());
+
     connect(b,SIGNAL(stateChanged(int)),this,SLOT(slotStateChanged(int)));
 }
 
