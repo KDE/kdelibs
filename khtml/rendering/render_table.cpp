@@ -1383,7 +1383,7 @@ void RenderTable::layoutRows(int yoff)
             setContainsPositioned(true);
         }
     }
-    if (th && totalRows)
+    if (th && totalRows && rowHeights[totalRows])
     {
         int ax,ay;
         absolutePosition(ax,ay);
