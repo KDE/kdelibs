@@ -191,6 +191,9 @@ bool Ftp::ftpConnect( const char *_host, unsigned short int _port, const char *_
 
   if ( m_bLoggedOn )
     if ( m_bPersistent ) {
+      if ( m_host != _host )
+        ftpDisconnect( true );
+      else
       // this should check whether there is still opened data connection.
       // is it enough ?  Should we check also the control connection ?
       if ( ftpOpenDataConnection() ) {
