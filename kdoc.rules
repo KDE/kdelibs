@@ -6,7 +6,7 @@
 #
 # $Id$
 
-kde_MODULES = qk dcop kdecore kdeui kimgio kio kfile khtml kjs kformula kspell kab kparts mediatool
+kde_MODULES = qk dcop kdecore kdeui kimgio kio kfile khtml kjs kdejava kformula kspell kab kparts mediatool
 
 qk_FILES = *.h
 qk_LIBS = -lqt
@@ -35,6 +35,10 @@ khtml_LIBS = -lkdecore -lkdeui -lkimgio -lqt
 kjs_FILES = *.h
 kjs_PATH = khtml/kjs
 kjs_LIBS = -lkdecore -lkdeui -lkimgio -lqt
+
+kdejava_FILES = *.h
+kdejava_PATH = khtml/java
+kdejava_LIBS = -lkdecore -lkdeui -lkimgio -lqt
 
 kio_FILES = *.h
 kio_LIBS = -lkdecore -lkdeui -ldcop -lqt
