@@ -1136,7 +1136,7 @@ private:
   void findText();
   void findTextNext();
   void extendSelection( DOM::NodeImpl* node, long offset, DOM::Node& selectionNode, long& selectionOffset, bool right, bool paragraph );
-  khtml::Decoder *decoder();
+  khtml::Decoder *createDecoder();
 
   KHTMLPartPrivate *d;
   friend class KHTMLPartPrivate;

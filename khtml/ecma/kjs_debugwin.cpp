@@ -77,14 +77,16 @@ QString SourceFile::getCode()
   if (interpreter) {
     KHTMLPart *part = static_cast<ScriptInterpreter*>(interpreter)->part();
     if (url == part->url().url() && KHTMLPageCache::self()->isValid(part->cacheId())) {
-      Decoder *decoder = part->decoder();
+      Decoder *decoder = part->createDecoder();
       QByteArray data;
       QDataStream stream(data,IO_WriteOnly);
       KHTMLPageCache::self()->saveData(part->cacheId(),&stream);
+      QString str;
       if (data.size() == 0)
-	return "";
+	str = "";
       else
-	return decoder->decode(data.data(),data.size());
+	str = decoder->decode(data.data(),data.size());
+      delete decoder;
     }
   }
 

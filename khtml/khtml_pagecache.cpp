@@ -200,7 +200,7 @@ void
 KHTMLPageCache::fetchData(long id, QObject *recvObj, const char *recvSlot)
 {
   KHTMLPageCacheEntry *entry = d->dict.find(id);
-  if (!entry) return;
+  if (!entry || !entry->isComplete()) return;
 
   // Make this entry the most recent entry.
   d->expireQueue.removeRef(entry);
@@ -277,6 +277,7 @@ KHTMLPageCache::saveData(long id, QDataStream *str)
   int fd = entry->m_file->handle();
   if ( fd < 0 ) return;
 
+  off_t pos = lseek(fd, 0, SEEK_CUR);
   lseek(fd, 0, SEEK_SET);
 
   char buf[8192];
@@ -299,6 +300,9 @@ KHTMLPageCache::saveData(long id, QDataStream *str)
         str->writeRawBytes(buf, n);
      }
   }
+
+  if (pos != (off_t)-1)
+    lseek(fd, pos, SEEK_SET);
 }
 
 KHTMLPageCacheDelivery::~KHTMLPageCacheDelivery()
