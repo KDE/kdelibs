@@ -168,7 +168,6 @@ protected:
   static void clientStarted(
     const QString & execName,
     const QString & iconName,
-    const QString & resName,
     pid_t pid);
 
   /**
