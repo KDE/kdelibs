@@ -30,7 +30,7 @@
 #include <qdir.h>
 #include <qstringlist.h>
 
-static 
+static
 QString encode( const QString& segment )
 {
   QCString utf8 = segment.utf8();
@@ -50,7 +50,7 @@ QString encode( const QString& segment )
     // according to RFC 1738,
     // 2.2. URL Character Encoding Issues (pp. 3-4)
     // WABA: Added non-ascii
-    unsigned int character = utf8[i]; 
+    unsigned int character = utf8[i];
     if ( (character <= 32) || (character >= 127) ||
          strchr("<>#@\"&%$:,;?={}|^~[]\'`\\", character) )
     {
@@ -90,10 +90,10 @@ static char hex2int( unsigned int _char )
 // operation will make it usable again:
 //	encode(decode(...))
 //
-// As a result one can see that url.prettyURL() does not result in 
+// As a result one can see that url.prettyURL() does not result in
 // a RFC compliant URL but that the following sequence does:
 //	KURL(url.prettyURL()).url()
- 
+
 
 static QString lazy_encode( const QString& segment )
 {
@@ -115,7 +115,7 @@ static QString lazy_encode( const QString& segment )
         ((character == '%') && // The escape character itself
            (i+2 < old_length) && // But only if part of a valid escape sequence!
           (hex2int(segment[i+1].unicode())!= -1) &&
-          (hex2int(segment[i+2].unicode())!= -1)) || 
+          (hex2int(segment[i+2].unicode())!= -1)) ||
         (character == '?') || // Start of query delimiter
         (character == '#') || // Start of reference delimiter
         ((character == 32) && (i+1 == old_length))) // A trailing space
@@ -753,19 +753,19 @@ QString KURL::path( int _trailing ) const
     return result;
   else if ( _trailing == 1 )
   {
-    int len = result.length();
-    if ( len == 0 )
-      result = QString::null;
-    else if ( result[ len - 1 ] != '/' )
+    if ( result.isEmpty() )
+      return QString::null;
+
+    if ( result[ result.length() - 1 ] != '/' )
       result += "/";
     return result;
   }
   else if ( _trailing == -1 )
   {
-    if ( result == "/" )
-      return result;
+    if ( result == "/" || result.isEmpty() )
+      return "/";
     int len = result.length();
-    if ( len != 0 && result[ len - 1 ] == '/' )
+    if ( result[ len - 1 ] == '/' )
       result.truncate( len - 1 );
     return result;
   }
@@ -1108,6 +1108,8 @@ KURL KURL::upURL( bool _zapRef ) const
   // Example: tar:/#gzip:/decompress#file:/home/weis/test.tgz will be changed
   // to file:/home/weis/
   KURL::List lst = split( u );
+  if (lst.isEmpty())
+      return KURL();
 
   QString ref = (*lst.begin()).ref();
 
@@ -1177,34 +1179,34 @@ bool KURL::hasHTMLRef() const
   return (*lst.begin()).hasRef();
 }
 
-void 
-KURL::setProtocol( const QString& _txt ) 
-{ 
-   m_strProtocol = _txt; 
+void
+KURL::setProtocol( const QString& _txt )
+{
+   m_strProtocol = _txt;
 }
 
-void 
-KURL::setUser( const QString& _txt ) 
-{ 
-   m_strUser = _txt; 
+void
+KURL::setUser( const QString& _txt )
+{
+   m_strUser = _txt;
 }
 
-void 
-KURL::setPass( const QString& _txt ) 
-{ 
-   m_strPass = _txt; 
+void
+KURL::setPass( const QString& _txt )
+{
+   m_strPass = _txt;
 }
 
-void 
-KURL::setHost( const QString& _txt ) 
-{ 
-   m_strHost = _txt; 
+void
+KURL::setHost( const QString& _txt )
+{
+   m_strHost = _txt;
 }
 
-void 
-KURL::setPort( unsigned short int _p ) 
-{ 
-   m_iPort = _p; 
+void
+KURL::setPort( unsigned short int _p )
+{
+   m_iPort = _p;
 }
 
 void KURL::setPath( const QString & path )
