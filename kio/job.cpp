@@ -71,7 +71,7 @@ using namespace KIO;
 
 #define KIO_ARGS QByteArray packedArgs; QDataStream stream( packedArgs, IO_WriteOnly ); stream
 
-Job::Job() : QObject(0, "job"), m_error(0)
+Job::Job() : QObject(0, "job"), m_error(0), m_processedSize(0)
 {
    // All jobs delete themselves after emiting 'result'.
 }
@@ -485,6 +485,11 @@ void FileCopyJob::slotData( KIO::Job *, const QByteArray &data)
    m_getJob->suspend();
    m_putJob->resume(); // Drink the beer
    m_buffer = data;
+
+   emit processedData( this, data.size() );
+
+   m_processedSize += data.size();
+   emit processedSize( this, m_processedSize );
 }
 
 void FileCopyJob::slotDataReq( KIO::Job *, QByteArray &data)
@@ -820,11 +825,11 @@ void CopyJob::slotEntries(KIO::Job* job, const UDSEntryList& list)
         QString relName;
         for( ; it2 != it.current()->end(); it2++ ) {
             switch ((*it2).m_uds) {
-                case UDS_NAME:
-                    relName = (*it2).m_str;
-                    break;
                 case UDS_FILE_TYPE:
                     info.type = (mode_t)((*it2).m_long);
+                    break;
+                case UDS_NAME:
+                    relName = (*it2).m_str;
                     break;
                 case UDS_LINK_DEST:
                     info.linkDest = (*it2).m_str;
@@ -1160,6 +1165,7 @@ void CopyJob::createNextDir()
         // Create the directory - with default permissions so that we can put files into it
         // TODO : change permissions once all is finished
         KIO::Job * newjob = KIO::mkdir( (*it).uDest, -1 );
+	emit creatingDir( this, (*it).uDest);
         addSubjob(newjob);
         return;
     }
@@ -1359,13 +1365,17 @@ void CopyJob::copyNextFile()
         {
             newjob = KIO::file_move( (*it).uSource, (*it).uDest, (*it).permissions, bOverwrite, false );
             kDebugInfo( "CopyJob::copyNextFile : Moving %s to %s", (*it).uSource.url().ascii(), (*it).uDest.url().ascii() );
+	    emit movingFile( this, (*it).uSource, (*it).uDest );
         }
         else // Copying a file
         {
             newjob = KIO::file_copy( (*it).uSource, (*it).uDest, (*it).permissions, bOverwrite, false );
             kDebugInfo( "CopyJob::copyNextFile : Copying %s to %s", (*it).uSource.url().ascii(), (*it).uDest.url().ascii() );
+	    emit copyingFile( this, (*it).uSource, (*it).uDest );
         }
         addSubjob(newjob);
+	connect( newjob, SIGNAL( processedData( KIO::Job *, unsigned long ) ),
+		 this, SLOT( slotProcessedData( KIO::Job *, unsigned long ) ) );
     }
     else
     {
@@ -1398,6 +1408,12 @@ void CopyJob::deleteNextDir()
         m_srcList.remove(m_srcList.begin()); // done with this url
         startNextJob();
     }
+}
+
+void CopyJob::slotProcessedData( KIO::Job *, unsigned long data_size )
+{
+  m_processedSize += data_size;
+  emit processedSize( this, m_processedSize );
 }
 
 void CopyJob::slotResultDeletingDirs( Job * job )
@@ -1436,6 +1452,11 @@ void CopyJob::slotResult( Job *job )
 
             subjobs.remove( job );
             assert ( subjobs.isEmpty() ); // We should have only one job at a time ...
+
+	    // emit all signals for total numbers
+	    emit totalSize( this, m_totalSize );
+	    emit totalFiles( this, files.count() );
+	    emit totalDirs( this, dirs.count() );
 
             state = STATE_CREATING_DIRS;
             createNextDir();
@@ -1489,7 +1510,7 @@ CopyJob *KIO::move( const KURL::List& src, const KURL& dest )
 }
 
 DeleteJob::DeleteJob( const KURL::List& src, bool shred )
-    : Job(), m_srcList(src), m_shred(shred)
+    : Job(), m_totalSize(0), m_srcList(src), m_shred(shred)
 {
     startNextJob();
 }
@@ -1512,6 +1533,9 @@ void DeleteJob::slotEntries(KIO::Job* job, const UDSEntryList& list)
                     break;
                 case UDS_LINK_DEST:
                     bLink = !(*it2).m_str.isEmpty();
+                    break;
+                case UDS_SIZE:
+                    m_totalSize += (off_t)((*it2).m_long);
                     break;
                 default:
                     break;
@@ -1574,10 +1598,12 @@ void DeleteJob::deleteNextFile()
             // KShred your KTie
             KIO_ARGS << int(3) << (*it).path();
             job = KIO::special(KURL("file:/"), packedArgs);
+ 	    emit deletingFile( this, *it );
         } else
         {
             // Normal deletion
             job = KIO::file_delete( *it );
+	    emit deletingFile( this, *it );
         }
         if ( isLink ) symlinks.remove(it);
                  else files.remove(it);
@@ -1681,7 +1707,12 @@ void DeleteJob::slotResult( Job *job )
             }
             subjobs.remove( job );
             assert( subjobs.isEmpty() );
-            debug("files: %d dirs: %d", files.count(), dirs.count());
+            debug("totalSize: %ld files: %d dirs: %d", m_totalSize, files.count(), dirs.count());
+
+	    // emit all signals for total numbers
+	    emit totalSize( this, m_totalSize );
+	    emit totalFiles( this, files.count() );
+	    emit totalDirs( this, dirs.count() );
 
             state = STATE_DELETING_FILES;
             deleteNextFile();

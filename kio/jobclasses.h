@@ -115,6 +115,10 @@ namespace KIO {
          */
         void result( KIO::Job *job );
 
+        void processedSize( KIO::Job *, unsigned long size );
+        void processedData( KIO::Job *, unsigned long data_size );
+
+
     protected slots:
         /**
          * Called whenever a subjob finishes.
@@ -144,12 +148,14 @@ namespace KIO {
         QList<Job> subjobs;
         int m_error;
         QString m_errorText;
+
+        long int m_processedSize;
     };
 
     /**
      * A simple job (one url and one command)
      * This is the base class for all jobs that are scheduled.
-     * Other jobs are high-level jobs (CopyJob, DeleteJob, FIleCopyJob...)
+     * Other jobs are high-level jobs (CopyJob, DeleteJob, FileCopyJob...)
      * that manage subjobs but aren't scheduled directly.
      */
     class SimpleJob : public KIO::Job {
@@ -385,6 +391,22 @@ namespace KIO {
     public:
         CopyJob( const KURL::List& src, const KURL& dest, bool move = false );
 
+    signals:
+        void totalSize( KIO::Job *, unsigned long size );
+        void totalFiles( KIO::Job *, unsigned long files );
+        void totalDirs( KIO::Job *, unsigned long dirs );
+
+        void processedFiles( KIO::Job *, unsigned long files );
+        void processedDirs( KIO::Job *, unsigned long dirs );
+
+        void copyingFile( KIO::Job *, const KURL& from, const KURL& to );
+        void movingFile( KIO::Job *, const KURL& from, const KURL& to );
+        void creatingDir( KIO::Job *, const KURL& dir );
+
+        void renamingFile( KIO::Job *, const KURL& old_name, const KURL& new_name );
+        void speed( KIO::Job *, unsigned long bytes_per_second );
+        void canResume( KIO::Job *, bool can_resume );
+
     protected:
         void startNextJob();
 
@@ -398,6 +420,8 @@ namespace KIO {
         void copyNextFile();
         void slotResultDeletingDirs( KIO::Job * job );
         void deleteNextDir();
+
+        void slotProcessedData( KIO::Job * job, unsigned long data_size );
 
     protected slots:
         void slotEntries( KIO::Job*, const KIO::UDSEntryList& list );
@@ -430,6 +454,16 @@ namespace KIO {
     public:
     DeleteJob( const KURL::List& src, bool shred );
 
+    signals:
+        void totalSize( KIO::Job *, unsigned long size );
+        void totalFiles( KIO::Job *, unsigned long files );
+        void totalDirs( KIO::Job *, unsigned long dirs );
+
+        void processedFiles( KIO::Job *, unsigned long files );
+        void processedDirs( KIO::Job *, unsigned long dirs );
+
+        void deletingFile( KIO::Job *, const KURL& file );
+
     protected:
         void startNextJob();
         void deleteNextFile();
@@ -442,6 +476,7 @@ namespace KIO {
     private:
         enum { STATE_STATING, STATE_LISTING,
                STATE_DELETING_FILES, STATE_DELETING_DIRS } state;
+        long int m_totalSize;
         KURL::List files;
         KURL::List symlinks;
         KURL::List dirs;
