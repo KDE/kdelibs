@@ -463,3 +463,11 @@ Since 2.2 release, Michael Goffioul <goffioul@imec.be>
   * kdeprintfax: added "-n" and "-f %email" by default for the Hylafax
     system
   * general: various small UI improvements (suggested by Thomas)
+
+02/03/2002 Michael Goffioul <goffioul@imec.be>
+  * general: modified the driver structure to support dynamic options
+    as in SuSE
+  * LPR: more management support for SuSE handler -> drver settings can
+    be modified now.
+  * general: needed stuff to provide translations for filters (Coolo will
+    now extract the strings from XML files for translators)
