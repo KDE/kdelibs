@@ -89,6 +89,8 @@
 KBufferedIO::KBufferedIO() :
   inBufIndex(0), outBufIndex(0)
 {
+  inBuf.setAutoDelete(true);
+  outBuf.setAutoDelete(true);
 }
 
 // destructor
@@ -216,7 +218,7 @@ void KBufferedIO::consumeWriteBuffer(unsigned nbytes)
       outBufIndex = 0;
       outBuf.remove();
 
-      while ((buf = outBuf.next()) != NULL)
+      while ((buf = outBuf.current()) != NULL)
 	if (buf->size() <= nbytes)
 	  {
 	    nbytes -= buf->size();
