@@ -465,10 +465,11 @@ public:
   static BrowserExtension *childObject( QObject *obj );
 
   /**
-   * Asks the hosting browser to perform a paste.
+   * Asks the hosting browser to perform a paste (using openURLRequestDelayed)
    * @since 3.2
    */
   void pasteRequest();
+
 // KDE invents support for public signals...
 #undef signals
 #define signals public
