@@ -219,7 +219,7 @@ void KHTMLPartBrowserExtension::copy()
 
         QClipboard *cb = QApplication::clipboard();
         disconnect( cb, SIGNAL( selectionChanged() ), m_part, SLOT( slotClearSelection() ) );
-#ifndef QT_NO_MIMECLIPBOARD  /** Do I need to do this? I copied this #ifndef from elsewhere.*/
+#ifndef QT_NO_MIMECLIPBOARD
 	QString htmltext = m_part->selectedTextAsHTML();
 	
 	htmltext.replace( QChar( 0xa0 ), ' ' );
@@ -229,7 +229,6 @@ void KHTMLPartBrowserExtension::copy()
 	KMultipleDrag *drag = new KMultipleDrag( m_editableFormWidget );
 	drag->addDragObject( textdrag );
 	drag->addDragObject( htmltextdrag );
-        kdDebug() << htmltext << endl;
         cb->setData(drag);
 #else
 	cb->setText(text);
@@ -529,7 +528,7 @@ KHTMLPopupGUIClient::KHTMLPopupGUIClient( KHTMLPart *khtml, const QString &doc, 
                  actionCollection(), "copyimage" ))->setEnabled(!d->m_image.isNull());
 #endif
     
-    if(d->m_image.isNull()) {    //fallback to image location if still loading the image.
+    if(d->m_image.isNull()) {    //fallback to image location if still loading the image.  this will always be true if ifdef QT_NO_MIMECLIPBOARD
       new KAction( i18n( "Copy Image Location" ), 0, this, SLOT( slotCopyImageLocation() ),
                    actionCollection(), "copyimagelocation" );
     }
