@@ -1376,6 +1376,10 @@ void KHTMLView::timerEvent ( QTimerEvent *e )
 	DOM::DocumentImpl *document = m_part->xmlDocImpl();
 	khtml::RenderRoot* root = static_cast<khtml::RenderRoot *>(document->renderer());
 	resizeContents(root->docWidth(), root->docHeight());
+	if ( !root->layouted() ) {
+	    scheduleRelayout();
+	    return;
+	}
     }
     setStaticBackground(d->useSlowRepaints);
 
