@@ -249,8 +249,8 @@ public:
 	Override = 6, // NON STANDARD
         TopMenu  = 7, // NON STANDARD
 	Tool     = Toolbar, // This will go away soon, COMPAT (How soon? :)
-	Utility  = 8,
-	Splash   = 9
+	Utility  = 8,	///< @since 3.2
+	Splash   = 9	///< @since 3.2
     };
 
     /**
@@ -298,12 +298,12 @@ public:
 	Max = MaxVert | MaxHoriz,
 	Shaded       = 1<<4,
 	SkipTaskbar  = 1<<5,
-	Above        = 1<<6,
+	Above        = 1<<6,	///< @since 3.2
 	StaysOnTop = Above,	// NOT STANDARD
 	SkipPager    = 1<<7,
-	Hidden       = 1<<8,
-	FullScreen   = 1<<9,
-	Below        = 1<<10
+	Hidden       = 1<<8,	///< @since 3.2
+	FullScreen   = 1<<9,	///< @since 3.2
+	Below        = 1<<10	///< @since 3.2
     };
 
     /**
@@ -335,7 +335,13 @@ public:
 	BottomLeft   = 6,
 	Left         = 7,
 	Move         = 8,  // movement only
+    /**
+       @since 3.2
+    **/
 	KeyboardSize = 9,  // size via keyboard
+    /**
+       @since 3.2
+    **/
 	KeyboardMove = 10  // move via keyboard
     };
 
@@ -444,6 +450,7 @@ public:
     /**
        Sentinel value to indicate that the client wishes to be visible on
        all desktops.
+       @since 3.2
      **/ 
     enum { OnAllDesktops = -1 };
 };
