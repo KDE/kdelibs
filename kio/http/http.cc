@@ -588,8 +588,8 @@ bool HTTPProtocol::http_openConnection()
     QString proxy_host = m_proxyURL.host();
     int proxy_port = m_proxyURL.port();
 
-    kdDebug(7113) << "(" << getpid() << ") http_openConnection " << proxy_host << " "
-                           << proxy_port << endl;
+    kdDebug(7113) << "(" << getpid() << ") http_openConnection " << proxy_host
+                  << " " << proxy_port << endl;
 
     infoMessage( i18n("Connecting to <b>%1</b>...").arg(m_state.hostname) );
     setConnectTimeout( m_proxyConnTimeout );
@@ -1540,7 +1540,7 @@ bool HTTPProtocol::readHeader()
   // Check if we got need to error out...
   if ( errCode >= 0 )
   {
-    if ( errCode == 0 && m_iSize > 0 )
+    if ( errCode == 0 && (m_iSize > 0 || !m_strMimeType.isEmpty()) )
     {
       errorPage();
     }
@@ -1641,7 +1641,7 @@ bool HTTPProtocol::readHeader()
         }
         else
         {
-          if ( m_bErrorPage && m_iSize > 0 )
+          if ( m_bErrorPage && (m_iSize > 0 || !m_strMimeType.isEmpty()) )
             errorPage();
           else
             error( ERR_USER_CANCELED, QString::null );          
