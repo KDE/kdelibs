@@ -1983,6 +1983,7 @@ void KURLPropsPlugin::applyChanges()
     if ( nameStr.right(7) == QString::fromLatin1(".kdelnk") )
       nameStr.truncate( nameStr.length() - 7 );
     config.writeEntry( QString::fromLatin1("Name"), nameStr );
+	config.writeEntry( QString::fromLatin1("Name"), nameStr, true, false, true );
   }
 }
 
