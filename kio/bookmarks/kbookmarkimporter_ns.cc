@@ -157,7 +157,6 @@ void KNSBookmarkExporter::writeFolder(QTextStream &/*stream*/, KBookmarkGroup /*
    // TODO - requires a d pointer workaround hack?
 }
 
-
 ////////////////////////////////////////////////////////////////
 
 void KNSBookmarkExporterImpl::setUtf8(bool utf8) {
@@ -195,7 +194,7 @@ void KNSBookmarkExporterImpl::write(KBookmarkGroup parent) {
            << "</DL><P>" << endl;
 }
 
-const QString KNSBookmarkExporterImpl::folderAsString(KBookmarkGroup parent) {
+QString KNSBookmarkExporterImpl::folderAsString(KBookmarkGroup parent) const {
    QString str;
    QTextStream fstream(&str, IO_WriteOnly);
 

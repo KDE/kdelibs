@@ -115,7 +115,7 @@ public:
     virtual void write(KBookmarkGroup);
     void setUtf8(bool);
 protected:
-    virtual const QString folderAsString(KBookmarkGroup);
+    QString folderAsString(KBookmarkGroup) const;
 private:
     bool m_utf8;
 };

@@ -122,4 +122,10 @@ QString KIEBookmarkImporterImpl::findDefaultLocation(bool) const
     return KFileDialog::getExistingDirectory();
 }
 
+/////////////////////////////////////////////////
+
+void KIEBookmarkExporterImpl::write(KBookmarkGroup parent) {
+}
+
+////
 #include "kbookmarkimporter_ie.moc"
