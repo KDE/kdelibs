@@ -1,17 +1,5 @@
 // $Id$
 
-// comment the following line out if you want debug output
-#define NO_DEBUG
-
-#ifdef NO_DEBUG
-#ifdef NDEBUG
-#undef NO_DEBUG
-#else
-#undef NDEBUG
-#define NDEBUG
-#endif
-#endif
-
 #include <assert.h>
 #include <stdlib.h>
 #include <string.h>
@@ -36,7 +24,7 @@
 
 KFileManager * KFileManager::pFileManager = 0L;
 
-// TODO : use QString for the url
+// TODO : use KURL for the url
 bool KRun::runURL( const char *_url, const char *_mimetype )
 {
 
@@ -261,13 +249,8 @@ bool KRun::run( const QString& _exec, QStringList& _urls, const QString& _name,
 
 bool KRun::run( const QString& _cmd )
 {
-  kdebug( KDEBUG_INFO, 7010, "Running %s", _cmd.ascii() );
+  kDebugInfo( 7010, "Running %s", _cmd.ascii() );
 
-/*
-  QString exec = _cmd;
-  exec += " &";
-  system( exec.ascii() );
-*/
   KShellProcess proc;
   proc << _cmd;
   proc.start(KShellProcess::DontCare);
@@ -346,7 +329,7 @@ KRun::KRun( const QString& _url, mode_t _mode, bool _is_local_file, bool _auto_d
 
 void KRun::init()
 {
-  kdebug( KDEBUG_INFO, 7010, "INIT called" );
+  kDebugInfo( 7010, "INIT called" );
 
   if ( m_strURL.left( 7 ) == "mailto:" )
   {
@@ -395,7 +378,7 @@ void KRun::init()
 
     KMimeType::Ptr mime = KMimeType::findByURL( url, m_mode, m_bIsLocalFile );
     assert( mime );
-    kdebug( KDEBUG_INFO, 7010, "MIME TYPE is %s", mime->mimeType().ascii() );
+    kDebugInfo( 7010, "MIME TYPE is %s", mime->mimeType().ascii() );
     foundMimeType( mime->mimeType().ascii() );
     return;
   }
@@ -409,14 +392,14 @@ void KRun::init()
 
   if ( !KProtocolManager::self().supportsListing( url.protocol() ) )
   {
-    kdebug( KDEBUG_INFO, 7010, "##### NO SUPPORT FOR LISTING" );
+    kDebugInfo( 7010, "NO SUPPORT FOR LISTING" );
     // No support for listing => we can scan the file
     scanFile();
     return;
   }
 
   // Let's see whether it is a directory
-  kdebug( KDEBUG_INFO, 7010, "##### TESTING DIRECTORY" );
+  kDebugInfo( 7010, "TESTING DIRECTORY" );
 
   // It may be a directory
   KIOJob* job = new KIOJob();
@@ -440,7 +423,7 @@ KRun::~KRun()
 
 void KRun::scanFile()
 {
-  kdebug( KDEBUG_INFO, 7010, "###### Scanning file %s", m_strURL.data() );
+  kDebugInfo( 7010, "Scanning file %s", m_strURL.data() );
 
   KIOJob* job = new KIOJob();
   connect( job, SIGNAL( sigMimeType( int, const char* ) ), this, SLOT( slotMimeType( int, const char* ) ) );
@@ -505,7 +488,7 @@ void KRun::slotIsFile( int /* _id */ )
 
 void KRun::slotFinished( int /* _id */ )
 {
-  kdebug( KDEBUG_INFO, 7010, "####### FINISHED" );
+  kDebugInfo( 7010, "FINISHED" );
 
   if ( m_bFault )
   {
@@ -531,7 +514,7 @@ void KRun::slotError( int, int _errid, const char *_errortext )
   if ( _errid == KIO::ERR_WARNING )
     return; //let's ingore warnings for now
 
-  kdebug( KDEBUG_ERROR, 7010,"######## ERROR %d %s", _errid, _errortext );
+  kDebugError( 7010,"ERROR %d %s", _errid, _errortext );
   // HACK
   // Display error message
   kioErrorDialog( _errid, _errortext );
@@ -542,13 +525,13 @@ void KRun::slotError( int, int _errid, const char *_errortext )
 
 void KRun::slotMimeType( int, const char *_type )
 {
-  kdebug( KDEBUG_INFO, 7010, "######## MIMETYPE %s", _type );
+  kDebugInfo( 7010, "MIMETYPE %s", _type );
   foundMimeType( _type );
 }
 
 void KRun::slotPreData( int, const char *_data, int _len )
 {
-  kdebug( KDEBUG_INFO, 7010, "Got pre data" );
+  kDebugInfo( 7010, "Got pre data" );
   KMimeMagicResult* result = KMimeMagic::self()->findBufferType( _data, _len );
 
   // If we still did not find it, we must assume the default mime type
@@ -560,7 +543,7 @@ void KRun::slotPreData( int, const char *_data, int _len )
 
 void KRun::foundMimeType( const char *_type )
 {
-  kdebug( KDEBUG_INFO, 7010, "Resulting mime type is %s", _type );
+  kDebugInfo( 7010, "Resulting mime type is %s", _type );
 
   // Automatically unzip/untar stuff
   if ( strcmp( _type, "application/x-gzip" ) == 0 ||
@@ -596,7 +579,7 @@ void KRun::foundMimeType( const char *_type )
     // Create the new URL
     m_strURL = KURL::join( lst );
 
-    kdebug( KDEBUG_INFO, 7010, "Now trying with %s", m_strURL.ascii() );
+    kDebugInfo( 7010, "Now trying with %s", m_strURL.ascii() );
 
     killJob();
 
@@ -649,7 +632,3 @@ bool KFileManager::openFileManagerWindow( const QString & _url )
 
 #include "krun.moc"
 
-#ifdef NO_DEBUG
-#undef NO_DEBUG
-#undef NDEBUG
-#endif
