@@ -57,6 +57,12 @@
 #include "kio/ioslave_defaults.h"
 #include "kio/slaveinterface.h"
 
+#ifndef NDEBUG
+#ifdef HAVE_BACKTRACE
+#include <execinfo.h>
+#endif
+#endif
+
 using namespace KIO;
 
 template class QPtrList<QValueList<UDSAtom> >;
@@ -128,6 +134,8 @@ long SlaveBase::s_seqNr;
 
 static volatile bool slaveWriteError = false;
 
+static const char *s_protocol;
+
 static void genericsig_handler(int sigNumber)
 {
    signal(sigNumber,SIG_IGN);
@@ -150,6 +158,7 @@ SlaveBase::SlaveBase( const QCString &protocol,
       mPoolSocket( QFile::decodeName(pool_socket)),
       mAppSocket( QFile::decodeName(app_socket))
 {
+    s_protocol = protocol.data();
     if (!getenv("KDE_DEBUG"))
     {
         KCrash::setCrashHandler( sigsegv_handler );
@@ -219,6 +228,7 @@ SlaveBase::SlaveBase( const QCString &protocol,
 SlaveBase::~SlaveBase()
 {
     delete d;
+    s_protocol = "";
 }
 
 DCOPClient *SlaveBase::dcopClient()
@@ -673,9 +683,17 @@ void SlaveBase::sigsegv_handler(int sig)
 
     // Debug and printf should be avoided because they might
     // call malloc.. and get in a nice recursive malloc loop
-    char buffer[80];
-    snprintf(buffer, sizeof(buffer), "kioslave: ####### CRASH ###### pid = %d signal = %d\n", getpid(), sig);
+    char buffer[120];
+    snprintf(buffer, sizeof(buffer), "kioslave: ####### CRASH ###### protocol = %s pid = %d signal = %d\n", s_protocol, getpid(), sig);
     write(2, buffer, strlen(buffer));
+#ifndef NDEBUG
+#ifdef HAVE_BACKTRACE
+    void* trace[256];
+    int n = backtrace(trace, 256);
+    if (n)
+      backtrace_symbols_fd(trace, n, 2);
+#endif
+#endif
     ::exit(1);
 }
 
