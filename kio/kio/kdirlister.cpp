@@ -466,7 +466,7 @@ void KDirListerCache::forgetDirs( KDirLister *lister )
 void KDirListerCache::forgetDirs( KDirLister *lister, const KURL& url )
 {
   kdDebug(7004) << k_funcinfo << lister << " url: " << url.prettyURL() << endl;
-  
+
   QPtrList<KDirLister> *listers = urlsCurrentlyHeld[url.url()];
   Q_ASSERT( listers );
   listers->removeRef( lister );
@@ -621,7 +621,7 @@ KFileItem* KDirListerCache::findByURL( const KDirLister *lister, const KURL& _u 
         if ( (*kit)->url() == _url )
           return (*kit);
     }
-    
+
     QCacheIterator< DirItem > itc( itemsCached );
     for ( ; itc.current(); ++itc )
     {
@@ -911,7 +911,7 @@ void KDirListerCache::slotUpdateResult( KIO::Job * j )
 
   // once we are updating dirs that are only in the cache this will fail!
   Q_ASSERT( listers );
-  if (!listers) 
+  if (!listers)
 	  return;          // FIXME: FIX THIS EVIL HACK!!
 
   if ( job->error() )
@@ -920,7 +920,7 @@ void KDirListerCache::slotUpdateResult( KIO::Job * j )
     {
       //don't bother the user
       //kdl->handleError( job );
-      
+
       emit kdl->canceled( url );
       if ( --kdl->d->numJobs == 0 )
       {
@@ -1011,7 +1011,7 @@ void KDirListerCache::slotUpdateResult( KIO::Job * j )
         tmp->assign( *item );
 
         for ( kdl = listers->first(); kdl; kdl = listers->next() )
-          kdl->addRefreshItem( item );
+          kdl->addRefreshItem( tmp );
       }
       delete item;  // gmbl, this is the most often case... IMPORTANT TODO: speed it up somehow!
     }
