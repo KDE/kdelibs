@@ -497,6 +497,7 @@ void KHTMLPopupGUIClient::slotFrameInWindow()
 {
   KParts::URLArgs args( d->m_khtml->browserExtension()->urlArgs() );
   args.metaData()["referrer"] = d->m_khtml->pageReferrer();
+  args.metaData()["forcenewwindow"] = "true";
   emit d->m_khtml->browserExtension()->createNewWindow( d->m_khtml->url(), args );
 }
 
