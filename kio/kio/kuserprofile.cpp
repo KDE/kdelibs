@@ -25,7 +25,6 @@
 #include <kapplication.h>
 #include <kglobal.h>
 #include <kdebug.h>
-#include <kstaticdeleter.h>
 
 #include <qtl.h>
 
@@ -38,7 +37,6 @@ template class QPtrList<KServiceTypeProfile>;
  *********************************************/
 
 QPtrList<KServiceTypeProfile>* KServiceTypeProfile::s_lstProfiles = 0L;
-static KStaticDeleter< QPtrList<KServiceTypeProfile> > profileDeleter;
 bool KServiceTypeProfile::s_configurationMode = false;
 
 void KServiceTypeProfile::initStatic()
@@ -49,7 +47,7 @@ void KServiceTypeProfile::initStatic()
   // Make sure that a KServiceTypeFactory gets created.
   (void) KServiceTypeFactory::self();
 
-  s_lstProfiles = profileDeleter.setObject(new QPtrList<KServiceTypeProfile>);
+  s_lstProfiles = new QPtrList<KServiceTypeProfile>;
 
   KSimpleConfig config( "profilerc");
 
