@@ -480,15 +480,6 @@ QStringList KConfigBase::readListEntry( const QString& pKey, char sep ) const
   return readListEntry(pKey.utf8().data(), sep);
 }
 
-QStringList KConfigBase::readListEntry( const QString& pKey, const QStringList& aDefault,
-		  char sep) const
-{
-	if ( !hasKey( pKey ) )
-		return aDefault;
-	else
-		return readListEntry( pKey, sep );
-}
-
 QStringList KConfigBase::readListEntry( const char *pKey, char sep ) const
 {
   static const QString& emptyString = KGlobal::staticQString("");
@@ -528,6 +519,15 @@ QStringList KConfigBase::readListEntry( const char *pKey, char sep ) const
     list.append( value );
   }
   return list;
+}
+
+QStringList KConfigBase::readListEntry( const char* pKey, const QStringList& aDefault,
+		char sep ) const
+{
+	if ( !hasKey( pKey ) )
+		return aDefault;
+	else
+		return readListEntry( pKey, sep );
 }
 
 QValueList<int> KConfigBase::readIntListEntry( const QString& pKey ) const

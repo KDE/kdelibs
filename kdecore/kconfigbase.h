@@ -250,6 +250,15 @@ public:
   QStringList readListEntry( const QString& pKey, char sep = ',' ) const;
 
   /**
+   * Reads a list of strings.
+   *
+   * @param pKey The key to search for.
+   * @param sep  The list separator (default is ",").
+   * @return The list. Empty if the entry does not exist.
+   */
+  QStringList readListEntry( const char *pKey, char sep = ',' ) const;
+
+  /**
    * Reads a list of strings, but returns a default if the key 
    * did not exist.
    * @param pKey The key to search for.
@@ -258,17 +267,8 @@ public:
    * @return The list. Contains @p aDefault if the Key does not exist.
    * @since 3.3
    */
-  QStringList readListEntry( const QString& pKey, const QStringList& aDefault, 
+  QStringList readListEntry( const char* pKey, const QStringList& aDefault, 
 		  char sep = ',' ) const;
-
-  /**
-   * Reads a list of strings.
-   *
-   * @param pKey The key to search for.
-   * @param sep  The list separator (default is ",").
-   * @return The list. Empty if the entry does not exist.
-   */
-  QStringList readListEntry( const char *pKey, char sep = ',' ) const;
 
   /**
    * Reads a list of Integers.
@@ -2028,7 +2028,6 @@ class KConfigGroupSaverPrivate;
   * in one block.
   *
   * @author Matthias Kalle Dalheimer <kalle@kde.org>
-  * @version $Id$
   * @see KConfigBase, KConfig, KSimpleConfig
   * @short Helper class for easier use of KConfig/KSimpleConfig groups
   */
