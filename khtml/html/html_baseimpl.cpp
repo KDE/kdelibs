@@ -115,6 +115,10 @@ void HTMLBodyElementImpl::parseAttribute(AttrImpl *attr)
 	m_styleSheet->setNonCSSHints();
 	break;
     }
+    case ATTR_BGPROPERTIES:
+        if ( strcasecmp( attr->value(), "fixed" ) == 0)
+            addCSSProperty(CSS_PROP_BACKGROUND_ATTACHMENT, "fixed");
+        break;
     case ATTR_VLINK:
     {
 	if(!m_styleSheet) {
