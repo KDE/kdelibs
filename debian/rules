@@ -79,7 +79,7 @@ indep-stamp:
 	dh_testdir
 	dh_testroot
 	dh_clean -i
-	if test -f /usr/bin/qt2kdoc; then \
+	-if test -f /usr/bin/qt2kdoc; then \
 		(mkdir -p debian/kdelibs4-doc/$(KDEDOCDIR)/kdoc-reference) ; \
 		qt2kdoc --url=/$(QTDOCDIR) \
 		--outdir=`pwd`/debian/kdelibs4-doc/$(KDEDOCDIR)/kdoc-reference \
