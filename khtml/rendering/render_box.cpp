@@ -365,7 +365,7 @@ void RenderBox::updateHeight()
 #endif
 
     if (parsing())
-    { 
+    {
     	setLayouted(false);
     	containingBlock()->updateHeight();		
 	return;
@@ -637,7 +637,7 @@ void RenderBox::calcAbsoluteHorizontal()
     int l,r,w,ml,mr,cw;
 
     int pab = borderLeft()+ borderRight()+ paddingLeft()+ paddingRight();
-    
+
     l=r=ml=mr=w=AUTO;
     cw = containingBlockWidth()
     	+containingBlock()->paddingLeft() +containingBlock()->paddingRight();
@@ -649,13 +649,13 @@ void RenderBox::calcAbsoluteHorizontal()
     if(!m_style->width().isVariable())
 	w = m_style->width().width(cw);
     else if (isReplaced())
-        w = intrinsicWidth();   
+        w = intrinsicWidth();
     if(!m_style->marginLeft().isVariable())
 	ml = m_style->marginLeft().width(cw);		
     if(!m_style->marginRight().isVariable())
 	mr = m_style->marginRight().width(cw);
 
-    
+
     // css2 spec 10.3.7 & 10.3.8
     // 1
     RenderObject* o=parent();
@@ -666,7 +666,7 @@ void RenderBox::calcAbsoluteHorizontal()
 	else l=0;
 	while (o && o!=containingBlock()) { l+=o->xPos(); o=o->parent(); }
     }
-    
+
     // 2
     else if (style()->direction()==RTL && r==AUTO && r==AUTO)
     {
@@ -682,14 +682,14 @@ void RenderBox::calcAbsoluteHorizontal()
     	if (l==AUTO) l=0;
 	if (r==AUTO) r=0;
     };
-    
+
     // 4
     if (w==AUTO || l==AUTO || r==AUTO)
     {
         if (ml==AUTO) ml=0;
         if (mr==AUTO) mr=0;
     }
-    
+
     // 5
     if (ml==AUTO && mr==AUTO)
     {
@@ -697,7 +697,7 @@ void RenderBox::calcAbsoluteHorizontal()
         ml = (cw - ot)/2;
         mr = cw - ot - ml;
     }
-    
+
     // 6
     if (w==AUTO)
         w = cw - ( r + l + ml + mr + pab);
@@ -715,10 +715,10 @@ void RenderBox::calcAbsoluteHorizontal()
     {
         if (style()->direction()==LTR)
             r = cw - ( l + w + ml + mr + pab);
-        else 
+        else
             l = cw - ( r + w + ml + mr + pab);
     }
-    
+
     m_width = w + pab;
     m_marginLeft = ml;
     m_marginLeft = mr;
@@ -734,7 +734,7 @@ void RenderBox::calcAbsoluteVertical()
     int t,b,h,mt,mb,ch;
 
     t=b=h=mt=mb=AUTO;
-    
+
     int pab = borderTop()+borderBottom()+paddingTop()+paddingBottom();
 
     Length hl = containingBlock()->style()->height();
@@ -742,7 +742,7 @@ void RenderBox::calcAbsoluteVertical()
     	ch = hl.value + containingBlock()->paddingTop()
 	     + containingBlock()->paddingBottom();
     else
-    	ch = containingBlock()->height();   
+    	ch = containingBlock()->height();
 
     if(!m_style->top().isVariable())
 	t = m_style->top().width(ch);
@@ -757,7 +757,7 @@ void RenderBox::calcAbsoluteVertical()
     if(!m_style->marginBottom().isVariable())
 	mb = m_style->marginBottom().width(ch);
 
-    
+
     // css2 spec 10.6.4 & 10.6.5
     // 1
     RenderObject* o = parent();
@@ -779,7 +779,7 @@ void RenderBox::calcAbsoluteVertical()
     	if (mt==AUTO) mt=0;
         if (mb==AUTO) mb=0;
     }
-    
+
     // 4
     if (mt==AUTO && mb==AUTO)
     {
@@ -787,7 +787,7 @@ void RenderBox::calcAbsoluteVertical()
         mt = (ch - ot)/2;
         mb = ch - ot - mt;
     }
-    
+
     // 5
     if (h==AUTO)
     	h = ch - ( t+b+mt+mb+pab);
@@ -803,7 +803,7 @@ void RenderBox::calcAbsoluteVertical()
     if (m_height<h+pab)
     	m_height = h+pab;
     m_marginTop = mt;
-    m_marginBottom = mb;    
+    m_marginBottom = mb + b;
     m_y = t + mt +
     	containingBlock()->paddingTop() + containingBlock()->borderTop();
 	

@@ -91,6 +91,9 @@ void RenderRoot::layout()
     }
     RenderFlow::layout();
 
+    // have to do that before layoutSpecialObjects() to get fixed positioned objects at the right place
+    m_view->resizeContents(docWidth(), docHeight());
+
     m_height = m_view->visibleHeight();
     m_width = m_view->visibleWidth();
     //kdDebug(0) << "visibleHeight = " << contentsHeight << endl;
@@ -143,7 +146,7 @@ void RenderRoot::printObject(QPainter *p, int _x, int _y,
     // it is anyway undefined if regular text is above fixed objects or the other way round.
     _tx += m_view->contentsX();
     _ty += m_view->contentsY();
-    
+
     if(specialObjects)
     {
 	SpecialObject* r;	

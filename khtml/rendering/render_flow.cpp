@@ -449,6 +449,8 @@ RenderFlow::insertPositioned(RenderObject *o)
     f->count = specialObjects->count();
 
     specialObjects->append(f);
+
+    setContainsPositioned(true);
 }
 
 void
@@ -719,8 +721,8 @@ RenderFlow::lowestPosition()
 	if( last )
 	    lp = yPos() + last->lowestPosition();
     }
-    
-    if(  lp > bottom ) 
+
+    if(  lp > bottom )
 	bottom = lp;
 	
     //kdDebug(0) << renderName() << " bottom = " << bottom << endl;
