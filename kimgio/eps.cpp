@@ -52,7 +52,7 @@ int bbox ( const char *fileName, int *x1, int *y1, int *x2, int *y2)
 	return ret;
 }  
 
-void kimgio_epsf_read (QImageIO *image)
+void kimgio_eps_read (QImageIO *image)
 {
 	FILE * ghostfd, * imagefd;
 	int x1, y1, x2, y2;
@@ -137,7 +137,7 @@ void kimgio_epsf_read (QImageIO *image)
 }
 
 // Sven Wiegand <SWiegand@tfh-berlin.de> -- eps output filter (from KSnapshot)
-void kimgio_epsf_write( QImageIO *imageio )
+void kimgio_eps_write( QImageIO *imageio )
 {
   QPrinter	 psOut;
   QPainter	 p;
@@ -203,8 +203,3 @@ void kimgio_epsf_write( QImageIO *imageio )
   imageio->setStatus(0);
 }
 
-extern "C" void kimgio_init_eps() {
-    QImageIO::defineIOHandler("EPS", "^%!PS-Adobe-[^\n]+\n"
-			      "%%BoundingBox", "T", kimgio_epsf_read, 
-			      kimgio_epsf_write );
-}

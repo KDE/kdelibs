@@ -1,0 +1,9 @@
+[Image Format]
+Type=PNM
+Header=
+Pattern=PNM-Pictures
+Read=true
+Write=true
+Suffices=pnm,PNM,pbm,PBM,pgm,PGM,ppm,PPM,pbmraw,PBMRAW,pgmraw,PGMRAW,ppmraw,PPMRAW
+Mimetype=image/x-pnm
+Library=

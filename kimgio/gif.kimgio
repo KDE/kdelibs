@@ -1,0 +1,9 @@
+[Image Format]
+Type=GIF
+Header=
+Pattern=GIF-Pictures
+Read=true
+Write=false
+Suffices=gif,GIF
+Mimetype=image/gif
+Library=

@@ -1,0 +1,9 @@
+[Image Format]
+Type=XBM
+Header=
+Pattern=XWindow Bitmaps
+Read=true
+Write=true
+Suffices=xbm,XBM
+Mimetype=image/x-xbm
+Library=

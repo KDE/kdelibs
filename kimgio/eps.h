@@ -2,8 +2,10 @@
 #ifndef _EPS_H
 #define _EPS_H
 
-void kimgio_epsf_read (QImageIO *image);
-void kimgio_epsf_write (QImageIO *image);
+extern "C" {
+void kimgio_eps_read (QImageIO *image);
+void kimgio_eps_write (QImageIO *image);
+}
 
 #endif
 

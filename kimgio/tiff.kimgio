@@ -1,0 +1,9 @@
+[Image Format]
+Type=TIFF
+Header=[MI][MI]
+Pattern=TIFF-Pictures
+Read=true
+Write=true
+Suffices=tiff,TIFF,tif,TIF 
+Mimetype=image/tiff
+Library=kimg_tiff.la

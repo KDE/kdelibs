@@ -11,7 +11,9 @@
 
 class QImageIO;
 
+extern "C" {
 void kimgio_krl_read( QImageIO *io );
 void kimgio_krl_write(QImageIO *io );
+}
 
 #endif

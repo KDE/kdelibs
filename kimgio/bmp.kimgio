@@ -1,0 +1,9 @@
+[Image Format]
+Type=BMP
+Header=
+Pattern=MSWindows Pixmaps
+Read=true
+Write=true
+Suffices=bmp,BMP
+Mimetype=image/x-bmp
+Library=

@@ -1,0 +1,9 @@
+[Image Format]
+Type=KRL
+Header=DUMMYKRLREGEXP
+Pattern=
+Read=true
+Write=true
+Suffices=
+Mimetype=image/x-krl
+Library=kimg_krl.la

@@ -204,8 +204,3 @@ void kimgio_krl_write( QImageIO * imageio )
 
 }
 
-extern "C" void kimgio_init_krl() {
-    QImageIO::defineIOHandler( "KRL", "^DUMMYKRLREGEXP", 0,
-			       kimgio_krl_read, kimgio_krl_write );     
-}
-

@@ -1,0 +1,9 @@
+[Image Format]
+Type=XPM
+Header=
+Pattern=XWindow Pixmaps
+Read=true
+Write=true
+Suffices=xpm,XPM
+Mimetype=image/x-xpm
+Library=
