@@ -30,6 +30,7 @@
 #include <qdir.h>
 #include <qstringlist.h>
 #include <qregexp.h>
+#include <qstylesheet.h>
 
 #include <qtextcodec.h>
 #include <kcharsets.h>
@@ -1241,11 +1242,7 @@ QString KURL::prettyURL( int _trailing, AdjustementFlags _flags) const
 
 QString KURL::htmlURL() const
 {
-  QString s = prettyURL();
-  s.replace(QRegExp("&"), QString("&amp;"));
-  s.replace(QRegExp("<"), QString("&lt;"));
-  s.replace(QRegExp(">"), QString("&gt;"));
-  return s;
+  return QStyleSheet::escape(prettyURL());
 }
 
 KURL::List KURL::split( const KURL& _url )
