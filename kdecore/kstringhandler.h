@@ -26,6 +26,8 @@
 #include <qfontmetrics.h>
 
 /**
+ * This class contains utility functions for handling strings.
+ *
  * This class is @em not a substitute for the @ref QString class. What
  * I tried to do with this class is provide an easy way to
  * cut/slice/splice words inside sentences in whatever order desired.
@@ -384,6 +386,21 @@ public:
      * @since 3.1
      */
     static QString tagURLs( const QString& text );
+
+    /**
+      Obscure string by using a simple symmetric encryption. Applying the
+      function to a string obscured by this function will result in the original
+      string.
+
+      The function can be used to obscure passwords stored to configuration
+      files. Note that this won't give you any more security than preventing
+      that the password is directly copied and pasted.
+
+      @param str string to be obscured
+      @return obscured string
+      @since 3.2
+    */
+    static QString obscure( const QString &str );
 
 #ifdef KDE_NO_COMPAT
 private:

@@ -635,3 +635,13 @@ KStringHandler::tagURLs( const QString& text )
     }
     return richText;
 }
+
+QString KStringHandler::obscure( const QString &str )
+{
+  QString result;
+  for ( uint i = 0; i < str.length(); ++i )
+    result += ( str[ i ].unicode() < 0x20 ) ? str[ i ] :
+        QChar( 0x1001F - str[ i ].unicode() );
+
+  return result;
+}
