@@ -87,13 +87,14 @@ void close_fds()
    signal(SIGPIPE, SIG_DFL);
 }
 
-pid_t launch(int argc, char *name, char *args)
+pid_t launch(int argc, const char *_name, const char *args)
 {
   int l;
   int launcher = 0;
   char *cmd;
+  char *name;
 
-  if (strcmp(name, "klauncher") == 0)
+  if (strcmp(_name, "klauncher") == 0)
   {
      /* klauncher is launched in a special way:
       * instead of calling 'main(argc, argv)',
@@ -107,10 +108,11 @@ pid_t launch(int argc, char *name, char *args)
      }
      launcher = 1;
   }
-  if (name[0] != '/')
+
+  if (_name[0] != '/')
   {
      /* Relative name without 'lib' and '.la' */
-     strcpy(cmdLine, name);
+     strcpy(cmdLine, _name);
      name = cmdLine;
      cmd = strcpy(name + strlen(name) + 1, "lib");
      strncat(cmd, name, MAX_ARGLENGTH - 10);
@@ -119,15 +121,17 @@ pid_t launch(int argc, char *name, char *args)
   else
   {
      /* Absolute path including 'lib' and '.la' */
-     char *start;
-     char *p = name+strlen(name)-1;
-     while((p >= name) && (*p != '/'))
-        p--;
-     if (*p++ != '/') return -1;
-     if (*p++ != 'l') return -1;
-     if (*p++ != 'i') return -1;
-     if (*p++ != 'b') return -1;
-     start = p;
+     const char *start;
+     char *p;
+     const char *cp;
+     cp = _name+strlen(_name)-1;
+     while((cp >= _name) && (*cp != '/'))
+        cp--;
+     if (*cp++ != '/') return -1;
+     if (*cp++ != 'l') return -1;
+     if (*cp++ != 'i') return -1;
+     if (*cp++ != 'b') return -1;
+     start = cp;
     
      strcpy(cmdLine, start);
      p = cmdLine+strlen(cmdLine)-1;
@@ -135,7 +139,7 @@ pid_t launch(int argc, char *name, char *args)
      if (*p-- != 'l') return -1;
      if (*p != '.') return -1;
      *p = 0;
-     cmd = strcpy(cmdLine+strlen(cmdLine)+1, name);
+     cmd = strcpy(cmdLine+strlen(cmdLine)+1, _name);
      name = cmdLine; 
   }
   l = strlen(cmd);
@@ -172,7 +176,7 @@ fprintf(stderr, "arg[0] = %s\n", name);
      d.argv[0] = name;
      for ( l = 1;  l < argc; l++)
      {
-        d.argv[l] = args;
+        d.argv[l] = (char *) args;
 fprintf(stderr, "arg[%d] = %s (%p)\n", l, args, args);
         while(*args != 0) args++;
         args++; 
@@ -211,6 +215,7 @@ fprintf(stderr, "arg[%d] = %s (%p)\n", l, args, args);
      }
      else
      {
+fprintf(stderr, "Starting klauncher.\n"); 
         d.sym = lt_dlsym( d.handle, "start_launcher");
         if (!d.sym )
         {
@@ -263,7 +268,7 @@ fprintf(stderr, "arg[%d] = %s (%p)\n", l, args, args);
   return d.fork;
 }
 
-void sig_child_handler(int sig) 
+void sig_child_handler(int) 
 {
    /*
     * Write into the pipe of death.
@@ -519,7 +524,7 @@ printf("KInit: argc[%d] = '%s'\n", i, arg_n);
       }
       pid = launch(argc, name, args);
       
-      if (pid)
+      if (pid && (d.result == 0))
       {
          response_header.cmd = LAUNCHER_OK;
          response_header.arg_length = sizeof(response_data);
@@ -543,8 +548,8 @@ printf("KInit: argc[%d] = '%s'\n", i, arg_n);
 
       printf("Got SETENV '%s=%s' from klauncher \n", env_name, env_value);
 
-      if (request_header.arg_length != 
-          (strlen(env_name) + strlen(env_value) + 2))
+      if ( request_header.arg_length != 
+          (int) (strlen(env_name) + strlen(env_value) + 2))
       {
          fprintf(stderr, "kinit: SETENV request has invalid format.\n"); 
          free(request_data);
@@ -706,7 +711,6 @@ int main(int argc, char **argv, char **envp)
    }
 
    /** Free arguments **/
-   d.argv = (char **) malloc( sizeof(char *) * argc);
    for(i = 0; i < argc; i++) 
    {
       free(d.argv[i]);
