@@ -76,7 +76,7 @@ public:
   enum direction{ horizontal, vertical };
 
 
-  enum metric_style{ pixel, inch, millimetres, centimetres, metres };
+  enum metric_style{ custom=0, pixel, inch, millimetres, centimetres, metres };
   enum paint_style{ flat, raised, sunken };
 
 
@@ -240,13 +240,19 @@ KRuler(direction dir, int widgetWidth, QWidget *parent=0, const char *name=0, WF
   void setRulerStyle(metric_style);
   inline metric_style getMetricRulerStyle() const;
 
+  /** currently not implemented */
   void setRulerStyle(paint_style);
+  /** currently not implemented */
   inline paint_style getPaintRulerStyle() const;
+  /** currently not implemented */
   void setTickStyle(paint_style);
+  /** currently not implemented */
   inline paint_style getTickStyle() const;
 
-  /** set the amount of pixel between two base marks.
-   * for pixel display the value is 10.0 marks per pixel ;-)
+  /** Set the amount of pixel between two base marks.
+   * Calling this method your are able to stretch or shrink your ruler.
+   *
+   * For pixel display the value is 10.0 marks per pixel ;-)
    * for inches it is 9.0, and for centimetres ~2,835 -> 3.0 .
    * If you like to magnify your part of display, you have to
    * adjust HERE your markdistance.

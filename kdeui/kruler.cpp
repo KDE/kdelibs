@@ -284,6 +284,9 @@ void
 KRuler::setRulerStyle(metric_style style)
 {
   switch (style) {
+  default: /* fall through */
+  case custom:
+    return;
   case pixel:
     setLittleMarkDistance(1);
     setMediumMarkDistance(5);
@@ -315,8 +318,8 @@ KRuler::setRulerStyle(metric_style style)
     setPixelPerMark(9.0);
 
     break;
-  case millimetres:
-  case centimetres:
+  case millimetres: /* fall through */
+  case centimetres: /* fall through */
   case metres:
     setLittleMarkDistance(1);
     setMediumMarkDistance(5);
@@ -346,6 +349,8 @@ KRuler::setRulerStyle(metric_style style)
     break;
   case metres:
     setEndLabel("m");
+  default: /* never reached, see above switch */
+    /* empty command */;
   }
   // if the style changes one of the values,
   // update would have been called inside the methods
