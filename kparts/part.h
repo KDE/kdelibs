@@ -280,6 +280,15 @@ public:
    */
   virtual ~ReadOnlyPart();
 
+  /**
+   * Call this to turn off the progress info dialog used by 
+   * the internal KIO job. Use this if you provide another way
+   * of displaying progress info (e.g. a statusbar), using the
+   * signals emitted by this class, and/or those emitted by
+   * the Job given by @ref started.
+   */
+   void showProgressInfo( bool show );
+
 public slots:
   /**
    * Only reimplement openURL if you don't want synchronous network transparency

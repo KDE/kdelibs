@@ -237,12 +237,14 @@ public:
   ReadOnlyPartPrivate()
   {
     m_job = 0L;
+    m_showProgressInfo = true;
   }
   ~ReadOnlyPartPrivate()
   {
   }
 
   KIO::FileCopyJob * m_job;
+  bool m_showProgressInfo;
 };
 
 };
@@ -257,6 +259,11 @@ ReadOnlyPart::~ReadOnlyPart()
 {
   ReadOnlyPart::closeURL();
   delete d;
+}
+
+void ReadOnlyPart::showProgressInfo( bool show )
+{
+  d->m_showProgressInfo = show;
 }
 
 bool ReadOnlyPart::openURL( const KURL &url )
@@ -282,7 +289,7 @@ bool ReadOnlyPart::openURL( const KURL &url )
     // We can't use mkstemp since we don't want to create the file here
     // KIO::Job has to create it
 
-    d->m_job = KIO::file_copy( m_url, m_file );
+    d->m_job = KIO::file_copy( m_url, m_file, false, false, d->m_showProgressInfo );
     emit started( d->m_job );
     connect( d->m_job, SIGNAL( result( KIO::Job * ) ), this, SLOT( slotJobFinished ( KIO::Job * ) ) );
     return true;
