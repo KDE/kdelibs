@@ -37,6 +37,8 @@
 
 #include "pixmaploader.h"
 
+class QProgressBar;
+
 class KeramikStyle : public KStyle
 {
 	Q_OBJECT
@@ -155,8 +157,7 @@ private:
 	bool firstComboPopupRelease;
 
 	//Animation support.
-	QMap<QWidget*, bool> progAnimWidgets;
-	int                  progAnimShift;
+	QMap<QProgressBar*, int> progAnimWidgets;
 
 	bool eventFilter( QObject* object, QEvent* event );
 

@@ -12,7 +12,8 @@
              (C) 2000 Dirk Mueller          <mueller@kde.org>
              (C) 2001 Martijn Klingens      <klingens@kde.org>
 
-    Progressbar code based on KStyle, Copyright (C) 2001-2002 Karol Szwed <gallium@kde.org>
+   Progressbar code based on KStyle, Copyright (C) 2001-2002 Karol Szwed <gallium@kde.org>,
+   Improvements to progressbar animation from Plastik, Copyright (C) 2003 Sandro Giessl <sandro@giessl.com>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -281,7 +282,6 @@ KeramikStyle::KeramikStyle()
 {
 	forceSmallMode = false;
 	hoverWidget    = 0;
-	progAnimShift  = 0;
 
 	QSettings settings;
 
@@ -300,14 +300,20 @@ KeramikStyle::KeramikStyle()
 
 void KeramikStyle::updateProgressPos()
 {
-	progAnimShift++;
-	if (progAnimShift == 28)
-		progAnimShift = 0;
-		
 	//Update the registered progressbars.
-	QMap<QWidget*, bool>::iterator iter;
+	QMap<QProgressBar*, int>::iterator iter;
 	for (iter = progAnimWidgets.begin(); iter != progAnimWidgets.end(); iter++)
-		iter.key()->update();
+	{
+		QProgressBar* pbar = iter.key(); 
+		if (pbar->isVisible() && pbar->isEnabled() &&
+			pbar->progress() != pbar->totalSteps())
+		{
+			++iter.data();
+			if (iter.data() == 28)
+				iter.data() = 0;
+			iter.key()->update();
+		}
+	}
 }
 
 KeramikStyle::~KeramikStyle()
@@ -354,7 +360,7 @@ void KeramikStyle::polish(QWidget* widget)
 
 	if (animateProgressBar && ::qt_cast<QProgressBar*>(widget))
 	{
-		progAnimWidgets[widget] = true;
+		progAnimWidgets[static_cast<QProgressBar*>(widget)] = true;
 		connect(widget, SIGNAL(destroyed(QObject*)), this, SLOT(progressBarDestroyed(QObject*)));
 	}
 
@@ -390,7 +396,7 @@ void KeramikStyle::unPolish(QWidget* widget)
 	}
 	else if ( ::qt_cast<QProgressBar*>(widget) )
 	{
-		progAnimWidgets.remove(widget);
+		progAnimWidgets.remove(static_cast<QProgressBar*>(widget));
 	}
 
 	KStyle::unPolish(widget);
@@ -398,7 +404,7 @@ void KeramikStyle::unPolish(QWidget* widget)
 
 void KeramikStyle::progressBarDestroyed(QObject* obj)
 {
-	progAnimWidgets.remove(static_cast<QWidget*>(obj));
+	progAnimWidgets.remove(static_cast<QProgressBar*>(obj));
 }
 
 
@@ -1848,6 +1854,7 @@ void KeramikStyle::drawControl( ControlElement element,
 				//////////////////////////////////////
 				if (animateProgressBar)
 				{
+					int progAnimShift = progAnimWidgets[const_cast<QProgressBar*>(pb)];
 					if (reverse)
 					{
 						//Here, we can't simply shift, as the painter code calculates everything based
