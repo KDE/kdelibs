@@ -21,11 +21,13 @@
 #include <kiconloader.h>
 #include <kglobal.h>
 #include <kstddirs.h>
+#include <kdebug.h>
 #include "kservicefactory.h"
 #include "kservicegroupfactory.h"
 #include "kservicegroup.h"
 #include "kservice.h"
 #include "ksycoca.h"
+
 
 KServiceGroup::KServiceGroup( const QString &configFile, const QString & _relpath )
  : KSycocaEntry(_relpath)
@@ -57,7 +59,7 @@ KServiceGroup::KServiceGroup( const QString &configFile, const QString & _relpat
      m_strIcon = "folder";
 }
 
-KServiceGroup::KServiceGroup( QDataStream& _str, int offset, bool deep ) : 
+KServiceGroup::KServiceGroup( QDataStream& _str, int offset, bool deep ) :
 	KSycocaEntry( _str, offset )
 {
   m_bDeep = deep;
@@ -77,7 +79,7 @@ void KServiceGroup::load( QDataStream& s )
 
   if (m_bDeep)
   {
-     for(QStringList::ConstIterator it = groupList.begin(); 
+     for(QStringList::ConstIterator it = groupList.begin();
 	 it != groupList.end(); it++)
      {
         QString path = *it;
@@ -111,7 +113,7 @@ void KServiceGroup::save( QDataStream& s )
        it != m_serviceList.end(); it++)
   {
      KSycocaEntry *p = (*it);
-     if (p->isType(KST_KService)) 
+     if (p->isType(KST_KService))
      {
         KService *service = static_cast<KService *>(p);
         groupList.append( service->desktopEntryPath());
@@ -127,67 +129,75 @@ void KServiceGroup::save( QDataStream& s )
      }
   }
 
-  s << m_strCaption << m_strIcon << 
+  s << m_strCaption << m_strIcon <<
        m_strComment << groupList;
 }
 
-KServiceGroup::List 
+KServiceGroup::List
 KServiceGroup::entries(bool sort)
 {
-  KServiceGroup *group = this;
+    KServiceGroup *group = this;
 
-  // If the entries haven't been loaded yet, we have to reload ourselves
-  // together with the entries. We can't only load the entries afterwards
-  // since the offsets could have been changed if the database has changed.
+    // If the entries haven't been loaded yet, we have to reload ourselves
+    // together with the entries. We can't only load the entries afterwards
+    // since the offsets could have been changed if the database has changed.
 
-  if (!m_bDeep) {
+    if (!m_bDeep) {
 
-    group =
-      KServiceGroupFactory::self()->findGroupByDesktopPath(relPath(), true);
+	group =
+	    KServiceGroupFactory::self()->findGroupByDesktopPath(relPath(), true);
 
-    if (0 == group) // No guarantee that we still exist!
-      return List();
-  }
+	if (0 == group) // No guarantee that we still exist!
+	    return List();
+    }
 
-  if (!sort)
-    return group->m_serviceList;
+    if (!sort)
+	return group->m_serviceList;
 
-  QStringList order =
-    KDesktopFile(relPath() + QString::fromUtf8(".directory")).sortOrder();
+    QString rp = relPath();
+    if(rp == "/") rp = QString::null;
+    
+    QStringList order =
+	KDesktopFile(rp + QString::fromUtf8(".directory")).sortOrder();
 
-  if (order.isEmpty())
-    return group->m_serviceList;
+    if (order.isEmpty())
+	{
+	    //kdDebug() << "No SortOrder in " << rp + QString::fromUtf8(".directory") << endl;
+	    return group->m_serviceList;
+	}
 
-  // Iterate through the sort spec list. If we find an entry that matches one
-  // in the original list, take it out of the original list and add it to the
-  // sorted list. Finally, add all entries that are still in the original list
-  // to the end of the sorted list.
+    // Iterate through the sort spec list. If we find an entry that matches one
+    // in the original list, take it out of the original list and add it to the
+    // sorted list. Finally, add all entries that are still in the original list
+    // to the end of the sorted list.
 
-  List sorted;
-  List orig = group->m_serviceList;
+    List sorted;
+    List orig = group->m_serviceList;
 
-  for (QStringList::ConstIterator it(order.begin()); it != order.end(); ++it)
+    for (QStringList::ConstIterator it(order.begin()); it != order.end(); ++it)
+	for (List::Iterator sit(orig.begin()); sit != orig.end(); ++sit)
+	    {
+		if (*it == (*sit)->entryPath().mid((*sit)->entryPath().findRev('/') + 1))
+		    {
+			sorted.append(*sit);
+			orig.remove(sit);
+			break;
+		    }
+	    }
+
     for (List::Iterator sit(orig.begin()); sit != orig.end(); ++sit)
-      if (*it == (*sit)->entryPath().mid((*sit)->entryPath().findRev('/') + 1))
-      {
-        sorted.append(*sit);
-        orig.remove(sit);
-        break;
-      }
+	sorted.append(*sit);
 
-  for (List::Iterator sit(orig.begin()); sit != orig.end(); ++sit)
-    sorted.append(*sit);
-
-  return sorted;
+    return sorted;
 }
 
-  KServiceGroup::Ptr 
+  KServiceGroup::Ptr
 KServiceGroup::root()
 {
    return KServiceGroupFactory::self()->findGroupByDesktopPath("/", true);
 }
 
-KServiceGroup::Ptr 
+KServiceGroup::Ptr
 KServiceGroup::group(const QString &relPath)
 {
    if (relPath.isEmpty()) return root();
