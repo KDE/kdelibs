@@ -624,7 +624,6 @@ bool HTMLGenericFormElementImpl::isSelectable() const
 
 void HTMLGenericFormElementImpl::defaultEventHandler(EventImpl *evt)
 {
-    kdDebug(6010)<<"default form event handler reached for event "<<evt->type().string()<<endl;
     if (evt->target()==this)
     {
         if (evt->id()==EventImpl::MOUSEDOWN_EVENT || evt->id()==EventImpl::KHTML_KEYDOWN_EVENT)
@@ -1765,7 +1764,7 @@ void HTMLSelectElementImpl::notifyOptionSelected(HTMLOptionElementImpl *selected
         uint i;
         for (i = 0; i < m_listItems.size(); i++) {
             if (m_listItems[i]->id() == ID_OPTION && m_listItems[i] != selectedOption)
-                static_cast<HTMLOptionElementImpl*>(m_listItems[i])->setSelected(false);
+                static_cast<HTMLOptionElementImpl*>(m_listItems[i])->m_selected = false;
         }
     }
     if (m_render && m_render->layouted())
