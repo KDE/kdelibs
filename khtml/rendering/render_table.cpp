@@ -1408,6 +1408,7 @@ void RenderTable::layoutRow(int r, int yoff)
         if ( r < (int)totalRows - 1 && cell == cells[r+1][c] )
             continue;
 
+	cell->calcVerticalMargins();
         cell->layout();
         cell->setCellTopExtra(0);
         cell->setCellBottomExtra(0);

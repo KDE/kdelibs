@@ -599,6 +599,13 @@ void RenderBox::calcHeight()
 
 void RenderBox::calcVerticalMargins()
 {
+    if( isTableCell() ) {
+	// table margins are basically infinite
+	m_marginTop = -0x4000;
+	m_marginBottom = -0x4000;
+	return;
+    }
+	
     Length tm = style()->marginTop();
     Length bm = style()->marginBottom();
 

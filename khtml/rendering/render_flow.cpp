@@ -50,6 +50,7 @@ using namespace khtml;
 
 static inline int collapseMargins(int a, int b)
 {
+    if ( a == -0x4000 || b == -0x4000 ) return -0x4000;
     if(a >= 0 && b >= 0) return (a > b ? a : b );
     if(a > 0 && b < 0) return a + b;
     if(a < 0 && b > 0) return b + a;
@@ -309,17 +310,16 @@ void RenderFlow::layoutBlockChildren()
 
     int prevMargin = 0;
     if(isTableCell() ) {
-	if ( child && !( child->isPositioned() || child->isFloating() ) ) {
-	    child->calcVerticalMargins();
-	    prevMargin = -child->marginTop();
-	}
+	prevMargin = -0x4000;
     } else if ( m_height == 0 ) {
 	// the elements and childs margin collapse if there is no border and padding.
 	prevMargin = marginTop();
 	if ( parent() )
 	    prevMargin = collapseMargins( prevMargin, parent()->marginTop() );
-	m_height = -prevMargin;
+	if ( prevMargin != -0x4000 )
+	    m_height = -prevMargin;
     }
+    //kdDebug() << "RenderFlow::layoutBlockChildren " << prevMargin << endl; 
 
     //QTime t;
     //t.start();
@@ -357,7 +357,8 @@ void RenderFlow::layoutBlockChildren()
         //kdDebug(0) << "margin = " << margin << " prevMargin = " << prevMargin << endl;
         margin = collapseMargins(margin, prevMargin);
 
-        m_height += margin;
+	if ( margin != -0x4000 )
+	    m_height += margin;
 
         //kdDebug(0) << "margin = " << margin << " yPos = " << m_height << endl;
 
