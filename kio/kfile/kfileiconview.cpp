@@ -151,6 +151,7 @@ KFileIconView::KFileIconView(QWidget *parent, const char *name)
 	connect( this, SIGNAL( selectionChanged( QIconViewItem * )),
 		 SLOT( highlighted( QIconViewItem * )));
 
+    viewport()->installEventFilter( this );
 
     // for mimetype resolving
     m_resolver = new KMimeTypeResolver<KFileIconViewItem,KFileIconView>(this);
@@ -671,6 +672,20 @@ void KFileIconView::listingCompleted()
     arrangeItemsInGrid();
     m_resolver->start( d->previews->isChecked() ? 0 : 10 );
 }
+
+// need to remove our tooltip, eventually
+bool KFileIconView::eventFilter( QObject *o, QEvent *e )
+{
+    if ( o == viewport() || o == this ) {
+        int type = e->type();
+        if ( type == QEvent::Leave || 
+             type == QEvent::FocusOut )
+            removeToolTip();
+    }
+    
+    return KIconView::eventFilter( o, e );
+}
+
 /////////////////////////////////////////////////////////////////
 
 // ### workaround for Qt3 Bug
