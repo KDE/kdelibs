@@ -243,9 +243,9 @@ bool KFileMetaPropsPlugin::supports( KFileItemList _items )
 #ifdef _GNUC
 #warning TODO: Add support for more than one item
 #endif
-  return _items.count()==1 && KConfigGroup( KGlobal::config(), "PreviewSettings" ).readBoolEntry( _items.first()->url().protocol(), true )
-      ? true
-      : false;
+  KConfigGroup g(KGlobal::config(), "PreviewSettings");
+  bool metaDataEnabled = g.readBoolEntry(_items.first()->url().protocol(), true);
+  return _items.count() == 1 && metaDataEnabled;
 }
 
 void KFileMetaPropsPlugin::applyChanges()
