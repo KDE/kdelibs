@@ -89,7 +89,7 @@ public:
       selectionMode (Single),
       contextMenuKey (KGlobalSettings::contextMenuKey()),
       showContextMenusOnPress (KGlobalSettings::showContextMenusOnPress()),
-      mDropVisualizerWidth (4),
+      mDropVisualizerWidth (4)
   {
       renameable += 0;
       connect(editor, SIGNAL(done(QListViewItem*,int)), listview, SLOT(doneEditing(QListViewItem*,int)));
