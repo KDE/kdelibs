@@ -21,6 +21,7 @@
 
 #include "kcarddb.h"
 #include <kconfig.h>
+#include <kprocess.h>
 #include <qstring.h>
 
 
@@ -54,12 +55,14 @@ int KCardDB::removeByHandler(const QString module) {
 			cfg->deleteGroup(*i);
 	}
 
+	cfg->sync();
 	return 0;
 }
 
 
 int KCardDB::removeCard(const QString ATR) {
 	cfg->deleteGroup(ATR);
+	cfg->sync();
 	return 0;
 }
 
@@ -67,12 +70,16 @@ int KCardDB::removeCard(const QString ATR) {
 int KCardDB::addHandler(const QString ATR, const QString module) {
 	cfg->setGroup(ATR);
 	cfg->writeEntry("Handler", module);
+	cfg->sync();
 	return 0;
 }
 
 
 int KCardDB::launchSelector(const QString slot, const QString ATR) {
-	return -1;
+	KShellProcess p;
+	p << "kcardchooser" << "--slot" << slot << "--atr" << ATR;
+	p.start(KProcess::DontCare);
+	return 0;
 }
 
 
