@@ -1343,8 +1343,8 @@ void KToolBar::insertWidgetInternal( QWidget *w, int &index, int id )
     connect( w, SIGNAL( destroyed() ),
              this, SLOT( widgetDestroyed() ) );
     if ( index == -1 || index > (int)widgets.count() ) {
-        widgets.append( w );
         index = (int)widgets.count();
+        widgets.append( w );
     }
     else
         widgets.insert( index, w );
