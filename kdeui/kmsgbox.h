@@ -20,6 +20,12 @@
  * $Id$
  *
  * $Log$
+ * Revision 1.7  1998/01/03 19:47:30  kulow
+ * changed the defaults for yesNo and co. It's no longer "Yes" and co, but
+ * 0 to enable translation in case.
+ * This is source and binary compatible. It's just, that it will behave
+ * differently after recompiling (as far I understood the C++ language ;)
+ *
  * Revision 1.6  1997/11/04 17:48:51  kulow
  * hmm, gcc accepts QPixmap & icon = 0, Sparc CC won't. So I made it .. = QPixmap()
  *
@@ -81,82 +87,155 @@
 #include <qpixmap.h>
 
 
-/// KMsgBox
-/** A message box API for the KDE project. KMsgBox provides a Windows - lookalike message- or
- error box with icons and up to 4 configurable buttons.
- */
-
+ /** 
+  * Enhanced MessageBox Dialog. 
+  *
+  * Provides a message box with icons and up to four configurable
+  * buttons and internationalized button text.
+  *
+  * Several static functions that perform common message box functions
+  * are also provided for convenience.
+  *
+  * @author Alexander Sanda (alex@darkstar.ping.at)
+  * @version $Id$
+  */
 class KMsgBox : public QDialog
 {
     Q_OBJECT
+
 public:
 
-    enum {INFORMATION = 1, EXCLAMATION = 2, STOP = 4, QUESTION = 8};
-    enum {DB_FIRST = 16, DB_SECOND = 32, DB_THIRD = 64, DB_FOURTH = 128};
-    
-    /// Constructor
-    /** The generic constructor for a KMsgBox Widget. All parameters have a default value of 0.
-     @Doc:
-     \begin{itemize}
-     \item { \tt The parent widget }
-     \item { \tt A caption (title) for the message box. }
-     \item { \tt a message string. The default alignment is centered. The string may contain
-     newline characters.}
-     \item { \tt Flags: This parameter is responsible for several behaviour options of the
-     message box. See below for valid constans for this parameter.}
-     \item { \tt Up to 4 button strings (b1text to b4text). You have to specify at least b1text.
-     Unspecified buttons will not appear in the message box, therefore you can control the
-     number of buttons in the box.}
-     \end{itemize}
-     */
-    KMsgBox(QWidget *parent = 0, const char *caption = 0, const char *message = 0, int flags = INFORMATION,
-            const char *b1text = 0, const char *b2text = 0, const char *b3text = 0, const char *b4text = 0);
+    /**
+    * Icon styles for message box customization. One of these should be
+    * passed in the type parameter of the message box constructor
+    * and static functions.
+    *
+    * @see KMsgBox::KMsgBox
+    */
+    enum IconStyle { INFORMATION = 1, EXCLAMATION = 2, 
+		STOP = 4, QUESTION = 8 };
 
-    // the default destructor - only for some compilers
+    /**
+    * Possible options for the default button. The first button
+    * is set to the default if no button is explicitly selected.
+    *
+    * @see KMsgBox::KMsgBox
+    */
+    enum DefaultButton { DB_FIRST = 16, DB_SECOND = 32, 
+    		DB_THIRD = 64, DB_FOURTH = 128};
+    
+    /** 
+     * The generic constructor for a KMsgBox widget. 
+     *
+     * @param parent 	Parent widget
+     * @param caption	Message box title
+     * @param message	Message string, center aligned by default. 
+     *			May contain newlines.
+     * @param type	Selects message box options. This value is 
+     *			a constant from @ref ::DefaultButton and/or
+     *			a constant from @ref ::IconStyle or-ed together.
+     * @param b1text..	Button captions. Up to four may be specified, only
+     *			specified buttons will be displayed.
+     *
+     * @see ::DefaultButton ::IconStyle
+     */
+    KMsgBox ( QWidget *parent = 0, const char *caption = 0, 
+		    const char *message = 0, int type = INFORMATION,
+		    const char *b1text = 0, const char *b2text = 0, 
+		    const char *b3text = 0, const char *b4text = 0);
+
+    /**
+    * Destructor.
+    */
     ~KMsgBox();
-    /// yesNo
-    /** A static member function. Can be used to create simple message boxes with a
-     single function call. This box has 2 buttons which default to "Yes" and "No". The icon
-     shows a question mark. The appearance can be manipulated with the {\bf type} parameter.
-     */
-    
-    static int yesNo(QWidget *parent = 0, const char *caption = 0, const char *message = 0, int type = 0,
-                     const char *yes = 0, const char *no = 0);
 
-    /// yesNoCancel
-    /** A static member function for creating a three-way message box. The box has three
-     buttons (defaulting to "Yes", "No" and "Cancel") and a question-mark icon. The {\bf type}
-     Parameter can be used to change the default behaviour.
+    /** 
+     * Displays a modal yes/no message box. 
+     * The icon is set to a question mark.
+     *
+     * @param parent 	the parent widget
+     * @param caption	the message box title
+     * @param message	the message in the dialog (eg the question the 
+     *			user is to be asked)
+     * @param type	Selects message box options. This value is 
+     *			a constant from @ref ::DefaultButton and/or
+     *			a constant from @ref ::IconStyle or-ed together.
+     * @param yes	the text for the "Yes" button. defaults to "Yes", or
+     *			its translation in the current user's locale if
+     *			available.
+     * @param no	the text for the "No" button. defaults to "No", or
+     *			its translation in the current user's locale if
+     *			available.
+     *
+     * @return 1 if yes is clicked, 0 otherwise.
      */
-    
-    static int yesNoCancel(QWidget *parent = 0, const char *caption = 0, const char *message = 0, int type = 0,
-                           const char *yes = 0, const char *no = 0, const char *cancel = 0);
+    static int yesNo( QWidget *parent = 0, const char *caption = 0, 
+		    const char *message = 0, int type = 0,
+		    const char *yes = 0, const char *no = 0);
 
-    /// message
-    /** A static member function. Creates a simple message box with only one button ("Ok")
-     and a information-icon. The icon can be changed by using another value for the {\bf type}
-     parameter.
+    /** 
+     * Displays a modal yes/no/cancel message box.
+     * The icon is set to a question mark.
+     *
+     * @param parent 	the parent widget
+     * @param caption	the message box title
+     * @param message	the message in the dialog (eg the question the user is 
+     *			to be asked)
+     * @param type	Selects message box options. This value is 
+     *			a constant from @ref ::DefaultButton and/or
+     *			a constant from @ref ::IconStyle or-ed together.
+     * @param yes	the text for the "Yes" button. defaults to "Yes", or
+     *			its translation in the current user's locale if
+     *			available.
+     * @param no	the text for the "No" button. defaults to "No", or
+     *			its translation in the current user's locale if
+     *			available.
+     * @param cancel	the text for the "Cancel" button. defaults to "Cancel", 
+     *			or its translation in the current user's locale
+     *			if available.
+     *
+     * @return 1, 2 or 3 if yes, no or cancel are clicked respectively.
      */
-    
-    static int message(QWidget *parent = 0, const char *caption = 0, const char *message = 0, int type = 0,
-                       const char *btext = 0);
+    static int yesNoCancel( QWidget *parent = 0, 
+    		const char *caption = 0, const char *message = 0, 
+		int type = 0, const char *yes = 0, const char *no = 0, 
+		const char *cancel = 0);
 
+    /** 
+     * Displays a modal message box with one button. An "Information"
+     * icon is displayed.
+     *
+     * @param parent 	the parent widget
+     * @param caption	the message box title
+     * @param message	the message in the dialog (eg the question the user is 
+     *			to be asked)
+     * @param type	Selects message box options. This value is 
+     *			a constant from @ref ::DefaultButton and/or
+     *			a constant from @ref ::IconStyle or-ed together.
+     * @param btext	the text for the "Ok" button. defaults to "Ok", or
+     *			its translation in the current user's locale if
+     *			available.
+     * @return		1 if the Ok button is clicked
+     */
+    static int message( QWidget *parent = 0, const char *caption = 0, 
+		    const char *message = 0, int type = 0,
+		    const char *btext = 0);
 
 private:
+
     enum {B_SPACING = 10, B_WIDTH = 80};
+
     QLabel      *msg, *picture;
     QPushButton *b1, *b2, *b3, *b4;
     QFrame      *f1;
-    int nr_buttons;
-    int         w, h, h1, text_offset;
-    void        calcOptimalSize();
-    void        resizeEvent(QResizeEvent *);
 
-    void        initMe(const char *caption, const char *message, const char *b1text,
-                       const char *b2text, const char *b3text, const char *b4text,
-                       const QPixmap & icon = QPixmap());
+    int		nr_buttons;
+    int         w, h, h1, text_offset;
+
+    void        calcOptimalSize();
 
 public slots:
+
     void        b1Pressed();
     void        b2Pressed();
     void        b3Pressed();

@@ -20,6 +20,9 @@
  * $Id$
  *
  * $Log$
+ * Revision 1.11  1998/03/15 13:05:14  mario
+ * Mario: fixed kb60
+ *
  * Revision 1.10  1998/02/24 15:54:35  kulow
  * replaced some hard coded paths with the kapp->kde_ methodes.
  * I'm not sure, if kde_datadir() is optimal for /share/apps ;)
@@ -132,13 +135,6 @@ KMsgBox::KMsgBox( QWidget *parent, const char *caption,
     else
         icon = 3;
 	
-	//
-	// The separate call to initMe is now obsolete.
-	// The following code replaces all of it.
-	// 
-    //initMe( caption, message, b1text, b2text, b3text, b4text, icons[icon] );
-	//debug("KMsgBox::initMe");
-	
 	setCaption( caption );
 	
 	int border = 8;
@@ -168,18 +164,6 @@ KMsgBox::KMsgBox( QWidget *parent, const char *caption,
 	
 	labels->addWidget( picture );
 	labels->addWidget( msg );
-    
-	//
-	// Following is rendered obsolete by automatic geometry management
-	// and new styling.
-	//
-	//calcOptimalSize();
-    //setMinimumSize(w + 20, h);
-    //f1 = new QFrame(this);
-    //f1->setLineWidth(1);
-    //f1->setFrameStyle(QFrame::NoFrame);
-	//f1->resize(0,0);
-	//
 
 	topLayout->addStretch( 10 );
 	
@@ -192,36 +176,25 @@ KMsgBox::KMsgBox( QWidget *parent, const char *caption,
 	bbox->addStretch( 10 );
 	
     if( b1text ) {
-        //b1 = new QPushButton( b1text, this, "_b1" );
-		//b1->resize(80, 25);
-		
 		b1 = bbox->addButton( b1text );
 		connect( b1, SIGNAL( clicked() ), this, SLOT( b1Pressed() ) );
         nr_buttons++;
     }
 
     if( b2text ) {
-        //b2 = new QPushButton( b2text, this, "_b2" );
-		//b2->resize(80, 25);
-		
+	
         b2 = bbox->addButton( b2text );
 		connect( b2, SIGNAL( clicked() ), this, SLOT( b2Pressed() ) );
         nr_buttons++;
     }
 
     if( b3text ) {
-        //b3 = new QPushButton( b3text, this, "_b3" );
-		//b3->resize(80, 25);
-        
 		b3 = bbox->addButton( b3text );
 		connect( b3, SIGNAL( clicked() ), this, SLOT( b3Pressed() ) );
         nr_buttons++;
     }
 
     if( b4text ) {
-        //b4 = new QPushButton( b4text, this, "_b4" );
-		//b4->resize(80, 25);
-        
 		b4 = bbox->addButton( b4text );
 		connect( b4, SIGNAL( clicked() ), this, SLOT( b4Pressed() ) );
         nr_buttons++;
@@ -232,160 +205,24 @@ KMsgBox::KMsgBox( QWidget *parent, const char *caption,
 	//
 	// Check, if we have a default button
 	// If not, set the left button to default
-    //
+	//
+
 	if( !(type & 0x000000f0) )
-        type |= DB_FIRST;
-    if( b1 )
-        b1->setDefault( type & DB_FIRST );
-    if( b2 )
-        b2->setDefault( type & DB_SECOND );
-    if( b3 )
-        b3->setDefault( type & DB_THIRD );
-    if( b4 )
-        b4->setDefault( type & DB_FOURTH );
-    
+		type |= DB_FIRST;
+	if( b1 )
+		b1->setDefault( type & DB_FIRST );
+	if( b2 )
+		b2->setDefault( type & DB_SECOND );
+	if( b3 )
+		b3->setDefault( type & DB_THIRD );
+	if( b4 )
+		b4->setDefault( type & DB_FOURTH );
+
 	bbox->layout();
 	topLayout->addWidget( bbox );
 	
     topLayout->freeze();
 }
-
-void KMsgBox::initMe( const char */*caption*/, 
-		      const char */*message*/,
-		      const char */*b1text*/, 
-		      const char */*b2text*/,
-		      const char */*b3text*/, 
-		      const char */*b4text*/,
-		      const QPixmap &/* icon*/ )
-{
-   /*
-   
-   debug("KMsgBox::initMe");
-	
-	setCaption( caption );
-	
-	QBoxLayout *topLayout = new QVBoxLayout( this, 10 );
-	
-	QBoxLayout *labels = new QHBoxLayout();
-	topLayout->addLayout( labels );
-	
-	// CREATE THE ICON AND MESSAGE LABELS
-	
-	picture = new QLabel( this, "_pict" );
-    picture->setAutoResize( TRUE );
-    picture->setPixmap( icon );
-	
-	msg = new QLabel( message, this, "_msg" );
-    //msg->setAlignment( AlignCenter );
-    msg->adjustSize();
-	
-	// Add the labels to their layout manager
-	
-	labels->addWidget( picture );
-	labels->addWidget( msg );
-    
-	// Following is rendered obsolete by automatic geometry management
-	// and new styling.
-	
-	//calcOptimalSize();
-    //setMinimumSize(w + 20, h);
-    f1 = new QFrame(this);
-    f1->setLineWidth(1);
-    f1->setFrameStyle(QFrame::NoFrame);
-	
-	debug("created labels");
-	
-	// CREATE BUTTONS
-	
-	nr_buttons = 0;
-    b1 = b2 = b3 = b4 = 0;
-	
-	QBoxLayout *buttons = new QHBoxLayout();
-	topLayout->addLayout( buttons );
-	
-	int widget_width = 0;
-	
-    if( b1text ) {
-        b1 = new QPushButton( b1text, this, "_b1" );
-        
-		//b1->resize(80, 25);
-        
-		connect( b1, SIGNAL( clicked() ), this, SLOT( b1Pressed() ) );
-		if( b1->sizeHint().width() > widget_width )
-			widget_width =  b1->sizeHint().width();
-        nr_buttons++;
-    }
-
-    if( b2text ) {
-        b2 = new QPushButton( b2text, this, "_b2" );
-        
-		//b2->resize(80, 25);
-        
-		connect( b2, SIGNAL( clicked() ), this, SLOT( b2Pressed() ) );
-		if( b2->sizeHint().width() > widget_width )
-			widget_width =  b2->sizeHint().width();
-        nr_buttons++;
-    }
-
-    if( b3text ) {
-        b3 = new QPushButton( b3text, this, "_b3" );
-        
-		//b3->resize(80, 25);
-        
-		connect( b3, SIGNAL( clicked() ), this, SLOT( b3Pressed() ) );
-		if( b3->sizeHint().width() > widget_width )
-			widget_width =  b3->sizeHint().width();
-        nr_buttons++;
-    }
-
-    if( b4text ) {
-        b4 = new QPushButton( b4text, this, "_b4" );
-        
-		//b4->resize(80, 25);
-        
-		connect( b4, SIGNAL( clicked() ), this, SLOT( b4Pressed() ) );
-		if( b4->sizeHint().width() > widget_width )
-			widget_width =  b4->sizeHint().width();
-        nr_buttons++;
-    }
-    
-	// Calculate appropriate buttons sizes
-	// Add the buttons to their layout manager
-	// The stretch pushes the buttons to the right
-	
-	debug("created buttons");
-	
-	
-	buttons->addStretch( 10 );
-	
-	if ( b1 ) {
-		b1->setSize( widget_width, b1->sizeHint().height() );
-		buttons->addWidget( b1, 0, AlignBottom );
-	}
-	
-	if ( b2 ) {
-		b2->setSize( widget_width, b2->sizeHint().height() );
-		buttons->addWidget( b2, 0, AlignBottom );
-	}
-	
-	if ( b3 ) {
-		b3->setSize( widget_width, b3->sizeHint().height() );
-		buttons->addWidget( b3, 0, AlignBottom );
-	}
-	
-	if ( b4 ) {
-		b4->setSize( widget_width, b4->sizeHint().height() );
-		buttons->addWidget( b4, 0, AlignBottom );
-	}
-		
-	
-	debug("activate topLayout");
-	
-	topLayout->activate();
-	
-	*/
-}
-
 
 KMsgBox::~KMsgBox() 
 {
@@ -401,41 +238,6 @@ KMsgBox::~KMsgBox()
 		delete b3;
 	if( b4 )
 		delete b4;
-}
-
-void KMsgBox::resizeEvent(QResizeEvent *)
-{
-	// Resize event is rendered obsolete by automatic geometry management
-	 
-    /*
-	
-	int interval = B_WIDTH + B_SPACING;
-    
-    calcOptimalSize();
-
-    f1->setGeometry(0, height() - 45, width(), 2);
-    
-    picture->move(15, 10 + (h1 - picture->height()) / 2);
-    msg->move(text_offset + ((width() - text_offset) - msg->width()) / 2, 10 + (h1 - msg->height()) / 2);
-    int left_offset = (width() - ((nr_buttons * 80) + (nr_buttons - 1) * 10)) / 2;
-    int hw = height() - 30;
-    if(b1) {
-        b1->move(left_offset, hw);
-        left_offset += interval;
-    }
-    if(b2) {
-        b2->move(left_offset, hw);
-        left_offset += interval;
-    }
-    if(b3) {
-        b3->move(left_offset, hw);
-        left_offset += interval;
-    }
-
-    if(b4)
-        b4->move(left_offset, hw);
-		
-	*/
 }
 
 void KMsgBox::calcOptimalSize()
@@ -463,7 +265,8 @@ void KMsgBox::b4Pressed() { done(4); }
  * some general message boxes
  */
 
-int KMsgBox::message(QWidget *parent, const char *caption, const char *message, int type, const char *btext)
+int KMsgBox::message(QWidget *parent, const char *caption, 
+	const char *message, int type, const char *btext)
 
 {
     if (!btext)
@@ -477,7 +280,9 @@ int KMsgBox::message(QWidget *parent, const char *caption, const char *message, 
 }
 
 
-int KMsgBox::yesNo(QWidget *parent, const char *caption, const char *message, int type, const char *yes, const char *no)
+int KMsgBox::yesNo(QWidget *parent, const char *caption, 
+	const char *message, int type, 
+	const char *yes, const char *no )
 {
     if (!no)
 	no = klocale->translate("No");
@@ -491,8 +296,9 @@ int KMsgBox::yesNo(QWidget *parent, const char *caption, const char *message, in
     return retcode;
 }
 
-int KMsgBox::yesNoCancel(QWidget *parent, const char *caption, const char *message, int type,
-                        const char *yes, const char *no, const char *cancel)
+int KMsgBox::yesNoCancel(QWidget *parent, const char *caption, 
+	const char *message, int type, const char *yes, 
+	const char *no, const char *cancel)
 {
     if (!no)
 	no = klocale->translate("No");
@@ -501,7 +307,8 @@ int KMsgBox::yesNoCancel(QWidget *parent, const char *caption, const char *messa
     if (!cancel)
 	cancel = klocale->translate("Cancel");
     
-    KMsgBox *mb = new KMsgBox(parent, caption, message, type, yes, no, cancel);
+    KMsgBox *mb = new KMsgBox(parent, caption, message, type, 
+    	yes, no, cancel);
 
     int retcode = mb->exec();
     delete mb;
