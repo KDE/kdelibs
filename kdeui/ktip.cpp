@@ -69,14 +69,14 @@ void KTipDatabase::loadTips(const QString &tipFile)
 
     if (fileName.isEmpty())
     {
-	kdDebug() << "can't find '" << tipFile.latin1() << "' in standard dirs" << endl;
+	kdDebug() << "can't find '" << tipFile << "' in standard dirs" << endl;
         return;
     }
 
     QFile file(fileName);
     if (!file.open(IO_ReadOnly))
     {
-	kdDebug() << "can't open '" << fileName.latin1() << "' for reading" << endl;
+	kdDebug() << "can't open '" << fileName << "' for reading" << endl;
 	return;
     }
 
@@ -88,6 +88,8 @@ void KTipDatabase::loadTips(const QString &tipFile)
     while ((pos = content.find("<html>", pos + 1, false)) != -1)
     {
 	QString tip = content.mid(pos + 6, content.find("</html>", pos, false) - pos - 6);
+	if (tip.startsWith("\n"))
+		tip = tip.mid(1);
 	tips.append(tip);
     }
 
@@ -116,7 +118,7 @@ void KTipDatabase::prevTip()
 
 QString KTipDatabase::tip() const
 {
-    return i18n(tips[current].latin1());
+    return tips[current];
 }
 
 KTipDialog *KTipDialog::_instance = 0;
@@ -246,13 +248,13 @@ void KTipDialog::showTip(QWidget *parent,const QString &tipFile, bool force)
 void KTipDialog::prevTip()
 {
     _database->prevTip();
-    _tipText->setText(QString("<qt bgcolor=\"%1\">%2</qt>").arg(colorGroup().color(QColorGroup::Base).name()).arg(_database->tip()));
+    _tipText->setText(QString::fromLatin1("<qt bgcolor=\"%1\">%2</qt>").arg(colorGroup().color(QColorGroup::Base).name()).arg(i18n(_database->tip().utf8())));
 }
 
 void KTipDialog::nextTip()
 {
     _database->nextTip();
-    _tipText->setText(QString("<qt bgcolor=\"%1\">%2</qt>").arg(colorGroup().color(QColorGroup::Base).name()).arg(_database->tip()));
+    _tipText->setText(QString::fromLatin1("<qt bgcolor=\"%1\">%2</qt>").arg(colorGroup().color(QColorGroup::Base).name()).arg(i18n(_database->tip().utf8())));
 }
 
 void KTipDialog::showOnStart(bool on)
