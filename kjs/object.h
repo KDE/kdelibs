@@ -286,9 +286,10 @@ namespace KJS {
    */
   class Imp {
     friend KJSO;
+    friend class Collector;
   public:
     Imp();
-    virtual ~Imp();
+  public:
     virtual KJSO toPrimitive(Type preferred = UndefinedType) const; // ECMA 9.1
     virtual Boolean toBoolean() const; // ECMA 9.2
     virtual Number toNumber() const; // ECMA 9.3
@@ -306,10 +307,6 @@ namespace KJS {
 
     bool implementsCall() const;
 
-    // reference counting mechanism
-    inline Imp* ref() { refcount++; return this; }
-    inline bool deref() { return (!--refcount); }
-    unsigned int refcount;
     /**
      * @internal Reserved for mark & sweep garbage collection
      */
@@ -333,10 +330,17 @@ namespace KJS {
      */
     static int count;
 #endif
+  protected:
+    virtual ~Imp();
   private:
     Imp(const Imp&);
     Imp& operator=(const Imp&);
     void putArrayElement(const UString &p, const KJSO& v);
+
+    // reference counting mechanism
+    inline Imp* ref() { refcount++; return this; }
+    inline bool deref() { return (!--refcount); }
+    unsigned int refcount;
 
     Property *prop;
     Imp *proto;

@@ -140,6 +140,7 @@ namespace KJS {
     UString(UChar *c, int length, bool copy);
     UString(const UString &);
     UString(const UString *);
+    UString(const QString &);
     UString(const DOM::DOMString &);
 
     ~UString();

@@ -56,8 +56,6 @@ namespace KJS {
     Boolean(bool b = false);
     virtual ~Boolean();
     bool value() const;
-  private:
-    Boolean(BooleanImp *d);
   };
 
   /**
@@ -75,8 +73,6 @@ namespace KJS {
     int intValue() const;
     bool isNaN() const;
     bool isInf() const;
-  private:
-    Number(NumberImp *d);
   };
 
   /**
@@ -88,8 +84,6 @@ namespace KJS {
     String(const UString &s = "");
     virtual ~String();
     UString value() const;
-  private:
-    String(StringImp *d);
   };
 
   /**

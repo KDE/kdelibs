@@ -55,13 +55,14 @@ namespace KJS {
     virtual CodeType codeType() const = 0;
     KJSO thisValue() const;
     void addParameter(const UString &n);
-    void processParameters(const List *);
     KJSO executeCall(Imp *thisV, const List *args);
     UString name() const;
   protected:
     UString ident;
     FunctionAttribute attr;
     Parameter *param;
+  private:
+    void processParameters(const List *);
   };
 
   /**
