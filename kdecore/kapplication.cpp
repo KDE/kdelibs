@@ -2383,9 +2383,9 @@ void KApplication::initUrlActionRestrictions()
   d->urlActionRestrictions.append( new KApplicationPrivate::URLActionRule
   ("redirect", QString::null, QString::null, QString::null, "file", QString::null, QString::null, true));
   d->urlActionRestrictions.append( new KApplicationPrivate::URLActionRule
-  ("redirect", "http*", QString::null, QString::null, "file", QString::null, QString::null, false));
+  ("redirect", "http", QString::null, QString::null, "file", QString::null, QString::null, false));
   d->urlActionRestrictions.append( new KApplicationPrivate::URLActionRule
-  ("redirect", "webdav*", QString::null, QString::null, "file", QString::null, QString::null, false));
+  ("redirect", "webdav", QString::null, QString::null, "file", QString::null, QString::null, false));
 
   d->urlActionRestrictions.append( new KApplicationPrivate::URLActionRule
   ("redirect", QString::null, QString::null, QString::null, "about", QString::null, QString::null, true));
