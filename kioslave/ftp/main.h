@@ -49,6 +49,7 @@ protected:
     QString m_strRelDest;
     mode_t m_access;
     mode_t m_type;
+    time_t m_mtime;
     off_t m_size;
   };
   
@@ -58,6 +59,7 @@ protected:
     QString m_strRelDest;
     mode_t m_access;
     mode_t m_type;
+    time_t m_mtime;
   };
 
   void doCopy( QStringList& _source, const char *_dest, bool _rename, bool _move = false );

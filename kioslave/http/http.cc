@@ -789,6 +789,7 @@ bool HTTPProtocol::readHeader()
       m_iSize = atol(trimLead(buffer + 15));
     }
 
+    
     // what type of data do we have?
     else if (strncasecmp(buffer, "Content-Type:", 13) == 0) {
       // Jacek: We can't send mimeType signal now,
@@ -1538,7 +1539,7 @@ void HTTPProtocol::slotCopy( QStringList& _source, const char *_dest )
 		}
 		
 		QString tmp2 = ud.url();
-		r = open_RenameDlg( *fit, tmp2, m, n );
+		r = open_RenameDlg( *fit, tmp2, m, true, n );
 	      }
 	      if ( r == R_CANCEL ) {
 		error( ERR_USER_CANCELED, "" );

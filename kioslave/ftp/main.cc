@@ -158,7 +158,8 @@ void FtpProtocol::slotMove( const char* _source, const char *_dest )
 }
 
 
-void FtpProtocol::doCopy( QStringList& _source, const char *_dest, bool _rename, bool _move )
+void FtpProtocol::doCopy( QStringList& _source, const char *_dest, 
+			  bool _rename, bool _move )
 {
   if ( _rename )
     assert( _source.count() == 1 );
@@ -428,7 +429,10 @@ void FtpProtocol::doCopy( QStringList& _source, const char *_dest, bool _rename,
 	    m = (RenameDlg_Mode)(M_MULTI | M_SKIP | M_OVERWRITE ); */
 	  RenameDlg_Mode m = (RenameDlg_Mode)( M_MULTI | M_SKIP | M_OVERWRITE );
 	  QString tmp2 = udest.url(), n;
-	  RenameDlg_Result r = open_RenameDlg( (*dit).m_strAbsSource, tmp2, m, n );
+	  bool sn = (*dit).m_mtime >= ftp.ftpStat( usrc )->date;
+
+	  RenameDlg_Result r = open_RenameDlg( (*dit).m_strAbsSource, tmp2, 
+					       m, sn, n );
 	  if ( r == R_CANCEL ) {
 	    ftp.ftpDisconnect();
 	    error( ERR_USER_CANCELED, "" );
@@ -636,7 +640,8 @@ void FtpProtocol::doCopy( QStringList& _source, const char *_dest, bool _rename,
 	    }
 
 	    QString tmp2 = ud.url();
-	    r = open_RenameDlg( (*fit).m_strAbsSource, tmp2, m, n );
+	    bool sn = (*dit).m_mtime >= ftp.ftpStat( usrc )->date;
+	    r = open_RenameDlg( (*fit).m_strAbsSource, tmp2, m, sn, n );
 	  }
 
 	  if ( r == R_CANCEL ) {
@@ -1246,6 +1251,7 @@ long FtpProtocol::listRecursive( const char *_path, QValueList<Copy>&
       c.m_strRelDest = "";
     c.m_access = S_IRWXU | S_IRWXO | S_IRWXG;
     c.m_type = S_IFDIR;
+    c.m_mtime = ::time(0L);
     _dirs.append( c );
 
     return listRecursive2( "/", c.m_strRelDest, _files, _dirs );
@@ -1285,6 +1291,7 @@ long FtpProtocol::listRecursive( const char *_path, QValueList<Copy>&
     c.m_strRelDest = fname;
     c.m_access = e->access;
     c.m_type = e->type;
+    c.m_mtime = e->date;
     c.m_size = e->size;
     _files.append( c );
     return e->size;
@@ -1307,6 +1314,7 @@ long FtpProtocol::listRecursive( const char *_path, QValueList<Copy>&
   c.m_strAbsSource = p;
   c.m_strRelDest = tmp2;
   c.m_access = e->access;
+  c.m_mtime = e->date;
   c.m_type = e->type;
   _dirs.append( c );
   kdebug( KDEBUG_INFO, 7102, "########### STARTING RECURSION with %s and %s",tmp1.ascii(), tmp2.ascii() );
@@ -1367,6 +1375,7 @@ long FtpProtocol::listRecursive2( const char *_abs_path, const char *_rel_path,
       c.m_strRelDest = tmp;
       c.m_access = e->access;
       c.m_type = e->type;
+      c.m_mtime = e->date;
       c.m_size = e->size;
       _files.append( c );
       size += e->size;
@@ -1376,6 +1385,7 @@ long FtpProtocol::listRecursive2( const char *_abs_path, const char *_rel_path,
       c.m_strRelDest = tmp;
       c.m_access = e->access;
       c.m_type = e->type;
+      c.m_mtime = e->date;
       _dirs.append( c );
 
       recursion.append( tmp );
