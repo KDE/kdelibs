@@ -1753,7 +1753,7 @@ bool KConfigBase::hasDefault(const QString &key) const
 KConfigGroup::KConfigGroup(KConfigBase *master, const QString &group)
 {
   mMaster = master;
-  backEnd = 0;
+  backEnd = mMaster->backEnd; // Needed for getConfigState()
   bLocaleInitialized = true;
   bReadOnly = mMaster->bReadOnly;
   bExpand = false;
@@ -1766,7 +1766,7 @@ KConfigGroup::KConfigGroup(KConfigBase *master, const QString &group)
 KConfigGroup::KConfigGroup(KConfigBase *master, const QCString &group)
 {
   mMaster = master;
-  backEnd = 0;
+  backEnd = mMaster->backEnd; // Needed for getConfigState()
   bLocaleInitialized = true;
   bReadOnly = mMaster->bReadOnly;
   bExpand = false;
@@ -1779,7 +1779,7 @@ KConfigGroup::KConfigGroup(KConfigBase *master, const QCString &group)
 KConfigGroup::KConfigGroup(KConfigBase *master, const char * group)
 {
   mMaster = master;
-  backEnd = 0;
+  backEnd = mMaster->backEnd; // Needed for getConfigState()
   bLocaleInitialized = true;
   bReadOnly = mMaster->bReadOnly;
   bExpand = false;
