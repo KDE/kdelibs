@@ -474,6 +474,9 @@ void KBookmarkManager::updateAccessMetadata( const QString & url, bool emitSigna
     s_bk_map->update(); // TODO - should make update only when dirty
     
     QValueList<KBookmark> list = s_bk_map->find(url);
+    if ( list.count() == 0 )
+        return;
+
     for ( QValueList<KBookmark>::iterator it = list.begin(); 
           it != list.end(); ++it )
         (*it).updateAccessMetadata();
