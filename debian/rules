@@ -88,8 +88,6 @@ binary-arch:  build
 	for i in `cat debian/undocumented.in | grep -v "#"`; do \
 	  echo "$$i.1" >> debian/undocumented ; \
 	done
-	sed -e "s#kde_confdir='etc/kde2'#kde_confdir='/etc/kde2'#" debian/tmp/etc/kde2/kde-config > debian/tmp/etc/kde2/kde-config.tmp
-	mv debian/tmp/etc/kde2/kde-config.tmp debian/tmp/etc/kde2/kde-config
 	dh_installdocs
 # libraries not starting with lib are modules
 	list=`cd debian/tmp && find ./ -type l -name "lib*.so" | sed -e 's#^./##'` ;\
