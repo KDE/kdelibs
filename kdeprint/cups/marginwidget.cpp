@@ -59,9 +59,12 @@ double MarginWidget::toValue(int pix, int mode)
 	switch (mode)
 	{
 		default:
-		case Pixels: return (double)pix;
-		case IN: return (double(pix) / m_dpi);
-		case CM: return (double(pix) * 2.54 / m_dpi);
+		case Pixels:
+			return (double)pix;
+		case IN:
+			return (double(pix) / m_dpi);
+		case CM:
+			return (double(pix) * 2.54 / m_dpi);
 	}
 }
 
