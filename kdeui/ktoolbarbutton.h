@@ -29,9 +29,11 @@
 #include <qintdict.h>
 #include <qstring.h>
 #include <qfont.h>
+#include <kglobal.h>
 
 class KToolBar;
 class KToolBarButtonPrivate;
+class KInstance;
 class QEvent;
 class QPopupMenu;
 class QPainter;
@@ -58,7 +60,8 @@ public:
    * @param txt    This button's text (in a tooltip or otherwise)
    */
   KToolBarButton(const QString& icon, int id, QWidget *parent,
-                 const char *name=0L, const QString &txt=QString::null);
+                 const char *name=0L, const QString &txt=QString::null,
+                 KInstance *_instance = KGlobal::instance());
 
   /**
    * Construct a button with an existing pixmap.  It is not

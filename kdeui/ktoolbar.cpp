@@ -418,9 +418,6 @@ void KToolBar::layoutHorizontal(int w)
 
     if ((*qli)->height() > d->m_maxItemHeight)
       d->m_maxItemHeight = (*qli)->height();
-
-    if ((*qli)->width() > d->m_maxItemWidth)
-      d->m_maxItemWidth = (*qli)->width();
   }
 
   /* During the second iteration we resize and position the left
@@ -468,20 +465,6 @@ void KToolBar::layoutHorizontal(int w)
       {
         itemWidth = MIN_AUTOSIZE;
         autoSizeItem = *qli;
-      }
-      else
-      {
-        /* if this isn't autosized, then make sure that it is the same
-         * size as the maximum width IF it is a button and IF it is
-         * IconOnly or IconTextBottom */
-        if ((itemWidth < d->m_maxItemWidth) &&
-            ((*qli)->itemType() == KToolBarItem::Button) &&
-            ((iconText() == IconOnly) || (iconText() == IconTextBottom)))
-        {
-          (*qli)->resize(d->m_maxItemWidth, d->m_maxItemHeight);
-          itemWidth  = d->m_maxItemWidth;
-          itemHeight = d->m_maxItemHeight;
-        }
       }
 
       /* make sure that it is the standard height */
@@ -1446,9 +1429,9 @@ void KToolBar::ButtonHighlighted(int id, bool on )
 
 // insert a button
 int KToolBar::insertButton( const QString& icon, int id, bool enabled,
-          const QString&_text, int index )
+          const QString&_text, int index, KInstance *_instance )
 {
-  KToolBarButton *button = new KToolBarButton( icon, id, this, 0L, _text);
+  KToolBarButton *button = new KToolBarButton( icon, id, this, 0L, _text, _instance);
   KToolBarItem *item = new KToolBarItem(button, KToolBarItem::Button, id, true);
   if ( index == -1 )
     d->m_items->append( item );
@@ -1528,9 +1511,9 @@ int KToolBar::insertButton( const QPixmap& pixmap, int id, QPopupMenu *_popup,
 /// Inserts a button with connection.
 int KToolBar::insertButton( const QString& icon, int id, const char *signal,
           const QObject *receiver, const char *slot, bool enabled,
-          const QString&_text, int index )
+          const QString&_text, int index, KInstance *_instance )
 {
-  KToolBarButton *button = new KToolBarButton( icon, id, this, 0L, _text);
+  KToolBarButton *button = new KToolBarButton( icon, id, this, 0L, _text, _instance);
   KToolBarItem *item = new KToolBarItem(button, KToolBarItem::Button, id, true);
 
   /* now do checks to make sure that this is the right size */

@@ -26,6 +26,7 @@
 
 #include <kiconloader.h>
 #include "kcombobox.h"
+#include <kglobal.h>
 
 class QSize;
 class QPixmap;
@@ -39,6 +40,7 @@ class KToolBarItemList;
 class KToolBoxManager;
 class KAnimWidget;
 class KPopupMenu;
+class KInstance;
 
 class KToolBarPrivate;
 
@@ -142,7 +144,8 @@ public:
    * @return The item index.
    */
   int insertButton(const QString& icon, int id, bool enabled = true,
-                   const QString& text = QString::null, int index=-1 );
+                   const QString& text = QString::null, int index=-1,
+                   KInstance *_instance = KGlobal::instance());
 
    /**
    * This is the same as above, but with specified signals and
@@ -163,7 +166,7 @@ public:
   int insertButton(const QString& icon, int id, const char *signal,
                    const QObject *receiver, const char *slot,
                    bool enabled = true, const QString& text = QString::null,
-                   int index=-1 );
+                   int index=-1, KInstance *_instance = KGlobal::instance() );
 
   /**
    * Insert a button (a @ref KToolbarButton) with the specified

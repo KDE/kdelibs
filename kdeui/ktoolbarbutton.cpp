@@ -43,6 +43,9 @@
 #include <kiconeffect.h>
 #include <kiconloader.h>
 
+// needed to get our instance
+#include <ktmainwindow.h>
+
 template class QIntDict<KToolBarButton>;
 
 // Delay in ms before delayed popup pops up
@@ -70,6 +73,8 @@ public:
 
     m_disabledIconName = QString::null;
     m_defaultIconName  = QString::null;
+
+    m_instance = KGlobal::instance();
   }
   ~KToolBarButtonPrivate()
   {
@@ -106,6 +111,8 @@ public:
 
   QTimer     *m_delayTimer;
   QPopupMenu *m_popup;
+
+  KInstance  *m_instance;
 };
 
 // This will construct a separator
@@ -121,7 +128,7 @@ KToolBarButton::KToolBarButton( QWidget *_parent, const char *_name )
 
 KToolBarButton::KToolBarButton( const QString& _icon, int _id,
                                 QWidget *_parent, const char *_name,
-                                const QString &_txt )
+                                const QString &_txt, KInstance *_instance )
     : QButton( _parent, _name )
 {
   d = new KToolBarButtonPrivate;
@@ -129,6 +136,7 @@ KToolBarButton::KToolBarButton( const QString& _icon, int _id,
   d->m_id     = _id;
   d->m_parent = (KToolBar*)_parent;
   d->setText(_txt);
+  d->m_instance = _instance;
 
   setFocusPolicy( NoFocus );
 
@@ -280,14 +288,14 @@ void KToolBarButton::setIcon( const QString &icon, bool )
   // QObject::name() return "const char *" instead of QString.
   if (!strcmp(d->m_parent->name(), "mainToolBar"))
   {
-    setPixmap( MainBarIcon(icon, d->m_iconSize, KIcon::ActiveState), false );
-    setDisabledPixmap( MainBarIcon(icon, d->m_iconSize, KIcon::DisabledState) );
-    setDefaultPixmap( MainBarIcon(icon, d->m_iconSize, KIcon::DefaultState) );
+    setPixmap( MainBarIcon(icon, d->m_iconSize, KIcon::ActiveState, d->m_instance), false );
+    setDisabledPixmap( MainBarIcon(icon, d->m_iconSize, KIcon::DisabledState, d->m_instance) );
+    setDefaultPixmap( MainBarIcon(icon, d->m_iconSize, KIcon::DefaultState, d->m_instance) );
   } else
   {
-    setPixmap( BarIcon(icon, d->m_iconSize, KIcon::ActiveState), false );
-    setDisabledPixmap( BarIcon(icon, d->m_iconSize, KIcon::DisabledState) );
-    setDefaultPixmap( BarIcon(icon, d->m_iconSize, KIcon::DefaultState) );
+    setPixmap( BarIcon(icon, d->m_iconSize, KIcon::ActiveState, d->m_instance), false );
+    setDisabledPixmap( BarIcon(icon, d->m_iconSize, KIcon::DisabledState, d->m_instance) );
+    setDefaultPixmap( BarIcon(icon, d->m_iconSize, KIcon::DefaultState, d->m_instance) );
   }
 }
 
@@ -297,9 +305,9 @@ void KToolBarButton::setDisabledIcon( const QString &icon )
   d->m_disabledIconName = icon;
   d->m_iconSize         = d->m_parent->iconSize();
   if (!strcmp(d->m_parent->name(), "mainToolBar"))
-    setDisabledPixmap( MainBarIcon(icon, d->m_iconSize, KIcon::DisabledState) );
+    setDisabledPixmap( MainBarIcon(icon, d->m_iconSize, KIcon::DisabledState, d->m_instance) );
   else
-    setDisabledPixmap( BarIcon(icon, d->m_iconSize, KIcon::DisabledState) );
+    setDisabledPixmap( BarIcon(icon, d->m_iconSize, KIcon::DisabledState, d->m_instance) );
 }
 
 // obsolete?
@@ -308,9 +316,9 @@ void KToolBarButton::setDefaultIcon( const QString &icon )
   d->m_defaultIconName = icon;
   d->m_iconSize        = d->m_parent->iconSize();
   if (!strcmp(d->m_parent->name(), "mainToolBar"))
-    setDefaultPixmap( MainBarIcon(icon, d->m_iconSize, KIcon::DefaultState) );
+    setDefaultPixmap( MainBarIcon(icon, d->m_iconSize, KIcon::DefaultState, d->m_instance) );
   else
-    setDefaultPixmap( BarIcon(icon, d->m_iconSize, KIcon::DefaultState) );
+    setDefaultPixmap( BarIcon(icon, d->m_iconSize, KIcon::DefaultState, d->m_instance) );
 }
 
 void KToolBarButton::setPixmap( const QPixmap &pixmap )

@@ -415,9 +415,15 @@ int KAction::plug( QWidget *w, int index )
     }
     else
     {
+      KInstance *instance;
+      if ( parent() && parent()->inherits( "KActionCollection" ) )
+        instance = static_cast<KActionCollection*>(parent())->instance();
+      else
+        instance = KGlobal::instance();
+
       bar->insertButton( iconName(), id_, SIGNAL( clicked() ), this,
                          SLOT( slotActivated() ), isEnabled(), plainText(),
-                         index );
+                         index, instance );
     }
 
     QWhatsThis::add( bar->getButton(id_), whatsThis() );
