@@ -34,6 +34,7 @@
 #include <qfile.h>
 #include <qstringlist.h>
 #include <qtextstream.h>
+#include <qscrollbar.h> 
 #include <qfont.h>
 #include <qlayout.h>
 #include <qcombobox.h>
@@ -43,6 +44,7 @@
 #include <qpushbutton.h>
 
 #include <kglobal.h>
+#include <kdialog.h>
 #include <klocale.h>
 #include <kcharsets.h>
 #include <kbuttonbox.h>
@@ -57,129 +59,177 @@
 
 #define MINSIZE(x) x->setMinimumSize(x->sizeHint());
 
+static int minimumListWidth( const QListBox *list ) 
+{
+  int w=0;
+  for( int i=0; i<list->count(); i++ )
+  {
+    int itemWidth = list->item(i)->width(list);
+    w = QMAX(w,itemWidth);
+  }
+  if( w == 0 ) { w = 40; }
+  w += list->frameWidth() * 2;
+  w += list->verticalScrollBar()->sizeHint().width();
+  return( w );
+}
+
+static int minimumListHeight( const QListBox *list, int numVisibleEntry )
+{
+  int w = list->count() > 0 ? list->item(0)->height(list) : 
+    list->fontMetrics().lineSpacing();
+  
+  if( w < 0 ) { w = 10; }
+  if( numVisibleEntry <= 0 ) { numVisibleEntry = 4; }
+  return( w * numVisibleEntry + 2 * list->frameWidth() );
+}
+
+
 
 KFontChooser::KFontChooser(QWidget *parent, const char *name,
-			   bool onlyFixed,
-			   const QStringList &fontList)
+			   bool onlyFixed, const QStringList &fontList,
+			   bool makeFrame )
   : QWidget(parent, name), usingFixed(onlyFixed)
 {
-  QVBoxLayout *layout = new QVBoxLayout(this, 10);
+  QVBoxLayout *topLayout = new QVBoxLayout( this, 0, KDialog::spacingHint() );
+    
+  QWidget *page;
+  QGridLayout *gridLayout;
+  if( makeFrame == true )
+  {
+    page = new QGroupBox( i18n("Requested Font"), this );
+    topLayout->addWidget(page);
+    gridLayout = new QGridLayout( page, 5, 3, KDialog::spacingHint() );
+    gridLayout->addRowSpacing( 0, fontMetrics().lineSpacing() );
 
-  QGroupBox *box1 = new QGroupBox(i18n("Requested Font"), this);
-  layout->addWidget(box1);
-
-  xlfdBox = new QGroupBox(i18n("Actual Font"), this);
-  layout->addWidget(xlfdBox);
-
-  QGridLayout *box1Layout = new QGridLayout(box1, 5, 3, 10);
-
-  // some spacing at the top
-  box1Layout->addRowSpacing(0, 10);
-
+  }
+  else
+  {
+    page = new QWidget( this );
+    topLayout->addWidget(page);
+    gridLayout = new QGridLayout( page, 5, 3, 0, KDialog::spacingHint() );
+  }
+  
+  //
   // first, create the labels across the top
-  QLabel *familyLabel = new QLabel(box1, "familyLabel");
-  familyLabel->setText( i18n("Font:") );
-  box1Layout->addWidget(familyLabel, 1, 0, AlignLeft);
+  //
+  QLabel *familyLabel = new QLabel( i18n("Font"), page, "familyLabel" );
+  gridLayout->addWidget(familyLabel, 1, 0, AlignLeft );
 
-  QLabel *styleLabel = new QLabel(box1, "styleLabel");
-  styleLabel->setText(i18n("Font style:"));
-  box1Layout->addWidget(styleLabel, 1, 1, AlignLeft);
+  QLabel *styleLabel = new QLabel( i18n("Font style"), page, "styleLabel");
+  gridLayout->addWidget(styleLabel, 1, 1, AlignLeft);
 
-  QLabel *sizeLabel = new QLabel(box1, "sizeLabel");
-  sizeLabel->setText("Size:");
-  box1Layout->addWidget(sizeLabel, 1, 2, AlignLeft);
+  QLabel *sizeLabel = new QLabel( i18n("Size"), page, "sizeLabel");
+  gridLayout->addWidget(sizeLabel, 1, 2, AlignLeft);
 
+  //
   // now create the actual boxes that hold the info
-  familyListBox = new QListBox(box1, "familyListBox");
-  box1Layout->addWidget(familyListBox, 2, 0);
+  //
+  familyListBox = new QListBox( page, "familyListBox");
+  gridLayout->addWidget( familyListBox, 2, 0 );
   connect(familyListBox, SIGNAL(highlighted(const QString &)),
 	  SLOT(family_chosen_slot(const QString &)));
-  if (fontList.count() != 0) {
+  if(fontList.count() != 0) 
+  {
     familyListBox->insertStringList(fontList);
-  } else
+  } 
+  else
+  {
     fillFamilyListBox(onlyFixed);
+  }
 
-  familyListBox->setMinimumWidth(familyListBox->sizeHint().width());
-  familyListBox->setMinimumHeight(familyListBox->sizeHint().height() / 2);
+  familyListBox->setMinimumWidth( minimumListWidth( familyListBox ) );
+  familyListBox->setMinimumHeight( minimumListHeight( familyListBox, 8 ) );
 
-  styleListBox = new QListBox(box1, "styleListBox");
-  box1Layout->addWidget(styleListBox, 2, 1);
+  styleListBox = new QListBox( page, "styleListBox");
+  gridLayout->addWidget(styleListBox, 2, 1);
   styleListBox->insertItem(i18n("Regular"));
   styleListBox->insertItem(i18n("Italic"));
   styleListBox->insertItem(i18n("Bold"));
   styleListBox->insertItem(i18n("Bold Italic"));
-
+  styleListBox->setMinimumWidth( minimumListWidth( styleListBox ) );
+  
   connect(styleListBox, SIGNAL(highlighted(const QString &)),
 	  SLOT(style_chosen_slot(const QString &)));
 
-  sizeListBox = new QListBox(box1, "sizeListBox");
-  box1Layout->addWidget(sizeListBox, 2, 2);
+  sizeListBox = new QListBox( page, "sizeListBox");
+  gridLayout->addWidget(sizeListBox, 2, 2);
 
-  const char *c[] = {"4",  "5",  "6",  "7",
-	       "8",  "9",  "10", "11",
-	       "12", "13", "14", "15",
-	       "16", "17", "18", "19",
-	       "20", "22", "24", "26",
-	       "28", "32", "48", "64",
-	       0};
+  const char *c[] = 
+  {
+    "4",  "5",  "6",  "7",
+    "8",  "9",  "10", "11",
+    "12", "13", "14", "15",
+    "16", "17", "18", "19",
+    "20", "22", "24", "26",
+    "28", "32", "48", "64",
+    0
+  };
   for(int i = 0; c[i] != 0; i++)
+  {
     sizeListBox->insertItem(c[i]);
-  sizeListBox->setMinimumWidth(sizeListBox->sizeHint().width() / 2);
+  }
+  sizeListBox->setMinimumWidth( minimumListWidth(sizeListBox) +
+    sizeListBox->fontMetrics().maxWidth() );
 
   connect( sizeListBox, SIGNAL(highlighted(const QString&)),
-	  SLOT(size_chosen_slot(const QString&)) );
+	   SLOT(size_chosen_slot(const QString&)) );
 
-  QLabel *charsetLabel = new QLabel(box1, "charsetLabel");
+  QLabel *charsetLabel = new QLabel( page, "charsetLabel");
   charsetLabel->setText(i18n("Character set:"));
-  box1Layout->addWidget(charsetLabel, 3, 0, AlignRight);
+  gridLayout->addWidget(charsetLabel, 3, 0, AlignRight);
 
-  charsetsCombo = new QComboBox(true, box1, "charsetsCombo");
-  box1Layout->addMultiCellWidget(charsetsCombo, 3, 3, 1, 2);
+  charsetsCombo = new QComboBox(true, page, "charsetsCombo");
+  gridLayout->addMultiCellWidget(charsetsCombo, 3, 3, 1, 2);
 
   charsetsCombo->setInsertionPolicy(QComboBox::NoInsertion);
   connect(charsetsCombo, SIGNAL(activated(const QString&)),
 	  SLOT(charset_chosen_slot(const QString&)));
 
-  sampleEdit = new KLineEdit(box1, "sampleEdit");
-  sampleEdit->setAlignment(Qt::AlignCenter);
-  box1Layout->addMultiCellWidget(sampleEdit, 4, 4, 0, 2);
-  QFont tmpFont(selFont);
-  tmpFont.setPointSize(24);
+  sampleEdit = new KLineEdit( page, "sampleEdit");
+  QFont tmpFont( KGlobal::generalFont().family(), 64, QFont::Black );
   sampleEdit->setFont(tmpFont);
   sampleEdit->setText("The Quick Brown Fox Jumps Over The Lazy Dog");
-
+  sampleEdit->setMinimumHeight( sampleEdit->fontMetrics().lineSpacing() );
+  
+  sampleEdit->setAlignment(Qt::AlignCenter);
+  gridLayout->addMultiCellWidget(sampleEdit, 4, 4, 0, 2);
   connect(this, SIGNAL(fontSelected(const QFont &)),
 	  SLOT(displaySample(const QFont &)));
-  sampleEdit->setFont(selFont);
 
-  box1Layout->addRowSpacing(5, 15);
+  gridLayout->activate();
 
-  box1Layout->activate();
-
-  QVBoxLayout *box2Layout = new QVBoxLayout(xlfdBox, 10);
-
-  box2Layout->addSpacing(15);
-
-  xlfdLabel = new QLabel(xlfdBox, "xlfdLabel");
-  xlfdLabel->setFont(KGlobal::fixedFont());
-  xlfdLabel->setAlignment(Qt::AlignCenter);
-  box2Layout->addWidget(xlfdLabel);
-
-  box2Layout->addSpacing(15);
-
-  box2Layout->activate();
+  QVBoxLayout *vbox;
+  if( makeFrame == true )
+  {
+    page = new QGroupBox( i18n("Actual Font"), this );
+    topLayout->addWidget(page);
+    vbox = new QVBoxLayout( page, KDialog::spacingHint() );
+    vbox->addSpacing( fontMetrics().lineSpacing() );
+  }
+  else
+  {
+    page = new QWidget( this );
+    topLayout->addWidget(page);
+    vbox = new QVBoxLayout( page, 0, KDialog::spacingHint() );
+    QLabel *label = new QLabel( i18n("Actual Font"), page );
+    vbox->addWidget( label );
+  }
+ 
+  xlfdEdit = new KLineEdit( page, "xlfdEdit" );
+  vbox->addWidget( xlfdEdit );
 
   // lets initialize the display if possible
-  setFont(KGlobal::generalFont());
-
+  setFont( KGlobal::generalFont(), usingFixed );
   // Create displayable charsets list
   fillCharsetsCombo();
 
-  layout->activate();
+  vbox->activate();
 
   KConfig *config = KGlobal::config();
   config->setGroup("General");
   showXLFDArea(config->readBoolEntry("fontSelectorShowXLFD", false));
+
+  topLayout->activate();
 }
 
 void KFontChooser::charset_chosen_slot(const QString& chset)
@@ -194,10 +244,11 @@ void KFontChooser::charset_chosen_slot(const QString& chset)
   emit fontSelected(selFont);
 }
 
-void KFontChooser::setFont( const QFont& aFont, bool onlyFixed)
+void KFontChooser::setFont( const QFont& aFont, bool onlyFixed )
 {
   selFont = aFont;
-  if (onlyFixed != usingFixed) {
+  if( onlyFixed != usingFixed) 
+  {
     usingFixed = onlyFixed;
     fillFamilyListBox(usingFixed);
   }
@@ -262,8 +313,9 @@ void KFontChooser::style_chosen_slot(const QString& style)
 void KFontChooser::displaySample(const QFont& font)
 {
   sampleEdit->setFont(font);
-
-  xlfdLabel->setText(font.rawName());
+  sampleEdit->setCursorPosition(0); 
+  xlfdEdit->setText(font.rawName());
+  xlfdEdit->setCursorPosition(0); 
 }
 
 void KFontChooser::setupDisplay()
@@ -378,82 +430,66 @@ void KFontChooser::addFont( QStringList &list, const char *xfont )
 void KFontChooser::fillFamilyListBox(bool onlyFixedFonts)
 {
   QStringList fontList;
-
   getFontList(fontList, onlyFixedFonts);
-
-  familyListBox->clear(); familyListBox->insertStringList(fontList);
+  familyListBox->clear(); 
+  familyListBox->insertStringList(fontList);
 }
 
 void KFontChooser::showXLFDArea(bool show)
 {
-  if (show)
-    xlfdBox->show();
+  if( show == true )
+  {
+    xlfdEdit->parentWidget()->show();
+  }
   else
-    xlfdBox->hide();
+  {
+    xlfdEdit->parentWidget()->hide();
+  }
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 
 KFontDialog::KFontDialog( QWidget *parent, const char* name,
 			  bool onlyFixed, bool modal,
-			  const QStringList &fontList)
-  : QDialog( parent, name, modal )
+			  const QStringList &fontList, bool makeFrame )
+  : KDialogBase( parent, name, modal, i18n("Select Font"), Ok|Cancel, Ok )
 {
-  setCaption( i18n("Select Font") );
-
-  QVBoxLayout *layout = new QVBoxLayout(this, 10);
-
-  chooser = new KFontChooser(this, "fontChooser", onlyFixed, fontList);
-  layout->addWidget(chooser);
-
-  KButtonBox *bbox = new KButtonBox(this);
-  layout->addWidget(bbox);
-
-  bbox->addStretch(1);
-  QPushButton *button = bbox->addButton(i18n("OK"));
-  button->setDefault(true);
-  connect( button, SIGNAL( clicked() ),
-	  SLOT( accept() ) );
-  button = bbox->addButton(i18n("Cancel"));
-  connect( button, SIGNAL( clicked() ),
-	  SLOT( reject() ) );
-  bbox->layout();
-  MINSIZE(bbox);
-
-  layout->activate();
-
-  // propogate signal from chooser
-  connect(chooser, SIGNAL(fontSelected(const QFont &)),
-	  SIGNAL(fontSelected(const QFont &)));
+  chooser = new KFontChooser(this,"fontChooser",onlyFixed,fontList,makeFrame);
+  setMainWidget(chooser);
 }
 
 
-int KFontDialog::getFont( QFont &theFont, bool onlyFixed )
+int KFontDialog::getFont( QFont &theFont, bool onlyFixed, QWidget *parent, 
+			  bool makeFrame )
 {
-  KFontDialog dlg( 0L, "Font Selector", onlyFixed, true );
-  dlg.setFont( theFont );
+  KFontDialog dlg( parent, "Font Selector", onlyFixed, true, QStringList(),
+		   makeFrame );
+  dlg.setFont( theFont, onlyFixed );
+
   int result = dlg.exec();
-
-  if ( result == Accepted )
+  if( result == Accepted )
+  {
     theFont = dlg.chooser->font();
-
-  return result;
+  }
+  return( result );
 }
 
 
 int KFontDialog::getFontAndText( QFont &theFont, QString &theString,
-				 bool onlyFixed )
+				 bool onlyFixed, QWidget *parent, 
+				 bool makeFrame )
 {
-  KFontDialog dlg( 0L, "Font and Text Selector", true, onlyFixed );
-  dlg.setFont( theFont );
-  int result = dlg.exec();
+  KFontDialog dlg( parent, "Font and Text Selector", onlyFixed, true,
+		   QStringList(), makeFrame );
+  dlg.setFont( theFont, onlyFixed );
 
-  if( result == Accepted ) {
-    theFont = dlg.chooser->font();
+  int result = dlg.exec();
+  if( result == Accepted ) 
+  {
+    theFont   = dlg.chooser->font();
     theString = dlg.chooser->sampleText();
   }
-
-  return result;
+  return( result );
 }
 
 
@@ -461,6 +497,10 @@ int KFontDialog::getFontAndText( QFont &theFont, QString &theString,
 ****************************************************************************
 *
 * $Log$
+*
+* Revision 1.42  1999/07/27 04:12:08  pbrown
+* layout improvements.
+*
 * Revision 1.41  1999/06/14 10:56:28  kulow
 * some more warnings fixed
 *

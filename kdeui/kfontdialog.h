@@ -31,6 +31,8 @@
 #include <qdialog.h>
 #include <qlineedit.h>
 
+#include <kdialogbase.h>
+
 class QLabel;
 class QListBox;
 class QComboBox;
@@ -64,7 +66,8 @@ public:
    */
   KFontChooser(QWidget *parent = 0L, const char *name = 0L, 
 	       bool onlyFixed = false,
-	       const QStringList &fontList = QStringList());
+	       const QStringList &fontList = QStringList(),
+	       bool makeFrame = true );
 
   /**
    * Sets the currently selected font in the chooser.
@@ -121,10 +124,11 @@ protected:
   // inserted into the fontdialog font-family combo-box
   QStringList  fontList; 
   
-  QLabel       *xlfdLabel;
+  //QLabel       *xlfdLabel;
   QGroupBox    *xlfdBox;
 
   QLineEdit    *sampleEdit;
+  QLineEdit    *xlfdEdit;
 
   QListBox     *familyListBox;
   QListBox     *styleListBox;
@@ -143,7 +147,7 @@ protected:
  * @author Preston Brown <pbrown@kde.org>, Bernd Wuebben <wuebben@kde.org>
  * @version $Id$
  */
-class KFontDialog : public QDialog {
+class KFontDialog : public KDialogBase  {
     Q_OBJECT
 
 public:
@@ -159,10 +163,13 @@ public:
    *        no list is formatted, the internal KDE font list is used.
    *        If that has not been created, X is queried, and all fonts
    *        available on the system are displayed.
+   * @param makeFrame Draws a frame with titles around the contents.
+   *
    */
   KFontDialog( QWidget *parent = 0L, const char *name = 0,
 	       bool modal = false, bool onlyFixed = false,
-	       const QStringList &fontlist = QStringList());
+	       const QStringList &fontlist = QStringList(),
+	       bool makeFrame = true );
 
   /**
    * Sets the currently selected font in the dialog.
@@ -186,11 +193,15 @@ public:
    * @param theFont a reference to the font to write the chosen font
    *        into.
    * @param onlyFixed if true, only select from fixed-width fonts.
+   * @param parent Parent widget of the dialog. Specifying a widget different
+   *        from 0 (Null) improves centering (looks better).
+   * @param makeFrame Draws a frame with titles around the contents.
    * @return The result of the dialog.
    * 
    * @see QDialog::result
    */
-  static int getFont( QFont &theFont, bool onlyFixed = false );
+  static int getFont( QFont &theFont, bool onlyFixed = false, 
+		      QWidget *parent = 0L, bool makeFrame = true );
   
   /**
    * When you are not only interested in the font selected, but also
@@ -200,10 +211,14 @@ public:
    *        into.
    * @param theString a reference to the example text that was typed.
    * @param onlyFixed if true, only select from fixed-width fonts.
+   * @param parent Parent widget of the dialog. Specifying a widget different
+   *        from 0 (Null) improves centering (looks better).
+   * @param makeFrame Draws a frame with titles around the contents.
    * @return The result of the dialog.
    */
   static int getFontAndText( QFont &theFont, QString &theString,
-			     bool onlyFixed = false);
+			     bool onlyFixed = false, QWidget *parent = 0L, 
+			     bool makeFrame = true );
 
 signals:
   /**
