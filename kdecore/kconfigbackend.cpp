@@ -194,7 +194,7 @@ void KConfigINIBackEnd::parseSingleConfigFile(QFile &rFile,
 
       if (pWriteBackMap) {
 	// add the special group key indicator
-	KEntryKey groupKey = { aCurrentGroup, "" };
+	KEntryKey groupKey(aCurrentGroup, "");
 	pWriteBackMap->insert(groupKey, KEntry());
       }
       continue;
@@ -213,7 +213,7 @@ void KConfigINIBackEnd::parseSingleConfigFile(QFile &rFile,
     QString key = aCurrentLine.left(nEqualsPos).stripWhiteSpace();
     QString val = printableToString(aCurrentLine.right(aCurrentLine.length() - nEqualsPos - 1)).stripWhiteSpace();
 
-    KEntryKey aEntryKey = { aCurrentGroup, key };
+    KEntryKey aEntryKey(aCurrentGroup, key);
     KEntry aEntry;
     aEntry.aValue = val;
     aEntry.bGlobal = bGlobal;
@@ -289,7 +289,7 @@ bool KConfigINIBackEnd::writeConfigFile(QString filename, bool bGlobal,
   if (pConfig->isReadOnly())
     return true; // pretend we wrote it
 
-  if (bMerge) 
+  if (bMerge)
   {
     // Read entries from disk
     QFile rConfigFile( filename );
@@ -304,16 +304,16 @@ bool KConfigINIBackEnd::writeConfigFile(QString filename, bool bGlobal,
 
     // augment this structure with the dirty entries from the config object
     for (KEntryMapIterator aInnerIt = aMap.begin();
-          aInnerIt != aMap.end(); ++aInnerIt) 
+          aInnerIt != aMap.end(); ++aInnerIt)
     {
       KEntry currentEntry = *aInnerIt;
 
-      if (!currentEntry.bDirty) 
+      if (!currentEntry.bDirty)
          continue;
 
       // only write back entries that have the same
       // "globality" as the file
-      if (currentEntry.bGlobal == bGlobal) 
+      if (currentEntry.bGlobal == bGlobal)
       {
         KEntryKey entryKey = aInnerIt.key();
 	
@@ -323,16 +323,16 @@ bool KConfigINIBackEnd::writeConfigFile(QString filename, bool bGlobal,
         {
           aTempMap.replace(entryKey, currentEntry);
         }
-	else 
+	else
         {
 	  // add special group key and then the entry
-	  KEntryKey groupKey = { entryKey.group, "" };
+	  KEntryKey groupKey(entryKey.group, "");
 	  if (!aTempMap.contains(groupKey))
 	    aTempMap.insert(groupKey, KEntry());
 
 	  aTempMap.insert(entryKey, currentEntry);
         }
-      } 
+      }
       else
       {
         // wrong "globality" - might have to be saved later
@@ -340,8 +340,8 @@ bool KConfigINIBackEnd::writeConfigFile(QString filename, bool bGlobal,
       }
     } // loop
   }
-  else 
-  { 
+  else
+  {
     // don't merge, just get the regular entry map and use that.
     aTempMap = pConfig->internalEntryMap();
     bEntriesLeft = true; // maybe not true, but we aren't sure
@@ -381,14 +381,14 @@ bool KConfigINIBackEnd::writeConfigFile(QString filename, bool bGlobal,
     // check if it's not the default group (which has already been written)
     if (aWriteIt.key().group == "<default>")
       continue;
-    
+
     if ( currentGroup != aWriteIt.key().group ) {
 	currentGroup = aWriteIt.key().group;
 	(*pStream) << '[' << aWriteIt.key().group << ']' << '\n';
     }
 
     if (aWriteIt.key().key.isEmpty()) {
-      // we found a special group key, ignore it 
+      // we found a special group key, ignore it
     } else {
       // it is data for a group
       if ( (*aWriteIt).bNLS &&

@@ -12,7 +12,7 @@
  */
 struct KEntry
 {
-  KEntry() 
+  KEntry()
     : aValue(QString::null), bDirty(false), bNLS(false), bGlobal(false) {}
   QString aValue;
   bool    bDirty;  // must the entry be written back to disk?
@@ -27,6 +27,9 @@ struct KEntry
  */
 struct KEntryKey
 {
+  KEntryKey(const QString& _group = QString::null,
+	    const QString _key = QString::null)
+      : group(_group), key(_key) {}
   QString group; // the "group" to which this EntryKey belongs
   QString key;   // the _actual_ key of the entry in question
 };
@@ -35,8 +38,8 @@ struct KEntryKey
  * compares two KEntryKeys (needed for QMap).
  * @internal
  */
-inline bool operator <(const KEntryKey &k1, const KEntryKey &k2) 
-{ 
+inline bool operator <(const KEntryKey &k1, const KEntryKey &k2)
+{
   if (k1.group != k2.group)
     return k1.group < k2.group;
   return k1.key < k2.key;

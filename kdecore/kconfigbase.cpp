@@ -98,7 +98,7 @@ QString KConfigBase::readEntry( const QString& aKey,
 
   // try the localized key first
   KEntry aEntryData;
-  KEntryKey entryKey = { aGroup, aLocalizedKey };
+  KEntryKey entryKey(aGroup, aLocalizedKey);
   aEntryData = lookupData(entryKey);
   if (!aEntryData.aValue.isNull()) {
     aValue = aEntryData.aValue;
@@ -671,7 +671,7 @@ QDateTime KConfigBase::readDateTimeEntry( const QString& pKey,
     time.setHMS( QString( list.at( 3 ) ).toInt(),
 		 QString( list.at( 4 ) ).toInt(),
 		 QString( list.at( 5 ) ).toInt() );
-    
+
     aRetDateTime.setTime( time );
     aRetDateTime.setDate( date );
   }
@@ -701,7 +701,7 @@ QString KConfigBase::writeEntry( const QString& pKey, const QString& value,
   if( bNLS )
     aLocalizedKey = aLocalizedKey + '[' + aLocaleString + ']';
 
-  KEntryKey entryKey = { aGroup, aLocalizedKey };
+  KEntryKey entryKey(aGroup, aLocalizedKey);
   KEntry aEntryData;
   QString aValue;
 

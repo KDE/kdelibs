@@ -154,7 +154,7 @@ QMap<QString, QString> KConfig::entryMap(const QString &pGroup) const
   QMap<QString, QString> tmpMap;
   KEntryMapConstIterator aIt;
   KEntry aEntry;
-  KEntryKey groupKey = { pGroup, "" };
+  KEntryKey groupKey( pGroup, "" );
   //  cacheCheck();
 
   aIt = aEntryMap.find(groupKey);
@@ -174,7 +174,7 @@ void KConfig::reparseConfiguration()
   aEntryMap.clear();
 
   // add the "default group" marker to the map
-  KEntryKey groupKey = { "<default>", "" };
+  KEntryKey groupKey("<default>", "");
   aEntryMap.insert(groupKey, KEntry());
 
   parseConfigFiles();
@@ -184,7 +184,7 @@ KEntryMap KConfig::internalEntryMap(const QString &pGroup) const
 {
   KEntry aEntry;
   KEntryMapConstIterator aIt;
-  KEntryKey aKey = { pGroup, "" };
+  KEntryKey aKey(pGroup, "");
   KEntryMap tmpEntryMap;
 
   //  cacheCheck();
@@ -210,7 +210,7 @@ void KConfig::putData(const KEntryKey &_key, const KEntry &_data)
   // check to see if the special group key is present,
   // and if not, put it in.
   if (!hasGroup(_key.group)) {
-    KEntryKey groupKey = { _key.group, "" };
+    KEntryKey groupKey( _key.group, "");
     aEntryMap.insert(groupKey, KEntry());
   }
 
@@ -266,7 +266,7 @@ void KConfig::flushCache()
     // no I/O within the timeout period.  Flush the cache.
     isCached = false;
     aEntryMap.clear();
-    KEntryKey groupKey = { "<default>", "" };
+    KEntryKey groupKey("<default>", "");
     aEntryMap.insert(groupKey, KEntry());
     // reset the interval to 30 second checks
     flushInterval = 30;

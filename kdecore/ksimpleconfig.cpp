@@ -41,7 +41,7 @@
 KSimpleConfig::KSimpleConfig(const QString &pFileName, bool bReadOnly)
   : KConfig("", bReadOnly, false)
 {
-  // the difference between KConfig and KSimpleConfig is just that 
+  // the difference between KConfig and KSimpleConfig is just that
   // for KSimpleConfig an absolute filename is guaranteed
   if (!pFileName.isNull() && pFileName[0] != '/') {
      backEnd->changeFileName( KGlobal::dirs()->
@@ -73,7 +73,7 @@ QString KSimpleConfig::deleteEntry( const QString& pKey, bool bLocalized )
   }
 
   // retrieve the current entry map for the group specified by pKey
-  KEntryKey entryKey = { group(), aLocalizedKey };
+  KEntryKey entryKey(group(), aLocalizedKey);
   KEntryMapIterator aIt;
 
   aIt = aEntryMap.find(entryKey);
@@ -91,7 +91,7 @@ bool KSimpleConfig::deleteGroup( const QString& pGroup, bool bDeep )
 {
 
   KEntryMapIterator aIt;
-  KEntryKey groupKey = { pGroup, QString("") };
+  KEntryKey groupKey(pGroup, QString::fromLatin1(""));
 
   aIt = aEntryMap.find(groupKey);
   if (aIt != aEntryMap.end()) {
@@ -108,7 +108,7 @@ bool KSimpleConfig::deleteGroup( const QString& pGroup, bool bDeep )
       // we want to remove the group and all entries in the group
       for (; aIt.key().group == pGroup && aIt != aEntryMap.end(); ++aIt)
 	keyList.append(aIt.key());
-    
+
       QValueList<KEntryKey>::Iterator kIt(keyList.begin());
       for (; kIt != keyList.end(); ++kIt)
 	aEntryMap.remove(*kIt);

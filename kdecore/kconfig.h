@@ -1,18 +1,18 @@
-/* 
+/*
    This file is part of the KDE libraries
    Copyright (c) 1999 Preston Brown <pbrown@kde.org>
    Copyright (C) 1997 Matthias Kalle Dalheimer <kalle@kde.org>
-   
+
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
    License as published by the Free Software Foundation; either
    version 2 of the License, or (at your option) any later version.
-   
+
    This library is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
    Library General Public License for more details.
-   
+
    You should have received a copy of the GNU Library General Public License
    along with this library; see the file COPYING.LIB.  If not, write to
    the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
@@ -29,7 +29,7 @@ class QTimer;
 #include "kconfigbase.h"
 #include <qdatetime.h>
 
-/** 
+/**
 * KDE Configuration entries
 *
 * This class implements KDE's default configuration system.
@@ -44,8 +44,8 @@ class KConfig : public KConfigBase
   Q_OBJECT
 
 public:
-  /** 
-   * Construct a KConfig object. 
+  /**
+   * Construct a KConfig object.
    *
    * @param fileName A file to parse in addition to the
    *        system-wide file(s).  If it is not provided, only global
@@ -57,8 +57,8 @@ public:
   KConfig( const QString& fileName = QString::null,
 	   bool bReadOnly = false, bool bUseKDEGlobals = true);
 
-  /** 
-   * Destructor. 
+  /**
+   * Destructor.
    *
    * Writes back any dirty configuration entries, and destroys
    * dynamically created objects.
@@ -75,7 +75,7 @@ public:
    *        false, but the dirty entries remain in the dirty entry
    *        map.
    *
-   * @see KConfigBase::rollback 
+   * @see KConfigBase::rollback
    */
   virtual void rollback(bool bDeep = true);
 
@@ -92,7 +92,7 @@ public:
    * @returns the list of groups.
    */
   virtual QStringList groupList() const;
-  
+
   /*
    * Check if the key has an entry in the currently active group. Use
    * this to determine if a key is not specified for the current group
@@ -154,7 +154,7 @@ protected:
    *        the group of the key and the key itself. If the key already
    *        exists, the old value will be replaced.
    * @param _data the KEntry that is to be stored.
-   */ 
+   */
   virtual void putData(const KEntryKey &_key, const KEntry &_data);
 
   /**
@@ -174,7 +174,7 @@ protected:
    * set to QString::null.
    */
   KEntryMap aEntryMap;
-    
+
 private:
   /**
    * indicates whether the internal data cache is full or empty.
@@ -198,7 +198,7 @@ private:
    * @see #lookupData, #putData
    */
   QTime lastIoOp;
-  
+
   /**
    * time between flush attempts.  We initialize this to 30 seconds.
    */
@@ -236,7 +236,7 @@ private slots:
 inline bool KConfig::hasGroup(const QString &_pGroup) const
 {
     //  cacheCheck();
-    KEntryKey groupKey = { _pGroup, QString::fromLatin1("") };
+    KEntryKey groupKey( _pGroup, QString::fromLatin1(""));
     return aEntryMap.contains(groupKey);
 }
 
