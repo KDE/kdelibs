@@ -600,7 +600,7 @@ void Dialog::createDialogFromServices()
 	d->pagetree.addToDialog( d->dlg );
 
 	if( dialogface == KJanusWidget::TreeList )
-		d->dlg->unfoldTreeList( true );
+		d->dlg->unfoldTreeList();
 }
 
 void Dialog::configureTree()
