@@ -117,6 +117,11 @@ bool KFilterDev::open( int mode )
 
     if ( !ret )
         kdWarning(7005) << "KFilterDev::open: Couldn't open underlying device" << endl;
+    else
+    {
+        setState( IO_Open );
+        setMode( mode );
+    }
     ioIndex = 0;
     return ret;
 }
@@ -131,6 +136,7 @@ void KFilterDev::close()
     filter->terminate();
     //kdDebug(7005) << "KFilterDev::close. Terminate() done. Closing device." << endl;
     filter->device()->close();
+    setState( 0 ); // not IO_Open
 }
 
 void KFilterDev::flush()
