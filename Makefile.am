@@ -94,7 +94,7 @@ qtmessages:
 		qurloperator qftp qhttp qlocal qerrormessage; do \
 		grep -v $$file list > list.new && mv list.new list ;\
 	done ;\
-	xgettext -C -ktr `cat list`  ;\
+	xgettext -C -ktr -kQT_TRANSLATE_NOOP `cat list`  ;\
 	cd ../../kdelibs ;\
 	mv $$top_srcdir/../qt-copy/src/messages.po $$top_srcdir
 	echo "remove the header from messages.po and move to qt-messages.pot"

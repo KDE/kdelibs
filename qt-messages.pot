@@ -99,6 +99,48 @@ msgstr ""
 msgid "Select Font"
 msgstr ""
 
+#: dialogs/qmessagebox.cpp:414
+msgid ""
+"_: QMessageBox\n"
+"OK"
+msgstr ""
+
+#: dialogs/qmessagebox.cpp:415
+msgid ""
+"_: QMessageBox\n"
+"Cancel"
+msgstr ""
+
+#: dialogs/qmessagebox.cpp:416
+msgid ""
+"_: QMessageBox\n"
+"&Yes"
+msgstr ""
+
+#: dialogs/qmessagebox.cpp:417
+msgid ""
+"_: QMessageBox\n"
+"&No"
+msgstr ""
+
+#: dialogs/qmessagebox.cpp:418
+msgid ""
+"_: QMessageBox\n"
+"&Abort"
+msgstr ""
+
+#: dialogs/qmessagebox.cpp:419
+msgid ""
+"_: QMessageBox\n"
+"&Retry"
+msgstr ""
+
+#: dialogs/qmessagebox.cpp:420
+msgid ""
+"_: QMessageBox\n"
+"&Ignore"
+msgstr ""
+
 #: dialogs/qmessagebox.cpp:550
 msgid ""
 "<h3>About Qt</h3><p>This program uses Qt version %1.</p><p>Qt is a C++ "
@@ -144,6 +186,420 @@ msgid ""
 "Translate this string to the string 'LTR' in left-to-right languages or to "
 "'RTL' in right-to-left languages (such as Hebrew and Arabic) to get proper "
 "widget layout."
+msgstr ""
+
+#: kernel/qfontdatabase.cpp:1135
+msgid ""
+"_: QFont\n"
+"Latin"
+msgstr ""
+
+#: kernel/qfontdatabase.cpp:1138
+msgid ""
+"_: QFont\n"
+"Greek"
+msgstr ""
+
+#: kernel/qfontdatabase.cpp:1141
+msgid ""
+"_: QFont\n"
+"Cyrillic"
+msgstr ""
+
+#: kernel/qfontdatabase.cpp:1144
+msgid ""
+"_: QFont\n"
+"Armenian"
+msgstr ""
+
+#: kernel/qfontdatabase.cpp:1147
+msgid ""
+"_: QFont\n"
+"Georgian"
+msgstr ""
+
+#: kernel/qfontdatabase.cpp:1150
+msgid ""
+"_: QFont\n"
+"Runic"
+msgstr ""
+
+#: kernel/qfontdatabase.cpp:1153
+msgid ""
+"_: QFont\n"
+"Ogham"
+msgstr ""
+
+#: kernel/qfontdatabase.cpp:1156
+msgid ""
+"_: QFont\n"
+"Hebrew"
+msgstr ""
+
+#: kernel/qfontdatabase.cpp:1159
+msgid ""
+"_: QFont\n"
+"Arabic"
+msgstr ""
+
+#: kernel/qfontdatabase.cpp:1162
+msgid ""
+"_: QFont\n"
+"Syriac"
+msgstr ""
+
+#: kernel/qfontdatabase.cpp:1165
+msgid ""
+"_: QFont\n"
+"Thaana"
+msgstr ""
+
+#: kernel/qfontdatabase.cpp:1168
+msgid ""
+"_: QFont\n"
+"Devanagari"
+msgstr ""
+
+#: kernel/qfontdatabase.cpp:1171
+msgid ""
+"_: QFont\n"
+"Bengali"
+msgstr ""
+
+#: kernel/qfontdatabase.cpp:1174
+msgid ""
+"_: QFont\n"
+"Gurmukhi"
+msgstr ""
+
+#: kernel/qfontdatabase.cpp:1177
+msgid ""
+"_: QFont\n"
+"Gujarati"
+msgstr ""
+
+#: kernel/qfontdatabase.cpp:1180
+msgid ""
+"_: QFont\n"
+"Oriya"
+msgstr ""
+
+#: kernel/qfontdatabase.cpp:1183
+msgid ""
+"_: QFont\n"
+"Tamil"
+msgstr ""
+
+#: kernel/qfontdatabase.cpp:1186
+msgid ""
+"_: QFont\n"
+"Telugu"
+msgstr ""
+
+#: kernel/qfontdatabase.cpp:1189
+msgid ""
+"_: QFont\n"
+"Kannada"
+msgstr ""
+
+#: kernel/qfontdatabase.cpp:1192
+msgid ""
+"_: QFont\n"
+"Malayalam"
+msgstr ""
+
+#: kernel/qfontdatabase.cpp:1195
+msgid ""
+"_: QFont\n"
+"Sinhala"
+msgstr ""
+
+#: kernel/qfontdatabase.cpp:1198
+msgid ""
+"_: QFont\n"
+"Thai"
+msgstr ""
+
+#: kernel/qfontdatabase.cpp:1201
+msgid ""
+"_: QFont\n"
+"Lao"
+msgstr ""
+
+#: kernel/qfontdatabase.cpp:1204
+msgid ""
+"_: QFont\n"
+"Tibetan"
+msgstr ""
+
+#: kernel/qfontdatabase.cpp:1207
+msgid ""
+"_: QFont\n"
+"Myanmar"
+msgstr ""
+
+#: kernel/qfontdatabase.cpp:1210
+msgid ""
+"_: QFont\n"
+"Khmer"
+msgstr ""
+
+#: kernel/qfontdatabase.cpp:1213
+msgid ""
+"_: QFont\n"
+"Han"
+msgstr ""
+
+#: kernel/qfontdatabase.cpp:1216
+msgid ""
+"_: QFont\n"
+"Hiragana"
+msgstr ""
+
+#: kernel/qfontdatabase.cpp:1219
+msgid ""
+"_: QFont\n"
+"Katakana"
+msgstr ""
+
+#: kernel/qfontdatabase.cpp:1222
+msgid ""
+"_: QFont\n"
+"Hangul"
+msgstr ""
+
+#: kernel/qfontdatabase.cpp:1225
+msgid ""
+"_: QFont\n"
+"Bopomofo"
+msgstr ""
+
+#: kernel/qfontdatabase.cpp:1228
+msgid ""
+"_: QFont\n"
+"Yi"
+msgstr ""
+
+#: kernel/qfontdatabase.cpp:1231
+msgid ""
+"_: QFont\n"
+"Ethiopic"
+msgstr ""
+
+#: kernel/qfontdatabase.cpp:1234
+msgid ""
+"_: QFont\n"
+"Cherokee"
+msgstr ""
+
+#: kernel/qfontdatabase.cpp:1237
+msgid ""
+"_: QFont\n"
+"Canadian Aboriginal"
+msgstr ""
+
+#: kernel/qfontdatabase.cpp:1240
+msgid ""
+"_: QFont\n"
+"Mongolian"
+msgstr ""
+
+#: kernel/qfontdatabase.cpp:1244
+msgid ""
+"_: QFont\n"
+"Currency Symbols"
+msgstr ""
+
+#: kernel/qfontdatabase.cpp:1248
+msgid ""
+"_: QFont\n"
+"Letterlike Symbols"
+msgstr ""
+
+#: kernel/qfontdatabase.cpp:1252
+msgid ""
+"_: QFont\n"
+"Number Forms"
+msgstr ""
+
+#: kernel/qfontdatabase.cpp:1256
+msgid ""
+"_: QFont\n"
+"Mathematical Operators"
+msgstr ""
+
+#: kernel/qfontdatabase.cpp:1260
+msgid ""
+"_: QFont\n"
+"Technical Symbols"
+msgstr ""
+
+#: kernel/qfontdatabase.cpp:1264
+msgid ""
+"_: QFont\n"
+"Geometric Symbols"
+msgstr ""
+
+#: kernel/qfontdatabase.cpp:1268
+msgid ""
+"_: QFont\n"
+"Miscellaneous Symbols"
+msgstr ""
+
+#: kernel/qfontdatabase.cpp:1272
+msgid ""
+"_: QFont\n"
+"Enclosed and Square"
+msgstr ""
+
+#: kernel/qfontdatabase.cpp:1276
+msgid ""
+"_: QFont\n"
+"Braille"
+msgstr ""
+
+#: kernel/qfontdatabase.cpp:1280
+msgid ""
+"_: QFont\n"
+"Unicode"
+msgstr ""
+
+#: kernel/qkeysequence.cpp:78
+msgid ""
+"_: QAccel\n"
+"Space"
+msgstr ""
+
+#: kernel/qkeysequence.cpp:79
+msgid ""
+"_: QAccel\n"
+"Esc"
+msgstr ""
+
+#: kernel/qkeysequence.cpp:80
+msgid ""
+"_: QAccel\n"
+"Tab"
+msgstr ""
+
+#: kernel/qkeysequence.cpp:81
+msgid ""
+"_: QAccel\n"
+"Backtab"
+msgstr ""
+
+#: kernel/qkeysequence.cpp:82
+msgid ""
+"_: QAccel\n"
+"Backspace"
+msgstr ""
+
+#: kernel/qkeysequence.cpp:83
+msgid ""
+"_: QAccel\n"
+"Return"
+msgstr ""
+
+#: kernel/qkeysequence.cpp:84
+msgid ""
+"_: QAccel\n"
+"Enter"
+msgstr ""
+
+#: kernel/qkeysequence.cpp:85
+msgid ""
+"_: QAccel\n"
+"Ins"
+msgstr ""
+
+#: kernel/qkeysequence.cpp:86
+msgid ""
+"_: QAccel\n"
+"Del"
+msgstr ""
+
+#: kernel/qkeysequence.cpp:87
+msgid ""
+"_: QAccel\n"
+"Pause"
+msgstr ""
+
+#: kernel/qkeysequence.cpp:88
+msgid ""
+"_: QAccel\n"
+"Print"
+msgstr ""
+
+#: kernel/qkeysequence.cpp:89
+msgid ""
+"_: QAccel\n"
+"SysReq"
+msgstr ""
+
+#: kernel/qkeysequence.cpp:90
+msgid ""
+"_: QAccel\n"
+"Home"
+msgstr ""
+
+#: kernel/qkeysequence.cpp:91
+msgid ""
+"_: QAccel\n"
+"End"
+msgstr ""
+
+#: kernel/qkeysequence.cpp:92
+msgid ""
+"_: QAccel\n"
+"Left"
+msgstr ""
+
+#: kernel/qkeysequence.cpp:93
+msgid ""
+"_: QAccel\n"
+"Up"
+msgstr ""
+
+#: kernel/qkeysequence.cpp:94
+msgid ""
+"_: QAccel\n"
+"Right"
+msgstr ""
+
+#: kernel/qkeysequence.cpp:95
+msgid ""
+"_: QAccel\n"
+"Down"
+msgstr ""
+
+#: kernel/qkeysequence.cpp:96
+msgid ""
+"_: QAccel\n"
+"PgUp"
+msgstr ""
+
+#: kernel/qkeysequence.cpp:97
+msgid ""
+"_: QAccel\n"
+"PgDown"
+msgstr ""
+
+#: kernel/qkeysequence.cpp:98
+msgid ""
+"_: QAccel\n"
+"CapsLock"
+msgstr ""
+
+#: kernel/qkeysequence.cpp:99
+msgid ""
+"_: QAccel\n"
+"NumLock"
+msgstr ""
+
+#: kernel/qkeysequence.cpp:100
+msgid ""
+"_: QAccel\n"
+"ScrollLock"
 msgstr ""
 
 #: kernel/qkeysequence.cpp:191 kernel/qkeysequence.cpp:260
