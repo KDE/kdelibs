@@ -107,7 +107,7 @@ pid_t KRun::run( const KService& _service, const KURL::List& _urls )
       exec = QString("kdesu -u %1 -- %2").arg(user).arg(exec);
   } else if (_service.terminal())
      // Keep in mind that exec could include spaces. No quotes around %3, then.
-     exec = QString("konsole %1 -e %2").arg(_service.terminalOptions()).arg(exec); 
+     exec = QString("konsole %1 -e %2").arg(_service.terminalOptions()).arg(exec);
   else
   {
   QString error;
@@ -261,14 +261,31 @@ pid_t KRun::run( const QString& _exec, const KURL::List& _urls, const QString& _
 
   if ( b_allow_multiple || _urls.isEmpty() )
   {
+    KURL firstURL = (_urls.isEmpty()) ? KURL() : _urls.first();
     while ( ( pos = exec.find( "%f" )) != -1 )
-      exec.replace( pos, 2, "" );
+    {
+      QString f ( firstURL.path( -1 ) );
+      shellQuote( f );
+      exec.replace( pos, 2, f );
+    }
     while ( ( pos = exec.find( "%n" )) != -1 )
-      exec.replace( pos, 2, "" );
+    {
+      QString n ( firstURL.fileName() );
+      shellQuote( n );
+      exec.replace( pos, 2, n );
+    }
     while ( ( pos = exec.find( "%d" )) != -1 )
-      exec.replace( pos, 2, "" );
+    {
+      QString d ( firstURL.directory() );
+      shellQuote( d );
+      exec.replace( pos, 2, d );
+    }
     while ( ( pos = exec.find( "%u" )) != -1 )
-      exec.replace( pos, 2, "" );
+    {
+      QString u ( firstURL.url() );
+      shellQuote( u );
+      exec.replace( pos, 2, u );
+    }
 
     while ( ( pos = exec.find( "%F" )) != -1 )
       exec.replace( pos, 2, F );
@@ -295,7 +312,7 @@ pid_t KRun::run( const QString& _exec, const KURL::List& _urls, const QString& _
       shellQuote( d );
       QString n ( url.fileName() );
       shellQuote( n );
-      QString u ( (*it).url() );
+      QString u ( url.url() );
       shellQuote( u );
 
       while ( ( pos = e.find( "%f" )) != -1 )

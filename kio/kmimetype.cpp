@@ -36,6 +36,7 @@
 #include "kservice.h"
 #include "krun.h"
 #include "kautomount.h"
+#include <kdirnotify_stub.h>
 
 #include <qstring.h>
 #include <qfile.h>
@@ -763,30 +764,40 @@ QValueList<KDEDesktopMimeType::Service> KDEDesktopMimeType::userDefinedServices(
 
 void KDEDesktopMimeType::executeService( const QString& _url, KDEDesktopMimeType::Service& _service )
 {
-  //kdDebug(7009) << "EXECUTING Service " << _service.m_strName.data() << endl;
+    KURL u;
+    u.setPath(_url);
+    KURL::List lst;
+    lst.append( _url );
+    executeService( lst, _service );
+}
 
-  KURL u( _url );
+void KDEDesktopMimeType::executeService( const KURL::List& urls, KDEDesktopMimeType::Service& _service )
+{
+  //kdDebug(7009) << "EXECUTING Service " << _service.m_strName << endl;
 
   if ( _service.m_type == ST_USER_DEFINED )
   {
-    KURL::List lst;
-    lst.append( u );
-    KRun::run( _service.m_strExec, lst, _service.m_strName, _service.m_strIcon,
-	       _service.m_strIcon, _url );
+    kdDebug() << "KDEDesktopMimeType::executeService " << _service.m_strName
+              << " first url's path=" << urls.first().path() << " exec=" << _service.m_strExec << endl;
+    KRun::run( _service.m_strExec, urls, _service.m_strName, _service.m_strIcon,
+	       _service.m_strIcon, urls.first().path() );
     // The action may update the desktop file. Example: eject unmounts (#5129).
-    KDirWatch::self()->setFileDirty( _url );
+    KDirNotify_stub allDirNotify("*", "KDirNotify*");
+    allDirNotify.FilesChanged( urls );
     return;
   }
   else if ( _service.m_type == ST_MOUNT || _service.m_type == ST_UNMOUNT )
   {
+    ASSERT( urls.count() == 1 );
+    QString path = urls.first().path();
     //kdDebug(7009) << "MOUNT&UNMOUNT" << endl;
 
-    KSimpleConfig cfg( u.path(), true );
+    KSimpleConfig cfg( path, true );
     cfg.setDesktopGroup();
     QString dev = cfg.readEntry( "Dev" );
     if ( dev.isEmpty() )
     {
-      QString tmp = i18n("The desktop entry file\n%1\nis of type FSDevice but has no Dev=... entry").arg( u.path() );
+      QString tmp = i18n("The desktop entry file\n%1\nis of type FSDevice but has no Dev=... entry").arg( path );
       KMessageBoxWrapper::error( 0, tmp );
       return;
     }
@@ -804,7 +815,7 @@ void KDEDesktopMimeType::executeService( const QString& _url, KDEDesktopMimeType
       bool ro = cfg.readBoolEntry( "ReadOnly", false );
       QString fstype = cfg.readEntry( "FSType" );
       QString point = cfg.readEntry( "MountPoint" );
-      (void)new KAutoMount( ro, fstype, dev, point, u.path(), false );
+      (void)new KAutoMount( ro, fstype, dev, point, path, false );
     }
     else if ( _service.m_type == ST_UNMOUNT )
     {
@@ -812,7 +823,7 @@ void KDEDesktopMimeType::executeService( const QString& _url, KDEDesktopMimeType
       if ( mp.isEmpty() )
 	return;
 
-      (void)new KAutoUnmount( mp, u.path() );
+      (void)new KAutoUnmount( mp, path );
     }
   }
   else

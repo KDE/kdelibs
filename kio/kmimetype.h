@@ -344,10 +344,15 @@ public:
   static QValueList<Service> userDefinedServices( const KURL& _url );
 
   /**
-   * @param _url is the URL of the desktop entry. The URL must be
-   *        local, otherwise nothing will happen.
+   * @param _path is the path of the desktop entry.
+   * @deprecated, see the other executeService
    */
-  static void executeService( const QString& _url, KDEDesktopMimeType::Service& _service );
+  static void executeService( const QString& _path, KDEDesktopMimeType::Service& _service );
+
+  /**
+   * Execute @p service on the list of @p urls
+   */
+  static void executeService( const KURL::List& urls, KDEDesktopMimeType::Service& service );
 
   /**
    * Invokes the default action for the desktop entry. If the desktop
