@@ -152,19 +152,6 @@ public:
   virtual const KAboutData *aboutData() const { return 0; }
 
   /**
-   * Realizes the settings in the config files.
-   *
-   * This method may be called during system startup to apply the
-   * information in the config files to the running system.
-   *
-   * Note that this method is static, so it is not necessary to
-   * create an instance of the module at system startup.
-   * Generally, it should be avoided to construct GUI elements
-   * in this method.
-   */
-  static void init() {};
-
-  /**
    * Indicate which buttons will be used.
    *
    * The return value is a value or'ed together from
