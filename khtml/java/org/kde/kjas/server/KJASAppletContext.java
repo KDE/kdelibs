@@ -12,6 +12,9 @@ import java.awt.event.*;
  * <H3>Change Log</H3>
  * <PRE>
  * $Log$
+ * Revision 1.2  1999/10/09 21:55:27  rich
+ * More consts
+ *
  * Revision 1.1.1.1  1999/07/22 17:28:08  rich
  * This is a current snapshot of my work on adding Java support
  * to KDE. Applets now work!
@@ -54,7 +57,7 @@ public class KJASAppletContext implements AppletContext
          Class appletClass = loader.loadClass( codeBase.toString() );
 
          // Load and instantiate applet
-         app = (Applet) appletClass.newInstance();
+	 app = (Applet) appletClass.newInstance();
 
          KJASAppletStub stub = new KJASAppletStub( this, app, codeBase, docBase, name );
 

@@ -16,6 +16,9 @@ import java.util.*;
  * <H3>Change Log</H3>
  * <PRE>
  * $Log$
+ * Revision 1.2  1999/11/12 01:22:36  rich
+ * Now trys adding a / to the code base if the class loader could not find the applet class file. Fixed applet start/stop
+ *
  * Revision 1.1.1.1  1999/07/22 17:28:08  rich
  * This is a current snapshot of my work on adding Java support
  * to KDE. Applets now work!
@@ -94,6 +97,8 @@ public class KJASAppletClassLoader
    private byte[] loadClassData( String name )
       throws IOException
    {
+       if ( !name.endsWith( ".class" ) )
+	   name += ".class";
       URL classURL = new URL( codeBase, name );
 
       System.err.println( "class data URL = " + classURL );
@@ -103,10 +108,14 @@ public class KJASAppletClassLoader
 	  dataStream = classURL.openStream();
       }
       catch( FileNotFoundException fnfe ) {
+	  System.err.println( "Caught FileNotFoundException: " + fnfe );
 	  String baseTmp = codeBase.toString();
 	  baseTmp += "/";
 	  URL baseURL = new URL( baseTmp );
 	  classURL = new URL( baseURL, name );
+
+	  System.err.println( "Retrying with " + classURL );
+
 	  dataStream = classURL.openStream();
       }
 
