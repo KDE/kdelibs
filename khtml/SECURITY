@@ -24,4 +24,16 @@ as the requested object. (We currently don't support referer headers)
 * Either a) Don't allow POST or GET actions from javascript.
   or b) _Always_ ask the user for confirmation when javascript requests a 
         POST or GET action.
+  Additional note: Simple requests for e.g. images are also GET actions, 
+  disabling them would break a lot of javascript scripts.
+
+
+SSL certificates
+================
+Entry By: Waldo Bastian <bastian@kde.org>
+Created: May 13th, 2000
+See also: http://www.cert.org/advisories/CA-2000-05.html
+
+We never check SSL certificates. This makes https just as insecure as http.
+
 
