@@ -44,7 +44,7 @@ class KURL;
  * @sect Detail
  *
  * This widget inherits from @ref QLineEdit and implements the following
- * additional functionalities: q completion object that provides both
+ * additional functionalities: a completion object that provides both
  * automatic and manual text completion as well as multiple match iteration
  * features, configurable key-bindings to activate these features and a
  * popup-menu item that can be used to allow the user to set text completion
@@ -57,7 +57,7 @@ class KURL;
  * user in filling out the remaining text.  The text rotation signal is
  * intended to be used to iterate through the list of all possible matches
  * whenever there is more than one match for the entered text.  The
- * @p returnPressed( const QString& ) signals are the same as QLineEdit's
+ * @p returnPressed( const QString& ) signals are the same as @ref QLineEdit's
  * except it provides the current text in the widget as its argument whenever
  * appropriate.
  *
