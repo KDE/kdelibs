@@ -1,4 +1,4 @@
-kdelibs (4:2.2-cvs20010525-1) experimental; urgency=low
+kdelibs (4:2.2-cvs20010528-1) unstable; urgency=low
 
   * New upstream CVS pull (post alpha2)
   * Remove old .shlibs files
@@ -25,7 +25,7 @@ kdelibs (4:2.2-cvs20010525-1) experimental; urgency=low
   * Moving kdoc and qt-doc into Build-Depends-Indep
   * Add Provides in for libarts-alsa/libkmid-alsa
 
- -- Ivan E. Moore II <rkrusty@debian.org>  Fri, 25 May 2001 11:10:00 -0700
+ -- Ivan E. Moore II <rkrusty@debian.org>  Mon, 28 May 2001 18:10:00 -0700
 
 kdelibs (4:2.1.1-7) unstable; urgency=low
  
