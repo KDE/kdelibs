@@ -895,7 +895,9 @@ void RegressionTest::doJavascriptReport( const QString &test )
     QString text = "\n" + m_currentOutput;
     text.replace( '<', "&lt;" );
     text.replace( '>', "&gt;" );
+    text.replace( QRegExp( "\nFAILED" ), "\n<span style='color: red'>FAILED</span>" );
     text.replace( QRegExp( "\nFAIL" ), "\n<span style='color: red'>FAIL</span>" );
+    text.replace( QRegExp( "\nPASSED" ), "\n<span style='color: green'>PASSED</span>" );
     text.replace( QRegExp( "\nPASS" ), "\n<span style='color: green'>PASS</span>" );
     if ( text.at( 0 ) == '\n' )
         text = text.mid( 1, text.length() );
