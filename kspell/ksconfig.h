@@ -26,10 +26,21 @@ class QLabel;
 
 class KConfig;
 
+// Should be replaced by the charset strings
+// because the config file would be more stable
+// when inserting entries in the list
 enum Encoding {
   KS_E_ASCII=0,
   KS_E_LATIN1=1,
-  KS_E_LATIN2=2
+  KS_E_LATIN2=2,
+  KS_E_LATIN3=3,
+  KS_E_LATIN4=4,
+  KS_E_LATIN5=5,
+  KS_E_LATIN7=6,
+  KS_E_LATIN8=7,
+  KS_E_LATIN9=8,
+  KS_E_LATIN15=9,
+  KS_E_UTF8=10
 };
 
 enum KSpellClients {
@@ -40,7 +51,7 @@ enum KSpellClients {
 /**
  * A configuration class/dialog for @ref KSpell.
  *
- * It contains all of the options settings.The options are set to default 
+ * It contains all of the options settings.The options are set to default
  * values by the constructor and can be reset either by using the 
  * public interface or by using @ref KSpellConfig as a widget in a dialog 
  * (or, preferably a tabbed dialog using @ref KDialogBase) and letting 
