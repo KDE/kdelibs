@@ -135,7 +135,7 @@ static double newMoon(long n)
  * @internal
  * Compute general hijri date structure from gregorian date
  */
-static SDATE * gregorianToHijri(long day, long month, long year)
+static SDATE * gregorianToHijri(int day, int month, int year)
 {
   static SDATE h;
 
@@ -148,7 +148,7 @@ static SDATE * gregorianToHijri(long day, long month, long year)
   long synmonth;
 
   // Get Julian Day from Gregorian
-  julday = QDate::gregorianToJulian(year, day, month);
+  julday = QDate::gregorianToJulian(year, month, day);
 
   /*
    * obtain approx. of how many Synodic months since the beginning
@@ -238,11 +238,17 @@ static SDATE *hijriToGregorian(int *day, int *month, int *year)
   return(&h);
 }
 
-static SDATE * toHijri(const QDate & date)
+static void gregorianToHijri(const QDate & date, int * pYear, int * pMonth, int * pDay)
 {
   SDATE *sd;
   sd = gregorianToHijri(date.day(), date.month(), date.year());
-  return sd;
+
+  if (pYear)
+    *pYear = sd->year;
+  if (pMonth)
+    *pMonth = sd->mon;
+  if (pDay)
+    *pDay = sd->day;
 }
 
 KCalendarSystemHijri::KCalendarSystemHijri(const KLocale * locale)
@@ -256,8 +262,23 @@ KCalendarSystemHijri::~KCalendarSystemHijri()
 
 int KCalendarSystemHijri::year(const QDate& date) const
 {
-  SDATE *sd = toHijri(date);
-  return sd->year;
+  int y;
+  gregorianToHijri(date, &y, 0, 0);
+  return y;
+}
+
+int KCalendarSystemHijri::month(const QDate& date) const
+{
+  int m;
+  gregorianToHijri(date, 0, &m, 0);
+  return m;
+}
+
+int KCalendarSystemHijri::day(const QDate& date) const
+{
+  int d;
+  gregorianToHijri(date, 0, 0, &d);
+  return d;
 }
 
 int KCalendarSystemHijri::monthsInYear( const QDate & date ) const
@@ -548,9 +569,10 @@ static bool islamicLeapYear(int year)
 
 int KCalendarSystemHijri::daysInMonth(const QDate& date) const
 {
-  SDATE *sd = toHijri(date);
+  int y, m;
+  gregorianToHijri(date, &y, &m, 0);
 
-  return hndays(sd->mon, sd->year);
+  return hndays(m, y);
 }
 
 int KCalendarSystemHijri::hndays(int month, int year) const
@@ -575,21 +597,7 @@ int KCalendarSystemHijri::maxValidYear() const
 {
   QDate date(8000, 1, 1);
 
-  SDATE *sd = toHijri(date);
-
-  return sd->year;
-}
-
-int KCalendarSystemHijri::day(const QDate& date) const
-{
-  SDATE *sd = toHijri(date);
-  return sd->day;
-}
-
-int KCalendarSystemHijri::month(const QDate& date) const
-{
-  SDATE *sd = toHijri(date);
-  return sd->mon;
+  return year(date);
 }
 
 int KCalendarSystemHijri::daysInYear(const QDate & date) const
