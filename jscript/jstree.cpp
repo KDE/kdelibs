@@ -14,12 +14,12 @@ JSNode::JSNode()
 {
 }
 
-int JSNode::leftValue( JSScopeStack *_scopes, JSValue *_lv )
+int JSNode::leftValue( JSScopeStack *, JSValue * )
 {
     return ERROR_JSNotALeftValue;
 }
 
-int JSNode::rightValue( JSScopeStack *_scopes, JSValue *_rv )
+int JSNode::rightValue( JSScopeStack *, JSValue * )
 {
     return ERROR_JSNotARightValue;
 }
@@ -35,7 +35,7 @@ JSInteger::JSInteger( int _value ) : JSNode()
     value = _value;
 }
 
-int JSInteger::rightValue( JSScopeStack *_scopes, JSValue *_rv )
+int JSInteger::rightValue( JSScopeStack * , JSValue *_rv )
 {
     _rv->setObject( new JSIntegerObject( value ) );
     _rv->setAutoDelete( TRUE );
@@ -55,7 +55,7 @@ JSBool::JSBool( bool _value ) : JSNode()
     value = _value;
 }
 
-int JSBool::rightValue( JSScopeStack *_scopes, JSValue *_rv )
+int JSBool::rightValue( JSScopeStack *, JSValue *_rv )
 {
     _rv->setObject( new JSBoolObject( value ) );
     _rv->setAutoDelete( TRUE );
@@ -75,7 +75,7 @@ JSFloat::JSFloat( double _value ) : JSNode()
     value = _value;
 }
 
-int JSFloat::rightValue( JSScopeStack *_scopes, JSValue *_rv )
+int JSFloat::rightValue( JSScopeStack *, JSValue *_rv )
 {
     _rv->setObject( new JSFloatObject( value ) );
     _rv->setAutoDelete( TRUE );
@@ -347,7 +347,7 @@ JSAssignment::JSAssignment( int _op, JSNode *_left, JSNode *_right ) :
 {
 }
 
-int JSAssignment::rightValue( JSScopeStack *_scopes, JSValue *_rv )
+int JSAssignment::rightValue( JSScopeStack *_scopes, JSValue * )
 {
     int ret = 0;
     if ( !leftNode || !rightNode )
@@ -424,7 +424,7 @@ JSIdentifier::JSIdentifier( const char *_name )
 
 int JSIdentifier::rightValue( JSScopeStack *_scopes, JSValue *_rv )
 {
-    int ret = 0;
+    // int ret = 0;
  
     // Is it a function ?
     JSFunctionObject* func;
@@ -457,7 +457,7 @@ int JSIdentifier::leftValue( JSScopeStack *_scopes, JSValue *_lv )
 {
     JSVariableObject* var;
     
-    int ret = 0;
+    // int ret = 0;
     
     var = _scopes->findVariable( name, TRUE );
     if ( !var )
@@ -516,7 +516,7 @@ JSFunction::JSFunction( const char *_name, JSParameter* _param, JSNode *_code ) 
     name = _name;
 }
 
-int JSFunction::rightValue( JSScopeStack* _s, JSValue *rv )
+int JSFunction::rightValue( JSScopeStack* , JSValue *rv )
 {
     // This is NOT a call to this function. The programmer just wants a
     // reference to this function ( read: pointer ).
@@ -530,7 +530,7 @@ int JSFunction::rightValue( JSScopeStack* _s, JSValue *rv )
     return 0;
 }
 
-int JSFunction::rightValue( JSScopeStack *_scopes, JSValue *_rv, JSParameterListObject* _param )
+int JSFunction::rightValue( JSScopeStack *_scopes, JSValue *_rv, JSParameterListObject* )
 {
     // TODO: Scope change and fill parameters
 
@@ -855,7 +855,7 @@ JSString::~JSString()
     delete object;
 }
 
-int JSString::rightValue( JSScopeStack* _s, JSValue *rv )
+int JSString::rightValue( JSScopeStack* , JSValue *rv )
 {
     int ret = 0;
  
@@ -882,7 +882,7 @@ JSNull::~JSNull()
     delete object;
 }
 
-int JSNull::rightValue( JSScopeStack* _s, JSValue *rv )
+int JSNull::rightValue( JSScopeStack*, JSValue *rv )
 {
     int ret = 0;
  

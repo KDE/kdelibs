@@ -17,9 +17,9 @@ JSPrintFunction::JSPrintFunction() : JSFunction( "print", 0L, 0L )
 {
 }
 
-int JSPrintFunction::rightValue( JSScopeStack* _s, JSValue *rv, JSParameterListObject *_param )
+int JSPrintFunction::rightValue( JSScopeStack* , JSValue *rv, JSParameterListObject *_param )
 {
-    int ret = 0;
+    // int ret = 0;
     
     if ( _param )
     {
