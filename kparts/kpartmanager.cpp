@@ -77,6 +77,9 @@ bool KPartManager::eventFilter( QObject *obj, QEvent *ev )
       KPart *oldActivePart = m_activePart;
       m_activePart = part;
       emit activePartChanged( m_activePart, oldActivePart );
+      // I suppose we don't return here in case of child parts, right ?
+      // But it means we'll emit the event for each intermediate parent ? (David)
+      // Perhaps we should store the new part and emit at the end ?
     }
 
     w = w->parentWidget();
