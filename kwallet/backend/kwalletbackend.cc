@@ -22,7 +22,9 @@
 #include <kdebug.h>
 #include <kglobal.h>
 #include <kmdcodec.h>
+#include <ksavefile.h>
 #include <kstandarddirs.h>
+
 #include <qfile.h>
 #include <qfileinfo.h>
 #include "blowfish.h"
@@ -427,13 +429,14 @@ int Backend::sync(const QByteArray& password) {
 		return -255;  // not open yet
 	}
 
-	QFile qf(_path);
+	KSaveFile sf(_path, 0600);
+	QFile *qf = sf.file();
 
-	if (!qf.open(IO_WriteOnly)) {
+	if (!qf) {
 		return -1;		// error opening file
 	}
 
-	qf.writeBlock(KWMAGIC, KWMAGIC_LEN);
+	qf->writeBlock(KWMAGIC, KWMAGIC_LEN);
 
 	// Write the version number
 	QByteArray version(4);
@@ -441,7 +444,7 @@ int Backend::sync(const QByteArray& password) {
 	version[1] = KWALLET_VERSION_MINOR;
 	version[2] = KWALLET_CIPHER_BLOWFISH_CBC;
 	version[3] = KWALLET_HASH_SHA1;
-	qf.writeBlock(version, 4);
+	qf->writeBlock(version, 4);
 
 	// Holds the hashes we write out
 	QByteArray hashes;
@@ -487,7 +490,7 @@ int Backend::sync(const QByteArray& password) {
 		}
 	}
 
-	qf.writeBlock(hashes, hashes.size());
+	qf->writeBlock(hashes, hashes.size());
 
 	// calculate the hash of the file
 	SHA1 sha;
@@ -561,8 +564,10 @@ int Backend::sync(const QByteArray& password) {
 	passhash.fill(0);        // passhash is UNUSABLE NOW
 
 	// write the file
-	qf.writeBlock(wholeFile, wholeFile.size());
-	qf.close();
+	qf->writeBlock(wholeFile, wholeFile.size());
+	if (!sf.close()) {
+		return -4; // write error
+	}
 
 	wholeFile.fill(0);
 
