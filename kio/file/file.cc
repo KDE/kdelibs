@@ -603,11 +603,15 @@ void FileProtocol::createUDSEntry( const QString & filename, const QString & pat
 		    atom.m_uds = KIO::UDS_FILE_TYPE;
 		    atom.m_long = type;
 		    entry.append( atom );
-		
+
 		    atom.m_uds = KIO::UDS_ACCESS;
 		    atom.m_long = access;
 		    entry.append( atom );
-		
+
+		    atom.m_uds = KIO::UDS_SIZE;
+		    atom.m_long = 0L;
+		    entry.append( atom );
+
 		    goto notype;
 
 		}
