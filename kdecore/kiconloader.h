@@ -143,6 +143,12 @@ public:
     int currentSize(int group);
 
     /**
+     * @return the current effect for an icon group, depending on its state.
+     * Mostly internal, but allows some optimisations in the apps.
+     */
+    int effect(int group, int state);
+
+    /**
      * Returns a pointer to the current theme. Can be used to query
      * available and default sizes for groups.
      */

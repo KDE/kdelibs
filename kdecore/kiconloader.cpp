@@ -600,6 +600,11 @@ QStringList KIconLoader::queryIcons(int group_or_size, int context) const
     return res2;
 }
 
+int KIconLoader::effect( int group, int state )
+{
+    return d->mpEffect.effect( group, state );
+}
+
 // Easy access functions
 
 QPixmap DesktopIcon(const QString& name, int force_size, int state,
@@ -616,7 +621,6 @@ QPixmap DesktopIcon(const QString& name, KInstance *instance)
 
 QIconSet DesktopIconSet(const QString& name, int force_size, KInstance *instance)
 {
-    KIconLoader *loader = instance->iconLoader();
     QIconSet iconset;
     iconset.setPixmap( 
 	DesktopIcon(name, force_size, KIcon::ActiveState, instance) ,
@@ -644,7 +648,6 @@ QPixmap BarIcon(const QString& name, KInstance *instance)
 
 QIconSet BarIconSet(const QString& name, int force_size, KInstance *instance)
 {
-    KIconLoader *loader = instance->iconLoader();
     QIconSet iconset;
     iconset.setPixmap( 
 	BarIcon(name, force_size, KIcon::ActiveState, instance) ,
@@ -672,7 +675,6 @@ QPixmap SmallIcon(const QString& name, KInstance *instance)
 
 QIconSet SmallIconSet(const QString& name, int force_size, KInstance *instance)
 {
-    KIconLoader *loader = instance->iconLoader();
     QIconSet iconset;
     iconset.setPixmap( 
 	SmallIcon(name, force_size, KIcon::ActiveState, instance) ,
@@ -700,7 +702,6 @@ QPixmap MainBarIcon(const QString& name, KInstance *instance)
 
 QIconSet MainBarIconSet(const QString& name, int force_size, KInstance *instance)
 {
-    KIconLoader *loader = instance->iconLoader();
     QIconSet iconset;
     iconset.setPixmap( 
 	MainBarIcon(name, force_size, KIcon::ActiveState, instance) ,
@@ -727,7 +728,6 @@ QPixmap UserIcon(const QString& name, KInstance *instance)
 
 QIconSet UserIconSet(const QString& name, KInstance *instance)
 {
-    KIconLoader *loader = instance->iconLoader();
     QIconSet iconset;
     iconset.setPixmap( 
 	UserIcon(name, KIcon::ActiveState, instance) ,
@@ -740,6 +740,7 @@ QIconSet UserIconSet(const QString& name, KInstance *instance)
 	QIconSet::Automatic, QIconSet::Normal );
     return iconset;
 }
+
 int IconSize(int group, KInstance *instance)
 {
     KIconLoader *loader = instance->iconLoader();

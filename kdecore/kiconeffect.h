@@ -83,6 +83,12 @@ public:
     QImage doublePixels(QImage src);
 
     /**
+     * Returns the effect that is applied to icons of group @p group for
+     * the state @state.
+     */
+    int effect( int group, int state ) { return mEffect[group][state]; }
+
+    /**
      * Provide visual feedback to show activation of an icon on a widget.
      *
      * Not strictly an 'icon effect', but in practice that's what it looks
