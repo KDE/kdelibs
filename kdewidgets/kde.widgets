@@ -217,3 +217,8 @@ ToolTip=This widget can be used to display or allow user selection of date and t
 IncludeFile=kdatetimewidget.h
 Group=Input (KDE)
 
+[KDateTable]
+IncludeFile=kdatetbl.h
+Group=Input (KDE)
+ConstructorArgs=(parent, QDate::currentDate(), name)
+

@@ -15,6 +15,7 @@
 #include "kcolorcombo.h"
 #include "kcombobox.h"
 #include "kdatepicker.h"
+#include "kdatetbl.h"
 #include "kdatetimewidget.h"
 #include "kdatewidget.h"
 #include "kdialog.h"
@@ -163,6 +164,14 @@ KDEWidgetsPlugin::KDEWidgetsPlugin()
 	widget.whatsThis = "KDatePicker";
 	widget.isContainer = false;
 	m_widgets.insert("KDatePicker", widget);
+
+	widget.group = "Input (KDE)";
+	widget.iconSet = "kdatetable.png";
+	widget.includeFile = "kdatetbl.h";
+	widget.toolTip = "KDateTable";
+	widget.whatsThis = "KDateTable";
+	widget.isContainer = false;
+	m_widgets.insert("KDateTable", widget);
 
 	widget.group = "Input (KDE)";
 	widget.iconSet = "kdatetimewidget.png";
@@ -459,6 +468,8 @@ QWidget *KDEWidgetsPlugin::create(const QString &key, QWidget *parent, const cha
 		return new KComboBox(parent, name);
 	if (key == "KDatePicker")
 		return new KDatePicker(parent, QDate::currentDate(), name);
+	if (key == "KDateTable")
+		return new KDateTable(parent, QDate::currentDate(), name);
 	if (key == "KDateTimeWidget")
 		return new KDateTimeWidget(parent, name);
 	if (key == "KDateWidget")
