@@ -1,1 +1,1 @@
-SUBDIRS = plastik highcolor themes light kthemestyle riscos utils keramik
+SUBDIRS = plastik highcolor highcontrast themes light kthemestyle riscos utils keramik

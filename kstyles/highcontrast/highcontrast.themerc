@@ -1,0 +1,5 @@
+[Misc]
+Name=HighContrast
+Comment=A style that works well with high contrast color schemes
+[KDE]
+WidgetStyle=HighContrast
