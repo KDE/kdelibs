@@ -106,7 +106,7 @@ KServiceTypeProfile::OfferList KServiceTypeProfile::offers( const QString& _serv
 {
     OfferList offers;
     QStringList serviceList;
-    kdDebug(7014) << "KServiceTypeProfile::offers( " << _servicetype << "," << _genericServiceType << " )" << endl;
+    //kdDebug(7014) << "KServiceTypeProfile::offers( " << _servicetype << "," << _genericServiceType << " )" << endl;
 
     // Note that KServiceTypeProfile::offers() calls KServiceType::offers(),
     // so we _do_ get the new services, that are available but not in the profile.
@@ -182,7 +182,7 @@ KServiceTypeProfile::OfferList KServiceTypeProfile::offers( const QString& _serv
         kdDebug(7014) << (*itOff).service()->name() << " allow-as-default=" << (*itOff).allowAsDefault() << endl;
 #endif
 
-    kdDebug(7014) << "Returning " << offers.count() << " offers" << endl;
+    //kdDebug(7014) << "Returning " << offers.count() << " offers" << endl;
     return offers;
 }
 
@@ -300,7 +300,7 @@ KService::Ptr KServiceTypeProfile::preferredService( const QString & _serviceTyp
   if( itOff != lst.end() && (*itOff).allowAsDefault() )
     return (*itOff).service();
 
-  kdDebug(7014) << "No offers, or none allowed as default" << endl;
+  //kdDebug(7014) << "No offers, or none allowed as default" << endl;
   return 0L;
 }
 

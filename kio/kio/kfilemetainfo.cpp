@@ -920,11 +920,11 @@ KFilePlugin * KFileMetaInfoProvider::plugin(const QString& mimeType)
 //        kdDebug(7033) << "need to look for a plugin to load\n";
 
         KService::Ptr service =
-            KServiceTypeProfile::preferredService( mimeType, "KFilePlugin");
+            KServiceTypeProfile::preferredService( mimeType, "KFilePlugin" );
 
         if ( !service || !service->isValid() )
         {
-//            kdDebug(7033) << "no valid service found\n";
+            //kdDebug(7033) << "no preferred KFilePlugin service found for " << mimeType << endl;
             return 0;
         }
 

@@ -25,6 +25,7 @@
 #include <kuserprofile.h>
 #include <kstandarddirs.h>
 #include <kstaticdeleter.h>
+#include <kdebug.h>
 
 template class KStaticDeleter<KTrader>;
 
@@ -167,6 +168,15 @@ KTrader::OfferList KTrader::query( const QString& _servicetype, const QString& _
       ret.append( (*it).service() );
   }
 
+#ifndef NDEBUG
+  QString query = _servicetype;
+  if ( !_genericServiceType.isEmpty() ) {
+      query += ", ";
+      query += _genericServiceType;
+  }
+  kdDebug(7014) << "query for " << query
+                << " : returning " << ret.count() << " offers" << endl;
+#endif
   return ret;
 }
 
