@@ -24,7 +24,7 @@ int main(int argc, char *argv[])
 
     KHTMLWidget *doc = new KHTMLWidget(0, 0);
     doc->resize(800,500);
-    //doc->enableJScript(true);
+    doc->enableJScript(true);
     doc->enableJava(true);
     //doc->setFollowsLinks(false);
 
