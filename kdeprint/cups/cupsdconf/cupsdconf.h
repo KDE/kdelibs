@@ -22,7 +22,7 @@
 
 #include <qstring.h>
 #include <qstringlist.h>
-#include <qlist.h>
+#include <qptrlist.h>
 #include <qtextstream.h>
 
 #include "cupsdcomment.h"
@@ -131,8 +131,8 @@ struct CupsdConf
 
 	// Security
 	QString	systemgroup_;
-	QList<CupsLocation>	locations_;
-	QList<CupsResource>	resources_;
+	QPtrList<CupsLocation>	locations_;
+	QPtrList<CupsResource>	resources_;
 
         // Encryption
         QString	servercertificate_;

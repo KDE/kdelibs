@@ -22,7 +22,7 @@
 
 #include <qdialog.h>
 #include <qstring.h>
-#include <qlist.h>
+#include <qptrlist.h>
 
 class QLineEdit;
 class QLabel;
@@ -48,8 +48,8 @@ protected:
 	void init(int numlines);
 
 private:
-	QList<QLineEdit>	edits_;
-	QList<QLabel>		labels_;
+	QPtrList<QLineEdit>	edits_;
+	QPtrList<QLabel>		labels_;
 	int			count_;
 	bool			initialized_;
 	QPushButton	*okbtn_, *cancelbtn_;

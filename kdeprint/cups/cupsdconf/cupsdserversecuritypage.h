@@ -22,7 +22,7 @@
 
 #include "cupsdpage.h"
 
-#include <qlist.h>
+#include <qptrlist.h>
 
 class QLineEdit;
 class QListView;
@@ -54,7 +54,7 @@ private:
 	QListView	*locations_;
 
 	CupsdOption	*opt_[1];
-	QList<CupsLocation>	loclist_;
+	QPtrList<CupsLocation>	loclist_;
 };
 
 #endif

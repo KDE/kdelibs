@@ -147,7 +147,7 @@ int KMCupsUiManager::pluginPageCap()
 	return (KMUiManager::CopyAll & ~KMUiManager::Current);
 }
 
-void KMCupsUiManager::setupPrintDialogPages(QList<KPrintDialogPage>* pages)
+void KMCupsUiManager::setupPrintDialogPages(QPtrList<KPrintDialogPage>* pages)
 {
 	pages->append(new KPSchedulePage());
 }

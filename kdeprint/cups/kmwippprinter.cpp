@@ -132,8 +132,8 @@ void KMWIppPrinter::slotScan()
 	else
 	{
 		m_list->clear();
-		const QList<SocketInfo>	*list = m_util->printerList();
-		QListIterator<SocketInfo>	it(*list);
+		const QPtrList<SocketInfo>	*list = m_util->printerList();
+		QPtrListIterator<SocketInfo>	it(*list);
 		for (;it.current();++it)
 		{
 			QString	name;

@@ -33,7 +33,7 @@
 QStringList defaultBanners()
 {
 	QStringList	bans;
-	QList<KMPrinter>	*list = KMFactory::self()->manager()->printerList(false);
+	QPtrList<KMPrinter>	*list = KMFactory::self()->manager()->printerList(false);
 	if (list && list->count() > 0 && KMFactory::self()->manager()->completePrinter(list->getFirst()))
 	{
 		QString	s = list->getFirst()->option("kde-banners-supported");

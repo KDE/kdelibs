@@ -21,7 +21,7 @@
 #define	CUPSDCOMMENT_H
 
 #include <qstringlist.h>
-#include <qlist.h>
+#include <qptrlist.h>
 
 #define	HEADER_COMM		0
 #define	SERVERNAME_COMM		1
@@ -112,7 +112,7 @@ private:
 	bool loadComments();
 
 private:
-	QList<Comment>  comments_;
+	QPtrList<Comment>  comments_;
 };
 
 #endif

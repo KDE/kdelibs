@@ -39,13 +39,13 @@ int KMCupsJobManager::actions()
 	return KMJob::All;
 }
 
-bool KMCupsJobManager::sendCommandSystemJob(const QList<KMJob>& jobs, int action, const QString& argstr)
+bool KMCupsJobManager::sendCommandSystemJob(const QPtrList<KMJob>& jobs, int action, const QString& argstr)
 {
 	IppRequest	req;
 	QString		uri;
 	bool		value(true);
 
-	QListIterator<KMJob>	it(jobs);
+	QPtrListIterator<KMJob>	it(jobs);
 	for (;it.current() && value;++it)
 	{
 		req.addURI(IPP_TAG_OPERATION,"job-uri",it.current()->uri());
