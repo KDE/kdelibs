@@ -302,7 +302,7 @@ Ticket *AddressBook::requestSaveTicket( Resource *resource )
   KRES::ResourceManager<Resource>::ActiveIterator it;
   for ( it = d->mManager->activeBegin(); it != d->mManager->activeEnd(); ++it ) {
     if ( (*it) == resource ) {
-      if ( (*it)->readOnly() )
+      if ( (*it)->readOnly() || !(*it)->isOpen() )
         return 0;
       else
         return (*it)->requestSaveTicket();
@@ -569,7 +569,7 @@ void AddressBook::deleteRemovedAddressees()
   Addressee::List::Iterator it;
   for ( it = d->mRemovedAddressees.begin(); it != d->mRemovedAddressees.end(); ++it ) {
     Resource *resource = (*it).resource();
-    if ( resource && !resource->readOnly() )
+    if ( resource && !resource->readOnly() && resource->isOpen() )
       resource->removeAddressee( *it );
   }
 
@@ -595,7 +595,7 @@ void AddressBook::cleanUp()
 {
   KRES::ResourceManager<Resource>::ActiveIterator it;
   for ( it = d->mManager->activeBegin(); it != d->mManager->activeEnd(); ++it ) {
-    if ( !(*it)->readOnly() )
+    if ( !(*it)->readOnly() && (*it)->isOpen() )
       (*it)->cleanUp();
   }
 }

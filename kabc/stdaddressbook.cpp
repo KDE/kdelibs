@@ -105,10 +105,8 @@ void StdAddressBook::init( bool )
   KRES::ResourceManager<Resource>::ActiveIterator it;
   for ( it = manager->activeBegin(); it != manager->activeEnd(); ++it ) {
     (*it)->setAddressBook( this );
-    if ( !(*it)->open() ) {
+    if ( !(*it)->open() )
       error( QString( "Unable to open resource '%1'!" ).arg( (*it)->resourceName() ) );
-      manager->remove( *it );
-    }
   }
 
   Resource *res = standardResource();
@@ -138,10 +136,11 @@ bool StdAddressBook::save()
   KRES::ResourceManager<Resource>::ActiveIterator it;
   KRES::ResourceManager<Resource> *manager = ab->resourceManager();
   for ( it = manager->activeBegin(); it != manager->activeEnd(); ++it ) {
-    if ( !(*it)->readOnly() ) {
+    if ( !(*it)->readOnly() && (*it)->isOpen() ) {
       Ticket *ticket = ab->requestSaveTicket( *it );
       if ( !ticket ) {
-        ab->error( i18n( "Unable to save to standard addressbook. It is locked." ) );
+        ab->error( i18n( "Unable to save to resource '%1'. It is locked." )
+                   .arg( (*it)->resourceName() ) );
         return false;
       }
 
