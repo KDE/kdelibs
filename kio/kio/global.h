@@ -161,7 +161,7 @@ namespace KIO
     ERR_CYCLIC_LINK = 19,
     ERR_USER_CANCELED = 20,
     ERR_CYCLIC_COPY = 21,
-    ERR_COULD_NOT_CREATE_SOCKET = 22,
+    ERR_COULD_NOT_CREATE_SOCKET = 22, // KDE4: s/COULD_NOT/CANNOT/ or the other way round
     ERR_COULD_NOT_CONNECT = 23,
     ERR_CONNECTION_BROKEN = 24,
     ERR_NOT_FILTER_PROTOCOL = 25,
@@ -188,7 +188,6 @@ namespace KIO
     ERR_UNKNOWN_PROXY_HOST = 45,
     ERR_COULD_NOT_AUTHENTICATE = 46,
     ERR_ABORTED = 47, // Action got aborted from application side
-    // ERR_WARNING, // Errors terminate the job now. Use warning() instead.
     ERR_INTERNAL_SERVER = 48,
     ERR_SERVER_TIMEOUT = 49,
     ERR_SERVICE_NOT_AVAILABLE = 50,
