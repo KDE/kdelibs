@@ -3014,21 +3014,33 @@ KToggleToolBarAction::KToggleToolBarAction( const char* toolBarName,
 {
 }
 
+KToggleToolBarAction::KToggleToolBarAction( KToolBar *toolBar, const QString &text,
+                                            KActionCollection *parent, const char *name )
+  : KToggleAction( text, KShortcut(), parent, name )
+  , m_toolBarName( 0 ), m_toolBar( toolBar )
+{
+}
+
 KToggleToolBarAction::~KToggleToolBarAction()
 {
 }
 
 int KToggleToolBarAction::plug( QWidget* w, int index )
 {
-  // Note: topLevelWidget() stops too early, we can't use it.
-  QWidget * tl = w;
-  QWidget * n;
-  while ( !tl->isDialog() && ( n = tl->parentWidget() ) ) // lookup parent and store
-    tl = n;
+  if ( !m_toolBar ) {
+    // Note: topLevelWidget() stops too early, we can't use it.
+    QWidget * tl = w;
+    QWidget * n;
+    while ( !tl->isDialog() && ( n = tl->parentWidget() ) ) // lookup parent and store
+      tl = n;
 
-  KMainWindow * mw = dynamic_cast<KMainWindow *>(tl); // try to see if it's a kmainwindow
+    KMainWindow * mw = dynamic_cast<KMainWindow *>(tl); // try to see if it's a kmainwindow
 
-  if( mw && (m_toolBar = mw->toolBar( m_toolBarName )) ) {
+    if ( mw )
+	m_toolBar = mw->toolBar( m_toolBarName );
+  }
+
+  if( m_toolBar ) {
     setChecked( m_toolBar->isVisible() );
     connect( m_toolBar, SIGNAL(visibilityChanged(bool)), this, SLOT(setChecked(bool)) );
     // Also emit toggled when the toolbar's visibility changes (see comment in header)
@@ -3976,5 +3988,7 @@ void KActionSeparator::virtual_hook( int id, void* data )
 void KActionCollection::virtual_hook( int, void* )
 { /*BASE::virtual_hook( id, data );*/ }
 
+/* vim: et sw=2 ts=2
+ */
 
 #include "kaction.moc"

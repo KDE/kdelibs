@@ -1656,10 +1656,14 @@ public:
      */
     KToggleToolBarAction( const char* toolBarName, const QString& text,
                           KActionCollection* parent, const char* name );
+    KToggleToolBarAction( KToolBar *toolBar, const QString &text,
+                          KActionCollection *parent, const char *name );
     virtual ~KToggleToolBarAction();
 
     virtual int plug( QWidget*, int index = -1 );
     
+    KToolBar *toolBar() { return m_toolBar; }
+
 public slots:
     virtual void setChecked( bool );
     
