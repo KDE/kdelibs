@@ -86,8 +86,6 @@ KSycocaFactory::saveHeader(QDataStream &str)
    str << (Q_INT32) m_sycocaDictOffset;
    str << (Q_INT32) m_beginEntryOffset;
    str << (Q_INT32) m_endEntryOffset;
-   kdebug( KDEBUG_INFO, 7011, QString("SycocaFactory : factoryId = %1 dictOffset = %2")
-	.arg( factoryId() ) .arg( m_sycocaDictOffset ,8,16));
 }
 
 void
