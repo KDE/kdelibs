@@ -13,14 +13,7 @@ lib_LTLIBRARIES = kio_http.la kio_http_cache_cleaner.la
 
 kio_http_la_SOURCES = http.cc extern_md5.c
 kio_http_la_LIBADD = ../libksycoca.la $(LIBZ) $(LIBSSL)
-kio_http_la_LDFLAGS = -module -avoid-version
-
-check_PROGRAMS = linktest
-linktest_SOURCES = $(kio_http_la_SOURCES) linktest.cpp
-linktest.cpp:
-	echo "int main() {};" > linktest.cpp
-linktest_LDFLAGS  = $(all_libraries) -module -avoid-version
-linktest_LDADD = $(kio_http_la_LIBADD)
+kio_http_la_LDFLAGS = $(all_libraries) -module -avoid-version -no-undefined
 
 kio_http_cache_cleaner_SOURCES = dummy.cpp
 kio_http_cache_cleaner_LDADD   = kio_http_cache_cleaner.la
@@ -40,3 +33,4 @@ kdelnk_DATA = http_cache_cleaner.desktop
 
 dummy.cpp:
 	echo > dummy.cpp
+

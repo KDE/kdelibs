@@ -37,6 +37,8 @@
 #include <ktempfile.h>
 #include <klocale.h>
 #include <kprotocolmanager.h>
+#include <kcmdlineargs.h>
+#include <kaboutdata.h>
 
 #include "kio/global.h"
 #include "kio/connection.h"
@@ -48,6 +50,8 @@
 #include "kioslave.h"
 
 using namespace KIO;
+
+template class QList<IdleSlave>;
 
 IdleSlave::IdleSlave(KSocket *socket)
 {
@@ -91,18 +95,19 @@ IdleSlave::gotInput()
       mConnected = (b != 0);
       mProtocol = protocol;
       mHost = host;
-      kDebugInfo(7016, "SlavePool: SlaveStatus = %s %s %s",
-           mProtocol.data(), mHost.ascii(), 
-           mConnected ? "Connected" : "Not connected");
+      kdDebug(7016) << "SlavePool: SlaveStatus = "
+	<< mProtocol << " " << mHost << " " << 
+           mConnected ? "Connected" : "Not connected";
    }
 }
 
 void
 IdleSlave::connect(const QString &app_socket)
 {
-   kDebugInfo(7016, "SlavePool: New mission for slave (%s %s %s)",
-           mProtocol.data(), mHost.ascii(), 
-           mConnected ? "Connected" : "Not connected");
+   kdDebug(7016) << "SlavePool: New mission for slave:"
+	<< mProtocol << " " << mHost << " " << 
+           mConnected ? "Connected" : "Not connected";
+
    QByteArray data;
    QDataStream stream( data, IO_WriteOnly);
    stream << app_socket;
@@ -121,8 +126,8 @@ IdleSlave::match(const QString &protocol, const QString &host, bool connected)
    return true;
 }
 
-KIODaemon::KIODaemon(int &argc, char **argv) :
-    KUniqueApplication(argc, argv, "kioslave", false)
+KIODaemon::KIODaemon() :
+    KUniqueApplication(false, true)
 {
     KTempFile domainname(QString::null, QString::fromLatin1(".slave-socket"));
     mPoolSocketName = domainname.name();
@@ -183,9 +188,10 @@ KIODaemon::requestSlave(const QString &protocol,
        return slave->pid();
     }
 
-    kDebugInfo(7016, "requestSlave( %s, %s, %s)",
-		protocol.ascii(), host.ascii(), app_socket.ascii());
+    kdDebug(7016) << "requestSlave( " << protocol << ", " << host << ", " << app_socket << ")\n";
     QString libname = KProtocolManager::self().library( protocol );
+    if (libname.isEmpty()) // .desktop not installed etc
+	libname = QString("kio_%1.la").arg(protocol);
     QString protocol_library = QString::fromLatin1("%1/.libs/%2").arg(protocol).arg(libname);
     if (!QFile::exists(protocol_library))
 	 protocol_library = locate("lib", libname);
@@ -224,7 +230,7 @@ KIODaemon::requestSlave(const QString &protocol,
 	lt_dlhandle handle = lt_dlopen( protocol_library );
 
 	if ( !handle ) {
-	    kDebugInfo(7016, "trying to load support for %s failed with %s", protocol.ascii(), lt_dlerror() );
+	    kdDebug(7016) << "trying to load support for " << protocol << " failed with " << lt_dlerror();
 	    ::write(fd[1], errors + ERR_LOADING, 1);
 	    exit(0);
 	}
@@ -237,7 +243,7 @@ KIODaemon::requestSlave(const QString &protocol,
 	void* sym = lib->symbol( symname );
 	if ( !sym )
         {
-	    kDebugInfo(7016, "KLibrary: The library does not offer a KDE compatible factory");
+	    kdDebug(7016) << "KLibrary: The library does not offer a KDE compatible factory";
 	    ::write(fd[1], errors + ERR_LOADING, 1);
 	    exit(0);
         }
@@ -299,6 +305,7 @@ bool KIODaemon::process(const QCString &fun, const QByteArray &data,
         QString host;
         QString app_socket;
 	stream >> protocol >> host >> app_socket;
+	fprintf(stderr, "requestSlave %s %s\n", debugString(protocol), debugString(host));
 	replyType = "QString";
         QString error;
 	pid_t pid = requestSlave(protocol, host, app_socket, error);
@@ -310,6 +317,8 @@ bool KIODaemon::process(const QCString &fun, const QByteArray &data,
     return false;
 }
 
+extern "C" void slave_sigchld_handler(int);
+
 void slave_sigchld_handler(int)
 {
     int status;
@@ -319,20 +328,30 @@ void slave_sigchld_handler(int)
 
 int main(int argc, char **argv)
 {
-  //  KCmdLineArgs::init(argc, argv, "kioslave",
-  //  "a tool to start kio protocols", "0.0");
+  KAboutData aboutData( "kioslave", I18N_NOOP("KDE Daemon"),
+      "$Id$",
+        I18N_NOOP("KDE IO Daemon - backend for the protocols used by libkio"));
 
-  // KUniqueApplication::addCmdLineOptions();
+  KCmdLineArgs::init(argc, argv, &aboutData);
+  KUniqueApplication::addCmdLineOptions();
 
-  if (!KUniqueApplication::start(argc, argv, "kioslave"))
+  KCmdLineArgs *args = KCmdLineArgs::parsedArgs();
+
+  LTDL_SET_PRELOADED_SYMBOLS();
+  if (lt_dlinit() != 0) {
+    fprintf (stderr, "error during initialization: %s\n", lt_dlerror());
+    return 1;
+  }
+
+  if (!KUniqueApplication::start())
     {
         fprintf(stderr, "kioslave already running!\n");
 	return 0;
     }
   signal(SIGCHLD, slave_sigchld_handler);
 
-    KIODaemon k(argc,argv);
-    return k.exec(); // keep running
+  KIODaemon k;
+  return k.exec(); // keep running
 }
 
 #include "kioslave.moc"

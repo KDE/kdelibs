@@ -53,7 +53,7 @@ class KIODaemon : public KUniqueApplication {
     Q_OBJECT
 
 public:
-    KIODaemon(int& argc, char** argv);
+    KIODaemon();
 
     virtual bool process(const QCString &fun, const QByteArray &data,
 			 QCString &replyType, QByteArray &replyData);

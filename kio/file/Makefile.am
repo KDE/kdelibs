@@ -8,7 +8,7 @@ lib_LTLIBRARIES = kio_file.la
 
 kio_file_la_SOURCES = file.cc
 kio_file_la_LIBADD = ../libkio.la
-kio_file_la_LDFLAGS = $(all_libraries) -module -avoid-version
+kio_file_la_LDFLAGS = -module -avoid-version
 noinst_HEADERS = file.h
 
 check_PROGRAMS = test

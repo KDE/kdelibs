@@ -27,6 +27,6 @@ bin_PROGRAMS = kioslave
 
 kioslave_SOURCES = kioslave.cpp slavewrapper.cpp
 kioslave_LDADD = ../libksycoca.la 
-kioslave_LDFLAGS = $(KDE_RPATH) -dlpreopen ../file/kio_file.la -dlpreopen ../ftp/kio_ftp.la -dlpreopen ../http/kio_http.la
+kioslave_LDFLAGS = $(all_libraries) $(KDE_RPATH) -dlpreopen ../file/kio_file.la -dlpreopen ../ftp/kio_ftp.la -dlpreopen ../http/kio_http.la
 
 

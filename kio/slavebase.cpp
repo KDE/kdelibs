@@ -214,7 +214,7 @@ void SlaveBase::sigsegv_handler (int)
 
 void SlaveBase::openConnection(QString const &host, int, QString const &, QString const &)
 {
-   kDebugInfo( 7007, "openConnection( host = %s)", host.ascii() );
+   kdDebug( 7007 ) << "openConnection( host = " << host << ")";
    connected();
 }
 
