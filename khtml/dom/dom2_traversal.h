@@ -28,6 +28,7 @@
 #ifndef _dom2_traversal_h_
 #define _dom2_traversal_h_
 #include "dom_node.h"
+#include "dom_misc.h"
 
 
 namespace DOM {
@@ -291,7 +292,7 @@ protected:
  *
  */
 
-class CustomNodeFilter {
+class CustomNodeFilter : public DomShared {
 public:
     CustomNodeFilter();
     virtual ~CustomNodeFilter();
