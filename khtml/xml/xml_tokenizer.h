@@ -28,6 +28,7 @@
 
 #include <qxml.h>
 #include <qlist.h>
+#include <qvaluelist.h>
 
 #include "misc/loader.h"
 #include "misc/loader_client.h"
@@ -95,6 +96,7 @@ private:
         StateP
     };
     State state;
+    QValueList<DOMString> sheetElemId;
 };
 
 

@@ -185,8 +185,13 @@ bool XMLHandler::processingInstruction(const QString &target, const QString &dat
         if (attrs.value("type") != "text/css")
             return false;
 
-        // ### some validation on the URL?
-        (void) new XMLStyleSheetLoader(m_doc,attrs.value("href"));
+        DOMString href = attrs.value("href");
+        if (href[0]=='#')            
+            sheetElemId.append(href.string().mid(1));
+        else
+            // ### some validation on the URL?
+            (void) new XMLStyleSheetLoader(m_doc,href);
+
     }
 
     return true;
@@ -229,8 +234,30 @@ bool XMLHandler::enterText()
 
 void XMLHandler::exitText()
 {
-    if (m_currentNode->parentNode() != 0)
-        m_currentNode = m_currentNode->parentNode();
+    NodeImpl* par = m_currentNode->parentNode();
+    if (par != 0)
+    {
+        if (!sheetElemId.isEmpty() && par->isElementNode())
+        {   
+            QValueList<DOMString>::Iterator it;
+            for( it = sheetElemId.begin(); it != sheetElemId.end(); ++it )        
+            {
+                if (static_cast<ElementImpl*>(par)->getAttribute("id")==*it)
+                {
+    //                kdDebug() << "sheet found:" << endl;
+                    DOMString sheet= static_cast<TextImpl*>(m_currentNode)->data();
+    //                kdDebug() << sheet.string() << endl;
+                    CSSStyleSheetImpl *styleSheet = new CSSStyleSheetImpl(m_doc->document());
+                    styleSheet->ref();
+                    styleSheet->parseString(sheet);
+                    m_doc->document()->addXMLStyleSheet(styleSheet);
+                    m_doc->document()->applyChanges();
+                }
+            }
+        }    
+    
+        m_currentNode = par;
+    }
 }
 
 bool XMLHandler::attributeDecl(const QString &/*eName*/, const QString &/*aName*/, const QString &/*type*/,
