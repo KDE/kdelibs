@@ -169,12 +169,14 @@ void KLineEdit::makeCompletion( const QString& text )
 
 void KLineEdit::keyPressEvent( QKeyEvent *e )
 {
-    if ( KStdAccel::isEqual( e, KStdAccel::deleteWordBack()) ) {
+    if ( KStdAccel::isEqual( e, KStdAccel::deleteWordBack()) )
+    {
         deleteWordBack();  // to be replaced with QT3 function
         e->accept();
         return;
     }
-    else if ( KStdAccel::isEqual( e, KStdAccel::deleteWordForward()) ) {
+    else if ( KStdAccel::isEqual( e, KStdAccel::deleteWordForward()) )
+    {
         deleteWordForward(); // to be replaced with QT3 function
         e->accept();
         return;
@@ -238,7 +240,12 @@ void KLineEdit::keyPressEvent( QKeyEvent *e )
         else if ( mode == KGlobalSettings::CompletionShell )
         {
             // Handles completion.
-            int key = ( keys[TextCompletion] == 0 ) ? KStdAccel::key(KStdAccel::TextCompletion) : keys[TextCompletion];
+            int key;
+            if ( keys[TextCompletion] == 0 )
+                key = KStdAccel::key(KStdAccel::TextCompletion);
+            else
+                key = keys[TextCompletion];
+
             if ( KStdAccel::isEqual( e, key ) )
             {
                 // Emit completion if the completion mode is CompletionShell
@@ -247,7 +254,6 @@ void KLineEdit::keyPressEvent( QKeyEvent *e )
                 int len = txt.length();
                 if ( cursorPosition() == len && len != 0 )
                 {
-                    kdDebug(293) << "Shell Completion" << endl;
                     if ( emitSignals() )
                         emit completion( txt );
                     if ( handleSignals() )
@@ -263,7 +269,12 @@ void KLineEdit::keyPressEvent( QKeyEvent *e )
         if ( mode != KGlobalSettings::CompletionNone )
         {
             // Handles previous match
-            int key = ( keys[PrevCompletionMatch] == 0 ) ? KStdAccel::key(KStdAccel::PrevCompletion) : keys[PrevCompletionMatch];
+            int key;
+            if ( keys[PrevCompletionMatch] == 0 )
+                key = KStdAccel::key(KStdAccel::PrevCompletion);
+            else
+                key = keys[PrevCompletionMatch];
+
             if ( KStdAccel::isEqual( e, key ) )
             {
                 if ( emitSignals() )
@@ -272,8 +283,13 @@ void KLineEdit::keyPressEvent( QKeyEvent *e )
                     rotateText( KCompletionBase::PrevCompletionMatch );
                 return;
             }
+
             // Handles next match
-            key = ( keys[NextCompletionMatch] == 0 ) ? KStdAccel::key(KStdAccel::NextCompletion) : keys[NextCompletionMatch];
+            if ( keys[NextCompletionMatch] == 0 )
+                key = KStdAccel::key(KStdAccel::NextCompletion);
+            else
+                key = keys[NextCompletionMatch];
+
             if ( KStdAccel::isEqual( e, key ) )
             {
                 if ( emitSignals() )
@@ -285,14 +301,21 @@ void KLineEdit::keyPressEvent( QKeyEvent *e )
         }
 
         // substring completion
-        if ( compObj() ) {
-            int key = ( keys[SubstringCompletion] == 0 ) ?
-                      KStdAccel::key(KStdAccel::SubstringCompletion) :
-                      keys[SubstringCompletion];
-            if ( KStdAccel::isEqual( e, key ) ) {
+        if ( compObj() )
+        {
+            int key;
+
+            if ( keys[SubstringCompletion] == 0 )
+                key = KStdAccel::key(KStdAccel::SubstringCompletion);
+            else
+                key = keys[SubstringCompletion];
+
+            if ( KStdAccel::isEqual( e, key ) )
+            {
                 if ( emitSignals() )
                     emit substringCompletion( text() );
-                if ( handleSignals() ) {
+                if ( handleSignals() )
+                {
                     setCompletedItems( compObj()->substringCompletion(text()));
                     e->accept();
                 }
@@ -317,8 +340,8 @@ QPopupMenu *KLineEdit::createPopupMenu()
     if ( compObj() )
     {
         QPopupMenu *subMenu = new QPopupMenu( popup );
-	connect( subMenu, SIGNAL( activated( int ) ),
-		this, SLOT( completionMenuActivated( int ) ) );
+        connect( subMenu, SIGNAL( activated( int ) ),
+                 this, SLOT( completionMenuActivated( int ) ) );
 
         popup->insertSeparator();
         popup->insertItem( SmallIconSet("completion"), i18n("Completion"), subMenu );
@@ -375,10 +398,10 @@ void KLineEdit::completionMenuActivated( int id )
 
     if ( oldMode != completionMode() )
     {
-	if ( oldMode == KGlobalSettings::CompletionPopup &&
-		d->completionBox && d->completionBox->isVisible() )
-	    d->completionBox->hide();
-	emit completionModeChanged( completionMode() );
+        if ( oldMode == KGlobalSettings::CompletionPopup &&
+             d->completionBox && d->completionBox->isVisible() )
+            d->completionBox->hide();
+        emit completionModeChanged( completionMode() );
     }
 }
 
