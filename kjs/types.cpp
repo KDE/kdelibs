@@ -74,7 +74,7 @@ Error::Error(ErrorCode e, KJSO *)
     KJScript::setError(this);
   }
 
-  fprintf(stderr, "Runtime error %d at line %d\n", (int) e, line);
+  fprintf(stderr, "Runtime error %d\n", (int) e);
 }
 
 List::List()

@@ -55,7 +55,8 @@ extern "C" {
     script->setCurrent(0L);
     // this is somewhat ugly. But the only way I found to control the
     // dlopen'ed interpreter (*no* linking!) were callback functions.
-    return new KJSProxy(script, &kjs_eval, &kjs_clear, &kjs_destroy);
+    return new KJSProxy(script, &kjs_eval, &kjs_clear,
+			&kjs_special, &kjs_destroy);
   }
   // evaluate code
   bool kjs_eval(KJScript *script, const QChar *c, unsigned int len)
@@ -66,6 +67,12 @@ extern "C" {
   void kjs_clear(KJScript *script)
   {
     script->clear();
+  }
+  // for later extensions.
+  const char *kjs_special(KJScript *, const char *c)
+  {
+    // return something like a version number for now
+    return "1";
   }
   void kjs_destroy(KJScript *script)
   {
