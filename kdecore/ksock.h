@@ -108,7 +108,7 @@ public:
 
     /**
      * Returns a file descriptor for this socket.
-     * Returns -1 when an error occured.
+     * @return the file descriptor, or -1 when an error occured.
      */
     int socket() const { return sock; }
 
@@ -118,8 +118,9 @@ public:
      * If you enable read mode, the socket will emit the signal
      * @ref readEvent() whenever there is something to read out of this
      * socket.
+     * @param enable true to enable reading signals
      */
-    void enableRead( bool );
+    void enableRead( bool enable );
 
     /**
      * Enables the socket for writing.
@@ -130,8 +131,9 @@ public:
      * Warning: If you forget to call enableWrite(false) when you are
      * not ready to send data, you will get lots of writeEvent() signals,
      * in the order of thousands a second !
+     * @param enable true to enable writing signals
      */
-    void enableWrite( bool );
+    void enableWrite( bool enable );
 
 #ifdef KSOCK_NO_BROKEN
     // BCI: remove in libkdecore.so.4
@@ -159,8 +161,9 @@ signals:
      *
      * This signal will only be raised if @ref enableRead( @p true ) was called
      * first.
+     * @param s the KSocket that triggered the event
      */
-    void readEvent( KSocket * );
+    void readEvent( KSocket *s );
 
     /**
      * Socket is ready for writing.
@@ -171,13 +174,15 @@ signals:
      * Warning: If you forget to call enableWrite(false) when you are
      * not ready to send data, you will get lots of writeEvent() signals,
      * in the order of thousands a second !
+     * @param s the KSocket that triggered the event
      */
-    void writeEvent( KSocket * );
+    void writeEvent( KSocket *s );
 
     /**
      * Raised when the connection is broken.
+     * @param s the KSocket that triggered the event
      */
-    void closeEvent( KSocket * );
+    void closeEvent( KSocket *s );
 
 public slots:
     /**
@@ -185,16 +190,18 @@ public slots:
      *
      * Called when
      *  the socket is ready for writing.
+     * @param x ignored
      */
-    void slotWrite( int );
+    void slotWrite( int x);
 
     /**
      * Connected to the readNotifier.
      *
      * Called when
      *  the socket is ready for reading.
+     * @param x ignored
      */
-    void slotRead( int );
+    void slotRead( int x );
 
 protected:
     bool connect( const QString& _host, unsigned short int _port, int timeout = 0 );
@@ -261,20 +268,21 @@ public:
     /**
      * Binds the socket and start listening. This should only be called
      * once when the constructor was called with _bind false.
-     * @return true on success. false on error.
      * On error the socket will be closed.
+     * @return true on success. false on error.
      */
     bool bindAndListen();
 
     /**
      * Returns the file descriptor associated with the socket.
-     * Returns -1 when an error occured during construction or
-     * @ref bindAndListen
+     * @return the file descriptor, -1 when an error occured during 
+     *         construction or @ref bindAndListen
      */
     int socket() const { return sock; }
 
     /**
      * Returns the port number which is being monitored.
+     * @return the port number
      */
     unsigned short int port();
 
@@ -303,8 +311,9 @@ signals:
      * WARNING: this signal is always emitted, even if you don't connect
      * anything to it. That would mean memory loss, because the KSockets
      * created go to oblivion.
+     * @param s the socket that accepted
      */
-    void accepted( KSocket* );
+    void accepted( KSocket*s );
 
 protected:
     bool init( unsigned short int );
