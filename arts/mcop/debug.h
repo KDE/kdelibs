@@ -47,48 +47,60 @@
 #ifdef __GNUC__
 
 #define arts_return_if_fail(expr)										\
-     if (!(expr))                       								\
-	 {																	\
-       arts_warning ("file %s: line %d (%s): assertion failed: (%s)", 	\
+	 do {																\
+       if (!(expr))                       								\
+	   {																\
+         arts_warning ("file %s: line %d (%s): assertion failed: (%s)", \
           __FILE__, __LINE__, __PRETTY_FUNCTION__, #expr);				\
-	   return;															\
-	 }
+	     return;														\
+	   }																\
+	 } while(0)
 
 #define arts_return_val_if_fail(expr,val)								\
-     if (!(expr))                       								\
-	 {																	\
-       arts_warning ("file %s: line %d (%s): assertion failed: (%s)",  	\
-          __FILE__, __LINE__, __PRETTY_FUNCTION__, #expr);				\
-	   return (val);													\
-	 }
+	 do {																\
+       if (!(expr))                       								\
+	   {																\
+         arts_warning ("file %s: line %d (%s): assertion failed: (%s)", \
+            __FILE__, __LINE__, __PRETTY_FUNCTION__, #expr);			\
+	     return (val);													\
+	   }																\
+	 } while(0)
 
 #define arts_assert(expr)												\
-     if (!(expr))                       								\
-       arts_fatal ("file %s: line %d (%s): assertion failed: (%s)",  	\
-          __FILE__, __LINE__, __PRETTY_FUNCTION__, #expr);				\
+	 do {																\
+       if (!(expr))                       								\
+         arts_fatal ("file %s: line %d (%s): assertion failed: (%s)",  	\
+            __FILE__, __LINE__, __PRETTY_FUNCTION__, #expr);			\
+	 } while(0)
 
 #else
 
 #define arts_return_if_fail(expr)										\
-     if (!(expr))                       								\
-	 {																	\
-       arts_warning ("file %s: line %d: assertion failed: (%s)",  		\
-          __FILE__, __LINE__, #expr);									\
-	   return;															\
-	 }
+	 do {																\
+       if (!(expr))                       								\
+	   {																\
+         arts_warning ("file %s: line %d: assertion failed: (%s)",  	\
+            __FILE__, __LINE__, #expr);									\
+	     return;														\
+	   }
+	 } while(0)
 
 #define arts_return_val_if_fail(expr,val)								\
-     if (!(expr))                       								\
-	 {																	\
-       arts_warning ("file %s: line %d: assertion failed: (%s)", 	 	\
-          __FILE__, __LINE__, #expr);									\
-	   return (val);													\
-	 }
+	 do {																\
+       if (!(expr))                       								\
+	   {																\
+         arts_warning ("file %s: line %d: assertion failed: (%s)", 	 	\
+            __FILE__, __LINE__, #expr);									\
+	     return (val);													\
+	   }																\
+	 } while(0)
 
 #define arts_assert(expr)												\
-     if (!(expr))                       								\
-       arts_fatal ("file %s: line %d: assertion failed: (%s)",  		\
-          __FILE__, __LINE__, #expr);									\
+	 do {																\
+       if (!(expr))                       								\
+         arts_fatal ("file %s: line %d: assertion failed: (%s)",  		\
+            __FILE__, __LINE__, #expr);									\
+	 } while(0)
 
 #endif
 
