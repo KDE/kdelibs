@@ -435,7 +435,7 @@ public:
     refCount = 1;
     oldIceIOErrorHandler = 0;
     checkAccelerators = 0;
-    styleFile="kstylerc";
+    overrideStyle=QString::null;
     startup_id = "0";
     m_KAppDCOPInterface = 0L;
   }
@@ -453,7 +453,7 @@ public:
   int refCount;
   IceIOErrorHandler oldIceIOErrorHandler;
   KCheckAccelerators* checkAccelerators;
-  QString styleFile;
+  QString overrideStyle;
   QString geometry_arg;
   QCString startup_id;
   KAppDCOPInterface *m_KAppDCOPInterface;
@@ -702,7 +702,7 @@ void KApplication::init(bool GUIenabled)
 
   if( KProcessController::theKProcessController == 0 )
       (void) new KProcessController();
-  
+
   QApplication::setDesktopSettingsAware( false );
 
   KApp = this;
@@ -725,7 +725,7 @@ void KApplication::init(bool GUIenabled)
 
       atoms[n] = &atom_NetSupported;
       names[n++] = (char *) "_NET_SUPPORTED";
-  
+
       atoms[n] = &atom_KdeNetUserTime;
       names[n++] = (char *) "_KDE_NET_USER_TIME";
 
@@ -750,7 +750,7 @@ void KApplication::init(bool GUIenabled)
 
   KConfig* config = KGlobal::config();
   d->actionRestrictions = config->hasGroup("KDE Action Restrictions" );
-  
+
   if (GUIenabled)
   {
 #ifdef Q_WS_X11
@@ -817,8 +817,8 @@ void KApplication::init(bool GUIenabled)
   {
     smw = new QWidget(0,0);
     long data = 1;
-    XChangeProperty(qt_xdisplay(), smw->winId(), 
-		    atom_DesktopWindow, atom_DesktopWindow, 
+    XChangeProperty(qt_xdisplay(), smw->winId(),
+		    atom_DesktopWindow, atom_DesktopWindow,
 		    32, PropModeReplace, (unsigned char *)&data, 1);
   }
 #else
@@ -952,7 +952,7 @@ void KApplication::disableSessionManagement() {
 }
 
 
-bool KApplication::requestShutDown( 
+bool KApplication::requestShutDown(
     ShutdownConfirm confirm, ShutdownType sdtype, ShutdownMode sdmode )
 {
 #ifdef Q_WS_X11
@@ -972,7 +972,7 @@ bool KApplication::requestShutDown(
     if ( mySmcConnection ) {
         // we already have a connection to the session manager, use it.
         SmcRequestSaveYourself( mySmcConnection, SmSaveBoth, True,
-				SmInteractStyleAny, 
+				SmInteractStyleAny,
 				confirm == ShutdownConfirmNo, True );
 
 	// flush the request
@@ -1279,31 +1279,14 @@ void KApplication::parseCommandLine( )
 
     if (args->isSet("style"))
     {
-       KGlobal::dirs()->addResourceType("kstylefile", KStandardDirs::kde_default("data") + "kstyle/themes");
-       QString style(args->getOption("style"));
 
-       QString styleExtension(".themerc");
-       if (style.right(8) == styleExtension)
-          style.truncate(style.length()-8);
+       QStringList styles = QStyleFactory::keys();
+       QString reqStyle(args->getOption("style"));
 
-       // Look in local dir first.
-       QString styleFile(style+styleExtension);
-       if (!KStandardDirs::exists(styleFile))
-       {
-          styleFile = locate("kstylefile", style+styleExtension);
-          if (styleFile.isEmpty())
-          {
-             styleFile = locate("kstylefile", "qt"+style+styleExtension);
-          }
-       }
-       if (styleFile.isEmpty())
-       {
-          fprintf(stderr, "%s", i18n("The style %1 was not found\n").arg(style).local8Bit().data());
-       }
+       if ((*styles.find(reqStyle)).isEmpty())
+          fprintf(stderr, "%s", i18n("The style %1 was not found\n").arg(reqStyle).local8Bit().data());
        else
-       {
-          d->styleFile = styleFile;
-       }
+          d->overrideStyle = reqStyle;
     }
 
     if (args->isSet("caption"))
@@ -1347,7 +1330,7 @@ void KApplication::parseCommandLine( )
         int format;
         unsigned long length, after;
         unsigned char *data;
-        while ( XGetWindowProperty( qt_xdisplay(), qt_xrootwin(), atom_NetSupported, 
+        while ( XGetWindowProperty( qt_xdisplay(), qt_xrootwin(), atom_NetSupported,
 				    0, 1, FALSE, AnyPropertyType, &type, &format,
                                     &length, &after, &data ) != Success || !length ) {
             if ( data )
@@ -1408,7 +1391,7 @@ KApplication::~KApplication()
   delete d->m_KAppDCOPInterface;
 
   // First call the static deleters and then call KLibLoader::cleanup()
-  // The static deleters may delete libraries for which they need KLibLoader. 
+  // The static deleters may delete libraries for which they need KLibLoader.
   // KLibLoader will take care of the remaining ones.
   KGlobal::deleteStaticDeleters();
   KLibLoader::cleanUp();
@@ -1473,8 +1456,8 @@ bool KApplication::x11EventFilter( XEvent *_event )
 		timeval tv;
 		gettimeofday( &tv, NULL );
 		unsigned long now = tv.tv_sec * 10 + tv.tv_usec / 100000;
-		XChangeProperty(qt_xdisplay(), activeWindow()->winId(), 
-				atom_KdeNetUserTime, XA_CARDINAL, 
+		XChangeProperty(qt_xdisplay(), activeWindow()->winId(),
+				atom_KdeNetUserTime, XA_CARDINAL,
 				32, PropModeReplace, (unsigned char *)&now, 1);
 	    }
 	    break;
@@ -1606,34 +1589,26 @@ void KApplication::applyGUIStyle()
 {
     if ( !useStyles ) return;
 
-    KSimpleConfig pConfig(d->styleFile , true );
-    QString oldGroup = pConfig.group();
-    pConfig.setGroup("KDE");
-    QString styleStr = pConfig.readEntry("WidgetStyle",
-                                          QPixmap::defaultDepth() > 8 ? "HighColor" : "Default");
+    KConfig pConfig( QString::null, true );
+    pConfig.setGroup("General");
+    QString defaultStyle = (QPixmap::defaultDepth() > 8 ? "HighColor" : "Default");
+    QString styleStr = pConfig.readEntry("widgetStyle", defaultStyle);
 
-#if 0
-    // default style is not yet ported - currently looking into it
-    if(styleStr == "Default"){
-        pKStyle = new KDEStyle;
-        setStyle(pKStyle);
-        styleHandle=0;
+    if (d->overrideStyle.isEmpty()) {
+      // ### add check wether we already use the correct style to return then
+      // (workaround for Qt misbehaviour to avoid double style initialization)
+
+      QStyle* sp = QStyleFactory::create( styleStr );
+
+      // If there is no default style available, try falling back any available style
+      if ( !sp && styleStr != defaultStyle)
+          sp = QStyleFactory::create( defaultStyle );
+      if ( !sp )
+          sp = QStyleFactory::create( *(QStyleFactory::keys().begin()) );
+      setStyle(sp);
     }
     else
-#endif
-        if(styleStr == "Windows 95"){
-        setStyle("Windows");
-    }
-    else if(styleStr == "Qt SGI"){
-        setStyle("SGI");
-    }
-    else {
-        QStyle* sp = QStyleFactory::create( styleStr );
-	if ( !sp )
-	    sp = QStyleFactory::create( *(QStyleFactory::keys().begin()) );
-        setStyle(sp);
-    }
-
+        setStyle(d->overrideStyle);
     // Reread palette from config file.
     kdisplaySetPalette();
 }
@@ -2393,7 +2368,7 @@ bool KApplication::authorize(const QString &genericAction)
 {
    if (!d->actionRestrictions)
       return true;
-      
+
    KConfig *config = KGlobal::config();
    KConfigGroupSaver saver( config, "KDE Action Restrictions" );
    return config->readBoolEntry(genericAction, true);
@@ -2405,7 +2380,7 @@ bool KApplication::authorizeKAction(const char *action)
       return true;
 
    static const QString &action_prefix = KGlobal::staticQString( "action/" );
-      
+
    return authorize(action_prefix + action);
 }
 
