@@ -32,6 +32,7 @@
 #ifndef __keramik_h__
 #define __keramik_h__
 
+#include <qframe.h>
 #include <kstyle.h>
 
 #include "pixmaploader.h"
@@ -50,6 +51,7 @@ public:
 	void polish( QWidget* widget );
 	void unPolish( QWidget* widget );
 	void polish( QPalette& );
+	void polish( QApplication *app );
 
 	void drawKStylePrimitive( KStylePrimitive kpe,
 	                          QPainter* p,
@@ -135,6 +137,7 @@ protected:
 	
 	
 private:
+	bool kickerMode;
 	QRect subRect(SubRect r, const QWidget *widget) const;
 	
 	// Disable copy constructor and = operator

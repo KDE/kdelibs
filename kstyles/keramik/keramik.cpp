@@ -35,6 +35,7 @@
 #include <qbitmap.h>
 #include <qcombobox.h>
 #include <qdrawutil.h>
+#include <qframe.h>
 #include <qheader.h>
 #include <qintdict.h>
 #include <qlistbox.h>
@@ -110,7 +111,7 @@ namespace
 {
 	QIntDict<GradientSet> gDict;
 
-	const int itemFrame       = 1;
+	const int itemFrame       = 2;
 	const int itemHMargin     = 6;
 	const int itemVMargin     = 0;
 	const int arrowHMargin    = 6;
@@ -364,7 +365,7 @@ void KeramikStyle::renderGradient( QPainter* p, const QRect& r,
 #define loader Keramik::PixmapLoader::the()
 
 KeramikStyle::KeramikStyle() 
-	: KStyle( AllowMenuTransparency | FilledFrameWorkaround, ThreeButtonScrollBar ), maskMode(false)
+	:KStyle( AllowMenuTransparency | FilledFrameWorkaround, ThreeButtonScrollBar ), maskMode(false),kickerMode(false)
 {
 	gDict.setAutoDelete( true );
 }
@@ -373,6 +374,12 @@ KeramikStyle::~KeramikStyle()
 {
 	Keramik::PixmapLoader::release();
 	KeramikDbCleanup();
+}
+
+void KeramikStyle::polish(QApplication* app)
+{
+	if (QString(app->argv()[0]) == "kicker")
+		kickerMode = true;
 }
 
 void KeramikStyle::polish(QWidget* widget)
@@ -394,6 +401,18 @@ void KeramikStyle::polish(QWidget* widget)
 	} else if (widget->inherits("QToolBarExtensionWidget")) {
 		widget->installEventFilter(this);
  	}
+	else if (kickerMode) 
+	{
+		
+		if (QCString(widget->className()) == ("FittsLawFrame"))
+		{
+			QFrame* f = static_cast<QFrame*>(widget);
+			f->setFrameStyle(QFrame::Panel | QFrame::Raised);
+			f->setLineWidth(1);
+			f->setMidLineWidth(1);
+			
+		}
+	}	
 
 	KStyle::polish(widget);
 }
@@ -416,6 +435,17 @@ void KeramikStyle::unPolish(QWidget* widget)
 	} else if (widget->inherits("QToolBarExtensionWidget")) {
 		widget->removeEventFilter(this);
  	}
+	else if (kickerMode)  //CHECKME!
+	{
+		if (QCString(widget->className()) == ("FittsLawFrame"))
+		{
+			QFrame* f = static_cast<QFrame*>(widget);
+			f->setFrameStyle(QFrame::Panel | QFrame::Raised);
+			f->setLineWidth(2);
+			f->setMidLineWidth(1);
+		}
+	}	
+	
 
 
 	KStyle::unPolish(widget);
@@ -462,14 +492,21 @@ void KeramikStyle::drawPrimitive( PrimitiveElement pe,
 		{
 			bool sunken = on || down;
 			
-			if (sunken)
+			int x2 = x+w-1;
+			int y2 = y+h-1;
+			
+			if (on)
+			{
+				Keramik::RectTilePainter(keramik_toolbar_clk).draw(p, r, cg.button(), cg.background());
+				p->setPen(cg.dark());
+				p->drawLine(x, y, x2, y);
+				p->drawLine(x, y, x, y2);
+			}
+			else if (down)
 			{
 				Keramik::RectTilePainter(keramik_toolbar_clk).draw(p, r, cg.button(), cg.background());
 			}
-			else
-			{
-				int x2 = x+w-1;
-				int y2 = y+h-1;
+			else {
 				QPen oldPen = p->pen();
 
 				// Outer frame (round style)
@@ -617,7 +654,7 @@ void KeramikStyle::drawPrimitive( PrimitiveElement pe,
 			                loader.size( keramik_scrollbar_vbar+KeramikSlider3 ).height() + 2 ) )
 					count = 5;
 
-			Keramik::ScrollBarPainter( name, count, horizontal ).draw( p, r, cg.button(), cg.background(), disabled, pmode() );
+			Keramik::ScrollBarPainter( name, count, horizontal ).draw( p, r, cg.highlight(), cg.background(), false, pmode() );
 			break;
 		}
 
@@ -671,7 +708,13 @@ void KeramikStyle::drawPrimitive( PrimitiveElement pe,
 		// -------------------------------------------------------------------
 		case PE_Indicator:
 		case PE_IndicatorMask:
-			Keramik::ScaledPainter( on ? keramik_checkbox_on : keramik_checkbox_off ).draw( p, r, cg.button(), cg.background(), disabled, pmode() );
+			if (flags & Style_On)
+				Keramik::ScaledPainter( keramik_checkbox_on ).draw( p, r, cg.button(), cg.background(), disabled, pmode() );
+			else if (flags & Style_Off) 
+				Keramik::ScaledPainter( keramik_checkbox_off ).draw( p, r, cg.button(), cg.background(), disabled, pmode() );
+			else
+				Keramik::ScaledPainter( keramik_checkbox_tri ).draw( p, r, cg.button(), cg.background(), disabled, pmode() );
+							
 			break;
 
 			// RADIOBUTTON (exclusive indicator)
@@ -953,10 +996,10 @@ void KeramikStyle::drawKStylePrimitive( KStylePrimitive kpe,
 				bool horizontal = slider->orientation() == Horizontal;
 
 				if (horizontal)
-					Keramik::ScaledPainter( keramik_slider ).draw( p, r, cg.button(), 
+					Keramik::ScaledPainter( keramik_slider ).draw( p, r, cg.highlight(), 
 						Qt::black,  disabled, Keramik::TilePainter::PaintFullBlend );
 				else
-					Keramik::ScaledPainter( keramik_vslider ).draw( p, r, cg.button(), 
+					Keramik::ScaledPainter( keramik_vslider ).draw( p, r, cg.highlight(), 
 						Qt::black,  disabled, Keramik::TilePainter::PaintFullBlend );
 				break;
 			}
@@ -1196,7 +1239,8 @@ void KeramikStyle::drawControl( ControlElement element,
 				// Don't leave blank holes if we set NoBackground for the QPopupMenu.
 				// This only happens when the popupMenu spans more than one column.
 				if (! ( widget->erasePixmap() && !widget->erasePixmap()->isNull() ) )
-					p->fillRect( r, cg.brush( QColorGroup::Button ) );
+					p->fillRect( r, cg.background().light( 110 ) );
+
 				break;
 			}
 			int  tab        = opt.tabWidth();
@@ -1212,7 +1256,7 @@ void KeramikStyle::drawControl( ControlElement element,
 			// Draw the menu item background
 			if ( active )
 			{
-				Keramik::RowPainter( keramik_menuitem ).draw( p, main, cg.button(), cg.background() );
+				Keramik::RowPainter( keramik_menuitem ).draw( p, main, cg.highlight(), cg.background() );
 				//p->fillRect(main.x(), main.y(), main.width(), main.height(), cg.brush(QColorGroup::Highlight) );
 			}
 			// Draw the transparency pixmap
@@ -1318,8 +1362,8 @@ void KeramikStyle::drawControl( ControlElement element,
 					int text_flags = AlignVCenter | ShowPrefix | DontClip | SingleLine;
 					text_flags |= reverse ? AlignRight : AlignLeft;
 					
-					QColor draw = cg.text();
-					//active? cg.highlightedText () : cg.text();
+					//QColor draw = cg.text();
+					QColor draw = active? cg.highlightedText () : cg.text();
 					p->setPen(draw);
 
 

@@ -56,7 +56,7 @@ pixmaps.keramik: pics/checkbox-off.png pics/checkbox-on.png pics/combobox-list-b
 	 pics/progressbar-cc.png pics/progressbar-cl.png pics/progressbar-cr.png\
 	 pics/toolbar-clk-bc.png pics/toolbar-clk-bl.png pics/toolbar-clk-br.png\
 	 pics/toolbar-clk-cc.png pics/toolbar-clk-cl.png pics/toolbar-clk-cr.png\
-	 pics/toolbar-clk-tc.png pics/toolbar-clk-tl.png pics/toolbar-clk-tr.png\
+	 pics/toolbar-clk-tc.png pics/toolbar-clk-tl.png pics/toolbar-clk-tr.png pics/checkbox-tri.png\
 	 pics/spinbox-pressed-down.png pics/spinbox-pressed-up.png pics/tab-bottom-active-bc.png pics/tab-bottom-active-bl.png pics/tab-bottom-active-br.png pics/tab-bottom-active-cc.png pics/tab-bottom-active-cl.png pics/tab-bottom-active-cr.png pics/tab-bottom-inactive-bc.png pics/tab-bottom-inactive-bl.png pics/tab-bottom-inactive-br.png pics/tab-bottom-inactive-cc.png pics/tab-bottom-inactive-cl.png pics/tab-bottom-inactive-cr.png pics/tab-bottom-inactive-separator.png pics/tab-top-active-cc.png pics/tab-top-active-cl.png pics/tab-top-active-cr.png pics/tab-top-active-tc.png pics/tab-top-active-tl.png pics/tab-top-active-tr.png pics/tab-top-inactive-cc.png pics/tab-top-inactive-cl.png pics/tab-top-inactive-cr.png pics/tab-top-inactive-separator.png pics/tab-top-inactive-tc.png pics/tab-top-inactive-tl.png pics/tab-top-inactive-tr.png pics/toolbar.png pics/vslider.png
 
 pixmaps.keramik keramikrc.h: genembed

@@ -290,7 +290,7 @@ namespace Keramik
 				colMde[0] = Tiled;
 				colMde[1] = Fixed;
 			}
-			rowMde[1] = Fixed;
+			rowMde[0] = Scaled;
 			
 			m_columns = 2;
 		}
