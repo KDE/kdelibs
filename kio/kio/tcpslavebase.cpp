@@ -1,7 +1,7 @@
 /*
  * $Id$
  *
- * Copyright (C) 2000 Alex Zepeda <jazepeda@pacbell.net>
+ * Copyright (C) 2000 Alex Zepeda <zipzippy@sonic.net
  * Copyright (C) 2001 George Staikos <staikos@kde.org>
  * Copyright (C) 2001 Dawit Alemayehu <adawit@kde.org>
  *
