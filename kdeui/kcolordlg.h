@@ -34,6 +34,8 @@
 #include "kselect.h"
 
 class QLineEdit;
+class KPalette;
+class KColorCells;
 
 /**
 * Widget for Hue/Saturation selection.
@@ -89,6 +91,57 @@ protected:
   QPixmap pixmap;
 };
 
+class KColor : public QColor
+{
+public:
+  KColor();
+  KColor( const KColor &col);
+  KColor( const QColor &col);
+
+  void setHsv(int _h, int _s, int _v);
+  void setRgb(int _r, int _g, int _b);
+
+  void rgb(int *_r, int *_g, int *_b);
+  void hsv(int *_h, int *_s, int *_v);
+protected:
+  int h;
+  int s;
+  int v;
+  int r;
+  int g;
+  int b;
+};
+
+/**
+ * A color palette in table form.
+ * @author Waldo Bastian <bastian@kde.org>
+ * @version $Id:  $
+ **/
+class KPaletteTable : public QWidget
+{
+  Q_OBJECT
+public:
+  KPaletteTable( QWidget *parent, int minWidth=210, int cols = 16);
+  void addToCustomColors( const QColor &);
+  void addToRecentColors( const QColor &);
+public slots:
+  void setPalette(const QString &paletteName);
+signals:
+  void colorSelected( const QColor &, const QString & );
+
+protected slots:
+  void slotColorCellSelected( int );
+protected:
+  QString i18n_customColors;
+  QString i18n_recentColors;
+  QComboBox *combo;
+  KColorCells *cells;
+  QScrollView *sv;
+  KPalette *palette;
+  int mMinWidth;
+  int mCols;
+};
+
 
 /**
 * A table of editable colour cells.
@@ -107,6 +160,8 @@ public:
   {	return colors[indx]; }
   int numCells()
   {	return numRows() * numCols(); }
+
+  void setShading(bool _shade) { shade = _shade; }
 	
   int getSelected()
   {	return selected; }
@@ -129,7 +184,7 @@ protected:
   bool inMouse;
   QPoint mPos;
   int	selected;
-  
+  bool shade;  
 };
 
 /**
@@ -165,7 +220,7 @@ private:
  *
  * @sect Features:
  * 
- * @li Colour selection from a standard system palette.
+ * @li Colour selection from a wide range of palettes.
  * @li Colour selection from a Palette of H vs S and V selectors (similar to windoze).
  * @li Direct input of HSV or RGB values.
  * @li Saving of custom colors
@@ -194,7 +249,7 @@ class KColorDialog : public KDialogBase
     /** 
      * Retrieve the currently selected color. 
      **/
-    QColor color() { return selColor; }
+    QColor color();
   
     /**
      * This is probably the function you are looking for.
@@ -202,6 +257,11 @@ class KColorDialog : public KDialogBase
      * returns @ref result().
      */
     static int getColor( QColor &theColor, QWidget *parent=0L );
+
+    /**
+     * Get the color from the pixel at point p on the screen.
+     */
+    static QColor grabColor(const QPoint &p);
 
   public slots:
     /** 
@@ -222,19 +282,29 @@ class KColorDialog : public KDialogBase
     void slotHSVChanged( void );
     void slotHSChanged( int, int );
     void slotVChanged( int );
-    void slotSysColorSelected( int );
-    void slotCustColorSelected( int );
-    void slotAddToCustom( void );
-    void slotWriteSettings( void );
+    void slotColorSelected( const QColor &col );
+    void slotColorSelected( const QColor &col, const QString &name );
+    void slotColorPicker();
+    void slotAddToCustomColors();
 
   private:
-    void readSettings( void );
     void setRgbEdit( void );
     void setHsvEdit( void );
+    void setHtmlEdit( void );
+    void _setColor( const KColor &col, const QString &name=QString::null );
+
+  protected:
+    virtual void mouseReleaseEvent( QMouseEvent * );
+    virtual void keyPressEvent( QKeyEvent * );
 
   private:
-    KColorCells *sysColorCells;
-    KColorCells *custColorCells;
+    KPaletteTable *table;
+    bool bRecursion;
+    bool bEditRgb;
+    bool bEditHsv;
+    bool bColorPicking;
+    QLabel *colorName;
+    QLineEdit *htmlName;
     QLineEdit *hedit;
     QLineEdit *sedit;
     QLineEdit *vedit;
@@ -242,9 +312,10 @@ class KColorDialog : public KDialogBase
     QLineEdit *gedit;
     QLineEdit *bedit;
     KColorPatch *patch;
-    KHSSelector *palette;
+    KHSSelector *hsSelector;
+    KPalette *palette;
     KValueSelector *valuePal;
-    QColor selColor;
+    KColor selColor;
 };
 
 
