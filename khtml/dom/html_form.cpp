@@ -848,7 +848,13 @@ void HTMLSelectElement::setTabIndex( long _tabIndex )
 
 void HTMLSelectElement::add( const HTMLElement &element, const HTMLElement &before )
 {
-    if(impl) static_cast<HTMLSelectElementImpl*>(impl)->add( element, before );
+    if (!impl)
+        throw DOMException(DOMException::NOT_FOUND_ERR);
+
+    int exceptioncode = 0;
+    static_cast<HTMLSelectElementImpl*>(impl)->add( element, before, exceptioncode );
+    if ( exceptioncode )
+        throw DOMException( exceptioncode );
 }
 
 void HTMLSelectElement::remove( long index )
