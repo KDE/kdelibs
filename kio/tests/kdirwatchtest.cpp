@@ -18,7 +18,7 @@ int main (int argc, char **argv)
 
   myTest testObject;
 
-  KDirWatch *dirwatch = new KDirWatch();
+  KDirWatch *dirwatch = KDirWatch::self();
 
   QString home = QString(getenv ("HOME")) + "/";
   QString desk = home + "Desktop/";
@@ -40,7 +40,7 @@ int main (int argc, char **argv)
   if(!dirwatch->restartDirScan(home))
       kdDebug() << "restartDirScan: " << home << "error!" << endl;
   if (!dirwatch->stopDirScan(test))
-    kdDebug() << "stopDirScan: error" << endl;
+     kdDebug() << "stopDirScan: error" << endl;
 
   return a.exec();
 }
