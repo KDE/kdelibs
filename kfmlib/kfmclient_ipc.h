@@ -41,6 +41,8 @@ public slots:
 	void sortDesktop();
 public slots:
 	void auth(const char* _password);
+public slots:
+	void selectRootIcons(int _x, int _y, int _w, int _h, bool _add);
 signals:
 	void finished();
 private:

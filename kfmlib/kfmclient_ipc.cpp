@@ -29,12 +29,12 @@ bool KfmIpc::isConnected()
     return connected;
 }
 
-void KfmIpc::closeEvent( KSocket * )
+void KfmIpc::closeEvent( KSocket * _sock )
 {
     connected = FALSE;
 }
 
-void KfmIpc::readEvent( KSocket * )
+void KfmIpc::readEvent( KSocket *_sock )
 {
     if ( bHeader )
     {
@@ -48,7 +48,7 @@ void KfmIpc::readEvent( KSocket * )
 	    cBody = 0;
 	    if ( bodyLen <= 0 )
 	    {
-		warning("ERROR: Invalid header\n");
+		printf("ERROR: Invalid header\n");
 		delete this;
 		return;
 	    }
@@ -58,7 +58,7 @@ void KfmIpc::readEvent( KSocket * )
 	}
 	else if ( cHeader + n == 10 )
 	{
-	    warning("ERROR: Too long header\n");
+	    printf("ERROR: Too long header\n");
 	    delete this;
 	    return;
 	}
@@ -66,7 +66,7 @@ void KfmIpc::readEvent( KSocket * )
 	{
 	    if ( !isdigit( headerBuffer[ cHeader ] ) )
 	    {
-		warning("ERROR: Header must be an int\n");
+		printf("ERROR: Header must be an int\n");
 		delete this;
 		return;
 	    }
@@ -81,6 +81,7 @@ void KfmIpc::readEvent( KSocket * )
     if ( n + cBody == bodyLen )
     {
 	pBody[bodyLen] = 0;
+	printf(">>'%s'\n",pBody);
 	bHeader = TRUE;
 	parse( pBody, bodyLen );
 	return;
@@ -98,7 +99,7 @@ void KfmIpc::parse( char *_data, int _len )
     _len -= pos;
 
 	if ( strcmp( name, "finished" ) == 0 ) { parse_finished( _data, _len ); } else
-    { warning("Unknown command '%s'\n",name); }
+    { printf("Unknown command '%s'\n",name); }
 }
 
 

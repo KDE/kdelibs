@@ -123,8 +123,28 @@ void KfmIpc::auth(const char* _password)
 	write_string( sock->socket(), _password );
 }
 
-void KfmIpc::parse_finished( char *, int  )
+void KfmIpc::selectRootIcons(int _x, int _y, int _w, int _h, bool _add)
 {
+	int len = 0;
+	len += len_int( _x );
+	len += len_int( _y );
+	len += len_int( _w );
+	len += len_int( _h );
+	len += len_bool( _add );
+	len += len_string("selectRootIcons");
+	write_int( sock->socket(), len );
+	write_string( sock->socket(), "selectRootIcons" );
+	write_int( sock->socket(), _x );
+	write_int( sock->socket(), _y );
+	write_int( sock->socket(), _w );
+	write_int( sock->socket(), _h );
+	write_bool( sock->socket(), _add );
+}
+
+void KfmIpc::parse_finished( char *_data, int _len )
+{
+	int pos = 0;
+
 	// Calling function
 	emit finished(  );
 }
