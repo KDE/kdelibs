@@ -158,7 +158,7 @@ public:
     //                 the upper 16 bit identify the namespace
     //                 the lower 16 bit identify the local part of the
     //                 qualified element name.
-    virtual Id id() const { return 0; };
+    virtual Id id() const { return 0; }
 
     enum IdType {
         AttributeId,
@@ -222,7 +222,7 @@ public:
     /**
      * whether this node can receive the keyboard focus.
      */
-    virtual bool isSelectable() const { return false; };
+    virtual bool isSelectable() const { return false; }
 
     virtual bool isInline() const;
     virtual QString toHTML() const;

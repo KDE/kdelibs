@@ -40,6 +40,56 @@
 using namespace DOM;
 using namespace khtml;
 
+XMLIncrementalSource::XMLIncrementalSource()
+    : QXmlInputSource(), m_pos( 0 ), m_unicode( 0 ),
+      m_finished( false )
+{
+}
+
+void XMLIncrementalSource::fetchData()
+{
+    //just a dummy to overwrite default behavior
+}
+
+QChar XMLIncrementalSource::next()
+{
+    if ( m_finished )
+        return QXmlInputSource::EndOfDocument;
+    else if ( m_data.length() <= m_pos )
+        return QXmlInputSource::EndOfData;
+    else
+        return m_unicode[m_pos++];
+}
+
+void XMLIncrementalSource::setData( const QString& str )
+{
+    m_data = str;
+    m_unicode = m_data.unicode();
+    m_pos = 0;
+    if ( !str.isEmpty() )
+        m_finished = false;
+}
+void XMLIncrementalSource::setData( const QByteArray& data )
+{
+    setData( fromRawData( data, true ) );
+}
+
+void XMLIncrementalSource::appendXML( const QString& str )
+{
+    m_data += str;
+    m_unicode = m_data.unicode();
+}
+
+QString XMLIncrementalSource::data()
+{
+    return m_data;
+}
+
+void XMLIncrementalSource::setFinished( bool finished )
+{
+    m_finished = finished;
+}
+
 XMLHandler::XMLHandler(DocumentPtr *_doc, KHTMLView *_view)
     : errorLine(0)
 {
@@ -72,7 +122,7 @@ bool XMLHandler::startDocument()
 }
 
 
-bool XMLHandler::startElement( const QString& namespaceURI, const QString& localName, const QString& qName, const QXmlAttributes& atts )
+bool XMLHandler::startElement( const QString& namespaceURI, const QString& /*localName*/, const QString& qName, const QXmlAttributes& atts )
 {
     if (m_currentNode->nodeType() == Node::TEXT_NODE)
         exitText();
@@ -292,18 +342,24 @@ bool XMLHandler::unparsedEntityDecl(const QString &/*name*/, const QString &/*pu
 //------------------------------------------------------------------------------
 
 XMLTokenizer::XMLTokenizer(DOM::DocumentPtr *_doc, KHTMLView *_view)
+    : m_handler(_doc,_view)
 {
     m_doc = _doc;
     if ( m_doc ) m_doc->ref();
     m_view = _view;
-    m_xmlCode = "";
     m_scriptsIt = 0;
     m_cachedScript = 0;
+    m_noErrors = true;
+    m_reader.setContentHandler( &m_handler );
+    m_reader.setLexicalHandler( &m_handler );
+    m_reader.setErrorHandler( &m_handler );
+    m_reader.setDeclHandler( &m_handler );
+    m_reader.setDTDHandler( &m_handler );
 }
 
 XMLTokenizer::~XMLTokenizer()
 {
-    if ( m_doc ) m_doc->deref();
+    if (m_doc) m_doc->deref();
     if (m_scriptsIt)
         delete m_scriptsIt;
     if (m_cachedScript)
@@ -313,33 +369,31 @@ XMLTokenizer::~XMLTokenizer()
 
 void XMLTokenizer::begin()
 {
+    // parse xml file
+    m_reader.parse( &m_source, true );
 }
 
-void XMLTokenizer::write( const QString &str, bool /*appendData*/ )
+void XMLTokenizer::write( const QString &str, bool appendData )
 {
-    m_xmlCode += str;
+    if ( !m_noErrors && appendData )
+        return;
+    if ( appendData ) {
+        m_source.appendXML( str );
+        m_noErrors = m_reader.parseContinue();
+    }
 }
 
 void XMLTokenizer::end()
 {
+    m_source.setFinished( true );
+    //if ( m_noErrors )
+    //m_noErrors = m_reader.parseContinue();
     emit finishedParsing();
 }
 
 void XMLTokenizer::finish()
 {
-    // parse xml file
-    XMLHandler handler(m_doc,m_view);
-    QXmlInputSource source;
-    source.setData(m_xmlCode);
-    QXmlSimpleReader reader;
-    reader.setContentHandler( &handler );
-    reader.setLexicalHandler( &handler );
-    reader.setErrorHandler( &handler );
-    reader.setDeclHandler( &handler );
-    reader.setDTDHandler( &handler );
-    bool ok = reader.parse( source );
-
-    if (!ok) {
+    if (!m_noErrors) {
         // An error occurred during parsing of the code. Display an error page to the user (the DOM
         // tree is created manually and includes an excerpt from the code where the error is located)
 
@@ -350,15 +404,16 @@ void XMLTokenizer::finish()
         while (m_doc->document()->hasChildNodes())
             static_cast<NodeImpl*>(m_doc->document())->removeChild(m_doc->document()->firstChild(),exceptioncode);
 
-        QTextIStream stream(&m_xmlCode);
+        QString xmlCode = m_source.data();
+        QTextIStream stream(&xmlCode);
         QString line, errorLocPtr;
-        if ( handler.errorLine ) {
+        if ( m_handler.errorLine ) {
             unsigned long lineno;
-            for (lineno = 0; lineno < handler.errorLine-1; lineno++)
-              stream.readLine();
-            QString line = stream.readLine();
+            for (lineno = 1; lineno < m_handler.errorLine; lineno++)
+                stream.readLine();
+            line = stream.readLine();
 
-            for (unsigned long colno = 0; colno < handler.errorCol-1; colno++)
+            for (unsigned long colno = 0; colno < m_handler.errorCol-1; colno++)
                 errorLocPtr += " ";
             errorLocPtr += "^";
         }
@@ -369,7 +424,7 @@ void XMLTokenizer::finish()
         NodeImpl   *body = doc->createElementNS(XHTML_NAMESPACE,"body");
         NodeImpl     *h1 = doc->createElementNS(XHTML_NAMESPACE,"h1");
         NodeImpl       *headingText = doc->createTextNode(i18n("XML parsing error"));
-        NodeImpl     *errorText = doc->createTextNode(handler.errorProtocol());
+        NodeImpl     *errorText = doc->createTextNode(m_handler.errorProtocol());
         NodeImpl     *hr = 0;
         NodeImpl     *pre = 0;
         NodeImpl     *lineText = 0;

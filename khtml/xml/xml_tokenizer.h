@@ -120,6 +120,26 @@ signals:
 
 };
 
+class XMLIncrementalSource : public QXmlInputSource
+{
+public:
+    XMLIncrementalSource();
+    virtual void fetchData();
+    virtual QChar next();
+    virtual void setData( const QString& str );
+    virtual void setData( const QByteArray& data );
+    virtual QString data();
+
+    void appendXML( const QString& str );
+    void setFinished( bool );
+
+private:
+    QString      m_data;
+    uint         m_pos;
+    const QChar *m_unicode;
+    bool         m_finished;
+};
+
 class XMLTokenizer : public Tokenizer, public khtml::CachedObjectClient
 {
 public:
@@ -140,10 +160,14 @@ protected:
     void executeScripts();
     void addScripts(DOM::NodeImpl *n);
 
-    QString m_xmlCode;
     QPtrList<DOM::HTMLScriptElementImpl> m_scripts;
     QPtrListIterator<DOM::HTMLScriptElementImpl> *m_scriptsIt;
     khtml::CachedScript *m_cachedScript;
+
+    XMLHandler m_handler;
+    QXmlSimpleReader m_reader;
+    XMLIncrementalSource m_source;
+    bool m_noErrors;
 };
 
 #endif
