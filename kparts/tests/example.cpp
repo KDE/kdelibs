@@ -17,6 +17,8 @@ Shell::Shell( KPart *part1, KPart *part2 )
   
   m_splitter = new QSplitter( this );
 
+  setView( m_splitter );
+
   m_splitter->show();
   
   m_part1->reparent( m_splitter, 0, QPoint( 0, 0 ), true );
@@ -42,7 +44,7 @@ void Shell::slotActivePartChanged( KPart *newPart, KPart *oldPart )
 
 QString Shell::config() const
 {
-  return QString::null;
+  return readConfigFile( "example_shell.rc" );
 }
 
 void Shell::resizeEvent( QResizeEvent * )

@@ -1,0 +1,7 @@
+<!DOCTYPE kpartgui>
+<kpartgui>
+<MenuBar>
+  <Menu name="File"><text>File</text>
+  </Menu>
+</MenuBar>
+</kpartgui>
