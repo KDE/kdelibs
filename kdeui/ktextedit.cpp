@@ -154,7 +154,7 @@ QPopupMenu *KTextEdit::createPopupMenu( const QPoint &pos )
     if ( checkSpellingEnabled() ) {
 
 	menu->insertSeparator();
-	int id = menu->insertItem( SmallIcon( "spellcheck" ), i18n( "Check Spelling" ), 
+	int id = menu->insertItem( SmallIcon( "spellcheck" ), i18n( "Check Spelling..." ), 
 				   this, SLOT( checkSpelling() ) );
 
 	if( text().isEmpty() )
@@ -256,7 +256,6 @@ void KTextEdit::checkSpelling()
 
     connect( d->spell, SIGNAL( corrected( const QString &, const QString &, unsigned int ) ),
 	     this, SLOT( spellCheckerCorrected( const QString &, const QString &, unsigned int ) ) );
-
 }
 
 void KTextEdit::spellCheckerMisspelling( const QString &text, const QStringList &, unsigned int pos )
@@ -287,7 +286,8 @@ void KTextEdit::posToRowCol(unsigned int pos, unsigned int &line, unsigned int &
 
 void KTextEdit::spellCheckerFinished()
 {
-
+    delete d->spell;
+    d->spell = 0L;
 }
 
 void KTextEdit::slotSpellCheckReady( KSpell *s )
