@@ -9,7 +9,7 @@
 #include <qcheckbox.h>
 #include <qradiobutton.h>
 #include <qbuttongroup.h>
-#include <kintlineedit.h>
+#include <knumlineedit.h>
 
 class KRuler;
 class QWidget;
