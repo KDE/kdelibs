@@ -307,7 +307,7 @@ signals:
   void rightClickedURL(const QString& url);
 
   /**
-   * Emitted when the user clicked the left mouse button on this label.
+   * Emitted when the user clicked the right mouse button on this label.
    */
   void rightClickedURL();
 
