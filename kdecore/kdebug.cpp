@@ -434,7 +434,7 @@ kdbgstream& kdbgstream::operator<<( const QSize& s ) {
     return *this;
 }
 kdbgstream& kdbgstream::operator<<( const QRect& r ) {
-    *this << "[" << r.left() << ", " << r.top() << " - " << r.right() << ", " << r.bottom() << "]";
+    *this << "[" << r.x() << "," << r.y() << " - " << r.width() << "x" << r.height() << "]";
     return *this;
 }
 kdbgstream& kdbgstream::operator<<( const QRegion& reg ) {
@@ -442,7 +442,7 @@ kdbgstream& kdbgstream::operator<<( const QRegion& reg ) {
 
     QMemArray<QRect>rs=reg.rects();
     for (uint i=0;i<rs.size();++i)
-        *this << QString("[%1, %2 - %3, %4] ").arg(rs[i].left()).arg(rs[i].top()).arg(rs[i].right()).arg(rs[i].bottom() ) ;
+        *this << QString("[%1,%2 - %3x%4] ").arg(rs[i].x()).arg(rs[i].y()).arg(rs[i].width()).arg(rs[i].height() ) ;
 
     *this <<"]";
     return *this;
