@@ -336,7 +336,7 @@ void HTMLTokenizer::parseListing( DOMStringIt &src)
             {
                 ++src;
             }
-            // broken HTML: skip spaces before the ">", i.e "</script >"
+            // be tolerant: skip spaces before the ">", i.e "</script >"
             else if (!comment && cmp.isSpace() && searchFor[searchCount].latin1() == '>')
             {
                 ++src;
@@ -375,7 +375,7 @@ void HTMLTokenizer::parseListing( DOMStringIt &src)
         }
 	else
         {
-	    if (textarea && src[0] == '&') {
+	    if (textarea && ch == '&') {
 		QChar *scriptCodeDest = scriptCode+scriptCodeSize;
 		++src;
 		parseEntity(src,scriptCodeDest,true);
@@ -498,35 +498,41 @@ void HTMLTokenizer::parseEntity(DOMStringIt &src, QChar *&dest, bool start)
             entityPos++;
             ++src;
         }
-        else // end of entity... try to decode it
+        else
+        // end of entity... try to decode it
         {
-            QConstString cStr(entityBuffer, entityPos);
-            QChar res = charsets->fromEntity(cStr.string());
+            QChar res;
+            if(entityPos > 1)
+            {
+                QConstString cStr(entityBuffer, entityPos);
+                res = charsets->fromEntity(cStr.string());
 
-            //kdDebug( 6036 ) << "ENTITY " << res.unicode() << ", " << res << endl;
+                //kdDebug( 6036 ) << "ENTITY " << res.unicode() << ", " << res << endl;
 
-            if (tag && src[0] != ';' ) {
-                // Don't translate entities in tags with a missing ';'
-                res = QChar::null;
-            }
+                if (tag && src[0] != ';' ) {
+                    // Don't translate entities in tags with a missing ';'
+                    res = QChar::null;
+                }
 
-            // Partial support for MS Windows Latin-1 extensions
-            // full list http://www.bbsinc.com/iso8859.html
-            // There may be better equivelants
-            if ( res != QChar::null ) {
-                switch (res.unicode())
-                {
-                    case 0x91: res = '\''; break;
-                    case 0x92: res = '\''; break;
-                    case 0x93: res = '"'; break;
-                    case 0x94: res = '"'; break;
-                    case 0x95: res = 0xb7; break;
-                    case 0x96: res = '-'; break;
-                    case 0x97: res = '-'; break;
-                    case 0x98: res = '~'; break;
-                    default: break;
+                // Partial support for MS Windows Latin-1 extensions
+                // full list http://www.bbsinc.com/iso8859.html
+                // There may be better equivelants
+                if ( res != QChar::null ) {
+                    switch (res.unicode())
+                    {
+                        case 0x91: res = '\''; break;
+                        case 0x92: res = '\''; break;
+                        case 0x93: res = '"'; break;
+                        case 0x94: res = '"'; break;
+                        case 0x95: res = 0xb7; break;
+                        case 0x96: res = '-'; break;
+                        case 0x97: res = '-'; break;
+                        case 0x98: res = '~'; break;
+                        default: break;
+                    }
                 }
             }
+
 
             if ( res != QChar::null ) {
                 checkBuffer();
@@ -1410,12 +1416,31 @@ void HTMLTokenizer::end()
     if(buffer)
         QT_DELETE_QCHAR_VEC(buffer);
 
+    if(scriptCode)
+        QT_DELETE_QCHAR_VEC(scriptCode);
+
+    scriptCode = 0;
     buffer = 0;
     emit finishedParsing();
 }
 
 void HTMLTokenizer::finish()
 {
+    // do this as long as we don't find matching comment ends
+    while(comment && scriptCode && scriptCodeSize > 0)
+    {
+        // we've found an unmatched comment start
+        scriptCode[ scriptCodeSize ] = 0;
+        scriptCode[ scriptCodeSize + 1 ] = 0;
+        int pos = QConstString(scriptCode, scriptCodeSize).string().find('>');
+        QString food;
+        food.setUnicode(scriptCode+pos+1, scriptCodeSize-pos-1); // deep copy
+        QT_DELETE_QCHAR_VEC(scriptCode);
+        scriptCode = 0;
+        script = style = listing = comment = textarea = false;
+        scriptCodeSize = 0;
+        write(food);
+    }
     // this indicates we will not recieve any more data... but if we are waiting on
     // an external script to load, we can't finish parsing until that is done
     noMoreData = true;
