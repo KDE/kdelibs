@@ -1852,7 +1852,7 @@ void KApplication::installKDEPropertyMap()
     QSqlPropertyMap *kdeMap = new QSqlPropertyMap;
     kdeMap->insert( "KColorButton", "color" );
     kdeMap->insert( "KComboBox", "currentItem" );
-    kdeMap->insert( "KDatePicker", "getDate" );
+    kdeMap->insert( "KDatePicker", "date" );
     kdeMap->insert( "KEditListBox", "currentItem" );
     kdeMap->insert( "KFontCombo", "family" );
     kdeMap->insert( "KFontRequester", "font" );
