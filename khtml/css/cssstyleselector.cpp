@@ -245,6 +245,7 @@ void CSSStyleSelector::clear()
     defaultQuirksStyle = 0;
     defaultPrintStyle = 0;
     defaultSheet = 0;
+    styleNotYetAvailable = 0;
 }
 
 #define MAXFONTSIZES 15
