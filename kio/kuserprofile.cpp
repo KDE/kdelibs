@@ -77,6 +77,7 @@ void KServiceTypeProfile::initStatic()
           p = new KServiceTypeProfile( type, type2 );
 
         bool allow = config.readBoolEntry( "AllowAsDefault" );
+        //kdDebug(7010) << "KServiceTypeProfile::initStatic adding service " << application << " to profile for " << type << " with preference " << pref << endl;
         p->addService( application, pref, allow );
       }
     }
@@ -189,8 +190,8 @@ KServiceTypeProfile* KServiceTypeProfile::serviceTypeProfile( const QString& _se
 KServiceTypeProfile* KServiceTypeProfile::serviceTypeProfile( const QString& _servicetype, const QString& _genericServiceType )
 {
   initStatic();
-
-  QString hackedType = _servicetype + HACK_ST_SEPARATOR + _genericServiceType;
+  static const QString& app_str = KGlobal::staticQString("Application");
+  QString hackedType = _servicetype + HACK_ST_SEPARATOR + ((!_genericServiceType.isEmpty()) ? _genericServiceType : app_str);
 
   QListIterator<KServiceTypeProfile> it( *s_lstProfiles );
   for( ; it.current(); ++it )
