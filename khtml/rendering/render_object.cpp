@@ -746,7 +746,7 @@ short RenderObject::verticalPositionHint() const
 	vpos -= f.pixelSize()/3 + 1;
     else if ( va == TEXT_TOP )
 	vpos += -parent()->baselinePosition() + baselinePosition();
-    else if ( MIDDLE ) {
+    else if ( va == MIDDLE ) {
 	QRect b = QFontMetrics(f).boundingRect('x');
 	vpos += -b.height()/2 - contentHeight()/2 + baselinePosition();
     } else if ( va == TEXT_BOTTOM )
