@@ -682,7 +682,7 @@ NodeImpl *NodeImpl::childNode(unsigned long /*index*/)
 
 NodeImpl *NodeImpl::traverseNextNode(NodeImpl *stayWithin) const
 {
-    if (firstChild())
+    if (firstChild() || stayWithin == this)
 	return firstChild();
     else if (nextSibling())
 	return nextSibling();
@@ -690,7 +690,7 @@ NodeImpl *NodeImpl::traverseNextNode(NodeImpl *stayWithin) const
 	const NodeImpl *n = this;
 	while (n && !n->nextSibling() && (!stayWithin || n->parentNode() != stayWithin))
 	    n = n->parentNode();
-	if (n && (!stayWithin || n->parentNode() != stayWithin))
+	if (n)
 	    return n->nextSibling();
     }
     return 0;

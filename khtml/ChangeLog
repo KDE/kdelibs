@@ -1,5 +1,10 @@
 2005-03-18  Germain Garand  <germain@ebooksfrance.org>
 
+        * xml/dom_nodeimpl.cpp (traverseNextNode): fix broken algorithm for stayWithin
+        case (#101711)
+
+2005-03-18  Germain Garand  <germain@ebooksfrance.org>
+
         make disabling of CSSheets via DOM actually do something.
 
         * css/css_stylesheetimpl.{cpp,h} (setDisabled): update style selector.
