@@ -303,6 +303,7 @@ void KIntNumInput::setRange(int lower, int upper, int step, bool slider)
         m_slider->setTickmarks(QSlider::Below);
 
         int major = (upper-lower)/10;
+		if ( major==0 ) major = step; // #### workaround Qt bug in 2.1-beta3
         m_slider->setSteps( step, major );
         m_slider->setTickInterval(major);
         connect(m_slider, SIGNAL(valueChanged(int)), m_spin, SLOT(setValue(int)));
