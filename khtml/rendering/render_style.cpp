@@ -4,7 +4,7 @@
  * Copyright (C) 1999 Antti Koivisto (koivisto@kde.org)
  * Copyright (C) 1999-2003 Lars Knoll (knoll@kde.org)
  * Copyright (C) 2002-2003 Dirk Mueller (mueller@kde.org)
- * Copyright (C) 2002 Apple Computer, Inc.
+ * Copyright (C) 2002-2003 Apple Computer, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -174,6 +174,48 @@ bool StyleCSS3NonInheritedData::operator==(const StyleCSS3NonInheritedData& o) c
      marquee == o.marquee;
 }
 
+StyleCSS3InheritedData::StyleCSS3InheritedData()
+:Shared<StyleCSS3InheritedData>(), textShadow(0)
+#ifdef APPLE_CHANGES
+, userModify(READ_ONLY), textSizeAdjust(RenderStyle::initialTextSizeAdjust())
+#endif
+{
+
+}
+
+StyleCSS3InheritedData::StyleCSS3InheritedData(const StyleCSS3InheritedData& o)
+:Shared<StyleCSS3InheritedData>()
+{
+    textShadow = o.textShadow ? new ShadowData(*o.textShadow) : 0;
+#ifdef APPLE_CHANGES
+    userModify = o.userModify;
+    textSizeAdjust = o.textSizeAdjust;
+#endif
+}
+
+StyleCSS3InheritedData::~StyleCSS3InheritedData()
+{
+    delete textShadow;
+}
+
+bool StyleCSS3InheritedData::operator==(const StyleCSS3InheritedData& o) const
+{
+    return shadowDataEquivalent(o)
+#ifdef APPLE_CHANGES
+            && (userModify == o.userModify) && (textSizeAdjust == o.textSizeAdjust)
+#endif
+    ;
+}
+
+bool StyleCSS3InheritedData::shadowDataEquivalent(const StyleCSS3InheritedData& o) const
+{
+    if (!textShadow && o.textShadow || textShadow && !o.textShadow)
+        return false;
+    if (textShadow && o.textShadow && (*textShadow != *o.textShadow))
+        return false;
+    return true;
+}
+
 StyleInheritedData::StyleInheritedData()
     : indent( RenderStyle::initialTextIndent() ), line_height( RenderStyle::initialLineHeight() ),
       style_image( RenderStyle::initialListStyleImage() ),
@@ -231,9 +273,7 @@ RenderStyle::RenderStyle()
     background = _default->background;
     surround = _default->surround;
     css3NonInheritedData = _default->css3NonInheritedData;
-#ifdef APPLE_CHANGES	// ### not merged (yet)
     css3InheritedData = _default->css3InheritedData;
-#endif
 
     inherited = _default->inherited;
 
@@ -256,9 +296,7 @@ RenderStyle::RenderStyle(bool)
     css3NonInheritedData.access()->flexibleBox.init();
 #endif
     css3NonInheritedData.access()->marquee.init();
-#ifdef APPLE_CHANGES	// ### yet to be merged
     css3InheritedData.init();
-#endif
     inherited.init();
 
     pseudoStyle = 0;
@@ -269,12 +307,14 @@ RenderStyle::RenderStyle(const RenderStyle& o)
     : Shared<RenderStyle>(),
       inherited_flags( o.inherited_flags ), noninherited_flags( o.noninherited_flags ),
       box( o.box ), visual( o.visual ), background( o.background ), surround( o.surround ),
+      css3NonInheritedData( o.css3NonInheritedData ), css3InheritedData( o.css3InheritedData ),
       inherited( o.inherited ), pseudoStyle( 0 ), content( o.content )
 {
 }
 
 void RenderStyle::inheritFrom(const RenderStyle* inheritParent)
 {
+    css3InheritedData = inheritParent->css3InheritedData;
     inherited = inheritParent->inherited;
     inherited_flags = inheritParent->inherited_flags;
 }
@@ -305,6 +345,8 @@ bool RenderStyle::operator==(const RenderStyle& o) const
             visual == o.visual &&
             background == o.background &&
             surround == o.surround &&
+            css3NonInheritedData == o.css3NonInheritedData &&
+            css3InheritedData == o.css3InheritedData &&
             inherited == o.inherited);
 }
 
@@ -365,7 +407,8 @@ bool RenderStyle::inheritedNotEqual( RenderStyle *other ) const
     return
 	(
 	    inherited_flags != other->inherited_flags ||
-	    inherited != other->inherited
+            inherited != other->inherited ||
+            css3InheritedData != other->css3InheritedData
 	    );
 }
 
@@ -484,8 +527,9 @@ RenderStyle::Diff RenderStyle::diff( const RenderStyle *other ) const
         !(inherited_flags.f._text_decorations == other->inherited_flags.f._text_decorations) ||
         !(noninherited_flags.f._hasClip == other->noninherited_flags.f._hasClip) ||
         visual->textDecoration != other->visual->textDecoration ||
-        *background.get() != *other->background.get()
-	)
+        *background.get() != *other->background.get() ||
+        !css3InheritedData->shadowDataEquivalent(*other->css3InheritedData.get())
+       )
         return Visible;
 
     return Equal;
@@ -634,6 +678,35 @@ void ContentData::clearContent()
         default:
             ;
     }
+}
+
+void RenderStyle::setTextShadow(ShadowData* val, bool add)
+{
+    StyleCSS3InheritedData* css3Data = css3InheritedData.access();
+    if (!add) {
+        delete css3Data->textShadow;
+        css3Data->textShadow = val;
+        return;
+    }
+
+    ShadowData* last = css3Data->textShadow;
+    while (last->next) last = last->next;
+    last->next = val;
+}
+
+ShadowData::ShadowData(const ShadowData& o)
+:x(o.x), y(o.y), blur(o.blur), color(o.color)
+{
+    next = o.next ? new ShadowData(*o.next) : 0;
+}
+
+bool ShadowData::operator==(const ShadowData& o) const
+{
+    if ((next && !o.next) || (!next && o.next) ||
+        (next && o.next && *next != *o.next))
+        return false;
+
+    return x == o.x && y == o.y && blur == o.blur && color == o.color;
 }
 
 #ifdef ENABLE_DUMP

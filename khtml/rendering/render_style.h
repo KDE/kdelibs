@@ -60,6 +60,7 @@
 
 namespace DOM {
     class DOMStringImpl;
+    class ShadowValueImpl;
 }
 
 namespace khtml {
@@ -431,6 +432,26 @@ public:
     EMarqueeDirection direction : 3;
 };
 
+// This struct holds information about shadows for the text-shadow and box-shadow properties.
+struct ShadowData {
+    ShadowData(int _x, int _y, int _blur, const QColor& _color)
+    :x(_x), y(_y), blur(_blur), color(_color), next(0) {}
+    ShadowData(const ShadowData& o);
+
+    ~ShadowData() { delete next; }
+
+    bool operator==(const ShadowData& o) const;
+    bool operator!=(const ShadowData &o) const {
+        return !(*this == o);
+    }
+
+    int x;
+    int y;
+    int blur;
+    QColor color;
+    ShadowData* next;
+};
+
 // This struct is for rarely used non-inherited CSS3 properties.  By grouping them together,
 // we save space, and only allocate this object when someone actually uses
 // a non-inherited CSS3 property.
@@ -451,6 +472,32 @@ public:
     DataRef<StyleFlexibleBoxData> flexibleBox; // Flexible box properties
 #endif
     DataRef<StyleMarqueeData> marquee; // Marquee properties
+};
+
+// This struct is for rarely used inherited CSS3 properties.  By grouping them together,
+// we save space, and only allocate this object when someone actually uses
+// an inherited CSS3 property.
+class StyleCSS3InheritedData : public Shared<StyleCSS3InheritedData>
+{
+    public:
+        StyleCSS3InheritedData();
+        ~StyleCSS3InheritedData();
+        StyleCSS3InheritedData(const StyleCSS3InheritedData& o);
+
+        bool operator==(const StyleCSS3InheritedData& o) const;
+        bool operator!=(const StyleCSS3InheritedData &o) const {
+            return !(*this == o);
+        }
+        bool shadowDataEquivalent(const StyleCSS3InheritedData& o) const;
+
+        ShadowData* textShadow;  // Our text shadow information for shadowed text drawing.
+#ifdef APPLE_CHANGES
+        EUserModify userModify : 2; // Flag used for editing state
+        bool textSizeAdjust : 1;    // An Apple extension.  Not really CSS3 but not worth making a new struct over.
+#endif
+
+    private:
+        StyleCSS3InheritedData &operator=(const StyleCSS3InheritedData &);
 };
 
 //------------------------------------------------
@@ -681,6 +728,7 @@ protected:
     DataRef<StyleCSS3NonInheritedData> css3NonInheritedData;
 
 // inherited attributes
+    DataRef<StyleCSS3InheritedData> css3InheritedData;
     DataRef<StyleInheritedData> inherited;
 
 // list of associated pseudo styles
@@ -902,6 +950,7 @@ public:
 
     // CSS3 Getter Methods
     EBoxSizing boxSizing() const { return box->box_sizing; }
+    ShadowData* textShadow() const { return css3InheritedData->textShadow; }
     EUserInput userInput() const { return inherited_flags.f._user_input; }
 
     Length marqueeIncrement() { return css3NonInheritedData->marquee->increment; }
@@ -1049,6 +1098,7 @@ public:
 
     // CSS3 Setters
     void setBoxSizing( EBoxSizing b ) { SET_VAR(box,box_sizing,b); }
+    void setTextShadow(ShadowData* val, bool add=false);
     void setUserInput(EUserInput ui) { inherited_flags.f._user_input = ui; }
 
     void setMarqueeIncrement(const Length& f) { SET_VAR(css3NonInheritedData.access()->marquee, increment, f); }

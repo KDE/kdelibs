@@ -4,6 +4,7 @@
  * Copyright (C) 1999-2003 Lars Knoll (knoll@kde.org)
  *           (C) 2000-2003 Dirk Mueller (mueller@kde.org)
  *           (C) 2003 Apple Computer, Inc.
+ *           (C) 2004 Allan Sandfeld Jensen (kde@carewolf.com)
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -37,11 +38,13 @@
 
 #include "misc/loader.h"
 
+#include <qbitmap.h>
 #include <qpainter.h>
 #include <kdebug.h>
 #include <kglobal.h>
 #include <assert.h>
 #include <limits.h>
+#include <math.h>
 
 #ifdef HAVE_ALLOCA_H
 // explicitly included for systems that don't provide it in stdlib.h
@@ -207,31 +210,6 @@ void InlineTextBox::paintSelection(const Font *f, RenderText *text, QPainter *p,
 		startPos, endPos, hbg, m_y + ty, text->lineHeight(m_firstLine), deco);
 }
 
-#ifdef APPLE_CHANGES
-void InlineTextBox::paintDecoration( QPainter *pt, int _tx, int _ty, int deco)
-{
-    _tx += m_x;
-    _ty += m_y;
-
-    // Get the text decoration colors.
-    QColor underline, overline, linethrough;
-    object()->getTextDecorationColors(deco, underline, overline, linethrough, true);
-
-    // Use a special function for underlines to get the positioning exactly right.
-    if (deco & UNDERLINE) {
-        pt->setPen(underline);
-        pt->drawLineForText(_tx, _ty, m_baseline, m_width);
-    }
-    if (deco & OVERLINE) {
-        pt->setPen(overline);
-        pt->drawLineForText(_tx, _ty, 0, m_width);
-    }
-    if (deco & LINE_THROUGH) {
-        pt->setPen(linethrough);
-        pt->drawLineForText(_tx, _ty, 2*m_baseline/3, m_width);
-    }
-}
-#else
 void InlineTextBox::paintDecoration( QPainter *pt, const Font *f, int _tx, int _ty, int deco)
 {
     _tx += m_x;
@@ -259,7 +237,91 @@ void InlineTextBox::paintDecoration( QPainter *pt, const Font *f, int _tx, int _
     // NO! Do NOT add BLINK! It is the most annouing feature of Netscape, and IE has a reason not to
     // support it. Lars
 }
-#endif
+
+void InlineTextBox::paintShadow(QPainter *pt, const Font *f, int _tx, int _ty, const ShadowData *shadow )
+{
+    int x = m_x + _tx + shadow->x;
+    int y = m_y + _ty + shadow->y;
+    const RenderText* text = renderText();
+
+    if (shadow->blur == 0) {
+        QColor c = pt->pen().color();
+        pt->setPen(shadow->color);
+        f->drawText(pt, x, y+m_baseline, text->str->s, text->str->l,
+                    m_start, m_len, m_toAdd,
+                    m_reversed ? QPainter::RTL : QPainter::LTR);
+        pt->setPen(c);
+
+    }
+    else {
+        const int thickness = shadow->blur;
+        const int w = m_width+2*thickness;
+        const int h = m_height+2*thickness;
+        const QRgb color = shadow->color.rgb();
+        const int gray = qGray(color);
+        const bool inverse = (gray < 100);
+        const QRgb bgColor = (inverse) ? qRgb(255,255,255) : qRgb(0,0,0);
+        QPixmap pixmap(w, h);
+        pixmap.fill(bgColor);
+        QPainter p;
+
+        p.begin(&pixmap);
+        p.setPen(shadow->color);
+        p.setFont(pt->font());
+        f->drawText(&p, thickness, thickness+m_baseline, text->str->s, text->str->l,
+                    m_start, m_len, m_toAdd,
+                    m_reversed ? QPainter::RTL : QPainter::LTR);
+
+        p.end();
+        QImage img = pixmap.convertToImage().convertDepth(32);
+
+        // alpha map
+        unsigned char* map = new unsigned char[h*w];
+        memset(map, 0, h*w);
+        float md = thickness*thickness; // max-dist²
+        float strength = 1.0/(log10(thickness*10));
+        if (strength > 1.0) strength = 1.0;
+        for(int j=thickness; j<h-thickness; j++) {
+            for(int i=thickness; i<w-thickness; i++) {
+                QRgb col= img.pixel(i,j);
+                if (col == bgColor) continue;
+                float g = qGray(col);
+                if (inverse)
+                    g = (255-g)/(255-gray);
+                else
+                    g = g/gray;
+                for(int n=-thickness; n<thickness; n++) {
+                    for(int m=-thickness; m<thickness; m++) {
+                        float d = (m*m+n*n); // dist²
+                        if (d >= md) continue;
+                        float f = (md-d)/md;
+                        f = f*f*f*f; // square-root of distance
+                        unsigned int anew = (unsigned int)(f*g*255*strength);
+                        unsigned int aold = map[(i+m)+(j+n)*w];
+                        if (aold < anew) map[(i+m)+(j+n)*w] = anew;
+                    }
+                }
+            }
+        }
+
+        QImage res(w,h,32);
+        res.setAlphaBuffer(true);
+        int r = qRed(color);
+        int g = qGreen(color);
+        int b = qBlue(color);
+
+        for(int j=0; j<h; j++) {
+            for(int i=0; i<w; i++) {
+                res.setPixel(i,j, qRgba(r,g,b,map[i+j*w]));
+            }
+        }
+        delete[] map;
+
+        pt->drawImage(x-thickness, y-thickness, res, 0, 0, -1, -1, Qt::DiffuseAlphaDither | Qt::ColorOnly | Qt::PreferDither);
+    }
+    // Paint next shadow effect
+    if (shadow->next) paintShadow(pt, f, _tx-m_x, _ty-m_y, shadow->next);
+}
 
 /**
  * Distributes pixels to justify text.
@@ -919,9 +981,23 @@ void RenderText::paint( PaintInfo& pI, int tx, int ty)
             if(_style->color() != pI.p->pen().color())
                 pI.p->setPen(_style->color());
 
-	    if (s->m_len > 0 && pI.phase != PaintActionSelection) {
+#ifdef APPLE_CHANGES
+            // Set a text shadow if we have one.
+            bool setShadow = false;
+            if (_style->textShadow()) {
+                p->setShadow(_style->textShadow()->x, _style->textShadow()->y,
+                             _style->textShadow()->blur, _style->textShadow()->color);
+                setShadow = true;
+            }
+#endif
+
+            if (s->m_len > 0 && pI.phase != PaintActionSelection) {
 	        if (!haveSelection) {
 	            //kdDebug( 6040 ) << "RenderObject::paintObject(" << QConstString(str->s + s->m_start, s->m_len).string() << ") at(" << s->m_x+tx << "/" << s->m_y+ty << ")" << endl;
+#ifndef APPLE_CHANGES
+                    if (_style->textShadow())
+                        s->paintShadow(pI.p, font, tx, ty, _style->textShadow());
+#endif
 		    font->drawText(pI.p, s->m_x + tx, s->m_y + ty + s->m_baseline, str->s, str->l, s->m_start, s->m_len,
 				   s->m_toAdd, s->m_reversed ? QPainter::RTL : QPainter::LTR);
 	        }
@@ -933,19 +1009,23 @@ void RenderText::paint( PaintInfo& pI, int tx, int ty)
 #ifdef APPLE_CHANGES
                     if (paintSelectedTextSeparately) {
 #endif
+#ifndef APPLE_CHANGES
+                        if (_style->textShadow())
+                            s->paintShadow(pI.p, font, tx, ty, _style->textShadow());
+#endif
                         if (sPos >= ePos)
                             font->drawText(pI.p, s->m_x + tx, s->m_y + ty + s->m_baseline,
                                            str->s, str->l, s->m_start, s->m_len,
                                            s->m_toAdd, s->m_reversed ? QPainter::RTL : QPainter::LTR);
                         else {
                             if (sPos-1 >= 0)
-                                font->drawText(pI.p, s->m_x + tx, s->m_y + ty + s->m_baseline, str->s,
-                                            str->l, s->m_start, s->m_len,
-                                            s->m_toAdd, s->m_reversed ? QPainter::RTL : QPainter::LTR, 0, sPos);
+                                font->drawText(pI.p, s->m_x + tx, s->m_y + ty + s->m_baseline,
+                                               str->s, str->l, s->m_start, s->m_len,
+                                               s->m_toAdd, s->m_reversed ? QPainter::RTL : QPainter::LTR, 0, sPos);
                             if (ePos < s->m_len)
-                                font->drawText(pI.p, s->m_x + tx, s->m_y + ty + s->m_baseline, str->s,
-                                            str->l, s->m_start, s->m_len,
-                                            s->m_toAdd, s->m_reversed ? QPainter::RTL : QPainter::LTR, ePos, s->m_len);
+                                font->drawText(pI.p, s->m_x + tx, s->m_y + ty + s->m_baseline,
+                                               str->s, str->l, s->m_start, s->m_len,
+                                               s->m_toAdd, s->m_reversed ? QPainter::RTL : QPainter::LTR, ePos, s->m_len);
                         }
 #ifdef APPLE_CHANGES
                     }

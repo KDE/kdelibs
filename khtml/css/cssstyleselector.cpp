@@ -3462,6 +3462,7 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
         else if (isInitial)
             style->resetOutline();
         break;
+    /* CSS3 properties */
     case CSS_PROP_BOX_SIZING:
         HANDLE_INHERIT(boxSizing, BoxSizing)
         if (!primitiveValue) return;
@@ -3471,6 +3472,44 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
         if (primitiveValue->getIdent() == CSS_VAL_BORDER_BOX)
             style->setBoxSizing(BORDER_BOX);
         break;
+    case CSS_PROP_TEXT_SHADOW: {
+        if (isInherit) {
+            style->setTextShadow(parentStyle->textShadow() ? new ShadowData(*parentStyle->textShadow()) : 0);
+            return;
+        }
+        else if (isInitial) {
+            style->setTextShadow(0);
+            return;
+        }
+
+        if (primitiveValue) { // none
+            style->setTextShadow(0);
+            return;
+        }
+
+        if (!value->isValueList()) return;
+        CSSValueListImpl *list = static_cast<CSSValueListImpl *>(value);
+        int len = list->length();
+        for (int i = 0; i < len; i++) {
+            ShadowValueImpl *item = static_cast<ShadowValueImpl*>(list->item(i));
+
+            int x = item->x->computeLength(style, paintDeviceMetrics);
+            int y = item->y->computeLength(style, paintDeviceMetrics);
+            int blur = item->blur ? item->blur->computeLength(style, paintDeviceMetrics) : 0;
+            QColor col = khtml::transparentColor;
+            if (item->color) {
+                int ident = item->color->getIdent();
+                if (ident)
+                    col = colorForCSSValue( ident );
+                else if (item->color->primitiveType() == CSSPrimitiveValue::CSS_RGBCOLOR)
+                    col.setRgb(item->color->getRGBColorValue());
+            }
+            ShadowData* shadowData = new ShadowData(x, y, blur, col);
+            style->setTextShadow(shadowData, i != 0);
+        }
+
+        return;
+    }
     case CSS_PROP__KHTML_MARQUEE:
         if (value->cssValueType() != CSSValue::CSS_INHERIT || !parentNode) return;
         style->setMarqueeDirection(parentStyle->marqueeDirection());

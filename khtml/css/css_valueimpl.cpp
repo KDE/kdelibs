@@ -917,6 +917,48 @@ DOMString FontValueImpl::cssText() const
     return result;
 }
 
+// Used for text-shadow and box-shadow
+ShadowValueImpl::ShadowValueImpl(CSSPrimitiveValueImpl* _x, CSSPrimitiveValueImpl* _y,
+                                 CSSPrimitiveValueImpl* _blur, CSSPrimitiveValueImpl* _color)
+    :x(_x), y(_y), blur(_blur), color(_color)
+{}
+
+ShadowValueImpl::~ShadowValueImpl()
+{
+    delete x;
+    delete y;
+    delete blur;
+    delete color;
+}
+
+DOMString ShadowValueImpl::cssText() const
+{
+    DOMString text("");
+    if (color) {
+        text += color->cssText();
+    }
+    if (x) {
+        if (text.length() > 0) {
+            text += " ";
+        }
+        text += x->cssText();
+    }
+    if (y) {
+        if (text.length() > 0) {
+            text += " ";
+        }
+        text += y->cssText();
+    }
+    if (blur) {
+        if (text.length() > 0) {
+            text += " ";
+        }
+        text += blur->cssText();
+    }
+
+    return text;
+}
+
 DOMString CSSProperty::cssText() const
 {
     return getPropertyName(m_id) + DOMString(": ") + m_value->cssText() + (m_bImportant ? DOMString(" !important") : DOMString()) + DOMString("; ");

@@ -22,6 +22,7 @@
 #define _CSS_cssparser_h_
 
 #include <qstring.h>
+#include <qcolor.h>
 #include <dom/dom_string.h>
 
 namespace DOM {
@@ -124,7 +125,13 @@ namespace DOM {
         // @param forward if true, it parses the next in the list
         CSSPrimitiveValueImpl *parseBackgroundPositionXY( int propId, bool forward, bool &ok );
 	CSSValueListImpl *parseFontFamily();
-	CSSPrimitiveValueImpl *parseColor();
+        CSSPrimitiveValueImpl *parseColor();
+        CSSPrimitiveValueImpl *parseColorFromValue(Value* val);
+
+        static bool parseColor(const QString &name, QRgb& rgb);
+
+        // CSS3 Parsing Routines (for properties specific to CSS3)
+        bool parseShadow(int propId, bool important);
 
     public:
 	bool strict;

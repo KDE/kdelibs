@@ -1081,6 +1081,12 @@ bool CSSParser::parseValue( int propId, bool important, int expected )
         if ( id == CSS_VAL_BORDER_BOX || id == CSS_VAL_CONTENT_BOX )
             valid_primitive = true;
         break;
+    case CSS_PROP_TEXT_SHADOW:  // CSS2 property, dropped in CSS2.1, back in CSS3, so treat as CSS3
+        if (id == CSS_VAL_NONE)
+            valid_primitive = true;
+        else
+            return parseShadow(propId, important);
+        break;
     case CSS_PROP__KHTML_USER_INPUT:        // none | enabled | disabled | inherit
         if ( id == CSS_VAL_NONE || id == CSS_VAL_ENABLED || id == CSS_VAL_DISABLED )
             valid_primitive = true;
@@ -1749,11 +1755,14 @@ static bool parseColor(int unit, const QString &name, QRgb& rgb)
     return false;
 }
 
-
 CSSPrimitiveValueImpl *CSSParser::parseColor()
 {
+    return parseColorFromValue(valueList->current());
+}
+
+CSSPrimitiveValueImpl *CSSParser::parseColorFromValue(Value* value)
+{
     QRgb c = khtml::transparentColor;
-    Value *value = valueList->current();
     if ( !strict && value->unit == CSSPrimitiveValue::CSS_NUMBER &&
               value->fValue >= 0. && value->fValue < 1000000. ) {
         QString str;
@@ -1835,6 +1844,144 @@ CSSPrimitiveValueImpl *CSSParser::parseColor()
     return new CSSPrimitiveValueImpl(c);
 }
 
+// This class tracks parsing state for shadow values.  If it goes out of scope (e.g., due to an early return)
+// without the allowBreak bit being set, then it will clean up all of the objects and destroy them.
+struct ShadowParseContext {
+    ShadowParseContext()
+    :values(0), x(0), y(0), blur(0), color(0),
+     allowX(true), allowY(false), allowBlur(false), allowColor(true),
+     allowBreak(true)
+    {}
+
+    ~ShadowParseContext() {
+        if (!allowBreak) {
+            delete values;
+            delete x;
+            delete y;
+            delete blur;
+            delete color;
+        }
+    }
+
+    bool allowLength() { return allowX || allowY || allowBlur; }
+
+    bool failed() { return allowBreak = false; }
+
+    void commitValue() {
+        // Handle the ,, case gracefully by doing nothing.
+        if (x || y || blur || color) {
+            if (!values)
+                values = new CSSValueListImpl();
+
+            // Construct the current shadow value and add it to the list.
+            values->append(new ShadowValueImpl(x, y, blur, color));
+        }
+
+        // Now reset for the next shadow value.
+        x = y = blur = color = 0;
+        allowX = allowColor = allowBreak = true;
+        allowY = allowBlur = false;
+    }
+
+    void commitLength(Value* v) {
+        CSSPrimitiveValueImpl* val = new CSSPrimitiveValueImpl(v->fValue,
+                                                               (CSSPrimitiveValue::UnitTypes)v->unit);
+        if (allowX) {
+            x = val;
+            allowX = false; allowY = true; allowColor = false; allowBreak = false;
+        }
+        else if (allowY) {
+            y = val;
+            allowY = false; allowBlur = true; allowColor = true; allowBreak = true;
+        }
+        else if (allowBlur) {
+            blur = val;
+            allowBlur = false;
+        }
+    }
+
+    void commitColor(CSSPrimitiveValueImpl* val) {
+        color = val;
+        allowColor = false;
+        if (allowX)
+            allowBreak = false;
+        else
+            allowBlur = false;
+    }
+
+    CSSValueListImpl* values;
+    CSSPrimitiveValueImpl* x;
+    CSSPrimitiveValueImpl* y;
+    CSSPrimitiveValueImpl* blur;
+    CSSPrimitiveValueImpl* color;
+
+    bool allowX;
+    bool allowY;
+    bool allowBlur;
+    bool allowColor;
+    bool allowBreak;
+};
+
+bool CSSParser::parseShadow(int propId, bool important)
+{
+    ShadowParseContext context;
+    Value* val;
+    while ((val = valueList->current())) {
+        // Check for a comma break first.
+        if (val->unit == Value::Operator) {
+            if (val->iValue != ',' || !context.allowBreak)
+                // Other operators aren't legal or we aren't done with the current shadow
+                // value.  Treat as invalid.
+                return context.failed();
+
+            // The value is good.  Commit it.
+            context.commitValue();
+        }
+        // Check to see if we're a length.
+        else if (validUnit(val, FLength, true)) {
+            // We required a length and didn't get one. Invalid.
+            if (!context.allowLength())
+                return context.failed();
+
+            // A length is allowed here.  Construct the value and add it.
+            context.commitLength(val);
+        }
+        else {
+            // The only other type of value that's ok is a color value.
+            CSSPrimitiveValueImpl* parsedColor = 0;
+            bool isColor = (val->id >= CSS_VAL_AQUA && val->id <= CSS_VAL_WINDOWTEXT || val->id == CSS_VAL_MENU ||
+                           (val->id >= CSS_VAL_GREY && val->id <= CSS_VAL__KHTML_TEXT && !strict));
+            if (isColor) {
+                if (!context.allowColor)
+                    return context.failed();
+                parsedColor = new CSSPrimitiveValueImpl(val->id);
+            }
+
+            if (!parsedColor)
+                // It's not built-in. Try to parse it as a color.
+                parsedColor = parseColorFromValue(val);
+
+            if (!parsedColor || !context.allowColor)
+                return context.failed(); // This value is not a color or length and is invalid or
+                                         // it is a color, but a color isn't allowed at this point.
+
+            context.commitColor(parsedColor);
+        }
+
+        valueList->next();
+    }
+
+    if (context.allowBreak) {
+        context.commitValue();
+        if (context.values->length()) {
+            addProperty(propId, context.values, important);
+            valueList->next();
+            return true;
+        }
+    }
+
+    return context.failed();
+}
 
 static inline int yyerror( const char *str ) {
 //    assert( 0 );

@@ -1,3 +1,10 @@
+2004-12-07  Allan Sandfeld Jensen <kde@carewolf.com>
+        Implement/merge CSS2-3 text-shadow property
+
+        * css/*: Merge values and parsing from WebCore
+        * render/render_style.{h,cpp}: Merge CSS3Inherited and ShadowData classes
+        * render/render_text.{h,cpp}: Implement new paintShadow function
+
 2004-12-06  Allan Sandfeld Jensen <kde@carewolf.com>
 
         * rendering/bidi.cpp: Layout arabic numbers with a separator correctly.
