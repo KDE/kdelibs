@@ -783,9 +783,9 @@ QDate KLocale::readDate(const QString &intstr) const
 			break;
 		}
 	}
+error:
 	date.setYMD(year, month, day);
 
-error:
         // if there was an error date will be zero, if not it would be ok
 	return date;
 }
@@ -879,9 +879,10 @@ QTime KLocale::readTime(const QString &intstr) const
       hour %= 12;
       if (pm) hour += 12;
     }
-  _time.setHMS(hour, minute, second);
 
 error:
+  _time.setHMS(hour, minute, second);
+
   // if there was an error time will be zero, if not it would be ok
   return _time;
 }
