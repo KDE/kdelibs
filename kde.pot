@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2002-09-11 02:59+0200\n"
+"POT-Creation-Date: 2002-11-25 02:58+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -170,12 +170,12 @@ msgstr ""
 msgid "About"
 msgstr ""
 
-#: common_texts.cpp:63
+#: common_texts.cpp:63 common_texts.cpp:176
 msgid "&About"
 msgstr ""
 
 #: common_texts.cpp:64
-msgid "A&bout..."
+msgid "A&bout"
 msgstr ""
 
 #: common_texts.cpp:65
@@ -606,10 +606,6 @@ msgstr ""
 msgid "&Contents"
 msgstr ""
 
-#: common_texts.cpp:176
-msgid "&About..."
-msgstr ""
-
 #: common_texts.cpp:177
 msgid "Open Recent"
 msgstr ""
@@ -1036,4 +1032,70 @@ msgstr ""
 
 #: common_texts.cpp:253
 msgid "Main Toolbar"
+msgstr ""
+
+#: common_texts.cpp:256
+msgid ""
+"_: font style\n"
+"Demibold"
+msgstr ""
+
+#: common_texts.cpp:257
+msgid ""
+"_: font style\n"
+"Light"
+msgstr ""
+
+#: common_texts.cpp:258
+msgid ""
+"_: font style\n"
+"Light Italic"
+msgstr ""
+
+#: common_texts.cpp:259
+msgid ""
+"_: font style\n"
+"Demibold Italic"
+msgstr ""
+
+#: common_texts.cpp:260
+msgid ""
+"_: font style\n"
+"Demi bold"
+msgstr ""
+
+#: common_texts.cpp:261
+msgid ""
+"_: font style\n"
+"Demi bold Italic"
+msgstr ""
+
+#: common_texts.cpp:262
+msgid ""
+"_: font style\n"
+"Oblique"
+msgstr ""
+
+#: common_texts.cpp:263
+msgid ""
+"_: font style\n"
+"Book"
+msgstr ""
+
+#: common_texts.cpp:264
+msgid ""
+"_: font style\n"
+"Book Oblique"
+msgstr ""
+
+#: common_texts.cpp:267
+msgid ""
+"_: window operation\n"
+"Sticky"
+msgstr ""
+
+#: common_texts.cpp:268
+msgid ""
+"_: window operation\n"
+"Un-Sticky"
 msgstr ""
