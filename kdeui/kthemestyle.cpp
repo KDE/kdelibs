@@ -116,7 +116,7 @@ void KThemeStyle::unPolish(QWidget* w)
         w->setPalette(indiPalette);
     if(w->inherits("QRadioButton"))
         w->setPalette(exIndiPalette);
-}                                     
+}
 
 void KThemeStyle::drawBaseButton(QPainter *p, int x, int y, int w, int h,
                                  const QColorGroup &g, bool sunken, bool
@@ -231,7 +231,7 @@ void KThemeStyle::drawButtonMask(QPainter *p, int x, int y, int w, int h)
     //    drawBorderMask(p, PushButton, x, y, w, h);
     //else
     //    drawBaseMask(p, x, y, w, h, roundButton());
-}                                         
+}
 
 void KThemeStyle::drawComboButtonMask(QPainter *p, int x, int y, int w, int h)
 {
@@ -242,7 +242,7 @@ void KThemeStyle::drawComboButtonMask(QPainter *p, int x, int y, int w, int h)
     //else
     //    drawBaseMask(p, x, y, w, h, roundComboBox());
 }
- 
+
 void KThemeStyle::drawBevelButton(QPainter *p, int x, int y, int w, int h,
                                   const QColorGroup &g, bool sunken,
                                   const QBrush *)
@@ -277,7 +277,7 @@ void KThemeStyle::drawKToolBarButton(QPainter *p, int x, int y, int w, int h,
 {
 
     WidgetType widget = sunken ? ToolButtonDown : ToolButton;
-    
+
     drawBaseButton(p, x, y, w, h, *colorGroup(g, widget), sunken, false,
                    widget);
     int dx, dy;
@@ -401,7 +401,7 @@ QRect KThemeStyle::buttonRect(int x, int y, int w, int h)
     int spacing = decoWidth(PushButton) > decoWidth(PushButtonDown) ?
         decoWidth(PushButton) : decoWidth(PushButtonDown);
     return(QRect(x+spacing+4, y+spacing+4, w-(spacing*2)-4, h-(spacing*2)-4));
-}                                                            
+}
 
 void KThemeStyle::drawComboButton(QPainter *p, int x, int y, int w, int h,
                                   const QColorGroup &g, bool sunken, bool,
@@ -538,7 +538,7 @@ void KThemeStyle::drawScrollBarControls(QPainter *p, const QScrollBar *sb,
         WidgetType widget = horizontal ?
             active ? HScrollBarSliderDown : HScrollBarSlider :
             active ? VScrollBarSliderDown : VScrollBarSlider;
-            
+
         drawBaseButton(p, slider.x(), slider.y(), slider.width(),
                        slider.height(), *colorGroup(g, widget), active, false,
                        widget);
@@ -978,7 +978,7 @@ void KThemeStyle::drawShade(QPainter *p, int x, int y, int w, int h,
 
         if(!hWidth)
             return;
-        
+
         x2 = x+w-1, y2 = y+h-1;
         for(i=0; i < hWidth; ++i, ++x, ++y, --x2, --y2){
             highShade.putPoints(i*4, 4, x,y, x2,y, x,y, x,y2);
@@ -1010,14 +1010,14 @@ void KThemeStyle::drawPushButtonLabel(QPushButton *btn, QPainter *p)
         PushButton;
     const QColorGroup *cg = colorGroup(btn->colorGroup(), widget);
     int x, y, w, h;
-    
+
     QRect r = btn->rect();
     r.rect(&x, &y, &w, &h);
     x+=decoWidth(widget);
     y+=decoWidth(widget);
     w-=decoWidth(widget)*2;
     h-=decoWidth(widget)*2;
-    
+
     if(widget == PushButtonDown){
         drawItem(p, x+buttonXShift(), y+buttonYShift(),
                  w, h, AlignCenter | ShowPrefix, *cg, btn->isEnabled(),
@@ -1061,7 +1061,7 @@ int KThemeStyle::popupMenuItemHeight(bool /*checkable*/, QMenuItem *mi,
 {
     int h2, h = 0;
     int offset = QMAX(decoWidth(MenuItemDown), decoWidth(MenuItem)) + 4;
-    
+
     if(mi->isSeparator())
         return(2);
     if(mi->isChecked())
@@ -1092,7 +1092,7 @@ static const int motifSepHeight         = 2;    // separator item height
 static const int motifArrowHMargin      = 6;    // arrow horizontal margin
 static const int motifTabSpacing        = 12;   // space between text and tab
 static const int motifCheckMarkHMargin  = 2;    // horiz. margins of check mark
-static const int windowsRightBorder     = 12;       // right border on windowsstatic const int windowsCheckMarkWidth = 12;       // checkmarks width on windows                                                                        
+static const int windowsRightBorder     = 12;       // right border on windowsstatic const int windowsCheckMarkWidth = 12;       // checkmarks width on windows
 #define KTHEMESTYLE_CONSTANTS
 #endif
 
@@ -1104,16 +1104,16 @@ void KThemeStyle::drawPopupMenuItem( QPainter* p, bool checkable, int maxpmw,
     bool dis = !enabled;
     const QColorGroup &g = dis ? *colorGroup(pal.normal(), MenuItem) :
         *colorGroup(pal.normal(), MenuItemDown);
-    
+
     QColorGroup itemg = dis ? *colorGroup(pal.disabled(), MenuItem)
         : act ? *colorGroup(pal.active(), MenuItemDown)
         : *colorGroup(pal.normal(), MenuItem);
 
     if (checkable)
-        maxpmw = QMAX( maxpmw, 12 ); 
+        maxpmw = QMAX( maxpmw, 12 );
     int checkcol = maxpmw;
 
-    if (mi->isSeparator()){
+    if ( mi && mi->isSeparator()){
         p->setPen(g.dark());
 	p->drawLine(x, y, x+w, y);
 	p->setPen(g.light());
@@ -1138,8 +1138,10 @@ void KThemeStyle::drawPopupMenuItem( QPainter* p, bool checkable, int maxpmw,
                                (w, p->window().height(), MenuItem),
                                x, y);
         }
-        
+
     }
+    if ( !mi )
+	return;
     if ( mi->iconSet() ) {
 	QIconSet::Mode mode = dis?QIconSet::Disabled:QIconSet::Normal;
 	if (act && !dis)
@@ -1257,7 +1259,7 @@ void KThemeStyle::drawKMenuItem(QPainter *p, int x, int y, int w, int h,
     if(active)
         drawBaseButton(p, x, y, w, h, *cg, false, false, MenuBarItem);
         //qDrawShadePanel(p, x, y, w, h, *cg, false, 1);
-    
+
     drawItem(p, x, y, w, h, AlignCenter|ShowPrefix|DontClip|SingleLine,
              *cg, mi->isEnabled(), mi->pixmap(), mi->text(),
              -1, &btext );;
@@ -1406,7 +1408,7 @@ void KThemeStyle::drawTab( QPainter* p, const QTabBar* tb, QTab* t ,
         else
             p->fillRect(x, y, x2-x+1, y2-y+1, cg->background());
     }
-    else 
+    else
         QCommonStyle::drawTab(p, tb, t, selected );
 }
 
@@ -1430,7 +1432,7 @@ void KThemeStyle::drawTabMask(QPainter* p,  const  QTabBar* tb, QTab* t,
         p->fillRect(r.left(), r.top(), r.width(), r.height()-1, b);
     } else
         QCommonStyle::drawTabMask(p, tb, t, selected );
-    
+
 }
 
 
