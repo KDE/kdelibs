@@ -2888,6 +2888,9 @@ unsigned int CSSSelector::specificity()
     case List:
     case Hyphen:
     case Pseudo:
+    case Contain:
+    case Begin:
+    case End:
         s += 0x100;
     case None:
         break;
