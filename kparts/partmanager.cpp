@@ -177,6 +177,7 @@ bool PartManager::eventFilter( QObject *obj, QEvent *ev )
           if ( part == d->m_activePart && w == d->m_activeWidget )
             return false;
 
+          //kdDebug(1000) << "PartManager::eventFilter -> setActivePart" << part << endl;
           setActivePart( part, w );
           return true;
         }
@@ -205,7 +206,7 @@ bool PartManager::eventFilter( QObject *obj, QEvent *ev )
       }
       else if ( part != d->m_activePart )
       {
-        //kdDebug(1000) << QString("Part %1 made active because %2 got event").arg(part->name()).arg(w->className()) << endl;
+        // kdDebug(1000) << "Part " << part << " made active because " << w->className() << " got event" << endl;
 
         setActivePart( part, w );
       }
@@ -324,7 +325,7 @@ void PartManager::setActivePart( Part *part, QWidget *widget )
 {
   if ( part && d->m_parts.findRef( part ) == -1 )
   {
-      kdWarning( 1000 ) << "PartManager::setActivePart : trying to active a non-registered part! " << part->name() << endl;
+      kdWarning( 1000 ) << "PartManager::setActivePart : trying to activate a non-registered part! " << part->name() << endl;
       return; // don't allow someone call setActivePart with a part we don't know about
   }
 
