@@ -36,9 +36,32 @@ class QStrIList;
  * It is not possible with SASL to transfer any other information in an
  * encrypted way. For that purpose OpenPGP or SSL are useful.
  *
- * Currently PLAIN (RFC 2595), LOGIN, CRAM-MD5 (RFC 2195) and
- * DIGEST-MD5 (RFC 2831) authentication are supported.
- * PLAIN and LOGIN do only use encoding and not encryption.
+ * Currently PLAIN (RFC 2595), LOGIN (not a SASL mechanism, but the
+ * native IMAP authentication mechanism), CRAM-MD5 (RFC 2195) and
+ * DIGEST-MD5 (RFC 2831) authentication are supported.  PLAIN and
+ * LOGIN transmit the credentials in the clear (apart from a possible
+ * base64 encoding).
+ *
+ * For KDE 3.2, the API has been extended to allow transparent use of
+ * all currently supported SASL mechanisms. Example:
+ * <pre>
+ * KDESasl sasl( myUser, myPass, myProtocol );
+ * if ( !sasl.chooseMethod( myMechanismsSupportedByServer ) )
+ *   return false; // couldn't agree on a method
+ *
+ * int numResponses = 0;
+ * if ( sasl.clientStarts() ) { // check whether we're supposed to start the dialog
+ *   ++numResponses;
+ *   mySendAuthCommand( sasl.method(), sasl.getResponse() );
+ * } else {
+ *   mySendAuthCommand( sasl.method() );
+ * }
+ * for ( ; !sasl.dialogComplete( numResponses ) ; ++numResponses ) {
+ *   QByteArray challenge = myRecvChallenge();
+ *   mySendResponse( sasl.getResponse( challenge ) );
+ * }
+ * return myCheckSuccess();
+ * </pre>
  *
  * @author Michael Häckel <haeckel@kde.org>
  * @version $Id$
@@ -72,6 +95,26 @@ public:
    */
   virtual void setMethod(const QCString &aMethod);
   /**
+   * @return the SASL method used.
+   * @since 3.2
+   */
+  QCString method() const;
+  /**
+   * @param numCalls number of times @ref #getResponse() has been called.
+   * @return whether the challenge/response dialog has completed
+   *
+   * @since 3.2
+   */
+  bool dialogComplete( int numCalls ) const;
+  /**
+   * @return whether the currently selected mechanism results in
+   * cleartext passwords being sent over the network and thus should
+   * be used only under TLS/SSL cover or for legacy servers.
+   *
+   * @since 3.2
+   */
+  bool isClearTextMethod() const;
+  /**
    * Creates a response using the formerly chosen SASL method.
    * For LOGIN authentication you have to call this function twice. KDESasl
    * realizes on its own, if you are calling it for the first or for the
@@ -81,12 +124,22 @@ public:
    * encoding. The challenge is decoded from base64 and the response is
    * encoded base64 if set to TRUE.
    */
-   QCString getResponse(const QByteArray &aChallenge, bool aBase64 = TRUE);
+   QCString getResponse(const QByteArray &aChallenge=QByteArray(), bool aBase64 = TRUE);
   /**
    * Create a response as above but place it in a QByteArray
    */
-  QByteArray getBinaryResponse(const QByteArray &aChallenge, bool aBase64); 
-
+  QByteArray getBinaryResponse(const QByteArray &aChallenge=QByteArray(), bool aBase64=true); 
+  /**
+   * Returns true if the client is supposed to initiate the
+   * challenge-respinse dialog with an initial response (which most
+   * protocols can transfer alongside the authentication command as an
+   * optional second parameter). This method relieves the sasl user
+   * from knowing details about the mechanism. If true, use @ref
+   * #getResponse() with a null challenge.
+   *
+   * @since 3.2
+   */
+  bool clientStarts() const;
 protected:
   /**
    * PLAIN authentication as described in RFC 2595

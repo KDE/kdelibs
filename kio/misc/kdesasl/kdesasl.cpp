@@ -55,7 +55,7 @@ QCString KDESasl::chooseMethod(const QStrIList aMethods)
 
 void KDESasl::setMethod(const QCString &aMethod)
 {
-  mMethod = aMethod;
+  mMethod = aMethod.upper();
 }
 
 QByteArray KDESasl::getPlainResponse()
@@ -252,4 +252,24 @@ QCString KDESasl::getResponse(const QByteArray &aChallenge, bool aBase64)
 {
   QByteArray ba = getBinaryResponse(aChallenge, aBase64);
   return QCString(ba.data(), ba.size() + 1);
+}
+
+QCString KDESasl::method() const {
+  return mMethod;
+}
+
+bool KDESasl::clientStarts() const {
+  return method() == "PLAIN";
+}
+
+bool KDESasl::dialogComplete( int n ) const {
+  if ( method() == "PLAIN" || method() == "CRAM-MD5" )
+    return n >= 1;
+  if ( method() == "LOGIN" || method() == "DIGEST-MD5" )
+    return n >= 2;
+  return true;
+}
+
+bool KDESasl::isClearTextMethod() const {
+  return method() == "PLAIN" || method() == "LOGIN" ;
 }
