@@ -41,7 +41,7 @@ bin_SCRIPTS = kdb2html checkXML
 METASOURCES = AUTO
 
 messages:
-	$(XGETTEXT) *.cpp -o $(podir)/kdebase/kio_help.pot
+	$(XGETTEXT) *.cpp -o $(podir)/../kdebase/kio_help.pot
 
 install-data-local:
 	@(for subdir in customization docbook; do \
