@@ -1273,16 +1273,18 @@ Value WindowFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
     return Boolean((KMessageBox::warningYesNo(widget, QStyleSheet::convertFromPlainText(str), "JavaScript",
                                                 i18n("OK"), i18n("Cancel")) == KMessageBox::Yes));
   case Window::Prompt:
+    if (!widget->dialogsAllowed())
+      return Undefined();
     part->xmlDocImpl()->updateRendering();
     bool ok;
     if (args.size() >= 2)
       str2 = KInputDialog::getText(i18n("Prompt"),
                                    QStyleSheet::convertFromPlainText(str),
-                                   args[1].toString(exec).qstring(), &ok);
+                                   args[1].toString(exec).qstring(), &ok, widget);
     else
       str2 = KInputDialog::getText(i18n("Prompt"),
                                    QStyleSheet::convertFromPlainText(str),
-                                   QString::null, &ok);
+                                   QString::null, &ok, widget);
     if ( ok )
         return String(str2);
     else
