@@ -1,837 +1,298 @@
-/* This file is part of the KDE libraries
-   Copyright (C) 1998 Kurt Granroth (granroth@kde.org)
+// (c) 2000 Peter Putzer
 
-   This library is free software; you can redistribute it and/or
-   modify it under the terms of the GNU Library General Public
-   License version 2 as published by the Free Software Foundation.
+#pragma implementation
 
-   This library is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-   Library General Public License for more details.
+#include <qcolor.h>
+#include <qtimer.h>
+#include <qtooltip.h>
+#include <qpixmap.h>
 
-   You should have received a copy of the GNU Library General Public License
-   along with this library; see the file COPYING.LIB.  If not, write to
-   the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
-   Boston, MA 02111-1307, USA.
-*/
+#include <kcursor.h>
+#include <kglobalsettings.h>
+
 #include "kurllabel.h"
 
-#include <qtooltip.h>
-#include <kcursor.h>
-
-KURLLabel::KURLLabel(QWidget *parent, const char *name, WFlags f)
-	: QLabel(parent, name, f),
-	  m_textAlign(Bottom),
-	  m_url(QString::null),
-	  m_tipText(QString::null),
-	  m_float(false),
-	  m_tips(false),
-	  m_glow(false),
-	  m_underline(true),
-	  m_inRegion(false),
-	  m_haveCursor(true),
-	  m_transparent(true)
+class KURLLabel::Private
 {
-	/* set the defaults */
-	m_hc.setNamedColor(QString::fromLatin1("blue"));
-	m_sc.setNamedColor(QString::fromLatin1("red"));
-	m_bc        = backgroundColor();
+public:
+  Private (const QString& url, KURLLabel* label)
+    : URL (url),
+      Underline (true),
+      LinkColor (KGlobalSettings::linkColor()),
+      HighlightedLinkColor (Qt::red),
+      Cursor (0L),
+      UseTips (false),
+      UseCursor (false),
+      Glow (false),
+      Float (false),
+      RealUnderline (true),
+      Timer (new QTimer (label))
+  {
+    connect (Timer, SIGNAL (timeout ()), label, SLOT (updateColor ()));
+  }
 
+  ~Private ()
+  {
+  }
 
-	setUseCursor(true);
-	setMouseTracking(true);
+  QString URL;
+  QPixmap AltPixmap;
 
-	setBackgroundMode(NoBackground);
+  bool Underline;
+  QColor LinkColor;
+  QColor HighlightedLinkColor;
 
-	m_resetPalette();
-}
+  QString Tip;
+  QCursor* Cursor;
+  bool UseTips;
+  bool UseCursor;
 
-KURLLabel::~KURLLabel()
+  bool Glow;
+  bool Float;
+  
+  bool RealUnderline;
+  QPixmap RealPixmap;
+
+  QTimer* Timer;
+};
+
+KURLLabel::KURLLabel (const QString& url, const QString& text,
+                        QWidget* parent, const char* name)
+  : QLabel (!text.isNull() ? text : url, parent, name),
+    d (new Private (url, this))
 {
+  setFont (font());
+  setCursor (KCursor::handCursor());
+  setLinkColor (d->LinkColor);
 }
 
-const QString KURLLabel::url() const
+KURLLabel::KURLLabel (QWidget* parent, const char* name)
+  : QLabel (parent, name),
+    d (new Private (QString::null, this))
 {
-	return m_url;
+  setFont (font());
+  setCursor (KCursor::handCursor());
+  setLinkColor (d->LinkColor);
 }
 
-const QString KURLLabel::text() const
+KURLLabel::~KURLLabel ()
 {
-	return m_text;
+  delete d;
 }
 
-const QPixmap* KURLLabel::pixmap() const
+void KURLLabel::mousePressEvent (QMouseEvent* e)
 {
-	return &m_pixmap;
+  QLabel::mousePressEvent (e);
+  
+  setLinkColor (d->HighlightedLinkColor);
+  d->Timer->start (300);
+
+  switch (e->button())
+    {
+    case LeftButton:
+      emit leftClickedURL ();
+      emit leftClickedURL (d->URL);
+      break;
+      
+    case MidButton:
+      emit middleClickedURL ();
+      emit middleClickedURL (d->URL);
+      break;
+
+    case RightButton:
+      emit rightClickedURL ();
+      emit rightClickedURL (d->URL);
+      break;
+      
+    default:
+      ; // nothing
+    }
 }
 
-KURLLabel::TextAlignment KURLLabel::textAlignment() const
+void KURLLabel::setFont (const QFont& f)
 {
-    return m_textAlign;
+  QFont newFont = f;
+  newFont.setUnderline (d->Underline);
+
+  QLabel::setFont (newFont);
 }
 
-void KURLLabel::setURL(const QString& url)
+void KURLLabel::setUnderline (bool on)
 {
-	/* save the input */
-	m_url = url;
+  d->Underline = on;
 
-	/* show the tool tip if we are allowed to */
-	if (m_tips)
-	{
-		if (!m_tipText.isNull())
-			QToolTip::add(this, m_tipText);
-		else
-			QToolTip::add(this, m_url);
-	}
+  setFont (font());
 }
 
-void KURLLabel::setTextAlignment(TextAlignment align)
+void KURLLabel::updateColor ()
 {
-	m_textAlign = align;
+  d->Timer->stop();
 
-	if (autoResize())
-		adjustSize();
-	else
-		repaint(true);
+  if (!(d->Glow || d->Float) || !rect().contains (mapFromGlobal(QCursor::pos())))
+    setLinkColor (d->LinkColor);
 }
 
-void KURLLabel::setUseCursor(bool use_cursor, const QCursor* cursor)
+void KURLLabel::setLinkColor (const QColor& col)
+{  
+  QPalette p = palette();
+  p.setColor (QColorGroup::Foreground, col);
+  setPalette (p);
+
+  update();
+}
+
+void KURLLabel::setURL (const QString& url)
 {
-	/* set the global var */
-	m_haveCursor = use_cursor;
-
-	/* if this is false, then use the default cursor */
-	if (use_cursor == false)
-	{
-		m_customCursor = QCursor();
-		return;
-	}
-
-	/* set the cursor to the user defined one if supplied */
-	if (cursor)
-	{
-		m_customCursor = *cursor;
-	}
-	else
-	{
-		/* otherwise, use the "hand" cursor */
-		m_customCursor = KCursor::handCursor();
-	}
+  d->URL = url;
 }
 
-void KURLLabel::setTipText(const QString& tip)
+const QString& KURLLabel::url () const
 {
-	/* make sure there is something coming in */
-	if (!tip)
-		return;
-
-	/* assign the input */
-	m_tipText = tip;
-
-	/* reset the tooltips if we can */
-	if (m_tips)
-		QToolTip::add(this, m_tipText);
+  return d->URL;
 }
 
-void KURLLabel::setUseTips(bool tips)
+void KURLLabel::setUseCursor (bool on, QCursor* cursor)
 {
-	/* save the input */
-	m_tips = tips;
+  d->UseCursor = on;
+  d->Cursor = cursor;
 
-	/* setup the tool tip if we are ready */
-	if (m_tips)
-	{
-		/* can we use a user tip? */
-		if (!m_tipText.isNull())
-			QToolTip::add(this, m_tipText);
-		else if (!m_url.isNull())
-			QToolTip::add(this, m_url);
-	}
+  if (on)
+    {
+      if (cursor)
+        setCursor (*cursor);
+      else 
+        setCursor (KCursor::handCursor());
+    }
 }
 
-void KURLLabel::setFloat(bool do_float)
+bool KURLLabel::useCursor () const
 {
-	/* save the input */
-	m_float = do_float;
+  return d->UseCursor;
 }
 
-void KURLLabel::setFont(const QFont& font)
+void KURLLabel::setUseTips (bool on)
 {
-	/* set the underlining */
-	QFont new_font = font;
-	new_font.setUnderline(m_underline);
+  d->UseTips = on;
 
-	/* use the base setFont to do all the real work */
-	QLabel::setFont(new_font);
+  if (on)
+    QToolTip::add (this, d->Tip);
+  else
+    QToolTip::remove (this);
 }
 
-void KURLLabel::setText(const QString& text)
+void KURLLabel::setTipText (const QString& tip)
 {
-	/**
-	 * we set the underlining now and in setUnderline
-	 * and in setFont to cover all the bases.
-	 * this allows the user to invoke these functions
-	 * in either order.
-	 */
-	setUnderline(m_underline);
-	
-	/* set the palette to normal (at first)*/
-	setPalette(m_nsp);
+  d->Tip = tip;
 
-	/* save a copy of the text for our uses */
-	m_text = text;
-
-	/* use the native setText for some processing */
-	QLabel::setText(text);
-
-	/* if we don't have a decent URL, set it equal to our text */
-	if (m_url.isNull())
-		m_url = text;
-
-	/* show the tool tip if we are allowed to */
-	if (m_tips)
-	{
-		if (!m_tipText.isNull())
-			QToolTip::add(this, m_tipText);
-		else
-			QToolTip::add(this, m_url);
-	}
+  setUseTips (d->UseTips);
 }
 
-void KURLLabel::setAltPixmap(const QPixmap& pixmap)
+bool KURLLabel::useTips () const
 {
-	/* set the "alt" pixmap */
-	m_altPixmap = pixmap;
+  return d->UseTips;
 }
 
-void KURLLabel::setPixmap(const QPixmap& pixmap)
+const QString& KURLLabel::tipText () const
 {
-	/* save a copy of the pixmap for use later */
-	m_pixmap = pixmap;
-
-	/* let the base setPixmap do all the work */
-	QLabel::setPixmap(pixmap);
+  return d->Tip;
 }
 
-void KURLLabel::setMovie(const QMovie& movie)
+void KURLLabel::setHighlightedColor (const QColor& highcolor)
 {
-	/* save a copy of the movie */
-	m_movie = movie;
+  d->LinkColor = highcolor;
 
-	/* let the base function do all the work */
-	QLabel::setMovie(movie);
+  if (!d->Timer->isActive())
+    setLinkColor (highcolor);
 }
 
-void KURLLabel::setGlow(bool glow)
+void KURLLabel::setHighlightedColor (const QString& highcolor)
 {
-	/* save the input */
-	m_glow = glow;
+  setHighlightedColor (QColor (highcolor));
 }
 
-void KURLLabel::setUnderline(bool underline)
+void KURLLabel::setSelectedColor (const QColor& selcolor)
 {
-	/* save the input */
-	m_underline = underline;
+  d->HighlightedLinkColor = selcolor;
 
-	/* turn on or off the underlining */
-	setFont(font());
+  if (d->Timer->isActive())
+    setLinkColor (selcolor);
 }
 
-void KURLLabel::setHighlightedColor(const QColor& high)
+void KURLLabel::setSelectedColor (const QString& selcolor)
 {
-	/* set the new color */
-	m_hc = high;
-
-	/* reset the palette to display the new color */
-	m_resetPalette();
-	setPalette(m_nsp);
+  setSelectedColor (QColor (selcolor));
 }
 
-void KURLLabel::setHighlightedColor(const QString& high)
+void KURLLabel::setGlow (bool glow)
 {
-	/* set the new color */
-	m_hc.setNamedColor(high);
-
-	/* reset the palette to display the new color */
-	m_resetPalette();
-	setPalette(m_nsp);
+  d->Glow = glow;
 }
 
-void KURLLabel::setSelectedColor(const QColor& selected)
+void KURLLabel::setFloat (bool do_float)
 {
-	/* set the new color */
-	m_sc = selected;
-
-	/* reset the palette to display the new color */
-	m_resetPalette();
+  d->Float = do_float;
 }
 
-void KURLLabel::setSelectedColor(const QString& selected)
+bool KURLLabel::isGlowEnabled () const
 {
-	/* set the new color */
-	m_sc.setNamedColor(selected);
-
-	/* reset the palette to display the new color */
-	m_resetPalette();
+  return d->Glow;
 }
 
-void KURLLabel::setBackgroundColor(const QColor& back)
+bool KURLLabel::isFloatEnabled () const
 {
-	/* set the new color */
-	m_bc = back;
-
-	/* reset the palette to display the new color */
-	m_resetPalette();
-	setPalette(m_nsp);
+  return d->Float;
 }
 
-void KURLLabel::setBackgroundColor(const QString& back)
+void KURLLabel::setAltPixmap (const QPixmap& altPix)
 {
-	/* set the new color */
-	m_bc.setNamedColor(back);
-
-	/* reset the palette to display the new color */
-	m_resetPalette();
-	setPalette(m_nsp);
+  d->AltPixmap = altPix;
 }
 
-QSize KURLLabel::sizeHint() const
+const QPixmap* KURLLabel::altPixmap () const
 {
-	int x_min, x_max, y_min, y_max;
-
-	/* get the bounding rectangles for text and pixmap */
-	QRect text_rect = m_textRect();
-	QRect pixmap_rect = m_pixmapRect();
-
-	/* get the outer x coordinates */
-	x_min = QMIN(text_rect.topLeft().x(), pixmap_rect.topLeft().x());
-	x_max = QMAX(text_rect.topRight().x(), pixmap_rect.topRight().x());
-
-	/* get the outer y coordinates */
-	y_min = QMIN(text_rect.topLeft().y(), pixmap_rect.topLeft().y());
-	y_max = QMAX(text_rect.bottomLeft().y(), pixmap_rect.bottomLeft().y());
-
-	return QSize((x_max - x_min)+1, (y_max - y_min)+1);
+  return &d->AltPixmap;
 }
 
-void KURLLabel::mouseMoveEvent(QMouseEvent *event)
+void KURLLabel::enterEvent (QEvent* e)
 {
-	/* get the boundries of the text and/or pixmap */
-	QRect text_rect = m_textRect();
-	QRect pixmap_text = m_pixmapRect();
-	int tx_min = text_rect.topLeft().x();
-	int ty_min = text_rect.topLeft().y();
-	int tx_max = text_rect.bottomRight().x();
-	int ty_max = text_rect.bottomRight().y();
-	int px_min = pixmap_text.topLeft().x();
-	int py_min = pixmap_text.topLeft().y();
-	int px_max = pixmap_text.bottomRight().x();
-	int py_max = pixmap_text.bottomRight().y();
+  QLabel::enterEvent (e);
 
-	/* process this event only if we are within the text boundry */
-	if (((event->x() > tx_min) && (event->x() < tx_max) &&
-	    (event->y() > ty_min) && (event->y() < ty_max)) ||
-	   ((event->x() > px_min) && (event->x() < px_max) &&
-	    (event->y() > py_min) && (event->y() < py_max)))
-	{
-		/**
-		 * if we were not within the region before, then this is
-		 * a enter event
-		 */
-		if (m_inRegion == false)
-		{
-			m_inRegion = true;
-			m_enterEvent();
-		}
-	}
-	/* if we were in the region before, then this is a leave event */
-	else if (m_inRegion == true)
-	{
-		m_inRegion = false;
-		m_leaveEvent();
-	}
+  if (!d->AltPixmap.isNull() && pixmap())
+    {
+      d->RealPixmap = *pixmap();
+      setPixmap (d->AltPixmap);
+    }
+
+  if (d->Glow || d->Float)
+    {
+      d->Timer->stop();
+
+      setLinkColor (d->HighlightedLinkColor);
+
+      d->RealUnderline = d->Underline;
+      
+      if (d->Float)
+        setUnderline (true);
+    }
+
+  emit enteredURL ();
+  emit enteredURL (d->URL);
 }
 
-
-void KURLLabel::m_enterEvent()
+void KURLLabel::leaveEvent (QEvent* e)
 {
-	/* emit this signal with our URL*/
-	emit(enteredURL(m_url));
-	emit(enteredURL());
+  QLabel::leaveEvent (e);
 
-	/* check if we have an "alt" pixmap */
-	if (!m_altPixmap.isNull() && (m_float || m_glow))
-	{
-		/* display it instead of the regular pixmap */
-		m_origPixmap = m_pixmap;
-		m_pixmap = m_altPixmap;
-	}
+  if (!d->AltPixmap.isNull() && pixmap())
+    setPixmap (d->RealPixmap);
 
-	/* if we are using a custom cursor, use it */
-	if (m_haveCursor);
-		setCursor(m_customCursor);
+  if ((d->Glow || d->Float) && !d->Timer->isActive())
+    setLinkColor (d->LinkColor);
+  
+  setUnderline (d->RealUnderline);
 
-	/* check if we are in float mode */
-	if (m_float)
-	{
-		/* turn on underlining */
-		QLabel::setFont(font());
-
-		/* and "glow" this */
-		setPalette(m_sp);
-	}
-	else
-	/* if we are in "glow" mode, turn on the selected palette */
-	if (m_glow)
-		setPalette(m_sp);
+  emit leftURL ();
+  emit leftURL (d->URL);
 }
 
-void KURLLabel::leaveEvent(QEvent*)
-{
-	/* let m_leaveEvent handle this if we are in the region */
-	if (m_inRegion)
-	{
-		m_inRegion = false;
-		m_leaveEvent();
-	}
-}
-
-void KURLLabel::m_leaveEvent()
-{
-	/* emit this signal with our URL*/
-	emit(leftURL(m_url));
-	emit(leftURL());
-
-	/* check if we have an "alt" pixmap */
-	if (!m_altPixmap.isNull() && (m_float || m_glow))
-	{
-		/* change back to the original */
-		m_pixmap = m_origPixmap;
-	}
-
-	/* if we are using a custom cursor, set it back */
-	if (m_haveCursor)
-		setCursor(QCursor());
-
-	/* check if we are in float mode */
-	if (m_float)
-	{
-		/* switch underlining back to original state */
-		QLabel::setFont(font());
-
-		/* set palette back to normal*/
-		setPalette(m_nsp);
-	}
-	else
-	/* if we are in "glow" mode, turn off the selected palette */
-	if (m_glow)
-		setPalette(m_nsp);
-}
-
-void KURLLabel::mousePressEvent(QMouseEvent *event)
-{
-	if (m_inRegion)
-	{
-		/* set the palette to "selected"*/
-		setPalette(m_sp);
-
-		/* select the pixmap only if there is one */
-		if (!m_pixmap.isNull())
-		{
-			/* save the original pixmap */
-			m_unselPixmap = m_pixmap;
-
-			/* select the pixmap */
-			QBrush b(m_sc, Dense4Pattern);
-			QPainter p(&m_pixmap);
-			p.fillRect(0, 0, m_pixmap.width(), m_pixmap.height(), b);
-		}
-
-		/**
-		 * set the timer for 1/2 second.  this allows time
-		 * to show that this is selected
-		 */
-		startTimer(500);
-
-		/**
-		 * emit the proper signal based on which button the
-		 * user clicked
-		 */
-		switch (event->button())
-		{
-			case LeftButton:
-				emit(leftClickedURL(m_url));
-				emit(leftClickedURL());
-				break;
-			case RightButton:
-				emit(rightClickedURL(m_url));
-				emit(rightClickedURL());
-				break;
-			case MidButton:
-				emit(middleClickedURL(m_url));
-				emit(middleClickedURL());
-				break;
-			default:
-				break;
-		}
-	}
-}
-
-void KURLLabel::timerEvent(QTimerEvent *event)
-{
-	/* reset the the palette to normal */
-	setPalette(m_nsp);
-
-	if (!m_unselPixmap.isNull())
-	{
-		/* redraw the original pixmap */
-		QPainter p(&m_pixmap);
-		p.drawPixmap(0, 0, m_unselPixmap);
-	}
-
-	/* kill the timer */
-	killTimer(event->timerId());
-}
-
-void KURLLabel::m_resetPalette()
-{
-	/* reset the palette with any colors that have changed */
-	m_nsp.setNormal(
-		QColorGroup(
-			m_hc,
-			m_bc,
-			palette().normal().light(),
-			palette().normal().dark(),
-			palette().normal().mid(),
-			m_hc,
-			palette().normal().base()
-		)
-	);
-	m_sp.setNormal(
-		QColorGroup(
-			m_sc,
-			m_bc,
-			palette().normal().light(),
-			palette().normal().dark(),
-			palette().normal().mid(),
-			m_sc,
-			palette().normal().base()
-		)
-	);
-}
-
-QRect KURLLabel::m_textRect() const
-{
-	int x_min = 0, y_min = 0;
-	int pixmap_width = 0, pixmap_height = 0;
-
-	/* get the pixmap info if it exists */
-	if (!m_pixmap.isNull())
-	{
-		pixmap_height = m_pixmap.height();
-		pixmap_width = m_pixmap.width();
-	}
-
-	/* return 0 if there is no text */
-	if (m_text.isEmpty())
-		return QRect(0, 0, 0, 0);
-
-	/**
-	 * calculate the boundry rect for the text based on the
-	 * text metrics and the current alignment
-	 */
-	QFontMetrics fm(font());
-	if (alignment() & AlignHCenter)
-	{
-		switch (m_textAlign)
-		{
-			case Bottom:
-			case Top:
-				if (autoResize())
-					x_min = (pixmap_width > fm.width(m_text)) ?
-						         (pixmap_width - fm.width(m_text)) / 2 : 0;
-				else
-					x_min = (width() - fm.width(m_text)) / 2;
-				break;
-			case Left:
-				if (autoResize())
-					x_min = 0;
-				else
-					x_min = (width() - fm.width(m_text) - pixmap_width) / 2;
-				break;
-			case Right:
-				if (autoResize())
-					x_min = pixmap_width;
-				else
-					x_min = (width() - fm.width(m_text) + pixmap_width) / 2;
-				break;
-		}
-	}
-
-	if (alignment() & AlignVCenter)
-	{
-		switch (m_textAlign)
-		{
-			case Bottom:
-				if (autoResize())
-					y_min = pixmap_height;
-				else
-					y_min = (height() + pixmap_height - fm.height()) / 2;
-				break;
-			case Top:
-				if (autoResize())
-					y_min = 0;
-				else
-					y_min = ((height() - pixmap_height - fm.height()) / 2) + 3;
-				break;
-			case Left:
-			case Right:
-				y_min = (height() - fm.height()) / 2;
-				break;
-		}
-	}
-
-	if (alignment() & AlignLeft)
-	{
-		switch (m_textAlign)
-		{
-			case Top:
-			case Bottom:
-			case Left:
-				x_min = 0;
-				break;
-			case Right:
-				x_min = pixmap_width;
-				break;
-		}
-	}	
-
-	if (alignment() & AlignTop)
-	{
-		switch (m_textAlign)
-		{
-			case Top:
-			case Left:
-			case Right:
-				y_min = 0;
-				break;
-			case Bottom:
-				y_min = pixmap_height;
-				break;
-		}
-	}
-
-	if (alignment() & AlignRight)
-	{
-		switch (m_textAlign)
-		{
-			case Top:
-			case Bottom:
-			case Right:
-				x_min = width() - fm.width(m_text);
-				break;
-			case Left:
-				x_min = width() - pixmap_width - fm.width(m_text);
-				break;
-		}
-	}
-
-	if (alignment() & AlignBottom)
-	{
-		switch (m_textAlign)
-		{
-			case Top:
-				y_min = height() - pixmap_height - fm.height();
-				break;
-			case Bottom:
-			case Right:
-			case Left:
-				y_min = height() - fm.height();
-				break;
-		}
-	}
-
-	/* construct the bounding rectangle */
-	return QRect(x_min, y_min, fm.width(m_text), fm.height());
-}
-
-QRect KURLLabel::m_pixmapRect() const
-{
-	int x_min = 0, y_min = 0;
-	int text_width = 0, text_height = 0;
-
-	/* get the text info if necessary */
-	if (!m_text.isEmpty())
-	{
-		QFontMetrics metrics(font());
-		text_height = metrics.height();
-		text_width = metrics.width(m_text);
-	}
-
-	/* return now if there is no pixmap */
-	if (m_pixmap.isNull())
-		return QRect(0, 0, 0, 0);
-
-	/**
-	 * calculate the boundry rect for the pixmap based on its
-	 * size and the current alignment
-	 */
-	if (alignment() & AlignHCenter)
-	{
-		switch (m_textAlign)
-		{
-			case Bottom:
-			case Top:
-				if (autoResize())
-					x_min = m_pixmap.width() > text_width ?
-					            0 : (text_width - m_pixmap.width()) / 2;
-				else
-					x_min = (width() - m_pixmap.width()) / 2;
-				break;
-			case Left:
-				if (autoResize())
-					x_min = text_width;
-				else
-					x_min = (width() - m_pixmap.width() + text_width) / 2;
-				break;
-			case Right:
-				if (autoResize())
-					x_min = 0;
-				else
-					x_min = (width() - m_pixmap.width() - text_width) / 2;
-				break;
-		}
-	}
-
-	if (alignment() & AlignVCenter)
-	{
-		switch (m_textAlign)
-		{
-			case Bottom:
-				if (autoResize())
-					y_min = 0;
-				else
-					y_min = (height() - m_pixmap.height() - text_height) / 2;
-				break;
-			case Top:
-				if (autoResize())
-					y_min = text_height;
-				else
-					y_min = (height() - m_pixmap.height() + text_height) / 2;
-				break;
-			case Left:
-			case Right:
-				if (autoResize())
-					y_min = 0;
-				else
-					y_min = (height() - m_pixmap.height()) / 2;
-				break;
-		}
-	}
-
-	if (alignment() & AlignLeft)
-	{
-		switch (m_textAlign)
-		{
-			case Left:
-				x_min = text_width;
-				break;
-			case Right:
-			case Top:
-			case Bottom:
-				x_min = 0;
-		}
-	}
-
-	if (alignment() & AlignTop)
-	{
-		switch (m_textAlign)
-		{
-			case Top:
-				y_min = text_height;
-				break;
-			case Left:
-			case Right:
-			case Bottom:
-				y_min = 0;
-				break;
-		}
-	}
-
-	if (alignment() & AlignRight)
-	{
-		switch (m_textAlign)
-		{
-			case Bottom:
-			case Top:
-			case Left:
-				x_min = width() - m_pixmap.width();
-				break;
-			case Right:
-				x_min = width() - m_pixmap.width() - text_width;
-				break;
-		}
-	}
-
-	if (alignment() & AlignBottom)
-	{
-		switch (m_textAlign)
-		{
-			case Top:
-			case Left:
-			case Right:
-				y_min = height() - m_pixmap.height();
-				break;
-			case Bottom:
-				y_min = height() - m_pixmap.height() - text_height;
-				break;
-		}
-	}
-
-	/* construct the bounding rectangle */
-	return QRect(x_min, y_min, m_pixmap.width(), m_pixmap.height());
-}
-
-void KURLLabel::drawContents(QPainter* p)
-{
-	/* get the bounding rectangles for both the text and pixmap */
-	QRect text_rect = m_textRect();
-	QRect pixmap_rect = m_pixmapRect();
-
-	/* draw the text only if it is not null */
-	if (!m_text.isEmpty())
-		p->drawText(text_rect.bottomLeft().x(), text_rect.bottomLeft().y()-3,
-		            m_text);
-
-	/* draw the pixmap only if it is not null */
-	if (!m_pixmap.isNull())
-	{
-		p->drawPixmap(pixmap_rect.topLeft().x(), pixmap_rect.topLeft().y(),
-		              m_pixmap);
-	}
-}
-
-void KURLLabel::setTransparentMode(bool state)
-{
-	m_transparent = state;
-	setBackgroundMode(state ? NoBackground : PaletteBackground);
-}
-
-void KURLLabel::paintEvent(QPaintEvent*)
-{ // Mirko Sucker, 1998/11/16:
-	QPen pen;
-	QPainter paint(this);
-	// -----
-	if(m_transparent && parentWidget()!=0)
-	{
-		QPixmap bg(width(), height());
-		// -----
-		bg.fill(parentWidget(), mapToParent(QPoint(0, 0)));
-		paint.drawPixmap(0, 0, bg);
-	}
-	drawFrame(&paint);
-	drawContents(&paint);
-	paint.end();
-}
 #include "kurllabel.moc"
