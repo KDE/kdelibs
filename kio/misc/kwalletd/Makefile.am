@@ -22,11 +22,11 @@ kde_module_LTLIBRARIES = kded_kwalletd.la
 
 kded_kwalletd_la_LDFLAGS = $(all_libraries) -module -avoid-version
 kded_kwalletd_la_LIBADD = $(LIB_KIO) ../../../kwallet/backend/libkwalletbackend.la ../../../kwallet/client/libkwalletclient.la
-kded_kwalletd_la_SOURCES = kwalletd.cpp kwalletd.skel
+kded_kwalletd_la_SOURCES = kwalletd.cpp kwalletd.skel ktimeout.cpp
 
 METASOURCES = AUTO
 
-noinst_HEADERS = kwalletd.h
+noinst_HEADERS = kwalletd.h ktimeout.h
 
 services_DATA = kwalletd.desktop
 servicesdir = $(kde_servicesdir)/kded
