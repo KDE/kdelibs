@@ -36,7 +36,7 @@
 using namespace KABC;
 
 ResourceFileConfig::ResourceFileConfig( QWidget* parent,  const char* name )
-    : ResourceConfigWidget( parent, name )
+    : ConfigWidget( parent, name )
 {
   resize( 245, 115 ); 
   QGridLayout *mainLayout = new QGridLayout( this, 2, 2 );

@@ -28,7 +28,7 @@
 
 namespace KABC {
 
-class ResourceDirConfig : public KRES::ResourceConfigWidget
+class ResourceDirConfig : public KRES::ConfigWidget
 { 
   Q_OBJECT
 

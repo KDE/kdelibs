@@ -298,7 +298,7 @@ class AddressBook : public QObject
     void deleteRemovedAddressees();
     void setStandardResource( Resource * );
     Resource *standardResource();
-    KRES::ResourceManager<Resource> *resourceManager();
+    KRES::Manager<Resource> *resourceManager();
 
   private:
     QPtrList<Resource> mDummy; // Remove in KDE 4

@@ -24,7 +24,7 @@
 #define KCMKABC_H
 
 class KAboutData;
-namespace KRES { class ResourcesConfigPage; }
+namespace KRES { class ConfigPage; }
 
 class KCMkabc : public KCModule
 {
@@ -39,7 +39,7 @@ public:
   const KAboutData* aboutData() const;
 
 private:
-  KRES::ResourcesConfigPage *mConfigPage;
+  KRES::ConfigPage *mConfigPage;
 };
 
 #endif

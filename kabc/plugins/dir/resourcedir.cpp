@@ -28,7 +28,7 @@ using namespace KABC;
 
 extern "C"
 {
-  KRES::ResourceConfigWidget *config_widget( QWidget *parent ) {
+  KRES::ConfigWidget *config_widget( QWidget *parent ) {
     KGlobal::locale()->insertCatalogue( "kabc_dir" );
     return new ResourceDirConfig( parent, "ResourceDirConfig" );
   }

@@ -19,7 +19,7 @@ lib_LTLIBRARIES   = libkabc.la
 libkabc_la_COMPILE_FIRST = addressee.h
 libkabc_la_LDFLAGS = $(all_libraries) -no-undefined -version-info 3:0:2 -module
 libkabc_la_LIBADD  = vcard/libvcard.la ../kdeui/libkdeui.la ../kio/libkio.la \
-  ../kresources/libkderesources.la $(LDAP_LIBS)
+  ../kresources/libkresources.la $(LDAP_LIBS)
 
 libkabc_la_SOURCES = \
   address.cpp addressbook.cpp addressee.cpp addresseedialog.cpp agent.cpp \

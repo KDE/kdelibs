@@ -39,7 +39,7 @@
 using namespace KABC;
 
 ResourceLDAPConfig::ResourceLDAPConfig( QWidget* parent,  const char* name )
-  : KRES::ResourceConfigWidget( parent, name )
+  : KRES::ConfigWidget( parent, name )
 {
   resize( 250, 120 ); 
   QGridLayout *mainLayout = new QGridLayout( this, 8, 2 );

@@ -44,7 +44,7 @@ struct AddressBook::AddressBookData
   Field::List mAllFields;
   ErrorHandler *mErrorHandler;
   KConfig *mConfig;
-  KRES::ResourceManager<Resource> *mManager;
+  KRES::Manager<Resource> *mManager;
 };
 
 struct AddressBook::Iterator::IteratorData
@@ -207,7 +207,7 @@ AddressBook::AddressBook()
   d = new AddressBookData;
   d->mErrorHandler = 0;
   d->mConfig = 0;
-  d->mManager = new KRES::ResourceManager<Resource>( "contact" );
+  d->mManager = new KRES::Manager<Resource>( "contact" );
   d->mManager->readConfig();
 }
 
@@ -216,7 +216,7 @@ AddressBook::AddressBook( const QString &config )
   d = new AddressBookData;
   d->mErrorHandler = 0;
   d->mConfig = new KConfig( config );
-  d->mManager = new KRES::ResourceManager<Resource>( "contact" );
+  d->mManager = new KRES::Manager<Resource>( "contact" );
   d->mManager->readConfig( d->mConfig );
 }
 
@@ -234,7 +234,7 @@ bool AddressBook::load()
 
   clear();
 
-  KRES::ResourceManager<Resource>::ActiveIterator it;
+  KRES::Manager<Resource>::ActiveIterator it;
   bool ok = true;
   for ( it = d->mManager->activeBegin(); it != d->mManager->activeEnd(); ++it )
     if ( !(*it)->load() ) {
@@ -302,7 +302,7 @@ Ticket *AddressBook::requestSaveTicket( Resource *resource )
   if ( !resource )
     resource = standardResource();
 
-  KRES::ResourceManager<Resource>::ActiveIterator it;
+  KRES::Manager<Resource>::ActiveIterator it;
   for ( it = d->mManager->activeBegin(); it != d->mManager->activeEnd(); ++it ) {
     if ( (*it) == resource ) {
       if ( (*it)->readOnly() || !(*it)->isOpen() )
@@ -452,7 +452,7 @@ QString AddressBook::identifier()
   QStringList identifier;
 
 
-  KRES::ResourceManager<Resource>::ActiveIterator it;
+  KRES::Manager<Resource>::ActiveIterator it;
   for ( it = d->mManager->activeBegin(); it != d->mManager->activeEnd(); ++it ) {
     if ( !(*it)->identifier().isEmpty() )
       identifier.append( (*it)->identifier() );
@@ -543,7 +543,7 @@ QPtrList<Resource> AddressBook::resources()
 {
   QPtrList<Resource> list;
 
-  KRES::ResourceManager<Resource>::ActiveIterator it;
+  KRES::Manager<Resource>::ActiveIterator it;
   for ( it = d->mManager->activeBegin(); it != d->mManager->activeEnd(); ++it )
     list.append( *it );
 
@@ -589,14 +589,14 @@ Resource *AddressBook::standardResource()
   return d->mManager->standardResource();
 }
 
-KRES::ResourceManager<Resource> *AddressBook::resourceManager()
+KRES::Manager<Resource> *AddressBook::resourceManager()
 {
   return d->mManager;
 }
 
 void AddressBook::cleanUp()
 {
-  KRES::ResourceManager<Resource>::ActiveIterator it;
+  KRES::Manager<Resource>::ActiveIterator it;
   for ( it = d->mManager->activeBegin(); it != d->mManager->activeEnd(); ++it ) {
     if ( !(*it)->readOnly() && (*it)->isOpen() )
       (*it)->cleanUp();

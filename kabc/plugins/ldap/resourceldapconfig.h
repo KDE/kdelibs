@@ -36,7 +36,7 @@ class KLineEdit;
 
 namespace KABC {
 
-class ResourceLDAPConfig : public KRES::ResourceConfigWidget
+class ResourceLDAPConfig : public KRES::ConfigWidget
 { 
   Q_OBJECT
 

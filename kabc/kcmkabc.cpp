@@ -30,7 +30,7 @@ KCMkabc::KCMkabc( QWidget *parent, const char *name )
   : KCModule( parent, name )
 {
   QVBoxLayout *layout = new QVBoxLayout( this );
-  mConfigPage = new KRES::ResourcesConfigPage( "contact", "kabcrc", this );
+  mConfigPage = new KRES::ConfigPage( "contact", "kabcrc", this );
   layout->addWidget( mConfigPage );
   connect( mConfigPage, SIGNAL( changed( bool ) ), SIGNAL( changed( bool ) ) );
 }
