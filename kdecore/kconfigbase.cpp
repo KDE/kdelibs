@@ -1085,7 +1085,9 @@ static QString translatePath( QString path )
         startsWithFile && path[5] != '/')
 	return path;
 
-   if (startsWithFile)
+   if (path.startsWith("file://", false))
+        path.remove(0,7); // strip leading "file:///" off the string
+   else if (startsWithFile)
         path.remove(0,5); // strip leading "file:/" off the string
 
    // we can not use KGlobal::dirs()->relativeLocation("home", path) here,
