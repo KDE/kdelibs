@@ -1,3 +1,19 @@
+/* provide a definition for a 32 bit entity, usable as a typedef, possibly
+   extended by "unsigned" */
+#undef INT32_BASETYPE
+#ifdef SIZEOF_INT
+#if SIZEOF_INT == 4
+#define INT32_BASETYPE int
+#endif
+#endif
+#if !defined(INT32_BASETYPE) && defined(SIZEOF_LONG)
+#if SIZEOF_LONG == 4
+#define INT32_BASETYPE long
+#endif
+#endif
+#ifndef INT32_BASETYPE
+#define INT32_BASETYPE int
+#endif
 
 /* this is needed for Solaris and others */
 #ifndef HAVE_GETDOMAINNAME
