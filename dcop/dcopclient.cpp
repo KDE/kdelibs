@@ -265,10 +265,10 @@ void DCOPProcessMessage(IceConn iceConn, IcePointer clientObject,
 	    // process() without confusing the DCOP call stack.
 	    bool old_notifier_enabled = d->notifier_enabled;
 	    d->notifier_enabled = false;
-            if (opcode == DCOPFind)
-                b = c->find(app, objId, fun, data, replyType, replyData );
-            else
-                b = c->receive( app, objId, fun, data, replyType, replyData );
+	    if (opcode == DCOPFind)
+		b = c->find(app, objId, fun, data, replyType, replyData );
+	    else
+		b = c->receive( app, objId, fun, data, replyType, replyData );
 	    // set notifier back to previous state
 	    d->notifier_enabled = old_notifier_enabled;
 	}
@@ -624,6 +624,15 @@ bool DCOPClient::send(const QCString &remApp, const QCString &remObjId,
 		      const QCString &remFun, const QByteArray &data,
 		      bool)
 {
+    if ( remApp == appId() ) {
+	QCString replyType;
+	QByteArray replyData;
+	bool b = receive(  remApp, remObjId, remFun, data, replyType, replyData );
+	if ( !b )
+	    qWarning("DCOP failure in app %s:\n   object '%s' has no function '%s'", remApp.data(), remObjId.data(), remFun.data() );
+	return true;
+    }
+    
     if ( !isAttached() )
 	return false;
 
@@ -1198,6 +1207,13 @@ bool DCOPClient::call(const QCString &remApp, const QCString &remObjId,
 		      QCString& replyType, QByteArray &replyData,
                       bool useEventLoop, bool fast)
 {
+    if ( remApp == appId() ) {
+	bool b = receive(  remApp, remObjId, remFun, data, replyType, replyData );
+	if ( !b )
+	    qWarning("DCOP failure in app %s:\n   object '%s' has no function '%s'", remApp.data(), remObjId.data(), remFun.data() );
+	return b;
+    }
+
     return callInternal(remApp, remObjId, remFun, data,
                          replyType, replyData, useEventLoop, fast, DCOPCall);
 }
@@ -1401,7 +1417,7 @@ DCOPClient::emitDCOPSignal( const QCString &signal, const QByteArray &data)
 }
 
 bool
-DCOPClient::connectDCOPSignal( const QCString &sender, const QCString &senderObj, 
+DCOPClient::connectDCOPSignal( const QCString &sender, const QCString &senderObj,
   const QCString &signal,
   const QCString &receiverObj, const QCString &slot, bool Volatile)
 {
