@@ -389,12 +389,12 @@ int KPrinterImpl::doFilterFiles(KPrinter *printer, QStringList& files, const QSt
 
 		QString	tmpfile = tempFile();
 		QString	cmd(filtercmd);
-		cmd.replace(rin,quote(*it));
 		cmd.replace(rout,quote(tmpfile));
 		cmd.replace(rpsl,ps.lower());
 		cmd.replace(rpsu,ps);
+		cmd.replace(rin,quote(*it)); // Replace as last, filename could contain "%psl"
 		statusMessage(i18n("Filtering print data"), printer);
-		int status = system(cmd.latin1());
+		int status = system(QFile::encodeName(cmd));
 		if (status < 0 || WEXITSTATUS(status) == 127)
 		{
 			printer->setErrorMessage(i18n("Error while filtering. Command was: <b>%1</b>.").arg(filtercmd));

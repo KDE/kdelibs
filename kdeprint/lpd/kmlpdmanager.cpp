@@ -223,7 +223,11 @@ bool KMLpdManager::removePrinter(KMPrinter *printer)
 bool KMLpdManager::enablePrinter(KMPrinter *printer, bool state)
 {
 	KPipeProcess	proc;
-	QString		cmd = QString::fromLatin1("%1 %2 %3").arg(programName(0)).arg(state ? "up" : "down").arg(printer->printerName());
+	QString		cmd = programName(0);
+	cmd += " ";
+	cmd += state ? "up" : "down";
+	cmd += " ";
+	cmd += KProcess::quote(printer->printerName());
 	if (proc.open(cmd))
 	{
 		QTextStream	t(&proc);
@@ -285,7 +289,7 @@ QString KMLpdManager::programName(int f)
 void KMLpdManager::checkStatus()
 {
 	KPipeProcess	proc;
-	QString		cmd = QString::fromLatin1("%1 status all").arg(programName(0));
+	QString		cmd = programName(0) + " status all";
 	if (proc.open(cmd))
 	{
 		QTextStream	t(&proc);

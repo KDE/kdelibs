@@ -238,7 +238,7 @@ QString getEtcPrintersConfName()
 		printersconf = locateLocal("tmp","printers.conf");
 		QString	cmd = QString::fromLatin1("ypcat printers.conf.byname > %1").arg(printersconf);
 		kdDebug() << "printers.conf obtained from NIS server: " << cmd << endl;
-		::system(cmd.local8Bit());
+		::system(QFile::encodeName(cmd));
 	}
 	return printersconf;
 }

@@ -235,7 +235,7 @@ bool LpcHelper::changeState(const QString& printer, const QString& op, QString& 
 		msg = i18n("Unable to locate executable %1 in your PATH.").arg("lpc");
 		return false;
 	}
-	QString	result = execute(m_exepath + " " + op + " " + printer);
+	QString	result = execute(m_exepath + " " + op + " " + KProcess::quote(printer));
 	int	status;
 
 	switch (LprSettings::self()->mode())
@@ -291,7 +291,7 @@ bool LpcHelper::changeJobState(KMJob *job, int state, QString& msg)
 		msg = i18n("The executable %1 couldn't be find in your PATH.").arg("lpc");
 		return false;
 	}
-	QString	result = execute(m_exepath + (state == KMJob::Held ? " hold " : " release ") + job->printer() + " " + QString::number(job->id()));
+	QString	result = execute(m_exepath + (state == KMJob::Held ? " hold " : " release ") + KProcess::quote(job->printer()) + " " + QString::number(job->id()));
 	QString	answer = lprngAnswer(result, job->printer());
 	if (answer == "no")
 	{
