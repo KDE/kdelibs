@@ -173,6 +173,8 @@ public:
 
   virtual QRect textBoundingRect(const QFontMetrics& fm) const;
 
+  virtual QRect itemBoundingRect(const QFontMetrics& fm) const;
+
   virtual int width(const KTreeList *theOwner) const;
 
 protected:

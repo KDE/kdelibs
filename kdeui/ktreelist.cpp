@@ -323,18 +323,24 @@ void KTreeListItem::paint(QPainter *p, const QColorGroup& cg, bool highlighted)
   
   p->drawPixmap(pixmapX, pixmapY, pixmap);
   if(doText) {
-    int textX = pixmapX + pixmap.width() + 4;
-    int textY = cellHeight - ((cellHeight - p->fontMetrics().ascent() - 
-      p->fontMetrics().leading()) / 2);
-    if(highlighted) {
-      p->setPen(cg.base());
-      p->setBackgroundColor(cg.text());
-    }
-    else {
-      p->setPen(cg.text());
-      p->setBackgroundColor(cg.base());
-    }
-    p->drawText(textX, textY, text);
+	  int textX = pixmapX + pixmap.width() + 4;
+	  int textY = cellHeight - ((cellHeight - p->fontMetrics().ascent() - 
+			  p->fontMetrics().leading()) / 2);
+	  if(highlighted) {
+	     if(QApplication::style() == WindowsStyle) {
+		      p->setPen(white);
+		      p->setBackgroundColor(QApplication::winStyleHighlightColor());
+		  }
+		  else {
+		      p->setPen(cg.base());
+		      p->setBackgroundColor(cg.text());
+		  }
+	  }
+	  else {
+		  p->setPen(cg.text());
+		  p->setBackgroundColor(cg.base());
+	  }
+	  p->drawText(textX, textY, text);
   }
   p->restore();
 }
@@ -433,6 +439,17 @@ QRect KTreeListItem::textBoundingRect(const QFontMetrics& fm) const
   int rectY = (cellHeight - fm.ascent() - fm.leading()) / 2 + 2;
   int rectW = fm.width(text) + 1;
   int rectH = fm.ascent() + fm.leading();
+  return QRect(rectX, rectY, rectW, rectH);
+}
+
+QRect KTreeListItem::itemBoundingRect(const QFontMetrics& fm) const
+{
+  int rectX = indent + branch * indent + 2;
+  int rectY = 4;
+  int rectW = fm.width(text) + pixmap.width() + 6;
+
+  int rectH = ((pixmap.height() > fm.lineSpacing()) ? pixmap.height() :
+              fm.lineSpacing()) + 2;
   return QRect(rectX, rectY, rectW, rectH);
 }
 
@@ -1775,28 +1792,31 @@ void KTreeList::paintHighlight(QPainter *p,
   QColorGroup cg = colorGroup();
   QColor fc;
   if(style() == WindowsStyle) 
-    fc = darkBlue; // hardcoded in Qt
+    fc = QApplication::winStyleHighlightColor();
   else
     fc = cg.text();
-  QRect textRect = item->textBoundingRect(p->fontMetrics());
+  QRect textRect = item->itemBoundingRect(p->fontMetrics());
   int t,l,b,r;
   textRect.coords(&l, &t, &r, &b);
   p->fillRect(textRect, fc); // draw base highlight
   if(hasFocus()) { 
-    if(style() == WindowsStyle) {  // draw Windows style highlight
-      textRect.setCoords(l - 1, t - 1, r + 1, b + 1);
-      p->setPen(QPen(yellow, 0, DotLine));
-      p->setBackgroundColor(fc);
-      p->setBackgroundMode(OpaqueMode);
+// As far as I can tell, Qt doesn't make much of a distinction between 
+// Windows and Motif style in this particular case.
+//    if(style() == WindowsStyle) {  // draw Windows style highlight
+//      textRect.setCoords(l - 1, t - 1, r + 1, b + 1);
+//      p->setPen(QPen(yellow, 0, DotLine));
+//      p->setBackgroundColor(fc);
+//      p->setBackgroundMode(OpaqueMode);
+//      p->drawRect(textRect);
+//      textRect.setCoords(l - 2, t - 2, r + 2, b + 2);
+//      p->setPen(fc);
+//      p->drawRect(textRect);
+//    }
+//    else { // draw Motif style highlight
+//      p->setBackgroundMode(OpaqueMode);
+      textRect.setCoords(l - 2, t - 2, r + 2, b + 1);
       p->drawRect(textRect);
-      textRect.setCoords(l - 2, t - 2, r + 2, b + 2);
-      p->setPen(fc);
-      p->drawRect(textRect);
-    }
-    else { // draw Motif style highlight
-      textRect.setCoords(l - 2, t - 2, r + 2, b + 2);
-      p->drawRect(textRect);
-    }
+//    }
   }
   p->restore(); // restore painter
 }
