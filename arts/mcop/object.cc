@@ -445,6 +445,11 @@ TypeDef Object_skel::_queryType(const string& name)
 	return Dispatcher::the()->interfaceRepo().queryType(name);
 }
 
+EnumDef Object_skel::_queryEnum(const string& name)
+{
+	return Dispatcher::the()->interfaceRepo().queryEnum(name);
+}
+
 void Object_skel::_addMethod(DispatchFunction disp, void *obj,
                                                const MethodDef& md)
 {
@@ -579,14 +584,23 @@ static void _dispatch_Arts_Object_03(void *object, Arts::Buffer *request, Arts::
 	_returnCode.writeType(*result);
 }
 
+// _queryEnum
+static void _dispatch_Arts_Object_04(void *object, Arts::Buffer *request, Arts::Buffer *result)
+{
+	std::string name;
+	request->readString(name);
+	Arts::EnumDef _returnCode = ((Arts::Object_skel *)object)->_queryEnum(name);
+	_returnCode.writeType(*result);
+}
+
 // _toString
-static void _dispatch_Arts_Object_04(void *object, Arts::Buffer *, Arts::Buffer *result)
+static void _dispatch_Arts_Object_05(void *object, Arts::Buffer *, Arts::Buffer *result)
 {
 	result->writeString(((Arts::Object_skel *)object)->_toString());
 }
 
 // _isCompatibleWith
-static void _dispatch_Arts_Object_05(void *object, Arts::Buffer *request, Arts::Buffer *result)
+static void _dispatch_Arts_Object_06(void *object, Arts::Buffer *request, Arts::Buffer *result)
 {
 	std::string interfacename;
 	request->readString(interfacename);
@@ -594,25 +608,25 @@ static void _dispatch_Arts_Object_05(void *object, Arts::Buffer *request, Arts::
 }
 
 // _copyRemote
-static void _dispatch_Arts_Object_06(void *object, Arts::Buffer *, Arts::Buffer *)
+static void _dispatch_Arts_Object_07(void *object, Arts::Buffer *, Arts::Buffer *)
 {
 	((Arts::Object_skel *)object)->_copyRemote();
 }
 
 // _useRemote
-static void _dispatch_Arts_Object_07(void *object, Arts::Buffer *, Arts::Buffer *)
+static void _dispatch_Arts_Object_08(void *object, Arts::Buffer *, Arts::Buffer *)
 {
 	((Arts::Object_skel *)object)->_useRemote();
 }
 
 // _releaseRemote
-static void _dispatch_Arts_Object_08(void *object, Arts::Buffer *, Arts::Buffer *)
+static void _dispatch_Arts_Object_09(void *object, Arts::Buffer *, Arts::Buffer *)
 {
 	((Arts::Object_skel *)object)->_releaseRemote();
 }
 
 // _get__flowSystem
-static void _dispatch_Arts_Object_09(void *object, Arts::Buffer *, Arts::Buffer *result)
+static void _dispatch_Arts_Object_10(void *object, Arts::Buffer *, Arts::Buffer *result)
 {
 	Arts::FlowSystem returnCode = ((Arts::Object_skel *)object)->_flowSystem();
 	writeObject(*result,returnCode._base());
@@ -629,15 +643,16 @@ void Arts::Object_skel::_buildMethodTable()
         "0000000013417274733a3a496e7465726661636544656600000000020000000100"
         "000007737472696e6700000000056e616d65000000000b5f717565727954797065"
         "000000000e417274733a3a54797065446566000000000200000001000000077374"
-        "72696e6700000000056e616d65000000000a5f746f537472696e67000000000773"
-        "7472696e67000000000200000000000000125f6973436f6d70617469626c655769"
-        "74680000000008626f6f6c65616e00000000020000000100000007737472696e67"
-        "000000000e696e746572666163656e616d65000000000c5f636f707952656d6f74"
-        "650000000005766f69640000000002000000000000000b5f75736552656d6f7465"
-        "0000000005766f69640000000002000000000000000f5f72656c6561736552656d"
-        "6f74650000000005766f6964000000000200000000000000115f6765745f5f666c"
-        "6f7753797374656d0000000011417274733a3a466c6f7753797374656d00000000"
-        "0200000000",
+        "72696e6700000000056e616d65000000000b5f7175657279456e756d000000000e"
+        "417274733a3a456e756d44656600000000020000000100000007737472696e6700"
+        "000000056e616d65000000000a5f746f537472696e670000000007737472696e67"
+        "000000000200000000000000125f6973436f6d70617469626c6557697468000000"
+        "0008626f6f6c65616e00000000020000000100000007737472696e67000000000e"
+        "696e746572666163656e616d65000000000c5f636f707952656d6f746500000000"
+        "05766f69640000000002000000000000000b5f75736552656d6f74650000000005"
+        "766f69640000000002000000000000000f5f72656c6561736552656d6f74650000"
+        "000005766f6964000000000200000000000000115f6765745f5f666c6f77537973"
+        "74656d0000000011417274733a3a466c6f7753797374656d000000000200000000",
 		"MethodTable"
 	);
 	_addMethod(_dispatch_Arts_Object_00,this,Arts::MethodDef(m));
@@ -650,6 +665,7 @@ void Arts::Object_skel::_buildMethodTable()
 	_addMethod(_dispatch_Arts_Object_07,this,Arts::MethodDef(m));
 	_addMethod(_dispatch_Arts_Object_08,this,Arts::MethodDef(m));
 	_addMethod(_dispatch_Arts_Object_09,this,Arts::MethodDef(m));
+	_addMethod(_dispatch_Arts_Object_10,this,Arts::MethodDef(m));
 }
 
 /*
@@ -807,6 +823,23 @@ TypeDef Object_stub::_queryType(const string& name)
 	result = Dispatcher::the()->waitForResult(requestID,_connection);
 	if(!result) return TypeDef(); // error
 	TypeDef _returnCode(*result);
+	delete result;
+	return _returnCode;
+}
+
+EnumDef Object_stub::_queryEnum(const string& name)
+{
+	long requestID;
+	Arts::Buffer *request, *result;
+	request = Arts::Dispatcher::the()->createRequest(requestID,_objectID,4);
+	// methodID = 4  =>  _queryEnum (always)
+	request->writeString(name);
+	request->patchLength();
+	_connection->qSendBuffer(request);
+
+	result = Dispatcher::the()->waitForResult(requestID,_connection);
+	if(!result) return EnumDef(); // error occured
+	EnumDef _returnCode(*result);
 	delete result;
 	return _returnCode;
 }

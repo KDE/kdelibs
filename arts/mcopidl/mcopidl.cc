@@ -2291,6 +2291,7 @@ void exit_usage(char *name)
 	fprintf(stderr,"usage: %s [ <options> ] <filename>\n",name);
 	fprintf(stderr,"\nOptions:\n");
 	fprintf(stderr,"  -I <directory>     search in <directory> for includes\n");
+	fprintf(stderr,"  -e <name>          exclude a struct/interface/enum from code generation\n");
 	exit(1);
 }
 extern void mcopidlParse(const char *code);
@@ -2451,7 +2452,7 @@ int main(int argc, char **argv)
 	 */
 	int c;
 	bool makeTypeInfo = false;
-	while((c = getopt(argc, argv, "I:P:C:t")) != -1)
+	while((c = getopt(argc, argv, "I:P:C:te:")) != -1)
 	{
 		switch(c)
 		{
@@ -2462,6 +2463,8 @@ int main(int argc, char **argv)
 			case 'C': customIncludes.push_back(optarg);
 				break;
 			case 't': makeTypeInfo = true;
+				break;
+			case 'e': includedNames.push_back(optarg);
 				break;
 			default: exit_usage(argv[0]);
 				break;

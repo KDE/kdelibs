@@ -481,23 +481,31 @@ interface TraderQuery {
 	sequence<TraderOffer> query();
 };
 
-// this is only (!) used for generation of the Object_stub stuff
-/*
+// this is used for generation of the Object_stub stuff
+// (use mcopidl -e Arts::Object to avoid code generation for this interface)
 interface Object {
 	// access to the flow system this object is running in
 	readonly attribute FlowSystem _flowSystem;
 
 	// returns the ID for methodinvocations to this specific method
+	// methodID = 0  =>  _lookupMethod (always)
 	long _lookupMethod(MethodDef methodDef);
 
 	// returns the name of the interface
+	// methodID = 1  =>  _interfaceName (always)
 	string _interfaceName();
 
 	// returns the interface description to a given interface
+	// methodID = 2  =>  _queryInterface (always)
 	InterfaceDef _queryInterface(string name);
 
 	// returns the type description to a given type
+	// methodID = 3  =>  _queryType (always)
 	TypeDef _queryType(string name);
+
+	// returns the enum description to a given enum
+	// methodID = 4  =>  _queryEnum (always)
+	EnumDef _queryEnum(string name);
 
 	// stringifies the object to one string
 	string _toString();
@@ -517,6 +525,5 @@ interface Object {
 	// declares that the object is no longer used remotely
 	void _releaseRemote();
 };
-*/
 
 };

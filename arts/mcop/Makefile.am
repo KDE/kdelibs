@@ -30,4 +30,4 @@ artsinclude_HEADERS = buffer.h common.h connection.h core.h dispatcher.h \
   dynamicrequest.h anyref.h
 
 core: $(srcdir)/core.idl $(MCOPIDL)
-	$(MCOPIDL) -I$(srcdir) $(srcdir)/core.idl
+	$(MCOPIDL) -e Arts::Object -I$(srcdir) $(srcdir)/core.idl

@@ -220,6 +220,11 @@ public:
 		assert(_pool->base);
 		return _pool->base->_queryType(name);
 	}
+	inline EnumDef _queryEnum(const std::string& name) const {
+		_pool->checkcreate();
+		assert(_pool->base);
+		return _pool->base->_queryEnum(name);
+	}
 	// Stringification
 	inline std::string _toString() const {
 		_pool->checkcreate();

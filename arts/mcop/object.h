@@ -117,6 +117,7 @@ public:
 	virtual std::string _interfaceName() = 0;
 	virtual class InterfaceDef _queryInterface(const std::string& name) = 0;
 	virtual class TypeDef _queryType(const std::string& name) = 0;
+	virtual class EnumDef _queryEnum(const std::string& name) = 0;
 	virtual std::string _toString() = 0;
 
 	/*
@@ -251,6 +252,7 @@ public:
 	virtual std::string _interfaceName();
 	InterfaceDef _queryInterface(const std::string& name);
 	TypeDef _queryType(const std::string& name);
+	EnumDef _queryEnum(const std::string& name);
 	virtual std::string _toString();
 	
 	// Run-time type compatibility check
@@ -291,6 +293,7 @@ public:
 	std::string _interfaceName();
 	InterfaceDef _queryInterface(const std::string& name);
 	TypeDef _queryType(const std::string& name);
+	EnumDef _queryEnum(const std::string& name);
 	std::string _toString();
 
 	/*
