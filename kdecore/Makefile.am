@@ -11,6 +11,7 @@ EXTRA_DIST = convert_key.c
 lib_LTLIBRARIES = libkdecore.la
 SUFFIXES = .moc
 CXXFLAGS = @CXXFLAGS@ -DKDEDIR=\"@KDEDIR@\"
+COMPILE = $(CC) $(DEFS) $(INCLUDES) $(CPPFLAGS) $(CFLAGS)
 
 include_HEADERS = Kconfig.h Kconfigdata.h kcolorgroup.h kapp.h\
 	kurl.h ksock.h drag.h kkeyconf.h kkeydata.h ckey.h kmisc.h
