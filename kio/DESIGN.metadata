@@ -11,24 +11,25 @@ The following keys are currently in use:
 Key             Value(s)        Description
 ----            --------        -----------
 
-referrer	    string          The URL from which the request originates. (read by http)
+referrer        string          The URL from which the request originates. (read by http)
 
-modified	    string          The modification date of the document (set by http)
+modified        string          The modification date of the document (set by http)
 
-accept		    string          List of mimetypes to accept seperated by a ", ". (read by http)
+accept          string          List of mimetypes to accept seperated by a ", ". (read by http)
 
-userAgent       string          The user agent name to send to remote host ( read by http )
+userAgent       string          The user agent name to send to remote host (read by http)
 
-content-type    string          The content type of the data to be uploaded ( read by http )
+content-type    string          The content type of the data to be uploaded (read by http)
 
-cache	        "cache"         Use entry from cache if available.
+cache           "cache"         Use entry from cache if available.
                 "cacheonly"     Do not do any remote lookups, fail if not in cache. (read by http)
                 "verify"        Use entry from after verifying with remote server
                 "reload"        Do not do any cache lookups.
 
-window-id	number		winId() of the window the request is associated with.
+window-id       number          winId() of the window the request is associated with.
 
+resume          number          Try to get the file starting at the given offset (set by TransferJob)
 
-
+ssl_*           *               Many SSL metadata fields (see khtml_part and kio_http)
 
 ** NOTE: Anything in quotes ("") under Value(s) indicates literal value.
