@@ -173,7 +173,6 @@ void HTMLTokenizer::begin()
     loadingExtScript = false;
     scriptSrc = "";
     pendingSrc = "";
-    scriptOutput = "";
     noMoreData = false;
 }
 
@@ -337,22 +336,29 @@ void HTMLTokenizer::parseListing( DOMStringIt &src)
             processToken();
             if (cachedScript) {
                 cachedScript->ref(this);
-                if (cachedScript) { // will be 0 if script was already loaded and ref() executed it
+                // will be 0 if script was already loaded and ref() executed it
+                if (cachedScript) {
                     loadingExtScript = true;
-                    pendingSrc = QString(src.current(), src.length());
+                    pendingSrc.prepend( QString(src.current(), src.length() ) );
                     _src = QString::null;
                     src = DOMStringIt(_src);
                 }
             }
             else if (view && doScriptExec && javascript && !parser->skipMode()) {
+                pendingSrc = QString( src.current(), src.length() );
+                _src = QString::null;
+                src = DOMStringIt( _src );
                 m_executingScript = true;
+                script = false;
                 view->part()->executeScript(QString(scriptCode, scriptCodeSize));
+                script = true;
                 m_executingScript = false;
             }
             script = style = listing = textarea = false;
             scriptCodeSize = 0;
 
-            addScriptOutput();
+            if ( !m_executingScript && !loadingExtScript )
+                addPendingSource();
 
             return; // Finished parsing script/style/listing
         }
@@ -1218,39 +1224,24 @@ void HTMLTokenizer::write( const QString &str, bool appendData )
     kdDebug( 6036 ) << "Tokenizer::write(\"" << str << "\"," << appendData << ")" << endl;
 #endif
 
-    if ( str.isEmpty() || buffer == 0L )
+    if ( !buffer )
         return;
 
-    // reentrant...
-    // we just insert the code at the tokenizers current position. Parsing will continue once
-    // we return from the script stuff
-    // (this won't happen if we're in the middle of loading an external script)
-    if(!appendData || onHold) {
-#ifdef TOKEN_DEBUG
-        kdDebug( 6036 ) << "adding to scriptOutput" << endl;
-#endif
-        scriptOutput += str;
-        return;
-    }
-
-    // we received new data from the slave while executing
-    // a script. we need to append the new data at the end
-    // ### fix all those nasty deep string copying!!
-    if(appendData && m_executingScript) {
-        QString newStr = QString(src.current(), src.length());
-        newStr += str;
-        _src = newStr;
-        src = DOMStringIt(_src);
-        return;
-    }
-
-    if (loadingExtScript) {
+    if ( loadingExtScript || ( m_executingScript && appendData ) ) {
         // don't parse; we will do this later
         pendingSrc += str;
         return;
     }
 
-    _src = str;
+    if ( onHold ) {
+        QString rest = QString( src.current(), src.length() );
+        rest += str;
+        _src = rest;
+        return;
+    }
+    else
+        _src = str;
+
     src = DOMStringIt(_src);
 
     if (plaintext)
@@ -1452,25 +1443,8 @@ void HTMLTokenizer::write( const QString &str, bool appendData )
         }
     }
     _src = QString();
-    if (noMoreData && !cachedScript)
+    if (noMoreData && !loadingExtScript && !m_executingScript )
         end(); // this actually causes us to be deleted
-}
-
-bool HTMLTokenizer::close()
-{
-    return true;
-#if 0
-    if(!scriptOutput.isEmpty()) {
-        m_executingScript = false;
-        addScriptOutput();
-        write(_src, true);
-//         write(scriptOutput, false)
-//         scriptOutput = QString::null;
-        return false;
-    }
-
-    return true;
-#endif
 }
 
 void HTMLTokenizer::end()
@@ -1636,34 +1610,29 @@ void HTMLTokenizer::notifyFinished(CachedObject *finishedObj)
         // of 'scriptOutput'.
         if (!script)
         {
-           QString rest = scriptOutput+pendingSrc;
-           scriptOutput = pendingSrc = "";
+           QString rest = pendingSrc;
+           pendingSrc = "";
            write(rest, true);
         }
     }
 }
 
-void HTMLTokenizer::addScriptOutput()
+void HTMLTokenizer::addPendingSource()
 {
-    if ( !scriptOutput.isEmpty() ) {
-        //kdDebug( 6036 ) << "adding scriptOutput to parsed string" << endl;
-        QString newStr = scriptOutput;
-        newStr += QString(src.current(), src.length());
-        _src = newStr;
-        src = DOMStringIt(_src);
-        scriptOutput = "";
-    }
+    //kdDebug( 6036 ) << "adding pending Output to parsed string" << endl;
+    QString newStr = QString(src.current(), src.length());
+    newStr += pendingSrc;
+    _src = newStr;
+    src = DOMStringIt(_src);
+    pendingSrc = "";
 }
 
 void HTMLTokenizer::setOnHold(bool _onHold)
 {
     if (onHold == _onHold) return;
     onHold = _onHold;
-    if (!onHold) {
-	QString rest = scriptOutput+pendingSrc;
-	scriptOutput = pendingSrc = "";
-	write(rest, true);
-    }
+    if (!onHold)
+        write( _src, true );
 }
 
 #include "htmltokenizer.moc"

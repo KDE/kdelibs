@@ -132,7 +132,6 @@ public:
     virtual void end() = 0;
     virtual void finish() = 0;
     virtual void setOnHold(bool /*_onHold*/) {}
-    virtual bool close() { return true; }
 
 signals:
     void finishedParsing();
@@ -160,7 +159,6 @@ public:
     void write( const QString &str, bool appendData );
     void end();
     void finish();
-    bool close();
     virtual void setOnHold(bool _onHold);
 
 protected:
@@ -178,7 +176,7 @@ protected:
     void parseTag(khtml::DOMStringIt &str);
     void parseEntity(khtml::DOMStringIt &str, QChar *&dest, bool start = false);
     void parseProcessingInstruction(khtml::DOMStringIt &str);
-    void addScriptOutput();
+    void addPendingSource();
 
     // check if we have enough space in the buffer.
     // if not enlarge it
@@ -340,8 +338,6 @@ protected:
     khtml::CachedScript *cachedScript;
     // you can pause the tokenizer if you need to display a dialog or something
     bool onHold;
-
-    QString scriptOutput;
 
 #define CBUFLEN 14
     char cBuffer[CBUFLEN+2];
