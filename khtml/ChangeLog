@@ -1,3 +1,13 @@
+2004-01-11  Germain Garand  <germain@ebooksfrance.org>
+
+        * rendering/render_text.cpp (paintBoxDecorations):
+        make background images on inlines obbey the full CSS
+        spec (#59600)
+
+        * rendering/render_text.h (paintBoxDecorations): changed prototype
+
+        * rendering/render_line.cpp (paintDecorations): disable for now.
+
 2004-01-11  Dirk Mueller  <mueller@kde.org>
 
 	* html/htmlparser.cpp (insertNode): fix <p><dl> handling (#68167).

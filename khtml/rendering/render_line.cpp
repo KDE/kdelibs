@@ -565,6 +565,10 @@ void InlineFlowBox::paintDecorations(QPainter *p, int _x, int _y,
 {
     // Now paint our text decorations. We only do this if we aren't in quirks mode (i.e., in
     // almost-strict mode or strict mode).
+    
+    // ### disabled for now
+    return;
+
     _tx += m_x;
     _ty += m_y;
     RenderStyle* styleToUse = object()->style(m_firstLine);

@@ -267,7 +267,7 @@ void InlineTextBox::paintDecoration( QPainter *pt, const Font *f, int _tx, int _
 }
 #endif
 
-void InlineTextBox::paintBoxDecorations(QPainter *pt, RenderStyle* style, RenderText *p, int _tx, int _ty, bool begin, bool end)
+void InlineTextBox::paintBoxDecorations(QPainter *pt, RenderStyle* style, RenderText *p, int _tx, int _ty, int curr, int count)
 {
     int topExtra = p->borderTop() + p->paddingTop();
     int bottomExtra = p->borderBottom() + p->paddingBottom();
@@ -278,6 +278,8 @@ void InlineTextBox::paintBoxDecorations(QPainter *pt, RenderStyle* style, Render
     _ty += m_y + halfleading - topExtra;
 
     int width = m_width;
+    bool begin = !curr;
+    bool end = (curr == count-1);
 
     // the height of the decorations is:  topBorder + topPadding + CSS font-size + bottomPadding + bottomBorder
     int height = style->font().pixelSize() + topExtra + bottomExtra;
@@ -291,9 +293,26 @@ void InlineTextBox::paintBoxDecorations(QPainter *pt, RenderStyle* style, Render
         pt->fillRect(_tx, _ty, width, height, c);
 
     if(i) {
-        // ### might need to add some correct offsets
-        // ### use paddingX/Y
-        pt->drawTiledPixmap(_tx, _ty, width, height, i->tiled_pixmap(c));
+        if (begin && end) {
+             p->parent()->paintBackgroundExtended(pt, c, i, _ty, height,
+                                _tx, _ty, width, height,
+                                p->borderLeft(), p->borderRight());
+        } else {
+            int mw = 0;
+            int startX = _tx;
+            for (int ix=0; ix<count; ix++) {
+                if(ix == curr) startX -= mw;
+                mw += static_cast<InlineBox*>(renderText()->m_lines[ix])->width();
+            }
+            QRect clipRect(_tx, _ty, width, height);
+            clipRect = pt->xForm(clipRect);
+            pt->save();
+            pt->setClipRect( clipRect );
+            p->parent()->paintBackgroundExtended(pt, c, i, _ty, height,
+                                startX, _ty, mw, height, 
+                                p->borderLeft(), p->borderRight());
+            pt->restore();
+        }
     }
 
 #ifdef DEBUG_VALIGN
@@ -962,7 +981,7 @@ void RenderText::paintObject( QPainter *p, int /*x*/, int y, int /*w*/, int h,
             if (shouldPaintBackgroundOrBorder() &&
                 ((pseudoStyle && s->m_firstLine) ||
                 (!pseudoStyle && parent()->isInline())))
-                s->paintBoxDecorations(p, _style, this, tx, ty, si == 0, si == (int)m_lines.count()-1);
+                s->paintBoxDecorations(p, _style, this, tx, ty, si, (int)m_lines.count());
 
             if(_style->color() != p->pen().color())
                 p->setPen(_style->color());

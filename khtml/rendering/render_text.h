@@ -70,7 +70,7 @@ public:
     virtual bool isInlineTextBox() const { return true; }
 
     void paintDecoration( QPainter *pt, const Font *f, int _tx, int _ty, int decoration, bool begin, bool end);
-    void paintBoxDecorations(QPainter *p, RenderStyle* style, RenderText *parent, int _tx, int _ty, bool begin, bool end);
+    void paintBoxDecorations(QPainter *p, RenderStyle* style, RenderText *parent, int _tx, int _ty, int curr, int count);
     void paintSelection(const Font *f, RenderText *text, QPainter *p, RenderStyle* style, int tx, int ty, int startPos, int endPos, int deco);
 
     // Return before, after (offset set to max), or inside the text, at @p offset
