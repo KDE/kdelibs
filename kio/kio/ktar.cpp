@@ -112,7 +112,7 @@ KTar::KTar( const QString& filename, const QString & _mimetype )
 }
 
 void KTar::prepareDevice( const QString & filename,
-                            const QString & mimetype, bool forced )
+                            const QString & mimetype, bool /*forced*/ )
 {
   if( "application/x-tar" == mimetype )
       setDevice( new QFile( filename ) );
