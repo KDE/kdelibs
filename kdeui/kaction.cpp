@@ -695,8 +695,8 @@ int KAction::plug( QWidget *w, int index )
 
     if ( icon().isEmpty() && !iconSet().pixmap().isNull() ) // old code using QIconSet directly
     {
-        bar->insertButton( iconSet().pixmap(), id_, SIGNAL( clicked() ), this,
-                           SLOT( slotActivated() ),
+        bar->insertButton( iconSet().pixmap(), id_, SIGNAL( buttonClicked(int, Qt::ButtonState) ), this,
+                           SLOT( slotButtonClicked(int, Qt::ButtonState) ),
                            d->isEnabled(), d->plainText(), index );
     }
     else
@@ -704,14 +704,12 @@ int KAction::plug( QWidget *w, int index )
         QString icon = d->iconName();
         if ( icon.isEmpty() )
             icon = "unknown";
-        bar->insertButton( icon, id_, SIGNAL( clicked() ), this,
-                           SLOT( slotActivated() ),
+        bar->insertButton( icon, id_, SIGNAL( buttonClicked(int, Qt::ButtonState) ), this,
+                           SLOT( slotButtonClicked(int, Qt::ButtonState) ),
                            d->isEnabled(), d->plainText(), index, instance );
     }
 
     KToolBarButton* ktb = bar->getButton(id_);
-    connect( ktb, SIGNAL( buttonClicked(int, Qt::ButtonState) ),
-             this, SLOT( slotButtonClicked(int, Qt::ButtonState) ) );
     ktb->setName( QCString("toolbutton_")+name() );
 
     if ( !d->whatsThis().isEmpty() )
@@ -1099,8 +1097,6 @@ void KAction::slotActivated()
   {
     if ( ::qt_cast<KAccelPrivate *>( senderObj ) )
         emit activated( KAction::AccelActivation, Qt::NoButton );
-    else if ( ::qt_cast<KToolBarButton *>( senderObj ) )
-        emit activated( KAction::ToolBarActivation, Qt::NoButton );
   }
   emit activated();
 }
@@ -1145,11 +1141,9 @@ void KAction::slotButtonClicked( int, Qt::ButtonState state )
   kdDebug(129) << "slotButtonClicked() state=" << state << endl;
   emit activated( KAction::ToolBarActivation, state );
 
-  // LeftButton is still connected to slotActivated directly,
-  // and RightButton isn't really an activation
-  if ( state & Qt::MidButton ) {
-      emit activated();
-  }
+  // RightButton isn't really an activation
+  if ( ( state & LeftButton ) || ( state & MidButton ) )
+    slotActivated();
 }
 
 

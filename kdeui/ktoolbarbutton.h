@@ -253,11 +253,17 @@ public:
   void setNoStyle(bool no_style = true);
 
 signals:
+  /**
+   * Emitted when the toolbar button is clicked (with LMB or MMB)
+   */
   void clicked(int);
   /**
+   * Emitted when the toolbar button is clicked (with any mouse button)
+   * @param state makes it possible to find out which button was pressed,
+   * and whether any keyboard modifiers were held.
    * @since 3.4
    */
-  void buttonClicked(int, Qt::ButtonState);
+  void buttonClicked(int, Qt::ButtonState state);
   void doubleClicked(int);
   void pressed(int);
   void released(int);
