@@ -1,5 +1,6 @@
 usr/include/kde/*
 usr/share/doc/kdelibs4-dev/dh-make/*
+usr/lib/kde/libkdefx.so
 usr/lib/kde/libkscreensaver.so
 usr/lib/kde/libkdeprint.so
 usr/lib/kde/libkdeprint_management.so
@@ -25,8 +26,6 @@ usr/lib/kde/libvcard.so
 usr/lib/kde/libkabc.so
 usr/lib/kde/libkwalletclient.so
 usr/lib/kde/libkwalletbackend.so
-usr/bin/meinproc
 usr/bin/dcopidl
 usr/bin/dcopidl2cpp
 usr/bin/kde-config
-usr/bin/kdb2html

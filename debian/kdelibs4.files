@@ -1,3 +1,5 @@
+usr/lib/kde/libkdefx.so.*
+usr/lib/kde/libkdefx.la
 usr/lib/kde/libDCOP.so.*
 usr/lib/kde/libDCOP.la
 usr/lib/kde/dcopserver.so
@@ -71,6 +73,12 @@ usr/lib/kde/libkwalletbackend.so.*
 usr/lib/kde/libkwalletbackend.la
 usr/lib/kde/libkscreensaver.so.*
 usr/lib/kde/libkscreensaver.la
+usr/lib/kde/libkscriptloader.so.*
+usr/lib/kde/libkscriptloader.la
+usr/lib/kde/libshellscript.so.*
+usr/lib/kde/libshellscript.la
+usr/lib/kde/kcookiejar.*
+usr/lib/kde3/*
 usr/bin/dcopserver
 usr/bin/dcopserver_shutdown
 usr/bin/dcop
@@ -97,9 +105,6 @@ usr/bin/make_driver_db_lpd
 usr/bin/imagetops
 usr/bin/kconf_update
 usr/bin/kab2kabc
-usr/bin/xml2man
-usr/bin/xmlizer
-usr/bin/checkXML
 usr/bin/kdeinit
 usr/bin/kdeinit_wrapper
 usr/bin/kshell
@@ -108,3 +113,5 @@ usr/bin/lnusertemp
 usr/bin/kwrapper
 etc/kde/*
 usr/share/kde/*
+usr/share/qt/*
+usr/share/doc/kde/*

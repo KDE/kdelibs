@@ -1,3 +1,4 @@
 usr/lib/kde/libkmid.so
 usr/lib/kde/libqtmcop.so
+usr/lib/kde/libgmcop.so
 usr/include/kde/libkmid/*
