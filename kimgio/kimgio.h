@@ -10,6 +10,8 @@
 #ifndef SSK_KIMGIO_H
 #define SSK_KIMGIO_H
 
+#include <qstringlist.h>
+
 /**
 * Registers all available image format encoders and decoders.
 */
