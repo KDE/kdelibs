@@ -1,3 +1,8 @@
+2004-03-01  Dirk Mueller  <mueller@kde.org>
+
+	* rendering/render_object.cpp (drawBorder): use drawPixel directly.
+	turns out to be more reliable and equally fast (#62296).
+
 2004-02-29  Dirk Mueller  <mueller@kde.org>
 
 	* html/html_documentimpl.cpp (determineParseMode): treat xhtml transitional
