@@ -1,6 +1,6 @@
 /*
     Copyright (C) 1998 Mark Donohoe <donohoe@kde.org>
-    Copyright (C) 1997 Nicolas Hadacek <hadacek@via.ecp.fr>
+    Copyright (C) 1997-1999 Nicolas Hadacek <hadacek@kde.org>
     Copyright (C) 1998 Matthias Ettrich <ettrich@kde.org>
 
     This library is free software; you can redistribute it and/or
@@ -721,69 +721,66 @@ QString keyToString( uint keyCode, bool i18_n )
 	return QString();
 }
 
-uint stringToKey(const QString& key )
+uint stringToKey(const QString& key)
 {
-	char *toks[4], *next_tok;
-	uint keyCode = 0;
-	int j, nb_toks = 0;
-	char sKey[200];
-	
-	//printf("string to key %s\n", key);
-	if ( key == 0 ) { kdebug(KDEBUG_WARN, 125, "stringToKey::Null key");return 0; }
-	if( strcmp( key, "" ) == -1 ) { kdebug(KDEBUG_WARN, 125, "stringToKey::Empty key");return 0; }
-	
-	strncpy(sKey, key.ascii(), 200);
-	next_tok = strtok(sKey,"+");
-	
-	if ( next_tok== 0L ) return 0;
-	
+//	debug("string to key %s\n", key.ascii());
+
+	if ( key.isNull() ) {
+		kdebug(KDEBUG_WARN, 125, "stringToKey::Null key");
+		return 0;
+	} else if ( key.isEmpty() ) {
+		kdebug(KDEBUG_WARN, 125, "stringToKey::Empty key");
+		return 0;
+	}
+
+	// break the string in tokens separated by "+"
+	uint k = 0;
+	QArray<int> tokens;
+	int i = -1;
 	do {
-		toks[nb_toks] = next_tok;
-		nb_toks++;
-		if ( nb_toks==5 ) return 0;
-		next_tok = strtok(0L, "+");
-	} while ( next_tok!=0L );
+		tokens.resize(k+1);
+		tokens[k] = i+1;
+		i = key.find('+', i+1);
+		k++;
+	} while ( i!=-1 );
+	tokens.resize(k+1);
+	tokens[k] = key.length() + 1;
 	
-	/* we test if there is one and only one key (the others tokens
-	   are accelerators) ; we also fill the keycode with infos */
-	bool  keyFound = FALSE;
-	for (int i=0; i<nb_toks; i++) {
-		if ( strcmp(toks[i], "SHIFT")==0 )
-		  keyCode |= Qt::SHIFT;
-		else if ( strcmp(toks[i], "CTRL")==0 )
-		  keyCode |= Qt::CTRL;
-		else if ( strcmp(toks[i], "ALT")==0 )
-		  keyCode |= Qt::ALT;
-		else if ( strcmp(toks[i], "Umschalt")==0 )
-		  keyCode |= Qt::SHIFT;
-		else if ( strcmp(toks[i], "Strg")==0 )
-		  keyCode |= Qt::CTRL;
-		else if ( strcmp(toks[i], "Alt")==0 )
-		  keyCode |= Qt::ALT;
-		else if ( strcmp(toks[i], i18n("SHIFT"))==0 )
-		  keyCode |= Qt::SHIFT;
-		else if ( strcmp(toks[i], i18n("CTRL"))==0 )
-		  keyCode |= Qt::CTRL;
-		else if ( strcmp(toks[i], i18n("ALT"))==0 )
-		  keyCode |= Qt::ALT;
-	    else {
-			/* key already found ? */
-			if ( keyFound ) return 0;
-			keyFound = TRUE;
-			
-			/* search key */
+	// we have k tokens.
+	// find a keycode (only one)
+	// the other tokens are accelerators (SHIFT, CTRL & ALT)
+	// the order is unimportant
+	bool codeFound = FALSE;
+	QString str;
+	uint keyCode = 0;
+	for (uint i=0; i<k; i++) {
+		str = key.mid(tokens[i], tokens[i+1]-tokens[i]-1);
+		str.stripWhiteSpace();
+		if ( str.isEmpty() ) {
+			kdebug(KDEBUG_WARN, 125, "stringToKey::Empty token");
+			return 0;
+		}
+
+		if ( str=="SHIFT" )     keyCode |= Qt::SHIFT;
+		else if ( str=="CTRL" ) keyCode |= Qt::CTRL;
+		else if ( str=="ALT" )  keyCode |= Qt::ALT;
+		else if (codeFound) {
+			kdebug(KDEBUG_WARN, 125, "stringToKey::Duplicate keycode");
+			return 0;
+		} else {
+			// search for keycode
+			uint j;
 			for(j=0; j<NB_KEYS; j++) {
-				if ( strcmp(toks[i], KKEYS[j].name)==0 ) {
+				if ( str==KKEYS[j].name ) {
 				    keyCode |= KKEYS[j].code;
 					break;
 				}
 			}
-			
-			/* key name ot found ? */
-			if ( j==NB_KEYS ) return 0;
+			if ( j==NB_KEYS ) {
+				kdebug(KDEBUG_WARN, 125, "stringToKey::Unknown key name %s", str.ascii());
+				return 0;
+			}
 		}
 	}
-	
 	return keyCode;
 }
-

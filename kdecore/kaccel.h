@@ -1,6 +1,6 @@
 /* This file is part of the KDE libraries
     Copyright (C) 1997 Mark Donohoe <donohoe@kde.org>
-    Copyright (C) 1997 Nicolas Hadacek <hadacek@via.ecp.fr>
+    Copyright (C) 1997-1999 Nicolas Hadacek <hadacek@kde.org>
     Copyright (C) 1998 Matthias Ettrich <ettrich@kde.org>
 
     This library is free software; you can redistribute it and/or
@@ -28,7 +28,6 @@
 
 #include <kconfig.h>
 
-//#include "kckey.h"
 #include <qcstring.h>
 
 /**
@@ -36,6 +35,7 @@
  * is not recognized. The string must be something like "SHIFT+A",
  * "F1+CTRL+ALT" or "Backspace" for example. That is, a key plus a combination
  * of SHIFT, CTRL and ALT.
+ * NB: sKey must *not* be i18ned !!
  */	
 uint stringToKey( const QString& sKey );
 
