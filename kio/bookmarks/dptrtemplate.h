@@ -1,3 +1,6 @@
+#ifndef __dptrtemplate_h__
+#define __dptrtemplate_h__
+
 #include <qptrdict.h>
 
 template<class Instance, class PrivateData>
@@ -29,3 +32,4 @@ private:
     static QPtrDict<PrivateData>* d_ptr;
 };
 
+#endif
