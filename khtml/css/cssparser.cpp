@@ -73,11 +73,6 @@ bool StyleBaseImpl::deleteMe()
     return false;
 }
 
-void StyleBaseImpl::setParent(StyleBaseImpl *parent)
-{
-    m_parent = parent;
-}
-
 void StyleBaseImpl::checkLoaded()
 {
     if(m_parent) m_parent->checkLoaded();

@@ -90,14 +90,14 @@ public:
     public:
 	StyleBaseImpl() { m_parent = 0; hasInlinedDecl = false; strictParsing = true; }
 	StyleBaseImpl(StyleBaseImpl *p) { m_parent = p; hasInlinedDecl = false; strictParsing = true; }
-	
+
 	virtual ~StyleBaseImpl() {}
 
 	virtual bool deleteMe();
 
 	// returns the url of the style sheet this object belongs to
 	DOMString baseUrl();
-	
+
 	StyleBaseImpl *parent() { return m_parent; }
 
 	virtual bool isStyleSheet() { return false; }
@@ -119,7 +119,7 @@ public:
 	virtual bool isValueList() { return false; }
 	virtual bool isValueCustom() { return false; }
 
-	void setParent(StyleBaseImpl *parent);
+	void setParent(StyleBaseImpl *parent) { m_parent = parent; }
 
 	QString preprocess(const QString &str);
 	const QChar *parseSpace(const QChar *curP, const QChar *endP);
@@ -136,9 +136,9 @@ public:
 	/* parses generic CSSValues, return true, if it found a valid value */
 	bool parseValue(const QChar *curP, const QChar *endP, int propId, bool important,
 			QList<CSSProperty> *propList);
-	bool parseShortHand(const QChar *curP, const QChar *endP, const int *properties, 
+	bool parseShortHand(const QChar *curP, const QChar *endP, const int *properties,
 			    int num, bool important, QList<CSSProperty> *propList, bool multiple = false);
-	bool parseBackground(const QChar *curP, const QChar *endP, bool important, 
+	bool parseBackground(const QChar *curP, const QChar *endP, bool important,
 			     QList<CSSProperty> *propList);
 	bool parse4Values(const QChar *curP, const QChar *endP, const int *properties,
 			  bool important, QList<CSSProperty> *propList);
@@ -156,10 +156,10 @@ public:
 	    TIME      = 0x0020,
 	    FREQUENCY = 0x0040
 	};
-	
+
 	/* called by parseValue, parses numbers+units */
 	CSSValueImpl *parseUnit(const QChar * curP, const QChar *endP, int allowedUnits);
-	
+
 	CSSRuleImpl *parseAtRule(const QChar *&curP, const QChar *endP);
 	CSSStyleRuleImpl *parseStyleRule(const QChar *&curP, const QChar *endP);
 	CSSRuleImpl *parseRule(const QChar *&curP, const QChar *endP);
@@ -167,9 +167,9 @@ public:
 	virtual bool parseString(const DOMString &/*cssString*/, bool = false) { return false; }
 
 	virtual void checkLoaded();
-	
+
 	void setStrictParsing( bool b ) { strictParsing = b; }
-	
+
     protected:
 	StyleBaseImpl *m_parent;
 	bool hasInlinedDecl : 1;
@@ -189,7 +189,7 @@ public:
 	StyleBaseImpl *item(unsigned long num) { return m_lstChildren->at(num); }
 
 	void append(StyleBaseImpl *item) { m_lstChildren->append(item); }
-	
+
     protected:
 	QList<StyleBaseImpl> *m_lstChildren;
     };
