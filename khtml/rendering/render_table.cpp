@@ -172,7 +172,7 @@ void RenderTable::addChild(RenderObject *child, RenderObject *beforeChild)
         {
         RenderObject::addChild(child,beforeChild);
         RenderTableCol* colel = static_cast<RenderTableCol *>(child);
-        if (_oldColElem)
+        if (_oldColElem && _oldColElem->style()->display() == TABLE_COLUMN_GROUP)
             _currentCol = _oldColElem->lastCol();
         _oldColElem = colel;
         colel->setStartCol(_currentCol);
