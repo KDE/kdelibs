@@ -81,15 +81,13 @@ public:
 
     QMap<QListViewItem*, KKeyEntryMap::Iterator> actionMap;
     bool bKeyIntercept;
+
+    bool bAllowMetaKey;
     // If this is set, then shortcuts require a modifier:
     //  so 'A' would not be valid, whereas 'Ctrl+A' would be.
     // Note, however, that this only applies to printable characters.
     //  'F1', 'Insert', etc., could still be used.
-    bool bRequireModifier;
-
-    // Hacks for Qt's lack of Meta support
-    bool bMetaKeyAllowed;
-    //static bool g_bMetaPressed;
+    bool bAllowLetterShortcuts;
 };
 
 // HACK: for getting around some of Qt's lack of Meta support
@@ -415,24 +413,39 @@ int KKeyDialog::configureKeys( KActionCollection *coll, const QString& file,
   return retcode;
 }
 
+//************************************************************************
+// KKeyChooser                                                           *
+//************************************************************************
+KKeyChooser::KKeyChooser( KKeyEntryMap *aKeyMap, QWidget* parent,
+			bool check_against_std_keys,
+			bool bAllowLetterShortcuts,
+			bool bAllowMetaKey )
+: QWidget( parent )
+{
+	init( aKeyMap, check_against_std_keys, bAllowLetterShortcuts, bAllowMetaKey );
+}
+
 KKeyChooser::KKeyChooser( KKeyEntryMap *aKeyMap, QWidget *parent,
                           bool check_against_std_keys)
     : QWidget( parent )
+{
+	init( aKeyMap, check_against_std_keys, false, true );
+}
+
+void KKeyChooser::init( KKeyEntryMap *aKeyMap,
+			bool check_against_std_keys,
+			bool bAllowLetterShortcuts,
+			bool bAllowMetaKey )
 {
   d = new KKeyChooserPrivate();
 
   d->bKeyIntercept = false;
   d->map = aKeyMap;
-  // Temporary Hack: prevents unmodified shortcut-keys from being used as
-  //  global shortcuts.  I.e., you can't assign 'A' to Kill Window.
-  // This restriction should normally apply, but without an additional
-  //  argument to the constructor, it would be incompatible with programs like KMail
-  //  which do use non-modified keys as accelerators.
-  d->bRequireModifier = check_against_std_keys;
   // Hack: until we have qt support of meta key, we can only use Meta with global
   //  accelerators.  Since check_against_std_keys is 'true' for globals,
   //  we can use it to determine whether or not to allow the Meta key.
-  d->bMetaKeyAllowed = check_against_std_keys;
+  d->bAllowMetaKey = bAllowMetaKey;
+  d->bAllowLetterShortcuts = bAllowLetterShortcuts;
 
   //
   // TOP LAYOUT MANAGER
@@ -494,13 +507,13 @@ KKeyChooser::KKeyChooser( KKeyEntryMap *aKeyMap, QWidget *parent,
   d->fCArea = new QGroupBox( this );
   topLayout->addWidget( d->fCArea, 1 );
 
-  d->fCArea->setTitle( i18n("Choose a key for the selected action") );
+  d->fCArea->setTitle( i18n("Choose a Key for the Selected Action") );
   d->fCArea->setFrameStyle( QFrame::Box | QFrame::Sunken );
 
   //
   // CHOOSE KEY GROUP LAYOUT MANAGER
   //
-  QGridLayout *grid = new QGridLayout( d->fCArea, 6, 4, KDialog::spacingHint() );
+  /*QGridLayout *grid = new QGridLayout( d->fCArea, 6, 4, KDialog::spacingHint() );
   grid->setRowStretch(0,10);
   grid->setRowStretch(1,10);
   grid->setRowStretch(2,10);
@@ -514,8 +527,8 @@ KKeyChooser::KKeyChooser( KKeyEntryMap *aKeyMap, QWidget *parent,
   grid->setColStretch(3,0);
 
   grid->addRowSpacing(0,15);
-  grid->addRowSpacing(5,1);
-
+  grid->addRowSpacing(5,1);*/
+  QGridLayout *grid = new QGridLayout( d->fCArea, 2, 4, KDialog::spacingHint() );
 
   d->kbGroup = new QButtonGroup( d->fCArea );
   d->kbGroup->hide();
@@ -524,26 +537,29 @@ KKeyChooser::KKeyChooser( KKeyEntryMap *aKeyMap, QWidget *parent,
   QRadioButton *rb = new QRadioButton( i18n("&No key"), d->fCArea );
   d->kbGroup->insert( rb, NoKey );
   rb->setEnabled( false );
-  grid->addMultiCellWidget( rb, 1, 1, 1, 2 );
+  //grid->addMultiCellWidget( rb, 1, 1, 1, 2 );
+  grid->addWidget( rb, 0, 0 );
   QWhatsThis::add( rb, i18n("The selected action will not be associated with any key.") );
 
-  rb = new QRadioButton( i18n("De&fault key"), d->fCArea );
+  rb = new QRadioButton( i18n("De&fault Key"), d->fCArea );
   d->kbGroup->insert( rb, DefaultKey );
   rb->setEnabled( false );
-  grid->addMultiCellWidget( rb, 2, 2, 1, 2 );
+  //grid->addMultiCellWidget( rb, 2, 2, 1, 2 );
+  grid->addWidget( rb, 0, 1 );
   QWhatsThis::add( rb, i18n("This will bind the default key to the selected action. Usually a reasonable choice.") );
 
-  rb = new QRadioButton( i18n("Custom &key"), d->fCArea );
+  rb = new QRadioButton( i18n("Custom &Key"), d->fCArea );
   d->kbGroup->insert( rb, CustomKey );
   rb->setEnabled( false );
-
-  connect( d->kbGroup, SIGNAL( clicked( int ) ), SLOT( keyMode( int ) ) );
-  grid->addMultiCellWidget( rb, 3, 3, 1, 2 );
+  //grid->addMultiCellWidget( rb, 3, 3, 1, 2 );
+  grid->addWidget( rb, 0, 2 );
   QWhatsThis::add( rb, i18n("If this option is selected you can create a customized key binding for the"
     " selected action using the buttons below.") );
 
+  connect( d->kbGroup, SIGNAL( clicked( int ) ), SLOT( keyMode( int ) ) );
+
   QBoxLayout *pushLayout = new QHBoxLayout( KDialog::spacingHint() );
-  grid->addLayout( pushLayout, 4, 2 );
+  grid->addLayout( pushLayout, 0, 3 );
 
   d->bChange = new KKeyButton(d->fCArea, "key");
   d->bChange->setEnabled( false );
@@ -562,10 +578,13 @@ KKeyChooser::KKeyChooser( KKeyEntryMap *aKeyMap, QWidget *parent,
   pushLayout->addStretch( 10 );
 
   d->lInfo = new QLabel(d->fCArea);
-  resize(0,0);
-  d->lInfo->setAlignment( AlignCenter );
-  d->lInfo->setEnabled( false );
-  d->lInfo->hide();
+  //resize(0,0);
+  //d->lInfo->setAlignment( AlignCenter );
+  //d->lInfo->setEnabled( false );
+  //d->lInfo->hide();
+  grid->addMultiCellWidget( d->lInfo, 1, 1, 0, 3 );
+
+  grid->addRowSpacing( 0, d->bChange->sizeHint().height() + 5 );
 
   d->globalDict = new QDict<int> ( 100, false );
   d->globalDict->setAutoDelete( true );
@@ -575,8 +594,6 @@ KKeyChooser::KKeyChooser( KKeyEntryMap *aKeyMap, QWidget *parent,
   if (check_against_std_keys)
     readStdKeys();
 }
-
-
 
 KKeyChooser::~KKeyChooser()
 {
@@ -744,15 +761,21 @@ void KKeyChooser::defaultKey()
 
 void KKeyChooser::allDefault()
 {
+	allDefault( KAccel::useFourModifierKeys() );
+}
+
+void KKeyChooser::allDefault( bool useFourModifierKeys )
+{
     // Change all configKeyCodes to default values
 
     QListViewItem *at = d->wList->firstChild();
     while (at) {
 
         KKeyEntryMap::Iterator it = d->actionMap[at];
-
+kdDebug() << QString( "allDefault: %1 %2\n" ).arg((*it).aDefaultKeyCode).arg((*it).aDefaultKeyCode4);
         if ( (*it).bConfigurable ) {
-            (*it).aCurrentKeyCode = (*it).aConfigKeyCode = (*it).aDefaultKeyCode;
+            (*it).aCurrentKeyCode = (*it).aConfigKeyCode =
+	    	(useFourModifierKeys) ? (*it).aDefaultKeyCode4 : (*it).aDefaultKeyCode;
         }
         at->setText(1, KAccel::keyToString((*it).aConfigKeyCode, true));
 
@@ -800,6 +823,20 @@ void KKeyChooser::setKey( int keyCode )
 
    KKeyEntryMap::Iterator it = d->actionMap[item];
 
+   if( !d->bAllowMetaKey && (keyCode & (Qt::ALT<<1)) ) {
+	QString s = i18n("The Meta key is not allowed in this context.");
+	KMessageBox::sorry( this, s, i18n("Invalid Shortcut Key") );
+	return;
+   }
+
+   if( keyCode < 0x1000  && !d->bAllowLetterShortcuts ) {
+	QString s = i18n( 	"In order to use the '%1' key as a shortcut,\n"
+				"it must combine with the\n"
+				"Meta, Alt, Ctrl, and/or Shift keys." ).arg(QChar(keyCode));
+	KMessageBox::sorry( this, s, i18n("Invalid Shortcut Key") );
+	return;
+   }
+
    // If key isn't already in use,
    if( !isKeyPresent( keyCode ) ) {
       // Set new key code
@@ -815,15 +852,6 @@ bool KKeyChooser::isKeyPresent( int kcode, bool warnuser )
 {
     if (!kcode)
         return false;
-
-    if( kcode < 0x1000 ) {
-	QString s = i18n( 	"In order to use the '%1' key as a shortcut,\n"
-				"you must combine with the\n"
-				"Meta, Alt, Ctrl, and/or Shift keys." )
-				.arg( KAccel::keyToString( kcode, true ) );
-    	KMessageBox::sorry( this, s, i18n("Invalid shortcut key") );
-	return true;
-    }
 
     // Search the global key codes to find if this keyCode is already used
     //  elsewhere

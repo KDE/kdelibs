@@ -42,9 +42,17 @@
 #include <X11/keysymdef.h>
 #include <ctype.h>
 
+bool KAccel::bUseFourModifierKeys = false;
+
+KKey::KKey( const XEvent *pEvent )	{ m_keyCombQt = KAccel::keyEventXToKeyQt( pEvent ); }
+KKey::KKey( const QKeyEvent *pEvent )	{ m_keyCombQt = KAccel::keyEventQtToKeyQt( pEvent ); }
+KKey::KKey( const QString& keyStr )	{ m_keyCombQt = KAccel::stringToKey( keyStr ); }
+QString KKey::toString()		{ return KAccel::keyToString( m_keyCombQt ); }
+
 void KKeyEntry::operator=(const KKeyEntry& e) {
     aCurrentKeyCode = e.aCurrentKeyCode;
     aDefaultKeyCode = e.aDefaultKeyCode;
+    aDefaultKeyCode4 = e.aDefaultKeyCode4;
     aConfigKeyCode = e.aConfigKeyCode;
     bConfigurable = e.bConfigurable;
     bEnabled = e.bEnabled;
@@ -54,11 +62,14 @@ void KKeyEntry::operator=(const KKeyEntry& e) {
     descr = e.descr;
     menuId = e.menuId;
     menu = e.menu;
+    keyCodeNative = e.keyCodeNative;
+    keyModNative = e.keyModNative;
 }
 
 KKeyEntry::KKeyEntry() {
     aCurrentKeyCode = 0;
     aDefaultKeyCode = 0;
+    aDefaultKeyCode4 = 0;
     aConfigKeyCode = 0;
     bConfigurable = false;
     bEnabled = false;
@@ -67,6 +78,8 @@ KKeyEntry::KKeyEntry() {
     member = 0;
     menuId = 0;
     menu = 0;
+    keyCodeNative = 0;
+    keyModNative = 0;
 }
 
 KKeyEntry::KKeyEntry(const KKeyEntry& e) {
@@ -173,21 +186,33 @@ QString KAccel::findKey( int key ) const
 bool KAccel::insertItem( const QString& descr, const QString& action, int keyCode,
 			 bool configurable )
 {
-	return insertItem( descr, action,  keyCode,
+	return insertItem( descr, action, keyCode, keyCode,
 			 0, 0, configurable);
 }
 
-bool KAccel::insertItem( const QString& descr, const QString& action, int keyCode,
+bool KAccel::insertItem( const QString& descr, const QString& action,
+			 KKey defaultKeyCode3, KKey defaultKeyCode4,
+			 bool configurable )
+{
+	//kdDebug() << QString( "insertItem("+action+", %1, %2)\n" ).arg(defaultKeyCode3).arg(defaultKeyCode4);
+	return insertItem( descr, action, defaultKeyCode3, defaultKeyCode4,
+			 0, 0, configurable);
+}
+
+bool KAccel::insertItem( const QString& descr, const QString& action,
+			 KKey defaultKeyCode3, KKey defaultKeyCode4,
 			 int id, QPopupMenu *qmenu, bool configurable)
 {
+    kdDebug() << QString( "insertItem("+action+", 0x%1, 0x%2)\n" ).arg(defaultKeyCode3.key(),0,16).arg(defaultKeyCode4.key(),0,16);
+
     if (aKeyMap.contains(action))
         removeItem( action );
 
     KKeyEntry entry;
 
-    entry.aDefaultKeyCode = keyCode;
-    entry.aCurrentKeyCode = keyCode;
-    entry.aConfigKeyCode = keyCode;
+    entry.aDefaultKeyCode = defaultKeyCode3.key();
+    entry.aDefaultKeyCode4 = defaultKeyCode4.key();
+    entry.aCurrentKeyCode = entry.aConfigKeyCode = useFourModifierKeys() ? defaultKeyCode4.key() : defaultKeyCode3.key();
     entry.bConfigurable = configurable;
     entry.descr = descr;
     entry.menuId = id;
@@ -197,6 +222,12 @@ bool KAccel::insertItem( const QString& descr, const QString& action, int keyCod
     aKeyMap[action] = entry;
 
     return true;
+}
+
+bool KAccel::insertItem( const QString& descr, const QString& action, int keyCode,
+			 int id, QPopupMenu *qmenu, bool configurable)
+{
+	return insertItem( descr, action, keyCode, keyCode, id, qmenu, configurable );
 }
 
 bool KAccel::insertItem( const QString& descr, const QString& action,
@@ -514,7 +545,18 @@ void KAccel::removeDeletedMenu(QPopupMenu *menu)
             (*it).menu = 0;
 }
 
+void KAccel::useFourModifierKeys( bool b )
+{
+	bUseFourModifierKeys = b && keyboardHasMetaKey();
+}
 
+bool KAccel::qtSupportsMetaKey()
+{
+	static int qtSupport = -1;
+	if( qtSupport == -1 )
+		qtSupport = QAccel::stringToKey("Meta+A") & (Qt::ALT<<1);
+	return qtSupport == 1;
+}
 
 /*****************************************************************************/
 
@@ -553,17 +595,19 @@ static const TransKey g_aTransKeySyms[] = {
 	{ Qt::Key_ScrollLock,	XK_Scroll_Lock }
 };
 
-// This function probably shouldn't be called for Qt reasons:
-//  Qt assumes that Alt is always Mod1Mask.
-void KAccel::setupMasks()
+void KAccel::readModifierMapping()
 {
 	XModifierKeymap* xmk = XGetModifierMapping( qt_xdisplay() );
 
-	for( int i = 3; i < 8; i++ ) {
+	for( int i = Mod2MapIndex; i < 8; i++ )
+		g_aModKeys[i].keyModMaskX = 0;
+
+	// Qt assumes that Alt is always Mod1Mask, so start at Mod2Mask.
+	for( int i = Mod2MapIndex; i < 8; i++ ) {
 		int j = -1;
-		switch( xmk->modifiermap[xmk->max_keypermod * i + j] ) {
-			case XK_Alt_L:
-			case XK_Alt_R:		j = 3; break;	// Normally Mod1Mask
+		switch( XKeycodeToKeysym( qt_xdisplay(), xmk->modifiermap[xmk->max_keypermod * i + j], 0 ) ) {
+			//case XK_Alt_L:
+			//case XK_Alt_R:		j = 3; break;	// Normally Mod1Mask
 			case XK_Num_Lock:	j = 4; break;	// Normally Mod2Mask
 			case XK_Mode_switch:	j = 5; break;	// Normally Mod3Mask
 			case XK_Meta_L:
@@ -572,6 +616,7 @@ void KAccel::setupMasks()
 		}
 		if( j >= 0 )
 			g_aModKeys[j].keyModMaskX = (1<<i);
+		kdDebug(125) << QString( "%1 = mod%2, keycode: %3\n" ).arg(g_aModKeys[i].keyName).arg(i-2).arg( keyCodeXToString( xmk->modifiermap[xmk->max_keypermod * i + j], 0, false ) );
 	}
 
 	XFreeModifiermap(xmk);
@@ -594,10 +639,16 @@ QString KAccel::keyToString( int keyCombQt, bool bi18n )
 		keySymQt = QChar( keySymQt ).upper().unicode();
 
 	if( keySymQt ) {
+		// Make sure 'Backtab' print
+		if( keySymQt == Qt::Key_Backtab ) {
+			keySymQt = Qt::Key_Tab;
+			keyModQt |= Qt::SHIFT;
+		}
 		if( keyModQt ) {
 			// Should possibly remove SHIFT
 			// i.e., in en_US: 'Exclam' instead of 'Shift+1'
-			if( keyModQt & Qt::SHIFT ) {
+			// But don't do it on the Tab key.
+			if( (keyModQt & Qt::SHIFT) && keySymQt != Qt::Key_Tab ) {
 				int	index = keySymXIndex( keySymX );
 				int	indexUnshifted = (index / 2) * 2; // 0 & 1 => 0, 2 & 3 => 2
 				uint	keySymX0 = XKeycodeToKeysym( qt_xdisplay(), keyCodeX, indexUnshifted ),
@@ -696,7 +747,7 @@ uint KAccel::stringToKey( const QString& keyStr, unsigned char *pKeyCodeX, uint 
 
 		// Check if this is a modifier key (Shift, Ctrl, Alt, Meta).
 		for( i = 0; i < MOD_KEYS; i++ ) {
-			if( stricmp( sKeySym.ascii(), g_aModKeys[i].keyName ) == 0 ) {
+			if( g_aModKeys[i].keyModMaskQt && stricmp( sKeySym.ascii(), g_aModKeys[i].keyName ) == 0 ) {
 				// If there is no X mod flag defined for this key,
 				//  then abort.  Ex: Meta+F1, but X hasn't assigned Meta.
 				if( g_aModKeys[i].keyModMaskX == 0 )
@@ -884,13 +935,13 @@ uint KAccel::keySymXToKeyQt( uint keySymX, uint keyModX )
 void KAccel::keyQtToKeyX( uint keyCombQt, unsigned char *pKeyCodeX, uint *pKeySymX, uint *pKeyModX )
 {
 	uint	keySymQt;
-	uint	keySymX = NoSymbol;
+	uint	keySymX = 0;
 	unsigned char	keyCodeX = 0;
 	uint	keyModX = 0;
 
 	const char *psKeySym = 0;
 
-	// Find name of key
+	// Get code of just the primary key
 	keySymQt = keyCombQt & 0xffff;
 
 	// If unicode value beneath 0x1000 (special Qt codes begin thereafter),
@@ -918,11 +969,11 @@ void KAccel::keyQtToKeyX( uint keyCombQt, unsigned char *pKeyCodeX, uint *pKeySy
 			// Check for lower-case equalent first because most
 			//  X11 names are all lower-case.
 			keySymX = XStringToKeysym( sKeySym.lower().ascii() );
-			if( keySymX == NoSymbol )
+			if( keySymX == 0 )
 				keySymX = XStringToKeysym( psKeySym );
 		}
 
-		if( keySymX == NoSymbol ) {
+		if( keySymX == 0 ) {
 			for( uint i = 0; i < sizeof(g_aTransKeySyms)/sizeof(TransKey); i++ )
 			{
 				if( keySymQt == g_aTransKeySyms[i].keySymQt ) {
@@ -933,7 +984,7 @@ void KAccel::keyQtToKeyX( uint keyCombQt, unsigned char *pKeyCodeX, uint *pKeySy
 		}
 	}
 
-	if( keySymX != NoSymbol ) {
+	if( keySymX != 0 ) {
 		// Get X keyboard code
 		keyCodeX = XKeysymToKeycode( qt_xdisplay(), keySymX );
 		// Add ModeSwitch modifier bit, if necessary
@@ -990,5 +1041,7 @@ uint KAccel::keyModXScrollLock()	{ return g_aModKeys[ModScrollLockIndex].keyModM
 
 uint KAccel::accelModMaskQt()		{ return Qt::SHIFT | Qt::CTRL | Qt::ALT | (Qt::ALT<<1); }
 uint KAccel::accelModMaskX()		{ return ShiftMask | ControlMask | keyModXAlt() | keyModXMeta(); }
+
+bool KAccel::keyboardHasMetaKey()	{ return keyModXMeta() != 0; }
 
 #include "kaccel.moc"

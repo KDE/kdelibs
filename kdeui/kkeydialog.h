@@ -23,6 +23,7 @@
 #include <qdict.h>
 #include <kdialogbase.h>
 #include <kaccel.h>
+#include <klocale.h>
 
 class QButtonGroup;
 class QCheckBox;
@@ -63,9 +64,23 @@ public:
      *
      * @param aKeyDict A dictionary (@ref QMap) of key definitons.
      **/
+    // bAllowLetterShortcuts should be true if i.e. 'A' should be
+    //  usable as a shortcut.
+    // bAllowMetaKey should be true only if this is not a shortcut
+    //  for a specific application.
+    KKeyChooser( KKeyEntryMap *aKeyMap, QWidget* parent,
+		bool check_against_std_keys,
+		bool bAllowLetterShortcuts,
+		bool bAllowMetaKey = false );
     KKeyChooser( KKeyEntryMap *aKeyDict, QWidget* parent = 0,
                  bool check_against_std_keys = false );
     ~KKeyChooser();
+
+protected:
+    void init( KKeyEntryMap *aKeyMap,
+		bool check_against_std_keys,
+		bool bAllowLetterShortcuts,
+		bool bAllowMetaKey );
 
 signals:
     /**
@@ -79,6 +94,8 @@ public slots:
      * Set all keys to their default values (bindings).
      **/
     void allDefault();
+    // Whether to use the 3 or 4 modifier key scheme.
+    void allDefault( bool useFourModifierKeys );
 
    /**
     * Set all list entries to their changed values.

@@ -79,7 +79,8 @@ uint keyToXSym( int keyCode );
 class KGlobalAccel : public QObject
 {
 	Q_OBJECT
-	
+	friend class KGlobalAccelPrivate;
+
  public:
 	/**
 	 * Creates a KGlobalAccel object.
@@ -99,7 +100,7 @@ class KGlobalAccel : public QObject
 	 * Destroys the accelerator object.and ungrabs any allocated key bindings.
 	 */
 	~KGlobalAccel();
-	
+
 	/**
 	 * Removes all accelerator items.
 	 */
@@ -151,16 +152,6 @@ class KGlobalAccel : public QObject
 	QString findKey( int key ) const;
 
 	/**
-	 * Attempts to make a passive X server grab of the key specified by key symbol
-	 * keysym and modifier mod. Returns false if unsuccessful.
-	 *
-	 * Modifications with num lock and caps lock are also grabbed.
-	 *
-	 */
-	bool grabKey(uint keysym, uint mod);
-	bool grabKey(uint keyCombQt);
-
-	/**
 	 * Inserts an accelerator item and returns false if the key code
 	 * 	defaultKeyCode is not valid.
 	 *
@@ -178,6 +169,9 @@ class KGlobalAccel : public QObject
 	 */
 	bool insertItem( const QString& descr, const QString& action,
 			 int defaultKeyCode,
+			 bool configurable = true );
+	bool insertItem( const QString& descr, const QString& action,
+			 KKey defaultKeyCode3, KKey defaultKeyCode4,
 			 bool configurable = true );
 
 	 /**
@@ -202,17 +196,20 @@ class KGlobalAccel : public QObject
 	bool insertItem( const QString& descr, const QString& action,
 			 const QString& defaultKeyCode,
 			 bool configurable = true );
-	
+	//bool insertItem( const QString& descr, const QString& action,
+	//		 const QString& defaultKeyCode3, const QString& defaultKeyCode4,
+	//		 bool configurable = true );
+
 	bool isEnabled() const;
 	bool isItemEnabled( const QString& action ) const;
-	
+
 	/**
 	* Returns the dictionary of accelerator action names and KKeyEntry
 	* objects. Note that only a shallow copy is returned so that
 	* items will be lost when the KKeyEntry objects are deleted.
-	*/	
+	*/
 	KKeyEntryMap keyDict() const;
-				
+
 	/**
 	 * Read all key associations from @p config, or (if @p config
 	 * is zero) from the application's configuration file
@@ -224,16 +221,16 @@ class KGlobalAccel : public QObject
 	void readSettings(KConfig* config);
         // BCI merge with the one above
 	void readSettings();
-		
+
  	/**
 	 * Removes the accelerator item with the action name action.
 	 */
 	void removeItem( const QString& action );
-	
+
 	void setConfigGroup( const QString& group );
-	
+
 	QString configGroup() const;
-	
+
 	/**
 	 * Enables the accelerator if activate is true, or disables it if
 	 * activate is false...
@@ -241,7 +238,7 @@ class KGlobalAccel : public QObject
 	 * Individual keys can also be enabled or disabled.
 	 */
 	void setEnabled( bool activate );
-	
+
 	/**
 	 * Enables or disables an accelerator item.
 	 *
@@ -252,23 +249,13 @@ class KGlobalAccel : public QObject
 	 *	disabled.
 	 */
 	void setItemEnabled( const QString& action, bool activate );
-	
+
 	/**
 	* Sets the dictionary of accelerator action names and KKeyEntry
 	* objects to nKeyMap. Note that only a shallow copy is made so that items will be
 	* lost when the KKeyEntry objects are deleted.
-	*/	
+	*/
 	bool setKeyDict( const KKeyEntryMap& nKeyMap );
-	
-	/**
-	 * Ungrabs the key specified by key symbol
-	 * keysym and modifier mod. Returns false if unsuccessful.
-	 *
-	 * Modifications with num lock and caps lock are also ungrabbed.
-	 *
-	 */
-	bool ungrabKey(uint keysym, uint mod);
-	bool ungrabKey(uint keyCombQt);
 
 	/**
 	 * Write the current configurable associations to @p config,
@@ -279,6 +266,12 @@ class KGlobalAccel : public QObject
         // BCI merge with the one above
 	void writeSettings() const;
 
+protected:
+	// Attempts to make a passive X server grab/ungrab of the specified key.
+	//  Return true if successful.
+	// Modifications with NumLock, CapsLock, ScrollLock, and ModeSwitch are
+	//  also grabbed.
+	bool grabKey( KKeyEntry *pKeyEntry, bool bGrab );
 
     	/**
 	 * Filters X11 events ev for key bindings in the accelerator dictionary.
@@ -291,7 +284,7 @@ class KGlobalAccel : public QObject
 
 
 signals:
-	void activated();	
+	void activated();
 
 protected:
 	int aAvailableId;

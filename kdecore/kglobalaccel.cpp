@@ -159,96 +159,20 @@ QString KGlobalAccel::findKey( int key ) const
        aKeyIt != aKeyMap.end(); ++aKeyIt)
     if ( key == (*aKeyIt).aCurrentKeyCode )
       return aKeyIt.key();
-  return QString::null;	
+  return QString::null;
 }
 
-bool grabFailed;
-
-extern "C" {
-  static int XGrabErrorHandler( Display *, XErrorEvent *e ) {
-	if ( e->error_code != BadAccess ) {
-	    kdWarning() << "grabKey: got X error " << e->type << " instead of BadAccess\n";
-	}
-	grabFailed = true;
-	return 0;
-  }
-}
-
-bool KGlobalAccel::grabKey( uint keyCombQt ) {
-	uint keySymX, keyModX;
-	KAccel::keyQtToKeyX( keyCombQt, 0, &keySymX, &keyModX );
-	return grabKey( keySymX, keyModX );
-}
-
-bool KGlobalAccel::grabKey( uint keysym, uint mod ) {
-	// Most of this comes from kpanel/main.C
-	// Copyright (C) 1996,97 Matthias Ettrich
-	if (do_not_grab)
-	  return true;
-
-	kdDebug(125) << QString( "grabKey: %1 keySymX: %2 keyModX: %3 keyCodeX: %4\n" )
-		.arg( KAccel::keySymXToString( keysym, mod, false ) )
-		.arg( keysym, 0, 16 ).arg( mod, 0, 16 )
-		.arg( XKeysymToKeycode(qt_xdisplay(), keysym), 0, 16 );
-
-	if (!keysym || !XKeysymToKeycode(qt_xdisplay(), keysym)) return false;
-
-	grabFailed = false;
-
-	// We wan't to catch only our own errors
-	XSync(qt_xdisplay(),0);
-	XErrorHandler savedErrorHandler=XSetErrorHandler(XGrabErrorHandler);
-
-	uchar keyCodeX = XKeysymToKeycode( qt_xdisplay(), keysym );
-	// X11 seems to treat the ModeSwitch bit differently than the others --
-	//  namely, it won't grab anything if it's set, but both switched and
-	//  unswiched keys if it's not.
-	//  So we always need to XGrabKey with the bit set to 0.
-	//  I don't think this causes any problems, per se, just an extra call
-	//  to x11EventFilter.
-	uint keyModMaskX = KAccel::accelModMaskX() | KAccel::keyModXModeSwitch();
-	mod &= KAccel::accelModMaskX(); // Get rid of any non-relevant bits in mod
-
-	// We'll have to grab 8 key modifier combinations in order to cover all
-	//  combinations of CapsLock, NumLock, ScrollLock.
-	// Does anyone with more X-savvy know how to set a mask on qt_xrootwin so that
-	//  the irrelevant bits are always ignored and we can just make one XGrabKey
-	//  call per accelerator?
-	for( uint irrelevantBitsMask = 0; irrelevantBitsMask <= 0xff; irrelevantBitsMask++ ) {
-		if( (irrelevantBitsMask & keyModMaskX) == 0 ) {
-			kdDebug(125) << QString( "KGlobalAccel::grabKey() grab code: 0x%1 state: 0x%2 | 0x%3\n" )
-					.arg( keyCodeX, 0, 16 ).arg( mod, 0, 16 ).arg( irrelevantBitsMask, 0, 16 );
-			XGrabKey( qt_xdisplay(), keyCodeX, mod | irrelevantBitsMask,
-				qt_xrootwin(), True, GrabModeAsync, GrabModeSync );
-
-			// If grab failed, then ungrab any previously successful grabs.
-			if( grabFailed ) {
-				kdDebug() << QString( "KGlobalAccel::grabKey() failed to grab code: 0x%1 state: 0x%2 | 0x%3\n" )
-						.arg( keyCodeX, 0, 16 ).arg( mod, 0, 16 ).arg( irrelevantBitsMask, 0, 16 );
-				for( uint m = 0; m < irrelevantBitsMask; m++ ) {
-					if( m & keyModMaskX == 0 )
-						XUngrabKey( qt_xdisplay(), keyCodeX, mod | m, qt_xrootwin() );
-				}
-				break;
-			}
-		}
-	}
-
-	XSync(qt_xdisplay(),0);
-	XSetErrorHandler(savedErrorHandler);
-
-	return !grabFailed;
-}
-
-bool KGlobalAccel::insertItem(  const QString& descr, const QString& action, int keyCode,
+bool KGlobalAccel::insertItem(  const QString& descr, const QString& action,
+				 KKey defaultKeyCode3, KKey defaultKeyCode4,
                                 bool configurable )
 {
   if (aKeyMap.contains(action))
     removeItem( action );
 
   KKeyEntry entry;
-  entry.aDefaultKeyCode = keyCode;
-  entry.aCurrentKeyCode = keyCode;
+  entry.aDefaultKeyCode = defaultKeyCode3.key();
+  entry.aDefaultKeyCode4 = defaultKeyCode4.key();
+  entry.aCurrentKeyCode = entry.aConfigKeyCode = KAccel::useFourModifierKeys() ? defaultKeyCode4.key() : defaultKeyCode3.key();
   entry.bConfigurable = configurable;
   entry.bEnabled = false;
   entry.aAccelId = 0;
@@ -260,11 +184,16 @@ bool KGlobalAccel::insertItem(  const QString& descr, const QString& action, int
   return true;
 }
 
+bool KGlobalAccel::insertItem(  const QString& descr, const QString& action, int keyCode,
+                                bool configurable )
+{
+	return insertItem( descr, action, keyCode, keyCode, configurable );
+}
+
 bool KGlobalAccel::insertItem( const QString& descr, const QString& action,
 					   const QString& keyCode, bool configurable )
 {
-	int iKeyCode = KAccel::stringToKey( keyCode );
-	return insertItem(descr, action, iKeyCode, configurable);
+	return insertItem(descr, action, KKey(keyCode).key(), configurable);
 }
 
 bool KGlobalAccel::isEnabled() const
@@ -285,7 +214,7 @@ KKeyEntryMap KGlobalAccel::keyDict() const
 void KGlobalAccel::readSettings(KConfig* config)
 {
 	kdDebug(125) << "KGlobalAccel::readSettings()\n";
-	QArray<uint> aKeysToGrab( aKeyMap.count() );
+	QArray<KKeyEntry*> aKeysToGrab( aKeyMap.count() );
 	int cKeysToGrab = 0;
 
 	KConfigBase *pConfig = config ? config : KGlobal::config();
@@ -296,25 +225,30 @@ void KGlobalAccel::readSettings(KConfig* config)
 	//  new key for grabbing afterwards.
 	for( KKeyEntryMap::Iterator it = aKeyMap.begin(); it != aKeyMap.end(); ++it ) {
 		QString keyStr = pConfig->readEntry( it.key() );
-		int key;
+		uint keyQt;
+		uchar keyCodeX;
+		uint keyModX;
 
 		if ( keyStr.isEmpty() || keyStr.startsWith( "default" ))
-			key = (*it).aDefaultKeyCode;
+			keyQt = (*it).aDefaultKeyCode;
 		else
-			key = KAccel::stringToKey( keyStr );
+			keyQt = KAccel::stringToKey( keyStr );
+		KAccel::keyQtToKeyX( keyQt, &keyCodeX, 0, &keyModX );
 
 		kdDebug(125) << QString( it.key()+" = "+keyStr+" key: 0x%1 curKey: 0x%2 enabled: %3\n" )
-			.arg( key, 0, 16 ). arg( (*it).aCurrentKeyCode, 0, 16 ).arg( (*it).bEnabled );
-		if( (*it).bEnabled && key != (*it).aCurrentKeyCode ) {
-			ungrabKey( (*it).aCurrentKeyCode );
-			aKeysToGrab[cKeysToGrab++] = key;
+			.arg( keyQt, 0, 16 ). arg( (*it).aCurrentKeyCode, 0, 16 ).arg( (*it).bEnabled );
+
+		// If the X codes have changed,
+		if( (*it).bEnabled && (keyCodeX != (*it).keyCodeNative || keyModX != (*it).keyModNative) ) {
+			grabKey( &(*it), false );
+			aKeysToGrab[cKeysToGrab++] = &(*it);
 		}
-		(*it).aConfigKeyCode = (*it).aCurrentKeyCode = key;
+		(*it).aConfigKeyCode = (*it).aCurrentKeyCode = keyQt;
 	}
 
 	// Grab the changed keys.
 	for( int i = 0; i < cKeysToGrab; i++ )
-		grabKey( aKeysToGrab[i] );
+		grabKey( aKeysToGrab[i], true );
 }
 
 void KGlobalAccel::readSettings()
@@ -372,9 +306,9 @@ void KGlobalAccel::setItemEnabled( const QString& action, bool activate )
     if ( entry.aCurrentKeyCode == 0 ) return;
 
     if ( entry.bEnabled )
-        grabKey( entry.aCurrentKeyCode );
+        grabKey( &entry, true );
     else
-        ungrabKey( entry.aCurrentKeyCode );
+        grabKey( &entry, false );
 
 }
 
@@ -385,7 +319,7 @@ bool KGlobalAccel::setKeyDict( const KKeyEntryMap& nKeyMap )
 	// ungrab all connected and enabled keys
         QString s;
         if ( (*it).bEnabled )
-            ungrabKey( (*it).aCurrentKeyCode );
+            grabKey( (KKeyEntry*)&(*it), false );
     }
 
     // Clear the dictionary
@@ -403,45 +337,9 @@ bool KGlobalAccel::setKeyDict( const KKeyEntryMap& nKeyMap )
 
         aKeyMap[it.key()] = entry;
         if ( entry.bEnabled )
-            grabKey( entry.aCurrentKeyCode );
+            grabKey( &entry, true );
     }
     return true;
-}
-
-bool KGlobalAccel::ungrabKey( uint keyCombQt ) {
-	uint keySymX, keyModX;
-	KAccel::keyQtToKeyX( keyCombQt, 0, &keySymX, &keyModX );
-	return ungrabKey( keySymX, keyModX );
-}
-
-bool KGlobalAccel::ungrabKey( uint keysym, uint mod ) {
-	// Most of this comes from kpanel/main.C
-	// Copyright (C) 1996,97 Matthias Ettrich
-	if (do_not_grab)
-	  return true;
-
-	if (!keysym||!XKeysymToKeycode(qt_xdisplay(), keysym)) return false;
-
-	grabFailed = false;
-
-	// We wan't to catch only our own errors
-	XSync(qt_xdisplay(),0);
-	XErrorHandler savedErrorHandler=XSetErrorHandler(XGrabErrorHandler);
-
-	// See grabKey() for comments.
-	KeyCode keyCodeX = XKeysymToKeycode( qt_xdisplay(), keysym );
-	uint keyModMaskX = KAccel::accelModMaskX() | KAccel::keyModXModeSwitch();
-	mod &= KAccel::accelModMaskX();
-
-	for( uint irrelevantBitsMask = 0; irrelevantBitsMask <= 0xff; irrelevantBitsMask++ ) {
-		if( irrelevantBitsMask & keyModMaskX == 0 )
-			XUngrabKey( qt_xdisplay(), keyCodeX, mod | irrelevantBitsMask, qt_xrootwin() );
-	}
-
-	XSync(qt_xdisplay(),0);
-	XSetErrorHandler(savedErrorHandler);
-
-	return !grabFailed;
 }
 
 void KGlobalAccel::writeSettings(KConfig* config) const
@@ -452,6 +350,93 @@ void KGlobalAccel::writeSettings(KConfig* config) const
 void KGlobalAccel::writeSettings() const
 {
     KAccel::writeKeyMap( aKeyMap, aGroup, NULL );
+}
+
+bool grabFailed;
+
+extern "C" {
+  static int XGrabErrorHandler( Display *, XErrorEvent *e ) {
+	if ( e->error_code != BadAccess ) {
+	    kdWarning() << "grabKey: got X error " << e->type << " instead of BadAccess\n";
+	}
+	grabFailed = true;
+	return 0;
+  }
+}
+
+bool KGlobalAccel::grabKey( KKeyEntry *pKeyEntry, bool bGrab )
+{
+	if (do_not_grab)
+		return true;
+	if( !pKeyEntry )
+		return false;
+
+	// Get the X equivalents.
+	KKey key = pKeyEntry->aCurrentKeyCode;
+	uchar keyCodeX;
+	uint keyModX;
+
+	if( bGrab ) {
+		KAccel::keyQtToKeyX( key.key(), &keyCodeX, 0, &keyModX );
+		pKeyEntry->keyCodeNative = keyCodeX;
+		pKeyEntry->keyModNative = keyModX;
+	} else {
+		keyCodeX = pKeyEntry->keyCodeNative;
+		keyModX = pKeyEntry->keyModNative;
+	}
+
+	// X11 seems to treat the ModeSwitch bit differently than the others --
+	//  namely, it won't grab anything if it's set, but both switched and
+	//  unswiched keys if it's not.
+	//  So we always need to XGrabKey with the bit set to 0.
+	//  I don't think this causes any problems, per se, just a potential
+	//  superfluous call to x11EventFilter.
+	uint keyModMaskX = KAccel::accelModMaskX() | KAccel::keyModXModeSwitch();
+	keyModX &= KAccel::accelModMaskX(); // Get rid of any non-relevant bits in mod
+
+	kdDebug(125) << QString( "grabKey( key: 0x%1, bGrab: %2 ): %3 keyCodeX: %4 keyModX: %5\n" )
+		.arg( key.key(), 0, 16 ).arg( bGrab ).arg( bGrab ? key.toString() : "" )
+		.arg( keyCodeX, 0, 16 ).arg( keyModX, 0, 16 );
+
+	if( !keyCodeX )
+		return false;
+
+	// We wan't to catch only our own errors
+	grabFailed = false;
+	XSync(qt_xdisplay(),0);
+	XErrorHandler savedErrorHandler=XSetErrorHandler(XGrabErrorHandler);
+
+	// We'll have to grab 8 key modifier combinations in order to cover all
+	//  combinations of CapsLock, NumLock, ScrollLock.
+	// Does anyone with more X-savvy know how to set a mask on qt_xrootwin so that
+	//  the irrelevant bits are always ignored and we can just make one XGrabKey
+	//  call per accelerator?
+	for( uint irrelevantBitsMask = 0; irrelevantBitsMask <= 0xff; irrelevantBitsMask++ ) {
+		if( (irrelevantBitsMask & keyModMaskX) == 0 ) {
+			kdDebug(125) << QString( "code: 0x%1 state: 0x%2 | 0x%3\n" )
+					.arg( keyCodeX, 0, 16 ).arg( keyModX, 0, 16 ).arg( irrelevantBitsMask, 0, 16 );
+			if( bGrab ) {
+				XGrabKey( qt_xdisplay(), keyCodeX, keyModX | irrelevantBitsMask,
+					qt_xrootwin(), True, GrabModeAsync, GrabModeSync );
+
+				// If grab failed, then ungrab any previously successful grabs.
+				if( grabFailed ) {
+					kdDebug(125) << "grab failed!\n";
+					for( uint m = 0; m < irrelevantBitsMask; m++ ) {
+						if( m & keyModMaskX == 0 )
+							XUngrabKey( qt_xdisplay(), keyCodeX, keyModX | m, qt_xrootwin() );
+					}
+					break;
+				}
+			} else
+				XUngrabKey( qt_xdisplay(), keyCodeX, keyModX | irrelevantBitsMask, qt_xrootwin() );
+		}
+	}
+
+	XSync(qt_xdisplay(),0);
+	XSetErrorHandler(savedErrorHandler);
+
+	return !grabFailed;
 }
 
 bool KGlobalAccel::x11EventFilter( const XEvent *event_ ) {
@@ -490,18 +475,20 @@ bool KGlobalAccel::x11EventFilter( const XEvent *event_ ) {
 	}
     }
 
-    if ( !entry.receiver || !entry.bEnabled )
-	return false;
-
     if ( !QWidget::keyboardGrabber() ) {
 	XAllowEvents(qt_xdisplay(), AsyncKeyboard, CurrentTime);
 	XUngrabKeyboard(qt_xdisplay(), CurrentTime);
 	XSync(qt_xdisplay(), false);
-	connect( this, SIGNAL( activated() ),
-		 entry.receiver, entry.member);
-	emit activated();
-	disconnect( this, SIGNAL( activated() ), entry.receiver,
-		    entry.member );
+	if ( !entry.receiver || !entry.bEnabled ) {
+		kdDebug(125) << "KGlobalAccel::x11EventFilter(): Key has been grabbed (" << KAccel::keySymXToString( keySymX, keyModX, false ) << ") which doesn't have an associated action or was disabled.\n";
+		return false;
+	} else {
+		connect( this, SIGNAL( activated() ),
+			entry.receiver, entry.member);
+		emit activated();
+		disconnect( this, SIGNAL( activated() ), entry.receiver,
+			entry.member );
+	}
     }
 
     return true;

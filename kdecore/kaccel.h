@@ -35,6 +35,28 @@ class QObject;
 class QWidget;
 class KAccelPrivate;
 
+class KKey {
+protected:
+	uint	m_keyCombQt;
+public:
+	KKey()					{ m_keyCombQt = 0; }
+	KKey( const KKey& k )			{ m_keyCombQt = k.m_keyCombQt; }
+	KKey( uint keyCombQt )			{ m_keyCombQt = keyCombQt; }
+	KKey( const XEvent * );
+	KKey( const QKeyEvent * );
+	KKey( const QString& );
+
+	KKey& operator =( KKey k )		{ m_keyCombQt = k.m_keyCombQt; return *this; }
+	KKey& operator =( uint keyCombQt )	{ m_keyCombQt = keyCombQt; return *this; }
+
+	uint key() const		{ return m_keyCombQt; }
+	uint sym() const		{ return m_keyCombQt & 0xffff; }
+	uint mod() const		{ return m_keyCombQt & ~0xffff; }
+	uint state() const		{ return mod() >> 18; }
+
+	QString toString();
+};
+
 /**
  * Accelerator information, similar to an action.
  *
@@ -44,7 +66,8 @@ class KAccelPrivate;
 struct KKeyEntry {
  public:
     int aCurrentKeyCode;
-    int aDefaultKeyCode;
+    int aDefaultKeyCode;		// For keyboards with no meta key
+    int aDefaultKeyCode4;		// For keyboards with meta key (4 modifiers)
     int aConfigKeyCode;
     bool bConfigurable;
     bool bEnabled;
@@ -54,6 +77,7 @@ struct KKeyEntry {
     QString descr;
     int menuId;
     QPopupMenu *menu;
+    uint keyCodeNative, keyModNative;	// For storing the X11 codes (for global shortcuts)
 
     void operator=(const KKeyEntry& e);
     KKeyEntry();
@@ -249,6 +273,10 @@ class KAccel : public QAccel
 	 */
 	bool insertItem( const QString& descr, const QString& action,
 					int defaultKeyCode, bool configurable = true );
+	bool insertItem( const QString& descr, const QString& action,
+					KKey defaultKeyCode3,
+					KKey defaultKeyCode4,
+					bool configurable = true );
 
 	/**
 	 * Insert an accelerator item.
@@ -274,6 +302,11 @@ class KAccel : public QAccel
 	 */
 	bool insertItem( const QString& descr, const QString& action,
 					int defaultKeyCode, int id, QPopupMenu *qmenu,
+					bool configurable = true );
+	bool insertItem( const QString& descr, const QString& action,
+					KKey defaultKeyCode3,
+					KKey defaultKeyCode4,
+					int id, QPopupMenu *qmenu,
 					bool configurable = true );
 
 	 /**
@@ -501,6 +534,12 @@ class KAccel : public QAccel
 	 **/
 	void removeDeletedMenu(QPopupMenu *menu);
 
+	// When bUseFourModifierKeys is on (setting: Global|Keyboard|Use Four Modifier Keys = true | false)
+	//  calls to insertItem will set the current key to aDefaultKeyCode4.
+	static bool useFourModifierKeys()		{ return bUseFourModifierKeys; }
+	static void useFourModifierKeys( bool b );
+	static bool qtSupportsMetaKey();
+
 	/**
 	 * Retrieve the key code corresponding to the string @p sKey or
 	 * zero if the string is not recognized.
@@ -527,7 +566,7 @@ class KAccel : public QAccel
 		ModNumLockIndex, ModModeSwitchIndex, ModMetaIndex, ModScrollLockIndex,
 		MOD_KEYS
 	};
-	static void setupMasks();
+	static void readModifierMapping();
 	static uint stringToKey( const QString& keyStr, uchar *pKeyCodeX, uint *pKeySymX, uint *pKeyModX );
 	static uint keyCodeXToKeySymX( uchar keyCodeX, uint keyModX );
 	static void keyEventXToKeyX( const XEvent *pEvent, uchar *pKeyCodeX, uint *pKeySymX, uint *pKeyModX );
@@ -553,6 +592,8 @@ class KAccel : public QAccel
 	static uint accelModMaskQt();		// Normally Qt::SHIFT | Qt::CTRL | Qt::ALT | (Qt::ALT<<1)
 	static uint accelModMaskX();		// Normally ShiftMask | ControlMask | Mod1Mask | Mod3Mask
 
+	static bool keyboardHasMetaKey();
+
 signals:
 	void keycodeChanged();
 
@@ -562,6 +603,8 @@ signals:
 	bool bEnabled;
 	bool bGlobal;
 	QString aGroup;
+
+	static bool bUseFourModifierKeys;
  private:
         KAccelPrivate *d;
 };
