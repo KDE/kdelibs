@@ -135,21 +135,12 @@ void HTMLHRElementImpl::parseAttribute(AttrImpl *attr)
     case ATTR_SIZE:
     {
         if(!attr->val()) break;
-        int _s = attr->val()->toInt();
-        if(_s % 2)
-        {
-            QString n;
-            n.sprintf("%dpx", _s / 2);
-            addCSSProperty(CSS_PROP_BORDER_WIDTH, DOMString(n));
-            n.sprintf("%dpx", (_s/ 2)+(_s ? 1 : 0));
-            addCSSProperty(CSS_PROP_BORDER_TOP_WIDTH, DOMString(n));
-        }
-        else {
-            QString w;
-            w.setNum(_s/2);
-            addCSSLength(CSS_PROP_BORDER_BOTTOM_WIDTH, DOMString(w));
-            addCSSLength(CSS_PROP_BORDER_TOP_WIDTH, DOMString(w));
-        }
+        bool ok;
+        int s = attr->val()->toInt(&ok);
+        if(ok && !s)
+            addCSSLength(CSS_PROP_HEIGHT, "1");
+        else
+            addCSSLength(CSS_PROP_HEIGHT, attr->value());
         break;
     }
     case ATTR_WIDTH:
