@@ -1125,10 +1125,10 @@ void KListView::konquerorKeyPressEvent (QKeyEvent* e)
 	 default:
 
           //this is mainly for the "goto filename beginning with pressed char" feature (alex)
-//           KListView::SelectionModeExt mode=selectionModeExt();
+          KListView::SelectionModeExt mode=selectionModeExt();
 //           setSelectionModeExt(KListView::Multi);
           QListView::keyPressEvent (e);
-//           setSelectionModeExt(mode);
+          setSelectionModeExt(mode);
           break;
    }
 }
