@@ -36,7 +36,7 @@ include_HEADERS = kconfig.h kconfigdata.h ksimpleconfig.h kconfigbase.h \
 	krandomsequence.h kstringhandler.h knotifyclient.h kiconeffect.h \
 	kaudioplayer.h kdestyle.h kdcoppropertyproxy.h kdatastream.h  netwm.h \
 	netwm_def.h netwm_p.h kpixmapprovider.h kunload.h kstaticdeleter.h \
-	kextsock.h ksockaddr.h \
+	kextsock.h ksockaddr.h kprocio.h \
 	kurldrag.h kmimesourcefactory.h kpixmapsplitter.h kmdcodec.h ksocks.h
 
 libkdefakes_la_SOURCES = fakes.c vsnprintf.c
@@ -60,11 +60,9 @@ libkdecore_la_SOURCES = libintl.cpp kdebug.cpp netwm.cpp kapp.cpp \
 	ksavefile.cpp krandomsequence.cpp kstringhandler.cpp kcompletion.cpp \
 	kcmdlineargs.cpp kaboutdata.cpp kcompletionbase.cpp knotifyclient.cpp \
 	kaudioplayer.cpp kdestyle.cpp kdcoppropertyproxy.cpp \
-	kextsock.cpp ksockaddr.cpp netsupp.cpp \
+	kextsock.cpp ksockaddr.cpp netsupp.cpp kprocio.cpp \
 	kpixmapprovider.cpp kurldrag.cpp kpixmapsplitter.cpp kmdcodec.cpp ksocks.cpp
 
-
-kcharset.cpp: kentities.c
 
 libkdecore_la_LDFLAGS = $(QT_LDFLAGS) $(X_LDFLAGS) $(USER_LDFLAGS) -version-info 3:0 -no-undefined
 libkdecore_la_LIBADD = libkdefakes.la ../libltdl/libltdlc.la -lXext $(LIB_DCOP) $(LIB_DMALLOC) $(LIBRESOLV)
