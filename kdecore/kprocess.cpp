@@ -764,7 +764,25 @@ void KProcess::slotSendData(int)
 void KProcess::setUseShell(bool useShell, const char *shell)
 {
   d->useShell = useShell;
-  d->shell = (shell && *shell) ? shell : "/bin/sh";
+  if (shell && *shell)
+    d->shell = shell;
+  else
+// #ifdef NON_FREE // ... as they ship non-POSIX /bin/sh
+#if !defined(__linux__) && !defined(__FreeBSD__) && !defined(__NetBSD__) && !defined(__OpenBSD__) && !defined(__GNU__)
+  // Solaris POSIX ...
+  if (!access( "/usr/xpg4/bin/sh", X_OK ))
+    d->shell = "/usr/xpg4/bin/sh";
+  else
+  // ... which links here anyway
+  if (!access( "/bin/ksh", X_OK ))
+    d->shell = "/bin/ksh";
+  else
+  // dunno, maybe superfluous?
+  if (!access( "/usr/ucb/sh", X_OK ))
+    d->shell = "/usr/ucb/sh";
+  else
+#endif
+    d->shell = "/bin/sh";
 }
 
 #ifdef Q_OS_UNIX
