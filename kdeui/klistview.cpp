@@ -31,16 +31,6 @@
 
 #include <X11/Xlib.h>
 
-class KListView::KListViewPrivate // mostly DnD stuff
-{
-public:
-	QListViewItem *startDragItem;
-	QRect *invalidateRect;
-	QPoint *pressPos;
-	QPoint *startDragPos;
-};
-
-
 KListView::KListView( QWidget *parent, const char *name )
     : QListView( parent, name )
 {
@@ -358,9 +348,13 @@ void KListView::dropEvent(QDropEvent* event)
 	{
 		if (dragEnabled() && itemsMovable())
 		{
-			QList<QListViewItem> selected(selectedItems());
-		
-		
+			for (QListViewItem *i=firstChild(); i!=0; i=i->itemBelow())
+			{
+				if (!i->isSelected())
+					continue;
+				moveItem(i, afterme);
+				afterme=i;
+			}		
 		}	
 	}
     else
@@ -527,9 +521,14 @@ QList<QListViewItem> KListView::selectedItems() const
 	return list;
 }
 
-void KListView::moveItem(QListViewItem */*item*/, QListViewItem */*after*/)
+void KListView::moveItem(QListViewItem *item, QListViewItem *after)
 {
-//unimplemented
+// unimplemented
+/*
+<Don Sanders>
+Alternatively you could use takeItem on all items beyond the 'after' item insert
+the new item and then insert all the items you just took (uugh).
+*/
 }
 
 void KListView::dragEnterEvent(QDragEnterEvent *event)
