@@ -3473,12 +3473,17 @@ bool HTTPProtocol::readHeader()
   // Some webservers say "text/plain" when they mean "application/x-bzip2"
   else if (m_strMimeType == "text/plain")
   {
-     if (m_request.url.path().right(4) == ".bz2")
+     QString ext = m_request.url.path().right(4).upper();
+     if (ext == ".BZ2")
         m_strMimeType = QString::fromLatin1("application/x-bzip2");
-     else if (m_request.url.path().right(4).upper() == ".PEM")
+     else if (ext == ".PEM")
         m_strMimeType = QString::fromLatin1("application/x-x509-ca-cert");
-     else if (m_request.url.path().right(4).upper() == ".SWF")
+     else if (ext == ".SWF")
         m_strMimeType = QString::fromLatin1("application/x-shockwave-flash");
+     else if (ext == ".PLS")
+        m_strMimeType = QString::fromLatin1("audio/x-scpls");
+     else if (ext == ".WMV")
+        m_strMimeType = QString::fromLatin1("video/w-ms-wmv");
   }
 
 #if 0
@@ -5309,6 +5314,9 @@ QString HTTPProtocol::createDigestAuth ( bool isForProxy )
     }
     p+=(i+1);
   }
+
+  if (info.realm.isEmpty() || info.nonce.isEmpty())
+    return QString::null;
 
   // If the "domain" attribute was not specified and the current response code
   // is authentication needed, add the current request url to the list over which
