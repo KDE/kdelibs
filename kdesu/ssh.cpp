@@ -4,9 +4,9 @@
  *
  * This file is part of the KDE project, module kdesu.
  * Copyright (C) 2000 Geert Jansen <jansen@kde.org>
- * 
- * This is free software; you can use this library under the GNU Library 
- * General Public License, version 2. See the file "COPYING.LIB" for the 
+ *
+ * This is free software; you can use this library under the GNU Library
+ * General Public License, version 2. See the file "COPYING.LIB" for the
  * exact licensing terms.
  *
  * ssh.cpp: Execute a program on a remote machine using ssh.
@@ -73,13 +73,13 @@ int SshProcess::checkNeedPassword()
 
 
 int SshProcess::exec(const char *password, int check)
-{    
+{
     if (check)
 	setTerminal(true);
 
     QCStringList args;
     args += "-l"; args += m_User;
-    args += "-o"; args += "StrictHostKeyChecking no";
+    args += "-o"; args += "StrictHostKeyChecking=no";
     args += m_Host; args += m_Stub;
 
     if (StubProcess::exec("ssh", args) < 0)
@@ -104,7 +104,7 @@ int SshProcess::exec(const char *password, int check)
 	return ret;
     }
 
-    if (m_bErase && password) 
+    if (m_bErase && password)
     {
 	char *ptr = const_cast<char *>(password);
 	for (unsigned i=0; i<strlen(password); i++)
@@ -141,7 +141,7 @@ int SshProcess::exec(const char *password, int check)
 /*
  * Create a port forwarding for DCOP. For the remote port, we take a pseudo
  * random number between 10k and 50k. This is not ok, of course, but I see
- * no other way. There is, afaik, no security issue involved here. If the port 
+ * no other way. There is, afaik, no security issue involved here. If the port
  * happens to be occupied, ssh will refuse to start.
  *
  * 14/SEP/2000: DCOP forwarding is not used anymore.
@@ -156,7 +156,7 @@ QCString SshProcess::dcopForward()
     QCString srv = StubProcess::dcopServer();
     if (srv.isEmpty())
        return result;
- 
+
     int i = srv.find('/');
     if (i == -1)
        return result;
@@ -176,17 +176,17 @@ QCString SshProcess::dcopForward()
     return result;
 }
 
-	
+
 /*
- * Conversation with ssh. 
- * If check is 0, this waits for either a "Password: " prompt, 
+ * Conversation with ssh.
+ * If check is 0, this waits for either a "Password: " prompt,
  * or the header of the stub. If a prompt is received, the password is
  * written back. Used for running a command.
  * If check is 1, operation is the same as 0 except that if a stub header is
  * received, the stub is stopped with the "stop" command. This is used for
  * checking a password.
  * If check is 2, operation is the same as 1, except that no password is
- * written. The prompt is saved to m_Prompt. Used for checking the need for 
+ * written. The prompt is saved to m_Prompt. Used for checking the need for
  * a password.
  */
 
@@ -197,7 +197,7 @@ int SshProcess::ConverseSsh(const char *password, int check)
     QCString line;
     int state = 0;
 
-    while (state < 2) 
+    while (state < 2)
     {
 	line = readLine();
 	if (line.isNull())
@@ -206,16 +206,16 @@ int SshProcess::ConverseSsh(const char *password, int check)
 	switch (state) {
 	case 0:
 	    // Check for "kdesu_stub" header.
-	    if (line == "kdesu_stub") 
+	    if (line == "kdesu_stub")
 	    {
 		unreadLine(line);
 		return 0;
 	    }
 
 	    // Match "Password: " with the regex ^[^:]+:[\w]*$.
-	    for (i=0,j=0,colon=0; i<line.length(); i++) 
+	    for (i=0,j=0,colon=0; i<line.length(); i++)
 	    {
-		if (line[i] == ':') 
+		if (line[i] == ':')
 		{
 		    j = i; colon++;
 		    continue;
@@ -223,7 +223,7 @@ int SshProcess::ConverseSsh(const char *password, int check)
 		if (!isspace(line[i]))
 		    j++;
 	    }
-	    if ((colon == 1) && (line[j] == ':')) 
+	    if ((colon == 1) && (line[j] == ':'))
 	    {
 		if (check == 2)
 		{
@@ -233,7 +233,7 @@ int SshProcess::ConverseSsh(const char *password, int check)
 		WaitSlave();
 		write(m_Fd, password, strlen(password));
 		write(m_Fd, "\n", 1);
-		state++; 
+		state++;
 		break;
 	    }
 
@@ -244,7 +244,7 @@ int SshProcess::ConverseSsh(const char *password, int check)
 	    break;
 
 	case 1:
-	    if (line.isEmpty()) 
+	    if (line.isEmpty())
 	    {
 		state++;
 		break;
