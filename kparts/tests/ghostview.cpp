@@ -7,8 +7,10 @@
 #include <kmessagebox.h>
 #include <kcmdlineargs.h>
 #include <klibloader.h>
+
 #include <qwidget.h>
 #include <qdir.h>
+#include <qfile.h>
 
 #include <ktrader.h>
 
@@ -33,7 +35,7 @@ Shell::Shell()
   {
     KService::Ptr ptr = (*it);
 
-    factory = KLibLoader::self()->factory( ptr->library().latin1() );
+    factory = KLibLoader::self()->factory( QFile::encodeName(ptr->library()) );
     if (factory)
     {
       m_gvpart = static_cast<KParts::ReadOnlyPart *>(factory->create(this, ptr->name().latin1(), "KParts::ReadOnlyPart"));
