@@ -372,7 +372,6 @@ QString KIconThemeDir::iconPath(const QString& name) const
 {
     if (!mbValid)
 	return QString::null;
-    kdDebug(264) << "trying " << mDir << "/" << name << endl;
     QString file = mDir + "/" + name;
     if (KStandardDirs::exists(file))
       return file;
