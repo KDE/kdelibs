@@ -65,7 +65,7 @@ include_HEADERS = kprogress.h kcolordlg.h \
 		kcommand.h kwindowlistmenu.h kfontcombo.h kaccelgen.h ktip.h \
 		kdatewidget.h karrowbutton.h kguiitem.h kstdguiitem.h \
 		kstringvalidator.h kwindowinfo.h \
-		ktextedit.h kpassivepopup.h kdockwidget_p.h \
+		ktextedit.h kpassivepopup.h \
 		kdatetimewidget.h ktimewidget.h \
 		kspell.h ksconfig.h kspelldlg.h ksyntaxhighlighter.h \
 		ktabbar.h ktabwidget.h ksplashscreen.h kconfigdialog.h
@@ -115,7 +115,7 @@ libkdeui_la_SOURCES = \
 		kspell.cpp ksyntaxhighlighter.cpp ktabbar.cpp ktabwidget.cpp \
 		ksplashscreen.cpp kspellui.ui kconfigdialog.cpp
 
-noinst_HEADERS = kdockwidget_private.h klistviewlineedit.h \
+noinst_HEADERS = kdockwidget_private.h kdockwidget_p.h klistviewlineedit.h \
 		kdialogbase_priv.h kaboutdialog_private.h kcursor_private.h \
 		kdepackages.h kshortcutdialog.h kxmlguifactory_p.h \
 		kstdaction_p.h
