@@ -91,8 +91,10 @@ QValueList<QDomDocument> Part::pluginDocuments()
     QStringList pluginDocs = plugins();
     QStringList::ConstIterator pIt = pluginDocs.begin();
     QStringList::ConstIterator pEnd = pluginDocs.end();
+    kDebugInfo( 1000, "Plugins : " );
     for (; pIt != pEnd; ++pIt )
     {
+      kDebugInfo( 1000, "Plugin : %s", (*pIt).ascii() );
       QString xml = XMLGUIFactory::readConfigFile( *pIt );
       if ( !xml.isEmpty() )
       {

@@ -13,6 +13,7 @@
 #include <qvbox.h>
 
 #include <kiconloader.h>
+#include <kstddirs.h>
 #include <kapp.h>
 #include <kmessagebox.h>
 #include <kaction.h>
@@ -27,7 +28,7 @@ Shell::Shell()
   // When the manager says the active part changes, the builder updates (recreates) the GUI
   connect( m_manager, SIGNAL( activePartChanged( Part * ) ),
            this, SLOT( createGUI( Part * ) ) );
-  
+
   // We can do this "switch active part" because we have a splitter with
   // two items in it.
   // I wonder what kdevelop uses/will use to embed kedit, BTW.
@@ -60,13 +61,13 @@ Shell::Shell()
 }
 
 Shell::~Shell()
-{ 
+{
   disconnect( m_manager, 0, this, 0 );
 }
 
 void Shell::slotFileOpen()
 {
-  if ( ! m_part1->openURL( QDir::current().absPath()+"/example_shell.rc" ) )
+  if ( ! m_part1->openURL( locate("data", KGlobal::instance()->instanceName()+"/example_shell.rc" ) ) )
     KMessageBox::error(this,"Couldn't open file !");
 }
 

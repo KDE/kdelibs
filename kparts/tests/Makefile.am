@@ -3,6 +3,8 @@ INCLUDES= -I$(top_srcdir)/kparts $(all_includes)
 LDFLAGS	= $(all_libraries)
 LDADD = $(top_builddir)/kparts/libkparts.la $(LIB_KDECORE)
 
+SUBDIRS = notepadplugins
+
 check_PROGRAMS = kpartstest
 
 kpartstest_SOURCES = example.cpp notepad.cpp
