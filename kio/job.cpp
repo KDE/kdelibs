@@ -1637,7 +1637,35 @@ void CopyJob::slotResultStating( Job *job )
     // Was there an error while stating the src ?
     if (job->error() && destinationState != DEST_NOT_STATED )
     {
-        // Probably : src doesn't exist
+        KURL srcurl = ((SimpleJob*)job)->url();
+        if ( !srcurl.isLocalFile() )
+        {
+            // Probably : src doesn't exist. Well, over some protocols (e.g. FTP)
+            // this info isn't really reliable (thanks to MS FTP servers).
+            // We'll assume a file, and try to download anyway.
+            kdDebug() << "Error while stating source. Activating hack" << endl;
+            subjobs.remove( job );
+            assert ( subjobs.isEmpty() ); // We should have only one job at a time ...
+            m_currentDest = m_dest;
+            struct CopyInfo info;
+            info.permissions = (mode_t) -1;
+            info.mtime = (time_t) -1;
+            info.ctime = (time_t) -1;
+            info.size = (off_t)-1;
+            info.uSource = srcurl;
+            info.uDest = m_currentDest;
+            // Append filename or dirname to destination URL, if allowed
+            if ( destinationState == DEST_IS_DIR && !m_asMethod )
+                info.uDest.addPath( srcurl.fileName() );
+            files.append( info );
+            emit totalFiles( this, 1 );
+            emit totalDirs( this, 0 );
+
+            state = STATE_COPYING_FILES;
+            copyNextFile();
+            return;
+        }
+        // Local file. If stat fails, the file definitely doesn't exist.
         Job::slotResult( job ); // will set the error and emit result(this)
         return;
     }
