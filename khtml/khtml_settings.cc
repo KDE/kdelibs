@@ -98,13 +98,13 @@ void KHTMLSettings::splitDomainAdvice(const QString& configStr, QString &domain,
     int splitIndex = tmp.find(':');
     if ( splitIndex == -1)
     {
-        domain = configStr;
+        domain = configStr.lower();
         javaAdvice = KJavaScriptDunno;
                 javaScriptAdvice = KJavaScriptDunno;
     }
     else
     {
-        domain = tmp.left(splitIndex);
+        domain = tmp.left(splitIndex).lower();
                 QString adviceString = tmp.mid( splitIndex+1, tmp.length() );
                 int splitIndex2 = adviceString.find( ':' );
                 if( splitIndex2 == -1 ) {
@@ -398,12 +398,12 @@ static bool lookup_hostname_policy(const QString& hostname,
 
 bool KHTMLSettings::isJavaEnabled( const QString& hostname )
 {
-  return lookup_hostname_policy(hostname, d->javaDomainPolicy, d->m_bEnableJava);
+  return lookup_hostname_policy(hostname.lower(), d->javaDomainPolicy, d->m_bEnableJava);
 }
 
 bool KHTMLSettings::isJavaScriptEnabled( const QString& hostname )
 {
-  return lookup_hostname_policy(hostname, d->javaScriptDomainPolicy, d->m_bEnableJavaScript);
+  return lookup_hostname_policy(hostname.lower(), d->javaScriptDomainPolicy, d->m_bEnableJavaScript);
 }
 
 bool KHTMLSettings::isJavaScriptDebugEnabled( const QString& /*hostname*/ )
