@@ -40,11 +40,11 @@ include_HEADERS = kautoconfig.h kconfig.h kconfigskeleton.h \
 	kprocctrl.h klocale.h kicontheme.h kiconloader.h kdebug.h \
 	kwinmodule.h kwin.h krootprop.h kshortcut.h kkeynative.h kaccel.h \
 	kglobalaccel.h kstdaccel.h kshortcutlist.h kcatalogue.h \
-	kregexp.h kcompletion.h kstringhandler.h kstringhandler.h \
+	kregexp.h kcompletion.h kstringhandler.h \
 	kstddirs.h kstandarddirs.h kglobal.h kglobalsettings.h ksharedptr.h \
 	kallocator.h kvmallocator.h kcrash.h krfcdate.h \
 	kinstance.h kpalette.h kipc.h klibloader.h ktempfile.h ksavefile.h \
-	krandomsequence.h kstringhandler.h knotifyclient.h kiconeffect.h \
+	krandomsequence.h knotifyclient.h kiconeffect.h \
 	kaudioplayer.h kdcoppropertyproxy.h netwm.h kaccelmanager.h \
 	netwm_def.h kpixmapprovider.h kunload.h kstaticdeleter.h \
 	kextsock.h kextendedsocket.h ksockaddr.h kprocio.h kasyncio.h \

@@ -29,13 +29,13 @@ METASOURCES = AUTO
 include_HEADERS = kfiledialog.h kencodingfiledialog.h\
 	kdiroperator.h kfileview.h kfilefiltercombo.h \
 	kfiledetailview.h kcombiview.h kdiskfreesp.h \
-	kfileiconview.h krecentdocument.h kfileview.h \
-	kfiledialog.h kurlrequester.h kfilepreview.h kfile.h \
+	kfileiconview.h krecentdocument.h \
+	kurlrequester.h kfilepreview.h kfile.h \
 	kurlcombobox.h kurlrequesterdlg.h kopenwith.h kpropsdlg.h \
 	kicondialog.h kdirsize.h kpreviewwidgetbase.h kimagefilepreview.h kfilesharedlg.h \
 	kfiletreeview.h kfiletreeviewitem.h kfiletreebranch.h \
 	kdirselectdialog.h kurlbar.h kpropertiesdialog.h knotifydialog.h \
-	kcustommenueditor.h knotifywidgetbase.h knotifydialog.h
+	kcustommenueditor.h knotifywidgetbase.h
 
 noinst_HEADERS = config-kfile.h krecentdirs.h kmetaprops.h \
 	kfilebookmarkhandler.h kfilemetainfowidget.h kopenwith_p.h \

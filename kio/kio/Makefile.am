@@ -99,7 +99,6 @@ noinst_HEADERS = kservicetypefactory.h kservicefactory.h \
 	kmessageboxwrapper.h \
 	ktraderparse.h ktraderparsetree.h yacc.h \
 	kimageiofactory.h kdirwatch_p.h kdirlister_p.h \
-	kimageiofactory.h kdirwatch_p.h \
 	renamedlg.h skipdlg.h dataslave.h dataprotocol.h \
 	kservice_p.h
 
