@@ -54,8 +54,10 @@ KURL::KURL()
 KURL::KURL( const QString &_url )
 {
   reset();
+  /*The following two variables have already been
+    initialized by reset()! Why Re-initialize again ?? (Dawit A.)
   m_strProtocol = "file";
-  m_iPort = 0;
+  m_iPort = 0; */
   parse( _url );
 }
 
