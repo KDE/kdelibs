@@ -1,6 +1,6 @@
 [Desktop Entry]
 Type=MimeType
 Comment=Streaming MPEG layer 3 audio
-MimeType=audio/mpegurl
+MimeType=audio/x-mpegurl
 Icon=mimetypes/sound
 Patterns=*.m3u;*.M3U;
