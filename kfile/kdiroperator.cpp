@@ -990,11 +990,7 @@ void KDirOperator::updateViewActions()
 {
     KFile::FileView fv = static_cast<KFile::FileView>( viewKind );
 
-    bool separate = KFile::isSeparateDirs( fv ) &&
-                    myMode & KFile::Directory == 0 &&
-		    myMode & KFile::PreviewContents == 0 &&
-                    myMode & KFile::PreviewInfo == 0;
-    separateDirsAction->setChecked( separate );
+    separateDirsAction->setChecked( KFile::isSeparateDirs( fv ) && separateDirsAction->isEnabled() );
 
     shortAction->setChecked( KFile::isSimpleView( fv ));
     detailedAction->setChecked( KFile::isDetailView( fv ));
@@ -1079,8 +1075,7 @@ void KDirOperator::saveConfig( KConfig *kc, const QString& group )
                     dirsFirstAction->isChecked() );
 
     // don't save the separate dirs mode in combiview or directory mode
-    if ( !(myMode & KFile::Directory == KFile::Directory || 
-	   viewKind & KFile::PreviewInfo || viewKind & KFile::PreviewContents))
+    if ( separateDirsAction->isEnabled() )
 	kc->writeEntry( QString::fromLatin1("Separate Directories"),
 			separateDirsAction->isChecked() );
 
