@@ -583,7 +583,7 @@ QStringList KConfigBase::readListEntry( const char *pKey, char sep ) const
   QString value = "";
   int len = str_list.length();
  // obviously too big, but faster than letting each += resize the string.
-  value.setLength( len );
+  value.reserve( len );
   for( int i = 0; i < len; i++ )
     {
       if( str_list[i] != sep && str_list[i] != '\\' )
@@ -599,8 +599,8 @@ QStringList KConfigBase::readListEntry( const char *pKey, char sep ) const
           continue;
         }
       list.append( value );
-      value.truncate(0);
-      value.setLength( len - i );
+      value = "";
+      value.reserve( len - i );
     }
   if ( str_list[len-1] != sep || ( len > 1 && str_list[len-2] == '\\' ) )
     list.append( value );
