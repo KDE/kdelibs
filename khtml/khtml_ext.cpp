@@ -476,10 +476,9 @@ void KHTMLPopupGUIClient::saveURL( const KURL &url, const KURL &destURL,
         if(!saved)
         {
             KIO::Job *job = KIO::copy( url, destURL );
-#if KDE_VERSION > 290
             job->setMetaData(metadata);
+            job->addMetaData("MaxCacheSize", "0"); // Don't store in http cache.
             job->setAutoErrorHandlingEnabled( true );
-#endif
         }
     }
 }
