@@ -100,8 +100,8 @@ RenderFrameSet::~RenderFrameSet()
 
 void RenderFrameSet::layout( )
 {
-    assert( !layouted() );
-    assert( minMaxKnown() );
+    KHTMLAssert( !layouted() );
+    KHTMLAssert( minMaxKnown() );
 
     if ( !parent()->isFrameSet() ) {
         m_width = m_view->visibleWidth();
@@ -803,7 +803,7 @@ void RenderPartObject::updateWidget()
       }
       part->requestObject( this, url, serviceType, params );
   } else {
-      assert(m_element->id() == ID_IFRAME);
+      KHTMLAssert(m_element->id() == ID_IFRAME);
       HTMLIFrameElementImpl *o = static_cast<HTMLIFrameElementImpl *>(m_element);
       url = o->url.string();
       if( url.isEmpty()) return;
@@ -912,8 +912,8 @@ void RenderPartObject::slotPartLoadingErrorNotify()
 
 void RenderPartObject::layout( )
 {
-    assert( !layouted() );
-    assert( minMaxKnown() );
+    KHTMLAssert( !layouted() );
+    KHTMLAssert( minMaxKnown() );
 
     qDebug("RenderPartObject::layout()");
     qDebug("parent: %p", RenderObject::parent());

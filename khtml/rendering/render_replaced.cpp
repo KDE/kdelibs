@@ -87,7 +87,7 @@ void RenderReplaced::print( QPainter *p, int _x, int _y, int _w, int _h,
 
 void RenderReplaced::calcMinMaxWidth()
 {
-    assert( !minMaxKnown());
+    KHTMLAssert( !minMaxKnown());
 
 #ifdef DEBUG_LAYOUT
     kdDebug( 6040 ) << "RenderReplaced::calcMinMaxWidth() known=" << minMaxKnown() << endl;
@@ -154,7 +154,7 @@ void RenderWidget::detach()
 
 RenderWidget::~RenderWidget()
 {
-    assert( refCount() <= 0 );
+    KHTMLAssert( refCount() <= 0 );
 
     delete m_widget;
 }
@@ -188,8 +188,8 @@ void RenderWidget::setQWidget(QWidget *widget)
 
 void RenderWidget::layout( )
 {
-    assert( !layouted() );
-    assert( minMaxKnown() );
+    KHTMLAssert( !layouted() );
+    KHTMLAssert( minMaxKnown() );
     if ( m_widget )
         m_widget->resize( m_width-borderLeft()-borderRight()-paddingLeft()-paddingRight(),
                           m_height-borderLeft()-borderRight()-paddingLeft()-paddingRight());

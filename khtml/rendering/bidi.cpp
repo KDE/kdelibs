@@ -1016,7 +1016,7 @@ BidiIterator RenderFlow::findNextLineBreak(const BidiIterator &start)
             tmpW += t->width(lastSpace, pos - lastSpace, &fm);
             }
         } else
-            assert( false );
+            KHTMLAssert( false );
 
         if( w + tmpW > width+1 && style()->whiteSpace() != NOWRAP ) {
             //kdDebug() << " too wide w=" << w << " tmpW = " << tmpW << " width = " << width << endl;

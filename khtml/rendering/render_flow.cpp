@@ -225,9 +225,9 @@ void RenderFlow::layout()
 //     QTime t;
 //     t.start();
 
-    assert( !layouted() );
-    assert( minMaxKnown() );
-    assert(!isInline());
+    KHTMLAssert( !layouted() );
+    KHTMLAssert( minMaxKnown() );
+    KHTMLAssert(!isInline());
 
     int oldWidth = m_width;
 
@@ -238,7 +238,7 @@ void RenderFlow::layout()
 	relayoutChildren = true;
 
     // need a small hack here, as tables are done a bit differently
-    if ( isTableCell() && static_cast<RenderTableCell *>(this)->widthChanged() )
+    if ( isTableCell() ) //&& static_cast<RenderTableCell *>(this)->widthChanged() )
 	relayoutChildren = true;
 
 //     kdDebug( 6040 ) << specialObjects << "," << oldWidth << ","
@@ -302,7 +302,7 @@ void RenderFlow::layoutSpecialObjects()
         for ( ; (r = it.current()); ++it ) {
             //kdDebug(6040) << "   have a positioned object" << endl;
             if (r->type == SpecialObject::Positioned) {
-		kdDebug(6040) << renderName() << " relayouting positioned object" << endl;
+//		kdDebug(6040) << renderName() << " relayouting positioned object" << endl;
 		r->node->setLayouted( false );
 // 		if ( !r->node->layouted() )
 		    r->node->layout();
@@ -525,7 +525,7 @@ void RenderFlow::insertSpecialObject(RenderObject *o)
     else {
 	// We should never get here, as insertSpecialObject() should only ever be called with positioned or floating
 	// objects.
-	assert(false);
+	KHTMLAssert(false);
     }
 
     newObj->count = specialObjects->count();
@@ -980,7 +980,7 @@ void RenderFlow::addOverHangingFloats( RenderFlow *flow, int xoff, int offset, b
 
 void RenderFlow::calcMinMaxWidth()
 {
-    assert( !minMaxKnown() );
+    KHTMLAssert( !minMaxKnown() );
 
 #ifdef DEBUG_LAYOUT
     kdDebug( 6040 ) << renderName() << "(RenderBox)::calcMinMaxWidth() known=" << minMaxKnown() << endl;
@@ -1231,12 +1231,14 @@ void RenderFlow::addChild(RenderObject *newChild, RenderObject *beforeChild)
     // just insert the child into the anonymous block box instead of here.
     if (beforeChild && beforeChild->parent() != this) {
 
-        assert(beforeChild->parent());
-        assert(beforeChild->parent()->isAnonymousBox());
-        assert(beforeChild->parent()->parent() == this);
+        KHTMLAssert(beforeChild->parent());
+        KHTMLAssert(beforeChild->parent()->isAnonymousBox());
+        KHTMLAssert(beforeChild->parent()->parent() == this);
 
         if (newChild->isInline()) {
             beforeChild->parent()->addChild(newChild,beforeChild);
+	    newChild->setLayouted( false );
+	    newChild->setMinMaxKnown( false );
             return;
         }
         else {
@@ -1245,7 +1247,7 @@ void RenderFlow::addChild(RenderObject *newChild, RenderObject *beforeChild)
             // anonmous boxes which become children of this
 
             RenderObject *anonBox = beforeChild->parent();
-            assert (anonBox->isFlow()); // ### RenderTableSection the only exception - should never happen here
+            KHTMLAssert (anonBox->isFlow()); // ### RenderTableSection the only exception - should never happen here
 
             static_cast<RenderFlow*>(anonBox)->makeChildrenNonInline(beforeChild);
             beforeChild = beforeChild->parent();
@@ -1259,7 +1261,7 @@ void RenderFlow::addChild(RenderObject *newChild, RenderObject *beforeChild)
             removeChildNode(anonBox);
             anonBox->detach(); // does necessary cleanup & deletes anonBox
 
-            assert(beforeChild->parent() == this);
+            KHTMLAssert(beforeChild->parent() == this);
         }
     }
 
@@ -1282,7 +1284,7 @@ void RenderFlow::addChild(RenderObject *newChild, RenderObject *beforeChild)
         makeChildrenNonInline(beforeChild);
         if (beforeChild) {
             beforeChild = beforeChild->parent();
-            assert(beforeChild->parent() == this);
+            KHTMLAssert(beforeChild->parent() == this);
         }
     }
     else if (!m_childrenInline)
@@ -1294,13 +1296,17 @@ void RenderFlow::addChild(RenderObject *newChild, RenderObject *beforeChild)
             if (beforeChild) {
                 if (beforeChild->previousSibling() && beforeChild->previousSibling()->isAnonymousBox()) {
                     beforeChild->previousSibling()->addChild(newChild);
+		    newChild->setLayouted( false );
+		    newChild->setMinMaxKnown( false );
                     return;
                 }
             }
             else{
                 if (m_last && m_last->isAnonymousBox()) {
                     m_last->addChild(newChild);
-                    return;
+		    newChild->setLayouted( false );
+		    newChild->setMinMaxKnown( false );
+		    return;
                 }
             }
 
@@ -1317,6 +1323,8 @@ void RenderFlow::addChild(RenderObject *newChild, RenderObject *beforeChild)
             newBox->addChild(newChild);
             newBox->setPos(newBox->xPos(), -100000);
 
+	    newChild->setLayouted( false );
+	    newChild->setMinMaxKnown( false );
             return;
         }
         else {
@@ -1346,13 +1354,15 @@ void RenderFlow::addChild(RenderObject *newChild, RenderObject *beforeChild)
     RenderBox::addChild(newChild,beforeChild);
     // ### care about aligned stuff
 
+    newChild->setLayouted( false );
+    newChild->setMinMaxKnown( false );
     insertPseudoChild(RenderStyle::AFTER, newChild, beforeChild);
 
 }
 
 void RenderFlow::makeChildrenNonInline(RenderObject *box2Start)
 {
-    assert(!box2Start || box2Start->parent() == this);
+    KHTMLAssert(!box2Start || box2Start->parent() == this);
 
     if (!m_childrenInline)
         return;
@@ -1411,7 +1421,7 @@ void RenderFlow::makeChildrenNonInline(RenderObject *box2Start)
     if (isInline()) {
         setInline(false);
         if (parent()->isFlow()) {
-            assert(parent()->childrenInline());
+            KHTMLAssert(parent()->childrenInline());
             static_cast<RenderFlow *>(parent())->makeChildrenNonInline();
         }
     }
@@ -1438,7 +1448,7 @@ void RenderFlow::printTree(int indent) const
 {
     RenderBox::printTree(indent);
 
-    assert(!m_blockBidi);
+//     KHTMLAssert(!m_blockBidi);
 
     if(specialObjects)
     {

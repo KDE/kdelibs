@@ -96,15 +96,15 @@ public:
     void startRow();
     void addCell( RenderTableCell *cell );
     void endTable();
-    void  addColInfo(RenderTableCell *cell);
+    void  addColInfo(RenderTableCell *cell, bool recalc = true);
     void  addColInfo(RenderTableCol *colel);
 
     void addColInfo(int _startCol, int _colSpan,
                     int _minSize, int _maxSize, khtml::Length _width,
-                    RenderTableCell* _cell);
+                    RenderTableCell* _cell, bool recalc = true);
 
     void recalcColInfos();
-
+    
     // overrides
     virtual void addChild(RenderObject *child, RenderObject *beforeChild = 0);
     virtual void print( QPainter *, int x, int y, int w, int h,
@@ -154,14 +154,16 @@ public:
     {
         ColInfo()
         {
+	    span = 0;
+	    start = 0;
             min=0;
             max=0;
             type=khtml::Undefined;
             value=0;
             minCell=0;
             maxCell=0;
+	    widthCell=0;
         }
-        void update();
 
         int     span;
         int     start;
@@ -171,10 +173,13 @@ public:
         RenderTableCell* maxCell;
         khtml::LengthType       type;
         int     value;
-        int     percentage;
+	RenderTableCell* widthCell;
     };
 
 protected:
+
+    void recalcColInfo( ColInfo *col );
+
     // This function calculates the actual widths of the columns
     void calcColWidth();
 
@@ -223,7 +228,6 @@ protected:
     QMemArray<int> rowHeights;
     QMemArray<int> rowBaselines;
     QMemArray<int> actColWidth;
-    unsigned int totalColInfos;
     unsigned int col;
     unsigned int totalCols;
     unsigned int row;
@@ -244,10 +248,12 @@ protected:
     RenderTableCol *_oldColElem;
     int _currentCol; // keeps track of current col for col/colgroup stuff
     int spacing;
-    short _lastParentWidth;
-    bool incremental;
-    bool collapseBorders;
-    bool needsCellsRecalc;
+    short _lastParentWidth 	: 16;
+    bool incremental 		: 1;
+    bool collapseBorders 	: 1;
+    bool colWidthKnown 		: 1;
+    bool needsCellsRecalc 	: 1;
+    bool hasPercent 		: 1;
 };
 
 // -------------------------------------------------------------------------

@@ -27,6 +27,7 @@
 
 #include <qcolor.h>
 #include <qrect.h>
+#include <assert.h>
 
 #include "misc/khtmllayout.h"
 #include "misc/loader_client.h"
@@ -36,6 +37,12 @@ class QPainter;
 class QTextStream;
 class CSSStyle;
 class KHTMLView;
+
+#define KHTMLAssert( x ) if( !(x) ) { \
+    RenderObject *o = this; while( o->parent() ) o = o->parent(); \
+    o->printTree(); \
+    assert( false ); \
+}
 
 namespace DOM {
     class DOMString;
@@ -158,8 +165,10 @@ public:
 	m_minMaxKnown = b;
 	if ( !b ) {
 	    RenderObject *o = this;
+	    RenderObject *root = this;
 	    while( o ) { // ### && !o->m_recalcMinMax ) {
 		o->m_recalcMinMax = true;
+		root = o;
 		o = o->m_parent;
 	    }
 	}
@@ -397,6 +406,7 @@ private:
     bool m_isSelectionBorder          : 1;
 
     // note: do not add unnecessary bitflags, we have 32 bit already!
+    friend class RenderListItem;
     friend class RenderContainer;
     friend class RenderRoot;
 };

@@ -87,7 +87,7 @@ void RenderRoot::calcWidth()
 
 void RenderRoot::calcMinMaxWidth()
 {
-    assert( !minMaxKnown() );
+    KHTMLAssert( !minMaxKnown() );
 
     RenderFlow::calcMinMaxWidth();
 

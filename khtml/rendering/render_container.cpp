@@ -122,16 +122,17 @@ void RenderContainer::addChild(RenderObject *newChild, RenderObject *beforeChild
             addChild(table, beforeChild);
         }
         table->addChild(newChild);
-        return;
+    } else {
+	// just add it...
+	insertChildNode(newChild, beforeChild);
     }
-
-    // just add it...
-    insertChildNode(newChild, beforeChild);
+    newChild->setLayouted( false );
+    newChild->setMinMaxKnown( false );
 }
 
 RenderObject* RenderContainer::removeChildNode(RenderObject* oldChild)
 {
-    assert(oldChild->parent() == this);
+    KHTMLAssert(oldChild->parent() == this);
 
     // if oldChild is the start or end of the selection, then clear the selection to
     // avoid problems of invalid pointers
@@ -165,6 +166,9 @@ RenderObject* RenderContainer::removeChildNode(RenderObject* oldChild)
     oldChild->setPreviousSibling(0);
     oldChild->setNextSibling(0);
     oldChild->setParent(0);
+
+    setLayouted( false );
+    setMinMaxKnown( false );
 
     return oldChild;
 }
@@ -212,13 +216,12 @@ void RenderContainer::insertPseudoChild(RenderStyle::PseudoId type, RenderObject
         }
 
     }
-
 }
 
 
 void RenderContainer::appendChildNode(RenderObject* newChild)
 {
-    assert(newChild->parent() == 0);
+    KHTMLAssert(newChild->parent() == 0);
 
     newChild->setParent(this);
     RenderObject* lChild = lastChild();
@@ -232,6 +235,8 @@ void RenderContainer::appendChildNode(RenderObject* newChild)
         setFirstChild(newChild);
 
     setLastChild(newChild);
+    newChild->setLayouted( false );
+    newChild->setMinMaxKnown( false );
 }
 
 void RenderContainer::insertChildNode(RenderObject* child, RenderObject* beforeChild)
@@ -241,8 +246,8 @@ void RenderContainer::insertChildNode(RenderObject* child, RenderObject* beforeC
         return;
     }
 
-    assert(!child->parent());
-    assert(beforeChild->parent() == this);
+    KHTMLAssert(!child->parent());
+    KHTMLAssert(beforeChild->parent() == this);
 
     if(beforeChild == firstChild())
         setFirstChild(child);
@@ -254,13 +259,15 @@ void RenderContainer::insertChildNode(RenderObject* child, RenderObject* beforeC
     child->setPreviousSibling(prev);
 
     child->setParent(this);
+    child->setLayouted( false );
+    child->setMinMaxKnown( false );
 }
 
 
 void RenderContainer::layout()
 {
-    assert( !layouted() );
-    assert( minMaxKnown() );
+    KHTMLAssert( !layouted() );
+    KHTMLAssert( minMaxKnown() );
 
     RenderObject *child = firstChild();
     while( child ) {

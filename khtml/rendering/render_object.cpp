@@ -128,28 +128,28 @@ RenderObject::~RenderObject()
 
 void RenderObject::addChild(RenderObject* , RenderObject *)
 {
-    assert(0);
+    KHTMLAssert(0);
 }
 
 RenderObject* RenderObject::removeChildNode(RenderObject* )
 {
-    assert(0);
+    KHTMLAssert(0);
     return 0;
 }
 
 void RenderObject::removeChild(RenderObject* )
 {
-    assert(0);
+    KHTMLAssert(0);
 }
 
 void RenderObject::appendChildNode(RenderObject*)
 {
-    assert(0);
+    KHTMLAssert(0);
 }
 
 void RenderObject::insertChildNode(RenderObject*, RenderObject*)
 {
-    assert(0);
+    KHTMLAssert(0);
 }
 
 RenderObject *RenderObject::containingBlock() const
@@ -174,12 +174,12 @@ RenderObject *RenderObject::containingBlock() const
     // the case below should never happen...
     if(!o) {
         if(!isRoot()) {
-            //assert ( false );
+            //KHTMLAssert ( false );
             kdDebug( 6040 ) << this << ": " << renderName() << "(RenderObject): No containingBlock!" << endl;
             const RenderObject* p = this;
             while (p->parent()) p = p->parent();
             p->printTree();
-            assert(0);
+            KHTMLAssert(0);
         }
         return const_cast<RenderObject *>(this);
     } else
@@ -524,6 +524,7 @@ void RenderObject::printTree(int indent) const
     for(RenderObject* c = firstChild(); c; c = c->nextSibling())
         childcount++;
 
+    if (!isInline() )
     kdDebug()    << ind << renderName()
                  << (childcount ?
                      (QString::fromLatin1("[") + QString::number(childcount) + QString::fromLatin1("]"))
@@ -539,6 +540,7 @@ void RenderObject::printTree(int indent) const
                  << " oc=" << (int)overhangingContents()
                  << " lt=" << (int)layouted()
                  << " mk=" << (int)minMaxKnown()
+                 << " rmm=" << (int)m_recalcMinMax
                   << " (" << xPos() << "," << yPos() << "," << width() << "," << height() << ")"
 		 << endl;
     RenderObject *child = firstChild();
@@ -621,7 +623,7 @@ void RenderObject::setStyle(RenderStyle *style)
     setSpecialObjects( m_style->backgroundColor().isValid() || m_style->hasBorder() || nb );
     m_hasFirstLine = (style->getPseudoStyle(RenderStyle::FIRST_LINE) != 0);
 
-    if ( d >= RenderStyle::Position ) {
+    if ( d >= RenderStyle::Position && m_parent ) {
 	setMinMaxKnown(false);
 	setLayouted(false);
     }
@@ -719,7 +721,7 @@ RenderRoot* RenderObject::root() const
     RenderObject* o = const_cast<RenderObject*>( this );
     while ( o->parent() ) o = o->parent();
 
-    assert( o->isRoot() );
+    KHTMLAssert( o->isRoot() );
     return static_cast<RenderRoot*>( o );
 }
 
@@ -883,7 +885,7 @@ void RenderObject::invalidateVerticalPositions()
 
 void RenderObject::recalcMinMaxWidths()
 {
-    assert( m_recalcMinMax );
+    KHTMLAssert( m_recalcMinMax );
 
 #ifdef DEBUG_LAYOUT
     kdDebug( 6040 ) << renderName() << " recalcMinMaxWidths()" <<endl;
@@ -900,7 +902,7 @@ void RenderObject::recalcMinMaxWidths()
 	}
 	if ( child->m_recalcMinMax )
 	    child->recalcMinMaxWidths();
-	else if ( !child->m_minMaxKnown )
+	if ( !child->m_minMaxKnown )
 	    child->calcMinMaxWidth();
 	if ( m_minMaxKnown && test && (cmin != child->minWidth() || cmax != child->maxWidth()) )
 	    m_minMaxKnown = false;

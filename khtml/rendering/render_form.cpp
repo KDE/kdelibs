@@ -156,8 +156,8 @@ void RenderFormElement::updateFromElement()
 
 void RenderFormElement::layout()
 {
-    assert( !layouted() );
-    assert( minMaxKnown() );
+    KHTMLAssert( !layouted() );
+    KHTMLAssert( minMaxKnown() );
 
     // minimum height
     m_height = 0;
@@ -217,7 +217,7 @@ RenderCheckBox::RenderCheckBox(KHTMLView *view,
 
 void RenderCheckBox::calcMinMaxWidth()
 {
-    assert( !minMaxKnown() );
+    KHTMLAssert( !minMaxKnown() );
 
     QCheckBox *cb = static_cast<QCheckBox *>( m_widget );
     QSize s( cb->style().pixelMetric( QStyle::PM_IndicatorWidth ),
@@ -274,7 +274,7 @@ void RenderRadioButton::slotClicked()
 
 void RenderRadioButton::calcMinMaxWidth()
 {
-    assert( !minMaxKnown() );
+    KHTMLAssert( !minMaxKnown() );
 
     QRadioButton *rb = static_cast<QRadioButton *>( m_widget );
     QSize s( rb->style().pixelMetric( QStyle::PM_ExclusiveIndicatorWidth ),
@@ -299,7 +299,7 @@ RenderSubmitButton::RenderSubmitButton(KHTMLView *view, HTMLInputElementImpl *el
 
 void RenderSubmitButton::calcMinMaxWidth()
 {
-    assert( !minMaxKnown() );
+    KHTMLAssert( !minMaxKnown() );
 
     QString value = static_cast<HTMLInputElementImpl*>(m_element)->value().isEmpty() ?
         defaultLabel() : static_cast<HTMLInputElementImpl*>(m_element)->value().string();
@@ -456,7 +456,7 @@ void RenderLineEdit::handleFocusOut()
 
 void RenderLineEdit::calcMinMaxWidth()
 {
-    assert( !minMaxKnown() );
+    KHTMLAssert( !minMaxKnown() );
 
     QFontMetrics fm = fontMetrics( style()->font() );
     QSize s;
@@ -491,7 +491,7 @@ void RenderLineEdit::calcMinMaxWidth()
 
 void RenderLineEdit::layout()
 {
-    assert( !layouted() );
+    KHTMLAssert( !layouted() );
 
     KLineEdit *edit = static_cast<KLineEdit*>(m_widget);
     HTMLInputElementImpl *input = static_cast<HTMLInputElementImpl*>(m_element);
@@ -555,7 +555,7 @@ RenderFileButton::RenderFileButton(KHTMLView *view, HTMLInputElementImpl *elemen
 
 void RenderFileButton::calcMinMaxWidth()
 {
-    assert( !minMaxKnown() );
+    KHTMLAssert( !minMaxKnown() );
 
     QFontMetrics fm = fontMetrics( style()->font() );
     QSize s;
@@ -600,7 +600,7 @@ void RenderFileButton::slotClicked()
 
 void RenderFileButton::layout( )
 {
-    assert(!layouted());
+    KHTMLAssert(!layouted());
 
     // this is largely taken from the RenderLineEdit layout
     QFontMetrics fm = fontMetrics( m_edit->font() );
@@ -726,7 +726,7 @@ RenderSelect::RenderSelect(KHTMLView *view, HTMLSelectElementImpl *element)
 
 void RenderSelect::calcMinMaxWidth()
 {
-    assert( !minMaxKnown() );
+    KHTMLAssert( !minMaxKnown() );
 
     // ### ugly HACK FIXME!!!
     setMinMaxKnown();
@@ -741,7 +741,7 @@ void RenderSelect::calcMinMaxWidth()
 
 void RenderSelect::layout( )
 {
-    assert(!layouted());
+    KHTMLAssert(!layouted());
 
     // ### maintain selection properly between type/size changes, and work
     // out how to handle multiselect->singleselect (probably just select
@@ -823,7 +823,7 @@ void RenderSelect::layout( )
                         ->insertItem(QString(text.implementation()->s, text.implementation()->l), listIndex);
             }
             else
-                assert(false);
+                KHTMLAssert(false);
             m_selectionChanged = true;
         }
         m_optionsChanged = false;
@@ -895,7 +895,7 @@ void RenderSelect::slotSelected(int index)
 {
     if ( m_ignoreSelectEvents ) return;
 
-    assert( !m_useListBox );
+    KHTMLAssert( !m_useListBox );
 
     QMemArray<HTMLGenericFormElementImpl*> listItems = static_cast<HTMLSelectElementImpl*>(m_element)->listItems();
     if(index >= 0 && index < int(listItems.size()))
@@ -1090,7 +1090,7 @@ void RenderTextArea::handleFocusOut()
 
 void RenderTextArea::calcMinMaxWidth()
 {
-    assert( !minMaxKnown() );
+    KHTMLAssert( !minMaxKnown() );
 
     TextAreaWidget* w = static_cast<TextAreaWidget*>(m_widget);
     HTMLTextAreaElementImpl* f = static_cast<HTMLTextAreaElementImpl*>(m_element);
@@ -1110,7 +1110,7 @@ void RenderTextArea::calcMinMaxWidth()
 
 void RenderTextArea::layout( )
 {
-    assert( !layouted() );
+    KHTMLAssert( !layouted() );
 
     TextAreaWidget* w = static_cast<TextAreaWidget*>(m_widget);
     HTMLTextAreaElementImpl* f = static_cast<HTMLTextAreaElementImpl*>(m_element);

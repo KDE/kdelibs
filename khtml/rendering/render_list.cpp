@@ -138,7 +138,16 @@ void RenderListItem::setStyle(RenderStyle *_style)
     if(!m_marker && style()->listStyleType() != LNONE) {
         m_marker = new RenderListMarker();
         m_marker->setStyle(newStyle);
-        addChild(m_marker);
+	// add as first child. We do this by hand to not trigger a setLayouted( false ) on
+	// the marker.
+	if ( m_first ) {
+	    m_first->setPreviousSibling( m_marker );
+	    m_marker->setNextSibling( m_first );
+	}
+	m_marker->setParent( this );
+	m_first = m_marker;
+	setLayouted( false );
+	setMinMaxKnown( false );
     } else if ( m_marker && style()->listStyleType() == LNONE) {
         m_marker->detach();
         m_marker = 0;
@@ -176,8 +185,8 @@ void RenderListItem::calcListValue()
 
 void RenderListItem::layout( )
 {
-    assert( !layouted() );
-    assert( minMaxKnown() );
+    KHTMLAssert( !layouted() );
+    KHTMLAssert( minMaxKnown() );
 
     if ( !checkChildren() ) {
         m_height = 0;
@@ -350,8 +359,10 @@ void RenderListMarker::printObject(QPainter *p, int, int,
 
 void RenderListMarker::layout()
 {
-    assert( !layouted() );
-    assert( minMaxKnown() );
+    KHTMLAssert( !layouted() );
+    // ### KHTMLAssert( minMaxKnown() );
+    if ( !minMaxKnown() )
+	calcMinMaxWidth();
     setLayouted();
 }
 
@@ -373,7 +384,7 @@ void RenderListMarker::setPixmap( const QPixmap &p, const QRect& r, CachedImage 
 
 void RenderListMarker::calcMinMaxWidth()
 {
-    assert( !minMaxKnown() );
+    KHTMLAssert( !minMaxKnown() );
 
     m_width = 0;
 

@@ -257,7 +257,7 @@ RenderText::RenderText(DOMStringImpl *_str)
     m_maxWidth = -1;
     str = _str;
     if(str) str->ref();
-    assert(!str || !str->l || str->s);
+    KHTMLAssert(!str || !str->l || str->s);
 
     m_selectionState = SelectionNone;
     m_hasReturn = true;
@@ -311,7 +311,7 @@ void RenderText::deleteSlaves()
     for(unsigned int i=0; i < len; i++)
         m_lines.remove(i);
 
-    assert(m_lines.count() == 0);
+    KHTMLAssert(m_lines.count() == 0);
 }
 
 TextSlave * RenderText::findTextSlave( int offset, int &pos )
@@ -642,7 +642,7 @@ void RenderText::print( QPainter *p, int x, int y, int w, int h,
 void RenderText::calcMinMaxWidth()
 {
     //kdDebug( 6040 ) << "Text::calcMinMaxWidth(): known=" << minMaxKnown() << endl;
-    assert( !minMaxKnown() );
+    KHTMLAssert( !minMaxKnown() );
 
     // ### calc Min and Max width...
     m_minWidth = 0;
@@ -748,8 +748,8 @@ void RenderText::setText(DOMStringImpl *text)
 
     // ### what should happen if we change the text of a
     // RenderBR object ?
-    assert(!isBR() || (str->l == 1 && (*str->s) == '\n'));
-    assert(!str->l || str->s);
+    KHTMLAssert(!isBR() || (str->l == 1 && (*str->s) == '\n'));
+    KHTMLAssert(!str->l || str->s);
 
     setLayouted(false);
 #ifdef BIDI_DEBUG

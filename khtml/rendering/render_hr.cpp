@@ -104,8 +104,8 @@ void RenderHR::print(QPainter *p, int _x, int _y, int _w, int _h, int _tx, int _
 
 void RenderHR::layout()
 {
-    assert( !layouted() );
-    assert( minMaxKnown() );
+    KHTMLAssert( !layouted() );
+    KHTMLAssert( minMaxKnown() );
 
     calcWidth();
     calcHeight();
@@ -119,7 +119,7 @@ void RenderHR::layout()
 
 void RenderHR::calcMinMaxWidth()
 {
-    assert( !minMaxKnown() );
+    KHTMLAssert( !minMaxKnown() );
 
     // contentWidth
     Length w = style()->width();

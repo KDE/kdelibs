@@ -282,8 +282,8 @@ void RenderImage::printObject(QPainter *p, int /*_x*/, int /*_y*/, int /*_w*/, i
 
 void RenderImage::layout()
 {
-    assert(!layouted());
-    assert( minMaxKnown() );
+    KHTMLAssert(!layouted());
+    KHTMLAssert( minMaxKnown() );
 
     short oldwidth = m_width;
     int oldheight = m_height;
