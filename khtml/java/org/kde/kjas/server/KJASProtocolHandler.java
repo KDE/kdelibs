@@ -27,7 +27,7 @@ public class KJASProtocolHandler
     private static final int GetURLDataCode      = 12;
     private static final int URLDataCode         = 13;
     private static final int ShutdownServerCode  = 14;
-    private static final int EvalulateJavaScript = 15;
+    private static final int JavaScriptEvent     = 15;
     private static final int GetMember           = 16;
     private static final int CallMember          = 17;
     private static final int PutMember           = 18;
@@ -247,15 +247,6 @@ public class KJASProtocolHandler
                     context.addImage( requestedURL, data );
                 }
             }
-        } else
-        if (cmd_code_value == EvalulateJavaScript)
-        {
-            String retval = getArg(command);
-            Main.debug( "EvalulateJavaScript return value: " + retval);
-            Main.liveconnect_returnval = retval;
-            try {
-                Main.liveconnect_thread.interrupt();
-            } catch (SecurityException ex) {}
         } else
         if (cmd_code_value == GetMember)
         {
@@ -499,18 +490,27 @@ public class KJASProtocolHandler
 
         signals.print( chars );
     }
-    public void sendEvaluateJavaScriptCmd( String contextID, String script )
+    public void sendJavaScriptEventCmd( String contextID, String appletID, int objid, String event, int [] types, String [] args )
     {
-        Main.debug( "sendEvaluateJavaScriptCmd, contextID = " + contextID + " script = " + script );
-
-        int length = contextID.length() + script.length() + 4;
+        Main.debug( "sendJavaScriptEventCmd, contextID = " + contextID + " event = " + event );
+        String objstr = new String("" + objid);
+        int length = contextID.length() + appletID.length() + event.length() + objstr.length() + 6;
+        String [] typestrings = null;
+        if (types != null) {
+            typestrings = new String[args.length];
+            for (int i = 0; i < types.length; i++) {
+                typestrings[i] = new String("" + types[i]);
+                length += 2 + typestrings[i].length() + args[i].length();
+                Main.debug( "sendJavaScriptEventCmd, length = " + length);
+            }
+        }
         char[] chars = new char[ length + 8 ]; //for length of message
         char[] tmpchar = getPaddedLength( length );
         int index = 0;
 
         System.arraycopy( tmpchar, 0, chars, index, tmpchar.length );
         index += tmpchar.length;
-        chars[index++] = (char) EvalulateJavaScript;
+        chars[index++] = (char) JavaScriptEvent;
         chars[index++] = sep;
 
         tmpchar = contextID.toCharArray();
@@ -518,10 +518,33 @@ public class KJASProtocolHandler
         index += tmpchar.length;
         chars[index++] = sep;
 
-        tmpchar = script.toCharArray();
+        tmpchar = appletID.toCharArray();
         System.arraycopy( tmpchar, 0, chars, index, tmpchar.length );
         index += tmpchar.length;
         chars[index++] = sep;
+
+        tmpchar = objstr.toCharArray();
+        System.arraycopy( tmpchar, 0, chars, index, tmpchar.length );
+        index += tmpchar.length;
+        chars[index++] = sep;
+
+        tmpchar = event.toCharArray();
+        System.arraycopy( tmpchar, 0, chars, index, tmpchar.length );
+        index += tmpchar.length;
+        chars[index++] = sep;
+
+        if (types != null)
+            for (int i = 0; i < types.length; i++) {
+                tmpchar = typestrings[i].toCharArray();
+                System.arraycopy( tmpchar, 0, chars, index, tmpchar.length );
+                index += tmpchar.length;
+                chars[index++] = sep;
+                tmpchar = args[i].toCharArray();
+                System.arraycopy( tmpchar, 0, chars, index, tmpchar.length );
+                index += tmpchar.length;
+                Main.debug( "sendJavaScriptEventCmd, index = " + index);
+                chars[index++] = sep;
+            }
 
         signals.print( chars );
     }

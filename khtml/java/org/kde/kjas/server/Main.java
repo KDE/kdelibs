@@ -22,8 +22,6 @@ public class Main
     public  static final boolean             Debug;
     public  static final boolean             log;
     static final boolean                     cacheImages;
-    public  static String                    liveconnect_returnval = null;
-    public  static Thread                    liveconnect_thread = null;
     public static String                     proxyHost = null;
     public static int                        proxyPort = 0;
     private static boolean                   good_jdk = true;

@@ -347,18 +347,15 @@ public class KJASAppletContext implements AppletContext
             Main.protocol.sendShowStatusCmd( myID, message );
         }
     }
-    public String evaluateJavaScript(String script) {
+    public void evaluateJavaScript(String script, String appletID) {
         if( active && (script != null) ) {
-            Main.liveconnect_thread = Thread.currentThread();
-            Main.protocol.sendEvaluateJavaScriptCmd(myID, script);
-            try {
-                Thread.currentThread().sleep(30000);
-            } catch (InterruptedException ex) {}
-            String retval = Main.liveconnect_returnval;
-            Main.liveconnect_returnval = null;
-            return retval; 
+            int [] types = new int[1];
+            // keep in sync with KPart::LiveConnectExtension::TypeString
+            types[0] = 5;
+            String [] arglist = new String[1];
+            arglist[0] = script;
+            Main.protocol.sendJavaScriptEventCmd(myID, appletID, 0, "__evaluate", types, arglist);
         }
-        return null;
     }
     private int getTypedValue(Object obj, StringBuffer value) {
         String val = obj.toString();
