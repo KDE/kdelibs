@@ -23,6 +23,9 @@ case "$1" in
           ln -s /etc/kde2/applnk /usr/share/applnk >/dev/null 2>&1
         fi
       fi
+      if [ -e /usr/share/applnk/applnk ]; then
+          rm -rf /usr/share/applnk/applnk >/dev/null 2>&1
+      fi
     ;;
 
     abort-upgrade)
