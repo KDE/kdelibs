@@ -212,18 +212,7 @@ bool KRun::run( const QString& _exec, const KURL::List& _urls, const QString& _n
   // The application accepts only local files ?
   if ( b_local_app && !b_local_files )
   {
-      // TODO (BCI)
-      return /*pid_t pid = */runOldApplication( exec, _urls, b_allow_multiple );
-      /*
-        if ( pid != -1 )
-          if (_appStartNotify)
-            clientStarted(_bin_name, mini_icon, _res_name, pid);
-          return true;
-        }
-        else
-          return false;
-      */
-
+      return runOldApplication( exec, _urls, b_allow_multiple );
   }
 
   bool retval = true;
@@ -257,39 +246,41 @@ bool KRun::run( const QString& _exec, const KURL::List& _urls, const QString& _n
     else
       clientStarted(_bin_name, mini_icon, pid);
   }
-
-  it = _urls.begin();
-  for( ; it != _urls.end(); ++it )
+  else
   {
-    QString e = exec;
-    KURL url( *it );
-    ASSERT( !url.isMalformed() );
-    QString f ( url.path( -1 ) );
-    shellQuote( f );
-    QString d ( url.directory() );
-    shellQuote( d );
-    QString n ( url.fileName() );
-    shellQuote( n );
-    QString u ( (*it).url() );
-    shellQuote( u );
+    it = _urls.begin();
+    for( ; it != _urls.end(); ++it )
+    {
+      QString e = exec;
+      KURL url( *it );
+      ASSERT( !url.isMalformed() );
+      QString f ( url.path( -1 ) );
+      shellQuote( f );
+      QString d ( url.directory() );
+      shellQuote( d );
+      QString n ( url.fileName() );
+      shellQuote( n );
+      QString u ( (*it).url() );
+      shellQuote( u );
 
-    while ( ( pos = e.find( "%f" )) != -1 )
-      e.replace( pos, 2, f );
-    while ( ( pos = e.find( "%n" )) != -1 )
-      e.replace( pos, 2, n );
-    while ( ( pos = e.find( "%d" )) != -1 )
-      e.replace( pos, 2, d );
-    while ( ( pos = e.find( "%u" )) != -1 )
-      e.replace( pos, 2, u );
+      while ( ( pos = e.find( "%f" )) != -1 )
+        e.replace( pos, 2, f );
+      while ( ( pos = e.find( "%n" )) != -1 )
+        e.replace( pos, 2, n );
+      while ( ( pos = e.find( "%d" )) != -1 )
+        e.replace( pos, 2, d );
+      while ( ( pos = e.find( "%u" )) != -1 )
+        e.replace( pos, 2, u );
 
-    pid_t pid = run(e);
+      pid_t pid = run(e);
 
-    // App starting notification.
+      // App starting notification.
 
-    if (pid == -1)
-      retval = false;
-    else
-      clientStarted(_bin_name, mini_icon, pid);
+      if (pid == -1)
+        retval = false;
+      else
+        clientStarted(_bin_name, mini_icon, pid);
+    }
   }
 
   return retval;
@@ -341,13 +332,18 @@ bool KRun::runOldApplication( const QString& app, const KURL::List& _urls, bool 
         proc << (*it).url();
     proc.start(KProcess::DontCare);
 
-    return proc.getPid() != -1;
+    pid_t pid = proc.getPid();
+
+    if ( pid != -1 )
+      clientStarted(app, "" /* mini_icon */, pid);
+
+    return (pid != -1);
   }
   else
   {
     kdDebug(7010) << "Not multiple" << endl;
     KURL::List::ConstIterator it = _urls.begin();
-    pid_t pid = -1; // we'll return only the last one...
+    bool retval = true;
     for( ; it != _urls.end(); ++it )
     {
         KProcess proc;
@@ -356,13 +352,15 @@ bool KRun::runOldApplication( const QString& app, const KURL::List& _urls, bool 
         proc << (*it).url();
         proc.start(KProcess::DontCare);
 
-        pid = proc.getPid();
+        pid_t pid = proc.getPid();
+        if (pid == -1)
+          retval = false;
+        else
+          clientStarted(app, "" /* mini_icon */, pid);
     }
 
-    return pid != -1;
+    return retval;
   }
-
-  return true;
 }
 
 KRun::KRun( const KURL& _url, mode_t _mode, bool _is_local_file, bool _auto_delete )
