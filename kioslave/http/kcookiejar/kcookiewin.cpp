@@ -98,12 +98,12 @@ KCookieWin::KCookieWin( QWidget *parent, KHttpCookieList cookieList,
     int count = cookieList.count();
 
     QVBox* vBox = new QVBox( hBox );
-    QString txt = i18n("You received a cookie from",
-                       "You received %n cookies from", count);
+    QString txt = i18n("You received a cookie from %1",
+                       "You received %n cookies from %1", count)
+                  .arg(KIDNA::toUnicode(cookie->host()));
     QLabel* lbl = new QLabel( txt, vBox );
     lbl->setAlignment( Qt::AlignCenter );
     KHttpCookiePtr cookie = cookieList.first();
-    txt = i18n("<b>%1</b>").arg( KIDNA::toUnicode(cookie->host()) );
     if (cookie->isCrossDomain())
        txt += i18n(" <b>[Cross Domain!]</b>");
     lbl = new QLabel( txt, vBox );
@@ -212,14 +212,14 @@ void KCookieWin::slotCookieDetails()
 KCookieAdvice KCookieWin::advice( KCookieJar *cookiejar, KHttpCookie* cookie )
 {
     int result = exec();
-    
+
     cookiejar->setShowCookieDetails ( m_showDetails );
-    
+
     KCookieAdvice advice = (result==QDialog::Accepted) ? KCookieAccept:KCookieReject;
-    
+
     int preferredPolicy = m_btnGrp->id( m_btnGrp->selected() );
     cookiejar->setPreferredDefaultPolicy( preferredPolicy );
-    
+
     switch ( preferredPolicy )
     {
         case 2:
