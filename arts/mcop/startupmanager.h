@@ -61,6 +61,11 @@ public:
 	 * present in the extension
 	 */
 	static void setExtensionLoader(class ExtensionLoader *extension);
+
+	/**
+	 * to free all resources when the application terminates (internal use only)
+	 */
+	static void internalFreeAll();
 };
 
 };

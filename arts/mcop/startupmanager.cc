@@ -100,10 +100,25 @@ void StartupManager::shutdown()
 
 		for(i = startupClasses->begin(); i != startupClasses->end(); i++)
 			(*i)->shutdown();
+	}
+}
 
+void StartupManager::internalFreeAll()
+{
+	if(startupClasses)
+	{
 		startupClasses->erase(startupClasses->begin(),startupClasses->end());
 
 		delete startupClasses;
 		startupClasses = 0;
 	}
 }
+
+namespace Arts {
+
+static class StartupManagerFree {
+public:
+	~StartupManagerFree() { StartupManager::internalFreeAll(); }
+} The_StartupManagerFree;
+
+};

@@ -1,5 +1,5 @@
 check_PROGRAMS = testbuffer testifacerepo testanyref testwrapper \
-   testchangenotify testflowsystem
+   testchangenotify testflowsystem testdispatcher
 
 TESTS = $(check_PROGRAMS)
 
@@ -13,6 +13,7 @@ FLOWLIBS = $(LDFLAGS) $(top_builddir)/arts/flow/libartsflow.la
 testbuffer_SOURCES = testbuffer.cc
 testifacerepo_SOURCES = testifacerepo.cc
 testanyref_SOURCES = testanyref.cc
+testdispatcher_SOURCES = testdispatcher.cc
 
 testwrapper_SOURCES = wrapper.cc testwrapper.cc
 
