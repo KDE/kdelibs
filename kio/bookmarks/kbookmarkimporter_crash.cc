@@ -146,39 +146,44 @@ QStringList KCrashBookmarkImporter::getCrashLogs()
     return crashFiles;
 }
 
-void KCrashBookmarkImporter::parseCrashBookmarks( bool del ) {
+void KCrashBookmarkImporter::parseCrashBookmarks( bool del ) 
+{
     QStringList crashFiles = KCrashBookmarkImporter::getCrashLogs();
-    int outerFolder = ( crashFiles.count() > 1 );
-    int n = 1;
-    for ( QStringList::Iterator it = crashFiles.begin(); it != crashFiles.end(); ++it ) {
+    int count = 1;
+    for ( QStringList::Iterator it = crashFiles.begin(); it != crashFiles.end(); ++it ) 
+    {
         ViewMap views;
         views = parseCrashLog_noemit( *it, del );
-        if ( outerFolder && (views.count() > 0) )
-            emit newFolder( QString("Konqueror Window %1").arg(n++), false, "" );
-        for ( ViewMap::Iterator it = views.begin(); it != views.end(); ++it ) {
+        int outerFolder = ( crashFiles.count() > 1 ) && (views.count() > 0);
+        if ( outerFolder )
+            emit newFolder( QString("Konqueror Window %1").arg(count++), false, "" );
+        for ( ViewMap::Iterator it = views.begin(); it != views.end(); ++it ) 
             emit newBookmark( it.data(), it.data().latin1(), QString("") );
-        }
-        if ( outerFolder && (views.count() > 0) )
+        if ( outerFolder )
             emit endFolder();
     }
 }
 
-QString KCrashBookmarkImporter::crashBookmarksDir() {
+QString KCrashBookmarkImporter::crashBookmarksDir() 
+{
     static KCrashBookmarkImporterImpl importer;
     return importer.findDefaultLocation();
 }
 
-void KCrashBookmarkImporterImpl::setShouldDelete( bool shouldDelete ) {
+void KCrashBookmarkImporterImpl::setShouldDelete( bool shouldDelete ) 
+{
     m_shouldDelete = shouldDelete;
 }
 
-void KCrashBookmarkImporterImpl::parse() {
+void KCrashBookmarkImporterImpl::parse() 
+{
     KCrashBookmarkImporter importer( QString::null );
     setupSignalForwards( &importer, this );
     importer.parseCrashBookmarks( m_shouldDelete );
 }
 
-QString KCrashBookmarkImporterImpl::findDefaultLocation( bool ) const {
+QString KCrashBookmarkImporterImpl::findDefaultLocation( bool ) const 
+{
     return locateLocal( "tmp", "" );
 }
 
