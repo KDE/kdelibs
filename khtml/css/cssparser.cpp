@@ -2551,7 +2551,7 @@ void CSSSelector::print(void)
         tagHistory->print();
 }
 
-int CSSSelector::specificity()
+unsigned int CSSSelector::specificity()
 {
     if ( nonCSSHint )
         return 0;
@@ -2563,21 +2563,33 @@ int CSSSelector::specificity()
     case Exact:
         if(attr == ATTR_ID)
         {
-            s += 10000;
+            s += 0x10000;
             break;
         }
     case Set:
     case List:
     case Hyphen:
     case Pseudo:
-        s += 100;
+        s += 0x100;
     case None:
         break;
     }
     if(tagHistory)
         s += tagHistory->specificity();
-    return s;
+    // make sure it doesn't overflow
+    return s & 0xffffff;
 }
+
+int CSSSelector::sortId() const
+{
+    CSSSelector *history = this;
+    while ( history ) {
+	if ( history->match == Pseudo )
+	    return -1;
+    }
+    return tag;
+}
+
 // ----------------------------------------------------------------------------
 
 CSSProperty::~CSSProperty()

@@ -82,7 +82,9 @@ public:
 
     CSSSelector *tagHistory;
 
-    int specificity();
+    unsigned int specificity();
+    
+    int sortId() const;
 };
 
     // a style class which has a parent (almost all have)

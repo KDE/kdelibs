@@ -71,7 +71,7 @@ static PseudoState pseudoState;
 static int dynamicState;
 static RenderStyle::PseudoId dynamicPseudo;
 static int usedDynamicStates;
-static int selectorState;
+static int selectorDynamicState;
 static bool lastSelectorPart;
 static CSSStyleSelector::Encodedurl *encodedurl;
 
@@ -81,6 +81,10 @@ CSSStyleSelector::CSSStyleSelector(DocumentImpl * doc)
     strictParsing = doc->parseMode() == DocumentImpl::Strict;
     if(!defaultStyle) loadDefaultStyle(doc->view()->part()->settings());
 
+    selectors = 0;
+    selectorState = 0;
+    properties = 0;
+    
     // add stylesheets from document
     authorStyle = new CSSStyleSelectorList();
     QList<StyleSheetImpl> authorStyleSheets = doc->authorStyleSheets();
@@ -88,6 +92,8 @@ CSSStyleSelector::CSSStyleSelector(DocumentImpl * doc)
     for (; it.current(); ++it)
 	authorStyle->append(it.current());
 
+    buildLists();
+    
 //     kdDebug() << "CSSStyleSelector: author style has " << authorStyle->count() << " elements"<< endl;
 //     if ( userStyle )
 //     kdDebug() << "CSSStyleSelector: user style has " << userStyle->count() << " elements"<< endl;
@@ -177,7 +183,7 @@ void CSSStyleSelector::clear()
 }
 
 static bool strictParsing;
-static QList<RenderStyle>* styleElementCache = 0;
+//static QList<RenderStyle>* styleElementCache = 0;
 
 RenderStyle *CSSStyleSelector::styleForElement(ElementImpl *e, int state)
 {
@@ -186,27 +192,49 @@ RenderStyle *CSSStyleSelector::styleForElement(ElementImpl *e, int state)
     ::dynamicState = state;
     ::usedDynamicStates = StyleSelector::None;
     ::encodedurl = &encodedurl;
-    CSSOrderedPropertyList *propsToApply = new CSSOrderedPropertyList();
+    CSSOrderedPropertyList *propsToApply = new CSSOrderedPropertyList;
+    CSSOrderedPropertyList *pseudoProps = new CSSOrderedPropertyList;
 
-    // the higher the offset or important number, the later the rules get applied.
-
-    pseudoState = PseudoUnknown;
-
-    if(defaultStyle) defaultStyle->collect(propsToApply, e, 0x00100000); // no important rules here
-    // important rules from user styles are higher than important rules from author styles.
-    // for non important rules the order is reversed
-
-
-    if(userStyle) userStyle->collect(propsToApply, e, 0x00200000, 0x04000000);
-
-    if(authorStyle) authorStyle->collect(propsToApply, e, 0x00400000, 0x01000000);
-
+    //memset( selectorState, 0, sizeof( SelectorState ) * selectors_size );
+#if 1
+    // try to sort out most style rules as early as possible.
+    int id = e->id();
+    CSSSelector **sel = selectors;
+    SelectorState *sel_state = selectorState;
+    while ( *sel ) {
+	int tag = (*sel)->tag;
+	if ( id != tag && tag != -1 )
+	    *sel_state = Invalid;
+	else
+	    *sel_state = Unknown;
+	++sel;
+	++sel_state;
+    }
+#endif
+    
+    //qDebug( "styleForElement( %s )", e->tagName().string().latin1() );
+    
+    CSSOrderedProperty **prop = properties;
+    while ( *prop ) {
+	unsigned int selIndex = (*prop)->selector;
+	if ( selectorState[selIndex] != Invalid ) {
+	    if ( selectorState[selIndex] == Unknown )
+		checkSelector( selIndex, e );
+	    if ( selectorState[selIndex] == Applies ) {
+		//qDebug("adding property" );	    
+		static_cast<QList<CSSOrderedProperty>*>(propsToApply)->append( *prop );
+	    } else if ( selectorState[selIndex] == AppliesPseudo )
+		static_cast<QList<CSSOrderedProperty>*>(pseudoProps)->append( *prop );
+	}
+	++prop;
+    }
+    
     // inline style declarations, after all others. non css hints
     // count as author rules, and come before all other style sheets, see hack in append()
-    dynamicPseudo = RenderStyle::NOPSEUDO;
-    if(e->styleRules()) propsToApply->append(e->styleRules(), 0x00800000, 0x020000000);
+    if(e->styleRules()) propsToApply->append( e->styleRules(), 0, 0, Inline, InlineImportant );
 
     propsToApply->sort();
+    pseudoProps->sort();
 
     RenderStyle* style = new RenderStyle();
     if(e->parentNode())
@@ -215,31 +243,25 @@ RenderStyle *CSSStyleSelector::styleForElement(ElementImpl *e, int state)
         style->inheritFrom(e->parentNode()->style());
     }
 
+    //qDebug("applying properties, count=%d", propsToApply->count() );
+    
     if ( propsToApply->count() != 0 ) {
-
-    QList<CSSOrderedProperty> *pseudoProps = new QList<CSSOrderedProperty>;
-    pseudoProps->setAutoDelete( false ); // so we don't delete them twice
-    for(int i = 0; i < (int)propsToApply->count(); i++) {
-	CSSOrderedProperty* ordprop = propsToApply->at(i);
-	if ( ordprop->pseudoId == RenderStyle::NOPSEUDO )
+	for(int i = 0; i < (int)propsToApply->count(); i++) {
+	    CSSOrderedProperty* ordprop = propsToApply->at(i);
+	    //qDebug("property %d has spec %x", ordprop->prop->m_id, ordprop->priority );
 	    applyRule( style, ordprop->prop, e );
-	else
-	    pseudoProps->append( ordprop );
+	}
     }
 
-    if ( style->display() != INLINE ) {
-    for(int i = 0; i < (int)pseudoProps->count(); i++) {
-	CSSOrderedProperty* ordprop = pseudoProps->at(i);
-	RenderStyle *pseudoStyle;
-	pseudoStyle = style->addPseudoStyle(ordprop->pseudoId);
-	if ( pseudoStyle )
-	    applyRule(pseudoStyle, ordprop->prop, e);
+    if ( style->display() != INLINE && pseudoProps->count() != 0 ) {
+	for(int i = 0; i < (int)pseudoProps->count(); i++) {
+	    CSSOrderedProperty* ordprop = pseudoProps->at(i);
+	    RenderStyle *pseudoStyle;
+	    pseudoStyle = style->addPseudoStyle(ordprop->pseudoId);
+	    if ( pseudoStyle )
+		applyRule(pseudoStyle, ordprop->prop, e);
+	}
     }
-    }
-
-    delete pseudoProps;
-    }
-    delete propsToApply;
 
     if ( usedDynamicStates & StyleSelector::Hover )
 	style->setHasHover();
@@ -248,7 +270,9 @@ RenderStyle *CSSStyleSelector::styleForElement(ElementImpl *e, int state)
     if ( usedDynamicStates & StyleSelector::Active )
 	style->setHasActive();
 
-
+    delete propsToApply;
+    delete pseudoProps;
+    
 #if 0
     bool found = false;
     if(!styleElementCache) styleElementCache = new QList<RenderStyle>;
@@ -274,37 +298,25 @@ RenderStyle *CSSStyleSelector::styleForElement(ElementImpl *e, int state)
     return style;
 }
 
-// ----------------------------------------------------------------------
 
-
-CSSOrderedRule::CSSOrderedRule(DOM::CSSStyleRuleImpl *r, DOM::CSSSelector *s, int _index)
-{
-    rule = r;
-    if(rule) r->ref();
-    index = _index;
-    selector = s;
-}
-
-CSSOrderedRule::~CSSOrderedRule()
-{
-    if(rule) rule->deref();
-}
-
-bool CSSOrderedRule::checkSelector(DOM::ElementImpl *e)
+void CSSStyleSelector::checkSelector(int selIndex, DOM::ElementImpl *e)
 {
     dynamicPseudo = RenderStyle::NOPSEUDO;
-    selectorState = StyleSelector::None;
+    selectorDynamicState = StyleSelector::None;
     lastSelectorPart = true;
-    CSSSelector *sel = selector;
     NodeImpl *n = e;
+    
+    selectorState[ selIndex ] = Invalid;
+    CSSSelector *sel = selectors[ selIndex ];
+    
     // first selector has to match
-    if(!checkOneSelector(sel, e)) return false;
+    if(!checkOneSelector(sel, e)) return;
 
     // check the subselectors
     CSSSelector::Relation relation = sel->relation;
     while((sel = sel->tagHistory))
     {
-        if(!n->isElementNode()) return false;
+        if(!n->isElementNode()) return;
         switch(relation)
         {
         case CSSSelector::Descendant:
@@ -313,7 +325,7 @@ bool CSSOrderedRule::checkSelector(DOM::ElementImpl *e)
             while(!found)
             {
                 n = n->parentNode();
-                if(!n || !n->isElementNode()) return false;
+                if(!n || !n->isElementNode()) return;
                 ElementImpl *elem = static_cast<ElementImpl *>(n);
                 if(checkOneSelector(sel, elem)) found = true;
             }
@@ -322,9 +334,9 @@ bool CSSOrderedRule::checkSelector(DOM::ElementImpl *e)
         case CSSSelector::Child:
         {
             n = n->parentNode();
-            if(!n || !n->isElementNode()) return false;
+            if(!n || !n->isElementNode()) return;
             ElementImpl *elem = static_cast<ElementImpl *>(n);
-            if(!checkOneSelector(sel, elem)) return false;
+            if(!checkOneSelector(sel, elem)) return;
             break;
         }
         case CSSSelector::Sibling:
@@ -332,26 +344,32 @@ bool CSSOrderedRule::checkSelector(DOM::ElementImpl *e)
             n = n->previousSibling();
 	    while( n && !n->isElementNode() )
 		n = n->previousSibling();
-            if( !n ) return false;
+            if( !n ) return;
             ElementImpl *elem = static_cast<ElementImpl *>(n);
-            if(!checkOneSelector(sel, elem)) return false;
+            if(!checkOneSelector(sel, elem)) return;
             break;
         }
         case CSSSelector::SubSelector:
 	{
 	    //kdDebug() << "CSSOrderedRule::checkSelector" << endl;
 	    ElementImpl *elem = static_cast<ElementImpl *>(n);
-	    if(!checkOneSelector(sel, elem)) return false;
+	    if(!checkOneSelector(sel, elem)) return;
 	    //kdDebug() << "CSSOrderedRule::checkSelector: passed" << endl;
 	    break;
 	}
         }
         relation = sel->relation;
     }
-    usedDynamicStates |= selectorState;
-    if ((selectorState & dynamicState) != selectorState)
-	return false;
-    return true;
+    usedDynamicStates |= selectorDynamicState;
+    if ((selectorDynamicState & dynamicState) != selectorDynamicState)
+	return;
+    if ( dynamicPseudo != RenderStyle::NOPSEUDO )
+	selectorState[selIndex] = AppliesPseudo;
+    else
+	selectorState[ selIndex ] = Applies;
+    //qDebug( "selector %d applies", selIndex );
+    //selectors[ selIndex ]->print();
+    return;
 }
 
 // modified version of the one in kurl.cpp
@@ -405,7 +423,7 @@ static void checkPseudoState( DOM::ElementImpl *e )
 	pseudoState = PseudoLink;
 }
 
-bool CSSOrderedRule::checkOneSelector(DOM::CSSSelector *sel, DOM::ElementImpl *e)
+bool CSSStyleSelector::checkOneSelector(DOM::CSSSelector *sel, DOM::ElementImpl *e)
 {
     bool last = lastSelectorPart;
     lastSelectorPart = false;
@@ -489,15 +507,15 @@ bool CSSOrderedRule::checkOneSelector(DOM::CSSSelector *sel, DOM::ElementImpl *e
 		return true;
 	    }
 	} else if ( sel->value == ":hover" ) {
-	    selectorState |= StyleSelector::Hover;
+	    selectorDynamicState |= StyleSelector::Hover;
 	    // dynamic pseudos have to be sorted out in checkSelector, so we if it could in some state apply
 	    // to the element.
 	    return true;
 	} else if ( sel->value == ":focus" ) {
-	    selectorState |= StyleSelector::Focus;
+	    selectorDynamicState |= StyleSelector::Focus;
 	    return true;
 	} else if ( sel->value == ":active" ) {
-	    selectorState |= StyleSelector::Active;
+	    selectorDynamicState |= StyleSelector::Active;
 	    return true;
 	}
 	return false;
@@ -506,6 +524,79 @@ bool CSSOrderedRule::checkOneSelector(DOM::CSSSelector *sel, DOM::ElementImpl *e
     return true;
 }
 
+void CSSStyleSelector::clearLists()
+{
+    if ( selectors ) delete [] selectors;
+    if ( selectorState ) delete [] selectorState;
+    if ( properties ) {
+	CSSOrderedProperty **prop = properties;
+	while ( *prop ) {
+	    delete (*prop);
+	    prop++;
+	}
+    }
+    selectors = 0;
+    properties = 0;
+}
+    
+
+void CSSStyleSelector::buildLists()
+{
+    clearLists();
+    
+    // collect all selectors and Properties in lists. Then transer them to the array for faster lookup.
+    
+    QList<CSSSelector> selectorList;
+    CSSOrderedPropertyList propertyList;
+
+    if(defaultStyle) defaultStyle->collect( &selectorList, &propertyList, Default, Default );
+    if(userStyle) userStyle->collect(&selectorList, &propertyList, User, UserImportant );
+    if(authorStyle) authorStyle->collect(&selectorList, &propertyList, Author, AuthorImportant );
+
+    selectors_size = selectorList.count() + 1;
+    selectors = new CSSSelector *[selectors_size];
+    CSSSelector *s = selectorList.first();
+    CSSSelector **sel = selectors;
+    while ( s ) {
+	*sel = s;
+	s = selectorList.next();
+	++sel;
+    }
+    *sel = 0;
+
+    selectorState = new SelectorState[selectors_size];
+
+    // ### this should make it more efficent, as the list will be mostly presorted, but
+    // somehow this doesn't work correctly everywhere. Strange.
+    //propertyList.sort();
+    properties_size = propertyList.count() + 1;
+    properties = new CSSOrderedProperty *[ properties_size ];
+    CSSOrderedProperty *p = propertyList.first();
+    CSSOrderedProperty **prop = properties;
+    while ( p ) {
+	*prop = p;
+	p = propertyList.next();
+	++prop;
+    }
+    *prop = 0;
+}
+
+
+// ----------------------------------------------------------------------
+
+
+CSSOrderedRule::CSSOrderedRule(DOM::CSSStyleRuleImpl *r, DOM::CSSSelector *s, int _index)
+{
+    rule = r;
+    if(rule) r->ref();
+    index = _index;
+    selector = s;
+}
+
+CSSOrderedRule::~CSSOrderedRule()
+{
+    if(rule) rule->deref();
+}
 
 // -----------------------------------------------------------------
 
@@ -516,15 +607,6 @@ CSSStyleSelectorList::CSSStyleSelectorList()
 }
 CSSStyleSelectorList::~CSSStyleSelectorList()
 {
-}
-
-int CSSStyleSelectorList::compareItems(QCollection::Item i1, QCollection::Item i2)
-{
-    CSSOrderedRule *r1 = static_cast<CSSOrderedRule *>(i1);
-    CSSOrderedRule *r2 = static_cast<CSSOrderedRule *>(i2);
-    int d = r1->selector->specificity() - r2->selector->specificity();
-    if(d) return d;
-    return r1->index - r2->index;
 }
 
 void CSSStyleSelectorList::append(StyleSheetImpl *sheet)
@@ -544,7 +626,7 @@ void CSSStyleSelectorList::append(StyleSheetImpl *sheet)
             for(int j = 0; j < (int)s->count(); j++)
             {
                 CSSOrderedRule *rule = new CSSOrderedRule(r, s->at(j), count());
-                QList<CSSOrderedRule>::append(rule);
+		QList<CSSOrderedRule>::append(rule);
                 //kdDebug( 6080 ) << "appending StyleRule!" << endl;
             }
         }
@@ -560,6 +642,20 @@ void CSSStyleSelectorList::append(StyleSheetImpl *sheet)
     sort();
 }
 
+
+void CSSStyleSelectorList::collect( QList<CSSSelector> *selectorList, CSSOrderedPropertyList *propList,
+				    Source regular, Source important )
+{
+    CSSOrderedRule *r = first();
+    while( r ) {
+	int selectorNum = selectorList->count();
+	selectorList->append( r->selector );
+	propList->append(r->rule->declaration(), selectorNum, r->selector->specificity(), regular, important );
+	r = next();
+    }
+}
+
+#if 0
 void CSSStyleSelectorList::append(CSSStyleRuleImpl *rule)
 {
     QList<CSSSelector> *s = rule->selector();
@@ -586,32 +682,33 @@ void CSSStyleSelectorList::collect(CSSOrderedPropertyList *propsToApply, DOM::El
 	}
     }
 }
+#endif
 
 // -------------------------------------------------------------------------
 
-CSSOrderedPropertyList::CSSOrderedPropertyList()
-{
-    setAutoDelete(true);
-}
-
 int CSSOrderedPropertyList::compareItems(QCollection::Item i1, QCollection::Item i2)
 {
-    return static_cast<CSSOrderedProperty *>(i1)->priority
+    int diff =  static_cast<CSSOrderedProperty *>(i1)->priority
         - static_cast<CSSOrderedProperty *>(i2)->priority;
+    return diff ? diff : static_cast<CSSOrderedProperty *>(i2)->position
+        - static_cast<CSSOrderedProperty *>(i1)->position;
 }
 
-void CSSOrderedPropertyList::append(DOM::CSSStyleDeclarationImpl *decl, int offset, int important)
+void CSSOrderedPropertyList::append(DOM::CSSStyleDeclarationImpl *decl, uint selector, uint specificity, 
+				    Source regular, Source important )
 {
     QList<CSSProperty> *values = decl->values();
     if(!values) return;
     int len = values->count();
     for(int i = 0; i < len; i++)
     {
-        int thisOffset = offset;
         CSSProperty *prop = values->at(i);
-        if(prop->m_bImportant) thisOffset += important;
-	// one less than authorstyle, makes them come at the beginning
-	if( prop->nonCSSHint ) thisOffset = 0x003FFFFF;
+	Source source = regular;
+        
+	if( prop->m_bImportant ) source = important;
+	if( prop->nonCSSHint ) source = NonCSSHint;
+	
+	bool first = false;
         // give special priority to font-xxx, color properties
         switch(prop->m_id)
         {
@@ -621,20 +718,16 @@ void CSSOrderedPropertyList::append(DOM::CSSStyleDeclarationImpl *decl, int offs
 	case CSS_PROP_BACKGROUND_IMAGE:
             // these have to be applied first, because other properties use the computed
             // values of these porperties.
+	    first = true;
             break;
         default:
-            // don't use 0x80000000, that is negative usually
-            thisOffset += 0x40000000;
             break;
         }
 
-        append(prop, thisOffset);
+	QList<CSSOrderedProperty>::append(new CSSOrderedProperty(prop, selector,
+								 first, source, specificity,
+								 count() ));
     }
-}
-
-void CSSOrderedPropertyList::append(DOM::CSSProperty *prop, int priority)
-{
-    QList<CSSOrderedProperty>::append(new CSSOrderedProperty(prop, priority, dynamicPseudo));
 }
 
 // -------------------------------------------------------------------------------------

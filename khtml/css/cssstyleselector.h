@@ -46,11 +46,28 @@ namespace khtml
 {
     class CSSStyleSelectorList;
     class CSSOrderedRule;
+    class CSSOrderedProperty;
     class RenderStyle;
 
     // independent of classes. Applies on styleDeclaration to the RenderStyle style
     void applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop,
 		   DOM::ElementImpl *e);
+
+    /*
+     * to remember the source where a rule came from. Differntiates between
+     * important and not important rules. This is ordered in the order they have to be applied 
+     * to the RenderStyle.
+     */
+    enum Source {
+	Default,
+	User,
+	NonCSSHint,
+	Author,
+	Inline,
+	AuthorImportant,
+	InlineImportant,
+	UserImportant
+    };
 
     /**
      * this class selects a RenderStyle for a given Element based on the
@@ -112,11 +129,36 @@ namespace khtml
 	    QString file;
 	} encodedurl;
     protected:
+
+	/* checks if the complete selector (which can be build up from a few CSSSelector's
+	    with given relationships matches the given Element */
+	void checkSelector(int selector, DOM::ElementImpl *e);
+	/* checks if the selector matches the given Element */
+	bool checkOneSelector(DOM::CSSSelector *selector, DOM::ElementImpl *e);
+
+	/* builds up the selectors and properties lists from the CSSStyleSelectorList's */
+	void buildLists();
+	void clearLists();
+	
 	static DOM::CSSStyleSheetImpl *defaultSheet;
 	static CSSStyleSelectorList *defaultStyle;
 	static DOM::CSSStyleSheetImpl *userSheet;
 	static CSSStyleSelectorList *userStyle;
 	CSSStyleSelectorList *authorStyle;
+	
+	
+	enum SelectorState {
+	    Unknown = 0,
+	    Applies,
+	    AppliesPseudo,
+	    Invalid
+	};
+	unsigned int selectors_size;
+	DOM::CSSSelector **selectors;
+	SelectorState *selectorState;
+	
+	unsigned int properties_size;
+	CSSOrderedProperty **properties;
     };
 
     /*
@@ -129,17 +171,22 @@ namespace khtml
      */
     class CSSOrderedProperty
     {
-    public:
-	CSSOrderedProperty(DOM::CSSProperty *_prop, int _priority, RenderStyle::PseudoId _pid)
+    public:	
+	CSSOrderedProperty(DOM::CSSProperty *_prop, uint _selector, 
+			   bool first, Source source, unsigned int specificity, 
+			   unsigned int _position )
+	    : prop ( _prop ), pseudoId( RenderStyle::NOPSEUDO ), selector( _selector ),
+	      position( _position )
 	{
-	    prop = _prop;
-	    priority = _priority;
-            pseudoId = _pid;
+	    priority = (!first << 31) | (source << 24) | specificity;
 	}
 	
 	DOM::CSSProperty *prop;
-	int priority;
-        RenderStyle::PseudoId pseudoId;        
+	RenderStyle::PseudoId pseudoId;
+	unsigned int selector;
+	unsigned int position;
+	
+	Q_UINT32 priority;
     };
 
     /*
@@ -149,11 +196,9 @@ namespace khtml
     class CSSOrderedPropertyList : public QList<CSSOrderedProperty>
     {
     public:
-	CSSOrderedPropertyList();
-	
 	virtual int compareItems(QCollection::Item i1, QCollection::Item i2);
-	void append(DOM::CSSStyleDeclarationImpl *decl, int offset, int important);
-	void append(DOM::CSSProperty *prop, int priority);
+	void append(DOM::CSSStyleDeclarationImpl *decl, uint selector, uint specificity, 
+		    Source regular, Source important );
     };
 
     class CSSOrderedRule
@@ -161,13 +206,6 @@ namespace khtml
     public:
 	CSSOrderedRule(DOM::CSSStyleRuleImpl *r, DOM::CSSSelector *s, int _index);
 	~CSSOrderedRule();
-
-	/* checks if the complete selector (which can be build up from a few CSSSelector's
-	    with given relationships matches the given Element */
-	bool checkSelector(DOM::ElementImpl *e);
-
-	/* checks if the selector matches the given Element */
-	bool checkOneSelector(DOM::CSSSelector *selector, DOM::ElementImpl *e);
 	
 	DOM::CSSSelector *selector;
 	DOM::CSSStyleRuleImpl *rule;
@@ -180,20 +218,10 @@ namespace khtml
 	CSSStyleSelectorList();
 	virtual ~CSSStyleSelectorList();
 	
-	virtual int compareItems(QCollection::Item i1, QCollection::Item i2);
-
 	void append(DOM::StyleSheetImpl *sheet);
-	void append(DOM::CSSStyleRuleImpl *rule);
-
-	/**
-	 * collects the rules that would apply to the style object. The important variable adds to
-	 * the priority of the CSSOrderedProperty appended.
-	 * This is needed to get the sorting order correct.
-	 * offset is used to get the ordering between default user and author style sheets right
-	 */
-	void collect(khtml::CSSOrderedPropertyList *propsToApply, DOM::ElementImpl *e,
-		     int offset = 0x0, int important = 0x0 );
-
+	
+	void collect( QList<DOM::CSSSelector> *selectorList, CSSOrderedPropertyList *propList,
+		      Source regular, Source important );
     };
 
 };
