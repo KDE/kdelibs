@@ -107,4 +107,5 @@ ul, ID_UL
 var, ID_VAR
 anchor, ID_A
 image, ID_IMG
+xmp, ID_PRE
 %%
