@@ -193,7 +193,8 @@ void HTMLAnchorElementImpl::getAnchorPosition(int &xPos, int &yPos)
 	}
 	else
 	{
-	    xPos = yPos = 0;
+	  // we take the position of the parent.
+	  return;
 	}
     }
     else
