@@ -53,7 +53,7 @@ KFileInfo::KFileInfo(const UDSEntry &e)
     for( ; it != e.end(); it++ ) {
 	switch (it->m_uds) {
 	case UDS_NAME:
-	    myName = it->m_str.c_str();
+	    myName = it->m_str;
 	    break;
 	case UDS_SIZE:
 	    mySize = it->m_long;
@@ -62,10 +62,10 @@ KFileInfo::KFileInfo(const UDSEntry &e)
 	    myDate = dateTime(it->m_long);
 	    break;
 	case UDS_USER:
-	    myOwner = it->m_str.c_str();
+	    myOwner = it->m_str;
 	    break;
 	case UDS_GROUP:
-	    myGroup = it->m_str.c_str();
+	    myGroup = it->m_str;
 	    break;
 	case UDS_ACCESS:
 	    myPermissions = it->m_long;
