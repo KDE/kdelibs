@@ -2,6 +2,7 @@
 Type=jp2
 Header=^\001\001
 Name=JPEG 2000-Pictures
+Name[fa]=تصاویر JPEG 2000
 Name[sv]=Jpeg 2000-bilder
 Read=true
 Write=false
