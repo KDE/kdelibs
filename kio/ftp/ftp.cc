@@ -19,6 +19,8 @@
 
 // $Id$
 
+#define QT_NO_CAST_ASCII
+
 #include "ftp.h"
 
 #include <sys/types.h>
@@ -55,8 +57,9 @@
 #include <kmimetype.h>
 #include <ksock.h>
 
-#define FTP_LOGIN "anonymous"
-#define FTP_PASSWD "kde-user@kde.org"
+#define FTP_LOGIN QString::fromLatin1("anonymous")
+#define FTP_PASSWD QString::fromLatin1("kde-user@kde.org")
+
 
 using namespace KIO;
 
@@ -187,7 +190,7 @@ char Ftp::readresp()
   {
     // This can happen after the server closed the connection (after a timeout)
     kdWarning(7102) << "Could not read" << endl;
-    //error( ERR_COULD_NOT_READ, "" );
+    //error( ERR_COULD_NOT_READ, QString::null );
     return '\0';
   }
   kdDebug(7102) << "resp> " << rspbuf << endl;
@@ -198,7 +201,7 @@ char Ftp::readresp()
     do {
       if ( ftpReadline( rspbuf, 256, nControl ) == -1 ) {
           kdWarning(7102) << "Could not read" << endl;
-          //error( ERR_COULD_NOT_READ, "" );
+          //error( ERR_COULD_NOT_READ, QString::null );
           return '\0';
       }
       kdDebug(7102) << rspbuf << endl;
@@ -240,7 +243,7 @@ void Ftp::setHost( const QString& _host, int _port, const QString& _user, const 
       if ( !_pass.isEmpty() )
           pass = _pass;
       else
-          pass = "";
+          pass = QString::null;
   } else {
       user = FTP_LOGIN;
       pass = FTP_PASSWD;
@@ -262,13 +265,13 @@ void Ftp::openConnection()
 
   if ( m_host.isEmpty() )
   {
-    error( ERR_UNKNOWN_HOST, "" );
+    error( ERR_UNKNOWN_HOST, QString::null );
     return;
   }
 
   assert( !m_bLoggedOn );
 
-  m_initialPath = "";
+  m_initialPath = QString::null;
 
   if (!connect( m_host, m_port ))
     return; // error emitted by connect
@@ -332,7 +335,7 @@ bool Ftp::connect( const QString &host, unsigned short int port )
   if (nControl == NULL)
   {
     ::close( sControl );
-    error( ERR_OUT_OF_MEMORY, "" );
+    error( ERR_OUT_OF_MEMORY, QString::null );
     return false;
   }
   nControl->handle = sControl;
@@ -379,7 +382,7 @@ bool Ftp::ftpLogin( const QString & user )
     if (needPass) {
       //kdDebug(7102) << "Old pass is '" << m_pass << "'" << endl;
       if ( m_pass.isEmpty() ) {
-        QString tmp = i18n("Authorization is required for %1").arg(m_user + "@" + m_host);
+        QString tmp = i18n("Authorization is required for %1").arg(m_user + QString::fromLatin1("@") + m_host);
         if ( !openPassDlg( tmp, m_user, m_pass, m_host ) )
         {
           error( ERR_USER_CANCELED, m_host );
@@ -469,7 +472,7 @@ bool Ftp::ftpSendCmd( const QCString& cmd, char expresp, int maxretries )
     kdDebug(7102) << cmd.data() << endl;
 
   if ( ::write( sControl, buf.data(), buf.length() ) <= 0 )  {
-    error( ERR_COULD_NOT_WRITE, "" );
+    error( ERR_COULD_NOT_WRITE, QString::null );
     return false;
   }
 
@@ -494,7 +497,7 @@ bool Ftp::ftpSendCmd( const QCString& cmd, char expresp, int maxretries )
       return ftpSendCmd( cmd, expresp, maxretries - 1 );
     } else
     {
-      error( ERR_COULD_NOT_READ, "" );
+      error( ERR_COULD_NOT_READ, QString::null );
       return false;
     }
   }
@@ -598,19 +601,19 @@ bool Ftp::ftpOpenDataConnection()
   sDatal = socket( PF_INET, SOCK_STREAM, IPPROTO_TCP );
   if ( sDatal == 0 )
   {
-    error( ERR_COULD_NOT_CREATE_SOCKET, "" );
+    error( ERR_COULD_NOT_CREATE_SOCKET, QString::null );
     return false;
   }
   if ( setsockopt( sDatal, SOL_SOCKET, SO_REUSEADDR, (char*)&on, sizeof(on) ) == -1 )
   {
     ::close( sDatal );
-    error( ERR_COULD_NOT_CREATE_SOCKET, "" );
+    error( ERR_COULD_NOT_CREATE_SOCKET, QString::null );
     return false;
   }
   if ( setsockopt( sDatal, SOL_SOCKET, SO_LINGER, (char*)&lng, sizeof(lng) ) == -1 )
   {
     ::close( sDatal );
-    error( ERR_COULD_NOT_CREATE_SOCKET, "" );
+    error( ERR_COULD_NOT_CREATE_SOCKET, QString::null );
     return false;
   }
 
@@ -685,12 +688,12 @@ bool Ftp::ftpOpenCommand( const char *_command, const QString & _path, char _mod
 
   if ( !ftpSendCmd( buf, '2' ) )
   {
-    error( ERR_COULD_NOT_CONNECT, "" );
+    error( ERR_COULD_NOT_CONNECT, QString::null );
     return false;
   }
   if ( !ftpOpenDataConnection() )
   {
-    error( ERR_COULD_NOT_CONNECT, "" );
+    error( ERR_COULD_NOT_CONNECT, QString::null );
     return false;
   }
 
@@ -709,7 +712,7 @@ bool Ftp::ftpOpenCommand( const char *_command, const QString & _path, char _mod
 
   QCString tmp = _command;
 
-  if ( _path != 0L ) {
+  if ( !_path.isEmpty() ) {
     tmp += " ";
     tmp += _path.ascii();
   }
@@ -722,7 +725,7 @@ bool Ftp::ftpOpenCommand( const char *_command, const QString & _path, char _mod
 
   if ( ( sData = ftpAcceptConnect() ) < 0 )
   {
-    error( ERR_COULD_NOT_ACCEPT, "" );
+    error( ERR_COULD_NOT_ACCEPT, QString::null );
     return false;
   }
 
@@ -909,13 +912,12 @@ void Ftp::createUDSEntry( const QString & filename, FtpEntry * e, UDSEntry & ent
     atom.m_str = e->link;
     entry.append( atom );
 
-    KMimeType::Ptr mime = KMimeType::findByURL( KURL(QString("ftp://host/") + filename ) );
+    KMimeType::Ptr mime = KMimeType::findByURL( KURL(QString::fromLatin1("ftp://host/") + filename ) );
     // Links on ftp sites are often links to dirs, and we have no way to check
     // that. Let's do like Netscape : assume dirs generally.
     // But we do this only when the mimetype can't be known from the filename.
     // --> we do better than Netscape :-)
-    // TODO if ( mime->name() == KMimeType::defaultMimeType() )
-    if ( mime->name() == "application/octet-stream" )
+    if ( mime->name() == KMimeType::defaultMimeType() )
     {
       kdDebug() << "Setting guessed mime type to inode/directory for " << filename << endl;
       atom.m_uds = UDS_GUESSED_MIME_TYPE;
@@ -943,12 +945,12 @@ void Ftp::stat( const KURL &url)
   kdDebug(7102) << "Ftp::stat : cleaned path='" << path << "'" << endl;
 
   // We can't stat root, but we know it's a dir.
-  if ( path.isEmpty() || path == "/" ) {
+  if ( path.isEmpty() || path == QString::fromLatin1("/") ) {
     UDSEntry entry;
     UDSAtom atom;
 
     atom.m_uds = KIO::UDS_NAME;
-    atom.m_str = "";
+    atom.m_str = QString::null;
     entry.append( atom );
 
     atom.m_uds = KIO::UDS_FILE_TYPE;
@@ -997,7 +999,7 @@ void Ftp::stat( const KURL &url)
     listarg = path;
     search = path;
     // LIST doesn't support spaces. Using a '?' wildcard instead.
-    listarg.replace(QRegExp(" "),"?");
+    listarg.replace(QRegExp(QString::fromLatin1(" ")),QString::fromLatin1("?"));
   }
   else
   {
@@ -1021,7 +1023,7 @@ void Ftp::stat( const KURL &url)
 
   kdDebug(7102) << "Starting of list was ok" << endl;
 
-  assert( search != "" && search != "/" );
+  assert( !search.isEmpty() && search != QString::fromLatin1("/") );
 
   FtpEntry *e;
   bool bFound = false;
@@ -1175,7 +1177,7 @@ bool Ftp::ftpOpenDir( const QString & path )
 
   // don't use the path in the list command
   // we changed into this directory anyway ("cwd"), so it's enough just to send "list"
-  if( !ftpOpenCommand( "list", 0L, 'A', ERR_CANNOT_ENTER_DIRECTORY ) )
+  if( !ftpOpenCommand( "list", QString::null, 'A', ERR_CANNOT_ENTER_DIRECTORY ) )
   {
     kdWarning(7102) << "Can't open for listing" << endl;
     return false;
@@ -1206,6 +1208,7 @@ FtpEntry *Ftp::ftpReadDir()
 FtpEntry* Ftp::ftpParseDir( char* buffer )
 {
   QString tmp;
+  kdDebug() << "ftpParseDir " << buffer << endl;
 
   static FtpEntry de;
   const char *p_access, *p_junk, *p_owner, *p_group;
@@ -1243,17 +1246,17 @@ FtpEntry* Ftp::ftpParseDir( char* buffer )
                     if ( p_access[0] == 'l' )
                     {
                       tmp = p_name;
-                      int i = tmp.findRev( " -> " );
+                      int i = tmp.findRev( QString::fromLatin1(" -> ") );
                       if ( i != -1 ) {
                         de.link = p_name + i + 4;
                         tmp.truncate( i );
                         p_name = tmp.ascii();
                       }
                       else
-                        de.link = "";
+                        de.link = QString::null;
                     }
                     else
-                      de.link = "";
+                      de.link = QString::null;
 
                     de.access = 0;
                     de.type = S_IFREG;
@@ -1297,11 +1300,16 @@ FtpEntry* Ftp::ftpParseDir( char* buffer )
                     if ( p_access[9] == 'x' )
                       de.access |= S_IXOTH;
 
-                    de.owner    = p_owner;
-                    de.group    = p_group;
+                    // maybe fromLocal8Bit would be better in some cases,
+                    // but what proves that the ftp server is in the same encoding
+                    // than the user ??
+                    de.owner    = QString::fromLatin1(p_owner);
+                    de.group    = QString::fromLatin1(p_group);
                     de.size     = atoi(p_size);
-                    // QString tmp( p_name );
-                    de.name     = p_name; /* tmp.stripWhiteSpace(); */
+                    QCString tmp( p_name );
+                    // Some sites put more than one space between the date and the name
+                    // e.g. ftp://ftp.uni-marburg.de/mirror/
+                    de.name     = QString::fromLatin1(tmp.stripWhiteSpace());
 
                     // Parsing the date is somewhat tricky
                     // Examples : "Oct  6 22:49", "May 13  1999"
@@ -1520,7 +1528,7 @@ void Ftp::ftpAbortTransfer()
    kdDebug(7102) << "send ABOR" << endl;
    QCString buf = "ABOR\r\n";
    if ( ::write( sControl, buf.data(), buf.length() ) <= 0 )  {
-     error( ERR_COULD_NOT_WRITE, "" );
+     error( ERR_COULD_NOT_WRITE, QString::null );
      return;
    }
 
@@ -1528,7 +1536,7 @@ void Ftp::ftpAbortTransfer()
    kdDebug(7102) << "read resp" << endl;
    if ( readresp() != '2' )
    {
-     error( ERR_COULD_NOT_READ, "" );
+     error( ERR_COULD_NOT_READ, QString::null );
      return;
    }
 
@@ -1545,7 +1553,7 @@ void Ftp::put( const KURL& dest_url, int permissions, bool overwrite, bool resum
 
   kdDebug(7102) << "Put " << dest_orig << endl;
   QString dest_part( dest_orig );
-  dest_part += ".part";
+  dest_part += QString::fromLatin1(".part");
 
   bool bMarkPartial = KProtocolManager::markPartial();
 
@@ -1701,7 +1709,7 @@ bool Ftp::ftpResume( unsigned long offset )
   char buf[64];
   sprintf(buf, "rest %ld", offset);
   if ( !ftpSendCmd( buf, '3' ) ) {
-    error( ERR_CANNOT_RESUME, "" );
+    error( ERR_CANNOT_RESUME, QString::null );
     return false;
   }
   return true;
