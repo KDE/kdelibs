@@ -49,45 +49,47 @@ KFileItem::KFileItem( const KIO::UDSEntry& _entry, const KURL& _url,
   // extract the mode and the filename from the KIO::UDS Entry
   KIO::UDSEntry::ConstIterator it = m_entry.begin();
   for( ; it != m_entry.end(); it++ ) {
-  switch ((*it).m_uds) {
+    switch ((*it).m_uds) {
 
-    case KIO::UDS_FILE_TYPE:
-      m_fileMode = (mode_t)((*it).m_long);
-      break;
+        case KIO::UDS_FILE_TYPE:
+          m_fileMode = (mode_t)((*it).m_long);
+          break;
 
-    case KIO::UDS_ACCESS:
-      m_permissions = (mode_t)((*it).m_long);
-      break;
+        case KIO::UDS_ACCESS:
+          m_permissions = (mode_t)((*it).m_long);
+          break;
 
-    case KIO::UDS_USER:
-      m_user = ((*it).m_str);
-      break;
+        case KIO::UDS_USER:
+          m_user = ((*it).m_str);
+          break;
 
-    case KIO::UDS_GROUP:
-      m_group = ((*it).m_str);
-      break;
+        case KIO::UDS_GROUP:
+          m_group = ((*it).m_str);
+          break;
 
-    case KIO::UDS_NAME:
-      m_strName = (*it).m_str;
-      m_strText = KIO::decodeFileName( m_strName );
-      break;
+        case KIO::UDS_NAME:
+          m_strName = (*it).m_str;
+          m_strText = KIO::decodeFileName( m_strName );
+          break;
 
-    case KIO::UDS_URL:
-      UDS_URL_seen = true;
-      m_url = KURL((*it).m_str);
-      break;
+        case KIO::UDS_URL:
+          UDS_URL_seen = true;
+          m_url = KURL((*it).m_str);
+          break;
 
-    case KIO::UDS_MIME_TYPE:
-      m_pMimeType = KMimeType::mimeType((*it).m_str);
-      break;
+        case KIO::UDS_MIME_TYPE:
+          m_pMimeType = KMimeType::mimeType((*it).m_str);
+          break;
 
-    case KIO::UDS_LINK_DEST:
-      m_bLink = !(*it).m_str.isEmpty(); // we don't store the link dest
-      break;
+        case KIO::UDS_LINK_DEST:
+          m_bLink = !(*it).m_str.isEmpty(); // we don't store the link dest
+          break;
+    }
   }
-  }
-  if ( _urlIsDirectory && !UDS_URL_seen && !m_strName.isEmpty() )
-      m_url.addPath( m_strName );
+  // avoid creating these QStrings again and again
+  static const QString& dot = KGlobal::staticQString(".");
+  if ( _urlIsDirectory && !UDS_URL_seen && !m_strName.isEmpty() && m_strName != dot )
+    m_url.addPath( m_strName );
   init( _determineMimeTypeOnDemand );
 }
 
