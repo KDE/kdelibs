@@ -63,7 +63,7 @@ FMOut::~FMOut()
   delete vm;
   if (deleteFMPatchesDirectory)
   {
-    delete FMPatchesDirectory;
+    free((char *)FMPatchesDirectory);
     deleteFMPatchesDirectory = 0;
     FMPatchesDirectory="/etc";
   }
@@ -326,10 +326,11 @@ void FMOut::sysex(uchar *, ulong )
 void FMOut::setFMPatchesDirectory(const char *dir)
 {
   if ((dir==NULL)||(dir[0]==0)) return;
-  if (deleteFMPatchesDirectory) delete FMPatchesDirectory;
-  char *FMPatchesDirectory2=new char[strlen(dir)+1];
-  strcpy(FMPatchesDirectory2,dir);
-  FMPatchesDirectory = FMPatchesDirectory2;
+  if (deleteFMPatchesDirectory)
+  	free((char *)FMPatchesDirectory);
+
+  FMPatchesDirectory = strdup(dir);
+
   deleteFMPatchesDirectory=1;
 }
 
