@@ -166,9 +166,18 @@ public:
      **/
     virtual void action( Action a );
 
+
+    /**
+     * Reimplement this function to set a prefered dock position for your extension.
+     * The extension manager will try to place new instances of this extension according
+     * to this setting.
+     * @return Position
+     **/
+    virtual Position preferedPosition() const { return Bottom; }
+
 signals:
     /**
-     * Emit this signal to make the panel relayout all extensions in the dock, when you want 
+     * Emit this signal to make the panel relayout all extensions in the dock, when you want
      * to change the extensions size.
      * The panel is going to relayout all extensions based on their prefered size.
      **/
@@ -213,7 +222,7 @@ protected:
      * @return the extension's position. (left, right, top, bottom)
      **/
     Position position() const { return _pos; }
-    
+
     /**
      * @return the extensions orientation. (horizontal or vertical)
      **/
