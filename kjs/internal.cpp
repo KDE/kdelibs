@@ -33,6 +33,8 @@
 #include "lexer.h"
 #include "collector.h"
 
+#define I18N_NOOP(s) s
+
 extern int kjsyyparse();
 
 using namespace KJS;
@@ -71,7 +73,7 @@ String UndefinedImp::toString() const
 
 Object UndefinedImp::toObject() const
 {
-  return Error::createObject(TypeError);
+  return Error::createObject(TypeError, I18N_NOOP("Undefined value"));
 }
 
 NullImp::NullImp()
@@ -100,7 +102,7 @@ String NullImp::toString() const
 
 Object NullImp::toObject() const
 {
-  return Error::createObject(TypeError);
+  return Error::createObject(TypeError, I18N_NOOP("Null value"));
 }
 
 KJSO BooleanImp::toPrimitive(Type) const

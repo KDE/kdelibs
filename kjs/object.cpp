@@ -276,7 +276,7 @@ void KJSO::setConstructor(KJSO c)
 KJSO KJSO::getBase() const
 {
   if (!isA(ReferenceType))
-    return Error::create(ReferenceError);
+    return Error::create(ReferenceError, I18N_NOOP("Invalid reference base"));
 
   return ((ReferenceImp*)rep)->getBase();
 }
@@ -794,7 +794,7 @@ KJSO Imp::defaultValue(Type hint) const
       return s;
   }
 
-  return Error::create(TypeError);
+  return Error::create(TypeError, I18N_NOOP("No default value"));
 }
 
 void Imp::mark(Imp*)
