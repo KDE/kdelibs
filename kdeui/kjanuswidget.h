@@ -45,34 +45,8 @@ class KGuiItem;
  * as an internal widget in KDialogBase, but can also used as a
  * widget of its own.
  *
- * It provides TreeList, IconList, Tabbed, Plain and Swallow layouts.
- *
- * The TreeList face provides a list in the left area and pages in the
- * right. The area are separated by a movable splitter. The style is somewhat
- * similar to the layout in the Control Center. A page is raised by
- * selecting the corresponding tree list item.
- *
- * The IconList face provides an icon list in the left area and pages in the
- * right. For each entry the Icon is on top with the text below. The style
- * is somewhat similar to the layout of the Eudora configuation dialog box.
- * A page is raised by selecting the corresponding icon list item. The
- * preferred icon size is 32x32 pixels.
- *
- * The Tabbed face is a common tabbed widget. The procedure for creating a
- * page is similar for creating a TreeList. This has the advantage that if
- * your widget contain too many pages it is trivial to convert it into a
- * TreeList. Just change the face in the KJanusWidget constructor to
- * KJanusWidget::TreeList and you have a tree list layout instead.
- *
- * The Plain face provides an empty widget (QFrame) where you can place your
- * widgets. The KJanusWidget makes no assumptions regarding the contents so
- * you are free to add whatever you want.
- *
- * The Swallow face is provided in order to simplify the usage of existing
- * widgets and to allow changing the visible widget. You specify the widget
- * to be displayed by setSwallowedWidget(). Your widget will be
- * reparented inside the widget. You can specify a Null (0) widget. A empty
- * space is then displayed.
+ * This class provides KJanusWidget::TreeList, KJanusWidget::IconList,
+ * KJanusWidget::Tabbed, KJanusWidget::Plain and KJanusWidget::Swallow layouts.
  *
  * For all modes it is important that you specify the QWidget::minimumSize()
  * on the page, plain widget or the swallowed widget. If you use a QLayout
@@ -113,10 +87,41 @@ class KJanusWidget : public QWidget
   public:
     enum Face
     {
+      /**
+       * The TreeList face provides a list in the left area and pages in the
+       * right. The area are separated by a movable splitter. The style is somewhat
+       * similar to the layout in the Control Center. A page is raised by
+       * selecting the corresponding tree list item.
+       */
       TreeList = 0,
+      /** The Tabbed face is a common tabbed widget. The procedure for creating a
+       * page is similar for creating a TreeList. This has the advantage that if
+       * your widget contain too many pages it is trivial to convert it into a
+       * TreeList. Just change the face in the KJanusWidget constructor to
+       * KJanusWidget::TreeList and you have a tree list layout instead.
+       */
       Tabbed,
+      /**
+       * The Plain face provides an empty widget (QFrame) where you can place your
+       * widgets. The KJanusWidget makes no assumptions regarding the contents so
+       * you are free to add whatever you want.
+       */
       Plain,
+      /**
+       * The Swallow face is provided in order to simplify the usage of existing
+       * widgets and to allow changing the visible widget. You specify the widget
+       * to be displayed by setSwallowedWidget(). Your widget will be
+       * reparented inside the widget. You can specify a Null (0) widget. A empty
+       * space is then displayed.
+       */
       Swallow,
+      /**
+       * The IconList face provides an icon list in the left area and pages in the
+       * right. For each entry the Icon is on top with the text below. The style
+       * is somewhat similar to the layout of the Eudora configuation dialog box.
+       * A page is raised by selecting the corresponding icon list item. The
+       * preferred icon size is 32x32 pixels.
+       */
       IconList
     };
 
