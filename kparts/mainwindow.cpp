@@ -54,10 +54,10 @@ MainWindow::~MainWindow()
 
 void MainWindow::createGUI( Part * part )
 {
-  kDebugStringArea( 1000, QString("MainWindow::createGUI for %1").arg(part?part->name():"0L"));
+  kDebugInfo( 1000, QString("MainWindow::createGUI for %1").arg(part?part->name():"0L"));
 
   KXMLGUIFactory *factory = guiFactory();
-  
+
   setUpdatesEnabled( false );
 
   QValueList<KXMLGUIServant *> plugins;
@@ -65,7 +65,7 @@ void MainWindow::createGUI( Part * part )
 
   if ( d->m_activePart )
   {
-    kDebugStringArea( 1000, QString("deactivating GUI for %1").arg(d->m_activePart->name()) );
+    kDebugInfo( 1000, QString("deactivating GUI for %1").arg(d->m_activePart->name()) );
 
     GUIActivateEvent ev( false );
     QApplication::sendEvent( d->m_activePart, &ev );
