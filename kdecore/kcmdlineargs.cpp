@@ -1241,3 +1241,24 @@ KCmdLineArgs::addArgument(const char *argument)
 
    parsedArgList->append(argument);
 }
+
+static const KCmdLineOptions kde_tempfile_option[] =
+{
+   { "tempfile",       I18N_NOOP("The files/urls opened by the application will be deleted after use"), 0},
+   KCmdLineLastOption
+};
+
+void
+KCmdLineArgs::addTempFileOption()
+{
+    qDebug( "addTempFileOption" );
+    KCmdLineArgs::addCmdLineOptions( kde_tempfile_option, "KDE-tempfile", "kde-tempfile" );
+}
+
+bool KCmdLineArgs::isTempFileSet()
+{
+    KCmdLineArgs* args = KCmdLineArgs::parsedArgs( "kde-tempfile" );
+    if ( args )
+        return args->isSet( "tempfile" );
+    return false;
+}

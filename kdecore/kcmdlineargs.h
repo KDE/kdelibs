@@ -534,6 +534,18 @@ public:
    */
   static void loadAppArgs( QDataStream &);
 
+  /**
+   * Add standard option --tempfile
+   */
+  static void addTempFileOption();
+
+  // this avoids having to know the "id" used by addTempFileOption
+  // but this approach doesn't scale well, we can't have 50 standard options here...
+  /**
+   * @return true if --tempfile was set
+   */
+  static bool isTempFileSet();
+
 protected:
   /**
    * @internal

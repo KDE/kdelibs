@@ -35,6 +35,13 @@ class KUniqueApplicationPrivate;
  * or a second instance.  If it is a second instance, it will forward on
  * the information to the first instance and then quit.
  *
+ * The .desktop file for the application should state X-DCOP-ServiceType=Unique,
+ * see kapplication.h
+ *
+ * If your application is used to open files, it should also support the --tempfile
+ * option (see KCmdLineArgs::addTempFileOption()), to delete tempfiles after use.
+ * Add X-KDE-HasTempFileOption=true to the .desktop file to indicate this.
+ *
  * @see KApplication DCOPObject
  * @author Preston Brown <pbrown@kde.org>
  */
