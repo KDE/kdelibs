@@ -593,13 +593,13 @@ Object ObjectImp::toObject(ExecState */*exec*/) const
 // ------------------------------ Error ----------------------------------------
 
 const char *errorNamesArr[] = {
-  I18N_NOOP("Error") // GeneralError
-  I18N_NOOP("Evaluation error") // EvalError
-  I18N_NOOP("Range error") // RangeError
-  I18N_NOOP("Reference error") // ReferenceError
-  I18N_NOOP("Syntax error") // SyntaxError
-  I18N_NOOP("Type error") // TypeError
-  I18N_NOOP("URI error") // URIError
+  I18N_NOOP("Error"), // GeneralError
+  I18N_NOOP("Evaluation error"), // EvalError
+  I18N_NOOP("Range error"), // RangeError
+  I18N_NOOP("Reference error"), // ReferenceError
+  I18N_NOOP("Syntax error"), // SyntaxError
+  I18N_NOOP("Type error"), // TypeError
+  I18N_NOOP("URI error"), // URIError
 };
 
 const char **Error::errorNames = errorNamesArr;
