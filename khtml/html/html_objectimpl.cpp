@@ -34,6 +34,7 @@
 
 #include "xml/dom_docimpl.h"
 #include "css/cssstyleselector.h"
+#include "css/csshelper.h"
 #include "css/cssproperties.h"
 #include "rendering/render_applet.h"
 #include "rendering/render_frames.h"
@@ -216,8 +217,8 @@ void HTMLEmbedElementImpl::parseAttribute(AttrImpl *attr)
         break;
      case ATTR_CODE:
      case ATTR_SRC:
-        url = val;
-        break;
+         url = khtml::parseURL(attr->val()).string();
+         break;
      case ATTR_WIDTH:
         addCSSLength( CSS_PROP_WIDTH, attr->value() );
         break;
@@ -271,7 +272,7 @@ void HTMLEmbedElementImpl::parseAttribute(AttrImpl *attr)
 
 void HTMLEmbedElementImpl::attach()
 {
-   KHTMLView* w = ownerDocument()->view();    
+   KHTMLView* w = ownerDocument()->view();
    setStyle(ownerDocument()->styleSelector()->styleForElement( this ));
    khtml::RenderObject *r = _parent->renderer();
    RenderPartObject* p = 0;
@@ -342,7 +343,7 @@ void HTMLObjectElementImpl::parseAttribute(AttrImpl *attr)
       needWidgetUpdate = true;
       break;
     case ATTR_DATA:
-      url = val;
+      url = khtml::parseURL(  val ).string();
       needWidgetUpdate = true;
       break;
     case ATTR_WIDTH:
@@ -370,7 +371,7 @@ void HTMLObjectElementImpl::parseAttribute(AttrImpl *attr)
 
 void HTMLObjectElementImpl::attach()
 {
-  KHTMLView* w = ownerDocument()->view();    
+  KHTMLView* w = ownerDocument()->view();
   setStyle(ownerDocument()->styleSelector()->styleForElement( this ));
 
   khtml::RenderObject *r = _parent->renderer();

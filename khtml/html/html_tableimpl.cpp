@@ -29,12 +29,14 @@
 #include "dom_exception.h"
 #include "html_documentimpl.h"
 #include "dom_node.h"
+
 using namespace DOM;
 
 #include "htmlhashes.h"
 
 #include "css/cssstyleselector.h"
 #include "css/cssproperties.h"
+#include "css/csshelper.h"
 
 #include "rendering/render_table.h"
 using namespace khtml;
@@ -299,7 +301,7 @@ void HTMLTableElementImpl::parseAttribute(AttrImpl *attr)
     {
         if (!attr->value().isEmpty()) {
             HTMLDocumentImpl *doc = static_cast<HTMLDocumentImpl *>(ownerDocument());
-            QString url = Cache::completeURL(attr->value(), doc->baseURL()).url();
+            QString url = Cache::completeURL(khtml::parseURL(attr->value() ).string(), doc->baseURL()).url();
             addCSSProperty(CSS_PROP_BACKGROUND_IMAGE, "url('"+url+"')" );
         }
         else
@@ -410,7 +412,7 @@ void HTMLTablePartElementImpl::parseAttribute(AttrImpl *attr)
     {
         if (attr->val()) {
             HTMLDocumentImpl *doc = static_cast<HTMLDocumentImpl *>(ownerDocument());
-            QString url = Cache::completeURL(attr->value(), doc->baseURL()).url();
+            QString url = Cache::completeURL(khtml::parseURL( attr->val() ).string(), doc->baseURL()).url();
             addCSSProperty(CSS_PROP_BACKGROUND_IMAGE, "url('"+url+"')" );
         }
         else
