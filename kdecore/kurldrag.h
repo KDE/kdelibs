@@ -75,6 +75,7 @@ public:
    * But in some cases this might not be wanted, e.g. if using the KURLDrag in a KMultipleDrag
    * and another component of the multiple-drag provides better plain text data.
    * In such a case, setExportAsText( false ) should be called.
+   * @since 3.4
    */
   void setExportAsText( bool exp );
 
