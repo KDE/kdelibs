@@ -48,7 +48,8 @@ messages:
 
 EXTRA_DIST = admin bsd-port debian kdelibs.spec.in kde.pot kde-config.in \
 	kde-config COMPILING COMPILING.html COPYING.BSD DEBUG \
-	KDE2PORTING.html NAMING common_texts.cpp kdelibs.lsm kdoc.rules
+	KDE2PORTING.html NAMING common_texts.cpp kdelibs.lsm kdoc.rules \
+	qt-messages.pot configure.in.in configure.in.mid configure.in.bot
 
 MAINTAINERCLEANFILES = configure.files subdirs
 
