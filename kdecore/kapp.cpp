@@ -46,6 +46,7 @@
 #include <qstylesheet.h>
 #include <qpixmapcache.h>
 #include <qtooltip.h>
+#include <qpushbutton.h>
 
 #undef QT_NO_TRANSLATION
 #include <kapp.h>
@@ -275,8 +276,14 @@ public:
 		QWidget *w = static_cast<QWidget *>(o);
 		if ( w->inherits( "QMenuBar" ) )
 		    mbar = static_cast<QMenuBar *>(w);
+#if QT_VERSION < 300
 		const QMetaProperty* text = w->metaObject()->property( "text", TRUE );
 		const QMetaProperty* title = w->metaObject()->property( "title", TRUE );
+#else
+		QMetaObject *mo = w->metaObject();
+		const QMetaProperty* text = mo->property( mo->findProperty( "text", TRUE ), TRUE );
+		const QMetaProperty* title = mo->property( mo->findProperty( "title", TRUE ), TRUE );
+#endif
 		if ( text )
 		    findAccel( w->className(), w->property( "text" ).toString(), accels );
 		if ( title )
@@ -1382,6 +1389,7 @@ void KApplication::disableStyles()
 }
 
 void KApplication::applyGUIStyle(GUIStyle /* pointless */) {
+#if QT_VERSION < 300
     /* Hey, we actually do stuff here now :)
      * The widgetStyle key is used as a style string. If it matches a
      * Qt internal style that is used, otherwise it is checked to see
@@ -1526,6 +1534,7 @@ void KApplication::applyGUIStyle(GUIStyle /* pointless */) {
     if(pKStyle)
         connect(pKStyle, SIGNAL(destroyed()), SLOT(kstyleDestroyed()));
 
+#endif // QT_VERSION < 300
     // WABA: Reread palette from config file.
     kdisplaySetPalette();
 }
