@@ -18,6 +18,7 @@ or <a href="http://doc.trolltech.com/porting.html">this page online</a>.<P>
 <LI><A HREF="#gettingstarted">Getting Started</A></LI>
 <LI><A HREF="#kdecore">Changes in kdecore</A></LI>
 <LI><A HREF="#kdeui">Changes in kdeui</A></LI>
+<LI><A HREF="#kio">Changes in kio</A></LI>
 <LI><A HREF="#kparts">Changes in kparts</A></LI>
 <LI><A HREF="#khtmlpart">API-cleanup in KHTML</A></LI>
 </UL>
@@ -99,6 +100,18 @@ for more informations on this new extension.
 The KRootPixmap class has been extended to make it more flexible, and the
 <i>checkAvailable(bool ignored)</i> method has been renamed <i>isAvailable()</i>.
 The old name will still work unless KDE_NO_COMPAT is defined.
+
+<H4><P ALIGN="RIGHT"><A HREF="#TOC">Return to the Table of Contents</A></P></H4>
+
+<H3><A NAME="kio">Changes in kio</A></H3>
+
+<H4>KTarGz/KTarBase/KTarData</H4>
+<ul>
+  <li>The KTarBase and KTarData classes have been removed.</li>
+  <li>KTarGz is now KTar (#define for source compatibility)</li>
+  <li>A base class KArchive has been written, to support other archive formats in the future</li>
+  <li>KTarEntry is now KArchiveEntry, KTarDirectory is now KArchiveDirectory, and KTarFile is now KArchiveFile.</li>
+</ul>
 
 <H4><P ALIGN="RIGHT"><A HREF="#TOC">Return to the Table of Contents</A></P></H4>
 
