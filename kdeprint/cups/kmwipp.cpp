@@ -81,5 +81,5 @@ void KMWIpp::updatePrinter(KMPrinter *p)
 	url.setPort(text(1).toInt());
 	if (!p->option("kde-login").isEmpty()) url.setUser(p->option("kde-login"));
 	if (!p->option("kde-password").isEmpty()) url.setPass(p->option("kde-password"));
-	p->setDevice(url);
+	p->setDevice(url.url());
 }

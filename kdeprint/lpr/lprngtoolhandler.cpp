@@ -60,16 +60,15 @@ bool LPRngToolHandler::completePrinter(KMPrinter *prt, PrintcapEntry *entry, boo
 	else if (l[1] == "SMB")
 	{
 		QMap<QString,QString>	opts = parseXferOptions(entry->field("xfer_options"));
-		KURL	url = smbToUrl(opts["workgroup"], opts["host"], opts["printer"]);
 		QString	user, pass;
 		loadAuthFile(LprSettings::self()->baseSpoolDir() + "/" + entry->name + "/" + opts["authfile"], user, pass);
-		if (!user.isEmpty())
-		{
-			url.setUser(user);
-			if (!pass.isEmpty())
-				url.setPass(pass);
-		}
-		prt->setDevice(url);
+		QString uri = buildSmbURI(
+				opts[ "workgroup" ],
+				opts[ "host" ],
+				opts[ "printer" ],
+				user,
+				pass );
+		prt->setDevice( uri );
 		prt->setLocation(i18n("Network printer (%1)").arg("smb"));
 	}
 
@@ -271,7 +270,7 @@ QString LPRngToolHandler::driverDirInternal()
 
 PrintcapEntry* LPRngToolHandler::createEntry(KMPrinter *prt)
 {
-	QString	prot = prt->device().protocol();
+	QString	prot = prt->deviceProtocol();
 	if (prot != "parallel" && prot != "lpd" && prot != "smb" && prot != "socket")
 	{
 		manager()->setErrorMsg(i18n("Unsupported backend: %1.").arg(prot));
@@ -283,37 +282,47 @@ PrintcapEntry* LPRngToolHandler::createEntry(KMPrinter *prt)
 	if (prot == "parallel")
 	{
 		comment.append("DEVICE ");
-		lp = prt->device().path();
+		lp = prt->device().mid( 9 );
 		entry->addField("rw@", Field::Boolean);
 	}
 	else if (prot == "socket")
 	{
 		comment.append("SOCKET ");
-		lp = prt->device().host();
-		if (prt->device().port() == 0)
+		KURL url( prt->device() );
+		lp = url.host();
+		if (url.port() == 0)
 			lp.append("%9100");
 		else
-			lp.append("%").append(QString::number(prt->device().port()));
+			lp.append("%").append(QString::number(url.port()));
 	}
 	else if (prot == "lpd")
 	{
 		comment.append("QUEUE ");
-		lp = prt->device().path().mid(1) + "@" + prt->device().host();
+		KURL url( prt->device() );
+		lp = url.path().mid(1) + "@" + url.host();
 	}
 	else if (prot == "smb")
 	{
 		comment.append("SMB ");
 		lp = "| " + filterDir() + "/smbprint";
-		QString	work, server, printer;
-		urlToSmb(prt->device(), work, server, printer);
-		entry->addField("xfer_options", Field::String, QString::fromLatin1("authfile=\"auth\" crlf=\"0\" hostip=\"\" host=\"%1\" printer=\"%2\" remote_mode=\"SMB\" share=\"//%3/%4\" workgroup=\"%5\"").arg(server).arg(printer).arg(server).arg(printer).arg(work));
-		QFile	authfile(LprSettings::self()->baseSpoolDir() + "/" + prt->printerName() + "/auth");
-		if (authfile.open(IO_WriteOnly))
+		QString	work, server, printer, user, passwd;
+		if ( splitSmbURI( prt->device(), work, server, printer, user, passwd ) )
 		{
-			QTextStream	t(&authfile);
-			t << "username=" << prt->device().user() << endl;
-			t << "password=" << prt->device().user() << endl;
-			authfile.close();
+			entry->addField("xfer_options", Field::String, QString::fromLatin1("authfile=\"auth\" crlf=\"0\" hostip=\"\" host=\"%1\" printer=\"%2\" remote_mode=\"SMB\" share=\"//%3/%4\" workgroup=\"%5\"").arg(server).arg(printer).arg(server).arg(printer).arg(work));
+			QFile	authfile(LprSettings::self()->baseSpoolDir() + "/" + prt->printerName() + "/auth");
+			if (authfile.open(IO_WriteOnly))
+			{
+				QTextStream	t(&authfile);
+				t << "username=" << user << endl;
+				t << "password=" << passwd << endl;
+				authfile.close();
+			}
+		}
+		else
+		{
+			manager()->setErrorMsg( i18n( "Invalid printer backend specification: %1" ).arg( prt->device() ) );
+			delete entry;
+			return NULL;
 		}
 	}
 

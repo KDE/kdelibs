@@ -80,7 +80,7 @@ void KMWBackend::initPrinter(KMPrinter *p)
 		ID = s.toInt();
 	else
 	{
-		s = p->device().protocol();
+		s = p->deviceProtocol();
 		// extract protocol
 		if (s == "parallel" || s == "serial" || s == "usb") ID = KMWizard::Local;
 		else if (s == "smb") ID = KMWizard::SMB;

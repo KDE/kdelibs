@@ -107,3 +107,85 @@ int findIndex(int ID)
 			return i;
 	return 4;
 }
+
+QString buildSmbURI( const QString& work, const QString& server, const QString& printer, const QString& user, const QString& passwd )
+{
+	QString uri = server + "/" + printer;
+	if ( !work.isEmpty() )
+		uri.prepend( work + "/" );
+	if ( !user.isEmpty() )
+	{
+		uri.prepend( "@" );
+		if ( !passwd.isEmpty() )
+			uri.prepend( ":" + passwd );
+		uri.prepend( user );
+	}
+	uri.prepend( "smb://" );
+	return uri;
+}
+
+bool splitSmbURI( const QString& uri, QString& work, QString& server, QString& printer, QString& user, QString& passwd )
+{
+	int p( 0 );
+	if ( !uri.startsWith( "smb://" ) )
+		return false;
+	p = 6;
+
+	int p1 = uri.find( '/', p );
+	if ( p1 != -1 )
+	{
+		int p2 = uri.find( '@', p );
+		if ( p2 != -1 && p2 < p1 )
+		{
+			// Got a user
+			int p3 = uri.find( ':', p );
+			if ( p3 != -1 && p3 < p2 )
+			{
+				// Got a password
+				user = uri.mid( p, p3-p );
+				passwd = uri.mid( p3+1, p2-p3-1 );
+			}
+			else
+				user = uri.mid( p, p2-p );
+		}
+		else
+			p2 = p-1;
+		QStringList l = QStringList::split( '/', uri.mid( p2+1 ), false );
+		switch ( l.count() )
+		{
+			case 3:
+				work = l[ 0 ];
+				server = l[ 1 ];
+				printer = l[ 2 ];
+				break;
+			case 2:
+				server = l[ 0 ];
+				printer = l[ 1 ];
+				break;
+			default:
+				return false;
+		}
+		return true;
+	}
+	return false;
+}
+
+QString shadowPassword( const QString& uri )
+{
+	QString result = uri;
+	int p = result.find( ':' );
+	if ( p != -1 )
+	{
+		while ( result[ ++p ] == '/' );
+		int p1 = result.find( '@', p );
+		if ( p1 != -1 )
+		{
+			int p2 = result.find( ':', p );
+			if ( p2 != -1 && p2 < p1 )
+			{
+				result.replace( p2, p1-p2, "" );
+			}
+		}
+	}
+	return result;
+}

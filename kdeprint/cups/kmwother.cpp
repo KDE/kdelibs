@@ -66,7 +66,7 @@ KMWOther::KMWOther(QWidget *parent, const char *name)
 
 void KMWOther::initPrinter(KMPrinter *p)
 {
-	m_uri->setText(p->device().url());
+	m_uri->setText(p->device());
 
 	if ( m_uriview->childCount() == 0 )
 	{
@@ -113,9 +113,7 @@ void KMWOther::initPrinter(KMPrinter *p)
 
 void KMWOther::updatePrinter(KMPrinter *p)
 {
-	KURL dev( m_uri->text() );
-	p->setDevice( dev );
-	p->setOption( "device-string", m_uri->text() );
+	p->setDevice( m_uri->text() );
 }
 
 void KMWOther::slotPressed( QListViewItem *item )

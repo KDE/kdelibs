@@ -148,17 +148,12 @@ bool KMCupsManager::createPrinter(KMPrinter *p)
 		KMPrinter	*otherP = findPrinter(p->printerName());
 		if (!otherP || otherP->device() != p->device())
 		{
-			// do not encode special chars in login/passwd in SMB devices
-			// to be compatible with CUPS/smbspool
-			if (p->device().protocol() == "smb")
-				req.addURI(IPP_TAG_PRINTER, "device-uri", urlToSmb(p->device()));
-			else
-			{
-				if ( p->hasOption( "device-string" ) )
-					req.addURI( IPP_TAG_PRINTER, "device-uri", p->option( "device-string" ) );
-				else
-					req.addURI(IPP_TAG_PRINTER,"device-uri",p->device().url());
-			}
+			/**
+			 * As now the device is a QString instead of KURL, special encoding
+			 * required for SMB is not needed anymore. Use a unique mechanism
+			 * for all backends.
+			 */
+			req.addURI(IPP_TAG_PRINTER,"device-uri",p->device());
 		}
 		if (!p->option("kde-banners").isEmpty())
 		{
@@ -337,11 +332,11 @@ bool KMCupsManager::completePrinterShort(KMPrinter *p)
 		if (req.text("printer-make-and-model",value)) p->setDriverInfo(value);
 		if (req.uri("device-uri",value))
 		{
-			// in case of SMB, encode special chars in login/passwd
-			if (value.startsWith("smb://"))
-				p->setDevice(smbToUrl(value));
-			else
-				p->setDevice(KURL(value));
+			/**
+			 * No specific treatment required as the device is
+			 * a normal QString instead of a KURL
+			 */
+			p->setDevice( value );
 		}
 		QStringList	values;
 /*		if (req.uri("member-uris",values))

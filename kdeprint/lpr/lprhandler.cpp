@@ -95,7 +95,7 @@ bool LprHandler::completePrinter(KMPrinter *prt, PrintcapEntry *entry, bool)
 	}
 	else
 		prt->setLocation(i18n("Unknown (unrecognized entry)"));
-	prt->setDevice(uri);
+	prt->setDevice(uri.url());
 	return true;
 }
 

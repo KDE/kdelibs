@@ -77,5 +77,5 @@ bool KMWFax::isValid(QString& msg)
 void KMWFax::updatePrinter(KMPrinter *printer)
 {
 	QString	uri = m_list->currentText();
-	printer->setDevice(KURL(uri));
+	printer->setDevice(uri);
 }

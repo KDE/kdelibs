@@ -59,8 +59,8 @@ void KMPropBackend::setPrinter(KMPrinter *p)
 {
 	if (p && p->isPrinter())
 	{
-		m_uri->setText(p->device().prettyURL());
-		QString	prot = p->device().protocol().lower();
+		m_uri->setText(p->device());
+		QString	prot = p->deviceProtocol();
 		if (prot == "ipp" || prot == "http") m_type->setText(i18n("IPP Printer"));
 		else if (prot == "usb") m_type->setText(i18n("Local USB Printer"));
 		else if (prot == "parallel") m_type->setText(i18n("Local Parallel Printer"));

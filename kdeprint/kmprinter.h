@@ -93,8 +93,9 @@ public:
 	void setState(PrinterState s) 		{ m_state = PrinterState((m_state & ~StateMask) | s); }
 	bool acceptJobs() const			{ return !(m_state & Rejecting); }
 	void setAcceptJobs(bool on)		{ m_state = PrinterState((m_state & StateMask) | (on ? 0 : Rejecting)); }
-	const KURL& device() const 		{ return m_device; }
-	void setDevice(const KURL& d) 		{ m_device = d; }
+	const QString& device() const 		{ return m_device; }
+	QString deviceProtocol() const;
+	void setDevice(const QString& d) 		{ m_device = d; }
 	const QStringList& members() const	{ return m_members; }
 	void setMembers(const QStringList& l)	{ m_members = l; }
 	void addMember(const QString& s)	{ m_members.append(s); }
@@ -171,7 +172,12 @@ protected:
 	QString		m_instancename;	// instance name (human-readable)
 	int		m_type;		// printer type (any PrinterType flag OR-ed together)
 	PrinterState	m_state;	// printer state
-	KURL		m_device;	// printer device
+	/**
+	 * Represent the device as a string, to provide native
+	 * support for exotic devices. Conversion to URL is done
+	 * only when really needed
+	 */
+	QString		m_device;	// printer device
 
 	// class specific information
 	QStringList	m_members;	// members of the class

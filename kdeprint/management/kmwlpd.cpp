@@ -69,7 +69,7 @@ bool KMWLpd::isValid(QString& msg)
 void KMWLpd::updatePrinter(KMPrinter *p)
 {
 	QString	dev = QString::fromLatin1("lpd://%1/%2").arg(text(0)).arg(text(1));
-	p->setDevice(KURL(dev));
+	p->setDevice(dev);
 }
 
 //*******************************************************************************************************

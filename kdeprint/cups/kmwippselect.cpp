@@ -105,6 +105,6 @@ void KMWIppSelect::updatePrinter(KMPrinter *p)
 	QString	path = m_list->currentText();
 	path.prepend("/printers/");
 	url.setPath(path);
-	p->setDevice(url);
+	p->setDevice(url.url());
 kdDebug(500) << url.url() << endl;
 }

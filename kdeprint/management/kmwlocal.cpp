@@ -111,7 +111,7 @@ void KMWLocal::updatePrinter(KMPrinter *printer)
 	QListViewItem *item = m_ports->selectedItem();
 	if ( item && item->depth() == 3 )
 		printer->setOption( "kde-autodetect", item->text( 0 ) );
-	printer->setDevice(KURL(m_localuri->text()));
+	printer->setDevice(m_localuri->text());
 }
 
 void KMWLocal::initPrinter(KMPrinter *printer)
@@ -121,7 +121,7 @@ void KMWLocal::initPrinter(KMPrinter *printer)
 
 	if (printer)
 	{
-		m_localuri->setText(printer->device().url());
+		m_localuri->setText(printer->device());
 	}
 }
 
@@ -172,14 +172,13 @@ void KMWLocal::initialize()
 		QString cl = *it;
 		++it;
 
-		KURL	uri = *it;
-		QString	desc = *(++it), prot = uri.protocol();
+		QString	uri = *it;
+		int p = uri.find( ':' );
+		QString	desc = *(++it), prot = ( p != -1 ? uri.left( p ) : QString::null );
 		QString	printer = *(++it);
 		int	index(-1);
-		if (!uri.isValid())
-			continue;
 		if (desc.isEmpty())
-			desc = uri.prettyURL();
+			desc = uri;
 		if (prot == "parallel" || prot == "file")
 			index = 0;
 		else if (prot == "serial")
@@ -190,10 +189,10 @@ void KMWLocal::initialize()
 			index = 3;
 		else
 			continue;
-		last[index] = new QListViewItem(m_parents[index], last[index], desc, uri.url());
+		last[index] = new QListViewItem(m_parents[index], last[index], desc, uri);
 		last[index]->setPixmap(0, SmallIcon("blockdevice"));
 		m_parents[index]->setOpen(true);
-		m_uris << uri.url();
+		m_uris << uri;
 		if (!printer.isEmpty())
 		{
 			QListViewItem	*pItem = new QListViewItem(last[index], printer);

@@ -110,7 +110,7 @@ void KMWRlpr::initPrinter(KMPrinter *p)
 void KMWRlpr::updatePrinter(KMPrinter *p)
 {
 	QString	uri = QString::fromLatin1("lpd://%1/%2").arg(m_host->text()).arg(m_queue->text());
-	p->setDevice(KURL(uri));
+	p->setDevice(uri);
 	p->setOption("host",m_host->text());
 	p->setOption("queue",m_queue->text());
 	p->setOption("kde-backend-description",i18n("Remote LPD queue"));

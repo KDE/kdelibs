@@ -102,7 +102,7 @@ KMWIppPrinter::~KMWIppPrinter()
 
 void KMWIppPrinter::updatePrinter(KMPrinter *p)
 {
-	p->setDevice(KURL(m_uri->text()));
+	p->setDevice(m_uri->text());
 }
 
 bool KMWIppPrinter::isValid(QString& msg)

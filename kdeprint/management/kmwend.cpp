@@ -22,6 +22,7 @@
 #include "kmwend.h"
 #include "kmprinter.h"
 #include "kmwizard.h"
+#include "util.h"
 
 #include <qtextview.h>
 #include <klocale.h>
@@ -94,10 +95,7 @@ void KMWEnd::initPrinter(KMPrinter *p)
 			default:
 				// double decoding in case the printer name contains chars like '#' that are
 				// not decoded by "prettyURL".
-				if ( p->hasOption( "device-string" ) )
-					txt.append(s.arg(i18n("URI")).arg(p->option( "device-string" )));
-				else
-					txt.append(s.arg(i18n("URI")).arg(KURL::decode_string(url.prettyURL())));
+				txt.append(s.arg(i18n("URI")).arg(shadowPassword( p->device() )));
 				break;
 		}
 		txt.append("</ul><br>");

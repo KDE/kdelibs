@@ -810,7 +810,7 @@ void KMMainView::slotToolSelected(int ID)
 		if (factory)
 		{
 			QStringList	args;
-			args << m_current->device().url() << m_current->printerName();
+			args << m_current->device() << m_current->printerName();
 			KDialogBase	*dlg = static_cast<KDialogBase*>(factory->create(this, "Tool", 0, args));
 			if (dlg)
 				dlg->exec();

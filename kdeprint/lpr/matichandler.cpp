@@ -89,7 +89,7 @@ bool MaticHandler::completePrinter(KMPrinter *prt, PrintcapEntry *entry, bool sh
 			url.setProtocol("usb");
 		else
 			url.setProtocol("parallel");
-		prt->setDevice(url);
+		prt->setDevice(url.url());
 	}
 	prt->setDescription(entry->aliases.join(", "));
 
@@ -105,7 +105,7 @@ bool MaticHandler::completePrinter(KMPrinter *prt, PrintcapEntry *entry, bool sh
 				if (!url.isEmpty())
 				{
 					QString	ds = QString::fromLatin1("%1 (%2)").arg(prt->location()).arg(url.protocol());
-					prt->setDevice(url);
+					prt->setDevice(url.url());
 					prt->setLocation(ds);
 				}
 			}
@@ -153,9 +153,9 @@ DrMain* MaticHandler::loadMaticDriver(const QString& fname)
 		return NULL;
 }
 
-KURL MaticHandler::parsePostpipe(const QString& s)
+QString MaticHandler::parsePostpipe(const QString& s)
 {
-	KURL	url;
+	QString	url;
 	int	p = s.findRev('|');
 	QStringList	args = QStringList::split(" ", s.right(s.length()-p-1));
 
@@ -164,17 +164,15 @@ KURL MaticHandler::parsePostpipe(const QString& s)
 		// socket printer
 		if (args[0].right(3) == "/nc")
 		{
-			url.setProtocol("socket");
-			url.setHost(args[1]);
-			if (args.count() > 2)
-				url.setPort(args[2].toInt());
+			url = "socket://" + args[ 1 ];
+			if ( args.count() > 2 )
+				url += ":" + args[ 2 ];
 			else
-				url.setPort(9100);
+				url += ":9100";
 		}
 		// smb printer
 		else if (args[0].right(10) == "/smbclient")
 		{
-			url.setProtocol("smb");
 			QStringList	host_components = QStringList::split(QRegExp("/|\\\\\""), args[1], false);
 			QString	workgrp, user, pass;
 			for (uint i=2; i<args.count(); i++)
@@ -186,20 +184,7 @@ KURL MaticHandler::parsePostpipe(const QString& s)
 				else if (args[i][0] != '-' && i == 2)
 					pass = args[i];
 			}
-			if (!workgrp.isEmpty())
-			{
-				url.setHost(workgrp);
-				url.setPath("/"+host_components[0]+"/"+host_components[1]);
-			}
-			else
-			{
-				url.setHost(host_components[0]);
-				url.setPath("/"+host_components[1]);
-			}
-			if (!user.isEmpty())
-				url.setUser(user);
-			if (!pass.isEmpty())
-				url.setPass(pass);
+			url = buildSmbURI( workgrp, host_components[ 0 ], host_components[ 1 ], user, pass );
 		}
 		// remote printer
 		else if (args[0].right(5) == "/rlpr")
@@ -215,9 +200,7 @@ KURL MaticHandler::parsePostpipe(const QString& s)
 					int	p = host.find("\\@");
 					if (p != -1)
 					{
-						url.setProtocol("lpd");
-						url.setHost(host.right(host.length()-p-2));
-						url.setPath("/"+host.left(p));
+						url = "lpd://" + host.right(host.length()-p-2) + "/" + host.left(p);
 					}
 					break;
 				}
@@ -228,8 +211,9 @@ KURL MaticHandler::parsePostpipe(const QString& s)
 	return url;
 }
 
-QString MaticHandler::createPostpipe(const KURL& url)
+QString MaticHandler::createPostpipe(const QString& _url)
 {
+	KURL url( _url );
 	QString	prot = url.protocol();
 	QString	str;
 	if (prot == "socket")
@@ -247,17 +231,19 @@ QString MaticHandler::createPostpipe(const KURL& url)
 	}
 	else if (prot == "smb")
 	{
-		str += ("| (\\n echo \\\"print -\\\"\\n cat \\n) | " + m_smbpath);
-		QString	work, server, printer;
-		urlToSmb(url, work, server, printer);
-		str += (" \\\"//" + server + "/" + printer + "\\\"");
-		if (!url.pass().isEmpty())
-			str += (" " + url.pass());
-		if (!url.user().isEmpty())
-			str += (" -U " + url.user());
-		if (!work.isEmpty())
-			str += (" -W " + work);
-		str += " -N -P";
+		QString work, server, printer, user, passwd;
+		if ( splitSmbURI( _url, work, server, printer, user, passwd ) )
+		{
+			str += ("| (\\n echo \\\"print -\\\"\\n cat \\n) | " + m_smbpath);
+			str += (" \\\"//" + server + "/" + printer + "\\\"");
+			if (!passwd.isEmpty())
+				str += (" " + passwd);
+			if (!user.isEmpty())
+				str += (" -U " + user);
+			if (!work.isEmpty())
+				str += (" -W " + work);
+			str += " -N -P";
+		}
 	}
 	return str;
 }
@@ -455,7 +441,8 @@ bool MaticHandler::savePpdFile(DrMain *driver, const QString& filename)
 
 PrintcapEntry* MaticHandler::createEntry(KMPrinter *prt)
 {
-	QString	prot = prt->device().protocol();
+	KURL url( prt->device() );
+	QString	prot = url.protocol();
 	if ((prot != "lpd" || m_rlprpath.isEmpty()) &&
 		(prot != "socket" || m_ncpath.isEmpty()) &&
 		(prot != "smb" || m_smbpath.isEmpty()) &&
@@ -474,7 +461,7 @@ PrintcapEntry* MaticHandler::createEntry(KMPrinter *prt)
 	}
 	PrintcapEntry	*entry = new PrintcapEntry;
 	entry->addField("lf", Field::String, "/var/log/lp-errs");
-	entry->addField("lp", Field::String, (prot != "parallel" ? "/dev/null" : prt->device().path()));
+	entry->addField("lp", Field::String, (prot != "parallel" ? "/dev/null" : url.path()));
 	entry->addField("if", Field::String, m_exematicpath);
 	if (LprSettings::self()->mode() == LprSettings::LPRng)
 	{

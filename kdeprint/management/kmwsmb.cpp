@@ -21,6 +21,7 @@
 #include "kmwizard.h"
 #include "smbview.h"
 #include "kmprinter.h"
+#include "util.h"
 
 #include <klocale.h>
 #include <kpushbutton.h>
@@ -83,18 +84,8 @@ bool KMWSmb::isValid(QString& msg)
 
 void KMWSmb::updatePrinter(KMPrinter *printer)
 {
-	KURL	url;
-	if (m_work->text().isEmpty())
-		url = QString::fromLatin1("smb://%1/%2").arg(m_server->text()).arg(KURL::encode_string(m_printer->text()));
-	else
-		url = QString::fromLatin1("smb://%1/%2/%3").arg(m_work->text()).arg(m_server->text()).arg(KURL::encode_string(m_printer->text()));
-	if (!printer->option("kde-login").isEmpty())
-	{
-		url.setUser(printer->option("kde-login"));
-		if (!printer->option("kde-password").isEmpty())
-			url.setPass(printer->option("kde-password"));
-	}
-	printer->setDevice(url);
+	QString uri = buildSmbURI( m_work->text(), m_server->text(), m_printer->text(), printer->option( "kde-login" ), printer->option( "kde-password" ) );
+	printer->setDevice( uri );
 }
 
 void KMWSmb::initPrinter(KMPrinter *printer)

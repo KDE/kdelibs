@@ -71,50 +71,45 @@ bool ApsHandler::completePrinter(KMPrinter *prt, PrintcapEntry *entry, bool shor
 		}
 		if (prt->device().isEmpty())
 		{
+			QString prot;
 			QString	smbname(sysconfDir() + "/" + prt->printerName() + "/smbclient.conf");
 			QString	ncpname(sysconfDir() + "/" + prt->printerName() + "/netware.conf");
 			if (QFile::exists(smbname))
 			{
 				QMap<QString,QString>	opts = loadVarFile(smbname);
 				if (opts.count() == 0)
-					prt->setDevice(KURL("smb://<unknown>/<unknown>"));
+					prt->setDevice("smb://<unknown>/<unknown>");
 				else
 				{
-					KURL	uri;
-					uri.setProtocol("smb");
-					if (opts["SMB_WORKGROUP"].isEmpty())
-					{
-						uri.setHost(opts["SMB_SERVER"]);
-						uri.setPath("/" + opts["SMB_PRINTER"]);
-					}
-					else
-					{
-						uri.setHost(opts["SMB_WORKGROUP"]);
-						uri.setPath("/" + opts["SMB_SERVER"] + "/" + opts["SMB_PRINTER"]);
-					}
-					uri.setUser(opts["SMB_USER"]);
-					uri.setPass(opts["SMB_PASSWD"]);
-					prt->setDevice(uri);
+					prt->setDevice(buildSmbURI(
+								opts[ "SMB_WORKGROUP" ],
+								opts[ "SMB_SERVER" ],
+								opts[ "SMB_PRINTER" ],
+								opts[ "SMB_USER" ],
+								opts[ "SMB_PASSWD" ] ) );
 				}
+				prot = "smb";
 			}
 			else if (QFile::exists(ncpname))
 			{
 				QMap<QString,QString>	opts = loadVarFile(ncpname);
 				if (opts.count() == 0)
-					prt->setDevice(KURL("ncp://<unknown>/<unknown>"));
+					prt->setDevice("ncp://<unknown>/<unknown>");
 				else
 				{
-					KURL	uri;
-					uri.setProtocol("ncp");
-					uri.setHost(opts["NCP_SERVER"]);
-					uri.setPath("/" + opts["NCP_PRINTER"]);
-					uri.setUser(opts["NCP_USER"]);
-					uri.setPass(opts["NCP_PASSWD"]);
+					QString uri = buildSmbURI( 
+							QString::null,
+							opts[ "NCP_SERVER" ],
+							opts[ "NCP_PRINTER" ],
+							opts[ "NCP_USER" ],
+							opts[ "NCP_PASSWD" ] );
+					uri.replace( 0, 3, "ncp" );
 					prt->setDevice(uri);
 				}
+				prot = "ncp";
 			}
 			if (!prt->device().isEmpty())
-				prt->setLocation(i18n("Network printer (%1)").arg(prt->device().protocol()));
+				prt->setLocation(i18n("Network printer (%1)").arg(prot));
 		}
 		return true;
 	}
@@ -214,7 +209,7 @@ void ApsHandler::reset()
 
 PrintcapEntry* ApsHandler::createEntry(KMPrinter *prt)
 {
-	QString	prot = prt->device().protocol();
+	QString	prot = prt->deviceProtocol();
 	if (prot != "parallel" && prot != "lpd" && prot != "smb" && prot != "ncp")
 	{
 		manager()->setErrorMsg(i18n("Unsupported backend: %1.").arg(prot));
@@ -238,23 +233,30 @@ PrintcapEntry* ApsHandler::createEntry(KMPrinter *prt)
 			if (f.open(IO_WriteOnly))
 			{
 				QTextStream	t(&f);
-				QString	w, s, p;
-				urlToSmb(prt->device(), w, s, p);
-				if (w.isEmpty())
+				QString work, server, printer, user, passwd;
+				if ( splitSmbURI( prt->device(), work, server, printer, user, passwd ) )
 				{
-					manager()->setErrorMsg(i18n("Missing element: %1.").arg("Workgroup"));
-					return NULL;
+					if (work.isEmpty())
+					{
+						manager()->setErrorMsg(i18n("Missing element: %1.").arg("Workgroup"));
+						return NULL;
+					}
+					t << "SMB_SERVER='" << server << "'" << endl;
+					t << "SMB_PRINTER='" << printer << "'" << endl;
+					t << "SMB_IP=''" << endl;
+					t << "SMB_WORKGROUP='" << work << "'" << endl;
+					t << "SMB_BUFFER=1400" << endl;
+					t << "SMB_FLAGS='-N'" << endl;
+					if (!user.isEmpty())
+					{
+						t << "SMB_USER='" << user << "'" << endl;
+						t << "SMB_PASSWD='" << passwd << "'" << endl;
+					}
 				}
-				t << "SMB_SERVER='" << s << "'" << endl;
-				t << "SMB_PRINTER='" << p << "'" << endl;
-				t << "SMB_IP=''" << endl;
-				t << "SMB_WORKGROUP='" << w << "'" << endl;
-				t << "SMB_BUFFER=1400" << endl;
-				t << "SMB_FLAGS='-N'" << endl;
-				if (!prt->device().user().isEmpty())
+				else
 				{
-					t << "SMB_USER='" << prt->device().user() << "'" << endl;
-					t << "SMB_PASSWD='" << prt->device().pass() << "'" << endl;
+					manager()->setErrorMsg( i18n( "Invalid printer backend specification: %1" ).arg( prt->device() ) );
+					return NULL;
 				}
 			}
 			else
@@ -268,13 +270,24 @@ PrintcapEntry* ApsHandler::createEntry(KMPrinter *prt)
 			f.setName(path + "/netware.conf");
 			if (f.open(IO_WriteOnly))
 			{
-				QTextStream	t(&f);
-				t << "NCP_SERVER='" << prt->device().host() << "'" << endl;
-				t << "NCP_PRINTER='" << prt->device().path().mid(1) << "'" << endl;
-				if (!prt->device().user().isEmpty())
+				QString work, server, printer, user, passwd;
+				QString uri = prt->device();
+				uri.replace( 0, 3, "smb" );
+				if ( splitSmbURI( uri, work, server, printer, user, passwd ) )
 				{
-					t << "NCP_USER='" << prt->device().user() << "'" << endl;
-					t << "NCP_PASSWD='" << prt->device().pass() << "'" << endl;
+					QTextStream	t(&f);
+					t << "NCP_SERVER='" << server << "'" << endl;
+					t << "NCP_PRINTER='" << printer << "'" << endl;
+					if (!user.isEmpty())
+					{
+						t << "NCP_USER='" << user << "'" << endl;
+						t << "NCP_PASSWD='" << passwd << "'" << endl;
+					}
+				}
+				else
+				{
+					manager()->setErrorMsg( i18n( "Invalid printer backend specification: %1" ).arg( prt->device() ) );
+					return NULL;
 				}
 			}
 			else

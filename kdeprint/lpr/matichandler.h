@@ -47,8 +47,8 @@ protected:
 private:
 	MaticBlock* loadMaticData(const QString&);
 	DrMain* loadMaticDriver(const QString&);
-	KURL parsePostpipe(const QString&);
-	QString createPostpipe(const KURL&);
+	QString parsePostpipe(const QString&);
+	QString createPostpipe(const QString&);
 	bool savePpdFile(DrMain*, const QString&);
 
 private:

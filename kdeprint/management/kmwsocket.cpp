@@ -90,7 +90,7 @@ KMWSocket::~KMWSocket()
 void KMWSocket::updatePrinter(KMPrinter *p)
 {
 	QString	dev = QString::fromLatin1("socket://%1:%2").arg(m_printer->text()).arg(m_port->text());
-	p->setDevice(KURL(dev));
+	p->setDevice(dev);
 }
 
 bool KMWSocket::isValid(QString& msg)
