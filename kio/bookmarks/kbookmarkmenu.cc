@@ -172,7 +172,7 @@ void KBookmarkMenu::addAddBookmark()
                                           SLOT( slotAddBookmark() ),
                                           m_actionCollection, m_bIsRoot ? "add_bookmark" : 0 );
 
-  paAddBookmarks->setStatusText( i18n( "Add a bookmark for the current document" ) );
+  paAddBookmarks->setToolTip( i18n( "Add a bookmark for the current document" ) );
 
   paAddBookmarks->plug( m_parentMenu );
   m_actions.append( paAddBookmarks );
@@ -183,7 +183,7 @@ void KBookmarkMenu::addEditBookmarks()
   KAction * m_paEditBookmarks = KStdAction::editBookmarks( m_pManager, SLOT( slotEditBookmarks() ),
                                                              m_actionCollection, "edit_bookmarks" );
   m_paEditBookmarks->plug( m_parentMenu );
-  m_paEditBookmarks->setStatusText( i18n( "Edit your bookmark collection in a separate window" ) );
+  m_paEditBookmarks->setToolTip( i18n( "Edit your bookmark collection in a separate window" ) );
   m_actions.append( m_paEditBookmarks );
 }
 
@@ -201,7 +201,7 @@ void KBookmarkMenu::addNewFolder()
                                        SLOT( slotNewFolder() ),
                                        m_actionCollection );
 
-  paNewFolder->setStatusText( i18n( "Create a new bookmark folder in this menu" ) );
+  paNewFolder->setToolTip( i18n( "Create a new bookmark folder in this menu" ) );
 
   paNewFolder->plug( m_parentMenu );
   m_actions.append( paNewFolder );
@@ -261,7 +261,7 @@ void KBookmarkMenu::fillBookmarkMenu()
                                         this, SLOT( slotBookmarkSelected() ),
                                         m_actionCollection, bm.url().url().utf8() );
 
-        action->setStatusText( bm.url().prettyURL() );
+        action->setToolTip( bm.url().prettyURL() );
 
         action->plug( m_parentMenu );
         m_actions.append( action );
@@ -397,7 +397,7 @@ void KBookmarkMenuNSImporter::newBookmark( const QString & text, const QCString 
   _text.replace( QRegExp( "&" ), "&&" );
   KAction * action = new KAction( _text, "html", 0, m_menu, SLOT( slotNSBookmarkSelected() ),
                                   m_actionCollection, actionLink.data());
-  action->setStatusText( url );
+  action->setToolTip( url );
   action->plug( mstack.top()->m_parentMenu );
   mstack.top()->m_actions.append( action );
 }

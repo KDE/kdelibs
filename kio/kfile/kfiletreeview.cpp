@@ -68,8 +68,8 @@ KFileTreeView::KFileTreeView( QWidget *parent, const char *name )
     	     this, SLOT( slotExpanded( QListViewItem *) ));
     connect( this, SIGNAL( collapsed( QListViewItem *) ),
 	     this, SLOT( slotCollapsed( QListViewItem* )));
-    
-    
+
+
     /* connections from the konqtree widget */
     connect( this, SIGNAL( selectionChanged() ),
              this, SLOT( slotSelectionChanged() ) );
@@ -78,7 +78,7 @@ KFileTreeView::KFileTreeView( QWidget *parent, const char *name )
     connect( this, SIGNAL(itemRenamed(QListViewItem*, const QString &, int)),
              this, SLOT(slotItemRenamed(QListViewItem*, const QString &, int)));
 
-	     
+
     m_bDrag = false;
     m_branches.setAutoDelete( true );
 
@@ -127,7 +127,7 @@ void KFileTreeView::contentsDragMoveEvent( QDragMoveEvent *e )
    QListViewItem *par;
 
    findDrop( e->pos(), par, item );
-   
+
    if( item && item->isSelectable() )
    {
       setSelected( item, true );
@@ -165,7 +165,7 @@ void KFileTreeView::contentsDropEvent( QDropEvent *e )
 
     m_autoOpenTimer->stop();
     m_dropItem = 0;
-    
+
     kdDebug(250) << "contentsDropEvent !" << endl;
     if( ! acceptDrag( e ) ) {
        e->ignore();
@@ -186,7 +186,7 @@ void KFileTreeView::contentsDropEvent( QDropEvent *e )
        emit dropped(e, parent, afterme);
        emit dropped(this, e, parent, afterme);
 
-       
+
        KURL parentURL;
        if( afterme )
        {
@@ -259,7 +259,7 @@ void KFileTreeView::slotCollapsed( QListViewItem *item )
    {
       item->setPixmap( 0, itemIcon(kftvi));
    }
-   
+
 }
 
 void KFileTreeView::slotExpanded( QListViewItem *item )
@@ -267,7 +267,7 @@ void KFileTreeView::slotExpanded( QListViewItem *item )
    kdDebug(250) << "slotExpanded here !" << endl;
 
    if( ! item ) return;
-   
+
    KFileTreeViewItem *it = static_cast<KFileTreeViewItem*>(item);
    KFileTreeBranch *branch = it->branch();
 
@@ -420,7 +420,7 @@ void KFileTreeView::slotNewTreeViewItems( KFileTreeBranch* branch, const KFileTr
 {
    if( ! branch ) return;
    kdDebug(250) << "hitting slotNewTreeViewItems" << endl;
-   
+
    /* Sometimes it happens that new items should become selected, i.e. if the user
     * creates a new dir, he probably wants it to be selected. This can not be done
     * right after creating the directory or file, because it takes some time until
@@ -431,12 +431,12 @@ void KFileTreeView::slotNewTreeViewItems( KFileTreeBranch* branch, const KFileTr
    if( ! m_nextUrlToSelect.isEmpty() )
    {
       KFileTreeViewItemListIterator it( itemList );
-      
+
       bool end = false;
       for( ; !end && it.current(); ++it )
       {
 	 KURL url = (*it)->url();
-	 
+
 	 if( m_nextUrlToSelect.cmp(url, true ))   // ignore trailing / on dirs
 	 {
 	    setCurrentItem( static_cast<QListViewItem*>(*it) );
@@ -451,7 +451,7 @@ QPixmap KFileTreeView::itemIcon( KFileTreeViewItem *item, int gap ) const
 {
    QPixmap pix;
    kdDebug(250) << "Setting icon for column " << gap << endl;
-   
+
    if( item )
    {
       /* Check if it is a branch root */
@@ -478,7 +478,7 @@ QPixmap KFileTreeView::itemIcon( KFileTreeViewItem *item, int gap ) const
       }
    }
    }
-   
+
    return pix;
 }
 
@@ -521,9 +521,9 @@ void KFileTreeView::startAnimation( KFileTreeViewItem * item, const char * iconB
 void KFileTreeView::stopAnimation( KFileTreeViewItem * item )
 {
    if( ! item ) return;
-   
+
    kdDebug(250) << "Stoping Animation !" << endl;
-   
+
    MapCurrentOpeningFolders::Iterator it = m_mapCurrentOpeningFolders.find(item);
    if ( it != m_mapCurrentOpeningFolders.end() )
    {
@@ -606,7 +606,7 @@ KFileTreeViewItem *KFileTreeView::findItem( KFileTreeBranch* brnch, const QStrin
 
          kdDebug(250) << "assembled complete dir string " << url.prettyURL() << endl;
 
-         KFileItem *fi = brnch->find( url );
+         KFileItem *fi = brnch->findByURL( url );
          if( fi )
          {
             ret = static_cast<KFileTreeViewItem*>( fi->extraData( brnch ));
