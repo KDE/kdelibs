@@ -71,7 +71,8 @@ Terminate the sound server.
 
 autosuspend <seconds>
 
-Sets the autosuspend time for the specified number of seconds.
+Sets the autosuspend time for the specified number of seconds. A value
+of zero disables the autosuspend feature.
 
 networkbuffers <n>
 
@@ -228,6 +229,9 @@ void status(Arts::SoundServerV2 server)
 		  break;
 	  case 0:
 		  cout << "suspended" << endl;
+		  break;
+	  case -2:
+		  cout << "running, autosuspend disabled" << endl;
 		  break;
 	  default:
 		  cout << "running, will suspend in " << seconds << " s" << endl;

@@ -54,6 +54,8 @@ RealtimeStatus SoundServer_impl::realtimeStatus() {
 long SoundServer_impl::secondsUntilSuspend() {
 	if (Dispatcher::the()->flowSystem()->suspended())
 		return 0;
+	if (Dispatcher::the()->flowSystem()->suspendable() && autoSuspendTime == 0)
+		return -2;
 	if (Dispatcher::the()->flowSystem()->suspendable())
 		return (autoSuspendTime*5 - asCount)/5;
 	return -1;

@@ -133,7 +133,7 @@ bool PlayStreamJob::done()
  *    |      playSound      |      (output to soundcard)
  *     ~~~~~~~~~~~~~~~~~~~~~
  */
-SimpleSoundServer_impl::SimpleSoundServer_impl() : autoSuspendTime(60), bufferMultiplier(1)
+SimpleSoundServer_impl::SimpleSoundServer_impl() : autoSuspendTime(0), bufferMultiplier(1)
 {
 	soundcardBus.busname("out_soundcard");
 	connect(soundcardBus,_outstack);
@@ -266,7 +266,8 @@ void SimpleSoundServer_impl::notifyTime()
  * AutoSuspend
  */
 	if(Dispatcher::the()->flowSystem()->suspendable() &&
-	  !Dispatcher::the()->flowSystem()->suspended())
+	  !Dispatcher::the()->flowSystem()->suspended() &&
+	   autoSuspendTime != 0)
 	{
 		asCount++;
 		if(asCount > autoSuspendTime*5)
