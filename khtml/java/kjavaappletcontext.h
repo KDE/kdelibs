@@ -104,10 +104,10 @@ public:
     /**
      * LiveConnect functions
      */
-    bool getMember(KJavaApplet *, const unsigned long, const QString &, int &, unsigned long &, QString &);
-    bool putMember(KJavaApplet *, const unsigned long, const QString &, const QString &);
-    bool callMember(KJavaApplet *, const unsigned long, const QString &, const QStringList &, int &, unsigned long &, QString &);
-    void derefObject(KJavaApplet *, const unsigned long id);
+    bool getMember(QStringList & args, QStringList & ret_args);
+    bool putMember(QStringList & args);
+    bool callMember(QStringList & args, QStringList & ret_args);
+    void derefObject(QStringList & args);
 
     KJavaAppletServer* getServer() const { return server; }
 signals:

@@ -155,8 +155,7 @@ KJavaAppletViewer::KJavaAppletViewer (QWidget * wparent, const char *,
  : KParts::ReadOnlyPart (parent, name),
    m_browserextension (new KJavaAppletViewerBrowserExtension (this)),
    m_liveconnect (new KJavaAppletViewerLiveConnectExtension (this)),
-   m_closed (true),
-   m_jssession (0)
+   m_closed (true)
 {
     if (!serverMaintainer) {
         serverMaintainerDeleter.setObject (serverMaintainer,
@@ -268,7 +267,7 @@ KJavaAppletViewer::KJavaAppletViewer (QWidget * wparent, const char *,
 }
 
 bool KJavaAppletViewer::eventFilter (QObject *o, QEvent *e) {
-    if (m_jssession) {
+    if (m_liveconnect->jsSessions () > 0) {
         switch (e->type()) {
             case QEvent::Destroy:
             case QEvent::Close:
@@ -409,53 +408,87 @@ KJavaAppletViewerLiveConnectExtension::KJavaAppletViewerLiveConnectExtension(KJa
     : KParts::LiveConnectExtension (parent), m_viewer (parent) {
 }
 
-bool KJavaAppletViewerLiveConnectExtension::get (const unsigned long objid, const QString & field,
-                            KParts::LiveConnectExtension::Type & type,
-                            unsigned long & rid, QString & value) {
+bool KJavaAppletViewerLiveConnectExtension::get (
+        const unsigned long objid, const QString & name,
+        KParts::LiveConnectExtension::Type & type,
+        unsigned long & rid, QString & value)
+{
     if (!m_viewer->appletAlive ())
         return false;
+    QStringList args, ret_args;
     KJavaApplet * applet = m_viewer->view ()->applet ();
-    int itype;
-    m_viewer->setJSSession(true);
-    bool ret = applet->getContext()->getMember (applet, objid, field,
-                                                itype, rid, value);
-    m_viewer->setJSSession(false);
+    args.append (QString::number (applet->appletId ()));
+    args.append (QString::number (objid));
+    args.append (name);
+    m_jssessions++;
+    bool ret = applet->getContext()->getMember (args, ret_args);
+    m_jssessions--;
+    if (!ret || ret_args.count() != 3) return false;
+    bool ok;
+    int itype = ret_args[0].toInt (&ok);
+    if (!ok || itype < 0) return false;
     type = (KParts::LiveConnectExtension::Type) itype;
-    return ret;
+    rid = ret_args[1].toInt (&ok);
+    if (!ok) return false;
+    value = ret_args[2];
+    return true;
 }
 
 bool KJavaAppletViewerLiveConnectExtension::put(const unsigned long objid, const QString & name, const QString & value)
 {
     if (!m_viewer->appletAlive ())
         return false;
-    m_viewer->setJSSession(true);
+    QStringList args;
     KJavaApplet * applet = m_viewer->view ()->applet ();
-    m_viewer->setJSSession(false);
-    return applet->getContext()->putMember(applet, objid, name, value);
+    args.append (QString::number (applet->appletId ()));
+    args.append (QString::number (objid));
+    args.append (name);
+    args.append (value);
+    m_jssessions++;
+    bool ret = applet->getContext()->putMember (args);
+    m_jssessions--;
+    return ret;
 }
 
-bool KJavaAppletViewerLiveConnectExtension::call( const unsigned long objid, const QString & func, const QStringList & args, KParts::LiveConnectExtension::Type & type, unsigned long & retobjid, QString & value )
+bool KJavaAppletViewerLiveConnectExtension::call( const unsigned long objid, const QString & func, const QStringList & fargs, KParts::LiveConnectExtension::Type & type, unsigned long & retobjid, QString & value )
 {
     if (!m_viewer->appletAlive ())
         return false;
     KJavaApplet * applet = m_viewer->view ()->applet ();
-    int itype;
-    m_viewer->setJSSession(true);
-    bool ret = applet->getContext()->callMember(applet, objid, func, args, itype, retobjid, value);
-    m_viewer->setJSSession(false);
+    QStringList args, ret_args;
+    args.append (QString::number (applet->appletId ()));
+    args.append (QString::number (objid));
+    args.append (func);
+    for (QStringList::const_iterator it=fargs.begin(); it != fargs.end(); ++it)
+        args.append(*it);
+    m_jssessions++;
+    bool ret = applet->getContext()->callMember (args, ret_args);
+    m_jssessions--;
+    if (!ret || ret_args.count () != 3) return false;
+    bool ok;
+    int itype = ret_args[0].toInt (&ok);
+    if (!ok || itype < 0) return false;
     type = (KParts::LiveConnectExtension::Type) itype;
-    return ret;
+    retobjid = ret_args[1].toInt (&ok);
+    if (!ok) return false;
+    value = ret_args[2];
+    return true;
 }
 
 void KJavaAppletViewerLiveConnectExtension::unregister(const unsigned long objid)
 {
+    if (!m_viewer->view ())
+        return;
     KJavaApplet * applet = m_viewer->view ()->applet ();
     if (!applet || objid == 0) {
         // typically a gc after a function call on the applet, 
         // no need to send to the jvm
         return;
     }
-    applet->getContext()->derefObject(applet, objid);
+    QStringList args;
+    args.append (QString::number (applet->appletId ()));
+    args.append (QString::number (objid));
+    applet->getContext()->derefObject (args);
 }
 
 void KJavaAppletViewerLiveConnectExtension::jsEvent (const QStringList & args) {
@@ -470,6 +503,8 @@ void KJavaAppletViewerLiveConnectExtension::jsEvent (const QStringList & args) {
         arglist.push_back(KParts::LiveConnectExtension::ArgList::value_type((KParts::LiveConnectExtension::Type) args[i].toInt(), args[i+1]));
     emit partEvent (objid, event, arglist);
 }
+
+int KJavaAppletViewerLiveConnectExtension::m_jssessions = 0;
 
 //-----------------------------------------------------------------------------
 

@@ -38,7 +38,7 @@
 
 class KJavaAppletContext;
 class KJavaAppletServerPrivate;
-class JSStackNode;
+class JSStackFrame;
 
 class KJavaAppletServer : public QObject
 {
@@ -131,12 +131,13 @@ public:
 
     QString appletLabel();
 
-    void waitForReturnData(JSStackNode *);
+    void waitForReturnData(JSStackFrame *);
     void endWaitForReturnData();
-    bool getMember(int contextId, int appletId, const unsigned long, const QString &, int &, unsigned long &, QString &);
-    bool putMember(int contextId, int appletId, const unsigned long, const QString &, const QString &);
-    bool callMember(int contextId, int appletId, const unsigned long, const QString &, const QStringList &, int &, unsigned long &, QString &);
-    void derefObject(int contextId, int appletId, const unsigned long id);
+
+    bool getMember(QStringList & args, QStringList & ret_args);
+    bool putMember(QStringList & args);
+    bool callMember(QStringList & args, QStringList & ret_args);
+    void derefObject(QStringList & args);
 protected:
     void setupJava( KJavaProcess* p );
 

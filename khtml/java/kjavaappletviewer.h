@@ -64,15 +64,16 @@ public:
     bool put(const unsigned long, const QString & field, const QString & value);
     bool call (const unsigned long , const QString & func, const QStringList & args, KParts::LiveConnectExtension::Type & type, unsigned long & retobjid, QString & value);
     void unregister (const unsigned long objid);
+
+    int jsSessions () const { return m_jssessions; }
 public slots:
     void jsEvent (const QStringList & args);
 signals:
-
-  virtual void partEvent (const unsigned long objid, const QString & event, const KParts::LiveConnectExtension::ArgList & args);
+    virtual void partEvent (const unsigned long objid, const QString & event, const KParts::LiveConnectExtension::ArgList & args);
 
 private:
-
-  KJavaAppletViewer * m_viewer;
+    KJavaAppletViewer * m_viewer;
+    static int m_jssessions;
 };
 
 class KJavaAppletViewer : public KParts::ReadOnlyPart {
@@ -92,7 +93,6 @@ public:
     bool eventFilter (QObject *o, QEvent *e);
 
     bool appletAlive () const;
-    void setJSSession (bool b) { m_jssession += b ? 1 : -1; }
 public slots:
     virtual bool openURL (const KURL & url);
     virtual bool closeURL ();
@@ -108,7 +108,6 @@ private:
     KJavaAppletViewerLiveConnectExtension * m_liveconnect;
     QString baseurl;
     bool m_closed;
-    int m_jssession;
 };
 
 class KJavaAppletViewerFactory : public KParts::Factory {

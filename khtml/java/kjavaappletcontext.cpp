@@ -157,7 +157,7 @@ void KJavaAppletContext::received( const QString& cmd, const QStringList& arg )
         emit showDocument( arg[0], "_top" );
     }
     else if ( cmd == QString::fromLatin1( "resizeapplet" )
-              && arg.count() > 0 )
+              && arg.count() > 2 )
     {
         //arg[1] should be appletID
         //arg[2] should be new width
@@ -248,20 +248,24 @@ bool KJavaAppletContext::appletsLoaded() const {
     return true;
 }
 
-bool KJavaAppletContext::getMember(KJavaApplet * applet, const unsigned long objid, const QString & name, int & type, unsigned long & rid, QString & value) {
-    return server->getMember(id, applet->appletId(), objid, name, type, rid, value);
+bool KJavaAppletContext::getMember(QStringList & args, QStringList & ret_args) {
+    args.push_front( QString::number(id) );
+    return server->getMember( args, ret_args );
 }
 
-bool KJavaAppletContext::putMember(KJavaApplet * applet, const unsigned long objid, const QString & name, const QString & value) {
-    return server->putMember(id, applet->appletId(), objid, name, value);
+bool KJavaAppletContext::putMember( QStringList & args ) {
+    args.push_front( QString::number(id) );
+    return server->putMember( args );
 }
 
-bool KJavaAppletContext::callMember(KJavaApplet * applet, const unsigned long objid, const QString & name, const QStringList & args, int & type, unsigned long & retobjid, QString & value) {
-    return server->callMember(id, applet->appletId(), objid, name, args, type, retobjid, value);
+bool KJavaAppletContext::callMember(QStringList & args, QStringList &ret_args) {
+    args.push_front( QString::number(id) );
+    return server->callMember( args, ret_args );
 }
 
-void KJavaAppletContext::derefObject(KJavaApplet * applet, const unsigned long jid) {
-    server->derefObject(id, applet->appletId(), jid);
+void KJavaAppletContext::derefObject( QStringList & args ) {
+    args.push_front( QString::number(id) );
+    server->derefObject( args );
 }
 
 #include <kjavaappletcontext.moc>

@@ -257,9 +257,9 @@ public class KJASProtocolHandler
         } else
         if (cmd_code_value == GetMember)
         {
+            int ticketnr = Integer.parseInt( getArg( command ) );
             String contextID = getArg( command );
             String appletID  = getArg( command );
-            int ticketnr = Integer.parseInt( getArg( command ) );
             int objid  = Integer.parseInt( getArg( command ) );
             String name  = getArg( command );
             int [] ret_type_obj = { -1, 0 };
@@ -273,9 +273,9 @@ public class KJASProtocolHandler
         } else
         if (cmd_code_value == PutMember)
         {
+            int ticketnr = Integer.parseInt( getArg( command ) );
             String contextID = getArg( command );
             String appletID  = getArg( command );
-            int ticketnr = Integer.parseInt( getArg( command ) );
             int objid  = Integer.parseInt( getArg( command ) );
             String name  = getArg( command );
             String value  = getArg( command );
@@ -291,9 +291,9 @@ public class KJASProtocolHandler
             new Thread("CallMember") {
                 byte [] command;
                 public void run() {
+                    int ticketnr = Integer.parseInt( getArg( command ) );
                     String contextID = getArg( command );
                     String appletID  = getArg( command );
-                    int ticketnr = Integer.parseInt( getArg( command ) );
                     int objid  = Integer.parseInt( getArg( command ) );
                     String name  = getArg( command );
                     int [] ret_type_obj = { -1, 0 };
