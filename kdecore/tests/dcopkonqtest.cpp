@@ -1,4 +1,5 @@
 #include <kapp.h>
+#include <kdebug.h>
 #include <dcopclient.h>
 
 int main( int argc, char** argv )
@@ -10,13 +11,13 @@ int main( int argc, char** argv )
 
     QByteArray data;
 
-debug("sending reparseConfiguration to object KonquerorIface in konqueror");
+    kdDebug() << "sending reparseConfiguration to object KonquerorIface in konqueror" << endl;
        QByteArray snd;
        QByteArray rcv;
        QCString _type_;
        kapp->dcopClient()->call( "konqueror", "KonquerorIface", "reparseConfiguration()", snd, _type_, rcv );
-       debug(_type_);
-       if( _type_ != "void" ) debug("void expected, %s returned",_type_.data());
+       kdDebug() << _type_ << endl;
+       if( _type_ != "void" ) kdDebug() << "void expected, " << _type_.data() << " returned" << endl;
 
 /*
 debug("sending configure to object KonquerorIface in konqueror");

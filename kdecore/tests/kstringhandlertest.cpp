@@ -5,8 +5,8 @@
 
 bool check(QString txt, QString a, QString b)
 {
-  printf("%s : checking '%s' against expected value '%s'... ",
-         debugString(txt), debugString(a), debugString(b));
+  kdDebug() << txt << ": checking '" << a << "' against expected value '"
+	    << b << "'... " << endl;
   if (a == b) 
     printf("ok\n");
   else {
