@@ -1408,6 +1408,8 @@ void RenderTable::setCellWidths()
 void RenderTable::print( QPainter *p, int _x, int _y,
 				  int _w, int _h, int _tx, int _ty)
 {
+    if ( !m_visible )
+	return;
 
 //    if(!layouted()) return;
 
@@ -1718,6 +1720,9 @@ void RenderTableCell::absolutePosition(int &xPos, int &yPos)
 void RenderTableCell::print(QPainter *p, int _x, int _y,
 				       int _w, int _h, int _tx, int _ty)
 {
+    if ( !m_visible )
+	return;
+
 #ifdef DEBUG_LAYOUT
     kdDebug( 6040 ) << renderName() << "(RenderTableCell)::print() w/h = (" << width() << "/" << height() << ")" << endl;
 #endif

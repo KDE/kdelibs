@@ -160,7 +160,7 @@ bool RenderListItem::checkChildren() const
 void RenderListItem::print(QPainter *p, int _x, int _y, int _w, int _h,
 			     int _tx, int _ty)
 {
-    if ( !m_height )
+    if ( !m_height || !m_visible )
 	return;
 
 #ifdef DEBUG_LAYOUT

@@ -358,7 +358,8 @@ protected:
     bool m_relPositioned  : 1;
     bool m_printSpecial   : 1; // if the box has something special to print (background, border, etc)
     bool m_isAnonymous    : 1;
-
+    bool m_visible : 1;
+    
     RenderStyle *m_style;
     RenderObject *m_parent;
     RenderObject *m_previous;

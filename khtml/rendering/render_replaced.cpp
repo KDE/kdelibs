@@ -29,7 +29,10 @@ using namespace khtml;
 void RenderReplaced::print( QPainter *p, int _x, int _y, int _w, int _h,
 			    int _tx, int _ty)
 {
-   _tx += m_x;
+    if ( !m_visible )
+	return;
+
+    _tx += m_x;
    _ty += m_y;
 
 //   if((_ty > _y + _h) || (_ty + m_height < _y)) return;
@@ -53,7 +56,7 @@ RenderWidget::~RenderWidget()
     assert(!deleted);
     if (m_widget)
     {
-       disconnect( m_widget, SIGNAL( destroyed()), 
+       disconnect( m_widget, SIGNAL( destroyed()),
              this, SLOT( slotWidgetDestructed()));
        delete m_widget;
     }
@@ -63,7 +66,7 @@ RenderWidget::~RenderWidget()
 void RenderWidget::setQWidget(QWidget *widget)
 {
     m_widget = widget;
-    connect( m_widget, SIGNAL( destroyed()), 
+    connect( m_widget, SIGNAL( destroyed()),
              this, SLOT( slotWidgetDestructed()));
 }
 
@@ -125,17 +128,17 @@ short RenderWidget::verticalPositionHint() const
 
 short RenderWidget::intrinsicWidth() const
 {
-    if (m_widget) 
+    if (m_widget)
 	return m_widget->width();
-    else 
+    else
 	return 0;
 }
 
 int RenderWidget::intrinsicHeight() const
 {
-    if (m_widget) 
+    if (m_widget)
 	return m_widget->height();
-    else 
+    else
 	return 0;
 }
 

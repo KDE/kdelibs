@@ -125,6 +125,8 @@ RenderFlow::~RenderFlow()
 void RenderFlow::print(QPainter *p, int _x, int _y, int _w, int _h,
 				 int _tx, int _ty)
 {
+    if ( !m_visible )
+	return;
 
 #ifdef DEBUG_LAYOUT
     kdDebug( 6040 ) << renderName() << "(RenderFlow) " << this << " ::print() x/y/w/h = ("  << xPos() << "/" << yPos() << "/" << width() << "/" << height()  << ")" << endl;
@@ -154,6 +156,7 @@ void RenderFlow::print(QPainter *p, int _x, int _y, int _w, int _h,
 void RenderFlow::printObject(QPainter *p, int _x, int _y,
 				       int _w, int _h, int _tx, int _ty)
 {
+
 #ifdef DEBUG_LAYOUT
     kdDebug( 6040 ) << renderName() << "(RenderFlow) " << this << " ::printObject() w/h = (" << width() << "/" << height() << ")" << endl;
 #endif

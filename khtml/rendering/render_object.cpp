@@ -113,7 +113,8 @@ RenderObject::RenderObject()
     m_printSpecial = false;
     m_containsPositioned = false;
     m_isAnonymous = false;
-
+    m_visible = true;
+    
     m_bgImage = 0;
 }
 
@@ -442,6 +443,9 @@ void RenderObject::setStyle(RenderStyle *style)
     if( m_style->backgroundColor().isValid() || m_style->hasBorder() || m_bgImage )
 	m_printSpecial = true;
 
+    if( m_style->visiblity() == HIDDEN || m_style->visiblity() == COLLAPSE )
+	m_visible = false;
+    
     setMinMaxKnown(false);
     setLayouted(false);
 }

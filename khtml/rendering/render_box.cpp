@@ -172,6 +172,9 @@ int RenderBox::height() const
 void RenderBox::print(QPainter *p, int _x, int _y, int _w, int _h,
 				  int _tx, int _ty)
 {
+    if ( !m_visible )
+	return;
+    
     _tx += m_x;
     _ty += m_y;
 
@@ -521,7 +524,7 @@ void RenderBox::calcWidth()
                 m_width = w.width(cw);
 	        m_width += paddingLeft() + paddingRight() + borderLeft() + borderRight();
             }
-                
+
             return;
         }
 	else if (w.type == Variable)
@@ -545,7 +548,7 @@ void RenderBox::calcWidth()
 	
             calcHorizontalMargins(ml,mr,cw);
 	}
-        
+
 	if (cw != m_width + m_marginLeft + m_marginRight && !isFloating() && !isInline())
 	{
     	    if (style()->direction()==LTR)
@@ -619,8 +622,8 @@ void RenderBox::calcHeight()
 	Length tm = style()->marginTop();
 	Length bm = style()->marginBottom();
 	Length ch = containingBlock()->style()->height();
-        
-        // margins are calculated with respect to the _width_ of 
+
+        // margins are calculated with respect to the _width_ of
         // the containing block (8.3)
         int cw = containingBlockWidth();
 	

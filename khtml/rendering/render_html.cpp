@@ -45,6 +45,9 @@ void RenderHtml::setStyle(RenderStyle *style)
 
 void RenderHtml::print(QPainter *p, int _x, int _y, int _w, int _h, int _tx, int _ty)
 {
+    if ( !m_visible )
+	return;
+
     _tx += m_x;
     _ty += m_y;
 
