@@ -3,8 +3,7 @@
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
-    License as published by the Free Software Foundation; either
-    version 2 of the License, or (at your option) any later version.
+    License version 2 as published by the Free Software Foundation.
 
     This library is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -20,8 +19,8 @@
 
 */
 
-#ifndef _KWIDGET_H
-#define _KWIDGET_H
+#ifndef _KTMAINWINDOW_H
+#define _KTMAINWINDOW_H
 
 #include <stdlib.h>
 #include <qlist.h>
@@ -34,6 +33,7 @@ class KConfig;
 class KHelpMenu;
 class KMenuBar;
 class KTMLayout;
+class KTMainWindowPrivate;
 
 /**
  * Top level widget that provides toolbars, a status line and a frame.
@@ -89,7 +89,8 @@ class KTMLayout;
 
  */
 
-class KTMainWindow : public QWidget {
+class KTMainWindow : public QWidget
+{
     Q_OBJECT
 
         friend class KToolBar;
@@ -668,6 +669,8 @@ private:
    KTMLayout* layoutMgr;
 
    KHelpMenu    *mHelpMenu;
+
+   KTMainWindowPrivate *d;
 
 protected:
 

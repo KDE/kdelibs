@@ -6,8 +6,7 @@
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
-    License as published by the Free Software Foundation; either
-    version 2 of the License, or (at your option) any later version.
+    License version 2 as published by the Free Software Foundation.
 
     This library is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -87,6 +86,17 @@ public:
     }
 };
 
+class KTMainWindowPrivate
+{
+public:
+  KTMainWindowPrivate()
+  {
+  }
+  ~KTMainWindowPrivate()
+  {
+  }
+};
+
 static KTLWSessionManaged* ksm = 0;
 
 
@@ -95,6 +105,8 @@ static bool initing = FALSE;
 KTMainWindow::KTMainWindow( const char *name, WFlags f )
     : QWidget( 0L, name, f )
 {
+    d = new KTMainWindowPrivate();
+
     initing = TRUE;
 
     kmenubar = 0L;
@@ -170,6 +182,7 @@ KTMainWindow::~KTMainWindow()
 
   //if (!QApplication::closingDown())
     delete mHelpMenu;
+
   debug ("KTM destructor: end");
 }
 
@@ -824,7 +837,5 @@ void KTMainWindow::showAboutApplication( void )
 {
   // Just an empty virtual slot
 }
-
-
 
 #include "ktmainwindow.moc"
