@@ -333,6 +333,16 @@ protected:
     * process. (Matthias) */
     virtual bool queryExit();
 
+    /**
+     * Called before window is closed, but only if it is not the last one.
+     * (in that case see @ref #queryExit )
+     * Reimplement this function if you want to ignore/accept close event.
+     * Default implementation returns true. returning false will ignore
+     * closing. (sven)
+     */
+    virtual bool queryClose();
+
+    
   /** Save your instance-specific properties.
    * You MUST NOT change the group of the kconfig object,
    * since KTMW uses one group for each window.

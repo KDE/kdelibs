@@ -122,14 +122,22 @@ void KTMainWindow::deleteAll(){
 
 void KTMainWindow::closeEvent ( QCloseEvent *e){
   if (memberList->count() > 1){
-      e->accept();
-      delete this;
+      if (queryClose())
+      {
+        e->accept();
+        delete this;
+      }
   }
   else if (queryExit()) {
       e->accept();
       delete this;
       qApp->quit();
   }
+}
+
+bool KTMainWindow::queryClose()
+{
+  return true;
 }
 
 bool KTMainWindow::queryExit(){
