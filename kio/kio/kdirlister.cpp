@@ -223,8 +223,6 @@ void KDirListerCache::listDir( KDirLister* lister, const KURL& _u,
       if ( lister->d->url == _url )
         lister->d->rootFileItem = 0;
 
-      lister->d->complete = false;
-
       KIO::ListJob* job = KIO::listDir( _url, false /* no default GUI */ );
       jobs.insert( job, QValueList<KIO::UDSEntry>() );
 
@@ -252,7 +250,6 @@ void KDirListerCache::listDir( KDirLister* lister, const KURL& _u,
 
     emit lister->started( _url );
 
-    lister->d->complete = false;
     urlsCurrentlyListed[urlStr]->append( lister );
 
     KIO::ListJob *job = jobForUrl( urlStr );
@@ -572,7 +569,6 @@ void KDirListerCache::updateDirectory( const KURL& _dir )
         for ( KDirLister *kdl = holders->first(); kdl; kdl = holders->next() )
         {
            kdl->jobStarted( job );
-           kdl->d->complete = false;
            if ( first && kdl->d->window )
            {
               first = false;
@@ -1093,7 +1089,6 @@ void KDirListerCache::slotRedirection( KIO::Job *j, const KURL& url )
     for ( KDirLister *kdl = holders->first(); kdl; kdl = holders->next() )
     {
       kdl->jobStarted( job );
-      kdl->d->complete = false;
       
       // do it like when starting a new list-job that will redirect later
       emit kdl->started( oldUrl );
@@ -1170,7 +1165,6 @@ void KDirListerCache::slotRedirection( KIO::Job *j, const KURL& url )
       for ( KDirLister *kdl = curHolders->first(); kdl; kdl = curHolders->next() )  // holders of newUrl
       {
         kdl->jobStarted( job );
-        kdl->d->complete = false;
         emit kdl->started( newUrl );
       }
 
@@ -2422,6 +2416,7 @@ void KDirLister::jobStarted( KIO::ListJob *job )
   jobData.totalSize = 0;
 
   d->jobData.insert( job, jobData );
+  d->complete = false;
 }
 
 void KDirLister::connectJob( KIO::ListJob *job )
