@@ -1,6 +1,10 @@
 [Desktop Entry]
 Comment=Desktop config file
-Icon=kmailion.xpm
+Comment[de]=Konfigurationsdatei für die Arbeitsfläche
+Comment[eo]=Labortabula agordo-dosiero
+Comment[hu]=Munkaasztal konfigurációs fájl
+Comment[ja]=¥Ç¥¹¥¯¥È¥Ã¥×ÀßÄê¥Õ¥¡¥¤¥ë
+Icon=exec.xpm
 Type=MimeType
 MimeType=application/x-desktop
 Patterns=;
