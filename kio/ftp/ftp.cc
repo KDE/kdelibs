@@ -261,7 +261,7 @@ void Ftp::openConnection()
 {
   kdDebug(7102) << "openConnection " << m_host << ":" << m_port << " " << m_user << " [password hidden]" << endl;
 
-  infoMessage( i18n("Opening connection to host %1").arg(m_host) );
+  infoMessage( i18n("Opening connection to host <b>%1</b>").arg(m_host) );
 
   if ( m_host.isEmpty() )
   {
@@ -278,7 +278,7 @@ void Ftp::openConnection()
 
   m_bFtpStarted = true;
 
-  infoMessage( i18n("Connected to host %1").arg(m_host) );
+  infoMessage( i18n("Connected to host <b>%1</b>").arg(m_host) );
   kdDebug(7102) << "Connected ...." << endl;
 
   m_bLoggedOn = ftpLogin( m_user );
@@ -455,8 +455,8 @@ bool Ftp::ftpLogin( const QString & user )
     }
   }
 
-  kdDebug(7102) << "Login ok" << endl;
-  infoMessage( i18n("Login ok") );
+  kdDebug(7102) << "Login OK" << endl;
+  infoMessage( i18n("Login OK") );
 
   // Okay, we're logged in. If this is IIS 4, switch dir listing style to Unix:
   // Thanks to jk@soegaard.net (Jens Kristian Søgaard) for this hint

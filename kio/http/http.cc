@@ -748,7 +748,7 @@ HTTPProtocol::http_openConnection()
         return false;
       }
 
-      infoMessage( i18n("Connecting to %1...").arg(m_state.hostname) );
+      infoMessage( i18n("Connecting to <b>%1</b>...").arg(m_state.hostname) );
 
       if(::connect(m_sock, (struct sockaddr*)(&m_proxySockaddr), sizeof(m_proxySockaddr))) {
         if((errno != EINPROGRESS) && (errno != EWOULDBLOCK)) {
@@ -826,7 +826,7 @@ HTTPProtocol::http_openConnection()
         return false;
       }
 
-      infoMessage( i18n("Connecting to %1...").arg(m_state.hostname) );
+      infoMessage( i18n("Connecting to <b>%1</b>...").arg(m_state.hostname) );
 
       if(::connect(m_sock, (struct sockaddr*)( &server_name ), sizeof(server_name))) {
         if((errno != EINPROGRESS) && (errno != EWOULDBLOCK)) {
@@ -1297,7 +1297,7 @@ bool HTTPProtocol::http_open()
   if (moreData)
      res = sendBody();
 
-  infoMessage( i18n( "%1 contacted. Waiting for reply..." ).arg( m_request.hostname ) );
+  infoMessage( i18n( "<b>%1</b> contacted. Waiting for reply..." ).arg( m_request.hostname ) );
 
   return res;
 #endif
@@ -1570,29 +1570,34 @@ bool HTTPProtocol::readHeader()
         // The value in our cache is still valid.
         cacheValidated = true;
       }
-      else if ((code == 301) || (code == 307))
+      else if (code >= 301 && code <= 303)
       {
         // 301 Moved permanently
-        // 307 Temporary Redirect
-        if (m_request.method == HTTP_POST)
-        {
-           errorPage();
-           m_bCachedWrite = false; // Don't put in cache
-           mayCache = false;
-           noRedirect = true;
-        }
-      }
-      else if ((code == 302) || (code == 303))
-      {
-        // 302 Found
+        // 302 Found (temporary location)
         // 303 See Other
-        if (m_request.method != HTTP_HEAD)
+        if (m_request.method != HTTP_HEAD && m_request.method != HTTP_GET)
         {
-           m_request.method = HTTP_GET; // Force a GET!
-           m_bCachedWrite = false; // Don't put in cache
-           mayCache = false;
+           // NOTE: This is wrong according to RFC 2616.  However,
+           // because most other existing user agent implementations
+           // treat a 301/302 response as a 303 response and preform
+           // a GET action regardless of what the previous method was,
+           // many servers have simply adapted to this way of doing
+           // things!!  Thus, we are forced to do the same thing or we
+           // won't be able to retrieve these pages correctly!!  This
+           // implementation is therefore only correct for a 303 response
+           // according to RFC 2616 section 10.3.2/3/4/8
+           m_request.method = HTTP_GET; // Force a GET
         }
+        m_bCachedWrite = false; // Don't put in cache
+        mayCache = false;
       }
+      else if (code == 307)
+      {
+        // 307 Temporary Redirect
+        m_bCachedWrite = false; // Don't put in cache
+        mayCache = false;
+      }
+
     }
     // In fact we should do redirection only if we got redirection code
     else if (strncasecmp(buffer, "Location:", 9) == 0 ) {
@@ -1841,7 +1846,6 @@ bool HTTPProtocol::readHeader()
       error(ERR_MALFORMED_URL, u.url());
       return false;
     }
-
     redirection(u.url());
     m_bCachedWrite = false; // Turn off caching on re-direction (DA)
     mayCache = false;
@@ -2673,7 +2677,7 @@ bool HTTPProtocol::readBody( )
 
   totalSize( (m_iSize > -1) ? m_iSize : 0 );
 
-  infoMessage( i18n( "Retrieving data from %1" ).arg( m_request.hostname ) );
+  infoMessage( i18n( "Retrieving data from <b>%1</b>" ).arg( m_request.hostname ) );
 
   // get the starting time.  this is used later to compute the transfer
   // speed.
