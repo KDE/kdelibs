@@ -483,9 +483,9 @@ void KPixmapEffect::unbalancedGradient(KPixmap &pixmap, const QColor &ca,
 	  for (y = 0; y < h; y++) {
               unsigned int *scanline = (unsigned int *)image.scanLine(y);
               for (x = 0; x < w; x++) {
-                  scanline[x] = qRgb(rcb - (xtable[0][dir] + ytable[0][y]),
-                                     gcb - (xtable[1][dir] + ytable[1][y]),
-                                     bcb - (xtable[2][dir] + ytable[2][y]));
+                  scanline[x] = qRgb(rcb - (xtable[0][x] + ytable[0][y]),
+                                     gcb - (xtable[1][x] + ytable[1][y]),
+                                     bcb - (xtable[2][x] + ytable[2][y]));
               }
           }
         }
