@@ -1042,6 +1042,7 @@ private slots:
   void slotDecZoomFast();
 
   void slotLoadImages();
+  void slotWalletClosed();
 
   /**
    * @internal
