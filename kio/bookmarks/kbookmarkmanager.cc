@@ -73,6 +73,18 @@ KBookmarkManager* KBookmarkManager::managerForFile( const QString& bookmarksFile
     return mgr;
 }
 
+// principally used for filtered toolbars
+KBookmarkManager* KBookmarkManager::createTempManager()
+{
+    if ( !s_pSelf ) {
+        sdbm.setObject( s_pSelf, new QPtrList<KBookmarkManager> );
+        s_pSelf->setAutoDelete( true );
+    }
+    KBookmarkManager* mgr = new KBookmarkManager();
+    s_pSelf->append( mgr );
+    return mgr;
+}
+
 #define PI_DATA "version=\"1.0\" encoding=\"UTF-8\""
 
 KBookmarkManager::KBookmarkManager( const QString & bookmarksFile, bool bImportDesktopFiles )
@@ -98,6 +110,27 @@ KBookmarkManager::KBookmarkManager( const QString & bookmarksFile, bool bImportD
     
     connectDCOPSignal(0, objId(), "bookmarksChanged(QString)", "notifyChanged(QString)", false);
     connectDCOPSignal(0, objId(), "bookmarkConfigChanged()", "notifyConfigChanged()", false);
+}
+
+KBookmarkManager::KBookmarkManager( )
+    : DCOPObject(QCString("KBookmarkManager-generated")), m_doc("xbel"), m_docIsLoaded(true)
+{
+    m_toolbarDoc.clear(); // strange ;-)
+
+    m_update = false; // TODO - make it read/write
+    m_showNSBookmarks = true;
+
+    m_bookmarksFile = QString::null; // AK - check all codepaths for this one
+
+    QDomElement topLevel = m_doc.createElement("xbel");
+    m_doc.appendChild( topLevel );
+    m_doc.insertBefore( m_doc.createProcessingInstruction( "xml", PI_DATA), topLevel );
+    
+    // TODO - enable this via some sort of api and fix the above DCOPObject script somehow
+#if 0
+    connectDCOPSignal(0, objId(), "bookmarksChanged(QString)", "notifyChanged(QString)", false);
+    connectDCOPSignal(0, objId(), "bookmarkConfigChanged()", "notifyConfigChanged()", false);
+#endif
 }
 
 KBookmarkManager::~KBookmarkManager()

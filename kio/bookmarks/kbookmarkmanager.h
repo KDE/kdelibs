@@ -71,6 +71,11 @@ protected:
      */
     KBookmarkManager( const QString & bookmarksFile, bool bImportDesktopFiles = true );
 
+    /**
+     * @since 3.2
+     */
+    KBookmarkManager();
+
 public:
     /**
      * Destructor
@@ -199,6 +204,9 @@ public:
      */
     static KBookmarkManager* managerForFile( const QString& bookmarksFile,
                                    bool bImportDesktopFiles = true );
+
+
+    static KBookmarkManager* createTempManager();
 
     /**
      * Returns a pointer to the users main bookmark collection.
