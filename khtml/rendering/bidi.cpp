@@ -697,14 +697,16 @@ BidiContext *RenderFlow::bidiReorderLine(BidiStatus &status, const BidiIterator 
 	r->baseline = r->obj->baselinePosition();
         r->vertical = r->obj->verticalPositionHint();
         //kdDebug(6041) << "object="<< r->obj << " height="<<r->height<<" baseline="<< r->baseline << " vertical=" << r->vertical <<endl;
-        if(r->vertical == PositionTop || r->vertical == PositionBottom ) {
-            if(maxHeight < r->height) maxHeight = r->height;
-        } else {
-            int ascent = r->baseline - r->vertical;
-            int descent = r->height - ascent;
-            if(maxAscent < ascent) maxAscent = ascent;
-            if(maxDescent < descent) maxDescent = descent;
-        }
+        int ascent;
+        if ( r->vertical == PositionTop )
+            ascent = 0;
+        else if ( r->vertical == PositionBottom )
+            ascent = r->height;
+        else
+            ascent = r->baseline - r->vertical;
+        int descent = r->height - ascent;
+        if(maxAscent < ascent) maxAscent = ascent;
+        if(maxDescent < descent) maxDescent = descent;
         r = runs.next();
     }
     if(maxHeight < maxAscent + maxDescent) maxHeight = maxAscent + maxDescent;
