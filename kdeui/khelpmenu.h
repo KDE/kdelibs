@@ -49,16 +49,17 @@ class KAboutDialog;
  * connect( this, SIGNAL(someSignal()), mHelpMenu,SLOT(mHelpMenu->aboutKDE()));
  *
  * IMPORTANT:
- * If you use mHelpMenu->menu() once, a QPopupMenu object is allocated. Only
- * one object is created by the class so if you call mHelpMenu->menu() twice 
- * or more, only one QPopupMenu object is created. The class will not 
- * destroy this popupmenu itself. So to avoid a memory leak you should do
- * the following in your destructor:
+ * The first time you use mHelpMenu->menu(), a QPopupMenu object is 
+ * allocated. Only one object is created by the class so if you call 
+ * mHelpMenu->menu() twice or more, the same pointer is returned. The class 
+ * will destroy the popupmenu in the destructor so do not delete this 
+ * pointer yourself.
  * 
+ * The KHelpMenu object will be deleted when its parent is destroyed but you 
+ * can delete it yourself if you want. The code below will always work.
+ *
  * MyClass::~MyClass( void )
  * {
- *   delete mHelpMenu->menu(); // Only required if mHelpMenu->menu() has 
- *                             // already been used.
  *   delete mHelpMenu;
  * }
  *
@@ -87,7 +88,7 @@ class KHelpMenu : public QObject
     /**
      * Destructor
      *
-     * Destroys dialogs. NOTE: The menu is not destroyed.
+     * Destroys dialogs and the menu pointer retuned by @ref menu
      */
     ~KHelpMenu( void );
 
@@ -95,11 +96,8 @@ class KHelpMenu : public QObject
      * Returns a popup menu you can use in the menu bar or where you 
      * need it. 
      *
-     * Note 1: You must delete the returned object when you do not
-     * need it anymore. It is not destroyed by the destructor.
-     *
-     * Note 2: This method will only create one instance of the menu. If
-     * you call this method twice or more the same menu pointer is returned
+     * Note: This method will only create one instance of the menu. If
+     * you call this method twice or more the same pointer is returned
      */
     QPopupMenu *menu( void );
 
@@ -122,6 +120,14 @@ class KHelpMenu : public QObject
      */
     void aboutKDE( void );
 
+  private slots:
+    /**
+     * Connected to the menu pointer (if created) to detect a delete
+     * operation on the pointer. You should not delete the pointer in your
+     * code yourself. Let the KHelpMenu destructor do the job.
+     */
+    void menuDestroyed( void );
+
   private:
     QPopupMenu   *mMenu;
     QMessageBox  *mAboutApp;
@@ -133,3 +139,5 @@ class KHelpMenu : public QObject
 
 
 #endif
+
+

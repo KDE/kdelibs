@@ -32,7 +32,7 @@
 
 
 KHelpMenu::KHelpMenu( QWidget *parent, const QString &aboutAppText )
-  : QObject( parent ), mMenu(0), mAboutApp(0), mAboutKDE(0)
+  : QObject(parent), mMenu(0), mAboutApp(0), mAboutKDE(0)
 {
   mParent = parent;
   mAboutAppText = aboutAppText;
@@ -41,6 +41,7 @@ KHelpMenu::KHelpMenu( QWidget *parent, const QString &aboutAppText )
 
 KHelpMenu::~KHelpMenu( void )
 {
+  delete mMenu;
   delete mAboutApp;
   delete mAboutKDE;
 }
@@ -52,6 +53,7 @@ QPopupMenu* KHelpMenu::menu( void )
   {
     mMenu = new QPopupMenu();
     if( mMenu == 0 ) { return(0); }
+    connect( mMenu, SIGNAL(destroyed()), this, SLOT(menuDestroyed()));
 
     int id = mMenu->insertItem( i18n( "&Contents" ) );
     mMenu->connectItem( id, this, SLOT( appHelpActivated() ) );
@@ -156,5 +158,13 @@ void KHelpMenu::aboutKDE( void )
   mAboutKDE->show();
 }
 
-#include "khelpmenu.moc"
 
+void KHelpMenu::menuDestroyed( void )
+{
+  mMenu = 0;
+}
+
+
+
+
+#include "khelpmenu.moc"
