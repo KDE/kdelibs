@@ -88,6 +88,11 @@ build-stamp: configure-stamp
 	echo Building API Documentation
 	-doxygen Doxyfile
 
+	# generate manpages
+	for i in debian/*.sgml; do \
+		docbook-to-man $$i > `dirname $$i`/`basename $$i .sgml`.1 ;\
+	done
+
 	touch build-stamp
 
 debian-clean:
@@ -100,7 +105,7 @@ clean: debian-clean
 	dh_testdir
 	dh_testroot
 	rm -f build-stamp configure-stamp \
-		 debian/debiandirs debian/system.kdeglobals
+		 debian/debiandirs debian/system.kdeglobals debian/*.1
 
 	# Remove Debian specific patches
 	if test -f patch-stamp; then \
