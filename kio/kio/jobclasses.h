@@ -122,9 +122,9 @@ namespace KIO {
          * Use this to display the error yourself, but for a dialog box
          * use Job::showErrorDialog. Do not call it if error()
 	 * is not 0.
-	 * @return the error message. If there is on error, a message
-	 *         tellng the user that the app is broken, so check with
-	 * error() whether there is an error
+	 * @return the error message and if there is no error, a message
+	 *         telling the user that the app is broken, so check with
+	 *         error() whether there is an error
          */
         QString errorString() const;
 
