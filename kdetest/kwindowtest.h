@@ -5,6 +5,8 @@
 #include <kstatusbar.h>
 #include "ktoolbar.h"
 
+// #define _HAVE_RADIOGROUP
+
 
 class testWindow  : public KTopLevelWidget
 {
@@ -34,12 +36,13 @@ public slots:
     void slotExit();
     void slotFrame();
     void slotListCompletion();
-    void slotWidth();
+    void slotMessage(int, bool);
     void slotToggle(bool);
     void slotClearCombo();
     void slotGoGoGoo();
     void slotInsertListInCombo ();
     void slotMakeItem3Current ();
+    void slotToggled(int);
 protected:
     KMenuBar *menuBar;
     QPopupMenu *fileMenu;
@@ -59,6 +62,9 @@ protected:
     QMultiLineEdit *widget;
     QTimer *timer;
     QProgressBar *pr;
+#ifdef _HAVE_RADIOGROUP
+    KRadioGroup *rg;
+#endif
 };
 
 

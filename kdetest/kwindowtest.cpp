@@ -15,6 +15,8 @@
 #include "kwindowtest.moc"
 
 #include <kmsgbox.h>
+
+
 //#include <dclock.h>
 
 /*
@@ -64,7 +66,6 @@ testWindow::testWindow (QWidget *, const char *name)
     itemsMenu->insertItem ("delete/insert exit button", this, SLOT(slotExit()));
     itemsMenu->insertItem ("insert/delete green frame!", this, SLOT(slotFrame()));
     itemsMenu->insertItem ("enable/disable Lined", this, SLOT(slotLined()));
-    itemsMenu->insertItem ("decrease MaxWidth", this, SLOT(slotWidth()));
     itemsMenu->insertItem ("Toggle fileNew", this, SLOT(slotNew()));
     itemsMenu->insertItem ("Clear comboBox", this, SLOT(slotClearCombo()));
     itemsMenu->insertItem ("Insert List in Combo", this, SLOT(slotInsertListInCombo()));
@@ -80,8 +81,8 @@ testWindow::testWindow (QWidget *, const char *name)
     /*Now, we setup statusbar order is not important. */
     /**************************************************/
     statusBar = new KStatusBar (this);
-    statusBar->insertItem("Hi there!", 0);
-    statusBar->insertItem("What?", 1);
+    statusBar->insertItem("Hi there!                         ", 0);
+    statusBar->insertItem("Look for tooltips to see functions", 1);
 
     //DigitalClock *clk = new DigitalClock (statusBar);
     //clk->setFrameStyle(QFrame::NoFrame);
@@ -108,16 +109,17 @@ testWindow::testWindow (QWidget *, const char *name)
     // First four  buttons
     pix = loader->loadIcon("filenew.xpm");
     toolBar->insertButton(pix, 0, SIGNAL(clicked()), this, SLOT(slotNew()),
-                         TRUE, "Create new file");
+                         TRUE, "Create.. (toggles upper button)");
     pix = loader->loadIcon("fileopen.xpm");
     toolBar->insertButton(pix, 1, SIGNAL(clicked()), this, SLOT(slotOpen()),
-                         false, "Read window properties");
+                         false, "Open");
     pix = loader->loadIcon("filefloppy.xpm");
     toolBar->insertButton(pix, 2, SIGNAL(clicked()), this, SLOT(slotSave()),
-                         TRUE, "Save window properties");
+                          TRUE, "Save (beep or delayed popup)");
+    toolBar->setDelayedPopup(2, itemsMenu);
     pix = loader->loadIcon("fileprint.xpm");
     toolBar->insertButton(pix, 3, SIGNAL(clicked()), this, SLOT(slotPrint()),
-                         TRUE, "Print file");
+                         TRUE, "Print (enables/disables open)");
 
     // And a combobox
     // arguments: text (or strList), ID, writable, signal, object, slot, enabled,
@@ -163,36 +165,51 @@ testWindow::testWindow (QWidget *, const char *name)
 
     pix = loader->loadIcon("fileopen.xpm");
     tb1->insertButton(pix, 1, SIGNAL(clicked()), this, SLOT(slotOpen()),
-                          TRUE, "Open existing file2");
+                          TRUE, "Open (starts progres in sb)");
 
     tb1->insertSeparator ();
     
     pix = loader->loadIcon("filefloppy.xpm");
     tb1->insertButton(pix, 2, SIGNAL(clicked()), this, SLOT(slotSave()),
-                         TRUE, "Save file2");
+                      TRUE, "Save file2 (autorepeat)");
+    tb1->setAutoRepeat(2);
+    
     pix = loader->loadIcon("fileprint.xpm");
-    tb1->insertButton(pix, 3, SIGNAL(clicked()), this, SLOT(slotPrint()),
-                         TRUE, "Print file2");
+    tb1->insertButton(pix, 3, itemsMenu, true, "Print (pops menu)");
     
     tb1->insertSeparator ();
-
+    /**** RADIO BUTTONS */
     pix = loader->loadIcon("filenew.xpm");
-    tb1->insertButton(pix, 4, SIGNAL(clicked()), this, SLOT(slotNew()),
-                         TRUE, "Create new file2");
+    tb1->insertButton(pix, 4, true, "Radiobutton1");
+    tb1->setToggle(4);
 
     pix = loader->loadIcon("fileopen.xpm");
-    tb1->insertButton(pix, 5, SIGNAL(clicked()), this, SLOT(slotOpen()),
-                          TRUE, "Open existing file2");
-
-    tb1->insertSeparator ();
+    tb1->insertButton(pix, 5, true, "Radiobutton2");
+    tb1->setToggle(5);
     
     pix = loader->loadIcon("filefloppy.xpm");
-    tb1->insertButton(pix, 6, SIGNAL(clicked()), this, SLOT(slotSave()),
-                         TRUE, "Save file2");
+    tb1->insertButton(pix, 6, true, "Radiobutton3");
+    tb1->setToggle(6);
+    
     pix = loader->loadIcon("fileprint.xpm");
-    tb1->insertButton(pix, 7, SIGNAL(clicked()), this, SLOT(slotPrint()),
-                         TRUE, "Print file2");
+    tb1->insertButton(pix, 7, true, "Radiobutton4");
+    tb1->setToggle(7);
 
+#ifdef _HAVE_RADIOGROUP
+    //Create
+    rg = new KRadioGroup (tb1);
+
+    rg->addButton(4);
+    rg->addButton(5);
+    rg->addButton(6);
+    rg->addButton(7);
+#else
+#warning Radio group not yet implemented in this version
+    debug ("WARNING: Radio group not yet implemented in this version");
+#endif
+
+    connect (tb1, SIGNAL(toggled(int)), this, SLOT(slotToggled(int)));
+    
     // Set caption for floating toolbars
     toolBar->setTitle ("Toolbar 1");
     tb1->setTitle ("Toolbar 2");
@@ -208,6 +225,9 @@ testWindow::testWindow (QWidget *, const char *name)
     // add two toolbars
     toolbar2 = addToolBar (tb1);
     toolbar1 = addToolBar (toolBar);
+
+    connect (toolBar, SIGNAL(highlighted(int,bool)), this, SLOT(slotMessage(int, bool)));
+    connect (tb1, SIGNAL(highlighted(int, bool)), this, SLOT(slotMessage(int, bool)));
 
     // Floating is enabled by default, so you don't need this.
     // toolBar->enableFloating(TRUE);
@@ -237,10 +257,15 @@ testWindow::testWindow (QWidget *, const char *name)
     completions->insertItem("/vmlinuz :-)");
 
     connect (completions, SIGNAL(activated(int)), this, SLOT(slotCompletionsMenu(int)));
+    pr = 0;
 }
 /***********************************/
 /*  Now slots for toolbar actions  */
 /***********************************/
+void testWindow::slotToggled(int)
+{
+  statusBar->message ("Buton toggled", 1500);
+}
 
 void testWindow::slotInsertClock()
 {
@@ -255,7 +280,8 @@ void testWindow::slotNew()
 }
 void testWindow::slotOpen()
 {
-  pr= new QProgressBar (statusBar);
+  if (pr == 0)
+    pr = new QProgressBar (statusBar);
   statusBar->message(pr);
   timer = new QTimer (pr);
 
@@ -271,14 +297,16 @@ void testWindow::slotGoGoGoo()
     timer->stop();
     statusBar->clear();
     delete pr;
+    pr = 0;
   }
 }
 
 void testWindow::slotSave()
 {
-    statusBar->changeItem("Saving properties...", 0);
-
+  kapp->beep();
+  statusBar->changeItem("Saving properties...", 0);
 }
+
 void testWindow::slotPrint()
 {
     statusBar->changeItem("Print file pressed", 0);
@@ -349,10 +377,10 @@ void testWindow::slotHide1 ()
 
 testWindow::~testWindow ()
 {
-    /********************************************************/
-    /*                                                      */
-    /*                THIS IS IMPORTANT!!!                  */
-    /*                                                      */
+  /********************************************************/
+  /*                                                      */
+  /*   THIS IS NOT ANY MORE IMPORTANT BUT ALLOWED!!!      */
+  /*                                                      */
   /********************************************************/
 
   delete tb1->getWidget(8);
@@ -448,17 +476,13 @@ void testWindow::slotFrame()
    }
 }
 
-void testWindow::slotWidth()
+void testWindow::slotMessage(int, bool boo)
 {
-  // this sets maximal width for horizontal toolbars
-  // argument is width of free space between end of horizontal toolbar and
-  // toplewel end of toplevelwidget
-  // That is we, want toolbar to be max KTopLevelWidget::width() - 40 wide
-  
-  toolBar->setMaxWidth(40);
-  tb1->setMaxWidth(40);
+  if (boo)
+    statusBar->message("This button does this and that", 1500);
+  else
+    statusBar->clear();
 }
-
 // Now few Combo slots, for Torben
 
 void testWindow::slotClearCombo()
