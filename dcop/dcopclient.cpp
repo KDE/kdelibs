@@ -92,7 +92,7 @@ static Status NewClientProc ( SmsConn, SmPointer, unsigned long*, SmsCallbacks*,
 static void registerXSM()
 {
     char 	errormsg[256];
-    if (!SmsInitialize ("SAMPLE-SM", "1.0",
+    if (!SmsInitialize ((char *)"SAMPLE-SM", (char *)"1.0",
 	NewClientProc, NULL,
 	HostBasedAuthProc, 256, errormsg))
     {
