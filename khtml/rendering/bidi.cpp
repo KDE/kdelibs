@@ -990,11 +990,9 @@ void RenderFlow::layoutInlineChildren()
 
     emptyRun = true;
 
-    if(style()->hasPadding())
-    {
-        m_height += paddingTop();
-        toAdd += paddingBottom();
-    }
+    m_height += paddingTop();
+    toAdd += paddingBottom();
+
     if(firstChild()) {
         // layout replaced elements
         RenderObject *o = first( this );

@@ -29,8 +29,11 @@
 
 using namespace khtml;
 
+/* CSS says Fixde for the default padding value, but we treat variable as 0 padding anyways, and like
+ * this is works fine for table paddings aswell
+ */
 StyleSurroundData::StyleSurroundData()
-    : margin( Fixed ), padding( Fixed )
+    : margin( Fixed ), padding( Variable )
 {
 }
 

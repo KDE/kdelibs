@@ -622,10 +622,12 @@ void RenderFieldset::printBoxDecorations(QPainter *p,int, int _y,
 
     printBackground(p, style()->backgroundColor(), style()->backgroundImage(), my, mh, _tx, _ty, w, h);
 
-    if(legend && style()->hasBorder())
-        printBorderMinusLegend(p, _tx, _ty, w, h, style(), lx, lw);
-    else if(style()->hasBorder())
-        printBorder(p, _tx, _ty, w, h, style());
+    if ( style()->hasBorder() ) {
+	if ( legend )
+	    printBorderMinusLegend(p, _tx, _ty, w, h, style(), lx, lw);
+	else
+	    printBorder(p, _tx, _ty, w, h, style());
+    }
 }
 
 void RenderFieldset::printBorderMinusLegend(QPainter *p, int _tx, int _ty, int w, int h,

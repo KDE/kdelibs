@@ -91,8 +91,7 @@ RenderBox::~RenderBox()
 short RenderBox::contentWidth() const
 {
     short w = m_width - style()->borderLeftWidth() - style()->borderRightWidth();
-    if(style()->hasPadding())
-        w -= paddingLeft() + paddingRight();
+    w -= paddingLeft() + paddingRight();
 
     //kdDebug( 6040 ) << "RenderBox::contentWidth(2) = " << w << endl;
     return w;
@@ -101,8 +100,7 @@ short RenderBox::contentWidth() const
 int RenderBox::contentHeight() const
 {
     int h = m_height - style()->borderTopWidth() - style()->borderBottomWidth();
-    if(style()->hasPadding())
-        h -= paddingTop() + paddingBottom();
+    h -= paddingTop() + paddingBottom();
 
     return h;
 }
