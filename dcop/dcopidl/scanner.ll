@@ -12,6 +12,7 @@ class QString;
 
 extern int idl_line_no;
 int comment_mode;
+int function_mode = 0;
 
 #include <qstring.h>
 
@@ -105,7 +106,7 @@ Esc_Sequence2           "\\"{Oct_Digit}{1,3}
 Esc_Sequence3           "\\"(x|X){Hex_Digit}{1,2}
 Esc_Sequence            ({Esc_Sequence1}|{Esc_Sequence2}|{Esc_Sequence3})
 Char                    ([^\n\t\"\'\\]|{Esc_Sequence})
-Char_Literal            "'"({Char}|\")"'"
+Char_Literal            "'"({Char}|\"|\\)"'"
 String_Literal		\"({Char}|"'")*\"
 Float_Literal1		{Digits}"."{Digits}(e|E)("+"|"-")?{Digits}
 Float_Literal2		{Digits}(e|E)("+"|"-")?{Digits}
@@ -128,7 +129,8 @@ Kidl_Identifier		[_a-zA-Z][a-zA-Z0-9_]*
 
 "/\*"           { comment_mode = 1; }
 "\*/"           { if (!comment_mode) { REJECT; } else { comment_mode = 0; } }
-[^\n*]*         { if (!comment_mode) { REJECT; } }
+"}"		{ if (!function_mode) { REJECT; } else { function_mode = 0; } }
+[^\n*]*         { if (!comment_mode && !function_mode) { REJECT; } }
 "*"             { if (!comment_mode) { REJECT; } }
 
 "//"[^\n]*		;
@@ -149,6 +151,8 @@ Kidl_Identifier		[_a-zA-Z][a-zA-Z0-9_]*
 "("			return T_LEFT_PARANTHESIS;
 ")"			return T_RIGHT_PARANTHESIS;
 ":"			return T_COLON;
+"+"			return T_PLUS;
+"-"			return T_MINUS;
 "~"			return T_TILDE;
 ","			return T_COMMA;
 "*"			return T_ASTERISK;
@@ -159,8 +163,11 @@ Kidl_Identifier		[_a-zA-Z][a-zA-Z0-9_]*
 "::"			return T_SCOPE;
 "="			return T_EQUAL;
 "."			return T_ACCESS;
+"..."			return T_TRIPLE_DOT;
+"["			return T_ARRAY_OPEN;
+"]"			return T_ARRAY_CLOSE;
 "->"			return T_ACCESS;
-(">="|"<="|"!="|"==")	return T_MISCOPERATOR;
+(">="|"<="|"!="|"=="|"<<"|">>")	return T_MISCOPERATOR;
 
 
 const			return T_CONST;
@@ -171,15 +178,21 @@ struct			return T_STRUCT;
 operator		return T_FUNOPERATOR;
 virtual			return T_VIRTUAL;
 public			return T_PUBLIC;
+inline			return T_INLINE;
 static			return T_STATIC;
 signed			return T_SIGNED;
 unsigned		return T_UNSIGNED;
+short			return T_SHORT;
+long			return T_LONG;
+friend			return T_FRIEND;
 protected		return T_PROTECTED;
 private			return T_PRIVATE;
 signals			return T_SIGNAL;
 return			return T_RETURN;
 slots			return T_SLOT;
 true			return T_TRUE;
+int			return T_INT;
+char			return T_CHAR;
 false			return T_FALSE;
 TRUE			return T_TRUE;
 FALSE			return T_FALSE;
@@ -188,11 +201,13 @@ typedef			return T_TYPEDEF;
 K_DCOP			return T_DCOP;
 Q_OBJECT		;
 ("0"|"0L")		return T_NULL;
+"extern \"C\""		return T_EXTERN;
 
 {Kidl_Identifier}	{
 			  yylval._str = new QString( yytext );
 			  return T_IDENTIFIER;
 			}
+
 {Float_Literal1}	|
 {Float_Literal2}	|
 {Float_Literal3}	|
@@ -224,7 +239,13 @@ Q_OBJECT		;
                           yylval._str = new QString( s.mid( 1, s.length() - 2 ) );
 			  return T_STRING_LITERAL;
 			}
-.			return T_UNKNOWN;
+.			{
+			  if (function_mode)
+				return yylex(); // call once again
+
+			  fatal("could not parse %c(%d) at line %d" , yytext[0], yytext[0], idl_line_no);
+			  return T_UNKNOWN;
+			}
 
 %%
 

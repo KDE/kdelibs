@@ -13,6 +13,7 @@ extern int yylex();
 
 // extern QString idl_lexFile;
 extern int idl_line_no;
+extern int function_mode;
 
 static int dcop_area = 0;
 
@@ -40,7 +41,6 @@ void yyerror( const char *s )
 %token <_float> T_DOUBLE_LITERAL
 %token <_str> T_IDENTIFIER
 %token <_int> T_INTEGER_LITERAL
-%token <_int> T_CHAR_LITERAL
 %token <_str> T_STRING_LITERAL
 %token <_str> T_INCLUDE
 %token T_CLASS
@@ -53,33 +53,46 @@ void yyerror( const char *s )
 %token T_SEMICOLON
 %token T_PUBLIC
 %token T_PROTECTED
+%token T_TRIPE_DOT
 %token T_PRIVATE
 %token T_VIRTUAL
 %token T_CONST
+%token T_INLINE
+%token T_FRIEND
 %token T_RETURN
 %token T_SIGNAL
 %token T_SLOT
 %token T_TYPEDEF
+%token T_PLUS
+%token T_MINUS
 %token T_COMMA
 %token T_ASTERISK
 %token T_TILDE
 %token T_LESS
 %token T_GREATER
 %token T_AMPERSAND
+%token T_EXTERN
 %token T_ACCESS
 %token T_ENUM
 %token T_NAMESPACE
 %token T_UNKNOWN
+%token T_TRIPLE_DOT
 %token T_TRUE
 %token T_FALSE
 %token T_STATIC
 %token T_EQUAL
 %token T_SCOPE
 %token T_NULL
+%token T_INT
+%token T_ARRAY_OPEN
+%token T_ARRAY_CLOSE
+%token T_CHAR
 %token T_DCOP
 %token T_DCOP_AREA
 %token T_SIGNED
 %token T_UNSIGNED
+%token T_LONG
+%token T_SHORT
 %token T_FUNOPERATOR
 %token T_MISCOPERATOR
 
@@ -96,9 +109,8 @@ void yyerror( const char *s )
 %type <_str> type_name
 %type <_str> type_list
 %type <_str> params
-%type <_str> return
+%type <_str> int_type
 %type <_int> const_qualifier
-%type <_str> prequalifier
 %type <_int> virtual_qualifier
 %type <_str> Identifier
 %type <_int> dcoptag
@@ -109,7 +121,6 @@ void yyerror( const char *s )
 main
 	: includes declaration main
 	  {
-	     dcop_area = 0; // reset
 	  }
 	| /* empty */
 	
@@ -117,6 +128,9 @@ includes
 	: T_INCLUDE includes
           {
 		printf("<INCLUDE file=\"%s\"/>\n", $1->latin1() );
+	  }
+	| T_EXTERN T_LEFT_CURLY_BRACKET main T_RIGHT_CURLY_BRACKET
+	  {
 	  }
         | /* empty */
           {
@@ -145,7 +159,16 @@ declaration
 	| T_NAMESPACE T_IDENTIFIER T_LEFT_CURLY_BRACKET main T_RIGHT_CURLY_BRACKET T_SEMICOLON
 	  {
 	  }
-	| T_TYPEDEF return Identifier T_SEMICOLON
+	| T_TYPEDEF type Identifier T_SEMICOLON
+	  {
+	  }
+	| T_TYPEDEF T_STRUCT T_LEFT_CURLY_BRACKET member_list T_RIGHT_CURLY_BRACKET Identifier T_SEMICOLON
+	  {
+	  }
+	| T_TYPEDEF T_STRUCT Identifier T_LEFT_CURLY_BRACKET member_list T_RIGHT_CURLY_BRACKET Identifier T_SEMICOLON
+	  {
+	  }
+	| T_INLINE function
 	  {
 	  }
 	| function
@@ -157,6 +180,10 @@ declaration
 	| enum
 	  {
 	  }
+
+member_list
+	: member member_list
+	| /* empty */
 
 bool_value: T_TRUE | T_FALSE;
 
@@ -255,10 +282,18 @@ body
 	  {	
 	        $$ = $2;
 	  }
-	| member body {
+	| member body
+	  {
  	        $$ = $2;
-	}
-	;
+	  }
+	| T_FRIEND T_CLASS Identifier T_SEMICOLON body
+	  {
+		$$ = $5;
+	  }
+	| T_FRIEND Identifier T_SEMICOLON body
+	  {
+		$$ = $4;
+	  }
 
 enum
 	: T_ENUM T_IDENTIFIER T_LEFT_CURLY_BRACKET enum_list T_RIGHT_CURLY_BRACKET T_IDENTIFIER T_SEMICOLON
@@ -270,9 +305,19 @@ enum_list
 	| enum_item
 
 enum_item
-	: T_IDENTIFIER T_EQUAL T_INTEGER_LITERAL {}
-	| T_IDENTIFIER T_EQUAL T_CHAR_LITERAL {}
+	: T_IDENTIFIER T_EQUAL int_expression {}
 	| T_IDENTIFIER {}
+
+number
+	: T_CHARACTER_LITERAL {}
+	| T_INTEGER_LITERAL {}
+	| T_MINUS T_INTEGER_LITERAL {}
+	| T_NULL {}
+	| Identifier {}
+	
+int_expression
+	: number {}
+	| number T_PLUS number {}
 
 typedef
 	: T_TYPEDEF Identifier T_LESS type_list T_GREATER Identifier T_SEMICOLON
@@ -284,6 +329,11 @@ typedef
 		} else {
 		  $$ = new QString("");
 		}
+	  }
+	| T_TYPEDEF Identifier T_LESS type_list T_GREATER T_SCOPE T_IDENTIFIER Identifier T_SEMICOLON
+	  {
+		if (dcop_area)
+		  yyerror("scoped template typedefs are not supported in dcop areas!");
 	  }
 
 const_qualifier
@@ -297,17 +347,18 @@ const_qualifier
 	  }
 	;
 
-prequalifier
-	: T_SIGNED { $$ = new QString("signed"); }
-	| T_UNSIGNED { $$ = new QString("unsigned"); }
-
-return
-	: type
-	  {
-		QString* tmp = new QString("<RET %1");
-		*tmp = tmp->arg( *($1) );
-		$$ = tmp;
-	  }
+int_type
+	: T_SIGNED { $$ = new QString("signed int"); }
+	| T_UNSIGNED { $$ = new QString("unsigned int"); }
+	| T_SIGNED T_SHORT { $$ = new QString("signed short int"); }
+	| T_SIGNED T_LONG { $$ = new QString("signed long int"); }
+	| T_SIGNED T_SHORT T_INT { $$ = new QString("signed short int"); }
+	| T_INT { $$ = new QString("int"); }
+	| T_LONG { $$ = new QString("long int"); }
+	| T_SHORT { $$ = new QString("short int"); }
+	| T_CHAR { $$ = new QString("char"); }
+	| T_SIGNED T_CHAR { $$ = new QString("signed char"); }
+	| T_UNSIGNED T_CHAR { $$ = new QString("unsigned char"); }
 
 asterisks
 	: T_ASTERISK asterisks
@@ -319,9 +370,6 @@ params
 		$$ = new QString( "" );
 	  }
 	| param
-	  {
-		$$ = $1;
-	  }
 	| params T_COMMA param
 	  {
 		$$ = new QString( *($1) + *($3) );
@@ -329,13 +377,27 @@ params
 	;
 
 type_name
-	: prequalifier Identifier { $$ = new QString( *($1) + *($2) ); }
+	: int_type
 	| Identifier { $$ = $1; }
+	| T_STRUCT Identifier { $$ = $2; }
+	| T_CLASS Identifier { $$ = $2; }
+	| Identifier T_LESS type_list T_GREATER {
+		QString *tmp = new QString("%1<%2>");
+		tmp->arg(*($1));
+		tmp->arg(*($3));
+	 }
+	| Identifier T_LESS type_list T_GREATER T_SCOPE Identifier{
+		QString *tmp = new QString("%1<%2>::%3");
+		tmp->arg(*($1));
+		tmp->arg(*($3));
+		tmp->arg(*($6));
+	 }
 
 type
-	: type_name T_AMPERSAND {
-	     if (dcop_area)
-		yyerror("in dcop areas are only const references allowed!");
+	: T_CONST type_name asterisks
+  	  {
+	    if (dcop_area)
+	      yyerror("in dcop areas are no pointers allowed");
 	  }
 	| T_CONST type_name T_AMPERSAND {
 	     if (dcop_area) {
@@ -344,26 +406,16 @@ type
 		$$ = tmp;
 	     }
 	  }
-	| T_CONST Identifier T_LESS type_list T_GREATER T_AMPERSAND {
-		if (dcop_area) {
-		  QString* tmp = new QString(" type=\"%1<%2>\" qleft=\"const\" qright=\"" AMP_ENTITY "\"/>");
-		  *tmp = tmp->arg( *($2) ).arg( *($4) );
-		  $$ = tmp;
-		}
+	| T_CONST type_name {
+		QString* tmp = new QString(" type=\"%1\"/>");
+		*tmp = tmp->arg( *($2) );
+		$$ = tmp;
 	}
-	| Identifier T_LESS type_list T_GREATER T_AMPERSAND {
-	    if (dcop_area)
-	      yyerror("in dcop areas are only const references allowed!");	
-	}
-	| Identifier T_LESS type_list T_GREATER asterisks {
-	    if (dcop_area)
-	      yyerror("in dcop areas are no pointers allowed!");
-	}
-	| Identifier T_LESS type_list T_GREATER {
-	     QString* tmp = new QString(" type=\"%1<%2>\" qleft=\"\" qright=\"\"/>");
-	     *tmp = tmp->arg( *($1) ).arg( *($3) );
-	     $$ = tmp;
-	}
+	| type_name T_AMPERSAND {
+	     if (dcop_area)
+		yyerror("in dcop areas are only const references allowed!");
+	  }
+
 	| type_name {
 		QString* tmp = new QString(" type=\"%1\"/>");
 		*tmp = tmp->arg( *($1) );
@@ -374,18 +426,11 @@ type
 	    if (dcop_area)
 	      yyerror("in dcop areas are no pointers allowed");
 	  }
-	| T_CONST type_name asterisks
-  	  {
-	    if (dcop_area)
-	      yyerror("in dcop areas are no pointers allowed");
-	  }
+
 
 type_list
 	: type T_COMMA type_list
 	  {
-	    if (dcop_area)
-		yyerror("two argument templates in dcop area currently not supported!");
-
 	    $$ = new QString(*($1) + "," + *($3));
 	  }
 	| type
@@ -408,6 +453,12 @@ param
 		  yyerror("in dcoparea you have to specify paramater names!");
 		$$ = new QString();
 	  }
+	| T_TRIPLE_DOT
+	  {
+		if (dcop_area)
+			yyerror("variable arguments not supported in dcop area!");
+		$$ = new QString("");
+	  }
 
 default
 	: /* empty */
@@ -416,19 +467,10 @@ default
 	| T_EQUAL T_STRING_LITERAL
 	  {
 	  }
-	| T_EQUAL T_CHARACTER_LITERAL
+	| T_EQUAL int_expression
 	  {
 	  }
 	| T_EQUAL T_DOUBLE_LITERAL
-	  {
-	  }
-	| T_EQUAL T_INTEGER_LITERAL
-	  {
-	  }
-	| T_EQUAL T_NULL
-	  {
-	  }
-	| T_EQUAL Identifier
 	  {
 	  }
 	| T_EQUAL bool_value
@@ -447,10 +489,10 @@ operator
 	: T_MISCOPERATOR | T_GREATER | T_LESS | T_EQUAL ;
 
 function_header
-	: return Identifier T_LEFT_PARANTHESIS params T_RIGHT_PARANTHESIS const_qualifier
+	: type Identifier T_LEFT_PARANTHESIS params T_RIGHT_PARANTHESIS const_qualifier
 	  {
 	     if (dcop_area) {
-		QString* tmp = new QString("<FUNC name=\"%1\" qual=\"%4\">%2%3</FUNC>\n");
+		QString* tmp = new QString("<FUNC name=\"%1\" qual=\"%4\"><RET%2%3</FUNC>\n");
 		*tmp = tmp->arg( *($2) );
 		*tmp = tmp->arg( *($1) );
 		*tmp = tmp->arg( *($4) );
@@ -459,12 +501,25 @@ function_header
    	     } else
 	        $$ = new QString("");
 	  }
-	| return T_FUNOPERATOR operator T_LEFT_PARANTHESIS params T_RIGHT_PARANTHESIS const_qualifier
+	| type T_FUNOPERATOR operator T_LEFT_PARANTHESIS params T_RIGHT_PARANTHESIS const_qualifier
 	  {
 	     if (dcop_area)
 		yyerror("operators aren't allowed in dcop areas!");
 	     $$ = new QString("");
 	  }
+
+argument : number {}
+
+arguments
+	: argument {}
+	| argument T_COMMA arguments {}
+	
+init_item
+	: T_IDENTIFIER T_LEFT_PARANTHESIS arguments T_RIGHT_PARANTHESIS {}
+
+init_list
+	: init_item {}
+	| init_item T_COMMA init_list {}
 
 function
 	: function_header function_body
@@ -485,36 +540,52 @@ function
 	      assert(!dcop_area);
               $$ = new QString("");
 	  }
+	| Identifier T_LEFT_PARANTHESIS params T_RIGHT_PARANTHESIS T_COLON init_list function_body
+	  {
+	      /* The constructor */
+	      assert(!dcop_area);
+              $$ = new QString("");
+	  }
 	| virtual_qualifier T_TILDE Identifier T_LEFT_PARANTHESIS T_RIGHT_PARANTHESIS function_body
 	  {
 	      /* The destructor */
   	      assert(!dcop_area);
               $$ = new QString("");
 	  }
-	| T_STATIC return Identifier T_LEFT_PARANTHESIS params T_RIGHT_PARANTHESIS function_body
+	| T_STATIC function_header function_body
 	  {
 		if (dcop_area)
 		  yyerror("static is not allowed in dcop area!");
 		$$ = new QString();
 	  }
 
+function_begin : T_LEFT_CURLY_BRACKET
+	{
+		function_mode = 1;
+	}
+	
 function_body
 	: T_SEMICOLON
-	| T_LEFT_CURLY_BRACKET function_lines T_RIGHT_CURLY_BRACKET
-	| T_LEFT_CURLY_BRACKET function_lines T_RIGHT_CURLY_BRACKET T_SEMICOLON
+	| function_begin function_lines T_RIGHT_CURLY_BRACKET
+	| function_begin function_lines T_RIGHT_CURLY_BRACKET T_SEMICOLON
 
 function_lines
-	: T_RETURN Identifier T_SEMICOLON function_lines {}
-	| T_RETURN Identifier T_LEFT_PARANTHESIS params T_RIGHT_PARANTHESIS T_SEMICOLON function_lines {}
-	| T_RETURN Identifier T_ACCESS T_IDENTIFIER T_SEMICOLON function_lines {}
-	| T_RETURN Identifier T_ACCESS T_IDENTIFIER T_LEFT_PARANTHESIS params T_RIGHT_PARANTHESIS T_SEMICOLON function_lines {}
-	| T_IDENTIFIER T_EQUAL T_IDENTIFIER T_SEMICOLON function_lines {}
+	: function_line function_lines {}
 	| /* empty */ {}
-	;
+
+function_line
+	: T_SEMICOLON /* dummy */
+
+Identifier_list_rest
+	: T_COMMA Identifier_list
+	| /* empty */
+
+Identifier_list : T_IDENTIFIER Identifier_list_rest {}
 
 member
-	: return T_IDENTIFIER T_SEMICOLON {}
-	| T_STATIC return T_IDENTIFIER T_SEMICOLON {}
+	: type Identifier_list T_SEMICOLON {}
+	| T_STATIC type T_IDENTIFIER T_SEMICOLON {}
+	| type T_IDENTIFIER T_ARRAY_OPEN int_expression T_ARRAY_CLOSE T_SEMICOLON {}
 
 %%
 
