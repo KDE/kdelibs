@@ -460,6 +460,8 @@ int KAction::plug( QWidget *w, int index )
 	kdWarning() << "KAction::plug called with 0 argument\n";
  	return -1;
   }
+  if (kapp && !kapp->authorizeKAction(name()))
+    return -1;
 
   // Plug into the KMainWindow accel so that keybindings work for
   // actions that are only plugged into a toolbar, and in case of
@@ -1024,6 +1026,8 @@ int KToggleAction::plug( QWidget* widget, int index )
     kdWarning() << "Can not plug KToggleAction in " << widget->className() << endl;
     return -1;
   }
+  if (kapp && !kapp->authorizeKAction(name()))
+    return -1;
 
   int _index = KAction::plug( widget, index );
   if ( _index == -1 )
@@ -1451,7 +1455,9 @@ void KSelectAction::updateItems( int id )
 
 int KSelectAction::plug( QWidget *widget, int index )
 {
-	kdDebug(125) << "KAction::plug( " << widget << ", " << index << " )" << endl; // remove -- ellis
+  if (kapp && !kapp->authorizeKAction(name()))
+    return -1;
+  kdDebug(125) << "KAction::plug( " << widget << ", " << index << " )" << endl; // remove -- ellis
   if ( widget->inherits("QPopupMenu") )
   {
     // Create the PopupMenu and store it in m_menu
@@ -2052,6 +2058,8 @@ void KFontAction::setFont( const QString &family )
 
 int KFontAction::plug( QWidget *w, int index )
 {
+  if (kapp && !kapp->authorizeKAction(name()))
+    return -1;
   if ( w->inherits("KToolBar") )
   {
     KToolBar* bar = static_cast<KToolBar*>( w );
@@ -2316,7 +2324,9 @@ void KActionMenu::setStickyMenu(bool sticky) {
 
 int KActionMenu::plug( QWidget* widget, int index )
 {
-	kdDebug(125) << "KAction::plug( " << widget << ", " << index << " )" << endl; // remove -- ellis
+  if (kapp && !kapp->authorizeKAction(name()))
+    return -1;
+  kdDebug(125) << "KAction::plug( " << widget << ", " << index << " )" << endl; // remove -- ellis
   if ( widget->inherits("QPopupMenu") )
   {
     QPopupMenu* menu = static_cast<QPopupMenu*>( widget );
@@ -2483,6 +2493,8 @@ void KToolBarPopupAction::setStickyMenu(bool sticky) {
 
 int KToolBarPopupAction::plug( QWidget *widget, int index )
 {
+  if (kapp && !kapp->authorizeKAction(name()))
+    return -1;
   // This is very related to KActionMenu::plug.
   // In fact this class could be an interesting base class for KActionMenu
   if ( widget->inherits( "KToolBar" ) )

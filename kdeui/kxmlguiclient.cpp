@@ -31,6 +31,7 @@
 #include <kstandarddirs.h>
 #include <kdebug.h>
 #include <kaction.h>
+#include <kapplication.h>
 
 class KXMLGUIClientPrivate
 {
@@ -274,7 +275,9 @@ bool KXMLGUIClient::mergeXML( QDomElement &base, const QDomElement &additive, KA
     // not implemented, then we remove the element
     if ( tag == tagAction )
     {
-      if ( !actionCollection->action( e.attribute( attrName ).utf8() ) )
+      QCString name =  e.attribute( attrName ).utf8(); // WABA
+      if ( !actionCollection->action( name ) ||
+           (kapp && !kapp->authorizeKAction(name)))
       {
         // remove this child as we aren't using it
         QDomElement oldChild = e;

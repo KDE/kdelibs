@@ -117,34 +117,50 @@ KPopupMenu* KHelpMenu::menu()
     mMenu = new KPopupMenu();
     connect( mMenu, SIGNAL(destroyed()), this, SLOT(menuDestroyed()));
 
-    mMenu->insertItem( BarIcon( "contents", KIcon::SizeSmall),
-		       i18n( "%1 &Handbook" ).arg( appName) ,menuHelpContents );
-    mMenu->connectItem( menuHelpContents, this, SLOT(appHelpActivated()) );
-    mMenu->setAccel( KStdAccel::key(KStdAccel::Help), menuHelpContents );
+    bool need_separator = false;
+    if (kapp->authorizeKAction("help_contents"))
+    {
+      mMenu->insertItem( BarIcon( "contents", KIcon::SizeSmall),
+                     i18n( "%1 &Handbook" ).arg( appName) ,menuHelpContents );
+      mMenu->connectItem( menuHelpContents, this, SLOT(appHelpActivated()) );
+      mMenu->setAccel( KStdAccel::key(KStdAccel::Help), menuHelpContents );
+      need_separator = true;
+    }
 
-    if( mShowWhatsThis == true )
+    if( (mShowWhatsThis == true) && kapp->authorizeKAction("help_whats_this") )
     {
       QToolButton* wtb = QWhatsThis::whatsThisButton(0);
       mMenu->insertItem( wtb->iconSet(),i18n( "What's &This" ), menuWhatsThis);
       mMenu->connectItem( menuWhatsThis, this, SLOT(contextHelpActivated()) );
       delete wtb;
       mMenu->setAccel( SHIFT + Key_F1, menuWhatsThis );
+      need_separator = true;
     }
 
-    mMenu->insertSeparator();
+    if (kapp->authorizeKAction("help_report_bug"))
+    {
+      if (need_separator)
+        mMenu->insertSeparator();
+      mMenu->insertItem( i18n( "&Report Bug..." ), menuReportBug );
+      mMenu->connectItem( menuReportBug, this, SLOT(reportBug()) );
+      need_separator = true;
+    }
 
-    mMenu->insertItem( i18n( "&Report Bug..." ), menuReportBug );
-    mMenu->connectItem( menuReportBug, this, SLOT(reportBug()) );
+    if (need_separator)
+      mMenu->insertSeparator();
 
-    mMenu->insertSeparator();
-
-
-    mMenu->insertItem( kapp->miniIcon(),
-      i18n( "&About %1" ).arg(appName), menuAboutApp );
-    mMenu->connectItem( menuAboutApp, this, SLOT( aboutApplication() ) );
-
-    mMenu->insertItem( SmallIcon("go"), i18n( "About &KDE" ), menuAboutKDE );
-    mMenu->connectItem( menuAboutKDE, this, SLOT( aboutKDE() ) );
+    if (kapp->authorizeKAction("help_about_app"))
+    {
+      mMenu->insertItem( kapp->miniIcon(),
+        i18n( "&About %1" ).arg(appName), menuAboutApp );
+      mMenu->connectItem( menuAboutApp, this, SLOT( aboutApplication() ) );
+    }
+    
+    if (kapp->authorizeKAction("help_about_kde"))
+    {
+      mMenu->insertItem( SmallIcon("go"), i18n( "About &KDE" ), menuAboutKDE );
+      mMenu->connectItem( menuAboutKDE, this, SLOT( aboutKDE() ) );
+    }
   }
 
   return( mMenu );
