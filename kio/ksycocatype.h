@@ -48,7 +48,8 @@ enum KSycocaFactoryId { KST_KServiceFactory = 1,
                         KST_KServiceTypeFactory = 2,
                         KST_KServiceGroupFactory = 3,
                         KST_KImageIO = 4,
-                        KST_KProtocolInfoFactory = 5 };
+                        KST_KProtocolInfoFactory = 5,
+                        KST_CTimeInfo = 100 };
 
 #define K_SYCOCAFACTORY( factory_id ) \
 public: \
