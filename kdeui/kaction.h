@@ -260,60 +260,213 @@ public:
     QString  actionName;
 };
 
+/**
+ *  Checkbox like action.
+ *
+ *  This action provides two states: checked or not.
+ *
+ *  @short Checkbox like action.
+ */
 class KToggleAction : public QToggleAction
 {
     Q_OBJECT
+    
 public:
+    
+    /**
+     * Construct a toggle action with text and potential keyboard
+     * accelerator but nothing else. Use this only if you really
+     * know what you are doing.
+     *
+     * @param text The text that will be displayed.
+     * @param accel The corresponding keyboard accelerator (shortcut).
+     * @param parent This action's parent.
+     * @param name An internal name for this action.
+     */
     KToggleAction( const QString& text, int accel = 0, QObject* parent = 0, const char* name = 0 );
+    
+    /**
+     *  @param text The text that will be displayed.
+     *  @param accel The corresponding keyboard accelerator (shortcut).
+     *  @param receiver The SLOT's parent.
+     *  @param slot The SLOT to invoke to execute this action.
+     *  @param parent This action's parent.
+     *  @param name An internal name for this action.
+     */
     KToggleAction( const QString& text, int accel,
 		   const QObject* receiver, const char* slot, QObject* parent, const char* name = 0 );
+    
+    /**
+     *  @param text The text that will be displayed.
+     *  @param pix The icons that go with this action.
+     *  @param accel The corresponding keyboard accelerator (shortcut).
+     *  @param parent This action's parent.
+     *  @param name An internal name for this action.
+     */
     KToggleAction( const QString& text, const QIconSet& pix, int accel = 0,
 	     QObject* parent = 0, const char* name = 0 );
+    
+    /**
+     *  @param text The text that will be displayed.
+     *  @param pix The icons that go with this action.
+     *  @param accel The corresponding keyboard accelerator (shortcut).
+     *  @param receiver The SLOT's parent.
+     *  @param slot The SLOT to invoke to execute this action.
+     *  @param parent This action's parent.
+     *  @param name An internal name for this action.
+     */
     KToggleAction( const QString& text, const QIconSet& pix, int accel,
 		   const QObject* receiver, const char* slot, QObject* parent, const char* name = 0 );
+    
+    /**
+     *  @param parent This action's parent.
+     *  @param name An internal name for this action.
+     */
     KToggleAction( QObject* parent = 0, const char* name = 0 );
 
+    /**
+     *  "Plug" or insert this action into a given widget.
+     *
+     *  This will typically be a menu or a toolbar.
+     *  From this point on, you will never need to directly
+     *  manipulate the item in the menu or toolbar.
+     *  You do all enabling/disabling/manipulation directly with your KToggleAction object.
+     *
+     *  @param widget The GUI element to display this action.
+     *  @param index  The index of the item.
+     */
     int plug( QWidget*, int index = -1 );
 
+    /**
+     *  Sets the state of the action.
+     */
     virtual void setChecked( bool );
+
+    /**
+     *  Retrieves the actual state of the action.
+     */
     bool isChecked() const;
 
 protected slots:
+    
     void slotActivated();
 
 protected:
+    
     bool locked, locked2;
     bool checked;
-
 };
 
+/**
+ *  Action for selecting one of several items.
+ *
+ *  This action shows up a submenu with a list of items.
+ *  One of them can be checked. If The user clicks on an item
+ *  this item will automatically be checked,
+ *  the formerly checked item becomes unchecked.
+ *  There can be only one item checked at a time.
+ *
+ *  @short Action for selecting one of several items
+ */
 class KSelectAction : public QSelectAction
 {
     Q_OBJECT
 
 public:
+
+    /**
+     * Construct a select action with text and potential keyboard
+     * accelerator but nothing else. Use this only if you really
+     * know what you are doing.
+     *
+     * @param text The text that will be displayed.
+     * @param accel The corresponding keyboard accelerator (shortcut).
+     * @param parent This action's parent.
+     * @param name An internal name for this action.
+     */
     KSelectAction( const QString& text, int accel = 0, QObject* parent = 0, const char* name = 0 );
+    
+    /**
+     *  @param text The text that will be displayed.
+     *  @param accel The corresponding keyboard accelerator (shortcut).
+     *  @param receiver The SLOT's parent.
+     *  @param slot The SLOT to invoke to execute this action.
+     *  @param parent This action's parent.
+     *  @param name An internal name for this action.
+     */
     KSelectAction( const QString& text, int accel,
 		   const QObject* receiver, const char* slot, QObject* parent, const char* name = 0 );
+    
+    /**
+     *  @param text The text that will be displayed.
+     *  @param pix The icons that go with this action.
+     *  @param accel The corresponding keyboard accelerator (shortcut).
+     *  @param parent This action's parent.
+     *  @param name An internal name for this action.
+     */
     KSelectAction( const QString& text, const QIconSet& pix, int accel = 0,
 	     QObject* parent = 0, const char* name = 0 );
+    
+    /**
+     *  @param text The text that will be displayed.
+     *  @param pix The icons that go with this action.
+     *  @param accel The corresponding keyboard accelerator (shortcut).
+     *  @param receiver The SLOT's parent.
+     *  @param slot The SLOT to invoke to execute this action.
+     *  @param parent This action's parent.
+     *  @param name An internal name for this action.
+     */
     KSelectAction( const QString& text, const QIconSet& pix, int accel,
 		   const QObject* receiver, const char* slot, QObject* parent, const char* name = 0 );
+    
+    /**
+     *  @param parent This action's parent.
+     *  @param name An internal name for this action.
+     */
     KSelectAction( QObject* parent = 0, const char* name = 0 );
 
-    int plug( QWidget*, int index = -1 );
+    /**
+     *  "Plug" or insert this action into a given widget.
+     *
+     *  This will typically be a menu or a toolbar.
+     *  From this point on, you will never need to directly
+     *  manipulate the item in the menu or toolbar.
+     *  You do all enabling/disabling/manipulation directly with your KSelectAction object.
+     *
+     *  @param widget The GUI element to display this action.
+     *  @param index  The index of the item.
+     */
+    int plug( QWidget* widget, int index = -1 );
 
-    virtual void setCurrentItem( int i );	
+    /**
+     *  Sets the currently checked item.
+     *
+     *  @param index Index of the item (remember the first item is zero).
+     */
+    virtual void setCurrentItem( int index );	
+
+    /**
+     *  Sets a list of strings as items into the menu.
+     *
+     *  @param lst A list of strings that represents the items.
+     */
     void setItems( const QStringList& lst );
+
+    /**
+     *  Clears all items in the select action.
+     */
     void clear();
 
 protected slots:
+
     void slotActivated( const QString &text );
 
 signals:
+
     void activate();
 
 private:
+
     bool m_lock;
 };
 
@@ -339,8 +492,8 @@ public:
     int plug( QWidget*, int index = -1 );
 
 private:
-    QStringList fonts;
 
+    QStringList fonts;
 };
 
 class KFontSizeAction : public KSelectAction
