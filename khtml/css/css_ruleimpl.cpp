@@ -33,7 +33,6 @@
 #include "misc/htmltags.h"
 #include "misc/htmlattrs.h"
 #include "xml/dom_docimpl.h"
-#include "parser.h"
 
 using namespace DOM;
 
