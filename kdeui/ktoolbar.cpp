@@ -92,6 +92,8 @@ public:
 
 	m_xmlguiClient   = 0;
 	hasRealPos = FALSE;
+
+	oldPos = QMainWindow::Unmanaged;
     }
 
     int m_iconSize;
@@ -108,7 +110,8 @@ public:
     QMainWindow::ToolBarDock realPos;
     int realIndex, realOffset;
     bool realNl;
-
+    QMainWindow::ToolBarDock oldPos;
+    
     KXMLGUIClient *m_xmlguiClient;
 };
 
@@ -221,6 +224,10 @@ void KToolBar::init()
 
   // finally, read in our configurable settings
   slotReadConfig();
+
+  if ( parentWidget() && parentWidget()->inherits( "QMainWindow" ) )
+      connect( (QMainWindow*)parentWidget(), SIGNAL( toolBarPositionChanged( QToolBar * ) ),
+	       this, SLOT( toolBarPosChanged( QToolBar * ) ) );
 }
 
 
@@ -1658,6 +1665,15 @@ void KToolBar::slotRepaint()
 {
     setUpdatesEnabled( TRUE );
     repaint( FALSE );
+}
+
+void KToolBar::toolBarPosChanged( QToolBar *tb )
+{
+    if ( tb != this )
+	return;
+    if ( d->oldPos == QMainWindow::Minimized )
+	rebuildLayout();
+    d->oldPos = (BarPosition)barPos();
 }
 
 #include "ktoolbar.moc"
