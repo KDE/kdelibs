@@ -113,6 +113,8 @@ public:
    **/
   void setEnabled(bool);
 
+  KDateTable *dateTable() const { return table; };
+  
   /**
    * Sets the font size of the widgets elements.
    **/

@@ -24,6 +24,9 @@
 #include <qgridview.h>
 #include <qlineedit.h>
 #include <qdatetime.h>
+#include <qcolor.h>
+
+class KPopupMenu;
 
 /** Week selection widget.
 * @internal
@@ -253,6 +256,12 @@ public:
     KDateTable(QWidget *parent=0,
 	       QDate date=QDate::currentDate(),
 	       const char* name=0, WFlags f=0);
+	       
+    /**
+     * The destructor.
+     */
+    ~KDateTable();
+    
     /**
      * Returns a recommended size for the widget.
      * To save some time, the size of the largest used cell content is
@@ -271,6 +280,37 @@ public:
     bool setDate(const QDate&);
     const QDate& getDate() const;
 
+    /**
+     * Enables a popup menu when right clicking on a date. 
+     * 
+     * When it's enabled, this object emits a aboutToShowContextMenu signal
+     * where you can fill in the menu items.
+     *
+     * @since 3.2
+     */
+    void setPopupMenuEnabled( bool enable );
+
+    /**
+     * Returns if the popup menu is enabled or not
+     */
+    bool popupMenuEnabled() const;
+
+    enum BackgroundMode { NoBgMode=0, RectangleMode, CircleMode };
+
+    /**
+     * Makes a given date be painted with a given foregroundColor, and background
+     * (a rectangle, or a circle/ellipse) in a given color.
+     *
+     * @since 3.2
+     */
+    void setCustomDatePainting( const QDate &date, const QColor &fgColor, BackgroundMode bgMode=NoBgMode, const QColor &bgColor=QColor());
+
+    /**
+     * Unsets the custom painting of a date so that the date is painted as usual.
+     *
+     * @since 3.2
+     */
+    void unsetCustomDatePainting( const QDate &date );
 
 protected:
     /**
@@ -327,6 +367,15 @@ signals:
      * A date has been selected by clicking on the table.
      */
     void tableClicked();
+
+    /**
+     * A popup menu for a given date is about to be shown (as when the user
+     * right clicks on that date and the popup menu is enabled). Connect
+     * the slot where you fill the menu to this signal.
+     *
+     * @since 3.2
+     */
+    void aboutToShowContextMenu( KPopupMenu * menu, const QDate &date);
 
 protected:
   virtual void virtual_hook( int id, void* data );

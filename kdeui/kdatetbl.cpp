@@ -41,12 +41,42 @@
 #include <kcalendarsystem.h>
 #include "kdatepicker.h"
 #include "kdatetbl.h"
+#include "kpopupmenu.h"
 #include <qdatetime.h>
 #include <qstring.h>
 #include <qpen.h>
 #include <qpainter.h>
 #include <qdialog.h>
+#include <qdict.h>
 #include <assert.h>
+
+
+class KDateTable::KDateTablePrivate
+{
+public:
+   KDateTablePrivate()
+   {
+      popupMenuEnabled=false;
+      useCustomColors=false;
+   }
+
+   ~KDateTablePrivate()
+   {
+   }
+
+   bool popupMenuEnabled;
+   bool useCustomColors;
+
+   struct DatePaintingMode
+   {
+     QColor fgColor;
+     QColor bgColor;
+     BackgroundMode bgMode;
+   };
+   QDict <DatePaintingMode> customPaintingModes;
+   
+};
+
 
 KDateValidator::KDateValidator(QWidget* parent, const char* name)
     : QValidator(parent, name)
@@ -82,6 +112,7 @@ KDateValidator::fixup( QString& ) const
 KDateTable::KDateTable(QWidget *parent, QDate date_, const char* name, WFlags f)
   : QGridView(parent, name, f)
 {
+  d = new KDateTablePrivate;
   setFontSize(10);
   if(!date_.isValid())
     {
@@ -95,6 +126,11 @@ KDateTable::KDateTable(QWidget *parent, QDate date_, const char* name, WFlags f)
   setVScrollBarMode(AlwaysOff);
   viewport()->setEraseColor(KGlobalSettings::baseColor());
   setDate(date_); // this initializes firstday, numdays, numDaysPrevMonth
+}
+
+KDateTable::~KDateTable()
+{
+  delete d;
 }
 
 void
@@ -147,6 +183,7 @@ KDateTable::paintCell(QPainter *painter, int row, int col)
       painter->lineTo(w-1, h-1);
       // ----- draw the weekday:
     } else {
+      bool paintRect=true;
       painter->setFont(font);
       pos=7*(row-1)+col;
       if ( firstWeekDay < 4 )
@@ -166,6 +203,31 @@ KDateTable::paintCell(QPainter *painter, int row, int col)
           painter->setPen(gray);
         } else { // paint a day of the current month
           text.setNum(pos-firstday+1);
+	  if ( d->useCustomColors )
+	  {
+	    const QString key=text+"-"+date.month()+"-"+date.year();
+	    KDateTablePrivate::DatePaintingMode *mode=d->customPaintingModes[key];
+	    if (mode)
+	    {
+	      if (mode->bgMode != NoBgMode)
+	      {
+	        QBrush oldbrush=painter->brush();
+	        painter->setBrush( mode->bgColor );
+	        switch(mode->bgMode)
+	        {
+	          case(CircleMode) : painter->drawEllipse(0,0,w,h);break;
+ 		  case(RectangleMode) : painter->drawRect(0,0,w,h);break;
+                  case(NoBgMode) : // Should never be here, but just to get one
+		  		// less warning when compiling
+		  default: break;
+		}
+	        painter->setBrush( oldbrush );
+	        paintRect=false;
+	      }	
+	      painter->setPen( mode->fgColor );
+	    } else
+	      painter->setPen(KGlobalSettings::textColor());
+	  } else
           painter->setPen(KGlobalSettings::textColor());
         }
 
@@ -195,7 +257,7 @@ KDateTable::paintCell(QPainter *painter, int row, int col)
          painter->setPen(KGlobalSettings::textColor());
       }
 
-      painter->drawRect(0, 0, w, h);
+      if ( paintRect ) painter->drawRect(0, 0, w, h);
       painter->setPen(pen);
       painter->drawText(0, 0, w, h, AlignCenter, text, -1, &rect);
     }
@@ -351,18 +413,26 @@ KDateTable::contentsMousePressEvent(QMouseEvent *e)
       setDate(date.addDays(pos - firstday - calendar->day(date) + dayoff % 7));
       return;
     }
+
   temp = firstday + calendar->day(date) - dayoff % 7 - 1;
 
-  // setDate(QDate(date.year(), date.month(), pos - firstday + dayoff % 7));
-  QDate newDate;
-  calendar->setYMD(newDate, calendar->year(date), calendar->month(date),
+  QDate clickedDate;
+  calendar->setYMD(clickedDate, calendar->year(date), calendar->month(date),
 		   pos - firstday + dayoff % 7);
-  setDate(newDate);
+  setDate(clickedDate);
 
   updateCell(temp/7+1, temp%7); // Update the previously selected cell
   updateCell(row, col); // Update the selected cell
   // assert(QDate(date.year(), date.month(), pos-firstday+dayoff).isValid());
+  
   emit(tableClicked());
+  if (  e->button() == Qt::RightButton && d->popupMenuEnabled )
+  {
+	KPopupMenu *menu = new KPopupMenu();
+	menu->insertTitle( clickedDate.toString() );
+	emit aboutToShowContextMenu( menu, clickedDate );
+	menu->popup(e->globalPos());
+  }
 }
 
 bool
@@ -432,6 +502,42 @@ KDateTable::sizeHint() const
       return QSize(-1, -1);
     }
 }
+
+void KDateTable::setPopupMenuEnabled( bool enable )
+{
+   d->popupMenuEnabled=enable;
+}
+
+bool KDateTable::popupMenuEnabled() const
+{
+   return d->popupMenuEnabled;
+}
+
+void KDateTable::setCustomDatePainting(const QDate &date, const QColor &fgColor, BackgroundMode bgMode, const QColor &bgColor)
+{
+    if (!fgColor.isValid())
+    {
+	unsetCustomDatePainting( date );
+	return;
+    }
+    
+    KDateTablePrivate::DatePaintingMode *mode=new KDateTablePrivate::DatePaintingMode;
+    mode->bgMode=bgMode;
+    mode->fgColor=fgColor;
+    mode->bgColor=bgColor;
+    const QString key=QString::number(date.day())+"-"+date.month()+"-"+date.year();
+		
+    d->customPaintingModes.replace( key, mode );
+    d->useCustomColors=true;
+    update();
+}
+
+void KDateTable::unsetCustomDatePainting( const QDate &date )
+{
+    const QString key=QString::number(date.day())+"-"+date.month()+"-"+date.year();
+
+    d->customPaintingModes.remove( key );
+}	
 
 KDateInternalWeekSelector::KDateInternalWeekSelector
 (int fontsize, QWidget* parent, const char* name)
