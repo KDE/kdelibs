@@ -521,6 +521,7 @@ static const ushort tag_list_7[] = {
 static const ushort tag_list_10[] = {
     ID_FRAMESET,
     ID_FRAME,
+    ID_NOFRAMES,
     ID_COMMENT,
     0
 };
@@ -530,8 +531,9 @@ static const ushort tag_list_11[] = {
     ID_STYLE,
     ID_META,
     ID_LINK,
-    ID_OBJECT,
-    ID_EMBED,
+    ID_TITLE,
+    ID_ISINDEX,
+    ID_BASE,
     ID_COMMENT,
     0
 };
@@ -738,13 +740,10 @@ bool DOM::checkChild(ushort tagID, ushort childID)
         // TR: (TD, TH)
         return (childID == ID_TH || childID == ID_TD);
     case ID_FRAMESET:
-        // FRAMESET: ( _10 + & NOFRAMES ? )
+        // FRAMESET: _10
         return check_array(childID, tag_list_10);
-        return (childID == ID_NOFRAMES);
     case ID_HEAD:
-        // HEAD: ( TITLE & ISINDEX ? & BASE ? ) + _11
-        if(childID == ID_TITLE || childID == ID_ISINDEX || childID == ID_BASE)
-            return true;
+        // HEAD: _11
         return check_array(childID, tag_list_11);
     case ID_HTML:
         // HTML: ( HEAD , COMMENT, ( BODY | ( FRAMESET & NOFRAMES ? ) ) )
@@ -820,10 +819,6 @@ void DOM::addForbidden(int tagId, ushort *forbiddenTags)
         forbiddenTags[ID_FIELDSET]++;
         forbiddenTags[ID_ADDRESS]++;
         break;
-    case ID_FORM:
-        // the parser deals with them in another way. helps supporting some broken html
-        //forbiddenTags[ID_FORM]++;
-        break;
     case ID_LABEL:
         forbiddenTags[ID_LABEL]++;
         break;
@@ -895,9 +890,6 @@ void DOM::removeForbidden(int tagId, ushort *forbiddenTags)
         forbiddenTags[ID_TABLE]--;
         forbiddenTags[ID_FIELDSET]--;
         forbiddenTags[ID_ADDRESS]--;
-        break;
-    case ID_FORM:
-        //forbiddenTags[ID_FORM]--;
         break;
     case ID_LABEL:
         forbiddenTags[ID_LABEL]--;
