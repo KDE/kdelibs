@@ -281,7 +281,5 @@ bool RegExpObjectImp::implementsCall() const
 Value RegExpObjectImp::call(ExecState *exec, Object &/*thisObj*/,
 			    const List &args)
 {
-  // TODO: handle RegExp argument case (15.10.3.1)
-
   return construct(exec, args);
 }
