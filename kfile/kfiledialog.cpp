@@ -400,12 +400,12 @@ void KFileDialog::setFilterMimeType(const QString &label,
     setMimeFilter( d->mimetypes, defaultType->name() );
 }
 
-void KFileDialog::setMimeFilter( const QStringList& mimeTypes, 
+void KFileDialog::setMimeFilter( const QStringList& mimeTypes,
                                  const QString& defaultType )
 {
     d->mimetypes = mimeTypes;
     filterWidget->setMimeFilter( mimeTypes, defaultType );
-    
+
     QStringList types = mimeTypes;
     types.append( QString::fromLatin1( "inode/directory" ));
     ops->fileReader()->setNameFilter( QString::null );
@@ -829,7 +829,7 @@ void KFileDialog::slotFilterChanged()
 
     if ( filter.contains( '/' ) ) {
         ops->fileReader()->setNameFilter( QString::null );
-        ops->fileReader()->setMimeFilter( filter + 
+        ops->fileReader()->setMimeFilter( filter +
                                       QString::fromLatin1(" inode/directory"));
     }
     else {
@@ -1179,27 +1179,18 @@ void KFileDialog::updateStatusLine(int dirs, int files)
     if (!d->myStatusLine)
         return;
 
+    QString lDirText  = i18n( "%n directory", "%n directories", dirs );
+    QString lFileText = i18n( "%n file", "%n files", files );
+
     QString lStatusText;
-    QString lFileText, lDirText;
 
-    if ( dirs == 1 )
-        lDirText = i18n("directory");
-    else
-        lDirText = i18n("directories");
-
-    if ( files == 1 )
-        lFileText = i18n("file");
-    else
-        lFileText = i18n("files");
-
-    if (dirs != 0 && files != 0) {
-        lStatusText = i18n("%1 %2 and %3 %4")
-            .arg(dirs).arg( lDirText )
-            .arg(files).arg( lFileText );
-    } else if ( dirs == 0 )
-        lStatusText = i18n("%1 %2").arg(files).arg( lFileText );
-    else
-        lStatusText = i18n("%1 %2").arg(dirs).arg( lDirText );
+    if ( dirs == 0 )
+        lStatusText = lFileText;
+    else if ( files == 0 )
+        lStatusText = lDirText;
+    else {
+        lStatusText = i18n( "%1 and %2" ).arg( lDirText ).arg( lFileText );
+    }
 
     d->myStatusLine->setText(lStatusText);
 }
