@@ -1890,7 +1890,7 @@ bool DCOPClient::callInternal(const QCString &remApp, const QCString &remObjId,
             tv.tv_sec = msecs / 1000;
             tv.tv_usec = (msecs % 1000) * 1000;
             if ( select( socket() + 1, &fds, 0, 0, &tv ) <= 0 ) {
-                if( useEventLoop && (time_left > guiTimeout)) {
+                if( useEventLoop && (timeout < 0 || time_left > guiTimeout)) {
                     // nothing was available, we got a timeout. Reactivate
                     // the GUI in blocked state.
                     bool old_lock = d->non_blocking_call_lock;
@@ -1898,7 +1898,8 @@ bool DCOPClient::callInternal(const QCString &remApp, const QCString &remObjId,
                         d->non_blocking_call_lock = true;
                         emit blockUserInput( true );
                     }
-                    d->eventLoopTimer.start(time_left - guiTimeout, true);
+                    if( timeout >= 0 )
+                        d->eventLoopTimer.start(time_left - guiTimeout, true);
                     qApp->enter_loop();
                     d->eventLoopTimer.stop();
                     if ( !old_lock ) {
