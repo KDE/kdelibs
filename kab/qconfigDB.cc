@@ -3,7 +3,7 @@
    the KDE addressbook
 
    $ Author: Mirko Boehm $
-   $ Copyright: (C) 1996-2000, Mirko Boehm $
+   $ Copyright: (C) 1996-2001, Mirko Boehm $
    $ Contact: mirko@kde.org
          http://www.kde.org $
    $ License: GPL with the following explicit clarification:
