@@ -17,6 +17,8 @@
     Boston, MA 02111-1307, USA.
 */
 
+#include <qfile.h>
+
 #include <klocale.h>
 #include <ktrader.h>
 
@@ -31,7 +33,7 @@ KScanDialog * KScanDialog::getScanDialog( QWidget *parent, const char *name,
 	return 0L;
 	
     KService::Ptr ptr = *(offers.begin());
-    KLibFactory *factory = KLibLoader::self()->factory( ptr->library().latin1() );
+    KLibFactory *factory = KLibLoader::self()->factory( QFile::encodeName(ptr->library()) );
 
     if ( !factory )
         return 0;
@@ -74,7 +76,7 @@ KOCRDialog * KOCRDialog::getOCRDialog( QWidget *parent, const char *name,
 	return 0L;
 	
     KService::Ptr ptr = *(offers.begin());
-    KLibFactory *factory = KLibLoader::self()->factory( ptr->library().latin1() );
+    KLibFactory *factory = KLibLoader::self()->factory( QFile::encodeName(ptr->library()) );
 
     if ( !factory )
         return 0;
