@@ -1,0 +1,6 @@
+[Desktop Entry]
+Comment=Bibliographic Data (bibtex)
+Icon=tex
+MimeType=text/x-bibtex
+Patterns=*.bib
+Type=MimeType
