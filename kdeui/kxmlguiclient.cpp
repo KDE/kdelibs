@@ -535,15 +535,17 @@ KXMLGUIClient *KXMLGUIClient::parentClient() const
 
 void KXMLGUIClient::insertChildClient( KXMLGUIClient *child )
 {
-  if ( child->parentClient() )
-    child->parentClient()->removeChildClient( child );
+  if ( child->d->m_parent )
+    child->d->m_parent->removeChildClient( child );
 
   d->m_children.append( child );
+  child->d->m_parent = this;
 }
 
 void KXMLGUIClient::removeChildClient( KXMLGUIClient *child )
 {
   d->m_children.removeRef( child );
+  child->d->m_parent = 0;
 }
 
 const QPtrList<KXMLGUIClient> *KXMLGUIClient::childClients()
