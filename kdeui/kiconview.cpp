@@ -10,6 +10,8 @@ KIconView::KIconView( QWidget *parent, const char *name, WFlags f )
     : QIconView( parent, name, f )
 {
     kdDebug() << "KIconView: KIconView()" << endl;
+    //initializing that checkSettings() actually does something
+    m_bUseSingle = !KGlobalSettings::singleClick();
     checkSettings();
     oldCursor = viewport()->cursor();
     m_bChangeCursorOverItem = true;
@@ -31,23 +33,34 @@ KIconView::KIconView( QWidget *parent, const char *name, WFlags f )
 
 void KIconView::checkSettings()
 {
+  if( m_bUseSingle != KGlobalSettings::singleClick() ) {
     m_bUseSingle = KGlobalSettings::singleClick();
-    m_bChangeCursorOverItem = KGlobalSettings::changeCursorOverIcon();
-    m_autoSelectDelay = KGlobalSettings::autoSelectDelay();
+    if( m_bUseSingle ) {
+      debug("SET SINGLE CLICK");
+      connect( this, SIGNAL( clicked( QIconViewItem * ) ),
+	       this, SIGNAL( executed( QIconViewItem * ) ) );
+    }
+    else {
+      debug("SET DOUBLE CLICK");
+      connect( this, SIGNAL( doubleClicked( QIconViewItem * ) ),
+	       this, SIGNAL( executed( QIconViewItem * ) ) );
+    }
+  }
 
-    if( !m_bUseSingle || !m_bChangeCursorOverItem )
-	viewport()->setCursor( oldCursor );
+  m_bChangeCursorOverItem = KGlobalSettings::changeCursorOverIcon();
+  m_autoSelectDelay = KGlobalSettings::autoSelectDelay();
+
+  if( !m_bUseSingle || !m_bChangeCursorOverItem )
+    viewport()->setCursor( oldCursor );
 }
 
 void KIconView::slotOnItem( QIconViewItem *item )
 {
-    debug("KIconView: slotOnItem");
     checkSettings();
     if ( item && m_bChangeCursorOverItem && m_bUseSingle )
         viewport()->setCursor( KCursor().handCursor() );
 
     if ( item && m_autoSelectDelay ) {
-      debug("KIconView: timer start");
       m_pAutoSelect->start( m_autoSelectDelay, true ); 
       m_pCurrentItem = item;
     }
@@ -55,7 +68,6 @@ void KIconView::slotOnItem( QIconViewItem *item )
 
 void KIconView::slotOnViewport()
 {
-    debug("KIconView: slotOnViewport");
     checkSettings();
     if ( m_bChangeCursorOverItem )
         viewport()->setCursor( oldCursor );
@@ -66,8 +78,6 @@ void KIconView::slotOnViewport()
 
 void KIconView::slotAutoSelect()
 {
-  debug("KIconView: slotAutoSelect");
-
   Window root;
   Window child;
   int root_x, root_y, win_x, win_y;
@@ -78,14 +88,9 @@ void KIconView::slotAutoSelect()
   if( m_pCurrentItem ) {
     //Shift pressed?
     if( (keybstate & ShiftMask) ) {
-      kdDebug() << "SHIFT Modifier" << endl;
       //No Ctrl? Then clear before!
-      if( !(keybstate & ControlMask) ) { 
-	kdDebug() << "NO CTRL Modifier" << endl;
+      if( !(keybstate & ControlMask) )  
 	clearSelection();
-      }
-      else
-	kdDebug() << "CTRL Modifier" << endl;
 
       //Temporary implementaion of the selection until QIconView supports it
       bool select = !m_pCurrentItem->isSelected();
@@ -128,16 +133,10 @@ void KIconView::slotAutoSelect()
       emit selectionChanged();
       //setSelected( m_pCurrentItem, true, (keybstate & ControlMask), (keybstate & ShiftMask) );
     }
-    else if( (keybstate & ControlMask) ) {
-      kdDebug() << "NO SHIFT Modifier" << endl;
-      kdDebug() << "CTRL Modifier" << endl;
+    else if( (keybstate & ControlMask) ) 
       setSelected( m_pCurrentItem, !m_pCurrentItem->isSelected(), true );
-    }
-    else {
-      kdDebug() << "NO SHIFT Modifier" << endl;
-      kdDebug() << "NO CTRL Modifier" << endl;
+    else 
       setSelected( m_pCurrentItem, true );
-    }
   }
   else
     kdDebug() << "That´s not supposed to happen!!!!" << endl;
