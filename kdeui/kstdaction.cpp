@@ -846,8 +846,8 @@ KAction *KStdAction::reportBug(const QObject *recvr, const char *slot,
 KAction *KStdAction::aboutApp(const QObject *recvr, const char *slot,
 						      QObject *parent, const char *name )
 {
-    return new KAction(i18n("&About %1").arg(kapp->name());
-        + QString::fromLatin1("..."), QIconSet(kapp->miniIcon()), 0, recvr,
+    return new KAction(i18n("&About %1...").arg(kapp->name()),
+        QIconSet(kapp->miniIcon()), 0, recvr,
         slot, parent, name ? name : stdName(AboutApp));
 }
 
