@@ -336,7 +336,7 @@ NodeImpl *HTMLDocumentImpl::findElement(int id, NodeImpl *start, bool forward)
 	    if (start->id()==id)
 		return start;
 	}
-    kdDebug(6000) << "some error in findLink\n";
+    kdFatal(6000) << "some error in findLink\n";
     exit(1);
 }
 
