@@ -266,6 +266,7 @@ void KDirSelectDialog::accept()
     }
 
     d->urlCombo->addToHistory( item->url().prettyURL() );
+    KFileDialog::setStartDir( url() );
 
     KDialogBase::accept();
     saveConfig( KGlobal::config(), "DirSelect Dialog" );

@@ -2168,6 +2168,13 @@ KURL KFileDialog::getStartURL( const QString& startDir,
     return ret;
 }
 
+void KFileDialog::setStartDir( const KURL& directory )
+{
+    initStatic();
+    if ( directory.isValid() )
+        *lastDirectory = directory;
+}
+
 void KFileDialog::virtual_hook( int id, void* data )
 { KDialogBase::virtual_hook( id, data ); }
 

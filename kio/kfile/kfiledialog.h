@@ -743,6 +743,12 @@ public:
      */
     static KURL getStartURL( const QString& startDir, QString& recentDirClass );
 
+    /**
+     * @internal
+     * Used by KDirSelectDialog to share the dialog's start directory.
+     */
+    static void setStartDir( const KURL& directory );
+
 
 signals:
     /**
