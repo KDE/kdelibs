@@ -27,7 +27,7 @@
 #include <qwmatrix.h>
 
 #include "kiconloaderdialog.h"
-#include "kiconloaderdialog.moc"
+#include "kiconloaderdialog.h"
 
 #include <kpixmap.h>
 #include <klocale.h>

@@ -9,7 +9,7 @@
 #include <kdebug.h>
 #include <klined.h>
 
-#include "ksconfig.moc"
+#include "ksconfig.h"
 
 #define NLS(s) i18n(s)
 

@@ -68,7 +68,7 @@
 #define BUTTON_SPACE 4
 #define MINIMUM_SPACE 9
 
-#include "ktablistbox.moc"
+#include "ktablistbox.h"
 
 
 //=============================================================================

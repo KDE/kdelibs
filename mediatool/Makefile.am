@@ -23,7 +23,7 @@ lib_LTLIBRARIES = libmediatool.la
 #
 MEDIATOOLVERSION=	0.0
 MEDIATOOLPATCH	 =	91
-INCLUDES = -I../kdecore $(QT_INCLUDES) $(X_INCLUDES) 
+INCLUDES = -I$(top_srcdir)/kdecore $(QT_INCLUDES) $(X_INCLUDES) 
 libmediatool_la_SOURCES = chunk.c eventcounter.c \
 			connect.c filename.c playlist.c kaudio.cpp
 
@@ -33,10 +33,7 @@ noinst_HEADERS = chunk.h
 libmediatool_la_LDFLAGS = -version-info 2:0 
 libmediatool_la_LIBADD = $(LIBCOMPAT)
 
+libmediatool_METASOURCES = USE_AUTOMOC
 
-kaudio.cpp: kaudio.moc
-kaudio.moc: kaudio.h
-	$(MOC) -o kaudio.moc kaudio.h
-
-DISTCLEANFILES = kaudio.moc
+DISTCLEANFILES = $(libmediatool_METASOURCES)
 

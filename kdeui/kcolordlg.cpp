@@ -31,7 +31,7 @@
 #include <qlabel.h>
 #include <kconfig.h>
 #include "kcolordlg.h"
-#include "kcolordlg.moc"
+#include "kcolordlg.h"
 
 #include <dither.h>
 #include <klocale.h>

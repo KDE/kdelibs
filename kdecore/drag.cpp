@@ -20,6 +20,9 @@
  * $Id$
  * 
  * $Log$
+ * Revision 1.22  1998/08/22 20:02:32  kulow
+ * make kdecore have nicer output, when compiled with -Weffc++ :)
+ *
  * Revision 1.21  1998/06/19 18:18:04  kalle
  * Cleaned up debugging messages
  *
@@ -128,7 +131,6 @@
 # endif
 #endif    
 
-#include "drag.moc"
 #include "kapp.h"
 #include <X11/Xlib.h>
 #include <X11/Xatom.h>

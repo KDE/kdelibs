@@ -21,6 +21,9 @@
    Boston, MA 02111-1307, USA.
 
    $Log$
+   Revision 1.27  1998/10/28 19:00:15  ettrich
+   small fix (thanks to Christian Stoeckl)
+
    Revision 1.26  1998/10/19 08:09:05  ettrich
    small pseudo fix to kshellprocess reverted
 
@@ -86,8 +89,6 @@
 #include <fcntl.h>
 #include <signal.h>
 #include <stdio.h>
-
-#include "kprocess.moc"
 
 /////////////////////////////
 // public member functions //

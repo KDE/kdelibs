@@ -23,7 +23,7 @@ Cambridge, MA 02139, USA.
 */
 
 #include <ktreelist.h>
-#include "ktreelist.moc"
+#include "ktreelist.h"
 #ifdef HAVE_CONFIG_H
 #include <config.h>
 #endif

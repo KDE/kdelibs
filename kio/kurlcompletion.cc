@@ -231,4 +231,4 @@ bool KURLCompletion::CompleteDir (QString &dir)
 	return false;
 }
 
-#include "kurlcompletion.moc"
+#include "kurlcompletion.h"

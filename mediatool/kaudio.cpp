@@ -24,11 +24,7 @@
 #ifdef HAVE_CONFIG_H
 #include <config.h>
 #endif
-extern "C" {
-#include <mediatool.h>
-}
 #include "kaudio.h"
-#include "kaudio.moc"
 
 #ifdef HAVE_SYSENT_H
 #include <sysent.h>

@@ -23,6 +23,10 @@
     Boston, MA 02111-1307, USA.
   
     $Log$
+    Revision 1.27  1998/11/30 19:31:32  lavikka
+    Now kfontdialog uses QLayout instead of hardcoded widget coordinates.
+    Command buttons are aligned correctly as well. Looks good and behaves well.
+
     Revision 1.26  1998/09/14 20:44:04  kulow
     I know, Ok is ok too, but OK is more OK some GUI guides say :)
 
@@ -140,7 +144,7 @@
 #include <config.h>
 #endif
 
-#include "kfontdialog.moc"
+#include "kfontdialog.h"
 #include "stdio.h"
 #include "stdlib.h"
 #include "qfile.h"

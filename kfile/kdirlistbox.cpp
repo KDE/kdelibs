@@ -197,5 +197,5 @@ void KDirListBox::highlightItem(unsigned int i)
     QListBox::setCurrentItem(i);
 }
 
-#include "kdirlistbox.moc"
+#include "kdirlistbox.h"
 

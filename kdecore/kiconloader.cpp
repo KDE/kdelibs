@@ -20,6 +20,9 @@
    Boston, MA 02111-1307, USA.
    
    $Log$
+   Revision 1.24  1998/11/02 10:08:34  ettrich
+   new reload method for kiconloader (Rene Beutler)
+}
    Revision 1.23  1998/10/04 11:05:30  neerfeld
    fixed a bug in loadInternal; fixes the crash of kmenuedit
 
@@ -52,7 +55,6 @@
 #include <qwmatrix.h>
 		result = loadInternal("unknown.xpm", w, h);
 #include "kiconloader.h"
-#include "kiconloader.moc"
 	}
 #include <kpixmap.h>
 #include <klocale.h>

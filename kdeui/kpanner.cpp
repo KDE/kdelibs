@@ -20,6 +20,10 @@
  * $Id$
  *
  * $Log$
+ * Revision 1.7  1997/10/16 11:15:27  torben
+ * Kalle: Copyright headers
+ * kdoctoolbar removed
+ *
  * Revision 1.6  1997/05/17 20:38:23  kalle
  * Kalle:
  * - Bugfix for KPanner (from Paul Kendall)
@@ -64,7 +68,7 @@
 #include <qcursor.h>
 #include <qframe.h>
 #include <kpanner.h>
-#include "kpanner.moc"
+#include "kpanner.h"
 
 KPanner::KPanner(QWidget *parent, const char *name, unsigned flags, int d)
     : QWidget(parent, name)

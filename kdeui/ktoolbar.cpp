@@ -22,6 +22,9 @@
 
 // $Id$
 // $Log$
+// Revision 1.94  1998/12/09 13:44:30  radej
+// sven: iconify() -> hide() even when floating. Commented out debug output.
+// generally it's better than keeping them updated by hand.
 // Revision 1.93  1998/12/02 16:08:26  radej
 // sven: hide toolbar items better when session management wants toolbar flat
 //
@@ -2374,7 +2377,7 @@ void KRadioGroup::slotToggled(int id)
 
 
 // sven
-#include <ktoolbar.moc>
+#include <ktoolbar.h>
       ++it;
     }
   }

@@ -428,6 +428,6 @@ void EditEntryDialog::editEmailAddresses()
 
 // #############################################################################
 // MOC OUTPUT FILES:
-#include "editentry.moc"
+#include "editentry.h"
 // #############################################################################
 

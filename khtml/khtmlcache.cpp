@@ -24,7 +24,7 @@
 //
 // $Id$
 
-#include "khtmlcache.moc"
+#include "khtmlcache.h"
 #include "khtml.h"
 
 //#undef CACHE_DEBUG

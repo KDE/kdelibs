@@ -24,6 +24,9 @@
 #include <kstatusbar.h>
 // $Id$
 // $Log$
+// selfwritten rules. I have to fight with some bugs of this tool, but
+// generally it's better than keeping them updated by hand.
+//
 // Revision 1.16  1998/10/05 10:14:25  radej
 // sven: Bugfix: SEGV when 10000 messages come in the same time
 //
@@ -358,7 +361,7 @@ void KStatusBar::slotReleased(int _id)
 QSize KStatusBar::sizeHint()
 {
   return QSize(width(), height());
-#include <kstatusbar.moc>
+#include <kstatusbar.h>
 
 
 #include "kstatusbar.moc"

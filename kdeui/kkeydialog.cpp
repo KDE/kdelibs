@@ -31,7 +31,7 @@
 #include <kbuttonbox.h>
 
 #include "kkeydialog.h"
-#include "kkeydialog.moc"
+#include "kkeydialog.h"
 
 
 /*****************************************************************************/

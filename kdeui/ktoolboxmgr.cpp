@@ -32,6 +32,9 @@
 
  // $Id$
  // $Log$
+ // Revision 1.13  1998/11/06 15:45:43  radej
+ // sven: added helper for addHotSpot
+ //
  // Revision 1.12  1998/09/01 20:22:25  kulow
  // I renamed all old qt header files to the new versions. I think, this looks
  // nicer (and gives the change in configure a sense :)
@@ -513,5 +516,5 @@ void KToolBoxManager::deleteLastRectangle()
   noLast = true;
 }
 
-#include "ktoolboxmgr.moc"
+#include "ktoolboxmgr.h"
 

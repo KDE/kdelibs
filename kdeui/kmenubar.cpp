@@ -27,7 +27,7 @@
 
 #include "ktopwidget.h"
 
-#include "kmenubar.moc"
+#include "kmenubar.h"
 
 #include <klocale.h>
 #include <kapp.h>
@@ -41,6 +41,9 @@
 
 // $Id$
 // $Log$
+// automocifized it, the generated rules are easier to maintain than
+// selfwritten rules. I have to fight with some bugs of this tool, but
+// generally it's better than keeping them updated by hand.
 //
 // Revision 1.60  1998/12/16 01:42:21  ettrich
 // last fix for today

@@ -21,6 +21,9 @@
 
  // $Id$
  // $Log$
+ // Revision 1.44  1998/08/02 09:31:22  radej
+ // sven: added closeEvent to behave like old KTW
+ //
  // Revision 1.43  1998/08/01 21:59:29  radej
  // sven: inherits KTMainWindow now. KTW is dead.
  //
@@ -74,7 +77,7 @@
 
 
 #include <ktopwidget.h>
-#include <ktopwidget.moc>
+#include <ktopwidget.h>
 
 // a static pointer (too bad we cannot have static objects in libraries)
 //QList<KTopLevelWidget>* KTopLevelWidget::memberList = 0L;

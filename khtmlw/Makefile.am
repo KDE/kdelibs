@@ -21,15 +21,14 @@
 lib_LTLIBRARIES = libkhtmlw.la
 libkhtmlw_la_SOURCES = jscript.cpp html.cpp htmlobj.cpp htmlfont.cpp htmlform.cpp htmltoken.cpp htmlframe.cpp htmlview.cpp htmlclue.cpp debug.cpp htmldata.cpp htmltable.cpp htmliter.cpp htmlchain.cpp
 
-SRC_META = html.moc htmlobj.moc htmlform.moc htmlframe.moc htmlview.moc
-html.cpp: html.moc
-htmlobj.cpp: htmlobj.moc
-htmlform.cpp: htmlform.moc
-htmlframe.cpp: htmlframe.moc
-htmlview.cpp: htmlview.moc
+libkhtmlw_METASOURCES = USE_AUTOMOC
 
-DISTCLEANFILES = $(SRC_META)
-include_HEADERS = jscript.h html.h htmlobj.h htmlfont.h htmlform.h htmltoken.h htmlframe.h htmlview.h htmlclue.h htmldata.h htmltable.h htmliter.h
+DISTCLEANFILES = $(libkhtmlw_METASOURCES)
+
+include_HEADERS = jscript.h html.h htmlobj.h htmlfont.h htmlform.h \
+	htmltoken.h htmlframe.h htmlview.h htmlclue.h htmldata.h \
+	htmltable.h htmliter.h
+
 noinst_HEADERS = htmlchain.h
 libkhtmlw_la_LDFLAGS = -version-info 2:0
 
@@ -38,20 +37,5 @@ datadir = $(kde_datadir)/khtmlw/pics
 
 EXTRA_DIST = khtmlw_dnd.xpm
 
-INCLUDES = -I../kdecore -I../kdeui -I../jscript -I../kimgio $(all_includes)
-
-html.moc: html.h
-	$(MOC) -o html.moc html.h 
-
-htmlobj.moc: htmlobj.h
-	$(MOC) -o htmlobj.moc htmlobj.h 
-
-htmlform.moc: htmlform.h
-	$(MOC) -o htmlform.moc htmlform.h 
-
-htmlframe.moc: htmlframe.h
-	$(MOC) -o htmlframe.moc htmlframe.h 
-
-htmlview.moc: htmlview.h
-	$(MOC) -o htmlview.moc htmlview.h 
+INCLUDES = -I$(top_srcdir)/kdecore -I$(top_srcdir)/kdeui -I$(top_srcdir)/jscript -I$(top_srcdir)/kimgio $(QT_INCLUDES) $(X_INCLUDES)
 

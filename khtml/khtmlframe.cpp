@@ -459,5 +459,5 @@ void HTMLFramePanner::mouseReleaseEvent( QMouseEvent * )
     raise();
 }
 
-#include "khtmlframe.moc"
+#include "khtmlframe.h"
 

@@ -132,5 +132,3 @@ void KfmIpc::parse( char *_data, int _len )
     free(name);
 }
 
-
-#include "kfmclient_ipc.moc"

@@ -38,8 +38,6 @@
 
 #include "kprocctrl.h"
 
-#include "kprocctrl.moc"
-
 KProcessController *theKProcessController = 0;
 
 KProcessController::KProcessController()

@@ -118,4 +118,4 @@ bool open_PassDlg( const char *_head, string& _user, string& _pass )
     return false;
 }
 
-#include "kio_pass_dlg.moc"
+#include "kio_pass_dlg.h"

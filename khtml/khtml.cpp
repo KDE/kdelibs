@@ -2865,5 +2865,5 @@ KHTMLWidget::getPageInfo()
     return pageInfo;
 }
 
-#include "khtml.moc"
+#include "khtml.h"
 

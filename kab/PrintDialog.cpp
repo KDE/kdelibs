@@ -83,8 +83,8 @@ void PrintDialog::initializeGeometry()
 
 // #############################################################################
 // MOC OUTPUT FILES:
-#include "PrintDialog.moc"
-#include "PrintDialogData.moc"
+#include "PrintDialog.h"
+#include "PrintDialogData.h"
 // #############################################################################
 
 

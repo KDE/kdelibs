@@ -5,6 +5,11 @@
  * $Id$
  *
  * $Log$
+ * Revision 1.5  1997/06/21 11:10:12  kalle
+ * Kalle: KEdit restores file permissions when saving
+ * KIconLoader patch (not binary compatible!)
+ * KSlider patch (not binary compatible!)
+ *
  * Revision 1.4  1997/05/08 22:53:18  kalle
  * Kalle:
  * KPixmap gone for good
@@ -59,7 +64,7 @@
 
 
 
-#include "kedit.moc"
+#include "kedit.h"
 #include "kedit.h"
 #include "kfontdialog.h"
 
@@ -669,5 +674,5 @@ void KEdSrch::resizeEvent(QResizeEvent *)
     sensitive->setGeometry(20, 55, 100, 25);
 }
 
-#include "kfontdialog.moc"
+#include "kfontdialog.h"
 

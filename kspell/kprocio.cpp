@@ -6,7 +6,7 @@
 
 #include <stdio.h>
 
-#include "kprocio.moc"
+#include "kprocio.h"
 
 #include <kdebug.h>
 

@@ -18,7 +18,6 @@
 */
 
 #include "kdebugdialog.h"
-#include "kdebugdialog.moc"
 #include "kdebug.h"
 #include "kapp.h"
 

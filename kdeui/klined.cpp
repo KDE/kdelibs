@@ -22,7 +22,7 @@
 // 'cause a tabbed dialog will stop working ..
 
 #include <qlineedit.h>
-#include "klined.moc"
+#include "klined.h"
 
 #include <qkeycode.h>
 

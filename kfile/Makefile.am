@@ -17,14 +17,13 @@
 #    Boston, MA 02111-1307, USA.
 
 
-INCLUDES= -I../kdecore -I../kdeui -I../kfmlib $(QT_INCLUDES) $(X_INCLUDES)
+INCLUDES= -I$(top_srcdir)/kdecore -I$(top_srcdir)/kdeui -I$(top_srcdir)/kfmlib $(QT_INCLUDES) $(X_INCLUDES)
 
 lib_LTLIBRARIES  = libkfile.la
 
-DISTCLEANFILES = kfilebookmark.moc kdir.moc kdirlistbox.moc kfiledialog.moc \
-	kfiledialogconf.moc kfiledetaillist.moc kfilesimpleview.moc \
-	kcombiview.moc kpreview.moc kfilepreview.moc kfileinfocontents.moc \
-	kfilefilter.moc
+DISTCLEANFILES = $(libkfile_METASOURCES) 
+
+libkfile_METASOURCES = USE_AUTOMOC
 
 include_HEADERS = kfiledialog.h kfileinfo.h kfilebookmark.h  \
 	kremotefile.h kdir.h kdirlistbox.h kfileinfocontents.h \
@@ -54,56 +53,3 @@ libkfile_la_LIBADD =  -lXext  $(LIB_QT)
 check_PROGRAMS = kfstest
 kfstest_LDFLAGS = $(LDFLAGS) $(KDE_RPATH)
 kfstest_LDADD = libkfile.la ../kfmlib/libkfm.la ../kdeui/libkdeui.la ../kdecore/libkdecore.la  -lXext  $(LIB_QT)
-
-kfilebookmark.cpp:kfilebookmark.moc
-kfilebookmark.moc: kfilebookmark.h
-	$(MOC) kfilebookmark.h -o kfilebookmark.moc
-
-kdir.cpp:kdir.moc
-kdir.moc: kdir.h
-	$(MOC) kdir.h -o kdir.moc
-
-kdirlistbox.cpp:kdirlistbox.moc
-kdirlistbox.moc: kdirlistbox.h
-	$(MOC) kdirlistbox.h -o kdirlistbox.moc
-
-kfilelistbox.cpp:kfilelistbox.moc
-kfilelistbox.moc: kfilelistbox.h
-	$(MOC) kfilelistbox.h -o kfilelistbox.moc
-
-kfiledialog.cpp:kfiledialog.moc
-kfiledialog.moc: kfiledialog.h
-	$(MOC) kfiledialog.h -o kfiledialog.moc
-
-kfiledialogconf.cpp:kfiledialogconf.moc
-kfiledialogconf.moc: kfiledialogconf.h
-	$(MOC) kfiledialogconf.h -o kfiledialogconf.moc
-
-kfiledetaillist.cpp: kfiledetaillist.moc
-kfiledetaillist.moc: kfiledetaillist.h
-	$(MOC) kfiledetaillist.h -o kfiledetaillist.moc
-
-kfilesimpleview.cpp:kfilesimpleview.moc
-kfilesimpleview.moc: kfilesimpleview.h
-	$(MOC) kfilesimpleview.h -o kfilesimpleview.moc
-
-kcombiview.cpp:kcombiview.moc
-kcombiview.moc: kcombiview.h
-	$(MOC) kcombiview.h -o kcombiview.moc
-
-kpreview.cpp:kpreview.moc
-kpreview.moc: kpreview.h
-	$(MOC) kpreview.h -o kpreview.moc
-
-kfilepreview.cpp:kfilepreview.moc
-kfilepreview.moc: kfilepreview.h
-	$(MOC) kfilepreview.h -o kfilepreview.moc
-
-kfileinfocontents.cpp:kfileinfocontents.moc
-kfileinfocontents.moc: kfileinfocontents.h
-	$(MOC) kfileinfocontents.h -o kfileinfocontents.moc
-
-kfilefilter.cpp:kfilefilter.moc
-kfilefilter.moc: kfilefilter.h
-	$(MOC) kfilefilter.h -o kfilefilter.moc
-

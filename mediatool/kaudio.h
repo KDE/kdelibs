@@ -28,6 +28,9 @@
 #include <qobject.h>
 #include <qtimer.h>
 
+extern "C" {
+#include <mediatool.h>
+}
 
 /**
   * The KAudio class is a very easy means to playback digital audio

@@ -521,4 +521,4 @@ void KFileInfoContents::insertSortedItem(const KFileInfo *item, uint pos)
     sorted_length++;
 }
 
-#include "kfileinfocontents.moc" // for the signaler
+#include "kfileinfocontents.h" // for the signaler

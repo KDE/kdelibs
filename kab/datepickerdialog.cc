@@ -155,5 +155,5 @@ const QDate& DateLabel::getDate()
 
 // #############################################################################
 // MOC OUTPUT FILES:
-#include "datepickerdialog.moc"
+#include "datepickerdialog.h"
 // #############################################################################

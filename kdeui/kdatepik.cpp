@@ -47,7 +47,7 @@
 #include <qdatetime.h>
 
 #include "kdatepik.h"
-#include "kdatepik.moc"
+#include "kdatepik.h"
 
 #include "kdatetbl.h"
 

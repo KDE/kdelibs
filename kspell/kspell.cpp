@@ -13,7 +13,7 @@
 #include <kapp.h>
 #include <kwm.h>
 
-#include "kspell.moc"
+#include "kspell.h"
  
 
 #define MAXLINELENGTH 150

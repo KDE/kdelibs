@@ -21,7 +21,7 @@
 // #include "functions.h"
 // #include "businesscard.h"
 // #include <kfiledialog.h>
-// #include "widgets.moc"
+// #include "widgets.h"
 // #include <kprocess.h>
 // #include <qmessagebox.h>
 // #include "kab.h"

@@ -18,7 +18,7 @@
 #    Boston, MA 02111-1307, USA.
 
 INCLUDES = $(QT_INCLUDES) $(X_INCLUDES)
-DISTCLEANFILES = $(BUILT_SOURCES)
+DISTCLEANFILES = $(libkdecore_METASOURCES)
 EXTRA_DIST = convert_key.c charsets.config
 lib_LTLIBRARIES = libkdecore.la
 
@@ -42,34 +42,17 @@ libkdecore_la_SOURCES = kconfig.cpp kconfigbase.cpp ksimpleconfig.cpp \
 
 
 libkdecore_la_LDFLAGS = -version-info 2:0
-libkdecore_la_LIBADD = 
+# libkdecore_la_LIBADD = 
 
-BUILT_SOURCES = ksock.moc drag.moc  kapp.moc kprocess.moc	\
-	kprocctrl.moc kiconloader.moc kdebugdialog.moc kconfig.moc \
-	kconfigbase.moc ksimpleconfig.moc kglobalaccel.moc kclipboard.moc
+libkdecore_METASOURCES = USE_AUTOMOC
 
 SRCDOC_DEST=$(kde_htmldir)/en/kdelibs/kdecore
 
-ksock.cpp: ksock.moc
-drag.cpp: drag.moc
-kapp.cpp: kapp.moc
-kprocess.cpp: kprocess.moc
-kprocctrl.cpp: kprocctrl.moc
-kiconloader.cpp: kiconloader.moc
-kdebug.cpp: kdebugdialog.moc
-kconfigbase.cpp: kconfigbase.moc
-kconfig.cpp: kconfig.moc
-ksimpleconfig.cpp: ksimpleconfig.moc
-kglobalaccel.cpp: kglobalaccel.moc 
-kclipboard.cpp: kclipboard.moc
+charsetsdir = $(kde_confdir)/charsets
+charsets_DATA = charsets.config
 
-install-data-local: charsets.config kdebug.areas
-	$(mkinstalldirs) $(kde_confdir)
-	$(INSTALL_DATA) charsets.config $(kde_confdir)/charsets
-	$(INSTALL_DATA) kdebug.areas $(kde_confdir)
-
-uninstall-local:
-	-rm -f $(kde_confdir)/charsets
+kdebugdir = $(kde_confdir)
+kdebug_DATA = kdebug.areas
 
 ## generate lib documentation
 srcdoc:
@@ -77,45 +60,9 @@ srcdoc:
 	kdoc -H -d $(SRCDOC_DEST) kdecore \
 		 $(include_HEADERS) -lqt
 
-
 ckey.h : convert_key.c
 	$(CC) $(CFLAGS) convert_key.c -o convert_key
 	./convert_key $(QKEYCODE_H)
 	cat ackey ckey > ckey.h
 	rm -f ackey ckey
 
-ksock.moc: ksock.h
-	$(MOC) ksock.h -o ksock.moc
-
-drag.moc: drag.h
-	$(MOC) drag.h -o drag.moc
-
-kapp.moc: kapp.h
-	$(MOC) kapp.h -o kapp.moc
-
-kprocess.moc: kprocess.h
-	$(MOC) kprocess.h -o kprocess.moc
-
-kprocctrl.moc: kprocctrl.h
-	$(MOC) kprocctrl.h -o kprocctrl.moc
-
-kiconloader.moc: kiconloader.h
-	$(MOC) kiconloader.h -o kiconloader.moc
-
-kdebugdialog.moc: kdebugdialog.h
-	$(MOC) kdebugdialog.h -o kdebugdialog.moc
-
-kconfig.moc: kconfig.h
-	$(MOC) kconfig.h -o kconfig.moc
-
-kconfigbase.moc: kconfigbase.h
-	$(MOC) kconfigbase.h -o kconfigbase.moc
-
-ksimpleconfig.moc: ksimpleconfig.h
-	$(MOC) ksimpleconfig.h -o ksimpleconfig.moc
-
-kglobalaccel.moc: kglobalaccel.h
-	$(MOC) kglobalaccel.h -o kglobalaccel.moc
-
-kclipboard.moc: kclipboard.h
-	$(MOC) kclipboard.h -o kclipboard.moc

@@ -425,5 +425,5 @@ void KDir::setMaxReturns(uint max) {
     maxReturns = max;
 }
 
-#include "kdir.moc"
+#include "kdir.h"
 

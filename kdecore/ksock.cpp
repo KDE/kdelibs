@@ -19,6 +19,9 @@
 /*
  * $Id$
  * $Log$
+ * Revision 1.22  1999/01/11 23:09:51  thufir
+ * fix: fixes bug where it would loop n - tries, after a successful connect (would cause a pause after successful connect)
+ *
  * Revision 1.21  1998/11/11 00:02:54  thufir
  * addes ability to set a connect Time Out, breaks binary compatability
  *
@@ -113,7 +116,6 @@
 #include <config.h>
 #endif
 
-#include "ksock.moc"
 #include <stdio.h>
 #include <errno.h>
 #ifdef STDC_HEADERS
@@ -154,6 +156,8 @@
 #include <netdb.h>
 #include <fcntl.h>
 #include <signal.h>
+
+#include "ksock.h"
 
 #ifndef UNIX_PATH_MAX
 #define UNIX_PATH_MAX 108 // this is the value, I found under Linux

@@ -428,7 +428,5 @@ void DlgLocation::resizeEvent(QResizeEvent *e)
     ok->move( 10, h-10-ok->height() );
     cancel->move( w-10-cancel->width(), h-10-cancel->height() );
 }
-#include "kfm.moc"
-
 
 

@@ -144,5 +144,5 @@ void KFilePreview::fileHighlighted(KFileInfo *i)
     myPreview->previewFile(i);
 }
 
-#include "kfilepreview.moc"
+#include "kfilepreview.h"
 

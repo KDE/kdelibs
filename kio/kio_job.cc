@@ -877,4 +877,4 @@ QString KIOJob::findDeviceMountPoint( const char *_device, const char *_file )
   return QString();
 }
   
-#include "kio_job.moc"
+#include "kio_job.h"

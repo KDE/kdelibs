@@ -20,32 +20,15 @@
 #    Boston, MA 02111-1307, USA.
 
 
-INCLUDES=  -I../kdecore -I../kdeui $(QT_INCLUDES) $(X_INCLUDES)
+INCLUDES=  -I$(top_srcdir)/kdecore -I$(top_srcdir)/kdeui $(QT_INCLUDES) $(X_INCLUDES)
 
-DISTCLEANFILES = $(BUILT_SOURCES)
+DISTCLEANFILES = $(libkspell_METASOURCES)
 
 lib_LTLIBRARIES  = libkspell.la
 libkspell_la_LDFLAGS = -version-info 2:0
 
-DISTCLEANFILES = kspelldlg.moc kspell.moc ksconfig.moc kprocio.moc
-
 include_HEADERS = kspell.h ksconfig.h kprocio.h kspelldlg.h
-
 libkspell_la_SOURCES = kspelldlg.cpp kspell.cpp ksconfig.cpp kprocio.cpp
 
-kspell.cpp: kspell.moc
-kspell.moc: kspell.h
-	$(MOC) kspell.h -o kspell.moc
-
-kspelldlg.cpp: kspelldlg.moc
-kspelldlg.moc: kspelldlg.h
-	$(MOC) kspelldlg.h -o kspelldlg.moc
-
-ksconfig.cpp: ksconfig.moc
-ksconfig.moc: ksconfig.h
-	$(MOC) ksconfig.h -o ksconfig.moc
-
-kprocio.cpp: kprocio.moc
-kprocio.moc: kprocio.h
-	$(MOC) kprocio.h -o kprocio.moc
+libkspell_METASOURCES = USE_AUTOMOC
 

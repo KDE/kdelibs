@@ -20,6 +20,9 @@
 // $Id$
 //
 // $Log$
+// Revision 1.120  1999/01/10 14:48:47  ettrich
+// fixed default widget style
+//
 // Revision 1.119  1998/12/13 20:32:57  ettrich
 // reverted some of the previous changes
 //
@@ -294,8 +297,6 @@
 // Matthias: BINARY INCOMPATIBLE CHANGES: extended session management support
 
 #include <qdir.h> // must be at the front
-
-#include "kapp.moc"
 
 #include <kapp.h>
 #include <kiconloader.h>

@@ -22,6 +22,9 @@
     Boston, MA 02111-1307, USA.
 
     $Log$
+    Revision 1.16  1999/01/12 12:45:30  ettrich
+    fixes for dialog handling
+
     Revision 1.15  1998/10/22 16:50:14  ettrich
     support for kstart
 
@@ -34,7 +37,7 @@
 
 */
 
-#include "kwmmapp.moc"
+#include "kwmmapp.h"
 
 int KWMModuleXErrorHandler(Display *, XErrorEvent *){
 

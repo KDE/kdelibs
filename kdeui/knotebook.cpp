@@ -17,7 +17,7 @@
     Boston, MA 02111-1307, USA.
 */  
 
-#include "knotebook.moc"
+#include "knotebook.h"
 
 struct KNoteBookProtected
 {

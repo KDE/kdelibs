@@ -19,6 +19,9 @@
 // $Id$
 //
 // $Log$
+// Revision 1.35  1998/10/09 20:37:10  kalle
+// KPanel works again
+//
 // Revision 1.34  1998/10/07 06:49:21  kalle
 // Correctly read double dollar signs (patch by Harri Porten)
 // Dollar expansion can be turned off with setDollarExpansion( false ).
@@ -146,7 +149,6 @@
 //
 
 #include <kconfigbase.h>
-#include "kconfigbase.moc"
 
 // Unix includes
 #include <stdlib.h>

@@ -20,7 +20,7 @@
 */
 
 
-#include "knewpanner.moc"
+#include "knewpanner.h"
 #include <stdio.h>
 #ifdef HAVE_CONFIG_H
 #include <config.h>

@@ -1,5 +1,5 @@
 #include "kpopmenu.h"
-#include "kpopmenu.moc"
+#include "kpopmenu.h"
 #include <qpainter.h>
 #include <klocale.h>
 #include <kapp.h>

@@ -16,22 +16,13 @@
 #    the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
 #    Boston, MA 02111-1307, USA.
 
-INCLUDES = -I../kdecore $(QT_INCLUDES) $(X_INCLUDES) 
-DISTCLEANFILES = $(BUILT_SOURCES)
+INCLUDES = -I$(top_srcdir)/kdecore $(QT_INCLUDES) $(X_INCLUDES) 
+DISTCLEANFILES = $(libkfm_METASOURCES)
+
+libkfm_METASOURCES = USE_AUTOMOC
 
 lib_LTLIBRARIES = libkfm.la
 libkfm_la_LDFLAGS = -version-info 2:0
 
 libkfm_la_SOURCES = kfm.cpp kfmclient_ipc.cpp kfmclient_ipc2.cpp kfmipc.cpp
-BUILT_SOURCES = kfm.moc kfmclient_ipc.moc
 include_HEADERS = kfm.h kfmclient_ipc.h kfmipc.h
-
-kfm.cpp: kfm.moc
-kfmclient_ipc.cpp: kfmclient_ipc.moc
-
-kfm.moc: kfm.h
-	$(MOC) -o kfm.moc kfm.h 
-
-kfmclient_ipc.moc: kfmclient_ipc.h
-	$(MOC) -o kfmclient_ipc.moc kfmclient_ipc.h
-

@@ -20,6 +20,10 @@
  * $Id$
  *
  * $Log$
+ * Revision 1.14  1998/09/01 20:22:19  kulow
+ * I renamed all old qt header files to the new versions. I think, this looks
+ * nicer (and gives the change in configure a sense :)
+ *
  * Revision 1.13  1998/07/13 08:39:32  hoss
  * Fixed small bug in showTab. pages[i]->raise() does only work with more than
  * one widget!
@@ -101,7 +105,7 @@
 #include "qpixmap.h"
 
 #include "ktabctl.h"
-#include "ktabctl.moc"
+#include "ktabctl.h"
 
 KTabCtl::KTabCtl(QWidget *parent, const char *name)
     : QWidget(parent, name)

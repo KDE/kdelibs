@@ -25,7 +25,7 @@
 #include <qdrawutil.h>
 
 
-#include "kdbtn.moc"
+#include "kdbtn.h"
 
 KDirectionButton::KDirectionButton(QWidget *parent, const char *name)
  : QButton(parent, name)

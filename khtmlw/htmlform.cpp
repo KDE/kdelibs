@@ -33,7 +33,7 @@
 #include <qfontmetrics.h>
 #include "htmlform.h"
 #include <strings.h>
-#include "htmlform.moc"
+#include "htmlform.h"
 #include "htmlfont.h"
 
 //----------------------------------------------------------------------------

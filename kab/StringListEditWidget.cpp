@@ -298,7 +298,7 @@ void StringListEditWidget::enableButtons()
 
 // ##############################################################################
 // MOC OUTPUT FILES:
-#include "StringListEditWidget.moc"
-#include "StringListEditWidgetData.moc"
+#include "StringListEditWidget.h"
+#include "StringListEditWidgetData.h"
 // ##############################################################################
 

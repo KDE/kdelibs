@@ -576,7 +576,7 @@ StringListSelectAndReorderSet* StringListSAndRSetDialog::selector()
 
 // #############################################################################
 // MOC OUTPUT FILES:
-#include "StringListSelectAndReorderSet.moc"
-#include "StringListSelectAndReorderSetData.moc"
+#include "StringListSelectAndReorderSet.h"
+#include "StringListSelectAndReorderSetData.h"
 // #############################################################################
 

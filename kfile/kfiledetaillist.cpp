@@ -225,5 +225,5 @@ void KFileDetailList::highlighted(int row)
 }
 
 
-#include "kfiledetaillist.moc"
+#include "kfiledetaillist.h"
 

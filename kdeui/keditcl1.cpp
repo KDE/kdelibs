@@ -32,7 +32,7 @@
 #include <kapp.h>
 
 
-#include "keditcl.moc"
+#include "keditcl.h"
 
 KEdit::KEdit(KApplication *a, QWidget *parent, const char *name,
 	     const char *fname) : QMultiLineEdit(parent, name){

@@ -19,6 +19,10 @@
 // $Id$
 //
 // $Log$
+// Revision 1.19  1999/01/11 13:53:42  kulow
+// fixing bug 1311 - don't use data.sprintf("%s", data.data());
+// the meaning is undefined
+//
 // Revision 1.18  1998/11/08 19:06:46  esken
 // Several security fixes by adding checkAccess() tests before the creation
 // of files and directorys. This is neccesary for SUID programs. Added
@@ -90,7 +94,6 @@
 //
 
 #include <kconfig.h>
-#include "kconfig.moc"
 #include <qfileinfo.h>
 #include <stdlib.h>
 

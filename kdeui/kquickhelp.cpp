@@ -25,7 +25,7 @@
 //
 // ---------------------------------------------------------------------------
 
-#include "kquickhelp.moc"
+#include "kquickhelp.h"
 #include "kquickhelp.h"
 #include <qpainter.h>
 #include <qpixmap.h>

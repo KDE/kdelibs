@@ -38,7 +38,7 @@
 #include <qdrawutil.h>
 
 #include "kslider.h"
-#include "kslider.moc"
+#include "kslider.h"
 
 #define ARROW_LENGTH	13
 

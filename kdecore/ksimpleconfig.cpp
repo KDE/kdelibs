@@ -19,6 +19,10 @@
 // $Id$
 //
 // $Log$
+// Revision 1.11  1998/09/01 20:21:32  kulow
+// I renamed all old qt header files to the new versions. I think, this looks
+// nicer (and gives the change in configure a sense :)
+//
 // Revision 1.10  1998/01/18 14:39:01  kulow
 // reverted the changes, Jacek commited.
 // Only the RCS comments were affected, but to keep them consistent, I
@@ -53,7 +57,6 @@
 //
 
 #include <ksimpleconfig.h>
-#include "ksimpleconfig.moc"
 
 #include <qfileinfo.h>
 

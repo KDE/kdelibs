@@ -26,7 +26,7 @@
 
 #include <qpainter.h>
 #include <qcolor.h>
-#include "kled.moc"
+#include "kled.h"
 #include "kled.h"
 
 const QRgb

@@ -26,7 +26,7 @@
 #include <qpen.h>
 #include <qcolor.h>
 #include "kledlamp.h"
-#include "kledlamp.moc"
+#include "kledlamp.h"
 
 KLedLamp::KLedLamp(QWidget *parent) : QFrame(parent),
   width( 28 ), height( 7 ), dx( 4 )

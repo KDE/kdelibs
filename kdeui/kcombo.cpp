@@ -2,7 +2,7 @@
 #include <qdrawutil.h>
 #include <qkeycode.h>
 #include "kcombo.h"
-#include "kcombo.moc"
+#include "kcombo.h"
 #include <qaccel.h>
 
 KCombo::KCombo( QWidget* parent, const char* name, WFlags ) :

@@ -24,7 +24,7 @@
 
 
 #include "kcontrol.h"
-#include "kcontrol.moc"
+#include "kcontrol.h"
 
 static int minimum_width_;
 

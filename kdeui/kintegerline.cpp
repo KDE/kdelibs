@@ -27,7 +27,7 @@
 
 #include <stdlib.h>
 
-#include "kintegerline.moc"
+#include "kintegerline.h"
 
 
 KIntegerLine::KIntegerLine( QWidget *parent, 

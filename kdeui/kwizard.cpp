@@ -18,7 +18,7 @@
 */  
 
 
-#include "kwizard.moc"
+#include "kwizard.h"
 
 
 struct KWizProtected

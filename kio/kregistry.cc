@@ -360,4 +360,4 @@ bool KRegFactory::matchFile( const char *_file )
   return false;
 }
 
-#include "kregistry.moc"
+#include "kregistry.h"

@@ -229,7 +229,7 @@ bool StringListSelectOneDialog::isEditable()
 
 // #############################################################################
 // MOC OUTPUT FILES:
-#include "StringListSelectOneDialog.moc"
+#include "StringListSelectOneDialog.h"
 // #############################################################################
 
 

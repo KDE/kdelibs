@@ -44,7 +44,7 @@
 #include <qdict.h>
 #include <qbitmap.h>
 
-#include "htmlobj.moc"
+#include "htmlobj.h"
 
 // This will be constructed once and NEVER deleted.
 QDict<HTMLCachedImage>* HTMLImage::pCache = 0L;

@@ -3,7 +3,7 @@
 # set "REMOVE_NANA" to get rid of the NANA assertions:
 # (REMOVE_NANA is now defined by default if the compiler directives
 #  do not define DEBUG), I use MS_NANA_DEFINES for this:
-INCLUDES= -I../kdecore -I../kdeui -I../kfile -I../kfmlib $(QT_INCLUDES) $(X_INCLUDES)
+INCLUDES= -I$(top_srcdir)/kdecore -I$(top_srcdir)/kdeui -I$(top_srcdir)/kfile -I$(top_srcdir)/kfmlib $(QT_INCLUDES) $(X_INCLUDES)
 
 # $(MS_NANA_DEFINES)
 # -DREMOVE_NANA
@@ -58,48 +58,9 @@ libkab_la_LDFLAGS = -version-info 2:0 $(X_LDFLAGS) $(QT_LDFLAGS)
 libkab_la_LIBADD  = -lXext $(LIB_QT)
 
 # just to make sure, automake makes them 
-libkab_la_METASOURCES =	addressbook.moc widgets.moc widget.moc \
-		AssertDialog.moc AssertDialogData.moc \
-		DialogBase.moc DialogBaseData.moc \
-		SearchDialog.moc searchresults.moc \
-		editentry.moc datepickerdialog.moc businesscard.moc \
-		StringListSelectOneDialog.moc \
-		StringListSelectSetDialog.moc \
-		StringListSelectAndReorderSet.moc \
-		StringListSelectAndReorderSetData.moc \
-		SearchDialogMainWidget.moc \
-		SearchDialogMainWidgetData.moc
+libkab_METASOURCES = USE_AUTOMOC cc
 
-DISTCLEANFILES = $(libkab_la_METASOURCES)
+DISTCLEANFILES = $(libkab_METASOURCES)
 
 picsdir = $(kde_datadir)/kab/pics
 pics_DATA = dialog_background.jpg background_1.jpg
-
-SUFFIXES = .h .moc
-
-.h.moc:
-	$(MOC) $< -o $@
-
-widgets.cc:widgets.moc
-widget.cc:kab.moc
-searchresults.cc:searchresults.moc
-editentry.cc:editentry.moc
-datepickerdialog.cc:datepickerdialog.moc
-businesscard.cc:businesscard.moc
-SearchDialog.cpp: SearchDialog.moc 
-AddressBookAbout.cpp:AddressBookAbout.moc AddressBookAboutData.moc
-PrintDialog.cpp:PrintDialog.moc PrintDialogData.moc
-#StringListDialog.cpp:StringListDialog.moc StringListDialogData.moc
-StringListEditWidget.cpp:StringListEditWidget.moc StringListEditWidgetData.moc
-StringListEditDialog.cpp:StringListEditDialog.moc
-kabapi.cc:kabapi.moc
-StringListSelectOneDialog.cpp:StringListSelectOneDialog.moc
-StringListSelectSetDialog.cpp:StringListSelectSetDialog.moc 
-StringListSelectAndReorderSet.cpp:StringListSelectAndReorderSet.moc \
-				StringListSelectAndReorderSetData.moc
-AssertDialog.cpp: AssertDialog.moc AssertDialogData.moc
-DialogBase.cpp			:	DialogBase.moc DialogBaseData.moc
-SearchDialogMainWidget.cpp	:	SearchDialogMainWidget.moc \
-			   		SearchDialogMainWidgetData.moc
-
-

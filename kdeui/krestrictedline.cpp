@@ -25,7 +25,7 @@
 #include "krestrictedline.h"
 #include "qkeycode.h"
 
-#include "krestrictedline.moc"
+#include "krestrictedline.h"
 
 
 KRestrictedLine::KRestrictedLine( QWidget *parent, 

@@ -19,7 +19,7 @@
     Boston, MA 02111-1307, USA.
 */
 #include <ktmainwindow.h>
-#include <ktmainwindow.moc>
+#include <ktmainwindow.h>
 #include <kapp.h>
 #include <kdebug.h>
 #include <kconfig.h>

@@ -16,8 +16,8 @@
 #    the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
 #    Boston, MA 02111-1307, USA.
 
-INCLUDES = -I../kdecore -I../kdeui -I../kdeutils $(QT_INCLUDES) $(X_INCLUDES) 
-DISTCLEANFILES = $(libkio_la_METASOURCES)
+INCLUDES = -I$(top_srcdir)/kdecore -I$(top_srcdir)/kdeui -I$(top_srcdir)/kdeutils $(QT_INCLUDES) $(X_INCLUDES) 
+DISTCLEANFILES = $(libkio_METASOURCES)
 
 lib_LTLIBRARIES = libkio.la
 libkio_la_LDFLAGS = -version-info 2:0
@@ -31,9 +31,7 @@ libkio_la_SOURCES = kio_connection.cc kio_base.cc kio_rename_dlg.cc \
 	kio_job.cc kregistry.cc kio_linedit_dlg.cc kio_paste.cc \
 	kio_openwith.cc
 
-libkio_la_METASOURCES = kio_pass_dlg.moc kio_rename_dlg.moc \
-	kio_skip_dlg.moc kautomount.moc kdirwatch.moc \
-	kio_cache.moc kio_job.moc kio_linedit_dlg.moc kio_openwith.moc
+libkio_METASOURCES = USE_AUTOMOC cc
 
 include_HEADERS = kio_connection.h kio_base.h kio_rename_dlg.h \
 	kio_filter.h kio_dlg.h kio_skip_dlg.h  kio_interface.h \
@@ -47,45 +45,4 @@ kioconfig_DATA = kio.kfg
 kioconfigdir = $(kde_datadir)/kio
 
 EXTRA_DIST = $(kioconfig_DATA)
-
-kio_pass_dlg.cc: kio_pass_dlg.moc
-kio_rename_dlg.cc: kio_rename_dlg.moc
-kio_skip_dlg.cc: kio_skip_dlg.moc
-kio_progress_dlg.cc: kio_progress_dlg.moc
-kautomount.cc: kautomount.moc
-kdirwatch.cc: kdirwatch.moc
-kio_cache.cc: kio_cache.moc
-kio_job.cc: kio_job.moc
-kurlcompletion.cc: kurlcompletion.moc
-krun.cc: krun.moc
-kregistry.cc: kregistry.moc
-kio_linedit_dlg.cc: kio_linedit_dlg.moc
-kio_openwith.cc:kio_openwith.moc
-
-kio_pass_dlg.moc: kio_pass_dlg.h
-	$(MOC) -o kio_pass_dlg.moc kio_pass_dlg.h 
-kio_rename_dlg.moc: kio_rename_dlg.h
-	$(MOC) -o kio_rename_dlg.moc kio_rename_dlg.h 
-kio_skip_dlg.moc: kio_skip_dlg.h
-	$(MOC) -o kio_skip_dlg.moc kio_skip_dlg.h 
-kio_progress_dlg.moc: kio_progress_dlg.h
-	$(MOC) -o kio_progress_dlg.moc kio_progress_dlg.h 
-kio_cache.moc: kio_cache.h
-	$(MOC) -o kio_cache.moc kio_cache.h 
-kio_job.moc: kio_job.h
-	$(MOC) -o kio_job.moc kio_job.h 
-kdirwatch.moc: kdirwatch.h
-	$(MOC) -o kdirwatch.moc kdirwatch.h 
-kautomount.moc: kautomount.h
-	$(MOC) -o kautomount.moc kautomount.h 
-kurlcompletion.moc: kurlcompletion.h
-	$(MOC) -o kurlcompletion.moc kurlcompletion.h 
-krun.moc: krun.h
-	$(MOC) -o krun.moc krun.h 
-kregistry.moc: kregistry.h
-	$(MOC) -o kregistry.moc kregistry.h 
-kio_linedit_dlg.moc: kio_linedit_dlg.h
-	$(MOC) -o kio_linedit_dlg.moc kio_linedit_dlg.h 
-kio_openwith.moc: kio_openwith.h
-	$(MOC) kio_openwith.h -o kio_openwith.moc
 

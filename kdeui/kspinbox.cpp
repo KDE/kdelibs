@@ -29,7 +29,7 @@
 #include <qapplication.h>	     // for beep()
 
 #include "kspinbox.h"
-#include "kspinbox.moc"
+#include "kspinbox.h"
 
 #if 0
 #define DBG(s)		s

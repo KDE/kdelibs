@@ -159,7 +159,7 @@ bool StringListSelectSetDialog::getSelection(QStrList& s)
 
 // #############################################################################
 // MOC OUTPUT FILES:
-#include "StringListSelectSetDialog.moc"
+#include "StringListSelectSetDialog.h"
 // #############################################################################
 
 

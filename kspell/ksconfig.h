@@ -12,6 +12,8 @@
 #include <klined.h>
 #include <qpushbutton.h>
 
+class QLabel;
+
 enum Encoding {
 	KS_E_LATIN1=0,
 	KS_E_ASCII=1

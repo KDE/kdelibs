@@ -20,6 +20,10 @@
  * $Id$
  *
  * $Log$
+ * Revision 1.12  1998/08/03 15:24:22  ssk
+ * Wrote documentation.
+ * Eliminated dead and commented-out code.
+ *
  * Revision 1.11  1998/03/15 13:05:14  mario
  * Mario: fixed kb60
  *
@@ -103,7 +107,7 @@
 #include <kbuttonbox.h>
 
 #include "kmsgbox.h"
-#include "kmsgbox.moc"
+#include "kmsgbox.h"
 
 KMsgBox::KMsgBox( QWidget *parent, const char *caption,
 	const char *message, int type,

@@ -503,5 +503,5 @@ void KFileSimpleView::insertArray(uint item, uint pos)
     width_length++;
 }
 
-#include "kfilesimpleview.moc"
+#include "kfilesimpleview.h"
 

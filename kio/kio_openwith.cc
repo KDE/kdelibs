@@ -13,7 +13,7 @@
 #include <string.h>
 #include <stdio.h>
 
-#include "kio_openwith.moc"
+#include "kio_openwith.h"
 
 #define SORT_SPEC (QDir::DirsFirst | QDir::Name | QDir::IgnoreCase)
 

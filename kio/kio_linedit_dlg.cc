@@ -65,4 +65,4 @@ void KLineEditDlg::slotClear()
     edit->setText("");
 }
 
-#include "kio_linedit_dlg.moc"
+#include "kio_linedit_dlg.h"

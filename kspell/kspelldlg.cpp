@@ -3,7 +3,7 @@
 
 #include <kapp.h>
 
-#include "kspelldlg.moc"
+#include "kspelldlg.h"
 #include "version.h"
 
 #define NLS(s) i18n(s)

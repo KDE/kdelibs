@@ -37,7 +37,7 @@
 #include <kapp.h>
 
 #include "kdatetbl.h"
-#include "kdatetbl.moc"
+#include "kdatetbl.h"
 
 KDateTable::KDateTable(QWidget *parent, QDate date, 
 		       const char *name, WFlags f) 

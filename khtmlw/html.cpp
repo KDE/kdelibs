@@ -6457,4 +6457,4 @@ void KHTMLWidget::registerFormats()
 	kimgioRegister();
 }
 
-#include "html.moc"
+#include "html.h"

@@ -26,7 +26,7 @@
 #include "kcolordlg.h"
 #include "kcolorbtn.h"
 
-#include "kcolorbtn.moc"
+#include "kcolorbtn.h"
 
 KColorButton::KColorButton( QWidget *parent, const char *name )
 	: QPushButton( parent, name )

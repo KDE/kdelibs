@@ -277,6 +277,6 @@ KabAPI::ErrorCode KabAPI::sendEmail(const string& address, const string& subject
 
 // #############################################################################
 // MOC OUTPUT FILES:
-#include "kabapi.moc"
+#include "kabapi.h"
 // #############################################################################
 
