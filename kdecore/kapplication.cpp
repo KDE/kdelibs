@@ -1976,7 +1976,7 @@ void KApplication::propagateSettings(SettingsCategory arg)
     KConfigGroupSaver saver( config, "KDE" );
 
     int num = config->readNumEntry("CursorBlinkRate", QApplication::cursorFlashTime());
-    if (num < 200)
+    if ((num != 0) && (num < 200))
         num = 200;
     if (num > 2000)
         num = 2000;
