@@ -58,11 +58,13 @@ struct KSycocaPrivate {
     KSycocaPrivate() {
         database = 0;
         readError = false;
+        updateSig = 0;
     }
     QFile *database;
     QStringList changeList;
     QString language;
     bool readError;
+    Q_UINT32 updateSig;
 };
 
 // Read-only constructor
@@ -338,6 +340,7 @@ QString KSycoca::kfsstnd_prefixes()
    KSycocaEntry::read(*m_str, prefixes);
    (*m_str) >> m_timeStamp;
    KSycocaEntry::read(*m_str, d->language);
+   (*m_str) >> d->updateSig;
    return prefixes;
 }
 
@@ -346,6 +349,13 @@ Q_UINT32 KSycoca::timeStamp()
    if (!m_timeStamp)
       (void) kfsstnd_prefixes();
    return m_timeStamp;
+}
+
+Q_UINT32 KSycoca::updateSignature()
+{
+   if (!m_timeStamp)
+      (void) kfsstnd_prefixes();
+   return d->updateSig;
 }
 
 QString KSycoca::language()

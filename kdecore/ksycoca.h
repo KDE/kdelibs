@@ -34,7 +34,7 @@ class KSycocaFactoryList;
  * If the existing file is outdated, it will not get read
  * but instead we'll ask kded to regenerate a new one...
 */
-#define KSYCOCA_VERSION 56
+#define KSYCOCA_VERSION 57
 
 /**
  * @internal
@@ -91,6 +91,17 @@ public:
     * _might_ contain changes made after that.
     */
    Q_UINT32 timeStamp();
+
+   /**
+    * @internal - returns update signature of database
+    * 
+    * Signature that keeps track of changes to 
+    * $KDEDIR/share/services/update_ksycoca
+    *
+    * Touching this file causes the database to be recreated
+    * from scratch.
+    */
+   Q_UINT32 updateSignature();
 
    /**
     * @internal - add a factory
