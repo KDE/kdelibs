@@ -106,6 +106,8 @@ KProcess::~KProcess()
 
   if (runs && (run_mode != DontCare))
     kill(SIGKILL);
+
+  // TODO: restore SIGCHLD and SIGPIPE handler if this is the last KProcess
 }
 
 
@@ -187,6 +189,14 @@ bool KProcess::start(RunMode runmode, Communication comm)
 	// Matthias
 	if (run_mode == DontCare)
           setpgid(0,0);
+
+        // restore default SIGPIPE handler (Harri)
+        struct sigaction act;
+        sigemptyset(&(act.sa_mask));
+        sigaddset(&(act.sa_mask), SIGPIPE);
+        act.sa_handler = SIG_DFL;
+        act.sa_flags = 0;
+        sigaction(SIGPIPE, &act, 0L);
 
 	execvp(arglist[0], arglist);
 	_exit(-1);
@@ -586,6 +596,14 @@ bool KShellProcess::start(RunMode runmode, Communication comm)
 	// Matthias
 	if (run_mode == DontCare)
           setpgid(0,0);
+
+        // restore default SIGPIPE handler (Harri)
+        struct sigaction act;
+        sigemptyset(&(act.sa_mask));
+        sigaddset(&(act.sa_mask), SIGPIPE);
+        act.sa_handler = SIG_DFL;
+        act.sa_flags = 0;
+        sigaction(SIGPIPE, &act, 0L);
 
 	execvp(arglist[0], arglist);
 	_exit(-1);
