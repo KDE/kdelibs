@@ -352,11 +352,9 @@ public:
 	text_decoration = TDNONE;
 	line_height = Length(100, Percent);
 	indent = Length(0, Fixed);
-	fontSize = 3;
     }
 
     QFont font;
-    short fontSize; 	    // to help implementing smaller, larger
     QColor color;
     QColor decoration_color;
 
@@ -533,7 +531,6 @@ public:
     short colSpan() { return visual->colspan; }
 
     const QFont & font() { return text->font; }
-    short fontSize() { return text->fontSize; }
 
     const QColor & color() { return text->color; }
     Length textIndent() { return text->indent; }
@@ -652,7 +649,6 @@ public:
     void colSpan(short v) { visual.set()->colspan = v; }
 
     void setFont(const QFont & v) { text.set()->font = v; }
-    void setFontSize(short v) { text.set()->fontSize = v; }
 
     void setColor(const QColor & v) { text.set()->color = v; }
     void setTextIndent(Length v) { text.set()->indent = v; }
