@@ -25,7 +25,7 @@
 // KDE HTML Widget -- HTML Parser
 // $Id$
 
-//#define PARSER_DEBUG
+#define PARSER_DEBUG
 //#define COMMENTS_IN_DOM
 
 #include "htmlparser.h"
@@ -520,6 +520,13 @@ void KHTMLParser::insertNode(NodeImpl *n)
             }
             break;
         }
+	    case ID_DD:
+	    case ID_DT:
+            e = new HTMLDListElementImpl(document);
+            insertNode(e);
+	    insertNode(n);
+	    return;
+	    break;
         case ID_AREA:
         {
             if(map)
