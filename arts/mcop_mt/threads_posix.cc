@@ -147,6 +147,7 @@ public:
 			owner = self;
 		}
 		count++;
+		return true;
 	}
 	void unlock()
 	{
