@@ -1,3 +1,4 @@
+// -*- mode: c++; c-basic-offset: 2 -*-
 /* This file is part of the KDE libraries
    Copyright (C) 2000 Kurt Granroth <granroth@kde.org>
 
@@ -177,6 +178,34 @@ public:
   }
 
   /**
+   * Return the name of a given toolbar
+   */
+  QString toolbarName( const XmlData& xmlData, const QDomElement& it ) const
+  {
+      static const QString &tagText = KGlobal::staticQString( "text" );
+      static const QString &tagText2 = KGlobal::staticQString( "Text" );
+      static const QString &attrName = KGlobal::staticQString( "name" );
+
+      QString name;
+      QCString txt( it.namedItem( tagText ).toElement().text().utf8() );
+      if ( txt.isEmpty() )
+          txt = it.namedItem( tagText2 ).toElement().text().utf8();
+      if ( txt.isEmpty() )
+          name = it.attribute( attrName );
+      else
+          name = i18n( txt );
+
+      // the name of the toolbar might depend on whether or not
+      // it is in kparts
+      if ( ( xmlData.m_type == XmlData::Shell ) ||
+           ( xmlData.m_type == XmlData::Part ) )
+      {
+        QString doc_name(xmlData.m_document.documentElement().attribute( attrName ));
+        name += " <" + doc_name + ">";
+      }
+      return name;
+  }
+  /**
    * Look for a given item in the current toolbar
    */
   QDomElement findElementForToolbarItem( const ToolbarItem* item ) const
@@ -191,6 +220,26 @@ public:
     }
     return QDomElement();
   }
+
+#ifndef NDEBUG
+  void dump()
+  {
+    static const char* s_XmlTypeToString[] = { "Shell", "Part", "Local", "Merged" };
+    XmlDataList::Iterator xit = m_xmlFiles.begin();
+    for ( ; xit != m_xmlFiles.end(); ++xit )
+    {
+        kdDebug(240) << "XmlData type " << s_XmlTypeToString[(*xit).m_type] << " xmlFile: " << (*xit).m_xmlFile << endl;
+        for( QValueList<QDomElement>::Iterator it = (*xit).m_barList.begin();
+             it != (*xit).m_barList.end(); ++it ) {
+            kdDebug(240) << "    Toolbar: " << toolbarName( *xit, *it ) << endl;
+        }
+        if ( (*xit).m_actionCollection )
+            kdDebug(240) << "    " << (*xit).m_actionCollection->count() << " actions in the collection." << endl;
+        else
+            kdDebug(240) << "    no action collection." << endl;
+    }
+  }
+#endif
 
   //QValueList<KAction*> m_actionList;
   KActionCollection* m_collection;
@@ -402,6 +451,10 @@ void KEditToolbarWidget::initNonKPart(KActionCollection *collection,
   merge.m_actionCollection = collection;
   d->m_xmlFiles.append(merge);
 
+#ifndef NDEBUG
+  //d->dump();
+#endif
+
   // okay, that done, we concern ourselves with the GUI aspects
   setupLayout();
 }
@@ -439,6 +492,10 @@ void KEditToolbarWidget::initKPart(KXMLGUIFactory* factory)
 
     //d->m_actionList += client->actionCollection()->actions();
   }
+
+#ifndef NDEBUG
+  //d->dump();
+#endif
 
   // okay, that done, we concern ourselves with the GUI aspects
   setupLayout();
@@ -647,8 +704,6 @@ void KEditToolbarWidget::setupLayout()
 void KEditToolbarWidget::loadToolbarCombo(const QString& defaultToolbar)
 {
   static const QString &attrName = KGlobal::staticQString( "name" );
-  static const QString &tagText = KGlobal::staticQString( "text" );
-  static const QString &tagText2 = KGlobal::staticQString( "Text" );
   // just in case, we clear our combo
   m_toolbarCombo->clear();
 
@@ -666,24 +721,7 @@ void KEditToolbarWidget::loadToolbarCombo(const QString& defaultToolbar)
     ToolbarList::Iterator it = (*xit).m_barList.begin();
     for ( ; it != (*xit).m_barList.end(); ++it)
     {
-      QString name;
-      QCString txt( (*it).namedItem( tagText ).toElement().text().utf8() );
-      if ( txt.isEmpty() )
-          txt = (*it).namedItem( tagText2 ).toElement().text().utf8();
-      if ( txt.isEmpty() )
-          name = (*it).attribute( attrName );
-      else
-          name = i18n( txt );
-
-      // the name of the toolbar might depend on whether or not
-      // it is in kparts
-      if ( ( (*xit).m_type == XmlData::Shell ) ||
-           ( (*xit).m_type == XmlData::Part ) )
-      {
-        QString doc_name((*xit).m_document.documentElement().attribute( attrName ));
-        name += " <" + doc_name + ">";
-      }
-
+      QString name = d->toolbarName( *xit, *it );
       m_toolbarCombo->setEnabled( true );
       m_toolbarCombo->insertItem( name );
       if (defaultToolbarId == -1 && (name == defaultToolbar || defaultToolbar == (*it).attribute( attrName )))
@@ -815,10 +853,6 @@ KActionCollection *KEditToolbarWidget::actionCollection() const
 
 void KEditToolbarWidget::slotToolbarSelected(const QString& _text)
 {
-  static const QString &attrName = KGlobal::staticQString( "name" );
-  static const QString &tagText = KGlobal::staticQString( "text" );
-  static const QString &tagText2 = KGlobal::staticQString( "Text" );
-
   // iterate through everything
   XmlDataList::Iterator xit = d->m_xmlFiles.begin();
   for ( ; xit != d->m_xmlFiles.end(); ++xit)
@@ -827,24 +861,7 @@ void KEditToolbarWidget::slotToolbarSelected(const QString& _text)
     ToolbarList::Iterator it = (*xit).m_barList.begin();
     for ( ; it != (*xit).m_barList.end(); ++it)
     {
-      QString name;
-      QCString txt( (*it).namedItem( tagText ).toElement().text().utf8() );
-      if ( txt.isEmpty() )
-          txt = (*it).namedItem( tagText2 ).toElement().text().utf8();
-      if ( txt.isEmpty() )
-          name = (*it).attribute( attrName );
-      else
-          name = i18n( txt );
-
-      // the name of the toolbar might depend on whether or not
-      // it is in kparts
-      if ( ( (*xit).m_type == XmlData::Shell ) ||
-           ( (*xit).m_type == XmlData::Part ) )
-      {
-        QString doc_name((*xit).m_document.documentElement().attribute( attrName ));
-        name += " <" + doc_name + ">";
-      }
-
+      QString name = d->toolbarName( *xit, *it );
       // is this our toolbar?
       if ( name == _text )
       {
