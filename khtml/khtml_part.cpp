@@ -464,7 +464,7 @@ void KHTMLPart::init( KHTMLView *view, GUIProfile prof )
   d->m_bMousePressed = false;
   d->m_paViewDocument = new KAction( i18n( "View Document Source" ), 0, this, SLOT( slotViewDocumentSource() ), actionCollection(), "viewDocumentSource" );
   d->m_paViewFrame = new KAction( i18n( "View Frame Source" ), 0, this, SLOT( slotViewFrameSource() ), actionCollection(), "viewFrameSource" );
-  d->m_paSendURL = new KAction( i18n( "Send Link" ), "mail_generic", 0, this, SLOT( slotSendURL() ), actionCollection(), "sendURL" );
+  d->m_paSendURL = new KAction( i18n( "Send &Link" ), "mail_generic", CTRL+Key_L, this, SLOT( slotSendURL() ), actionCollection(), "sendURL" );
   d->m_paSendPage = new KAction( i18n( "Send Page" ), "mail_generic", 0, this, SLOT( slotSendPage() ), actionCollection(), "sendPage" );
   d->m_paSaveBackground = new KAction( i18n( "Save &Background Image As..." ), 0, this, SLOT( slotSaveBackground() ), actionCollection(), "saveBackground" );  
   d->m_paSaveDocument = new KAction( i18n( "&Save As..." ), CTRL+Key_S, this, SLOT( slotSaveDocument() ), actionCollection(), "saveDocument" );

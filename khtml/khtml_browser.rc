@@ -2,11 +2,9 @@
 <kpartgui name="khtmlpart" version="8">
 <MenuBar>
  <Menu name="file"><text>&amp;File</text>
-<!--
   <Action name="sendURL"/>
   <Action name="sendPage"/>
   <Separator/>
--->
   <Action name="saveBackground" />
   <Action name="saveDocument" />
   <Action name="saveFrame" />
