@@ -47,6 +47,9 @@ namespace KJS {
 
         bool isEmpty() const { return !_node; }
         ObjectImp *top() const { return _node->object; }
+        ObjectImp *bottom() const { const ScopeChainNode *n = _node;
+				    while (n->next) n = n->next;
+				    return n->object; }
 
         void clear() { deref(); _node = 0; }
         void push(ObjectImp *);

@@ -22,6 +22,7 @@
 
 #include "reference.h"
 #include "internal.h"
+#include "context.h"
 
 #include <assert.h>
 
@@ -154,11 +155,12 @@ void Reference::putValue(ExecState *exec, const Value &w)
 #endif
   Value o = getBase(exec);
   if (o.type() == NullType)
-    o = exec->interpreter()->globalObject();
+    o = Value(exec->context().imp()->scopeChain().bottom());
 
   if (propertyNameIsNumber)
-    return static_cast<ObjectImp*>(o.imp())->put(exec,propertyNameAsNumber, w);
-  return static_cast<ObjectImp*>(o.imp())->put(exec,prop, w);
+    static_cast<ObjectImp*>(o.imp())->put(exec,propertyNameAsNumber, w);
+  else
+    static_cast<ObjectImp*>(o.imp())->put(exec,prop, w);
 }
 
 bool Reference::deleteValue(ExecState *exec)
