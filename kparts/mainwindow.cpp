@@ -132,6 +132,9 @@ void MainWindow::createGUI( Part * part )
 
     GUIActivateEvent ev( true );
     QApplication::sendEvent( part, &ev );
+
+    if ( autoSaveSettings() )
+        setAutoSaveSettings( part->instance()->instanceName(), false );
   }
 
   setUpdatesEnabled( true );
@@ -177,6 +180,12 @@ void MainWindow::createShellGUI( bool create )
         guiFactory()->removeClient( this );
     }
     accel()->setAutoUpdate( bAccelAutoUpdate );
+}
+
+void KParts::MainWindow::saveNewToolbarConfig()
+{
+    createGUI( d->m_activePart );
+    applyMainWindowSettings( KGlobal::config() );
 }
 
 #include "mainwindow.moc"
