@@ -137,7 +137,7 @@ void KHelpMenu::aboutKDE( void )
       "improved documentation. You decide!"
       "<br><br>"
       "Visit "
-      "<A HREF=\"http://www.kde.org/jobs/\">http://www.kde.org/jobs/</A> "
+      "<A HREF=\"http://www.kde.org/jobs.html\">http://www.kde.org/jobs.html</A> "
       "for information on some projects in which you can participate."
       "<br><br>"
       "If you need more information or documentation, then a visit to "
