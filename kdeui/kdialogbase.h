@@ -148,7 +148,7 @@ class KDialogBaseTile;
  * UrlDlg::UrlDlg( QWidget *parent, const QString& caption,
  *                 const QString& urltext)
  *   : KDialogBase( parent, "urldialog", true, caption,
- *		    KDialogBase::Ok|KDialogBase::Cancel, KDialogBase::Ok, true )
+ *                  KDialogBase::Ok|KDialogBase::Cancel, KDialogBase::Ok, true )
  * {
  *   QWidget *page = new QWidget( this );
  *   setMainWidget(page);
@@ -170,9 +170,9 @@ class KDialogBaseTile;
  *
  * \code
  * UrlDlg::UrlDlg( QWidget *parent, const QString& caption,
- *		const QString& urltext)
+ *                 const QString& urltext)
  * : KDialogBase( parent, "urldialog", true, caption,
-		  KDialogBase::Ok|KDialogBase::Cancel, KDialogBase::Ok, true )
+ *                KDialogBase::Ok|KDialogBase::Cancel, KDialogBase::Ok, true )
  * {
  *   QVBox *page = makeVBoxMainWidget();
  *   QLabel *label = new QLabel( caption, page, "caption" );
@@ -283,7 +283,7 @@ class KDialogBase : public KDialog
      * @param user3 User button3 item.
      */
     KDialogBase( QWidget *parent=0, const char *name=0, bool modal=true,
-                 const QString &caption=QString::null,
+		 const QString &caption=QString::null,
 		 int buttonMask=Ok|Apply|Cancel, ButtonCode defaultButton=Ok,
 		 bool separator=false,
 		 const KGuiItem &user1=KGuiItem(),
@@ -389,11 +389,11 @@ class KDialogBase : public KDialog
     KDialogBase( const QString &caption, int buttonMask=Yes|No|Cancel,
 		 ButtonCode defaultButton=Yes, ButtonCode escapeButton=Cancel,
 		 QWidget *parent=0, const char *name=0,
-                 bool modal=true, bool separator=false,
+		 bool modal=true, bool separator=false,
 		 const KGuiItem &yes = KStdGuiItem::yes(), // i18n("&Yes")
 		 const KGuiItem &no = KStdGuiItem::no(), // i18n("&No"),
 		 const KGuiItem &cancel = KStdGuiItem::cancel() // i18n("&Cancel")
-	         );
+		 );
 
     /**
      * Destructor.
@@ -477,7 +477,7 @@ class KDialogBase : public KDialog
      *         the page.
      */
     QFrame  *addPage( const QString &itemName,
-                      const QString &header=QString::null,
+		      const QString &header=QString::null,
 		      const QPixmap &pixmap=QPixmap() );
 
     /**
@@ -492,7 +492,7 @@ class KDialogBase : public KDialog
      * @p TreeList, all the strings except the last one is ignored.
      **/
     QFrame  *addPage( const QStringList &items,
-                      const QString &header=QString::null,
+		      const QString &header=QString::null,
 		      const QPixmap &pixmap=QPixmap() );
 
     /**
