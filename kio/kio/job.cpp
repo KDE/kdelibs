@@ -2476,8 +2476,10 @@ void CopyJob::statCurrentSrc()
         {
             // if the file system doesn't support deleting, we do not even stat
             if (m_mode == Move && !KProtocolInfo::supportsDeleting(m_currentSrcURL)) {
+                QGuardedPtr<CopyJob> that = this;
                 KMessageBox::information( 0, buildErrorString(ERR_CANNOT_DELETE, m_currentSrcURL.prettyURL()));
-                statNextSrc(); // we could use a loop instead of a recursive call :)
+                if (that)
+                    statNextSrc(); // we could use a loop instead of a recursive call :)
                 return;
             }
             // Stat the next src url
@@ -3675,9 +3677,11 @@ void DeleteJob::statNextSrc()
 
         // if the file system doesn't support deleting, we do not even stat
         if (!KProtocolInfo::supportsDeleting(m_currentURL)) {
-            KMessageBox::information( 0, buildErrorString(ERR_CANNOT_DELETE, m_currentURL.prettyURL()));
+            QGuardedPtr<DeleteJob> that = this;
             ++m_currentStat;
-            statNextSrc(); // we could use a loop instead of a recursive call :)
+            KMessageBox::information( 0, buildErrorString(ERR_CANNOT_DELETE, m_currentURL.prettyURL()));
+            if (that)
+                statNextSrc();
             return;
         }
         // Stat it
