@@ -74,6 +74,7 @@ public:
 KSSLCertificate::KSSLCertificate() {
   d = new KSSLCertificatePrivate;
   d->m_stateCached = false;
+  KGlobal::dirs()->addResourceType("kssl", "share/apps/kssl");
 #ifdef HAVE_SSL
   d->m_cert = NULL;
 #endif
