@@ -76,7 +76,8 @@ bool DOMNode::hasProperty(const UString &p, bool recursive) const
       /* moved here from Element in DOM2
       p == "normalize"  || p == "supports" */
       // no DOM standard, found in IE only
-      p == "offsetLeft" || p == "offsetTop" || p == "offsetParent" ||
+      p == "offsetLeft" || p == "offsetTop" || p == "offsetWidth" || p == "offsetHeight" ||
+      p == "offsetParent" ||
       p == "scrollLeft" || p == "scrollTop" || p == "addEventListener" ||
       p == "removeEventListener" || p == "dispatchEvent")
     return true;
@@ -139,6 +140,10 @@ KJSO DOMNode::tryGet(const UString &p) const
     result = rend ? static_cast<KJSO>(Number(rend->xPos())) : KJSO(Undefined());
   else if (p == "offsetTop")
     result = rend ? static_cast<KJSO>(Number(rend->yPos())) : KJSO(Undefined());
+  else if (p == "offsetWidth")
+    result = rend ? static_cast<KJSO>(Number(rend->width()) ) : KJSO(Undefined());
+  else if (p == "offsetHeight")
+    result = rend ? static_cast<KJSO>(Number(rend->height() ) ) : KJSO(Undefined());
   else if (p == "offsetParent")
     result = getDOMNode(node.parentNode()); // not necessarily correct
   else if (p == "clientWidth")
