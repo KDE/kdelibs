@@ -118,8 +118,6 @@ int StubProcess::ConverseStub(bool check_only)
 	} else if (line == "app_start_pid") {
 	    tmp.setNum(getpid());
 	    writeLine(tmp);
-	} else if (line == "libmapnotify") {
-	    writeLine(KApplication::libmapnotify().local8Bit());
 	} else if (line == "end") {
 	    return 0;
 	} else 
