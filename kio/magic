@@ -747,3 +747,5 @@
 0	belong		0x000003f3	application/x-executable # AmigaOS loadseg()ble executable/binary
 0	belong		0x000003e7	application/x-sharedlib # AmigaOS object/library data 
 
+0 	string		%TGIF		application/x-tgif	
+
