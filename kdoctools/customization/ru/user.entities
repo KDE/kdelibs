@@ -18,6 +18,15 @@
 <!ENTITY FAQ    '<acronym>FAQ</acronym>'>
 
 <!-- Temporary hack - please translate to Russian: -->
+<!ENTITY kicon	"<guiicon>
+<inlinemediaobject>
+ <objectinfo><title>&kde;'s K-icon</title></objectinfo>
+ <imageobject><imagedata fileref='common/kmenu.png' format='PNG'/></imageobject>
+ <textobject><phrase>K</phrase></textobject>
+</inlinemediaobject>
+</guiicon> icon"><!-- if image is localised, then entityref should be used 
+                      instead of fileref -->
+<!ENTITY kmenu  "<guimenu>K</guimenu> menu">
 <!ENTITY Shift  "<keycap>Shift</keycap>">
 <!ENTITY Alt    "<keycap>Alt</keycap>">
 <!ENTITY Ctrl   "<keycap>Ctrl</keycap>">
