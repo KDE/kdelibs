@@ -223,6 +223,7 @@ int main( int argc, char **argv )
 #define SIZEENTRY QSize( 10, 20 )
 #define RECTENTRY QRect( 10, 23, 5321, 13 )
 #define DATETIMEENTRY QDateTime( QDate( 2002, 06, 23 ), QTime( 12, 55, 40 ) )
+#define STRINGLISTENTRY QStringList( "Hello," )
 
 if (argc == 2)
 {
@@ -251,6 +252,7 @@ if (argc == 2)
   sc.writeEntry( "pointEntry", POINTENTRY );
   sc.writeEntry( "sizeEntry", SIZEENTRY );
   sc.writeEntry( "dateTimeEntry", DATETIMEENTRY );
+  sc.writeEntry( "stringListEntry", STRINGLISTENTRY );
   sc.sync();
 }
 
@@ -285,6 +287,7 @@ if (argc == 2)
   test( "readSizeEntry()", sc2.readSizeEntry( "sizeEntry" ) == SIZEENTRY);
   test( "readRectEntry()", sc2.readRectEntry( "rectEntry" ) == RECTENTRY );
   test( "readDateTimeEntry()", sc2.readDateTimeEntry( "dateTimeEntry" ) == DATETIMEENTRY );
+  test( "readListEntry()", sc2.readListEntry( "stringListEntry") == STRINGLISTENTRY );
 }
 
 #include "kconfigtest.moc"

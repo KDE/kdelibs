@@ -542,7 +542,7 @@ int KConfigBase::readListEntry( const char *pKey,
     value.truncate(0);
   }
 
-  if ( str_list[len-1] != sep )
+  if ( str_list[len-1] != sep || ( len > 1 && str_list[len-2] == '\\' ) )
     list.append( value );
   return list.count();
 }
@@ -578,7 +578,7 @@ QStringList KConfigBase::readListEntry( const char *pKey, char sep ) const
       list.append( value );
       value.truncate(0);
     }
-  if ( str_list[len-1] != sep )
+  if ( str_list[len-1] != sep || ( len > 1 && str_list[len-2] == '\\' ) )
     list.append( value );
   return list;
 }
