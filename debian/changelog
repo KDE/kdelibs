@@ -1,3 +1,9 @@
+kdelibs (4:2.2-alpha1-5) experimental; urgency=low
+ 
+  * More upstream fixes
+ 
+ -- Ivan E. Moore II <rkrusty@debian.org>  Fri, 27 Apr 2001 01:20:00 -0700
+
 kdelibs (4:2.2-alpha1-4) experimental; urgency=low
  
   * More upstream fixes
