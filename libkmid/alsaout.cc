@@ -188,8 +188,13 @@ void AlsaOut::closeDev (void)
     {
        snd_seq_delete_simple_port(di->handle,di->src->port);
        delete di->src;
+       di->src=0;
     }
-    if (di->tgt) delete di->tgt;
+    if (di->tgt) 
+    {
+       delete di->tgt;
+       di->tgt=0;
+    }
     if (di->queue) 
     {
       snd_seq_free_queue(di->handle, di->queue);
@@ -230,13 +235,12 @@ void AlsaOut::eventInit(snd_seq_event_t *ev)
   tmp.tv_sec=(time)/1000;
   tmp.tv_nsec=(time%1000)*1000000;
 //  printf("time : %d %d %d\n",(int)time,(int)tmp.tv_sec, (int)tmp.tv_nsec);
-  if (!di->src) fprintf(stderr,"AlsaOut::eventInit : no source\n");
+  if (!di->src) { fprintf(stderr,"AlsaOut::eventInit : no source\n"); return; }
   ev->source = *di->src;
-  if (!di->tgt) fprintf(stderr,"AlsaOut::eventInit : no target\n");
+  if (!di->tgt) { fprintf(stderr,"AlsaOut::eventInit : no target\n"); return; }
   ev->dest = *di->tgt;
 
   snd_seq_ev_schedule_real(ev, di->queue, 0, &tmp);
-
 }
 
 void AlsaOut::eventSend(snd_seq_event_t *ev)
@@ -282,7 +286,6 @@ void AlsaOut::timerEventSend(int type)
 
   snd_seq_event_output(di->handle, &ev);
   snd_seq_flush_output(di->handle);
-
 }
 
 #endif // HAVE_ALSA_SEQ
@@ -504,7 +507,7 @@ void AlsaOut::sync(int i)
     snd_seq_flush_output(di->handle);
   }
 
-  if (di->timerStarted) 
+  if (di->timerStarted && di->src)
   {
     eventInit(di->ev);
     di->ev->dest = *di->src;
