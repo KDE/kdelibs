@@ -94,6 +94,9 @@ void KMFilterManager::loadFilters()
 			FilterInfo	*fi = load(d.absFilePath(*it));
 			if (fi)
 			{
+				// override any "Name" setting in the desktop
+				// file to avoid translation.
+				fi->name = (*it).left((*it).length()-8);
 				m_filters.append(fi);
 				for (QStringList::ConstIterator mit=fi->mimeSrc.begin(); mit!=fi->mimeSrc.end(); ++mit)
 					insertToDict(fi, *mit);
