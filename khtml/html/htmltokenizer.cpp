@@ -1046,7 +1046,7 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
 
             if(tagID >= ID_CLOSE_TAG)
                 tagID -= ID_CLOSE_TAG;
-            else if ( beginTag && !brokenServer && tagID == ID_SCRIPT ) {
+            else if ( beginTag && !brokenScript && tagID == ID_SCRIPT ) {
                 DOMStringImpl* a = 0;
                 scriptSrc = scriptSrcCharset = QString::null;
                 if ( currToken.attrs && /* potentially have a ATTR_SRC ? */
@@ -1084,7 +1084,7 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
                 prePos = 0;
                 break;
             case ID_SCRIPT:
-                if (!brokenServer && beginTag) {
+                if (!brokenScript && beginTag) {
                     searchStopper = scriptEnd;
                     searchStopperLen = 8;
                     script = true;
