@@ -5,7 +5,7 @@
 #define KHTML_TAGS_H
 
 #include "dom/dom_string.h"
-#include <kglobal.h>
+#include <kdemacros.h>
 
 DOM::DOMString KDE_NO_EXPORT getTagName(unsigned short id);
 

@@ -29,7 +29,7 @@
 #include "dom/dom_misc.h"
 #include "xml/dom_nodeimpl.h"
 #include "misc/shared.h"
-#include <kglobal.h>
+#include <kdemacros.h>
 #include <qdatetime.h>
 #include <qptrlist.h>
 
