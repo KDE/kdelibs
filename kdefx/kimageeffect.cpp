@@ -625,7 +625,6 @@ QImage& KImageEffect::intensity(QImage &image, float percent)
     }
 
     int segColors = image.depth() > 8 ? 256 : image.numColors();
-    unsigned char *segTbl = new unsigned char[segColors];
     int pixels = image.depth() > 8 ? image.width()*image.height() :
         image.numColors();
     unsigned int *data = image.depth() > 8 ? (unsigned int *)image.bits() :
@@ -759,6 +758,7 @@ QImage& KImageEffect::intensity(QImage &image, float percent)
     else
 #endif // USE_MMX_INLINE_ASM
     {
+        unsigned char *segTbl = new unsigned char[segColors];
         int tmp;
         if(brighten){ // keep overflow check out of loops
             for(int i=0; i < segColors; ++i){
