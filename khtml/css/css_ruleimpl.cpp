@@ -125,7 +125,9 @@ CSSImportRuleImpl::CSSImportRuleImpl(StyleBaseImpl *parent, const DOM::DOMString
     if (root->isCSSStyleSheet())
 	docLoader = static_cast<CSSStyleSheetImpl*>(root)->docLoader();
 
-    DOMString absHref = KURL(parentStyleSheet()->href().string(),href.string()).url();
+    DOMString absHref = href;
+    if (!parentStyleSheet()->href().isNull())
+      absHref = KURL(parentStyleSheet()->href().string(),href.string()).url();
     kdDebug( 6080 ) << "CSSImportRule: requesting sheet " << href.string() << endl;
 
     // we must have a docLoader !
