@@ -78,8 +78,8 @@ QString KCalendarSystem::yearString(const QDate & pDate, bool bShort) const
   QString sResult;
 
   sResult.setNum(year(pDate));
-  if (!bShort && sResult.length() == 1 )
-    sResult.prepend('0');
+  if (bShort && sResult.length() == 4 )
+    sResult = sResult.right(2);
 
   return sResult;
 }
