@@ -194,6 +194,7 @@ public:
 	 * @param only accept filenames that fit to filter. The filter
 	 *        may consist of an optional directory and a QRexExp 
 	 *        wildcard expression. E.g. "images\*.jpg" 
+	 * @param return only items which have unique suffixes.
 	 *        
 	 * @return a list of directories matching the resource specified,
 	 *         or an empty list if the resource type is unknown.
