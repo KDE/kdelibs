@@ -80,3 +80,5 @@ that we would like to make for the next binary incompatible release.
 of it failing and when would you not like to have that fallback? I think a default of 'true' would be 
 fine.
 
+- KCModuleInfo and KService should use d-pointer. Perhaps there is more.
+
