@@ -1,55 +1,62 @@
 Source: kdelibs
-Section: libs
-Priority: optional
 Maintainer: Christopher L Cheney <ccheney@debian.org>
-Build-Depends: automake (>= 1:1.4-p4-1.1), bison, debhelper (>> 3.0.0), docbook, flex, gettext, libasound2-dev (>= 0.9.0beta7-1), libaudiofile-dev, libbz2-dev, libcupsys2-dev, libfam-dev, libpcre3-dev, libqt-dev (>= 3:2.3.1-18), libsasl-dev, libtiff3g-dev | libtiff-dev, libxslt1-dev (>= 1.0.6), nas-dev, texinfo
+Build-Depends: automake (>= 1:1.4-p4-1.1), bison, debhelper (>> 3.0.0), docbook, flex, gettext, libasound2-dev (>= 0.9.0beta7-1), libaudiofile-dev, libbz2-dev, libcupsys2-dev, libfam-dev, libpcre3-dev, libqt-dev (>= 3:2.3.1-18), libsasl-dev, libtiff3g-dev, libxslt1-dev (>= 1.0.6), nas-dev, texinfo
 Build-Depends-Indep: kdoc, qt-doc
 Build-Conflicts: qt3-tools
 Standards-Version: 3.5.6.0
 
 Package: kdelibs
+Section: libs
+Priority: optional
 Architecture: all
-Section: x11
-Depends: kdelibs3 (= ${Source-Version}), kdelibs-bin (= ${Source-Version}), libarts (= ${Source-Version}), libarts-kde (= ${Source-Version})
+Depends: libkdecore (= ${Source-Version}), libkdecore-bin (= ${Source-Version}), libarts (= ${Source-Version}), libarts-kde (= ${Source-Version})
 Description: kdelibs meta package
  kdelibs meta package.
 
-Package: kdelibs3
-Architecture: any
+Package: libkdecore
 Section: libs
+Priority: optional
+Architecture: any
 Depends: ${shlibs:Depends}
+Provides: kdelibs3
 Description: KDE core libraries (runtime files)
  KDE core libraries.
  You need these files to run kde applications.
 
-Package: kdelibs-bin
-Architecture: any
+Package: libkdecore-bin
 Section: libs
+Priority: optional
+Architecture: any
 Depends: ${shlibs:Depends}, python
 Suggests: libjpeg-mmx-progs | libjpeg-progs, netpbm
 Description: KDE core binaries (binary files)
  KDE core binaries.
  You need these files to run kde applications.
 
-Package: kdelibs-dev
-Architecture: any
+Package: libkdecore-dev
 Section: devel
-Depends: kdelibs3 (= ${Source-Version}), kdelibs-bin (= ${Source-Version}), libarts-dev (= ${Source-Version}), docbook, gettext, libaudiofile-dev, libbz2-dev, libfam-dev, libpcre3-dev, libqt-dev (>= 3:2.3.1-18), libtiff3g-dev | libtiff-dev
+Priority: optional
+Architecture: any
+Depends: libkdecore (= ${Source-Version}), libkdecore-bin (= ${Source-Version}), libarts-dev (= ${Source-Version}), docbook, gettext, libaudiofile-dev, libbz2-dev, libfam-dev, libpcre3-dev, libqt-dev (>= 3:2.3.1-18), libtiff3g-dev
+Provides: kdelibs-dev
 Description: KDE core libraries (development files)
  KDE core libraries.
  You need these files to compile kde applications.
 
-Package: kdelibs-doc
-Architecture: all
+Package: libkdecore-doc
 Section: doc
-Suggests: kdelibs-dev, libqt-dev, kdoc
+Priority: optional
+Architecture: all
+Provides: kdelibs3-doc
+Suggests: libkdecore-dev, libqt-dev, kdoc
 Description: KDE core library documentation
  These are the core documentation created by the kdoc package.  This package
  is needed for developing KDE related packages.
 
 Package: libarts
-Architecture: any
 Section: libs
+Priority: optional
+Architecture: any
 Depends: ${shlibs:Depends}
 Suggests: artsbuilder
 Description: aRts Sound system
@@ -62,9 +69,11 @@ Description: aRts Sound system
  aRts is the core sound system for KDE (and other systems).
 
 Package: libarts-kde
-Architecture: any
 Section: libs
+Priority: optional
+Architecture: any
 Depends: ${shlibs:Depends}
+Provides: libkmid
 Suggests: artsbuilder
 Description: aRts Sound system (KDE support libraries)
  aRts is a short form for "analog realtime synthesizer". The idea of the whole
@@ -76,11 +85,12 @@ Description: aRts Sound system (KDE support libraries)
  aRts is the core sound system for KDE (and other systems).
 
 Package: libarts-dev
-Architecture: any
 Section: devel
+Priority: optional
+Architecture: any
 Replaces: libarts (<< ${Source-Version}), libarts-kde (<< ${Source-Version})
 Depends: libarts (= ${Source-Version}), libarts-kde (= ${Source-Version}), libaudiofile-dev, nas-dev
-Suggests: kdelibs-dev, libasound2-dev
+Suggests: libkdecore-dev, libasound2-dev
 Description: aRts Sound system (development files)
  aRts sound system.
  .

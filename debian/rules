@@ -9,16 +9,18 @@
 export DH_COMPAT=3
 
 QTDOCDIR  = usr/share/doc/qt-doc/doc/html
-KDEDOCDIR = usr/share/doc/kdelibs-doc/html
-KDEDEVDIR = usr/share/doc/kdelibs-dev
+KDEDOCDIR = usr/share/doc/libkdecore-doc/html
+KDEDEVDIR = usr/share/doc/libkdecore-dev
 
-ARCH = $(shell dpkg-architecture -qDEB_BUILD_ARCH)
-ifeq ($(ARCH),alpha)
+DEB_BUILD_GNU_TYPE	?= $(shell dpkg-architecture -qDEB_BUILD_GNU_TYPE)
+DEB_BUILD_ARCH		?= $(shell dpkg-architecture -qDEB_BUILD_ARCH)
+
+ifeq ($(DEB_BUILD_ARCH),alpha)
 	export CFLAGS=-O0 -mieee
 	export CXXFLAGS=-O0 -mieee
 endif
 
-ifeq ($(ARCH),i386)
+ifeq ($(DEB_BUILD_ARCH),i386)
 	# Uncomment the following 2 lines to enable i686 optimziation
 	# You may want to tweak the settings to your likings
 	#export CFLAGS=-O3 -march=i686 -ffast-math -finline-functions
@@ -48,7 +50,12 @@ configure-stamp:
 		$(MAKE) -f admin/Makefile.common ;\
 	fi
 
-	./configure $(configkde) \
+	# make build directory
+	mkdir $(CURDIR)/obj-$(DEB_BUILD_ARCH)
+
+	# run configure so that build tree is $(CURDIR)/obj-$(DEB_BUILD_ARCH)
+	cd $(CURDIR)/obj-$(DEB_BUILD_ARCH) && \
+	../configure $(configkde) \
 	--with-distribution="$$version (`cat /etc/debian_version`)" \
 	--enable-final --enable-fast-install --with-alsa $(XINERAMA)
 
@@ -58,7 +65,7 @@ build: build-stamp
 build-stamp: configure-stamp 
 	dh_testdir
 
-	# Add here commands to compile the package.
+	cd $(CURDIR)/obj-$(DEB_BUILD_ARCH) && \
 	$(MAKE)
 
 	touch build-stamp
@@ -75,11 +82,14 @@ clean:
 	fi
 
 	# Add here commands to clean up after the build process.
-	-$(MAKE) distclean
+	-cd $(CURDIR)/obj-$(DEB_BUILD_ARCH) && \
+	$(MAKE) distclean
 
 	if test -d CVS; then \
 		$(MAKE) -f admin/Makefile.common cvs-clean ;\
 	fi
+
+	rm -rf $(CURDIR)/obj-$(DEB_BUILD_ARCH)
 
 	dh_clean
 
@@ -90,6 +100,7 @@ install-arch: build
 	dh_installdirs -a
 
 	# Add here commands to install the package into debian/tmp
+	cd $(CURDIR)/obj-$(DEB_BUILD_ARCH) && \
 	$(MAKE) install DESTDIR=$(CURDIR)/debian/tmp
 
 	# Install dh-make template for KDE packages
@@ -167,7 +178,7 @@ binary-indep: configure install-indep
 
 	dh_installdocs -i
 	dh_installchangelogs -i
-	dh_compress -i
+	dh_compress -i -X.docbook -X.css -X-license -X.dcl -X.bz2
 	dh_fixperms -i
 	dh_installdeb -i
 	dh_gencontrol -i
@@ -190,12 +201,12 @@ binary-arch: build install-arch
 	dh_installchangelogs -a
 	dh_link -a
 	dh_strip -a
-	dh_compress -a
+	dh_compress -a -X.docbook -X.css -X-license -X.dcl -X.bz2
 	dh_fixperms -a -X artswrapper
 	dh_makeshlibs -a -V
 	dh_installdeb -a
 	dh_perl -a
-	dh_shlibdeps -a -ldebian/kdelibs3/usr/lib:debian/libarts/usr/lib:debian/libarts-kde/usr/lib
+	dh_shlibdeps -a -ldebian/libkdecore/usr/lib:debian/libarts/usr/lib:debian/libarts-kde/usr/lib
 	dh_gencontrol -a
 	dh_md5sums -a
 	dh_builddeb -a

@@ -1,3 +1,10 @@
+kdelibs (4:2.2.2-13) unstable; urgency=low
+
+  * Changed package names and added provides.
+  * Added support to have separate build tree.
+
+ -- Christopher L Cheney <ccheney@debian.org>  Mon, 18 Feb 2002 17:00:00 -0600
+
 kdelibs (4:2.2.2-12) unstable; urgency=high
 
   * New maintainer.
