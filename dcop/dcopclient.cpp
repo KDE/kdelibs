@@ -447,7 +447,7 @@ bool DCOPClient::receive(const QCString &app, const QCString &objId,
 			 const QCString &fun, const QByteArray &data,
 			 QCString& replyType, QByteArray &replyData)
 {
-  if ( !app.isEmpty() && app != d->appId) {
+  if ( !app.isEmpty() && app != d->appId && app != "*") {
       qDebug("WEIRD! we somehow received a DCOP message w/a different appId");
     return false;
   }
