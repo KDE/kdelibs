@@ -92,6 +92,7 @@ KFullscreenVideoWidget::KFullscreenVideoWidget( KVideoWidget *parent, const char
     : KVideoWidget( parent, name, WType_TopLevel | WStyle_Customize | WStyle_NoBorder )
 {
     this->videoWidget = parent;
+    setEraseColor( black );
 }
 
 void KFullscreenVideoWidget::windowActivationChange( bool )
@@ -112,8 +113,7 @@ bool KFullscreenVideoWidget::x11Event( XEvent *event )
 	{
 	case VPO_DESTROY_NOTIFY:
 	case VPO_DISABLE_NOTIFY:
-	    setBackgroundMode( PaletteBackground );
-	    repaint();
+	    setEraseColor( black );
 	    break;
 	case VPO_ENABLE_NOTIFY:
 	    setBackgroundMode( NoBackground );
@@ -202,9 +202,7 @@ void KVideoWidget::embed( Arts::VideoPlayObject vpo )
 	// Resize GUI
 	videoWidth  = 0;
 	videoHeight = 0;
-	setMinimumSize(0, 0);
 	setSizePolicy( QSizePolicy( QSizePolicy::Minimum, QSizePolicy::Minimum ) );
-	repaint();
 
 	if (isHalfSize() || isNormalSize() || isDoubleSize())
 	    emit adaptSize( 0, 0 );
@@ -397,15 +395,15 @@ bool KVideoWidget::x11Event( XEvent *event )
 		emit adaptSize( (2 * videoWidth), (2 * videoHeight) );
 	    break;
 	case VPO_DESTROY_NOTIFY:
-	    setEraseColor(palette().active().background());
+	    setEraseColor( black );
 	    embedded = false;
 	    break;
 	case VPO_ENABLE_NOTIFY:
-	    setEraseColor(black);
+	    setBackgroundMode( NoBackground );
 	    enabled = true;
 	    break;
 	case VPO_DISABLE_NOTIFY:
-	    setEraseColor(palette().active().background());
+	    setEraseColor( black );
 	    enabled = false;
 	    break;
 	}
