@@ -38,6 +38,15 @@
 #include "kaccelmanager.h"
 
 
+const int KAccelManagerAlgorithm::DEFAULT_WEIGHT = 50;
+const int KAccelManagerAlgorithm::FIRST_CHARACTER_EXTRA_WEIGHT = 50;
+const int KAccelManagerAlgorithm::WORD_BEGINNING_EXTRA_WEIGHT = 50;
+const int KAccelManagerAlgorithm::WANTED_ACCEL_EXTRA_WEIGHT = 150;
+const int KAccelManagerAlgorithm::ACTION_ELEMENT_WEIGHT = 50;
+const int KAccelManagerAlgorithm::GROUP_BOX_WEIGHT = 0;
+const int KAccelManagerAlgorithm::MENU_TITLE_WEIGHT = 250;
+
+
 /*********************************************************************
 
  class Item - helper class containing widget information

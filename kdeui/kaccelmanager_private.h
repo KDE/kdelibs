@@ -88,15 +88,15 @@ class KAccelManagerAlgorithm
 {
 public:
 
-  static const int DEFAULT_WEIGHT = 50;
+  static const int DEFAULT_WEIGHT;
 
-  static const int FIRST_CHARACTER_EXTRA_WEIGHT = 50;
-  static const int WORD_BEGINNING_EXTRA_WEIGHT = 50;
-  static const int WANTED_ACCEL_EXTRA_WEIGHT = 150;
+  static const int FIRST_CHARACTER_EXTRA_WEIGHT;
+  static const int WORD_BEGINNING_EXTRA_WEIGHT;
+  static const int WANTED_ACCEL_EXTRA_WEIGHT;
 
-  static const int ACTION_ELEMENT_WEIGHT = 50;
-  static const int GROUP_BOX_WEIGHT = 0;
-  static const int MENU_TITLE_WEIGHT = 250;
+  static const int ACTION_ELEMENT_WEIGHT;
+  static const int GROUP_BOX_WEIGHT;
+  static const int MENU_TITLE_WEIGHT;
 
   static void findAccelerators(KAccelStringList &result, QString &used);
 
