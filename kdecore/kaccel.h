@@ -24,6 +24,7 @@
 
 #include <qdict.h>
 #include <qaccel.h>
+#include <qpopmenu.h>
 
 #include <kconfig.h>
 
@@ -91,10 +92,37 @@ struct KKeyEntry {
  * KAccel *a = new KAccel( myWindow );
  * a->insertItem( i18n("Scroll up"), "Scroll Up", "Up" );
  * a->connectItem( "Scroll up", myWindow, SLOT( scrollUp() ) );
- * a->insertStdItem( KAccel::Print );
- * a->connectItem( a->stdAction( KAccel::Print ), myWindow, SLOT( printDoc() ) );
+ * // a->insertStdItem( KAccel::Print ); //not necessary, since it
+                                                             // is done automatially with the
+                                                            // connect below!
+ * a->connectItem(KAccel::Print, myWindow, SLOT( printDoc() ) );
  * 
  * a->readSettings();
+ *
+ *
+ * if a shortcut has a menu entry as well, you could insert them like this. The example
+ * is again the KAccel::Print from above.
+ *
+ * int id;
+ * id = popup->insertItem("&Print",this, SLOT(printDoc())); 
+ * a->changeMenuAccel(popup, id, KAccel::Print );
+ *
+ * If you want a somewhat "exotic" name for your standard print action, like
+ *          id = popup->insertItem(i18n("Print &Document"),this, SLOT(printDoc())); 
+ * it might be a good idea to insert the standard action before as
+ *          a->insertStdItem( KAccel::Print, i18n("Print Document") )
+ * as well, so that the user can easily find the corresponding function.
+ *
+ *
+ * This technique works for other actions as well, your scroll up function in a menu
+ * could be done with
+ * 
+ *    id = popup->insertItem(i18n"Scroll &up",this, SLOT(scrollUp())); 
+ *    a->changeMenuAccel(popup, id, "Scroll Up" );
+ * 
+ * Please keep the order right: first insert all functions in the
+ * acceleratior, then call a->readSettings() and _then_ build your menu structure.
+ *
  * */
 class KAccel 
 { 
@@ -130,8 +158,18 @@ class KAccel
 	 * 	\end{itemize}
 	 */
 	void connectItem( const char * action,
-						  const QObject* receiver, const char* member,
-						  bool activate = TRUE );
+			  const QObject* receiver, const char* member,
+			  bool activate = TRUE );
+
+  
+	/** 
+	 * Same as connectItem from above, but for standard accelerators.
+	 * If the standard accelerator was not inserted so far, it will be inserted
+	 * automatically.
+	 */
+	void connectItem( StdAccel accel,
+			  const QObject* receiver, const char* member,
+			  bool activate = TRUE );
 
 	/** 
 	* Returns the number of accelerator items.
@@ -144,6 +182,12 @@ class KAccel
 	* key is set to no key.
 	*/
 	uint currentKey( const char * action );
+
+	/** 
+	* Returns the description  of the accelerator item with the action name
+	* action, or zero if the action name cannot be found. Useful for menus.
+	*/
+	const char*  description( const char * action );
 
 	/** 
 	* Returns the default key code of the accelerator item with the action name
@@ -213,17 +257,36 @@ class KAccel
 	 *
 	 * If an action already exists the old association and connections will be
 	 * removed..
+	 * 
+	 * You can (optional) also assign a description to the standard item which
+	 * may be used a in a popup menu.
 	 */
-	const char *insertStdItem( StdAccel id );
-				 
+	const char *insertStdItem( StdAccel id, const char* descr = 0 );
+
+
+
+                 /** 
+	   * Often (usually?) shortcuts should be visible in
+	   * the menu structure of an application. Use this function 
+	   * for that purpose.  Note that the action must have been inserted
+	   * before! */
+
+	  void KAccel::changeMenuAccel ( QPopupMenu *menu, int id,
+			       const char* action );
+                 /** 
+	   * Same as changeMenuAccel but for standard accelerators
+	*/
+	  void KAccel::changeMenuAccel ( QPopupMenu *menu, int id,
+				 StdAccel accel );
+
+
 	bool isEnabled();
 	bool isItemEnabled( const char *action );
 				 
 	/** 
 	* Returns the dictionary of accelerator action names and KKeyEntry
 	* objects. Note that only a shallow copy is returned so that items will be
-	* lost when the KKeyEntry objects are deleted.
-	*/	
+	* lost when the KKeyEntry objects are deleted.  */
 	QDict<KKeyEntry> keyDict();
 				 
 	/** 
@@ -234,8 +297,8 @@ class KAccel
  	/** 
 	 * Removes the accelerator item with the action name action.
 	 */
-    void removeItem( const char * action );  
-	
+	void removeItem( const char * action );  
+    
 	void setConfigGroup( const char *group );
 	void setConfigGlobal( bool global );
 	

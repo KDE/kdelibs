@@ -25,7 +25,6 @@
 #include <qapp.h>
 #include <qdrawutl.h>
 #include <qmsgbox.h>
-
 #include <kapp.h>
 
 #include "kaccel.h"
@@ -53,6 +52,8 @@ void KAccel::connectItem( const char * action,
 			  const QObject* receiver, const char* member,
 			  bool activate )
 {
+  if (!action)
+    return;
     KKeyEntry *pEntry = aKeyDict[ action ];
 
 	if ( !pEntry ) {
@@ -75,6 +76,15 @@ void KAccel::connectItem( const char * action,
 		setItemEnabled( action, FALSE );
 }
 
+void KAccel::connectItem( StdAccel accel,
+			  const QObject* receiver, const char* member,
+			  bool activate ){
+  if (stdAction(accel) && !aKeyDict[ stdAction(accel) ]){
+    insertStdItem(accel);
+  }
+  connectItem(stdAction(accel), receiver, member, activate);
+}
+
 uint KAccel::count() const
 {
 	return aKeyDict.count();
@@ -88,6 +98,15 @@ uint KAccel::currentKey( const char * action )
 		return 0;
 	else
 		return pEntry->aCurrentKeyCode;
+}
+
+const char*  KAccel::description( const char * action ){
+	KKeyEntry *pEntry = aKeyDict[ action ];
+	
+	if ( !pEntry )
+		return 0;
+	else
+		return pEntry->descr;
 }
 
 uint KAccel::defaultKey( const char * action )
@@ -161,7 +180,38 @@ bool KAccel::insertItem( const char* descr, const char * action,
 	return insertItem( descr, action, iKeyCode, configurable );
 }
 
-const char * KAccel::insertStdItem( StdAccel id )
+
+
+
+void KAccel::changeMenuAccel ( QPopupMenu *menu, int id,
+	const char *action )
+{
+	QString s = menu->text( id );
+	if ( !s ) return;
+	if (!action) return;
+	
+	int i = s.find('\t');
+	
+	QString k = keyToString( currentKey( action) );
+	if( !k ) return;
+	
+	if ( i >= 0 )
+		s.replace( i+1, s.length()-i, k );
+	else {
+		s += '\t';
+		s += k;
+	}
+	
+	menu->changeItem( s, id );
+}
+
+void KAccel::changeMenuAccel ( QPopupMenu *menu, int id,
+			       StdAccel accel ){
+  changeMenuAccel(menu, id, stdAction(accel)); 
+}
+
+
+const char * KAccel::insertStdItem( StdAccel id, const char* descr )
 {
 	const char* action=0, *key=0, *name = 0;
 	switch( id ) {
@@ -241,7 +291,7 @@ const char * KAccel::insertStdItem( StdAccel id )
 			return 0;
 			break;
 	}
-	insertItem( name, stdAction(id), key, false );
+	insertItem( descr?descr:name, stdAction(id), key, false );
 	return action;
 }
 
