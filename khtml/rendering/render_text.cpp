@@ -705,10 +705,10 @@ void RenderText::setText(DOMStringImpl *text)
 
 int RenderText::height() const
 {
-#ifdef DEBUG_LAYOUT
-    kdDebug()<< "RenderText::height()=" << m_contentHeight + style()->borderTopWidth() + style()->borderBottomWidth();
-#endif
-    return m_contentHeight + style()->borderTopWidth() + style()->borderBottomWidth();
+    int retval = m_contentHeight + borderTop() + borderBottom();
+    if (m_lines.count())
+	retval += m_lines[m_lines.count()-1]->m_y - m_lines[0]->m_y;
+    return retval;
 }
 
 int RenderText::bidiHeight() const
