@@ -10,5 +10,6 @@
 <!ENTITY Alt	"<keycap>Alt</keycap>">
 <!ENTITY Ctrl	"<keycap>Ctrl</keycap>">
 <!ENTITY etc    "<abbrev>etc.</abbrev>">
+<!ENTITY ie     "<abbrev>i.e.</abbrev>">
 <!ENTITY kcontrolcenter	"<application>&kde; Control Center</application>">
 <!ENTITY Shift	"<keycap>Shift</keycap>">
