@@ -2,6 +2,7 @@
 #define __khtml_ext_h__
 
 #include "khtml_part.h"
+#include <kaction.h>
 
 /**
  * This is the BrowserExtension for a @ref KHTMLPart document. Please see the KParts documentation for
