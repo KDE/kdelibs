@@ -173,6 +173,12 @@ static int password2hash(const QByteArray& password, QByteArray& hash) {
 }
 
 
+bool Backend::exists(const QString& wallet) {
+QString path = KGlobal::dirs()->saveLocation("kwallet") + "/" + wallet + ".kwl";
+return QFile::exists(path);
+}
+
+
 int Backend::open(const QByteArray& password) {
 
 	if (_open) {

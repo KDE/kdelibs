@@ -87,6 +87,8 @@ class Backend {
 
 		int refCount() const { return _ref; }
 
+		static bool exists(const QString& wallet);
+
 	private:
 		class BackendPrivate;
 		BackendPrivate *d;
