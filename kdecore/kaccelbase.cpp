@@ -24,7 +24,6 @@
 
 #include <qkeycode.h>
 
-#include <kaccel.h>
 #include <kconfig.h>
 #include <kckey.h>
 #include <kdebug.h>
@@ -32,10 +31,6 @@
 #include <kkeysequence.h>
 #include <klocale.h>
 #include <kshortcuts.h>
-
-#ifdef Q_WS_X11
-//#include "kkey_x11.h"
-#endif
 
 //----------------------------------------------------
 
@@ -45,7 +40,7 @@ KAccelSequence::KAccelSequence( const KAccelSequence& seq )
 	{ m_rgKeys = seq.m_rgKeys; }
 KAccelSequence::KAccelSequence( KKeySequence key )
 	{ setKey( key ); }
-	
+
 KAccelSequence::KAccelSequence( const QString& s )
 {
 	m_rgKeys = KKeySequence::stringToKeys( s );
@@ -391,6 +386,7 @@ class KAccelActionPrivate
 
 KAccelAction::KAccelAction()
 {
+	kdDebug(125) << "KAccelAction(): this = " << this << endl;
 	d = new KAccelActionPrivate;
 	m_pObjSlot = 0;
 	m_psMethodSlot = 0;
@@ -398,52 +394,63 @@ KAccelAction::KAccelAction()
 	m_bEnabled = true;
 	m_nIDAccel = 0;
 	m_nIDMenu = 0;
-	m_pMenu = 0;
+	//m_pMenu = 0;
 	d->m_bConnected = false;
 }
 
-KAccelAction::KAccelAction( const QString& sName, const QString& sDesc,
+KAccelAction::KAccelAction( const KAccelAction& action )
+{
+	kdDebug(125) << "KAccelAction( copy from \"" << action.m_sName << "\" ): this = " << this << endl;
+	d = new KAccelActionPrivate;
+	*this = action;
+}
+
+KAccelAction::KAccelAction( const QString& sName, const QString& sDesc, const QString& sHelp,
 			const char* rgCutDefaults3, const char* rgCutDefaults4,
 			const QObject* pObjSlot, const char* psMethodSlot,
-			int nIDMenu, QPopupMenu* pMenu,
+			int nIDMenu,
 			bool bConfigurable, bool bEnabled )
 {
+	kdDebug(125) << "KAccelAction( \"" << sName << "\" ): this = " << this << endl;
 	d = new KAccelActionPrivate;
-	init( sName, sDesc,
+	init( sName, sDesc, sHelp,
 		rgCutDefaults3, rgCutDefaults4,
 		pObjSlot, psMethodSlot,
-		nIDMenu, pMenu,
+		nIDMenu,
 		bConfigurable, bEnabled );
 }
 
-KAccelAction::KAccelAction( const QString& sName, const QString& sDesc,
+KAccelAction::KAccelAction( const QString& sName, const QString& sDesc, const QString& sHelp,
 			const KAccelShortcuts& rgCutDefaults3, const KAccelShortcuts& rgCutDefaults4,
 			const QObject* pObjSlot, const char* psMethodSlot,
-			int nIDMenu, QPopupMenu* pMenu,
+			int nIDMenu,
 			bool bConfigurable, bool bEnabled )
 {
+	kdDebug(125) << "KAccelAction( \"" << sName << "\" ): this = " << this << endl;
 	d = new KAccelActionPrivate;
-	init( sName, sDesc,
+	init( sName, sDesc, sHelp,
 		rgCutDefaults3, rgCutDefaults4,
 		pObjSlot, psMethodSlot,
-		nIDMenu, pMenu,
+		nIDMenu,
 		bConfigurable, bEnabled );
 }
 
 KAccelAction::~KAccelAction()
 {
+	kdDebug(125) << "\t\t\tKAccelAction::~KAccelAction( \"" << m_sName << "\" ): this = " << this << endl;
 	delete d;
 }
 
-bool KAccelAction::init( const QString& sName, const QString& sDesc,
+bool KAccelAction::init( const QString& sName, const QString& sDesc, const QString& sHelp,
 			const char* rgCutDefaults3, const char* rgCutDefaults4,
 			const QObject* pObjSlot, const char* psMethodSlot,
-			int nIDMenu, QPopupMenu* pMenu,
+			int nIDMenu,
 			bool bConfigurable, bool bEnabled )
 {
 	kdDebug(125) << "KAccelAction::init()" << endl;
 	m_sName = sName;
 	m_sDesc = sDesc;
+	m_sHelp = sHelp;
 	//kdDebug(125) << "KAccelAction::init() B" << endl;
 	m_rgCutDefaults3.init( rgCutDefaults3 );
 	//kdDebug(125) << "KAccelAction::init() C" << endl;
@@ -453,21 +460,22 @@ bool KAccelAction::init( const QString& sName, const QString& sDesc,
 	m_bConfigurable = bConfigurable;
 	m_bEnabled = bEnabled;
 	m_nIDMenu = nIDMenu;
-	m_pMenu = pMenu;
+	//m_pMenu = pMenu;
 	m_rgShortcuts = shortcutDefaults();
 	d->m_bConnected = false;
 	//kdDebug(125) << "KAccelAction::init() D" << endl;
 	return true;
 }
 
-bool KAccelAction::init( const QString& sName, const QString& sDesc,
+bool KAccelAction::init( const QString& sName, const QString& sDesc, const QString& sHelp,
 			const KAccelShortcuts& rgCutDefaults3, const KAccelShortcuts& rgCutDefaults4,
 			const QObject* pObjSlot, const char* psMethodSlot,
-			int nIDMenu, QPopupMenu* pMenu,
+			int nIDMenu,
 			bool bConfigurable, bool bEnabled )
 {
 	m_sName = sName;
 	m_sDesc = sDesc;
+	m_sHelp = sHelp;
 	//kdDebug(125) << "KAccelAction::init() B" << endl;
 	m_rgCutDefaults3 = rgCutDefaults3;
 	//kdDebug(125) << "KAccelAction::init() C" << endl;
@@ -477,17 +485,18 @@ bool KAccelAction::init( const QString& sName, const QString& sDesc,
 	m_bConfigurable = bConfigurable;
 	m_bEnabled = bEnabled;
 	m_nIDMenu = nIDMenu;
-	m_pMenu = pMenu;
+	//m_pMenu = pMenu;
 	m_rgShortcuts = shortcutDefaults();
 	d->m_bConnected = false;
 	//kdDebug(125) << "KAccelAction::init() C" << endl;
 	return true;
 }
 
-KAccelAction& KAccelAction::operator=( const KAccelAction& action )
+KAccelAction& KAccelAction::operator =( const KAccelAction& action )
 {
 	m_sName          = action.m_sName;
 	m_sDesc          = action.m_sDesc;
+	m_sHelp          = action.m_sHelp;
 	m_rgCutDefaults3 = action.m_rgCutDefaults3;
 	m_rgCutDefaults4 = action.m_rgCutDefaults4;
 	m_pObjSlot       = action.m_pObjSlot;
@@ -495,7 +504,7 @@ KAccelAction& KAccelAction::operator=( const KAccelAction& action )
 	m_bConfigurable  = action.m_bConfigurable;
 	m_bEnabled       = action.m_bEnabled;
 	m_nIDMenu        = action.m_nIDMenu;
-	m_pMenu          = action.m_pMenu;
+	//m_pMenu          = action.m_pMenu;
 	m_rgShortcuts    = action.m_rgShortcuts;
 	d->m_bConnected  = action.d->m_bConnected;
 
@@ -600,40 +609,68 @@ void KAccelAction::setConnected( bool bConnected )
 class KAccelActionsPrivate
 {
  public:
-	KAccel* m_pKAccel;
-	bool m_bChanged, m_bDataReallocated;
+	bool m_bChanged;
 };
 
 KAccelActions::KAccelActions()
 {
-	d = new KAccelActionsPrivate;
-	d->m_pKAccel = 0;
-	d->m_bChanged = false;
-	d->m_bDataReallocated = false;
+	//*((char*)0) = 0;
+	kdDebug(125) << "KAccelActions(): this = " << this << endl;
+	init( 0 );
+}
+
+KAccelActions::KAccelActions( KAccelBase* pKAccelBase )
+{
+	//*((char*)0) = 0;
+	kdDebug(125) << "KAccelActions( KAccelBase = " << pKAccelBase << " ): this = " << this << endl;
+	init( pKAccelBase );
 }
 
 KAccelActions::~KAccelActions()
 {
+	kdDebug(125) << "KAccelActions::~KAccelActions(): this = " << this << endl;
+	clear();
+	kdDebug(125) << "\td = " << d << endl;
 	delete d;
+	kdDebug(125) << "\tKAccelActions::~KAccelActions() C" << endl;
 }
 
-void KAccelActions::resize( size_t nSize )
+void KAccelActions::clear()
 {
-	//kdDebug(125) << "KAccelActions::resize( size_t nSize )" << endl;
-	KAccelAction* pAction = &at(0);
+	kdDebug(125) << "\tKAccelActions::clear()" << endl;
+	for( uint i = 0; i < m_nSize; i++ ) {
+		kdDebug(125) << "\t\tm_prgActions[" << i << "] = " << m_prgActions[i] << endl;
+		delete m_prgActions[i];
+	}
+	kdDebug(125) << "\t\tm_prgActions = " << m_prgActions << endl;
+	delete[] m_prgActions;
 
-	reserve( ((nSize/10) + 1) * 10 );
-	QValueVector<KAccelAction>::resize( nSize );
+	m_nSizeAllocated = m_nSize = 0;
+	m_prgActions = 0;
+	kdDebug(125) << "\tKAccelActions::clear() end" << endl;
+}
 
-	if( pAction != &at(0) )
-		dataReallocated( true );
+void KAccelActions::init( KAccelBase* pKAccelBase )
+{
+	m_pKAccelBase = pKAccelBase;
+	m_nSizeAllocated = m_nSize = 0;
+	m_prgActions = 0;
+	d = new KAccelActionsPrivate;
+	d->m_bChanged = false;
 }
 
 bool KAccelActions::init( KAccelActions& actions )
 {
-	*static_cast<QValueVector<KAccelAction>*>(this)
-		= static_cast<QValueVector<KAccelAction>&>(actions);
-	dataReallocated( true );
+	clear();
+	resize( actions.size() );
+	for( uint i = 0; i < m_nSize; i++ ) {
+		KAccelAction* pAction = actions.m_prgActions[i];
+		if( pAction )
+			m_prgActions[i] = new KAccelAction( *pAction );
+		else
+			m_prgActions[i] = 0;
+	}
+
 	return true;
 }
 
@@ -641,23 +678,57 @@ bool KAccelActions::init( KConfigBase& config, QString sGroup )
 {
 	kdDebug(125) << "KAccelActions::init( " << sGroup << " )" << endl;
 	QMap<QString, QString> mapEntry = config.entryMap( sGroup );
-	reserve( mapEntry.size() );
-	resize( 0 );
+	resize( mapEntry.size() );
 
 	QMap<QString, QString>::Iterator it( mapEntry.begin() );
-	for( ; it != mapEntry.end(); ++it ) {
+	for( uint i = 0; it != mapEntry.end(); ++it, i++ ) {
 		QString sShortcuts = *it;
-		if( !sShortcuts.isEmpty() ) {
-			kdDebug(125) << it.key() << " = " << sShortcuts << endl;
-			KAccelAction action;
-			action.m_sName = it.key();
-			if( sShortcuts != "none" )
-				action.setShortcuts( KAccelShortcuts( sShortcuts ) );
-			push_back( action );
-		}
+		KAccelShortcuts cuts;
+
+		kdDebug(125) << it.key() << " = " << sShortcuts << endl;
+		if( !sShortcuts.isEmpty() && sShortcuts != "none" )
+			cuts.init( sShortcuts );
+
+		m_prgActions[i] = new KAccelAction( it.key(), it.key(), it.key(),
+			cuts, cuts,
+			0, 0,           // pObjSlot, psMethodSlot,
+			0,              // nIDMenu, 
+			true, false );  // bConfigurable, bEnabled
 	}
 
 	return true;
+}
+
+void KAccelActions::resize( uint nSize )
+{
+	if( nSize > m_nSizeAllocated ) {
+		uint nSizeAllocated = ((nSize/10) + 1) * 10;
+		KAccelAction** prgActions = new KAccelAction* [nSizeAllocated];
+
+		// Copy pointers over to new array
+		for( uint i = 0; i < m_nSizeAllocated; i++ )
+			prgActions[i] = m_prgActions[i];
+
+		// Null out new pointers
+		for( uint i = m_nSizeAllocated; i < nSizeAllocated; i++ )
+			prgActions[i] = 0;
+
+		delete[] m_prgActions;
+		m_prgActions = prgActions;
+		m_nSizeAllocated = nSizeAllocated;
+	}
+
+	// Allocate memory where needed
+	//for( int i = m_nSize; i < nSize; i++ )
+	//	if( prgActions[i] == 0 )
+	//		m_prgActions = new KAccelAction;
+	m_nSize = nSize;
+}
+
+void KAccelActions::insertActionPtr( KAccelAction* pAction )
+{
+	resize( m_nSize + 1 );
+	m_prgActions[m_nSize-1] = pAction;
 }
 
 void KAccelActions::updateShortcuts( KAccelActions& actions2 )
@@ -665,17 +736,17 @@ void KAccelActions::updateShortcuts( KAccelActions& actions2 )
 	kdDebug(125) << "KAccelActions::updateShortcuts()" << endl;
 	bool bChanged = false;
 
-	for( KAccelActions::iterator it = begin(); it != end(); ++it ) {
-		KAccelAction& action = *it;
-		if( action.m_bConfigurable ) {
-			KAccelAction* pAction2 = actions2.actionPtr( (*it).m_sName );
+	for( uint i = 0; i < m_nSize; i++ ) {
+		KAccelAction* pAction = m_prgActions[i];
+		if( pAction && pAction->m_bConfigurable ) {
+			KAccelAction* pAction2 = actions2.actionPtr( pAction->m_sName );
 			if( pAction2 ) {
-				QString sOld( action.m_rgShortcuts.toString() );
-				action.m_rgShortcuts = pAction2->m_rgShortcuts;
-				kdDebug(125) << "\t" << action.m_sName
+				QString sOld( pAction->m_rgShortcuts.toString() );
+				pAction->m_rgShortcuts = pAction2->m_rgShortcuts;
+				kdDebug(125) << "\t" << pAction->m_sName
 					<< " found: " << sOld
 					<< " => " << pAction2->m_rgShortcuts.toString()
-					<< " = " << action.m_rgShortcuts.toString() << endl;
+					<< " = " << pAction->m_rgShortcuts.toString() << endl;
 				bChanged = true;
 			}
 		}
@@ -687,94 +758,120 @@ void KAccelActions::updateShortcuts( KAccelActions& actions2 )
 	}
 }
 
-KAccelActions::iterator KAccelActions::actionIterator( const QString& sAction )
+int KAccelActions::actionIndex( const QString& sAction ) const
 {
-	KAccelActions::iterator it = begin();
-	for( ; it != end(); ++it ) {
-		if( (*it).m_sName == sAction )
-			break;
+	for( uint i = 0; i < m_nSize; i++ ) {
+		if( m_prgActions[i] == 0 )
+			kdWarning(125) << "KAccelActions::actionPtr( " << sAction << " ): encountered null pointer at m_prgActions[" << i << "]" << endl;
+		else if( m_prgActions[i]->m_sName == sAction )
+			return (int) i;
 	}
-	return it;
+	return -1;
+}
+
+KAccelAction* KAccelActions::actionPtr( uint i )
+{
+	return m_prgActions[i];
+}
+
+const KAccelAction* KAccelActions::actionPtr( uint i ) const
+{
+	return m_prgActions[i];
 }
 
 KAccelAction* KAccelActions::actionPtr( const QString& sAction )
 {
-	KAccelActions::iterator it = actionIterator( sAction );
-	if( it != end() )
-		return &(*it);
-	else
-		return 0;
+	int i = actionIndex( sAction );
+	return (i >= 0) ? m_prgActions[i] : 0;
+}
+
+const KAccelAction* KAccelActions::actionPtr( const QString& sAction ) const
+{
+	int i = actionIndex( sAction );
+	return (i >= 0) ? m_prgActions[i] : 0;
 }
 
 KAccelAction* KAccelActions::actionPtr( KAccelShortcut cut )
 {
-	for( KAccelActions::iterator it = begin(); it != end(); ++it ) {
-		if( (*it).contains( cut ) )
-			return &(*it);
+	for( uint i = 0; i < m_nSize; i++ ) {
+		if( m_prgActions[i] == 0 )
+			kdWarning(125) << "KAccelActions::actionPtr( " << cut.toString() << " ): encountered null pointer at m_prgActions[" << i << "]" << endl;
+		else if( m_prgActions[i]->contains( cut ) )
+			return m_prgActions[i];
 	}
 	return 0;
 }
 
+KAccelAction& KAccelActions::operator []( uint i )
+{
+	return *actionPtr( i );
+}
+
+const KAccelAction& KAccelActions::operator []( uint i ) const
+{
+	return *actionPtr( i );
+}
+
 bool KAccelActions::insertLabel( const QString& sName, const QString& sDesc )
 {
-	if( actionPtr( sName ) )
+	if( actionPtr( sName ) ) {
+		kdWarning(125) << "KAccelActions::insertLabel( " << sName << ", " << sDesc << " ): action with same name already present." << endl;
 		return false;
+	}
 
-	resize( size() + 1 );
-	KAccelAction& action = back();
-	action.m_sName = sName;
-	action.m_sDesc = sDesc;
-	action.m_bConfigurable = false;
-	action.m_bEnabled = false;
+	KAccelAction* pAction = new KAccelAction;
+	pAction->m_sName = sName;
+	pAction->m_sDesc = sDesc;
+	pAction->m_bConfigurable = false;
+	pAction->m_bEnabled = false;
 
+	insertActionPtr( pAction );
 	return true;
 }
 
-KAccelAction* KAccelActions::insertAction( const QString& sAction, const QString& sDesc,
+KAccelAction* KAccelActions::insertAction( const QString& sAction, const QString& sDesc, const QString& sHelp,
 			const char* rgCutDefaults3, const char* rgCutDefaults4,
 			const QObject* pObjSlot, const char* psMethodSlot,
-			int nIDMenu, QPopupMenu* pMenu,
+			int nIDMenu,
 			bool bConfigurable, bool bEnabled )
 {
 	//kdDebug(125) << "KAccelActions::insertAction()1 begin" << endl;
-	if( actionPtr( sAction ) )
-		return false;
-
-	KAccelAction* pAction = actionPtr( "__DELETED__" );
-	if( !pAction ) {
-		resize( size() + 1 );
-		pAction = &back();
+	if( actionPtr( sAction ) ) {
+		kdWarning(125) << "KAccelActions::insertAction( " << sAction << " ): action with same name already present." << endl;
+		return 0;
 	}
-	pAction->init( sAction, sDesc,
+
+	KAccelAction* pAction = new KAccelAction(
+		sAction, sDesc, sHelp,
 		rgCutDefaults3, rgCutDefaults4,
 		pObjSlot, psMethodSlot,
-		nIDMenu, pMenu,
+		nIDMenu, 
 		bConfigurable, bEnabled );
+	insertActionPtr( pAction );
 
 	//kdDebug(125) << "KAccelActions::insertAction()1 end" << endl;
 	return pAction;
 }
 
-KAccelAction* KAccelActions::insertAction( const QString& sAction, const QString& sDesc,
+KAccelAction* KAccelActions::insertAction( const QString& sAction, const QString& sDesc, const QString& sHelp,
 			const KAccelShortcuts& rgCutDefaults3, const KAccelShortcuts& rgCutDefaults4,
 			const QObject* pObjSlot, const char* psMethodSlot,
-			int nIDMenu, QPopupMenu* pMenu,
+			int nIDMenu,
 			bool bConfigurable, bool bEnabled )
 {
 	//kdDebug(125) << "KAccelActions::insertAction()2 begin" << endl;
-	if( actionPtr( sAction ) )
-		return false;
-
-	KAccelAction* pAction = actionPtr( "__DELETED__" );
-	if( !pAction ) {
-		resize( size() + 1 );
-		pAction = &back();
+	if( actionPtr( sAction ) ) {
+		kdWarning(125) << "KAccelActions::insertAction( " << sAction << " ): action with same name already present." << endl;
+		return 0;
 	}
-	pAction->init( sAction, sDesc,
+
+	KAccelAction* pAction = new KAccelAction(
+		sAction, sDesc, sHelp,
 		rgCutDefaults3, rgCutDefaults4,
 		pObjSlot, psMethodSlot,
-		nIDMenu, pMenu,
+		nIDMenu, 
 		bConfigurable, bEnabled );
+	insertActionPtr( pAction );
 
 	//kdDebug(125) << "KAccelActions::insertAction()2 end" << endl;
 	return pAction;
@@ -782,34 +879,49 @@ KAccelAction* KAccelActions::insertAction( const QString& sAction, const QString
 
 bool KAccelActions::removeAction( const QString& sAction )
 {
-	/*iterator it = actionIterator( sAction );
-	if( it != end() ) {
-		erase( it );
-		dataReallocated( true );
-		//setChanged( true );
-		return true;
-	} else
+	kdDebug(125) << "KAccelActions::removeAction( \"" << sAction << "\" ): this = " << this << " m_pKAccelBase = " << m_pKAccelBase << endl;
+
+	int iAction = actionIndex( sAction );
+	if( iAction < 0 )
 		return false;
-	*/
-	KAccelAction* pAction = actionPtr( sAction );
-	if( pAction ) {
-		pAction->m_sName = "__DELETED__";
-		pAction->m_bEnabled = false;
-		setChanged( true );
-		return true;
-	} else
-		return false;
+
+	if( m_pKAccelBase )
+		m_pKAccelBase->slotRemoveAction( m_prgActions[iAction] );
+	delete m_prgActions[iAction];
+
+	for( uint i = iAction; i < m_nSize - 1; i++ )
+		m_prgActions[i] = m_prgActions[i+1];
+	m_nSize--;
+
+	return true;
 }
 
 void KAccelActions::readActions( const QString& sConfigGroup, KConfigBase* pConfig )
 {
-	kdDebug(125) << "readActions start" << endl;
+	kdDebug(125) << "readActions( \"" << sConfigGroup << "\", " << pConfig << " ) start" << endl;
 	if( !pConfig )
 		pConfig = KGlobal::config();
 	KConfigGroupSaver cgs( pConfig, sConfigGroup );
 
-	for( iterator it = begin(); it != end(); ++it ) {
-		KAccelAction& action = *it;
+	/*QMap<QString, QString> mapEntry = pConfig->entryMap( sConfigGroup );
+	QMap<QString, QString>::Iterator it( mapEntry.begin() );
+	for( uint i = 0; it != mapEntry.end(); ++it, i++ ) {
+		QString sShortcuts = *it;
+		kdDebug(125) << "\t" << it.key() << " = " << sShortcuts << endl;
+	}
+
+	kdDebug(125) << "--------------" << endl;
+	for( uint i = 0; i < m_nSize; i++ ) {
+		KAccelAction* pAction = m_prgActions[i];
+		kdDebug(125) << pAction->m_sName << " bConfigurable = " << pAction->m_bConfigurable << endl;
+	}*/
+
+	for( uint i = 0; i < m_nSize; i++ ) {
+		if( m_prgActions[i] == 0 ) {
+			kdWarning(125) << "KAccelActions::readActions(): encountered null pointer at m_prgActions[" << i << "]" << endl;
+			continue;
+		}
+		KAccelAction& action = *m_prgActions[i];
 
 		if( action.m_bConfigurable ) {
 			QString sEntry = pConfig->readEntry( action.m_sName );
@@ -844,11 +956,16 @@ void KAccelActions::readActions( const QString& sConfigGroup, KConfigBase* pConf
 void KAccelActions::writeActions( const QString &sGroup, KConfig *config,
 			bool bWriteAll, bool bGlobal ) const
 {
+	kdDebug(125) << "KAccelActions::writeActions( " << sGroup << ", " << config << ", " << bWriteAll << ", " << bGlobal << " )" << endl;
 	KConfig *pConfig = config ? config : KGlobal::config();
 	KConfigGroupSaver cs( pConfig, sGroup );
 
-	for( const_iterator it = begin(); it != end(); ++it ) {
-		const KAccelAction& action = *it;
+	for( uint i = 0; i < m_nSize; i++ ) {
+		if( m_prgActions[i] == 0 ) {
+			kdWarning(125) << "KAccelActions::writeActions(): encountered null pointer at m_prgActions[" << i << "]" << endl;
+			continue;
+		}
+		const KAccelAction& action = *m_prgActions[i];
 
 		QString s;
 		bool bConfigHasAction = !pConfig->readEntry( action.m_sName ).isEmpty();
@@ -874,7 +991,7 @@ void KAccelActions::writeActions( const QString &sGroup, KConfig *config,
 			}
 
 			if( bWriteAction ) {
-				kdDebug(125) << "writing " << action.m_sName << " = " << s << endl;
+				kdDebug(125) << "\twriting " << action.m_sName << " = " << s << endl;
 				pConfig->writeEntry( action.m_sName, s, true, bGlobal );
 			}
 		}
@@ -883,40 +1000,29 @@ void KAccelActions::writeActions( const QString &sGroup, KConfig *config,
 	pConfig->sync();
 }
 
-void KAccelActions::setKAccel( class KAccel* pKAccel )
-{
-	d->m_pKAccel = pKAccel;
-}
-
 void KAccelActions::emitKeycodeChanged()
 {
-	if( d->m_pKAccel )
-		d->m_pKAccel->emitKeycodeChanged();
+	if( m_pKAccelBase )
+		m_pKAccelBase->emitSignal( KAccelBase::KEYCODE_CHANGED );
 }
 
 bool KAccelActions::hasChanged() const
 	{ return d->m_bChanged; }
 void KAccelActions::setChanged( bool bChanged )
 	{ d->m_bChanged = bChanged; }
-bool KAccelActions::dataReallocated() const
-	{ return d->m_bDataReallocated; }
-void KAccelActions::dataReallocated( bool bChanged )
-{
-	d->m_bDataReallocated = bChanged;
-	if( bChanged )
-		d->m_bChanged = true;
-}
 
 //----------------------------------------------------
 
 class KAccelBasePrivate
 {
  public:
-	QMap<KKeySequence, QString> m_mapKeyToActionName;
+	//QMap<KKeySequence, QString> m_mapKeyToActionName;
 };
 
 KAccelBase::KAccelBase()
+:	m_rgActions( this )
 {
+	kdDebug(125) << "KAccelBase(): this = " << this << endl;
 	d = new KAccelBasePrivate;
 	m_bEnabled = true;
 	m_sConfigGroup = "Shortcuts";
@@ -926,6 +1032,7 @@ KAccelBase::KAccelBase()
 
 KAccelBase::~KAccelBase()
 {
+	kdDebug(125) << "~KAccelBase(): this = " << this << endl;
 	delete d;
 }
 
@@ -933,20 +1040,11 @@ uint KAccelBase::actionCount() const { return m_rgActions.size(); }
 KAccelActions& KAccelBase::actions() { return m_rgActions; }
 bool KAccelBase::isEnabled() const { return m_bEnabled; }
 
-KAccelActions::iterator KAccelBase::actionIterator( const QString& sAction )
-	{ return m_rgActions.actionIterator( sAction ); }
-
 KAccelAction* KAccelBase::actionPtr( const QString& sAction )
 	{ return m_rgActions.actionPtr( sAction ); }
 
 const KAccelAction* KAccelBase::actionPtr( const QString& sAction ) const
-{
-	for( KAccelActions::const_iterator it = m_rgActions.begin(); it != m_rgActions.end(); ++it ) {
-		if( (*it).m_sName == sAction )
-			return &(*it);
-	}
-	return 0;
-}
+	{ return m_rgActions.actionPtr( sAction ); }
 
 KAccelAction* KAccelBase::actionPtr( KKeySequence key )
 {
@@ -980,13 +1078,13 @@ bool KAccelBase::setActionEnabled( const QString& sAction, bool bEnable )
 	return false;
 }
 
-void KAccelBase::removeDeletedMenu( QPopupMenu* pMenu )
+/*void KAccelBase::removeDeletedMenu( QPopupMenu* pMenu )
 {
 	for( KAccelActions::iterator it = m_rgActions.begin(); it != m_rgActions.end(); ++it ) {
 		if( (*it).m_pMenu == pMenu )
 			(*it).m_pMenu = 0;
 	}
-}
+}*/
 
 void KAccelBase::setEnabled( bool bActivate )
 {
@@ -1011,18 +1109,18 @@ void KAccelBase::clearActions()
 bool KAccelBase::insertLabel( const QString& sName, const QString& sDesc )
 	{ return m_rgActions.insertLabel( sName, sDesc ); }
 
-KAccelAction* KAccelBase::insertAction( const QString& sAction, const QString& sDesc,
+KAccelAction* KAccelBase::insertAction( const QString& sAction, const QString& sDesc, const QString& sHelp,
 			const KAccelShortcuts& rgCutDefaults3, const KAccelShortcuts& rgCutDefaults4,
 			const QObject* pObjSlot, const char* psMethodSlot,
-			int nIDMenu, QPopupMenu* pMenu,
+			int nIDMenu, 
 			bool bConfigurable, bool bEnabled )
 {
 	//kdDebug(125) << "KAccelBase::insertAction() begin" << endl;
 	KAccelAction* pAction = m_rgActions.insertAction(
-		sAction, sDesc,
+		sAction, sDesc, sHelp,
 		rgCutDefaults3, rgCutDefaults4,
 		pObjSlot, psMethodSlot,
-		nIDMenu, pMenu,
+		nIDMenu,
 		bConfigurable, bEnabled );
 
 	if( pAction && m_bAutoUpdate )
@@ -1034,11 +1132,14 @@ KAccelAction* KAccelBase::insertAction( const QString& sAction, const QString& s
 
 bool KAccelBase::removeAction( const QString& sAction )
 {
-	kdDebug(125) << "KAccelBase::removeAction( " << sAction << " )" << endl;
-	KAccelAction* pAction = m_rgActions.actionPtr( sAction );
-	if( pAction )
-		removeConnection( *pAction );
+	kdDebug(125) << "KAccelBase::removeAction( \"" << sAction << "\" ) this = " << this << endl;
 	return m_rgActions.removeAction( sAction );
+}
+
+void KAccelBase::slotRemoveAction( KAccelAction* pAction )
+{
+	kdDebug(125) << "KAccelBase::slotRemoveAction( \"" << pAction << "\" ) this = " << this << endl;
+	removeConnection( *pAction );
 }
 
 // BCI: make virtual ASAP, and then make changes to KAccel::connectItem()
@@ -1201,13 +1302,13 @@ bool KAccelBase::updateConnections()
 	QValueVector<X> rgKeys;
 	createKeyList( rgKeys );
 
-	refreshKeyMap();
+	//refreshKeyMap();
 
 	KKeyToActionMap mapKeyToAction;
 	for( uint i = 0; i < rgKeys.size(); i++ ) {
 		X& x = rgKeys[i];
 		KKeySequence key = x.key;
-		KAccelAction& action = m_rgActions[x.iAction];
+		KAccelAction* pAction = m_rgActions.actionPtr( x.iAction );
 
 		// Search whether the same key has already been connected.
 		uint j;
@@ -1217,15 +1318,15 @@ bool KAccelBase::updateConnections()
 		// If key sequence is not present in preceeding entries,
 		//	associate key with action in mapKeyToAction
 		if( j == i )
-			mapKeyToAction[key] = &action;
+			mapKeyToAction[key] = pAction;
 		// Else, key is superceeded by another:
 		else {
 			// If it is currently connected, disconnect it.
-			if( actionPtr( key ) == &action ) {
+			if( actionPtr( key ) == pAction ) {
 				m_mapKeyToAction.remove( key );
-				d->m_mapKeyToActionName.remove( key );
-				disconnectKey( action, key );
-				action.setConnected( false );
+				//d->m_mapKeyToActionName.remove( key );
+				disconnectKey( *pAction, key );
+				pAction->setConnected( false );
 			}
 		}
 	}
@@ -1255,15 +1356,14 @@ bool KAccelBase::updateConnections()
 	// Store new map.
 	m_mapKeyToAction = mapKeyToAction;
 
-	d->m_mapKeyToActionName.clear();
-	for( KKeyToActionMap::iterator it = m_mapKeyToAction.begin(); it != m_mapKeyToAction.end(); ++it ) {
-		kdDebug(125) << "Key: " << it.key().toString() << " => '" << (*it)->m_sName << "'" << endl;
-		d->m_mapKeyToActionName[it.key()] = (*it)->m_sName;
-	}
+	//d->m_mapKeyToActionName.clear();
+	//for( KKeyToActionMap::iterator it = m_mapKeyToAction.begin(); it != m_mapKeyToAction.end(); ++it ) {
+	//	kdDebug(125) << "Key: " << it.key().toString() << " => '" << (*it)->m_sName << "'" << endl;
+	//	d->m_mapKeyToActionName[it.key()] = (*it)->m_sName;
+	//}
 
 	// Indicate that current state of actions has been used.
 	actions().setChanged( false );
-	actions().dataReallocated( false );
 	return true;
 }
 
@@ -1274,12 +1374,11 @@ void KAccelBase::createKeyList( QValueVector<X>& rgKeys )
 		return;
 
 	// create the list
-	uint iAction = 0;
-	for( KAccelActions::iterator itAction = m_rgActions.begin(); itAction != m_rgActions.end(); ++itAction ) {
-		KAccelAction& action = *itAction;
-		if( action.m_bEnabled && action.m_pObjSlot && action.m_psMethodSlot ) {
+	for( uint iAction = 0; iAction < m_rgActions.size(); iAction++ ) {
+		KAccelAction* pAction = m_rgActions.actionPtr( iAction );
+		if( pAction && pAction->m_bEnabled && pAction->m_pObjSlot && pAction->m_psMethodSlot ) {
 			uint iShortcut = 0;
-			for( KAccelShortcuts::iterator itShortcut = action.begin(); itShortcut != action.end(); ++itShortcut ) {
+			for( KAccelShortcuts::iterator itShortcut = pAction->begin(); itShortcut != pAction->end(); ++itShortcut ) {
 				KAccelShortcut& shortcut = *itShortcut;
 				if( shortcut.count() > 0 ) {
 					KAccelSequence& seq = shortcut.front();
@@ -1293,14 +1392,13 @@ void KAccelBase::createKeyList( QValueVector<X>& rgKeys )
 				iShortcut++;
 			}
 		}
-		iAction++;
 	}
 
 	// sort by priority: iVariation[of first sequence], iShorcut, iAction
 	qHeapSort( rgKeys.begin(), rgKeys.end() );
 }
 
-void KAccelBase::refreshKeyMap()
+/*void KAccelBase::refreshKeyMap()
 {
 	kdDebug(125) << "KAccelBase::refreshKeyMap() begin" << endl;
 	for( KKeyToActionMap::iterator it = m_mapKeyToAction.begin(); it != m_mapKeyToAction.end(); ++it ) {
@@ -1314,7 +1412,7 @@ void KAccelBase::refreshKeyMap()
 		}
 	}
 	kdDebug(125) << "KAccelBase::refreshKeyMap() end" << endl;
-}
+}*/
 
 bool KAccelBase::insertConnection( KAccelAction& action )
 {
@@ -1322,11 +1420,6 @@ bool KAccelBase::insertConnection( KAccelAction& action )
 		return true;
 
 	kdDebug(125) << "KAccelBase::insertConnection( " << &action << "=\"" << action.m_sName << "\" )  this = " << this << endl;
-
-	if( actions().dataReallocated() ) {
-		kdDebug(125) << "Data reallocated: call updateConnections()" << endl;
-		return updateConnections();
-	}
 
 	KKeySequence keyLast;
 
@@ -1339,7 +1432,7 @@ bool KAccelBase::insertConnection( KAccelAction& action )
 				if( !key.isNull() ) {
 					if( !m_mapKeyToAction.contains( key ) ) {
 						m_mapKeyToAction[key] = &action;
-						d->m_mapKeyToActionName[key] = action.m_sName;
+						//d->m_mapKeyToActionName[key] = action.m_sName;
 						if( connectKey( action, key ) )
 							action.setConnected( true );
 						keyLast = key;
@@ -1375,9 +1468,6 @@ bool KAccelBase::removeConnection( KAccelAction& action )
 	kdDebug(125) << "KAccelBase::removeConnection( " << &action << " = " << action.m_sName << " )  this = " << this << endl;
 	kdDebug(125) << "\tkeys = " << action.m_rgShortcuts.toString() << endl;
 
-	if( actions().dataReallocated() )
-		updateConnections();
-
 	//for( KKeyToActionMap::iterator it = m_mapKeyToAction.begin(); it != m_mapKeyToAction.end(); ++it )
 	//	kdDebug(125) << "\tKey: " << it.key().toString() << " => '" << (*it)->m_sName << "'" << " " << *it << endl;
 
@@ -1389,7 +1479,7 @@ bool KAccelBase::removeConnection( KAccelAction& action )
 				KKeySequence& key = *itKey;
 				if( m_mapKeyToAction.contains( key ) && m_mapKeyToAction[key] == &action ) {
 					m_mapKeyToAction.remove( key );
-					d->m_mapKeyToActionName.remove( key );
+					//d->m_mapKeyToActionName.remove( key );
 					disconnectKey( action, key );
 					action.setConnected( false );
 				}

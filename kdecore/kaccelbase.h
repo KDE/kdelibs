@@ -21,13 +21,15 @@
 #define _KACCELBASE_H
 
 #include <qmap.h>
+#include <qptrvector.h>
 #include <qstring.h>
 #include <qvaluevector.h>
 
 #include <kkeysequence.h>
 
+class KAccelBase;
+
 class QObject;
-class QPopupMenu;
 class KConfig;
 class KConfigBase;
 
@@ -205,7 +207,8 @@ class KAccelAction
 {
  public:
 	QString m_sName,
-	        m_sDesc;
+	        m_sDesc,
+	        m_sHelp;
 	KAccelShortcuts m_rgCutDefaults3, m_rgCutDefaults4;
 	const QObject* m_pObjSlot;
 	const char* m_psMethodSlot;
@@ -214,33 +217,34 @@ class KAccelAction
 	     m_bEnabled;
 
 	int m_nIDAccel, m_nIDMenu;
-	QPopupMenu* m_pMenu;
+	//QPopupMenu* m_pMenu;
 
 	KAccelShortcuts m_rgShortcuts;
 
  public:
 	KAccelAction();
-	KAccelAction( const QString& sName, const QString& sDesc,
+	KAccelAction( const KAccelAction& );
+	KAccelAction( const QString& sName, const QString& sDesc, const QString& sHelp,
 			const char* rgCutDefaults3, const char* rgCutDefaults4,
 			const QObject* pObjSlot, const char* psMethodSlot,
-			int nIDMenu, QPopupMenu* pMenu,
+			int nIDMenu,
 			bool bConfigurable, bool bEnabled );
-	KAccelAction( const QString& sName, const QString& sDesc,
+	KAccelAction( const QString& sName, const QString& sDesc, const QString& sHelp,
 			const KAccelShortcuts& rgCutDefaults3, const KAccelShortcuts& rgCutDefaults4,
 			const QObject* pObjSlot, const char* psMethodSlot,
-			int nIDMenu, QPopupMenu* pMenu,
+			int nIDMenu, 
 			bool bConfigurable, bool bEnabled );
 	~KAccelAction();
 
-	bool init( const QString& sName, const QString& sDesc,
+	bool init( const QString& sName, const QString& sDesc, const QString& sHelp,
 			const char* rgCutDefaults3, const char* rgCutDefaults4,
 			const QObject* pObjSlot, const char* psMethodSlot,
-			int nIDMenu, QPopupMenu* pMenu,
+			int nIDMenu, 
 			bool bConfigurable, bool bEnabled );
-	bool init( const QString& sName, const QString& sDesc,
+	bool init( const QString& sName, const QString& sDesc, const QString& sHelp,
 			const KAccelShortcuts& rgCutDefaults3, const KAccelShortcuts& rgCutDefaults4,
 			const QObject* pObjSlot, const char* psMethodSlot,
-			int nIDMenu, QPopupMenu* pMenu,
+			int nIDMenu, 
 			bool bConfigurable, bool bEnabled );
 
 	KAccelAction& operator=( const KAccelAction& );
@@ -281,64 +285,70 @@ class KAccelAction
 
 //----------------------------------------------------
 
-class KAccelActions : protected QValueVector<KAccelAction>
+class KAccelActions
 {
  public:
-        typedef KAccelAction* iterator;
-        typedef const KAccelAction* const_iterator;
+        //typedef KAccelAction* iterator;
+        //typedef const KAccelAction* const_iterator;
 	KAccelActions();
 	virtual ~KAccelActions();
 
+	void clear();
 	bool init( KAccelActions& );
 	bool init( KConfigBase& config, QString sGroup );
 
 	void updateShortcuts( KAccelActions& );
 
-	KAccelActions::iterator actionIterator( const QString& sAction );
+	int actionIndex( const QString& sAction ) const;
+	KAccelAction* actionPtr( uint );
+	const KAccelAction* actionPtr( uint ) const;
 	KAccelAction* actionPtr( const QString& sAction );
+	const KAccelAction* actionPtr( const QString& sAction ) const;
 	KAccelAction* actionPtr( KAccelShortcut cut );
+	KAccelAction& operator []( uint );
+	const KAccelAction& operator []( uint ) const;
 
 	bool insertLabel( const QString& sName, const QString& sDesc );
-	KAccelAction* insertAction( const QString& sAction, const QString& sDesc,
+	KAccelAction* insertAction(
+	                 const QString& sAction, const QString& sDesc, const QString& sHelp,
 	                 const char* rgCutDefaults3, const char* rgCutDefaults4,
 	                 const QObject* pObjSlot = 0, const char* psMethodSlot = 0,
-	                 int nIDMenu = 0, QPopupMenu *pMenu = 0,
-			 bool bConfigurable = true, bool bEnabled = true );
-	KAccelAction* insertAction( const QString& sAction, const QString& sDesc,
+	                 int nIDMenu = 0,
+	                 bool bConfigurable = true, bool bEnabled = true );
+	KAccelAction* insertAction( const QString& sAction, const QString& sDesc, const QString& sHelp,
 	                 const KAccelShortcuts& rgCutDefaults3, const KAccelShortcuts& rgCutDefaults4,
 	                 const QObject* pObjSlot = 0, const char* psMethodSlot = 0,
-	                 int nIDMenu = 0, QPopupMenu *pMenu = 0,
-			 bool bConfigurable = true, bool bEnabled = true );
+	                 int nIDMenu = 0, 
+	                 bool bConfigurable = true, bool bEnabled = true );
 	bool removeAction( const QString& sAction );
 
 	void readActions( const QString& sConfigGroup, KConfigBase* pConfig = 0 );
         void writeActions( const QString& sGroup, KConfig *config = 0,
 	                   bool bWriteAll = false, bool bGlobal = false ) const;
 
-	void setKAccel( class KAccel* );
 	void emitKeycodeChanged();
 
 	bool hasChanged() const;
 	void setChanged( bool );
-	bool dataReallocated() const;
-	void dataReallocated( bool );
 
-	size_t size() const               { return QValueVector<KAccelAction>::size(); }
-	const KAccelAction* begin() const { return QValueVector<KAccelAction>::begin(); }
-	KAccelAction* begin()             { return QValueVector<KAccelAction>::begin(); }
-	const KAccelAction* end() const   { return QValueVector<KAccelAction>::end(); }
-	KAccelAction* end()               { return QValueVector<KAccelAction>::end(); }
-	void clear()                      { QValueVector<KAccelAction>::clear(); }
-	KAccelAction& operator []( unsigned int i )
-		{ return QValueVector<KAccelAction>::operator []( i ); }
+	uint size() const               { return m_nSize; }
 
  protected:
-	void resize( size_t );
+	KAccelBase* m_pKAccelBase;
+	KAccelAction** m_prgActions;
+	uint m_nSizeAllocated, m_nSize;
+
+	void resize( uint );
+	void insertActionPtr( KAccelAction* );
 
  private:
 	class KAccelActionsPrivate* d;
 
+	KAccelActions( KAccelBase* );
+	void init( KAccelBase* );
 	KAccelActions& operator =( KAccelActions& );
+
+	friend KAccelBase;
 };
 
 typedef QMap<KKeySequence, KAccelAction*> KKeyToActionMap;
@@ -391,7 +401,7 @@ typedef QMap<KKeySequence, KAccelAction*> KKeyToActionMap;
  * a->insertItem( i18n("Scroll down"), "Scroll Down", 0);
  * a->connectItem( "Scroll up", myWindow, SLOT( scrollUp() ) );
  * // a->insertStdItem( KStdAccel::Print ); //not necessary, since it
- *	// is done automatically with the
+ *	// is done automatially with the
  *	// connect below!
  * a->connectItem(KStdAccel::Print, myWindow, SLOT( printDoc() ) );
  *
@@ -422,7 +432,7 @@ typedef QMap<KKeySequence, KAccelAction*> KKeyToActionMap;
  * </pre>
  *
  * Please keep the order right:  First insert all functions in the
- * accelerator, then call a -> @ref readSettings() and @em then build your
+ * acceleratior, then call a -> @ref readSettings() and @em then build your
  * menu structure.
  *
  * @short Configurable key binding support.
@@ -432,6 +442,8 @@ typedef QMap<KKeySequence, KAccelAction*> KKeyToActionMap;
 class KAccelBase
 {
  public:
+	enum Signal { KEYCODE_CHANGED };
+
 	KAccelBase();
 	virtual ~KAccelBase();
 
@@ -439,7 +451,6 @@ class KAccelBase
 	KAccelActions& actions();
 	bool isEnabled() const;
 
-	KAccelActions::iterator actionIterator( const QString& sAction );
 	KAccelAction* actionPtr( const QString& sAction );
 	const KAccelAction* actionPtr( const QString& sAction ) const;
 	KAccelAction* actionPtr( KKeySequence key );
@@ -455,10 +466,11 @@ class KAccelBase
 	virtual void clearActions();
 
 	virtual bool insertLabel( const QString& sName, const QString& sDesc );
-	virtual KAccelAction* insertAction( const QString& sAction, const QString& sDesc,
+	virtual KAccelAction* insertAction(
+	                 const QString& sAction, const QString& sDesc, const QString& sHelp,
 	                 const KAccelShortcuts& rgCutDefaults3, const KAccelShortcuts& rgCutDefaults4,
 	                 const QObject* pObjSlot, const char* psMethodSlot,
-	                 int nIDMenu = 0, QPopupMenu *pMenu = 0,
+	                 int nIDMenu = 0,
 			 bool bConfigurable = true, bool bEnabled = true );
 	virtual bool removeAction( const QString& sAction );
 	bool setActionSlot( const QString& sAction, const QObject* pObjSlot, const char* psMethodSlot );
@@ -473,7 +485,7 @@ class KAccelBase
 
 // Modify individual Action sub-items
 	bool setActionEnabled( const QString& sAction, bool bEnable );
-	void removeDeletedMenu( QPopupMenu *pMenu );
+	//void removeDeletedMenu( QPopupMenu *pMenu );
 
 	/**
 	 * Read all key associations from @p config, or (if @p config
@@ -500,17 +512,22 @@ class KAccelBase
 	QString m_sConfigGroup;
 	bool m_bAutoUpdate;
 
+	void slotRemoveAction( KAccelAction* );
+
+	void createKeyList( QValueVector<struct X>& rgKeys );
+	bool insertConnection( KAccelAction& );
+	bool removeConnection( KAccelAction& );
+
+	virtual bool emitSignal( Signal ) = 0;
 	virtual bool connectKey( KAccelAction&, KKeySequence ) = 0;
 	virtual bool disconnectKey( KAccelAction&, KKeySequence ) = 0;
 
-	void createKeyList( QValueVector<struct X>& rgKeys );
-	void refreshKeyMap();
-	bool insertConnection( KAccelAction& );
-	bool removeConnection( KAccelAction& );
  private:
         class KAccelBasePrivate *d;
 
 	KAccelBase& operator =( const KAccelBase& );
+
+	friend KAccelActions;
 };
 
 #endif // _KACCELBASE_H

@@ -11,25 +11,24 @@ class KConfig;
 
 class KGlobalAccel : public QObject
 {
-	friend class KGlobalAccelPrivate;
+	Q_OBJECT
  public:
 	KGlobalAccel( QObject* pParent, const char* psName = 0 );
 	virtual ~KGlobalAccel();
 
-	class KAccelBase* basePtr();
+	void clearActions();
+
 	KAccelActions& actions();
-	virtual bool insertAction( const QString& sAction, const QString& sDesc,
+	bool insertAction( const QString& sAction, const QString& sDesc, const QString& sHelp,
 	                 const KShortcuts& cutsDef3, const KShortcuts& cutsDef4,
 	                 const QObject* pObjSlot, const char* psMethodSlot,
-	                 int nIDMenu = 0, QPopupMenu* pMenu = 0, bool bConfigurable = true );
-	bool insertAction( const QString& sAction, const QString& sDesc,
+	                 bool bConfigurable = true, bool bEnabled = true );
+	bool insertAction( const QString& sAction, const QString& sDesc, const QString& sHelp,
 	                 const char* cutsDef3, const char* cutsDef4,
 	                 const QObject* pObjSlot, const char* psMethodSlot,
-	                 int nIDMenu = 0, QPopupMenu* pMenu = 0, bool bConfigurable = true );
-	//bool insertAction( const QString& sAction, KShortcuts cutsDef,
-	//                 const QObject* pObjSlot, const char* psMethodSlot,
-	//                 int nIDMenu = 0, QPopupMenu* pMenu = 0, bool bConfigurable = true );
-	virtual bool insertLabel( const QString& sName, const QString& sDesc );
+	                 bool bConfigurable = true, bool bEnabled = true );
+	bool insertLabel( const QString& sName, const QString& sDesc );
+	bool setActionSlot( const QString& sAction, const QObject* pObjSlot, const char* psMethodSlot );
 
 	bool updateConnections();
 	bool setShortcuts( const QString& sAction, const KShortcuts& );
@@ -52,14 +51,6 @@ class KGlobalAccel : public QObject
  private:
 	class KGlobalAccelPrivate* d;
 
-//protected:
-//	KAccelActions m_rgActions;
-//	int aAvailableId;
-//	bool bEnabled;
-//	QString aGroup;
-//	bool do_not_grab;
-//	KGlobalAccelPrivate* d;
-
  public:
 	// Setting this to false shuts off processing of KeyPress events in
 	//  x11EventFilter(). It will still be called, but won't act on them.
@@ -68,6 +59,8 @@ class KGlobalAccel : public QObject
 	// These functions should be implemented in kglobalaccel_x11/emb.cpp
 	static void setKeyEventsEnabled( bool enabled );
 	static bool areKeyEventsEnabled();
+
+	friend class KGlobalAccelPrivate;
 };
 
 #endif // _KGLOBALACCEL_H_

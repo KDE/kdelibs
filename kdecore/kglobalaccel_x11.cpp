@@ -101,6 +101,11 @@ void KGlobalAccelPrivate::setEnabled( bool bEnable )
 	updateConnections();
 };
 
+bool KGlobalAccelPrivate::emitSignal( Signal )
+{
+	return false;
+}
+
 bool KGlobalAccelPrivate::connectKey( KAccelAction& action, KKeySequence key )
 {
 	kdDebug(125) << "KGlobalAccel::connectKey( " << action.m_sName << ", " << key.toString() << " )" << endl;

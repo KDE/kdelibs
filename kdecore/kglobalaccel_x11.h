@@ -14,6 +14,7 @@ class KGlobalAccelPrivate : public QWidget, public KAccelBase
 
 	virtual void setEnabled( bool );
 
+	virtual bool emitSignal( Signal );
 	virtual bool connectKey( KAccelAction&, KKeySequence );
 	virtual bool disconnectKey( KAccelAction&, KKeySequence );
 

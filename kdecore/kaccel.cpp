@@ -17,7 +17,7 @@
 class KAccelPrivate : public KAccelBase
 {
 public:
-	QAccel* m_pAccel;
+	KAccel* m_pAccel;
 	int m_nIDAccelNext;
 
 	KAccelPrivate( KAccel* pParent );
@@ -28,6 +28,7 @@ public:
 	// BCI: make virtual when KAccelBase::setActionSlot has been made virtual
 	//bool setActionSlot( const QString& sAction, const QObject* pObjSlot, const char* psMethodSlot );
 
+	virtual bool emitSignal( KAccelBase::Signal );
 	virtual bool connectKey( KAccelAction&, KKeySequence );
 	virtual bool disconnectKey( KAccelAction&, KKeySequence );
 
@@ -39,7 +40,6 @@ KAccelPrivate::KAccelPrivate( KAccel* pParent )
 	m_pAccel = pParent;
 	m_nIDAccelNext = 1;
 	m_bAutoUpdate = true;
-	actions().setKAccel( pParent );
 }
 
 void KAccelPrivate::setEnabled( bool bEnabled )
@@ -55,10 +55,19 @@ bool KAccelPrivate::removeAction( const QString& sAction )
 		int nID = pAction->getID();
 		//bool b = actions().removeAction( sAction );
 		bool b = KAccelBase::removeAction( sAction );
-		m_pAccel->removeItem( nID );
+		((QAccel*)m_pAccel)->removeItem( nID );
 		return b;
 	} else
 		return false;
+}
+
+bool KAccelPrivate::emitSignal( KAccelBase::Signal signal )
+{
+	if( signal == KAccelBase::KEYCODE_CHANGED ) {
+		m_pAccel->emitKeycodeChanged();
+		return true;
+	}
+	return false;
 }
 
 bool KAccelPrivate::connectKey( KAccelAction& action, KKeySequence key )
@@ -68,21 +77,22 @@ bool KAccelPrivate::connectKey( KAccelAction& action, KKeySequence key )
 		action.setID( m_nIDAccelNext++ );
 
 	uint keyCombQt = (QKeySequence) key;
-	int nID = m_pAccel->insertItem( key, action.getID() );
+	int nID = ((QAccel*)m_pAccel)->insertItem( key, action.getID() );
 	if( nID != action.getID() )
 		action.setID( nID );
 	if( nID && action.m_pObjSlot )
-		m_pAccel->connectItem( nID, action.m_pObjSlot, action.m_psMethodSlot );
+		((QAccel*)m_pAccel)->connectItem( nID, action.m_pObjSlot, action.m_psMethodSlot );
 
-	kdDebug(125) << "KAccelPrivate::connectKey( " << action.m_sName << ", " << key.toString() << " = 0x" << QString::number(keyCombQt,16) << " ) = " << nID << " m_pObjSlot = " << action.m_pObjSlot << endl;
+	kdDebug(125) << "KAccelPrivate::connectKey( \"" << action.m_sName << "\", " << key.toString() << " = 0x" << QString::number(keyCombQt,16) << " ) = " << nID << " m_pObjSlot = " << action.m_pObjSlot << endl;
 	return nID != 0;
 }
-#include <iostream.h>
+
 bool KAccelPrivate::disconnectKey( KAccelAction& action, KKeySequence key )
 {
+	kdDebug(125) << "KAccelPrivate::disconnectKey( &action = " << &action << " )" << endl;
 	kdDebug(125) << "KAccelPrivate::disconnectKey( \"" << action.m_sName << "\", " << key.toString() << " )  m_pObjSlot = " << action.m_pObjSlot << endl;
 	if( action.getID() && action.m_pObjSlot )
-		return m_pAccel->disconnectItem( action.getID(), action.m_pObjSlot, action.m_psMethodSlot );
+		return ((QAccel*)m_pAccel)->disconnectItem( action.getID(), action.m_pObjSlot, action.m_psMethodSlot );
 	return true;
 }
 
@@ -91,11 +101,13 @@ bool KAccelPrivate::disconnectKey( KAccelAction& action, KKeySequence key )
 KAccel::KAccel( QWidget* pParent, const char* psName )
 : QAccel( pParent, psName )
 {
+	kdDebug(125) << "KAccel(): this = " << this << endl;
 	d = new KAccelPrivate( this );
 }
 
 KAccel::~KAccel()
 {
+	kdDebug(125) << "~KAccel(): this = " << this << endl;
 	delete d;
 }
 
@@ -108,62 +120,62 @@ bool KAccel::setAutoUpdate( bool bAuto )  { return d->setAutoUpdate( bAuto ); }
 KAccelAction* KAccel::insertAction( const QString& sAction, const QString& sDesc,
 		const KShortcuts& cutsDef3, const KShortcuts& cutsDef4,
 		const QObject* pObjSlot, const char* psMethodSlot,
-		int nIDMenu, QPopupMenu *pMenu,
+		int nIDMenu, QPopupMenu *,
 		bool bConfigurable, bool bEnabled )
 {
-	return d->insertAction( sAction, sDesc,
+	return d->insertAction( sAction, sDesc, QString::null,
 		cutsDef3, cutsDef4,
 		pObjSlot, psMethodSlot,
-		nIDMenu, pMenu, bConfigurable, bEnabled );
+		nIDMenu, bConfigurable, bEnabled );
 }
 
 KAccelAction* KAccel::insertAction( const QString& sAction, const QString& sDesc,
 		const QString& cutsDef,
 		const QObject* pObjSlot, const char* psMethodSlot,
-		int nIDMenu, QPopupMenu *pMenu,
+		int nIDMenu, QPopupMenu *,
 		bool bConfigurable, bool bEnabled )
 {
 	KAccelShortcuts cuts( cutsDef );
-	return d->insertAction( sAction, sDesc,
+	return d->insertAction( sAction, sDesc, QString::null,
 		cuts, cuts,
 		pObjSlot, psMethodSlot,
-		nIDMenu, pMenu, bConfigurable, bEnabled );
+		nIDMenu, bConfigurable, bEnabled );
 }
 
 KAccelAction* KAccel::insertAction( const QString& sAction, const QString& sDesc,
 		KKeySequence cutsDef,
 		const QObject* pObjSlot, const char* psMethodSlot,
-		int nIDMenu, QPopupMenu *pMenu,
+		int nIDMenu, QPopupMenu *,
 		bool bConfigurable, bool bEnabled )
 {
 	KAccelShortcuts cuts( cutsDef );
-	return d->insertAction( sAction, sDesc,
+	return d->insertAction( sAction, sDesc, QString::null,
 		cuts, cuts,
 		pObjSlot, psMethodSlot,
-		nIDMenu, pMenu, bConfigurable, bEnabled );
+		nIDMenu, bConfigurable, bEnabled );
 }
 
 KAccelAction* KAccel::insertAction( const char* psAction, const char* psShortcuts,
 		const QObject* pObjSlot, const char* psMethodSlot,
-		int nIDMenu, QPopupMenu* pMenu,
+		int nIDMenu, QPopupMenu*,
 		bool bConfigurable, bool bEnabled )
 {
 	return insertAction( psAction, i18n(psAction),
 		KShortcuts(psShortcuts), KShortcuts(psShortcuts),
 		pObjSlot, psMethodSlot,
-		nIDMenu, pMenu, bConfigurable, bEnabled );
+		nIDMenu, 0, bConfigurable, bEnabled );
 }
 
 /*bool KAccel::insertAction( const QString& sAction, KShortcuts rgCutDefaults,
 		const QObject* pObjSlot, const char* psMethodSlot,
-		int nIDMenu, QPopupMenu *pMenu,
+		int nIDMenu, QPopupMenu *,
 		bool bConfigurable, bool bEnabled )
 {
 	KAccelShortcuts cuts( rgCutDefaults.m_s );
 	bool b = d->insertAction( sAction, i18n(sAction.latin1()),
 		cuts, cuts,
 		pObjSlot, psMethodSlot,
-		nIDMenu, pMenu, bConfigurable, bEnabled );
+		nIDMenu, bConfigurable, bEnabled );
 	if( m_bAutoUpdate )
 		updateConnections();
 	return b;
@@ -171,19 +183,19 @@ KAccelAction* KAccel::insertAction( const char* psAction, const char* psShortcut
 
 KAccelAction* KAccel::insertAction( KStdAccel::StdAccel id,
 		const QObject* pObjSlot, const char* psMethodSlot,
-		int nIDMenu, QPopupMenu *pMenu,
+		int nIDMenu, QPopupMenu *,
 		bool bConfigurable, bool bEnabled )
 {
 	QString sAction = KStdAccel::action( id );
 	if( sAction.isEmpty() )
-		return false;
+		return 0;
 
-	KAccelAction* pAction = d->insertAction( sAction, KStdAccel::description( id ),
+	KAccelAction* pAction = d->insertAction( sAction, KStdAccel::description( id ), QString::null,
 		KStdAccel::defaultShortcuts3( id ), KStdAccel::defaultShortcuts4( id ),
 		pObjSlot, psMethodSlot,
-		nIDMenu, pMenu, bConfigurable, bEnabled );
+		nIDMenu, bConfigurable, bEnabled );
 	if( pAction )
-		d->setShortcuts( sAction, KAccelShortcuts( KStdAccel::key( id ) ) );
+		pAction->setShortcuts( KAccelShortcuts( KStdAccel::key( id ) ) );
 
 	return pAction;
 }
@@ -249,25 +261,25 @@ void KAccel::emitKeycodeChanged()
 
 bool KAccel::insertItem( const QString& sDesc, const QString& sAction,
 		const char* cutsDef,
-		int nIDMenu, QPopupMenu *pMenu, bool bConfigurable )
+		int nIDMenu, QPopupMenu *, bool bConfigurable )
 {
 	KShortcuts cuts( cutsDef );
-	bool b = d->insertAction( sAction, sDesc,
+	bool b = d->insertAction( sAction, sDesc, QString::null,
 		cuts, cuts,
 		0, 0,
-		nIDMenu, pMenu, bConfigurable ) != 0;
+		nIDMenu, bConfigurable ) != 0;
 	return b;
 }
 
 bool KAccel::insertItem( const QString& sDesc, const QString& sAction,
 		int key,
-		int nIDMenu, QPopupMenu* pMenu, bool bConfigurable )
+		int nIDMenu, QPopupMenu*, bool bConfigurable )
 {
 	KShortcuts cuts( key );
-	KAccelAction* pAction = d->insertAction( sAction, sDesc,
+	KAccelAction* pAction = d->insertAction( sAction, sDesc, QString::null,
 		cuts, cuts,
 		0, 0,
-		nIDMenu, pMenu, bConfigurable );
+		nIDMenu, bConfigurable );
 	return pAction != 0;
 }
 
