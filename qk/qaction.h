@@ -137,7 +137,7 @@ class QActionSeparator : public QAction
     Q_OBJECT
 public:
     QActionSeparator( QObject* parent = 0, const char* name = 0 );
-    ~QActionSeparator();
+    virtual ~QActionSeparator();
 
     virtual int plug( QWidget* );
     virtual void unplug( QWidget* );
