@@ -1009,7 +1009,7 @@ static void fillQtObjects( QCStringList& l, QObject* o, QCString path )
 	    ++it;
  	    QCString n = obj->name();
  	    if ( n == "unnamed" || n.isEmpty() )
- 		n.sprintf("unnamed%d(%s, %p)", ++unnamed, obj->className(), obj );
+ 		n.sprintf("unnamed%d(%s, %p)", ++unnamed, obj->className(), (void *)obj );
  	    QCString fn = path + n;
  	    l.append( fn );
  	    if ( obj->children() )
@@ -1040,7 +1040,7 @@ static void fillQtObjectsEx( QValueList<O>& l, QObject* o, QCString path )
 	    ++it;
 	    QCString n = obj->name();
 	    if ( n == "unnamed" || n.isEmpty() )
-		n.sprintf("unnamed%d(%s, %p)", ++unnamed, obj->className(), obj );
+		n.sprintf("unnamed%d(%s, %p)", ++unnamed, obj->className(), (void *)obj );
 	    QCString fn = path + n;
 	    l.append( O( fn, obj ) );
 	    if ( obj->children() )
