@@ -1281,7 +1281,7 @@ AC_DEFUN(AM_KDE_WITH_NLS,
       AC_DEFINE(ENABLE_NLS)
 
       AM_PATH_PROG_WITH_TEST_KDE(MSGFMT, msgfmt, 
-         [test -n "`$ac_dir/$ac_word --version 2>&1 | grep '(GNU gettext)'`"], msgfmt)
+         [test -n "`$ac_dir/$ac_word --version 2>&1 | grep 'GNU gettext'`"], msgfmt)
       AC_PATH_PROG(GMSGFMT, gmsgfmt, $MSGFMT)
 
       if test -z "`$MSGFMT 2>&1 | grep 'GNU gettext'`"; then
@@ -1668,8 +1668,7 @@ AC_DEFUN(AC_PATH_PAM,
 
 ]) 
 
-
-AC_DEFUN(KDE_CHECK_DLOPEN,
+AC_DEFUN(KDE_CHECK_LIBDL,
 [
 AC_CHECK_LIB(dl, dlopen, [
 LIBDL="-ldl"
@@ -1682,6 +1681,11 @@ ac_cv_have_shload=yes
 ])
 
 AC_SUBST(LIBDL)
+])
+
+AC_DEFUN(KDE_CHECK_DLOPEN,
+[
+KDE_CHECK_LIBDL
 AC_CHECK_HEADERS(dlfcn.h dl.h)
 if test "$ac_cv_header_dlfcn_h" = "no"; then
   ac_cv_have_dlfcn=no
@@ -1780,6 +1784,7 @@ fi
 
 AC_DEFUN(KDE_CHECK_MICO,
 [
+AC_REQUIRE([KDE_CHECK_LIBDL])
 AC_MSG_CHECKING(for MICO)
 AC_ARG_WITH(micodir,
   [  --with-micodir=micodir  where mico is installed ],
@@ -1886,8 +1891,50 @@ fi
 
 ])
 
+
+AC_DEFUN(KDE_CHECK_LIBPTHREAD,
+[
+AC_CHECK_LIB(pthread, main, [LIBPTHREAD="-lpthread"], LIBPTHREAD= )
+AC_SUBST(LIBPTHREAD)
+])
+
+AC_DEFUN(KDE_TRY_LINK_PYTHON,
+[
+AC_CACHE_VAL(kde_cv_try_link_python_$1,
+[
+kde_save_cxxflags="$CXXFLAGS"
+CXXFLAGS="$CXXFLAGS $PYTHONINC"
+kde_save_libs="$LIBS"
+LIBS="$LIBS $LIBPYTHON $2 $LIBDL"
+kde_save_ldflags="$LDFLAGS"
+LDFLAGS="$LDFLAGS $PYTHONLIB"
+
+AC_TRY_LINK(
+[
+#include <Python.h>
+],[
+	PySys_SetArgv(1, 0);
+],
+	[kde_cv_try_link_python_$1=yes],
+	[kde_cv_try_link_python_$1=no]
+)
+CXXFLAGS="$kde_save_cxxflags"
+LIBS="$kde_save_libs"
+LDFLAGS="$kde_save_ldflags"
+])
+
+if test "$kde_cv_try_link_python_$1" = "yes"; then
+  $3
+else
+  $4
+fi
+
+])
+
 AC_DEFUN(KDE_CHECK_PYTHON,
 [
+AC_REQUIRE([KDE_CHECK_LIBDL])
+AC_REQUIRE([KDE_CHECK_LIBPTHREAD])
 if test -z "$1"; then 
   version="1.5"
 else
@@ -1923,32 +1970,27 @@ LIBPYTHON=-lpython$version
 AC_MSG_RESULT(header $python_incdir library $python_libdir)
 
 dnl Note: this test is very weak
-AC_MSG_CHECKING(if Python needs thread lib to compile)
-AC_CACHE_VAL(kde_cv_python_pthread,
-[
-	AC_TRY_COMPILE([#include <Python.h>],
-[
-int main(int argc, char **argv) {
-	PySys_SetArgv(argc, argv);
-	return 0;
-}
-],
-	kde_cv_python_pthread=no,
-	[kde_cv_python_pthread=yes]
-)
-])
-
-AC_MSG_RESULT($kde_cv_python_pthread)
-
-if test "$kde_cv_python_pthread" = "yes"; then
-  LIBPYTHON="$LIBPYTHON -lpthread $LIBDL"
-fi
+AC_MSG_CHECKING(if an Python application links)
+KDE_TRY_LINK_PYTHON(normal, "", AC_MSG_RESULT(yes),
+ [
+    AC_MSG_RESULT(no)
+    AC_MSG_CHECKING(if Python depends on -lpthread)
+    KDE_TRY_LINK_PYTHON(pthread, "$LIBPTHREAD",
+    [  
+       AC_MSG_RESULT(yes)
+       LIBPYTHON="$LIBPYTHON $LIBPTHREAD $LIBDL"
+    ],
+    [
+       AC_MSG_RESULT(no)
+       AC_MSG_WARN([it seems, Python depends on another library. 
+Pleae use "make LIBPTYHON='-lpyhon$version -lotherlib'" to fix this
+and contact the authors to let them know about this problem])
+    ])
+ ]) 
 
 AC_SUBST(PYTHONINC)
 AC_SUBST(PYTHONLIB)
 AC_SUBST(LIBPYTHON)
-
-
 
 ])
 
