@@ -83,7 +83,7 @@ public:
 
 class KImageIOFactory : public KSycocaFactory
 {
-  friend KImageIO;
+  friend class KImageIO;
   K_SYCOCAFACTORY( KST_KImageIO )
 public:
   static KImageIOFactory *self() 

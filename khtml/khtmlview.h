@@ -61,11 +61,11 @@ class KHTMLView : public QScrollView
 {
     Q_OBJECT
 
-    friend DOM::HTMLDocumentImpl;
-    friend DOM::HTMLElementImpl;
-    friend DOM::HTMLTitleElementImpl;
+    friend class DOM::HTMLDocumentImpl;
+    friend class DOM::HTMLElementImpl;
+    friend class DOM::HTMLTitleElementImpl;
     friend class KHTMLPart;
-    friend khtml::RenderRoot;
+    friend class khtml::RenderRoot;
     friend void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::ElementImpl *e);
 
 public:

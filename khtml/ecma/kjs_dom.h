@@ -51,7 +51,7 @@ namespace KJS {
   };
 
   class DOMNodeFunc : public DOMFunction {
-    friend DOMNode;
+    friend class DOMNode;
   public:
     DOMNodeFunc(DOM::Node n, int i) : node(n), id(i) { }
     Completion tryExecute(const List &);
@@ -75,7 +75,7 @@ namespace KJS {
   };
 
   class DOMNodeListFunc : public DOMFunction {
-    friend DOMNodeList;
+    friend class DOMNodeList;
   public:
     DOMNodeListFunc(DOM::NodeList l, int i) : list(l), id(i) { }
     Completion tryExecute(const List &);

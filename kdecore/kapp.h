@@ -77,7 +77,7 @@ class KApplicationPrivate;
 */
 class KApplication : public QApplication, public KInstance
 {
-  friend QTDispatcher;
+  friend class QTDispatcher;
 
   Q_OBJECT
 public:
@@ -786,6 +786,10 @@ private:
 #endif
 
 // $Log$
+// Revision 1.183  2000/08/22 14:02:22  raabe
+// Added method KApplication::invokeMailer(const KURL&), this fixed bug #5708
+// and makes the mailto parser comply to RFC 2368.
+//
 // Revision 1.182  2000/08/13 22:27:32  faure
 // Fixed errors when running kdoc (I meant, it's e.g. @p remFun and not @remFun,
 // @param is allowed of course). Also increased version number in kapp.h while

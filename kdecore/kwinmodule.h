@@ -213,7 +213,7 @@ signals:
 private:
     KWinModulePrivate* d;
 
-    friend KWinModulePrivate;
+    friend class KWinModulePrivate;
 };
 
 #endif

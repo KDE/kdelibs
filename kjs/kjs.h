@@ -45,11 +45,11 @@ namespace KJS {
  * @short ECMAScript interpreter
  */
 class KJScript {
-  friend KJS::KJScriptImp;
-  friend KJS::KJSO;
-  friend KJS::Context;
-  friend KJS::Lexer;
-  friend KJS::Global;
+  friend class KJS::KJScriptImp;
+  friend class KJS::KJSO;
+  friend class KJS::Context;
+  friend class KJS::Lexer;
+  friend class KJS::Global;
 public:
   /**
    * Create a new ECMAScript interpreter. You can later ask it to interprete

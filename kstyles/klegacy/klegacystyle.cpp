@@ -261,7 +261,7 @@ class GtkObject : public QObject {
 private:
     KLegacyStyleData *d;
 
-    friend KLegacyStylePrivate;
+    friend class KLegacyStylePrivate;
 
 
 public:
@@ -1042,7 +1042,7 @@ private:
     QPtrDict<GtkObject> gtkDict;
     GtkObject *gtktree;
 
-    friend KLegacyStyle;
+    friend class KLegacyStyle;
 
 
 public:

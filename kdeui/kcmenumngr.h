@@ -108,7 +108,7 @@ private:
     bool showOnPress;
     int menuKey;
     static KContextMenuManager* manager;
-    friend I_really_like_this_class; // avoid warning
+    friend class I_really_like_this_class; // avoid warning
 
     KContextMenuManagerPrivate *d;
 };

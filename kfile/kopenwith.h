@@ -203,7 +203,7 @@ protected:
     virtual void activate();
     virtual void setOpen( bool o );
 
-    friend KApplicationTree;
+    friend class KApplicationTree;
 };
 
 /* ------------------------------------------------------------------------- */

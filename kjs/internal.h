@@ -233,10 +233,10 @@ namespace KJS {
   };
 
   class KJScriptImp {
-    friend KJScript;
-    friend Lexer;
-    friend Context;
-    friend Global;
+    friend class KJScript;
+    friend class Lexer;
+    friend class Context;
+    friend class Global;
   public:
     KJScriptImp();
     ~KJScriptImp();

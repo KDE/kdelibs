@@ -62,7 +62,7 @@ class KDockTabBar : public QWidget
 {
   Q_OBJECT
   
-  friend KDockTabBarPainter;
+  friend class KDockTabBarPainter;
 
 public:
   
@@ -300,7 +300,7 @@ private:
 class KDockTabBarPainter : public QWidget
 {
   Q_OBJECT
-  friend KDockTabBar;
+  friend class KDockTabBar;
 
 public:
   /** returns the tooltip string of the tab at this position */

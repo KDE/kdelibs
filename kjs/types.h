@@ -51,7 +51,7 @@ namespace KJS {
    * @short Handle for a Boolean type.
    */
   class Boolean : public KJSO {
-    friend BooleanImp;
+    friend class BooleanImp;
   public:
     Boolean(bool b = false);
     virtual ~Boolean();
@@ -83,7 +83,7 @@ namespace KJS {
    * to behave more intelligently.
    */
   class Number : public KJSO {
-    friend NumberImp;
+    friend class NumberImp;
   public:
     /**
      * Construct a Number type from an integer.
@@ -132,7 +132,7 @@ namespace KJS {
    * @short Handle for a String type.
    */
   class String : public KJSO {
-    friend StringImp;
+    friend class StringImp;
   public:
     String(const UString &s = "");
     virtual ~String();
@@ -167,8 +167,8 @@ namespace KJS {
    * @internal
    */
   class ListNode {
-    friend List;
-    friend ListIterator;
+    friend class List;
+    friend class ListIterator;
     ListNode(KJSO obj, ListNode *p, ListNode *n)
       : member(obj), prev(p), next(n) {};
     KJSO member;
@@ -179,7 +179,7 @@ namespace KJS {
    * @short Iterator for @ref KJS::List objects.
    */
   class ListIterator {
-    friend List;
+    friend class List;
     ListIterator();
     ListIterator(ListNode *n) : node(n) { }
   public:
@@ -251,7 +251,7 @@ namespace KJS {
    * The class takes care of memory management via reference counting.
    */
   class List {
-    friend ListIterator;
+    friend class ListIterator;
   public:
     /**
      * Constructor.

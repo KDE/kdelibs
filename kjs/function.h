@@ -43,7 +43,7 @@ namespace KJS {
    * @short Implementation class for Functions.
    */
   class FunctionImp : public ObjectImp {
-    friend Function;
+    friend class Function;
   public:
     FunctionImp();
     FunctionImp(const UString &n);

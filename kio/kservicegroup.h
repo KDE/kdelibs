@@ -35,7 +35,7 @@ class KBuildServiceGroupFactory;
 
 class KServiceGroup : public KSycocaEntry
 {
-  friend KBuildServiceGroupFactory;
+  friend class KBuildServiceGroupFactory;
   K_SYCOCATYPE( KST_KServiceGroup, KSycocaEntry )
 
 public:

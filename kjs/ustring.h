@@ -86,8 +86,8 @@ namespace KJS {
      */
     static UChar null;
   private:
-    friend UCharReference;
-    friend UString;
+    friend class UCharReference;
+    friend class UString;
     friend bool operator==(const UChar &c1, const UChar &c2);
     friend bool operator==(const UString& s1, const char *s2);
     friend bool operator<(const UString& s1, const UString& s2);
@@ -110,7 +110,7 @@ namespace KJS {
    * existance of this class and treat is as being identical to @ref UChar.
    */
   class UCharReference {
-    friend UString;
+    friend class UString;
     UCharReference(UString *s, unsigned int off) : str(s), offset(off) { }
   public:
     /**
@@ -177,12 +177,12 @@ namespace KJS {
    */
   class UString {
     friend bool operator==(const UString&, const UString&);
-    friend UCharReference;
+    friend class UCharReference;
     /**
      * @internal
      */
     struct Rep {
-      friend UString;
+      friend class UString;
       friend bool operator==(const UString&, const UString&);
       static Rep *create(UChar *d, int l);
       inline UChar *data() const { return dat; }

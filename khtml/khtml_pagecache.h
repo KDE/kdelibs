@@ -92,7 +92,7 @@ private:
 
 class KHTMLPageCacheDelivery : public QObject
 {
-   friend KHTMLPageCache;
+   friend class KHTMLPageCache;
 Q_OBJECT
 public:
    KHTMLPageCacheDelivery(int _fd)

@@ -37,7 +37,7 @@ class KTempFilePrivate;
  */
 class KTempFile
 {
-   friend KSaveFile;
+   friend class KSaveFile;
 public:
    /**
     * Create a temporary file with the name:

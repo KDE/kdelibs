@@ -177,9 +177,9 @@ class KCmdLineArgsPrivate;
  */
 class KCmdLineArgs
 {
-  friend KApplication;
-  friend KUniqueApplication;
-  friend QList<KCmdLineArgs>;
+  friend class KApplication;
+  friend class KUniqueApplication;
+  friend class QList<KCmdLineArgs>;
 public:
   // Static functions:
   

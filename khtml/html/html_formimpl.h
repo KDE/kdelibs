@@ -497,7 +497,7 @@ protected:
     WrapMethod m_wrap;
     DOMString m_value;
 
-    friend khtml::RenderTextArea;
+    friend class khtml::RenderTextArea;
 };
 
 }; //namespace

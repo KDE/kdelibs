@@ -366,7 +366,7 @@ namespace KJS {
    * @short Base for all implementation classes.
    */
   class Imp {
-    friend KJSO;
+    friend class KJSO;
     friend class Collector;
   public:
     Imp();
@@ -438,7 +438,7 @@ namespace KJS {
    * @short General implementation class for Objects
    */
   class ObjectImp : public Imp {
-    friend Object;
+    friend class Object;
   public:
     ObjectImp(Class c);
     ObjectImp(Class c, const KJSO &v);
@@ -506,7 +506,7 @@ namespace KJS {
    * @short Unique global object containing initial native properties.
    */
   class Global : public Object {
-    friend KJScriptImp;
+    friend class KJScriptImp;
   public:
     /**
      * Constructs a Global object. This is done by the interpreter once and

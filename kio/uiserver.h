@@ -150,7 +150,7 @@ public:
     TB_ADDRESS = 8
   };
 
-  friend ProgressItem;
+  friend class ProgressItem;
 
 protected:
 

@@ -36,7 +36,7 @@
 
 class KHTMLPageCacheEntry
 {
-  friend KHTMLPageCache;
+  friend class KHTMLPageCache;
 public:
   KHTMLPageCacheEntry(long id);
 

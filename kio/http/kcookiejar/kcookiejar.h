@@ -47,8 +47,8 @@ enum KCookieAdvice {
 
 class KHttpCookie
 {
-    friend KCookieJar;
-    friend KHttpCookieList;
+    friend class KCookieJar;
+    friend class KHttpCookieList;
 
 protected:
     QString mHost;

@@ -21,6 +21,9 @@
  * $Id$
  *
  * $Log$
+ * Revision 1.15  2000/08/17 16:44:44  reggie
+ * Don't crash
+ *
  * Revision 1.14  2000/06/03 01:04:42  gehrmab
  * * Made drawing routines available for overriding
  * * Added a parent/name constructor
@@ -88,7 +91,7 @@
 
 class KLed::KLedPrivate
 {
-  friend KLed;
+  friend class KLed;
 
   int dark_factor;
   QColor offcolor;
