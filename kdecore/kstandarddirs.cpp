@@ -506,12 +506,6 @@ KStandardDirs::findAllResources( const char *type,
                                  QStringList &relList) const
 {
     QStringList list;
-    if (filter.at(0) == '/') // absolute paths we return
-    {
-        list.append( filter);
-	return list;
-    }
-
     QString filterPath;
     QString filterFile;
 
@@ -528,9 +522,18 @@ KStandardDirs::findAllResources( const char *type,
 
     checkConfig();
 
-    if (d && d->restrictionsActive && (strcmp(type, "data")==0))
-       applyDataRestrictions(filter);
-    QStringList candidates = resourceDirs(type);
+    QStringList candidates;
+    if (filterPath.startsWith("/")) // absolute path
+    {
+        filterPath = filterPath.mid(1);
+        candidates << "/";
+    }
+    else
+    {
+        if (d && d->restrictionsActive && (strcmp(type, "data")==0))
+            applyDataRestrictions(filter);
+        candidates = resourceDirs(type);
+    }
     if (filterFile.isEmpty())
 	filterFile = "*";
 
