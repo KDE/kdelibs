@@ -984,10 +984,11 @@ int main( int argc, char* argv[] )
     QApplication a( argc, argv, false );
 
     IceSetIOErrorHandler (IoErrorHandler );
-    DCOPServer server;
+    DCOPServer *server = new DCOPServer();
 
     setjmp (JumpHere);
-    return a.exec();
+    a.exec();
+    delete server;    
 }
 
 #include "dcopserver.moc"
