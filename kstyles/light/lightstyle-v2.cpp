@@ -1010,7 +1010,7 @@ void LightStyleV2::drawComplexControl( ComplexControl control,
 	    if ((controls & SC_SpinWidgetDown) && down.isValid()) {
 		PrimitiveElement pe = PE_SpinWidgetDown;
 		if ( spinwidget->buttonSymbols() == QSpinWidget::PlusMinus )
-		    pe = PE_SpinWidgetPlus;
+		    pe = PE_SpinWidgetMinus;
 
 		p->setPen(cg.dark());
 		p->drawLine(down.topLeft(), down.bottomLeft());
