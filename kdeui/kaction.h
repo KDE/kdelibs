@@ -639,11 +639,22 @@ public:
      */
     bool isChecked() const;
 
+    /**
+     * @return which "exclusive group" this action is part of.
+     * @see setExclusiveGroup
+     */
     virtual QString exclusiveGroup() const;
 
 public slots:
 
+    /**
+     * Defines which "exclusive group" this action is part of.
+     * In a given exclusive group, only one toggle action can be checked
+     * at a any moment. Checking an action unchecks the other actions
+     * of the group.
+     */
     virtual void setExclusiveGroup( const QString& name );
+    // why virtual? why slot? (change in KDE 3?)
 
     /**
      *  Sets the state of the action.
