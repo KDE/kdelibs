@@ -29,9 +29,6 @@
 <!ENTITY LMB    "<mousebutton>botón izquierdo</mousebutton>">
 <!ENTITY MMB    "<mousebutton>botón central</mousebutton>">
 <!ENTITY OS "Sistema operativo">
-<!ENTITY pej     "<abbrev>p. ej.</abbrev>" ><!-- pej -->
 <!ENTITY RMB    "<mousebutton>botón derecho</mousebutton>">
 <!ENTITY Shift "<keycap>Mayúsculas</keycap>">
-<!ENTITY X-Windows      '<trademark class="registered">Sistema de ventanas X</trademark>'>
-<!ENTITY X-Window      '<trademark class="registered">Sistema de ventanas X</trademark>'>
-
+<!ENTITY X-Windows      "Sistema de ventanas X">
