@@ -1,13 +1,8 @@
 #ifndef kregexpeditor_h
 #define kregexpeditor_h
 
-#include <qstring.h>
-#include <qwidget.h>
-#include <qlabel.h>
-#include <qvaluestack.h>
-#include <qcstring.h>
-
-class KRegExpEditorPrivate;
+class QWidget;
+class QDialog;
 
 /**
    Regular Expression Editor.
@@ -15,28 +10,11 @@ class KRegExpEditorPrivate;
    @author Jesper Kjær Pedersen <blackie@kde.org> 
    @version 0.1
  **/
-class KRegExpEditor  :public QWidget
+class KRegExpEditor  
 {
-Q_OBJECT
-
 public:
-  static KRegExpEditor* createEditor( QWidget* parent, const char* name = 0);
-  virtual QString regexp() = 0;
-
-
-signals:
-  void canUndo( bool );
-  void canRedo( bool );
-  void changes( bool );
-
-protected:
-  KRegExpEditor( QWidget *parent, const char *name = 0 );
-
-public slots:
-  virtual void slotRedo() = 0;
-  virtual void slotUndo() = 0;
-  virtual void slotSetRegExp( QString regexp ) = 0;
-
+  static QWidget* createEditor( QWidget* parent, const char* name = 0);
+  static QDialog* createDialog( QWidget* parent, const char* name = 0);
 };
 
 #endif
