@@ -28,11 +28,7 @@ COMPILE_BEFORE_kate = interfaces kutils
 COMPILE_BEFORE_kmdi = kutils
 COMPILE_BEFORE_interfaces = arts
 
-$(top_srcdir)/acinclude.m4: $(top_srcdir)/admin/acinclude.m4.in $(top_srcdir)/admin/libtool.m4.in $(top_srcdir)/libltdl/ltdl.m4
-	@cd $(top_srcdir) && cat admin/acinclude.m4.in admin/libtool.m4.in libltdl/ltdl.m4 > acinclude.m4
-
-$(top_srcdir)/configure.in: $(top_srcdir)/subdirs $(top_srcdir)/configure.files $(CONF_FILES)
-	cd $(top_srcdir) && $(MAKE) -f admin/Makefile.common configure.in
+$(top_srcdir)/acinclude.m4: $(top_srcdir)/libltdl/ltdl.m4
 
 AUTOMAKE_OPTIONS = foreign 1.5
 
@@ -91,6 +87,7 @@ qtmessages:
 	echo "remove the header from messages.po and move to qt-messages.pot"
 
 include admin/Doxyfile.am
+include admin/deps.am
 
 apidox-am-toplevel-yes: apidox-am-toplevel-kdelibs
 
