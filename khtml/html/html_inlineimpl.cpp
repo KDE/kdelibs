@@ -120,6 +120,8 @@ void HTMLAnchorElementImpl::defaultEventHandler(EventImpl *evt)
                     state |= Qt::ShiftButton;
                 if ( e->altKey() )
                     state |= Qt::AltButton;
+                if (  e->metaKey() )
+                    state |= Qt::MetaButton;
 
                 if ( e->button() == 0 )
                     button = Qt::LeftButton;
@@ -197,8 +199,14 @@ void HTMLBRElementImpl::attach()
     assert(parentNode());
 
     if (parentNode()->renderer()) {
-        m_render = new RenderBR(this);
-        m_render->setStyle(getDocument()->styleSelector()->styleForElement(this));
+        RenderStyle* style = getDocument()->styleSelector()->styleForElement(  this );
+        style->ref();
+        if(  style->display() != NONE ) {
+          m_render = new RenderBR( this );
+          m_render->setStyle( style );
+          parentNode()->renderer()->addChild( m_render, nextRenderer() );
+        }
+        style->deref();
         parentNode()->renderer()->addChild(m_render, nextRenderer());
     }
     NodeImpl::attach();
