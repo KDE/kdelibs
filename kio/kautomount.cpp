@@ -20,6 +20,7 @@
 #include "krun.h"
 #include "kdirwatch.h"
 #include "kio/job.h"
+#include <kdirnotify_stub.h>
 #include <kdebug.h>
 
 /***********************************************************************
@@ -46,11 +47,15 @@ void KAutoMount::slotResult( KIO::Job * job )
     job->showErrorDialog();
   else
   {
-    QString mp = KIO::findDeviceMountPoint( m_strDevice );
+    KURL mountpoint;
+    mountpoint.setPath( KIO::findDeviceMountPoint( m_strDevice ) );
 
     if ( m_bShowFilemanagerWindow )
-      KRun::runURL( mp, "inode/directory" );
-    //      KFileManager::getFileManager()->openFileManagerWindow( mp );
+      KRun::runURL( mountpoint, "inode/directory" );
+
+    // Notify about the new stuff in that dir, in case of opened windows showing it
+    KDirNotify_stub allDirNotify("*", "KDirNotify*");
+    allDirNotify.FilesAdded( mountpoint );
 
     // Update of window which contains the desktop entry which is used for mount/unmount
     kdDebug(7015) << " mount finished : updating " << m_desktopFile << endl;
@@ -60,9 +65,9 @@ void KAutoMount::slotResult( KIO::Job * job )
 }
 
 KAutoUnmount::KAutoUnmount( const QString & _mountpoint, const QString & _desktopFile )
-  : m_desktopFile( _desktopFile )
+  : m_desktopFile( _desktopFile ), m_mountpoint( _mountpoint )
 {
-  KIO::Job * job = KIO::unmount( _mountpoint );
+  KIO::Job * job = KIO::unmount( m_mountpoint );
   connect( job, SIGNAL( result( KIO::Job * ) ), this, SLOT( slotResult( KIO::Job * ) ) );
 }
 
@@ -75,6 +80,14 @@ void KAutoUnmount::slotResult( KIO::Job * job )
     // Update of window which contains the desktop entry which is used for mount/unmount
     kdDebug(7015) << "unmount finished : updating " << m_desktopFile << endl;
     KDirWatch::self()->setFileDirty( m_desktopFile );
+
+    // Notify about the new stuff in that dir, in case of opened windows showing it
+    // You may think we removed files, but this may have also readded some
+    // (if the mountpoint wasn't empty). The only possible behaviour on FilesAdded
+    // is to relist the directory anyway.
+    KDirNotify_stub allDirNotify("*", "KDirNotify*");
+    allDirNotify.FilesAdded( m_mountpoint );
+
   }
 
   delete this;

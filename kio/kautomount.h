@@ -83,6 +83,7 @@ protected slots:
   void slotResult( KIO::Job * );
 private:
   QString m_desktopFile;
+  QString m_mountpoint;
 };
 
 #endif
