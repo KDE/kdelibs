@@ -136,7 +136,7 @@ void KKeyButton::drawButton( QPainter *painter )
   painter->setClipping( false );
   if( width() > 12 && height() > 8 )
     qDrawShadePanel( painter, 6, 4, width() - 12, height() - 8,
-		     colorGroup(), true, 1, 0L );
+                     colorGroup(), true, 1, 0L );
   if ( editing )
   {
     painter->setPen( colorGroup().base() );
@@ -151,7 +151,7 @@ void KKeyButton::drawButton( QPainter *painter )
     painter->drawRect( 7, 5, width() - 14, height() - 10 );
 
   drawButtonLabel( painter );
-	
+
   painter->setPen( colorGroup().text() );
   painter->setBrush( NoBrush );
   if( hasFocus() || editing )
@@ -174,9 +174,9 @@ void KKeyButton::drawButton( QPainter *painter )
 /*                                                                      */
 /************************************************************************/
 KKeyDialog::KKeyDialog( KKeyEntryMap *aKeyMap, QWidget *parent,
-			bool check_against_std_keys)
+                        bool check_against_std_keys)
   : KDialogBase( parent, 0, true, i18n("Configure Key Bindings"),
-		 Help|Default|Ok|Cancel, Ok )
+                 Help|Default|Ok|Cancel, Ok )
 {
   KKeyChooser *kc =  new KKeyChooser( aKeyMap, this, check_against_std_keys );
   setMainWidget(kc);
@@ -189,7 +189,7 @@ KKeyDialog::~KKeyDialog()
 }
 
 int KKeyDialog::configureKeys( KAccel *keys, bool save_settings,
-			       QWidget *parent )
+                               QWidget *parent )
 {
     KKeyEntryMap map = keys->keyDict();
     KKeyDialog kd( &map, parent );
@@ -204,7 +204,7 @@ int KKeyDialog::configureKeys( KAccel *keys, bool save_settings,
 }
 
 int KKeyDialog::configureKeys( KGlobalAccel *keys, bool save_settings,
-			       QWidget *parent )
+                               QWidget *parent )
 {
     KKeyEntryMap dict = keys->keyDict();
 
@@ -303,7 +303,7 @@ int KKeyDialog::configureKeys( KActionCollection *coll, const QString& file,
 }
 
 KKeyChooser::KKeyChooser( KKeyEntryMap *aKeyMap, QWidget *parent,
-			  bool check_against_std_keys)
+                          bool check_against_std_keys)
     : QWidget( parent )
 {
 
@@ -317,10 +317,10 @@ KKeyChooser::KKeyChooser( KKeyEntryMap *aKeyMap, QWidget *parent,
   // TOP LAYOUT MANAGER
   //
   // The following layout is used for the dialog
-  // 		LIST LABELS LAYOUT
-  //		SPLIT LIST BOX WIDGET
-  //		CHOOSE KEY GROUP BOX WIDGET
-  //		BUTTONS LAYOUT
+  //            LIST LABELS LAYOUT
+  //            SPLIT LIST BOX WIDGET
+  //            CHOOSE KEY GROUP BOX WIDGET
+  //            BUTTONS LAYOUT
   // Items are added to topLayout as they are created.
   //
 
@@ -402,16 +402,19 @@ KKeyChooser::KKeyChooser( KKeyEntryMap *aKeyMap, QWidget *parent,
 
   QRadioButton *rb = new QRadioButton( i18n("&No key"), d->fCArea );
   d->kbGroup->insert( rb, NoKey );
+  rb->setEnabled( false );
   grid->addMultiCellWidget( rb, 1, 1, 1, 2 );
   QWhatsThis::add( rb, i18n("The selected action will not be associated with any key.") );
 
   rb = new QRadioButton( i18n("&Default key"), d->fCArea );
   d->kbGroup->insert( rb, DefaultKey );
+  rb->setEnabled( false );
   grid->addMultiCellWidget( rb, 2, 2, 1, 2 );
   QWhatsThis::add( rb, i18n("This will bind the default key to the selected action. Usually a reasonable choice.") );
 
   rb = new QRadioButton( i18n("&Custom key"), d->fCArea );
   d->kbGroup->insert( rb, CustomKey );
+  rb->setEnabled( false );
   connect( d->kbGroup, SIGNAL( clicked( int ) ), SLOT( keyMode( int ) ) );
   grid->addMultiCellWidget( rb, 3, 3, 1, 2 );
   QWhatsThis::add( rb, i18n("If this option is selected you can create a customized key binding for the"
@@ -480,7 +483,7 @@ KKeyChooser::KKeyChooser( KKeyEntryMap *aKeyMap, QWidget *parent,
   d->lInfo->setAlignment( AlignCenter );
   d->lInfo->setEnabled( false );
   d->lInfo->hide();
-	
+
   d->globalDict = new QDict<int> ( 100, false );
   d->globalDict->setAutoDelete( true );
   readGlobalKeys();
@@ -502,15 +505,21 @@ KKeyChooser::~KKeyChooser()
 
 void KKeyChooser::updateAction( QListViewItem *item )
 {
-    KKeyEntryMap::Iterator it = d->actionMap[item];
+    if ( !item )
+    {
+        toChange( 0 );
+    } else
+    {
+        KKeyEntryMap::Iterator it = d->actionMap[item];
 
-    if ( (*it).aConfigKeyCode == 0 )
-        d->kbMode = NoKey;
-    else if ( (*it).aConfigKeyCode == (*it).aDefaultKeyCode )
-        d->kbMode = DefaultKey;
-    else d->kbMode = CustomKey;
+        if ( (*it).aConfigKeyCode == 0 )
+            d->kbMode = NoKey;
+        else if ( (*it).aConfigKeyCode == (*it).aDefaultKeyCode )
+            d->kbMode = DefaultKey;
+        else d->kbMode = CustomKey;
 
-    toChange( item );
+        toChange( item );
+    }
 }
 
 void KKeyChooser::readGlobalKeys()
@@ -565,126 +574,148 @@ void KKeyChooser::readStdKeys()
 
 void KKeyChooser::toChange( QListViewItem *item )
 {
-	d->bKeyIntercept = false;
-	
-	/* get the entry */
+    if ( !item )
+    {
+        // if nothing is selected -> disable radio boxes
+        d->kbGroup->find(NoKey)->setEnabled( false );
+        d->kbGroup->find(DefaultKey)->setEnabled( false );
+        d->kbGroup->find(CustomKey)->setEnabled( false );
+        d->cAlt->setEnabled( false );
+        d->cShift->setEnabled( false );
+        d->cCtrl->setEnabled( false );
+        d->bChange->setEnabled( false );
+    } else
+    {
+        d->bKeyIntercept = false;
+
+        /* get the entry */
         KKeyEntryMap::Iterator it = d->actionMap[item];
 
-	/* Is the key configurable or has the user turned it off ? */
-	if ( !(*it).bConfigurable || d->kbMode == NoKey ) {
-		d->lInfo->setEnabled( false );
-		d->cShift->setEnabled( false );
+        /* Is the key configurable or has the user turned it off ? */
+        if ( !(*it).bConfigurable || d->kbMode == NoKey ) {
+                d->lInfo->setEnabled( false );
+                d->cShift->setEnabled( false );
                 d->cCtrl->setEnabled( false );
                 d->cAlt->setEnabled( false );
-		d->bChange->setEnabled( false );  //bDefault->setEnabled( false );
-		d->lNotConfig->setEnabled( true );
-		
-		int kCode = (*it).aConfigKeyCode;
-		int kSCode = kCode & ~(SHIFT | CTRL | ALT);
-		
-		if ( kSCode == Key_Shift ) d->cShift->setChecked(false);
-		else d->cShift->setChecked( kCode & SHIFT );
-		if ( kSCode == Key_Control ) d->cCtrl->setChecked(false);
-		else d->cCtrl->setChecked( kCode & CTRL );
-		if ( kSCode == Key_Alt ) d->cAlt->setChecked(false);
-		else d->cAlt->setChecked( kCode & ALT );
-		
-		QString str = KAccel::keyToString( kSCode );
-		d->bChange->setText(str);
+                d->bChange->setEnabled( false );  //bDefault->setEnabled( false );
+                d->lNotConfig->setEnabled( true );
+
+                int kCode = (*it).aConfigKeyCode;
+                int kSCode = kCode & ~(SHIFT | CTRL | ALT);
+
+                if ( kSCode == Key_Shift ) d->cShift->setChecked(false);
+                else d->cShift->setChecked( kCode & SHIFT );
+                if ( kSCode == Key_Control ) d->cCtrl->setChecked(false);
+                else d->cCtrl->setChecked( kCode & CTRL );
+                if ( kSCode == Key_Alt ) d->cAlt->setChecked(false);
+                else d->cAlt->setChecked( kCode & ALT );
+
+                QString str = KAccel::keyToString( kSCode );
+                d->bChange->setText(str);
 
                 item->setText(1, KAccel::keyToString( kCode ));
-		
-	} else {
-		d->lNotConfig->setEnabled( false );
-		d->lInfo->setText(QString::null); d->lInfo->setEnabled( true );
-		
-		int kCode = (*it).aConfigKeyCode;
-		int kSCode = kCode & ~(SHIFT | CTRL | ALT);
-		
-		//d->cShift->setEnabled( true ); d->cCtrl->setEnabled( true ); d->cAlt->setEnabled( true );
-		if ( kSCode == Key_Shift ) d->cShift->setChecked(false);
-		else d->cShift->setChecked( kCode & SHIFT );
-		if ( kSCode == Key_Control ) d->cCtrl->setChecked(false);
-		else d->cCtrl->setChecked( kCode & CTRL );
-		if ( kSCode == Key_Alt ) d->cAlt->setChecked(false);
-		else d->cAlt->setChecked( kCode & ALT );
-		
-		QString str = KAccel::keyToString( kSCode );
-		d->bChange->setText(str); //eKey->setText(str);
-		//d->bChange->setEnabled( true ); //bDefault->setEnabled( true );
-		item->setText(1, KAccel::keyToString( kCode ));
 
-		if ( isKeyPresent(kCode, false) ) {
-			d->lInfo->setText(i18n("Attention : key already used") );
-		}
-		
-		if ( d->kbMode == DefaultKey ) {
-			d->cAlt->setEnabled( false );
-			d->cShift->setEnabled( false );
-			d->cCtrl->setEnabled( false );
-			d->bChange->setEnabled( false );
-		} else {
-			d->cAlt->setEnabled( true );
-			d->cShift->setEnabled( true );
-			d->cCtrl->setEnabled( true );
-			d->bChange->setEnabled( true );
-		}
-	}
-		
-	((QRadioButton *)d->kbGroup->find(NoKey))->setChecked( d->kbMode == NoKey );
-	((QRadioButton *)d->kbGroup->find(DefaultKey))->setChecked( d->kbMode == DefaultKey );
-	((QRadioButton *)d->kbGroup->find(CustomKey))->setChecked( d->kbMode == CustomKey );
-	
-	if ( !(*it).bConfigurable ) {
-		d->cAlt->setEnabled( false );
-		d->cShift->setEnabled( false );
-		d->cCtrl->setEnabled( false );
-		d->bChange->setEnabled( false );
-		((QRadioButton *)d->kbGroup->find(NoKey))->setEnabled( false );
-		((QRadioButton *)d->kbGroup->find(DefaultKey))->setEnabled( false );
-		((QRadioButton *)d->kbGroup->find(CustomKey))->setEnabled( false );
-	} else {
-		((QRadioButton *)d->kbGroup->find(NoKey))->setEnabled( true );
-		((QRadioButton *)d->kbGroup->find(DefaultKey))->setEnabled( (*it).aDefaultKeyCode != 0);
-		((QRadioButton *)d->kbGroup->find(CustomKey))->setEnabled( true );
-	}	
+        } else {
+                d->lNotConfig->setEnabled( false );
+                d->lInfo->setText(QString::null); d->lInfo->setEnabled( true );
+
+                int kCode = (*it).aConfigKeyCode;
+                int kSCode = kCode & ~(SHIFT | CTRL | ALT);
+
+                //d->cShift->setEnabled( true ); d->cCtrl->setEnabled( true ); d->cAlt->setEnabled( true );
+                if ( kSCode == Key_Shift ) d->cShift->setChecked(false);
+                else d->cShift->setChecked( kCode & SHIFT );
+                if ( kSCode == Key_Control ) d->cCtrl->setChecked(false);
+                else d->cCtrl->setChecked( kCode & CTRL );
+                if ( kSCode == Key_Alt ) d->cAlt->setChecked(false);
+                else d->cAlt->setChecked( kCode & ALT );
+
+                QString str = KAccel::keyToString( kSCode );
+                d->bChange->setText(str); //eKey->setText(str);
+                //d->bChange->setEnabled( true ); //bDefault->setEnabled( true );
+                item->setText(1, KAccel::keyToString( kCode ));
+
+                if ( isKeyPresent(kCode, false) ) {
+                        d->lInfo->setText(i18n("Attention : key already used") );
+                }
+
+                if ( d->kbMode == DefaultKey ) {
+                        d->cAlt->setEnabled( false );
+                        d->cShift->setEnabled( false );
+                        d->cCtrl->setEnabled( false );
+                        d->bChange->setEnabled( false );
+                } else {
+                        d->cAlt->setEnabled( true );
+                        d->cShift->setEnabled( true );
+                        d->cCtrl->setEnabled( true );
+                        d->bChange->setEnabled( true );
+                }
+        }
+
+        d->kbGroup->find(NoKey)->setEnabled( true );
+        d->kbGroup->find(DefaultKey)->setEnabled( true );
+        d->kbGroup->find(CustomKey)->setEnabled( true );
+
+        ((QRadioButton *)d->kbGroup->find(NoKey))->setChecked( d->kbMode == NoKey );
+        ((QRadioButton *)d->kbGroup->find(DefaultKey))->setChecked( d->kbMode == DefaultKey );
+        ((QRadioButton *)d->kbGroup->find(CustomKey))->setChecked( d->kbMode == CustomKey );
+
+        if ( !(*it).bConfigurable ) {
+                d->cAlt->setEnabled( false );
+                d->cShift->setEnabled( false );
+                d->cCtrl->setEnabled( false );
+                d->bChange->setEnabled( false );
+                ((QRadioButton *)d->kbGroup->find(NoKey))->setEnabled( false );
+                ((QRadioButton *)d->kbGroup->find(DefaultKey))->setEnabled( false );
+                ((QRadioButton *)d->kbGroup->find(CustomKey))->setEnabled( false );
+        } else {
+                ((QRadioButton *)d->kbGroup->find(NoKey))->setEnabled( true );
+                ((QRadioButton *)d->kbGroup->find(DefaultKey))->setEnabled( (*it).aDefaultKeyCode != 0);
+                ((QRadioButton *)d->kbGroup->find(CustomKey))->setEnabled( true );
+        }
+    }
 }
 
 void KKeyChooser::fontChange( const QFont & )
 {
 
-	d->cAlt->setFixedHeight( d->bChange->sizeHint().height() );
-	d->cShift->setFixedHeight( d->bChange->sizeHint().height() );
-	d->cCtrl->setFixedHeight( d->bChange->sizeHint().height() );
-	
-	d->fCArea->setMinimumHeight( 4*d->bChange->sizeHint().height() );
-	
-	int widget_width = 0;
-	
-	setMinimumWidth( 20+5*(widget_width+10) );
+        d->cAlt->setFixedHeight( d->bChange->sizeHint().height() );
+        d->cShift->setFixedHeight( d->bChange->sizeHint().height() );
+        d->cCtrl->setFixedHeight( d->bChange->sizeHint().height() );
+
+        d->fCArea->setMinimumHeight( 4*d->bChange->sizeHint().height() );
+
+        int widget_width = 0;
+
+        setMinimumWidth( 20+5*(widget_width+10) );
 }
 
 void KKeyChooser::keyMode( int m )
 {
-	d->kbMode = m;
-	switch( d->kbMode ) {
-		case NoKey:
-			noKey();
-			break;
-		case DefaultKey:
-			defaultKey();
-			break;
-		case CustomKey: default:
-			toChange( d->wList->currentItem() );
-			break;
-	}
+        d->kbMode = m;
+        switch( d->kbMode ) {
+                case NoKey:
+                        noKey();
+                        break;
+                case DefaultKey:
+                        defaultKey();
+                        break;
+                case CustomKey: default:
+                        toChange( d->wList->currentItem() );
+                        break;
+        }
 }
 
 void KKeyChooser::noKey()
 {
+    // return if no key is selected
+    QListViewItem *item = d->wList->currentItem();
+    if (!item)
+        return;
+
     kdDebug(125) << "no Key" << d->wList->currentItem()->text(0) << endl;
     (*d->actionMap[d->wList->currentItem()]).aConfigKeyCode = 0;
-	
+
     /* update the list and the change area */
 
     if ( d->bChange->isEditing() )
@@ -696,18 +727,18 @@ void KKeyChooser::noKey()
 
 void KKeyChooser::defaultKey()
 {
-    /* update the list and the change area */
-
+    // return if no key is selected
     QListViewItem *item = d->wList->currentItem();
     if (!item)
         return;
 
+    /* update the list and the change area */
     (*d->actionMap[item]).aConfigKeyCode =
         (*d->actionMap[item]).aDefaultKeyCode;
 
     item->setText(1, KAccel::keyToString((*d->actionMap[item]).
                                          aConfigKeyCode));
-		
+
     if ( d->bChange->isEditing() )
         d->bChange->setEditing(false);
 
@@ -719,7 +750,7 @@ void KKeyChooser::defaultKey()
 void KKeyChooser::allDefault()
 {
     // Change all configKeyCodes to default values
-	
+
     QListViewItem *at = d->wList->firstChild();
     while (at) {
 
@@ -840,7 +871,7 @@ void KKeyChooser::keyPressEvent( QKeyEvent *e )
     e->ignore();
     return;
   }
-	
+
   int kCode = e->key() & ~(SHIFT | CTRL | ALT);
   /* check the given key :
      if it is a non existent key (=0) : keep the old value and say
@@ -851,7 +882,7 @@ void KKeyChooser::keyPressEvent( QKeyEvent *e )
     d->lInfo->setText( i18n("Undefined key") );
     return;
   }
-	
+
   d->bKeyIntercept = false;
   //eKey->hide();
   //eKey->setEnabled(false);
@@ -881,7 +912,7 @@ void KKeyChooser::setKey( int kCode)
     /* set the list and the change button */
     (*it).aConfigKeyCode = kCode;
     item->setText(1, KAccel::keyToString((*it).aConfigKeyCode));
-	
+
     toChange(item);
     emit keyChange();
 }
@@ -998,7 +1029,7 @@ bool KKeyChooser::isKeyPresent( int kcode, bool warnuser )
         }
     }
 
-    //	emit keyChange();
+    //  emit keyChange();
 
     return false;
 }
