@@ -225,6 +225,7 @@ private:
   QList<OtherCertItem> otherCertDelList;
   QList<YourCertItem> yourCertDelList;
 
+  QString pCertPass;
 
   KConfig *config;
   KSimpleConfig *policies, *pcerts;

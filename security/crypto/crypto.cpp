@@ -675,6 +675,7 @@ void KCryptoConfig::configChanged()
 
 void KCryptoConfig::load()
 {
+  pCertPass = "";
 #ifdef HAVE_SSL
   otherCertDelList.clear();
   yourCertDelList.clear();
@@ -1281,6 +1282,8 @@ YourCertItem *x = static_cast<YourCertItem *>(yourSSLBox->selectedItem());
    if (!x) return;
 
    KSSLPKCS12 *pkcs = KSSLPKCS12::fromString(x->getPKCS(), x->getPass());
+   if (!pkcs)
+      pkcs = KSSLPKCS12::fromString(x->getPKCS(), pCertPass);
    if (!pkcs) {
       QString pprompt = i18n("Enter the certificate password:");
       QCString oldpass;
@@ -1290,6 +1293,8 @@ YourCertItem *x = static_cast<YourCertItem *>(yourSSLBox->selectedItem());
          pkcs = KSSLPKCS12::fromString(x->getPKCS(), oldpass);
          pprompt = i18n("Decoding failed.  Please try again:");
       } while (!pkcs);
+      pCertPass = oldpass;
+      slotYourUnlock();
    }
 
   // For now, we will only export to PKCS#12
@@ -1303,7 +1308,33 @@ YourCertItem *x = static_cast<YourCertItem *>(yourSSLBox->selectedItem());
 
 
 void KCryptoConfig::slotYourVerify() {
-  // Must verify the X.509 against the CA list, and the private key.
+YourCertItem *x = static_cast<YourCertItem *>(yourSSLBox->selectedItem());
+QString iss;
+   if (!x) return;
+
+   KSSLPKCS12 *pkcs = KSSLPKCS12::fromString(x->getPKCS(), x->getPass());
+   if (!pkcs)
+      pkcs = KSSLPKCS12::fromString(x->getPKCS(), pCertPass);
+   if (!pkcs) {
+      QString pprompt = i18n("Enter the certificate password:");
+      QCString oldpass;
+      do {
+         int i = KPasswordDialog::getPassword(oldpass, pprompt);
+         if (i != KPasswordDialog::Accepted) return; 
+         pkcs = KSSLPKCS12::fromString(x->getPKCS(), oldpass);
+         pprompt = i18n("Decoding failed.  Please try again:");
+      } while (!pkcs);
+      pCertPass = oldpass;
+      slotYourUnlock();
+   }
+
+  if (pkcs->isValid()) {
+     KMessageBox::information(this, i18n("This certificate passed the verification tests successfully."), i18n("SSL"));
+  } else {
+     KMessageBox::detailedError(this, i18n("This certificate has failed the tests and should be considered invalid."), KSSLCertificate::verifyText(pkcs->validate()), i18n("SSL"));
+  }
+
+  delete pkcs;
 }
 
 
@@ -1320,9 +1351,11 @@ YourCertItem *x = static_cast<YourCertItem *>(yourSSLBox->selectedItem());
 void KCryptoConfig::slotYourUnlock() {
 YourCertItem *x = static_cast<YourCertItem *>(yourSSLBox->selectedItem());
 QString iss;
-   if (!x) return;
+   if (!x || !yourSSLUnlock->isEnabled()) return;
 
    KSSLPKCS12 *pkcs = KSSLPKCS12::fromString(x->getPKCS(), x->getPass());
+   if (!pkcs)
+      pkcs = KSSLPKCS12::fromString(x->getPKCS(), pCertPass);
    if (!pkcs) {
       QString pprompt = i18n("Enter the certificate password:");
       QCString oldpass;
@@ -1332,6 +1365,7 @@ QString iss;
          pkcs = KSSLPKCS12::fromString(x->getPKCS(), oldpass);
          pprompt = i18n("Decoding failed.  Please try again:");
       } while (!pkcs);
+      pCertPass = oldpass;
    }
 
    // update the info
@@ -1367,10 +1401,11 @@ void KCryptoConfig::slotYourCertSelect() {
 YourCertItem *x = static_cast<YourCertItem *>(yourSSLBox->selectedItem());
 QString iss;
 
+   pCertPass = "";
    yourSSLExport->setEnabled(x != NULL);
    yourSSLPass->setEnabled(x != NULL);
    yourSSLUnlock->setEnabled(false);
-//   yourSSLVerify->setEnabled(x != NULL);
+   yourSSLVerify->setEnabled(x != NULL);
    yourSSLRemove->setEnabled(x != NULL);
 
    if (x) {
@@ -1415,6 +1450,8 @@ QCString oldpass = "";
    if (!x) return;
 
    KSSLPKCS12 *pkcs = KSSLPKCS12::fromString(x->getPKCS(), x->getPass());
+   if (!pkcs)
+      pkcs = KSSLPKCS12::fromString(x->getPKCS(), pCertPass);
    if (!pkcs) {
       QString pprompt = i18n("Enter the OLD password for the certificate:");
       do {
@@ -1427,11 +1464,14 @@ QCString oldpass = "";
 
    if (pkcs) {
       QCString pass;
+      pCertPass = oldpass;
       int i = KPasswordDialog::getNewPassword(pass, 
                                    i18n("Enter the new certificate password"));
       if (i == KPasswordDialog::Accepted) {
          pkcs->changePassword(QString(oldpass), QString(pass));
          x->setPKCS(pkcs->toString());
+         pCertPass = pass;
+         slotYourUnlock();
          configChanged();
       }
       delete pkcs;
