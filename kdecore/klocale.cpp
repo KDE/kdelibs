@@ -426,16 +426,19 @@ const QString KLocale::getAlias(long key) const
 
 QString i18n(const char* text) {
 #ifdef ENABLE_NLS
-  if (!KGlobal::_locale) {
-      KApplication *app = KApplication::getKApplication();
-      if (app)
-	  KGlobal::_locale = new KLocale(app->appName());
-      else
-	  return text;
-  }
-  return KGlobal::_locale->translate(text); 
-#else
-  return text;
+  register KLocale *instance = KGlobal::locale();
+  if (instance)
+     return instance->translate(text); 
 #endif
+  return text;
 }
 
+void KLocale::initInstance() {
+  if (KGlobal::_locale) 
+     return;
+
+  KApplication *app = KApplication::getKApplication();
+  if (app)
+    KGlobal::_locale = new KLocale(app->appName());
+ 
+}

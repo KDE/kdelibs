@@ -69,7 +69,8 @@ KIconLoader *KGlobal::iconLoader()
 KLocale	*KGlobal::locale()
 {	
 	if( _locale == 0 ) {
-		_locale = new KLocale;
+		// will set _locale if it works - otherwise 0 is returned
+		KLocale::initInstance();
 	}
 
 	return _locale;

@@ -44,6 +44,8 @@ class QStrList;
   */
 class KLocale {
 
+      friend class KGlobal;
+
 public:
     /**
       * Create a KLocale with the given catalogue name.
@@ -193,9 +195,11 @@ private:
     bool numeric_enabled;
     QString langs;
 
-  // Disallow assignment and copy-construction
-  KLocale( const KLocale& );
-  KLocale& operator= ( const KLocale& );
+    // Disallow assignment and copy-construction
+    KLocale( const KLocale& );
+    KLocale& operator= ( const KLocale& );
+  
+    static void initInstance();
 };
 
 QString i18n(const char *text);
