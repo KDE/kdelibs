@@ -249,9 +249,11 @@ void HTMLFormElementImpl::prepareSubmit()
     if(!view) return;
 
     DOMString script = getAttribute(ATTR_ONSUBMIT);
-    if (!script.isNull() && view->part()->jScriptEnabled())
-        if(!view->part()->executeScript(Node(this), script.string()))
+    if (!script.isNull() && view->part()->jScriptEnabled()) {
+        QVariant ret = view->part()->executeScript(Node(this), script.string());
+	if (ret.type() == QVariant::Bool && ret.toBool() == false)
             return; // don't submit if script returns false
+    }
 
     submit();
 }
@@ -288,8 +290,7 @@ void HTMLFormElementImpl::reset(  )
     
     DOMString script = getAttribute(ATTR_ONRESET);
     if (!script.isNull() && view->part()->jScriptEnabled())
-        if(!view->part()->executeScript(Node(this), script.string()))
-            return;
+	view->part()->executeScript(Node(this), script.string());
 
     HTMLGenericFormElementImpl *current = formElements.first();
     while(current)

@@ -663,28 +663,22 @@ KJSProxy *KHTMLPart::jScript()
   return d->m_jscript;
 }
 
-bool KHTMLPart::executeScript( const QString &script )
+QVariant KHTMLPart::executeScript( const QString &script )
 {
     return executeScript( DOM::Node(), script );
 }
 
-bool KHTMLPart::executeScript( const DOM::Node &n, const QString &script )
+QVariant KHTMLPart::executeScript( const DOM::Node &n, const QString &script )
 {
   KJSProxy *proxy = jScript();
 
   if (!proxy)
-    return false;
+    return QVariant();
 
-   bool ret = proxy->evaluate( script.unicode(), script.length(), n );
+  QVariant ret = proxy->evaluate( script.unicode(), script.length(), n );
   d->m_doc->updateRendering();
-  return ret;
-}
 
-bool KHTMLPart::scheduleScript( const QString &script )
-{
-    d->scheduledScript = script;
-    d->scheduledScriptNode = DOM::Node();
-    return true;
+  return ret;
 }
 
 bool KHTMLPart::scheduleScript(const DOM::Node &n, const QString& script)
@@ -697,22 +691,17 @@ bool KHTMLPart::scheduleScript(const DOM::Node &n, const QString& script)
     return true;
 }
 
-bool KHTMLPart::executeScheduledScript()
+QVariant KHTMLPart::executeScheduledScript()
 {
-    if(d->scheduledScript.isEmpty() || d->scheduledScript.isNull() )
-        return false;
-
-    KJSProxy *proxy = jScript();
-
-  if (!proxy)
-    return false;
+  if( d->scheduledScript.isEmpty() )
+    return QVariant();
 
   //kdDebug() << "executing delayed " << d->scheduledScript << endl;
 
-  bool ret = proxy->evaluate( d->scheduledScript.unicode(), d->scheduledScript.length(), d->scheduledScriptNode );
+  QVariant ret = executeScript( d->scheduledScriptNode, d->scheduledScript );
   d->scheduledScript = QString();
   d->scheduledScriptNode = DOM::Node();
-  d->m_doc->updateRendering();
+
   return ret;
 }
 

@@ -209,11 +209,11 @@ public:
    * and the code returned true itself or @p false otherwise.
    * @deprecated, use the one below.
    */
-  bool executeScript( const QString &script );
+  QVariant executeScript( const QString &script );
   /**
    * Same as above except the Node parameter specifying the 'this' value.
    */
-  bool executeScript( const DOM::Node &n, const QString &script );
+  QVariant executeScript( const DOM::Node &n, const QString &script );
 
   void setDNDEnabled( bool b );
   bool dndEnabled() const;
@@ -765,13 +765,9 @@ private:
 
   void clear();
 
-  /**
-   * @deprecated
-   */
-  bool scheduleScript( const QString &script );
   bool scheduleScript( const DOM::Node &n, const QString& script);
 
-  bool executeScheduledScript();
+  QVariant executeScheduledScript();
 
   /**
    * @internal

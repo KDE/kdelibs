@@ -47,7 +47,6 @@ KJSProxy *kjs_html_init(KHTMLPart *khtml)
 
   // proxy class operating via callback functions
   KJSProxy *proxy = new KJSProxy(script, &kjs_create, &kjs_eval, &kjs_clear,
-				 &kjs_event, &kjs_mask,
 	  			 &kjs_special, &kjs_destroy);
   proxy->khtml = khtml;
 
@@ -71,14 +70,35 @@ KJSProxy *kjs_html_init(KHTMLPart *khtml)
     return script;
   }
 
-  // evaluate code
-  bool kjs_eval(KJScript *script, const QChar *c, unsigned int len,
-		const DOM::Node &n)
+  // evaluate code. Returns the JS return value or an invalid QVariant
+  // if there was none, an error occured or the type couldn't be converted.
+  QVariant kjs_eval(KJScript *script, const QChar *c, unsigned int len,
+		    const DOM::Node &n)
   {
-    if(n.isNull())
-      return script->evaluate(KJS::Global::current().prototype(), c, len);
-    else
-      return script->evaluate(getDOMNode(n), c, len);
+    KJS::KJSO thisNode = n.isNull() ?
+			 KJS::Global::current().prototype() : getDOMNode(n);
+
+    bool ret = script->evaluate(thisNode, c, len);
+
+    // let's try to convert the return value
+    QVariant res;
+    if (ret && script->returnValue()) {
+      KJS::KJSO retVal(script->returnValue());
+      switch (retVal.type()) {
+      case BooleanType:
+	  res = QVariant(retVal.toBoolean().value(), 0);
+	  break;
+      case NumberType:
+	  res = QVariant(retVal.toNumber().value());
+	  break;
+      case StringType:
+	  res = QVariant(retVal.toString().value().qstring());
+	  break;
+      default:
+	  break;
+      }
+    }
+    return res;
   }
   // clear resources allocated by the interpreter
   void kjs_clear(KJScript *script)
@@ -86,17 +106,6 @@ KJSProxy *kjs_html_init(KHTMLPart *khtml)
     script->clear();
     delete script;
     script = 0L;
-  }
-  // process an event
-  bool kjs_event(KJScript *, QEvent *, void *)
-  {
-    /* TODO */
-    return true;
-  }
-  // check whether a specific event handler is present
-  bool kjs_mask(KJScript *, int)
-  {
-    return false;
   }
   // for later extensions.
   const char *kjs_special(KJScript *, const char *)

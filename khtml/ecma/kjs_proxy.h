@@ -20,8 +20,8 @@
 #ifndef _KJS_PROXY_H_
 #define _KJS_PROXY_H_
 
-class QChar;
-class QEvent;
+#include <qvariant.h>
+
 class KJScript;
 class KHTMLPart;
 
@@ -31,11 +31,9 @@ namespace DOM {
 
 // callback functions for KJSProxy
 typedef KJScript* (KJSCreateFunc)(KHTMLPart *);
-typedef bool (KJSEvalFunc)(KJScript *script, const QChar *, unsigned int,
+typedef QVariant (KJSEvalFunc)(KJScript *script, const QChar *, unsigned int,
 			   const DOM::Node &);
 typedef void (KJSClearFunc)(KJScript *script);
-typedef bool (KJSEventFunc)(KJScript *script, QEvent *, void *);
-typedef bool (KJSMaskFunc)(KJScript *script, int);
 typedef const char* (KJSSpecialFunc)(KJScript *script, const char *);
 typedef void (KJSDestroyFunc)(KJScript *script);
 extern "C" {
@@ -43,8 +41,6 @@ extern "C" {
   KJSEvalFunc kjs_eval;
   KJSClearFunc kjs_clear;
   KJSSpecialFunc kjs_special;
-  KJSEventFunc kjs_event;
-  KJSMaskFunc kjs_mask;
   KJSDestroyFunc kjs_destroy;
 }
 
@@ -54,14 +50,10 @@ extern "C" {
 class KJSProxy {
 public:
   KJSProxy(KJScript *s, KJSCreateFunc cr, KJSEvalFunc e, KJSClearFunc c,
-	   KJSEventFunc ev, KJSMaskFunc m,
 	   KJSSpecialFunc sp, KJSDestroyFunc d)
-    : create(cr), script(s), eval(e), clr(c), event(ev),
-      mask(m), spec(sp), destr(d) { };
+    : create(cr), script(s), eval(e), clr(c), spec(sp), destr(d) { };
   ~KJSProxy() { (*destr)(script); }
-  bool evaluate(const QChar *c, unsigned int l, const DOM::Node &n);
-  bool processEvent(QEvent *e, void *unknown);
-  bool eventMask(int e);
+  QVariant evaluate(const QChar *c, unsigned int l, const DOM::Node &n);
   const char *special(const char *c);
   void clear();
   KHTMLPart *khtml;
@@ -70,25 +62,15 @@ private:
   KJScript *script;
   KJSEvalFunc *eval;
   KJSClearFunc *clr;
-  KJSEventFunc *event;
-  KJSMaskFunc *mask;
   KJSSpecialFunc *spec;
   KJSDestroyFunc *destr;
 };
 
-inline bool KJSProxy::evaluate(const QChar *c, unsigned int l,
+inline QVariant KJSProxy::evaluate(const QChar *c, unsigned int l,
 			       const DOM::Node &n) {
   if (!script)
     script = (*create)(khtml);
   return (*eval)(script, c, l, n);
-}
-
-inline bool KJSProxy::processEvent(QEvent *e, void *unknown) {
-  return (script ? (*event)(script, e, unknown) : false);
-}
-
-inline bool KJSProxy::eventMask(int e) {
-  return (script ? (*mask)(script, e) : false);
 }
 
 inline const char *KJSProxy::special(const char *c) {
