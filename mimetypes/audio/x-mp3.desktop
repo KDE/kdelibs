@@ -1,5 +1,5 @@
 [Desktop Entry]
-MimeType=audio/x-mp3
+Type=MimeType
 Comment=MPEG layer 3 audio
 Comment[ca]=Àudio MPEG nivell 3
 Comment[de]=MPEG Layer-3-Audio
@@ -7,7 +7,6 @@ Comment[fi]=MPEG taso 3 musiikki
 Comment[fr]=MPEG niveau 3 audio
 Comment[hu]=MPEG layer 3 audió
 Comment[ja]=MPEG layer 3 ¥ª¡¼¥Ç¥£¥ª
-DefaultApp=kmpg
+MimeType=audio/x-mp3
 Icon=mimetypes/sound
-Type=MimeType
 Patterns=*.mp3;*.MP3;
