@@ -6,6 +6,7 @@
 #include "jp2.h"
 
 #include <stdint.h>
+#include <qcolor.h>
 #include <qfile.h>
 #include <qimage.h>
 
@@ -164,11 +165,7 @@ namespace {
 					else if( v[k] > 255 ) v[k] = 255;
 				} // for k
 
-				// TODO: is this safe for both BE and LE?
-				*data = v[0] << 16; // red
-				*data += v[1] << 8; // green
-				*data += v[2];      // blue
-				++data;
+				*data++ = qRgb( v[0], v[1], v[2] );
 			} // for x
 		} // for y
 	} // draw_view
