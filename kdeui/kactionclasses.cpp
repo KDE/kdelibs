@@ -7,7 +7,7 @@
               (C) 2001 Holger Freyther <freyther@kde.org>
               (C) 2002 Ellis Whitehead <ellis@kde.org>
               (C) 2002 Joseph Wenninger <jowenn@kde.org>
-              (C) 2002 Andras Mantia <amantia@kde.org>
+              (C) 2003 Andras Mantia <amantia@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
