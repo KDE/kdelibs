@@ -122,7 +122,7 @@ they should be seperated by commas (',').
 
 To restrict access to function the kdeglobals file should contain the 
 group "[KDE Action Restrictions]", each action can then restricted by 
-adding <action>="true". E.g. to disable the action "shell_access" one 
+adding "<action>=false". E.g. to disable the action "shell_access" one 
 would add:
 [KDE Action Restrictions]
 shell_access=false
