@@ -185,7 +185,7 @@ protected:
    * 
    * Set the contents type of the cache entry to 'mimetype'.
    */
-  void createCacheEntry(const QString &mimetype);
+  void createCacheEntry(const QString &mimetype, time_t expireDate);
 
   /**
    * Write data to cache.
@@ -216,6 +216,7 @@ protected: // Members
   bool m_bUseCache; // Whether the cache is active
   bool m_bCachedRead; // Whether the file is to be read from m_fcache.
   bool m_bCachedWrite; // Whether the file is to be written to m_fcache.
+  int m_maxCacheAge; // Maximum age of a cache entry.
   FILE* m_fcache; // File stream of a cache entry
   QString m_strCacheDir; // Location of the cache. 
 

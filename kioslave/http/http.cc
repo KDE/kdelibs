@@ -288,6 +288,7 @@ int verify_callback (int, X509_STORE_CTX *)
 
 HTTPProtocol::HTTPProtocol( KIOConnection *_conn ) : KIOProtocol( _conn )
 {
+  m_maxCacheAge = 0;
   m_cmd = CMD_NONE;
   m_fsocket = 0L;
   m_sock = 0;
@@ -322,6 +323,7 @@ HTTPProtocol::HTTPProtocol( KIOConnection *_conn ) : KIOProtocol( _conn )
   if (m_bUseCache)
   {
      m_strCacheDir = KGlobal::dirs()->saveLocation("data", "kio_http/cache");
+     m_maxCacheAge = KProtocolManager::self().maxCacheAge();
   }
 
   m_bEOF=false;
@@ -798,6 +800,7 @@ bool HTTPProtocol::readHeader()
   bool unauthorized = false;
   bool cont = false;
   bool noRedirect = false; // No automatic redirection
+  time_t cacheExpireDate = 0;
 
   gets(buffer, sizeof(buffer)-1);
   if (eof())
@@ -1056,7 +1059,7 @@ bool HTTPProtocol::readHeader()
   if (m_bCachedWrite)
   {
      // Check...
-     createCacheEntry(m_strMimeType); // Create a cache entry 
+     createCacheEntry(m_strMimeType, cacheExpireDate); // Create a cache entry 
      if (!m_fcache)
         m_bCachedWrite = false; // Error creating cache entry.
   }
@@ -2156,7 +2159,11 @@ HTTPProtocol::findCookies( const QString &url)
    return result;
 }
 
-#define CACHE_REVISION "1\n"
+// !START SYNC!
+// The following code should be kept in sync 
+// with the code in http_cache_cleaner.cpp
+
+#define CACHE_REVISION "2\n"
 
 FILE *
 HTTPProtocol::checkCacheEntry( QString &CEF)
@@ -2206,34 +2213,52 @@ HTTPProtocol::checkCacheEntry( QString &CEF)
 
    CEF = dir + "/" + CEF;
 
-   kdebug( KDEBUG_INFO, 7103, "URL = \"%s\"", u.data() );
-   kdebug( KDEBUG_INFO, 7103, "DIR = \"%s\"", dir.ascii() );
-   kdebug( KDEBUG_INFO, 7103, "CEF = \"%s\"", CEF.ascii() );
-  
    FILE *fs = fopen( CEF.ascii(), "r");
    if (!fs)
       return 0;
 
-   char buffer[5];
+   char buffer[40];
+   bool ok = true;
 
-   if (!fgets(buffer, 5, fs))
+  // CacheRevision 
+  if (ok && (!fgets(buffer, 40, fs)))
+      ok = false;  
+   if (ok && (strcmp(buffer, CACHE_REVISION) != 0))
+      ok = false;
+
+   time_t date;
+   time_t currentDate = time(0);
+
+   // Creation Date
+   if (ok && (!fgets(buffer, 40, fs)))
+      ok = false;  
+   if (ok)
    {
-      fclose(fs);
-      unlink( CEF.ascii());
-      return 0;
+      date = (time_t) strtoul(buffer, 0, 10);
+      if (m_maxCacheAge && (difftime(currentDate, date) > m_maxCacheAge))
+         ok = false; // Expired
    }
-   if (strcmp(buffer, CACHE_REVISION) != 0)
+
+   // Expiration Date
+   if (ok && (!fgets(buffer, 40, fs)))
+      ok = false;  
+   if (ok)
    {
-      fclose(fs);
-      unlink( CEF.ascii());
-      return 0;
+      date = (time_t) strtoul(buffer, 0, 10);
+      if (date && (date < currentDate))
+         ok = false; // Expired
    }
-  
-   return fs;   
+ 
+   if (ok)
+      return fs;
+
+   fclose(fs);
+   unlink( CEF.ascii());
+   return 0;
 }
 
 void
-HTTPProtocol::createCacheEntry( const QString &mimetype)
+HTTPProtocol::createCacheEntry( const QString &mimetype, time_t expireDate)
 {
    QString dir = m_state.cef;
    int p = dir.findRev('/');
@@ -2242,7 +2267,6 @@ HTTPProtocol::createCacheEntry( const QString &mimetype)
 
    // Create file
    int result = ::mkdir( dir.ascii(), 0700 );
-   kdebug( KDEBUG_INFO, 7103, "mkdir %s: result = %d, errno =%d", dir.ascii(), result, errno );
 
    QString filename = m_state.cef + ".new";  // Create a new cache entry
 
@@ -2250,12 +2274,25 @@ HTTPProtocol::createCacheEntry( const QString &mimetype)
    if (!m_fcache)
       return; // Error.
 
-   fputs(CACHE_REVISION, m_fcache);  
-   fputs(mimetype.ascii(), m_fcache);
+   fputs(CACHE_REVISION, m_fcache);    // Revision
+
+   QString date;
+   date.setNum( time(0) );
+   fputs(date.ascii(), m_fcache);      // Creation date
+   fputc('\n', m_fcache);
+
+   date.setNum( expireDate );
+   fputs(date.ascii(), m_fcache);      // Expire date
+   fputc('\n', m_fcache);
+
+   fputs(mimetype.ascii(), m_fcache);  // Mimetype
    fputc('\n', m_fcache);
 
    return;  
 }
+// The above code should be kept in sync 
+// with the code in http_cache_cleaner.cpp
+// !END SYNC!
 
 void
 HTTPProtocol::writeCacheEntry( const char *buffer, int nbytes)
