@@ -1,6 +1,7 @@
 # KDE Config File
 [KDE Desktop Entry]
 Comment=Locked Directory
+Comment[es]=Directorio inaccesible
 Comment[de]=Gesperrter Ordner
 Comment[pl]=Zablokowany katalog
 Comment[fi]=Lukittu hakemisto

@@ -5,6 +5,7 @@ Mimetype=application/x-zip
 Icon=tgz.xpm
 Patterns=*.zip;*.ZIP;
 Comment=Zip archive
+Comment[es]=Archivo ZIP
 Comment[de]=Zip Archiv
 Comment[nl]=Zip archief
 Comment[pl]=Archiwum Zip

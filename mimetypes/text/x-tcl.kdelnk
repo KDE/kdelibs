@@ -1,6 +1,7 @@
 # KDE Config File
 [KDE Desktop Entry]
 Comment=Tcl file
+Comment[es]=Programa TCL
 Comment[de]=TcL Programm
 Comment[nl]=Tcl bestand
 Comment[pl]=Program Tcl

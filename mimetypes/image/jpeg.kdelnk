@@ -5,6 +5,7 @@ MimeType=image/jpeg
 Icon=image.xpm
 Patterns=*.jpeg;*.jpg;*.JPG;
 Comment=Jpeg images
+Comment[es]=Imágen JPEG
 Comment[de]=Jpeg Bild
 Comment[nl]=Jpeg afbeelding
 Comment[pl]=Obraz Jpeg

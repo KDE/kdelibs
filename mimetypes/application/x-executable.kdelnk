@@ -1,6 +1,7 @@
 # KDE Config File
 [KDE Desktop Entry]
 Comment=Executable
+Comment[es]=Ejecutable
 Comment[de]=Programm
 Comment[nl]=Programma
 Comment[pl]=Program

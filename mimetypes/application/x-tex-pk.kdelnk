@@ -1,6 +1,7 @@
 # KDE Config File
 [KDE Desktop Entry]
 Comment=Packed Font file
+Comment[es]=Fuente comprimida
 Comment[de]=Komprimierte Fontdatei
 Comment[nl]=Gecomprimeerd lettertypebestand
 Comment[pl]=Spakowana czcionka Tex'a

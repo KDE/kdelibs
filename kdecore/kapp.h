@@ -19,6 +19,9 @@
 // $Id$
 //
 // $Log$
+// Revision 1.47  1998/04/06 10:06:48  kulow
+// made kdedir() protected. I have to announce it after lunch ;)
+//
 // Revision 1.46  1998/03/29 19:07:28  kalle
 // Methods for reading and writing bool, unsigned int, long, unsigned long,
 // double, QRect, QSize, QPoint
@@ -784,5 +787,6 @@ public:
 	*/
   void saveYourself();
 };
+
 
 #endif

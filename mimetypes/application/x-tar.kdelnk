@@ -5,6 +5,7 @@ MimeType=application/x-tar
 Icon=tgz.xpm
 Patterns=*.tar;
 Comment=Tar archive
+Comment[es]=Archivo TAR
 Comment[de]=Tar Archiv
 Comment[nl]=Tar archief
 Comment[pl]=Archiwum Tar
@@ -12,3 +13,4 @@ Comment[fi]=Tar paketti
 Comment[fr]=Archive TAR
 Comment[pt]=Arquivo TAR
 Comment[it]=Archivio Tar
+

@@ -1,6 +1,7 @@
 # KDE Config File
 [KDE Desktop Entry]
 Comment=TeX Device Independent file
+Comment[es]=Fichero TeX DVI
 Comment[de]=TeX DVI Datei
 Comment[nl]=TeX apperaat onafhankelijk bestand
 Comment[pl]=Plik TeX DVI

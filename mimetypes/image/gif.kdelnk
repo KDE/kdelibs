@@ -5,6 +5,7 @@ MimeType=image/gif
 Icon=image.xpm
 Patterns=*.gif;*.GIF;
 Comment=Gif images
+Comment[es]=Imágen GIF
 Comment[de]=GIF Bild
 Comment[nl]=Gif afbeelding
 Comment[pl]=Obraz GIF
