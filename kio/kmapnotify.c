@@ -159,10 +159,10 @@ KDE_InterceptXMapRequest(Display * d, Window w)
     KDE_appStartPid = atoi(envStr);
   
   /* unsetenv is not available on all platforms... */
-  putenv("LD_PRELOAD=");
-  putenv("KDE_INITIAL_DESKTOP=");
-  putenv("KDE_DISABLE_KMAPNOTIFY=");
-  putenv("KDE_APP_START_PID=");
+  putenv(strdup("LD_PRELOAD="));
+  putenv(strdup("KDE_INITIAL_DESKTOP="));
+  putenv(strdup("KDE_DISABLE_KMAPNOTIFY="));
+  putenv(strdup("KDE_APP_START_PID="));
 
   /* Find symbols *********************************************************/
 

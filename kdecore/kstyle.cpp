@@ -273,7 +273,6 @@ void KStyle::drawKickerTaskButton(QPainter *p, int x, int y, int w, int h,
                                   const QString &text, bool sunken,
                                   QPixmap *pixmap, QBrush *)
 {
-  qDebug("drawKickerTaskButton(%s)", text.ascii());
   int x2 = x + w - 1;
   int y2 = y + h - 1;
 
@@ -334,8 +333,6 @@ void KStyle::drawKickerTaskButton(QPainter *p, int x, int y, int w, int h,
 
     textPos += pxWidth;
   }
-
-  qDebug("textPos == %d", textPos);
 
   if (!s.isEmpty())
   {
