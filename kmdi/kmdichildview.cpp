@@ -569,12 +569,12 @@ bool KMdiChildView::eventFilter(QObject *obj, QEvent *e )
       // child and its children
       QObject* pLostChild = ((QChildEvent*)e)->child();
       if (pLostChild != 0L) {
-         QObjectList *list = pLostChild->queryList();
+         QObjectList *list = pLostChild->queryList( "QWidget" );
          list->insert(0, pLostChild);        // add the lost child to the list too, just to save code
          QObjectListIt it( *list );          // iterate over all lost child widgets
-         QObject * obj;
-         while ( (obj=it.current()) != 0 ) { // for each found object...
-            QWidget* widg = (QWidget*)obj;
+         QObject * o;
+         while ( (o=it.current()) != 0 ) { // for each found object...
+            QWidget* widg = (QWidget*)o;
             ++it;
             widg->removeEventFilter(this);
             if((widg->focusPolicy() == QWidget::StrongFocus) ||
@@ -605,9 +605,9 @@ bool KMdiChildView::eventFilter(QObject *obj, QEvent *e )
          QObjectList *list = pNewWidget->queryList( "QWidget" );
          list->insert(0, pNewChild);         // add the new child to the list too, just to save code
          QObjectListIt it( *list );          // iterate over all new child widgets
-         QObject * obj;
-         while ( (obj=it.current()) != 0 ) { // for each found object...
-            QWidget* widg = (QWidget*)obj;
+         QObject * o;
+         while ( (o=it.current()) != 0 ) { // for each found object...
+            QWidget* widg = (QWidget*)o;
             ++it;
             widg->installEventFilter(this);
             connect(widg, SIGNAL(destroyed()), this, SLOT(slot_childDestroyed()));
