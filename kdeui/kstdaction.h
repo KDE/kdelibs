@@ -24,6 +24,8 @@ class KAction;
 class QAction;
 class QObject;
 
+class KStdActionPrivate;
+
 /**
  * Convenience methods to access all standard KDE actions.
  *
@@ -423,6 +425,8 @@ public:
     static KAction *aboutKDE(const QObject *recvr = 0, const char *slot = 0,
                              QObject *parent = 0, const char *name = 0L );
 
+private:
+    KStdActionPrivate *d;
 };
 
 #endif // KSTDACTION_H
