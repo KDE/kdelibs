@@ -138,7 +138,7 @@ public:
   virtual void setIcon(const QString &icon);
 
   virtual void setIcon( const QPixmap &pixmap )
-  { return QToolButton::setIcon( pixmap ); }
+  { QToolButton::setIcon( pixmap ); }
 
   /**
    * Set the pixmaps for this toolbar button from a QIconSet.
