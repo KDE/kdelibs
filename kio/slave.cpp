@@ -76,6 +76,12 @@ void Slave::accept(KSocket *socket)
     delete serv;
     serv = 0;
     slaveconn.connect(this, SLOT(gotInput()));
+    unlinkSocket();
+}
+
+void Slave::unlinkSocket()
+{
+    if (m_socket.isEmpty()) return;
     QCString filename = QFile::encodeName(m_socket);
     unlink(filename.data());
     m_socket = QString::null;
@@ -98,9 +104,7 @@ void Slave::timeout()
    kdDebug(7002) << "Houston, we lost our slave, pid=" << m_pid << endl;
    delete serv;
    serv = 0;
-   QCString filename = QFile::encodeName(m_socket);
-   unlink(filename.data());
-   m_socket = QString::null;
+   unlinkSocket();
    dead = true;
    QString arg = m_protocol;
    if (!m_host.isEmpty())
@@ -138,6 +142,7 @@ Slave::~Slave()
         delete serv;
         serv = 0;
     }
+    unlinkSocket();
     m_pid = 99999;
 }
 

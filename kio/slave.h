@@ -172,6 +172,9 @@ namespace KIO {
     signals:
         void slaveDied(KIO::Slave *slave);
 
+    protected:
+        void unlinkSocket();
+
     private:
         QString m_protocol;
         QString m_slaveProtocol;
