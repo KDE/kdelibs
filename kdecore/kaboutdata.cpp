@@ -69,7 +69,7 @@ KAboutData::KAboutData( const char *appName,
   mBugEmailAddress( bugsEmailAddress )
 {
    if( appName ) {
-     char *p = strrchr(appName, '/');
+     const char *p = strrchr(appName, '/');
      if( p )
 	 mAppName = p+1;
      else
