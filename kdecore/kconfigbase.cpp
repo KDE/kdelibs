@@ -149,7 +149,7 @@ QString KConfigBase::readEntry( const char *pKey,
       while( nDollarPos != -1 && nDollarPos+1 < static_cast<int>(aValue.length())) {
         // there is at least one $
         if( (aValue)[nDollarPos+1] != '$' ) {
-          uint nEndPos = nDollarPos;
+          uint nEndPos = nDollarPos+1;
           // the next character is no $
           while ( nEndPos <= aValue.length() && (aValue[nEndPos].isNumber()
                     || aValue[nEndPos].isLetter() || aValue[nEndPos]=='_' )  )
