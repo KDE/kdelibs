@@ -429,6 +429,49 @@ KCmdLineArgs::findOption(const char *_opt, QCString opt, int &i, bool _enabled, 
       if (result) break;
       args = argsList->next();
    }
+   if (!args && (_opt[0] == '-') && _opt[1] && (_opt[1] != '-'))
+   {
+      // Option not found check if it is a valid option 
+      // in the style of -Pprinter1 or ps -aux
+      int p = 1;
+      while (true)
+      {
+         QCString singleCharOption = " ";
+         singleCharOption[0] = _opt[p];
+         args = argsList->first();
+         while (args)
+         {
+            enabled = _enabled;
+            result = ::findOption(args->options, singleCharOption, opt_name, def, enabled);
+            if (result) break;
+            args = argsList->next();
+         }
+         if (!args)
+            break; // Unknown argument
+
+         p++;
+         if (result == 1) // Single option
+         {
+            args->setOption(singleCharOption, enabled); 
+            if (_opt[p])
+               continue; // Next option
+            else
+               return; // Finished
+         }
+         else if (result == 3) // This option takes an argument
+         {
+            if (argument.isEmpty())
+            {
+               argument = _opt+p;
+            }
+            args->setOption(singleCharOption, argument);
+            return;
+         }
+         break; // Unknown argument
+      }
+      args = 0;
+      result = 0;
+   }
 
    if (!args || !result)
    {

@@ -176,6 +176,13 @@ class KCmdLineArgsPrivate;
  *  When an application does this it should mention this in the description
  *  of the option. @ref getOptionList()
  *
+ *  Tips for end-users:
+ *
+ *  @li Single char options like "-a -b -c" may be combined into "-abc"
+ *  @li The option "--foo bar" may also be written "--foo=bar"
+ *  @li The option "-P lp1" may also be written "-P=lp1" or "-Plp1"
+ *  @li The option "--foo bar" may also be written "-foo bar"
+ * 
  *  @short A class for command-line argument handling.
  *  @author Waldo Bastian
  *  @version 0.0.4
