@@ -151,21 +151,14 @@ KLibFactory* KLibrary::factory()
     if ( m_factory )
         return m_factory;
 
-    void *sym = symbol( "kde_initFactory" );
-
-    if ( !sym )
-    {
         QCString symname;
         symname.sprintf("init_%s", name().latin1() );
 
-        kdDebug(150) << "KLibrary: fallback to " << symname << endl;
-
-        sym = symbol( symname );
+    void* sym = symbol( symname );
         if ( !sym )
         {
             kdWarning(150) << "KLibrary: The library " << name() << " does not offer an init_" << name() << " function" << endl;
             return 0;
-        }
     }
 
     typedef KLibFactory* (*t_func)();
