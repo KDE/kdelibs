@@ -150,18 +150,20 @@ bool KWinModulePrivate::x11Event( XEvent * ev )
 	}
     } else  if ( windows.contains( ev->xany.window ) ){
 	NETWinInfo ni( qt_xdisplay(), ev->xany.window, qt_xrootwin(), 0 );
-	unsigned int dirty = ni.event( ev );
-	if ( !dirty && ev->type ==PropertyNotify && ev->xproperty.atom == XA_WM_HINTS )
-	    dirty |= NET::WMIcon; // support for old icons
-	if ( (dirty & NET::WMStrut) != 0 ) {
+        unsigned long dirty[ 2 ];
+	ni.event( ev, dirty, 2 );
+	if ( !dirty[ 0 ] && !dirty[ 1 ] && ev->type ==PropertyNotify && ev->xproperty.atom == XA_WM_HINTS )
+	    dirty[ NETWinInfo::PROTOCOLS ] |= NET::WMIcon; // support for old icons
+	if ( (dirty[ NETWinInfo::PROTOCOLS ] & NET::WMStrut) != 0 ) {
 	    if ( !strutWindows.contains( ev->xany.window )  )
 		strutWindows.append( ev->xany.window );
 	}
-	if ( dirty ) {
+	if ( dirty[ NETWinInfo::PROTOCOLS ] || dirty[ NETWinInfo::PROTOCOLS2 ] ) {
 	    for ( module = modules.first(); module; module = modules.next() ) {
 		emit module->windowChanged( ev->xany.window );
-		emit module->windowChanged( ev->xany.window, dirty );
-		if ( (dirty & NET::WMStrut) != 0 )
+                emit module->windowChanged( ev->xany.window, dirty );
+		emit module->windowChanged( ev->xany.window, dirty[ NETWinInfo::PROTOCOLS ] );
+		if ( (dirty[ NETWinInfo::PROTOCOLS ] & NET::WMStrut) != 0 )
 		    emit module->strutChanged();
 	    }
 	}

@@ -55,6 +55,13 @@ struct NETWinInfoPrivate;
 class NETRootInfo : public NET {
 public:
     /**
+        Indexes for the properties array.
+    **/
+    // update also NETRootInfoPrivate::properties[] size when extending this
+    enum { PROTOCOLS, WINDOW_TYPES, STATES, PROTOCOLS2,
+        PROPERTIES_SIZE };
+
+    /**
        Window Managers should use this constructor to create a NETRootInfo object,
        which will be used to set/update information stored on the rootWindow.
        The application role is automatically set to WindowManager
@@ -72,7 +79,8 @@ public:
        @param properties An array of elements listing all properties and protocols
        the window manager supports. The elements contain OR'ed values of constants
        from the NET base class, in the following order: [0]= NET::Property,
-       [1]= NET::WindowTypeMask (not NET::WindowType!), [2]= NET::State.
+       [1]= NET::WindowTypeMask (not NET::WindowType!), [2]= NET::State,
+       [3]= NET::Property2.
        In future versions, the list may be extended. In case you pass less elements,
        the missing ones will be replaced with default values.
        
@@ -87,7 +95,7 @@ public:
        @since 3.2
     **/
     NETRootInfo(Display *display, Window supportWindow, const char *wmName,
-		unsigned long properties[], int properties_size,
+		const unsigned long properties[], int properties_size,
                 int screen = -1, bool doActivate = true);
 
     /**
@@ -100,27 +108,35 @@ public:
 		unsigned long properties, int screen = -1, bool doActivate = true);
 
     /**
-        Indexes for the properties array.
-    **/
-    // update also NETRootInfoPrivate::properties[] size when extending this
-    enum { PROTOCOLS, WINDOW_TYPES, STATES,
-        PROPERTIES_SIZE };
-
-    /**
        Clients should use this constructor to create a NETRootInfo object, which
        will be used to query information set on the root window. The application
        role is automatically set to Client when using this constructor.
 
        @param display An X11 Display struct.
 
-       @param properties An OR'ed list of all protocols the client is interested in.
-       (See the NET::Property enum.)
+       @param properties An array of elements listing all protocols the client
+       is interested in. The elements contain OR'ed values of constants
+       from the NET base class, in the following order: [0]= NET::Property,
+       [1]= NET::Property2.
+
+       @param properties_size The number of elements in the properties array.
 
        @param screen For Clients that support multiple screen (ie. "multiheaded")
        displays, the screen number may be explicitly defined. If this argument is
        omitted, the default screen will be used.
        
        @param doActivate true to activate the window
+
+       @since 3.2
+    **/
+    NETRootInfo(Display *display, const unsigned long properties[], int properties_size,
+                int screen = -1, bool doActivate = true);
+
+    /**
+        @deprecated
+        This constructor differs from the above one only in the way it accepts
+        the list of supported properties. The properties argument is equivalent
+        to the first element of the properties array in the above constructor.
     **/
     NETRootInfo(Display *display, unsigned long properties, int screen = -1,
 		bool doActivate = true);
@@ -173,20 +189,27 @@ public:
     int screenNumber() const;
 
     /**
-       Returns an OR'ed list of protocols passed to the constructor.
-       For the constructor used by Window Managers, this is equivalent
-       to the first element of the properties argument, for the constructor
-       for Clients, it's the properties argument.
-       
-       Clients willing to find out all properties and protocols supported
-       by the WindowManager should use @ref supportedProperties().
-       
-       @return an OR'ed list of protocols
-
-       @see NET::Property
+       Returns true if the given property is supported by the window
+       manager. Note that for Client mode, NET::Supported needs
+       to be passed in the properties argument for this to work.
+       @since 3.2
     **/
-    // KDE4 rename to a better name
-    unsigned long supported() const;
+    bool isSupported( NET::Property property ) const;
+    /**
+       @overload
+       @since 3.2
+    **/
+    bool isSupported( NET::Property2 property ) const;
+    /**
+       @overload
+       @since 3.2
+    **/
+    bool isSupported( NET::WindowType type ) const;
+    /**
+       @overload
+       @since 3.2
+    **/
+    bool isSupported( NET::State state ) const;
 
     /**
        In the Window Manager mode, this is equivalent to the properties
@@ -199,8 +222,33 @@ public:
        
        @since 3.2
     **/
-    // KDE4 rename to a better name
     const unsigned long* supportedProperties() const;
+
+    /**
+       Returns the properties argument passed to the constructor.
+       The size is the maximum array size the constructor accepts.
+
+       @since 3.2
+    **/
+    // KDE4 better name?
+    const unsigned long* passedProperties() const;
+
+    /**
+       @deprecated
+       
+       Returns an OR'ed list of protocols passed to the constructor.
+       For the constructor used by Window Managers, this is equivalent
+       to the first element of the properties argument, for the constructor
+       for Clients, it's the properties argument.
+       
+       Clients willing to find out all properties and protocols supported
+       by the WindowManager should use @ref supportedProperties().
+       
+       @return an OR'ed list of protocols
+
+       @see NET::Property
+    **/
+    unsigned long supported() const;
 
     /**
        Returns an array of Window id's, which contain all managed windows.
@@ -352,6 +400,7 @@ public:
 
        @param count The number of windows in the array
     **/
+    // KDE4 'const Window*', also in the others below
     void setClientList(Window *windows, unsigned int count);
 
     /**
@@ -475,6 +524,23 @@ public:
 			   Direction direction);
 
     /**
+       This function takes the passed XEvent and returns an OR'ed list of
+       NETRootInfo properties that have changed in the properties argument.
+       The new information will be read immediately by the class.
+       The elements of the properties argument are as they would be passed
+       to the constructor, if the array is not large enough,
+       changed properties that don't fit in it won't be listed there
+       (they'll be updated in the class though).
+       
+       @param event the event
+       @param properties properties that changed
+       @param properties_size size of the passed properties array
+
+    **/
+    void event( XEvent* event, unsigned long* properties, int properties_size );
+    
+    /**
+       @deprecated
        This function takes the passed XEvent and returns an OR'ed list of
        NETRootInfo properties that have changed.  The new information will be
        read immediately by the class.
@@ -607,7 +673,7 @@ protected:
 
 
 private:
-    void update(unsigned long);
+    void update( const unsigned long[] );
     void setSupported();
     void setDefaultProperties();
     void updateSupportedProperties( Atom atom );
@@ -651,6 +717,12 @@ protected:
 class NETWinInfo : public NET {
 public:
     /**
+        Indexes for the properties array.
+    **/
+    // update also NETWinInfoPrivate::properties[] size when extending this
+    enum { PROTOCOLS, PROTOCOLS2,
+        PROPERTIES_SIZE };
+    /**
        Create a NETWinInfo object, which will be used to set/read/change
        information stored on an application window.
 
@@ -660,11 +732,28 @@ public:
 
        @param rootWindow The Window id of the root window.
 
-       @param properties An OR'ed list of all protocols the client is interested in.
-       (See the NET::Property enum.)
+       @param properties An array of elements listing all properties the client
+       is interested in.The elements contain OR'ed values of constants
+       from the NET base class, in the following order: [0]= NET::Property,
+       [1]= NET::Property2.
+       In future versions, the list may be extended. In case you pass less elements,
+       the missing ones will be replaced with default values.
+       
+       @param properties_size The number of elements in the properties array.
 
        @param role Select the application role.  If this argument is omitted,
        the role will default to Client.
+    **/
+    NETWinInfo(Display *display, Window window, Window rootWindow,
+               const unsigned long properties[], int properties_size,
+	       Role role = Client);
+
+    /**
+        @deprecated
+        This constructor differs from the above one only in the way it accepts
+        the list of properties the client is interested in. The properties argument
+        is equivalent to the first element of the properties array
+        in the above constructor.
     **/
     NETWinInfo(Display *display, Window window,
 	       Window rootWindow, unsigned long properties,
@@ -689,6 +778,17 @@ public:
     const NETWinInfo &operator=(const NETWinInfo &wintinfo);
 
     /**
+       Returns the properties argument passed to the constructor.
+       The size is the maximum array size the constructor accepts.
+
+       @since 3.2
+    **/
+    // KDE4 better name?
+    const unsigned long* passedProperties() const;
+
+    /**
+       @deprecated
+       
        Returns an OR'ed list of protocols passed to the constructor.
        
        @return an OR'ed list of protocols
@@ -945,6 +1045,23 @@ public:
     void kdeGeometry(NETRect &frame, NETRect &window);
 
     /**
+       This function takes the passed XEvent and returns an OR'ed list of
+       NETWinInfo properties that have changed in the properties argument.
+       The new information will be read immediately by the class.
+       The elements of the properties argument are as they would be passed
+       to the constructor, if the array is not large enough,
+       changed properties that don't fit in it won't be listed there
+       (they'll be updated in the class though).
+       
+       @param event the event
+       @param properties properties that changed
+       @param properties_size size of the passed properties array
+
+    **/
+    void event( XEvent* event, unsigned long* properties, int properties_size );
+
+    /**
+       @deprecated
        This function takes the pass XEvent and returns an OR'ed list of NETWinInfo
        properties that have changed.  The new information will be read
        immediately by the class.
@@ -987,7 +1104,8 @@ protected:
     virtual void changeState(unsigned long /*state*/, unsigned long /*mask*/) { }
 
 private:
-    void update(unsigned long);
+    void update( const unsigned long[] );
+    void updateWMState();
     Role role;
 
 protected:

@@ -464,6 +464,14 @@ public:
     };
     
     /**
+        Supported properties. This enum is an extension to NET::Property,
+        because them enum is limited only to 32 bits.
+    **/
+    enum Property2 {
+        WM2Test               = 1<<0
+    };
+
+    /**
        Sentinel value to indicate that the client wishes to be visible on
        all desktops.
        @since 3.2

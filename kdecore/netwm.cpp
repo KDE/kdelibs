@@ -31,6 +31,7 @@
 
 #include <string.h>
 #include <stdio.h>
+#include <assert.h>
 
 #include <X11/Xlibint.h>
 #include <X11/Xmd.h>
@@ -490,7 +491,7 @@ Z &NETRArray<Z>::operator[](int index) {
 // Construct a new NETRootInfo object.
 
 NETRootInfo::NETRootInfo(Display *display, Window supportWindow, const char *wmName,
-			 unsigned long properties[], int properties_size,
+			 const unsigned long properties[], int properties_size,
                          int screen, bool doActivate)
 {
 
@@ -527,8 +528,9 @@ NETRootInfo::NETRootInfo(Display *display, Window supportWindow, const char *wmN
         p->properties[ i ] = properties[ i ];
     // force support for Supported and SupportingWMCheck for window managers
     p->properties[ PROTOCOLS ] |= ( Supported | SupportingWMCheck );
-    p->client_properties = DesktopNames // the only thing that can be changed by clients
-			    | WMPing; // or they can reply to this
+    p->client_properties[ PROTOCOLS ] = DesktopNames // the only thing that can be changed by clients
+			                | WMPing; // or they can reply to this
+    p->client_properties[ PROTOCOLS2 ] = 0;
 
     role = WindowManager;
 
@@ -569,8 +571,9 @@ NETRootInfo::NETRootInfo(Display *display, Window supportWindow, const char *wmN
     p->properties[ PROTOCOLS ] = properties;
     // force support for Supported and SupportingWMCheck for window managers
     p->properties[ PROTOCOLS ] |= ( Supported | SupportingWMCheck );
-    p->client_properties = DesktopNames // the only thing that can be changed by clients
-			    | WMPing; // or they can reply to this
+    p->client_properties[ PROTOCOLS ] = DesktopNames // the only thing that can be changed by clients
+			                | WMPing; // or they can reply to this
+    p->client_properties[ PROTOCOLS2 ] = 0;
 
     role = WindowManager;
 
@@ -579,6 +582,55 @@ NETRootInfo::NETRootInfo(Display *display, Window supportWindow, const char *wmN
     if (doActivate) activate();
 }
 
+
+NETRootInfo::NETRootInfo(Display *display, const unsigned long properties[], int properties_size,
+                         int screen, bool doActivate)
+{
+
+#ifdef    NETWMDEBUG
+    fprintf(stderr, "NETRootInfo::NETRootInfo: using Client constructor\n");
+#endif
+
+    p = new NETRootInfoPrivate;
+    p->ref = 1;
+
+    p->name = 0;
+
+    p->display = display;
+
+    if (screen != -1) {
+	p->screen = screen;
+    } else {
+	p->screen = DefaultScreen(p->display);
+    }
+
+    p->root = RootWindow(p->display, p->screen);
+    p->rootSize.width = WidthOfScreen(ScreenOfDisplay(p->display, p->screen));
+    p->rootSize.height = HeightOfScreen(ScreenOfDisplay(p->display, p->screen));
+
+    p->supportwindow = None;
+    p->number_of_desktops = p->current_desktop = 0;
+    p->active = None;
+    p->clients = p->stacking = p->virtual_roots = (Window *) 0;
+    p->clients_count = p->stacking_count = p->virtual_roots_count = 0;
+    p->kde_system_tray_windows = 0;
+    p->kde_system_tray_windows_count = 0;
+    setDefaultProperties();
+    if( properties_size > PROPERTIES_SIZE ) {
+        fprintf( stderr, "NETWinInfo::NETWinInfo(): properties array too large\n");
+        properties_size = PROPERTIES_SIZE;
+    }
+    for( int i = 0; i < properties_size; ++i )
+        p->client_properties[ i ] = properties[ i ];
+    for( int i = 0; i < PROPERTIES_SIZE; ++i )
+        p->properties[ i ] = 0;
+
+    role = Client;
+
+    if (! netwm_atoms_created) create_atoms(p->display);
+
+    if (doActivate) activate();
+}
 
 NETRootInfo::NETRootInfo(Display *display, unsigned long properties, int screen,
 			 bool doActivate)
@@ -612,7 +664,8 @@ NETRootInfo::NETRootInfo(Display *display, unsigned long properties, int screen,
     p->clients_count = p->stacking_count = p->virtual_roots_count = 0;
     p->kde_system_tray_windows = 0;
     p->kde_system_tray_windows_count = 0;
-    p->client_properties = properties;
+    setDefaultProperties();
+    p->client_properties[ PROTOCOLS ] = properties;
     for( int i = 0; i < PROPERTIES_SIZE; ++i )
         p->properties[ i ] = 0;
 
@@ -663,6 +716,11 @@ void NETRootInfo::setDefaultProperties()
         | ToolbarMask | MenuMask | DialogMask;
     p->properties[ STATES ] = Modal | Sticky | MaxVert | MaxHoriz | Shaded
         | SkipTaskbar | StaysOnTop;
+    p->properties[ PROTOCOLS2 ] = 0;
+    p->client_properties[ PROTOCOLS ] = 0;
+    p->client_properties[ WINDOW_TYPES ] = 0; // these two actually don't
+    p->client_properties[ STATES ] = 0;       // make sense in client_properties
+    p->client_properties[ PROTOCOLS2 ] = 0;
 }
 
 void NETRootInfo::activate() {
@@ -1413,9 +1471,20 @@ const NETRootInfo &NETRootInfo::operator=(const NETRootInfo &rootinfo) {
     return *this;
 }
 
+unsigned long NETRootInfo::event(XEvent *ev )
+{
+    unsigned long props[ 1 ];
+    event( ev, props, 1 );
+    return props[ 0 ];
+}
 
-unsigned long NETRootInfo::event(XEvent *event) {
-    unsigned long dirty = 0;
+void NETRootInfo::event(XEvent *event, unsigned long* properties, int properties_size )
+{
+    unsigned long props[ PROPERTIES_SIZE ] = { 0, 0, 0, 0 };
+    assert( PROPERTIES_SIZE == 4 ); // add elements above
+    unsigned long& dirty = props[ PROTOCOLS ];
+    unsigned long& dirty2 = props[ PROTOCOLS2 ];
+    bool do_update = false;
 
     // the window manager will be interested in client messages... no other
     // client should get these messages
@@ -1567,27 +1636,41 @@ unsigned long NETRootInfo::event(XEvent *event) {
 		break;
 	}
 
-	update(dirty & p->client_properties);
+	do_update = true;
     }
 
+    if( do_update )
+        update( props );
+        
 #ifdef   NETWMDEBUG
-    fprintf(stderr, "NETRootInfo::event: handled events, returning dirty = 0x%lx\n",
-	    dirty & p->client_properties);
+    fprintf(stderr, "NETRootInfo::event: handled events, returning dirty = 0x%lx, 0x%lx\n",
+	    dirty, dirty2);
 #endif
 
-    return dirty & p->client_properties;
+    if( properties_size > PROPERTIES_SIZE )
+        properties_size = PROPERTIES_SIZE;
+    for( int i = 0;
+         i < properties_size;
+         ++i )
+        properties[ i ] = props[ i ];
 }
 
 
 // private functions to update the data we keep
 
-void NETRootInfo::update(unsigned long dirty) {
+void NETRootInfo::update( const unsigned long dirty_props[] )
+{
     Atom type_ret;
     int format_ret;
     unsigned char *data_ret;
     unsigned long nitems_ret, unused;
-
-    dirty &= p->client_properties;
+    unsigned long props[ PROPERTIES_SIZE ];
+    for( int i = 0;
+         i < PROPERTIES_SIZE;
+         ++i )
+        props[ i ] = dirty_props[ i ] & p->client_properties[ i ];
+    const unsigned long& dirty = props[ PROTOCOLS ];
+    const unsigned long& dirty2 = props[ PROTOCOLS2 ];
 
     if (dirty & Supported ) {
         // only in Client mode
@@ -2030,13 +2113,34 @@ int NETRootInfo::screenNumber() const {
 unsigned long NETRootInfo::supported() const {
     return role == WindowManager
         ? p->properties[ PROTOCOLS ]
-        : p->client_properties;
+        : p->client_properties[ PROTOCOLS ];
 }
 
 const unsigned long* NETRootInfo::supportedProperties() const {
     return p->properties;
 }
 
+const unsigned long* NETRootInfo::passedProperties() const {
+    return role == WindowManager
+        ? p->properties
+        : p->client_properties;
+}
+
+bool NETRootInfo::isSupported( NET::Property property ) const {
+    return p->properties[ PROTOCOLS ] & property;
+}
+
+bool NETRootInfo::isSupported( NET::Property2 property ) const {
+    return p->properties[ PROTOCOLS2 ] & property;
+}
+
+bool NETRootInfo::isSupported( NET::WindowType type ) const {
+    return p->properties[ WINDOW_TYPES ] & type;
+}
+
+bool NETRootInfo::isSupported( NET::State state ) const {
+    return p->properties[ STATES ] & state;
+}
 
 const Window *NETRootInfo::clientList() const {
     return p->clients;
@@ -2132,6 +2236,59 @@ Window NETRootInfo::activeWindow() const {
 const int NETWinInfo::OnAllDesktops = NET::OnAllDesktops;
 
 NETWinInfo::NETWinInfo(Display *display, Window window, Window rootWindow,
+		       const unsigned long properties[], int properties_size,
+                       Role role)
+{
+
+#ifdef   NETWMDEBUG
+    fprintf(stderr, "NETWinInfo::NETWinInfo: constructing object with role '%s'\n",
+	    (role == WindowManager) ? "WindowManager" : "Client");
+#endif
+
+    p = new NETWinInfoPrivate;
+    p->ref = 1;
+
+    p->display = display;
+    p->window = window;
+    p->root = rootWindow;
+    p->mapping_state = Withdrawn;
+    p->mapping_state_dirty = True;
+    p->state = 0;
+    p->types[ 0 ] = Unknown;
+    p->name = (char *) 0;
+    p->visible_name = (char *) 0;
+    p->icon_name = (char *) 0;
+    p->visible_icon_name = (char *) 0;
+    p->desktop = p->pid = p->handled_icons = 0;
+
+    // p->strut.left = p->strut.right = p->strut.top = p->strut.bottom = 0;
+    // p->frame_strut.left = p->frame_strut.right = p->frame_strut.top =
+    // p->frame_strut.bottom = 0;
+
+    p->kde_system_tray_win_for = 0;
+
+    for( int i = 0;
+         i < PROPERTIES_SIZE;
+         ++i )
+        p->properties[ i ] = 0;
+    if( properties_size > PROPERTIES_SIZE )
+        properties_size = PROPERTIES_SIZE;
+    for( int i = 0;
+         i < properties_size;
+         ++i )
+        p->properties[ i ] = properties[ i ];
+
+    p->icon_count = 0;
+
+    this->role = role;
+
+    if (! netwm_atoms_created) create_atoms(p->display);
+
+    if (p->properties) update(p->properties);
+}
+
+
+NETWinInfo::NETWinInfo(Display *display, Window window, Window rootWindow,
 		       unsigned long properties, Role role)
 {
 
@@ -2162,7 +2319,12 @@ NETWinInfo::NETWinInfo(Display *display, Window window, Window rootWindow,
 
     p->kde_system_tray_win_for = 0;
 
-    p->properties = properties;
+    for( int i = 0;
+         i < PROPERTIES_SIZE;
+         ++i )
+        p->properties[ i ] = 0;
+    p->properties[ PROTOCOLS ] = properties;
+
     p->icon_count = 0;
 
     this->role = role;
@@ -2296,7 +2458,7 @@ void NETWinInfo::setStrut(NETStrut strut) {
 
 void NETWinInfo::setState(unsigned long state, unsigned long mask) {
     if (p->mapping_state_dirty)
-	update(XAWMState);
+	updateWMState();
 
     if (role == Client && p->mapping_state != Withdrawn) {
 
@@ -2597,7 +2759,7 @@ void NETWinInfo::setVisibleIconName(const char *visibleIconName) {
 
 void NETWinInfo::setDesktop(int desktop) {
     if (p->mapping_state_dirty)
-	update(XAWMState);
+	updateWMState();
 
     if (role == Client && p->mapping_state != Withdrawn) {
 	// we only send a ClientMessage if we are 1) a client and 2) managed
@@ -2739,8 +2901,19 @@ NETIcon NETWinInfo::icon(int width, int height) const {
 }
 
 
-unsigned long NETWinInfo::event(XEvent *event) {
-    unsigned long dirty = 0;
+unsigned long NETWinInfo::event(XEvent *ev )
+{
+    unsigned long props[ 1 ];
+    event( ev, props, 1 );
+    return props[ 0 ];
+}
+
+void NETWinInfo::event(XEvent *event, unsigned long* properties, int properties_size ) {
+    unsigned long props[ PROPERTIES_SIZE ] = { 0, 0 };
+    assert( PROPERTIES_SIZE == 2 ); // add elements above
+    unsigned long& dirty = props[ PROTOCOLS ];
+    unsigned long& dirty2 = props[ PROTOCOLS2 ];
+    bool do_update = false;
 
     if (role == WindowManager && event->type == ClientMessage &&
 	event->xclient.format == 32) {
@@ -2883,7 +3056,7 @@ unsigned long NETWinInfo::event(XEvent *event) {
 		break;
 	}
 
-	update(dirty);
+	do_update = true;
     } else if (event->type == ConfigureNotify) {
 
 #ifdef NETWMDEBUG
@@ -2899,16 +3072,40 @@ unsigned long NETWinInfo::event(XEvent *event) {
 	p->win_geom.size.height = event->xconfigure.height;
     }
 
-    return dirty;
+    if( do_update )
+        update( props );
+        
+    if( properties_size > PROPERTIES_SIZE )
+        properties_size = PROPERTIES_SIZE;
+    for( int i = 0;
+         i < properties_size;
+         ++i )
+        properties[ i ] = props[ i ];
 }
 
+void NETWinInfo::updateWMState() {
+    unsigned long props[ PROPERTIES_SIZE ] = { XAWMState, 0 };
+    assert( PROPERTIES_SIZE == 2 ); // add elements above
+    update( props );
+}
 
-void NETWinInfo::update(unsigned long dirty) {
+void NETWinInfo::update(const unsigned long dirty_props[]) {
     Atom type_ret;
     int format_ret;
     unsigned long nitems_ret, unused;
     unsigned char *data_ret;
+    unsigned long props[ PROPERTIES_SIZE ];
+    for( int i = 0;
+         i < PROPERTIES_SIZE;
+         ++i )
+        props[ i ] = dirty_props[ i ] & p->properties[ i ];
+    const unsigned long& dirty = props[ PROTOCOLS ];
+    const unsigned long& dirty2 = props[ PROTOCOLS2 ];
 
+    // we *always* want to update WM_STATE if set in dirty_props
+    if( dirty_props[ PROTOCOLS ] & XAWMState )
+        props[ PROTOCOLS ] |= XAWMState;
+    
     if (dirty & XAWMState) {
         p->mapping_state = Withdrawn;
 	if (XGetWindowProperty(p->display, p->window, xa_wm_state, 0l, 1l,
@@ -2938,9 +3135,6 @@ void NETWinInfo::update(unsigned long dirty) {
 		XFree(data_ret);
 	}
     }
-
-    // we do this here because we *always* want to update WM_STATE
-    dirty &= p->properties;
 
     if (dirty & WMState) {
 	p->state = 0;
@@ -3328,9 +3522,12 @@ Window NETWinInfo::kdeSystemTrayWinFor() const {
     return p->kde_system_tray_win_for;
 }
 
+const unsigned long* NETWinInfo::passedProperties() const {
+    return p->properties;
+}
 
 unsigned long NETWinInfo::properties() const {
-    return p->properties;
+    return p->properties[ PROTOCOLS ];
 }
 
 

@@ -243,8 +243,21 @@ signals:
     /**
      * The window changed.
      *
+     * The properties parameter contains the NET properties that
+     * were modified (see netwm_def.h). First element are NET::Property
+     * values, second element are NET::Property2 values (i.e. the format
+     * is the same like for the NETWinInfo class constructor).
+     * @param id the id of the window
+     * @param properties the properties that were modified
+     */
+    void windowChanged(WId id, const unsigned long* properties );
+
+    /**
+     * @deprecated
+     * The window changed.
+     *
      * The unsigned int parameter contains the NET properties that
-     * were modified (see netem_def.h).
+     * were modified (see netwm_def.h).
      * @param id the id of the window
      * @param properties the properties that were modified
      */
