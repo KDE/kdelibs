@@ -1411,7 +1411,11 @@ void KHTMLWidget::parseB( HTMLClueV *_clue, const char *str )
 		vspace_inserted = FALSE;
 
 		if ( flow != 0 )
-			flow = 0;
+		{
+			HTMLText *t = new HTMLText( currentFont(), painter );
+			t->setNewline( true );
+			flow->append( t );
+		}
 		else
 		{
 			HTMLText *t = new HTMLText( currentFont(), painter );
@@ -2032,7 +2036,8 @@ void KHTMLWidget::parseL( HTMLClueV *_clue, const char *str )
 		c->append( vc );
 		flow = new HTMLClueFlow( 0, 0, vc->getMaxWidth() );
 		vc->append( flow );
-		listStack.top()->itemNumber++;
+		if ( listStack.count() > 0 )
+			listStack.top()->itemNumber++;
 	}
 }
 
@@ -2155,6 +2160,11 @@ void KHTMLWidget::parseP( HTMLClueV *_clue, const char *str )
 		flow->setIndent( indent );
 		flow->setHAlign( align );
 		_clue->append( flow );
+	}
+	else if ( strncasecmp( str, "</p>", 4 ) == 0 )
+	{
+		vspace_inserted = insertVSpace( _clue, vspace_inserted );
+		flow = NULL;
 	}
 }
 

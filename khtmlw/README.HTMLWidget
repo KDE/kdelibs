@@ -1,7 +1,7 @@
 KDE HTML Widget
 ---------------
 
-This is the alpha version 0.8.2
+This is the alpha version 0.8.3
 
 Developers
 ----------
@@ -457,6 +457,16 @@ Version 0.8.2a - Martin
 
  Added #define KHTMLW_VERSION 820 in html.h
 
+Version 0.8.3 - Martin
+
+ Yet more work on tables.
+
+ Bugfix from Stephan Kulow - another static object crept in
+ (static QList<KHTMLView> viewList).  Changed to pointer and
+ constructed on first occurrence.
+
+ fixed <br> and <p align=...>
+
 Last change
-9.7.97 Martin Jones
+15.7.97 Martin Jones
 

@@ -1,6 +1,6 @@
 #include "htmlview.h"
 
-QList<KHTMLView> KHTMLView::viewList;
+QList<KHTMLView> *KHTMLView::viewList = NULL;
 
 KHTMLView::KHTMLView( QWidget *_parent, const char *_name, int _flags, KHTMLView *_parent_view ) 
     : QWidget( _parent, _name, _flags )
@@ -15,8 +15,10 @@ KHTMLView::KHTMLView( QWidget *_parent, const char *_name, int _flags, KHTMLView
     
     printf("Constructed KHTML View\n");
     
-    viewList.setAutoDelete( FALSE );
-    viewList.append( this );
+	if (viewList == NULL)
+		viewList = new QList<KHTMLView>;
+	viewList->setAutoDelete( FALSE );
+	viewList->append( this );
     
     frameName = _name;
     
@@ -28,7 +30,7 @@ KHTMLView::KHTMLView( QWidget *_parent, const char *_name, int _flags, KHTMLView
 
 KHTMLView::~KHTMLView()
 {
-    viewList.removeRef( this );
+    viewList->removeRef( this );
     
     printf("Deleted View\n");
 }
@@ -59,7 +61,7 @@ KHTMLView* KHTMLView::newView( QWidget *_parent, const char *_name, int _flags )
 KHTMLView* KHTMLView::findView( const char *_name )
 {
     KHTMLView *v;
-    for ( v = viewList.first(); v != 0L; v = viewList.next() )
+    for ( v = viewList->first(); v != 0L; v = viewList->next() )
     {
 	if ( v->getFrameName() )
 	{

@@ -731,7 +731,7 @@ protected:
     /**
      * List of all open html views.
      */
-    static QList<KHTMLView> viewList;
+    static QList<KHTMLView> *viewList;
 
     /**
      * The name of the window. You can refer to this name in the &lt;a href=... target=... &gt> tag.

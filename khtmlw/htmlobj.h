@@ -435,11 +435,14 @@ protected:
 	void addColumns( int );
 
 protected:
+	enum ColType { Fixed, Percent, Variable };
 	HTMLTableCell ***cells;
 	QArray<int> columnPos;
 	QArray<int> columnPrefPos;
 	QArray<int> columnOpt;
+	QArray<int> colSpan;
 	QArray<int> rowHeights;
+	QArray<ColType> colType;
 	unsigned int col, totalCols;
 	unsigned int row, totalRows;
 	int spacing;
