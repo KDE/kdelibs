@@ -327,11 +327,11 @@ void player::play(int calloutput,void output(void))
 #endif
     midi->openDev();
     if (midi->OK()==0) {printf("Player :: Couldn't play !\n");ctl->error=1;return;};
+    midi->setVolumePercentage(ctl->volumepercentage);
     midi->initDev();
     //    parsePatchesUsed(tracks,info,ctl->gm);
     midi->setPatchesToUse(info->patchesUsed);
     
-    midi->setVolumePercentage(ctl->volumepercentage);
     
     int trk;
     int minTrk;
@@ -396,7 +396,7 @@ void player::play(int calloutput,void output(void))
         ctl->playing=playing=1;
         while (playing)
         {
-            if (ctl->message!=0)
+/*            if (ctl->message!=0)
             {
                 if (ctl->message & PLAYER_DOPAUSE)
                 {
@@ -424,7 +424,7 @@ void player::play(int calloutput,void output(void))
                     playing=0;
                     halt=1;
                 };
-                /*	if (ctl->message & PLAYER_SETPOS)
+  */              /*	if (ctl->message & PLAYER_SETPOS)
                  {
                  ctl->moving=1;
                  ctl->message&=~PLAYER_SETPOS;
@@ -445,7 +445,7 @@ void player::play(int calloutput,void output(void))
                  while (ctl->OK==1) ;
                  ctl->moving=0;
                  };
-                 */	};
+                 */	/*};*/
                  prevms=minTime;
                  //    ctl->millisecsPlayed=minTime;
                  trk=0;
