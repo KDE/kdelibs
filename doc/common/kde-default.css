@@ -27,6 +27,11 @@
    Any updates should be validated, e.g. http://jigsaw.w3.org/css-validator/
 */
 
+/* Note: "should be inherit" means that in a proper browser inherit should work.
+         Somehow Netscape manages to interpret "inherit" as bright green.
+         Yuck.
+*/
+
 BODY { background-color: rgb(255,255,255);
        font-family: Helvetica, Arial, sans-serif; /* or just generic font? */
        color: rgb(0,0,0);
@@ -37,7 +42,7 @@ BODY { background-color: rgb(255,255,255);
 }
 
 :link { color: rgb(170,0,0); 
-        background-color: white; /* should be inherited */ }
+        background-color: white; /* should be inherit */ }
 /* :visited { color: rgb(170,0,0); } what is KDE value?*/
 
 /* Lauri */
@@ -47,7 +52,7 @@ TABLE.programlisting
 TABLE.screen { border-style: none;
                background-color: rgb(224,224,224);
                table-layout: auto; /* 100%? */
-               color: rgb(0,0,0); /* should be inherited */
+               color: rgb(0,0,0); /* should be inherit */
                }
 
 /* Same as previous block, but more general (previous is HTML only)
@@ -56,7 +61,7 @@ TABLE[class~=programlisting]
 TABLE[class~=screen] { border-style: none;
                        background-color: rgb(224,224,224);
                        table-layout: auto;
-                       color: inherited;
+                       color: inherit;
                        }
 */
 
@@ -76,9 +81,24 @@ P H1 H2 H3 H4 H5 TD { font-family: Helvetica, Arial, sans-serif;
 
 /* Lauri @ Hack Session in Erlangen - Test */
 
-.GUIMENU, .GUIMENUITEM, .GUISUBMENU { background-color: rgb(240,240,240); }
-.GUILABEL, .INTERFACE, .GUIBUTTON { background-color: rgb(240,240,240); }
-.SHORTCUT { background-color: rgb(240,240,240); }
-.SHORTCUT .KEYCAP { background-color: rgb(240,240,240); }
+.guimenu, .guimenuitem, .guisubmenu { background-color: rgb(240,240,240);
+                                      color: rgb(0,0,0); /* should be inherit */
+                                    }
 
+.guilabel, .interface, .guibutton { background-color: rgb(240,240,240);
+                                    color: rgb(0,0,0); /* should be inherit */
+                                  }
 
+.shortcut { background-color: rgb(240,240,240);
+            color: rgb(0,0,0); /* should be inherit */
+            }
+
+.shortcut .keycap { background-color: rgb(240,240,240);
+                    color: rgb(0,0,0); /* should be inherit */
+                    }
+
+.question { font-weight: bolder; }
+
+/* An idea that could be nice: a search engine looking for specific
+classes could display them in some conspicuous colour.  All that is
+needed is an on the fly generated style element/style sheet. */
