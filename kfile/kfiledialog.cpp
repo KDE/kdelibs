@@ -1622,3 +1622,4 @@ bool KFileDialog::keepsLocation() const
 }
 
 #include "kfiledialog.moc"
+#include "kpreviewwidgetbase.moc"
