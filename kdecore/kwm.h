@@ -322,6 +322,9 @@ public:
    * automatically a list of windows in both stacking and creation order.  
    */
   static void setKWMModule(Window w);
+  /**
+   * Is the window a kwm module?
+   */
   static bool isKWMModule(Window w);
 
   /**
@@ -334,6 +337,9 @@ public:
    * KWM_MODULE_DOCKWIN_REMOVE
    */
   static void setKWMDockModule(Window w);
+  /**
+   * Is the window a kwm dock module?
+   */
   static bool isKWMDockModule(Window w);
 
   /**
@@ -348,7 +354,13 @@ public:
     */
   static bool isKWMInitialized();
 
+  /**
+   * Returns the window which has the focus
+   */
   static Window activeWindow();
+  /**
+   * Switches to the specified virtual desktop
+   */
   static void switchToDesktop(int desk);
 
   /** 
@@ -359,17 +371,32 @@ public:
    * kwm will store the regions in the kwmrc when exiting.
    */
   static void setWindowRegion(int desk, const QRect &region);
+  /**
+    * Returns the window region of the specified virtual desktop.
+    */
   static QRect getWindowRegion(int desk);
 
   /** 
    * At present the maximium number of desktops is limited to 32
    *
-   * As with the window regions, kwm will store these properties in
+   * As with the window regions, kwm will store the following properties in
    * the kwmrc when exiting
    */
+  /**
+    * Returns the number of virtual desktops.
+    */
   static int numberOfDesktops();
+  /**
+    * Sets the number of virtual desktops. Modules like kpanel are informed.
+    */
   static void setNumberOfDesktops(int num);
+  /**
+    * Changes a name of a virtual desktop. Modules like kpanel are informed.
+    */
   static void setDesktopName(int desk, const QString &name);
+  /**
+    * Returns the name of the specified virtual desktop.
+    */
   static QString getDesktopName(int desk);
 
   /**
@@ -400,10 +427,13 @@ public:
    * icon. The result will be scaled to (width, height) if it is
    * larger. Otherwise it will not be modified. If you do not specify
    * width or height, the result will be returned in its native
-   * size. Both functions will return a null pixmap in the case no
+   * size. Returns a null pixmap in the case no
    * icon is defined.
    */
   static QPixmap miniIcon(Window w, int width=0, int height=0);
+  /**
+    * Same as miniIcon() above, but for the full icon.
+    */
   static QPixmap icon(Window w, int width=0, int height=0);
 
 
@@ -411,7 +441,17 @@ public:
    ***** GET WINDOW PROPERTIES *****
    */
 
+  /**
+    * Returns the virtual desktop on which the window is located.
+    */
   static int desktop(Window w);
+  /** 
+    * Returns the geometry of a window. If including_frame is set,
+    * then the geometry of kwm's decoration frame is returned. This
+    * functions tries to work even for non-KDE-compliant window
+    * managers. Anyway, since this is a bit weird in X the result
+    * cannot be guaranteed to be correct then.  
+    */
   static QRect geometry(Window w, bool including_frame = FALSE);
 
   /**
@@ -419,13 +459,38 @@ public:
    * geometry a window will get when it is unmaximized.  
    */
   static QRect geometryRestore(Window w);
+
+  /**
+   * Is the window iconified?
+   */
   static bool isIconified(Window w);
+  /**
+   * Is the window maximized?
+   */
   static bool isMaximized(Window w);
+  /**
+   * Is the window sticky?
+   */
   static bool isSticky(Window w);
+  /**
+   * Returns the KDE decoration hints of the window.
+   */
   static long getDecoration(Window w);
+  /**
+   * Is the window sticky?
+   */
   static bool fixedSize(Window w);
+  /**
+   * Does the window contain unsaved data? (KDE hint)
+   */
   static bool containsUnsavedData(Window w);
+  /**
+   * Does the window define the KDE unsaved data hint at all?
+   */
   static bool unsavedDataHintDefined(Window w);
+  /**
+   * Does the window have the focus?
+   */
   static bool isActive(Window w);
   
 
@@ -437,12 +502,33 @@ public:
    * document.
    */
 
+  /**
+   * Move the  window to another virutal desktop
+   */
   static void moveToDesktop(Window w, int desk);
+  /**
+   * Move a window to another virutal desktop
+   */
   static void setGeometry(Window w, const QRect &geom);
+  /**
+   * Move a window to another virutal desktop
+   */
   static void setGeometryRestore(Window w, const QRect &geom);
+  /**
+   * Move a window to another geometric position
+   */
   static void move(Window w, const QPoint &pos);
+  /**
+   * Maximize/Unmaximize a window according to value
+   */
   static void setMaximize(Window w, bool value);
+  /**
+   * Iconify/UnIconify a window according to value
+   */
   static void setIconify(Window w, bool value);
+  /**
+   * Sticky/UnSticky a window according to value
+   */
   static void setSticky(Window w, bool value);
 
   /**
@@ -466,22 +552,46 @@ public:
   static void activateInternal(Window w);
 
   /**
-   * raise or lower a window. Should work with any windowmanager
+   * raise the specified window. Should work with any windowmanager
    */
   static void raise(Window w);
+  /**
+   * lower the specified window. Should work with any windowmanager
+   */
   static void lower(Window w);
 
-  /**
-   * if you like to swallow a window ( == XReparentWindow) you MUST call 
-   * prepareForSwallowing before. This will set the window to WithDrawnState
-   * (and also wait until the window achieved this state), what usually let
-   * the windowmanager remove all its decorations and re-reparent the window
-   * to the root window.
+  /**   
+   * if you like to swallow a mapped window ( == XReparentWindow)
+   * you should call prepareForSwallowing before. This will set the
+   * window to WithDrawnState (and also wait until the window achieved
+   * this state), what usually let the windowmanager remove all its
+   * decorations and re-reparent the window to the root window.
    *
-   * Note: It may happen that you are using a windowmanager which behaves 
-   * different. Maybe this one is able to handle the XReparentWindow anyway,
-   * maybe XReparentWindow will fail. There is nothing I can do about it.
-   */
+   * You do not need to call prepareForSwallowing if you are sure that
+   * the window is already in withdrawn state and unmanaged
+   * (i.e. still a child of the root window). This is usually the case
+   * if the window was never shown, but not always. Some
+   * windowmanagers may even manage newly created unmapped windows,
+   * although this is not a good idea to do. If the window is not in
+   * withdrawn state but managed by the windowmanager, then the
+   * windowmanager may react on the synthetic unmapNotify event
+   * created from XReparentWindow by reparenting the window back to
+   * the root window. Since this happen after your XReparentWindow,
+   * you did not swallow it but put it onto the desktop without any
+   * decoration frame instead!  prepareForSwallowing helps to avoid
+   * this case.
+   *
+   * Note: You _never_ need to call prepareForSwallowing if you are
+   * using kwm, since kwm is very clever regarding unmapNotify
+   * events. If you like to ensure that your software works with other
+   * windowmanager though, you should better do it. Please keep in
+   * mind that taking windows away from windowmanagers is a sensitive
+   * topic. That means: Even prepareForSwallowing may fail with
+   * certain non-standard windowmanagers.  
+   *
+   * Also note that all this stuff only affects toplevel
+   * windows. Reparenting subwindows is no problem at all, since a
+   * windowmanager does not care about them.  */
   static void prepareForSwallowing(Window w);
 
   /**
@@ -502,16 +612,49 @@ public:
    * For 100% consitancy of the desktop, clients which do window operations 
    * should use these strings.
    */
+  /**
+   * An i18n'ed string for maximize.
+   */
   static QString getMaximizeString();
+  /**
+   * An i18n'ed string for unmaximize
+   */
   static QString getUnMaximizeString();
+  /**
+   * An i18n'ed string for iconify
+   */
   static QString getIconifyString();
+  /**
+   * An i18n'ed string for uniconify
+   */
   static QString getUnIconifyString();
+  /**
+   * An i18n'ed string for sticky
+   */
   static QString getStickyString();
+  /**
+   * An i18n'ed string for unsticky.
+   */
   static QString getUnStickyString();
+  /**
+   * An i18n'ed string for move.
+   */
   static QString getMoveString();
+  /**
+   * An i18n'ed string for resize.
+   */
   static QString getResizeString();
+  /**
+   * An i18n'ed string for close.
+   */
   static QString getCloseString();
+  /**
+   * An i18n'ed string for "toDesktop".
+   */
   static QString getToDesktopString();
+  /**
+   * An i18n'ed string for "ontoCurrentDesktop".
+   */
   static QString getOntoCurrentDesktopString();
 
 
@@ -520,7 +663,13 @@ public:
    *       WINDOWMANAGER ITSELF *****
    */
 
+  /**
+   * Is the window a docking window?
+   */
   static bool isDockWindow(Window w);
+  /**
+   * Returns the X window state of the specified winodw
+   */
   static int getWindowState(Window w);
 
 };
