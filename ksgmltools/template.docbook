@@ -544,6 +544,7 @@ dicer-toaster daemon first, or KApp won't work !</para>
 </book>
 <!--
 Local Variables:
+mode: sgml
 sgml-minimize-attributes: nil
 sgml-general-insert-case: lower
 End:
