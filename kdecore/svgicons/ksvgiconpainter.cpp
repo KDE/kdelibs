@@ -2254,7 +2254,20 @@ void KSVGIconPainter::drawPath(const QString &data, bool filled)
 
 	vec[index].code = ART_END;
 
-	d->helper->drawVPath(d->helper->art_bez_path_to_vec(vec.data(), 0.25));
+	// There are pure-moveto paths which reference paint servers *bah*
+	// Do NOT render them
+	bool render = false;
+	for(int i = index; i >= 0; i--)
+	{
+		if(vec[i].code != ART_MOVETO_OPEN && vec[i].code != ART_MOVETO && !(vec[i].code >= ART_END))
+		{
+			render = true;
+			break;
+		}
+	}
+
+	if(render)
+		d->helper->drawVPath(d->helper->art_bez_path_to_vec(vec.data(), 0.25));
 }
 
 void KSVGIconPainter::drawImage(double x, double y, QImage &image)
