@@ -159,9 +159,6 @@ AC_SUBST(LIB_DCOP)
 KDB2HTML_UNINSTALLED='$(SHELL) $(top_srcdir)/ksgmltools/kdb2html_uninstalled $(top_builddir)/ksgmltools/kdb2html'
 AC_SUBST(KDB2HTML_UNINSTALLED)
 
-all_includes='-I$(top_srcdir)/dcop -I$(top_srcdir)/kdecore -I$(top_srcdir)/kdeui $(QT_INCLUDES) $(X_INCLUDES) $(KDE_INCLUDES) $(USER_INCLUDES)'
-AC_SUBST(all_includes)
-
 AC_SUBST(EXTRA_SUBDIRS)
 
 AC_MSG_CHECKING(if malloc debugging is wanted)
