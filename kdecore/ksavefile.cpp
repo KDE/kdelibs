@@ -82,7 +82,6 @@ KSaveFile::KSaveFile(const QString &filename, int mode)
          }
       }
    }
-   return;
 }
 
 KSaveFile::~KSaveFile()
@@ -116,23 +115,10 @@ KSaveFile::close()
    }
    if (mTempFile.close())
    {
-#ifdef Q_WS_WIN 
-      // QDir::rename() has non-unix semantics, first we need to remove dest. file
-      // TODO: let's move this code to a separate public function
-      if (QFile(mFileName).exists()) {
-         if (::remove(QFile::encodeName(mFileName)) != 0 )
-            return false;
-      }
-#endif
-      QDir dir;
-      bool result = dir.rename( mTempFile.name(), mFileName);
-      if ( result )
-      {
+      if (0==KDE_rename(QFile::encodeName(mTempFile.name()), QFile::encodeName(mFileName)))
          return true; // Success!
-      }
       mTempFile.setError(errno);
    }
-
    // Something went wrong, make sure to delete the interim file.
    mTempFile.unlink();
    return false;

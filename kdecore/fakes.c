@@ -310,6 +310,9 @@ KDECORE_EXPORT char* mkdtemp (char* _template)
 
 #ifndef HAVE_REVOKE
 #include <errno.h>
+#ifndef ENOTSUP
+#define ENOTSUP 134 /* Not supported */
+#endif
 KDECORE_EXPORT int revoke(const char *tty)
 {
         errno = ENOTSUP;

@@ -1190,7 +1190,12 @@ static QString readEnvPath(const char *env)
    QCString c_path = getenv(env);
    if (c_path.isEmpty())
       return QString::null;
+#ifdef Q_OS_WIN
+   //win32 paths are case-insensitive: avoid duplicates on various dir lists
+   return QFile::decodeName(c_path).lower();
+#else
    return QFile::decodeName(c_path);
+#endif
 }
 
 #ifdef __linux__
@@ -1264,18 +1269,20 @@ void KStandardDirs::addKDEDefaults()
     QString kdedirs = readEnvPath("KDEDIRS");
     if (!kdedirs.isEmpty())
     {
-	tokenize(kdedirList, kdedirs, QChar(KPATH_SEPARATOR));
+        tokenize(kdedirList, kdedirs, QChar(KPATH_SEPARATOR));
     }
     else
     {
-	QString kdedir = readEnvPath("KDEDIR");
-	if (!kdedir.isEmpty())
+        QString kdedir = readEnvPath("KDEDIR");
+        if (!kdedir.isEmpty())
         {
            kdedir = KShell::tildeExpand(kdedir);
-	   kdedirList.append(kdedir);
+           kdedirList.append(kdedir);
         }
     }
+#ifndef Q_OS_WIN //no default KDEDIR on win32 defined
     kdedirList.append(KDEDIR);
+#endif
 
 #ifdef __KDE_EXECPREFIX
     QString execPrefix(__KDE_EXECPREFIX);
