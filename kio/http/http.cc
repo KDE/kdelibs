@@ -2027,6 +2027,9 @@ bool HTTPProtocol::readBody( )
 #endif
 
   totalSize( m_iSize );
+  
+  infoMessage( i18n( "Retrieving data from %1" ).arg( m_request.hostname ) );
+  
   // get the starting time.  this is used later to compute the transfer
   // speed.
   time_t t_start = time(0L);
