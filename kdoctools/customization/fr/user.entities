@@ -77,6 +77,9 @@
 <!ENTITY traducteurJeanJacquesFreulon    '<othercredit role="translator"><firstname>Jean-Jacques</firstname><surname>Freulon</surname><affiliation><address><email>jeanjacques.freulon@free.fr</email></address></affiliation><contrib>Traduction française</contrib></othercredit>'>
 <!ENTITY relecteurJeanJacquesFreulon     '<othercredit role="reviewer"><firstname>Jean-Jacques</firstname><surname>Freulon</surname><affiliation><address><email>jeanjacques.freulon@free.fr</email></address></affiliation><contrib>Relecture de la documentation française</contrib></othercredit>'>
 
+<!ENTITY traducteurSylvainGarsault    '<othercredit role="translator"><firstname>Sylvain</firstname><surname>Garsault</surname><affiliation><address><email>sylvain.garsault@freesbee.fr</email></address></affiliation><contrib>Traduction française</contrib></othercredit>'>
+<!ENTITY relecteurSylvainGarsault     '<othercredit role="reviewer"><firstname>Sylvain</firstname><surname>Garsault</surname><affiliation><address><email>sylvain.garsault@freesbee.fr</email></address></affiliation><contrib>Relecture de la documentation française</contrib></othercredit>'>
+
 <!ENTITY traducteurLudovicGrossard    '<othercredit role="translator"><firstname>Ludovic</firstname><surname>Grossard</surname><affiliation><address><email>guilbertph@wanadoo.fr</email></address></affiliation><contrib>Traduction française</contrib></othercredit>'>
 <!ENTITY relecteurLudovicGrossard     '<othercredit role="reviewer"><firstname>Ludovic</firstname><surname>Grossard</surname><affiliation><address><email>guilbertph@wanadoo.fr</email></address></affiliation><contrib>Relecture de la documentation française</contrib></othercredit>'>
 
@@ -160,6 +163,7 @@
 <!ENTITY NilsSergioFernandez 'Nils Sergio Fernandez Rönningen <email>nilsfernandez@yahoo.fr</email>'>
 <!ENTITY FredericFoiry       'Frédéric Foiry <email>frederic.foiry@wanadoo.fr</email>'>
 <!ENTITY JeanJacquesFreulon  'Jean-Jacques Freulon <email>jeanjacques.freulon@free.fr</email>'>
+<!ENTITY SylvainGarsault  'Sylvain Garsault <email>sylvain.garsault@freesbee.fr</email>'>
 <!ENTITY LudovicGrossard   'Ludovic Grossard <email>grossard@kde.org</email>'>
 <!ENTITY YvesGuillou   'Yves Guillou <email>yv_guil@club-internet.fr</email>'>
 <!ENTITY PhilippeGuilbert  'Philippe Guilbert <email>guilbertph@wanadoo.fr</email>'>
