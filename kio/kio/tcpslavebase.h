@@ -32,6 +32,7 @@
 
 #include <kextsock.h>
 #include <kio/slavebase.h>
+#include <kdemacros.h>
 
 
 namespace KIO {
@@ -63,48 +64,48 @@ protected:
     /**
      * @deprecated Due to inconsistency with KDE naming convention.
      */
-    ssize_t Write(const void *data, ssize_t len) { return write( data, len ); }
+    KDE_DEPRECATED ssize_t Write(const void *data, ssize_t len) { return write( data, len ); }
 
     /**
      * @deprecated Due to inconsistency with KDE naming convention.
      */
-    ssize_t Read(void *data, ssize_t len) { return read( data, len ); }
+    KDE_DEPRECATED ssize_t Read(void *data, ssize_t len) { return read( data, len ); }
 
     /**
      * @deprecated Due to inconsistency with KDE naming convention.
      */
-    ssize_t ReadLine(char *data, ssize_t len) { return readLine( data, len ); }
+    KDE_DEPRECATED ssize_t ReadLine(char *data, ssize_t len) { return readLine( data, len ); }
 
     /**
      * @deprecated Due to inconsistency with KDE naming convention.
      */
-    unsigned short int GetPort(unsigned short int p) { return port(p); }
+    KDE_DEPRECATED unsigned short int GetPort(unsigned short int p) { return port(p); }
 
     /**
      * @deprecated Due to inconsistency with KDE naming convention.
      */
-    bool ConnectToHost( const QString &host, unsigned int port,
+    KDE_DEPRECATED bool ConnectToHost( const QString &host, unsigned int port,
                         bool sendError ) { return connectToHost( host, port, sendError ); }
 
     /**
      * @deprecated Due to inconsistency with KDE naming convention.
      */
-    void CloseDescriptor() { closeDescriptor(); }
+    KDE_DEPRECATED void CloseDescriptor() { closeDescriptor(); }
 
     /**
      * @deprecated Due to inconsistency with KDE naming convention.
      */
-    bool AtEOF() { return atEnd(); }
+    KDE_DEPRECATED bool AtEOF() { return atEnd(); }
 
     /**
      * @deprecated Due to inconsistency with KDE naming convention.
      */
-    bool InitializeSSL() { return initializeSSL(); }
+    KDE_DEPRECATED bool InitializeSSL() { return initializeSSL(); }
 
     /**
      * @deprecated Due to inconsistency with KDE naming convention.
      */
-    void CleanSSL() { cleanSSL(); }
+    KDE_DEPRECATED void CleanSSL() { cleanSSL(); }
 #endif
 
     /**

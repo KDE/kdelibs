@@ -26,6 +26,7 @@
 #include <qobject.h>
 
 #include <kurl.h>
+#include <kdemacros.h>
 
 #include <kio/global.h>
 #include <kio/authinfo.h>
@@ -147,12 +148,12 @@ signals:
     /**
      * @deprecated. Obselete as of 3.1. Replaced by kpassword, a kded module.
      */
-    void authorizationKey( const QCString&, const QCString&, bool );
+    void authorizationKey( const QCString&, const QCString&, bool ) KDE_DEPRECATED;
 
     /**
      * @deprecated. Obselete as of 3.1. Replaced by kpassword, a kded module.
      */
-    void delAuthorization( const QCString& grpkey );
+    void delAuthorization( const QCString& grpkey ) KDE_DEPRECATED;
 
 protected:
     /////////////////
@@ -208,12 +209,12 @@ protected:
     */
     void openPassDlg( const QString& prompt, const QString& user,
                       const QString& caption, const QString& comment,
-                      const QString& label, bool readOnly );
+                      const QString& label, bool readOnly ) KDE_DEPRECATED;
 
    /**
     * @deprecated. Use openPassDlg( AuthInfo& ) instead.
     */
-    void openPassDlg( const QString& prompt, const QString& user, bool readOnly );
+    void openPassDlg( const QString& prompt, const QString& user, bool readOnly ) KDE_DEPRECATED;
 
     void messageBox( int type, const QString &text, const QString &caption,
                      const QString &buttonYes, const QString &buttonNo );

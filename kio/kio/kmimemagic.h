@@ -31,6 +31,7 @@
 #define KMIMEMAGIC_H
 
 #include <qstring.h>
+#include <kdemacros.h>
 
 class KMimeMagic; // see below (read this one first)
 
@@ -42,7 +43,7 @@ class KMimeMagic; // see below (read this one first)
  * It contains the mimetype and the encoding of
  * the file or buffer read.
  */
-class KMimeMagicResult
+class KDE_DEPRECATED KMimeMagicResult
 {
 public:
   KMimeMagicResult() { m_iAccuracy = 100; }
@@ -97,7 +98,7 @@ protected:
  *
  * The result is contained in the class KMimeMagicResult.
  */
-class KMimeMagic
+class KDE_DEPRECATED KMimeMagic
 {
 public:
   /**

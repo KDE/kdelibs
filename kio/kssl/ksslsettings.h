@@ -24,6 +24,7 @@
 #include <qstring.h>
 #include <qvaluelist.h>
 #include <kconfig.h>
+#include <kdemacros.h>
 
 class KSSLSettingsPrivate;
 
@@ -104,19 +105,19 @@ public:
 	 *  Do not use this
 	 *  @deprecated
 	 */
-	bool warnOnSelfSigned() const;
+	bool warnOnSelfSigned() const KDE_DEPRECATED;
 
 	/**
 	 *  Do not use this
 	 *  @deprecated
 	 */
-	bool warnOnRevoked() const;
+	bool warnOnRevoked() const KDE_DEPRECATED;
 
 	/**
 	 *  Do not use this
 	 *  @deprecated
 	 */
-	bool warnOnExpired() const;
+	bool warnOnExpired() const KDE_DEPRECATED;
 
 	/**
 	 *  Does the user want to use the Entropy Gathering Daemon?

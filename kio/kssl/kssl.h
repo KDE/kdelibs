@@ -177,7 +177,7 @@ public:
 	 *  @param proxy is the IP or hostname of the proxy server
 	 *  @deprecated
 	 */
-	void setProxyUse(bool active, QString realIP = QString::null, int realPort = 0, QString proxy = QString::null);
+	void setProxyUse(bool active, QString realIP = QString::null, int realPort = 0, QString proxy = QString::null) KDE_DEPRECATED;
 
 	/**
 	 *  Set the peer hostname to be used for certificate verification.

@@ -28,6 +28,7 @@
 #include <qstring.h>
 #include <kurl.h>
 #include <kstartupinfo.h>
+#include <kdemacros.h>
 
 class KProcess;
 class KService;
@@ -367,7 +368,7 @@ private:
  * KRun can open the openwith dialog directly now.
  * Use KRun::displayOpenWithDialog() if you were using KOpenWithHandler directly.
  */
-class KOpenWithHandler
+class KDE_DEPRECATED KOpenWithHandler
 {
 public:
   KOpenWithHandler() {}

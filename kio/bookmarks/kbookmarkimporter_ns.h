@@ -23,6 +23,7 @@
 #include <qcstring.h>
 #include <qstringlist.h>
 #include <ksimpleconfig.h>
+#include <kdemacros.h>
 
 #include "kbookmarkimporter.h"
 #include "kbookmarkexporter.h"
@@ -31,7 +32,7 @@
  * A class for importing NS bookmarks
  * @deprecated
  */
-class KNSBookmarkImporter : public QObject
+class KDE_DEPRECATED KNSBookmarkImporter : public QObject
 {
     Q_OBJECT
 public:

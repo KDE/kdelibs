@@ -23,6 +23,7 @@
 
 #include <kdialog.h>
 #include <qstringlist.h>
+#include <kdemacros.h>
 
 class QWidget;
 class QCheckBox;
@@ -65,7 +66,7 @@ public:
 	 *  @param sendChecked send the checked item to the remote host
 	 *  @deprecated
 	 */
-	void setup(QStringList certs, bool saveChecked = false, bool sendChecked = true);
+	void setup(QStringList certs, bool saveChecked = false, bool sendChecked = true) KDE_DEPRECATED;
 
 	/**
 	 *  Setup the dialog. Call this before you display the dialog.

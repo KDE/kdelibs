@@ -118,7 +118,7 @@ public:
    * @param autoShow tells the dialog whethr it should show itself automatically.  */
   KPropertiesDialog( const KURL& _url, mode_t _mode,
                      QWidget* parent = 0L, const char* name = 0L,
-                     bool modal = false, bool autoShow = true);
+                     bool modal = false, bool autoShow = true) KDE_DEPRECATED;
 #endif
 
   /**
@@ -218,8 +218,8 @@ public:
    * @return a pointer to the dialog
    * @deprecated
    */
-  KDialogBase* dialog() { return this; }
-  const KDialogBase* dialog() const { return this; }
+  KDE_DEPRECATED KDialogBase* dialog() { return this; }
+  KDE_DEPRECATED const KDialogBase* dialog() const { return this; }
 
   /**
    * If we are building this dialog from a template,

@@ -20,6 +20,7 @@
 
 #include <qiodevice.h>
 #include <qstring.h>
+#include <kdemacros.h>
 
 class QFile;
 class KFilterBase;
@@ -104,7 +105,7 @@ private:
      * @deprecated. Use deviceForFile instead.
      * To be removed in KDE 3.0
      */
-    static QIODevice* createFilterDevice(KFilterBase* base, QFile* file);
+    static QIODevice* createFilterDevice(KFilterBase* base, QFile* file) KDE_DEPRECATED;
 public:
 
     /**

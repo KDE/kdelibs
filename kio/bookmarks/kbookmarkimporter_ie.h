@@ -23,6 +23,7 @@
 #include <qcstring.h>
 #include <qstringlist.h>
 #include <ksimpleconfig.h>
+#include <kdemacros.h>
 
 #include <kbookmarkimporter.h>
 
@@ -30,7 +31,7 @@
  * A class for importing IE bookmarks
  * @deprecated
  */
-class KIEBookmarkImporter : public QObject
+class KDE_DEPRECATED KIEBookmarkImporter : public QObject
 {
     Q_OBJECT
 public:

@@ -306,7 +306,7 @@ public:
      * Do not use in conjunction with setFilter()
      * @deprecated
      */
-    void setFilterMimeType(const QString &label, const KMimeType::List &types, const KMimeType::Ptr &defaultType);
+    void setFilterMimeType(const QString &label, const KMimeType::List &types, const KMimeType::Ptr &defaultType) KDE_DEPRECATED;
 
     /**
      * Returns the mimetype for the desired output format.
@@ -361,7 +361,7 @@ public:
      * Ownership is transferred to KFileDialog. You need to create the
      * preview-widget with "new", i.e. on the heap.
      */
-    void setPreviewWidget(const QWidget *w);
+    void setPreviewWidget(const QWidget *w) KDE_DEPRECATED;
 
     /**
      * Adds a preview widget and enters the preview mode.
@@ -634,7 +634,7 @@ public:
     /**
      * @deprecated use setMode( unsigned int ) instead
      */
-    void setMode( KFile::Mode m );
+    void setMode( KFile::Mode m ) KDE_DEPRECATED;
 
     /**
      * Sets the mode of the dialog.

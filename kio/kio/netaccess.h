@@ -27,6 +27,7 @@
 #include <qobject.h>
 #include <qstring.h>
 #include <kio/global.h>
+#include <kdemacros.h>
 
 class QStringList;
 class QWidget;
@@ -111,7 +112,7 @@ public:
     /**
      * @deprecated. Use the function above instead.
      */
-    static bool download(const KURL& src, QString & target);
+    static bool download(const KURL& src, QString & target) KDE_DEPRECATED;
 
     /**
      * Removes the specified file if and only if it was created
@@ -149,7 +150,7 @@ public:
     /**
      * @deprecated. Use the function above instead.
      */
-    static bool upload(const QString& src, const KURL& target);
+    static bool upload(const QString& src, const KURL& target) KDE_DEPRECATED;
 
     /**
      * Alternative to upload for copying over the network.
@@ -175,7 +176,7 @@ public:
     /**
      * @deprecated. Use the function above instead.
      */
-    static bool copy( const KURL& src, const KURL& target );
+    static bool copy( const KURL& src, const KURL& target ) KDE_DEPRECATED;
     // KDE4: merge with above
 
     /**
@@ -217,7 +218,7 @@ public:
     /**
      * @deprecated. Use the function above instead.
      */
-    static bool dircopy( const KURL& src, const KURL& target ); // KDE4: merge
+    static bool dircopy( const KURL& src, const KURL& target ) KDE_DEPRECATED; // KDE4: merge
 
     /**
      * Overloaded method, which takes a list of source urls
@@ -258,17 +259,17 @@ public:
     /**
      * @deprecated. Use the function above instead.
      */
-    static bool exists(const KURL& url, QWidget* window);
+    static bool exists(const KURL& url, QWidget* window) KDE_DEPRECATED;
 
     /**
      * @deprecated. Use the function above instead.
      */
-    static bool exists(const KURL& url);
+    static bool exists(const KURL& url) KDE_DEPRECATED;
 
     /**
      * @deprecated. Use the function above instead.
      */
-    static bool exists(const KURL& url, bool source); // KDE4: merge
+    static bool exists(const KURL& url, bool source) KDE_DEPRECATED; // KDE4: merge
 
     /**
      * Tests whether a URL exists and return information on it.
@@ -291,7 +292,7 @@ public:
     /**
      * @deprecated. Use the function above instead.
      */
-    static bool stat(const KURL& url, KIO::UDSEntry & entry);
+    static bool stat(const KURL& url, KIO::UDSEntry & entry) KDE_DEPRECATED;
 
     /**
      * Deletes a file or a directory in an synchronous way.
@@ -312,7 +313,7 @@ public:
     /**
      * @deprecated. Use the function above instead.
      */
-    static bool del( const KURL & url );
+    static bool del( const KURL & url ) KDE_DEPRECATED;
 
     /**
      * Creates a directory in a synchronous way.
@@ -333,7 +334,7 @@ public:
     /**
      * @deprecated. Use the function above instead.
      */
-    static bool mkdir( const KURL & url, int permissions = -1 );
+    static bool mkdir( const KURL & url, int permissions = -1 ) KDE_DEPRECATED;
 
     /**
      * Executes a remote process via the fish ioslave in a synchrounous way.
@@ -382,7 +383,7 @@ public:
     /**
      * @deprecated. Use the function above instead.
      */
-    static QString mimetype( const KURL & url );
+    static QString mimetype( const KURL & url ) KDE_DEPRECATED;
 
     /**
      * Returns the error string for the last job, in case it failed.

@@ -23,6 +23,7 @@
 #define __kio_jobclasses_h__
 
 #include <kurl.h>
+#include <kdemacros.h>
 
 #include <qobject.h>
 #include <qptrlist.h>
@@ -1044,7 +1045,7 @@ namespace KIO {
         /**
          * @deprecated
          */
-        void setSourceSize( off_t size );
+        void setSourceSize( off_t size ) KDE_DEPRECATED;
 
 	/**
 	 * Returns the source URL.

@@ -24,6 +24,7 @@
 #include <kurl.h>
 #include <ksycocaentry.h>
 #include <ksycocatype.h>
+#include <kdemacros.h>
 
 /**
  * Information about I/O (Internet, etc.) protocols supported by KDE.
@@ -422,44 +423,44 @@ public:
   // The following methods are deprecated:
 
   /// @deprecated
-  static Type inputType( const QString& protocol );
+  static Type inputType( const QString& protocol ) KDE_DEPRECATED;
   /// @deprecated
-  static Type outputType( const QString& protocol );
+  static Type outputType( const QString& protocol ) KDE_DEPRECATED;
   /**
    * @deprecated
    * Returns the list of fields this protocol returns when listing
    * The current possibilities are
    * Name, Type, Size, Date, AccessDate, Access, Owner, Group, Link, URL, MimeType   
    */
-  static QStringList listing( const QString& protocol );
+  static QStringList listing( const QString& protocol ) KDE_DEPRECATED;
   /// @deprecated
-  static bool isSourceProtocol( const QString& protocol );
+  static bool isSourceProtocol( const QString& protocol ) KDE_DEPRECATED;
   /// @deprecated
-  static bool isHelperProtocol( const QString& protocol );
+  static bool isHelperProtocol( const QString& protocol ) KDE_DEPRECATED;
   /// @deprecated
-  static bool isFilterProtocol( const QString& protocol );
+  static bool isFilterProtocol( const QString& protocol ) KDE_DEPRECATED;
   /// @deprecated
-  static bool isKnownProtocol( const QString& protocol );
+  static bool isKnownProtocol( const QString& protocol ) KDE_DEPRECATED;
   /// @deprecated
-  static bool supportsListing( const QString& protocol );
+  static bool supportsListing( const QString& protocol ) KDE_DEPRECATED;
   /// @deprecated
-  static bool supportsReading( const QString& protocol );
+  static bool supportsReading( const QString& protocol ) KDE_DEPRECATED;
   /// @deprecated
-  static bool supportsWriting( const QString& protocol );
+  static bool supportsWriting( const QString& protocol ) KDE_DEPRECATED;
   /// @deprecated
-  static bool supportsMakeDir( const QString& protocol );
+  static bool supportsMakeDir( const QString& protocol ) KDE_DEPRECATED;
   /// @deprecated
-  static bool supportsDeleting( const QString& protocol );
+  static bool supportsDeleting( const QString& protocol ) KDE_DEPRECATED;
   /// @deprecated
-  static bool supportsLinking( const QString& protocol );
+  static bool supportsLinking( const QString& protocol ) KDE_DEPRECATED;
   /// @deprecated
-  static bool supportsMoving( const QString& protocol );
+  static bool supportsMoving( const QString& protocol ) KDE_DEPRECATED;
   /// @deprecated
-  static bool canCopyFromFile( const QString& protocol );
+  static bool canCopyFromFile( const QString& protocol ) KDE_DEPRECATED;
   /// @deprecated
-  static bool canCopyToFile( const QString& protocol );
+  static bool canCopyToFile( const QString& protocol ) KDE_DEPRECATED;
   /// @deprecated
-  static QString defaultMimetype( const QString& protocol);
+  static QString defaultMimetype( const QString& protocol) KDE_DEPRECATED;
   //////////////////////// END DEPRECATED ///////////////////////
 
 protected:

@@ -30,6 +30,7 @@
 #include <qstringlist.h>
 
 #include <kurl.h>
+#include <kdemacros.h>
 
 class KURIFilterPrivate;
 class KURIFilterDataPrivate;
@@ -137,7 +138,7 @@ public:
      *
      * @deprecated
      */
-    bool hasBeenFiltered() const { return true; }
+    KDE_DEPRECATED bool hasBeenFiltered() const { return true; }
 
     /**
      * Returns the filtered or the original URL.

@@ -105,7 +105,7 @@ public:
     /**
      * @deprecated. Use setUserReadOnly(bool).
      */
-    void setEnableUserField( bool enable, bool=false ) {
+    KDE_DEPRECATED void setEnableUserField( bool enable, bool=false ) {
 	setUserReadOnly( !enable );
     };
 

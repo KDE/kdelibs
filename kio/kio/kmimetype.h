@@ -29,6 +29,7 @@
 #include <kicontheme.h>
 
 #include <kurl.h>
+#include <kdemacros.h>
 
 #include "ksycocatype.h"
 #include "kservicetype.h"
@@ -545,7 +546,7 @@ public:
    * @param _path is the path of the desktop entry.
    * @deprecated, see the other executeService
    */
-  static void executeService( const QString& _path, KDEDesktopMimeType::Service& _service );
+  static void executeService( const QString& _path, KDEDesktopMimeType::Service& _service ) KDE_DEPRECATED;
 
   /**
    * Execute @p service on the list of @p urls.

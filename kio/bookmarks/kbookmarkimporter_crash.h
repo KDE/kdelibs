@@ -24,6 +24,7 @@
 #include <qstringlist.h>
 #include <qmap.h>
 #include <ksimpleconfig.h>
+#include <kdemacros.h>
 
 #include "kbookmarkimporter.h"
 
@@ -31,7 +32,7 @@
  * A class for importing all crash sessions as bookmarks
  * @deprecated
  */
-class KCrashBookmarkImporter : public QObject
+class KDE_DEPRECATED KCrashBookmarkImporter : public QObject
 {
     Q_OBJECT
 public:

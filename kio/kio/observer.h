@@ -30,6 +30,8 @@
 #include "kio/skipdlg.h"
 #include "kio/renamedlg.h"
 
+#include <kdemacros.h>
+
 class UIServer_stub;
 class KURL;
 

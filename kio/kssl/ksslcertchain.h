@@ -23,6 +23,7 @@
 
 #include <qglobal.h>
 #include <qptrlist.h>
+#include <kdemacros.h>
 
 class QString;
 class QCString;
@@ -94,7 +95,7 @@ public:
 	 *  @param chain the certificate chain
 	 *  @deprecated
 	 */
-	void setChain(QStringList chain);
+	void setChain(QStringList chain) KDE_DEPRECATED;
 
 	/**
 	 *  Set the certificate chain as a list of base64 encoded X.509
