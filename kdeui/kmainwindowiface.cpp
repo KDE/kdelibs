@@ -39,6 +39,7 @@ KMainWindowInterface::KMainWindowInterface(KMainWindow * mainWindow)
 KMainWindowInterface::~KMainWindowInterface()
 {
 	delete m_dcopActionProxy;
+        delete m_dcopPropertyProxy;
 }
 
 QCStringList KMainWindowInterface::actions()
