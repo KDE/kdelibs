@@ -1,6 +1,10 @@
 // $Id$
 // Revision 1.87  1998/01/27 20:17:01  kulow
 // $Log$
+// New version looks way more correct to me...
+//
+// Revision 1.73  1997/11/20 22:24:30  kalle
+// new static methods for the various directories
 //
 // Revision 1.72  1997/11/18 21:40:41  kalle
 // KApplication::localconfigdir()
@@ -309,6 +313,7 @@
 // Fixed bug with default help menu (Thanks, Bernd! This one was just in time!)
 //
 // Matthias: bugfixes for session management.
+//
 // Revision 1.64  1997/10/22 20:42:52  kalle
 // Help menu works as advertised
 //
@@ -1314,17 +1319,67 @@ const QString& KApplication::kde_partsdir()
 	dir = KDE_PARTSDIR;
   return dir;
 }
-  KDEBUG( KDEBUG_WARN, 101, "Sorry not implemented: KApplication::tempSaveName" );
-  return pFilename;
+
+const QString& KApplication::kde_configdir()
+{
+  static QString dir;
+  if (dir.isNull()) 
+	dir = KDE_CONFIGDIR;
+  return dir;
+}
+
+const QString& KApplication::kde_mimedir()
+{
+  static QString dir;
+  if (dir.isNull()) 
+	dir = KDE_MIMEDIR;
+  return dir;
+}
+
+
+QString KApplication::localkdedir()
+{
+  return ( QDir::homeDirPath() + "/.kde" );
+}
+
 
 QString KApplication::localconfigdir()
 {
   return ( localkdedir() + "/share/config" );
 }
 
-  KDEBUG( KDEBUG_WARN, 101, "Sorry not implemented: KApplication::checkRecoverFile" );
-  bRecover = false;
-  return pFilename;
+
+bool KApplication::getKDEFonts(QStrList *fontlist)
+{
+  QString fontfilename;
+
+  if(fontlist == 0L)
+    return false;
+
+  fontfilename =  getenv("HOME");
+
+  if(fontfilename.isEmpty()){
+    return false;
+  }
+    
+  fontfilename = fontfilename + "/.kde/share/config/kdefonts";
+
+  QFile fontfile(fontfilename);
+
+  if (!fontfile.exists())
+    return false;
+
+  if(!fontfile.open(IO_ReadOnly)){
+    return false;
+  }
+
+  if (!fontfile.isReadable())
+    return false;
+  
+  QTextStream t(&fontfile);
+
+
+  while ( !t.eof() ) {
     QString s = t.readLine();
     if(!s.isEmpty())
       fontlist->append( s );

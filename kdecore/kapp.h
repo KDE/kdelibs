@@ -1,6 +1,10 @@
 // $Id$
 // Revision 1.41  1998/01/06 22:54:29  kulow
 // $Log$
+//
+// Revision 1.38  1997/12/13 15:08:58  jacek
+// KCharsets support added
+// WARNING: kderc file format has changed. Since now charset name
 // instead of id is stored.
 //
 //
@@ -474,7 +478,8 @@ class KApplication : public QApplication
 * This would be set either by
 * "-caption", otherwise it will be equivalent to the name of the
 * executable.
-	* @return A new filename for auto-saving.
+*/
+   const char* getCaption() const;
 	* file. If file is not found, isEmpty() will return True
 	*/
   static QString findFile( const char *file );
