@@ -333,6 +333,8 @@
 14171       kopete (winpopup - raw protocol)
 14180       kopete (yahoo)
 14181       kopete (yahoo - raw protocol)
+14190       kopete (oscar/aim)
+14200       kopete (oscar/icq)
 14300       kopete (autoaway)
 14301       kopete (connectionstatus)
 14302       kopete (contactnotes)
