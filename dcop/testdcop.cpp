@@ -29,6 +29,9 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 DCOPClientTransaction *countDownAction = 0;
 int countDownCount = 0;
 
+DCOPClientTransaction *countDownAction2 = 0;
+int countDownCount2 = 0;
+
 bool MyDCOPObject::process(const QCString &fun, const QByteArray &data,
 			   QCString& replyType, QByteArray &replyData)
 {
@@ -66,12 +69,26 @@ bool MyDCOPObject::process(const QCString &fun, const QByteArray &data,
   }
   if (fun == "countDown()") {
 qDebug("countDown() countDownAction = %p", countDownAction);
-    if (countDownAction)
-       return false;
+    if (countDownAction2)
+    {
+       replyType = "QString";
+       QDataStream reply( replyData, IO_WriteOnly );
+       reply << QString("Hey");
+       return true;
+    }
 
-    countDownCount = 10;       
-    countDownAction = kapp->dcopClient()->beginTransaction();
-    QTimer::singleShot(1000, this, SLOT(slotTimeout()));
+    if (countDownAction == 0)
+    {
+       countDownCount = 10;       
+       countDownAction = kapp->dcopClient()->beginTransaction();
+       QTimer::singleShot(1000, this, SLOT(slotTimeout()));
+    }
+    else
+    {
+       countDownCount2 = 10;       
+       countDownAction2 = kapp->dcopClient()->beginTransaction();
+       QTimer::singleShot(1000, this, SLOT(slotTimeout2()));
+    }
     return true;
   }
 
@@ -97,11 +114,49 @@ void MyDCOPObject::slotTimeout()
   }
 }
 
+void MyDCOPObject::slotTimeout2()
+{
+  qDebug("MyDCOPObject::slotTimeout2() %d", countDownCount2);
+  countDownCount2--;
+  if (countDownCount2 == 0)
+  {
+     QCString replyType = "QString";
+     QByteArray replyData;
+     QDataStream reply( replyData, IO_WriteOnly );
+     reply << QString("Hello World");
+     kapp->dcopClient()->endTransaction(countDownAction2, replyType, replyData);
+     countDownAction2 = 0;
+  }
+  else
+  {
+     QTimer::singleShot(1000, this, SLOT(slotTimeout2()));
+  }
+}
+
 QCStringList MyDCOPObject::functions()
 {
    QCStringList result = DCOPObject::functions();
    result << "QRect canLaunchRockets(QRect)";
    return result;
+}
+
+TestObject::TestObject(const QCString& app)
+ :  m_app(app)
+{
+   QTimer::singleShot(2500, this, SLOT(slotTimeout()));
+}
+
+void TestObject::slotTimeout()
+{
+   QCString replyType;
+   QByteArray data, reply;
+   qWarning("#2 Calling countDown");
+
+   if (!kapp->dcopClient()->call(m_app, "object1", "countDown()", data, replyType, reply))
+      qDebug("#2 I couldn't call countDown");
+   else
+      qDebug("#2 countDown() return type was '%s'", replyType.data() ); 
+   
 }
 
 int main(int argc, char **argv)
@@ -111,6 +166,19 @@ int main(int argc, char **argv)
   QCString replyType;
   QByteArray data, reply;
   DCOPClient *client; client = app.dcopClient();
+
+  if (argc == 2)
+  {
+      QCString app = argv[1];
+      TestObject obj(app);
+      qWarning("#1 Calling countDown");
+      if (!kapp->dcopClient()->call(app, "object1", "countDown()", data, replyType, reply, true))
+         qDebug("#1 I couldn't call countDown");
+      else
+         qDebug("#1 countDown() return type was '%s'", replyType.data() ); 
+    
+      return 0;
+  }
 
 //  client->attach(); // attach to the server, now we can use DCOP service
 

@@ -122,6 +122,25 @@ struct DCOPClientMessage
     QByteArray data;
 };
 
+namespace
+{
+struct ReplyStruct
+{
+
+    enum ReplyStatus { Pending, Ok, Failed };
+    ReplyStruct() {
+	status = Pending;
+	replyType = 0;
+	replyData = 0;
+	replyId = 0;
+    }
+    ReplyStatus status;
+    QCString* replyType;
+    QByteArray* replyData;
+    Q_INT32 replyId;
+};
+} // namespace
+
 class DCOPClientPrivate
 {
 public:
@@ -157,6 +176,8 @@ public:
     QTimer postMessageTimer;
     QPtrList<DCOPClientMessage> messages;
 
+    QPtrList<ReplyStruct> pendingReplies;
+
     struct LocalTransactionResult 
     {
        QCString replyType;
@@ -173,26 +194,6 @@ public:
     CARD32 key;
     QCString senderId;
 };
-
-namespace
-{
-struct ReplyStruct
-{
-
-    enum ReplyStatus { Pending, Ok, Failed };
-    ReplyStruct() {
-	status = Pending;
-	replyType = 0;
-	replyData = 0;
-	replyId = 0;
-    }
-    ReplyStatus status;
-    QCString* replyType;
-    QByteArray* replyData;
-    Q_INT32 replyId;
-};
-} // namespace
-
 
 QCString DCOPClient::iceauthPath()
 {
@@ -304,6 +305,7 @@ static void DCOPProcessMessage(IceConn iceConn, IcePointer clientObject,
     case DCOPReplyFailed:
 	if ( replyWait ) {
 	    static_cast<ReplyStruct*>(replyWait->reply)->status = ReplyStruct::Failed;
+	    static_cast<ReplyStruct*>(replyWait->reply)->replyId = 0;
 	    *replyWaitRet = True;
 	    return;
 	} else {
@@ -315,6 +317,7 @@ static void DCOPProcessMessage(IceConn iceConn, IcePointer clientObject,
 	    QByteArray* b = static_cast<ReplyStruct*>(replyWait->reply)->replyData;
 	    QCString* t =  static_cast<ReplyStruct*>(replyWait->reply)->replyType;
 	    static_cast<ReplyStruct*>(replyWait->reply)->status = ReplyStruct::Ok;
+	    static_cast<ReplyStruct*>(replyWait->reply)->replyId = 0;
 
 	    QCString calledApp, app;
 	    QDataStream ds( dataReceived, IO_ReadOnly );
@@ -333,6 +336,8 @@ static void DCOPProcessMessage(IceConn iceConn, IcePointer clientObject,
 	    QDataStream ds( dataReceived, IO_ReadOnly );
 	    ds >> calledApp >> app >> id;
 	    static_cast<ReplyStruct*>(replyWait->reply)->replyId = id;
+	    d->pendingReplies.append(static_cast<ReplyStruct*>(replyWait->reply));
+	    *replyWaitRet = True;
 	    return;
 	} else {
 	    qWarning("Very strange! got a DCOPReplyWait opcode, but we were not waiting for a reply!");
@@ -340,21 +345,30 @@ static void DCOPProcessMessage(IceConn iceConn, IcePointer clientObject,
 	}
     case DCOPReplyDelayed:
 	if ( replyWait ) {
-	    QByteArray* b = static_cast<ReplyStruct*>(replyWait->reply)->replyData;
-	    static_cast<ReplyStruct*>(replyWait->reply)->status = ReplyStruct::Ok;
-	    QCString* t =  static_cast<ReplyStruct*>(replyWait->reply)->replyType;
-
 	    QDataStream ds( dataReceived, IO_ReadOnly );
 	    QCString calledApp, app;
 	    Q_INT32 id;
 
-	    ds >> calledApp >> app >> id >> *t >> *b;
-	    if (id != static_cast<ReplyStruct*>(replyWait->reply)->replyId) {
-		static_cast<ReplyStruct*>(replyWait->reply)->status = ReplyStruct::Failed;
-		qWarning("Very strange! DCOPReplyDelayed got wrong sequence id!");
+	    ds >> calledApp >> app >> id;
+	    if (id == static_cast<ReplyStruct*>(replyWait->reply)->replyId) {
+              *replyWaitRet = True;
 	    }
 
-	    *replyWaitRet = True;
+	    for(ReplyStruct *rs = d->pendingReplies.first(); rs; 
+	        rs = d->pendingReplies.next())
+	    {
+	       if (rs->replyId == id)
+	       {
+	         QByteArray* b = rs->replyData;
+	         QCString* t =  rs->replyType;
+	         ds >> *t >> *b;
+
+	         rs->status = ReplyStruct::Ok;
+	         rs->replyId = 0;
+	         break;
+	       }
+	    }
+
 	} else {
 	    qWarning("Very strange! got a DCOPReplyDelayed opcode, but we were not waiting for a reply!");
 	}
@@ -1676,6 +1690,7 @@ bool DCOPClient::callInternal(const QCString &remApp, const QCString &remObjId,
     ReplyStruct replyStruct;
     replyStruct.replyType = &replyType;
     replyStruct.replyData = &replyData;
+    replyStruct.replyId = -1;
     waitInfo.reply = static_cast<IcePointer>(&replyStruct);
 
     Bool readyRet = False;
@@ -1721,6 +1736,9 @@ bool DCOPClient::callInternal(const QCString &remApp, const QCString &remObjId,
         if (!d->iceConn)
             return false;
 
+        if( replyStruct.replyId == 0 )
+	    break;
+
 	if( !timed_out ) { // something is available
 	    s = IceProcessMessages(d->iceConn, &waitInfo,
 				    &readyRet);
@@ -1731,8 +1749,9 @@ bool DCOPClient::callInternal(const QCString &remApp, const QCString &remObjId,
 	    }
 	}
     
-	if( readyRet )
+        if( replyStruct.replyId == 0 )
 	    break;
+
 	if( timeout < 0 )
 	    continue;
 	timeval time_now;
@@ -1744,6 +1763,11 @@ bool DCOPClient::callInternal(const QCString &remApp, const QCString &remObjId,
 	     replyStruct.status = ReplyStruct::Failed;
 	     break;
 	}
+    }
+
+    // Wake up parent call, maybe it's reply is available already.
+    if ( d->non_blocking_call_lock ) {
+	qApp->exit_loop();
     }
 
     d->currentKey = oldCurrentKey;

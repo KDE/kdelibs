@@ -41,6 +41,19 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 **/
 
+class TestObject : public QObject
+{
+  Q_OBJECT
+public:
+  TestObject(const QCString &app);
+
+public slots:
+  void slotTimeout();
+private:
+
+  QCString m_app;
+};
+
 
 class MyDCOPObject : public QObject, public DCOPObject
 {
@@ -52,6 +65,7 @@ public:
   void function(const QString &arg1, int arg2) { qDebug("function got arg: %s and %d", arg1.utf8().data(), arg2); }
 public slots:
   void slotTimeout();
+  void slotTimeout2();
   void registered(const QCString &appName)
      { printf("REGISTER: %s\n", appName.data()); }
 
