@@ -234,12 +234,15 @@ void CupsAddSmb::doNextAction()
 			s.append(" \"").append(m_actions[m_actionindex].latin1()).append("\" \"").append(m_actions[m_actionindex+1].latin1()).append("\"");
 			m_actionindex += 2;
 		}
-		else if (s == "addprinter")
+		else if (s == "addprinter" || s == "setdriver")
 		{
 			m_state = AddPrinter;
 			m_text->setText(i18n("Installing printer %1").arg(m_actions[m_actionindex]));
 			QCString	dest = m_actions[m_actionindex].local8Bit();
-			s.append(" ").append(dest).append(" ").append(dest).append(" \"").append(dest).append("\" \"\"");
+			if (s == "addprinter")
+				s.append(" ").append(dest).append(" ").append(dest).append(" \"").append(dest).append("\" \"\"");
+			else
+				s.append(" ").append(dest).append(" ").append(dest);
 			m_actionindex++;
 		}
 		else
@@ -384,8 +387,11 @@ bool CupsAddSmb::doInstall()
 
 	m_actions.clear();
 	m_actions << "adddriver" << "Windows NT x86" << m_dest+":ADOBEPS5.DLL:"+m_dest+".PPD:ADOBEPSU.DLL:ADOBEPSU.HLP:NULL:RAW:NULL";
-	m_actions << "addprinter" << m_dest;
+	// seems to be wrong with newer versions of Samba
+	//m_actions << "addprinter" << m_dest;
 	m_actions << "adddriver" << "Windows 4.0" << m_dest+":ADOBEPS4.DRV:"+m_dest+".PPD:NULL:ADOBEPS4.HLP:PSMON.DLL:RAW:ADFONTS.MFM,DEFPRTR2.PPD,ICONLIB.DLL";
+	// seems to be ok with newer versions of Samba
+	m_actions << "setdriver" << m_dest;
 	m_actions << "quit";
 
 	m_text->setText(i18n("Preparing to install driver on host <b>%1</b>").arg(cupsServer()));
