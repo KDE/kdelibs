@@ -556,16 +556,22 @@ QString KService::username() const {
 
 bool KService::noDisplay() const {
   QMap<QString,QVariant>::ConstIterator it = m_mapProps.find( "NoDisplay" );
-  if ( (it == m_mapProps.end()) || (!it.data().isValid()))
+  if ( (it != m_mapProps.end()) && (it.data().isValid()))
   {
-     return false;
+     QString aValue = it.data().toString().lower();
+     if (aValue == "true" || aValue == "on" || aValue == "yes")
+        return true;
   }
-
-  QString aValue = it.data().toString();
-  if (aValue == "true" || aValue == "on" || aValue == "yes")
-     return true;
-  else
-     return false;
+  
+  it = m_mapProps.find( "OnlyShowIn" );
+  if ( (it != m_mapProps.end()) && (it.data().isValid()))
+  {
+     QString aValue = it.data().toString();
+     QStringList aList = QStringList::split(';', aValue);
+     if (!aList.contains("KDE"))
+        return true;
+  }
+  return false;
 }
 
 QString KService::untranslatedGenericName() const {
