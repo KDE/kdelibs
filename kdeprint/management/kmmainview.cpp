@@ -182,8 +182,14 @@ void KMMainView::initActions()
 	vact->setCurrentItem(0);
 	connect(vact,SIGNAL(activated(int)),SLOT(slotChangeView(int)));
 
-	new KAction(i18n("&Enable"),"kdeprint_enableprinter",0,this,SLOT(slotEnable()),m_actions,"printer_enable");
-	new KAction(i18n("&Disable"),"kdeprint_stopprinter",0,this,SLOT(slotDisable()),m_actions,"printer_disable");
+	KActionMenu	*stateAct = new KActionMenu(i18n("S&hut down"), "kdeprint_stopprinter", m_actions, "printer_down");
+	connect(stateAct, SIGNAL(activated()), SLOT(slotChangePrinterState()));
+	stateAct->insert(new KAction(i18n("&Disable job spooling"),"kdeprint_stopprinter",0,this,SLOT(slotChangePrinterState()),m_actions,"printer_disable"));
+	stateAct->insert(new KAction(i18n("&Stop printing"),"kdeprint_stopprinter",0,this,SLOT(slotChangePrinterState()),m_actions,"printer_stop"));
+	stateAct = new KActionMenu(i18n("St&art up"), "kdeprint_enableprinter", m_actions, "printer_up");
+	connect(stateAct, SIGNAL(activated()), SLOT(slotChangePrinterState()));
+	stateAct->insert(new KAction(i18n("&Enable job spooling"),"kdeprint_enableprinter",0,this,SLOT(slotChangePrinterState()),m_actions,"printer_enable"));
+	stateAct->insert(new KAction(i18n("&Start printing"),"kdeprint_enableprinter",0,this,SLOT(slotChangePrinterState()),m_actions,"printer_start"));
 	new KAction(i18n("&Remove"),"edittrash",0,this,SLOT(slotRemove()),m_actions,"printer_remove");
 	new KAction(i18n("&Configure"),"configure",0,this,SLOT(slotConfigure()),m_actions,"printer_configure");
 	new KAction(i18n("Add &printer/class..."),"kdeprint_addprinter",0,this,SLOT(slotAdd()),m_actions,"printer_add");
@@ -230,8 +236,8 @@ void KMMainView::initActions()
 	m_actions->action("printer_add")->plug(m_toolbar);
 	m_actions->action("printer_add_special")->plug(m_toolbar);
 	m_toolbar->insertLineSeparator();
-	m_actions->action("printer_disable")->plug(m_toolbar);
-	m_actions->action("printer_enable")->plug(m_toolbar);
+	m_actions->action("printer_down")->plug(m_toolbar);
+	m_actions->action("printer_up")->plug(m_toolbar);
 	m_toolbar->insertSeparator();
 	m_actions->action("printer_hard_default")->plug(m_toolbar);
 	m_actions->action("printer_soft_default")->plug(m_toolbar);
@@ -292,8 +298,13 @@ void KMMainView::slotPrinterSelected(KMPrinter *p)
 		m_actions->action("printer_hard_default")->setEnabled((sp && (mask & KMManager::PrinterDefault) && p && !p->isClass(true) && !p->isHardDefault() && p->isLocal()));
 		m_actions->action("printer_soft_default")->setEnabled((sp && p && !p->isSoftDefault()));
 		m_actions->action("printer_test")->setEnabled((sp && (mask & KMManager::PrinterTesting) && p && !p->isClass(true)));
-		m_actions->action("printer_enable")->setEnabled((sp && (mask & KMManager::PrinterEnabling) && p && p->state() == KMPrinter::Stopped));
-		m_actions->action("printer_disable")->setEnabled((sp && (mask & KMManager::PrinterEnabling) && p && p->state() != KMPrinter::Stopped));
+		bool	stmask = (sp && (mask & KMManager::PrinterEnabling) && p);
+		m_actions->action("printer_start")->setEnabled((stmask && p->state() == KMPrinter::Stopped));
+		m_actions->action("printer_stop")->setEnabled((stmask && p->state() != KMPrinter::Stopped));
+		m_actions->action("printer_enable")->setEnabled((stmask && !p->acceptJobs()));
+		m_actions->action("printer_disable")->setEnabled((stmask && p->acceptJobs()));
+		m_actions->action("printer_up")->setEnabled((stmask && (!p->acceptJobs() || p->state() == KMPrinter::Stopped)));
+		m_actions->action("printer_down")->setEnabled((stmask && (p->acceptJobs() || p->state() != KMPrinter::Stopped)));
 
 		m_actions->action("printer_add")->setEnabled((mask & KMManager::PrinterCreation));
 		mask = m_manager->serverOperationMask();
@@ -327,10 +338,10 @@ void KMMainView::slotRightButtonClicked(KMPrinter *printer, const QPoint& p)
 	if (printer)
 	{
 		m_current = printer;
-		if (printer->state() == KMPrinter::Stopped)
-			m_actions->action("printer_enable")->plug(m_pop);
-		else
-			m_actions->action("printer_disable")->plug(m_pop);
+		if (printer->state() == KMPrinter::Stopped || !printer->acceptJobs())
+			m_actions->action("printer_up")->plug(m_pop);
+		if (printer->state() != KMPrinter::Stopped || printer->acceptJobs())
+			m_actions->action("printer_down")->plug(m_pop);
 		m_pop->insertSeparator();
 		if (!printer->isSoftDefault()) m_actions->action("printer_soft_default")->plug(m_pop);
 		if (printer->isLocal() && !printer->isImplicit())
@@ -386,26 +397,28 @@ void KMMainView::slotRightButtonClicked(KMPrinter *printer, const QPoint& p)
 	m_pop->popup(p);
 }
 
-void KMMainView::slotEnable()
+void KMMainView::slotChangePrinterState()
 {
-	if (m_current)
+	QString	opname = sender()->name();
+	if (m_current && opname.startsWith("printer_"))
 	{
+		opname = opname.mid(8);
 		KMTimer::self()->hold();
-		bool	result = m_manager->upPrinter(m_current, true);
+		bool	result;
+		if (opname == "up")
+			result = m_manager->upPrinter(m_current, true);
+		else if (opname == "down")
+			result = m_manager->upPrinter(m_current, false);
+		else if (opname == "enable")
+			result = m_manager->enablePrinter(m_current, true);
+		else if (opname == "disable")
+			result = m_manager->enablePrinter(m_current, false);
+		else if (opname == "start")
+			result = m_manager->startPrinter(m_current, true);
+		else if (opname == "stop")
+			result = m_manager->startPrinter(m_current, false);
 		if (!result)
-			showErrorMsg(i18n("Unable to enable printer %1.").arg(m_current->printerName()));
-		KMTimer::self()->release(result);
-	}
-}
-
-void KMMainView::slotDisable()
-{
-	if (m_current)
-	{
-		KMTimer::self()->hold();
-		bool	result = m_manager->upPrinter(m_current, false);
-		if (!result)
-			showErrorMsg(i18n("Unable to disable printer %1.").arg(m_current->printerName()));
+			showErrorMsg(i18n("Unable to modify the state of printer %1.").arg(m_current->printerName()));
 		KMTimer::self()->release(result);
 	}
 }

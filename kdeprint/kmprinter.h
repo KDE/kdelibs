@@ -75,7 +75,7 @@ public:
 	PrinterState state(bool complete = false) const 		{ return PrinterState(m_state & (complete ? ~0x0 : StateMask)); }
 	QString stateString() const;
 	void setState(PrinterState s) 		{ m_state = PrinterState((m_state & ~StateMask) | s); }
-	bool acceptJobs() const			{ return (m_state & Rejecting); }
+	bool acceptJobs() const			{ return !(m_state & Rejecting); }
 	void setAcceptJobs(bool on)		{ m_state = PrinterState((m_state & StateMask) | (on ? 0 : Rejecting)); }
 	const KURL& device() const 		{ return m_device; }
 	void setDevice(const KURL& d) 		{ m_device = d; }

@@ -428,3 +428,7 @@ Since 2.2 release, Michael Goffioul <goffioul@imec.be>
   * general: large UI standardization by making use of KDialogBase along
     with KGuiItem
   * kicker menu: possibility to open main Options Dialog from the menu
+
+21/02/2002 Michael Goffioul <goffioul@imec.be>
+  * general: splitted the printer state into enable/disable and start/stop
+    and modified the GUI to reflect this

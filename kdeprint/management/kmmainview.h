@@ -57,8 +57,7 @@ public:
 public slots:
 	void slotTimer();
 	void slotShowPrinterInfos(bool);
-	void slotEnable();
-	void slotDisable();
+	void slotChangePrinterState();
 	void slotRemove();
 	void slotConfigure();
 	void slotAdd();
