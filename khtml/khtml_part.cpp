@@ -2377,11 +2377,28 @@ void KHTMLPart::slotViewDocumentSource()
 
 void KHTMLPart::slotViewFrameSource()
 {
-  // ### frames
-  //emit d->m_extension->openURLRequest( ((KParts::ReadOnlyPart *)partManager()->activePart())->url(), KParts::URLArgs( false, 0, 0, QString::fromLatin1( "text/plain" ) ) );
   KParts::ReadOnlyPart *frame = static_cast<KParts::ReadOnlyPart *>( partManager()->activePart() );
-  if ( frame )
-    (void) KRun::runURL( frame->url(), QString::fromLatin1("text/plain") );
+  if ( !frame )
+    return;
+ 
+  KURL url = frame->url(); 
+  if (!(url.isLocalFile()) && frame->inherits("KHTMLPart"))
+  {
+       long cacheId = static_cast<KHTMLPart *>(frame)->d->m_cacheId;
+      
+       if (KHTMLPageCache::self()->isValid(cacheId))
+       {
+           KTempFile sourceFile(QString::null, QString::fromLatin1(".html"));
+           if (sourceFile.status() == 0)
+           {
+               KHTMLPageCache::self()->saveData(cacheId, sourceFile.dataStream());
+               url = KURL();
+               url.setPath(sourceFile.name());
+           }
+     }
+  }
+
+  (void) KRun::runURL( url, QString::fromLatin1("text/plain") );
 }
 
 void KHTMLPart::slotSaveBackground()
