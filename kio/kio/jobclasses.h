@@ -1392,7 +1392,7 @@ namespace KIO {
          * For that case, call setDefaultPermissions(true)
          *
          * TODO KDE4: consider adding this as bool to copy/copyAs?
-         * @since 3.3
+         * @since 3.2.3
          */
         void setDefaultPermissions( bool b );
 
