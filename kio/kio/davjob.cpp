@@ -42,9 +42,16 @@
 
 using namespace KIO;
 
+class DavJob::DavJobPrivate
+{
+public:
+  QByteArray savedStaticData;
+};
+
 DavJob::DavJob( const KURL& url, int method, const QString& request, bool showProgressInfo )
   : TransferJob( url, KIO::CMD_SPECIAL, QByteArray(), QByteArray(), showProgressInfo )
 {
+  d = new DavJobPrivate;
   // We couldn't set the args when calling the parent constructor,
   // so do it now.
   QDataStream stream( m_packedArgs, IO_WriteOnly );
@@ -53,10 +60,11 @@ DavJob::DavJob( const KURL& url, int method, const QString& request, bool showPr
   if ( ! request.isEmpty() && ! request.isNull() ) {
     staticData = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\r\n" + request.utf8();
     staticData.truncate( staticData.size() - 1 );
+    d->savedStaticData = staticData.copy();
   }
 }
 
-void DavJob::slotData( const QByteArray& data ) 
+void DavJob::slotData( const QByteArray& data )
 {
   if(m_redirectionURL.isEmpty() || !m_redirectionURL.isValid() || m_error)
     m_str_response.append( QString( data ) );
@@ -67,7 +75,7 @@ void DavJob::slotFinished()
   // kdDebug() << "DavJob::slotFinished()" << endl;
   // kdDebug() << m_str_response << endl;
 	if (!m_redirectionURL.isEmpty() && m_redirectionURL.isValid() && (m_command == CMD_SPECIAL)) {
-        QDataStream istream( m_packedArgs, IO_ReadOnly );
+		QDataStream istream( m_packedArgs, IO_ReadOnly );
 		int s_cmd, s_method;
 		KURL s_url;
 		istream >> s_cmd;
@@ -88,10 +96,16 @@ void DavJob::slotFinished()
 		QDomText textnode = m_response.createTextNode( m_str_response );
 		el.appendChild( textnode );
 		root.appendChild( el );
+		delete d; // Should be in virtual destructor
+		d = 0;
+	} else {
+		delete d; // Should be in virtual destructor
+		d = 0;
 	}
 
 	// kdDebug() << m_response.toString() << endl;
 	TransferJob::slotFinished();
+	if( d ) staticData = d->savedStaticData.copy(); // Need to send DAV request to this host too
 }
 
 /* Convenience methods */

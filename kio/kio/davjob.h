@@ -78,7 +78,8 @@ namespace KIO {
         bool m_suspended;
         TransferJob *m_subJob;
     private:
-	class DavJobPrivate* d;
+	class DavJobPrivate;
+	DavJobPrivate *d;
 	QString m_str_response;
 	QDomDocument m_response;
    };
