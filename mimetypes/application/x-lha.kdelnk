@@ -2,6 +2,7 @@
 [KDE Desktop Entry]
 Mimetype=application/x-lha
 Comment=Lha Archives
+Comment[de]=LHA-Archiv
 Comment[pl]=Archiwum Lha
 Comment[fi]=Lha pakkaus
 Comment[fr]=Archive LHA
