@@ -136,6 +136,7 @@ using namespace KJS;
 
 %type <slist> StatementList
 %type <init>  Initializer
+%type <func>  FunctionDeclarationInternal
 %type <func>  FunctionDeclaration
 %type <body>  FunctionBody
 %type <src>   SourceElement
@@ -583,11 +584,18 @@ Finally:
 ;
 
 FunctionDeclaration:
+    FunctionDeclarationInternal
+    /* Hack for IE/NS4 compatibility */
+  | VOID FunctionDeclarationInternal { $$ = $2; }
+;
+
+FunctionDeclarationInternal:
     FUNCTION IDENT '(' ')' FunctionBody    { $$ = new FuncDeclNode($2, 0L, $5);
                                              delete $2; }
   | FUNCTION IDENT '(' FormalParameterList ')' FunctionBody
                                    { $$ = new FuncDeclNode($2, $4, $6);
                                      delete $2; }
+;
 
 FunctionExpr:
     FUNCTION '(' ')' FunctionBody  { $$ = new FuncExprNode(0L, $4); }
