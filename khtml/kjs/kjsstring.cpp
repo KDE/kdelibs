@@ -126,7 +126,7 @@ UString::UString(const char *c)
 {
   l = strlen(c);
   s = new UnicodeChar[l];
-  for (uint i = 0; i < l; i++)
+  for (unsigned int i = 0; i < l; i++)
     s[i] = c[i];
 
   //  cout << "UString(" << c << ")" << endl;
@@ -187,7 +187,7 @@ UString &UString::operator=(const char *c)
 
   l = strlen(c);
   s = new UnicodeChar[l];
-  for (uint i = 0; i < l; i++)
+  for (unsigned int i = 0; i < l; i++)
     s[i] = c[i];
 
   return *this;
@@ -221,14 +221,14 @@ const char* UString::ascii() const
 //  cerr << "UString::ascii() not fully implemented yet" << endl;
 
   char *memoryLeak = new char[l+1];
-  for(uint i = 0; i < l; i++)
+  for(unsigned int i = 0; i < l; i++)
     memoryLeak[i] = (char) s[i];
   memoryLeak[l] = '\0';
 
   return memoryLeak;
 }
 
-UnicodeChar UString::operator[](uint pos) const
+UnicodeChar UString::operator[](unsigned int pos) const
 {
   if (pos < 0 || pos >= l)
     return 0;
