@@ -115,3 +115,5 @@ kdelibs3: shlib-missing-in-control-file dcopserver usr/lib/dcopserver.so
 kdelibs3: shlib-missing-in-control-file kio_ftp usr/lib/kde2/kio_ftp.so
 kdelibs3: shlib-missing-in-control-file kio_uiserver usr/lib/kio_uiserver.so
 kdelibs3: unused-shlib-entry-in-control-file libkssl-nossl
+kdelibs3: shlib-missing-in-control-file kimg_xview usr/lib/kde2/kimg_xview.so
+kdelibs3: shlib-missing-in-control-file kded usr/lib/kded.so
