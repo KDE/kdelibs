@@ -343,6 +343,7 @@ public:
 	long channels()     { return _channels; }
 	long bits()         { return _bits; }
 	bool finished()     { return _finished; }
+	string title()      { return _name; }
 
 	void process_indata(DataPacket<mcopbyte> *packet)
 	{
@@ -376,7 +377,7 @@ public:
 		{
 			if(blockingIO)
 			{
-				/* C API blocking style write */
+				/* C API blocking style read */
 				while(streamqueue.empty())
 					Dispatcher::the()->ioManager()->processOneEvent(true);
 			}
@@ -386,7 +387,7 @@ public:
 				if(streamqueue.empty())
 					Dispatcher::the()->ioManager()->processOneEvent(false);
 
-				/* still no more space to write? */
+				/* still no more packets to read? */
 				if(streamqueue.empty())
 					return size - remaining;
 			}
@@ -394,14 +395,14 @@ public:
 			/* get a packet */
 			DataPacket<mcopbyte> *packet = streamqueue.front();
 
-			/* copy some data there */
+			/* copy some data from there */
 			int tocopy = min(remaining,packet->size-pos);
 			memcpy(data,&packet->contents[pos],tocopy);
 			pos += tocopy;
 			data += tocopy;
 			remaining -= tocopy;
 
-			/* have we filled up the packet? then send it */
+			/* have we read the whole packet? then get rid of it */
 			if(pos == packet->size)
 			{
 				packet->processed();
@@ -464,6 +465,7 @@ public:
 	long channels()     { return _channels; }
 	long bits()         { return _bits; }
 	bool finished()     { return _finished; }
+	string title()      { return _name; }
 
 	void streamStart()
 	{
