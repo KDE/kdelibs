@@ -365,23 +365,12 @@ void TCPSlaveBase::certificatePrompt()
 {
 QString certname;   // the cert to use this session
 bool send = false, prompt = false, save = false, forcePrompt = false;
+KSSLCertificateHome::KSSLAuthAction aa;
 
   setMetaData("ssl_using_client_cert", "FALSE"); // we change this if needed
 
   if (metaData("ssl_no_client_cert") == "TRUE") return;
   forcePrompt = (metaData("ssl_force_cert_prompt") == "TRUE");
-
-  if (hasMetaData("ssl_demand_certificate")) {
-     certname = metaData("ssl_demand_certificate");
-     if (!certname.isEmpty())
-        forcePrompt = false;
-  }
-
-  KSSLSettings kss;
-
-  if (kss.autoSendX509()) {   // FIXME: or if a host-based setting exists
-    // FIXME: set the certificate name here
-  }
 
   // Delete the old cert since we're certainly done with it now
   if (d->pkcs) {
@@ -391,24 +380,68 @@ bool send = false, prompt = false, save = false, forcePrompt = false;
 
   if (!d->kssl) return;
 
-  // Look for a certificate on a per-host basis
-  if (certname.isEmpty())
-        certname = KSSLCertificateHome::getDefaultCertificateName(d->host,
-                                                                  &send,
-                                                                  &prompt);
   // Look for a general certificate
-  if (certname.isEmpty() && !prompt && !forcePrompt) {
-        certname = KSSLCertificateHome::getDefaultCertificateName(&send,
-                                                                  &prompt);
+  if (!forcePrompt) {
+        certname = KSSLCertificateHome::getDefaultCertificateName(&aa);
+        switch(aa) {
+        case KSSLCertificateHome::AuthSend:
+          send = true; prompt = false;
+  messageBox(WarningYesNo, "Gen Send", "SSL");
+         break;
+        case KSSLCertificateHome::AuthDont:
+          send = false; prompt = false;
+          certname = "";
+  messageBox(WarningYesNo, "Gen Dont", "SSL");
+         break;
+        case KSSLCertificateHome::AuthPrompt:
+          send = false; prompt = true;
+  messageBox(WarningYesNo, "Gen Prompt", "SSL");
+         break;
+        default:
+         break;
+        }
   }
 
-  if (certname.isEmpty() && !prompt)
-     prompt = kss.promptSendX509();
+
+  // Look for a certificate on a per-host basis as an override
+  QString tmpcn = KSSLCertificateHome::getDefaultCertificateName(d->host, &aa);
+  if (aa != KSSLCertificateHome::AuthNone) {   // we must override
+    switch (aa) {
+        case KSSLCertificateHome::AuthSend:
+          send = true; prompt = false;
+          certname = tmpcn;
+  messageBox(WarningYesNo, "Host Send", "SSL");
+         break;
+        case KSSLCertificateHome::AuthDont:
+          send = false; prompt = false;
+          certname = "";
+  messageBox(WarningYesNo, "Host Dont", "SSL");
+         break;
+        case KSSLCertificateHome::AuthPrompt:
+          send = false; prompt = true;
+          certname = tmpcn;
+  messageBox(WarningYesNo, "Host Prompt", "SSL");
+         break;
+        default:
+         break;
+    }
+  }
+
+  // Finally, we allow the application to override anything.
+  if (hasMetaData("ssl_demand_certificate")) {
+     certname = metaData("ssl_demand_certificate");
+     if (!certname.isEmpty()) {
+        forcePrompt = false;
+        prompt = false;
+        send = true;
+     }
+  }
 
   if (certname.isEmpty() && !prompt && !forcePrompt) return;
+  messageBox(WarningYesNo, "Checks are done", "SSL");
 
   // Ok, we're supposed to prompt the user....
-  if ((certname.isEmpty() && prompt) || forcePrompt) {
+  if (prompt || forcePrompt) {
      QStringList certs = KSSLCertificateHome::getCertificateList();
 
         if (certs.isEmpty()) return;  // we had nothing else, and prompt failed
@@ -449,6 +482,7 @@ bool send = false, prompt = false, save = false, forcePrompt = false;
             KSSLCertificateHome::setDefaultCertificate(certname, d->host,
                                                        false, false);
      }
+  messageBox(WarningYesNo, "Exit without sending", "SSL");
      return;
   }
 
@@ -485,10 +519,10 @@ bool send = false, prompt = false, save = false, forcePrompt = false;
         pkcs = KSSLCertificateHome::getCertificateByName(certname, pass);
 
         if (!pkcs) {
-                int rc = messageBox(WarningYesNo, i18n("Couldn't open the "
-                                                       "certificate.  Try a "
-                                                       "new password?"),
-              i18n("SSL"));
+              int rc = messageBox(WarningYesNo, i18n("Couldn't open the "
+                                                     "certificate.  Try a "
+                                                     "new password?"),
+                                                i18n("SSL"));
               if (rc == KMessageBox::No) break;
         }
      } while (!pkcs);
@@ -501,8 +535,8 @@ bool send = false, prompt = false, save = false, forcePrompt = false;
                                          "client certificate for the session "
                                          "failed."), i18n("SSL"));
          delete pkcs;  // we don't need this anymore
-        }
-        else {
+      } else {
+         kdDebug(7029) << "Client SSL certificate is being used." << endl;
          setMetaData("ssl_using_client_cert", "TRUE");
          if (save) {
                 KSSLCertificateHome::setDefaultCertificate(certname, d->host,
@@ -542,13 +576,13 @@ bool _IPmatchesCN = false;
     setMetaData("ssl_peer_cert_subject", pc.getSubject());
     setMetaData("ssl_peer_cert_issuer", pc.getIssuer());
     setMetaData("ssl_cipher", d->kssl->connectionInfo().getCipher());
-   setMetaData("ssl_cipher_desc",
+    setMetaData("ssl_cipher_desc",
                             d->kssl->connectionInfo().getCipherDescription());
-   setMetaData("ssl_cipher_version",
+    setMetaData("ssl_cipher_version",
                                 d->kssl->connectionInfo().getCipherVersion());
-   setMetaData("ssl_cipher_used_bits",
+    setMetaData("ssl_cipher_used_bits",
               QString::number(d->kssl->connectionInfo().getCipherUsedBits()));
-   setMetaData("ssl_cipher_bits",
+    setMetaData("ssl_cipher_bits",
                   QString::number(d->kssl->connectionInfo().getCipherBits()));
     setMetaData("ssl_peer_ip", d->ip);
     setMetaData("ssl_cert_state", QString::number(ksv));
