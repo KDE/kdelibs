@@ -171,8 +171,11 @@ bool LDIF::splitControl( const QCString &line, QString &oid, bool &critical,
   critical = false;
   bool url = splitLine( line, tmp, value );
   
-  if ( tmp.isEmpty() ) tmp = QString::fromUtf8( value, value.size() );
-  value.resize( 0 );
+  kdDebug(5700) << "splitControl: value: " << QString::fromUtf8(value, value.size()) << endl;
+  if ( tmp.isEmpty() ) {
+    tmp = QString::fromUtf8( value, value.size() );
+    value.resize( 0 );
+  }
   if ( tmp.right( 4 ) == "true" ) {
     critical = true;
     tmp.truncate( tmp.length() - 5 );
