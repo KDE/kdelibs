@@ -9,7 +9,7 @@
 
 html {
 	display: block;
-	color: text;        
+	color: windowtext;
 } 
 
 /*
@@ -475,7 +475,7 @@ acronym {
 	font-style: italic;
 }
 
-:focus          { outline: 1px dotted invert }
+a:focus          { outline: 1px dotted invert }
 a:link:active          { color: red; outline: 1px dotted invert; }
 a:visited:active          { color: red; outline: 1px dotted invert; }
 
