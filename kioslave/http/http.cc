@@ -2157,6 +2157,15 @@ bool HTTPProtocol::httpOpen()
   return res;
 }
 
+void HTTPProtocol::forwardHttpResponseHeader()
+{
+  // Send the response header if it was requested
+  if ( config()->readBoolEntry("PropagateHttpHeader", false) )
+  {
+    setMetaData("HTTP-Headers", m_responseHeader.join("\n"));
+    sendMetaData();
+  }
+}
 
 /**
  * This function will read in the return header from the server.  It will
@@ -2167,9 +2176,11 @@ bool HTTPProtocol::httpOpen()
 bool HTTPProtocol::readHeader()
 {
   m_bRedirect = false;
+  m_responseHeader.clear();
   // Check
   if (m_bCachedRead)
   {
+     m_responseHeader << "HTTP-CACHE";
      // Read header from cache...
      char buffer[4097];
      if (!fgets(buffer, 4096, m_fcache) )
@@ -2185,7 +2196,6 @@ bool HTTPProtocol::readHeader()
                    << "data mimetype: " << buffer << endl;
 
      m_strMimeType = QString::fromUtf8( buffer).stripWhiteSpace();
-     mimeType(m_strMimeType);
 
      if (!fgets(buffer, 4096, m_fcache) )
      {
@@ -2203,6 +2213,8 @@ bool HTTPProtocol::readHeader()
      QString tmp;
      tmp.setNum(m_expireDate);
      setMetaData("expire-date", tmp);
+     mimeType(m_strMimeType);
+     forwardHttpResponseHeader();
      return true;
   }
 
@@ -2222,7 +2234,6 @@ bool HTTPProtocol::readHeader()
   bool canUpgrade = false;        // The server offered an upgrade
 
 
-  m_responseHeader.clear();
   m_etag = QString::null;
   m_lastModified = QString::null;
   m_strCharset = QString::null;
@@ -3072,12 +3083,7 @@ bool HTTPProtocol::readHeader()
     mimeType( m_strMimeType );
   }
 
-  // Send the response header if it was requested
-  if ( config()->readBoolEntry("PropagateHttpHeader", false) )
-  {
-    setMetaData("HTTP-Headers", m_responseHeader.join("\n"));
-    sendMetaData();
-  }
+  forwardHttpResponseHeader();
 
   if (m_request.method == HTTP_HEAD)
      return true;
@@ -3900,12 +3906,7 @@ void HTTPProtocol::error( int _err, const QString &_text )
   
   if (!m_request.id.isEmpty())
   {
-    // Send the response header if it was requested
-    if ( config()->readBoolEntry("PropagateHttpHeader", false) )
-    {
-       setMetaData("HTTP-Headers", m_responseHeader.join("\n"));
-    }
-
+    forwardHttpResponseHeader();
     sendMetaData();
   }
 
