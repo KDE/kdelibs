@@ -796,11 +796,17 @@ void Dispatcher::handleCorrupt(Connection *connection)
 
 void Dispatcher::handleConnectionClose(Connection *connection)
 {
-	list<Object_skel *> objects = objectPool.enumerate();
-	list<Object_skel *>::iterator o;
-
-	for(o=objects.begin(); o != objects.end();o++)
-		(*o)->_disconnectRemote(connection);
+	/*
+	 * we can't use enumerate here, because the "existing objects list" might
+	 * be changing due to the other _disconnectRemote calls we make, so we
+	 * enumerate() the objects manually
+	 */
+	unsigned long l, max;
+	for(l=0, max = objectPool.max(); l<max; l++)
+	{
+		Object_skel *skel = objectPool[l]; 
+		if(skel) skel->_disconnectRemote(connection);
+	}
 
 	/*
 	 * FIXME:
