@@ -3,6 +3,8 @@
 
 #include <qdatastream.h>
 
+#warning "Remove operator<<(QDataStream &, long) before Qt 2.2. release"
+
 QDataStream & operator << (QDataStream & str, long l);
 
 QDataStream & operator >> (QDataStream & str, long & l);

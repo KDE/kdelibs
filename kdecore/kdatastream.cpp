@@ -3,6 +3,8 @@
 
 #include "config.h"
 
+#warning "Remove operator<<(QDataStream &, long) before Qt 2.2. release"
+
 #if SIZEOF_LONG == 8
 QDataStream & operator << (QDataStream & str, long l)
 {
