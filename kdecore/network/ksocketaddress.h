@@ -90,6 +90,16 @@ public:
   { setAddress(addr); }
 
   /**
+   * Creates an object from the given string representation.
+   *
+   * The IP version is guessed from the address format.
+   *
+   * @param addr		the address
+   */
+  inline KIpAddress(const char* addr)
+  { setAddress(addr); }
+
+  /**
    * Creates an object from the given raw data and IP version.
    *
    * @param addr		the raw data
@@ -179,6 +189,14 @@ public:
    * false and leaves the object unchanged.
    */
   bool setAddress(const QString& address);
+
+  /**
+   * Sets the address to the given string representation.
+   *
+   * @return true if the address was successfully parsed; otherwise returns
+   * false and leaves the object unchanged.
+   */
+  bool setAddress(const char* address);
 
   /**
    * Sets the address to the given raw binary representation.

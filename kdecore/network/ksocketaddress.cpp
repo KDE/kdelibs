@@ -162,6 +162,11 @@ bool KIpAddress::setAddress(const QString& address)
   return false;			// can never happen!
 }
 
+bool KIpAddress::setAddress(const char* address)
+{
+  return setAddress(QString::fromLatin1(address));
+}
+
 // set from binary data
 bool KIpAddress::setAddress(const void* raw, int version)
 {
