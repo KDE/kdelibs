@@ -42,13 +42,22 @@ Observer::Observer() : DCOPObject("KIO::Observer")
 
     if ( !kapp->dcopClient()->isApplicationRegistered( "kio_uiserver" ) )
     {
+        kdDebug() << "Starting kio_uiserver" << endl;
         QString error;
-        if ( KApplication::startServiceByDesktopPath( "kio_uiserver.desktop",
-               QStringList(), &error ) > 0 )
+        int ret = KApplication::startServiceByDesktopPath( "kio_uiserver.desktop",
+                                                             QStringList(), &error );
+        if ( ret > 0 )
         {
             kdError() << "Couldn't start kio_uiserver from kio_uiserver.desktop: " << error << endl;
-        }
+        } else
+            kdDebug() << "startServiceByDesktopPath returned " << ret << endl;
+
     }
+    if ( !kapp->dcopClient()->isApplicationRegistered( "kio_uiserver" ) )
+        kdDebug() << "The application kio_uiserver is STILL NOT REGISTERED" << endl;
+    else
+        kdDebug() << "kio_uiserver registered" << endl;
+
     m_uiserver = new UIServer_stub( "kio_uiserver", "UIServer" );
 }
 
@@ -157,23 +166,54 @@ void Observer::slotCanResume( KIO::Job* job, bool can_resume )
 
 bool Observer::authorize( QString& user, QString& pass ,const QString& head, const QString& key )
 {
-	if( m_uiserver )
-	{
-		QByteArray resultArgs = m_uiserver->authorize( user, head, key );
-	  	QDataStream stream( resultArgs, IO_ReadOnly );
-	  	Q_UINT8 authorized;
-	  	QString u, p;	  	
-	  	stream >> authorized >> u >> p;
-		if( authorized )
-		{
-			user = u;
-			pass = p;
-			return true;
-		}			
-	}
-	return false;		
+  QByteArray resultArgs = m_uiserver->authorize( user, head, key );
+  if ( m_uiserver->ok() )
+  {
+    kdDebug(7007) << "Call was ok" << endl;
+    QDataStream stream( resultArgs, IO_ReadOnly );
+    Q_UINT8 authorized;
+    QString u, p;	  	
+    stream >> authorized >> u >> p;
+    if( authorized )
+    {
+      user = u;
+      pass = p;
+      return true;
+    }
+  }
+  else
+    kdDebug(7007) << "Call was not OK" << endl;
+  return false;		
 }
 
+RenameDlg_Result Observer::open_RenameDlg( KIO::Job * job,
+                                           const QString & caption,
+                                           const QString& src, const QString & dest,
+                                           RenameDlg_Mode mode, QString& newDest,
+                                           unsigned long sizeSrc,
+                                           unsigned long sizeDest,
+                                           time_t ctimeSrc,
+                                           time_t ctimeDest,
+                                           time_t mtimeSrc,
+                                           time_t mtimeDest
+                                           )
+{
+  kdDebug(7007) << "Observer::open_RenameDlg" << endl;
+  QByteArray resultArgs = m_uiserver->open_RenameDlg( job ? job->progressId() : 0, caption, src, dest, mode,
+                                                      sizeSrc, sizeDest,
+                                                      (unsigned long) ctimeSrc, (unsigned long) ctimeDest,
+                                                      (unsigned long) mtimeSrc, (unsigned long) mtimeDest );
+  kdDebug(7007) << "open_RenameDlg call returned" << endl;
+  if ( m_uiserver->ok() )
+  {
+    QDataStream stream( resultArgs, IO_ReadOnly );
+    Q_UINT8 result;
+    stream >> result >> newDest;
+    kdDebug(7007) << "UIServer::open_RenameDlg returned " << result << "," << newDest << endl;
+    return (RenameDlg_Result) result;
+  }
+  return R_CANCEL;
+}
 
 
 #include "observer.moc"

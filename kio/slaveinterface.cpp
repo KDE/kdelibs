@@ -176,12 +176,12 @@ void SlaveInterface::openPassDlg( const QString& head, const QString& user, cons
 {
     kdDebug(7007) << "openPassDlg " << head << endl;
     QByteArray packedArgs;
-  	QDataStream stream( packedArgs, IO_WriteOnly );
-  	QString u = user, p = pass;
-  	bool result = Observer::self()->authorize( u, p, head, key );
-  	if( result )
-  	{
-  	    stream << u << p;
+    QDataStream stream( packedArgs, IO_WriteOnly );
+    QString u = user, p = pass;
+    bool result = Observer::self()->authorize( u, p, head, key );
+    if( result )
+    {
+        stream << u << p;
         m_pConnection->sendnow( CMD_USERPASS, packedArgs );
     }
     else

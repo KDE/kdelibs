@@ -74,6 +74,7 @@ ProgressItem::ProgressItem( ListProgress* view, QListViewItem *after, QCString a
 
   m_sAppId = app_id;
   m_iJobId = job_id;
+  m_visible = true;
 
   // create dialog, but don't show it
   defaultProgress = new DefaultProgress( false );
@@ -222,7 +223,20 @@ void ProgressItem::slotCanceled() {
 
 
 void ProgressItem::slotShowDefaultProgress() {
-  defaultProgress->show();
+  if ( m_visible )
+    defaultProgress->show();
+}
+
+void ProgressItem::setVisible( bool visible ) {
+    // TODO listProgress ?
+    m_visible = visible;
+    if ( defaultProgress )
+    {
+        if ( visible )
+            defaultProgress->show();
+        else
+            defaultProgress->hide();
+    }
 }
 
 
@@ -665,6 +679,38 @@ QByteArray UIServer::authorize( const QString& user, const QString& head, const 
     }
     stream << Q_UINT8(0) << QString::null << QString::null;
     return packedArgs;
+}
+
+QByteArray UIServer::open_RenameDlg( int id,
+                                     const QString & caption,
+                                     const QString& src, const QString & dest,
+                                     int mode,
+                                     unsigned long sizeSrc,
+                                     unsigned long sizeDest,
+                                     unsigned long ctimeSrc,
+                                     unsigned long ctimeDest,
+                                     unsigned long mtimeSrc,
+                                     unsigned long mtimeDest
+                                     )
+{
+  // Hide existing dialog box if any
+  ProgressItem *item = findItem( id );
+  if ( item )
+      item->setVisible( false );
+  QString newDest;
+  kdDebug(7024) << "Calling KIO::open_RenameDlg" << endl;
+  KIO::RenameDlg_Result result = KIO::open_RenameDlg( caption, src, dest,
+                                                      (KIO::RenameDlg_Mode) mode, newDest,
+                                                      sizeSrc, sizeDest,
+                                                      (time_t)ctimeSrc, (time_t)ctimeDest,
+                                                      (time_t)mtimeSrc, (time_t)mtimeDest );
+  kdDebug(7024) << "KIO::open_RenameDlg done" << endl;
+  QByteArray data;
+  QDataStream stream( data, IO_WriteOnly );
+  stream << Q_UINT8(result) << newDest;
+  if ( item )
+      item->setVisible( true );
+  return data;
 }
 
 

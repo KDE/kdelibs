@@ -23,6 +23,7 @@
 #include <qdatetime.h>
 #include <dcopobject.h>
 #include <kio/global.h>
+#include <kio/renamedlg.h>
 #include <kurl.h>
 #include <ktmainwindow.h>
 
@@ -52,6 +53,8 @@ public:
 
   QCString appId() { return m_sAppId; }
   int jobId() { return m_iJobId; }
+
+  void setVisible( bool visible );
 
   void setTotalSize( unsigned long bytes );
   void setTotalFiles( unsigned long files );
@@ -93,6 +96,9 @@ protected:
   // ids that uniquely identify this progress item
   QCString m_sAppId;
   int m_iJobId;
+
+  // whether shown or not (it is hidden if a rename dialog pops up for the same job)
+  bool m_visible;
 
   // parent listview
   ListProgress *listProgress;
@@ -217,6 +223,23 @@ k_dcop:
    * @return serialized autorization info: (bool authorized, QString user, QString password)
    */
   QByteArray authorize( const QString& /*user*/, const QString& /*head*/, const QString& /*key*/ );
+
+  /**
+   * See renamedlg.h
+   * @return serialized answer: (RenameDlg_Result result, QString newDest)
+   */
+  QByteArray open_RenameDlg( int id,
+                             const QString & caption,
+                             const QString& src, const QString & dest,
+                             int /* KIO::RenameDlg_Mode */ mode,
+                             unsigned long sizeSrc,
+                             unsigned long sizeDest,
+                             unsigned long /* time_t */ ctimeSrc,
+                             unsigned long /* time_t */ ctimeDest,
+                             unsigned long /* time_t */ mtimeSrc,
+                             unsigned long /* time_t */ mtimeDest
+                             );
+
 
 protected slots:
 

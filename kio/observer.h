@@ -25,6 +25,7 @@
 
 #include "kio/global.h"
 #include "kio/job.h"
+#include "kio/renamedlg.h"
 
 class UIServer_stub;
 class KURL;
@@ -88,6 +89,22 @@ public:
    * @return true if authrization information was obtained.
    */
   bool authorize( QString& /*user*/, QString& /*pass*/, const QString& /*head*/, const QString& /*key*/ );
+
+  /**
+   * See renamedlg.h
+   */
+  KIO::RenameDlg_Result open_RenameDlg( KIO::Job * job,
+                                        const QString & caption,
+                                        const QString& src, const QString & dest,
+                                        KIO::RenameDlg_Mode mode,
+                                        QString& newDest,
+                                        unsigned long sizeSrc = (unsigned long) -1,
+                                        unsigned long sizeDest = (unsigned long) -1,
+                                        time_t ctimeSrc = (time_t) -1,
+                                        time_t ctimeDest = (time_t) -1,
+                                        time_t mtimeSrc = (time_t) -1,
+                                        time_t mtimeDest = (time_t) -1
+                                        );
 
 k_dcop:
   /**
