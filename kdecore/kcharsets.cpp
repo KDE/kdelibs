@@ -97,12 +97,11 @@ static const char * const xNames[CHARSETS_COUNT] = {
     "iso8859-15",
     "koi8-r",
     "jisx0208.1983-0",
-    /* ### not sure about the next seven ones. Lars */
     "ksc5601.1987-0",
-    "ksx1001.1997-0",
-    "gbk*",
-    "unknown",
-    "unknown",
+    "tis620.2533-1",
+    "gbk2312.1980-0",
+    "gbk2312.1980-0",
+    "big5-0"
     "big5-0",
     "tscii-0",
     "utf8",
@@ -300,46 +299,34 @@ QList<QFont::CharSet> KCharsets::availableCharsets(QString family)
     if(!d->db)
         d->db = new QFontDatabase;
 
-    if( !family.isNull() ) {
-        QStringList lst = d->db->charSets(family, false);
-        QList<QFont::CharSet> chSets;
-        chSets.setAutoDelete(true);
-        for ( QStringList::Iterator it = lst.begin(); it != lst.end(); ++it ) {
-            QFont::CharSet *i = new QFont::CharSet;
-            *i = xNameToID(*it);
-            chSets.append(i);
-        }
-        return chSets;
-    }
-
     d->getAvailableCharsets();
 
     QList<QFont::CharSet> chSets;
-    chSets.setAutoDelete(true);
+    //chSets.setAutoDelete(true);
+    QCString f = family.latin1();
     for( QMap<QFont::CharSet, QValueList<QCString> >::Iterator it = d->availableCharsets->begin();
          it != d->availableCharsets->end(); ++it ) {
-            QFont::CharSet *i = new QFont::CharSet;
-            *i = it.key();
-            chSets.append( i );
+	if( !family.isNull() ) {
+	    if ( it.data().contains( f ) == 0)
+		continue;
+	}
+	QFont::CharSet *i = new QFont::CharSet;
+	*i = it.key();
+	chSets.append( i );
     }
     return chSets;
 }
 
 QStringList KCharsets::availableCharsetNames(QString family)
 {
-    if(!d->db)
-        d->db = new QFontDatabase;
-
-    if( !family.isNull() )
-        return d->db->charSets(family, false);
-
-    d->getAvailableCharsets();
-
-    QStringList chSets;
-    for( QMap<QFont::CharSet, QValueList<QCString> >::Iterator it = d->availableCharsets->begin();
-         it != d->availableCharsets->end(); ++it )
-            chSets.append( xCharsetName(it.key()) );
-    return chSets;
+    QList<QFont::CharSet> list = availableCharsets( family );
+    list.setAutoDelete( true );
+    QStringList chsetNames;
+    QFont::CharSet *chset;
+    for ( chset = list.first(); chset != 0; chset = list.next() ) {
+	chsetNames.append( xCharsetName( *chset ) );
+    }
+    return chsetNames;
 }
 
 
@@ -560,9 +547,10 @@ QString KCharsets::xCharsetName(QFont::CharSet charSet) const
     case QFont::TSCII:
         return "tscii-0";
     case QFont::Set_Th_TH:
+	return "unknown";
 	case QFont::Set_GBK:
-	    return "set-gbk";
 	case QFont::Set_Zh:
+	    return "set-gbk";
     case QFont::Set_Zh_TW:
     case QFont::Set_Big5:
 	return "big5-0";
@@ -633,6 +621,13 @@ QFont::CharSet KCharsets::xNameToID(QString name) const
 
 QTextCodec *KCharsets::codecForName(const QString &n) const
 {
+    bool b;
+    return codecForName( n, b );
+}
+
+QTextCodec *KCharsets::codecForName(const QString &n, bool &ok) const
+{
+    ok = true;
   if (n.isEmpty()) {
     QString lc = KGlobal::locale()->charset();
     if (lc.isEmpty())
@@ -689,6 +684,7 @@ QTextCodec *KCharsets::codecForName(const QString &n) const
         return codec;
 
     // could not assign a codec, let's return Latin1
+    ok = false;
     return QTextCodec::codecForName("iso8859-1");
 }
 

@@ -57,11 +57,16 @@ public:
     virtual ~KCharsets();
 
     /**
-     * tries to find a QTextCodec to convert the given encoding from and to
-     * Unicode
+     * provided for compitibility.
      */
     QTextCodec *codecForName(const QString &name) const;
-
+    
+    /**
+     * tries to find a QTextCodec to convert the given encoding from and to
+     * Unicode. If no codec could be found the latin1 codec will be returned an
+     * ok will be set to false.
+     */
+    QTextCodec *codecForName(const QString &n, bool &ok) const;
     /**
      * @returns the charset that fits a given encoding best (that can display a
      * file in the given encoding)
@@ -93,6 +98,8 @@ public:
     /**
      * lists all available charsets for a given family.
      * if family is omitted, it will return all charsets available.
+     *
+     * It is the resonsability of the caller to delete the items in the list.
      */
     QList<QFont::CharSet> availableCharsets(QString family = QString::null);
 
