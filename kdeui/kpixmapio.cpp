@@ -42,7 +42,7 @@ extern "C" int XShmQueryExtension(Display *display);
 
 // d pointer
 
-struct KPixmapIOData
+struct KPixmapIOPrivate
 {
     int shmsize;
     int shmpolicy;
@@ -80,7 +80,7 @@ static int lowest_bit(uint val)
 KPixmapIO::KPixmapIO()
 {
     m_bShm = false;
-    d = new KPixmapIOData;
+    d = new KPixmapIOPrivate;
 
 #ifdef HAVE_MITSHM
     setShmPolicy(ShmDontKeep);

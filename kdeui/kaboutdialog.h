@@ -558,6 +558,8 @@ protected slots:
   virtual void mouseTrackSlot( int mode, const QMouseEvent *e );
 
   // #########################################################################
+protected:
+  virtual void virtual_hook( int id, void* data );
 private:
   KAboutDialogPrivate *d;
 };

@@ -334,4 +334,8 @@ void KTabCtl::addTab(QWidget *w, const QString& name)
     // BL: compute sizes
     setSizes();
 }
+
+void KTabCtl::virtual_hook( int, void* )
+{ /*BASE::virtual_hook( id, data );*/ }
+
 #include "ktabctl.moc"

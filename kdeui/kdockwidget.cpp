@@ -2256,6 +2256,34 @@ void KDockArea::setMainDockWidget( KDockWidget* mdw )
 
 #endif
 
+void KDockWidgetAbstractHeader::virtual_hook( int, void* )
+{ /*BASE::virtual_hook( id, data );*/ }
+
+void KDockWidgetAbstractHeaderDrag::virtual_hook( int, void* )
+{ /*BASE::virtual_hook( id, data );*/ }
+
+void KDockWidgetHeaderDrag::virtual_hook( int id, void* data )
+{ KDockWidgetAbstractHeaderDrag::virtual_hook( id, data ); }
+
+void KDockWidgetHeader::virtual_hook( int id, void* data )
+{ KDockWidgetAbstractHeader::virtual_hook( id, data ); }
+
+void KDockTabGroup::virtual_hook( int, void* )
+{ /*BASE::virtual_hook( id, data );*/ }
+
+void KDockWidget::virtual_hook( int, void* )
+{ /*BASE::virtual_hook( id, data );*/ }
+
+void KDockManager::virtual_hook( int, void* )
+{ /*BASE::virtual_hook( id, data );*/ }
+
+void KDockMainWindow::virtual_hook( int id, void* data )
+{ KMainWindow::virtual_hook( id, data ); }
+
+void KDockArea::virtual_hook( int, void* )
+{ /*KMainWindow::virtual_hook( id, data );*/ }
+
+
 #ifndef NO_INCLUDE_MOCFILES // for Qt-only projects, because tmake doesn't take this name
 #include "kdockwidget.moc"
 #endif

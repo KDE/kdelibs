@@ -100,4 +100,7 @@ void KSqueezedTextLabel::squeezeTextToLabel() {
   };
 }
 
+void KSqueezedTextLabel::virtual_hook( int id, void* data )
+{ /*BASE::virtual_hook( id, data );*/ }
+
 #include "ksqueezedtextlabel.moc"

@@ -167,4 +167,7 @@ void KPushButton::startDrag()
 	d->dragCopy();
 }
 
+void KPushButton::virtual_hook( int, void* )
+{ /*BASE::virtual_hook( id, data );*/ }
+
 #include "kpushbutton.moc"

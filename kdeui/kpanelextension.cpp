@@ -70,3 +70,7 @@ Qt::Orientation KPanelExtension::orientation()
     else
 	return Horizontal;
 }
+
+void KPanelExtension::virtual_hook( int, void* )
+{ /*BASE::virtual_hook( id, data );*/ }
+

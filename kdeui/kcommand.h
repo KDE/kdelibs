@@ -42,7 +42,7 @@ protected:
     KCommand() {}
 
 public:
-    virtual ~KCommand() {}
+    virtual ~KCommand();
 
     /**
      * The main method: executes this command.
@@ -65,6 +65,8 @@ public:
      * in the menus.
      */
     virtual QString name() const = 0;
+protected:
+    virtual void virtual_hook( int id, void* data );
 };
 
 /**
@@ -95,6 +97,8 @@ public:
 
 private:
     QString m_name;
+protected:
+    virtual void virtual_hook( int id, void* data );
 };
 
 /**
@@ -133,6 +137,8 @@ public:
 
 protected:
     QPtrList<KCommand> m_commands;
+protected:
+    virtual void virtual_hook( int id, void* data );
 };
 
 
@@ -255,12 +261,15 @@ private:
     void clipCommands();  // ensures that the limits are kept
 
     QPtrList<KCommand> m_commands;
-    class KCommandHistoryPrivate;
-    KCommandHistoryPrivate *d;
     KAction *m_undo, *m_redo;
     QPopupMenu *m_undoPopup, *m_redoPopup;
     int m_undoLimit, m_redoLimit;
     bool m_first;  // attention: it's the first command in the list!
+protected:
+    virtual void virtual_hook( int id, void* data );
+private:
+    class KCommandHistoryPrivate;
+    KCommandHistoryPrivate *d;
 };
 
 #endif

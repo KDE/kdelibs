@@ -494,6 +494,9 @@ void KXMLGUIFactory::configureAction( KAction *action, const QDomAttr &attribute
     action->setProperty( attrName.latin1() /* ???????? */, propertyValue );
 }
 
+void KXMLGUIFactory::virtual_hook( int, void* )
+{ /*BASE::virtual_hook( id, data );*/ }
+
 #include "kxmlguifactory.moc"
 
 /* vim: et sw=4

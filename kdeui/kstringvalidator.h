@@ -89,6 +89,8 @@ protected:
   QStringList mStringList;
   bool        mRejecting;
   bool        mFixupEnabled;
+private:
+  class KStringListValidator* d;
 };
 
 /** 
@@ -122,6 +124,8 @@ public:
   virtual State validate( QString & input, int & pos ) const;
   /** Removes all characters that are forbidden in mimetypes. */
   virtual void fixup( QString & input ) const;
+private:
+  class KMimeTypeValidator* d;
 };
 
 

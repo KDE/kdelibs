@@ -76,3 +76,7 @@ void KPanelApplet::action( Action a )
     if ( (a & ReportBug) != 0 )
     reportBug();
 }
+
+void KPanelApplet::virtual_hook( int, void* )
+{ /*BASE::virtual_hook( id, data );*/ }
+

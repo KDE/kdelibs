@@ -341,3 +341,6 @@ bool KFontCombo::displayFonts()
     return KGlobal::config()->readBoolEntry("DisplayFontItems", true);
 }
 
+void KFontCombo::virtual_hook( int id, void* data )
+{ KComboBox::virtual_hook( id, data ); }
+

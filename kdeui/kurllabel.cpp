@@ -297,4 +297,7 @@ void KURLLabel::leaveEvent (QEvent* e)
   emit leftURL (d->URL);
 }
 
+void KURLLabel::virtual_hook( int, void* )
+{ /*BASE::virtual_hook( id, data );*/ }
+
 #include "kurllabel.moc"

@@ -121,6 +121,9 @@ private:
     bool needIcons();
     static bool s_useIcons;
 
+protected:
+    virtual void virtual_hook( int id, void* data );
+private:
     class KPushButtonPrivate;
     KPushButtonPrivate *d;
 

@@ -21,6 +21,7 @@
 
 #include <qpushbutton.h>
 
+class KArrowButtonPrivate;
 /**
  * Draws a button which shows an arrow pointing into a certain direction. The
  * arrow's alignment on the button depends on the direction it's pointing to,
@@ -70,9 +71,10 @@ class KArrowButton : public QPushButton
 		 */
 		virtual void drawButton(QPainter *);
 
+	protected:
+		virtual void virtual_hook( int id, void* data );
 	private:
-		class Private;
-		Private *d;
+		KArrowButtonPrivate *d;
 };
 
 #endif // __karrowbutton_h__

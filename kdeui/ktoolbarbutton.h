@@ -278,16 +278,17 @@ protected:
   QSize minimumSizeHint() const;
   QSize minimumSize() const;
 
-private:
-  KToolBarButtonPrivate *d;
-
-
 protected slots:
   void slotClicked();
   void slotPressed();
   void slotReleased();
   void slotToggled();
   void slotDelayTimeout();
+
+protected:
+  virtual void virtual_hook( int id, void* data );
+private:
+  KToolBarButtonPrivate *d;
 };
 
 /**

@@ -21,6 +21,7 @@
 
 #include <qtextbrowser.h>
 
+class KActiveLabelPrivate;
  /**
   * Label with support for selection and clickable links.
   *
@@ -61,8 +62,9 @@ private slots:
 
 private:
     void init();
-
-    class KActiveLabelPrivate;
+protected:
+    virtual void virtual_hook( int id, void* data );
+private:
     KActiveLabelPrivate *d;
 };
 

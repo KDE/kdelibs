@@ -131,6 +131,8 @@ protected:
 private slots:
   void slotMouseButtonClicked( int btn, QListBoxItem *item, const QPoint &pos );
 
+protected:
+  virtual void virtual_hook( int id, void* data );
 private:
   class KListBoxPrivate;
   KListBoxPrivate *d;

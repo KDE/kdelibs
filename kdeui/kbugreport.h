@@ -97,6 +97,8 @@ protected:
   QHButtonGroup * m_bgSeverity;
   QPushButton * m_configureEmail;
 
+protected:
+  virtual void virtual_hook( int id, void* data );
 private:
   KBugReportPrivate *d;
 };

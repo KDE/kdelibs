@@ -1488,5 +1488,24 @@ void KColorDialog::setHsvEdit( const KColor &col )
   d->vedit->setValue( v );
 }
 
+void KHSSelector::virtual_hook( int id, void* data )
+{ KXYSelector::virtual_hook( id, data ); }
+
+void KValueSelector::virtual_hook( int id, void* data )
+{ KSelector::virtual_hook( id, data ); }
+
+void KPaletteTable::virtual_hook( int, void* )
+{ /*BASE::virtual_hook( id, data );*/ }
+
+void KColorCells::virtual_hook( int, void* )
+{ /*BASE::virtual_hook( id, data );*/ }
+
+void KColorPatch::virtual_hook( int, void* )
+{ /*BASE::virtual_hook( id, data );*/ }
+
+void KColorDialog::virtual_hook( int id, void* data )
+{ KDialogBase::virtual_hook( id, data ); }
+
+
 #include "kcolordialog.moc"
 #endif

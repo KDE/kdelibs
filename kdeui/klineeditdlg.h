@@ -109,6 +109,11 @@ protected:
    * The line edit widget
    */
   KLineEdit *edit;
+protected:
+  virtual void virtual_hook( int id, void* data );
+private:
+  class KLineEditDlgPrivate;
+  KLineEditDlgPrivate* d;
 };
 
 #endif

@@ -97,8 +97,11 @@ signals:
     void doubleClicked();
 
 private:
-    KCharSelectTablePrivate *d;
     virtual void setFont(const QFont &f) { QGridView::setFont(f); }
+protected:
+    virtual void virtual_hook( int id, void* data );
+private:
+    KCharSelectTablePrivate *d;
 };
 
 /**
@@ -243,8 +246,11 @@ signals:
     void doubleClicked();
 
 private:
-    KCharSelectPrivate *d;
     virtual void setFont(const QFont &f) { QVBox::setFont(f); }
+protected:
+    virtual void virtual_hook( int id, void* data );
+private:
+    KCharSelectPrivate *d;
 };
 
 #endif

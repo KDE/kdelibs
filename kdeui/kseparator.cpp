@@ -115,7 +115,6 @@ QSize KSeparator::sizeHint() const
    return QSize(-1, -1);
 }
 
-
-
-
+void KSeparator::virtual_hook( int, void* )
+{ /*BASE::virtual_hook( id, data );*/ }
 

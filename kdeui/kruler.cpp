@@ -21,6 +21,9 @@
  * $Id$
  *
  * $Log$
+ * Revision 1.15  2000/11/29 11:52:59  mlaurent
+ * Fix draw marker when kruler is horizontal
+ *
  * Revision 1.14  2000/09/12 17:48:02  mueller
  * avoid compiler warning
  *
@@ -790,4 +793,8 @@ KRuler::drawContents(QPainter *p)
 #endif
 
 }
+
+void KRuler::virtual_hook( int, void* )
+{ /*BASE::virtual_hook( id, data );*/ }
+
 #include "kruler.moc"

@@ -764,4 +764,7 @@ KToolBarButtonList::KToolBarButtonList()
    setAutoDelete(false);
 }
 
+void KToolBarButton::virtual_hook( int, void* )
+{ /*BASE::virtual_hook( id, data );*/ }
+
 #include "ktoolbarbutton.moc"

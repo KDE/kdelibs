@@ -1042,12 +1042,14 @@ private:
     QMap<QWidget*, int > widget2id;
     typedef QMap<int, QWidget* > Id2WidgetMap;
     Id2WidgetMap id2widget;
-    KToolBarPrivate *d;
     KPopupMenu *context;
     QPtrList<QWidget> widgets;
     QTimer *layoutTimer;
     QGuardedPtr<QWidget> stretchableWidget, rightAligned;
-
+protected:
+    virtual void virtual_hook( int id, void* data );
+private:
+    KToolBarPrivate *d;
 };
 
 #endif

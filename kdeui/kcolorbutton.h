@@ -22,6 +22,7 @@
 
 #include <qpushbutton.h>
 
+class KColorButtonPrivate;
 /**
 * This widget can be used to display or allow user selection of a colour.
 *
@@ -95,8 +96,10 @@ private:
         QPoint mPos;
 	bool dragFlag;
 
-  class KColorButtonPrivate;
-  KColorButtonPrivate *d;
+protected:
+	virtual void virtual_hook( int id, void* data );
+private:
+	KColorButtonPrivate *d;
 };
 
 #endif

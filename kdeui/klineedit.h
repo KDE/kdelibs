@@ -469,6 +469,9 @@ private:
 
     bool possibleTripleClick;  // set in mousePressEvent, deleted in tripleClickTimeout
 
+protected:
+    virtual void virtual_hook( int id, void* data );
+private:
     class KLineEditPrivate;
     KLineEditPrivate *d;
 };

@@ -20,6 +20,9 @@
  * $Id$
  *
  * $Log$
+ * Revision 1.4  2001/10/15 18:04:25  gehrmab
+ * The preferred location for constructing C++ objects is in the constructor ;-)
+ *
  * Revision 1.3  2001/08/26 20:14:19  lunakl
  * Ok, watch closely :
  * const is your friend !
@@ -110,4 +113,8 @@ KColorDrag::makeDrag( const QColor &color,QWidget *dragsource)
 {
      return new KColorDrag( color, dragsource);
 }
+
+void KColorDrag::virtual_hook( int, void* )
+{ /*BASE::virtual_hook( id, data );*/ }
+
 #include "kcolordrag.moc"

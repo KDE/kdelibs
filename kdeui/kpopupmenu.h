@@ -80,6 +80,9 @@ protected:
     QColor fgColor, bgColor, grHigh, grLow;
     bool useGradient;
 
+protected:
+    virtual void virtual_hook( int id, void* data );
+private:
     class KPopupTitlePrivate;
     KPopupTitlePrivate *d;
 };
@@ -147,6 +150,8 @@ public:
      */
     void setTitle(const QString &title);
 
+protected:
+    virtual void virtual_hook( int id, void* data );
 private:
     class KPopupMenuPrivate;
     KPopupMenuPrivate *d;

@@ -49,6 +49,9 @@ protected slots:
 private:
     KWinModule*         kwin_module;
     QMap<int,WId>       map;
+protected:
+    virtual void virtual_hook( int id, void* data );
+private:
     KWindowListMenuPrivate *d;
 };
 

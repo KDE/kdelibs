@@ -1952,6 +1952,9 @@ void KListViewItem::paintCell(QPainter *p, const QColorGroup &cg, int column, in
   }
 }
 
+void KListView::virtual_hook( int, void* )
+{ /*BASE::virtual_hook( id, data );*/ }
+
 #include "klistview.moc"
 #include "klistviewlineedit.moc"
 

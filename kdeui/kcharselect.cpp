@@ -444,3 +444,10 @@ void KCharSelect::tableChanged( int _value )
 {
     charTable->setTableNum( _value );
 }
+
+void KCharSelectTable::virtual_hook( int, void*)
+{ /*BASE::virtual_hook( id, data );*/ }
+
+void KCharSelect::virtual_hook( int, void* )
+{ /*BASE::virtual_hook( id, data );*/ }
+

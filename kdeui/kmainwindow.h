@@ -629,6 +629,9 @@ private:
     KHelpMenu *mHelpMenu, *helpMenu2;
     KXMLGUIFactory *factory_;
     QPtrList<KToolBar> toolbarList;
+protected:
+    virtual void virtual_hook( int id, void* data );
+private:
     KMainWindowPrivate *d;
 };
 

@@ -146,9 +146,6 @@ class KKeyChooser : public QWidget
 	QRadioButton* m_prbDef;
 	QRadioButton* m_prbCustom;
 
- private:
-	class KKeyChooserPrivate *d;
-	friend class KKeyDialog;
 
 #ifndef KDE_NO_COMPAT
  public:
@@ -171,6 +168,11 @@ class KKeyChooser : public QWidget
 	void listSync();
 
 #endif
+ protected:
+	virtual void virtual_hook( int id, void* data );
+ private:
+	class KKeyChooserPrivate *d;
+	friend class KKeyDialog;
 };
 typedef KKeyChooser KKeyChooser;
 
@@ -269,6 +271,9 @@ private:
 	QPushButton* bCancel;
 	QPushButton* bHelp;
 
+protected:
+	virtual void virtual_hook( int id, void* data );
+private:
 	class KKeyDialogPrivate* d;
 };
 

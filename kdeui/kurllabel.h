@@ -339,14 +339,17 @@ private slots:
   void updateColor ();
 
 private:
-  class Private;
-  Private* d;
-
   /**
    * @internal
    * A private helper function to set the link-color to @p col.
    */
   void setLinkColor (const QColor& col);
+
+protected:
+  virtual void virtual_hook( int id, void* data );
+private:
+  class Private;
+  Private* d;
 };
 
 #endif // KURLLABEL_H

@@ -465,5 +465,14 @@ void KGradientSelector::drawContents( QPainter *painter )
 
 //-----------------------------------------------------------------------------
 
+void KXYSelector::virtual_hook( int, void* )
+{ /*BASE::virtual_hook( id, data );*/ }
+
+void KSelector::virtual_hook( int, void* )
+{ /*BASE::virtual_hook( id, data );*/ }
+
+void KGradientSelector::virtual_hook( int id, void* data )
+{ KSelector::virtual_hook( id, data ); }
+
 #include "kselect.moc"
 

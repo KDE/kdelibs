@@ -503,8 +503,6 @@ signals:
 
 private:
     QString whatsThisWithIcon() const;
-    class KActionPrivate;
-    KActionPrivate *d;
 
     void initPrivate( const QString& text, const KShortcut& cut,
                   const QObject* receiver, const char* slot );
@@ -538,6 +536,11 @@ public:
     int menuId( int i ) { return itemId( i ); }
 #endif // !KDE_NO_COMPAT
 
+protected:
+    virtual void virtual_hook( int id, void* data );
+private:
+    class KActionPrivate;
+    KActionPrivate *d;
 };
 
 /**
@@ -680,6 +683,8 @@ protected:
 signals:
     void toggled( bool );
 
+protected:
+    virtual void virtual_hook( int id, void* data );
 private:
     class KToggleActionPrivate;
     KToggleActionPrivate *d;
@@ -770,6 +775,8 @@ public:
 protected:
     virtual void slotActivated();
 
+protected:
+    virtual void virtual_hook( int id, void* data );
 private:
     class KRadioActionPrivate;
     KRadioActionPrivate *d;
@@ -967,6 +974,8 @@ protected:
 
     virtual void updateClear( int id );
 
+protected:
+    virtual void virtual_hook( int id, void* data );
 private:
     class KSelectActionPrivate;
     KSelectActionPrivate *d;
@@ -1071,8 +1080,9 @@ public slots:
      */
     virtual void setCurrentItem( int index );
 
+protected:
+    virtual void virtual_hook( int id, void* data );
 private:
-
     class KListActionPrivate;
     KListActionPrivate *d;
 };
@@ -1255,6 +1265,8 @@ protected slots:
    */
   void itemSelected( const QString& string );
 
+protected:
+  virtual void virtual_hook( int id, void* data );
 private:
   class KRecentFilesActionPrivate;
   KRecentFilesActionPrivate *d;
@@ -1293,6 +1305,8 @@ public:
 public slots:
     void setFont( const QString &family );
 
+protected:
+    virtual void virtual_hook( int id, void* data );
 private:
     class KFontActionPrivate;
     KFontActionPrivate *d;
@@ -1338,6 +1352,9 @@ private:
     void init();
 
 
+protected:
+    virtual void virtual_hook( int id, void* data );
+private:
     class KFontSizeActionPrivate;
     KFontSizeActionPrivate *d;
 };
@@ -1411,8 +1428,9 @@ public:
 
     virtual int plug( QWidget* widget, int index = -1 );
 
+protected:
+    virtual void virtual_hook( int id, void* data );
 private:
-
     class KActionMenuPrivate;
     KActionMenuPrivate *d;
 };
@@ -1526,6 +1544,9 @@ private:
     KPopupMenu *m_popup;
     bool m_delayed:1;
     bool m_stickyMenu:1;
+protected:
+    virtual void virtual_hook( int id, void* data );
+private:
     class KToolBarPopupActionPrivate;
     KToolBarPopupActionPrivate *d;
 };
@@ -1539,6 +1560,8 @@ public:
 
     virtual int plug( QWidget*, int index = -1 );
 
+protected:
+    virtual void virtual_hook( int id, void* data );
 private:
     class KActionSeparatorPrivate;
     KActionSeparatorPrivate *d;
@@ -1629,8 +1652,6 @@ private slots:
 
 private:
    KAction *findAction( QWidget *container, int id );
-   class KActionCollectionPrivate;
-   KActionCollectionPrivate *d;
 
 #ifndef KDE_NO_COMPAT
 public:
@@ -1651,6 +1672,11 @@ public slots:
    */
   void clear();
 #endif // !KDE_NO_COMPAT
+protected:
+    virtual void virtual_hook( int id, void* data );
+private:
+    class KActionCollectionPrivate;
+    KActionCollectionPrivate *d;
 };
 
 #endif

@@ -848,3 +848,7 @@ void KXMLGUIClient::stateChanged(const QString &newstate)
   }
     
 }
+
+void KXMLGUIClient::virtual_hook( int, void* )
+{ /*BASE::virtual_hook( id, data );*/ }
+

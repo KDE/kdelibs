@@ -21,6 +21,7 @@
 #include <qlabel.h>
 #include "ksystemtray.h"
 
+#ifndef KDE_NO_COMPAT
 /**
  * This class is obsolete, it is provided for compatibility only.
  * 
@@ -34,5 +35,5 @@ public:
 	: KSystemTray( parent, name ) {}
     ~KDockWindow() {}
 };
-
+#endif
 #endif

@@ -131,3 +131,7 @@ void KPanelMenu::reinitialize()
     slotClear();
     initialize();
 }
+
+void KPanelMenu::virtual_hook( int id, void* data )
+{ KPopupMenu::virtual_hook( id, data ); }
+

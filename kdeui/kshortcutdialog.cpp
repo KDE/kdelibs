@@ -288,4 +288,8 @@ void KShortcutDialog::x11EventKeyPress( XEvent *pEvent )
 }
 #endif // QT_WS_X11
 
+void KShortcutDialog::virtual_hook( int id, void* data )
+{ KDialog::virtual_hook( id, data ); }
+
+
 #include "kshortcutdialog.moc"

@@ -131,9 +131,12 @@ private slots:
 
 private:
     KPopupMenu* menu;
-    KSystemTrayPrivate* d;
     int minimizeRestoreId;
     uint hasQuit :1;
+protected:
+    virtual void virtual_hook( int id, void* data );
+private:
+    KSystemTrayPrivate* d;
 };
 
 

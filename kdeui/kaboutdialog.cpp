@@ -1749,3 +1749,6 @@ void KImageTrackLabel::mouseMoveEvent ( QMouseEvent *e )
   emit mouseTrack( MouseDoubleClick, e );
 }
 
+void KAboutDialog::virtual_hook( int id, void* data )
+{ KDialogBase::virtual_hook( id, data ); }
+

@@ -181,4 +181,7 @@ QString KLineEditDlg::getText(const QString &_caption, const QString &_text,
     return QString::null;
 }
 
+void KLineEditDlg::virtual_hook( int id, void* data )
+{ KDialogBase::virtual_hook( id, data ); }
+
 #include "klineeditdlg.moc"

@@ -26,6 +26,7 @@
 class KLineEdit;
 class QPushButton;
 
+class KEditListBoxPrivate;
 /**
  * An editable listbox
  *
@@ -162,9 +163,11 @@ class KEditListBox : public QGroupBox
       //this is called in both ctors, to avoid code duplication
       void init( bool checkAtEntering, int buttons );
 
+   protected:
+      virtual void virtual_hook( int id, void* data );
+   private:
       //our lovely private d-pointer
-      class PrivateData;
-      PrivateData *d;
+      KEditListBoxPrivate *d;
 };
 
 #endif

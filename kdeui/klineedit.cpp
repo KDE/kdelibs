@@ -849,3 +849,7 @@ void KLineEdit::slotRestoreSelectionColors()
     if (d->disableRestoreSelection) return;
     setUserSelection(true);
 }
+
+void KLineEdit::virtual_hook( int id, void* data )
+{ KCompletionBase::virtual_hook( id, data ); }
+

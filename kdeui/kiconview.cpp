@@ -577,4 +577,7 @@ void KIconViewItem::paintItem( QPainter *p, const QColorGroup &cg )
     p->restore();
 }
 
+void KIconView::virtual_hook( int, void* )
+{ /*BASE::virtual_hook( id, data );*/ }
+
 #include "kiconview.moc"

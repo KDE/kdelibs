@@ -80,6 +80,8 @@ protected:
     void showEvent( QShowEvent* );
     bool eventFilter(QObject *, QEvent *);
 
+protected:
+    virtual void virtual_hook( int id, void* data );
 private:
     class KMenuBarPrivate;
     KMenuBarPrivate *d;

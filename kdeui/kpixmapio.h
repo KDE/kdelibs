@@ -14,8 +14,7 @@
 
 class QPixmap;
 class QImage;
-class KPixmapIOData;
-
+class KPixmapIOPrivate;
 /**
  * @short Fast QImage to/from QPixmap conversion.
  * @author Geert Jansen <jansen@kde.org>
@@ -168,8 +167,6 @@ private:
     };
 
     bool m_bShm;
-    class KPixmapIOData *d;
-
     void initXImage(int w, int h);
     void doneXImage();
     void createXImage(int w, int h);
@@ -178,6 +175,8 @@ private:
     void destroyShmSegment();
     void convertToXImage(const QImage &);
     QImage convertFromXImage();
+private:
+    KPixmapIOPrivate* d;
 };
 
 #endif // __KPixmapIO_h_Included__

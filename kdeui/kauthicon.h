@@ -84,6 +84,8 @@ protected:
   QString lockText;
   QString openLockText;
 
+protected:
+  virtual void virtual_hook( int id, void* data );
 private:
   KAuthIconPrivate *d;
 };
@@ -113,6 +115,8 @@ public slots:
 protected:
   bool root;
 
+protected:
+  virtual void virtual_hook( int id, void* data );
 private:
   KRootPermsIconPrivate *d;
 };
@@ -149,6 +153,8 @@ protected:
   bool writable; 
   QFileInfo fi;
 
+protected:
+  virtual void virtual_hook( int id, void* data );
 private:
   KWritePermsIconPrivate *d;
 };

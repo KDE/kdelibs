@@ -122,6 +122,8 @@ private:
   int maxY;
   QPixmap store;
 
+protected:
+  virtual void virtual_hook( int id, void* data );
 private:
   class KXYSelectorPrivate;
   KXYSelectorPrivate *d;
@@ -266,6 +268,9 @@ private:
   Orientation _orientation;
   bool _indent;
 
+protected:
+  virtual void virtual_hook( int id, void* data );
+private:
   class KSelectorPrivate;
   KSelectorPrivate *d;
 };
@@ -353,6 +358,9 @@ private:
   QString text1;
   QString text2;
 
+protected:
+  virtual void virtual_hook( int id, void* data );
+private:
   class KGradientSelectorPrivate;
   KGradientSelectorPrivate *d;
 };

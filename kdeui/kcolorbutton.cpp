@@ -121,4 +121,7 @@ void KColorButton::chooseColor()
   }
 }
 
+void KColorButton::virtual_hook( int, void* )
+{ /*BASE::virtual_hook( id, data );*/ }
+
 #include "kcolorbutton.moc"

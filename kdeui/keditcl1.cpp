@@ -585,3 +585,15 @@ void KEdit::create( WId id, bool initializeWindow, bool destroyOldWindow )
 }
 
 
+void KEdGotoLine::virtual_hook( int id, void* data )
+{ KDialogBase::virtual_hook( id, data ); }
+
+void KEdFind::virtual_hook( int id, void* data )
+{ KDialogBase::virtual_hook( id, data ); }
+
+void KEdReplace::virtual_hook( int id, void* data )
+{ KDialogBase::virtual_hook( id, data ); }
+
+void KEdit::virtual_hook( int, void* )
+{ /*BASE::virtual_hook( id, data );*/ }
+

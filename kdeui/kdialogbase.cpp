@@ -1691,4 +1691,7 @@ void KDialogBaseTile::cleanup()
   delete mPixmap; mPixmap = 0;
 }
 
+void KDialogBase::virtual_hook( int id, void* data )
+{ KDialog::virtual_hook( id, data ); }
+
 #include "kdialogbase.moc"

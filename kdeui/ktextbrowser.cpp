@@ -21,6 +21,11 @@
 ****************************************************************************
 *
 * $Log$
+* Revision 1.10  2001/11/24 01:19:04  pfeiffer
+* make the wheelmouse work the same way as in KDE2, i.e. Ctrl-Wheel
+* scrolls faster, instead of zooming. Do we need to make this configurable?
+* I for one find myself scrolling much more often than zooming.
+*
 * Revision 1.9  2001/10/10 17:40:39  mueller
 * CVS_SILENT: fixincludes
 *
@@ -141,5 +146,8 @@ void KTextBrowser::contentsWheelEvent( QWheelEvent *e )
 {
     QScrollView::contentsWheelEvent( e );
 }
+
+void KTextBrowser::virtual_hook( int, void* )
+{ /*BASE::virtual_hook( id, data );*/ }
 
 #include "ktextbrowser.moc"

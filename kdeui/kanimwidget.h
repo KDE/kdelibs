@@ -24,6 +24,7 @@ class QStringList;
 class QPainter;
 class QMouseEvent;
 
+class KAnimWidgetPrivate;
 /**
  * This is a widget used to display animation using multiple
  * individual pixmaps.  This widget allows you to deal with variable
@@ -127,8 +128,9 @@ protected slots:
   void slotTimerUpdate();
   void updateIcons();
 
+protected:
+  virtual void virtual_hook( int id, void* data );
 private:
-  class KAnimWidgetPrivate;
   KAnimWidgetPrivate *d;
 };
 

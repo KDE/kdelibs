@@ -165,4 +165,7 @@ void KMenuBar::showEvent( QShowEvent *e )
     QMenuBar::showEvent(e);
 }
 
+void KMenuBar::virtual_hook( int, void* )
+{ /*BASE::virtual_hook( id, data );*/ }
+
 #include "kmenubar.moc"

@@ -180,6 +180,7 @@ signals:
 
 private:
   QIntDict<KStatusBarLabel> items;
+  class KStatusBarPrivate* d;
 };
 
 #endif // __KSTATUSBAR_H__

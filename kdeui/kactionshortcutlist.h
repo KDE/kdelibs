@@ -7,6 +7,7 @@
 // class KActionShortcutList
 //---------------------------------------------------------------------
 
+class KAccelShortcutListPrivate;
 class KActionShortcutList : public KShortcutList
 {
  public:
@@ -32,14 +33,17 @@ class KActionShortcutList : public KShortcutList
  protected:
 	KActionCollection& m_actions;
 
+ protected:
+        virtual void virtual_hook( int id, void* data );
  private:
-	class KAccelShortcutListPrivate* d;
+	KAccelShortcutListPrivate* d;
 };
 
 //---------------------------------------------------------------------
 // class KActionPtrShortcutList
 //---------------------------------------------------------------------
 
+class KAccelShortcutListPrivate;
 class KActionPtrShortcutList : public KShortcutList
 {
  public:
@@ -63,8 +67,10 @@ class KActionPtrShortcutList : public KShortcutList
  protected:
 	KActionPtrList& m_actions;
 
+ protected:
+       virtual void virtual_hook( int id, void* data );
  private:
-	class KAccelShortcutListPrivate* d;
+	KAccelShortcutListPrivate* d;
 };
 
 #endif // !_KACTIONSHORTCUTLIST_H

@@ -25,6 +25,7 @@
 #include <qdragobject.h>
 #include <qcolor.h>
 
+class KColorDragPrivate;
 /**
  * A drag-and-drop object for colors. The according MIME type
  * is set to application/x-color.
@@ -64,7 +65,9 @@ public:
 
 private:
      QColor m_color; // unused
-     class KColorDragPrivate;
+protected:
+     virtual void virtual_hook( int id, void* data );
+private:
      KColorDragPrivate *d;
 };
 

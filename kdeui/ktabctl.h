@@ -20,6 +20,9 @@
  * $Id$
  *
  * $Log$
+ * Revision 1.12  2001/09/22 19:53:58  mueller
+ * fixes for QT_NO_COMPAT
+ *
  * Revision 1.11  2000/06/15 06:35:12  kalle
  * Replaced #include "qtheader.h" with #include <qtheader.h> as it is supposed to be
  *
@@ -101,5 +104,9 @@ protected:
     QMemArray<QWidget *> pages;
     int bh;
     bool blBorder;
+protected:
+    virtual void virtual_hook( int id, void* data );
+private:
+    class KTabCtrlPrivate* d;
 };
 #endif

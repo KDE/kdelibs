@@ -66,8 +66,6 @@ protected:
   /** Emit monthSelected(int) when a cell has been released. */
   void contentsMouseReleaseEvent(QMouseEvent *e);
 
-
-
 private:
   class KDateInternalMonthPrivate;
   KDateInternalMonthPrivate *d;
@@ -139,10 +137,13 @@ public:
   int exec(int x, int y);
 
 private:
-  class KPopupFramePrivate;
-  KPopupFramePrivate *d;
 
   virtual bool close(bool alsoDelete) { return QFrame::close(alsoDelete); }
+protected:
+  virtual void virtual_hook( int id, void* data );
+private:
+  class KPopupFramePrivate;
+  KPopupFramePrivate *d;
 };
 
 /**
@@ -221,6 +222,8 @@ signals:
     /** A date has been selected by clicking on the table. */
     void tableClicked();
 
+protected:
+  virtual void virtual_hook( int id, void* data );
 private:
     class KDateTablePrivate;
     KDateTablePrivate *d;

@@ -202,6 +202,8 @@ private slots:
     void cancelled();
     void slotItemClicked( QListBoxItem * );
 
+protected:
+    virtual void virtual_hook( int id, void* data );
 private:
     class KCompletionBoxPrivate;
     KCompletionBoxPrivate* d;

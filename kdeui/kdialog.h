@@ -134,6 +134,9 @@ class KDialog : public QDialog
     static int mMarginSize;
     static int mSpacingSize;
 
+  protected:
+    virtual void virtual_hook( int id, void* data );
+  private:
     class KDialogPrivate;
     KDialogPrivate *d;
 

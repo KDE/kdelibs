@@ -813,11 +813,23 @@ int KFontDialog::getFontAndText( QFont &theFont, QString &theString,
   return( result );
 }
 
+void KFontChooser::virtual_hook( int, void* )
+{ /*BASE::virtual_hook( id, data );*/ }
+
+void KFontDialog::virtual_hook( int id, void* data )
+{ KDialogBase::virtual_hook( id, data ); }
+
 
 /*
 ****************************************************************************
 *
 * $Log$
+* Revision 1.85  2002/01/24 07:41:12  waba
+* * Add some spacing inside the groupbox.
+* * Fix logic when selecting another family (e.g. make sure the style and size
+*  are always updated and that the fontChanged signal is emitted exactly once.
+* * Stay within bounds.
+*
 * Revision 1.84  2002/01/08 00:23:58  djarvie
 * Add KFontChooser::setBackgroundColor(), KFontChooser::backgroundColor()
 *

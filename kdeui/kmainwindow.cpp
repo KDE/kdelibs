@@ -889,6 +889,10 @@ QSize KMainWindow::sizeForCentralWidgetSize(QSize size)
     return size;
 }
 
+void KMainWindow::virtual_hook( int id, void* data )
+{ KXMLGUIBuilder::virtual_hook( id, data );
+  KXMLGUIClient::virtual_hook( id, data ); }
+
 
 
 #include "kmainwindow.moc"

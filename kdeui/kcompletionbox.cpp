@@ -362,4 +362,7 @@ void KCompletionBox::slotItemClicked( QListBoxItem *item )
     }
 }
 
+void KCompletionBox::virtual_hook( int id, void* data )
+{ KListBox::virtual_hook( id, data ); }
+
 #include "kcompletionbox.moc"

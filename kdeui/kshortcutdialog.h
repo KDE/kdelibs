@@ -61,6 +61,9 @@ class KShortcutDialog : public KDialog
 	void x11EventKeyPress( XEvent *pEvent );
 #endif
 
+ protected:
+	virtual void virtual_hook( int id, void* data );
+ private:
 	class KShortcutDialogPrivate* d;
 };
 

@@ -163,11 +163,13 @@ private:
   QCheckBox *_tipOnStart;
   KTextBrowser *_tipText;
 
-  class KTipDialogPrivate;
-  KTipDialogPrivate *d;
-
   static KTipDialog *_instance;
 
+protected:
+  virtual void virtual_hook( int id, void* data );
+private:
+  class KTipDialogPrivate;
+  KTipDialogPrivate *d;
 };
 
 

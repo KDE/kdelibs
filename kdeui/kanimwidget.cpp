@@ -26,7 +26,7 @@
 #include <kdebug.h>
 #include <kiconloader.h>
 
-class KAnimWidget::KAnimWidgetPrivate
+class KAnimWidgetPrivate
 {
 public:
   bool                   loadingCompleted : 1;
@@ -181,5 +181,8 @@ void KAnimWidget::updateIcons()
   setFixedSize( d->size+2, d->size+2 );
   resize( d->size+2, d->size+2 );
 }
+
+void KAnimWidget::virtual_hook( int, void* )
+{ /*BASE::virtual_hook( id, data );*/ }
 
 #include "kanimwidget.moc"

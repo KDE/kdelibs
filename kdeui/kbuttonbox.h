@@ -23,6 +23,7 @@
 #include <qwidget.h>
 class QPushButton;
 
+class KButtonBoxPrivate;
 /**
  * Container widget for buttons. 
  * 
@@ -121,8 +122,6 @@ public:
 public: // as PrivateData needs Item, it has to be exported
   class Item;
 protected:
-  class PrivateData;  
-
   /**
     * @return the best size for a button. Checks all buttons and takes
     * the maximum width/height.
@@ -131,7 +130,10 @@ protected:
   void  placeButtons();
   QSize buttonSizeHint(QPushButton *) const;
   
-  PrivateData *data;
+protected:
+  virtual void virtual_hook( int id, void* data );
+private:
+  KButtonBoxPrivate *data;
 };
 
 #endif

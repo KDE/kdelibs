@@ -416,3 +416,7 @@ void KXMLGUIBuilder::finalizeGUI( KXMLGUIClient * )
     static_cast<KMainWindow *>(d->m_widget)->finalizeGUI( false );
 #endif
 }
+
+void KXMLGUIBuilder::virtual_hook( int, void* )
+{ /*BASE::virtual_hook( id, data );*/ }
+

@@ -169,4 +169,7 @@ void KKeyButton::drawButton( QPainter *painter )
 
 }
 
+void KKeyButton::virtual_hook( int, void* )
+{ /*BASE::virtual_hook( id, data );*/ }
+
 #include "kkeybutton.moc"

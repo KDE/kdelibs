@@ -312,8 +312,10 @@ private:
     Direction    _dir;
     KConfig*     _config;
     int          _actions;
-    class Private;
-    Private *d;
+protected:
+    virtual void virtual_hook( int id, void* data );
+    class KPanelAppletPrivate;
+    KPanelAppletPrivate *d;
 };
 
 #endif

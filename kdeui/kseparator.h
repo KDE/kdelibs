@@ -67,6 +67,10 @@ class KSeparator : public QFrame
 
 protected:
   virtual void drawFrame( QPainter * );
+protected:
+  virtual void virtual_hook( int id, void* data );
+private:
+  class KSeparatorPrivate* d;
 };
 
 

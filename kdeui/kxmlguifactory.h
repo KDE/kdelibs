@@ -176,6 +176,9 @@ class KXMLGUIFactory : public QObject
   void *dummy1; // remove next Friday
   void *dummy2; 
 
+protected:
+  virtual void virtual_hook( int id, void* data );
+private:
   KXMLGUIFactoryPrivate *d;
 };
 

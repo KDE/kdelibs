@@ -990,4 +990,16 @@ bool KDoubleNumInput::eventFilter( QObject* obj, QEvent* ev )
 
 // -----------------------------------------------------------------------------
 
+void KNumInput::virtual_hook( int, void* )
+{ /*BASE::virtual_hook( id, data );*/ }
+
+void KIntNumInput::virtual_hook( int id, void* data )
+{ KNumInput::virtual_hook( id, data ); }
+
+void KDoubleNumInput::virtual_hook( int id, void* data )
+{ KNumInput::virtual_hook( id, data ); }
+
+void KIntSpinBox::virtual_hook( int, void* )
+{ /*BASE::virtual_hook( id, data );*/ }
+
 #include "knuminput.moc"

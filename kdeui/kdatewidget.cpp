@@ -126,4 +126,7 @@ void KDateWidget::slotDateChanged( )
   setDate(date);
 }
 
+void KDateWidget::virtual_hook( int, void* )
+{ /*BASE::virtual_hook( id, data );*/ }
+
 #include "kdatewidget.moc"

@@ -1986,5 +1986,8 @@ void KToolBar::removeWidgetInternal( QWidget * w )
     id2widget.remove( *it );
 }
 
+void KToolBar::virtual_hook( int, void* )
+{ /*BASE::virtual_hook( id, data );*/ }
+
 #include "ktoolbar.moc"
 

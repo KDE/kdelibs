@@ -21,6 +21,9 @@
  * $Id$
  *
  * $Log$
+ * Revision 1.22  2002/02/27 23:15:45  pfeiffer
+ * kapp--
+ *
  * Revision 1.21  2002/01/22 10:23:55  hausmann
  * - minor API fix (don't return a const QColor object)
  *
@@ -646,5 +649,8 @@ KLed::minimumSizeHint() const
 {
   return QSize(16, 16 );
 }
+
+void KLed::virtual_hook( int, void* )
+{ /*BASE::virtual_hook( id, data );*/ }
 
 #include "kled.moc"

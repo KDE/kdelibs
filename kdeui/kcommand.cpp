@@ -26,6 +26,10 @@
 #include <klocale.h>
 #include <kpopupmenu.h>
 
+KCommand::~KCommand()
+{
+}
+
 KMacroCommand::KMacroCommand( const QString & name ) : KNamedCommand(name)
 {
     m_commands.setAutoDelete(true);
@@ -355,5 +359,17 @@ void KCommandHistory::updateActions()
         m_redo->setEnabled(m_first || (m_commands.findRef(d->m_present)!=-1 && m_commands.next()!=0));
     }
 }
+
+void KCommand::virtual_hook( int, void* )
+{ /*BASE::virtual_hook( id, data );*/ }
+
+void KNamedCommand::virtual_hook( int id, void* data )
+{ KCommand::virtual_hook( id, data ); }
+
+void KMacroCommand::virtual_hook( int id, void* data )
+{ KNamedCommand::virtual_hook( id, data ); }
+
+void KCommandHistory::virtual_hook( int, void* )
+{ /*BASE::virtual_hook( id, data );*/ }
 
 #include "kcommand.moc"

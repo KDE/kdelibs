@@ -399,3 +399,7 @@ KDatePicker::setFontSize(int s)
     }
   table->setFontSize(s);
 }
+
+void KDatePicker::virtual_hook( int id, void* data )
+{ /*BASE::virtual_hook( id, data );*/ }
+

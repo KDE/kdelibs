@@ -257,6 +257,9 @@ class KHelpMenu : public QObject
 
     bool         mShowWhatsThis;
 
+  protected:
+    virtual void virtual_hook( int id, void* data );
+  private:
     KHelpMenuPrivate *d;
 };
 

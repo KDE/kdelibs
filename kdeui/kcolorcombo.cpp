@@ -258,4 +258,7 @@ void KColorCombo::addColors()
 	}
 }
 
+void KColorCombo::virtual_hook( int, void* )
+{ /*BASE::virtual_hook( id, data );*/ }
+
 #include "kcolorcombo.moc"

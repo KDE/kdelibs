@@ -215,5 +215,7 @@ void KDialogQueue::slotShowQueuedDialog()
       ksdkdq.destructObject(); // Suicide.
 }
 
+void KDialog::virtual_hook( int, void* )
+{ /*BASE::virtual_hook( id, data );*/ }
 
 #include "kdialog.moc"

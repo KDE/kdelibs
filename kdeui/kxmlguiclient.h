@@ -274,6 +274,9 @@ private:
   // Actions to enable/disable on a state change
   QMap<QString,StateChange> m_actionsStateMap;
 
+protected:
+  virtual void virtual_hook( int id, void* data );
+private:
   KXMLGUIClientPrivate *d;
 };
 

@@ -509,6 +509,9 @@ private:
     // indicating if we should stop return-key events from propagating
     bool m_trapReturnKey;
 
+protected:
+    virtual void virtual_hook( int id, void* data );
+private:
     class KComboBoxPrivate;
     KComboBoxPrivate *d;
 };
@@ -757,6 +760,8 @@ private:
     bool myRotated;
     KPixmapProvider *myPixProvider;
 
+protected:
+    virtual void virtual_hook( int id, void* data );
 private:
     class KHistoryComboPrivate;
     KHistoryComboPrivate *d;

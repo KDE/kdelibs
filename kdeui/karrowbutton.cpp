@@ -21,7 +21,7 @@
 #include <qstyle.h>
 #include <qpainter.h>
 
-class KArrowButton::Private
+class KArrowButtonPrivate
 {
 	public:
 		Qt::ArrowType arrow;
@@ -31,7 +31,7 @@ KArrowButton::KArrowButton(QWidget *parent, Qt::ArrowType arrow,
 		const char *name)
 	: QPushButton(parent, name)
 {
-	d = new Private();
+	d = new KArrowButtonPrivate();
 	d->arrow = arrow;
 }
 
@@ -112,5 +112,8 @@ void KArrowButton::drawButton(QPainter *p)
 			       colorGroup(), flags );
 #endif
 }
+
+void KArrowButton::virtual_hook( int, void* )
+{ /*BASE::virtual_hook( id, data );*/ }
 
 #include "karrowbutton.moc"

@@ -81,6 +81,8 @@ private:
     QValueList<int> m_lineWidths;
     QRect m_boundingRect;
     QString m_text;
+private:
+    class KWordWrapPrivate* d;
 };
 
 #endif

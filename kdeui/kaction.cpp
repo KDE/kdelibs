@@ -3219,5 +3219,48 @@ bool KActionPtrShortcutList::setOther( Other, uint, QVariant )
 bool KActionPtrShortcutList::save() const
 	{ return false; }
 
+void KActionShortcutList::virtual_hook( int id, void* data )
+{ KShortcutList::virtual_hook( id, data ); }
+
+void KActionPtrShortcutList::virtual_hook( int id, void* data )
+{ KShortcutList::virtual_hook( id, data ); }
+
+void KAction::virtual_hook( int, void* )
+{ /*BASE::virtual_hook( id, data );*/ }
+
+void KToggleAction::virtual_hook( int id, void* data )
+{ KAction::virtual_hook( id, data ); }
+
+void KRadioAction::virtual_hook( int id, void* data )
+{ KToggleAction::virtual_hook( id, data ); }
+
+void KSelectAction::virtual_hook( int id, void* data )
+{ KAction::virtual_hook( id, data ); }
+
+void KListAction::virtual_hook( int id, void* data )
+{ KSelectAction::virtual_hook( id, data ); }
+
+void KRecentFilesAction::virtual_hook( int id, void* data )
+{ KListAction::virtual_hook( id, data ); }
+
+void KFontAction::virtual_hook( int id, void* data )
+{ KSelectAction::virtual_hook( id, data ); }
+
+void KFontSizeAction::virtual_hook( int id, void* data )
+{ KSelectAction::virtual_hook( id, data ); }
+
+void KActionMenu::virtual_hook( int id, void* data )
+{ KAction::virtual_hook( id, data ); }
+
+void KToolBarPopupAction::virtual_hook( int id, void* data )
+{ KAction::virtual_hook( id, data ); }
+
+void KActionSeparator::virtual_hook( int id, void* data )
+{ KAction::virtual_hook( id, data ); }
+
+void KActionCollection::virtual_hook( int, void* )
+{ /*BASE::virtual_hook( id, data );*/ }
+
+
 #include "kaction.moc"
 

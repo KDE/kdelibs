@@ -66,4 +66,7 @@ void KActiveLabel::openLink(const QString & link)
    kapp->kdeinitExec("kfmclient", args);
 }
 
+void KActiveLabel::virtual_hook( int, void* )
+{ /*BASE::virtual_hook( id, data );*/ }
+
 #include "kactivelabel.moc"

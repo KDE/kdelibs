@@ -288,4 +288,7 @@ void KListBox::slotMouseButtonClicked( int btn, QListBoxItem *item, const QPoint
     emitExecute( item, pos );
 }
 
+void KListBox::virtual_hook( int, void* )
+{ /*BASE::virtual_hook( id, data );*/ }
+
 #include "klistbox.moc"

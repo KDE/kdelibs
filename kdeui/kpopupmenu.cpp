@@ -281,4 +281,10 @@ void KPopupMenu::setTitle(const QString &title)
     d->m_lastTitle = title;
 }
 
+void KPopupTitle::virtual_hook( int, void* )
+{ /*BASE::virtual_hook( id, data );*/ }
+
+void KPopupMenu::virtual_hook( int, void* )
+{ /*BASE::virtual_hook( id, data );*/ }
+
 #include "kpopupmenu.moc"

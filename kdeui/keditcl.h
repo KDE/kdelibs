@@ -48,6 +48,9 @@ public slots:
 private:
     KIntNumInput *lineNum;
 
+protected:
+    virtual void virtual_hook( int id, void* data );
+private:
     class KEdGotoLinePrivate;
     KEdGotoLinePrivate *d;
 };
@@ -89,14 +92,17 @@ private:
     QCheckBox *sensitive;
     QCheckBox *direction;
 
-    class KEdFindPrivate;
-    KEdFindPrivate *d;
     virtual void done(int i ) { KDialogBase::done(i); }
 
 signals:
 
     void search();
     void done();
+protected:
+    virtual void virtual_hook( int id, void* data );
+private:
+    class KEdFindPrivate;
+    KEdFindPrivate *d;
 };
 
 ///
@@ -140,8 +146,6 @@ private:
     QCheckBox 	*sensitive;
     QCheckBox 	*direction;
 
-    class KEdReplacePrivate;
-    KEdReplacePrivate *d;
 	virtual void done(int i ) { KDialogBase::done(i); }
 
 signals:
@@ -149,6 +153,11 @@ signals:
     void find();
     void replaceAll();
     void done();
+protected:
+  virtual void virtual_hook( int id, void* data );
+private:
+    class KEdReplacePrivate;
+    KEdReplacePrivate *d;
 };
 
 
@@ -398,6 +407,9 @@ private:
     bool        word_wrap_is_set;
     int         fill_column_value;
 
+protected:
+    virtual void virtual_hook( int id, void* data );
+private:
     class KEditPrivate;
     KEditPrivate *d;
 };

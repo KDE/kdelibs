@@ -112,6 +112,9 @@ class KTextBrowser : public QTextBrowser
   private:
     bool    mNotifyClick;
 
+  protected:
+    virtual void virtual_hook( int id, void* data );
+  private:
     class KTextBrowserPrivate;
     KTextBrowserPrivate *d;
 };

@@ -249,6 +249,9 @@ private:
     Position     		_pos;
     KConfig*     		_config;
     int          		_actions;
+protected:
+    virtual void virtual_hook( int id, void* data );
+private:
     KPanelExtensionPrivate     *d;
 };
 

@@ -157,6 +157,9 @@ protected:
 private:
   QString   mFormat;
 
+protected:
+  virtual void virtual_hook( int id, void* data );
+private:
   class KProgressPrivate;
   KProgressPrivate *d;
 };
@@ -213,8 +216,11 @@ class KProgressDialog : public KDialogBase
         KProgress* mProgressBar;
         QTimer*    mShowTimer;
         int        mMinDuration;
-        class KProgressPrivate;
-        KProgressPrivate *d;
+    protected:
+	virtual void virtual_hook( int id, void* data );
+    private:
+        class KProgressDialogPrivate;
+        KProgressDialogPrivate *d;
 };
 
 #endif

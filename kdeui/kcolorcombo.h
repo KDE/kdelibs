@@ -88,8 +88,11 @@ private:
 	QColor customColor;
 	QColor internalcolor;
 
-    class KColorComboPrivate;
-    KColorComboPrivate *d;
+protected:
+	virtual void virtual_hook( int id, void* data );
+private:
+	class KColorComboPrivate;
+	KColorComboPrivate *d;
 };
 
 #endif	// __KCOLORCOMBO_H__

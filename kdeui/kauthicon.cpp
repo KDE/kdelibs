@@ -192,4 +192,13 @@ void KWritePermsIcon::updateStatus()
   }
 }
 
+void KAuthIcon::virtual_hook( int, void* )
+{ /*BASE::virtual_hook( id, data );*/ }
+
+void KRootPermsIcon::virtual_hook( int id, void* data )
+{ KAuthIcon::virtual_hook( id, data ); }
+
+void KWritePermsIcon::virtual_hook( int id, void* data )
+{ KAuthIcon::virtual_hook( id, data ); }
+
 #include "kauthicon.moc"

@@ -703,4 +703,10 @@ KPopupFrame::exec(int x, int y)
   return exec(QPoint(x, y));
 }
 
+void KPopupFrame::virtual_hook( int, void* )
+{ /*BASE::virtual_hook( id, data );*/ }
+
+void KDateTable::virtual_hook( int, void* )
+{ /*BASE::virtual_hook( id, data );*/ }
+
 #include "kdatetbl.moc"

@@ -307,6 +307,9 @@ private:
   Look  led_look;
   Shape led_shape;
 
+protected:
+  virtual void virtual_hook( int id, void* data );
+private:
   class KLedPrivate;
   KLedPrivate *d;
 };

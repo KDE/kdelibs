@@ -34,7 +34,7 @@
 
 #include "keditlistbox.h"
 
-class KEditListBox::PrivateData
+class KEditListBoxPrivate
 {
    public:
       bool m_checkAtEntering;
@@ -63,7 +63,7 @@ KEditListBox::~KEditListBox()
 
 void KEditListBox::init( bool checkAtEntering, int buttons )
 {
-   d=new PrivateData;
+   d=new KEditListBoxPrivate;
    d->m_checkAtEntering=checkAtEntering;
    d->buttons = buttons;
 
@@ -335,5 +335,8 @@ QStringList KEditListBox::items() const
 
     return list;
 }
+
+void KEditListBox::virtual_hook( int, void* )
+{ /*BASE::virtual_hook( id, data );*/ }
 
 #include "keditlistbox.moc"

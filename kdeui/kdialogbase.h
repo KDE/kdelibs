@@ -1446,16 +1446,11 @@ class KDialogBase : public KDialog
     int  mButtonOrientation;
     ButtonCode mEscapeButton;
 
+  protected:
+    virtual void virtual_hook( int id, void* data );
+  private:
     class KDialogBasePrivate;
     KDialogBasePrivate *d;
 };
 
-
-
-
-
-
 #endif
-
-
-

@@ -301,6 +301,9 @@ private:
 
   bool usingFixed;
 
+protected:
+  virtual void virtual_hook( int id, void* data );
+private:
   class KFontChooserPrivate;
   KFontChooserPrivate *d;
 };
@@ -489,6 +492,8 @@ signals:
 protected:
   KFontChooser *chooser;
 
+protected:
+  virtual void virtual_hook( int id, void* data );
 private:
   class KFontDialogPrivate;
   KFontDialogPrivate *d;

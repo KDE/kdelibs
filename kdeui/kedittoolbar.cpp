@@ -984,4 +984,10 @@ void KEditToolbarWidget::updateLocal(QDomElement& elem)
   }
 }
 
+void KEditToolbar::virtual_hook( int id, void* data )
+{ KDialogBase::virtual_hook( id, data ); }
+
+void KEditToolbarWidget::virtual_hook( int id, void* data )
+{ KXMLGUIClient::virtual_hook( id, data ); }
+
 #include "kedittoolbar.moc"

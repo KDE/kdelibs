@@ -154,3 +154,6 @@ bool KDCOPActionProxy::processAction( const QCString &, const QCString &fun, con
   return KDCOPPropertyProxy::processPropertyRequest( fun, data, replyType, replyData, action );
 }
 
+void KDCOPActionProxy::virtual_hook( int id, void* data )
+{ DCOPObjectProxy::virtual_hook( id, data ); }
+

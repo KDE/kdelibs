@@ -623,4 +623,10 @@ void KHistoryCombo::slotClear()
     emit cleared();
 }
 
+void KComboBox::virtual_hook( int id, void* data )
+{ KCompletionBase::virtual_hook( id, data ); }
+
+void KHistoryCombo::virtual_hook( int id, void* data )
+{ KComboBox::virtual_hook( id, data ); }
+
 #include "kcombobox.moc"

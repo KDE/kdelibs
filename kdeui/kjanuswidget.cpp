@@ -1059,8 +1059,7 @@ int KJanusWidget::IconListItem::width( const QListBox *lb ) const
 }
 
 
-
-
+void KJanusWidget::virtual_hook( int, void* )
+{ /*BASE::virtual_hook( id, data );*/ }
 
 #include "kjanuswidget.moc"
-

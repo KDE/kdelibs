@@ -62,7 +62,7 @@ public:
 
 template class QPtrList<KButtonBox::Item>;
 
-class KButtonBox::PrivateData {
+class KButtonBoxPrivate {
 public:
   unsigned short border;
   unsigned short autoborder;
@@ -75,7 +75,7 @@ KButtonBox::KButtonBox(QWidget *parent, Orientation _orientation,
 		       int border, int autoborder)
   :  QWidget(parent)
 {
-  data = new PrivateData;
+  data = new KButtonBoxPrivate;
   assert(data != 0);
 
   data->orientation = _orientation;
@@ -292,4 +292,7 @@ QSize KButtonBox::buttonSizeHint(QPushButton *b) const {
 
   return s;
 }
+
+void KButtonBox::virtual_hook( int, void* )
+{ /*BASE::virtual_hook( id, data );*/ }
 

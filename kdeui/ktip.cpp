@@ -238,4 +238,7 @@ bool KTipDialog::eventFilter(QObject *o, QEvent *e)
   return QWidget::eventFilter( o, e );
 }
 
+void KTipDialog::virtual_hook( int id, void* data )
+{ KDialog::virtual_hook( id, data ); }
+
 #include "ktip.moc"

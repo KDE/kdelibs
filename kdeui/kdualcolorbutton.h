@@ -142,6 +142,9 @@ private:
     bool dragFlag, miniCtlFlag;
     DualColor curColor, tmpColor;
 
+protected:
+    virtual void virtual_hook( int id, void* data );
+private:
     class KDualColorPrivate;
     KDualColorPrivate *d;
 };

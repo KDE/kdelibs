@@ -878,4 +878,10 @@ int KKeyDialog::configure( KActionCollection* coll, QWidget *parent, bool bSaveS
 	return retcode;
 }*/
 
+void KKeyChooser::virtual_hook( int, void* )
+{ /*BASE::virtual_hook( id, data );*/ }
+
+void KKeyDialog::virtual_hook( int id, void* data )
+{ KDialogBase::virtual_hook( id, data ); }
+
 #include "kkeydialog.moc"

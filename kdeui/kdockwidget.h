@@ -123,6 +123,8 @@ public:
   virtual void loadConfig( KConfig* ){};
 #endif
 
+protected:
+  virtual void virtual_hook( int id, void* data );
 private:
   class KDockWidgetAbstractHeaderPrivate;
   KDockWidgetAbstractHeaderPrivate *d;
@@ -163,6 +165,9 @@ public:
 private:
   /** the dockwidget where this belongs to */
   KDockWidget* dw;
+protected:
+  virtual void virtual_hook( int id, void* data );
+private:
   class KDockWidgetAbstractHeaderDragPrivate;
   KDockWidgetAbstractHeaderDragPrivate *d;
 };
@@ -202,6 +207,8 @@ protected:
    */
   virtual void paintEvent( QPaintEvent* );
 
+protected:
+  virtual void virtual_hook( int id, void* data );
 private:
   class KDockWidgetHeaderDragPrivate;
   KDockWidgetHeaderDragPrivate *d;
@@ -288,6 +295,8 @@ protected:
   /** the drag panel (double line) */
   KDockWidgetHeaderDrag* drag;
 
+protected:
+  virtual void virtual_hook( int id, void* data );
 private:
   class KDockWidgetHeaderPrivate;
   KDockWidgetHeaderPrivate *d;
@@ -316,6 +325,8 @@ public:
    */
   virtual ~KDockTabGroup(){};
 
+protected:
+  virtual void virtual_hook( int id, void* data );
 private:
   class KDockTabGroupPrivate;
   KDockTabGroupPrivate *d;
@@ -712,6 +723,9 @@ private:
   bool isGroup;
   bool isTabGroup;
 
+protected:
+  virtual void virtual_hook( int id, void* data );
+private:
   KDockWidgetPrivate *d;
 };
 
@@ -1049,6 +1063,9 @@ private:
    */
   QPtrList<MenuDockData> *menuData;
 
+protected:
+  virtual void virtual_hook( int id, void* data );
+private:
   class KDockManagerPrivate;
   KDockManagerPrivate *d;
 };
@@ -1248,6 +1265,8 @@ protected slots:
   */
   void slotDockWidgetUndocked();
 
+protected:
+  virtual void virtual_hook( int id, void* data );
 private:
   class KDockMainWindowPrivate;
   KDockMainWindowPrivate *d;
@@ -1326,6 +1345,8 @@ protected slots:
 public:
 	virtual void resizeEvent(QResizeEvent *);
 
+protected:
+  virtual void virtual_hook( int id, void* data );
 private:
   class KDockMainWindowPrivate;
   KDockMainWindowPrivate *d;
