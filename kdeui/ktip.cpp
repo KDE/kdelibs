@@ -193,6 +193,12 @@ KTipDialog::KTipDialog(KTipDatabase *db, QWidget *parent, const char *name)
 
 void KTipDialog::showTip(const QString &tipFile, bool force)
 {
+  showTip(kapp->mainWidget(), tipFile, force);
+}
+
+
+void KTipDialog::showTip(QWidget *parent,const QString &tipFile, bool force)
+{
   if (!force)
   {
     KConfig *config = kapp->config();
@@ -202,7 +208,7 @@ void KTipDialog::showTip(const QString &tipFile, bool force)
   }
 
   if (!_instance)
-    _instance = new KTipDialog(new KTipDatabase(tipFile), kapp->mainWidget());
+    _instance = new KTipDialog(new KTipDatabase(tipFile), parent);
 
   _instance->nextTip();
   _instance->show();

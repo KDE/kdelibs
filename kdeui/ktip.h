@@ -114,10 +114,19 @@ public:
    *
    * Note that you probably want an item in the help menu calling
    * this method with force=true.
-   *
+   * 
+   * @param parent Parent widget of TipDialog.
    * @param tipFile The name of the tip file.
    * @param force If true, the dialog is show, even when the users
    *              disabled it.
+   */
+  static void showTip(QWidget *parent,const QString &tipFile=QString::null, bool force=false);
+
+  /**
+   * Show a tip.
+   *
+   * This methods calls showTip() with the applications main window as parent.
+   *
    */
   static void showTip(const QString &tipFile=QString::null, bool force=false);
 
