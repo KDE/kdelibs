@@ -262,7 +262,7 @@ QFont KGlobalSettings::fixedFont()
 
     KConfig *c = KGlobal::config();
     KConfigGroupSaver cgs( c, QString::fromLatin1("General") );
-    *_fixedFont = c->readFontEntry("fixed", _menuFont);
+    *_fixedFont = c->readFontEntry("fixed", _fixedFont);
     // Resolve "default" charset. Note that if the charset is anything else,
     // then calling setQFont is not necessary, the above already sets the charset.
     if ( c->readEntry("fixedCharset","default") == "default" )
