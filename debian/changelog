@@ -1,3 +1,14 @@
+kdelibs (4:2.2-alpha1-2) experimental; urgency=low
+ 
+  * More upstream fixes
+  * And lets list the bug fixes
+         None yet..have to figure them out
+  * Move dh_make files into kdelibs-dev package where they were supposed to be
+  * Move more includes from kdelibs3 to kdelibs-dev ... new stuff I missed
+  * More more cups bits out of kdelibs3 and into kdelibs3-cups
+
+ -- Ivan E. Moore II <rkrusty@debian.org>  Sat, 14 Apr 2001 05:35:00 -0700
+
 kdelibs (4:2.2-alpha1-1) experimental; urgency=low
  
   * New upstream alpha version.

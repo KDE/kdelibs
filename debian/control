@@ -8,11 +8,11 @@ Standards-Version: 3.5.2
 Package: kdelibs3
 Architecture: any
 Section: libs
-Replaces: kdelibs3-cvs, kdelibs3-nossl, kdelibs2g, kdebase-libs (<< 4:2.1-20010109-1), kdebase (<< 4:2.2-alpha1)
+Replaces: kdelibs2g, kdebase-libs (<< 4:2.1-20010109-1), kdebase (<< 4:2.2-alpha1), konqueror (<< 4:2.2-alpha1)
 Depends: ${shlibs:Depends}
 Recommends: libarts | libarts-alsa, libkmid | libkmid-alsa, kdelibs3-cups
 Suggests: kdelibs3-crypto, task-anti-aliasing, gdb, libkdb-mysql, libkdb-postgres
-Conflicts: kdelibs3-nossl, kdebase-libs (<< 4:2.1-20010109-1)
+Conflicts: kdebase-libs (<< 4:2.1-20010109-1)
 Description: KDE core libraries (runtime files)
  KDE core libraries.
  You need these files to run kde applications.
@@ -20,7 +20,7 @@ Description: KDE core libraries (runtime files)
 Package: kdelibs3-cups
 Architecture: any
 Section: libs
-Replaces: kdelibs3 (<< 4:2.2-alpha1-1)
+Replaces: kdelibs3 (<< 4:2.2-alpha1-2)
 Depends: ${shlibs:Depends}, kdebase-libs
 Conflicts: kdelibs3 (<< 4:2.2-alpha1-1)
 Description: KDE print system (CUPS support)
@@ -139,7 +139,7 @@ Description: aRts Sound system (midi development files)
 Package: kdelibs3-doc
 Architecture: all
 Section: doc
-Replaces: kdelibs3-doc-cvs, kdelibs-doc
+Replaces: kdelibs-doc
 Suggests: kdelibs3, kdelibs-dev, libqt-dev (>= 2:2.3.0), kdoc
 Provides: kdelibs-doc
 Description: KDE core library documentation
@@ -149,7 +149,7 @@ Description: KDE core library documentation
 Package: kdelibs-dev
 Architecture: any
 Section: devel
-Replaces: kdelibs2g-dev, kdelibs3-nossl-dev, kdelibs3 (<< 4:2.0.1-0), kdelibs3-dev
+Replaces: kdelibs2g-dev, kdelibs3-nossl-dev, kdelibs3 (<< 4:2.2-alpha1-2), kdelibs3-dev
 Depends: kdelibs3 (= ${Source-Version}), libarts-dev (= ${Source-Version}), libkmid-dev (= ${Source-Version}), libqt-dev (>= 2:2.3.0), kdelibs3-cups (= ${Source-Version}), libaudiofile-dev, gettext, libtiff3g-dev | libtiff-dev, jade, sgml-base, docbook, docbook-stylesheets, libpcre3-dev, libbz2-dev, libsasl-dev
 Conflicts: kdelibs0-dev, kdelibs2g-dev, kdelibs3-nossl-dev, kdelibs3-dev
 Suggests: kdelibs3-doc, kdoc, libasound1-dev, automake, autoconf, libtool
