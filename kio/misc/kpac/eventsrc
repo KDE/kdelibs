@@ -121,6 +121,7 @@ Name[sr]=Greška prilikom izračunavanja u skripti
 Name[sv]=Utvärderingsfel för skript
 Name[tr]=Betik çalıştırma hatası
 Comment=There was an error executing the proxy configuration script
+Comment[bg]=Сериозна грешка, предизвикваща излизане от програмата
 Comment[ca]=Hi ha hagut un error executant l'script de configuració del servidor intermedi
 Comment[cs]=Nastala chyba při spouštění konfiguračního skriptu proxy
 Comment[cy]=Digwyddodd gwall wrth weithredu'r sgript ffurfweddu'r dirprwy
