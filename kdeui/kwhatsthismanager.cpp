@@ -98,7 +98,8 @@ void KWhatsThisManager::init ()
 
 KWhatsThisManager::KWhatsThisManager ()
 {
-    qApp -> installEventFilter (this);
+    // go away...
+    // qApp -> installEventFilter (this);
 }
 
 bool KWhatsThisManager::eventFilter (QObject * /*o*/, QEvent *e)
