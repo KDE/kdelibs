@@ -1209,13 +1209,8 @@ KURL Cache::completeURL( const DOMString &_url, const DOMString &_baseUrl )
     QString url = _url.string();
     QString baseUrl = _baseUrl.string();
     KURL orig(baseUrl);
-    if(_url[(unsigned int)0] != '/')
-    {
-        KURL u( orig, url );
-        return u;
-    }
-    orig.setEncodedPathAndQuery(url);
-    return orig;
+    KURL u( orig, url );
+    return u;
 }
 
 void Cache::removeCacheEntry( CachedObject *object )
