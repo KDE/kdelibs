@@ -1326,40 +1326,56 @@ void HTTPProtocol::http_closeConnection()
   m_sock = 0;
 }
 
-#if 1
-#ifdef __GNUC__
-#warning To be removed ?
-#endif
-// David: No, to be implemented as stat() - it's ok to return
-// only the size if that's all kio_http can guess.
-#else
-void HTTPProtocol::slotGetSize(const char *_url)
+// Returns only the file size, that's all kio_http can guess.
+void HTTPProtocol::stat(const QString& path)
 {
-  KURL usrc(_url);
-  if (usrc.isMalformed()) {
-    error(ERR_MALFORMED_URL, _url);
-    return;
-  }
+  if (m_request.hostname.isEmpty())
+     error( KIO::ERR_INTERNAL, "stat: No host specified!");
 
-  if (!isValidProtocol(&usrc)) {
-    error(ERR_INTERNAL, "kio_http got non http/https/httpf url");
-    return;
-  }
+  m_request.method = HTTP_GET;
+  m_request.path = path;
+  m_request.query = ""; // Do we need to add query to the arguments /
+  m_request.reload = false; // Use the cache
+  m_request.offset = 0;
+  m_request.do_proxy = m_bUseProxy;
+  buildURL();
 
-  m_bIgnoreErrors = false;
-  if (http_open(usrc, 0, false)) {
+  if (http_open()) {
 
     if (readHeader())
-      totalSize( m_iSize );
+    {
+      UDSEntry entry;
+      UDSAtom atom;
+      // Extract filename out of path (not very important, I guess...)
+      QString filename = KURL( path ).filename();
+      atom.m_uds = KIO::UDS_NAME;
+      atom.m_str = filename;
+      entry.append( atom );
 
-    http_close();
+      atom.m_uds = KIO::UDS_FILE_TYPE;
+      atom.m_long = S_IFREG; // a file
+      entry.append( atom );
 
-    finished();
+      atom.m_uds = KIO::UDS_ACCESS;
+      atom.m_long = S_IRUSR | S_IRGRP | S_IROTH; // readable by everybody
+      entry.append( atom );
+
+      atom.m_uds = KIO::UDS_SIZE;
+      atom.m_long = m_iSize;
+      entry.append( atom );
+
+      statEntry( entry );
+
+      http_close();
+      finished();
+    }
+    else {
+      http_close();
+      // error already emitted
+    }
+
   }
-
-  return;
 }
-#endif
 
 const char *HTTPProtocol::getUserAgentString ()
 {

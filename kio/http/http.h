@@ -115,11 +115,7 @@ public:
 
   virtual void mimetype( const QString& path);
 
-#if 0
-  // TODO (replaces testDir and getSize)
   virtual void stat( const QString& path );
-  virtual void del( const QString& path, bool isfile);
-#endif
 
 protected:
 
