@@ -28,8 +28,9 @@
 #include "kreplacedialog.h"
 #include <qregexp.h>
 
-struct KReplace::KReplacePrivate
+class KReplace::KReplacePrivate
 {
+public:
     void setLabel( const QString& pattern, const QString& replacement ) {
         m_mainLabel->setText( i18n("Replace '%1' with '%2'?").arg(pattern).arg(replacement) );
     }
