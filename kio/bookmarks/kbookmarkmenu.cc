@@ -18,18 +18,6 @@
    Boston, MA 02111-1307, USA.
 */
 
-
-#include <sys/types.h>
-#include <sys/stat.h>
-
-#include <assert.h>
-#include <dirent.h>
-#include <errno.h>
-#include <fcntl.h>
-#include <stddef.h>
-#include <stdlib.h>
-#include <unistd.h>
-
 #include "kbookmarkmenu.h"
 #include "kbookmarkmenu_p.h"
 #include "kbookmarkimporter.h"
@@ -66,6 +54,28 @@
 #include <kiconloader.h>
 
 template class QPtrList<KBookmarkMenu>;
+
+// kbookmark material?
+
+static QString makeTextNodeMod(KBookmark bk, const QString &m_nodename, const QString &m_newText) {
+  QDomNode subnode = bk.internalElement().namedItem(m_nodename);
+  if (subnode.isNull()) {
+    subnode = bk.internalElement().ownerDocument().createElement(m_nodename);
+    bk.internalElement().appendChild(subnode);
+  }
+
+  if (subnode.firstChild().isNull()) {
+    QDomText domtext = subnode.ownerDocument().createTextNode("");
+    subnode.appendChild(domtext);
+  }
+
+  QDomText domtext = subnode.firstChild().toText();
+
+  QString m_oldText = domtext.data();
+  domtext.setData(m_newText);
+
+  return m_oldText;
+}
 
 /********************************************************************
  *
@@ -214,80 +224,79 @@ void KBookmarkMenu::slotAboutToShowContextMenu( KPopupMenu*, int, QPopupMenu* co
   fillContextMenu( contextMenu, s_highlightedAddress, 0 );
 }
 
-void KBookmarkMenu::fillContextMenu( QPopupMenu* contextMenu, const QString & address, int val )
+static struct {
+  KBookmarkManager *m_pManager;
+  QObject *recv;
+} s_rmb_state;
+
+static KBookmark rmb_atAddress(const QString & address)
 {
-  KBookmark bookmark = m_pManager->findByAddress( address );
+  KBookmark bookmark = s_rmb_state.m_pManager->findByAddress( address );
   Q_ASSERT(!bookmark.isNull());
+  return bookmark;
+}
+
+static void rmb_fillContextMenu( QPopupMenu* contextMenu, const QString & address, int val )
+{
+  KBookmark bookmark = rmb_atAddress(address);
 
   int id;
 
   if (bookmark.isGroup()) {
-    id = contextMenu->insertItem( i18n( "Add Bookmark Here" ), this, SLOT(slotRMBActionInsert(int)) );
+    id = contextMenu->insertItem( i18n( "Add Bookmark Here" ), s_rmb_state.recv, SLOT(slotRMBActionInsert(int)) );
     contextMenu->setItemParameter( id, val );
-    id = contextMenu->insertItem( i18n( "Delete Folder" ), this, SLOT(slotRMBActionRemove(int)) );
+    id = contextMenu->insertItem( i18n( "Delete Folder" ), s_rmb_state.recv, SLOT(slotRMBActionRemove(int)) );
     contextMenu->setItemParameter( id, val );
-    id = contextMenu->insertItem( i18n( "Open Folder in Bookmark Editor" ), this, SLOT(slotRMBActionEditAt(int)) );
+    id = contextMenu->insertItem( i18n( "Open Folder in Bookmark Editor" ), s_rmb_state.recv, SLOT(slotRMBActionEditAt(int)) );
     contextMenu->setItemParameter( id, val );
   } 
   else
   {
-    id = contextMenu->insertItem( i18n( "Delete Bookmark" ), this, SLOT(slotRMBActionRemove(int)) );
+    id = contextMenu->insertItem( i18n( "Delete Bookmark" ), s_rmb_state.recv, SLOT(slotRMBActionRemove(int)) );
     contextMenu->setItemParameter( id, val );
-    id = contextMenu->insertItem( i18n( "Copy Link Location" ), this, SLOT(slotRMBActionCopyLocation(int)) );
+    id = contextMenu->insertItem( i18n( "Copy Link Location" ), s_rmb_state.recv, SLOT(slotRMBActionCopyLocation(int)) );
     contextMenu->setItemParameter( id, val );
-    id = contextMenu->insertItem( i18n( "Open Bookmark" ), this, SLOT(slotRMBActionOpen(int)) );
+    id = contextMenu->insertItem( i18n( "Open Bookmark" ), s_rmb_state.recv, SLOT(slotRMBActionOpen(int)) );
     contextMenu->setItemParameter( id, val );
-    id = contextMenu->insertItem( i18n( "Add Bookmark Here" ), this, SLOT(slotRMBActionInsert(int)) );
+    id = contextMenu->insertItem( i18n( "Add Bookmark Here" ), s_rmb_state.recv, SLOT(slotRMBActionInsert(int)) );
     contextMenu->setItemParameter( id, val );
   }
-  id = contextMenu->insertItem( i18n( "Properties" ), this, SLOT(slotRMBActionProperties(int)) );
+  id = contextMenu->insertItem( i18n( "Properties" ), s_rmb_state.recv, SLOT(slotRMBActionProperties(int)) );
   contextMenu->setItemParameter( id, val );
+}
 
-  emit aboutToShowContextMenu( bookmark, contextMenu );
+void KBookmarkMenu::fillContextMenu( QPopupMenu* contextMenu, const QString & address, int val )
+{ 
+  s_rmb_state.recv = this;
+  s_rmb_state.m_pManager = m_pManager;
+  rmb_fillContextMenu(contextMenu, address, val);
+  emit aboutToShowContextMenu( rmb_atAddress(address), contextMenu );
 }
 
 void KBookmarkMenu::slotRMBActionEditAt( int val )
 {
-  //kdDebug(7043) << "KBookmarkMenu::slotRMBActionEditAt" << s_highlightedAddress << endl;
+  s_rmb_state.m_pManager = m_pManager;
+
+  kdDebug(7043) << "KBookmarkMenu::slotRMBActionEditAt" << s_highlightedAddress << endl;
   if (invalid(val)) return;
 
-  KBookmark bookmark = m_pManager->findByAddress( s_highlightedAddress );
-  Q_ASSERT(!bookmark.isNull());
+  KBookmark bookmark = rmb_atAddress(s_highlightedAddress);
 
-  emit m_pManager->slotEditBookmarksAtAddress( s_highlightedAddress );
-}
-
-QString makeTextNodeMod(KBookmark bk, const QString &m_nodename, const QString &m_newText) {
-   QDomNode subnode = bk.internalElement().namedItem(m_nodename);
-   if (subnode.isNull()) {
-      subnode = bk.internalElement().ownerDocument().createElement(m_nodename);
-      bk.internalElement().appendChild(subnode);
-   }
-
-   if (subnode.firstChild().isNull()) {
-      QDomText domtext = subnode.ownerDocument().createTextNode("");
-      subnode.appendChild(domtext);
-   }
-
-   QDomText domtext = subnode.firstChild().toText();
-
-   QString m_oldText = domtext.data();
-   domtext.setData(m_newText);
-
-   return m_oldText;
+  s_rmb_state.m_pManager->slotEditBookmarksAtAddress( s_highlightedAddress );
 }
 
 void KBookmarkMenu::slotRMBActionProperties( int val )
 {
+  s_rmb_state.m_pManager = m_pManager;
+
   kdDebug(7043) << "KBookmarkMenu::slotRMBActionProperties" << s_highlightedAddress << endl;
   if (invalid(val)) return;
 
-  KBookmark bookmark = m_pManager->findByAddress( s_highlightedAddress );
-  Q_ASSERT(!bookmark.isNull());
+  KBookmark bookmark = rmb_atAddress(s_highlightedAddress);
 
   QString folder = bookmark.isGroup() ? QString::null : bookmark.url().url();
   KBookmarkEditDialog dlg( bookmark.fullText(), folder, 
-                           m_pManager, KBookmarkEditDialog::ModifyMode );
+                           s_rmb_state.m_pManager, KBookmarkEditDialog::ModifyMode );
   if ( dlg.exec() != KDialogBase::Accepted )
     return;
 
@@ -296,14 +305,14 @@ void KBookmarkMenu::slotRMBActionProperties( int val )
 
   kdDebug(7043) << "Requested move to " << dlg.finalAddress() << "!" << endl;
 
-  KBookmarkGroup parentBookmark = m_pManager->findByAddress( m_parentAddress ).toGroup();
-  Q_ASSERT(!parentBookmark.isNull());
-
-  m_pManager->emitChanged( parentBookmark );
+  KBookmarkGroup parentBookmark = rmb_atAddress(m_parentAddress).toGroup();
+  s_rmb_state.m_pManager->emitChanged( parentBookmark );
 }
 
 void KBookmarkMenu::slotRMBActionInsert( int val )
 {
+  s_rmb_state.m_pManager = m_pManager;
+
   kdDebug(7043) << "KBookmarkMenu::slotRMBActionInsert" << s_highlightedAddress << endl;
   if (invalid(val)) return;
 
@@ -317,8 +326,7 @@ void KBookmarkMenu::slotRMBActionInsert( int val )
   if (title.isEmpty())
     title = url;
 
-  KBookmark bookmark = m_pManager->findByAddress( s_highlightedAddress );
-  Q_ASSERT(!bookmark.isNull());
+  KBookmark bookmark = rmb_atAddress( s_highlightedAddress );
 
   // TODO use unique title
 
@@ -326,21 +334,23 @@ void KBookmarkMenu::slotRMBActionInsert( int val )
   {
     KBookmarkGroup parentBookmark = bookmark.toGroup();
     Q_ASSERT(!parentBookmark.isNull());
-    parentBookmark.addBookmark( m_pManager, title, url );
-    m_pManager->emitChanged( parentBookmark );
+    parentBookmark.addBookmark( s_rmb_state.m_pManager, title, url );
+    s_rmb_state.m_pManager->emitChanged( parentBookmark );
   }
   else 
   {
     KBookmarkGroup parentBookmark = bookmark.parentGroup();
     Q_ASSERT(!parentBookmark.isNull());
-    KBookmark newBookmark = parentBookmark.addBookmark( m_pManager, title, url );
+    KBookmark newBookmark = parentBookmark.addBookmark( s_rmb_state.m_pManager, title, url );
     parentBookmark.moveItem( newBookmark, parentBookmark.previous(bookmark) );
-    m_pManager->emitChanged( parentBookmark );
+    s_rmb_state.m_pManager->emitChanged( parentBookmark );
   }
 }
 
 void KBookmarkMenu::slotRMBActionRemove( int val )
 {
+  s_rmb_state.m_pManager = m_pManager;
+
   //kdDebug(7043) << "KBookmarkMenu::slotRMBActionRemove" << s_highlightedAddress << endl;
   if (invalid(val)) return;
 
@@ -351,23 +361,22 @@ void KBookmarkMenu::slotRMBActionRemove( int val )
      )
     return;
 
-  KBookmark bookmark = m_pManager->findByAddress( s_highlightedAddress );
-  Q_ASSERT(!bookmark.isNull());
+  KBookmark bookmark = rmb_atAddress( s_highlightedAddress );
 
-  KBookmarkGroup parentBookmark = m_pManager->findByAddress( m_parentAddress ).toGroup();
-  Q_ASSERT(!parentBookmark.isNull());
+  KBookmarkGroup parentBookmark = rmb_atAddress( m_parentAddress ).toGroup();
   parentBookmark.deleteBookmark( bookmark );
-  m_pManager->emitChanged( parentBookmark );
+  s_rmb_state.m_pManager->emitChanged( parentBookmark );
   m_parentMenu->hide();
 }
 
 void KBookmarkMenu::slotRMBActionCopyLocation( int val )
 {
+  s_rmb_state.m_pManager = m_pManager;
+
   //kdDebug(7043) << "KBookmarkMenu::slotRMBActionOpen" << s_highlightedAddress << endl;
   if (invalid(val)) return;
 
-  KBookmark bookmark = m_pManager->findByAddress( s_highlightedAddress );
-  Q_ASSERT(!bookmark.isNull());
+  KBookmark bookmark = rmb_atAddress( s_highlightedAddress );
 
   if ( !bookmark.isGroup() )
   {
@@ -378,10 +387,12 @@ void KBookmarkMenu::slotRMBActionCopyLocation( int val )
 
 void KBookmarkMenu::slotRMBActionOpen( int val )
 {
+  s_rmb_state.m_pManager = m_pManager;
+
   //kdDebug(7043) << "KBookmarkMenu::slotRMBActionOpen" << s_highlightedAddress << endl;
   if (invalid(val)) return;
 
-  KBookmark bookmark = m_pManager->findByAddress( s_highlightedAddress );
+  KBookmark bookmark = rmb_atAddress( s_highlightedAddress );
   Q_ASSERT(!bookmark.isNull());
   Q_ASSERT(!bookmark.isGroup());
 
