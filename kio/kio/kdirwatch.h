@@ -93,8 +93,8 @@ class KIO_EXPORT KDirWatch : public QObject
     * created(), deleted() can be emitted.
     *
     * @param path the path to watch
-    * @param watchFiles if true, the KDirWatch will also watch files
-    * @param recursive if true, all sub directories are also watched
+    * @param watchFiles if true, the KDirWatch will also watch files - NOT IMPLEMENTED YET
+    * @param recursive if true, all sub directories are also watched - NOT IMPLEMENTED YET
     */
    void addDir(const QString& path, 
 	       bool watchFiles = false, bool recursive = false);

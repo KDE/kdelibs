@@ -1338,8 +1338,7 @@ void KDirWatch::addDir( const QString& _path,
 			bool watchFiles, bool recursive)
 {
   if (watchFiles || recursive) {
-    kdDebug(7001) << "addDir - recursive/watchFiles not supported in KDE 3.0"
-		  << endl;
+    kdDebug(7001) << "addDir - recursive/watchFiles not supported yet in KDE 3.x" << endl;
   }
   if (d) d->addEntry(this, _path, 0, true);
 }
