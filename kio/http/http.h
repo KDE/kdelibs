@@ -229,7 +229,7 @@ protected:
   /**
    * Update expire time of current cache entry.
    */
-  void updateExpireDate(time_t expireDate);
+  void updateExpireDate(time_t expireDate, bool updateCreationDate=false);
 
   /**
    * Quick check whether the cache needs cleaning.

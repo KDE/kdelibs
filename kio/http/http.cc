@@ -1740,16 +1740,12 @@ bool HTTPProtocol::readHeader()
      if (cacheValidated)
      {
        // Yippie, we can use the cached version.
-       // TODO: Update the cache with new "Expire" headers.
-       // If we don't, we need to revalidate each and every time
-       // after this request.
-       if (expireDate > 10 + m_expireDate)
-       {
-          fclose(m_fcache);
-          m_fcache = 0;
-          updateExpireDate( expireDate );
-          m_fcache = checkCacheEntry( ); // Re-read cache entry
-       }
+       // Update the cache with new "Expire" headers.
+       fclose(m_fcache);
+       m_fcache = 0;
+       updateExpireDate( expireDate, true );
+       m_fcache = checkCacheEntry( ); // Re-read cache entry
+
        if (m_fcache)
        {
           m_bCachedRead = true;
@@ -2980,7 +2976,7 @@ HTTPProtocol::findCookies( const QString &url)
 // The following code should be kept in sync
 // with the code in http_cache_cleaner.cpp
 
-#define CACHE_REVISION "6\n"
+#define CACHE_REVISION "7\n"
 
 FILE *
 HTTPProtocol::checkCacheEntry( bool readWrite)
@@ -3115,7 +3111,7 @@ HTTPProtocol::checkCacheEntry( bool readWrite)
 }
 
 void
-HTTPProtocol::updateExpireDate(time_t expireDate)
+HTTPProtocol::updateExpireDate(time_t expireDate, bool updateCreationDate)
 {
     bool ok = true;
 
@@ -3123,6 +3119,32 @@ HTTPProtocol::updateExpireDate(time_t expireDate)
     if (fs)
     {
         QString date;
+        char buffer[401];
+        time_t creationDate;
+
+        fseek(fs, 0, SEEK_SET);
+        if (ok && !fgets(buffer, 400, fs))
+            ok = false;
+        if (ok && !fgets(buffer, 400, fs))
+            ok = false;
+        long cacheCreationDateOffset = ftell(fs);
+        if (ok && !fgets(buffer, 400, fs))
+            ok = false;
+        creationDate = strtoul(buffer, 0, 10);
+        if (!creationDate)
+            ok = false;
+
+        if (updateCreationDate)
+        {
+           if (!ok || fseek(fs, cacheCreationDateOffset, SEEK_SET))
+              return;
+           QString date;
+           date.setNum( time(0) );
+           date = date.leftJustify(16);
+           fputs(date.latin1(), fs);      // Creation date
+           fputc('\n', fs);
+        }
+
         if (expireDate>(30*365*24*60*60))
         {
             // expire date is a really a big number, it can't be
@@ -3136,19 +3158,6 @@ HTTPProtocol::updateExpireDate(time_t expireDate)
             // <META http-equiv="Expires"> tags.
             // so we have to scan the creation time and add
             // it to the expiryDate
-            char buffer[401];
-            time_t creationDate;
-
-            fseek(fs, 0, SEEK_SET);
-            if (ok && !fgets(buffer, 400, fs))
-                ok = false;
-            if (ok && !fgets(buffer, 400, fs))
-                ok = false;
-            if (ok && !fgets(buffer, 400, fs))
-                ok = false;
-            creationDate = strtoul(buffer, 0, 10);
-            if (!creationDate)
-                ok = false;
             date.setNum( creationDate + expireDate );
         }
         date = date.leftJustify(16);
@@ -3187,6 +3196,7 @@ HTTPProtocol::createCacheEntry( const QString &mimetype, time_t expireDate)
 
    QString date;
    date.setNum( time(0) );
+   date = date.leftJustify(16);
    fputs(date.latin1(), m_fcache);      // Creation date
    fputc('\n', m_fcache);
 
