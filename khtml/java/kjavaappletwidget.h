@@ -4,6 +4,8 @@
 #define KJAVAAPPLETWIDGET_H
 
 #include <qwidget.h>
+#include <qxembed.h>
+
 #include <kjavaappletcontext.h>
 #include <kjavaapplet.h>
 
@@ -51,7 +53,7 @@ class KWinModule;
  * @version $Id$
  * @author Richard J. Moore, rich@kde.org
  */
-class KJavaAppletWidget : public QWidget
+class KJavaAppletWidget : public QXEmbed
 {
 Q_OBJECT
 
@@ -180,6 +182,10 @@ private:
 
 /*
  * $Log$
+ * Revision 1.9  2000/06/08 22:48:24  pfeiffer
+ * actually s/kwin.h//, as it's not needed at all in the headerfile.
+ * No idea how to fix the cpp-file, tho.
+ *
  * Revision 1.8  2000/06/08 22:40:15  pfeiffer
  * s/kwm/kwin/
  *

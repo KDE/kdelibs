@@ -3,6 +3,7 @@
 #include <X11/Xutil.h>
 #include <qtimer.h>
 #include <kwinmodule.h>
+#include <kwin.h>
 
 #include <unistd.h>
 
@@ -16,7 +17,7 @@ static unsigned int count = 0;
 
 KJavaAppletWidget::KJavaAppletWidget( KJavaAppletContext *context,
                                       QWidget *parent, const char *name )
-   : QWidget( parent, name )
+   : QXEmbed( parent, name )
 {
    applet = new KJavaApplet( context );
    CHECK_PTR( applet );
@@ -30,7 +31,7 @@ KJavaAppletWidget::KJavaAppletWidget( KJavaAppletContext *context,
 
 KJavaAppletWidget::KJavaAppletWidget( KJavaApplet *applet,
                                       QWidget *parent, const char *name )
-   : QWidget( parent, name )
+   : QXEmbed( parent, name )
 {
    this->applet = applet;
 
@@ -42,7 +43,7 @@ KJavaAppletWidget::KJavaAppletWidget( KJavaApplet *applet,
 }
 
 KJavaAppletWidget::KJavaAppletWidget( QWidget *parent, const char *name )
-   : QWidget( parent, name )
+   : QXEmbed( parent, name )
 {
    KJavaAppletContext *context = KJavaAppletContext::getDefaultContext();
 
@@ -58,6 +59,8 @@ KJavaAppletWidget::KJavaAppletWidget( QWidget *parent, const char *name )
 
 KJavaAppletWidget::~KJavaAppletWidget()
 {
+  XUnmapWindow(qt_xdisplay(), embeddedWinId());
+
   delete applet;
 }
 
@@ -76,7 +79,7 @@ void KJavaAppletWidget::show()
 	shown = true;
     }
 
-    QWidget::show();
+    QXEmbed::show();
 }
 
 void KJavaAppletWidget::setAppletClass( const QString &clazzName )
@@ -182,32 +185,18 @@ void KJavaAppletWidget::setWindow( WId w )
        }
 }
 
+
 void KJavaAppletWidget::swallowWindow( WId w )
 {
    window = w;
 
-   //KWM::prepareForSwallowing( w );
+   embed(window);
 
-#ifdef __GNUC__
-#warning FIXME, KWin guru! Check all this stuff :)
-#endif
-
-   // NASTY WORKAROUND:
-   // KWin reparents the window back to the root window if
-   // we do not sleep this second. Somehow this method is called
-   // before KWin is done with window mapping. As a result Java
-   // window ends up being outside of the khtml window.
-   // The problem never happens under KWM.
-   sleep(1);
+   KWin::setType(window, NET::Toolbar);
 
    XReparentWindow( qt_xdisplay(), window, winId(), 0, 0 );
    XMapRaised( qt_xdisplay(), window );
    XSync( qt_xdisplay(), False );
-
-   // HACK here: If we do not wait this second resize event
-   // is ignored and applet stays of size 1x1->invisible
-   // (Note: This happens for IBM JDK 1.1.8 but not for SUN JDK 1.2.2)
-   sleep(1);
 
    XResizeWindow( qt_xdisplay(), window, width(), height() );
 }
@@ -220,7 +209,7 @@ void KJavaAppletWidget::resizeEvent( QResizeEvent * )
 
 void KJavaAppletWidget::resize( int w, int h)
 {
-  QWidget::resize( w, h );
+  QXEmbed::resize( w, h );
   applet->setSize( QSize(w, h) );
 }
 

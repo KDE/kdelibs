@@ -148,6 +148,7 @@ void KJavaProcess::wroteData( )
     }
 }
 
+
 void KJavaProcess::invokeJVM()
 {
     *javaProcess << d->jvmPath;
