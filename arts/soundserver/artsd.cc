@@ -59,6 +59,8 @@ static void exitUsage(const char *progname)
 	fprintf(stderr,"-n                  enable network transparency\n");
 	fprintf(stderr,"-p <port>           set TCP port to use (implies -n)\n");
 	fprintf(stderr,"-u                  public, no authentication (dangerous!)\n");
+	fprintf(stderr,"-N                  use larger network buffers\n");
+	fprintf(stderr,"-w <n>              increase network buffers by factor of <n>\n");
 	fprintf(stderr,"\n");
 	fprintf(stderr,"audio options:\n");
 	fprintf(stderr,"-a <audioiomethod>  select audio i/o method (oss, alsa, ...)\n");
@@ -69,7 +71,6 @@ static void exitUsage(const char *progname)
 	fprintf(stderr,"-F <fragments>      number of fragments\n");
 	fprintf(stderr,"-S <size>           fragment size in bytes\n");
 	fprintf(stderr,"-s <seconds>        auto-suspend time in seconds\n");
-	fprintf(stderr,"-m <appName>        application to display messages\n");
 	fprintf(stderr,"\n");
 	fprintf(stderr,"misc options:\n");
 	fprintf(stderr,"-h                  display this help and exit\n");
@@ -77,6 +78,7 @@ static void exitUsage(const char *progname)
 	fprintf(stderr,"-v                  show version\n");
 	fprintf(stderr,"-l <level>          information level\n");
 	fprintf(stderr,"  3: quiet, 2: warnings, 1: info, 0: debug\n");
+	fprintf(stderr,"-m <appName>        application to display messages\n");
 	exit(1);	
 }
 
@@ -107,13 +109,14 @@ static bool  					cfgFullDuplex	= 0;
 static const char			   *cfgDeviceName   = 0;
 static const char              *cfgAudioIO      = 0;
 static int                      cfgAutoSuspend  = 0;
+static int                      cfgBuffers      = 0;
 
 static bool						cmdListAudioIO  = false;
 
 static void handleArgs(int argc, char **argv)
 {
 	int optch;
-	while((optch = getopt(argc,argv,"r:p:nuF:S:hD:dl:a:Ab:s:m:v")) > 0)
+	while((optch = getopt(argc,argv,"r:p:nuF:S:hD:dl:a:Ab:s:m:vNw:")) > 0)
 	{
 		switch(optch)
 		{
@@ -146,6 +149,10 @@ static void handleArgs(int argc, char **argv)
 				break;
 			case 'v': printf("artsd %s\n",ARTS_VERSION);
 					  exit(0);
+				break;
+			case 'N': cfgBuffers = 5;
+				break;
+			case 'w': cfgBuffers = atoi(optarg);
 				break;
 			case 'h':
 			default:
@@ -258,6 +265,9 @@ int main(int argc, char **argv)
 
 	if (cfgAutoSuspend)
 		server.autoSuspendSeconds(cfgAutoSuspend);
+
+	if (cfgBuffers)
+		server.bufferSizeMultiplier(cfgBuffers);
 
 	/* make global MCOP references available */
 	if(!publishReferences(server,audioManager,true))

@@ -126,6 +126,13 @@ interface SoundServerV2 : SoundServer
 	attribute long autoSuspendSeconds;
 
 	/**
+	 * Multiplier for size of network buffers. Default is 1,
+	 * which is fragment size * fragment count. (expressed
+	 * as milliseconds).
+	 */
+	attribute long bufferSizeMultiplier;
+
+	/**
 	 * AudioSubSystem parameters
 	 */
 	readonly attribute string audioMethod;

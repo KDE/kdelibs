@@ -79,6 +79,14 @@ std::string SoundServerV2_impl::version() {
 	return ARTS_VERSION;
 }
 
+long SoundServerV2_impl::bufferSizeMultiplier() {
+	return bufferMultiplier;
+}
+
+void SoundServerV2_impl::bufferSizeMultiplier(long newValue) {
+	bufferMultiplier = newValue;
+}
+
 #ifndef __SUNPRO_CC
 /* See bottom of simplesoundserver_impl.cc for the reason this is here.  */
 REGISTER_IMPLEMENTATION(SoundServerV2_impl);

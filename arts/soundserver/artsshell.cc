@@ -63,6 +63,12 @@ autosuspend <seconds>
 
 Sets the autosuspend time for the specified number of seconds.
 
+networkbuffers <n>
+
+When running artsd over a network connection a large buffer size is
+desirable to avoid dropouts. This command allows increasing the buffer
+size by a factor of <n> from the default.
+
 midi (future)
 
 When the MIDI manager functionality is all implemented this would be a
@@ -107,7 +113,8 @@ Commands:\n\
   suspend             - suspend sound server\n\
   status              - display sound server status information\n\
   terminate           - terminate sound server (might confuse/kill apps using it)\n\
-  autosuspend <secs>  - set autosuspend time\
+  autosuspend <secs>  - set autosuspend time\n\
+  networkbuffers <n>  - increase network buffers by a factor of <n>\
 " << endl;
 	exit(0);
 }
@@ -138,7 +145,7 @@ void parseOptions(int argc, char **argv)
 			  usage();
 			  break;
 		}
-	}                                         
+	}
 
 	// should be at least one more argument
 	if (optind >= argc)
@@ -220,8 +227,9 @@ void status(Arts::SoundServerV2 server)
 		  break;
 	}
 
-	cout << "minimum stream buffer time: " << server.minStreamBufferTime() << " ms" << endl;
 	cout << "server buffer time: " << server.serverBufferTime() << " ms" << endl;
+	cout << "buffer size multiplier: " << server.bufferSizeMultiplier() << endl;
+	cout << "minimum stream buffer time: " << server.minStreamBufferTime() << " ms" << endl;
 	cout << "auto suspend time: " << server.autoSuspendSeconds() << " s" << endl;
 	cout << "audio method: " << server.audioMethod() << endl;
 	cout << "sampling rate: " << server.samplingRate() << endl;
@@ -258,6 +266,13 @@ void autosuspend(Arts::SoundServerV2 server, int secs)
 	server.autoSuspendSeconds(secs);
 }
 
+// set network buffers size
+void networkBuffers(Arts::SoundServerV2 server, int n)
+{
+	if (n > 0)
+		server.bufferSizeMultiplier(n);
+}
+
 int main(int argc, char *argv[])
 {
 	Arts::Dispatcher dispatcher;
@@ -290,6 +305,12 @@ int main(int argc, char *argv[])
 	if(!strcmp(argv[optind], "autosuspend") && ((argc - optind) == 2)) {
 		int secs = atoi(argv[optind+1]);
 		autosuspend(server, secs);
+		return 0;
+	}
+
+	if(!strcmp(argv[optind], "networkbuffers") && ((argc - optind) == 2)) {
+		int n = atoi(argv[optind+1]);
+		networkBuffers(server, n);
 		return 0;
 	}
 	

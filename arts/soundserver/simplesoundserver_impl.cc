@@ -129,7 +129,7 @@ bool PlayStreamJob::done()
  *    |      playSound      |      (output to soundcard)
  *     ~~~~~~~~~~~~~~~~~~~~~
  */
-SimpleSoundServer_impl::SimpleSoundServer_impl() : autoSuspendTime(60)
+SimpleSoundServer_impl::SimpleSoundServer_impl() : autoSuspendTime(60), bufferMultiplier(1)
 {
 	soundcardBus.busname("out_soundcard");
 	connect(soundcardBus,_outstack);
@@ -192,11 +192,11 @@ float SimpleSoundServer_impl::serverBufferTime()
 float SimpleSoundServer_impl::minStreamBufferTime()
 {
 	/*
-	 * it is sane to assume that client side stream buffers must be >= server
+	 * It is sane to assume that client side stream buffers must be >= server
 	 * side hardware buffers (or it can come to dropouts during hardware
-	 * buffer refill)
+	 * buffer refill). The buffer size can be increased using the multiplier.
 	 */
-	return serverBufferTime();
+	return bufferMultiplier * serverBufferTime();
 }
 
 void SimpleSoundServer_impl::attach(ByteSoundProducer bsp)

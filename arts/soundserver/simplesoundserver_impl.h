@@ -84,6 +84,7 @@ protected:
 	StereoEffectStack _outstack;
 	long asCount;
 	long autoSuspendTime;
+	long bufferMultiplier;
 
 public:
 	SimpleSoundServer_impl();

@@ -46,6 +46,8 @@ namespace Arts {
 		long fragments();
 		long fragmentSize();
 		std::string version();
+		long bufferSizeMultiplier();
+		void bufferSizeMultiplier(long newValue);
 	};
 };
 
