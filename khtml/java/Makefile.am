@@ -1,16 +1,15 @@
 KDE_CXXFLAGS = $(WOVERLOADED_VIRTUAL)
 
-lib_LTLIBRARIES = libkjava.la
+noinst_LTLIBRARIES = libkjava.la
 libkjava_la_SOURCES = kjavaapplet.cpp kjavaappletcontext.cpp \
 	kjavaappletserver.cpp kjavaappletwidget.cpp kjavaprocess.cpp \
 	kjavadownloader.cpp 
 
-noinst_HEADERS = javaembed.h kjavaappletwidget.h kqeventutil.h kxeventutil.h
+noinst_HEADERS = javaembed.h kjavaappletwidget.h kqeventutil.h kxeventutil.h \
+                 kjavaapplet.h kjavaappletcontext.h \
+                 kjavaappletserver.h kjavaprocess.h
 
 libkjava_la_METASOURCES = AUTO
-
-include_HEADERS = kjavaapplet.h kjavaappletcontext.h \
-	kjavaappletserver.h kjavaprocess.h
 
 libkjava_la_LDFLAGS = $(KDE_MT_LDFLAGS) -version-info 2:0:1 -no-undefined
 libkjava_la_LIBADD = $(LIB_KPARTS)
