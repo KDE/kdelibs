@@ -262,23 +262,22 @@ QString KInputDialog::getText( const QString &caption, const QString &label,
     const QString &value, bool *ok, QWidget *parent, const char *name,
     QValidator *validator, const QString &mask )
 {
-  KInputDialog *dlg = new KInputDialog( caption, label, value, parent, name,
+  KInputDialog dlg( caption, label, value, parent, name,
     validator, mask );
 
-  bool _ok = ( dlg->exec() == Accepted );
+  bool _ok = ( dlg.exec() == Accepted );
 
   if ( ok )
     *ok = _ok;
 
   QString result;
   if ( _ok )
-    result = dlg->lineEdit()->text();
+    result = dlg.lineEdit()->text();
 
   // A validator may explicitly allow leading and trailing whitespace
   if ( !validator )
     result = result.stripWhiteSpace();
 
-  delete dlg;
   return result;
 }
 
@@ -286,18 +285,17 @@ QString KInputDialog::getMultiLineText( const QString &caption,
     const QString &label, const QString &value, bool *ok,
     QWidget *parent, const char *name )
 {
-  KInputDialog *dlg = new KInputDialog( caption, label, value, parent, name );
+  KInputDialog dlg( caption, label, value, parent, name );
 
-  bool _ok = ( dlg->exec() == Accepted );
+  bool _ok = ( dlg.exec() == Accepted );
 
   if ( ok )
     *ok = _ok;
 
   QString result;
   if ( _ok )
-    result = dlg->textEdit()->text();
+    result = dlg.textEdit()->text();
 
-  delete dlg;
   return result;
 }
 
@@ -305,19 +303,18 @@ int KInputDialog::getInteger( const QString &caption, const QString &label,
     int value, int minValue, int maxValue, int step, int base, bool *ok,
     QWidget *parent, const char *name )
 {
-  KInputDialog *dlg = new KInputDialog( caption, label, value, minValue,
+  KInputDialog dlg( caption, label, value, minValue,
     maxValue, step, base, parent, name );
 
-  bool _ok = ( dlg->exec() == Accepted );
+  bool _ok = ( dlg.exec() == Accepted );
 
   if ( ok )
     *ok = _ok;
 
   int result=0;
   if ( _ok )
-    result = dlg->intSpinBox()->value();
+    result = dlg.intSpinBox()->value();
 
-  delete dlg;
   return result;
 }
 
@@ -333,19 +330,18 @@ double KInputDialog::getDouble( const QString &caption, const QString &label,
     double value, double minValue, double maxValue, double step, int decimals,
     bool *ok, QWidget *parent, const char *name )
 {
-  KInputDialog *dlg = new KInputDialog( caption, label, value, minValue,
+  KInputDialog dlg( caption, label, value, minValue,
     maxValue, step, decimals, parent, name );
 
-  bool _ok = ( dlg->exec() == Accepted );
+  bool _ok = ( dlg.exec() == Accepted );
 
   if ( ok )
     *ok = _ok;
 
   double result=0;
   if ( _ok )
-    result = dlg->doubleSpinBox()->value();
+    result = dlg.doubleSpinBox()->value();
 
-  delete dlg;
   return result;
 }
 
@@ -361,13 +357,13 @@ QString KInputDialog::getItem( const QString &caption, const QString &label,
     const QStringList &list, int current, bool editable, bool *ok,
     QWidget *parent, const char *name )
 {
-  KInputDialog *dlg = new KInputDialog( caption, label, list, current,
+  KInputDialog dlg( caption, label, list, current,
     editable, parent, name );
   if ( !editable)
   {
-      connect( dlg->listBox(),  SIGNAL(doubleClicked ( QListBoxItem *)), dlg, SLOT( slotOk()));
+      connect( dlg.listBox(),  SIGNAL(doubleClicked ( QListBoxItem *)), &dlg, SLOT( slotOk()));
   }
-  bool _ok = ( dlg->exec() == Accepted );
+  bool _ok = ( dlg.exec() == Accepted );
 
   if ( ok )
     *ok = _ok;
@@ -375,11 +371,10 @@ QString KInputDialog::getItem( const QString &caption, const QString &label,
   QString result;
   if ( _ok )
     if ( editable )
-      result = dlg->comboBox()->currentText();
+      result = dlg.comboBox()->currentText();
     else
-      result = dlg->listBox()->currentText();
+      result = dlg.listBox()->currentText();
 
-  delete dlg;
   return result;
 }
 
@@ -387,10 +382,10 @@ QStringList KInputDialog::getItemList( const QString &caption,
     const QString &label, const QStringList &list, const QStringList &select,
     bool multiple, bool *ok, QWidget *parent, const char *name )
 {
-  KInputDialog *dlg = new KInputDialog( caption, label, list, select,
+  KInputDialog dlg( caption, label, list, select,
     multiple, parent, name );
 
-  bool _ok = ( dlg->exec() == Accepted );
+  bool _ok = ( dlg.exec() == Accepted );
 
   if ( ok )
     *ok = _ok;
@@ -399,11 +394,10 @@ QStringList KInputDialog::getItemList( const QString &caption,
   if ( _ok )
   {
     for ( unsigned int i=0; i<list.count(); ++i )
-      if ( dlg->listBox()->isSelected( i ) )
-        result.append( dlg->listBox()->text( i ) );
+      if ( dlg.listBox()->isSelected( i ) )
+        result.append( dlg.listBox()->text( i ) );
   }
 
-  delete dlg;
   return result;
 }
 
