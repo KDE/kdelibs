@@ -191,6 +191,10 @@ RenderObject* RenderContainer::removeChildNode(RenderObject* oldChild)
 
 void RenderContainer::updatePseudoChild(RenderStyle::PseudoId type, RenderObject* child)
 {
+    // In CSS2, before/after pseudo-content cannot nest.  Check this first.
+    if (style()->styleType() == RenderStyle::BEFORE || style()->styleType() == RenderStyle::AFTER)
+        return;
+
     RenderStyle* pseudo = style()->getPseudoStyle(type);
     if (!pseudo || pseudo->display() == NONE) {
         if (child && child->style()->styleType() == type)
@@ -225,10 +229,18 @@ void RenderContainer::updatePseudoChild(RenderStyle::PseudoId type, RenderObject
         // inline should be mutated to INLINE.
         pseudo->setDisplay(INLINE);
 
+    // Generated content consists of a single container that houses multiple children (specified
+    // by the content property).  This pseudo container gets the pseudo style set on it.
+    RenderObject* pseudoContainer = 0;
+
     // Now walk our list of generated content and create render objects for every type
     // we encounter.
     for (ContentData* contentData = pseudo->contentData();
          contentData; contentData = contentData->_nextContent) {
+
+        if (!pseudoContainer)
+            pseudoContainer = RenderFlow::createFlow(document(), pseudo, renderArena()); /* anonymous box */
+
         if (contentData->_contentType == CONTENT_TEXT)
         {
             RenderObject* po = RenderFlow::createFlow(document() /* anonymous*/, pseudo, renderArena());
@@ -249,12 +261,22 @@ void RenderContainer::updatePseudoChild(RenderStyle::PseudoId type, RenderObject
         else if (contentData->_contentType == CONTENT_OBJECT)
         {
             RenderImage* po = new (renderArena()) RenderImage( document() /* anonymous */);
-            po->setStyle(pseudo);
+            RenderStyle* style = new RenderStyle();
+            style->inheritFrom(pseudo);
+            po->setStyle(style);
             po->setContentObject(contentData->contentObject());
-            addChild(po, insertBefore);
+            pseudoContainer->addChild(po);
             po->close();
         }
     }
+
+    if (pseudoContainer) {
+        // Add the pseudo after we've installed all our content, so that addChild will be able to find the text
+        // inside the inline for e.g., first-letter styling.
+        addChild(pseudoContainer, insertBefore);
+        pseudoContainer->close();
+    }
+
 }
 
 
