@@ -458,7 +458,7 @@ void KXMLGUIFactory::addClient( KXMLGUIClient *client )
     // contains the correct container state information (like toolbar positions, sizes, etc.) .
     // if there is non available, then use the "real" document.
     QDomDocument doc = client->xmlguiBuildDocument();
-    if ( doc.isNull() )
+    if ( doc.documentElement().isNull() )
         doc = client->domDocument();
 
     QDomElement docElement = doc.documentElement();
@@ -591,7 +591,7 @@ void KXMLGUIFactory::removeClient( KXMLGUIClient *client )
     // cloning the original document, so that saving container information in the
     // DOM tree does not touch the original document.
     QDomDocument doc = client->xmlguiBuildDocument();
-    if ( doc.isNull() )
+    if ( doc.documentElement().isNull() )
     {
         doc = client->domDocument().cloneNode( true ).toDocument();
         client->setXMLGUIBuildDocument( doc );
