@@ -17,6 +17,7 @@ modified        string          The modification date of the document (set by ht
 
 accept          string          List of mimetypes to accept separated by a ", ". (read by http)
 
+SendUserAgent	bool		Whether to send a User-Agent (read by http)
 UserAgent       string          The user agent name to send to remote host (read by http)
 
 content-type    string          The content type of the data to be uploaded (read by http)
@@ -44,8 +45,6 @@ content-
 disposition     string          Suggested name to Save a file as as returned by a HTTP Header Response.
 
 request-id	number		Sequence number to identify requests in a MultiGet command.
-
-UserAgent	string		HTTP User Agent to send to remote server.
 
 expire-date	number		Date on which a cache entry needs validation.
 
