@@ -90,7 +90,7 @@ public:
    */
   virtual bool load();
 
-  virtual bool loadAsynchronous();
+  virtual bool asyncLoad();
 
   /**
    * Saves all addresses from address book to file.

@@ -105,48 +105,46 @@ Addressee *AddressBook::Iterator::operator->()
 
 AddressBook::Iterator &AddressBook::Iterator::operator++()
 {
-start:
-  bool jumped = false;
-  while ( d->mIt == (d->mResources[ d->mCurrRes ])->end() ) { // at end of addressee list of resource
-    if ( (uint)d->mCurrRes == d->mResources.count() - 1 ) {
-      return *this;
+  do {
+    bool jumped = false;
+    while ( d->mIt == (d->mResources[ d->mCurrRes ])->end() ) { // at end of addressee list of resource
+      if ( (uint)d->mCurrRes == d->mResources.count() - 1 ) {
+        return *this;
+      }
+
+      d->mCurrRes++; // jump to next resource
+
+      jumped = true;
+      d->mIt = (d->mResources[ d->mCurrRes ])->begin();
     }
 
-    d->mCurrRes++; // jump to next resource
+    if ( !jumped )
+      (d->mIt)++;
 
-    jumped = true;
-    d->mIt = (d->mResources[ d->mCurrRes ])->begin();
-  }
-
-  if ( !jumped )
-    (d->mIt)++;
-
-  if ( d->mIt == (d->mResources[ d->mCurrRes ])->end() )
-    goto start;
+  } while ( d->mIt == (d->mResources[ d->mCurrRes ])->end() );
 
   return *this;
 }
 
 AddressBook::Iterator &AddressBook::Iterator::operator++( int )
 {
-start:
-  bool jumped = false;
-  while ( d->mIt == (d->mResources[ d->mCurrRes ])->end() ) { // at end of addressee list of resource
-    if ( (uint)d->mCurrRes == d->mResources.count() - 1 ) {
-      return *this;
+  do {
+    bool jumped = false;
+    while ( d->mIt == (d->mResources[ d->mCurrRes ])->end() ) { // at end of addressee list of resource
+      if ( (uint)d->mCurrRes == d->mResources.count() - 1 ) {
+        return *this;
+      }
+
+      d->mCurrRes++; // jump to next resource
+
+      jumped = true;
+        d->mIt = (d->mResources[ d->mCurrRes ])->begin();
     }
 
-    d->mCurrRes++; // jump to next resource
+    if ( !jumped )
+      (d->mIt)++;
 
-    jumped = true;
-    d->mIt = (d->mResources[ d->mCurrRes ])->begin();
-  }
-
-  if ( !jumped )
-    (d->mIt)++;
-
-  if ( d->mIt == (d->mResources[ d->mCurrRes ])->end() )
-    goto start;
+  } while ( d->mIt == (d->mResources[ d->mCurrRes ])->end() );
 
   return *this;
 }
@@ -225,48 +223,46 @@ const Addressee* AddressBook::ConstIterator::operator->() const
 
 AddressBook::ConstIterator &AddressBook::ConstIterator::operator++()
 {
-start:
-  bool jumped = false;
-  while ( d->mIt == (d->mResources[ d->mCurrRes ])->end() ) { // at end of addressee list of resource
-    if ( (uint)d->mCurrRes == d->mResources.count() - 1 ) {
-      return *this;
+  do {
+    bool jumped = false;
+    while ( d->mIt == (d->mResources[ d->mCurrRes ])->end() ) { // at end of addressee list of resource
+      if ( (uint)d->mCurrRes == d->mResources.count() - 1 ) {
+        return *this;
+      }
+
+      d->mCurrRes++; // jump to next resource
+
+      jumped = true;
+      d->mIt = (d->mResources[ d->mCurrRes ])->begin();
     }
 
-    d->mCurrRes++; // jump to next resource
+    if ( !jumped )
+      (d->mIt)++;
 
-    jumped = true;
-    d->mIt = (d->mResources[ d->mCurrRes ])->begin();
-  }
-
-  if ( !jumped )
-    (d->mIt)++;
-
-  if ( d->mIt == (d->mResources[ d->mCurrRes ])->end() )
-    goto start;
+  } while ( d->mIt == (d->mResources[ d->mCurrRes ])->end() );
 
   return *this;
 }
 
 AddressBook::ConstIterator &AddressBook::ConstIterator::operator++(int)
 {
-start:
-  bool jumped = false;
-  while ( d->mIt == (d->mResources[ d->mCurrRes ])->end() ) { // at end of addressee list of resource
-    if ( (uint)d->mCurrRes == d->mResources.count() - 1 ) {
-      return *this;
+  do {
+    bool jumped = false;
+    while ( d->mIt == (d->mResources[ d->mCurrRes ])->end() ) { // at end of addressee list of resource
+      if ( (uint)d->mCurrRes == d->mResources.count() - 1 ) {
+        return *this;
+      }
+
+      d->mCurrRes++; // jump to next resource
+
+      jumped = true;
+      d->mIt = (d->mResources[ d->mCurrRes ])->begin();
     }
 
-    d->mCurrRes++; // jump to next resource
+    if ( !jumped )
+      (d->mIt)++;
 
-    jumped = true;
-    d->mIt = (d->mResources[ d->mCurrRes ])->begin();
-  }
-
-  if ( !jumped )
-    (d->mIt)++;
-
-  if ( d->mIt == (d->mResources[ d->mCurrRes ])->end() )
-    goto start;
+  } while ( d->mIt == (d->mResources[ d->mCurrRes ])->end() );
 
   return *this;
 }
@@ -338,9 +334,9 @@ bool AddressBook::load()
   return ok;
 }
 
-bool AddressBook::loadAsynchronous()
+bool AddressBook::asyncLoad()
 {
-  kdDebug(5700) << "AddressBook::loadAsynchronous()" << endl;
+  kdDebug(5700) << "AddressBook::asyncLoad()" << endl;
 
   clear();
 
@@ -348,7 +344,7 @@ bool AddressBook::loadAsynchronous()
   bool ok = true;
   for ( it = d->mManager->activeBegin(); it != d->mManager->activeEnd(); ++it ) {
     (*it)->setAddressBook( this );
-    if ( !(*it)->loadAsynchronous() ) {
+    if ( !(*it)->asyncLoad() ) {
       error( i18n("Unable to load resource '%1'").arg( (*it)->resourceName() ) );
       ok = false;
     }

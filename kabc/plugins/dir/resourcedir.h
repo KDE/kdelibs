@@ -55,7 +55,7 @@ class ResourceDir : public Resource
     virtual void releaseSaveTicket( Ticket* );
 
     virtual bool load();
-    virtual bool loadAsynchronous();
+    virtual bool asyncLoad();
     virtual bool save( Ticket * );
 
     /**

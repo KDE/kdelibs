@@ -174,7 +174,7 @@ class Resource : public KRES::Resource
       Loads asyncronous all addressees. It will return immediatley and
       emit the loadingFinished() signal when finished loading.
      */
-    virtual bool loadAsynchronous() = 0;
+    virtual bool asyncLoad() = 0;
 
     /**
       Insert a addressee into the resource.

@@ -49,7 +49,7 @@ class ResourceLDAP : public Resource
     virtual void releaseSaveTicket( Ticket* );
 
     virtual bool load();
-    virtual bool loadAsynchronous();
+    virtual bool asyncLoad();
     virtual bool save( Ticket * );
 
     virtual void removeAddressee( const Addressee& addr );

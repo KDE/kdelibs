@@ -161,7 +161,7 @@ bool ResourceFile::load()
   return mFormat->loadAll( addressBook(), this, &file );
 }
 
-bool ResourceFile::loadAsynchronous()
+bool ResourceFile::asyncLoad()
 {
   return load();
 }

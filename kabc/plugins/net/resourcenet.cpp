@@ -132,7 +132,7 @@ bool ResourceNet::load()
   return mFormat->loadAll( addressBook(), this, &file );
 }
 
-bool ResourceNet::loadAsynchronous()
+bool ResourceNet::asyncLoad()
 {
   return load();
 }

@@ -176,7 +176,7 @@ bool ResourceDir::load()
   return ok;
 }
 
-bool ResourceDir::loadAsynchronous()
+bool ResourceDir::asyncLoad()
 {
   return load();
 }

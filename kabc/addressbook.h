@@ -127,7 +127,7 @@ class AddressBook : public QObject
     */
     bool load();
 
-    bool loadAsynchronous();
+    bool asyncLoad();
 
     /**
       Save address book. The address book is saved to the file, the Ticket

@@ -279,7 +279,7 @@ bool ResourceLDAP::load()
   return true;
 }
 
-bool ResourceLDAP::loadAsynchronous()
+bool ResourceLDAP::asyncLoad()
 {
   return load();
 }
