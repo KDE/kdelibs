@@ -54,7 +54,9 @@ public:
 
   static char* serverAddr; // location of server in ICE-friendly format.
   QSocketNotifier *notifier;
-   bool registered;
+  bool registered;
+    
+  QCString senderId; 
 };
 
 struct ReplyStruct
@@ -98,7 +100,7 @@ void DCOPProcessMessage(IceConn iceConn, IcePointer clientObject,
     QDataStream ds( ba, IO_ReadOnly );
     QCString app, objId, fun;
     QByteArray data;
-    ds >> app >> objId >> fun >> data;
+    ds >> d->senderId >> app >> objId >> fun >> data;
 
     QByteArray replyData;
     bool b = c->receive( app, objId, fun,
@@ -219,6 +221,8 @@ bool DCOPClient::attach()
     connect(d->notifier, SIGNAL(activated(int)),
 	    SLOT(processSocketData(int)));
   }
+  
+  registerAs( "anonymous" );
 
   return true;
 }
@@ -321,6 +325,13 @@ QCString DCOPClient::normalizeFunctionSignature( const QCString& fun ) {
     int i;
 }
 
+
+QCString DCOPClient::senderId() const
+{
+    return d->senderId;
+}
+
+
 bool DCOPClient::send(const QCString &remApp, const QCString &remObjId,
 		      const QCString &remFun, const QByteArray &data,
 		      bool fast)
@@ -333,7 +344,7 @@ bool DCOPClient::send(const QCString &remApp, const QCString &remObjId,
 
   QByteArray ba;
   QDataStream ds(ba, IO_WriteOnly);
-  ds << remApp << remObjId << normalizeFunctionSignature(remFun) << data;
+  ds << d->appId << remApp << remObjId << normalizeFunctionSignature(remFun) << data;
 
   IceGetHeader(d->iceConn, d->majorOpcode, DCOPSend,
 	       sizeof(DCOPMsg), DCOPMsg, pMsg);
@@ -343,7 +354,7 @@ bool DCOPClient::send(const QCString &remApp, const QCString &remObjId,
 
   //  IceWriteData(d->iceConn, datalen, (char *) ba.data());
   IceSendData(d->iceConn, datalen, (char *) ba.data());
-  
+
   //  IceFlush(d->iceConn);
 
   if (IceConnectionStatus(d->iceConn) != IceConnectAccepted)
@@ -443,7 +454,7 @@ bool DCOPClient::call(const QCString &remApp, const QCString &remObjId,
 
   QByteArray ba;
   QDataStream ds(ba, IO_WriteOnly);
-  ds << remApp << remObjId << normalizeFunctionSignature(remFun) << data;
+  ds << d->appId << remApp << remObjId << normalizeFunctionSignature(remFun) << data;
 
   IceGetHeader(d->iceConn, d->majorOpcode, DCOPCall,
 	       sizeof(DCOPMsg), DCOPMsg, pMsg);

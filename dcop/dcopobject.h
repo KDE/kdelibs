@@ -43,7 +43,7 @@ class DCOPObject
   DCOPObject(const QCString &objId);
   virtual ~DCOPObject();
 
-  QCString id() const;
+  QCString objId() const;
 
   /**
    * dispatch a message.

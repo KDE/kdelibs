@@ -115,8 +115,8 @@ void DCOPServer::processMessage( IceConn iceConn, int opcode, unsigned long leng
       QByteArray ba( length );
       IceReadData(iceConn, length, ba.data() );
       QDataStream ds( ba, IO_ReadOnly );
-      QCString app;
-      ds >> app;
+      QCString appFrom, app;
+      ds >> appFrom >> app;
       DCOPConnection* target = appIds.find( app );
       if ( target ) {
 	IceGetHeader( target->iceConn, majorOpcode, DCOPSend,
@@ -144,8 +144,8 @@ void DCOPServer::processMessage( IceConn iceConn, int opcode, unsigned long leng
       QByteArray ba( length );
       IceReadData(iceConn, length, ba.data() );
       QDataStream ds( ba, IO_ReadOnly );
-      QCString app;
-      ds >> app;
+      QCString appFrom, app;
+      ds >> appFrom >> app;
       DCOPConnection* target = appIds.find( app );
       int datalen = ba.size();
       if ( target ) {
@@ -432,7 +432,8 @@ void DCOPServer::removeConnection( void* data )
       datas << conn->appId;
       QByteArray ba;
       QDataStream ds( ba, IO_WriteOnly );
-      ds << QCString("") << QCString("") << QCString("void applicationRemoved(QCString)") << data;
+      ds << QCString("DCOPServer") << QCString("") 
+	 << QCString("") << QCString("void applicationRemoved(QCString)") << data;
       int datalen = ba.size();
       DCOPMsg *pMsg = 0;
       while ( it.current() ) {
@@ -447,7 +448,7 @@ void DCOPServer::removeConnection( void* data )
 	      //IceFlush( c->iceConn );
 	  }
       }
-  } 
+  }
   else
       qDebug("remove unregistered connection (count=%d)", clients.count() );
   delete conn;
@@ -466,8 +467,10 @@ bool DCOPServer::receive(const QCString &app, const QCString &obj,
       DCOPConnection* conn = clients.find( iceConn );
       if ( conn && !app.isEmpty() ) {
 	  if ( !conn->appId.isNull() &&
-	       appIds.find( conn->appId ) == conn )
+	       appIds.find( conn->appId ) == conn ) {
 	      appIds.remove( conn->appId );
+	      qDebug("remove '%s', will be reregistered", conn->appId.data() );
+	  }
 	
 	  conn->appId = app;
 	  if ( appIds.find( app ) != 0 ) {
@@ -490,7 +493,8 @@ bool DCOPServer::receive(const QCString &app, const QCString &obj,
 	  datas << conn->appId;
 	  QByteArray ba;
 	  QDataStream ds( ba, IO_WriteOnly );
-	  ds << QCString("") << QCString("") << QCString("void applicationRegistered(QCString)") << data;
+	  ds <<QCString("DCOPServer") <<  QCString("") << QCString("") 
+	     << QCString("void applicationRegistered(QCString)") << data;
 	  int datalen = ba.size();
 	  DCOPMsg *pMsg = 0;
 	  while ( it.current() ) {

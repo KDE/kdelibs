@@ -2,22 +2,22 @@
    This file is part of the KDE libraries
    Copyright (c) 1999 Preston Brown <pbrown@kde.org>
    Copyright (c) 1999 Matthias Ettrich <ettrich@kde.org>
- 
+
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
    License as published by the Free Software Foundation; either
    version 2 of the License, or (at your option) any later version.
- 
+
    This library is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
    Library General Public License for more details.
- 
+
    You should have received a copy of the GNU Library General Public License
    along with this library; see the file COPYING.LIB.  If not, write to
    the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
    Boston, MA 02111-1307, USA.
-*/ 
+*/
 
 #include <dcopobject.h>
 
@@ -38,7 +38,8 @@ DCOPObject::DCOPObject(QObject *obj)
     ident.prepend("/");
     currentObj = currentObj->parent();
   }
-  ident = ident.mid(2);
+  if ( ident[0] == '/' )
+      ident = ident.mid(1);
   qDebug("set dcopobject id to %s",ident.data());
 
   objMap()->insert(ident, this);
@@ -56,7 +57,7 @@ DCOPObject::~DCOPObject()
   objMap()->remove(ident);
 }
 
-QCString DCOPObject::id() const
+QCString DCOPObject::objId() const
 {
   return ident;
 }

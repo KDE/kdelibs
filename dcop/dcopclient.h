@@ -110,10 +110,11 @@ class DCOPClient : public QObject
    * registered with the same name, the server will add a number to the
    * id to unify it.
    *
-   * Registration is necessary if you want to allow other clients to talk 
-   * to you.  They can do so using your @param appId as first parameter 
+   * Registration is necessary if you want to allow other clients to talk
+   * to you.  They can do so using your @param appId as first parameter
    * for send() or call(). If you just want to talk to other clients, you
    * do not need to register at the server. In that case attach() is enough.
+   * It will implicitely register you as "anonymous".
    *
    * @returns the actuall appId used for the registration or a null string
    * if the registration wasn't successfull.
@@ -206,11 +207,11 @@ class DCOPClient : public QObject
 	       const QCString &fun, const QByteArray& data,
 	       QByteArray &replyData);
 
-    
-    
+
+
     /**
-     * Normalizes the function signature @param fun. 
-     * 
+     * Normalizes the function signature @param fun.
+     *
      * A normalized signature doesn't contain any unnecessary whitespace
      * anymore. The remaining whitespace consists of single blanks only (0x20).
      *
@@ -220,10 +221,16 @@ class DCOPClient : public QObject
      * </pre>
      *
      * When using send() or call(), normlization is done automatically for you.
-     * 
+     *
      */
     static QCString normalizeFunctionSignature( const QCString& fun );
     
+    
+    /*
+     * Returns the appId of the last application that talked to us.
+     */
+    QCString senderId() const; 
+
 signals:
   /**
    * Indicates that the application @param appId has been registered with
@@ -231,11 +238,11 @@ signals:
    */
   void applicationRegistered( const QCString& appId );
   /**
-   * Indicates that the formerly registered application @param appId has 
+   * Indicates that the formerly registered application @param appId has
    * been removed.
    */
   void applicationRemoved( const QCString& appId );
-    
+
  public slots:
 
  protected slots:
