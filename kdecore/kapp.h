@@ -122,16 +122,18 @@ public:
   virtual ~KApplication();
 
   /** Retrieve the number of command line arguments, i. e. the length
-   *  of the array @ref KApplication::argv(). In this array, the arguments
-   *  handled by KApplication itself (eg. '-icon') are already removed
+   *  of the array @ref KApplication::argv().
+   *
+   * In this array, the arguments
+   *  handled by @ref KApplication itself (eg. '-icon') are already removed
    */
   int argc() const { return pArgc; }
 
   /**
    * Retrieve the current application object.
    *
-   * This is similar to the global @ref QApplication pointer qApp. It
-   * allows access to the single global KApplication object, since
+   * This is similar to the global @ref QApplication pointer @ref qApp. It
+   * allows access to the single global @ref KApplication object, since
    * more than one cannot be created in the same application. It
    * saves you the trouble of having to pass the pointer explicitly
    * to every function that may require it.
@@ -150,15 +152,16 @@ public:
   /**
    * Is the application restored from the session manager?
    *
-   * @return If true, this application was restored by the session manager.
+   * @return If @p true, this application was restored by the session manager.
    *	Note that this may mean the config object returned by
-   *	sessionConfig() contains data saved by a session closedown.
+   *	@ref sessionConfig() contains data saved by a session closedown.
    * @see sessionConfig()
    */
   bool isRestored() const { return QApplication::isSessionRestored(); }
 
   /**
    * Disable session management for this application.
+   *
    * Useful in case  your application is started by the
    * inital "startkde" script.
    */
@@ -181,7 +184,7 @@ public:
 
 
   /**
-   * Retrieve a pointer to a DCOPClient for the application.
+   * Retrieve a pointer to a @ref DCOPClient for the application.
    */
   virtual DCOPClient *dcopClient();
 
@@ -212,14 +215,14 @@ public:
    *
    *  This means bascially applying the right window caption and
    *  icon. An application may have several top widgets. You don't
-   *  need to call this function manually when using KTMainWindow.
+   *  need to call this function manually when using @ref KTMainWindow.
    *
    *  @see icon(), caption()
    **/
   void setTopWidget( QWidget *topWidget );
 
   /**
-   * Invoke the kehlpcenter HTML help viewer.
+   * Invoke the khelpcenter HTML help viewer.
    *
    * @param aFilename	The filename that is to be loaded. Its
    *			location is computed automatically
@@ -277,15 +280,17 @@ public:
   QString caption() const;
 
   /**
-   * Builds a caption that contains the application name along with the
-   * userCaption using a standard layout. To make a compliant caption
+   * Build a caption that contains the application name along with the
+   * @ref userCaption() using a standard layout.
+   *
+   * To make a compliant caption
    * for your window, simply do: @p setCaption(kapp->makeStdCaption(yourCaption));
    *
    * @param userCaption The caption string you want to display in the
    * window caption area. Do not include the application name!
    * @param withAppName Indicates that the method shall include or ignore
    * the application name when making the caption string. You are not
-   * compliant if you set this to false.
+   * compliant if you set this to @p false.
    * @param modified If true, a 'modified' sign will be included in the
    * returned string. This is useful when indicating that a file is
    * modified, i.e., contains data the has not been saved.
@@ -319,15 +324,19 @@ public:
   Display *getDisplay() { return display; }
 
   /**
-   * Enable style plugins. This is useful only to applications that normally
-   * do not display a GUI and create the KApplication with allowStyles=false.
+   * Enable style plugins.
+   *
+   * This is useful only to applications that normally
+   * do not display a GUI and create the @ref KApplication with @p allowStyles = @pfalse.
    */
   void enableStyles();
     
     
     
   /** 
-   *  Install widget filter as global X11 event filter. The widget
+   *  Install widget filter as global X11 event filter.
+   *
+   * The widget
    *  filter receives XEvents in its standard @ref QWidget::x11Event() function.
    *  
    *  Warning: Only do this when absolutely necessary. An installed X11 filter
@@ -571,6 +580,9 @@ public:
 #endif
 
 // $Log$
+// Revision 1.132  2000/01/09 23:01:22  waba
+// WABA: AboutData is taken from KCmdLineArgs.
+//
 // Revision 1.131  2000/01/09 19:18:30  dsweet
 // Spiffed up documentation.
 //
