@@ -18,7 +18,7 @@
 */
 
 #include <qglobal.h>
-#if QT_VERSION >= 320
+#if QT_VERSION >= 0x030200
 
 #include <kconfig.h>
 #include <kglobal.h>
