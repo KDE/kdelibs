@@ -90,6 +90,17 @@ khtmlw has been replaced with khtml.
   These classes have been replaced by the Qt DND interface.
   A good starting point may be reading the Qt Drag and Drop Tutorial.
 
+  Hints:
+   - QMultiLineEdit has already a DnD interface that accepts text/*
+     If you want to add support for other mimetypes, you need to 
+     re-implement all DnD-methods (also dragMoveEvent()) and pass
+     QTextDrag's to the parent methods. 
+   - QTextDrag also accepts text/uri-list, which means that you
+     always need to check for QUriDrag first if you want to get
+     both working. 
+   - The mimetype for Uri's is now text/uri-list. If you've used
+     the proprietary Qt 1.x url/url, you need to adjust that.  
+
 //////////////////////////////////////////////////////////////////////
 // * KConfigBase, KConfig, KSimpleConfig
 
