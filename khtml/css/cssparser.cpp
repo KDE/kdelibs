@@ -1884,13 +1884,12 @@ bool StyleBaseImpl::parseValue( const QChar *curP, const QChar *endP, int propId
       case CSS_PROP_TEXT_DECORATION:
     	// none | [ underline || overline || line-through || blink ] | inherit
 	{
-	  if (cssval) {
-	    if (cssval->id == CSS_VAL_NONE) {
+	    if (cssval && cssval->id == CSS_VAL_NONE) {
 	      parsedValue = new CSSPrimitiveValueImpl(cssval->id);
 	    } else {
 	      CSSValueListImpl *list = new CSSValueListImpl;
 	      value.simplifyWhiteSpace();
-	      //kdDebug( 6080 ) << "text-decoration: '" << str << "'" << endl;
+	      //kdDebug( 6080 ) << "text-decoration: '" << value << "'" << endl;
 	      int pos=0, pos2;
 	      while( 1 )
 		{
@@ -1913,7 +1912,6 @@ bool StyleBaseImpl::parseValue( const QChar *curP, const QChar *endP, int propId
                 delete list;
 	      }
 	    }
-	  }
 	  break;
 	}
       case CSS_PROP__KONQ_FLOW_MODE:
