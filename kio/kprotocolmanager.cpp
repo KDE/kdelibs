@@ -320,6 +320,9 @@ QString KProtocolManager::slaveProtocol( const QString & protocol )
 */
 static bool revmatch(const char *host, const char *nplist)
 {
+  if (0 == host)
+    return false;
+
   const char *hptr = host + strlen( host ) - 1;
   const char *nptr = nplist + strlen( nplist ) - 1;
   const char *shptr = hptr;
