@@ -4,6 +4,7 @@
  * Copyright (C) 1999-2003 Lars Knoll (knoll@kde.org)
  *           (C) 1999 Antti Koivisto (koivisto@kde.org)
  *           (C) 2000-2002 Dirk Mueller (mueller@kde.org)
+ *           (C) 2003 Apple Computer, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -20,7 +21,6 @@
  * the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
  * Boston, MA 02111-1307, USA.
  *
- * $Id$
  */
 
 #include "rendering/render_list.h"
@@ -127,6 +127,8 @@ RenderListItem::RenderListItem(DOM::NodeImpl* node)
 
     predefVal = -1;
     m_marker = 0;
+    m_insideList = false;
+    m_deleteMarker = false;
 }
 
 void RenderListItem::setStyle(RenderStyle *_style)
@@ -134,17 +136,15 @@ void RenderListItem::setStyle(RenderStyle *_style)
     RenderBlock::setStyle(_style);
 
     RenderStyle *newStyle = new RenderStyle();
+    newStyle->ref();
+
     newStyle->inheritFrom(style());
-    if(newStyle->direction() == LTR)
-        newStyle->setFloating(FLEFT);
-    else
-        newStyle->setFloating(FRIGHT);
 
     if(!m_marker && style()->listStyleType() != LNONE) {
-
         m_marker = new (renderArena()) RenderListMarker(element()->getDocument());
         m_marker->setStyle(newStyle);
-        insertChildNode( m_marker, firstChild() );
+        m_marker->setListItem( this );
+        m_deleteMarker = true;
     } else if ( m_marker && style()->listStyleType() == LNONE) {
         m_marker->detach();
         m_marker = 0;
@@ -152,10 +152,96 @@ void RenderListItem::setStyle(RenderStyle *_style)
     else if ( m_marker ) {
         m_marker->setStyle(newStyle);
     }
+
+    newStyle->deref();
 }
 
-RenderListItem::~RenderListItem()
+void RenderListItem::detach()
 {
+    if ( m_marker && m_deleteMarker )
+        m_marker->detach();
+    RenderBlock::detach();
+}
+
+static RenderObject* getParentOfFirstLineBox(RenderObject* curr, RenderObject* marker)
+{
+    RenderObject* firstChild = curr->firstChild();
+    if (!firstChild)
+        return 0;
+
+    for (RenderObject* currChild = firstChild;
+         currChild; currChild = currChild->nextSibling()) {
+        if (currChild == marker)
+            continue;
+
+        if (currChild->isInline())
+            return curr;
+
+        if (currChild->isFloating() || currChild->isPositioned())
+            continue;
+
+        if (currChild->isTable() || !currChild->isRenderBlock())
+            break;
+
+        if (currChild->style()->htmlHacks() && currChild->element() &&
+            (currChild->element()->id() == ID_UL || currChild->element()->id() == ID_OL))
+            break;
+
+        RenderObject* lineBox = getParentOfFirstLineBox(currChild, marker);
+        if (lineBox)
+            return lineBox;
+    }
+
+    return 0;
+}
+
+
+void RenderListItem::updateMarkerLocation()
+{
+    // Sanity check the location of our marker.
+    if (m_marker) {
+        RenderObject* markerPar = m_marker->parent();
+        RenderObject* lineBoxParent = getParentOfFirstLineBox(this, m_marker);
+        if (!lineBoxParent) {
+            // If the marker is currently contained inside an anonymous box,
+            // then we are the only item in that anonymous box (since no line box
+            // parent was found).  It's ok to just leave the marker where it is
+            // in this case.
+            if (markerPar && markerPar->isAnonymous())
+                lineBoxParent = markerPar;
+            else
+                lineBoxParent = this;
+        }
+        if (markerPar != lineBoxParent)
+        {
+            if (markerPar)
+                markerPar->removeChild(m_marker);
+            if (!lineBoxParent)
+                lineBoxParent = this;
+            lineBoxParent->addChild(m_marker, lineBoxParent->firstChild());
+            m_deleteMarker = false;
+            if (!m_marker->minMaxKnown())
+                m_marker->calcMinMaxWidth();
+            recalcMinMaxWidths();
+        }
+    }
+}
+
+void RenderListItem::calcMinMaxWidth()
+{
+    // Make sure our marker is in the correct location.
+    updateMarkerLocation();
+    if (!minMaxKnown())
+        RenderBlock::calcMinMaxWidth();
+}
+
+void RenderListItem::layout( )
+{
+    KHTMLAssert( !layouted() );
+    KHTMLAssert( minMaxKnown() );
+
+    updateMarkerLocation();
+    RenderBlock::layout();
 }
 
 void RenderListItem::calcListValue()
@@ -173,27 +259,11 @@ void RenderListItem::calcListValue()
 	    o = o->previousSibling();
         if( o && o->isListItem() && o->style()->listStyleType() != LNONE ) {
             RenderListItem *item = static_cast<RenderListItem *>(o);
-            m_marker->m_value = item->value() + 1;
+            m_marker->m_value = item->m_marker->m_value + 1;
         }
-        else if (parent()->element() && parent()->element()->id() == ID_OL)
-            m_marker->m_value = static_cast<DOM::HTMLOListElementImpl*>(parent()->element())->start();
         else
             m_marker->m_value = 1;
     }
-}
-
-void RenderListItem::layout( )
-{
-    KHTMLAssert( !layouted() );
-    KHTMLAssert( minMaxKnown() );
-
-    if (m_marker && !m_marker->layouted())
-        m_marker->layout();
-    RenderBlock::layout();
-
-    m_height = kMax ( m_height, int ( lineHeight( true ) ) );
-    if (m_marker)
-        m_height = kMax( m_height, m_marker->height() );
 }
 
 // -----------------------------------------------------------
@@ -233,21 +303,61 @@ void RenderListMarker::setStyle(RenderStyle *s)
 void RenderListMarker::paint(QPainter *p, int _x, int _y, int _w, int _h,
                              int _tx, int _ty, PaintAction paintAction)
 {
+    if (paintAction != PaintActionForeground)
+        return;
+
+    if (style()->visibility() != VISIBLE)  return;
+
+    _tx += m_x;
+    _ty += m_y;
+
+    if((_ty > _y + _h) || (_ty + m_height < _y))
+        return;
+
+    if(shouldPaintBackgroundOrBorder())
+        paintBoxDecorations(p, _x, _y, _w, _h, _tx, _ty);
+
     paintObject(p, _x, _y, _w, _h, _tx, _ty, paintAction);
 }
 
 void RenderListMarker::paintObject(QPainter *p, int, int _y, int, int _h,
 				   int _tx, int _ty, PaintAction paintAction)
 {
-    if (paintAction != PaintActionForeground || style()->visibility() != VISIBLE)
-        return;
-
 #ifdef DEBUG_LAYOUT
     kdDebug( 6040 ) << nodeName().string() << "(ListMarker)::paintObject(" << _tx << ", " << _ty << ")" << endl;
 #endif
     p->setFont(style()->font());
     const QFontMetrics fm = p->fontMetrics();
     int offset = fm.ascent()*2/3;
+
+
+    // The marker needs to adjust its tx, for the case where it's an outside marker.
+    RenderObject* listItem = 0;
+    int leftLineOffset = 0;
+    int rightLineOffset = 0;
+    if (!listPositionInside()) {
+        listItem = this;
+        int yOffset = 0;
+        int xOffset = 0;
+        while (listItem && listItem != m_listItem) {
+            yOffset += listItem->yPos();
+            xOffset += listItem->xPos();
+            listItem = listItem->parent();
+        }
+
+        // Now that we have our xoffset within the listbox, we need to adjust ourselves by the delta
+        // between our current xoffset and our desired position (which is just outside the border box
+        // of the list item).
+        if (style()->direction() == LTR) {
+            leftLineOffset = m_listItem->leftRelOffset(yOffset, m_listItem->leftOffset(yOffset));
+            _tx -= (xOffset - leftLineOffset) + m_listItem->paddingLeft() + m_listItem->borderLeft();
+        }
+        else {
+            rightLineOffset = m_listItem->rightRelOffset(yOffset, m_listItem->rightOffset(yOffset));
+            _tx += (rightLineOffset-xOffset) + m_listItem->paddingRight() + m_listItem->borderRight();
+        }
+    }
+
 
     bool isPrinting = (p->device()->devType() == QInternal::Printer);
     if (isPrinting)
@@ -268,27 +378,25 @@ void RenderListMarker::paintObject(QPainter *p, int, int _y, int, int _h,
     }
 
 
-    int xoff = m_x;
+    int xoff = 0;
     int yoff = fm.ascent() - offset;
 
+    if (!listPositionInside())
+        if (listItem->style()->direction() == LTR)
+            xoff = -7 - offset;
+        else
+            xoff = offset;
 
     if ( m_listImage && !m_listImage->isErrorImage()) {
-	if ( style()->listStylePosition() != INSIDE ) {
-	    if ( style()->direction() == LTR )
-		xoff = - m_listImage->pixmap().width();
-	    else
-		xoff = parent()->width();
+	if ( !listPositionInside() ) {
+            if (style()->direction() == LTR)
+                xoff -= m_listImage->pixmap().width() - fm.ascent()*1/3;
+            else
+                xoff -= fm.ascent()*1/3;
 	}
+
 	p->drawPixmap( QPoint( _tx + xoff, _ty ), m_listImage->pixmap());
         return;
-    }
-
-    if(style()->listStylePosition() != INSIDE) {
-	if(style()->direction() == RTL)
-	    xoff = 7 + parent()->width();
-	else
-	    xoff = -7 - offset;
-
     }
 
 #ifdef BOX_DEBUG
@@ -316,8 +424,7 @@ void RenderListMarker::paintObject(QPainter *p, int, int _y, int, int _h,
         return;
     default:
         if (!m_item.isNull()) {
-       	    //_ty += fm.ascent() - fm.height()/2 + 1;
-            if(style()->listStylePosition() == INSIDE) {
+            if(listPositionInside()) {
             	if(style()->direction() == LTR)
         	    p->drawText(_tx, _ty, 0, 0, Qt::AlignLeft|Qt::DontClip, m_item);
             	else
@@ -335,14 +442,10 @@ void RenderListMarker::paintObject(QPainter *p, int, int _y, int, int _h,
 void RenderListMarker::layout()
 {
     KHTMLAssert( !layouted() );
-    // ### KHTMLAssert( minMaxKnown() );
-    if (m_listImage)
-        m_height = m_listImage->pixmap().height();
-    else
-        m_height = style()->fontMetrics().ascent();
 
     if ( !minMaxKnown() )
-	calcMinMaxWidth();
+        calcMinMaxWidth();
+
     setLayouted();
 }
 
@@ -369,27 +472,26 @@ void RenderListMarker::calcMinMaxWidth()
     m_width = 0;
 
     if(m_listImage) {
-        if(style()->listStylePosition() == INSIDE)
-            m_width = m_listImage->pixmap().width();
-	setMinMaxKnown();
+        if (listPositionInside())
+            m_width = m_listImage->pixmap().width() + 5;
+        m_height = m_listImage->pixmap().height();
+        m_minWidth = m_maxWidth = m_width;
+        setMinMaxKnown();
         return;
     }
 
-    if (m_value < 0) { // not yet calculated
-        RenderObject* p = parent();
-        while (p->isAnonymous())
-            p = p->parent();
-        static_cast<RenderListItem*>(p)->calcListValue();
-    }
+    if (m_value < 0)
+        m_listItem->calcListValue();
 
     const QFontMetrics &fm = style()->fontMetrics();
+    m_height = fm.ascent();
 
     switch(style()->listStyleType())
     {
     case DISC:
     case CIRCLE:
     case SQUARE:
-        if(style()->listStylePosition() == INSIDE)
+        if(listPositionInside())
             m_width = fm.ascent();
     	goto end;
     case ARMENIAN:
@@ -439,7 +541,7 @@ void RenderListMarker::calcMinMaxWidth()
     }
     m_item += QString::fromLatin1(". ");
 
-    if(style()->listStylePosition() == INSIDE)
+    if(listPositionInside())
 	m_width = fm.width(m_item);
 
 end:
@@ -450,9 +552,14 @@ end:
     setMinMaxKnown();
 }
 
-short RenderListMarker::verticalPositionHint( bool ) const
+short RenderListMarker::lineHeight(bool b) const
 {
-    return 0;
+    return height();
+}
+
+short RenderListMarker::baselinePosition(bool b) const
+{
+    return height();
 }
 
 void RenderListMarker::calcWidth()

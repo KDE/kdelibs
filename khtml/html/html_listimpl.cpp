@@ -135,9 +135,29 @@ void HTMLLIElementImpl::attach()
     HTMLElementImpl::attach();
 
     if ( m_render && m_render->style()->display() == LIST_ITEM ) {
+        RenderListItem* render = static_cast<RenderListItem*>( renderer() );
+        NodeImpl* listNode = 0;
+        for ( NodeImpl* n = parentNode(); n; n = n->parentNode() ) {
+            switch( n->id() ) {
+            case ID_UL:
+            case ID_OL:
+                listNode = n;
+                break;
+            }
+        }
+
+        // if we are not in a list, then position us inside, even if CSS says otherwise
+        render->setInsideList( listNode );
+
+        // If we are first, and the OL has a start attr, set the value.
+        if (listNode && listNode->id() == ID_OL && !m_render->previousSibling()) {
+            HTMLOListElementImpl *ol = static_cast<HTMLOListElementImpl *>(listNode);
+            render->setValue(ol->start());
+        }
+
         DOMString v = getAttribute(ATTR_VALUE);
-        if (!v.isEmpty())
-            static_cast<RenderListItem*>(m_render)->setValue(v.implementation()->toInt());
+        if ( !v.isEmpty() )
+            render->setValue( v.implementation()->toInt() );
     }
 }
 

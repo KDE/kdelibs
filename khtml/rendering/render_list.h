@@ -37,10 +37,43 @@ namespace khtml
 {
 
 class RenderListItem;
+class RenderListMarker;
 
-/* used to render the lists marker.
-     This class always has to be a direct child of a RenderListItem!
-*/
+class RenderListItem : public RenderBlock
+{
+    friend class RenderListMarker;
+
+public:
+    RenderListItem(DOM::NodeImpl*);
+
+    virtual const char *renderName() const { return "RenderListItem"; }
+
+    virtual void setStyle(RenderStyle *style);
+
+    virtual bool isListItem() const { return true; }
+
+//    long value() const { return m_marker->m_value; }
+    void setValue( long v ) { predefVal = v; }
+    void calcListValue();
+
+    virtual void layout( );
+    virtual void detach( );
+    virtual void calcMinMaxWidth();
+
+    void setInsideList(bool b ) { m_insideList = b; }
+
+protected:
+
+    void updateMarkerLocation();
+
+    RenderListMarker *m_marker;
+    long int predefVal : 30;
+    bool m_insideList  : 1;
+    bool m_deleteMarker: 1;
+};
+
+// -----------------------------------------------------------------------------
+
 class RenderListMarker : public RenderBox
 {
 public:
@@ -60,41 +93,26 @@ public:
     virtual void layout( );
     virtual void calcMinMaxWidth();
 
-    virtual short verticalPositionHint( bool firstLine ) const;
+    virtual short lineHeight( bool firstLine ) const;
+    virtual short baselinePosition( bool firstLine ) const;
 
     virtual void setPixmap( const QPixmap &, const QRect&, CachedImage *);
 
     virtual void calcWidth();
 
+    RenderListItem* listItem() const { return m_listItem; }
+    void setListItem(RenderListItem* listItem) { m_listItem = listItem; }
+
 protected:
     friend class RenderListItem;
+
+    bool listPositionInside() const
+    { return !m_listItem->m_insideList || style()->listStylePosition() == INSIDE; }
 
     QString m_item;
     CachedImage *m_listImage;
     long m_value;
-};
-
-class RenderListItem : public RenderBlock
-{
-public:
-    RenderListItem(DOM::NodeImpl*);
-    virtual ~RenderListItem();
-
-    virtual const char *renderName() const { return "RenderListItem"; }
-
-    virtual void setStyle(RenderStyle *style);
-
-    virtual bool isListItem() const { return true; }
-
-    long value() const { return m_marker->m_value; }
-    void setValue( long v ) { predefVal = v; }
-    void calcListValue();
-
-    virtual void layout( );
-
-protected:
-    long int predefVal;
-    RenderListMarker *m_marker;
+    RenderListItem* m_listItem;
 };
 
 } //namespace

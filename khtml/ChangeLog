@@ -1,3 +1,11 @@
+2003-10-20  Dirk Mueller  <dmuell@gmx.net>
+
+	* html/htmlparser.cpp (insertNode): don't set css list position on stray <li>
+	elements. its an inherited attribute, and might mess up rendering of nested
+	<ul>/<ol> constructs.
+
+	* rendering/render_list.cpp: ListItems are no longer floats.
+
 2003-10-19  Dirk Mueller  <dmuell@gmx.net>
 
 	* html/html_headimpl.cpp (childrenChanged): make sure that we respect the media
