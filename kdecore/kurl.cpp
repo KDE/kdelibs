@@ -280,7 +280,7 @@ QString KURL::path( int _trailing ) const
     assert( 0 );
 }
 
-bool KURL::isLocalFile()
+bool KURL::isLocalFile() const
 {
   if ( m_strProtocol != "file" )
     return false;

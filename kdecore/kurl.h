@@ -119,12 +119,12 @@ public:
   /**
    * @return the encoded query. This has a good reason: The query may contain the 0 character.
    */
-  const char* query() { return m_strQuery_encoded.data(); }
+  const char* query() const { return m_strQuery_encoded.data(); }
   
   /**
    * The reference is NEVER decoded automatically.
    */
-  const char* ref() { return m_strRef_encoded.data(); }
+  const char* ref() const { return m_strRef_encoded.data(); }
   /**
    * Set the reference part (everything after '#')
    * @param _txt is considered encoded.
@@ -135,7 +135,7 @@ public:
   bool isMalformed() const  { return m_bIsMalformed; }
 
   /* @return true if the file is a plain local file (no sub protocol) */
-  bool isLocalFile();
+  bool isLocalFile() const;
   /* @return true if the file has at least one sub URL.
      Use @ref split to get the sub URLs. */
   bool hasSubURL() const;
