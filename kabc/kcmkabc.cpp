@@ -210,6 +210,10 @@ void ConfigPageImpl::slotSelectionChanged()
     editButton->setEnabled( state );
 }
 
+void ConfigPageImpl::slotStandard()
+{
+}
+
 KCMkabc::KCMkabc( QWidget *parent, const char *name )
     : KCModule( parent, name )
 {
