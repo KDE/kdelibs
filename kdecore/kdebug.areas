@@ -284,6 +284,7 @@
 7125        kio_ldap
 7126        kio_devices
 7127        kio_fish
+7128        kio_svn
 
 # kdesdk
 8100        kompare
@@ -336,6 +337,7 @@
 9033        kdevelop (diff frontend)
 9034        kdevelop (filecreate part)
 9035        kdevelop (konsole part)
+9036        kdevelop (subversion part)
 
 # toys and games
 10000        amor
