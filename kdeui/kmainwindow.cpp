@@ -771,8 +771,17 @@ KStatusBar *KMainWindow::statusBar()
 
 void KMainWindow::shuttingDown()
 {
-    // call the virtual queryExit
-    queryExit();
+    // Needed for Qt <= 3.0.3 at least to prevent reentrancy
+    // when queryExit() shows a dialog. Check before removing!
+    static bool reentrancy_protection = false;
+    if (!reentrancy_protection)
+    {
+       reentrancy_protection = true;
+       // call the virtual queryExit
+       queryExit();
+       reentrancy_protection = false;
+    }
+    
 }
 
 QMenuBar *KMainWindow::internalMenuBar()
