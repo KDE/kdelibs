@@ -39,6 +39,7 @@
 #include <qbuffer.h>
 
 #include "kurl.h"
+#include "khtmlclue.h"
 
 //
 // External Classes
@@ -449,7 +450,7 @@ protected:
     /*
      * The current alignment, set by <DIV > or <CENTER>
      */
-    int divAlign;
+    HTMLClue::HAlign divAlign;
 
     /*
      * Number of tokens parsed in the current time-slice
@@ -503,12 +504,6 @@ protected:
     // the text to be put in a form element
     QString formText;
 
-
-    /*
-     * Image maps used in this document
-     */
-    QList<HTMLMap> mapList;
-                  
     /*
      * The toplevel frame set if we have frames otherwise 0L.
      */

@@ -1355,12 +1355,6 @@ void HTMLImage::changeImage( const char *_url )
     htmlWidget->paintSingleObject( this );
 }
 
-void HTMLImage::setOverlay( const char *_ol )
-{
-    // overlays must be cached
-    overlay = HTMLImage::findImage( _ol );
-}
-
 void HTMLImage::setPixmap( QPixmap *p )
 {
     pixmap = p;

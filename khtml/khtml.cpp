@@ -89,7 +89,6 @@ HTMLPendingFile::HTMLPendingFile( const char *_url, HTMLObject *_obj )
 //
 ///////////////////////////
 
-
 KHTMLWidget::KHTMLWidget( QWidget *parent, const char *name, const char * )
     : KDNDWidget( parent, name, WPaintClever )
 {
@@ -167,44 +166,6 @@ KHTMLWidget::KHTMLWidget( QWidget *parent, const char *name, const char * )
 ///////////////////////////////////////////////////
 
 
-void KHTMLWidget::setDefaultFontBase( int size )
-{   
-    if ( size < 2 ) 
-     	size = 2;
-    else if ( size > 5 ) 
-     	size = 5;
-     
-    defaultSettings->fontBaseSize = size - 1;
-}
-
-void KHTMLWidget::setStandardFont( const char *name )
-{   
-    defaultSettings->fontBaseFace = name; 
-}
-
-void KHTMLWidget::setFixedFont( const char *name )
-{    
-    defaultSettings->fixedFontFace = name; 
-}
-
-void KHTMLWidget::setDefaultBGColor( const QColor &col )
-{   
-    defaultSettings->bgColor = col; 
-}
-
-void KHTMLWidget::setDefaultTextColors( const QColor &normal, 
-                                        const QColor &link,
-                                        const QColor &vlink )
-{
-    defaultSettings->fontBaseColor = normal;
-    defaultSettings->linkColor = link;
-    defaultSettings->vLinkColor = vlink;
-}
-
-void KHTMLWidget::setUnderlineLinks( bool ul )
-{ 
-    defaultSettings->underlineLinks = ul; 
-}                                             
 
 void KHTMLWidget::requestImage( HTMLObject *obj, const char *_url )
 { 
@@ -343,7 +304,7 @@ void KHTMLWidget::slotFileLoaded( const char *_url, const char *_filename )
   
   mapPendingFiles.remove( _url );
 
-  if ( mapPendingFiles.count() == 0 && !parsing )
+  if ( mapPendingFiles.count() == 0 && !parser )
   {
     emit documentDone();
     cache->flush();
