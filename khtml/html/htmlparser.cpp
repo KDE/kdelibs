@@ -131,6 +131,7 @@ const unsigned short tagPriority[] = {
     1, // ID_INS
     0, // ID_ISINDEX
     1, // ID_KBD
+    1, // ID_KEYGEN
     5, // ID__KONQBLOCK
     1, // ID_LABEL
     1, // ID_LAYER
