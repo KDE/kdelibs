@@ -50,6 +50,8 @@ public:
   QString language;
   QStringList languageList;
   QList<KCatalogue> catalogues;
+  QString encoding;
+  QTextCodec * codecForEncoding;
 
   KLocalePrivate()
     : defaultsOnly(false)
@@ -58,6 +60,12 @@ public:
 };
 
 extern void qt_set_locale_codec( QTextCodec *codec );
+
+// ### HPB: Merge with the constructor below in KDE 3
+KLocale::KLocale( const QString & catalogue )
+{
+  KLocale( catalogue, true );
+}
 
 KLocale::KLocale( const QString & catalogue, bool useEnv )
   : m_codec( 0 ),
@@ -68,6 +76,7 @@ KLocale::KLocale( const QString & catalogue, bool useEnv )
 
   KConfig *config = KGlobal::instance()->config();
   initCharset(config);
+  initEncoding(config);
 
   // Use the first non-null string.
   QString mainCatalogue = catalogue;
@@ -89,7 +98,7 @@ KLocale::KLocale( const QString & catalogue, bool useEnv )
   initLanguage(config, useEnv);
 }
 
-void KLocale::initEncoding()
+void KLocale::initCodec()
 {
   m_codec = 0;
   QString location = locate("locale",
@@ -103,12 +112,13 @@ void KLocale::initEncoding()
 	  f.readLine(buf, 256);
 	  QString codecName = QString::fromLatin1( buf ).stripWhiteSpace();
 	  m_codec = KGlobal::charsets()->codecForName( codecName );
-	  f.close();
+
+	  ASSERT( m_codec );
 	}
     }
   // default to UTF-8
   if (!m_codec)
-    m_codec = QTextCodec::codecForName( "UTF-8" );
+    m_codec = QTextCodec::codecForMib(106); // UTF-8
 }
 
 void KLocale::initLanguage(KConfig * config, bool useEnv)
@@ -372,7 +382,7 @@ bool KLocale::setLanguage(const QString & language)
     {
       d->language = language;
 
-      initEncoding();
+      initCodec();
 
       doBindInit();
     }
@@ -1434,7 +1444,12 @@ void KLocale::initInstance()
 
   KInstance *app = KGlobal::instance();
   if (app)
-    KGlobal::_locale = new KLocale(app->instanceName());
+    {
+      KGlobal::_locale = new KLocale(app->instanceName());
+
+      // only do this for the global instance
+      qt_set_locale_codec(KGlobal::_locale->codecForEncoding());
+    }
   else
     kdDebug(173) << "no app name available using KLocale - nothing to do\n";
 }
@@ -1492,27 +1507,45 @@ void KLocale::initCharset(KConfig *config)
   if (m_charset.isEmpty())
     {
       m_charset = QString::fromLatin1("iso-8859-1");
-      qt_set_locale_codec(QTextCodec::codecForMib(4)); // latin-1
-      // ### we should default to Qt's default, as thats always more
-      // intelligent
     }
   else
     {
-      bool ok;
-      QTextCodec* nc = KGlobal::charsets()->codecForName(m_charset, ok);
+      // ### HPB: This code should be rewritten/removed
+      bool bOk;
+      KGlobal::charsets()->codecForName(m_charset, bOk);
       // if !ok, we have a problem. it will return latin-1 then, but thats
       // obviously not what the user wants
-      if(!ok)
+      if(!bOk)
 	kdWarning(173) << "charset " << m_charset
 		       << " is not known. using ISO 8859-1 instead." << endl;
-
-      // Lars said: "A UTF-16 locale doesn't exist. It can't interact with
-      // other Unix applications because UTF-16 has 0's in the string."
-      if (!strcmp(nc->name(), "ISO-10646-UCS-2"))
-	nc = QTextCodec::codecForName( "UTF-8" );
-      
-      qt_set_locale_codec(nc);
+      //m_charset = QString::fromLatin1("iso-8859-1");
     }
+}
+
+void KLocale::initEncoding(KConfig *config)
+{
+  const int mibDefault = 4; // ISO 8859-1
+
+  int encodingMib = mibDefault; // set to default
+  if (config)
+    {
+      KConfigGroupSaver saver(config, QString::fromLatin1("Locale"));
+      encodingMib = config->readNumEntry(QString::fromLatin1("EncodingMib"),
+					 encodingMib);
+    }
+
+  setEncoding( encodingMib );
+
+  if ( !d->codecForEncoding )
+    {
+      kdWarning(173) << "encodingMib " << encodingMib
+		     << " is not known. using ISO 8859-1 instead." << endl;
+      setEncoding(mibDefault);
+      // ### we should default to Qt's default, as thats always more 
+      // intelligent
+    }
+
+  ASSERT( d->codecForEncoding );
 }
 
 void KLocale::initCatalogue( KCatalogue * catalogue )
@@ -1635,4 +1668,28 @@ void KLocale::setCurrencySymbol(const QString & symbol)
 QString KLocale::internalLanguage()
 {
   return QString::fromLatin1("C");
+}
+
+const char * KLocale::encoding() const
+{
+  return codecForEncoding()->name();
+}
+
+int KLocale::encodingMib() const
+{
+  return codecForEncoding()->mibEnum();
+}
+
+QTextCodec * KLocale::codecForEncoding() const
+{
+  return d->codecForEncoding;
+}
+
+bool KLocale::setEncoding(int mibEnum)
+{
+  QTextCodec * codec = QTextCodec::codecForMib(mibEnum);
+  if (codec)
+    d->codecForEncoding = codec;
+
+  return codec != 0;
 }

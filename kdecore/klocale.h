@@ -85,7 +85,19 @@ public:
    * @param catalogue The name of the main language file
    * @param useEnv True if we should use environment variables.
    */
-  KLocale( const QString& catalogue = QString::null, bool useEnv = true );
+  KLocale( const QString& catalogue, bool useEnv );
+  /**
+   * Create a KLocale with the given catalogue name.
+   * The constructor looks for an entry Locale/Language in the
+   * configuration file.
+   * If nothing is set there, it looks for the environment variable
+   * $LANG. The format for LANG is de, if de (german) is your
+   * prefered language. If none of them can be find, the default (C)
+   * will be used.
+   *
+   * @param catalogue The name of the main language file
+   */
+  KLocale( const QString& catalogue = QString::null );
 
   /**
    * Destructor.
@@ -145,6 +157,14 @@ public:
    * @return True on success.
    */
   bool setCharset(const QString & charset);
+  /**
+   * Changes the current encoding.
+   *
+   * @param mibEnum The mib of the prefered codec
+   *
+   * @return True on success.
+   */
+  bool setEncoding(int mibEnum);
 
   /**
    * Changes the current language. The current language will be left
@@ -500,8 +520,39 @@ public:
    * "iso-8859-1" is default
    *
    * @return Name of the prefered charset for fonts
+   *
+   * @sa encoding
    */
   QString charset() const;
+
+  /**
+   * Retrives the user's prefered encoding
+   *
+   * @return The name of the prefered encoding
+   *
+   * @sa codecForEncoding
+   * @sa encodingMib
+   */
+  const char * encoding() const;
+
+  /**
+   * Retrieves the user's prefered encoding.
+   *
+   * @return The Mib of the prefered encoding
+   *
+   * @sa encoding
+   * @sa codecForEncoding
+   */
+  int encodingMib() const;
+  /**
+   * Retrieves the user's prefered encoding. Should never be NULL.
+   *
+   * @return The codec for the prefered encoding
+   *
+   * @sa encoding
+   * @sa encodingMib
+   */
+  QTextCodec * codecForEncoding() const;
 
   /**
    * Changes the current date format.
@@ -694,22 +745,29 @@ private:
    * @internal Init the language part of the instance with the given config
    * object. It should be valid and contain the global entries.
    *
-   * @param config The configuration object used for init.
-   * @param useEnv True if we should use environment variables.
+   * @param config The configuration object used for init
+   * @param useEnv True if we should use environment variables
    */
   void initLanguage(KConfig * config, bool useEnv);
   
   /**
    * @internal Figure out which charset the user prefers.
    *
-   * @param config The configuration object used for init.
+   * @param config The configuration object used for init
    */
   void initCharset(KConfig * config);
 
   /**
+   * @internal FIgure out which encoding the user prefers.
+   * 
+   * @param config The configuration object used for init
+   */
+  void initEncoding(KConfig * config);
+
+  /**
    * @internal function used by setLanguage().
    */
-  void initEncoding();
+  void initCodec();
 
   /**
    * @internal function used by readTime(const QString &) const.
