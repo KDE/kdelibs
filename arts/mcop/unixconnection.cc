@@ -50,10 +50,11 @@ static struct sockaddr_un *parse_unix_url(const char *url)
 	    return 0;
 	}
 
+    int maxlen = sizeof(addr.sun_path);
     memset((void *) &addr, '\0', sizeof(addr));
     addr.sun_family = AF_UNIX;
-    strncpy(addr.sun_path,path,108);
-	addr.sun_path[107] = 0;
+    strncpy(addr.sun_path,path,maxlen);
+	addr.sun_path[maxlen-1] = 0;
 	free(work);
 	return &addr;
 }
