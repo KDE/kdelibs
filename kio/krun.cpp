@@ -40,7 +40,7 @@
 #include <dcopclient.h>
 #include <qfile.h>
 #include <qtextstream.h>
-#include <netwm.h>
+#include <kwin.h>
 #include <kdesktopfile.h>
 
 KOpenWithHandler * KOpenWithHandler::pOpenWithHandler = 0L;
@@ -293,9 +293,7 @@ pid_t KRun::run( const QString& _cmd )
   kdDebug(7010) << "Running " << _cmd << endl;
   
   // Figure out current desktop
-  NETRootInfo rinfo( qt_xdisplay(), NET::CurrentDesktop );
-  rinfo.activate();
-  int desktop = rinfo.currentDesktop(); 
+  int desktop = KWin::currentDesktop();
 
   KShellProcess proc;
 
