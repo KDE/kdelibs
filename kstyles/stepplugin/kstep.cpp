@@ -223,7 +223,7 @@ void KStepStyle::drawScrollBarControls(QPainter *p, const QScrollBar *sb,
             p->drawRect(add);
             qDrawShadePanel(p, add.x()+1, add.y()+1, add.width()-2,
                             add.height()-2, nextGrp, activeControl == AddLine, 1,
-                            &nextGrp.brush(QColorGroup::Button));
+                            &nextGrp.brush(QColorGroup::Background));
             drawStepBarArrow(p, (horizontal) ? RightArrow : DownArrow,
                              add.x()+3, add.y()+3, nextGrp);
         }
@@ -234,7 +234,7 @@ void KStepStyle::drawScrollBarControls(QPainter *p, const QScrollBar *sb,
             p->drawRect(sub);
             qDrawShadePanel(p, sub.x()+1, sub.y()+1, sub.width()-2,
                             sub.height()-2, nextGrp, activeControl == SubLine, 1,
-                            &nextGrp.brush(QColorGroup::Button));
+                            &nextGrp.brush(QColorGroup::Background));
             drawStepBarArrow(p, (horizontal) ? LeftArrow : UpArrow, sub.x()+3,
                              sub.y()+3, nextGrp);
         }
@@ -576,15 +576,24 @@ void KStepStyle::drawKBarHandle(QPainter *p, int x, int y, int w, int h,
 }
 
 void KStepStyle::drawKMenuBar(QPainter *p, int x, int y, int w, int h,
-                              const QColorGroup &, QBrush *)
+                              const QColorGroup &g, QBrush *)
 {
-    drawButton(p, x, y, w, h, nextGrp, false);
+    drawButton(p, x, y, w, h, nextGrp, false, &g.brush(QColorGroup::Background));
 }
 
 void KStepStyle::drawKToolBar(QPainter *p, int x, int y, int w, int h,
-                              const QColorGroup &, bool)
+                              const QColorGroup &g, bool)
 {
-    drawButton(p, x, y, w, h, nextGrp, false);
+   // drawButton(p, x, y, w, h, nextGrp, false, &g.brush(QColorGroup::Background));
+    int x2 = x+w-1;
+    int y2 = y+h-1;
+    p->fillRect(x+1, y+1, w-2, h-2, g.brush(QColorGroup::Background));
+    p->setPen(g.light());
+    p->drawLine(x, y, x2-1, y);
+    p->drawLine(x, y, x, y2-1);
+    p->setPen(Qt::black);
+    p->drawLine(x, y2, x2, y2);
+    p->drawLine(x2, y, x2, y2);
 }
 
 void KStepStyle::drawKToolBarButton(QPainter *p, int x, int y, int w, int h,
@@ -596,13 +605,17 @@ void KStepStyle::drawKToolBarButton(QPainter *p, int x, int y, int w, int h,
 {
     int x2 = x+w-1;
     int y2 = y+h-1;
-    p->setPen(sunken ? g.dark() : g.light());
-    p->drawLine(x, y, x2, y);
-    p->drawLine(x, y, x, y2);
-    p->setPen(sunken ? g.light() : g.dark());
-    p->drawLine(x2, y, x2, y2);
-    p->drawLine(x, y2, x2, y2);
-    p->fillRect(x+1, y+1, w-2, h-2, sunken? g.mid() : g.button());
+    if(sunken || raised){
+        p->setPen(sunken ? g.dark() : g.light());
+        p->drawLine(x, y, x2, y);
+        p->drawLine(x, y, x, y2);
+        p->setPen(sunken ? g.light() : g.dark());
+        p->drawLine(x2, y, x2, y2);
+        p->drawLine(x, y2, x2, y2);
+        p->fillRect(x+1, y+1, w-2, h-2, sunken? g.mid() : g.background());
+    }
+    else
+        p->fillRect(x, y, w, h, g.background());
     int dx, dy;
 
     if (icontext == Icon){ // icon only
