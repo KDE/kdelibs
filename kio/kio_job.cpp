@@ -1019,19 +1019,34 @@ QDialog* KIOJob::createDialog( const char *_text ) {
 }
 
 
-QString KIOJob::convertSize( int size ) { // !!! internationalization 
-  float fsize;
-  QString s;
-  if ( size > 1048576 ){
-    fsize = (float) size / (float) 1048576;
-    s.sprintf ( "%.1f MB", fsize);
-  } else if ( size > 1024 ){
-    fsize = (float) size / (float) 1024;
-    s.sprintf ( "%.1f kB", fsize);
-  } else {
-    s.sprintf ( "%d B", size);
-  }
-  return s;
+QString KIOJob::convertSize( unsigned long size )
+{
+    float fsize;
+    QString s;
+    // Giga-byte
+    if ( size >= 1073741824 )
+    {
+        fsize = (float) size / (float) 1048576;
+        s = i18n( "%1 GB" ).arg( fsize, 0, 'f', 1 );
+    }
+    // Mega-byte
+    else if ( size >= 1048576 )
+    {
+        fsize = (float) size / (float) 1048576;
+        s = i18n( "%1 MB" ).arg( fsize, 0, 'f', 1 );
+    }
+    // Kilo-byte
+    else if ( size > 1024 )
+    {
+        fsize = (float) size / (float) 1024;
+        s = i18n( "%1 KB" ).arg( fsize, 0, 'f', 1 );
+    }
+    // Just a byte
+    else
+    {
+        s = i18n( "%1 B" ).arg( size );
+    }
+    return s;
 }
 
 

@@ -235,7 +235,7 @@ public:
    * @param  _size  size in bytes
    * @return  converted size as a string - e.g. 123.4 kB , 12 MB
    */
-  static QString convertSize( int size );
+  static QString convertSize( unsigned long size );
 
   friend KIOListViewItem;
 
