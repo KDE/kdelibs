@@ -144,4 +144,46 @@
 # define KDE_ISUNLIKELY( x )  ( x )
 #endif
 
+/**
+ * This macro, and it's friends going up to 10 reserve a fixed number of virtual
+ * functions in a class.  Because adding virtual functions to a class changes the
+ * size of the vtable, adding virtual functions to a class breaks binary
+ * compatibility.  However, by using this macro, and decrementing it as new
+ * virtual methods are added, binary compatibility can still be preserved.
+ *
+ * \note The added functions must be added to the header at the same location
+ * as the macro; changing the order of virtual functions in a header is also
+ * binary incompatible as it breaks the layout of the vtable.
+ */
+
+#define RESERVE_VIRTUAL_1 \
+    virtual void reservedVirtual1();
+#define RESERVE_VIRTUAL_2 \
+    virtual void reservedVirtual2(); \
+    RESERVE_VIRTUAL_1
+#define RESERVE_VIRTUAL_3 \
+    virtual void reservedVirtual3(); \
+    RESERVE_VIRTUAL_2
+#define RESERVE_VIRTUAL_4 \
+    virtual void reservedVirtual4(); \
+    RESERVE_VIRTUAL_3
+#define RESERVE_VIRTUAL_5 \
+    virtual void reservedVirtual5(); \
+    RESERVE_VIRTUAL_4
+#define RESERVE_VIRTUAL_6 \
+    virtual void reservedVirtual6(); \
+    RESERVE_VIRTUAL_5
+#define RESERVE_VIRTUAL_7 \
+    virtual void reservedVirtual7(); \
+    RESERVE_VIRTUAL_6
+#define RESERVE_VIRTUAL_8 \
+    virtual void reservedVirtual8(); \
+    RESERVE_VIRTUAL_7
+#define RESERVE_VIRTUAL_9 \
+    virtual void reservedVirtual9(); \
+    RESERVE_VIRTUAL_8
+#define RESERVE_VIRTUAL_10 \
+    virtual void reservedVirtual10(); \
+    RESERVE_VIRTUAL_9
+
 #endif // _KDE_MACROS_H_
