@@ -352,7 +352,12 @@ skipact:
 static KAction* handleToolbarMouseButton(QPoint pos, QPtrList<KAction> actions, 
 	                                     KBookmarkManager * /*mgr*/, QPoint & pt)
 {
-    KToolBar *tb = dynamic_cast<KToolBar*>(actions.first()->container(0));
+    KAction *act = actions.first();
+    if (!act) {
+        return 0;
+    }
+
+    KToolBar *tb = dynamic_cast<KToolBar*>(act->container(0));
     Q_ASSERT(tb);
 
     KToolBarButton *b;
