@@ -66,6 +66,7 @@ private:
     AuthInfo() { expire = expNever; isCanceled = false; seqNr = 0; }
   
     KURL url;
+    QString directory;
     QString username;
     QString password;
     QString realmValue;
@@ -79,8 +80,14 @@ private:
     bool isCanceled;
   };
 
-
-  QDict< QPtrList<AuthInfo> > m_authDict;
+  class AuthInfoList : public QPtrList<AuthInfo>
+  {
+    public: 
+      AuthInfoList() { setAutoDelete(true); }
+      int compareItems(QPtrCollection::Item n1, QPtrCollection::Item n2);
+  };
+  
+  QDict< AuthInfoList > m_authDict;
 
   struct Request {
      DCOPClientTransaction *transaction;

@@ -39,6 +39,26 @@
 
 #include "kpasswdserver.h"
 
+int
+KPasswdServer::AuthInfoList::compareItems(QPtrCollection::Item n1, QPtrCollection::Item n2)
+{
+   if (!n1 || !n2)
+      return 0;
+            
+   AuthInfo *i1 = (AuthInfo *) n1;
+   AuthInfo *i2 = (AuthInfo *) n2;
+         
+   int l1 = i1->directory.length();
+   int l2 = i2->directory.length();
+         
+   if (l1 > l2)
+      return -1;
+   if (l1 < l2)
+      return 1;
+   return 0;
+}
+
+
 KPasswdServer::KPasswdServer()
  : DCOPObject("kpasswdserver")
 {
@@ -58,7 +78,7 @@ KPasswdServer::checkCachedAuthInfo(KIO::AuthInfo info, long windowId)
     QString key = createCacheKey(info);
 
     Request *request = m_authPending.first();
-    QString path2 = info.url.path(+1);
+    QString path2 = info.url.directory(false, false);
     for(; request; request = m_authPending.next())
     {
        if (request->key != key)
@@ -66,7 +86,7 @@ KPasswdServer::checkCachedAuthInfo(KIO::AuthInfo info, long windowId)
            
        if (info.verifyPath)
        {
-          QString path1 = request->info.url.path(+1);
+          QString path1 = request->info.url.directory(false, false);
           if (!path2.startsWith(path1))
              continue;
        }
@@ -205,7 +225,7 @@ KPasswdServer::processRequest()
        QString key = waitRequest->key;
 
        request = m_authPending.first();
-       QString path2 = waitRequest->info.url.path(+1);
+       QString path2 = waitRequest->info.url.directory(false, false);
        for(; request; request = m_authPending.next())
        {
            if (request->key != key)
@@ -213,7 +233,7 @@ KPasswdServer::processRequest()
            
            if (info.verifyPath)
            {
-               QString path1 = request->info.url.path(+1);
+               QString path1 = request->info.url.directory(false, false);
                if (!path2.startsWith(path1))
                    continue;
            }
@@ -299,11 +319,11 @@ KPasswdServer::copyAuthInfo(const AuthInfo *i)
 const KPasswdServer::AuthInfo *
 KPasswdServer::findAuthInfoItem(const QString &key, const KIO::AuthInfo &info)
 {
-   QPtrList<AuthInfo> *authList = m_authDict.find(key);
+   AuthInfoList *authList = m_authDict.find(key);
    if (!authList)
       return 0;
       
-   QString path2 = info.url.path(+1);
+   QString path2 = info.url.directory(false, false);
    for(AuthInfo *current = authList->first();
        current; )
    {
@@ -317,7 +337,8 @@ KPasswdServer::findAuthInfoItem(const QString &key, const KIO::AuthInfo &info)
           
        if (info.verifyPath)
        {
-          QString path1 = current->url.path(+1);
+          QString path1 = current->directory;
+// qWarning("Comparing %s with %s", path2.latin1(), path1.latin1());
           if (path2.startsWith(path1))
              return current;
        }
@@ -335,7 +356,7 @@ KPasswdServer::findAuthInfoItem(const QString &key, const KIO::AuthInfo &info)
 void
 KPasswdServer::removeAuthInfoItem(const QString &key, const KIO::AuthInfo &info)
 {
-   QPtrList<AuthInfo> *authList = m_authDict.find(key);
+   AuthInfoList *authList = m_authDict.find(key);
    if (!authList)
       return;
       
@@ -358,30 +379,33 @@ KPasswdServer::removeAuthInfoItem(const QString &key, const KIO::AuthInfo &info)
    }
 }
 
+
 void
 KPasswdServer::addAuthInfoItem(const QString &key, const KIO::AuthInfo &info, long windowId, long seqNr, bool canceled)
 {
-   QPtrList<AuthInfo> *authList = m_authDict.find(key);
+   AuthInfoList *authList = m_authDict.find(key);
    if (!authList)
    {
-      authList = new QPtrList<AuthInfo>;
-      authList->setAutoDelete(true);
+      authList = new AuthInfoList;
       m_authDict.insert(key, authList);
    }
    AuthInfo *current = authList->first();
    for(; current; current = authList->next())
    {
        if (current->realmValue == info.realmValue)
+       {
+          authList->take();
           break;
+       }
    }
 
    if (!current)
    {
       current = new AuthInfo;
-      authList->append(current);
    }
 
    current->url = info.url;
+   current->directory = info.url.directory(false, false);
    current->username = info.username;
    current->password = info.password;
    current->realmValue = info.realmValue;
@@ -405,6 +429,9 @@ KPasswdServer::addAuthInfoItem(const QString &key, const KIO::AuthInfo &info, lo
       current->expireTime = time(0)+10;
    }
    
+   // Insert into list, keep the list sorted "longest path" first.
+   authList->inSort(current);
+   
    // Update mWindowIdList
    QStringList *keysChanged = mWindowIdList.find(windowId);
    if (!keysChanged)
@@ -426,7 +453,7 @@ KPasswdServer::removeAuthForWindowId(long windowId)
        it != keysChanged->end(); ++it)
    {
       QString key = *it;
-      QPtrList<AuthInfo> *authList = m_authDict.find(key);
+      AuthInfoList *authList = m_authDict.find(key);
       if (!authList)
          continue;
 
