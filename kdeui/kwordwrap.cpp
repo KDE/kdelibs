@@ -119,8 +119,14 @@ KWordWrap* KWordWrap::formatText( QFontMetrics &fm, const QRect & r, int /*flags
     //kdDebug() << "KWordWrap::formatText boundingRect:" << r.x() << "," << r.y() << " " << textwidth << "x" << y << endl;
     if ( r.height() >= 0 && y > r.height() )
         textwidth = r.width();
-    kw->m_boundingRect.setRect( 0, 0, textwidth,
-                                r.height() < 0 ? y : QMIN( y, r.height() ) );
+    int realY = y;
+    if ( r.height() >= 0 )
+    {
+        while ( realY > r.height() )
+            realY -= height;
+        realY = QMAX( realY, 0 );
+    }
+    kw->m_boundingRect.setRect( 0, 0, textwidth, realY );
     return kw;
 }
 
