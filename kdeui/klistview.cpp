@@ -1935,9 +1935,21 @@ void KListViewItem::paintCell(QPainter *p, const QColorGroup &cg, int column, in
     if (isAlternate())
       QListViewItem::paintCell(p, static_cast<KListView *>(listView())->d->cgAlternate, column, width, alignment);
     else
-      QListViewItem::paintCell(p, static_cast<KListView *>(listView())->d->cgAlternate, column, width, alignment);
+      QListViewItem::paintCell(p, static_cast<KListView *>(listView())->d->cgNormal, column, width, alignment);
   }
-  else QListViewItem::paintCell(p, cg, column, width, alignment);
+  else
+  { 
+    QColorGroup _cg = cg;
+    const QPixmap *pm = listView()->viewport()->backgroundPixmap();
+    if (pm && !pm->isNull())
+    {
+      _cg.setBrush(QColorGroup::Base, QBrush(backgroundColor(), *pm));
+      p->setBrushOrigin( -listView()->contentsX(), -listView()->contentsY() );
+    }
+    _cg.setColor(QColorGroup::Base, backgroundColor());
+          
+    QListViewItem::paintCell(p, _cg, column, width, alignment);
+  }
 }
 
 #include "klistview.moc"
