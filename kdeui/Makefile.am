@@ -40,7 +40,7 @@ include_HEADERS = qttableview.h kprogress.h kcolordlg.h kcolordialog.h kselect.h
 		kcontainer.h keditcl.h kled.h keditlistbox.h \
 		kdbtn.h kwizard.h kkeydialog.h \
 		kurllabel.h kruler.h kcursor.h kaccelmenu.h \
-		klineeditdlg.h kwidgetid.h kthemebase.h \
+		klineeditdlg.h kthemebase.h \
 		kthemestyle.h kcharselect.h kcolordrag.h qxembed.h \
 		knumvalidator.h kdialog.h kdialogbase.h \
 		kjanuswidget.h kaboutdialog.h kpixmapeffect.h \
