@@ -142,7 +142,8 @@ typedef void* IceIOErrorHandler;
 
 #include "kappdcopiface.h"
 
-bool kde_have_kipc = true; // magic hook to disable kipc in kdm
+// exported for kdm kfrontend
+KDE_EXPORT bool kde_have_kipc = true; // magic hook to disable kipc in kdm
 bool kde_kiosk_exception = false; // flag to disable kiosk restrictions
 bool kde_kiosk_admin = false;
 
