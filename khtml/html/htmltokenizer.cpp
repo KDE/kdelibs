@@ -1452,11 +1452,6 @@ void HTMLTokenizer::write( const QString &str, bool appendData )
             {
                 prePos++;
             }
-#if QT_VERSION < 300
-            unsigned char row = src->row();
-            if ( row > 0x05 && row < 0x10 || row > 0xfd )
-                    currToken.complexText = true;
-#endif
             *dest = *src;
             fixUpChar( *dest );
             ++dest;
