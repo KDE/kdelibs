@@ -761,8 +761,8 @@ KCookieAdvice KCookieJar::cookieAdvice(KHttpCookiePtr cookiePtr)
        {
           qWarning("WARNING: Host %s tries to set cookie for domain %s",
                     cookiePtr->host().latin1(), cookiePtr->domain().latin1());
-
-          return KCookieReject;
+          cookiePtr->fixDomain(QString::null);
+          isEmptyDomain = true;
        }
     }
 
