@@ -123,7 +123,7 @@ void KAccelMenu::popMsg () {
       QWhatsThis::remove(this);
     } else {
       msg = i18n("Global Key: cannot change shortcut");
-      KMessageBox::sorry(this, msg, i18n("KAccelMenu Warning"));
+      KMessageBox::sorry(this, msg);
     }
   }
 }
