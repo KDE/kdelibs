@@ -72,7 +72,7 @@ QStringList KProtocolInfoFactory::protocols()
        it != list.end();
        ++it)
   {
-     KSycocaEntry *entry = *it.data();
+     KSycocaEntry *entry = (*it).data();
      KProtocolInfo *info = static_cast<KProtocolInfo *>(entry);
 
      res.append( info->name() );
