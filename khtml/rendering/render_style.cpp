@@ -249,6 +249,9 @@ bool RenderStyle::operator==(const RenderStyle& o) const
             _floating == o._floating &&
             _flowAroundFloats == o._flowAroundFloats &&
             _styleType == o._styleType &&
+	    _hasHover == o._hasHover &&
+	    _hasFocus == o._hasFocus &&
+	    _hasActive == o._hasActive &&
             *box.get() == *o.box.get() &&
             *visual.get() == *o.visual.get() &&
             *background.get() == *o.background.get() &&
