@@ -600,7 +600,7 @@ void RenderPart::setWidget( QWidget *widget )
 void RenderPart::layout( )
 {
     if ( m_widget )
-        m_widget->resize( QMIN( m_width, 2000 ), QMIN( m_height, 3072 ) );
+        m_widget->resize( QMIN( m_width, 2000 ), QMIN( m_height, 3860 ) );
 }
 
 void RenderPart::partLoadingErrorNotify()
