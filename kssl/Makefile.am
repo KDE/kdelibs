@@ -23,6 +23,7 @@ include_HEADERS = \
 		ksslcertchain.h		 \
 		ksslkeygen.h		 \
 		ksslx509v3.h		 \
+		ksslsigners.h		 \
 		ksslx509map.h
  
 
@@ -43,6 +44,7 @@ libkssl_la_SOURCES	= \
 			ksslcertchain.cc	  \
 			ksslkeygen.cc		  \
 			ksslx509v3.cc		  \
+			ksslsigners.cc		  \
 			ksslx509map.cc
 
 libkssl_la_LDFLAGS = $(all_libraries) -version-info 4:0 -no-undefined
