@@ -26,8 +26,8 @@
  *	$Id$
  */
 
-#ifndef _EMAILSETTINGS_H
-#define _EMAILSETTINGS_H "$Id$"
+#ifndef _KEMAILSETTINGS_H
+#define _KEMAILSETTINGS_H "$Id$"
 
 #include <qstring.h>
 #include <qstringlist.h>

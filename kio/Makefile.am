@@ -60,7 +60,7 @@ include_HEADERS = ksycoca.h ksycocaentry.h ksycocatype.h \
 	progressbase.h defaultprogress.h statusbarprogress.h \
 	kimageio.h kdirnotify.h kdirnotify_stub.h \
         kurlpixmapprovider.h kprotocolinfo.h kprotocolmanager.h \
-	kfilterbase.h kfilterdev.h emailsettings.h
+	kfilterbase.h kfilterdev.h kemailsettings.h
 
 libkio_la_LDFLAGS = -version-info 3:0 -no-undefined $(all_libraries)
 libkio_la_LIBADD = ../kdeui/libkdeui.la ../kdesu/libkdesu.la $(LIBZ) $(LIBFAM) 
@@ -79,7 +79,7 @@ libkio_la_SOURCES = \
 	statusbarprogress.cpp \
 	kdirnotify.cpp kdirnotify.skel kdirnotify.stub \
 	observer.cpp uiserver.stub observer.skel \
-	kmdbase.cpp emailsettings.cpp
+	kmdbase.cpp kemailsettings.cpp
 
 kio_uiserver_SOURCES = dummy.cpp
 kio_uiserver_LDADD = kio_uiserver.la
