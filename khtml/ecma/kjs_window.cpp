@@ -230,7 +230,11 @@ KJSO FrameArray::get(const UString &p) const
   unsigned int i = (unsigned int)p.toDouble();
 
   QList<KParts::ReadOnlyPart> frames = part->frames();
-  if (i < frames.count()) {
+  int len = frames.count();
+  if (p == "length")
+    return Number(len);
+  
+  if (i < len) {
     const KParts::ReadOnlyPart *frame = frames.at(i);
     if (frame->inherits("KHTMLPart")) {
       const KHTMLPart *khtml = static_cast<const KHTMLPart*>(frame);
