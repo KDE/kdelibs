@@ -530,7 +530,7 @@ static const char **namedColorFilePath( void )
   static const char *path[] =
   {
 #ifdef X11_RGBFILE
-    X11_RBGFILE,
+    X11_RGBFILE,
 #endif
     "/usr/X11R6/lib/X11/rgb.txt",
     "/usr/openwin/lib/X11/rgb.txt", // for Solaris.
