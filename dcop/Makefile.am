@@ -24,7 +24,7 @@
 SUBDIRS = KDE-ICE . dcopidl dcopidlng dcopidl2cpp client
 KDE_OPTIONS = qtonly
 
-INCLUDES=  $(all_includes)
+INCLUDES = -I$(top_builddir)/kdecore $(all_includes)
 
 bin_PROGRAMS = dcopserver_shutdown
 check_PROGRAMS = testdcop testdcopc dcop_deadlock_test
