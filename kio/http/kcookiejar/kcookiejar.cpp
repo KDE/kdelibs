@@ -456,9 +456,14 @@ bool KCookieJar::extractDomains(const QString &_fqdn,
        _domains.append(domain);
        partList.remove(partList.begin()); // Remove part
     }
-    
-    if (_domains.isEmpty())  // If we have no domains, use the fqdn only.
-       _domains.append(_fqdn);
+    // If we have no domains, use the fqdn only.
+    // Do not forget to append a preceeding ".".  Otherwise,
+    // there will be an incorrect mis-match when checking for
+    // cookies under some circumstances.  For example, a cookie
+    // set by "linuxtoday.com" won't be avaliable to "www.linuxtoday.com"
+    // and vise-versa.
+    if (_domains.isEmpty())
+       _domains.append( "." + _fqdn);
     return true;
 }
 
@@ -492,12 +497,12 @@ KHttpCookiePtr KCookieJar::makeCookies(const QString &_url,
     for(;;)
     {
         // check for "Set-Cookie"
-        if (strncasecmp(cookieStr, "Set-Cookie: ", 12) == 0)
+        if (strncasecmp(cookieStr, "Set-Cookie:", 11) == 0)
         {
-            cookieStr = parseNameValue(cookieStr+12, Name, Value);
+            cookieStr = parseNameValue(cookieStr+11, Name, Value);
 
-	    if (Name.isEmpty())
-	        continue;
+	        if (Name.isEmpty())
+	            continue;
 
             // Host = FQDN
             // Default domain = ""
