@@ -1,6 +1,6 @@
 INCLUDES = -I$(top_builddir)/kabc -I$(top_srcdir)/kabc $(all_includes)
 
-lib_LTLIBRARIES = libvcards.la
+noinst_LTLIBRARIES = libvcards.la
 libvcards_la_SOURCES = vcard.cpp vcardline.cpp vcardparser.cpp
 
 vcardsincludedir = $(includedir)/kabc
