@@ -186,7 +186,7 @@ class KGlobalSettings
     static QColor activeTitleColor();
     static QColor activeTextColor();
     static int contrast();
-  
+
     /**
      * The default colors to use for text and links.
      */
@@ -208,7 +208,14 @@ private:
      * reads in all paths from kdeglobals
      */
     static void initStatic();
+    /**
+     * drop cached values (called by KApplication)
+     */
     static void rereadFontSettings();
+    /**
+     * drop cached values (called by KApplication)
+     */
+    static void rereadPathSettings();
 
     static QString* s_desktopPath;
     static QString* s_autostartPath;

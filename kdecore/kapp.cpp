@@ -917,6 +917,8 @@ bool KApplication::x11EventFilter( XEvent *_event )
 
             case KIPC::SettingsChanged:
                 KGlobal::config()->reparseConfiguration();
+                if (arg == SETTINGS_PATHS)
+                    KGlobalSettings::rereadPathSettings();
                 propagateSettings((SettingsCategory)arg);
                 break;
 

@@ -100,9 +100,9 @@ KGlobalSettings::Completion KGlobalSettings::completionMode()
     KConfigGroupSaver cgs( c, "General" );
     completion = c->readNumEntry("completionMode", -1);
     if ((completion < (int) CompletionNone) ||
-	(completion > (int) CompletionShell))
+        (completion > (int) CompletionShell))
       {
-	completion = (int) CompletionAuto; // Default
+        completion = (int) CompletionAuto; // Default
       }
   return (Completion) completion;
 }
@@ -111,7 +111,7 @@ bool KGlobalSettings::showContextMenusOnPress ()
 {
     KConfig *c = KGlobal::config();
     KConfigGroupSaver cgs (c, "ContextMenus");
-    
+
     return cgs.config()->readBoolEntry("ShowOnPress", true);
 }
 
@@ -173,7 +173,7 @@ int KGlobalSettings::contrast()
 }
 
 // IMPORTANT:
-//  This function should be get in sync with 
+//  This function should be get in sync with
 //   KApplication::kdisplaySetPalette()
 QColor KGlobalSettings::baseColor()
 {
@@ -183,7 +183,7 @@ QColor KGlobalSettings::baseColor()
 }
 
 // IMPORTANT:
-//  This function should be get in sync with 
+//  This function should be get in sync with
 //   KApplication::kdisplaySetPalette()
 QColor KGlobalSettings::textColor()
 {
@@ -193,7 +193,7 @@ QColor KGlobalSettings::textColor()
 }
 
 // IMPORTANT:
-//  This function should be get in sync with 
+//  This function should be get in sync with
 //   KApplication::kdisplaySetPalette()
 QColor KGlobalSettings::highlightedTextColor()
 {
@@ -203,7 +203,7 @@ QColor KGlobalSettings::highlightedTextColor()
 }
 
 // IMPORTANT:
-//  This function should be get in sync with 
+//  This function should be get in sync with
 //   KApplication::kdisplaySetPalette()
 QColor KGlobalSettings::highlightColor()
 {
@@ -240,10 +240,10 @@ QFont KGlobalSettings::generalFont()
     *_generalFont = c->readFontEntry("font", _generalFont);
     return *_generalFont;
 }
-	
+
 QFont KGlobalSettings::fixedFont()
 {
-    if (_fixedFont) 
+    if (_fixedFont)
         return *_fixedFont;
 
     KConfig *c = KGlobal::config();
@@ -294,7 +294,7 @@ QFont KGlobalSettings::menuFont()
 void KGlobalSettings::initStatic()
 {
     if ( s_desktopPath != 0 )
-	return;
+        return;
 
     s_desktopPath = new QString();
     s_autostartPath = new QString();
@@ -312,14 +312,14 @@ void KGlobalSettings::initStatic()
       s_desktopPath->prepend( QDir::homeDirPath() + "/" );
     *s_desktopPath = QDir::cleanDirPath( *s_desktopPath );
     if ( s_desktopPath->right(1) != "/")
-	*s_desktopPath += "/";
+        *s_desktopPath += "/";
 
     // Trash Path
     *s_trashPath = *s_desktopPath + "Trash" + "/";
     *s_trashPath = config->readEntry( "Trash" , *s_trashPath);
     *s_trashPath = QDir::cleanDirPath( *s_trashPath );
     if ( s_trashPath->right(1) != "/")
-	*s_trashPath += "/";
+        *s_trashPath += "/";
 
     // Autostart Path
     *s_autostartPath = KGlobal::dirs()->localkdedir() + "Autostart" + "/";
@@ -328,7 +328,7 @@ void KGlobalSettings::initStatic()
       s_autostartPath->prepend( QDir::homeDirPath() + "/" );
     *s_autostartPath = QDir::cleanDirPath( *s_autostartPath );
     if ( s_autostartPath->right(1) != "/")
-	*s_autostartPath += "/";
+        *s_autostartPath += "/";
 
     kde2Gray = new QColor(220, 220, 220);
     kde2Blue = new QColor(0, 128, 128);
@@ -346,4 +346,14 @@ void KGlobalSettings::rereadFontSettings()
     _menuFont = 0L;
     delete _toolBarFont;
     _toolBarFont = 0L;
+}
+
+void KGlobalSettings::rereadPathSettings()
+{
+    delete s_autostartPath;
+    s_autostartPath = 0L;
+    delete s_trashPath;
+    s_trashPath = 0L;
+    delete s_desktopPath;
+    s_desktopPath = 0L;
 }
