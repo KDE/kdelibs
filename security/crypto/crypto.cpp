@@ -143,7 +143,7 @@ QString whatstr;
   QLabel *nossllabel = new QLabel(i18n("SSL ciphers cannot be configured"
                                " because this module was not linked"
                                " with OpenSSL."), tabSSL);
-  grid->addWidget(nossllabel, 2, 0);
+  grid->addMultiCellWidget(nossllabel, 2, 2, 0, 1);
   grid->addRowSpacing( 3, 100 ); // give minimum height to look better
 #endif
 
