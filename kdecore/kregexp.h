@@ -21,10 +21,15 @@
 class KRegExpPrivate;
 
 /**
+ * @deprecated
+ * Please use QRegExp instead.
+ *
  * Regular expression (regexp) matching with back-references.
  *
  * This was implemented
- * because @ref QRegExp does not support back-references.
+ * because @ref QRegExp did not support back-references. It now does and
+ * is recommended over KRegExp because of the unicode support and the
+ * more powerful API.
  *
  * Back-references are parts of a regexp grouped with parentheses. If a
  * string matches the regexp, you can access the text that matched each
