@@ -495,8 +495,13 @@ void KSpell::checkWord2 (KProcIO *)
   QString word;
 
   QString line;
-
   proc->fgets (line, TRUE); //get ispell's response
+
+/* ispell man page: "Each sentence of text input is terminated with an 
+   additional blank line,  indicating that ispell has completed processing
+   the input line." */
+  QString blank_line;
+  proc->fgets(blank_line, TRUE); // eat the blank line
 
   NOOUTPUT(checkWord2);
 
