@@ -1,5 +1,22 @@
 2005-03-29  Germain Garand  <germain@ebooksfrance.org>
 
+        Layer related fixes.
+
+        * ecma/kjs_dom.cpp (putValueProperty): scrollLeft/scrollTop need an
+        up-to-date rendering.
+
+        * rendering/render_box.cpp (repaintRectangle): apply scroll offset
+        to the repaint rectangle (overflow != visible objects).
+
+        * rendering/render_layer.{h,cpp} (repaint): rename markForRepaint to
+        less equivocal repaint.
+        (updateLayerPositions): small fixes.
+        (scrollToOffset): update our child layers (#102235)
+
+        * rendering/render_object.cpp (setStyle/repaintDuringLayout): rename ditto.
+
+2005-03-29  Germain Garand  <germain@ebooksfrance.org>
+
         offsetLeft/Top/width/Height/Parent improvements
 
         * rendering/render_object.cpp (offsetLeft/offsetTop/offsetParent):
