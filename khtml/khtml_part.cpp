@@ -1317,6 +1317,9 @@ void KHTMLPart::begin( const KURL &url, int xOffset, int yOffset )
   args.yOffset = yOffset;
   d->m_extension->setURLArgs( args );
 
+  if ( d->m_referrer != url.url() )
+      d->m_pageReferrer = d->m_referrer;
+
   KURL ref(url);
   ref.setRef(QString::null);
   d->m_referrer = ref.protocol().startsWith("http") ? ref.url() : "";
@@ -1738,7 +1741,7 @@ void KHTMLPart::slotRedirect()
   QString u = d->m_redirectURL;
   d->m_delayRedirect = 0;
   d->m_redirectURL = QString::null;
-  d->m_referrer = "";
+  d->m_pageReferrer = d->m_referrer = "";
   // SYNC check with ecma/kjs_window.cpp::goURL !
   if ( u.find( QString::fromLatin1( "javascript:" ), 0, false ) == 0 )
   {
@@ -4162,7 +4165,7 @@ QString KHTMLPart::jsDefaultStatusBarText() const
 
 QString KHTMLPart::referrer() const
 {
-   return d->m_referrer;
+   return d->m_pageReferrer;
 }
 
 QString KHTMLPart::lastModified() const
