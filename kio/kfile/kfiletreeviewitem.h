@@ -42,22 +42,49 @@ class KFileTreeViewItem : public KListViewItem
 public:
    KFileTreeViewItem( KFileTreeViewItem*, KFileItem*, KFileTreeBranch * );
    KFileTreeViewItem( KFileTreeView*, KFileItem*, KFileTreeBranch * );
+
+   /**
+    * @return the @see KFileTreeBranch the item is sorted in.
+    */
    KFileTreeBranch* branch() const     { return m_branch; }
+
+   /**
+    * @return the @see KFileItem the viewitem is representing.
+    */
    KFileItem *fileItem() const         { return m_kfileitem; }
+
+   /**
+    * @return the path of the item.
+    */
    QString path() const;
+
+   /**
+    * @return the items @see KURL
+    */
    KURL    url() const;
+
+   /**
+    * @return if the item represents a directory 
+    */ 
    bool    isDir() const;
 
-   virtual void middleButtonPressed() { }
-   virtual void rightButtonPressed() { }
+   /**
+    * @return if this directory was already seen by a @see KDirLister.
+    */ 
+   bool    alreadyListed() const;
 
+   /**
+    * set the flag if the directory was already listed.
+    */ 
+   void    setListed( bool wasListed );
+   
 protected:
 
 private:
 
    KFileItem *m_kfileitem;
    KFileTreeBranch *m_branch;
-
+   bool  m_wasListed;
    class KFileTreeViewItemPrivate;
    KFileTreeViewItemPrivate *d;
 };

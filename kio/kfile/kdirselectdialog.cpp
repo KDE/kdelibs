@@ -43,6 +43,9 @@ KDirSelectDialog::KDirSelectDialog(const QString &startDir, bool localOnly,
 
     // Create dir list
     m_treeView = new KFileTreeView( page );
+    m_treeView->addColumn( i18n("Directory") );
+    m_treeView->setColumnWidthMode( 0, QListView::Maximum );
+    m_treeView->setResizeMode( QListView::AllColumns );
     m_mainLayout->addWidget(m_treeView, 1);
 }
 
@@ -70,6 +73,8 @@ KURL KDirSelectDialog::selectDirectory( const QString& startDir,
     KFileTreeBranch *rootBranch = view->addBranch( root, "/" );
     view->setDirOnlyMode( rootBranch, true );
 
+    rootBranch->setOpen(true);
+    
     if ( !caption.isNull() )
         myDialog.setCaption( caption );
 

@@ -48,9 +48,6 @@ KFileTreeView::KFileTreeView( QWidget *parent, const char *name )
       m_wantOpenFolderPixmaps( true ),
       m_toolTip( this )
 {
-    setAcceptDrops( true );
-    viewport()->setAcceptDrops( true );
-
     setSelectionMode( QListView::Single );
 
     m_animationTimer = new QTimer( this );
@@ -72,6 +69,7 @@ KFileTreeView::KFileTreeView( QWidget *parent, const char *name )
     connect( this, SIGNAL( collapsed( QListViewItem *) ),
 	     this, SLOT( slotCollapsed( QListViewItem* )));
     
+    
     /* connections from the konqtree widget */
     connect( this, SIGNAL( mouseButtonPressed(int, QListViewItem*, const QPoint&, int)),
              this, SLOT( slotMouseButtonPressed(int, QListViewItem*, const QPoint&, int)) );
@@ -91,192 +89,131 @@ KFileTreeView::KFileTreeView( QWidget *parent, const char *name )
 
 KFileTreeView::~KFileTreeView()
 {
-    clearTree();
+   m_mapCurrentOpeningFolders.clear();
 }
 
-void KFileTreeView::clearTree()
-{
-//     for ( KFileTreeViewModule * module = m_lstModules.first() ; module ; module = m_lstModules.next() )
-//         module->clearAll();
-    m_mapCurrentOpeningFolders.clear();
-    clear();
-    setRootIsDecorated( true );
-}
 
 void KFileTreeView::contentsDragEnterEvent( QDragEnterEvent *ev )
 {
-    m_dropItem = 0;
-    m_currentBeforeDropItem = selectedItem();
-    // Save the available formats
-    m_lstDropFormats.clear();
-    for( int i = 0; ev->format( i ); i++ )
-      if ( *( ev->format( i ) ) )
-         m_lstDropFormats.append( ev->format( i ) );
+   if ( ! acceptDrag( ev ) )
+   {
+      ev->ignore();
+      return;
+   }
+   ev->acceptAction();
+   QListViewItem *item = itemAt( contentsToViewport( ev->pos() ) );
+   if( item )
+   {
+      m_dropItem = item;
+      m_currentBeforeDropItem = selectedItem();
+      m_autoOpenTimer->start( autoOpenTimeout );
+   }
+   m_dropItem = 0;
+   m_currentBeforeDropItem = selectedItem();
 }
 
 void KFileTreeView::contentsDragMoveEvent( QDragMoveEvent *e )
 {
+   if( ! acceptDrag( e ) ) {
+      e->ignore();
+      return;
+   }
+   e->acceptAction();
 
-    QListViewItem *item = itemAt( contentsToViewport( e->pos() ) );
-
-    // Accept drops on the background, if URLs
-    if ( !item && m_lstDropFormats.contains("text/uri-list") )
-    {
-        m_dropItem = 0;
-        e->acceptAction();
-        if (selectedItem())
-        setSelected( selectedItem(), false ); // no item selected
-        return;
-    }
-    if ( !item || !item->isSelectable() ) // || !item->acceptsDrops( m_lstDropFormats ))
-
-    // if ( !item || !item->isSelectable() || !static_cast<KFileViewItem*>(item)->acceptsDrops( m_lstDropFormats ))
-    {
-        m_dropItem = 0;
-        m_autoOpenTimer->stop();
-        e->ignore();
-        return;
-    }
-
-    e->acceptAction();
-
-    setSelected( item, true );
-
-    if ( item != m_dropItem )
-    {
-        m_autoOpenTimer->stop();
-        m_dropItem = item;
-        m_autoOpenTimer->start( autoOpenTimeout );
-    }
-
+   QListViewItem *item = itemAt( contentsToViewport( e->pos() ) );
+   if( item && item->isSelectable() )
+   {
+      setSelected( item, true );
+      if( item != m_dropItem ) {
+	 m_autoOpenTimer->stop();
+	 m_dropItem = item;
+	 m_autoOpenTimer->start( autoOpenTimeout );
+      }
+   }
+   else
+   {
+      m_autoOpenTimer->stop();
+      m_dropItem = 0;
+   }
 }
 
 void KFileTreeView::contentsDragLeaveEvent( QDragLeaveEvent * )
 {
 
-    // Restore the current item to what it was before the dragging (#17070)
-    if ( m_currentBeforeDropItem )
-        setSelected( m_currentBeforeDropItem, true );
-    else
-        setSelected( m_dropItem, false ); // no item selected
-    m_currentBeforeDropItem = 0;
-    m_dropItem = 0;
-    m_lstDropFormats.clear();
+   // Restore the current item to what it was before the dragging (#17070)
+   if ( m_currentBeforeDropItem )
+      setSelected( m_currentBeforeDropItem, true );
+   else
+      setSelected( m_dropItem, false ); // no item selected
+   m_currentBeforeDropItem = 0;
+   m_dropItem = 0;
 
 }
 
-void KFileTreeView::contentsDropEvent( QDropEvent * /*ev*/ )
+void KFileTreeView::contentsDropEvent( QDropEvent *e )
 {
 
     m_autoOpenTimer->stop();
-
+    m_dropItem = 0;
+    
     kdDebug(250) << "contentsDropEvent !" << endl;
-    if ( !selectedItem() )
-    {
-       // KonqOperations::doDrop( 0L, m_dirtreeDir, ev, this );
+    if( ! acceptDrag( e ) ) {
+       e->ignore();
+       return;
     }
-    else
-    {
-        //KFileTreeViewItem *selection = currentKFileTreeViewItem();
-       // selection->drop( ev );
-    }
+    e->acceptAction();
 
+    /* the drop was accepted so lets emit this to the outside world
+       Not sure about what signals to emit ? */
+    KURL::List urls;
+    KURLDrag::decode( e, urls );
+    emit dropped( this, e );
+    emit dropped( this, e, urls );
 }
 
-void KFileTreeView::contentsMousePressEvent( QMouseEvent *e )
+bool KFileTreeView::acceptDrag(QDropEvent* e ) const
 {
-
-    KListView::contentsMousePressEvent( e );
-
-    QPoint p( contentsToViewport( e->pos() ) );
-    QListViewItem *i = itemAt( p );
-
-    if ( e->button() == LeftButton && i ) {
-        // if the user clicked into the root decoration of the item, don't try to start a drag!
-        if ( p.x() > header()->cellPos( header()->mapToActual( 0 ) ) +
-             treeStepSize() * ( i->depth() + ( rootIsDecorated() ? 1 : 0) ) + itemMargin() ||
-             p.x() < header()->cellPos( header()->mapToActual( 0 ) ) )
-        {
-            m_dragPos = e->pos();
-            m_bDrag = true;
-        }
-    }
-
+   //Maybe we don't want to support all these actions ?
+   return QUriDrag::canDecode( e ) &&
+      ( e->action() == QDropEvent::Copy
+	|| e->action() == QDropEvent::Move
+	|| e->action() == QDropEvent::Link );
 }
 
-void KFileTreeView::contentsMouseMoveEvent( QMouseEvent *e )
-{
-    KListView::contentsMouseMoveEvent( e );
-    if ( !m_bDrag || ( e->pos() - m_dragPos ).manhattanLength() <= KGlobalSettings::dndEventDelay() )
-        return;
 
-    m_bDrag = false;
-
-    QListViewItem *item = itemAt( contentsToViewport( m_dragPos ) );
-    if ( !item || !item->isSelectable() )
-        return;
-
-    // Start a drag
-    // ### TODO: actually, there could be multiple items selected and dragged!
-    QDragObject *drag = dragObject();
-    if ( !drag )
-        return;
-
-    if ( drag->pixmap().isNull() ) {
-        const QPixmap *pix = item->pixmap(0);
-        if ( pix && !pix->isNull() ) {
-            QPoint hotspot( pix->width() / 2, pix->height() / 2 );
-            drag->setPixmap( *pix, hotspot );
-        }
-    }
-
-    drag->drag();
-}
 
 QDragObject * KFileTreeView::dragObject()
 {
-    // ### somehow, quite broken...
-    KURL::List urls;
-    QListViewItem *item = firstChild();
-    QListViewItem *current = currentItem();
-    while ( item ) {
-        if ( item->isSelected() || item == current ) {
-            urls.append( static_cast<KFileTreeViewItem*>( item )->url() );
-        }
 
-        if ( !item->nextSibling() )
-            item = item->firstChild();
-        else
-            item = item->nextSibling();
-    }
-
-    QDragObject *drag = 0L;
-    if ( !urls.isEmpty() )
-        drag = new KURLDrag( urls, viewport(), "url drag" );
-    return drag;
+   KURL::List urls;
+   const QPtrList<QListViewItem> fileList = selectedItems();
+   QPtrListIterator<QListViewItem> it( fileList );
+   for ( ; it.current(); ++it )
+   {
+      urls.append( static_cast<KFileTreeViewItem*>(it.current())->url() );
+   }
+   QPoint hotspot;
+   QPixmap pixmap;
+   if( urls.count() > 1 ){
+      pixmap = DesktopIcon( "kmultiple", 16 );
+   }
+   if( pixmap.isNull() )
+      pixmap = currentKFileTreeViewItem()->fileItem()->pixmap( 16 );
+   hotspot.setX( pixmap.width() / 2 );
+   hotspot.setY( pixmap.height() / 2 );
+   QDragObject* dragObject = KURLDrag::newDrag( urls, this );
+   if( dragObject )
+      dragObject->setPixmap( pixmap, hotspot );
+   return dragObject;
 }
 
-void KFileTreeView::contentsMouseReleaseEvent( QMouseEvent *e )
-{
-
-    KListView::contentsMouseReleaseEvent( e );
-    m_bDrag = false;
-
-}
-
-void KFileTreeView::leaveEvent( QEvent *e )
-{
-
-    KListView::leaveEvent( e );
-
-}
 
 
 void KFileTreeView::slotCollapsed( QListViewItem *item )
 {
    KFileTreeViewItem *kftvi = static_cast<KFileTreeViewItem*>(item);
    kdDebug(250) << "hit slotCollapsed" << endl;
-   if( kftvi->isDir())
+   if( kftvi && kftvi->isDir())
    {
       item->setPixmap( 0, itemIcon(kftvi));
    }
@@ -287,15 +224,24 @@ void KFileTreeView::slotExpanded( QListViewItem *item )
 {
    kdDebug(250) << "slotExpanded here !" << endl;
 
+   if( ! item ) return;
+   
    KFileTreeViewItem *it = static_cast<KFileTreeViewItem*>(item);
    KFileTreeBranch *branch = it->branch();
 
    /* Start the animation for the branch object */
    if( branch )
    {
+      /* check here if the branch really needs to be populated again */
       kdDebug(250 ) << "starting to open " << it->url().prettyURL() << endl;
       startAnimation( it );
-      branch->populate( it->url(), it );
+      bool branchAnswer = branch->populate( it->url(), it );
+      kdDebug(250) << "Branches answer: " << branchAnswer << endl;
+      if( ! branchAnswer )
+      {
+	 kdDebug(250) << "ERR: Could not populate!" << endl;
+	 stopAnimation( it );
+      }
    }
 
    /* set a pixmap 'open folder' */
@@ -312,10 +258,6 @@ void KFileTreeView::slotExecuted( QListViewItem *item )
 {
     if ( !item )
         return;
-#if 0
-    if ( !static_cast<KFileViewItem*>(item)->isClickable() )
-        return;
-#endif
     /* This opens the dir and causes the Expanded-slot to be called,
      * which strolls through the children.
      */
@@ -326,64 +268,25 @@ void KFileTreeView::slotExecuted( QListViewItem *item )
 }
 
 
-void KFileTreeView::slotMouseButtonPressed(int _button, QListViewItem* _item,
-                                           const QPoint&, int col)
-{
-   KFileTreeViewItem * item = static_cast<KFileTreeViewItem*>(_item);
-   if(_item && col < 2)
-      if (_button == MidButton)
-	 item->middleButtonPressed();
-      else if (_button == RightButton)
-      {
-	 item->setSelected( true );
-	 item->rightButtonPressed();
-      }
-}
-
 void KFileTreeView::slotAutoOpenFolder()
 {
-    m_autoOpenTimer->stop();
+   m_autoOpenTimer->stop();
 
-    if ( !m_dropItem || m_dropItem->isOpen() )
-        return;
+   if ( !m_dropItem || m_dropItem->isOpen() )
+      return;
 
-    m_dropItem->setOpen( true );
-    m_dropItem->repaint();
+   m_dropItem->setOpen( true );
+   m_dropItem->repaint();
 }
 
 
 void KFileTreeView::slotSelectionChanged()
 {
-    if ( !m_dropItem ) // don't do this while the dragmove thing
-    {
-    }
+   if ( !m_dropItem ) // don't do this while the dragmove thing
+   {
+   }
 }
 
-
-#if 0
-void KFileTreeView::FilesAdded( const KURL & dir )
-{
-    kdDebug(250) << "KFileTreeView::FilesAdded " << dir.url() << endl;
-    /* TODO */
-}
-
-void KFileTreeView::FilesRemoved( const KURL::List & urls )
-{
-    //kdDebug(250) << "KFileTreeView::FilesRemoved " << urls.count() << endl;
-    for ( KURL::List::ConstIterator it = urls.begin() ; it != urls.end() ; ++it )
-    {
-        //kdDebug(250) <<  "KFileTreeView::FilesRemoved " << (*it).prettyURL() << endl;
-       // TODO
-    }
-}
-
-void KFileTreeView::FilesChanged( const KURL::List & urls )
-{
-    //kdDebug(250) << "KFileTreeView::FilesChanged" << endl;
-    // not same signal, but same implementation
-    FilesRemoved( urls );
-}
-#endif
 
 KFileTreeBranch* KFileTreeView::addBranch( const KURL &path, const QString& name,
                               bool showHidden )
@@ -464,19 +367,10 @@ void KFileTreeView::setDirOnlyMode( KFileTreeBranch* branch, bool bom )
    }
 }
 
-void KFileTreeView::populateBranch( KFileTreeBranch *brnch )
-{
-   startAnimation( brnch->root() );
-   kdDebug(250) << "Starting to populate !" << endl;
-
-   if( brnch )
-   {
-      brnch->populate();
-   }
-}
 
 void KFileTreeView::slotPopulateFinished( KFileTreeViewItem *it )
 {
+   if( it && it->isDir())
     stopAnimation( it );
 }
 
@@ -489,7 +383,7 @@ void KFileTreeView::slotNewTreeViewItems( KFileTreeBranch* branch, const KFileTr
     * creates a new dir, he probably wants it to be selected. This can not be done
     * right after creating the directory or file, because it takes some time until
     * the item appears here in the treeview. Thus, the creation code sets the member
-    * m_nextUrlToSelect to the required url. If this url appears here, the item becomes
+    * m_neUrlToSelect to the required url. If this url appears here, the item becomes
     * selected and the member nextUrlToSelect will be cleared.
     */
    if( ! m_nextUrlToSelect.isEmpty() )
@@ -511,26 +405,6 @@ void KFileTreeView::slotNewTreeViewItems( KFileTreeBranch* branch, const KFileTr
    }
 }
 
-void KFileTreeView::slotResult( )
-{
-}
-
-void KFileTreeView::slotCanceled( )
-{
-}
-
-
-/*
- * This method checks if a file should be displayed or not depending
- * on the current filter
- */
-bool KFileTreeView::checkOnFilter( QString& fi )
-{
-   kdDebug(250) << "Checking on Filter: " << fi << endl;
-   // dummy
-   return( true );
-}
-
 QPixmap KFileTreeView::itemIcon( KFileTreeViewItem *item, int gap ) const
 {
    QPixmap pix;
@@ -538,6 +412,18 @@ QPixmap KFileTreeView::itemIcon( KFileTreeViewItem *item, int gap ) const
    
    if( item )
    {
+      /* Check if it is a branch root */
+      KFileTreeBranch *brnch = item->branch();
+      if( item == brnch->root() )
+      {
+	 pix = brnch->pixmap();
+	 if( m_wantOpenFolderPixmaps && brnch->root()->isOpen() )
+	 {
+	    pix = brnch->openPixmap();
+	 }
+      }
+      else
+      {
       // TODO: different modes, user Pixmaps ?
       pix = item->fileItem()->pixmap( KIcon::SizeSmall ); // , KIcon::DefaultState);
 
@@ -549,6 +435,7 @@ QPixmap KFileTreeView::itemIcon( KFileTreeViewItem *item, int gap ) const
 	     pix = m_openFolderPixmap;
       }
    }
+   }
    
    return pix;
 }
@@ -556,19 +443,19 @@ QPixmap KFileTreeView::itemIcon( KFileTreeViewItem *item, int gap ) const
 
 void KFileTreeView::slotAnimation()
 {
-    MapCurrentOpeningFolders::Iterator it = m_mapCurrentOpeningFolders.begin();
-    MapCurrentOpeningFolders::Iterator end = m_mapCurrentOpeningFolders.end();
-    for (; it != end; ++it )
-    {
-        uint & iconNumber = it.data().iconNumber;
-        QString icon = QString::fromLatin1( it.data().iconBaseName ).append( QString::number( iconNumber ) );
-	kdDebug(250) << "Loading icon " << icon << endl;
-        it.key()->setPixmap( 0, SmallIcon( icon )); // KFileTreeViewFactory::instance() ) );
+   MapCurrentOpeningFolders::Iterator it = m_mapCurrentOpeningFolders.begin();
+   MapCurrentOpeningFolders::Iterator end = m_mapCurrentOpeningFolders.end();
+   for (; it != end; ++it )
+   {
+      uint & iconNumber = it.data().iconNumber;
+      QString icon = QString::fromLatin1( it.data().iconBaseName ).append( QString::number( iconNumber ) );
+      kdDebug(250) << "Loading icon " << icon << endl;
+      it.key()->setPixmap( 0, SmallIcon( icon )); // KFileTreeViewFactory::instance() ) );
 
-        iconNumber++;
-        if ( iconNumber > it.data().iconCount )
-            iconNumber = 1;
-    }
+      iconNumber++;
+      if ( iconNumber > it.data().iconCount )
+	 iconNumber = 1;
+   }
 }
 
 
@@ -585,28 +472,39 @@ void KFileTreeView::startAnimation( KFileTreeViewItem * item, const char * iconB
                                       AnimationInfo( iconBaseName,
                                                      iconCount,
                                                      itemIcon(item, 0) ) );
-    if ( !m_animationTimer->isActive() )
-        m_animationTimer->start( 50 );
+   if ( !m_animationTimer->isActive() )
+      m_animationTimer->start( 50 );
 }
 
 void KFileTreeView::stopAnimation( KFileTreeViewItem * item )
 {
-    MapCurrentOpeningFolders::Iterator it = m_mapCurrentOpeningFolders.find(item);
-    if ( it != m_mapCurrentOpeningFolders.end() )
-    {
-       if( item->isDir() && isOpen(static_cast<QListViewItem*>(item)))
-       {
-	  kdDebug(250) << "Setting folder open pixmap !" << endl;
-	  item->setPixmap( 0, itemIcon( item ));
-       }
-       else
-       {
-	  item->setPixmap( 0, it.data().originalPixmap );
-       }
-       m_mapCurrentOpeningFolders.remove( item );
-    }
-    if (m_mapCurrentOpeningFolders.isEmpty())
-        m_animationTimer->stop();
+   if( ! item ) return;
+   
+   kdDebug(250) << "Stoping Animation !" << endl;
+   
+   MapCurrentOpeningFolders::Iterator it = m_mapCurrentOpeningFolders.find(item);
+   if ( it != m_mapCurrentOpeningFolders.end() )
+   {
+      if( item->isDir() && isOpen(static_cast<QListViewItem*>(item)))
+      {
+	 kdDebug(250) << "Setting folder open pixmap !" << endl;
+	 item->setPixmap( 0, itemIcon( item ));
+      }
+      else
+      {
+	 item->setPixmap( 0, it.data().originalPixmap );
+      }
+      m_mapCurrentOpeningFolders.remove( item );
+   }
+   else
+   {
+      if( item )
+	 kdDebug(250)<< "StopAnimation - could not find item " << item->url().prettyURL()<< endl;
+      else
+	 kdDebug(250)<< "StopAnimation - item is zero !" << endl;
+   }
+   if (m_mapCurrentOpeningFolders.isEmpty())
+      m_animationTimer->stop();
 }
 
 KFileTreeViewItem * KFileTreeView::currentKFileTreeViewItem() const

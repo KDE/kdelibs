@@ -1,6 +1,7 @@
 /* This file is part of the KDE project
    Copyright (C) 2000 David Faure <faure@kde.org>
                  2000 Carsten Pfeiffer <pfeiffer@kde.org>
+		 2002 Klaas Freitag <freitag@suse.de>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -50,10 +51,17 @@ private:
 
 
 /**
- * The multi-purpose tree (listview)
- * It parses its configuration (desktop files), each one corresponding to
- * a toplevel item, and creates the modules that will handle the contents
- * of those items.
+ * The filetreeview offers a treeview on the file system which behaves like  
+ * a QTreeView showing files and/or directories in the file system.
+ *
+ * KFileTreeView is able to handle more than one URL, represented by
+ * @ref KFileTreeBranch.
+ * 
+ * Typicall usage:
+ * 1. create a KFileTreeView fitting in your layout and add columns to it
+ * 2. call addBranch to create one or more branches
+ * 3. retrieve the root item with @ref KFileTreeBranch::root() and set it open
+ *    if desired. That starts the listing.
  */
 class KFileTreeView : public KListView
 {
@@ -62,18 +70,21 @@ public:
     KFileTreeView( QWidget *parent, const char *name = 0 );
     virtual ~KFileTreeView();
 
-   // void followURL( const KURL &url );
-
     /**
      * @return the current (i.e. selected) item
      */
     KFileTreeViewItem * currentKFileTreeViewItem() const;
 
+   /**
+    * @return the URL of the current selected item.
+    */
     KURL currentURL() const;
 
    /**
     *  adds a branch to the treeview item. This highlevel function creates the branch, adds
-    *  it to the treeview, starts the branches dirlister to list the directory and
+    *  it to the treeview and connects some signals. Note that directory listing does not
+    *  yet start. It is started by expanding the branches root either by opening the root
+    *  item by user or by setOpen on the root item.
     *  @returns a pointer to the new branch or zero
     *  @param path is the base url of the branch
     *  @param name is the name of the branch, which will be the text for column 0
@@ -84,7 +95,8 @@ public:
    /**
     *  same as the function above but with a pixmap to set for the branch.
     */
-   virtual KFileTreeBranch* addBranch( const KURL &path, const QString& name ,const QPixmap& pix, bool showHidden = false  );
+   virtual KFileTreeBranch* addBranch( const KURL &path, const QString& name ,
+				       const QPixmap& pix, bool showHidden = false  );
 
    /**
     *  same as the function above but letting the user create the branch.
@@ -137,13 +149,6 @@ public:
    bool showFolderOpenPixmap() const { return m_wantOpenFolderPixmaps; };
    
 public slots:
-   /**
-    * starts to list the filesystem for the branch. This is the last method to call after
-    * having created a branch and set attributes like @ref setDirOnlyMode. This makes the
-    * branch alive
-    */
-   virtual void populateBranch( KFileTreeBranch *brnch );
-
    
    /**
     * set the flag to show 'extended' folder icons on or off. If switched on, folders will
@@ -156,6 +161,11 @@ public slots:
       { m_wantOpenFolderPixmaps = showIt; }
    
 protected:
+   /**
+    * @returns true if we can decode the drag and support the action
+    */
+   virtual bool acceptDrag(QDropEvent* event) const;
+
     virtual QDragObject * dragObject();
     virtual void startAnimation( KFileTreeViewItem* item, const char * iconBaseName = "kde", uint iconCount = 6 );
     virtual void stopAnimation( KFileTreeViewItem* item );
@@ -164,12 +174,6 @@ protected:
     virtual void contentsDragMoveEvent( QDragMoveEvent *e );
     virtual void contentsDragLeaveEvent( QDragLeaveEvent *e );
     virtual void contentsDropEvent( QDropEvent *ev );
-
-    virtual void contentsMousePressEvent( QMouseEvent *e );
-    virtual void contentsMouseMoveEvent( QMouseEvent *e );
-    virtual void contentsMouseReleaseEvent( QMouseEvent *e );
-
-    virtual void leaveEvent( QEvent * );
 
 protected slots:
     virtual void slotNewTreeViewItems( KFileTreeBranch*,
@@ -185,7 +189,6 @@ private slots:
     void slotExpanded( QListViewItem * );
     void slotCollapsed( QListViewItem *item );
    
-    void slotMouseButtonPressed(int _button, QListViewItem* _item, const QPoint&, int col);
     void slotSelectionChanged();
 
     void slotAnimation();
@@ -195,23 +198,22 @@ private slots:
     void slotOnItem( QListViewItem * );
     void slotItemRenamed(QListViewItem*, const QString &, int);
 
-   void slotResult(  );
-   void slotCanceled(  );
-
    void slotPopulateFinished( KFileTreeViewItem* );
 
    
 signals:
 
    void onItem( const QString& );
-   
+   /* New signals if you like it ? */
+   void dropped( QWidget*, QDropEvent* );
+   void dropped( QWidget*, QDropEvent*, KURL::List& );
+
 protected:
    KURL m_nextUrlToSelect;
 
    
 private:
     void clearTree();
-    bool checkOnFilter( QString&);
 
 
    /* List that holds the branches */

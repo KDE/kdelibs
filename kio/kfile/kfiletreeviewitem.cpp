@@ -31,7 +31,8 @@ KFileTreeViewItem::KFileTreeViewItem( KFileTreeViewItem *parent,
 				      KFileTreeBranch *brnch )
    : KListViewItem( parent ),
      m_kfileitem( item ),
-     m_branch( brnch )
+     m_branch( brnch ),
+     m_wasListed(false)
 {
    setPixmap(0, item->pixmap( KIcon::SizeSmall ));
    setText( 0, item->text());
@@ -43,10 +44,21 @@ KFileTreeViewItem::KFileTreeViewItem( KFileTreeView* parent,
 				      KFileTreeBranch *brnch )
    :KListViewItem( (QListView*)parent ),
     m_kfileitem(item ),
-    m_branch( brnch )
+    m_branch( brnch ),
+    m_wasListed(false)
 {
    setPixmap(0, item->pixmap( KIcon::SizeSmall ));
    setText( 0, item->text());
+}
+
+bool KFileTreeViewItem::alreadyListed() const
+{
+   return m_wasListed;
+}
+
+void KFileTreeViewItem::setListed( bool wasListed )
+{
+   m_wasListed = wasListed;
 }
 
 KURL KFileTreeViewItem::url() const

@@ -17,6 +17,8 @@
     Boston, MA 02111-1307, USA.
 */
 
+#include <kglobal.h>
+#include <kiconloader.h>
 #include <kmainwindow.h>
 #include <kapp.h>
 #include <kurl.h>
@@ -24,21 +26,18 @@
 #include <kstatusbar.h>
 
 #include <kfiletreeview.h>
-
-class testFrame: public KMainWindow
-{
-public:
-   testFrame();
-   void showPath( KURL & );
-
-private:
-   KFileTreeView *treeView;
-};
+#include "kfiletreeviewtest.h"
 
 
-testFrame::testFrame():KMainWindow(0,"Test FileTreeView")
+#include "kfiletreeviewtest.moc"
+
+testFrame::testFrame():KMainWindow(0,"Test FileTreeView"),
+		       dirOnlyMode(false)
+
 {
    treeView = new KFileTreeView( this );
+   treeView->setDragEnabled( true );
+   treeView->setDropVisualizer( true );
 
    /* Connect to see the status bar */
    KStatusBar* sta = statusBar();
@@ -46,19 +45,61 @@ testFrame::testFrame():KMainWindow(0,"Test FileTreeView")
 	    sta, SLOT( message( const QString& )));
    
    
-   treeView->addColumn( "Column1" );
-   
+   treeView->addColumn( "File" );
+   treeView->addColumn( "ChildCount" );
    setCentralWidget( treeView );
 }
 
 void testFrame::showPath( KURL &url )
 {
-   QString fname = url.fileName ();
-   KFileTreeBranch *nb = treeView->addBranch( url, fname );
-   treeView->populateBranch( nb );
+   QString fname = "TestBranch"; // url.fileName ();
+   /* try a user icon */
+   KIconLoader *loader = KGlobal::iconLoader();
+   QPixmap pix = loader->loadIcon( "contents2", KIcon::Small );
+   QPixmap pixOpen = loader->loadIcon( "contents", KIcon::Small );
+
+   KFileTreeBranch *nb = treeView->addBranch( url, fname, pix );
+   
+   if( nb )
+   {
+      if( dirOnlyMode ) treeView->setDirOnlyMode( nb, true );
+      nb->setOpenPixmap( pixOpen );
+      
+      connect( nb, SIGNAL(populateFinished(KFileTreeViewItem*)),
+	       this, SLOT(slotPopulateFinished(KFileTreeViewItem*)));
+      connect( nb, SIGNAL( directoryChildCount( KFileTreeViewItem *, int )),
+	       this, SLOT( slotSetChildCount( KFileTreeViewItem*, int )));
+      // nb->setChildRecurse(false );
+      
+      nb->setOpen(true);
+   }
+
+
 }
 
+void testFrame::slotPopulateFinished(KFileTreeViewItem *item )
+{
+#if 0
+   if( item )
+   {
+      int cc = item->childCount();
 
+      kdDebug() << "setting column 2 of treeview with count " << cc << endl;
+
+      item->setText( 1, QString::number( cc ));
+   }
+   else
+   {
+      kdDebug() << "slotPopFinished for uninitalised item" << endl;
+   }
+#endif
+}
+
+void testFrame::slotSetChildCount( KFileTreeViewItem *item, int c )
+{
+   if( item )
+      item->setText(1, QString::number( c ));
+}
 
 int main(int argc, char **argv)
 {
@@ -78,9 +119,16 @@ int main(int argc, char **argv)
        {
 	  argv1 = QString::fromLatin1(argv[i]);
 	  kdDebug() << "Opening " << argv1 << endl;
+	  if( argv1 == "-d" )
+	     tf->setDirOnly();
+	  else
+	  {
+	     if( argv1.endsWith( "/" ))
+		argv1.truncate( argv1.length() -1  );
 	  KURL u( argv1 );
 	  tf->showPath( u );
        }
+    }
     }
     tf->show();
     int ret = a.exec();
