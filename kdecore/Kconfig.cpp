@@ -1,6 +1,10 @@
 // $Id$
 //
 /* $Log$
+ * Revision 1.19  1997/08/05 14:24:37  ettrich
+ * Matthias: Final solution to the sync() problem. Sync() doesn't reparse,
+ *   but a new method reparseConfiguration() will fullfill this task.
+ *
  * Revision 1.18  1997/08/04 18:30:14  ettrich
  * Matthias: *sigh*
  *
@@ -263,7 +267,7 @@ void KConfig::parseOneConfigFile( QTextStream* pStream,
   
   // reset the stream's device
   pStream->device()->at(0);
-  while( !pStream->eof() )
+  while( pStream->device()->isOpen() && !pStream->eof() )
     {
       aCurrentLine = pStream->readLine();
 
