@@ -8,6 +8,7 @@ AC_DEFUN(AC_CHECK_LIBAUDIOFILE,
   ac_CPPFLAGS_save="$CPPFLAGS"
   LDFLAGS="$all_libraries $LDFLAGS"
   CPPFLAGS="$CPPFLAGS $all_includes"
+  args_audiolib_found=no
   dnl WAV reading
   AC_CHECK_HEADER(audiofile.h,
   [
@@ -16,8 +17,10 @@ AC_DEFUN(AC_CHECK_LIBAUDIOFILE,
       LIBAUDIOFILE="$LDFLAGS -laudiofile"
       AC_DEFINE(HAVE_LIBAUDIOFILE, 1,
         [Define if you have libaudiofile (required for playing wavs with aRts)])
+      arts_audiolib_found=yes
     ])
   ])
+  AM_CONDITIONAL(HAVE_WAVSUPPORT,  test "x$args_audiolib_found" = "xyes")
   AC_SUBST(LIBAUDIOFILE)
   CPPFLAGS="$ac_CPPFLAGS_save"
   LDFLAGS="$ac_ldflags_save"
