@@ -384,11 +384,13 @@ NodeImpl *DocumentImpl::importNode( NodeImpl */*importedNode*/, bool /*deep*/,
 ElementImpl *DocumentImpl::createElementNS( const DOMString &_namespaceURI, const DOMString &_qualifiedName )
 {
     ElementImpl *e = 0;
-    if (_namespaceURI == XHTML_NAMESPACE) {
+    QString qName = _qualifiedName.string();
+    int colonPos = qName.find(':',0);
+
+    if ((_namespaceURI.isNull() && colonPos < 0) ||
+        _namespaceURI == XHTML_NAMESPACE) {
         // User requested an element in the XHTML namespace - this means we create a HTML element
         // (elements not in this namespace are treated as normal XML elements)
-        QString qName = _qualifiedName.string();
-        int colonPos = qName.find(':',0);
         e = createHTMLElement(qName.mid(colonPos+1));
         int exceptioncode = 0;
         if (colonPos >= 0)
