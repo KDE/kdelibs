@@ -406,6 +406,8 @@ void MouseEventImpl::initMouseEvent(const DOMString &typeArg,
     m_relatedTarget = relatedTargetArg.handle();
     if (m_relatedTarget)
 	m_relatedTarget->ref();
+
+    // ### make this on-demand. its soo sloooow
     computeLayerPos();
 }
 
