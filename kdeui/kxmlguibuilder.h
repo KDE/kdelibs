@@ -64,10 +64,6 @@ class KXMLGUIBuilder
    * @param element The element from the DOM tree describing the
    *                container (use it to access container specified
    *                attributes or child elements)
-   * @param containerStateBuffer A buffer which possibibly contains
-   *                             previously saved container state
-   *                             information, return via 
-   *                             removeContainer .
    */
   virtual QWidget *createContainer( QWidget *parent, int index,
           const QDomElement &element, int &id );
@@ -76,11 +72,6 @@ class KXMLGUIBuilder
    * Removes the given (and previously via createContainer )
    * created container.
    *
-   * @return A buffer containing state information about the deleted
-   *         container (like the last position of a toolbar container
-   *         for example). The buffer is passed again to
-   * createContainer when the same container is about to be
-   *         created again later.
    */
   virtual void removeContainer( QWidget *container, QWidget *parent,
 				QDomElement &element, int id );
