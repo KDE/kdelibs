@@ -80,9 +80,6 @@ HTMLDocumentImpl::HTMLDocumentImpl(DOMImplementationImpl *_implementation, KHTML
 */
     connect( KHTMLFactory::vLinks(), SIGNAL( cleared()),
              SLOT( slotHistoryChanged() ));
-
-    m_attrNames->setCaseSensitive(false);
-    m_elementNames->setCaseSensitive(false);
 }
 
 HTMLDocumentImpl::~HTMLDocumentImpl()
@@ -240,12 +237,12 @@ bool HTMLDocumentImpl::childAllowed( NodeImpl *newChild )
     return (newChild->id() == ID_HTML || newChild->id() == ID_COMMENT);
 }
 
-ElementImpl *HTMLDocumentImpl::createElement( const DOMString &name )
+ElementImpl *HTMLDocumentImpl::createElement( const DOMString &name, int* pExceptioncode )
 {
     ElementImpl *e = createHTMLElement(name);
-    if (!e)
-	e = DocumentImpl::createElement(name);
-    return e;
+    if ( e )
+        return e;
+    return DocumentImpl::createElement(name, pExceptioncode);
 }
 
 void HTMLDocumentImpl::slotHistoryChanged()

@@ -610,7 +610,7 @@ element_name:
 #ifdef APPLE_CHANGES
             $$ = doc->tagId(0, dtag.implementation(), false);
 #else
-	    $$ = doc->elementNames()->getId(dtag.implementation(), false);
+	    $$ = doc->getId(NodeImpl::ElementId, dtag.implementation(), false);
 #endif
 	} else {
 	    $$ = khtml::getTagID(tag.lower().ascii(), tag.length());
@@ -685,7 +685,7 @@ attrib_id:
 #ifdef APPLE_CHANGES
             $$ = doc->attrId(0, dattr.implementation(), false);
 #else
-	    $$ = doc->attrNames()->getId(dattr.implementation(), false);
+	    $$ = doc->getId(NodeImpl::AttributeId, dattr.implementation(), false);
 #endif
 	} else {
 	    $$ = khtml::getAttrID(attr.lower().ascii(), attr.length());

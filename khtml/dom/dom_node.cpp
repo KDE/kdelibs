@@ -66,16 +66,17 @@ NamedNodeMap::~NamedNodeMap()
 Node NamedNodeMap::getNamedItem( const DOMString &name ) const
 {
     if (!impl) return 0;
-    NodeImpl::Id id = impl->mapId(name, true);
-    if (!id) return 0;
-    return impl->getNamedItem(id, DOMString(), DOMString());
+    NodeImpl::Id nid = impl->mapId(0, name.implementation(), true);
+    if (!nid) return 0;
+    return impl->getNamedItem(nid, false, name.implementation());
 }
 
 Node NamedNodeMap::setNamedItem( const Node &arg )
 {
     if (!impl) throw DOMException(DOMException::NOT_FOUND_ERR);
     int exceptioncode = 0;
-    Node r = impl->setNamedItem(arg.impl, false, exceptioncode);
+    Node r = impl->setNamedItem(arg.impl, false, 
+                       arg.handle()->nodeName().implementation(), exceptioncode);
     if (exceptioncode)
         throw DOMException(exceptioncode);
     return r;
@@ -85,7 +86,8 @@ Node NamedNodeMap::removeNamedItem( const DOMString &name )
 {
     if (!impl) throw DOMException(DOMException::NOT_FOUND_ERR);
     int exceptioncode = 0;
-    Node r = impl->removeNamedItem(impl->mapId(name, false), DOMString(), DOMString(), exceptioncode);
+    Node r = impl->removeNamedItem(impl->mapId(0, name.implementation(), false), 
+                                   false, name.implementation(), exceptioncode);
     if (exceptioncode)
         throw DOMException(exceptioncode);
     return r;
@@ -100,14 +102,15 @@ Node NamedNodeMap::item( unsigned long index ) const
 Node NamedNodeMap::getNamedItemNS( const DOMString &namespaceURI, const DOMString &localName ) const
 {
     if (!impl) return 0;
-    return impl->getNamedItem(0, namespaceURI, localName);
+    NodeImpl::Id nid = impl->mapId( namespaceURI.implementation(), localName.implementation(), true );
+    return impl->getNamedItem(nid, true);
 }
 
 Node NamedNodeMap::setNamedItemNS( const Node &arg )
 {
     if (!impl) throw DOMException(DOMException::NOT_FOUND_ERR);
     int exceptioncode = 0;
-    Node r = impl->setNamedItem(arg.impl, true, exceptioncode);
+    Node r = impl->setNamedItem(arg.impl, true, 0, exceptioncode);
     if (exceptioncode)
         throw DOMException(exceptioncode);
     return r;
@@ -117,7 +120,8 @@ Node NamedNodeMap::removeNamedItemNS( const DOMString &namespaceURI, const DOMSt
 {
     if (!impl) throw DOMException(DOMException::NOT_FOUND_ERR);
     int exceptioncode = 0;
-    Node r = impl->removeNamedItem(0, namespaceURI, localName, exceptioncode);
+    NodeImpl::Id nid = impl->mapId( namespaceURI.implementation(), localName.implementation(), false );
+    Node r = impl->removeNamedItem(nid, true, 0, exceptioncode);
     if (exceptioncode)
         throw DOMException(exceptioncode);
     return r;

@@ -1845,7 +1845,7 @@ yyreduce:
 #ifdef APPLE_CHANGES
             yyval.element = doc->tagId(0, dtag.implementation(), false);
 #else
-	    yyval.element = doc->elementNames()->getId(dtag.implementation(), false);
+	    yyval.element = doc->getId(NodeImpl::ElementId, dtag.implementation(), false);
 #endif
 	} else {
 	    yyval.element = khtml::getTagID(tag.lower().ascii(), tag.length());
@@ -1938,7 +1938,7 @@ yyreduce:
 #ifdef APPLE_CHANGES
             yyval.attribute = doc->attrId(0, dattr.implementation(), false);
 #else
-	    yyval.attribute = doc->attrNames()->getId(dattr.implementation(), false);
+	    yyval.attribute = doc->getId(NodeImpl::AttributeId, dattr.implementation(), false);
 #endif
 	} else {
 	    yyval.attribute = khtml::getAttrID(attr.lower().ascii(), attr.length());

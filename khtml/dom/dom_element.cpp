@@ -153,20 +153,20 @@ DOMString Element::getAttribute( const DOMString &name )
     if (!impl) throw DOMException(DOMException::NOT_FOUND_ERR);
     if (!name.implementation()) throw DOMException(DOMException::NOT_FOUND_ERR);
 
-    NodeImpl::Id id = impl->getDocument()->attrNames()->getId(name.implementation(),true);
+    NodeImpl::Id id = impl->getDocument()->getId(NodeImpl::AttributeId,name.implementation(),true);
     if (!id) return DOMString();
 
     ElementImpl* e = static_cast<ElementImpl*>(impl);
-    return e->getAttribute(id);
+    return e->getAttribute(id, false, name);
 }
 
 void Element::setAttribute( const DOMString &name, const DOMString &value )
 {
     if (!impl) throw DOMException(DOMException::NOT_FOUND_ERR);
-    NodeImpl::Id id = impl->getDocument()->attrNames()->getId(name.implementation(), false /* allocate */);
-
     int exceptioncode = 0;
-    static_cast<ElementImpl*>(impl)->setAttribute(id,0,0,value.implementation(),exceptioncode);
+    NodeImpl::Id id = impl->getDocument()->getId(NodeImpl::AttributeId, name.implementation(), false /* allocate */, &exceptioncode);
+
+    static_cast<ElementImpl*>(impl)->setAttribute(id, value, name, exceptioncode);
     if ( exceptioncode )
         throw DOMException( exceptioncode );
 }
@@ -174,12 +174,12 @@ void Element::setAttribute( const DOMString &name, const DOMString &value )
 void Element::removeAttribute( const DOMString &name )
 {
     if (!impl) throw DOMException(DOMException::NOT_FOUND_ERR);
-    NodeImpl::Id id = impl->getDocument()->attrNames()->getId(name.implementation(), true);
+    NodeImpl::Id id = impl->getDocument()->getId(NodeImpl::AttributeId, name.implementation(), true);
     if (!id) return;
 
     int exceptioncode = 0;
     NamedNodeMapImpl *attributes = static_cast<ElementImpl*>(impl)->attributes(false);
-    attributes->removeNamedItem(id, DOMString(), DOMString(), exceptioncode);
+    attributes->removeNamedItem(id, false, name.implementation(), exceptioncode);
     // it's allowed to remove attributes that don't exist.
     if ( exceptioncode && exceptioncode != DOMException::NOT_FOUND_ERR )
         throw DOMException( exceptioncode );
@@ -189,18 +189,31 @@ Attr Element::getAttributeNode( const DOMString &name )
 {
     if (!impl) throw DOMException(DOMException::NOT_FOUND_ERR);
     if (!name.implementation()) throw DOMException(DOMException::NOT_FOUND_ERR);
-    NodeImpl::Id id = impl->getDocument()->attrNames()->getId(name.implementation(),true);
+    NodeImpl::Id id = impl->getDocument()->getId(NodeImpl::AttributeId, name.implementation(), true);
     if (!id) return 0;
 
     ElementImpl* e = static_cast<ElementImpl*>(impl);
     if (!e->attributes()) return 0;
 
-    return static_cast<AttrImpl*>(e->attributes()->getNamedItem(id,DOMString(),DOMString()));
+    return static_cast<AttrImpl*>(e->attributes()->getNamedItem(id, false, name.implementation()));
 }
 
 Attr Element::setAttributeNode( const Attr &newAttr )
 {
-    return setAttributeNodeNS(newAttr);
+    if (!impl || newAttr.isNull())
+        throw DOMException(DOMException::NOT_FOUND_ERR);
+    if (impl->getDocument() != newAttr.handle()->getDocument())
+        throw DOMException(DOMException::WRONG_DOCUMENT_ERR);
+    if (!newAttr.ownerElement().isNull())
+        throw DOMException(DOMException::INUSE_ATTRIBUTE_ERR);
+
+    int exceptioncode = 0;
+    Attr r = static_cast<ElementImpl*>(impl)->attributes(false)->setNamedItem(newAttr.handle(), false, 
+                               newAttr.handle()->nodeName().implementation(), exceptioncode);
+    if ( exceptioncode )
+        throw DOMException( exceptioncode );
+    static_cast<AttrImpl *>(newAttr.handle())->setOwnerElement( static_cast<ElementImpl*>(impl) );
+    return r;
 }
 
 Attr Element::removeAttributeNode( const Attr &oldAttr )
@@ -225,7 +238,7 @@ NodeList Element::getElementsByTagName( const DOMString &tagName )
     if ( tagName == "*" )
         id = 0;
     else
-        id = impl->getDocument()->elementNames()->getId(tagName.implementation(), false);
+        id = impl->getDocument()->getId(NodeImpl::ElementId, tagName.implementation(), false);
     return new TagNodeListImpl( impl, id );
 }
 
@@ -241,9 +254,9 @@ DOMString Element::getAttributeNS( const DOMString &namespaceURI,
 {
     if (!impl) throw DOMException(DOMException::NOT_FOUND_ERR);
     if (!localName.implementation()) throw DOMException(DOMException::NOT_FOUND_ERR);
-
+    NodeImpl::Id id = impl->getDocument()->getId(NodeImpl::AttributeId, namespaceURI.implementation(), 0/*prefix*/, localName.implementation(), true);
     ElementImpl* e = static_cast<ElementImpl*>(impl);
-    return e->getAttribute(0,namespaceURI.implementation(),localName.implementation());
+    return e->getAttribute(id, true);
 }
 
 void Element::setAttributeNS( const DOMString &namespaceURI,
@@ -253,8 +266,7 @@ void Element::setAttributeNS( const DOMString &namespaceURI,
     if (!impl) throw DOMException(DOMException::NOT_FOUND_ERR);
 
     int exceptioncode = 0;
-    static_cast<ElementImpl*>(impl)->setAttribute(0,namespaceURI.implementation(),qualifiedName.implementation(),
-						  value.implementation(),exceptioncode);
+    static_cast<ElementImpl*>(impl)->setAttributeNS(namespaceURI, qualifiedName, value, exceptioncode);
     if ( exceptioncode )
         throw DOMException( exceptioncode );
 }
@@ -266,7 +278,8 @@ void Element::removeAttributeNS( const DOMString &namespaceURI,
 
     int exceptioncode = 0;
     NamedNodeMapImpl *attributes = static_cast<ElementImpl*>(impl)->attributes(false);
-    attributes->removeNamedItem(0, namespaceURI, localName, exceptioncode);
+    NodeImpl::Id id = impl->getDocument()->getId(NodeImpl::AttributeId, namespaceURI.implementation(), 0/*prefix*/, localName.implementation(), false);
+    attributes->removeNamedItem(id, true, 0, exceptioncode);
     if ( exceptioncode )
         throw DOMException( exceptioncode );
 }
@@ -276,11 +289,12 @@ Attr Element::getAttributeNodeNS( const DOMString &namespaceURI,
 {
     if (!impl) throw DOMException(DOMException::NOT_FOUND_ERR);
     if (!localName.implementation()) throw DOMException(DOMException::NOT_FOUND_ERR);
-
+    NodeImpl::Id id = impl->getDocument()->getId(NodeImpl::AttributeId, namespaceURI.implementation(),
+						0/*prefix*/, localName.implementation(), true);
     ElementImpl* e = static_cast<ElementImpl*>(impl);
     if (!e->attributes()) return 0;
 
-    return static_cast<AttrImpl*>(e->attributes()->getNamedItem(0,namespaceURI,localName));
+    return static_cast<AttrImpl*>(e->attributes()->getNamedItem(id, true));
 }
 
 Attr Element::setAttributeNodeNS( const Attr &newAttr )
@@ -292,9 +306,8 @@ Attr Element::setAttributeNodeNS( const Attr &newAttr )
     if (!newAttr.ownerElement().isNull())
         throw DOMException(DOMException::INUSE_ATTRIBUTE_ERR);
 
-    // ### respace ns/non-ns here
     int exceptioncode = 0;
-    Attr r = static_cast<ElementImpl*>(impl)->attributes(false)->setNamedItem(newAttr.handle(), false, exceptioncode);
+    Attr r = static_cast<ElementImpl*>(impl)->attributes(false)->setNamedItem(newAttr.handle(), true, 0, exceptioncode);
     if ( exceptioncode )
         throw DOMException( exceptioncode );
     static_cast<AttrImpl *>(newAttr.handle())->setOwnerElement( static_cast<ElementImpl*>(impl) );
@@ -305,11 +318,11 @@ Attr Element::setAttributeNodeNS( const Attr &newAttr )
 bool Element::hasAttribute( const DOMString& name )
 {
     if (!impl || !static_cast<ElementImpl*>(impl)->attributes()) return false; // ### throw ?
-    NodeImpl::Id id = impl->getDocument()->attrNames()->getId(name.implementation(), true);
+    NodeImpl::Id id = impl->getDocument()->getId(NodeImpl::AttributeId, name.implementation(), true);
     if (!id) return false;
 
     if (!static_cast<ElementImpl*>(impl)->attributes(true /*readonly*/)) return false;
-    return static_cast<ElementImpl*>(impl)->attributes(true)->getValue(id) != 0;
+    return static_cast<ElementImpl*>(impl)->attributes(true)->getValue(id, false, name.implementation()) != 0;
 }
 
 bool Element::hasAttributeNS( const DOMString &namespaceURI,
@@ -317,8 +330,9 @@ bool Element::hasAttributeNS( const DOMString &namespaceURI,
 {
     if (!impl || !static_cast<ElementImpl*>(impl)->attributes()) return false; // ### throw ?
     if (!static_cast<ElementImpl*>(impl)->attributes(true /*readonly*/)) return false;
-    return static_cast<ElementImpl*>(impl)->attributes(true)->getValue(0,namespaceURI.implementation(),
-								       localName.implementation()) != 0;
+    NodeImpl::Id id = impl->getDocument()->getId(NodeImpl::AttributeId,namespaceURI.implementation(),
+						 0/*prefix*/, localName.implementation(), true);
+    return static_cast<ElementImpl*>(impl)->attributes(true)->getValue(id, true) != 0;
 }
 
 bool Element::isHTMLElement() const

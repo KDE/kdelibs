@@ -33,6 +33,7 @@
 
 // The namespace used for XHTML elements
 #define XHTML_NAMESPACE "http://www.w3.org/1999/xhtml"
+#define XHTML_NSID 0x00010000
 
 class QPainter;
 template <class type> class QPtrList;
@@ -159,6 +160,12 @@ public:
     //                 the lower 16 bit identify the local part of the
     //                 qualified element name.
     virtual Id id() const { return 0; };
+
+    enum IdType {
+        AttributeId,
+        ElementId,
+        NamespaceId
+    };
 
     enum MouseEventType {
         MousePress,
@@ -581,17 +588,16 @@ public:
     virtual ~NamedNodeMapImpl();
 
     // DOM methods & attributes for NamedNodeMap
-    virtual NodeImpl *getNamedItem ( NodeImpl::Id id, const DOMString &namespaceURI,
-				     const DOMString &localName ) const = 0;
-    virtual Node removeNamedItem ( NodeImpl::Id id, const DOMString &namespaceURI,
-				   const DOMString &localName, int &exceptioncode ) = 0;
-    virtual Node setNamedItem ( NodeImpl* arg, bool ns, int &exceptioncode ) = 0;
+    virtual NodeImpl *getNamedItem ( NodeImpl::Id id, bool nsAware = false, DOMStringImpl* qName = 0 ) const = 0;
+    virtual Node removeNamedItem ( NodeImpl::Id id, bool nsAware, DOMStringImpl* qName, int &exceptioncode ) = 0;
+    virtual Node setNamedItem ( NodeImpl* arg, bool nsAware, DOMStringImpl* qName, int &exceptioncode ) = 0;
 
     virtual NodeImpl *item ( unsigned long index ) const = 0;
     virtual unsigned long length(  ) const = 0;
 
     // Other methods (not part of DOM)
-    virtual NodeImpl::Id mapId(const DOMString& name, bool readonly) = 0;
+    virtual NodeImpl::Id mapId(DOMStringImpl* namespaceURI,
+				DOMStringImpl* localName, bool readonly) = 0;
     virtual bool isReadOnly() { return false; }
 };
 

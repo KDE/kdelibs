@@ -35,6 +35,7 @@
 #include <qstringlist.h>
 #include <qptrlist.h>
 #include <qobject.h>
+#include <qintdict.h>
 #include <qdict.h>
 #include <qmap.h>
 
@@ -45,9 +46,6 @@ class QTextCodec;
 class QPaintDeviceMetrics;
 class KHTMLView;
 class Tokenizer;
-
-typedef DOM::DOMString (*NameLookupFunction)(unsigned short id);
-typedef int (*IdLookupFunction)(const char *tagStr, int len);
 
 namespace khtml {
     class CSSStyleSelector;
@@ -87,30 +85,6 @@ namespace DOM {
     class StyleSheetListImpl;
     class TextImpl;
     class TreeWalkerImpl;
-
-class IdNameMapping
-{
-public:
-    IdNameMapping(NameLookupFunction nameLookup, IdLookupFunction idLookup,
-		  unsigned short idStart, bool caseSensitive);
-    ~IdNameMapping();
-
-    NodeImpl::Id getId(DOMStringImpl *_name, bool readonly);
-    DOMString getName(unsigned short _id) const;
-    void setCaseSensitive(bool _caseSensitive) { m_caseSensitive = _caseSensitive; }
-
-private:
-
-    NameLookupFunction m_nameLookup;
-    IdLookupFunction m_idLookup;
-
-    DOM::DOMStringImpl **m_names;
-    unsigned short m_alloc;
-    unsigned short m_count;
-    unsigned short m_idStart;
-    QDict<void> m_dict;
-    bool m_caseSensitive;
-};
 
 class DOMImplementationImpl : public khtml::Shared<DOMImplementationImpl>
 {
@@ -162,7 +136,8 @@ public:
 
     DOMImplementationImpl *implementation() const;
     ElementImpl *documentElement() const;
-    virtual ElementImpl *createElement ( const DOMString &tagName );
+    virtual ElementImpl *createElement ( const DOMString &tagName, int* pExceptioncode = 0 );
+    virtual AttrImpl *createAttribute( const DOMString &tagName, int* pExceptioncode = 0 );
     DocumentFragmentImpl *createDocumentFragment ();
     TextImpl *createTextNode ( DOMStringImpl* data ) { return new TextImpl( docPtr(), data); }
     TextImpl *createTextNode ( const QString& data )
@@ -172,7 +147,10 @@ public:
     ProcessingInstructionImpl *createProcessingInstruction ( const DOMString &target, DOMStringImpl* data );
     EntityReferenceImpl *createEntityReference ( const DOMString &name );
     NodeImpl *importNode( NodeImpl *importedNode, bool deep, int &exceptioncode );
-    virtual ElementImpl *createElementNS ( const DOMString &_namespaceURI, const DOMString &_qualifiedName );
+    virtual ElementImpl *createElementNS ( const DOMString &_namespaceURI, const DOMString &_qualifiedName,
+                                           int* pExceptioncode = 0 );
+    virtual AttrImpl *createAttributeNS( const DOMString &_namespaceURI, const DOMString &_qualifiedName,
+                                           int* pExceptioncode = 0 );
     ElementImpl *getElementById ( const DOMString &elementId ) const;
 
     // Actually part of HTMLDocument, but used for giving XML documents a window title as well
@@ -337,8 +315,11 @@ public:
     virtual bool childTypeAllowed( unsigned short nodeType );
     virtual NodeImpl *cloneNode ( bool deep );
 
-    IdNameMapping *elementNames() const { return m_elementNames; }
-    IdNameMapping *attrNames() const { return m_attrNames; }
+    NodeImpl::Id getId( NodeImpl::IdType _type, DOMStringImpl* _nsURI, DOMStringImpl *_localName,
+                        DOMStringImpl *_prefix, bool readonly, int *pExceptioncode = 0);
+    NodeImpl::Id getId( NodeImpl::IdType _type, DOMStringImpl *_nodeName, bool readonly,
+                                      int *pExceptioncode = 0);
+    DOMString getName( NodeImpl::IdType _type, NodeImpl::Id _id ) const;
 
     StyleSheetListImpl* styleSheets() { return m_styleSheets; };
 
@@ -477,8 +458,23 @@ protected:
     NodeImpl *m_hoverNode;
     NodeImpl *m_focusNode;
 
-    IdNameMapping *m_attrNames;
-    IdNameMapping *m_elementNames;
+    struct IdNameMapping {
+        IdNameMapping(unsigned short _start)
+            : idStart(_start), count(0) {}
+        ~IdNameMapping() {
+            QIntDictIterator<DOM::DOMStringImpl> it(names);
+            for (; it.current() ; ++it)
+                it.current()->deref();
+        }
+        unsigned short idStart;
+        unsigned short count;
+        QIntDict<DOM::DOMStringImpl> names;
+        QDict<void> ids;
+    };
+
+    IdNameMapping *m_attrMap;
+    IdNameMapping *m_elementMap;
+    IdNameMapping *m_namespaceMap;
 
     QPtrList<NodeIteratorImpl> m_nodeIterators;
     AbstractViewImpl *m_defaultView;

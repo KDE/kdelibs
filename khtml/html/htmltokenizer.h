@@ -82,17 +82,17 @@ namespace khtml {
 		value = v.implementation();
             }
             else if ( !attrName.isEmpty() && attrName != "/" ) {
-		tid = doc->attrNames()->getId(DOMString(attrName).implementation(), false);
+		tid = doc->getId(NodeImpl::AttributeId, DOMString(attrName).implementation(), false);
 		value = v.implementation();
             }
 
-            if (value) {
+            if (value && tid) {
                 if(!attrs) {
                     attrs = new DOM::NamedAttrMapImpl(0);
                     attrs->ref();
                 }
                 if (!attrs->getValue(tid))
-		    attrs->setValue(tid,0,0,value);
+		    attrs->setValue(tid,value);
             }
         }
         void reset()

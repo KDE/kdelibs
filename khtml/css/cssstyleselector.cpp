@@ -2860,15 +2860,12 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
             }
             else if (val->primitiveType()==CSSPrimitiveValue::CSS_ATTR)
             {
-                // FIXME: Should work with generic XML attributes also, and not
-                // just the hardcoded HTML set.  Can a namespace be specified for
-                // an attr(foo)?
 #ifdef APPLE_CHANGES
                 int attrID = element->getDocument()->attrId(0, val->getStringValue(), false);
                 if (attrID)
                     style->setContent(element->getAttribute(attrID).implementation(), i != 0);
 #else
-                int attrID = element->getDocument()->attrNames()->getId(val->getStringValue(), false);
+                int attrID = element->getDocument()->getId(NodeImpl::AttributeId, val->getStringValue(), false);
                 if (attrID)
                     style->setContent(element->getAttribute(attrID).implementation(), i != 0);
 #endif

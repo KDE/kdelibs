@@ -227,14 +227,26 @@ Element Document::documentElement() const
 
 Element Document::createElement( const DOMString &tagName )
 {
-    if (impl) return ((DocumentImpl *)impl)->createElement(tagName);
-    return 0;
+    if (!impl)
+        throw DOMException(DOMException::NOT_FOUND_ERR);
+
+    int exceptioncode = 0;
+    ElementImpl* r = ((DocumentImpl *)impl)->createElement(tagName, &exceptioncode);
+    if ( exceptioncode )
+        throw DOMException( exceptioncode );
+    return r;
 }
 
 Element Document::createElementNS( const DOMString &namespaceURI, const DOMString &qualifiedName )
 {
-    if (impl) return ((DocumentImpl *)impl)->createElementNS(namespaceURI,qualifiedName);
-    return 0;
+    if (!impl)
+        throw DOMException(DOMException::NOT_FOUND_ERR);
+
+    int exceptioncode = 0;
+    ElementImpl* r = ((DocumentImpl *)impl)->createElementNS(namespaceURI,qualifiedName, &exceptioncode);
+    if ( exceptioncode )
+        throw DOMException( exceptioncode );
+    return r;
 }
 
 DocumentFragment Document::createDocumentFragment(  )
@@ -272,20 +284,22 @@ Attr Document::createAttribute( const DOMString &name )
 {
     if (!impl) throw DOMException(DOMException::NOT_FOUND_ERR);
     if (name.isNull()) throw DOMException(DOMException::NOT_FOUND_ERR);
-
-    NodeImpl::Id attrId = impl->getDocument()->attrNames()->getId(name.implementation(),false);
-    return new AttrImpl(0,impl->docPtr(),attrId,DOMString("").implementation());
+    int exceptioncode = 0;
+    AttrImpl* a = impl->getDocument()->createAttribute(name, &exceptioncode);
+    if ( exceptioncode )
+        throw DOMException( exceptioncode );
+    return a;
 }
 
 Attr Document::createAttributeNS( const DOMString &namespaceURI, const DOMString &qualifiedName )
 {
     if (!impl) throw DOMException(DOMException::NOT_FOUND_ERR);
     if (qualifiedName.isNull()) throw DOMException(DOMException::NAMESPACE_ERR);
-
-    // ### check exceptions
-
-    return new AttrImpl(0,impl->docPtr(),namespaceURI.implementation(),qualifiedName.implementation(),
-			DOMString("").implementation());
+    int exceptioncode = 0;
+    AttrImpl* a = impl->getDocument()->createAttributeNS(namespaceURI, qualifiedName, &exceptioncode);
+    if ( exceptioncode )
+        throw DOMException( exceptioncode );
+    return a;
 }
 
 EntityReference Document::createEntityReference( const DOMString &name )
@@ -307,7 +321,7 @@ NodeList Document::getElementsByTagName( const DOMString &tagName )
     if ( tagName == "*" )
         id = 0;
     else
-        id = impl->getDocument()->elementNames()->getId(tagName.implementation(), false);
+        id = impl->getDocument()->getId(NodeImpl::ElementId, tagName.implementation(), false);
     return new TagNodeListImpl( impl, id );
 }
 

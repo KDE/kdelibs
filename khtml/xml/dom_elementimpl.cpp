@@ -53,77 +53,19 @@
 using namespace DOM;
 using namespace khtml;
 
-namespace DOM {
-    DOMString extractPrefix(DOMStringImpl *qualifiedName);
-    DOMString extractLocalName(DOMStringImpl *qualifiedName);
-}
-
-DOMString DOM::extractPrefix(DOMStringImpl *qualifiedName)
-{
-    DOMString prefix;
-    int colonpos = -1;
-    for (uint i = 0; i < qualifiedName->l && colonpos < 0; ++i)
-        if (qualifiedName->s[i] == ':')
-            colonpos = i;
-
-    if (colonpos >= 0) {
-        prefix = qualifiedName->copy();
-        prefix.implementation()->truncate(colonpos);
-    }
-    return prefix;
-}
-
-DOMString DOM::extractLocalName(DOMStringImpl *qualifiedName)
-{
-    DOMString localName;
-    int colonpos = -1;
-    for (uint i = 0; i < qualifiedName->l && colonpos < 0; ++i)
-        if (qualifiedName->s[i] == ':')
-            colonpos = i;
-
-    if (colonpos >= 0) {
-        localName = qualifiedName->copy();
-        localName.implementation()->remove(0,colonpos+1);
-    }
-    else {
-        localName = qualifiedName;
-    }
-    return localName;
-}
-
 AttrImpl::AttrImpl(ElementImpl* element, DocumentPtr* docPtr, NodeImpl::Id attrId,
-		   DOMStringImpl *_value)
+		   DOMStringImpl *value, DOMStringImpl *prefix, DOMStringImpl *localName)
     : NodeBaseImpl(docPtr),
       m_element(element)
 {
     m_attrId = attrId;
-    m_value = _value;
+    m_value = value;
     m_value->ref();
 
-    m_prefix = 0;
-    m_namespaceURI = 0;
-    m_localName = 0;
-    m_specified = true; // we don't yet support default attributes
-}
-
-AttrImpl::AttrImpl(ElementImpl* element, DocumentPtr* docPtr, DOMStringImpl *_namespaceURI,
-		   DOMStringImpl *_qualifiedName, DOMStringImpl *_value)
-    : NodeBaseImpl(docPtr),
-      m_element(element)
-{
-    m_attrId = docPtr->document()->attrNames()->getId(_qualifiedName,false);
-    m_value = _value;
-    m_value->ref();
-    m_namespaceURI = _namespaceURI;
-    if (m_namespaceURI)
-	m_namespaceURI->ref();
-
-    DOMString prefix = extractPrefix(_qualifiedName);
-    m_prefix = prefix.implementation();
+    m_prefix = prefix;
     if (m_prefix)
 	m_prefix->ref();
-    DOMString localName = extractLocalName(_qualifiedName);
-    m_localName = localName.implementation();
+    m_localName = localName;
     if (m_localName)
 	m_localName->ref();
     m_specified = true; // we don't yet support default attributes
@@ -134,15 +76,13 @@ AttrImpl::~AttrImpl()
     m_value->deref();
     if (m_prefix)
 	m_prefix->deref();
-    if (m_namespaceURI)
-	m_namespaceURI->deref();
     if (m_localName)
 	m_localName->deref();
 }
 
 DOMString AttrImpl::nodeName() const
 {
-    return getDocument()->attrNames()->getName(m_attrId);
+    return name();
 }
 
 unsigned short AttrImpl::nodeType() const
@@ -173,7 +113,9 @@ void AttrImpl::setPrefix(const DOMString &_prefix, int &exceptioncode )
 
 DOMString AttrImpl::namespaceURI() const
 {
-    return m_namespaceURI;
+    if (!m_localName)
+        return DOMString();
+    return getDocument()->getName(NamespaceId, m_attrId >> 16);
 }
 
 DOMString AttrImpl::localName() const
@@ -188,7 +130,11 @@ DOMString AttrImpl::nodeValue() const
 
 DOMString AttrImpl::name() const
 {
-    return getDocument()->attrNames()->getName(m_attrId);
+    if (!m_localName)
+        return getDocument()->getName(AttributeId, m_attrId);
+    if (!m_prefix || !m_prefix->l)
+        return m_localName;
+    return DOMString(m_prefix) + ":" + DOMString(m_localName);
 }
 
 void AttrImpl::setValue( const DOMString &v, int &exceptioncode )
@@ -231,11 +177,7 @@ void AttrImpl::setNodeValue( const DOMString &v, int &exceptioncode )
 
 NodeImpl *AttrImpl::cloneNode ( bool /*deep*/)
 {
-    if (m_localName) // namespace support
-	return new AttrImpl(0,docPtr(),m_namespaceURI,
-			    getDocument()->attrNames()->getName(m_attrId).implementation(),m_value);
-    else
-	return new AttrImpl(0,docPtr(),m_attrId,m_value);
+     return new AttrImpl(0, docPtr(), m_attrId, m_prefix, m_value, m_localName);
 }
 
 // DOM Section 1.1.1
@@ -259,12 +201,12 @@ bool AttrImpl::childTypeAllowed( unsigned short type )
     }
 }
 
-// -------------------------------------------------------------------------
-
 void AttrImpl::setElement(ElementImpl *element)
 {
     m_element = element;
 }
+
+// -------------------------------------------------------------------------
 
 void AttributeImpl::setValue(DOMStringImpl *value, ElementImpl *element)
 {
@@ -292,7 +234,7 @@ AttrImpl *AttributeImpl::createAttr(ElementImpl *element, DocumentPtr *docPtr)
 	m_data.value->deref();
 	m_data.attr = attr;
 	m_data.attr->ref();
-	m_attrId = 0;
+	m_attrId = 0; /* "has implementation" flag */
     }
 
     return m_data.attr;
@@ -317,7 +259,6 @@ ElementImpl::ElementImpl(DocumentPtr *doc)
     namedAttrMap = 0;
     m_styleDecls = 0;
     m_prefix = 0;
-    m_namespaceURI = 0;
 }
 
 ElementImpl::~ElementImpl()
@@ -342,41 +283,57 @@ unsigned short ElementImpl::nodeType() const
     return Node::ELEMENT_NODE;
 }
 
-DOMString ElementImpl::getAttribute( NodeImpl::Id id, DOMStringImpl *namespaceURI,
-				     DOMStringImpl *qualifiedName ) const
+DOMString ElementImpl::getAttribute( NodeImpl::Id id, bool nsAware, const DOMString& qName) const
 {
     if (!namedAttrMap)
 	return DOMString();
 
-    DOMStringImpl *value = namedAttrMap->getValue(id,namespaceURI,qualifiedName);
+    DOMStringImpl *value = namedAttrMap->getValue(id, nsAware, (qName.isEmpty() ? 0: qName.implementation()));
     if (value)
 	return value;
 
     // then search in default attr in case it is not yet set
     NamedAttrMapImpl* dm = defaultMap();
-    value = dm ? dm->getValue(id,namespaceURI,qualifiedName) : 0;
+    value = dm ? dm->getValue(id, nsAware, (qName.isEmpty() ? 0: qName.implementation())) : 0;
     if (value)
 	return value;
 
     return DOMString();
 }
 
-void ElementImpl::setAttribute( NodeImpl::Id id, DOMStringImpl *namespaceURI, DOMStringImpl *qualifiedName,
-				DOMStringImpl* value, int &exceptioncode )
+void ElementImpl::setAttribute(NodeImpl::Id id, const DOMString &value, const DOMString& qName, int &exceptioncode)
 {
     // NO_MODIFICATION_ALLOWED_ERR: Raised when the node is readonly
     if (isReadOnly()) {
         exceptioncode = DOMException::NO_MODIFICATION_ALLOWED_ERR;
         return;
     }
+    attributes()->setValue(id, value.implementation(), (qName.isEmpty() ? 0: qName.implementation()));
+}
 
-    attributes()->setValue(id,namespaceURI,qualifiedName,value);
+void ElementImpl::setAttributeNS( const DOMString &namespaceURI, const DOMString &qualifiedName,
+				const DOMString &value, int &exceptioncode )
+{
+    // NO_MODIFICATION_ALLOWED_ERR: Raised when the node is readonly
+    if (isReadOnly()) {
+        exceptioncode = DOMException::NO_MODIFICATION_ALLOWED_ERR;
+        return;
+    }
+    int colonPos;
+    if (!DOM::checkQualifiedName(qualifiedName, namespaceURI, &colonPos, false/*nameCanBeNull*/, &exceptioncode))
+        return;
+    DOMString prefix, localName;
+    splitPrefixLocalName(qualifiedName.implementation(), prefix, localName, colonPos);
+    NodeImpl::Id id = getDocument()->getId(AttributeId, namespaceURI.implementation(),
+                            prefix.implementation(), localName.implementation(), false);
+    attributes()->setValue(id, value.implementation(), 0, prefix.implementation(),
+                           localName.implementation());
 }
 
 void ElementImpl::setAttribute(NodeImpl::Id id, const DOMString &value)
 {
     int exceptioncode = 0;
-    setAttribute(id,0,0,value.implementation(),exceptioncode);
+    setAttribute(id,value,DOMString(),exceptioncode);
 }
 
 void ElementImpl::setAttributeMap( NamedAttrMapImpl* list )
@@ -442,23 +399,6 @@ void ElementImpl::setPrefix( const DOMString &_prefix, int &exceptioncode )
     m_prefix = _prefix.implementation();
     if (m_prefix)
         m_prefix->ref();
-}
-
-DOMString ElementImpl::namespaceURI() const
-{
-    return m_namespaceURI;
-}
-
-void ElementImpl::setNamespaceURI(const DOMString &_namespaceURI)
-{
-    if (m_namespaceURI == _namespaceURI.implementation())
-	return;
-
-    if (m_namespaceURI)
-	m_namespaceURI->deref();
-    m_namespaceURI = _namespaceURI.implementation();
-    if (m_namespaceURI)
-	m_namespaceURI->ref();
 }
 
 void ElementImpl::createAttributeMap() const
@@ -661,34 +601,33 @@ void ElementImpl::setContentEditable(bool enabled) {
 
 // -------------------------------------------------------------------------
 
-XMLElementImpl::XMLElementImpl(DocumentPtr *doc, DOMStringImpl *_tagName)
+XMLElementImpl::XMLElementImpl(DocumentPtr *doc, NodeImpl::Id id, DOMStringImpl *_tagName)
     : ElementImpl(doc)
 {
     // Called from createElement(). In this case localName, prefix, and namespaceURI all need to be null.
+    m_id = id;
     m_tagName = _tagName;
     m_tagName->ref();
     m_localName = 0;
 }
 
-XMLElementImpl::XMLElementImpl(DocumentPtr *doc, DOMStringImpl *_qualifiedName, DOMStringImpl *_namespaceURI)
+XMLElementImpl::XMLElementImpl(DocumentPtr *doc, NodeImpl::Id id, DOMStringImpl *_qualifiedName,
+                               DOMStringImpl */*_namespaceURI*/)
     : ElementImpl(doc)
 {
     // Called from createElementNS()
+    m_id = id;
     m_tagName = _qualifiedName;
     m_tagName->ref();
 
-    DOMString prefix = extractPrefix(_qualifiedName);
+    DOMString prefix, localName;
+    splitPrefixLocalName(_qualifiedName, prefix, localName);
     m_prefix = prefix.implementation();
     if (m_prefix)
 	m_prefix->ref();
-    DOMString localName = extractLocalName(_qualifiedName);
     m_localName = localName.implementation();
     if (m_localName)
 	m_localName->ref();
-
-    m_namespaceURI = _namespaceURI;
-    if (m_namespaceURI)
-	m_namespaceURI->ref();
 }
 
 XMLElementImpl::~XMLElementImpl()
@@ -705,13 +644,18 @@ DOMString XMLElementImpl::localName() const
     return m_localName;
 }
 
+DOMString XMLElementImpl::namespaceURI() const
+{
+    return getDocument()->getName(NamespaceId, m_id >> 16);
+}
+
 NodeImpl *XMLElementImpl::cloneNode ( bool deep )
 {
     XMLElementImpl *clone;
     if (!m_localName)
-	clone = new XMLElementImpl(docPtr(),m_tagName);
+	clone = new XMLElementImpl(docPtr(), id(), m_tagName);
     else
-	clone = new XMLElementImpl(docPtr(),m_tagName,m_namespaceURI);
+	clone = new XMLElementImpl(docPtr(), id(), m_tagName, 0);
 
     // clone attributes
     if (namedAttrMap)
@@ -743,25 +687,27 @@ NamedAttrMapImpl::~NamedAttrMapImpl()
     free(m_attrs);
 }
 
-NodeImpl *NamedAttrMapImpl::getNamedItem ( NodeImpl::Id id, const DOMString &namespaceURI,
-					   const DOMString &localName ) const
+NodeImpl *NamedAttrMapImpl::getNamedItem ( NodeImpl::Id id, bool nsAware, DOMStringImpl* qName ) const
 {
     if (!m_element)
 	return 0;
+    unsigned int mask = nsAware ? ~0L : NodeImpl_IdLocalMask;
+    id = (id & mask);
 
     for (unsigned long i = 0; i < m_attrCount; i++) {
-	// For getNamedItem(), just compare the id (nodeName). For getNamedItemNS(), we need to compare
-	// the namespace and local name, as there may be multiple attributes with the same nodeName.
-	if ((id != 0 && m_attrs[i].id() == id) ||
-	    (id == 0 && m_attrs[i].namespaceURI() == namespaceURI && m_attrs[i].localName() == localName))
+	if ((m_attrs[i].id() & mask) == id) {
+            // if we are called with a qualified name, filter out NS-aware elements with non-matching name.
+            if (qName && (m_attrs[i].id() & NodeImpl_IdNSMask) &&
+                strcasecmp(m_attrs[i].name(), DOMString(qName)))
+                continue;
 	    return m_attrs[i].createAttr(m_element,m_element->docPtr());
+        }
     }
 
     return 0;
 }
 
-Node NamedAttrMapImpl::removeNamedItem ( NodeImpl::Id id, const DOMString &namespaceURI,
-					 const DOMString &localName, int &exceptioncode )
+Node NamedAttrMapImpl::removeNamedItem ( NodeImpl::Id id, bool nsAware, DOMStringImpl* qName, int &exceptioncode )
 {
     if (!m_element) {
         exceptioncode = DOMException::NOT_FOUND_ERR;
@@ -773,12 +719,15 @@ Node NamedAttrMapImpl::removeNamedItem ( NodeImpl::Id id, const DOMString &names
         exceptioncode = DOMException::NO_MODIFICATION_ALLOWED_ERR;
         return 0;
     }
+    unsigned int mask = nsAware ? ~0L : NodeImpl_IdLocalMask;
+    id = (id & mask);
 
     for (unsigned long i = 0; i < m_attrCount; i++) {
-	// For removeNamedItem(), just compare the id (nodeName). For removeNamedItemNS(), we need to compare
-	// the namespace and local name, as there may be multiple attributes with the same nodeName.
-	if ((id != 0 && m_attrs[i].id() == id) ||
-	    (id == 0 && m_attrs[i].namespaceURI() == namespaceURI && m_attrs[i].localName() == localName)) {
+	if ((m_attrs[i].id() & mask) == id) {
+            // if we are called with a qualified name, filter out NS-aware elements with non-matching name.
+            if (qName && (m_attrs[i].id() & NodeImpl_IdNSMask) &&
+                strcasecmp(m_attrs[i].name(), DOMString(qName)))
+                continue;
 	    id = m_attrs[i].id();
 	    Node removed(m_attrs[i].createAttr(m_element,m_element->docPtr()));
 	    m_attrs[i].free();
@@ -796,7 +745,7 @@ Node NamedAttrMapImpl::removeNamedItem ( NodeImpl::Id id, const DOMString &names
     return 0;
 }
 
-Node NamedAttrMapImpl::setNamedItem ( NodeImpl* arg, bool ns, int &exceptioncode )
+Node NamedAttrMapImpl::setNamedItem ( NodeImpl* arg, bool nsAware, DOMStringImpl* qName, int &exceptioncode )
 {
     if (!m_element) {
         exceptioncode = DOMException::NOT_FOUND_ERR;
@@ -833,17 +782,19 @@ Node NamedAttrMapImpl::setNamedItem ( NodeImpl* arg, bool ns, int &exceptioncode
 	// Already have this attribute. Since we're not "replacing" it, return null.
 	return 0;
     }
+    unsigned int mask = nsAware ? ~0L : NodeImpl_IdLocalMask;
+    NodeImpl::Id id = (attr->id() & mask);
 
     for (unsigned long i = 0; i < m_attrCount; i++) {
-	// For setNamedItem(), just compare the id (nodeName). For setNamedItemNS(), we need to compare
-	// the namespace and local name, as there may be multiple attributes with the same nodeName.
-	if ((!ns && m_attrs[i].id() == attr->attrId()) ||
-	    (ns && m_attrs[i].namespaceURI() == attr->namespaceURI() &&
-	     m_attrs[i].localName() == attr->localName())) {
+	if ((m_attrs[i].id() & mask) == id) {
+            // if we are called with a qualified name, filter out NS-aware elements with non-matching name.
+            if (qName && (m_attrs[i].id() & NodeImpl_IdNSMask) &&
+                strcasecmp(m_attrs[i].name(), DOMString(qName)))
+                continue;
 	    // Attribute exists; replace it
 	    Node replaced = m_attrs[i].createAttr(m_element,m_element->docPtr());
 	    m_attrs[i].free();
-	    m_attrs[i].m_attrId = 0;
+	    m_attrs[i].m_attrId = 0; /* "has implementation" flag */
 	    m_attrs[i].m_data.attr = attr;
 	    m_attrs[i].m_data.attr->ref();
 	    attr->setElement(m_element);
@@ -856,7 +807,7 @@ Node NamedAttrMapImpl::setNamedItem ( NodeImpl* arg, bool ns, int &exceptioncode
     // No existing attribute; add to list
     m_attrCount++;
     m_attrs = (AttributeImpl*)realloc(m_attrs,m_attrCount*sizeof(AttributeImpl));
-    m_attrs[m_attrCount-1].m_attrId = 0;
+    m_attrs[m_attrCount-1].m_attrId = 0; /* "has implementation" flag */
     m_attrs[m_attrCount-1].m_data.attr = attr;
     m_attrs[m_attrCount-1].m_data.attr->ref();
     attr->setElement(m_element);
@@ -897,49 +848,46 @@ DOMStringImpl *NamedAttrMapImpl::valueAt(unsigned long index) const
     return m_attrs[index].val();
 }
 
-DOMStringImpl *NamedAttrMapImpl::getValue(NodeImpl::Id id, DOMStringImpl *namespaceURI,
-					  DOMStringImpl *localName) const
+DOMStringImpl *NamedAttrMapImpl::getValue(NodeImpl::Id id, bool nsAware, DOMStringImpl* qName) const
 {
-    DOMString nsURI(namespaceURI);
-    DOMString lName(localName);
+    unsigned int mask = nsAware ? ~0L : NodeImpl_IdLocalMask;
+    id = (id & mask);
     for (unsigned long i = 0; i < m_attrCount; i++)
-	if ((id != 0 && m_attrs[i].id() == id) ||
-	    (id == 0 && m_attrs[i].namespaceURI() == nsURI && m_attrs[i].localName() == lName))
-	    return m_attrs[i].val();
-
+        if ((m_attrs[i].id() & mask) == id) {
+            // if we are called with a qualified name, filter out NS-aware elements with non-matching name.
+            if (qName && (m_attrs[i].id() & NodeImpl_IdNSMask) &&
+                strcasecmp(m_attrs[i].name(), DOMString(qName)))
+                continue;
+            return m_attrs[i].val();
+        }
     return 0;
 }
 
-void NamedAttrMapImpl::setValue(NodeImpl::Id id, DOMStringImpl *namespaceURI,
-				DOMStringImpl *qualifiedName, DOMStringImpl *value)
+void NamedAttrMapImpl::setValue(NodeImpl::Id id, DOMStringImpl *value, DOMStringImpl* qName,
+                                DOMStringImpl *prefix, DOMStringImpl *localName)
 {
+    assert( !(qName && localName) );
+    if (!id) return;
+
     // Passing in a null value here causes the attribute to be removed. This is a khtml extension
     // (the spec does not specify what to do in this situation).
     int exceptioncode = 0;
     if (!value) {
-	DOMString localName = (id ? DOMString() : extractLocalName(qualifiedName));
-	removeNamedItem(id,namespaceURI,localName,exceptioncode);
+	removeNamedItem(id,(bool)localName, qName, exceptioncode);
 	return;
     }
+    unsigned int mask = localName ? ~0L : NodeImpl_IdLocalMask;
+    NodeImpl::Id mid = (id & mask);
 
-    DOMString prefix;
-    DOMString localName;
-    if (id == 0) {
-	prefix = extractPrefix(qualifiedName);
-	localName = extractLocalName(qualifiedName);
-    }
-
-    // Check for an existing attribute. If called from setAttribute(), we only compare the ids (i.e. nodeName)
-    // If called from setAttributeNS(), we need to compare both the namespace URI and the local name (there
-    // may be multiple attributes with the same nodeName).
-    DOMString nsURI(namespaceURI);
+    // Check for an existing attribute.
     for (unsigned long i = 0; i < m_attrCount; i++) {
-	if ((id != 0 && m_attrs[i].id() == id) ||
-	    (id == 0 && m_attrs[i].namespaceURI() == nsURI && m_attrs[i].localName() == localName)) {
-
-	    if (id == 0)
+	if ((m_attrs[i].id() & mask) == mid) {
+            // if we are called with a qualified name, filter out NS-aware elements with non-matching name.
+            if (qName && (m_attrs[i].id() & NodeImpl_IdNSMask) &&
+                strcasecmp(m_attrs[i].name(), DOMString(qName)))
+                continue;
+	    if (prefix)
 		m_attrs[i].attr()->setPrefix(prefix,exceptioncode);
-
 	    m_attrs[i].setValue(value,m_element);
 	    // ### dispatch mutation events
 	    return;
@@ -949,19 +897,21 @@ void NamedAttrMapImpl::setValue(NodeImpl::Id id, DOMStringImpl *namespaceURI,
     // No existing matching attribute; add a new one
     m_attrCount++;
     m_attrs = (AttributeImpl*)realloc(m_attrs,m_attrCount*sizeof(AttributeImpl));
-    m_attrs[m_attrCount-1].m_attrId = id;
-    if (id) {
+    if (!localName) {
 	// Called from setAttribute()... we only have a name
-	m_attrs[m_attrCount-1].m_data.value = value;
+        m_attrs[m_attrCount-1].m_attrId = id;
+        m_attrs[m_attrCount-1].m_data.value = value;
 	m_attrs[m_attrCount-1].m_data.value->ref();
     }
     else {
 	// Called from setAttributeNS()... need to create a full AttrImpl here to store the
 	// namespaceURI, prefix and localName
 	m_attrs[m_attrCount-1].m_data.attr = new AttrImpl(m_element,m_element->docPtr(),
-							  namespaceURI,
-							  qualifiedName,
-							  value);
+							  id,
+							  value,
+                                                          prefix,
+                                                          localName);
+	m_attrs[m_attrCount-1].m_attrId = 0; /* "has implementation" flag */
 	m_attrs[m_attrCount-1].m_data.attr->ref();
     }
     if (m_element)
@@ -988,12 +938,13 @@ Attr NamedAttrMapImpl::removeAttr(AttrImpl *attr)
     return 0;
 }
 
-NodeImpl::Id NamedAttrMapImpl::mapId(const DOMString& name, bool readonly)
+NodeImpl::Id NamedAttrMapImpl::mapId(DOMStringImpl* namespaceURI,
+				     DOMStringImpl* localName, bool readonly)
 {
     if (!m_element)
 	return 0;
 
-    return m_element->getDocument()->attrNames()->getId(name.implementation(), readonly);
+    return m_element->getDocument()->getId(NodeImpl::AttributeId, namespaceURI, 0, localName, readonly);
 }
 
 void NamedAttrMapImpl::copyAttributes(NamedAttrMapImpl *other)

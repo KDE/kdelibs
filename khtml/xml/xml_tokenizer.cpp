@@ -72,7 +72,7 @@ bool XMLHandler::startDocument()
 }
 
 
-bool XMLHandler::startElement( const QString& namespaceURI, const QString& /*localName*/, const QString& qName, const QXmlAttributes& atts )
+bool XMLHandler::startElement( const QString& namespaceURI, const QString& localName, const QString& qName, const QXmlAttributes& atts )
 {
     if (m_currentNode->nodeType() == Node::TEXT_NODE)
         exitText();
@@ -84,10 +84,9 @@ bool XMLHandler::startElement( const QString& namespaceURI, const QString& /*loc
     for (i = 0; i < atts.length(); i++) {
         int exceptioncode = 0;
         DOMString uri(atts.uri(i));
-        DOMString ln(atts.localName(i));
-        DOMString val(atts.value(i));
-        newElement->setAttribute(0, uri.implementation(), ln.implementation(),
-				 val.implementation(), exceptioncode);
+        DOMString qn(atts.qName(i));
+        DOMString val(atts.value(i));        
+        newElement->setAttributeNS(uri, qn, val, exceptioncode);
         if (exceptioncode) // exception setting attributes
             return false;
     }

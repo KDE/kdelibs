@@ -103,26 +103,26 @@ bool HTMLElementImpl::isInline() const
 
 DOMString HTMLElementImpl::tagName() const
 {
-    DOMString tn = getDocument()->elementNames()->getName(id());
-
-    // HTML elements in the XHTML namespace are lowercase
-    // ### do we need to do this conversion here? should it come back from getName()
-    // in the correct case?
-    if (m_namespaceURI)
-	tn = getTagName(id()).lower();
-
+    DOMString tn = getDocument()->getName(ElementId, 
+                        m_xhtml ? XHTML_NSID + id() : id() );
     if (m_prefix)
         return DOMString(m_prefix) + ":" + tn;
 
     return tn;
 }
 
+DOMString HTMLElementImpl::namespaceURI() const
+{
+    return (m_xhtml) ? 
+        DOMString(XHTML_NAMESPACE) : DOMString();
+}
+
+
 DOMString HTMLElementImpl::localName() const
 {
     // We only have a localName if we were created by createElementNS(), in which
-    // case we have a namespace URI. This also means we're an XHTML element and
-    // we have a lowercase name.
-    if (m_namespaceURI)
+    // case we are an XHTML element. This also means we have a lowercase name.
+    if (m_xhtml)
 	return getTagName(id()).lower();
     // createElement() always returns elements with a null localName.
     else

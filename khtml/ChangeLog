@@ -1,3 +1,78 @@
+
+2003-10-24  Germain Garand  <germain@ebooksfrance.org>
+	* General scope of the change:
+	  - bring back the NodeImpl_NSMask bits in id() for Attributes and XMLElements
+	    => the cssselector need that to support CSS namespaces in an efficient way.
+	    => fixes CSS selection for XML documents
+	  - change Nodeimpl::Id registration mechanism: 
+	    We tried to solve the DOM1/DOM2 NS methods compatibility problems
+	    by registering the qualifiedName. However, this is doomed to  fail in other
+	    places that relies on Ids because prefixes aren't  encoded in  the Ids and 
+	    are irrelevant for NS nodes identification.
+	    Instead, use registered aliases (see DocumentImpl::getId) to solve  
+	    compatibility issues while maintaining a sound Id system.
+
+        * css/cssstyleselector.cpp: change getId calls
+
+        * css/parser.y: ditto
+
+        * dom/dom_doc.cpp: change getId/implementation method calls
+        (DOM::Document::createElement): check DOM exceptions
+        (DOM::Document::createElementNS): ditto
+        (DOM::Document::createAttribute): ditto
+        (DOM::Document::createAttributeNS): ditto
+        (DOM::Document::createDocumentFragment): ditto
+
+        * dom/dom_element.cpp: change getId/implementation method calls
+
+        * dom/dom_node.cpp: ditto
+
+        * html/html_documentimpl.cpp:
+        (HTMLDocumentImpl::createElement): check DOM exceptions
+
+        * html/html_documentimpl.h: ditto 
+
+        * html/html_elementimpl.cpp: use m_xhtml bool flag to distinguish HTML/XHTML elements
+
+        * html/html_elementimpl.h:
+        (DOM::HTMLElementImpl::HTMLElementImpl): init m_xhtml
+        (DOM::HTMLElementImpl::setXHtmlElement): set/retrieve m_xhtml (non-virtual)
+        (DOM::HTMLElementImpl::isXHtmlElement): ditto
+
+        * html/htmlparser.cpp: change getValue/setValue syntax
+
+        * html/htmltokenizer.h: change getId calls
+
+        * rendering/render_frames.cpp: ditto
+
+        * xml/dom_docimpl.cpp: IdNameMapping is now a struct holding QDicts. getId dynamically choses
+            the struct to be used based on it's first argument (ElementId, AttributeId, NamespaceId)
+        (DOMImplementationImpl::createDocument): factor qualifiedName checking code
+        (DocumentImpl::createAttribute): New. Mirrors DOM.
+        (DocumentImpl::createAttributeNS): ditto
+        (DocumentImpl::createElementNS): check exceptions in qualifiedName
+
+        * xml/dom_docimpl.h: IdNameMapping change
+
+        * xml/dom_elementimpl.h:
+        * xml/dom_elementimpl.cpp: 
+        (AttrImpl::AttrImpl): no more m_namespaceURI, now dynamically retrieved with getName(NamespaceId...)
+        (AttrImpl::nodeName): now built from prefix + localName
+        (ElementImpl::setAttributeNS): check exceptions on qualifiedName
+        (XMLElementImpl::XMLElementImpl): no more m_namespaceURI, now dynamically retrieved with getName(NamespaceId...)
+             restore m_id (as in 3_1_BRANCH) for correct CSS selection on XML Elements
+
+        * xml/dom_elementimpl.h:
+        (DOM::checkQualifiedName): inline DOM helper, factoring qualifiedName exception checkings
+        (DOM::splitPrefixLocalName): inline DOM helper, avoids scanning qualifiedName multiple times
+
+        * xml/dom_nodeimpl.h:
+        (DOM::NodeImpl::): enum IdType for (ElementId, AttributeId, NamespaceId)
+
+        * xml/xml_tokenizer.cpp:
+        (XMLHandler::startElement): use the qualifiedName instead of the localName
+            in order to know the prefix if any.
+
 2003-10-24  Stephan Kulow  <coolo@kde.org>
 
 	* rendering/render_form.cpp (updateFromElement): support disabled attribute

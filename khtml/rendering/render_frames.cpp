@@ -640,7 +640,7 @@ void RenderPartObject::updateWidget()
               for (unsigned long i = 0; i < a->length(); ++i) {
                   NodeImpl::Id id = a->idAt(i);
                   DOMString value = a->valueAt(i);
-              params.append(objbase->getDocument()->attrNames()->getName(id).string() + "=\"" + value.string() + "\"");
+              params.append(objbase->getDocument()->getName(DocumentImpl::ElementId, id).string() + "=\"" + value.string() + "\"");
               }
           }
       }

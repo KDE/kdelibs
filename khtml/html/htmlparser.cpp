@@ -390,8 +390,8 @@ bool KHTMLParser::insertNode(NodeImpl *n, bool flat)
 		    for (unsigned long l = 0; map && l < map->length(); ++l) {
 			NodeImpl::Id attrId = map->idAt(l);
 			DOMStringImpl *attrValue = map->valueAt(l);
-			changed = !bmap->getValue(attrId,0,0);
-			bmap->setValue(attrId,0,0,attrValue);
+			changed = !bmap->getValue(attrId);
+			bmap->setValue(attrId,attrValue);
 		    }
 		    if ( changed )
 			doc()->recalcStyle( NodeImpl::Inherit );
@@ -440,8 +440,8 @@ bool KHTMLParser::insertNode(NodeImpl *n, bool flat)
                 for (unsigned long l = 0; map && l < map->length(); ++l) {
                     NodeImpl::Id attrId = map->idAt(l);
                     DOMStringImpl *attrValue = map->valueAt(l);
-                    changed = !bmap->getValue(attrId,0,0);
-                    bmap->setValue(attrId,0,0,attrValue);
+                    changed = !bmap->getValue(attrId);
+                    bmap->setValue(attrId,attrValue);
                 }
                 if ( changed )
                     doc()->recalcStyle( NodeImpl::Inherit );
@@ -1252,7 +1252,7 @@ NodeImpl *KHTMLParser::handleIsindex( Token *t )
         n = new HTMLDivElementImpl( document, ID_DIV );
     NodeImpl *child = new HTMLHRElementImpl( document );
     n->addChild( child );
-    DOMStringImpl* a = t->attrs ? t->attrs->getValue(ATTR_PROMPT,0,0) : 0;
+    DOMStringImpl* a = t->attrs ? t->attrs->getValue(ATTR_PROMPT) : 0;
     DOMString text = i18n("This is a searchable index. Enter search keywords: ");
     if (a)
         text = a;
