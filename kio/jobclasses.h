@@ -116,8 +116,31 @@ namespace KIO {
          */
         void result( KIO::Job *job );
 
-        void processedSize( KIO::Job *, unsigned long size );
         void processedData( KIO::Job *, unsigned long data_size );
+
+        /**
+         * Progress signals
+         */
+        void totalSize( KIO::Job *, unsigned long size );
+        void totalFiles( KIO::Job *, unsigned long files );
+        void totalDirs( KIO::Job *, unsigned long dirs );
+
+        void processedSize( KIO::Job *, unsigned long size );
+        void processedFiles( KIO::Job *, unsigned long files );
+        void processedDirs( KIO::Job *, unsigned long dirs );
+
+        void speed( KIO::Job *, unsigned long bytes_per_second );
+        void percent( KIO::Job *, unsigned int percent );
+
+        /**
+         * Status signals
+         */
+        void copyingFile( KIO::Job *, const KURL& from, const KURL& to );
+        void movingFile( KIO::Job *, const KURL& from, const KURL& to );
+        void deletingFile( KIO::Job *, const KURL& file );
+        void creatingDir( KIO::Job *, const KURL& dir );
+        void renamingFile( KIO::Job *, const KURL& old_name, const KURL& new_name );
+        void canResume( KIO::Job *, bool can_resume );
 
 
     protected slots:
@@ -393,22 +416,6 @@ namespace KIO {
     public:
         CopyJob( const KURL::List& src, const KURL& dest, bool move = false );
 
-    signals:
-        void totalSize( KIO::Job *, unsigned long size );
-        void totalFiles( KIO::Job *, unsigned long files );
-        void totalDirs( KIO::Job *, unsigned long dirs );
-
-        void processedFiles( KIO::Job *, unsigned long files );
-        void processedDirs( KIO::Job *, unsigned long dirs );
-
-        void copyingFile( KIO::Job *, const KURL& from, const KURL& to );
-        void movingFile( KIO::Job *, const KURL& from, const KURL& to );
-        void creatingDir( KIO::Job *, const KURL& dir );
-
-        void renamingFile( KIO::Job *, const KURL& old_name, const KURL& new_name );
-        void speed( KIO::Job *, unsigned long bytes_per_second );
-        void canResume( KIO::Job *, bool can_resume );
-
     protected:
         void startNextJob();
 
@@ -455,16 +462,6 @@ namespace KIO {
 
     public:
     DeleteJob( const KURL::List& src, bool shred );
-
-    signals:
-        void totalSize( KIO::Job *, unsigned long size );
-        void totalFiles( KIO::Job *, unsigned long files );
-        void totalDirs( KIO::Job *, unsigned long dirs );
-
-        void processedFiles( KIO::Job *, unsigned long files );
-        void processedDirs( KIO::Job *, unsigned long dirs );
-
-        void deletingFile( KIO::Job *, const KURL& file );
 
     protected:
         void startNextJob();
