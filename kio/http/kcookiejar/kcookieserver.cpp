@@ -38,6 +38,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include <qtimer.h>
 #include <unistd.h>
 #include <qlist.h>
+#include <qfile.h>
 
 #include <dcopclient.h>
 #include <kconfig.h>
@@ -81,7 +82,7 @@ KCookieServer::KCookieServer()
       mCookieJar->loadCookies( filenameOld );
       if (mCookieJar->saveCookies( filename))
       {
-         unlink(filenameOld.ascii()); // Remove old kfm cookie file
+         unlink(QFile::encodeName(filenameOld)); // Remove old kfm cookie file
       }
    }
    else

@@ -1043,7 +1043,7 @@ bool KCookieJar::saveCookies(const QString &_filename)
                 if (!domainPrinted)
                 {
                     domainPrinted = true;
-                    fprintf(fStream, "[%s]\n", domain.latin1());
+                    fprintf(fStream, "[%s]\n", domain.local8Bit().data());
                 }
                 // Store persistent cookies
                 QString path("\"");
@@ -1053,9 +1053,9 @@ bool KCookieJar::saveCookies(const QString &_filename)
                 domain += cookie->domain();
                 domain += "\"";
                 fprintf(fStream, "%-20s %-20s %-12s %9lu   %2d %-10s %s %-4i\n",
-		    cookie->host().latin1(), domain.latin1(), path.latin1(),
+		    cookie->host().local8Bit().data(), domain.local8Bit().data(), path.local8Bit().data(),
 		    (unsigned long) cookie->expireDate(), cookie->protocolVersion()+100,
-		    cookie->name().latin1(), cookie->value().latin1(),
+		    cookie->name().local8Bit().data(), cookie->value().local8Bit().data(),
 		    cookie->isSecure());
 		cookie = cookieList->next();
 	    }
@@ -1108,7 +1108,7 @@ static const char *parseField(charPtr &buffer, bool keepQuotes=false)
 // On failure 'false' is returned.
 bool KCookieJar::loadCookies(const QString &_filename)
 {
-    FILE *fStream = fopen( _filename.latin1(), "r");
+    FILE *fStream = fopen( QFile::encodeName(_filename), "r");
     if (fStream == 0)
     {
         return false;
