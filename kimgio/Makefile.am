@@ -36,7 +36,9 @@ kimg_eps_la_SOURCES = eps.cpp
 kimg_eps_la_LDFLAGS = -module -avoid-version
 kimg_eps_la_LIBADD = $(LIB_QT)
 
-kimgio-config.h: $(PNG_MODULE) $(JPEG_MODULE) $(TIFF_MODULE)
+kimgio-config.h: staticmodules
+
+staticmodules: $(PNG_MODULE) $(JPEG_MODULE) $(TIFF_MODULE)
 	@rm -f kimgio-config.h staticmodules ;\
 	touch kimgio-config.h ;\
 	touch staticmodules ;\
@@ -45,11 +47,14 @@ kimgio-config.h: $(PNG_MODULE) $(JPEG_MODULE) $(TIFF_MODULE)
 	  dlname=`grep -E '^dlname=' kimg_$$mod.la | sed -e 's#^dlname=.\(.*\).#\1#'` ;\
 	  if test -z "$$dlname"; then \
 		echo "#define LINKED_$$mod 1" >> kimgio-config.h ;\
-		if test $$mod = jpeg; then \
-		  echo jpeg.lo >> staticmodules ;\
-		else \
-		  echo "$$mod"r.lo >> staticmodules ;\
-		fi; \
+		case $$mod in \
+		jpeg) \
+		  echo jpeg.lo $(LIBJPEG) >> staticmodules ;;\
+		png) \
+		  echo pngr.lo $(LIBPNG) >> staticmodules ;;\
+		tiff) \
+		  echo tiffr.lo $(LIBTIFF) >> staticmodules ;;\
+		esac ;\
 	  fi \
 	fi ;\
 	done; \
@@ -66,10 +71,10 @@ kimgio-config.h: $(PNG_MODULE) $(JPEG_MODULE) $(TIFF_MODULE)
 CLEANFILES = staticmodules kimgio-config.h
 
 libkimgio_la_LDFLAGS = -version-info 3:0 --export-dynamic
-libkimgio_la_LIBADD = `cat staticmodules` $(LIB_KDECORE)
-libkimgio_la_DEPENDENCIES = staticmodules
+libkimgio_la_LIBADD = `cat staticmodules` $(LIB_KDECORE) 
+libkimgio_la_DEPENDENCIES = staticmodules 
 libkimgio_la_SOURCES = kimgio.cpp
-kimgio.cpp: kimgio-config.h
+$(srcdir)/kimgio.cpp: kimgio-config.h
 include_HEADERS = kimgio.h
 
 noinst_HEADERS= jpeg.h xview.h eps.h tiffr.h pngr.h
