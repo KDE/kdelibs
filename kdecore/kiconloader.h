@@ -20,6 +20,11 @@
    Boston, MA 02111-1307, USA.
    
    $Log$
+   Revision 1.37  1999/08/15 13:14:36  kulow
+   get rid of ICON and Icon. These macros names are very misleading as it doesn't
+   load anything than toolbar pictures. I added the function BarIcon as replacement
+   for these macros which doesn't require klobal.h to be included
+
    Revision 1.36  1999/06/27 17:33:28  waba
    WABA: Updated docu, fixed directory scan order
 
@@ -275,14 +280,14 @@ public:
    * you, but special programs like kpanel or kmenuedit
    * need to load the application icons of foreign applications.
    *
-   * @see loadIcon
+   * @see loadIcon, loadApplicationMiniIcon
    */
   QPixmap loadApplicationIcon( const QString& name, int w = 0, int h = 0 );
 
   /**
-  	Similar to loadMiniIcon, but searches for a mini icon.
+  	Similar to loadApplicationIcon, but searches for a mini icon.
 
-	@see loadMiniIcon, loadApplicationIcon
+	@see loadApplicationIcon
   */
   QPixmap loadApplicationMiniIcon( const QString& name, int w = 0, int h = 0 );
 
