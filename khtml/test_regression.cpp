@@ -156,7 +156,7 @@ Value RegTestFunction::call(ExecState *exec, Object &/*thisObj*/, const List &ar
             if ( str.qstring().lower().find( "failed!" ) >= 0 )
                 m_regTest->saw_failure = true;
             QString res = str.qstring().replace('\007', "");
-	    fprintf(stderr, "%s\n", res.latin1());
+            m_regTest->m_currentOutput += res + "\n";
 	    break;
 	}
 	case ReportResult: {
@@ -165,6 +165,8 @@ Value RegTestFunction::call(ExecState *exec, Object &/*thisObj*/, const List &ar
             if (args[1].isA(UndefinedType) || args[1].isA(NullType))
                 description = QString::null;
             m_regTest->reportResult(passed,description);
+            if ( !passed )
+                m_regTest->saw_failure = true;
             break;
         }
 	case CheckOutput: {
@@ -575,6 +577,8 @@ RegressionTest::~RegressionTest()
 
 bool RegressionTest::runTests(QString relPath, bool mustExist, int known_failure)
 {
+    m_currentOutput = QString::null;
+
     if (!QFile(m_baseDir + "/tests/"+relPath).exists()) {
 	fprintf(stderr,"%s: No such file or directory\n",relPath.latin1());
 	return false;
@@ -628,11 +632,11 @@ bool RegressionTest::runTests(QString relPath, bool mustExist, int known_failure
         m_known_failures = known_failure;
 	if ( filename.endsWith(".html") || filename.endsWith( ".htm" ) ) {
             if ( m_runHTML )
-	      testStaticFile(relPath);
+                testStaticFile(relPath);
 	}
 	else if (filename.endsWith(".js")) {
             if ( m_runJS )
-              testJSFile(relPath);
+                testJSFile(relPath);
 	}
 	else if (mustExist) {
 	    fprintf(stderr,"%s: Not a valid test file (must be .htm(l) or .js)\n",relPath.latin1());
@@ -857,16 +861,13 @@ bool RegressionTest::imageEqual( const QImage &lhsi, const QImage &rhsi )
     return true;
 }
 
-void RegressionTest::doFailureReport( const QString& baseDir,  const QString& test, int failures )
+void RegressionTest::createLink( const QString& test, int failures )
 {
-    if ( failures == NoFailure ) {
-        ::unlink( QFile::encodeName( m_baseDir + "/output/" + test + "-compare.html" ) );
-        return;
-    }
+    createMissingDirs( m_baseDir + "/output/" + test + "-compare.html" );
 
-    QFile list( baseDir + "/output/links.html" );
+    QFile list( m_baseDir + "/output/links.html" );
     list.open( IO_WriteOnly|IO_Append );
-    QString link, cl;
+    QString link;
     link = QString( "<a href=\"%1\" target=\"content\" title\"%2\">" )
            .arg( test + "-compare.html" )
            .arg( test );
@@ -881,8 +882,46 @@ void RegressionTest::doFailureReport( const QString& baseDir,  const QString& te
     link += "]<br>\n";
     list.writeBlock( link.latin1(), link.length() );
     list.close();
+}
 
-    QFile compare( baseDir + "/output/" + test + "-compare.html" );
+void RegressionTest::doJavascriptReport( const QString &test )
+{
+    QFile compare( m_baseDir + "/output/" + test + "-compare.html" );
+    if ( !compare.open( IO_WriteOnly|IO_Truncate ) )
+        kdDebug() << "failed to open " << m_baseDir + "/output/" + test + "-compare.html" << endl;
+    QString cl;
+    cl = QString( "<html><head><title>%1</title>" ).arg( test );
+    cl += "<body><tt>";
+    QString text = "\n" + m_currentOutput;
+    text.replace( '<', "&lt;" );
+    text.replace( '>', "&gt;" );
+    text.replace( QRegExp( "\nFAIL" ), "\n<span style='color: red'>FAIL</span>" );
+    text.replace( QRegExp( "\nPASS" ), "\n<span style='color: green'>PASS</span>" );
+    if ( text.at( 0 ) == '\n' )
+        text = text.mid( 1, text.length() );
+    text.replace( '\n', "<br>\n" );
+    cl += text;
+    cl += "</tt></body></html>";
+    compare.writeBlock( cl.latin1(), cl.length() );
+    compare.close();
+}
+
+void RegressionTest::doFailureReport( const QString& test, int failures )
+{
+    if ( failures == NoFailure ) {
+        ::unlink( QFile::encodeName( m_baseDir + "/output/" + test + "-compare.html" ) );
+        return;
+    }
+
+    createLink( test, failures );
+
+    if ( failures & JSFailure ) {
+        doJavascriptReport( test );
+        return; // no support for both kind
+    }
+
+    QFile compare( m_baseDir + "/output/" + test + "-compare.html" );
+
     // create a relative path so that it works via web as well. ugly
     QString relpath = "..";
     for ( int i = 0; i < test.contains( '/' ); ++i )
@@ -897,7 +936,7 @@ void RegressionTest::doFailureReport( const QString& baseDir,  const QString& te
     // are blocking reads possible with KProcess?
     char pwd[PATH_MAX];
     getcwd( pwd, PATH_MAX );
-    chdir( QFile::encodeName( baseDir ) );
+    chdir( QFile::encodeName( m_baseDir ) );
 
     if ( failures & RenderFailure ) {
         renderDiff += "<pre>";
@@ -924,6 +963,7 @@ void RegressionTest::doFailureReport( const QString& baseDir,  const QString& te
     chdir( pwd );
 
     compare.open( IO_WriteOnly|IO_Truncate );
+    QString cl;
     cl = QString( "<html><head><title>%1</title>" ).arg( test );
     cl += QString( "<script>\n"
                   "var pics = new Array();\n"
@@ -1086,7 +1126,7 @@ void RegressionTest::testStaticFile(const QString & filename)
         if (!dumped)
             failures |= PaintFailure;
 
-        doFailureReport(m_baseDir, filename, failures );
+        doFailureReport(filename, failures );
     }
 
     m_known_failures = back_known_failures;
@@ -1094,7 +1134,6 @@ void RegressionTest::testStaticFile(const QString & filename)
 
 void RegressionTest::evalJS( ScriptInterpreter &interp, const QString &filename, bool report_result )
 {
-    // qDebug("eval %s", filename.latin1());
     QString fullSourceName = filename;
     QFile sourceFile(fullSourceName);
 
@@ -1113,18 +1152,21 @@ void RegressionTest::evalJS( ScriptInterpreter &interp, const QString &filename,
     Completion c = interp.evaluate(UString( code ) );
 
     if ( report_result && !ignore_errors) {
+        bool expected_failure = filename.endsWith( "-n.js" );
         if (c.complType() == Throw) {
             QString errmsg = c.value().toString(interp.globalExec()).qstring();
-            if ( !filename.endsWith( "-n.js" ) ) {
-                printf( "ERROR: %s (%s)\n",filename.latin1(),errmsg.latin1());
+            if ( !expected_failure ) {
+                printf( "ERROR: %s (%s)\n",filename.latin1(), errmsg.latin1());
                 m_errors++;
             } else {
                 reportResult( true, QString( "Expected Failure: %1" ).arg( errmsg ) );
             }
         } else if ( saw_failure ) {
-            reportResult( filename.endsWith( "-n.js" ), "saw 'failed!'" );
+            if ( !expected_failure )
+                doFailureReport( m_currentCategory + "/" + m_currentTest, JSFailure );
+            reportResult( !expected_failure, "saw 'failed!'" );
         } else {
-            reportResult( !filename.endsWith( "-n.js" ), "passed" );
+            reportResult( !expected_failure, "passed" );
         }
     }
 }
@@ -1178,8 +1220,7 @@ bool RegressionTest::checkPaintdump(const QString &filename)
     QImage output = renderToImage();
     if ( !imageEqual( baseline, output ) ) {
         QString outputFilename = m_baseDir + "/output/" + againstFilename;
-        QFileInfo info(outputFilename);
-        createMissingDirs(info.dirPath());
+        createMissingDirs(outputFilename );
         output.save(outputFilename, "PNG", 60);
     }
     else {
@@ -1233,8 +1274,7 @@ bool RegressionTest::checkOutput(const QString &againstFilename)
     }
 
     // generate result file
-    QFileInfo info(outputFilename);
-    createMissingDirs(info.dirPath());
+    createMissingDirs( outputFilename );
     QFile file2(outputFilename);
     if (!file2.open(IO_WriteOnly)) {
         fprintf(stderr,"Error writing to file %s\n",outputFilename.latin1());
@@ -1291,9 +1331,10 @@ bool RegressionTest::reportResult(bool passed, const QString & description)
     return passed;
 }
 
-void RegressionTest::createMissingDirs(QString path)
+void RegressionTest::createMissingDirs(const QString & filename)
 {
-    QFileInfo dirInfo(path);
+    QFileInfo dif(filename);
+    QFileInfo dirInfo( dif.dirPath() );
     if (dirInfo.exists())
 	return;
 

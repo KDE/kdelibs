@@ -135,20 +135,23 @@ public:
     void testJSFile(const QString& filename);
     bool checkOutput(const QString& againstFilename);
     bool checkPaintdump( const QString& againstFilename);
-    enum FailureType { NoFailure = 0, AllFailure = 1, RenderFailure = 2, DomFailure = 4, PaintFailure = 8};
+    enum FailureType { NoFailure = 0, AllFailure = 1, RenderFailure = 2, DomFailure = 4, PaintFailure = 8, JSFailure = 16};
     bool runTests(QString relPath = QString::null, bool mustExist = false, int known_failure = NoFailure);
     bool reportResult( bool passed, const QString & description = QString::null );
-    void createMissingDirs(QString path);
+    void createMissingDirs(const QString &path);
 
     QImage renderToImage();
     bool imageEqual( const QImage &lhs, const QImage &rhs );
-    void doFailureReport( const QString& baseDir,  const QString& test, int failures );
+    void createLink( const QString& test, int failures );
+    void doJavascriptReport( const QString &test );
+    void doFailureReport( const QString& test, int failures );
 
     KHTMLPart *m_part;
     QString m_baseDir;
     bool m_genOutput;
     QString m_currentBase;
 
+    QString m_currentOutput;
     QString m_currentCategory;
     QString m_currentTest;
     QPixmap* m_paintBuffer;
