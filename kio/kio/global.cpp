@@ -1250,6 +1250,7 @@ extern "C" void endvfsent( );
 #define GETMNTENT(file, var) ((var = getmntent(file)) != 0)
 #define MOUNTPOINT(var) var->mnt_dir
 #define MOUNTTYPE(var) var->mnt_type
+#define HASMNTOPT(var, opt) hasmntopt(var, opt)
 #define FSNAME(var) var->mnt_fsname
 #elif defined(_AIX)
 /* we don't need this stuff */
@@ -1261,6 +1262,7 @@ extern "C" void endvfsent( );
 #define GETMNTENT(file, var) (getmntent(file, &var) == 0)
 #define MOUNTPOINT(var) var.mnt_mountp
 #define MOUNTTYPE(var) var.mnt_fstype
+#define HASMNTOPT(var, opt) hasmntopt(&var, opt)
 #define FSNAME(var) var.mnt_special
 #endif
 
@@ -1583,8 +1585,7 @@ static QString get_mount_info(const QString& filename,
             if (ismanual == Unseen)
             {
                 struct fstab *ft = getfsfile(mounted[i].f_mntonname);
-                if (!ft || strstr(ft->fs_mntops, "noauto")
-                    || strcmp(ft->fs_vfstype,"supermount")==0)
+                if (!ft || strstr(ft->fs_mntops, "noauto"))
                   ismanual = Right;
             }
         }
@@ -1685,15 +1686,34 @@ static QString get_mount_info(const QString& filename,
         {
             mountPoint = QFile::decodeName( MOUNTPOINT(me) );
             check_mount_point(MOUNTTYPE(me), FSNAME(me), isautofs, isslow);
-
+kdDebug() << "***** point: " << mountPoint << ", " << FSNAME(me) << ", " << MOUNTPOINT(me) << endl;
             // we don't check if ismanual is Right, if /a/b is manually
             // mounted /a/b/c can't be automounted. At least IMO.
             if (ismanual == Unseen)
             {
-                struct fstab *ft = getfsfile(MOUNTPOINT(me));
-                if (!ft || strstr(ft->fs_mntops, "noauto")
-                    || strcmp(ft->fs_vfstype, "supermount")==0)
+                STRUCT_SETMNTENT fstab;
+                // TODO: #define FSTAB (FSTAB_FILE?), important for Solaris
+                if ((fstab = SETMNTENT("/etc/fstab", "r")) == 0)
+                    continue;
+
+                bool found = false;
+                STRUCT_MNTENT fe;
+                while (GETMNTENT(fstab, fe))
+                {
+                    if (!strcmp(FSNAME(me), FSNAME(fe)))
+                    {
+kdDebug() << "***** found: " << MOUNTPOINT(fe) << ", " << FSNAME(fe) <<endl;
+                        found = true;
+                        if (HASMNTOPT(fe, "noauto") || 
+                            !strcmp(MOUNTTYPE(fe), "supermount"))
+                            ismanual = Right;
+                        break;
+                    }
+                }
+                if (!found || !strcmp(MOUNTTYPE(me), "supermount"))
                   ismanual = Right;
+
+                ENDMNTENT(fstab);
             }
         }
     }
