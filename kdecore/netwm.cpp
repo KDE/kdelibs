@@ -231,8 +231,8 @@ static void create_atoms(Display *d) {
 static void readIcon(NETWinInfoPrivate *p) {
     Atom type_ret;
     int format_ret;
-    unsigned long nitems_ret, after_ret;
-    unsigned char *data_ret;
+    unsigned long nitems_ret = 0, after_ret = 0;
+    unsigned char *data_ret = 0;
 
     int ret =
 	XGetWindowProperty(p->display, p->window, net_wm_icon, 0l, 3l, False,
