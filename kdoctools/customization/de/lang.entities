@@ -27,6 +27,14 @@
 <!ENTITY updating.documentation PUBLIC "-//KDE//DOCUMENT Updating Documentation//DE"
   "entities/update-doc.docbook"                        >
 
+<!ENTITY help.menu.documentation PUBLIC "-//KDE//DOCUMENT Help Menu Documentation//DE"
+  "entities/help-menu.docbook"                      ><!-- level: variablelist -->
+<!ENTITY install.intro.documentation PUBLIC "-//KDE//DOCUMENT Installation General Information//DE"
+  "entities/install-intro.docbook"                     ><!-- level: para -->
+<!ENTITY install.compile.documentation PUBLIC "-//KDE//DOCUMENT Compilation Instructions//DE"
+  "entities/install-compile.docbook"                     ><!-- level: para -->
+
+
 <!-- FDL notice -->
 <!ENTITY FDLNotice PUBLIC "-//KDE//DOCUMENT GNU Free Documentation Notice//DE"
          "entities/fdl-notice.docbook">

@@ -27,9 +27,9 @@
   "entities/update-doc.docbook"                     ><!-- level: para -->
 <!ENTITY help.menu.documentation PUBLIC "-//KDE//DOCUMENT Help Menu Documentation//PTBR"
   "entities/help-menu.docbook"                      ><!-- level: variablelist -->
-<!ENTITY  PUBLIC "-//KDE//DOCUMENT Installation General Information//PTBR"
+<!ENTITY install.intro.documentation PUBLIC "-//KDE//DOCUMENT Installation General Information//PTBR"
   "entities/install-intro.docbook"                     ><!-- level: para -->
-<!ENTITY  PUBLIC "-//KDE//DOCUMENT Compilation Instructions//PTBR"
+<!ENTITY install.compile.documentation PUBLIC "-//KDE//DOCUMENT Compilation Instructions//PTBR"
   "entities/install-compile.docbook"                     ><!-- level: para -->
 
 

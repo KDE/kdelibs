@@ -10,7 +10,7 @@
 </menuchoice>
 </term>
 <listitem><para><action>Invokes the KDE Help system</action> starting at the
-&kcron; help pages. (this document).</para></listitem>
+&kappname; help pages. (this document).</para></listitem>
 </varlistentry>
 
 <varlistentry>

@@ -10,7 +10,7 @@
 </menuchoice>
 </term>
 <listitem><para><action>Invokes the KDE Help system</action> starting at the
-&kcron; help pages. (this document).</para></listitem>
+&kappname; help pages. (this document).</para></listitem>
 </varlistentry>
 
 <varlistentry>
@@ -27,7 +27,6 @@ question mark.</action>  Clicking on items within &kappname; will open a help
 window (if one exists for the particular item) explaining the item's
 function.</para></listitem>
 </varlistentry>
-
 
 <varlistentry>
 <term><menuchoice>
