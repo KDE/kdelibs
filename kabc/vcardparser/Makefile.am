@@ -1,4 +1,4 @@
-INCLUDES = $(all_includes) -I$(top_srcdir)/kabc
+INCLUDES = $(all_includes) -I$(top_builddir)/kabc -I$(top_srcdir)/kabc
 
 noinst_LTLIBRARIES = libvcards.la
 
