@@ -509,6 +509,16 @@ void CachedImage::deref( CachedObjectClient *c )
 #define BGMINWIDTH      32
 #define BGMINHEIGHT     32
 
+class KHTMLPixmap : public QPixmap
+{
+public:
+#ifdef Q_WS_X11
+    bool hasAlphaImage() const { return data->alphapm; }
+#else
+    bool hasAlphaImage() const { return false; }
+#endif
+};
+
 const QPixmap &CachedImage::tiled_pixmap(const QColor& newc)
 {
     static QRgb bgTransparant = qRgba( 0, 0, 0, 0xFF );
@@ -537,7 +547,8 @@ const QPixmap &CachedImage::tiled_pixmap(const QColor& newc)
         if ( r.height() < BGMINHEIGHT )
             h = ((BGMINHEIGHT / s.height())+1) * s.height();
     }
-    if ( (w != r.width()) || (h != r.height()) || (isvalid && r.mask()))
+    if ( !static_cast<const KHTMLPixmap*>( &r )->hasAlphaImage() &&
+        ( (w != r.width()) || (h != r.height()) || (isvalid && r.mask())) )
     {
         QPixmap pix = r;
         if ( w != r.width() || (isvalid && pix.mask()))
