@@ -44,6 +44,8 @@ IsContainer defaults to false - note, any value except an empty one is
                                 container, just omit this line.
 Group defaults to "KDE"
 
+Don't forget to add an icon to the pics directory.  Try to make it look similar to the other icons and be the same size.
+
 There are some global options that you can have.
 
 [Global]
