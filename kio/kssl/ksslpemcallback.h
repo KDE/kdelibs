@@ -21,10 +21,6 @@
 #ifndef _kde_ksslpemcallback_h
 #define _kde_ksslpemcallback_h
 
-#ifdef HAVE_CONFIG_H
-#include <config.h>
-#endif
-
 int KSSLPemCallback(char *buf, int size, int rwflag, void *userdata);
 
 #endif
