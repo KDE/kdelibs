@@ -172,7 +172,7 @@ signals:
    */
   void setLocationBarURL( const QString &url );
 
-  void createNewWindow( const KURL &url );
+  void createNewWindow( const KURL &url, const KParts::URLArgs &args = KParts::URLArgs() );
 
   /**
    * Since the part emits the jobid in the started() signal,
