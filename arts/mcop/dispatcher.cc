@@ -165,6 +165,12 @@ Dispatcher::~Dispatcher()
 	if(objectManager)
 		objectManager->removeGlobalReferences();
 
+	d->globalComm = GlobalComm::null();
+
+	/* all objects should be gone now - remove all extensions we loaded */
+	if(objectManager)
+		objectManager->removeExtensions();
+
 	StartupManager::shutdown();
 
 	/* drop all open connections */
@@ -183,7 +189,6 @@ Dispatcher::~Dispatcher()
 	delete referenceClean;
 
 	d->interfaceRepo = InterfaceRepo::null();
-	d->globalComm = GlobalComm::null();
 
 	if(unixServer)
 	{

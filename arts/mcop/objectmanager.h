@@ -30,8 +30,12 @@
 namespace Arts {
 
 class Object;
+class ObjectManagerPrivate;
 
 class ObjectManager {
+private:
+	ObjectManagerPrivate *d;
+
 protected:
 	static ObjectManager *_instance;
 	std::list<Factory *> factories;
@@ -47,6 +51,7 @@ public:
 	bool addGlobalReference(Object object, std::string name);
 	std::string getGlobalReference(std::string name);
 	void removeGlobalReferences();
+	void removeExtensions();
 
 	void registerFactory(Factory *factory);
 	void removeFactory(Factory *factory);

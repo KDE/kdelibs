@@ -32,6 +32,11 @@
 using namespace std;
 using namespace Arts;
 
+class Arts::ObjectManagerPrivate {
+public:
+	list<ExtensionLoader *> extensions;
+};
+
 Object_skel *ObjectManager::create(string name)
 {
 	list<Factory *>::iterator i;
@@ -74,10 +79,9 @@ Object_skel *ObjectManager::create(string name)
 	if(library != "")
 	{
 		ExtensionLoader *e = new ExtensionLoader(library);
-
 		if(e->success())
 		{
-			// TODO: memory leak here, extension is never unloaded
+			d->extensions.push_back(e);
 			for(i = factories.begin();i != factories.end(); i++)
 			{
 				Factory *f = *i;
@@ -120,10 +124,14 @@ ObjectManager::ObjectManager()
 {
 	assert(!_instance);
 	_instance = this;
+	d = new ObjectManagerPrivate;
 }
 
 ObjectManager::~ObjectManager()
 {
+	// they should be unloaded before this object can be deleted
+	assert(d->extensions.empty());
+	delete d;
 	assert(_instance);
 	_instance = 0;
 }
@@ -132,6 +140,16 @@ ObjectManager *ObjectManager::the()
 {
 	assert(_instance);
 	return _instance;
+}
+
+void ObjectManager::removeExtensions()
+{
+	// unloads all dynamically loaded extensions
+	list<ExtensionLoader *>::iterator i;
+	for(i=d->extensions.begin(); i != d->extensions.end(); i++)
+		delete *i;
+	
+	d->extensions.clear();
 }
 
 /*
