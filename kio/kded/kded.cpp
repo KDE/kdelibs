@@ -42,7 +42,7 @@
 #include <kstddirs.h>
 
 
-Kded::Kded( bool needUpdate) 
+Kded::Kded( bool needUpdate)
   : KSycoca( true )
 {
   QString path = KGlobal::dirs()->saveLocation("config")+"ksycoca";
@@ -63,7 +63,7 @@ Kded::Kded( bool needUpdate)
 
   m_pDirWatch = 0;
 }
-   
+
 Kded::~Kded()
 {
   m_pTimer->stop();
@@ -88,19 +88,19 @@ void Kded::build()
 
   // For each factory
   QListIterator<KSycocaFactory> factit ( *m_lstFactories );
-  for (KSycocaFactory *factory = m_lstFactories->first(); 
+  for (KSycocaFactory *factory = m_lstFactories->first();
        factory;
        factory = m_lstFactories->first() )
   {
     // For each resource the factory deals with
     for( QStringList::ConstIterator it1 = factory->resourceList()->begin();
-         it1 != factory->resourceList()->end(); 
+         it1 != factory->resourceList()->end();
          ++it1 )
     {
       QStringList dirs = KGlobal::dirs()->resourceDirs( *it1 );
       // For each resource the factory deals with
       for( QStringList::ConstIterator it2 = dirs.begin();
-           it2 != dirs.end(); 
+           it2 != dirs.end();
            ++it2 )
       {
          readDirectory( *it2 );
@@ -126,7 +126,7 @@ void Kded::dirDeleted(const QString& /*path*/)
 
 void Kded::update(const QString& path)
 {
-  kdebug(KDEBUG_INFO, 7020, QString("Kded::update( %1 ) - starting timer").arg( path ));
+  kDebugInfo(7020, QString("Kded::update( %1 ) - starting timer").arg( path ));
   // We could be smarter here, and find out which factory
   // deals with that dir, and update only that...
   // But rebuilding everything is fine for me.
@@ -137,7 +137,7 @@ void Kded::readDirectory( const QString& _path )
 {
   // kdebug(KDEBUG_INFO, 7020, QString("reading %1").arg(_path));
 
-  QDir d( _path, QString::null, QDir::Unsorted, QDir::AccessMask | QDir::Dirs );         
+  QDir d( _path, QString::null, QDir::Unsorted, QDir::AccessMask | QDir::Dirs );
   // set QDir ...
   if ( !d.exists() )                            // exists&isdir?
     return;                             // return false

@@ -31,14 +31,14 @@
 #include <assert.h>
 
 KBuildServiceFactory::KBuildServiceFactory( KSycocaFactory *serviceTypeFactory ) :
-  KServiceFactory(), 
+  KServiceFactory(),
   m_serviceTypeFactory( serviceTypeFactory)
 {
    m_resourceList->append( "apps" );
    m_resourceList->append( "services" );
 }
 
-KSycocaEntry * 
+KSycocaEntry *
 KBuildServiceFactory::createEntry( const QString& file, const char *resource )
 {
   QString name = file;
@@ -52,8 +52,8 @@ KBuildServiceFactory::createEntry( const QString& file, const char *resource )
      return 0;
 
   // Just a backup file ?
-  if ( ( name.right(1) == "~") || 
-       ( name.right(4) == ".bak") || 
+  if ( ( name.right(1) == "~") ||
+       ( name.right(4) == ".bak") ||
        ( name[0] == '.') ||
        ( name[0] == '%' && name.right(1) == "%" ) )
       return 0;
@@ -76,7 +76,7 @@ void
 KBuildServiceFactory::saveHeader(QDataStream &str)
 {
    KSycocaFactory::saveHeader(str);
-kdebug(KDEBUG_INFO, 7012, QString("KBuildServiceFactory m_offerListOffset = %1")
+   kDebugInfo( 7012, QString("KBuildServiceFactory m_offerListOffset = %1")
 	.arg( m_offerListOffset, 8, 16) );
 
    str << (Q_INT32) m_nameDictOffset;
@@ -106,14 +106,14 @@ KBuildServiceFactory::save(QDataStream &str)
    str.device()->at(endOfFactoryData);
 }
 
-void 
+void
 KBuildServiceFactory::saveOfferList(QDataStream &str)
 {
    m_offerListOffset = str.device()->at();
 
    // For each entry in servicetypeFactory
    for(QDictIterator<KSycocaEntry> it ( *(m_serviceTypeFactory->entryDict()) );
-       it.current(); 
+       it.current();
        ++it)
    {
       // export associated services
@@ -122,7 +122,7 @@ KBuildServiceFactory::saveOfferList(QDataStream &str)
       // Doing it here saves a lot of time to the clients
       QString serviceType = it.current()->name();
       for(QDictIterator<KSycocaEntry> itserv ( *m_entryDict );
-          itserv.current(); 
+          itserv.current();
           ++itserv)
       {
          if ( ((KService *)itserv.current())->hasServiceType( serviceType ) )
@@ -137,7 +137,7 @@ KBuildServiceFactory::saveOfferList(QDataStream &str)
    str << (Q_INT32) 0;               // End of list marker (0)
 }
 
-void 
+void
 KBuildServiceFactory::addEntry(KSycocaEntry *newEntry)
 {
    KSycocaFactory::addEntry(newEntry);

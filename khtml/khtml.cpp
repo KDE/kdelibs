@@ -518,7 +518,7 @@ void KHTMLWidget::openURL( const QString &_url, bool _reload, int _xoffset, int 
 //	       this, SLOT( slotPost( int ) ) );
       // TODO !!! m_job = KIO::http_post( u, post_data);
       // was put, but I guess it has to use http_post ? (David)
-      // I guess it means converting the char * or QCString to a QByteArray 
+      // I guess it means converting the char * or QCString to a QByteArray
   }
   else
   {
@@ -557,18 +557,18 @@ void KHTMLWidget::slotFinished( KIO::Job * job )
 {
   if (job->error() )
   {
-    kdebug(0,1202,"+++++++++++++ ERROR %d, %s ", job->error(), job->errorText().ascii() );
- 
+    kDebugInfo(1202,"+++++++++++++ ERROR %d, %s ", job->error(), job->errorText().ascii() );
+
     slotStop();
- 
+
     // TODO : use errorString() instead
     emit error( job->error(), job->errorText() );
- 
+
     // !!!!!! HACK !!!!!!!!!!
     job->showErrorDialog();
- 
+
     kdebug(0,1202,"+++++++++++ RETURN from error ++++++++++");
- 
+
     emit canceled();
 
   } else {

@@ -77,7 +77,7 @@ HTMLURLRequestJob::HTMLURLRequestJob( KHTMLWidget* _browser, HTMLURLRequest *r, 
 
   //job->setGUImode( KIOJob::NONE );
 
-  kdebug(0,1202,"BROWSER JOB %s", m_req->m_strURL.ascii());
+  kDebugInfo(1202,"BROWSER JOB %s", m_req->m_strURL.ascii());
 
   connect( m_job, SIGNAL( result( KIO::Job * ) ), this, SLOT( slotFinished( KIO::Job * ) ) );
   connect( m_job, SIGNAL( data( KIO::Job*, const QByteArray &)),

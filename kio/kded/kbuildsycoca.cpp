@@ -44,11 +44,11 @@
 
 #include <stdlib.h>
 
-KBuildSycoca::KBuildSycoca() 
+KBuildSycoca::KBuildSycoca()
   : KSycoca( true )
 {
 }
-   
+
 KBuildSycoca::~KBuildSycoca()
 {
 }
@@ -57,27 +57,27 @@ void KBuildSycoca::build()
 {
   // For each factory
   QListIterator<KSycocaFactory> factit ( *m_lstFactories );
-  for (KSycocaFactory *factory = m_lstFactories->first(); 
+  for (KSycocaFactory *factory = m_lstFactories->first();
        factory;
        factory = m_lstFactories->next() )
   {
     // For each resource the factory deals with
     for( QStringList::ConstIterator it1 = factory->resourceList()->begin();
-         it1 != factory->resourceList()->end(); 
+         it1 != factory->resourceList()->end();
          ++it1 )
     {
       const char *resource = (*it1).ascii();
 
       QStringList relFiles;
-      
-      (void) KGlobal::dirs()->findAllResources( resource, 
+
+      (void) KGlobal::dirs()->findAllResources( resource,
                                                 QString::null,
                                                 true, // Recursive!
                                                 true, // uniq
                                                 relFiles);
       // For each file the factory deals with.
       for( QStringList::ConstIterator it2 = relFiles.begin();
-           it2 != relFiles.end(); 
+           it2 != relFiles.end();
            ++it2 )
       {
          // Create a new entry
@@ -104,21 +104,21 @@ void KBuildSycoca::recreate()
 
   m_str = database.dataStream();
 
-  kdebug(KDEBUG_INFO, 7021, "Recreating ksycoca file");
-     
+  kDebugInfo(7021, "Recreating ksycoca file");
+
   // It is very important to build the servicetype one first
   // Both are registered in KSycoca, no need to keep the pointers
   KSycocaFactory *stf = new KBuildServiceTypeFactory;
   (void) new KBuildServiceFactory(stf);
-  
+
   build(); // Parse dirs
   save(); // Save database
 
   m_str = 0L;
   if (!database.close())
   {
-     kdebug(KDEBUG_ERROR, 7021, "Error writing database to %s", database.name().ascii());
-     return;  
+     kDebugError(7021, "Error writing database to %s", database.name().ascii());
+     return;
   }
 }
 
@@ -176,8 +176,8 @@ void KBuildSycoca::save()
    }
    (*m_str) << (Q_INT32) 0; // No more factories.
 
-   kdebug(KDEBUG_INFO, 7021, QString("endOfData : %1").
-          arg(endOfData,8,16));
+   kDebugInfo(7021, debugString(QString("endOfData : %1").
+				arg(endOfData,8,16)));
 
    // Jump to end of database
    m_str->device()->at(endOfData);
@@ -228,7 +228,7 @@ int main(int argc, char **argv)
    KBuildSycoca *sycoca= new KBuildSycoca; // Build data base
    sycoca->recreate();
 
-   if (args->isSet("signal")) 
+   if (args->isSet("signal"))
    {
      // Notify ALL applications that have a ksycoca object, using a broadcast
      QByteArray data;

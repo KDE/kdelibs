@@ -46,7 +46,7 @@ KServiceType * KBuildServiceTypeFactory::findServiceTypeByName(const QString &_n
 }
 
 
-KSycocaEntry * 
+KSycocaEntry *
 KBuildServiceTypeFactory::createEntry(const QString &file, const char *resource)
 {
   QString name = file;
@@ -60,13 +60,13 @@ KBuildServiceTypeFactory::createEntry(const QString &file, const char *resource)
      return 0;
 
   // Just a backup file ?
-  if ( ( name.right(1) == "~") || 
-       ( name.right(4) == ".bak") || 
+  if ( ( name.right(1) == "~") ||
+       ( name.right(4) == ".bak") ||
        ( name[0] == '.') ||
        ( name[0] == '%' && name.right(1) == "%" ) )
       return 0;
 
-  if (name == "magic") 
+  if (name == "magic")
       return 0;
 
   KDesktopFile desktopFile(file, true, resource);
@@ -79,10 +79,10 @@ KBuildServiceTypeFactory::createEntry(const QString &file, const char *resource)
   {
     QString tmp = QString("The service/mime type config file\n%1\n"
 		  "does not contain a ServiceType=...\nor MimeType=... entry").arg( file );
-    kdebug( KDEBUG_WARN, 7012, tmp);
+    kDebugWarning(7012, tmp);
     return 0;
   }
-  
+
   KServiceType* e;
   if ( mime == "inode/directory" )
     e = new KFolderType( &desktopFile );
@@ -97,7 +97,7 @@ KBuildServiceTypeFactory::createEntry(const QString &file, const char *resource)
 
   if ( !(e->isValid()) )
   {
-    kdebug( KDEBUG_WARN, 7012, "Invalid ServiceType : %s", file.ascii() );
+    kDebugWarning(7012, "Invalid ServiceType : %s", file.ascii() );
     delete e;
     return 0;
   }
@@ -109,12 +109,12 @@ void
 KBuildServiceTypeFactory::saveHeader(QDataStream &str)
 {
    KSycocaFactory::saveHeader(str);
-kdebug(KDEBUG_INFO, 7012, QString("KBuildServiceTypeFactory m_fastPatternOffset = %1 m_otherPatternOffset = %2")
-	.arg( m_fastPatternOffset, 8, 16) 
+   kDebugInfo(7012, QString("KBuildServiceTypeFactory m_fastPatternOffset = %1 m_otherPatternOffset = %2")
+	.arg( m_fastPatternOffset, 8, 16)
 	.arg( m_otherPatternOffset, 8, 16));
 
    str << (Q_INT32) m_fastPatternOffset;
-   str << (Q_INT32) m_otherPatternOffset; 
+   str << (Q_INT32) m_otherPatternOffset;
 }
 
 void
@@ -143,7 +143,7 @@ KBuildServiceTypeFactory::savePatternLists(QDataStream &str)
 
    // For each mimetype in servicetypeFactory
    for(QDictIterator<KSycocaEntry> it ( *m_entryDict );
-       it.current(); 
+       it.current();
        ++it)
    {
       if ( it.current()->isType( KST_KMimeType ) )
@@ -154,8 +154,8 @@ KBuildServiceTypeFactory::savePatternLists(QDataStream &str)
         for ( ; patit != pat.end() ; ++patit )
         {
            const QString &pattern = *patit;
-           if ( pattern.findRev('*') == 0 
-                && pattern.findRev('.') == 1 
+           if ( pattern.findRev('*') == 0
+                && pattern.findRev('.') == 1
                 && pattern.length() <= 6 )
               // it starts with "*.", has no other '*' and no other '.', and is max 6 chars
               // => fast patttern
@@ -170,7 +170,7 @@ KBuildServiceTypeFactory::savePatternLists(QDataStream &str)
    }
    // Sort the list - the fast one, useless for the other one
    fastPatterns.sort();
-   
+
    Q_INT32 entrySize = 0;
    Q_INT32 nrOfEntries = 0;
 
@@ -216,6 +216,6 @@ KBuildServiceTypeFactory::savePatternLists(QDataStream &str)
      str << (*it);
      str << dict[(*it)]->offset();
    }
-   
+
    str << QString(""); // end of list marker (has to be a string !)
 }

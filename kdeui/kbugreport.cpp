@@ -275,7 +275,7 @@ bool KBugReport::sendBugReport()
   FILE * fd = popen(command.local8Bit(),"w");
   if (!fd)
   {
-    kdebug(KDEBUG_ERROR,0,"Unable to open a pipe to %s",command.local8Bit().data());
+    kDebugError("Unable to open a pipe to %s",command.local8Bit().data());
     return false;
   }
 

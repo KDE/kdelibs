@@ -103,23 +103,11 @@ inline void kDebugInfo( bool , unsigned short , const char* , ... ) {}
  */
 #ifdef NDEBUG
 #define kDebugArea(area, a) ;
-#define kDebugStringArea(area,a) ;
-#define kDebug(a) ;
-#define kDebugString(a) ;
 #else
 #define kDebugArea(area, a) kDebugInfo( area, "[%s:%d] %s", __FILE__, __LINE__, a )
-#define kDebugStringArea(area, a) kDebugArea( area, a.ascii() )
-#define kDebug(a) kDebugArea(0, a)
-#define kDebugString(a) kDebugStringArea( 0, a )
 #endif
 
-// ----- OLD AND DEPRECATED
-extern "C" {
-  void kdebug( unsigned short level, unsigned short area, const char* fmt, ... );
-}
-enum DebugLevels { KDEBUG_INFO= 0, KDEBUG_WARN= 1, KDEBUG_ERROR= 2, KDEBUG_FATAL= 3 };
 inline const char* debugString(const QString& a) { if (a.isNull()) return "<null>"; else return a.ascii(); }
-#define KASSERT( Cond, Level, Area, String ) { if( !(Cond) ) kdebug( (Level), (Area), (String) ); }
 // -----
 
 /*  Script to help porting from kdebug to kDebug* :

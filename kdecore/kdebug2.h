@@ -3,11 +3,12 @@
 #include <kdebug.h>
 #include <stdio.h>
 
+enum DebugLevels { KDEBUG_INFO= 0, KDEBUG_WARN= 1, KDEBUG_ERROR= 2, KDEBUG_FATAL= 3 };
+
 extern void kDebugBackend( unsigned short nLevel, unsigned short nArea,
 			   const char * pFormat, va_list arguments );
 
 class kdbgstream;
-
 typedef kdbgstream & (*KDBGFUNC)(kdbgstream &);// manipulator function
 
 class kdbgstream {

@@ -35,6 +35,7 @@
 
 // Other includes needed by kDebug* functions.
 
+#include "kdebug2.h"
 #include "kglobal.h"
 #include "kinstance.h"
 #include "kstddirs.h"
@@ -150,7 +151,7 @@ void kDebugBackend( unsigned short nLevel, unsigned short nArea,
       pConfig = new KConfig( "kdebugrc", false );
       pConfig->setGroup("0");
   }
- 
+
   static QString aAreaName;
   static int oldarea = 0;
   if (pConfig && oldarea != nArea) {
@@ -166,7 +167,7 @@ void kDebugBackend( unsigned short nLevel, unsigned short nArea,
   static ushort oldLevel = KDEBUG_FATAL + 1;
   static int nPriority = 0;
   static QString aCaption;
-  
+
   if (oldLevel != nLevel) {
     /* Determine output */
 
@@ -199,8 +200,8 @@ void kDebugBackend( unsigned short nLevel, unsigned short nArea,
 
     nOutput = pConfig ? pConfig->readNumEntry(key, 2) : 2;
   }
-  
-  
+
+
 
   // Output
   switch( nOutput )
@@ -411,14 +412,5 @@ void kDebugPError( unsigned short area, const char* fmt, ... )
     va_start( arguments, fmt );
     vsprintf( buf, fmt, arguments );
     kDebugError( area, "%s: %s", buf, strerror(errno) );
-}
-
-// For compatibility
-void kdebug( ushort nLevel, ushort area, const char* fmt, ... )
-{
-    va_list arguments;
-    va_start( arguments, fmt );
-    kDebugBackend( nLevel, area, fmt, arguments );
-    va_end( arguments );
 }
 
