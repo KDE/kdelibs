@@ -53,6 +53,15 @@ dcopserver_LDFLAGS = $(KDE_RPATH)
 dcopserver_SOURCES = dcopserver.cpp dcopsignals.cpp
 dcopserver_LDADD   = libDCOP.la
 
+# Following two dependencies are for the incorrent dependency tracking code
+# in automake, if sources are in normal program _and_ libtool programs.
+# If the .o file is generated first, the .deps/x.P file only contains the
+# dependency for the .o file, the .lo file is missing. So we sometimes
+# got a new dcopsignals.o but an old dcopsignals.lo, and this mismatch
+# caused many crashes
+dcopserver.lo: dcopserver.o
+dcopsignals.lo: dcopsignals.o
+
 testdcop_SOURCES = testdcop.cpp
 testdcop_LDADD = ../kdecore/libkdecore.la
 
