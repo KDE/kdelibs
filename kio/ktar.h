@@ -359,4 +359,54 @@ private:
   QDict<KTarEntry> m_entries;
 };
 
+
+/**
+ * @deprecated
+ * This class operates on a QDataStream, which is assumed to
+ * be a normal tar archive (not gzipped). 
+ *
+ * Obsolete. Do not use, backwards compatibility only. 
+ * To be removed in KDE 3.0
+ */
+class KTarData : public KTarBase
+{
+public:
+  /**
+   * Constructor, probably
+   */
+  KTarData( QDataStream * str );
+
+  virtual ~KTarData();
+
+  /**
+   * Opens the tar data for reading or writing.
+   * @param mode may be IO_ReadOnly or IO_WriteOnly
+   */
+  virtual bool open( int mode );
+
+  /**
+   * For symmetry
+   */
+  virtual void close() {}
+
+private:
+  /**
+   * Read @p len data into @p buffer
+   * @return length read
+   */
+  virtual int read( char * buffer, int len );
+
+  /**
+   * Write @p len data from @p buffer
+   */
+  virtual void write( const char * buffer, int len );
+
+  /**
+   * @return the current position
+   */
+  virtual int position();
+  QDataStream * m_str;
+};
+
+
 #endif

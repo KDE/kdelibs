@@ -173,7 +173,7 @@ bool KTarBase::open( int mode )
         // '0' for files, '1' hard link, '2' symlink, '5' for directory (and 'L' for longlink)
         if ( typeflag == '1' )
           isdir = true;
-        bool islink = ( typeflag == '1' || typeflag == '2' );
+        //bool islink = ( typeflag == '1' || typeflag == '2' );
         //kdDebug() << "typeflag=" << typeflag << " islink=" << islink << endl;
 
         if (isdir)
@@ -744,4 +744,38 @@ const KTarEntry* KTarDirectory::entry( QString name ) const
 void KTarDirectory::addEntry( KTarEntry* entry )
 {
   m_entries.insert( entry->name(), entry );
+}
+
+////////////////////////////////////////////////////////////////////////
+/////////////////////////// KTarData ///////////////////////////////////
+//////////////////// Obsolete, remove in KDE 3.0 ///////////////////////
+////////////////////////////////////////////////////////////////////////
+
+KTarData::KTarData( QDataStream * str )
+{
+  m_str = str;
+}
+
+KTarData::~KTarData()
+{
+}
+
+bool KTarData::open( int mode )
+{
+  return KTarBase::open( mode );
+}
+
+int KTarData::read( char * buffer, int len )
+{
+  return m_str->device()->readBlock( buffer, len );
+}
+
+void KTarData::write( const char * buffer, int len )
+{
+  m_str->device()->writeBlock( buffer, len );
+}
+
+int KTarData::position()
+{
+  return m_str->device()->at();
 }
