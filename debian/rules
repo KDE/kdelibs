@@ -91,7 +91,9 @@ binary-arch:  build
 	dh_installdocs
 # libraries not starting with lib are modules
 	list=`cd debian/tmp && find ./ -type l -name "lib*.so" | sed -e 's#^./##'` ;\
-	dh_movefiles -pkdelibs3-dev $$list usr/include usr/lib/lib*.a
+	dh_movefiles -pkdelibs3-dev $$list usr/include/kde usr/lib/lib*.a
+	install -d debian/tmp/usr/share/icons/locolor/16x16/apps/
+	cp debian/package.png debian/tmp/usr/share/icons/locolor/16x16/apps/ 
 	dh_installchangelogs
 	dh_undocumented
 	dh_strip
