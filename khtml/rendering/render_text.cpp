@@ -527,7 +527,7 @@ RenderText::RenderText(DOM::NodeImpl* node, DOMStringImpl *_str)
 void RenderText::setStyle(RenderStyle *_style)
 {
     if ( style() != _style ) {
-        bool changedText = ((!style() && ( _style->textTransform() != TTNONE || 
+        bool changedText = ((!style() && ( _style->textTransform() != TTNONE ||
                                            !_style->preserveLF() || !_style->preserveWS() )) ||
                             (style() && (style()->textTransform() != _style->textTransform() ||
                                          style()->whiteSpace() != _style->whiteSpace())));
@@ -1177,48 +1177,48 @@ const QFont &RenderText::font()
 // A helper function for setText to treat white-space
 static DOMStringImpl* cleanString (DOMStringImpl *str, bool preserveLF, bool preserveWS) {
     if (!str) return 0;
-    
+
     if (preserveLF && preserveWS) return str;
 
     const int len = str->l;
     QString n;
     bool collapsing = false;   // collapsing white-space
     bool collapsingLF = false; // collapsing around linefeed
-    for(unsigned int i=0; i<len; i++) {
+    for(int i=0; i<len; i++) {
         QChar ch = str->s[i];
-        if (!preserveLF && ch == '\n')
-            // ### Not strictly correct according to CSS3 text-module. 
+        if (!preserveLF && (ch == '\n' || ch == '\r')
+            // ### Not strictly correct according to CSS3 text-module.
             // - In ideographic languages linefeed should be ignored
             // - and in Thai and Khmer it should be treated as a zero-width space
             ch = ' '; // Treat as space
         if (collapsing) {
             if (ch == ' ')
                 continue;
-            if (ch == '\n') {
+            if (ch == '\n' || ch == '\r') {
                 collapsingLF = true;
                 continue;
             }
-            
+
             n.append((collapsingLF) ? '\n' : ' ');
             collapsing = false;
             collapsingLF = false;
         }
-        
+
         if (!preserveWS && ch == ' ') {
             collapsing = true;
         }
-        else 
-        if (!preserveWS && ch == '\n') {
+        else
+        if (!preserveWS && (ch == '\n' || ch == '\r')) {
             collapsing = true;
             collapsingLF = true;
-        }    
+        }
         else
             n.append(ch);
     }
     if (collapsing)
         n.append((collapsingLF) ? '\n' : ' ');
 //    if (!n.length()) return 0;
-    
+
     DOMStringImpl *out = new DOMStringImpl(n.unicode(), n.length());
     return out;
 }
@@ -1226,7 +1226,7 @@ static DOMStringImpl* cleanString (DOMStringImpl *str, bool preserveLF, bool pre
 void RenderText::setText(DOMStringImpl *text, bool force)
 {
     if( !force && str == text ) return;
-    
+
     DOMStringImpl *oldstr = str;
     if(style())
         str = cleanString(text, style()->preserveLF(), style()->preserveWS());

@@ -503,7 +503,9 @@ ABBR, ACRONYM {
 a:link:active          { color: red; outline: 1px dotted invert; }
 a:visited:active          { color: red; outline: 1px dotted invert; }
 
-/* ### :before is not supported at the moment
+:before,:after  { white-space: pre-line }
+
+/* ### replace renderBR
       BR:before       { content: "\n" }
 */
 
