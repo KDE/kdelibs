@@ -91,7 +91,9 @@ void RenderTable::setStyle(RenderStyle *_style)
     if ( !tableLayout || style()->tableLayout() != oldTableLayout ) {
 	delete tableLayout;
 
-	if (style()->tableLayout() == TFIXED ) {
+        // According to the CSS2 spec, you only use fixed table layout if an
+        // explicit width is specified on the table.  Auto width implies auto table layout.
+	if (style()->tableLayout() == TFIXED && !style()->width().isVariable()) {
 	    tableLayout = new FixedTableLayout(this);
 #ifdef DEBUG_LAYOUT
 	    kdDebug( 6040 ) << "using fixed table layout" << endl;
@@ -147,9 +149,8 @@ void RenderTable::addChild(RenderObject *child, RenderObject *beforeChild)
         break;
     case TABLE_COLUMN:
     case TABLE_COLUMN_GROUP:
-	RenderContainer::addChild(child,beforeChild);
 	has_col_elems = true;
-        return;
+        break;
     case TABLE_HEADER_GROUP:
 	if ( !head )
 	    head = static_cast<RenderTableSection *>(child);
@@ -1288,6 +1289,11 @@ void RenderTableRow::addChild(RenderObject *child, RenderObject *beforeChild)
     kdDebug( 6040 ) << renderName() << "(TableRow)::addChild( " << child->renderName() << " )"  << ", " <<
                        (beforeChild ? beforeChild->renderName() : "0") << " )" << endl;
 #endif
+    if (child->element() && child->element()->id() == ID_FORM) {
+        RenderContainer::addChild(child,beforeChild);
+        return;
+    }
+
     RenderTableCell *cell;
 
     if ( !child->isTableCell() ) {
@@ -1408,7 +1414,7 @@ void RenderTableCell::calcMinMaxWidth()
             // of hiptop.com.
             m_minWidth = style()->width().value();
     }
-    
+
     setMinMaxKnown();
 }
 
@@ -1506,7 +1512,7 @@ void RenderTableCell::paint(QPainter *p, int _x, int _y, int _w, int _h,
 
     // check if we need to do anything at all...
     if(!overhangingContents() && ((_ty-_topExtra > _y + _h)
-        || (_ty + m_height+_topExtra+_bottomExtra < _y))) return;
+        || (_ty + m_height + _bottomExtra < _y))) return;
 
     paintObject(p, _x, _y, _w, _h, _tx, _ty, paintPhase);
 
@@ -1616,9 +1622,10 @@ void RenderTableCol::addChild(RenderObject *child, RenderObject *beforeChild)
     //                   (beforeChild ? beforeChild->renderName() : 0) << " )" << endl;
 #endif
 
-    if (child->style()->display() == TABLE_COLUMN)
-        // these have to come before the table definition!
-        RenderContainer::addChild(child,beforeChild);
+    KHTMLAssert(child->style()->display() == TABLE_COLUMN);
+
+    // these have to come before the table definition!
+    RenderContainer::addChild(child,beforeChild);
 }
 
 #ifndef NDEBUG
