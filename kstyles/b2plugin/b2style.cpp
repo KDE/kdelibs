@@ -430,7 +430,7 @@ void B2Style::drawScrollBarControls(QPainter *p, const QScrollBar *sb,
             p->fillRect(addPageR, activeControl == AddPage ?
                         g.brush(QColorGroup::Midlight) :
                         g.brush(QColorGroup::Mid));
-            p->setPen(g.mid());
+            p->setPen(g.dark());
             if(horiz){
                 p->drawLine(addPageR.x(), addPageR.y(), addPageR.right(),
                             addPageR.y());
@@ -456,7 +456,7 @@ void B2Style::drawScrollBarControls(QPainter *p, const QScrollBar *sb,
             p->fillRect(subPageR, activeControl == SubPage ?
                         g.brush(QColorGroup::Midlight) :
                         g.brush(QColorGroup::Mid));
-            p->setPen(g.mid());
+            p->setPen(g.dark());
             if(horiz){
                 p->drawLine(subPageR.x(), subPageR.y(), subPageR.right(),
                             subPageR.y());
@@ -491,21 +491,17 @@ void B2Style::drawScrollBarControls(QPainter *p, const QScrollBar *sb,
 void B2Style::drawSBButton(QPainter *p, const QRect &r, const QColorGroup &g,
                            bool down)
 {
-    p->setPen(g.mid());
+    p->setPen(g.dark());
     p->drawRect(r);
     p->fillRect(r.x()+1, r.y()+1, r.width()-2, r.height()-2,
-                g.brush(QColorGroup::Midlight));
+                g.brush(down ? QColorGroup::Midlight : QColorGroup::Button));
 
-    p->setPen(g.light());
-    if(down){
-        p->drawLine(r.x()+1, r.bottom()-1, r.right()-1, r.bottom()-1);
-        p->drawLine(r.right()-1, r.top()+1, r.right()-1, r.bottom()-1);
-    }
-    else{
-        p->drawLine(r.x()+1, r.y()+1, r.right()-1, r.y()+1);
-        p->drawLine(r.x()+1, r.y()+1, r.x()+1, r.bottom()-1);
-    }
-    
+    p->setPen(down ? g.light() : g.mid());
+    p->drawLine(r.x()+1, r.bottom()-1, r.right()-1, r.bottom()-1);
+    p->drawLine(r.right()-1, r.top()+1, r.right()-1, r.bottom()-1);
+    p->setPen(down ? g.mid() : g.light());
+    p->drawLine(r.x()+1, r.y()+1, r.right()-1, r.y()+1);
+    p->drawLine(r.x()+1, r.y()+1, r.x()+1, r.bottom()-1);
 }
 
 void B2Style::drawSBDeco(QPainter *p, const QRect &r, const QColorGroup &g,
