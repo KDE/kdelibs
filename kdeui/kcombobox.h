@@ -127,6 +127,7 @@ class KComboBox : public QComboBox, public KCompletionBase
   Q_OBJECT
   Q_PROPERTY( bool autoCompletion READ autoCompletion WRITE setAutoCompletion )
   Q_PROPERTY( bool contextMenuEnabled READ isContextMenuEnabled WRITE setContextMenuEnabled )
+  Q_PROPERTY( bool urlDropsEnabled READ isURLDropsEnabled WRITE setURLDropsEnabled )
 
 public:
 	
@@ -248,6 +249,22 @@ public:
     * @return @p true if context menu is enabled.
     */
     bool isContextMenuEnabled() const { return m_bEnableMenu; }
+
+    /**
+     * Enables/Disables handling of URL drops. If enabled and the user
+     * drops an URL, the decoded URL will be inserted. Otherwise the default
+     * behaviour of QComboBox is used, which inserts the encoded URL.
+     *
+     * @param enable If @p true, insert decoded URLs
+     */
+    void setURLDropsEnabled( bool enable );
+
+    /**
+     * Returns @p true when decoded URL drops are enabled
+     * 
+     * @return @p true if decoded URL drops are enabled
+     */
+    bool isURLDropsEnabled() const;
 
     /**
     * Returns @p true if the combo-box is editable.

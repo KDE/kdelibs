@@ -134,6 +134,7 @@ class KLineEdit : public QLineEdit, public KCompletionBase
 {
 	Q_OBJECT
 	Q_PROPERTY( bool contextMenuEnabled READ isContextMenuEnabled WRITE setContextMenuEnabled )
+	Q_PROPERTY( bool urlDropsEnabled READ isURLDropsEnabled WRITE setURLDropsEnabled )
 
 public:
 
@@ -211,6 +212,22 @@ public:
     */
     bool isContextMenuEnabled() const { return m_bEnableMenu; }
 
+    /**
+     * Enables/Disables handling of URL drops. If enabled and the user
+     * drops an URL, the decoded URL will be inserted. Otherwise the default
+     * behaviour of QLineEdit is used, which inserts the encoded URL.
+     *
+     * @param enable If @p true, insert decoded URLs
+     */
+    void setURLDropsEnabled( bool enable );
+
+    /**
+     * Returns @p true when decoded URL drops are enabled
+     * 
+     * @return @p true if decoded URL drops are enabled
+     */
+    bool isURLDropsEnabled() const;
+    
     /**
      * By default, @ref KComboBox recognizes @p Key_Return and @p Key_Enter and emits
      * the @ref returnPressed() signals, but it also lets the event pass,
@@ -348,6 +365,14 @@ protected:
     * See @ref QLineEdit::mousePressEvent().
     */
     virtual void mousePressEvent( QMouseEvent * );
+
+    /**
+    * Re-implemented to handle URI drops.
+    *
+    * See @ref QLineEdit::dropEvent().
+    */
+    virtual void dropEvent( QDropEvent * );
+
 
     /*
     * This function simply sets the lineedit text and

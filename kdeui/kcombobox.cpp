@@ -32,6 +32,7 @@
 #include <kdebug.h>
 #include <kcompletionbox.h>
 #include <kurl.h>
+#include <kurldrag.h>
 #include <knotifyclient.h>
 #include <kiconloader.h>
 
@@ -44,6 +45,7 @@ class KComboBox::KComboBoxPrivate
 public:
     KCompletionBox *completionBox;
     QString origText;
+    bool handleURLDrops;
 };
 
 KComboBox::KComboBox( QWidget *parent, const char *name )
@@ -79,6 +81,7 @@ void KComboBox::init()
 {
     d = new KComboBoxPrivate;
     d->completionBox = 0L;
+    d->handleURLDrops=true;
 
     // Permanently set some parameters in the parent object.
     QComboBox::setAutoCompletion( false );
@@ -127,6 +130,18 @@ void KComboBox::setContextMenuEnabled( bool showMenu )
     if( m_pEdit )
         m_bEnableMenu = showMenu;
 }
+
+
+void KComboBox::setURLDropsEnabled(bool enable)
+{
+    d->handleURLDrops=enable;
+}
+
+bool KComboBox::isURLDropsEnabled() const
+{
+    return d->handleURLDrops;
+}
+
 
 void KComboBox::setCompletedText( const QString& text, bool marked )
 {
@@ -328,6 +343,7 @@ void KComboBox::keyPressEvent ( QKeyEvent * e )
     QComboBox::keyPressEvent( e );
 }
 
+
 bool KComboBox::eventFilter( QObject* o, QEvent* ev )
 {
     if ( o == m_pEdit )
@@ -435,6 +451,31 @@ bool KComboBox::eventFilter( QObject* o, QEvent* ev )
                         d->completionBox->hide();
                     emit completionModeChanged( completionMode() );
                 }
+                return true;
+            }
+        }
+        else if(type == QEvent::Drop)
+        { 
+            QDropEvent *e = static_cast<QDropEvent *>( ev );
+            KURL::List urlList;
+            if(d->handleURLDrops && KURLDrag::decode( e, urlList ))
+            {
+                QString dropText;
+                KURL::List::ConstIterator it;
+                for( it = urlList.begin() ; it != urlList.end() ; ++it)
+                {
+                    if(!dropText.isEmpty())
+                        dropText+=' ';
+            
+                    dropText += (*it).prettyURL();
+                }
+
+                if(!m_pEdit->text().isEmpty())
+                    dropText=' '+dropText;
+
+                m_pEdit->end(false);
+                m_pEdit->insert(dropText);
+
                 return true;
             }
         }

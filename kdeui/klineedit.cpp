@@ -33,6 +33,7 @@
 #include <kdebug.h>
 #include <kcompletionbox.h>
 #include <kurl.h>
+#include <kurldrag.h>
 #include <kiconloader.h>
 
 #include "klineedit.h"
@@ -43,6 +44,7 @@ class KLineEdit::KLineEditPrivate
 {
 public:
     bool grabReturnKeyEvents;
+    bool handleURLDrops;
     KCompletionBox *completionBox;
     QString origText ;
 };
@@ -70,6 +72,7 @@ void KLineEdit::init()
 {
     d = new KLineEditPrivate;
     d->grabReturnKeyEvents = false;
+    d->handleURLDrops = true;
     d->completionBox = 0L;
 
     // Enable the context menu by default.
@@ -356,6 +359,37 @@ void KLineEdit::mousePressEvent( QMouseEvent* e )
     QLineEdit::mousePressEvent( e );
 }
 
+
+void KLineEdit::dropEvent(QDropEvent *e)
+{
+    KURL::List urlList;
+    if(d->handleURLDrops && KURLDrag::decode( e, urlList ))
+    {
+        QString dropText;
+        KURL::List::ConstIterator it;
+        for( it = urlList.begin() ; it != urlList.end() ; ++it)
+        {
+            if(!dropText.isEmpty())
+                dropText+=' ';
+            
+            dropText += (*it).prettyURL();
+        }
+
+        if(!text().isEmpty())
+            dropText=' '+dropText;
+
+        end(false);
+        insert(dropText);
+
+        e->accept();
+    }
+    else
+    {
+        QLineEdit::dropEvent(e);
+    }
+}
+
+
 bool KLineEdit::eventFilter( QObject* o, QEvent* ev )
 {
     if ( o == this )
@@ -379,6 +413,16 @@ bool KLineEdit::eventFilter( QObject* o, QEvent* ev )
     return QLineEdit::eventFilter( o, ev );
 }
 
+
+void KLineEdit::setURLDropsEnabled(bool enable)
+{
+    d->handleURLDrops=enable;
+}
+
+bool KLineEdit::isURLDropsEnabled() const
+{
+    return d->handleURLDrops;
+}
 
 void KLineEdit::setTrapReturnKey( bool grab )
 {
