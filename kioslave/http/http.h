@@ -189,9 +189,6 @@ protected:
   int readLimited();    // Read maximum m_iSize bytes.
   int readUnlimited();  // Read as much as possible.
 
-  void decodeGzip();    //decodes data compressed with gzip algorithm
-  void decodeDeflate(); //decodes data compressed with deflate algorithm
-
   /**
     * A "smart" wrapper around write that will use SSL_write or
     * write(2) depending on whether you've got an SSL connection or not.
