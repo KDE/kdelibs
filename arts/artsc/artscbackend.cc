@@ -320,7 +320,7 @@ public:
 			{
 				/* send the last half-filled packet */
 				DataPacket<mcopbyte> *packet = outqueue.front();
-				packet->size = packetCapacity;
+				packet->size = pos;
 				packet->send();
 				outqueue.pop();
 			}
