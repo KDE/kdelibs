@@ -35,6 +35,7 @@
 #include "kjs_views.h"
 #include "kjs_window.h"
 #include "dom/dom_exception.h"
+#include "kjs_dom.lut.h"
 
 using namespace KJS;
 
@@ -48,7 +49,7 @@ QPtrDict<DOMDOMImplementation> domImplementations;
 
 // -------------------------------------------------------------------------
 
-const ClassInfo DOMNode::info = { "Node", 0, 0, 0 };
+const ClassInfo DOMNode::info = { "Node", 0, &DOMNodeTable, 0 };
 
 DOMNode::~DOMNode()
 {
@@ -60,144 +61,166 @@ Boolean DOMNode::toBoolean(ExecState *) const
     return Boolean(!node.isNull());
 }
 
-bool DOMNode::hasProperty(ExecState *exec, const UString &p, bool recursive) const
+/*
+@begin DOMNodeTable 60
+  nodeName	DOMNode::NodeName	DontDelete|ReadOnly
+  nodeValue	DOMNode::NodeValue	DontDelete
+  nodeType	DOMNode::NodeType	DontDelete|ReadOnly
+  parentNode	DOMNode::ParentNode	DontDelete|ReadOnly
+  parentElement	DOMNode::ParentElement	DontDelete|ReadOnly
+  childNodes	DOMNode::ChildNodes	DontDelete|ReadOnly
+  firstChild	DOMNode::FirstChild	DontDelete|ReadOnly
+  lastChild	DOMNode::LastChild	DontDelete|ReadOnly
+  previousSibling  DOMNode::PreviousSibling DontDelete|ReadOnly
+  nextSibling	DOMNode::NextSibling	DontDelete|ReadOnly
+  attributes	DOMNode::Attributes	DontDelete|ReadOnly
+#// new for DOM2 - not yet in khtml
+#namespaceURI	DOMNode::NamespaceURI	DontDelete|ReadOnly
+#prefix		DOMNode::Prefix		DontDelete
+#localName	DOMNode::LocalName	DontDelete|ReadOnly
+  ownerDocument	DOMNode::OwnerDocument	DontDelete|ReadOnly
+#
+  insertBefore	DOMNode::InsertBefore	DontDelete|ReadOnly|Function
+  replaceChild	DOMNode::ReplaceChild	DontDelete|ReadOnly|Function
+  removeChild	DOMNode::RemoveChild	DontDelete|ReadOnly|Function
+  appendChild	DOMNode::AppendChild	DontDelete|ReadOnly|Function
+  hasAttributes	DOMNode::HasAttributes	DontDelete|ReadOnly|Function
+  hasChildNodes	DOMNode::HasChildNodes	DontDelete|ReadOnly|Function
+  cloneNode	DOMNode::CloneNode	DontDelete|ReadOnly|Function
+#normalize // moved here from Element in DOM2 DOMNode::Normalize
+#supports // new for DOM2 - not yet in khtml  DOMNode::Supports
+# from the EventTarget interface
+  addEventListener	DOMNode::AddEventListener	DontDelete|ReadOnly|Function
+  removeEventListener	DOMNode::RemoveEventListener	DontDelete|ReadOnly|Function
+  dispatchEvent		DOMNode::DispatchEvent	DontDelete|ReadOnly|Function
+  contains	DOMNode::Contains		DontDelete|ReadOnly|Function
+#
+  onabort	DOMNode::OnAbort		DontDelete
+  onblur	DOMNode::OnBlur			DontDelete
+  onchange	DOMNode::OnChange		DontDelete
+  onclick	DOMNode::OnClick		DontDelete
+  ondblclick	DOMNode::OnDblClick		DontDelete
+  ondragdrop	DOMNode::OnDragDrop		DontDelete
+  onerror	DOMNode::OnError		DontDelete
+  onfocus	DOMNode::OnFocus       		DontDelete
+  onkeydown	DOMNode::OnKeyDown		DontDelete
+  onkeypress	DOMNode::OnKeyPress		DontDelete
+  onkeyup	DOMNode::OnKeyUp		DontDelete
+  onload	DOMNode::OnLoad			DontDelete
+  onmousedwn	DOMNode::OnMouseDown		DontDelete
+  onmousemove	DOMNode::OnMouseMove		DontDelete
+  onmouseout	DOMNode::OnMouseOut		DontDelete
+  onmouseover	DOMNode::OnMouseOver		DontDelete
+  onmouseup	DOMNode::OnMouseUp		DontDelete
+  onmove	DOMNode::OnMove			DontDelete
+  onreset	DOMNode::OnReset		DontDelete
+  onresize	DOMNode::OnResize		DontDelete
+  onselect	DOMNode::OnSelect		DontDelete
+  onsubmit	DOMNode::OnSubmit		DontDelete
+  onunload	DOMNode::OnUnload		DontDelete
+#
+  offsetLeft	DOMNode::OffsetLeft		DontDelete|ReadOnly
+  offsetTop	DOMNode::OffsetTop		DontDelete|ReadOnly
+  offsetWidth	DOMNode::OffsetWidth		DontDelete|ReadOnly
+  offsetHeight	DOMNode::OffsetHeight		DontDelete|ReadOnly
+  offsetParent	DOMNode::OffsetParent		DontDelete|ReadOnly
+  clientWidth	DOMNode::ClientWidth		DontDelete|ReadOnly
+  clientHeight	DOMNode::ClientHeight		DontDelete|ReadOnly
+  scrollLeft	DOMNode::ScrollLeft		DontDelete|ReadOnly
+  scrollTop	DOMNode::ScrollTop		DontDelete|ReadOnly
+@end
+*/
+Value DOMNode::tryGet(ExecState *exec, const UString &propertyName) const
 {
 #ifdef KJS_VERBOSE
-  kdDebug(6070) << "DOMNode::hasProperty " << p.qstring().latin1() << endl;
+  kdDebug(6070) << "DOMNode::tryGet " << propertyName.qstring() << endl;
 #endif
-  if (p == "nodeName" || p == "nodeValue" || p == "nodeType" ||
-      p == "parentNode" || p == "childNodes" || p == "firstChild" ||
-      p == "lastChild" || p == "previousSibling" || p == "nextSibling" ||
-      p == "attributes" ||
-      /* new for DOM2 - not yet in khtml
-      p == "namespaceURI" || p == "prefix" || p == "localName" || */
-      p == "ownerDocument" || p == "insertBefore" || p == "replaceChild" ||
-      p == "removeChild" || p == "appendChild" || p == "hasChildNodes" ||
-      p == "cloneNode" || p == "hasAttributes" ||
-      /* moved here from Element in DOM2
-      p == "normalize"  || p == "supports" */
-      // no DOM standard, found in IE only
-      p == "offsetLeft" || p == "offsetTop" || p == "offsetWidth" || p == "offsetHeight" ||
-      p == "offsetParent" || p == "parentElement" ||
-      p == "scrollLeft" || p == "scrollTop" || p == "addEventListener" ||
-      p == "removeEventListener" || p == "dispatchEvent")
-    return true;
-
-  return recursive && ObjectImp::hasProperty(exec, p, true);
+  return DOMObjectLookupOrCreate<DOMNodeFunc, DOMNode, DOMObject>( exec, propertyName, &DOMNodeTable, this, node );
 }
 
-Value DOMNode::tryGet(ExecState *exec, const UString &p) const
+Value DOMNode::getValue(ExecState *, int token) const
 {
-#ifdef KJS_VERBOSE
-  kdDebug(6070) << "DOMNode::tryGet " << p.qstring().latin1() << endl;
-#endif
-  Value result;
   khtml::RenderObject *rend = node.handle() ? node.handle()->renderer() : 0L;
 
-  if (p == "nodeName")
-    result = getString(node.nodeName());
-  else if (p == "nodeValue")
-    result = getString(node.nodeValue());
-  else if (p == "nodeType")
-    result = Number((unsigned int)node.nodeType());
-  else if (p == "parentNode")
-    result = getDOMNode(node.parentNode());
-  else if (p == "parentElement") // IE only apparently
-    result = getDOMNode(node.parentNode());
-  else if (p == "childNodes")
-    result = getDOMNodeList(node.childNodes());
-  else if (p == "firstChild")
-    result = getDOMNode(node.firstChild());
-  else if (p == "lastChild")
-    result = getDOMNode(node.lastChild());
-  else if (p == "previousSibling")
-    result = getDOMNode(node.previousSibling());
-  else if (p == "nextSibling")
-    result = getDOMNode(node.nextSibling());
-  else if (p == "attributes")
-    result = getDOMNamedNodeMap(node.attributes());
-//  else if (p == "namespaceURI") // new for DOM2 - not yet in khtml
-//    result = getString(node.namespaceURI());
-//  else if (p == "prefix") // new for DOM2 - not yet in khtml
-//    result = getString(node.prefix());
-//  else if (p == "localName") // new for DOM2 - not yet in khtml
-//    result = getString(node.localName());
-  else if (p == "ownerDocument")
-    result = getDOMNode(node.ownerDocument());
-  // methods
-  else if (p == "insertBefore")
-    result = new DOMNodeFunc(node, DOMNodeFunc::InsertBefore);
-  else if (p == "replaceChild")
-    result = new DOMNodeFunc(node, DOMNodeFunc::ReplaceChild);
-  else if (p == "removeChild")
-    result = new DOMNodeFunc(node, DOMNodeFunc::RemoveChild);
-  else if (p == "appendChild")
-    result = new DOMNodeFunc(node, DOMNodeFunc::AppendChild);
-  else if (p == "hasAttributes") // DOM2
-    result = new DOMNodeFunc(node, DOMNodeFunc::HasAttributes);
-  else if (p == "hasChildNodes")
-    result = new DOMNodeFunc(node, DOMNodeFunc::HasChildNodes);
-  else if (p == "cloneNode")
-    result = new DOMNodeFunc(node, DOMNodeFunc::CloneNode);
-//  else if (p == "normalize") // moved here from Element in DOM2
-//    result = new DOMNodeFunc(node, DOMNodeFunc::Normalize);
-//  else if (p == "supports") // new for DOM2 - not yet in khtml
-//    result = new DOMNodeFunc(node, DOMNodeFunc::Supports);
-  else if (p == "addEventListener") // from the EventTarget interface
-    result = new DOMNodeFunc(node, DOMNodeFunc::AddEventListener);
-  else if (p == "removeEventListener") // from the EventTarget interface
-    result = new DOMNodeFunc(node, DOMNodeFunc::RemoveEventListener);
-  else if (p == "dispatchEvent") // from the EventTarget interface
-    result = new DOMNodeFunc(node, DOMNodeFunc::DispatchEvent);
-  else if (p == "contains")
-    result = new DOMNodeFunc(node, DOMNodeFunc::Contains);
-  else if (p == "onabort")
-    result = getListener(DOM::EventImpl::ABORT_EVENT);
-  else if (p == "onblur")
-    result = getListener(DOM::EventImpl::BLUR_EVENT);
-  else if (p == "onchange")
-    result = getListener(DOM::EventImpl::CHANGE_EVENT);
-  else if (p == "onclick")
-    result = getListener(DOM::EventImpl::KHTML_CLICK_EVENT);
-  else if (p == "ondblclick")
-    result = getListener(DOM::EventImpl::KHTML_DBLCLICK_EVENT);
-  else if (p == "ondragdrop")
-    result = getListener(DOM::EventImpl::KHTML_DRAGDROP_EVENT);
-  else if (p == "onerror")
-    result = getListener(DOM::EventImpl::KHTML_ERROR_EVENT);
-  else if (p == "onfocus")
-    result = getListener(DOM::EventImpl::FOCUS_EVENT);
-  else if (p == "onkeydown")
-    result = getListener(DOM::EventImpl::KHTML_KEYDOWN_EVENT);
-  else if (p == "onkeypress")
-    result = getListener(DOM::EventImpl::KHTML_KEYPRESS_EVENT);
-  else if (p == "onkeyup")
-    result = getListener(DOM::EventImpl::KHTML_KEYUP_EVENT);
-  else if (p == "onload")
-    result = getListener(DOM::EventImpl::LOAD_EVENT);
-  else if (p == "onmousedown")
-    result = getListener(DOM::EventImpl::MOUSEDOWN_EVENT);
-  else if (p == "onmousemove")
-    result = getListener(DOM::EventImpl::MOUSEMOVE_EVENT);
-  else if (p == "onmouseout")
-    result = getListener(DOM::EventImpl::MOUSEOUT_EVENT);
-  else if (p == "onmouseover")
-    result = getListener(DOM::EventImpl::MOUSEOVER_EVENT);
-  else if (p == "onmouseup")
-    result = getListener(DOM::EventImpl::MOUSEUP_EVENT);
-  else if (p == "onmove")
-    result = getListener(DOM::EventImpl::KHTML_MOVE_EVENT);
-  else if (p == "onreset")
-    result = getListener(DOM::EventImpl::RESET_EVENT);
-  else if (p == "onresize")
-    result = getListener(DOM::EventImpl::RESIZE_EVENT);
-  else if (p == "onselect")
-    result = getListener(DOM::EventImpl::SELECT_EVENT);
-  else if (p == "onsubmit")
-    result = getListener(DOM::EventImpl::SUBMIT_EVENT);
-  else if (p == "onunload")
-    result = getListener(DOM::EventImpl::UNLOAD_EVENT);
-  else {
+  switch (token) {
+  case NodeName:
+    return getString(node.nodeName());
+  case NodeValue:
+    return getString(node.nodeValue());
+  case NodeType:
+    return Number((unsigned int)node.nodeType());
+  case ParentNode:
+    return getDOMNode(node.parentNode());
+  case ParentElement: // IE only apparently
+    return getDOMNode(node.parentNode());
+  case ChildNodes:
+    return getDOMNodeList(node.childNodes());
+  case FirstChild:
+    return getDOMNode(node.firstChild());
+  case LastChild:
+    return getDOMNode(node.lastChild());
+  case PreviousSibling:
+    return getDOMNode(node.previousSibling());
+  case NextSibling:
+    return getDOMNode(node.nextSibling());
+  case Attributes:
+    return getDOMNamedNodeMap(node.attributes());
+// new for DOM2 - not yet in khtml
+//  case NamespaceURI:
+//    return getString(node.namespaceURI());
+//  case Prefix:
+//    return getString(node.prefix());
+//  case LocalName:
+//    return getString(node.localName());
+  case OwnerDocument:
+    return getDOMNode(node.ownerDocument());
+  case OnAbort:
+    return getListener(DOM::EventImpl::ABORT_EVENT);
+  case OnBlur:
+    return getListener(DOM::EventImpl::BLUR_EVENT);
+  case OnChange:
+    return getListener(DOM::EventImpl::CHANGE_EVENT);
+  case OnClick:
+    return getListener(DOM::EventImpl::KHTML_CLICK_EVENT);
+  case OnDblClick:
+    return getListener(DOM::EventImpl::KHTML_DBLCLICK_EVENT);
+  case OnDragDrop:
+    return getListener(DOM::EventImpl::KHTML_DRAGDROP_EVENT);
+  case OnError:
+    return getListener(DOM::EventImpl::KHTML_ERROR_EVENT);
+  case OnFocus:
+    return getListener(DOM::EventImpl::FOCUS_EVENT);
+  case OnKeyDown:
+    return getListener(DOM::EventImpl::KHTML_KEYDOWN_EVENT);
+  case OnKeyPress:
+    return getListener(DOM::EventImpl::KHTML_KEYPRESS_EVENT);
+  case OnKeyUp:
+    return getListener(DOM::EventImpl::KHTML_KEYUP_EVENT);
+  case OnLoad:
+    return getListener(DOM::EventImpl::LOAD_EVENT);
+  case OnMouseDown:
+    return getListener(DOM::EventImpl::MOUSEDOWN_EVENT);
+  case OnMouseMove:
+    return getListener(DOM::EventImpl::MOUSEMOVE_EVENT);
+  case OnMouseOut:
+    return getListener(DOM::EventImpl::MOUSEOUT_EVENT);
+  case OnMouseOver:
+    return getListener(DOM::EventImpl::MOUSEOVER_EVENT);
+  case OnMouseUp:
+    return getListener(DOM::EventImpl::MOUSEUP_EVENT);
+  case OnMove:
+    return getListener(DOM::EventImpl::KHTML_MOVE_EVENT);
+  case OnReset:
+    return getListener(DOM::EventImpl::RESET_EVENT);
+  case OnResize:
+    return getListener(DOM::EventImpl::RESIZE_EVENT);
+  case OnSelect:
+    return getListener(DOM::EventImpl::SELECT_EVENT);
+  case OnSubmit:
+    return getListener(DOM::EventImpl::SUBMIT_EVENT);
+  case OnUnload:
+    return getListener(DOM::EventImpl::UNLOAD_EVENT);
+  default:
     // no DOM standard, found in IE only
 
     // make sure our rendering is up to date before
@@ -206,90 +229,125 @@ Value DOMNode::tryGet(ExecState *exec, const UString &p) const
     if ( node.handle() && node.handle()->ownerDocument() )
       node.handle()->ownerDocument()->updateRendering();
 
-    if (p == "offsetLeft")
-      result = rend ? static_cast<Value>(Number(rend->xPos())) : Value(Undefined());
-    else if (p == "offsetTop")
-      result = rend ? static_cast<Value>(Number(rend->yPos())) : Value(Undefined());
-    else if (p == "offsetWidth")
-      result = rend ? static_cast<Value>(Number(rend->width()) ) : Value(Undefined());
-    else if (p == "offsetHeight")
-      result = rend ? static_cast<Value>(Number(rend->height() ) ) : Value(Undefined());
-    else if (p == "offsetParent")
-      result = getDOMNode(node.parentNode()); // not necessarily correct
-    else if (p == "clientWidth")
-      result = rend ? static_cast<Value>(Number(rend->contentWidth())) : Value(Undefined());
-    else if (p == "clientHeight")
-      result = rend ? static_cast<Value>(Number(rend->contentHeight())) : Value(Undefined());
-    else if (p == "scrollLeft")
-      result = rend ? static_cast<Value>(Number(-rend->xPos() + node.ownerDocument().view()->contentsX())) : Value(Undefined());
-    else if (p == "scrollTop")
-      result = rend ? static_cast<Value>(Number(-rend->yPos() + node.ownerDocument().view()->contentsY())) : Value(Undefined());
-    else
-      result = ObjectImp::get(exec, p);
+    switch (token) {
+    case OffsetLeft:
+      return rend ? static_cast<Value>(Number(rend->xPos())) : Value(Undefined());
+    case OffsetTop:
+      return rend ? static_cast<Value>(Number(rend->yPos())) : Value(Undefined());
+    case OffsetWidth:
+      return rend ? static_cast<Value>(Number(rend->width()) ) : Value(Undefined());
+    case OffsetHeight:
+      return rend ? static_cast<Value>(Number(rend->height() ) ) : Value(Undefined());
+    case OffsetParent:
+      return getDOMNode(node.parentNode()); // not necessarily correct
+    case ClientWidth:
+      return rend ? static_cast<Value>(Number(rend->contentWidth())) : Value(Undefined());
+    case ClientHeight:
+      return rend ? static_cast<Value>(Number(rend->contentHeight())) : Value(Undefined());
+    case ScrollLeft:
+      return rend ? static_cast<Value>(Number(-rend->xPos() + node.ownerDocument().view()->contentsX())) : Value(Undefined());
+    case ScrollTop:
+      return rend ? static_cast<Value>(Number(-rend->yPos() + node.ownerDocument().view()->contentsY())) : Value(Undefined());
+    default:
+      fprintf(stderr, "Unhandled token in DOMNode::getValue : %d\n", token);
+      break;
+    }
   }
 
-  return result;
+  return Value();
 }
 
-void DOMNode::tryPut(ExecState *exec, const UString &p, const Value& value, int attr)
+void DOMNode::tryPut(ExecState *exec, const UString& propertyName, const Value& value, int attr)
 {
 #ifdef KJS_VERBOSE
-  kdDebug(6070) << "DOMNode::tryPut " << p.qstring().latin1() << endl;
+  kdDebug(6070) << "DOMNode::tryPut " << propertyName.qstring() << endl;
 #endif
-  if (p == "nodeValue") {
+  DOMObjectLookupPutValue<DOMNode,DOMObject>(exec, propertyName, value, attr,
+                                             &DOMNodeTable, this );
+}
+
+void DOMNode::putValue(ExecState *exec, int token, const Value& value, int /*attr*/)
+{
+  switch (token) {
+  case NodeValue:
     node.setNodeValue(value.toString(exec).value().string());
-  }
-//  else if (p == "prefix") { // new for DOM2 - not yet in khtml
-//    node.setPrefix(v.toString().value().string());
-//  }
-  else if (p == "onabort")
+    break;
+  //case Prefix:
+   // new for DOM2 - not yet in khtml
+   //    node.setPrefix(v.toString().value().string());
+    break;
+  case OnAbort:
     setListener(exec,DOM::EventImpl::ABORT_EVENT,value);
-  else if (p == "onblur")
+    break;
+  case OnBlur:
     setListener(exec,DOM::EventImpl::BLUR_EVENT,value);
-  else if (p == "onchange")
+    break;
+  case OnChange:
     setListener(exec,DOM::EventImpl::CHANGE_EVENT,value);
-  else if (p == "onclick")
+    break;
+  case OnClick:
     setListener(exec,DOM::EventImpl::KHTML_CLICK_EVENT,value);
-  else if (p == "ondblclick")
+    break;
+  case OnDblClick:
     setListener(exec,DOM::EventImpl::KHTML_DBLCLICK_EVENT,value);
-  else if (p == "ondragdrop")
+    break;
+  case OnDragDrop:
     setListener(exec,DOM::EventImpl::KHTML_DRAGDROP_EVENT,value);
-  else if (p == "onerror")
+    break;
+  case OnError:
     setListener(exec,DOM::EventImpl::KHTML_ERROR_EVENT,value);
-  else if (p == "onfocus")
+    break;
+  case OnFocus:
     setListener(exec,DOM::EventImpl::FOCUS_EVENT,value);
-  else if (p == "onkeydown")
+    break;
+  case OnKeyDown:
     setListener(exec,DOM::EventImpl::KHTML_KEYDOWN_EVENT,value);
-  else if (p == "onkeypress")
+    break;
+  case OnKeyPress:
     setListener(exec,DOM::EventImpl::KHTML_KEYPRESS_EVENT,value);
-  else if (p == "onkeyup")
+    break;
+  case OnKeyUp:
     setListener(exec,DOM::EventImpl::KHTML_KEYUP_EVENT,value);
-  else if (p == "onload")
+    break;
+  case OnLoad:
     setListener(exec,DOM::EventImpl::LOAD_EVENT,value);
-  else if (p == "onmousedown")
+    break;
+  case OnMouseDown:
     setListener(exec,DOM::EventImpl::MOUSEDOWN_EVENT,value);
-  else if (p == "onmousemove")
+    break;
+  case OnMouseMove:
     setListener(exec,DOM::EventImpl::MOUSEMOVE_EVENT,value);
-  else if (p == "onmouseout")
+    break;
+  case OnMouseOut:
     setListener(exec,DOM::EventImpl::MOUSEOUT_EVENT,value);
-  else if (p == "onmouseover")
+    break;
+  case OnMouseOver:
     setListener(exec,DOM::EventImpl::MOUSEOVER_EVENT,value);
-  else if (p == "onmouseup")
+    break;
+  case OnMouseUp:
     setListener(exec,DOM::EventImpl::MOUSEUP_EVENT,value);
-  else if (p == "onmove")
+    break;
+  case OnMove:
     setListener(exec,DOM::EventImpl::KHTML_MOVE_EVENT,value);
-  else if (p == "onreset")
+    break;
+  case OnReset:
     setListener(exec,DOM::EventImpl::RESET_EVENT,value);
-  else if (p == "onresize")
+    break;
+  case OnResize:
     setListener(exec,DOM::EventImpl::RESIZE_EVENT,value);
-  else if (p == "onselect")
+    break;
+  case OnSelect:
     setListener(exec,DOM::EventImpl::SELECT_EVENT,value);
-  else if (p == "onsubmit")
+    break;
+  case OnSubmit:
     setListener(exec,DOM::EventImpl::SUBMIT_EVENT,value);
-  else if (p == "onunload")
+    break;
+  case OnUnload:
     setListener(exec,DOM::EventImpl::UNLOAD_EVENT,value);
-  else
-    ObjectImp::put(exec, p, value, attr);
+    break;
+  default:
+    kdWarning() << "DOMNode::putValue unhandled token " << token << endl;
+  }
 }
 
 Value DOMNode::toPrimitive(ExecState *exec, Type /*preferred*/) const
@@ -333,48 +391,55 @@ List DOMNode::eventHandlerScope() const
   return List::empty();
 }
 
-Value DOMNodeFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
+DOMNodeFunc::DOMNodeFunc(ExecState *exec, DOM::Node n, int i, int l)
+  : DOMFunction(), node(n), id(i)
+{
+  Value protect(this);
+  put(exec,"length",Number(l),DontDelete|ReadOnly|DontEnum);
+}
+
+Value DOMNodeFunc::tryCall(ExecState *exec, Object & /*thisObj*/, const List &args)
 {
   Value result;
   switch (id) {
-    case HasAttributes:
+    case DOMNode::HasAttributes:
       result = Boolean(node.hasAttributes());
       break;
-    case HasChildNodes:
+    case DOMNode::HasChildNodes:
       result = Boolean(node.hasChildNodes());
       break;
-    case CloneNode:
+    case DOMNode::CloneNode:
       result = getDOMNode(node.cloneNode(args[0].toBoolean(exec).value()));
       break;
-    case AddEventListener: {
+    case DOMNode::AddEventListener: {
 //        JSEventListener *listener = new JSEventListener(args[1]); // will get deleted when the node derefs it
         JSEventListener *listener = Window::retrieveActive(exec)->getJSEventListener(args[1]);
         node.addEventListener(args[0].toString(exec).value().string(),listener,args[2].toBoolean(exec).value());
         result = Undefined();
       }
       break;
-    case RemoveEventListener: {
+    case DOMNode::RemoveEventListener: {
         JSEventListener *listener = Window::retrieveActive(exec)->getJSEventListener(args[1]);
         node.removeEventListener(args[0].toString(exec).value().string(),listener,args[2].toBoolean(exec).value());
         result = Undefined();
       }
       break;
-    case DispatchEvent:
+    case DOMNode::DispatchEvent:
       result = Boolean(node.dispatchEvent(toEvent(args[0])));
       break;
-    case AppendChild:
+    case DOMNode::AppendChild:
       result = getDOMNode(node.appendChild(toNode(args[0])));
       break;
-    case RemoveChild:
+    case DOMNode::RemoveChild:
       result = getDOMNode(node.removeChild(toNode(args[0])));
       break;
-    case InsertBefore:
+    case DOMNode::InsertBefore:
       result = getDOMNode(node.insertBefore(toNode(args[0]), toNode(args[1])));
       break;
-    case ReplaceChild:
+    case DOMNode::ReplaceChild:
       result = getDOMNode(node.replaceChild(toNode(args[0]), toNode(args[1])));
       break;
-    case Contains:
+    case DOMNode::Contains:
     {
         int exceptioncode=0;
 	DOM::Node other = toNode(args[0]);
@@ -433,7 +498,7 @@ Value DOMNodeList::tryGet(ExecState *exec, const UString &p) const
   return result;
 }
 
-Value DOMNodeListFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
+Value DOMNodeListFunc::tryCall(ExecState *exec, Object & /*thisObj*/, const List &args)
 {
   Value result;
 
@@ -498,7 +563,7 @@ bool DOMDocument::hasProperty(ExecState *exec, const UString &p, bool recursive)
 Value DOMDocument::tryGet(ExecState *exec, const UString &p) const
 {
 #ifdef KJS_VERBOSE
-  kdDebug(6070) << "DOMDocument::tryGet " << p.qstring().latin1() << endl;
+  kdDebug(6070) << "DOMDocument::tryGet " << p.qstring() << endl;
 #endif
   DOM::Document doc = static_cast<DOM::Document>(node);
 
@@ -556,7 +621,7 @@ Value DOMDocument::tryGet(ExecState *exec, const UString &p) const
 }
 
 
-Value DOMDocFunction::tryCall(ExecState *exec, Object &thisObj, const List &args)
+Value DOMDocFunction::tryCall(ExecState *exec, Object &/*thisObj*/, const List &args)
 {
   Value result;
   String str = args[0].toString(exec);
@@ -707,7 +772,7 @@ Value DOMElement::tryGet(ExecState *exec, const UString &p) const
   }
 }
 
-Value DOMElementFunction::tryCall(ExecState *exec, Object &thisObj, const List &args)
+Value DOMElementFunction::tryCall(ExecState *exec, Object &/*thisObj*/, const List &args)
 {
   Value result;
 
@@ -780,7 +845,7 @@ Value DOMDOMImplementation::tryGet(ExecState *exec, const UString &p) const
     return ObjectImp::get(exec, p);
 }
 
-Value DOMDOMImplementationFunction::tryCall(ExecState *exec, Object &thisObj, const List &args)
+Value DOMDOMImplementationFunction::tryCall(ExecState *exec, Object &/*thisObj*/, const List &args)
 {
   Value result;
 
@@ -865,7 +930,7 @@ Value DOMNamedNodeMap::tryGet(ExecState *exec, const UString &p) const
   return result;
 }
 
-Value DOMNamedNodeMapFunction::tryCall(ExecState *exec, Object &thisObj, const List &args)
+Value DOMNamedNodeMapFunction::tryCall(ExecState *exec, Object &/*thisObj*/, const List &args)
 {
   Value result;
 

@@ -25,6 +25,7 @@
 #include <dom/dom_node.h>
 #include <qvariant.h>
 #include <kurl.h>
+#include <kjs/lookup.h>
 
 class KHTMLPart;
 
@@ -97,6 +98,62 @@ namespace KJS {
    * Convery a KJS value into a QVariant
    */
   QVariant ValueToVariant(ExecState* exec, const Value& val);
+
+  /**
+   * We need a modified version of lookupOrCreate because
+   * we call tryGet instead of get, in DOMObjects.
+   * It also allows to add an extra parameter to the function constructors
+   * (the dom object that the function relates to).
+   */
+  template <class FuncImp, class ThisImp, class ParentImp, class Object>
+  inline Value DOMObjectLookupOrCreate(ExecState *exec, const UString &propertyName,
+                                       const HashTable* table, const ThisImp* thisObj,
+                                       const Object& obj)
+  {
+    const HashEntry* entry = Lookup::findEntry(table, propertyName);
+
+    if (!entry) // not found, forward to parent
+      return thisObj->ParentImp::tryGet(exec, propertyName);
+
+    //fprintf(stderr, "lookupOrCreate: found value=%d attr=%d\n", entry->value, entry->attr);
+    if (entry->attr & Function)
+    {
+      // Look for cached value in dynamic map of properties (in ObjectImp)
+      ValueImp * cachedVal = thisObj->ObjectImp::getDirect(propertyName);
+      /*if (cachedVal)
+        fprintf(stderr, "lookupOrCreate: Function -> looked up in ObjectImp, found type=%d (object=%d)\n",
+                 cachedVal->type(),  ObjectType);*/
+      if (cachedVal && cachedVal->type() == ObjectType)
+        return cachedVal;
+
+      Value val = new FuncImp(exec, obj, entry->value, entry->params);
+      const_cast<ThisImp *>(thisObj)->put(exec, propertyName, val, entry->attr);
+      return val;
+    }
+    return thisObj->getValue(exec, entry->value);
+  }
+
+  /**
+   * We need a modified version of lookupPutValue because
+   * we call tryPut instead of put, in DOMObjects.
+   */
+  template <class ThisImp, class ParentImp>
+  inline void DOMObjectLookupPutValue(ExecState *exec, const UString &propertyName,
+                             const Value& value, int attr,
+                             const HashTable* table, ThisImp* thisObj)
+  {
+    const HashEntry* entry = Lookup::findEntry(table, propertyName);
+
+    if (!entry) { // not found, forward to parent
+       thisObj->ParentImp::tryPut(exec, propertyName, value, attr);
+       return;
+    }
+
+    if (entry->attr & Function)
+      fprintf(stderr, "Function bit set! Shouldn't happen in lookupPutValue!\n" );
+    thisObj->putValue(exec, entry->value, value, attr);
+  }
+
 
 }; // namespace
 

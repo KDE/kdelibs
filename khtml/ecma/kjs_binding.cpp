@@ -44,7 +44,6 @@ Value DOMObject::get(ExecState *exec, const UString &p) const
     result = tryGet(exec,p);
   }
   catch (DOM::DOMException e) {
-    // ### is this correct ?
     // ### translate code into readable string ?
     // ### oh, and s/QString/i18n or I18N_NOOP (the code in kjs uses I18N_NOOP... but where is it translated ?)
     //     and where does it appear to the user ?

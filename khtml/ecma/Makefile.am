@@ -38,6 +38,10 @@ kjs_html_la_LDFLAGS = -module -avoid-version $(all_libraries)
 kjs_html_la_LIBADD = $(top_builddir)/kjs/libkjs.la ../libkhtml.la
 kjs_html_la_METASOURCES = AUTO
 
+hashtables:
+	cd $(srcdir); \
+	../../kjs/create_hash_table kjs_dom.cpp > kjs_dom.lut.h
+
 # interactive test program
 #check_PROGRAMS = testecma
 #testecma_SOURCES = testecma.cpp $(kjs_html_la_SOURCES)

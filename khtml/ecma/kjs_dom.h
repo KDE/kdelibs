@@ -35,9 +35,11 @@ namespace KJS {
     DOMNode(DOM::Node n) : node(n) { }
     ~DOMNode();
     virtual Boolean toBoolean(ExecState *) const;
-    virtual bool hasProperty(ExecState *exec, const UString &propertyName, bool recursive = true) const;
     virtual Value tryGet(ExecState *exec, const UString &propertyName) const;
+    Value getValue(ExecState *exec, int token) const;
+
     virtual void tryPut(ExecState *exec, const UString &propertyName, const Value& value, int attr = None);
+    void putValue(ExecState *exec, int token, const Value& value, int attr);
     virtual DOM::Node toNode() const { return node; }
     virtual const ClassInfo* classInfo() const { return &info; }
     static const ClassInfo info;
@@ -48,6 +50,19 @@ namespace KJS {
     Value getListener(int eventId) const;
     virtual List eventHandlerScope() const;
 
+    enum { NodeName, NodeValue, NodeType, ParentNode, ParentElement,
+           ChildNodes, FirstChild, LastChild, PreviousSibling, NextSibling,
+           Attributes, NamespaceURI, Prefix, LocalName, OwnerDocument, InsertBefore,
+           ReplaceChild, RemoveChild, AppendChild, HasAttributes, HasChildNodes,
+           CloneNode, Normalize, Supports, AddEventListener, RemoveEventListener,
+           DispatchEvent, Contains,
+           OnAbort, OnBlur, OnChange, OnClick, OnDblClick, OnDragDrop, OnError,
+           OnFocus, OnKeyDown, OnKeyPress, OnKeyUp, OnLoad, OnMouseDown,
+           OnMouseMove, OnMouseOut, OnMouseOver, OnMouseUp, OnMove, OnReset,
+           OnResize, OnSelect, OnSubmit, OnUnload,
+           OffsetLeft, OffsetTop, OffsetWidth, OffsetHeight, OffsetParent,
+           ClientWidth, ClientHeight, ScrollLeft, ScrollTop };
+
   protected:
     DOM::Node node;
   };
@@ -55,12 +70,8 @@ namespace KJS {
   class DOMNodeFunc : public DOMFunction {
     friend class DOMNode;
   public:
-    DOMNodeFunc(DOM::Node n, int i)
-        : DOMFunction(), node(n), id(i) { }
-      virtual Value tryCall(ExecState *exec, Object &thisObj, const List &);
-      enum { InsertBefore, ReplaceChild, RemoveChild, AppendChild,
-	   HasChildNodes, CloneNode, AddEventListener, RemoveEventListener,
-	   DispatchEvent, Contains, HasAttributes };
+    DOMNodeFunc(ExecState *exec, DOM::Node n, int i, int l);
+    virtual Value tryCall(ExecState *exec, Object &thisObj, const List &);
   private:
     DOM::Node node;
     int id;
