@@ -698,10 +698,8 @@ protected:
        it wants to know when a Client made a request to change state (ie. to
        Shade / Unshade).
     **/
-    // virtual void changeState(unsigned long state, unsigned long mask) { }
-    virtual void changeState(unsigned long, unsigned long) { }
-    
-    
+    virtual void changeState(unsigned long /*state*/, unsigned long /*mask*/) { }
+
 private:
     void update(unsigned long);
 

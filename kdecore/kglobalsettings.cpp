@@ -437,7 +437,7 @@ KGlobalSettings::KMouseSettings & KGlobalSettings::mouseSettings()
     return *s_mouseSettings;
 }
 
-static void KGlobalSettings::rereadMouseSettings()
+void KGlobalSettings::rereadMouseSettings()
 {
     delete s_mouseSettings;
     s_mouseSettings = 0L;

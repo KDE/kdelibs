@@ -61,9 +61,6 @@ KInstance::KInstance( const QCString& name)
 
     d = new KInstancePrivate ();
     d->ownAboutdata = true;
-
-    //This screws up LD_PRELOAD=`kdeinit --libkmapnotify`
-    //kdDebug() << "Instance " << _name.data() << " has no about data" << endl;
 }
 
 KInstance::KInstance( const KAboutData * aboutData )

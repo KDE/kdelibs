@@ -579,7 +579,6 @@ QImage KIconLoader::loadIconImage(const QString& _name, int group, int size,
 {
     QString name = _name;
     QImage img;
-    QString key;
     bool absolutePath=false;
 
     if (d->mpThemeRoot == 0L)
@@ -591,12 +590,6 @@ QImage KIconLoader::loadIconImage(const QString& _name, int group, int size,
     // Special case for "User" icons.
     if (group == KIcon::User)
     {
-	key = "$kicou_";
-	key += name;
-//	bool inCache = QPixmapCache::find(key, pix);
-//	if (inCache && (path_store == 0L))
-//	    return pix;
-
 	QString path = (absolutePath) ? name :
 			iconPath(name, KIcon::User, canReturnNull);
 	if (path.isEmpty())
@@ -614,10 +607,7 @@ QImage KIconLoader::loadIconImage(const QString& _name, int group, int size,
 
 	if (path_store != 0L)
 	    *path_store = path;
-//	if (inCache)
-//	    return pix;
 	img.load(path);
-//	QPixmapCache::insert(key, pix);
 	return img;
     }
 
@@ -660,29 +650,6 @@ QImage KIconLoader::loadIconImage(const QString& _name, int group, int size,
     {
 	size = d->mpGroups[group].size;
     }
-
-    // Generate a unique cache key for the icon.
-
-    key = "$kico_";
-    key += name; key += "_";
-    key += QString().setNum(size); key += "_";
-    if (group >= 0)
-    {
-	key += d->mpEffect.fingerprint(group, state);
-	if (d->mpGroups[group].dblPixels)
-	    key += QString::fromLatin1(":dblsize");
-    } else
-	key += QString::fromLatin1("noeffect");
-    key += "_";
-    key += QString().setNum(overlay);
-
-    // Is the icon in the cache?
-    bool inCache = false;
-
-//    bool inCache = QPixmapCache::find(key, pix);
-//    if (inCache && (path_store == 0L))
-//	return pix;
-
     // No? load it.
     KIcon icon;
     if (absolutePath)
@@ -714,8 +681,6 @@ QImage KIconLoader::loadIconImage(const QString& _name, int group, int size,
 
     if (path_store != 0L)
 	*path_store = icon.path;
-//    if (inCache)
-//eturn pix;
 
     img.load(icon.path);
     if (img.isNull())
@@ -750,8 +715,6 @@ QImage KIconLoader::loadIconImage(const QString& _name, int group, int size,
     {
 	img = d->mpEffect.apply(img, group, state);
     }
-
-//    QPixmapCache::insert(key, pix);
     return img;
 }
 
