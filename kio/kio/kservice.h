@@ -31,6 +31,8 @@ class QDataStream;
 class KDesktopFile;
 class KService;
 class KBuildSycoca;
+class QWidget;
+
 /**
  * Represent a service, i.e. an application bound to one or several mimetypes
  * (or servicetypes) as written in its desktop entry file.
@@ -480,6 +482,14 @@ public:
   static QString newServicePath(bool showInMenu, const QString &suggestedName,
                                 QString *menuId = 0,
                                 const QStringList *reservedMenuIds = 0);
+                                
+                                
+  /**
+   * Rebuild KSycoca and show a progress dialog while doing so.
+   * @param parent Parent widget for the progress dialog
+   * @since 3.2
+   */
+  static void rebuildKSycoca(QWidget *parent);
 
 protected:
 

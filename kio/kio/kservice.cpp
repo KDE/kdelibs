@@ -22,6 +22,8 @@
 #include <config.h>
 
 #include "kservice.h"
+#include "kservice_p.h"
+
 #include <sys/types.h>
 #include <sys/stat.h>
 
@@ -768,3 +770,59 @@ QString KService::newServicePath(bool showInMenu, const QString &suggestedName,
 void KService::virtual_hook( int id, void* data )
 { KSycocaEntry::virtual_hook( id, data ); }
 
+
+void KService::rebuildKSycoca(QWidget *parent)
+{
+  KServiceProgressDialog dlg(parent, "ksycoca_progress", 
+                      i18n("Updating System Configuration"),
+                      i18n("Updating system configuration."));
+
+  QByteArray data;
+  DCOPClient *client = kapp->dcopClient();
+
+  int result = client->callAsync("kded", "kbuildsycoca", "recreate()", 
+               data, &dlg, SLOT(slotFinished()));
+               
+  if (result)
+  {
+     dlg.exec();
+  }
+}
+
+KServiceProgressDialog::KServiceProgressDialog(QWidget *parent, const char *name, 
+                          const QString &caption, const QString &text)
+ : KProgressDialog(parent, name, caption, text, true)
+{
+  connect(&m_timer, SIGNAL(timeout()), this, SLOT(slotProgress()));
+  progressBar()->setTotalSteps(20);
+  m_timeStep = 700;
+  m_timer.start(m_timeStep);
+  setAutoClose(false);
+}
+
+void
+KServiceProgressDialog::slotProgress()
+{
+  int p = progressBar()->progress();
+  if (p == 18)
+  {
+     progressBar()->reset();
+     progressBar()->setProgress(1);
+     m_timeStep = m_timeStep * 2;
+     m_timer.start(m_timeStep);
+  }
+  else
+  {
+     progressBar()->setProgress(p+1);
+  }
+}
+
+void
+KServiceProgressDialog::slotFinished()
+{
+  progressBar()->setProgress(20);
+  m_timer.stop();
+  QTimer::singleShot(1000, this, SLOT(close()));
+}
+
+#include "kservice_p.moc"
