@@ -621,9 +621,11 @@ void KEditToolbarWidget::loadToolbarStyles(QDomElement& elem)
 
   if ( (icon_size == -1) && (name == "mainToolBar") )
   {
-    KConfig *config = KGlobal::config();
-    config->setGroup(QString::fromLatin1("Toolbar style"));
-    icon_size = config->readNumEntry(QString::fromLatin1("IconSize"), 22);
+    // the new icon loader doesn't respect the IconSize field in the
+    // config file... so neither will we
+    icon_size = instance()->iconLoader()->currentSize( name == "mainToolBar" ?
+                                                       KIcon::MainToolbar :
+                                                       KIcon::Toolbar );
   }
 
   if ( icon_size == -1 )
