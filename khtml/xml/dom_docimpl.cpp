@@ -594,7 +594,9 @@ void DocumentImpl::recalcStyle()
             size = settings->minFontSize();
 
         khtml::setFontSize( f, int(size),  settings, paintDeviceMetrics() );
+#if QT_VERSION < 300
         KGlobal::charsets()->setQFont(f, settings->charset());
+#endif
     }
 
     //kdDebug() << "DocumentImpl::attach: setting to charset " << settings->charset() << endl;

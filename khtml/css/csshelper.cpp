@@ -152,8 +152,12 @@ void khtml::setFontSize( QFont &f,  int  pixelsize, const KHTMLSettings *s, QPai
     // ok, now some magic to get a nice unscaled font
     // ### all other font properties should be set before this one!!!!
     // ####### make it use the charset needed!!!!
+#if QT_VERSION < 300
     QFont::CharSet cs = s->charset();
     QString charset = KGlobal::charsets()->xCharsetName( cs );
+#else
+    QString charset;
+#endif
 
     if( !db.isSmoothlyScalable(f.family(), db.styleString(f), charset) )
     {

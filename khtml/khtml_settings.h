@@ -84,6 +84,7 @@ public:
     int minFontSize() const { return m_minFontSize; }
 
     // the charset used to display the current document.
+#if QT_VERSION < 300
     QFont::CharSet charset() const { return m_charset; }
     void setCharset( QFont::CharSet c );
     QFont::CharSet script() const { return m_script; }
@@ -91,6 +92,7 @@ public:
     void resetCharset( );
 
     void setDefaultCharset( QFont::CharSet c, bool b );
+#endif
 
     const QString &encoding() const { return m_encoding; }
 
@@ -124,10 +126,15 @@ public:
     int maxFormCompletionItems() const { return m_maxFormCompletionItems; }
 
 private:
+#if QT_VERSION < 300
     void setFont(const QFont::CharSet &charset, int i, const QString &n);
     QString lookupFont(const QFont::CharSet &charset, int i) const;
 
     void internalSetCharset( QFont::CharSet c );
+#else
+    void setFont(int, int i, const QString &n);
+    QString lookupFont(int , int i) const;
+#endif
     
 private:
     bool m_bChangeCursor;
@@ -138,9 +145,13 @@ private:
     QValueList<int>     m_fontSizes;
     int m_minFontSize;
 
+#if QT_VERSION < 300
     QFont::CharSet m_charset;
     QFont::CharSet m_script;
     QFont::CharSet m_defaultCharset;
+#else
+    int m_charset;
+#endif
     bool enforceCharset;
     QString m_encoding;
     QString m_userSheet;
@@ -156,7 +167,9 @@ private:
     bool m_bEnableCSS;
     QMap<QString,KJavaScriptAdvice> javaDomainPolicy;
     QMap<QString,KJavaScriptAdvice> javaScriptDomainPolicy;
+#if QT_VERSION < 300
     QMap<QFont::CharSet, QStringList> fontsForCharset;
+#endif
     QStringList defaultFonts;
     QString availFamilies;
 

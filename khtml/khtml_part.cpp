@@ -94,6 +94,9 @@ using namespace DOM;
 #include <qapplication.h>
 #include <qdragobject.h>
 #include <qmetaobject.h>
+#if QT_VERSION >= 300
+#include <qucom.h>
+#endif
 
 namespace khtml
 {
@@ -231,7 +234,9 @@ public:
   DOM::DocumentImpl *m_doc;
   khtml::Decoder *m_decoder;
   QString m_encoding;
+#if QT_VERSION < 300
   QFont::CharSet m_charset;
+#endif
   long m_cacheId;
   QString scheduledScript;
   DOM::Node scheduledScriptNode;
@@ -579,8 +584,10 @@ KHTMLPart::~KHTMLPart()
 
 bool KHTMLPart::restoreURL( const KURL &url )
 {
+#if QT_VERSION < 300
   // Save charset setting (it was already restored!)
   QFont::CharSet charset = d->m_charset;
+#endif
 
   kdDebug( 6050 ) << "KHTMLPart::restoreURL " << url.url() << endl;
 
@@ -598,8 +605,10 @@ bool KHTMLPart::restoreURL( const KURL &url )
   d->m_bJavaEnabled = KHTMLFactory::defaultHTMLSettings()->isJavaEnabled(url.host());
   d->m_bPluginsEnabled = KHTMLFactory::defaultHTMLSettings()->isPluginsEnabled(url.host());
   d->m_haveCharset = true;
+#if QT_VERSION < 300
   d->m_charset = charset;
   d->m_settings->setCharset( d->m_charset );
+#endif
 
   m_url = url;
 
@@ -690,9 +699,13 @@ bool KHTMLPart::openURL( const KURL &url )
   d->m_bJScriptEnabled = KHTMLFactory::defaultHTMLSettings()->isJavaScriptEnabled(url.host());
   d->m_bJavaEnabled = KHTMLFactory::defaultHTMLSettings()->isJavaEnabled(url.host());
   d->m_bPluginsEnabled = KHTMLFactory::defaultHTMLSettings()->isPluginsEnabled(url.host());
+#if QT_VERSION < 300
   d->m_settings->resetCharset();
+#endif
   d->m_haveCharset = false;
+#if QT_VERSION < 300
   d->m_charset = d->m_settings->charset();
+#endif
 
   // initializing m_url to the new url breaks relative links when opening such a link after this call and _before_ begin() is called (when the first
   // data arrives) (Simon)
@@ -1228,9 +1241,11 @@ void KHTMLPart::slotData( KIO::Job* kio_job, const QByteArray &data )
     QString qData = d->m_job->queryMetaData("charset");
     if ( !qData.isEmpty() && !d->m_haveEncoding ) // only use information if the user didn't override the settings
     {
+#if QT_VERSION < 300
        d->m_charset = KGlobal::charsets()->charsetForEncoding(qData);
        d->m_settings->setCharset( d->m_charset );
        d->m_settings->setScript( KGlobal::charsets()->charsetForEncoding(qData, true) );
+#endif
        d->m_haveCharset = true;
        d->m_encoding = qData;
     }
@@ -1438,9 +1453,11 @@ void KHTMLPart::write( const char *str, int len )
       {
          const QTextCodec *c = d->m_decoder->codec();
          //kdDebug(6005) << "setting up charset to " << (int) KGlobal::charsets()->charsetForEncoding(c->name()) << endl;
+#if QT_VERSION < 300
          d->m_charset = KGlobal::charsets()->charsetForEncoding(c->name());
          d->m_settings->setCharset( d->m_charset );
          d->m_settings->setScript( KGlobal::charsets()->charsetForEncoding(c->name(), true ));
+#endif
          //kdDebug(6005) << "charset is " << (int)d->m_settings->charset() << endl;
       }
       d->m_doc->applyChanges(true, true);
@@ -1755,12 +1772,14 @@ void KHTMLPart::slotRedirection(KIO::Job*, const KURL& url)
 // ####
 bool KHTMLPart::setCharset( const QString &name, bool override )
 {
+#if QT_VERSION < 300
   QFont f(settings()->stdFontName());
   KGlobal::charsets()->setQFont(f, KGlobal::charsets()->charsetForEncoding(name) );
 
   //kdDebug(6005) << "setting to charset " << (int)QFontInfo(f).charSet() <<" " << override << " should be " << name << endl;
 
   d->m_settings->setDefaultCharset( f.charSet(), override );
+#endif
   return true;
 }
 
@@ -1770,11 +1789,13 @@ bool KHTMLPart::setEncoding( const QString &name, bool override )
     d->m_haveEncoding = override;
 
 //    setCharset( name, override );
+#if QT_VERSION < 300
      d->m_charset = KGlobal::charsets()->charsetForEncoding(name);
      d->m_settings->setCharset( d->m_charset );
      // the script should not be unicode. We need to know the document is eg. arabic to be
      // able to choose a unicode font that contains arabic glyphs.
      d->m_settings->setScript( KGlobal::charsets()->charsetForEncoding( name, true ) );
+#endif
 
     if( !m_url.isEmpty() ) {
         // reload document
@@ -3187,7 +3208,11 @@ void KHTMLPart::saveState( QDataStream &stream )
   {
      docState = d->m_doc->state();
   }
+#if QT_VERSION < 300
   stream << (Q_UINT32) d->m_settings->charset() << d->m_encoding << docState;
+#else
+  stream << (Q_UINT32) 0 << d->m_encoding << docState;
+#endif
 
   // Save font data
   stream << fontSizes() << d->m_fontBase;
@@ -3264,9 +3289,13 @@ void KHTMLPart::restoreState( QDataStream &stream )
   stream >> d->m_cacheId;
 
   stream >> charset >> encoding >> docState;
+#if QT_VERSION < 300
   d->m_charset = (QFont::CharSet) charset;
+#endif
   d->m_encoding = encoding;
+#if QT_VERSION < 300
   if ( d->m_settings ) d->m_settings->setCharset( d->m_charset );
+#endif
   kdDebug(6050)<<"restoring charset to:"<< charset << endl;
 
 
@@ -3364,9 +3393,13 @@ void KHTMLPart::restoreState( QDataStream &stream )
     // frames.
     d->m_bCleared = false;
     clear();
+#if QT_VERSION < 300
     d->m_charset = (QFont::CharSet) charset;
+#endif
     d->m_encoding = encoding;
+#if QT_VERSION < 300
     if ( d->m_settings ) d->m_settings->setCharset( (QFont::CharSet)charset );
+#endif
 
     QStringList::ConstIterator fNameIt = frameNames.begin();
     QStringList::ConstIterator fNameEnd = frameNames.end();
@@ -3530,9 +3563,11 @@ void KHTMLPart::reparseConfiguration()
   KHTMLSettings *settings = KHTMLFactory::defaultHTMLSettings();
   settings->init();
 
+#if QT_VERSION < 300
   // Keep original charset setting.
   settings->setCharset(d->m_settings->charset());
   settings->setScript(d->m_settings->script());
+#endif
 
   setAutoloadImages( settings->autoLoadImages() );
 
@@ -4059,9 +4094,19 @@ void KHTMLPart::slotPrintFrame()
   if ( !ext )
     return;
 
+#if QT_VERSION < 300
   QMetaData *mdata = ext->metaObject()->slot( "print()" );
   if ( mdata )
     (ext->*(mdata->ptr))();
+#else
+  QMetaObject *mo = ext->metaObject();
+  const QMetaData *mdata = mo->slot( mo->findSlot( "print()" ) );
+  if ( mdata )
+  {
+    QUObject o[ 1 ];
+    ext->qt_invoke( mdata->ptr, o );
+  }
+#endif
 }
 
 void KHTMLPart::slotSelectAll()

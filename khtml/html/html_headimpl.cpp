@@ -465,9 +465,13 @@ void HTMLTitleElementImpl::setTitle()
     TextImpl *t = static_cast<TextImpl *>(_first);
     QString s = t->data().string();
     s.compose();
-    s = KStringHandler::csqueeze( s.visual(), 128 );
+    s = KStringHandler::csqueeze( s, 128 );
 
     HTMLDocumentImpl *d = static_cast<HTMLDocumentImpl *>(ownerDocument());
     if ( !d->view()->part()->parentPart() )
+#if QT_VERSION < 300
         emit d->view()->part()->setWindowCaption( s.visual() );
+#else
+        emit d->view()->part()->setWindowCaption( s );
+#endif
 }

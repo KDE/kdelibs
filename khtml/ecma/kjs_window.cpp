@@ -898,6 +898,9 @@ Completion WindowFunc::tryExecute(const List &args)
     part->xmlDocImpl()->updateRendering();
     if (args.size() >= 2)
       str2 = QInputDialog::getText("Konqueror: Prompt", str,
+#if QT_VERSION >= 300
+                                   QLineEdit::Normal,
+#endif
                                    args[1].toString().value().qstring());
     else
       str2 = QInputDialog::getText("Konqueror: Prompt", str);

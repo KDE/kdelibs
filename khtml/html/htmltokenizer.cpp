@@ -49,6 +49,7 @@
 #include <kglobal.h>
 #include <ctype.h>
 #include <assert.h>
+#include <qvariant.h>
 #include <kdebug.h>
 #include <stdlib.h>
 

@@ -131,6 +131,7 @@ void KHTMLSettings::init( KConfig * config, bool reset )
     if ( reset || config->hasKey( "MinimumFontSize" ) )
         m_minFontSize = config->readNumEntry( "MinimumFontSize", HTML_DEFAULT_MIN_FONT_SIZE );
 
+#if QT_VERSION < 300
     QStringList chSets = KGlobal::charsets()->availableCharsetNames();
     for ( QStringList::Iterator it = chSets.begin(); it != chSets.end(); ++it ) {
         if ( reset || config->hasKey( *it ) ){
@@ -142,14 +143,17 @@ void KHTMLSettings::init( KConfig * config, bool reset )
             fontsForCharset[KGlobal::charsets()->xNameToID(*it)] = fonts;
         }
     }
+#endif
 
     if ( reset || config->hasKey( "DefaultEncoding" ) ) {
         m_encoding = config->readEntry( "DefaultEncoding", "" );
         if ( m_encoding.isEmpty() )
             m_encoding = KGlobal::locale()->charset();
 
+#if QT_VERSION < 300
         m_defaultCharset = KGlobal::charsets()->nameToID( m_encoding );
         internalSetCharset( m_defaultCharset );
+#endif
     }
 
     if ( reset || config->hasKey( "EnforceDefaultCharset" ) )
@@ -429,12 +433,18 @@ QString KHTMLSettings::settingsToCSS() const
     return str;
 }
 
+#if QT_VERSION < 300
 QString KHTMLSettings::lookupFont(const QFont::CharSet &charset, int i) const
+#else
+QString KHTMLSettings::lookupFont(int, int i) const
+#endif
 {
     QString font;
+#if QT_VERSION < 300
     const QStringList &fontList = fontsForCharset[charset];
     if (fontList.count() > (uint) i)
        font = fontList[i];
+#endif
     if (font.isEmpty())
         font = defaultFonts[i];
     return font;
@@ -470,6 +480,7 @@ QString KHTMLSettings::fantasyFontName() const
     return lookupFont(m_charset,5);
 }
 
+#if QT_VERSION < 300
 void KHTMLSettings::setFont(const QFont::CharSet &charset, int i, const QString &n)
 {
     QStringList fontList = fontsForCharset[charset];
@@ -477,6 +488,11 @@ void KHTMLSettings::setFont(const QFont::CharSet &charset, int i, const QString 
       fontList.append(QString::null);
     fontList[i] = n;
 }
+#else
+void KHTMLSettings::setFont(int, int, const QString &)
+{
+}
+#endif
 
 void KHTMLSettings::setStdFontName(const QString &n)
 {
@@ -488,6 +504,7 @@ void KHTMLSettings::setFixedFontName(const QString &n)
     setFont(m_charset, 1, n);
 }
 
+#if QT_VERSION < 300
 void KHTMLSettings::setDefaultCharset( QFont::CharSet c, bool enforce )
 {
     m_defaultCharset = c;
@@ -520,6 +537,7 @@ void KHTMLSettings::setScript( QFont::CharSet c )
     //kdDebug(6050) << "KHTMLSettings::setScript to " << c << endl;
     m_script = c;
 }
+#endif
 
 QString KHTMLSettings::userStyleSheet() const
 {

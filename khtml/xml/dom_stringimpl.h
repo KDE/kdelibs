@@ -26,8 +26,8 @@
 #include <qstring.h>
 #include <dom_misc.h>
 #include <khtmllayout.h>
+#include <qlist.h> // ### template <class type> QPtrList when switching to qt3
 
-template<class type> class QList;
 class QChar;
 
 namespace DOM {

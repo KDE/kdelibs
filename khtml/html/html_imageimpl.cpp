@@ -42,6 +42,7 @@
 #include <qregion.h>
 #include <qstack.h>
 #include <qimage.h>
+#include <qpointarray.h>
 
 using namespace DOM;
 using namespace khtml;

@@ -2199,6 +2199,7 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
 		    pos = available.length();
 		family = available.mid( pos1, pos - pos1 );
 		f.setFamily( family );
+#if QT_VERSION < 300
 		KGlobal::charsets()->setQFont(f, s->charset() );
 		//kdDebug() << "font charset is " << f.charSet() << " script = " << s->script() << endl;
 		if ( s->charset() == s->script() || KGlobal::charsets()->supportsScript( f, s->script() ) ) {
@@ -2206,6 +2207,10 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
 		    style->setFont(f);
 		    return;
 		}
+#else
+                style->setFont(f);
+                return;
+#endif
 	    }
 //            kdDebug( 6080 ) << "no match for font family " << face << ", got " << f.family() << endl;
         }

@@ -28,7 +28,7 @@
 // qt includes and classes
 #include <qscrollview.h>
 
-template<class C> class QList;
+#include <qlist.h> // ### replace when switching to qt3: template<class C> class QPtrList;
 
 class QPainter;
 class QRect;

@@ -200,9 +200,15 @@ QByteArray HTMLFormElementImpl::formData()
     }
     if(!codec)
     {
+#if QT_VERSION < 300
         QString n = KGlobal::charsets()->name(view->part()->settings()->charset());
         if(n != "any")
             codec = KGlobal::charsets()->codecForName(n);
+#else
+#if defined(Q_CC_GNU)
+#warning ### FIXME
+#endif
+#endif
     }
 
     if(!codec)

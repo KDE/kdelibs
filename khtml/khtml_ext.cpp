@@ -9,6 +9,9 @@
 #include <qpopupmenu.h>
 #include <qlineedit.h>
 #include <qmetaobject.h>
+#if QT_VERSION >= 300
+#include <qucom.h>
+#endif
 
 #include <kdebug.h>
 #include <klocale.h>
@@ -198,12 +201,22 @@ void KHTMLPartBrowserExtension::callExtensionProxyMethod( const char *method )
     if ( !m_extensionProxy )
         return;
 
+#if QT_VERSION < 300
     QMetaData *metaData = m_extensionProxy->metaObject()->slot( method );
     if ( !metaData )
         return;
 
     KParts::BrowserExtension *ext = static_cast<KParts::BrowserExtension *>( m_extensionProxy );
     (ext->*(metaData->ptr))();
+#else
+    QMetaObject *mo = m_extensionProxy->metaObject();
+    const QMetaData *metaData = mo->slot( mo->findSlot( method ) );
+    if ( !metaData )
+        return;
+
+    QUObject o[ 1 ];
+    m_extensionProxy->qt_invoke( metaData->ptr, o );
+#endif
 }
 
 void KHTMLPartBrowserExtension::updateEditActions()

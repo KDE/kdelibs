@@ -29,6 +29,7 @@
 #include <qpixmap.h>
 #include <qdrawutil.h>
 #include <qpalette.h>
+#include <qpainter.h>
 
 #include <kapp.h>
 #include <kdebug.h>

@@ -39,6 +39,7 @@
 #include <qlabel.h>
 #include <qstringlist.h>
 #include <qtextstream.h>
+#include <qcursor.h>
 
 #include <assert.h>
 #include <kdebug.h>
