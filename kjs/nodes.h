@@ -366,7 +366,6 @@ namespace KJS {
     List evaluateList(ExecState *exec) const;
     virtual void streamTo(SourceStream &s) const;
   private:
-    void reverseList();
     ArgumentListNode *list;
   };
 
