@@ -1008,7 +1008,7 @@ void KConfigBase::sync()
   if (isReadOnly())
     return;
 
-  backEnd->sync(true);
+  backEnd->sync();
   if (bDirty)
     rollback();
 }

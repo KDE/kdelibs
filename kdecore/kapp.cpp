@@ -532,17 +532,8 @@ bool KApplication::x11EventFilter( XEvent *_event )
 
     // stuff for reconfiguring
     if ( cme->message_type == KDEChangeStyle ) {
-      QString str;
-
-      KGlobal::config()->setGroup("KDE");
-      str = KGlobal::config()->readEntry("widgetStyle");
-      if(!str.isNull())
-	if(str == "Motif")
-	  applyGUIStyle(MotifStyle);
-	else
-	  if(str == "Windows 95")
-	    applyGUIStyle(WindowsStyle);
-      return true;
+	applyGUIStyle(WindowsStyle); // arg doesn't matter
+	return true;
     }
 
     if ( cme->message_type == KDEChangePalette )
@@ -555,7 +546,7 @@ bool KApplication::x11EventFilter( XEvent *_event )
     if ( cme->message_type == KDEChangeGeneral )
       {
 	readSettings(true);
-	kdisplaySetPalette(); // This has to be first (mosfet)
+	kdisplaySetPalette();
 	kdisplaySetStyleAndFont();
 	
 	return True;
@@ -565,7 +556,7 @@ bool KApplication::x11EventFilter( XEvent *_event )
   return false;
 }
 
-void KApplication::applyGUIStyle(GUIStyle /* newstyle */) {
+void KApplication::applyGUIStyle(GUIStyle /* pointless */) {
     /* Hey, we actually do stuff here now :)
      * The widgetStyle key is used as a style string. If it matches a
      * Qt internal style that is used, otherwise it is checked to see
@@ -664,14 +655,7 @@ void KApplication::applyGUIStyle(GUIStyle /* newstyle */) {
             }
         }
     }
-    
-    // workaround to get a blue highlight color before I start fixing the color/font configuration stuff.
-    // Matthias (3.Aug.1999)
-    QPalette pal = palette();
-    pal.setColor( QPalette::Normal, QColorGroup::Highlight, darkBlue );
-    pal.setColor( QPalette::Disabled, QColorGroup::Highlight, darkBlue );
-    pal.setColor( QPalette::Active, QColorGroup::Highlight, darkBlue );
-    setPalette( pal, TRUE );
+
     pConfig->setGroup(oldGroup);
 }
 
@@ -718,14 +702,6 @@ void KApplication::readSettings(bool reparse)
   if ( num > 2000 ) num = 2000;
   setCursorFlashTime(num);
 
-
-  // Finally, read GUI style from config.
-  //	
-  config->setGroup( "KDE" );
-  if ( config->readEntry( "widgetStyle", "Windows 95" ) == "Windows 95" )
-    applicationStyle_=WindowsStyle;
-  else
-    applicationStyle_=MotifStyle;
 	
 }
 
@@ -733,26 +709,77 @@ void KApplication::readSettings(bool reparse)
 
 void KApplication::kdisplaySetPalette()
 {
+    // the following is temporary and will soon dissappear (Matthias, 3.August 1999 )
+    
+  KConfigBase* config;
+  config  = kapp->getConfig();
+  config->setGroup( "General" );
+  QColor buttonText =
+    config->readColorEntry( "foreground", &black );
+
+  QColor background =
+    config->readColorEntry( "background", &lightGray );
+
+  QColor highlight =
+    config->readColorEntry( "selectBackground", &darkBlue);
+
+  QColor highlightedText =
+    config->readColorEntry( "selectForeground", &white );
+
+  QColor base =
+    config->readColorEntry( "windowBackground", &white );
+
+  QColor foreground =
+    config->readColorEntry( "windowForeground", &black );
+
+
+  int contrast =
+    config->readNumEntry( "contrast", 7 );
+
+  int highlightVal, lowlightVal;
+
+  highlightVal=100+(2*contrast+4)*16/10;
+  lowlightVal=100+(2*contrast+4)*10;
+
+
+  QColorGroup disabledgrp( foreground, background,
+			   background.light(150),
+			   background.dark(),
+			   background.dark(120),
+			   background.dark(120), base );
+
+  QColorGroup colgrp( foreground, background,
+		      background.light(150),
+		      background.dark(),
+		      background.dark(120),
+		      foreground, base );
+
+  colgrp.setColor( QColorGroup::Highlight, highlight);
+  colgrp.setColor( QColorGroup::HighlightedText, highlightedText);
+  colgrp.setColor( QColorGroup::ButtonText, buttonText);
+
+  setPalette( QPalette( colgrp, disabledgrp, colgrp), true );
+    
+  applyGUIStyle( WindowsStyle ); // to fix the palette again
   emit kdisplayPaletteChanged();
   emit appearanceChanged();
 }
 
 void KApplication::kdisplaySetFont()
 {
-//     QApplication::setFont( generalFont_, true );
-  // setFont() works every time for me !
+    KGlobal::freeAll();
+    QApplication::setFont( KGlobal::generalFont(), true );
 
-  emit kdisplayFontChanged();
-  emit appearanceChanged();
+    emit kdisplayFontChanged();
+    emit appearanceChanged();
 
-  resizeAll();
+    resizeAll();
 }	
 
 
 void KApplication::kdisplaySetStyle()
 {
-  // QApplication::setStyle( applicationStyle );
-  applyGUIStyle( applicationStyle_ );
+  applyGUIStyle( WindowsStyle );
 
   emit kdisplayStyleChanged();
   emit appearanceChanged();
@@ -762,23 +789,18 @@ void KApplication::kdisplaySetStyle()
 
 void KApplication::kdisplaySetStyleAndFont()
 {
-  //  QApplication::setStyle( applicationStyle );
-  // 	setStyle() works pretty well but may not change the style of combo
-  //	boxes.
-    if ( font() != KGlobal::generalFont())
-	QApplication::setFont( KGlobal::generalFont(), true );
-  applyGUIStyle(applicationStyle_);
+    KGlobal::freeAll();
+    QApplication::setFont( KGlobal::generalFont(), true );
+    kdisplaySetPalette(); // does both palette and style
+    emit kdisplayFontChanged();
 
-  emit kdisplayStyleChanged();
-  emit kdisplayFontChanged();
-  emit appearanceChanged();
-
-  resizeAll();
+    resizeAll();
 }	
 
 
 void KApplication::resizeAll()
 {
+    return;
   // send a resize event to all windows so that they can resize children
   QWidgetList *widgetList = QApplication::topLevelWidgets();
   QWidgetListIt it( *widgetList );
@@ -1005,9 +1027,10 @@ int KApplication::contrast() const
 }
 
 
+// pointless, to be removed########
 Qt::GUIStyle KApplication::applicationStyle() const
 {
-    return applicationStyle_;
+    return style();
 }
 
 

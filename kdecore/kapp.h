@@ -33,7 +33,7 @@ class KCharsets;
 class KStyle;
 class QTDispatcher;
 
-typedef unsigned long Atom; 
+typedef unsigned long Atom;
 
 #include <qapplication.h>
 #include <qpixmap.h>
@@ -71,12 +71,12 @@ class KApplication : public QApplication
 
   Q_OBJECT
 public:
-  
+
   /**
 	* Constructor. Parses command-line arguments.
 	*
 	*/
-  KApplication( int& argc, char** argv, 
+  KApplication( int& argc, char** argv,
 		const QString& rAppName = QString::null);
 
   /** Destructor */
@@ -152,7 +152,7 @@ public:
    * @param bAboutQtMenu If true, there is a menu entry for About Qt
    * @return a standard help menu
    */
-  QPopupMenu* getHelpMenu( bool bAboutQtMenu, 
+  QPopupMenu* getHelpMenu( bool bAboutQtMenu,
 			   const QString& appAboutText );
 							
   /**
@@ -201,7 +201,7 @@ public:
    *
    */
   KStyle* kstyle() const {return pKStyle;}
-  
+
   /**
    * Get the KDE font list.
    *
@@ -225,7 +225,7 @@ public:
    */
   QString getCaption() const;
 
-  /** 
+  /**
    * Get a file name in order to make a temporary copy of your document.
    *
    * @param pFilename The full path to the current file of your
@@ -235,7 +235,7 @@ public:
    */
   QString tempSaveName( const QString& pFilename ) const;
 
-  /** 
+  /**
    * Check if there is an auto-save file for the document you want to
    * open.
    *
@@ -303,7 +303,7 @@ private:
   KStyle *pKStyle; // A KDE style object if available (mosfet)
   void* styleHandle; // A KDE style dlopen handle, if used
   QWidget *smw;
-  
+
   void init( );
   void parseCommandLine( int&, char** ); // search for special KDE arguments
 
@@ -313,14 +313,14 @@ private:
   virtual void kdisplaySetStyleAndFont();
   virtual void readSettings(bool reparse = true);
   void resizeAll();
-  virtual void applyGUIStyle(GUIStyle newstyle);
+  virtual void applyGUIStyle(GUIStyle);
 
   QColor inactiveTitleColor_;
   QColor inactiveTextColor_;
   QColor activeTitleColor_;
   QColor activeTextColor_;
   int contrast_;
-  GUIStyle applicationStyle_;
+    GUIStyle applicationStyle_; // ###### pointless, to be removed
 
 public:
 
@@ -332,7 +332,7 @@ public:
   GUIStyle applicationStyle() const;
 
 
-  /** 
+  /**
       @internal
     */
   int xioErrhandler();
@@ -423,6 +423,9 @@ private:
 #endif
 
 // $Log$
+// Revision 1.98  1999/08/03 20:21:32  kulow
+// removing the last kde_ function and kdedir() with it  ;)
+//
 // Revision 1.97  1999/07/23 17:07:15  steffen
 // be QTDispatchers friend
 //
@@ -451,196 +454,4 @@ private:
 // KApplication does reparseConfig right after creating the config
 // object (through KGlobal). Fixed in adding a bool reparse parameter
 // to readSettings
-//
-// Revision 1.91  1999/06/18 20:27:42  kulow
-// moved getConfig into source to avoid including kglobal.h (this enabal-final
-// thing fools me way too often :(
-//
-// Revision 1.90  1999/06/18 20:23:07  kulow
-// some more cleanups of KApplication. the KConfig instance is controlled
-// by KGlobal to make it independent from KApplication.
-// KApplication::getConfig() just calls KGlobal::config()
-//
-// Revision 1.89  1999/06/18 19:25:21  kulow
-// getting rid of KApplication::findFile. I don't remember having seen this
-// function ever used :)
-//
-// Revision 1.88  1999/06/18 16:48:27  kulow
-// ok, many changes for KConfig.
-//   KConfig's constructor doesn't take two absolute pathnames, but one
-//    filename ("kwmrc" for example) and looks for the files itself.
-//   KConfig has no longer a list of global system files, but looks for
-//    all kdeglobals and then system.kdeglobals
-// some changes to KApplication
-//   removed localkdeconfigdir - KConfig handles that on it's own now
-//   added obsolete message to localkdedir
-//   removed configstate and functions using it (I haven't found a single
-//   application caring if their config files is opened read only :)
-//   don't create directories before allocating KConfig object - KConfigBackend
-//   will do that in writeConfigFile if the file needs to be written - no
-//   empty k*rc files anymore :)
-// every other change is adopting to KConfig's new constructor. I'm wondering
-// why this has been that long this way - two full expanded path names aren't
-// really good arguments ;-)
-//
-// Revision 1.87  1999/06/17 22:06:21  kulow
-// thanks kde_toolbardir for the hard work you've done for us...
-//
-// Revision 1.86  1999/06/16 18:43:11  mario
-// Mario: made aboutKDE(), aboutQt() and aboutApp() public slots. No need to hide it
-//
-// Revision 1.85  1999/06/14 11:41:15  kulow
-// hmm, -Wwrite-strings gives _lot_ of warnings
-//
-// Revision 1.84  1999/06/14 10:42:42  kulow
-// some more correct const char*ness
-//
-// Revision 1.83  1999/06/11 20:41:41  kulow
-// appName is depreacted. Just use kapp->name() (from QApplication). I didn't
-// removed the function, but made it a wrapper for name, but I would, if I had
-// the time to fix all KDE ;)
-//
-// Revision 1.82  1999/06/11 19:58:53  knoll
-// committing the new kcharsets class.
-//
-// see KDE2PORTING for details
-//
-// Revision 1.81  1999/06/11 11:35:44  kulow
-// making aboutKDE protected. We should get rid of private for functions! ;)
-//
-// Revision 1.80  1999/05/28 07:44:15  pbrown
-// some cleanups to KConfig, including only calling rollback() when there are
-// actually dirty entries to roll back.  Minor cleanups to KDE font list
-// stuff in kapp.
-//
-// Revision 1.79  1999/05/25 16:17:24  kulow
-// two changes:
-//   kde_icondir() has been removed. Use locate("icon", pixmap) instead
-//   KIconLoader::loadMiniIcon has been removed. It does the same as
-//   loadApplicationMiniIcon and the later is less confusing in what it
-//   does (loading icons out of share/icons/mini)
-//
-// Revision 1.78  1999/05/23 17:04:51  kulow
-// let KGlobal create the IconLoader instance. Removed KApplication::getIconLoader.
-// Steffen's idea - just more consequent ;)
-//
-// removing some little used kde_*dir functions. May break kdebase parts,
-// I'm compiling right now
-//
-// Revision 1.77  1999/05/23 16:28:42  kulow
-// kde_localedir has been removed - first step on the way to KStdDirs.
-//
-// Revision 1.76  1999/05/23 00:50:57  kulow
-// searching for memory leaks - dmalloc is a great tool for that. The problem
-// is that it doesn't know the concept of static variables, but for the
-// rest it works perfect
-//
-// Revision 1.75  1999/05/19 20:39:53  kulow
-// clean up in dependency tree between KConfig, KLocale and Kapp
-// in using KGlobal. KGlobal::_locale is now the instance we're
-// using. Should be done for KIconLoader and co as well
-//
-// Revision 1.74  1999/05/19 18:47:01  kulow
-// const QString is pointless
-//
-// Revision 1.73  1999/05/18 00:40:23  steffen
-// Implemented lazy getIcon/getMiniIcon. Otherwise the code to defer creation of the iconloader is worthless. We now have 46 less system calls (mainly access() and other filesystem stuff) at startup ;-)
-//
-// Revision 1.72  1999/05/06 10:37:12  kulow
-// I don't know why I spent several days removing headers from kapp.h when
-// the next commit adds one ;(
-//
-// Revision 1.71  1999/05/06 02:50:30  pbrown
-// refer to .desktop files not .kdelnk files.
-//
-// Revision 1.70  1999/05/03 07:02:33  garbanzo
-// Might as well bump the version string and numbers to avoid confusion.
-//
-// Revision 1.69  1999/04/23 13:42:14  mosfet
-// KStyle class addition and the routines to allocate it.
-//
-// Revision 1.68  1999/04/19 15:49:31  kulow
-// cleaning up yet some more header files (fixheaders is your friend).
-// Adding copy constructor to KPixmap to avoid casting while assingment.
-//
-// The rest of the fixes in kdelibs and kdebase I will commit silently
-//
-// Revision 1.67  1999/04/17 19:15:41  kulow
-// cleaning up kapp.h, so that only needed headers are included. Guess how
-// many files include kapp.h because it includes almost anything they need ;)
-// If you find problems after this, please use
-//
-//   make -k 2>&1 | perl ..../kdesdk/script/fixheaders
-//
-// And if you find a problem, fixheaders doesn't fix, fix fixheaders
-//
-// Revision 1.66  1999/04/12 16:47:15  ssk
-// Wrote and updated some documentation.
-//
-// Revision 1.65  1999/03/04 17:49:08  ettrich
-// more fixes for Qt-2.0
-//
-// Revision 1.64  1999/03/02 16:22:18  kulow
-// i18n is no longer a macro, but a function defined in klocale.h. So you
-// don't need to include kapp.h when you want to use i18n. I see klocale->translate
-// as obsolute (actually I seded it all over KDE :)
-// I wanted to remove the #include <klocale.h> from kapp.h, but this broke
-// too much, so I readded it after fixing half of kdeui. I guess I will
-// write a script once that fixed compilation problems (I like the qt20fix way :),
-// but for now it's only important to know that i18n works without kapp.h
-//
-// Revision 1.63  1999/03/02 00:09:41  dfaure
-// Fix for ICON() when icon not found. Now returns a default pixmap, unknown.xpm,
-// instead of 0L. Will prevent koffice apps and some others from crashing when
-// not finding an icon. Approved by Reggie.
-//
-// loadIcon not changed, since I tried and it broke kpanel (which uses loadIcon
-// even on empty string in configuration item). This means loadIcon and ICON are
-// no longer equivalent : loadIcon is for apps that want to do complex things
-// with icons, based on whether they're installed or not, ICON() is for apps
-// that just want an Icon and don't want to care about it !
-//
-// Of course, unknown.xpm is WAYS to big for a toolbar - that's the point :
-// you easily see that the icon is missing....   :)))
-//
-// Not tested with Qt2.0, of course, but it's time for binary incompat changes...
-//
-// Revision 1.62  1999/03/01 23:33:11  kulow
-// CVS_SILENT ported to Qt 2.0
-//
-// Revision 1.60.2.8  1999/02/23 18:21:01  pbrown
-// reverted changes to kapp -- old dnd functionality should work again.
-//
-// Revision 1.60.2.6  1999/02/22 12:14:11  kulow
-// CVS_SILENT: merging 1.1 and 1.2
-//
-// Revision 1.60.2.5  1999/02/17 17:33:13  kulow
-// reverting Alex's patch.
-//
-// Revision 1.60.2.4  1999/02/17 05:36:42  garbanzo
-// i18n() seems to be returning a QString now.  This is a quick hack to get
-// around this.  i18n_r() returns the QString, i18n() returns the
-// QString.data().  Fully supporting QStrings means using QFiles
-// throughout...
-//
-// Revision 1.60.2.3  1999/02/14 02:05:35  granroth
-// Converted a lot of 'const char*' to 'QString'.  This compiles... but
-// it's entirely possible that nothing will run linked to it :-P
-//
-// Revision 1.60.2.2  1999/01/30 23:55:51  kulow
-// more porting - it actually compiles now ;)
-//
-// Revision 1.60.2.1  1999/01/30 20:18:45  kulow
-// start porting to Qt2.0 beta
-//
-// Revision 1.61  1999/02/06 16:27:11  kulow
-// make KDE "1.1" and 1 - 1 - 3 (pre1 and 2 was 1 - 1 - 1). Then again
-// 1.1.1 has to be 1 - 1 - 4. Would be strange, not? I see no other way around.
-//
-// Revision 1.60  1998/12/06 08:56:10  garbanzo
-// Typo police.
-//
-// Revision 1.59  1998/12/06 08:43:47  garbanzo
-// Oh hell, it looks ok at the bottom.  I hope nobody gets their tighty
-// whitites in a knot.
 //

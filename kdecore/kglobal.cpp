@@ -61,7 +61,7 @@ KIconLoader *KGlobal::iconLoader()
     if( _iconLoader == 0 ) {
 	_iconLoader = new KIconLoader();
     }
-    
+
     return _iconLoader;
 }
 
@@ -92,11 +92,6 @@ QFont KGlobal::generalFont()
 
     c->setGroup( "General" );
     _generalFont = new QFont(c->readFontEntry("font"));
-    if( *_generalFont == QFont::defaultFont() )
-    {
-	*_generalFont = QFont("helvetica", 12, QFont::Normal);
-	charsets()->setQFont(*_generalFont, charsets()->charsetForLocale());
-    }
     return *_generalFont;
 }
 	
@@ -109,7 +104,7 @@ QFont KGlobal::fixedFont()
     KConfig *c = KGlobal::config();
     c->setGroup( "General" );
     _fixedFont = new QFont(c->readFontEntry("fixedFont"));
-    
+
     if(!QFontInfo(*_fixedFont).fixedPitch() ) {
         *_fixedFont = QFont("fixed",
                             _fixedFont->pointSize(), QFont::Normal);
@@ -129,7 +124,7 @@ int KGlobal::dndEventDelay()
     }
     return(delay);
 }
- 
+
 
 
 void KGlobal::freeAll()
