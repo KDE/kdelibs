@@ -18,9 +18,9 @@
 #    Boston, MA 02111-1307, USA.
 
 
-SUBDIRS = kdecore kimgio kdeui kformula mimetypes \
+SUBDIRS = dcop kdecore kimgio kdeui kformula mimetypes \
 	mediatool kspell kio kfile kab khtml kstyles \
-	corba doc toolbar kdetest dcop
+	corba doc toolbar kdetest
 
 $(top_srcdir)/acinclude.m4: $(top_srcdir)/admin/acinclude.m4.in $(top_srcdir)/admin/libtool.m4.in $(top_srcdir)/libltdl.m4
 	@cd $(top_srcdir) && cat admin/acinclude.m4.in admin/libtool.m4.in libltdl.m4 > acinclude.m4 
