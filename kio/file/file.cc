@@ -1128,6 +1128,7 @@ void FileProtocol::slotListDir( const char *_url )
       // It is a link pointing to nowhere
       type = S_IFMT - 1;
       access = S_IRWXU | S_IRWXG | S_IRWXO;
+      buff.st_size = lbuff.st_size; // buff.st_size is invalid
     } else {
       lstat( tmp.ascii(), &lbuff );
       type = buff.st_mode & S_IFMT; // extract file type
