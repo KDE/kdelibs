@@ -314,7 +314,7 @@ void KStyle::drawKickerTaskButton(QPainter *p, int x, int y, int w, int h,
 
   static QString modStr =
     QString::fromUtf8("[") + i18n("modified") + QString::fromUtf8("]");
-  
+
   int modStrPos = s.find(modStr);
 
   if (-1 != modStrPos) {
@@ -328,6 +328,26 @@ void KStyle::drawKickerTaskButton(QPainter *p, int x, int y, int w, int h,
     int dy = (h       - modPixmap.height()) / 2;
 
     p->drawPixmap(br.x() + textPos + dx, dy, modPixmap);
+
+    textPos += pxWidth;
+  }
+
+  static QString mailStr =
+    QString::fromUtf8("[") + i18n("new mail") + QString::fromUtf8("]");
+
+  int mailStrPos = s.find(mailStr);
+
+  if (-1 != mailStrPos) {
+
+    // +1 because we include a space after the closing brace.
+    s.remove(mailStrPos, mailStr.length()+1);
+
+    QPixmap mailPixmap = SmallIcon("mail_get");
+
+    int dx = (pxWidth - mailPixmap.width())  / 2;
+    int dy = (h       - mailPixmap.height()) / 2;
+
+    p->drawPixmap(br.x() + textPos + dx, dy, mailPixmap);
 
     textPos += pxWidth;
   }

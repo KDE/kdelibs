@@ -18,6 +18,7 @@
 #ifndef _KNOTIFY_CLIENT
 #define _KNOTIFY_CLIENT
 #include <qobject.h>
+#include <qstack.h>
 #include <kapp.h>
 #include <dcopclient.h>
 
@@ -169,6 +170,41 @@ namespace KNotifyClient
 	 * Some do (Sound)
 	 */
 	QString getDefaultFile(const QString &eventname, int present);
+
+    /**
+     * Makes it possible to use @ref KNotifyClient with a @ref KInstance
+     * that is not the application.
+     *
+     * Use like this:
+     * <pre>
+     * KNotify(myInstance);
+     * KNotifyClient::event("MyEvent");
+     *
+     * @short Enables @ref KNotifyClient to use a different @ref KInstance
+     */
+    class Instance
+    {
+    public:
+        /**
+         * Constructs a KNotifyClient::Instance to make @ref KNotifyClient use
+         * the specified @ref KInstance for the event configuration
+         */
+        Instance(KInstance *);
+        /**
+         * Destructs the KNotifyClient::Instance and resets @ref KNotifyClient
+         * to the previously used @ref KInstance
+         */
+        ~Instance();
+        /**
+         * Returns the currently active @ref KInstance
+         */
+        static KInstance *current();
+
+    private:
+        KInstance *m_instance;
+        static QStack<Instance> s_instances;
+    };
+
 };
 
 #endif

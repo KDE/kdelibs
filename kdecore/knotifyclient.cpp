@@ -23,6 +23,7 @@
 #include <kstddirs.h>
 #include <kconfig.h>
 #include <dcopclient.h>
+#include <kdebug.h>
 
 static const char *daemonName="knotify";
 
@@ -40,7 +41,7 @@ static bool sendNotifyEvent(const QString &message, const QString &text,
 
   QByteArray data;
   QDataStream ds(data, IO_WriteOnly);
-  QString appname = kapp->name();
+  QString appname = KNotifyClient::Instance::current()->instanceName();
   ds << message << appname << text << sound << file << present << level;
 
   if ( !KNotifyClient::startDaemon() )
@@ -168,3 +169,32 @@ void KNotifyClient::beep(const QString& reason)
 
   KNotifyClient::event(KNotifyClient::notification, reason);
 }
+
+QStack<KNotifyClient::Instance> KNotifyClient::Instance::s_instances;
+
+KNotifyClient::Instance::Instance(KInstance *instance)
+    : m_instance(instance)
+{
+    s_instances.push(this);
+}
+
+KNotifyClient::Instance::~Instance()
+{
+    if (s_instances.top() == this)
+        s_instances.pop();
+    else if (s_instances.count())
+    {
+        kdWarning(160) << "Tried to remove an Instance that is not the current," << endl;
+        kdWarning(160) << "Resetting to the main KApplication." << endl;
+        s_instances.clear();
+    }
+    else {
+        kdWarning(160) << "Tried to remove an Instance, but the stack was empty." << endl;
+    }
+}
+
+KInstance *KNotifyClient::Instance::current()
+{
+    return s_instances.top() ? s_instances.top()->m_instance : kapp;
+}
+
