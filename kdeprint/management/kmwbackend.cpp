@@ -25,11 +25,11 @@
 
 #include <qlayout.h>
 #include <qbuttongroup.h>
-#include <qframe.h>
 #include <qradiobutton.h>
 
 #include <kcursor.h>
 #include <klocale.h>
+#include <kseparator.h>
 
 class KRadioButton : public QRadioButton
 {
@@ -107,10 +107,8 @@ void KMWBackend::addBackend(int ID, const QString& txt, bool on, int nextpage)
 {
 	if (ID == -1)
 	{
-		QFrame	*fr = new QFrame(this);
-		fr->setFrameStyle(QFrame::HLine|QFrame::Sunken);
-		fr->setLineWidth(1);
-		m_layout->insertWidget(m_count, fr);
+		KSeparator* sep = new KSeparator( KSeparator::HLine, this);
+		m_layout->insertWidget(m_count, sep);
 	}
 	else
 	{

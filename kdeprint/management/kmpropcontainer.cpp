@@ -22,25 +22,23 @@
 #include "kmpropcontainer.h"
 #include "kmpropwidget.h"
 
-#include <qframe.h>
 #include <qpushbutton.h>
 #include <qlayout.h>
 #include <klocale.h>
+#include <kseparator.h>
 
 KMPropContainer::KMPropContainer(QWidget *parent, const char *name)
 : QWidget(parent,name)
 {
-	QFrame	*line = new QFrame(this);
-	line->setFrameStyle(QFrame::HLine|QFrame::Sunken);
-	line->setLineWidth(1);
-	line->setFixedHeight(5);
+	KSeparator* sep = new KSeparator( KSeparator::HLine, this);
+	sep->setFixedHeight(5);
 
 	m_button = new QPushButton(i18n("Change..."), this);
 	m_widget = 0;
 
 	QVBoxLayout	*main_ = new QVBoxLayout(this, 0, 10);
 	QHBoxLayout	*btn_ = new QHBoxLayout(0, 0, 0);
-	main_->addWidget(line,0);
+	main_->addWidget(sep,0);
 	main_->addLayout(btn_,0);
 	btn_->addStretch(1);
 	btn_->addWidget(m_button);

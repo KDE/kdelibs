@@ -25,9 +25,9 @@
 #include <qpixmap.h>
 #include <qlabel.h>
 #include <qlayout.h>
-#include <qframe.h>
 #include <klocale.h>
 #include <kiconloader.h>
+#include <kseparator.h>
 
 KMInfoPage::KMInfoPage(QWidget *parent, const char *name)
 : QWidget(parent,name)
@@ -35,9 +35,7 @@ KMInfoPage::KMInfoPage(QWidget *parent, const char *name)
 	m_title = new QLabel(this);
 	m_titlepixmap = new QLabel(this);
 	m_titlepixmap->setAlignment(Qt::AlignCenter);
-	QFrame	*m_line = new QFrame(this);
-	m_line->setFrameStyle(QFrame::HLine|QFrame::Sunken);
-	m_line->setLineWidth(1);
+        KSeparator* sep = new KSeparator( KSeparator::HLine, this);
 	m_type = new QLabel(this);
 	m_description = new QLabel(this);
 	m_state = new QLabel(this);
@@ -67,7 +65,7 @@ KMInfoPage::KMInfoPage(QWidget *parent, const char *name)
 	lay0->setRowStretch(10,1);
 	lay0->setColStretch(1,1);
 	lay0->addMultiCellLayout(lay1, 0, 0, 0, 1);
-	lay0->addMultiCellWidget(m_line, 1, 1, 0, 1);
+	lay0->addMultiCellWidget(sep, 1, 1, 0, 1);
 	lay0->addWidget(m_typelabel, 2, 0);
 	lay0->addWidget(m_statelabel, 3, 0);
 	lay0->addWidget(m_loclabel, 4, 0);

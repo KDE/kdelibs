@@ -24,13 +24,13 @@
 #include <qlineedit.h>
 #include <qcheckbox.h>
 #include <qlabel.h>
-#include <qframe.h>
 #include <qlayout.h>
 #include <qwhatsthis.h>
 #include <klocale.h>
 #include <kmessagebox.h>
 #include <kicondialog.h>
 #include <kfiledialog.h>
+#include <kseparator.h>
 
 KMSpecialPrinterDlg::KMSpecialPrinterDlg(QWidget *parent, const char *name)
 : KDialog(parent,name,true)
@@ -53,10 +53,8 @@ KMSpecialPrinterDlg::KMSpecialPrinterDlg(QWidget *parent, const char *name)
 	QLabel	*m_namelabel = new QLabel(i18n("Name:"), this);
 	QLabel	*m_desclabel = new QLabel(i18n("Description:"), this);
 	QLabel	*m_loclabel = new QLabel(i18n("Location:"), this);
-	QFrame	*m_line = new QFrame(this);
-	m_line->setFrameStyle(QFrame::HLine|QFrame::Sunken);
-	m_line->setLineWidth(1);
-	m_line->setFixedHeight(10);
+	KSeparator* sep = new KSeparator( KSeparator::HLine, this);
+	sep->setFixedHeight(10);
 	QLabel	*m_cmdlabel = new QLabel(i18n("Command:"), this);
 	m_usefile = new QCheckBox(i18n("Use output file with extension:"), this);
 	connect(m_usefile, SIGNAL(toggled(bool)), m_extension, SLOT(setEnabled(bool)));
@@ -86,7 +84,7 @@ KMSpecialPrinterDlg::KMSpecialPrinterDlg(QWidget *parent, const char *name)
 	l1->addWidget(m_name, 0, 2);
 	l1->addWidget(m_description, 1, 2);
 	l1->addWidget(m_location, 2, 2);
-	l0->addWidget(m_line);
+	l0->addWidget(sep);
 	QHBoxLayout	*l2 = new QHBoxLayout(0, 0, 10);
 	l0->addLayout(l2);
 	l2->addWidget(m_cmdlabel);

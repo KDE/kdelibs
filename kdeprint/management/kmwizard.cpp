@@ -28,11 +28,11 @@
 #include <qpushbutton.h>
 #include <qlabel.h>
 #include <qwidgetstack.h>
-#include <qframe.h>
 #include <kmessagebox.h>
 #include <qlayout.h>
 #include <klocale.h>
 #include <kdebug.h>
+#include <kseparator.h>
 
 #include "kmwinfopage.h"
 #include "kmwpassword.h"
@@ -67,10 +67,8 @@ KMWizard::KMWizard(QWidget *parent, const char *name)
 	QFont	f(m_title->font());
 	f.setBold(true);
 	m_title->setFont(f);
-	QFrame	*m_fr = new QFrame(this);
-	m_fr->setFrameStyle(QFrame::HLine|QFrame::Plain);
-	m_fr->setLineWidth(1);
-	m_fr->setFixedHeight(5);
+	KSeparator* sep = new KSeparator( KSeparator::HLine, this);
+	sep->setFixedHeight(5);
 
 	connect(m_cancel,SIGNAL(clicked()),SLOT(reject()));
 	connect(m_next,SIGNAL(clicked()),SLOT(slotNext()));
@@ -81,7 +79,7 @@ KMWizard::KMWizard(QWidget *parent, const char *name)
 	QHBoxLayout	*btn_ = new QHBoxLayout(0, 0, 10);
 	QHBoxLayout	*btn2_ = new QHBoxLayout(0, 0, 10);
 	main_->addWidget(m_title);
-	main_->addWidget(m_fr);
+	main_->addWidget(sep);
 	main_->addSpacing(10);
 	main_->addWidget(m_stack,1);
 	main_->addSpacing(20);

@@ -34,6 +34,7 @@
 #include <qlayout.h>
 #include <klocale.h>
 #include <kiconloader.h>
+#include <kseparator.h>
 
 KMWSocket::KMWSocket(QWidget *parent, const char *name)
 : KMWizardPage(parent,name)
@@ -62,10 +63,8 @@ KMWSocket::KMWSocket(QWidget *parent, const char *name)
 	QPushButton	*settings_ = new QPushButton(i18n("Settings"),this);
 	QPushButton	*scan_ = new QPushButton(i18n("Scan"),this);
 
-	QFrame	*fr = new QFrame(this);
-	fr->setFrameStyle(QFrame::HLine|QFrame::Sunken);
-	fr->setLineWidth(1);
-	fr->setFixedHeight(40);
+	KSeparator* sep = new KSeparator( KSeparator::HLine, this);
+	sep->setFixedHeight(40);
 
 	connect(m_list,SIGNAL(selectionChanged(QListViewItem*)),SLOT(slotPrinterSelected(QListViewItem*)));
 	connect(scan_,SIGNAL(clicked()),SLOT(slotScan()));
@@ -83,7 +82,7 @@ KMWSocket::KMWSocket(QWidget *parent, const char *name)
 	lay2->addSpacing(10);
 	lay2->addWidget(l2);
 	lay2->addWidget(m_port);
-	lay2->addWidget(fr);
+	lay2->addWidget(sep);
 	lay2->addWidget(l3);
 	lay2->addSpacing(10);
 	lay2->addWidget(m_bar);

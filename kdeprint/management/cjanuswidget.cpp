@@ -23,9 +23,9 @@
 
 #include <qwidgetstack.h>
 #include <qlabel.h>
-#include <qframe.h>
 #include <klistbox.h>
 #include <qlayout.h>
+#include <kseparator.h>
 
 class CJanusWidget::CPage
 {
@@ -137,10 +137,8 @@ CJanusWidget::CJanusWidget(QWidget *parent, const char *name)
 	f.setBold(true);
 	m_header->setFont(f);
 
-	QFrame	*m_frame = new QFrame(this);
-	m_frame->setFrameStyle(QFrame::HLine|QFrame::Plain);
-	m_frame->setLineWidth(1);
-	m_frame->setFixedHeight(5);
+	KSeparator* sep = new KSeparator( KSeparator::HLine, this);
+	sep->setFixedHeight(5);
 
 	m_iconlist = new CListBox(this);
 	f = m_iconlist->font();
@@ -156,7 +154,7 @@ CJanusWidget::CJanusWidget(QWidget *parent, const char *name)
 	main_->addWidget(m_iconlist,0);
 	main_->addLayout(sub_,1);
 	sub_->addWidget(m_header,0);
-	sub_->addWidget(m_frame,0);
+	sub_->addWidget(sep,0);
 	sub_->addWidget(m_stack,1);
 }
 
