@@ -50,6 +50,7 @@ public:
     int tarEnd;
     KTempFile* tmpFile;
     QString mimetype;
+    QCString origFileName;
 
     bool fillTempFile(const QString & filename);
     bool writeBackTempFile( const QString & filename );
@@ -168,7 +169,7 @@ void KTar::setOrigFileName( const QCString & fileName )
         kdWarning(7041) << "KTar::setOrigFileName: File must be opened for writing first.\n";
         return;
     }
-    static_cast<KFilterDev *>(device())->setOrigFileName( fileName );
+    d->origFileName = fileName;
 }
 
 Q_LONG KTar::readRawHeader(char *buffer) {
@@ -506,6 +507,8 @@ bool KTar::KTarPrivate::writeBackTempFile( const QString & filename ) {
             delete dev;
             return false;
         }
+        if ( forced )
+            static_cast<KFilterDev *>(dev)->setOrigFileName( origFileName );
         QByteArray buffer(8*1024);
         Q_LONG len;
         while ( ! file->atEnd()) {
