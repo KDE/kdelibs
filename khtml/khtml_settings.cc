@@ -533,7 +533,9 @@ static const KPerDomainSettings &lookup_hostname_policy(
 			const KHTMLSettingsPrivate *d,
 			const QString& hostname)
 {
+#ifdef DEBUG_SETTINGS
   kdDebug() << "lookup_hostname_policy(" << hostname << ")" << endl;
+#endif
   if (hostname.isEmpty()) {
 #ifdef DEBUG_SETTINGS
     d->global.dump("global");
@@ -546,8 +548,8 @@ static const KPerDomainSettings &lookup_hostname_policy(
   // First check whether there is a perfect match.
   PolicyMap::const_iterator it = d->domainPolicy.find(hostname);
   if( it != notfound ) {
-    kdDebug() << "perfect match" << endl;
 #ifdef DEBUG_SETTINGS
+    kdDebug() << "perfect match" << endl;
     (*it).dump(hostname);
 #endif
     // yes, use it (unless dunno)
@@ -563,8 +565,8 @@ static const KPerDomainSettings &lookup_hostname_policy(
     it = d->domainPolicy.find(host_part);
     Q_ASSERT(notfound == d->domainPolicy.end());
     if( it != notfound ) {
-      kdDebug() << "partial match" << endl;
 #ifdef DEBUG_SETTINGS
+      kdDebug() << "partial match" << endl;
       (*it).dump(host_part);
 #endif
       return *it;
@@ -574,8 +576,8 @@ static const KPerDomainSettings &lookup_hostname_policy(
   }
 
   // No domain-specific entry: use global domain
-  kdDebug() << "no match" << endl;
 #ifdef DEBUG_SETTINGS
+  kdDebug() << "no match" << endl;
   d->global.dump("global");
 #endif
   return d->global;
@@ -588,13 +590,11 @@ bool KHTMLSettings::isBackRightClickEnabled()
 
 bool KHTMLSettings::isJavaEnabled( const QString& hostname )
 {
-  kdDebug() << k_funcinfo << endl;
   return lookup_hostname_policy(d,hostname.lower()).m_bEnableJava;
 }
 
 bool KHTMLSettings::isJavaScriptEnabled( const QString& hostname )
 {
-  kdDebug() << k_funcinfo << endl;
   return lookup_hostname_policy(d,hostname.lower()).m_bEnableJavaScript;
 }
 
@@ -606,37 +606,31 @@ bool KHTMLSettings::isJavaScriptDebugEnabled( const QString& /*hostname*/ )
 
 bool KHTMLSettings::isPluginsEnabled( const QString& hostname )
 {
-  kdDebug() << k_funcinfo << endl;
   return lookup_hostname_policy(d,hostname.lower()).m_bEnablePlugins;
 }
 
 KHTMLSettings::KJSWindowOpenPolicy KHTMLSettings::windowOpenPolicy(
 				const QString& hostname) const {
-  kdDebug() << k_funcinfo << endl;
   return lookup_hostname_policy(d,hostname.lower()).m_windowOpenPolicy;
 }
 
 KHTMLSettings::KJSWindowMovePolicy KHTMLSettings::windowMovePolicy(
 				const QString& hostname) const {
-  kdDebug() << k_funcinfo << endl;
   return lookup_hostname_policy(d,hostname.lower()).m_windowMovePolicy;
 }
 
 KHTMLSettings::KJSWindowResizePolicy KHTMLSettings::windowResizePolicy(
 				const QString& hostname) const {
-  kdDebug() << k_funcinfo << endl;
   return lookup_hostname_policy(d,hostname.lower()).m_windowResizePolicy;
 }
 
 KHTMLSettings::KJSWindowStatusPolicy KHTMLSettings::windowStatusPolicy(
 				const QString& hostname) const {
-  kdDebug() << k_funcinfo << endl;
   return lookup_hostname_policy(d,hostname.lower()).m_windowStatusPolicy;
 }
 
 KHTMLSettings::KJSWindowFocusPolicy KHTMLSettings::windowFocusPolicy(
 				const QString& hostname) const {
-  kdDebug() << k_funcinfo << endl;
   return lookup_hostname_policy(d,hostname.lower()).m_windowFocusPolicy;
 }
 
