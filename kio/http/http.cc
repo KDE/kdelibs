@@ -952,6 +952,7 @@ bool HTTPProtocol::http_open()
     AuthInfo info;
     info.url = m_request.url;
     info.verifyPath = true;
+    info.multipleUserCaching = true;
     if ( !m_request.user.isEmpty() )
       info.username = m_request.user;
     if ( checkCachedAuthentication( info ) )
@@ -1006,6 +1007,7 @@ bool HTTPProtocol::http_open()
       info.username = m_proxyURL.user();
       info.password = m_proxyURL.pass();
       info.verifyPath = true;
+      info.multipleUserCaching = true;
 
       // If the proxy URL already contains username
       // and password simply attempt to retrieve it
@@ -1528,9 +1530,17 @@ bool HTTPProtocol::readHeader()
         {
           pos = 8;
           int len = disposition.length();
-          while( disposition[ pos ] == ' ' || disposition[ pos ] == '=' ) pos++;
+          while( disposition[pos] == ' ' || disposition[pos] == '=' ||
+                 disposition[pos] == '"' )
+              pos++;
           if( pos < len )
-            disposition = disposition.mid(pos);
+          {
+            int start = pos;
+            while ( pos < len &&
+                   (disposition[pos] != '"' || disposition[pos] != ';') )
+                pos++;
+            disposition = disposition.mid(start, pos);
+          }
           else
             disposition = QString::null;
         }
@@ -3341,6 +3351,7 @@ bool HTTPProtocol::getAuthorization()
     }
 
     info.verifyPath = false;
+    info.multipleUserCaching = true;
     result = checkCachedAuthentication( info );
     if ( Authentication == AUTH_Digest )
     {
@@ -3407,6 +3418,7 @@ bool HTTPProtocol::getAuthorization()
 void HTTPProtocol::saveAuthorization()
 {
   AuthInfo info;
+  info.multipleUserCaching = true;
   if ( m_prevResponseCode == 407 )
   {
     info.url = m_proxyURL;
@@ -3781,4 +3793,5 @@ void HTTPProtocol::resetSessionSettings()
   m_bCanResume = false;
   m_bUnauthorized = false;
 }
+
 
