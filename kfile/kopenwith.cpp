@@ -309,10 +309,9 @@ void KOpenWithDlg::setServiceType( const KURL::List& _urls )
 
 void KOpenWithDlg::init( const QString& _text, const QString& _value )
 {
-
+  m_terminaldirty = false;
   m_pTree = 0L;
   m_pService = 0L;
-  haveApp = false;
 
   QBoxLayout* topLayout = new QVBoxLayout(this, KDialog::marginHint(),
                                           KDialog::spacingHint());
@@ -350,6 +349,8 @@ void KOpenWithDlg::init( const QString& _text, const QString& _value )
            this, SLOT( slotDbClick() ) );
 
   terminal = new QCheckBox( i18n("Run in terminal"), this );
+  connect(terminal, SIGNAL(toggled(bool)), this, SLOT(slotTerminalToggled(bool)));
+
   topLayout->addWidget(terminal);
 
   if (!qServiceType.isNull())
@@ -403,6 +404,7 @@ void KOpenWithDlg::slotClear()
 
 void KOpenWithDlg::slotSelected( const QString& /*_name*/, const QString& _exec )
 {
+    kdDebug(6000)<<"KOpenWithDlg::slotSelected\n";
     edit->setURL( _exec );
 }
 
@@ -411,10 +413,24 @@ void KOpenWithDlg::slotSelected( const QString& /*_name*/, const QString& _exec 
 
 void KOpenWithDlg::slotHighlighted( const QString& _name, const QString& )
 {
+    kdDebug(6000)<<"KOpenWithDlg::slotHighlighted\n";
     qName = _name;
-    haveApp = true;
+    m_pService = KService::serviceByName( qName );
+    if (!m_terminaldirty)
+    {
+	// ### indicate that default value was restored
+	terminal->setChecked(m_pService->terminal());
+        m_terminaldirty = false; // slotTerminalToggled changed it
+    }
 }
 
+// ----------------------------------------------------------------------
+
+void KOpenWithDlg::slotTerminalToggled(bool)
+{
+    // ### indicate that default value was overridden
+    m_terminaldirty = true;
+}
 
 // ----------------------------------------------------------------------
 
@@ -426,12 +442,7 @@ void KOpenWithDlg::slotDbClick()
 
 void KOpenWithDlg::slotOK()
 {
-  if (haveApp)
-  {
-    m_pService = KService::serviceByName( qName );
-  }
-  else {
-    m_pService = 0L;
+  if (!m_pService) {
     // no service was found, maybe they typed the name into the text field
     KService::List sList = KService::allServices();
     QValueListIterator<KService::Ptr> it(sList.begin());
@@ -450,10 +461,8 @@ void KOpenWithDlg::slotOK()
           (*it)->name().lower() == text.lower())
         m_pService = *it;
     }
-    if (m_pService) {
+    if (m_pService)
       edit->setURL(m_pService->exec());
-      haveApp = true;
-    }
   }
 
   if (terminal->isChecked()) {
@@ -463,17 +472,18 @@ void KOpenWithDlg::slotOK()
 
     m_command += QString::fromLatin1(" -e ");
     m_command += edit->url();
+    kdDebug() << "Setting m_command to " << m_command << endl;
   }
+  if ( m_pService && terminal->isChecked() != m_pService->terminal() )
+      m_pService = 0L; // It's not exactly this service we're running
 
-  if (haveApp && !remember) {
-    haveApp = false;
+  if (m_pService && !remember) {
     accept();
     return;
   }
 
   if (remember)
     if (!remember->isChecked()) {
-      haveApp = false;
       accept();
       return;
     }
@@ -482,7 +492,7 @@ void KOpenWithDlg::slotOK()
   // association to be remembered.  Create/update service.
   QString keepExec(edit->url());
   QString serviceName;
-  if (!haveApp) {
+  if (!m_pService) {
     if (keepExec.contains('/'))
     {
       serviceName = keepExec.mid(keepExec.findRev('/') + 1);
@@ -504,7 +514,7 @@ void KOpenWithDlg::slotOK()
 
   KDesktopFile desktop(path);
   desktop.writeEntry(QString::fromLatin1("Type"), QString::fromLatin1("Application"));
-  desktop.writeEntry(QString::fromLatin1("Name"), haveApp ? m_pService->name() : serviceName);
+  desktop.writeEntry(QString::fromLatin1("Name"), m_pService ? m_pService->name() : serviceName);
   desktop.writeEntry(QString::fromLatin1("Exec"), keepExec);
   if (remember)
     if (remember->isChecked()) {
@@ -540,7 +550,6 @@ void KOpenWithDlg::slotOK()
 
   ASSERT( m_pService );
 
-  haveApp = false;
   accept();
 }
 

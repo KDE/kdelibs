@@ -105,6 +105,7 @@ public slots:
     void slotClear();
     void slotSelected( const QString&_name, const QString& _exec );
     void slotHighlighted( const QString& _name, const QString& _exec );
+    void slotTerminalToggled(bool);
     void slotDbClick();
     void slotOK();
 
@@ -137,7 +138,7 @@ protected:
     QLabel *label;
 
     QString qName, qServiceType;
-    bool  haveApp;
+    bool m_terminaldirty;
     QCheckBox   *terminal, *remember;
     QPushButton *ok;
     QPushButton *clear;
