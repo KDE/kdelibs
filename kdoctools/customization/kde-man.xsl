@@ -2,6 +2,10 @@
 <!-- vim:set syntax=xml ts=2 et: -->
 <xsl:import href="../docbook/xsl/manpages/docbook.xsl"/>
 
+<!-- Disable the automatically generated AUTHORS section by overloading the
+  respective template and making it a no-op. -->
+<xsl:template match="articleinfo|bookinfo|refentryinfo" mode="authorsect"/>
+
 <!--
   Copied from ../docbook/xsl/manpages/docbook.xsl and changed it so that the
   output file's name is harccoded to 'manpage.troff', and the quiet parameter
