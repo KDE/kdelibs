@@ -429,15 +429,14 @@ int KIconView::iconTextHeight() const
 void KIconView::setIconTextHeight( int n )
 {
     int oldHeight = iconTextHeight();
-    if ( n > 1 ) {
+    if ( n > 1 )
         d->textHeight = n;
-        setWordWrapIconText( true );
-    }
-    else {
+    else
         d->textHeight = 1;
-        setWordWrapIconText( false );
-    }
-    
+
+    // so that Qt still shows the tooltip when even a wrapped text is too long
+    setWordWrapIconText( false );
+
     // update view if needed
     if ( iconTextHeight() != oldHeight )
         setFont( font() );  // hack to recalc items
