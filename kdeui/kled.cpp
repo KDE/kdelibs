@@ -21,6 +21,10 @@
  * $Id$
  *
  * $Log$
+ * Revision 1.7  1999/10/10 13:34:14  mirko
+ * First merge with KLedLamp that shows a rectangular LED.
+ * It does not yet work reliably.
+ *
  * Revision 1.6  1999/03/01 23:34:49  kulow
  * CVS_SILENT ported to Qt 2.0
  *
@@ -66,24 +70,26 @@ void
 KLed::paintEvent(QPaintEvent *)
 {
   switch(led_shape)
+  {
+  case Rectangular:
+    paintrect();
+    break;
+  case Circular:
+    switch (led_look) 
     {
-    case Rectangular:
-      paintrect();
+    case flat  : 
+      paintflat(); 
       break;
-    case Circular:
-      switch (led_look) 
-	{
-	case flat  : 
-	  paintflat(); 
-	  break;
-	case round : 
-	  paintround(); 
-	  break;
-	case sunken: 
-	  paintsunken(); 
-	  break;
-	}
+    case round : 
+      paintround(); 
+      break;
+    case sunken: 
+      paintsunken(); 
+      break;
     }
+  case NoShape:
+    break;
+  }
 }
 
 void
@@ -139,9 +145,7 @@ KLed::paintround()
 {
   QPainter p(this);
   KPixmap pix;
-  int x=this->x(), y=this->y(), w=width(), h=height();
   QColor c;
-  QRgb rgb=led_color.rgb();
   // -----
   c.setRgb(qRed(led_color.rgb())/2, qGreen(led_color.rgb())/2, qBlue(led_color.rgb())/2);
   if(led_state==On)
@@ -265,25 +269,24 @@ KLed::paintrect()
   int h=height();
   // -----
   switch(led_shape) 
-    {
-    case On:
-      painter.setBrush(lightBrush);
-      painter.drawRect(0, 0, w, h);
-      break;
-    case Off:
-      painter.setBrush(darkBrush);
-      painter.drawRect(0, 0, w, h);
-      painter.setPen(pen);
-      painter.drawLine(0, 0, w, 0);
-      painter.drawLine(0, h-1, w, h-1);
-      // Draw verticals
-      int i;
-      for(i=0; i < w; i+= 4 /* dx */)
-	painter.drawLine(i, 1, i, h-1);
-      break;
-      //  default:
-      //    fprintf(stderr, "KLedLamp: INVALID State (%d)\n", s);
-    } 
+  {
+  case On:
+    painter.setBrush(lightBrush);
+    painter.drawRect(0, 0, w, h);
+    break;
+  case Off:
+    painter.setBrush(darkBrush);
+    painter.drawRect(0, 0, w, h);
+    painter.setPen(pen);
+    painter.drawLine(0, 0, w, 0);
+    painter.drawLine(0, h-1, w, h-1);
+    // Draw verticals
+    int i;
+    for(i=0; i < w; i+= 4 /* dx */)
+      painter.drawLine(i, 1, i, h-1);
+    break;
+  default: break;
+  } 
 }
 
 KLed::State

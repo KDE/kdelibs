@@ -829,9 +829,8 @@ void KThemeStyle::drawArrow(QPainter *p, Qt::ArrowType type, bool down, int x,
         widget = enabled ? down ? SunkenArrowLeft : ArrowLeft : DisArrowLeft;
         break;
     case RightArrow:
-        widget = enabled ? down ? SunkenArrowRight : ArrowRight : DisArrowRight;
-        break;
     default:
+        widget = enabled ? down ? SunkenArrowRight : ArrowRight : DisArrowRight;
         break;
     }
     if(isPixmap(widget)){

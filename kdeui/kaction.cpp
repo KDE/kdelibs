@@ -247,47 +247,43 @@ KToggleAction::KToggleAction( QObject* parent, const char* name )
 int KToggleAction::plug( QWidget* widget )
 {
     if ( !widget->inherits("QPopupMenu") && !widget->inherits("QActionWidget" ) &&
-	 !widget->inherits("KToolBar") )
-    {
-	qDebug("Can not plug KToggleAction in %s", widget->className() );
-	return -1;	
+         !widget->inherits("KToolBar") ) {
+        qDebug("Can not plug KToggleAction in %s", widget->className() );
+        return -1;	
     }
-
+    
     int index = -1;
     if ( widget->inherits( "KToolBar" ) ) {
-	KToolBar *bar = (KToolBar *)widget;
-
-	int id_ = get_toolbutton_id();
- 	bar->insertButton( iconSet().pixmap(), id_, SIGNAL( clicked() ), this, SLOT( slotActivated() ),
- 			   isEnabled(), plainText() );
-
-	KToolBarButton *but = bar->getButton( id_ );
-	addContainer( bar, id_ );
-	
-	connect( bar, SIGNAL( destroyed() ), this, SLOT( slotDestroyed() ) );
-
-	index =  containerCount() - 1;
-  } else
-      index = QToggleAction::plug( widget );
-
+        KToolBar *bar = (KToolBar *)widget;
+        
+        int id_ = get_toolbutton_id();
+        bar->insertButton( iconSet().pixmap(), id_, SIGNAL( clicked() ), this, SLOT( slotActivated() ),
+                           isEnabled(), plainText() );
+        
+        addContainer( bar, id_ );
+        
+        connect( bar, SIGNAL( destroyed() ), this, SLOT( slotDestroyed() ) );
+        
+        index =  containerCount() - 1;
+    } else
+        index = QToggleAction::plug( widget );
+    
     if ( index == -1 )
-	return index;
-
-    if ( widget->inherits("QPopupMenu") )
-    {
-	int id = menuId( index );
-
-	popupMenu( index )->setItemChecked( id, isChecked() );
+        return index;
+    
+    if ( widget->inherits("QPopupMenu") ) {
+        int id = menuId( index );
+        
+        popupMenu( index )->setItemChecked( id, isChecked() );
     }
     else if ( widget->inherits("QActionWidget" ) )
     {
     }
     else if ( widget->inherits("KToolBar") )
     {
-	KToolBar *bar = (KToolBar*)container( index );
-	KToolBarButton* b = bar->getButton( menuId( index ) );
-	bar->setToggle( menuId( index ), TRUE );
-	bar->setButton( menuId( index ), isChecked() );
+        KToolBar *bar = (KToolBar*)container( index );
+        bar->setToggle( menuId( index ), TRUE );
+        bar->setButton( menuId( index ), isChecked() );
     }
 
     return index;

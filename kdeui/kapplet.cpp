@@ -32,7 +32,7 @@ KApplet::~KApplet()
     delete d;
 }
 
-void KApplet::init( int& argc, char ** argv )
+void KApplet::init( int& /*argc*/, char ** /*argv*/ )
 {
     int ideal_width = 42;
     int ideal_height = 42;
