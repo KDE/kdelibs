@@ -85,6 +85,11 @@ QString KDesktopFile::readPath()
   return readEntry("Path");
 }
 
+QString KDesktopFile::readURL()
+{
+    return readEntry("URL");
+}
+
 bool KDesktopFile::hasLinkType()
 {
   return readEntry("Type") == "Link";

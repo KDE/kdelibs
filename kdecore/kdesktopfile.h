@@ -96,6 +96,10 @@ public:
    */
   QString readPath();
 
+  /**
+   * Returns the value of the "URL=" entry.
+   */
+  QString readURL();
 
   /**
    * Returns true if there is an entry "Type=Link".
