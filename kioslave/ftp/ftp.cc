@@ -381,7 +381,15 @@ bool Ftp::ftpLogin( const char *_user, const char *_pass, QString& _redirect )
   if( ftpSendCmd( "syst", '2' ) )
   {
     if( !strncmp( rspbuf, "215 Windows_NT version", 22 ) ) // should do for any version
+    {
       ftpSendCmd( "site dirstyle", '2' );
+      // Check if it was already in Unix style
+      // Patch from Keith Refson <Keith.Refson@earth.ox.ac.uk>
+      if( !strncmp( rspbuf, "200 MSDOS-like directory output is off", 38 ))
+         //It was in Unix style already!
+         ftpSendCmd( "site dirstyle", '2' );
+
+    }
   }
   else
     kDebugWarning( 7102, "syst failed");
