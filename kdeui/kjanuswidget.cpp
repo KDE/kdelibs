@@ -217,6 +217,43 @@ QFrame *KJanusWidget::addPage( const QStringList &items, const QString &header,
   return page;
 }
 
+void KJanusWidget::pageGone()
+{
+  const QWidget *page=static_cast<const QWidget*>(QObject::sender());
+ 
+  if (!mPageList->containsRef(page))
+    return;
+  mPageList->removeRef(page);
+  
+  if ( mFace == TreeList )
+  {
+    QMap<QListViewItem*, QWidget *>::Iterator i;
+    for( i = mTreeListToPageStack.begin(); i != mTreeListToPageStack.end(); ++i )
+      if (i.data()==page)
+	  {
+        delete i.key();
+        mTreeListToPageStack.remove(i);
+		break;
+      }
+  }
+  else if ( mFace == IconList )
+  {
+    QMap<QListBoxItem*, QWidget *>::Iterator i;
+    for( i = mIconListToPageStack.begin(); i != mIconListToPageStack.end(); ++i )
+      if (i.data()==page)
+	  {
+        delete i.key();
+        mIconListToPageStack.remove(i);
+		break;
+      }
+  }
+  else // Tabbed
+  {
+
+  }
+	
+
+}
 
 QFrame *KJanusWidget::addPage( const QString &itemName, const QString &header,
 			       const QPixmap &pixmap )
@@ -385,6 +422,8 @@ void KJanusWidget::InsertTreeListItem(const QStringList &items, const QPixmap &p
 void KJanusWidget::addPageWidget( QFrame *page, const QStringList &items,
 				  const QString &header,const QPixmap &pixmap )
 {
+  connect(page, SIGNAL(destroyed()), SLOT(pageGone()));
+  
   if( mFace == Tabbed )
   {
     mTabControl->addTab (page, items.last());
