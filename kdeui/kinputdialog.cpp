@@ -188,6 +188,12 @@ KInputDialog::KInputDialog( const QString &caption, const QString &label,
     d->m_listBox->setSelected( current, true );
     d->m_listBox->ensureCurrentVisible();
     layout->addWidget( d->m_listBox, 10 );
+    connect( d->m_listBox, SIGNAL( doubleClicked( QListBoxItem * ) ),
+      SLOT( slotOk() ) );
+    connect( d->m_listBox, SIGNAL( returnPressed( QListBoxItem * ) ),
+      SLOT( slotOk() ) );
+
+    d->m_listBox->setFocus();
   }
 
   layout->addStretch();
@@ -228,6 +234,8 @@ KInputDialog::KInputDialog( const QString &caption, const QString &label,
   {
     connect( d->m_listBox, SIGNAL( doubleClicked( QListBoxItem * ) ),
       SLOT( slotOk() ) );
+    connect( d->m_listBox, SIGNAL( returnPressed( QListBoxItem * ) ),
+      SLOT( slotOk() ) );
 
     QString text = select.first();
     item = d->m_listBox->findItem( text, CaseSensitive|ExactMatch );
@@ -236,6 +244,7 @@ KInputDialog::KInputDialog( const QString &caption, const QString &label,
   }
 
   d->m_listBox->ensureCurrentVisible();
+  d->m_listBox->setFocus();
 
   layout->addStretch();
 
