@@ -99,13 +99,22 @@ KTMainWindow::~KTMainWindow()
 	  // Matthias:
     //        Nope, not bad luck. We should simply
     //        exit the application in this case.
-    //        (But emit a signal before)
     
     kapp->setTopWidget( 0 );
     kapp->quit();
   }
 }
 
+
+void KTMainWindow::deleteAll(){
+  KTMainWindow* w;
+  if (memberList){
+    for (w = memberList->first(); w; w = memberList->next()){
+      delete w;
+    }
+    memberList->clear();
+  }
+}
 
 void KTMainWindow::closeEvent ( QCloseEvent *e){
   if (memberList->count() > 1 || queryExit()){

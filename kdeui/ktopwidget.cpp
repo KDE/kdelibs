@@ -21,6 +21,11 @@
 
  // $Id$
  // $Log$
+ // Revision 1.40  1998/05/10 17:42:00  radej
+ // Fixed: two vertical toolbars when window is tall enough to
+ // have one under another. All toolbars had with of the first one.
+ // Fixedsize mode has even bigger bug. Ugh.
+ //
  // Revision 1.39  1998/04/16 18:46:49  radej
  // Removed som debug messages before beta4
  //
@@ -112,6 +117,16 @@ KTopLevelWidget::~KTopLevelWidget()
       kapp->setTopWidget( 0 );
   }
   //debug ("KTW destructor: dead as a dodo (exiting)");
+}
+
+void KTopLevelWidget::deleteAll(){
+  KTopLevelWidget* w;
+  if (memberList){
+    for (w = memberList->first(); w; w = memberList->next()){
+      delete w;
+    }
+    memberList->clear();
+  }
 }
 
 void KTopLevelWidget::closeEvent ( QCloseEvent *e)

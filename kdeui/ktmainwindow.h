@@ -54,6 +54,18 @@ public:
      */
     ~KTMainWindow();
 
+    /** Deletes all KTMainWindows. This is a good thing to call before
+      * an applications wants to exit via kapp->quit(). Rationale: The
+      * destructors of main windows may want to delete other widgets
+      * as well. Now, if an application calls kapp->quit() then Qt
+      * will destroy all widgets in a somewhat random order which may
+      * result in double-free'ed memory (=segfault). Since not every
+      * program checks for QApplication::closingDown() before deleting
+      * a widget, calling KTMainWindow::deleteAll() before is a good
+      * and proper solution.  
+     */
+  static void deleteAll();
+
     /**
      * Add a toolbar to the widget.
      * A toolbar added to this widget will be automatically laid out
@@ -66,8 +78,7 @@ public:
      * with toolBar(index) instead and the KTMainWindow will 
      * create it for you. Anyway addToolBar() is useful if you want
      * to pass additional arguments to the toolbar's constructor.
-     * (Matthias)
-     */
+     * (Matthias) */
     int addToolBar( KToolBar *toolbar, int index = -1 );
 
     /**

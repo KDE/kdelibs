@@ -14,6 +14,10 @@
 
  // $Id$
  // $Log$
+ // Revision 1.27  1998/04/07 20:14:05  radej
+ // Made memberList public, so YOU can use it
+ // instead your window lists.
+ //
  // Revision 1.26  1998/04/05 18:19:48  radej
  // Reverted to old interface (before Matthias' changes) + Docs
  //
@@ -67,6 +71,18 @@ public:
      * Destructor. You must delete all *Bars here.
      */
     ~KTopLevelWidget();
+
+    /** Deletes all KTopLevelWidgets. This is a good thing to call before
+      * an applications wants to exit via kapp->quit(). Rationale: The
+      * destructors of main windows may want to delete other widgets
+      * as well. Now, if an application calls kapp->quit() then Qt
+      * will destroy all widgets in a somewhat random order which may
+      * result in double-free'ed memory (=segfault). Since not every
+      * program checks for QApplication::closingDown() before deleting
+      * a widget, calling KTopLevelWidgets::deleteAll() before is a good
+      * and proper solution.  
+      */
+      static void deleteAll();
 
     /**
      * Add toolbar. If index is -1 toolbar will be appended on end
