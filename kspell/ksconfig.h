@@ -56,6 +56,8 @@ public:
 
   KSpellConfig (const KSpellConfig &);
 
+  virtual ~KSpellConfig ();
+
   void operator= (const KSpellConfig &ksc);
 
   /**

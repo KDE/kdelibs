@@ -232,6 +232,14 @@ KSpellConfig::KSpellConfig (QWidget *parent, char *name,
     }
 }
 
+KSpellConfig::~KSpellConfig ()
+{
+  if (! nodialog) {
+//    delete langnames;
+    delete langfnames;
+  }
+}
+
 
 bool KSpellConfig::dictFromList (void) const
 {
