@@ -1141,6 +1141,16 @@ void KHTMLPart::processChildRequest( khtml::ChildFrame *child, const KURL &url, 
 	       d->m_extension, SIGNAL( createNewWindow( const KURL &, const KParts::URLArgs & ) ) );
       connect( child->m_extension, SIGNAL( openURLNotify() ),
 	       d->m_extension, SIGNAL( openURLNotify() ) );
+      
+      connect( child->m_extension, SIGNAL( popupMenu( const QPoint &, const KonqFileItemList & ) ),
+	       d->m_extension, SIGNAL( popupMenu( const QPoint &, const KonqFileItemList & ) ) );
+      connect( child->m_extension, SIGNAL( popupMenu( KXMLGUIClient *, const QPoint &, const KonqFileItemList & ) ),
+	       d->m_extension, SIGNAL( popupMenu( KXMLGUIClient *, const QPoint &, const KonqFileItemList & ) ) );
+      connect( child->m_extension, SIGNAL( popupMenu( const QPoint &, const KURL &, const QString &, mode_t ) ),
+	       d->m_extension, SIGNAL( popupMenu( const QPoint &, const KURL &, const QString &, mode_t ) ) );
+      connect( child->m_extension, SIGNAL( popupMenu( KXMLGUIClient *, const QPoint &, const KURL &, const QString &, mode_t ) ),
+	       d->m_extension, SIGNAL( popupMenu( KXMLGUIClient *, const QPoint &, const KURL &, const QString &, mode_t ) ) );
+      
     }
 
     connect( part, SIGNAL( setStatusBarText( const QString & ) ),
