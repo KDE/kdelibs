@@ -179,7 +179,7 @@ bool TCPSlaveBase::ConnectToHost(const QCString &host, unsigned short int _port)
 	}
 	m_iPort=port;
 
-        connected();
+        //connected();
  
 	return true;
 }
@@ -326,7 +326,15 @@ QString theurl = QString(m_sServiceName)+"://"+d->host+":"+QString::number(m_iPo
       //  - Read from cache and see if there is a policy for this
       KSSLCertificateCache::KSSLCertificatePolicy cp = d->cc->getPolicyByCertificate(pc);
 
-      //  - does the IP match?   FIXME
+      //  - does the IP match? 
+/*
+      if (!d->kssl->peerInfo().certMatchesAddress()) {
+           messageBox( WarningYesNo,
+                 i18n("The server's certificate does not match it's IP."),
+                 i18n("Server Authentication"));
+      }
+*/
+
 
       //  - validation code
       if (ksv != KSSLCertificate::Ok) {
