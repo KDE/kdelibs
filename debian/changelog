@@ -1,11 +1,25 @@
+kdelibs (4:2.0-final-13) unstable; urgency=low
+ 
+  * New graphics from upstream
+  * Tons of minor cleanups
+ 
+ -- Ivan E. Moore II <rkrusty@debian.org>  Sun, 26 Nov 2000 23:16:00 -0700
+
+kdelibs (4:2.0-final-12) unstable; urgency=low
+ 
+  * Fixing kdm's creation of /.kde (Closes: #77509)
+  * arts sound system fixes
+  * other upstream fixes
+ 
+ -- Ivan E. Moore II <rkrusty@debian.org>  Sat, 25 Nov 2000 16:50:00 -0700
+
 kdelibs (4:2.0-final-11) unstable; urgency=low
  
   * mimetypes additions for mng and jng
-  * More fixes towards getting rid of kdm's creation of /.kde
   * More upstream fixes
   * Adding in replaces/conflicts for old kde 1 packages
  
- -- Ivan E. Moore II <rkrusty@debian.org>  Fri, 24 Nov 2000 05:07:00 -0700
+ -- Ivan E. Moore II <rkrusty@debian.org>  Sat, 25 Nov 2000 04:50:00 -0700
 
 kdelibs (4:2.0-final-10) unstable; urgency=low
  
