@@ -1312,12 +1312,9 @@ void QXEmbed::checkGrab()
 //        the client about its window geometry. See L1390, L2024 and L2090.
 void QXEmbed::sendSyntheticConfigureNotifyEvent() 
 {
-    // L2910: ??? [why are x and y global coordinates?]
-    //    It is bizarre that the x and y members are set to the global
-    //    position of the client window, and not the position relative
-    //    to its parent window as reported by the X11 documentation.
-    //    Few applications rely on this because the x and y components
-    //    are usually messed up by reparenting window managers.
+    // L2910: It seems that the x and y coordinates are global.
+    //        But this is what ICCCM section 4.1.5 wants.
+    //        See http://lists.kde.org/?l=kfm-devel&m=107090222032378
     QPoint globalPos = mapToGlobal(QPoint(0,0));
     if (window) {
         XConfigureEvent c;
