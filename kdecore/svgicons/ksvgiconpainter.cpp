@@ -1360,203 +1360,171 @@ void KSVGIconPainter::drawPolygon(QPointArray polyArray)
 	d->helper->drawVPath(polygon);
 }
 
+// parses the coord into number and forwards to the next token
+const char *getCoord(const char *ptr, double &number)
+{
+	int integer, exponent;
+	double decimal, frac;
+	int sign, expsign;
+
+	exponent = 0;
+	integer = 0;
+	frac = 1.0;
+	decimal = 0;
+	sign = 1;
+	expsign = 1;
+	// read the sign
+	if(*ptr == '+')
+		ptr++;
+	else if(*ptr == '-')
+	{
+		ptr++;
+		sign = -1;
+	}
+	// read the integer part
+	while(*ptr != '\0' && *ptr >= '0' && *ptr <= '9')
+		integer = (integer * 10) + *(ptr++) - '0';
+	if(*ptr == '.') // read the decimals
+    {
+		ptr++;
+		while(*ptr != '\0' && *ptr >= '0' && *ptr <= '9')
+			decimal += (*(ptr++) - '0') * (frac *= 0.1);
+    }
+	if(*ptr == 'e' || *ptr == 'E')
+	// read the exponent part
+	{
+		ptr++;
+		// read the sign of the exponent
+		if(*ptr == '+')
+			ptr++;
+		else if(*ptr == '-')
+		{
+			ptr++;
+			expsign = -1;
+		}
+		exponent = 0;
+		while(*ptr != '\0' && *ptr >= '0' && *ptr <= '9')
+		{
+			exponent *= 10;
+			exponent += *ptr - '0';
+			ptr++;
+		}
+    }
+	number = integer + decimal;
+	number *= sign * pow(10, expsign * exponent);
+
+	// skip the following space
+	if(*ptr == ' ') ptr++;
+	return ptr;
+}
+
+
 void KSVGIconPainter::drawPath(const QString &data, bool filled)
 {
 	QString value = data;
 
 	QMemArray<ArtBpath> vec;
 	int index = -1;
-	
-	enum
-	{
-		mAbs, mRel,
-		lAbs, lRel,
-		zAbs, zRel,
-		hAbs, hRel,
-		vAbs, vRel,
-		qAbs, qRel,
-		tAbs, tRel,
-		cAbs, cRel,
-		sAbs, sRel,
-		aAbs, aRel,
-		nrCommands
-	};
 
-	QChar commands[] =
-	{
-		'M', 'm', 'L', 'l', 'Z', 'z', 'H', 'h', 'V', 'v',
-		'Q', 'q', 'T', 't', 'C', 'c', 'S', 's', 'A', 'a'
-	};
-
-	QString seperator("|");
-	unsigned int i = 0;
-	for(i = 0; i < nrCommands; i++)
-	{
-		const QString temp = seperator + commands[i];
-		value.replace(QRegExp(commands[i]), temp);
-	}
-
-	QRegExp reg("[a-zA-Z,() ]");
-	QStringList coords;
-	
-	double tox, toy, x1, y1, x2, y2, rx, ry, angle;
-	bool largeArc, sweep;
-	
-	double curx = 0.0, cury = 0.0, contrlx = 0.0, contrly = 0.0;
+	double curx = 0.0, cury = 0.0, contrlx = 0.0, contrly = 0.0, xc, yc;
 	unsigned int lastCommand = 0;
 
-	QStringList::Iterator it2;
-	QStringList path = QStringList::split(seperator, value);
-	for(QStringList::Iterator it = path.begin(); it != path.end(); it++)
+	QString _d = value.replace(QRegExp(","), " ");
+	_d = _d.simplifyWhiteSpace();
+	const char *ptr = _d.latin1();
+	const char *end = _d.latin1() + _d.length() + 1;
+
+	double tox, toy, x1, y1, x2, y2, rx, ry, angle;
+	bool largeArc, sweep;
+	char command = *(ptr++);
+
+	while(ptr < end)
 	{
-		(*it).simplifyWhiteSpace();
-		(*it).replace(QRegExp("-"), " -");
-		(*it).replace(QRegExp("+"), " +");
-
-		coords = QStringList::split(reg, (*it));
-		switch(((*it)[0]).latin1()) // TODO : check code for fault toleranty
+		if(*ptr == ' ') ptr++;
+		switch(command)
 		{
-			case 'm':
-				it2 = coords.begin();
-				tox = (*(it2++)).toFloat();
-				if(it2 != coords.end())
-				{
-					toy = (*(it2++)).toFloat();
-
-					if(index != -1 && lastCommand != 'z')
-					{
-						// Find last subpath
-						int find = -1;
-						for(int i = index; i >= 0; i--)
+			case 'm':	ptr = getCoord(ptr, tox);
+						ptr = getCoord(ptr, toy);
+						if(index != -1 && lastCommand != 'z')
 						{
-							if(vec[i].code == ART_MOVETO_OPEN || vec[i].code == ART_MOVETO)
+							// Find last subpath
+							int find = -1;
+							for(int i = index; i >= 0; i--)
 							{
-								find = i;
-								break;
+								if(vec[i].code == ART_MOVETO_OPEN || vec[i].code == ART_MOVETO)
+								{
+									find = i;
+									break;
+								}
 							}
+
+							index++;
+
+							if(vec.size() == (unsigned int) index)
+								vec.resize(index + 1);
+
+							vec[index].code = (ArtPathcode)ART_END2;
+							vec[index].x3 = vec[find].x3;
+							vec[index].y3 = vec[find].y3;
 						}
-						
-						index++;
-
-						if(vec.size() == (unsigned int) index)
-							vec.resize(index + 1);
-
-						vec[index].code = (ArtPathcode)ART_END2;
-						vec[index].x3 = vec[find].x3;
-						vec[index].y3 = vec[find].y3;
-					}
-
-					curx += tox;
-					cury += toy;
-					
-					index++;
-
-					d->helper->ensureSpace(vec, index);
-
-					vec[index].code = (index == 0) ? ART_MOVETO : ART_MOVETO_OPEN;
-					vec[index].x3 = curx;
-					vec[index].y3 = cury;
-
-					lastCommand = 'm';
-				}
-				
-				for(; it2 != coords.end();)
-				{
-					tox = (*(it2++)).toFloat();
-					if(it2 != coords.end())
-					{
-						toy = (*(it2++)).toFloat();
-
-						index++;
-
-						d->helper->ensureSpace(vec, index);
-
-						vec[index].code = ART_LINETO;
-						vec[index].x3 = curx + tox;
-						vec[index].y3 = cury + toy;
 
 						curx += tox;
 						cury += toy;
 
-						lastCommand = 'm';
-					}
-				}
-				break;
-
-			case 'M':
-				it2 = coords.begin();
-				tox = (*(it2++)).toFloat();
-				if(it2 != coords.end())
-				{
-					toy = (*(it2++)).toFloat();
-
-					if(index != -1 && lastCommand != 'z')
-					{
-						// Find last subpath
-						int find = -1;
-						for(int i = index; i >= 0; i--)
-						{
-							if(vec[i].code == ART_MOVETO_OPEN || vec[i].code == ART_MOVETO)
-							{
-								find = i;
-								break;
-							}
-						}
-						
-						index++;
-
-						if(vec.size() == (unsigned int) index)							
-							vec.resize(index + 1);
-						
-						vec[index].code = (ArtPathcode)ART_END2;
-						vec[index].x3 = vec[find].x3;
-						vec[index].y3 = vec[find].y3;
-					}
-					
-					curx = tox;
-					cury = toy;
-					
-					index++;
-
-					d->helper->ensureSpace(vec, index);
-
-					vec[index].code = (index == 0) ? ART_MOVETO : ART_MOVETO_OPEN;
-					vec[index].x3 = curx;
-					vec[index].y3 = cury;
-
-					lastCommand = 'M';
-				}
-				
-				for(; it2 != coords.end();)
-				{
-					tox = (*(it2++)).toFloat();
-					if(it2 != coords.end())
-					{
-						toy = (*(it2++)).toFloat();
-						
 						index++;
 
 						d->helper->ensureSpace(vec, index);
 
-						vec[index].code = ART_LINETO;
-						vec[index].x3 = tox;
-						vec[index].y3 = toy;
+						vec[index].code = (index == 0) ? ART_MOVETO : ART_MOVETO_OPEN;
+						vec[index].x3 = curx;
+						vec[index].y3 = cury;
+
+						lastCommand = 'm';
+				
+						break;
+
+			case 'M':	ptr = getCoord(ptr, tox);
+						ptr = getCoord(ptr, toy);
+						if(index != -1 && lastCommand != 'z')
+						{
+							// Find last subpath
+							int find = -1;
+							for(int i = index; i >= 0; i--)
+							{
+								if(vec[i].code == ART_MOVETO_OPEN || vec[i].code == ART_MOVETO)
+								{
+									find = i;
+									break;
+								}
+							}
+							
+							index++;
+
+							if(vec.size() == (unsigned int) index)							
+								vec.resize(index + 1);
+
+							vec[index].code = (ArtPathcode)ART_END2;
+							vec[index].x3 = vec[find].x3;
+							vec[index].y3 = vec[find].y3;
+						}
 
 						curx = tox;
 						cury = toy;
 
-						lastCommand = 'M';
-					}
-				}
-				break;
+						index++;
 
-			case 'l':
-				for(it2 = coords.begin(); it2 != coords.end();)
-				{
-					tox = (*(it2++)).toFloat();
-					if(it2 != coords.end())
-					{
-						toy = (*(it2++)).toFloat();
+						d->helper->ensureSpace(vec, index);
+
+						vec[index].code = (index == 0) ? ART_MOVETO : ART_MOVETO_OPEN;
+						vec[index].x3 = curx;
+						vec[index].y3 = cury;
+
+						lastCommand = 'M';
+
+						break;
+
+			case 'l':	ptr = getCoord(ptr, tox);
+						ptr = getCoord(ptr, toy);
 
 						index++;
 
@@ -1570,17 +1538,11 @@ void KSVGIconPainter::drawPath(const QString &data, bool filled)
 						cury += toy;
 
 						lastCommand = 'l';
-					}
-				}
-				break;
 
-			case 'L':
-				for(it2 = coords.begin(); it2 != coords.end();)
-				{
-					tox = (*(it2++)).toFloat();
-					if(it2 != coords.end())
-					{
-						toy = (*(it2++)).toFloat();
+						break;
+
+			case 'L':	ptr = getCoord(ptr, tox);
+						ptr = getCoord(ptr, toy);
 
 						index++;
 
@@ -1594,89 +1556,77 @@ void KSVGIconPainter::drawPath(const QString &data, bool filled)
 						cury = toy;
 
 						lastCommand = 'L';
-					}
-				}
-				break;
+
+						break;
+
+			case 'h':	ptr = getCoord(ptr, tox);
+
+						index++;
+
+						curx += tox;
+
+						d->helper->ensureSpace(vec, index);
+
+						vec[index].code = ART_LINETO;
+						vec[index].x3 = curx;
+						vec[index].y3 = cury;
+
+						lastCommand = 'h';
+
+						break;
+
+			case 'H':	ptr = getCoord(ptr, tox);
+
+						index++;
+
+						curx = tox;
+
+						d->helper->ensureSpace(vec, index);
+
+						vec[index].code = ART_LINETO;
+						vec[index].x3 = curx;
+						vec[index].y3 = cury;
+
+						lastCommand = 'H';
+
+						break;
+
+			case 'v':	ptr = getCoord(ptr, toy);
+
+						index++;
+
+						cury += toy;
+
+						d->helper->ensureSpace(vec, index);
+
+						vec[index].code = ART_LINETO;
+						vec[index].x3 = curx;
+						vec[index].y3 = cury;
+
+						lastCommand = 'v';
+						break;
+
+			case 'V':	ptr = getCoord(ptr, toy);
+
+						index++;
+
+						cury = toy;
+
+						d->helper->ensureSpace(vec, index);
+
+						vec[index].code = ART_LINETO;
+						vec[index].x3 = curx;
+						vec[index].y3 = cury;
+
+						lastCommand = 'V';
+						break;
 				
-			case 'h':
-				for(it2 = coords.begin(); it2 != coords.end();)
-				{
-					index++;
-
-					curx += (*(it2++)).toFloat();
-
-					d->helper->ensureSpace(vec, index);
-
-					vec[index].code = ART_LINETO;
-					vec[index].x3 = curx;
-					vec[index].y3 = cury;
-				}
-				
-				lastCommand = 'h';
-				break;
-
-			case 'H':
-				for(it2 = coords.begin(); it2 != coords.end();)
-				{
-					index++;
-
-					curx = (*(it2++)).toFloat();
-
-					d->helper->ensureSpace(vec, index);
-
-					vec[index].code = ART_LINETO;
-					vec[index].x3 = curx;
-					vec[index].y3 = cury;
-				}
-
-				lastCommand = 'H';
-				break;
-
-			case 'v':
-				for(it2 = coords.begin(); it2 != coords.end();)
-				{
-					index++;
-
-					cury += (*(it2++)).toFloat();
-
-					d->helper->ensureSpace(vec, index);
-
-					vec[index].code = ART_LINETO;
-					vec[index].x3 = curx;
-					vec[index].y3 = cury;
-				}
-
-				lastCommand = 'v';
-				break;
-
-			case 'V':
-				for(it2 = coords.begin(); it2 != coords.end();)
-				{
-					index++;
-
-					cury = (*(it2++)).toFloat();
-
-					d->helper->ensureSpace(vec, index);
-
-					vec[index].code = ART_LINETO;
-					vec[index].x3 = curx;
-					vec[index].y3 = cury;
-				}
-
-				lastCommand = 'V';
-				break;
-				
-			case 'c':
-				for(it2 = coords.begin(); it2 != coords.end();)
-				{
-					x1 = (*(it2++)).toFloat();
-					y1 = (*(it2++)).toFloat();
-					x2 = (*(it2++)).toFloat();
-					y2 = (*(it2++)).toFloat();
-					tox = (*(it2++)).toFloat();
-					if(it2 != coords.end())
-					{
-						toy = (*(it2++)).toFloat();
+			case 'c':	ptr = getCoord(ptr, x1);
+						ptr = getCoord(ptr, y1);
+						ptr = getCoord(ptr, x2);
+						ptr = getCoord(ptr, y2);
+						ptr = getCoord(ptr, tox);
+						ptr = getCoord(ptr, toy);
 
 						index++;
 
@@ -1697,21 +1647,14 @@ void KSVGIconPainter::drawPath(const QString &data, bool filled)
 						contrly = vec[index].y2;
 
 						lastCommand = 'c';
-					}
-				}
-				break;
+						break;
 
-			case 'C':
-				for(it2 = coords.begin(); it2 != coords.end();)
-				{
-					x1 = (*(it2++)).toFloat();
-					y1 = (*(it2++)).toFloat();
-					x2 = (*(it2++)).toFloat();
-					y2 = (*(it2++)).toFloat();
-					tox = (*(it2++)).toFloat();
-					if(it2 != coords.end())
-					{
-						toy = (*(it2++)).toFloat();
+			case 'C':	ptr = getCoord(ptr, x1);
+						ptr = getCoord(ptr, y1);
+						ptr = getCoord(ptr, x2);
+						ptr = getCoord(ptr, y2);
+						ptr = getCoord(ptr, tox);
+						ptr = getCoord(ptr, toy);
 
 						index++;
 
@@ -1731,19 +1674,13 @@ void KSVGIconPainter::drawPath(const QString &data, bool filled)
 						contrly = vec[index].y2;
 
 						lastCommand = 'C';
-					}
-				}
-				break;
 
-			case 's':
-				for(it2 = coords.begin(); it2 != coords.end();)
-				{
-					x2 = (*(it2++)).toFloat();
-					y2 = (*(it2++)).toFloat();
-					tox = (*(it2++)).toFloat();
-					if(it2 != coords.end())
-					{
-						toy = (*(it2++)).toFloat();
+						break;
+
+			case 's':	ptr = getCoord(ptr, x2);
+						ptr = getCoord(ptr, y2);
+						ptr = getCoord(ptr, tox);
+						ptr = getCoord(ptr, toy);
 
 						index++;
 
@@ -1764,19 +1701,13 @@ void KSVGIconPainter::drawPath(const QString &data, bool filled)
 						contrly = vec[index].y2;
 
 						lastCommand = 's';
-					}
-				}
-				break;
 
-			case 'S':
-				for(it2 = coords.begin(); it2 != coords.end();)
-				{
-					x2 = (*(it2++)).toFloat();
-					y2 = (*(it2++)).toFloat();
-					tox = (*(it2++)).toFloat();
-					if(it2 != coords.end())
-					{
-						toy = (*(it2++)).toFloat();
+						break;
+
+			case 'S':	ptr = getCoord(ptr, x2);
+						ptr = getCoord(ptr, y2);
+						ptr = getCoord(ptr, tox);
+						ptr = getCoord(ptr, toy);
 
 					    index++;
 
@@ -1796,19 +1727,13 @@ void KSVGIconPainter::drawPath(const QString &data, bool filled)
 						contrly = vec[index].y2;
 
 						lastCommand = 'S';
-					}
-				}
-				break;
 
-			case 'q':
-				for(it2 = coords.begin(); it2 != coords.end();)
-				{
-					x1 = (*(it2++)).toFloat();
-					y1 = (*(it2++)).toFloat();
-					tox = (*(it2++)).toFloat();
-					if(it2 != coords.end())
-					{
-						toy = (*(it2++)).toFloat();
+						break;
+
+			case 'q':	ptr = getCoord(ptr, x1);
+						ptr = getCoord(ptr, y1);
+						ptr = getCoord(ptr, tox);
+						ptr = getCoord(ptr, toy);
 
 						index++;
 
@@ -1828,20 +1753,14 @@ void KSVGIconPainter::drawPath(const QString &data, bool filled)
 						cury += toy;
 					
 						lastCommand = 'q';
-					}
-				}
-				break;
 
-			case 'Q':
-				for(it2 = coords.begin(); it2 != coords.end();)
-				{
-					x1 = (*(it2++)).toFloat();
-					y1 = (*(it2++)).toFloat();
-					tox = (*(it2++)).toFloat();
-					if(it2 != coords.end())
-					{
-						toy = (*(it2++)).toFloat();
-						
+						break;
+
+			case 'Q':	ptr = getCoord(ptr, x1);
+						ptr = getCoord(ptr, y1);
+						ptr = getCoord(ptr, tox);
+						ptr = getCoord(ptr, toy);
+
 						index++;
 
 						d->helper->ensureSpace(vec, index);
@@ -1861,20 +1780,14 @@ void KSVGIconPainter::drawPath(const QString &data, bool filled)
 						contrly = vec[index].y2;
 
 						lastCommand = 'Q';
-					}
-				}
-				break;
-				
-			case 't':
-				for(it2 = coords.begin(); it2 != coords.end();)
-				{
-					tox = (*(it2++)).toFloat();
-					if(it2 != coords.end())
-					{
-						toy = (*(it2++)).toFloat();
 
-						double xc = 2 * curx - contrlx;
-						double yc = 2 * cury - contrly;
+						break;
+				
+			case 't':	ptr = getCoord(ptr, tox);
+						ptr = getCoord(ptr, toy);
+
+						xc = 2 * curx - contrlx;
+						yc = 2 * cury - contrly;
 
 						index++;
 
@@ -1895,20 +1808,14 @@ void KSVGIconPainter::drawPath(const QString &data, bool filled)
 						contrly = yc;
 
 						lastCommand = 't';
-					}
-				}
-				break;
 
-			case 'T':
-				for(it2 = coords.begin(); it2 != coords.end();)
-				{
-					tox = (*(it2++)).toFloat();
-					if(it2 != coords.end())
-					{
-						toy = (*(it2++)).toFloat();
+						break;
+
+			case 'T':	ptr = getCoord(ptr, tox);
+						ptr = getCoord(ptr, toy);
 	
-						double xc = 2 * curx - contrlx;
-						double yc = 2 * cury - contrly;
+						xc = 2 * curx - contrlx;
+						yc = 2 * cury - contrly;
 
 						index++;
 
@@ -1928,80 +1835,86 @@ void KSVGIconPainter::drawPath(const QString &data, bool filled)
 						contrly = yc;
 
 						lastCommand = 'T';					
-					}
-				}
-				break;
+
+						break;
 
 			case 'z':
-			case 'Z':
-				int find;
-				find = -1;
-				for(int i = index; i >= 0; i--)
-				{
-					if(vec[i].code == ART_MOVETO_OPEN || vec[i].code == ART_MOVETO)
-					{
-						find = i;
+			case 'Z':	int find;
+						find = -1;
+						for(int i = index; i >= 0; i--)
+						{
+							if(vec[i].code == ART_MOVETO_OPEN || vec[i].code == ART_MOVETO)
+							{
+								find = i;
+								break;
+							}
+						}
+
+						if(find != -1)
+						{
+							if(vec[find].x3 != curx || vec[find].y3 != cury)
+							{
+								index++;
+
+								d->helper->ensureSpace(vec, index);
+
+								vec[index].code = ART_LINETO;
+								vec[index].x3 = vec[find].x3;
+								vec[index].y3 = vec[find].y3;
+							}
+						}
+
+						// reset for next (sub)path
+						curx = vec[find].x3;
+						cury = vec[find].y3;
+
+						lastCommand = 'z';
 						break;
-					}
-				}
-
-				if(find != -1)
-				{
-					if(vec[find].x3 != curx || vec[find].y3 != cury)
-					{
-						index++;
-
-						d->helper->ensureSpace(vec, index);
-
-						vec[index].code = ART_LINETO;
-						vec[index].x3 = vec[find].x3;
-						vec[index].y3 = vec[find].y3;
-					}
-				}
-
-				// reset for next (sub)path
-				curx = vec[find].x3;
-				cury = vec[find].y3;
-
-				lastCommand = 'z';
-				break;
 				
-			case 'a':
-				for(it2 = coords.begin(); it2 != coords.end();)
-				{
-					rx = (*(it2++)).toFloat();
-					ry = (*(it2++)).toFloat();
-					angle = (*(it2++)).toFloat();
-					largeArc = (*(it2++)).toShort() == 1;
-					sweep = (*(it2++)).toShort() == 1;
-					tox = (*(it2++)).toFloat();
-					toy = (*(it2++)).toFloat();
+			case 'a':	ptr = getCoord(ptr, rx);
+						ptr = getCoord(ptr, ry);
+						ptr = getCoord(ptr, angle);
+						ptr = getCoord(ptr, tox);
+						largeArc = tox == 1;
+						ptr = getCoord(ptr, tox);
+						sweep = tox == 1;
+						ptr = getCoord(ptr, tox);
+						ptr = getCoord(ptr, toy);
 
-					d->helper->calculateArc(true, vec, index, curx, cury, angle, tox, toy, rx, ry, largeArc, sweep);
+						d->helper->calculateArc(true, vec, index, curx, cury, angle, tox, toy, rx, ry, largeArc, sweep);
 
-					lastCommand = 'a';
-				}
-				break;
+						lastCommand = 'a';
 
-			case 'A':
-				for(it2 = coords.begin(); it2 != coords.end();)
-				{
-					rx = (*(it2++)).toFloat();
-					ry = (*(it2++)).toFloat();
-					angle = (*(it2++)).toFloat();
-					largeArc = (*(it2++)).toShort() == 1;
-					sweep = (*(it2++)).toShort() == 1;
-					tox = (*(it2++)).toFloat();
-					toy = (*(it2++)).toFloat();
+						break;
 
-					d->helper->calculateArc(false, vec, index, curx, cury, angle, tox, toy, rx, ry, largeArc, sweep);
+			case 'A':	ptr = getCoord(ptr, rx);
+						ptr = getCoord(ptr, ry);
+						ptr = getCoord(ptr, angle);
+						ptr = getCoord(ptr, tox);
+						largeArc = tox == 1;
+						ptr = getCoord(ptr, tox);
+						sweep = tox == 1;
+						ptr = getCoord(ptr, tox);
+						ptr = getCoord(ptr, toy);
 
-					lastCommand = 'A';
-				}
-				break;
+						d->helper->calculateArc(false, vec, index, curx, cury, angle, tox, toy, rx, ry, largeArc, sweep);
+
+						lastCommand = 'A';
+
+						break;
 		}
 
-		
+		if(*ptr == '+' || *ptr == '-' || (*ptr >= '0' && *ptr <= '9'))
+		{
+			// there are still coords in this command
+			if(command == 'M')
+				command = 'L';
+			else if(command == 'm')
+				command = 'l';
+		}
+		else
+			command = *(ptr++);
+
 		// Detect reflection points
 		if(lastCommand != 'C' && lastCommand != 'c'
 	      && lastCommand != 'S' && lastCommand != 's'
