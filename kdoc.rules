@@ -4,7 +4,7 @@
 #
 # -Taj (Apr 1999)
 
-kde_MODULES = kdecore kdeui kimgio kfile khtml kspell kab
+kde_MODULES = kdecore kdeui kimgio kfile khtml kspell kab kom kpartsui
 
 kdecore_FILES= *.h
 kdecore_LIBS= -lqt
@@ -29,3 +29,10 @@ kimgio_LIBS = -lqt
 
 kab_FILES = kabapi.h
 kab_LIBS = -lkdecore -lkdeui -lqt
+
+kom_FILES = *.idl
+kom_PATH = corba/kom
+
+kpartsui_FILES = *.idl
+kpartsui_PATH = corba/partsui
+kpartsui_LIBS = -lkom
