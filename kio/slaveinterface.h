@@ -63,7 +63,8 @@ class SlaveInterfacePrivate;
    CMD_META_DATA = 'P', // 80
    CMD_SYMLINK = 'Q', // 81
    CMD_SUBURL = 'R', // 82  Inform the slave about the url it is streaming on.
-   CMD_MESSAGEBOXANSWER = 'S' // 83
+   CMD_MESSAGEBOXANSWER = 'S', // 83
+   CMD_RESUMEANSWER = 'T' // 84
    // Add new ones here once a release is done, to avoid breaking binary compatibility.
    // Note that protocol-specific commands shouldn't be added here, but should use special.
  };
@@ -105,7 +106,8 @@ class SlaveInterfacePrivate;
    MSG_SLAVE_ACK,
    MSG_NET_REQUEST,
    MSG_NET_DROP,
-   MSG_NEED_SUBURL_DATA
+   MSG_NEED_SUBURL_DATA,
+   MSG_CANRESUME
    // add new ones here once a release is done, to avoid breaking binary compatibility
  };
 
@@ -130,7 +132,12 @@ public:
     void setProgressId( int id ) { m_progressId = id; }
     int progressId() const { return m_progressId; }
 
- signals:
+
+    // Send our answer to the MSG_RESUME (canResume) request
+    // (to tell the "put" job whether to resume or not)
+    void sendResumeAnswer( bool resume );
+
+signals:
     ///////////
     // Messages sent by the slave
     ///////////
@@ -146,7 +153,7 @@ public:
     void needSubURLData();
     void needProgressId();
 
-    void canResume( bool ) ;
+    void canResume( unsigned long ) ;
 
     ///////////
     // Info sent by the slave

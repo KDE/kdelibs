@@ -248,9 +248,10 @@ void DefaultProgress::slotUnmounting( KIO::Job*, const QString & point )
   setDestVisible( false );
 }
 
-void DefaultProgress::slotCanResume( KIO::Job*, bool resume )
+void DefaultProgress::slotCanResume( KIO::Job*, unsigned long resume )
 {
   if ( resume ) {
+    // TODO i18n(Resuming from %1).arg(resume)
     resumeLabel->setText( i18n("Resumable") );
   } else {
     resumeLabel->setText( i18n("Not resumable") );

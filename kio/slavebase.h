@@ -118,9 +118,19 @@ public:
     void listEntries( const UDSEntryList& _entry );
 
     /**
-     * ???? Is this still necessary?
+     * Call this at the beginning of put(), to give the size of the existing
+     * partial file, if there is one. The @p offset argument notifies the
+     * other job (the one that gets the data) about the offset to use.
+     * In this case, the boolean returns whether we can indeed resume or not
+     * (we can't if the protocol doing the get() doesn't support setting an offset)
      */
-    void canResume( bool _resume );
+    bool canResume( unsigned long offset );
+
+    /*
+     * Call this at the beginning of get(), if the "resume" metadata was set
+     * and resuming is implemented by this protocol.
+     */
+    void canResume();
 
     ///////////
     // Info Signals to send to the job
@@ -151,7 +161,9 @@ public:
     void redirection( const KURL &_url );
 
     /**
-     * "Tell that we will only get an error page here." ?  ## FIXME
+     * Tell that we will only get an error page here.
+     * This means: the data you'll get isn't the data you requested,
+     * but an error page (usually HTML) that describes an error.
      */
     void errorPage();
 
@@ -269,7 +281,7 @@ public:
      * @param overwrite if true, any existing file will be overwritten
      * @param resume
      */
-    virtual void put( const KURL& url, int permissions, bool overwrite, bool resume);
+    virtual void put( const KURL& url, int permissions, bool overwrite, bool resume );
 
     /**
      * Finds all details for one file or directory.
@@ -506,12 +518,6 @@ private:
     MetaData mIncomingMetaData;
     bool mConnectedToApp;
     SlaveBasePrivate *d;
-};
-
-// by kahl for netmgr
-class SlaveBasePrivate {
-public:
-    QString slaveid;
 };
 
 };

@@ -33,7 +33,7 @@
 
 namespace KIO {
 
-enum RenameDlg_Mode { M_OVERWRITE = 1, M_OVERWRITE_ITSELF = 2, M_SKIP = 4, M_SINGLE = 8, M_MULTI = 16, M_RESUME = 32 };
+enum RenameDlg_Mode { M_OVERWRITE = 1, M_OVERWRITE_ITSELF = 2, M_SKIP = 4, M_SINGLE = 8, M_MULTI = 16, M_RESUME = 32, M_NORENAME = 64 };
 
 enum RenameDlg_Result { R_RESUME = 6, R_RESUME_ALL = 7, R_OVERWRITE = 4, R_OVERWRITE_ALL = 5, R_SKIP = 2, R_AUTO_SKIP = 3, R_RENAME = 1, R_CANCEL = 0 };
 
@@ -47,7 +47,7 @@ public:
    * @param caption the caption for the dialog box
    * @param src the url to the file/dir we're trying to copy, as it's part of the text message
    * @param dest the path to destination file/dir, i.e. the one that already exists
-   * @param mode parameters for the dialog (which buttons to show...), 
+   * @param mode parameters for the dialog (which buttons to show...),
    * @see RenameDlg_Mode
    *
    * The following parameters bring optionnal information about @p src and @p dest
@@ -116,7 +116,7 @@ protected slots:
    * @param caption the caption for the dialog box
    * @param src the file/dir we're trying to copy, as it's part of the text message
    * @param dest the destination file/dir, i.e. the one that already exists
-   * @param mode parameters for the dialog (which buttons to show...), 
+   * @param mode parameters for the dialog (which buttons to show...),
    * @see RenameDlg_Mode
    * @param newDest the new destination path, valid if R_RENAME was returned.
    *

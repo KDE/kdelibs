@@ -98,6 +98,9 @@ protected:
     QCString m_sServiceName;
     FILE *fp;
 
+    class TcpSlaveBasePrivate;
+    TcpSlaveBasePrivate *d;
+
 #ifdef HAVE_SSL
     SSL_CTX *ssl_context;
     SSL *ssl;

@@ -176,10 +176,10 @@ void Observer::slotCreatingDir( KIO::Job* job, const KURL& dir )
   m_uiserver->creatingDir( job->progressId(), dir );
 }
 
-void Observer::slotCanResume( KIO::Job* job, bool can_resume )
+void Observer::slotCanResume( KIO::Job* job, unsigned long offset )
 {
-//   kdDebug() << "** Observer::slotCanResume " << job << " " << can_resume << endl;
-  m_uiserver->canResume( job->progressId(), (uint)can_resume );
+//   kdDebug() << "** Observer::slotCanResume " << job << " " << offset << endl;
+  m_uiserver->canResume( job->progressId(), offset );
 }
 
 void Observer::stating( KIO::Job* job, const KURL& url )

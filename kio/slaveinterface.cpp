@@ -97,10 +97,13 @@ void SlaveInterface::dispatch( int _cmd, const QByteArray &rawdata )
 
 	}
 	break;
-    case MSG_RESUME:
-	stream >> b;
-	emit canResume( (bool)b );
+    case MSG_RESUME: // From the put job
+	stream >> ul;
+	emit canResume( ul );
 	break;
+     case MSG_CANRESUME: // From the get job
+        emit canResume(0); // the arg doesn't matter
+        break;
     case MSG_ERROR:
 	stream >> i >> str1;
 	kdDebug(7007) << "error " << i << " " << str1 << endl;
@@ -222,6 +225,12 @@ void SlaveInterface::requestNetwork(const QString &host, const QString &slaveid)
 void SlaveInterface::dropNetwork(const QString &host, const QString &slaveid)
 {
     kdDebug(7007) << "dropNetwork " << host << slaveid << endl;
+}
+
+void SlaveInterface::sendResumeAnswer( bool resume )
+{
+    kdDebug(7007) << "SlaveInterface::sendResumeAnswer ok for resuming :" << resume << endl;
+    m_pConnection->sendnow( resume ? CMD_RESUMEANSWER : CMD_NONE, QByteArray() );
 }
 
 void SlaveInterface::openPassDlg( const QString& head, const QString& user, const QString& pass, const QString& key )

@@ -1401,8 +1401,14 @@ void Ftp::get( const KURL & url )
 
   ftpSize( url.path(), 'I' ); // try to find the size of the file
 
-  unsigned long offset = 0; // looks like this was never set to something else...
-  // Don't we want support for getting a file from a certain offset ? Hmm...
+  unsigned long offset = 0;
+  QString resumeOffset = metaData(QString::fromLatin1("resume"));
+  if ( !resumeOffset.isEmpty() )
+  {
+      offset = resumeOffset.toInt();
+      if (offset)
+          canResume();
+  }
 
   if ( !ftpOpenCommand( "retr", url.path(), 'I', ERR_CANNOT_OPEN_FOR_READING, offset ) ) {
     kdWarning(7102) << "Can't open for reading" << endl;
@@ -1418,7 +1424,7 @@ void Ftp::get( const KURL & url )
   size_t bytesLeft = m_size - offset;
 
   totalSize( m_size );
-  int processed_size = 0;
+  int processed_size = offset;
   time_t t_start = time( 0L );
   time_t t_last = t_start;
 
@@ -1462,7 +1468,7 @@ void Ftp::get( const KURL & url )
     time_t t = time( 0L );
     if ( t - t_last >= 1 ) {
       processedSize( processed_size );
-      speed( processed_size / ( t - t_start ) );
+      speed( ( processed_size - offset ) / ( t - t_start ) );
       t_last = t;
     }
   }
@@ -1475,7 +1481,7 @@ void Ftp::get( const KURL & url )
   processedSize( m_size );
   time_t t = time( 0L );
   if ( t - t_start >= 1 )
-    speed( processed_size / ( t - t_start ) );
+    speed( ( processed_size - offset ) / ( t - t_start ) );
 
   finished();
 }

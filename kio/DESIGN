@@ -1,8 +1,9 @@
 DESIGN:
 =======
 
-libkio talks to ONE running daemon, kioslave.
-( which is currently composed of kio_daemon.cpp and kio_slavewrapper.cpp )
+libkio uses kioslaves (separate processes) that handle a given protocol.
+Launching those slaves is taken care of by the kdeinit/klauncher tandem,
+which are notified by DCOP.
 
 Connection is the most low-level class, the one that encapsulate the pipe.
 
@@ -156,30 +157,15 @@ move: moves a file or directory, recursively if the latter
 
 del: deletes a file or directory, recursively if the latter
 
-USAGE:
-======
-
-Do NOT install this lib, yet. tests can work with the lib not installed.
-
-Currently you need to start kioslave manually : ./kioslave --nofork
-
-Test programs : speed and kioslavetest
-
-kioslave can start automatically if you do:
-cp .libs/lt-kioslave $KDEDIR/bin/kioslave
-cd file
-make install
-
-Alternatively, install kdelibs+kdebase in /opt/kde2_cool or whatever.
-
-
 PROGRESS DISPLAYING :
 =====================
 Taj brought up the idea of deligating all progress informations to an extern
 GUI daemon which could be provided in several implementations - examples
 are popup dialogs (most are annoyed by them, like me :) or a kicker applet
 or something completly different. This would also remove the dependency on
-libkdeui (I hope)
+libkdeui (I hope).
+Conclusion: kio_uiserver is this single GUI daemon, but the dependency on
+libkdeui couldn't be removed (for many reasons, including Job::showErrorDialog())
 
 A. progress handling
 ---------------------
@@ -233,8 +219,8 @@ D. Some notes
     approach ( see A.2 above )
 
 
-E. Streaming 
-------------
+Streaming 
+---------
 
  1. We currently support a streaming "GET": e.g. file:/tmp/test.gz#gzip:/
     works. The following should also work: file:/tmp/test.gz.gz#gzip:/#gzip:/
@@ -250,4 +236,37 @@ E. Streaming
  3. As a result of 1. COPY FROM an url like file:/tmp/test.gz#gzip:/ should
     work. COPY TO does not, because that would require PUT.
     
+
+Resuming
+--------
+
+A rough note for now, just to have this somewhere :
+(PJ=put-job, GJ=get-job)
+
+PJ can't resume:
+PJ-->app: canResume(0)  (emitted by dataReq)
+GJ-->app: data()
+PJ-->app: dataReq()
+app->PJ: data()
+
+PJ can resume but GJ can't resume:
+PJ-->app: canResume(xx)
+app->GJ: start job with "resume=xxx" metadata.
+GJ-->app: data()
+PJ-->app: dataReq()
+app->PJ: data()
+
+PJ can resume and GJ can resume:
+PJ-->app: canResume(xx)
+app->GJ: start job with "resume=xxx" metadata.
+GJ-->app: canResume(xx)
+GJ-->app: data()
+PJ-->app: dataReq()
+app->PJ: canResume(xx)
+app->PJ: data()
+
+So when the slave supports resume for "put" it has to check after the first 
+dataRequest() whether it has got a canResume() back from the app. If it did 
+it must resume. Otherwise it must start from 0.
+
 

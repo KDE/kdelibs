@@ -54,6 +54,16 @@ template class QList<QValueList<UDSAtom> >;
 
 #define KIO_DATA QByteArray data; QDataStream stream( data, IO_WriteOnly ); stream
 
+namespace KIO {
+class SlaveBasePrivate {
+public:
+    QString slaveid;
+    bool resume:1;
+    bool needSendCanResume:1;
+};
+};
+
+
 //////////////
 
 SlaveBase::SlaveBase( const QCString &protocol,
@@ -75,17 +85,17 @@ SlaveBase::SlaveBase( const QCString &protocol,
     mConnectedToApp = true;
     connectSlave(mAppSocket);
 
-    // by kahl for netmgr (need a way to identify slaves)
     d = new SlaveBasePrivate;
+    // by kahl for netmgr (need a way to identify slaves)
     d->slaveid = protocol;
     d->slaveid += QString::number(getpid());
+    d->resume = false;
+    d->needSendCanResume = false;
 }
 
 SlaveBase::~SlaveBase()
 {
-    // by kahl for netmgr
-    if (d)
-       delete d;
+    delete d;
 }
 
 void SlaveBase::dispatchLoop()
@@ -200,6 +210,8 @@ void SlaveBase::dataReq( )
 {
     if (!mOutgoingMetaData.isEmpty())
        sendMetaData();
+    if (d->needSendCanResume)
+        canResume(0);
     m_pConnection->send( MSG_DATA_REQ );
 }
 
@@ -238,10 +250,9 @@ void SlaveBase::slaveStatus( const QString &host, bool connected )
     m_pConnection->send( MSG_SLAVE_STATUS, data );
 }
 
-void SlaveBase::canResume( bool _resume )
+void SlaveBase::canResume()
 {
-    KIO_DATA << (int)_resume;
-    m_pConnection->send( MSG_RESUME, data );
+    m_pConnection->send( MSG_CANRESUME );
 }
 
 void SlaveBase::totalSize( unsigned long _bytes )
@@ -500,6 +511,23 @@ int SlaveBase::messageBox( int type, const QString &text, const QString &caption
         return 0; // communication failure
 }
 
+bool SlaveBase::canResume( unsigned long offset )
+{
+    kdDebug() << "SlaveBase::canResume offset=" << offset << endl;
+    d->needSendCanResume = false;
+    KIO_DATA << offset;
+    m_pConnection->send( MSG_RESUME, data );
+    int cmd;
+    if ( waitForAnswer( CMD_RESUMEANSWER, CMD_NONE, data, &cmd ) != -1 )
+    {
+        kdDebug() << "SlaveBase::canResume returning " << (cmd == CMD_RESUMEANSWER) << endl;
+        return cmd == CMD_RESUMEANSWER;
+    } else
+        return false;
+}
+
+
+
 int SlaveBase::waitForAnswer( int expected1, int expected2, QByteArray & data, int *pCmd )
 {
     int cmd, result;
@@ -569,6 +597,11 @@ void SlaveBase::dispatch( int command, const QByteArray &data )
 
 	bool overwrite = ( iOverwrite != 0 );
 	bool resume = ( iResume != 0 );
+
+        // Remember that we need to send canResume(), TransferJob is expecting
+        // it. Well, in theory this shouldn't be done if resume is true.
+        //   (the resume bool is currently unused)
+        d->needSendCanResume = true   /* !resume */;
 
 	put( url, permissions, overwrite, resume);
     }

@@ -77,7 +77,7 @@ public:
   void setMounting( const QString & dev, const QString & point );
   void setUnmounting( const QString & point );
 
-  void setCanResume( bool );
+  void setCanResume( unsigned long offset );
 
   unsigned long totalSize() { return m_iTotalSize; }
   unsigned long totalFiles() { return m_iTotalFiles; }
@@ -159,7 +159,7 @@ protected:
 
   // ListView IDs
   int lv_operation, lv_filename, lv_resume, lv_count, lv_progress;
-  int lv_total, lv_speed, lv_remaining, lv_url;
+  int lv_size, lv_speed, lv_remaining, lv_url;
 };
 
 
@@ -223,8 +223,7 @@ k_dcop:
   ASYNC mounting( int id, QString dev, QString point );
   ASYNC unmounting( int id, QString point );
 
-  // currently unused
-  ASYNC canResume( int id, unsigned int can_resume );
+  ASYNC canResume( int id, unsigned long offset );
 
   /**
    * Invoke this method to request autorization info from the user
@@ -307,7 +306,7 @@ private:
 
   // true if there's a new job that hasn't been shown yet.
   bool m_bUpdateNewJob;
- 
+
   static int s_jobId;
 };
 

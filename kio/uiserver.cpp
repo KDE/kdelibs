@@ -108,7 +108,8 @@ ProgressItem::~ProgressItem() {
 void ProgressItem::setTotalSize( unsigned long size ) {
   m_iTotalSize = size;
 
-  setText( listProgress->lv_total, KIO::convertSize( m_iTotalSize ) );
+  // It's already in the % column...
+  //setText( listProgress->lv_total, KIO::convertSize( m_iTotalSize ) );
 
   defaultProgress->slotTotalSize( 0, m_iTotalSize );
 }
@@ -128,6 +129,8 @@ void ProgressItem::setTotalDirs( unsigned long dirs ) {
 
 void ProgressItem::setProcessedSize( unsigned long size ) {
   m_iProcessedSize = size;
+
+  setText( listProgress->lv_size, KIO::convertSize( size ) );
 
   defaultProgress->slotProcessedSize( 0, size );
 }
@@ -239,7 +242,7 @@ void ProgressItem::setUnmounting( const QString & point ) {
   defaultProgress->slotUnmounting( 0, point );
 }
 
-void ProgressItem::setCanResume( bool /*_resume*/ ) {
+void ProgressItem::setCanResume( unsigned long offset ) {
   /*
   QString tmps;
   // set canResume
@@ -250,6 +253,7 @@ void ProgressItem::setCanResume( bool /*_resume*/ ) {
   }
   setText( listProgress->lv_resume, tmps );
   */
+  defaultProgress->slotCanResume( 0, offset );
 }
 
 
@@ -297,7 +301,8 @@ ListProgress::ListProgress (QWidget *parent, const char *name)
   //lv_resume = addColumn( i18n("Res.") );
   lv_count = addColumn( i18n("Count") );
   lv_progress = addColumn( i18n("%") );
-  lv_total = addColumn( i18n("Total") );
+  //lv_total = addColumn( i18n("Total") );
+  lv_size = addColumn( i18n("Size") );
   lv_speed = addColumn( i18n("Speed") );
   lv_remaining = addColumn( i18n("Rem. Time") );
   lv_url = addColumn( i18n("URL") );
@@ -411,7 +416,7 @@ int UIServer::newJob( QCString observerAppId, bool showProgress )
   connect( item, SIGNAL( jobCanceled( ProgressItem* ) ),
            SLOT( slotJobCanceled( ProgressItem* ) ) );
 
-  if ( m_bShowList && !updateTimer->isActive() ) 
+  if ( m_bShowList && !updateTimer->isActive() )
     updateTimer->start( 1000 );
 
   m_bUpdateNewJob=true;
@@ -559,13 +564,13 @@ void UIServer::infoMessage( int id, const QString & msg )
   }
 }
 
-void UIServer::canResume( int id, unsigned int can_resume )
+void UIServer::canResume( int id, unsigned long offset )
 {
-  kdDebug(7024) << "UIServer::canResume " << id << " " << can_resume << endl;
+  kdDebug(7024) << "UIServer::canResume " << id << " " << offset << endl;
 
   ProgressItem *item = findItem( id );
   if ( item ) {
-    item->setCanResume( can_resume );
+    item->setCanResume( offset );
   }
 }
 
@@ -676,7 +681,7 @@ void UIServer::slotUpdate() {
     hide();
     updateTimer->stop();
     return;
-  } 
+  }
 
   if (m_bUpdateNewJob)
   {

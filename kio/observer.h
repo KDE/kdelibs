@@ -160,7 +160,7 @@ public slots:
   void slotDeleting( KIO::Job*, const KURL& url );
   void slotCreatingDir( KIO::Job*, const KURL& dir );
   // currently unused
-  void slotCanResume( KIO::Job*, bool can_resume );
+  void slotCanResume( KIO::Job*, unsigned long offset );
 
 public:
   void stating( KIO::Job*, const KURL& url );

@@ -392,7 +392,7 @@ void SimpleJob::slotNeedProgressId()
 {
     if ( !m_progressId )
         m_progressId = Observer::self()->newJob( this, false );
-    m_slave->setProgressId( m_progressId ); 
+    m_slave->setProgressId( m_progressId );
 }
 
 void SimpleJob::slotTotalSize( unsigned long size )
@@ -461,7 +461,7 @@ SimpleJob *KIO::special(const KURL& url, const QByteArray & data, bool showProgr
 SimpleJob *KIO::mount( bool ro, const char *fstype, const QString& dev, const QString& point, bool showProgressInfo )
 {
     KIO_ARGS << int(1) << Q_INT8( ro ? 1 : 0 )
-             << fstype << dev << point;
+             << QString::fromLatin1(fstype) << dev << point;
     SimpleJob *job = special( KURL("file:/"), packedArgs, showProgressInfo );
     if ( showProgressInfo )
          Observer::self()->mounting( job, dev, point );
@@ -693,6 +693,8 @@ void TransferJob::resume()
 
 void TransferJob::start(Slave *slave)
 {
+    kdDebug() << "TransferJob::start" << endl;
+
     assert(slave);
     connect( slave, SIGNAL( data( const QByteArray & ) ),
              SLOT( slotData( const QByteArray & ) ) );
@@ -714,6 +716,9 @@ void TransferJob::start(Slave *slave)
 
     connect( slave, SIGNAL( needSubURLData() ),
              SLOT( slotNeedSubURLData() ) );
+
+    connect( slave, SIGNAL(canResume( unsigned long ) ),
+             SLOT( slotCanResume( unsigned long ) ) );
 
     if (slave->suspended())
     {
@@ -764,6 +769,11 @@ void TransferJob::slotSubURLData(KIO::Job*, const QByteArray &data)
 void TransferJob::slotErrorPage()
 {
     m_errorPage = true;
+}
+
+void TransferJob::slotCanResume( unsigned long offset )
+{
+    emit canResume(this, offset);
 }
 
 void TransferJob::slotResult( KIO::Job *job)
@@ -959,35 +969,110 @@ void FileCopyJob::slotPercent( KIO::Job*, unsigned long pct )
 void FileCopyJob::startDataPump()
 {
     kdDebug(7007) << "FileCopyJob::startDataPump()" << endl;
-    m_getJob = get( m_src, false, false /* no GUI */ );
-    kdDebug(7007) << "FileCopyJob: m_getJob = " << m_getJob << endl;
+
+    m_canResume = false;
+    m_resumeAnswerSent = false;
+    m_getJob = 0L; // for now
     m_putJob = put( m_dest, m_permissions, m_overwrite, m_resume, false /* no GUI */);
     kdDebug(7007) << "FileCopyJob: m_putJob = " << m_putJob << " m_dest=" << m_dest.prettyURL() << endl;
-    m_putJob->suspend();
-    addSubjob( m_getJob );
-    connectSubjob( m_getJob ); // Progress info depends on get
-    addSubjob( m_putJob );
-    m_getJob->resume(); // Order a beer
 
-    connect( m_getJob, SIGNAL(data(KIO::Job *, const QByteArray&)),
-             SLOT( slotData(KIO::Job *, const QByteArray&)));
+    // The first thing the put job will tell us is whether we can
+    // resume or not (this is always emitted)
+    connect( m_putJob, SIGNAL(canResume(KIO::Job *, unsigned long)),
+             SLOT( slotCanResume(KIO::Job *, unsigned long)));
     connect( m_putJob, SIGNAL(dataReq(KIO::Job *, QByteArray&)),
              SLOT( slotDataReq(KIO::Job *, QByteArray&)));
+    addSubjob( m_putJob );
+}
+
+void FileCopyJob::slotCanResume( KIO::Job* job, unsigned long offset )
+{
+    if ( job == m_putJob )
+    {
+        kdDebug() << "FileCopyJob::slotCanResume from PUT job. offset=" << offset << endl;
+
+        if (offset)
+        {
+            QString newPath;
+            // Ask confirmation about resuming previous transfer
+            RenameDlg_Result res = Observer::self()->open_RenameDlg(
+                this, i18n("File already exists"),
+                m_src.prettyURL(), m_dest.prettyURL(),
+                (RenameDlg_Mode) (M_OVERWRITE | M_RESUME | M_NORENAME), newPath,
+                (unsigned long) -1, offset );
+
+            if ( res == R_OVERWRITE )
+                offset = 0;
+            else if ( res == R_CANCEL )
+            {
+                m_putJob->kill(true);
+                m_error = ERR_USER_CANCELED;
+                emitResult();
+                return;
+            }
+        }
+
+        m_getJob = get( m_src, false, false /* no GUI */ );
+        kdDebug(7007) << "FileCopyJob: m_getJob = " << m_getJob << endl;
+        if (offset)
+        {
+            kdDebug() << "Setting metadata for resume" << endl;
+            m_getJob->addMetaData( "resume", QString::number(offset) );
+            // Might or might not get emitted
+            connect( m_getJob, SIGNAL(canResume(KIO::Job *, unsigned long)),
+                     SLOT( slotCanResume(KIO::Job *, unsigned long)));
+        }
+
+        m_putJob->suspend();
+        addSubjob( m_getJob );
+        connectSubjob( m_getJob ); // Progress info depends on get
+        m_getJob->resume(); // Order a beer
+
+        connect( m_getJob, SIGNAL(data(KIO::Job *, const QByteArray&)),
+                 SLOT( slotData(KIO::Job *, const QByteArray&)));
+    }
+    else if ( job == m_getJob )
+    {
+        // Cool, the get job said ok, we can resume
+        m_canResume = true;
+        kdDebug() << "FileCopyJob::slotCanResume from the GET job -> we can resume" << endl;
+    }
+    else
+        kdWarning(7007) << "FileCopyJob::slotCanResume from unknown job=" << job
+                        << " m_getJob=" << m_getJob << " m_putJob=" << m_putJob << endl;
 }
 
 void FileCopyJob::slotData( KIO::Job * , const QByteArray &data)
 {
-   //kdDebug(7007) << "FileCopyJob::slotData(" << job << ")" << endl;
+   //kdDebug(7007) << "FileCopyJob::slotData" << endl;
    //kdDebug(7007) << " data size : " << data.size() << endl;
    assert(m_putJob);
    m_getJob->suspend();
    m_putJob->resume(); // Drink the beer
    m_buffer = data;
+
+   // On the first set of data incoming, we tell the "put" slave about our
+   // decision about resuming
+   if (!m_resumeAnswerSent)
+   {
+       m_resumeAnswerSent = true;
+       kdDebug() << "FileCopyJob::slotData (first time) -> send resume answer " << m_canResume << endl;
+       m_putJob->slave()->sendResumeAnswer( m_canResume );
+   }
 }
 
 void FileCopyJob::slotDataReq( KIO::Job * , QByteArray &data)
 {
-   //kdDebug(7007) << "FileCopyJob::slotDataReq(" << job << ")" << endl;
+   //kdDebug(7007) << "FileCopyJob::slotDataReq" << endl;
+   if (!m_resumeAnswerSent && !m_getJob)
+   {
+       // This can't happen (except as a migration bug on 12/10/2000)
+       m_error = ERR_INTERNAL;
+       m_errorText = "'Put' job didn't send canResume or 'Get' job didn't send data!";
+       m_putJob->kill(true);
+       emitResult();
+       return;
+   }
    if (m_getJob)
    {
       m_getJob->resume(); // Order more beer
@@ -1271,9 +1356,6 @@ CopyJob::CopyJob( const KURL::List& src, const KURL& dest, CopyMode mode, bool a
 
     connect( this, SIGNAL( creatingDir( KIO::Job*, const KURL& ) ),
              Observer::self(), SLOT( slotCreatingDir( KIO::Job*, const KURL& ) ) );
-
-    connect( this, SIGNAL( canResume( KIO::Job*, bool ) ),
-             Observer::self(), SLOT( slotCanResume( KIO::Job*, bool ) ) );
   }
     // Stat the dest
     KIO::Job * job = KIO::stat( m_dest, false );
@@ -1852,13 +1934,18 @@ void CopyJob::slotResultConflictCopyingFiles( KIO::Job * job )
     }
     else
     {
-        SkipDlg_Result skipResult = Observer::self()->open_SkipDlg( this, files.count() > 0,
-                                                  job->errorString() );
+        if ( job->error() == ERR_USER_CANCELED )
+            res = R_CANCEL;
+        else
+        {
+            SkipDlg_Result skipResult = Observer::self()->open_SkipDlg( this, files.count() > 0,
+                                                                        job->errorString() );
 
-        // Convert the return code from SkipDlg into a RenameDlg code
-        res = ( skipResult == S_SKIP ) ? R_SKIP :
-            ( skipResult == S_AUTO_SKIP ) ? R_AUTO_SKIP :
-            R_CANCEL;
+            // Convert the return code from SkipDlg into a RenameDlg code
+            res = ( skipResult == S_SKIP ) ? R_SKIP :
+                         ( skipResult == S_AUTO_SKIP ) ? R_AUTO_SKIP :
+                                        R_CANCEL;
+        }
     }
 
     subjobs.remove( job );

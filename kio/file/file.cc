@@ -243,23 +243,26 @@ void FileProtocol::put( const KURL& url, int _mode, bool _overwrite, bool _resum
 
         struct stat buff_part;
         bool part_exists = ( ::stat( _dest_part.data(), &buff_part ) != -1 );
-        if ( part_exists && !_resume )
+        if ( part_exists && !_resume && buff_part.st_size > 0 )
         {
-             kdDebug(7101) << "Deleting partial file " << dest_part << endl;
-             if ( ! remove( _dest_part.data() ) ) {
-                 part_exists = false;
-             } else {
-                 error( KIO::ERR_CANNOT_DELETE_PARTIAL, dest_part );
-                 return;
+            kdDebug() << "FileProtocol::put : calling canResume with " << (unsigned long)buff_part.st_size << endl;
+             // Maybe we can use this partial file for resuming
+             // Tell about the size we have, and the app will tell us
+             // if it's ok to resume or not.
+             _resume = canResume( buff_part.st_size );
+
+             kdDebug() << "FileProtocol::put got answer " << _resume << endl;
+
+             if (!_resume)
+             {
+                 kdDebug(7101) << "Deleting partial file " << dest_part << endl;
+                 if ( ! remove( _dest_part.data() ) ) {
+                     part_exists = false;
+                 } else {
+                     error( KIO::ERR_CANNOT_DELETE_PARTIAL, dest_part );
+                     return;
+                 }
              }
-             // The whole point in .part files is being able to resume... (David)
-             // Note that resuming a normal file needs the bool passed to this method,
-             // because the user has to choose it instead of overwrite, which is not
-             // implemented currently (RenameDlg's M_RESUME flag never set).
-             //_resume = true;
-             // Problem is: we need to tell the job who does the 'put' to skip
-             // the beginning.... That's probably what canResume is about, but it lacks
-             // the size !
         }
     }
     else
@@ -961,7 +964,7 @@ void FileProtocol::slotInfoMessage( const QString & msg )
 
 void FileProtocol::mount( bool _ro, const char *_fstype, const QString& _dev, const QString& _point )
 {
-    kdDebug(7101) << "FileProtocol::mount" << endl;
+    kdDebug(7101) << "FileProtocol::mount _fstype=" << _fstype << endl;
     QString buffer;
 
     KTempFile tmpFile;

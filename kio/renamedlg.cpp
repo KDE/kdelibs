@@ -59,9 +59,11 @@ RenameDlg::RenameDlg(QWidget *parent, const QString & _caption,
   b0 = new QPushButton( i18n( "Cancel" ), this );
   connect(b0, SIGNAL(clicked()), this, SLOT(b0Pressed()));
 
-  b1 = new QPushButton( i18n( "Rename" ), this );
-  b1->setEnabled(false);
-  connect(b1, SIGNAL(clicked()), this, SLOT(b1Pressed()));
+  if ( ! (_mode & M_NORENAME ) ) {
+      b1 = new QPushButton( i18n( "Rename" ), this );
+      b1->setEnabled(false);
+      connect(b1, SIGNAL(clicked()), this, SLOT(b1Pressed()));
+  }
 
   if ( ( _mode & M_MULTI ) && ( _mode & M_SKIP ) ) {
     b2 = new QPushButton( i18n( "Skip" ), this );
@@ -150,8 +152,9 @@ RenameDlg::RenameDlg(QWidget *parent, const QString & _caption,
   m_pLineEdit = new QLineEdit( this );
   m_pLayout->addWidget( m_pLineEdit );
   m_pLineEdit->setText( KURL(dest).fileName() );
-  connect(m_pLineEdit, SIGNAL(textChanged(const QString &)),
-	  SLOT(enableRenameButton(const QString &)));
+  if (b1)
+      connect(m_pLineEdit, SIGNAL(textChanged(const QString &)),
+              SLOT(enableRenameButton(const QString &)));
 
   m_pLayout->addSpacing( 10 );
 

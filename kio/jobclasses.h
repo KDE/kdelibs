@@ -120,12 +120,12 @@ namespace KIO {
          * @param parent the parent widget for the dialog box
          */
         void showErrorDialog( QWidget * parent = 0L );
-        
+
         /**
          * Associate this job with a window given by @p window
          */
         void setWindow(QWidget *window);
-        
+
         /**
          * Returns the window this job is associated with.
          */
@@ -458,6 +458,7 @@ namespace KIO {
          */
         bool isErrorPage() const { return m_errorPage; }
 
+
     signals:
         /**
          * Data from the slave has arrived.
@@ -487,6 +488,16 @@ namespace KIO {
          */
         void mimetype( KIO::Job *, const QString &type );
 
+        /**
+         * @internal
+         * Emitted if the "put" job found an existing partial file
+         * (in which case offset is the size of that file)
+         * and emitted by the "get" job if it supports resuming to
+         * the given offset - in this case @p offset is unused)
+         */
+        void canResume( KIO::Job *, unsigned long offset );
+
+
     protected slots:
         virtual void slotRedirection( const KURL &url);
         virtual void slotFinished();
@@ -497,6 +508,7 @@ namespace KIO {
         virtual void slotNeedSubURLData();
         virtual void slotSubURLData(KIO::Job*, const QByteArray &);
         void slotErrorPage();
+        void slotCanResume( unsigned long offset );
 
     protected:
         bool m_suspended;
@@ -568,6 +580,10 @@ namespace KIO {
          * Forward signal from subjob
          */
         void slotPercent( KIO::Job*, unsigned long pct );
+        /**
+         * Forward signal from subjob
+         */
+        void slotCanResume( KIO::Job*, unsigned long offset );
 
     protected:
         void startCopyJob();
@@ -577,9 +593,11 @@ namespace KIO {
         KURL m_src;
         KURL m_dest;
         int m_permissions;
-        bool m_move;
-        bool m_overwrite;
-        bool m_resume;
+        bool m_move:1;
+        bool m_overwrite:1;
+        bool m_resume:1;
+        bool m_canResume:1;
+        bool m_resumeAnswerSent:1;
         QByteArray m_buffer;
         SimpleJob *m_moveJob;
         SimpleJob *m_copyJob;
@@ -680,9 +698,6 @@ namespace KIO {
          * The user chose to rename 'from' to 'to'
          */
         void renamed( KIO::Job *, const KURL& from, const KURL& to );
-
-        // ?
-        void canResume( KIO::Job *, bool can_resume );
 
         /**
          * The job emits this signal when copying or moving a file or directory successfully finished.

@@ -114,6 +114,7 @@ public slots:
   virtual void slotDeleting( KIO::Job*, const KURL& ) {}
   virtual void slotCreatingDir( KIO::Job*, const KURL& ) {}
 
+  // TODO: make the arg an unsigned long or remove (BIC)
   virtual void slotCanResume( KIO::Job*, bool ) {}
 
 signals:

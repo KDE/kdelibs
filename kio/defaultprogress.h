@@ -57,7 +57,8 @@ public slots:
   virtual void slotMounting( KIO::Job*, const QString & dev, const QString & point );
   virtual void slotUnmounting( KIO::Job*, const QString & point );
 
-  virtual void slotCanResume( KIO::Job*, bool );
+  // TODO make it virtual in progressbase
+  void slotCanResume( KIO::Job*, unsigned long );
 
 protected:
   void setDestVisible( bool visible );

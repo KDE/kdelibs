@@ -78,9 +78,6 @@ void ProgressBase::setJob( KIO::CopyJob *job )
   connect( job, SIGNAL( creatingDir( KIO::Job*, const KURL& ) ),
  	   SLOT( slotCreatingDir( KIO::Job*, const KURL& ) ) );
 
-  connect( job, SIGNAL( canResume( KIO::Job*, bool ) ),
- 	   SLOT( slotCanResume( KIO::Job*, bool ) ) );
-
   connect( job, SIGNAL( result( KIO::Job* ) ),
 	   SLOT( slotFinished( KIO::Job* ) ) );
 
