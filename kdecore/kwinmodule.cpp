@@ -39,10 +39,11 @@ static KWinModulePrivate* static_d = 0;
 class KWinModulePrivate : public QWidget, public NETRootInfo
 {
 public:
-    KWinModulePrivate()
+    KWinModulePrivate(int _what)
 	: QWidget(0,0), NETRootInfo( qt_xdisplay(),
-				     ClientList |
-				     ClientListStacking |
+				     ( _what >= KWinModule::INFO_WORKAREA ? 
+				       (ClientList | ClientListStacking) : 0
+				     ) |
 				     NumberOfDesktops |
 				     DesktopGeometry |
 				     CurrentDesktop |
@@ -52,7 +53,8 @@ public:
 				     KDESystemTrayWindows,
 				     -1, false
 				     ),
-          strutSignalConnected( false )
+          strutSignalConnected( false ),
+          what( _what )
     {
 	kapp->installX11EventFilter( this );
 	(void ) kapp->desktop(); //trigger desktop widget creation to select root window events
@@ -62,10 +64,6 @@ public:
     ~KWinModulePrivate()
     {
     }
-#if defined Q_WS_X11 && ! defined K_WS_QTONLY
-#else
-    
-#endif
     QPtrList<KWinModule> modules;
 
     QValueList<WId> windows;
@@ -84,6 +82,7 @@ public:
     QValueList<StrutData> strutWindows;
     QValueList<WId> possibleStrutWindows;
     bool strutSignalConnected;
+    int what;
 
     void addClient(Window);
     void removeClient(Window);
@@ -100,8 +99,36 @@ public:
 KWinModule::KWinModule( QObject* parent )
     : QObject( parent, "kwin_module" )
 {
+    init(INFO_ALL);
+}
+
+KWinModule::KWinModule( QObject* parent, int what )
+    : QObject( parent, "kwin_module" )
+{
+    init(what);
+}
+
+void KWinModule::init(int what)
+{
+    if (what >= INFO_WINDOWS)
+       what = INFO_WINDOWS;
+    else if (what >= INFO_WORKAREA)
+       what = INFO_WORKAREA;
+    else
+       what = INFO_DESKTOP;
+
     if ( !static_d )
-	static_d = new KWinModulePrivate;
+    {
+        static_d = new KWinModulePrivate(what);
+    }
+    else if (static_d->what < what)
+    {
+        QPtrList<KWinModule> modules = static_d->modules;
+        delete static_d;
+        static_d = new KWinModulePrivate(what);
+        static_d->modules = modules;
+    }
+    
     d = static_d;
     d->modules.append( this );
 }
@@ -213,7 +240,7 @@ void KWinModulePrivate::updateStackingOrder()
 
 void KWinModulePrivate::addClient(Window w)
 {
-    if ( !QWidget::find( w ) )
+    if ( (what >= KWinModule::INFO_WORKAREA) && !QWidget::find( w ) )
 	XSelectInput( qt_xdisplay(), w, PropertyChangeMask | StructureNotifyMask );
     bool emit_strutChanged = false;
     if( strutSignalConnected && modules.count() > 0 ) {

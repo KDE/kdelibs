@@ -54,6 +54,35 @@ class KWinModule : public QObject
 
 public:
 
+    enum { INFO_DESKTOP=1,
+           INFO_WORKAREA=2,
+           INFO_WINDOWS=4,
+           INFO_ALL=32767 };
+    /**
+     * Creates a KWinModule object and connects to the window
+     * manager.
+     * @param parent the parent for the QObject
+     * @param what The information you are interested in:
+     *   INFO_DESKTOP:  currentDesktop, 
+     *                  numberOfDesktops, 
+     *                  desktopName, 
+     *                  currentDesktopChanged, 
+     *                  numberOfDesktopsChanged, 
+     *                  desktopNameChanged
+     *   INFO_WORKAREA: workArea,
+     *                  workAreaChanged,
+     *                  strutChanged
+     *   INFO_WINDOWS:  windows,
+     *                  stackingOrder,
+     *                  systemTrayWindows,
+     *                  windowAdded,
+     *                  windowRemoved,
+     *                  systemTrayWindowAdded,
+     *                  systemTrayWindowRemoved,
+     *                  activeWindowChanged,
+     *                  windowChanged
+     **/
+    KWinModule( QObject* parent, int what );
     /**
      * Creates a KWinModule object and connects to the window
      * manager.
@@ -275,6 +304,8 @@ protected:
     virtual void connectNotify( const char* signal );
         
 private:
+    void init(int);
+
     KWinModulePrivate* d;
 
     friend class KWinModulePrivate;
