@@ -3,9 +3,7 @@
 kdelibs3: extra-license-file usr/share/doc/kde/HTML/en/common/fdl-license
 kdelibs3: extra-license-file usr/share/doc/kde/HTML/en/common/gpl-license
 kdelibs3: extra-license-file usr/share/doc/kde/HTML/en/common/lgpl-license
-kdelibs3: ldconfig-symlink-referencing-wrong-file usr/lib/libkssl.so.2 -> libkssl.so.2.0.2 instead of libkssl-nossl.so.2.0.2
 kdelibs3: non-dev-pkg-with-shlib-symlink usr/lib/libkscreensaver.so.1.0.0 usr/lib/libkscreensaver.so
-kdelibs3: ldconfig-symlink-missing-for-shlib usr/lib/kde2/kio_https.so usr/lib/kde2/kio_https-nossl.so kio_https.so
 kdelibs3: shlib-missing-in-control-file kimg_xview.so usr/lib/kde2/kimg_xview.so
 kdelibs3: shlib-missing-in-control-file kded.so usr/lib/kded.so
 kdelibs3: shlib-missing-in-control-file libkdeprint_ext.so usr/lib/kde2/libkdeprint_ext.so
@@ -40,7 +38,6 @@ kdelibs3: shlib-missing-in-control-file dcopserver.so usr/lib/dcopserver.so
 kdelibs3: shlib-missing-in-control-file kgzipfilter.so usr/lib/kde2/kgzipfilter.so
 kdelibs3: shlib-missing-in-control-file kio_ftp.so usr/lib/kde2/kio_ftp.so
 kdelibs3: shlib-missing-in-control-file kio_uiserver.so usr/lib/kio_uiserver.so
-kdelibs3: shlib-missing-in-control-file kio_https.so usr/lib/kde2/kio_https-nossl.so
 kdelibs3: shlib-missing-in-control-file kio_help.so usr/lib/kde2/kio_help.so
 kdelibs3: shlib-missing-in-control-file libkdeprint_rlpr.so usr/lib/kde2/libkdeprint_rlpr.so
 kdelibs3: extra-license-file usr/share/apps/ksgmltools2/customization/ca/entities/underArtisticLicense.docbook
