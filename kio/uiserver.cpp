@@ -63,7 +63,7 @@ enum { ID_TOTAL_FILES = 1, ID_TOTAL_SIZE, ID_TOTAL_TIME, ID_TOTAL_SPEED };
 //static
 int UIServer::s_jobId = 0;
 
-static int defaultColumnWidth[] = { 70,  // SIZE_OPERATION
+static const int defaultColumnWidth[] = { 70,  // SIZE_OPERATION
                                     160, // LOCAL_FILENAME
                                     40,  // RESUME
                                     60,  // COUNT

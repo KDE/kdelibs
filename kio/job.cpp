@@ -897,7 +897,7 @@ TransferJob *KIO::http_post( const KURL& url, const QByteArray &postData, bool s
         valid = false;
 
     // filter out some malicious ports
-    int bad_ports[] = {
+    static const int bad_ports[] = {
         1,   // tcpmux
         7,   // echo
         9,   // discard

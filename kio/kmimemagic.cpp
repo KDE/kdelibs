@@ -235,7 +235,7 @@ typedef struct asc_type {
 	double  weight;
 } asc_type;
 
-static asc_type types[] = {
+static const asc_type types[] = {
 	{ "text/html",          19, 2 }, // 10 items but 10 different words only
 	{ "text/x-c",           9, 1.3 },
 	{ "text/x-makefile",    4, 1.9 },
@@ -254,7 +254,7 @@ static asc_type types[] = {
 static struct names {
 	const char *name;
 	short type;
-} names[] = {
+} const names[] = {
 	{
 		"<html>", L_HTML
 	},
@@ -1663,7 +1663,7 @@ KMimeMagic::ascmagic(unsigned char *buf, int nbytes)
 	unsigned char *s;
 	char nbuf[HOWMANY + 1]; /* one extra for terminating '\0' */
 	char *token;
-	register struct names *p;
+	register const struct names *p;
 	int typecount[NTYPES];
 
 	/* these are easy, do them first */
