@@ -465,6 +465,15 @@ KURL::KURL( const QUrl &u )
 
 KURL::KURL( const KURL& _u, const QString& _rel_url, int encoding_hint )
 {
+  if (_u.hasSubURL()) // Operate on the last suburl, not the first
+  {
+    KURL::List lst = split( _u );
+    KURL u(lst.last(), _rel_url, encoding_hint);
+    lst.remove( lst.last() );
+    lst.append( u );
+    *this = join( lst );
+    return;
+  }
   // WORKAROUND THE RFC 1606 LOOPHOLE THAT ALLOWS
   // http:/index.html AS A VALID SYNTAX FOR RELATIVE
   // URLS. ( RFC 2396 section 5.2 item # 3 )
@@ -1242,6 +1251,10 @@ bool KURL::hasSubURL() const
   if (m_strRef_encoded.startsWith("bzip2:"))
      return true;
   if (m_strRef_encoded.startsWith("tar:"))
+     return true;
+  if (m_strRef_encoded.startsWith("ar:"))
+     return true;
+  if (m_strRef_encoded.startsWith("zip:"))
      return true;
   if ( m_strProtocol == "error" ) // anything that starts with error: has suburls
      return true;
