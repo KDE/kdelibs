@@ -1,6 +1,9 @@
 // $Id$
 // Revision 1.41  1998/01/06 22:54:29  kulow
 // $Log$
+// new static methods for the various directories
+//
+// Revision 1.36  1997/11/18 21:40:43  kalle
 // KApplication::localconfigdir()
 // KApplication::localkdedir()
 // KConfig searches in $KDEDIR/share/config/kderc
@@ -586,6 +589,7 @@ protected:
 */
   /**
 	* Two X11 atoms used for session management
+	*/
 private slots:
   void appHelpActivated();
 
