@@ -105,12 +105,14 @@ class DCOPConnection : public QSocketNotifier
       iceConn = conn;
       waitingOn = 0;
       status = IceConnectPending;
+      notifyRegister = false;
     }
 
   QCString appId;
   IceConn iceConn;
   IceConnectStatus status;
   IceConn waitingOn;
+  bool notifyRegister;
   QList < _IceConn> waitingForReply;
   QList < _IceConn> waitingForDelayedReply;
 };
@@ -814,6 +816,7 @@ void DCOPServer::removeConnection( void* data )
   if ( !conn->appId.isNull() ) {
       qDebug("remove connection '%s' (count=%d)", conn->appId.data(), clients.count() );
       appIds.remove( conn->appId );
+
       QPtrDictIterator<DCOPConnection> it( clients );
       QByteArray data;
       QDataStream datas( data, IO_WriteOnly );
@@ -827,7 +830,7 @@ void DCOPServer::removeConnection( void* data )
       while ( it.current() ) {
 	  DCOPConnection* c = it.current();
 	  ++it;
-	  if ( c != conn ) {
+	  if ( c->notifyRegister && (c != conn) ) {
 	      IceGetHeader( c->iceConn, majorOpcode, DCOPSend,
 			    sizeof(DCOPMsg), DCOPMsg, pMsg );
 	      pMsg->length += datalen;
@@ -874,6 +877,7 @@ bool DCOPServer::receive(const QCString &/*app*/, const QCString &/*obj*/,
 	  }
 	  qDebug("register '%s'", conn->appId.data() );
 	  appIds.insert( conn->appId, conn );
+
 	  QPtrDictIterator<DCOPConnection> it( clients );
 	  QByteArray data;
 	  QDataStream datas( data, IO_WriteOnly );
@@ -887,7 +891,7 @@ bool DCOPServer::receive(const QCString &/*app*/, const QCString &/*obj*/,
 	  while ( it.current() ) {
 	      DCOPConnection* c = it.current();
 	      ++it;
-	      if ( c != conn ) {
+              if ( c->notifyRegister && (c != conn) ) {
 		  IceGetHeader( c->iceConn, majorOpcode, DCOPSend,
 				sizeof(DCOPMsg), DCOPMsg, pMsg );
 		  pMsg->length += datalen;
@@ -921,6 +925,17 @@ bool DCOPServer::receive(const QCString &/*app*/, const QCString &/*obj*/,
       int b = ( appIds.find( s ) != 0 );
       replyType = "bool";
       reply << b;
+      return TRUE;
+    }
+  } else if ( fun == "setNotifications(bool)" ) {
+    QDataStream args( data, IO_ReadOnly );
+    if (!args.atEnd()) {
+      Q_INT8 notifyActive;
+      args >> notifyActive;
+      DCOPConnection* conn = clients.find( iceConn );
+      if ( conn ) 
+         conn->notifyRegister = (notifyActive != 0);
+      replyType = "void";
       return TRUE;
     }
   }

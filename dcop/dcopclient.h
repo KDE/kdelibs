@@ -286,16 +286,27 @@ class DCOPClient : public QObject
      */
     QCString defaultObject() const;
 
+    /**
+     * Enable / disable the applicationRegistered/applicationRemoved
+     * signals. They are disabled by default.
+     */
+    void setNotifications( bool enabled );
 
 signals:
   /**
    * Indicates that the application @p appId has been registered with
    * the server we are attached to.
+   *
+   * You need to call setNotifications() first, to tell the DCOPServer 
+   * that you want to get these events
    */
   void applicationRegistered( const QCString& appId );
   /**
    * Indicates that the formerly registered application @p appId has
    * been removed.
+   *
+   * You need to call setNotifications() first, to tell the DCOPServer 
+   * that you want to get these events
    */
   void applicationRemoved( const QCString& appId );
 

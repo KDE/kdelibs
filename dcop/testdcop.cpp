@@ -28,19 +28,30 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include <dcopclient.h>
 #include <dcopobject.h>
 
+#include <qobject.h>
+
+#include <stdio.h>
 /**
- g++ -o testdcop testdcop.cpp -I$KDEDIR/include -I$QTDIR/include -L$KDEDIR/lib -L$QTDIR/lib -lkdecore
+ $QTDIR/bin/moc testdcop.cpp -o testdcop.moc
+ g++ -o testdcop testdcop.cpp -I$KDEDIR/include -I$QTDIR/include -L$KDEDIR/lib -L$QTDIR/lib -lkdecore -ldl
 
 **/
 
 
-class MyDCOPObject : public DCOPObject
+class MyDCOPObject : public QObject, public DCOPObject
 {
+  Q_OBJECT
 public:
   MyDCOPObject(const QCString &name) : DCOPObject(name) {}
   bool process(const QCString &fun, const QByteArray &data,
 	       QCString& replyType, QByteArray &replyData);
   void function(const QString &arg1, int arg2) { qDebug("function got arg: %s and %d",arg1.data(), arg2); }
+public slots:
+  void registered(const QCString &appName)
+     { printf("REGISTER: %s\n", appName.data()); }
+
+  void unregistered(const QCString &appName)
+     { printf("UNREGISTER: %s\n", appName.data()); }
 };
 
 bool MyDCOPObject::process(const QCString &fun, const QByteArray &data,
@@ -80,7 +91,7 @@ int main(int argc, char **argv)
       qDebug("indeed, we are registered!");
 
 
-  DCOPObject *obj1 = new MyDCOPObject("object1");
+  MyDCOPObject *obj1 = new MyDCOPObject("object1");
 
   QDataStream ds(data, IO_WriteOnly);
   ds << QString("fourty-two") << 42;
@@ -94,7 +105,18 @@ int main(int argc, char **argv)
   int n = client->registeredApplications().count();
   qDebug("number of attached applications = %d", n );
 
+  QObject::connect( client, SIGNAL( applicationRegistered( const QCString&)),
+                    obj1, SLOT( registered( const QCString& )));
+
+  QObject::connect( client, SIGNAL( applicationRemoved( const QCString&)),
+                    obj1, SLOT( unregistered( const QCString& )));
+
+  // Enable the above signals
+  client->setNotifications( true );
+
   return app.exec();
 
   client->detach();
 }
+
+#include "testdcop.moc"

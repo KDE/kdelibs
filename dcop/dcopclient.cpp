@@ -591,6 +591,18 @@ QCStringList DCOPClient::registeredApplications()
   return result;
 }
 
+void DCOPClient::setNotifications(bool enabled)
+{
+  QByteArray data;
+  QDataStream ds(data, IO_WriteOnly);
+  ds << (Q_INT8) enabled;
+
+  QCString replyType;
+  QByteArray reply;
+  if (!call("DCOPServer", "", "setNotifications( bool )", data, replyType, reply))
+    qDebug("I couldn't enable notifications at the dcopserver!");
+}
+
 bool DCOPClient::receive(const QCString &app, const QCString &objId,
 			 const QCString &fun, const QByteArray &data,
 			 QCString& replyType, QByteArray &replyData)
