@@ -227,7 +227,7 @@ void KIconLoader::init( const QString& _appname, KStandardDirs *_dirs )
     QStringList dirs;
     dirs += d->mpDirs->resourceDirs("icon");
     dirs += d->mpDirs->resourceDirs("pixmap");
-    for (QStringList::ConstIterator it = dirs.begin(); it != dirs.end(); it++)
+    for (QStringList::ConstIterator it = dirs.begin(); it != dirs.end(); ++it)
 	d->mpDirs->addResourceDir("appicon", *it);
 
 #ifndef NDEBUG
@@ -291,7 +291,7 @@ void KIconLoader::addBaseThemes(KIconThemeNode *node, const QString &appname)
     QStringList lst = node->theme->inherits();
     QStringList::ConstIterator it;
 
-    for (it=lst.begin(); it!=lst.end(); it++)
+    for (it=lst.begin(); it!=lst.end(); ++it)
     {
 	if (!d->mThemeList.contains(*it) ||
 	    ( d->mThemesInTree.contains(*it) && (*it) != "hicolor"))
@@ -317,14 +317,14 @@ void KIconLoader::addExtraDesktopThemes()
     QStringList::ConstIterator it;
     char buf[1000];
     int r;
-    for (it=icnlibs.begin(); it!=icnlibs.end(); it++)
+    for (it=icnlibs.begin(); it!=icnlibs.end(); ++it)
     {
 	QDir dir(*it);
 	if (!dir.exists())
 	    continue;
 	QStringList lst = dir.entryList("default.*", QDir::Dirs);
 	QStringList::ConstIterator it2;
-	for (it2=lst.begin(); it2!=lst.end(); it2++)
+	for (it2=lst.begin(); it2!=lst.end(); ++it2)
 	{
 	    if (!KStandardDirs::exists(*it + *it2 + "/index.desktop")
 		&& !KStandardDirs::exists(*it + *it2 + "/index.theme"))
@@ -342,7 +342,7 @@ void KIconLoader::addExtraDesktopThemes()
 	}
     }
 
-    for (it=list.begin(); it!=list.end(); it++)
+    for (it=list.begin(); it!=list.end(); ++it)
     {
 	if ( d->mThemesInTree.contains(*it) )
 		continue;
@@ -982,7 +982,7 @@ QStringList KIconLoader::queryIconsByDir( const QString& iconsDir ) const
   QStringList lst = dir.entryList("*.png;*.xpm", QDir::Files);
   QStringList result;
   QStringList::ConstIterator it;
-  for (it=lst.begin(); it!=lst.end(); it++)
+  for (it=lst.begin(); it!=lst.end(); ++it)
     result += iconsDir + "/" + *it;
   return result;
 }
@@ -1010,7 +1010,7 @@ QStringList KIconLoader::queryIconsByContext(int group_or_size,
     QString name;
     QStringList res2, entries;
     QStringList::ConstIterator it;
-    for (it=result.begin(); it!=result.end(); it++)
+    for (it=result.begin(); it!=result.end(); ++it)
     {
 	int n = (*it).findRev('/');
 	if (n == -1)
@@ -1049,7 +1049,7 @@ QStringList KIconLoader::queryIcons(int group_or_size, KIcon::Context context) c
     QString name;
     QStringList res2, entries;
     QStringList::ConstIterator it;
-    for (it=result.begin(); it!=result.end(); it++)
+    for (it=result.begin(); it!=result.end(); ++it)
     {
 	int n = (*it).findRev('/');
 	if (n == -1)

@@ -95,7 +95,7 @@ KIconTheme::KIconTheme(const QString& name, const QString& appName)
        ( name == "crystalsvg" || name== "hicolor" || name == "locolor" ) )
     {
 	icnlibs = KGlobal::dirs()->resourceDirs("data");
-	for (it=icnlibs.begin(); it!=icnlibs.end(); it++)
+	for (it=icnlibs.begin(); it!=icnlibs.end(); ++it)
 	{
 	    cDir = *it + appName + "/icons/" + name;
 	    if (QFile::exists( cDir ))
@@ -105,7 +105,7 @@ KIconTheme::KIconTheme(const QString& name, const QString& appName)
     // Find the theme description file. These are always global.
 
     icnlibs = KGlobal::dirs()->resourceDirs("icon");
-    for (it=icnlibs.begin(); it!=icnlibs.end(); it++)
+    for (it=icnlibs.begin(); it!=icnlibs.end(); ++it)
     {
         cDir = *it + name + "/";
         if (KStandardDirs::exists(cDir))
@@ -151,10 +151,10 @@ KIconTheme::KIconTheme(const QString& name, const QString& appName)
 
     QStringList dirs = cfg.readPathListEntry("Directories");
     mDirs.setAutoDelete(true);
-    for (it=dirs.begin(); it!=dirs.end(); it++)
+    for (it=dirs.begin(); it!=dirs.end(); ++it)
     {
 	cfg.setGroup(*it);
-	for (itDir=themeDirs.begin(); itDir!=themeDirs.end(); itDir++)
+	for (itDir=themeDirs.begin(); itDir!=themeDirs.end(); ++itDir)
 	{
 	    if (KStandardDirs::exists(*itDir + *it + "/"))
 	    {
@@ -192,12 +192,12 @@ KIconTheme::KIconTheme(const QString& name, const QString& appName)
     groups += "Panel";
     const int defDefSizes[] = { 32, 22, 22, 16, 32 };
     cfg.setGroup(mainSection);
-    for (it=groups.begin(), i=0; it!=groups.end(); it++, i++)
+    for (it=groups.begin(), i=0; it!=groups.end(); ++it, i++)
     {
         mDefSize[i] = cfg.readNumEntry(*it + "Default", defDefSizes[i]);
-        QValueList<int> lst = cfg.readIntListEntry(*it + "Sizes"), exp;
+        QValueList<int> exp, lst = cfg.readIntListEntry(*it + "Sizes");
         QValueList<int>::ConstIterator it2;
-        for (it2=lst.begin(); it2!=lst.end(); it2++)
+        for (it2=lst.begin(); it2!=lst.end(); ++it2)
         {
             if (scIcons.contains(*it2))
                 exp += scIcons[*it2];
@@ -448,14 +448,14 @@ QStringList KIconTheme::list()
     _theme_list = new QStringList();
     QStringList icnlibs = KGlobal::dirs()->resourceDirs("icon");
     QStringList::ConstIterator it;
-    for (it=icnlibs.begin(); it!=icnlibs.end(); it++)
+    for (it=icnlibs.begin(); it!=icnlibs.end(); ++it)
     {
         QDir dir(*it);
         if (!dir.exists())
             continue;
         QStringList lst = dir.entryList(QDir::Dirs);
         QStringList::ConstIterator it2;
-        for (it2=lst.begin(); it2!=lst.end(); it2++)
+        for (it2=lst.begin(); it2!=lst.end(); ++it2)
         {
             if ((*it2 == ".") || (*it2 == "..") || (*it2).startsWith("default.") )
                 continue;
@@ -554,7 +554,7 @@ QStringList KIconThemeDir::iconList() const
 #endif
     QStringList result;
     QStringList::ConstIterator it;
-    for (it=lst.begin(); it!=lst.end(); it++)
+    for (it=lst.begin(); it!=lst.end(); ++it)
         result += mDir + "/" + *it;
     return result;
 }
