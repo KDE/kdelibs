@@ -174,8 +174,7 @@ QString VCardTool::createVCards( Addressee::List list, VCard::Version version )
     name.append( (*addrIt).prefix().replace( ';', "\\;" ) );
     name.append( (*addrIt).suffix().replace( ';', "\\;" ) );
 
-    if ( !name.join( "" ).isEmpty() )
-      card.addLine( VCardLine( "N", name.join( ";" ) ) );
+    card.addLine( VCardLine( "N", name.join( ";" ) ) );
 
     // NICKNAME
     if ( version == VCard::v3_0 )
