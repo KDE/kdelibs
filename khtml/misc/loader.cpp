@@ -33,7 +33,7 @@
 // up to which size is a picture for sure cacheable
 #define MAXCACHEABLE 40*1024
 // default cache size
-#define DEFCACHESIZE 512*1024
+#define DEFCACHESIZE 4096*1024
 
 #include <qasyncio.h>
 #include <qasyncimageio.h>
@@ -110,6 +110,24 @@ void CachedObject::setRequest(Request *_request)
         delete this;
 }
 
+void CachedObject::ref(CachedObjectClient *c)
+{
+    m_clients.remove(c);
+    m_clients.append(c);
+// FIXME_APPLE
+//    Cache::removeFromLRUList(this);
+    m_accessCount++;
+}
+
+void CachedObject::deref(CachedObjectClient *c)
+{
+    m_clients.remove(c);
+
+// FIXME_APPLE
+//     if (allowInLRUList())
+//         Cache::insertInLRUList(this);
+}
+
 // -------------------------------------------------------------------------------------------
 
 CachedCSSStyleSheet::CachedCSSStyleSheet(DocLoader* dl, const DOMString &url, KIO::CacheControl _cachePolicy, time_t _expireDate, const QString& charset)
@@ -150,9 +168,7 @@ CachedCSSStyleSheet::~CachedCSSStyleSheet()
 
 void CachedCSSStyleSheet::ref(CachedObjectClient *c)
 {
-    // make sure we don't get it twice...
-    m_clients.remove(c);
-    m_clients.append(c);
+    CachedObject::ref(c);
 
     if(!m_loading) c->setStyleSheet( m_url, m_sheet );
 }
@@ -160,7 +176,7 @@ void CachedCSSStyleSheet::ref(CachedObjectClient *c)
 void CachedCSSStyleSheet::deref(CachedObjectClient *c)
 {
     Cache::flush();
-    m_clients.remove(c);
+    CachedObject::deref(c);
 
     if ( canDelete() && m_free )
       delete this;
@@ -239,9 +255,7 @@ CachedScript::~CachedScript()
 
 void CachedScript::ref(CachedObjectClient *c)
 {
-    // make sure we don't get it twice...
-    m_clients.remove(c);
-    m_clients.append(c);
+    CachedObject::ref(c);
 
     if(!m_loading) c->notifyFinished(this);
 }
@@ -249,7 +263,7 @@ void CachedScript::ref(CachedObjectClient *c)
 void CachedScript::deref(CachedObjectClient *c)
 {
     Cache::flush();
-    m_clients.remove(c);
+    CachedObject::deref(c);
     if ( canDelete() && m_free )
       delete this;
 }
@@ -414,8 +428,8 @@ void ImageSource::cleanBuffer()
 static QString buildAcceptHeader()
 {
     QString result = KImageIO::mimeTypes( KImageIO::Reading ).join(", ");
-    if (result.right(2) == ", ")
-        result = result.left(result.length()-2);
+    if (result.endsWith(", "))
+        result.truncate(result.length()-2);
     return result;
 }
 
@@ -478,9 +492,7 @@ void CachedImage::ref( CachedObjectClient *c )
     kdDebug( 6060 ) << this << " CachedImage::ref(" << c << ") pixmap.isNull()=" << pixmap().isNull() << " valid_rect.isNull()=" << valid_rect().isNull()<< " status=" << m_status << endl;
 #endif
 
-    // make sure we don't get it twice...
-    m_clients.remove(c);
-    m_clients.append(c);
+    CachedObject::ref(c);
 
     if( m ) {
         m->unpause();
@@ -499,7 +511,7 @@ void CachedImage::deref( CachedObjectClient *c )
     kdDebug( 6060 ) << this << " CachedImage::deref(" << c << ") " << endl;
 #endif
     Cache::flush();
-    m_clients.remove( c );
+    CachedObject::deref(c);
     if(m && m_clients.isEmpty() && m->running())
         m->pause();
     if ( canDelete() && m_free )
@@ -1542,8 +1554,6 @@ void Cache::statistics()
             images++;
             if(im->m != 0)
             {
-                qDebug("found image with movie: %p", im);
-
                 movie++;
                 msize += im->size();
             }

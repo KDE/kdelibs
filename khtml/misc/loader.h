@@ -106,6 +106,7 @@ namespace khtml
 	    m_status = Pending;
 	    m_size = 0;
 	    m_free = false;
+            m_accessCount = 0;
 	    m_cachePolicy = _cachePolicy;
 	    m_request = 0;
 	    m_expireDate = _expireDate;
@@ -123,8 +124,8 @@ namespace khtml
 	const DOM::DOMString &url() const { return m_url; }
 	Type type() const { return m_type; }
 
-	virtual void ref(CachedObjectClient *consumer) = 0;
-	virtual void deref(CachedObjectClient *consumer) = 0;
+	virtual void ref(CachedObjectClient *consumer);
+	virtual void deref(CachedObjectClient *consumer);
 
 	int count() const { return m_clients.count(); }
 
@@ -175,6 +176,7 @@ namespace khtml
 	Type m_type;
 	Status m_status;
 	int m_size;
+        int m_accessCount;
 	time_t m_expireDate;
 	KIO::CacheControl m_cachePolicy;
         bool m_free : 1;
