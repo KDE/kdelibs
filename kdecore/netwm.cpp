@@ -586,7 +586,7 @@ void NETRootInfo::setClientList(Window *windows, unsigned int count) {
 #endif
 
     XChangeProperty(p->display, p->root, net_client_list, XA_WINDOW, 32,
-		    PropModeReplace, *((unsigned char **) &p->clients),
+		    PropModeReplace, (unsigned char *)p->clients,
 		    p->clients_count);
 }
 
