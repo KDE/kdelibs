@@ -190,6 +190,8 @@ static void kglobal_freeAll()
     }
     delete KGlobal::_staticDeleters;
     KGlobal::_staticDeleters = 0;
+    // so that we don't hold a reference and see memory leaks :/
+    KGlobal::_activeInstance = 0;
 }
 
 static bool addedFreeAll = false;
