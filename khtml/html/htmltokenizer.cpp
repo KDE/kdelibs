@@ -6,6 +6,7 @@
               (C) 1998 Waldo Bastian (bastian@kde.org)
               (C) 1999 Lars Knoll (knoll@kde.org)
               (C) 1999 Antti Koivisto (koivisto@kde.org)
+              (C) 2000 Dirk Mueller (mueller@kde.org)
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -317,12 +318,15 @@ void HTMLTokenizer::parseListing( DOMStringIt &src)
         else if ( searchCount > 0 )
         {
             const QChar& cmp = src[0];
-            // broken HTML: "--->" or "--!>"
-            if (comment && searchCount == 2 && cmp.latin1() == '-' || cmp.latin1() == '!')
+            // broken HTML: "--->"
+            if (comment && searchCount == 2 && cmp.latin1() == '-' && searchBuffer[0].latin1() != '<')
             {
-                // it's "--->"
-                if(searchFor[searchCount].latin1() != '>')
-                    scriptCode[ scriptCodeSize++ ] = cmp;
+                scriptCode[ scriptCodeSize++ ] = cmp;
+                ++src;
+            }
+            // broken HTML: "--!>"
+            else if (comment && searchCount == 2 && cmp.latin1() == '!' && searchBuffer[0].latin1() != '<')
+            {
                 ++src;
             }
             // broken HTML: skip spaces before the ">", i.e "</script >"
@@ -332,8 +336,7 @@ void HTMLTokenizer::parseListing( DOMStringIt &src)
             }
             else if ( cmp.lower() == searchFor[ searchCount ] )
             {
-                searchBuffer[ searchCount ] = cmp;
-                searchCount++;
+                searchBuffer[ searchCount++ ] = cmp;
                 ++src;
             }
             // We were wrong => print all buffered characters and the current one;
