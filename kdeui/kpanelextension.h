@@ -24,6 +24,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #ifndef __kpanelextension_h__
 #define __kpanelextension_h__
 
+class QPopupMenu;
 class KConfig;
 class KPanelExtensionPrivate;
 
@@ -206,6 +207,12 @@ public:
     **/
     int customSize() const;
 
+    /**
+     * @return the extension's custom menu, usually the same as the context menu, or 0 if none
+     * see setCustomMenu(QPopupMenu*)
+     * @since 3.4
+     */
+    QPopupMenu* customMenu() const;
 
 signals:
     /**
@@ -288,6 +295,19 @@ protected:
      * applet.
      **/
     virtual void alignmentChange( Alignment ) {};
+
+    /**
+     * Use this method to set the custom menu for this extensions so that it can be shown
+     * at the appropriate places/times that the extension many not itself
+     * be aware of. The extension itself is still responsible for deleting and managing the
+     * the menu.
+     *
+     * If the menu is deleted during the life of the extension, be sure to call this method again
+     * with the new menu (or 0) to avoid crashes
+     * @since 3.4
+     */
+    void setCustomMenu(QPopupMenu*);
+
 
 private:
     Type         		_type;

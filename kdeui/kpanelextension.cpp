@@ -21,6 +21,8 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 ******************************************************************/
 
+#include <qpopupmenu.h>
+
 #include <kconfig.h>
 
 #include "kpanelextension.h"
@@ -31,10 +33,12 @@ class KPanelExtensionPrivate
 public:
     KPanelExtensionPrivate() 
       : _size(KPanelExtension::SizeNormal), 
+        _customMenu(0),
         _customSize(58) 
     {}
 
     KPanelExtension::Size _size;
+    QPopupMenu* _customMenu;
     int _customSize;
 };
 
@@ -130,6 +134,16 @@ int KPanelExtension::sizeInPixels() const
   }
 
   return d->_customSize;
+}
+
+QPopupMenu* KPanelExtension::customMenu() const
+{
+    return d->_customMenu;
+}
+
+void KPanelExtension::setCustomMenu(QPopupMenu* menu)
+{
+    d->_customMenu = menu;
 }
 
 void KPanelExtension::virtual_hook( int, void* )
