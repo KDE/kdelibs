@@ -657,6 +657,7 @@ bool KHTMLPart::openURL( const KURL &url )
   args.metaData().insert("ssl_was_in_use", d->m_ssl_in_use ? "TRUE" : "FALSE" );
   args.metaData().insert("ssl_activate_warnings", "TRUE" );
   d->m_bReloading = args.reload;
+
   if ( args.doPost() && (url.protocol().startsWith("http")) )
   {
       d->m_job = KIO::http_post( url, args.postData, false );
@@ -2328,6 +2329,11 @@ void KHTMLPart::urlSelected( const QString &url, int button, int state, const QS
         args.metaData()["cache"]="reload"; //"verify";
   }
 
+  args.metaData().insert("main_frame_request",
+                         parentPart() == 0 ? "TRUE":"FALSE");
+  args.metaData().insert("ssl_was_in_use", d->m_ssl_in_use ? "TRUE":"FALSE");
+  args.metaData().insert("ssl_activate_warnings", "TRUE");
+
   if ( hasTarget )
   {
     // unknown frame names should open in a new window.
@@ -2380,12 +2386,12 @@ void KHTMLPart::slotViewFrameSource()
   KParts::ReadOnlyPart *frame = static_cast<KParts::ReadOnlyPart *>( partManager()->activePart() );
   if ( !frame )
     return;
- 
-  KURL url = frame->url(); 
+
+  KURL url = frame->url();
   if (!(url.isLocalFile()) && frame->inherits("KHTMLPart"))
   {
        long cacheId = static_cast<KHTMLPart *>(frame)->d->m_cacheId;
-      
+
        if (KHTMLPageCache::self()->isValid(cacheId))
        {
            KTempFile sourceFile(QString::null, QString::fromLatin1(".html"));
@@ -2602,7 +2608,7 @@ bool KHTMLPart::requestObject( khtml::ChildFrame *child, const KURL &url, const 
     return false;
   if ( child->m_bPreloaded )
   {
-    //kdDebug(6005) << "requestObject preload" << endl;
+    // kdDebug(6005) << "KHTMLPart::requestObject preload" << endl;
     if ( child->m_frame && child->m_part )
       child->m_frame->setWidget( child->m_part->widget() );
 
@@ -2622,6 +2628,12 @@ bool KHTMLPart::requestObject( khtml::ChildFrame *child, const KURL &url, const 
   child->m_serviceName = QString::null;
   if (!d->m_referrer.isEmpty() && !child->m_args.metaData().contains( "referrer" ))
     child->m_args.metaData()["referrer"] = d->m_referrer;
+
+  child->m_args.metaData().insert("main_frame_request",
+                                  parentPart() == 0 ? "TRUE":"FALSE");
+  child->m_args.metaData().insert("ssl_was_in_use",
+                                  d->m_ssl_in_use ? "TRUE":"FALSE");
+  child->m_args.metaData().insert("ssl_activate_warnings", "TRUE");
 
   // Support for <frame url="">
   if (url.isEmpty() && args.serviceType.isEmpty())
@@ -2882,6 +2894,12 @@ void KHTMLPart::submitForm( const char *action, const QString &url, const QByteA
 
   if (!d->m_referrer.isEmpty())
      args.metaData()["referrer"] = d->m_referrer;
+
+  args.metaData().insert("main_frame_request",
+                         parentPart() == 0 ? "TRUE":"FALSE");
+  args.metaData().insert("ssl_was_in_use", d->m_ssl_in_use ? "TRUE":"FALSE");
+  args.metaData().insert("ssl_activate_warnings", "TRUE");
+
   if ( strcmp( action, "get" ) == 0 )
   {
     u.setQuery( QString::fromLatin1( formData.data(), formData.size() ) );
