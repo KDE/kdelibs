@@ -21,13 +21,14 @@
    activities:
    -----------
    03/2000                   : class documentation added by Falk Brettschneider <gigafalk@yahoo.com>
-   10/1999 - 03/2000         : programmed by Max Judin <novaprint@mtu-net.ru>
+   10/1999 - 05/2000         : programmed by Max Judin <novaprint@mtu-net.ru>
+   3/2000 - 5/2000           : patches and bugfixes by Falk Brettschneider <gigafalk@yahoo.com>
    
    C++ classes in this file:
    -------------------------
-   - KDockTabBar        - minor class (but the actual tab bar)
-   - KDockTabBarPainter - minor helper class
-   - KDockTabCtl        - helper class for a tab-bar mode of centered docked KDockWidgets
+   - KDockTabBar           - minor class (but the actual tab bar)
+   - KDockTabCtl           - helper class for a tab-bar mode of centered docked KDockWidgets
+   - KDockTabBarPainter    - minor class (paints the tab header)
 */
 
 #ifndef KDOCKTABCTL_H
@@ -36,14 +37,16 @@
 #include <qwidget.h>
 #include <qlist.h>
 #include <qpixmap.h>
+#include <qtooltip.h>
 
 class QWidgetStack;
 class QBoxLayout;
 class QPushButton;
-class KDockTabBarPainter;
 
 struct KDockTabCtl_Private;
 struct KDockTabBar_Private;
+class KDockTabBarPainter;
+class KDockDynTabBarToolTip;
 
 /**
  * The actual tab bar for dockwidgets  (and member of the dockwidget class set). 
@@ -288,26 +291,34 @@ class KDockTabBarPainter : public QWidget
   Q_OBJECT
   friend KDockTabBar;
 
+public:
+  /** returns the tooltip string of the tab at this position */
+  QString tip( const QPoint & p );
+
+  /** returns the tab rectangle at this position */
+  QRect findBarRectByPos( int x, int y);
+
 private:
-  
+
   KDockTabBarPainter( KDockTabBar* parent );
   ~KDockTabBarPainter();
 
   void drawBuffer();
-    int findBarByPos( int x, int y );
+  int findBarByPos( int x, int y );
 
   QPixmap* buffer;
   int mousePressTab;
   int delta;
+  KDockDynTabBarToolTip* dynToolTip;
 
 protected:
-  
+
   /**
    * Handles mouse press events for this widgets
    * Reimplemented from QWidget
    */
   virtual void mousePressEvent ( QMouseEvent * );
-  
+
   /**
    * Handles mouse release events for this widgets
    * Reimplemented from QWidget
@@ -315,17 +326,11 @@ protected:
   virtual void mouseReleaseEvent ( QMouseEvent * );
 
   /**
-   * Handles mouse move events for this widgets
-   * Reimplemented from QWidget
-   */
-  virtual void mouseMoveEvent ( QMouseEvent * );
-
-  /**
    * Handles resize events for this widgets
    * Reimplemented from QWidget
    */
   virtual void resizeEvent( QResizeEvent * );
-  
+
   /**
    * Handles paint events for this widgets
    * Reimplemented from QWidget

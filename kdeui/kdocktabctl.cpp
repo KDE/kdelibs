@@ -25,6 +25,10 @@
 #include <qwmatrix.h>
 #include <qtooltip.h>
 
+//-----------------------------------------------------------------------------
+// private classes and struct declarations
+//-----------------------------------------------------------------------------
+
 struct KDockTabCtl_Private
 {
   KDockTabCtl_Private( QWidget* _widget, int _id )
@@ -87,6 +91,457 @@ static const char* b_left_xpm[] = {
 "......%%+.......",
 ".......%........",
 "................"};
+
+/**
+ * A helper class for @ref KDockTabBarPainter that provides a dynamic tooltip
+ * for that tab widget. The string changes from tab to tab, appropriate to the
+ * set tooltip string.
+ *
+ * @author Falk Brettschneider (using the Qt example called tooltip).
+ * @version $Id$
+ */
+class KDockDynTabBarToolTip : public QToolTip
+{
+public:
+    KDockDynTabBarToolTip( QWidget * parent );
+
+protected:
+    void maybeTip( const QPoint & );
+};
+
+
+//-----------------------------------------------------------------------------
+// private classes implementations
+//-----------------------------------------------------------------------------
+
+/***************************************************************************/
+
+KDockDynTabBarToolTip::KDockDynTabBarToolTip( QWidget * parent)
+    : QToolTip( parent )
+{
+}
+
+
+void KDockDynTabBarToolTip::maybeTip( const QPoint &pos)
+{
+  if ( !parentWidget()->inherits( "KDockTabBarPainter"))
+	return;
+
+  QString s;
+  s = ((KDockTabBarPainter*)parentWidget())->tip(pos);
+  tip( ((KDockTabBarPainter*)parentWidget())->findBarRectByPos(pos.x(),pos.y()), s);
+}
+
+/***************************************************************************/
+
+KDockTabBarPainter::KDockTabBarPainter( KDockTabBar* parent )
+:QWidget( parent )
+{
+  delta = 0;
+  buffer = new QPixmap(0,0);
+  setMouseTracking( true);
+  dynToolTip = new KDockDynTabBarToolTip( this);
+}
+
+KDockTabBarPainter::~KDockTabBarPainter()
+{
+  delete buffer;
+  buffer = 0L;
+  delete dynToolTip;
+  dynToolTip = 0L;
+}
+
+void KDockTabBarPainter::paintEvent( QPaintEvent* )
+{
+  if ( buffer->isNull() ) return;
+  drawBuffer();
+
+  switch ( ((KDockTabBar*)parent())->tabPos ){
+    case KDockTabBar::TAB_TOP:
+      bitBlt( this, 0, 0, buffer, 0, 0, width(), height() );
+      break;
+    case KDockTabBar::TAB_RIGHT:{
+      QWMatrix m;
+      m.rotate( -90 );
+      QPixmap xbuffer = buffer->xForm(m);
+      bitBlt( this, 0, 0, &xbuffer, 0, 0, width(), height() );
+      break;
+    }
+  }
+}
+
+void KDockTabBarPainter::resizeEvent( QResizeEvent* )
+{
+  delete buffer;
+  switch ( ((KDockTabBar*)parent())->tabPos ){
+    case KDockTabBar::TAB_TOP:
+      buffer = new QPixmap( width(), height() );
+      break;
+    case KDockTabBar::TAB_RIGHT:
+      buffer = new QPixmap( height(), width() );
+      break;
+  }
+}
+
+void KDockTabBarPainter::drawBuffer()
+{
+  QColor c1 = colorGroup().light();
+  QColor c2 = colorGroup().dark();
+  QColor c4 = colorGroup().light(); // for paint top line;
+  KDockTabBar* tabBar = (KDockTabBar*)parent();
+  int W = 0;
+  int H = 0;
+  int shadowX = 1;
+  int shadowY = 1;
+  switch ( tabBar->tabPos ){
+    case KDockTabBar::TAB_TOP:
+      W = width();
+      H = height();
+      break;
+    case KDockTabBar::TAB_RIGHT:
+      shadowX = -1;
+      c1 = colorGroup().dark();
+      c2 = colorGroup().light();
+      H = width();
+      W = height();
+      break;
+  }
+
+  QPainter paint;
+  paint.begin(buffer);
+  paint.setBrushOrigin(0,0);
+  paint.fillRect( 0, 0, W, H, QBrush( colorGroup().brush( QColorGroup::Background ) ));
+
+  int x = 2;
+  int curTab  = tabBar->_currentTab;
+  int curTabNum = -1;
+  int leftTab = tabBar->leftTab;
+  int curx = -1; // start current tab ( selected )
+  int curWidth = -1;
+  int broken = -1;
+  bool iconShow = tabBar->iconShow;
+
+  QList<KDockTabBar_Private> *mainData = tabBar->mainData;
+  for ( uint k = 0; k < mainData->count(); k++ ){
+    int x1 = x;
+    int y1 = 2;
+    int width = mainData->at(k)->width;
+
+    if ( mainData->at(k)->id == curTab ){  // store current tab start x
+      curTabNum = k;
+      curx = x;
+      curWidth = width;
+      x1 -= 1;
+      y1 -= 1;
+    }
+
+    if ( mainData->at(k)->pix != 0L && iconShow ){
+      QWMatrix m;
+      switch ( tabBar->tabPos ){
+        case KDockTabBar::TAB_TOP:
+          break;
+        case KDockTabBar::TAB_RIGHT:
+          m.rotate( 90 );
+          break;
+      }
+      paint.drawPixmap( x1+ 11, y1 + 2 , mainData->at(k)->pix->xForm(m) );
+    }
+
+    int ty = ( H + fontMetrics().height() ) / 2 - 2;
+    int tx = ( mainData->at(k)->pix != 0L && iconShow ) ? 32:12;
+
+    paint.setFont( tabBar->font() );
+
+    if ( mainData->at(k)->enabled ){
+      if ( (int)k == curTab && tabBar->hasFocus() ){
+        paint.setPen( colorGroup().buttonText() );
+        paint.drawWinFocusRect(x1+tx-2,y1+2,width-tx-2,H-3);
+      }
+      paint.setPen( mainData->at(k)->textColor );
+      paint.drawText( x1 + tx , ty + y1 , mainData->at(k)->label );
+    } else {
+      paint.setPen( colorGroup().light() );
+      paint.drawText( x1 + tx + shadowX, ty + y1 + shadowY, mainData->at(k)->label );
+      paint.setPen( colorGroup().mid() );
+      paint.drawText( x1 + tx , ty + y1 , mainData->at(k)->label );
+    }
+
+    paint.setPen( c1 );
+    paint.moveTo( x1, H + 1 -y1 );
+    paint.lineTo( x1, y1 );
+
+    paint.setPen( c4 );
+    paint.lineTo( x1 + width - 1, y1 );
+
+    paint.setPen( c2 );
+    paint.lineTo( x1 + width - 1, H+1-y1 );
+
+/***************************************************************/
+    paint.setPen( c1 );
+    paint.moveTo( x1 + 4, y1 + H - 5 );
+    paint.lineTo( x1 + 4, 3+y1 );
+
+    paint.moveTo( x1 + 7, y1 + H - 5 );
+    paint.lineTo( x1 + 7, 3+y1 );
+
+    paint.setPen( c2 );
+    paint.moveTo( x1 + 5, y1 + H - 5 );
+    paint.lineTo( x1 + 5, 3+y1 );
+
+    paint.moveTo( x1 + 8, y1 + H - 5 );
+    paint.lineTo( x1 + 8, 3+y1 );
+/***************************************************************/
+
+    // fixed picture for leftTab
+    if ( leftTab == (int)k + 1 ){
+      paint.fillRect( x1 + width - 2, 0, 2, H - 1, QBrush( colorGroup().brush( QColorGroup::Background ) ));
+    }
+
+    // paint broken left
+    if ( (int)k == leftTab && k != 0 )
+    {
+      int yy = y1;
+      int xx = x1 - 2;
+      paint.fillRect( x1, 0, 1, H - 1, QBrush( colorGroup().brush( QColorGroup::Background ) ));
+      paint.setPen( c1 );
+      do {
+          paint.drawPoint( xx + 2, yy );
+          paint.drawPoint( xx + 1, yy + 1 );
+          paint.moveTo( xx + 1, yy + 1 );
+          paint.lineTo( xx + 1, yy + 3 );
+          paint.drawPoint( xx + 2, yy + 4 );
+          paint.lineTo( xx + 2, yy + 6 );
+          paint.drawPoint( xx + 3, yy + 7 );
+          paint.lineTo( xx + 3, yy + 9 );
+          paint.drawPoint( xx + 2, yy + 10 );
+          paint.drawPoint( xx + 2, yy + 11 );
+          yy+= 12;
+      } while ( yy < H );
+    }
+
+    x += width;
+    if ( x >= W && broken == -1 ) broken = k; // store right broken tab
+  }
+
+  // modify ( paint ) selected tab
+  if ( curx != -1 && curTabNum >= leftTab ){
+    curx -= 2;
+    curWidth += 4;
+    paint.setPen( c1 );
+    paint.moveTo( curx, H-1 );
+    paint.lineTo( curx, 0 );
+    paint.setPen( c4 );
+    paint.lineTo( curx + curWidth - 2, 0 );
+
+    paint.setPen( c2 );
+    paint.moveTo( curx + curWidth - 1, 0 );
+    paint.lineTo( curx + curWidth - 1, H-1 );
+
+    paint.fillRect( curx + 1, 1, 2, H - 1, QBrush( colorGroup().brush( QColorGroup::Background ) ));
+    paint.fillRect( curx + curWidth - 4, 1, 3, H - 1, QBrush( colorGroup().brush( QColorGroup::Background ) ));
+    paint.fillRect( curx + 1, 1, curWidth - 3, 2, QBrush( colorGroup().brush( QColorGroup::Background ) ));
+  }
+
+  if ( curTabNum == leftTab && curTabNum != 0 )
+  {
+    int yy = 0;
+    int xx = curx;
+    paint.fillRect( curx, 0, 1, H - 1, QBrush( colorGroup().brush( QColorGroup::Background ) ));
+    paint.setPen( c1 );
+    do {
+        paint.drawPoint( xx + 2, yy );
+        paint.drawPoint( xx + 1, yy + 1 );
+        paint.moveTo( xx + 1, yy + 1 );
+        paint.lineTo( xx + 1, yy + 3 );
+        paint.drawPoint( xx + 2, yy + 4 );
+        paint.lineTo( xx + 2, yy + 6 );
+        paint.drawPoint( xx + 3, yy + 7 );
+        paint.lineTo( xx + 3, yy + 9 );
+        paint.drawPoint( xx + 2, yy + 10 );
+        paint.drawPoint( xx + 2, yy + 11 );
+        yy+= 12;
+    } while ( yy < H );
+  }
+
+  // paint broken right
+  if ( broken != -1 )
+  {
+    int yy = broken == curTabNum ? 0:2;
+    int xx = W;
+    paint.fillRect( xx - 2, 0, 2, H - 1, QBrush( colorGroup().brush( QColorGroup::Background ) ) );
+    paint.fillRect( xx - 5, yy + 1, 5, H - 2 - yy, QBrush( colorGroup().brush( QColorGroup::Background ) ) );
+    paint.setPen( c2 );
+    do {
+        paint.drawPoint( xx - 2, yy );
+        paint.drawPoint( xx - 1, yy + 1 );
+        paint.moveTo( xx - 1, yy + 1 );
+        paint.lineTo( xx - 1, yy + 3 );
+        paint.drawPoint( xx - 2, yy + 4 );
+        paint.lineTo( xx - 2, yy + 6 );
+        paint.drawPoint( xx - 3, yy + 7 );
+        paint.lineTo( xx - 3, yy + 9 );
+        paint.drawPoint( xx - 2, yy + 10 );
+        paint.drawPoint( xx - 2, yy + 11 );
+        yy+= 12;
+    } while ( yy < H );
+  }
+  paint.end();
+}
+
+int KDockTabBarPainter::findBarByPos( int x, int y )
+{
+  int dx = 5; // overlaped
+
+  switch ( ((KDockTabBar*)parent())->tabPos ){
+    case KDockTabBar::TAB_TOP:
+      break;
+    case KDockTabBar::TAB_RIGHT:
+      x = height() - y;
+      break;
+  }
+
+  KDockTabBar* bar = (KDockTabBar*)parent();
+
+  QList<KDockTabBar_Private> *mainData = bar->mainData;
+  if ( mainData->isEmpty() ) return -1;
+
+  int end = 0;
+  int find = -1;
+  int findWidth = -1;
+  for ( uint k = 0; k < mainData->count(); k++ ){
+    end += mainData->at(k)->width;
+    if ( x < end ){
+      find = k;
+      findWidth = mainData->at(k)->width;
+      break;
+    }
+  }
+
+  int idCurTab = bar->_currentTab;
+  int curTab = -1;
+  for ( uint k = 0; k < mainData->count(); k++ )
+    if ( mainData->at(k)->id == idCurTab ){
+      curTab = k;
+      break;
+    }
+
+  // process first Tab manualy
+  if ( x < dx && curTab != mainData->at(0)->id ) return -1;
+
+  // process last Tab manyaly
+  if ( find == -1 )
+    if ( x < (end + dx) && curTab == (int)mainData->count() - 1 )
+      find = mainData->count() - 1;
+
+  if ( find == -1 ) return -1;
+
+  // process overlaped
+  if ( find > 0 )
+    if ( curTab == (find - 1) &&  x < (end - findWidth + dx ) ) find -= 1;
+
+  if ( find < (int)mainData->count() - 1 )
+    if ( curTab == (find + 1) &&  x > (end - dx ) ) find += 1;
+
+  return mainData->at(find)->id;
+}
+
+QRect KDockTabBarPainter::findBarRectByPos( int x, int y)
+{
+  int dx = 5; // overlapped
+  bool tabRight = false;
+  switch ( ((KDockTabBar*)parent())->tabPos ){
+    case KDockTabBar::TAB_TOP:
+      break;
+    case KDockTabBar::TAB_RIGHT:
+      tabRight = true;
+      x = height() - y;
+      break;
+  }
+
+  KDockTabBar* bar = (KDockTabBar*)parent();
+
+  QList<KDockTabBar_Private> *mainData = bar->mainData;
+  if ( mainData->isEmpty() ) return QRect();
+
+  int end = 0;
+  int find = -1;
+  int findWidth = -1;
+  for ( uint k = 0; k < mainData->count(); k++ ){
+    end += mainData->at(k)->width;
+    if ( x < end ){
+      find = k;
+      findWidth = mainData->at(k)->width;
+      break;
+    }
+  }
+
+  int idCurTab = bar->_currentTab;
+  int curTab = -1;
+  for ( uint k = 0; k < mainData->count(); k++ )
+    if ( mainData->at(k)->id == idCurTab ){
+      curTab = k;
+      break;
+    }
+
+  // process first Tab manualy
+  if ( x < dx && curTab != mainData->at(0)->id ) return QRect();
+
+  // process last Tab manyaly
+  if ( find == -1 )
+    if ( x < (end + dx) && curTab == (int)mainData->count() - 1 )
+      find = mainData->count() - 1;
+
+  if ( find == -1 ) return QRect();
+
+  int boxX = end - findWidth + dx;
+  // process overlaped
+  if ( find > 0 )
+    if ( curTab == (find - 1) &&  x < boxX ) {
+      find -= 1;
+      boxX -= mainData->at(find)->width;
+    }
+
+  if ( find < (int)mainData->count() - 1 )
+    if ( curTab == (find + 1) &&  x > (end - dx ) ) {
+      find += 1;
+      boxX += mainData->at(find)->width;
+    }
+
+  if( !tabRight)
+    return QRect( boxX, 0, findWidth, height() );
+  else
+    return QRect( 0, boxX, width(), findWidth );
+}
+
+void KDockTabBarPainter::mousePressEvent( QMouseEvent* e )
+{
+  int cur = findBarByPos( e->x(), e->y() );
+  if ( e->button() == RightButton )
+    emit ((KDockTabBar*)parent())->rightButtonPress( cur, e->globalPos() );
+  else
+    mousePressTab = cur;
+}
+
+void KDockTabBarPainter::mouseReleaseEvent( QMouseEvent* e )
+{
+  int cur = findBarByPos( e->x(), e->y() );
+  if ( cur != -1 && cur == mousePressTab ){
+    ((KDockTabBar*)parent())->setCurrentTab( cur );
+  }
+}
+
+QString KDockTabBarPainter::tip( const QPoint & p )
+{
+  int cur = findBarByPos( p.x(), p.y() );
+  if( cur == -1)
+    return "";
+  QString tooltipStr = ((KDockTabBar*)parent())->findData(cur)->tooltipString;
+  return tooltipStr;
+}
+
+//-----------------------------------------------------------------------------
+// public classes implementation
+//-----------------------------------------------------------------------------
 
 KDockTabCtl::KDockTabCtl(QWidget *parent, const char *name)
 : QWidget(parent, name )
@@ -417,344 +872,6 @@ const QColor& KDockTabCtl::tabTextColor( QWidget* widget )
   KDockTabCtl_Private* data = findData( widget );
   if ( data == 0L ) return Qt::black;
   return tabs->textColor( data->id );
-}
-
-
-/***************************************************************************/
-
-KDockTabBarPainter::KDockTabBarPainter( KDockTabBar* parent )
-:QWidget( parent )
-{
-  delta = 0;
-  buffer = new QPixmap(0,0);
-  setMouseTracking( true);
-}
-
-KDockTabBarPainter::~KDockTabBarPainter()
-{
-  delete buffer;
-}
-
-void KDockTabBarPainter::paintEvent( QPaintEvent* )
-{
-  if ( buffer->isNull() ) return;
-  drawBuffer();
-
-  switch ( ((KDockTabBar*)parent())->tabPos ){
-    case KDockTabBar::TAB_TOP:
-      bitBlt( this, 0, 0, buffer, 0, 0, width(), height() );
-      break;
-    case KDockTabBar::TAB_RIGHT:{
-      QWMatrix m;
-      m.rotate( -90 );
-      QPixmap xbuffer = buffer->xForm(m);
-      bitBlt( this, 0, 0, &xbuffer, 0, 0, width(), height() );
-      break;
-    }
-  }
-}
-
-void KDockTabBarPainter::resizeEvent( QResizeEvent* )
-{
-  delete buffer;
-  switch ( ((KDockTabBar*)parent())->tabPos ){
-    case KDockTabBar::TAB_TOP:
-      buffer = new QPixmap( width(), height() );
-      break;
-    case KDockTabBar::TAB_RIGHT:
-      buffer = new QPixmap( height(), width() );
-      break;
-  }
-}
-
-void KDockTabBarPainter::drawBuffer()
-{
-  QColor c1 = colorGroup().light();
-  QColor c2 = colorGroup().dark();
-  QColor c4 = colorGroup().light(); // for paint top line;
-  KDockTabBar* tabBar = (KDockTabBar*)parent();
-  int W = 0;
-  int H = 0;
-  int shadowX = 1;
-  int shadowY = 1;
-  switch ( tabBar->tabPos ){
-    case KDockTabBar::TAB_TOP:
-      W = width();
-      H = height();
-      break;
-    case KDockTabBar::TAB_RIGHT:
-      shadowX = -1;
-      c1 = colorGroup().dark();
-      c2 = colorGroup().light();
-      H = width();
-      W = height();
-      break;
-  }
-
-  QPainter paint;
-  paint.begin(buffer);
-  paint.setBrushOrigin(0,0);
-  paint.fillRect( 0, 0, W, H, QBrush( colorGroup().brush( QColorGroup::Background ) ));
-
-  int x = 2;
-  int curTab  = tabBar->_currentTab;
-  int curTabNum = -1;
-  int leftTab = tabBar->leftTab;
-  int curx = -1; // start current tab ( selected )
-  int curWidth = -1;
-  int broken = -1;
-  bool iconShow = tabBar->iconShow;
-
-  QList<KDockTabBar_Private> *mainData = tabBar->mainData;
-  for ( uint k = 0; k < mainData->count(); k++ ){
-    int x1 = x;
-    int y1 = 2;
-    int width = mainData->at(k)->width;
-
-    if ( mainData->at(k)->id == curTab ){  // store current tab start x
-      curTabNum = k;
-      curx = x;
-      curWidth = width;
-      x1 -= 1;
-      y1 -= 1;
-    }
-
-    if ( mainData->at(k)->pix != 0L && iconShow ){
-      QWMatrix m;
-      switch ( tabBar->tabPos ){
-        case KDockTabBar::TAB_TOP:
-          break;
-        case KDockTabBar::TAB_RIGHT:
-          m.rotate( 90 );
-          break;
-      }
-      paint.drawPixmap( x1+ 11, y1 + 2 , mainData->at(k)->pix->xForm(m) );
-    }
-
-    int ty = ( H + fontMetrics().height() ) / 2 - 2;
-    int tx = ( mainData->at(k)->pix != 0L && iconShow ) ? 32:12;
-
-    paint.setFont( tabBar->font() );
-
-    if ( mainData->at(k)->enabled ){
-      if ( (int)k == curTab && tabBar->hasFocus() ){
-        paint.setPen( colorGroup().buttonText() );
-        paint.drawWinFocusRect(x1+tx-2,y1+2,width-tx-2,H-3);
-      }
-      paint.setPen( mainData->at(k)->textColor );
-      paint.drawText( x1 + tx , ty + y1 , mainData->at(k)->label );
-    } else {
-      paint.setPen( colorGroup().light() );
-      paint.drawText( x1 + tx + shadowX, ty + y1 + shadowY, mainData->at(k)->label );
-      paint.setPen( colorGroup().mid() );
-      paint.drawText( x1 + tx , ty + y1 , mainData->at(k)->label );
-    }
-
-    paint.setPen( c1 );
-    paint.moveTo( x1, H + 1 -y1 );
-    paint.lineTo( x1, y1 );
-
-    paint.setPen( c4 );
-    paint.lineTo( x1 + width - 1, y1 );
-
-    paint.setPen( c2 );
-    paint.lineTo( x1 + width - 1, H+1-y1 );
-
-/***************************************************************/
-    paint.setPen( c1 );
-    paint.moveTo( x1 + 4, y1 + H - 5 );
-    paint.lineTo( x1 + 4, 3+y1 );
-
-    paint.moveTo( x1 + 7, y1 + H - 5 );
-    paint.lineTo( x1 + 7, 3+y1 );
-
-    paint.setPen( c2 );
-    paint.moveTo( x1 + 5, y1 + H - 5 );
-    paint.lineTo( x1 + 5, 3+y1 );
-
-    paint.moveTo( x1 + 8, y1 + H - 5 );
-    paint.lineTo( x1 + 8, 3+y1 );
-/***************************************************************/
-
-    // fixed picture for leftTab
-    if ( leftTab == (int)k + 1 ){
-      paint.fillRect( x1 + width - 2, 0, 2, H - 1, QBrush( colorGroup().brush( QColorGroup::Background ) ));
-    }
-
-    // paint broken left
-    if ( (int)k == leftTab && k != 0 )
-    {
-      int yy = y1;
-      int xx = x1 - 2;
-      paint.fillRect( x1, 0, 1, H - 1, QBrush( colorGroup().brush( QColorGroup::Background ) ));
-      paint.setPen( c1 );
-      do {
-          paint.drawPoint( xx + 2, yy );
-          paint.drawPoint( xx + 1, yy + 1 );
-          paint.moveTo( xx + 1, yy + 1 );
-          paint.lineTo( xx + 1, yy + 3 );
-          paint.drawPoint( xx + 2, yy + 4 );
-          paint.lineTo( xx + 2, yy + 6 );
-          paint.drawPoint( xx + 3, yy + 7 );
-          paint.lineTo( xx + 3, yy + 9 );
-          paint.drawPoint( xx + 2, yy + 10 );
-          paint.drawPoint( xx + 2, yy + 11 );
-          yy+= 12;
-      } while ( yy < H );
-    }
-
-    x += width;
-    if ( x >= W && broken == -1 ) broken = k; // store right broken tab
-  }
-
-  // modify ( paint ) selected tab
-  if ( curx != -1 && curTabNum >= leftTab ){
-    curx -= 2;
-    curWidth += 4;
-    paint.setPen( c1 );
-    paint.moveTo( curx, H-1 );
-    paint.lineTo( curx, 0 );
-    paint.setPen( c4 );
-    paint.lineTo( curx + curWidth - 2, 0 );
-
-    paint.setPen( c2 );
-    paint.moveTo( curx + curWidth - 1, 0 );
-    paint.lineTo( curx + curWidth - 1, H-1 );
-
-    paint.fillRect( curx + 1, 1, 2, H - 1, QBrush( colorGroup().brush( QColorGroup::Background ) ));
-    paint.fillRect( curx + curWidth - 4, 1, 3, H - 1, QBrush( colorGroup().brush( QColorGroup::Background ) ));
-    paint.fillRect( curx + 1, 1, curWidth - 3, 2, QBrush( colorGroup().brush( QColorGroup::Background ) ));
-  }
-
-  if ( curTabNum == leftTab && curTabNum != 0 )
-  {
-    int yy = 0;
-    int xx = curx;
-    paint.fillRect( curx, 0, 1, H - 1, QBrush( colorGroup().brush( QColorGroup::Background ) ));
-    paint.setPen( c1 );
-    do {
-        paint.drawPoint( xx + 2, yy );
-        paint.drawPoint( xx + 1, yy + 1 );
-        paint.moveTo( xx + 1, yy + 1 );
-        paint.lineTo( xx + 1, yy + 3 );
-        paint.drawPoint( xx + 2, yy + 4 );
-        paint.lineTo( xx + 2, yy + 6 );
-        paint.drawPoint( xx + 3, yy + 7 );
-        paint.lineTo( xx + 3, yy + 9 );
-        paint.drawPoint( xx + 2, yy + 10 );
-        paint.drawPoint( xx + 2, yy + 11 );
-        yy+= 12;
-    } while ( yy < H );
-  }
-
-  // paint broken right
-  if ( broken != -1 )
-  {
-    int yy = broken == curTabNum ? 0:2;
-    int xx = W;
-    paint.fillRect( xx - 2, 0, 2, H - 1, QBrush( colorGroup().brush( QColorGroup::Background ) ) );
-    paint.fillRect( xx - 5, yy + 1, 5, H - 2 - yy, QBrush( colorGroup().brush( QColorGroup::Background ) ) );
-    paint.setPen( c2 );
-    do {
-        paint.drawPoint( xx - 2, yy );
-        paint.drawPoint( xx - 1, yy + 1 );
-        paint.moveTo( xx - 1, yy + 1 );
-        paint.lineTo( xx - 1, yy + 3 );
-        paint.drawPoint( xx - 2, yy + 4 );
-        paint.lineTo( xx - 2, yy + 6 );
-        paint.drawPoint( xx - 3, yy + 7 );
-        paint.lineTo( xx - 3, yy + 9 );
-        paint.drawPoint( xx - 2, yy + 10 );
-        paint.drawPoint( xx - 2, yy + 11 );
-        yy+= 12;
-    } while ( yy < H );
-  }
-  paint.end();
-}
-
-int KDockTabBarPainter::findBarByPos( int x, int y )
-{
-  int dx = 5; // overlaped
-
-  switch ( ((KDockTabBar*)parent())->tabPos ){
-    case KDockTabBar::TAB_TOP:
-      break;
-    case KDockTabBar::TAB_RIGHT:
-      x = height() - y;
-      break;
-  }
-
-  KDockTabBar* bar = (KDockTabBar*)parent();
-
-  QList<KDockTabBar_Private> *mainData = bar->mainData;
-  if ( mainData->isEmpty() ) return -1;
-
-  int end = 0;
-  int find = -1;
-  int findWidth = -1;
-  for ( uint k = 0; k < mainData->count(); k++ ){
-    end += mainData->at(k)->width;
-    if ( x < end ){
-      find = k;
-      findWidth = mainData->at(k)->width;
-      break;
-    }
-  }
-
-  int idCurTab = bar->_currentTab;
-  int curTab = -1;
-  for ( uint k = 0; k < mainData->count(); k++ )
-    if ( mainData->at(k)->id == idCurTab ){
-      curTab = k;
-      break;
-    }
-
-  // process first Tab manualy
-  if ( x < dx && curTab != mainData->at(0)->id ) return -1;
-
-  // process last Tab manyaly
-  if ( find == -1 )
-    if ( x < (end + dx) && curTab == (int)mainData->count() - 1 )
-      find = mainData->count() - 1;
-
-  if ( find == -1 ) return -1;
-
-  // process overlaped
-  if ( find > 0 )
-    if ( curTab == (find - 1) &&  x < (end - findWidth + dx ) ) find -= 1;
-
-  if ( find < (int)mainData->count() - 1 )
-    if ( curTab == (find + 1) &&  x > (end - dx ) ) find += 1;
-
-  return mainData->at(find)->id;
-}
-
-void KDockTabBarPainter::mousePressEvent( QMouseEvent* e )
-{
-  int cur = findBarByPos( e->x(), e->y() );
-  if ( e->button() == RightButton )
-    emit ((KDockTabBar*)parent())->rightButtonPress( cur, e->globalPos() );
-  else
-    mousePressTab = cur;
-}
-
-void KDockTabBarPainter::mouseReleaseEvent( QMouseEvent* e )
-{
-  int cur = findBarByPos( e->x(), e->y() );
-  if ( cur != -1 && cur == mousePressTab ){
-    ((KDockTabBar*)parent())->setCurrentTab( cur );
-  }
-}
-
-void KDockTabBarPainter::mouseMoveEvent( QMouseEvent* e )
-{
-  QPoint p = mapFromGlobal( e->globalPos());
-  int cur = findBarByPos( p.x(), p.y() );
-  if( cur == -1)
-    return;
-  QString tooltip = ((KDockTabBar*)parent())->findData(cur)->tooltipString;
-  QToolTip::remove(this);
-  QToolTip::add(this,tooltip);
 }
 
 /***************************************************************************/
