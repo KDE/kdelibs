@@ -179,7 +179,6 @@ void KIconLoaderDialog::init( void )
 {
   QWidget *page = new QWidget( this );
   setMainWidget( page );
-  setInitialSizeStep( QSize(0,100) );
 
   QVBoxLayout *topLayout = new QVBoxLayout( page, 0, spacingHint() );
   QHBoxLayout *hbox = new QHBoxLayout();
@@ -213,7 +212,7 @@ void KIconLoaderDialog::init( void )
   connect( canvas, SIGNAL( finished () ),
 	   this, SLOT( hideProgressBar() ) );
 
-  topLayout->activate();
+  incInitialSize( QSize(0,100) );
 }
 
 
