@@ -2,6 +2,7 @@
 Name=Beos
 Name[cs]=BeOS
 Name[eo]=BeOS
+Name[no_NY]=BeOS
 Name[ro]=BeOS
 Comment=Unthemed Beos-like style
 Comment[ca]=Estil del tipus Beos sense temes
@@ -20,6 +21,7 @@ Comment[ja]=Beosスタイル
 Comment[mk]=Beos стил (без тема)
 Comment[nl]=themaloze BeOS-stijl
 Comment[no]=Beos-lignende stil uten tema
+Comment[no_NY]=BeOS-aktig stil
 Comment[pt]=Estilo tipo Beos
 Comment[ro]=Stil BeOS fără temă
 Comment[sl]=Netematski slog, podoben Beosu
