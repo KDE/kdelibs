@@ -49,7 +49,7 @@ extern "C" {
 
 
 KWalletD::KWalletD(const QCString &name)
-: KDEDModule(name) {
+: KDEDModule(name), _failed(0) {
 	srand(time(0));
 	KGlobal::dirs()->addResourceType("kwallet", "share/apps/kwallet");
 	KApplication::dcopClient()->setNotifications(true);
@@ -626,10 +626,17 @@ KWallet::Backend *w = _wallets.find(handle);
 		if (_handles.contains(dc->senderId())) { // we know this app
 			if (_handles[dc->senderId()].contains(handle)) {
 				// the app owns this handle
+				_failed = 0;
 				return w;
 			}
 		}
 	}
+
+	if (++_failed > 5) {
+		KMessageBox::information(0, i18n("There have been repeated failed attempts to gain access to a wallet.  An application may be misbehaving."), i18n("KDE Wallet Service"));
+		_failed = 0;
+	}
+
 return 0L;
 }
 

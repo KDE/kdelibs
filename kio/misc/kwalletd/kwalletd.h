@@ -128,6 +128,7 @@ class KWalletD : public KDEDModule {
 		QMap<QCString,QValueList<int> > _handles;
 		QMap<QString,QCString> _passwords;
 		KDirWatch *_dw;
+		int _failed;
 };
 
 
