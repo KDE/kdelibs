@@ -1,3 +1,15 @@
+kdelibs-cvs (4:2.0-20000224-1.0) experimental; urgency=low
+
+  * More upstream CVS updates
+
+ -- Ivan E. Moore II <rkrusty@debian.org>  Thu, 24 Feb 2000 18:00:00 -0700
+
+kdelibs-cvs (4:2.0-20000221-1.1) experimental; urgency=low
+
+  * Rebuild with updated CVS files and new cleanups
+
+ -- Ivan E. Moore II <rkrusty@debian.org>  Tue, 22 Feb 2000 18:00:00 -0700
+
 kdelibs-cvs (4:2.0-20000221-1.0) experimental; urgency=low
 
   * More upstream changes
