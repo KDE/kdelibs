@@ -19,7 +19,8 @@ INCLUDES = -I$(srcdir)/../libltdl/ $(all_includes) $(KDEINIT_XFT_INCLUDES)
 
 SUBDIRS = . tests
 
-bin_PROGRAMS = kdeinit kdeinit_wrapper kshell kdeinit_shutdown lnusertemp kwrapper kioslave
+bin_PROGRAMS = kdeinit kdeinit_wrapper kshell kdeinit_shutdown lnusertemp kwrapper kioslave \
+               kstartupconfig kdostartupconfig
 
 lib_LTLIBRARIES = 
 kdeinit_LTLIBRARIES = klauncher.la
@@ -57,6 +58,11 @@ kwrapper_LDADD = $(LIBSOCKET)
 klauncher_la_LDFLAGS = $(all_libraries) -module -avoid-version
 klauncher_la_LIBADD = $(LIB_KIO)
 klauncher_la_SOURCES = klauncher.cpp klauncher_main.cpp autostart.cpp
+
+kstartupconfig_SOURCES  = kstartupconfig.cpp
+kstartupconfig_LDADD  = $(top_builddir)/kdecore/libkdefakes.la
+kdostartupconfig_SOURCES = kdostartupconfig.cpp
+kdostartupconfig_LDADD  = $(LIB_KDECORE)
 
 METASOURCES = AUTO
 
