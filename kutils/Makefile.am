@@ -5,7 +5,9 @@ libkutils_la_LDFLAGS = $(all_libraries) -no-undefined -version-info 2:0:1
 # Needs KTrader for kregexpeditor
 libkutils_la_LIBADD  = ../kio/libkio.la
 
-libkutils_la_SOURCES = kfind.cpp kfinddialog.cpp kreplacedialog.cpp # kreplace.cpp
+libkutils_la_SOURCES = kfind.cpp kfinddialog.cpp kreplacedialog.cpp
+
+ # kreplace.cpp
 
 include_HEADERS = kfind.h kfinddialog.h kreplace.h kreplacedialog.h
 
