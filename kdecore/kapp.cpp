@@ -125,7 +125,7 @@ int KApplication::xioErrhandler()
 
 void KApplication::init()
 {
-  QApplication::useXResourceManager( FALSE );
+  QApplication::setDesktopSettingsAware( FALSE );
   // this is important since we fork() to launch the help (Matthias)
   fcntl(ConnectionNumber(qt_xdisplay()), F_SETFD, 1);
   // set up the fance KDE xio error handler (Matthias)
@@ -835,19 +835,19 @@ void KApplication::applyGUIStyle(GUIStyle /* newstyle */) {
      *
      * mosfet@jorsm.com
      */
- 
+
     static bool dlregistered = false;
- 
+
     QString oldGroup = pConfig->group();
     pConfig->setGroup("KDE");
     QString styleStr = pConfig->readEntry("widgetStyle", "Platinum");
- 
+
     if(styleHandle){
         warning(i18n("KApp: Unloading previous style plugin."));
         lt_dlclose(styleHandle);
         styleHandle = NULL;
     }
- 
+
     if(styleStr == "Platinum"){
         pKStyle=NULL;
         setStyle(new QPlatinumStyle);
@@ -871,7 +871,7 @@ void KApplication::applyGUIStyle(GUIStyle /* newstyle */) {
             lt_dladdsearchdir(localkdedir() + "/share/apps/kstyle/modules");
             lt_dladdsearchdir(kde_bindir() + "/../lib");
         }
- 
+
         QDir dir(localkdedir() + "/share/apps/kstyle/modules/", styleStr);
         if(!dir.count()){
             dir.setPath(kde_bindir() + "/../lib/");
@@ -885,7 +885,7 @@ void KApplication::applyGUIStyle(GUIStyle /* newstyle */) {
         }
         styleStr = dir.path() + "/" + styleStr;
         styleHandle = lt_dlopen(styleStr);
- 
+
         if(!styleHandle){
             warning(i18n("KApp: Unable to open style plugin %s (%s)."),
                     (const char *)styleStr, lt_dlerror());
