@@ -14,6 +14,9 @@
 
  // $Id$
  // $Log$
+ // Revision 1.26  1998/04/05 18:19:48  radej
+ // Reverted to old interface (before Matthias' changes) + Docs
+ //
  // Revision 1.25  1998/04/04 11:43:14  radej
  // Minor docs update.
  //
@@ -314,13 +317,14 @@ protected slots:
 
 
 
-private:
+public:
 
     /**
      * List of members of KTopLevelWidget class
      */
   static QList<KTopLevelWidget>* memberList;
 
+private:
     /**
      * List of toolbars.
      */
