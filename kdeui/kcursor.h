@@ -3,8 +3,7 @@
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
-   License as published by the Free Software Foundation; either
-   version 2 of the License, or (at your option) any later version.
+   License version 2 as published by the Free Software Foundation.
 
    This library is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -18,16 +17,6 @@
 */
 /*
  * $Id$
- *
- * $Log$
- * Revision 1.2  1998/11/30 00:12:56  granroth
- * Updated KCursor to mimic all of Qt's cursors.  It would be a good idea
- * for all apps to start using, say "KCursor::arrowCursor" instead of just
- * "arrowCursor" so that when we have themes, the code won't have to change.
- *
- * Revision 1.1  1998/11/28 06:30:59  granroth
- * Added KCursor -- a simple wrapper around QCursor allowing for "themable"
- * cursors.  Currently, it only supports a 'handCursor'.
  *
  */
 #ifndef _KCURSOR_H
@@ -130,5 +119,3 @@ public:
 	static QCursor blankCursor();
 };
 #endif // _KCURSOR_H
-
-

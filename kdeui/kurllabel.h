@@ -3,8 +3,7 @@
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
-   License as published by the Free Software Foundation; either
-   version 2 of the License, or (at your option) any later version.
+   License version 2 as published by the Free Software Foundation.
 
    This library is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -18,37 +17,6 @@
 */
 /*
  * $Id$
- *
- * $Log$
- * Revision 1.7  1999/05/26 09:38:27  mkoch
- * kdocify kdeui
- *
- * Revision 1.6  1999/05/10 12:59:09  kulow
- * applied 90% of Hans's patch and tried to fix other stuff. Some classes
- * (KAccel is a good example - libkab is even worse) mix string types so
- * dramacticly, that I bet 70% of the runtime is spent in string conversion ;(
- *
- * Revision 1.5  1999/03/01 23:35:30  kulow
- * CVS_SILENT ported to Qt 2.0
- *
- * Revision 1.4.2.1  1999/02/14 02:40:07  granroth
- * Qt 2.0 changes. Mostly changed 'const char*' to QString where needed in
- * Qt SIGNALs and SLOTs
- *
- * Revision 1.4  1998/11/28 06:32:28  granroth
- * Got rid of built-in hand cursor and used KCursor
- *
- * Revision 1.3  1998/11/22 20:23:15  mirko
- * I added the possibility to use KURLLabel on top of a (parent) widget that
- * uses a background pattern, like kab's main view.
- *
- * Revision 1.2  1998/09/15 00:58:24  granroth
- * Changed method so that it compiles under egcs.  'moc' doesn't like default
- * args in declarations and generates invalid code if it encounters more than
- * one in any given function.
- *
- * Revision 1.1  1998/07/28 01:09:28  granroth
- * Added KURLLabel class
  *
  */
 #ifndef _KURLLABEL_H
