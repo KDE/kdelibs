@@ -240,7 +240,7 @@ void RenderFlow::repaint(bool immediate)
         RootInlineBox *lastRoot = lastLineBox() && !needsLayout() ? lastLineBox()->root() : 0;
         containingBlock()->repaintRectangle(-ow+left, -ow+top,
                                             width()+ow*2,
-					    (lastRoot ? lastRoot->bottomOverflow() : height())+ow*2,
+					    (lastRoot ? lastRoot->bottomOverflow() - top : height())+ow*2,
 					    immediate);
     }
     else {
