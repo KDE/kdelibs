@@ -143,7 +143,9 @@ void KFileTreeBranch::addItems( const KFileItemList& list )
 
       if( ! newKFTVI )
       {
-	 newKFTVI = createTreeViewItem( parentItem, currItem );
+         newKFTVI = createTreeViewItem( parentItem, currItem );
+         currItem->setExtraData( this, newKFTVI );
+
 
 	 /* Cut off the file extension in case it is not a directory */
 	 if( !m_showExtensions && !currItem->isDir() )	/* Need to cut the extension */
@@ -205,9 +207,6 @@ KFileTreeViewItem* KFileTreeBranch::createTreeViewItem( KFileTreeViewItem *paren
       tvi = new KFileTreeViewItem( parent,
 				   fileItem,
 				   this );
-
-      fileItem->setExtraData( this, tvi );
-
    }
    return( tvi );
 }
