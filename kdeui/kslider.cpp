@@ -1,6 +1,6 @@
 /* This file is part of the KDE libraries
-    Copyright (C) 1997 Martin Jones (mjones@kde.org)
-              (C) 1997 Christian Esken (esken@kde.org)
+    Copyright (C) 1997-1998 Christian Esken (esken@kde.org)
+              (C) 1997      Martin Jones    (mjones@kde.org)
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -44,12 +44,16 @@ KSlider::KSlider( QWidget *parent, const char *name )
   : QSlider( parent, name )
 {
   setBackgroundMode(PaletteBackground);
+  QSlider::setTickmarks(Below);
+  update();
 }
 
 KSlider::KSlider( Orientation o, QWidget *parent, const char *name )
   : QSlider( (QSlider::Orientation)o, parent, name )
 {
   setBackgroundMode(PaletteBackground);
+  QSlider::setTickmarks(Below);
+  update();
 }
 
 KSlider::KSlider( int _minValue, int _maxValue, int _Step, int _value,
@@ -58,6 +62,12 @@ KSlider::KSlider( int _minValue, int _maxValue, int _Step, int _value,
              parent, name )
 {
   setBackgroundMode(PaletteBackground);
+  // We always have TickMarks
+  if ( orientation() == Vertical)
+    QSlider::setTickmarks(Right);
+  else
+    QSlider::setTickmarks(Below);
+  update();
 }
 
 
@@ -127,7 +137,7 @@ void KSlider::drawArrow( QPainter *painter, bool show, const QPoint &pos )
 
       // !!! This fixes a problem with a missing point! Qt Bug?
       // !!! I will wait for Qt1.3 to see the results
-      //painter.drawPoint(array[1]);
+      // painter->drawPoint(array[1]);
     }
 }
 
@@ -205,24 +215,55 @@ void KSlider::drawTickMarks(QPainter *painter)
   }
 }
 
-void KSlider::paintEvent( QPaintEvent * )
+// This function is obsolete: I will delete it after Beta-3
+void KSlider::drawTicks ( QPainter * p, int d, int w, int i )
+{
+  drawTickMarks(p);
+}
+
+void KSlider::paintEvent( QPaintEvent *qpe )
 {
   QPainter painter;
 
   painter.begin( this );
   // build a rect for the paint event
   QRect rect(x(),y(),width(),height());
-  erase();  // Clear window fully, because there may be "pixel dirt" around
+  // Clear widget area, because there may be "pixel dirt" around
+  erase(qpe->rect().x(),qpe->rect().y(),qpe->rect().width(),qpe->rect().height());
   paintSlider(&painter, rect);
-  drawTickMarks(&painter);
+
+  if ( orientation() == Vertical ) {
+    QRect TickRect(ARROW_LENGTH+1,0,width(),height());
+    if (qpe->rect().intersects(TickRect))
+       drawTickMarks(&painter);
+  }
+  else {
+    QRect TickRect(0, ARROW_LENGTH+1,width(),height());
+    if (qpe->rect().intersects(TickRect)) {
+      drawTickMarks(&painter);
+    }
+  }
   painter.end();
 }
+
+
+void KSlider::valueChange()
+{
+  QSlider::valueChange();
+  if ( orientation() == Vertical )
+    repaint(0,0,ARROW_LENGTH,height());
+  else
+    repaint(0,0,width(),ARROW_LENGTH);
+
+  emit valueChanged( value() );
+}
+
 
 void KSlider::rangeChange()
 {
   QSlider::rangeChange();
   // when range changes, everything must be repainted  
-  paintEvent(0L);
+  update();
 }
 
 int KSlider::checkWidth()

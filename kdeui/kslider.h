@@ -82,14 +82,12 @@ private:
   void drawArrow( QPainter *painter, bool show, const QPoint &pos );
   void drawShadeLine( QPainter *painter );
   void drawTickMarks( QPainter *painter );
+  void drawTicks( QPainter * p, int d, int w, int i=1 );
 
   virtual void paintEvent( QPaintEvent * );
 
-//  virtual void mousePressEvent( QMouseEvent *e );
-//  virtual void mouseMoveEvent( QMouseEvent *e );
-
   int checkWidth();
-//  int cur_slider_pos;
+  void valueChange();
 };
 
 //-----------------------------------------------------------------------------
