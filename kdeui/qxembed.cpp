@@ -64,6 +64,7 @@
 # define XK_LATIN1
 # include <X11/keysymdef.h>
 # include <kdebug.h>
+# include <kxerrorhandler.h>
 
 // L0002: Is file config.h KDE specific?
 # include <config.h>
@@ -961,6 +962,7 @@ void QXEmbed::embed(WId w)
     bool has_window =  (w == window);
     window = w;
     if ( !has_window ) {
+        KXErrorHandler errhandler; // make X BadWindow errors silent
         // L1710: Try hard to withdraw the window.
         //        This makes sure that the window manager will
         //        no longer try to manage this window.
@@ -975,11 +977,10 @@ void QXEmbed::embed(WId w)
         //        window w into winId(). Everything else happens in L2020.
         //        The following code might be useful when the X11 server takes 
         //        time to create the embedded application main window.
-        Window parent;
+        Window parent = 0;
         get_parent(w, &parent);
         kdDebug() << QString("> before reparent: parent=0x%1").arg(parent,0,16) << endl;
         for (int i = 0; i < 50; i++) {
-            Window parent = 0;
             // this is done once more when finishing embedding, but it's done also here
             // just in case we crash before reaching that place
             if( !d->xplain )
@@ -998,6 +999,8 @@ void QXEmbed::embed(WId w)
                       << QString(" failed") << endl;
             USLEEP(1000);
         }
+        if( parent != winId()) // failed
+            window = 0;
     }
 }
 
