@@ -47,13 +47,21 @@ public:
      * Constructs a password input widget using the user's global "echo mode" setting.
      */
     KPasswordEdit(QWidget *parent=0, const char *name=0);
+    // KDE4: either of the two must go! add default values for parameters
     /**
      * Constructs a password input widget using echoMode as "echo mode".
-     * @version New in 3.0
+     * Note that echoMode is a QLineEdit::EchoMode.
+     * @since 3.0
      */
     KPasswordEdit(EchoMode echoMode, QWidget *parent, const char *name);
     /**
-     * @deprecated, may be removed in KDE 4.0
+     * Constructs a password input widget using echoMode as "echo mode".
+     * Note that echoMode is a KPasswordEdit::EchoModes.
+     * @since 3.2
+     */
+    KPasswordEdit(EchoModes echoMode, QWidget *parent, const char *name);
+    /**
+     * @deprecated, will be removed in KDE 4.0
      * Creates a password input widget using echoMode as "echo mode".
      */
     KPasswordEdit(QWidget *parent, const char *name, int echoMode) KDE_DEPRECATED;
@@ -164,14 +172,16 @@ public:
      * @param parent Passed to lower level constructor.
      * @param name Passed to lower level constructor
      *
-     * @version New in 3.0
+     * @since 3.0
      */
     KPasswordDialog(Types type, bool enableKeep, int extraBttn,
                     QWidget *parent=0, const char *name=0);
     /**
      * @deprecated Variant of the previous constructor without the
-     * possibility to specify a parent. May be removed in KDE 4.0
+     * possibility to specify a parent. Will be removed in KDE 4.0
      */
+    // note that this implicitly deprecates the 'prompt' variants of
+    // getPassword() below. i guess the above constructor needs to be extended.
     KPasswordDialog(int type, QString prompt, bool enableKeep=false,
 	    int extraBttn=0) KDE_DEPRECATED;
     /**

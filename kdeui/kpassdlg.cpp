@@ -55,7 +55,7 @@ public:
 const int KPasswordEdit::PassLen = 100;
 
 KPasswordEdit::KPasswordEdit(QWidget *parent, const char *name)
-    : QLineEdit(parent, name), m_EchoMode(OneStar)
+    : QLineEdit(parent, name)
 {
     init();
 
@@ -77,8 +77,15 @@ KPasswordEdit::KPasswordEdit(QWidget *parent, const char *name, int echoMode)
     init();
 }
 
-KPasswordEdit::KPasswordEdit(EchoMode echoMode, QWidget *parent, const char *name)
+KPasswordEdit::KPasswordEdit(EchoModes echoMode, QWidget *parent, const char *name)
     : QLineEdit(parent, name), m_EchoMode(echoMode)
+{
+    init();
+}
+
+KPasswordEdit::KPasswordEdit(EchoMode echoMode, QWidget *parent, const char *name)
+    : QLineEdit(parent, name)
+    , m_EchoMode( echoMode == QLineEdit::NoEcho ? NoEcho : OneStar )
 {
     init();
 }
