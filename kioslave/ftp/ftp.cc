@@ -540,7 +540,7 @@ bool Ftp::ftpLogin()
   // Thanks to jk@soegaard.net (Jens Kristian Søgaard) for this hint
   if( ftpSendCmd( "syst" ) && rspbuf[0] == '2' )
   {
-    if( !strncmp( rspbuf, "215 Windows_NT version", 22 ) ) // should do for any version
+    if( !strncmp( rspbuf, "215 Windows_NT", 14 ) ) // should do for any version
     {
       (void)ftpSendCmd( "site dirstyle" );
       // Check if it was already in Unix style
