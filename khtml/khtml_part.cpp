@@ -1441,6 +1441,18 @@ void KHTMLPart::restoreState( QDataStream &stream )
 
 }
 
+void KHTMLPart::show()
+{
+  if ( d->m_view )
+    d->m_view->show();
+}
+
+void KHTMLPart::hide()
+{
+  if ( d->m_view )
+    d->m_view->hide();
+} 
+
 KHTMLPartBrowserExtension::KHTMLPartBrowserExtension( KHTMLPart *parent, const char *name )
 : KParts::BrowserExtension( parent, name )
 {

@@ -127,6 +127,7 @@ KHTMLView::KHTMLView( KHTMLPart *part, QWidget *parent, const char *name)
 
     init();
 
+    viewport()->show();
 }
 /*
 KHTMLView::KHTMLView( QWidget *parent, KHTMLView *_parent_browser, QString name )

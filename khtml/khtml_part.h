@@ -223,6 +223,9 @@ public:
    */
   bool isTextSelected() const { return false; }
 
+  void show();
+  void hide();
+  
   KParts::PartManager *partManager();
 
   virtual void saveState( QDataStream &stream );
@@ -258,7 +261,7 @@ protected:
     virtual bool mouseMoveHook(QMouseEvent *){ return false; }
     virtual bool mouseReleaseHook(QMouseEvent *){ return false; }
 
-    
+
 protected slots:
   void slotData( KIO::Job*, const QByteArray &data );
   void slotFinished( KIO::Job* );
