@@ -2740,7 +2740,7 @@ void KHTMLWidget::parseB( HTMLClueV *_clue, const char *str )
 	    {
 		settings->fontBaseColor.setNamedColor( token+5 );
 		*(colorStack.top()) = settings->fontBaseColor;
-		font_stack.top()->setTextColor( settings->fontBaseColor );
+		selectFont();
 	    }
 	    else if ( strncasecmp( token, "link=", 5 ) == 0 &&
                     !defaultSettings->forceDefault )
