@@ -25,8 +25,18 @@
 #include <qpainter.h>
 #include <qdrawutil.h>
 
+class KDualColorButton::KDualColorPrivate
+{
+public:
+  KDualColorPrivate () : dialogParent (0L) {}
+  ~KDualColorPrivate () {}
+
+  QWidget* dialogParent;
+};
+
 KDualColorButton::KDualColorButton(QWidget *parent, const char *name)
-    : QWidget(parent, name)
+  : QWidget(parent, name),
+    d (new KDualColorPrivate)
 {
     arrowBitmap = new QBitmap(dcolorarrow_width, dcolorarrow_height,
                               (const unsigned char *)dcolorarrow_bits, true);
@@ -41,11 +51,50 @@ KDualColorButton::KDualColorButton(QWidget *parent, const char *name)
         setMinimumSize(sizeHint());
     setAcceptDrops(true);
 }
+KDualColorButton::KDualColorButton(QWidget *parent, const char *name, QWidget* dialogParent)
+  : QWidget(parent, name),
+    d (new KDualColorPrivate)
+{
+  d->dialogParent = dialogParent;
 
+    arrowBitmap = new QBitmap(dcolorarrow_width, dcolorarrow_height,
+                              (const unsigned char *)dcolorarrow_bits, true);
+    arrowBitmap->setMask(*arrowBitmap); // heh
+    resetPixmap = new QPixmap((const char **)dcolorreset_xpm);
+    fg = QBrush(Qt::black, SolidPattern);
+    bg = QBrush(Qt::white, SolidPattern);
+    curColor = Foreground;
+    dragFlag = false;
+    miniCtlFlag = false;
+    if(sizeHint().isValid())
+        setMinimumSize(sizeHint());
+    setAcceptDrops(true);
+}
 KDualColorButton::KDualColorButton(const QColor &fgColor, const QColor &bgColor,
                                    QWidget *parent, const char *name)
-    : QWidget(parent, name)
+  : QWidget(parent, name),
+    d (new KDualColorPrivate)
 {
+    arrowBitmap = new QBitmap(dcolorarrow_width, dcolorarrow_height,
+                              (const unsigned char *)dcolorarrow_bits, true);
+    arrowBitmap->setMask(*arrowBitmap);
+    resetPixmap = new QPixmap((const char **)dcolorreset_xpm);
+    fg = QBrush(fgColor, SolidPattern);
+    bg = QBrush(bgColor, SolidPattern);
+    curColor = Foreground;
+    dragFlag = false;
+    miniCtlFlag = false;
+    if(sizeHint().isValid())
+        setMinimumSize(sizeHint());
+    setAcceptDrops(true);
+}
+KDualColorButton::KDualColorButton(const QColor &fgColor, const QColor &bgColor,
+                                   QWidget *parent, const char *name, QWidget* dialogParent)
+  : QWidget(parent, name),
+    d (new KDualColorPrivate)
+{
+  d->dialogParent = dialogParent;
+
     arrowBitmap = new QBitmap(dcolorarrow_width, dcolorarrow_height,
                               (const unsigned char *)dcolorarrow_bits, true);
     arrowBitmap->setMask(*arrowBitmap);
@@ -62,8 +111,9 @@ KDualColorButton::KDualColorButton(const QColor &fgColor, const QColor &bgColor,
 
 KDualColorButton::~KDualColorButton()
 {
-    delete arrowBitmap;
-    delete resetPixmap;
+  delete d;
+  delete arrowBitmap;
+  delete resetPixmap;
 }
 
 QColor KDualColorButton::foreground() const
@@ -228,7 +278,7 @@ void KDualColorButton::mouseReleaseEvent(QMouseEvent *ev)
             }
             else{
                 QColor newColor = fg.color();
-                if(KColorDialog::getColor(newColor) != QDialog::Rejected){
+                if(KColorDialog::getColor(newColor, d->dialogParent) != QDialog::Rejected){
                     fg.setColor(newColor);
                     emit fgChanged(newColor);
                 }
@@ -241,7 +291,7 @@ void KDualColorButton::mouseReleaseEvent(QMouseEvent *ev)
             }
             else{
                 QColor newColor = bg.color();
-                if(KColorDialog::getColor(newColor) != QDialog::Rejected){
+                if(KColorDialog::getColor(newColor, d->dialogParent) != QDialog::Rejected){
                     bg.setColor(newColor);
                     emit bgChanged(newColor);
                 }
@@ -253,16 +303,5 @@ void KDualColorButton::mouseReleaseEvent(QMouseEvent *ev)
     else
         miniCtlFlag = false;
 }
+
 #include "kdualcolorbtn.moc"
-    
-
-
-
-
-
-
-
-
-
-
-

@@ -58,12 +58,31 @@ public:
      *
      */
     KDualColorButton(QWidget *parent=0, const char *name=0);
+
+    /**
+     * Constructs a new KDualColorButton using the default black and white
+     * colors.
+     *
+     * BIC: merge with the above next Wednesday, dialogParent defaults to 0L
+     */
+    KDualColorButton(QWidget *parent, const char *name, QWidget* dialogParent);
+
     /**
      * Constructs a new KDualColorButton with the supplied foreground and
      * background colors.
      */
     KDualColorButton(const QColor &fgColor, const QColor &bgColor,
                      QWidget *parent=0, const char *name=0);
+
+    /**
+     * Constructs a new KDualColorButton with the supplied foreground and
+     * background colors.
+     * 
+     * BIC: merge with the above next Wednesday, dialogParent defaults to 0L
+     */
+    KDualColorButton(const QColor &fgColor, const QColor &bgColor,
+                     QWidget *parent, const char *name, QWidget* dialogParent);
+
     ~KDualColorButton();
     /**
      * Returns the current foreground color.
