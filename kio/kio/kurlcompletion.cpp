@@ -33,6 +33,8 @@
 #include <qdir.h>
 #include <qfile.h>
 #include <qtextstream.h>
+#include <qdeepcopy.h>
+#include <qthread.h>
 
 #include <kapplication.h>
 #include <kdebug.h>
@@ -65,6 +67,64 @@ static QString unescape(const QString &text);
 
 // Constants for types of completion
 enum ComplType {CTNone=0, CTEnv, CTUser, CTMan, CTExe, CTFile, CTUrl, CTInfo};
+
+/**
+ * A custom event type that is used to return a list of completion
+ * matches from an asyncrynous lookup.
+ */
+
+class CompletionMatchEvent : public QCustomEvent
+{
+public:
+	CompletionMatchEvent(const QStringList &matches) :
+		QCustomEvent(uniqueType()),
+		m_matches(matches) {}
+	QDeepCopy<QStringList> matches() const { return m_matches; }
+	static int uniqueType() { return User + 42; }
+private:
+	QStringList m_matches;
+};
+
+/**
+ * A simple thread that fetches a list of tilde-completions and returns this
+ * to the caller via a CompletionMatchEvent.
+ */
+
+class UserListThread : public QThread
+{
+public:
+    UserListThread(KURLCompletion *receiver) :
+		QThread(),
+		m_receiver( receiver ),
+		m_terminationRequested( false ) 
+	{}
+
+	QDeepCopy<QStringList> matches() const
+	{
+		return finished() ? m_matches : QStringList();
+	}
+
+	void requestTermination() { m_terminationRequested = true; }
+
+protected:
+	void run()
+	{
+		static const QChar tilde = '~';
+
+		struct passwd *pw;
+		while ( ( pw = ::getpwent() ) && !m_terminationRequested )
+			m_matches.append( tilde + QString::fromLocal8Bit( pw->pw_name ) );
+
+		::endpwent();
+
+		m_matches.append( tilde );
+		kapp->postEvent( m_receiver, new CompletionMatchEvent( m_matches ) );
+	}
+private:
+	KURLCompletion *m_receiver;
+	QStringList m_matches;
+	bool m_terminationRequested;
+};
 
 ///////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////
@@ -429,14 +489,15 @@ class KURLCompletionPrivate
 {
 public:
 	KURLCompletionPrivate() : dir_lister(0L),
-	                          url_auto_completion(true) {};
+	                          url_auto_completion(true),
+	                          completionThread(0) {}
 	~KURLCompletionPrivate();
 
 	QValueList<KURL*> list_urls;
 
 	KURLCompletion::DirLister *dir_lister;
   
-  bool onlyLocalProto;
+	bool onlyLocalProto;
 
 	// urlCompletion() in Auto/Popup mode?
 	bool url_auto_completion;
@@ -466,11 +527,18 @@ public:
 	bool list_urls_only_exe; // true = only list executables
 	bool list_urls_no_hidden;
 	QString list_urls_filter; // filter for listed files
+
+	UserListThread *completionThread;
 };
 
 KURLCompletionPrivate::~KURLCompletionPrivate()
 {
 	assert( dir_lister == 0L );
+	if ( completionThread ) {
+		completionThread->requestTermination();
+		completionThread->wait();
+		delete completionThread;
+	}
 }
 
 ///////////////////////////////////////////////////////
@@ -732,27 +800,18 @@ bool KURLCompletion::userCompletion(const MyURL &url, QString *match)
 		stop();
 		clear();
 
-		struct passwd *pw;
+		if ( !d->completionThread ) {
+			d->completionThread = new UserListThread( this );
+			d->completionThread->start();
 
-		QString tilde = QString("~");
+			// If the thread finishes quickly make sure that the results
+			// are added to the first matching case.
 
-		QStringList l;
-
-		while ( (pw = ::getpwent()) ) {
-			QString user = QString::fromLocal8Bit( pw->pw_name );
-
-			l.append( tilde + user );
+			d->completionThread->wait(200);
+			QStringList l = d->completionThread->matches();
+			addMatches( &l );
 		}
-
-		::endpwent();
-
-		l.append( tilde ); // just ~ is a match to
-
-		addMatches( &l );
 	}
-
-	setListedURL( CTUser );
-
 	*match = finished();
 	return true;
 }
@@ -1379,6 +1438,29 @@ void KURLCompletion::postProcessMatches( KCompletionMatches * /*matches*/ ) cons
 	// Maybe '/' should be added to directories here as in
 	// postProcessMatch() but it would slow things down
 	// when there are a lot of matches...
+}
+
+void KURLCompletion::customEvent(QCustomEvent *e)
+{
+	if ( e->type() == CompletionMatchEvent::uniqueType() ) {
+
+		CompletionMatchEvent *event = static_cast<CompletionMatchEvent *>( e );
+		
+		if ( !isListedURL( CTUser ) ) {
+			stop();
+			clear();
+			QStringList matches = event->matches();
+			addMatches( &matches );
+		}
+
+		setListedURL( CTUser );
+
+		if ( d->completionThread ) {
+			d->completionThread->wait();
+			delete d->completionThread;
+			d->completionThread = 0;
+		}
+	}
 }
 
 // static
