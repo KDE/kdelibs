@@ -259,6 +259,7 @@ int main(int argc, char *argv[])
   KURL umail1 ( "mailto:faure@kde.org" );
   check("mailto: URL, general form", umail1.protocol(), "mailto");
   check("mailto: URL, general form", umail1.path(), "faure@kde.org");
+  check("mailto: URL, is relative", KURL::isRelativeURL("mailto:faure@kde.org") ? "true" : "false", "false");
   KURL umail2 ( "mailto:Faure David <faure@kde.org>" );
   check("mailto: URL, general form", umail2.protocol(), "mailto");
   check("mailto: URL, general form", umail2.path(), "Faure David <faure@kde.org>");
