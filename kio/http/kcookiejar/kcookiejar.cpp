@@ -907,43 +907,24 @@ void KCookieJar::eatCookie(KHttpCookiePtr cookiePtr)
     }
 }
 
-void KCookieJar::eatCookies( KHttpCookieList* cookieList )
-{
-    if (cookieList)
-    {
-        KHttpCookiePtr cookiePtr = cookieList->first();
-        QString domain = stripDomain(cookiePtr); // We file the cookie under this domain.
-
-        for ( ; cookieList != 0; cookieList->next() )
-            cookieList->removeRef( cookiePtr );
-
-        // Delete cookie list.
-        cookieDomains.remove(domain);
-        // Remove from the domain list.
-        domainList.remove(domain);
-        // set the cookies changed flag.
-        cookiesChanged = true;
-    }
-}
-
 void KCookieJar::eatAllCookies()
 {
     for ( QStringList::Iterator it=domainList.begin();
-    	  it != domainList.end();
-    	  it++)
+    	  it != domainList.end();)
     {
-        const QString &domain = *it;
+        const QString &domain = *it++;
 
 	KHttpCookieList *cookieList = cookieDomains[domain];
-        KHttpCookiePtr cookie=cookieList->first();
+        cookieList->clear();
 
-	for (; cookie != 0;)
+        if ((cookieList->isEmpty()) &&
+            (cookieList->getAdvice() == KCookieDunno))
         {
-           // Delete expired cookies
-           KHttpCookiePtr old_cookie = cookie;
-           cookie = cookieList->next();
-           cookieList->removeRef( old_cookie );
-	}
+            // This deletes cookieList!
+            cookieDomains.remove(domain);
+
+            domainList.remove(domain);
+        }
     }
     cookiesChanged = true;
 }

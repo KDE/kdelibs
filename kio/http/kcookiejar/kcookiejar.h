@@ -253,12 +253,6 @@ public:
     void eatCookie(KHttpCookiePtr cookiePtr);
 
     /**
-     * Same as the above method except this function will
-     * delete all cookies for a specific domain (list).
-     */
-    void eatCookies(KHttpCookieList* /*cookieList*/ );
-
-    /**
      * Remove & delete all cookies
      */
     void eatAllCookies();
