@@ -58,6 +58,7 @@ static Atom net_virtual_roots        = 0;
 
 // root window messages
 static Atom net_close_window         = 0;
+static Atom net_restack_window         = 0;
 static Atom net_wm_moveresize        = 0;
 
 // application window properties
@@ -221,7 +222,7 @@ static int wcmp(const void *a, const void *b) {
 }
 
 
-static const int netAtomCount = 69;
+static const int netAtomCount = 70;
 static void create_atoms(Display *d) {
     static const char * const names[netAtomCount] =
     {
@@ -239,6 +240,7 @@ static void create_atoms(Display *d) {
 	    "_NET_WORKAREA",
 	    "_NET_VIRTUAL_ROOTS",
 	    "_NET_CLOSE_WINDOW",
+            "_NET_RESTACK_WINDOW",
 
 	    "_NET_WM_MOVERESIZE",
 	    "_NET_WM_NAME",
@@ -321,6 +323,7 @@ static void create_atoms(Display *d) {
 	    &net_workarea,
 	    &net_virtual_roots,
 	    &net_close_window,
+            &net_restack_window,
 
 	    &net_wm_moveresize,
 	    &net_wm_name,
@@ -1081,6 +1084,8 @@ void NETRootInfo::setSupported() {
     if (p->properties[ PROTOCOLS ] & CloseWindow)
 	atoms[pnum++] = net_close_window;
 
+    if (p->properties[ PROTOCOLS2 ] & WM2RestackWindow)
+	atoms[pnum++] = net_restack_window;
 
     // Application window properties/messages
     if (p->properties[ PROTOCOLS ] & WMMoveResize)
@@ -1281,6 +1286,9 @@ void NETRootInfo::updateSupportedProperties( Atom atom )
 
     else if( atom == net_close_window )
         p->properties[ PROTOCOLS ] |= CloseWindow;
+
+    else if( atom == net_restack_window )
+        p->properties[ PROTOCOLS2 ] |= WM2RestackWindow;
 
 
     // Application window properties/messages
@@ -1552,6 +1560,30 @@ void NETRootInfo::moveResizeRequest(Window window, int x_root, int y_root,
     XSendEvent(p->display, p->root, False, netwm_sendevent_mask, &e);
 }
 
+void NETRootInfo::restackRequest(Window window, Window above, int detail)
+{
+#ifdef    NETWMDEBUG
+    fprintf(stderr,
+	    "NETRootInfo::restackRequest: requesting restack for 0x%lx (%lx, %d)\n",
+	    window, above, detail);
+#endif
+
+    XEvent e;
+
+    e.xclient.type = ClientMessage;
+    e.xclient.message_type = net_restack_window;
+    e.xclient.display = p->display;
+    e.xclient.window = window,
+    e.xclient.format = 32;
+    e.xclient.data.l[0] = above;
+    e.xclient.data.l[1] = detail;
+    e.xclient.data.l[2] = 0l;
+    e.xclient.data.l[3] = 0l;
+    e.xclient.data.l[4] = 0l;
+
+    XSendEvent(p->display, p->root, False, netwm_sendevent_mask, &e);
+}
+
 void NETRootInfo2::sendPing( Window window, Time timestamp )
 {
     if (role != WindowManager) return;
@@ -1708,6 +1740,16 @@ void NETRootInfo::event(XEvent *event, unsigned long* properties, int properties
 #endif
 
 	    closeWindow(event->xclient.window);
+	} else if (event->xclient.message_type == net_restack_window) {
+
+#ifdef   NETWMDEBUG
+	    fprintf(stderr, "NETRootInfo::event: restackWindow(0x%lx)\n",
+		    event->xclient.window);
+#endif
+
+	    if( NETRootInfo2* this2 = dynamic_cast< NETRootInfo2* >( this ))
+	        this2->restackWindow(event->xclient.window,
+                    event->xclient.data.l[0], event->xclient.data.l[1]);
 	} else if (event->xclient.message_type == wm_protocols
 	    && (Atom)event->xclient.data.l[ 0 ] == net_wm_ping) {
 	    dirty = WMPing;

@@ -499,6 +499,7 @@ public:
         @li WM2TransientFor mainwindow for the window (WM_TRANSIENT_FOR)
         @li WM2GroupLeader  group leader (window_group in WM_HINTS)
         @li WM2AllowedActions
+        @li WM2RestackWindow
 
     **/
     enum Property2 {
@@ -506,7 +507,8 @@ public:
         WM2StartupId           = 1<<1,
         WM2TransientFor        = 1<<2,
         WM2GroupLeader         = 1<<3,
-        WM2AllowedActions      = 1<<4
+        WM2AllowedActions      = 1<<4,
+        WM2RestackWindow       = 1<<5
     };
 
     /**

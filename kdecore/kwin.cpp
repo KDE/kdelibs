@@ -588,6 +588,22 @@ void KWin::deIconifyWindow( WId win, bool animation )
 #endif
 }
 
+void KWin::raiseWindow( WId win )
+{
+#if defined Q_WS_X11 && ! defined K_WS_QTONLY
+    NETRootInfo info( qt_xdisplay(), 0 );
+    info.restackRequest( win, None, Above );
+#endif
+}
+
+void KWin::lowerWindow( WId win )
+{
+#if defined Q_WS_X11 && ! defined K_WS_QTONLY
+    NETRootInfo info( qt_xdisplay(), 0 );
+    info.restackRequest( win, None, Below );
+#endif
+}
+
 void KWin::appStarted()
 {
 #if defined Q_WS_X11 && ! defined K_WS_QTONLY

@@ -331,6 +331,24 @@ public:
     static void deIconifyWindow( WId win, bool animation = true );
 
     /**
+     * Raises the given window. This call is only for pagers and similar
+     * tools that represent direct user actions. Applications should not
+     * use it, they should keep using QWidget::raise() or XRaiseWindow()
+     * if necessary.
+     * @since 3.2
+     */
+    static void raiseWindow( WId win );
+
+    /**
+     * Lowers the given window. This call is only for pagers and similar
+     * tools that represent direct user actions. Applications should not
+     * use it, they should keep using QWidget::lower() or XLowerWindow()
+     * if necessary.
+     * @since 3.2
+     */
+    static void lowerWindow( WId win );
+
+    /**
      * @internal
      * Returns true if the WM uses IconicState also for windows
      * on inactive virtual desktops.

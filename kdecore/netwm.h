@@ -546,6 +546,12 @@ public:
     void moveResizeRequest(Window window, int x_root, int y_root,
 			   Direction direction);
 
+
+    /**
+       @since 3.2
+    **/
+    void restackRequest(Window window, Window above, int detail);
+    
     /**
        This function takes the passed XEvent and returns an OR'ed list of
        NETRootInfo properties that have changed in the properties argument.
@@ -725,7 +731,7 @@ protected:
     friend class NETRootInfo;
     virtual void gotPing( Window, Time ) {};
     /**
-       A Window Manager should subclass NETRootInfo and reimplement this function
+       A Window Manager should subclass NETRootInfo2 and reimplement this function
        when it wants to know when a Client made a request to change the active
        (focused) window.
 
@@ -735,6 +741,17 @@ protected:
     **/
     // virtual void changeActiveWindow(Window window,NET::RequestSource src, Time timestamp ) { }
     virtual void changeActiveWindow(Window,NET::RequestSource,Time) { }
+    /**
+       A Window Manager should subclass NETRootInfo2 and reimplement this function
+       when it wants to know when a Client made a request to restack a window.
+       See _NET_RESTACK_WINDOW for details.
+
+       @param window the id of the window to restack
+       @param above other window in the restack request
+       @param detail restack detail
+    **/
+    // virtual void restackWindow(Window window, Window above, int detail) { }
+    virtual void restackWindow(Window, Window, int) { }
 
 // no private data, use NETRootInfoPrivate
 };
