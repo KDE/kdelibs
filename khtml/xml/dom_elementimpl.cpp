@@ -398,7 +398,7 @@ NodeImpl *ElementImpl::cloneNode ( bool deep, int &exceptioncode )
     return newImpl;
 }
 
-NamedNodeMapImpl *ElementImpl::attributes() const
+NamedNodeMapImpl *ElementImpl::attributes()
 {
     return namedAttrMap;
 }

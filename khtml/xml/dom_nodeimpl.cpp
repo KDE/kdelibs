@@ -200,7 +200,7 @@ QString NodeImpl::recursive_toHTML( ) const
         // print attributes
         if( nodeType() == Node::ELEMENT_NODE )
         {
-            const ElementImpl *el = static_cast<const ElementImpl *>(this);
+            ElementImpl *el = const_cast<ElementImpl*>(static_cast<const ElementImpl *>(this));
             AttrImpl *attr;
             int exceptioncode;
             NamedNodeMapImpl *attrs = el->attributes();
@@ -269,36 +269,34 @@ DOMString NodeImpl::namespaceURI() const
 }
 
 
-void NodeImpl::printTree(int indent) const
+void NodeImpl::printTree(int indent)
 {
     QString ind;
     QString s;
     ind.fill(' ', indent);
 
-    s = ind + "<" + nodeName().string();
-
-#if 0
     // ### find out why this isn't working
     if(isElementNode())
     {
-        const ElementImpl* e = static_cast<const ElementImpl*>(this);
-        bool complained = false;
+        s = ind + "<" + nodeName().string();
 
-        for(int i=0; i < e->getAttributeCount(); i++)
+        ElementImpl *el = const_cast<ElementImpl*>(static_cast<const ElementImpl *>(this));
+        AttrImpl *attr;
+        int exceptioncode;
+        NamedNodeMapImpl *attrs = el->attributes();
+        unsigned long lmap = attrs->length(exceptioncode);
+        for( unsigned int j=0; j<lmap; j++ )
         {
-            AttrImpl* a = e->attributes()->item(i);
-            if(a)
-                s += a->name().string() +"=\"" + a->value().string() + "\"";
-            else if(!complained)
-            {
-                s += "*** attribute count mismatch ***";
-                complained = true;
-            }
+            attr = static_cast<AttrImpl*>(attrs->item(j,exceptioncode));
+            s += " " + attr->name().string() + "=\"" + attr->value().string() + "\"";
         }
+        if(!firstChild())
+            s += " />";
+        else
+            s += ">";
     }
-#endif
-
-    s += ">";
+    else
+        s = ind + "'" + nodeValue().string() + "'";
 
     kdDebug() << s << endl;
 
@@ -308,7 +306,7 @@ void NodeImpl::printTree(int indent) const
         child->printTree(indent+2);
         child = child->nextSibling();
     }
-    if(isElementNode())
+    if(isElementNode() && firstChild())
         kdDebug() << ind << "</" << nodeName().string() << ">" << endl;
 }
 

@@ -389,10 +389,6 @@ bool
 HTMLAreaElementImpl::mapMouseEvent(int x_, int y_, int width_, int height_,
 				   MouseEvent *ev)
 {
-    // Ignore it when it has no "NOHREF" attribute and no "HREF"
-    if(!nohref && href == 0)
-        return false;
-
     //cout << "area:mapMouseEvent " << endl;
     bool inside = false;
     if (width_ != lastw || height_ != lasth)
@@ -402,15 +398,18 @@ HTMLAreaElementImpl::mapMouseEvent(int x_, int y_, int width_, int height_,
     }
     if (region.contains(QPoint(x_,y_)))
     {
-        //cout << "region hit, url " << QConstString(href->s, href->l).string() << endl;
     	inside = true;
-	if(target && href)
-	{
-	    DOMString s = DOMString("target://") + DOMString(target) + DOMString("/#") + DOMString(href);
-	    ev->url = s;
-	}
-	else
-	    ev->url = href;
+        if(isNoref())
+            ev->noHref = true;
+        else {
+            if(target && href)
+            {
+                DOMString s = DOMString("target://") + DOMString(target) + DOMString("/#") + DOMString(href);
+                ev->url = s;
+            }
+            else
+                ev->url = href;
+        }
     }
     // dynamic HTML...
     if(inside || mouseInside()) mouseEventHandler(ev, inside);

@@ -98,6 +98,7 @@ public:
     void parseAttribute(AttrImpl *attr);
 
     bool isDefault() const { return shape==Default; }
+    bool isNoref() const { return nohref && !href; }
 
     bool mapMouseEvent(int x_, int y_, int width_, int height_,
                        MouseEvent *ev );

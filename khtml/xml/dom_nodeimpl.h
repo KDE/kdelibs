@@ -137,13 +137,14 @@ public:
     struct MouseEvent
     {
         MouseEvent( int _button, MouseEventType _type,
-                    const DOMString &_url = DOMString(), NodeImpl *_innerNode = 0, bool _urlHandling = true )
+                    const DOMString &_url = DOMString(), NodeImpl *_innerNode = 0, bool _urlHandling = true, bool _noHref = false )
             {
                 button = _button; type = _type;
                 url = _url;
                 innerNode = _innerNode; urlHandling = _urlHandling;
                 currentZIndex = -1;
                 zIndex = -1;
+                noHref = _noHref;
             }
 
         int button;
@@ -153,6 +154,7 @@ public:
         int zIndex; // used to select the one most on top
         int currentZIndex; // temporary variable to avoid passing a param around
         bool urlHandling; // specify whether the part should handle the url or not
+        bool noHref; // whether anchor should be blocked by a map element
         int nodeAbsX, nodeAbsY; // temporary hack for selection stuff
     };
 
@@ -221,7 +223,7 @@ public:
 
     // ### check if this function is still needed at all...
     virtual bool isInline() const { return true; }
-    virtual void printTree(int indent=0) const;
+    virtual void printTree(int indent=0);
     virtual QString toHTML() const;
     QString recursive_toHTML() const;
 

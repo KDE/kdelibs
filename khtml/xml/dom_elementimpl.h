@@ -126,7 +126,7 @@ public:
     virtual void applyChanges(bool = true, bool = true);
 
     virtual NodeImpl *cloneNode ( bool deep, int &exceptioncode );
-    virtual NamedNodeMapImpl *attributes() const;
+    virtual NamedNodeMapImpl *attributes();
 
     /**
      * override this in subclasses if you need to parse
@@ -169,6 +169,7 @@ public:
 
 protected: // member variables
 
+    friend class NodeImpl;
     NamedAttrMapImpl *namedAttrMap;
 
     // map of default attributes. derived element classes are responsible
