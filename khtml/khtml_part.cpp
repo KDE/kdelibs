@@ -3316,7 +3316,7 @@ bool KHTMLPart::hasSelection() const
 
 DOM::Range KHTMLPart::selection() const
 {
-    DOM::Range r = document().createRange();DOM::Range();
+    DOM::Range r = document().createRange();
     r.setStart( d->m_selectionStart, d->m_startOffset );
     r.setEnd( d->m_selectionEnd, d->m_endOffset );
     return r;
@@ -3332,16 +3332,22 @@ void KHTMLPart::selection(DOM::Node &s, long &so, DOM::Node &e, long &eo) const
 
 void KHTMLPart::setSelection( const DOM::Range &r )
 {
-    d->m_selectionStart = r.startContainer();
-    d->m_startOffset = r.startOffset();
-    d->m_selectionEnd = r.endContainer();
-    d->m_endOffset = r.endOffset();
-    d->m_doc->setSelection(d->m_selectionStart.handle(),d->m_startOffset,
-                           d->m_selectionEnd.handle(),d->m_endOffset);
+    // Quick-fix: a collapsed range shouldn't select the whole node.
+    // The real problem is in RenderCanvas::setSelection though (when index==0 the whole node is selected).
+    if ( r.collapsed() )
+        slotClearSelection();
+    else {
+        d->m_selectionStart = r.startContainer();
+        d->m_startOffset = r.startOffset();
+        d->m_selectionEnd = r.endContainer();
+        d->m_endOffset = r.endOffset();
+        d->m_doc->setSelection(d->m_selectionStart.handle(),d->m_startOffset,
+                               d->m_selectionEnd.handle(),d->m_endOffset);
 #ifndef KHTML_NO_CARET
-    bool v = d->m_view->placeCaret();
-    emitCaretPositionChanged(v ? d->caretNode() : 0, d->caretOffset());
+        bool v = d->m_view->placeCaret();
+        emitCaretPositionChanged(v ? d->caretNode() : 0, d->caretOffset());
 #endif
+    }
 }
 
 void KHTMLPart::slotClearSelection()
