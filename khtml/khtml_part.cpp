@@ -1614,8 +1614,8 @@ KHTMLPopupGUIClient::KHTMLPopupGUIClient( KHTMLPart *khtml, const QString &doc, 
  				     actionCollection(), "savelinkas" );
   DOM::Element e;
   e = khtml->nodeUnderMouse();
-  
-  if ( !e.isNull() && e.getAttribute( ATTR_ID ) == ID_IMG )
+
+  if ( !e.isNull() && e.elementId() == ID_IMG )
   {
     d->m_imageURL = KURL( d->m_khtml->url(), e.getAttribute( "src" ).string() );
     d->m_paSaveImageAs = new KAction( i18n( "Save Image As ..." ), 0, this, SLOT( slotSaveImageAs() ),
