@@ -127,6 +127,7 @@ class BrowserExtensionPrivate;
   * @li @p cut : Copy selected items to clipboard and store 'not cut' in clipboard.
   * @li @p copy : Copy selected items to clipboard and store 'cut' in clipboard.
   * @li @p paste : Paste clipboard into selected items.
+  * @li @p rename : Rename item in place.
   * @li @p trash : Move selected items to trash.
   * @li @p del : Delete selected items (couldn't call it delete!).
   * @li @p shred : Shred selected items (secure deletion).
