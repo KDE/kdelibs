@@ -23,6 +23,9 @@ class QConfigDB;
 class Section;
 class StringKabKeyMap; /* The type of the mirror map. */
 class QStringList;
+/* Used to implement field lookup accoording to
+   keys. */
+class KeyNameMap; 
 
 #include <list>
 #include <qframe.h>
@@ -296,23 +299,53 @@ public:
   protected:
     /** \internal The pointer to the file the entry is read from. */
     // const QConfigDB *file; 
-  public:
+ public:
     // types:
     /** Since an entry may have different addresses, we need a type for them.
      *  Multiple addresses are used to distinguish between addresses at home
      * and work, for example. */
-    struct Address {
-      QString headline; /**< The headline for this address. */
-      QString position; /**< The position of the person at this address. */
-      QString org; /**< The organisation of the person at this address. */
-      QString orgUnit;  /**< The org unit of the person at this address. */
-      QString orgSubUnit; /**< The org subunit of the person at this address. */
-      QString deliveryLabel; /**< The description for delivering. */
-      QString address; /**< Street, with house number. */
-      QString zip; /**< Zip or postal code. */
-      QString town; /**< The town. */
-      QString country; /**< The country for federal states. */
-      QString state; /**< The state for federal states. */
+    class Address {
+    public:
+      /** A constructor. */
+      Address();
+      // ----- This aggregates are used to access the fields by
+      // keywords. We use char* here to be able to initialize the keys
+      // in code as statics without initializing Qt etc. :
+      /** An aggregat containing the keys of all declared fields:
+       */
+      static const char* Fields[];
+      /** The number of elements in Fields.
+       */
+      static const int NoOfFields;
+      /** Query the literal, translated name of the field given by its
+	  key. 
+	  @return false if key is not defined */
+      static bool nameOfField(const char* key, QString& value);
+      // ----- the following members represent the fields:
+      /** The headline for this address. */
+      QString headline; 
+      /** The position of the person at this address. */
+      QString position; 
+      /** The organisation of the person at this address. */
+      QString org; 
+      /** The org unit of the person at this address. */
+      QString orgUnit;  
+      /** The org subunit of the person at this address. */
+      QString orgSubUnit; 
+      /** The description for delivering. */
+      QString deliveryLabel; 
+      /** Street, with house number. */
+      QString address; 
+      /** Zip or postal code. */
+      QString zip;
+      /** The town. */
+      QString town; 
+      /** The country for federal states. */
+      QString country;
+      /** The state for federal states. */ 
+      QString state; 
+    protected:
+      static KeyNameMap *fields;
     };
     /** Contains one or more Address objects. */
     std::list<AddressBook::Entry::Address> addresses; 

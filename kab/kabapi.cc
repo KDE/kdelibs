@@ -203,7 +203,7 @@ AddressBook::ErrorCode KabAPI::save(bool force)
 void KabAPI::entrySelected(int index)
 {
   kdDebug(KAB_KDEBUG_AREA) << "KabAPI::entrySelected: entry " << index
-			   <<"selected." << endl;
+			   <<" selected." << endl;
   selection=index;
 }
 

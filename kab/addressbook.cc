@@ -57,12 +57,14 @@ extern "C" {
 #endif
 #define ENTRY_SECTION "entries"
 
-#ifdef LOCAL_CONFIG_SECTION // the name of the file-local configuration section
+// the name of the file-local configuration section
+#ifdef LOCAL_CONFIG_SECTION 
 #undef LOCAL_CONFIG_SECTION
 #endif
 #define LOCAL_CONFIG_SECTION "config"
 
-#ifdef ADDRESS_SUBSECTION // the name of the subsection for each entry
+// the name of the subsection for each entry
+#ifdef ADDRESS_SUBSECTION 
 #undef ADDRESS_SUBSECTION
 #endif
 #define ADDRESS_SUBSECTION "addresses"
@@ -76,6 +78,14 @@ extern "C" {
 #undef KAB_CONFIGTEMPLATE
 #endif
 #define KAB_CONFIGTEMPLATE "kab/template.config"
+
+const char* AddressBook::Entry::Address::Fields[]= {
+  "headline", "position", 
+  "org", "orgUnit", "orgSubUnit",
+  "deliveryLabel", "address", "zip", "town", "country", "state" };
+const int AddressBook::Entry::Address::NoOfFields
+=sizeof(AddressBook::Entry::Address::Fields)
+/sizeof(AddressBook::Entry::Address::Fields[0]);
 
 struct QStringLess
   : public binary_function<const QString&, const QString&, bool>
@@ -92,6 +102,13 @@ class StringKabKeyMap : public map<QString, KabKey, QStringLess>
 { /* Same as map, but a class for compilation reasons. This way we do not need
    * to include the QStringLess class into the addressbook header file. */
 };
+
+// ----- another derived map class:
+class KeyNameMap : public map<const char*, const QString, less<const char*> >
+{ // same thing
+};
+
+KeyNameMap* AddressBook::Entry::Address::fields;
 
 bool
 KabKey::operator == (const KabKey& key) const
@@ -117,6 +134,104 @@ KabKey::getKey() const
   // ###########################################################################
 }
 
+
+
+AddressBook::Entry::Address::Address()
+{
+}
+
+bool AddressBook::Entry::Address::nameOfField(const char* key, QString& value)
+{
+  KeyNameMap::iterator pos;
+  // -----
+  if(fields==0)
+    { // this is executed exactly one time per application instance,
+      // as fields is static 
+      int counter=0;
+      fields=new KeyNameMap;
+      CHECK_PTR(fields);
+      if(!fields->insert
+	 (map<const char*, const QString, less<const char*> >::value_type
+	  (Fields[counter++], i18n("Headline"))).second
+	 ||
+	 !fields->insert
+	 (map<const char*, const QString, less<const char*> >::value_type
+	 (Fields[counter++], i18n("Position"))).second
+	 ||
+	 !fields->insert
+	 (map<const char*, const QString, less<const char*> >::value_type
+	 (Fields[counter++], i18n("Organisation"))).second 
+	 ||
+	 !fields->insert
+	 (map<const char*, const QString, less<const char*> >::value_type
+	 (Fields[counter++], i18n("Department"))).second 
+	 ||
+	 !fields->insert
+	 (map<const char*, const QString, less<const char*> >::value_type
+	 (Fields[counter++], i18n("Sub-Department"))).second 
+	 ||
+	 !fields->insert
+	 (map<const char*, const QString, less<const char*> >::value_type
+	 (Fields[counter++], i18n("Delivery Label"))).second 
+	 ||
+	 !fields->insert
+	 (map<const char*, const QString, less<const char*> >::value_type
+	 (Fields[counter++], i18n("Address"))).second
+	 ||
+	 !fields->insert
+	 (map<const char*, const QString, less<const char*> >::value_type
+	  (Fields[counter++], i18n("Zipcode"))).second
+	 ||
+	 !fields->insert
+	 (map<const char*, const QString, less<const char*> >::value_type
+	  (Fields[counter++], i18n("City"))).second
+	 ||
+	 !fields->insert
+	 (map<const char*, const QString, less<const char*> >::value_type
+	  (Fields[counter++], i18n("Country"))).second
+	 ||
+	 !fields->insert
+	 (map<const char*, const QString, less<const char*> >::value_type
+	  (Fields[counter++], i18n("State"))).second)
+	{
+	  kdDebug() << "AddressBook::Entry::Address::nameOfField (while "
+		    << " creating field-name map): TYPO, correct this." 
+		    << endl;
+	} else {
+	  kdDebug() << "AddressBook::Entry::Address::nameOfField: "
+		    << "inserted field names." << endl;
+	}
+#if ! defined NDEBUG
+      QString name;
+      kdDebug() << "AddressBook::Entry::Address::get:" << endl
+		<< "Created key-fieldname-map. Defined fields are:" 
+		<< endl; 
+      for(counter=0; counter<AddressBook::Entry::Address::NoOfFields;
+	  ++counter)
+	{
+	  pos=fields->find(Fields[counter]);
+	  if(pos==fields->end())
+	    {
+	      kdDebug() << "  UNDEFINED" << endl;
+	    } else {
+	      kdDebug() << "  " << Fields[counter] << " ("
+			<< (*pos).second.utf8() << ")" 
+			<< endl;
+	    }
+	}
+#endif
+    }
+  // ----- now finally do the lookup:
+  pos=fields->find(key);
+  if(pos==fields->end())
+    {
+      return false;
+    } else {
+      value=(*pos).second;
+      return true;
+    }
+}
+      
 AddressBook::ErrorCode
 AddressBook::Entry::getAddress(int index, Address& address)
 {
