@@ -343,16 +343,7 @@ QString KFileItem::getStatusBarInfo()
 
 void KFileItem::run()
 {
+  if ( m_bLink )
+    m_url = KURL( m_url, linkDest() );
   (void) new KRun( m_url, m_fileMode, m_bIsLocalURL );
 }
-
-
-/* Doesn't deserve a method
-QString KFileItem::makeTimeString( time_t _time )
-{
-  QDateTime dt;
-  dt.setTime_t(_time);
-
-  return KGlobal::locale()->formatDateTime(dt);
-}
-*/
