@@ -23,7 +23,7 @@
 INCLUDES= $(all_includes)
 
 lib_LTLIBRARIES = libkdefx.la
-libkdefx_la_LDFLAGS = $(KDE_RPATH) $(KDE_MT_LDFLAGS) $(all_libraries) -no-undefined -version-info 4:0
+libkdefx_la_LDFLAGS = $(KDE_RPATH) $(KDE_MT_LDFLAGS) $(all_libraries) -no-undefined -version-info 5:0:1
 libkdefx_la_LIBADD = $(LIB_QT) $(LIB_XRENDER)
 
 include_HEADERS = kpixmap.h kpixmapsplitter.h \
