@@ -1,19 +1,27 @@
-#include "http.h"
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
 
-#include <kio_manager.h>
-#include <kio_rename_dlg.h>
-#include <kio_skip_dlg.h>
+#include <sys/wait.h>
+#include <sys/types.h>
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
-#include <sys/wait.h>
-#include <sys/types.h>
-#include <unistd.h>
 #include <signal.h>
 #include <time.h>
 #include <assert.h>
+
+#ifdef DO_MD5
+#include <md5.h>
+#endif
+
+#include "http.h"
+
+#include <kio_manager.h>
+#include <kio_rename_dlg.h>
+#include <kio_skip_dlg.h>
 
 #include <k2url.h>
 
@@ -22,6 +30,121 @@ bool open_PassDlg( const char *_head, string& _user, string& _pass );
 
 void sig_handler( int );
 void sig_handler2( int );
+extern "C" {
+  char *create_basic_auth (const char *header, const char *user, const char *passwd);
+  char *create_digest_auth (const char *header, const char *user, const char *passwd, const char *_realm, 
+			    const char *_nonce, const char *_domain);
+};
+
+
+#ifdef DO_MD5
+
+void CvtHex(
+    IN HASH Bin,
+    OUT HASHHEX Hex
+    )
+{
+    unsigned short i;
+    unsigned char j;
+
+    for (i = 0; i < HASHLEN; i++) {
+        j = (Bin[i] >> 4) & 0xf;
+        if (j <= 9)
+            Hex[i*2] = (j + '0');
+         else
+            Hex[i*2] = (j + 'a' - 10);
+        j = Bin[i] & 0xf;
+        if (j <= 9)
+            Hex[i*2+1] = (j + '0');
+         else
+            Hex[i*2+1] = (j + 'a' - 10);
+    };
+    Hex[HASHHEXLEN] = '\0';
+};
+
+/* calculate H(A1) as per spec */
+void DigestCalcHA1(
+    IN char * pszAlg,
+    IN char * pszUserName,
+    IN char * pszRealm,
+    IN char * pszPassword,
+    IN char * pszNonce,
+    IN char * pszCNonce,
+    OUT HASHHEX SessionKey
+    )
+{
+      MD5_CTX Md5Ctx;
+      HASH HA1;
+
+      MD5Init(&Md5Ctx);
+      MD5Update(&Md5Ctx, pszUserName, strlen(pszUserName));
+      MD5Update(&Md5Ctx, ":", 1);
+      MD5Update(&Md5Ctx, pszRealm, strlen(pszRealm));
+      MD5Update(&Md5Ctx, ":", 1);
+      MD5Update(&Md5Ctx, pszPassword, strlen(pszPassword));
+      MD5Final(HA1, &Md5Ctx);
+      if (strcmp(pszAlg, "md5-sess") == 0) {
+            MD5Init(&Md5Ctx);
+            MD5Update(&Md5Ctx, HA1, HASHLEN);
+            MD5Update(&Md5Ctx, ":", 1);
+            MD5Update(&Md5Ctx, pszNonce, strlen(pszNonce));
+            MD5Update(&Md5Ctx, ":", 1);
+            MD5Update(&Md5Ctx, pszCNonce, strlen(pszCNonce));
+            MD5Final(HA1, &Md5Ctx);
+      };
+      CvtHex(HA1, SessionKey);
+};
+
+/* calculate request-digest/response-digest as per HTTP Digest spec */
+void DigestCalcResponse(
+    IN HASHHEX HA1,           /* H(A1) */
+    IN char * pszNonce,       /* nonce from server */
+    IN char * pszNonceCount,  /* 8 hex digits */
+    IN char * pszCNonce,      /* client nonce */
+    IN char * pszQop,         /* qop-value: "", "auth", "auth-int" */
+    IN char * pszMethod,      /* method from the request */
+    IN char * pszDigestUri,   /* requested URL */
+    IN HASHHEX HEntity,       /* H(entity body) if qop="auth-int" */
+    OUT HASHHEX Response      /* request-digest or response-digest */
+    )
+{
+      MD5_CTX Md5Ctx;
+      HASH HA2;
+      HASH RespHash;
+       HASHHEX HA2Hex;
+
+      // calculate H(A2)
+      MD5Init(&Md5Ctx);
+      MD5Update(&Md5Ctx, pszMethod, strlen(pszMethod));
+      MD5Update(&Md5Ctx, ":", 1);
+      MD5Update(&Md5Ctx, pszDigestUri, strlen(pszDigestUri));
+      if (strcmp(pszQop, "auth-int") == 0) {
+            MD5Update(&Md5Ctx, ":", 1);
+            MD5Update(&Md5Ctx, HEntity, HASHHEXLEN);
+      };
+      MD5Final(HA2, &Md5Ctx);
+       CvtHex(HA2, HA2Hex);
+
+      // calculate response
+      MD5Init(&Md5Ctx);
+      MD5Update(&Md5Ctx, HA1, HASHHEXLEN);
+      MD5Update(&Md5Ctx, ":", 1);
+      MD5Update(&Md5Ctx, pszNonce, strlen(pszNonce));
+      MD5Update(&Md5Ctx, ":", 1);
+      if (*pszQop) {
+          MD5Update(&Md5Ctx, pszNonceCount, strlen(pszNonceCount));
+          MD5Update(&Md5Ctx, ":", 1);
+          MD5Update(&Md5Ctx, pszCNonce, strlen(pszCNonce));
+          MD5Update(&Md5Ctx, ":", 1);
+          MD5Update(&Md5Ctx, pszQop, strlen(pszQop));
+          MD5Update(&Md5Ctx, ":", 1);
+      };
+      MD5Update(&Md5Ctx, HA2Hex, HASHHEXLEN);
+      MD5Final(RespHash, &Md5Ctx);
+      CvtHex(RespHash, Response);
+};
+
+#endif
 
 int main( int argc, char **argv )
 {
@@ -127,32 +250,67 @@ char* base64_encode_line( const char *s )
    return res;
 }
 
-char *create_generic_auth (const char *prefix, const char *user, const char *passwd )
+char *create_digest_auth (const char *header, const char *user, const char *passwd, const char *_realm,
+			  const char *_nonce, const char *_domain)
 {
-   char *wwwauth;
+  char *wwwauth, *t2;
+  QString t1;
+  if (!user || !header || !passwd)
+    return NULL;
+  t1 += header;
+  t1 += ": Digest username=\"";
+  t1 += user;
+  t1 += "\", ";
 
-   if (user && passwd)
-   {
-      char *t1, *t2;
+  t1 += "realm=\"";
+  t1 += _realm;
+  t1 += "\", ";
 
-      t1 = (char *)malloc(strlen(user) + 1 + 2 * strlen(passwd) + 1);
-      sprintf(t1, "%s:%s", user, passwd);
-      t2 = base64_encode_line(t1);
-      free(t1);
-      // wwwauth = (char *)malloc(strlen(t2) + 24);
-      // sprintf(wwwauth, "Authorization: Basic %s\r\n", t2);
-      wwwauth = (char *)malloc(strlen(t2) + strlen(prefix) + 11 /* UPDATE WHEN FORMAT BELOW CHANGES !!! */);
-      sprintf(wwwauth, "%s: Basic %s\r\n", prefix, t2);
-      free(t2);
-   }
-   else
-      wwwauth = NULL;
-   return(wwwauth);
+  t1 += "nonce=\"";
+  t1 += _nonce;
+  t1 += "\", ";
+
+  t1 += "uri=\"";
+  t1 += _domain;
+  t1 += "\"";
+
+#ifdef DO_MD5
+  HASHHEX HA1;
+  HASHHEX HA2 = "";
+  HASHHEX Response;
+  char szNonceCount[9] = "00000001";
+  DigestCalcHA1("md5", user, _realm, passwd, _nonce, 0, HA1);
+  DigestCalcResponse(HA1, _nonce,szNonceCount, 0, "", "GET", _domain, HA2, Response);
+
+  t1 += ", response=\"";
+  t1 += Response;
+  t1 += "\"";
+#endif
+
+  t1 += "\r\n";
+  wwwauth = strdup(t1.data());
+  fprintf(stderr, "Returning: %s\n", wwwauth);
+  return wwwauth;
 }
 
-char *create_www_auth(const char *user, const char *passwd)
+char *create_basic_auth (const char *header, const char *user, const char *passwd)
 {
-  return create_generic_auth("Authorization",user, passwd);
+  char *wwwauth;
+  if (user && passwd) {
+    char *t1, *t2;
+
+    t1 = (char *)malloc(strlen(user) + 1 + 2 * strlen(passwd) + 1);
+    sprintf(t1, "%s:%s", user, passwd);
+    t2 = base64_encode_line(t1);
+    free(t1);
+    wwwauth = (char *)malloc(strlen(t2) + strlen(header) + 11); // UPDATE WHEN FORMAT BELOW CHANGES !!!
+    sprintf(wwwauth, "%s: Basic %s\r\n", header, t2);
+    free(t2);
+  }
+  else
+    wwwauth = NULL;
+
+  return(wwwauth);
 }
 
 /*****************************************************************************/
@@ -342,23 +500,27 @@ bool HTTPProtocol::http_open( K2URL &_url, const char* _post_data, int _post_dat
     sprintf( buffer, "%i\r\n", _post_data_size );
     command += buffer;
   }
- 
-  if( strlen( _url.user() ) != 0 )
-  {
-    char *www_auth = create_www_auth( _url.user(), _url.pass() );
-    command += www_auth;
-    free(www_auth);
+
+  if (_url.pass() ||_url.user()) {
+    if (Authentication == AUTH_Basic){
+      //command += "Authorization: Basic ";
+      command += create_basic_auth("Authorization", _url.user(), _url.pass());
+    }
+    else if (Authentication == AUTH_Digest) {
+      command+= create_digest_auth("Authorization", _url.user(), _url.pass(), realm.c_str(), nonce.c_str(), domain.c_str());
+    }
+    command+="\r\n";
   }
   
-  if( do_proxy )
+  /*  if( do_proxy )
   {
     if( m_strProxyUser != "" && m_strProxyPass != "" )
     {
       char *www_auth = create_generic_auth("Proxy-authorization", m_strProxyUser.c_str(), m_strProxyPass.c_str() );
       command += www_auth;
       free(www_auth);
-    }
-  }
+      }
+  }*/
 
   command += "\r\n";  /* end header */
     
@@ -385,7 +547,6 @@ repeat2:
   // however at least extensions should be checked
   m_strMimeType = "text/html";
 
-  string realm;
   bool unauthorized = false;
 
   char buffer[ 1024 ];
@@ -423,9 +584,11 @@ debug( "kio_http : Header: %s", buffer );
       }
     } else if ( strncasecmp( buffer, "HTTP/1.1 ", 9 ) == 0 ) {
       HTTP = HTTP_11;
+      Authentication = AUTH_None;
       // Unauthorized access
-      if ( strncmp( buffer + 9, "401", 3 ) == 0 )
+      if ( strncasecmp( buffer + 9, "401", 3 ) == 0  || strncasecmp(buffer+9, "407",3)==0) {
 	unauthorized = true;
+      }
       //Jacek: server error codes added (5xx)
       else if ( buffer[9] == '4' ||  buffer[9] == '5' )
       {
@@ -444,14 +607,47 @@ debug( "kio_http : Header: %s", buffer );
     } else if ( strncmp( buffer, "WWW-Authenticate:", 17 ) == 0 ) {
       const char *p = buffer + 17;
       while( *p == ' ' ) p++;
-      if ( strncmp( p, "Basic", 5 ) != 0 ) continue;
-      p += 5;
-      while( *p == ' ' ) p++;
-      if ( strncmp( p, "realm=\"", 7 ) != 0 ) continue;
-      p += 7;
-      int i = 0;
-      while( p[i] != '"' ) i++;
-      realm.assign( p, i );
+      if ( strncmp( p, "Basic", 5 ) == 0 ) {
+	Authentication = AUTH_Basic;
+	p += 5;
+      } else if (strncmp (p, "Digest", 6) ==0 ) {
+	p += 6;
+	Authentication = AUTH_Digest;
+      } else {
+	fprintf(stderr, "Invalid Authorization type requested\n");
+	fprintf(stderr, "buffer: %s\n", buffer);
+	fflush(stderr);
+	abort();
+      }
+      while (*p) {
+	while( *p == ' ' )
+	  p++;
+	int i = 0;
+	if ( strncmp( p, "realm=\"", 7 ) == 0 ) {
+	  p += 7;
+	  while( p[i] != '"' ) i++;
+	  realm.assign( p, i );
+	  fprintf(stderr,"REALM is: %s\n", realm.c_str());
+	} else if (strncmp(p, "nonce=\"", 7)==0) {
+	  p += 7;
+	  while( p[i] != '"' ) i++;
+	  nonce.assign( p, i );
+	} else if (strncmp(p, "domain=\"", 8)==0) {
+	  p += 8;
+	  while( p[i] != '"' ) i++;
+	  domain.assign( p, i );
+	} else if (strncmp(p, "algorith=\"", 10) == 0) {
+	  p += 10;
+	  while (p[i] != '"' ) i++;
+	  algorith.assign(p, i);
+	}
+	p+=i;
+	p++;
+      }
+      if (Authentication == AUTH_Digest) {
+	fprintf(stderr, "domain: %s\n", domain.c_str());
+      }
+      
     } else if (HTTP == HTTP_11) {
       if ( strncasecmp( buffer, "Transfer-Encoding: ", 19) == 0) {
 	// If multiple encodings have been applied to an entity, the transfer-

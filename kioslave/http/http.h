@@ -1,24 +1,25 @@
 #ifndef __http_h__
 #define __http_h__
 
-#include <kio_interface.h>
-#include <kio_base.h>
+#include <sys/stat.h>
+#include <sys/types.h>
+#include <sys/socket.h>
+
+#include <netinet/in.h>
+#include <arpa/inet.h>
 
 #include <string>
 
-#include <stdio.h>
-#include <sys/stat.h>
-#include <unistd.h>
-#include <sys/types.h>
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <arpa/inet.h>
 #include <errno.h>
+#include <stdio.h>
+#include <unistd.h>
 #include <netdb.h>
 
 #include <qstack.h>
 #include <qstring.h>
 
+#include <kio_interface.h>
+#include <kio_base.h>
 #include <k2url.h>
 
 class HTTPProtocol : public IOProtocol
@@ -28,9 +29,9 @@ public:
   virtual ~HTTPProtocol() { }
 
   enum HTTP_REV {HTTP_Unknown, HTTP_10, HTTP_11};
-  enum HTTP_AUTH {AUTH_None, AUTH_Basic, AUTH_Digest, AUTH_Unknown};
+  enum HTTP_AUTH {AUTH_None, AUTH_Basic, AUTH_Digest, AUTH_Need};
 
-  string realm;
+  string realm, nonce, domain, algorith;
   enum HTTP_REV HTTP;
   enum HTTP_AUTH Authentication;
   QStack<char> m_qTransferEncodings, m_qContentEncodings;
@@ -102,5 +103,42 @@ public:
 protected:
   HTTPProtocol* m_pHTTP;
 };
+
+#ifdef DO_MD5
+
+#define HASHLEN 16
+typedef char HASH[HASHLEN];
+#define HASHHEXLEN 32
+typedef char HASHHEX[HASHHEXLEN+1];
+#define IN
+#define OUT
+
+extern "C" {
+
+/* calculate H(A1) as per HTTP Digest spec */
+void DigestCalcHA1(
+    IN char * pszAlg,
+    IN char * pszUserName,
+    IN char * pszRealm,
+    IN char * pszPassword,
+    IN char * pszNonce,
+    IN char * pszCNonce,
+    OUT HASHHEX SessionKey
+    );
+
+/* calculate request-digest/response-digest as per HTTP Digest spec */
+void DigestCalcResponse(
+    IN HASHHEX HA1,           /* H(A1) */
+    IN char * pszNonce,       /* nonce from server */
+    IN char * pszNonceCount,  /* 8 hex digits */
+    IN char * pszCNonce,      /* client nonce */
+    IN char * pszQop,         /* qop-value: "", "auth", "auth-int" */
+    IN char * pszMethod,      /* method from the request */
+    IN char * pszDigestUri,   /* requested URL */
+    IN HASHHEX HEntity,       /* H(entity body) if qop="auth-int" */
+    OUT HASHHEX Response      /* request-digest or response-digest */
+    );
+}
+#endif
 
 #endif
