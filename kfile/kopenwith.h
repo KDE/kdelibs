@@ -186,16 +186,10 @@ class KApplicationTree : public KListView
 public:
     KApplicationTree( QWidget *parent );
 
-    bool isDesktopFile( const QString& filename );
-
     /**
-     * Parse a single .desktop/.kdelnk file
+     * Add a group of .desktop/.kdelnk entries
      */
-    void parseDesktopFile( QFileInfo *fi, KAppTreeListItem *item, QString relPath );
-    /**
-     * Parse a directory for .desktop/.kdelnk files
-     */
-    void parseDesktopDir( QString relPath, KAppTreeListItem *item = 0 );
+    void addDesktopGroup( QString relPath, KAppTreeListItem *item = 0 );
 
     KAppTreeListItem *it;
 

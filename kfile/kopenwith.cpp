@@ -46,6 +46,7 @@
 #include <kurlrequester.h>
 #include <dcopclient.h>
 #include <kmimetype.h>
+#include <kservicegroup.h>
 #include <klistview.h>
 
 #include "kopenwith.h"
@@ -94,7 +95,7 @@ void KAppTreeListItem::init(const QPixmap& pixmap, bool parse, bool dir, QString
 
 QString KAppTreeListItem::key(int column, bool /*ascending*/) const
 {
-    if(directory)
+    if (directory)
         return QString::fromLatin1(" ") + text(column).upper();
     else
         return text(column).upper();
@@ -109,7 +110,7 @@ void KAppTreeListItem::activate()
 void KAppTreeListItem::setOpen( bool o )
 {
     if( o && !parsed ) { // fill the children before opening
-        ((KApplicationTree *) parent())->parseDesktopDir( path + QString::fromLatin1("/"), this );
+        ((KApplicationTree *) parent())->addDesktopGroup( path, this );
         parsed = true;
     }
     QListViewItem::setOpen( o );
@@ -123,154 +124,61 @@ KApplicationTree::KApplicationTree( QWidget *parent )
     addColumn( i18n("Known Applications") );
     setRootIsDecorated( true );
 
-    parseDesktopDir( QString::null );
+    addDesktopGroup( QString::null );
 
     connect( this, SIGNAL( currentChanged(QListViewItem*) ), SLOT( slotItemHighlighted(QListViewItem*) ) );
     connect( this, SIGNAL( selectionChanged(QListViewItem*) ), SLOT( slotSelectionChanged(QListViewItem*) ) );
 }
 
-
 // ----------------------------------------------------------------------
 
-bool KApplicationTree::isDesktopFile( const QString& filename )
+void KApplicationTree::addDesktopGroup( QString relPath, KAppTreeListItem *item)
 {
-    QFile file(filename);
-    if (!file.open(IO_Raw | IO_ReadOnly))
-        return false;
+   KServiceGroup::Ptr root = KServiceGroup::group(relPath);
+   KServiceGroup::List list = root->entries();
 
-    QByteArray buffer(100);
-    file.readBlock(buffer.data(), 100);
-    file.close();
+   KAppTreeListItem * newItem;
+   for( KServiceGroup::List::ConstIterator it = list.begin();
+       it != list.end(); it++)
+   {
+      QString icon;
+      QString text;
+      QString relPath;
+      QString exec;
+      bool isDir = false;
+      KSycocaEntry *p = (*it);
+      if (p->isType(KST_KService)) 
+      {
+         KService *service = static_cast<KService *>(p);
+         icon = service->icon();
+         text = service->name();
+         exec = service->exec();
+      }
+      else if (p->isType(KST_KServiceGroup))
+      {
+         KServiceGroup *serviceGroup = static_cast<KServiceGroup *>(p);
+         icon = serviceGroup->icon();
+         text = serviceGroup->caption();
+         relPath = serviceGroup->relPath(); 
+         isDir = true;
+      }
+      else
+      {
+         debug("KServiceGroup: Unexpected object in list!");
+         continue;
+      }
+  
+      QPixmap pixmap = SmallIcon( icon );
 
-    KMimeMagicResult *result = KMimeMagic::self()->findBufferType( buffer );
-    if (!result)
-        return false;
-
-    if (result->mimeType() != QString::fromLatin1("application/x-desktop"))
-        return false;
-
-    return true;
-}
-
-
-// ----------------------------------------------------------------------
-
-void KApplicationTree::parseDesktopFile( QFileInfo *fi, KAppTreeListItem *item, QString relPath )
-{
-    QPixmap pixmap;
-    QString text_name, pixmap_name, mini_pixmap_name, big_pixmap_name, command_name, comment;
-
-    QString file = fi->absFilePath();
-
-    if( fi->isDir() ) {
-        // don't create empty directory items
-        QDir dir( file );
-	if ( dir.entryList().count() == 2 ) // . and ..
-	    return;
-	
-        text_name = fi->fileName();
-        file += QString::fromLatin1("/.directory");
-    }
-    else {
-        int pos = fi->fileName().find( QString::fromLatin1(".desktop") );
-        if( pos >= 0 )
-            text_name = fi->fileName().left( pos );
-        else {
-            pos = fi->fileName().find(QString::fromLatin1(".kdelnk"));
-            if (pos >= 0)
-                text_name = fi->fileName().left(pos);
-            else
-                text_name = fi->fileName();
-        }
-    }
-
-    QFile config( file );
-
-    if( config.exists() ) {
-        KSimpleConfig kconfig( file, true );
-        kconfig.setDesktopGroup();
-        command_name      = kconfig.readEntry(QString::fromLatin1("Exec"));
-        mini_pixmap_name  = kconfig.readEntry(QString::fromLatin1("MiniIcon"));
-        big_pixmap_name   = kconfig.readEntry(QString::fromLatin1("Icon"));
-        comment           = kconfig.readEntry(QString::fromLatin1("Comment"));
-        text_name         = kconfig.readEntry(QString::fromLatin1("Name"), text_name);
-
-        if( !mini_pixmap_name.isEmpty() )
-	  pixmap = SmallIcon(mini_pixmap_name);
-        if( pixmap.isNull() && !big_pixmap_name.isEmpty() )
-	  pixmap = SmallIcon(big_pixmap_name);
-        if( pixmap.isNull() )
-            pixmap = SmallIcon(QString::fromLatin1("default"));
-    }
-    else {
-        command_name = text_name;
-	pixmap = SmallIcon(QString::fromLatin1("default"));
-    }
-
-    KAppTreeListItem * newItem;
-    if(item)
-      newItem = new KAppTreeListItem( item, text_name, pixmap, false, fi->isDir(),
-                                      relPath + fi->fileName(), command_name );
-    else
-      newItem = new KAppTreeListItem( this, text_name, pixmap, false, fi->isDir(),
-                                      relPath + fi->fileName(), command_name );
-
-    if ( fi->isDir() )
-      newItem->setExpandable( true );
-}
-
-
-// ----------------------------------------------------------------------
-
-void KApplicationTree::parseDesktopDir( QString relPath, KAppTreeListItem *item)
-{
-    // for one relative path, like "Applications", there can be several real
-    // dirs (ex : a global one and a local one). Parse them both.
-    QStringList list = KGlobal::dirs()->findDirs("apps", relPath);
-    for (QStringList::ConstIterator dirsit = list.begin(); dirsit != list.end(); dirsit++) {
-        //debug(QString("(*dirsit): '%1'").arg((*dirsit)));
-        QDir d( (*dirsit) );
-        if( d.exists() ) {
-            debug("dirs exists");
-            d.setSorting( SORT_SPEC );
-            QList <QString> item_list;
-
-            const QFileInfoList *list = d.entryInfoList();
-            QFileInfoListIterator it( *list );
-            QFileInfo *fi;
-
-            while( ( fi = it.current() ) ) {
-                if( fi->fileName() == QString::fromLatin1(".") || fi->fileName() == QString::fromLatin1("..") ) {
-                    ++it;
-                    continue;
-                }
-                // check if item already in list (e.g. parsed from ~/.kde)
-                QListViewItem * pChild = item ? item->firstChild() : this->firstChild();
-                bool found = false;
-                while( pChild && !found ) {
-                    found = ( ((KAppTreeListItem *)pChild)->path == relPath + fi->fileName() );
-                    pChild = pChild->nextSibling();
-                }
-                if ( found ) {
-                    kdDebug() << "skipping " << *dirsit << " | " << fi->fileName() << endl;
-                    ++it;
-                    continue;
-                }
-
-                if( fi->isDir() ) {
-                    parseDesktopFile( fi, item, relPath );
-                }
-                else {
-                    if( !isDesktopFile( fi->absFilePath() ) ) {
-                        ++it;
-                        continue;
-                    }
-                    parseDesktopFile( fi, item, relPath );
-                }
-                ++it;
-            }
-        }
-    }
+      if (item)
+         newItem = new KAppTreeListItem( item, text, pixmap, false, isDir,
+                                         relPath, exec );
+      else
+         newItem = new KAppTreeListItem( this, text, pixmap, false, isDir,
+                                         relPath, exec );
+      if (isDir)
+         newItem->setExpandable( true );
+   }
 }
 
 
