@@ -129,12 +129,15 @@ Kidl_Identifier		[_a-zA-Z][a-zA-Z0-9_]*
 
 "/\*"           { comment_mode = 1; }
 "\*/"           { if (!comment_mode) { REJECT; } else { comment_mode = 0; } }
-"}"		{ if (!function_mode) { REJECT; } else {
+"}"		{   
+		    if (! comment_mode) {
+		    if (!function_mode) { REJECT; } else {
 			function_mode = 0;
 			return T_RIGHT_CURLY_BRACKET;
-		   }
+		    }
+		    }
 		}
-[^\n}*]*         { if (!comment_mode && !function_mode) { REJECT; } }
+[^\n}*]*        { if (!comment_mode && !function_mode) { REJECT; } }
 "*"             { if (!comment_mode) { REJECT; } }
 
 "//"[^\n]*		;
