@@ -49,6 +49,7 @@ private:
 	DrMain* loadMaticDriver(const QString&);
 	KURL parsePostpipe(const QString&);
 	QString createPostpipe(const KURL&);
+	bool savePpdFile(DrMain*, const QString&);
 
 private:
 	QString	m_exematicpath;

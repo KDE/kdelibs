@@ -561,3 +561,14 @@ Since 2.2 release, Michael Goffioul <goffioul@imec.be>
     still has to use the "Instances" tab.
   * ioslave: added support for print jobs browsing, per printer or for all
     printers together (-> print:/jobs)
+
+04/04/2002 Michael Goffioul <goffioul@imec.be>
+  * ioslave: added support to view the driver of a printer in HTML form
+    (print:/printers/lp1?driver)
+  * CUPS: allows editing of page-ranges for pending jobs, work around
+    small problem in CUPS.
+  * LPR:
+  	. added a "ppdfile" field in printcap file for Foomatic drivers
+	  with LPRng. This should make printers created with KDEPrint
+	  work with gpr (from GNUlpr)
+	. added support for "bool" directives in Foomatic drivers

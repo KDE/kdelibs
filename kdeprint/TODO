@@ -6,10 +6,6 @@ BUGS
 - Allow to view a set of specified printers in the job viewer
   (instead of "one or all").
 
-- LPRng: should create a PPD file for Foomatic and add the field
-  ppdfile=/etc/foomatic/<queue_name>.ppd to the printcap entry (for
-  use with gpr)
-
 
 WISHES
 ------
@@ -26,8 +22,6 @@ WISHES
 - add the possibility to view a printjob file (if possible)
 
 - possibility of a generic "tiling" feature (coreldraw)
-
-- fix the problem of page range in job edition dialog (CUPS)
 
 - restarting server: use of "ps" in a subshell to get the pid, possibility
   of authentification (put this into separate program that would restart

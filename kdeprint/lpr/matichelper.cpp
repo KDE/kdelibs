@@ -39,6 +39,8 @@ DrMain* maticToDriver(MaticBlock *blk)
 	DrMain	*driver = new DrMain;
 	driver->set("manufacturer", varblk->arg("make"));
 	driver->set("model", varblk->arg("model"));
+	driver->set("matic_driver", varblk->arg("driver"));
+	driver->set("matic_printer", varblk->arg("id"));
 	QString	desc = QString::fromLatin1("%1 %2 (%3)").arg(driver->get("manufacturer")).arg(driver->get("model")).arg(varblk->arg("driver"));
 	driver->set("text", desc);
 	if (!(desc = blk->arg("$postpipe")).isEmpty())
@@ -70,21 +72,40 @@ DrMain* maticToDriver(MaticBlock *blk)
 				opt->set("minval", it.current()->arg("min"));
 				opt->set("maxval", it.current()->arg("max"));
 			}
-			else if (type == "enum")
+			else if (type == "enum" || type == "bool")
 			{
-				MaticBlock	*valblk = it.current()->block("vals_byname");
-				if (!valblk)
-					continue;
-				DrListOption	*lopt = new DrListOption;
-				QDictIterator<MaticBlock>	it2(valblk->m_blocks);
-				for (; it2.current(); ++it2)
+				if (type == "enum")
 				{
-					DrBase	*ch = new DrBase;
-					ch->setName(it2.currentKey());
-					ch->set("text", it2.current()->arg("comment"));
-					lopt->addChoice(ch);
+					MaticBlock	*valblk = it.current()->block("vals_byname");
+					if (!valblk)
+						continue;
+					DrListOption	*lopt = new DrListOption;
+					QDictIterator<MaticBlock>	it2(valblk->m_blocks);
+					for (; it2.current(); ++it2)
+					{
+						DrBase	*ch = new DrBase;
+						ch->setName(it2.currentKey());
+						ch->set("text", it2.current()->arg("comment"));
+						lopt->addChoice(ch);
+					}
+					opt = lopt;
+					if (it.currentKey() == "PageSize")
+						loadPageSizes(driver, valblk);
 				}
-				opt = lopt;
+				else
+				{
+					DrBooleanOption	*bopt = new DrBooleanOption;
+					DrBase	*ch(0);
+					ch = new DrBase;
+					ch->setName("0");
+					ch->set("text", it.current()->arg("name_false"));
+					bopt->addChoice(ch);
+					ch = new DrBase;
+					ch->setName("1");
+					ch->set("text", it.current()->arg("name_true"));
+					bopt->addChoice(ch);
+					opt = bopt;
+				}
 				if (genname.find(it.currentKey()) != genname.end())
 				{
 					if (!gengrp)
@@ -105,8 +126,6 @@ DrMain* maticToDriver(MaticBlock *blk)
 					}
 					grp = othergrp;
 				}
-				if (it.currentKey() == "PageSize")
-					loadPageSizes(driver, valblk);
 			}
 
 			if (grp && opt)

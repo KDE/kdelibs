@@ -378,7 +378,74 @@ bool MaticHandler::savePrinterDriver(KMPrinter *prt, PrintcapEntry *entry, DrMai
 		manager()->setErrorMsg(i18n("You probably don't have the required permissions "
 		                            "to perform that operation."));
 	QFile::remove(tmpFile.name());
-	return result;
+	if (!result || entry->field("ppdfile").isEmpty())
+		return result;
+	else
+		return savePpdFile(driver, entry->field("ppdfile"));
+}
+
+bool MaticHandler::savePpdFile(DrMain *driver, const QString& filename)
+{
+	QString	mdriver(driver->get("matic_driver")), mprinter(driver->get("matic_printer"));
+	if (mdriver.isEmpty() || mprinter.isEmpty())
+		return true;
+
+	QString	PATH = getenv("PATH") + QString::fromLatin1(":/usr/sbin:/usr/local/sbin:/opt/sbin:/opt/local/sbin");
+	QString	exe = KStandardDirs::findExe("foomatic-datafile", PATH);
+	if (exe.isEmpty())
+	{
+		manager()->setErrorMsg(i18n("Unable to find the executable foomatic-datafile "
+		                            "in your PATH. Check that Foomatic is correctly installed."));
+		return false;
+	}
+
+	KPipeProcess	in;
+	QFile		out(filename);
+	if (in.open(exe + " -t cups -d " + mdriver + " -p " + mprinter) && out.open(IO_WriteOnly))
+	{
+		QTextStream	tin(&in), tout(&out);
+		QString	line, optname;
+		QRegExp	re("^\\*Default(\\w+):"), foo("'name'\\s+=>\\s+'(\\w+)'"), foo2("'\\w+'\\s*,\\s*$");
+		while (!tin.atEnd())
+		{
+			line = tin.readLine();
+			if (line.startsWith("*% COMDATA #"))
+			{
+				if (line.find("'default'") != -1)
+				{
+					DrBase	*opt = (optname.isEmpty() ? NULL : driver->findOption(optname));
+					if (opt)
+					{
+						line.replace(foo2, "'"+opt->valueText()+"',");
+					}
+				}
+				else if (foo.search(line) != -1)
+					optname = foo.cap(1);
+			}
+			else if (re.search(line) != -1)
+			{
+				DrBase	*opt = driver->findOption(re.cap(1));
+				if (opt)
+				{
+					QString	val = opt->valueText();
+					if (opt->type() == DrBase::Boolean)
+						val = (val == "1" ? "True" : "False");
+					tout << "*Default" << opt->name() << ": " << val << endl;
+					continue;
+				}
+			}
+			tout << line << endl;
+		}
+		in.close();
+		out.close();
+
+		return true;
+	}
+	manager()->setErrorMsg(i18n("Unable to create the Foomatic driver [%1,%2]. "
+	                            "Either that driver does not exist, or you don't have "
+	                            "the required permissions to perform that operation.").arg(mdriver).arg(mprinter));
+	
+	return false;
 }
 
 PrintcapEntry* MaticHandler::createEntry(KMPrinter *prt)
@@ -408,6 +475,7 @@ PrintcapEntry* MaticHandler::createEntry(KMPrinter *prt)
 	{
 		entry->addField("filter_options", Field::String, " --lprng $Z /etc/foomatic/lpd/"+prt->printerName()+".lom");
 		entry->addField("force_localhost", Field::Boolean);
+		entry->addField("ppdfile", Field::String, "/etc/foomatic/"+prt->printerName()+".ppd");
 	}
 	else
 		entry->addField("af", Field::String, "/etc/foomatic/lpd/"+prt->printerName()+".lom");
