@@ -38,9 +38,7 @@
 #include <stdio.h> // for FILE
 #include <qglobal.h>
 #include <qstring.h>
-
-typedef char HASH[16];
-typedef char HASHHEX[33];
+#include <qiodevice.h>
 
 /**
  * A wrapper class for the most commonly used encoding and
@@ -338,26 +336,27 @@ private:
  * functionality as the most commonly used C-implementation while
  * the other three constructors are meant to further simplify the
  * message digest calculations by calculating the result in one
- * single step.  Additionally, you have the ability to obtain the
- * result in either raw (16-bytes) or hexidecimal formats (33-bytes)
- * using @ref rawDigest and @ref hexDigest respectivelly, you can also
- * reuse a single instance to make multiple message digest calculations
- * by simply invoking @reset().
+ * single step.
+ * KMD5 is state-based, that means you can add new contents with
+ * update() as long as you didn't request the digest value yet.
+ * After the digest value was requested, the object is "finalized"
+ * and you have to call reset() to be able to do another calculation
+ * with it.
+ * The reason for this behaviour is that upon requesting the message
+ * digest KMD5 has to pad the received contents up to a 64 byte
+ * boundary to calculate its value. After this operation it is
+ * not possible to resume consuming data.
  *
- * @sect Useage:
+ * @sect Usage:
  *
- * A common useage of this class:
+ * A common usage of this class:
  *
  * <PRE>
- *  HASH rawResult;
- *  HASHHEX hexResult;
- *  QCString test1 = "This is a simple test.";
+ *  KMD5::Digest rawResult;
+ *  const char* test1 = "This is a simple test.";
  *
  *  KMD5 context( test1 );
- *  context.rawDigest( rawResult );
- *  context.hexDigest( hexResult );
- *  printf ( "Raw Digest output: %s", rawResult );
- *  printf ( "Hex Digest output: %s", hexResult );
+ *  printf ( "Hex Digest output: %s", context.hexDigest().data() );
  * </PRE>
  *
  * To cut down on the unnecessary overhead of creating multiple KMD5 objects,
@@ -366,238 +365,96 @@ private:
  *
  * <PRE>
  *  context.reset();
- *  context.update( QCString("TWO") );
- *  context.update( QCString("THREE") );
- *  printf ( "Raw Digest output: %s", static_cast<char*>(context.rawDigest()) );
- *  printf ( "Hex Digest output: %s", context.hexDigest() );
- * </PRE>
- *
- * NOTE: Invoke @ref reset() deletes the previously calculated message
- * digest value.  Thus, be sure to copy the previous result before you
- * reuse the same object!  Also, if you use one of the convienence
- * constructors you must first invoke reset(), before calling any of the
- * update functions.  Otherwise, the call to @ref update will fail.
- *
- * Here is an of KMD5 useage much along the same lines of how one would
- * use the commonly available C-implementations of the MD5 algorithm:
- *
- * <PRE>
- *  KMD5 context;
- *  context.update(QCString("ONE"));
- *  context.update(QCString("TWO"));
- *  context.update(QCString("THREE"));
- *  context.finalize();
- *  printf ( "Raw Digest output: %s", static_cast<char*>(context.rawDigest()) );
- *  printf ( "Hex Digest output: %s", context.hexDigest() );
+ *  context.update( "TWO" );
+ *  context.update( "THREE" );
+ *  printf ( "Hex Digest output: %s", context.hexDigest().data() );
  * </PRE>
  *
  * @short An adapted C++ implementation of RSA Data Securities MD5 algorithm.
- * @author Dawit Alemayehu <adawit@kde.org>
+ * @author Dirk Mueller <mueller@kde.org>, Dawit Alemayehu <adawit@kde.org>
  */
+
 class KMD5
 {
-
 public:
 
-  /**
-   * HEX    hexidecimal representation of the message digest
-   * BIN    binary representation of the message digest
-   */
-  enum DigestType { BIN, HEX };
+  typedef unsigned char Digest[16];
 
-  /**
-   * ERR_NONE                   no error occured. [default]
-   * ERR_ALREADY_FINALIZED      @ref finalize() has already been invoked.
-   * ERR_NOT_YET_FINALIZED      @ref hexDigest() or @ref rawDigest() invoked before @ref finalize().
-   * ERR_CANNOT_READ_FILE       indicates a problem while trying to read the given file.
-   * ERR_CANNOT_CLOSE_FILE      indicates a problem while trying to close the given file.
-   */
-  enum ErrorType { ERR_NONE, ERR_ALREADY_FINALIZED, ERR_NOT_YET_FINALIZED,
-                   ERR_CANNOT_READ_FILE, ERR_CANNOT_CLOSE_FILE };
-
-  /**
-   * Default constructor that only performs initialization.
-   * Unlike the other constructors
-   */
   KMD5();
 
   /**
-   * Constructor that initializes, computes, and finalizes
-   * the message digest for the given string.
+   * Constructor that updates the digest for the given string.
    *
-   * NOTE: This is a convience constructor.  It is provided to
-   * allow compatiability with the C implementation of this digest.
+   * @param in   C string or binary data
+   * @param len  if negative, calculates the length by using
+   *             strlen on the first parameter, otherwise
+   *             it trusts the given length (does not stop on NUL byte).
    */
-  KMD5(Q_UINT8 * in);
+  KMD5(const char* in, int len = -1);
 
   /**
-   * Constructor that initializes, computes, and finalizes
-   * the message digest for the given file.
+   * @overload
    *
-   * NOTE: This is a convience constructor.  As such it does
-   * not allow the update of the message after it has been
-   * invoked.  If you need to update the message after creating
-   * the constructor,
-   */
-  KMD5(FILE *file);
-
-  /**
    * Same as above except it accepts a QByteArray as its argument.
    */
   KMD5(const QByteArray& a );
 
-
   /**
-   * Same as above except it accepts a QCString as its argument.
-   */
-  KMD5(const QCString& in);
-
-  /**
-   * @deprcated.  Use @ref KMD5(const QCString& in) instead!
+   * @overload
    *
-   * <u>IMPORTANT:</u> This constructor has been depricated and
-   * will be removed in future release.  This is done to avoid
-   * loss of data from misuse of the function since it first
-   * converts the given data into Latin-1.  Additionally, this
-   * conversion is very slow!
+   * Same as above except it accepts a QByteArray as its argument.
    */
-  KMD5(const QString& in);
+  KMD5(const QCString& a );
 
   /**
-   * Updates the message to be digested.
+   * Updates the message to be digested. Be sure to add all data
+   * before you read the digest. After reading the digest, you
+   * can <b>not</b> add more data!
+   *
+   * @param input  message to be added to digest
+   * @param len    the length of the given message.
+   */
+  void update(const char* in, int len = -1) { update(reinterpret_cast<const unsigned char*>(in), len); }
+  void update(const unsigned char* in, int len = -1);
+
+  /**
+   * @overload
    *
    * @param input  message to be added to the digest (QByteArray).
    */
-  void update (const QByteArray& in );
+  void update(const QByteArray& in );
 
   /**
-   * Same as above except it accepts a pointer to FILE.
+   * @overload
    *
-   * NOTE that the file must have been already opened.  If you
-   * want the file to be automatically closed, set @p closeFile
-   * to TRUE.
+   * @param input  message to be added to the digest (QByteArray).
+   */
+  void update(const QCString& in );
+
+  /**
+   * @overload
+   *
+   * reads the data from an I/O device, i.e. from a file (QFile).
+   *
+   * NOTE that the file must be open for reading.
    *
    * @param file       a pointer to FILE as returned by calls like f{d,re}open
-   * @param closeFile  if true closes the file using fclose.
+   *
+   * @returns false if an error occured during reading.
    */
-  void update (FILE *file, bool closeFile = false );
+  bool update(QIODevice& file);
 
   /**
-   * Updates the message to be digested.
-   *
-   * @param input  message to be added to digest (unsigned char*)
-   * @param len    the length of the given message.
-   */
-  void update (Q_UINT8 * in, int len = -1 );
-
-  /**
-   * Same as above except it accepts a QCString as its argument.
-   */
-  void update ( const QCString& in );
-
-  /**
-   * Same as above except it accepts a QString as its argument.
-   *
-   * <u>IMPORTANT:</u> This function is ONLY provided for convenience
-   * and backward compatability!  Using it can result in an incorrect
-   * digest caclculation since the conversion of the QString input to
-   * latin-1 can and will result in data loss if the input data contains
-   * non-latin1 characters.  As such it is highly recommended that you
-   * avoid this function unless you are absolutely certain that your
-   * input does not contain any non-latin1 character!!
-   */
-  void update ( const QString& in );
-
-  /**
-   * Finalizes the message digest calculation.
-   *
-   * If you used the default constructor, you must invoke this function
-   * before you can obtain the calculated digest value.
-   */
-  void finalize();
-
-  /**
-   * Compares the message digest supplied messaged digest @p msg_digest
-   * with the one calculated for the input QCString @p input.
-   *
-   * @em NOTE: Calling this function will reset any previously calcualted
-   * digests.  If you want to verify your token with the current digest
-   * value, use @ref verify( const char*, DigestType ) instead.
-   *
-   * @param input       the message to be added to the digest value
-   * @param msg_digest  the digest to compare the result against
-   * @param type        the format of the result for comparison (binary or hexidecimal).
-   *
-   * @return true if the digests match, otherwise false.
-   */
-  bool verify( const QCString& in, const char * msg_digest,
-               DigestType type = HEX );
-
-  /**
-   * Same as above except it takes a QString argument as its input.
-   *
-   * @em IMPORTANT: This function is ONLY provided for convenience
-   * and backward compatability!  Using it can result in an incorrect
-   * verification since the conversion of the QString input to latin-1
-   * can and will result in data loss if the input data contains non-
-   * latin1 characters.  As such it is highly recommended that you
-   * avoid this function unless you are absolutely certain that your
-   * input does not contain any non-latin1 character!!
-   */
-  bool verify( const QString& in, const char * msg_digest,
-               DigestType type = HEX );
-
-  /**
-   * Same as above except it takes a pointer to a FILE as its input.
-   *
-   * @em NOTE: Calling this function will reset any previously
-   * calcualted digests.  If you want to verify your token with the
-   * current digest value, use @ref verify(const char*, DigestType)
-   * instead.
-   */
-  bool verify( FILE* f, const char * msg_digest, DigestType type = HEX );
-
-  /**
-   * Compares the given string with with the current message digest.
-   *
-   * Unlike the other verification functions this one does not reset
-   * the calculated message digest if one is already present.  Rather
-   * it simply compares the given digest value against the calculated
-   * one.
-   *
-   * @em NOTE: This function will return false if there was an error
-   * calculating the message digest as well as when the verification
-   * fails. You can use @ref hasErrored() to determine which is the case.
-   *
-   * @param msg_digest  the digest to compare the result against
-   * @param type        the format of the result for comparison (binary
-   *                    or hexidecimal).
-   *
-   * @return true if the digests match, otherwise false.
-   */
-  bool verify( const char* msg_digest, DigestType type = HEX );
-
-  /**
-   *  Re-initializes internal paramters.
-   *
-   * Note that calling this function will reset all internal variables
-   * and hence any calculated message digest.  Invoke this function only
-   * when you reuse the same object to perform another message digest
-   * calculation.
+   * Calling this function will reset the calculated message digest.
+   * Use this method to perform another message digest calculation
+   * without recreating the KMD5 object.
    */
   void reset();
 
   /**
-   * Returns the raw 16-byte binary value of the message
-   * digest.
-   *
-   * NOTE: you are responsible for making a copy of this
-   * string.
-   *
-   * @return the raw represenation of the digest or NULL
-   *         if there was error calculating the digest.
+   * @return the raw represenation of the digest
    */
-  Q_UINT8* rawDigest ();
+  const Digest& rawDigest ();
 
   /**
    * Fills the given array with the binary representation of the
@@ -608,75 +465,44 @@ public:
    *
    * @param bin an array of 16 characters ( char[16] )
    */
-  void rawDigest( HASH bin );
+  void rawDigest( KMD5::Digest& bin );
 
   /**
    * Returns the value of the calculated message digest in
    * a hexcidecimal representation.
-   *
-   * The 32-byte hexidecimal value is terminated by a NULL
-   * character to form a properly terminated string.  Also
-   * note that that if
-   *
-   * NOTE: You are responsible for making a copy of
-   * this string!
-   *
-   * @return the hex represenation of the digest or NULL if
-   *         there was error calculating the digest.
    */
-  char * hexDigest ();
+  QCString hexDigest ();
 
   /**
-   * Fills the given array with the hexcidecimal representation of
-   * the message digest.
-   *
-   * Use this method if you do not want to worry about making
-   * copy of the digest once you obtain it.  Also note that this
-   * method appends a NULL charater to the end of the array to
-   * form a properly terminated string.  This is the reason why
-   * the hexDigest is 33 characters long.
-   *
-   * @param bin an array of 33 characters ( char[33] )
+   * @overload
    */
-  void hexDigest( HASHHEX hex );
+  void hexDigest(QCString&);
 
   /**
-   * Indicates whether the message digest calculation failed or
-   * succeeded.  Use @ref error() to determine the error type.
-   *
-   * @return false if errors are present, otherwise true
+   * returns true if the calculated digest for the given
+   * message matches the given one.
    */
-  bool hasErrored() const { return (m_error != ERR_NONE); }
-
-  /**
-   * Returns the type of error that occurred.
-   *
-   * @return the error type. See @ref ErrorType for details.
-   */
-  int error() const { return m_error; }
+  bool verify( const KMD5::Digest& digest);
 
 protected:
-
-  /**
-   *  Initializer called by all constructors
-   */
-  void init();
-
   /**
    *  Performs the real update work.  Note
    *  that length is implied to be 64.
    */
-  void transform( Q_UINT8 * buffer );
+  void transform( const unsigned char* buffer );
 
   /**
-   * Returns true if the current message digest matches @p msg_digest.
+   * finalizes the digest
    */
-  bool isDigestMatch( const char * msg_digest, DigestType type );
+  void finalize();
 
 private:
+  KMD5(const KMD5& u);
+  KMD5& operator=(const KMD5& md);
 
-  void encode( Q_UINT8 *output, Q_UINT32 *in, Q_UINT32 len );
-  void decode( Q_UINT32 *output, Q_UINT8 *in, Q_UINT32 len );
+  void init();
+  void encode( unsigned char* output, Q_UINT32 *in, Q_UINT32 len );
+  void decode( Q_UINT32 *output, const unsigned char* in, Q_UINT32 len );
 
   Q_UINT32 rotate_left( Q_UINT32 x, Q_UINT32 n );
   Q_UINT32 F( Q_UINT32 x, Q_UINT32 y, Q_UINT32 z );
@@ -696,8 +522,7 @@ private:
   Q_UINT32 m_state[4];
   Q_UINT32 m_count[2];
   Q_UINT8 m_buffer[64];
-  Q_UINT8 m_digest[16];
-  ErrorType m_error;
+  Digest m_digest;
   bool m_finalized;
 
   struct KMD5Private;

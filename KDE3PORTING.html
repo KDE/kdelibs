@@ -86,6 +86,12 @@ to createObject and remove the 'emit objectCreated( yourObject );' line.
 Because of the QStyle rewrite our old extensions have been dropped
 in order to have styles that fully integrate in KDE and Qt applications
 
+<H4>KMD5</H4>
+HASHHEX and HASH has been removed to make this class namespace clean. 
+They have been replaced by QCString and KMD5::Digest. <br>
+The API has been cleaned up, it is no longer necessary to call finalize(). 
+Simply remove any calls to it. 
+
 <H4>KLocale</H4>
 <li>charset() has been removed. You might want to use encoding() instead.
 <li>setCharset(const QString &) has been removed. You might want to use

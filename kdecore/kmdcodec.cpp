@@ -747,74 +747,51 @@ KMD5::KMD5()
     init();
 }
 
-KMD5::KMD5( Q_UINT8 *in )
+KMD5::KMD5(const char *in, int len)
 {
     init();
-    update( in, qstrlen(reinterpret_cast<char *>(in)) );
-    finalize();
+    update(in, len);
 }
 
-KMD5::KMD5( const QCString& in )
-{
-    init();
-    update( in );
-    finalize();
-}
-
-KMD5::KMD5( const QString& in )
+KMD5::KMD5(const QByteArray& in)
 {
     init();
     update( in );
-    finalize();
 }
 
-KMD5::KMD5( const QByteArray& in )
+KMD5::KMD5(const QCString& in)
 {
     init();
     update( in );
-    finalize();
 }
 
-KMD5::KMD5(FILE *f)
+void KMD5::update(const QByteArray& in)
 {
-    init();
-    update( f, true );
-    finalize ();
+    update(in.data(), int(in.size()));
 }
 
-void KMD5::update ( const QString& str )
+void KMD5::update(const QCString& in)
 {
-    QByteArray in;
-    in.setRawData( str.latin1(), str.length() );
-    update( in );
-    in.resetRawData( str.latin1(), str.length() );
+    update(in.data(), int(in.length()));
 }
 
-void KMD5::update ( const QCString& in )
+void KMD5::update(const unsigned char* in, int len)
 {
-    update( reinterpret_cast<Q_UINT8 *>(in.data()) );
-}
+    if (len < 0)
+        len = qstrlen(reinterpret_cast<const char*>(in));
 
-void KMD5::update( const QByteArray& in )
-{
-    update( reinterpret_cast<Q_UINT8 *>(in.data()), in.size() );
-}
+    if (!len)
+        return;
 
-void KMD5::update( Q_UINT8 *in, int len )
-{
-    if ( len == -1 )
-        len = qstrlen( reinterpret_cast<char *>(in) );
+    if (m_finalized) {
+        kdWarning() << "KMD5::update called after state was finalized!" << endl;
+        return;
+    }
 
     Q_UINT32 in_index;
     Q_UINT32 buffer_index;
     Q_UINT32 buffer_space;
     Q_UINT32 in_length = static_cast<Q_UINT32>( len );
-
-    if (m_finalized)
-    {
-        m_error = ERR_ALREADY_FINALIZED;
-        return;
-    }
 
     buffer_index = static_cast<Q_UINT32>((m_count[0] >> 3) & 0x3F);
 
@@ -831,7 +808,7 @@ void KMD5::update( Q_UINT8 *in, int len )
 
         for (in_index = buffer_space; in_index + 63 < in_length;
              in_index += 64)
-            transform (in+in_index);
+            transform (reinterpret_cast<const unsigned char*>(in+in_index));
 
         buffer_index = 0;
     }
@@ -841,32 +818,24 @@ void KMD5::update( Q_UINT8 *in, int len )
     memcpy(m_buffer+buffer_index, in+in_index, in_length-in_index);
 }
 
-void KMD5::update( FILE *file, bool closeFile )
+bool KMD5::update(QIODevice& file)
 {
-    Q_UINT8 buffer[1024];
+    char buffer[1024];
     int len;
 
-    while ((len=fread(buffer, 1, 1024, file)))
+    while ((len=file.readBlock(reinterpret_cast<char*>(buffer), sizeof(buffer))) > 0)
         update(buffer, len);
 
-    // Check if we got to this point because
-    // we reached EOF or an error.
-    if ( !feof( file ) )
-    {
-        m_error = ERR_CANNOT_READ_FILE;
-        return;
-    }
-
-    // Close the file iff the flag is set.
-    if ( closeFile && fclose (file) )
-        m_error = ERR_CANNOT_CLOSE_FILE;
+    return file.atEnd();
 }
 
 void KMD5::finalize ()
 {
+    if (m_finalized) return;
+
     Q_UINT8 bits[8];
     Q_UINT32 index, padLen;
-    static Q_UINT8 PADDING[64]=
+    static unsigned char PADDING[64]=
     {
         0x80, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -874,22 +843,16 @@ void KMD5::finalize ()
         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
     };
 
-    if (m_finalized)
-    {
-        m_error = ERR_ALREADY_FINALIZED;
-        return;
-    }
-
     //encode (bits, m_count, 8);
     memcpy( bits, m_count, 8 );
 
     // Pad out to 56 mod 64.
     index = static_cast<Q_UINT32>((m_count[0] >> 3) & 0x3f);
     padLen = (index < 56) ? (56 - index) : (120 - index);
-    update (PADDING, padLen);
+    update (reinterpret_cast<const char*>(PADDING), padLen);
 
     // Append length (before padding)
-    update (bits, 8);
+    update (reinterpret_cast<const char*>(bits), 8);
 
     // Store state in digest
     //encode (m_digest, m_state, 16);
@@ -901,91 +864,57 @@ void KMD5::finalize ()
     m_finalized = true;
 }
 
-void KMD5::reset()
-{
-    init();
-}
 
-bool KMD5::verify( const char * msg_digest, DigestType type )
+bool KMD5::verify( const KMD5::Digest& digest)
 {
-    if ( !m_finalized || !m_digest || m_error != ERR_NONE )
-      return false;
-    return isDigestMatch( msg_digest,  type );
-}
-
-bool KMD5::verify( FILE* f, const char * msg_digest, DigestType type )
-{
-    init();
-    update( f );
     finalize();
-    return isDigestMatch( msg_digest,  type );
+    return (0 == memcmp(rawDigest(), digest, sizeof(KMD5::Digest)));
 }
 
-bool KMD5::verify( const QCString& in, const char * msg_digest,
-                   DigestType type )
+const KMD5::Digest& KMD5::rawDigest()
 {
-    init();
-    update( in );
     finalize();
-    return isDigestMatch( msg_digest,  type );
+    return m_digest;
 }
 
-bool KMD5::verify( const QString& in, const char * msg_digest,
-                   DigestType type )
+void KMD5::rawDigest( KMD5::Digest& bin )
 {
-    init();
-    update( in );
     finalize();
-    return isDigestMatch( msg_digest,  type );
-}
-
-Q_UINT8* KMD5::rawDigest()
-{
-    Q_UINT8* s = new Q_UINT8[16];
-    rawDigest( reinterpret_cast<char *>(s) );
-    if ( m_error == ERR_NONE )
-        return s;
-    else
-        return '\0';
-}
-
-void KMD5::rawDigest( HASH bin )
-{
-    if (!m_finalized)
-    {
-        m_error = ERR_NOT_YET_FINALIZED;
-        return;
-    }
     memcpy( bin, m_digest, 16 );
 }
 
-char * KMD5::hexDigest()
+
+QCString KMD5::hexDigest()
 {
-    char *s = new char[33];
-    hexDigest( s );
-    if ( m_error == ERR_NONE )
-        return s;
-    else
-        return 0;
+    QCString s(33);
+
+    finalize();
+    sprintf(s.data(), "%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x",
+            m_digest[0], m_digest[1], m_digest[2], m_digest[3], m_digest[4], m_digest[5],
+            m_digest[6], m_digest[7], m_digest[8], m_digest[9], m_digest[10], m_digest[11],
+            m_digest[12], m_digest[13], m_digest[14], m_digest[15]);
+
+    return s;
 }
 
-void KMD5::hexDigest( HASHHEX hex )
+void KMD5::hexDigest(QCString& s)
 {
-    if (!m_finalized)
-    {
-        m_error = ERR_NOT_YET_FINALIZED;
-        return;
-    }
-
-    for (int i=0; i<16; i++)
-        sprintf(hex+i*2, "%02x", m_digest[i]);
-    hex[32]='\0';
+    s.resize(33);
+    sprintf(s.data(), "%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x",
+            m_digest[0], m_digest[1], m_digest[2], m_digest[3], m_digest[4], m_digest[5],
+            m_digest[6], m_digest[7], m_digest[8], m_digest[9], m_digest[10], m_digest[11],
+            m_digest[12], m_digest[13], m_digest[14], m_digest[15]);
 }
 
 void KMD5::init()
 {
+    d = 0;
+    reset();
+}
+
+void KMD5::reset()
+{
     m_finalized = false;
-    m_error = ERR_NONE;
 
     m_count[0] = 0;
     m_count[1] = 0;
@@ -995,31 +924,11 @@ void KMD5::init()
     m_state[2] = 0x98badcfe;
     m_state[3] = 0x10325476;
 
-    memset ( static_cast<void *>(m_buffer), 0, sizeof(*m_buffer));
-    memset ( static_cast<void *>(m_digest), 0, sizeof(*m_digest));
+    memset ( m_buffer, 0, sizeof(*m_buffer));
+    memset ( m_digest, 0, sizeof(*m_digest));
 }
 
-bool KMD5::isDigestMatch( const char * msg_digest, DigestType type )
-{
-    bool result = false;
-
-    switch (type)
-    {
-        case HEX:
-            if ( ::qstrcmp( hexDigest(), msg_digest ) == 0 )
-                result = true;
-            break;
-        case BIN:
-            if ( ::qstrcmp( reinterpret_cast<char *>(rawDigest()), msg_digest ) == 0 )
-                result = true;
-            break;
-        default:
-            break;
-    }
-    return result;
-}
-
-void KMD5::transform( Q_UINT8 block[64] )
+void KMD5::transform( const unsigned char block[64] )
 {
 
     Q_UINT32 a = m_state[0], b = m_state[1], c = m_state[2], d = m_state[3], x[16];
@@ -1162,7 +1071,7 @@ void KMD5::II ( Q_UINT32& a, Q_UINT32 b, Q_UINT32 c, Q_UINT32 d,
 }
 
 
-void KMD5::encode ( Q_UINT8 *output, Q_UINT32 *in, Q_UINT32 len )
+void KMD5::encode ( unsigned char* output, Q_UINT32 *in, Q_UINT32 len )
 {
 #if !defined(WORDS_BIGENDIAN)
     memcpy(output, in, len);
@@ -1181,7 +1090,7 @@ void KMD5::encode ( Q_UINT8 *output, Q_UINT32 *in, Q_UINT32 len )
 
 // Decodes in (Q_UINT8) into output (Q_UINT32). Assumes len is a
 // multiple of 4.
-void KMD5::decode (Q_UINT32 *output, Q_UINT8 *in, Q_UINT32 len)
+void KMD5::decode (Q_UINT32 *output, const unsigned char* in, Q_UINT32 len)
 {
 #if !defined(WORDS_BIGENDIAN)
     memcpy(output, in, len);
