@@ -94,6 +94,12 @@ HTTP-Version		string	The HTTP version in use for kio_http
 
 HTTP-Headers		string	The HTTP headers, concatenated, \n delimited
 
+PrivacyPolicy		stringlist  \n delimited URIs referring to P3P privacy
+                                policies presented by the HTTP server
+
+PrivacyCompactPolicy	stringlist  \n delimited P3P compact tag policies
+                                presented by the HTTP server
+
 ** NOTE: Anything in quotes ("") under Value(s) indicates literal value.
 
 
