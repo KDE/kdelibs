@@ -3286,6 +3286,8 @@ void DeleteJob::slotResult( Job *job )
       {
          // Try deleting nonetheless, it may be empty (and non-listable)
       }
+      subjobs.remove( job );
+      assert( subjobs.isEmpty() );
       ++m_currentStat;
       statNextSrc();
       break;
