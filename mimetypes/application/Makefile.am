@@ -51,8 +51,8 @@ mimetypeapplicationdata_DATA = x-dvi.desktop x-gzdvi.desktop x-bz2dvi.desktop \
 	vnd.stardivision.chart.desktop vnd.stardivision.draw.desktop \
 	vnd.stardivision.math.desktop vnd.stardivision.writer-global.desktop vnd.sun.xml.writer.master.desktop \
 	x-xliff.desktop x-7z.desktop xml.desktop x-webarchive.desktop  x-mimearchive.desktop \
-	vnd.oasis.opendocument.drawing-template.desktop \
-	vnd.oasis.opendocument.drawing.desktop \
+	vnd.oasis.opendocument.graphics-template.desktop \
+	vnd.oasis.opendocument.graphics.desktop \
 	vnd.oasis.opendocument.formula.desktop \
 	vnd.oasis.opendocument.presentation-template.desktop \
 	vnd.oasis.opendocument.presentation.desktop \
