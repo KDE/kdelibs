@@ -599,6 +599,8 @@ void KEditToolbarWidget::setupLayout()
   inactive_label->setBuddy(m_inactiveList);
   connect(m_inactiveList, SIGNAL(selectionChanged(QListViewItem *)),
           this,           SLOT(slotInactiveSelected(QListViewItem *)));
+  connect(m_inactiveList, SIGNAL( doubleClicked( QListViewItem *, const QPoint &, int  )),
+          this,           SLOT(slotInsertButton()));
 
   // our list of active actions
   QLabel *active_label = new QLabel(i18n("Curr&ent actions:"), this);
@@ -613,6 +615,8 @@ void KEditToolbarWidget::setupLayout()
 
   connect(m_activeList, SIGNAL(selectionChanged(QListViewItem *)),
           this,         SLOT(slotActiveSelected(QListViewItem *)));
+  connect(m_activeList, SIGNAL( doubleClicked( QListViewItem *, const QPoint &, int  )),
+          this,           SLOT(slotRemoveButton()));
 
   // "change icon" button
   d->m_changeIcon = new KPushButton( i18n( "Change &Icon..." ), this );
