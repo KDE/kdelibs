@@ -82,7 +82,7 @@ KJSObject* ObjectConstructor::construct(KJSList *args)
     return result;
   }
 
-  KJSO *arg = args->begin().object();
+  KJSO *arg = args->begin();
   if (arg->isA(Object)) {
     /* TODO: handle host objects */
     KJSObject *obj = static_cast<KJSObject*>(arg->ref());

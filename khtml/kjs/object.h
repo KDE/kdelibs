@@ -174,7 +174,8 @@ class KJSListIterator {
 public:
   KJSListIterator(KJSListNode *n) : node(n) { }
 
-  KJSO *object() const { return node->member; }
+  KJSO* operator->() const { return node->member; }
+  operator KJSO*() const { return node->member; }
   KJSListNode* operator++() { node = node->next; return node; }
   KJSListNode* operator++(int) { KJSListNode *n = node; ++*this; return n; }
   KJSListNode* operator--() { node = node->prev; return node; }

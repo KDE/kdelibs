@@ -103,10 +103,9 @@ KJSO *ResolveNode::evaluate()
   KJSListIterator scope = chain->begin();
 
   while (scope != chain->end()) {
-    KJSO *obj = scope.object();
-    if (obj->hasProperty(ident)) {
+    if (scope->hasProperty(ident)) {
       //      cout << "Resolve: found '" << ident.ascii() << "'" << endl;
-      return new KJSReference(obj, ident);
+      return new KJSReference(scope, ident);
     }
     scope++;
   }

@@ -67,7 +67,7 @@ KJSObject* BooleanConstructor::construct(KJSList *args)
 {
   Ptr b;
   if (args->size() > 0)
-    b = toBoolean(args->begin().object());
+    b = toBoolean(args->begin());
   else
     b = new KJSBoolean(false);
 

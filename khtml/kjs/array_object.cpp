@@ -68,13 +68,13 @@ KJSObject* ArrayConstructor::construct(KJSList *args)
   unsigned int len;
   KJSListIterator it = args->begin();
   // a single argument might denote the array size
-  if (args->size() == 1 && it.object()->isA(Number))
-    len = toUInt32(it.object());
+  if (args->size() == 1 && it->isA(Number))
+    len = toUInt32(it);
   else {
     // initialize array
     len = args->size();
     for (unsigned int u = 0; it != args->end(); it++, u++)
-      result->put(CString(u), it.object());
+      result->put(CString(u), it);
   }
 
   // array size
