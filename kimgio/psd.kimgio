@@ -1,0 +1,10 @@
+[Image Format]
+Type=PSD
+Header=^8BPS
+Name=PhotoShop Document
+Read=true
+Write=false
+Suffices=psd,PSD
+Mimetype=image/x-psd
+Library=kimg_psd.la
+ 
