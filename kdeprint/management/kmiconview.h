@@ -33,17 +33,17 @@ class KMIconViewItem : public QIconViewItem, public KMObject
 {
 public:
 	KMIconViewItem(QIconView *parent, KMPrinter *p);
-	KMPrinter* printer() const	{ return m_printer; }
 	void updatePrinter(KMPrinter *printer = 0, int mode = QIconView::Bottom);
+	bool isClass() const	{ return m_isclass; }
 
 protected:
 	virtual void paintItem(QPainter*, const QColorGroup&);
 
 private:
-	KMPrinter	*m_printer;
 	int		m_mode;
 	QString		m_pixmap;
 	char		m_state;
+	bool		m_isclass;
 };
 
 class KMIconView : public KIconView
@@ -56,12 +56,13 @@ public:
 	~KMIconView();
 
 	void setPrinterList(QPtrList<KMPrinter> *list);
+	void setPrinter(const QString&);
 	void setPrinter(KMPrinter*);
 	void setViewMode(ViewMode);
 
 signals:
-	void rightButtonClicked(KMPrinter*, const QPoint&);
-	void printerSelected(KMPrinter*);
+	void rightButtonClicked(const QString&, const QPoint&);
+	void printerSelected(const QString&);
 
 protected slots:
 	void slotRightButtonClicked(QIconViewItem*, const QPoint&);

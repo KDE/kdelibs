@@ -70,6 +70,7 @@ protected slots:
 	void slotClose();
 	void slotShowMoveMenu();
 	void slotShowPrinterMenu();
+	void slotUserOnly(bool);
 
 protected:
 	void init();
@@ -82,7 +83,7 @@ protected:
 	void loadPluginActions();
 	void removePluginActions();
 	void reload();
-	void aboutToReload();
+	//void aboutToReload();
 	void closeEvent(QCloseEvent*);
 	void triggerRefresh();
 	void addToManager();
@@ -98,6 +99,7 @@ private:
 	QPtrList<KMPrinter>	m_printers;
 	QString	m_prname;
 	int	m_type;
+	QString	m_username;
 };
 
 inline QString KMJobViewer::printer() const

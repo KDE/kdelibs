@@ -74,8 +74,8 @@ public slots:
 	void slotToggleFilter(bool);
 
 protected slots:
-	void slotPrinterSelected(KMPrinter*);
-	void slotRightButtonClicked(KMPrinter*, const QPoint&);
+	void slotPrinterSelected(const QString&);
+	void slotRightButtonClicked(const QString&, const QPoint&);
 	void slotToggleToolBar(bool);
 	void slotChangeView(int);
 	void slotChangeDirection(int);
@@ -88,7 +88,7 @@ protected:
 	void loadParameters();
 	void reload();
 	void configChanged();
-	void aboutToReload();
+	//void aboutToReload();
 	void loadPluginActions();
 	void removePluginActions();
 

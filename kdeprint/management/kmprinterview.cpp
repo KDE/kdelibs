@@ -24,6 +24,7 @@
 #include "kmiconview.h"
 #include "kmlistview.h"
 #include "kmtimer.h"
+#include "kmmanager.h"
 
 #include <qlayout.h>
 #include <qpopupmenu.h>
@@ -33,19 +34,18 @@
 KMPrinterView::KMPrinterView(QWidget *parent, const char *name)
 : QWidgetStack(parent,name), m_type(KMPrinterView::Icons)
 {
-	m_printers = 0;
 	m_iconview = new KMIconView(this);
 	addWidget(m_iconview,0);
 	m_listview = new KMListView(this);
 	addWidget(m_listview,1);
-	m_current = 0;
+	m_current = QString::null;
 
-	connect(m_iconview,SIGNAL(rightButtonClicked(KMPrinter*,const QPoint&)),SIGNAL(rightButtonClicked(KMPrinter*,const QPoint&)));
-	connect(m_listview,SIGNAL(rightButtonClicked(KMPrinter*,const QPoint&)),SIGNAL(rightButtonClicked(KMPrinter*,const QPoint&)));
-	connect(m_iconview,SIGNAL(printerSelected(KMPrinter*)),SIGNAL(printerSelected(KMPrinter*)));
-	connect(m_listview,SIGNAL(printerSelected(KMPrinter*)),SIGNAL(printerSelected(KMPrinter*)));
-	connect(m_iconview,SIGNAL(printerSelected(KMPrinter*)),SLOT(slotPrinterSelected(KMPrinter*)));
-	connect(m_listview,SIGNAL(printerSelected(KMPrinter*)),SLOT(slotPrinterSelected(KMPrinter*)));
+	connect(m_iconview,SIGNAL(rightButtonClicked(const QString&,const QPoint&)),SIGNAL(rightButtonClicked(const QString&,const QPoint&)));
+	connect(m_listview,SIGNAL(rightButtonClicked(const QString&,const QPoint&)),SIGNAL(rightButtonClicked(const QString&,const QPoint&)));
+	connect(m_iconview,SIGNAL(printerSelected(const QString&)),SIGNAL(printerSelected(const QString&)));
+	connect(m_listview,SIGNAL(printerSelected(const QString&)),SIGNAL(printerSelected(const QString&)));
+	connect(m_iconview,SIGNAL(printerSelected(const QString&)),SLOT(slotPrinterSelected(const QString&)));
+	connect(m_listview,SIGNAL(printerSelected(const QString&)),SLOT(slotPrinterSelected(const QString&)));
 
 	setViewType(m_type);
 	setSizePolicy( QSizePolicy( QSizePolicy::Expanding, QSizePolicy::Expanding ) );
@@ -57,11 +57,10 @@ KMPrinterView::~KMPrinterView()
 
 void KMPrinterView::setPrinterList(QPtrList<KMPrinter> *list)
 {
-	m_printers = list;
 	if (m_type != KMPrinterView::Tree || list == 0)
-		m_iconview->setPrinterList(m_printers);
+		m_iconview->setPrinterList(list);
 	if (m_type == KMPrinterView::Tree || list == 0)
-		m_listview->setPrinterList(m_printers);
+		m_listview->setPrinterList(list);
 }
 
 void KMPrinterView::setViewType(ViewType t)
@@ -78,8 +77,8 @@ void KMPrinterView::setViewType(ViewType t)
 		default:
 			break;
 	}
-	KMPrinter	*oldcurrent = m_current;
-	setPrinterList(m_printers);
+	QString	oldcurrent = m_current;
+	setPrinterList(KMManager::self()->printerList(false));
 	if (m_type == KMPrinterView::Tree)
 	{
 		raiseWidget(m_listview);
@@ -92,7 +91,7 @@ void KMPrinterView::setViewType(ViewType t)
 	}
 }
 
-void KMPrinterView::slotPrinterSelected(KMPrinter *p)
+void KMPrinterView::slotPrinterSelected(const QString& p)
 {
 	m_current = p;
 }

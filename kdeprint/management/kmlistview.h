@@ -36,11 +36,12 @@ public:
 	~KMListView();
 
 	void setPrinterList(QPtrList<KMPrinter> *list);
+	void setPrinter(const QString&);
 	void setPrinter(KMPrinter*);
 
 signals:
-	void rightButtonClicked(KMPrinter*, const QPoint&);
-	void printerSelected(KMPrinter*);
+	void rightButtonClicked(const QString&, const QPoint&);
+	void printerSelected(const QString&);
 
 protected slots:
 	void slotRightButtonClicked(QListViewItem*, const QPoint&, int);

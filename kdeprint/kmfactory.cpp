@@ -372,8 +372,8 @@ void KMFactory::slot_configChanged()
 
 	// notify all registered objects about the coming reload
 	QPtrListIterator<KPReloadObject>	it(m_objects);
-	for (;it.current();++it)
-		it.current()->aboutToReload();
+	/*for (;it.current();++it)
+		it.current()->aboutToReload();*/
 
 	// notify all object about the change
 	for (it.toFirst(); it.current();++it)

@@ -46,18 +46,17 @@ public:
 	QSize minimumSizeHint() const;
 
 signals:
-	void printerSelected(KMPrinter*);
-	void rightButtonClicked(KMPrinter*, const QPoint&);
+	void printerSelected(const QString&);
+	void rightButtonClicked(const QString&, const QPoint&);
 
 protected slots:
-	void slotPrinterSelected(KMPrinter*);
+	void slotPrinterSelected(const QString&);
 
 private:
-	KMIconView		*m_iconview;
-	KMListView		*m_listview;
-	ViewType		m_type;
-	QPtrList<KMPrinter>	*m_printers;
-	KMPrinter		*m_current;
+	KMIconView	*m_iconview;
+	KMListView	*m_listview;
+	ViewType	m_type;
+	QString		m_current;
 };
 
 #endif

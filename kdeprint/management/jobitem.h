@@ -31,6 +31,7 @@ class JobItem : public QListViewItem, public KMObject
 {
 public:
 	JobItem(QListView *parent, KMJob *job = 0);
+	~JobItem();
 	void init(KMJob *job);
 	int compare(QListViewItem*, int, bool) const;
 

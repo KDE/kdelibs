@@ -44,6 +44,7 @@
 #include <kwin.h>
 #include <qtimer.h>
 #include <qlayout.h>
+#include <stdlib.h>
 
 #undef m_manager
 #define	m_manager	KMFactory::self()->jobManager()
@@ -152,7 +153,8 @@ void KMJobViewer::refresh(bool reload)
 	for (; it.current(); ++it)
 		if ((all || it.current()->printer() == m_prname)
 		    && ((it.current()->state() >= KMJob::Cancelled && !active)
-			    || (it.current()->state() < KMJob::Cancelled && active)))
+			    || (it.current()->state() < KMJob::Cancelled && active))
+		    && (m_username.isEmpty() || m_username == it.current()->owner()))
 			m_jobs.append(it.current());
 	updateJobs();
 	slotSelectionChanged();
@@ -209,6 +211,8 @@ void KMJobViewer::initActions()
 	KToggleAction	*tact = new KToggleAction(i18n("Toggle Completed Jobs"),"history",0,actionCollection(),"view_completed");
 	tact->setEnabled(m_manager->actions() & KMJob::ShowCompleted);
 	connect(tact,SIGNAL(toggled(bool)),SLOT(slotShowCompleted(bool)));
+	KToggleAction	*uact = new KToggleAction(i18n("Show Only User Jobs"), "personal", 0, actionCollection(), "view_user_jobs");
+	connect(uact, SIGNAL(toggled(bool)), SLOT(slotUserOnly(bool)));
 
 	if (!m_pop)
 	{
@@ -244,6 +248,7 @@ void KMJobViewer::initActions()
 		sact->plug(toolbar);
 		toolbar->insertSeparator();
 		tact->plug(toolbar);
+		uact->plug(toolbar);
 	}
 	else
 	{// stand-alone application
@@ -530,6 +535,7 @@ void KMJobViewer::removePluginActions()
 	}
 }
 
+/*
 void KMJobViewer::aboutToReload()
 {
 	if (m_view)
@@ -539,6 +545,7 @@ void KMJobViewer::aboutToReload()
 	}
 	m_jobs.clear();
 }
+*/
 
 void KMJobViewer::reload()
 {
@@ -584,6 +591,12 @@ void KMJobViewer::pluginActionActivated(int ID)
 
 	triggerRefresh();
 	KMTimer::self()->release();
+}
+
+void KMJobViewer::slotUserOnly(bool on)
+{
+	m_username = (on ? QString(getenv("USER")) : QString::null);
+	refresh(false);
 }
 
 #include "kmjobviewer.moc"

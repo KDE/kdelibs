@@ -115,8 +115,8 @@ KMMainView::KMMainView(QWidget *parent, const char *name, KActionCollection *col
 
 	// connections
 	connect(KMTimer::self(),SIGNAL(timeout()),SLOT(slotTimer()));
-	connect(m_printerview,SIGNAL(printerSelected(KMPrinter*)),SLOT(slotPrinterSelected(KMPrinter*)));
-	connect(m_printerview,SIGNAL(rightButtonClicked(KMPrinter*,const QPoint&)),SLOT(slotRightButtonClicked(KMPrinter*,const QPoint&)));
+	connect(m_printerview,SIGNAL(printerSelected(const QString&)),SLOT(slotPrinterSelected(const QString&)));
+	connect(m_printerview,SIGNAL(rightButtonClicked(const QString&,const QPoint&)),SLOT(slotRightButtonClicked(const QString&,const QPoint&)));
 	connect(m_pop,SIGNAL(aboutToShow()),KMTimer::self(),SLOT(hold()));
 	connect(m_pop,SIGNAL(aboutToHide()),KMTimer::self(),SLOT(release()));
 
@@ -259,7 +259,7 @@ void KMMainView::initActions()
 	m_actions->action("view_pfilter")->plug(m_toolbar);
 
 	loadPluginActions();
-	slotPrinterSelected(0);
+	slotPrinterSelected(QString::null);
 }
 
 void KMMainView::slotRefresh()
@@ -279,8 +279,9 @@ void KMMainView::slotTimer()
 	}
 }
 
-void KMMainView::slotPrinterSelected(KMPrinter *p)
+void KMMainView::slotPrinterSelected(const QString& prname)
 {
+	KMPrinter	*p = KMManager::self()->findPrinter(prname);
 	m_current = p;
 	if (p && !p->isSpecial())
 		KMFactory::self()->manager()->completePrinter(p);
@@ -330,8 +331,9 @@ void KMMainView::slotChangeView(int ID)
 		m_printerview->setViewType((KMPrinterView::ViewType)ID);
 }
 
-void KMMainView::slotRightButtonClicked(KMPrinter *printer, const QPoint& p)
+void KMMainView::slotRightButtonClicked(const QString& prname, const QPoint& p)
 {
+	KMPrinter	*printer = KMManager::self()->findPrinter(prname);
 	// construct popup menu
 	m_pop->clear();
 	if (printer)
@@ -638,10 +640,12 @@ KAction* KMMainView::action(const char *name)
 	return m_actions->action(name);
 }
 
+/*
 void KMMainView::aboutToReload()
 {
 	m_printerview->setPrinterList(0);
 }
+*/
 
 void KMMainView::reload()
 {
