@@ -81,8 +81,8 @@ using namespace DOM;
 #include <ktempfile.h>
 #include <kglobalsettings.h>
 #include <kurldrag.h>
-#include <kapp.h> // for KDE_VERSION
-#if !defined(QT_NO_DRAGANDDROP) && KDE_VERSION >= 290
+#include <kapplication.h>
+#if !defined(QT_NO_DRAGANDDROP)
 #include <kmultipledrag.h>
 #endif
 
@@ -99,9 +99,7 @@ using namespace DOM;
 #include <qapplication.h>
 #include <qdragobject.h>
 #include <qmetaobject.h>
-#if QT_VERSION >= 300
 #include <private/qucomextra_p.h>
-#endif
 
 namespace khtml
 {
@@ -239,9 +237,6 @@ public:
   DOM::DocumentImpl *m_doc;
   khtml::Decoder *m_decoder;
   QString m_encoding;
-#if QT_VERSION < 300
-  QFont::CharSet m_charset;
-#endif
   long m_cacheId;
   QString scheduledScript;
   DOM::Node scheduledScriptNode;
@@ -291,7 +286,6 @@ public:
   bool m_bParsing:1;
   bool m_bReloading:1;
   bool m_haveEncoding:1;
-  bool m_haveCharset:1;
   bool m_bHTTPRefresh:1;
   bool m_onlyLocalReferences :1;
 
@@ -589,11 +583,6 @@ KHTMLPart::~KHTMLPart()
 
 bool KHTMLPart::restoreURL( const KURL &url )
 {
-#if QT_VERSION < 300
-  // Save charset setting (it was already restored!)
-  QFont::CharSet charset = d->m_charset;
-#endif
-
   kdDebug( 6050 ) << "KHTMLPart::restoreURL " << url.url() << endl;
 
   d->m_redirectionTimer.stop();
@@ -610,11 +599,6 @@ bool KHTMLPart::restoreURL( const KURL &url )
   d->m_bJScriptDebugEnabled = KHTMLFactory::defaultHTMLSettings()->isJavaScriptDebugEnabled();
   d->m_bJavaEnabled = KHTMLFactory::defaultHTMLSettings()->isJavaEnabled(url.host());
   d->m_bPluginsEnabled = KHTMLFactory::defaultHTMLSettings()->isPluginsEnabled(url.host());
-  d->m_haveCharset = true;
-#if QT_VERSION < 300
-  d->m_charset = charset;
-  d->m_settings->setCharset( d->m_charset );
-#endif
 
   m_url = url;
 
@@ -705,13 +689,6 @@ bool KHTMLPart::openURL( const KURL &url )
   d->m_bJScriptDebugEnabled = KHTMLFactory::defaultHTMLSettings()->isJavaScriptDebugEnabled();
   d->m_bJavaEnabled = KHTMLFactory::defaultHTMLSettings()->isJavaEnabled(url.host());
   d->m_bPluginsEnabled = KHTMLFactory::defaultHTMLSettings()->isPluginsEnabled(url.host());
-#if QT_VERSION < 300
-  d->m_settings->resetCharset();
-#endif
-  d->m_haveCharset = false;
-#if QT_VERSION < 300
-  d->m_charset = d->m_settings->charset();
-#endif
 
   // initializing m_url to the new url breaks relative links when opening such a link after this call and _before_ begin() is called (when the first
   // data arrives) (Simon)
@@ -857,6 +834,7 @@ KJSProxy *KHTMLPart::jScript()
     void *sym = lib->symbol("kjs_html_init");
     if ( !sym ) {
       delete lib;
+      setJScriptEnabled( false );
       return 0;
     }
     typedef KJSProxy* (*initFunction)(KHTMLPart *);
@@ -878,7 +856,7 @@ QVariant KHTMLPart::executeScript( const QString &script )
 
 QVariant KHTMLPart::executeScript( const DOM::Node &n, const QString &script )
 {
-  //kdDebug(6070) << "KHTMLPart::executeScript n=" << n.nodeName().string().latin1() << "(" << n.nodeType() << ") " << script << endl;
+  //kdDebug() << "KHTMLPart::executeScript n=" << n.nodeName().string().latin1() << "(" << n.nodeType() << ") " << script << endl;
   KJSProxy *proxy = jScript();
 
   if (!proxy || proxy->paused())
@@ -1262,15 +1240,7 @@ void KHTMLPart::slotData( KIO::Job* kio_job, const QByteArray &data )
     // Check for charset meta-data
     QString qData = d->m_job->queryMetaData("charset");
     if ( !qData.isEmpty() && !d->m_haveEncoding ) // only use information if the user didn't override the settings
-    {
-#if QT_VERSION < 300
-       d->m_charset = KGlobal::charsets()->charsetForEncoding(qData);
-       d->m_settings->setCharset( d->m_charset );
-       d->m_settings->setScript( KGlobal::charsets()->charsetForEncoding(qData, true) );
-#endif
-       d->m_haveCharset = true;
        d->m_encoding = qData;
-    }
 
     // Support for http-refresh
     qData = d->m_job->queryMetaData("http-refresh");
@@ -1311,7 +1281,7 @@ void KHTMLPart::slotData( KIO::Job* kio_job, const QByteArray &data )
                 end_pos = index;
           }
         }
-        scheduleRedirection( delay, d->m_doc->completeURL( qData.mid( pos, end_pos ) ) );
+        scheduleRedirection( delay, completeURL( qData.mid( pos, end_pos ) ) );
       }
       d->m_bHTTPRefresh = true;
     }
@@ -1497,17 +1467,6 @@ void KHTMLPart::write( const char *str, int len )
   //kdDebug(6050) << "KHTMLPart::write haveEnc = " << d->m_haveEncoding << endl;
       // ### this is still quite hacky, but should work a lot better than the old solution
       if(d->m_decoder->visuallyOrdered()) d->m_doc->setVisuallyOrdered();
-      if (!d->m_haveCharset)
-      {
-         const QTextCodec *c = d->m_decoder->codec();
-         //kdDebug(6005) << "setting up charset to " << (int) KGlobal::charsets()->charsetForEncoding(c->name()) << endl;
-#if QT_VERSION < 300
-         d->m_charset = KGlobal::charsets()->charsetForEncoding(c->name());
-         d->m_settings->setCharset( d->m_charset );
-         d->m_settings->setScript( KGlobal::charsets()->charsetForEncoding(c->name(), true ));
-#endif
-         //kdDebug(6005) << "charset is " << (int)d->m_settings->charset() << endl;
-      }
       d->m_doc->applyChanges(true, true);
   }
 
@@ -1704,7 +1663,7 @@ void KHTMLPart::checkCompleted()
 
           QString href = link->getAttribute( "HREF" ).string();
           if ( !href.isEmpty() && d->m_doc ) {
-            href = d->m_doc->completeURL( href );
+            href = completeURL( href );
             emit d->m_extension->setIconURL( KURL( href ) );
             break;
           }
@@ -1778,18 +1737,21 @@ QString KHTMLPart::baseTarget() const
 
   return d->m_doc->baseTarget();
 }
+#endif
 
 KURL KHTMLPart::completeURL( const QString &url )
 {
   if ( !d->m_doc ) return url;
 
+  if (d->m_decoder)
+    return KURL(d->m_doc->completeURL(url), d->m_decoder->codec()->mibEnum());
+
   return KURL( d->m_doc->completeURL( url ) );
 }
-#endif
 
 void KHTMLPart::scheduleRedirection( int delay, const QString &url )
 {
-    //kdDebug(6050) << "KHTMLPart::scheduleRedirection delay=" << delay << " url=" << url << endl;
+  //kdDebug(6050) << "KHTMLPart::scheduleRedirection delay=" << delay << " url=" << url << endl;
     if( d->m_redirectURL.isEmpty() || delay < d->m_delayRedirect )
     {
        d->m_delayRedirect = delay;
@@ -1803,7 +1765,7 @@ void KHTMLPart::scheduleRedirection( int delay, const QString &url )
 
 void KHTMLPart::slotRedirect()
 {
-  kdDebug( 6050 ) << "KHTMLPart::slotRedirect()" << endl;
+//  kdDebug( 6050 ) << "KHTMLPart::slotRedirect()" << endl;
   QString u = d->m_redirectURL;
   d->m_delayRedirect = 0;
   d->m_redirectURL = QString::null;
@@ -1823,20 +1785,6 @@ void KHTMLPart::slotRedirection(KIO::Job*, const KURL& url)
   // kdDebug( 6050 ) << "redirection by KIO to " << url.url() << endl;
   emit d->m_extension->setLocationBarURL( url.prettyURL() );
   d->m_workingURL = url;
-}
-
-// ####
-bool KHTMLPart::setCharset( const QString &name, bool override )
-{
-#if QT_VERSION < 300
-  QFont f(settings()->stdFontName());
-  KGlobal::charsets()->setQFont(f, KGlobal::charsets()->charsetForEncoding(name) );
-
-  //kdDebug(6005) << "setting to charset " << (int)QFontInfo(f).charSet() <<" " << override << " should be " << name << endl;
-
-  d->m_settings->setDefaultCharset( f.charSet(), override );
-#endif
-  return true;
 }
 
 bool KHTMLPart::setEncoding( const QString &name, bool override )
@@ -2160,7 +2108,7 @@ void KHTMLPart::overURL( const QString &url, const QString &target, bool shiftPr
     return;
   }
 
-  KURL u = d->m_doc ? d->m_doc->completeURL( url ) : url;
+  KURL u = completeURL(url);
 
   // special case for <a href="">
   if ( url.isEmpty() )
@@ -2311,7 +2259,7 @@ void KHTMLPart::urlSelected( const QString &url, int button, int state, const QS
     return;
   }
 
-  KURL cURL = d->m_doc ? d->m_doc->completeURL( url ) : url;
+  KURL cURL = completeURL(url);
   // special case for <a href="">
   if ( url.isEmpty() )
     cURL.setFileName( url );
@@ -2623,7 +2571,7 @@ bool KHTMLPart::requestFrame( khtml::RenderPart *frame, const QString &url, cons
       }
       return false;
   }
-  return requestObject( &(*it), d->m_doc ? d->m_doc->completeURL( url ) : url );
+  return requestObject( &(*it), completeURL( url ));
 }
 
 QString KHTMLPart::requestFrameName()
@@ -2644,7 +2592,7 @@ bool KHTMLPart::requestObject( khtml::RenderPart *frame, const QString &url, con
 
   KParts::URLArgs args;
   args.serviceType = serviceType;
-  return requestObject( &(*it), d->m_doc ? d->m_doc->completeURL( url ) : url, args );
+  return requestObject( &(*it), completeURL( url ), args );
 }
 
 bool KHTMLPart::requestObject( khtml::ChildFrame *child, const KURL &url, const KParts::URLArgs &_args )
@@ -2920,7 +2868,7 @@ void KHTMLPart::submitFormAgain()
 void KHTMLPart::submitForm( const char *action, const QString &url, const QByteArray &formData, const QString &_target, const QString& contentType, const QString& boundary )
 {
   kdDebug(6000) << "KHTMLPart::submitForm target=" << _target << " url=" << url << endl;
-  KURL u = d->m_doc ? d->m_doc->completeURL( url ) : url;
+  KURL u = completeURL( url );
 
   if ( !u.isValid() )
   {
@@ -2963,11 +2911,11 @@ void KHTMLPart::submitForm( const char *action, const QString &url, const QByteA
 				config->sync();
 				kss.setWarnOnUnencrypted(false);
 				kss.save();
-			}
-			if (rc == KMessageBox::Cancel)
-				return;
-		}
-	}
+        }
+        if (rc == KMessageBox::Cancel)
+          return;
+      }
+    }
   }
 
   // End form security checks
@@ -2976,9 +2924,9 @@ void KHTMLPart::submitForm( const char *action, const QString &url, const QByteA
   QString urlstring = u.url();
 
   if ( urlstring.find( QString::fromLatin1( "javascript:" ), 0, false ) == 0 ) {
-      urlstring = KURL::decode_string(urlstring);
-      executeScript( urlstring.right( urlstring.length() - 11) );
-      return;
+    urlstring = KURL::decode_string(urlstring);
+    executeScript( urlstring.right( urlstring.length() - 11) );
+    return;
   }
 
   if (!checkLinkSecurity(u,
@@ -3034,7 +2982,7 @@ void KHTMLPart::submitForm( const char *action, const QString &url, const QByteA
 
 void KHTMLPart::popupMenu( const QString &url )
 {
-  KURL completedURL( d->m_doc ? d->m_doc->completeURL( url ) : url );
+  KURL completedURL( completeURL( url ) );
   KURL popupURL;
   if ( !url.isEmpty() )
     popupURL = completedURL;
@@ -3889,33 +3837,23 @@ void KHTMLPart::khtmlMouseMoveEvent( khtml::MouseMoveEvent *event )
       QPixmap p;
       QDragObject *drag = 0;
       if( !d->m_strSelectedURL.isEmpty() ) {
-          KURL u( d->m_doc->completeURL( splitUrlTarget(d->m_strSelectedURL)) );
-#if KDE_VERSION >= 290
+          KURL u( completeURL( splitUrlTarget(d->m_strSelectedURL)) );
           KURLDrag* urlDrag = KURLDrag::newDrag( u, d->m_view->viewport() );
           if ( !d->m_referrer.isEmpty() )
             urlDrag->metaData()["referrer"] = d->m_referrer;
           drag = urlDrag;
-#else
-	  KURL::List uris;
-	  uris.append(u);
-	  drag = KURLDrag::newDrag( uris, d->m_view->viewport() );
-#endif
           p = KMimeType::pixmapForURL(u, 0, KIcon::SizeMedium);
       } else {
           HTMLImageElementImpl *i = static_cast<HTMLImageElementImpl *>(innerNode.handle());
           if( i ) {
-#if KDE_VERSION >= 290
             KMultipleDrag *mdrag = new KMultipleDrag( d->m_view->viewport() );
             mdrag->addDragObject( new QImageDrag( i->currentImage(), 0L ) );
-            KURL u( d->m_doc->completeURL( splitUrlTarget( i->imageURL().string() ) ) );
+            KURL u( completeURL( splitUrlTarget( i->imageURL().string() ) ) );
             KURLDrag* urlDrag = KURLDrag::newDrag( u, 0L );
             if ( !d->m_referrer.isEmpty() )
               urlDrag->metaData()["referrer"] = d->m_referrer;
             mdrag->addDragObject( urlDrag );
             drag = mdrag;
-#else
-	    drag = new QImageDrag( i->currentImage(), d->m_view->viewport() );
-#endif
             p = KMimeType::mimeType("image/png")->pixmap(KIcon::Desktop);
           }
       }

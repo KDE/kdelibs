@@ -1,3 +1,4 @@
+// -*- c-basic-offset: 2 -*-
 /* This file is part of the KDE project
  *
  * Copyright (C) 1998, 1999 Torben Weis <weis@kde.org>
@@ -341,11 +342,12 @@ public:
   void enablePlugins(bool e) { return setPluginsEnabled(e); }
   void autoloadImages(bool e) { return setAutoloadImages(e); }
   void enableMetaRefresh(bool e) { return setMetaRefreshEnabled(e); }
+  bool setCharset( const QString &, bool ) { return true; }
 
   KURL baseURL() const;
   QString baseTarget() const;
-  KURL completeURL( const QString &url );
 #endif
+
 
   /**
    * Schedules a redirection after @p delay seconds.
@@ -423,14 +425,6 @@ public:
    * Paints the HTML page to a QPainter. See @ref KHTMLView::paint for details
    */
   void paint(QPainter *, const QRect &, int = 0, bool * = 0);
-
-  /**
-   * Sets the charset to use for displaying HTML pages.
-   *
-   * If override is @p true,
-   * it will override charset specifications of the document.
-   */
-  bool setCharset( const QString &name, bool override = false );
 
   /**
    * Sets the encoding the page uses.
@@ -930,6 +924,12 @@ private slots:
   void slotJobSpeed(KIO::Job*, unsigned long);
 
 private:
+
+  /**
+   * @internal
+   */
+  KURL completeURL( const QString &url );
+
   /**
    * @internal
    */
