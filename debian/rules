@@ -93,7 +93,6 @@ binary-arch:  build
 	list=`cd debian/tmp && find ./ -type l -name "lib*.so" | sed -e 's#^./##'` ;\
 	dh_movefiles -pkdelibs3-dev $$list usr/include/kde usr/lib/lib*.a
 	install -d debian/tmp/usr/share/icons/locolor/16x16/apps/
-	cp debian/package.png debian/tmp/usr/share/icons/locolor/16x16/apps/
 	-rm -rf debian/tmp/usr/share/apps/kssl
 	mv debian/tmp/usr/lib/kio_https.so debian/tmp/usr/lib/kio_https-nossl.so
 	mv debian/tmp/usr/lib/kio_https.la debian/tmp/usr/lib/kio_https-nossl.la
