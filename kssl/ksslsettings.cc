@@ -236,7 +236,7 @@ void KSSLSettings::load() {
   m_cfg->setGroup("Warnings");
   m_bWarnOnEnter = m_cfg->readBoolEntry("OnEnter", false);
   m_bWarnOnLeave = m_cfg->readBoolEntry("OnLeave", true);
-  m_bWarnOnUnencrypted = m_cfg->readBoolEntry("OnUnencrypted", false);
+  m_bWarnOnUnencrypted = m_cfg->readBoolEntry("OnUnencrypted", true);
   m_bWarnOnMixed = m_cfg->readBoolEntry("OnMixed", true);
 
   m_cfg->setGroup("Validation");
@@ -266,7 +266,7 @@ void KSSLSettings::defaults() {
   m_bUseSSLv3 = true;
   m_bWarnOnEnter = false;
   m_bWarnOnLeave = true;
-  m_bWarnOnUnencrypted = false;
+  m_bWarnOnUnencrypted = true;
   m_bWarnOnMixed = true;
   m_bWarnSelfSigned = true;
   m_bWarnExpired = true;
@@ -335,6 +335,7 @@ void KSSLSettings::save() {
 
 bool KSSLSettings::warnOnEnter() const       { return m_bWarnOnEnter; }
 bool KSSLSettings::warnOnUnencrypted() const { return m_bWarnOnUnencrypted; }
+void KSSLSettings::setWarnOnUnencrypted(bool x) { m_bWarnOnUnencrypted = x; }
 bool KSSLSettings::warnOnLeave() const       { return m_bWarnOnLeave; }
 bool KSSLSettings::warnOnMixed() const       { return m_bWarnOnMixed; }
 bool KSSLSettings::warnOnSelfSigned() const  { return m_bWarnSelfSigned; }

@@ -38,6 +38,7 @@ public:
 
   bool warnOnEnter() const;
   bool warnOnUnencrypted() const;
+  void setWarnOnUnencrypted(bool x);
   bool warnOnLeave() const;
   bool warnOnMixed() const;
   bool warnOnSelfSigned() const;
