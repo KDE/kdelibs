@@ -364,7 +364,7 @@ void KLocale::initFormat()
 
   _positiveSign = config->readEntry("PositiveSign");
   if (_positiveSign.isNull())
-    _positiveSign = monentry.readEntry("PositiveSign", "+");
+    _positiveSign = monentry.readEntry("PositiveSign");
 
   config->readEntry("NegativeSign");
   _negativeSign = config->readEntry("NegativeSign");
@@ -602,9 +602,7 @@ QString KLocale::formatNumber(double num, int precision) const
         res.insert(pos, thousandsSeparator()); // thousend sep
 
     // How can we know where we should put the sign?
-    if ( neg )
-	res.prepend( negativeSign() );
-    // res.prepend(neg?negativeSign():positiveSign());
+    res.prepend(neg?negativeSign():positiveSign());
 
     return res;
 }
