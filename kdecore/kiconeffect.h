@@ -5,7 +5,7 @@
  * This file is part of the KDE project, module kdecore.
  * Copyright (C) 2000 Geert Jansen <jansen@kde.org>
  * with minor additions and based on ideas from
- * Torsten Rahn <torsten@kde.org>                                                                 
+ * Torsten Rahn <torsten@kde.org>
  *
  * This is free software; it comes under the GNU Library General 
  * Public License, version 2. See the file "COPYING.LIB" for the 
@@ -49,7 +49,7 @@ public:
      * @li NoEffect: Don't apply any icon effect
      * @li ToGray: Tints the icon gray
      * @li Colorize: Tints the icon with an other color
-     * @li ToGamma: Change the gamma value if the icon
+     * @li ToGamma: Change the gamma value of the icon
      * @li DeSaturate: Reduce the saturation of the icon
      */
     enum Effects { NoEffect, ToGray, Colorize, ToGamma, DeSaturate, LastEffect };
@@ -69,7 +69,7 @@ public:
      * @ref KIcon::States
      */
     bool hasEffect(int group, int state) const;
-    
+
     /**
      * Returns a fingerprint for the effect by encoding
      * the given @p group and @p state into a QString. This 
@@ -96,7 +96,7 @@ public:
      * @param effect The effect to apply, one of @ref #KIconEffect::Effects.
      * @param value Strength of the effect. 0 <= @p value <= 1.
      * @param color Color parameter for effects that need one.
-     * @param trans Add Transparency if trans = true.                             
+     * @param trans Add Transparency if trans = true.
      * @return An image with the effect applied.
      */
     QImage apply(QImage src, int effect, float value, const QColor rgb, bool trans) const;
@@ -116,7 +116,7 @@ public:
      * @param effect The effect to apply, one of @ref #KIconEffect::Effects.
      * @param value Strength of the effect. 0 <= @p value <= 1.
      * @param color Color parameter for effects that need one.
-     * @param trans Add Transparency if trans = true.                             
+     * @param trans Add Transparency if trans = true.
      * @return A pixmap with the effect applied.
      */
     QPixmap apply(QPixmap src, int effect, float value, const QColor rgb, bool trans) const;
