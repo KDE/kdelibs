@@ -307,7 +307,7 @@
 <!ENTITY kworldclock	"<application>KWorldClock</application>">
 <!ENTITY kword	"<application>KWord</application>">
 <!ENTITY kwin	"<application>KWin</application>">
-<!ENTITY k4wins	"<application>K Four Wins</application>">
+<!ENTITY k4wins	"<application>KWin4</application>">
 <!ENTITY kwrite	"<application>KWrite</application>">
 <!ENTITY kwuftpd	"<application>kwuftpd</application>">
 <!ENTITY kxkb	"<application>Kxkb</application>">
