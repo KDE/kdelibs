@@ -54,6 +54,8 @@ protected:
   void expandSelection();
 
   int isValidCursorPos(int pos);
+  int isInMatrix(int immed = 0); // am I inside (directly inside if immed)
+                                 // of a matrix?
   int deleteAtCursor();
   int posAtPoint(QPoint p);
   int cursorDrawn;

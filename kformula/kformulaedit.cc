@@ -240,6 +240,39 @@ void KFormulaEdit::paintEvent(QPaintEvent *)
   }
 }
 
+//------------------------IS IN MATRIX------------------------
+//am I inside a matrix?  if so, return the index of the matrix char
+//otherwise return 0 (which can never be the index of a matrix char).
+int KFormulaEdit::isInMatrix(int immed) // default immed = 0
+{
+  int level, minlevel;
+  int i;
+
+  level = 0;
+  minlevel = 0;
+
+  if(cursorPos == (int)formText.length()) return 0;
+
+  for(i = cursorPos; i > 5; i--) { //a matrix char is at least in pos 5
+
+    // {w&h}#{{}&{$}&} -> {w&h}#{{}$&{}&} not to count the level.
+    if(immed && i == cursorPos && formText[i - 1] == L_GROUP) i -= 2;
+
+    if(formText[i] == L_GROUP) level--;
+    if(formText[i] == R_GROUP) level++;
+
+    if(formText[i - 1] == QChar(MATRIX)) {
+      if(!immed && level <= minlevel - 1) return i - 1;
+      if(level == -1 && level == minlevel - 1) return i - 1;
+    }
+
+    if(level < minlevel) minlevel = level;
+
+  }
+
+  return 0;
+}
+
 //------------------------IS VALID CURSOR POS------------------
 //The cursor cannot be anywhere.  It cannot be between an
 //operation symbol and the opening brace for it
@@ -608,13 +641,152 @@ void KFormulaEdit::keyPressEvent(QKeyEvent *e)
   QString oldText = formText; // for undo
   int oldc = cursorPos; // also for undo mostly
 
+
+  //DOWN ARROW:
+
+  if(e->key() == Key_Down) { // move down a cell in a matrix
+    if(shift || !isInMatrix()) return;
+
+    if(textSelected) { //deselect
+      cursorPos = QMAX(selectStart, cursorPos);
+      textSelected = 0;
+    }
+
+    while(1) { // break inside!
+      int level = 0;
+      
+      if(cursorPos + 5 < (int)formText.length() &&
+	 formText[cursorPos + 5] == QChar(MATRIX)) {
+	//skip the matrix inside the current cell
+
+	cursorPos += 6; // move to the matrix body
+
+	do { // find the end of the matrix body
+	  if(formText[cursorPos] == L_GROUP) level++;
+	  if(formText[cursorPos] == R_GROUP) level--;
+
+	  cursorPos++;
+	} while(level);
+
+	continue;
+      }
+
+      cursorPos++;
+
+      if(formText[cursorPos - 1] == QChar(SEPARATOR)) break;
+	 
+    }
+	  
+    cursorPos++; // move to a valid position at the start of the cell
+    
+    if(cursorPos != oldc) {
+      CURSOR_RESET;
+      
+      redraw();
+    }
+    
+
+    return;
+  }
+
+  //UP ARROW:
+
+  if(e->key() == Key_Up) { // move to the cell above
+    int m = isInMatrix();
+
+    if(shift || !m) return;
+    if(textSelected) { //deselect
+      cursorPos = QMIN(selectStart, cursorPos);
+      textSelected = 0;
+    }
+
+    while(cursorPos > m) { //stop if we left current matrix.  break inside!
+      int level = 0;
+      
+      if(formText[cursorPos] == R_GROUP &&
+	 formText[cursorPos - 1] == QChar(SEPARATOR)) {
+	// if we have a matrix inside the cell, skip it:
+
+	do {
+	  if(formText[cursorPos] == R_GROUP) level++;
+	  if(formText[cursorPos] == L_GROUP) level--;
+
+	  cursorPos--;
+
+	  if(formText[cursorPos] == QChar(MATRIX)) { // we need to go
+	                                             // from {w&h}$#{{}&...
+                                        	     // to ${w&h}#{...
+	    cursorPos -= 5;
+	  }
+
+	} while(level);
+
+	continue;
+      }
+
+      cursorPos--;
+
+      if(formText[cursorPos + 1] == QChar(SEPARATOR)) {
+	break;
+      }
+    }  
+
+    if(cursorPos <= m) cursorPos = m - 5;
+
+    if(cursorPos != oldc) {
+      CURSOR_RESET;
+
+      redraw();
+    }
+
+    return;
+  }
+
   //LEFT ARROW:
 
   if(e->key() == Key_Left) {
     if(!textSelected || shift) { //if we are not removing a selection
-      //move left to the next valid cursor position.
-      while(cursorPos > 0 && !isValidCursorPos(--cursorPos));
-      
+      int m;
+
+      m = isInMatrix(1);
+      if(m && formText[cursorPos - 1] != L_GROUP) m = 0;
+
+      if(!m) {
+	//move left to the next valid cursor position.
+	while(cursorPos > 0 && !isValidCursorPos(--cursorPos));
+      }
+      else { // move to previous matrix cell
+	int i;
+	int level = 0;
+
+	//since the cells are ordered by columns, to get to the cell
+	//on the left, we need to skip as many cells as there are rows.
+	for(i = 0; i < formText[m - 2].unicode(); i++) {
+	  if(!isInMatrix()) break;
+	    
+	  while(cursorPos > m) { //stop if we leave matrix.  break inside!
+	    cursorPos--;
+
+	    if(formText[cursorPos] == R_GROUP) level++;
+	    if(formText[cursorPos] == L_GROUP) level--;
+	    
+	    // level==-1 insures we only count the cells of the current
+	    //matrix, not of any nested ones inside the current one.
+
+	    if(level == -1 && formText[cursorPos] == QChar(SEPARATOR)) {
+	      cursorPos--;
+	      level++;
+	      break;
+	    }
+	  }
+
+	  if(cursorPos <= m) { // we left the matrix
+	    cursorPos = m - 5; // start of matrix
+	    break;
+	  }
+	}
+      }
+
       if(oldc != cursorPos) {
 	CURSOR_RESET
       }
@@ -644,9 +816,44 @@ void KFormulaEdit::keyPressEvent(QKeyEvent *e)
 
   if(e->key() == Key_Right) {
     if(!textSelected || shift) { //if we are not removing a selection
-      //move right to the next valid cursor position.
-      while(cursorPos < (int)formText.length() &&
-	    !isValidCursorPos(++cursorPos));
+      int m;
+
+      m = isInMatrix(1);
+      if(m && formText[cursorPos] != R_GROUP) m = 0;
+
+      if(!m) {
+	//move right to the next valid cursor position.
+	while(cursorPos < (int)formText.length() &&
+	      !isValidCursorPos(++cursorPos));
+      }
+      else { //move to next matrix cell
+	int i;
+	int level = 0;
+
+	//skip as many cells as there are rows.
+	for(i = 0; i < formText[m - 2].unicode(); i++) {
+	  if(!isInMatrix()) break;
+
+	  while(1) {
+	    if(formText[cursorPos] == L_GROUP) level++;
+	    if(formText[cursorPos] == R_GROUP) level--;
+
+	    //count only cells of the current (not any nested) matrix
+	    if(level == -1 &&
+	       formText[cursorPos] == QChar(SEPARATOR)) {
+	      cursorPos += 2;
+	      level++;
+	      break;
+	    }
+
+	    cursorPos++;
+	  }
+	  if(formText[cursorPos - 1] == R_GROUP) { // we left the matrix
+	    break;
+	  }
+	}
+      }
+	  
       
       if(oldc != cursorPos) {
 	CURSOR_RESET

@@ -27,14 +27,6 @@ MatrixDialog::MatrixDialog(QWidget *parent)
   grid->addWidget(rows, 0, 0);
   grid->addWidget(columns, 0, 1);
 
-  ok = new QPushButton("OK", this);
-  grid->addWidget(ok, 2, 0);
-  connect(ok, SIGNAL(clicked()), SLOT(accept()));
-  
-  cancel = new QPushButton("Cancel", this);
-  grid->addWidget(cancel, 2, 1);
-  connect(cancel, SIGNAL(clicked()), SLOT(reject()));
-
   QSpinBox *width, *height;
 
   width = new QSpinBox(1, MAX_SIZE, 1, this);
@@ -47,9 +39,19 @@ MatrixDialog::MatrixDialog(QWidget *parent)
   height->setValue(DEFAULT_SIZE);
   connect(height, SIGNAL(valueChanged(int)), SLOT(setHeight(int)));
 
-  QCheckBox *fill = new QCheckBox("0-Fill", this);
-  grid->addWidget(fill, 3, 0);
+  QCheckBox *fill = new QCheckBox("Zero-Fill", this);
+  grid->addMultiCellWidget(fill, 2, 2, 0, 1);
   connect(fill, SIGNAL(toggled(bool)), SLOT(setFill(bool)));
+
+  ok = new QPushButton("OK", this);
+  ok->setDefault(TRUE);
+  grid->addWidget(ok, 3, 0);
+  connect(ok, SIGNAL(clicked()), SLOT(accept()));
+  
+  cancel = new QPushButton("Cancel", this);
+  grid->addWidget(cancel, 3, 1);
+  connect(cancel, SIGNAL(clicked()), SLOT(reject()));
+
 }
 
 void MatrixDialog::setHeight(int value)
