@@ -10,7 +10,7 @@ static Atom kde_applet_command = 0;
 
 
 KApplet::KApplet( QWidget* parent, const char* name  )
-    : QWidget( 0, name )
+    : QWidget( parent, name )
 {
     if ( !kde_applet ) {
 	kde_applet =  XInternAtom(qt_xdisplay(), "KDE_APPLET", FALSE);
