@@ -989,6 +989,7 @@ void KDialogBase::resizeEvent( QResizeEvent * )
 }
 
 
+
 void KDialogBase::keyPressEvent( QKeyEvent *e )
 {
   //
@@ -1024,6 +1025,28 @@ void KDialogBase::keyPressEvent( QKeyEvent *e )
   // Do the default action instead. Note KDialog::keyPressEvent is bypassed
   //
   QDialog::keyPressEvent(e);
+}
+
+
+
+void KDialogBase::hideEvent( QHideEvent * )
+{
+  emit hidden();
+}
+
+
+
+void KDialogBase::closeEvent( QCloseEvent *e )
+{
+  QPushButton *pb = getButton( mEscapeButton );
+  if( pb != 0 )
+  {
+    pb->animateClick();
+  }
+  else
+  {
+    QDialog::closeEvent(e);
+  }
 }
 
 

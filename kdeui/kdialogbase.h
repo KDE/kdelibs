@@ -763,6 +763,13 @@ class KDialogBase : public KDialog
      */
     void backgroundChanged( void ); 
 
+    /**
+     * The dialog is about to be hidden. If you have stored a pointer to the 
+     * dialog do NOT try to delete the pointer in the slot that is 
+     * connected to this signal. Instead you must start a timer and delete 
+     * the pointer when this timer expires.
+     */
+    void hidden( void );
 
   protected:
     /**
@@ -804,7 +811,21 @@ class KDialogBase : public KDialog
      * button if present and Escape to the Cancel or Close if present. The
      * button action event is animated.
      */
-    virtual void keyPressEvent( QKeyEvent * );
+    virtual void keyPressEvent( QKeyEvent *e );
+
+    /**
+     * Emits the @ref hidden signal. You can connect to that signal to
+     * detect when a dialog has been closed.
+     */
+    virtual void hideEvent( QHideEvent * );
+    
+    /**
+     * Detects when a dialog is being closed from the window manager 
+     * controls. If the Cancel or Close button is present then the button
+     * is activated. Otherwise standard @ref QDialog behavior 
+     * will take place.
+     */
+    virtual void closeEvent( QCloseEvent *e );
 
   protected slots:
     /**
