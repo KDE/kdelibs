@@ -31,6 +31,7 @@
 #include <kdebug.h>
 #include <klocale.h>
 #include <kmessagebox.h>
+#include <assert.h>
 
 #include <kregexpeditorinterface.h>
 #include <kparts/componentfactory.h>
