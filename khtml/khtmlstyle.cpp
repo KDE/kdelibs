@@ -144,7 +144,7 @@ CSSStyleSheet::newStyle(CSSStyle *parentStyle)
         newStyle->text.valign = CSSStyleText::valBaseline;
         newStyle->text.valignOffset = 0;
 
-        newStyle->list.type = CSSStyleList::liDisc;
+        newStyle->list.type = CSSStyleList::liDisc;	
     }
 
     newStyle->box.marginF = 0;
@@ -159,6 +159,7 @@ CSSStyleSheet::newStyle(CSSStyle *parentStyle)
     newStyle->width_percent = UNDEFINED;
     newStyle->height = UNDEFINED;
     newStyle->height_percent = UNDEFINED;
+    newStyle->bgcolor = Qt::lightGray;
 
     return newStyle;
 }
