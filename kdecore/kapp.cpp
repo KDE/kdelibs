@@ -432,7 +432,7 @@ QPopupMenu* KApplication::helpMenu( bool /*bAboutQtMenu*/,
 
   pMenu->insertSeparator();
 
-  id = pMenu->insertItem( i18n( "&About" ) + " " + name() + "...");
+  id = pMenu->insertItem(i18n("&About %1...").arg(aAppName));
   if( !aboutAppText.isNull() )
 	{
 	  pMenu->connectItem( id, this, SLOT( aboutApp() ) );
