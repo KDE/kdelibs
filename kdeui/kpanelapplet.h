@@ -310,7 +310,7 @@ protected:
      * The orientation changed to @p orientation. Reimplement this
      * change handler in order to adjust the look of your applet.
      *
-     * @deprecated Reimplement arrangementChanged instead.
+     * @deprecated Reimplement positionChange instead.
      **/
     // FIXME: Remove for KDE 4
     virtual void orientationChange( Orientation /* orientation*/) {}
@@ -329,7 +329,7 @@ protected:
      * The popup direction changed to @p direction. Reimplement this
      * change handler in order to adjust the look of your applet.
      *
-     * @deprecated Reimplement arrangementChanged instead.
+     * @deprecated Reimplement positionChange instead.
      **/
     // FIXME: Remove for KDE 4
     virtual void popupDirectionChange( Direction /*direction*/ ) {}
