@@ -197,7 +197,7 @@ public:
    */
   static QString noProxyFor();
 
-  /*
+  /**
    * Returns the proxy server address for a given
    * protocol.
    *
