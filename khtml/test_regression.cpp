@@ -520,7 +520,7 @@ static QStringList readListFile( const QString &filename )
 }
 
 
-bool RegressionTest::runTests(QString relPath, bool mustExist, bool known_failure)
+bool RegressionTest::runTests(QString relPath, bool mustExist, int known_failure)
 {
     if (!QFile(m_baseDir + "/tests/"+relPath).exists()) {
 	fprintf(stderr,"%s: No such file or directory\n",relPath.latin1());
@@ -552,7 +552,14 @@ bool RegressionTest::runTests(QString relPath, bool mustExist, bool known_failur
 
 	    if (filename == "." || filename == ".." ||  ignoreFiles.contains(filename) )
                 continue;
-            runTests(relFilename, false, failureFiles.contains(filename) );
+            int failure_type = NoFailure;
+            if ( failureFiles.contains( filename ) )
+                failure_type |= AllFailure;
+            if ( failureFiles.contains ( filename + "-render" ) )
+                failure_type |= RenderFailure;
+            if ( failureFiles.contains ( filename + "-dom" ) )
+                failure_type |= DomFailure;
+            runTests(relFilename, false, failure_type );
 	}
     }
     else if (info.isFile()) {
@@ -563,7 +570,7 @@ bool RegressionTest::runTests(QString relPath, bool mustExist, bool known_failur
 	m_currentBase = m_baseDir + "/tests/"+relativeDir;
 	m_currentCategory = relativeDir;
 	m_currentTest = filename;
-        m_known_failure = known_failure;
+        m_known_failures = known_failure;
 	if (filename.endsWith(".html") || filename.endsWith( ".htm" )) {
 	    testStaticFile(relPath);
 	}
@@ -761,13 +768,25 @@ void RegressionTest::testStaticFile(const QString & filename)
         return;
     }
 
+    int known_failures = m_known_failures;
+
     if ( m_genOutput ) {
+        if ( m_known_failures & DomFailure)
+            m_known_failures = AllFailure;
         reportResult( checkOutput(filename+"-dom"), QString::null );
+        if ( known_failures & RenderFailure )
+            m_known_failures = AllFailure;
         reportResult( checkOutput(filename+"-render"), QString::null );
+        m_known_failures = known_failures;
     } else {
         // compare with output file
+        if ( m_known_failures & DomFailure)
+            m_known_failures = AllFailure;
         reportResult( checkOutput(filename+"-dom"), QString::null );
+        if ( known_failures & RenderFailure )
+            m_known_failures = AllFailure;
         reportResult( checkOutput(filename+"-render"), QString::null );
+        m_known_failures = known_failures;
     }
 }
 
@@ -845,10 +864,13 @@ void RegressionTest::testJSFile(const QString & filename )
 bool RegressionTest::checkOutput(const QString &againstFilename)
 {
     QString absFilename = QFileInfo(m_baseDir + "/baseline/" + againstFilename).absFilePath();
-    if ( cvsIgnored( absFilename ) )
+    if ( cvsIgnored( absFilename ) ) {
+        m_known_failures = NoFailure;
         return true;
+    }
 
-    QString data = getPartOutput( againstFilename.endsWith( "-dom" ) ? DOMTree : RenderTree );
+    bool domOut = againstFilename.endsWith( "-dom" );
+    QString data = getPartOutput( domOut ? DOMTree : RenderTree );
     data.remove( char( 13 ) );
 
     bool result = true;
@@ -856,7 +878,14 @@ bool RegressionTest::checkOutput(const QString &againstFilename)
     // compare result to existing file
 
     QString outputFilename = QFileInfo(m_baseDir + "/output/" + againstFilename).absFilePath();
-    if ( m_known_failure )
+    bool kf = false;
+    if ( m_known_failures & AllFailure )
+        kf = true;
+    else if ( domOut && ( m_known_failures & DomFailure ) )
+        kf = true;
+    else if ( !domOut && ( m_known_failures & RenderFailure ) )
+        kf = true;
+    if ( kf )
         outputFilename += "-KF";
 
     if ( m_genOutput )
@@ -877,7 +906,6 @@ bool RegressionTest::checkOutput(const QString &againstFilename)
     }
 
     // generate result file
-
     QFileInfo info(outputFilename);
     createMissingDirs(info.dirPath());
     QFile file2(outputFilename);
@@ -901,7 +929,7 @@ bool RegressionTest::reportResult(bool passed, const QString & description)
 	return true;
 
     if (passed) {
-        if ( m_known_failure ) {
+        if ( m_known_failures & AllFailure ) {
             printf("PASS (unexpected!): ");
             m_passes_fail++;
         } else {
@@ -910,7 +938,7 @@ bool RegressionTest::reportResult(bool passed, const QString & description)
         }
     }
     else {
-        if ( m_known_failure ) {
+        if ( m_known_failures & AllFailure ) {
             printf("FAIL (known): ");
             m_failures_fail++;
         } else {

@@ -133,7 +133,8 @@ public:
     void testStaticFile(const QString& filename);
     void testJSFile(const QString& filename);
     bool checkOutput(const QString& againstFilename);
-    bool runTests(QString relPath = QString::null, bool mustExist = false, bool known_failure = false);
+    enum FailureType { NoFailure = 0, AllFailure = 1, RenderFailure = 2, DomFailure = 4};
+    bool runTests(QString relPath = QString::null, bool mustExist = false, int known_failure = NoFailure);
     bool reportResult( bool passed, const QString & description = QString::null );
     void createMissingDirs(QString path);
 
@@ -153,7 +154,7 @@ public:
     int m_errors;
     bool saw_failure;
     bool ignore_errors;
-    bool m_known_failure;
+    int m_known_failures;
 
     static RegressionTest *curr;
 
