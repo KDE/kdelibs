@@ -24,4 +24,4 @@ proxyscoutdatadir = $(kde_datadir)/proxyscout
 proxyscoutdata_DATA = eventsrc
 
 install-exec-local:
-	@(chown root $(bindir)/kpac_dhcp_helper && chmod 4755 $(bindir)/kpac_dhcp_helper) || echo "Please make kpac_dhcp_helper setuid root"
+	@(chown root $(DESTDIR)$(bindir)/kpac_dhcp_helper && chmod 4755 $(DESTDIR)$(bindir)/kpac_dhcp_helper) || echo "Please make kpac_dhcp_helper setuid root"
