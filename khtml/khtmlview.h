@@ -140,20 +140,20 @@ public:
     /*
      * set a margin in x direction
      */
-    //    void setMarginWidth(int x) { _marginWidth = x; }
+    void setMarginWidth(int x) { _marginWidth = x; }
     /**
-     * @return the margin With
+     * @return the margin With. -1 means the default value will be used.
      */
      int marginWidth() const { return _marginWidth; }
 
     /*
      * set a margin in y direction
      */
-    //    void setMarginHeight(int y) { _marginHeight = y; }
+    void setMarginHeight(int y) { _marginHeight = y; }
     /*
-     * @return the margin height
+     * @return the margin height. -1 means the default value will be used.
      */
-    //    int marginHeight() { return _marginHeight; }
+    int marginHeight() { return _marginHeight; }
 
     QString selectedText() const;
 

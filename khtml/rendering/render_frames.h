@@ -106,6 +106,8 @@ public:
 
   DOM::HTMLFrameElementImpl *frameImpl() const { return m_frame; }
 
+    virtual void setWidget( QWidget *widget );
+
 private:
   DOM::HTMLFrameElementImpl *m_frame;
 };

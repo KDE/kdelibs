@@ -58,7 +58,7 @@
       CAPTION         { display: table-caption;  }
       TH              { font-weight: bolder; text-align: center }
       CAPTION         { text-align: center }
-      BODY            { padding: 8px; line-height: 1.05 }
+      BODY            { padding: 5px; line-height: 1.05 }
       H1              { font-size: 2em; margin: .67em 0 }
       H2              { font-size: 1.5em; margin: .83em 0 }
       H3              { font-size: 1.17em; margin: 1em 0 }

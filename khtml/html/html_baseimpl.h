@@ -32,6 +32,9 @@
 
 class KHTMLView;
 
+namespace khtml {
+    class RenderFrame;
+}
 
 namespace DOM {
 
@@ -51,6 +54,7 @@ public:
     virtual tagStatus endTag() { return BODYEndTag; }
 
     virtual void parseAttribute(khtml::Attribute *);
+    void attach(KHTMLView *w);
 
     CSSStyleSheetImpl *sheet() const { return m_style; }
 protected:
@@ -61,6 +65,7 @@ protected:
 
 class HTMLFrameElementImpl : public HTMLElementImpl
 {
+    friend class khtml::RenderFrame;
 public:
     HTMLFrameElementImpl(DocumentImpl *doc);
 

@@ -113,6 +113,23 @@ void HTMLBodyElementImpl::parseAttribute(Attribute *attr)
     }
 }
 
+
+void HTMLBodyElementImpl::attach(KHTMLView *w)
+{
+    if(w->marginWidth() != -1) {
+	QString str;
+	str.sprintf("%dpx",w->marginWidth());
+	addCSSProperty(CSS_PROP_PADDING_LEFT, str, false);
+        addCSSProperty(CSS_PROP_PADDING_RIGHT, str, false);	
+    }
+    if(w->marginHeight() != -1) {
+	QString str;
+	str.sprintf("%dpx",w->marginHeight());
+	addCSSProperty(CSS_PROP_PADDING_TOP, str, false);
+        addCSSProperty(CSS_PROP_PADDING_BOTTOM, str, false);
+    }
+    HTMLElementImpl::attach(w);
+}
 // -------------------------------------------------------------------------
 
 HTMLFrameElementImpl::HTMLFrameElementImpl(DocumentImpl *doc)
@@ -144,7 +161,7 @@ ushort HTMLFrameElementImpl::id() const
 
 void HTMLFrameElementImpl::parseAttribute(Attribute *attr)
 {
-    kdDebug( 6030 ) << "parsing attribute " << attr->id << "=" << attr->value().string() << endl;
+    kdDebug( 6031 ) << "parsing attribute " << attr->id << "=" << attr->value().string() << endl;
 
     switch(attr->id)
     {
@@ -168,6 +185,7 @@ void HTMLFrameElementImpl::parseAttribute(Attribute *attr)
 	noresize = true;
 	break;
     case ATTR_SCROLLING:
+	kdDebug( 6031 ) << "set scroll mode" << endl;
 	if( strcasecmp( attr->value(), "auto" ) == 0 )
 	    scrolling = QScrollView::Auto;
 	else if( strcasecmp( attr->value(), "yes" ) == 0 )
@@ -182,6 +200,8 @@ void HTMLFrameElementImpl::parseAttribute(Attribute *attr)
 
 void HTMLFrameElementImpl::attach(KHTMLView *w)
 {
+    kdDebug( 6031 ) << "Frame::attach" <<endl;
+    
     m_style = document->styleSelector()->styleForElement( this );
 
     khtml::RenderObject *r = _parent->renderer();

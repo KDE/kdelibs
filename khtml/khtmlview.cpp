@@ -110,6 +110,9 @@ KHTMLView::KHTMLView( KHTMLPart *part, QWidget *parent, const char *name)
 
     viewport()->show();
 
+    setVScrollBarMode(Auto);
+    setHScrollBarMode(Auto);
+
     d = new KHTMLViewPrivate;
 }
 
@@ -138,8 +141,8 @@ void KHTMLView::init()
 
   viewport()->setFocusPolicy( QWidget::WheelFocus );
 
-  _marginWidth = 5;
-  _marginHeight = 5;
+  _marginWidth = -1; // undefined
+  _marginHeight = -1; 
   _width = width()- SCROLLBARWIDTH - 2*marginWidth();
 
   resizeContents(clipper()->width(), clipper()->height());
@@ -151,8 +154,8 @@ void KHTMLView::clear()
 
     pressed = false;
 
-    setVScrollBarMode(Auto);
-    setHScrollBarMode(Auto);
+    //setVScrollBarMode(Auto);
+    //setHScrollBarMode(Auto);
 
     d->selectionStart = 0;
     d->selectionEnd = 0;
