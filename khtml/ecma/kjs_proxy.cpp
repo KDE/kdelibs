@@ -382,12 +382,12 @@ void KJSCPUGuard::start(unsigned int ms, unsigned int i_ms)
       { i_ms / 1000, (i_ms % 1000) * 1000 },
       { ms / 1000, (ms % 1000) * 1000 }
   };
-  //setitimer(ITIMER_VIRTUAL, &tv, &oldtv);
+  setitimer(ITIMER_VIRTUAL, &tv, &oldtv);
 }
 
 void KJSCPUGuard::stop()
 {
-  //setitimer(ITIMER_VIRTUAL, &oldtv, 0L);
+  setitimer(ITIMER_VIRTUAL, &oldtv, 0L);
   signal(SIGVTALRM, oldAlarmHandler);
 }
 
