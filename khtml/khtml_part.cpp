@@ -4021,6 +4021,7 @@ void KHTMLPart::khtmlMouseReleaseEvent( khtml::MouseReleaseEvent *event )
   if ((_mouse->button() == MidButton) && (event->url().isNull()))
   {
     QClipboard *cb = QApplication::clipboard();
+    cb->setSelectionMode( true );
     QCString plain("plain");
     QString url = cb->text(plain);
     KURL u(url);
