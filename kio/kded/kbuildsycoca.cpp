@@ -99,12 +99,9 @@ void KBuildSycoca::recreate()
   save(); // Save database
   clear(); // save memory usage
 
-  // TODO notify ALL applications that have a ksycoca object (a broadcast is needed!)
-  // HACK !!
+  // Notify ALL applications that have a ksycoca object, using a broadcast
   QByteArray data;
-  debug("sending databaseChanged() signal !");
-  kapp->dcopClient()->send( "konqueror", "ksycoca", "databaseChanged()", data );
-  debug("done");
+  kapp->dcopClient()->send( "*", "ksycoca", "databaseChanged()", data );
 }
 
 void KBuildSycoca::dirDeleted(const QString& /*path*/)
