@@ -19,6 +19,8 @@ public:
 			printf("[%s] %d\n",name.c_str(),i+1);
 			sleep(1);
 		}
+		printf("[%s] terminating.\n", static_cast<Counter *>
+			(SystemThreads::the()->getCurrentThread())->name.c_str());
 	}
 };
 
