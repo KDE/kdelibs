@@ -23,6 +23,9 @@
 
 // $Id$
 // $Log$
+// Revision 1.116  1999/06/09 21:52:26  cschlaeg
+// serveral fixes for recently implemented layout management; removed segfault on close; removed segfault for no menubar apps; setFullWidth(false) is working again; floating a bar does not segfault any more but still does not work properly; I will look into this again.
+//
 // Revision 1.115  1999/06/07 21:11:04  cschlaeg
 // more work done for layout management integration; setFullWidth(false) still does not work; will work on this tomorrow
 //
@@ -1133,9 +1136,9 @@ KToolBar::layoutHorizontal(int w)
 		}
 		else
 		{
-		   totalRightItemWidth += (*qli)->width() + 3;
-		   if ((*qli)->isAuto())
-			   debug("Right aligned toolbar item cannot be auto-sized!");
+			totalRightItemWidth += (*qli)->width() + 3;
+			if ((*qli)->isAuto())
+				debug("Right aligned toolbar item cannot be auto-sized!");
 		}
 
 	int newXOffset = w - (3 + (totalRightItemWidth + 3) % w);
@@ -1387,9 +1390,10 @@ KToolBar::updateRects(bool res)
 		/* If we are not in full size mode and the user has not
 		 * defined a maximum width then we have to define it
 		 * ourselves. */
-		if (!fullSize && maxWidth == -1)
-				maxWidth = maximumSizeHint().width();
-		layoutHorizontal(!fullSize ? maxWidth : width());
+		layoutHorizontal(!fullSize ?
+						 (maxWidth == -1 ?
+						  maximumSizeHint().width() : maxWidth) :
+						 width());
 		break;
 
 	case Left:
@@ -1397,9 +1401,10 @@ KToolBar::updateRects(bool res)
 		/* If we are not in full size mode and the user has not
 		 * defined a maximum height then we have to define it
 		 * ourselves. */
-		if (!fullSize && maxHeight == -1)
-			maxHeight = maximumSizeHint().height();
-		layoutVertical(!fullSize ? maxHeight : height());
+		layoutVertical(!fullSize ? 
+					   (maxHeight == -1 ?
+						maximumSizeHint().height() : maxHeight) :
+					   height());
 		break;
 
 	default:
