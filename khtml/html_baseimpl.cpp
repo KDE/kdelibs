@@ -274,10 +274,10 @@ HTMLFrameSetElementImpl::HTMLFrameSetElementImpl(DocumentImpl *doc)
 {
     rowHeight = 0;
     colWidth = 0;
-    
+
     rowResize = 0;
     colResize = 0;
-    
+
     // default value for rows and cols...
     rows = 0;
     cols = 0;
@@ -287,7 +287,7 @@ HTMLFrameSetElementImpl::HTMLFrameSetElementImpl(DocumentImpl *doc)
     noresize = false;
 
     view = 0;
-    
+
     setBlocking();
 }
 
@@ -334,7 +334,7 @@ void HTMLFrameSetElementImpl::parseAttribute(Attribute *attr)
 
 void HTMLFrameSetElementImpl::layout(bool deep)
 {
-    
+
 #ifdef DEBUG_LAYOUT
     printf("%s(FrameSet)::layout(%d) width=%d, layouted=%d\n", nodeName().string().ascii(), deep, width, layouted());
 #endif
@@ -343,7 +343,7 @@ void HTMLFrameSetElementImpl::layout(bool deep)
 
     if(_parent->id() == ID_HTML && view)
 	descent = view->height();
-    
+
     int totalRows = 1;
     if(rows)
 	totalRows = rows->count();
@@ -357,7 +357,7 @@ void HTMLFrameSetElementImpl::layout(bool deep)
     if(remainingWidth<0) remainingWidth=0;
     int remainingHeight = descent - (totalRows-1)*border;
     if(remainingHeight<0) remainingHeight=0;
-    
+
     if(rowHeight) delete [] rowHeight;
     if(colWidth) delete [] colWidth;
     rowHeight = new int[totalRows];
@@ -613,6 +613,8 @@ void HTMLHtmlElementImpl::layout(bool deep)
 	child->setYPos(BORDER);
     }
 
+    if(!child) return;
+    
     QTime qt;
     qt.start();
     child->layout(deep);
