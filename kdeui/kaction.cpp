@@ -351,11 +351,11 @@ void KToggleAction::setChecked( bool c )
 	    ((QPopupMenu*)w)->setItemChecked( menuId( i ), c );
 	else if ( w->inherits( "KMenuBar" ) )
 	    ((KMenuBar*)w)->setItemChecked( menuId( i ), c );
-	else if ( w->inherits( "KActionWidget" ) )
+	else if ( w->inherits( "QActionWidget" ) )
 	    ((QActionWidget*)w)->updateAction( this );	
     }
 
-    if (  parent() && !exclusiveGroup().isEmpty() ) {
+    if ( c && parent() && !exclusiveGroup().isEmpty() ) {
 	const QObjectList *list = parent()->children();
 	if ( list ) {
 	    QObjectListIt it( *list );
@@ -370,7 +370,9 @@ void KToggleAction::setChecked( bool c )
 
     checked = c;
 
+    locked = TRUE;
     emit activated();
+    locked = FALSE;
     emit toggled( isChecked() );
 }
 
