@@ -20,8 +20,8 @@
  */
 
 #include "kjavaappletcontext.h"
-#include <kjavaappletserver.h>
-#include <kjavaapplet.h>
+#include "kjavaappletserver.h"
+#include "kjavaapplet.h"
 #include <klocale.h>
 #include <kmessagebox.h>
 #include <kdebug.h>
@@ -29,6 +29,9 @@
 #include <qguardedptr.h>
 #include <qstringlist.h>
 #include <qregexp.h>
+
+// This file was using 6002, but kdebug.areas didn't know about that number
+#define DEBUGAREA 6100
 
 typedef QMap< int, QGuardedPtr<KJavaApplet> > AppletMap;
 
@@ -82,17 +85,21 @@ void KJavaAppletContext::registerApplet( KJavaApplet* applet )
     d->applets.insert( appletId, applet );
 }
 
-void KJavaAppletContext::create( KJavaApplet* applet )
+bool KJavaAppletContext::create( KJavaApplet* applet )
 {
-    server->createApplet( id, applet->appletId(),
-                          applet->appletName(),
-                          applet->appletClass(),
-                          applet->baseURL(),
-                          applet->codeBase(),
-                          applet->archives(),
-                          applet->size(),
-                          applet->getParams(),
-                          applet->getWindowName() );
+    return server->createApplet( id, applet->appletId(),
+                                applet->appletName(),
+                                applet->appletClass(),
+                                applet->baseURL(),
+                                applet->user(),
+                                applet->password(),
+                                applet->authName(),
+                                applet->codeBase(),
+                                applet->archives(),
+                                applet->size(),
+                                applet->getParams(),
+                                applet->getWindowName() );
+
 
 }
 
@@ -162,7 +169,7 @@ void KJavaAppletContext::received( const QString& cmd, const QStringList& arg )
 
         if( !ok )
         {
-            kdError(6002) << "could not parse out parameters for resize" << endl;
+            kdError(DEBUGAREA) << "could not parse out parameters for resize" << endl;
         }
         else
         {
@@ -171,7 +178,7 @@ void KJavaAppletContext::received( const QString& cmd, const QStringList& arg )
         }
     }
     else if (cmd.startsWith(QString::fromLatin1("audioclip_"))) {
-        kdDebug(6002) << "process Audio command (not yet implemented): " << cmd  << " " << arg[0] << endl;
+        kdDebug(DEBUGAREA) << "process Audio command (not yet implemented): " << cmd  << " " << arg[0] << endl;
     }
     else if ( cmd == QString::fromLatin1( "JS_Event" )
               && arg.count() > 2 )
@@ -192,10 +199,10 @@ void KJavaAppletContext::received( const QString& cmd, const QStringList& arg )
                 emit static_cast<KJavaLiveConnect*>(applet->getLiveConnectExtension())->sendEvent(objid, arg[2], arglist);
             }
             else
-                kdError(6002) << "could find applet for JS event" << endl;
+                kdError(DEBUGAREA) << "could find applet for JS event" << endl;
         }
         else
-            kdError(6002) << "could not parse applet ID for JS event " << arg[0] << " " << arg[1] << endl;
+            kdError(DEBUGAREA) << "could not parse applet ID for JS event " << arg[0] << " " << arg[1] << endl;
     }
     else if ( cmd == QString::fromLatin1( "AppletStateNotification" ) )
     {
@@ -211,15 +218,15 @@ void KJavaAppletContext::received( const QString& cmd, const QStringList& arg )
                 {
                     applet->stateChange(newState);
                     if (newState == KJavaApplet::INITIALIZED) {
-                        kdDebug(6002) << "emit appletLoaded" << endl;
+                        kdDebug(DEBUGAREA) << "emit appletLoaded" << endl;
                         emit appletLoaded();
                     }
                 } else
-                    kdError(6002) << "AppletStateNotification: status is not numerical" << endl;
+                    kdError(DEBUGAREA) << "AppletStateNotification: status is not numerical" << endl;
             } else
-                kdWarning(6002) << "AppletStateNotification:  No such Applet with ID=" << arg[0] << endl;
+                kdWarning(DEBUGAREA) << "AppletStateNotification:  No such Applet with ID=" << arg[0] << endl;
         } else
-            kdError(6002) << "AppletStateNotification: Applet ID is not numerical" << endl;
+            kdError(DEBUGAREA) << "AppletStateNotification: Applet ID is not numerical" << endl;
     }
     else if ( cmd == QString::fromLatin1( "AppletFailed" ) ) {
         bool ok;

@@ -24,6 +24,9 @@
 
 #include <klocale.h>
 #include <kdebug.h>
+#include <kapplication.h>
+#include <kio/authinfo.h>
+#include <dcopclient.h>
 
 
 
@@ -47,7 +50,7 @@ public:
 
 KJavaApplet::KJavaApplet( KJavaAppletWidget* _parent,
                           KJavaAppletContext* _context )
-    : params(), liveconnect( new KJavaLiveConnect( _context, this ) )
+    : params()
 {
     d = new KJavaAppletPrivate;
 
@@ -56,12 +59,9 @@ KJavaApplet::KJavaApplet( KJavaAppletWidget* _parent,
     d->failed = false;
 
     if( _context )
-        context = _context;
-    else
-        context = new KJavaAppletContext();
+        setAppletContext( _context );
 
     d->reallyExists = false;
-    context->registerApplet(this);
 }
 
 KJavaApplet::~KJavaApplet()
@@ -76,6 +76,13 @@ KJavaApplet::~KJavaApplet()
 bool KJavaApplet::isCreated()
 {
     return d->reallyExists;
+}
+
+void KJavaApplet::setAppletContext( KJavaAppletContext* _context )
+{
+    context = _context;
+    context->registerApplet( this );
+    liveconnect = new KJavaLiveConnect( _context, this );
 }
 
 void KJavaApplet::setAppletClass( const QString& _className )
@@ -173,7 +180,32 @@ QString& KJavaApplet::appletName()
 
 void KJavaApplet::create( )
 {
-    context->create( this );
+    KIO::AuthInfo info;
+    QString errorMsg;
+    QCString replyType;
+    QByteArray params;
+    QByteArray reply;
+    KIO::AuthInfo authResult;
+
+    //(void) dcopClient(); // Make sure to have a dcop client.
+    info.url = d->baseURL;
+    info.verifyPath = true;
+
+    QDataStream stream(params, IO_WriteOnly);
+    stream << info << d->UIwidget->topLevelWidget()->winId();
+
+    if (!kapp->dcopClient ()->call( "kded", "kpasswdserver", "checkAuthInfo(KIO::AuthInfo, long int)", params, replyType, reply ) ) {
+        kdWarning() << "Can't communicate with kded_kpasswdserver!" << endl;
+    } else if ( replyType == "KIO::AuthInfo" ) {
+        QDataStream stream2( reply, IO_ReadOnly );
+        stream2 >> authResult;
+        setUser (authResult.username);
+        setPassword (authResult.password);
+        setAuthName (authResult.realmValue);
+    }
+
+    if (  !context->create( this ) )
+        setFailed();
     d->reallyExists = true;
 }
 
@@ -235,6 +267,11 @@ bool KJavaLiveConnect::call( const unsigned long objid, const QString & func, co
 
 void KJavaLiveConnect::unregister(const unsigned long objid)
 {
+    if (objid == 0) {
+        // typically a gc after a function call on the applet, 
+        // no need to send to the jvm
+        return;
+    }
     context->derefObject(applet, objid);
 }
 

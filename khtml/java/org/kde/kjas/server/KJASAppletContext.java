@@ -10,6 +10,32 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import org.kde.javascript.JSObject;
 
+final class KJASAuthenticator extends Authenticator {
+    private Hashtable authentication;
+
+    KJASAuthenticator() {
+        authentication = new Hashtable();
+        setDefault(this);
+    }
+    final void addURL(URL url, String user, String password, String authname) {
+        String key = new String(url.getProtocol() + ":" + url.getHost() + ":" +
+                url.getPort() + "_" + authname);
+        String [] auths = { user, password };
+        authentication.put(key, auths);
+    }
+    final protected PasswordAuthentication getPasswordAuthentication() {
+        URL url;
+        String key = new String(getRequestingProtocol() + ":" + getRequestingHost() + ":" + getRequestingPort() + "_" + getRequestingPrompt());
+        String [] auths = (String []) authentication.get(key);
+        if (auths != null) {
+            char [] pw = new char[auths[1].length()];
+            auths[1].getChars(0, auths[1].length(), pw, 0);
+            return new PasswordAuthentication(auths[0], pw);
+        }
+        return null;
+    }
+}
+
 /**
  * The context in which applets live.
  */
@@ -19,6 +45,7 @@ public class KJASAppletContext implements AppletContext
     private Hashtable images;
     private Vector    pendingImages;
     private Hashtable streams;
+    private Stack jsobjects;
 
     private String myID;
     private KJASAppletClassLoader loader;
@@ -26,7 +53,7 @@ public class KJASAppletContext implements AppletContext
     private int refcounter = 0;
     // a mapping JS referenced Java objects
     private Hashtable jsReferencedObjects;
-    private JSObject jsobject = null;
+    private final static KJASAuthenticator authenticator = new KJASAuthenticator();
     // keep this in sync with KParts::LiveConnectExtension::Type
     private final static int JError    = -1;
     private final static int JVoid     = 0;
@@ -45,6 +72,7 @@ public class KJASAppletContext implements AppletContext
         images = new Hashtable();
         pendingImages = new Vector();
         streams = new Hashtable();
+        jsobjects = new Stack();
         jsReferencedObjects = new Hashtable();
         myID   = _contextID;
         active = true;
@@ -72,8 +100,8 @@ public class KJASAppletContext implements AppletContext
         return ((KJASAppletStub) stubs.get( appletId )).getApplet();
     }
 
-    public Object getJSReferencedObject(int index) {
-        return jsReferencedObjects.get(new Integer(index));
+    public Object getJSReferencedObject(int objid) {
+        return jsReferencedObjects.get(new Integer(objid));
     }
 
     public String getAppletName(String appletID) {
@@ -84,6 +112,7 @@ public class KJASAppletContext implements AppletContext
     }
     public void createApplet( String appletID, String name,
                               String className, String docBase,
+                              String username, String password, String authname,
                               String codeBase, String archives,
                               String width, String height,
                               String windowName, Hashtable params )
@@ -126,6 +155,16 @@ public class KJASAppletContext implements AppletContext
         if( !params.containsKey( key ) )
             params.put( key, height );
 
+        if (username != null && !username.equals("")) {
+            try {
+                URL url = new URL(docBase);
+                int port = url.getPort();
+                if (port < 0)
+                    port = url.getDefaultPort();
+                authenticator.addURL(new URL(url.getProtocol(), url.getHost(), port, ""), username, password, authname);
+            } catch (MalformedURLException muex) {
+            }
+        }
         try
         {
             KJASAppletClassLoader loader =
@@ -225,6 +264,7 @@ public class KJASAppletContext implements AppletContext
 
         stubs.clear();
         jsReferencedObjects.clear();
+        jsobjects.clear();
         active = false;
     }
 
@@ -366,12 +406,11 @@ public class KJASAppletContext implements AppletContext
     }
     public void evaluateJavaScript(String script, String appletID, JSObject jso) {
         if( active && (script != null) ) {
-            jsobject = jso;
-            int [] types = new int[1];
-            // keep in sync with KPart::LiveConnectExtension::TypeString
-            types[0] = 5;
-            String [] arglist = new String[1];
-            arglist[0] = script;
+            synchronized (jsobjects) {
+                jsobjects.push(jso);
+            }
+            int [] types = { JString };
+            String [] arglist = { script };
             Main.protocol.sendJavaScriptEventCmd(myID, appletID, 0, "eval", types, arglist);
         }
     }
@@ -429,14 +468,20 @@ public class KJASAppletContext implements AppletContext
 
     public boolean putMember(String appletID, int objid, String name, String value)
     {
-        if (jsobject != null && name.equals("__lc_ret")) {
+        if (name.equals("__lc_ret")) {
             // special case; return value of JS script evaluation
             Main.debug("putValue: applet " + name + "=" + value);
-            jsobject.returnvalue = value;
+            JSObject jso = null;
+            synchronized (jsobjects) {
+                if (!jsobjects.empty())
+                    jso = (JSObject) jsobjects.pop();
+            }
+            if (jso == null)
+                return false;
+            jso.returnvalue = value;
             try {
-                jsobject.thread.interrupt();
+                jso.thread.interrupt();
             } catch (SecurityException ex) {}
-            jsobject = null;
             return true;
         }
         KJASAppletStub stub = null;

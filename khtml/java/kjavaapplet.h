@@ -92,6 +92,11 @@ public:
     ~KJavaApplet();
 
     /**
+     * Set the applet context'.
+     */
+    void setAppletContext( KJavaAppletContext* _context );
+
+    /**
      * Specify the name of the class file to run. For example 'Lake.class'.
      */
     void setAppletClass( const QString& clazzName );
@@ -231,6 +236,24 @@ public:
     KJavaAppletContext* getContext() const { return context; }
     
     /**
+     * Get/Set the user name
+     */
+    void setUser(const QString & _user) { username = _user; }
+    const QString & user () const { return username; }
+
+    /**
+     * Get/Set the user password
+     */
+    void setPassword(const QString & _password) { userpassword = _password; }
+    const QString & password () const { return userpassword; }
+
+    /**
+     * Get/Set the auth name
+     */
+    void setAuthName(const QString & _auth) { authname = _auth; }
+    const QString & authName () const { return authname; }
+
+    /**
     * called from the protocol engine
     * changes the status according to the one on the java side.
     * Do not call this yourself!
@@ -248,6 +271,9 @@ private:
     KJavaAppletContext*    context;
     KJavaLiveConnect*      liveconnect;
     int                    id;
+    QString                username;
+    QString                userpassword;
+    QString                authname;
 };
 
 #endif // KJAVAAPPLET_H
