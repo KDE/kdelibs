@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=MimeType
+MimeType=application/x-jar
+Icon=mimetypes/java_src
+Patterns=*.jar;
+Comment=Java Archive
+Comment[de]=Java-Archive
+Comment[fr]=Archive Java
+DefaultApp=
