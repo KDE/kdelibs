@@ -1,9 +1,19 @@
+kdelibs (4:2.1.1-8) unstable; urgency=low
+ 
+  * Update config.sub/guess files for hppa/ia64 and whatever else...
+  * Merge with upstream CVS
+  * Update Build-Depends
+  * Update Standards Version
+ 
+ -- Ivan E. Moore II <rkrusty@debian.org>  Sun, 22 Apr 2001 01:27:00 -0700
+
 kdelibs (4:2.1.1-7) unstable; urgency=low
  
   * Adding in a dh-make template tree under /usr/share/doc/kdelibs-dev/dh-make
     It is for a single binary package.  
+  * More upstream fixes
  
- -- Ivan E. Moore II <rkrusty@debian.org>  Mon, 09 Apr 2001 03:00:00 -0700
+ -- Ivan E. Moore II <rkrusty@debian.org>  Fri, 13 Apr 2001 14:37:00 -0700
 
 kdelibs (4:2.1.1-6) unstable; urgency=low
  
