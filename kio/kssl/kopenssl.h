@@ -617,6 +617,11 @@ public:
 
 
    /*
+    *  ASN1_STRING_data
+    */
+   unsigned char *ASN1_STRING_data(ASN1_STRING *x);
+
+   /*
     *  
     */
    int OBJ_obj2nid(ASN1_OBJECT *o);
