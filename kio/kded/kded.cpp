@@ -295,6 +295,7 @@ int main(int argc, char *argv[])
      // unconditionnally (David)
      QByteArray data;
      kapp->dcopClient()->send( "*", "ksycoca", "notifyDatabaseChanged()", data );
+     kapp->dcopClient()->send( "ksplash", "", "upAndRunning(QString)",  QString("kded"));
 
      return k.exec(); // keep running
 }
