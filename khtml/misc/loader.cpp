@@ -1053,7 +1053,7 @@ void Loader::servePendingRequests()
       job->addMetaData("accept", req->object->accept());
   if ( req->m_docLoader )  {
       KURL r = req->m_docLoader->doc()->URL();
-      r.setQuery(QString::null);
+      r.setRef(QString::null);
       if ( r.protocol().startsWith( "http" ) && r.path().isEmpty() )
           r.setPath( "/" );
       job->addMetaData("referrer", r.url());
