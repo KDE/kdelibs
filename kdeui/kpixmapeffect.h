@@ -35,7 +35,7 @@ public:
 		   SouthLite, SELite, EastLite, NELite};
 
     /**
-     * Create a gradient from color a to color b of the specified type.
+     * Creates a gradient from color a to color b of the specified type.
      *
      * @param pixmap The pixmap to process.
      * @param ca Color a.
@@ -50,7 +50,7 @@ public:
                             GradientType type, int ncols=3);
 
     /**
-     * Create an unbalanced gradient.
+     * Creates an unbalanced gradient.
      *
      * An unbalanced gradient is a gradient where the transition from
      * color a to color b is not linear, but in this case, exponential.
@@ -69,7 +69,7 @@ public:
                    int yfactor = 100, int ncols=3);
 
     /**
-     * Create a Pixmap of a given size with the given pixmap.
+     * Creates a pixmap of a given size with the given pixmap.
      *
      * if the
      * given size is bigger than the size of the pixmap, the pixmap is
@@ -82,7 +82,7 @@ public:
     static KPixmap createTiled(const KPixmap& pixmap, QSize size);
 
     /**
-     * Either brighten or dim a pixmap by a specified ratio.
+     * Either brightens or dims a pixmap by a specified ratio.
      *
      * @param pixmap The pixmap to process.
      * @param ratio The ratio to use. Use negative value to dim.
@@ -102,7 +102,7 @@ public:
                                     RGBComponent channel);
 
     /**
-     * Blend the provided pixmap into a background of the indicated color
+     * Blends the provided pixmap into a background of the indicated color.
      *
      * @param pixmap The pixmap to process.
      * @param initial_intensity this parameter takes values from -1 to 1:
@@ -121,7 +121,7 @@ public:
                          bool anti_dir=false, int ncols=3);
 
     /**
-     * Build a hash on any given Pixmap.
+     * Builds a hash on any given pixmap.
      *
      * @param pixmap The pixmap to process.
      * @param lite The hash faces the indicated lighting (cardinal poles)
@@ -132,7 +132,7 @@ public:
                         unsigned int spacing=0, int ncols=3);
 
     /**
-     * Create a pattern from a pixmap.
+     * Creates a pattern from a pixmap.
      *
      * The given pixmap is "flattened"
      * between color a to color b.
@@ -148,7 +148,7 @@ public:
                    const QColor &ca, const QColor &cb, int ncols=8);
     	
     /**
-     * Recolor a pixmap.
+     * Recolors a pixmap.
      *
      * The most dark color will become color a,
      * the most bright one color b, and in between.
@@ -163,7 +163,7 @@ public:
     static KPixmap& fade(KPixmap& pixmap, double val, const QColor &color);
 
     /**
-     * Convert a pixmap to grayscale.
+     * Converts a pixmap to grayscale.
      *
      * @param pixmap The pixmap to process.
      * @param fast Set to @p true in order to use a faster but non-photographic
@@ -173,7 +173,7 @@ public:
     static KPixmap& toGray(KPixmap& pixmap, bool fast=false);
 
     /**
-     * Desaturate a pixmap.
+     * Desaturates a pixmap.
      *
      * @param pixmap The pixmap to process.
      * @param desat A value between 0 and 1 setting the degree of desaturation
@@ -182,7 +182,7 @@ public:
     static KPixmap& desaturate(KPixmap& pixmap, float desat = 0.3);
 
     /**
-     * Modifie the contrast of a pixmap.
+     * Modifies the contrast of a pixmap.
      *
      * @param pixmap The pixmap to process.
      * @param c A contrast value between -255 and 255.
@@ -191,7 +191,7 @@ public:
     static KPixmap& contrast(KPixmap& pixmap, int c);
 
     /**
-     * Dither a pixmap using Floyd-Steinberg dithering for low-color
+     * Dithers a pixmap using Floyd-Steinberg dithering for low-color
      * situations.
      *
      * @param pixmap The pixmap to process.

@@ -109,7 +109,7 @@ public:
   virtual void save() {};
 
   /**
-   * Set the configuration to sensible default values.
+   * Sets the configuration to sensible default values.
    *
    * This method is called when the user clicks the "Default"
    * button. It should set the display to useful values.
@@ -193,7 +193,7 @@ signals:
 protected:
 
   /**
-   * Set the buttons to display.
+   * Sets the buttons to display.
    *
    * Help: shows a "Help" button.
    * Default: shows a "Use Defaults" button

@@ -189,16 +189,21 @@ public:
   static bool isEqual(QKeyEvent* /*ev*/, int /*key*/);
 
   /**
-   * Return the keybinding for @p accel.
+   * Returns the keybinding for @p accel.
    */
   static uint key(StdAccel accel);
-
-  static QString action(StdAccel);
+  /**
+   * Returns a string representation for @p accel.
+   */
+  static QString action(StdAccel accel);
+  /**
+   * Returns a localized description of @p accel.
+   */
   static QString description(StdAccel);
 
   /**
    * @internal
-   * Return the hardcoded default keybinding for @p accel.
+   * Returns the hardcoded default keybinding for @p accel.
    * This does not take into account the user's configuration.
    */
   static uint defaultKey(StdAccel accel);

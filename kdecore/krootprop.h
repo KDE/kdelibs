@@ -51,44 +51,37 @@ private:
   bool dirty;
   KRootPropPrivate *d;
 
-protected:
-
 public:
   /**
-   * Construct a KRootProp object for the property @p rProp.
-   *
+   * Constructs a KRootProp object for the property @p rProp.
    **/
    KRootProp( const QString& rProp = QString::null );
-
-/**
- * Destructor.
- *
- * Writes back any dirty configuration entries.
- **/
-   ~KRootProp();
+  /**
+   * Destructs the KRootProp object.
+   *
+   * Writes back any dirty configuration entries.
+   **/
+  ~KRootProp();
    
-/**
- * Specify the property in which keys will be searched.
- *
- **/	
+  /**
+   * Sets the property in which keys will be searched.
+   **/	
    void setProp(const QString& rProp="");
-   
-   
    /**
-    * Retrieve the name of the property under which keys are searched.
+    * Returns the name of the property under which keys are searched.
     **/
    QString prop() const;
    
    /**
-    * Destroy the property completely.
+    * Destroys the property completely.
     *
     * I.e. all entries will be cleared
     * and the property will be removed from the root window.
     **/
- void destroy();
+   void destroy();
 
  /**
-  * Read the value of an entry specified by @p rKey in the current property
+  * Reads the value of an entry specified by @p rKey in the current property.
   *
   * @param rKey	The key to search for.
   * @param pDefault A default value returned if the key was not found.
@@ -99,10 +92,10 @@ public:
 		    const QString& pDefault = QString::null ) const ;
 					
  /**
-  * Read a numerical value.
+  * Reads a numerical value.
   *
-  * Read the value of an entry specified by @p rKey in the current property
-  * and interpret it numerically.
+  * Reads the value of an entry specified by @p rKey in the current property
+  * and interprets it numerically.
   *
   * @param rKey The key to search for.
   * @param nDefault A default value returned if the key was not found.
@@ -111,9 +104,9 @@ public:
  int readNumEntry( const QString& rKey, int nDefault = 0 ) const;
  
  /**
-  * Read a @ref QFont.
+  * Reads a @ref QFont value.
   *
-  * Read the value of an entry specified by @p rKey in the current property
+  * Reads the value of an entry specified by @p rKey in the current property
   * and interpret it as a font object.
   *
   * @param rKey		The key to search for.
@@ -124,10 +117,10 @@ public:
 		      const QFont* pDefault = 0 ) const;
  
  /**
-  * Read a @ref QColor.
+  * Reads a @ref QColor.
   *
-  * Read the value of an entry specified by @p rKey in the current property
-  * and interpret it as a color.
+  * Reads the value of an entry specified by @p rKey in the current property
+  * and interprets it as a color.
   *
   * @param rKey		The key to search for.
   * @param pDefault	A default value returned if the key was not found.
@@ -139,7 +132,7 @@ public:
 							
 	
  /**
-  * @ref writeEntry() overridden to accept a const @ref QString& argument.
+  * Writes a (key/value) pair.
   *
   * This is stored to the current property when destroying the
   * config object or when calling @ref sync().
@@ -152,8 +145,9 @@ public:
   **/				
  QString writeEntry( const QString& rKey, const QString& rValue );
 
- /** Write the key value pair.
-  * Same as above, but write a numerical value.
+ /**
+  * Writes the (key/value) pair.
+  * Same as above, but writes a numerical value.
   * @param rKey The key to write.
   * @param nValue The value to write.
   * @return The old value for this key. If this key did not
@@ -161,8 +155,9 @@ public:
   **/
  QString writeEntry( const QString& rKey, int nValue );
 
- /** Write the key value pair.
-  * Same as above, but write a font.
+ /**
+  * Writes the (key/value) pair.
+  * Same as above, but writes a font.
   * @param rKey The key to write.
   * @param rValue The value to write.
   * @return The old value for this key. If this key did not
@@ -170,8 +165,9 @@ public:
   **/
   QString writeEntry( const QString& rKey, const QFont& rFont );
  
-  /** Write the key value pair.
-   * Same as above, but write a color.
+  /**
+   * Writes the (key/value) pair.
+   * Same as above, but writes a color.
    * @param rKey The key to write.
    * @param rValue The value to write.
    * @return The old value for this key. If this key did not
@@ -180,7 +176,7 @@ public:
   QString writeEntry( const QString& rKey, const QColor& rColor );
   
   /**
-   * Remove an entry.
+   * Removes an entry.
    * @param rKey The key to remove.
    * @return The old value for this key. If this key did not
    *  exist, a null string is returned.
@@ -188,14 +184,15 @@ public:
   QString removeEntry(const QString& rKey);
 
   /**
-   * Get a list of all keys.
+   * Returns a list of all keys.
    * @return A @ref QStringList containing all the keys.
    **/
   QStringList listEntries() const;
 
-  /** Flush the entry cache.
-   * Write back dirty configuration entries to the current property,
-   *  This is called automatically from the destructor.
+  /**
+   * Flushes the entry cache.
+   * Writes back dirty configuration entries to the current property,
+   * This is called automatically from the destructor.
    **/	
   void sync();
 };

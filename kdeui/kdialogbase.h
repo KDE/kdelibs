@@ -427,7 +427,7 @@ class KDialogBase : public KDialog
     void setButtonBoxOrientation( int orientation );
 
     /**
-     * Set the button that will be activated when the Escape key
+     * Sets the button that will be activated when the Escape key
      * is pressed.
      *
      * Normally you should not use this function. By default,
@@ -633,7 +633,7 @@ class KDialogBase : public KDialog
 
   
     /**
-     * Set the icon used in @p TreeList Mode for the given path.
+     * Sets the icon used in @p TreeList Mode for the given path.
      *
      * @param path The path for which this icon should be shown.
      * @param pixmap The icon used.
@@ -752,7 +752,7 @@ class KDialogBase : public KDialog
     void showButtonCancel( bool state );
 
     /**
-     * Set the page with @p index to be displayed.
+     * Sets the page with @p index to be displayed.
      *
      * This method will only 
      * work when the dialog is using the predefined shape of TreeList,
@@ -794,7 +794,7 @@ class KDialogBase : public KDialog
 
 
     /**
-     * Set the main user definable widget.
+     * Sets the main user definable widget.
      *
      * If the dialog is using the predefined Swallow mode, the widget will 
      * be reparented to the internal swallow control widget. If the dialog 
@@ -829,7 +829,7 @@ class KDialogBase : public KDialog
     void disableResize();
 
     /**
-     * Convenience method. Set the initial dialog size.
+     * Convenience method. Sets the initial dialog size.
      *
      *  This method should 
      * only be called right before @ref show() or @ref exec(). The initial
@@ -888,7 +888,7 @@ class KDialogBase : public KDialog
 			     const QString &quickhelp=QString::null );
 
     /** 
-     * Set the text of the Cancel button.
+     * Sets the text of the Cancel button.
      *
      *  If the default parameters are 
      * used (that is, if no parameters are given) the standard texts are set:
@@ -903,7 +903,7 @@ class KDialogBase : public KDialog
 			      const QString &quickhelp=QString::null );
 
     /**
-     * Set the text of any button.
+     * Sets the text of any button.
      * 
      * @param id The button identifier.
      * @param text Button text.
@@ -911,7 +911,7 @@ class KDialogBase : public KDialog
     void setButtonText( ButtonCode id, const QString &text );
 
     /**
-     * Set the tooltip text of any button.
+     * Sets the tooltip text of any button.
      * 
      * @param id The button identifier.
      * @param text Button text.
@@ -998,7 +998,7 @@ class KDialogBase : public KDialog
     static const QPixmap *getBackgroundTile();
     
     /** 
-     * Set the background tile.
+     * Sets the background tile.
      *
      *  If it is Null (0), the background image is deleted. 
      *
@@ -1120,7 +1120,7 @@ class KDialogBase : public KDialog
     void enableLinkedHelp( bool state );
 
     /**
-     * Set the text that is shown as the linked text.
+     * Sets the text that is shown as the linked text.
      *
      * If text is empty, 
      * the text "Get help..." (internationalized) is used instead.
@@ -1130,7 +1130,7 @@ class KDialogBase : public KDialog
     void setHelpLinkText( const QString &text );
     
     /** 
-     * Set the help path and topic.
+     * Sets the help path and topic.
      *
      * @param anchor Defined anchor in your docbook sources
      * @param appname Defines the appname the help belongs to
@@ -1145,12 +1145,12 @@ class KDialogBase : public KDialog
     void helpClickedSlot( const QString & );
 
     /**
-     * Set the status of the Details button.
+     * Sets the status of the Details button.
      */
     void setDetails(bool showDetails); 
 
     /**
-     * Set the widget that gets shown when "Details" is enabled.
+     * Sets the widget that gets shown when "Details" is enabled.
      *
      * The dialog takes over ownership of the widget.
      * Any previously set widget gets deleted.

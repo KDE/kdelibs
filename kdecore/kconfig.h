@@ -37,7 +37,7 @@ class KConfigPrivate;
 *
 * @author Kalle Dalheimer <kalle@kde.org>, Preston Brown <pbrown@kde.org>
 * @version $Id$
-* @see KGlobal::config KConfigBase KSimpleConfig
+* @see KGlobal::config(), KConfigBase, KSimpleConfig
 * @short KDE Configuration Management class
 */
 class KConfig : public KConfigBase
@@ -46,7 +46,7 @@ class KConfig : public KConfigBase
 
 public:
   /**
-   * Construct a KConfig object.
+   * Constructs a KConfig object.
    *
    * @param fileName A file to parse in addition to the
    *        system-wide file(s).  If it is not provided, only global
@@ -54,13 +54,13 @@ public:
    *        @p bUseKDEGlobals).
    * @param bReadOnly Set the config object's read-only status.
    * @param bUseKDEGlobals Toggle reading the global KDE configuration file.
-   * @param resType the place to look in (config, data, etc) See @ref KStandardDirs
+   * @param resType the place to look in (config, data, etc) See @ref KStandardDirs.
    */
   KConfig( const QString& fileName = QString::null,
           bool bReadOnly = false, bool bUseKDEGlobals = true, const char *resType="config");
 
   /**
-   * Destructor.
+   * Destructs the KConfig object.
    *
    * Writes back any dirty configuration entries, and destroys
    * dynamically created objects.
@@ -82,31 +82,30 @@ public:
   virtual void rollback(bool bDeep = true);
 
   /**
-   * @return @p true if the specified group is known.
+   * Returns true if the specified group is known.
    *
-   * @param _pGroup The group to search for.
+   * @param group The group to search for.
    * @returns @p true if the group exists.
    */
-  virtual bool hasGroup(const QString &_pGroup) const;
+  virtual bool hasGroup(const QString &group) const;
 
   /**
-   * Retrieve a list of groups that are known.
-   * @returns The list of groups.
+   * Returns a list of groups that are known.
    */
   virtual QStringList groupList() const;
 
   /*
-   * Check if the key has an entry in the currently active group. Use
+   * Checks if the key has an entry in the currently active group. Use
    * this to determine if a key is not specified for the current group
    * (@p hasKey returns false). Keys with null data are considered
    * nonexistent.
    *
-   * @param pKey The key to search for.
+   * @param key The key to search for.
    */
-  virtual bool hasKey(const QString &pKey) const;
+  virtual bool hasKey(const QString &key) const;
 
   /**
-   * Retrieve a map (tree) of entries for all entries in a particular
+   * Returns a map (tree) of entries for all entries in a particular
    * group.
    *
    *  Only the actual entry string is returned, none of the
@@ -119,7 +118,7 @@ public:
   virtual QMap<QString, QString> entryMap(const QString &pGroup) const;
 
   /**
-   * Clear all internal data structures and then reread
+   * Clears all internal data structures and then reread
    * configuration information from disk.
    */
   virtual void reparseConfiguration();
@@ -127,7 +126,7 @@ public:
 protected:
 
   /**
-   * Retrieve a map (tree) of the entries in the specified group.
+   * Returns a map (tree) of the entries in the specified group.
    *
    * Do not use this function, the implementation / return type are
    * subject to change.
@@ -151,7 +150,7 @@ protected:
    virtual KEntryMap internalEntryMap() const { return aEntryMap; }
 
   /**
-   * Insert a key,value pair into the internal storage mechanism of
+   * Inserts a (key, value) pair into the internal storage mechanism of
    * the configuration object.
    *
    * @param _key The key to insert.  It contains information both on
@@ -163,7 +162,7 @@ protected:
   virtual void putData(const KEntryKey &_key, const KEntry &_data, bool _checkGroup=true);
 
   /**
-   * Look up an entry in the config object's internal structure.
+   * Looks up an entry in the config object's internal structure.
    *
    * @param _key The key to look up  It contains information both on
    *        the group of the key and the entry's key itself.
@@ -181,16 +180,16 @@ protected:
    * set to @ref QString::null.
    */
   KEntryMap aEntryMap;
-  
-  
+
+
 public:
   /**
    * Overloaded public functions.
    */
-  virtual bool hasGroup(const QCString &_pGroup) const;
+  virtual bool hasGroup(const QCString &group) const;
   virtual bool hasGroup(const char *_pGroup) const;
   virtual bool hasKey(const char *pKey) const;
-  
+
 private:
   /**
    * @internal

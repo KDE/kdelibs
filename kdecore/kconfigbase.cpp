@@ -145,12 +145,12 @@ QString KConfigBase::locale() const
   return QString::fromUtf8(aLocaleString);
 }
 
-void KConfigBase::setGroup( const QString& pGroup )
+void KConfigBase::setGroup( const QString& group )
 {
-  if ( pGroup.isNull() )
+  if ( group.isNull() )
     mGroup = "<default>";
   else
-    mGroup = pGroup.utf8();
+    mGroup = group.utf8();
   bCheckGroup = true;
 }
 
@@ -159,12 +159,12 @@ void KConfigBase::setGroup( const char *pGroup )
   setGroup(QCString(pGroup));
 }
 
-void KConfigBase::setGroup( const QCString &pGroup )
+void KConfigBase::setGroup( const QCString &group )
 {
-  if ( pGroup.isEmpty() )
+  if ( group.isEmpty() )
     mGroup = "<default>";
   else
-    mGroup = pGroup;
+    mGroup = group;
   bCheckGroup = true;
 }
 
@@ -1021,9 +1021,9 @@ void KConfigBase::deleteEntry( const char *pKey,
   bCheckGroup = false;
 }
 
-bool KConfigBase::deleteGroup( const QString& pGroup, bool bDeep )
+bool KConfigBase::deleteGroup( const QString& group, bool bDeep )
 {
-  KEntryMap aEntryMap = internalEntryMap(pGroup);
+  KEntryMap aEntryMap = internalEntryMap(group);
 
   if (!bDeep) {
     // Check if it empty

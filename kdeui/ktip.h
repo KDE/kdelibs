@@ -111,7 +111,7 @@ class KTipDialog : public KDialog
 public:
 
   /**
-   * Show a tip.
+   * Shows a tip.
    *
    * This static method is all that is needed to add a tip-of-the-day
    * dialog to an application. It will pop up the dialog, unless the
@@ -128,7 +128,7 @@ public:
   static void showTip(QWidget *parent,const QString &tipFile=QString::null, bool force=false);
 
   /**
-   * Show a tip.
+   * Shows a tip.
    *
    * This methods calls showTip() with the applications main window as parent.
    *
@@ -136,7 +136,7 @@ public:
   static void showTip(const QString &tipFile=QString::null, bool force=false);
 
   /**
-   * Toggle the start behaviour.
+   * Toggles the start behaviour.
    *
    * Normally, the user can disable the display of the tip in the dialog.
    * This is just a way to change this setting from outside.

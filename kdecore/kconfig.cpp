@@ -104,9 +104,9 @@ QStringList KConfig::groupList() const
   return retList;
 }
 
-bool KConfig::hasKey(const QString &pKey) const
+bool KConfig::hasKey(const QString &key) const
 {
-   return KConfig::hasKey(pKey.utf8().data());
+   return KConfig::hasKey(key.utf8().data());
 }
 
 bool KConfig::hasKey(const char *pKey) const
@@ -235,9 +235,9 @@ KEntry KConfig::lookupData(const KEntryKey &_key) const
   }
 }
 
-bool KConfig::hasGroup(const QString &_pGroup) const
+bool KConfig::hasGroup(const QString &group) const
 {
-  return KConfig::hasGroup( _pGroup.utf8());
+  return KConfig::hasGroup( group.utf8());
 }
 
 bool KConfig::hasGroup(const char *_pGroup) const
@@ -245,9 +245,9 @@ bool KConfig::hasGroup(const char *_pGroup) const
   return KConfig::hasGroup( QCString(_pGroup));
 }
 
-bool KConfig::hasGroup(const QCString &_pGroup) const
+bool KConfig::hasGroup(const QCString &group) const
 {
-  KEntryKey groupKey( _pGroup, 0);
+  KEntryKey groupKey( group, 0);
   return aEntryMap.contains(groupKey);
 }
 

@@ -30,12 +30,12 @@ class KGlobalAccelPrivate;
 #ifdef Q_WS_X11
 /**
  * Returns the X key modifier for the key code keyCode.
- */	
+ */
 uint keyToXMod( int keyCode );
 
 /**
  * Returns the X key sym for the key code keyCode.
- */	
+ */
 uint keyToXSym( int keyCode );
 #endif
 
@@ -87,7 +87,7 @@ class KGlobalAccel : public QObject
 	 * Creates a KGlobalAccel object.
 	 */
 	KGlobalAccel( bool _do_not_grab = false);
-			
+
 	/**
 	   Creates a KGlobalAccel object with a parent and a name. The
 	   parent has the only effect that the KGlobalAccel object
@@ -108,7 +108,7 @@ class KGlobalAccel : public QObject
 	void clear();
 
 	/**
-	 * Connect an accelerator item to a slot/signal in another object.
+	 * Connects an accelerator item to a slot/signal in another object.
 	 *
 	 * Arguments:
 	 *

@@ -153,7 +153,7 @@ public:
   ~KRuler();
 
   /**
-   * Set the minimal value of the ruler pointer (default is 0).
+   * Sets the minimal value of the ruler pointer (default is 0).
    *
    * This method calls @ref update() so that the widget is painted after leaving
    * to the main event loop.
@@ -162,24 +162,25 @@ public:
   void setMinValue(int);
 
   /**
-   * Retrieve the minimal value of the ruler pointer.
+   * Returns the minimal value of the ruler pointer.
    **/
   inline int minValue() const;
 
   /**
-   * Set the maximum value of the ruler pointer (default is 100).
+   * Sets the maximum value of the ruler pointer (default is 100).
    *
    * This method calls @ref update() so that the widget is painted after leaving
    * to the main event loop.
    */
   void setMaxValue(int);
   
-  /** returns the maximal value of the ruler pointer.
+  /**
+   * Returns the maximal value of the ruler pointer.
    */
   inline int maxValue() const;
 
   /**
-   * Set minimum and maxmimum values of the ruler pointer.
+   * Sets minimum and maximum values of the ruler pointer.
    *
    * This method calls @ref update() so that the widget is painted after leaving
    * to the main event loop.
@@ -187,7 +188,7 @@ public:
   void setRange(int min, int max);
 
   /**
-   * Set the value of the ruler pointer.
+   * Sets the value of the ruler pointer.
    *
    * The value is indicated by painting the ruler pointer at the
    * corresponding position.
@@ -198,30 +199,30 @@ public:
   inline int value() const;
 
   /**
-   * Set distance between tiny marks.
+   * Sets the distance between tiny marks.
    *
    * This is mostly used in the English system (inches) with distance of 1. 
    */
   void setTinyMarkDistance(int);
   /**
-   * Retrieve the distance between tiny marks.
+   * Returns the distance between tiny marks.
    **/
   inline int tinyMarkDistance() const;
 
   /** 
-   * Set the distance between little marks.
+   * Sets the distance between little marks.
    *
    * The default value is 1 in the metric system and 2 in the English (inches) system.
    */
   void setLittleMarkDistance(int);
 
   /** 
-   * Retrieve the distance between little marks.
+   * Returns the distance between little marks.
    */
   inline int littleMarkDistance() const;
 
   /**
-   * Set the distance between medium marks.
+   * Sets the distance between medium marks.
    *
    * For English (inches) styles it defaults to twice the little mark distance.
    * For metric styles it defaults to five times the little mark distance.
@@ -230,43 +231,43 @@ public:
   inline int mediumMarkDistance() const;
 
   /** 
-   * Set distance between big marks.
+   * Sets distance between big marks.
    *
    * For English (inches) or metric styles it is twice the medium mark distance.
    **/
   void setBigMarkDistance(int);
   /**
-   * Retrieve the distance between big marks.
+   * Returns the distance between big marks.
    **/
   inline int bigMarkDistance() const;
 
   /**
-   * Show/hide tiny marks.
+   * Shows/hides tiny marks.
    **/
   void setShowTinyMarks(bool);
   bool showTinyMarks() const;
   /**
-   * Show/hide little marks.
+   * Shows/hides little marks.
    **/
   void setShowLittleMarks(bool);
   bool showLittleMarks() const;
   /**
-   * Show/hide medium marks.
+   * Shows/hides medium marks.
    **/
   void setShowMediumMarks(bool);
   bool showMediumMarks() const;
   /**
-   * Show/hide big marks.
+   * Shows/hides big marks.
    **/
   void setShowBigMarks(bool);
   bool showBigMarks() const;
   /**
-   * Show/hide end marks.
+   * Shows/hides end marks.
    **/
   void setShowEndMarks(bool);
   bool showEndMarks() const;
   /**
-   * Show/hide the pointer.
+   * Shows/hides the pointer.
    */
   void setShowPointer(bool);
   bool showPointer() const;
@@ -329,21 +330,21 @@ public:
    bool showEndLabel() const;
 
   /**
-   * Set the label this is drawn at the beginning of the visible part
-   * of the ruler.
+   * Sets the label this is drawn at the beginning of the visible part
+   * of the ruler to @p label
    **/
   void setEndLabel(const QString&);
   QString endLabel() const;
 
   /**
-   * Set up the necessary tasks for the provided styles.
+   * Sets up the necessary tasks for the provided styles.
    *
    * A convenience method.
    **/
   void setRulerMetricStyle(KRuler::MetricStyle);
 
   /**
-   * Set the number of pixels between two base marks.
+   * Sets the number of pixels between two base marks.
    *
    * Calling this method stretches or shrinks your ruler.
    *
@@ -360,15 +361,15 @@ public:
    * To use @p int values use setPixelPerMark((int)your_int_value);
    * default: 1 mark per 10 pixels 
    */
-  void setPixelPerMark(double);
+  void setPixelPerMark(double rate);
 
   /**
-   * Retrieve the number of pixels between two base marks.
+   * Returns the number of pixels between two base marks.
    **/
   inline double pixelPerMark() const;
 
   /**
-   * sets the length of the ruler, i.e. the difference between
+   * Sets the length of the ruler, i.e. the difference between
    * the begin mark and the end mark of the ruler.
    *
    * Same as (width() - offset())
@@ -380,7 +381,7 @@ public:
   int length() const;
 
   /**
-   * locks the length of the ruler, i.e. the difference between
+   * Locks the length of the ruler, i.e. the difference between
    * the two end marks doesn't change when the widget is resized.
    *
    * @param fix fixes the length, if true
@@ -389,7 +390,7 @@ public:
   bool lengthFixed() const;
 
   /**
-   * Set the number of pixels by which the ruler may slide up or left.
+   * Sets the number of pixels by which the ruler may slide up or left.
    * The number of pixels moved is realive to the previous position.
    * The Method makes sense for updating a ruler, which is working with 
    * a scrollbar.
@@ -402,7 +403,7 @@ public:
   void slideUp(int count = 1);
 
   /**
-   * Set the number of pixels by which the ruler may slide down or right.
+   * Sets the number of pixels by which the ruler may slide down or right.
    * The number of pixels moved is realive to the previous position.
    * The Method makes sense for updating a ruler, which is working with 
    * a scrollbar.
@@ -415,7 +416,7 @@ public:
   void slideDown(int count = 1);
 
   /**
-   * Set ruler slide offset.
+   * Sets the ruler slide offset.
    *
    * This is like @ref slideup() or @ref slidedown() with an absolute offset
    * from the start of the ruler.
@@ -425,7 +426,7 @@ public:
   void setOffset(int offset);
 
   /**
-   * Get the current ruler offset.
+   * Returns the current ruler offset.
    **/
   inline int offset() const;
 

@@ -59,22 +59,22 @@ public:
         enum GradientMode { Horizontal, Vertical, Diagonal, CrossDiagonal };
 
 	/**
-	 * Create a null pixmap.
+	 * Constructs a null pixmap.
 	 */
          KPixmap() : QPixmap() {};
 
 	/**
-	 * Destroy the pixmap.
+	 * Destructs the pixmap.
 	 */
 	~KPixmap() {};
 
 	/**
-	 * Copy the QPixmap @p pix.
+	 * Copies the QPixmap @p pix.
          */
 	KPixmap(const QPixmap& pix);
 
 	/**
-	 * Convert an image and sets this pixmap. 
+	 * Converts an image and sets this pixmap.
 	 *
 	 * The conversion_flags argument is a bitwise-OR from the
 	 * following choices. The options marked (default) are the
@@ -172,7 +172,7 @@ public:
 	 * considered to be a match, since this extra color may be a
 	 * transparent background.
 	 **/
-	bool checkColorTable(const QImage &image);	
+	bool checkColorTable(const QImage &image);
 
 private:
     KPixmapPrivate *d;

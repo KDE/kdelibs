@@ -27,9 +27,9 @@ class QEvent;
 #include <klistbox.h>
 
 /**
- * A little utility class for "completion-widgets", like KLineEdit or
- * KComboBox. KCompletionBox is a listbox, displayed as a rectangle without
- * any window-decoration, usually directly under the lineedit or combobox.
+ * A little utility class for "completion-widgets", like @ref KLineEdit or
+ * @ref KComboBox. KCompletionBox is a listbox, displayed as a rectangle without
+ * any window decoration, usually directly under the lineedit or combobox.
  * It is filled with all possible matches for a completion, so the user
  * can select the one he wants.
  *
@@ -67,7 +67,7 @@ public:
 
 public slots:
     /**
-     * @returns a list of all items currently in the box.
+     * Returns a list of all items currently in the box.
      */
     QStringList items() const;
 
@@ -130,32 +130,32 @@ public slots:
     QString cancelledText() const;
 
     /**
-     * Move the selection one line down or select the first item if nothing is selected yet.
+     * Moves the selection one line down or select the first item if nothing is selected yet.
      */
     void down();
 
     /**
-     * Move the selection one line up or select the first item if nothing is selected yet.
+     * Moves the selection one line up or select the first item if nothing is selected yet.
      */
     void up();
 
     /**
-     * Move the selection one page down.
+     * Moves the selection one page down.
      */
     void pageDown();
 
     /**
-     * Move the selection one page up.
+     * Moves the selection one page up.
      */
     void pageUp();
 
     /**
-     * Move the selection up to the first item.
+     * Moves the selection up to the first item.
      */
     void home();
 
     /**
-     * Move the selection down to the last item.
+     * Moves the selection down to the last item.
      */
     void end();
 

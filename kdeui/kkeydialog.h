@@ -197,17 +197,25 @@ public:
   ~KKeyDialog();
 
   /**
-   * Configure key settings, from a KAccel object.
+   * Pops up a modal dialog for configuring key settings. The dialog is initialized
+   * from a @ref KAccel object, and the modifications are written to that object
+   * when the dialog is closed.
+   * @return Accept if the dialog was closed with OK, Reject otherwise.
    **/
   static int configureKeys( KAccel *keys, bool save_settings = true,
 			    QWidget *parent = 0  );
   /**
-   * Configure key settings, from a KGlobalAccel object.
+   * Pops up a modal dialog for configuring key settings. The dialog is initialized
+   * from a KGlobalAccel object, and the modifications are written to that object
+   * when the dialog is closed.
+   * @return Accept if the dialog was closed with OK, Reject otherwise.
    **/
   static int configureKeys( KGlobalAccel *keys,  bool save_settings = true,
 			    QWidget *parent = 0 );
   /**
-   * Configure key settings, from an action collection (for XMLGUI based applications).
+   * Pops up a modal dialog for configuring key settings. The dialog is initialized
+   * from an action collection (for XMLGUI based applications).
+   * @return Accept if the dialog was closed with OK, Reject otherwise.
    **/
   static int configureKeys( KActionCollection *coll, const QString& xmlfile,
                             bool save_settings = true, QWidget *parent = 0 );

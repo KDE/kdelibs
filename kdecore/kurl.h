@@ -29,7 +29,7 @@ class QStringList;
 struct KURLPrivate;
 
 /**
- * Represent and parse a URL.
+ * Represents and parses a URL.
  *
  * A prototypical URL looks like:
  * <pre>
@@ -97,7 +97,7 @@ public:
    */
   KURL( const KURL& u );
   /**
-   * Convert from a @ref QUrl.
+   * Converts from a @ref QUrl.
    */
   KURL( const QUrl &u );
   /**
@@ -114,20 +114,20 @@ public:
   KURL( const KURL& _baseurl, const QString& _rel_url, int encoding_hint=0 );
 
   /**
-   * Retrieve the protocol for the URL (i.e., file, http, etc.).
+   * Returns the protocol for the URL (i.e., file, http, etc.).
    **/
   QString protocol() const { return m_bIsMalformed ? QString::null : m_strProtocol; }
   /**
-   * Set the protocol for the URL (i.e., file, http, etc.)
+   * Sets the protocol for the URL (i.e., file, http, etc.)
    **/
   void setProtocol( const QString& _txt );
 
   /**
-   * Retrieve the decoded user name (login, user id, ...) included in the URL.
+   * Returns the decoded user name (login, user id, ...) included in the URL.
    **/
   QString user() const { return m_strUser; }
   /**
-   * Set the user name (login, user id, ...) included the URL.
+   * Sets the user name (login, user id, ...) included in the URL.
    *
    * Special characters in the user name will appear encoded in the URL.
    **/
@@ -138,11 +138,11 @@ public:
   bool hasUser() const { return !m_strUser.isEmpty(); }
 
   /**
-   * Retrieve the decoded password (corresponding to @ref user()) included in the URL.
+   * Returns the decoded password (corresponding to @ref user()) included in the URL.
    **/
   QString pass() const { return m_strPass; }
   /**
-   * Set the password (corresponding to @ref user()) included in the URL.
+   * Sets the password (corresponding to @ref user()) included in the URL.
    *
    * Special characters in the password will appear encoded in the URL.
    **/
@@ -153,11 +153,11 @@ public:
   bool hasPass() const { return !m_strPass.isEmpty(); }
 
   /**
-   * Retrieve the decoded hostname included in the URL.
+   * Returns the decoded hostname included in the URL.
    **/
   QString host() const { return m_strHost; }
   /**
-   * Set the hostname included in the URL.
+   * Sets the hostname included in the URL.
    *
    * Special characters in the hostname will appear encoded in the URL.
    **/
@@ -168,18 +168,17 @@ public:
   bool hasHost() const { return !m_strHost.isEmpty(); }
 
   /**
-   * Retrieve the port number included in the URL.
+   * Returns the port number included in the URL.
    * If there is no port number specified in the URL, returns 0.
    **/
   unsigned short int port() const { return m_iPort; }
   /**
-   * Set the port number included in the URL.
+   * Sets the port number included in the URL.
    **/
   void setPort( unsigned short int _p );
 
   /**
-   * @return The current decoded path. This does @em not include the query.
-   *
+   * Returns the current decoded path. This does @em not include the query.
    */
   QString path() const  { return m_strPath; }
 
@@ -208,7 +207,8 @@ public:
    **/
   bool hasPath() const { return !m_strPath.isEmpty(); }
 
-  /** Removes all multiple directory separators ('/') and
+  /**
+   * Removes all multiple directory separators ('/') and
    * resolves any "." or ".." found in the path.
    * Calls @ref QDir::cleanDirPath but saves the trailing slash if any.
    */
@@ -264,14 +264,14 @@ public:
   QString ref() const { return m_strRef_encoded; }
 
   /**
-   * Set the reference part (everything after '#').
+   * Sets the reference part (everything after '#').
    * @param _txt is considered encoded.
    */
   void setRef( const QString& _txt ) { m_strRef_encoded = _txt; }
 
   /**
    * @return @p true if the URL has a reference part. In a URL like
-   *         http://www.kde.org/kdebase.tar#tar:/README it would 
+   *         http://www.kde.org/kdebase.tar#tar:/README it would
    *         return @p true, too.
    */
   bool hasRef() const { return !m_strRef_encoded.isNull(); }
@@ -287,7 +287,7 @@ public:
   QString encodedHtmlRef() const;
 
   /**
-   * Set the HTML-style reference.
+   * Sets the HTML-style reference.
    *
    * @param _ref This is considered to be @em not encoded in contrast to @ref setRef()
    *
@@ -325,7 +325,7 @@ public:
   bool hasSubURL() const;
 
   /**
-   * Add to the current path.
+   * Adds to the current path.
    * Assumes that the current path is a directory. @p _txt is appended to the
    * current path. The function adds '/' if needed while concatenating.
    * This means it does not matter whether the current path has a trailing
@@ -379,7 +379,7 @@ public:
 		     bool _ignore_trailing_slash_in_path = true ) const;
 
   /**
-   * Change directory by descending into the given directory.
+   * Changes the directory by descending into the given directory.
    * It is assumed the current URL represents a directory.
    * If @p dir starts with a "/" the
    * current URL will be "protocol://host/dir" otherwise @p _dir will
@@ -447,7 +447,7 @@ public:
   bool operator!=( const QString& _u ) const { return !( *this == _u ); }
 
   /**
-   * Compare this url with @p u
+   * Compares this url with @p u
    * @param ignore_trailing set to true to ignore trailing '/' characters.
    * @return true if both urls are the same
    * @see operator==. This function should be used if you want to

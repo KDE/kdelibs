@@ -550,7 +550,7 @@ public:
    * Compares the message digest supplied messaged digest @p msg_digest
    * with the one calculated for the input QCString @p input.
    *
-   * <u>NOTE:</u> Calling this function will reset any previously calcualted
+   * @em NOTE: Calling this function will reset any previously calcualted
    * digests.  If you want to verify your token with the current digest
    * value, use @ref verify( const char*, DigestType ) instead.
    *
@@ -566,7 +566,7 @@ public:
   /**
    * Same as above except it takes a QString argument as its input.
    *
-   * <u>IMPORTANT:</u> This function is ONLY provided for convenience
+   * @em IMPORTANT: This function is ONLY provided for convenience
    * and backward compatability!  Using it can result in an incorrect
    * verification since the conversion of the QString input to latin-1
    * can and will result in data loss if the input data contains non-
@@ -580,7 +580,7 @@ public:
   /**
    * Same as above except it takes a pointer to a FILE as its input.
    *
-   * <u>NOTE:</u> Calling this function will reset any previously
+   * @em NOTE: Calling this function will reset any previously
    * calcualted digests.  If you want to verify your token with the
    * current digest value, use @ref verify(const char*, DigestType)
    * instead.
@@ -595,7 +595,7 @@ public:
    * it simply compares the given digest value against the calculated
    * one.
    *
-   * <u>NOTE:</u> This function will return false if there was an error
+   * @em NOTE: This function will return false if there was an error
    * calculating the message digest as well as when the verification
    * fails. You can use @ref hasErrored() to determine which is the case.
    *

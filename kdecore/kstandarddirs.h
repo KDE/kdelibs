@@ -127,7 +127,7 @@ public:
 	virtual ~KStandardDirs();
 
 	/**
-	 * Add another search dir to front of the @p fsstnd list.
+	 * Adds another search dir to front of the @p fsstnd list.
 	 *
 	 * @li When compiling kdelibs, the prefix is added to this.
 	 * @li KDEDIRS or KDEDIR is taking into account
@@ -138,7 +138,7 @@ public:
 	void addPrefix( const QString& dir );
 
 	/**
-	 * Add suffixes for types.
+	 * Adds suffixes for types.
 	 *
 	 * You may add as many as you need, but it is advised that there
 	 * is exactly one to make writing definite.
@@ -160,7 +160,7 @@ public:
 
 
 	/**
-	 * Add absolute path at the end of the search path for
+	 * Adds absolute path at the end of the search path for
 	 * particular types (for example in case of icons where
 	 * the user specifies extra paths).
 	 *
@@ -178,7 +178,7 @@ public:
 			     const QString& absdir);
 
 	/**
-	 * Try to find resource in the following order:
+	 * Tries to find a resource in the following order:
 	 * @li All PREFIX/<relativename> paths (most recent first).
 	 * @li All absolute paths (most recent first).
 	 *
@@ -201,7 +201,7 @@ public:
         /**
          * Returns a number that identifies this version of the resource.
          * When a change is made to the resource this number will change.
-         * 
+         *
 	 * @param type The type of the wanted resource
 	 * @param filename A relative filename of the resource.
 	 * @param deep If true, all resources are taken into account
@@ -214,7 +214,7 @@ public:
 			      const QString& filename, bool deep) const;
 
 	/**
-	 * Try to find all directories whose names consist of the
+	 * Tries to find all directories whose names consist of the
 	 * specified type and a relative path. So would
 	 * findDirs("apps", "Settings") return
 	 * @li /opt/kde/share/applnk/Settings/
@@ -233,7 +233,7 @@ public:
                               const QString& reldir ) const;
 
 	/**
-	 * Try to find the directory the file is in.
+	 * Tries to find the directory the file is in.
 	 * It works the same as @ref findResource(), but it doesn't
 	 * return the filename but the name of the directory.
 	 *
@@ -255,7 +255,7 @@ public:
 
 
 	/**
-	 * Try to find all resources with the specified type.
+	 * Tries to find all resources with the specified type.
 	 *
 	 * The function will look into all specified directories
 	 * and return all filenames in these directories.
@@ -278,7 +278,7 @@ public:
 				       bool uniq = false) const;
 
 	/**
-	 * Try to find all resources with the specified type.
+	 * Tries to find all resources with the specified type.
 	 *
 	 * The function will look into all specified directories
 	 * and return all filenames (full and relative paths) in
@@ -306,7 +306,7 @@ public:
 				       QStringList &relPaths) const;
 
 	/**
-	 * Find the executable in the system path.
+	 * Finds the executable in the system path.
 	 *
 	 * A valid executable must
 	 * be a file and have its executable bit set.
@@ -327,7 +327,7 @@ public:
 				bool ignoreExecBit=false );
 
 	/**
-	 * Find all occurences of an executable in the system path.
+	 * Finds all occurences of an executable in the system path.
 	 *
 	 * @see	findExe()
 	 *
@@ -360,7 +360,7 @@ public:
 	void addKDEDefaults();
 
 	/**
-	 * Read customized entries out of the given config object and add
+	 * Reads customized entries out of the given config object and add
 	 * them via @ref addResourceDirs().
 	 *
 	 * @param config The object the entries are read from. This should
@@ -391,7 +391,7 @@ public:
 	QStringList allTypes() const;
 
 	/**
-	 * Find a location to save files into for the given type
+	 * Finds a location to save files into for the given type
 	 * in the user's home directory.
 	 *
 	 * @param type The type of location to return.
@@ -410,9 +410,9 @@ public:
 	 QString saveLocation(const char *type,
 			      const QString& suffix = QString::null,
 			      bool create = true) const;
-			      
+
         /**
-         * Converts an absolute path to a path relative to a certain 
+         * Converts an absolute path to a path relative to a certain
          * resource.
          *
          * If "abs = locate(resource, rel)"
@@ -422,14 +422,14 @@ public:
          *
          * @param absPath An absolute path to make relative.
          *
-         * @return A relative path relative to resource @p type that 
+         * @return A relative path relative to resource @p type that
          * will find @p absPath. If no such relative path exists, absPath
          * will be returned unchanged.
          */
          QString relativeLocation(const char *type, const QString &absPath);
 
 	/**
-	 * Recursively create still-missing directories in the given path.
+	 * Recursively creates still-missing directories in the given path.
 	 *
 	 * The resulting permissions will depend on the current umask setting.
 	 * permission = mode & ~umask.

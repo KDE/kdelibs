@@ -40,6 +40,12 @@
 
 using namespace KIO;
 
+struct KIO::ChmodInfo
+{
+    KURL url;
+    int permissions;
+};
+
 /*
 
  NOTE : This job is currently in ksycoca because kfileitem needs to know

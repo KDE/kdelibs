@@ -186,7 +186,7 @@ class KAction : public QObject
   Q_PROPERTY( QString icon READ icon WRITE setIcon )
 public:
     /**
-     * Construct an action with text and potential keyboard
+     * Constructs an action with text and potential keyboard
      * accelerator but nothing else.  Use this only if you really
      * know what you are doing.
      *
@@ -198,7 +198,7 @@ public:
     KAction( const QString& text, int accel = 0, QObject* parent = 0, const char* name = 0 );
 
     /**
-     * Construct an action with text, potential keyboard
+     * Constructs an action with text, potential keyboard
      * accelerator, and a SLOT to call when this action is invoked by
      * the user.
      *
@@ -221,7 +221,7 @@ public:
              const QObject* receiver, const char* slot, QObject* parent, const char* name = 0 );
 
     /**
-     * Construct an action with text, icon, and a potential keyboard
+     * Constructs an action with text, icon, and a potential keyboard
      * accelerator.
      *
      * This Action cannot execute any command.  Use this only if you
@@ -237,7 +237,7 @@ public:
              QObject* parent = 0, const char* name = 0 );
 
     /**
-     * Construct an action with text, automatically loaded icon, and a
+     * Constructs an action with text, automatically loaded icon, and a
      * potential keyboard accelerator.
      *
      * This Action cannot execute any command.  Use this only if you
@@ -253,7 +253,7 @@ public:
              QObject* parent = 0, const char* name = 0 );
 
     /**
-     * Construct an action with text, icon, potential keyboard
+     * Constructs an action with text, icon, potential keyboard
      * accelerator, and a SLOT to call when this action is invoked by
      * the user.
      *
@@ -275,7 +275,7 @@ public:
              const QObject* receiver, const char* slot, QObject* parent, const char* name = 0 );
 
     /**
-     * Construct an action with text, icon, potential keyboard
+     * Constructs an action with text, icon, potential keyboard
      * accelerator, and a SLOT to call when this action is invoked by
      * the user.  The icon is loaded on demand later based on where it
      * is plugged in.
@@ -299,7 +299,7 @@ public:
          const char* name = 0 );
 
     /**
-     * Construct a null action.
+     * Constructs a null action.
      * This is not recommended since all actions should have a text,
      * for the "Edit ToolBar" dialog. So don't forget to call setText later :)
      *
@@ -434,20 +434,20 @@ public:
 
 public slots:
     /**
-     * Set the text associated with this action. The text is used for menu
+     * Sets the text associated with this action. The text is used for menu
      * and toolbar labels etc.
      */
     virtual void setText(const QString &text);
 
     /**
-     * Set the keyboard accelerator associated with this action.
+     * Sets the keyboard accelerator associated with this action.
      */
     virtual void setAccel(int a);
 
     virtual void setGroup( const QString& );
 
     /**
-     * Set the What's this text for the action. This text will be displayed when
+     * Sets the What's this text for the action. This text will be displayed when
      * a widget that has been created by plugging this action into a container
      * is clicked on in What's this mode.
      *
@@ -456,7 +456,7 @@ public slots:
     virtual void setWhatsThis( const QString& text );
 
     /**
-     * Set the tooltip text for the action.
+     * Sets the tooltip text for the action.
      * This will be used as a tooltip for a toolbar button, as a
      * statusbar help-text for a menu item, and it also appears
      * in the toolbar editor, to describe the action.
@@ -464,7 +464,7 @@ public slots:
     virtual void setToolTip( const QString& );
 
     /**
-     * Set the QIconSet from which the icons used to display this action will
+     * Sets the QIconSet from which the icons used to display this action will
      * be chosen.
      */
     virtual void setIconSet( const QIconSet &iconSet );
@@ -545,7 +545,7 @@ class KToggleAction : public KAction
 public:
 
     /**
-     * Construct a toggle action with text and potential keyboard
+     * Constructs a toggle action with text and potential keyboard
      * accelerator but nothing else. Use this only if you really
      * know what you are doing.
      *
@@ -659,7 +659,7 @@ public slots:
     // why virtual? why slot? (change in KDE 3?)
 
     /**
-     *  Sets the state of the action.
+     *  Setss the state of the action.
      */
     virtual void setChecked( bool );
 
@@ -686,7 +686,7 @@ class KRadioAction : public KToggleAction
   Q_OBJECT
 public:
     /**
-     * Construct a radio action with text and potential keyboard
+     * Constructs a radio action with text and potential keyboard
      * accelerator but nothing else. Use this only if you really
      * know what you are doing.
      *
@@ -789,7 +789,7 @@ class KSelectAction : public KAction
 public:
 
     /**
-     * Construct a select action with text and potential keyboard
+     * Constructs a select action with text and potential keyboard
      * accelerator but nothing else. Use this only if you really
      * know what you are doing.
      *
@@ -970,7 +970,7 @@ class KListAction : public KSelectAction
     Q_OBJECT
 public:
     /**
-     * Construct a list action with text and potential keyboard
+     * Constructs a list action with text and potential keyboard
      * accelerator but nothing else. Use this only if you really
      * know what you are doing.
      *

@@ -56,7 +56,7 @@ public:
     ~KPixmapSplitter();
 
     /**
-     * Set the pixmap to be splitted.
+     * Sets the pixmap to be splitted.
      */
     void setPixmap( const QPixmap& pixmap );
 
@@ -66,7 +66,7 @@ public:
     const QPixmap& pixmap() const { return m_pixmap; }
 
     /**
-     * Set the size of the items you want to get out of the given pixmap.
+     * Sets the size of the items you want to get out of the given pixmap.
      * The QRect of @ref coordinates will have the width and height of exactly
      * this @p size.
      */
@@ -114,7 +114,5 @@ private:
 
     bool m_dirty;
 };
-
-
 
 #endif // KPIXMAPSPLITTER_H

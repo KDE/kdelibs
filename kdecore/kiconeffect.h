@@ -25,7 +25,7 @@ class QWidget;
 class KIconEffectPrivate;
 
 /**
- * Apply effects to icons.
+ * Applies effects to icons.
  */
 class KIconEffect
 {
@@ -36,7 +36,7 @@ public:
     enum Effects { NoEffect, ToGray, Colorize, ToGamma, DeSaturate, LastEffect };
 
     /**
-     * Reread configuration.
+     * Rereads configuration.
      */
     void init();
 
@@ -53,7 +53,7 @@ public:
      QString fingerprint(int group, int state) const;
 
     /**
-     * Apply an effect to an image. The effect to apply depends on the
+     * Applies an effect to an image. The effect to apply depends on the
      * @p group and @p state parameters, and is configured by the user.
      * @param src The image.
      * @param group The group for the icon.
@@ -63,7 +63,7 @@ public:
     QImage apply(QImage src, int group, int state) const;
 
     /**
-     * Apply an effect to an image.
+     * Applies an effect to an image.
      * @param src The image.
      * @param effect The effect to apply, one of @ref #KIconEffect::Effects.
      * @param value Strength of the effect. 0 <= @p value <= 1.
@@ -74,12 +74,12 @@ public:
     QImage apply(QImage src, int effect, float value, const QColor rgb, bool trans) const;
 
     /**
-     * Apply an effect to a pixmap.
+     * Applies an effect to a pixmap.
      */
     QPixmap apply(QPixmap src, int group, int state) const;
 
     /**
-     * Apply an effect to a pixmap.
+     * Applies an effect to a pixmap.
      */
     QPixmap apply(QPixmap src, int effect, float value, const QColor rgb, bool trans) const;
 
@@ -89,7 +89,7 @@ public:
     QImage doublePixels(QImage src) const;
 
     /**
-     * Provide visual feedback to show activation of an icon on a widget.
+     * Provides visual feedback to show activation of an icon on a widget.
      *
      * Not strictly an 'icon effect', but in practice that's what it looks
      * like.

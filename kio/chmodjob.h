@@ -37,11 +37,7 @@
 
 namespace KIO {
 
-    struct ChmodInfo
-    {
-        KURL url;
-        int permissions;
-    };
+    struct ChmodInfo;
 
     /**
      * This job changes permissions on a list of files or directories,

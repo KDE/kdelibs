@@ -35,33 +35,33 @@ class KDesktopFilePrivate;
  */
 class KDesktopFile : public KConfig
 {
-  Q_OBJECT 
+  Q_OBJECT
 
 public:
-  /** 
-   * Construct a KDesktopFile object and make it either read-write
-   * or read-only.  
+  /**
+   * Constructs a KDesktopFile object and make it either read-write
+   * or read-only.
    *
-   * @param pFileName The file used for saving the data. The
+   * @param fileName The file used for saving the data. The
    *                  full path must be specified.
    * @param bReadOnly Whether the object should be read-only.
    * @param resType   Allows you to change what sort of resource
    *                  to search for if @p pFileName is not absolute.  For
    *                  instance, you might want to specify "config".
    */
-  KDesktopFile( const QString &pFileName, bool bReadOnly = false,
+  KDesktopFile( const QString &fileName, bool bReadOnly = false,
 		const char * resType = "apps");
 
-  /** 
-   * Destructor. 
+  /**
+   * Destructs the KDesktopFile object.
    *
-   * Write back any dirty configuration entries.
+   * Writes back any dirty configuration entries.
    */
   virtual ~KDesktopFile();
 
   /**
-   * Check to see whether this is a desktop file.
-   * 
+   * Checks whether this is really a desktop file.
+   *
    * The check is performed looking at the file extension (the file is not
    * opened).
    * Currently, valid extensions are ".kdelnk" and ".desktop".
@@ -70,38 +70,38 @@ public:
   static bool isDesktopFile(const QString& path);
 
   /**
-   * Retrieve the value of the "Type=" entry.
+   * Returns the value of the "Type=" entry.
    */
   QString readType() const;
 
   /**
-   * Retrieve the value of the "Icon=" entry.
+   * Returns the value of the "Icon=" entry.
    */
   QString readIcon() const;
 
   /**
-   * Retrieve the value of the "Name=" entry.
+   * Returns the value of the "Name=" entry.
    */
   QString readName() const;
 
   /**
-   * Retrieve the value of the "Comment=" entry.
+   * Returns the value of the "Comment=" entry.
    */
   QString readComment() const;
 
   /**
-   * Retrieve the value of the "Path=" entry.
+   * Returns the value of the "Path=" entry.
    * @deprecated
    */
   QString readPath() const;
 
   /**
-   * Retrieve the value of the "Dev=" entry.
+   * Returns the value of the "Dev=" entry.
    */
   QString readDevice() const;
 
   /**
-   * Retrieve the value of the "URL=" entry.
+   * Returns the value of the "URL=" entry.
    */
   QString readURL() const;
 
@@ -116,34 +116,34 @@ public:
   void setActionGroup(const QString &group);
 
   /**
-   * Returns @p if the action group exists.
+   * Returns true if the action group exists, false otherwise
    */
   bool hasActionGroup(const QString &group) const;
 
   /**
-   * Check to see if there is a "Type=Link" entry.
+   * Checks whether tere is a "Type=Link" entry.
    *
    * The link points to the "URL=" entry.
    */
   bool hasLinkType() const;
 
   /**
-   * Check to see if there is an entry "Type=Application".
+   * Checks whether there is an entry "Type=Application".
    */
   bool hasApplicationType() const;
 
   /**
-   * Check to see if there is an entry "Type=MimeType".
+   * Checks whether there is an entry "Type=MimeType".
    */
   bool hasMimeTypeType() const; // funny name :)
 
   /**
-   * Check to see if there is an entry "Type=FSDev".
+   * Checks whether there is an entry "Type=FSDev".
    */
   bool hasDeviceType() const;
 
   /**
-   * Check to see if the TryExec field contains a binary
+   * Checks whether the TryExec field contains a binary
    * which is found on the local system.
    */
   bool tryExec() const;
@@ -152,7 +152,7 @@ public:
    * @return The filename as passed to the constructor.
    */
   QString filename() const;
-  
+
   /**
    * @return The resource type as passed to the constructor.
    */
@@ -169,6 +169,6 @@ private:
   KDesktopFilePrivate *d;
 };
 
-  
+
 #endif
 

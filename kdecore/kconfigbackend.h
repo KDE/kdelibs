@@ -1,4 +1,4 @@
-/* 
+/*
    This file is part of the KDE libraries
    Copyright (c) 1999 Preston Brown <pbrown@kde.org>
    Portions copyright (c) 1997 Matthias Kalle Dalheimer <kalle@kde.org>
@@ -47,7 +47,7 @@ class KConfigBackEnd
 {
 public:
   /**
-   * Construct a configuration back end.
+   * Constructs a configuration back end.
    *
    * @param _config Specifies the configuration object which values
    *        will be passed to as they are read, or from where values
@@ -57,28 +57,28 @@ public:
    *        will be looked in in order of decreasing relevance.
    * @param _resType the resource type of the fileName specified, _if_
    *        it is not an absolute path (otherwise this parameter is ignored).
-   * @param _useKDEGlobals If true, the user's system-wide kdeglobals file 
-   *        will be imported into the config object.  If false, only 
+   * @param _useKDEGlobals If true, the user's system-wide kdeglobals file
+   *        will be imported into the config object.  If false, only
    *        the filename specified will be dealt with.
    */
   KConfigBackEnd(KConfigBase *_config, const QString &_fileName,
 		 const char * _resType, bool _useKDEGlobals);
-  
+
   /**
-   * Destructor.
+   * Destructs the configuration backend.
    */
   virtual ~KConfigBackEnd() {};
 
-  /** 
-   * Parse all configuration files for a configuration object.  This
+  /**
+   * Parses all configuration files for a configuration object.  This
    * method must be reimplemented by the derived classes.
-   * 
-   * @returns Whether or not parsing was successful.  
+   *
+   * @returns Whether or not parsing was successful.
    */
   virtual bool parseConfigFiles() = 0;
 
   /**
-   * Write configuration data to file(s).  This method must be
+   * Writes configuration data to file(s).  This method must be
    * reimplemented by the derived classes.
    *
    * @param bMerge Specifies whether the old config file already
@@ -89,7 +89,7 @@ public:
   virtual void sync(bool bMerge = true) = 0;
 
   /**
-   * change the filenames associated with this back end.  You should
+   * Changes the filenames associated with this back end.  You should
    * probably reparse your config info after doing this.
    *
    * @param _fileName the new filename to use
@@ -102,7 +102,7 @@ public:
 		      bool _useKDEGlobals);
 
   /**
-   * Retrieve the state of the app-config object.
+   * Returns the state of the app-config object.
    *
    * @see KConfig::getConfigState
    */
@@ -113,12 +113,12 @@ public:
    * @return the filename as passed to the constructor.
    */
   QString filename() const { return fileName; }
-  
+
   /**
    * @return the resource type as passed to the constructor.
    */
   const char * resource() const { return resType; }
-  
+
   void setLocaleString(const QCString &_localeString) { localeString = _localeString; }
 
 protected:
@@ -139,7 +139,7 @@ class KConfigINIBackEndPrivate;
 /**
  * Class for KDE INI-style configuration file loading/saving.
  *
- * @author Preston Brown <pbrown@kde.org>, 
+ * @author Preston Brown <pbrown@kde.org>,
  *         Matthias Kalle Dalheimer <kalle@kde.org>
  * @version $Id$
  */
@@ -148,7 +148,7 @@ class KConfigINIBackEnd : public KConfigBackEnd
 
 public:
   /**
-   * Construct a configuration back end.
+   * Constructs an ini-style configuration back end.
    *
    * @param _config Specifies the configuration object which values
    *        will be passed to as they are read, or from where values
@@ -158,34 +158,34 @@ public:
    *        will be looked in in order of decreasing relevance.
    * @param _resType the resource type of the fileName specified, _if_
    *        it is not an absolute path (otherwise this parameter is ignored).
-   * @param _useKDEGlobals If true, the user's system-wide kdeglobals file 
-   *        will be imported into the config object.  If false, only 
+   * @param _useKDEGlobals If true, the user's system-wide kdeglobals file
+   *        will be imported into the config object.  If false, only
    *        the filename specified will be dealt with.
    */
   KConfigINIBackEnd(KConfigBase *_config, const QString &_fileName,
 		    const char * _resType, bool _useKDEGlobals = true)
     : KConfigBackEnd(_config, _fileName, _resType, _useKDEGlobals) {}
-  
+
   /**
-   * Destructor.
+   * Destructs the configuration backend.
    */
   virtual ~KConfigINIBackEnd() {};
 
   /**
-   * Parse all INI-style configuration files for a config object.
+   * Parses all INI-style configuration files for a config object.
    *
    * @returns Whether or not parsing was successful.
    */
   bool parseConfigFiles();
 
   /**
-   * write configuration data to file(s). 
+   * Writes configuration data to file(s).
    */
   virtual void sync(bool bMerge = true);
-  
+
 protected:
   /**
-   * Parse one configuration file.
+   * Parses one configuration file.
    *
    * @param rFile The configuration file to parse
    * @param pWriteBackMap If specified, points to a KEntryMap where
@@ -203,7 +203,7 @@ protected:
 			     bool bGlobal = false, bool bDefault = false);
 
   /**
-   * Write configuration file back.
+   * Writes configuration file back.
    *
    * @param filename The name of the file to write.
    * @param bGlobal Specifies whether to write only entries which
@@ -214,12 +214,12 @@ protected:
    *        data is read off the disk and merged.  If false, the on-disk
    *        file is removed and only in-memory data is written out.
    * @return Whether some entries are left to be written to other
-   *         files. 
+   *         files.
    */
   bool writeConfigFile(QString filename, bool bGlobal = false, bool bMerge = true);
 
   /**
-   * Retrieve the state of the app-config object.
+   * Returns the state of the app-config object.
    *
    * @see KConfig::getConfigState
    */

@@ -36,38 +36,34 @@ class KDateWidget : public QWidget
 
 public:
   /**
-   * Constructor. Create a KDateWidget.
+   * Constructs a date selection widget.
    */
-  KDateWidget( QWidget *parent, const char *name = 0L );
+  KDateWidget( QWidget *parent=0, const char *name=0 );
 
   /**
-   * Constructor. Create a KDateWidget.
-   * @param date The initial date of the button.
+   * Constructs a date selection widget with the initial date set to @p date.
    */
-  KDateWidget( QDate date, QWidget *parent, const char *name = 0L );
+  KDateWidget( QDate date, QWidget *parent=0, const char *name=0 );
 
   /**
-   * Destructor.
+   * Destructs the date selection widget.
    */
   virtual ~KDateWidget();
 
   /**
-   * The currently selected date.
-   * @return The current selected date.
+   * Returns the currently selected date.
    */
   QDate date() const;
 
   /**
-   * Change the selected date.
-   *
-   * @param date The date to change to.
+   * Changes the selected date to @p date.
    */
   void setDate(QDate date);
 
 
 signals:
   /**
-   * This signal will be emitted when the date of the widget
+   * Emitted whenever the date of the widget
    * is changed, either with @ref #setDate() or via user selection.
    */
    void changed(QDate);

@@ -37,8 +37,6 @@ class QStringList;
 class KListBox;
 
 /**
- * A widget for interactive font selection.
- *
  * While KFontChooser as an ordinary widget can be embedded in
  * custom dialogs and therefore is very flexible, in most cases
  * it is preferable to use the convenience functions in
@@ -80,10 +78,13 @@ public:
 	       const QStringList &fontList = QStringList(),
 	       bool makeFrame = true, int visibleListSize=8 );
 
+  /**
+   * Destructs the font chooser.
+   */
   virtual ~KFontChooser();
 
   /**
-   * Enable or disable a font column in the chooser.
+   * Enables or disable a font column in the chooser.
    *
    * Use this
    * function if your application does not need or supports all font
@@ -96,7 +97,7 @@ public:
   void enableColumn( int column, bool state );
 
   /**
-   * Set the currently selected font in the chooser.
+   * Sets the currently selected font in the chooser.
    *
    * @param font The font to select.
    * @param onlyFixed Readjust the font list to display only fixed
@@ -110,7 +111,7 @@ public:
   QFont font() const { return selFont; }
 
   /**
-   * Set the color to use in the preview
+   * Sets the color to use in the preview.
    */
   void setColor( const QColor & col );
 
@@ -137,7 +138,7 @@ public:
   QString sampleText() const { return sampleEdit->text(); }
 
   /**
-   * Set the sample text.
+   * Sets the sample text.
    *
    * Normally you should not change this
    * text, but it can be better to do this if the default text is
@@ -152,7 +153,7 @@ public:
   }
 
   /**
-   * Convert a @ref QFont into the corresponding X Logical Font
+   * Converts a @ref QFont into the corresponding X Logical Font
    * Description (XLFD).
    *
    * @param theFont The font to convert.
@@ -162,7 +163,7 @@ public:
     { return theFont.rawName(); }
 
   /**
-   * Create a list of font strings that match @p pattern.
+   * Creates a list of font strings that match @p pattern.
    *
    * @param list The list is returned here.
    * @param pattern The font pattern.
@@ -170,7 +171,7 @@ public:
   static void getFontList( QStringList &list, const char *pattern );
 
   /**
-   * Create a list of font strings.
+   * Creates a list of font strings.
    *
    * @param list The list is returned here.
    * @param fixed Flag, when true only fixed fonts are returned.
@@ -182,6 +183,12 @@ public:
    */
   virtual QSize sizeHint( void ) const;
 
+signals:
+  /**
+   * Emitted whenever the selected font changes.
+   */
+  void fontSelected( const QFont &font );
+
 private slots:
   void family_chosen_slot(const QString&);
   void size_chosen_slot(const QString&);
@@ -189,12 +196,6 @@ private slots:
   void displaySample(const QFont &font);
   void charset_chosen_slot(const QString&);
   void showXLFDArea(bool);
-
-signals:
-  /**
-   * connect to this to monitor the font as it is selected.
-   */
-  void fontSelected( const QFont &font );
 
 private:
   void fillFamilyListBox(bool onlyFixedFonts = false);

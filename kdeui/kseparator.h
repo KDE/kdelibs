@@ -47,18 +47,18 @@ class KSeparator : public QFrame
 	     WFlags f=0);
   
   /**
-   * Retreive the orientation of the separator.
+   * Returns the orientation of the separator.
    *
    * Possible values are VLine and HLine.
    **/
   int orientation() const;
   
   /**
-   * Set the orientation of the separator.
+   * Set the orientation of the separator to @p orient
    *
    * Possible values are VLine and HLine.
    */
-  void setOrientation(int);
+  void setOrientation(int orient);
   
   /**
    * The recommended height (width) for a horizontal (vertical) separator.

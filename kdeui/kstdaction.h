@@ -159,7 +159,7 @@ public:
     ~KStdAction();
 
     /**
-     * Retrieve the action corresponding to the
+     * Creates an action corresponding to the
      * @ref KStdAction::StdAction enum.
      */
     static KAction *action(StdAction act_enum, const QObject *recvr = 0,

@@ -30,7 +30,7 @@ class KPanelExtensionPrivate;
 #include <qframe.h>
 
 /**
- * Implement a panel extension.
+ * Implements a panel extension.
  *
  * Panel extensions
  *   @li Are small applications living in the Window Manager dock managed by the panel.
@@ -121,7 +121,7 @@ public:
     ~KPanelExtension();
 
     /**
-     * Retrieve a prefered size for a given Position.
+     * Returns the prefered size for a given Position.
      *
      * Every extension should reimplement this function.
      *

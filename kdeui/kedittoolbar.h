@@ -33,7 +33,7 @@ class KEditToolbarPrivate;
 class KEditToolbarWidgetPrivate;
 
 /**
- * This is a dialog used to customize or configure toolbars
+ * This is a dialog used to customize or configure toolbars.
  *
  * This dialog only works if your application uses the XML UI
  * framework for creating menus and toolbars.  It depends on the XML

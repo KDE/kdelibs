@@ -28,7 +28,7 @@ class KDateValidator;
 class KDateTable;
 
 /**
- * Provide a widget for calendar date input.
+ * Provides a widget for calendar date input.
  * 
  *     Different from the
  *     previous versions, it now emits two types of signals, either
@@ -46,8 +46,10 @@ class KDateTable;
  *
  * @short A date selection widget.
  **/
-class KDatePicker: public QFrame {
+class KDatePicker: public QFrame
+{
   Q_OBJECT
+
 public:
   /** The usual constructor.  The given date will be displayed 
    * initially.
@@ -68,7 +70,8 @@ public:
    **/
   QSize sizeHint() const; 
 
-  /** Set the date.
+  /**
+   * Sets the date.
    *
    *  @returns @p false and does not change anything 
    *      if the date given is invalid. 
@@ -76,21 +79,21 @@ public:
   bool setDate(const QDate&);
 
   /** 
-   * Retrieve the date.
+   * Returns the selected date.
    **/
   const QDate& getDate();
 
   /** 
-   * Enable or disable the widget. 
+   * Enables or disables the widget. 
    **/
   void setEnabled(bool);
 
   /** 
-   * Set the font size of the widgets elements. 
+   * Sets the font size of the widgets elements. 
    **/
   void setFontSize(int);
   /**
-   * Font size of the widget elements.
+   * Returns the font size of the widget elements.
    */
   int fontSize() const
     { return fontsize; }

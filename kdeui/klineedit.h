@@ -174,7 +174,7 @@ public:
     void setURL( const KURL& url );
 
     /**
-     * Put cursor at the end of the string.
+     * Puts the text cursor at the end of the string.
      *
      * This method is deprecated.  Use @ref QLineEdit::end()
      * instead.
@@ -212,8 +212,6 @@ public:
 
     /**
      * Returns @p true when the context menu is enabled.
-     *
-     * @return @p true If context menu is enabled.
      */
     bool isContextMenuEnabled() const { return m_bEnableMenu; }
 
@@ -228,8 +226,6 @@ public:
 
     /**
      * Returns @p true when decoded URL drops are enabled
-     *
-     * @return @p true if decoded URL drops are enabled
      */
     bool isURLDropsEnabled() const;
 
@@ -339,7 +335,7 @@ signals:
 public slots:
 
     /**
-     * Iterate through all possible matches of the completed text or
+     * Iterates through all possible matches of the completed text or
      * the history list.
      *
      * This function simply iterates over all possible matches in case
@@ -364,7 +360,7 @@ public slots:
 protected slots:
 
     /**
-    * Complete the remaining text with a matching one from
+    * Completes the remaining text with a matching one from
     * a given list.
     */
     virtual void makeCompletion( const QString& );

@@ -69,17 +69,17 @@ class KInstance
     virtual ~KInstance();
 
     /**
-     *  Retrieve the application standard dirs object.
+     *  Returns the application standard dirs object.
      */
     KStandardDirs	*dirs() const;
 
     /**
-     *  Retrieve the general config object.
+     *  Returns the general config object.
      */
     KConfig            *config() const;
 
     /**
-     *  Retrieve an iconloader object.
+     *  Returns an iconloader object.
      */
     KIconLoader	       *iconLoader() const;
 
@@ -91,7 +91,7 @@ class KInstance
     KCharsets	     *charsets() const;
 
     /**
-     *  @return the about data of this instance
+     *  Returns the about data of this instance
      *  Warning, can be 0L
      */
     const KAboutData *aboutData() const;

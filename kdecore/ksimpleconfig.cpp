@@ -36,16 +36,16 @@
 
 #include "ksimpleconfig.h"
 
-KSimpleConfig::KSimpleConfig(const QString &pFileName, bool bReadOnly)
+KSimpleConfig::KSimpleConfig(const QString &fileName, bool bReadOnly)
   : KConfig(QString::fromLatin1(""), bReadOnly, false)
 {
   // the difference between KConfig and KSimpleConfig is just that
   // for KSimpleConfig an absolute filename is guaranteed
-  if (!pFileName.isNull() && pFileName[0] != '/') {
+  if (!fileName.isNull() && fileName[0] != '/') {
      backEnd->changeFileName( KGlobal::dirs()->
-	saveLocation("config", QString::null, !bReadOnly)+pFileName, "config", false);
+	saveLocation("config", QString::null, !bReadOnly)+fileName, "config", false);
   } else {
-     backEnd->changeFileName(pFileName, "config", false);
+     backEnd->changeFileName(fileName, "config", false);
   }
   parseConfigFiles();
 }

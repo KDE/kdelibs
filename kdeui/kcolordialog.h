@@ -398,13 +398,13 @@ class KColorDialog : public KDialogBase
     ~KColorDialog();
 
     /**
-     * Retrieve the currently selected color.
+     * Returns the currently selected color.
      **/
     QColor color();
 
     /**
-     * Create a modal color dialog, let the user choose a
-     * color, and return when the dialog is closed.
+     * Creates a modal color dialog, let the user choose a
+     * color, and returns when the dialog is closed.
      *
      * The selected color is returned in the argument @p theColor.
      *
@@ -413,8 +413,8 @@ class KColorDialog : public KDialogBase
     static int getColor( QColor &theColor, QWidget *parent=0L );
 
     /**
-     * Create a modal color dialog, let the user choose a
-     * color, and return when the dialog is closed.
+     * Creates a modal color dialog, lets the user choose a
+     * color, and returns when the dialog is closed.
      *
      * The selected color is returned in the argument @p theColor.
      *
@@ -427,7 +427,7 @@ class KColorDialog : public KDialogBase
     static int getColor( QColor &theColor, const QColor& defaultColor, QWidget *parent=0L );
 
     /**
-     * Get the color from the pixel at point p on the screen.
+     * Gets the color from the pixel at point p on the screen.
      */
     static QColor grabColor(const QPoint &p);
 
@@ -439,7 +439,9 @@ class KColorDialog : public KDialogBase
      */
     void setDefaultColor( const QColor& defaultCol );
 
-    /** @return the value passed to setDefaultColor */
+    /**
+     * @return the value passed to setDefaultColor
+     */
     QColor defaultColor() const;
 
   public slots:

@@ -33,14 +33,14 @@
 #include "kdesktopfile.h"
 #include "kdesktopfile.moc"
 
-KDesktopFile::KDesktopFile(const QString &pFileName, bool bReadOnly,
+KDesktopFile::KDesktopFile(const QString &fileName, bool bReadOnly,
 			   const char * resType)
   : KConfig(QString::fromLatin1(""), bReadOnly, false)
 {
   // KConfigBackEnd will try to locate the filename that is provided
   // based on the resource type specified, _only_ if the filename
   // is not an absolute path.
-  backEnd->changeFileName(pFileName, resType, false);
+  backEnd->changeFileName(fileName, resType, false);
   parseConfigFiles();
   setDesktopGroup();
 }

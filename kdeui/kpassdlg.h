@@ -49,10 +49,11 @@ public:
     KPasswordEdit(QWidget *parent=0, const char *name=0);
     /**
      * Constructs a password input widget using echoMode as "echo mode".
+     * @version New in 3.0
      */
     KPasswordEdit(EchoMode echoMode, QWidget *parent, const char *name);
     /**
-     * @deprecated
+     * @deprecated, may be removed in KDE 4.0
      * Creates a password input widget using echoMode as "echo mode".
      */
     KPasswordEdit(QWidget *parent, const char *name, int echoMode);
@@ -154,6 +155,8 @@ public:
      * @param enableKeep: if true, a check box is shown in the dialog
      *        which allows the user to keep his password input for later.
      * @param extraBttn: allows to show additional buttons, @ref KDialogBase.
+     *
+     * @version New in 3.0
      */
     KPasswordDialog(Types type, bool enableKeep, int extraBttn,
                     QWidget *parent=0, const char *name=0);

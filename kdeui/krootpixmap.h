@@ -24,7 +24,7 @@ class KSharedPixmap;
 class KRootPixmapData;
 
 /**
- * Create pseudo-transparent widgets. 
+ * Creates pseudo-transparent widgets. 
  * 
  * A pseudo-transparent widget is a widget with its background pixmap set to
  * that part of the desktop background that it is currently obscuring. This
@@ -49,7 +49,7 @@ class KRootPixmap: public QObject
 
 public:
     /**
-     * Construct a KRootPixmap. The KRootPixmap will be created as a child
+     * Constructs a KRootPixmap. The KRootPixmap will be created as a child
      * of the target widget so it will be deleted automatically when the
      * widget is destroyed.
      *
@@ -59,15 +59,18 @@ public:
     KRootPixmap( QWidget *target, const char *name=0 );
 
     /**
-     * Create a KRootPixmap where the parent QObject and target QWidget are
+     * Constructs a KRootPixmap where the parent QObject and target QWidget are
      * different.
      */
     KRootPixmap( QWidget *target, QObject *parent, const char *name=0 );
 
+    /**
+     * Destructs the object.
+     */
     virtual ~KRootPixmap();
 
     /**
-     * Check if pseudo-transparency is available.
+     * Checks if pseudo-transparency is available.
      * @return @p true if transparency is available, @p false otherwise.
      */
     bool isAvailable() const;
@@ -98,17 +101,17 @@ public:
 
 public slots:
     /**
-     * Start background handling.
+     * Starts background handling.
      */
     virtual void start();
 
     /**
-     * Stop background handling.
+     * Stops background handling.
      */
     virtual void stop();
 
     /**
-     * Set the fade effect.
+     * Sets the fade effect.
      *
      * This effect will fade the background to the
      * specified color. 
@@ -120,7 +123,7 @@ public slots:
     void setFadeEffect(double strength, QColor color);
 
     /**
-     * Repaint the widget background. Normally, you shouldn't need this
+     * Repaints the widget background. Normally, you shouldn't need this
      * as it is handled automatically.
      *
      * @param force Force a repaint, even if the contents did not change.
@@ -128,7 +131,7 @@ public slots:
     void repaint( bool force );
 
     /**
-     * Repaint the widget background. Normally, you shouldn't need this
+     * Repaints the widget background. Normally, you shouldn't need this
      * as it is handled automatically. This is equivalent to calling
      * repaint( false ).
      */
@@ -159,7 +162,7 @@ signals:
 
 protected:
     /**
-     * Reimplemented to filters the events from the target widget and
+     * Reimplemented to filter the events from the target widget and
      * track its movements.
      */
     virtual bool eventFilter(QObject *, QEvent *);

@@ -90,7 +90,7 @@ public:
   enum BarStatus{ Toggle, Show, Hide };
   
   /**
-   *  Construct KStatusBar object. @p parent is usually @ref KMainWindow.
+   *  Constructs a status bar. @p parent is usually @ref KMainWindow.
    */
   KStatusBar( QWidget* parent = 0L, const char* name = 0L );
 
@@ -102,7 +102,7 @@ public:
   ~KStatusBar();
 
   /**
-   *  Insert text label into the status bar.
+   *  Inserts a text label into the status bar.
    *  Paremeters @p stretch and  @p permanent are passed to
    *  @ref QStatusBar::addWidget .
    *
@@ -119,7 +119,7 @@ public:
   void insertItem(const QString& text, int id, int stretch=0, bool permanent=false );
 
   /**
-   *  Insert fixed width text label into status bar. The width will be set
+   *  Inserts a fixed width text label into status bar. The width will be set
    *  according to @p text, but will remain fixed even if you change text.
    *  You can change fixed width by calling @ref setItemFixed.
    *  @param id id ov item
@@ -129,14 +129,14 @@ public:
                { insertItem(text, id, 0, permanent); setItemFixed(id); }
   
   /**
-   *  Remove an item.
+   *  Removes an item.
    *
    * @param id The item to remove.
    */
   void removeItem( int id );
 
   /**
-   * Change the text in a status bar field.
+   * Changes the text in a status bar field.
    *
    * The item will be resized to fit the text. If you change text to be empty,
    * item will not be visible (untill you add some text).

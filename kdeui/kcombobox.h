@@ -134,7 +134,7 @@ class KComboBox : public QComboBox, public KCompletionBase
 public:
 
     /**
-    * Construct a read-only or rather select-only combo box with a
+    * Constructs a read-only or rather select-only combo box with a
     * parent object and a name.
     *
     * @param parent The parent object of this widget
@@ -143,7 +143,7 @@ public:
     KComboBox( QWidget *parent=0, const char *name=0 );
 
     /**
-    * Construct a "read-write" or "read-only" combo box depending on
+    * Constructs a "read-write" or "read-only" combo box depending on
     * the value of the first argument( @p rw ) with a parent, a
     * name.
     *
@@ -195,7 +195,7 @@ public:
     void changeURL( const QPixmap& pixmap, const KURL& url, int index );
 
     /**
-    * Retrieve the current cursor position.
+    * Retrieves the current cursor position.
     *
     * This method always returns a -1 if the combo-box is @em not
     * editable (read-write).
@@ -228,7 +228,7 @@ public:
     bool autoCompletion() const { return completionMode() == KGlobalSettings::CompletionAuto; }
 
     /**
-    * Enable or disable the popup (context) menu.
+    * Enables or disable the popup (context) menu.
     *
     * This method only works if this widget is editable, i.e.
     * read-write and allows you to enable/disable the context
@@ -247,8 +247,6 @@ public:
 
     /**
     * Returns @p true when the context menu is enabled.
-    *
-    * @return @p true if context menu is enabled.
     */
     bool isContextMenuEnabled() const { return m_bEnableMenu; }
 
@@ -263,15 +261,11 @@ public:
 
     /**
      * Returns @p true when decoded URL drops are enabled
-     *
-     * @return @p true if decoded URL drops are enabled
      */
     bool isURLDropsEnabled() const;
 
     /**
     * Returns @p true if the combo-box is editable.
-    *
-    * @return @p true if combo is editable.
     */
     bool isEditable() const { return editable(); }
 
@@ -408,7 +402,7 @@ signals:
 public slots:
 
     /**
-    * Iterate through all possible matches of the completed text
+    * Iterates through all possible matches of the completed text
     * or the history list.
     *
     * Depending on the value of the argument, this function either
@@ -651,7 +645,7 @@ public:
     QStringList historyItems() const;
 
     /**
-     * Remove all items named @p item.
+     * Removes all items named @p item.
      *
      * @return @p true if at least one item was removed.
      *

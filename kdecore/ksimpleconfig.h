@@ -55,7 +55,7 @@ public:
    *                  directory for "config" files is used.
    * @param bReadOnly Whether the object should be read-only.
    */
-  KSimpleConfig( const QString &pFileName, bool bReadOnly = false);
+  KSimpleConfig( const QString &fileName, bool bReadOnly = false);
 
   /** 
    * Destructor. 

@@ -240,7 +240,7 @@ public:
   virtual void setTopLevel( bool t);
 
   /**
-   * Set the drag panel of this header.
+   * Sets the drag panel of this header.
    *
    * @param nd A pointer to the new drag panel
    */
@@ -267,7 +267,7 @@ public:
 
 protected slots:
   /**
-   * Set dragging the dockwidget off when the stay button is pressed down and vice versa.
+   * Sets dragging the dockwidget off when the stay button is pressed down and vice versa.
    */
   void slotStayClicked();
 
@@ -453,7 +453,7 @@ public:
   int dockSite() const { return sDocking; }
 
   /**
-   * Set the embedded widget.
+   * Sets the embedded widget.
    *
    * A QLayout takes care about proper resizing, automatically.
    *
@@ -469,7 +469,7 @@ public:
   QWidget* getWidget() const { return widget; };
 
   /**
-   * Set the header of this dockwidget.
+   * Sets the header of this dockwidget.
    *
    * A @ref QLayout takes care about proper resizing, automatically.
    * The header contains the drag panel, the close button and the stay button.
@@ -533,7 +533,7 @@ public:
   bool isDockBackPossible() const;
 
   /**
-   * Set a string that is used for the label of the tab page when in tab page mode
+   * Sets a string that is used for the label of the tab page when in tab page mode
    * @param label The new tab page label.
    */
   void setTabPageLabel( const QString& label) { tabPageTitle = label; };
@@ -559,7 +559,7 @@ public:
 
 #ifndef NO_KDE2
 
-    /**
+  /**
    * Sets the type of the dock window
    *
    * @param windowType is type of dock window
@@ -568,7 +568,7 @@ public:
 
 #endif
 
- /**
+  /**
    * Sets the type of the dock window
    *
    * @param windowType is type of dock window
@@ -576,12 +576,14 @@ public:
   void setDockWindowTransient (QWidget *parent, bool transientEnabled);
 
 public slots:
-  /** Docks a dockwidget back to the dockwidget that was the neighbor widget before the current dock position. */
+  /**
+   * Docks a dockwidget back to the dockwidget that was the neighbor
+   widget before the current dock position.
+  */
   void dockBack();
 
   /**
    * Toggles the visibility state of the dockwidget if it is able to be shown or to be hidden.
-   *
    */
   void changeHideShowState();
 
@@ -595,7 +597,7 @@ public slots:
 protected:
 
   /**
-   * Check some conditions and show or hide the dockwidget header (drag panel).
+   * Checks some conditions and shows or hides the dockwidget header (drag panel).
    * The header is hidden if:
    * @li the parent widget is the KDockMainWindow
    * @li this is a (tab) group dockwidget
@@ -605,7 +607,7 @@ protected:
   
 signals:
   /**
-   * Emits that another dockwidget is docking to this.
+   * Emitted when another dock widget is docking to this.
    *
    * @param dw the dockwidget that is docking to this
    * @param dp the DockPosition where it wants to dock to
@@ -618,21 +620,21 @@ signals:
   void setDockDefaultPos();
 
   /**
-   * Signals that the close button of the panel (@ref KDockWidgetHeader) has been clicked.
+   * Emitted when the close button of the panel (@ref KDockWidgetHeader) has been clicked.
    */
   void headerCloseButtonClicked();
 
   /**
-   * Signals that the dockback button of the panel (@ref KDockWidgetHeader) has been clicked.
+   * Emitted when the dockback button of the panel (@ref KDockWidgetHeader) has been clicked.
    */
   void headerDockbackButtonClicked();
 
   /**
-   * Signals that the widget processes a close event.
+   * Emitted when the widget processes a close event.
    */
   void iMBeingClosed();
   /**
-   * Signals that the widget is undocked now.
+   * Emitted when the widget has undocked.
    */
   void hasUndocked();
 

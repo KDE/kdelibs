@@ -149,10 +149,9 @@ class KAboutContributor : public QFrame
  */
 class KAboutWidget : public QWidget
 {
-  // #########################################################################
   Q_OBJECT
 
-  public:
+public:
 
   /**
    * The Qt constructor.
@@ -166,25 +165,25 @@ class KAboutWidget : public QWidget
   void adjust();
 
   /**
-   * Set the image as the application logo.
+   * Sets the image as the application logo.
    */
   void setLogo(const QPixmap&);
-  /** Set the authors name and email address. */
+  /** Sets the author's name and email address. */
   void setAuthor(const QString& name, const QString& email,
 		 const QString& url, const QString& work);
-  /** Set the maintainers name and email address. */
+  /** Sets the maintainers name and email address. */
   void setMaintainer(const QString& name, const QString& email,
 		     const QString& url, const QString& work);
-  /** Show this person as one of the major contributors. */
+  /** Shows this person as one of the major contributors. */
   void addContributor(const QString& name, const QString& email,
 		      const QString& url, const QString& work);
-  /** Set the text describing the version. */
+  /** Sets the text describing the version. */
   void setVersion(const QString& name);
   // -------------------------------------------------------------------------
 protected slots:
-  /** Catch the signals from the contributors elements. */
+  /** Catches the signals from the contributors elements. */
   void sendEmailSlot(const QString& name, const QString& email);
-  /** Catch the clicked URLs. */
+  /** Catches the clicked URLs. */
   void openURLSlot(const QString& url);
   // -------------------------------------------------------------------------
 signals:
@@ -315,7 +314,7 @@ class KAboutDialog : public KDialogBase
 		  const QString &user3 = QString::null );
 
   /**
-   * Adjust the dialog.
+   * Adjusts the dialog.
    *
    * You can call this method after you have set up all
    * the contents but it is not required. It is done automatically when
@@ -324,7 +323,7 @@ class KAboutDialog : public KDialogBase
   void adjust();
 
   /**
-   * Make a modeless (modal = false in constructor) dialog visible.
+   * Makes a modeless (modal = false in constructor) dialog visible.
    *
    * If you reimplement this method make sure you run it
    * in the new method (e.g., @ref show()). Reimplemented
@@ -333,7 +332,7 @@ class KAboutDialog : public KDialogBase
   virtual void show( void );
 
   /**
-   * Make a modless (modal = false in constructor) dialog visible.
+   * Makes a modeless (modal = false in constructor) dialog visible.
    *
    * If you reimplmement this method make sure you run it
    * in the new method (i.e., @ref show( parent )).
@@ -344,7 +343,7 @@ class KAboutDialog : public KDialogBase
 
   /**
    * (Constructor II only)
-   * Set a title (not caption) in the uppermost area of the dialog
+   * Sets a title (not caption) in the uppermost area of the dialog.
    *
    * @param title Title string.
    */
@@ -371,7 +370,7 @@ class KAboutDialog : public KDialogBase
 
   /**
    * (Constructor II only)
-   * Enable or disable a frame around the image. The frame is, by default,
+   * Enables or disables a frame around the image. The frame is, by default,
    * enabled in the constructor
    *
    * @param state A value of @p true enables the frame
@@ -380,7 +379,7 @@ class KAboutDialog : public KDialogBase
 
   /**
    * (Constructor II only)
-   * Print the application name, KDE version, author, a copyright sign
+   * Prints the application name, KDE version, author, a copyright sign
    * and a year string. To the left of the text the standard application
    * icon is displayed.
    *
@@ -394,7 +393,7 @@ class KAboutDialog : public KDialogBase
 
   /**
    * (Constructor II only)
-   * Add a text page to a tab box. The text can be regular text or
+   * Adds a text page to a tab box. The text can be regular text or
    * rich text. The rich text can contain URLs and mail links.
    *
    * @param title Tab name.
@@ -409,7 +408,7 @@ class KAboutDialog : public KDialogBase
 
   /**
    * (Constructor II only)
-   * Add a license page to a tab box.
+   * Adds a license page to a tab box.
    *
    * @param title Tab name.
    * @param text The text to display.
@@ -452,7 +451,7 @@ class KAboutDialog : public KDialogBase
 
   /**
    * (Constructor II only)
-   * Add a container. You can add text and images to a container.
+   * Adds a container. You can add text and images to a container.
    *
    * @param childAlignment Specifies how the children of the container are
    *        aligned with respect to the container.
@@ -474,20 +473,20 @@ class KAboutDialog : public KDialogBase
 
   /**
    * (Constructor I only)
-   * Set the image as the application logo.
+   * Sets the image as the application logo.
    */
   void setLogo(const QPixmap&);
 
   /**
    * (Constructor I only)
-   * Set the author's name and email address.
+   * Sets the author's name and email address.
    */
   void setAuthor(const QString& name, const QString& email,
 		 const QString& url, const QString& work);
 
   /**
    * (Constructor I only)
-   * Set the maintainer's name and email address.
+   * Sets the maintainer's name and email address.
    */
   void setMaintainer(const QString& name, const QString& email,
 		     const QString& url, const QString& work);
@@ -501,7 +500,7 @@ class KAboutDialog : public KDialogBase
 
   /**
    * (Constructor I only)
-   * Set the text describing the version.
+   * Sets the text describing the version.
    */
   void setVersion(const QString& name);
 

@@ -54,7 +54,7 @@ public:
 		     QWidget *parent, const char *name=0 );
 
     /**
-     * Destroys the button
+     * Destructs the button.
      */
     ~KPushButton();
 

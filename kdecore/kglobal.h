@@ -33,7 +33,7 @@ class KStaticDeleterList;
 
 
 /**
- * Access the KDE global objects.
+ * Access to the KDE global objects.
  *
  * @author Sirtaj Singh Kang (taj@kde.org)
  * @version $Id$
@@ -43,24 +43,24 @@ class KGlobal
 public:
 
     /**
-     * Retrieve the global instance.  There is always at least
+     * Returns the global instance.  There is always at least
      * one instance of a component in one application (in most
      * cases the application itself).
      */
     static KInstance            *instance();
 
     /**
-     *  Retrieve the application standard dirs object.
+     *  Returns the application standard dirs object.
      */
     static KStandardDirs	*dirs();
 
     /**
-     *  Retrieve the general config object.
+     *  Returns the general config object.
      */
     static KConfig		*config();
 
     /**
-     *  Retrieve an iconloader object.
+     *  Returns an iconloader object.
      */
     static KIconLoader	        *iconLoader();
 
@@ -68,7 +68,7 @@ public:
     static KCharsets	        *charsets();
 
     /**
-     * Create a static QString
+     * Creates a static QString.
      *
      * To be used inside functions(!) like:
      * static const QString &myString = KGlobal::staticQString("myText");
@@ -81,7 +81,7 @@ public:
     static const QString        &staticQString(const char *);
 
     /**
-     * Create a static QString
+     * Creates a static QString.
      *
      * To be used inside functions(!) like:
      * static const QString &myString = KGlobal::staticQString(i18n("My Text"));

@@ -35,6 +35,8 @@
 class KMimeMagic; // see below (read this one first)
 
 /**
+ * @deprecated Use KMimeType::findByContent() instead
+ * May be removed in KDE 4.0
  * Returned by @ref KMimeMagic @p find...Type methods.
  *
  * It contains the mimetype and the encoding of
@@ -72,6 +74,8 @@ protected:
 };
 
 /**
+ * @deprecated Use KMimeType::findByContent() instead
+ * May be removed in KDE 4.0
  * Determine auto-magically the type of file,
  * not only by using its extension, but also by reading its contents.
  *

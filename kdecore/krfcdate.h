@@ -24,7 +24,7 @@
 #include <time.h>
 
 /**
- * The KDate class contains functions related to the parsing of dates.
+ * The KRFCDate class contains functions related to the parsing of dates.
  *
  * @author Waldo Bastian <bastian@kde.org>
  */
@@ -42,7 +42,7 @@ public:
     * The date/time returned is converted to UTC.
     *
     */
-   static time_t parseDate(const QString &);
+   static time_t parseDate(const QString &date);
 
 
   /**

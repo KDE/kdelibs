@@ -88,21 +88,17 @@ public:
               QWidget* parent = 0L, const char* name = 0L);
 
   /**
-   * Destructor.
+   * Destructs the label.
    */
   virtual ~KURLLabel ();
 
   /**
-   * Retreive the URL. 
-   *
-   * @return the URL.
+   * Returns the URL.
    */
   const QString& url () const;
 
   /**
-   * Retreive the tooltip text.
-   *
-   * @return the current tooltip text.
+   * Returns the current tooltip text.
    */
   const QString& tipText () const;
 
@@ -143,7 +139,7 @@ public:
 
 public slots:
   /**
-   * Turn on or off the underlining.
+   * Turns on or off the underlining.
    *
    *  When this is on, the
    * text will be underlined.  By default, it is @p true.
@@ -163,7 +159,7 @@ public slots:
   virtual void setFont (const QFont&);
 
   /**
-   * Turn on or off the tool tip feature.
+   * Turns on or off the tool tip feature.
    *
    * When this is on, the URL will be displayed as a
    * tooltip whenever the mouse passes passes over it.
@@ -181,7 +177,7 @@ public slots:
   void setTipText (const QString& tip);
 
   /**
-   * Set the highlight color.
+   * Sets the highlight color.
    *
    * This is the default foreground
    * color (non-selected).  By default, it is @p blue.
@@ -196,7 +192,7 @@ public slots:
   void setHighlightedColor(const QString& highcolor);
   
   /**
-   * Set the selected color.
+   * Sets the selected color.
    *
    * This is the color the text will change
    * to when either a mouse passes over it and "glow" mode is on or
@@ -212,7 +208,7 @@ public slots:
   void setSelectedColor(const QString& selcolor);
 
   /**
-   * Turn the custom cursor feature on or off.
+   * Turns the custom cursor feature on or off.
    *
    * When this is on, the cursor will change to a custom cursor
    * (default is a "pointing hand") whenever the cursor passes
@@ -224,7 +220,7 @@ public slots:
   void setUseCursor (bool on, QCursor* cursor = 0L);
 
   /**
-   * Turn on or off the "glow" feature. 
+   * Turns on or off the "glow" feature. 
    *
    * When this is on, the text will switch to the
    * selected color whenever the mouse
@@ -233,7 +229,7 @@ public slots:
   void setGlow (bool glow = true);
 
   /**
-   * Turn on or off the "float" feature.
+   * Turns on or off the "float" feature.
    *
    * This feature is very similar to the "glow" feature in
    * that the color of the label switches to the selected 
@@ -246,7 +242,7 @@ public slots:
   void setFloat (bool do_float = true);
 
   /**
-   * Set the "alt" pixmap. 
+   * Sets the "alt" pixmap. 
    *
    * This pixmap will be displayed when the
    * cursor passes over the label.  The effect is similar to the
@@ -259,62 +255,62 @@ public slots:
 signals:
 
   /**
-   * The mouse has passed over the label.
+   * Emitted when the mouse has passed over the label.
    *
    * @param url The URL for this label.
    */ 
   void enteredURL (const QString& url);
 
   /**
-   * The mouse has passed over the label.
+   * Emitted when the mouse has passed over the label.
    */ 
   void enteredURL ();
 
   /**
-   * The mouse is no longer over the label.
+   * Emitted when the mouse is no longer over the label.
    *
    * @param url The URL for this label.
    */ 
   void leftURL (const QString& url);
 
   /**
-   * The mouse is no longer over the label.
+   * Emitted when the mouse is no longer over the label.
    */ 
   void leftURL ();
 
   /**
-   * The user clicked the left mouse button on this label.
+   * Emitted when the user clicked the left mouse button on this label.
    *
    * @param url The URL for this label.
    */ 
   void leftClickedURL(const QString& url);
   
   /**
-   * The user clicked the left mouse button on this label.
+   * Emitted when the user clicked the left mouse button on this label.
    */ 
   void leftClickedURL();
   
   /**
-   * The user clicked the right mouse button on this label.
+   * Emitted when the user clicked the right mouse button on this label.
    *
    * @param url The URL for this label.
    */ 
   void rightClickedURL(const QString& url);
   
   /**
-   * The user clicked the left mouse button on this label.
+   * Emitted when the user clicked the left mouse button on this label.
    */ 
   void rightClickedURL();
   
   /**
-   * The user clicked the middle mouse button on this label.
+   * Emitted when the user clicked the middle mouse button on this label.
    *
    * @param url The URL for this label.
    */ 
   void middleClickedURL(const QString& url);
   
   /**
-   * The user clicked the left mouse button on this label.
+   * Emitted when the user clicked the left mouse button on this label.
    */ 
   void middleClickedURL();
 

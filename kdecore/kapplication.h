@@ -182,7 +182,7 @@ public:
   bool isRestored() const { return QApplication::isSessionRestored(); }
 
   /**
-   * Disable session management for this application.
+   * Disables session management for this application.
    *
    * Useful in case  your application is started by the
    * initial "startkde" script.
@@ -228,7 +228,9 @@ public:
   void saveState( QSessionManager& sm );
 
   /**
-   * Retrieve a pointer to a @ref DCOPClient for the application.
+   * Returns a pointer to a @ref DCOPClient for the application.
+   * If a client does not exist yet, it is created when this
+   * function is called.
    */
   virtual DCOPClient *dcopClient();
   
@@ -238,21 +240,17 @@ public:
   void disableAutoDcopRegistration();
 
   /**
-   * Get the application icon.
-   * @return a @ref QPixmap with the icon.
-   * @see QPixmap
+   * Returns a @ref QPixmap with the application icon.
    */
   QPixmap icon() const;
 
   /**
-   * Get the mini-icon for the application.
-   * @return a @ref QPixmap with the icon.
-   * @see QPixmap
-        */
+   * Returns the mini-icon for the application as a @ref QPixmap.
+   */
   QPixmap miniIcon() const;
 
   /**
-   *   Set the top widget of the application.
+   *   Sets the top widget of the application.
    *
    *   @param topWidget A top widget of the application.
    *
@@ -265,7 +263,7 @@ public:
   void setTopWidget( QWidget *topWidget );
 
   /**
-   * Invoke the KHelpCenter HTML help viewer from docbook sources.
+   * Invokes the KHelpCenter HTML help viewer from docbook sources.
    *
    * @param anchor      This has to be a defined anchor in your
    *                    docbook sources. If empty the main index
@@ -309,16 +307,15 @@ public:
   void invokeMailer( const KURL &mailtoURL );
 
   /**
-   * Invoke the standard browser.
+   * Invokes the standard browser.
    *
    * @param url The destination address
    */
   void invokeBrowser( const QString &url );
 
   /**
-   * Get the DCOP name of the service launcher. This will be something like
+   * Returns the DCOP name of the service launcher. This will be something like
    * klaucher_$host_$uid.
-   * @return The DCOP name of the launcher.
    */
   static QCString launcher();
 
@@ -403,9 +400,9 @@ public:
                 QString *error=0, QCString *dcopService=0, int *pid = 0, const QCString &startup_id = "" );
 
   /**
-   * Start a program via kdeinit.
+   * Starts a program via kdeinit.
    * There will be no application startup notification, so you should
-   * use it only for starting internal processes. 
+   * use it only for starting internal processes.
    *
    * program name and arguments are converted to according to the
    * local encoding and passed as is to kdeinit.
@@ -422,7 +419,7 @@ public:
                 QString *error=0, int *pid = 0 );
 
   /**
-   * Start a program via kdeinit and wait for it to finish.
+   * Starts a program via kdeinit and wait for it to finish.
    *
    * Like kdeinitExec but it waits till the program is finished.
    * As such it behaves similair to the system(...) function.
@@ -431,7 +428,7 @@ public:
                 QString *error=0, int *pid = 0 );
 
   /**
-   * Return a text for the window caption.
+   * Returns a text for the window caption.
    *
    * This may be set by
    * "-caption", otherwise it will be equivalent to the name of the
@@ -440,7 +437,12 @@ public:
   QString caption() const;
 
   /**
-   * Build a caption that contains the application name along with the
+   * @deprecated
+   */
+  KStyle* kstyle() const { return 0; }
+
+  /**
+   * Builds a caption that contains the application name along with the
    * @ref userCaption() using a standard layout.
    *
    * To make a compliant caption
@@ -486,16 +488,16 @@ public:
 #endif
 
   /**
-   * Enable style plugins.
+   * Enables style plugins.
    *
    * This is useful only to applications that normally
    * do not display a GUI and create the KApplication with
-   *  @p allowStyles set to @p false.
+   * allowStyles set to false.
    */
   void enableStyles();
 
   /**
-   * Disable style plugins.
+   * Disables style plugins.
    *
    * Current style plugins do not get unloaded.
    *
@@ -504,7 +506,7 @@ public:
   void disableStyles();
 
   /**
-   *  Install widget filter as global X11 event filter.
+   *  Installs widget filter as global X11 event filter.
    *
    * The widget
    *  filter receives XEvents in its standard @ref QWidget::x11Event() function.
@@ -515,19 +517,19 @@ public:
   void installX11EventFilter( QWidget* filter );
 
   /**
-   * Generate a uniform random number.
+   * Generates a uniform random number.
    * @return A truly unpredictable number in the range [0, RAND_MAX)
    */
   static int random();
 
   /**
-   * Generate a random string.  It operates in the range [A-Za-z0-9]
+   * Generates a random string.  It operates in the range [A-Za-z0-9]
    * @param length Generate a string of this length.
    */
   static QString randomString(int length);
 
   /**
-   * Add a message type to the KIPC event mask. You can only add "system
+   * Adds a message type to the KIPC event mask. You can only add "system
    * messages" to the event mask. These are the messages with id < 32.
    * Messages with id >= 32 are user messages.
    * @param id The message id. See @ref #KIPC::Message.
@@ -535,7 +537,7 @@ public:
   void addKipcEventMask(int id);
 
   /**
-   * Remove a message type from the KIPC event mask. This message will not
+   * Removes a message type from the KIPC event mask. This message will not
    * be handled anymore.
    * @param id The message id.
    */
@@ -545,7 +547,7 @@ public:
    * Returns the app startup notification identifier for this running application.
    */
   QCString startupId() const;
-  
+
   /**
    * Sets a new value for the application startup notification window property for newly
    * created toplevel windows.
@@ -560,7 +562,7 @@ public:
 
 public slots:
   /**
-   * Tell KApplication about one more operation that should be finished
+   * Tells KApplication about one more operation that should be finished
    * before the application exits. The standard behaviour is to exit on the
    * "last window closed" event, but some events should outlive the last window closed
    * (e.g. a file copy for a file manager, or 'compacting folders on exit' for a mail client).
@@ -568,7 +570,7 @@ public slots:
   void ref();
 
   /**
-   * Tell KApplication that one operation such as those described in @ref ref just finished.
+   * Tells KApplication that one operation such as those described in @ref ref just finished.
    * The application exits if the counter is back to 0.
    */
   void deref();
@@ -609,7 +611,7 @@ private:
   void init( bool GUIenabled );
 
   void parseCommandLine( ); // Handle KDE arguments (Using KCmdLineArgs)
-  
+
   void read_app_startup_id();
 
 public:
@@ -646,7 +648,7 @@ public:
 
 signals:
   /**
-   * KApplication has changed its palette due to a KDisplay request.
+   * Emitted when KApplication has changed its palette due to a KControl request.
    *
    * Normally, widgets will update their palettes automatically, but you
    * should connect to this to program special behaviour.
@@ -654,7 +656,7 @@ signals:
   void kdisplayPaletteChanged();
 
   /**
-   * KApplication has changed its GUI style in response to a KControl request.
+   * Emitted when KApplication has changed its GUI style in response to a KControl request.
    *
    * Normally, widgets will update their styles automatically (as they would
    * respond to an explicit setGUIStyle() call), but you should connect to
@@ -663,7 +665,7 @@ signals:
   void kdisplayStyleChanged();
 
   /**
-   * KApplication has changed its font in response to a KControl request.
+   * Emitted when KApplication has changed its font in response to a KControl request.
    *
    * Normally widgets will update their fonts automatically, but you should
    * connect to this to monitor global font changes, especially if you are
@@ -672,26 +674,26 @@ signals:
   void kdisplayFontChanged();
 
   /**
-   * KApplication has changed either its GUI style, its font or its palette
+   * Emitted when KApplication has changed either its GUI style, its font or its palette
    * in response to a kdisplay request. Normally, widgets will update their styles
    * automatically, but you should connect to this to program special
    * behavior. */
   void appearanceChanged();
 
   /**
-   * The settings for toolbars have been changed. KToolBar will know what to do.
+   * Emitted when the settings for toolbars have been changed. KToolBar will know what to do.
    */
   void toolbarAppearanceChanged(int);
 
   /**
-   * The desktop background has been changed by @p kcmdisplay.
+   * Emitted when the desktop background has been changed by @p kcmdisplay.
    *
    * @param desk The desktop whose background has changed.
    */
   void backgroundChanged(int desk);
 
   /**
-   * The global settings have been changed - see KGlobalSettings
+   * Emitted when the global settings have been changed - see KGlobalSettings
    * KApplication takes care of calling reparseConfiguration on KGlobal::config()
    * so that applications/classes using this only have to re-read the configuration
    * @param category the category among the enum above
@@ -699,7 +701,7 @@ signals:
   void settingsChanged(int category);
 
   /**
-   * The global icon settings have been changed.
+   * Emitted when the global icon settings have been changed.
    */
   void iconChanged(int group);
 

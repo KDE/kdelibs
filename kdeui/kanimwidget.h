@@ -105,24 +105,24 @@ public:
   virtual ~KAnimWidget();
 
   /**
-   * Start the animation from frame 1
+   * Starts the animation from frame 1
    */
   void start();
 
   /**
-   * Stop the animation.  This will also reset the widget to frame 1.
+   * Stops the animation.  This will also reset the widget to frame 1.
    */
   void stop();
 
   /**
-   * Set the size of the icons.
+   * Sets the size of the icons.
    *
    * @param size The size of the icons
    */
   void setSize( int size );
 
   /**
-   * Set the list of icons to use for the animation.  They will all be
+   * Sets the list of icons to use for the animation.  They will all be
    * loaded using the @p MainBarIcon() function so make sure that they are
    * toolbar icons... or at least loadable using @p MainBarIcon().
    *
@@ -131,7 +131,7 @@ public:
   void setIcons( const QStringList& icons );
 
   /**
-   * Set the name of the animated icons to load.  This will use the
+   * Sets the name of the animated icons to load.  This will use the
    * KIconLoader::loadAnimated method for the actual loading.
    *
    * @param icons The name of the icons to use for the animation

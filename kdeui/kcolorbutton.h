@@ -37,37 +37,33 @@ class KColorButton : public QPushButton
 
 public:
 	/**
-	* Constructor. Create a KColorButton.
-	*/
+	 * Creates a color button.
+	 */
 	KColorButton( QWidget *parent, const char *name = 0L );
 	/**
-	* Constructor. Create a KColorButton.
-	* @param c	The initial colour of the button.
-	*/
+	 * Creates a color button with an initial color @p c.
+	 */
 	KColorButton( const QColor &c, QWidget *parent, const char *name = 0L );
 	/**
-	* Destructor.
-	*/
+	 * Destructor.
+	 */
 	virtual ~KColorButton() {}
 
 	/**
-	* The current colour.
-	* @return The current colour.
-	*/
+	 * Returns the currently chosen color.
+	 */
 	QColor color() const
 		{	return col; }
 	/**
-	* Set the current colour.
-	*
-	* @param c	The colour to set.
-	*/
+	 * Sets the current color to @p c.
+	 */
 	void setColor( const QColor &c );
 
 signals:
 	/**
-	* This signal will be emitted when the colour of the widget
-	* is changed, either with @ref #setColor() or via user selection.
-	*/
+	 * Emitted when the color of the widget
+	 * is changed, either with @ref #setColor() or via user selection.
+	 */
 	void changed( const QColor &newColor );
 
 protected slots:

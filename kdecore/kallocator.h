@@ -1,4 +1,4 @@
-/* 
+/*
     This file is part of the KDE libraries
 
     Copyright (C) 1999 Waldo Bastian (bastian@kde.org)
@@ -43,23 +43,23 @@ class KZoneAllocator
 {
 public:
     /**
-     * Create a ZoneAllocator 
-     * @param _blockSize Size in bytes of the blocks requested from malloc. 
+     * Creates a KZoneAllocator object.
+     * @param _blockSize Size in bytes of the blocks requested from malloc.
      */
     KZoneAllocator(long _blockSize = 128*1024);
 
     /**
-     * Destruct the ZoneAllocator and free all memory allocated by it.
+     * Destructs the ZoneAllocator and free all memory allocated by it.
      */
     ~KZoneAllocator();
 
     /**
-     * Allocate a memory block.
+     * Allocates a memory block.
      * @param _size Size in bytes of the memory block. Memory is not alligned!
      */
     void* allocate(size_t _size);
-                
-protected:    
+
+protected:
     long blockSize;
     QPtrList<char> memoryBlocks;
     char *currentBlock;

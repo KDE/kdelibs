@@ -70,7 +70,7 @@ class KIconLoader
 public:
 
     /**
-     * Construct the iconloader.
+     * Constructs an iconloader.
      * @param appname Add the data directories of this application to the
      * icon search path for the "User" group. The default argument adds the
      * directories of the current application.
@@ -82,13 +82,13 @@ public:
     ~KIconLoader();
 
     /**
-     * Add @p appname to the list of application specific directories.
+     * Adds @p appname to the list of application specific directories.
      * @param appname The application name.
      */
     void addAppDir(const QString& appname);
 
     /**
-     * Load an icon. It will try very hard to find an icon which is
+     * Loads an icon. It will try very hard to find an icon which is
      * suitable. If no exact match is found, a close match is searched.
      * If neither an exact nor a close match is found, a null pixmap or
      * the "unknown" pixmap is returned, depending on the value of the
@@ -121,7 +121,7 @@ public:
 		     bool canReturnNull=false) const;
 
     /**
-     * Load an animated icon. In the future, this will be replaced by a
+     * Loads an animated icon. In the future, this will be replaced by a
      * routine which loads an MNG animation and returns a QMovie.
      * @param name The name of the icon.
      * @param group The icon group. See @ref loadIcon().
@@ -132,7 +132,7 @@ public:
     QStringList loadAnimated(const QString& name, int group, int size=0) const;
 
     /**
-     * Query all available icons for a specific group, having a specific
+     * Queries all available icons for a specific group, having a specific
      * context.
      * @param group_or_size The icon group or size. See @ref #iconPath.
      * @param context The icon context.
@@ -140,7 +140,7 @@ public:
     QStringList queryIcons(int group_or_size, int context=KIcon::Any) const;
 
     /**
-     * Query all available icons for a specific context.
+     * Queries all available icons for a specific context.
      * @param group_or_size The icon preferred group or size. If available
      * at this group or size, those icons will be returned, in other case,
      * icons of undefined size will be returned.

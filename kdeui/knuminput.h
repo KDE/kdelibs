@@ -62,7 +62,7 @@ public:
     ~KNumInput();
 
     /**
-     * Set the text and alignment of the main description label.
+     * Sets the text and alignment of the main description label.
      *
      * @param label The text of the label.
      *              Use @ref QString::null to remove an existing one.
@@ -82,7 +82,7 @@ public:
     virtual void setLabel(QString label, int a = AlignLeft | AlignTop);
 
     /**
-     * Set the spacing of tickmarks for the slider.
+     * Sets the spacing of tickmarks for the slider.
      *
      * @param minor Minor tickmark separation.
      * @param major Major tickmark separation.
@@ -90,13 +90,13 @@ public:
     void setSteps(int minor, int major);
 
     /**
-     * Specify that this widget may stretch horizontally, but is
+     * Specifies that this widget may stretch horizontally, but is
      * fixed vertically (like @ref QSpinBox itself).
      */
     QSizePolicy sizePolicy() const;
 
     /**
-     * Return a size which fits the contents of the control.
+     * Returns a size which fits the contents of the control.
      *
      * @return the preferred size necessary to show the control
      */
@@ -111,7 +111,7 @@ protected:
     void layout(bool deep);
 
     /**
-     * You need to overwrite this method and implement yourlayout
+     * You need to overwrite this method and implement your layout
      * calculations there. 
      *
      * See @ref KIntNumInput / @ref KDoubleNumInput implementation

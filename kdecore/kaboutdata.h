@@ -41,23 +41,23 @@ public:
     /**
      * Convenience constructor
      *
-     * @param _name The name of the person.
+     * @param name The name of the person.
      *
-     * @param _task The task of this person. This string should be
+     * @param task The task of this person. This string should be
      *              marked for translation, e.g.
      *              I18N_NOOP("Task description....")
      *
-     * @param _emailAddress The email address of the person.
+     * @param emailAddress The email address of the person.
      *
-     * @param _webAddress Homepage of the person.
+     * @param webAddress Homepage of the person.
      */
-    KAboutPerson( const char *_name, const char *_task,
-                  const char *_emailAddress, const char *_webAddress )
+    KAboutPerson( const char *name, const char *task,
+                  const char *emailAddress, const char *webAddress )
     {
-      mName = _name;
-      mTask = _task;
-      mEmailAddress = _emailAddress;
-      mWebAddress = _webAddress;
+      mName = name;
+      mTask = task;
+      mEmailAddress = emailAddress;
+      mWebAddress = webAddress;
     }
     /**
      * @internal - don't use. Required by QValueList
@@ -101,7 +101,7 @@ private:
  * Normally you should at least define the translator's name.
  * 
  * It's not possible to use @ref KAboutPerson for this, because
- * KAboutPerson stores internaly only const char* pointers, but the
+ * @ref KAboutPerson stores internaly only const char* pointers, but the
  * translator information is generated dynamically from the translation
  * of a dummy string.
 */

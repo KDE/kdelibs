@@ -47,13 +47,13 @@ public:
     virtual ~KCommand() {}
 
     /**
-     * The main method: execute this command.
+     * The main method: executes this command.
      * Implement here what this command is about, and remember to
      * record any information that will be helpful for @ref unexecute.
      */
     virtual void execute() = 0;
     /**
-     * Unexecute (undo) this command.
+     * Unexecutes (undo) this command.
      * Implement here the steps to take for undoing the command.
      * If your application uses actions for everything (it should),
      * and if you implement unexecute correctly, the application is in the same
@@ -67,7 +67,7 @@ public:
      */
     QString name() const { return m_name; }
     /**
-     * Update the name of this command.
+     * Updates the name of this command.
      * Rarely necessary.
      */
     void setName(const QString &name) { m_name=name; }
@@ -85,7 +85,7 @@ class KMacroCommand : public KCommand
 {
 public:
     /**
-     * Create a macro command. You will then need to call @ref addCommand
+     * Creates a macro command. You will then need to call @ref addCommand
      * for each subcommand to be added to this macro command.
      * @param name the name of this command, translated, since it will appear
      * in the menus.
@@ -100,12 +100,12 @@ public:
     void addCommand(KCommand *command);
 
     /**
-     * Execute this command, i.e. execute all the sub-commands
+     * Executes this command, i.e. execute all the sub-commands
      * in the order in which they were added.
      */
     virtual void execute();
     /**
-     * Undo the execution of this command, i.e. unexecute all the sub-commands
+     * Undoes the execution of this command, i.e. unexecute all the sub-commands
      * in the _reverse_ order to the one in which they were added.
      */
     virtual void unexecute();
@@ -129,14 +129,14 @@ class KCommandHistory : public QObject {
     Q_OBJECT
 public:
     /**
-     * Create a command history, to store commands.
+     * Creates a command history, to store commands.
      * This constructor doesn't create actions, so you need to call
      * @ref undo and @ref redo yourself.
      */
     KCommandHistory();
 
     /**
-     * Create a command history, to store commands.
+     * Creates a command history, to store commands.
      * This also creates an undo and a redo action, in the @p actionCollection,
      * using the standard names ("edit_undo" and "edit_redo").
      * @param withMenus if true, the actions will display a menu when plugged
@@ -144,10 +144,13 @@ public:
      */
     KCommandHistory(KActionCollection *actionCollection, bool withMenus = true);
 
+    /**
+     * Destructs the command history object.
+     */
     virtual ~KCommandHistory();
 
     /**
-     * Erase all the undo/redo history.
+     * Erases all the undo/redo history.
      * Use this when reloading the data, for instance, since this invalidates
      * all the commands.
      */
@@ -167,7 +170,7 @@ public:
      */
     const int &undoLimit() { return m_undoLimit; }
     /**
-     * Set the maximum number of items in the undo history
+     * Sets the maximum number of items in the undo history.
      */
     void setUndoLimit(const int &limit);
     /**
@@ -175,23 +178,23 @@ public:
      */
     const int &redoLimit() { return m_redoLimit; }
     /**
-     * Set the maximum number of items in the redo history
+     * Sets the maximum number of items in the redo history.
      */
     void setRedoLimit(const int &limit);
 
 public slots:
     /**
-     * Undo the last action.
+     * Undoes the last action.
      * Call this if you don't use the builtin KActions.
      */
     virtual void undo();
     /**
-     * Redo the last undone action.
+     * Redoes the last undone action.
      * Call this if you don't use the builtin KActions.
      */
     virtual void redo();
     /**
-     * Remember when you saved the document.
+     * Remembers when you saved the document.
      * Call this right after saving the document. As soon as
      * the history reaches the current index again (via some
      * undo/redo operations) it will emit @ref documentRestored
@@ -208,13 +211,13 @@ protected slots:
 
 signals:
     /**
-     * This is called every time a command is executed
+     * Emitted every time a command is executed
      * (whether by addCommand, undo or redo).
      * You can use this to update the GUI, for instance.
      */
     void commandExecuted();
     /**
-     * This is emitted everytime we reach the index where you
+     * Emitted everytime we reach the index where you
      * saved the document for the last time. See @ref documentSaved
      */
     void documentRestored();

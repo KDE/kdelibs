@@ -99,7 +99,7 @@ class KPopupMenu : public QPopupMenu {
     Q_OBJECT
 public:
     /**
-     * Creates a new KPopupMenu.
+     * Constructs a KPopupMenu.
      */
     KPopupMenu(QWidget *parent=0, const char *name=0);
     /**

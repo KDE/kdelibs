@@ -77,30 +77,30 @@ public:
   KConfigBase();
 
   /**
-   * Destructor.
+   * Destructs the KConfigBase object.
    */
   virtual ~KConfigBase();
 
   /**
-   * Specify the group in which keys will be searched.
+   * Specifies the group in which keys will be searched.
    *
    *  Subsequent
    * calls to @ref readEntry() will look only for keys in the currently
    * activated group.
    *
    * Switch back to the default group by passing an empty string.
-   * @param pGroup The name of the new group.
+   * @param group The name of the new group.
    */
-  void setGroup( const QString& pGroup );
+  void setGroup( const QString& group );
 
   /**
-   * Set the group to the "Desktop Entry" group used for
+   * Sets the group to the "Desktop Entry" group used for
    * desktop configuration files for applications, mime types, etc.
    */
   void setDesktopGroup();
 
   /**
-   * Retrieve the name of the group in which we are
+   * Returns the name of the group in which we are
    *  searching for keys and from which we are retrieving entries.
    *
    * @return The current group.
@@ -108,29 +108,29 @@ public:
   QString group() const;
 
   /**
-   * Returns @p true if the specified group is known about.
+   * Returns true if the specified group is known about.
    *
-   * @param _pGroup The group to search for.
+   * @param group The group to search for.
    * @returns Whether the group exists.
    */
-  virtual bool hasGroup(const QString &_pGroup) const = 0;
+  virtual bool hasGroup(const QString &group) const = 0;
 
   /**
-   * Retrieve a list of groups that are known about.
+   * Returns a list of groups that are known about.
    *
    * @returns The list of groups.
    **/
   virtual QStringList groupList() const = 0;
 
   /**
-   * Retrieve a the current locale.
+   * Returns a the current locale.
    *
    * @return A string representing the current locale.
    */
   QString locale() const;
 
   /**
-   * Read the value of an entry specified by @p pKey in the current group.
+   * Reads the value of an entry specified by @p pKey in the current group.
    *
    * @param pKey The key to search for.
    * @param aDefault A default value returned if the key was not found.
@@ -143,7 +143,7 @@ public:
                      const QString& aDefault = QString::null ) const;
 
   /**
-   * Read the value of an entry specified by @p pKey in the current group.
+   * Reads the value of an entry specified by @p pKey in the current group.
    * The value is treated as if it is of the given type.
    *
    * @return An empty property or error.
@@ -152,7 +152,7 @@ public:
   QVariant readPropertyEntry( const char *pKey, QVariant::Type ) const;
 
   /**
-   * Read a list of strings.
+   * Reads a list of strings.
    *
    * @deprecated
    *
@@ -165,7 +165,7 @@ public:
   int readListEntry( const char *pKey, QStrList &list, char sep = ',' ) const;
 
   /**
-   * Read a list of strings.
+   * Reads a list of strings.
    *
    * @param pKey The key to search for.
    * @param sep  The list separator (default is ",").
@@ -175,7 +175,7 @@ public:
   QStringList readListEntry( const char *pKey, char sep = ',' ) const;
 
   /**
-   * Read a list of Integers.
+   * Reads a list of Integers.
    *
    * @param pKey The key to search for.
    * @return The list.
@@ -184,7 +184,7 @@ public:
   QValueList<int> readIntListEntry( const char *pKey ) const;
 
   /**
-   * Read a path.
+   * Reads a path.
    *
    * Read the value of an entry specified by @p pKey in the current group
    * and interpret it as a path. This means, dollar expansion is activated
@@ -198,7 +198,7 @@ public:
   QString readPathEntry( const char *pKey, const QString & aDefault = QString::null ) const;
 
   /**
-   * Read a numerical value.
+   * Reads a numerical value.
    *
    * Read the value of an entry specified by @p pKey in the current group
    * and interpret it numerically.
@@ -211,7 +211,7 @@ public:
   int readNumEntry( const char *pKey, int nDefault = 0 ) const;
 
   /**
-   * Read a numerical value.
+   * Reads an unsigned numerical value.
    *
    * Read the value of an entry specified by @p pKey in the current group
    * and interpret it numerically.
@@ -225,7 +225,7 @@ public:
 
 
   /**
-   * Read a numerical value.
+   * Reads a numerical value.
    *
    * Read the value of an entry specified by @p pKey in the current group
    * and interpret it numerically.
@@ -238,7 +238,7 @@ public:
   long readLongNumEntry( const char *pKey, long nDefault = 0 ) const;
 
   /**
-   * Read a numerical value.
+   * Read an unsigned numerical value.
    *
    * Read the value of an entry specified by @p pKey in the current group
    * and interpret it numerically.
@@ -251,7 +251,7 @@ public:
   unsigned long readUnsignedLongNumEntry( const char *pKey, unsigned long nDefault = 0 ) const;
 
   /**
-   * Read a numerical value.
+   * Reads a floating point value.
    *
    * Read the value of an entry specified by @p pKey in the current group
    * and interpret it numerically.
@@ -264,7 +264,7 @@ public:
   double readDoubleNumEntry( const char *pKey, double nDefault = 0.0 ) const;
 
   /**
-   * Read a @ref QFont.
+   * Reads a @ref QFont value.
    *
    * Read the value of an entry specified by @p pKey in the current group
    * and interpret it as a font object.
@@ -277,7 +277,7 @@ public:
   QFont readFontEntry( const char *pKey, const QFont* pDefault = 0L ) const;
 
   /**
-   * Read a boolean entry.
+   * Reads a boolean entry.
    *
    * Read the value of an entry specified by @p pKey in the current group
    * and interpret it as a boolean value. Currently "on" and "true" are
@@ -293,7 +293,7 @@ public:
   bool readBoolEntry( const char *pKey, const bool bDefault = false ) const;
 
   /**
-   * Read a rect entry.
+   * Reads a @QRect entry.
    *
    * Read the value of an entry specified by pKey in the current group
    * and interpret it as a @ref QRect object.
@@ -308,7 +308,7 @@ public:
   QRect readRectEntry( const char *pKey, const QRect* pDefault = 0L ) const;
 
   /**
-   * Read a point entry.
+   * Reads a @ref QPoint entry.
    *
    * Read the value of an entry specified by @p pKey in the current group
    * and interpret it as a @ref QPoint object.
@@ -323,7 +323,7 @@ public:
   QPoint readPointEntry( const char *pKey, const QPoint* pDefault = 0L ) const;
 
   /**
-   * Read a size entry.
+   * Reads a @ref QSize entry.
    *
    * Read the value of an entry specified by @p pKey in the current group
    * and interpret it as a @ref QSize object.
@@ -339,7 +339,7 @@ public:
 
 
   /**
-   * Read a @ref QColor.
+   * Reads a @ref QColor entry.
    *
    * Read the value of an entry specified by @p pKey in the current group
    * and interpret it as a color.
@@ -353,7 +353,7 @@ public:
   QColor readColorEntry( const char *pKey, const QColor* pDefault = 0L ) const;
 
   /**
-   * Read a @ref QDateTime.
+   * Reads a @ref QDateTime entry.
    *
    * Read the value of an entry specified by @p pKey in the current group
    * and interpret it as a date and time.
@@ -367,7 +367,7 @@ public:
   QDateTime readDateTimeEntry( const char *pKey, const QDateTime* pDefault = 0L ) const;
 
   /**
-   * Write the key/value pair.
+   * Writes a key/value pair.
    *
    * This is stored in the most specific config file when destroying the
    * config object or when calling @ref sync().
@@ -490,7 +490,7 @@ public:
 		   bool bPersistent = true, bool bGlobal = false, bool bNLS = false );
 
   /**
-   * Write the key/value pair.
+   * Write a (key/value) pair.
    *
    * This is stored to the most specific config file when destroying the
    * config object or when calling @ref sync().
@@ -516,8 +516,8 @@ public:
     { return writeEntry(pKey, QString::fromLatin1(pValue), bPersistent, bGlobal, bNLS); }
 
   /**
-   * Write the key value pair.
-   * Same as above, but write a numerical value.
+   * Write a (key/value) pair.
+   * Same as above, but writes a numerical value.
    *
    * @param pKey The key to write.
    * @param nValue The value to write.
@@ -538,8 +538,8 @@ public:
                       bool bNLS = false );
 
   /**
-   * Write the key value pair.
-   * Same as above, but write an unsigned numerical value.
+   * Writes a (key/value) pair.
+   * Same as above, but writes an unsigned numerical value.
    *
    * @param pKey The key to write.
    * @param nValue The value to write.
@@ -560,7 +560,7 @@ public:
                       bool bNLS = false );
 
   /**
-   * Write the key value pair.
+   * Writes a (key/value) pair.
    * Same as above, but write a long numerical value.
    *
    * @param pKey The key to write.
@@ -581,8 +581,8 @@ public:
                       bool bNLS = false );
 
   /**
-   * Write the key value pair.
-   * Same as above, but write an unsigned long numerical value.
+   * Writes a (key/value) pair.
+   * Same as above, but writes an unsigned long numerical value.
    *
    * @param pKey The key to write.
    * @param nValue The value to write.
@@ -602,8 +602,8 @@ public:
                       bool bNLS = false );
 
   /**
-   * Write the key value pair.
-   * Same as above, but write a floating-point value.*
+   * Writes a (key/value) pair.
+   * Same as above, but writes a floating-point value.
    * @param pKey The key to write.
    * @param nValue The value to write.
    * @param bPersistent If @p bPersistent is false, the entry's dirty
@@ -628,8 +628,8 @@ public:
                       bool bNLS = false );
 
   /**
-   * Write the key value pair.
-   * Same as above, but write a boolean value.
+   * Writes a (key/value) pair.
+   * Same as above, but writes a boolean value.
    *
    * @param pKey The key to write.
    * @param bValue The value to write.
@@ -649,8 +649,8 @@ public:
                       bool bNLS = false );
 
   /**
-   * Write the key value pair.
-   * Same as above, but write a font
+   * Writes a (key/value) pair.
+   * Same as above, but writes a font value.
    *
    * @param pKey The key to write.
    * @param rFont The font value to write.
@@ -670,8 +670,8 @@ public:
                       bool bNLS = false );
 
   /**
-   * Write the key value pair.
-   * Same as above, but write a color.
+   * Writes a (key/value) pair.
+   * Same as above, but write a color entry.
    *
    * Note: Unlike the other @ref writeEntry() functions, the old value is
    * _not_ returned here!
@@ -694,8 +694,8 @@ public:
                    bool bNLS = false );
 
   /**
-   * Write the key value pair.
-   * Same as above, but write a date and time.
+   * Writes a (key/value) pair.
+   * Same as above, but writes a date and time entry.
    *
    * Note: Unlike the other @ref writeEntry() functions, the old value is
    * @em not returned here!
@@ -719,8 +719,8 @@ public:
 
 
   /**
-   * Write the key value pair.
-   * Same as above, but write a rectangle.
+   * Writes a (key/value) pair.
+   * Same as above, but writes a rectangle.
    *
    * Note: Unlike the other @ref writeEntry() functions, the old value is
    * _not_ returned here!
@@ -743,8 +743,8 @@ public:
                    bool bNLS = false );
 
   /**
-   * Write the key value pair.
-   * Same as above, but write a point.
+   * Writes a (key/value) pair.
+   * Same as above, but writes a point.
    *
    * Note: Unlike the other @ref writeEntry() functions, the old value is
    * _not_ returned here!
@@ -767,8 +767,8 @@ public:
                    bool bNLS = false );
 
   /**
-   * Write the key value pair.
-   * Same as above, but write a size.
+   * Writes a (key/value) pair.
+   * Same as above, but writes a size.
    *
    * Note: Unlike the other @ref writeEntry() functions, the old value is
    * _not_ returned here!
@@ -791,7 +791,7 @@ public:
                    bool bNLS = false );
 
   /**
-   * Write a filepath.
+   * Writes a filepath.
    *
    * It is checked whether the path is located under $HOME. If so the
    * path is written out with the user's home-directory replaced with
@@ -816,7 +816,7 @@ public:
 
 
   /**
-   * Delete the entry specified by @p pKey in the current group.
+   * Deletes the entry specified by @p pKey in the current group.
    *
    * @param pKey The key to delete.
    * @param bGlobal     If @p bGlobal is true, the pair is not removed from the
@@ -829,7 +829,7 @@ public:
                    bool bNLS = false, bool bGlobal = false);
 
   /**
-   * Delete a configuration entry group
+   * Deletes a configuration entry group
    *
    * If the group is not empty and bDeep is false, nothing gets
    * deleted and false is returned.
@@ -837,13 +837,13 @@ public:
    * current group is undefined and should be set with setGroup()
    * before the next operation on the configuration object.
    *
-   * @param pGroup The name of the group
+   * @param group The name of the group
    * @param bDeep Specify whether non-empty groups should be completely
    *        deleted (including their entries).
-   * @return If the group is not empty and bDeep is false, 
+   * @return If the group is not empty and bDeep is false,
              deleteGroup returns false.
    */
-  bool deleteGroup( const QString& pGroup, bool bDeep = true );
+  bool deleteGroup( const QString& group, bool bDeep = true );
 
 
   /**
@@ -879,7 +879,7 @@ public:
   virtual void rollback( bool bDeep = true );
 
   /**
-   * Flush all changes that currently reside only in memory
+   * Flushes all changes that currently reside only in memory
    * back to disk / permanent storage. Dirty configuration entries are
    * written to the most specific file available.
    *
@@ -899,7 +899,7 @@ public:
   bool isDirty() const { return bDirty; }
 
   /**
-   * Set the config object's read-only status.
+   * Sets the config object's read-only status.
    *
    * @param _ro If @p true, the config object will not write out any
    *        changes to disk even if it is destroyed or @ref sync() is called.
@@ -908,14 +908,14 @@ public:
   virtual void setReadOnly(bool _ro) { bReadOnly = _ro; }
 
    /**
-    * Queries the read-only status of the config object.
+    * Returns the read-only status of the config object.
     *
     * @return The read-only status.
     */
   bool isReadOnly() const { return bReadOnly; }
 
   /**
-   * Check whether the key has an entry in the currently active group.
+   * Checks whether the key has an entry in the currently active group.
    * Use this to determine whether a key is not specified for the current
    * group (hasKey() returns false). Keys with null data are considered
    * nonexistent.
@@ -923,19 +923,19 @@ public:
    * @param pKey The key to search for.
    * @return If true, the key is available.
    */
-  virtual bool hasKey( const QString& pKey ) const = 0;
+  virtual bool hasKey( const QString& key ) const = 0;
 
   /**
-   * Return a map (tree) of entries for all entries in a particular
+   * Returns a map (tree) of entries for all entries in a particular
    * group.  Only the actual entry string is returned, none of the
    * other internal data should be included.
    *
-   * @param pGroup A group to get keys from.
+   * @param group A group to get keys from.
    * @return A map of entries in the group specified, indexed by key.
    *         The returned map may be empty if the group is not found.
    * @see   QMap
    */
-  virtual QMap<QString, QString> entryMap(const QString &pGroup) const = 0;
+  virtual QMap<QString, QString> entryMap(const QString &group) const = 0;
 
   /**
    * Reparses all configuration files. This is useful for programs
@@ -959,7 +959,7 @@ public:
   enum ConfigState { NoAccess, ReadOnly, ReadWrite };
 
   /**
-   * Retrieve the state of the app-config object.
+   * Returns the state of the app-config object.
    *
    * Possible return values
    * are NoAccess (the application-specific config file could not be
@@ -974,7 +974,7 @@ public:
 
 protected:
   /**
-   * Read the locale and put in the configuration data struct.
+   * Reads the locale and put in the configuration data struct.
    * Note that this should be done in the constructor, but this is not
    * possible due to some mutual dependencies in @ref KApplication::init()
    */
@@ -988,14 +988,14 @@ protected:
   virtual void setDirty(bool _bDirty = true) { bDirty = _bDirty; }
 
   /**
-   * Parse all configuration files for a configuration object.
+   * Parses all configuration files for a configuration object.
    *
    * The actual parsing is done by the associated KConfigBackEnd.
    */
   virtual void parseConfigFiles();
 
   /**
-   * Returns an map (tree) of the entries in the specified group.
+   * Returns a map (tree) of the entries in the specified group.
    * This may or may not return all entries that belong to the
    * config object.  The only guarantee that you are given is that
    * any entries that are dirty (i.e. modified and not yet written back
@@ -1012,7 +1012,7 @@ protected:
   virtual KEntryMap internalEntryMap( const QString& pGroup ) const = 0;
 
   /**
-   * Returns an map (tree) of the entries in the tree.
+   * Returns a map (tree) of the entries in the tree.
    *
    * Do not use this function, the implementation / return type are
    * subject to change.
@@ -1025,7 +1025,7 @@ protected:
   virtual KEntryMap internalEntryMap() const = 0;
 
   /**
-   * Insert a key,value pair into the internal storage mechanism of
+   * Inserts a (key/value) pair into the internal storage mechanism of
    * the configuration object. Classes that derive from KConfigBase
    * will need to implement this method in a storage-specific manner.
    *
@@ -1042,7 +1042,7 @@ protected:
   virtual void putData(const KEntryKey &_key, const KEntry &_data, bool _checkGroup = true) = 0;
 
   /**
-   * Look up an entry in the config object's internal structure.
+   * Looks up an entry in the config object's internal structure.
    * Classes that derive from KConfigBase will need to implement this
    * method in a storage-specific manner.
    *
@@ -1062,7 +1062,7 @@ protected:
    */
   KConfigBackEnd *backEnd;
 public:
-  /** 
+  /**
    * Overloaded public methods:
    */
   void setGroup( const QCString &pGroup );

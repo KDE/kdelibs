@@ -64,74 +64,74 @@ public:
     virtual ~KFontCombo();
 
     /**
-     * Sets the font list
+     * Sets the font list.
      *
      * @param fonts Font list to show
      */
     void setFonts(const QStringList &fonts);
     /**
-     * Set the listed fonts to bold or normal
+     * Sets the listed fonts to bold or normal.
      *
      * @param bold Set to true to display fonts in bold
      */
     void setBold(bool bold);
     /**
-     * Retrieve the current bold status
+     * Returns the current bold status.
      *
-     * @return True if fonts are bold
+     * @return true if fonts are bold
      */
     bool bold() const;
     /**
-     * Set the listed fonts to italic or regular
+     * Sets the listed fonts to italic or regular.
      *
      * @param italic Set to true to display fonts italic
      */
     void setItalic(bool bold);
     /**
-     * Retrieve the current italic status
+     * Returns the current italic status
      *
      * @return True if fonts are italic
      */
     bool italic() const;
     /**
-     * Set the listed fonts to underlined or not underlined
+     * Sets the listed fonts to underlined or not underlined
      *
      * @param underline Set to true to display fonts underlined
      */
     void setUnderline(bool bold);
     /**
-     * Retrieve the current underline status
+     * Returns the current underline status
      *
      * @return True if fonts are underlined
      */
     bool underline() const;
     /**
-     * Set the listed fonts to striked out or not
+     * Sets the listed fonts to striked out or not
      *
      * @param strikeOut Set to true to display fonts striked out
      */
     void setStrikeOut(bool bold);
     /**
-     * Retrieve the current strike out status
+     * Returns the current strike out status
      *
      * @return True if fonts are striked out
      */
     bool strikeOut() const;
     /**
-     * Set the listed fonts' size
+     * Sets the listed fonts' size
      *
      * @param size Set to the point size to display the fonts in
      */
     void setSize(int size);
     /**
-     * Retrieve the current font size
+     * Returns the current font size
      *
      * @return The point size of the fonts
      */
     int size() const;
 
     /**
-     * Retrieve the user's setting of whether the items should be painted
+     * Returns the user's setting of whether the items should be painted
      * in the respective fonts or not
      *
      * @return True if the respective fonts are used for painting
