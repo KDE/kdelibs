@@ -895,3 +895,8 @@ Comment[zh_TW.Big5]=KDE 結束中
 default_presentation=1
 default_sound=KDE_Logout.wav
 
+[printerror]
+Name=Print error
+Comment=A print error has occured
+default_presentation=2
+level=8
