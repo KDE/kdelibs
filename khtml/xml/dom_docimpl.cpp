@@ -91,7 +91,7 @@ ElementImpl *DocumentImpl::documentElement() const
 
 ElementImpl *DocumentImpl::createElement( const DOMString &name )
 {
-    uint id = khtml::getTagID( name.string().latin1(), name.string().length() );
+    uint id = khtml::getTagID( name.string().lower().latin1(), name.string().length() );
 
     ElementImpl *n = 0;
     switch(id)
