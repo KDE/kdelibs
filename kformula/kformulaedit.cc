@@ -15,6 +15,9 @@ QString KFormulaEdit::clipText;
 #define SOME_DIRTY 1
 #define ALL_CLEAN 2
 
+//easier.
+#define IS_LGROUP(x) ((x) == '{' || (x) == L_BRACE_UNSEEN)
+#define IS_RGROUP(x) ((x) == '}' || (x) == R_BRACE_UNSEEN)
 
 //  The widget works by having an internal string which the user
 //  unwittingly edits.  This string is re-parsed into a formula
@@ -127,11 +130,11 @@ void KFormulaEdit::redraw(int all)
   p.fillRect(0, 0, pm.width(), pm.height(), backgroundColor());
 
   //temp is just for debugging.
-  /* QString temp = formText;
+  /*QString temp = formText;
 
   temp.insert(cursorPos, '$');
 
-  fprintf(stderr, "\r%s       ", temp.ascii()); */
+  fprintf(stderr, "\r%s       ", temp.ascii());*/
 
   form->setPos(pm.width() / 2, pm.height() / 2);
   form->redraw(p);
@@ -237,12 +240,15 @@ int KFormulaEdit::isValidCursorPos(int pos)
 {
   if(pos == 0 || pos == (int)formText.length()) return 1;
 
+  if(formText[pos - 1] == L_BRACE_UNSEEN) return 0;
+  if(formText[pos] == R_BRACE_UNSEEN) return 0;
+
   if(formText[pos] == '{' && isInString(pos - 1, KFormula::delim() +
 					KFormula::loc() + QChar(SQRT) +
 					QChar(DIVIDE))) return 0;
   
   if(formText[pos - 1] == '}' && isInString(pos, KFormula::delim() +
-					    QChar(SQRT) +
+					    QChar(SQRT) + QString("[]") +
 					    QChar(DIVIDE))) return 0;
 
   if(formText[pos] == '}' && isInString(pos + 1, KFormula::delim()))
@@ -276,10 +282,10 @@ int KFormulaEdit::deleteAtCursor()
   //we only delete an operator if both its operands are empty.
   //if we are not in an empty group, the following if statement
   //catches it and returns.
-  if((cursorPos > 0 && formText[cursorPos] == '}' &&
-     formText[cursorPos - 1] != '{') ||
-     (cursorPos < maxpos && formText[cursorPos] == '{' &&
-      formText[cursorPos + 1] != '}'))
+  if((cursorPos > 0 && IS_RGROUP(formText[cursorPos]) &&
+     !IS_LGROUP(formText[cursorPos - 1])) ||
+     (cursorPos < maxpos && IS_LGROUP(formText[cursorPos]) &&
+      !IS_RGROUP(formText[cursorPos + 1])))
     return 0;
 
   //if we happen to be in a right group, this shifts cursor position from
@@ -290,7 +296,7 @@ int KFormulaEdit::deleteAtCursor()
 		QChar(SQRT) + QChar(DIVIDE)))
     ncpos -= 2;
   else if(cursorPos > 0 && cursorPos <= maxpos &&
-	  formText[cursorPos] == '{' &&
+	  IS_LGROUP(formText[cursorPos]) &&
 	  isInString(cursorPos - 1, KFormula::delim() + KFormula::loc() +
 		     QChar(SQRT) + QChar(DIVIDE)))
     ncpos--;
@@ -302,32 +308,36 @@ int KFormulaEdit::deleteAtCursor()
   //The following handles the case where the operator has only
   //the right operand grouped (exponents and subscripts).
   //It also checks whether the group is empty before deleting.
-  if(isInString(ncpos, KFormula::loc()) &&
+  if(isInString(ncpos, QString(QChar(POWER)) + QChar(SUB)) &&
      ncpos <= maxpos - 2 &&
-     formText[ncpos + 1] == '{' && formText[ncpos + 2] == '}') {
+     IS_LGROUP(formText[ncpos + 1]) && IS_RGROUP(formText[ncpos + 2])) {
     formText.remove(ncpos, 3);
     cursorPos = ncpos;
     return 1;
   }
 
   //Shifts position from "{$}/{}" and "${}/{}" to "{}$/{}".
-  if(formText[ncpos] == '{' &&
+  if(IS_LGROUP(formText[ncpos]) &&
      isInString(ncpos + 2, KFormula::delim() + QChar(SQRT) + QChar(DIVIDE)))
     {
       ncpos += 2;
     }
   else if(ncpos > 0 && ncpos < maxpos &&
-	  formText[ncpos] == '}' &&
-	  (formText[ncpos + 1] == QChar(SQRT) ||
+	  IS_RGROUP(formText[ncpos]) &&
+	  (formText[ncpos + 1] == QChar(ABOVE) ||
+	   formText[ncpos + 1] == QChar(BELOW) ||
+	   formText[ncpos + 1] == QChar(SQRT) ||
 	   formText[ncpos + 1] == QChar(DIVIDE)))
     ncpos++;
 
   //The following removes the division operator and leaves the
   //numerator intact.
-  if(ncpos <= maxpos - 2 && formText[ncpos + 2] == '}' &&
-     formText[ncpos + 1] == '{') {
+  if(ncpos <= maxpos - 2 && IS_RGROUP(formText[ncpos + 2]) &&
+     IS_LGROUP(formText[ncpos + 1])) {
     if(ncpos <= 1) return 0;
-    if(formText[ncpos] == '/') {
+    if(formText[ncpos] == QChar(DIVIDE) ||
+       formText[ncpos] == QChar(ABOVE) ||
+       formText[ncpos] == QChar(BELOW)) {
       int i, level = 0;
       ncpos--;
       formText.remove(ncpos, 4); // "{hello$}/{}" -> "{hello$"
@@ -335,8 +345,8 @@ int KFormulaEdit::deleteAtCursor()
       //now find the curly brace which marks the start of the numerator,
       //remove it, and go away.
       for(i = ncpos - 1; i >= 0; i--) {
-	if(formText[i] == '}') level++;
-	if(formText[i] == '{') level--;
+	if(IS_RGROUP(formText[i])) level++;
+	if(IS_LGROUP(formText[i])) level--;
 	if(level < 0) {
 	  formText.remove(i, 1); //removes the curly brace.
 	  ncpos--;
@@ -353,8 +363,8 @@ int KFormulaEdit::deleteAtCursor()
       ncpos--;
       formText.remove(ncpos, 4);
       for(i = ncpos - 1; i >= 0; i--) {
-	if(formText[i] == '}') level++;
-	if(formText[i] == '{') level--;
+	if(IS_RGROUP(formText[i])) level++;
+	if(IS_LGROUP(formText[i])) level--;
 	formText.remove(i, 1); //remove everything including the curly brace.
 	ncpos--;
 	if(level < 0) {
@@ -482,14 +492,14 @@ void KFormulaEdit::expandSelection()
     //expand selection to the left.
     while(i <= (int)formText.length() &&
 	  (i < cursorPos || level != 0 || !isValidCursorPos(i))) {
-      if(i < (int)formText.length() && formText[i] == '{') level++;
-      if(i < (int)formText.length() && formText[i] == '}') level--;
+      if(i < (int)formText.length() && IS_LGROUP(formText[i])) level++;
+      if(i < (int)formText.length() && IS_RGROUP(formText[i])) level--;
       if(level == -1) {
 	while(selectStart > 0 &&
 	      (level < 0 || !isValidCursorPos(selectStart))) {
 	  selectStart--;
-	  if(formText[selectStart] == '{') level++;
-	  if(formText[selectStart] == '}') level--;
+	  if(IS_LGROUP(formText[selectStart])) level++;
+	  if(IS_RGROUP(formText[selectStart])) level--;
 	}
       }
       i++;
@@ -500,15 +510,15 @@ void KFormulaEdit::expandSelection()
     while(i > 0 &&
 	  (i > cursorPos || level != 0 || !isValidCursorPos(i))) {
       i--;
-      if(formText[i] == '{') level--;
-      if(formText[i] == '}') level++;
+      if(IS_LGROUP(formText[i])) level--;
+      if(IS_RGROUP(formText[i])) level++;
       if(level == -1) {
 	while(selectStart <= (int)formText.length() &&
 	      (level < 0 || !isValidCursorPos(selectStart))) {
 	  if(selectStart < (int)formText.length() && 
-	     formText[selectStart] == '{') level--;
+	     IS_LGROUP(formText[selectStart])) level--;
 	  if(selectStart < (int)formText.length() &&
-	     formText[selectStart] == '}') level++;
+	     IS_RGROUP(formText[selectStart])) level++;
 	  selectStart++;
 	}
       }
@@ -835,7 +845,7 @@ void KFormulaEdit::keyPressEvent(QKeyEvent *e)
   if(!(e->state() & (ControlButton | AltButton))  && e->ascii() >= 32 &&
      !strchr("{})#", e->ascii())) {
     // the {})# are chars that can't be typed
-    
+
     insertChar(QChar(e->ascii()));
 
     MODIFIED
@@ -868,7 +878,7 @@ void KFormulaEdit::insertChar(QChar c)
     //if user entered a '/' (DIVIDE) then insert curly braces after it
     //and surround some previous text with curly braces.  Example:
     //"1+2^{3}$" -> (user types '/') -> "1+{2^{3}}/{$}".
-    if(c == DIVIDE) {
+    if(c == DIVIDE || c == QChar('[') || c == QChar(']')) {
       int i, level;
       
       //if there is selected text, put curly braces around that so
@@ -907,6 +917,7 @@ void KFormulaEdit::insertChar(QChar c)
 	cursorPos += 2;
       }
       textSelected = 0;
+      return;
     }
     
     //these just need a pair of curly braces after the operator.

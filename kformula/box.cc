@@ -180,11 +180,11 @@ void box::calculate(QPainter &p, int setFontsize)
       b2->calculate(p, fontsize);
       rect = b1->getRect();
       
-      tmp1 = QRect(1, -DOTSIZE / 2 - fm.height() / 2, DOTSIZE + 1, DOTSIZE);
+      tmp1 = QRect(1, -DOTSIZE / 2, DOTSIZE + 1, DOTSIZE);
       relx += rect.right() + SPACE + 1; //where the dot will be drawn.
       rely -= fm.height() / 2 - DOTSIZE - 1 +
 	fm.boundingRect("+").center().y();
-      tmp1.moveBy(rect.right() + SPACE, 0);
+      tmp1.moveBy(relx, rely);
       rect = rect.unite(tmp1);
       b2x += -b2->getRect().left() + rect.right() + SPACE;
       tmp1 = b2->getRect();
@@ -261,6 +261,8 @@ void box::calculate(QPainter &p, int setFontsize)
       b2x += -tmp1.center().x() + rect.center().x();
       tmp1.moveBy(b2x, b2y);
       rect = rect.unite(tmp1);
+      rect.setRect(rect.x() - SPACE / 2, rect.y(),
+		   rect.width() + SPACE, rect.height());
       break;
 
     case BELOW: // the smaller one below the normal one
@@ -272,6 +274,8 @@ void box::calculate(QPainter &p, int setFontsize)
       b2x += -tmp1.center().x() + rect.center().x();
       tmp1.moveBy(b2x, b2y);
       rect = rect.unite(tmp1);
+      rect.setRect(rect.x() - SPACE / 2, rect.y(),
+		   rect.width() + SPACE, rect.height());
       break;
 
       //we must make room for the radical.

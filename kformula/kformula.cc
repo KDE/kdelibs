@@ -151,6 +151,12 @@ void KFormula::parse(QString text, QArray<charinfo> *info)
     boxes.resize(boxes.size() - 1);
   }
 
+  //make "unseen" braces into regular ones:
+  for(i = 0; i < (int)text.length(); i++) {
+    if(text[i] == L_BRACE_UNSEEN) text[i] = QChar('{');
+    if(text[i] == R_BRACE_UNSEEN) text[i] = QChar('}');
+  }
+
   //search for implicit concatenation:
   //insert a CAT (#) symbol at every concatenation:
   //"a{b}/{c}d" -> "a#{b}/{c}#d".
