@@ -375,7 +375,6 @@ void box::draw(QPainter &p, int x, int y)
   QRect tmp;
   int i;
   QString tmpstr; //a one-char string for operators
-  tmpstr.resize(2);
   tmpstr[1] = 0;
 
 #if 0  // draw bounding boxes?
