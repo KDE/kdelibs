@@ -27,6 +27,8 @@
 #include <kdedmodule.h>
 #include <kurl.h>
 
+#include <time.h>
+
 class DCOPClientTransaction;
 class KInstance;
 
