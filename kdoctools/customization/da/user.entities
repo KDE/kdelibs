@@ -23,3 +23,12 @@
 <!ENTITY OS "operating system"><!-- <acronym>OS</acronym>-->
 <!ENTITY RMB    "<mousebutton>højre</mousebutton> museknap">
 <!ENTITY Shift	"<keycap>Shift</keycap>">
+<!ENTITY infocenter     "<application>Infocenter</application>">
+<!ENTITY kmenu  "<guimenu>K</guimenu>-menu">
+<!ENTITY kicon  "<guiicon>
+<inlinemediaobject>
+ <objectinfo><title>&kde;'s K-ikon</title></objectinfo>
+ <imageobject><imagedata fileref='common/kmenu.png' format='PNG'/></imageobject>
+ <textobject><phrase>K</phrase></textobject>
+</inlinemediaobject>
+</guiicon> icon">
