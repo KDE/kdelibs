@@ -785,7 +785,7 @@ void RenderFileButton::slotReturnPressed()
 	element()->form()->submitFromKeyboard();
 }
 
-void RenderFileButton::slotTextChanged(const QString &string)
+void RenderFileButton::slotTextChanged(const QString &/*string*/)
 {
    element()->m_value = KURL( widget()->url() ).prettyURL( 0, KURL::StripFileProtocol );
 }
