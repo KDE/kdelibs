@@ -165,7 +165,7 @@ public:
 
 static void exitUsage(const char *progname)
 {
-	fprintf(stderr,"usage: %s [ options ]\n",progname);
+	fprintf(stderr,"usage: %s [ options ] [ <filename> ]\n",progname);
 	fprintf(stderr,"-r <samplingrate>   set samplingrate to use\n");
 	fprintf(stderr,"-b <bits>           set number of bits (8 or 16)\n");
 	fprintf(stderr,"-c <channels>       set number of channels (1 or 2)\n");
@@ -193,6 +193,21 @@ int main(int argc, char **argv)
 		}
 	}
 
+	FILE *infile = stdin;
+
+	if (optind < argc)
+    {
+		string filename = argv[optind];
+		if(filename != "-")
+		{
+			infile = fopen(filename.c_str(),"r");
+			if(!infile)
+			{
+				cerr << "Can't open file '" << argv[optind] << "'." << endl;
+				exit(1);
+			}
+		}
+	}                                                                    
 	Dispatcher dispatcher;
 	SimpleSoundServer server(Reference("global:Arts_SimpleSoundServer"));
 
@@ -202,7 +217,7 @@ int main(int argc, char **argv)
 		return 1;
 	}
 
-	ByteSoundProducer sender = ByteSoundProducer::_from_base(new Sender(stdin,server.minStreamBufferTime()));
+	ByteSoundProducer sender = ByteSoundProducer::_from_base(new Sender(infile,server.minStreamBufferTime()));
 	server.attach(sender);
 	sender.start();
 	dispatcher.run();
