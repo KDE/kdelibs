@@ -47,7 +47,6 @@
 #include <kglobal.h>
 #include <klocale.h>
 #include <ksimpleconfig.h>
-#include <kwm.h>
 #include <kdebug.h>
 #include <kprotocolmanager.h>
 #include <kdialog.h>
