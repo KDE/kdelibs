@@ -867,7 +867,6 @@ Value WindowFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
     return err;
   }
   Window *window = static_cast<Window *>(thisObj.imp());
-  Value result;
   QString str, str2;
 
   if (!window->m_part)
@@ -886,13 +885,11 @@ Value WindowFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
   case Window::Alert:
     part->xmlDocImpl()->updateRendering();
     KMessageBox::error(widget, str, "JavaScript");
-    result = Undefined();
-    break;
+    return Undefined();
   case Window::Confirm:
     part->xmlDocImpl()->updateRendering();
-    result = Boolean((KMessageBox::warningYesNo(widget, str, "JavaScript",
+    return Boolean((KMessageBox::warningYesNo(widget, str, "JavaScript",
                                                 i18n("OK"), i18n("Cancel")) == KMessageBox::Yes));
-    break;
   case Window::Prompt:
     part->xmlDocImpl()->updateRendering();
     if (args.size() >= 2)
@@ -903,13 +900,13 @@ Value WindowFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
                                    args[1].toString(exec).qstring());
     else
       str2 = QInputDialog::getText("Konqueror: Prompt", str);
-    result = String(str2);
-    break;
+    return String(str2);
   case Window::Open:
   {
     KConfig *config = new KConfig("konquerorrc");
     config->setGroup("Java/JavaScript Settings");
     int policy = config->readUnsignedNumEntry( "WindowOpenPolicy", 0 );
+    delete config;
     if ( policy == 1 ) {
       if ( KMessageBox::questionYesNo(widget,
                                       i18n( "This site is trying to open up a new browser "
@@ -920,7 +917,7 @@ Value WindowFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
     }
 
     if ( policy ) {
-      result = Undefined();
+      return Undefined();
     } else {
       KParts::WindowArgs winargs;
 
@@ -983,6 +980,20 @@ Value WindowFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
       uargs.frameName = !args[1].isNull() ?
                         args[1].toString(exec).qstring()
                         : QString("_blank");
+      if ( uargs.frameName == "_top" )
+      {
+          while ( part->parentPart() )
+              part = part->parentPart();
+          part->scheduleRedirection(0, url.url().prepend( "target://_self/?#" ) );
+          return Window::retrieve(part);
+      }
+      if ( uargs.frameName == "_parent" )
+      {
+          if ( part->parentPart() )
+              part = part->parentPart();
+          part->scheduleRedirection(0, url.url().prepend( "target://_self/?#" ) );
+          return Window::retrieve(part);
+      }
       uargs.serviceType = "text/html";
 
       // request new window
@@ -998,23 +1009,19 @@ Value WindowFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
           uargs.frameName = QString::null;
         if (!url.isEmpty())
           emit khtmlpart->browserExtension()->openURLRequest(url,uargs);
-        result = Window::retrieve(khtmlpart); // global object
+        return Window::retrieve(khtmlpart); // global object
       } else
-        result = Undefined();
+        return Undefined();
     }
-    delete config;
-    break;
   }
   case Window::ScrollBy:
     if(args.size() == 2 && widget)
       widget->scrollBy(args[0].toInt32(exec), args[1].toInt32(exec));
-    result = Undefined();
-    break;
+    return Undefined();
   case Window::ScrollTo:
     if(args.size() == 2 && widget)
       widget->setContentsPos(args[0].toInt32(exec), args[1].toInt32(exec));
-    result = Undefined();
-    break;
+    return Undefined();
   case Window::MoveBy:
     if(args.size() == 2 && widget)
     {
@@ -1026,8 +1033,7 @@ Value WindowFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
            dest.y()+tl->height() <= QApplication::desktop()->height() )
         tl->move( dest );
     }
-    result = Undefined();
-    break;
+    return Undefined();
   case Window::MoveTo:
     if(args.size() == 2 && widget)
     {
@@ -1039,8 +1045,7 @@ Value WindowFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
            dest.y()+tl->height() <= QApplication::desktop()->height() )
         tl->move( dest );
     }
-    result = Undefined();
-    break;
+    return Undefined();
   case Window::ResizeBy:
     if(args.size() == 2 && widget)
     {
@@ -1052,8 +1057,7 @@ Value WindowFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
            dest.width() >= 100 && dest.height() >= 100 )
         tl->resize( dest );
     }
-    result = Undefined();
-    break;
+    return Undefined();
   case Window::ResizeTo:
     if(args.size() == 2 && widget)
     {
@@ -1065,13 +1069,12 @@ Value WindowFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
            dest.width() >= 100 && dest.height() >= 100 )
         tl->resize( dest );
     }
-    result = Undefined();
-    break;
+    return Undefined();
   case Window::SetTimeout:
     if (args.size() == 2 && v.isA(StringType)) {
       int i = args[1].toInt32(exec);
       int r = (const_cast<Window*>(window))->installTimeout(s, i, true /*single shot*/);
-      result = Number(r);
+      return Number(r);
     }
     else if (args.size() >= 2 && v.isA(ObjectType) && Object::dynamicCast(v).implementsCall()) {
       Value func = args[0];
@@ -1083,16 +1086,15 @@ Value WindowFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
       funcArgs->removeFirst();
 #endif
       int r = (const_cast<Window*>(window))->installTimeout(s, i, true /*single shot*/);
-      result = Number(r);
+      return Number(r);
     }
     else
-      result = Undefined();
-    break;
+      return Undefined();
   case Window::SetInterval:
     if (args.size() == 2 && v.isA(StringType)) {
       int i = args[1].toInt32(exec);
       int r = (const_cast<Window*>(window))->installTimeout(s, i, false);
-      result = Number(r);
+      return Number(r);
     }
     else if (args.size() >= 2 && Object::dynamicCast(v).implementsCall()) {
       Value func = args[0];
@@ -1104,25 +1106,21 @@ Value WindowFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
       funcArgs->removeFirst();
 #endif
       int r = (const_cast<Window*>(window))->installTimeout(s, i, false);
-      result = Number(r);
+      return Number(r);
     }
     else
-      result = Undefined();
-    break;
+      return Undefined();
   case Window::ClearTimeout:
   case Window::ClearInterval:
-    result = Undefined();
     (const_cast<Window*>(window))->clearTimeout(v.toInt32(exec));
-    break;
+    return Undefined();
   case Window::Focus:
     if (widget)
       widget->setActiveWindow();
-    result = Undefined();
-    break;
+    return Undefined();
   case Window::Blur:
-    result = Undefined();
     // TODO
-    break;
+    return Undefined();
   case Window::Close:
     /* From http://developer.netscape.com/docs/manuals/js/client/jsref/window.htm :
        The close method closes only windows opened by JavaScript using the open method.
@@ -1147,11 +1145,9 @@ Value WindowFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
     {
       (const_cast<Window*>(window))->scheduleClose();
     }
-
-    result = Undefined();
-    break;
+    return Undefined();
   }
-  return result;
+  return Undefined();
 }
 
 ////////////////////// ScheduledAction ////////////////////////
