@@ -297,6 +297,7 @@ int PtyProcess::exec(const QCString &command, const QCStringList &args)
     {
         putenv((*it).data());
     }
+    unsetenv("KDE_FULL_SESSION");
 
     // From now on, terminal output goes through the tty.
 
