@@ -1565,7 +1565,7 @@ void KHTMLView::print(bool quick)
     // this only works on Unix - we assume 72dpi
     KPrinter *printer = new KPrinter(true, QPrinter::PrinterResolution);
     printer->addDialogPage(new KHTMLPrintSettings());
-    QString docname = m_part->xmlDocImpl()->URL().prettyURL();
+    QString docname = m_part->xmlDocImpl()->URL();
     if ( !docname.isEmpty() )
         docname = KStringHandler::csqueeze(docname, 80);
     if(quick || printer->setup(this, i18n("Print %1").arg(docname))) {
