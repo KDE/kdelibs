@@ -27,7 +27,7 @@
 
 using namespace KABC;
 
-static bool matchBinaryPattern( int value, int pattern, int max );
+static bool matchBinaryPattern( int value, int pattern );
 
 struct Addressee::AddresseeData : public KShared
 {
@@ -399,7 +399,7 @@ PhoneNumber Addressee::phoneNumber( int type ) const
   PhoneNumber phoneNumber( "", type );
   PhoneNumber::List::ConstIterator it;
   for( it = mData->phoneNumbers.begin(); it != mData->phoneNumbers.end(); ++it ) {
-    if ( matchBinaryPattern( (*it).type(), type, PhoneNumber::Pager ) ) {
+    if ( matchBinaryPattern( (*it).type(), type ) ) {
       if ( (*it).type() & PhoneNumber::Pref )
         return (*it);
       else if ( phoneNumber.number().isEmpty() )
@@ -421,7 +421,7 @@ PhoneNumber::List Addressee::phoneNumbers( int type ) const
 
   PhoneNumber::List::ConstIterator it;
   for( it = mData->phoneNumbers.begin(); it != mData->phoneNumbers.end(); ++it ) {
-    if ( matchBinaryPattern( (*it).type(), type, PhoneNumber::Pager ) ) {
+    if ( matchBinaryPattern( (*it).type(), type ) ) {
       list.append( *it );
     }
   }
@@ -611,7 +611,7 @@ Address Addressee::address( int type ) const
   Address address( type );
   Address::List::ConstIterator it;
   for( it = mData->addresses.begin(); it != mData->addresses.end(); ++it ) {
-    if ( matchBinaryPattern( (*it).type(), type, Address::Pref ) ) {
+    if ( matchBinaryPattern( (*it).type(), type ) ) {
       if ( (*it).type() & Address::Pref )
         return (*it);
       else if ( address.isEmpty() )
@@ -633,7 +633,7 @@ Address::List Addressee::addresses( int type ) const
 
   Address::List::ConstIterator it;
   for( it = mData->addresses.begin(); it != mData->addresses.end(); ++it ) {
-    if ( matchBinaryPattern( (*it).type(), type , Address::Pref ) ) {
+    if ( matchBinaryPattern( (*it).type(), type ) ) {
       list.append( *it );
     }
   }
@@ -867,25 +867,16 @@ QDataStream &KABC::operator>>( QDataStream &s, Addressee &a )
   return s;
 }
 
-bool matchBinaryPattern( int value, int pattern, int max )
+bool matchBinaryPattern( int value, int pattern )
 {
-  if ( pattern == 0 ) {
-    if ( value != 0 )
-      return false;
-    else
-      return true;
-  }
-
-  int counter = 0;
-  while ( 1 ) {
-    if ( ( pattern & ( 1 << counter ) ) && !( value & ( 1 << counter ) ) )
-      return false;
-
-    if ( ( 1 << counter ) == max )
-      break;
-
-    counter++;
-  }
-
-  return true;
+  /**
+    We want to match all telephonnumbers/addresses which have the bits in the
+    pattern set. More are allowed.
+    if pattern == 0 we have a special handling, then we want only those with
+    exactly no bit set.
+   */
+  if ( pattern == 0 )
+    return ( value == 0 );
+  else
+    return ( pattern == ( pattern & value ) );
 }
