@@ -49,7 +49,7 @@ RenderApplet::RenderApplet(RenderStyle *style, QScrollView *view,
     : RenderWidget(style, view)
 {
     if( context == 0 ) {
-        //context = new KJavaAppletContext();
+        context = new KJavaAppletContext();
         context_counter = 0;
     }
     
