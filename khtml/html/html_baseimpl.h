@@ -34,6 +34,7 @@
 class KHTMLView;
 
 namespace khtml {
+    class RenderFrameSet;
     class RenderFrame;
     class RenderPartObject;
 }
