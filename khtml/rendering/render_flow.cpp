@@ -1020,6 +1020,7 @@ void RenderFlow::calcMinMaxWidth()
         int inlineMax=0;
         int inlineMin=0;
         bool noBreak=false;
+	bool prevWasText = false;
 
         while(child != 0)
         {
@@ -1038,7 +1039,7 @@ void RenderFlow::calcMinMaxWidth()
                         child->calcMinMaxWidth();
                     bool hasNbsp=false;
                     RenderText* t = static_cast<RenderText *>(child);
-                    if (t->data()[0] == nbsp) //inline starts with nbsp
+                    if (t->data()[0] == nbsp && prevWasText) //inline starts with nbsp
                     {
                         inlineMin += childMin;
                         inlineMax += childMax;
@@ -1055,6 +1056,7 @@ void RenderFlow::calcMinMaxWidth()
                         noBreak = true;
                         hasNbsp = true;
                     }
+		    prevWasText = true;
                     if (hasNbsp)
                     {
                         child = next(child);
@@ -1063,6 +1065,7 @@ void RenderFlow::calcMinMaxWidth()
                         continue;
                     }
                 }
+		prevWasText = false;
                 if (noBreak ||
                         (prevchild && prevchild->isFloating() && child->isFloating()))
                 {
@@ -1082,6 +1085,7 @@ void RenderFlow::calcMinMaxWidth()
                 if(m_maxWidth < inlineMax) m_maxWidth = inlineMax;
                 inlineMin = inlineMax = 0;
             }
+	    prevWasText = false;
             prevchild = child;
             child = next(child);
         }
