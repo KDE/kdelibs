@@ -30,7 +30,7 @@ check_PROGRAMS = ksycocatest getalltest kruntest ktartest kziptest\
 
 # Unfortunately some tests depend on the network settings, it seems
 #check: kurifiltertest
-	#./kurifiltertest
+#	./kurifiltertest
 
 bin_PROGRAMS = ktradertest
 
