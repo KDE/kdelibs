@@ -82,7 +82,7 @@ void KKeyNative::clear()
 bool KKeyNative::init( const XEvent* pEvent )
 {
 	m_code = pEvent->xkey.keycode;
-	m_mod = pEvent->xkey.state & KKeyServer::accelModMaskX();
+	m_mod = pEvent->xkey.state;
 	XLookupString( (XKeyEvent*) pEvent, 0, 0, (KeySym*) &m_sym, 0 );
 	return true;
 }
