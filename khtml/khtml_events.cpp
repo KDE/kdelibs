@@ -64,7 +64,7 @@ bool khtml::MouseEvent::isURLHandlingEnabled() const
 }
 
 // ### remove
-void khtml::MouseEvent::setURLHandlingEnabled( bool enable )
+void khtml::MouseEvent::setURLHandlingEnabled( bool )
 {
 }
 
