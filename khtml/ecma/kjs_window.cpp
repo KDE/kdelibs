@@ -495,7 +495,7 @@ KJSO Location::get(const UString &p) const
   else if (p == "href")
     str = url.prettyURL();
   else if (p == "pathname")
-    str = url.path().isEmpty() ? "/" : url.path();
+    str = url.path().isEmpty() ? QString("/") : url.path();
   else if (p == "port")
     str = url.port() ? QString::number(url.port()) : QString::fromLatin1("");
   else if (p == "protocol")
