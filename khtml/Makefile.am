@@ -78,9 +78,6 @@ noinst_HEADERS = khtmlparser.h khtmlfont.h khtmltoken.h \
 libkhtml_la_LDFLAGS = -version-info 3:0
 libkhtml_la_LIBADD = ./java/libkjava.la ./kjs/libkjs.la ../kimgio/libkimgio.la ../kio/libkio.la
 
-data_DATA = khtml_dnd.png
-datadir = $(kde_datadir)/khtml/pics
-
 INCLUDES = -I$(srcdir)/kjs -I$(top_srcdir)/kimgio -I$(top_srcdir)/kio \
 	-I$(srcdir)/java -I$(top_srcdir)/dcop  $(all_includes)
 
@@ -95,7 +92,7 @@ srcdoc:
 khtmltags_DIST = khtmltags.gperf khtmltags.in khtmltags.h khtmltags.c
 kcssprop_DIST = kcssprop.c kcssprop.h kcssprop.in
 
-EXTRA_DIST = $(khtmltags_DIST) makeprop maketags test $(data_DATA) \
+EXTRA_DIST = $(khtmltags_DIST) makeprop maketags test \
 	CHANGES DESIGN README.HTMLWidget README.tags $(kcssprop_DIST)
 
 parser:
