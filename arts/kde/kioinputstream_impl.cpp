@@ -46,7 +46,6 @@ const unsigned int KIOInputStream_impl::PACKET_COUNT = 10;
 KIOInputStream_impl::KIOInputStream_impl() : m_packetSize(2048)
 {
 	m_job = 0;
-	m_data = 0;
 	m_finished = false;
 	m_firstBuffer = false;
 	m_packetBuffer = 16;
