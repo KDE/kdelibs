@@ -47,6 +47,7 @@ HTMLTableCell::HTMLTableCell( int _x, int _y, int _max_width, int _percent,
 	rspan = rs;
 	cspan = cs;
 	padding = pad;
+	width = _max_width;
 }
 
 void HTMLTableCell::setMaxWidth( int _max_width )
@@ -54,7 +55,8 @@ void HTMLTableCell::setMaxWidth( int _max_width )
     HTMLObject *obj;
 
     // We allow fixed width cells to be resized in a table
-    width = max_width = _max_width;
+//    width = max_width = _max_width;
+    max_width = _max_width;
 /*
     if ( percent > 0 )
 	width = _max_width * percent / 100;
@@ -62,7 +64,25 @@ void HTMLTableCell::setMaxWidth( int _max_width )
 	width = max_width;
 */
     for ( obj = head; obj != 0; obj = obj->next() )
-	obj->setMaxWidth( width );
+	obj->setMaxWidth( max_width );
+}
+
+int HTMLTableCell::calcMinWidth()
+{
+    HTMLObject *obj;
+    int minWidth = 0;
+
+    for ( obj = head; obj != 0; obj = obj->next() )
+    {
+	int w = obj->calcMinWidth();
+	if ( w > minWidth )
+	    minWidth = w;
+    }
+
+//    if ( isFixedWidth() )
+//	return width > minWidth ? width : minWidth;
+
+    return minWidth;
 }
 
 bool HTMLTableCell::print( QPainter *_painter, int _x, int _y, int _width,
@@ -154,6 +174,11 @@ void HTMLTable::setCells( unsigned int r, unsigned int c, HTMLTableCell *cell )
 {
     unsigned int endRow = r + cell->rowSpan();
     unsigned int endCol = c + cell->colSpan();
+
+    // The first row sets the number of columns.  Do not allow subsequent
+    // rows to change the number of columns.
+    if ( row != 0 && endCol > totalCols )
+	endCol = totalCols;
 
     if ( endCol > totalCols )
 	addColumns( endCol - totalCols );
@@ -414,19 +439,10 @@ void HTMLTable::calcColumnWidths()
 	    if ( ( indx = c-cell->colSpan()+1 ) < 0 )
 		indx = 0;
 
-/*
-	    // calculate minimum pos
-	    if ( cell->isFixedWidth() )
-	    {
-		colPos = columnPos[indx] + cell->getWidth() + padding +
-			padding + spacing + borderExtra;
-	    }
-	    else
-	    {
-*/
-		colPos = columnPos[indx] + cell->calcMinWidth() +
-			padding + padding + spacing + borderExtra;
-//	    }
+	    // calculate minimum pos.
+	    colPos = columnPos[indx] + cell->calcMinWidth() +
+		    padding + padding + spacing + borderExtra;
+
 	    if ( columnPos[c + 1] < colPos )
 		columnPos[c + 1] = colPos;
 
@@ -2095,6 +2111,11 @@ void HTMLClueFlow::calcSize( HTMLClue *parent )
 	    }
 	    else
 	    {
+		// If this run cannot fit in the allowed area.  Break into
+		// individual objects.
+		if ( runWidth > rmargin - lmargin )
+		    run = obj->next();
+
 		while ( obj != run )
 		{
 		    if ( obj->getAscent() > a )
@@ -2470,23 +2491,30 @@ int HTMLClueFlow::calcMinWidth()
 {
     HTMLObject *obj = head;
     int minWidth = 0;
-    int runWidth;
+    int ow, runWidth = 0;
 
     while ( obj )
     {
-	runWidth = 0;
-
-	while ( obj && !obj->isSeparator() && !obj->isNewline() )
+	if ( obj->isSeparator() || obj->isNewline() )
 	{
-	    runWidth += obj->calcMinWidth();
-	    obj = obj->next();
+	    runWidth = 0;
+	}
+	else
+	{
+	    ow = obj->calcMinWidth();
+
+	    // we try not to grow larger than max_width by breaking at
+	    // object boundaries if necessary.
+	    if ( runWidth + ow > max_width )
+		runWidth = 0;
+
+	    runWidth += ow;
+
+	    if ( runWidth > minWidth )
+		minWidth = runWidth;
 	}
 
-	if ( runWidth > minWidth )
-	    minWidth = runWidth;
-
-	if ( obj )
-	    obj = obj->next();
+	obj = obj->next();
     }
 
     if ( isFixedWidth() )

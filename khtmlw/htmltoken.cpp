@@ -102,6 +102,7 @@ void HTMLTokenizer::begin()
     discardCR = false;
     pre = false;
     script = false;
+    select = false;
     comment = false;
     squote = false;
     dquote = false;
@@ -385,16 +386,16 @@ void HTMLTokenizer::write( const char *str )
 	    tag = false;
 	    src++;
 
-	    if ( strncasecmp( buffer+2, "pre", 3 ) == 0 )
+	    if ( strncmp( buffer+2, "pre", 3 ) == 0 )
 	    {
 		pre_pos = 0;
 		pre = true;
 	    }
-	    else if ( strncasecmp( buffer+2, "/pre", 4 ) == 0 )
+	    else if ( strncmp( buffer+2, "/pre", 4 ) == 0 )
 	    {
 		pre = false;
 	    }
-	    else if ( strncasecmp( buffer+2, "script", 6 ) == 0 )
+	    else if ( strncmp( buffer+2, "script", 6 ) == 0 )
 	    {
 		script = true;
 //		blocking.append(new BlockingToken(BlockingToken::Script,tail));
@@ -403,16 +404,24 @@ void HTMLTokenizer::write( const char *str )
 		scriptCodeSize = 0;
 		scriptCodeMaxSize = 1024;
 	    }
-	    else if ( strncasecmp( buffer+2, "frameset", 8 ) == 0 )
+	    else if ( strncmp( buffer+2, "select", 6 ) == 0 )
+	    {
+		select = true;
+	    }
+	    else if ( strncmp( buffer+2, "/select", 7 ) == 0 )
+	    {
+		select = false;
+	    }
+	    else if ( strncmp( buffer+2, "frameset", 8 ) == 0 )
 	    {
 		blocking.append( new BlockingToken( BlockingToken::FrameSet,
 				tail ) );
 	    }
-	    else if ( strncasecmp( buffer+2, "cell", 4 ) == 0 )
+	    else if ( strncmp( buffer+2, "cell", 4 ) == 0 )
 	    {
 		blocking.append( new BlockingToken(BlockingToken::Cell,tail) );
 	    }
-	    else if ( strncasecmp( buffer+2, "table", 5 ) == 0 )
+	    else if ( strncmp( buffer+2, "table", 5 ) == 0 )
 	    {
 		blocking.append( new BlockingToken( BlockingToken::Table,
 				tail ) );
@@ -438,18 +447,21 @@ void HTMLTokenizer::write( const char *str )
 		}
 		else if ( pre )
 		{ // For every line break in <pre> insert the tag '\n'.
-		    if ( dest > buffer )
+		    if ( !select )
 		    {
+			if ( dest > buffer )
+			{
+			    *dest = 0;
+			    appendToken( buffer, dest-buffer );
+			    dest = buffer;
+			}
+			*dest++ = TAG_ESCAPE;
+			*dest++ = '\n';
 			*dest = 0;
-			appendToken( buffer, dest-buffer );
+			appendToken( buffer, 2 );
 			dest = buffer;
+			pre_pos = 0; 
 		    }
-		    *dest++ = TAG_ESCAPE;
-		    *dest++ = '\n';
-		    *dest = 0;
-		    appendToken( buffer, 2 );
-		    dest = buffer;
-		    pre_pos = 0; 
 		}
 		else if ( !space )
 		{
@@ -533,8 +545,8 @@ void HTMLTokenizer::write( const char *str )
 	    // discard
 	    src++;
 	}
-	else if ( *src == '\"' )
-	{
+	else if ( *src == '\"' || *src == '\'')
+	{ // we treat " & ' the same
 	    src++;
 
 	    if ( tag )

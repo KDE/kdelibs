@@ -126,7 +126,7 @@ parseFunc KHTMLWidget::parseFuncArray[26] = {
 
 
 KHTMLWidget::KHTMLWidget( QWidget *parent, const char *name, const char * )
-    : KDNDWidget( parent, name ), tempStrings( true ), parsedURLs( false ),
+    : KDNDWidget( parent, name, WPaintClever ), tempStrings( true ), parsedURLs( false ),
 	parsedTargets( false )
 {
     jsEnvironment = 0;      
@@ -1269,6 +1269,7 @@ void KHTMLWidget::parse()
     formSelect = 0;
     inOption = false;
     inTextArea = false;
+
     inTitle = false;
     bodyParsed = false;
 
@@ -1281,7 +1282,7 @@ void KHTMLWidget::parse()
 
     parsing = true;
     indent = 0;
-    vspace_inserted = false;
+    vspace_inserted = true;
     divAlign = HTMLClue::Left;
 
     // move to the first token
@@ -1446,6 +1447,7 @@ bool KHTMLWidget::insertVSpace( HTMLClueV *_clue, bool _vspace_inserted )
 	_clue->append( f );
 	HTMLVSpace *t = new HTMLVSpace( HTMLFont::pointSize( settings->fontBaseSize ) );
 	f->append( t );
+	flow = 0;
     }
     
     return true;
@@ -1499,7 +1501,7 @@ const char* KHTMLWidget::parseBody( HTMLClueV *_clue, const char *_end[], bool t
 	    }
 	    else
 	    {
-		vspace_inserted = FALSE;
+		vspace_inserted = false;
 
 		if ( flow == 0 )
 		{
@@ -1722,7 +1724,6 @@ void KHTMLWidget::parseA( HTMLClueV *_clue, const char *str )
 	char tmpurl[1024];
 	tmpurl[0] = '\0';
 	target = 0;
-	vspace_inserted = false;
 	bool visited = false;
 	const char *p;
 
@@ -1769,6 +1770,7 @@ void KHTMLWidget::parseA( HTMLClueV *_clue, const char *str )
 	}
 	if ( tmpurl[0] != '\0' )
 	{
+	    vspace_inserted = false;
 	    if ( visited )
 		colorStack.push( new QColor( settings->vLinkColor ) );
 	    else
@@ -1938,7 +1940,7 @@ void KHTMLWidget::parseB( HTMLClueV *_clue, const char *str )
 	else
 	    _clue->append( vs );
 
-	vspace_inserted = FALSE;
+	vspace_inserted = false;
     }
     else if ( strncmp(str, "b", 1 ) == 0 )
     {
@@ -2013,7 +2015,8 @@ void KHTMLWidget::parseC( HTMLClueV *_clue, const char *str )
 
 // <dir             </dir>          partial
 // <div             </div>
-// <dl>             </dl>           partial
+// <dl>             </dl>
+// <dt>             </dt>
 void KHTMLWidget::parseD( HTMLClueV *_clue, const char *str )
 {
     if ( strncmp( str, "dir", 3 ) == 0 )
@@ -2059,6 +2062,7 @@ void KHTMLWidget::parseD( HTMLClueV *_clue, const char *str )
     }
     else if ( strncmp( str, "dl", 2 ) == 0 )
     {
+	vspace_inserted = insertVSpace( _clue, vspace_inserted );
 	closeAnchor();
 	if ( glossaryStack.top() )
 	{
@@ -2080,8 +2084,7 @@ void KHTMLWidget::parseD( HTMLClueV *_clue, const char *str )
 	glossaryStack.remove();
 	if ( glossaryStack.top() )
 	    indent -= INDENT_SIZE;
-	vspace_inserted = false;
-	flow = 0;
+	vspace_inserted = insertVSpace( _clue, vspace_inserted );
     }
     else if (strncmp( str, "dt", 2 ) == 0)
     {
@@ -2384,10 +2387,13 @@ void KHTMLWidget::parseH( HTMLClueV *_clue, const char *str )
 			}
 		}
 		// Start a new flow box
-		flow = new HTMLClueFlow( 0, 0, _clue->getMaxWidth() );
-		flow->setIndent( indent );
+		if ( !flow )
+		{
+		    flow = new HTMLClueFlow( 0, 0, _clue->getMaxWidth() );
+		    flow->setIndent( indent );
+		    _clue->append( flow );
+		}
 		flow->setHAlign( align );
-		_clue->append( flow );
 
 		switch ( str[1] )
 		{
@@ -2433,8 +2439,6 @@ void KHTMLWidget::parseH( HTMLClueV *_clue, const char *str )
 	{
 		// Insert a vertical space if this did not happen already.
 		vspace_inserted = insertVSpace( _clue, vspace_inserted );
-		// Close the FlowBox of the headline. This way we get a line break.
-		flow = 0L;
 		// Restore the old font
 		popFont();
 	}
@@ -2448,7 +2452,7 @@ void KHTMLWidget::parseH( HTMLClueV *_clue, const char *str )
 		bool shade = TRUE;
 
 		if ( flow )
-			oldAlign = align = flow->getHAlign();
+		    oldAlign = align = flow->getHAlign();
 
 		stringTok->tokenize( str + 3, " >" );
 		while ( stringTok->hasMoreTokens() )
@@ -2490,10 +2494,9 @@ void KHTMLWidget::parseH( HTMLClueV *_clue, const char *str )
 
 		flow->append( new HTMLRule( length, percent, size, shade ) );
 
-		flow = new HTMLClueFlow( 0, 0, _clue->getMaxWidth() );
-		flow->setIndent( indent );
-		flow->setHAlign( oldAlign );
-		_clue->append( flow );
+		flow = 0;
+
+		vspace_inserted = false;
 	}
 }
 
@@ -2782,7 +2785,6 @@ void KHTMLWidget::parseM( HTMLClueV *_clue, const char *str )
 		listStack.push( new HTMLList( Menu ) );
 		indent += INDENT_SIZE;
 //		parseList( _clue, _clue->getMaxWidth(), Menu );
-		flow = 0;
 	}
 	else if (strncmp( str, "/menu", 5 ) == 0)
 	{
@@ -2862,7 +2864,6 @@ void KHTMLWidget::parseO( HTMLClueV *_clue, const char *str )
 	    indent -= INDENT_SIZE;
 	    if ( listStack.isEmpty() )
 		vspace_inserted = insertVSpace( _clue, vspace_inserted );
-	    flow = 0;
 	}
     }
     else if ( strncmp( str, "option", 6 ) == 0 )
@@ -2917,8 +2918,7 @@ void KHTMLWidget::parseP( HTMLClueV *_clue, const char *str )
 	}	
 	else if ( strncmp( str, "/pre", 4 ) == 0 )
 	{
-		vspace_inserted = insertVSpace( _clue, vspace_inserted );
-		flow = 0;
+		vspace_inserted = insertVSpace( _clue, false );
 		popFont();
 	}
 	else if ( *str == 'p' && ( *(str+1) == ' ' || *(str+1) == '>' ) )
@@ -2941,10 +2941,18 @@ void KHTMLWidget::parseP( HTMLClueV *_clue, const char *str )
 					align = HTMLClue::Left;
 			}
 		}
-		flow = new HTMLClueFlow( 0, 0, _clue->getMaxWidth() );
-		flow->setIndent( indent );
+		if ( flow == 0 )
+		{
+		    flow = new HTMLClueFlow( 0, 0, _clue->getMaxWidth() );
+		    flow->setIndent( indent );
+		    _clue->append( flow );
+		}
 		flow->setHAlign( align );
-		_clue->append( flow );
+	}
+	else if ( *str == '/' && *(str+1) == 'p' &&
+	    ( *(str+2) == ' ' || *(str+2) == '>' ) )
+	{
+	    vspace_inserted = insertVSpace( _clue, vspace_inserted );
 	}
 }
 
@@ -3004,6 +3012,7 @@ void KHTMLWidget::parseS( HTMLClueV *_clue, const char *str )
 		}
 
 		formSelect = new HTMLSelect( this, name, size, multi );
+		formSelect->setForm( form );
 		form->addElement( formSelect );
 		if ( flow == 0 )
 		{
@@ -3069,10 +3078,13 @@ void KHTMLWidget::parseT( HTMLClueV *_clue, const char *str )
 	if ( strncmp( str, "table", 5 ) == 0 )
 	{
 		closeAnchor();
-		flow = new HTMLClueFlow( 0, 0, _clue->getMaxWidth() );
-		flow->setIndent( indent );
-		flow->setHAlign( divAlign );
-		_clue->append( flow );
+		if ( !vspace_inserted || !flow )
+		{
+		    flow = new HTMLClueFlow( 0, 0, _clue->getMaxWidth() );
+		    flow->setIndent( indent );
+		    flow->setHAlign( divAlign );
+		    _clue->append( flow );
+		}
 
 		parseTable( flow, _clue->getMaxWidth(), str + 6 );
 
@@ -3119,6 +3131,7 @@ void KHTMLWidget::parseT( HTMLClueV *_clue, const char *str )
 		}
 
 		formTextArea = new HTMLTextArea( this, name, rows, cols );
+		formTextArea->setForm( form );
 		form->addElement( formTextArea );
 		if ( flow == 0 )
 		{
@@ -3182,7 +3195,6 @@ void KHTMLWidget::parseU( HTMLClueV *_clue, const char *str )
 	    indent -= INDENT_SIZE;
 	    if ( listStack.isEmpty() )
 		vspace_inserted = insertVSpace( _clue, vspace_inserted );
-	    flow = 0;
 	}
     }
     else if ( strncmp(str, "u", 1 ) == 0 )
@@ -3766,8 +3778,18 @@ const char *KHTMLWidget::parseInput( const char *attr )
 
     if ( element )
     {
-	form->addElement( element );
-	flow->append( element );
+	element->setForm( form );
+
+	// hidden elements are not added to the HTMLObject hierarchy
+	if ( type == Hidden )
+	{
+	    form->addHidden( (HTMLHidden *)element );
+	}
+	else
+	{
+	    form->addElement( element );
+	    flow->append( element );
+	}
     }
 
     return 0;

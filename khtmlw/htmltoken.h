@@ -160,8 +160,11 @@ protected:
     
     // Are we in a <script> ... </script> block
     bool script;
-    
-    // Are we in a <-- comment -->
+
+    // Are we in a <select> ... </select> block
+    bool select;
+
+    // Area we in a <!-- comment --> block
     bool comment;
 
     // Used to store the code of a srcipting sequence

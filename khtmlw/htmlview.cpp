@@ -135,6 +135,8 @@ void KHTMLView::begin( const char *_url, int _dx, int _dy )
     displayHScroll = FALSE;
     vert->hide();
     horz->hide();
+    vert->setSteps( 12, view->height() );
+    horz->setSteps( 12, view->width() );
 
     if ( _url )
 	url = _url;
@@ -266,12 +268,12 @@ void KHTMLView::slotDocumentChanged()
 
 void KHTMLView::calcScrollBars()
 {
-    if ( view->docWidth() > view->width() && !isFrameSet() )
+    if ( view->docWidth() > view->width() && !isFrameSet() && scrolling )
 	displayHScroll = TRUE;
     else
         displayHScroll = FALSE;
     
-    if ( view->docHeight() > view->height() && !isFrameSet() )
+    if ( view->docHeight() > view->height() && !isFrameSet() && scrolling )
 	displayVScroll = TRUE;
     else
         displayVScroll = FALSE;

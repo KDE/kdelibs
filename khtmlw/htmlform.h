@@ -35,6 +35,8 @@ class HTMLTextArea;
 
 #include "htmlobj.h"
 
+class HTMLForm;
+
 //---------------------------------------------------------------------------
 
 class HTMLElement : public QObject, public HTMLObject
@@ -42,13 +44,17 @@ class HTMLElement : public QObject, public HTMLObject
 	Q_OBJECT
 public:
 	HTMLElement( const char *n )
-		{	_name = n; _absX = 0; _absY = 0; widget = 0L; }
+		{ _name = n; _absX = 0; _absY = 0; widget = 0; form = 0; }
 	virtual ~HTMLElement();
 
 	const QString &name() const
 		{	return _name; }
 	void setName( const char *n )
 		{	_name = n; }
+
+	void setForm( HTMLForm *f )
+		{	form = f; }
+
 	int absX() const
 		{	return _absX; }
 	int absY() const
@@ -80,45 +86,8 @@ private:
 	// absolute position of this element in the page
 	int _absX;
 	int _absY;
+	HTMLForm *form;
 };
-
-//---------------------------------------------------------------------------
-
-class HTMLForm : public QObject
-{
-	Q_OBJECT
-public:
-	HTMLForm( const char *a, const char *m );
-	virtual ~HTMLForm() {}
-
-	void addElement( HTMLElement *e );
-
-	const char *method() const
-		{	return _method; }
-	const char *action() const
-		{	return _action; }
-
-	void position( int _x, int _y, int _width, int _height );
-
-public slots:
-	void slotReset();
-	void slotSubmit();
-	void slotRadioSelected( const char *n, const char *v );
-
-signals:
-	void submitted( const char *method, const char *url );
-	void radioSelected( const char *n, const char *v );
-
-private:
-	QString _method;
-	QString _action;
-
-	QList<HTMLElement> elements;
-};
-
-//---------------------------------------------------------------------------
-
-#include "jscript.h"
 
 //---------------------------------------------------------------------------
 
@@ -273,23 +242,6 @@ protected:
 
 //---------------------------------------------------------------------------
 
-class HTMLButton : public HTMLInput
-{
-    Q_OBJECT
-public:
-    HTMLButton( KHTMLWidget *_parent, const char *_name, const char *v, QList<JSEventHandler> *_handlers );
-    virtual ~HTMLButton();
-    
-protected slots:
-    void slotClicked();
-    
-protected:
-    KHTMLWidget *view;
-    QList<JSEventHandler> *eventHandlers;
-};
-
-//---------------------------------------------------------------------------
-
 class HTMLSubmit : public HTMLInput
 {
 	Q_OBJECT
@@ -326,6 +278,65 @@ signals:
 
 private:
 	QString _defText;
+};
+
+//---------------------------------------------------------------------------
+
+class HTMLForm : public QObject
+{
+	Q_OBJECT
+public:
+	HTMLForm( const char *a, const char *m );
+	virtual ~HTMLForm();
+
+	void addElement( HTMLElement *e );
+	// We keep hidden elements here, not in HTMLObject hierarchy
+	void addHidden( HTMLHidden *he );
+	void removeElement( HTMLElement *e );
+
+	const char *method() const
+		{	return _method; }
+	const char *action() const
+		{	return _action; }
+
+	void position( int _x, int _y, int _width, int _height );
+
+public slots:
+	void slotReset();
+	void slotSubmit();
+	void slotRadioSelected( const char *n, const char *v );
+
+signals:
+	void submitted( const char *method, const char *url );
+	void radioSelected( const char *n, const char *v );
+
+private:
+	QString _method;
+	QString _action;
+
+	QList<HTMLElement> elements;
+	QList<HTMLHidden>  hidden;
+};
+
+//---------------------------------------------------------------------------
+
+#include "jscript.h"
+
+//---------------------------------------------------------------------------
+
+class HTMLButton : public HTMLInput
+{
+    Q_OBJECT
+public:
+    HTMLButton( KHTMLWidget *_parent, const char *_name, const char *v, QList<JSEventHandler> *_handlers );
+    virtual ~HTMLButton();
+    
+protected slots:
+    void slotClicked();
+    
+protected:
+    KHTMLWidget *view;
+    QList<JSEventHandler> *eventHandlers;
 };
 
 #endif

@@ -300,6 +300,7 @@ public:
 	    {	bg = c; }
 
     virtual void setMaxWidth( int );
+    virtual int  calcMinWidth();
     virtual bool print( QPainter *_painter, int _x, int _y, int _width,
 		int _height, int _tx, int _ty, bool toPrinter );
     virtual void print( QPainter *_painter, HTMLObject *_obj, int _x, int _y,

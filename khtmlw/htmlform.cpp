@@ -86,8 +86,11 @@ QString HTMLElement::encodeString( const QString &e )
 
 HTMLElement::~HTMLElement()
 {
-	if ( widget )
-		delete widget;
+    if ( widget )
+	delete widget;
+
+    if ( form )
+	form->removeElement( this );
 }
 
 //----------------------------------------------------------------------------
@@ -116,7 +119,7 @@ HTMLSelect::HTMLSelect( QWidget *parent, const char *n, int s, bool )
 		widget = new QComboBox( FALSE, parent );
 		size.setWidth( 150 );
 		size.setHeight( 25 );
-		descent = 3;
+		descent = 5;
 		ascent = size.height() - descent;
 	}
 
@@ -566,35 +569,47 @@ void HTMLTextInput::slotReturnPressed()
 
 HTMLForm::HTMLForm( const char *a, const char *m )
 {
-	_action = a;
-	_method = m;
+    _action = a;
+    _method = m;
 
-	elements.setAutoDelete( FALSE );
+    elements.setAutoDelete( false );
+    hidden.setAutoDelete( true );
 }
 
 void HTMLForm::addElement( HTMLElement *e )
 {
-	elements.append( e );
+    elements.append( e );
+}
+
+void HTMLForm::addHidden( HTMLHidden *e )
+{
+    elements.append( e );
+    hidden.append( e );
+}
+
+void HTMLForm::removeElement( HTMLElement *e )
+{
+    elements.removeRef( e );
 }
 
 void HTMLForm::position( int _x, int _y, int _width, int _height )
 {
-	HTMLElement *e;
+    HTMLElement *e;
 
-	for ( e = elements.first(); e != 0L; e = elements.next() )
-	{
-		e->position( _x, _y, _width, _height );
-	}
+    for ( e = elements.first(); e != 0; e = elements.next() )
+    {
+	e->position( _x, _y, _width, _height );
+    }
 }
 
 void HTMLForm::slotReset()
 {
-	HTMLElement *e;
+    HTMLElement *e;
 
-	for ( e = elements.first(); e != 0L; e = elements.next() )
-	{
-		e->reset();
-	}
+    for ( e = elements.first(); e != 0; e = elements.next() )
+    {
+	e->reset();
+    }
 }
 
 void HTMLForm::slotSubmit()
@@ -603,7 +618,7 @@ void HTMLForm::slotSubmit()
 	QString encoding = "";
 	bool first = true;
 
-	for ( e = elements.first(); e != 0L; e = elements.next() )
+	for ( e = elements.first(); e != 0; e = elements.next() )
 	{
 		QString enc = e->encoding();
 		if ( enc.length() )
@@ -624,6 +639,16 @@ void HTMLForm::slotSubmit()
 
 void HTMLForm::slotRadioSelected( const char *n, const char *v )
 {
-	emit radioSelected( n, v );
+    emit radioSelected( n, v );
+}
+
+HTMLForm::~HTMLForm()
+{
+    HTMLElement *e;
+
+    for ( e = elements.first(); e != 0; e = elements.next() )
+    {
+	e->setForm( 0 );
+    }
 }
 

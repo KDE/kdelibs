@@ -24,7 +24,7 @@
 #ifndef HTML_H
 #define HTML_H
 
-#define KHTMLW_VERSION  1201		// 00.12.01
+#define KHTMLW_VERSION  1202		// 00.12.02
 
 #include <qpainter.h>
 #include <qstrlist.h>
@@ -354,7 +354,7 @@ public:
      * @see #rightBorder
      * @see KHTMLView::setMarginWidth
      */
-    void setMarginWidth( int _w ) { leftBorder = _w; rightBorder = _w; }
+    void setMarginWidth( int _w ) { leftBorder = _w; rightBorder = _w + 4; }
 
     /**
      * Sets the margin height in pixels. This function is used
@@ -776,7 +776,6 @@ protected:
 	{
 	    popColor();
 	    popFont();
-	    vspace_inserted = FALSE;
 	}
 	url = 0;
 	target = 0;
