@@ -393,11 +393,12 @@ void KLocale::insertCatalogue( const QString& catalogue )
     .arg(lang)
     .arg(catalogue);
   str = KGlobal::dirs()->findResourceDir("locale", str);
-  if (!str.isEmpty()) {
+
+  if (!str.isEmpty())
       k_bindtextdomain ( catalogue.ascii(),
                          QFile::encodeName(str));
-      catalogues->append(catalogue.ascii());
-  }
+
+  catalogues->append(catalogue.ascii());
 }
 
 KLocale::~KLocale()
