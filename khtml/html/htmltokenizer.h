@@ -24,7 +24,6 @@
 //----------------------------------------------------------------------------
 //
 // KDE HTML Widget -- Tokenizers
-// $Id$
 
 #ifndef HTMLTOKENIZER_H
 #define HTMLTOKENIZER_H

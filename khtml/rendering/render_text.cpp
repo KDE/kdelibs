@@ -20,7 +20,6 @@
  * the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
  * Boston, MA 02111-1307, USA.
  *
- * $Id$
  */
 
 //#define DEBUG_LAYOUT
@@ -1451,7 +1450,7 @@ void RenderText::dump(QTextStream &stream, const QString &ind) const
 
 RenderTextFragment::RenderTextFragment(DOM::NodeImpl* _node, DOM::DOMStringImpl* _str,
                                        int startOffset, int endOffset)
-:RenderText(_node, _str->substring(startOffset, endOffset)), 
+:RenderText(_node, _str->substring(startOffset, endOffset)),
 m_start(startOffset), m_end(endOffset), m_generatedContentStr(0)
 {}
 
