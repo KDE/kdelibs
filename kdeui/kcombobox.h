@@ -40,11 +40,10 @@
  * that can be used to iterate through some type of list.
  * They key-bindings for the rotation feature are also
  * configurable and can be interchanged between system and
- * local settings easily.
- *
- * Also since this widget inherits form QComboBox it can
- * easily be used as a drop-in replacement where the above
- * functionalities are needed and/or useful.
+ * local settings easily.  Moreover,  since this widget
+ * inherits form QComboBox it can easily be used as a
+ * drop-in replacement where the above functionalities are
+ * needed and/or useful.
  *
  * KComboBox emits a few more additional signals than @ref
  * QComboBox, the main ones being the @ref comepltion and
@@ -191,13 +190,16 @@ public:
     * read-write and allows you to enable/disable the context
     * menu.  It does nothing if invoked for a none-editable
     * combo-box.  Note that by default the mode changer item
-    * is made visiable if the context menu is enabled.  Use
-    * @ref hideModechanger() if you want to hide this item.
+    * is made visiable whenever the context menu is enabled.
+    * Use * @ref hideModechanger() if you want to hide this
+    * item.    Also by default, the context menu is created if
+    * this widget is editable. Call this function with the
+    * argument set to false to disable the popup menu.
     *
     * @param showMenu if true, show the context menu.
     * @param showMode if true, show the mode changer.
     */
-    virtual void setEnableContextMenu( bool showMenu = true );
+    virtual void setEnableContextMenu( bool showMenu );
 
     /**
     * Marks the text in the line edit beginning
@@ -353,19 +355,33 @@ public slots:
 protected slots:
 
     /**
-    * Accepts the "aboutToShow" signal from the completion
-    * sub-menu.
+    *  changes the completion mode.
     *
-    * This implementation allows this widget to handle
-    * the requests for changing the completion mode on
-    * the fly by the user. See @ref showCompletionMenu().
+    * This slot sets the completion mode to the one
+    * requested by the end user through the popup
+    * menu.
     */
-    virtual void selectedItem( int itemID );
+    virtual void selectedItem( int itemID ) { setCompletionMode( (KGlobalSettings::Completion)itemID ); }
 
     /**
     * Populates the sub menu before it is displayed.
+    *
+    * All the items are inserted by the completion base
+    * class.  See @KCompletionBase::insertCompletionItems.
+    * The items then invoke the slot giiven by the
     */
     virtual void showCompletionMenu() { insertCompletionItems( this, SLOT( selectedItem( int ) ) ); }
+
+    /**
+    * Inserts the completion menu item as needed.
+    *
+    * Since this widget comes with its own pop-up menu
+    * this slot is needed to invoke the method need to
+    * insert the completion menu.  This method,
+    * @ref KCompletionBase::insetCompeltionMenu, is
+    * defined by the KCompletionBase.
+    */
+    virtual void aboutToShowMenu();
 
     /**
     * Deals with text changing in the line edit in
@@ -374,8 +390,8 @@ protected slots:
     virtual void entryChanged( const QString& );
 
     /**
-    * Deals with highlighting the seleted item when return
-    * is pressed in the list box (editable-mode only).
+    * Deals with highlighting the seleted item when
+    * return is pressed in the list box (editable-mode only).
     */
     virtual void itemSelected( QListBoxItem* );
 
@@ -383,12 +399,6 @@ protected slots:
     * Deals with text changes in auto completion mode.
     */
     virtual void makeCompletion( const QString& );
-
-    /**
-    * Correctly populates the context menu with the
-    * completion entry before it is displayed.
-    */
-    virtual void aboutToShowMenu();
 
 protected:
     /**

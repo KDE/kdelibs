@@ -71,8 +71,15 @@ void KComboBox::init()
     // Permanently set some parameters in the parent object.
     setAutoCompletion( false );
 
-    // Hide menu by default
+    // Initialize enable popup menu to false.
+    // Below it will be enabled if the widget
+    // is editable.
     m_bEnableMenu = false;
+
+    // Enable context menu by default if widget
+    // is editable.
+    if( m_pEdit != 0 )
+        setEnableContextMenu( true );
 
     // Initalize Variables used in auto-completion mode.
     // These values greatly simplify the logic used to
@@ -279,14 +286,6 @@ void KComboBox::connectSignals( bool handle ) const
         disconnect( this, SIGNAL( rotateUp() ), this, SLOT( iterateUpInList() ) );
         disconnect( this, SIGNAL( rotateDown() ), this, SLOT( iterateDownInList() ) );
     }
-}
-
-void KComboBox::selectedItem( int itemID )
-{
-    if( itemID == 0 )
-        setCompletionMode( KGlobalSettings::completionMode() );
-    else
-        setCompletionMode( (KGlobalSettings::Completion)itemID );
 }
 
 bool KComboBox::eventFilter( QObject *o, QEvent *ev )

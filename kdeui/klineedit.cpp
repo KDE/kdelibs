@@ -64,6 +64,7 @@ void KLineEdit::init()
     delete list;
 
     m_bEnableMenu = false;
+    setEnableContextMenu( true ); // Enable the context menu by default
 
     // Connect the signals and slots.
     connect( this, SIGNAL( textChanged( const QString& ) ), this, SLOT( entryChanged( const QString& ) ) );
@@ -218,16 +219,6 @@ void KLineEdit::connectSignals( bool handle ) const
         disconnect( this, SIGNAL( rotateUp() ), this, SLOT( iterateUpInList() ) );
         disconnect( this, SIGNAL( rotateDown() ), this, SLOT( iterateDownInList() ) );
     }
-}
-
-
-
-void KLineEdit::selectedItem( int itemID )
-{
-    if( itemID == 0 )
-        setCompletionMode( KGlobalSettings::completionMode() );
-    else
-        setCompletionMode( (KGlobalSettings::Completion)itemID );
 }
 
 void KLineEdit::keyPressEvent( QKeyEvent *ev )

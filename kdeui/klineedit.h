@@ -45,9 +45,9 @@
  * provides automatic & manual completion as well as
  * iteration through a given list, and the ability to
  * change which keyboard keys to use for these features.
- * Since this widget inherits form QLineEdit, it can be
- * used as a drop-in replacement where the above extra
- * functionalities are needed and/or useful.
+ * Additionally, since this widget inherits form QLineEdit,
+ * it can be used as a drop-in replacement where the
+ * above extra functionalities are needed and/or useful.
  *
  * KLineEdit emits a few more additional signals than
  * QLineEdit: @ref completion, @ref rotateUp and @ref rotateDown
@@ -187,12 +187,15 @@ public:
     * context menu will be enabled.  By default the mode changer
     * is visible when context menu is enabled.  Use either the
     * second boolean parameter or @ref hideModechanger() if you
-    * do not want this item to be visible.
+    * do not want this item to be visible.   Also by default, the
+    * context menu is created if this widget is editable. Call this
+    * function with the argument set to false to disable the popup
+    * menu.
     *
     * @param showMenu if true, show the context menu.
     * @param showMode if true, show the mode changer item.
     */
-    virtual void setEnableContextMenu( bool showMenu = true );
+    virtual void setEnableContextMenu( bool showMenu );
 
     /**
     * Returns true when the context menu is enabled.
@@ -275,21 +278,30 @@ protected slots:
 
     /**
     * Accepts the "aboutToShow" signal from the completion
-    * sub-menu.
+    * sub-menu inserted by @ref showCompletionMenu.
     *
-    * This implementation allows this widget to handle
-    * the requests for changing the completion mode on
-    * the fly by the user. See @ref showCompletionMenu().
+    * This method sets the completion mode to the one
+    * requested by the end user.
     */
-    virtual void selectedItem( int itemID );
+    virtual void selectedItem( int itemID ) { setCompletionMode( (KGlobalSettings::Completion)itemID ); }
 
     /**
     * Populates the sub menu before it is displayed.
+    *
+    * All the items are inserted by the completion base
+    * class.  See @KCompletionBase::insertCompletionItems.
+    * The items then invoke the slot giiven by the
     */
     virtual void showCompletionMenu() { insertCompletionItems( this, SLOT( selectedItem( int ) ) ); }
 
     /**
-    * Populates the context menu before it is displayed.
+    * Inserts the completion menu item as needed.
+    *
+    * Since this widget comes with its own pop-up menu
+    * this slot is needed to invoke the method need to
+    * insert the completion menu.  This method,
+    * @ref KCompletionBase::insetCompeltionMenu, is
+    * defined by the KCompletionBase.
     */
     virtual void aboutToShowMenu();
 
