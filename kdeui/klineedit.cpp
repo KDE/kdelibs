@@ -39,6 +39,7 @@
 #include <kurl.h>
 #include <kurldrag.h>
 #include <kiconloader.h>
+#include <kapplication.h>
 
 #include "klineedit.h"
 #include "klineedit.moc"
@@ -761,7 +762,7 @@ QPopupMenu *KLineEdit::createPopupMenu()
     // If a completion object is present and the input
     // widget is not read-only, show the Text Completion
     // menu item.
-    if ( compObj() && !isReadOnly() )
+    if ( compObj() && !isReadOnly() && kapp->authorize("lineedit_text_completion"))
     {
         QPopupMenu *subMenu = new QPopupMenu( popup );
         connect( subMenu, SIGNAL( activated( int ) ),

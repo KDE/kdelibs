@@ -22,11 +22,7 @@
 #define _KSSLCERTCHAIN_H
 
 #include <qglobal.h>
-#if QT_VERSION < 300
-#include <qlist.h>
-#else
 #include <qptrlist.h>
-#endif
 
 class QString;
 class QCString;
@@ -83,9 +79,6 @@ public:
 	 */
 	void setChain(void *stack_of_x509);
 
-#if QT_VERSION < 300
-	void setChain(QList<KSSLCertificate>& chain);
-#else
 	/**
 	 *  Set the certificate chain as a pointer list of KSSL certificates.
 	 *
@@ -93,7 +86,6 @@ public:
 	 *  @see KSSLCertificate
 	 */
 	void setChain(QPtrList<KSSLCertificate>& chain);
-#endif
 
 	/**
 	 *  Set the certificate chain as a list of base64 encoded X.509
@@ -112,9 +104,6 @@ public:
 	 */
 	void setCertChain(const QStringList& chain);
 
-#if QT_VERSION < 300
-	QList<KSSLCertificate> getChain();
-#else
 	/**
 	 *  Obtain a copy of the certificate chain.
 	 *
@@ -122,7 +111,6 @@ public:
 	 *  @see KSSLCertificate
 	 */
 	QPtrList<KSSLCertificate> getChain();
-#endif
 
 	/**
 	 *  Determine the number of entries (depth) of the chain.

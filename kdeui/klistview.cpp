@@ -1262,12 +1262,8 @@ QRect KListView::drawItemHighlighter(QPainter *painter, QListViewItem *item)
     r = itemRect(item);
     r.setLeft(r.left()+(item->depth()+1)*treeStepSize());
     if (painter)
-#if QT_VERSION < 300
-      style().drawFocusRect(painter, r, colorGroup(), &colorGroup().highlight(), true);
-#else
       style().drawPrimitive(QStyle::PE_FocusRect, painter, r, colorGroup(),
                             QStyle::Style_FocusAtBorder, colorGroup().highlight());
-#endif
   }
 
   return r;
@@ -1854,12 +1850,8 @@ void KListView::viewportPaintEvent(QPaintEvent *e)
       QPainter painter(viewport());
 
       // This is where we actually draw the drop-highlighter
-#if QT_VERSION < 300
-      style().drawFocusRect(&painter, d->mOldDropHighlighter, colorGroup(), 0, true);
-#else
       style().drawPrimitive(QStyle::PE_FocusRect, &painter, d->mOldDropHighlighter, colorGroup(),
                             QStyle::Style_FocusAtBorder);
-#endif
     }
 }
 

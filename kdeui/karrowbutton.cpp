@@ -58,16 +58,11 @@ void KArrowButton::drawButton(QPainter *p)
 	const unsigned int arrowSize = 8;
 	const unsigned int margin = 2;
 	
-#if QT_VERSION < 300
-	style().drawPanel(p, 0, 0, width(), height(), colorGroup(),
-			isDown(), 2, &colorGroup().brush(QColorGroup::Background));
-#else
         p->fillRect( rect(), colorGroup().brush( QColorGroup::Background ) );
 	style().drawPrimitive( QStyle::PE_Panel, p, QRect( 0, 0, width(), height() ),
 			       colorGroup(), 
 			       isDown() ? QStyle::Style_Sunken : QStyle::Style_Default,
 			       QStyleOption( 2, 0 ) );
-#endif
 
 	if (static_cast<unsigned int>(width()) < arrowSize + margin ||
 	    static_cast<unsigned int>(height()) < arrowSize + margin)
@@ -93,10 +88,6 @@ void KArrowButton::drawButton(QPainter *p)
 		y++;
 	}
 
-#if QT_VERSION < 300
-	style().drawArrow(p, d->arrow, isDown(), x, y, arrowSize, arrowSize,
-			colorGroup(), true);
-#else
 	QStyle::PrimitiveElement e = QStyle::PE_ArrowLeft;
 	switch (d->arrow)
 	{
@@ -110,7 +101,6 @@ void KArrowButton::drawButton(QPainter *p)
 		flags |= QStyle::Style_Down;
 	style().drawPrimitive( e, p, QRect( QPoint( x, y ), QSize( arrowSize, arrowSize ) ),
 			       colorGroup(), flags );
-#endif
 }
 
 void KArrowButton::virtual_hook( int, void* )

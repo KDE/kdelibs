@@ -94,13 +94,9 @@ void KSeparator::drawFrame(QPainter *p)
       p2 = QPoint( p1.x(), r.height() );
    }
 
-#if QT_VERSION < 300
-   style().drawSeparator( p, p1.x(), p1.y(), p2.x(), p2.y(), g, true, 1, midLineWidth() );
-#else
    QStyleOption opt( lineWidth(), midLineWidth() );
    style().drawPrimitive( QStyle::PE_Separator, p, QRect( p1, p2 ), g,
 		          QStyle::Style_Sunken, opt );
-#endif
 }
 
 

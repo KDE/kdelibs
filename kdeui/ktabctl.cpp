@@ -319,13 +319,8 @@ void KTabCtl::showTab(int i)
 void KTabCtl::addTab(QWidget *w, const QString& name)
 {
     QTab *t = new QTab();
-#if QT_VERSION < 300
-    t->label = name;
-    t->enabled = TRUE;
-#else
     t->setText( name );
     t->setEnabled( true );
-#endif
     int id = tabs->addTab(t);   /* add the tab itself to the tabbar */
     if (id == (int)pages.size()) {
 	pages.resize(id + 1);
