@@ -1,0 +1,11 @@
+A note about the licensing:
+
+aRts currently is GPL, and so are the things I've written for mcop right
+now. However, if there are parts in mcop/aRts that will have some library
+like character (like libmcop), I'll change the license to LGPL later.
+
+It's just that I currently can't yet see what parts should have which
+license. (Most of aRts will be rearranged/touched due to moving from CORBA
+to MCOP).
+
+Stefan <stefan@space.twc.de>

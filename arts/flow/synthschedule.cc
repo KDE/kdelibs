@@ -1,0 +1,581 @@
+	/*
+
+	Copyright (C) 1998,1999 Stefan Westerfeld
+                            stefan@space.twc.de
+
+    This program is free software; you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation; either version 2 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program; if not, write to the Free Software
+    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+
+    */
+
+#include "startupmanager.h"
+#include "synthschedule.h"
+#include "debug.h"
+#include <stdio.h>
+
+// well, this was tuneable once...
+
+const int rbSize = 128;
+
+// ----------- SynthBuffer -------------
+
+SynthBuffer::SynthBuffer(float initialvalue, unsigned long size)
+{
+	this->size = size;
+	data = new float[size];
+
+	setValue(initialvalue);
+
+	position = 0;
+	needread = 0;
+}
+
+void SynthBuffer::setValue(float value)
+{
+	unsigned long i;
+	for(i=0;i<size;i++) data[i] = value;
+}
+
+SynthBuffer::~SynthBuffer()
+{
+	delete[] data;
+}
+
+// ----------- Port -----------
+
+Port::Port(string name, void *ptr, long flags, StdScheduleNode* parent)
+{
+	_ptr = ptr;
+	_name = name;
+	_flags = (AttributeType)flags;
+
+	this->parent = parent;
+}
+
+Port::~Port()
+{
+	//
+}
+
+AttributeType Port::flags()
+{
+	return _flags;
+}
+
+string Port::name()
+{
+	return _name;
+}
+
+AudioPort *Port::audioPort()
+{
+	return 0;
+}
+
+void Port::setPtr(void *ptr)
+{
+	_ptr = ptr;
+}
+
+// ------- AudioPort ---------
+
+AudioPort::AudioPort(string name, void *ptr, long flags,StdScheduleNode *parent)
+		: Port(name,ptr,flags,parent)
+{
+	position = 0;
+	destcount = 0;
+	sourcemodule = 0;
+	lbuffer = buffer = new SynthBuffer(0.0, rbSize);
+}
+
+AudioPort::~AudioPort()
+{
+	delete lbuffer;
+}
+
+AudioPort *AudioPort::audioPort()
+{
+	return this;
+}
+
+void AudioPort::setFloatValue(float f)
+{
+	buffer->setValue(f);
+}
+
+
+void AudioPort::connect(Port *psource)
+{
+	AudioPort *source = psource->audioPort();
+	assert(source);
+
+	buffer = source->buffer;
+	position = buffer->position;
+	source->destcount++;
+	sourcemodule = source->parent;
+}
+
+void AudioPort::disconnect(Port *psource)
+{
+	AudioPort *source = psource->audioPort();
+	assert(source);
+
+	assert(sourcemodule == source->parent);
+	sourcemodule = 0;
+
+	// skip the remaining stuff in the buffer
+	read(buffer->position - position);
+	source->destcount--;
+
+	position = lbuffer->position;
+	buffer = lbuffer;
+}
+
+// --------- MultiPort ----------
+
+MultiPort::MultiPort(string name, void *ptr, long flags,StdScheduleNode *parent)
+	: Port(name,ptr,flags,parent)
+{
+	conns = 0;
+	nextID = 0;
+	initConns();
+}
+
+MultiPort::~MultiPort()
+{
+	if(conns)
+	{
+		delete[] conns;
+		conns = 0;
+	}
+}
+
+void MultiPort::initConns()
+{
+	if(conns != 0) delete[] conns;
+	conns = new float_ptr[parts.size() + 1];
+	conns[parts.size()] = (float *)0;
+
+	*(float ***)_ptr = conns;
+
+	long n = 0;
+	list<AudioPort *>::iterator i;
+	for(i = parts.begin();i != parts.end(); i++)
+	{
+		AudioPort *p = *i;
+		p->setPtr((void *)&conns[n++]);
+	}
+}
+
+void MultiPort::connect(Port *port)
+{
+	AudioPort *dport;
+	char sid[20];
+	sprintf(sid,"%ld",nextID++);
+
+	dport = new AudioPort("_"+_name+string(sid),0,streamIn,parent);
+	parts.push_back(dport);
+	initConns();
+
+	parent->addDynamicPort(dport);
+	dport->connect(port);
+}
+
+void MultiPort::disconnect(Port *sport)
+{
+	AudioPort *port = (AudioPort *)sport;
+	char sid[20];
+	sprintf(sid,"%ld",nextID++);
+
+	list<AudioPort *>::iterator i;
+	for(i = parts.begin(); i != parts.end(); i++)
+	{
+		AudioPort *dport = *i;
+
+		if(dport->buffer == port->buffer)
+		{
+			parts.erase(i);
+			initConns();
+
+			dport->disconnect(port);
+			parent->removeDynamicPort(dport);
+
+			delete dport;
+			return;
+		}
+	}
+}
+
+// -------- StdScheduleNode ---------
+
+void StdScheduleNode::freeConn()
+{
+	if(inConn)
+	{
+		delete inConn;
+		inConn = 0;
+	}
+	if(outConn)
+	{
+		delete outConn;
+		outConn = 0;
+	}
+	inConnCount = outConnCount = 0;
+}
+
+void StdScheduleNode::rebuildConn()
+{
+	list<Port *>::iterator i;
+
+	freeConn();
+
+	inConnCount = outConnCount = 0;
+	inConn = new AudioPort_ptr[ports.size()];
+	outConn = new AudioPort_ptr[ports.size()];
+
+	for(i=ports.begin();i != ports.end();i++)
+	{
+		AudioPort *p = (*i)->audioPort();
+		if(p)
+		{
+			if(p->flags() & streamIn) inConn[inConnCount++] = p;
+			if(p->flags() & streamOut) outConn[outConnCount++] = p;
+		}
+	}
+}
+
+void StdScheduleNode::accessModule()
+{
+	if(module) return;
+
+	module = (SynthModule *)object->_cast("SynthModule");
+	if(!module)
+	{
+		cerr << "Only SynthModule derived classes should carry streams."
+			<< endl;
+	}
+}
+
+StdScheduleNode::StdScheduleNode(Object_skel *object, FlowSystem *flowSystem)
+{
+	this->object = object;
+	this->flowSystem = flowSystem;
+	this->module = 0;
+	inConn = outConn = 0;
+	inConnCount = outConnCount = 0;
+	Busy = BusyHit = NeedCycles = CanPerform = 0;
+}
+
+StdScheduleNode::~StdScheduleNode()
+{
+	list<Port *>::iterator i;
+	for(i=ports.begin();i != ports.end();i++)
+		delete (*i);
+	ports.clear();
+
+	freeConn();
+}
+
+void StdScheduleNode::initStream(string name, void *ptr, long flags)
+{
+	if(flags & streamMulti)
+	{
+		ports.push_back(new MultiPort(name,ptr,flags,this));
+	}
+	else
+	{
+		ports.push_back(new AudioPort(name,ptr,flags,this));
+	}
+
+	// TODO: maybe initialize a bit later
+	rebuildConn();
+}
+
+void StdScheduleNode::addDynamicPort(Port *port)
+{
+	ports.push_back(port);
+	rebuildConn();
+}
+
+void StdScheduleNode::removeDynamicPort(Port *port)
+{
+	list<Port *>::iterator i;
+	for(i=ports.begin();i!=ports.end();i++)
+	{
+		Port *p = *i;
+		if(p->name() == port->name())
+		{
+			ports.erase(i);
+			rebuildConn();
+			return;	
+		}
+	}
+}
+
+void StdScheduleNode::start()
+{
+	//cout << "start" << endl;
+	accessModule();
+	module->firstInitialize();
+	module->initialize();
+	module->start();
+}
+
+void StdScheduleNode::stop()
+{
+	accessModule();
+	module->deInitialize();
+}
+
+void StdScheduleNode::requireFlow()
+{
+	// cout << "rf" << module->_interfaceName() << endl;
+	request(128);
+}
+
+Port *StdScheduleNode::findPort(string name)
+{
+	list<Port *>::iterator i;
+	for(i=ports.begin();i!=ports.end();i++)
+	{
+		Port *p = *i;
+		if(p->name() == name) return p;
+	}
+	return 0;
+}
+
+void StdScheduleNode::connect(string port, ScheduleNode *dest, string destport)
+{
+	Port *p1 = findPort(port);
+	Port *p2 = ((StdScheduleNode *)dest)->findPort(destport);
+
+	if(p1 && p2)
+	{
+		if((p1->flags() & streamIn) && (p2->flags() & streamOut))
+		{
+			p1->connect(p2);
+		}
+		else if((p2->flags() & streamIn) && (p1->flags() & streamOut))
+		{
+			p2->connect(p1);
+		}
+	}
+}
+
+void StdScheduleNode::disconnect(string port,
+								ScheduleNode *dest, string destport)
+{
+	Port *p1 = findPort(port);
+	Port *p2 = ((StdScheduleNode *)dest)->findPort(destport);
+
+	if(p1 && p2)
+	{
+		if((p1->flags() & streamIn) && (p2->flags() & streamOut))
+		{
+			p1->disconnect(p2);
+		}
+		else if((p2->flags() & streamIn) && (p1->flags() & streamOut))
+		{
+			p2->disconnect(p1);
+		}
+	}
+}
+
+void StdScheduleNode::setFloatValue(string port, float value)           
+{
+	AudioPort *p = findPort(port)->audioPort();
+
+	if(p) {
+		p->setFloatValue(value);
+	} else {
+		assert(false);
+	}
+}
+
+/* request a module to calculate a number of turns
+   will return -1 if busy, count that has been done otherwise */
+
+long StdScheduleNode::request(long amount)
+{
+	unsigned long in;
+	int have_in,need_more,have_done,have_done_total = 0;
+
+	if(Busy) { BusyHit++; return(-1); }
+
+	Busy = 1;
+	if(NeedCycles < amount)
+	{
+		NeedCycles = amount;
+	}
+
+	// cout << "re" << module->_interfaceName() << endl;
+	//artsdebug("DSP %s: request of %d cycles\n",getClassName(),amount);
+	do
+	{
+		/* assume we can satisfy the request */
+		CanPerform = NeedCycles;
+
+		/* then, check wether the input channels supply enough data to do so. */
+
+		for(in=0;in<inConnCount;in++)
+		{
+			have_in = inConn[in]->haveIn();
+
+			if(have_in < NeedCycles)
+			{
+				//artsdebug("connection %d indicates to have %d, "
+                //       "thats not enough\n", in,have_in);
+				/* if we can't calculate enough stuff due to a certain
+				   ingoing connection, go to the associated module and
+				   tell it that we need more data
+				*/
+				need_more = NeedCycles - have_in;
+				//artsdebug("requesting %d\n", need_more);
+				/* when there is no source (constant input value), then
+					we don't need to request something, it's just that
+					it can't supply more because the buffer isn't big enough
+				*/
+				if(inConn[in]->sourcemodule)
+					inConn[in]->sourcemodule->request(need_more);
+
+				have_in = inConn[in]->haveIn();
+	
+				//artsdebug("now connection %d indicates to have %d\n",in,have_in);
+				if(CanPerform > have_in) CanPerform = have_in;
+			}
+		}
+		have_done = calc(CanPerform);
+		have_done_total += have_done;
+
+		/*
+		if(dsp->m_BusyHit != 0) artsdebug("got busyhit: %s\n",dsp->m_Name);
+		*/
+
+	} while(BusyHit && NeedCycles != CanPerform && have_done);
+	/* makes only sense to repeat if
+		 - there was a busyhit which indicates we are in a feedback loop
+		 - we should have done more than we have done
+         - actually something could be calculated
+     */
+	Busy = 0;
+	return(have_done);
+}
+
+/* This routine would now actually let the plugin calculate some data
+   that means generate sinus waves, mix audio signals etc.
+
+   The number of cycles is guaranteed to work without input underrun
+   by the flow system. But the routine still needs to check output
+   stall situations (ring buffer full).
+*/
+
+unsigned long StdScheduleNode::calc(unsigned long cycles)
+{
+	unsigned long i,room;
+
+	//cout << "ca" << module->_interfaceName() << endl;
+	/* output sanity check:
+	   when there is not enough room in one of the buffers, we
+	   can't calculate that much cycles
+	*/
+	for(i=0;i<outConnCount;i++)
+	{
+		room = outConn[i]->outRoom();
+		if(room < cycles)
+		{
+			cycles = room;
+			/*
+			artsdebug("- reduced calculation to %d due to lack of space\n",cycles);
+			*/
+		}
+	}
+
+	if(cycles == 0) return(0);
+
+	//artsdebug("DSP %s: calculation of %d cycles\n",getClassName(),cycles);
+	/* input sanity check:
+		it's guaranteed that we have enough input, but do the check
+		anyway... - you never know
+	*/
+	for(i=0;i<inConnCount;i++)
+	{
+		/* otherwise input is "overconsumed" */
+		assert(inConn[i]->haveIn() >= cycles);
+
+		/* check sanity of the needread setting:
+			either data comes from fixed value (sourcemodule not assigned)
+			then we can't expect needread to contain sensible setting,
+			but otherwise: needread should have expected that we'll want
+			to read the data and thus be more than the cycles! */
+
+		assert((!inConn[i]->sourcemodule)
+				|| (inConn[i]->buffer->needread >= cycles));
+	}
+
+	unsigned long j, donecycles = 0, cando = 0;
+	
+	while(donecycles != cycles)
+	{	
+		cando = cycles-donecycles;
+
+		for(j=0;j<inConnCount;j++)
+			cando = inConn[j]->readSegment(donecycles,cando);
+
+		for(j=0;j<outConnCount;j++)
+			cando = outConn[j]->writeSegment(donecycles,cando);
+
+		module->calculateBlock(cando);
+		donecycles += cando;
+	}
+	assert(donecycles == cycles);
+
+	// actually update buffer by subtracting consumed input
+	for(i=0;i<inConnCount;i++)
+		inConn[i]->read(cycles);
+
+	// and adding fresh output
+	for(i=0;i<outConnCount;i++)
+		outConn[i]->write(cycles);
+
+	NeedCycles -= cycles;
+	CanPerform -= cycles;
+	return(cycles);
+}
+
+ScheduleNode *StdFlowSystem::addObject(Object_skel *object)
+{
+	return new StdScheduleNode(object,this);
+}
+
+void StdFlowSystem::removeObject(ScheduleNode *node)
+{
+	delete node;
+}
+
+// hacked initialization of Dispatcher::the()->flowSystem ;)
+
+StdFlowSystem stdflow;
+
+static class SetFlowSystem : StartupClass {
+	FlowSystem *_fs;
+public:
+	SetFlowSystem(FlowSystem *fs) {
+		_fs = fs;
+	}
+
+	void startup()
+	{
+		Dispatcher::the()->setFlowSystem(_fs);
+	}
+} sfs(&stdflow);

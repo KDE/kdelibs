@@ -1,0 +1,203 @@
+/*
+    Copyright (C) 1999 Stefan Westerfeld
+                       stefan@space.twc.de
+  
+    This program is free software; you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation; either version 2 of the License, or
+    (at your option) any later version.
+  
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+  
+    You should have received a copy of the GNU General Public License
+    along with this program; if not, write to the Free Software
+    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+ */
+
+// MCOP protocol
+
+enum HeaderMagic { MCOP_MAGIC = 0x504f434d }; /* gets marshalled as "MCOP" */
+
+enum MessageType {
+ mcopInvocation  = 1,
+ mcopReturn      = 2,
+ mcopServerHello = 3,
+ mcopClientHello = 4,
+ mcopAuthAccept  = 5
+};
+
+struct Header {
+    HeaderMagic magic;    // the value 0x504f434d, which is marshalled as MCOP
+    long messageLength;
+    MessageType messageType;
+};
+
+struct Invocation {
+    long requestID;
+    long objectID;
+    long methodID;
+};
+
+struct ServerHello {
+	string serverID;
+	sequence<string> authProtocols;
+	string authSeed;
+};
+
+struct ClientHello {
+	string serverID;
+	string authProtocol;
+	string authData;
+};
+
+struct ObjectReference {
+	string serverID; // should be unique, i.e. start time, hostname, and pid
+	long objectID;	 // number of the object under that server
+	sequence<string> urls; // where the server holding object can be reached
+};
+
+// Interface definitions
+
+struct ParamDef {
+	string type;
+	string name;
+};
+
+struct MethodDef {
+	string  name;
+	string  type;
+	long    flags;
+
+	sequence<ParamDef> signature;
+};
+
+/*
+ * an attribute
+ *
+ * flags should contain things like
+ * - attribute is readonly/writeonly/readwrite
+ * - attribute is incoming/outgoing stream
+ * - if it's a stream, it also should contain the information whether it is
+ *   asynchronous or synchronous
+ */
+
+enum AttributeType {
+  streamIn    = 1,
+  streamOut   = 2,
+  streamMulti = 4,
+  attributeStream    = 8,
+  attributeAttribute = 16
+};
+
+struct AttributeDef {
+	string  name;
+	string  type;
+	AttributeType flags;
+};
+
+/**
+ * InterfaceDef - interface definition structure
+ *
+ * defines what methods/attributes a particular interface supports: these
+ * do not contain the methods/attributes of inherited interfaces.
+ *
+ * inheritedInterfaces only contains the names of Interfaces that this one
+ * inherits in exactly one step. So to see if interface XYZ is inherited
+ * from ABC, you need to check the "inheritedInterfaces" of XYZ, and their
+ * "inheritedInterfaces" and their "inheritedInterfaces" and so on.
+ */
+
+struct InterfaceDef {
+	string name;
+
+	sequence<string> inheritedInterfaces;
+	sequence<MethodDef> methods;
+	sequence<AttributeDef> attributes;
+};
+
+// Type definitions (struct's and such)
+
+struct TypeComponent {
+	string type;
+	string name;
+};
+
+struct TypeDef {
+	string name;
+
+	sequence<TypeComponent> contents;
+};
+
+struct EnumComponent {
+	string name;
+
+	long value;
+};
+
+struct EnumDef {
+	string name;	// empty for anonymous enum
+
+	sequence<EnumComponent> contents;
+};
+
+/**
+ * The contents of an idl file
+ */
+
+struct ModuleDef {
+	string moduleName;
+
+	sequence<ModuleDef> modules;
+	sequence<EnumDef> enums;
+	sequence<TypeDef> types;
+	sequence<InterfaceDef> interfaces;
+};
+
+/**
+ * The interface repository
+ */
+
+interface InterfaceRepo {
+	/**
+	 * insertModule inserts the contents of a module into the interface
+	 * repository and returns and ID
+	 */
+	long insertModule(ModuleDef newModule);
+
+	/**
+	 * removeModule removes the contents of a module from the interface
+	 * repository
+	 */
+	void removeModule(long moduleID);
+
+	/**
+	 * queryInterface queries the definition of an interface
+	 */
+	InterfaceDef queryInterface(string name);
+
+	/**
+	 * queryType queries the definition of a type
+	 */
+	TypeDef queryType(string name);
+};
+
+/* this is only (!) used for generation of the Object_stub stuff
+
+interface Object {
+	// returns the ID for methodinvocations to this specific method
+	long _lookupMethod(MethodDef methodDef);
+
+	// returns the name of the interface
+	string _interfaceName();
+
+	// returns the interface description to a given interface
+	InterfaceDef _queryInterface(string name);
+
+	// returns the type description to a given type
+	TypeDef _queryType(string name);
+};
+
+*/

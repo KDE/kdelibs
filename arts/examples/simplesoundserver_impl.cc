@@ -1,0 +1,102 @@
+    /*
+
+    Copyright (C) 1999-2000 Stefan Westerfeld
+                            stefan@space.twc.de
+
+    This program is free software; you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation; either version 2 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program; if not, write to the Free Software
+    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+
+    */
+
+#include "simplesoundserver_impl.h"
+#include "artsflow.h"
+#include <stdio.h>
+
+SimpleSoundServer_impl::SimpleSoundServer_impl()
+{
+	play_obj = ObjectManager::the()->create("Synth_PLAY");
+	assert(play_obj);
+
+	add_left = ObjectManager::the()->create("Synth_MULTI_ADD");
+	assert(add_left);
+
+	add_right = ObjectManager::the()->create("Synth_MULTI_ADD");
+	assert(add_right);
+
+	play_obj->_node()->connect("invalue_left",add_left->_node(),"outvalue");
+	play_obj->_node()->connect("invalue_right",add_right->_node(),"outvalue");
+
+	add_left->_node()->start();
+	add_right->_node()->start();
+	play_obj->_node()->start();
+
+	Dispatcher::the()->ioManager()->addTimer(200,this);
+}
+
+SimpleSoundServer_impl::~SimpleSoundServer_impl()
+{
+	add_left->_node()->stop();
+	add_right->_node()->stop();
+	play_obj->_node()->stop();
+
+	delete add_right;
+	delete add_left;
+	delete play_obj;
+
+	Dispatcher::the()->ioManager()->removeTimer(this);
+}
+
+long SimpleSoundServer_impl::play(const string& filename)
+{
+	printf("Play '%s'!\n",filename.c_str());
+
+	Object_skel *playwavobj = ObjectManager::the()->create("Synth_PLAY_WAV");
+	assert(playwavobj);
+
+	Synth_PLAY_WAV *playwav =
+		(Synth_PLAY_WAV *)playwavobj->_cast("Synth_PLAY_WAV");
+	assert(playwav);
+
+	playwav->filename(filename);
+
+	add_left->_node()->connect("invalue",playwav->_node(),"left");
+	add_right->_node()->connect("invalue",playwav->_node(),"right");
+
+	playwav->_node()->start();
+
+	activeWavs.push_back(playwav);
+	return 1;
+}
+
+void SimpleSoundServer_impl::notifyTime()
+{
+	list<Synth_PLAY_WAV *>::iterator i;
+
+	i = activeWavs.begin();
+	while(i != activeWavs.end())
+	{
+		Synth_PLAY_WAV *playwav = (*i);
+		if(playwav->finished())
+		{
+			cout << "finished" << endl;
+			add_left->_node()->disconnect("invalue",playwav->_node(),"left");
+			add_right->_node()->disconnect("invalue",playwav->_node(),"right");
+			playwav->_node()->stop();
+			delete playwav;
+			activeWavs.erase(i);
+			i = activeWavs.begin();
+		}
+		else i++;
+	}
+}

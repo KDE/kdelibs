@@ -1,0 +1,62 @@
+This is an approximation what remains todo to get aRts running on MCOP
+as it was before on CORBA.
+
+1. To get some kind of an audio server running
+
+- TCP disconnection handling should work *done*
+- passing MCOP object references might be useful (including specification
+  in the IDL, e.g.
+
+interface Foo {
+  Bar giveMeABar(); // should return a Bar object reference
+}
+
+- streaming stuff should work again (scheduling) *somewhat done*
+- C++ language binding should be a bit more complete
+  => attributes are missing *mostly done*
+
+  interface Foo {
+    attribute long height,width;
+  }
+
+- port audio playing stuff (SynthPlay, etc.) *done*
+- port wav loading objects *done*
+- port caching *done*
+- port flow graph descriptions (Structure, etc.) (might be ok in 2. as well)
+- work on dynamic N:M connectivity (SynthBus*) *somewhat done*
+- authentication
+
+2. To get everything up again
+
+- do reference counting (might be required for 1.)
+- implement inheritance (might be required for 1.) *done*
+- namespaces (mapped to modules in the IDL) - currently MCOP puts every
+  interface in the standard namespace
+- integrate with the Qt message loop
+- do dynamic loading of plugins
+- port visual objects
+- do streaming between servers again
+- port artsbuilder
+- port every object
+- asynchronous streams (as opposed to synchronous) w/ language binding
+- asynchronous invocations
+- notifications when attributes change
+- recursive scheduling again (with loops & cycles)
+- reading/writing IEEE Floats needs proper documentation, testing on
+  different architectures and probably different code for some machines
+
+3. To have more fun
+
+- tune the transfer protocol (although MCOP theoretically could do 30000+
+  synchronous invocations per second, it can only do 4000+ since the TCP
+  protocol is so sloow - perhaps something sharedmem/semaphore based would
+  solve the problem)
+- implement plugins that transfer non-standard datatypes such as midi events,
+  video frames, fft packets, oscilloscope views, ... (which was impossible
+  with aRts on CORBA)
+- make aRts run inside Brahms, KWave or your-favourite-other-app, to do
+  signal processing where it is needed (similar to AudioLogic Environment,
+  for instance)
+- convince other people to use aRts, so that the usefulness of universal
+  plugins written for the API increases
+

@@ -1,0 +1,22 @@
+/*
+ * This is a very simple sound server interface
+ */
+
+interface SimpleSoundServer {
+	/**
+	 * tries to play the sound in "filename"
+	 *
+	 * returns an ID when success 0 when it fails
+	 */
+	long play(string filename);
+
+	/**
+	 * returns true if the sound in ID is still playing
+	 */
+	//bool isPlaying(long ID);
+
+	/**
+	 * stops a playing sound by ID
+	 */
+	//void stop(long ID);
+};

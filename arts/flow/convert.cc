@@ -1,0 +1,194 @@
+    /*
+
+    Copyright (C) 1999 Stefan Westerfeld
+                       stefan@space.twc.de
+
+    This program is free software; you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation; either version 2 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program; if not, write to the Free Software
+    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+
+    */
+
+#include "convert.h"
+#include <math.h>
+
+/*---------------------------- new code begin -------------------------- */
+
+#define compose_16le(ptr) \
+	((((*((ptr)+1)+128)&0xff) << 8)+*(ptr))
+
+#define conv_16le_float(x) \
+	((float)((x)-32768)/32768.0)
+
+#define convert_16le_float(x) conv_16le_float(compose_16le(&(x)))
+
+#define conv_8_float(x) \
+	((float)((x)-128)/128.0)
+
+#define convert_8_float(x) \
+	((float)((x)-128)/128.0)
+
+/*
+ * 16le, 8, float
+ */
+
+#define datatype_16le unsigned char
+#define datasize_16le 2
+
+#define datatype_8 unsigned char
+#define datasize_8 1
+
+#define datatype_float float
+#define datasize_float 1
+
+#define mk_converter(from_format,to_format) \
+void convert_mono_ ## from_format ## _ ## to_format (unsigned long samples, \
+									datatype_ ## from_format *from, \
+                                    datatype_ ## to_format *to) \
+{ \
+	datatype_ ## to_format *end = to+samples * (datasize_ ## to_format); \
+	while(to<end) { \
+		*to = convert_ ## from_format ## _ ## to_format(*from); \
+		from += datasize_ ## from_format; \
+		to += datasize_ ## to_format; \
+	} \
+} \
+void interpolate_mono_ ## from_format ## _ ## to_format (unsigned long samples,\
+									float startpos, float speed, \
+									datatype_ ## from_format *from, \
+                                    datatype_ ## to_format *to) \
+{ \
+	float flpos = startpos; \
+	while(samples) { \
+		long position = ((long)(flpos)) * (datasize_ ## from_format); \
+		float error = flpos - floor(flpos); \
+		*to =	(convert_ ## from_format ## _ ## to_format(from[position])) * \
+				(1.0-error) + (convert_ ## from_format ## _ ## \
+				to_format(from[position + datasize_ ## from_format])) * error; \
+		to += datasize_ ## to_format; \
+		flpos += speed; \
+		samples--; \
+	} \
+} \
+void convert_stereo_i ## from_format ## _2 ## to_format (unsigned long samples,\
+									datatype_ ## from_format *from, \
+                                    datatype_ ## to_format *left, \
+									datatype_ ## to_format *right) \
+{ \
+	datatype_ ## to_format *end = left+samples * (datasize_ ## to_format); \
+	while(left<end) { \
+		*left = convert_ ## from_format ## _ ## to_format(*from); \
+		from += datasize_ ## from_format; \
+		left += datasize_ ## to_format; \
+		*right = convert_ ## from_format ## _ ## to_format(*from); \
+		from += datasize_ ## from_format; \
+		right += datasize_ ## to_format; \
+	} \
+} \
+void interpolate_stereo_i ## from_format ## _2 ## to_format (unsigned long samples,\
+									float startpos, float speed, \
+									datatype_ ## from_format *from, \
+                                    datatype_ ## to_format *left, \
+                                    datatype_ ## to_format *right) \
+{ \
+	float flpos = startpos; \
+	while(samples) { \
+		long position = ((long)(flpos)) * (datasize_ ## from_format) * 2; \
+		float error = flpos - floor(flpos); \
+		*left =	(convert_ ## from_format ## _ ## to_format(from[position])) * \
+				(1.0-error) + (convert_ ## from_format ## _ ## \
+				to_format(from[position + datasize_ ## from_format])) * error; \
+		left += datasize_ ## to_format; \
+		position += 2*datasize_ ## to_format; \
+		*right =(convert_ ## from_format ## _ ## to_format(from[position])) * \
+				(1.0-error) + (convert_ ## from_format ## _ ## \
+				to_format(from[position + datasize_ ## from_format])) * error; \
+		right += datasize_ ## to_format; \
+		flpos += speed; \
+		samples--; \
+	} \
+}
+
+mk_converter(8,float)
+mk_converter(16le,float)
+
+/*----------------------------- new code end --------------------------- */
+
+void old_convert_mono_8_float(unsigned long samples, unsigned char *from, float *to)
+{
+	float *end = to+samples;
+
+	while(to<end) *to++ = conv_8_float(*from++);
+}
+
+void old_convert_mono_16le_float(unsigned long samples, unsigned char *from, float *to)
+{
+	float *end = to+samples;
+
+	while(to<end)
+	{
+		*to++ = conv_16le_float(compose_16le(from));
+		from += 2;
+	}
+}
+
+
+void old_convert_stereo_i8_2float(unsigned long samples, unsigned char *from, float *left, float *right)
+{
+	float *end = left+samples;
+	while(left < end)
+	{
+		*left++ = conv_8_float(*from++);
+		*right++ = conv_8_float(*from++);
+	}
+}
+
+void old_convert_stereo_i16le_2float(unsigned long samples, unsigned char *from, float *left, float *right)
+{
+	float *end = left+samples;
+	while(left < end)
+	{
+		*left++ = conv_16le_float(compose_16le(from));
+		*right++ = conv_16le_float(compose_16le(from+2));
+		from += 4;
+	}
+}
+
+void convert_stereo_2float_i16le(unsigned long samples, float *left, float *right, unsigned char *to)
+{
+	float *end = left+samples;
+	long syn;
+
+	while(left < end)
+	{
+		syn = (long)((*left++)*32767)+65536;
+		*to++ = syn & 0xff;
+		*to++ = (syn >> 8) & 0xff;
+
+		syn = (long)((*right++)*32767)+65536;
+		*to++ = syn & 0xff;
+		*to++ = (syn >> 8) & 0xff;
+	}	
+}
+
+void convert_mono_float_16le(unsigned long samples, float *from, unsigned char *to)
+{
+	float *end = from+samples;
+
+	while(from < end)
+	{
+		long syn = (long)((*from++)*32767)+65536;
+		*to++ = syn & 0xff;
+		*to++ = (syn >> 8) & 0xff;
+	}	
+}

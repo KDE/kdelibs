@@ -1,0 +1,76 @@
+<HTML>
+<TITLE>
+aRts/MCOP documentation index
+</TITLE>
+<BODY bgcolor="#FFFFFF">
+<center><h3>aRts/MCOP documentation index</h3></center>
+<p>
+<h4>The basics</h4>
+<p>
+aRts is a short form for "analog realtime synthesizer". The idea of the whole
+thing is to create/process sound using small modules which do certain tasks.
+These may be create a waveform (oscillators), play samples, filter data, add
+signals, perform effects like delay/flanger/chorus, or output the data to
+the soundcard.
+<p>
+By connecting all those small modules together, you can perform complex
+tasks like simulating a mixer, generating an instrument or things like
+playing a wave file with some effects.
+<p>
+<h4>What is this MCOP stuff? What is happening with CORBA?</h4>
+<p>
+All "stable" aRts releases until now (that is until arts-0.3.4) were using
+CORBA. That was a convenient way to let the GUI components of aRts run in
+one process, while the sound calculations ran in another. Due to that, a
+blocking X-Server would never let the sound stop, and the sound server could
+run as realtime process with very low latency.
+<p>
+However, CORBA has also some disadvantages (for instance speed of
+communication, the lack to work with "streams" of media, bloat).
+<p>
+MCOP is a try to get around these problems by providing a new, fast IPC
+mechanism (ORB) for aRts.
+<p>
+Since the "old" aRts releases (until 0.3.4) use CORBA a lot, lots of stuff
+needs to be redone to get a new release based on MCOP instead of CORBA.
+<p>
+<h4>Available documentation</h4>
+<p>
+The documentation (currently more or less a collection of associated notes to
+the aRts/MCOP/KDE developments).
+<p>
+</table>
+<table width=100% bgcolor="#FFFFCC">
+<tr><td><a href=LICENSE>LICENSE</a><td bgcolor="#EEEEEE">
+  some notes about the licensing
+</tr>
+
+<tr><td><a href=MCOP>MCOP</a><td bgcolor="#EEEEEE">
+  the detailed description of the protocol/marshalling MCOP servers use
+</tr>
+
+<tr><td><a href=TODO>TODO</a><td bgcolor="#EEEEEE">
+  the TODO list
+</tr>
+
+<tr><td><a href=corba-user-intro.html>corba-user-intro.html</a><td bgcolor="#EEEEEE">
+  an introduction to MCOP for CORBA users
+</tr>
+</table>
+
+<p>
+<h4>More information</h4>
+<p>
+<ul>
+<li>aRts homepage <a href=http://www.arts-project.org>http://www.arts-project.org</a>
+<li>the <a href=http://www.arts-project.org/gen/2-maillist.html>mailing list for aRts</a>
+<li>the <a href=http://lists.kde.org/?l=kde-multimedia>kde-multimedia mailing list</a>
+<li>the kdemultimedia/arts CVS tree in the KDE2 CVS -
+<a href=http://www.nebsllc.com/cgi-bin/cvsweb.cgi/kdemultimedia/arts>browse code online!</a>
+<li>contact <a href=mailto:stefan@space.twc.de>stefan@space.twc.de</a> if
+    you want to join the team / have questions
+</ul>
+<p>
+<p>
+</BODY>
+</HTML>
