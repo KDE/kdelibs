@@ -53,10 +53,6 @@ KAutoConfigDialog::~KAutoConfigDialog(){
   delete d;
 }
 
-KConfig *KAutoConfigDialog::kconfig(){
-  return kautoconfig->kconfig();
-}
-
 void KAutoConfigDialog::addPage(QWidget *page,
 		                  const QString &itemName,
 				  const QString &groupName,

@@ -110,12 +110,6 @@ public:
   ~KAutoConfig();
   
   /**
-   * Helper function to find out what KConfig is being used.
-   * @return pointer to the KConfig that is being used.
-   */ 
-  KConfig *kconfig();
-  
-  /**
    * Adds a widget to the list of widgets that should be parsed for any 
    * children that KAutoConfig might know when @ref retrieveSettings() is
    * called.

@@ -104,12 +104,6 @@ public:
   ~KAutoConfigDialog();
  
   /**
-   * Helper function to find out what KConfig is being used by this dialog.
-   * @return pointer to the KConfig that is being used by this KAutoConfigDialog
-   */ 
-  KConfig *kconfig();
-  
-  /**
    * Adds page to the dialog and to @ref KAutoConfig.  When an application is
    * done adding pages @ref show() should be called to display the dialog.
    * Note that after you call @ref show() you can not add any more pages

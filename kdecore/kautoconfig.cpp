@@ -72,10 +72,6 @@ KAutoConfig::~KAutoConfig(){
   delete d;
 }
 
-KConfig *KAutoConfig::kconfig(){
-  return config;
-}
-
 void KAutoConfig::addWidget(QWidget *widget, const QString &group){
   d->widgets.append(widget);
   d->groups.insert(widget, group);
