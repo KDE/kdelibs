@@ -4147,9 +4147,8 @@ void HTTPProtocol::slotData(const QByteArray &_d)
    else
    {
       uint old_size = m_bufWebDavData.size();
-      m_bufWebDavData.resize (old_size + m_bufReceive.size());
-      memcpy (m_bufWebDavData.data() + old_size, m_bufReceive.data(),
-              m_bufReceive.size());
+      m_bufWebDavData.resize (old_size + d.size());
+      memcpy (m_bufWebDavData.data() + old_size, d.data(), d.size());
    }
 }
 
