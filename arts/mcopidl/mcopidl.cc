@@ -167,6 +167,28 @@ bool isInterface( string type )
 	return (type == "object");
 }
 
+string formatMultiLineString(string s, string indent)
+{
+	string result = indent+"\"";
+	string::iterator si = s.begin();
+
+	int lineLen = 80-indent.size()-6;	
+	int i = 0;
+
+	while(si != s.end())
+	{
+		if(i == lineLen)
+		{
+			result += "\"\n" + indent + "\"";
+			i = 0;
+		}
+
+		result += *si++;
+		i++;
+	}
+	return result+"\"";
+}
+
 #define MODEL_MEMBER    1
 #define MODEL_ARG       2
 #define MODEL_READ      3
@@ -826,8 +848,7 @@ string createCallParamList(MethodDef *md)
 	return result;
 }
 
-void createStubCode(FILE *source, string iface, string method, MethodDef *md,
-	long mcount)
+void createStubCode(FILE *source, string iface, string method, MethodDef *md)
 {
 	string rc = createReturnCode(md);
 	string params = createParamList(md);
@@ -853,7 +874,6 @@ void createStubCode(FILE *source, string iface, string method, MethodDef *md,
 		fprintf(source,"\tBuffer *request = Dispatcher::the()->"
 				"createOnewayRequest(_objectID,methodID);\n");
 	}
-	fprintf(source,"\t// methodID = %ld  =>  %s\n",mcount,md->name.c_str());
 
 	for(pi = md->signature.begin(); pi != md->signature.end(); pi++)
 	{
@@ -1350,6 +1370,7 @@ void doInterfacesSource(FILE *source)
 	
 		// create stub
 
+		/** constructors **/
 		fprintf(source,"%s_stub::%s_stub()\n" ,d->name.c_str(),d->name.c_str());
 		fprintf(source,"{\n");
 		fprintf(source,"\t// constructor for subclasses"
@@ -1363,18 +1384,16 @@ void doInterfacesSource(FILE *source)
 		fprintf(source,"\t// constructor to create a stub for an object\n");
 		fprintf(source,"}\n\n");
 
-		// TODO:
-		// first official method is 3, but this needs to be synchronized
-		// with multiple inheritance and backward compatibility (what if
-		// somebody adds a method to an interface)
-		mcount = 3;
+		/** stub operations **/
 
+			/** stub operations for object methods **/
 		for(mi = d->methods.begin(); mi != d->methods.end(); mi++)
 		{
 			MethodDef *md = *mi;
-			createStubCode(source,d->name.c_str(),md->name.c_str(),md,mcount++);
+			createStubCode(source,d->name.c_str(),md->name.c_str(),md);
 		}
 
+			/** stub operations for attributes **/
 		for(ai = d->attributes.begin();ai != d->attributes.end();ai++)
 		{
 			AttributeDef *ad = *ai;
@@ -1389,8 +1408,7 @@ void doInterfacesSource(FILE *source)
 					md.flags = methodTwoway;
 					/* no parameters (don't set md.signature) */
 
-					createStubCode(source,d->name.c_str(),ad->name.c_str(),
-						&md,mcount++);
+					createStubCode(source,d->name.c_str(),ad->name.c_str(),&md);
 				}
 				if(ad->flags & streamIn)  /* writeable from outside */
 				{
@@ -1399,8 +1417,7 @@ void doInterfacesSource(FILE *source)
 					md.flags = methodTwoway;
 					md.signature.push_back(new ParamDef(ad->type,"newValue"));
 
-					createStubCode(source,d->name.c_str(),ad->name.c_str(),
-						&md,mcount++);
+					createStubCode(source,d->name.c_str(),ad->name.c_str(),&md);
 				}
 			}
 		}
@@ -1496,11 +1513,16 @@ void doInterfacesSource(FILE *source)
 
 		/** methodTable **/
 
+		string methodTableString = formatMultiLineString(
+			methodTable.toString("MethodTable"),"        ");
+
 		fprintf(source,"void %s_skel::_buildMethodTable()\n",d->name.c_str());
 		fprintf(source,"{\n");
 		fprintf(source,"\tBuffer m;\n");
-		fprintf(source,"\tm.fromString(\"%s\",\"MethodTable\");\n",
-			methodTable.toString("MethodTable").c_str());
+		fprintf(source,"\tm.fromString(\n");
+		fprintf(source,"%s,\n",methodTableString.c_str());
+		fprintf(source,"\t\t\"MethodTable\"\n");
+		fprintf(source,"\t);\n");
 
 		long i;
 		for(i=0;i<mcount;i++)
@@ -1590,8 +1612,10 @@ void doInterfaceRepoSource(FILE *source, string prefix)
 	module.moduleName = "";
 	module.writeType(b);
 
-	fprintf(source,"IDLFileReg IDLFileReg_%s(\"%s\",\"%s\");\n",
-		prefix.c_str(),prefix.c_str(),b.toString("IDLFile").c_str());
+	string data = formatMultiLineString(b.toString("IDLFile"),"    ");
+
+	fprintf(source,"static IDLFileReg IDLFileReg_%s(\"%s\",\n%s\n);\n",
+		prefix.c_str(),prefix.c_str(),data.c_str());
 }
 
 void exit_usage(char *name)
