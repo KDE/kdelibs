@@ -193,6 +193,10 @@ action/help_about_app
 action/help_about_kde
 action/fullscreen
 
+action/editfiletype
+action/properties
+action/openwith
+
 Notes:
 * action/options_show_toolbar will also disable the "Toolbars" submenu
   if present.
