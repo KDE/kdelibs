@@ -20,6 +20,9 @@
  * $Id$
  *
  * $Log$
+ * Revision 1.1  1999/07/25 19:38:57  waba
+ * WABA: Added some i18n'ed qmessagebox'es for convenience
+ *
  *
  */
 
@@ -112,7 +115,7 @@ KMessageBox::error(QWidget *parent,  const QString &text,
     _caption += " - "+kapp->getCaption();
 
     (void) QMessageBox::critical(parent, _caption, text,
-	       i18n("&Ok"), QString::null, QString::null, 0, 0);
+	       i18n("&OK"), QString::null, QString::null, 0, 0);
     return;
 }
 
@@ -126,7 +129,7 @@ KMessageBox::sorry(QWidget *parent, const QString &text,
     _caption += " - "+kapp->getCaption();
 
     (void) QMessageBox::warning(parent, _caption, text, 
-	       i18n("&Ok"), QString::null, QString::null, 0, 0);
+	       i18n("&OK"), QString::null, QString::null, 0, 0);
     return;
 }
 
@@ -140,7 +143,7 @@ KMessageBox::information(QWidget *parent,const QString &text,
     _caption += " - "+kapp->getCaption();
 
     (void) QMessageBox::information(parent, _caption, text,  
-	       i18n("&Ok"), QString::null, QString::null, 0, 0);
+	       i18n("&OK"), QString::null, QString::null, 0, 0);
     return;
 }
 
