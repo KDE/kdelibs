@@ -183,7 +183,7 @@ static int createKMessageBox(KDialogBase *dialog, QMessageBox::Icon icon, const 
 
     if (!details.isEmpty())
     {
-       QVGroupBox *detailsGroup = new QVGroupBox( i18n("Details:"), dialog);
+       QVGroupBox *detailsGroup = new QVGroupBox( i18n("Details"), dialog);
        if ( details.length() < 512 ) {
          QLabel *label3 = new QLabel(details, detailsGroup);
          label3->setMinimumSize(label3->sizeHint());
