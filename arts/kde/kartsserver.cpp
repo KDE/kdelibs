@@ -79,7 +79,7 @@ Arts::SoundServerV2 KArtsServer::server(void)
 	else
 		proc << QFile::encodeName(KStandardDirs::findExe(QString::fromLatin1("artsd")));
 
-	proc << config.readEntry("Arguments", "-F 10 -S 4096 -s 60 -m artsmessage -l 3 -f");
+	proc << QStringList::split( " ", config.readEntry( "Arguments", "-F 10 -S 4096 -s 60 -m artsmessage -l 3 -f" ) );
 
 	if(proc.start(KProcess::Block) && proc.normalExit())
 	{
@@ -102,4 +102,5 @@ Arts::SoundServerV2 KArtsServer::server(void)
 	return d->server;
 }
 
+// vim: sw=4 ts=4 noet
 #include "kartsserver.moc"
