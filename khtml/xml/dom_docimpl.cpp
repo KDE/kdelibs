@@ -1099,15 +1099,22 @@ void DocumentImpl::open( bool clearEventListeners )
     delete m_tokenizer;
     m_tokenizer = 0;
 
-    //{
-        RenderObject* render = m_render;
-        m_render = 0; // indicate destruction mode
-        removeChildren();
-        if (clearEventListeners) {
-            QPtrListIterator<RegisteredEventListener> it(m_windowEventListeners);
-            for (; it.current();)
-                m_windowEventListeners.removeRef(it.current());
-        m_render = render;
+    KHTMLView* view = m_view;
+    bool was_attached = attached();
+    if ( was_attached )
+        detach();
+
+    removeChildren();
+    delete m_styleSelector;
+    m_styleSelector = 0;
+    m_view = view;
+    if ( was_attached )
+        attach();
+
+    if (clearEventListeners) {
+        QPtrListIterator<RegisteredEventListener> it(m_windowEventListeners);
+        for (; it.current();)
+            m_windowEventListeners.removeRef(it.current());
     }
 
     m_tokenizer = createTokenizer();

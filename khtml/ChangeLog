@@ -1,3 +1,8 @@
+2003-10-30  Dirk Mueller  <mueller@kde.org>
+
+	* xml/dom_docimpl.cpp (open): do a full detach()/attach(),
+	otherwise we're corrupting the rendertree (#66590). 
+
 2003-10-29  Stephan Kulow  <coolo@kde.org>
 
 	* html/htmltokenizer.cpp (processListing): fixing textarea regression
