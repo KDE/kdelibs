@@ -1,0 +1,17 @@
+Installing Apple mDNSResponder:
+
+1) download mDNSResponder 
+ - from CVS (see 	http://developer.apple.com/darwin/projects/rendezvous/).
+ 
+ - or you can get tarball from: http://helios.et.put.poznan.pl/~jstachow/pub/mDNSResponder-85.tar.bz2
+
+2) compile and install
+ Build system for mDNSResponder is quite weird so here are instructions:
+ 
+ cd mDNSPosix
+ make os=linux             (make without parameters gives list of supported systems)
+ now as root:
+ make os=linux install
+ 
+ make sure that mdnsd.sh init script is properly installed and will be executed at  boot time
+ 
