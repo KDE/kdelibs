@@ -1,6 +1,9 @@
 // $Id$
 //
 /* $Log$
+ * Revision 1.15  1997/08/04 17:14:04  ettrich
+ * Matthis: clear dirty flag after sync()
+ *
  * Revision 1.14  1997/08/04 15:16:51  ettrich
  * Matthias: trivial fix for sync(): Now this works as _real_ sync, that
  *  means it also reparses the configuration files.
@@ -700,12 +703,12 @@ void KConfig::sync()
 	    break;
 	  }
       }
-    pData->bDirty = false;
   }
 
   // re-parse all config files
   // These could be modified by configuration programs
   parseConfigFiles();
+  pData->bDirty = false;
 
 }
 
