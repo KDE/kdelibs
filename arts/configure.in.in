@@ -4,16 +4,19 @@ dnl libaudiofile is used for loading wave files
 
 AC_DEFUN(AC_CHECK_LIBAUDIOFILE,
 [
-   ac_ldflags_save="$LDFLAGS"
-   LDFLAGS="$all_libraries $LDFLAGS"
-   dnl WAV reading
-   AC_CHECK_LIB(audiofile,afOpenFile, [LIBAUDIOFILE="-laudiofile"])
-   AC_SUBST(LIBAUDIOFILE)
-   LDFLAGS="$ac_ldflags_save"
-   if eval "test \"`echo `$LIBAUDIOFILE\" = -laudiofile"; then
-     AC_DEFINE(HAVE_LIBAUDIOFILE, 1,
-	    [Define if you have libaudiofile (required for playing wavs with aRts)])
-   fi
+  ac_ldflags_save="$LDFLAGS"
+  LDFLAGS="$all_libraries $LDFLAGS"
+  dnl WAV reading
+  AC_CHECK_HEADER(audiofile.h,
+  [
+    AC_CHECK_LIB(audiofile,afOpenFile,[
+      LIBAUDIOFILE="-laudiofile"
+      AC_DEFINE(HAVE_LIBAUDIOFILE, 1,
+        [Define if you have libaudiofile (required for playing wavs with aRts)])
+    ])
+  ])
+  AC_SUBST(LIBAUDIOFILE)
+  LDFLAGS="$ac_ldflags_save"
 ])
 
 AC_CHECK_LIBAUDIOFILE
