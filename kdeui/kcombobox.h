@@ -217,17 +217,6 @@ public:
     virtual void setAutoCompletion( bool autocomplete );
 
     /**
-    * Re-implemented from QComboBox.
-    *
-    * Returns @p true if the current completion mode is set
-    * to automatic.  See its more comprehensive replacement
-    * @ref completionMode().
-    *
-    * @return @p true when completion mode is automatic.
-    */
-    bool autoCompletion() const { return completionMode() == KGlobalSettings::CompletionAuto; }
-
-    /**
     * Enables or disable the popup (context) menu.
     *
     * This method only works if this widget is editable, i.e.
@@ -263,11 +252,6 @@ public:
      * Returns @p true when decoded URL drops are enabled
      */
     bool isURLDropsEnabled() const;
-
-    /**
-    * Returns @p true if the combo-box is editable.
-    */
-    bool isEditable() const { return editable(); }
 
     /**
      * Convenience method which iterates over all items and checks if
@@ -323,7 +307,7 @@ public:
     KCompletionBox * completionBox( bool create = true );
 
     virtual void setLineEdit( QLineEdit * );
-    
+
 signals:
     /**
     * Emitted when the user presses the Enter key.
@@ -706,6 +690,7 @@ protected:
      * Handling key-events, the shortcuts to rotate the items.
      */
     virtual void keyPressEvent( QKeyEvent * );
+
 
     /**
      * Inserts @p items into the combo, honouring @ref pixmapProvider()

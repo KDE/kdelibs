@@ -57,15 +57,12 @@ public:
 KComboBox::KComboBox( QWidget *parent, const char *name )
     : QComboBox( parent, name )
 {
-    m_trapReturnKey = false;
     init();
 }
 
 KComboBox::KComboBox( bool rw, QWidget *parent, const char *name )
     : QComboBox( rw, parent, name )
 {
-    m_trapReturnKey = false;
-
     init();
 
     if ( rw ) {
@@ -90,6 +87,8 @@ void KComboBox::init()
     // Below it will be enabled if the widget
     // is editable.
     m_bEnableMenu = false;
+
+    m_trapReturnKey = false;
 
     // Enable context menu by default if widget
     // is editable.
@@ -116,7 +115,7 @@ void KComboBox::setAutoCompletion( bool autocomplete )
                                          KGlobalSettings::CompletionAuto :
                                          KGlobalSettings::completionMode() );
         setCompletionMode( autocomplete ? KGlobalSettings::CompletionAuto:
-                                          KGlobalSettings::completionMode() );
+                           KGlobalSettings::completionMode() );
     }
 }
 
@@ -179,6 +178,7 @@ void KComboBox::rotateText( KCompletionBase::KeyBindingType type )
 bool KComboBox::eventFilter( QObject* o, QEvent* ev )
 {
     QLineEdit *edit = lineEdit();
+
 
     if ( o == edit )
     {
@@ -274,14 +274,14 @@ void KComboBox::setLineEdit( QLineEdit *edit )
                  SIGNAL( completion( const QString& )) );
         connect( d->klineEdit, SIGNAL( substringCompletion( const QString& )),
                  SIGNAL( substringCompletion( const QString& )) );
-        connect( d->klineEdit, 
+        connect( d->klineEdit,
                  SIGNAL( textRotation( KCompletionBase::KeyBindingType )),
                  SIGNAL( textRotation( KCompletionBase::KeyBindingType )) );
-        connect( d->klineEdit, 
+        connect( d->klineEdit,
                  SIGNAL( completionModeChanged( KGlobalSettings::Completion )),
                  SIGNAL( completionModeChanged( KGlobalSettings::Completion)));
-        
-        connect( d->klineEdit, 
+
+        connect( d->klineEdit,
                  SIGNAL( aboutToShowContextMenu( QPopupMenu * )),
                  SIGNAL( aboutToShowContextMenu( QPopupMenu * )) );
     }
