@@ -135,6 +135,7 @@ protected:
 class KFileMetaInfo
 {
 public:
+    class Data;
     /**
      * The constructor. 
      *
@@ -243,7 +244,7 @@ public:
      * @return true if the item is valid, i.e. if actually represents the info
      * about a file, false if the object is uninitialized
      */
-    bool isValid()    { return d != &Data::null; }
+    bool isValid() const;
 
 #ifdef GNUC_    
 #warning TODO: add a factory for appropriate widgets
@@ -274,7 +275,8 @@ protected:
         bool                              supportsVariableKeys;
         QMap<QString, KFileMetaInfoItem>  items;
     
-        static Data null;
+        static Data* null;
+        static Data* makeNull();
 
     };
 
@@ -287,7 +289,6 @@ protected:
  * contains additional functions that the plugins need to write the data into
  * the object
  **/
-#include <kdebug.h>
 class KFileMetaInfo::Internal : public KFileMetaInfo
 {
 public:
@@ -322,8 +323,8 @@ public:
      **/
     void setSupportedKeys(QStringList keys)
     {
-        if (d==&Data::null) return;
-        d->supportedKeys = keys;
+        if (isValid())
+            d->supportedKeys = keys;
     }
 
     /**
@@ -332,8 +333,8 @@ public:
      **/
     void setPreferredKeys(QStringList keys)
     {
-        if (d==&Data::null) return;
-        d->preferredKeys = keys;
+        if (isValid())
+            d->preferredKeys = keys;
     }
     
     /**
@@ -342,8 +343,8 @@ public:
      **/
     void setSupportsVariableKeys(bool b   )
     {
-        if (d==&Data::null) return;
-        d->supportsVariableKeys = b;
+        if (isValid())
+            d->supportsVariableKeys = b;
     }
     
     /**
@@ -360,11 +361,12 @@ public:
      */
     void insert( const KFileMetaInfoItem &item )
     {
-        kdDebug(7033) << "insert\n";
-        if (d==&Data::null) return;
-        kdDebug(7033) << "insert really " << item.key() << endl;
-        d->items.insert( item.key(), item );
-        kdDebug(7033) << "inserted " << item.key() << endl;
+        //kdDebug(7033) << "insert\n";
+        if (isValid()) {
+            //kdDebug(7033) << "insert really " << item.key() << endl;
+            d->items.insert( item.key(), item );
+            //kdDebug(7033) << "inserted " << item.key() << endl;
+        }
     }
         
     /**

@@ -36,14 +36,22 @@ public:
     bool                dirty    :1;
     bool                editable :1;
     
-    static Data null;
+    static Data* null;
+    static Data* makeNull();
 };
 
 //this is our null data
-KFileMetaInfoItem::Data
-KFileMetaInfoItem::Data::null(QString::null, QString::null, QVariant(),
-                              QString::null, QString::null, false);
+KFileMetaInfoItem::Data* KFileMetaInfoItem::Data::null = 0L;
+static KStaticDeleter<KFileMetaInfoItem::Data> sd_KFileMetaInfoItemData;
 
+KFileMetaInfoItem::Data* KFileMetaInfoItem::Data::makeNull()
+{
+    if (!null)
+        sd_KFileMetaInfoItemData.setObject( null,
+                new KFileMetaInfoItem::Data(QString::null, QString::null, QVariant(),
+                                            QString::null, QString::null, false) );
+    return null;
+}
 
 KFileMetaInfoItem::KFileMetaInfoItem( const QString& key,
                                       const QString& translatedKey,
@@ -60,19 +68,20 @@ KFileMetaInfoItem::KFileMetaInfoItem( const KFileMetaInfoItem& item )
 //    kdDebug(7033) << "KFileMetaInfoItem copy constructor\n";
     *this = item;
     // d gets copied by value, i.e. the pointer is shared!
-    if (d != &Data::null) d->ref();
+    if (d != Data::makeNull()) d->ref();
 }
 
 KFileMetaInfoItem::KFileMetaInfoItem()
 {
+
 //    kdDebug(7033) << "KFileMetaInfoItem default constructor\n";
-    d = &Data::null;
+    d = Data::makeNull();
 }
 
 KFileMetaInfoItem::~KFileMetaInfoItem()
 {
 //    kdDebug(7033) << "KFileMetaInfoItem destructor\n";
-    if ( d != &Data::null && d->deref() )
+    if ( d != Data::makeNull() && d->deref() )
     {
         kdDebug(7033) << "a metainfoitem " << d->key << " is finally deleted\n";
         delete d;
@@ -95,7 +104,7 @@ void KFileMetaInfoItem::setValue( const QVariant& value )
     kdDebug(7033) << "type: " << value.typeName() << " and " << d->value.typeName()
               << endl;
     
-    if ( d == &Data::null ) return;
+    if ( d == Data::makeNull() ) return;
     
     if ( !d->editable ||
          (d->value.isValid() && value.type() != d->value.type()) )
@@ -158,7 +167,7 @@ bool KFileMetaInfoItem::isEditable() const
 
 bool KFileMetaInfoItem::isValid() const
 {
-    return d != &Data::null;
+    return d != Data::makeNull();
 }
 
 ///////////////////////////////////////////////////////////////////
@@ -192,18 +201,18 @@ KFileMetaInfo::KFileMetaInfo( const KFileMetaInfo& original )
 //    kdDebug(7033) << "KFileMetaInfo( const KFileMetaInfo& original)\n";
     *this = original;
     // d gets copied by value, i.e. the pointer is shared!
-    if (d!=&Data::null) d->ref();
+    if (d!=Data::makeNull()) d->ref();
 }
 
 KFileMetaInfo::KFileMetaInfo()
 {
-    d = &Data::null;
+    d = Data::makeNull();
 }
 
 KFileMetaInfo::~KFileMetaInfo()
 {
-//    if (d!=&Data::null) kdDebug(7033) << "KFileMetaInfo()\n";
-    if ( d != &Data::null && d->deref() )
+//    if (d!=Data::makeNull()) kdDebug(7033) << "KFileMetaInfo()\n";
+    if ( d != Data::makeNull() && d->deref() )
        delete d;
 }
 
@@ -218,11 +227,15 @@ KFileMetaInfoItem & KFileMetaInfo::addItem( const QString& key,
 const KFileMetaInfo& KFileMetaInfo::operator= (const KFileMetaInfo& info )
 {
     d = info.d;
-    if (d != &Data::null) d->ref();
+    if (d != Data::makeNull()) d->ref();
 //    kdDebug(7033) << "info::operator=\n";
     return *this;
 }
 
+bool KFileMetaInfo::isValid() const
+{
+    return d != Data::makeNull();
+}
 
 const QStringList KFileMetaInfo::preferredKeys() const
 {
@@ -232,7 +245,7 @@ const QStringList KFileMetaInfo::preferredKeys() const
     kdDebug(7033) << "preferredKeys(), we have " << d->preferredKeys.size() << endl;
     kdDebug(7033) << "preferredKeys(), and " << d->items.size() << endl;
 
-    if (d == &Data::null) kdWarning(7033) << "s.th. tries to get the prefferedKeys of an invalid metainfo object\n";
+    if (d == Data::makeNull()) kdWarning(7033) << "s.th. tries to get the prefferedKeys of an invalid metainfo object\n";
     
     for (it = d->items.begin(); it!=d->items.end(); ++it)
     {
@@ -306,7 +319,15 @@ KFilePlugin * const KFileMetaInfo::plugin() const
     return prov->plugin( d->mimetype );
 }
 
-KFileMetaInfo::Data KFileMetaInfo::Data::null(QString::null);
+KFileMetaInfo::Data* KFileMetaInfo::Data::null = 0L;
+static KStaticDeleter<KFileMetaInfo::Data> sd_KFileMetaInfoData;
+
+KFileMetaInfo::Data* KFileMetaInfo::Data::makeNull()
+{
+    if (!null)
+        sd_KFileMetaInfoData.setObject( null, new KFileMetaInfo::Data(QString::null) );
+    return null;
+}
 
 ///////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////
