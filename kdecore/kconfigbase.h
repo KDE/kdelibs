@@ -1636,7 +1636,7 @@ public:
    *
    * @param pKey The key to delete.
    * @param bGlobal     If @p bGlobal is true, the pair is not removed from the
-   *  application specific config file, but to the global KDE config file.
+   *  application specific config file, but from the global KDE config file.
    * @param bNLS        If @p bNLS is true, the key with the locale tag is removed.
    */
    void deleteEntry( const char *pKey,
@@ -1654,8 +1654,8 @@ public:
    * @param group The name of the group
    * @param bDeep Specify whether non-empty groups should be completely
    *        deleted (including their entries).
-   * @param bGlobal     If @p bGlobal is true, the pair is not removed from the
-   *  application specific config file, but to the global KDE config file.
+   * @param bGlobal     If @p bGlobal is true, the group is not removed from the
+   *  application specific config file, but from the global KDE config file.
    * @return If the group is not empty and bDeep is false,
    *         deleteGroup returns false.
    */
