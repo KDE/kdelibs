@@ -360,9 +360,10 @@ int main(int argc, char *argv[])
     sc1.writeEntry( "OnUnencrypted",  false );
     a.config()->setGroup( "Notification Messages" );
     a.config()->writeEntry( "kjscupguard_alarmhandler", true );
+    a.config()->setGroup("HTML Settings");
+    a.config()->writeEntry("ReportJSErrors", false);
     KConfig cfg( "khtmlrc" );
     cfg.setGroup("HTML Settings");
-    cfg.writeEntry("ReportJSErrors", false);
     cfg.writeEntry( "StandardFont", KGlobalSettings::generalFont().family() );
     cfg.writeEntry( "FixedFont", KGlobalSettings::fixedFont().family() );
     cfg.writeEntry( "SerifFont", HTML_DEFAULT_VIEW_SERIF_FONT );
