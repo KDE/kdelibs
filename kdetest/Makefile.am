@@ -31,12 +31,16 @@ check_PROGRAMS = kformulatest \
 		khtmltest \
 		kspelltest \
 		kmemtest \
-		kidlservertest kidlclienttest
+		kidlservertest kidlclienttest \
+		dcopkonqtest
 
 
 noinst_HEADERS = KIDLTest.h
 
 # METASOURCES = AUTO
+
+dcopkonqtest_SOURCES = dcopkonqtest.cpp
+dcopkonqtest_LDADD = $(LIB_KDECORE)
 
 kformulatest_SOURCES = kformulatest.cpp
 kformulatest_LDADD = $(LIB_KFORMULA)
