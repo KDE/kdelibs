@@ -72,12 +72,14 @@ extern QMap<QCString, DCOPObject *> *dcopObjMap; // defined in dcopobject.cpp
  * Keep track of local clients
  *********************************************/
 typedef QAsciiDict<DCOPClient> client_map_t;
+static client_map_t *DCOPClient_CliMap = 0;
 
 static
 client_map_t *cliMap()
 {
-    static client_map_t *dcopCliMap = new client_map_t;
-    return dcopCliMap;
+    if (!DCOPClient_CliMap)
+       DCOPClient_CliMap = new client_map_t;
+    return DCOPClient_CliMap;
 }
 
 static
@@ -1649,6 +1651,28 @@ DCOPClient::disconnectDCOPSignal( const QCString &sender, const QCString &signal
   const QCString &receiverObj, const QCString &slot)
 {
   return disconnectDCOPSignal( sender, 0, signal, receiverObj, slot);
+}
+
+void
+DCOPClient::emergencyClose()
+{
+    QList<DCOPClient> list;
+    client_map_t *map = DCOPClient_CliMap;
+    if (!map) return;
+    QAsciiDictIterator<DCOPClient> it(*map);
+    while(it.current()) {
+       list.removeRef(it.current());
+       list.append(it.current());
+       ++it;
+    }
+    for(DCOPClient *cl = list.first(); cl; cl = list.next())
+    {
+        if (cl->d->iceConn) {
+            IceProtocolShutdown(cl->d->iceConn, cl->d->majorOpcode);
+            IceCloseConnection(cl->d->iceConn);
+            cl->d->iceConn = 0L;
+        }
+    }
 }
 
 

@@ -504,6 +504,11 @@ class DCOPClient : public QObject
    */
   static void setMainClient( DCOPClient* );
 
+  /**
+    * @internal Do not use.
+    */
+  static void emergencyClose();
+
 signals:
   /**
    * Indicate that the application @p appId has been registered with
