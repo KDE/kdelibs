@@ -135,14 +135,13 @@ class KIOConnection
             if (!mayblock)
                 return false;
             thread = Thread.currentThread();
-            try {
-                Thread.currentThread().sleep(10000);
-            } catch (InterruptedException ie) {
-                return getData(true);
+            while (true) {
+                try {
+                    Thread.currentThread().sleep(10000);
+                } catch (InterruptedException ie) {
+                    return getData(false);
+                }
             }
-            thread = null;
-            disconnect();
-            throw new IOException("timeout");
         }
         public int read() throws IOException {
             if (getData(true))
@@ -150,11 +149,9 @@ class KIOConnection
             return -1;
         }
         public int read(byte[] b, int off, int len) throws IOException {
-            boolean mayblock = true;
             int total = 0;
             do {
                 if (!getData(true)) break;
-                mayblock = false;
                 int nr = buf.length - bufpos;
                 if (nr > len)
                     nr = len;
@@ -187,6 +184,13 @@ class KIOConnection
             return false;
         }
         public void close() throws IOException {
+            if (thread != null) {
+                try {
+                    eof = true;
+                    thread.interrupt();
+                } catch (SecurityException sex) {}
+                thread = null;
+            }
             checkConnected();
             disconnect();
         }
@@ -291,8 +295,8 @@ class KIOConnection
         try {
             Thread.currentThread().sleep(20000);
         } catch (InterruptedException ie) {
+            connected = true;
             if (!haveError()) {
-                connected = true;
                 if (doInput)
                     in = new KJASInputStream();
                 else
@@ -310,10 +314,10 @@ class KIOConnection
             if (!finished)
                 Main.protocol.sendDataCmd(jobid, STOP);
             Main.debug ("connect error(" + jobid + ") " + url);
-            throw new IOException("connection failed (not found)");
+            throw new ConnectException("connection failed (not found)");
         }
         Main.debug ("connect timeout(" + jobid + ") " + url);
-        throw new IOException("connection failed (timeout)");
+        throw new SocketTimeoutException("connection failed (timeout)");
     }
     void disconnect() {
         if (!connected)
@@ -359,7 +363,7 @@ final class KIOHttpConnection extends KIOConnection
         super(u);
     }
     protected boolean haveError() {
-        return responseCode < 0 || responseCode >= 400;
+        return responseCode != 404 && (responseCode < 0 || responseCode >= 400);
     }
     public void setData(int code, byte [] d) {
         // this method is synchronized on jobs in processCommand
@@ -444,10 +448,13 @@ final class KJASHttpURLConnection extends HttpURLConnection
     }
     public synchronized void connect() throws IOException {
         Main.debug ("KJASHttpURLConnection.connect " + url);
+        kioconnection.responseCode = -1;
         SecurityManager security = System.getSecurityManager();
         if (security != null)
             security.checkPermission(getPermission());
         kioconnection.connect(doInput);
+        if (kioconnection.responseCode == 404)
+            throw new FileNotFoundException(url.toExternalForm());
         connected = true;
     }
     public void disconnect() {
@@ -465,6 +472,14 @@ final class KJASHttpURLConnection extends HttpURLConnection
         doOutput = true;
         connect();
         return kioconnection.getOutputStream();
+    }
+    public InputStream getErrorStream() {
+        Main.debug("KJASHttpURLConnection.getErrorStream" + url);
+        try {
+            if (kioconnection.responseCode == 404)
+                return kioconnection.getInputStream();
+        } catch (Exception ex) {}
+        return null;
     }
 }
 
