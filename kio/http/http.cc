@@ -2,6 +2,10 @@
 
 #include <config.h>
 
+//
+//  Portions Copyright 2000 George Staikos <staikos@kde.org>
+//  (mostly SSL related)
+//
 #undef EXTRA_DEBUG
 
 #ifdef HAVE_LIBZ
@@ -470,9 +474,13 @@ void HTTPProtocol::initSSL() {
     // we assume that the config file will have consecutive entries.
     for (int k = 0; k < 2; k++) {
 
-      if (k == 0)                    // do v2, then v3
+      if (k == 0) {                   // do v2, then v3
+        if (!m_bUseSSL2) continue;
         config->setGroup("SSLv2");
-      else config->setGroup("SSLv3");
+      } else {
+        if (!m_bUseSSL3) continue;
+        config->setGroup("SSLv3");
+      }
 
       for(int i = 0;; i++) {
         tcipher.sprintf("cipher_%d", i);
@@ -502,9 +510,9 @@ void HTTPProtocol::initSSL() {
     // are selected
     if (m_bUseSSL2 && m_bUseSSL3 && v2ciphers_unset && v3ciphers_unset) {
       kdDebug(7103) << "SSL will use default ciphers." << endl;
-    } else if (m_bUseSSL2 && v2ciphers_unset) {
+    } else if (m_bUseSSL2 && !m_bUseSSL3 && v2ciphers_unset) {
       kdDebug(7103) << "SSL will use default ciphers." << endl;
-    } else if (m_bUseSSL3 && v3ciphers_unset) {
+    } else if (!m_bUseSSL2 && m_bUseSSL3 && v3ciphers_unset) {
       kdDebug(7103) << "SSL will use default ciphers." << endl;
     } else {
       kdDebug(7103) << "SSL CIPHERS IN USE: " << clist << endl;
