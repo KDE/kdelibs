@@ -3491,9 +3491,10 @@ int HTTPProtocol::readLimited()
 
   bytesReceived = read(m_bufReceive.data(), bytesToReceive);
 
-  if (bytesReceived > 0)
-     m_iBytesLeft -= bytesReceived;
+  if (bytesReceived <= 0)
+     return -1; // Error: connection lost
 
+  m_iBytesLeft -= bytesReceived;
   return bytesReceived;
 }
 
