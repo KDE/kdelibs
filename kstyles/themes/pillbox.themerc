@@ -9,7 +9,7 @@ Name[hu]=Gyógyszeresdoboz
 Name[no]=Pilleboks
 Name[pt]=Caixa
 Name[pt_BR]=Caixa
-Name[sl]=©katlica tablet
+Name[sl]=Å katlica tablet
 Comment=Pillbox unthemed style.
 Comment[af]=Pilhouer temalose styl
 Comment[ca]=Estil sense tema Pillbox.
@@ -26,6 +26,6 @@ Comment[no_NY]='Pillbox'-stil utan tema
 Comment[pt]=Estilo caixa
 Comment[pt_BR]=Estilo caixa
 Comment[ro]=Stil fãrã temã Pillbox
-Comment[sl]=Netematski slog ¹katlice tablet.
+Comment[sl]=Netematski slog Å¡katlice tablet.
 [KDE]
 widgetStyle=pillboxstyle.la
