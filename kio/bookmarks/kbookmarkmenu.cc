@@ -66,6 +66,16 @@
 
 #include <kiconloader.h>
 
+#include "dptrtemplate.h"
+
+class KBookmarkMenuPrivate : public dPtrTemplate<KBookmarkMenu, KBookmarkMenuPrivate> {
+public:
+    QPtrList<KAction> m_actions;
+};
+QPtrDict<KBookmarkMenuPrivate>* dPtrTemplate<KBookmarkMenu, KBookmarkMenuPrivate>::d_ptr = 0;
+
+#define dptr() KBookmarkMenuPrivate::d(this)
+
 template class QPtrList<KBookmarkMenu>;
 
 #ifndef enable_final_users_suck

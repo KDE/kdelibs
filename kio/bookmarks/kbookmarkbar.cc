@@ -34,6 +34,8 @@
 #include "kbookmarkdrag.h"
 #include "kbookmarkmenu_p.h"
 
+#include "dptrtemplate.h"
+
 #ifndef enable_final_users_suck
 #define enable_final_users_suck
 
@@ -52,8 +54,6 @@ static bool isAdvanced()
 }
 
 #endif
-
-#include "dptrtemplate.h"
 
 class KBookmarkBarPrivate : public dPtrTemplate<KBookmarkBar, KBookmarkBarPrivate> {
 public:
