@@ -662,7 +662,8 @@ void KListView::slotHeaderChanged()
 void KListView::emitExecute( QListViewItem *item, const QPoint &pos, int c )
 {
     if( isExecuteArea( viewport()->mapFromGlobal(pos) ) ) {
-
+	d->validDrag=false;
+	
         // Double click mode ?
         if ( !d->bUseSingle )
         {
@@ -1146,6 +1147,7 @@ QDragObject *KListView::dragObject()
   if (!currentItem())
         return 0;
 
+  
   return new QStoredDrag("application/x-qlistviewitem", viewport());
 }
 

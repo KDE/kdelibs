@@ -310,6 +310,10 @@ void KDockWidgetHeader::forceCloseButtonHidden(bool hidden) {
   else closeButton->show();
 }
 
+KDockWidgetHeaderDrag *KDockWidgetHeader::dragPanel() {
+	return drag;
+}
+
 void KDockWidgetHeader::setDragPanel( KDockWidgetHeaderDrag* nd )
 {
   if ( !nd ) return;

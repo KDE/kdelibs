@@ -263,6 +263,14 @@ public:
    */
   void setDragPanel( KDockWidgetHeaderDrag* nd );
 
+  /**
+   * Get the drag panel of this header.
+   *
+   * @param nd A pointer to the new drag panel
+   * @since 3.4
+   */
+   KDockWidgetHeaderDrag *dragPanel();
+
   bool dragEnabled() const;
   void setDragEnabled(bool b);
   /// @since 3.1
