@@ -213,15 +213,48 @@ void HTMLTableElementImpl::deleteCaption(  )
     tCaption = 0;
 }
 
-HTMLElementImpl *HTMLTableElementImpl::insertRow( long /*index*/ )
+HTMLElementImpl *HTMLTableElementImpl::insertRow( long index )
 {
-    // ###
-    return 0;
+    // IE treats index=-1 as default value meaning 'append after last'
+    // This isn't in the DOM. So, not implemented yet.
+    HTMLTableSectionElementImpl* section = 0L;
+    NodeImpl *node = firstChild();
+    for ( ; node ; node = node->nextSibling() )
+    {
+        if ( node->id() == ID_THEAD || node->id() == ID_TFOOT || node->id() == ID_TBODY )
+        {
+            section = static_cast<HTMLTableSectionElementImpl *>(node);
+            if ( section->numRows() > index )
+                break;
+            else
+                index -= section->numRows();
+        }
+    }
+    if (!section) {
+        section = new HTMLTableSectionElementImpl(docPtr(), ID_TBODY);
+        setTBody( section );
+    }
+    return section->insertRow( index );
 }
 
-void HTMLTableElementImpl::deleteRow( long /*index*/ )
+void HTMLTableElementImpl::deleteRow( long index )
 {
-    // ###
+    HTMLTableSectionElementImpl* section = 0L;
+    NodeImpl *node = firstChild();
+    for ( ; node ; node = node->nextSibling() )
+    {
+        if ( node->id() == ID_THEAD || node->id() == ID_TFOOT || node->id() == ID_TBODY )
+        {
+            section = static_cast<HTMLTableSectionElementImpl *>(node);
+            if ( section->numRows() > index )
+                break;
+            else
+                index -= section->numRows();
+        }
+    }
+    if ( section && index >= 0 && index < section->numRows() )
+        section->deleteRow( index );
+    // ## TODO error checking, returning exceptioncode
 }
 
 NodeImpl *HTMLTableElementImpl::addChild(NodeImpl *child)
