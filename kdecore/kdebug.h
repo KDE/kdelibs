@@ -40,6 +40,14 @@ class QBrush;
 
 class kdbgstream;
 class kndbgstream;
+
+/**
+ * \addtogroup kdebug Debug message generators
+ *  @{
+ * KDE debug message streams let you and the user control just how many debug
+ * messages you see.
+ */
+
 typedef kdbgstream & (*KDBGFUNC)(kdbgstream &); // manipulator function
 typedef kndbgstream & (*KNDBGFUNC)(kndbgstream &); // manipulator function
 
@@ -554,6 +562,8 @@ kdbgstream kdFatal(bool cond, int area = 0);
  * config file
  */
 void kdClearDebugConfig();
+
+/** @} */
 
 #ifdef NDEBUG
 #define kdDebug kndDebug
