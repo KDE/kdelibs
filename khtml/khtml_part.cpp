@@ -2830,9 +2830,10 @@ void KHTMLPart::submitForm( const char *action, const QString &url, const QByteA
 
 void KHTMLPart::popupMenu( const QString &url )
 {
-  KURL u;
+  KURL completedURL( completeURL( url ) );
+  KURL popupURL;
   if ( !url.isEmpty() )
-    u = completeURL( url );
+    popupURL = completedURL;
 
   /*
   mode_t mode = 0;
@@ -2848,9 +2849,10 @@ void KHTMLPart::popupMenu( const QString &url )
   mode_t mode = S_IFDIR; // treat all html documents as "DIR" in order to have the back/fwd/reload
                          // buttons in the popupmenu
 
-  KXMLGUIClient *client = new KHTMLPopupGUIClient( this, d->m_popupMenuXML, u );
+  KXMLGUIClient *client = new KHTMLPopupGUIClient( this, d->m_popupMenuXML, popupURL );
 
-  emit d->m_extension->popupMenu( client, QCursor::pos(), u, QString::fromLatin1( "text/html" ), mode );
+  emit d->m_extension->popupMenu( client, QCursor::pos(), completedURL, 
+                                  QString::fromLatin1( "text/html" ), mode );
 
   delete client;
 
