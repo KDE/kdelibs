@@ -1733,15 +1733,41 @@ void HTMLClue::setMaxAscent( int _a )
     if ( valign == VCenter )
     {
 	for ( obj = head; obj != 0; obj = obj->next() )
+	{	
 	    obj->setYPos( obj->getYPos() + ( _a - ascent )/2 );
+	}
     }
     else if ( valign == Bottom )
     {
 	for ( obj = head; obj != 0; obj = obj->next() )
+	{	
 	    obj->setYPos( obj->getYPos() + _a - ascent );
+	}
     }
 
     ascent = _a;
+}
+
+void HTMLClue::setMaxDescent( int _d )
+{
+    HTMLObject *obj;
+
+    if ( valign == VCenter )
+    {
+	for ( obj = head; obj != 0; obj = obj->next() )
+	{	
+	    obj->setYPos( obj->getYPos() + ( _d - descent )/2 );
+	}
+    }
+    else if ( valign == Bottom )
+    {
+	for ( obj = head; obj != 0; obj = obj->next() )
+	{	
+	    obj->setYPos( obj->getYPos() + _d - descent );
+	}
+    }
+
+    descent = _d;
 }
 
 int HTMLClue::findPageBreak( int _y )
@@ -2942,6 +2968,7 @@ void HTMLClueFlow::calcSize( HTMLClue *parent )
 		{
 		    line->setYPos( ascent - d );
 		    line->setMaxAscent( a );
+		    line->setMaxDescent( d );
 		    if ( halign == HCenter || halign == Right )
 		    {
 			line->setXPos( line->getXPos() + extra );

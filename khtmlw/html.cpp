@@ -2777,6 +2777,7 @@ void KHTMLWidget::parseI( HTMLClueV *_clue, const char *str )
 	int percent = 0;
 	int border = url == 0 ? 0 : 2;
 	HTMLClue::HAlign align = HTMLClue::HNone;
+	HTMLClue::VAlign valign = HTMLClue::VNone;
 
 	stringTok->tokenize( str + 4, " >" );
 	while ( stringTok->hasMoreTokens() )
@@ -2803,6 +2804,10 @@ void KHTMLWidget::parseI( HTMLClueV *_clue, const char *str )
 		    align = HTMLClue::Left;
 		else if ( strcasecmp( token + 6, "right" ) == 0 )
 		    align = HTMLClue::Right;
+		else if ( strcasecmp( token + 6, "top" ) == 0 )
+		    valign = HTMLClue::Top;
+		else if ( strcasecmp( token + 6, "bottom" ) == 0 )
+		    valign = HTMLClue::Bottom;
 	    }
 	    else if ( strncasecmp( token, "usemap=", 7 ) == 0 )
 	    {
@@ -2882,9 +2887,19 @@ void KHTMLWidget::parseI( HTMLClueV *_clue, const char *str )
 
 	    image->setBorderColor( *(colorStack.top()) );
 
-	    if ( align != HTMLClue::Left && align != HTMLClue::Right )
+	    if ( align == HTMLClue::HNone )
 	    {
-		flow->append( image );
+	    	if ( valign == HTMLClue::VNone)
+	    	{
+		    flow->append( image );
+		}
+                else
+	    	{
+		    HTMLClueH *valigned = new HTMLClueH (0, 0, _clue->getMaxWidth() );
+		    valigned->setVAlign( valign );
+		    valigned->append( image );
+		    flow->append( valigned );
+	    	}
 	    }
 	    // we need to put the image in a HTMLClueAligned
 	    else

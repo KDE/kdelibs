@@ -106,6 +106,7 @@ public:
     virtual int  calcPreferredWidth() { return width; }
 
     virtual void setMaxAscent( int ) { }
+    virtual void setMaxDescent( int ) { }
     virtual void setMaxWidth( int _w ) { max_width = _w; }
     virtual int  findPageBreak( int _y );
 

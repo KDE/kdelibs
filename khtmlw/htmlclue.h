@@ -92,6 +92,7 @@ public:
     virtual int  calcMinWidth();
     virtual int  calcPreferredWidth();
     virtual void setMaxAscent( int );
+    virtual void setMaxDescent( int );
     virtual HTMLObject *checkPoint( int, int );
     virtual HTMLObject *mouseEvent( int, int, int, int );
     virtual void selectByURL( QPainter *,const char *,bool, int _tx, int _ty );
