@@ -122,7 +122,7 @@ PrintcapEntry* LprHandler::createEntry(KMPrinter *prt)
 	// this default handler only supports local parallel and remote lpd URIs
 	KURL	uri = prt->device();
 	QString	prot = uri.protocol();
-	if (!prot.isEmpty() && prot != "parallel" && prot != "file" && prot != "lpd")
+	if (!prot.isEmpty() && prot != "parallel" && prot != "file" && prot != "lpd" && prot != "socket")
 	{
 		manager()->setErrorMsg(i18n("Unsupported backend: %1.").arg(prot));
 		return NULL;
@@ -139,6 +139,14 @@ PrintcapEntry* LprHandler::createEntry(KMPrinter *prt)
 		// force this entry to null (otherwise it seems it's redirected
 		// to /dev/lp0 by default)
 		entry->addField("lp", Field::String, QString::null);
+	}
+	else if ( prot == "socket" )
+	{
+		QString lp = uri.host();
+		if ( uri.port() == 0 )
+			lp.append( "%9100" );
+		else
+			lp.append( "%" ).append( QString::number( uri.port() ) );
 	}
 	else
 	{
