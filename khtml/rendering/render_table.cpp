@@ -352,6 +352,7 @@ void RenderTable::layout()
         m_height += tCaption->height() + tCaption->marginTop() + tCaption->marginBottom();
     }
 
+    m_overflowHeight = m_height;
     //kdDebug(0) << "table height: " << m_height << endl;
 
     // table can be containing block of positioned elements.
