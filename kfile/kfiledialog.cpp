@@ -98,11 +98,13 @@ KFileBaseDialog::KFileBaseDialog(const char *dirName, const char *filter,
     finished = true;
 
     filters = new QStrList( true );
-    QString tmp = filter; // deep copy
-    char *g = strtok(tmp.data(), "\n");
-    while (g) {
-	filters->append(g);
-	g = strtok(0, "\n");
+    if (filter) {
+       QString tmp = filter; // deep copy
+       char *g = strtok(tmp.data(), "\n");
+       while (g) {
+	  filters->append(g);
+	  g = strtok(0, "\n");
+       }
     }
     
     connect(dir, SIGNAL(finished()),
