@@ -1,9 +1,32 @@
-kdelibs (4:3.1.0-1) unstable; urgency=low
+kdelibs (4:3.0.99+cvs20021212-1) unstable; urgency=low
 
   * New Upstream.
   * Rebuilt debian dir.
+  * Split arts out of kdelibs source.
 
- -- Christopher L Cheney <ccheney@debian.org>  Sat, 30 Nov 2002 22:55:14 -0800
+ -- Christopher L Cheney <ccheney@debian.org>  Thu, 12 Dec 2002 21:00:00 -0600
+
+kdelibs (4:2.2.2-13.woody.5) stable-security; urgency=high
+
+  * Non-maintainer upload by the Security Team
+  * Second (or third, since the first one burnt together with satie and
+    the entire building around it) injection into the security build
+    network since 8 buildds refuse to upload the binary packages and the
+    maintainer refuses to answer.  *sigh*
+
+ -- Martin Schulze <joey@infodrom.org>  Sat, 30 Nov 2002 18:25:33 +0100
+
+kdelibs (4:2.2.2-13.woody.4) stable-security; urgency=high
+
+  * Non-maintainer upload by the Security Team
+  * Remove rlogin.protocol and telnet.protocol to fix URL KIO
+    vulnerability (as reported by the KDE team)
+  * Add special detection routine for big/little endianess on MIPS since
+    the line "byteorder  : {big|little} endian" from /proc/cpuinfo was
+    removed as of Linux 2.4.20, resulting in the mipsel buildd being
+    unable to build this package.
+
+ -- Martin Schulze <joey@infodrom.org>  Fri, 22 Nov 2002 11:42:59 +0100
 
 kdelibs (4:2.2.2-14) unstable; urgency=low
 
