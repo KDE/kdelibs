@@ -102,7 +102,7 @@ unsigned short	*authDataLenRet;
 char		**authDataRet;
 
 {
-    IceAuthDataEntry	*entry;
+    IceAuthDataEntry	*entry = NULL;
     int			found = 0;
     int			i;
 
