@@ -40,7 +40,9 @@
 #endif
  
 #ifdef HAVE_SSL
+#define crypt _openssl_crypt
 #include <openssl/ssl.h>
+#undef crypt
 #endif
  
 #include <qstring.h>

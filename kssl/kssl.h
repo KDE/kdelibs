@@ -25,8 +25,12 @@
 #include <config.h>
 #endif
 
+// this hack provided by Malte Starostik to avoid glibc/openssl bug
+// on some systems
 #ifdef HAVE_SSL
+#define crypt _openssl_crypt
 #include <openssl/ssl.h>
+#undef crypt
 #endif
 
 #include <ksslsettings.h>
