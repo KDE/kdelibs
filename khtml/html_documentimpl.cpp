@@ -264,12 +264,25 @@ void HTMLDocumentImpl::layout( bool deep )
 
 	_first->setPos(0, 0);
 	_first->setDescent(view->height());
-	_first->setAvailableWidth(width);
+	setAvailableWidth(width);
 	if(deep)
 	    _first->layout(deep);
 	height = _first->getHeight();
     }
 }
+
+void HTMLDocumentImpl::setAvailableWidth(int w) { 
+    if(w != -1) width = w; 
+    if(bodyElement) 
+    {
+//	bodyElement->calcMinMaxWidth();
+    	int tw = width > bodyElement->getMinWidth() ? width :
+	    bodyElement->getMinWidth();
+    	bodyElement->setAvailableWidth(tw);
+//    	printf("Doc:setAvailableWidth %d %d\n",width, tw);
+    }
+}
+
 
 bool HTMLDocumentImpl::mouseEvent( int _x, int _y, int button, MouseEventType type,
 				  int, int, DOMString &url)

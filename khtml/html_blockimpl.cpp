@@ -119,11 +119,11 @@ void HTMLDivElementImpl::parseAttribute(Attribute *attr)
 
 HTMLHRElementImpl::HTMLHRElementImpl(DocumentImpl *doc) : HTMLBlockElementImpl(doc)
 {
-    ascent = 4; // 3 pixel space on each side + 1 pixel for the line
-    descent = 3;
+    descent = 5;
+    ascent = 5;
     halign = HCenter;
     shade = TRUE;
-
+    size=1;
 }
 
 HTMLHRElementImpl::~HTMLHRElementImpl()
@@ -164,7 +164,7 @@ void HTMLHRElementImpl::parseAttribute(Attribute *attr)
 	    halign = HCenter;
 	break;
     case ATTR_SIZE:
-	ascent = attr->value().toInt() + 3;
+	size = attr->value().toInt();
 	break;
     case ATTR_WIDTH:
 	length = attr->val()->toLength();
@@ -181,8 +181,9 @@ void HTMLHRElementImpl::layout(bool)
 #ifdef DEBUG_LAYOUT
      printf("%s(HR)::layout(???) width=%d, layouted=%d\n", nodeName().string().ascii(), width, layouted());
 #endif
-   // nothing to do here...
-    setLayouted();
+   // almost nothing to do here...
+    ascent=size+4;    
+    width = availableWidth;    
 }
 
 void HTMLHRElementImpl::print( QPainter *p, int _x, int _y, int _w, int _h,
@@ -206,14 +207,17 @@ void HTMLHRElementImpl::printObject(QPainter *p, int, int _y,
     Qt::gray, Qt::black, Qt::black );
 
     int l = length.width(width);
-    int size = ascent - 3;
-    int xp = x + _tx;
+    int xp = _tx;
+    int yp = _ty+ascent;
+    
     if(halign == HCenter)
     {
 	xp += (width - l)/2;
     }
-
-    int yp = _ty ;
+    else if(halign == Right)
+    {
+	xp += width - l;
+    }
 
     int lw = size/2;
 
@@ -247,6 +251,15 @@ const DOMString HTMLHeadingElementImpl::nodeName() const
     return getTagName(_id);
 }
 
+
+void HTMLHeadingElementImpl::layout(bool deep)
+{
+    HTMLBlockElementImpl::layout(deep);
+    //QFontMetrics fm(*getFont());      //put some space after
+    //descent+=fm.ascent();
+    descent+=13;
+}
+
 ushort HTMLHeadingElementImpl::id() const
 {
     return _id;
@@ -269,8 +282,8 @@ void HTMLHeadingElementImpl::setStyle(CSSStyle *currentStyle)
 	break;
 	
     case ID_H3:
-	currentStyle->font.weight = CSSStyleFont::Normal;
-	currentStyle->font.style = CSSStyleFont::stItalic;
+	currentStyle->font.weight = CSSStyleFont::Bold;
+	currentStyle->font.style = CSSStyleFont::stNormal;
 	currentStyle->font.size = pSettings->fontBaseSize+1;
 	break;
 	
@@ -282,7 +295,7 @@ void HTMLHeadingElementImpl::setStyle(CSSStyle *currentStyle)
 	
     case ID_H5:
 	currentStyle->font.weight = CSSStyleFont::Normal;
-	currentStyle->font.style = CSSStyleFont::stItalic;
+	currentStyle->font.style = CSSStyleFont::stNormal;
 	currentStyle->font.size = pSettings->fontBaseSize;
 	break;
 	

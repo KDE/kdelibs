@@ -1096,10 +1096,10 @@ void HTMLTableElementImpl::calcColWidthII(void)
 	    int cPref 
 	    	= (colMaxWidth[i] < tableWidth ? colMaxWidth[i] : tableWidth)
 		- colMinWidth[i];
-//#ifdef TABLE_DEBUG
+#ifdef TABLE_DEBUG
 	    printf("col %d prefWidth=%d space=%d\n", i, colMaxWidth[i],
 		cPref);
-//#endif
+#endif
 	    if(wide)
 	    {
 		actColWidth[i] += cPref;
@@ -1160,7 +1160,7 @@ void HTMLTableElementImpl::calcColWidthII(void)
 	    }
 	    if(++i==totalCols) i=0;
 	}
-	printf("TOOADD %d\n",tooAdd);
+//	printf("TOOADD %d\n",tooAdd);
     }
     else if(tooAdd < 0)
     {

@@ -649,7 +649,7 @@ void HTMLBlockElementImpl::layout( bool deep )
 		break;
 	    }
  	    child->setXPos(x);
-	    descent += child->getDescent();
+	    descent += child->getDescent()+child->getAscent();
 	    child = child->nextSibling();
 	}
     }
@@ -859,7 +859,10 @@ NodeImpl *HTMLBlockElementImpl::calcParagraph(NodeImpl *_start, bool pre)
     int endPos = 0;
 
     HAlign elemPAlign=HNone;
-
+    
+    QFontMetrics fm(*getFont());
+    int defTextHeight=fm.ascent()+fm.descent();
+    
     TextSlave *slave = 0;
 
     while(endNode.current())
@@ -928,11 +931,11 @@ NodeImpl *HTMLBlockElementImpl::calcParagraph(NodeImpl *_start, bool pre)
 		      	skipBlank = (*text)[testPos] == QChar(' ');
 		    }
 		}
+		int dw = getWidth(descent);
 		int len = text->l;
 		while(testPos<len)
 		{
-		    w += fm.width((*text)[testPos]);
-		    int dw = getWidth(descent);
+		    w += fm.width((*text)[testPos]);		    
 		    if(w > dw)
 		    {
 			if(!breakPosFound)
@@ -1080,7 +1083,23 @@ NodeImpl *HTMLBlockElementImpl::calcParagraph(NodeImpl *_start, bool pre)
 	    }
 
 	
-	    if(lineFull) break;
+	    if(lineFull) {
+	    	// correct the line length for text lines 
+	    	if ( (align==Right || align==HCenter) 
+		    && current->isTextNode() && testPos>endPos)
+		{
+		    TextImpl *t = static_cast<TextImpl *>(current);
+		    text = t->string();
+		    
+		    QFontMetrics fm(*t->getFont());
+		    QConstString str(text->s+endPos, testPos-endPos+1);
+
+		    w -= fm.width(str.string());
+		
+		}
+		// got one line
+	    	break;
+	    } 
 	
 	    startOfLine = false;
 	    ++testNode;	
@@ -1127,6 +1146,7 @@ NodeImpl *HTMLBlockElementImpl::calcParagraph(NodeImpl *_start, bool pre)
 	default:
 	    break;
 	}
+	
 
 	while(1)
 	{
@@ -1211,10 +1231,14 @@ NodeImpl *HTMLBlockElementImpl::calcParagraph(NodeImpl *_start, bool pre)
 		    // ### should be defined by style sheet...
 		    // ### add indent for next line acc to style
 		    lineDescent += 8;		
-		    
+		    endOfLine = true;
+		    nextNode = true;
+		    break;
  		case ID_P + ID_CLOSE_TAG:				    
+		    lineDescent += 8;
 		case ID_BR:
-		    // ignore
+		    if (lineAscent==0)
+		    	lineAscent=defTextHeight;
 		    endOfLine = true;
 		    nextNode = true;
 		    break;
@@ -1288,7 +1312,7 @@ NodeImpl *HTMLBlockElementImpl::addChild(NodeImpl *newChild)
     width=availableWidth;
 
     if(_last && !_last->isInline() && !_last->isFloating())
-	descent += _last->getDescent();
+	descent += _last->getDescent() +_last->getAscent();;
 
     NodeImpl* child = NodeBaseImpl::addChild(newChild);
 

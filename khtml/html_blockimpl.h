@@ -100,6 +100,7 @@ public:
 protected:
     Length length;
     bool shade;
+    int size;
 };
 
 // -------------------------------------------------------------------------
@@ -113,6 +114,8 @@ public:
 
     virtual const DOMString nodeName() const;
     virtual ushort id() const;
+    
+    virtual void layout(bool deep);
 
     virtual void setStyle(CSSStyle *currentStyle);
     void parseAttribute(Attribute *token);

@@ -71,10 +71,7 @@ public:
 
     // oeverrides NodeImpl
     virtual NodeImpl *addChild(NodeImpl *newChild);
-    virtual void setAvailableWidth(int w = -1) { 
-    	if(w != -1) width = w; 
-	if(bodyElement) bodyElement->setAvailableWidth(w);
-    }
+    virtual void setAvailableWidth(int w = -1);
 
     virtual int getWidth() const { return width; }
     virtual int getHeight() const { return height; }
