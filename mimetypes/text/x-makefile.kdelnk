@@ -13,6 +13,7 @@ Comment[it]=Makefile
 Comment[sk]=Makefile
 Comment[pt]=Makefile
 Comment[pt_BR]=Makefile
+Comment[ro]=Fiºier Makefile
 DefaultApp=Kemacs
 Icon=unknown.xpm
 Type=MimeType

@@ -12,6 +12,7 @@ Comment[pt]=Arquivo Lha
 Comment[pt_BR]=Arquivo Lha
 Comment[it]=Archivio Lha
 Comment[sk]=Lha archív
+Comment[ro]=Arhivã LHA
 DefaultApp=Zip
 Icon=unzip.xpm
 Type=MimeType

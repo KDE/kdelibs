@@ -11,6 +11,7 @@ Comment[pt]=Pipe
 Comment[pt_BR]=Pipe
 Comment[it]=Pipe
 Comment[sk]=FIFO rúra
+Comment[ro]=Canal de comunicaþie de tip FIFO
 Icon=pipe.xpm
 Type=MimeType
 MimeType=inode/fifo

@@ -12,6 +12,7 @@ Comment[it]=Documento TeX
 Comment[sk]=Dokument sádzacieho systému TeX
 Comment[pt]=Documento TeX
 Comment[pt_BR]=Documento TeX
+Comment[ro]=Document în format TeX
 Icon=tex.xpm
 Type=MimeType
 MimeType=text/x-tex

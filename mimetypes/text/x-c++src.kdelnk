@@ -12,6 +12,7 @@ Comment[it]=Sorgenti C++
 Comment[sk]=Zdrojový kód v jazyku C++
 Comment[pt]=Programa C++
 Comment[pt_BR]=Programa C++
+Comment[ro]=Sursã C++
 Icon=c_src.xpm
 Type=MimeType
 MimeType=text/x-c++src

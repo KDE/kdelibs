@@ -11,6 +11,7 @@ Comment[pt]=Directoria inacessivel
 Comment[pt_BR]=Diretório inacessível
 Comment[it]=Cartella Bloccata
 Comment[sk]=Uzamknutý prieèinok
+Comment[ro]=Director inaccesibil
 Icon=lockedfolder.xpm
 Type=MimeType
 MimeType=inode/directory-locked

@@ -13,6 +13,7 @@ Comment[it]=Testo Semplice
 Comment[sk]=Jednoduchý text
 Comment[pt]=Texto Plano
 Comment[pt_BR]=Texto Plano
+Comment[ro]=Text simplu
 DefaultApp=Kedit
 Icon=txt.xpm
 Type=MimeType

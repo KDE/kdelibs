@@ -12,6 +12,7 @@ Comment[pt_BR]=Desconhecido
 Comment[it]=Sconosciuto
 Comment[es]=Desconocido
 Comment[sk]=Neznámy
+Comment[ro]=Fiºier de tip necunoscut
 Icon=unknown.xpm
 Type=MimeType
 MimeType=application/octet-stream

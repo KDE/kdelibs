@@ -12,6 +12,7 @@ Comment[it]=Header C
 Comment[sk]=C hlavièka
 Comment[pt]=Header C
 Comment[pt_BR]=Header C
+Comment[ro]=Fiºier Header de C
 DefaultApp=
 Icon=h_src.xpm
 Type=MimeType

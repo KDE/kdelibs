@@ -11,6 +11,7 @@ Comment[pt]=Página HTML
 Comment[pt_BR]=Página HTML
 Comment[it]=Pagina HTML
 Comment[sk]=HTML stránka
+Comment[ro]=Paginã HTML
 DefaultApp=KDE Browser
 Icon=html.xpm
 Type=MimeType

@@ -12,6 +12,7 @@ Comment[it]=Sorgente Java
 Comment[sk]=Zdrojový kód v jazyku Java
 Comment[pt]=Programa Java
 Comment[pt_BR]=Programa Java
+Comment[ro]=Sursã Java
 Icon=java_src.xpm
 Type=MimeType
 MimeType=text/x-java

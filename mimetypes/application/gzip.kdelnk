@@ -14,6 +14,7 @@ Comment[fi]=Gzip paketti
 Comment[pt]=Ficheiro GZip
 Comment[pt_BR]=Arquivo GZip
 Comment[sk]=GZip súbor
+Comment[ro]=Fiºier comprimat cu GZip 
 DefaultApp=
 Icon=tgz.xpm
 Type=MimeType

@@ -12,6 +12,7 @@ Comment[pt]=Fonte comprimida
 Comment[pt_BR]=Fonte comprimida
 Comment[it]=Set di Caratteri compresso
 Comment[sk]=Skomprimované znakové sady
+Comment[ro]=Fiºier de font împachetat
 Icon=pk.xpm
 Type=MimeType
 MimeType=application/x-tex-pk

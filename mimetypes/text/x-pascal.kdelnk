@@ -12,6 +12,7 @@ Comment[it]=Sorgenti Pascal
 Comment[sk]=Zdrojový kód v jazyku Pascal
 Comment[pt]=Programa Pascal
 Comment[pt_BR]=Programa Pascal
+Comment[ro]=Sursã Pascal
 Icon=p_src.xpm
 Type=MimeType
 MimeType=text/x-pascal

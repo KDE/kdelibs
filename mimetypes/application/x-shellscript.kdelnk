@@ -12,6 +12,7 @@ Comment[pt]=Shell script
 Comment[pt_BR]=Shell script
 Comment[it]=Script per la Shell
 Comment[sk]=Shellovský skript
+Comment[ro]=Script de shell
 Icon=terminal.xpm
 Type=MimeType
 MimeType=application/x-shellscript

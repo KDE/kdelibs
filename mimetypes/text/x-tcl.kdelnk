@@ -12,6 +12,7 @@ Comment[it]=File Tcl
 Comment[sk]=Tcl súbor
 Comment[pt]=Programa TCL
 Comment[pt_BR]=Programa TCL
+Comment[ro]=Fiºier de program TCL
 Icon=unknown.xpm
 Type=MimeType
 MimeType=text/x-tcl
