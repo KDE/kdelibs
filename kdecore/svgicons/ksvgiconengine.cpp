@@ -414,16 +414,16 @@ public:
 				KCodecs::base64Decode(input, output);
 
 				// Display
-				QImage *image = new QImage(output);
+				QImage image(output);
 
 				// Scale, if needed
-				if(image->width() != (int) w || image->height() != (int) h)
+				if(image.width() != (int) w || image.height() != (int) h)
 				{
-					QImage show = image->smoothScale((int) w, (int) h, QImage::ScaleMin);
+					QImage show = image.smoothScale((int) w, (int) h, QImage::ScaleMin);
 					m_engine->painter()->drawImage(x, y, show);
 				}
 
-				m_engine->painter()->drawImage(x, y, *image);
+				m_engine->painter()->drawImage(x, y, image);
 			}
 			return true;
 		}
