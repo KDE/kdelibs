@@ -195,6 +195,9 @@ public:
 				vec[(*it)].code = (ArtPathcode)ART_END2;
 		}
 
+		// There seems to be a problem when stroke width is zero, this is a quick
+		// fix (Rob).
+		if(m_strokeWidth <= 0) m_useStroke = m_useStrokeGradient = false;
 		// Stroking
 		if(m_useStroke || m_useStrokeGradient)
 		{
