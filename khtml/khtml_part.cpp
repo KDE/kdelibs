@@ -4027,7 +4027,13 @@ void KHTMLPart::khtmlMouseReleaseEvent( khtml::MouseReleaseEvent *event )
     QString text = selectedText();
     text.replace(QRegExp(QChar(0xa0)), " ");
     QClipboard *cb = QApplication::clipboard();
+#if QT_VERSION >= 300
+    cb->setSelectionMode( true );
+#endif
     cb->setText(text);
+#if QT_VERSION >= 300
+    cb->setSelectionMode( false );
+#endif
 #endif
     //kdDebug( 6000 ) << "selectedText = " << text << endl;
     emitSelectionChanged();
