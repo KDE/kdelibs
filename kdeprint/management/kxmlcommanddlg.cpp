@@ -852,9 +852,9 @@ KXmlCommandDlg::KXmlCommandDlg(QWidget *parent, const char *name)
 	m_availablemime = new KListBox(m_gb1);
 	m_selectedmime = new KListBox(m_gb1);
 	m_addmime = new QToolButton(m_gb1);
-	m_addmime->setIconSet(SmallIconSet("back"));
+	m_addmime->setIconSet(QApplication::reverseLayout()? SmallIconSet("forward") : SmallIconSet("back"));
 	m_removemime = new QToolButton(m_gb1);
-	m_removemime->setIconSet(SmallIconSet("forward"));
+	m_removemime->setIconSet(QApplication::reverseLayout()? SmallIconSet("back" ) : SmallIconSet("forward"));
 	m_gb2->setMinimumWidth(380);
 	m_gb1->setMinimumHeight(180);
 	m_requirements->setMaximumHeight(80);
