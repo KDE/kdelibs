@@ -160,9 +160,9 @@ namespace
 static QXEmbedAppFilter* filter = 0;
 // L0202: See L0610, L0730
 static QPtrDict<QGuardedPtr<QWidget> > *focusMap = 0;
-// L0203: See L0660, L0661, L1400, L1450
+// L0203: See L0660, L1400, L1450
 static XKeyEvent last_key_event;
-// L0204: See L0652, L1531 
+// L0204: See L0620, L1531 
 static bool tabForward = true;
 
 // L0300: This class gives access protected members of class QWidget.
@@ -176,8 +176,9 @@ static bool tabForward = true;
 class QPublicWidget : public QWidget
 {
 public:
-    QTLWExtra* topData() { return QWidget::topData(); };
-    QFocusData *focusData(){ return QWidget::focusData(); };
+    QTLWExtra* topData() { return QWidget::topData(); }
+    QFocusData *focusData(){ return QWidget::focusData(); }
+    bool focusNextPrevChild(bool b) { return QWidget::focusNextPrevChild(b); }
 };
 
 // L0400: This sets a very low level filter for X11 messages.
@@ -297,7 +298,6 @@ static void sendFocusMessage(Window window, int type, int mode, int detail)
 
 bool QXEmbedAppFilter::eventFilter( QObject *o, QEvent * e)
 {
-    // L0611: The main purpose of this filter is to capture Qt FocusIn events.
     static bool obeyFocus = false;
     switch ( e->type() ) {
     case QEvent::MouseButtonPress:
@@ -339,68 +339,74 @@ bool QXEmbedAppFilter::eventFilter( QObject *o, QEvent * e)
             obeyFocus = false;
         }
         break;
+    case QEvent::KeyPress: 
+        if (qApp->focusWidget() == o &&
+            ((QPublicWidget*)qApp->focusWidget()->topLevelWidget())->topData()->embedded ) {
+            // L0620: The following code replaces the Qt code that 
+            //        handles focus focus changes with the tab key. See the
+            //        XEMBED specification for details.  The keypress event
+            //        arrives here after an interesting itinerary. It is first
+            //        saved in the embedding application (L0660). After being
+            //        rejected for tab navigation in the embedding application
+            //        (L1901), it gets forwarded to the embedded client
+            //        (L1400) and arrives here.  Depending on the status of
+            //        the tab chain in the embedded client, focus navigation
+            //        messages are sent back to the embedding application
+            //        (L0653, L0654) which then performs tab navigation
+            //        (L2081).
+            QKeyEvent *k = (QKeyEvent *)e;
+            QWidget *w = qApp->focusWidget();
+            // L0621: The following tests are copied from QWidget::event().
+            bool res = false;
+            if ( !(k->state() & ControlButton || k->state() & AltButton) ) {
+                if ( k->key() == Key_Backtab || (k->key() == Key_Tab && (k->state() & ShiftButton)) ) {
+                    QFocusEvent::setReason( QFocusEvent::Backtab );
+                    res = ((QPublicWidget*)w)->focusNextPrevChild( tabForward = false );
+                    QFocusEvent::resetReason();
+                } else if ( k->key() == Key_Tab ) {
+                    QFocusEvent::setReason( QFocusEvent::Tab );
+                    res = ((QPublicWidget*)w)->focusNextPrevChild( tabForward = true );
+                    QFocusEvent::resetReason();
+                }
+            }
+            if (res) {
+                // L0625: We changed the focus because of tab/backtab key
+                //        Now check whether we have been looping around.
+                QFocusData *fd = ((QPublicWidget*)w)->focusData();
+                WId window = ((QPublicWidget*)w->topLevelWidget())->topData()->parentWinId;
+                QWidget *cw = 0;
+                QWidget *fw = fd->home();
+                if (tabForward && window) {
+                    while (cw != w && cw != fw && cw != w->topLevelWidget()) 
+                        cw = fd->prev();
+                    if (cw != w)
+                        sendXEmbedMessage( window, XEMBED_FOCUS_NEXT );
+                } else if (window) {
+                    while (cw != w && cw != fw && cw != w->topLevelWidget()) 
+                        cw = fd->next();
+                    if (cw != w)
+                        sendXEmbedMessage( window, XEMBED_FOCUS_PREV );
+                }
+                // L0628: Qt should no longer process this event.
+                return true;
+            }
+        }
+        break;
     default:
         break;
     }
-    // L0618: Application gets to see the events anyway.
+    // L0640: Application gets to see the events anyway.
     return false;
 }
 
 // L0650: This filter receives all XEvents in both the client and the embedder.  
-//        Most of it involves the embedded client (except L0660, L0661, L0671).
+//        Most of it involves the embedded client (except L0660, L0671).
 static int qxembed_x11_event_filter( XEvent* e)
 {
     switch ( e->type ) {
-        
-    case XKeyPress: {
-        // L0651: keypress events
-        int kc = XKeycodeToKeysym(qt_xdisplay(), e->xkey.keycode, 0);
-        if ( kc == XK_Tab || kc == XK_ISO_Left_Tab ) {
-            // L0652: The following code replaces the Qt code that handles
-            //        focus changes with the tab key. See the XEMBED
-            //        specification for details.  The keypress event arrives
-            //        here after an interesting itinerary. It is first saved
-            //        in the embedding application (L0660). After being rejected
-            //        for tab navigation in the embedding application (L1901),
-            //        it gets forwarded to the embedded client (L1400) and 
-            //        arrives here.  Depending on the status of the tab chain
-            //        in the embedded client, focus navigation messages are sent 
-            //        back to the embedding application (L0653, L0654) which
-            //        then performs tab navigation (L2081).
-            //
-            //        ??? [seems broken. see QWidget::focusNextPrevWidget()]
-            //
-            tabForward = (e->xkey.state & ShiftMask) == 0;
-            QWidget* w = QWidget::find( e->xkey.window );
-            if ( w && w->isActiveWindow() && qApp->focusWidget() &&
-                 qApp->focusWidget()->topLevelWidget() == w->topLevelWidget() &&
-                 ((QPublicWidget*)w->topLevelWidget())->topData()->embedded ) {
-                WId window = ((QPublicWidget*)w->topLevelWidget())->topData()->parentWinId;
-                QFocusData *fd = ((QPublicWidget*)w)->focusData();
-                while ( fd->next() != w->topLevelWidget() )
-                    { /* do nothing */ }
-                QWidget* first = fd->next();
-                QWidget* last = fd->prev(); last = fd->prev();
-                if ( !tabForward && fd->focusWidget() == first ) {
-                    // L0653: send back a focus navigation message
-                    //        and prevent Qt from further processing this event.
-                    sendXEmbedMessage( window, XEMBED_FOCUS_PREV );
-                    return true;
-                } else if ( tabForward && fd->focusWidget() == last ) {
-                    // L0654: send back a focus navigation message
-                    //        and prevent Qt from further processing this event.
-                    sendXEmbedMessage( window, XEMBED_FOCUS_NEXT );
-                    return true;
-                }
-            }
-        } else
-            // L0660: This is for the embedding side (L1400).
-            //        ??? [possibly useless: there is no break statement]
-            last_key_event = e->xkey;
-    }
-    // FALL THROUGH
+    case XKeyPress:
     case XKeyRelease: {
-        // L0661: This is for the embedding side (L1450).
+        // L0660: This is for the embedding side (L1450).
         last_key_event = e->xkey;
         break;
     }
@@ -478,32 +484,18 @@ static int qxembed_x11_event_filter( XEvent* e)
                     case XEMBED_FOCUS_FIRST:
                         {
                             // L0684: Search first widget in tab chain
-                            QFocusData *fd = ((QPublicWidget*)w)->focusData();
-                            while ( fd->next() != w->topLevelWidget() )
-                                { /* do nothing */ }
-                            QWidget* fw = fd->next();
                             QFocusEvent::setReason( QFocusEvent::Tab );
-                            // L0685: ??? [shouldn't this be {if (fw) ...}?]
-                            if ( w )
-                                fw->setFocus();
-                            else
-                                w->topLevelWidget()->setFocus();
+                            w->topLevelWidget()->setFocus();
+                            ((QPublicWidget*)w->topLevelWidget())->focusNextPrevChild(true);
                             QFocusEvent::resetReason();
                         }
                         break;
                     case XEMBED_FOCUS_LAST:
                         {
                             // L0686: Search last widget in tab chain
-                            QFocusData *fd = ((QPublicWidget*)w)->focusData();
-                            while ( fd->next() != w->topLevelWidget() )
-                                { /* do nothing */ }
-                            QWidget* fw = fd->prev();
                             QFocusEvent::setReason( QFocusEvent::Tab );
-                            // L0687: ??? [shouldn't this be {if (fw) ...}?]
-                            if ( w )
-                                fw->setFocus();
-                            else
-                                w->topLevelWidget()->setFocus();
+                            w->topLevelWidget()->setFocus();
+                            ((QPublicWidget*)w->topLevelWidget())->focusNextPrevChild(false);
                             QFocusEvent::resetReason();
                         }
                         break;
@@ -626,7 +618,7 @@ QXEmbed::QXEmbed(QWidget *parent, const char *name, WFlags f)
     d->focusProxy->setGeometry( -1, -1, 1, 1 );
     // L0903: Install the client side event filters
     //        because they also provide services for the embedder side
-    //        See L0660, L0661, L0671, L0685.
+    //        See L0660, L0671, L0685.
     initialize();
     window = 0;
     setFocusPolicy(StrongFocus);
@@ -680,11 +672,11 @@ QXEmbed::~QXEmbed()
             XReparentWindow(qt_xdisplay(), window, qt_xrootwin(), 0, 0);
             XSync(qt_xdisplay(), false);
             // L1022: Send the WM_DELETE_WINDOW message (close button)
-            // Only for XPLAIN, XEMBED apps are supposed to detect when the embedding ends.
+            //        Only for XPLAIN, XEMBED apps are 
+            //        supposed to detect when the embedding ends.
             if( autoDelete() /*&& d->xplain*/ ) 
                 sendDelete();
       }
-    
     window = 0;
     // L01040: Our focus proxy window will be destroyed as well.
     //         Make sure that the X11 focus is not lost in the process.
@@ -814,7 +806,7 @@ bool  QXEmbed::event( QEvent * e)
 //        the QXEmbed object has the Qt focus.
 //        The X11 event that caused the Qt key event
 //        must be forwarded to the client.
-//        See L0660 and L0661.
+//        See L0660.
 void QXEmbed::keyPressEvent( QKeyEvent *)
 {
     if (!window)
@@ -859,7 +851,7 @@ void QXEmbed::focusInEvent( QFocusEvent * e ){
         //        the client must select the first (or last) widget of
         //        its own tab chain.
         if ( e->reason() == QFocusEvent::Tab )
-            detail = tabForward?XEMBED_FOCUS_FIRST:XEMBED_FOCUS_LAST;
+            detail = tabForward ? XEMBED_FOCUS_FIRST : XEMBED_FOCUS_LAST;
         sendXEmbedMessage( window, XEMBED_FOCUS_IN, detail);
     }
 }
