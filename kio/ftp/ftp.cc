@@ -403,7 +403,7 @@ bool Ftp::ftpLogin()
     }
   }
 
-  kdDebug(7102) << "ftpLogin " << user << ":" << pass << endl;
+  //kdDebug(7102) << "ftpLogin " << user << ":" << pass << endl; // shows the pass!
 
   if ( !user.isEmpty() )
   {
