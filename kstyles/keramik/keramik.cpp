@@ -2232,7 +2232,7 @@ int KeramikStyle::pixelMetric(PixelMetric m, const QWidget *widget) const
 			return 13;
 
 		case PM_TabBarTabVSpace:
-			return 11;
+			return 12;
 
 		case PM_TitleBarHeight:
 			return titleBarH;
