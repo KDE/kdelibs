@@ -35,11 +35,6 @@ KPanelExtension::KPanelExtension(const QString& configFile, Type type,
   , _actions(actions)
 {
     setFrameStyle(NoFrame);
-    QPalette pal(palette());
-    if(pal.active().mid() != pal.inactive().mid()){
-	pal.setInactive(pal.active());
-	setPalette(pal);
-    }
     _config = new KConfig(configFile);
 }
 
@@ -50,6 +45,7 @@ KPanelExtension::~KPanelExtension()
 
 void KPanelExtension::slotSetPosition(Position p)
 {
+    _pos = p;
     positionChange(p);
     QResizeEvent e(size(), size());
     resizeEvent(&e);
