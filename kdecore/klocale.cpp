@@ -499,14 +499,29 @@ void KLocale::insertCatalogue( const QString & catalogue )
 
 void KLocale::removeCatalogue(const QString &catalogue)
 {
+  qDebug("removeCatalogue %s", catalogue.latin1());
   for ( QValueList<KCatalogue>::Iterator it = d->catalogues.begin();
-	it != d->catalogues.end();
-	 )
-    if ((*it).name() == catalogue)
+	it != d->catalogues.end(); )
+    if ((*it).name() == catalogue) {
       it = d->catalogues.remove(it);
-    else
+      return;
+    } else
       ++it;
 }
+
+void KLocale::setActiveCatalogue(const QString &catalogue)
+{
+  qDebug("setActiveCatalogue %s", catalogue.latin1());
+  for ( QValueList<KCatalogue>::Iterator it = d->catalogues.begin();
+	it != d->catalogues.end(); ++it)
+    if ((*it).name() == catalogue) {
+      KCatalogue save = *it;
+      d->catalogues.remove(it);
+      d->catalogues.prepend(save);
+      return;
+    }
+}
+
 
 KLocale::~KLocale()
 {
@@ -531,7 +546,7 @@ QString KLocale::translate_priv(const char *msgid,
 	it != d->catalogues.end();
 	++it )
     {
-      kdDebug(173) << "translate " << msgid << " " << (*it).name() << " " << (!KGlobal::activeInstance() ? QCString("no instance") : KGlobal::activeInstance()->instanceName()) << endl;
+      // kdDebug(173) << "translate " << msgid << " " << (*it).name() << " " << (!KGlobal::activeInstance() ? QCString("no instance") : KGlobal::activeInstance()->instanceName()) << endl;
       const char * text = (*it).translate( msgid );
 
       if ( text )

@@ -770,6 +770,8 @@ public:
 
   void removeCatalogue(const QString &catalogue);
 
+  void setActiveCatalogue(const QString &catalogue);
+
   /**
    * Translates a message as a QTranslator is supposed to.
    * The parameters are similar to i18n(), but the result

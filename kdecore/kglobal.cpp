@@ -103,8 +103,10 @@ KCharsets *KGlobal::charsets()
 
 void KGlobal::setActiveInstance(KInstance *i)
 {
-	 _activeInstance = i;
-	 qDebug("active Instance %p %s", i, (i ? i->instanceName().data() : "no instance"));
+    _activeInstance = i;
+    qDebug("active Instance %p %s", i, (i ? i->instanceName().data() : "no instance"));
+    if (i && _locale)
+	_locale->setActiveCatalogue(QString::fromUtf8(i->instanceName()));
 }
 
 /**
