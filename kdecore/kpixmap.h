@@ -75,16 +75,13 @@ public:
 	 * Fills the pixmap with a color blend running from color ca to
 	 * color cb.
 
-	 * If upDown is true the blend will run from the top to the
+         * If upDown is true the blend will run from the top to the
 	 * bottom of the pixmap. If upDown is false the blend will run
 	 * from the right to the left of the pixmap.
 
-	 * By default, the blend will use 3 colors on 8 bpp displays,
-	 * 32 colors on 16 bpp displays and unlimited colors at higher
-	 * dislay depths. For 8bpp displays ncols specifies an alternative
-	 * number of colors to use. The greater the number of colors
-	 * allocated the better the appearance of the gradient but the
-	 * longer it takes to make.
+         * By default, the blend will use 3 colors on 8 bpp displays,
+         * and unlimited colors at higher dislay depths. For 8bpp displays
+         * ncols specifies an alternative number of colors to use. 
 	 */
 	void gradientFill( QColor ca, QColor cb, bool upDown = true, 
                            int ncols = 3 );
@@ -93,12 +90,9 @@ public:
          * Fills the pixmap with a gradient running from color ca to
          * color cb in the specified direction.
          *
-         * By default, the blend will use 3 colors on 8 bpp displays,
-	 * 32 colors on 16 bpp displays and unlimited colors at higher
-	 * dislay depths. For 8bpp displays ncols specifies an alternative
-	 * number of colors to use. The greater the number of colors
-	 * allocated the better the appearance of the gradient but the
-	 * longer it takes to make.
+	 * By default, the blend will use 3 colors on 8 bpp displays,
+         * and unlimited colors at higher dislay depths. For 8bpp displays
+         * ncols specifies an alternative number of colors to use. 
          */
         void gradientFill(QColor ca, QColor cb, GradientMode direction,
                           int ncols = 3);

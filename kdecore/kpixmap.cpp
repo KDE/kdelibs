@@ -238,9 +238,7 @@ void KPixmap::gradientFill(QColor ca, QColor cb, GradientMode direction,
             for(x=0; x < width(); ++x)
                 scanline[x] = src[x];
         }
-        if(depth() <= 16 ) {
-            if( depth() == 16 )
-                ncols = 32;
+        if(depth() < 16 ) {
             if ( ncols < 2 || ncols > 256 )
                 ncols = 3;
             QColor *dPal = new QColor[ncols];
@@ -289,9 +287,7 @@ void KPixmap::gradientFill(QColor ca, QColor cb, GradientMode direction,
             }
         }
 
-        if ( depth() <= 16 ) {
-
-            if( depth() == 16 ) ncols = 32;
+        if ( depth() < 16 ) {
             if ( ncols < 2 || ncols > 256 ) ncols = 3;
 
             QColor *dPal = new QColor[ncols];
@@ -383,9 +379,7 @@ void KPixmap::gradientFill(QColor ca, QColor cb, GradientMode direction,
                                    xtable[x][2] + ytable[y][2]);
             }
         }
-        if(depth() <= 16 ) {
-            if( depth() == 16 )
-                ncols = 32;
+        if(depth() < 16 ) {
             if ( ncols < 2 || ncols > 256 )
                 ncols = 3;
             QColor *dPal = new QColor[ncols];
