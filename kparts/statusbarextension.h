@@ -1,6 +1,7 @@
 /* This file is part of the KDE project
    Copyright (C) 2003 Daniel Molkentin <molkentin@kde.org>
-   
+   Copyright (C) 2003 David Faure <faure@kde.org>
+
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
    License as published by the Free Software Foundation; either
@@ -34,7 +35,7 @@ namespace KParts
 
   // Defined in impl
   class StatusBarItem;
-  
+
 
   /**
    * @short an extension for KParts that allows more sophisticated statusbar handling
@@ -42,12 +43,12 @@ namespace KParts
    * Every part can use this class to customize the statusbar as long as it is active.
    * add items via @p addStatusBarItem and remove it with @p removeStatusBarItem.
    *
-   * You can inherit from this class and reimplement @p mainWindow for custom usage.
-   **/
+   * @since 3.2
+   */
   class StatusBarExtension : public QObject
   {
     Q_OBJECT
-   
+
     public:
       StatusBarExtension( KParts::ReadOnlyPart *parent, const char *name=0L );
       ~StatusBarExtension();
@@ -71,24 +72,27 @@ namespace KParts
       void removeStatusBarItem( QWidget * widget );
 
       /**
-       * @return the KMainWindow in which this part is currently embedded.
-       * This one should never return 0L, in a KDE app.
-       *
-       * You might want to reimplement this if your mainWindow is in a different place.
-       */
-      virtual KMainWindow* mainWindow() const;
-
-      /**
        * @return the statusbar of the KMainWindow in which this part is currently embedded.
        * WARNING: this could return 0L
        */
       KStatusBar* statusBar() const;
 
+      /**
+       * This allows the hosting application to set a particular KStatusBar
+       * for this part. If it doesn't do this, the statusbar used will be
+       * the one of the KMainWindow in which the part is embedded.
+       * Konqueror uses this to assign a view-statusbar to the part.
+       * The part should never call this method!
+       */
+      void setStatusBar( KStatusBar* status );
+
       /** @internal */
       virtual bool eventFilter( QObject *watched, QEvent* ev );
 
     private:
+
      QValueList<StatusBarItem> m_statusBarItems; // Our statusbar items
+     KStatusBar* m_statusBar;
 
      // for future extensions
      class StatusBarExtensionPrivate;

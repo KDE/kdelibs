@@ -1,5 +1,6 @@
 /* This file is part of the KDE project
    Copyright (C) 2003 Daniel Molkentin <molkentin@kde.org>
+   Copyright (C) 2003 David Faure <faure@kde.org>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -75,7 +76,7 @@ class KParts::StatusBarItem {
 
 
 StatusBarExtension::StatusBarExtension(KParts::ReadOnlyPart *parent, const char* name)
-  : QObject(parent, name), d(0)
+  : QObject(parent, name), m_statusBar(0), d(0)
 {
   parent->installEventFilter(this);
 }
@@ -94,7 +95,7 @@ bool StatusBarExtension::eventFilter(QObject * watched, QEvent* ev)
   KStatusBar * sb = statusBar();
 
   GUIActivateEvent *gae = static_cast<GUIActivateEvent*>(ev);
-  
+
   if ( gae->activated() )
   {
     QValueListIterator<StatusBarItem> it = m_statusBarItems.begin();
@@ -112,17 +113,20 @@ bool StatusBarExtension::eventFilter(QObject * watched, QEvent* ev)
 
 }
 
-KMainWindow * StatusBarExtension::mainWindow() const
-{
-  return dynamic_cast<KMainWindow *>
-    ( static_cast<KParts::ReadOnlyPart*>(parent())
-      ->widget()->topLevelWidget() );
-}
-
 KStatusBar * StatusBarExtension::statusBar() const
 {
-  KMainWindow *mw = mainWindow();
-  return mw ? mw->statusBar() : 0L;
+  if ( !m_statusBar )  {
+    QWidget* w = static_cast<KParts::ReadOnlyPart*>(parent())->widget();
+    KMainWindow* mw = dynamic_cast<KMainWindow *>( w->topLevelWidget() );
+    if ( mw )
+      const_cast<StatusBarExtension *>(this)->m_statusBar = mw->statusBar();
+  }
+  return m_statusBar;
+}
+
+void StatusBarExtension::setStatusBar( KStatusBar* status )
+{
+  m_statusBar = status;
 }
 
 void StatusBarExtension::addStatusBarItem( QWidget * widget, int stretch, bool permanent )
