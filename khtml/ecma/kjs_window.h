@@ -213,7 +213,6 @@ namespace KJS {
     void setNextTimer();
   private:
     Window *parent;
-    KHTMLPart *part;   		// not guarded, may be dangling
     QPtrList<ScheduledAction> scheduledActions;
     int pausedTime;
     int lastTimerId;

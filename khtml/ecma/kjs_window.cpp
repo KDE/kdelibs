@@ -1140,9 +1140,8 @@ void Window::clear( ExecState *exec )
   // Forget about the listeners (the DOM::NodeImpls will delete them)
   jsEventListeners.clear();
 
-  KHTMLPart *part = ::qt_cast<KHTMLPart *>(m_frame->m_part);
-  if (part) {
-    KJSProxy* proxy = part->jScript();
+  if (m_frame) {
+    KJSProxy* proxy = m_frame->m_jscript;
     if (proxy) // i.e. JS not disabled
     {
       winq = new WindowQObject(this);
@@ -1795,11 +1794,10 @@ WindowQObject::WindowQObject(Window *w)
   : parent(w)
 {
   //kdDebug(6070) << "WindowQObject::WindowQObject " << this << endl;
-  part = ::qt_cast<KHTMLPart *>(parent->m_frame->m_part);
-  if ( !part )
+  if ( !parent->m_frame )
       kdDebug(6070) << "WARNING: null part in " << k_funcinfo << endl;
   else
-      connect( part, SIGNAL( destroyed() ),
+      connect( parent->m_frame, SIGNAL( destroyed() ),
                this, SLOT( parentDestroyed() ) );
   pausedTime = 0;
   lastTimerId = 0;
