@@ -161,6 +161,8 @@ public:
      * @param enableKeep: if true, a check box is shown in the dialog
      *        which allows the user to keep his password input for later.
      * @param extraBttn: allows to show additional buttons, KDialogBase.
+     * @param parent Passed to lower level constructor.
+     * @param name Passed to lower level constructor
      *
      * @version New in 3.0
      */

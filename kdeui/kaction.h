@@ -56,6 +56,8 @@ class KPopupMenu;
 class KMainWindow;
 
 /**
+ * @short Class to encapsulate user-driven action or event
+ *
  * The KAction class (and derived and super classes) provides a way to
  * easily encapsulate a "real" user-selected action or event in your
  * program.
@@ -197,7 +199,6 @@ class KMainWindow;
  * does that for you.
  *
  * @see KStdAction
- * @short Class to encapsulate user-driven action or event
  */
 class KAction : public QObject
 {
@@ -289,6 +290,11 @@ public:
      * the text and icon.
      *
      * @param item The KGuiItem with the label and (optional) icon.
+     * @param cut The corresponding keyboard shortcut (shortcut).
+     * @param receiver The SLOT's parent.
+     * @param slot The SLOT to invoke to execute this action.
+     * @param parent This action's parent.
+     * @param name An internal name for this action.
      */
     KAction( const KGuiItem& item, const KShortcut& cut,
              const QObject* receiver, const char* slot,
@@ -344,6 +350,8 @@ public:
      * with your KAction object.
      *
      * @param widget The GUI element to display this action
+     * @param index The position into which the action is plugged. If
+     * this is negative, the action is inserted at the end.
      */
     virtual int plug( QWidget *widget, int index = -1 );
 

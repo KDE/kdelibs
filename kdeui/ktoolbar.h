@@ -76,6 +76,8 @@ private:
 
 
  /**
+  * @short Floatable toolbar with auto resize.
+  *
   * A KDE-style toolbar.
   *
   * KToolBar can be dragged around in and between different docks.
@@ -94,7 +96,6 @@ private:
   * construction. It will reread this config group on a
   * KApplication::appearanceChanged() signal.
   *
-  * @short Floatable toolbar with auto resize.
   * @version $Id$
   * @author Reginald Stadlbauer <reggie@kde.org>, Stephan Kulow <coolo@kde.org>, Sven Radej <radej@kde.org>.
   */
@@ -197,7 +198,7 @@ public:
    * @param id      The id of this button
    * @param enabled Enable or disable the button at startup
    * @param text    The tooltip or toolbar text (depending on state)
-   * @param index The position of the button. (-1 = at end).
+   * @param index   The position of the button. (-1 = at end).
    *
    * @return The item index.
    */
@@ -205,7 +206,7 @@ public:
 		     const QString& text = QString::null, int index=-1,
 		     KInstance *_instance = KGlobal::instance());
 
-    /**
+   /**
    * This is the same as above, but with specified signals and
    * slots to which this button will be connected.
    *
@@ -215,6 +216,7 @@ public:
    * @param id       The id of this button
    * @param signal   The signal to connect to
    * @param receiver The slot's parent
+   * @param slot     The slot to receive the signal specified in that argument.
    * @param enabled  Enable or disable the button at startup
    * @param text     The tooltip or toolbar text (depending on state)
    * @param index    The position of the button. (-1 = at end).
@@ -263,6 +265,7 @@ public:
    * @param id       The id of this button
    * @param signal   The signal to connect to
    * @param receiver The slot's parent
+   * @param slot     The slot to receive the signal specified in that argument.
    * @param enabled  Enable or disable the button at startup
    * @param text     The tooltip or toolbar text (depending on state)
    * @param index    The position of the button. (-1 = at end).

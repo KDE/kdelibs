@@ -92,6 +92,7 @@ public:
    *        available on the system are displayed.
    * @param diff Display the difference version dialog.
    *        See KFontDialog::getFontDiff().
+   * @param makeFrame Draws a frame with titles around the contents.
    * @param visibleListSize The minimum number of visible entries in the
    *        fontlists.
    * @param sizeIsRelativeState If not zero the widget will show a

@@ -643,7 +643,7 @@ public:
    *                widget, the message box becomes modal relative to parent.
    * @param text    Message string.
    * @param caption Message box title. The application name is added to
-   *                the title. The default title is i18n("About <appname>").
+   *                the title. The default title is i18n("About \<appname\>").
    * @param options  see OptionsType
    *
    *

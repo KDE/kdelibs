@@ -279,6 +279,7 @@ protected:
    *             filename, which will then be assumed to be installed
    *             in the "data" resource, under a directory named like
    *             the instance.
+   * @param merge Whether to merge with the global document.
    * @param setXMLDoc Specify whether to call setXML. Default is true.
    *               and the DOM document at once.
    **/

@@ -431,6 +431,7 @@ public:
    * @param parent      Parent widget
    * @param strCaption  Title of the dockwidget window (shown when toplevel)
    * @param strTabPageLabel The title of the tab page (shown when in tab page mode), if it is "", only the icon will be shown, if it is 0L, the label is set to strCaption
+   * @param f Qt::WidgetFlags widget flags
    */
   KDockWidget( KDockManager* dockManager, const char* name,
                const QPixmap &pixmap, QWidget* parent = 0L, const QString& strCaption = QString::null,
@@ -1256,7 +1257,7 @@ private:
  *   ...
  * \endcode
  *
- * Docking is fully dynamical at runtime. That means you can always move dockwidgets via drag and drop.
+ * Docking is fully dynamic at runtime. That means you can always move dockwidgets via drag and drop.
  *
  * And last but not least you can use the popupmenu for showing or hiding any controlled dockwidget
  * of this class and insert it to your main menu bar or anywhere else.
@@ -1279,7 +1280,9 @@ public:
    * @li ...and gets initialized
    * @li the main dockwidget is set to 0
    *
-   * @param name object name
+   * @param parent Parent widget for the dock main widget
+   * @param name internal object name
+   * @param f Qt::WidgetFlags widget flags
    */
   KDockMainWindow( QWidget* parent = 0L, const char *name = 0L, WFlags f = WType_TopLevel | WDestructiveClose );
 

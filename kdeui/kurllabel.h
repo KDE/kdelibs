@@ -27,7 +27,7 @@ class QCursor;
 class QPixmap;
 
 /**
- * A label class that supports displaying an active hyperlink.
+ * @short A drop-in replacement for QLabel that displays hyperlinks.
  *
  * KURLLabel is a drop-in replacement for QLabel that handles text
  * in a fashion similar to how an HTML widget handles hyperlinks.  The
@@ -56,7 +56,6 @@ class QPixmap;
  *
  * \image html kurllabel.png "KDE URL Label"
  *
- * @short A drop-in replacement for QLabel that displays hyperlinks.
  * @author Kurt Granroth <granroth@kde.org> (Interface)
  * @author Peter Putzer <putzer@kde.org> (Rewrite)
  * @version $Id$
@@ -88,8 +87,11 @@ public:
    * @param url is the URL emitted when the label is clicked.
    * @param text is the displayed string. If it's equal to QString::null
    * the @p url will be used instead.
+   * @param parent Passed to lower level constructor
+   * @param name Passed to lower level constructor
    *
-   * @p parent and @p name are passed to QLabel.
+   * @p parent and @p name are passed to QLabel, which in turn passes
+   * them further down
    */
   KURLLabel (const QString& url, const QString& text = QString::null,
               QWidget* parent = 0L, const char* name = 0L);

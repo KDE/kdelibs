@@ -111,6 +111,7 @@ public:
    *  If @p permanent is true, then item will be placed on the far right of
    *  the statusbar and will never be hidden by QStatusBar::message.
    *
+   *  @param text The label's text string.
    *  @param id id of item
    *  @param stretch stretch passed to QStatusBar::addWidget
    *  @param permanent is item permanent or not (passed to QStatusBar::addWidget )
@@ -124,7 +125,9 @@ public:
    *  Inserts a fixed width text label into status bar. The width will be set
    *  according to @p text, but will remain fixed even if you change text.
    *  You can change fixed width by calling setItemFixed.
-   *  @param id id ov item
+   *
+   *  @param text The label's text string
+   *  @param id id of item
    *  @param permanent permanent flag passed to QStatusBar::addWidget
    */
   inline void insertFixedItem(const QString& text, int id, bool permanent=false)
@@ -143,6 +146,7 @@ public:
    * The item will be resized to fit the text. If you change text to be empty,
    * item will not be visible (untill you add some text).
    *
+   * @param text The label's text string
    * @param id The id of item.
    */
   void changeItem( const QString& text, int id );

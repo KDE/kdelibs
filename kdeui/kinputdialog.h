@@ -165,6 +165,7 @@ class KInputDialog : public KDialogBase
      * @param minValue Minimum value user can input
      * @param maxValue Maximum value user can input
      * @param step     Amount by which value is incremented or decremented
+     * @param decimals Number of digits after the decimal point
      * @param ok       This bool would be set to true if user pressed Ok
      * @param parent   Parent of the dialog widget
      * @param name     Name of the dialog widget

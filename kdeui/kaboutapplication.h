@@ -27,16 +27,17 @@
 #include <kaboutdialog.h>
 
 /**
- * This class provides the standard "About Application" dialog box that
- * is used by KHelpMenu. It uses the information of the global
- * KAboutData that is specified at the start of you program in
- * main(). Normally you should not use this class directly but
- * rather the KHelpMenu class or even better just subclass your
- * toplevel window from KMainWindow. If you do the latter, the help
- * menu and thereby this dialog box is available through the
+ * @short Standard "About Application" dialog box.
+ * 
+ * This class provides the standard "About Application" dialog box
+ * that is used by KHelpMenu. It uses the information of the global
+ * KAboutData that is specified at the start of your program in
+ * main(). Normally you should not use this class directly but rather
+ * the KHelpMenu class or even better just subclass your toplevel
+ * window from KMainWindow. If you do the latter, the help menu and
+ * thereby this dialog box is available through the
  * KMainWindow::helpMenu() function.
  *
- * @short Standard "About Application" dialog box.
  * @author Waldo Bastian (bastian@kde.org) and Espen Sand (espen@kde.org)
  * @version $Id
  */
@@ -60,7 +61,7 @@ class KAboutApplication : public KAboutDialog
     KAboutApplication( QWidget *parent=0, const char *name=0, bool modal=true );
 
     /**
-     * Constructor. Mostly does the same stuff as the above constructor, except
+     * Constructor. Mostly does the same stuff as the previous constructor, except
      * that it can take a custom KAboutData object instead of the one specified
      * in your main() function. This is especially useful for applications
      * which are implemented as (dynamically loaded) libraries, e.g. panel

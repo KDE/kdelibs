@@ -275,6 +275,7 @@ public:
      * @param min  minimum value
      * @param max  maximum value
      * @param step step size for the QSlider
+     * @param slider whether the slider is created or not
      */
     void setRange(int min, int max, int step=1, bool slider=true);
     /**
@@ -475,7 +476,7 @@ public:
      * @deprecated (rounds @p value to a multiple of 1/100)
      * Constructor
      *
-     * puts it below other KNumInput
+     * puts it visually below other KNumInput
      *
      * @param  below
      * @param  value  initial value for the control
@@ -487,8 +488,15 @@ public:
     /**
      * Constructor
      *
-     * puts it below other KNumInput
+     * the difference here is the "below" parameter. It tells this
+     * instance that it is visually put below some other KNumInput
+     * widget.  Note that these two KNumInput's need not to have the
+     * same parent widget or be in the same layout group.  The effect
+     * is that it'll adjust it's layout in correspondence with the
+     * layout of the other KNumInput's (you can build an arbitary long
+     * chain).
      *
+     * @param below  append KDoubleNumInput to the KDoubleNumInput chain
      * @param lower lower boundary value
      * @param upper upper boundary value
      * @param value  initial value for the control
@@ -535,6 +543,7 @@ public:
      * @param min  minimum value
      * @param max  maximum value
      * @param step step size for the QSlider
+     * @param slider whether the slider is created or not
      */
     void setRange(double min, double max, double step=1, bool slider=true);
     /**

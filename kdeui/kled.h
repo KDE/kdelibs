@@ -28,6 +28,8 @@
 
 class QColor;
 /**
+ * @short An LED widget.
+ *
  * Displays a round  or rectangular light emitting diode.
  *
  * It is configurable to five colors, the two on/off states and three
@@ -38,7 +40,6 @@ class QColor;
  *
  * \image html kled.png "KDE LED Widget"
  *
- * @short An LED widget.
  * @author Joerg Habenicht, Richard J. Moore (rich@kde.org) 1998, 1999
  */
 class KLed : public QWidget
@@ -113,6 +114,7 @@ public:
    * @param col Initial color of the LED.
    * @param state    Sets the State.
    * @param look     Sets the Look.
+   * @param shape    Sets the Shape (rectangular or circular)
    * @param parent   Will be handed over to QWidget.
    * @param name     Will be handed over to QWidget.
    * @short Constructor

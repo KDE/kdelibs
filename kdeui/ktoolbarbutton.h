@@ -220,6 +220,7 @@ public:
    * behavior.
    *
    * @param p The new popup menu
+   * @param unused Has no effect - ignore it.
    */
   void setPopup (QPopupMenu *p, bool unused = false);
 
@@ -231,6 +232,7 @@ public:
    * held down for about half a second.
    *
    * @param p the new popup menu
+   * @param unused Has no effect - ignore it.
    */
   void setDelayedPopup(QPopupMenu *p, bool unused = false);
 

@@ -148,7 +148,7 @@ class KHelpMenu : public QObject
      * @param aboutAppText User definable string that is used in the
      *        application specific dialog box. Note: The help menu will
      *        not open this dialog box if you don't define a string. See
-     * showAboutApplication() for more information.
+     *        showAboutApplication() for more information.
      * @param showWhatsThis Decides whether a "Whats this" entry will be
      *        added to the dialog.
      *
@@ -159,11 +159,17 @@ class KHelpMenu : public QObject
     /**
      * Constructor.
      *
+     * This alternative constructor is mainly useful if you want to
+     * overide the standard actions (aboutApplication(), aboutKDE(),
+     * helpContents(), reportBug, and optionally whatsThis).
+     *
      * @param parent The parent of the dialog boxes. The boxes are modeless
      *        and will be centered with respect to the parent.
      * @param aboutData User and app data used in the About app dialog
      * @param showWhatsThis Decides whether a "Whats this" entry will be
      *        added to the dialog.
+     * @param actions KActionCollection that is used instead of the
+     *        standard actions.
      *
      */
     KHelpMenu( QWidget *parent, const KAboutData *aboutData,

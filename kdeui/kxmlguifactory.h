@@ -129,6 +129,8 @@ class KXMLGUIFactory : public QObject
    * where @p "my_popup" is the name of the menu in the XMLUI file, and
    * @p "this" is XMLGUIClient which owns the popupmenu (e.g. the mainwindow, or the part, or the plugin...)
    *
+   * @param containerName Name of the container widget
+   * @param client Owner of the container widget
    * @param useTagName Specifies whether to compare the specified name with the name attribute or
    *        the tag name.
    *

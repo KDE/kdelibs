@@ -53,6 +53,7 @@ public:
    *
    * @param _text      Text of the label
    * @param _value     Initial value of the inputline
+   * @param parent     Parent widget for the line edit dialog
    */
   KLineEditDlg( const QString& _text, const QString& _value, QWidget *parent ) KDE_DEPRECATED;
   virtual ~KLineEditDlg();
@@ -88,6 +89,7 @@ public:
    * @param text      Text of the label
    * @param value     Initial value of the inputline
    * @param ok         this bool will be set to true if user pressed "Ok"
+   * @param parent    The parent widget for this text input dialog
    * @param validator Validator to be stuffed into the line edit.
    */
   static QString getText(const QString &caption, const QString &text,

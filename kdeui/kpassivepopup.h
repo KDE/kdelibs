@@ -17,7 +17,8 @@ class QLabel;
 class QVBox;
 
 /**
- * A dialog-like popup that displays messages without interupting the user.
+ * @short A dialog-like popup that displays messages without interupting the user.
+ *
  * The simplest uses of KPassivePopup are by using the various message() static
  * methods. The position the popup appears at depends on the type of the parent window:
  *
@@ -99,6 +100,9 @@ public:
      *
      * After customizing the widget, pass it to setView( QWidget* )
      *
+     * @param caption The window caption (title) on the popup
+     * @param text The text for the popup
+     * @param icon The icon to use for the popup
      * @param parent The parent widget used for the returned QVBox. If left 0L,
      * then "this", i.e. the passive popup object will be used.
      *

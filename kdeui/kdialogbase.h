@@ -386,6 +386,9 @@ class KDialogBase : public KDialog
      *        while the dialog is open.
      * @param separator If @p true, a separator line is drawn between the
      *        action buttons and the main widget.
+     * @param yes Text to use for the first button (defaults to i18n("Yes"))
+     * @param no Text to use for the second button (defaults to i18n("No"))
+     * @param cancel Text to use for the third button (defaults to i18n("Cancel"))
      */
     KDialogBase( const QString &caption, int buttonMask=Yes|No|Cancel,
 		 ButtonCode defaultButton=Yes, ButtonCode escapeButton=Cancel,
