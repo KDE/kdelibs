@@ -334,6 +334,14 @@ protected:
    * Resets any per session settings.
    */
   void resetSessionSettings();
+  
+  /**
+   * Resets any per connection settings.  These are different from
+   * per-session settings in that they must be invalidates every time
+   * a request is made, e.g. a retry to re-send the header to the
+   * server, as compared to only when a new request arrives.
+   */
+  void resetConnectionSettings();
 
   /**
    * Returns any pre-cached proxy authentication info

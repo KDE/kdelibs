@@ -172,6 +172,25 @@ void HTTPProtocol::reparseConfiguration()
     m_iDefaultPort = DEFAULT_HTTP_PORT;
 }
 
+void HTTPProtocol::resetConnectionSettings()
+{
+  m_bEOF = false;
+  m_bError = false;
+  m_bChunked = false;
+
+  m_iSize = -1;
+  m_lineCount = 0;
+  m_iWWWAuthCount = 0;
+  m_lineCountUnget = 0;
+  m_iProxyAuthCount = 0;
+
+  m_qContentEncodings.clear();
+  m_qTransferEncodings.clear();
+  m_sContentMD5 = QString::null;
+  m_strMimeType = QString::null;
+  m_bErrorPage = config()->readBoolEntry("errorPage");
+}
+
 void HTTPProtocol::resetSessionSettings()
 {
   // Do not reset the URL on redirection if the proxy
@@ -285,6 +304,9 @@ void HTTPProtocol::resetSessionSettings()
 
   m_bCanResume = false;
   m_bUnauthorized = false;
+  
+  // Set the SSL meta-data here...
+  setSSLMetaData();
 }
 
 void HTTPProtocol::setHost( const QString& host, int port,
@@ -1567,47 +1589,38 @@ ssize_t HTTPProtocol::read (void *b, size_t nbytes)
   return ret;
 }
 
-
 void HTTPProtocol::httpCheckConnection()
 {
+  kdDebug(7113) << "(" << m_pid << ") HTTPProtocol::httpCheckConnection: " << endl;
+  kdDebug(7113) << "(" << m_pid << ")     Socket status: " << m_iSock << endl;
+  kdDebug(7113) << "(" << m_pid << ")     Keep Alive: " << m_bKeepAlive << endl;
+  
   if ( m_iSock != -1 )
   {
      bool closeDown = false;
-     if ( m_request.doProxy && m_state.doProxy )
+     
+     if ( !m_state.doProxy && !m_request.doProxy )
      {
-        // Keep the connection to the proxy.
-     }
-     else if ( !m_state.doProxy && !m_request.doProxy )
-     {
-        if (m_state.hostname != m_request.hostname)
-        {
-           closeDown = true;
-        }
-        else if (m_state.port != m_request.port)
-        {
-           closeDown = true;
-        }
-        else if (m_state.user != m_request.user)
-        {
-           closeDown = true;
-        }
-        else if (m_state.passwd != m_request.passwd)
-        {
-           closeDown = true;
-        }
+        if (m_state.hostname != m_request.hostname ||
+            m_state.port != m_request.port ||
+            m_state.user != m_request.user ||
+            m_state.passwd != m_request.passwd)
+          closeDown = true;
      }
      else
      {
-        closeDown = true;
+        // Keep the connection to the proxy.
+        if ( !(m_request.doProxy && m_state.doProxy) )
+          closeDown = true;
      }
-
+     
      if (!closeDown && !isConnectionValid())
         closeDown = true;
-
+        
      if (closeDown)
         httpCloseConnection();
   }
-
+  
   // Let's update our current state
   m_state.hostname = m_request.hostname;
   m_state.port = m_request.port;
@@ -1782,44 +1795,17 @@ bool HTTPProtocol::httpOpen()
      }
   }
 
-  // Clear out some things so that bogus values aren't used.
-  m_bEOF = false;
-  m_bError = false;
-  m_bChunked = false;
-
-  m_iSize = -1;
-  m_lineCount = 0;
-  m_iWWWAuthCount = 0;
-  m_lineCountUnget = 0;
-  m_iProxyAuthCount = 0;
-
-  m_qContentEncodings.clear();
-  m_qTransferEncodings.clear();
-  m_sContentMD5 = QString::null;
-  m_strMimeType = QString::null;
-  m_bErrorPage = (metaData("errorPage") != "false");
-
-
-  httpCheckConnection();
-
-  // Let's try to open up our socket if we don't have one already.
-  if ( m_iSock == -1)
-  {
-    if (!httpOpenConnection())
-       return false;
-  }
-  else
-  {
-    setSSLMetaData();
-  }
-
-  // Clean up previous POST
-  bool moreData = false;
-  bool davData = false;
-
-  // Variable to hold the entire header...
   QString header;
   QString davHeader;
+
+  bool moreData = false;
+  bool davData = false;
+    
+  // Clear out per-connection settings...  
+  resetConnectionSettings ();
+
+  // Check the validity of the current connection, if one exists.
+  httpCheckConnection();  
 
   // Determine if this is a POST or GET method
   switch ( m_request.method)
@@ -2154,22 +2140,31 @@ bool HTTPProtocol::httpOpen()
   for (; it != headerOutput.end(); it++)
     kdDebug(7103) << "(" << m_pid << ") " << (*it) << endl;
 
-  // now that we have our formatted header, let's send it!
-  bool sendOk;
-  sendOk = (write(header.latin1(), header.length()) == (ssize_t) header.length());
+  // Now that we have our formatted header, let's send it!  
+  // Create a new connection to the remote machine if we do
+  // not already have one...
+  if ( m_iSock == -1)
+  {
+    if (!httpOpenConnection())
+       return false;
+  }
+  
+  bool sendOk = (write(header.latin1(), header.length()) == (ssize_t) header.length());
   if (!sendOk)
   {
     kdDebug(7113) << "(" << m_pid << ") httpOpen: Connection broken! ("
                   << m_state.hostname << ")" << endl;
+    
+    // With a Keep-Alive connection this can happen.
+    // Just reestablish the connection.                  
     if (m_bKeepAlive)
     {
-       // With a Keep-Alive connection this can happen.
-       // Just reestablish the connection.
        httpCloseConnection();
        if (!httpOpenConnection())
           return false;
        sendOk = (write(header.latin1(), header.length()) == (ssize_t) header.length());
     }
+    
     if (!sendOk)
     {
        kdDebug(7113) << "(" << m_pid << ") httpOpen: sendOk==false. Connnection"
@@ -2207,6 +2202,8 @@ void HTTPProtocol::forwardHttpResponseHeader()
  */
 bool HTTPProtocol::readHeader()
 {
+  kdDebug(7113) << "(" << m_pid << ") HTTPProtocol::readHeader" << endl;
+  
   m_bRedirect = false;
   m_responseHeader.clear();
   // Check
@@ -2808,7 +2805,8 @@ bool HTTPProtocol::readHeader()
       if (strncasecmp(buf, "Connection:", 11) == 0) {
         if (strncasecmp(trimLead(buf + 11), "Close", 5) == 0) {
           m_bKeepAlive = false;
-        } else if (strncasecmp(trimLead(buf + 11), "Keep-Alive", 10)==0) {
+        }
+        else if (strncasecmp(trimLead(buf + 11), "Keep-Alive", 10)==0) {
           m_bKeepAlive = true;
         } else if (strncasecmp(trimLead(buf + 11), "Upgrade", 7)==0) {
           if (m_responseCode == 101) {
@@ -3329,7 +3327,7 @@ void HTTPProtocol::httpClose()
   // NOTE: we might even want to narrow this down to non-form
   // based submit requests which will require a meta-data from
   // khtml.
-  if (m_bKeepAlive && !m_bIsSSL && m_request.method == HTTP_GET)
+  if (m_bKeepAlive && m_request.method == HTTP_GET)
   {
     kdDebug(7113) << "(" << m_pid << ") HTTPProtocol::httpClose: keep alive" << endl;
     return;
@@ -3561,7 +3559,7 @@ void HTTPProtocol::slotData(const QByteArray &d)
  * data; in this case the data is stored in m_intData.
  */
 bool HTTPProtocol::readBody( bool dataInternal /* = false */ )
-{
+{  
   // Note that when dataInternal is true, we are going to:
   // 1) save the body data to a member variable, m_intData
   // 2) _not_ advertise the data, speed, size, etc., through the
@@ -3627,6 +3625,8 @@ bool HTTPProtocol::readBody( bool dataInternal /* = false */ )
 
     return true;
   }
+  
+  kdDebug(7113) << "(" << m_pid << ") HTTPProtocol::readBody: retreive data" << endl;
 
   if (m_iSize > -1)
     m_iBytesLeft = m_iSize - sz;
@@ -3702,16 +3702,20 @@ bool HTTPProtocol::readBody( bool dataInternal /* = false */ )
        bytesReceived = readUnlimited();
 
     // make sure that this wasn't an error, first
-    kdDebug(7113) << "(" << m_pid << ") readBody: bytesReceived: " << bytesReceived << " m_iSize: " << m_iSize << " Chunked: " << m_bChunked << endl;
+    kdDebug(7113) << "(" << m_pid << ") readBody: bytesReceived: " 
+                  << bytesReceived << " m_iSize: " << m_iSize << " Chunked: " 
+                  << m_bChunked << endl;
+    
     if (bytesReceived == -1)
     {
-      // erg.  oh well, log an error and bug out
-      kdDebug(7113) << "(" << m_pid << ") readBody: bytesReceived==-1. Connnection broken ! " << endl;
+      // Oh well... log an error and bug out
+      kdDebug(7113) << "(" << m_pid << ") readBody: bytesReceived==-1."
+                    << " Connnection broken !" << endl;
       error(ERR_CONNECTION_BROKEN, m_state.hostname);
       return false;
     }
 
-    // i guess that nbytes == 0 isn't an error.. but we certainly
+    // I guess that nbytes == 0 isn't an error.. but we certainly
     // won't work with it!
     if (bytesReceived > 0)
     {
@@ -4233,7 +4237,8 @@ void HTTPProtocol::writeCacheEntry( const char *buffer, int nbytes)
    long file_pos = ftell( m_fcache ) / 1024;
    if ( file_pos > m_maxCacheSize )
    {
-      kdDebug(7103) << "writeCacheEntry: File size reaches " << file_pos << "Kb, exceeds cache limits." << endl;
+      kdDebug(7103) << "writeCacheEntry: File size reaches " << file_pos 
+                    << "Kb, exceeds cache limits." << endl;
       fclose(m_fcache);
       m_fcache = 0;
       QString filename = m_state.cef + ".new";
