@@ -33,12 +33,13 @@ DEALINGS IN THE SOFTWARE.
 #include <kglobal.h>
 #include <klocale.h>
 #include <kcolorbutton.h>
+#include <kdemacros.h>
 
 #include "plastikconf.h"
 
 extern "C"
 {
-	QWidget* allocate_kstyle_config(QWidget* parent)
+	KDE_EXPORT QWidget* allocate_kstyle_config(QWidget* parent)
 	{
 		KGlobal::locale()->insertCatalogue("kstyle_plastik_config");
 		return new PlastikStyleConfig(parent);
