@@ -282,6 +282,10 @@ public:
      */
     bool roundComboBox() const;
     /**
+     * True if rounded slider grooves are requested.
+     */
+    bool roundSlider() const;
+    /**
      * Returns the current uncached pixmap for the given widget. This will
      * usually be either the last scaled or gradient pixmap if those have
      * been specified in the config file, the original pixmap if not, or NULL
@@ -550,6 +554,11 @@ inline bool KThemeBase::roundButton() const
 inline bool KThemeBase::roundComboBox() const
 {
     return(roundedCombo);
+}
+
+inline bool KThemeBase::roundSlider() const
+{
+    return(roundedSlider);
 }
 
 #endif

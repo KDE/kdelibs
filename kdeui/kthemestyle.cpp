@@ -412,7 +412,7 @@ void KThemeStyle::drawScrollBarControls(QPainter *p, const QScrollBar *sb,
     }
     if(controls & QStyle::AddLine){
         drawBaseButton(p, add.x(), add.y(), add.width(), add.height(), g,
-                       activeControl == AddLine, ScrollButton);
+                       activeControl == AddLine, false, ScrollButton);
         drawArrow(p, (horizontal) ? RightArrow : DownArrow, false,
                   add.x()+3, add.y()+3, add.width()-6,
                   add.height()-6, *colorGroup(g, ScrollButton));
@@ -421,7 +421,7 @@ void KThemeStyle::drawScrollBarControls(QPainter *p, const QScrollBar *sb,
         p->setPen(g.dark());
         p->drawRect(sub);
         drawBaseButton(p, sub.x(), sub.y(), sub.width(), sub.height(), g,
-                       activeControl == SubLine, ScrollButton);
+                       activeControl == SubLine, false, ScrollButton);
         drawArrow(p, (horizontal)  ? LeftArrow : UpArrow, false, sub.x()+3,
                   sub.y()+3, sub.width()-6, sub.height()-6,
                   *colorGroup(g, ScrollButton));
@@ -633,6 +633,16 @@ void KThemeStyle::drawIndicatorMask(QPainter *p, int x, int y, int w, int h,
         QPlatinumStyle::drawIndicatorMask(p, x, y, w, h, state);
 }
 
+void KThemeStyle::drawSliderGroove(QPainter *p, int x, int y, int w, int h,
+                                   const QColorGroup& g, QCOORD c,
+                                   Orientation orient)
+{
+    if(roundSlider())
+        QPlatinumStyle::drawSliderGroove(p, x, y, w, h, g, c, orient);
+    else
+        drawBaseButton(p, x, y, w, h, g, true, false, SliderGroove);
+}
+
 void KThemeStyle::drawSlider(QPainter *p, int x, int y, int w, int h,
                              const QColorGroup &g, Orientation orient,
                              bool tickAbove, bool tickBelow)
@@ -690,7 +700,7 @@ void KThemeStyle::drawArrow(QPainter *p, Qt::ArrowType type, bool down, int x,
         QBrush oldBrush = g.brush(QColorGroup::Button);
         QColorGroup tmp(g);
         tmp.setBrush(QColorGroup::Button, QBrush(NoBrush));
-        QPlatinumStyle::drawArrow(p, Qt::DownArrow, false, w-15, y, 15, h,
+        QPlatinumStyle::drawArrow(p, type, false, x, y, w, h,
                                   tmp, true);
     }
     else{

@@ -211,9 +211,9 @@ public:
     virtual void drawSlider(QPainter *p, int x, int y, int w, int h,
                             const QColorGroup &g, Orientation, bool tickAbove,
                             bool tickBelow);
-//    void drawSliderGroove(QPainter *p, int x, int y, int w, int h,
-//                          const QColorGroup& g, QCOORD c,
-//                          Orientation );
+    void drawSliderGroove(QPainter *p, int x, int y, int w, int h,
+                          const QColorGroup& g, QCOORD c,
+                          Orientation );
     virtual void drawSliderMask(QPainter *p, int x, int y, int w, int h,
                                 Orientation, bool tickAbove, bool tickBelow);
 //    void drawSliderGrooveMask(QPainter *p,int x, int y, int w, int h,
