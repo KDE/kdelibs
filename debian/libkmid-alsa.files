@@ -8,3 +8,5 @@ usr/lib/libkmid.so.*
 usr/lib/libkmid.la
 usr/lib/libqtmcop.so.*
 usr/lib/libqtmcop.la
+usr/lib/libgmcop.so.*
+usr/lib/libgmcop.la

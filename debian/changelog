@@ -1,3 +1,10 @@
+kdelibs (4:2.2.2-7) unstable; urgency=low
+
+  * Break out bin files from kdelibs3 so that we can interoperate with
+    kdelibs4 easily.
+
+ -- Ivan E. Moore II <rkrusty@debian.org>  Fri, 14 Dec 2001 18:28:00 -0700
+
 kdelibs (4:2.2.2-6) unstable; urgency=low
 
   * sync with upstream
@@ -8,6 +15,8 @@ kdelibs (4:2.2.2-6) unstable; urgency=low
     kdelibs-dev since some older versions don't have the .la file
   * Put bug reporting back to KDE so the users are happy and the developers
     are not.
+  * Conflict (Closes: #123846)
+  * Update dh-make files
 
  -- Ivan E. Moore II <rkrusty@debian.org>  Thu, 13 Dec 2001 00:57:00 -0700
 
