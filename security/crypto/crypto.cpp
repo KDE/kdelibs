@@ -604,7 +604,7 @@ QString whatstr;
                 " to a file of various formats.");
   QWhatsThis::add(otherSSLExport, whatstr);
 
-  otherSSLRemove = new QPushButton(i18n("&Remove..."), tabOtherSSLCert);
+  otherSSLRemove = new QPushButton(i18n("&Remove"), tabOtherSSLCert);
   connect(otherSSLRemove, SIGNAL(clicked()), SLOT(slotRemoveCert()));
   grid->addWidget(otherSSLRemove, 1, 5);
   whatstr = i18n("This button removes the selected certificate"
