@@ -109,9 +109,9 @@ struct QIconViewPrivate
     QIconViewItem *currentItem, *tmpCurrentItem, *highlightedItem;
     QRect *rubber;
     QTimer *scrollTimer, *adjustTimer, *updateTimer, *inputTimer,
-	*singleClickSelectTimer;
+	*singleClickSelectTimer, *fullRedrawTimer;
     int rastX, rastY, spacing;
-    bool cleared, dropped;
+    bool cleared, dropped, clearing;
     int dragItems;
     int numSelectedItems;
     QPoint oldDragPos;
@@ -2002,7 +2002,9 @@ QIconView::QIconView( QWidget *parent, const char *name, WFlags f )
     d->hasOwnFont = FALSE;
     d->wordWrapIconText = TRUE;
     d->cachedContentsX = d->cachedContentsY = -1;
-
+    d->clearing = FALSE;
+    d->fullRedrawTimer = new QTimer( this );
+    
     connect( d->adjustTimer, SIGNAL( timeout() ),
 	     this, SLOT( adjustItems() ) );
     connect( d->updateTimer, SIGNAL( timeout() ),
@@ -2011,6 +2013,8 @@ QIconView::QIconView( QWidget *parent, const char *name, WFlags f )
 	     this, SLOT( clearInputString() ) );
     connect( d->singleClickSelectTimer, SIGNAL( timeout() ),
 	     this, SLOT( selectHighlightedItem() ) );
+    connect( d->fullRedrawTimer, SIGNAL( timeout() ),
+	     this, SLOT( updateContents() ) );
 
     setAcceptDrops( TRUE );
     viewport()->setAcceptDrops( TRUE );
@@ -2100,6 +2104,7 @@ void QIconView::insertItem( QIconViewItem *item, QIconViewItem *after )
 	if ( d->reorderItemsWhenInsert ) {
 	    if ( d->updateTimer->isActive() )
 		d->updateTimer->stop();
+	    d->fullRedrawTimer->stop();
 	    // #### uncomment this ASA insertInGrid uses cached values and is efficient
 	    //insertInGrid( item );
 	
@@ -2107,12 +2112,6 @@ void QIconView::insertItem( QIconViewItem *item, QIconViewItem *after )
 	    d->cachedH= QMAX( d->cachedH, item->y() + item->height() );
 
 	    d->updateTimer->start( 100, TRUE );
- 	    if ( count() == 50 ) {
-		bool b = d->resortItemsWhenInsert;
-		d->resortItemsWhenInsert = FALSE;
- 		slotUpdate();
-		d->resortItemsWhenInsert = b;
-	    }
 	} else {
 	    insertInGrid( item );
 	}
@@ -2133,7 +2132,8 @@ void QIconView::insertItem( QIconViewItem *item, QIconViewItem *after )
 void QIconView::slotUpdate()
 {
     d->updateTimer->stop();
-
+    d->fullRedrawTimer->stop();
+    
     // #### remove that ASA insertInGrid uses cached values and is efficient
     if ( d->resortItemsWhenInsert )
 	sort( d->sortDirection );
@@ -2217,7 +2217,8 @@ void QIconView::removeItem( QIconViewItem *item )
 	}
     }
 
-    repaintContents( r.x(), r.y(), r.width(), r.height(), TRUE );
+    if ( !d->clearing )
+	repaintContents( r.x(), r.y(), r.width(), r.height(), TRUE );
 
     d->count--;
 }
@@ -2464,7 +2465,7 @@ void QIconView::drawContents( QPainter *p, int cx, int cy, int cw, int ch )
   iconview->sort( iconview->sortDirection() );
 
   If \a update is TRUE, the viewport is repainted.
-  
+
   \sa QIconView::setGridX(), QIconView::setGridY(), QIconView::sort()
 */
 
@@ -2516,7 +2517,7 @@ void QIconView::alignItemsInGrid( bool update )
   (see QSize::isValid(), an invalid size is created when using
   the default constructor of QSize())
   the best fitting grid is calculated first and used then.
-  
+
   if \a update is TRUE, the viewport is repainted.
 
 */
@@ -2774,8 +2775,10 @@ void QIconView::clearSelection()
 void QIconView::selectAll( bool select )
 {
     QIconViewItem *item = d->firstItem;
-    for ( ; item; item = item->next )
-	item->setSelected( select );
+    for ( ; item; item = item->next ) {
+	if ( select != item->isSelected() )
+	    item->setSelected( select );
+    }
 }
 
 /*!
@@ -2839,11 +2842,10 @@ QIconViewItem* QIconView::findFirstVisibleItem() const
 
 void QIconView::clear()
 {
+    d->clearing = TRUE;
     blockSignals( TRUE );
     clearSelection();
     blockSignals( FALSE );
-    resizeContents( visibleWidth() - verticalScrollBar()->width(),
-		    visibleHeight() - horizontalScrollBar()->width() );
     setContentsPos( 0, 0 );
 
     if ( !d->firstItem )
@@ -2864,9 +2866,11 @@ void QIconView::clear()
     d->tmpCurrentItem = 0;
     d->drawDragShapes = FALSE;
 
-    viewport()->repaint( FALSE );
+    // maybe we don´t need this update, so delay it
+    d->fullRedrawTimer->start( 0, TRUE );
 
     d->cleared = TRUE;
+    d->clearing = FALSE;
 }
 
 /*!
@@ -4546,7 +4550,7 @@ static int cmpIconViewItems( const void *n1, const void *n2 )
 }
 
 /*!
-  Sorts the items of the listview and re-aligns them afterwards. 
+  Sorts the items of the listview and re-aligns them afterwards.
   If \a ascending is TRUE, the items
   are sorted in increasing order, else in decreasing order. For sorting
   QIconViewItem::compare() is used. The default sort direction is set to
@@ -4560,7 +4564,7 @@ void QIconView::sort( bool ascending )
 {
     if ( count() == 0 )
 	return;
-    
+
     d->sortDirection = ascending;
     QIconViewPrivate::SortableItem *items = new QIconViewPrivate::SortableItem[ count() ];
 
@@ -4638,6 +4642,15 @@ QSize QIconView::sizeHint() const
 //     return QSize( QMIN( 400, w ), QMIN( 400, h ) );
 
     return QSize( 400, 400 );
+}
+
+/*!
+  \internal
+*/
+
+void QIconView::updateContents()
+{
+    viewport()->repaint( FALSE );
 }
 
 #include "qiconview.moc"

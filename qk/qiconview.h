@@ -414,7 +414,8 @@ protected slots:
     virtual void adjustItems();
     virtual void slotUpdate();
     virtual void selectHighlightedItem();
-
+    virtual void updateContents();
+    
 private slots:
     void clearInputString();
 
