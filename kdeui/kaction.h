@@ -1301,15 +1301,17 @@ public:
 
     /**
        Returns true if this action creates a delayed popup menu
-       when plugged in a KToolbar
+       when plugged in a KToolbar.
      */
     bool delayed() const;
     /**
        If set to true, this action will create a delayed popup menu
        when plugged in a KToolbar. Otherwise it creates a normal popup.
        Default: delayed.
-     */
+    */
     void setDelayed(bool _delayed);
+    // If you want to use a popup in a toolbar, and not in a menu, you might
+    // as well have a look at KToolBarPopupAction
 
     virtual int plug( QWidget* widget, int index = -1 );
     virtual void unplug( QWidget* widget );
@@ -1329,6 +1331,98 @@ private:
 
     class KActionMenuPrivate;
     KActionMenuPrivate *d;
+};
+
+/**
+ * This action is a normal action everywhere, except in a toolbar
+ * where it also has a delayed popupmenu. This action is designed
+ * for history actions (back/forward, undo/redo) and for any other action
+ * that has more detail in a toolbar than in a menu (e.g. tool chooser
+ * with "Other" leading to a dialog...).
+ */
+class KToolBarPopupAction : public KAction
+{
+  Q_OBJECT
+public:
+    //Not all constructors - because we need an icon, since this action only makes
+    // sense in a toolbar (as well as menubar)
+    /**
+     * Create a KToolBarPopupAction, with a text, an icon, an optionnal accelerator,
+     * parent and name.
+     *
+     * @param text The text that will be displayed.
+     * @param icon The icon to display.
+     * @param accel The corresponding keyboard accelerator (shortcut).
+     * @param parent This action's parent.
+     * @param name An internal name for this action.
+     */
+    KToolBarPopupAction( const QString& text, const QString& icon, int accel = 0,
+                         QObject* parent = 0, const char* name = 0 );
+
+    /**
+     * Create a KToolBarPopupAction, with a text, an icon, an accelerator,
+     * a slot connected to the action, parent and name.
+     *
+     * If you do not want or have a keyboard accelerator, set the
+     * @p accel param to 0.
+     *
+     * @param text The text that will be displayed.
+     * @param icon The icon to display.
+     * @param accel The corresponding keyboard accelerator (shortcut).
+     * @param receiver The SLOT's owner.
+     * @param slot The SLOT to invoke to execute this action.
+     * @param parent This action's parent.
+     * @param name An internal name for this action.
+     */
+    KToolBarPopupAction( const QString& text, const QString& icon, int accel,
+                         const QObject* receiver, const char* slot,
+                         QObject* parent = 0, const char* name = 0 );
+
+    virtual ~KToolBarPopupAction();
+
+    virtual int plug( QWidget *widget, int index = -1 );
+    virtual void unplug( QWidget *widget );
+
+    /**
+     * The popup menu that is shown when clicking (some time) on the toolbar
+     * button. You may want to plug items into it on creation, or connect to
+     * aboutToShow for a more dynamic menu.
+     */
+    QPopupMenu *popupMenu();
+
+    /**
+     * Returns true if this action creates a delayed popup menu
+     * when plugged in a KToolbar.
+     */
+    bool delayed() const;
+    /**
+     * If set to true, this action will create a delayed popup menu
+     * when plugged in a KToolbar. Otherwise it creates a normal popup.
+     * Default: delayed.
+     */
+    void setDelayed(bool delayed);
+    /**
+     * Returns true if this action creates a sticky popup menu.
+     * See @ref setStickyMenu.
+     */
+    bool stickyMenu() const;
+    /**
+     * If set to true, this action will create a sticky popup menu
+     * when plugged in a KToolbar.
+     * "Sticky", means it's visible until a selection is made or the mouse is
+     * clicked elsewhere. This feature allows you to make a selection without
+     * having to press and hold down the mouse while making a selection.
+     * Only available if delayed() is true.
+     * Default: sticky.
+     */
+    void setStickyMenu(bool sticky);
+
+private:
+    QPopupMenu *m_popup;
+    bool m_delayed:1;
+    bool m_stickyMenu:1;
+    class KToolBarPopupActionPrivate;
+    KToolBarPopupActionPrivate *d;
 };
 
 class KActionSeparator : public KAction

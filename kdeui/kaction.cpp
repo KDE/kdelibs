@@ -2072,7 +2072,6 @@ KActionMenu::KActionMenu( QObject* parent, const char* name )
   : KAction( parent, name )
 {
   d = new KActionMenuPrivate;
-  setDelayed(true);
 }
 
 KActionMenu::KActionMenu( const QString& text, QObject* parent,
@@ -2297,6 +2296,111 @@ void KActionMenu::setIconSet( int id, const QIconSet& iconSet )
 
   KAction::setIconSet( id, iconSet );
 }
+
+////////
+
+KToolBarPopupAction::KToolBarPopupAction( const QString& text, const QString& icon, int accel, QObject* parent, const char* name )
+  : KAction( text, icon, accel, parent, name )
+{
+  m_popup = 0;
+  m_delayed = true;
+  m_stickyMenu = true;
+}
+
+KToolBarPopupAction::KToolBarPopupAction( const QString& text, const QString& icon, int accel, const QObject* receiver, const char* slot, QObject* parent, const char* name )
+  : KAction( text, icon, accel, receiver, slot, parent, name )
+{
+  m_popup = 0;
+  m_delayed = true;
+  m_stickyMenu = true;
+}
+
+KToolBarPopupAction::~KToolBarPopupAction()
+{
+  if ( m_popup )
+    delete m_popup;
+}
+
+bool KToolBarPopupAction::delayed() const {
+    return m_delayed;
+}
+
+void KToolBarPopupAction::setDelayed(bool delayed) {
+    m_delayed = delayed;
+}
+
+bool KToolBarPopupAction::stickyMenu() const {
+    return m_stickyMenu;
+}
+
+void KToolBarPopupAction::setStickyMenu(bool sticky) {
+    m_stickyMenu = sticky;
+}
+
+int KToolBarPopupAction::plug( QWidget *widget, int index )
+{
+  // This is very related to KActionMenu::plug.
+  // In fact this class could be an interesting base class for KActionMenu
+  if ( widget->inherits( "KToolBar" ) )
+  {
+    KToolBar *bar = (KToolBar *)widget;
+
+    int id_ = KAction::getToolButtonID();
+
+    KInstance * instance;
+    if ( m_parentCollection )
+        instance = m_parentCollection->instance();
+    else
+        instance = KGlobal::instance();
+
+    bar->insertButton( icon(), id_, SIGNAL( clicked() ), this,
+                       SLOT( slotActivated() ), isEnabled(), plainText(),
+                       index, instance );
+
+    addContainer( bar, id_ );
+
+    connect( bar, SIGNAL( destroyed() ), this, SLOT( slotDestroyed() ) );
+
+    if (delayed()) {
+        bar->setDelayedPopup( id_, popupMenu(), stickyMenu() );
+    } else {
+        bar->getButton(id_)->setPopup(popupMenu());
+    }
+
+    return containerCount() - 1;
+  }
+
+  return KAction::plug( widget, index );
+}
+
+void KToolBarPopupAction::unplug( QWidget *widget )
+{
+  if ( widget->inherits( "KToolBar" ) )
+  {
+    KToolBar *bar = (KToolBar *)widget;
+
+    int idx = findContainer( bar );
+
+    if ( idx != -1 )
+    {
+      bar->removeItem( menuId( idx ) );
+      removeContainer( idx );
+    }
+
+    return;
+  }
+
+  KAction::unplug( widget );
+}
+
+QPopupMenu *KToolBarPopupAction::popupMenu()
+{
+  if ( !m_popup )
+      m_popup = new KPopupMenu;
+  return m_popup;
+}
+
+////////
 
 KActionSeparator::KActionSeparator( QObject *parent, const char *name )
   : KAction( parent, name )
