@@ -731,11 +731,25 @@ void
 KMessageBox::error(QWidget *parent,  const QString &text,
                    const QString &caption, int options)
 {
-    return errorWId( parent ? parent->winId() : 0, text, caption, options );
+    return errorListWId( parent ? parent->winId() : 0, text, QStringList(), caption, options );
 }
 
 void
-KMessageBox::errorWId(WId parent_id,  const QString &text,
+KMessageBox::errorWId(WId parent_id, const QString &text,
+                      const QString &caption, int options)
+{
+    errorListWId( parent_id, text, QStringList(), caption, options );
+}
+
+void
+KMessageBox::errorList(QWidget *parent, const QString &text, const QStringList &strlist,
+                       const QString &caption, int options)
+{
+    return errorListWId( parent ? parent->winId() : 0, text, strlist, caption, options );
+}
+
+void
+KMessageBox::errorListWId(WId parent_id,  const QString &text, const QStringList &strlist,
                    const QString &caption, int options)
 {
     QWidget* parent = QWidget::find( parent_id );
@@ -752,7 +766,7 @@ KMessageBox::errorWId(WId parent_id,  const QString &text,
         XSetTransientForHint( qt_xdisplay(), dialog->winId(), parent_id );
 #endif
 
-    createKMessageBox(dialog, QMessageBox::Critical, text, QStringList(), QString::null, 0, options);
+    createKMessageBox(dialog, QMessageBox::Critical, text, strlist, QString::null, 0, options);
 }
 
 void

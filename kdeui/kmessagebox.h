@@ -604,10 +604,57 @@ public:
  /**
   * This function accepts the window id of the parent window, instead
   * of QWidget*. It should be used only when necessary.
+  *
   * @since 3.2
   */
   static void errorWId(WId parent_id,
                     const QString &text,
+                    const QString &caption = QString::null,
+                    int options = Notify);
+
+ /**
+  * Display an "Error" dialog with a listbox.
+  *
+  * @param parent  If @p parent is 0, then the message box becomes an
+  *                application-global modal dialog box. If @p parent is a
+  *                widget, the message box becomes modal relative to parent.
+  * @param text    Message string.
+  * @param strlist List of strings to be written in the listbox. If the
+  *                list is empty, it doesn't show any listbox, working
+  *                as error().
+  * @param caption Message box title. The application name is added to
+  *                the title. The default title is i18n("Error").
+  * @param options  see OptionsType
+  *
+  * Your program messed up and now it's time to inform the user.
+  * To be used for important things like "Sorry, I deleted your hard disk."
+  *
+  * If your program detects the action specified by the user is somehow
+  * not allowed, this should never be reported with error(). Use sorry()
+  * instead to explain to the user that this action is not allowed.
+  *
+  * The default button is "&OK". Pressing "Esc" selects the OK-button.
+  *
+  * NOTE: The OK button will always have the i18n'ed text '&OK'.
+  *
+  * @since 3.4
+  */
+
+  static void errorList(QWidget *parent,
+                    const QString &text,
+                    const QStringList &strlist,
+                    const QString &caption = QString::null,
+                    int options = Notify);
+
+ /**
+  * This function accepts the window id of the parent window, instead
+  * of QWidget*. It should be used only when necessary.
+  * @since 3.4
+  */
+
+  static void errorListWId(WId parent_id,
+                    const QString &text,
+                    const QStringList &strlist,
                     const QString &caption = QString::null,
                     int options = Notify);
 
