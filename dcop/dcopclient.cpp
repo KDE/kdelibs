@@ -34,6 +34,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include <ctype.h>
 #include <unistd.h>
 #include <stdlib.h>
+#include <assert.h>
 
 #ifndef QT_CLEAN_NAMESPACE
 #define QT_CLEAN_NAMESPACE
@@ -377,6 +378,18 @@ void DCOPClient::bindToApp()
 	connect(d->notifier, SIGNAL(activated(int)),
 		SLOT(processSocketData(int)));
     }
+}
+
+void DCOPClient::suspend()
+{
+  assert(d->notifier); // Suspending makes no sense if we didn't had a qApp yet
+  d->notifier->setEnabled(false);
+}
+
+void DCOPClient::resume()
+{
+  assert(d->notifier); // Should never happen
+  d->notifier->setEnabled(true);
 }
 
 bool DCOPClient::attachInternal( bool registerAsAnonymous )

@@ -159,11 +159,28 @@ class DCOPClient : public QObject
   */
   QCString appId() const;
 
-
   /**
    * @return The socket over which DCOP is communicating with the server.
    */
   int socket() const;
+
+  /**
+   * Temporarily suspend processing of DCOP events.
+   * This can be usefull if you need to show e.g. a dialog before
+   * your application is ready to accept DCOP requests. Normally the
+   * dialog would start an event loop and in this event loop DCOP 
+   * requests will be handled.
+   *
+   * Be aware that not responding to DCOP requests may cause other
+   * programs that want to communicate with your application, to hang.
+   */
+  void suspend();
+  
+  /**
+   * Resume the processing of DCOP events.
+   * See @ref suspend().
+   */
+  void resume();
 
   /**
    * Send a data block to the server.
