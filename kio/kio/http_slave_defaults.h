@@ -27,7 +27,7 @@
 #define DEFAULT_MAX_CACHE_AGE           60*60*24*14     // 14 DAYS
 #define DEFAULT_CACHE_EXPIRE            3*60            // 3 MINS
 #define DEFAULT_CLEAN_CACHE_INTERVAL    30*60           // 30 MINS
-#define DEFAULT_CACHE_CONTROL           KIO::CC_Verify  // Verify with remote
+#define DEFAULT_CACHE_CONTROL           KIO::CC_Refresh // Verify with remote
 #define CACHE_REVISION                  "7\n"           // Cache version
 
 // DEFAULT USER AGENT KEY - ENABLES OS NAME
