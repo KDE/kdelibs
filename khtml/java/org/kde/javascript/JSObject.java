@@ -15,7 +15,7 @@ public class JSObject extends netscape.javascript.JSObject {
     /* JavaScript code:
      * __lc=[[JS objects],call func(index,script,appletname,isglobal)]
      */
-    private final String decls = "if(!window.__lc) window.__lc=[[window],function(i,s,a,g){var r;var len=window.__lc[0].length;if(i>=len)r='E ';else{try{r=eval((g?'':'window.__lc[0][i]')+s);}catch(e){r='E ';}finally{var t=typeof r;var v;if(t=='undefined')v='V ';else if(t=='number')v='N '+r;else if(t=='string')if(r=='E ')v='E ';else v='S '+r;else{window.__lc[0][len]=r;v=''+len+' '+(r==window.__lc?'[array]':r);}}}a.__lc_ret=v},0]";
+    private final String decls = "if(!window.__lc) window.__lc=[[window],function(i,s,a,g){var v;var len=window.__lc[0].length;if(i>=len)v='E unknown object';else{var r;try{r=eval((g?'':'window.__lc[0][i]')+s);}catch(e){v='E '+e;r='E ';}finally{var t=typeof r;if(t=='undefined')v='V ';else if(t=='number')v='N '+r;else if(t=='string'){if(r!='E ')v='S '+r;}else{window.__lc[0][len]=r;v=''+len+' '+(r==window.__lc?'[array]':r);}}}a.__lc_ret=v},0]";
 
     public JSObject(Applet a, String name, int _id) {
         Main.info("JSObject.ctor: " + name);
@@ -93,11 +93,11 @@ public class JSObject extends netscape.javascript.JSObject {
         String retval = returnvalue;
         int pos = retval.indexOf(' ');
         String type = retval.substring(0, pos);
-        if (type.equals("E")) // Error
-            throw new netscape.javascript.JSException("Script error");
         if (type.equals("V")) // Void
             return null;
         String value = retval.substring(pos+1);
+        if (type.equals("E")) // Error
+            throw new netscape.javascript.JSException("Script error: " + value);
         Main.info("value=" + value + " (type=" + type + ")");
         if (type.equals("N")) // Number
             return new Double(value);
@@ -139,7 +139,7 @@ public class JSObject extends netscape.javascript.JSObject {
     public Object call(String func, Object [] args) throws netscape.javascript.JSException {
         Main.info("JSObject.call: " + jsobject + "." + func);
         String script = new String("." + func + "(");
-        for (int i = 0; i < args.length; i++)
+        for (int i = 0; args != null && i < args.length; i++)
             script += (i > 0 ? "," : "") + convertValueJ2JS(args[i]);
         script += ")";
         return evaluate(script, false);
