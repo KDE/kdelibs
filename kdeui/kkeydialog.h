@@ -119,17 +119,12 @@ class KKeyChooser : public QWidget
 	void buildListView( uint iList );
 
 	void readGlobalKeys();
-	//void readStdKeys();
 
 	void updateButtons();
 	void fontChange( const QFont& _font );
 	void setShortcut( const KShortcut& cut );
 	bool isKeyPresent( const KShortcut& cut, bool warnuser = true );
 	void _warning( const KKeySequence& seq, QString sAction, QString sTitle );
-
-	void allDefault( QListViewItem* );
-
-	void commitChanges( QListViewItem* pItem );
 
  protected slots:
 	void slotNoKey();

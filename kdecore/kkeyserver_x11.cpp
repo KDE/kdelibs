@@ -317,9 +317,10 @@ QString Sym::toString( bool bUserSpace ) const
 	// If it's a unicode character,
 	if( m_sym < 0x3000 ) {
 		QChar c = QChar(m_sym).upper();
-		// Print all unicode characters directly when output is user-visible.
+		// Print all non-space characters directly when output is user-visible.
 		// Otherwise only print alphanumeric latin1 characters directly (A,B,C,1,2,3).
-		if( bUserSpace || (c.latin1() && c.isLetterOrNumber()) )
+		if( (c.latin1() && c.isLetterOrNumber())
+		    || (bUserSpace && !c.isSpace()) )
 				return c;
 	}
 
@@ -366,59 +367,6 @@ void Sym::capitalizeKeyname( QString& s )
 	else if( s.endsWith( "right" ) ) s[len-5] = 'R';
 	else if( s == "Sysreq" )         s[len-3] = 'R';
 }
-
-//---------------------------------------------------------------------
-// class SymMod
-//---------------------------------------------------------------------
-
-// getModsRequiredForSym( int sym ) & g_rgModInfosymInfoPtr( sym );
-/*void SymMod::init( int sym )
-{
-	m_sym = sym;
-	...
-}*/
-
-// keyCodeXToKeySymX( (uchar) code, (uint) mod );
-/*void SymMod::initX( uchar codeX, uint modX )
-{
-	XKeyPressedEvent event;
-
-	event.type = KeyPress;
-	event.display = qt_xdisplay();
-	event.state = modX;
-	event.keycode = codeX;
-
-	XLookupString( &event, 0, 0, (KeySym*) &m_sym, 0 );
-	modXToMod( modX, m_mod );
-}
-*/
-// KKeySequenceOlds( QString )
-//void SymMod::init( const QString& );
-/*
-void SymMod::initModQt( int keyQt )
-{
-	// Get modifiers
-	m_mod = 0;
-	for( uint i = 0; i < KKey::MOD_FLAG_COUNT; i++ ) {
-		if( keyQt & g_rgModInfo[i].modQt )
-			m_mod |= g_rgModInfo[i].modKDE;
-	}
-	return true;
-}
-
-bool SymMod::initSymQt( int keyQt )
-{
-	if( keyQt < 0x1000 || (keyQt & Qt::UNICODE_ACCEL) )
-		m_sym = keyQt & 0xffff;
-	else
-}
-*/
-// keySymXToKeyQt( sym, 0 );
-//int SymMod::qt() const;
-
-// keySymXToString( symNative, 0, true );
-//QString SymMod::toStringInternal() const;
-//QString SymMod::toStringUser() const;
 
 //---------------------------------------------------------------------
 // Public functions
@@ -560,9 +508,6 @@ bool codeXToSym( uchar codeX, uint modX, uint& sym )
 	XLookupString( &event, 0, 0, (KeySym*) &sym, 0 );
 	return true;
 }
-
-//QString symToStringInternal( uint sym ) { return Sym(sym).toStringInternal(); }
-//QString symToStringUser( uint sym ) { return Sym(sym).toStringInternal(); }
 
 static QString modToString( uint mod, bool bUserSpace )
 {

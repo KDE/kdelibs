@@ -227,18 +227,11 @@ void KKeyChooser::commitChanges()
 {
 	kdDebug(125) << "KKeyChooser::commitChanges()" << endl;
 
-	for( QListViewItem* pChild = d->pList->firstChild(); pChild; pChild = pChild->nextSibling() )
-		commitChanges( pChild );
-}
-
-void KKeyChooser::commitChanges( QListViewItem* pItem )
-{
-	KKeyChooserItem* pShortcutItem = dynamic_cast<KKeyChooserItem*>(pItem);
-	if( pShortcutItem )
-		pShortcutItem->commitChanges();
-	else {
-		for( QListViewItem* pChild = pItem->firstChild(); pChild; pChild = pChild->nextSibling() )
-			commitChanges( pChild );
+	QListViewItemIterator it( d->pList );
+	for( ; it.current(); ++it ) {
+		KKeyChooserItem* pItem = dynamic_cast<KKeyChooserItem*>(it.current());
+		if( pItem ) 
+			pItem->commitChanges();
 	}
 }
 
@@ -499,32 +492,6 @@ void KKeyChooser::slotCustomKey()
 	d->bChange->captureShortcut();
 }
 
-/*
-void KKeyChooser::readKeysInternal( QMap<KKeySequence, QString>& map, const QString& group )
-{
-	map.clear();
-
-	// Insert all keys into dict
-	int *keyCode;
-	KConfig pConfig;
-	QMap<QString, QString> tmpMap = pConfig.entryMap( group );
-	QMap<QString, QString>::Iterator gIt(tmpMap.begin());
-	for (; gIt != tmpMap.end(); ++gIt) {
-	if ( (*gIt).isEmpty() || *gIt == "default" )  // old code used to write just "default"
-		continue;                                //  which is not enough
-	kdDebug( 125 ) << gIt.key() << " " << *gIt << endl;
-	QString tmp = *gIt;
-	if( tmp.startsWith( "default(" )) {
-		int pos = tmp.findRev( ')' );
-		if( pos >= 0 ) // this should be really done with regexp
-		tmp = tmp.mid( 8, pos - 8 );
-	}
-	keyCode = new int;
-	*keyCode = KKeySequence::stringToKeyQt( tmp );
-	dict->insert( gIt.key(), keyCode);
-	}
-}*/
-
 void KKeyChooser::readGlobalKeys()
 {
 	QMap<QString, QString> mapEntry = KGlobal::config()->entryMap( "Global Shortcuts" );
@@ -545,7 +512,7 @@ void KKeyChooser::fontChange( const QFont & )
 void KKeyChooser::allDefault()
 {
 	kdDebug(125) << "KKeyChooser::allDefault()" << endl;
-	
+
 	QListViewItemIterator it( d->pList );
 	for( ; it.current(); ++it ) {
 		KKeyChooserItem* pItem = dynamic_cast<KKeyChooserItem*>(it.current());
@@ -555,33 +522,6 @@ void KKeyChooser::allDefault()
 
 	updateButtons();
 	emit keyChange();
-}
-
-/*void KKeyChooser::allDefault( bool useFourModifierKeys )
-{
-	// Change all configKeyCodes to default values
-	kdDebug(125) << QString( "KKeyChooser::allDefault( %1 )\n" ).arg( useFourModifierKeys );
-
-	for( uint i = 0; i < d->actionsNew.count(); i++ ) {
-		KAccelAction& action = *d->actionsNew.actionPtr( i );
-		action.setShortcut( action.shortcutDefault() );
-	}
-
-	emit keyChange();
-	update();
-	updateButtons();
-}*/
-
-// TODO: Remove this
-void KKeyChooser::allDefault( QListViewItem* pItem )
-{
-	KKeyChooserItem* pShortcutItem = dynamic_cast<KKeyChooserItem*>(pItem);
-	if( pShortcutItem )
-		pShortcutItem->setShortcut( pShortcutItem->shortcutDefault() );
-	else {
-		for( QListViewItem* pChild = pItem->firstChild(); pChild; pChild = pChild->nextSibling() )
-			commitChanges( pChild );
-	}
 }
 
 void KKeyChooser::slotListItemSelected( QListViewItem* )
@@ -603,7 +543,7 @@ void KKeyChooser::capturedShortcut( const KShortcut& cut )
 }
 
 // FIXME: give this functionality again -- I don't think it's ever used, though. -- ellis
-// It's used in kdebase/kcontrol/keys/shortcuts.cpp
+// TODO: Check lxr.kde.org to see if it's used anywhere
 void KKeyChooser::listSync()
 {
 /*	kdDebug(125) << "KKeyChooser::listSync()" << endl;
@@ -640,7 +580,6 @@ void KKeyChooser::syncToConfig( const QString& sConfigGroup, KConfigBase* pConfi
 			kdDebug(125) << pItem->actionName() << " = " << pItem->shortcut().toStringInternal() << endl;
 		}
 	}
-	//d->pList->update();
 	updateButtons();
 	kdDebug(125) << "KKeyChooser::syncToConfig() done" << endl;
 }
@@ -661,7 +600,7 @@ void KKeyChooser::setShortcut( const KShortcut& cut )
 			KMessageBox::sorry( this, s, i18n("Invalid Shortcut Key") );
 			return;
 		}
-		if( !d->bAllowLetterShortcuts && key.modFlags() == 0 
+		if( !d->bAllowLetterShortcuts && key.modFlags() == 0
 		    && key.key() < 0x3000 && QChar(key.key()).isLetterOrNumber() ) {
 			QString s = i18n( 	"In order to use the '%1' key as a shortcut, "
 						"it must be combined with the "
