@@ -94,9 +94,7 @@ kckey_h : $(srcdir)/generate_keys.sh $(QNAMESPACE_H)
 	(cd $(srcdir) && ./generate_keys.sh $(QNAMESPACE_H))
 
 install-data-local:
-	$(mkinstalldirs) $(includedir)
 	$(mkinstalldirs) $(includedir)/kio
-	$(INSTALL_DATA) $(srcdir)/../libltdl/ltdl.h $(includedir)/ltdl.h
 	$(mkinstalldirs) $(kde_datadir)/knotify
 	$(INSTALL_DATA) $(srcdir)/eventsrc $(kde_datadir)/knotify/eventsrc
 	$(mkinstalldirs) $(kde_confdir)/colors
@@ -106,7 +104,6 @@ install-data-local:
 	$(INSTALL_DATA) $(srcdir)/kmdcodec_compat.h $(includedir)/kio/kmdcodec.h
 
 uninstall-local:
-	-rm -f $(includedir)/ltdl.h
 	-rm -f $(includedir)/kio/kmdcodec.h
 
 EXTRA_DIST = generate_keys.sh $(kdebug_DATA) Web.colors \
