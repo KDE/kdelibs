@@ -1318,7 +1318,7 @@ void KDirDialog::updateStatusLine()
     if ( fileList->numDirs() == 1 )
         lDirText = i18n("one directory");
     else
-	lDirText.sprintf("%d directories", fileList->numDirs());
+	lDirText.sprintf(i18n("%d directories"), fileList->numDirs());
 
     myStatusLine->setText(lDirText);
 }
