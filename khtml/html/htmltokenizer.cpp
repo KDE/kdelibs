@@ -6,7 +6,8 @@
               (C) 1998 Waldo Bastian (bastian@kde.org)
               (C) 1999 Lars Knoll (knoll@kde.org)
               (C) 1999 Antti Koivisto (koivisto@kde.org)
-              (C) 2001 Dirk Mueller (mueller@kde.org)
+              (C) 2001-2003 Dirk Mueller (mueller@kde.org)
+              (C) 2002 Apple Computer, Inc.
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -749,10 +750,14 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
                         // Found '<!--' sequence
                         ++src;
                         dest = buffer; // ignore the previous part of this tag
-                        comment = true;
                         tag = NoTag;
-                        parseComment(src);
 
+                        comment = true;
+                        // push what we parsed so far upon the stack. helps for <!-->
+                        checkScriptBuffer();
+                        scriptCode[0] = scriptCode[1] = '-';
+                        scriptCodeSize = 2;
+                        parseComment(src);
                         return; // Finished parsing tag!
                     }
                     // cuts of high part, is okay
