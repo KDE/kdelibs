@@ -1135,12 +1135,13 @@ void KFileDialog::setSelection(const QString& url)
      */
     KFileViewItem i((unsigned) -1, (unsigned)-1, u, true );
     //    KFileViewItem i(u.path());
-    if ( i.isDir() && u.isLocalFile() && QFile::exists( u.path() ) )
+    if ( i.isDir() && u.isLocalFile() && QFile::exists( u.path() ) ) {
         // trust isDir() only if the file is
         // local (we cannot stat non-local urls) and if it exists!
         // (as KFileItem does not check if the file exists or not
         // -> the statbuffer is undefined -> isDir() is unreliable) (Simon)
         setURL(u, true);
+    }
     else {
         QString filename = u.url();
         int sep = filename.findRev('/');
@@ -1477,7 +1478,8 @@ QString KFileDialog::getSaveFileName(const QString& dir, const QString& filter,
                                      QWidget *parent,
                                      const QString& caption)
 {
-    KFileDialog dlg(dir, filter, parent, "filedialog", true);
+    KFileDialog dlg(QString::null, filter, parent, "filedialog", true);
+    dlg.setSelection( dir ); // may also be a filename
     dlg.setOperationMode( Saving );
     dlg.setCaption(caption.isNull() ? i18n("Save As") : caption);
 
@@ -1493,7 +1495,8 @@ QString KFileDialog::getSaveFileName(const QString& dir, const QString& filter,
 KURL KFileDialog::getSaveURL(const QString& dir, const QString& filter,
                              QWidget *parent, const QString& caption)
 {
-    KFileDialog dlg(dir, filter, parent, "filedialog", true);
+    KFileDialog dlg(QString::null, filter, parent, "filedialog", true);
+    dlg.setSelection( dir ); // may also be a filename
     dlg.setCaption(caption.isNull() ? i18n("Save As") : caption);
     dlg.setOperationMode( Saving );
 
