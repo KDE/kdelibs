@@ -216,6 +216,14 @@ public:
    * @return the name of the host or QString::null if no host is set
    **/
   QString host() const { return m_strHost; }
+
+  /**
+   * Returns the decoded hostname included in the URL in Unicode
+   * representation for use in UI elements.
+   * @return the name of the host or QString::null if no host is set
+   **/
+  QString prettyHost() const;
+
   /**
    * Sets the hostname included in the URL.
    *

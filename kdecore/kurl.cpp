@@ -1847,6 +1847,12 @@ void KURL::addQueryItem( const QString& _item, const QString& _value, int encodi
   m_strQuery_encoded += item + value;
 }
 
+QString KURL::prettyHost() const 
+{ 
+   return KIDNA::toUnicode(m_strHost);
+}
+
+
 // static
 KURL KURL::fromPathOrURL( const QString& text )
 {
