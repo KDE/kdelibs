@@ -726,13 +726,11 @@ signals:
   /**
    * This signal is emitted whenever an asynchronous lookup process is done.
    * The parameter @p count tells how many results were found.
-   * You may not delete this object from this signal.
    */
   void lookupFinished(int count);
 
   /**
    * This signal is emitted whenever we connected asynchronously to a host.
-   * You may not delete this object from this signal.
    */
   void connectionSuccess();
 
@@ -740,7 +738,6 @@ signals:
    * This signal is emitted whenever our asynchronous connection attempt
    * failed to all hosts listed.
    * @param error	the errno code of the last connection attempt
-   * You may not delete this object from this signal.
    */
   void connectionFailed(int error);
 
@@ -748,7 +745,6 @@ signals:
    * This signal is emitted whenever this socket is ready to accept another
    * socket.
    * @see accept
-   * You may not delete this object from this signal.
    */
   void readyAccept();
 

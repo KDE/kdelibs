@@ -47,6 +47,7 @@
 #include <qiodevice.h>
 #include <qsocketnotifier.h>
 #include <qdns.h>
+#include <qguardedptr.h>
 
 #include "kdebug.h"
 #include "kextsock.h"
@@ -1398,7 +1399,10 @@ int KExtendedSocket::startAsyncConnect()
   // here we have d->status >= lookupDone and <= connecting
   // we can do our connection
   d->status = connecting;
+  QGuardedPtr<QObject> p = this;
   connectionEvent();
+  if (!p) 
+    return -1; // We have been deleted.
   if (d->status < connecting)
     return -1;
   return 0;
@@ -2079,8 +2083,10 @@ void KExtendedSocket::connectionEvent()
     }
 
   // if we got here, it means that there are no more options to connect
+  QGuardedPtr<QObject> ptr = this;
   emit connectionFailed(errcode);
-  d->status = lookupDone;	// go back
+  if (ptr) // As long as we aren't deleted.
+    d->status = lookupDone;	// go back
 }
 
 void KExtendedSocket::dnsResultsReady()
