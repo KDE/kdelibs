@@ -275,7 +275,7 @@ HTTPProtocol::HTTPProtocol( Connection *_conn ) : IOProtocol( _conn )
   Authentication = AUTH_None;
   ProxyAuthentication = AUTH_None;
 
-  HTTP = HTTP_Unknown;
+  m_HTTPrev = HTTP_Unknown;
 }
 
 bool HTTPProtocol::initSockaddr( struct sockaddr_in *server_name, const char *hostname, int port)
@@ -292,6 +292,7 @@ bool HTTPProtocol::initSockaddr( struct sockaddr_in *server_name, const char *ho
   server_name->sin_addr = *(struct in_addr*) hostinfo->h_addr;
   return true;
 }
+
 
 bool HTTPProtocol::http_open( KURL &_url, const char* _post_data, int _post_data_size, bool _reload, unsigned long _offset )
 {
@@ -432,10 +433,6 @@ bool HTTPProtocol::http_open( KURL &_url, const char* _post_data, int _post_data
 
   command += "\r\n";  /* end header */
 
-  /* debug( "http_open 4");
-     debug( "kio_http : ############### HEADER #############\n%s", command.c_str() );
-     debug( "http_open 5");*/
-
   int n;
 repeat1:
   if ( ( n = write( m_sock, command.c_str(), command.size() ) ) != (int)command.size() ) {
@@ -475,7 +472,7 @@ repeat2:
       m_strMimeType = f_buffer + 14;
     }
     else if ( strncasecmp( f_buffer, "HTTP/1.0 ", 9 ) == 0 ) {
-      HTTP = HTTP_10;
+      m_HTTPrev = HTTP_10;
       // Unauthorized access
       if ( strncmp( f_buffer + 9, "401", 3 ) == 0 ) {
 	unauthorized = true;
@@ -490,7 +487,7 @@ repeat2:
 	errorPage();
       }
     } else if ( strncasecmp(f_buffer, "HTTP/1.1 ", 9) == 0 ) {
-      HTTP = HTTP_11;
+      m_HTTPrev = HTTP_11;
       Authentication = AUTH_None;
       // Unauthorized access
       if ( (strncmp(f_buffer+9, "401", 3)==0) || (strncmp(f_buffer+9, "407", 3)==0) ) {
@@ -510,7 +507,7 @@ repeat2:
       configAuth(f_buffer+17, false);
     } else if ( strncasecmp(f_buffer, "Proxy-Authenticate:", 19) ==0 ) {
       configAuth(f_buffer+19, true);
-    } else if (HTTP == HTTP_11) {
+    } else if (m_HTTPrev == HTTP_11) {
       if (strncasecmp(f_buffer, "Connection: ", 12) == 0) {
 	if (strncasecmp(f_buffer+12, "Close", 5)==0)
 	  /*m_bPersistant=false*/;
@@ -567,10 +564,31 @@ void HTTPProtocol::addEncoding(QString encoding, QStack<char> *encs)
 }
 
 
+bool HTTPProtocol::isValidProtocol (const char *p)
+{
+  if (strncasecmp(p, "http", 4)==0)  // Standard HTTP
+    return true;
+  if (strncasecmp(p, "https", 5)==0) // Secure HTTP
+    return true;
+  if (strncasecmp(p, "httpf", 5)==0) // Try to use WebDAV
+    return true;
+  return false;
+}
+
+
+bool HTTPProtocol::isValidProtocol (KURL *u)
+{
+  if (u)
+    return isValidProtocol(u->protocol());
+  else
+    return false;
+}
+
+
 void HTTPProtocol::configAuth(const char *p, bool b)
 {
   HTTP_AUTH f;
-  string strAuth;
+  char * strAuth=0;
   int i;
 
   while( *p == ' ' ) p++;
@@ -619,17 +637,15 @@ void HTTPProtocol::http_close()
 
 void HTTPProtocol::slotGetSize( const char *_url )
 {
-  string url = _url;
-  
   KURL usrc( _url );
   if ( usrc.isMalformed() ) {
-    error( ERR_MALFORMED_URL, url.c_str() );
+    error( ERR_MALFORMED_URL, _url );
     m_cmd = CMD_NONE;
     return;
   }
 
-  if ( strcmp( usrc.protocol(), "http" ) != 0 ) {
-    error( ERR_INTERNAL, "kio_http got non http url" );
+  if (!isValidProtocol(&usrc)) {
+    error( ERR_INTERNAL, "kio_http got non http/https/httpf url" );
     m_cmd = CMD_NONE;
     return;
   }
@@ -651,9 +667,9 @@ void HTTPProtocol::slotGetSize( const char *_url )
 }
 
 
-string HTTPProtocol::getUserAgentString ()
+const char *HTTPProtocol::getUserAgentString ()
 {
-  string user_agent("Konqueror/1.9.032099");
+  string user_agent("Konqueror/1.9.032299");
 #ifdef DO_MD5
   user_agent+="; Supports MD5-Digest";
 #endif
@@ -667,17 +683,16 @@ string HTTPProtocol::getUserAgentString ()
 void HTTPProtocol::slotGet( const char *_url )
 {
   unsigned int old_len=0;
-  string url = _url;
   
   KURL usrc( _url );
   if ( usrc.isMalformed() ) {
-    error( ERR_MALFORMED_URL, url.c_str() );
+    error( ERR_MALFORMED_URL, strdup(_url) );
     m_cmd = CMD_NONE;
     return;
   }
 
-  if ( strcmp( usrc.protocol(), "http" ) != 0 ) {
-    error( ERR_INTERNAL, "kio_http got non http url" );
+  if (!isValidProtocol(&usrc)) {
+    error( ERR_INTERNAL, "kio_http got non http/https/httpf url" );
     m_cmd = CMD_NONE;
     return;
   }
@@ -743,6 +758,7 @@ void HTTPProtocol::slotGet( const char *_url )
 	decodeChunked();
       }
     }
+    // From HTTP 1.1 Draft 6:
     // The MD5 digest is computed based on the content of the entity-body,
     // including any content-coding that has been applied, but not including
     // any transfer-encoding applied to the message-body. If the message is
@@ -942,8 +958,8 @@ void HTTPProtocol::slotCopy( const char *_source, const char *_dest )
     return;
   }
 
-  if ( strcmp( usrc.protocol(), "http" ) != 0 ) {
-    error( ERR_INTERNAL, "kio_http got non http protocol as source in copy command" );
+  if (!isValidProtocol(&usrc)) {
+    error( ERR_INTERNAL, "kio_http got non http/https/httpf protocol as source in copy command" );
     m_cmd = CMD_NONE;
     return;
   }

@@ -28,14 +28,10 @@ public:
   HTTPProtocol( Connection *_conn );
   virtual ~HTTPProtocol() { }
 
-  enum HTTP_REV {HTTP_Unknown, HTTP_10, HTTP_11};
-  enum HTTP_AUTH {AUTH_None, AUTH_Basic, AUTH_Digest};
-
-  string m_strRealm, m_strAuthString, m_strProxyAuthString;
-  enum HTTP_REV HTTP;
-  enum HTTP_AUTH Authentication, ProxyAuthentication;
-  QStack<char> m_qTransferEncodings, m_qContentEncodings;
-  QByteArray big_buffer;
+  enum HTTP_REV    {HTTP_Unknown, HTTP_10, HTTP_11};
+  enum HTTP_AUTH   {AUTH_None, AUTH_Basic, AUTH_Digest};
+  enum HTTP_PROTO  {PROTO_HTTP, PROTO_HTTPS, PROTO_WEBDAV};
+  enum HTTP_METHOD {HTTP_GET, HTTP_PUT, HTTP_PROPFIND, HTTP_HEAD, HTTP_DELETE};
 
   virtual void slotGet( const char *_url );
   virtual void slotGetSize( const char *_url );
@@ -49,11 +45,21 @@ public:
 
 protected:
 
-  string m_sContentMD5;
   void decodeChunked();
   void decodeGzip();
-  void configAuth(const char *, bool);
+
+  /**
+    * Add an encoding on to the appropiate stack
+    * this is nececesary because transfer encodings
+    * and content encodings must be handled separately.
+    */
   void addEncoding(QString, QStack<char> *);
+
+  bool isValidProtocol (const char *);
+  bool isValidProtocol (KURL *);
+
+  void configAuth(const char *, bool);
+
   size_t sendData();
 
   bool initSockaddr( struct sockaddr_in *server_name, const char *hostname, int port);
@@ -67,31 +73,43 @@ protected:
     m_iSavedError = 0;
   }
 
-  string getUserAgentString();
-  
-  int m_cmd;
 
+  const char *getUserAgentString();
+
+protected: // Members
+  int m_cmd, m_sock, m_iSize;
   FILE* m_fsocket;
-  int m_sock;
+  enum HTTP_REV m_HTTPrev;
+  enum HTTP_PROTO m_proto;
+
+  // Language/Encoding
+  QStack<char> m_qTransferEncodings, m_qContentEncodings;
+  QByteArray big_buffer;
+  string m_sContentMD5, 
+         m_strMimeType,
+         m_strCharsets,
+         m_strLanguages;
   
-  string m_strMimeType;
-  int m_iSize;
-  
-  string m_strCharsets;
-  string m_strLanguages;
-  
+  // Proxy related members
   bool m_bUseProxy;
-  string m_strNoProxyFor;
-  string m_strProxyHost;
   int m_strProxyPort;
-  string m_strProxyUser;
-  string m_strProxyPass;
+  string m_strNoProxyFor,
+         m_strProxyHost,
+         m_strProxyUser,
+         m_strProxyPass;
   struct sockaddr_in m_proxySockaddr;
+
+  // Authentication
+  string m_strRealm, 
+         m_strAuthString, 
+         m_strProxyAuthString;
+  enum HTTP_AUTH Authentication, ProxyAuthentication;
 
   // Stuff to hold various error state information
   int m_iSavedError;
   string m_strSavedError;
-  bool m_bIgnoreJobErrors, m_bIgnoreErrors; 
+  bool m_bIgnoreJobErrors,
+       m_bIgnoreErrors; 
 
   bool m_bCanResume;
 };
