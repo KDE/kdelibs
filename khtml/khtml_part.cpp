@@ -238,7 +238,7 @@ void KHTMLPart::init( KHTMLView *view, GUIProfile prof )
   d->m_paSetEncoding->insert( new KActionSeparator( actionCollection() ) );
 
 
-  d->m_manualDetection = new KSelectAction( i18n( "Manual Detection" ), 0, this, SLOT( slotSetEncoding() ), actionCollection(), "manualDetection" );
+  d->m_manualDetection = new KSelectAction( i18n( "short for Manual Detection", "Manual" ), 0, this, SLOT( slotSetEncoding() ), actionCollection(), "manualDetection" );
   QStringList encodings = KGlobal::charsets()->descriptiveEncodingNames();
   d->m_manualDetection->setItems( encodings );
   d->m_manualDetection->setCurrentItem( -1 );
