@@ -1968,11 +1968,11 @@ bool HTTPProtocol::httpOpen()
       davData = true;
       davHeader = "Depth: ";
       if ( hasMetaData( "davDepth" ) ) 
-			{
+      {
         kdDebug(7113) << "Reading DAV depth from metadata: " << metaData( "davDepth" ) << endl;
         davHeader += metaData( "davDepth" );
       } 
-			else 
+      else 
       {
         if ( m_request.davData.depth == 2 )
           davHeader += "infinity";
@@ -2222,23 +2222,25 @@ bool HTTPProtocol::httpOpen()
     if ( !m_request.bNoAuth && m_responseCode != 401 && m_responseCode != 407 )
     {
       kdDebug(7113) << "(" << m_pid << ") Calling checkCachedAuthentication " << endl;
+      
       AuthInfo info;
       info.url = m_request.url;
-      info.verifyPath = true;
-      if ( !m_request.user.isEmpty() )
-        info.username = m_request.user;
+      info.username = m_request.user;
+      info.verifyPath = true;      
+      
       if ( checkCachedAuthentication( info ) && !info.digestInfo.isEmpty() )
       {
-        Authentication = info.digestInfo.startsWith("Basic") ? AUTH_Basic : AUTH_Digest ;
         m_state.user   = info.username;
         m_state.passwd = info.password;
         m_strRealm = info.realmValue;
         m_strAuthorization = info.digestInfo;
+        
+        Authentication = m_strAuthorization.startsWith("Basic") ? AUTH_Basic : AUTH_Digest;
       }
-    }
-    else
-    {
-      kdDebug(7113) << "(" << m_pid << ") Not calling checkCachedAuthentication " << endl;
+      else
+      {
+        Authentication = AUTH_None;
+      }
     }
 
     switch ( Authentication )
@@ -5248,19 +5250,13 @@ QString HTTPProtocol::proxyAuthenticationHeader()
     // without prompting the user...
     if ( !info.username.isNull() && !info.password.isNull() )
     {
-      if( m_strProxyAuthorization.startsWith("Basic") )
-        ProxyAuthentication = AUTH_Basic;
-      else
-        ProxyAuthentication = AUTH_Digest;
-    }
-    else
-    {
       if ( checkCachedAuthentication(info) && !info.digestInfo.isEmpty() )
       {
         m_proxyURL.setUser( info.username );
         m_proxyURL.setPass( info.password );
         m_strProxyRealm = info.realmValue;
         m_strProxyAuthorization = info.digestInfo;
+        
         if( m_strProxyAuthorization.startsWith("Basic") )
           ProxyAuthentication = AUTH_Basic;
         else
