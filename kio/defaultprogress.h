@@ -44,7 +44,7 @@ protected slots:
   virtual void slotProcessedDirs( KIO::Job*, unsigned long _dirs );
 
   virtual void slotSpeed( KIO::Job*, unsigned long _bytes_per_second );
-  virtual void slotPercent( KIO::Job*, unsigned int _percent );
+  virtual void slotPercent( KIO::Job*, unsigned long _percent );
 
   virtual void slotCopying( KIO::Job*, const KURL& _src, const KURL& _dest );
   virtual void slotMoving( KIO::Job*, const KURL& _src, const KURL& _dest );

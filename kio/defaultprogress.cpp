@@ -102,7 +102,7 @@ void DefaultProgress::slotTotalDirs( KIO::Job*, unsigned long _dirs )
 }
 
 
-void DefaultProgress::slotPercent( KIO::Job*, unsigned int _percent )
+void DefaultProgress::slotPercent( KIO::Job*, unsigned long _percent )
 {
   QString tmp(i18n( "%1% of %2 ").arg( _percent ).arg( KIO::convertSize(m_iTotalSize)));
   m_pProgressBar->setValue( _percent );

@@ -123,7 +123,7 @@ protected slots:
   virtual void slotProcessedDirs( KIO::Job*, unsigned long ) {}
 
   virtual void slotSpeed( KIO::Job*, unsigned long ) {}
-  virtual void slotPercent( KIO::Job*, unsigned int ) {}
+  virtual void slotPercent( KIO::Job*, unsigned long ) {}
 
   virtual void slotCopying( KIO::Job*, const KURL&, const KURL& ) {}
   virtual void slotMoving( KIO::Job*, const KURL&, const KURL& ) {}

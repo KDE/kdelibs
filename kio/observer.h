@@ -76,14 +76,14 @@ public slots:
   virtual void slotProcessedDirs( KIO::Job*, unsigned long ) {}
 
   virtual void slotSpeed( KIO::Job*, unsigned long ) {}
-  virtual void slotPercent( KIO::Job*, unsigned int ) {}
+  virtual void slotPercent( KIO::Job*, unsigned long ) {}
 
-  virtual void slotCopyingFile( KIO::Job*, const KURL&, const KURL& ) {}
-  virtual void slotMovingFile( KIO::Job*, const KURL&, const KURL& ) {}
-  virtual void slotDeletingFile( KIO::Job*, const KURL& ) {}
+  virtual void slotCopying( KIO::Job*, const KURL&, const KURL& ) {}
+  virtual void slotMoving( KIO::Job*, const KURL&, const KURL& ) {}
+  virtual void slotDeleting( KIO::Job*, const KURL& ) {}
   virtual void slotCreatingDir( KIO::Job*, const KURL& ) {}
 
-  //virtual void slotCanResume( KIO::Job*, bool ) {}
+  virtual void slotCanResume( KIO::Job*, bool ) {}
 };
 
 };

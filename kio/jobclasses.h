@@ -183,7 +183,7 @@ namespace KIO {
     signals:
         void totalSize( KIO::Job *, unsigned long size );
         void processedSize( KIO::Job *, unsigned long size );
-        void percent( KIO::Job *, unsigned int percent );
+        void percent( KIO::Job *, unsigned long percent );
         void speed( KIO::Job *, unsigned long bytes_per_second );
 
     protected slots:
@@ -211,7 +211,7 @@ namespace KIO {
         KURL m_url;
         int m_command;
         unsigned long m_totalSize;
-        unsigned int m_percent;
+        unsigned long m_percent;
     };
 
     // Stat Job
@@ -352,8 +352,9 @@ namespace KIO {
         virtual void slotResult( KIO::Job *job );
 
     signals:
+        void totalSize( KIO::Job *, unsigned long size );
         void processedSize( KIO::Job *, unsigned long size );
-        void percent( KIO::Job *, unsigned int percent );
+        void percent( KIO::Job *, unsigned long percent );
         void speed( KIO::Job *, unsigned long bytes_per_second );
 
 
@@ -436,7 +437,7 @@ namespace KIO {
         void processedFiles( KIO::Job *, unsigned long files );
         void processedDirs( KIO::Job *, unsigned long dirs );
 
-        void percent( KIO::Job *, unsigned int percent );
+        void percent( KIO::Job *, unsigned long percent );
 
         void speed( KIO::Job *, unsigned long bytes_per_second );
 
@@ -478,7 +479,7 @@ namespace KIO {
                STATE_COPYING_FILES, STATE_CONFLICT_COPYING_FILES, STATE_DELETING_DIRS } state;
         unsigned long m_totalSize;
         unsigned long m_processedSize;
-        unsigned int m_percent;
+        unsigned long m_percent;
         QValueList<CopyInfo> files;
         QValueList<CopyInfo> dirs;
         KURL::List dirsToRemove;
@@ -510,7 +511,7 @@ namespace KIO {
         void processedFiles( KIO::Job *, unsigned long files );
         void processedDirs( KIO::Job *, unsigned long dirs );
 
-        void percent( KIO::Job *, unsigned int percent );
+        void percent( KIO::Job *, unsigned long percent );
 
         void deleting( KIO::Job *, const KURL& file );
 
@@ -530,7 +531,7 @@ namespace KIO {
                STATE_DELETING_FILES, STATE_DELETING_DIRS } state;
         unsigned long m_totalSize;
         unsigned long m_processedSize;
-        unsigned int m_percent;
+        unsigned long m_percent;
         KURL::List files;
         KURL::List symlinks;
         KURL::List dirs;

@@ -207,12 +207,12 @@ void SimpleJob::slotProcessedSize( unsigned long size )
   emit processedSize( this, size );
 
   // calculate percents
-  uint ipercent = m_percent;
+  unsigned long ipercent = m_percent;
 
   if ( m_totalSize == 0 )
     m_percent = 100;
   else
-    m_percent = (uint)(( (float)size / (float)m_totalSize ) * 100.0);
+    m_percent = (unsigned long)(( (float)size / (float)m_totalSize ) * 100.0);
   
   if ( m_percent > ipercent ) {
     emit percent( this, m_percent );
@@ -949,8 +949,8 @@ CopyJob::CopyJob( const KURL::List& src, const KURL& dest, bool move, bool showP
 
     connect( this, SIGNAL( speed( KIO::Job*, unsigned long ) ),
 	     Observer::self(), SLOT( slotSpeed( KIO::Job*, unsigned long ) ) );
-    connect( this, SIGNAL( percent( KIO::Job*, unsigned int ) ),
-	     Observer::self(), SLOT( slotPercent( KIO::Job*, unsigned int ) ) );
+    connect( this, SIGNAL( percent( KIO::Job*, unsigned long ) ),
+	     Observer::self(), SLOT( slotPercent( KIO::Job*, unsigned long ) ) );
 
     connect( this, SIGNAL( copying( KIO::Job*, const KURL& , const KURL& ) ),
 	     Observer::self(), SLOT( slotCopying( KIO::Job*, const KURL&, const KURL& ) ) );
@@ -1592,12 +1592,12 @@ void CopyJob::slotProcessedSize( KIO::Job*, unsigned long data_size )
   emit processedSize( this, m_processedSize );
 
   // calculate percents
-  uint ipercent = m_percent;
+  unsigned long ipercent = m_percent;
 
   if ( m_totalSize == 0 )
     m_percent = 100;
   else
-    m_percent = (uint)(( (float)m_processedSize / (float)m_totalSize ) * 100.0);
+    m_percent = (unsigned long)(( (float)m_processedSize / (float)m_totalSize ) * 100.0);
   
   if ( m_percent > ipercent ) {
     emit percent( this, m_percent );
@@ -1723,8 +1723,8 @@ DeleteJob::DeleteJob( const KURL::List& src, bool shred, bool showProgressInfo )
 
     connect( this, SIGNAL( speed( KIO::Job*, unsigned long ) ),
 	     Observer::self(), SLOT( slotSpeed( KIO::Job*, unsigned long ) ) );
-    connect( this, SIGNAL( percent( KIO::Job*, unsigned int ) ),
-	     Observer::self(), SLOT( slotPercent( KIO::Job*, unsigned int ) ) );
+    connect( this, SIGNAL( percent( KIO::Job*, unsigned long ) ),
+	     Observer::self(), SLOT( slotPercent( KIO::Job*, unsigned long ) ) );
 
     connect( this, SIGNAL( deleting( KIO::Job*, const KURL& ) ),
 	     Observer::self(), SLOT( slotDeleting( KIO::Job*, const KURL& ) ) );
@@ -1855,12 +1855,12 @@ void DeleteJob::slotProcessedSize( KIO::Job*, unsigned long data_size )
   emit processedSize( this, m_processedSize );
 
   // calculate percents
-  uint ipercent = m_percent;
+  unsigned long ipercent = m_percent;
 
   if ( m_totalSize == 0 )
     m_percent = 100;
   else
-    m_percent = (uint)(( (float)m_processedSize / (float)m_totalSize ) * 100.0);
+    m_percent = (unsigned long)(( (float)m_processedSize / (float)m_totalSize ) * 100.0);
   
   if ( m_percent > ipercent ) {
     emit percent( this, m_percent );

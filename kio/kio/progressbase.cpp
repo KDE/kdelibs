@@ -43,8 +43,8 @@ void ProgressBase::Connect() {
 
   connect( m_pJob, SIGNAL( speed( KIO::Job*, unsigned long ) ),
 	   SLOT( slotSpeed( KIO::Job*, unsigned long ) ) );
-  connect( m_pJob, SIGNAL( percent( KIO::Job*, unsigned int ) ),
-	   SLOT( slotPercent( KIO::Job*, unsigned int ) ) );
+  connect( m_pJob, SIGNAL( percent( KIO::Job*, unsigned long ) ),
+	   SLOT( slotPercent( KIO::Job*, unsigned long ) ) );
 
   connect( m_pJob, SIGNAL( copying( KIO::Job*, const KURL& , const KURL& ) ),
 	   SLOT( slotCopying( KIO::Job*, const KURL&, const KURL& ) ) );
