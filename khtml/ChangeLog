@@ -6,11 +6,15 @@
         * khtml_part.cpp (openURL): when restoring a previous scroll
         position on reload, avoid jumping to anchors.
         (gotoAnchor): keep jumping at least while we are parsing.
+        (gotoAnchor): "top" and "" anchors mean top of document.
 
         (checkCompleted): entrust the view to emit completed on our behalf
         after any pending layout/repaint is done.
 
         * khtmlview.{cpp,h}: ditto
+
+        * xml/dom_nodeimpl.cpp (getUpperLeftCorner/getLowerRightCorner):
+        use inlineYPos for text objects (#57360 c.#17).
 
 2004-08-27  Leo Savernik  <l.savernik@aon.at>
 

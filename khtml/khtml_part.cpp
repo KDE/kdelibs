@@ -2324,7 +2324,13 @@ bool KHTMLPart::gotoAnchor( const QString &name )
       n = d->m_doc->getElementById( name );
   }
 
-  if(!n) {
+  // Implement the rule that "" and "top" both mean top of page as in other browsers.
+  bool quirkyName = !n && !d->m_doc->inStrictMode() && (name.isEmpty() || name.lower() == "top");
+  
+  if (quirkyName) {
+      d->m_view->setContentsPos(0, 0);
+      return true;
+  } else if (!n) {
       kdDebug(6050) << "KHTMLPart::gotoAnchor node '" << name << "' not found" << endl;
       return false;
   }
