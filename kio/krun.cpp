@@ -467,7 +467,7 @@ void KRun::init()
     }
 
     KMimeType::Ptr mime = KMimeType::findByURL( m_strURL, m_mode, m_bIsLocalFile );
-    assert( mime );
+    assert( mime != 0L );
     kdDebug(7010) << "MIME TYPE is " << debugString(mime->name()) << endl;
     foundMimeType( mime->name() );
     return;
@@ -530,7 +530,7 @@ void KRun::scanFile()
   if ( m_strURL.query().isEmpty() )
   {
     KMimeType::Ptr mime = KMimeType::findByURL( m_strURL );
-    assert( mime );
+    assert( mime != 0L );
     if ( mime->name() != "application/octet-stream" || m_bIsLocalFile )
     {
       // Found something - can we trust it ? (see mimetypeFastMode)
