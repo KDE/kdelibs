@@ -66,7 +66,7 @@ void kimgioRegister(void)
 
 	QRegExp reg("/kimg_[^.]*\\.la$");
 	list = KGlobal::dirs()->findAllResources("lib", "kimg_*.la"); // TODO: use the regexp right away
-       
+
 	for (it = list.begin(); it != list.end(); it++) {
 	
 	    QString libname = *it;
@@ -117,7 +117,8 @@ QString KImageIO::pattern(Mode ) {
   // this is hardcoded for the moment - but better hardcoded centrally :/
   return i18n( "*.gif *GIF *.bmp *.BMP *.xbm *.XBM *.xpm *.XPM *.pnm *.PNM "
 	       "*.PBM *.PGM *.PPM *.PBMRAW *.PGMRAW *.PPMRAW *.jpg *.JPG *.jpeg *.JPEG "
-	       "*.pbm *.pgm *.ppm *.pbmdraw *.pgmdraw *.ppmdraw *.png *.PNG|All pictures\n"
+	       "*.pbm *.pgm *.ppm *.pbmdraw *.pgmdraw *.ppmdraw *.png *.PNG *.TIF *.tif "
+	       "*.tiff *.TIFF |All pictures\n"
 	       "*.png *.PNG|PNG-Pictures\n"
 	       "*.gif *.GIF|GIF-Pictures\n"
 	       "*.jpg *.JPG *.jpeg *.JPEG|JPEG-Pictures\n"
@@ -125,7 +126,8 @@ QString KImageIO::pattern(Mode ) {
 	       "*.xbm *.XBM|XWindow Pitmaps\n"
 	       "*.xpm *.XPM|Pixmaps\n"
 	       "*.pnm *.PNM *.PBM *.PGM *.PPM *.PBMRAW *.PGMRAW *.PPMRAW "
-	       "*.pbm *.pgm *.ppm *.pbmdraw *.pgmdraw *.ppmdraw|PNM-Pictures" );
+	       "*.pbm *.pgm *.ppm *.pbmdraw *.pgmdraw *.ppmdraw|PNM-Pictures\n"
+	       "*.TIF *.tif *.TIFF *.tiff|TIF-Pictures" );
 }
 
 bool KImageIO::canWrite(const QString& type)
@@ -142,17 +144,17 @@ bool KImageIO::canWrite(const QString& type)
 
 bool KImageIO::canRead(const QString& type)
 {
-  if (type == "JPEG" || 
-      type == "XPM" || type == "XBM" || type == "PNG" || type == "BMP")
+  if (type == "JPEG" ||
+      type == "XPM" || type == "XBM" || type == "PNG" || type == "BMP" || type == "TIF" )
     return true;
-  
+
   return false;
 }
 
 QStringList KImageIO::types(Mode ) {
   static QStringList types;
   if (types.isEmpty()) {
-    
+
 #ifdef HAVE_QIMGIO
     types.append("JPEG");
 #endif
@@ -173,13 +175,13 @@ QString KImageIO::suffix(const QString& type)
   if (type == "JPEG")
     return "jpg";
 #endif
-  
+
   if (type == "XPM")
     return "xpm";
 
   if (type == "XBM")
     return "xbm";
-  
+
   if (type == "PNG")
     return "png";
 
@@ -190,7 +192,7 @@ QString KImageIO::type(const QString& filename)
 {
   QString suffix = filename;
   int dot = suffix.findRev('.');
-  if (dot >= 0) 
+  if (dot >= 0)
     suffix = suffix.mid(dot + 1);
 
   if (suffix == "gif")
