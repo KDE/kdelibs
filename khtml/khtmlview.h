@@ -133,6 +133,9 @@ public:
 
     static const QList<KHTMLView> *viewList() { return lstViews; }
 
+signals:
+    void cleared();
+    
 protected:
     void clear();
 

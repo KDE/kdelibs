@@ -98,6 +98,7 @@ public:
 
 class RenderFrame : public RenderPart
 {
+    Q_OBJECT
 public:
   RenderFrame( QScrollView *view, DOM::HTMLFrameElementImpl *frame );
   virtual ~RenderFrame();
@@ -108,6 +109,9 @@ public:
 
     virtual void setWidget( QWidget *widget );
 
+public slots:
+    void slotViewCleared();
+    
 private:
   DOM::HTMLFrameElementImpl *m_frame;
 };

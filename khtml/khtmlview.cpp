@@ -166,6 +166,7 @@ void KHTMLView::clear()
 
     delete d;
     d = new KHTMLViewPrivate();
+    emit cleared();
 }
 
 void KHTMLView::resizeEvent (QResizeEvent* e)

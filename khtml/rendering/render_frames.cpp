@@ -466,13 +466,22 @@ RenderFrame::~RenderFrame()
 void RenderFrame::setWidget( QWidget *widget )
 {
     kdDebug(6031) << "RenderFrame::setWidget()" << endl;
-    if(widget->inherits("QScrollView")) {
+    RenderPart::setWidget(widget);
+    slotViewCleared();
+
+    if(widget->inherits("KHTMLView"))
+	connect( widget, SIGNAL( cleared() ), this, SLOT( slotViewCleared() ) );
+}
+
+void RenderFrame::slotViewCleared()
+{
+    if(m_widget->inherits("QScrollView")) {
         kdDebug(6031) << "frame is a scrollview!" << endl;
-        QScrollView *view = static_cast<QScrollView *>(widget);
+        QScrollView *view = static_cast<QScrollView *>(m_widget);
         if(!m_frame->frameBorder || !((static_cast<HTMLFrameSetElementImpl *>(m_frame->_parent))->frameBorder()))
             view->setFrameStyle(QFrame::NoFrame);
-        //      if(m_frame->scrolling == QScrollView::AlwaysOff)
-        //    kdDebug(6031) << "no scrollbar"<<endl;
+	if(m_frame->scrolling == QScrollView::AlwaysOff)
+	    kdDebug(6031) << "no scrollbar"<<endl;
         view->setVScrollBarMode(m_frame->scrolling);
         view->setHScrollBarMode(m_frame->scrolling);
         if(view->inherits("KHTMLView")) {
@@ -481,10 +490,8 @@ void RenderFrame::setWidget( QWidget *widget )
             if(m_frame->marginWidth != -1) htmlView->setMarginWidth(m_frame->marginWidth);
             if(m_frame->marginHeight != -1) htmlView->setMarginHeight(m_frame->marginHeight);
         }
-    }
-    RenderPart::setWidget(widget);
+    }    
 }
-
 /****************************************************************************************/
 
 RenderPartObject::RenderPartObject( QScrollView *view, DOM::HTMLElementImpl *o )
