@@ -20,8 +20,8 @@
 #include <qcursor.h>
 
 #if defined Q_WS_X11 && ! defined K_WS_QTONLY
-#include <X11/Xlib.h> // schroder
-#include <X11/Xutil.h> // schroder
+#include <X11/Xlib.h>
+#include <X11/Xutil.h>
 #else
 #define XEvent void
 #endif
