@@ -49,6 +49,7 @@
 #include <kiconloader.h>
 #include <kdebug.h>
 #include "khtml_factory.h"
+#include "khtml_part.h"
 
 #include "css/css_stylesheetimpl.h"
 
@@ -534,7 +535,7 @@ void CachedImage::do_notify(const QPixmap& p, const QRect& r)
 
     for ( c = m_clients.first(); c != 0; c = m_clients.next() ) {
 #ifdef CACHE_DEBUG
-        kdDebug( 6060 ) << "found a client to update..." << endl;
+        kdDebug( 6060 ) << "found a client to update: " << c << endl;
 #endif
         bool manualUpdate = false; // set the pixmap, dont update yet.
         c->setPixmap( p, r, this, &manualUpdate);
@@ -736,12 +737,13 @@ Request::~Request()
 
 // ------------------------------------------------------------------------------------------
 
-DocLoader::DocLoader()
+DocLoader::DocLoader(KHTMLPart* part)
 {
     m_reloading = false;
     m_expireDate = 0;
     m_bautoloadImages = true;
     m_showAnimations = true;
+    m_part = part;
 
     Cache::docloader->append( this );
 }
@@ -758,6 +760,8 @@ void DocLoader::setExpireDate(int _expireDate)
 
 CachedImage *DocLoader::requestImage( const DOM::DOMString &url, const DOM::DOMString &baseUrl)
 {
+    if ( m_part && m_part->onlyLocalReferences() ) return 0;
+
     if (m_reloading) {
         QString fullURL = Cache::completeURL( url, baseUrl ).url();
         if (!m_reloadedURLs.contains(fullURL)) {
@@ -776,6 +780,8 @@ CachedImage *DocLoader::requestImage( const DOM::DOMString &url, const DOM::DOMS
 
 CachedCSSStyleSheet *DocLoader::requestStyleSheet( const DOM::DOMString &url, const DOM::DOMString &baseUrl, const QString& charset)
 {
+    if ( m_part && m_part->onlyLocalReferences() ) return 0;
+
     if (m_reloading) {
         QString fullURL = Cache::completeURL( url, baseUrl ).url();
         if (!m_reloadedURLs.contains(fullURL)) {
@@ -792,6 +798,8 @@ CachedCSSStyleSheet *DocLoader::requestStyleSheet( const DOM::DOMString &url, co
 
 CachedScript *DocLoader::requestScript( const DOM::DOMString &url, const DOM::DOMString &baseUrl, const QString& charset)
 {
+    if ( m_part && m_part->onlyLocalReferences() ) return 0;
+
     if (m_reloading) {
         QString fullURL = Cache::completeURL( url, baseUrl ).url();
         if (!m_reloadedURLs.contains(fullURL)) {

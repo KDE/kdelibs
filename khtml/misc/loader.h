@@ -49,6 +49,7 @@
 #include <dom/dom_string.h>
 
 class QMovie;
+class KHTMLPart;
 
 namespace KIO {
   class Job;
@@ -58,6 +59,7 @@ namespace KIO {
 namespace DOM
 {
     class CSSStyleSheetImpl;
+    class DocumentImpl;
 };
 
 namespace khtml
@@ -294,12 +296,12 @@ namespace khtml
     class DocLoader
     {
     public:
- 	DocLoader();
+ 	DocLoader(KHTMLPart*);
  	~DocLoader();
 
 	CachedImage *requestImage( const DOM::DOMString &url, const DOM::DOMString &baseUrl);
 	CachedCSSStyleSheet *requestStyleSheet( const DOM::DOMString &url, const DOM::DOMString &baseUrl, const QString& charset);
-CachedScript *requestScript( const DOM::DOMString &url, const DOM::DOMString &baseUrl, const QString& charset);
+        CachedScript *requestScript( const DOM::DOMString &url, const DOM::DOMString &baseUrl, const QString& charset);
 
 	bool autoloadImages() const { return m_bautoloadImages; }
         bool reloading() const { return m_reloading; }
@@ -313,12 +315,15 @@ CachedScript *requestScript( const DOM::DOMString &url, const DOM::DOMString &ba
 
     private:
         friend class Cache;
+        friend class DOM::DocumentImpl;
+        
         QStringList m_reloadedURLs;
         mutable QList<CachedObject> m_docObjects;
 	int m_expireDate;
 	bool m_reloading;
         bool m_bautoloadImages;
         bool m_showAnimations;
+        KHTMLPart* m_part;
     };
 
     /**
