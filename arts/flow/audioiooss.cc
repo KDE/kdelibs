@@ -361,7 +361,7 @@ bool AudioIOOSS::open()
 	 * Triggering - the original aRts code did this for full duplex:
 	 *
 	 *  - stop audio i/o using SETTRIGGER(~(PCM_ENABLE_INPUT|PCM_ENABLE_OUTPUT))
-	 *  - fill buffer (see zbuffer code two lines above
+	 *  - fill buffer (see zbuffer code two lines above)
 	 *  - start audio i/o using SETTRIGGER(PCM_ENABLE_INPUT|PCM_ENABLE_OUTPUT)
 	 *
 	 * this should guarantee synchronous start of input/output. Today, it
@@ -377,7 +377,7 @@ bool AudioIOOSS::open()
 
 		if(ioctl(audio_fd,SNDCTL_DSP_SETTRIGGER, &enable_bits) == -1)
 		{
-			_error = "can't start of sound i/o operation";
+			_error = "can't start sound i/o";
 
 			close();
 			return false;
