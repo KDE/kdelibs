@@ -41,6 +41,8 @@
  * version of this file under any of the LGPL, the MPL or the GPL.
  */
 
+//#define BOX_DEBUG
+
 #include "render_layer.h"
 #include <kdebug.h>
 #include <assert.h>
@@ -724,9 +726,14 @@ void RenderLayer::paintLayer(RenderLayer* rootLayer, QPainter *p,
     }
 
 #ifdef BOX_DEBUG
-    p->setPen(QPen(QColor("yellow"), 1, Qt::DotLine));
-    p->setBrush( Qt::NoBrush );
-    p->drawRect(m_x, m_y, width(), height());
+    {
+        int ax=0;
+        int ay=0;
+        renderer()->absolutePosition( ax, ay );
+        p->setPen(QPen(QColor("yellow"), 1, Qt::DotLine));
+        p->setBrush( Qt::NoBrush );
+        p->drawRect(ax, ay, width(), height());
+    }
 #endif
 
 #ifdef APPLE_CHANGES
