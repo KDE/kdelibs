@@ -24,6 +24,7 @@
 
 class KIntNumInput;
 class QLineEdit;
+class QComboBox;
 
 class CupsdFilterPage : public CupsdPage
 {
@@ -37,6 +38,7 @@ public:
 private:
 	QLineEdit	*user_, *group_;
 	KIntNumInput	*ripcache_, *filterlimit_;
+	QComboBox	*ripunit_;
 };
 
 #endif

@@ -38,6 +38,7 @@ enum PrintcapFormatType { PRINTCAP_BSD = 0, PRINTCAP_SOLARIS };
 enum HostnameLookupType { HOSTNAME_OFF = 0, HOSTNAME_ON, HOSTNAME_DOUBLE };
 enum ClassificationType { CLASS_NONE = 0, CLASS_CLASSIFIED, CLASS_CONFIDENTIAL, CLASS_SECRET, CLASS_TOPSECRET, CLASS_UNCLASSIFIED, CLASS_OTHER };
 enum SatisfyType { SATISFY_ALL = 0, SATISFY_ANY };
+enum UnitType { UNIT_KB = 0, UNIT_MB, UNIT_GB, UNIT_TILE };
 
 struct CupsLocation;
 struct CupsResource;
@@ -109,6 +110,7 @@ struct CupsdConf
 	QString user_;
 	QString group_;
 	int ripcache_;
+	int ripunit_;
 	int filterlimit_;
 
 	// Directories

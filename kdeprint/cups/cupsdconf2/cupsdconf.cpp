@@ -39,6 +39,25 @@ QString findDir(const QStringList& list)
 	return list[0];
 }
 
+void splitSizeSpec(const QString& s, int& sz, int& suff)
+{
+	int	p = s.find(QRegExp("\\D"));
+	sz = s.mid(0, p).toInt();
+	if (p != -1)
+	{
+		switch (s[p].latin1())
+		{
+			case 'k': suff = UNIT_KB; break;
+			default:
+			case 'm': suff = UNIT_MB; break;
+			case 'g': suff = UNIT_GB; break;
+			case 't': suff = UNIT_TILE; break;
+		}
+	}
+	else
+		suff = UNIT_MB;
+}
+
 CupsdConf::CupsdConf()
 {
 	// start by trying to find CUPS directories (useful later)
@@ -97,6 +116,7 @@ CupsdConf::CupsdConf()
 	user_ = "lp";
 	group_ = "sys";
 	ripcache_ = 8;
+	ripunit_ = UNIT_MB;
 	filterlimit_ = 0;
 	browsing_ = true;
 	browseprotocols_ << "CUPS";
@@ -351,7 +371,15 @@ bool CupsdConf::saveToFile(const QString& filename)
 		t << "Group " << group_ << endl;
 
 		t << endl << comments_["ripcache"] << endl;
-		t << "RIPCache " << ripcache_ << "m" << endl;
+		t << "RIPCache " << ripcache_;
+		switch (ripunit_)
+		{
+			case UNIT_KB: t << "k" << endl; break;
+			default:
+			case UNIT_MB: t << "m" << endl; break;
+			case UNIT_GB: t << "g" << endl; break;
+			case UNIT_TILE: t << "t" << endl; break;
+		}
 
 		t << endl << comments_["filterlimit"] << endl;
 		t << "FilterLimit " << filterlimit_ << endl;
@@ -566,8 +594,7 @@ bool CupsdConf::parseOption(const QString& line)
 	else if (keyword == "remoteroot") remoteroot_ = value;
 	else if (keyword == "ripcache")
 	{
-		// FIXME: support for suffixes
-		ripcache_ = value.toInt();
+		splitSizeSpec(value, ripcache_, ripunit_);
 	}
 	else if (keyword == "serveradmin") serveradmin_ = value;
 	else if (keyword == "serverbin") serverbin_ = value;
