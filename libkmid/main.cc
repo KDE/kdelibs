@@ -32,10 +32,10 @@
 #include "../version.h"
 
 // If you want to use a midi map you have to change the next definition :
-#define MAP_PATH NULL
+//#define MAP_PATH NULL
 // For example to something like :
 //#define MAP_PATH "/home/Antonio/prg/kmid1/kmid/maps/yamaha790.map"
-//#define MAP_PATH "/opt/kde/share/apps/kmid/maps/YamahaPSS790_2.map"
+#define MAP_PATH "/opt/kde/share/apps/kmid/maps/YamahaPSS790.map"
 
 
 PlayerController pctl;
@@ -85,8 +85,8 @@ int nmid=1;
 while ((nmid<argc)&&(pctl.error!=1))
     {
     Player->loadSong(argv[nmid]);
-//    Player->play(1,consoleOutput);
-    sleep(20);
+    Player->play(1,consoleOutput);
+//    sleep(20);
     nmid++;
     };
 //midi->useMapper(NULL);
