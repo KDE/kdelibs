@@ -930,6 +930,10 @@ void KSpell::check2 (KProcIO *)
   int e, tempe;
   QString word;
   QString line;
+  static bool recursive = false;
+  if (recursive)
+      return;
+  recursive = true;
 
   do
     {
@@ -982,6 +986,7 @@ void KSpell::check2 (KProcIO *)
                       dlgresult = KS_IGNORE;
                       check3();
                   }
+		  recursive = false;
 		  return;
 		}
 	    }
@@ -995,8 +1000,10 @@ void KSpell::check2 (KProcIO *)
   proc->ackRead();
 
 
-  if (tempe==-1) //we were called, but no data seems to be ready...
+  if (tempe==-1) { //we were called, but no data seems to be ready...
+    recursive = false;
     return;
+  }
 
   //If there is more to check, then send another line to ISpell.
   if ((unsigned int)lastline<origbuffer.length())
@@ -1011,6 +1018,7 @@ void KSpell::check2 (KProcIO *)
       qs=origbuffer.mid (lastline, i-lastline);
       cleanFputs (qs,FALSE);
       lastline=i;
+      recursive = false;
       return;
     }
   else
@@ -1022,6 +1030,7 @@ void KSpell::check2 (KProcIO *)
       emitProgress();
       emit done (newbuffer);
     }
+  recursive = false;
 }
 
 void KSpell::check3 ()
