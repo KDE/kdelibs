@@ -546,7 +546,7 @@ namespace KIO {
     Q_OBJECT
 
     public:
-        CopyJob( const KURL::List& src, const KURL& dest, bool move, bool showProgressInfo );
+        CopyJob( const KURL::List& src, const KURL& dest, bool move, bool asMethod, bool showProgressInfo );
 
     signals:
 
@@ -601,6 +601,7 @@ namespace KIO {
 
     private:
         bool m_move;
+        bool m_asMethod;
         enum { DEST_NOT_STATED, DEST_IS_DIR, DEST_IS_FILE, DEST_DOESNT_EXIST } destinationState;
         enum { STATE_STATING, STATE_RENAMING, STATE_LISTING, STATE_CREATING_DIRS,
                STATE_CONFLICT_CREATING_DIRS, STATE_COPYING_FILES, STATE_CONFLICT_COPYING_FILES,

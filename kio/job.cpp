@@ -1145,8 +1145,8 @@ void ListJob::start(Slave *slave)
 }
 
 
-CopyJob::CopyJob( const KURL::List& src, const KURL& dest, bool move, bool showProgressInfo )
-  : Job(showProgressInfo), m_move(move),
+CopyJob::CopyJob( const KURL::List& src, const KURL& dest, bool move, bool asMethod, bool showProgressInfo )
+  : Job(showProgressInfo), m_move(move), m_asMethod(asMethod),
     destinationState(DEST_NOT_STATED), state(STATE_STATING),
       m_totalSize(0), m_processedSize(0), m_fileProcessedSize(0), m_srcList(src), m_dest(dest),
       m_bAutoSkip( false ), m_bOverwriteAll( false )
@@ -1221,8 +1221,8 @@ void CopyJob::slotEntries(KIO::Job* job, const UDSEntryList& list)
             if ( m_bCurrentSrcIsDir ) // Only if src is a directory. Otherwise uSource is fine as is
                 info.uSource.addPath( relName );
             info.uDest = m_currentDest;
-            // Append filename or dirname to destination URL
-            if ( destinationState == DEST_IS_DIR )
+            // Append filename or dirname to destination URL, if allowed
+            if ( destinationState == DEST_IS_DIR && !m_asMethod )
                 info.uDest.addPath( relName );
             if ( info.linkDest.isEmpty() && (S_ISDIR(info.type)) ) // Dir
             {
@@ -1940,13 +1940,21 @@ CopyJob *KIO::copy(const KURL& src, const KURL& dest, bool showProgressInfo )
 {
     KURL::List srcList;
     srcList.append( src );
-    CopyJob *job = new CopyJob( srcList, dest, false, showProgressInfo );
+    CopyJob *job = new CopyJob( srcList, dest, false, false, showProgressInfo );
+    return job;
+}
+
+CopyJob *KIO::copyAs(const KURL& src, const KURL& dest, bool showProgressInfo )
+{
+    KURL::List srcList;
+    srcList.append( src );
+    CopyJob *job = new CopyJob( srcList, dest, false, true, showProgressInfo );
     return job;
 }
 
 CopyJob *KIO::copy( const KURL::List& src, const KURL& dest, bool showProgressInfo )
 {
-    CopyJob *job = new CopyJob( src, dest, false, showProgressInfo );
+    CopyJob *job = new CopyJob( src, dest, false, false, showProgressInfo );
     return job;
 }
 
@@ -1954,13 +1962,21 @@ CopyJob *KIO::move(const KURL& src, const KURL& dest, bool showProgressInfo )
 {
   KURL::List srcList;
   srcList.append( src );
-  CopyJob *job = new CopyJob( srcList, dest, true, showProgressInfo );
+  CopyJob *job = new CopyJob( srcList, dest, true, false, showProgressInfo );
+  return job;
+}
+
+CopyJob *KIO::moveAs(const KURL& src, const KURL& dest, bool showProgressInfo )
+{
+  KURL::List srcList;
+  srcList.append( src );
+  CopyJob *job = new CopyJob( srcList, dest, true, true, showProgressInfo );
   return job;
 }
 
 CopyJob *KIO::move( const KURL::List& src, const KURL& dest, bool showProgressInfo )
 {
-  CopyJob *job = new CopyJob( src, dest, true, showProgressInfo );
+  CopyJob *job = new CopyJob( src, dest, true, false, showProgressInfo );
   return job;
 }
 

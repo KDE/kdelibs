@@ -195,10 +195,38 @@ namespace KIO {
      */
     ListJob *listRecursive( const KURL& url, bool showProgressInfo = true );
 
+    /**
+     * Copy a file or directory @p src into the destination @dest,
+     * which can be a file (including the final filename) or a directory
+     * (into which @p src will be copied).
+     * This emulates the 'cp' command completely.
+     */
     CopyJob *copy( const KURL& src, const KURL& dest, bool showProgressInfo = true );
+    /**
+     * Copy a file or directory @p src into the destination @dest,
+     * which is the destination name in any case, even for a directory.
+     * As opposed to @ref copy, this doesn't emulate 'cp', but is the only
+     * way to copy a directory, giving it a new name and getting an error
+     * box if a directory already exists with the same name.
+     */
+    CopyJob *copyAs( const KURL& src, const KURL& dest, bool showProgressInfo = true );
+
+    /**
+     * Copy a list of file/dirs @p src into a destination directory @p dest
+     */
     CopyJob *copy( const KURL::List& src, const KURL& dest, bool showProgressInfo = true );
 
+    /**
+     * @see copy
+     */
     CopyJob *move( const KURL& src, const KURL& dest, bool showProgressInfo = true );
+    /**
+     * @see copyAs
+     */
+    CopyJob *moveAs( const KURL& src, const KURL& dest, bool showProgressInfo = true );
+    /**
+     * @see copy
+     */
     CopyJob *move( const KURL::List& src, const KURL& dest, bool showProgressInfo = true );
 
     /**
