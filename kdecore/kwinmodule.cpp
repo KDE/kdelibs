@@ -22,6 +22,9 @@
     Boston, MA 02111-1307, USA.
 
     $Log$
+    Revision 1.6  1999/11/07 02:16:51  ettrich
+    avoid using 50% CPU....
+
     Revision 1.5  1999/11/07 01:40:16  ettrich
     some updates, new kwin access to window manager functionality
 
@@ -217,7 +220,8 @@ void KWinModulePrivate::updateWindows()
     it2 = nl.begin();
     while ( it1 != windows.end() || it2 != nl.end() ) {
 	if ( it1 == windows.end() ) {
-	    XSelectInput(qt_xdisplay(), *it2, PropertyChangeMask );
+	    if ( !QWidget::find( *it2 ) )
+		XSelectInput(qt_xdisplay(), *it2, PropertyChangeMask );
 	    emit module->windowAdd( *it2 );
 	    ++it2;
 	} else if ( it2 == nl.end() ) {
@@ -228,7 +232,8 @@ void KWinModulePrivate::updateWindows()
 		emit module->windowRemove( *it1 );
 		++it1;
 	    } else if ( *it2 < *it1 ) {
-		XSelectInput(qt_xdisplay(), *it2, PropertyChangeMask );
+		if ( !QWidget::find( *it2 ) )
+		    XSelectInput(qt_xdisplay(), *it2, PropertyChangeMask );
 		emit module->windowAdd( *it2 );
 		++it2;
 	    } else {
