@@ -1,4 +1,3 @@
-
 /* This file is part of the KDE libraries
     Copyright (c) 1997 Stephan Kulow <coolo@kde.org>
     Copyright (c) 1999 Preston Brown <pbrown@kde.org>
@@ -927,9 +926,13 @@ KLocale::SignPosition KLocale::negativeMonetarySignPosition() const
   return ParensAround;
 }
 
-QString KLocale::formatMoney(double num) const
+QString KLocale::formatMoney(double num, const QString &symbol, int digits) const
 {
-  return QString::number( num );
+  QString str = QString::number( num, 'f', digits==-1?2:digits );
+  if (!symbol.isNull())
+    str.prepend(symbol);  
+
+  return str;
 }
 
 QString KLocale::formatMoney(const QString &numStr) const
