@@ -80,6 +80,7 @@ class KFileDialog : public KDialogBase
     Q_OBJECT
 
 public:
+
     /**
      * Defines some default behavior of the filedialog.
      * E.g. in mode @p Opening and @p Saving, the selected files/urls will
@@ -159,36 +160,6 @@ public:
 
       
     /**
-      * Constructs a file dialog for text files with encoding selection possibility.
-      *
-      * @param startDir This can either be
-      *         @li The URL of the directory to start in.
-      *         @li QString::null to start in the current working
-      *		    directory, or the last directory where a file has been
-      *		    selected.
-      *         @li ':&lt;keyword&gt;' to start in the directory last used
-      *             by a filedialog in the same application that specified
-      *             the same keyword.
-      *         @li '::&lt;keyword&gt;' to start in the directory last used
-      *             by a filedialog in any application that specified the
-      *             same keyword.
-      *
-      * @param encoding The encoding shown in the encoding combo. If it's
-      *		    QString::null, the global default encoding will be shown.
-      *
-      * @param caption The caption of the dialog
-      *
-      * @param type This can either be
-      *		@li Opening (open dialog, the default setting)
-      *		@li Saving 
-      *
-      * @since 3.2
-      */
-    KFileDialog (const QString& startDir = QString::null,
-                    const QString& encoding = QString::null,
-		    const QString& caption = QString::null, int type = Opening, 
-                    QWidget *parent= 0, const char *name="", bool modal = true);
-    /**
      * Destructs the file dialog.
      */
     ~KFileDialog();
@@ -203,11 +174,6 @@ public:
      */
     KURL::List selectedURLs() const;
     
-    /**
-    * @returns The selected encoding if the constructor with the encoding parameter was used, otherwise QString::null.
-    */
-    QString selectedEncoding() const;
-
     /**
      * @returns the currently shown directory.
      */
@@ -443,6 +409,7 @@ public:
 				   const QString& caption = QString::null);
 
 
+
     /**
      * Creates a modal file dialog and returns the selected
      * filenames or an empty list if none was chosen.
@@ -472,6 +439,8 @@ public:
 					const QString& filter= QString::null,
 					QWidget *parent = 0,
 					const QString& caption= QString::null);
+
+
 
     /**
      * Creates a modal file dialog and returns the selected
@@ -504,6 +473,7 @@ public:
 			   const QString& caption = QString::null);
 
 
+
     /**
      * Creates a modal file dialog and returns the selected
      * URLs or an empty list if none was chosen.
@@ -533,6 +503,8 @@ public:
 				  const QString& filter= QString::null,
 				  QWidget *parent = 0,
 				  const QString& caption= QString::null);
+
+
 
     /**
      * Creates a modal file dialog and returns the selected
@@ -597,6 +569,8 @@ public:
 			   const QString& filter= QString::null,
 			   QWidget *parent= 0,
 			   const QString& caption = QString::null);
+
+
     /**
      * Creates a modal file dialog and returns the selected
      * directory or an empty string if none was chosen.
@@ -784,7 +758,6 @@ public:
      * Used by KDirSelectDialog to share the dialog's start directory.
      */
     static void setStartDir( const KURL& directory );
-
 
 signals:
     /**

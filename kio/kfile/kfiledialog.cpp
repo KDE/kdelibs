@@ -113,7 +113,6 @@ struct KFileDialogPrivate
     QWidget *mainWidget;
 
     QLabel *locationLabel;
-    KComboBox *encoding;
 
     // @deprecated remove in KDE4
     QLabel *filterLabel;
@@ -175,53 +174,6 @@ KFileDialog::KFileDialog(const QString& startDir, const QString& filter,
     init( startDir, filter, widget );
 }
 
-KFileDialog::KFileDialog(const QString& startDir, const QString& encoding , 
-			 const QString& caption, int type, QWidget *parent, const char* name, bool modal)
-   : KDialogBase( parent, name, modal, QString::null, 0)			 
-{
-  init( startDir, "all/allfiles text/plain", 0);
-  setCaption( caption );
-  if (type == Opening) {
-    setMode(KFile::Files);
-    setOperationMode(Opening);
-    }
-  else {
-    setMode(KFile::File);
-    setOperationMode(Saving);
-    }
-
-  KToolBar *tb = toolBar();
-  int index = tb->insertCombo(QStringList(), -1 /*id*/, false /*writable*/, 0 /*signal*/, 0 /*receiver*/, 0 /*slot*/ );
-  d->encoding = tb->getCombo( tb->idAt( index ) );
-  if ( !d->encoding )
-      return;
-
-  d->encoding->clear ();
-  QString sEncoding = encoding;
-  if (sEncoding.isEmpty())
-     sEncoding = QString::fromLatin1(KGlobal::locale()->encoding());
-  
-  QStringList encodings (KGlobal::charsets()->availableEncodingNames());
-  int insert = 0;
-  for (uint i=0; i < encodings.count(); i++)
-  {
-    bool found = false;
-    QTextCodec *codecForEnc = KGlobal::charsets()->codecForName(encodings[i], found);
-
-    if (found)
-    {
-      d->encoding->insertItem (encodings[i]);
-      if ( (codecForEnc->name() == sEncoding) || (encodings[i] == sEncoding) )
-      {
-        d->encoding->setCurrentItem(insert);
-      }
-
-      insert++;
-    }
-  }
-        
-     
-}
 
 KFileDialog::~KFileDialog()
 {
@@ -842,7 +794,6 @@ void KFileDialog::init(const QString& startDir, const QString& filter, QWidget* 
     initStatic();
     d = new KFileDialogPrivate();
 
-    d->encoding = 0;
     d->boxLayout = 0;
     d->keepLocation = false;
     d->operationMode = Opening;
@@ -1454,14 +1405,6 @@ KURL::List KFileDialog::selectedURLs() const
             list.append( d->url );
     }
     return list;
-}
-
-QString KFileDialog::selectedEncoding() const
-{
-  if (d->encoding)
-     return d->encoding->currentText();
-  else
-    return QString::null;     
 }
 
 
@@ -2245,5 +2188,6 @@ void KFileDialog::setStartDir( const KURL& directory )
 
 void KFileDialog::virtual_hook( int id, void* data )
 { KDialogBase::virtual_hook( id, data ); }
+
 
 #include "kfiledialog.moc"

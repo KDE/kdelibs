@@ -26,7 +26,7 @@ METASOURCES = AUTO
 
 #SUBDIRS = . acl_prop_page
 
-include_HEADERS = kfiledialog.h \
+include_HEADERS = kfiledialog.h kencodingfiledialog.h\
 	kdiroperator.h kfileview.h kfilefiltercombo.h \
 	kfiledetailview.h kcombiview.h kdiskfreesp.h \
 	kfileiconview.h krecentdocument.h kfileview.h \
@@ -55,7 +55,8 @@ libkfile_la_SOURCES = \
 	kfilemetainfowidget.cpp kcustommenueditor.cpp knotifywidgetbase.ui \
 	knotifydialog.cpp kfilespeedbar.cpp kpreviewwidgetbase.cpp \
 	kfilemetapreview.cpp kpropertiesdesktopbase.ui \
-	kpropertiesdesktopadvbase.ui kpropertiesmimetypebase.ui
+	kpropertiesdesktopadvbase.ui kpropertiesmimetypebase.ui \
+	kencodingfiledialog.cpp
 
 libkfile_la_COMPILE_FIRST = ../kio/kdirnotify_stub.h
 
