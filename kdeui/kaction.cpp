@@ -347,6 +347,7 @@ bool KAction::isPlugged( const QWidget *container, const QWidget *_representativ
 
 bool KAction::setShortcut( const KShortcut& cut )
 {
+  KShortcut oldShortcut = d->m_cut;
   d->m_cut = cut;
 
   if( !d->m_kaccel ) {
@@ -358,7 +359,7 @@ bool KAction::setShortcut( const KShortcut& cut )
   else
     d->m_kaccel->setShortcut( name(), cut );
 
-  if( !d->m_cut.isNull() ) {
+  if( oldShortcut != cut ) {
       int len = containerCount();
       for( int i = 0; i < len; ++i )
           updateShortcut( i );
