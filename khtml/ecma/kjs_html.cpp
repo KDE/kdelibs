@@ -1882,12 +1882,14 @@ void KJS::HTMLElement::tryPut(ExecState *exec, const UString &propertyName, cons
 {
 #ifdef KJS_VERBOSE
   DOM::DOMString str = value.isA(NullType) ? DOM::DOMString() : value.toString(exec).string();
+#endif
   DOM::HTMLElement element = static_cast<DOM::HTMLElement>(node);
+#ifdef KJS_VERBOSE
   kdDebug(6070) << "KJS::HTMLElement::tryPut " << propertyName.qstring()
                 << " thisTag=" << element.tagName().string()
                 << " str=" << str.string() << endl;
 #endif
-    // First look at dynamic properties
+  // First look at dynamic properties
   switch (element.elementId()) {
     case ID_SELECT: {
       DOM::HTMLSelectElement select = element;
