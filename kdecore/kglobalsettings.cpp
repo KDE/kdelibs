@@ -246,6 +246,8 @@ QFont KGlobalSettings::generalFont()
     KConfig *c = KGlobal::config();
     KConfigGroupSaver cgs( c, QString::fromLatin1("General") );
     *_generalFont = c->readFontEntry("font", _generalFont);
+    if ( c->readEntry("fontCharset","default") == "default" )
+        KGlobal::charsets()->setQFont(*_generalFont, KGlobal::locale()->charset());
 
     return *_generalFont;
 }
@@ -261,6 +263,10 @@ QFont KGlobalSettings::fixedFont()
     KConfig *c = KGlobal::config();
     KConfigGroupSaver cgs( c, QString::fromLatin1("General") );
     *_fixedFont = c->readFontEntry("fixed", _menuFont);
+    // Resolve "default" charset. Note that if the charset is anything else,
+    // then calling setQFont is not necessary, the above already sets the charset.
+    if ( c->readEntry("fixedCharset","default") == "default" )
+        KGlobal::charsets()->setQFont(*_fixedFont, KGlobal::locale()->charset());
 
     return *_fixedFont;
 }
@@ -276,6 +282,8 @@ QFont KGlobalSettings::toolBarFont()
     KConfig *c = KGlobal::config();
     KConfigGroupSaver cgs( c, QString::fromLatin1("General") );
     *_toolBarFont = c->readFontEntry("toolBarFont", _toolBarFont);
+    if ( c->readEntry("toolBarFontCharset","default") == "default" )
+        KGlobal::charsets()->setQFont(*_toolBarFont, KGlobal::locale()->charset());
 
     return *_toolBarFont;
 }
@@ -291,6 +299,8 @@ QFont KGlobalSettings::menuFont()
     KConfig *c = KGlobal::config();
     KConfigGroupSaver cgs( c, QString::fromLatin1("General") );
     *_menuFont = c->readFontEntry("menuFont", _menuFont);
+    if ( c->readEntry("menuFontCharset","default") == "default" )
+        KGlobal::charsets()->setQFont(*_menuFont, KGlobal::locale()->charset());
 
     return *_menuFont;
 }
