@@ -439,9 +439,11 @@ KMessageBox::warningContinueCancelList(QWidget *parent, const QString &text,
                        dontAskAgainName.isEmpty() ? QString::null : i18n("&Do not ask again"),
                        &checkboxResult, options);
 
+    if ( result==KDialogBase::No )
+	return Cancel;
     if (checkboxResult)
         saveDontShowAgainContinue(dontAskAgainName);
-    return (result==KDialogBase::Yes ? Continue : Cancel);
+    return Continue;
 }
 
 int
