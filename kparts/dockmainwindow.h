@@ -77,9 +77,10 @@ protected slots:
    */
   virtual void slotSetStatusBarText( const QString & );
 
-private:
+ private:
   DockMainWindowPrivate *d;
-};
+  virtual void createGUI(const QString &s, bool b) { KTMainWindow::createGUI(s, b; }
+  };
 
 };
 

@@ -80,7 +80,7 @@ protected slots:
 
 private:
   MainWindowPrivate *d;
-  virtual void createGUI( const QString &, bool) {}
+  virtual void createGUI( const QString &b, bool s) { KTMainWindow::createGUI(s, b); }
 };
 
 };
