@@ -71,6 +71,7 @@ public:
     bool m_runExecutables;
 
     QString m_preferredService;
+    QString m_externalBrowser;
     QGuardedPtr <QWidget> m_window;
 };
 
@@ -713,6 +714,7 @@ void KRun::init ( const KURL& url, QWidget* window, mode_t mode, bool isLocalFil
   d = new KRunPrivate;
   d->m_runExecutables = true;
   d->m_window = window;
+  setEnableExternalBrowser(true);
 
   // Start the timer. This means we will return to the event
   // loop and do initialization afterwards.
@@ -756,8 +758,7 @@ void KRun::init()
   QString exec;
   if (m_strURL.protocol().startsWith("http"))
   {
-    KConfigGroup cfg(KGlobal::config(), "General");
-    exec = cfg.readEntry("BrowserApplication");
+    exec = d->m_externalBrowser;
   }
 
   if ( m_bIsLocalFile )
@@ -1128,6 +1129,14 @@ void KRun::abort()
 
   // will emit the error and autodelete this
   m_timer.start( 0, true );
+}
+
+void KRun::setEnableExternalBrowser(bool b)
+{
+   if (b)
+      d->m_externalBrowser = KConfigGroup(KGlobal::config(), "General").readEntry("BrowserApplication");
+   else
+      d->m_externalBrowser = QString::null;
 }
 
 void KRun::setPreferredService( const QString& desktopEntryName )
