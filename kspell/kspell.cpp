@@ -1242,7 +1242,7 @@ void KSpell::slotModalReady()
     //kdDebug() << qApp->loopLevel() << endl;
     //kdDebug(750) << "MODAL READY------------------" << endl;
 
-    ASSERT( m_status == Running );
+    Q_ASSERT( m_status == Running );
     connect( this, SIGNAL( done( const QString & ) ),
              this, SLOT( slotModalDone( const QString & ) ) );
     QObject::connect( this, SIGNAL( corrected( QString, QString, unsigned ) ),
