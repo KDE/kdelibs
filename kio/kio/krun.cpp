@@ -520,9 +520,13 @@ QString KRun::binaryName( const QString & execLine, bool removePath )
 {
   // Remove parameters and/or trailing spaces.
   QStringList args = breakup( execLine );
-  if ( args.isEmpty() )
-      return QString::null;
-  QString _bin_name = args.first();
+  QString _bin_name;
+  do {
+      if ( args.isEmpty() )
+         return QString::null;
+      _bin_name = args.first();
+      args.pop_front();
+  } while (_bin_name.contains('='));
   // Remove path if wanted
   return removePath ? _bin_name.mid(_bin_name.findRev('/') + 1) : _bin_name;
 }
