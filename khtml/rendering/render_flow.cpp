@@ -23,7 +23,7 @@
 //#define DEBUG
 //#define DEBUG_LAYOUT
 //#define BOX_DEBUG
-
+//#define FLOAT_DEBUG
 
 
 #include <qpainter.h>
@@ -205,7 +205,14 @@ void RenderFlow::printSpecialObjects( QPainter *p, int x, int y, int w, int h, i
 	if (r->node->containingBlock() == this) {
 	    r->node->print(p, x, y, w, h, tx , ty);
 	}
-
+#ifdef FLOAT_DEBUG	
+	p->save();
+	p->setPen( Qt::magenta );
+	p->setBrush( QPainter::NoBrush );
+	//qDebug("(%p): special object at (%d/%d-%d/%d)", this, r->left, r->startY, r->width, r->endY - r->startY );
+	p->drawRect( QRect( r->left+tx, r->startY+ty, r->width, r->endY - r->startY) );
+	p->restore();
+#endif	    
     }
 }
 
@@ -613,11 +620,11 @@ void RenderFlow::positionNewFloats()
             //kdDebug( 6040 ) << "positioning right aligned float at (" << fx - o->marginRight() - o->width() << "/" << y + o->marginTop() << ")" << endl;
             o->setPos(fx - o->marginRight() - o->width(), y + o->marginTop());
         }
-        f->startY = y;
+	f->startY = y;
         f->endY = f->startY + _height;
 
 
-//      kdDebug( 6040 ) << "specialObject y= (" << f->startY << "-" << f->endY << ")" << endl;
+	//kdDebug( 6040 ) << "specialObject x/y= (" << f->left << "/" << f->startY << "-" << f->width << "/" << f->endY - f->startY << ")" << endl;
 
         f = specialObjects->next();
     }
@@ -655,17 +662,17 @@ RenderFlow::leftOffset() const
 {
     int left = 0;
 
+    if(style()->hasBorder())
+        left += borderLeft();
+    if(style()->hasPadding())
+        left += paddingLeft();
+
     if ( firstLine && style()->direction() == LTR ) {
         int cw=0;
         if (style()->textIndent().isPercent())
             cw = containingBlock()->contentWidth();
         left += style()->textIndent().minWidth(cw);
     }
-
-    if(style()->hasBorder())
-        left = borderLeft();
-    if(style()->hasPadding())
-        left += paddingLeft();
 
     return left;
 }
@@ -699,6 +706,11 @@ RenderFlow::rightOffset() const
 {
     int right = m_width;
 
+    if(style()->hasBorder())
+        right -= borderRight();
+    if(style()->hasPadding())
+        right -= paddingRight();
+
     if ( firstLine && style()->direction() == RTL ) {
         int cw=0;
         if (style()->textIndent().isPercent())
@@ -706,10 +718,6 @@ RenderFlow::rightOffset() const
         right += style()->textIndent().minWidth(cw);
     }
 
-    if(style()->hasBorder())
-        right -= borderRight();
-    if(style()->hasPadding())
-        right -= paddingRight();
     return right;
 }
 
@@ -961,7 +969,7 @@ void RenderFlow::addOverHangingFloats( RenderFlow *flow, int xoff, int offset, b
 		special->node = r->node;
 		specialObjects->append(special);
 #ifdef DEBUG_LAYOUT
-		kdDebug( 6040 ) << "    y: " << special->startY << "-" << special->endY << " left: " << special->left << " width: " << special->width << endl;
+	kdDebug( 6040 ) << "addOverHangingFloats x/y= (" << special->left << "/" << special->startY << "-" << special->width << "/" << special->endY - special->startY << ")" << endl;
 #endif
 	    }
 	}
