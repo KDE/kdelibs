@@ -1002,13 +1002,22 @@ MimetypeJob::MimetypeJob( const KURL& url, int command,
 void MimetypeJob::start(Slave *slave)
 {
     TransferJob::start(slave);
-
 }
 
 
 void MimetypeJob::slotFinished( )
 {
     kdDebug(7007) << "MimetypeJob::slotFinished()" << endl;
+    if ( m_error == KIO::ERR_IS_DIRECTORY )
+    {
+        // It is in fact a directory. This happens when HTTP redirects to FTP.
+        // Due to the "protocol doesn't support listing" code in KRun, we
+        // assumed it was a file.
+        kdDebug(7007) << "It is in fact a directory!" << endl;
+        m_mimetype = QString::fromLatin1("inode/directory");
+        emit TransferJob::mimetype( this, m_mimetype );
+        m_error = 0;
+    }
     if ( m_redirectionURL.isEmpty() || m_redirectionURL.isMalformed() || m_error )
     {
         // Return slave to the scheduler
