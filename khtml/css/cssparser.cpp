@@ -868,8 +868,18 @@ bool StyleBaseImpl::parseValue(const QChar *curP, const QChar *endP, int propId,
       break;
     case CSS_PROP_BACKGROUND_POSITION:
       {
-	int properties[2] = { CSS_PROP_KONQ_BGPOS_X, CSS_PROP_KONQ_BGPOS_Y };
-	return 	parseShortHand(curP, endP, properties, 2, important, propList);
+	// special handling of "background-position: center;"
+	  const struct css_value *cssval = findValue(val, value.length());
+	  if ( cssval && cssval->id == CSS_VAL_CENTER ) {
+	      parsedValue = new CSSPrimitiveValueImpl( 50, CSSPrimitiveValue::CSS_PERCENTAGE );
+	      CSSProperty *prop = new CSSProperty();
+	      prop->m_id = CSS_PROP_KONQ_BGPOS_Y;
+	      prop->setValue(parsedValue);
+	      prop->m_bImportant = important;
+	      propList->append(prop);
+	  }
+	  int properties[2] = { CSS_PROP_KONQ_BGPOS_X, CSS_PROP_KONQ_BGPOS_Y };
+	  return parseShortHand(curP, endP, properties, 2, important, propList);
       }
       break;
     case CSS_PROP_KONQ_BGPOS_X:
