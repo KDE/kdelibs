@@ -89,6 +89,9 @@ CString &CString::operator=(const char *c)
 
 CString &CString::operator=(const CString &str)
 {
+  if (this == &str)
+    return *this;
+
   if (data)
     delete [] data;
   data = new char[str.size()+1];
