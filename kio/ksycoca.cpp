@@ -125,6 +125,9 @@ bool KSycoca::process(const QCString &fun, const QByteArray &/*data*/,
     // same for KUserProfile
     KServiceTypeProfile::clear();
 
+    // Now notify applications
+    emit databaseChanged();
+
     replyType = "void";
     return true;
   } else {

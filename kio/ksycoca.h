@@ -98,6 +98,13 @@ public:
     */
    static QString determineRelativePath( const QString & _fullpath, const QString & _resource );
 
+signals:
+   /**
+	* Connect to this to get notified when the database changes
+	* (Usually apps showing icons do a 'refresh' to take into account the new mimetypes)
+	*/
+   void databaseChanged();
+
 protected:
    void checkVersion();
    void openDatabase();

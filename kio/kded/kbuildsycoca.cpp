@@ -127,10 +127,6 @@ void KBuildSycoca::recreate()
   // Notify ALL applications that have a ksycoca object, using a broadcast
   QByteArray data;
   kapp->dcopClient()->send( "*", "ksycoca", "databaseChanged()", data );
-  // Notify also the kdesktop and konqueror, for an automatic update
-  // Other apps get the new stuff the next time they use a KMimeType/KService method
-  kapp->dcopClient()->send( "kdesktop", "KDesktopIface", "databaseChanged()", data );
-  kapp->dcopClient()->send( "konqueror", "KonqMainViewIface", "databaseChanged()", data );
 }
 
 void KBuildSycoca::dirDeleted(const QString& /*path*/)
