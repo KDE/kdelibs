@@ -700,20 +700,34 @@ QString KLocale::formatDate(const QDate &pDate, bool shortfmt) const
     return rst;
 }
 
+/**
+ * helper method to read integers
+ * @param str
+ * @param pos the position to start at. It will be updated when we parse it.
+ * @return the integer read in the string, or -1 if no string
+ */
+static int readInt(const QString &str, uint &pos)
+{
+	if (!str.at(pos).isDigit()) return -1;
+	int result = 0;
+	for (; str.length() > pos && str.at(pos).isDigit(); pos++) {
+		result *= 10;
+		result += str.at(pos).digitValue();
+	}
+	return result;
+}
+
 QDate KLocale::readDate(const QString &str) const
 {
 	QDate date;
 	QString fmt(_datefmtshort);
-	QChar	c;
-	int	i;
+
 	int day = 0, month = 0, year = 0;
 	uint strpos = 0;
 	uint fmtpos = 0;
 
-	while (fmt.length() > fmtpos) {
-		if (str.length() == strpos) break;
-
-		c = fmt.at(fmtpos++);
+	while (fmt.length() > fmtpos && str.length() > strpos) {
+		QChar c = fmt.at(fmtpos++);
 
 		if (c != '%') {
 			if (c.isSpace())
@@ -731,68 +745,35 @@ QDate KLocale::readDate(const QString &str) const
 		switch (c) {
 		case 'd':
 		case 'e':
-			if (!str.at(strpos).isDigit())
+			day = readInt(str, strpos);
+			if (day < 1 || day > 31)
 				goto error;
 
-			for (i = 0; str.length() > strpos && str.at(strpos).isDigit(); strpos++) {
-				i *= 10;
-				i += str.at(strpos).digitValue();
-			}
-			if (i > 31)
-				goto error;
-
-			day = i;
-
-			if (str.length() > strpos && str.at(strpos).isSpace())
-				while (fmt.at(fmtpos) != 0 && !fmt.at(fmtpos).isSpace())
-					fmtpos++;
 			break;
 
 		case 'n':
 		case 'm':
-			if (!str.at(strpos).isDigit())
+			month = readInt(str, strpos);
+			if (month < 1 || month > 12)
 				goto error;
 
-			for (i = 0; str.length() > strpos && str.at(strpos).isDigit(); strpos++) {
-				i *= 10;
-				i += str.at(strpos).digitValue();
-			}
-			if (i < 1 || i > 12)
-				goto error;
-
-			month = i;
-
-			if (str.length() > strpos && str.at(strpos).isSpace())
-				while (fmt.at(fmtpos) != 0 && !fmt.at(fmtpos).isSpace())
-					fmtpos++;
 			break;
 
 		case 'Y':
 		case 'y':
-			if (str.length() == strpos || str.at(strpos).isSpace())
-				break;
-
-			if (!str.at(strpos).isDigit())
+			year = readInt(str, strpos);
+			if (year < 0)
 				goto error;
-
-			for (i = 0; str.length() > strpos && str.at(strpos).isDigit(); strpos++) {
-				i *= 10;
-				i += str.at(strpos).digitValue();
-			}
 			if (c == 'y') {
-				if (i < 69) i += 100;
-				i += 1900;
+				if (year < 69) year += 100;
+				year += 1900;
 			}
-			if (i < 0)
-				goto error;
 
-			year = i;
-
-			if (str.length() > strpos && str.at(strpos).isSpace())
-				while (fmt.length() > fmtpos && !fmt.at(fmtpos).isSpace())
-					fmtpos++;
 			break;
 		}
+		if (str.length() > strpos && str.at(strpos).isSpace())
+			while (fmt.length() > fmtpos && !fmt.at(fmtpos).isSpace())
+				fmtpos++;
 	}
 	date.setYMD(year, month, day);
 
