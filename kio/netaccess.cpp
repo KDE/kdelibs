@@ -45,11 +45,20 @@ bool NetAccess::download(const KURL& u, QString & target, Job *job)
     return true;
   }
 
+  if (!job) kDebugFatal("Setting the job in KIO::NetAccess is not allowed anymore!");
+
+  if (target.isEmpty())
+  {
+      target = tmpnam(0);  // Generate a temp file name
+      if (!tmpfiles)
+	  tmpfiles = new QStringList;
+      tmpfiles->append(target);
+  }
+
   NetAccess kioNet;
-  KURL path( target );
-  bool result = kioNet.downloadInternal( u, path, job );
-  target = path.path(); // set by downloadInternal
-  return result;
+  QString dest( target );
+  KURL::encode(dest);
+  return kioNet.copyInternal( u, KURL( dest ) );
 }
 
 bool NetAccess::upload(const QString& src, const KURL& target, Job *job)
@@ -57,11 +66,20 @@ bool NetAccess::upload(const QString& src, const KURL& target, Job *job)
   if (target.isEmpty())
     return false;
 
-  // If !target.isEmpty(), then downloadInternal just
-  // copies src to target.  Great!
+  if (!job) kDebugFatal("Setting the job in KIO::NetAccess is not allowed anymore!");
+
+  // TODO : What do we do if target.isLocalFile() ? Copy ? Nothing ?
+
   NetAccess kioNet;
-  KURL path( target ); // need that for non-constness
-  return kioNet.downloadInternal( KURL(src), path, job);
+  QString s(src);
+  KURL::encode(s);
+  return kioNet.copyInternal( KURL(s), target );
+}
+
+bool NetAccess::copy( const KURL & src, const KURL & target )
+{
+  NetAccess kioNet;
+  return kioNet.copyInternal( src, target );
 }
 
 bool NetAccess::exists( const KURL & url )
@@ -89,21 +107,11 @@ void NetAccess::removeTempFile(const QString& name)
   }
 }
 
-bool NetAccess::downloadInternal(const KURL& src, KURL& target, Job *job)
+bool NetAccess::copyInternal(const KURL& src, const KURL& target)
 {
-  if (target.isEmpty())
-  {
-      QString path = tmpnam(0);
-      target = path;
-      if (!tmpfiles)
-	  tmpfiles = new QStringList;
-      tmpfiles->append(path);
-  }
   bDownloadOk = true; // success unless further error occurs
 
-  if (!job) kDebugFatal("Setting the job in KIO::NetAccess is not allowed anymore!");
-
-  job = KIO::file_copy( src, target );
+  KIO::Job * job = KIO::file_copy( src, target );
   connect( job, SIGNAL( result (KIO::Job *) ),
            this, SLOT( slotResult (KIO::Job *) ) );
 
@@ -113,6 +121,7 @@ bool NetAccess::downloadInternal(const KURL& src, KURL& target, Job *job)
 
 bool NetAccess::existsInternal( const KURL & url )
 {
+  bDownloadOk = true; // success unless further error occurs
   KIO::Job * job = KIO::stat( url );
   connect( job, SIGNAL( result (KIO::Job *) ),
            this, SLOT( slotResult (KIO::Job *) ) );
@@ -122,6 +131,7 @@ bool NetAccess::existsInternal( const KURL & url )
 
 bool NetAccess::delInternal( const KURL & url )
 {
+  bDownloadOk = true; // success unless further error occurs
   bDisplayErrors = true;
   KIO::Job * job = KIO::del( url );
   connect( job, SIGNAL( result (KIO::Job *) ),

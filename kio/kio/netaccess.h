@@ -118,6 +118,13 @@ public:
                        KIO::Job *job = 0L);
 
     /**
+     * Alternative method for copying over the network
+     * This one takes two URLs and is a direct equivalent
+     * of KIO::file_copy (not KIO::copy!).
+     */
+    static bool copy( const KURL& src, const KURL& target );
+    
+    /**
      * Test whether a url exists
      * This is a convenience function for KIO::stat
      * (it saves creating a slot and testing for the job result)
@@ -142,8 +149,7 @@ protected:
     /** Private destructor */
     ~NetAccess() {}
     /** Internal methods */
-    bool downloadInternal(const KURL& src, KURL& target,
-                          KIO::Job *job = 0L);
+    bool copyInternal(const KURL& src, const KURL& target);
     bool existsInternal(const KURL & url);
     bool delInternal(const KURL & url);
     /** List of temporary files */
