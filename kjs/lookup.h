@@ -293,12 +293,12 @@ namespace KJS {
       : KJS::ObjectImp( exec->interpreter()->builtinObjectPrototype() ) {} \
     \
   public: \
-    virtual const ClassInfo *classInfo() const { return &info; } \
-    static const ClassInfo info; \
+    virtual const KJS::ClassInfo *classInfo() const { return &info; } \
+    static const KJS::ClassInfo info; \
     KJS::Value get(KJS::ExecState *exec, const KJS::UString &propertyName) const; \
     bool hasProperty(KJS::ExecState *exec, const KJS::UString &propertyName) const; \
   }; \
-  const ClassInfo ClassProto::info = { ClassName, 0, &ClassProto##Table, 0 }; \
+  const KJS::ClassInfo ClassProto::info = { ClassName, 0, &ClassProto##Table, 0 }; \
   };
 
 #define IMPLEMENT_PROTOTYPE(ClassProto,ClassFunc) \
