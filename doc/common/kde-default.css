@@ -71,6 +71,7 @@ white; color: black;}
 
 TABLE { padding: 5px; } 
 DT { margin-top: 1em; }
+DIV.toc DT { margin-top: 0px; }
 DIV.SCREENSHOT { margin-bottom: 1em;
       margin-top: 1em; }
 DIV.INFORMALEXAMPLE { border-style: dotted; 
