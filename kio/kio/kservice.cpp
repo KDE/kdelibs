@@ -90,6 +90,10 @@ KService::init( KDesktopFile *config )
     return;
   }
   QMap<QString, QString> entryMap = config->entryMap(config->group());
+  
+  entryMap.remove("Encoding"); // reserved as part of Desktop Entry Standard
+  entryMap.remove("Version");  // reserved as part of Desktop Entry Standard
+  
   m_bDeleted = config->readBoolEntry( "Hidden", false );
   entryMap.remove("Hidden");
   if (m_bDeleted)
