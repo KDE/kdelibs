@@ -45,40 +45,40 @@
  * @ref completion() and @ref rotation() signals.  The completion signal
  * is intended to be connected to a slot that will assist the user
  * in filling out the remaining text while the rotation signals, both
- * @ref rotateUp() and @ref rotateDown(), are intended to be used to
+ * @ref rotateUp and @ref rotateDown, are intended to be used to
  * transverse through some kind of list in opposing directions.
- * The @ref previousMatch() and @ref nextMatch() signals are used to
+ * The @ref previousMatch and @ref nextMatch signals are used to
  * iterate through all possible matches whenever there are more than
- * one possible text completion matches.  And the @ref returnPressed()
+ * one possible text completion matches and the @ref returnPressed
  * signals are emitted when the user presses the return key.
  *
- * This widget by default creates a completion object whenever you
- * invoke the member function @ref completionObject for the first
- * time.  You can also assign your own completion object through
- * @ref setCompletionObject() function if you want to control the kind
- * of completion object that is used.  Additionally, to make
- * this widget more functional, KComboBox will automatically handle the
- * iteration and completion signals internally when a completion object
- * is created through either one of the previously defined methods.  If
- * you do not need this feature, simply use @ref KCompletionBase::setHandleSignals()
- * or the boolean parameter when calling @p setCompletionObject(), to turn
- * it off.
+ * This widget by default creates a completion object when you invoke
+ * the @ref completionObject member function for the first time or use
+ * @ref setCompletionObject to assign your own completion object.  
+ * Additionally, to make this widget more functional, KComboBox will
+ * automatically handle the iteration and completion signals internally
+ * when a completion object is created through either one of the methods
+ * mentioned above.  If you do not need these feature, simply use
+ * @ref KCompletionBase::setHandleSignals or alternatively the boolean
+ * parameter in @p setCompletionObject, to turn them off.
  *
  * The default key-binding for completion and rotation is determined
- * from the global settings in @ref KStdAccel.  However, these values
- * can be set locally to override these global settings.  Simply invoking
- * @ref useGlobalSettings() then allows you to immediately default the
- * bindings back to the global settings again.  You can also default
- * the key-bindings by simply invoking the @ref setXXXKey() method without
- * any argument.  Note that if this widget is not editable, i.e. it is
- * constructed as a "select-only" widget, then only one completion mode,
- * @p CompletionAuto, is allowed.  All the other modes are simply ignored.
- * The @p CompletionAuto mode in this case allows you to automatically select
- * an item from the list that matches the key-code of the first key pressed.
+ * from the global settings in @ref KStdAccel.  These values, however,
+ * can be set locally to override the global settings through the
+ * @ref setKeyBinding member function.  To default the values back,
+ * simply invoke @ref useGlobalSettings.  You can also default
+ * individual key-binding by simply calling the @p setKeyBinding member
+ * function with the default the second argument.
+ *
+ * Note that if this widget is not editable, i.e. it is constructed as a
+ * "select-only" widget, then only one completion mode, @p CompletionAuto,
+ * is allowed.  All the other modes are simply ignored.  The @p CompletionAuto
+ * mode in this case allows you to automatically select an item from the list
+ * that matches the key-code of the first key pressed.
  *
  * @sect Example:
  *
- * To enable the basic completion feature :
+ * To enable the basic completion feature:
  *
  * <pre>
  * KComboBox *combo = new KComboBox( true, this, "mywidget" );
@@ -87,8 +87,7 @@
  * connect(combo,SIGNAL(returnPressed(const QString&)),comp,SLOT(addItem(const QString&));
  * </pre>
  *
- * To use a customized completion objects or your
- * own completion object :
+ * To use your own completion object:
  *
  * <pre>
  * KComboBox *combo = new KComboBox( this,"mywidget" );
@@ -98,18 +97,18 @@
  * connect(combo,SIGNAL(returnPressed(const QString&)),comp,SLOT(addItem(const QString&));
  * </pre>
  *
- * Miscellaneous functions :
+ * Miscellaneous function calls:
  *
  * <pre>
  * // Tell the widget not to handle completion and rotation
  * combo->setHandleSignals( false );
- * // set your own completion key for manual completions.
+ * // Set your own completion key for manual completions.
  * combo->setKeyBinding( KCompletionBase::TextCompletion, Qt::End );
- * // Shows the context (popup) menu
+ * // Hide the context (popup) menu
  * combo->setContextMenuEnabled( false );
  * // Temporarly disable signal emition
  * combo->disableSignals();
- * // Default the key-bindings to system settings.
+ * // Default the all key-bindings to their system-wide settings.
  * combo->useGlobalKeyBindings();
  * </pre>
  *
