@@ -53,7 +53,6 @@ struct URLArgs
   QStringList docState;
 
   bool reload;
-  bool doPost;
   int xOffset;
   int yOffset;
   QString serviceType;
@@ -61,6 +60,8 @@ struct URLArgs
   QByteArray postData; //khtml specific stuff (POST)
   void setContentType( const QString & contentType ); // Header for POST
   QString contentType() const; // Header for POST
+  void setDoPost( bool enable );
+  bool doPost() const;
 
   QMap<QString, QString> &metaData();
 

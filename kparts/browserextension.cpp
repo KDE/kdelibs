@@ -60,6 +60,7 @@ struct URLArgsPrivate
 {
     QString contentType; // for POST
     QMap<QString, QString> metaData;
+    bool doPost;
 };
 
 };
@@ -135,6 +136,18 @@ QMap<QString, QString> &URLArgs::metaData()
   if (!d)
      d = new URLArgsPrivate;
   return d->metaData;
+}
+
+void URLArgs::setDoPost( bool enable )
+{
+    if ( !d )
+        d = new URLArgsPrivate;
+    d->doPost = enable;
+}
+
+bool URLArgs::doPost() const
+{
+    return d ? d->doPost : false;
 }
 
 namespace KParts
