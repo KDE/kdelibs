@@ -3,3 +3,13 @@
 - smaller art_render_new areas, if needed
 - make gradients work for boundingbox as well
 - patterns
+
+Things doubtful of supporting
+
+- ICC color (possible, requires extra lib)
+- text (possible, requires freetype)
+- js (technically possible, but strongly related to user events)
+
+Things that make no sense to support
+
+- everything related to user input (mouse, keyboard events, linking)
