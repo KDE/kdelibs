@@ -27,7 +27,7 @@ KDE_OPTIONS = qtonly
 INCLUDES=  $(all_includes)
 LDFLAGS = $(all_libraries)
 
-bin_PROGRAMS = dcopserver
+bin_PROGRAMS = dcopserver dcopserver_shutdown
 check_PROGRAMS = testdcop testdcopc
 
 lib_LTLIBRARIES  = libDCOP.la dcopserver.la
@@ -51,6 +51,8 @@ dcopserver_la_LIBADD   = libDCOP.la
 dcopserver_LDFLAGS = $(KDE_RPATH)
 dcopserver_SOURCES = dummy.cpp
 dcopserver_LDADD   = dcopserver.la
+
+dcopserver_shutdown_SOURCES = dcopserver_shutdown.c
 
 testdcop_SOURCES = testdcop.cpp
 testdcop_LDADD = ../kdecore/libkdecore.la

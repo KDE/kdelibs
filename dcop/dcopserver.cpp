@@ -424,7 +424,6 @@ DCOPConnection::signalConnectionList()
 
 IceAuthDataEntry *authDataEntries = 0;
 static char *addAuthFile = 0;
-static char *remAuthFile = 0;
 
 static IceListenObj *listenObjs = 0;
 int numTransports = 0;
@@ -444,11 +443,11 @@ static void fprintfhex (FILE *fp, unsigned int len, char *cp)
 }
 
 /*
- * We use temporary files which contain commands to add/remove entries from
+ * We use temporary files which contain commands to add entries to
  * the .ICEauthority file.
  */
 static void
-write_iceauth (FILE *addfp, FILE *removefp, IceAuthDataEntry *entry)
+write_iceauth (FILE *addfp, IceAuthDataEntry *entry)
 {
     fprintf (addfp,
 	     "add %s \"\" %s %s ",
@@ -457,12 +456,6 @@ write_iceauth (FILE *addfp, FILE *removefp, IceAuthDataEntry *entry)
 	     entry->auth_name);
     fprintfhex (addfp, entry->auth_data_length, entry->auth_data);
     fprintf (addfp, "\n");
-
-    fprintf (removefp,
-	     "remove protoname=%s protodata=\"\" netid=%s authname=%s\n",
-	     entry->protocol_name,
-	     entry->network_id,
-	     entry->auth_name);
 }
 
 
@@ -542,7 +535,6 @@ SetAuthentication (int count, IceListenObj *_listenObjs,
 		   IceAuthDataEntry **_authDataEntries)
 {
     FILE        *addfp = NULL;
-    FILE        *removefp = NULL;
     const char  *path;
     int         original_umask;
     char        command[256];
@@ -562,23 +554,11 @@ SetAuthentication (int count, IceListenObj *_listenObjs,
 
     if (!(addfp = fopen (addAuthFile, "w")))
 	goto bad;
-
-    if ((remAuthFile = unique_filename (path, "dcop")) == NULL)
-	goto bad;
-
-    if (!(removefp = fopen (remAuthFile, "w")))
-	goto bad;
 #else
     if ((addAuthFile = unique_filename (path, "dcop", &fd)) == NULL)
 	goto bad;
 
     if (!(addfp = fdopen(fd, "wb")))
-	goto bad;
-
-    if ((remAuthFile = unique_filename (path, "dcop", &fd)) == NULL)
-	goto bad;
-
-    if (!(removefp = fdopen(fd, "wb")))
 	goto bad;
 #endif
 
@@ -604,8 +584,8 @@ SetAuthentication (int count, IceListenObj *_listenObjs,
 	    IceGenerateMagicCookie (MAGIC_COOKIE_LEN);
 	(*_authDataEntries)[i+1].auth_data_length = MAGIC_COOKIE_LEN;
 
-	write_iceauth (addfp, removefp, &(*_authDataEntries)[i]);
-	write_iceauth (addfp, removefp, &(*_authDataEntries)[i+1]);
+	write_iceauth (addfp, &(*_authDataEntries)[i]);
+	write_iceauth (addfp, &(*_authDataEntries)[i+1]);
 
 	IceSetPaAuthData (2, &(*_authDataEntries)[i]);
 
@@ -613,7 +593,6 @@ SetAuthentication (int count, IceListenObj *_listenObjs,
     }
 
     fclose (addfp);
-    fclose (removefp);
 
     umask (original_umask);
 
@@ -629,16 +608,9 @@ SetAuthentication (int count, IceListenObj *_listenObjs,
     if (addfp)
 	fclose (addfp);
 
-    if (removefp)
-	fclose (removefp);
-
     if (addAuthFile) {
 	unlink(addAuthFile);
 	free(addAuthFile);
-    }
-    if (remAuthFile) {
-	unlink(remAuthFile);
-	free(remAuthFile);
     }
 
     umask (original_umask);
@@ -653,8 +625,6 @@ void
 FreeAuthenticationData(int count, IceAuthDataEntry *_authDataEntries)
 {
     /* Each transport has entries for ICE and XSMP */
-
-    char command[256];
     int i;
 
     if (only_local)
@@ -665,15 +635,8 @@ FreeAuthenticationData(int count, IceAuthDataEntry *_authDataEntries)
 	free (_authDataEntries[i].auth_data);
     }
 
-    free (_authDataEntries);
-
-    sprintf (command, "iceauth source %s", remAuthFile);
-    system(command);
-
-    unlink(remAuthFile);
-
+    free(_authDataEntries);
     free(addAuthFile);
-    free(remAuthFile);
 }
 
 void DCOPWatchProc ( IceConn iceConn, IcePointer client_data, Bool opening, IcePointer* watch_data)
@@ -1095,15 +1058,8 @@ DCOPServer::DCOPServer(bool _only_local, bool _suicide)
 
 DCOPServer::~DCOPServer()
 {
-    IceFreeListenObjs (numTransports, listenObjs);
-
-    QCString fName;
-    fName = ::getenv("DCOPSERVER");
-    if (fName.isNull()) {
-	fName = dcopServerFile();
-    }
-    unlink(fName.data());
-
+    system("dcopserver_shutdown --nokill");
+    IceFreeListenObjs(numTransports, listenObjs);
     FreeAuthenticationData(numTransports, authDataEntries);
     delete dcopSignals;
 }
@@ -1638,20 +1594,7 @@ int main( int argc, char* argv[] )
                }
             }
             qWarning("DCOPServer self-test failed.");
-            if (::access(fName.data(), R_OK) == 0) {
-	       QFile f(fName);
-	       f.open(IO_ReadOnly);
-	       QTextStream t(&f);
-	       t.readLine(); // skip over connection list
-	       bool ok = false;
-	       pid_t pid = t.readLine().toUInt(&ok);
-	       f.close();
-	       if (ok) {
-                  kill(pid, SIGTERM);
-                  sleep(1);
-               }
-            }
-            unlink(fName.data()); // Make sure to clean up socket.
+            system("dcopserver_shutdown --kill");
             return 1;
 	}
 	close(ready[0]);
