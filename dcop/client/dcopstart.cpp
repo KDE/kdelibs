@@ -57,7 +57,7 @@ void startApp(const char *_app, int argc, const char **args)
 
         if ( replyType != "serviceResult" )
         {
-            qWarning( "unexpected result '%s'", replyType);
+            qWarning( "unexpected result '%s'", replyType.data());
             exit(1);
         }
         int result;
@@ -66,7 +66,7 @@ void startApp(const char *_app, int argc, const char **args)
         reply >> result >> dcopName >> error;
         if (result != 0)
         {
-            qWarning("Error: %s", error.local8Bit());
+            qWarning("Error: %s", error.local8Bit().data());
             exit(1);
         }
         if (!dcopName.isEmpty())
@@ -90,8 +90,8 @@ int main( int argc, char** argv )
     QCString app;
     QCString objid;
     QCString function;
-    char **args = 0;
-    startApp( argv[1], argc - 2, &argv[2] );
+    /*char **args = 0;*/
+    startApp( argv[1], argc - 2, (const char**)&argv[2] );
 
     return 0;
 }
