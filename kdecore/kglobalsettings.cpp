@@ -259,7 +259,7 @@ QFont KGlobalSettings::menuFont()
     if(_menuFont)
         return *_menuFont;
 
-    _menuFont = new QFont("helvetica", 10);
+    _menuFont = new QFont("helvetica", 12);
     KCharsets *charsets = KGlobal::charsets();
     charsets->setQFont(*_menuFont, charsets->charsetForLocale());
 
