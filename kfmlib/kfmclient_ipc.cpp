@@ -2,6 +2,9 @@
 // (c) Torben Weis
 //     weis@stud.uni-frankfurt.de
 
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
 #include "ipc.h"
 #include "kfmclient_ipc.h"
 
