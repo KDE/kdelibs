@@ -110,11 +110,11 @@ bool KJS::equal(const KJSO& v1, const KJSO& v2)
     Number n2 = v2.toNumber();
     return equal(v1, n2);
   }
-  if ((t1 == StringType || t1 == NumberType) && t2 == ObjectType) {
+  if ((t1 == StringType || t1 == NumberType) && t2 >= ObjectType) {
     KJSO p2 = v2.toPrimitive();
     return equal(v1, p2);
   }
-  if (t1 == ObjectType && (t2 == StringType || t2 == NumberType)) {
+  if (t1 >= ObjectType && (t2 == StringType || t2 == NumberType)) {
     KJSO p1 = v1.toPrimitive();
     return equal(p1, v2);
   }
