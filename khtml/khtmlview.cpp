@@ -207,6 +207,7 @@ public:
         repaintTimerId = 0;
         scrollTimerId = 0;
         scrollSuspended = false;
+        scrollSuspendPreActivate = false;
         complete = false;
         firstRelayout = true;
         dirtyLayout = false;
@@ -315,6 +316,7 @@ public:
     int repaintTimerId;
     int scrollTimerId;
     bool scrollSuspended;
+    bool scrollSuspendPreActivate;
     int scrollTiming;
     int scrollBy;
     ScrollDirection scrollDirection;
@@ -1122,6 +1124,8 @@ void KHTMLView::keyPressEvent( QKeyEvent *_ke )
     // If CTRL was hit, be prepared for access keys
     if (_ke->key() == Key_Control && _ke->state()==0)
 	    d->accessKeysPreActivate=true;
+    if (_ke->key() == Key_Shift && _ke->state()==0)
+	    d->scrollSuspendPreActivate=true;
 
     // accesskey handling needs to be done before dispatching, otherwise e.g. lineedits
     // may eat the event
@@ -1341,10 +1345,6 @@ void KHTMLView::keyPressEvent( QKeyEvent *_ke )
             // what are you doing here?
 	    _ke->ignore();
             return;
-        case Key_Control:
-            if (d->scrollTimerId)
-                d->scrollSuspended = !d->scrollSuspended;
-            break;
         default:
             if (d->scrollTimerId)
                 d->newScrollTimer(this, 0);
@@ -1424,6 +1424,13 @@ void KHTMLView::keyReleaseEvent(QKeyEvent *_ke)
 	}
 	else if (d->accessKeysActivated) accessKeysTimeout();
 	
+    if( d->scrollSuspendPreActivate && _ke->key() != Key_Shift )
+        d->scrollSuspendPreActivate = false;
+    if( _ke->key() == Key_Shift && d->scrollSuspendPreActivate && _ke->state() == Qt::ShiftButton
+        && !(KApplication::keyboardModifiers() & KApplication::ShiftModifier))
+        if (d->scrollTimerId)
+                d->scrollSuspended = !d->scrollSuspended;
+
     // Send keyup event
     if ( dispatchKeyEvent( _ke ) )
     {
