@@ -210,7 +210,7 @@ QAction::QAction( const QString& text, const QIconSet& iconset, int accel, QObje
 }
 
 QAction::QAction( const QString& text, const QIconSet& iconset, int accel,
-		  QObject* receiver, const char* slot, QObject* parent, const char* name )
+		  const QObject* receiver, const char* slot, QObject* parent, const char* name )
     : QObject( parent, name )
 {
     m_bIconSet = FALSE;
@@ -228,7 +228,7 @@ QAction::QAction( const QString& text, const QIconSet& iconset, int accel,
 }
 
 QAction::QAction( const QString& text, int accel,
-		  QObject* receiver, const char* slot, QObject* parent, const char* name )
+		  const QObject* receiver, const char* slot, QObject* parent, const char* name )
     : QObject( parent, name )
 {
     m_bIconSet = FALSE;
@@ -1419,7 +1419,7 @@ QToggleAction::QToggleAction( const QString& text, int accel, QObject* parent, c
 }
 
 QToggleAction::QToggleAction( const QString& text, int accel,
-	       QObject* receiver, const char* slot, QObject* parent, const char* name )
+			      const QObject* receiver, const char* slot, QObject* parent, const char* name )
     : QAction( text, accel, receiver, slot, parent, name )
 {
     m_checked = FALSE;
@@ -1435,7 +1435,7 @@ QToggleAction::QToggleAction( const QString& text, const QIconSet& pix, int acce
 }
 
 QToggleAction::QToggleAction( const QString& text, const QIconSet& pix, int accel,
-	       QObject* receiver, const char* slot, QObject* parent, const char* name )
+			      const QObject* receiver, const char* slot, QObject* parent, const char* name )
     : QAction( text, pix, accel, receiver, slot, parent, name )
 {
     m_checked = FALSE;
@@ -1578,7 +1578,7 @@ QSelectAction::QSelectAction( const QString& text, int accel, QObject* parent, c
 }
 
 QSelectAction::QSelectAction( const QString& text, int accel,
-	       QObject* receiver, const char* slot, QObject* parent, const char* name )
+			      const QObject* receiver, const char* slot, QObject* parent, const char* name )
     : QAction( text, accel, receiver, slot, parent, name )
 {
     m_lock = FALSE;
@@ -1598,7 +1598,7 @@ QSelectAction::QSelectAction( const QString& text, const QIconSet& pix, int acce
 }
 
 QSelectAction::QSelectAction( const QString& text, const QIconSet& pix, int accel,
-	       QObject* receiver, const char* slot, QObject* parent, const char* name )
+			      const QObject* receiver, const char* slot, QObject* parent, const char* name )
     : QAction( text, pix, accel, receiver, slot, parent, name )
 {
     m_lock = FALSE;
@@ -1888,7 +1888,7 @@ QFontAction::QFontAction( const QString& text, int accel, QObject* parent, const
 }
 
 QFontAction::QFontAction( const QString& text, int accel,
-	       QObject* receiver, const char* slot, QObject* parent, const char* name )
+			  const QObject* receiver, const char* slot, QObject* parent, const char* name )
     : QSelectAction( text, accel, receiver, slot, parent, name )
 {
     setItems( m_fdb.families() );
@@ -1904,7 +1904,7 @@ QFontAction::QFontAction( const QString& text, const QIconSet& pix, int accel,
 }
 
 QFontAction::QFontAction( const QString& text, const QIconSet& pix, int accel,
-	       QObject* receiver, const char* slot, QObject* parent, const char* name )
+			  const QObject* receiver, const char* slot, QObject* parent, const char* name )
     : QSelectAction( text, pix, accel, receiver, slot, parent, name )
 {
     setItems( m_fdb.families() );
@@ -1927,7 +1927,7 @@ QFontSizeAction::QFontSizeAction( const QString& text, int accel, QObject* paren
 }
 
 QFontSizeAction::QFontSizeAction( const QString& text, int accel,
-	       QObject* receiver, const char* slot, QObject* parent, const char* name )
+				  const QObject* receiver, const char* slot, QObject* parent, const char* name )
     : QSelectAction( text, accel, receiver, slot, parent, name )
 {
     init();
@@ -1941,7 +1941,7 @@ QFontSizeAction::QFontSizeAction( const QString& text, const QIconSet& pix, int 
 }
 
 QFontSizeAction::QFontSizeAction( const QString& text, const QIconSet& pix, int accel,
-	       QObject* receiver, const char* slot, QObject* parent, const char* name )
+				  const QObject* receiver, const char* slot, QObject* parent, const char* name )
     : QSelectAction( text, pix, accel, receiver, slot, parent, name )
 {
     init();
