@@ -2728,8 +2728,10 @@ bool KHTMLPart::processObjectRequest( khtml::ChildFrame *child, const KURL &_url
                this, SLOT( slotChildCompleted(bool) ) );
       connect( part, SIGNAL( setStatusBarText( const QString & ) ),
                this, SIGNAL( setStatusBarText( const QString & ) ) );
+      connect( this, SIGNAL( completed() ),
+               part, SLOT( slotParentCompleted() ) );
       connect( this, SIGNAL( completed(bool) ),
-               part, SLOT( slotParentCompleted(bool) ) );
+               part, SLOT( slotParentCompleted() ) );
     }
 
     child->m_extension = KParts::BrowserExtension::childObject( part );
@@ -3023,7 +3025,7 @@ void KHTMLPart::popupMenu( const QString &url )
   emit popupMenu(url, QCursor::pos());
 }
 
-void KHTMLPart::slotParentCompleted( bool )
+void KHTMLPart::slotParentCompleted()
 {
   if ( !d->m_redirectURL.isEmpty() && !d->m_redirectionTimer.isActive() )
   {

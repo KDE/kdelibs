@@ -893,7 +893,7 @@ private slots:
   /**
    * @internal
    */
-  void slotParentCompleted( bool );
+  void slotParentCompleted();
   /**
    * @internal
    */
