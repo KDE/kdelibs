@@ -30,25 +30,50 @@
          Yuck.  */
 
 body {
-background-color: white;
+background: white none;
+color: black;
 font-family: sans-serif;
 padding: 0;
 margin: 0;
 }
 
-.sect1, .chapter { 
+.legalnotice, .copyright {
+font-size: xx-small;
+}
+
+.abstract {
+font-weight: bolder;
+padding-left: 2em;
+padding-right: 2em;
+}
+
+.sect1, .chapter, .toc {
 padding: 2em;
 }
 
-.chapter .sect1 { 
+.author {
+line-height: 1em;
+font-weight: bolder;
+}
+
+.othercredit {
+line-height: 1em;
+}
+
+.chapter .sect1, .chapter .titlepage, .sect1 .titlepage {
 padding: 0em;
+}
+
+.titlepage {
+padding-left: 2em;
+padding-right: 2em;
 }
 
 /* Links in Navigation */
 
 .navLeft a:link, .navCenter :link, .navRight :link, .header a:link, .header a:visited, .bottom-nav a:link, .bottom-nav a:visited {
 color: white;
-background-color: #3E91EB;
+background: #3E91EB none;
 font-weight: bold;
 }
 
@@ -57,23 +82,26 @@ font-weight: bold;
    Setting text-decoration seems to fix a nasty redraw problem in KHC */
 
 :link { color: rgb(170,0,0);
-        background-color: white; /* should be inherit */ }
+        background: white none; /* should be inherit */ }
 :visited { color: rgb(170,0,85);
-           background-color: white; /* should be inherit */ }
+           background: white none; /* should be inherit */ }
 :active { color: rgb(170,0,0);
-          background-color: white; /* should be inherit */ }
+          background: white none; /* should be inherit */ }
 
 .navLeft {
 text-align: left;
 font-weight: bold;
 padding-left: 0.5em;
-background-color: #3E91EB;
+background: #3E91EB none;
+color: white;
 }
 
 .navRight {
 text-align: right;
 font-weight: bold;
 padding-right: 0.5em;
+background: #3E91EB none;
+color: white;
 }
 
 .navCenter {
@@ -81,7 +109,8 @@ text-align: center;
 font-weight: bold;
 padding-left: 0.5em;
 padding-right: 0.5em;
-background-color: transparent;
+background: t#3E91EB none;
+color: white;
 }
 
 .header {
@@ -89,10 +118,12 @@ font-size: small;
 line-height: 1em;
 padding-left: 1em;
 vertical-align: middle;
-background-color: #3E91EB;
+background: #3E91EB none;
 color: white;
-margin: 0;
-padding: 0;
+margin: 0px;
+padding-right: 0px;
+padding-top: 0px;
+padding-bottom: 0px;
 border-top: 1px solid white;
 border-bottom: 1px solid #206dcd;
 height: 1.7em;
@@ -103,10 +134,11 @@ font-size: small;
 line-height: 1em;
 padding-left: 1em;
 vertical-align: middle;
-background-color: #3E91EB;
+background-color: #3E91EB none;
 color: white;
-margin: 0;
-padding: 0;
+margin: 0px;
+padding-right: 0px;
+padding-bottom: 0px;
 border-top: 1px solid white;
 padding-top: 10px;
 border-bottom: 1px solid #206dcd;
@@ -130,7 +162,7 @@ DIV.INFORMALEXAMPLE { border-style: dotted;
 
 /* But no padding for navigation elements */
 
-.toplogo, .navbackground, { padding: 0px; }
+.toplogo, .navbackground { padding: 0px; }
 
 TABLE.programlisting
 TABLE.screen { border-style: none;
@@ -157,7 +189,7 @@ P { text-align: justify; }
 /* P, H1, H2, H3, H4, H5, TD, TH { font-family: Helvetica, Arial, sans-serif;
     } */
 
-P, H1, H2, H3, H4, H5, TD, TH { font-family: sans-serif;
+P, H1, H2, H3, H4, H5, H6, TD, TH { font-family: sans-serif;
     }
 
 /* Visual cues for GUI elements etc in the text */
@@ -191,6 +223,7 @@ P, H1, H2, H3, H4, H5, TD, TH { font-family: sans-serif;
                   }
 
 h1, h2, h3, h4, h5, h6 { color: rgb(82,80,82);
+						background-color: transparent;
                    }
 .arg, .parameter, .replaceable{ background-color: rgb(255,255,255);
            color: rgb(0,128,64);
