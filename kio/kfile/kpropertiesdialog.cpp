@@ -1293,7 +1293,6 @@ public:
   QLabel *explanationLabel;
   QComboBox *ownerPermCombo, *groupPermCombo, *othersPermCombo;
   QCheckBox *extraCheckbox;
-    QPushButton *pbAvancedPerm;
   mode_t partialPermissions;
   KFilePermissionsPropsPlugin::PermissionsMode pmode;
   bool canChangePermissions;
@@ -1341,7 +1340,7 @@ KFilePermissionsPropsPlugin::KFilePermissionsPropsPlugin( KPropertiesDialog *_pr
   QString fname = properties->kurl().fileName();
   bool isLocal = properties->kurl().isLocalFile();
   bool isIntoTrash = isLocal && path.startsWith(KGlobalSettings::trashPath());
-  bool isTrash = ( properties->kurl().path( 1 ) == KGlobalSettings::trashPath() );
+  bool isTrash = isLocal && ( properties->kurl().path( 1 ) == KGlobalSettings::trashPath() );
   bool IamRoot = (geteuid() == 0);
 
   KFileItem * item = properties->item();
@@ -1423,6 +1422,7 @@ KFilePermissionsPropsPlugin::KFilePermissionsPropsPlugin( KPropertiesDialog *_pr
   QLabel *lbl;
   QGroupBox *gb;
   QGridLayout *gl;
+  QPushButton* pbAdvancedPerm = 0;
 
   /* Group: Access Permissions */
   gb = new QGroupBox ( 0, Qt::Vertical, i18n("Access Permissions"), d->m_frame );
@@ -1485,9 +1485,9 @@ KFilePermissionsPropsPlugin::KFilePermissionsPropsPlugin( KPropertiesDialog *_pr
     QLayoutItem *spacer = new QSpacerItem(0, 20, QSizePolicy::Minimum, QSizePolicy::Expanding);
     gl->addMultiCell(spacer, 5, 5, 0, 1);
 
-    l = d->pbAvancedPerm = new QPushButton(i18n("A&dvanced Permissions..."), gb);
-    gl->addMultiCellWidget(l, 6, 6, 0, 1, AlignRight);
-    connect(l, SIGNAL( clicked() ), this, SLOT( slotShowAdvancedPermissions() ));
+    pbAdvancedPerm = new QPushButton(i18n("A&dvanced Permissions..."), gb);
+    gl->addMultiCellWidget(pbAdvancedPerm, 6, 6, 0, 1, AlignRight);
+    connect(pbAdvancedPerm, SIGNAL( clicked() ), this, SLOT( slotShowAdvancedPermissions() ));
   }
   else
     d->extraCheckbox = 0;
@@ -1639,6 +1639,8 @@ KFilePermissionsPropsPlugin::KFilePermissionsPropsPlugin( KPropertiesDialog *_pr
   {
       //don't allow to change properties for file into trash
       enableAccessControls(false);
+      if ( pbAdvancedPerm)
+          pbAdvancedPerm->setEnabled(false);
   }
 
   box->addStretch (10);
@@ -1983,8 +1985,6 @@ void KFilePermissionsPropsPlugin::enableAccessControls(bool enable) {
 	d->othersPermCombo->setEnabled(enable);
 	if (d->extraCheckbox)
 	  d->extraCheckbox->setEnabled(enable);
-        if ( d->pbAvancedPerm)
-            d->pbAvancedPerm->setEnabled(enable);
         if ( d->cbRecursive )
             d->cbRecursive->setEnabled(enable);
 }
