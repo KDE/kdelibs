@@ -120,6 +120,7 @@ public:
     /**
      * If an archive is opened for writing then you can add new directories
      * using this function. KArchive won't write one directory twice.
+     *
      * @param name the name of the directory
      * @param user the user that owns the directory
      * @param group the group that owns the directory
@@ -211,8 +212,9 @@ public:
      * Here's another way of writing a file into an archive:
      * Call prepareWriting, then call writeData()
      * as many times as wanted then call doneWriting( totalSize ).
-     * For tar.gz files, you need to know the size before hand, it is needed in the header!
+     * For tar.gz files, you need to know the size before hand, since it is needed in the header.
      * For zip files, size isn't used.
+     *
      * @param name the name of the file
      * @param user the user that owns the file
      * @param group the group that owns the file
