@@ -48,7 +48,7 @@ INCLUDES = -I$(top_srcdir)/kimgio -I$(top_srcdir)/kio -I$(top_srcdir)/dcop \
 
 SRCDOC_DEST=$(kde_htmldir)/en/kdelibs/khtml
 
-## generate lib documentation
+## generate lib documentation 
 srcdoc:
 	$(mkinstalldirs) $(SRCDOC_DEST)
 	kdoc -H -d $(SRCDOC_DEST) kdecore \
