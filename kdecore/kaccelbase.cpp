@@ -38,16 +38,6 @@
 // class KAccelBase::ActionInfo
 //---------------------------------------------------------------------
 
-KAccelBase::ActionInfo::~ActionInfo()
-{
-	while( pInfoNext ) {
-		ActionInfo* pNext = pInfoNext->pInfoNext;
-		delete pInfoNext;
-		pInfoNext = pNext;
-	}
-	pInfoNext = 0;
-}
-
 //---------------------------------------------------------------------
 // class KAccelBase
 //---------------------------------------------------------------------
@@ -83,8 +73,8 @@ KAccelAction* KAccelBase::actionPtr( const KKeyServer::Key& key )
 {
 	if( !m_mapKeyToAction.contains( key ) )
 		return 0;
-	// If more than one action is connected to a single key, return nil.
-	return (m_mapKeyToAction[key].pInfoNext == 0) ? m_mapKeyToAction[key].pAction : 0;
+	// Note: If more than one action is connected to a single key, nil will be returned.
+	return m_mapKeyToAction[key].pAction;
 }
 
 KAccelAction* KAccelBase::actionPtr( const KKey& key )
@@ -110,9 +100,9 @@ bool KAccelBase::setActionEnabled( const QString& sAction, bool bEnable )
 			if( m_bAutoUpdate ) {
 				// FIXME: the action may already have it's connections inserted!
 				if( bEnable )
-					insertConnection( *pAction );
+					insertConnection( pAction );
 				else if( pAction->isConnected() )
-					removeConnection( *pAction );
+					removeConnection( pAction );
 			}
 		}
 		return true;
@@ -143,7 +133,7 @@ KAccelAction* KAccelBase::insert( const QString& sAction, const QString& sDesc, 
 		bConfigurable, bEnabled );
 
 	if( pAction && m_bAutoUpdate )
-		insertConnection( *pAction );
+		insertConnection( pAction );
 
 	//kdDebug(125) << "KAccelBase::insert() end" << endl;
 	return pAction;
@@ -159,7 +149,7 @@ bool KAccelBase::remove( const QString& sAction )
 
 void KAccelBase::slotRemoveAction( KAccelAction* pAction )
 {
-	removeConnection( *pAction );
+	removeConnection( pAction );
 }
 
 bool KAccelBase::setActionSlot( const QString& sAction, const QObject* pObjSlot, const char* psMethodSlot )
@@ -170,7 +160,7 @@ bool KAccelBase::setActionSlot( const QString& sAction, const QObject* pObjSlot,
 		// If there was a previous connection, remove it.
 		if( m_bAutoUpdate && pAction->isConnected() ) {
 			kdDebug(125) << "\tm_pObjSlot = " << pAction->m_pObjSlot << " m_psMethodSlot = " << pAction->m_psMethodSlot << endl;
-			removeConnection( *pAction );
+			removeConnection( pAction );
 		}
 
 		pAction->m_pObjSlot = pObjSlot;
@@ -178,7 +168,7 @@ bool KAccelBase::setActionSlot( const QString& sAction, const QObject* pObjSlot,
 
 		// If we're setting a connection,
 		if( m_bAutoUpdate && pObjSlot && psMethodSlot )
-			insertConnection( *pAction );
+			insertConnection( pAction );
 
 		return true;
 	} else
@@ -321,13 +311,14 @@ bool KAccelBase::updateConnections()
 	//  (key, variation, seq)
 	QValueVector<X> rgKeys;
 	createKeyList( rgKeys );
+	m_rgActionsNonUnique.clear();
 
 	KKeyToActionMap mapKeyToAction;
 	for( uint i = 0; i < rgKeys.size(); i++ ) {
 		X& x = rgKeys[i];
 		KKeyServer::Key& key = x.key;
 		ActionInfo info;
-		bool bMultiKey = false;
+		bool bNonUnique = false;
 
 		info.pAction = m_rgActions.actionPtr( x.iAction );
 		info.iSeq = x.iSeq;
@@ -335,7 +326,7 @@ bool KAccelBase::updateConnections()
 
 		// If this is a multi-key shortcut,
 		if( info.pAction->shortcut().seq(info.iSeq).count() > 1 )
-			bMultiKey = true;
+			bNonUnique = true;
 		// If this key is requested by more than one action,
 		else if( i < rgKeys.size() - 1 && key == rgKeys[i+1].key ) {
 			kdDebug(125) << "key = " << key.key().toStringInternal()
@@ -344,14 +335,14 @@ bool KAccelBase::updateConnections()
 			// If multiple actions requesting this key
 			//  have the same priority as the first one,
 			if( info.iVariation == rgKeys[i+1].iVari && info.iSeq == rgKeys[i+1].iSeq )
-				bMultiKey = true;
+				bNonUnique = true;
 
 			// Skip over the other records with this same key.
 			while( i < rgKeys.size() - 1 && key == rgKeys[i+1].key )
 				i++;
 		}
 
-		if( bMultiKey ) {
+		if( bNonUnique ) {
 			// Remove connection to single action if there is one
 			if( m_mapKeyToAction.contains( key ) ) {
 				KAccelAction* pAction = m_mapKeyToAction[key].pAction;
@@ -359,9 +350,11 @@ bool KAccelBase::updateConnections()
 					m_mapKeyToAction.remove( key );
 					disconnectKey( *pAction, key );
 					pAction->decConnections();
+					m_rgActionsNonUnique.append( pAction );
 				}
 			}
 			// Indicate that no single action is associated with this key.
+			m_rgActionsNonUnique.append( info.pAction );
 			info.pAction = 0;
 		}
 
@@ -446,38 +439,44 @@ void KAccelBase::createKeyList( QValueVector<X>& rgKeys )
 	qHeapSort( rgKeys.begin(), rgKeys.end() );
 }
 
-bool KAccelBase::insertConnection( KAccelAction& action )
+bool KAccelBase::insertConnection( KAccelAction* pAction )
 {
-	if( !action.m_pObjSlot || !action.m_psMethodSlot )
+	if( !pAction->m_pObjSlot || !pAction->m_psMethodSlot )
 		return true;
 
-	kdDebug(125) << "KAccelBase::insertConnection( " << &action << "=\"" << action.m_sName << "\"; shortcut = " << action.shortcut().toStringInternal() << " )  this = " << this << endl;
+	kdDebug(125) << "KAccelBase::insertConnection( " << pAction << "=\"" << pAction->m_sName << "\"; shortcut = " << pAction->shortcut().toStringInternal() << " )  this = " << this << endl;
 
 	// For each sequence associated with the given action:
-	for( uint iSeq = 0; iSeq < action.shortcut().count(); iSeq++ ) {
+	for( uint iSeq = 0; iSeq < pAction->shortcut().count(); iSeq++ ) {
 		// Get the first key of the sequence.
 		KKeyServer::Variations vars;
-		vars.init( action.shortcut().seq(iSeq).key(0), !m_bNativeKeys );
+		vars.init( pAction->shortcut().seq(iSeq).key(0), !m_bNativeKeys );
 		for( uint iVari = 0; iVari < vars.count(); iVari++ ) {
 			const KKeyServer::Key& key = vars.key( iVari );
 
 			//if( !key.isNull() ) {
 			if( key.sym() ) {
 				if( !m_mapKeyToAction.contains( key ) ) {
-					if( action.shortcut().seq(iSeq).count() == 1 ) {
-						m_mapKeyToAction[key] = ActionInfo( &action, iSeq, iVari );
-						if( connectKey( action, key ) )
-							action.incConnections();
-					} else {
-						m_mapKeyToAction[key] = ActionInfo( 0, iSeq, iVari );
+					// If this is a single-key shortcut,
+					if( pAction->shortcut().seq(iSeq).count() == 1 ) {
+						m_mapKeyToAction[key] = ActionInfo( pAction, iSeq, iVari );
+						if( connectKey( *pAction, key ) )
+							pAction->incConnections();
+					}
+					// Else this is a multi-key shortcut,
+					else {
+						m_mapKeyToAction[key] = ActionInfo( 0, 0, 0 );
+						// Insert into non-unique list if it's not already there.
+						if( m_rgActionsNonUnique.findIndex( pAction ) == -1 )
+							m_rgActionsNonUnique.append( pAction );
 						if( connectKey( key ) )
-							action.incConnections();
+							pAction->incConnections();
 					}
 				} else {
 					// There is a key conflict.  A full update
 					//  check is necessary.
 					// TODO: make this more efficient where possible.
-					if( m_mapKeyToAction[key].pAction != &action
+					if( m_mapKeyToAction[key].pAction != pAction
 					    && m_mapKeyToAction[key].pAction != 0 ) {
 						kdDebug(125) << "Key conflict: call updateConnections()" << endl;
 						return updateConnections();
@@ -502,12 +501,19 @@ bool KAccelBase::insertConnection( KAccelAction& action )
 	return true;
 }
 
-bool KAccelBase::removeConnection( KAccelAction& action )
+bool KAccelBase::removeConnection( KAccelAction* pAction )
 {
-	kdDebug(125) << "KAccelBase::removeConnection( " << &action << " = \"" << action.m_sName << "\"; shortcut = " << action.m_cut.toStringInternal() << " ): this = " << this << endl;
+	kdDebug(125) << "KAccelBase::removeConnection( " << pAction << " = \"" << pAction->m_sName << "\"; shortcut = " << pAction->m_cut.toStringInternal() << " ): this = " << this << endl;
 
 	//for( KKeyToActionMap::iterator it = m_mapKeyToAction.begin(); it != m_mapKeyToAction.end(); ++it )
 	//	kdDebug(125) << "\tKey: " << it.key().toString() << " => '" << (*it)->m_sName << "'" << " " << *it << endl;
+
+	if( m_rgActionsNonUnique.findIndex( pAction ) >= 0 ) {
+		mtemp_pActionRemoving = pAction;
+		bool b = updateConnections();
+		mtemp_pActionRemoving = 0;
+		return b;
+	}
 
 	KKeyToActionMap::iterator it = m_mapKeyToAction.begin();
 	while( it != m_mapKeyToAction.end() ) {
@@ -515,20 +521,12 @@ bool KAccelBase::removeConnection( KAccelAction& action )
 		ActionInfo* pInfo = &(*it);
 
 		// If the given action is connected to this key,
-		if( &action == pInfo->pAction ) {
-			disconnectKey( action, key );
-			action.decConnections();
+		if( pAction == pInfo->pAction ) {
+			disconnectKey( *pAction, key );
+			pAction->decConnections();
 
 			KKeyToActionMap::iterator itRemove = it++;
 			m_mapKeyToAction.remove( itRemove );
-		}
-		// If this is a multi-key shortcut,
-		else if( (*it).pAction == 0 ) {
-			// FIXME: make updating multi-key shortcuts efficient.
-			//if( cutOld.contains( key.key() ) )
-			mtemp_pActionRemoving = &action;
-			bool b = updateConnections();
-			mtemp_pActionRemoving = 0;
 		} else
 			it++;
 	}
@@ -540,12 +538,12 @@ bool KAccelBase::setShortcut( const QString& sAction, const KShortcut& cut )
 	KAccelAction* pAction = actionPtr( sAction );
 	if( pAction ) {
 		if( m_bAutoUpdate )
-			removeConnection( *pAction );
+			removeConnection( pAction );
 
 		pAction->setShortcut( cut );
 
 		if( m_bAutoUpdate && !pAction->shortcut().isNull() )
-			insertConnection( *pAction );
+			insertConnection( pAction );
 		return true;
 	} else
 		return false;
