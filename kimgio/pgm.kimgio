@@ -2,6 +2,7 @@
 Type=PNM
 Header=
 Name=Portable Graymap Image
+Name[ca]=Imatge portable Graymap
 Name[cs]=Obrázek ve formátu "Portable Graymap"
 Name[da]=Portabelt Graymap-billede
 Name[el]=Εικόνα Portable Graymap

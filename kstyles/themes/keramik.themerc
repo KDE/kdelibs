@@ -13,6 +13,7 @@ Name[ru]=Керамика
 Name[sr]=Keramika
 Name[th]=เครามิก - K
 Comment=The default style using alphablending
+Comment[ca]=L'estil per omissió usant la mescla alfa
 Comment[cs]=Výchozí styl používající alfa kanál
 Comment[da]=Standardstil med brug af alfablanding
 Comment[el]=Το προκαθορισμένο στυλ που χρησιμοποιεί alphablending

@@ -3,6 +3,7 @@ Type=PCX
 Header=^\012
 Name=PCX Image
 Name[be]=Малюнак PCX
+Name[ca]=Imatge PCX
 Name[cs]=Obrázek ve formátu PCX
 Name[da]=PCX-billede
 Name[el]=Εικόνα PCX

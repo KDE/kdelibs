@@ -3,6 +3,7 @@ Type=ICO
 Header=^\001\001[\001|\002]\001
 Name=Windows Icon
 Name[be]=Піктаграма Windows
+Name[ca]=Icona de Windows
 Name[cs]=Ikona MS Windows
 Name[da]=Windows-ikon
 Name[el]=Εικονίδιο Windows

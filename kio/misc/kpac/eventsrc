@@ -1,6 +1,7 @@
 [!Global!]
 IconName=proxy
 Comment=Automatic Proxy Configuration
+Comment[ca]=Configuració automàtica del servidor d'intercanvi
 Comment[cs]=Automatické nastavení proxy
 Comment[da]=Automatisk proxy-indstilling
 Comment[el]=Αυτόματη ρύθμιση proxy
@@ -20,6 +21,7 @@ Comment[wa]=Apontiaedje otomatike do procsi
 
 [script-error]
 Name=Invalid proxy script
+Name[ca]=Script del servidor intermedi no vàlid
 Name[cs]=Neplatný proxy skript
 Name[da]=Ugyldigt proxy-script
 Name[el]=Άκυρο σενάριο proxy
@@ -35,6 +37,7 @@ Name[sr]=Progršna proxy skripta
 Name[sv]=Ogiltigt proxy-skript
 Name[tr]=Geçersiz vekil sunucu betiği
 Comment=The downloaded proxy configuration script is invalid
+Comment[ca]=L'script de configuració del servidor intermedi descarregat no és vàlid
 Comment[cs]=Stažený konfigurační skript pro proxy je neplatný
 Comment[da]=Det downloadede proxy-indstillingsscript er ugyldigt
 Comment[el]=Το κατεβασμένο σενάριο ρύθμισης του proxy είναι άκυρο
@@ -54,6 +57,7 @@ default_presentation=16
 
 [download-error]
 Name=Script download error
+Name[ca]=Error descàrrega de l'script
 Name[cs]=Chyba ve stažení skriptu
 Name[da]=Script download-fejl
 Name[el]=Σφάλμα κατεβάσματος σεναρίου
@@ -69,6 +73,7 @@ Name[sr]=Greška prilikom preuzimanja skripte
 Name[sv]=Nerladdningsfel för skript
 Name[tr]=Betik indirme hatası
 Comment=The proxy configuration script could not be downloaded
+Comment[ca]=L'script de configuració del servidor intermedi no es pot descarregar
 Comment[cs]=Nelze stáhnout konfigurační skript pro proxy
 Comment[da]=Proxy-indstillingsscriptet kunne ikke downloades
 Comment[el]=Το σενάριο ρύθμισης του proxy δεν ήταν δυνατό να ανακτηθεί
@@ -88,6 +93,7 @@ default_presentation=16
 
 [evaluation-error]
 Name=Script evaluation error
+Name[ca]=Error en l'evaluació de l'script
 Name[cs]=Chyba v analýze skriptu
 Name[da]=Script evalueringsfejl
 Name[el]=Σφάλμα επικύρωσης σεναρίου
@@ -103,6 +109,7 @@ Name[sr]=Greška prilikom izračunavanja u skripti
 Name[sv]=Utvärderingsfel för skript
 Name[tr]=Betik çalıştırma hatası
 Comment=There was an error executing the proxy configuration script
+Comment[ca]=Hi ha hagut un error executant l'script de configuració del servidor intermedi
 Comment[cs]=Nastala chyba při spouštění konfiguračního skriptu proxy
 Comment[da]=Der opstod en fejl ved kørslen af proxy-indstillingsscriptet
 Comment[el]=Συνέβη ένα σφάλμα στην εκτέλεση του σεναρίου ρύθμισης του proxy
