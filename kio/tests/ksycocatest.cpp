@@ -1,3 +1,4 @@
+#include <kdebug.h>
 #include <kuserprofile.h>
 #include <ktrader.h>
 #include <kservice.h>
@@ -7,10 +8,29 @@
 #include <kservicegroup.h>
 #include <kimageio.h>
 #include <kprotocolinfo.h>
+#include <kiconloader.h>
 
 #include <kapplication.h>
 
 #include <stdio.h>
+#include <stdlib.h>
+
+bool check(QString txt, QString a, QString b)
+{
+  if (a.isEmpty())
+     a = QString::null;
+  if (b.isEmpty())
+     b = QString::null;
+  if (a == b) {
+    kdDebug() << txt << " : checking '" << a << "' against expected value '" << b << "'... " << "ok" << endl;
+  }
+  else {
+    kdDebug() << txt << " : checking '" << a << "' against expected value '" << b << "'... " << "KO !" << endl
+;
+    exit(1);
+  }
+  return true;
+}
 
 void debug(QString txt)
 {
@@ -41,8 +61,9 @@ int main(int argc, char *argv[])
    else
    {
      debug("Not found !");
+     exit(1);
    }
-     
+
    debug("Trying to look for application/x-zerosize");
    KMimeType::Ptr s0 = KMimeType::mimeType("application/x-zerosize");
    if ( s0 )
@@ -53,8 +74,9 @@ int main(int argc, char *argv[])
    else
    {
      debug("Not found !");
+     exit(1);
    }
-     
+
    debug("Trying to look for Desktop Pager");
    KService::Ptr se = KService::serviceByName("Desktop Pager");
    if ( se )
@@ -105,7 +127,8 @@ int main(int argc, char *argv[])
    {
      debug("Not found !");
    }
-   
+
+#if 1
    debug("Querying userprofile for services associated with text/plain");
    KServiceTypeProfile::OfferList offers = KServiceTypeProfile::offers("text/plain");
    debug(QString("got %1 offers").arg(offers.count()));
@@ -132,6 +155,7 @@ int main(int argc, char *argv[])
    {
      debug((*trit)->name());
    }
+#endif
 
 
    //
@@ -139,26 +163,33 @@ int main(int argc, char *argv[])
    KMimeType::Ptr mf  = KMimeType::findByURL( KStandardDirs::findExe( "kdesktop" ), 0,
 				 true, false );
    assert( mf );
-   debug(QString("Name is %1").arg(mf->name()));
-   debug(QString("Comment is %1").arg(mf->comment(KURL(),false)));
+   check( "A binary's mimetype", mf->name(), "application/x-executable" );
 
    //
-   debug("\nTrying findByURL for home.png");
-   mf  = KMimeType::findByURL( locate( "toolbar", "home.png" ), 0,
-				 true, false );
+   debug("\nTrying findByURL for folder_home.png");
+   QString fh;
+   (void)k.iconLoader()->loadIcon("folder_home.png",KIcon::Desktop,0,KIcon::DefaultState,&fh);
+   mf  = KMimeType::findByURL( fh, 0, true, false );
    assert( mf );
-   debug(QString("Name is %1").arg(mf->name()));
-   debug(QString("Comment is %1").arg(mf->comment(KURL(),false)));
+   check( "A PNG's mimetype", mf->name(), "image/png" );
 
    //
-   debug("\nTrying findByURL for Makefile.am");
-   mf  = KMimeType::findByURL( KURL("/tmp/Makefile.am"), 0, true, false );
+   //debug("\nTrying findByURL for Makefile.am");
+   //mf = KMimeType::findByURL( KURL("/tmp/Makefile.am"), 0, true, false );
+   //assert( mf );
+   //debug(QString("Name is %1").arg(mf->name()));
+   //debug(QString("Comment is %1").arg(mf->comment(KURL(),false)));
+
+   debug("\nTrying findByURL for man:/ls");
+   mf = KMimeType::findByURL( KURL("man:/ls") );
    assert( mf );
-   debug(QString("Name is %1").arg(mf->name()));
-   debug(QString("Comment is %1").arg(mf->comment(KURL(),false)));
+   check( "man:/ls", mf->name(), "text/html" );
+   check( "man:/ls/", mf->name(), "text/html" );
 
-   debug("\nTrying findByURL for Makefile.am");
+   mf = KMimeType::findByURL( KURL("http://foo/bar.png") );
+   check( "HTTP URL", mf->name(), "application/octet-stream" ); // HTTP can't know before downloading
 
+#if 1
    KMimeType::List mtl;
 
    mtl  = KMimeType::allMimeTypes( );
@@ -245,6 +276,7 @@ int main(int argc, char *argv[])
       debug((*it).ascii());
    }
    debug("--End of list--");
+#endif
 
 #if 0
    KImageIO::registerFormats();
