@@ -248,6 +248,7 @@ KDatePicker::selectMonthClicked()
   // -----
   picker.resize(picker.sizeHint());
   popup.setMainWidget(&picker);
+  picker.setFocus();
   connect(&picker, SIGNAL(closeMe(int)), &popup, SLOT(close(int)));
   if(popup.exec(selectMonth->mapToGlobal(QPoint(0, selectMonth->height()))))
     {
