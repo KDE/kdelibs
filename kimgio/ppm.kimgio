@@ -18,6 +18,6 @@ Name[sv]=Flyttbart pixmappfilformat
 Name[tr]=Taşınabilir Bit Eşlem Resim Dosyası
 Read=true
 Write=true
-Suffices=PPM,ppmraw,PPMRAW,pnm,PNM
+Suffices=ppm,PPM,pnm,PNM,ppmraw,PPMRAW
 Mimetype=image/x-portable-pixmap
 Library=

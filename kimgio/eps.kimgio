@@ -19,7 +19,7 @@ Name[sv]=Inkapslad Postscript-bild
 Name[tr]=Encapsulated PostScript Görüntüsü
 Read=true
 Write=true
-Suffices=eps,EPS
+Suffices=eps,EPS,epsi,EPSI,epsf,EPSF
 Mimetype=image/x-eps
 Library=kimg_eps.la
 
