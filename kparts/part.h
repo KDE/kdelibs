@@ -331,9 +331,24 @@ signals:
   /**
    * Emit this when you have completed loading data.
    * Hosting apps will want to know when the process of loading the data
-   *  is finished, so that they can access the data when everything is loaded.
+   * is finished, so that they can access the data when everything is loaded.
    **/
   void completed();
+  
+  /**
+   * Same as the above signal except besides indicating that the data has
+   * been completely loaded it also informs the host, by setting the flag,
+   * that a pending action has been generated as a result of completing the
+   * requested task (loading the data).  An example of this is meta-refresh
+   * tags on HTML pages which result in the page either being refreshed or
+   * the viewer being redirected to another page.  By emitting this signal
+   * after appropriately setting the flag, the part can tell the host of the
+   * pending scheduled action inorder to give it a chance to accept or cancel
+   * that action.
+   *
+   * @p pendingAction  if true, a pending action exists (ex: a scheduled refresh)
+   */
+  void completed( bool pendingAction );
 
   /**
    * Emit this if loading is canceled by the user or by an error.
