@@ -101,6 +101,7 @@ RenderFrameSet::~RenderFrameSet()
 void RenderFrameSet::layout( )
 {
     assert( !layouted() );
+    assert( minMaxKnown() );
 
     if ( !parent()->isFrameSet() ) {
         m_width = m_view->visibleWidth();
@@ -912,6 +913,7 @@ void RenderPartObject::slotPartLoadingErrorNotify()
 void RenderPartObject::layout( )
 {
     assert( !layouted() );
+    assert( minMaxKnown() );
 
     qDebug("RenderPartObject::layout()");
     qDebug("parent: %p", RenderObject::parent());

@@ -189,6 +189,7 @@ void RenderWidget::setQWidget(QWidget *widget)
 void RenderWidget::layout( )
 {
     assert( !layouted() );
+    assert( minMaxKnown() );
     if ( m_widget )
         m_widget->resize( m_width-borderLeft()-borderRight()-paddingLeft()-paddingRight(),
                           m_height-borderLeft()-borderRight()-paddingLeft()-paddingRight());

@@ -95,7 +95,8 @@ RenderObject::RenderObject()
 
     m_layouted = false;
     m_minMaxKnown = false;
-
+    m_recalcMinMax = true;
+    
     m_parent = 0;
     m_previous = 0;
     m_next = 0;

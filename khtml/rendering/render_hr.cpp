@@ -105,6 +105,7 @@ void RenderHR::print(QPainter *p, int _x, int _y, int _w, int _h, int _tx, int _
 void RenderHR::layout()
 {
     assert( !layouted() );
+    assert( minMaxKnown() );
 
     calcWidth();
     calcHeight();
@@ -141,7 +142,7 @@ void RenderHR::calcMinMaxWidth()
         m_length   = width;
     }
 
-//    setMinMaxKnown();
+    setMinMaxKnown();
 }
 
 void RenderHR::dump(QTextStream *stream, QString ind) const

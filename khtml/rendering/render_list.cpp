@@ -177,6 +177,7 @@ void RenderListItem::calcListValue()
 void RenderListItem::layout( )
 {
     assert( !layouted() );
+    assert( minMaxKnown() );
 
     if ( !checkChildren() ) {
         m_height = 0;
@@ -350,6 +351,7 @@ void RenderListMarker::printObject(QPainter *p, int, int,
 void RenderListMarker::layout()
 {
     assert( !layouted() );
+    assert( minMaxKnown() );
     setLayouted();
 }
 
@@ -379,6 +381,7 @@ void RenderListMarker::calcMinMaxWidth()
         if(style()->listStylePosition() == INSIDE)
             m_width = m_listImage->pixmap().width() + 5;
         m_height = m_listImage->pixmap().height();
+	setMinMaxKnown();
         return;
     }
 

@@ -130,7 +130,7 @@ void RenderImage::setPixmap( const QPixmap &p, const QRect& r, CachedImage *o)
         calcWidth();
         calcHeight();
 
-        if(m_width != oldwidth || m_height != oldheight)
+        if(iwchanged || m_width != oldwidth || m_height != oldheight)
             needlayout = true;
 
         m_width = oldwidth;
@@ -282,6 +282,7 @@ void RenderImage::printObject(QPainter *p, int /*_x*/, int /*_y*/, int /*_w*/, i
 void RenderImage::layout()
 {
     assert(!layouted());
+    assert( minMaxKnown() );
 
     short oldwidth = m_width;
     int oldheight = m_height;

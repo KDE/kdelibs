@@ -226,7 +226,7 @@ void RenderFlow::layout()
 //     t.start();
 
     assert( !layouted() );
-
+    assert( minMaxKnown() );
     assert(!isInline());
 
     int oldWidth = m_width;
@@ -1157,11 +1157,7 @@ void RenderFlow::calcMinMaxWidth()
     m_minWidth += toAdd;
     m_maxWidth += toAdd;
 
-//    seems to work but I'm not sure so I better leave it out
-//    maybe checking minMaxKnown() for each child and only set it if
-//    all childs have minMaxKnown() set ? this should be save? (Dirk)
-//     if(childrenInline())
-        setMinMaxKnown();
+    setMinMaxKnown();
 
     // ### compare with min/max width set in style sheet...
 }

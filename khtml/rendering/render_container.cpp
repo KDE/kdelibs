@@ -260,6 +260,7 @@ void RenderContainer::insertChildNode(RenderObject* child, RenderObject* beforeC
 void RenderContainer::layout()
 {
     assert( !layouted() );
+    assert( minMaxKnown() );
 
     RenderObject *child = firstChild();
     while( child ) {

@@ -157,6 +157,7 @@ void RenderFormElement::updateFromElement()
 void RenderFormElement::layout()
 {
     assert( !layouted() );
+    assert( minMaxKnown() );
 
     // minimum height
     m_height = 0;
@@ -728,10 +729,13 @@ void RenderSelect::calcMinMaxWidth()
     assert( !minMaxKnown() );
 
     // ### ugly HACK FIXME!!!
+    setMinMaxKnown();
     if ( !layouted() )
         layout();
     setLayouted( false );
-
+    setMinMaxKnown( false );
+    // ### end FIXME
+    
     RenderFormElement::calcMinMaxWidth();
 }
 

@@ -104,6 +104,10 @@ void RenderRoot::layout()
     if (m_printingMode)
        m_minWidth = m_width;
 
+    if(firstChild()) {
+        firstChild()->setLayouted(false);
+    }
+
 #ifdef SPEED_DEBUG
     QTime qt;
     qt.start();
@@ -116,9 +120,6 @@ void RenderRoot::layout()
     qt.start();
 #endif
 
-    if(firstChild()) {
-        firstChild()->setLayouted(false);
-    }
     RenderFlow::layout();
 #ifdef SPEED_DEBUG
     kdDebug() << "RenderRoot::layout time used=" << qt.elapsed() << endl;

@@ -1014,7 +1014,7 @@ void RenderTable::calcColWidth(void)
      * and the width of the table
      */
 
-    calcColMinMax();
+//     calcColMinMax();
 
     /*
      * Set actColWidth[] to column minimums, it will
@@ -1279,6 +1279,7 @@ void RenderTable::calcRowHeight(int r)
 void RenderTable::layout()
 {
     assert( !layouted() );
+    assert( minMaxKnown() );
 
 //     kdDebug( 6040 ) << renderName() << "(Table)"<< this << " ::layout0() width=" << width() << ", layouted=" << layouted() << endl;
 
@@ -1445,9 +1446,9 @@ void RenderTable::layoutRows(int yoff)
             default:
                 break;
             }
-    #ifdef DEBUG_LAYOUT
+#ifdef DEBUG_LAYOUT
             kdDebug( 6040 ) << "CELL te=" << te << ", be=" << rHeight - cell->height() - te << ", rHeight=" << rHeight << ", valign=" << va << endl;
-    #endif
+#endif
             cell->setCellTopExtra( te );
             cell->setCellBottomExtra( rHeight - cell->height() - te);
 
@@ -1871,6 +1872,7 @@ void RenderTableRow::dump(QTextStream *stream, QString ind) const
 void RenderTableRow::layout()
 {
     assert( !layouted() );
+    assert( minMaxKnown() );
 
     RenderObject *child = firstChild();
     while( child ) {
@@ -1928,9 +1930,11 @@ void RenderTableCell::calcMinMaxWidth()
     if(nWrap && !(style()->width().type==Fixed))
         m_minWidth = m_maxWidth;
 
-    if (m_minWidth!=oldMin || m_maxWidth!=oldMax)
+    if (m_minWidth!=oldMin || m_maxWidth!=oldMax) {
         m_table->addColInfo(this);
-
+	// ### should be done more intelligently in addColInfo
+	m_table->setMinMaxKnown( false );
+    }
     setMinMaxKnown();
 }
 
