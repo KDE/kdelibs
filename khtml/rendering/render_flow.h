@@ -103,7 +103,7 @@ protected:
     void layoutInlineChildren();
     void layoutSpecialObjects();
 
-    inline int floatBottom();
+    int floatBottom();
     inline int leftBottom();
     inline int rightBottom();
     bool checkClear(RenderObject *child);
