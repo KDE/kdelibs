@@ -41,10 +41,23 @@
 class KFileItem::KFileItemPrivate
 {
 public:
-  KFileItemPrivate() { bMimeTypeKnown = false; }
+  KFileItemPrivate() {
+    bMimeTypeKnown = false;
+    refresh();
+  }
+  void refresh() {
+    size = (KIO::filesize_t) -1;
+    for ( int i = Modification; i <= Creation; i++ )
+      time[i] = (time_t) -1;
+  }
+
    // For special case like link to dirs over FTP
   QString m_guessedMimeType;
   bool bMimeTypeKnown;
+
+  enum { Modification = 0, Access = 1, Creation = 2 };
+  time_t time[3];
+  KIO::filesize_t size;
 };
 
 KFileItem::KFileItem( const KIO::UDSEntry& _entry, const KURL& _url,
@@ -208,6 +221,7 @@ void KFileItem::refresh()
   m_permissions = (mode_t)-1;
   m_user = QString::null;
   m_group = QString::null;
+  d->refresh();
   // Basically, we can't trust any information we got while listing.
   // Everything could have changed...
   // Clearing m_entry makes it possible to detect changes in the size of the file,
@@ -252,11 +266,16 @@ QString KFileItem::linkDest() const
 
 KIO::filesize_t KFileItem::size() const
 {
+  if ( d->size > (KIO::filesize_t) -1 )
+    return d->size;
+    
   // Extract it from the KIO::UDSEntry
   KIO::UDSEntry::ConstIterator it = m_entry.begin();
   for( ; it != m_entry.end(); it++ )
-    if ( (*it).m_uds == KIO::UDS_SIZE )
-      return (*it).m_long;
+    if ( (*it).m_uds == KIO::UDS_SIZE ) {
+      d->size = (*it).m_long;
+      return d->size;
+    }
   // If not in the KIO::UDSEntry, or if UDSEntry empty, use stat() [if local URL]
   if ( m_bIsLocalURL )
   {
@@ -269,20 +288,41 @@ KIO::filesize_t KFileItem::size() const
 
 time_t KFileItem::time( unsigned int which ) const
 {
+  unsigned int mappedWhich = 0;
+
+  switch( which ) {
+    case KIO::UDS_MODIFICATION_TIME:
+      mappedWhich = KFileItemPrivate::Modification;
+      break;
+    case KIO::UDS_ACCESS_TIME:
+      mappedWhich = KFileItemPrivate::Modification;
+      break;
+    case KIO::UDS_CREATION_TIME:
+      mappedWhich = KFileItemPrivate::Modification;
+      break;
+  }
+
+  if ( d->time[mappedWhich] > (time_t) -1 )
+    return d->time[mappedWhich];
+
   // Extract it from the KIO::UDSEntry
   KIO::UDSEntry::ConstIterator it = m_entry.begin();
   for( ; it != m_entry.end(); it++ )
-    if ( (*it).m_uds == which )
-      return static_cast<time_t>((*it).m_long);
+    if ( (*it).m_uds == which ) {
+      d->time[mappedWhich] = static_cast<time_t>((*it).m_long);
+      return d->time[mappedWhich];
+    }
 
   // If not in the KIO::UDSEntry, or if UDSEntry empty, use stat() [if local URL]
   if ( m_bIsLocalURL )
   {
     KDE_struct_stat buf;
     KDE_stat( QFile::encodeName(m_url.path( -1 )), &buf );
-    return (which == KIO::UDS_MODIFICATION_TIME) ? buf.st_mtime :
-           (which == KIO::UDS_ACCESS_TIME) ? buf.st_atime :
-        static_cast<time_t>(0); // We can't determine creation time for local files
+    d->time[mappedWhich] = (which == KIO::UDS_MODIFICATION_TIME) ? 
+                           buf.st_mtime :
+                           (which == KIO::UDS_ACCESS_TIME) ? buf.st_atime :
+                           static_cast<time_t>(0); // We can't determine creation time for local files
+    return d->time[mappedWhich];
   }
   return static_cast<time_t>(0);
 }
@@ -378,7 +418,7 @@ QPixmap KFileItem::pixmap( int _size, int _state ) const
   if ( m_bLink )
       _state |= KIcon::LinkOverlay;
 
-  if ( !S_ISDIR( m_fileMode ) // Locked dirs have a special icon
+  if ( S_ISDIR( m_fileMode ) // Locked dirs have a special icon
        && !isReadable())
      _state |= KIcon::LockOverlay;
 
