@@ -273,6 +273,7 @@ public slots:
 
   void slotCAImport();
   void slotCARemove();
+  void slotCARestore();
   void slotCAItemChanged();
   void slotCAChecked();
   
@@ -342,7 +343,7 @@ private:
 
   /* CA stuff */
   KSSLCertBox *caSubject, *caIssuer;
-  QPushButton *caSSLImport, *caSSLRemove;
+  QPushButton *caSSLImport, *caSSLRemove, *caSSLRestore;
   QCheckBox *caSite, *caEmail, *caCode;
   KSSLSigners *_signers;
 

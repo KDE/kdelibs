@@ -698,10 +698,14 @@ QString whatstr;
   connect(caSSLImport, SIGNAL(clicked()), SLOT(slotCAImport()));
   grid->addWidget(caSSLImport, 0, 7);
 
-  caSSLRemove = new QPushButton(i18n("&Remove..."), tabSSLCA);
+  caSSLRemove = new QPushButton(i18n("&Remove"), tabSSLCA);
   connect(caSSLRemove, SIGNAL(clicked()), SLOT(slotCARemove()));
   grid->addWidget(caSSLRemove, 1, 7);
   caSSLRemove->setEnabled(false);
+
+  caSSLRestore = new QPushButton(i18n("R&estore..."), tabSSLCA);
+  connect(caSSLRestore, SIGNAL(clicked()), SLOT(slotCARestore()));
+  grid->addWidget(caSSLRestore, 2, 7);
 
   caSubject = KSSLInfoDlg::certInfoWidget(tabSSLCA, QString(""));
   caIssuer = KSSLInfoDlg::certInfoWidget(tabSSLCA, QString(""));
@@ -1852,6 +1856,50 @@ CAItem *x = static_cast<CAItem *>(caList->selectedItem());
     configChanged();
     slotCAItemChanged();
  }
+}
+
+
+void KCryptoConfig::slotCARestore() {
+
+ int rc = KMessageBox::warningYesNo(this, i18n("This will revert your certificate signers database to the KDE default.\nThis operation cannot be undone.\nAre you sure you wish to continue?"), i18n("SSL"));
+      if (rc == KMessageBox::No) {
+          return;
+      }
+
+// For now, we just rm the existing file and rebuild
+
+   QString path = KGlobal::dirs()->saveLocation("config");
+
+   path += "/ksslcalist";
+
+   QFile::remove(path);
+
+   // Remove all our old work and rebuild the GUI/List
+   caDelList.clear();
+   caList->clear();
+
+  
+  QStringList groups = _signers->list();
+  KConfig sigcfg("ksslcalist", true, false);
+
+  for (QStringList::Iterator i = groups.begin();
+                             i != groups.end();
+                             ++i) {
+    if ((*i).isEmpty() || *i == "<default>") continue;
+    if (!sigcfg.hasGroup(*i)) continue;
+    sigcfg.setGroup(*i);
+    if (!sigcfg.hasKey("x509")) continue;
+                new CAItem(caList,
+                     (*i),
+                     sigcfg.readEntry("x509", ""),
+                     sigcfg.readBoolEntry("site", false),
+                     sigcfg.readBoolEntry("email", false),
+                     sigcfg.readBoolEntry("code", false),
+                     this );
+  }
+
+   genCAList();
+   slotCAItemChanged();
 }
 
 
