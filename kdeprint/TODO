@@ -33,8 +33,6 @@ WISHES
   of authentification (put this into separate program that would restart
   itself using kdesu).
 
-- extension of the print ioslave to view jobs (print:/jobs)
-
 - CUPS: a "Printer/Server Debugging Helper" would be nice: you could 
   vary the LogLevel there, restart the server, provide a viewer
   for the error_log (maybe the other logs too) with life updates

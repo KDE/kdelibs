@@ -22,6 +22,7 @@
 #include "kmjobmanager.h"
 #include "kmjob.h"
 #include "kmthreadjob.h"
+#include "kmfactory.h"
 
 #include <kaction.h>
 #include <kdebug.h>
@@ -36,6 +37,11 @@ KMJobManager::KMJobManager(QObject *parent, const char *name)
 
 KMJobManager::~KMJobManager()
 {
+}
+
+KMJobManager* KMJobManager::self()
+{
+	return KMFactory::self()->jobManager();
 }
 
 void KMJobManager::discardAllJobs()

@@ -47,6 +47,8 @@ public:
 	KMJobManager(QObject *parent = 0, const char *name = 0);
 	virtual ~KMJobManager();
 
+	static KMJobManager* self();
+
 	void addPrinter(const QString& pr, JobType type = ActiveJobs);
 	void removePrinter(const QString& pr, JobType type = ActiveJobs);
 	void clearFilter();

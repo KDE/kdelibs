@@ -559,3 +559,5 @@ Since 2.2 release, Michael Goffioul <goffioul@imec.be>
   * manager: show instances as children of the real printer in the tree view.
     No instance management is possible from the tree view itself. The user
     still has to use the "Instances" tab.
+  * ioslave: added support for print jobs browsing, per printer or for all
+    printers together (-> print:/jobs)
