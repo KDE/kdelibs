@@ -30,7 +30,7 @@
  * Abstract base class for the worker classes behind the @ref KMacroExpander namespace.
  * @internal
  *
- * @since 3.2
+ * @since 3.1.3
  * @author Oswald Buddenhagen <ossi@kde.org>
  */
 class KMacroExpanderBase {
@@ -141,6 +141,7 @@ private:
 /**
  * A group of functions providing macro expansion (substitution) in strings,
  * optionally with quoting appropriate for shell execution.
+ * @since 3.1.3
  */
 namespace KMacroExpander {
     /**
@@ -152,7 +153,6 @@ namespace KMacroExpander {
      * @param map map with substitutions
      * @param c escape char indicating start of macro, or QChar::null if none
      * @return the string with all valid macros expanded
-     * @since 3.2
      *
      * \code
      * // Code example
@@ -177,7 +177,6 @@ namespace KMacroExpander {
      * @param c escape char indicating start of macro, or QChar::null if none
      * @return the string with all valid macros expanded, or a null string
      *  if a shell syntax error was detected in the command
-     * @since 3.2
      *
      * \code
      * // Code example
@@ -204,7 +203,6 @@ namespace KMacroExpander {
      * @param map map with substitutions
      * @param c escape char indicating start of macro, or QChar::null if none
      * @return the string with all valid macros expanded
-     * @since 3.2
      *
      * \code
      * // Code example
@@ -232,7 +230,6 @@ namespace KMacroExpander {
      * @param c escape char indicating start of macro, or QChar::null if none
      * @return the string with all valid macros expanded, or a null string
      *  if a shell syntax error was detected in the command
-     * @since 3.2
      *
      * \code
      * // Code example
