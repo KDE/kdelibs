@@ -310,14 +310,6 @@ KCmdLineArgs *KCmdLineArgs::parsedArgs(const char *id)
       args = argsList->next();
    }
 
-   if (!args)
-   {
-#ifndef NDEBUG
-      fprintf(stderr, "WARNING (KCmdLineArgs):\n");
-      fprintf(stderr, "Application requests for parsedArgs(\"%s\") without a prior call\n", id?id:"null");
-      fprintf(stderr, "to addCmdLineOptions( ..., \"%s\"), or after a reset()\n\n", id?id:"null");
-#endif
-   }
    return args;
 }
 
