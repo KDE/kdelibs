@@ -123,8 +123,10 @@ public:
   bool hasCloseButton() const;
 
 protected:
+  /// to catch move keyEvents when QLineEdit has keyFocus
+  virtual bool eventFilter(QObject *o, QEvent *e );
   /// the resize event
-  void resizeEvent(QResizeEvent*);
+  virtual void resizeEvent(QResizeEvent*);
   /// the year forward button
   QToolButton *yearForward;
   /// the year backward button

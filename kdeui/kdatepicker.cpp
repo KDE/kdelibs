@@ -71,6 +71,7 @@ KDatePicker::KDatePicker(QWidget *parent, QDate dt, const char *name)
   // -----
   setFontSize(10);
   line->setValidator(val);
+  line->installEventFilter( this );
   yearForward->setPixmap(BarIcon(QString::fromLatin1("2rightarrow")));
   yearBackward->setPixmap(BarIcon(QString::fromLatin1("2leftarrow")));
   monthForward->setPixmap(BarIcon(QString::fromLatin1("1rightarrow")));
@@ -91,6 +92,25 @@ KDatePicker::KDatePicker(QWidget *parent, QDate dt, const char *name)
 KDatePicker::~KDatePicker()
 {
   delete d;
+}
+
+bool
+KDatePicker::eventFilter(QObject *o, QEvent *e )
+{
+   if ( e->type() == QEvent::KeyPress ) {
+      QKeyEvent *k = (QKeyEvent *)e;
+
+      if ( (k->key() == Qt::Key_Prior) ||
+           (k->key() == Qt::Key_Next)  ||
+           (k->key() == Qt::Key_Up)    ||
+           (k->key() == Qt::Key_Down) )
+       {
+          QApplication::sendEvent( table, e );
+          table->setFocus();
+          return TRUE; // eat event
+       }
+   }
+   return QFrame::eventFilter( o, e );
 }
 
 void
