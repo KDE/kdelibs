@@ -1209,6 +1209,7 @@ KFileMimeTypeInfo::ItemInfo* KFileMimeTypeInfo::GroupInfo::addItemInfo(
     kdDebug(7034) << key << "(" << translatedKey << ") -> " << QVariant::typeToName(type) << endl;
     
     ItemInfo* item = new ItemInfo(key, translatedKey, type);
+    m_supportedKeys.append(key);
     m_itemDict.insert(key, item);
     return item;
 }
