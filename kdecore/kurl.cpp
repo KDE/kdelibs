@@ -1692,7 +1692,7 @@ QString KURL::queryItem( const QString& _item ) const
       if ( len > _len && item.at( _len ) == '=' )
       {
         if ( len > ++_len )
-          return item.mid( _len );
+          return decode_string( item.mid( _len ) );
         else // empty value
           return QString::fromLatin1("");
       }
