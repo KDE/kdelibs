@@ -29,6 +29,7 @@
 #include <qobjectlist.h>
 #include <qstyle.h>
 #include <qlayout.h>
+#include <qwidgetlist.h>
 
 #include <kaccel.h>
 #include <kaction.h>
@@ -170,21 +171,42 @@ void KMainWindow::initKMainWindow(const char *name)
 
     if ( !ksm )
         ksm = ksmd.setObject(new KMWSessionManaged());
-    if ( !name ) {
-        // set a unique object name. Required by session management.
-        QCString s;
-        int unusedNumber= 0;
-        KMainWindow *existingWin;
-        do {
-            s.setNum( ++unusedNumber );
-            s= kapp->instanceName() + "-mainwindow#" + s;
-            for ( existingWin= memberList->first(); existingWin!=0;
-                  existingWin= memberList->next() )
-                if ( existingWin->name() == s )
-                    break;
-        } while ( existingWin!=0 );
-        setName( s );
+    // set a unique object name. Required by session management.
+    QCString objname;
+    QCString s;
+    int unusedNumber;
+    if ( !name )
+        { // no name given
+        objname = kapp->instanceName() + "-mainwindow#";
+        s = objname + '1'; // start adding number immediately
+        unusedNumber = 1;
+        }
+    else
+        {
+        objname = name;
+        s = objname;
+        unusedNumber = 0; // add numbers only when needed
+        }
+    for(;;) {
+        QWidgetList* list = kapp->topLevelWidgets();
+        QWidgetListIt it( *list );
+        bool found = false;
+        for( QWidget* w = it.current();
+             w != NULL;
+             ++it, w = it.current())
+            if( w != this && w->name() == s )
+                {
+                found = true;
+                break;
+                }
+        delete list;
+        if( !found )
+            break;
+        s.setNum( ++unusedNumber );
+        s = objname + s;
     }
+    setName( s );
+
     memberList->append( this );
 
     d = new KMainWindowPrivate;
