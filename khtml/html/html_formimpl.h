@@ -63,7 +63,7 @@ public:
     virtual tagStatus endTag() { return FORMEndTag; }
 
     long length() const;
-    void submit (  );
+    void prepareSubmit();
     void reset (  );
 
     QByteArray formData( );
@@ -97,6 +97,10 @@ public:
 
 protected:
     static QCString encodeByteArray( const QByteArray& e );
+
+    void submit (  );
+
+    friend class HTMLFormElement;
 
     QList<HTMLGenericFormElementImpl> formElements;
     DOMString url;

@@ -284,7 +284,7 @@ void RenderSubmitButton::slotClicked()
 
     // ### if the above line calls some javascript which deletes us we will probably crash here
     if (m_element->form())
-        m_element->form()->submit();
+        m_element->form()->prepareSubmit();
 }
 
 void RenderSubmitButton::layout()

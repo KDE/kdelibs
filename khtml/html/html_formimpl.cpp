@@ -234,15 +234,22 @@ void HTMLFormElementImpl::setBoundary( const DOMString& bound )
     m_boundary = bound;
 }
 
-void HTMLFormElementImpl::submit(  )
+void HTMLFormElementImpl::prepareSubmit()
 {
-    kdDebug( 6030 ) << "submit pressed!" << endl;
     if(!view) return;
 
     DOMString script = getAttribute(ATTR_ONSUBMIT);
     if (!script.isNull() && view->part()->jScriptEnabled())
         if(!view->part()->executeScript(Node(this), script.string()))
             return; // don't submit if script returns false
+
+    submit();
+}
+
+void HTMLFormElementImpl::submit(  )
+{
+    kdDebug( 6030 ) << "submit pressed!" << endl;
+    if(!view) return;
 
     QByteArray form_data = formData();
 
@@ -355,7 +362,7 @@ void HTMLFormElementImpl::maybeSubmit()
 
     // if there's only one lineedit or only one possibly successful one, submit
     if (le < 2 || total < 2)
-        submit();
+        prepareSubmit();
 }
 
 
@@ -1022,7 +1029,7 @@ bool HTMLInputElementImpl::mouseEvent( int _x, int _y, int button, MouseEventTyp
         xPos = _x - _tx - m_render->xPos();
         yPos = _y - _ty - m_render->yPos();
         _clicked = true;
-        _form->submit();
+        if(_form) _form->prepareSubmit();
         return true;
     }
     return ret;
