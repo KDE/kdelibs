@@ -83,14 +83,20 @@ void HTMLBodyElementImpl::parseAttribute(AttributeImpl *attr)
             m_bgSet = false;
         break;
     }
-    case ATTR_MARGINWIDTH:
+    case ATTR_MARGINWIDTH: {
+	KHTMLView* w = getDocument()->view();
+	w->setMarginWidth( -1 ); // unset this, so it doesn't override the setting here
         addCSSLength(CSS_PROP_MARGIN_RIGHT, attr->value() );
+    }
         /* nobreak; */
     case ATTR_LEFTMARGIN:
         addCSSLength(CSS_PROP_MARGIN_LEFT, attr->value() );
         break;
-    case ATTR_MARGINHEIGHT:
+    case ATTR_MARGINHEIGHT: {
+	KHTMLView* w = getDocument()->view();
+	w->setMarginHeight( -1 ); // unset this, so it doesn't override the setting here
         addCSSLength(CSS_PROP_MARGIN_BOTTOM, attr->value());
+    }
         /* nobreak */
     case ATTR_TOPMARGIN:
         addCSSLength(CSS_PROP_MARGIN_TOP, attr->value());
