@@ -37,10 +37,10 @@ class ConfigWidget;
 
 /**
  * @internal
- * @libdoc The KDE Resource library
+ * \mainpage The KDE Resource library
  *
- * NOTE: this library is NOT (YET?) PUBLIC. Do not publish this
- * interface, it is in constant flux.
+ * \note { this library is NOT (YET?) PUBLIC. Do not publish this
+ * interface, it is in constant flux. }
  *
  * The KDE Resource framework can be used to manage resources of
  * different types, organized in families. The Resource framework
@@ -73,7 +73,7 @@ class ConfigWidget;
  * Example:
  *
 <B>resourceexample.h</B>:
-<pre>
+\code
 #include <kconfig.h>
 #include <kresources/resource.h>
 
@@ -87,9 +87,9 @@ private:
   QString mLocation;
   QString mPassword;
 }
-</pre>
+\endcode
 <B>resourceexample.cpp</B>:
-<pre>
+\code
 #include <kconfig.h>
 
 #include "resourceexample.h"
@@ -123,9 +123,9 @@ extern "C"
     return new ResourceExample( config );
   }
 }
-</pre>
+\endcode
 * <B>resourceexampleconfig.h</B>:
-<pre>
+\code
 #include <klineedit.h>
 #include <kresources/resourceconfigwidget.h>
 
@@ -146,9 +146,9 @@ private:
   KLineEdit* mLocationEdit;
   KLineEdit* mPasswordEdit;
 };
-</pre>
+\endcode
 * <B>resourceexampleconfig.cpp</B>:
-<pre>
+\code
 #include <qlayout.h>
 #include <qlabel.h"
 #include <kresources/resourceconfigwidget.h>
@@ -192,9 +192,9 @@ void ResourceExampleConfig::saveSettings( KRES::Resource *resource )
   } else
     kdDebug(5700) << "ERROR: ResourceExampleConfig::saveSettings(): no ResourceExample, cast failed" << endl;
 }
-</pre>
+\endcode
 * <B>resourceexample.desktop</B>:
-<pre>
+\code
 [Desktop Entry]
 Type=Service
 
@@ -205,9 +205,9 @@ Name=Example Resource
 [Plugin]
 Type=exchange
 X-KDE-Library=resourceexample
-</pre>
+\endcode
 * <B>Makefile.am</B>
-<pre>
+\code
 kde_module_LTLIBRARIES = resourceexample.la
 
 resourceexample_la_SOURCES = resourceexample.cpp resourceexampleconfig.cpp
@@ -216,7 +216,7 @@ resourceexample_la_LIBADD= -lkderesources
 
 linkdir= $(kde_datadir)/resources/family
 link_DATA= resourceexample.desktop
-</pre>
+\endcode
  *
  *
  */
@@ -381,7 +381,7 @@ class PluginFactory : public PluginFactoryBase
     {
       return new TR( config );
     }
-    
+
     ConfigWidget *configWidget( QWidget *parent )
     {
       return new TC( parent );

@@ -261,13 +261,13 @@ public:
      * If no | is found in the expression, just the namefilter is
      * shown. Examples:
      *
-     * <code>
+     * \code 
      * kfile->setFilter("*.cpp|C++ Source Files\n*.h|Header files");
      * kfile->setFilter("*.cpp");
      * kfile->setFilter("*.cpp|Sources (*.cpp)");
      * kfile->setFilter("*.cpp|" + i18n("Sources (*.cpp)"));
      * kfile->setFilter("*.cpp *.cc *.C|C++ Source Files\n*.h *.H|Header files");
-     * </code>
+     * \endcode
      *
      * Note: The text to display is not parsed in any way. So, if you
      * want to show the suffix to select by a specific filter, you must
@@ -278,10 +278,10 @@ public:
      * a '\'. You can specify multiple mimetypes like this (separated with
      * space):
      *
-     * <code>
+     * \code
      * kfile->setFilter( "image/png text/html text/plain" );
      * kfile->setFilter( "*.cue|CUE\\/BIN Files (*.cue)" );
-     * </code>
+     * \endcode
      *
      * @see #filterChanged
      * @see #setMimeFilter
@@ -647,7 +647,7 @@ public:
      * Sets the mode of the dialog.
      *
      * The mode is defined as (in kfile.h):
-     * <code>
+     * \code
      *    enum Mode {
      *         File         = 1,
      *         Directory    = 2,
@@ -655,14 +655,14 @@ public:
      *         ExistingOnly = 8,
      *         LocalOnly    = 16
      *    };
-     * </code>
+     * \endcode
      * You can OR the values, e.g.
-     * <code>
+     * \code
      * KFile::Mode mode = static_cast<KFile::Mode>( KFile::Files |
      *                                              KFile::ExistingOnly |
      *                                              KFile::LocalOnly );
      * setMode( mode );
-     * </code>
+     * \endcode
      */
     void setMode( unsigned int m );
 
@@ -686,12 +686,12 @@ public:
      *
      * You can use this to insert custom
      * items into it, e.g.:
-     * <code>
+     * \code
      *      yourAction = new KAction( i18n("Your Action"), 0,
      *                                this, SLOT( yourSlot() ),
      *                                this, "action name" );
      *      yourAction->plug( kfileDialog->toolBar() );
-     * </code>
+     * \endcode
      */
     KToolBar *toolBar() const { return toolbar; }
 

@@ -38,17 +38,17 @@ class Resource;
 
 /**
  * Dialog for selecting a resource.
- * 
+ *
  * Example:
  *
- * <pre>
+ * \code
  * KABC::Resource *res = KABC::SelectDialog::getResource();
  * if ( !( res ) ) {
  *   // no resource selected
  * } else {
  *   // do something with resource
  * }
- * </pre>
+ * \endcode
  */
 class SelectDialog : KDialog
 {

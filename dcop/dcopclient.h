@@ -595,9 +595,9 @@ class DCOPClient : public QObject
    * anymore. The remaining whitespace consists of single blanks only (0x20).
    *
    * Example for a normalized signature:
-   * <code>
+   * \code
    *   "someFunction(QString,int)"
-   * </code>
+   * \endcode
    *
    * When using @ref send() or @ref call(), normalization is done
    * automatically for you.

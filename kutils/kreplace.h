@@ -41,7 +41,7 @@ class KReplaceNextDialog;
  * To use the class to implement a complete replace feature:
  *
  * In the slot connect to the replace action, after using KReplaceDialog:
- * <pre>
+ * \code
  *
  *  // This creates a replace-on-prompt dialog if needed.
  *  m_replace = new KReplace(pattern, replacement, options, this);
@@ -56,7 +56,7 @@ class KReplaceNextDialog;
  *  // Connect replace signal - called when doing a replacement
  *  connect( m_replace, SIGNAL( replace(const QString &, int, int, int) ),
  *          this, SLOT( slotReplace(const QString &, int, int, int) ) );
- *
+ * \endcode
  *  Then initialize the variables determining the "current position"
  *  (to the cursor, if the option FromCursor is set,
  *   to the beginning of the selection if the option SelectedText is set,
@@ -65,7 +65,7 @@ class KReplaceNextDialog;
  *  Swap begin and end if FindBackwards.
  *  Finally, call slotReplaceNext();
  *
- * <pre>
+ * \code
  *  void slotReplaceNext()
  *  {
  *      KFind::Result res = KFind::NoMatch;
@@ -86,12 +86,11 @@ class KReplaceNextDialog;
  *           or           if ( m_replace->shouldRestart() ) { reinit (w/o FromCursor) and call slotReplaceNext(); }
  *                        else { m_replace->closeReplaceNextDialog(); }>
  *  }
- * </pre>
+ * \endcode
  *
  *  Don't forget delete m_find in the destructor of your class,
  *  unless you gave it a parent widget on construction.
  *
- * </pre>
  */
 class KReplace :
     public KFind

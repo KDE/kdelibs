@@ -42,7 +42,7 @@ namespace KRES {
  *
  * Example:
  *
- * <pre>
+ * \code
  * KABC::Factory<Calendar> *factory = KABC::Factory<Calendar>::self();
  *
  * QStringList list = factory->resources();
@@ -52,7 +52,7 @@ namespace KRES {
  *        KABC::StdAddressBook::self(), 0 );
  *   // do something with resource
  * }
- * </pre>
+ * \endcode
  */
 class Factory
 {
@@ -70,7 +70,7 @@ class Factory
      * or a null pointer if resource type doesn't exist.
      *
      * @param type   The type of the resource, returned by @ref resources()
-     * @param resource The resource to be editted. 
+     * @param resource The resource to be editted.
      * @param parent The parent widget
      */
     ConfigWidget *configWidget( const QString& type, QWidget *parent = 0 );
