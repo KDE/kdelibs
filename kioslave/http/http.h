@@ -467,6 +467,9 @@ protected:
   // Indicates whether there was some connection error.
   bool m_bError;
 
+  // Indicates current request is a redirection
+  bool m_bRedirect;
+
   // Indicates whether an error-page or error-msg should is preferred.
   bool m_bErrorPage;
 
