@@ -34,6 +34,7 @@
 #include "rendering/render_inline.h"
 #include "rendering/render_text.h"
 #include "rendering/render_replaced.h"
+#include "rendering/counter_tree.h"
 
 #include "xml/dom_elementimpl.h"
 #include "xml/dom_docimpl.h"
@@ -156,6 +157,7 @@ RenderObject::RenderObject(DOM::NodeImpl* node)
       m_parent( 0 ),
       m_previous( 0 ),
       m_next( 0 ),
+      m_counterList( 0 ),
       m_verticalPosition( PositionUndefined ),
       m_needsLayout( false ),
       m_normalChildNeedsLayout( false ),
@@ -1498,6 +1500,7 @@ RenderArena* RenderObject::renderArena() const
 
 void RenderObject::detach()
 {
+    detachCounters();
 
     deleteInlineBoxes();
     remove();
@@ -1927,6 +1930,187 @@ bool RenderObject::usesLineWidth() const
     // (c) all other objects use lineWidth in quirks mode and contentWidth in strict mode.
     return (flowAroundFloats() && (style()->width().isVariable() || isHR() || (style()->htmlHacks() && !isTable())));
 }
+
+bool RenderObject::hasCounter(const DOMString& counter) const
+{
+    if (style()) {
+        if (lookupCounter(counter)) return true;
+        if (style()->hasCounterReset(counter)) {
+            return true;
+        }
+        else if (style()->hasCounterIncrement(counter)) {
+            return true;
+        }
+    }
+    if (counter == "list-item") {
+        if (isListItem()) return true;
+        if (element() && (
+                element()->id() == ID_OL ||
+                element()->id() == ID_UL ||
+                element()->id() == ID_MENU ||
+                element()->id() == ID_DIR))
+            return true;
+    }
+    return false;
+}
+
+CounterNode* RenderObject::getCounter(const DOMString& counter, bool view, bool counters)
+{
+//     kdDebug( 6040 ) << renderName() << " getCounter(" << counter << ")" << endl;
+
+    if (!style()) return 0;
+
+    CounterNode *i = lookupCounter(counter);
+    if (i) return i;
+    int val = 0;
+
+    if (style()->hasCounterReset(counter) || isRoot()) {
+        i = new CounterReset(this);
+        val = style()->counterReset(counter);
+//         kdDebug( 6040 ) << renderName() << " counter-reset: " << counter << " " << val << endl;
+    }
+    else
+    if (style()->hasCounterIncrement(counter)) {
+        i = new CounterNode(this);
+        val = style()->counterIncrement(counter);
+//         kdDebug( 6040 ) << renderName() << " counter-increment: " << counter << " " << val << endl;
+    }
+    else if (counter == "list-item") {
+        if (isListItem()) {
+            if (element() && element()->id() == ID_LI) {
+                DOMString v = static_cast<ElementImpl*>(element())->getAttribute(ATTR_VALUE);
+                if ( !v.isEmpty() ) {
+                    i = new CounterReset(this);
+                    val = v.toInt();
+//                     kdDebug( 6040 ) << renderName() << " counter-reset: " << counter << " " << val << endl;
+                }
+            }
+            if (!i) {
+                i = new CounterNode(this);
+                val = 1;
+//                 kdDebug( 6040 ) << renderName() << " counter-increment: " << counter << " " << val << endl;
+            }
+        }
+        else
+        if (element() && element()->id() == ID_OL) {
+            i = new CounterReset(this);
+            DOMString v = static_cast<ElementImpl*>(element())->getAttribute(ATTR_START);
+            if ( !v.isEmpty() )
+                val = v.toInt()-1;
+            else
+                val = 0;
+//             kdDebug( 6040 ) << renderName() << " counter-reset: " << counter << " " << val << endl;
+        }
+        else
+        if (element() &&
+            (element()->id() == ID_UL ||
+             element()->id() == ID_MENU||
+             element()->id() == ID_DIR))
+        {
+            i = new CounterReset(this);
+            val = 0;
+//             kdDebug( 6040 ) << renderName() << " counter-reset: " << counter << " " << val << endl;
+        }
+    }
+    if (!i) {
+        i = new CounterNode(this);
+        val = 0;
+//         kdDebug( 6040 ) << renderName() << " counter-increment: " << counter << " " << val << endl;
+    }
+    i->setValue(val);
+    if (view) i->setIsVisual();
+    if (counters) i->setHasCounters();
+
+    insertCounter(counter, i);
+
+    if (!isRoot()) {
+        CounterNode *last=0, *current=0;
+        RenderObject *n = previousSibling();
+        while(n) {
+            if (n->hasCounter(counter)) {
+                current = n->getCounter(counter);
+                break;
+            }
+            else
+                n = n->previousSibling();
+        }
+        last = current;
+
+        CounterNode *sibling = current;
+        // counter-reset on same render-level is our counter-parent
+        if (last) {
+            // Found render-sibling, now search for later counter-siblings among its render-children
+            n = n->lastChild();
+            while (n) {
+                if (n->hasCounter(counter)) {
+                    current = n->getCounter(counter);
+                    if (last->parent() == current->parent() || sibling == current->parent()) {
+                        last = current;
+                        // If the current counter is not the last, search deeper
+                        if (current->nextSibling()) {
+                            n = n->lastChild();
+                            continue;
+                        }
+                        else
+                            break;
+                    }
+                }
+                n = n->previousSibling();
+            }
+            if (sibling->isReset())
+                if (last != sibling)
+                    sibling->insertAfter(i, last);
+                else
+                    sibling->insertAfter(i, 0);
+            else
+                last->parent()->insertAfter(i, last);
+        }
+        else {
+            // Nothing found among siblings, let our parent search
+            last = parent()->getCounter(counter, false);
+            if (last->isReset())
+                last->insertAfter(i, 0);
+            else
+                last->parent()->insertAfter(i, last);
+        }
+    }
+
+    return i;
+}
+
+CounterNode* RenderObject::lookupCounter(const DOMString& counter) const
+{
+    CounterList *i = m_counterList;
+    while (i) {
+        if (i->counter == counter)
+            return i->m_counterNode;
+        i = i->next;
+    }
+    return 0;
+}
+
+void RenderObject::detachCounters()
+{
+    CounterList *j, *i = m_counterList;
+    m_counterList = 0;
+    while (i) {
+        i->m_counterNode->remove();
+        delete i->m_counterNode;
+        j = i;
+        i = i->next;
+        delete j;
+    }
+}
+
+void RenderObject::insertCounter(const DOMString& counter, CounterNode* val)
+{
+    CounterList* i = new CounterList;
+    i->counter = counter;
+    i->m_counterNode = val;
+    i->next = m_counterList;
+    m_counterList = i;
+}
+
 
 #undef RED_LUMINOSITY
 #undef GREEN_LUMINOSITY

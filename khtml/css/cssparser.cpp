@@ -538,7 +538,6 @@ bool CSSParser::parseValue( int propId, bool important, int expected )
     case CSS_PROP_CONTENT:              // [ <string> | <uri> | <counter> | attr(X) | open-quote |
         // close-quote | no-open-quote | no-close-quote ]+ | inherit
         return parseContent( propId, important );
-        break;
 
     case CSS_PROP_WHITE_SPACE:          // normal | pre | nowrap | pre-wrap | pre-line | inherit
         if ( id == CSS_VAL_NORMAL ||
@@ -1040,38 +1039,19 @@ bool CSSParser::parseValue( int propId, bool important, int expected )
         else
             valid_primitive = ( !id && validUnit( value, FNumber|FLength|FPercent, strict&(!nonCSSHint) ) );
         break;
-#if 0
-        // removed from CSS 2.1
     case CSS_PROP_COUNTER_INCREMENT:    // [ <identifier> <integer>? ]+ | none | inherit
+        if ( id == CSS_VAL_NONE )
+            valid_primitive = true;
+        else
+            return parseCounter(propId, true, important);
+        break;
     case CSS_PROP_COUNTER_RESET:        // [ <identifier> <integer>? ]+ | none | inherit
         if ( id == CSS_VAL_NONE )
             valid_primitive = true;
-        else {
-            CSSValueListImpl *list = new CSSValueListImpl;
-            int pos=0, pos2;
-            while( 1 )
-            {
-                pos2 = value.find(',', pos);
-                QString face = value.mid(pos, pos2-pos);
-                face = face.stripWhiteSpace();
-                if(face.length() == 0) break;
-                // ### single quoted is missing...
-                if(face[0] == '\"') face.remove(0, 1);
-                if(face[face.length()-1] == '\"') face = face.left(face.length()-1);
-                //kdDebug( 6080 ) << "found face '" << face << "'" << endl;
-                list->append(new CSSPrimitiveValueImpl(DOMString(face), CSSPrimitiveValue::CSS_STRING));
-                pos = pos2 + 1;
-                if(pos2 == -1) break;
-            }
-            //kdDebug( 6080 ) << "got " << list->length() << " faces" << endl;
-            if(list->length()) {
-                parsedValue = list;
-                valueList->next();
-            } else
-                delete list;
+        else
+            return parseCounter(propId, false, important);
             break;
-        }
-#endif
+
     case CSS_PROP_FONT_FAMILY:
             // [[ <family-name> | <generic-family> ],]* [<family-name> | <generic-family>] | inherit
     {
@@ -1460,20 +1440,36 @@ bool CSSParser::parseContent( int propId, bool important )
             kdDebug( 6080 ) << "content, url=" << value.string() << " base=" << styleElement->baseURL().url( ) << endl;
 #endif
         } else if ( val->unit == Value::Function ) {
-            // attr( X )
+            // attr( X ) | counter( X [,Y] ) | counters( X, Y, [,Z] )
             ValueList *args = val->function->args;
             QString fname = qString( val->function->name ).lower();
-            if ( fname != "attr(" || !args )
-                return false;
+            if (!args) return false;
+            if (fname == "attr(") {
             if ( args->numValues != 1)
                 return false;
             Value *a = args->current();
             parsedValue = new CSSPrimitiveValueImpl(domString(a->string), CSSPrimitiveValue::CSS_ATTR);
+            }
+            else
+            if (fname == "counter(") {
+                parsedValue = parseCounterContent(args, false);
+                if (!parsedValue) return false;
+            } else
+            if (fname == "counters(") {
+                parsedValue = parseCounterContent(args, true);
+                if (!parsedValue) return false;
+            }
+            else
+                return false;
+
         } else if ( val->unit == CSSPrimitiveValue::CSS_IDENT ) {
-            // open-quote
-            // close-quote
-            // no-open-quote
-            // no-close-quote
+            // open-quote | close-quote | no-open-quote | no-close-quote
+            if ( val->id == CSS_VAL_OPEN_QUOTE ||
+                 val->id == CSS_VAL_CLOSE_QUOTE ||
+                 val->id == CSS_VAL_NO_OPEN_QUOTE ||
+                 val->id == CSS_VAL_NO_CLOSE_QUOTE ) {
+                parsedValue = new CSSPrimitiveValueImpl(val->id);
+            }
         } else if ( val->unit == CSSPrimitiveValue::CSS_STRING ) {
             parsedValue = new CSSPrimitiveValueImpl(domString(val->string), CSSPrimitiveValue::CSS_STRING);
         }
@@ -1490,6 +1486,38 @@ bool CSSParser::parseContent( int propId, bool important )
     }
     delete values;
     return false;
+}
+
+CSSValueImpl* CSSParser::parseCounterContent(ValueList *args, bool counters)
+{
+    if (counters || (args->numValues != 1 && args->numValues != 3))
+        if (!counters || (args->numValues != 3 && args->numValues != 5))
+            return 0;
+
+    CounterImpl *counter = new CounterImpl;
+    Value *i = args->current();
+//    if (i->unit != CSSPrimitiveValue::CSS_IDENT) goto invalid;
+    counter->m_identifier = domString(i->string);
+    if (counters) {
+        i = args->next();
+        if (i->unit != Value::Operator || i->iValue != ',') goto invalid;
+        i = args->next();
+        if (i->unit != CSSPrimitiveValue::CSS_STRING) goto invalid;
+        counter->m_separator = domString(i->string);
+    }
+    counter->m_listStyle = CSS_VAL_DECIMAL - CSS_VAL_DISC;
+    i = args->next();
+    if (i) {
+        if (i->unit != Value::Operator || i->iValue != ',') goto invalid;
+        i = args->next();
+        if (i->unit != CSSPrimitiveValue::CSS_IDENT) goto invalid;
+        if (i->id < CSS_VAL_DISC || i->id > CSS_VAL__KHTML_CLOSE_QUOTE) goto invalid;
+        counter->m_listStyle = i->id - CSS_VAL_DISC;
+    }
+    return new CSSPrimitiveValueImpl(counter);
+invalid:
+    delete counter;
+    return 0;
 }
 
 bool CSSParser::parseShape( int propId, bool important )
@@ -2031,6 +2059,48 @@ bool CSSParser::parseShadow(int propId, bool important)
     }
 
     return context.failed();
+}
+
+bool CSSParser::parseCounter(int propId, bool increment, bool important)
+{
+    enum { ID, VAL } state = ID;
+
+    CSSValueListImpl *list = new CSSValueListImpl;
+    DOMString c;
+    Value* val;
+    while (true) {
+        val = valueList->current();
+        switch (state) {
+            case ID:
+                if (val && val->unit == CSSPrimitiveValue::CSS_IDENT) {
+                    c = qString(val->string);
+                    state = VAL;
+                    valueList->next();
+                    continue;
+                }
+                break;
+            case VAL: {
+                short i = 0;
+                if (val && val->unit == CSSPrimitiveValue::CSS_NUMBER) {
+                    i = (short)val->fValue;
+                    valueList->next();
+                } else
+                    i = (increment) ? 1 : 0;
+
+                CounterActImpl *cv = new CounterActImpl(c,i);
+                list->append(cv);
+                state = ID;
+                continue;
+            }
+        }
+        break;
+    }
+    if(list->length() > 0) {
+        addProperty( propId, list, important );
+        return true;
+    }
+    delete list;
+    return false;
 }
 
 static inline int yyerror( const char *str ) {

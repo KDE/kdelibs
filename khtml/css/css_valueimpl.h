@@ -1,8 +1,9 @@
 /*
  * This file is part of the DOM implementation for KDE.
  *
- * (C) 1999-2003 Lars Knoll (knoll@kde.org)
- * Copyright (C) 2002 Apple Computer, Inc.
+ * Copyright (C) 1999-2003 Lars Knoll (knoll@kde.org)
+ *           (C) 2002 Apple Computer, Inc.
+ *           (C) 2005 Allan Sandfeld Jensen (kde@carewolf.com)
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -158,7 +159,7 @@ public:
     CSSPrimitiveValueImpl(int ident);
     CSSPrimitiveValueImpl(double num, CSSPrimitiveValue::UnitTypes type);
     CSSPrimitiveValueImpl(const DOMString &str, CSSPrimitiveValue::UnitTypes type);
-    CSSPrimitiveValueImpl(const Counter &c);
+    CSSPrimitiveValueImpl(CounterImpl *c);
     CSSPrimitiveValueImpl( RectImpl *r);
     CSSPrimitiveValueImpl(QRgb color);
 
@@ -245,13 +246,13 @@ public:
 
 class CounterImpl : public khtml::Shared<CounterImpl> {
 public:
-    CounterImpl() { }
+    CounterImpl() : m_listStyle(0) { }
     DOMString identifier() const { return m_identifier; }
-    DOMString listStyle() const { return m_listStyle; }
+    unsigned int listStyle() const { return m_listStyle; }
     DOMString separator() const { return m_separator; }
 
     DOMString m_identifier;
-    DOMString m_listStyle;
+    unsigned int m_listStyle;
     DOMString m_separator;
 };
 
@@ -354,6 +355,23 @@ public:
     CSSPrimitiveValueImpl* y;
     CSSPrimitiveValueImpl* blur;
     CSSPrimitiveValueImpl* color;
+};
+
+// Used for counter-reset and counter-increment
+class CounterActImpl : public CSSValueImpl {
+    public:
+        CounterActImpl(DOM::DOMString &c, short v) : m_counter(c), m_value(v) { }
+        virtual ~CounterActImpl() {};
+
+        virtual unsigned short cssValueType() const { return CSSValue::CSS_CUSTOM; }
+        virtual DOM::DOMString cssText() const;
+
+        DOMString counter() const { return m_counter; }
+        short value() const { return m_value; }
+        void setValue( const short v ) { m_value = v; }
+
+        DOM::DOMString m_counter;
+        short m_value;
 };
 
 

@@ -175,8 +175,8 @@ public:
                                                      DOM::NodeImpl*& node, int & offset,
 						     SelPointState & );
 
-    unsigned int length() const { return str->l; }
-    QChar *text() const { return str->s; }
+    unsigned int length() const { if (str) return str->l; else return 0; }
+    QChar *text() const { if (str) return str->s; else return 0; }
     unsigned int stringLength() const { return str->l; } // non virtual implementation of length()
     virtual void position(InlineBox* box, int from, int len, bool reverse);
 

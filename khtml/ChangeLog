@@ -1,3 +1,15 @@
+2005-02-15  Allan Sandfeld Jensen <kde@carewolf.com>
+
+        Implement genererated content: counter and quotes
+
+        * css/*: Parse new counter and quote content, and counter acts. Quotes are parsed to a special type of counter.
+        * rendering/counter_tree.{h,cpp}: Adds a dynamic counter-tree to keep counter values up-to-date
+        * rendering/render_generated.{h,cpp}: New renderCounter class to renders counters as text
+        * rendering/render_container.cpp: Content now only inherits style from the pseudo-container rather than use an exact duplicate.
+        * rendering/render_object.cpp: Add new functions to find and attach counter-tree nodes.
+        * rendering/render_style.cpp: New counter content and counter acts
+        * rendering/render_list.cpp: Use the new counters to count lists
+
 2005-02-14  Leo Savernik  <l.savernik@aon.at>
 
 	* rendering/render_flow.cpp (repaint): Only include top and bottom

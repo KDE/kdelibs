@@ -94,7 +94,7 @@ static DOMString stringForTextAlign(ETextAlign align)
     return "";
 }
 
-static DOMString stringForListStyleType(EListStyleType type)
+DOMString khtml::stringForListStyleType(EListStyleType type)
 {
     switch (type) {
         case khtml::LDISC:

@@ -42,6 +42,7 @@
 #include <qapplication.h>
 
 #include "dom/dom_misc.h"
+#include "dom/dom_string.h"
 #include "misc/khtmllayout.h"
 #include "misc/shared.h"
 #include "rendering/font.h"
@@ -62,6 +63,9 @@ namespace DOM {
     class DOMStringImpl;
     class ShadowValueImpl;
     class QuotesValueImpl;
+    class CounterImpl;
+    class CSSValueListImpl;
+    class CounterActImpl;
 }
 
 namespace khtml {
@@ -205,7 +209,7 @@ public:
 
     QColor color;
     unsigned short width : 12;
-    EBorderStyle style : 5;
+    EBorderStyle style : 6;
 
     bool nonZero() const
     {
@@ -222,6 +226,10 @@ public:
     	return width==o.width && style==o.style && color==o.color;
     }
 
+    bool operator!=(const BorderValue& o) const
+    {
+        return !(*this == o);
+    }
 };
 
 class OutlineValue : public BorderValue
@@ -502,7 +510,6 @@ class StyleCSS3InheritedData : public Shared<StyleCSS3InheritedData>
         EUserModify userModify : 2; // Flag used for editing state
         bool textSizeAdjust : 1;    // An Apple extension.  Not really CSS3 but not worth making a new struct over.
 #endif
-
     private:
         StyleCSS3InheritedData &operator=(const StyleCSS3InheritedData &);
 };
@@ -610,7 +617,7 @@ enum EUserInput {
 
 enum ContentType {
     CONTENT_NONE, CONTENT_OBJECT, CONTENT_TEXT,
-    CONTENT_ATTR
+    CONTENT_ATTR, CONTENT_COUNTER
 };
 
 struct ContentData {
@@ -624,11 +631,13 @@ struct ContentData {
     { if (_contentType == CONTENT_TEXT) return _content.text; return 0; }
     CachedObject* contentObject()
     { if (_contentType == CONTENT_OBJECT) return _content.object; return 0; }
+    DOM::CounterImpl* contentCounter()
+    { if (_contentType == CONTENT_COUNTER) return _content.counter; return 0; }
 
     union {
         CachedObject* object;
         DOM::DOMStringImpl* text;
-        // counters...
+        DOM::CounterImpl* counter;
     } _content ;
 
     ContentData* _nextContent;
@@ -651,7 +660,7 @@ public:
     static void cleanup();
 
     // static pseudo styles. Dynamic ones are produced on the fly.
-    enum PseudoId { NOPSEUDO, FIRST_LINE, FIRST_LETTER, BEFORE, AFTER, SELECTION, ENABLED, DISABLED, CHECKED, INDETERMINATE };
+    enum PseudoId { NOPSEUDO, FIRST_LINE, FIRST_LETTER, BEFORE, AFTER, SELECTION };
 
 protected:
 
@@ -746,6 +755,8 @@ protected:
     // added this here, so we can get rid of the vptr in this class.
     // makes up for the same size.
     ContentData *content;
+    DOM::CSSValueListImpl *counter_reset;
+    DOM::CSSValueListImpl *counter_increment;
 // !END SYNC!
 
 // static default style
@@ -822,7 +833,9 @@ public:
 
     bool operator==(const RenderStyle& other) const;
     bool        isFloating() const { return !(noninherited_flags.f._floating == FNONE); }
+    bool        hasMargin() const { return surround->margin.nonZero(); }
     bool        hasBorder() const { return surround->border.hasBorder(); }
+    bool        hasOffset() const { return surround->offset.nonZero(); }
 
     bool visuallyOrdered() const { return inherited_flags.f._visuallyOrdered; }
     void setVisuallyOrdered(bool b) {  inherited_flags.f._visuallyOrdered = b; }
@@ -1149,11 +1162,24 @@ public:
         const_cast<StyleVisualData *>(visual.get())->palette = QApplication::palette();
     }
 
-
     ContentData* contentData() const { return content; }
     bool contentDataEquivalent(RenderStyle* otherStyle);
     void setContent(DOM::DOMStringImpl* s, bool add);
     void setContent(CachedObject* o, bool add);
+    void setContent(DOM::CounterImpl* c, bool add);
+
+    DOM::CSSValueListImpl* counterReset() const { return counter_reset; }
+    DOM::CSSValueListImpl* counterIncrement() const { return counter_increment; }
+    bool counterDataEquivalent(RenderStyle* otherStyle);
+    void setCounterReset(DOM::CSSValueListImpl* v);
+    void setCounterIncrement(DOM::CSSValueListImpl* v);
+    void addCounterReset(DOM::CounterActImpl *c);
+    void addCounterIncrement(DOM::CounterActImpl *c);
+    bool hasCounterReset(const DOM::DOMString& c) const;
+    bool hasCounterIncrement(const DOM::DOMString& c) const;
+    short counterReset(const DOM::DOMString& c) const;
+    short counterIncrement(const DOM::DOMString& c) const;
+
 
     bool inheritedNotEqual( RenderStyle *other ) const;
 

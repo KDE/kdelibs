@@ -119,6 +119,7 @@ namespace DOM {
 	bool parseContent( int propId, bool important );
 	bool parseShape( int propId, bool important );
 	bool parseFont(bool important);
+        bool parseCounter(int propId, bool increment, bool important);
 
         // returns the found property
         // 0 if nothing found (or ok == false)
@@ -127,6 +128,7 @@ namespace DOM {
 	CSSValueListImpl *parseFontFamily();
         CSSPrimitiveValueImpl *parseColor();
         CSSPrimitiveValueImpl *parseColorFromValue(Value* val);
+        CSSValueImpl* parseCounterContent(ValueList *args, bool counters);
 
         static bool parseColor(const QString &name, QRgb& rgb);
 

@@ -38,28 +38,14 @@ namespace khtml
 
 class RenderListItem;
 class RenderListMarker;
-
-/*
-class RenderList : public RenderBox
-{
-public:
-    RenderList(DOM::NodeImpl*);
-
-    virtual const char *renderName() const { return "RenderList"; }
-
-    virtual short marginLeft() const;
-    virtual short marginRight() const;
-    virtual int countChildren() const;
-
-protected:
-    mutable int m_total;
-}*/
+class CounterNode;
 
 // -----------------------------------------------------------------------------
 
 class RenderListItem : public RenderBlock
 {
     friend class RenderListMarker;
+//    friend class CounterListItem;
 
 public:
     RenderListItem(DOM::NodeImpl*);
@@ -70,10 +56,7 @@ public:
 
     virtual bool isListItem() const { return true; }
 
-//    long value() const { return m_marker->m_value; }
     void setValue( long v ) { predefVal = v; }
-    void calcListValue();
-    void calcListTotal();
 
     virtual void layout( );
     virtual void detach( );
@@ -88,6 +71,7 @@ protected:
     void updateMarkerLocation();
 
     RenderListMarker *m_marker;
+    CounterNode *m_counter;
     signed long predefVal : 30;
     bool m_insideList  : 1;
     bool m_deleteMarker: 1;
@@ -133,11 +117,22 @@ protected:
 
     QString m_item;
     CachedImage *m_listImage;
-    int m_value;
-    int m_total;
     short m_markerWidth;
     RenderListItem* m_listItem;
 };
+
+// Implementation of list-item counter
+// ### should replace most list-item specific code in renderObject::getCounter
+/*
+class CounterListItem : public CounterNode
+{
+public:
+    int count() const;
+
+    virtual void recount( bool first = false );
+    virtual void setSelfDirty();
+
+}; */
 
 } //namespace
 

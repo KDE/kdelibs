@@ -87,13 +87,11 @@ Q        {
 }
 
 Q:before {
-         content: '"';
-    /*   content: open-quote;   */
+        content: open-quote;
 }
 
 Q:after  {
-         content: '"';
-    /*   content: close-quote;  */
+        content: close-quote;
 }
 
 CENTER {
@@ -283,7 +281,7 @@ OL {
 
 LI {
         display: list-item;
-        -khtml-flow-mode: -khtml-around-floats
+        -khtml-flow-mode: -khtml-around-floats;
 }
 
 

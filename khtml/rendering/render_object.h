@@ -5,6 +5,7 @@
  *           (C) 2000 Antti Koivisto (koivisto@kde.org)
  *           (C) 2000-2003 Dirk Mueller (mueller@kde.org)
  *           (C) 2002-2003 Apple Computer, Inc.
+ *           (C) 2004 Allan Sandfeld Jensen
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -104,6 +105,7 @@ namespace khtml {
     class RenderBlock;
     class InlineBox;
     class InlineFlowBox;
+    class CounterNode;
 
 /**
  * Base Class for all rendering tree objects.
@@ -158,8 +160,22 @@ public:
     RenderObject *objectBelow() const;
     RenderObject *objectAbove() const;
 
-    // RenderObject tree manipulation
+    // Returns if an object has counter-increment or counter-reset
+    bool hasCounter(const DOM::DOMString& counter) const;
+    // Calculates the value of the counter
+    CounterNode* getCounter(const DOM::DOMString& counter, bool view = false, bool counters = false);
+    // Detaches all counterNodes
+    void detachCounters();
+
+
+protected:
+    // Helper functions for counter-cache
+    void insertCounter(const DOM::DOMString& counter, CounterNode* value);
+    CounterNode* lookupCounter(const DOM::DOMString& counter) const;
+
+public:
     //////////////////////////////////////////
+    // RenderObject tree manipulation
     virtual void addChild(RenderObject *newChild, RenderObject *beforeChild = 0);
     void removeChild(RenderObject *oldChild);
 
@@ -686,6 +702,12 @@ private:
     RenderObject *m_parent;
     RenderObject *m_previous;
     RenderObject *m_next;
+
+    struct CounterList {
+        DOM::DOMString counter;
+        CounterNode *m_counterNode;
+        CounterList *next;
+    } *m_counterList;
 
     short m_verticalPosition;
 

@@ -1,8 +1,9 @@
 /**
  * This file is part of the DOM implementation for KDE.
  *
- * (C) 1999-2003 Lars Knoll (knoll@kde.org)
- * Copyright (C) 2002 Apple Computer, Inc.
+ * Copyright (C) 1999-2003 Lars Knoll (knoll@kde.org)
+ *           (C) 2002 Apple Computer, Inc.
+ *           (C) 2005 Allan Sandfeld Jensen (kde@carewolf.com)
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -477,9 +478,9 @@ CSSPrimitiveValueImpl::CSSPrimitiveValueImpl(const DOMString &str, CSSPrimitiveV
     m_type = type;
 }
 
-CSSPrimitiveValueImpl::CSSPrimitiveValueImpl(const Counter &c)
+CSSPrimitiveValueImpl::CSSPrimitiveValueImpl(CounterImpl *c)
 {
-    m_value.counter = c.handle();
+    m_value.counter = c;
     if (m_value.counter)
 	m_value.counter->ref();
     m_type = CSSPrimitiveValue::CSS_COUNTER;
@@ -720,7 +721,10 @@ DOM::DOMString CSSPrimitiveValueImpl::cssText() const
 	    // ###
 	    break;
 	case CSSPrimitiveValue::CSS_COUNTER:
-	    // ###
+            text = "counter(";
+            text += m_value.counter->m_identifier;
+            text += ")";
+            // ### add list-style and separator
 	    break;
 	case CSSPrimitiveValue::CSS_RECT:
         {
@@ -987,6 +991,14 @@ DOMString ShadowValueImpl::cssText() const
         }
         text += blur->cssText();
     }
+
+    return text;
+}
+
+DOMString CounterActImpl::cssText() const
+{
+    DOMString text(m_counter);
+    text += DOMString(QString::number(m_value));
 
     return text;
 }

@@ -5,7 +5,7 @@
  *           (C) 1999 Antti Koivisto (koivisto@kde.org)
  *           (C) 2000-2002 Dirk Mueller (mueller@kde.org)
  *           (C) 2003 Apple Computer, Inc.
- *           (C) 2004 Allan Sandfeld Jensen (kde@carewolf.com)
+ *           (C) 2004-2005 Allan Sandfeld Jensen (kde@carewolf.com)
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -27,6 +27,7 @@
 #include "rendering/render_list.h"
 #include "rendering/render_canvas.h"
 #include "rendering/enumerate.h"
+#include "rendering/counter_tree.h"
 #include "html/html_listimpl.h"
 #include "misc/helper.h"
 #include "misc/htmltags.h"
@@ -52,6 +53,7 @@ RenderListItem::RenderListItem(DOM::NodeImpl* node)
 
     predefVal = -1;
     m_marker = 0;
+    m_counter = 0;
     m_insideList = false;
     m_deleteMarker = false;
 }
@@ -155,6 +157,11 @@ void RenderListItem::updateMarkerLocation()
 
 void RenderListItem::calcMinMaxWidth()
 {
+    if (!m_counter) {
+        m_counter = getCounter("list-item", true);
+        if (m_marker) m_counter->setRenderer(m_marker);
+    }
+
     // Make sure our marker is in the correct location.
     updateMarkerLocation();
     if (!minMaxKnown())
@@ -183,72 +190,10 @@ void RenderListItem::layout( )
     RenderBlock::layout();
 }
 
-void RenderListItem::calcListValue()
-{
-    // only called from the marker so..
-    KHTMLAssert(m_marker);
-
-    if(predefVal != -1)
-        m_marker->m_value = predefVal;
-    else {
-	RenderObject *o = previousSibling();
-	while ( o && (!o->isListItem() || o->style()->listStyleType() == LNONE) )
-	    o = o->previousSibling();
-        if( o && o->isListItem() && o->style()->listStyleType() != LNONE ) {
-            RenderListItem *item = static_cast<RenderListItem *>(o);
-            m_marker->m_value = item->m_marker->m_value + 1;
-        }
-        else {
-            RenderObject* o = parent();
-            while ( o && o->isAnonymous() )
-                o = o->parent();
-
-            if (o->element() && o->element()->id() == ID_OL)
-                m_marker->m_value = static_cast<DOM::HTMLOListElementImpl*>(o->element())->start();
-            else
-                m_marker->m_value = 1;
-        }
-    }
-}
-
-void RenderListItem::calcListTotal()
-{
-    // only called from the marker so..
-    KHTMLAssert(m_marker);
-
-    // first see if our siblings have already counted the total
-    RenderObject *o = previousSibling();
-    while ( o && (!o->isListItem() || o->style()->listStyleType() == LNONE) )
-        o = o->previousSibling();
-    if( o && o->isListItem() && o->style()->listStyleType() != LNONE ) {
-        RenderListItem *item = static_cast<RenderListItem *>(o);
-        m_marker->m_total = item->m_marker->m_total;
-    }
-    else {
-        // count total number of sibling items
-        const RenderObject* o = parent();
-        while ( o && o->isAnonymous() )
-            o = o->parent();
-
-        unsigned int count;
-        if (o->element() && o->element()->id() == ID_OL)
-            count = static_cast<DOM::HTMLOListElementImpl*>(o->element())->start() - 1;
-        else
-            count = 0;
-
-        o = o->firstChild();
-        while (o) {
-            if (o->isListItem()) count++;
-            o = o->nextSibling();
-        }
-        m_marker->m_total = count;
-    }
-}
-
 // -----------------------------------------------------------
 
 RenderListMarker::RenderListMarker(DOM::NodeImpl* node)
-    : RenderBox(node), m_listImage(0), m_value(-1), m_total(-1), m_markerWidth(0)
+    : RenderBox(node), m_listImage(0), m_markerWidth(0)
 {
     // init RenderObject attributes
     setInline(true);   // our object is Inline
@@ -467,8 +412,13 @@ void RenderListMarker::calcMinMaxWidth()
         return;
     }
 
-    if (m_value < 0)
-        m_listItem->calcListValue();
+    CounterNode *counter = m_listItem->m_counter;
+
+    assert(counter);
+    int value = counter->count();
+    if (counter->isReset()) value = counter->value();
+    int total = value;
+    if (counter->parent()) total = counter->parent()->total();
 
     const QFontMetrics &fm = style()->fontMetrics();
     m_height = fm.ascent();
@@ -488,79 +438,77 @@ void RenderListMarker::calcMinMaxWidth()
         // ### unsupported, we use decimal instead
 // Numeric:
     case LDECIMAL:
-        m_item.setNum ( m_value );
+        m_item.setNum ( value );
         break;
     case DECIMAL_LEADING_ZERO: {
-        if (m_total < 0)
-            m_listItem->calcListTotal();
         int decimals = 2;
-        int t = m_total/100;
+        int t = total/100;
         while (t>0) {
             t = t/10;
             decimals++;
         }
         decimals = kMax(decimals, 2);
-        QString num = QString::number(m_value);
+        QString num = QString::number(value);
         m_item.fill('0',decimals-num.length());
         m_item.append(num);
         break;
     }
     case ARABIC_INDIC:
-        m_item = toArabicIndic( m_value );
+        m_item = toArabicIndic( value );
         break;
     case PERSIAN:
     case URDU:
-        m_item = toPersianUrdu( m_value );
+        m_item = toPersianUrdu( value );
         break;
 // Algoritmic:
     case LOWER_ROMAN:
-        m_item = toRoman( m_value, false );
+        m_item = toRoman( value, false );
         break;
     case UPPER_ROMAN:
-        m_item = toRoman( m_value, true );
+        m_item = toRoman( value, true );
         break;
     case HEBREW:
-        m_item = toHebrew( m_value );
+        m_item = toHebrew( value );
         break;
     case ARMENIAN:
-        m_item = toArmenian( m_value );
+        m_item = toArmenian( value );
         break;
     case GEORGIAN:
-        m_item = toGeorgian( m_value );
+        m_item = toGeorgian( value );
         break;
 // Alphabetic:
     case LOWER_ALPHA:
     case LOWER_LATIN:
-        m_item = toLatin( m_value, 'a' );
+        m_item = toLatin( value, 'a' );
         break;
     case UPPER_ALPHA:
     case UPPER_LATIN:
-        m_item = toLatin( m_value, 'A' );
+        m_item = toLatin( value, 'A' );
         break;
     case LOWER_GREEK:
-        m_item = toLowerGreek( m_value );
+        m_item = toLowerGreek( value );
         break;
     case UPPER_GREEK:
-        m_item = toUpperGreek( m_value );
+        m_item = toUpperGreek( value );
         break;
     case HIRAGANA:
-        m_item = toHiragana( m_value );
+        m_item = toHiragana( value );
         break;
     case HIRAGANA_IROHA:
-        m_item = toHiraganaIroha( m_value );
+        m_item = toHiraganaIroha( value );
         break;
     case KATAKANA:
-        m_item = toKatakana( m_value );
+        m_item = toKatakana( value );
         break;
     case KATAKANA_IROHA:
-        m_item = toKatakanaIroha( m_value );
+        m_item = toKatakanaIroha( value );
         break;
 // Quotes:
     case OPEN_QUOTE:
-        m_item = style()->openQuote( m_value );
+        m_item = style()->openQuote( value );
         break;
     case CLOSE_QUOTE:
-        m_item = style()->closeQuote( m_value );
+        m_item = style()->closeQuote( value );
         break;
     case LNONE:
         break;
@@ -593,5 +541,17 @@ void RenderListMarker::calcWidth()
 {
     RenderBox::calcWidth();
 }
+
+/*
+int CounterListItem::recount() const
+{
+    static_cast<RenderListItem*>(m_renderer)->m_marker->setNeedsLayoutAndMinMaxRecalc();
+}
+
+void CounterListItem::setSelfDirty()
+{
+
+}*/
+
 
 #undef BOX_DEBUG

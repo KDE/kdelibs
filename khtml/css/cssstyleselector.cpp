@@ -3213,16 +3213,65 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
                 CSSImageValueImpl *image = static_cast<CSSImageValueImpl *>(val);
                 style->setContent(image->image(), i != 0);
             }
+            else if (val->primitiveType()==CSSPrimitiveValue::CSS_COUNTER)
+            {
+                style->setContent(val->getCounterValue(), i != 0);
+            }
+            else if (val->primitiveType()==CSSPrimitiveValue::CSS_IDENT)
+            {
+                DOM::DOMString quotes("-khtml-quotes");
+                switch (val->getIdent()) {
+                    case CSS_VAL_OPEN_QUOTE:
+                    {
+                        CounterImpl *counter = new CounterImpl;
+                        counter->m_identifier = quotes;
+                        counter->m_listStyle = OPEN_QUOTE;
+                        style->setContent(counter, i != 0);
+                        // no break
+                    }
+                    case CSS_VAL_NO_OPEN_QUOTE:
+                    {
+                        CounterActImpl *act = new CounterActImpl(quotes, 1);
+                        style->addCounterIncrement(act);
+                        break;
+                    }
+                    case CSS_VAL_CLOSE_QUOTE:
+                    {
+                        CounterImpl *counter = new CounterImpl;
+                        counter->m_identifier = quotes;
+                        counter->m_listStyle = CLOSE_QUOTE;
+                        style->setContent(counter, i != 0);
+                        // no break
+                    }
+                    case CSS_VAL_NO_CLOSE_QUOTE:
+                    {
+                        CounterActImpl *act = new CounterActImpl(quotes, -1);
+                        style->addCounterIncrement(act);
+                        break;
+                    }
+                    default:
+                        assert(false);
+                }
+            }
 
         }
         break;
     }
 
-    case CSS_PROP_COUNTER_INCREMENT:
-        // list of CSS2CounterIncrement
-    case CSS_PROP_COUNTER_RESET:
-        // list of CSS2CounterReset
+    case CSS_PROP_COUNTER_INCREMENT: {
+        if(!value->isValueList()) return;
+
+        CSSValueListImpl *list = static_cast<CSSValueListImpl *>(value);
+        style->setCounterIncrement(list);
         break;
+    }
+    case CSS_PROP_COUNTER_RESET: {
+        if(!value->isValueList()) return;
+
+        CSSValueListImpl *list = static_cast<CSSValueListImpl *>(value);
+        style->setCounterReset(list);
+        break;
+    }
     case CSS_PROP_FONT_FAMILY:
         // list of strings and ids
     {
@@ -3592,7 +3641,7 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
             style->setTextShadow(shadowData, i != 0);
         }
 
-        return;
+        break;
     }
     case CSS_PROP_OPACITY:
         HANDLE_INHERIT_AND_INITIAL(opacity, Opacity)

@@ -23,6 +23,7 @@
 #include "dom/css_rule.h"
 #include "dom/dom_exception.h"
 
+#include "css/css_renderstyledeclarationimpl.h"
 #include "css/css_valueimpl.h"
 
 namespace DOM {
@@ -452,7 +453,7 @@ DOMString Counter::identifier() const
 DOMString Counter::listStyle() const
 {
   if (!impl) return DOMString();
-  return impl->listStyle();
+  return khtml::stringForListStyleType((khtml::EListStyleType)impl->listStyle());
 }
 
 DOMString Counter::separator() const

@@ -1,4 +1,4 @@
-/**
+/*
  * This file is part of the HTML rendering engine for KDE.
  *
  * Copyright (C) 2004 Allan Sandfeld Jensen (kde@carewolf.com)
@@ -19,38 +19,39 @@
  * Boston, MA 02111-1307, USA.
  *
  */
+#ifndef RENDER_GENERATED_H
+#define RENDER_GENERATED_H
 
-#ifndef ENUMERATE_H
-#define ENUMERATE_H
+#include "rendering/render_text.h"
 
-class QChar;
-class QString;
+namespace DOM {
+    class CounterImpl;
+}
 
 namespace khtml {
+    class CounterNode;
 
-namespace Enumerate {
+// -----------------------------------------------------------------------------
 
-// Numeric
-    QString toNumeric( int number, int base );
-    QString toArabicIndic( int number );
-    QString toPersianUrdu( int number );
+class RenderCounter : public RenderText
+{
+public:
+    RenderCounter(DOM::NodeImpl* node, const DOM::CounterImpl* counter);
+    virtual ~RenderCounter() {};
 
-// Alphabetic
-    QString toLatin( int number, int base );
-    QString toAlphabetic( int number, int base, const QChar alphabet[] );
-    QString toLowerGreek( int number );
-    QString toUpperGreek( int number );
-    QString toHiragana( int number );
-    QString toHiraganaIroha( int number );
-    QString toKatakana( int number );
-    QString toKatakanaIroha( int number );
+    virtual const char *renderName() const { return "RenderCounter"; }
 
-// Algorithmic
-    QString toRoman( int number, bool upper );
-    QString toHebrew( int number );
-    QString toGeorgian( int number );
-    QString toArmenian( int number );
+    virtual void layout( );
+    virtual void calcMinMaxWidth();
 
-}} // namespaces
+protected:
+    QString toListStyleType(int value, int total, EListStyleType type);
+
+    QString m_item;
+    const DOM::CounterImpl* m_counter;
+    CounterNode *m_counterNode;
+};
+
+} //namespace
 
 #endif

@@ -23,6 +23,7 @@
 
 #include "css/css_valueimpl.h"
 #include "dom/dom_string.h"
+#include "rendering/render_style.h"
 
 class RenderObject;
 
@@ -31,6 +32,9 @@ namespace DOM {
 }
 
 namespace khtml {
+
+// Used by DOM::Counter::listStyle()
+DOM::DOMString stringForListStyleType(khtml::EListStyleType type);
 
 class RenderStyleDeclarationImpl : public DOM::CSSStyleDeclarationImpl
 {

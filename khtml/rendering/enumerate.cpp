@@ -34,10 +34,11 @@ namespace Enumerate {
 
 QString toRoman( int number, bool upper )
 {
+    if (number < 1) return QString::number(number);
     QString roman;
-    QChar ldigits[] = { 'i', 'v', 'x', 'l', 'c', 'd', 'm' };
-    QChar udigits[] = { 'I', 'V', 'X', 'L', 'C', 'D', 'M' };
-    QChar *digits = upper ? udigits : ldigits;
+    static const QChar ldigits[] = { 'i', 'v', 'x', 'l', 'c', 'd', 'm' };
+    static const QChar udigits[] = { 'I', 'V', 'X', 'L', 'C', 'D', 'M' };
+    const QChar *digits = upper ? udigits : ldigits;
     int i, d = 0;
 
     do
@@ -46,16 +47,16 @@ QString toRoman( int number, bool upper )
 
         if ( num % 5 < 4 )
             for ( i = num % 5; i > 0; i-- )
-                roman.insert( 0, digits[ d ] );
+                roman.prepend( digits[ d ] );
 
         if ( num >= 4 && num <= 8)
-            roman.insert( 0, digits[ d+1 ] );
+            roman.prepend( digits[ d+1 ] );
 
         if ( num == 9 )
-            roman.insert( 0, digits[ d+2 ] );
+            roman.prepend( digits[ d+2 ] );
 
         if ( num % 5 == 4 )
-            roman.insert( 0, digits[ d ] );
+            roman.prepend( digits[ d ] );
 
         number /= 10;
         d += 2;
@@ -68,17 +69,17 @@ QString toRoman( int number, bool upper )
 QString toGeorgian( int number )
 {
     QString georgian;
-    QChar tenthousand = 0x10ef;
-    QChar thousands[9] = {0x10e8, 0x10e9, 0x10ea, 0x10eb, 0x10ec,
+    const QChar tenthousand = 0x10ef;
+    static const QChar thousands[9] = {0x10e8, 0x10e9, 0x10ea, 0x10eb, 0x10ec,
                           0x10ed, 0x10ee, 0x10f4, 0x10f5 };
-    QChar hundreds[9] = {0x10e0, 0x10e1, 0x10e2, 0x10e3, 0x10f3,
+    static const QChar hundreds[9] = {0x10e0, 0x10e1, 0x10e2, 0x10e3, 0x10f3,
                          0x10e4, 0x10e5, 0x10e6, 0x10e7 };
-    QChar tens[9] = {0x10d8, 0x10d9, 0x10da, 0x10db, 0x10dc,
+    static const QChar tens[9] = {0x10d8, 0x10d9, 0x10da, 0x10db, 0x10dc,
                      0x10f2, 0x10dd, 0x10de, 0x10df };
-    QChar units[9] = {0x10d0, 0x10d1, 0x10d2, 0x10d3, 0x10d4,
+    static const QChar units[9] = {0x10d0, 0x10d1, 0x10d2, 0x10d3, 0x10d4,
                       0x10d5, 0x10d6, 0x10f1, 0x10d7 };
 
-    if (number > 19999) return QString::number(number);
+    if (number < 1 || number > 19999) return QString::number(number);
     if (number >= 10000) {
         georgian.append(tenthousand);
         number = number - 10000;
@@ -111,7 +112,7 @@ QString toArmenian( int number )
     int units = 0x560;
 
     // The standard defines values over 1999, but 7000 is very hard to render
-    if (number > 1999) return QString::number(number);
+    if (number < 1 || number > 1999) return QString::number(number);
     if (number >= 1000) {
         armenian.append(QChar(onethousand));
         number = number - 1000;
@@ -132,9 +133,10 @@ QString toArmenian( int number )
 }
 
 QString toHebrew( int number ) {
-    const QChar tenDigit[] = {1497, 1499, 1500, 1502, 1504, 1505, 1506, 1508, 1510};
+    static const QChar tenDigit[] = {1497, 1499, 1500, 1502, 1504, 1505, 1506, 1508, 1510};
 
     QString letter;
+    if (number < 1) return QString::number(number);
     if (number>999) {
   	letter = toHebrew(number/1000) + QString::fromLatin1("'");
    	number = number%1000;
@@ -168,6 +170,7 @@ QString toHebrew( int number ) {
 }
 
 QString toLatin( int number, int base ) {
+    if (number < 1) return QString::number(number);
     QValueList<QChar> letters;
     while(number > 0) {
         number--; // number 0 is letter a
@@ -185,7 +188,8 @@ QString toLatin( int number, int base ) {
     return str;
 }
 
-QString toAlphabetic( int number, int base, QChar alphabet[] ) {
+QString toAlphabetic( int number, int base, const QChar alphabet[] ) {
+    if (number < 1) return QString::number(number);
     QValueList<QChar> letters;
     while(number > 0) {
         number--; // number 0 is letter 1
@@ -204,7 +208,7 @@ QString toAlphabetic( int number, int base, QChar alphabet[] ) {
 }
 
 QString toHiragana( int number ) {
-    static QChar hiragana[48] = {0x3042, 0x3044, 0x3046, 0x3048, 0x304A, 0x304B, 0x304D,
+    static const QChar hiragana[48] = {0x3042, 0x3044, 0x3046, 0x3048, 0x304A, 0x304B, 0x304D,
                                  0x304F, 0x3051, 0x3053, 0x3055, 0x3057, 0x3059, 0x305B, 0x305D,
                                  0x305F, 0x3061, 0x3064, 0x3066, 0x3068, 0x306A, 0x306B,
                                  0x306C, 0x306D, 0x306E, 0x306F, 0x3072, 0x3075, 0x3078,
@@ -215,7 +219,7 @@ QString toHiragana( int number ) {
 }
 
 QString toHiraganaIroha( int number ) {
-    static QChar hiragana[47] = {0x3044, 0x308D, 0x306F, 0x306B, 0x307B, 0x3078, 0x3068,
+    static const QChar hiragana[47] = {0x3044, 0x308D, 0x306F, 0x306B, 0x307B, 0x3078, 0x3068,
                                  0x3061, 0x308A, 0x306C, 0x308B, 0x3092, 0x308F, 0x304B,
                                  0x3088, 0x305F, 0x308C, 0x305D, 0x3064, 0x306D, 0x306A,
                                  0x3089, 0x3080, 0x3046, 0x3090, 0x306E, 0x304A, 0x304F, 0x3084,
@@ -226,7 +230,7 @@ QString toHiraganaIroha( int number ) {
 }
 
 QString toKatakana( int number ) {
-    static QChar katakana[48] = {0x30A2, 0x30A4, 0x30A6, 0x30A8, 0x30AA, 0x30AB, 0x30AD,
+    static const QChar katakana[48] = {0x30A2, 0x30A4, 0x30A6, 0x30A8, 0x30AA, 0x30AB, 0x30AD,
                                  0x30AF, 0x30B1, 0x30B3, 0x30B5, 0x30B7, 0x30B9, 0x30BB,
                                  0x30BD, 0x30BF, 0x30C1, 0x30C4, 0x30C6, 0x30C8, 0x30CA,
                                  0x30CB, 0x30CC, 0x30CD, 0x30CE, 0x30CF, 0x30D2, 0x30D5,
@@ -237,7 +241,7 @@ QString toKatakana( int number ) {
 }
 
 QString toKatakanaIroha( int number ) {
-    static QChar katakana[47] = {0x30A4, 0x30ED, 0x30CF, 0x30CB, 0x30DB, 0x30D8, 0x30C8,
+    static const QChar katakana[47] = {0x30A4, 0x30ED, 0x30CF, 0x30CB, 0x30DB, 0x30D8, 0x30C8,
                                  0x30C1, 0x30EA, 0x30CC, 0x30EB, 0x30F2, 0x30EF, 0x30AB,
                                  0x30E8, 0x30BF, 0x30EC, 0x30ED, 0x30C4, 0x30CD, 0x30CA,
                                  0x30E9, 0x30E0, 0x30A6, 0x30F0, 0x30CE, 0x30AA, 0x30AF,
@@ -248,7 +252,7 @@ QString toKatakanaIroha( int number ) {
 }
 
 QString toLowerGreek( int number ) {
-    static QChar greek[24] = { 0x3B1, 0x3B2, 0x3B3, 0x3B4, 0x3B5, 0x3B6, 0x3B7,
+    static const QChar greek[24] = { 0x3B1, 0x3B2, 0x3B3, 0x3B4, 0x3B5, 0x3B6, 0x3B7,
                                0x3B8, 0x3B9, 0x3BA, 0x3BB, 0x3BC, 0x3BD, 0x3BE,
                                0x3BF, 0x3C0, 0x3C1, 0x3C3, 0x3C4, 0x3C5, 0x3C6,
                                0x3C7, 0x3C8, 0x3C0};
@@ -258,7 +262,7 @@ QString toLowerGreek( int number ) {
 
 QString toUpperGreek( int number ) {
     // The standard claims to be base 24, but only lists 19 letters.
-    static QChar greek[19] = { 0x391, 0x392, 0x393, 0x394, 0x395, 0x396, 0x397, 0x398,
+    static const QChar greek[19] = { 0x391, 0x392, 0x393, 0x394, 0x395, 0x396, 0x397, 0x398,
                                0x399, 0x39A, 0x39B, 0x39C, 0x39D, 0x39E, 0x39F,
                                0x3A0, 0x3A1, 0x3A3, 0x3A9};
 
@@ -268,6 +272,7 @@ QString toUpperGreek( int number ) {
 QString toNumeric( int number, int base ) {
     QString letter = QString::number(number);
     for(unsigned int i = 0; i < letter.length(); i++) {
+        if (letter[i].isDigit())
         letter[i] = QChar(letter[i].digitValue()+base);
     }
     return letter;

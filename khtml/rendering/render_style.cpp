@@ -285,6 +285,8 @@ RenderStyle::RenderStyle()
 
     pseudoStyle = 0;
     content = 0;
+    counter_reset = 0;
+    counter_increment = 0;
 }
 
 RenderStyle::RenderStyle(bool)
@@ -305,6 +307,8 @@ RenderStyle::RenderStyle(bool)
 
     pseudoStyle = 0;
     content = 0;
+    counter_reset = 0;
+    counter_increment = 0;
 }
 
 RenderStyle::RenderStyle(const RenderStyle& o)
@@ -312,8 +316,11 @@ RenderStyle::RenderStyle(const RenderStyle& o)
       inherited_flags( o.inherited_flags ), noninherited_flags( o.noninherited_flags ),
       box( o.box ), visual( o.visual ), background( o.background ), surround( o.surround ),
       css3NonInheritedData( o.css3NonInheritedData ), css3InheritedData( o.css3InheritedData ),
-      inherited( o.inherited ), pseudoStyle( 0 ), content( o.content )
+      inherited( o.inherited ), pseudoStyle( 0 ), content( o.content ),
+      counter_reset(o.counter_reset), counter_increment(o.counter_increment)
 {
+    if (counter_reset) counter_reset->ref();
+    if (counter_increment) counter_increment->ref();
 }
 
 void RenderStyle::inheritFrom(const RenderStyle* inheritParent)
@@ -338,6 +345,8 @@ RenderStyle::~RenderStyle()
         prev->deref();
     }
     delete content;
+    if (counter_reset) counter_reset->deref();
+    if (counter_increment) counter_increment->deref();
 }
 
 bool RenderStyle::operator==(const RenderStyle& o) const
@@ -605,6 +614,10 @@ bool RenderStyle::contentDataEquivalent(RenderStyle* otherStyle)
             if (c1->_content.object != c2->_content.object)
                 return false;
         }
+        else if (c1->_contentType == CONTENT_COUNTER) {
+            if (c1->_content.counter != c2->_content.counter)
+                return false;
+        }
 
         c1 = c1->_nextContent;
         c2 = c2->_nextContent;
@@ -686,6 +699,34 @@ void RenderStyle::setContent(DOM::DOMStringImpl* s, bool add)
 
 }
 
+void RenderStyle::setContent(DOM::CounterImpl* c, bool add)
+{
+    if (!c)
+        return;
+
+    ContentData* lastContent = content;
+    while (lastContent && lastContent->_nextContent)
+        lastContent = lastContent->_nextContent;
+
+    bool reuseContent = !add;
+    ContentData* newContentData = 0;
+    if (reuseContent && content) {
+        content->clearContent();
+        newContentData = content;
+    }
+    else
+        newContentData = new ContentData;
+
+    if (lastContent && !reuseContent)
+        lastContent->_nextContent = newContentData;
+    else
+        content = newContentData;
+
+    c->ref();
+    newContentData->_content.counter = c;
+    newContentData->_contentType = CONTENT_COUNTER;
+}
+
 ContentData::~ContentData()
 {
     clearContent();
@@ -704,6 +745,11 @@ void ContentData::clearContent()
         case CONTENT_TEXT:
             _content.text->deref();
             _content.text = 0;
+            break;
+        case CONTENT_COUNTER:
+            _content.counter->deref();
+            _content.counter = 0;
+            break;
         default:
             ;
     }
@@ -736,6 +782,103 @@ bool ShadowData::operator==(const ShadowData& o) const
         return false;
 
     return x == o.x && y == o.y && blur == o.blur && color == o.color;
+}
+
+bool RenderStyle::counterDataEquivalent(RenderStyle* otherStyle)
+{
+    // ### Should we compare content?
+    return counter_reset == otherStyle->counter_reset &&
+           counter_increment == otherStyle->counter_increment;
+}
+
+static bool hasCounter(const DOM::DOMString& c, CSSValueListImpl *l)
+{
+    int len = l->length();
+    for(int i=0; i<len; i++) {
+        CounterActImpl* ca = static_cast<CounterActImpl*>(l->item(i));
+        Q_ASSERT(ca != 0);
+        if (ca->m_counter == c) return true;
+    }
+    return false;
+}
+
+bool RenderStyle::hasCounterReset(const DOM::DOMString& c) const
+{
+    if (counter_reset)
+        return hasCounter(c, counter_reset);
+    else
+        return false;
+}
+
+bool RenderStyle::hasCounterIncrement(const DOM::DOMString& c) const
+{
+    if (counter_increment)
+        return hasCounter(c, counter_increment);
+    else
+        return false;
+}
+
+static short readCounter(const DOM::DOMString& c, CSSValueListImpl *l)
+{
+    int len = l->length();
+    for(int i=0; i<len; i++) {
+        CounterActImpl* ca = static_cast<CounterActImpl*>(l->item(i));
+        Q_ASSERT(ca != 0);
+        if (ca->m_counter == c) return ca->m_value;
+    }
+    return 0;
+}
+
+short RenderStyle::counterReset(const DOM::DOMString& c) const
+{
+    if (counter_reset)
+        return readCounter(c, counter_reset);
+    else
+        return 0;
+}
+
+short RenderStyle::counterIncrement(const DOM::DOMString& c) const
+{
+    if (counter_increment)
+        return readCounter(c, counter_increment);
+    else
+        return 0;
+}
+
+void RenderStyle::setCounterReset(CSSValueListImpl *l)
+{
+    CSSValueListImpl *t = counter_reset;
+    counter_reset = l;
+    if (l) l->ref();
+    if (t) t->deref();
+}
+
+void RenderStyle::setCounterIncrement(CSSValueListImpl *l)
+{
+    CSSValueListImpl *t = counter_increment;
+    counter_increment = l;
+    if (l) l->ref();
+    if (t) t->deref();
+}
+
+void RenderStyle::addCounterReset(CounterActImpl *c)
+{
+    if (!counter_reset) {
+        counter_reset = new CSSValueListImpl;
+        counter_reset->ref();
+    }
+
+    counter_reset->append(c);
+}
+
+void RenderStyle::addCounterIncrement(CounterActImpl *c)
+{
+    if (!counter_increment) {
+        counter_increment = new CSSValueListImpl;
+        counter_increment->ref();
+    }
+
+    counter_increment->append(c);
 }
 
 #ifdef ENABLE_DUMP

@@ -30,7 +30,10 @@
 #include "rendering/render_text.h"
 #include "rendering/render_image.h"
 #include "rendering/render_canvas.h"
+#include "rendering/render_generated.h"
+#include "rendering/render_inline.h"
 #include "xml/dom_docimpl.h"
+#include "css/css_valueimpl.h"
 
 #include <kdebug.h>
 #include <assert.h>
@@ -207,6 +210,7 @@ void RenderContainer::updatePseudoChild(RenderStyle::PseudoId type, RenderObject
 
     RenderStyle* pseudo = style()->getPseudoStyle(type);
 
+
     // Whether or not we currently have generated content attached.
     bool oldContentPresent = child && (child->style()->styleType() == type);
 
@@ -248,6 +252,8 @@ void RenderContainer::updatePseudoChild(RenderStyle::PseudoId type, RenderObject
         // inline should be mutated to INLINE.
         pseudo->setDisplay(INLINE);
 
+    RenderStyle* style = new RenderStyle();
+    style->inheritFrom(pseudo);
     if (oldContentPresent) {
         if (child && child->style()->styleType() == type) {
             // We have generated content present still.  We want to walk this content and update our
@@ -266,11 +272,9 @@ void RenderContainer::updatePseudoChild(RenderStyle::PseudoId type, RenderObject
                 } else if (genChild->isText()) {
                     // Generated text content is a child whose style also needs to be set to the pseudo
                     // style.
-                    genChild->setStyle(pseudo);
+                    genChild->setStyle(style);
                 } else {
                     // Images get an empty style that inherits from the pseudo.
-                    RenderStyle* style = new RenderStyle();
-                    style->inheritFrom(pseudo);
                     genChild->setStyle(style);
                 }
             }
@@ -298,18 +302,23 @@ void RenderContainer::updatePseudoChild(RenderStyle::PseudoId type, RenderObject
         {
             RenderText* t = new (renderArena()) RenderText( element(), contentData->contentText());
             t->setIsAnonymous( true );
-            t->setStyle(pseudo);
+            t->setStyle(style);
             pseudoContainer->addChild(t);
         }
         else if (contentData->_contentType == CONTENT_OBJECT)
         {
             RenderImage* img = new (renderArena()) RenderImage(element());
             img->setIsAnonymous( true );
-            RenderStyle* style = new RenderStyle();
-            style->inheritFrom(pseudo);
             img->setStyle(style);
             img->setContentObject(contentData->contentObject());
             pseudoContainer->addChild(img);
+        }
+        else if (contentData->_contentType == CONTENT_COUNTER)
+        {
+            RenderCounter* t = new (renderArena()) RenderCounter( element(), contentData->contentCounter() );
+            t->setIsAnonymous( true );
+            t->setStyle(style);
+            pseudoContainer->addChild(t);
         }
     }
 
