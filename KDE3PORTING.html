@@ -16,6 +16,7 @@ or <a href="http://doc.trolltech.com/3.0/porting.html">this page online</a>.<P>
 
 <UL>
 <LI><A HREF="#gettingstarted">Getting Started</A></LI>
+<LI><A HREF="#kab">Changes in kab</A></LI>
 <LI><A HREF="#kdecore">Changes in kdecore</A></LI>
 <LI><A HREF="#kdeui">Changes in kdeui</A></LI>
 <LI><A HREF="#kio">Changes in kio</A></LI>
@@ -46,6 +47,15 @@ or <a href="http://doc.trolltech.com/3.0/porting.html">this page online</a>.<P>
 
 <H4><P ALIGN="RIGHT"><A HREF="#TOC">Return to the Table of Contents</A></P></H4>
 
+<H3><A NAME="kab">Changes in kab</A></H3>
+
+<H4>AddressBook</H4>
+The <i>getStandardFilename()</i> method has been renamed to <i>getStandardFileName()</i>.
+The old name will still work unless KDE_NO_COMPAT is defined.
+
+
+<H4><P ALIGN="RIGHT"><A HREF="#TOC">Return to the Table of Contents</A></P></H4>
+
 <H3><A NAME="kdecore">Changes in kdecore</A></H3>
 
 <H4>KDesktopWidget</H4>
@@ -63,21 +73,21 @@ instead, everything else is source compatible.
 <LI>kdualcolorbtn.h is now kdualcolorbutton.h</LI>
 
 </UL>
-This is to help finding out header files from classnames and the other
+This is to help finding out header files from class names and the other
 way round. Compatibility headers have been created. You can use them as 
 long as you don't compile with KDE_NO_COMPAT.
 
 <H4>DCOP</H4>
 The file with the DCOP connection information has been renamed. The new
 name is $HOME/.DCOPserver_<hostname>_<display>. The screen part has been 
-stripped from <display> and the ':' character that seperates host and
+stripped from <display> and the ':' character that separates host and
 display-number has been replaced with a '_'. If you access DCOP via
 DCOPClient you do not need to change anything.
 <p>
 It is no longer possible to make calls to an application registered as
 "<appid>-<pid>" with "<appid>" only. The full name can be obtained by using
 either KApplication::startServiceBy...() or DCOPClient::findObject() or 
-their commandline equivalents "dcopstart" and "dcopfind".
+their command line equivalents "dcopstart" and "dcopfind".
 
 <H4>KLibFactory</H4>
 KLibFactory's create method is no more virtual and the createObject method
@@ -85,9 +95,23 @@ is now pure virtual. The former was marked as deprecated since KDE 2.0.
 All it takes in your component is to rename your existing create implementation
 to createObject and remove the 'emit objectCreated( yourObject );' line.
 
+<H4>KDesktopFile</H4>
+The <i>filename()</i> method has been renamed to <i>fileName()</i>.
+The old name will still work unless KDE_NO_COMPAT is defined.
+
+<H4>KStringHandler</H4>
+The <i>matchFilename( const QString& filename, const QString& pattern )</i> method has been 
+renamed to <br><i>matchFileName( const QString& filename, const QString& pattern )</i>.
+The old name will still work unless KDE_NO_COMPAT is defined.
+
 <H4>KStyle</H4>
 Because of the QStyle rewrite our old extensions have been dropped
 in order to have styles that fully integrate in KDE and Qt applications
+
+<H4>KURL</H4>
+The <i>filename( bool _ignore_trailing_slash_in_path = true )</i> method has been 
+renamed to <br><i>fileName( bool _ignore_trailing_slash_in_path = true )</i>.
+The old name will still work unless KDE_NO_COMPAT is defined.
 
 <H4>KMD5</H4>
 HASHHEX and HASH has been removed to make this class namespace clean. 
@@ -186,7 +210,7 @@ for more informations on this new extension.
 
 <H4>KRootPixmap</H4>
 The KRootPixmap class has been extended to make it more flexible, and the
-<i>checkAvailable(bool ignored)</i> method has been renamed <i>isAvailable()</i>.
+<i>checkAvailable(bool ignored)</i> method has been renamed to <i>isAvailable()</i>.
 The old name will still work unless KDE_NO_COMPAT is defined.
 
 <H4>KThemeBase, KThemeStyle</H4>
@@ -245,7 +269,7 @@ in order to have styles that fully integrate in KDE and Qt applications.
 <li>setProxyConfigScript( const QString&amp;  )
       </ul>
   </li>
-  <li>In order to support files &gt; 4Gb, the filesize / file-offset argument 
+  <li>In order to support files &gt; 4Gb, the file size / file-offset argument 
       in the signals totalSize, processedSize and canResume, which are used 
       by the io-slaves and passed along to jobs, has been changed from
       <b>unsigned long</b> to <b>KIO::filesize_t</b>.
@@ -268,7 +292,7 @@ to createPartObject and remove the 'emit objectCreated( yourObject );' line.
 
 <H4>KParts::Part</H4>
 The <code>bool isSelectable() const</code> is no more virtual. So when you want to
-change the behaviour of the selectable property you don't need to re-implement
+change the behavior of the selectable property you don't need to re-implement
 both virtual functions, setSelectable and isSelectable, but instead just
 re-implementing setSelectable does the job. The very same applies for
 the <code>KURL url() const</code> and ReadWritePart's <code>bool isReadWrite const</code>
@@ -276,7 +300,7 @@ and <code>bool isModified() const</code> methods.
 
 <H4>KParts::BrowserExtension</H4>
 The <code>URLArgs urlArgs()</code> method is no more virtual. So when you want to
-change the behaviour of the urlArgs property you don't need to re-implement
+change the behavior of the urlArgs property you don't need to re-implement
 both virtual functions, setURLArgs and urlArgs, but instead just re-implementing
 setURLArgs does the job.
 
@@ -296,7 +320,7 @@ completeURL() are remained for compatibility reasons, but they're deprecated now
    any effect before either.
 </ul>
 Besides that, all methods previously marked as deprecated or were internal
-but accidently part of the public API are now private or removed.
+but accidentally part of the public API are now private or removed.
 As they were marked as becoming private already you should not experience
 any problems. Backward compatibility exists for the common methods, to
 disable this use a #define KDE_NO_COMPAT.
@@ -312,13 +336,13 @@ The kfile-library, as used by the KFileDialog provides classes for directory bro
 Those classes gained some new features, some parts were merged with other existing classes
 and in some cases the API was cleaned up/fixed.
 <p>
-Even if the list of changes is long, the affected codebase should be relatively small, as most
+Even if the list of changes is long, the affected code base should be relatively small, as most
 parts are rarely used outside of kfile.
 <p>
 The changes are:
 <H4>KFileItem</H4>
 The KFileViewItem class is completely replaced with KFileItem from kio. All its functionality has
-been merged with its former baseclass KFileItem. Additionally, some of its methods have been
+been merged with its former base class KFileItem. Additionally, some of its methods have been
 modified:
 <table>
 <tr><th>Old:</th><th>New:</th></tr>
@@ -409,14 +433,14 @@ Carsten Pfeiffer <A HREF="mailto:pfeiffer@kde.org">pfeiffer@kde.org</A>
 The meaning of the <i>X-KDE-RootOnly</i> flag in the .desktop files has changed.
 In KControl 2.0 a message was shown if the user did not press the &quot;modify&quot;
 button. With the additional flag <i>X-KDE-HasReadOnlyMode</i> it was possible to show
-a disabled version of the module instead of the message. The behaviour was inconsistent
+a disabled version of the module instead of the message. The behavior was inconsistent
 and has been changed:
 
 <ul>
 <li><i>X-KDE-HasReadOnlyMode</i> is not used anymore and is ignored by KControl &gt; 2.0.
 <li><i>X-KDE-RootOnly</i> does now show a disabled preview of the widget and a notification box.
-<li>If you want the old behaviour back set <i>X-KDE-IsHiddenByDefault</i> along with
-<i>X-KDE-RootOnly</i>. Please note that this behaviour is deprecated the sake of
+<li>If you want the old behavior back set <i>X-KDE-IsHiddenByDefault</i> along with
+<i>X-KDE-RootOnly</i>. Please note that this behavior is deprecated the sake of
 usability.
 </ul>
 
