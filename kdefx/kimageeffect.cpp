@@ -869,7 +869,7 @@ QImage& KImageEffect::blend(const QColor& clr, QImage& dst, float opacity)
     }
 
     int depth = dst.depth();
-    if (depth != 32) 
+    if (depth != 32)
 	dst = dst.convertDepth(32);
 
     int pixels = dst.width() * dst.height();
@@ -948,14 +948,14 @@ QImage& KImageEffect::blend(QImage& src, QImage& dst, float opacity)
     }
 
     return dst;
-}    
+}
 
 
 QImage& KImageEffect::blend(QImage &image, float initial_intensity,
                             const QColor &bgnd, GradientType eff,
                             bool anti_dir)
 {
-    if (image.width() == 0 || image.height() == 0) {
+    if (image.width() == 0 || image.height() == 0 || image.depth()!=32 ) {
 #ifndef NDEBUG
       cerr << "WARNING: KImageEffect::blend : invalid image\n";
 #endif
@@ -991,28 +991,34 @@ QImage& KImageEffect::blend(QImage &image, float initial_intensity,
 
     unsigned int *data =  (unsigned int *)image.bits();
 
+    int image_width = image.width(); //Those can't change
+    int image_height = image.height();
+
+
     if( eff == VerticalGradient || eff == HorizontalGradient ) {
 
         // set the image domain to apply the effect to
-        xi = 0, xf = image.width();
-        yi = 0, yf = image.height();
+        xi = 0, xf = image_width;
+        yi = 0, yf = image_height;
         if (eff == VerticalGradient) {
-            if (anti_dir) yf = (int)(image.height() * unaffected);
-            else yi = (int)(image.height() * (1 - unaffected));
+            if (anti_dir) yf = (int)(image_height * unaffected);
+            else yi = (int)(image_height * (1 - unaffected));
         }
         else {
-            if (anti_dir) xf = (int)(image.width() * unaffected);
-            else xi = (int)(image.height() * (1 - unaffected));
+            if (anti_dir) xf = (int)(image_width * unaffected);
+            else xi = (int)(image_height * (1 - unaffected));
         }
 
         var /= (eff == VerticalGradient?yf-yi:xf-xi);
 
+        int ind_base;
         for (y = yi; y < (int)yf; y++) {
             intensity = eff == VerticalGradient? intensity + var :
                 initial_intensity;
+            ind_base = image_width  * y ;
             for (x = xi; x < (int)xf ; x++) {
                 if (eff == HorizontalGradient) intensity += var;
-                ind = x + image.width()  * y ;
+                ind = x + ind_base;
                 r = qRed  (data[ind]) + (int)(intensity *
                                               (r_bgnd - qRed  (data[ind])));
                 g = qGreen(data[ind]) + (int)(intensity *
@@ -1028,15 +1034,16 @@ QImage& KImageEffect::blend(QImage &image, float initial_intensity,
         }
     }
     else if (eff == DiagonalGradient  || eff == CrossDiagonalGradient) {
-        float xvar = var / 2 / image.width();  // / unaffected;
-        float yvar = var / 2 / image.height(); // / unaffected;
+        float xvar = var / 2 / image_width;  // / unaffected;
+        float yvar = var / 2 / image_height; // / unaffected;
         float tmp;
 
-        for (x = 0; x < image.width() ; x++) {
+        for (x = 0; x < image_width ; x++) {
             tmp =  xvar * (eff == DiagonalGradient? x : image.width()-x-1);
-            for (y = 0; y < image.height() ; y++) {
+            ind = x;
+            for (y = 0; y < image_height ; y++) {
                 intensity = initial_intensity + tmp + yvar * y;
-                ind = x + image.width()  * y ;
+
                 r = qRed  (data[ind]) + (int)(intensity *
                                               (r_bgnd - qRed  (data[ind])));
                 g = qGreen(data[ind]) + (int)(intensity *
@@ -1048,6 +1055,8 @@ QImage& KImageEffect::blend(QImage &image, float initial_intensity,
                 if (b > 255) b = 255; if (b < 0 ) b = 0;
                 a = qAlpha(data[ind]);
                 data[ind] = qRgba(r, g, b, a);
+
+                ind += image_width;
             }
         }
     }
@@ -1056,10 +1065,10 @@ QImage& KImageEffect::blend(QImage &image, float initial_intensity,
         float xvar;
         float yvar;
 
-        for (x = 0; x < image.width() / 2 + image.width() % 2; x++) {
-            xvar = var / image.width()  * (image.width() - x*2/unaffected-1);
-            for (y = 0; y < image.height() / 2 + image.height() % 2; y++) {
-                yvar = var / image.height()   * (image.height() - y*2/unaffected -1);
+        for (x = 0; x < image_width / 2 + image_width % 2; x++) {
+            xvar = var / image_width  * (image_width - x*2/unaffected-1);
+            for (y = 0; y < image_height / 2 + image_height % 2; y++) {
+                yvar = var / image_height   * (image_height - y*2/unaffected -1);
 
                 if (eff == RectangleGradient)
                     intensity = initial_intensity + QMAX(xvar, yvar);
@@ -1069,7 +1078,7 @@ QImage& KImageEffect::blend(QImage &image, float initial_intensity,
                 if (intensity < 0) intensity = 0;
 
                 //NW
-                ind = x + image.width()  * y ;
+                ind = x + image_width  * y ;
                 r = qRed  (data[ind]) + (int)(intensity *
                                               (r_bgnd - qRed  (data[ind])));
                 g = qGreen(data[ind]) + (int)(intensity *
@@ -1083,7 +1092,7 @@ QImage& KImageEffect::blend(QImage &image, float initial_intensity,
                 data[ind] = qRgba(r, g, b, a);
 
                 //NE
-                ind = image.width() - x - 1 + image.width()  * y ;
+                ind = image_width - x - 1 + image_width  * y ;
                 r = qRed  (data[ind]) + (int)(intensity *
                                               (r_bgnd - qRed  (data[ind])));
                 g = qGreen(data[ind]) + (int)(intensity *
@@ -1100,10 +1109,10 @@ QImage& KImageEffect::blend(QImage &image, float initial_intensity,
 
         //CT  loop is doubled because of stupid central row/column issue.
         //    other solution?
-        for (x = 0; x < image.width() / 2; x++) {
-            xvar = var / image.width()  * (image.width() - x*2/unaffected-1);
-            for (y = 0; y < image.height() / 2; y++) {
-                yvar = var / image.height()   * (image.height() - y*2/unaffected -1);
+        for (x = 0; x < image_width / 2; x++) {
+            xvar = var / image_width  * (image_width - x*2/unaffected-1);
+            for (y = 0; y < image_height / 2; y++) {
+                yvar = var / image_height   * (image_height - y*2/unaffected -1);
 
                 if (eff == RectangleGradient)
                     intensity = initial_intensity + QMAX(xvar, yvar);
@@ -1113,7 +1122,7 @@ QImage& KImageEffect::blend(QImage &image, float initial_intensity,
                 if (intensity < 0) intensity = 0;
 
                 //SW
-                ind = x + image.width()  * (image.height() - y -1) ;
+                ind = x + image_width  * (image_height - y -1) ;
                 r = qRed  (data[ind]) + (int)(intensity *
                                               (r_bgnd - qRed  (data[ind])));
                 g = qGreen(data[ind]) + (int)(intensity *
@@ -1127,7 +1136,7 @@ QImage& KImageEffect::blend(QImage &image, float initial_intensity,
                 data[ind] = qRgba(r, g, b, a);
 
                 //SE
-                ind = image.width()-x-1 + image.width() * (image.height() - y - 1) ;
+                ind = image_width-x-1 + image_width * (image_height - y - 1) ;
                 r = qRed  (data[ind]) + (int)(intensity *
                                               (r_bgnd - qRed  (data[ind])));
                 g = qGreen(data[ind]) + (int)(intensity *
