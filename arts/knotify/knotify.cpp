@@ -20,7 +20,7 @@
 #include <qfile.h>
 
 #include <kstddirs.h>
-#include <kapp.h>
+#include <kuniqueapp.h>
 #include <kaboutdata.h>
 #include <kcmdlineargs.h>
 #include <kglobal.h>
@@ -51,13 +51,13 @@ int main(int argc, char **argv)
 	
 	KCmdLineArgs::init( argc, argv, &aboutdata );
 //	KCmdLineArgs::addCmdLineOptions( options );
-	KApplication app;
+	KUniqueApplication::addCmdLineOptions();
 	
-	// setup dcop communication
-	if (!app.dcopClient()->isAttached())
-		app.dcopClient()->registerAs("knotify",false);
-	if (!app.dcopClient()->isAttached())
-		return 1;
+	if (!KUniqueApplication::start())
+		exit(0);
+	
+	KUniqueApplication app;
+	
 	
 	// setup mcop communication
 	QIOManager qiomanager;
