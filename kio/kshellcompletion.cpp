@@ -196,7 +196,7 @@ void KShellCompletion::splitText(const QString &text, QString &text_start,
  */
 bool KShellCompletion::quoteText(QString *text, bool force, bool skip_last) const
 {
-	int pos;
+	int pos = 0;
 
 	if ( !force ) {
 		pos = text->find( m_word_break_char );
