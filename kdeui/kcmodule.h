@@ -30,9 +30,8 @@ class KCModulePrivate;
 /**
  * The base class for control center modules.
  *
- * In KDE 2.0, control center modules are realized as shared
- * libraries that are loaded into the control center at
- * runtime.
+ * Starting from KDE 2.0, control center modules are realized as shared
+ * libraries that are loaded into the control center at runtime.
  *
  * The module in principle is a simple widget displaying the
  * item to be changed. The module has a very small interface.
@@ -66,6 +65,7 @@ public:
 
   /**
    * An enumeration type for the buttons used by this module.
+   * You should only use Help, Default and Apply. The rest is obsolete.
    *
    * @see KCModule::buttons @see KCModule::setButtons
    */
