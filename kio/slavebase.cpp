@@ -884,7 +884,9 @@ void SlaveBase::dispatch( int command, const QByteArray &data )
         fprintf(stderr, "Got unexpected CMD_NONE!\n");
         break;
     default:
-        assert( 0 );
+        // Some command we don't understand.
+        // Just ignore it, it may come from some future version of KDE.
+        break;
     }
 }
 
