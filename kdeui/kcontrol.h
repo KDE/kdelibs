@@ -3,22 +3,21 @@
 
   written 1997 by Matthias Hoelzer
 
-    This library is free software; you can redistribute it and/or
-    modify it under the terms of the GNU Library General Public
-    License as published by the Free Software Foundation; either
-    version 2 of the License, or (at your option) any later version.
+  This library is free software; you can redistribute it and/or
+  modify it under the terms of the GNU Library General Public
+  License as published by the Free Software Foundation; either
+  version 2 of the License, or (at your option) any later version.
 
-    This library is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-    Library General Public License for more details.
+  This library is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+  Library General Public License for more details.
 
-    You should have received a copy of the GNU Library General Public License
-    along with this library; see the file COPYING.LIB.  If not, write to
-    the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
-    Boston, MA 02111-1307, USA.
-  */
-
+  You should have received a copy of the GNU Library General Public License
+  along with this library; see the file COPYING.LIB.  If not, write to
+  the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+  Boston, MA 02111-1307, USA.
+*/
 
 #ifndef _K_CONTROL_
 #define _K_CONTROL_
@@ -34,6 +33,8 @@ class KControlApplication;
 
 /**
  *  KControlDialog is a QTabDialog that is internally used by KControl Applications.
+ *
+ *  @see KConfigWidget, KControlApplication
  */
 class KControlDialog : public QTabDialog
 {
@@ -68,16 +69,16 @@ protected slots:
 
 private:
 
-  QPushButton *helpBtn;
-  QPushButton *defaultBtn;
-    
+  QPushButton* helpBtn;
+  QPushButton* defaultBtn;
 };
-
 
 /**
  *  The base widget for setup dialog.
  *
- *   It provides methods to load and apply the settings.
+ *  It provides methods to load and apply the settings.
+ *
+ *  @see KControlApplication, KControlDialog
  */
 class KConfigWidget : public QWidget
 {
@@ -121,6 +122,8 @@ public:
  *  KControlApplication is the common base for setup applications.
  *
  *  It provides a tab dialog and functionality common to most setup programs.
+ *
+ *  @see KControlDialog, KConfigWidget
  *
  *  @author Matthias H"olzer (hoelzer@physik.uni-wuerzburg.de)
  *  @short Common base for setup applications.
@@ -184,7 +187,7 @@ public:
   bool runGUI() { return !justInit; };
 
   /**
-   *  Returns the tabbed dialog object.
+   *  Returns the tabbed dialog object, normally a @ref KControlDialog object.
    *
    *  @return Pointer to a QTabDialog object.
    */
