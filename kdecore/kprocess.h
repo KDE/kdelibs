@@ -595,7 +595,7 @@ private:
   KProcessPrivate *d;
 };
 
-class KShellProcessPrivate *d;
+class KShellProcessPrivate;
 
 /**
 * This class is similar to @ref KProcess. The only difference is that
