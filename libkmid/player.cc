@@ -247,6 +247,7 @@ void MidiPlayer::removeSpecialEvents(void)
     spev=ev;
   }
   delete na;
+  na=0;
 }
 
 void MidiPlayer::parseSpecialEvents(void)
