@@ -62,7 +62,7 @@ class Range
 {
 public:
     Range();
-    Range(const Document *rootContainer);
+    Range(const Document rootContainer);
     Range(const Range &other);
 
     Range & operator = (const Range &other);
@@ -292,9 +292,20 @@ public:
      *
      * Compare the boundary-points of a range.
      *
-     * Return true if the start of the Range is before the end,
-     * or if the start and end points of the Range are equal.
-     * Return false if the start of the Range is after the end.
+     * Return -1 if A is before B, 0 if they are equal, and 1 if A is after B.
+     *
+     */
+    short compareBoundaryPoints ( Node containerA, long offsetA, Node containerB, long offsetB );
+
+    /**
+     * @internal
+     * not part of the DOM
+     *
+     * Compare the boundary-points of a range.
+     *
+     * Return true if the startContainer is before the endContainer,
+     * or if they are equal.
+     * Return false if the startContainer is after the endContainer.
      *
      */
     bool boundaryPointsValid (  );
@@ -433,11 +444,11 @@ public:
      */
     void detach (  );
 protected:
-    Node *startContainer;
+    Node startContainer;
     unsigned long startOffset;
-    Node *endContainer;
+    Node endContainer;
     unsigned long endOffset;
-    Node *commonAncestorContainer;
+    Node commonAncestorContainer;
     bool collapsed;
     bool detached;
 };

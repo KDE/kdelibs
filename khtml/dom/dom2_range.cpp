@@ -38,13 +38,13 @@ Range::Range()
     detached = false;
 }
 
-Range::Range(const Document *rootContainer)
+Range::Range(const Document rootContainer)
 {
-    startContainer = (Node *)rootContainer;
-    endContainer = (Node *)rootContainer;
+    startContainer = (Node)rootContainer;
+    endContainer = (Node)rootContainer;
     startOffset = 0;
     endOffset = 0;
-    commonAncestorContainer = (Node *)rootContainer;
+    commonAncestorContainer = (Node)rootContainer;
     collapsed = true;
     detached = false;
 }
@@ -75,7 +75,7 @@ Node Range::getStartContainer() const
     if( isDetached() )
         throw DOMException(DOMException::INVALID_STATE_ERR);
     else
-        return *startContainer;
+        return startContainer;
 }
 
 long Range::getStartOffset() const
@@ -91,7 +91,7 @@ Node Range::getEndContainer() const
     if( isDetached() )
         throw DOMException(DOMException::INVALID_STATE_ERR);
     else
-        return *endContainer;
+        return endContainer;
 }
 
 long Range::getEndOffset() const
@@ -107,7 +107,7 @@ Node Range::getCommonAncestorContainer() const
     if( isDetached() )
         throw DOMException(DOMException::INVALID_STATE_ERR);
     else
-        return *commonAncestorContainer;
+        return commonAncestorContainer;
 }
 
 bool Range::isCollapsed() const
@@ -146,7 +146,7 @@ void Range::setStart( const Node &refNode, long offset )
     if( isDetached() )
         throw DOMException( DOMException::INVALID_STATE_ERR );
 
-    startContainer = &refNode;
+    startContainer = refNode;
     startOffset = offset;
 
     _tempNode = refNode.parentNode();
@@ -187,7 +187,7 @@ void Range::setEnd( const Node &refNode, long offset )
     if( isDetached() )
         throw DOMException( DOMException::INVALID_STATE_ERR );
     
-    endContainer = &refNode;
+    endContainer = refNode;
     endOffset = offset;
 
     _tempNode = refNode.parentNode();
@@ -518,45 +518,44 @@ void Range::selectNodeContents( const Node &refNode )
 
 short Range::compareBoundaryPoints( CompareHow how, const Range &sourceRange )
 {
-    if( &commonAncestorContainer->ownerDocument != &sourceRange.commonAncestorContainer->ownerDocument )
+    if( &commonAncestorContainer.ownerDocument != &sourceRange.commonAncestorContainer.ownerDocument )
         throw DOMException( DOMException::WRONG_DOCUMENT_ERR );
     
     if( isDetached() )
         throw DOMException( DOMException::INVALID_STATE_ERR );
 
-    Node containerA, containerB;
-    unsigned long offsetA, offsetB;
     switch(how)
     {
     case StartToStart:
-        containerA = getStartContainer();
-        offsetA = startOffset;
-        containerB = sourceRange.getStartContainer();
-        offsetB = sourceRange.startOffset;
+        return compareBoundaryPoints( getStartContainer(), getStartOffset(),
+                                      sourceRange.getStartContainer(), sourceRange.getStartOffset() );
         break;
     case StartToEnd:
-        containerA = getStartContainer();
-        offsetA = startOffset;
-        containerB = sourceRange.getEndContainer();
-        offsetB = sourceRange.endOffset;
+        return compareBoundaryPoints( getStartContainer(), getStartOffset(),
+                                      sourceRange.getEndContainer(), sourceRange.getEndOffset() );
         break;
     case EndToEnd:
-        containerA = getEndContainer();
-        offsetA = endOffset;
-        containerB = sourceRange.getEndContainer();
-        offsetB = sourceRange.endOffset;
+        return compareBoundaryPoints( getEndContainer(), getEndOffset(),
+                                      sourceRange.getEndContainer(), sourceRange.getEndOffset() );
         break;
     case EndToStart:
-        containerA = getEndContainer();
-        offsetA = endOffset;
-        containerB = sourceRange.getStartContainer();
-        offsetB = sourceRange.startOffset;
+        return compareBoundaryPoints( getEndContainer(), getEndOffset(),
+                                      sourceRange.getStartContainer(), sourceRange.getStartOffset() );
         break;
     default:
         printf( "Function compareBoundaryPoints: Invalid CompareHow\n" );
-        return 2;     // undocumented - any better way to do this?
+        return 2;     // undocumented - should throw an exception here
     }
+}
 
+short Range::compareBoundaryPoints( Node containerA, long offsetA, Node containerB, long offsetB )
+{
+    if( offsetA < 0 || offsetB < 0 )
+    {
+        printf( "Function compareBoundaryPoints: No negative offsets allowed\n" );
+        return 2;     // undocumented - should throw an exception here
+    }
+    
     if( containerA == containerB )        // Case 1 in DOM2 pt. 8.5
     {
         if( offsetA < offsetB )  return -1;
@@ -570,7 +569,7 @@ short Range::compareBoundaryPoints( CompareHow how, const Range &sourceRange )
         {
             if( _tempNode.parentNode() == containerA )
             {
-                if( _tempNode.parentNode().index() < offsetA )  return -1;
+                if( _tempNode.parentNode().index() < (unsigned)offsetA )  return -1;
                 else  return 1;
             }
             _tempNode = _tempNode.parentNode();
@@ -581,21 +580,23 @@ short Range::compareBoundaryPoints( CompareHow how, const Range &sourceRange )
         {
             if( _tempNode.parentNode() == containerB )
             {
-                if( _tempNode.parentNode().index() > offsetB )  return -1;
+                if( _tempNode.parentNode().index() > (unsigned)offsetB )  return -1;
                 else  return 1;
             }
             _tempNode = _tempNode.parentNode();
         }
 
         // Case 4 in DOM2 pt. 8.5 (use a treewalker here)
-    }
+        }
+    return 0;
 }
 
 bool Range::boundaryPointsValid(  )
 {
-// Return true if the start of the Range is before the end,
-// or if the start and end points of the Range are equal.
-// Return false if the start of the Range is after the end.
+    short valid =  compareBoundaryPoints( getStartContainer(), getStartOffset(),
+                                          getEndContainer(), getEndOffset() );
+    if( valid == -1 )  return false;
+    else  return true;
 }
 
 void Range::deleteContents(  )
@@ -619,12 +620,20 @@ DocumentFragment Range::extractContents(  )
 {
     if( isDetached() )
         throw DOMException( DOMException::INVALID_STATE_ERR );
+
+    // this is just to avoid compiler warnings
+    DocumentFragment d;
+    return d;
 }
 
 DocumentFragment Range::cloneContents(  )
 {
     if( isDetached() )
         throw DOMException( DOMException::INVALID_STATE_ERR );
+
+    // this is just to avoid compiler warnings
+    DocumentFragment d;
+    return d;
 }
 
 void Range::insertNode( const Node &/*newNode*/ )
@@ -643,12 +652,20 @@ Range Range::cloneRange(  )
 {
     if( isDetached() )
         throw DOMException( DOMException::INVALID_STATE_ERR );
+
+    // this is just to avoid compiler warnings
+    Range r;
+    return r;
 }
 
 DOMString Range::toString(  )
 {
     if( isDetached() )
         throw DOMException( DOMException::INVALID_STATE_ERR );
+
+    // this is just to avoid compiler warnings
+    DOMString d;
+    return d;
 }
 
 void Range::detach(  )
