@@ -230,9 +230,9 @@ void KProgress::adjustStyle()
 
 void KProgress::paletteChange( const QPalette &p )
 {
-   // This never gets called because we call setPalette()
+   // This never gets called for global color changes 
+   // because we call setPalette() ourselves.
    QFrame::paletteChange(p);
-   paletteChange();
 }
 		
 void KProgress::drawText(QPainter *p)
