@@ -56,16 +56,35 @@ class NumSortListViewItem : public KListViewItem
 {
   public:
   NumSortListViewItem( QListView * parent, QString label1, QString label2 = QString::null, QString label3 = QString::null, QString label4 = QString::null, QString label5 = QString::null, QString label6 = QString::null, QString label7 = QString::null, QString label8 = QString::null )  :
-  KListViewItem( parent, label1, label2, label3, label4, label5, label6, label7, label8 )  
+  KListViewItem( parent, label1, label2, label3, label4, label5, label6, label7, label8 )
   {
   }
 
   QString key(int col, bool asc) const {
     if (col == 2)
     {
-      
       QString s;
       s.sprintf("%08d", text(col).toInt());
+      return s;
+    }
+    return KListViewItem::key( col, asc );
+  }
+};
+
+class DateSortListViewItem : public KListViewItem
+{
+  public:
+  DateSortListViewItem( QListView * parent, QString label1, QString label2 = QString::null, QString label3 = QString::null, QString label4 = QString::null, QString label5 = QString::null, QString label6 = QString::null, QString label7 = QString::null, QString label8 = QString::null )  :
+  KListViewItem( parent, label1, label2, label3, label4, label5, label6, label7, label8 )
+  {
+  }
+
+  QString key(int col, bool asc) const {
+    if (col == 2)
+    {
+      QString s;
+      QDate date = KGlobal::locale()->readDate(text(col));
+      s.sprintf("%08d", date.year() * 366 + date.dayOfYear());
       return s;
     }
     return KListViewItem::key( col, asc );
@@ -371,11 +390,11 @@ void DownloadDialog::addEntry(Entry *entry)
   else if(installed < 0) pix = KGlobal::iconLoader()->loadIcon("history", KIcon::Small);
   else pix = QPixmap();
 
-  KListViewItem *tmp_r = new KListViewItem(lv_r,
+  KListViewItem *tmp_r = new NumSortListViewItem(lv_r,
     entry->name(), entry->version(), QString("%1").arg(entry->rating()));
   KListViewItem *tmp_d = new NumSortListViewItem(lv_d,
     entry->name(), entry->version(), QString("%1").arg(entry->downloads()));
-  KListViewItem *tmp_l = new KListViewItem(lv_l,
+  KListViewItem *tmp_l = new DateSortListViewItem(lv_l,
     entry->name(), entry->version(), KGlobal::locale()->formatDate(entry->releaseDate()));
 
   tmp_r->setPixmap(0, pix);
