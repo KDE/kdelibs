@@ -1,5 +1,5 @@
 /*
- * $Id $
+ * $Id$
  * 
  * KStyle
  * Copyright (C) 2001-2002 Karol Szwed <gallium@kde.org>
