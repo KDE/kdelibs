@@ -20,6 +20,10 @@
 
 //$Id$
 //$Log$
+//Revision 1.25  1999/07/25 09:24:05  kulow
+//good news - the workaround is not needed anymore. I left a
+//comment in the Makefile for now
+//
 //Revision 1.24  1999/07/25 09:11:29  kulow
 ///me thinks these warnings should be default for the moment to bug
 //Mosfet :)
@@ -118,7 +122,7 @@ class KMenuBar : public QFrame
 
    /**
     * Enable or disable moving. This only disables user moving
-    * menubar can be moved wit @ref #setMenuBarPos.
+    * menubar can be moved with @ref #setMenuBarPos .
     */
    void enableMoving(bool flag = TRUE);
 
@@ -147,13 +151,15 @@ class KMenuBar : public QFrame
     * or hide, but if you do that the signal @ref #moved won't be emitted.
     */
    bool enable( BarStatus stat );
+
 #if QT2_WORKAROUND
    /** Hack: this is needed for Qt-2 */
    void show();
 #endif
+
    /**
-	* Reimplemented to return some useful measures.
-	*/
+    * Reimplemented to return some useful measures.
+    */
    QSize sizeHint(void) const;
 
    /**
