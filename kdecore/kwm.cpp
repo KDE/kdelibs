@@ -48,7 +48,7 @@ static bool getSimpleProperty(Window w, Atom a, long &result){
     return FALSE;
   }
   
-  result = (long) *p;
+  result = p[0];
   XFree((char *) p);
   kwm_error = FALSE;
   return TRUE;
@@ -67,8 +67,8 @@ static bool getDoubleProperty(Window w, Atom a, long &result1, long &result2){
     return FALSE;
   }
   
-  result1 = (long) *p;
-  result2 = (long) *(p + sizeof(long));
+  result1 = p[0];
+  result2 = p[1];
   XFree((char *) p);
   kwm_error = FALSE;
   return TRUE;
