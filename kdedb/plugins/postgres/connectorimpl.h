@@ -27,8 +27,22 @@
 #include <libpq-fe.h>
 #include <kdb/connector.h>
 
+#include <ksharedptr.h>
+
 #include <qvaluelist.h>
 #include <qstringlist.h>
+#include <qintcache.h>
+
+struct connRep : public KShared {
+
+    PGconn *conn;
+
+    ~connRep() {
+        //qDebug("~connRep");
+        PQfinish(conn);
+    }
+
+};
 
 
 class ConnectorImpl: public KDB::Connector {
@@ -62,11 +76,17 @@ public:
 
     KDB::Handler *query(const QString &SQL) ;
 
+    QString oidToTypeName(Oid oid);
 protected:
 
-    KDB::RowList resultQuery(const QString &sql);
+    PGconn * connection() {return conn->conn; };
 
-    PGconn *conn;
+    QString m_database;
+    
+    KDB::RowList resultQuery(const QString &sql);
+    KSharedPtr<connRep> conn;
+
+    QIntCache<QString> m_typeCache;
 };
 
 

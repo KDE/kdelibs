@@ -22,6 +22,39 @@
 
 #include <kdb/control.h>
 
+#include <kdialogbase.h>
+
+class QListView;
+class QListViewItem;
+class QLineEdit;
+class QPushButton;
+
+class PGControlDialog: public KDialogBase
+{
+    Q_OBJECT
+ public:
+    PGControlDialog(KConfigBase *conf, QWidget * parent);
+    ~PGControlDialog() {};
+
+ protected slots:
+        
+    void slotNew();
+    void slotDelete();
+    void slotHostChanged(const QString &);
+    void slotDbChanged(const QString &);
+    void slotItemSelected(QListViewItem *);
+    void slotOk();
+    
+ private:
+    KConfigBase *m_conf;
+    QListView *m_lst;
+    QLineEdit *m_host;
+    QLineEdit *m_db;
+    QPushButton *m_new;
+    QPushButton *m_delete;
+    
+};
+
 
 class ControlImpl : public KDB::Control
 {

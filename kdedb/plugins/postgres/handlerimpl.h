@@ -27,30 +27,32 @@
 #include <libpq-fe.h>
 #include <kdb/handler.h>
 
+class ConnectorImpl;
+
 class HandlerImpl: public KDB::Handler {
 
 public:
-    HandlerImpl(PGresult *result);
+    HandlerImpl(PGresult *result, ConnectorImpl *conn);
     virtual ~HandlerImpl();
 
-    //operator pRES();
-
-    KDB_ULONG count();
-    KDB::Row record(KDB_ULONG pos);
-    KDB::RowList rows();
-    QStringList fields();
-    QString nativeType(const QString &fieldName) ;
-    KDB::DataType kdbDataType(const QString &fieldName) ;
+    KDB_ULONG count() const;
+    KDB::Row record(KDB_ULONG pos) const;
+    KDB::RowList rows() const;
+    QStringList fields() const; 
+    QString nativeType(const QString &fieldName) const;
+    KDB::DataType kdbDataType(const QString &fieldName) const ;
 
     bool append(KDB::Row row);
     bool update(KDB_ULONG pos, KDB::Row row);
     bool remove(KDB_ULONG pos, KDB::Row row);
 
 private:
+
     PGresult *res;
     int numFields;
 
-    KDB::RowList m_rows;
+    ConnectorImpl *m_conn;
+    mutable KDB::RowList m_rows;
 
 };
 
