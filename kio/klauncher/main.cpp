@@ -23,6 +23,7 @@
 #include "klauncher.h"
 #include "kcmdlineargs.h"
 #include "kcrash.h"
+#include "kdebug.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <signal.h>
@@ -53,6 +54,21 @@ start_launcher(int socket)
 
    // Allow the locale to initialize properly
    KLocale::setMainCatalogue("kdelibs");
+
+   // Check DCOP communication.
+   {
+      DCOPClient testDCOP;
+      QCString dcopName = testDCOP.registerAs(cname, false);
+      if (dcopName.isEmpty())
+      {
+         kdFatal() << "DCOP communication problem!" << endl;
+         return 1;
+      }
+      if (dcopName != cname)
+      {
+         kdWarning() << "Already running!" << endl;
+      }
+   }
 
    KLauncher *launcher = new KLauncher(socket);
    launcher->dcopClient()->setDefaultObject( name );
