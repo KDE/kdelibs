@@ -1691,6 +1691,11 @@ RenderTableSection::RenderTableSection()
 RenderTableSection::~RenderTableSection()
 {
     nrows = 0;
+
+    // recalc cell info because RenderTable has unguarded pointers
+    // stored that point to this RenderTableSection.
+    if (table)
+        table->setNeedsCellsRecalc();
 }
 
 void RenderTableSection::addChild(RenderObject *child, RenderObject *beforeChild)
