@@ -51,6 +51,8 @@ class KBugReportPrivate {
 public:
     KComboBox *appcombo;
     QString lastError;
+    QString kde_version;
+    QString appname;
 };
 
 KBugReport::KBugReport( QWidget * parentw, bool modal, const KAboutData *aboutData )
@@ -112,18 +114,19 @@ KBugReport::KBugReport( QWidget * parentw, bool modal, const KAboutData *aboutDa
   QWhatsThis::add( tmpLabel, qwtstr );
   d->appcombo = new KComboBox( false, parent, "app");
   d->appcombo->insertStrList(packages);
-  QString appname = QString::fromLatin1( m_aboutData
-                                         ? m_aboutData->appName()
-                                         : kapp->name() );
+  connect(d->appcombo, SIGNAL(activated(int)), SLOT(appChanged(int)));
+  d->appname = QString::fromLatin1( m_aboutData
+                                    ? m_aboutData->appName()
+                                    : kapp->name() );
   glay->addWidget( d->appcombo, row, 1 );
   int index = 0;
   for (; index < d->appcombo->count(); index++) {
-      if (d->appcombo->text(index) == appname) {
+      if (d->appcombo->text(index) == d->appname) {
           break;
       }
   }
   if (index == d->appcombo->count()) { // not present
-      d->appcombo->insertItem(appname);
+      d->appcombo->insertItem(d->appname);
   }
   d->appcombo->setCurrentItem(index);
 
@@ -134,9 +137,12 @@ KBugReport::KBugReport( QWidget * parentw, bool modal, const KAboutData *aboutDa
   tmpLabel = new QLabel( i18n("Version:"), parent );
   glay->addWidget( tmpLabel, ++row, 0 );
   QWhatsThis::add( tmpLabel, qwtstr );
-  if (m_aboutData) m_strVersion = m_aboutData->version();
-   else m_strVersion = i18n("no version set (programmer error!)");
-  m_strVersion += QString::fromLatin1(" (KDE " KDE_VERSION_STRING ")");
+  if (m_aboutData)
+      m_strVersion = m_aboutData->version();
+  else
+      m_strVersion = i18n("no version set (programmer error!)");
+  d->kde_version = QString::fromLatin1(" (KDE " KDE_VERSION_STRING ")");
+  m_strVersion += d->kde_version;
   m_version = new QLabel( m_strVersion, parent );
   //glay->addWidget( m_version, row, 1 );
   glay->addMultiCellWidget( m_version, row, row, 1, 2 );
@@ -242,6 +248,17 @@ KBugReport::KBugReport( QWidget * parentw, bool modal, const KAboutData *aboutDa
 KBugReport::~KBugReport()
 {
     delete d;
+}
+
+void KBugReport::appChanged(int i)
+{
+    if (d->appname == d->appcombo->text(i) && m_aboutData)
+        m_strVersion = m_aboutData->version();
+    else
+        m_strVersion = i18n("unknown");
+
+    m_strVersion += d->kde_version;
+    m_version->setText(m_strVersion);
 }
 
 void KBugReport::slotConfigureEmail()

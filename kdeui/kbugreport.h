@@ -78,6 +78,9 @@ protected slots:
    */
   virtual void slotCancel();
 
+  // app combo changed
+  void appChanged(int);
+
 protected:
   QString text();
   bool sendBugReport();
