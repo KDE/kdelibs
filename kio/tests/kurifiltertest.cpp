@@ -43,14 +43,19 @@ int main(int argc, char **argv) {
     filter( "smb:", "ShortURIFilter" ); // use specific filter.
     filter( "smb:/", "ShortURIFilter" ); // use specific filter.
    
+    // Executable tests
+    filter( "kppp", "ShortURIFilter" );
    
     // IKWS test
     filter( "KDE" );
     filter( "GNOME" );
    
     // ENVIRONMENT variable
-    filter( "$KDEDIR/local/src/kde2" );
+    filter( "$KDEDIR/kdelibs/kio" );
     filter( "$HOME/.kde/share" );
+    filter( "$HOME/$KDEDIR/kdebase/kconotrol/ebrowsing" );
+    filter( "$1/$2/$3" );  // can be used as bogus or valid test
+    filter( "$$$$" ); // worst case scenarios.
     filter( "$QTDIR", "ShortURIFilter" ); //use specific filter. 
     filter( "$KDEDIR", "ShortURIFilter" ); //use specific filter.
    
