@@ -31,8 +31,8 @@ class QString;
 	**/
 	class KScriptClientInterface
 	{
-		enum Result { ResultSuccess, ResultFailure, ResultContinue, ResultBreak };
 	public:
+		enum Result { ResultSuccess, ResultFailure, ResultContinue, ResultBreak };
 		/**
 		*	This function will allow the main application of any errors
 		*	that have occured during processing of the script.
