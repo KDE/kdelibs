@@ -3935,8 +3935,13 @@ void KHTMLPart::popupMenu( const QString &linkUrl )
   KURL linkKURL;
   QString referrer;
   if ( linkUrl.isEmpty() ) { // click on background
-    popupURL = this->url();
-    referrer = this->pageReferrer();
+    KHTMLPart* khtmlPart = this;
+    while ( khtmlPart->parentPart() )
+    {
+      khtmlPart=khtmlPart->parentPart();
+    }
+    popupURL = khtmlPart->url();
+    referrer = khtmlPart->pageReferrer();
   } else {               // click on link
     popupURL = completeURL( linkUrl );
     linkKURL = popupURL;
