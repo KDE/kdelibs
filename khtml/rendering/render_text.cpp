@@ -218,7 +218,7 @@ void InlineTextBox::paintDecoration( QPainter *pt, int _tx, int _ty, int deco)
     }
 }
 #else
-void InlineTextBox::paintDecoration( QPainter *pt, const Font *f, int _tx, int _ty, int deco, bool begin, bool end)
+void InlineTextBox::paintDecoration( QPainter *pt, const Font *f, int _tx, int _ty, int deco)
 {
     _tx += m_x;
     _ty += m_y;
@@ -226,12 +226,6 @@ void InlineTextBox::paintDecoration( QPainter *pt, const Font *f, int _tx, int _
     int width = m_width - 1;
 
     RenderObject *p = object();
-    if( begin )
-        width -= p->paddingLeft() + p->borderLeft();
-
-    if ( end )
-        width -= p->paddingRight() + p->borderRight();
-
     QColor underline, overline, linethrough;
     p->getTextDecorationColors(deco, underline, overline, linethrough, p->style()->htmlHacks());
 
@@ -995,7 +989,7 @@ void RenderText::paintObject( QPainter *p, int /*x*/, int y, int /*w*/, int h,
 
             if(d != TDNONE)
             {
-                s->paintDecoration(p, font, tx, ty, d, si == 0, si == ( int ) m_lines.count()-1);
+                s->paintDecoration(p, font, tx, ty, d);
             }
 
             if (haveSelection) {
