@@ -137,7 +137,9 @@
 <!ENTITY GNU	"<acronym>GNU</acronym>">
 <!ENTITY GPL	"<acronym>GPL</acronym>">
 <!ENTITY GUI	"<acronym>GUI</acronym>">
+<!ENTITY Handspring "<trademark>Handspring</trademark>
 <!ENTITY Hewlett-Packard	'<trademark class="registered">Hewlett-Packard</trademark>'>
+<!ENTITY HotSync "<trademark class="registered">HotSync</trademark>">
 <!ENTITY HP	'<trademark class="registered">HP</trademark>'>
 <!ENTITY HP-UX	'<trademark class="registered">HP-UX</trademark>'>
 <!ENTITY HTTP	"<acronym>HTTP</acronym>">
@@ -177,7 +179,7 @@
 <!ENTITY kfaxview "<application>Kfaxview</application>">
 <!ENTITY kfind	"<application>KFind</application>">
 <!ENTITY kfloppy	"<application>Kfloppy</application>">
-<!ENTITY kfm	"<application>KFM</application>">
+<!ENTITY kformula "<application>KFormula</application>">
 <!ENTITY kfouleggs "<application>KFoulEggs</application>">
 <!ENTITY kfract	"<application>KFract</application>">
 <!ENTITY kghostview	"<application>Kghostview</application>">
@@ -255,7 +257,6 @@
 <!ENTITY kteatime "<application>KTeaTime</application>">
 <!ENTITY ktimemon "<application>KTimemon</application>">
 <!ENTITY ktip	"<application>Ktip</application>">
-<!ENTITY ktop	"<application>KTop</application>">
 <!ENTITY ktron	"<application>KTron</application>">
 <!ENTITY ktuberling	"<application>KTuberling</application>">
 <!ENTITY kugar "<application>Kugar</application>">
@@ -267,8 +268,6 @@
 <!ENTITY kword "<application>KWord</application>">
 <!ENTITY kwin	"<application>KWin</application>">
 <!ENTITY kwin4	"<application>K Four Wins</application>">
-<!ENTITY kwm	"<application>kwm</application>">
-<!ENTITY kwmpager	"<application>kwmpager</application>">
 <!ENTITY kwrite	"<application>KWrite</application>">
 <!ENTITY kwuftpd	"<application>kwuftpd</application>">
 <!ENTITY LaserJet	'<trademark class="registered">LaserJet</trademark>'>
@@ -296,6 +295,7 @@
 <!ENTITY quantaplus	"<application>Quanta Plus</application>">
 <!ENTITY Qt	"<trademark>Qt</trademark>">
 <!ENTITY RedHat	'<trademark class="registered">Red Hat</trademark>'>
+<!ENTITY Sendmail "<application><trademark class="registered">sendmail</trademark></application>">
 <!ENTITY Shift "<keycap>Shift</keycap>">
 <!ENTITY SGI	"<trademark>SGI</trademark>">
 <!ENTITY Solaris	"<trademark>Solaris</trademark>">
@@ -303,6 +303,7 @@
 <!ENTITY TrueType	'<trademark class="registered">TrueType</trademark>'>
 <!ENTITY UNIX	'<trademark class="registered">UNIX</trademark>'>
 <!ENTITY URL	"<acronym>URL</acronym>">
+<!ENTITY Visor  "<trademark>Visor</trademark>">
 <!ENTITY windowmaker	"<application>Window Maker</application>">
 <!ENTITY Windows	'<trademark class="registered">Windows</trademark>'>
 <!ENTITY XEmacs	"<application>XEmacs</application>">
@@ -314,3 +315,7 @@
 <!-- Obsolete entities -->
 <!ENTITY kab	"<application>Kab</application>">
 <!ENTITY kdat	"<application>Kdat</application>">
+<!ENTITY kfm	"<application>KFM</application>">
+<!ENTITY ktop	"<application>KTop</application>">
+<!ENTITY kwm	"<application>kwm</application>">
+<!ENTITY kwmpager	"<application>kwmpager</application>">
