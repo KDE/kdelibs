@@ -271,7 +271,7 @@ bool KSocket::connect( const QString& _host, unsigned short int _port )
       if (FD_ISSET(sock, &rd) || FD_ISSET(sock, &wr))
       {
          int errcode;
-         socklen_t len = sizeof(errcode);
+         ksize_t len = sizeof(errcode);
          int ret = getsockopt(sock, SOL_SOCKET, SO_ERROR, &errcode, &len);
          if ((ret == -1) || (errcode != 0))
          {
