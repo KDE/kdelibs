@@ -61,10 +61,15 @@
 
 /* workaround for kdecore: stupid moc's grammar doesn't accept two macros 
    between 'class' keyword and <classname>: */
-#if defined(KDE_DEPRECATED) && !defined(KDECORE_EXPORT_DEPRECATED)
-#define KDECORE_EXPORT_DEPRECATED KDE_DEPRECATED KDECORE_EXPORT
-#endif
-#if defined(KDE_DEPRECATED) && !defined(KIO_EXPORT_DEPRECATED)
-#define KIO_EXPORT_DEPRECATED KDE_DEPRECATED //KIO_EXPORT
+#ifdef KDE_DEPRECATED
+# ifndef KDECORE_EXPORT_DEPRECATED
+#  define KDECORE_EXPORT_DEPRECATED KDE_DEPRECATED KDECORE_EXPORT
+# endif
+# ifndef KIO_EXPORT_DEPRECATED
+#  define KIO_EXPORT_DEPRECATED KDE_DEPRECATED KIO_EXPORT
+# endif
+# ifndef KDEUI_EXPORT_DEPRECATED
+#  define KDEUI_EXPORT_DEPRECATED KDE_DEPRECATED KDEUI_EXPORT
+# endif
 #endif
 /* (let's add KDE****_EXPORT_DEPRECATED for other libraries if it's needed) */
