@@ -151,6 +151,6 @@ private:
 	PrivateData* d;
 };
 
-};
+}
 #endif
 // vim: sw=4 ts=4 noet

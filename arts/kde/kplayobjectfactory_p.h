@@ -40,7 +40,7 @@ private:
 	KAudioManagerPlay *ap;
 };
 
-};
+}
 
 #endif // KPLAYOBJECTFACTORY_P_H
 // vim: sw=4 ts=4 noet
