@@ -23,12 +23,8 @@ noinst_LTLIBRARIES = libkhtmlmisc.la
 libkhtmlmisc_la_SOURCES = \
 	decoder.cpp    loader.cpp loader_jpeg.cpp \
 	htmlhashes.cpp helper.cpp 
-#font.cpp
 
 libkhtmlmisc_la_METASOURCES = AUTO
-
-#include_HEADERS = \
-#	khtmlio.h
 
 noinst_HEADERS = \
 	decoder.h      khtmllayout.h loader_jpeg.h loader.h \

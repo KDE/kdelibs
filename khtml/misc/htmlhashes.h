@@ -1,6 +1,7 @@
 #ifndef HTMLHASHES_H
 #define HTMLHASHES_H
 
+#include "xml/dom_stringimpl.h"
 #include "htmlattrs.h"
 #include "htmltags.h"
 
