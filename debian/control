@@ -20,7 +20,7 @@ Description: KDE core libraries (runtime files)
 Package: kdelibs3-cups
 Architecture: any
 Section: libs
-Replaces: kdelibs3 (<< 4:2.2-alpha1-2)
+Replaces: kdelibs3 (<< 4:2.2.0-0beta1-2)
 Depends: ${shlibs:Depends}, kdebase-libs
 Enhances: kdebase
 Suggests: cupsomatic-ppd
