@@ -1,6 +1,5 @@
 #include <kurl.h>
 #include <stdio.h>
-#include <kprotocolmanager.h>
 #include <kapp.h>
 #include <stdlib.h>
 #include <kdebug.h>
