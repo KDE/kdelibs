@@ -217,6 +217,24 @@ void KDialogBase::show( QWidget *centerParent )
 }
 
 
+void KDialogBase::show( const QSize &startupSize )
+{
+  activateCore();
+
+  if( isVisible() == true )
+  {
+    raise();
+  }
+  else
+  {
+    resize( startupSize.expandedTo(minimumSize()) );
+    QDialog::show();
+    kapp->processOneEvent(); // See explanation above
+  }
+}
+
+
+
 void KDialogBase::activateCore( void )
 {
   if( mIsActivated == true )

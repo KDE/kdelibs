@@ -347,21 +347,40 @@ class KDialogBase : public KDialog
     ~KDialogBase( void );
 
     /**
-     * Use this method to make a modless (modal = false in constructor)
-     * visible. If you reimplmement this method make sure you run it 
-     * in the new menthod (i.e., KDialogBase::show()). Reimplemented 
-     * from &ref QWidget.
+     * Use this method to make a modeless (modal = false in constructor)
+     * visible. If you reimplement this method make sure you run it 
+     * in the new method (i.e., KDialogBase::show()). Reimplemented 
+     * from @ref QWidget.
      */
     virtual void show( void );
 
     /**
      * Use this method to make a modless (modal = false in constructor)
      * visible. If you reimplmement this method make sure you run it 
-     * in the new menthod (i.e., KDialogBase::show( widget )).
+     * in the new method (i.e., KDialogBase::show( widget )).
      *
-     * @param centerParent center the dialog with respect to this widget.
+     * @param centerParent Center the dialog with respect to this widget.
      */
     virtual void show( QWidget *centerParent );
+
+    /**
+     * Use this method to make a modless (modal = false in constructor)
+     * visible. If you reimplmement this method make sure you run it 
+     * in the new method (i.e., KDialogBase::show( widget )).
+     *
+     * Shows the dialog after setting the size. If the 'startupSize' is 
+     * smaller than the minimum size of the dialog then 'startupSize' will 
+     * be ignored. A value defined by @ref setInitialSizeStep will be 
+     * overridden by 'startupSize'. If the dialog is already visible when 
+     * you use this method then 'startupSize' will be ignored.
+     * 
+     * NOTE: Normally you should not need to set the size of the dialog. It
+     * is automatically adjusted to the minimum size. This method is intended
+     * for the rare case when this strategy is wrong.
+     *
+     * @param startupSize The initial size of the dialog.
+     */
+    virtual void show( const QSize &startupSize );
 
     /**
      * Hides or displays the a separator line drawn between the action
