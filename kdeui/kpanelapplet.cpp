@@ -121,6 +121,22 @@ bool KPanelApplet::process(const QCString &fun, const QByteArray &data,
       replyType = "int";
       return true;
     }
+  else if ( fun == "setPosition(int)" )
+    {
+      QDataStream dataStream( data, IO_ReadOnly );
+      int pos;
+      dataStream >> pos;
+      _pos = static_cast<Position>(pos);
+      return true;
+    }
+ else if ( fun == "setOrientation(int)" )
+    {
+      QDataStream dataStream( data, IO_ReadOnly );
+      int orient;
+      dataStream >> orient;
+      _orient = static_cast<Qt::Orientation>(orient);
+      return true;
+    }
   else if ( fun == "restartCommand()" )
     {
       QDataStream reply( replyData, IO_WriteOnly );
@@ -129,38 +145,6 @@ bool KPanelApplet::process(const QCString &fun, const QByteArray &data,
       return true;
     }
   return false;
-}
-
-KPanelApplet::Position KPanelApplet::position()
-{
-  QByteArray data;
-  QCString replyType;
-  QByteArray replyData;
-
-  if (kapp->dcopClient()->call( "kicker", "appletArea", "position()", data, replyType, replyData ) )
-    {
-      int pos;
-      QDataStream reply( replyData, IO_ReadOnly );
-      reply >> pos;
-      return static_cast<Position>(pos);
-    }
-  return Bottom; // Should never happen.
-}
-
-Qt::Orientation KPanelApplet::orientation()
-{
-  QByteArray data;
-  QCString replyType;
-  QByteArray replyData;
-
-  if (kapp->dcopClient()->call( "kicker", "appletArea", "orientation()", data, replyType, replyData ) )
-    {
-      int orient;
-      QDataStream reply( replyData, IO_ReadOnly );
-      reply >> orient;
-      return static_cast<Orientation>(orient);
-    }
-  return Horizontal; // Should never happen.
 }
 
 int KPanelApplet::heightForWidth(int width)

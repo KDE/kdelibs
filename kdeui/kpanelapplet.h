@@ -138,13 +138,13 @@ class KPanelApplet : public QWidget, DCOPObject
    * @returns The panel orientation. You may need this if you want to popup menus at the
    * right position.
    **/
-  Orientation orientation();
+  Orientation orientation() const { return _orient; }
 
   /**
    * @returns The panel position. You may need this if you want to popup menus at the
    * right position.
    **/
-  Position position();
+  Position position() const { return _pos; }
 
   // dcop internal
   bool process(const QCString &fun, const QByteArray &data,
@@ -152,6 +152,8 @@ class KPanelApplet : public QWidget, DCOPObject
  private:
   KPanelAppletData *d;
   bool _stretch;
+  Orientation _orient;
+  Position _pos;
 
 };
 
