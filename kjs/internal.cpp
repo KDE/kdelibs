@@ -627,7 +627,7 @@ bool KJScriptImp::evaluate(const UChar *code, unsigned int length, Imp *thisV,
 #ifndef NDEBUG
     fprintf(stderr, "KJS: entering recursion level %d\n", recursion);
 #endif
-    stack = stack->push();
+    pushStack();
   }
 
   assert(Lexer::curr());
@@ -700,11 +700,21 @@ bool KJScriptImp::evaluate(const UChar *code, unsigned int length, Imp *thisV,
     progNode()->deleteGlobalStatements();
 
   if (recursion > 0) {
-    stack = stack->pop();
-    assert(stack);
+    popStack();
   }
 
   return !errType;
+}
+
+void KJScriptImp::pushStack()
+{
+    stack = stack->push();
+}
+
+void KJScriptImp::popStack()
+{
+    stack = stack->pop();
+    assert(stack);
 }
 
 bool KJScriptImp::call(Imp *scope, const UString &func, const List &args)

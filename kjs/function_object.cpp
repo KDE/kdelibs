@@ -58,7 +58,12 @@ Object FunctionObject::construct(const List &args)
   }
 
   Lexer::curr()->setCode(body.data(), body.size());
-  if (kjsyyparse()) {
+
+  KJScriptImp::current()->pushStack();
+  int yp = kjsyyparse();
+  ProgramNode *progNode = KJScriptImp::current()->progNode();
+  KJScriptImp::current()->popStack();
+  if (yp) {
     /* TODO: free nodes */
     return ErrorObject::create(SyntaxError,
 			       I18N_NOOP("Syntax error in function body"), -1);
@@ -66,7 +71,7 @@ Object FunctionObject::construct(const List &args)
 
   List scopeChain;
   scopeChain.append(Global::current());
-  FunctionBodyNode *bodyNode = KJScriptImp::current()->progNode();
+  FunctionBodyNode *bodyNode = progNode;
   FunctionImp *fimp = new DeclaredFunctionImp(UString::null, bodyNode,
 					      &scopeChain);
 

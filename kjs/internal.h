@@ -335,6 +335,8 @@ namespace KJS {
     void setProgNode(ProgramNode *p) { stack->progNode = p; }
     Node *firstNode() const { return stack->firstNode; }
     void setFirstNode(Node *n) { stack->firstNode = n; }
+    void pushStack();
+    void popStack();
     KJScriptImp *next, *prev;
     KJScript *scr;
     ExecutionStack *stack;
