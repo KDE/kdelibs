@@ -30,6 +30,90 @@
 
 using namespace KIO;
 
+
+QDataStream &operator <<(QDataStream &s, const KIO::UDSEntry &e )
+{
+    // On 32-bit platforms we send UDS_SIZE with UDS_SIZE_LARGE in front
+    // of it to carry the 32 msb. We can't send a 64 bit UDS_SIZE because
+    // that would break the compatibility of the wire-protocol with KDE 2.
+    // On 64-bit platforms nothing has changed.
+    if (sizeof(long) == 8)
+    {
+        s << (Q_UINT32)e.size();
+        KIO::UDSEntry::ConstIterator it = e.begin();
+        for( ; it != e.end(); ++it )
+           s << *it;
+        return s;
+    }
+
+    Q_UINT32 size = 0;
+    KIO::UDSEntry::ConstIterator it = e.begin();
+    for( ; it != e.end(); ++it )
+    {
+       size++;
+       if ((*it).m_uds == KIO::UDS_SIZE)
+          size++;
+    }
+    s << size;
+    it = e.begin();
+    for( ; it != e.end(); ++it )
+    {
+       if ((*it).m_uds == KIO::UDS_SIZE)
+       {
+          KIO::UDSAtom a;
+          a.m_uds = KIO::UDS_SIZE_LARGE;
+          a.m_long = (*it).m_long >> 32;
+          s << a;
+       }
+       s << *it;
+    }
+    return s;
+}
+
+QDataStream &operator >>(QDataStream &s, KIO::UDSEntry &e )
+{
+    e.clear();
+    Q_UINT32 size;
+    s >> size;
+
+    // On 32-bit platforms we send UDS_SIZE with UDS_SIZE_LARGE in front
+    // of it to carry the 32 msb. We can't send a 64 bit UDS_SIZE because
+    // that would break the compatibility of the wire-protocol with KDE 2.
+    // On 64-bit platforms nothing has changed.
+    if (sizeof(long) == 8)
+    {
+       for(Q_UINT32 i = 0; i < size; i++)
+       {
+          KIO::UDSAtom a;
+          s >> a;
+          e.append(a);
+       }
+    }
+    else
+    {
+       long long msb = 0;
+       for(Q_UINT32 i = 0; i < size; i++)
+       {
+          KIO::UDSAtom a;
+          s >> a;
+          if (a.m_uds == KIO::UDS_SIZE_LARGE)
+          {
+             msb = a.m_long;
+          }
+          else
+          {
+             if (a.m_uds == KIO::UDS_SIZE)
+             {
+                a.m_long += msb << 32;
+             }
+             e.append(a);
+             msb = 0;
+          }
+       }
+    }
+    return s;
+}
+
 //////////////
 
 SlaveInterface::SlaveInterface( Connection * connection )
@@ -331,90 +415,6 @@ void SlaveInterface::sigpipe_handler(int)
     // Do nothing.
     // dispatch will return false and that will trigger ERR_SLAVE_DIED in slave.cpp
 }
-
-QDataStream &operator <<(QDataStream &s, const KIO::UDSEntry &e )
-{
-    // On 32-bit platforms we send UDS_SIZE with UDS_SIZE_LARGE in front
-    // of it to carry the 32 msb. We can't send a 64 bit UDS_SIZE because
-    // that would break the compatibility of the wire-protocol with KDE 2.
-    // On 64-bit platforms nothing has changed.
-    if (sizeof(long) == 8)
-    {
-        s << (Q_UINT32)e.size();
-        KIO::UDSEntry::ConstIterator it = e.begin();
-        for( ; it != e.end(); ++it )
-           s << *it;
-        return s;
-    }
-
-    Q_UINT32 size = 0;
-    KIO::UDSEntry::ConstIterator it = e.begin();
-    for( ; it != e.end(); ++it )
-    {
-       size++;
-       if ((*it).m_uds == KIO::UDS_SIZE)
-          size++;
-    }
-    s << size;
-    it = e.begin();
-    for( ; it != e.end(); ++it )
-    {
-       if ((*it).m_uds == KIO::UDS_SIZE)
-       {
-          KIO::UDSAtom a;
-          a.m_uds = KIO::UDS_SIZE_LARGE;
-          a.m_long = (*it).m_long >> 32;
-          s << a;
-       }
-       s << *it;
-    }
-    return s;
-}
-
-QDataStream &operator >>(QDataStream &s, KIO::UDSEntry &e )
-{
-    e.clear();
-    Q_UINT32 size;
-    s >> size;
-
-    // On 32-bit platforms we send UDS_SIZE with UDS_SIZE_LARGE in front
-    // of it to carry the 32 msb. We can't send a 64 bit UDS_SIZE because
-    // that would break the compatibility of the wire-protocol with KDE 2.
-    // On 64-bit platforms nothing has changed.
-    if (sizeof(long) == 8)
-    {
-       for(Q_UINT32 i = 0; i < size; i++)
-       {
-          KIO::UDSAtom a;
-          s >> a;
-          e.append(a);
-       }
-    }
-    else
-    {
-       long long msb = 0;
-       for(Q_UINT32 i = 0; i < size; i++)
-       {
-          KIO::UDSAtom a;
-          s >> a;
-          if (a.m_uds == KIO::UDS_SIZE_LARGE)
-          {
-             msb = a.m_long;
-          }
-          else
-          {
-             if (a.m_uds == KIO::UDS_SIZE)
-             {
-                a.m_long += msb << 32;
-             }
-             e.append(a);
-             msb = 0;
-          }
-       }
-    }
-    return s;
-}
-
 
 #include "slaveinterface.moc"
 
