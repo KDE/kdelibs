@@ -1,0 +1,8 @@
+1998-06-17  Christian Esken  <esken@kde.org>
+
+	* ADDING MdDisconnect() implementation. *BSD users should be
+	much happier now.
+
+0.90 Starting CHANGES File
+0.91 Adding biggest omission: Setting the current position in the
+     media stream.
