@@ -245,12 +245,11 @@ bool KCursorPrivate::eventFilter( QObject *o, QEvent *e )
 {
     if ( !o->isWidgetType() ) // should never happen, actually
 	return false;
-    qDebug("** got event %i, hidden: %i", e->type(), s_isCursorHidden);
+
     int t = e->type();
     QWidget *w = static_cast<QWidget *>( o );
 
     if ( t == QEvent::Leave || t == QEvent::FocusOut ) {
-	qDebug("**** focusOut: %i, ishidden: %i", t, s_isCursorHidden);
 	s_autoHideTimer->stop();
 	if ( s_isCursorHidden )
 	    unhideCursor( w );
