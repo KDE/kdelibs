@@ -26,12 +26,9 @@ are:
     An all purpose extension to the qimgio class that supports PNG and
     other image formats.
 
-* khtmlw
+* khtml
     The main HTML rendering widget, due to be replaced by khwml (For the
     next release of kfm).
-
-* kfmlib
-    The kfm support library.  UhHuh.
 
 * kfile
     This library contains the KFileDialog in all its glory.  A reasonably
@@ -50,14 +47,16 @@ are:
     The address book library.  See the README for more information.
 
 * khtml
-    The next generation HTML rendering widget designed for KFM-III (a.k.a.
-    Konquerer).  This supports HTML 4, CSS, and a variety of other web
+    The next generation HTML rendering widget designed for Konqueror
+    (kfm's successor).  This supports HTML 4, CSS, and a variety of other web
     related standards.
 
 * kio
     Classes that fetch and decode URLs are contained here.  Previously
     this functionality was contained in kfmlib, but among other
     improvments and redesigns, kio does not require KFM to operate.
+    This library also contains "Ksycoca", the system configure cache
+    containing services, applications, servicetypes and mimetypes.
 
 Licensing
 ---------
