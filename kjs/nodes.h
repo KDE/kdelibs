@@ -71,7 +71,9 @@ namespace KJS {
     virtual ~Node();
     virtual KJSO evaluate() = 0;
     int lineNo() const { return line; }
-    static void deleteAllNodes(Node **first, ProgramNode **prog);
+    static Node *firstNode() { return first; }
+    static void setFirstNode(Node *n) { first = n; }
+    static void deleteAllNodes();
 #ifdef KJS_DEBUGGER
     static bool setBreakpoint(Node *firstNode, int id, int line, bool set);
     virtual bool setBreakpoint(int, int, bool) { return false; }
@@ -84,6 +86,7 @@ namespace KJS {
     Node& operator=(const Node&);
     int line;
     static  int nodeCount;
+    static Node *first;
     Node *next, *prev;
   };
 
@@ -778,7 +781,7 @@ namespace KJS {
   class ProgramNode : public FunctionBodyNode {
   public:
     ProgramNode(SourceElementsNode *s) : FunctionBodyNode(s) { }
-    void deleteStatements();
+    void deleteGlobalStatements();
   };
 
 }; // namespace

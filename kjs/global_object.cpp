@@ -276,15 +276,18 @@ Completion GlobalFunc::execute(const List &args)
     if (x.type() != StringType)
       return Completion(ReturnValue, x);
     else {
-      String s = x.toString();
-      Lexer::curr()->setCode(s.value().data(), s.value().size());
-      if (kjsyyparse()) {
+      UString s = x.toString().value();
+      Lexer::curr()->setCode(s.data(), s.size());
+      Node::setFirstNode(KJScriptImp::current()->firstNode());      
+      int yp = kjsyyparse();
+      KJScriptImp::current()->setFirstNode(Node::firstNode());
+      if (yp) {
 	// TODO: stop this from growing (will be deleted at end of global eval)
 	//	KJS::Node::deleteAllNodes();
 	return Completion(ReturnValue, Error::create(SyntaxError));
       }
 
-      Completion c = KJScriptImp::current()->progNode->execute();
+      Completion c = KJScriptImp::current()->progNode()->execute();
       if (c.complType() == ReturnValue)
 	  return c;
       else if (c.complType() == Normal) {

@@ -602,7 +602,7 @@ FunctionBody:
 
 Program:
     SourceElements                 { $$ = new ProgramNode($1);
-                                     KJScriptImp::current()->progNode = $$; }
+                                     KJScriptImp::current()->setProgNode($$); }
 ;
 
 SourceElements:

@@ -66,7 +66,7 @@ Object FunctionObject::construct(const List &args)
 
   List scopeChain;
   scopeChain.append(Global::current());
-  FunctionBodyNode *bodyNode = KJScriptImp::current()->progNode;
+  FunctionBodyNode *bodyNode = KJScriptImp::current()->progNode();
   FunctionImp *fimp = new DeclaredFunctionImp(UString::null, bodyNode,
 					      &scopeChain);
 

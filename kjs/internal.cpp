@@ -497,8 +497,8 @@ void KJScriptImp::init()
 
     glob.init();
     con = new Context();
-    firstNode = 0L;
-    progNode = 0L;
+    firstN = 0L;
+    progN = 0L;
     recursion = 0;
     errMsg = "";
     initialized = true;
@@ -513,7 +513,10 @@ void KJScriptImp::clear()
   if (initialized) {
     KJScriptImp::curr = this;
 
-    Node::deleteAllNodes(&firstNode, &progNode);
+    Node::setFirstNode(firstNode());
+    Node::deleteAllNodes();
+    setFirstNode(0L);
+    setProgNode(0L);
 
     clearException();
     retVal = 0L;
@@ -557,7 +560,9 @@ bool KJScriptImp::evaluate(const UChar *code, unsigned int length, Imp *thisV,
 
   assert(Lexer::curr());
   Lexer::curr()->setCode(code, length);
+  Node::setFirstNode(firstNode());
   int parseError = kjsyyparse();
+  setFirstNode(Node::firstNode());
 
   if (parseError) {
     errType = 99; /* TODO */
@@ -587,8 +592,8 @@ bool KJScriptImp::evaluate(const UChar *code, unsigned int length, Imp *thisV,
 
   running++;
   recursion++;
-  assert(progNode);
-  Completion res = progNode->execute();
+  assert(progNode());
+  Completion res = progNode()->execute();
   recursion--;
   running--;
 
@@ -619,8 +624,8 @@ bool KJScriptImp::evaluate(const UChar *code, unsigned int length, Imp *thisV,
     context()->setVariableObject(oldVar);
   }
 
-  if (progNode)
-    progNode->deleteStatements();
+  if (progNode())
+    progNode()->deleteGlobalStatements();
 
   return !errType;
 }

@@ -1958,7 +1958,7 @@ case 188:
 case 189:
 #line 604 "grammar.y"
 { yyval.prog = new ProgramNode(yyvsp[0].srcs);
-                                     KJScriptImp::current()->progNode = yyval.prog; ;
+                                     KJScriptImp::current()->setProgNode(yyval.prog); ;
     break;}
 case 190:
 #line 609 "grammar.y"

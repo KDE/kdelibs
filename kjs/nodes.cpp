@@ -44,6 +44,7 @@ using namespace KJS;
 #endif
 
 int   Node::nodeCount = 0;
+Node* Node::first = 0;
 
 Node::Node()
 {
@@ -54,12 +55,11 @@ Node::Node()
 
   // create a list of allocated objects. Makes
   // deleting (even after a parse error) quite easy
-  Node **first  = &KJScriptImp::current()->firstNode;
-  next = *first;
+  next = first;
   prev = 0L;
-  if (*first)
-    (*first)->prev = this;
-  *first = this;
+  if (first)
+    first->prev = this;
+  first = this;
 }
 
 Node::~Node()
@@ -72,16 +72,15 @@ Node::~Node()
   nodeCount--;
 }
 
-void Node::deleteAllNodes(Node **first, ProgramNode **prog)
+void Node::deleteAllNodes()
 {
-  Node *tmp, *n = *first;
+  Node *tmp, *n = first;
 
   while ((tmp = n)) {
     n = n->next;
     delete tmp;
   }
-  *first = 0L;
-  *prog = 0L;
+  first = 0L;
   //  assert(nodeCount == 0);
 }
 
@@ -1402,7 +1401,7 @@ KJSO ParameterNode::evaluate()
   return Undefined();
 }
 
-void ProgramNode::deleteStatements()
+void ProgramNode::deleteGlobalStatements()
 {
   source->deleteStatements();
 }

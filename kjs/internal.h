@@ -303,11 +303,17 @@ namespace KJS {
 		  bool onlyCheckSyntax = false);
     bool call(Imp *scope, const UString &func, const List &args);
   public:
-    ProgramNode *progNode;
-    Node *firstNode;
+    ProgramNode *progNode() const { return progN; }
+    void setProgNode(ProgramNode *p) { progN = p; }
+    Node *firstNode() const { return firstN; }
+    void setFirstNode(Node *n) { firstN = n; }
     KJScriptImp *next, *prev;
     KJScript *scr;
+
   private:
+    ProgramNode *progN;
+    Node *firstN;
+
     static KJScriptImp *curr, *hook;
     static int running;	// total number running
     bool initialized;
