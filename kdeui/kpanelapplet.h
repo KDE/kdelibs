@@ -179,7 +179,7 @@ public:
     virtual int heightForWidth(int width) const { return width; }
 
     /**
-     * Always use this KConfig object to save/load your applets configuration.
+     * Always use this KConfig object to save/load your applet's configuration.
      *
      * For unique applets this config object will write to a config file called
      * \<appletname\>rc in the user's local KDE directory.
@@ -204,7 +204,7 @@ public:
 
     /**
      * Generic action dispatcher. Called  when the user selects an item
-     * from the applets RMB menu.
+     * from the applet's RMB menu.
      *
      * Reimplement this function to handle actions.
      *
@@ -239,7 +239,7 @@ signals:
      * widthForHeight(int height) (horizontal panel) or
      * heightForWidth(int width) (vertical panel).
      *
-     * Please note that the panel may change the applets location
+     * Please note that the panel may change the applet's location
      * if the new widthForHeight(int height) (horizontal panel) or
      * heightForWidth(int width) (vertical panel) does not fit into the
      * current panel layout.
