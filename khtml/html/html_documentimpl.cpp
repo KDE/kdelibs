@@ -117,11 +117,11 @@ HTMLElementImpl *HTMLDocumentImpl::body()
     if(bodyElement) return bodyElement;
     if(!_first) return 0;
     if(!htmlElement)
-	html();
+        html();
     if(!htmlElement) return 0;
     NodeImpl *test = htmlElement->firstChild();
     while(test && (test->id() != ID_BODY && test->id() != ID_FRAMESET))
-	test = test->nextSibling();
+        test = test->nextSibling();
     if(!test) return 0;
     bodyElement = static_cast<HTMLElementImpl *>(test);
     return bodyElement;
@@ -130,18 +130,18 @@ HTMLElementImpl *HTMLDocumentImpl::body()
 HTMLElementImpl *HTMLDocumentImpl::html()
 {
     if (htmlElement)
-	return htmlElement;
+        return htmlElement;
 
-    	
+
     NodeImpl *n = _first;
     while (n && n->id() != ID_HTML)
-	n = n->nextSibling();
+        n = n->nextSibling();
     if (n) {
-	htmlElement = static_cast<HTMLElementImpl*>(n);
-	return htmlElement;
+        htmlElement = static_cast<HTMLElementImpl*>(n);
+        return htmlElement;
     }
     else
-	return 0;
+        return 0;
 }
 
 
@@ -163,7 +163,7 @@ void HTMLDocumentImpl::open(  )
 void HTMLDocumentImpl::close(  )
 {
     if (m_render)
-    	m_render->close();
+        m_render->close();
 
     if(parser) delete parser;
     parser = 0;
@@ -174,13 +174,13 @@ void HTMLDocumentImpl::close(  )
 void HTMLDocumentImpl::write( const DOMString &text )
 {
     if(tokenizer)
-	tokenizer->write(text.string());
+        tokenizer->write(text.string());
 }
 
 void HTMLDocumentImpl::write( const QString &text )
 {
     if(tokenizer)
-	tokenizer->write(text);
+        tokenizer->write(text);
 }
 
 void HTMLDocumentImpl::writeln( const DOMString &text )
@@ -192,7 +192,7 @@ void HTMLDocumentImpl::writeln( const DOMString &text )
 void HTMLDocumentImpl::finishParsing (  )
 {
     if(tokenizer)
-	tokenizer->finish();
+        tokenizer->finish();
 }
 
 ElementImpl *HTMLDocumentImpl::getElementById( const DOMString &elementId )
@@ -202,32 +202,32 @@ ElementImpl *HTMLDocumentImpl::getElementById( const DOMString &elementId )
 
     while(1)
     {
-	if(!current)
-	{
-	    if(nodeStack.isEmpty()) break;
-	    current = nodeStack.pop();
-	    current = current->nextSibling();
-	}
-	else
-	{
-	    if(current->isElementNode())
-	    {
-		ElementImpl *e = static_cast<ElementImpl *>(current);
-		if(e->getAttribute(ATTR_ID) == elementId)
-		    return e;
-	    }
-	
-	    NodeImpl *child = current->firstChild();
-	    if(child)
-	    {	
-		nodeStack.push(current);
-		current = child;
-	    }
-	    else
-	    {
-		current = current->nextSibling();
-	    }
-	}
+        if(!current)
+        {
+            if(nodeStack.isEmpty()) break;
+            current = nodeStack.pop();
+            current = current->nextSibling();
+        }
+        else
+        {
+            if(current->isElementNode())
+            {
+                ElementImpl *e = static_cast<ElementImpl *>(current);
+                if(e->getAttribute(ATTR_ID) == elementId)
+                    return e;
+            }
+
+            NodeImpl *child = current->firstChild();
+            if(child)
+            {
+                nodeStack.push(current);
+                current = child;
+            }
+            else
+            {
+                current = current->nextSibling();
+            }
+        }
     }
 
     return 0;
@@ -247,28 +247,28 @@ NodeImpl *HTMLDocumentImpl::findElement( int id )
 
     while(1)
     {
-	if(!current)
-	{
-	    if(nodeStack.isEmpty()) break;
-	    current = nodeStack.pop();
-	    current = current->nextSibling();
-	}
-	else
-	{
-	    if(current->id() == id)
-		return current;
-	
-	    NodeImpl *child = current->firstChild();
-	    if(child)
-	    {	
-		nodeStack.push(current);
-		current = child;
-	    }
-	    else
-	    {
-		current = current->nextSibling();
-	    }
-	}
+        if(!current)
+        {
+            if(nodeStack.isEmpty()) break;
+            current = nodeStack.pop();
+            current = current->nextSibling();
+        }
+        else
+        {
+            if(current->id() == id)
+                return current;
+
+            NodeImpl *child = current->firstChild();
+            if(child)
+            {
+                nodeStack.push(current);
+                current = child;
+            }
+            else
+            {
+                current = current->nextSibling();
+            }
+        }
     }
 
     return 0;
@@ -297,15 +297,15 @@ void HTMLDocumentImpl::clear()
 }
 
 bool HTMLDocumentImpl::mouseEvent( int _x, int _y, int button, MouseEventType type,
-				  int, int, DOMString &url,
+                                  int, int, DOMString &url,
                                    NodeImpl *&innerNode, long &offset)
 {
     bool inside = false;
     NodeImpl *n = firstChild();
     while ( n && n->id() != ID_HTML )
-	n = n->nextSibling();
-    if ( n ) 
-	inside = n->mouseEvent(_x, _y, button, type, 0, 0, url, innerNode, offset);
+        n = n->nextSibling();
+    if ( n )
+        inside = n->mouseEvent(_x, _y, button, type, 0, 0, url, innerNode, offset);
     //kdDebug(0) << "documentImpl::mouseEvent " << n->id() << " " << inside << endl;
     return inside;
 }
@@ -321,7 +321,7 @@ void HTMLDocumentImpl::attach(KHTMLView *w)
     QValueList<int> fs = settings->fontSizes();
     int size = fs[3];
     if(size < settings->minFontSize())
-	size = settings->minFontSize();
+        size = settings->minFontSize();
     QFont f = KGlobalSettings::generalFont();
     f.setFamily(settings->stdFontName());
     f.setPointSize(size);
@@ -341,11 +341,11 @@ void HTMLDocumentImpl::detach()
 {
     // onunload script...
     if(m_view && m_view->part() && m_view->part()->jScriptEnabled() && body()) {
-	DOMString script = body()->getAttribute(ATTR_ONUNLOAD);
-	if(script.length()) {
-	    //kdDebug( 6030 ) << "emit executeScript( " << script.string() << " )" << endl;
-	    m_view->part()->executeScript( script.string() );
-	}
+        DOMString script = body()->getAttribute(ATTR_ONUNLOAD);
+        if(script.length()) {
+            //kdDebug( 6030 ) << "emit executeScript( " << script.string() << " )" << endl;
+            m_view->part()->executeScript( script.string() );
+        }
     }
 
 
@@ -378,24 +378,24 @@ void HTMLDocumentImpl::applyChanges(bool,bool force)
     if(!m_render) return;
 
     if (force || changed()) {
-	const KHTMLSettings *settings = m_view->part()->settings();
-	QValueList<int> fs = settings->fontSizes();
-	int size = fs[3];
-	if(size < settings->minFontSize())
-	    size = settings->minFontSize();
-	QFont f = KGlobalSettings::generalFont();
-	f.setFamily(settings->stdFontName());
-	f.setPointSize(size);
-	f.setCharSet(settings->charset());
-	m_style->setFont(f);
+        const KHTMLSettings *settings = m_view->part()->settings();
+        QValueList<int> fs = settings->fontSizes();
+        int size = fs[3];
+        if(size < settings->minFontSize())
+            size = settings->minFontSize();
+        QFont f = KGlobalSettings::generalFont();
+        f.setFamily(settings->stdFontName());
+        f.setPointSize(size);
+        f.setCharSet(settings->charset());
+        m_style->setFont(f);
     }
 
     // a style change can influence the children, so we just go
     // through them and trigger an appplyChanges there too
     NodeImpl *n = _first;
     while(n) {
-	n->applyChanges(true,force || changed());
-	n = n->nextSibling();
+        n->applyChanges(true,force || changed());
+        n = n->nextSibling();
     }
 
     // force a relayout of this part of the document
@@ -421,7 +421,7 @@ void HTMLDocumentImpl::setStyleSheet(const DOM::DOMString &url, const DOM::DOMSt
 CSSStyleSheetImpl* HTMLDocumentImpl::elementSheet()
 {
     if (!m_elemSheet)
-    	m_elemSheet = new CSSStyleSheetImpl(this, url);
+        m_elemSheet = new CSSStyleSheetImpl(this, url);
     return m_elemSheet;
 }
 
@@ -429,13 +429,13 @@ CSSStyleSheetImpl* HTMLDocumentImpl::elementSheet()
 void HTMLDocumentImpl::setSelection(NodeImpl* s, int sp, NodeImpl* e, int ep)
 {
     static_cast<RenderRoot*>(m_render)
-    	->setSelection(s->renderer(),sp,e->renderer(),ep);
+        ->setSelection(s->renderer(),sp,e->renderer(),ep);
 }
 
 void HTMLDocumentImpl::clearSelection()
 {
     static_cast<RenderRoot*>(m_render)
-    	->clearSelection();
+        ->clearSelection();
 }
 
 int HTMLDocumentImpl::findHighestTabIndex()
@@ -449,29 +449,29 @@ int HTMLDocumentImpl::findHighestTabIndex()
     {
       //find out tabindex of current element, if availiable
       if (n->id()==ID_A)
-	{
-	  a=static_cast<HTMLAreaElementImpl *>(n);
-	  tmpval=a->tabIndex();
-	  if (tmpval>retval)
-	    retval=tmpval;
-	}
+        {
+          a=static_cast<HTMLAreaElementImpl *>(n);
+          tmpval=a->tabIndex();
+          if (tmpval>retval)
+            retval=tmpval;
+        }
       //iterate to next element.
       if (n->firstChild())
-	n=n->firstChild();
+        n=n->firstChild();
       else if (n->nextSibling())
-	n=n->nextSibling();
+        n=n->nextSibling();
       else
-	{
-	  next=0;
-	  while(!next)
-	    {
-	      n=n->parentNode();
-	      if (!n)
-		return retval;
-	      next=n->nextSibling();
-	    }
-	  n=next;
-	}
+        {
+          next=0;
+          while(!next)
+            {
+              n=n->parentNode();
+              if (!n)
+                return retval;
+              next=n->nextSibling();
+            }
+          n=next;
+        }
     }
   return retval;
 }
@@ -480,11 +480,11 @@ void HTMLDocumentImpl::slotFinishedParsing()
 {
     // onload script...
     if(m_view && m_view->part()->jScriptEnabled() && body()) {
-	DOMString script = body()->getAttribute(ATTR_ONLOAD);
-	if(script.length()) {
-	    //kdDebug( 6030 ) << "emit executeScript( " << script.string() << " )" << endl;
-	    m_view->part()->executeScript( script.string() );
-	}
+        DOMString script = body()->getAttribute(ATTR_ONLOAD);
+        if(script.length()) {
+            kdDebug( 6030 ) << "emit executeScript( " << script.string() << " )" << endl;
+            m_view->part()->executeScript( script.string() );
+        }
     }
     emit finishedParsing();
 }
@@ -503,15 +503,15 @@ void HTMLDocumentImpl::updateRendering()
 {
     QListIterator<NodeImpl> it(changedNodes);
     for (; it.current(); ++it) {
-	it.current()->recalcStyle();
-	if (it.current()->renderer())
-	    it.current()->renderer()->setLayouted(false);
+        it.current()->recalcStyle();
+        if (it.current()->renderer())
+            it.current()->renderer()->setLayouted(false);
     }
     it.toFirst();
     for (; it.current(); ++it) {
-	if (it.current()->renderer())
-		it.current()->renderer()->updateSize();
-	it.current()->setChanged(false);
+        if (it.current()->renderer())
+                it.current()->renderer()->updateSize();
+        it.current()->setChanged(false);
     }
     changedNodes.clear();
 }

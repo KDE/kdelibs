@@ -77,7 +77,7 @@ void Window::tryPut(const UString &p, const KJSO &v)
     if (v.isA(ConstructorType)) {
       DOM::DOMString s = ((FunctionImp*)v.imp())->name().string() + "()";
       // doesn't work yet
-      //      widget->part()->htmlDocument().body().setAttribute(ATTR_ONLOAD, s);
+      widget->part()->htmlDocument().body().setAttribute(ATTR_ONLOAD, s);
     }
   } else
     Imp::put(p, v);
@@ -107,7 +107,7 @@ Completion WindowFunc::tryExecute(const List &args)
   KJSO v = args[0];
   String s = v.toString();
   str = s.value().qstring();
-  
+
   switch (id) {
   case Alert:
     KMessageBox::error(widget, str, "JavaScript");
@@ -115,13 +115,13 @@ Completion WindowFunc::tryExecute(const List &args)
     break;
   case Confirm:
     i = KMessageBox::warningYesNo(widget, str, "JavaScript",
-				  i18n("OK"), i18n("Cancel"));
+                                  i18n("OK"), i18n("Cancel"));
     result = Boolean((i == KMessageBox::Yes));
     break;
   case Prompt:
     if (args.size() >= 2)
       str2 = QInputDialog::getText("Konqueror: Prompt", str,
-				   args[1].toString().value().qstring());
+                                   args[1].toString().value().qstring());
     else
       str2 = QInputDialog::getText("Konqueror: Prompt", str);
     result = String(str2);
@@ -228,7 +228,7 @@ KJSO Location::get(const UString &p) const
 void Location::put(const UString &p, const KJSO &v)
 {
   QString str = v.toString().value().qstring();
-  
+
   if (p == "href")
     part->scheduleRedirection(0, str);
   /* TODO: remaining location properties */

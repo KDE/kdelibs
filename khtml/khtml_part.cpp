@@ -951,6 +951,8 @@ void KHTMLPart::scheduleRedirection( int delay, const QString &url )
 {
   d->m_delayRedirect = delay;
   d->m_redirectURL = url;
+  if(!d->m_bParsing)
+      d->m_redirectionTimer.start( 1000 * d->m_delayRedirect, true );
 }
 
 void KHTMLPart::slotRedirect()
