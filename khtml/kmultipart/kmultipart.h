@@ -20,6 +20,8 @@
 #ifndef __kmultipart_h__
 #define __kmultipart_h__
 
+#include <httpfilter/httpfilter.h>
+
 #include <kparts/part.h>
 #include <kparts/factory.h>
 #include <kparts/browserextension.h>
@@ -57,12 +59,15 @@ protected:
     void endOfData();
 
 private slots:
+    void reallySendData( const QByteArray& line );
     //void slotPopupMenu( KXMLGUIClient *cl, const QPoint &pos, const KURL &u, const QString &mime, mode_t mode );
     void slotJobFinished( KIO::Job *job );
     void slotData( KIO::Job *, const QByteArray & );
     //void updateWindowCaption();
 
     void slotPartCompleted();
+
+    void startHeader();
 
 private:
     KParts::BrowserExtension* m_extension;
@@ -77,6 +82,8 @@ private:
     KLineParser* m_lineParser;
     bool m_bParsingHeader;
     bool m_bGotAnyHeader;
+    bool m_gzip;
+    HTTPFilterBase *m_filter;
 };
 
 #if 0

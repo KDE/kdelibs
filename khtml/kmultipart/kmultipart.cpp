@@ -96,6 +96,8 @@ KMultiPart::KMultiPart( QWidget *parentWidget, const char *widgetName,
                         QObject *parent, const char *name, const QStringList& )
     : KParts::ReadOnlyPart( parent, name )
 {
+    m_filter = 0L;
+
     setInstance( KMultiPartFactory::instance() );
 
     QVBox *box = new QVBox( parentWidget, widgetName );
@@ -125,14 +127,27 @@ KMultiPart::~KMultiPart()
     delete m_job;
     delete m_lineParser;
     delete m_tempFile;
+    delete m_filter;
+    m_filter = 0L;
 }
+
+
+void KMultiPart::startHeader()
+{
+    m_bParsingHeader = true; // we expect a header to come first
+    m_bGotAnyHeader = false;
+    m_gzip = false;
+    // just to be sure for now
+    delete m_filter;
+    m_filter = 0L;
+}
+
 
 bool KMultiPart::openURL( const KURL &url )
 {
     m_url = url;
     m_lineParser->reset();
-    m_bParsingHeader = true; // we expect a header to come first
-    m_bGotAnyHeader = false;
+    startHeader();
 
     KParts::URLArgs args = m_extension->urlArgs();
     //m_mimeType = args.serviceType;
@@ -200,6 +215,15 @@ void KMultiPart::slotData( KIO::Job *job, const QByteArray &data )
                         m_boundaryLength = m_boundary.length();
                     }
                 }
+                else if ( !qstrnicmp( line.data(), "Content-Encoding:", 17 ) )
+                {
+                    QString encoding = QString::fromLatin1(line.data()+17).stripWhiteSpace().lower();
+                    if (encoding == "gzip" || encoding == "x-gzip") {
+                        m_gzip = true;
+                    } else {
+                        kdDebug() << "FIXME: unhandled encoding type in KMultiPart: " << encoding << endl;
+                    }
+                }
                 // parse Content-Type
                 else if ( !qstrnicmp( line.data(), "Content-Type:", 13 ) )
                 {
@@ -244,8 +268,7 @@ void KMultiPart::slotData( KIO::Job *job, const QByteArray &data )
 #endif
                         if ( nextChar == '\n' || nextChar == '\r' ) {
                             endOfData();
-                            m_bParsingHeader = true;
-                            m_bGotAnyHeader = false;
+                            startHeader();
                         }
                         else {
                             // otherwise, false hit, it has trailing stuff
@@ -363,6 +386,13 @@ void KMultiPart::startOfData()
     Q_ASSERT( !m_nextMimeType.isNull() );
     if( m_nextMimeType.isNull() )
         return;
+
+    if ( m_gzip )
+    {
+        m_filter = new HTTPFilterGZip;
+        connect( m_filter, SIGNAL( output( const QByteArray& ) ), this, SLOT( reallySendData( const QByteArray& ) ) );
+    }
+
     if ( m_mimeType != m_nextMimeType )
     {
         // Need to switch parts (or create the initial one)
@@ -388,6 +418,18 @@ void KMultiPart::startOfData()
 }
 
 void KMultiPart::sendData( const QByteArray& line )
+{
+    if ( m_filter )
+    {
+        m_filter->slotInput( line );
+    }
+    else
+    {
+        reallySendData( line );
+    }
+}
+
+void KMultiPart::reallySendData( const QByteArray& line )
 {
     if ( m_isHTMLPart )
     {
