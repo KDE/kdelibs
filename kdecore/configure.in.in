@@ -66,10 +66,12 @@ AC_CHECK_FUNC(getaddrinfo,
       #include <sys/types.h>
       #include <sys/socket.h>
       #include <netdb.h>
+      #include <string.h>
       int main()
       {
         struct addrinfo hint, *res;
         int err;
+        memset(&hint, 0, sizeof(hint));
         hint.ai_family = AF_INET;
         hint.ai_protocol = 0;
         hint.ai_socktype = SOCK_STREAM;
@@ -99,12 +101,14 @@ AC_CHECK_FUNC(getaddrinfo,
       AC_TRY_RUN(dnl
       [
         #include <sys/types.h>
-	#include <sys/socket.h>
+        #include <sys/socket.h>
         #include <netdb.h>
+        #include <string.h>
 	int main()
 	{
 	  struct addrinfo hint, *res;
 	  int err;
+	  memset(&hint, 0, sizeof(hint));
 	  hint.ai_family = AF_UNSPEC;
 	  hint.ai_protocol = 0;
 	  hint.ai_socktype = SOCK_STREAM;
