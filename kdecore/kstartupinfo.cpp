@@ -785,14 +785,14 @@ KStartupInfoData& KStartupInfoData::operator=( const KStartupInfoData& data )
 
 void KStartupInfoData::update( const KStartupInfoData& data_P )
     {
-    if( !data_P.d->bin.isEmpty())
-        d->bin = data_P.d->bin;
-    if( !data_P.d->name.isEmpty())
-        d->name = data_P.d->name;
-    if( !data_P.d->icon.isEmpty())
-        d->icon = data_P.d->icon;
-    if( data_P.d->desktop != 0 && d->desktop == 0 ) // CHECKME don't update desktop
-        d->desktop = data_P.d->desktop;
+    if( !data_P.bin().isEmpty())
+        d->bin = data_P.bin();
+    if( !data_P.name().isEmpty() && name().isEmpty()) // don't overwrite
+        d->name = data_P.name();
+    if( !data_P.icon().isEmpty() && icon().isEmpty()) // don't overwrite
+        d->icon = data_P.icon();
+    if( data_P.desktop() != 0 && desktop() == 0 ) // don't overwrite
+        d->desktop = data_P.desktop();
     if( !data_P.d->wmclass.isEmpty())
         d->wmclass = data_P.d->wmclass;
     if( !data_P.d->hostname.isEmpty())
