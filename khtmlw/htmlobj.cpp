@@ -22,6 +22,7 @@
 // KDE HTML Widget
 
 #include <kurl.h>
+#include <kapp.h>
 
 #include "htmlobj.h"
 #include "html.h"
@@ -409,8 +410,8 @@ void HTMLText::print( QPainter *_painter, int _tx, int _ty )
 	int fillStart = _painter->fontMetrics().width( text, selStart );
 	int fillEnd = _painter->fontMetrics().width( text, selEnd );
 	_painter->fillRect( x + fillStart + _tx, y - ascent + _ty,
-		fillEnd - fillStart, ascent + descent, black );
-	_painter->setPen( white );
+		fillEnd - fillStart, ascent + descent, kapp->selectColor );
+	_painter->setPen( kapp->selectTextColor );
 	_painter->drawText( x + _tx + fillStart, y + _ty, text + selStart,
 		selEnd - selStart );
 	_painter->setPen( font->textColor() );
@@ -837,7 +838,7 @@ void HTMLImage::print( QPainter *_painter, int _tx, int _ty )
 	    QPainter p( &pm );
 //	    p.setRasterOp( NotEraseROP );
 //	    p.fillRect( 0, 0, pm.width(), pm.height(), blue );
-	    QBrush b( blue, Dense4Pattern );
+	    QBrush b( kapp->selectColor, Dense4Pattern );
 	    p.fillRect( 0, 0, pm.width(), pm.height(), b );
 	}
 
