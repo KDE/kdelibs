@@ -969,7 +969,8 @@ List KJS::HTMLElement::eventHandlerScope() const
   DOM::HTMLElement element = static_cast<DOM::HTMLElement>(node);
 
   List scope;
-  scope.append(getDOMNode(element.ownerDocument()));
+  // The element is the first one, so that it is the most prioritary
+  scope.append(getDOMNode(element));
 
   DOM::Node form = element.parentNode();
   while (!form.isNull() && form.elementId() != ID_FORM)
@@ -977,7 +978,8 @@ List KJS::HTMLElement::eventHandlerScope() const
   if (!form.isNull())
     scope.append(getDOMNode(form));
 
-  scope.append(getDOMNode(element));
+  // The document is the last one, so that it is the least prioritary
+  scope.append(getDOMNode(element.ownerDocument()));
   return scope;
 }
 
