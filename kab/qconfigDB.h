@@ -37,33 +37,6 @@ extern "C" {
 
 class QTextStream;
 
-// some support functions:
-
-/**
- * Read a line, ignore comments.
- */
-QCString ReadLineFromStream(QTextStream&);
-
-/**
- * Find out wether a line is a comment or not (comments start with #).
- */
-bool isComment(QCString);
-
-/**
- * Parse the string and replace all non-standard characters with its
- * HTML equivalents.
- */
-bool htmlizeString(const QCString& orig, QCString& target);
-
-/**
- * tokenize partens the given string text into its tokens at every 
- * occurence of the designator c and delivers the result in the list
- * reference. If strict is true, the last token is only added if there
- * are characters after the last designator.
- */
-void tokenize(list<QCString>& res, const QCString& text, 
-	      char c, bool strict=false);
-
 /**
  * This is some STL interna, a function object for use with STL
  * container classes. Its only element function is the function

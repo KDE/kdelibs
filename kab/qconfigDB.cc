@@ -40,44 +40,7 @@ extern "C" {
 
 #define KAB_KDEBUG_AREA 800
 
-// the global functions:
-void evaluate_assertion(bool cond, const char* file, int line, const char* text)
-{
-  if(!cond)
-    {
-      kdDebug() << file << ":" << line << ": " << text << endl;
-    }
-}
-
-// QCString AuthorEmailAddress; // assign your email address to this string
-
-QCString ReadLineFromStream(QTextStream& stream)
-{
-  register bool GUARD; GUARD=false;
-  // ############################################################################
-  kdDebug(GUARD, KAB_KDEBUG_AREA) <<  "ReadLineFromStream:: reading line." << endl;
-  QCString line;
-  // -----
-  while(!stream.eof())
-    {
-      line=stream.readLine().ascii();
-      if(!line.isEmpty())
-	{
-	  if(isComment(line))
-	    {
-	      line="";
-	      continue;
-	    }
-	}
-      break;
-    }
-  // -----
-  kdDebug(GUARD, KAB_KDEBUG_AREA) <<  "ReadLineFromStream:: line \"" << line.data() << "\" read.\n";
-  return line;
-  // ############################################################################
-}
-
-bool isComment(QCString line)
+static bool isComment(QCString line)
 {
   // ############################################################################
   line=line.stripWhiteSpace();
@@ -90,35 +53,7 @@ bool isComment(QCString line)
   // ############################################################################
 }
 
-bool htmlizeString(const QCString& orig, QCString& target)
-{
-  register bool GUARD; GUARD=false;
-  kdDebug(GUARD, KAB_KDEBUG_AREA) <<  "htmlizeString: called." << endl;
-  // ############################################################################
-  QCString temp;
-  char current;
-  unsigned int index;
-  // -----
-  for(index=0; index<orig.length(); index++)
-    { // ----- the following code is character set depending
-      //       and will possibly need recompilation for EVERY
-      //       system using another charset than the machine
-      //       it was compiled on! Lets see.
-      current=orig[index];
-      switch(current)
-	{
-	case 'ä':
-	default: temp+=current;
-	}
-    }
-  target=temp;
-  // -----
-  kdDebug(GUARD, KAB_KDEBUG_AREA) <<  "htmlizeString: done." << endl;
-  return false; // not implemented
-  // ############################################################################
-}
-
-void tokenize(list<QCString>& res, const QCString& text, char tr, bool strict)
+static void tokenize(list<QCString>& res, const QCString& text, char tr, bool strict=false)
 {
   register bool GUARD; GUARD=false;
   // ############################################################################
@@ -157,6 +92,34 @@ void tokenize(list<QCString>& res, const QCString& text, char tr, bool strict)
 				  << res.size() << " parts.\n";
   // -----
   kdDebug(GUARD, KAB_KDEBUG_AREA) <<  "tokenize: done." << endl;
+  // ############################################################################
+}
+
+// QCString AuthorEmailAddress; // assign your email address to this string
+
+static QCString ReadLineFromStream(QTextStream& stream)
+{
+  register bool GUARD; GUARD=false;
+  // ############################################################################
+  kdDebug(GUARD, KAB_KDEBUG_AREA) <<  "ReadLineFromStream:: reading line." << endl;
+  QCString line;
+  // -----
+  while(!stream.eof())
+    {
+      line=stream.readLine().ascii();
+      if(!line.isEmpty())
+	{
+	  if(isComment(line))
+	    {
+	      line="";
+	      continue;
+	    }
+	}
+      break;
+    }
+  // -----
+  kdDebug(GUARD, KAB_KDEBUG_AREA) <<  "ReadLineFromStream:: line \"" << line.data() << "\" read.\n";
+  return line;
   // ############################################################################
 }
 
