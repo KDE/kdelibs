@@ -1,0 +1,39 @@
+This module contains the ECMAScript a.k.a. JavaScript language bindings for
+the KHTML Part. A series of functions and properties will be added in
+kjs_html_init() to the pre-existing set of the KJS library. The module will
+be loaded into KHTML's address space on demand.
+
+To test the non-HTML DOM functions you may compile a little interactive
+interpreter called 'testecma' with 'make check' (see testecma.cpp for
+further details).
+
+Harri Porten <porten@kde.org>
+
+========================================================================
+Appendix: Currently supported properties
+
+Non-DOM properties:
+
+window.alert(), confirm(), open() [not complete yet]
+navigator.appCodeName, appName, appVersion, userAgent [latter one is set
+  to "Mozilla/4.0 (X11; Konqueror; Unix)" currently]
+Image.src
+
+DOM Bindings:
+
+Node.*
+NodeList.length
+CharacterData.data, length
+Attr.*
+Document.*
+Element.*
+HTMLCollection.*
+HTMLDocument.*
+HTMLElement.*
+HTMLHtmlElement.*
+HTMLLinkElement.*
+HTMLBodyElement.*
+HTMLImageElement.*
+HTMLAreaElement.*
+
+
