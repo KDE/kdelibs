@@ -292,13 +292,17 @@ public:
   void insert( KAction* );
 
   /**
-   * @deprecated Removes an action from the collection and deletes it.
+   * Removes an action from the collection and deletes it.
+   * @deprecated Remove without substitution; the KActionCollection destructor
+   * will remove the action itself.
    * @param action The KAction to remove.
    */
   void remove( KAction* action ) KDE_DEPRECATED;
 
   /**
-   * @deprecated Removes an action from the collection.
+   * Removes an action from the collection.
+   * @deprecated Remove without substitution; the KActionCollection destructor
+   * will remove the action itself.
    * @return NULL if not found else returns action.
    * @param action the KAction to remove.
    */
