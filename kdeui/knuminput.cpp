@@ -562,6 +562,7 @@ KDoubleNumInput::KDoubleNumInput(KNumInput* below, double value, QWidget* parent
 
 KDoubleNumInput::~KDoubleNumInput()
 {
+	delete d;
 }
 
 // ### remove when BIC changes are allowed again:
