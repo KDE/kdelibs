@@ -246,6 +246,7 @@ void PreviewJob::determineNextFile()
         d->succeeded = false;
         d->items.remove(d->items.begin());
         KIO::Job *job = KIO::stat( d->currentItem.item->url(), false );
+        job->addMetaData( "no-auth-prompt", "true" );
         addSubjob(job);
     }
 }
