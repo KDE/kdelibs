@@ -126,13 +126,13 @@ public:
      *
      * @param fileName the name of the file to filter
      * @param mimetype the mime type of the file to filter, or QString::null if unknown
-     * @param forceFilter if true, the function will always return a QIODevice. If no
+     * @param forceFilter if true, the function will either find a compression filter, or return 0.
+     *                    If false, it will always return a QIODevice. If no
      *                    filter is available it will return a simple QFile.
      *                    This can be useful if the file is usable without a filter.
-     *                    If false, the function returns 0 if no filter is available
      * @return if a filter has been found, the QIODevice for the filter. If the
      *         filter does not exist, the return value depends on @p forceFilter.
-     *         The returned QIODevice has to be deleted after using
+     *         The returned QIODevice has to be deleted after using.
      */
     static QIODevice * deviceForFile( const QString & fileName, const QString & mimetype = QString::null,
                                       bool forceFilter = false );
