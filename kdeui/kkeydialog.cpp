@@ -514,13 +514,15 @@ void KKeyChooser::readGlobalKeys()
 	int *keyCode;
 	KConfig *pConfig = kapp->getConfig();
 	KEntryIterator *gIt = pConfig->entryIterator( "Global Keys" );
-	gIt->toFirst();
-	while ( gIt->current() ) {
-		keyCode = new int;
-		*keyCode = stringToKey( gIt->current()->aValue );
-		globalDict->insert( gIt->currentKey(), keyCode);
-		//debug( " %s, %d", gIt->currentKey(), *keyCode );
-		++(*gIt);
+	if (gIt){
+	  gIt->toFirst();
+	  while ( gIt->current() ) {
+	    keyCode = new int;
+	    *keyCode = stringToKey( gIt->current()->aValue );
+	    globalDict->insert( gIt->currentKey(), keyCode);
+	    //debug( " %s, %d", gIt->currentKey(), *keyCode );
+	    ++(*gIt);
+	  }
 	}
 	
 	
