@@ -850,7 +850,7 @@ KCmdLineArgs::KCmdLineArgs( const KCmdLineOptions *_options,
 {
   parsedOptionList = 0;
   parsedArgList = 0;
-  isQt = (strcmp(id, "qt") == 0);
+  isQt = (qstrcmp(id, "qt") == 0);
 }
 
 /**
