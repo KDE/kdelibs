@@ -37,6 +37,7 @@
 #include <qvgroupbox.h>
 #include <qlabel.h>
 #include <qbuttongroup.h>
+#include <qhgroupbox.h>
 #include <qhbuttongroup.h>
 #include <qvbuttongroup.h>
 #include <qradiobutton.h>
@@ -314,27 +315,24 @@ QString whatstr;
   //
   //  CipherWizards
   //
-  QHButtonGroup *cwbg = new QHButtonGroup(i18n("Cipher Wizards"), tabSSL);
-  mCWcompatible = new QPushButton(i18n("&Most Compatible"), cwbg);
-  mCWus = new QPushButton(i18n("U&S Ciphers Only"), cwbg);
-  mCWexp = new QPushButton(i18n("E&xport Ciphers Only"), cwbg);
-  mCWall = new QPushButton(i18n("E&nable All"), cwbg);
-  connect(mCWcompatible, SIGNAL(clicked()), SLOT(slotCWcompatible()));
-  connect(mCWus, SIGNAL(clicked()), SLOT(slotCWus()));
-  connect(mCWexp, SIGNAL(clicked()), SLOT(slotCWexp()));
-  connect(mCWall, SIGNAL(clicked()), SLOT(slotCWall()));
+  QHGroupBox *cwbg = new QHGroupBox(i18n("Cipher Wizard"), tabSSL);
+  QComboBox *cwcb = new QComboBox(cwbg);
   grid->addMultiCellWidget(cwbg, 3, 3, 0, 1);
-  whatstr = i18n("Use these buttons to more easily configure the SSL encryption settings.");
-  QWhatsThis::add(cwbg, whatstr);
-  whatstr = i18n("Select the settings found to be most compatible.");
-  QWhatsThis::add(mCWcompatible, whatstr);
-  whatstr = i18n("Select only the US strong (>= 128 bit) encryption ciphers.");
-  QWhatsThis::add(mCWus, whatstr);
-  whatstr = i18n("Select only the weak ciphers (<= 56 bit).");
-  QWhatsThis::add(mCWexp, whatstr);
-  whatstr = i18n("Select all SSL ciphers and methods.");
-  QWhatsThis::add(mCWall, whatstr);
-
+  QString whatStr = i18n("<qt>Use these preconfigurations to more easily configure the SSL encryption settings. You can choose among the following Modes: <ul>");
+ 
+  cwcb->insertItem(QString::null);
+  cwcb->insertItem(i18n("Most Compatible"));
+  whatStr += i18n("<li><b>Most Compatible:</b> Select the settings found to be most compatible.</li>");
+  cwcb->insertItem(i18n("US Ciphers Only"));
+  whatStr += i18n("<li><b>US Ciphers Only:</b> Select only the US strong (&gt;= 128 bit) encryption ciphers.</li>");
+  cwcb->insertItem(i18n("Export Ciphers Only"));
+  whatStr += i18n("<li><b>Export Ciphers Only:</b> Select only the weak ciphers (&lt;= 56 bit).</li>");
+  cwcb->insertItem(i18n("Enable All"));
+  whatStr += i18n("<li><b>Enable All:</b> Select all SSL ciphers and methods.</li></ul>");
+ 
+  QWhatsThis::add(cwcb, whatStr);
+  
+  connect(cwcb, SIGNAL(activated(int)), SLOT(slotSelectCipher(int)));
 
   //
   //  Settings for the EGD
@@ -1256,9 +1254,24 @@ void KCryptoConfig::genCAList() {
 
 }
 
+void KCryptoConfig::slotSelectCipher(int id) {
 
+    switch(id) {
+		case 1:
+			cwCompatible();
+			break;
+		case 2:
+			cwUS();
+			break;
+		case 3:
+			cwExp();
+			break;
+		case 4:
+			cwAll();
+	}
+}
 
-void KCryptoConfig::slotCWcompatible() {
+void KCryptoConfig::cwCompatible() {
   #ifdef HAVE_SSL
   CipherItem *item;
   for ( item = static_cast<CipherItem *>(SSLv2Box->firstChild()); item;
@@ -1279,7 +1292,7 @@ void KCryptoConfig::slotCWcompatible() {
 }
 
 
-void KCryptoConfig::slotCWus() {
+void KCryptoConfig::cwUS() {
   #ifdef HAVE_SSL
   CipherItem *item;
   for ( item = static_cast<CipherItem *>(SSLv2Box->firstChild()); item;
@@ -1297,7 +1310,7 @@ void KCryptoConfig::slotCWus() {
 }
 
 
-void KCryptoConfig::slotCWexp() {
+void KCryptoConfig::cwExp() {
   #ifdef HAVE_SSL
   CipherItem *item;
   for ( item = static_cast<CipherItem *>(SSLv2Box->firstChild()); item;
@@ -1315,7 +1328,7 @@ void KCryptoConfig::slotCWexp() {
 }
 
 
-void KCryptoConfig::slotCWall() {
+void KCryptoConfig::cwAll() {
   #ifdef HAVE_SSL
   CipherItem *item;
   for ( item = static_cast<CipherItem *>(SSLv2Box->firstChild()); item;

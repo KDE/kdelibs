@@ -240,10 +240,7 @@ public slots:
   void slotGeneratePersonal();
   void slotUseEGD();
   void slotUseEFile();
-  void slotCWcompatible();
-  void slotCWus();
-  void slotCWexp();
-  void slotCWall();
+  void slotSelectCipher(int id);
 
   void slotTestOSSL();
 
@@ -276,6 +273,12 @@ public slots:
   void slotCARestore();
   void slotCAItemChanged();
   void slotCAChecked();
+
+protected:
+  void cwCompatible();
+  void cwUS();
+  void cwExp();
+  void cwAll();
 
 private:
 
