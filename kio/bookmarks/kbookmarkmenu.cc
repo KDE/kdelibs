@@ -53,6 +53,7 @@
 #include <kpopupmenu.h>
 #include <kstdaccel.h>
 #include <kstdaction.h>
+#include <kconfig.h>
 
 #include <qlistview.h>
 
@@ -333,7 +334,8 @@ void KBookmarkMenu::fillBookmarkMenu()
   {
     QString text = bm.text();
     text.replace( QRegExp( "&" ), "&&" );
-    if ( !separatorInserted && m_bIsRoot) { // inserted before the first konq bookmark, to avoid the separator if no konq bookmark
+    if ( !separatorInserted && m_bIsRoot) { 
+      // inserted before the first konq bookmark, to avoid the separator if no konq bookmark
       m_parentMenu->insertSeparator();
       separatorInserted = true;
     }
@@ -396,7 +398,8 @@ void KBookmarkMenu::slotAddBookmark()
 
   KBookmarkGroup parentBookmark;
 
-  bool autoPick = true;
+  KGlobal::config()->setGroup( "Settings" );
+  bool autoPick = KGlobal::config()->readBoolEntry( "AutoPick", true );
 
   if (autoPick) 
   {
@@ -436,18 +439,20 @@ void KBookmarkMenu::slotAddBookmark()
     BookmarkEditDialog *dlg = new BookmarkEditDialog( title, url, m_pManager );
     int ret = dlg->exec();
 
-    if (ret != KDialogBase::Accepted) {
+    if (ret != KDialogBase::Accepted) 
+    {
       delete dlg;
       return;
     }
+
     kdDebug(7043) << "DEBUG! " << dlg->finalAddress() 
-                  << ", " << dlg->finalUrl() 
-                  << ", " << dlg->finalTitle() << endl;
+                       << ", " << dlg->finalUrl() 
+                       << ", " << dlg->finalTitle() << endl;
 
     parentBookmark = m_pManager->findByAddress( dlg->finalAddress() ).toGroup();
     Q_ASSERT(!parentBookmark.isNull());
 
-    parentBookmark.addBookmark( m_pManager, dlg->finalUrl(), dlg->finalTitle() );
+    parentBookmark.addBookmark( m_pManager, dlg->finalTitle(), dlg->finalUrl() );
     delete dlg;
   }
 
