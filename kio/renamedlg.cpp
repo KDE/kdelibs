@@ -100,7 +100,7 @@ RenameDlg::RenameDlg(QWidget *parent, const QString & _caption,
   QLabel *lb;
 
   if ( _mode & M_OVERWRITE_ITSELF ) {
-    lb = new QLabel( i18n("This action would overwrite %1 with itself.\n"
+    lb = new QLabel( i18n("This action would overwrite '%1' with itself.\n"
 			  "Do you want to rename it instead?").arg(src), this );
   }  else if ( _mode & M_OVERWRITE ) {
       QString sentence1;
@@ -108,10 +108,10 @@ RenameDlg::RenameDlg(QWidget *parent, const QString & _caption,
       // TODO rewrite this with a GridLayout and even icons, a la kpropsdlg
       if (mtimeDest < mtimeSrc)
           // The url is last since it may contain '%'
-	  sentence1 = i18n("An older item named %4 already exists\n"
+	  sentence1 = i18n("An older item named '%4' already exists\n"
                            "    size %1\n    created on %2\n    modified on %3\n");
       else
-	  sentence1 = i18n("A newer item named %4 already exists\n"
+	  sentence1 = i18n("A newer item named '%4' already exists\n"
                            "    size %1\n    created on %2\n    modified on %3\n");
 
       QDateTime dctime; dctime.setTime_t( ctimeDest );
@@ -123,7 +123,7 @@ RenameDlg::RenameDlg(QWidget *parent, const QString & _caption,
         arg(mtimeDest == (time_t)-1 ? i18n("unknown") : KGlobal::locale()->formatDateTime(dmtime)).
         arg(dest);
 
-      QString sentence2 = i18n("The original file is %4\n"
+      QString sentence2 = i18n("The original file is '%4'\n"
                                "    size %1\n    created on %2\n    modified on %3\n");
       dctime.setTime_t( ctimeSrc );
       dmtime.setTime_t( mtimeSrc );
@@ -139,9 +139,9 @@ RenameDlg::RenameDlg(QWidget *parent, const QString & _caption,
       // I wonder when this happens (David). And 'dest' isn't shown at all here...
       QString sentence1;
       if (mtimeDest < mtimeSrc)
-	  sentence1 = i18n("An older item than %1 already exists.\n").arg(src);
+	  sentence1 = i18n("An older item than '%1' already exists.\n").arg(src);
       else
-	  sentence1 = i18n("A newer item than %1 already exists.\n").arg(src);
+	  sentence1 = i18n("A newer item than '%1' already exists.\n").arg(src);
 
       lb = new QLabel( sentence1 + i18n("Do you want to use another file name?"), this );
   }
