@@ -22,7 +22,6 @@
 // here).
 
 #include "kdebug.h"
-#include "kdebug.moc"
 
 #ifdef NDEBUG
 #undef kdDebug
@@ -41,7 +40,6 @@
 #include <qintdict.h>
 #include <qstring.h>
 #include <qtextstream.h>
-#include <qregexp.h>
 
 #include <stdlib.h>	// abort
 #include <unistd.h>	// getpid
@@ -148,6 +146,13 @@ static QString getDescrFromNum(unsigned int _num)
   return QString::null;
 }
 
+enum DebugLevels {
+    KDEBUG_INFO=    0,
+    KDEBUG_WARN=    1,
+    KDEBUG_ERROR=   2,
+    KDEBUG_FATAL=   3
+};
+
 
 struct kDebugPrivate {
   kDebugPrivate() : 
@@ -162,6 +167,8 @@ struct kDebugPrivate {
 
 static kDebugPrivate *kDebug_data = 0;
 static KStaticDeleter<kDebugPrivate> pcd;
+static KStaticDeleter<KDebugDCOPIface> dcopsd;
+static KDebugDCOPIface* kDebugDCOPIface = 0;
 
 static void kDebugBackend( unsigned short nLevel, unsigned int nArea, const char *data)
 {
@@ -171,8 +178,12 @@ static void kDebugBackend( unsigned short nLevel, unsigned int nArea, const char
       // Do not call this deleter from ~KApplication
       KGlobal::unregisterStaticDeleter(&pcd);
 
-      // it might be that no KDebug instance is present - create it
-      KDebug::self();
+      // create the dcop interface if it has not been created yet
+      if (!kDebugDCOPIface)
+      {
+          kDebugDCOPIface = new KDebugDCOPIface();
+          dcopsd.setObject(kDebugDCOPIface);
+      }
   }
 
   if (!kDebug_data->config && KGlobal::_instance )
@@ -204,22 +215,22 @@ static void kDebugBackend( unsigned short nLevel, unsigned int nArea, const char
     QString key;
     switch( nLevel )
       {
-      case KDebug::KDEBUG_INFO:
+      case KDEBUG_INFO:
 	key = "InfoOutput";
 	aCaption = "Info";
 	nPriority = LOG_INFO;
 	break;
-      case KDebug::KDEBUG_WARN:
+      case KDEBUG_WARN:
 	key = "WarnOutput";
 	aCaption = "Warning";
 	nPriority = LOG_WARNING;
 	break;
-      case KDebug::KDEBUG_FATAL:
+      case KDEBUG_FATAL:
 	key = "FatalOutput";
 	aCaption = "Fatal Error";
 	nPriority = LOG_CRIT;
 	break;
-      case KDebug::KDEBUG_ERROR:
+      case KDEBUG_ERROR:
       default:
 	/* Programmer error, use "Error" as default */
 	key = "ErrorOutput";
@@ -243,16 +254,16 @@ static void kDebugBackend( unsigned short nLevel, unsigned int nArea, const char
                 QString aKey;
                 switch( nLevel )
                 {
-                    case KDebug::KDEBUG_INFO:
+                    case KDEBUG_INFO:
                         aKey = "InfoFilename";
                         break;
-                    case KDebug::KDEBUG_WARN:
+                    case KDEBUG_WARN:
                         aKey = "WarnFilename";
                         break;
-                    case KDebug::KDEBUG_FATAL:
+                    case KDEBUG_FATAL:
                         aKey = "FatalFilename";
                         break;
-                    case KDebug::KDEBUG_ERROR:
+                    case KDEBUG_ERROR:
                     default:
                         aKey = "ErrorFilename";
                         break;
@@ -308,29 +319,24 @@ static void kDebugBackend( unsigned short nLevel, unsigned int nArea, const char
           {
 	      break;
           }
-        case 5: // emit signal
-          {
-	      KDebug::self()->emitSignal(kDebug_data->aAreaName, data, (KDebug::DebugLevels)nLevel);
-	      break;
-          }
         }
 
   // check if we should abort
-  if( ( nLevel == KDebug::KDEBUG_FATAL )
+  if( ( nLevel == KDEBUG_FATAL )
       && ( !kDebug_data->config || kDebug_data->config->readNumEntry( "AbortFatal", 1 ) ) )
         abort();
 }
 
 kdbgstream &perror( kdbgstream &s) { return s << QString::fromLocal8Bit(strerror(errno)); }
-kdbgstream kdDebug(int area) { return kdbgstream(area, KDebug::KDEBUG_INFO); }
-kdbgstream kdDebug(bool cond, int area) { if (cond) return kdbgstream(area, KDebug::KDEBUG_INFO); else return kdbgstream(0, 0, false); }
+kdbgstream kdDebug(int area) { return kdbgstream(area, KDEBUG_INFO); }
+kdbgstream kdDebug(bool cond, int area) { if (cond) return kdbgstream(area, KDEBUG_INFO); else return kdbgstream(0, 0, false); }
 
-kdbgstream kdError(int area) { return kdbgstream("ERROR: ", area, KDebug::KDEBUG_ERROR); }
-kdbgstream kdError(bool cond, int area) { if (cond) return kdbgstream("ERROR: ", area, KDebug::KDEBUG_ERROR); else return kdbgstream(0,0,false); }
-kdbgstream kdWarning(int area) { return kdbgstream("WARNING: ", area, KDebug::KDEBUG_WARN); }
-kdbgstream kdWarning(bool cond, int area) { if (cond) return kdbgstream("WARNING: ", area, KDebug::KDEBUG_WARN); else return kdbgstream(0,0,false); }
-kdbgstream kdFatal(int area) { return kdbgstream("FATAL: ", area, KDebug::KDEBUG_FATAL); }
-kdbgstream kdFatal(bool cond, int area) { if (cond) return kdbgstream("FATAL: ", area, KDebug::KDEBUG_FATAL); else return kdbgstream(0,0,false); }
+kdbgstream kdError(int area) { return kdbgstream("ERROR: ", area, KDEBUG_ERROR); }
+kdbgstream kdError(bool cond, int area) { if (cond) return kdbgstream("ERROR: ", area, KDEBUG_ERROR); else return kdbgstream(0,0,false); }
+kdbgstream kdWarning(int area) { return kdbgstream("WARNING: ", area, KDEBUG_WARN); }
+kdbgstream kdWarning(bool cond, int area) { if (cond) return kdbgstream("WARNING: ", area, KDEBUG_WARN); else return kdbgstream(0,0,false); }
+kdbgstream kdFatal(int area) { return kdbgstream("FATAL: ", area, KDEBUG_FATAL); }
+kdbgstream kdFatal(bool cond, int area) { if (cond) return kdbgstream("FATAL: ", area, KDEBUG_FATAL); else return kdbgstream(0,0,false); }
 
 void kdbgstream::flush() {
     if (output.isEmpty() || !print)
@@ -439,48 +445,6 @@ void kdClearDebugConfig()
     kDebug_data->config = 0;
 }
 
-static KStaticDeleter<KDebug> sd;
-KDebug* KDebug::mDebug = 0;
-
-KDebug::KDebug() : QObject(0)
-{
- mEmitSignal = false;
- mIface = new KDebugDCOPIface();
-}
-
-KDebug::~KDebug()
-{
-}
-
-KDebug* KDebug::self()
-{
- if (!mDebug)
- {
-   mDebug = new KDebug();
-   sd.setObject(mDebug);
- }
- return mDebug;
-}
-
-void KDebug::emitSignal(const QString& area, const char* data, int level)
-{
- if (mEmitSignal)
- {
-   emit notify(area, data, level);
- }
-}
-
-void KDebug::connectNotify(const char* signal)
-{
- // this is pretty much a hack to prevent calling emitSignal for applications
- // that don't provide a slot for it
- // (will be faster for those apps then)
- QRegExp rexp(QString("%1notify\\s*\\(.*").arg(QSIGNAL_CODE));
- if (rexp.exactMatch(signal))
- {
-   mEmitSignal = true;
- }
-}
 
 // Needed for --enable-final
 #ifdef NDEBUG
