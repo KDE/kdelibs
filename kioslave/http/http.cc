@@ -3455,6 +3455,13 @@ bool HTTPProtocol::readHeader()
         m_qContentEncodings.remove(m_qContentEncodings.fromLast());
         m_strMimeType = QString::fromLatin1("application/x-tgz");
      }
+     else if (m_strMimeType == "application/postscript")
+     {
+        // LEONB: Adding another exception for psgz files.
+        // Could we use the mimelnk files instead of hardcoding all this?
+        m_qContentEncodings.remove(m_qContentEncodings.fromLast());
+        m_strMimeType = QString::fromLatin1("application/x-gzpostscript");
+     }
      else if ( (m_request.allowCompressedPage &&
                 m_strMimeType == "text/html")
                 ||
