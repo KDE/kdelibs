@@ -38,16 +38,16 @@ KRegExpPrivate::~KRegExpPrivate()
   if ( m_bInit )
     regfree( &m_pattern );
 }
-  
+
 bool KRegExpPrivate::compile( const char *_pattern, const char *_mode )
 {
   if ( m_bInit )
     regfree( &m_pattern );
-  
+
   int res = regcomp( &m_pattern, _pattern, ( strchr( _mode, 'i' ) != 0L ? REG_ICASE : 0 ) | REG_EXTENDED );
   if ( res == 0 )
     m_bInit = true;
-  
+
   return ( res == 0 );
 }
 
@@ -58,7 +58,7 @@ bool KRegExpPrivate::match( const char *_string )
     cerr << "You must compile a pattern before you can try to match it" << endl;
     assert( 0 );
   }
-  
+
   for ( int i = 0; i < 10; i++ )
   {
     m_matches[i].rm_so = -1;
@@ -73,9 +73,9 @@ bool KRegExpPrivate::match( const char *_string )
   int res = regexec( &m_pattern, _string, 10, m_matches, 0 );
   if ( res != 0 )
     return false;
-  
+
   int slen = strlen( _string );
-  
+
   for ( int j = 0; j < 10; j++ )
   {
     if ( m_matches[j].rm_so >= 0 && m_matches[j].rm_eo >= 0 &&
@@ -88,7 +88,7 @@ bool KRegExpPrivate::match( const char *_string )
       m_strMatches[j][ len ] = 0;
     }
   }
-  
+
   return true;
 }
 
@@ -99,8 +99,30 @@ const char* KRegExpPrivate::group( int _grp )
     cerr << "You may only use a group in the range of 0..9" << endl;
     assert( 0 );
   }
-  
+
   return m_strMatches[ _grp ];
+}
+
+int KRegExpPrivate::groupStart( int _grp )
+{
+  if ( _grp < 0 || _grp >= 10 )
+  {
+    cerr << "You may only use a group in the range of 0..9" << endl;
+    assert( 0 );
+  }
+
+  return m_matches[ _grp ].rm_so;
+}
+
+int KRegExpPrivate::groupEnd( int _grp )
+{
+  if ( _grp < 0 || _grp >= 10 )
+  {
+    cerr << "You may only use a group in the range of 0..9" << endl;
+    assert( 0 );
+  }
+
+  return m_matches[ _grp ].rm_eo;
 }
 
 KRegExp::KRegExp()
@@ -117,7 +139,7 @@ KRegExp::~KRegExp()
 {
   delete m_pPrivate;
 }
-  
+
 bool KRegExp::compile( const char *_pattern, const char *_mode)
 {
   return m_pPrivate->compile( _pattern, _mode );
@@ -133,23 +155,33 @@ const char* KRegExp::group( int _grp )
   return m_pPrivate->group( _grp );
 }
 
+int KRegExp::groupStart( int _grp )
+{
+  return m_pPrivate->groupStart( _grp );
+}
+
+int KRegExp::groupEnd( int _grp )
+{
+  return m_pPrivate->groupEnd( _grp );
+}
+
 /*
 int main( int argc, char **argv )
 {
   if ( argc != 3 )
     assert( 0 );
-  
+
   KRegExp r( argv[1], "" );
   cout << "Compiled" << endl;
-  
+
   if ( !r.match( argv[2] ) )
   {
     cerr << "Does not match" << endl;
     return 0;
   }
-  
+
   cout << "Match" << endl;
-  
+
   for( int i = 0; i < 10; i++ )
   {
     const char *c = r.group( i );
@@ -157,7 +189,7 @@ int main( int argc, char **argv )
       return 0;
     cout << "Group #" << i << ":" << c << endl;
   }
-  
+
   return 0;
 }
 */
