@@ -18,7 +18,7 @@
 #    Boston, MA 02111-1307, USA.
 
 
-SUBDIRS = dcop kdecore kimgio kdeui kformula mimetypes \
+SUBDIRS = qk dcop kdecore kimgio kdeui kformula mimetypes \
 	mediatool kspell kio kfile kab khtml kstyles \
 	kparts doc toolbar interfaces kdetest
 

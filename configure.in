@@ -197,7 +197,7 @@ AC_SUBST(ICE_RLIB)
 
 AC_OUTPUT(Makefile \
 	kdecore/Makefile \
-	kdecore/qk/Makefile \
+	qk/Makefile \
 	kdecore/tests/Makefile \
 	kdeui/Makefile \
 	kdeui/tests/Makefile \

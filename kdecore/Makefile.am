@@ -19,7 +19,7 @@
 
 INCLUDES = $(all_includes)
 
-SUBDIRS = qk
+SUBDIRS = tests
 
 lib_LTLIBRARIES = libkdecore.la
 
@@ -51,7 +51,7 @@ libkdecore_la_SOURCES = libintl.cpp kstddirs.cpp  \
 	kinstance.cpp kpalette.cpp kipc.cpp klibloader.cpp
 
 libkdecore_la_LDFLAGS = $(QT_LDFLAGS) $(X_LDFLAGS) $(USER_LDFLAGS) -version-info 3:0 -no-undefined
-libkdecore_la_LIBADD = qk/libqk.la -lXext $(LIB_DCOP) $(LIBDL) $(LIB_DMALLOC)
+libkdecore_la_LIBADD = ../qk/libqk.la -lXext $(LIB_DCOP) $(LIBDL) $(LIB_DMALLOC)
 
 libkdecore_la_METASOURCES = AUTO
 
