@@ -103,6 +103,8 @@ public:
     void addColInfo(int _startCol, int _colSpan,
                     int _minSize, int _maxSize, khtml::Length _width,
                     RenderTableCell* _cell);
+    
+    void recalcColInfos();
 
     // overrides
     virtual void addChild(RenderObject *child, RenderObject *beforeChild = 0);
@@ -124,6 +126,8 @@ public:
 
     virtual int borderTopExtra();
     virtual int borderBottomExtra();
+    
+    void closeRow();
 
 public:
     /*
@@ -181,7 +185,9 @@ protected:
     void setCells( unsigned int r, unsigned int c, RenderTableCell *cell );
     void addRows( int num );
     void addColumns( int num );
-    // ### need to provide some delete* methods too...
+
+    int realSpan(RenderTableCell* cell);
+    int realSpan(unsigned int r, unsigned int col);
 
     RenderTableCell ***cells;
 
@@ -208,8 +214,6 @@ protected:
     int distributeRest(int distrib, khtml::LengthType type, int divider );
 
     int maxColSpan;
-
-    QArray<int> percentTotals;
 
     QArray<int> columnPos;
     QArray<int> colMaxWidth;
@@ -304,6 +308,8 @@ public:
     virtual int bidiHeight() const { return 0; }
     virtual void position(int, int, int, int, int, bool) {}
     virtual void layout() {}
+    
+    virtual void close();
 
     virtual void setTable(RenderTable *t) { table = t; }
 

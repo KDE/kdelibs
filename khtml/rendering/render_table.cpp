@@ -229,6 +229,32 @@ void RenderTable::startRow()
     if(row > totalRows) totalRows = row;
 }
 
+void RenderTable::closeRow()
+{
+    bool recalc = false;
+    
+    while ( col < totalCols && cells[row][col] != 0L )
+        col++;
+    
+    if (col<=0) return;
+    
+    RenderTableCell* cell = cells[row][col-1];
+    
+    if (!cell) return;    
+    
+    while ( col < totalCols && cells[row][col] == 0L )
+    {          
+        cells[row][col] = cell;
+        col++;  
+        recalc = true;
+    }
+
+    if (recalc)
+    {
+        recalcColInfos();
+    }    
+}
+
 void RenderTable::addCell( RenderTableCell *cell )
 {
     while ( col < totalCols && cells[row][col] != 0L )
@@ -239,6 +265,32 @@ void RenderTable::addCell( RenderTableCell *cell )
     setLayouted(false);
 
     col++;
+}
+
+int RenderTable::realSpan( RenderTableCell* cell)
+{
+    unsigned int r = cell->row();
+    unsigned int c = cell->col();
+    unsigned int sp = cell->colSpan();
+    
+    int span=1;
+    
+    if (c+sp==totalCols || cells[r][c+sp]!=cell)
+        span = sp;
+    else
+    {
+        while (c>0 && cells[r][c-1]==cell) c--;
+        while (c<totalCols && cells[r][c+1]==cell) { c++ ; span++; }
+    }
+
+//    kdDebug(0) << "realspan(" << r << "," << c << ")=" << span << endl;
+        
+    return span;
+}
+
+int RenderTable::realSpan( unsigned int r, unsigned int c)
+{
+    return realSpan(cells[r][c]);
 }
 
 void RenderTable::setCells( unsigned int r, unsigned int c,
@@ -331,10 +383,6 @@ void RenderTable::addColumns( int num )
 
     colInfos.resize(mSpan);
 
-    percentTotals.resize(mSpan);
-    memset( percentTotals.data() + totalCols , 0, num*sizeof(int));
-
-
     for ( unsigned int c =0 ; c < totalCols; c++ )
     {
         colInfos[c]->resize(newCols);
@@ -344,10 +392,48 @@ void RenderTable::addColumns( int num )
         colInfos.insert(c, new ColInfoLine(newCols-c+1));
     }
 
+    // check if adding of cols means that we have to
+    // spread some existing columns to cover the new cols
+    bool recalc = false;    
+    for ( unsigned int r=0 ; r < row ; r++)
+    {
+        RenderTableCell* cell = cells[r][totalCols-1];
+        for ( unsigned int c = totalCols; (int)c < newCols; c++ )
+        {
+            if (cells[r][c]==0L)
+            {
+                cells[r][c] = cell;
+                recalc=true;
+            }
+        }
+    }
+    
     totalCols = newCols;
-
+    
+    if (recalc)
+    {
+        recalcColInfos();
+    }    
+   
 }
 
+
+void RenderTable::recalcColInfos()
+{
+//    kdDebug(0) << "RenderTable::recalcColInfos()" << endl;    
+    for (int s=0 ; s<maxColSpan; s++)
+    {
+        for (unsigned int c=0 ; c<totalCols; c++)
+            if (c<colInfos[s]->size())
+                colInfos[s]->remove(c);                 
+    }        
+    
+    maxColSpan = 0;
+    
+    FOR_EACH_CELL(r,c,cell)
+        addColInfo(cell);                         
+    END_FOR_EACH    
+}
 
 void RenderTable::addColInfo(RenderTableCol *colel)
 {
@@ -374,7 +460,7 @@ void RenderTable::addColInfo(RenderTableCell *cell)
 {
 
     int _startCol = cell->col();
-    int _colSpan = cell->colSpan();
+    int _colSpan = realSpan(cell);
     int _minSize = cell->minWidth();
     int _maxSize = cell->maxWidth();
 
@@ -430,15 +516,11 @@ void RenderTable::addColInfo(int _startCol, int _colSpan,
     {
         col->type = _width.type;
         col->value = _width.value;
-        if (_width.type==Percent)
-            percentTotals[_colSpan-1]+=_width.value;
     }
     if (_width.type == col->type)
     {
         if (_width.value > col->value)
         {
-            if (_width.type==Percent)
-                percentTotals[_colSpan-1]+=_width.value-col->value;
             col->value = _width.value;
         }
     }
@@ -1331,7 +1413,7 @@ void RenderTable::layoutRow(int r, int yoff)
         if ( r < (int)totalRows - 1 && cell == cells[r+1][c] )
             continue;
 
-        if ( ( indx = c-cell->colSpan()+1 ) < 0 )
+        if ( ( indx = c-realSpan(cell)+1 ) < 0 )
             indx = 0;
 
         if ( ( rindx = r-cell->rowSpan()+1 ) < 0 )
@@ -1396,7 +1478,7 @@ void RenderTable::setCellWidths()
     int indx;
     FOR_EACH_CELL( r, c, cell)
         {
-            if ( ( indx = c-cell->colSpan()+1) < 0 )
+            if ( ( indx = c-realSpan(cell)+1) < 0 )
                 indx = 0;
             int w = columnPos[c+1] - columnPos[ indx ] - spacing ; //- padding*2;
 
@@ -1586,6 +1668,11 @@ long RenderTableRow::rowIndex() const
 void RenderTableRow::setRowIndex( long  )
 {
     // ###
+}
+
+void RenderTableRow::close()
+{
+    table->closeRow();   
 }
 
 void RenderTableRow::addChild(RenderObject *child, RenderObject *beforeChild)
