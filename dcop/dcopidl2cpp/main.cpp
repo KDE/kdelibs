@@ -4,7 +4,6 @@
 #include <qstring.h>
 
 #include <string.h>
-#include <assert.h>
 #include <stdio.h>
 #include <unistd.h>
 
@@ -186,7 +185,9 @@ int main( int argc, char** argv )
 		    if ( s.tagName() == "SUPER" )
                         DCOPParent = s.attribute("name");
                 }
-                assert(!DCOPParent.isEmpty());
+                if (DCOPParent.isEmpty())
+		    DCOPParent = "DCOPObject";
+
                 str << "\tif ( " << DCOPParent << "::process( fun, data, replyType, replyData ) )" << endl;
                 str << "\t\treturn TRUE;" << endl;
 
@@ -352,8 +353,7 @@ int main( int argc, char** argv )
 		    if ( k.tagName() == "SUPER")
                         DCOPParent = k.attribute("name");
                 }
-                assert (!DCOPParent.isEmpty());
-                if ( DCOPParent == "DCOPObject" )
+                if ( DCOPParent.isEmpty() || DCOPParent == "DCOPObject" )
 		    str << "DCOPStub( _app, _id )" << endl;
                 else
                     str << DCOPParent << "( _app, _id )" << endl;
