@@ -352,14 +352,14 @@ QDataStream &operator <<(QDataStream &s, const KIO::UDSEntry &e )
     for( ; it != e.end(); ++it )
     {
        size++;
-       if ((*it).m_uds & KIO::UDS_SIZE)
+       if ((*it).m_uds == KIO::UDS_SIZE)
           size++;
     }
     s << size;
     it = e.begin();
     for( ; it != e.end(); ++it )
     {
-       if ((*it).m_uds & KIO::UDS_SIZE)
+       if ((*it).m_uds == KIO::UDS_SIZE)
        {
           KIO::UDSAtom a;
           a.m_uds = KIO::UDS_SIZE_LARGE;
@@ -397,13 +397,13 @@ QDataStream &operator >>(QDataStream &s, KIO::UDSEntry &e )
        {
           KIO::UDSAtom a;
           s >> a;
-          if (a.m_uds & KIO::UDS_SIZE_LARGE)
+          if (a.m_uds == KIO::UDS_SIZE_LARGE)
           {
              msb = a.m_long;
           }
           else
           {
-             if (a.m_uds & KIO::UDS_SIZE)
+             if (a.m_uds == KIO::UDS_SIZE)
              {
                 a.m_long += msb << 32;
              }
