@@ -121,12 +121,14 @@ public:
     RegressionTest(KHTMLPart *part, QString _sourceFilesDir,
 		   QString _resultFilesDir, bool _genOutput);
 
-    QByteArray getPartOutput();
-    void testStaticFile(QString filename);
-    void testJSFile(QString filename);
-    bool checkOutput(QString againstFilename);
+    enum OutputType { DOMTree, RenderTree };
+    QString getPartOutput( OutputType type );
+    void getPartDOMOutput( QTextStream &outputStream );
+    void testStaticFile(const QString& filename);
+    void testJSFile(const QString& filename);
+    bool checkOutput(const QString& againstFilename);
     bool runTests(QString relPath = "", bool mustExist = false);
-    void reportResult(bool passed, QString description = "");
+    bool reportResult(bool passed, const QString & description = QString::null);
     void createMissingDirs(QString path);
 
     KHTMLPart *m_part;

@@ -30,7 +30,7 @@
 #undef protected
 
 #include "test_regression.h"
-
+#include <unistd.h>
 #include <stdio.h>
 
 #include "css/cssstyleselector.h"
@@ -139,7 +139,7 @@ Value RegTestFunction::call(ExecState *exec, Object &/*thisObj*/, const List &ar
             bool passed = args[0].toBoolean(exec);
             QString description = args[1].toString(exec).qstring();
             if (args[1].isA(UndefinedType) || args[1].isA(NullType))
-                description = "";
+                description = QString::null;
             m_regTest->reportResult(passed,description);
             break;
         }
@@ -301,7 +301,8 @@ static KCmdLineOptions options[] =
 
 int main(int argc, char *argv[])
 {
-    KCmdLineArgs::init(argc, argv, "test_regression", "Regression tester for khtml", "1.0");
+    KCmdLineArgs::init(argc, argv, "test_regression", "TestRegression",
+                       "Regression tester for khtml", "1.0");
     KCmdLineArgs::addCmdLineOptions(options);
 
     KApplication a;
@@ -333,7 +334,7 @@ int main(int argc, char *argv[])
     toplevel->setCentralWidget( part->widget() );
     toplevel->resize( 800, 600);
     part->setJScriptEnabled(true);
-    part->executeScript(""); // force the part to create an interpreter
+    part->executeScript(DOM::Node(), ""); // force the part to create an interpreter
 //    part->setJavaEnabled(true);
 
     if (args->isSet("show"))
@@ -452,7 +453,6 @@ bool RegressionTest::runTests(QString relPath, bool mustExist)
 	    if (filename != "." && filename != ".." && !ignoreFiles.contains(filename))
 		runTests(relFilename,false);
 	}
-
     }
     else if (info.isFile()) {
 	QString relativeDir = QFileInfo(relPath).dirPath();
@@ -482,12 +482,8 @@ bool RegressionTest::runTests(QString relPath, bool mustExist)
     return true;
 }
 
-QByteArray RegressionTest::getPartOutput()
+void RegressionTest::getPartDOMOutput( QTextStream &outputStream )
 {
-    // dump out the contents of the rendering & DOM trees
-    QByteArray dumpData;
-    QTextStream outputStream(dumpData,IO_WriteOnly);
-
     Node node = m_part->document();
     uint indent = 0;
     while (!node.isNull()) {
@@ -567,11 +563,29 @@ QByteArray RegressionTest::getPartOutput()
 		node = node.nextSibling();
 	}
     }
-
-    return dumpData;
 }
 
-void RegressionTest::testStaticFile(QString filename)
+QString RegressionTest::getPartOutput( OutputType type)
+{
+    // dump out the contents of the rendering & DOM trees
+    QString dump;
+    QTextStream outputStream(dump,IO_WriteOnly);
+
+    if ( type == RenderTree ) {
+        static_cast<DocumentImpl*>( m_part->document().handle() )->renderer()->dump( outputStream );
+    } else {
+        assert( type == DOMTree );
+        getPartDOMOutput( outputStream );
+    }
+
+    if ( m_sourceFilesDir.endsWith( "/" ) )
+        dump.replace( m_sourceFilesDir, QString::fromLatin1( "REGRESSION_SRCDIR/" ) );
+    else
+        dump.replace( m_sourceFilesDir, QString::fromLatin1( "REGRESSION_SRCDIR" ) );
+    return dump;
+}
+
+void RegressionTest::testStaticFile(const QString & filename)
 {
     // load page
     KURL url;
@@ -581,11 +595,19 @@ void RegressionTest::testStaticFile(QString filename)
     m_part->openURL(url);
     pm.waitForCompletion();
 
-    // compare with (or generate) output file
-    reportResult(checkOutput(filename+"-dom"));
+    if ( m_genOutput ) {
+        reportResult( checkOutput(filename+"-dom") );
+        reportResult(checkOutput(filename+"-render"));
+    } else {
+        // compare with output file
+        if ( ::access( QFile::encodeName( m_outputFilesDir + "/" + filename + "-dom" ), R_OK ) ||
+             reportResult( checkOutput(filename+"-dom") ) )
+            if ( !::access( QFile::encodeName( m_outputFilesDir + "/" + filename + "-render" ), R_OK ) )
+                reportResult(checkOutput(filename+"-render"));
+    }
 }
 
-void RegressionTest::testJSFile(QString filename)
+void RegressionTest::testJSFile(const QString & filename)
 {
     // create interpreter
     // note: this is different from the interpreter used by the part,
@@ -623,14 +645,14 @@ void RegressionTest::testJSFile(QString filename)
 
     if (c.complType() == Throw) {
 	QString errmsg = c.value().toString(interp.globalExec()).qstring();
-	printf("ERROR: %s (%s)\n",filename.latin1(),errmsg.latin1());
+	printf("ERROR: %s:%d (%s)\n",filename.latin1(),interp.globalExec(),errmsg.latin1());
 	m_errors++;
     }
 }
 
-bool RegressionTest::checkOutput(QString againstFilename)
+bool RegressionTest::checkOutput(const QString &againstFilename)
 {
-    QByteArray data = getPartOutput();
+    QString data = getPartOutput( againstFilename.endsWith( "-dom" ) ? DOMTree : RenderTree );
     QString absFilename = QFileInfo(m_outputFilesDir+"/"+againstFilename).absFilePath();
     if (!m_genOutput) {
 	// compare result to existing file
@@ -641,19 +663,12 @@ bool RegressionTest::checkOutput(QString againstFilename)
 	    exit(1);
 	}
 
-	QByteArray fileData;
-	QTextStream stream(fileData,IO_WriteOnly);
+	QTextStream stream ( &file );
+        stream.setEncoding( QTextStream::UnicodeUTF8 );
 
-	char buf[1024];
-	int bytesread;
-	while (!file.atEnd()) {
-	    bytesread = file.readBlock(buf,1024);
-	    stream.writeRawBytes(buf,bytesread);
-	}
+        QString fileData = stream.read();
 
-	file.close();
-
-	return (fileData == data);
+	return ( fileData == data );
     }
     else {
 	// generate result file
@@ -665,20 +680,19 @@ bool RegressionTest::checkOutput(QString againstFilename)
 	    exit(1);
 	}
 
-	QDataStream fileOut(&file);
-	fileOut.writeRawBytes(data.data(),data.size());
-	file.close();
-
+	QTextStream stream(&file);
+        stream.setEncoding( QTextStream::UnicodeUTF8 );
+        stream << data;
 	printf("Generated %s\n",againstFilename.latin1());
 
 	return true;
     }
 }
 
-void RegressionTest::reportResult(bool passed, QString description)
+bool RegressionTest::reportResult(bool passed, const QString & description)
 {
     if (m_genOutput)
-	return;
+	return true;
 
     if (passed) {
 	printf("PASS: ");
@@ -698,6 +712,7 @@ void RegressionTest::reportResult(bool passed, QString description)
 	printf(" %s",description.latin1());
 
     printf("\n");
+    return passed;
 }
 
 void RegressionTest::createMissingDirs(QString path)
