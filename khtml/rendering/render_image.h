@@ -52,8 +52,8 @@ public:
 
     virtual void setPixmap( const QPixmap &, const QRect&, CachedImage *);
 
-    QPixmap pixmap() const { return pix; }
-    // don't even think about making this method virtual!
+    // don't even think about making these methods virtual!
+    QPixmap pixmap() const;
     DOM::HTMLElementImpl* element() const
     { return static_cast<DOM::HTMLElementImpl*>(RenderObject::element()); }
 
@@ -76,15 +76,6 @@ public:
     virtual void caretPos(int offset, bool override, int &_x, int &_y, int &width, int &height);
 
 private:
-    /*
-     * Pointer to the image
-     * If this pointer is 0L, that means that the picture could not be loaded
-     * for some strange reason or that the image is waiting to be downloaded
-     * from the internet for example.
-     */
-
-    QPixmap pix;
-
     /*
      * Cache for images that need resizing
      */

@@ -4,6 +4,12 @@
 	images if nobody explicitely asked for it. makes loading of very large images 
 	quite a bit faster.
 
+	* rendering/render_image.cpp/.h: Reduce X-server pressure with large images (#39693).
+
+	* misc/loader_jpeg.cpp: Upon suggestion from Maksim, implement decoding of
+	nonprogressive jpegs in non-buffered-image mode. This massively reduces memory
+	footprint and slightly improves performance. 
+
 2004-01-09  Dirk Mueller  <mueller@kde.org>
 
 	* rendering/render_replaced.cpp (eventFilter): readd the wheel event handling

@@ -69,6 +69,11 @@ RenderImage::~RenderImage()
     if(image) image->deref(this);
 }
 
+QPixmap RenderImage::pixmap() const
+{
+    return image ? image->pixmap() : QPixmap();
+}
+
 void RenderImage::setStyle(RenderStyle* _style)
 {
     RenderReplaced::setStyle(_style);
@@ -153,7 +158,6 @@ void RenderImage::setPixmap( const QPixmap &p, const QRect& r, CachedImage *o)
         m_height = oldheight;
     }
 
-    pix = p;
 
     if(needlayout)
     {
@@ -175,6 +179,7 @@ void RenderImage::setPixmap( const QPixmap &p, const QRect& r, CachedImage *o)
             return;
 
         resizeCache = QPixmap(); // for resized animations
+
         if(completeRepaint)
             repaintRectangle(borderLeft()+paddingLeft(), borderTop()+paddingTop(), contentWidth(), contentHeight());
         else
@@ -202,7 +207,7 @@ int /*_h*/, int _tx, int _ty, PaintAction paintAction)
         return;
 
     //kdDebug( 6040 ) << "    contents (" << contentWidth << "/" << contentHeight << ") border=" << borderLeft() << " padding=" << paddingLeft() << endl;
-    if ( pix.isNull() || berrorPic)
+    if ( !image || berrorPic)
     {
         if(cWidth > 2 && cHeight > 2)
         {
@@ -211,11 +216,12 @@ int /*_h*/, int _tx, int _ty, PaintAction paintAction)
                 qDrawShadePanel( p, _tx + leftBorder + leftPad, _ty + topBorder + topPad, cWidth, cHeight,
                                  KApplication::palette().inactive(), true, 1 );
             }
-            if(berrorPic && !pix.isNull() && (cWidth >= pix.width()+4) && (cHeight >= pix.height()+4) )
+            QPixmap const* pix = image ? &image->pixmap() : 0;
+            if(berrorPic && pix && (cWidth >= pix->width()+4) && (cHeight >= pix->height()+4) )
             {
-                QRect r(pix.rect());
+                QRect r(pix->rect());
                 r = r.intersect(QRect(0, 0, cWidth-4, cHeight-4));
-                p->drawPixmap( QPoint( _tx + leftBorder + leftPad+2, _ty + topBorder + topPad+2), pix, r );
+                p->drawPixmap( QPoint( _tx + leftBorder + leftPad+2, _ty + topBorder + topPad+2), *pix, r );
             }
             if(!alt.isEmpty()) {
                 QString text = alt.string();
@@ -231,6 +237,7 @@ int /*_h*/, int _tx, int _ty, PaintAction paintAction)
     }
     else if (image && !image->isTransparent())
     {
+        const QPixmap& pix = image->pixmap();
         if ( (cWidth != intrinsicWidth() ||  cHeight != intrinsicHeight()) &&
              pix.width() > 0 && pix.height() > 0 && image->valid_rect().isValid())
         {
@@ -420,9 +427,9 @@ void RenderImage::updateFromElement()
 
 bool RenderImage::complete() const
 {
-    // "complete" means that the image has been loaded
-    // but also that its width/height (contentWidth(),contentHeight()) have been calculated.
-    return !pix.isNull() && layouted();
+     // "complete" means that the image has been loaded
+     // but also that its width/height (contentWidth(),contentHeight()) have been calculated.
+     return image && image->valid_rect().size() == image->pixmap_size() && layouted();
 }
 
 short RenderImage::calcReplacedWidth() const

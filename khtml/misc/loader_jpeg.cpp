@@ -71,8 +71,8 @@ extern "C" {
     }
 }
 
-static const int max_buf = 8192;
-static const int max_consumingtime = 500;
+static const int max_buf = 32768;
+static const int max_consumingtime = 2000;
 
 struct khtml_jpeg_source_mgr : public jpeg_source_mgr {
     JOCTET buffer[max_buf];
@@ -80,9 +80,11 @@ struct khtml_jpeg_source_mgr : public jpeg_source_mgr {
     int valid_buffer_len;
     size_t skip_input_bytes;
     int ateof;
+    QRect change_rect;
     QTime decoder_timestamp;
     bool final_pass;
     bool decoding_done;
+    bool do_progressive;
 
 public:
     khtml_jpeg_source_mgr();
@@ -226,7 +228,7 @@ KJPEGFormat::KJPEGFormat()
 
 KJPEGFormat::~KJPEGFormat()
 {
-    jpeg_destroy_decompress(&cinfo);
+    (void) jpeg_destroy_decompress(&cinfo);
 }
 
 /*
@@ -282,7 +284,7 @@ int KJPEGFormat::decode(QImage& image, QImageConsumer* consumer, const uchar* bu
         int skipbytes = kMin((size_t) jsrc.valid_buffer_len, jsrc.skip_input_bytes);
 
         if(skipbytes < jsrc.valid_buffer_len)
-            memmove(jsrc.buffer, jsrc.buffer+skipbytes, jsrc.valid_buffer_len - skipbytes);
+            memcpy(jsrc.buffer, jsrc.buffer+skipbytes, jsrc.valid_buffer_len - skipbytes);
 
         jsrc.valid_buffer_len -= skipbytes;
         jsrc.skip_input_bytes -= skipbytes;
@@ -314,9 +316,19 @@ int KJPEGFormat::decode(QImage& image, QImageConsumer* consumer, const uchar* bu
 
     if(state == startDecompress)
     {
-        cinfo.buffered_image = true;
+        jsrc.do_progressive = jpeg_has_multiple_scans( &cinfo );
+        if ( jsrc.do_progressive )
+            cinfo.buffered_image = true;
+        else
+            cinfo.buffered_image = false;
+        // setup image sizes
+        jpeg_calc_output_dimensions( &cinfo );
+
+        assert( cinfo.out_color_space == JCS_RGB );
         cinfo.do_fancy_upsampling = true;
         cinfo.do_block_smoothing = false;
+        cinfo.quantize_colors = false;
+        assert( !cinfo.enable_2pass_quant );
         cinfo.dct_method = JDCT_FASTEST;
 
         // false: IO suspension
@@ -338,12 +350,12 @@ int KJPEGFormat::decode(QImage& image, QImageConsumer* consumer, const uchar* bu
 #endif
 
             jsrc.decoder_timestamp.start();
-            state = decompressStarted;
+            state = jsrc.do_progressive ? decompressStarted : doOutputScan;
         }
     }
 
     if(state == decompressStarted) {
-        state = (!jsrc.final_pass && jsrc.decoder_timestamp.elapsed() < max_consumingtime)
+        state =  (!jsrc.final_pass && jsrc.decoder_timestamp.elapsed() < max_consumingtime)
                 ? consumeInput : prepareOutputScan;
     }
 
@@ -355,19 +367,17 @@ int KJPEGFormat::decode(QImage& image, QImageConsumer* consumer, const uchar* bu
             retval = jpeg_consume_input(&cinfo);
         } while (retval != JPEG_SUSPENDED && retval != JPEG_REACHED_EOI);
 
-        if(jsrc.decoder_timestamp.elapsed() > max_consumingtime || jsrc.final_pass ||
+        if(jsrc.decoder_timestamp.elapsed() > max_consumingtime ||
+           jsrc.final_pass ||
            retval == JPEG_REACHED_EOI || retval == JPEG_REACHED_SOS)
             state = prepareOutputScan;
-        else
-            state = consumeInput;
     }
 
     if(state == prepareOutputScan)
     {
         jsrc.decoder_timestamp.restart();
-        cinfo.buffered_image = true;
-        jpeg_start_output(&cinfo, cinfo.input_scan_number);
-        state = doOutputScan;
+        if ( jpeg_start_output(&cinfo, cinfo.input_scan_number) )
+            state = doOutputScan;
     }
 
     if(state == doOutputScan)
@@ -410,14 +420,24 @@ int KJPEGFormat::decode(QImage& image, QImageConsumer* consumer, const uchar* bu
 #ifdef JPEG_DEBUG
             qDebug("changing %d/%d %d/%d", r.x(), r.y(), r.width(), r.height());
 #endif
-            consumer->changed(r);
+            jsrc.change_rect |= r;
+
+            if ( jsrc.decoder_timestamp.elapsed() >= max_consumingtime ) {
+                consumer->changed(jsrc.change_rect);
+                jsrc.change_rect = QRect();
+                jsrc.decoder_timestamp.restart();
+            }
         }
 
         if(cinfo.output_scanline >= cinfo.output_height)
         {
-            jpeg_finish_output(&cinfo);
-            jsrc.final_pass = jpeg_input_complete(&cinfo);
-            jsrc.decoding_done = jsrc.final_pass && cinfo.input_scan_number == cinfo.output_scan_number;
+            if ( jsrc.do_progressive ) {
+                jpeg_finish_output(&cinfo);
+                jsrc.final_pass = jpeg_input_complete(&cinfo);
+                jsrc.decoding_done = jsrc.final_pass && cinfo.input_scan_number == cinfo.output_scan_number;
+            }
+            else
+                jsrc.decoding_done = true;
 
 #ifdef JPEG_DEBUG
             qDebug("one pass is completed, final_pass = %d, dec_done: %d, complete: %d",
@@ -439,13 +459,18 @@ int KJPEGFormat::decode(QImage& image, QImageConsumer* consumer, const uchar* bu
 #ifdef JPEG_DEBUG
             qDebug("input is complete, cleaning up, returning..");
 #endif
-            (void) jpeg_finish_decompress(&cinfo);
-            (void) jpeg_destroy_decompress(&cinfo);
+            if ( consumer && !jsrc.change_rect.isEmpty() )
+                consumer->changed( jsrc.change_rect );
 
             if(consumer)
                 consumer->end();
 
             jsrc.ateof = true;
+
+            (void) jpeg_finish_decompress(&cinfo);
+            (void) jpeg_destroy_decompress(&cinfo);
+
+            state = readDone;
 
             return 0;
         }
