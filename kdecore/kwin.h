@@ -168,7 +168,7 @@ public:
      *
      * Possible values are NET::Normal, NET::Desktop, NET::Dock,
      * NET::Tool, NET::Menu, NET::Dialog, NET::Override (== no
-     * decoration frame) or NET::TopMenu
+     * decoration frame), NET::TopMenu, NET::Utility or NET::Splash
      *
      * @param win the id of the window
      * @param windowType the type of the window

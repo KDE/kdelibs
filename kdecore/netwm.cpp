@@ -92,6 +92,8 @@ static Atom net_wm_window_type_dock    = 0;
 static Atom net_wm_window_type_toolbar = 0;
 static Atom net_wm_window_type_menu    = 0;
 static Atom net_wm_window_type_dialog  = 0;
+static Atom net_wm_window_type_utility = 0;
+static Atom net_wm_window_type_splash  = 0;
 
 // application window state
 static Atom net_wm_state_modal        = 0;
@@ -197,7 +199,7 @@ static int wcmp(const void *a, const void *b) {
 }
 
 
-static const int netAtomCount = 52;
+static const int netAtomCount = 54;
 static void create_atoms(Display *d) {
     static const char * const names[netAtomCount] =
     {
@@ -237,6 +239,8 @@ static void create_atoms(Display *d) {
 	    "_NET_WM_WINDOW_TYPE_TOOLBAR",
 	    "_NET_WM_WINDOW_TYPE_MENU",
 	    "_NET_WM_WINDOW_TYPE_DIALOG",
+	    "_NET_WM_WINDOW_TYPE_UTILITY",
+	    "_NET_WM_WINDOW_TYPE_SPLASH",
 
 	    "_NET_WM_STATE_MODAL",
 	    "_NET_WM_STATE_STICKY",
@@ -299,6 +303,8 @@ static void create_atoms(Display *d) {
 	    &net_wm_window_type_toolbar,
 	    &net_wm_window_type_menu,
 	    &net_wm_window_type_dialog,
+	    &net_wm_window_type_utility,
+	    &net_wm_window_type_splash,
 
 	    &net_wm_state_modal,
 	    &net_wm_state_sticky,
@@ -914,6 +920,9 @@ void NETRootInfo::setSupported(unsigned long pr) {
 	atoms[pnum++] = net_wm_window_type_toolbar;
 	atoms[pnum++] = net_wm_window_type_menu;
 	atoms[pnum++] = net_wm_window_type_dialog;
+/*	atoms[pnum++] = net_wm_window_type_utility;	##### UNCOMMENT WHEN IMPLEMENTED IN KWIN!!!
+	atoms[pnum++] = net_wm_window_type_splash; */
+	// KDE extensions
 	atoms[pnum++] = kde_net_wm_window_type_override;
 	atoms[pnum++] = kde_net_wm_window_type_topmenu;
     }
@@ -2172,6 +2181,18 @@ void NETWinInfo::setWindowType(WindowType type) {
 	len = 1;
 	break;
 
+    case Utility:
+	data[0] = net_wm_window_type_utility;
+	data[1] = None;
+	len = 1;
+	break;
+
+    case Splash:
+	data[0] = net_wm_window_type_splash;
+	data[1] = None;
+	len = 1;
+	break;
+
     default:
     case Normal:
 	data[0] = net_wm_window_type_normal;
@@ -2771,6 +2792,10 @@ void NETWinInfo::update(unsigned long dirty) {
 			p->type = Menu;
 		    else if ((Atom) types[count] == net_wm_window_type_dialog)
 			p->type = Dialog;
+		    else if ((Atom) types[count] == net_wm_window_type_utility)
+			p->type = Utility;
+		    else if ((Atom) types[count] == net_wm_window_type_splash)
+			p->type = Splash;
 		    else if ((Atom) types[count] == kde_net_wm_window_type_override)
 			p->type = Override;
 		    else if ((Atom) types[count] == kde_net_wm_window_type_topmenu)

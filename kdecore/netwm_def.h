@@ -248,7 +248,9 @@ public:
 	Dialog   = 5,
 	Override = 6, // NON STANDARD
         TopMenu  = 7, // NON STANDARD
-	Tool     = Toolbar // This will go away soon, COMPAT
+	Tool     = Toolbar, // This will go away soon, COMPAT (How soon? :)
+	Utility  = 8,
+	Splash   = 9
     };
 
     /**
