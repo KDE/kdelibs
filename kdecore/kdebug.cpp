@@ -47,7 +47,7 @@ void kdebug( ushort nLevel, ushort,
 			 const char* pFormat, ... )
 {
   // Save old group
-  QString aOldGroup = kapp->getConfig()->getGroup();
+  QString aOldGroup = kapp->getConfig()->group();
   kapp->getConfig()->setGroup( "KDebug" );
   
   /* The QBitArrays should rather be application-static, but since
