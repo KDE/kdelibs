@@ -591,6 +591,8 @@ QString KStandardDirs::kde_default(const char *type) {
 	return "bin/";
     if (!strcmp(type, "lib"))
 	return "lib/";
+    if (!strcmp(type, "tmp"))
+	return "tmp/";
     qFatal("unknown resource type %s", type);
     return QString::null;
 }
