@@ -74,7 +74,7 @@ KIconView::Mode KIconView::mode() const
 }
 
 
-int KIconView::index( const QIconViewItem *item ) const
+int KIconView::itemIndex( const QIconViewItem *item ) const
 {
     if ( !item )
 	return -1;
@@ -85,7 +85,7 @@ int KIconView::index( const QIconViewItem *item ) const
 	return count() - 1;
     else {
 	QIconViewItem *i = firstItem();
-	uint j = 0;
+	int j = 0;
 	while ( i && i != item ) {
 	    i = i->nextItem();
 	    ++j;
@@ -120,6 +120,7 @@ void KIconView::slotSettingsChanged(int category)
     if ( category != KApplication::SETTINGS_MOUSE )
       return;
     m_bUseSingle = KGlobalSettings::singleClick();
+    kdDebug() << "KIconView::slotSettingsChanged for mouse, usesingle=" << m_bUseSingle << endl;
 
     disconnect( this, SIGNAL( mouseButtonClicked( int, QIconViewItem *,
 						  const QPoint & ) ),
@@ -131,6 +132,7 @@ void KIconView::slotSettingsChanged(int category)
 // 					     const QPoint & ) ) );
 
     if( m_bUseSingle ) {
+  kdDebug() << "USESINGLE" << endl;
       connect( this, SIGNAL( mouseButtonClicked( int, QIconViewItem *,
 						 const QPoint & ) ),
 	       this, SLOT( slotMouseButtonClicked( int, QIconViewItem *,
@@ -153,7 +155,7 @@ void KIconView::slotSettingsChanged(int category)
 void KIconView::slotAutoSelect()
 {
   // check that the item still exists
-  if( index( m_pCurrentItem ) == -1 )
+  if( itemIndex( m_pCurrentItem ) == -1 )
     return;
 
   //Give this widget the keyboard focus.
@@ -236,22 +238,31 @@ void KIconView::slotAutoSelect()
 
 void KIconView::emitExecute( QIconViewItem *item, const QPoint &pos )
 {
+  kdDebug() << "KIconView::emitExecute" << endl;
   if ( d->mode != Execute )
+  {
+    kdDebug() << "KIconView::emitExecute : NOT IN EXECUTE MODE !" << endl;
     return;
+  }
     
   Window root;
   Window child;
   int root_x, root_y, win_x, win_y;
   uint keybstate;
+  kdDebug() << "XQueryPointer" << endl;
   XQueryPointer( qt_xdisplay(), qt_xrootwin(), &root, &child,
 		 &root_x, &root_y, &win_x, &win_y, &keybstate );
+  kdDebug() << "XQueryPointer done" << endl;
 
   m_pAutoSelect->stop();
 
   //Don´t emit executed if in SC mode and Shift or Ctrl are pressed
   if( !( m_bUseSingle && ((keybstate & ShiftMask) || (keybstate & ControlMask)) ) ) {
+    kdDebug() << "emitExecute: setSelected (false)" << endl;
     setSelected( item, false );
+    kdDebug() << "emitExecute: emitting 1" << endl;
     emit executed( item );
+    kdDebug() << "emitExecute: emitting 2" << endl;
     emit executed( item, pos );
   }
 }
@@ -300,6 +311,7 @@ void KIconView::contentsMouseDoubleClickEvent ( QMouseEvent * e )
 
 void KIconView::slotMouseButtonClicked( int btn, QIconViewItem *item, const QPoint &pos )
 {
+  kdDebug() << " KIconView::slotMouseButtonClicked() item=" << item << endl;
   if( (btn == LeftButton) && item )
     emitExecute( item, pos );
 }

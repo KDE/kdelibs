@@ -80,7 +80,7 @@ public:
    * in this icon view.
    */
   //BCI: Remove this function. The bug(crash for nonexistent items) will hopefully be fixed then.
-  int index( const QIconViewItem *item ) const;
+  int itemIndex( const QIconViewItem *item ) const;
 
 signals:
 
