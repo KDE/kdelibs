@@ -1,7 +1,7 @@
 /* This file is part of the KDE libraries
    Copyright (C) 2000 Charles Samuels <charles@altair.dhs.org>
                  2000 Malte Starostik <starosti@zedat.fu-berlin.de>
-		 2000 Carsten Pfeiffer <pfeiffer@kde.org>
+		 2000,2003 Carsten Pfeiffer <pfeiffer@kde.org>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -57,7 +57,6 @@ static bool sendNotifyEvent(const QString &message, const QString &text,
   return client->send(daemonName, "Notify", "notify(QString,QString,QString,QString,QString,int,int,int)", data);
 }
 
-#ifndef KDE_NO_COMPAT
 bool KNotifyClient::event( StandardEvent type, const QString& text )
 {
     return event( 0, type, text );
@@ -74,7 +73,6 @@ bool KNotifyClient::userEvent(const QString &text, int present, int level,
     return userEvent( 0, text, present, level, sound, file );
 }
 
-#endif    
 
 bool KNotifyClient::event( int winId, StandardEvent type, const QString& text )
 {
