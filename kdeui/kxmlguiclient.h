@@ -21,6 +21,7 @@
 
 #include <qdom.h>
 #include <qlist.h>
+#include <qmap.h>
 
 class QAction;
 class QActionCollection;
