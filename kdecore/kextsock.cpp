@@ -983,7 +983,8 @@ int KExtendedSocket::doLookup(const QString &host, const QString &serv, addrinfo
   err = getaddrinfo(host.isNull() ? NULL : (const char*)host.utf8(),
 		    serv.isNull() ? NULL : (const char*)serv.utf8(),
 		    &hint, res);
-  if ( (host[0] == QChar('/')) || (serv[0] == QChar('/')) ) {
+  if (	(err) && 
+	( (host[0] == QChar('/')) || (serv[0] == QChar('/')) ) ) {
 #ifdef __FreeBSD__
 	const char *buf;
 	struct addrinfo *p;
@@ -999,7 +1000,7 @@ int KExtendedSocket::doLookup(const QString &host, const QString &serv, addrinfo
 	else
 		buf = serv.latin1();
 
-	_sun = (sockaddr_un*)malloc(sizeof(struct sockaddr_un));
+	_sun = static_cast<sockaddr_un *>(malloc(sizeof(struct sockaddr_un)));
 	memset(_sun, 0, sizeof(struct sockaddr_un));
 
 	len = strlen(buf) + offsetof(struct sockaddr_un, sun_path) + 1;
@@ -1020,7 +1021,7 @@ int KExtendedSocket::doLookup(const QString &host, const QString &serv, addrinfo
 	p->ai_protocol = 0;
 	p->ai_addrlen = len;
 	p->ai_canonname = strdup(buf);
-	p->ai_addr = (sockaddr*)_sun;
+	p->ai_addr = reinterpret_cast<sockaddr *>(_sun);
 	p->ai_next = 0;
 	err = 0;
 #endif
