@@ -445,9 +445,9 @@ void KCharsets::getFontList(KFontStruct mask, KFontStructList& lst) const
     }
 
     if(mask.scalable)
-        maskStr += "0-0-*-*-*-"; // perhaps "0-0-0-0-*-" ????
+        maskStr += "0-0-*-*-*-*-"; // perhaps "0-0-0-0-*-" ????
     else
-        maskStr += "*-*-*-*-*-";
+        maskStr += "*-*-*-*-*-*-";
 
     maskStr += xCharsetName(mask.charset);
 
@@ -478,7 +478,7 @@ void KCharsets::getFontList(KFontStruct mask, KFontStructList& lst) const
             f->slant = Italic;
         if(qfontname.find("-0-0-") != -1)
             f->scalable = true;
-        if(qfontname.find("-b-") != -1)
+        if(qfontname.find("-bold-") != -1)
             f->weight = Bold;
         else
             f->weight = Medium;
@@ -693,7 +693,7 @@ QFont::CharSet KCharsets::charsetForEncoding(const QString &e) const
     QString encoding = e.lower();
     KConfig conf( "charsets", true );
     conf.setGroup("charsetsForEncoding");
-    
+
     kdDebug(0) << "list is: " << conf.readEntry(encoding) << endl;
     QStringList charsets = conf.readListEntry(encoding);
 
