@@ -40,6 +40,7 @@
 
 KMultiTabBarInternal::KMultiTabBarInternal(QWidget *parent, KMultiTabBar::KMultiTabBarMode bm):QScrollView(parent)
 {
+	m_expandedTabSize=-1;
 	m_showActiveTabTexts=false;
 	m_tabs.setAutoDelete(true);
 	setHScrollBarMode(AlwaysOff);
@@ -145,17 +146,16 @@ int KMultiTabBarInternal::appendTab(const QPixmap &pic ,int id,const QString& te
 	KMultiTabBarTab  *tab;
 	m_tabs.append(tab= new KMultiTabBarTab(pic,text,id,box,m_position,m_style));
 	tab->showActiveTabText(m_showActiveTabTexts);
-	if (m_showActiveTabTexts)
+
+	if (m_style==KMultiTabBar::KONQSBC)
 	{
-		int size=0;
-		for (uint i=0;i<m_tabs.count();i++)
-		{
-			int tmp=m_tabs.at(i)->neededSize();
-			size=(size<tmp)?tmp:size;
-		}
-		for (uint i=0;i<m_tabs.count();i++)
-			m_tabs.at(i)->setSize(size);
-	}
+		if (m_expandedTabSize<tab->neededSize()) {
+			m_expandedTabSize=tab->neededSize();
+			for (uint i=0;i<m_tabs.count();i++)
+				m_tabs.at(i)->setSize(m_expandedTabSize);
+
+		} else tab->setSize(m_expandedTabSize);
+	} else tab->updateState();
 	tab->show();
 	return 0;
 }
@@ -264,7 +264,7 @@ void KMultiTabBarTab::updateState()
 		if ((m_style==KMultiTabBar::KDEV3) || (isOn())) {
 			QPushButton::setText(m_text);
 		} else {
-			//kdDebug()<<"KMultiTabBarTab::updateState(): setting text to an empty QString"<<endl;
+			kdDebug()<<"KMultiTabBarTab::updateState(): setting text to an empty QString***************"<<endl;
 			QPushButton::setText(QString::null);
 		}
 
