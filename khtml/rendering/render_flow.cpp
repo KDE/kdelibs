@@ -309,13 +309,15 @@ void RenderFlow::layoutBlockChildren()
 
     int prevMargin = 0;
     if(isTableCell() ) {
-	if ( child && !child->isPositioned()) {
+	if ( child && !( child->isPositioned() || child->isFloating() ) ) {
 	    child->calcVerticalMargins();
 	    prevMargin = -child->marginTop();
 	}
     } else if ( m_height == 0 ) {
 	// the elements and childs margin collapse if there is no border and padding.
 	prevMargin = marginTop();
+	if ( parent() )
+	    prevMargin = collapseMargins( prevMargin, parent()->marginTop() );
 	m_height = -prevMargin;
     }
 
