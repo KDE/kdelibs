@@ -739,9 +739,16 @@ pid_t KDEDesktopMimeType::runMimeType( const KURL& url , const KSimpleConfig & )
   // Hmm, can't really use keditfiletype since we might be looking
   // at the global file, or at a file not in share/mimelnk...
 
+  QStringList args;
+  args << "openProperties";
+  args << url.path();
+
+  int pid;
+  if ( !KApplication::kdeinitExec("kfmclient", args, 0, &pid) )
+      return pid;
+
   KProcess p;
-  p.setUseShell(true);
-  p << "kfmclient" << "openProperties" << url.path().local8Bit();
+  p << "kfmclient" << args;
   p.start(KProcess::DontCare);
   return p.getPid();
 }
