@@ -91,7 +91,7 @@ public:
    * relative) of your application's UI resource file.  If it is
    * left blank, then the resource file: share/apps/appname/appnameui.rc
    * is used.  This is the same resource file that is used by the
-   * default @ref createGUI() function in @ref KTMainWindow so you're usually
+   * default @ref createGUI() function in @ref KMainWindow so you're usually
    * pretty safe in leaving it blank.
    *
    * The third parameter, @ref global(), controls whether or not the
@@ -179,7 +179,7 @@ public:
    * relative) of your application's UI resource file.  If it is
    * left blank, then the resource file: share/apps/appname/appnameui.rc
    * is used.  This is the same resource file that is used by the
-   * default createGUI function in KTMainWindow so you're usually
+   * default createGUI function in KMainWindow so you're usually
    * pretty safe in leaving it blank.
    *
    * The third parameter, @ref #global, controls whether or not the

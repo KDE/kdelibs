@@ -40,10 +40,10 @@ class KHelpMenuPrivate;
  * This class provides the standard KDE help menu with the default "about"
  * dialog boxes and help entry.
  *
- * This class is used in @ref KTMainWindow so
+ * This class is used in @ref KMainWindow so
  * normally you don't need to use this class yourself. However, if you
  * need the help menu or any of its dialog boxes in your code that is
- * not subclassed from @ref KTMainWindow you should use this class.
+ * not subclassed from @ref KMainWindow you should use this class.
  *
  * The usage is simple:
  *

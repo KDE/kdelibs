@@ -13,7 +13,7 @@
 * certainly link to libkdeui.
 *
 * Most applications with single or multiple toplevel widgets
-* should use the @ref KTMainWindow class in this library, which
+* should use the @ref KMainWindow class in this library, which
 * automatically provides features like session management and simplified
 * toolbar/menubar/statusbar creation.
 *

@@ -61,7 +61,7 @@ signals:
  *
  *  You can insert text labels or custom widgets. Their geometry is managed
  *  internally. KStatusBar resizes itself, but positioning is left to
- *  @ref KTMainWindow (or to you, if you don't use @ref KTMainWindow ).
+ *  @ref KMainWindow (or to you, if you don't use @ref KMainWindow ).
  *
  *  A special type of item is a message which is a temporary text-message
  *  displayed on top of other items in full-width. Messages are visible for
@@ -90,8 +90,7 @@ public:
   enum BarStatus{ Toggle, Show, Hide };
   
   /**
-   *  Construct KStatusBar object. @p parent is usually @ref KTMainWindow.
-   *  @see KTMainWindow::setStatusBar
+   *  Construct KStatusBar object. @p parent is usually @ref KMainWindow.
    */
   KStatusBar( QWidget* parent = 0L, const char* name = 0L );
 

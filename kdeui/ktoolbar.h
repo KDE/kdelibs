@@ -49,7 +49,6 @@ class KPopupMenu;
 class KInstance;
 class KComboBox;
 class KXMLGUIClient;
-class KTMainWindow;
 
 class KToolBarPrivate;
 
@@ -80,7 +79,7 @@ private:
   *
   * A KToolBar can contain all sorts of widgets.
   *
-  * KToolBar can be used as a standalone widget, but @ref KTMainWindow
+  * KToolBar can be used as a standalone widget, but @ref KMainWindow
   * provides easy factories and management of one or more toolbars.
   * Once you have a KToolBar object, you can insert items into it with the
   * insert... methods, or remove them with the @ref removeItem() method. This
@@ -106,7 +105,6 @@ class KToolBar : public QToolBar
     Q_PROPERTY( bool fullSize READ fullSize WRITE setFullSize )
     Q_PROPERTY( int iconSize READ iconSize WRITE setIconSize )
     Q_PROPERTY( QString text READ text WRITE setText )
-    friend class KTMainWindow;
 
 public:
     enum IconText{IconOnly = 0, IconTextRight, TextOnly, IconTextBottom};
@@ -128,7 +126,7 @@ public:
    * true.  All other toolbars will be IconOnly and use Medium icons.
    *
    * @param parent      The standard toolbar parent (usually a
-   *                    @ref KTMainWindow)
+   *                    @ref KMainWindow)
    * @param name        The standard internal name
    * @param _honor_mode If true, then global settings for IconSize
    *                    and IconText will be honored
@@ -701,17 +699,13 @@ public:
    */
     bool enable(BarStatus stat);
 
-    /**
+  /**
    * Set maximal height of vertical (Right or Left) toolbar.
    *
-   * You normally
-   * do not have to call it, since it's called from
-   * @ref KTMainWindow::updateRects()
-   * If you reimplement @ref KTMainWindow::resizeEvent() or
-   * KTMainWindow::updateRects(),
+   * You normally do not have to call it.
+   * If you reimplement @ref KMainWindow::resizeEvent().
    * be sure to call this function with the maximal height the toolbar can have.
    * In 0xFE cases out of 0xFF (i.e., quite nearly always) you don't need to use this function.
-   * @see updateRects()
    */
     void setMaxHeight (int h);  // Set max height for vertical toolbars
 
@@ -954,14 +948,10 @@ signals:
      * Emitted when toolbar changes position, or when
      * an item is removed from toolbar.
      *
-     * This is normaly connected to
-     * @ref KTMainWindow::updateRects().
-     * If you subclass @ref KTMainWindow and reimplement
-     * @ref KTMainWindow::resizeEvent() or
-     * @ref KTMainWindow::updateRects(), be sure to connect to
+     * If you subclass @ref KMainWindow and reimplement
+     * @ref KMainWindow::resizeEvent() be sure to connect to
      * this signal. Note: You can connect this signal to a slot that
      * doesn't take parameter.
-     * @see updateRects()
      */
     void moved( BarPosition );
 
