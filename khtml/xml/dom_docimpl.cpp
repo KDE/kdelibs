@@ -1023,7 +1023,7 @@ ElementImpl *DocumentImpl::findSelectableElement(NodeImpl *start, bool forward)
     if (forward)
 	while(1)
 	{
-	    if (start->firstChild())
+	    if (!start->isSelectable() && start->firstChild())
 		start = start->firstChild();
 	    else if (start->nextSibling())
 		start = start->nextSibling();
@@ -1042,14 +1042,13 @@ ElementImpl *DocumentImpl::findSelectableElement(NodeImpl *start, bool forward)
 		    }
 		}
 	    }
-	    if (start->isElementNode()&&
-		static_cast<ElementImpl *>(start)->isSelectable())
+	    if (start->isElementNode() && start->isSelectable())
 		return static_cast<ElementImpl*>(start);
 	}
     else
 	while (1)
 	{
-	    if (start->lastChild())
+	    if (!start->isSelectable() && start->lastChild())
 		start = start->lastChild();
 	    else if (start->previousSibling())
 		start = start->previousSibling();
@@ -1070,8 +1069,7 @@ ElementImpl *DocumentImpl::findSelectableElement(NodeImpl *start, bool forward)
 		    }
 		}
 	    }
-	    if (start->isElementNode() &&
-		static_cast<ElementImpl*>(start)->isSelectable())
+	    if (start->isElementNode() && start->isSelectable())
 		return static_cast<ElementImpl*>(start);
 	}
     kdFatal(6000) << "some error in findElement\n";
@@ -1096,7 +1094,7 @@ int DocumentImpl::findHighestTabIndex()
 		retval=tmpval;
         }
 	//iterate to next element.
-	if (n->firstChild())
+	if (!n->isSelectable() && n->firstChild())
 	    n=n->firstChild();
 	else if (n->nextSibling())
 	    n=n->nextSibling();
