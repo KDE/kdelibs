@@ -20,7 +20,7 @@ AC_CACHE_VAL(ac_cv_libexr,
      if !(`$PKG_CONFIG --exists OpenEXR`) ; then
         AC_MSG_RESULT(no)
         echo "*** pkg-config installed, but no OpenEXR Libraries were found ***"
-	echo "*** Install OpenEXR package (from http:///www.openexr.org)"
+	echo "*** Install OpenEXR package (from http:///www.openexr.com)"
  	echo "*** if you want EXR image format support"
      else
         if !(`$PKG_CONFIG --atleast-version="1.1.1" OpenEXR`) ; then
