@@ -341,6 +341,7 @@ void KUniqueApplication::newInstanceNoFork()
   }
   
   newInstance();
+  KStartupInfo::handleAutoAppStartedSending(); // KDE4 remove?
   // What to do with the return value ?
 }
 
@@ -395,6 +396,7 @@ KUniqueApplication::processDelayed()
            setStartupId( asn_id );
        }
        int exitCode = newInstance();
+       KStartupInfo::handleAutoAppStartedSending(); // KDE4 remove?
        QDataStream rs(replyData, IO_WriteOnly);
        rs << exitCode;
        replyType = "int";
@@ -421,6 +423,7 @@ int KUniqueApplication::newInstance()
       mainWidget()->show();
 #if defined Q_WS_X11 && ! defined K_WS_QTONLY
       KStartupInfo::setNewStartupId( mainWidget(), kapp->startupId());
+      KStartupInfo::handleAutoAppStartedSending();
 #endif
     }
   }

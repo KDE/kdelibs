@@ -224,7 +224,7 @@ void KWindowListMenu::slotExec(int id)
     else if (id > 1000)
         KWin::setCurrentDesktop(id - 1000);
     else if ( id >= 0 )
-	KWin::setActiveWindow(map[id]);
+	KWin::forceActiveWindow(map[id]);
 #endif
 }
 

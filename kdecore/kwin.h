@@ -64,7 +64,7 @@ public:
      * Requests that window @p is activated.
      *
      * There are two ways how to activate a window, by calling
-     * activateWindow() and setActiveWindow(). Generally,
+     * activateWindow() and forceActiveWindow(). Generally,
      * applications shouldn't make attempts to explicitly activate
      * their windows, and instead let the user to activate them.
      * In the special cases where this may be needed, applications
@@ -72,7 +72,7 @@ public:
      * this request wouldn't result in focus stealing, which
      * would be obtrusive, and may refuse the request.
      *
-     * The usage of setActiveWindow() is meant only for pagers
+     * The usage of forceActiveWindow() is meant only for pagers
      * and similar tools, which represent direct user actions
      * related to window manipulation.
      * Except for rare cases, this request will be always honored,
@@ -103,15 +103,12 @@ public:
      *
      * @since 3.2
     */
-    static void setActiveWindow( WId win, long time );
+    static void forceActiveWindow( WId win, long time = 0 );
     /**
-     * @deprecated Consider using activateWindow(), use setActiveWindow()
+     * @deprecated Consider using activateWindow(), use forceActiveWindow()
      * only if necessary.
      */
-    // KDE4 merge with above with time = 0 ???
-    // this method is not really deprecated, but in most cases it should
-    // be replaced with activateWindow()
-    static void setActiveWindow( WId win );
+    static void setActiveWindow( WId win ) KDE_DEPRECATED;
 
     /**
      * When application finishes some operation and wants to notify

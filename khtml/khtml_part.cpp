@@ -2545,7 +2545,7 @@ void KHTMLPart::findText()
   // Raise if already opened
   if ( d->m_findDialog )
   {
-    KWin::setActiveWindow( d->m_findDialog->winId() );
+    KWin::activateWindow( d->m_findDialog->winId() );
     return;
   }
 

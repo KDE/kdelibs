@@ -250,7 +250,7 @@ void KSystemTray::activateOrHide()
             if( info.mappingState() == NET::Visible && info.geometry().intersects( pw->geometry()))
             {
                 pw->raise();
-                KWin::setActiveWindow( pw->winId());
+                KWin::activateWindow( pw->winId());
                 return;
             }
         }
@@ -277,7 +277,7 @@ void KSystemTray::minimizeRestore( bool restore )
         pw->move( info.geometry().topLeft() ); // avoid placement policies
         pw->show();
         pw->raise();
-	KWin::setActiveWindow( pw->winId() );
+	KWin::activateWindow( pw->winId() );
     } else {
 	d->on_all_desktops = info.onAllDesktops();
 	pw->hide();

@@ -56,6 +56,7 @@
 
 static bool atoms_created = false;
 extern Atom qt_wm_protocols;
+extern Time qt_x_time;
 extern Time qt_x_last_input_time;
 
 static Atom net_wm_context_help;
@@ -212,10 +213,12 @@ void KWin::activateWindow( WId win, long time )
 #endif // Q_WS_X11 ...
 }
 
-void KWin::setActiveWindow( WId win, long time )
+void KWin::forceActiveWindow( WId win, long time )
 {
 #if defined Q_WS_X11 && ! defined K_WS_QTONLY
     NETRootInfo info( qt_xdisplay(), 0 );
+    if( time == 0 )
+        time = qt_x_time;
     info.setActiveWindow( win, NET::FromTool, time );
 #endif // Q_WS_X11 ...
 }
