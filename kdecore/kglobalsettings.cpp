@@ -86,3 +86,9 @@ KGlobalSettings::Completion KGlobalSettings::completionMode()
   return (Completion) completion;
 }
 
+bool KGlobalSettings::honorGnome()
+{
+    KConfig *c = KGlobal::config();
+    c->setGroup(QString::fromLatin1("General"));
+    return c->readBoolEntry("honorGnome", false);
+}
