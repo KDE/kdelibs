@@ -618,6 +618,16 @@ bool KConfigSkeleton::useDefaults(bool b)
   return !mUseDefaults;
 }
 
+void KConfigSkeleton::setDefaults()
+{
+  KConfigSkeletonItem::List::ConstIterator it;
+  for( it = mItems.begin(); it != mItems.end(); ++it ) {
+    (*it)->setDefault();
+  }
+
+  usrSetDefaults();
+}
+
 void KConfigSkeleton::readConfig()
 {
   kdDebug(177) << "KConfigSkeleton::readConfig()" << endl;

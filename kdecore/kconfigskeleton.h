@@ -117,6 +117,11 @@
     virtual QVariant property() const = 0;
 
     /**
+      Sets the current value to the default value.
+    */
+    virtual void setDefault() = 0;
+
+    /**
      * Exchanges the current value with the default value
      * Used by KConfigSkeleton::useDefaults(bool);
      */
@@ -165,6 +170,11 @@ template < typename T > class KConfigSkeletonGenericItem:public KConfigSkeletonI
     T & value()
     {
       return mReference;
+    }
+
+    virtual void setDefault()
+    {
+      mReference = mDefault;
     }
 
     virtual void writeConfig(KConfig * config)
@@ -545,6 +555,11 @@ public:
     virtual ~ KConfigSkeleton();
 
   /**
+    Set all registered items to their default values.
+  */
+  void setDefaults();
+
+  /**
    * Read preferences from config file. All registered items are set to the
    * values read from disk.
    */
@@ -874,21 +889,25 @@ protected:
    */
   virtual void usrUseDefaults(bool)
   {
-  };
+  }
+
+  virtual void usrSetDefaults()
+  {
+  }
 
   /**
    * Implemented by subclasses that read special config values.
    */
   virtual void usrReadConfig()
   {
-  };
+  }
 
   /**
    * Implemented by subclasses that write special config values.
    */
   virtual void usrWriteConfig()
   {
-  };
+  }
 
 private:
   QString mCurrentGroup;
