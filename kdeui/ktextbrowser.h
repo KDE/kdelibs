@@ -38,6 +38,7 @@
 class KTextBrowser : public QTextBrowser
 {
   Q_OBJECT
+  Q_PROPERTY( bool notifyClick READ isNotifyClick WRITE setNotifyClick )
 
   public:
     /**

@@ -16,15 +16,10 @@
     the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
     Boston, MA 02111-1307, USA.
 */
-//-----------------------------------------------------------------------------
-// Selector widgets for KDE Color Selector, but probably useful for other
-// stuff also.
 
-#include <stdlib.h>
 #include <qimage.h>
 #include <qpainter.h>
 #include <qdrawutil.h>
-#include <qevent.h>
 #include <kimageeffect.h>
 #include "kselect.h"
 
@@ -49,6 +44,11 @@ KXYSelector::KXYSelector( QWidget *parent, const char *name )
 	store.setOptimization( QPixmap::BestOptim );
 	store.resize( STORE_W2, STORE_W2 );
 }
+
+
+KXYSelector::~KXYSelector()
+{}
+
 
 void KXYSelector::setRange( int _minX, int _minY, int _maxX, int _maxY )
 {
@@ -81,7 +81,7 @@ void KXYSelector::setValues( int _xPos, int _yPos )
 	setPosition( xp, yp );
 }
 
-QRect KXYSelector::contentsRect()
+QRect KXYSelector::contentsRect() const
 {
 	return QRect( 2, 2, width()-4, height()-4 );
 }
@@ -103,7 +103,7 @@ void KXYSelector::paintEvent( QPaintEvent *ev )
 	{
 	   bitBlt( &store, 0, 0, this, px - STORE_W, py - STORE_W,
 		STORE_W2, STORE_W2, CopyROP );
-	   drawCursor( painter, px, py );
+	   drawCursor( &painter, px, py );
         }
         else if (paintRect.intersects(cursorRect))
         {
@@ -147,7 +147,7 @@ void KXYSelector::setPosition( int xp, int yp )
 			STORE_W2, STORE_W2, CopyROP );
 	bitBlt( &store, 0, 0, this, xp - STORE_W, yp - STORE_W,
 			STORE_W2, STORE_W2, CopyROP );
-	drawCursor( painter, xp, yp );
+	drawCursor( &painter, xp, yp );
 	px = xp;
 	py = yp;
 
@@ -167,14 +167,18 @@ void KXYSelector::setPosition( int xp, int yp )
 		yPos = minY;
 }
 
-void KXYSelector::drawCursor( QPainter &painter, int xp, int yp )
-{
-	painter.setPen( QPen( white ) );
+void KXYSelector::drawContents( QPainter * )
+{}
 
-	painter.drawLine( xp - 6, yp - 6, xp - 2, yp - 2 );
-	painter.drawLine( xp - 6, yp + 6, xp - 2, yp + 2 );
-	painter.drawLine( xp + 6, yp - 6, xp + 2, yp - 2 );
-	painter.drawLine( xp + 6, yp + 6, xp + 2, yp + 2 );
+
+void KXYSelector::drawCursor( QPainter *p, int xp, int yp )
+{
+	p->setPen( QPen( white ) );
+
+	p->drawLine( xp - 6, yp - 6, xp - 2, yp - 2 );
+	p->drawLine( xp - 6, yp + 6, xp - 2, yp + 2 );
+	p->drawLine( xp + 6, yp - 6, xp + 2, yp - 2 );
+	p->drawLine( xp + 6, yp + 6, xp + 2, yp + 2 );
 }
 
 //-----------------------------------------------------------------------------
@@ -184,6 +188,13 @@ void KXYSelector::drawCursor( QPainter &painter, int xp, int yp )
  */
 
 
+KSelector::KSelector( QWidget *parent, const char *name )
+	: QWidget( parent, name ), QRangeControl()
+{
+	_orientation = Horizontal;
+	_indent = TRUE;
+}
+
 KSelector::KSelector( Orientation o, QWidget *parent, const char *name )
 	: QWidget( parent, name ), QRangeControl()
 {
@@ -191,7 +202,12 @@ KSelector::KSelector( Orientation o, QWidget *parent, const char *name )
 	_indent = TRUE;
 }
 
-QRect KSelector::contentsRect()
+
+KSelector::~KSelector()
+{}
+
+
+QRect KSelector::contentsRect() const
 {
 	if ( orientation() == Vertical )
 		return QRect( 2, 5, width()-9, height()-10 );
@@ -220,7 +236,7 @@ void KSelector::paintEvent( QPaintEvent * )
 	}
 
 	QPoint pos = calcArrowPos( value() );
-	drawArrow( painter, TRUE, pos );   
+	drawArrow( &painter, TRUE, pos );   
 
 	painter.end();
 }
@@ -243,10 +259,10 @@ void KSelector::valueChange()
 	painter.begin( this );
 
 	pos = calcArrowPos( prevValue() );
-	drawArrow( painter, FALSE, pos );   
+	drawArrow( &painter, FALSE, pos );   
 
 	pos = calcArrowPos( value() );
-	drawArrow( painter, TRUE, pos );   
+	drawArrow( &painter, TRUE, pos );   
 
 	painter.end();
 }
@@ -291,19 +307,22 @@ QPoint KSelector::calcArrowPos( int val )
 	return p;
 }
 
-void KSelector::drawArrow( QPainter &painter, bool show, const QPoint &pos )
+void KSelector::drawContents( QPainter * )
+{}
+
+void KSelector::drawArrow( QPainter *painter, bool show, const QPoint &pos )
 {
 	QPointArray array(3);
 
 	if ( show )
 	{
-		painter.setPen( QPen() );
-		painter.setBrush( QBrush( black ) );
+		painter->setPen( QPen() );
+		painter->setBrush( QBrush( black ) );
 	}
 	else
 	{
-		painter.setPen( QPen( backgroundColor() ) );
-		painter.setBrush( backgroundColor() );
+		painter->setPen( QPen( backgroundColor() ) );
+		painter->setBrush( backgroundColor() );
 	}
 
 	if ( orientation() == Vertical )
@@ -319,20 +338,38 @@ void KSelector::drawArrow( QPainter &painter, bool show, const QPoint &pos )
 		array.setPoint( 2, pos.x()-5, pos.y()+5 );
 	}
 
-	painter.drawPolygon( array );
+	painter->drawPolygon( array );
 }
 
 //----------------------------------------------------------------------------
+
+KGradientSelector::KGradientSelector( QWidget *parent, const char *name )
+    : KSelector( parent, name )
+{
+    init();
+}
+
 
 KGradientSelector::KGradientSelector( Orientation o, QWidget *parent,
 		const char *name )
 	: KSelector( o, parent, name )
 {
-	color1.setRgb( 0, 0, 0 );
-	color2.setRgb( 255, 255, 255 );
-
-	text1 = text2 = "";
+    init();
 }
+
+
+KGradientSelector::~KGradientSelector()
+{}
+
+
+void KGradientSelector::init()
+{
+    color1.setRgb( 0, 0, 0 );
+    color2.setRgb( 255, 255, 255 );
+    
+    text1 = text2 = "";
+}
+
 
 void KGradientSelector::drawContents( QPainter *painter )
 {

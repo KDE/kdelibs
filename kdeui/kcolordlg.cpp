@@ -62,8 +62,6 @@
 #define HSV_X 305
 #define RGB_X 385
 
-static QColor *standardPalette = 0;
-
 static const char *recentColors = "Recent_Colors";
 static const char *customColors = "Custom_Colors";
 
@@ -133,7 +131,9 @@ KColor::hsv(int *_h, int *_s, int *_v)
 };
 
 
-void createStandardPalette()
+static QColor *standardPalette = 0;
+
+static void createStandardPalette()
 {
     if ( standardPalette )
 	return;
@@ -161,15 +161,21 @@ void createStandardPalette()
     standardPalette[i++] = Qt::black;
 }
 
-KHSSelector::KHSSelector( QWidget *parent )
-	: KXYSelector( parent )
+
+KHSSelector::KHSSelector( QWidget *parent, const char *name )
+	: KXYSelector( parent, name )
 {
 	setRange( 0, 0, 359, 255 );
 }
 
+void KHSSelector::updateContents()
+{
+	drawPalette(&pixmap);
+}
+
 void KHSSelector::resizeEvent( QResizeEvent * )
 {
-	drawPalette();
+	updateContents();
 }
 
 void KHSSelector::drawContents( QPainter *painter )
@@ -177,7 +183,7 @@ void KHSSelector::drawContents( QPainter *painter )
 	painter->drawPixmap( contentsRect().x(), contentsRect().y(), pixmap );
 }
 
-void KHSSelector::drawPalette()
+void KHSSelector::drawPalette( QPixmap *pixmap )
 {
 	int xSize = contentsRect().width(), ySize = contentsRect().height();
 	QImage image( xSize, ySize, 32 );
@@ -201,21 +207,27 @@ void KHSSelector::drawPalette()
 		createStandardPalette();
 		KImageEffect::dither( image, standardPalette, STANDARD_PAL_SIZE );
 	}
-	pixmap.convertFromImage( image );
+	pixmap->convertFromImage( image );
 }
+
 
 //-----------------------------------------------------------------------------
 
-KValueSelector::KValueSelector( QWidget *parent )
-	: KSelector( KSelector::Vertical, parent ), hue(0), sat(0)
+KValueSelector::KValueSelector( QWidget *parent, const char *name )
+	: KSelector( KSelector::Vertical, parent, name ), _hue(0), _sat(0)
 {
 	setRange( 0, 255 );
 	pixmap.setOptimization( QPixmap::BestOptim );
 }
 
+void KValueSelector::updateContents()
+{
+	drawPalette(&pixmap);
+}
+
 void KValueSelector::resizeEvent( QResizeEvent * )
 {
-	drawPalette();
+	updateContents();
 }
 
 void KValueSelector::drawContents( QPainter *painter )
@@ -223,7 +235,7 @@ void KValueSelector::drawContents( QPainter *painter )
 	painter->drawPixmap( contentsRect().x(), contentsRect().y(), pixmap );
 }
 
-void KValueSelector::drawPalette()
+void KValueSelector::drawPalette( QPixmap *pixmap)
 {
 	int xSize = contentsRect().width(), ySize = contentsRect().height();
 	QImage image( xSize, ySize, 32 );
@@ -234,7 +246,7 @@ void KValueSelector::drawPalette()
 	for ( int v = 0; v < ySize; v++ )
 	{
 		p = (uint *) image.scanLine( ySize - v - 1 );
-		col.setHsv( hue, sat, 255*v/(ySize-1) );
+		col.setHsv( _hue, _sat, 255*v/(ySize-1) );
 		rgb = col.rgb();
 		for ( int i = 0; i < xSize; i++ )
 			*p++ = rgb;
@@ -245,7 +257,7 @@ void KValueSelector::drawPalette()
 		createStandardPalette();
 		KImageEffect::dither( image, standardPalette, STANDARD_PAL_SIZE );
 	}
-	pixmap.convertFromImage( image );
+	pixmap->convertFromImage( image );
 }
 
 //-----------------------------------------------------------------------------
@@ -1132,7 +1144,7 @@ void KColorDialog::_setColor(const KColor &color, const QString &name)
   hsSelector->setValues( h, s );
   valuePal->setHue( h );
   valuePal->setSaturation( s );
-  valuePal->drawPalette();
+  valuePal->updateContents();
   valuePal->repaint( FALSE );
   valuePal->setValue( v );
   bRecursion = false;
@@ -1229,7 +1241,7 @@ void KColorDialog::setHsvEdit( void )
   vedit->setText( num );
 }
 
-//----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 
 KColorCombo::KColorCombo( QWidget *parent, const char *name )
 	: QComboBox( parent, name )
@@ -1352,5 +1364,6 @@ void KColorCombo::addColors()
 			setCurrentItem( i + 1 );
 	}
 }
+
 #include "kcolordlg.moc"
 

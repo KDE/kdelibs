@@ -39,67 +39,102 @@ class KListBox;
 class KPalette;
 class KColorCells;
 
+
 /**
-* Widget for Hue/Saturation selection.
-* The actual values can be fetched using the inherited xValue and yValue
-* methods.
-*
-* @see KXYSelector, KValueSelector, KColorDialog
-* @author Martin Jones (mjones@kde.org)
-* @version $Id$
+ * Widget for Hue/Saturation selection.
+ * The actual values can be fetched using the inherited xValue and yValue
+ * methods.
+ *
+ * @see KXYSelector, KValueSelector, KColorDialog
+ * @author Martin Jones (mjones@kde.org)
+ * @version $Id$
 */
 class KHSSelector : public KXYSelector
 {
   Q_OBJECT
+
 public:
-  KHSSelector( QWidget *parent );
+  /**
+   * Constructs a hue/saturation selection widget.
+   */
+  KHSSelector( QWidget *parent=0, const char *name=0 );
 
-private:
-  void drawPalette();
-
+  void updateContents();
+    
 protected:
+  /**
+   * Draws the contents of the widget on a pixmap,
+   * which is used for buffering.
+   */
+  virtual void drawPalette( QPixmap *pixmap );
+    
   virtual void resizeEvent( QResizeEvent * );
+  /**
+   * Reimplemented from KXYSelector. This drawing is
+   * buffered in a pixmap here. As real drawing
+   * routine, drawPalette() is used.
+   */
   virtual void drawContents( QPainter *painter );
 
-protected:
+private:
   QPixmap pixmap;
 
-private:
   class KHSSelectorPrivate;
   KHSSelectorPrivate *d;
 };
 
+
 /**
-* Dialog for colour value selection.
-*
-* @see KHSSelector, KColorDialog
-* @author Martin Jones (mjones@kde.org)
-* @version $Id$
-*/
+ * Dialog for colour value selection.
+ *
+ * @see KHSSelector, KColorDialog
+ * @author Martin Jones (mjones@kde.org)
+ * @version $Id$
+ */
 class KValueSelector : public KSelector
 {
   Q_OBJECT
+
 public:
-  KValueSelector( QWidget *parent );
+  /**
+   * Constructs a widget for color selection.
+   */
+  KValueSelector( QWidget *parent=0, const char *name=0 );
 
-  void setHue( int h )	{	hue = h; }
-  void setSaturation( int s )	{	sat = s; }
-
-  void drawPalette();
-
+  int hue() const
+        { return _hue; }
+  void setHue( int h )
+        { _hue = h; }
+  int saturation() const
+        { return _sat; }
+  void setSaturation( int s )
+        { _sat = s; }
+  void updateContents();
+    
 protected:
+  /**
+   * Draws the contents of the widget on a pixmap,
+   * which is used for buffering.
+   */
+  virtual void drawPalette( QPixmap *pixmap );
+
   virtual void resizeEvent( QResizeEvent * );
+  /**
+   * Reimplemented from KSelector. The drawing is
+   * buffered in a pixmap here. As real drawing
+   * routine, drawPalette() is used.
+   */
   virtual void drawContents( QPainter *painter );
 
-protected:
-  int hue;
-  int sat;
+private:
+  int _hue;
+  int _sat;
   QPixmap pixmap;
 
-private:
   class KValueSelectorPrivate;
   KValueSelectorPrivate *d;
 };
+
 
 class KColor : public QColor
 {
@@ -374,8 +409,6 @@ class KColorDialog : public KDialogBase
     class KColorDialogPrivate;
     KColorDialogPrivate *d;
 };
-
-
 
 
 /**

@@ -24,46 +24,86 @@
 #define __KSELECT_H__
 
 #include <qdialog.h>
-#include <qframe.h>
 #include <qrangecontrol.h>
-#include <qlineedit.h>
 #include <qpixmap.h>
 
-/** 2D value selector.
-  The contents of the selector are drawn by derived class.
-  */
+/**
+ * KXYSelector is the base class for other widgets which
+ * provides the ability to choose from a two-dimensional
+ * range of values. The currently chosen value is indicated
+ * by a cross. An example is the @ref KHSSelector which
+ * allows to choose from a range of colors, and which is
+ * used in KColorDialog.
+ *
+ * A custom drawing routine for the widget surface has
+ * to be provided by the subclass.
+ */
 class KXYSelector : public QWidget
 {
   Q_OBJECT
-public:
-  KXYSelector( QWidget *parent = 0L, const char *name = 0L );
 
+public:
+  /**
+   * Constructs a two-dimensional selector widget which
+   * has a value range of [0..100] in both directions.
+   */
+  KXYSelector( QWidget *parent=0, const char *name=0 );
+  /**
+   * Destructs the widget.
+   */
+  ~KXYSelector();
+
+  /**
+   * Sets the current values in horizontal and
+   * vertical direction.
+   */
   void setValues( int _xPos, int _yPos );
+  /**
+   * Sets the range of possible values.
+   */
   void setRange( int _minX, int _minY, int _maxX, int _maxY );
 
+  /**
+   * @return the current value in horizontal direction.
+   */
   int xValue()	{	return xPos; }
+  /**
+   * @return the current value in vertical direction.
+   */
   int yValue()	{	return yPos; }
 
-  QRect contentsRect();
+  /**
+   * @return the rectangle on which subclasses should draw.
+   */
+  QRect contentsRect() const;
 
-  signals:
+signals:
+  /**
+   * This signal is emitted whenever the user chooses a value,
+   * e. g. by clicking with the mouse on the widget.
+   */
   void valueChanged( int _x, int _y );
 
 protected:
+  /**
+   * Override this function to draw the contents of the widget.
+   * The default implementation doesn nothing.
+   *
+   * Draw within contentsRect() only.
+   */
+  virtual void drawContents( QPainter * );
+  /**
+   * Override this function to draw the cursor which
+   * indicates the currently selected value pair.
+   */
+  virtual void drawCursor( QPainter *p, int xp, int yp );
+
   virtual void paintEvent( QPaintEvent *e );
-
-  /// Draw contents
-  /** Override this function to draw the contents of the widget.
-	Draw within contentsRect() only
-	*/
-  virtual void drawContents( QPainter * ) {}
-
   virtual void mousePressEvent( QMouseEvent *e );
   virtual void mouseMoveEvent( QMouseEvent *e );
 
 private:
   void setPosition( int xp, int yp );
-  void drawCursor( QPainter &painter, int xp, int yp );
 
 protected:
   int px;
@@ -75,81 +115,158 @@ protected:
   int minY;
   int maxY;
   QPixmap store;
+
+private:
+  class KXYSelectorPrivate;
+  KXYSelectorPrivate *d;
 };
 
-/** 1D value selector with contents drawn by derived class.
-  See KColorDialog for example.
+
+/**
+ * KSelector is the base class for other widgets which
+ * provides the ability to choose from a one-dimensional
+ * range of values. An example is the @ref KGradientSelector
+ * which allows to choose from a range of colors.
+ *
+ * A custom drawing routine for the widget surface has
+ * to be provided by the subclass.
  */
 class KSelector : public QWidget, public QRangeControl
 {
   Q_OBJECT
+
 public:
-  enum Orientation { Horizontal, Vertical };
 
+  /**
+   * Constructs a horizontal one-dimensional selection widget.
+   */
+  KSelector( QWidget *parent=0, const char *name=0 );
+  /**
+   * Constructs a one-dimensional selection widget with
+   * a given orientation.
+   */
   KSelector( Orientation o, QWidget *parent = 0L, const char *name = 0L );
+  /*
+   * Destructs the widget.
+   */
+  ~KSelector();
 
+  /**
+   * @return the orientation of the widget.
+   */
   Orientation orientation() const
   {	return _orientation; }
 
-  QRect contentsRect();
+  /**
+   * @return the rectangle on which subclasses should draw.
+   */
+  QRect contentsRect() const;
 
+  /**
+   * Sets the indent option of the widget to i.
+   * This determines whether a shaded frame is drawn.
+   */
   void setIndent( bool i )
   {	_indent = i; }
+  /**
+   * @return whether the indent option is set.
+   */
   bool indent() const
   {	return _indent; }
 
-  signals:
+signals:
+  /**
+   * This signal is emitted whenever the user chooses a value,
+   * e. g. by clicking with the mouse on the widget.
+   */
   void valueChanged( int value );
 
 protected:
   /**
-	Override this function to draw the contents of the control.
-	Draw only within contentsRect().
-	*/
-  virtual void drawContents( QPainter * ) {}
-
+   * Override this function to draw the contents of the control.
+   * The default implementation doesn nothing.
+   *
+   * Draw only within contentsRect().
+   */
+  virtual void drawContents( QPainter * ); 
+  /**
+   * Override this function to draw the cursor which
+   * indicates the currently value. This function is
+   * always called twice, once with argument show=false
+   * to clear the old cursor, once with argument show=true
+   * to draw the new one.
+   */
+  virtual void drawArrow( QPainter *painter, bool show, const QPoint &pos );
+  /**
+   * Reimplemented from QRangeControl for internal reasons.
+   */
   virtual void valueChange();
-  virtual void drawArrow( QPainter &painter, bool show, const QPoint &pos );
-
-private:
-  QPoint calcArrowPos( int val );
-  void moveArrow( const QPoint &pos );
 
   virtual void paintEvent( QPaintEvent * );
   virtual void mousePressEvent( QMouseEvent *e );
   virtual void mouseMoveEvent( QMouseEvent *e );
 
-protected:
+private:
+  QPoint calcArrowPos( int val );
+  void moveArrow( const QPoint &pos );
+
   Orientation _orientation;
   bool _indent;
+
+  class KSelectorPrivate;
+  KSelectorPrivate *d;
 };
 
-//-----------------------------------------------------------------------------
 
 /**
- Two-colour gradient selector widget.
-*/
+ * The KGradientSelector widget allows the user to choose
+ * from a one-dimensional range of colors which is given as a
+ * gradient between two colors provided by the programmer.
+ */
 class KGradientSelector : public KSelector
 {
   Q_OBJECT
-public:
-  KGradientSelector( Orientation o, QWidget *parent = 0L,
-		     const char *name = 0L );
 
+public:
+  /**
+   * Constructs a horizontal color selector which
+   * contains a gradient between white and black.
+   */
+  KGradientSelector( QWidget *parent=0, const char *name=0 );
+  /**
+   * Constructs a colors selector with orientation o which
+   * contains a gradient between white and black.
+   */
+  KGradientSelector( Orientation o, QWidget *parent=0, const char *name=0 );
+  /**
+   * Destructs the widget.
+   */
+  ~KGradientSelector();
+  /**
+   * Sets the two colors which span the gradient.
+   */
   void setColors( const QColor &col1, const QColor &col2 )
   {	color1 = col1; color2 = col2; }
   void setText( const QString& t1, const QString& t2 )
   {	text1 = t1; text2 = t2; }
 
 protected:
+  /**
+   * Reimplemented from KSelector.
+   */
   virtual void drawContents( QPainter * );
 
-protected:
+private:
+  void init();
   QColor color1;
   QColor color2;
   QString text1;
   QString text2;
+
+  class KGradientSelectorPrivate;
+  KGradientSelectorPrivate *d;
 };
+
 
 #endif		// __KSELECT_H__
 
