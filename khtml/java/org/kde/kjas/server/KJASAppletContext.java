@@ -224,6 +224,7 @@ public class KJASAppletContext implements AppletContext
         }
 
         stubs.clear();
+        jsReferencedObjects.clear();
         active = false;
     }
 
