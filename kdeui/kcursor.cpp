@@ -329,6 +329,7 @@ void KCursorPrivate::hideCursor( QWidget *w )
 void KCursorPrivate::unhideCursor( QWidget *w )
 {
     isCursorHidden = false;
+
     if ( w ) {
         QScrollView * sv = dynamic_cast<QScrollView *>( w );
         if ( sv )
@@ -391,6 +392,7 @@ bool KCursorPrivate::eventFilter( QObject *o, QEvent *e )
     }
 
     else { // other than enter/leave/focus events
+        
         if ( isCursorHidden ) {
             if ( t == QEvent::MouseButtonPress ||
                  t == QEvent::MouseButtonRelease ||
@@ -402,7 +404,7 @@ bool KCursorPrivate::eventFilter( QObject *o, QEvent *e )
 	}
 
         else { // cursor not hidden yet
-            if ( t == QEvent::KeyPress ) { //t == QEvent::KeyRelease ) {
+            if ( t == QEvent::KeyPress || t == QEvent::AccelOverride ) { //t == QEvent::KeyRelease ) {
                 if ( insideWidget( QCursor::pos(), w )) {
                     hideCursor( w );
                     autoHideTimer->stop();
@@ -412,7 +414,7 @@ bool KCursorPrivate::eventFilter( QObject *o, QEvent *e )
 	    // restart the timer on user-input
             else if ( (t >= QEvent::MouseButtonPress &&
 		       t <= QEvent::KeyRelease) ||
-		      t == QEvent::Wheel ) {
+		      t == QEvent::Wheel || t == QEvent::AccelOverride ) {
 
                 if ( insideWidget( QCursor::pos(), w ))
                     autoHideTimer->start( hideCursorDelay, true );
