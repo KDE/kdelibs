@@ -2063,7 +2063,7 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
         if (toPix  < 96./72.)
             toPix = 96./72.;
 
-        qDebug("printpainter: %d toPix %5.3f", khtml::printpainter, toPix);
+        //qDebug("printpainter: %d toPix %5.3f", khtml::printpainter, toPix);
         QValueList<int> standardSizes = e->getDocument()->view()->part()->fontSizes();
         if(e->parentNode()) {
             oldSize = e->parentNode()->style()->font().pixelSize();
