@@ -29,6 +29,7 @@ Test::Test( QWidget* parent, const char *name )
   connect( mWidget, SIGNAL( tabbarContextMenu( const QPoint & )), this, SLOT(tabbarContextMenu( const QPoint & )));
   connect( mWidget, SIGNAL( mouseDoubleClick( QWidget * )), this, SLOT(mouseDoubleClick( QWidget * )));
   connect( mWidget, SIGNAL( mouseMiddleClick( QWidget * )), this, SLOT(mouseMiddleClick( QWidget * )));
+  connect( mWidget, SIGNAL( closeRequest( QWidget * )), this, SLOT(mouseMiddleClick( QWidget * )));
   connect( mWidget, SIGNAL( receivedDropEvent( QDropEvent * )), this, SLOT(receivedDropEvent( QDropEvent * )));
   connect( mWidget, SIGNAL( receivedDropEvent( QWidget *, QDropEvent * )), this, SLOT(receivedDropEvent( QWidget *, QDropEvent * )));
   connect( mWidget, SIGNAL( dragInitiated( QWidget * )), this, SLOT(dragInitiated( QWidget * )));
