@@ -22,7 +22,7 @@
 #define KABC_VCARDTOOL_H
 
 #include "addressee.h"
-#include "libvcard/vcardparser.h"
+#include "vcardparser.h"
 
 class QDateTime;
 

@@ -2,7 +2,7 @@ INCLUDES = $(all_includes) -I$(top_srcdir)/kabc
 
 noinst_LTLIBRARIES = libvcards.la
 
-libvcards_la_SOURCES = vcard.cpp vcardline.cpp vcardparser.cpp
+libvcards_la_SOURCES = vcard.cpp vcardline.cpp vcardparser.cpp vcardtool.cpp
 libvcards_la_LIBADD = $(LIB_KDECORE) -L$(top_srcdir)/kabc -lkabc
 
 check_PROGRAMS = testread testwrite

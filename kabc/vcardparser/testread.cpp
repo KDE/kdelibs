@@ -17,8 +17,39 @@
     Boston, MA 02111-1307, USA.
 */
 
+#include <qfile.h>
+#include <qtextstream.h>
+
+#include "vcardtool.h"
+
 int main()
 {
+  QFile file( "test.vcf" );
+  if ( !file.open( IO_ReadOnly ) ) {
+    qDebug( "Unable to open file '%s' for reading!", file.name().latin1() );
+    return 1;
+  }
+
+  QString text;
+
+  QTextStream s( &file );
+  s.setEncoding( QTextStream::UnicodeUTF8 );
+  text = s.read();
+  file.close();
+
+  KABC::VCardTool tool;
+  KABC::Addressee::List list = tool.parseVCards( text );
+  text = tool.createVCards( list ); // uses version 3.0
+
+  file.setName( "testout.vcf" );
+  if ( !file.open( IO_WriteOnly ) ) {
+    qDebug( "Unable to open file '%s' for writing!", file.name().latin1() );
+    return 1;
+  }
+
+  s.setDevice( &file );
+  s << text;
+  file.close();
 
   return 0;
 }
