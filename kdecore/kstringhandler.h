@@ -195,8 +195,8 @@ public:
      * QStringList contains: "some", "string", "for", "you__here"
      *
      * @return A QStringList containing tokens extracted from s.
-     * @parem sep is the string to use to delimit s.
-     * @parem max is the maximum number of extractions to perform, or 0.
+     * @param sep is the string to use to delimit s.
+     * @param max is the maximum number of extractions to perform, or 0.
      */
     static QStringList perlSplit
       (const QString & sep, const QString & s, uint max = 0);
@@ -212,8 +212,8 @@ public:
      * QStringList contains: "kparts", "reaches", "the pats other parts can't"
      *
      * @return A QStringList containing tokens extracted from s.
-     * @parem sep is the character to use to delimit s.
-     * @parem max is the maximum number of extractions to perform, or 0.
+     * @param sep is the character to use to delimit s.
+     * @param max is the maximum number of extractions to perform, or 0.
      */
     static QStringList perlSplit
       (const QChar & sep, const QString & s, uint max = 0);
@@ -229,8 +229,8 @@ public:
      * QStringList contains: "Split", "me", "up ! I'm bored, OK ?"
      *
      * @return A QStringList containing tokens extracted from s.
-     * @parem sep is the regular expression to use to delimit s.
-     * @parem max is the maximum number of extractions to perform, or 0.
+     * @param sep is the regular expression to use to delimit s.
+     * @param max is the maximum number of extractions to perform, or 0.
      */
     static QStringList perlSplit
       (const QRegExp & sep, const QString & s, uint max = 0);

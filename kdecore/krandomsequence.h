@@ -89,7 +89,7 @@ public:
   /**
    * Put a list in random order
    *
-   * @return modifies the order of @list
+   * @return modifies the order of @p list
    */
   void randomize(QGList *list);
 	
