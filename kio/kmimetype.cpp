@@ -510,7 +510,7 @@ bool KDEDesktopMimeType::run( const QString& _url, bool _is_local )
     return runFSDevice( _url, cfg );
   else if ( type == "Application" )
     return runApplication( _url, u.path() );
-  else if ( type == "Link" || type == "URL" )
+  else if ( type == "Link" )
     return runLink( _url, cfg );
   else if ( type == "MimeType" )
     return runMimeType( _url, cfg );
