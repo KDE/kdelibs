@@ -690,12 +690,14 @@ void KFileDialog::toolbarCallback(int i) // SLOT
 	
 	    KSimpleConfig *c = new KSimpleConfig(QString::fromLatin1("kdeglobals"),
 						 false);
+	    c->setGroup( ConfigGroup );
 	
 	    delete d->boxLayout; // this removes all child layouts too
 	    d->boxLayout = 0;
 	
 	    d->showStatusLine =
 		c->readBoolEntry(QString::fromLatin1("ShowStatusLine"), DefaultShowStatusLine);
+	    delete c;
 	    kdDebug(kfile_area) << "showStatusLine " << d->showStatusLine
 				<< endl;
 

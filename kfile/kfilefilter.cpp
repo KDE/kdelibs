@@ -17,6 +17,7 @@ KFileFilter::KFileFilter( QWidget *parent, const char *name)
     QObjectListIt it( *list );
     edit = (QLineEdit*) it.current();
     edit->installEventFilter( this );
+    delete list;
 }
 
 KFileFilter::~KFileFilter()

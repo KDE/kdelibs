@@ -439,6 +439,7 @@ public:
     QObjectListIt it( *list );
     edit = (QLineEdit*) it.current();
     edit->installEventFilter( this );
+    delete list;
   }
 
   int cursorPosition() const { return edit->cursorPosition(); }
