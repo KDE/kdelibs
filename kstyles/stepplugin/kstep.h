@@ -79,12 +79,15 @@ public:
                            int h);
     void drawKProgressBlock(QPainter *p, int x, int y, int w, int h,
                             const QColorGroup &g, QBrush *fill);
+    void drawFocusRect(QPainter *p, const QRect &r, const QColorGroup &g,
+                       const QColor *pen, bool atBorder);
 protected:
     void drawStepBarCircle(QPainter *p, int x, int y, int w, int h,
                            const QColorGroup &g);
     void drawStepBarArrow(QPainter *p, Qt::ArrowType type, int x, int y,
                           const QColorGroup &g);
-    void drawStepBarGroove(QPainter *p, QRect r, const QWidget *w, const QColorGroup &g);
+    void drawStepBarGroove(QPainter *p, QRect r, const QWidget *w,
+                           const QColorGroup &g);
 private:
     QColorGroup nextGrp;
 };

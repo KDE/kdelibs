@@ -7,6 +7,7 @@
 #include <kapp.h>
 #include <qpalette.h>
 #include <qbitmap.h>
+#include <qtabbar.h>
 
 static unsigned char downarrow_bits[] = {
  0xff,0x01,0xff,0x01,0xfe,0x00,0xfe,0x00,0x7c,0x00,0x7c,0x00,0x38,0x00,0x38,
@@ -83,10 +84,18 @@ void KStepStyle::drawButton(QPainter *p, int x, int y, int w, int h,
 }
 void KStepStyle::drawPushButton(QPushButton *btn, QPainter *p)
 {
-    int x1, y1, x2, y2;
-    btn->rect().coords(&x1, &y1, &x2, &y2);
-    drawButton(p, x1, y1, btn->width(), btn->height(), nextGrp,
+    QRect r = btn->rect();
+    if(btn->isDefault() && r.width() > 20 && r.height() > 20){
+        qDrawShadePanel(p, r.x(), r.y(), r.width(), r.height(), nextGrp,
+                        true, 1);
+        r.setTop(r.top()+2);
+        r.setLeft(r.left()+2);
+        r.setBottom(r.bottom()-2);
+        r.setRight(r.right()-2);
+    }
+    drawButton(p, r.x(), r.y(), r.width(), r.height(), nextGrp,
                btn->isOn() || btn->isDown());
+    
 }
 
 void KStepStyle::drawPushButtonLabel(QPushButton *btn, QPainter *p)
@@ -110,7 +119,7 @@ void KStepStyle::drawBevelButton(QPainter *p, int x, int y, int w, int h,
 
 QRect KStepStyle::buttonRect(int x, int y, int w, int h)
 {
-    return(QRect(x+2, y+2, w-4, h-4));
+    return(QRect(x, y, w, h));
 }
 
 void KStepStyle::drawComboButton(QPainter *p, int x, int y, int w, int h,
@@ -176,22 +185,26 @@ void KStepStyle::drawScrollBarControls(QPainter *p, const QScrollBar *sb,
     }
 
     if(controls & AddLine){
-        p->setPen(g.mid());
-        p->drawRect(add);
-        qDrawShadePanel(p, add.x()+1, add.y()+1, add.width()-2,
-                        add.height()-2, nextGrp, activeControl == AddLine, 1,
-                        &nextGrp.brush(QColorGroup::Button));
-        drawStepBarArrow(p, (horizontal) ? RightArrow : DownArrow,
-                         add.x()+3, add.y()+3, nextGrp);
+        if(add.isValid()){
+            p->setPen(g.mid());
+            p->drawRect(add);
+            qDrawShadePanel(p, add.x()+1, add.y()+1, add.width()-2,
+                            add.height()-2, nextGrp, activeControl == AddLine, 1,
+                            &nextGrp.brush(QColorGroup::Button));
+            drawStepBarArrow(p, (horizontal) ? RightArrow : DownArrow,
+                             add.x()+3, add.y()+3, nextGrp);
+        }
     }
     if(controls & SubLine){
-        p->setPen(g.mid());
-        p->drawRect(sub);
-        qDrawShadePanel(p, sub.x()+1, sub.y()+1, sub.width()-2,
-                        sub.height()-2, nextGrp, activeControl == SubLine, 1,
-                        &nextGrp.brush(QColorGroup::Button));
-        drawStepBarArrow(p, (horizontal) ? LeftArrow : UpArrow, sub.x()+3,
-                         sub.y()+3, nextGrp);
+        if(sub.isValid()){
+            p->setPen(g.mid());
+            p->drawRect(sub);
+            qDrawShadePanel(p, sub.x()+1, sub.y()+1, sub.width()-2,
+                            sub.height()-2, nextGrp, activeControl == SubLine, 1,
+                            &nextGrp.brush(QColorGroup::Button));
+            drawStepBarArrow(p, (horizontal) ? LeftArrow : UpArrow, sub.x()+3,
+                             sub.y()+3, nextGrp);
+        }
     }
     if((controls & SubPage)){
         drawStepBarGroove(p, subPage, sb, g);
@@ -200,7 +213,7 @@ void KStepStyle::drawScrollBarControls(QPainter *p, const QScrollBar *sb,
         drawStepBarGroove(p, addPage, sb, g);
     }
     if(controls & Slider){
-        if(slider.width() > 1 && slider.height() > 1){
+        if(slider.isValid() && slider.width() > 1 && slider.height() > 1){
             if(horizontal){
                 p->setPen(Qt::black);
                 p->drawLine(slider.x(), slider.y(), slider.right(), slider.y());
@@ -482,10 +495,12 @@ void KStepStyle::drawStepBarArrow(QPainter *p, Qt::ArrowType type, int x,
 }
 
 void KStepStyle::drawSliderGroove(QPainter *p, int x, int y, int w, int h,
-                                    const QColorGroup &, QCOORD,
+                                    const QColorGroup &g, QCOORD,
                                     Orientation)
 {
-    drawButton(p, x, y, w, h, nextGrp, true);
+    qDrawShadePanel(p, x, y, w, h, nextGrp, true, 1,
+                    &g.brush(QColorGroup::Dark));
+    //drawButton(p, x, y, w, h, nextGrp, true);
 }
 
 int KStepStyle::sliderLength() const
@@ -497,7 +512,7 @@ void KStepStyle::drawSlider(QPainter *p, int x, int y, int w, int h,
                             const QColorGroup &g, Orientation orient,
                             bool, bool)
 {
-    drawButton(p, x+1, y+1, w-2, h-2, g, false);
+    drawButton(p, x+1, y+1, w-2, h-2, nextGrp, false);
     if(orient == Horizontal){
         int mid = x+w/2;
         qDrawShadeLine(p, mid, y+1, mid, y+h-2, g, true, 1);
@@ -523,14 +538,15 @@ void KStepStyle::drawKBarHandle(QPainter *p, int x, int y, int w, int h,
     p->setPen(g.light());
     p->drawLine(x, y, x2, y);
     p->drawLine(x, y, x, y2);
+    p->setPen(g.midlight());
+    p->drawLine(x+1, y+1, x2-1, y+1);
+    p->drawLine(x+1, y+1, x+1, y2-1);
     p->setPen(g.dark());
     p->drawLine(x2, y, x2, y2);
     p->drawLine(x, y2, x2, y2);
-    p->setPen(g.dark());
     p->drawLine(x2-1, y+1, x2-1, y2-1);
     p->drawLine(x+1, y2-1, x2-1, y2-1);
-    p->fillRect(x+1, y+1, w-3, h-3, g.mid());
-
+    p->fillRect(x+2, y+2, w-4, h-4, g.mid());
 }
 
 void KStepStyle::drawKMenuBar(QPainter *p, int x, int y, int w, int h,
@@ -775,9 +791,20 @@ static const int windowsRightBorder     = 12;
 }
 
 void KStepStyle::drawKProgressBlock(QPainter *p, int x, int y, int w, int h,
-                                const QColorGroup &g, QBrush *)
+                                    const QColorGroup &g, QBrush *)
 {
     qDrawShadePanel(p, x, y, w, h, nextGrp, false, 1, &g.brush(QColorGroup::Dark));
+}
+
+void KStepStyle::drawFocusRect(QPainter *p, const QRect &r,
+                               const QColorGroup &, const QColor *,
+                               bool atBorder)
+{
+    if (!atBorder)
+        qDrawShadePanel(p, r, nextGrp, true, 1);
+    else
+        qDrawShadePanel(p, r.x()+1, r.y()+1, r.width()-2, r.height()-2, nextGrp,
+                        true, 1);
 }
 
 
