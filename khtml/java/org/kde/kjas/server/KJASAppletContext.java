@@ -13,6 +13,14 @@ import java.io.*;
  * <H3>Change Log</H3>
  * <PRE>
  * $Log$
+ * Revision 1.11  2000/11/15 19:54:48  wynnw
+ * This update:
+ * * Updates the parsing to handle the new KJAS protocol
+ * * changes the classloading to use the URLClassLoader
+ * * encapsulates callbacks in the KJASProtocolHandler class
+ * * adds more debug functionality
+ * * fixed the callbacks to use the original PrintStream of stdout
+ *
  * Revision 1.10  2000/09/27 11:46:32  sschiman
  * * I've added implementations for the showDocument and showStatus calls to kjas
  * for java applets that want to change the location of a frame. This should fix
@@ -101,13 +109,43 @@ public class KJASAppletContext implements AppletContext
     {
         try
         {
-            if( loader == null )
+            URL real_codeBase;
+
+            if( codeBase == null )
+                real_codeBase = docBase;
+            else
+                real_codeBase = codeBase;
+
+            if( real_codeBase == null )
             {
-                loader = KJASAppletClassLoader.createLoader( codeBase );
+                //we have a serious problem- where do we get classes from ???
+                Main.kjas_debug( "Can't create URLClassLoader with a valid url" );
+                throw new IllegalArgumentException( "no codeBase for applet" );
             }
             else
             {
-                loader.addCodeBase( codeBase );
+                Main.kjas_debug( "checking the url for validity" );
+                Main.kjas_debug( "real_codeBase.getFile() == " + real_codeBase.getFile() );
+
+                //if this is a url like http://www.foo.com, it needs a slash on
+                //the end otherwise URLClassLoader thinks it's a jar file ??
+                if( ( real_codeBase.getFile().trim().length() == 0 ||
+                      real_codeBase.getFile() == null ) &&
+                    !real_codeBase.toString().endsWith(".jar") )
+                {
+                    Main.kjas_debug( "real_codeBase has no file, adding a /" );
+                    real_codeBase = new URL( real_codeBase.toString().concat( "/" ) );
+                }
+            }
+
+            Main.kjas_debug( "Creating class loader with url = " + real_codeBase );
+            if( loader == null )
+            {
+                loader = KJASAppletClassLoader.createLoader( real_codeBase );
+            }
+            else
+            {
+                loader.addCodeBase( real_codeBase );
             }
 
             if( jars != null )
@@ -243,4 +281,7 @@ public class KJASAppletContext implements AppletContext
             return appletSize;
         }
     }
+
+
+
 }
