@@ -322,13 +322,16 @@ void KFileMetaInfo::init( const KURL& url, const QString& mimeType,
     // let's "share our property"
     KFileMetaInfo item(*this);
 
-    d->mimeTypeInfo = KFileMetaInfoProvider::self()->mimeTypeInfo(mT);
+    //kdDebug() << k_funcinfo << mT << " " << url << endl;
+
+    d->mimeTypeInfo = KFileMetaInfoProvider::self()->mimeTypeInfo( mT, url.protocol() );
     if ( d->mimeTypeInfo )
     {
-//        kdDebug(7033) << "Found mimetype info for " << mT << endl;
+        //kdDebug(7033) << "Found mimetype info for " << mT /* or protocol*/ << endl;
         KFilePlugin *p = plugin();
-        if (p && !p->readInfo( item, what))
-            *this=KFileMetaInfo();
+        Q_ASSERT( p );
+        if ( p && !p->readInfo( item, what) )
+            d = Data::makeNull();
     }
     else
     {
@@ -566,7 +569,7 @@ KFilePlugin * const KFileMetaInfo::plugin() const
 {
     assert(isValid());
     KFileMetaInfoProvider* prov = KFileMetaInfoProvider::self();
-    return prov->plugin( d->mimeTypeInfo->mimeType() );
+    return prov->plugin( d->mimeTypeInfo->mimeType(), d->url.protocol() );
 }
 
 QString KFileMetaInfo::mimeType() const
@@ -771,10 +774,7 @@ KFilePlugin::~KFilePlugin()
 
 KFileMimeTypeInfo * KFilePlugin::addMimeTypeInfo( const QString& mimeType )
 {
-    KFileMimeTypeInfo* info;
-
-    info = KFileMetaInfoProvider::self()-> addMimeTypeInfo( mimeType );
-    return info;
+    return KFileMetaInfoProvider::self()->addMimeTypeInfo( mimeType );
 }
 
 void KFilePlugin::virtual_hook( int, void* )
@@ -901,7 +901,6 @@ KFileMetaInfoProvider * KFileMetaInfoProvider::self()
 KFileMetaInfoProvider::KFileMetaInfoProvider()
 {
     m_plugins.setAutoDelete( true );
-    m_mimeTypeDict.setAutoDelete( true );
 }
 
 KFileMetaInfoProvider::~KFileMetaInfoProvider()
@@ -909,48 +908,111 @@ KFileMetaInfoProvider::~KFileMetaInfoProvider()
     sd.setObject( 0 );
 }
 
+KFilePlugin* KFileMetaInfoProvider::loadPlugin( const QString& mimeType, const QString& protocol )
+{
+    //kdDebug() << "loadPlugin: mimeType=" << mimeType << " protocol=" << protocol << endl;
+    // Currently the idea is: either the mimetype is set or the protocol, but not both.
+    // We need PNG fileinfo, and trash: fileinfo, but not "PNG in the trash".
+    QString queryMimeType, query;
+    if ( !mimeType.isEmpty() ) {
+        query = "(not exist [X-KDE-Protocol])";
+        queryMimeType = mimeType;
+    } else {
+        query = QString::fromLatin1( "[X-KDE-Protocol] == '%1'" ).arg(protocol);
+        // querying for a protocol: we have no mimetype, so we need to use KFilePlugin as one
+        queryMimeType = "KFilePlugin";
+        // hopefully using KFilePlugin as genericMimeType too isn't a problem
+    }
+    const KTrader::OfferList offers = KTrader::self()->query( queryMimeType, "KFilePlugin", query, QString::null );
+    if ( offers.isEmpty() )
+        return 0;
+    KService::Ptr service = *(offers.begin());
+    Q_ASSERT( service && service->isValid() );
+    if ( !service || !service->isValid() )
+        return 0;
+
+    KFilePlugin* plugin = KParts::ComponentFactory::createInstanceFromService<KFilePlugin>
+                          ( service, this, mimeType.local8Bit() );
+    if (!plugin)
+        kdWarning(7033) << "error loading the plugin from " << service->desktopEntryPath() << endl;
+
+    return plugin;
+}
+
+KFilePlugin* KFileMetaInfoProvider::loadAndRegisterPlugin( const QString& mimeType, const QString& protocol )
+{
+    Q_ASSERT( m_pendingMimetypeInfos.isEmpty() );
+    m_pendingMimetypeInfos.clear();
+
+    KFilePlugin* plugin = loadPlugin( mimeType, protocol );
+    if ( !plugin ) {
+        // No plugin found. Remember that, to save time.
+        m_plugins.insert( protocol.isEmpty() ? mimeType : protocol, new CachedPluginInfo );
+        return 0;
+    }
+
+    if ( !protocol.isEmpty() ) {
+        // Protocol-metainfo: only one entry
+        Q_ASSERT( m_pendingMimetypeInfos.count() == 1 );
+        KFileMimeTypeInfo* info = m_pendingMimetypeInfos[ protocol ];
+        Q_ASSERT( info );
+        m_plugins.insert( protocol, new CachedPluginInfo( plugin, info ) );
+    } else {
+        // Mimetype-metainfo: the plugin can register itself for multiple mimetypes, remember them all
+        QDictIterator<KFileMimeTypeInfo> it( m_pendingMimetypeInfos );
+        for( ; it.current(); ++it ) {
+            KFileMimeTypeInfo* info = it.current();
+            m_plugins.insert( it.currentKey(), new CachedPluginInfo( plugin, info ) );
+        }
+        // Hopefully the above includes the mimetype we asked for!
+        if ( m_pendingMimetypeInfos.find( mimeType ) == 0 )
+            kdWarning(7033) << plugin->className() << " was created for " << mimeType << " but doesn't call addMimeTypeInfo for it!" << endl;
+    }
+    m_pendingMimetypeInfos.clear();
+    return plugin;
+}
+
 KFilePlugin * KFileMetaInfoProvider::plugin(const QString& mimeType)
 {
-    KFilePlugin *p = m_plugins.find( mimeType );
+    return plugin( mimeType, QString::null );
+}
 
-//    kdDebug(7033) << "mimetype is " << mimeType << endl;
+KFilePlugin * KFileMetaInfoProvider::plugin(const QString& mimeType, const QString& protocol)
+{
+    //kdDebug(7033) << "plugin() : looking for plugin for protocol=" << protocol << " mimeType=" << mimeType << endl;
 
-    if ( !p )
-    {
-//        kdDebug(7033) << "need to look for a plugin to load\n";
-
-        KService::Ptr service =
-            KServiceTypeProfile::preferredService( mimeType, "KFilePlugin" );
-
-        if ( !service || !service->isValid() )
-        {
-            //kdDebug(7033) << "no preferred KFilePlugin service found for " << mimeType << endl;
-            return 0;
+    if ( !protocol.isEmpty() ) {
+        CachedPluginInfo *cache = m_plugins.find( protocol );
+        if ( cache && cache->plugin ) {
+            return cache->plugin;
         }
 
-        p = KParts::ComponentFactory::createInstanceFromService<KFilePlugin>
-                 ( service, this, mimeType.local8Bit() );
-
-        if (!p)
-        {
-            kdWarning(7033) << "error loading the plugin\n";
-            return 0;
-        }
-
-//        kdDebug(7033) << "found a plugin\n";
-        m_plugins.insert( mimeType, p );
-
+        KFilePlugin* plugin = loadAndRegisterPlugin( QString::null, protocol );
+        if ( plugin )
+            return plugin;
     }
-//    else
-//        kdDebug(7033) << "plugin already loaded\n";
 
-//    kdDebug(7033) << "currently loaded plugins:\n";
+    CachedPluginInfo *cache = m_plugins.find( mimeType );
+    if ( cache ) {
+        return cache->plugin;
+    }
 
-//    QDictIterator<KFilePlugin> it( m_plugins );
-//    for( ; it.current(); ++it )
-//        kdDebug(7033) << it.currentKey() << ": " << it.current()->className() << endl;
+    KFilePlugin* plugin = loadAndRegisterPlugin( mimeType, QString::null );
 
-    return p;
+#if 0
+    kdDebug(7033) << "currently loaded plugins:\n";
+
+    QDictIterator<CachedPluginInfo> it( m_plugins );
+    for( ; it.current(); ++it ) {
+        CachedPluginInfo* cache = it.current();
+        kdDebug(7033)
+            << it.currentKey() // mimetype or protocol
+            << " : " << (cache->plugin ? cache->plugin->className() : "(no plugin)") << endl; // plugin
+        // TODO print cache->mimeTypeInfo
+    }
+#endif
+
+    return plugin;
 }
 
 QStringList KFileMetaInfoProvider::preferredKeys( const QString& mimeType ) const
@@ -981,25 +1043,48 @@ QStringList KFileMetaInfoProvider::preferredGroups( const QString& mimeType ) co
 
 const KFileMimeTypeInfo * KFileMetaInfoProvider::mimeTypeInfo( const QString& mimeType )
 {
-    KFileMimeTypeInfo *info = m_mimeTypeDict.find( mimeType );
-    if ( !info ) {
-        // create the plugin (adds the mimeTypeInfo, if possible)
-        KFilePlugin *p = plugin( mimeType );
-        if ( p )
-            info = m_mimeTypeDict.find( mimeType );
+    return mimeTypeInfo( mimeType, QString::null );
+}
+
+const KFileMimeTypeInfo * KFileMetaInfoProvider::mimeTypeInfo( const QString& mimeType, const QString& protocol )
+{
+    //kdDebug(7033) << "mimeTypeInfo() : looking for plugin for protocol=" << protocol << " mimeType=" << mimeType << endl;
+    if ( !protocol.isEmpty() ) {
+        CachedPluginInfo *cache = m_plugins.find( protocol );
+        if ( cache && cache->mimeTypeInfo ) {
+            return cache->mimeTypeInfo;
+        }
+
+        loadAndRegisterPlugin( QString::null, protocol );
+        cache = m_plugins.find( protocol );
+        if ( cache && cache->mimeTypeInfo ) {
+            return cache->mimeTypeInfo;
+        }
     }
 
-    return info;
+    CachedPluginInfo *cache = m_plugins.find( mimeType );
+    if ( cache ) {
+        return cache->mimeTypeInfo;
+    }
+
+    loadAndRegisterPlugin( mimeType, QString::null );
+    cache = m_plugins.find( mimeType );
+    if ( cache ) {
+        return cache->mimeTypeInfo;
+    }
+    return 0;
 }
 
 KFileMimeTypeInfo * KFileMetaInfoProvider::addMimeTypeInfo(
-        const QString& mimeType )
+    const QString& mimeType )
 {
-    KFileMimeTypeInfo *info = m_mimeTypeDict.find( mimeType );
+
+    KFileMimeTypeInfo *info = m_pendingMimetypeInfos.find( mimeType );
+    Q_ASSERT( !info );
     if ( !info )
     {
         info = new KFileMimeTypeInfo( mimeType );
-        m_mimeTypeDict.replace( mimeType, info );
+        m_pendingMimetypeInfos.insert( mimeType, info );
     }
 
     info->m_preferredKeys    = preferredKeys( mimeType );
@@ -1017,7 +1102,7 @@ QStringList KFileMetaInfoProvider::supportedMimeTypes() const
     KTrader::OfferListIterator it = offers.begin();
     for ( ; it != offers.end(); ++it )
     {
-        QStringList mimeTypes = (*it)->serviceTypes();
+        const QStringList mimeTypes = (*it)->serviceTypes();
         QStringList::ConstIterator it2 = mimeTypes.begin();
         for ( ; it2 != mimeTypes.end(); ++it2 )
             if ( allMimeTypes.find( *it2 ) == allMimeTypes.end() &&
@@ -1743,8 +1828,5 @@ KIO_EXPORT QDataStream& operator >>(QDataStream& s, KFileMetaInfo& info )
 
     return s;
 }
-
-
-
 
 #include "kfilemetainfo.moc"

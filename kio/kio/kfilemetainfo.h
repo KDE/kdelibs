@@ -1286,6 +1286,10 @@ protected:
      */
     // ### do we need this, if it only calls the provider?
     // IMHO the Plugin shouldn't call its provider.
+    // DF: yes we need this. A plugin can create more than one mimetypeinfo.
+    // What sucks though, is to let plugins do that in their ctor.
+    // Would be much simpler to have a virtual init method for that,
+    // so that the provider can set up stuff with the plugin pointer first!
     KFileMimeTypeInfo * addMimeTypeInfo( const QString& mimeType );
 
     QStringList m_preferredKeys;
@@ -1305,7 +1309,7 @@ private:
 /**
  * @internal
  *
- * Synchronous access to metadata of a local file. Ususally, you don't want
+ * Synchronous access to metadata of a local file. Usually, you don't want
  * to use this class. Use KFileMetaInfo directly.
  **/
 class KIO_EXPORT KFileMetaInfoProvider: private QObject
@@ -1322,9 +1326,17 @@ public:
      *  @return a pointer to the plugin that belongs to the specified mimetype,
      *  which means also load the plugin if it's not in memory
      */
-    KFilePlugin * plugin( const QString& mimeType );
+    KFilePlugin * plugin( const QString& mimeType ); // KDE4: merge with method below
 
-    const KFileMimeTypeInfo * mimeTypeInfo( const QString& mimeType );
+    /**
+     *  @return a pointer to the plugin that belongs to the specified mimetype,
+     *  for the given protocol.
+     *  This loads the plugin if it's not in memory yet.
+     */
+    KFilePlugin * plugin( const QString& mimeType, const QString& protocol );
+
+    const KFileMimeTypeInfo * mimeTypeInfo( const QString& mimeType ); // KDE4: merge with below
+    const KFileMimeTypeInfo * mimeTypeInfo( const QString& mimeType, const QString& protocol );
 
     QStringList preferredKeys( const QString& mimeType ) const;
     QStringList preferredGroups( const QString& mimeType ) const;
@@ -1332,15 +1344,42 @@ public:
     /// @since 3.1
     QStringList supportedMimeTypes() const;
 
-protected:
+protected: // ## should be private, right?
     KFileMetaInfoProvider();
 
-    QDict<KFilePlugin> m_plugins;
-    QDict<KFileMimeTypeInfo> m_mimeTypeDict;
+private:
+
+    // Data structure:
+    // Mimetype or Protocol -> { Plugin and MimeTypeInfo }
+    // The {} struct is CachedPluginInfo
+    struct CachedPluginInfo
+    {
+        CachedPluginInfo() : plugin( 0 ), mimeTypeInfo( 0 ) {}
+        CachedPluginInfo( KFilePlugin* p, KFileMimeTypeInfo* i )
+            : plugin( p ), mimeTypeInfo( i ) {}
+        // auto-delete behavior
+        ~CachedPluginInfo() { delete plugin; delete mimeTypeInfo; }
+
+        // If plugin and mimeTypeInfo are 0, means that no plugin is available.
+        KFilePlugin* plugin;
+        KFileMimeTypeInfo* mimeTypeInfo;
+    };
+
+    // The key is either a mimetype or a protocol. Those things don't look the same
+    // so there's no need for two QDicts.
+    QDict<CachedPluginInfo> m_plugins;
+
+    // This data is aggregated during the creation of a plugin,
+    // before being moved to the appropriate CachedPluginInfo(s)
+    // At any other time than during the loading of a plugin, this dict is EMPTY.
+    // Same key as in m_plugins: mimetype or protocol
+    QDict<KFileMimeTypeInfo> m_pendingMimetypeInfos;
 
 private:
     static KFileMetaInfoProvider * s_self;
 
+    KFilePlugin* loadPlugin( const QString& mimeType, const QString& protocol );
+    KFilePlugin* loadAndRegisterPlugin( const QString& mimeType, const QString& protocol );
     KFileMimeTypeInfo * addMimeTypeInfo( const QString& mimeType );
 
     class KFileMetaInfoProviderPrivate;
