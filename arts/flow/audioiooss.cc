@@ -311,6 +311,9 @@ bool AudioIOOSS::open()
 	 * written something first.
 	 */
 	char *zbuffer = (char *)calloc(sizeof(char), _fragmentSize);
+	if(_format == 8)
+		for(int zpos = 0; zpos < _fragmentSize; zpos++)
+			zbuffer[zpos] |= 0x80;
 	for(int fill = 0; fill < _fragmentCount; fill++)
 	{
 		int len = ::write(audio_fd,zbuffer,_fragmentSize);
