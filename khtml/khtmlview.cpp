@@ -1085,16 +1085,16 @@ void KHTMLView::dispatchMouseEvent(int eventId, DOM::NodeImpl *targetNode, bool 
     // Also send the DOMFOCUSIN_EVENT when clicking on a node (Niko)
     // usually done in setFocusNode()
     // Allow LMB, MMB and RMB (correct?)
-    if(button != -1 && targetNode)
-    {
-	UIEventImpl *ue = new UIEventImpl(EventImpl::DOMFOCUSIN_EVENT,
-				          true,false,m_part->xmlDocImpl()->defaultView(),
-					  0);
+//     if(button != -1 && targetNode)
+//     {
+// 	UIEventImpl *ue = new UIEventImpl(EventImpl::DOMFOCUSIN_EVENT,
+// 				          true,false,m_part->xmlDocImpl()->defaultView(),
+// 					  0);
 
-	ue->ref();
-	targetNode->dispatchEvent(ue,exceptioncode);
-	ue->deref();
-    }
+// 	ue->ref();
+// 	targetNode->dispatchEvent(ue,exceptioncode);
+// 	ue->deref();
+//     }
 
 
 
