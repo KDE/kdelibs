@@ -29,7 +29,7 @@ libmediatool_la_SOURCES = chunk.c eventcounter.c mediatypes.c tools.c \
 
 include_HEADERS= 	mediatool.h kaudio.h
 
-libmediatool_la_LDFLAGS = -version-info 0:7
+libmediatool_la_LDFLAGS = -version-info 0:7 -allow-undefined
 
 kaudio.cpp: kaudio.moc
 
