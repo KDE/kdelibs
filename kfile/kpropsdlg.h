@@ -428,6 +428,7 @@ public:
 private slots:
 
   void slotChmodResult( KIO::Job * );
+  void slotRecursiveClicked();
 
 private:
   QCheckBox *permBox[3][4];

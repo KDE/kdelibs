@@ -217,7 +217,7 @@ void KPropertiesDialog::init (bool modal, bool autoShow)
 
   insertPages();
 
-  kdDebug() << "KPropertiesDialog sizeHint " << sizeHint().width() << "x" << sizeHint().height() << endl;
+  //kdDebug() << "KPropertiesDialog sizeHint " << sizeHint().width() << "x" << sizeHint().height() << endl;
   // This HACK forces KDialogBase to recompute the layout
   // It is necessary for the case where init is not called from the constructor,
   // but from slotStatResult. And I'm way too lazy to look into KDialogBase...
@@ -1087,15 +1087,17 @@ void KFilePropsPlugin::slotCopyFinished( KIO::Job * job )
 
 void KFilePropsPlugin::slotFileRenamed( KIO::Job *, const KURL &, const KURL & newUrl )
 {
-    // This is called in case of an existing local file during the copy/move operation,
-    // if the user chooses Rename.
-    properties->updateUrl( newUrl );
+  // This is called in case of an existing local file during the copy/move operation,
+  // if the user chooses Rename.
+  properties->updateUrl( newUrl );
 }
 
 void KFilePropsPlugin::postApplyChanges()
 {
   KURL::List lst;
-  lst.append(properties->kurl());
+  KFileItemList items = properties->items();
+  for ( KFileItemListIterator it( items ); it.current(); ++it )
+    lst.append((*it)->url());
   KDirNotify_stub allDirNotify("*", "KDirNotify*");
   allDirNotify.FilesChanged( lst );
 }
@@ -1111,12 +1113,14 @@ public:
   }
 
   QFrame *m_frame;
+  QCheckBox *cbRecursive;
 };
 
 KFilePermissionsPropsPlugin::KFilePermissionsPropsPlugin( KPropertiesDialog *_props )
   : KPropsDlgPlugin( _props )
 {
   d = new KFilePermissionsPropsPluginPrivate;
+  d->cbRecursive = 0L;
   grpCombo = 0L; grpEdit = 0;
   usrEdit = 0L;
   QString path = properties->kurl().path(-1);
@@ -1127,7 +1131,8 @@ KFilePermissionsPropsPlugin::KFilePermissionsPropsPlugin( KPropertiesDialog *_pr
 
   KFileItem * item = properties->item();
   bool isLink = item->isLink();
-  bool isDir = item->isDir();
+  bool isDir = item->isDir(); // all dirs
+  bool hasDir = item->isDir(); // at least one dir
   permissions = item->permissions(); // common permissions to all files
   mode_t partialPermissions = permissions; // permissions that only some files have (at first we take everything)
   strOwner = item->user();
@@ -1144,6 +1149,8 @@ KFilePermissionsPropsPlugin::KFilePermissionsPropsPlugin( KPropertiesDialog *_pr
         isLink = false;
       if ( (*it)->isDir() != isDir )
         isDir = false;
+      else
+        hasDir = true;
       if ( (*it)->permissions() != permissions )
       {
         permissions &= (*it)->permissions();
@@ -1249,7 +1256,7 @@ KFilePermissionsPropsPlugin::KFilePermissionsPropsPlugin( KPropertiesDialog *_pr
       cb->setEnabled ((isMyFile || IamRoot) && (!isLink));
       permBox[row][col] = cb;
       gl->addWidget (permBox[row][col], row+2, col+1);
-      connect( cb, SIGNAL( toggled( bool ) ),
+      connect( cb, SIGNAL( clicked() ),
                this, SIGNAL( changed() ) );
     }
   }
@@ -1383,6 +1390,16 @@ KFilePermissionsPropsPlugin::KFilePermissionsPropsPlugin( KPropertiesDialog *_pr
   }
 
   gl->setColStretch(2, 10);
+
+  // "Apply recursive" checkbox
+  if ( hasDir )
+  {
+      d->cbRecursive = new QCheckBox( i18n("Apply changes recursively"), d->m_frame );
+      box->addWidget( d->cbRecursive );
+      connect( d->cbRecursive, SIGNAL( clicked() ),
+               this, SLOT( slotRecursiveClicked() ) );
+  }
+
   box->addStretch (10);
 
   if (isMyFile)
@@ -1408,54 +1425,61 @@ bool KFilePermissionsPropsPlugin::supports( KFileItemList /*_items*/ )
   return true;
 }
 
-void KFilePermissionsPropsPlugin::applyChanges()
+void KFilePermissionsPropsPlugin::slotRecursiveClicked()
 {
-  mode_t p = 0L;
+  // If we want to apply permissions recursively, then we didn't
+  // show up the right permissions to start with. Files in subdirs might
+  // have other flags.... At least, let the user the possibility
+  // to set any flag to "unchanged", so that he isn't forced to set +x
+  // on all files !
   for (int row = 0;row < 3; ++row)
     for (int col = 0; col < 4; ++col)
-      if (permBox[row][col]->isChecked())
-        p |= fperm[row][col];
+      permBox[row][col]->setTristate();
+}
+
+void KFilePermissionsPropsPlugin::applyChanges()
+{
+  mode_t newPermission = 0;
+  mode_t permissionMask = 0;
+  for (int row = 0;row < 3; ++row)
+    for (int col = 0; col < 4; ++col)
+    {
+      switch (permBox[row][col]->state())
+      {
+          case QCheckBox::On:
+            newPermission |= fperm[row][col];
+            //fall through
+          case QCheckBox::Off:
+            permissionMask |= fperm[row][col];
+            break;
+          default: // NoChange
+            break;
+      }
+    }
 
   QString owner, group;
   if (usrEdit)
     owner = usrEdit->text();
-  else
-    owner = strOwner;
   if (grpEdit)
     group = grpEdit->text();
   else if (grpCombo)
     group = grpCombo->currentText();
-  else
-    group = strGroup;
 
-  // First update group / owner
-  // (permissions have to set after, in case of suid and sgid)
-  if ((owner != strOwner) || (group != strGroup))
+  if (owner == strOwner)
+      owner = QString::null; // no change
+
+  if (group == strGroup)
+      group = QString::null;
+
+  kdDebug(250) << "old permissions : " << QString::number(permissions,8) << endl;
+  kdDebug(250) << "new permissions : " << QString::number(newPermission,8) << endl;
+  kdDebug(250) << "permissions mask : " << QString::number(permissionMask,8) << endl;
+
+  if ( permissions != newPermission || !owner.isEmpty() || !group.isEmpty() )
   {
-    struct passwd* pw = getpwnam(QFile::encodeName(owner));
-    struct group* g = getgrnam(QFile::encodeName(group));
-    if ( pw == 0L ) {
-      kdError(250) << " ERROR: No user " << owner << endl;
-      return;
-    }
-    if ( g == 0L ) {
-      kdError(250) << " ERROR: No group " << group << endl;
-      return;
-    }
-    // TODO support for multiple items
-    QString path = properties->kurl().path();
-    if ( chown( QFile::encodeName(path), pw->pw_uid, g->gr_gid ) != 0 )
-      KMessageBox::sorry( 0, i18n( "<qt>Could not modify the ownership of file <b>%1</b>.You have insufficient access to the file to perform the change.</qt>" ).arg(path));
-  }
-
-  kdDebug(250) << "old permissions : " << permissions << endl;
-  kdDebug(250) << "new permissions : " << p << endl;
-
-  // TODO support for multiple items
-  kdDebug(250) << "url : " << properties->kurl().url() << endl;
-  if ( permissions != p )
-  {
-    KIO::Job * job = KIO::chmod( properties->kurl(), p );
+    KIO::Job * job = KIO::chmod( properties->items(), newPermission, permissionMask,
+                                 owner, group,
+                                 d->cbRecursive && d->cbRecursive->isChecked() );
     connect( job, SIGNAL( result( KIO::Job * ) ),
              SLOT( slotChmodResult( KIO::Job * ) ) );
     // Wait for job
