@@ -2,6 +2,10 @@
  * $Id$
  * 
  * $Log$
+ * Revision 1.15  1997/10/21 20:44:40  kulow
+ * removed all NULLs and replaced it with 0L or "".
+ * There are some left in mediatool, but this is not C++
+ *
  * Revision 1.14  1997/10/16 11:14:26  torben
  * Kalle: Copyright headers
  * kdoctoolbar removed
@@ -90,7 +94,7 @@
 #include <X11/Xatom.h>
 #include <X11/Xutil.h>
 #include <X11/Xos.h>
-Window debugWin = 0;
+
 #ifdef HAVE_X11_EXTENSTIONS_SHAPE_H
 #include <X11/extensions/shape.h>
 #else
