@@ -106,7 +106,7 @@ void KIO::pasteData( const KURL& u, const QByteArray& _data )
 
     KTempFile tempFile;
     tempFile.setAutoDelete( true );
-    *tempFile.dataStream() << _data;
+    tempFile.dataStream()->writeRawBytes( _data.data(), _data.size() );
     tempFile.close();
 
     (void) KIO::NetAccess::upload( tempFile.name(), myurl );
