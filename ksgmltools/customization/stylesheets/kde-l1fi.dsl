@@ -35,7 +35,10 @@
 (define %kde-gentext-fi-default% "&Default;")
 (define %kde-gentext-fi-language% "&Finnish;")
 (define %kde-fi-logo% "")
+(define %kde-gentext-fi-date-phrase% "&LastUpdated;: ")
+(define %kde-gentext-fi-author-phrase% "&by; ")
+(define %kde-gentext-fi-releaseinfo-phrase% "&Version; ") 
 
-    </STYLE-SPECIFICATION-BODY>
+   </STYLE-SPECIFICATION-BODY>
   </STYLE-SPECIFICATION>
 </STYLE-SHEET>

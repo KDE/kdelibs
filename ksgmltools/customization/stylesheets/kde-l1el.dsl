@@ -35,7 +35,10 @@
 (define %kde-gentext-el-default% "&Default;")
 (define %kde-gentext-el-language% "&Greek;")
 (define %kde-el-logo% "")
+(define %kde-gentext-el-date-phrase% "&LastUpdated;: ")
+(define %kde-gentext-el-author-phrase% "&by; ")
+(define %kde-gentext-el-releaseinfo-phrase% "&Version; ") 
 
-    </STYLE-SPECIFICATION-BODY>
+   </STYLE-SPECIFICATION-BODY>
   </STYLE-SPECIFICATION>
 </STYLE-SHEET>

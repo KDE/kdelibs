@@ -208,3 +208,87 @@
     <![%kde-l10n-sv[ (("sv") %kde-gentext-sv-language%) ]]>
     <![%kde-l10n-zh-CN[ (("zh-cn") %kde-gentext-zh-CN-language%) ]]>
     (else (error "L10N ERROR: kde-gentext-language: no localised version"))))
+
+(define (kde-gentext-author-phrase)
+  (case ($lang$)
+    <![%kde-l10n-ca[ (("ca") %kde-gentext-ca-author-phrase%) ]]>
+    <![%kde-l10n-cs[ (("cs") %kde-gentext-cs-author-phrase%) ]]>
+    <![%kde-l10n-da[ (("da") %kde-gentext-da-author-phrase%) ]]>
+    <![%kde-l10n-de[ (("de") %kde-gentext-de-author-phrase%) ]]>
+    <![%kde-l10n-el[ (("el") %kde-gentext-el-author-phrase%) ]]>
+    <![%kde-l10n-en[ (("en") %kde-gentext-en-author-phrase%) ]]>
+    <![%kde-l10n-es[ (("es") %kde-gentext-es-author-phrase%) ]]>
+    <![%kde-l10n-et[ (("et") %kde-gentext-et-author-phrase%) ]]>
+    <![%kde-l10n-fi[ (("fi") %kde-gentext-fi-author-phrase%) ]]>
+    <![%kde-l10n-fr[ (("fr") %kde-gentext-fr-author-phrase%) ]]>
+    <![%kde-l10n-it[ (("it") %kde-gentext-it-author-phrase%) ]]>
+    <![%kde-l10n-ja[ (("ja") %kde-gentext-ja-author-phrase%) ]]>
+    <![%kde-l10n-nl[ (("nl") %kde-gentext-nl-author-phrase%) ]]>
+    <![%kde-l10n-no[ (("no") %kde-gentext-no-author-phrase%) ]]>
+    <![%kde-l10n-pl[ (("pl") %kde-gentext-pl-author-phrase%) ]]>
+    <![%kde-l10n-pt[ (("pt") %kde-gentext-pt-author-phrase%) ]]>
+    <![%kde-l10n-pt-BR[ (("pt-br") %kde-gentext-pt-BR-author-phrase%) ]]>
+    <![%kde-l10n-ro[ (("ro") %kde-gentext-ro-author-phrase%) ]]>
+    <![%kde-l10n-ru[ (("ru") %kde-gentext-ru-author-phrase%) ]]>
+    <![%kde-l10n-sk[ (("sk") %kde-gentext-sk-author-phrase%) ]]>
+    <![%kde-l10n-sl[ (("sl") %kde-gentext-sl-author-phrase%) ]]>
+    <![%kde-l10n-sr[ (("sr") %kde-gentext-sr-author-phrase%) ]]>
+    <![%kde-l10n-sv[ (("sv") %kde-gentext-sv-author-phrase%) ]]>
+    <![%kde-l10n-zh-CN[ (("zh-cn") %kde-gentext-zh-CN-author-phrase%) ]]>
+    (else (error "L10N ERROR: kde-gentext-author-phrase: no localised version"))))
+
+(define (kde-gentext-date-phrase)
+  (case ($lang$)
+    <![%kde-l10n-ca[ (("ca") %kde-gentext-ca-date-phrase%) ]]>
+    <![%kde-l10n-cs[ (("cs") %kde-gentext-cs-date-phrase%) ]]>
+    <![%kde-l10n-da[ (("da") %kde-gentext-da-date-phrase%) ]]>
+    <![%kde-l10n-de[ (("de") %kde-gentext-de-date-phrase%) ]]>
+    <![%kde-l10n-el[ (("el") %kde-gentext-el-date-phrase%) ]]>
+    <![%kde-l10n-en[ (("en") %kde-gentext-en-date-phrase%) ]]>
+    <![%kde-l10n-es[ (("es") %kde-gentext-es-date-phrase%) ]]>
+    <![%kde-l10n-et[ (("et") %kde-gentext-et-date-phrase%) ]]>
+    <![%kde-l10n-fi[ (("fi") %kde-gentext-fi-date-phrase%) ]]>
+    <![%kde-l10n-fr[ (("fr") %kde-gentext-fr-date-phrase%) ]]>
+    <![%kde-l10n-it[ (("it") %kde-gentext-it-date-phrase%) ]]>
+    <![%kde-l10n-ja[ (("ja") %kde-gentext-ja-date-phrase%) ]]>
+    <![%kde-l10n-nl[ (("nl") %kde-gentext-nl-date-phrase%) ]]>
+    <![%kde-l10n-no[ (("no") %kde-gentext-no-date-phrase%) ]]>
+    <![%kde-l10n-pl[ (("pl") %kde-gentext-pl-date-phrase%) ]]>
+    <![%kde-l10n-pt[ (("pt") %kde-gentext-pt-date-phrase%) ]]>
+    <![%kde-l10n-pt-BR[ (("pt-br") %kde-gentext-pt-BR-date-phrase%) ]]>
+    <![%kde-l10n-ro[ (("ro") %kde-gentext-ro-date-phrase%) ]]>
+    <![%kde-l10n-ru[ (("ru") %kde-gentext-ru-date-phrase%) ]]>
+    <![%kde-l10n-sk[ (("sk") %kde-gentext-sk-date-phrase%) ]]>
+    <![%kde-l10n-sl[ (("sl") %kde-gentext-sl-date-phrase%) ]]>
+    <![%kde-l10n-sr[ (("sr") %kde-gentext-sr-date-phrase%) ]]>
+    <![%kde-l10n-sv[ (("sv") %kde-gentext-sv-date-phrase%) ]]>
+    <![%kde-l10n-zh-CN[ (("zh-cn") %kde-gentext-zh-CN-date-phrase%) ]]>
+    (else (error "L10N ERROR: kde-gentext-date-phrase: no localised version"))))
+
+(define (kde-gentext-releaseinfo-phrase)
+  (case ($lang$)
+    <![%kde-l10n-ca[ (("ca") %kde-gentext-ca-releaseinfo-phrase%) ]]>
+    <![%kde-l10n-cs[ (("cs") %kde-gentext-cs-releaseinfo-phrase%) ]]>
+    <![%kde-l10n-da[ (("da") %kde-gentext-da-releaseinfo-phrase%) ]]>
+    <![%kde-l10n-de[ (("de") %kde-gentext-de-releaseinfo-phrase%) ]]>
+    <![%kde-l10n-el[ (("el") %kde-gentext-el-releaseinfo-phrase%) ]]>
+    <![%kde-l10n-en[ (("en") %kde-gentext-en-releaseinfo-phrase%) ]]>
+    <![%kde-l10n-es[ (("es") %kde-gentext-es-releaseinfo-phrase%) ]]>
+    <![%kde-l10n-et[ (("et") %kde-gentext-et-releaseinfo-phrase%) ]]>
+    <![%kde-l10n-fi[ (("fi") %kde-gentext-fi-releaseinfo-phrase%) ]]>
+    <![%kde-l10n-fr[ (("fr") %kde-gentext-fr-releaseinfo-phrase%) ]]>
+    <![%kde-l10n-it[ (("it") %kde-gentext-it-releaseinfo-phrase%) ]]>
+    <![%kde-l10n-ja[ (("ja") %kde-gentext-ja-releaseinfo-phrase%) ]]>
+    <![%kde-l10n-nl[ (("nl") %kde-gentext-nl-releaseinfo-phrase%) ]]>
+    <![%kde-l10n-no[ (("no") %kde-gentext-no-releaseinfo-phrase%) ]]>
+    <![%kde-l10n-pl[ (("pl") %kde-gentext-pl-releaseinfo-phrase%) ]]>
+    <![%kde-l10n-pt[ (("pt") %kde-gentext-pt-releaseinfo-phrase%) ]]>
+    <![%kde-l10n-pt-BR[ (("pt-br") %kde-gentext-pt-BR-releaseinfo-phrase%) ]]>
+    <![%kde-l10n-ro[ (("ro") %kde-gentext-ro-releaseinfo-phrase%) ]]>
+    <![%kde-l10n-ru[ (("ru") %kde-gentext-ru-releaseinfo-phrase%) ]]>
+    <![%kde-l10n-sk[ (("sk") %kde-gentext-sk-releaseinfo-phrase%) ]]>
+    <![%kde-l10n-sl[ (("sl") %kde-gentext-sl-releaseinfo-phrase%) ]]>
+    <![%kde-l10n-sr[ (("sr") %kde-gentext-sr-releaseinfo-phrase%) ]]>
+    <![%kde-l10n-sv[ (("sv") %kde-gentext-sv-releaseinfo-phrase%) ]]>
+    <![%kde-l10n-zh-CN[ (("zh-cn") %kde-gentext-zh-CN-releaseinfo-phrase%) ]]>
+    (else (error "L10N ERROR: kde-gentext-releaseinfo-phrase: no localised version"))))

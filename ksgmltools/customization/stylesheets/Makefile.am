@@ -1,5 +1,5 @@
 
-dsl_DATA = kde-anchor.dsl kde-faq.dsl kde-img.dsl kde-search.dsl \
+dsl_DATA = kde-anchor.dsl kde-faq.dsl kde-img.dsl kde-search.dsl kde-ttlpg.dsl \
 	   kde-l10n.entities kde-l10n.dsl \
 	   kde-navig.dsl kde.css kde.dsl \
 	   kde-l1ca.dsl kde-l1ca.ent \

@@ -35,7 +35,10 @@
 (define %kde-gentext-da-default% "&Default;")
 (define %kde-gentext-da-language% "&Danish;")
 (define %kde-da-logo% "")
+(define %kde-gentext-da-date-phrase% "&LastUpdated;: ")
+(define %kde-gentext-da-author-phrase% "&by; ")
+(define %kde-gentext-da-releaseinfo-phrase% "&Version; ") 
 
-    </STYLE-SPECIFICATION-BODY>
+   </STYLE-SPECIFICATION-BODY>
   </STYLE-SPECIFICATION>
 </STYLE-SHEET>

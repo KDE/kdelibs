@@ -36,7 +36,10 @@
 (define %kde-gentext-ja-default% "&Default;")
 (define %kde-gentext-ja-language% "&Japanese;")
 (define %kde-ja-logo% "")
+(define %kde-gentext-ja-date-phrase% "&LastUpdated;: ")
+(define %kde-gentext-ja-author-phrase% "&by; ")
+(define %kde-gentext-ja-releaseinfo-phrase% "&Version; ") 
 
-    </STYLE-SPECIFICATION-BODY>
+   </STYLE-SPECIFICATION-BODY>
   </STYLE-SPECIFICATION>
 </STYLE-SHEET>

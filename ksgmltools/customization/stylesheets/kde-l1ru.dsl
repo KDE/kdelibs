@@ -35,7 +35,10 @@
 (define %kde-gentext-ru-default% "&Default;")
 (define %kde-gentext-ru-language% "&Russian;")
 (define %kde-ru-logo% "")
+(define %kde-gentext-ru-date-phrase% "&LastUpdated;: ")
+(define %kde-gentext-ru-author-phrase% "&by; ")
+(define %kde-gentext-ru-releaseinfo-phrase% "&Version; ") 
 
-    </STYLE-SPECIFICATION-BODY>
+   </STYLE-SPECIFICATION-BODY>
   </STYLE-SPECIFICATION>
 </STYLE-SHEET>
