@@ -623,10 +623,11 @@ public slots:
   void slotDelExtension();
   void slotAddExtension();
 
-private:
-
-  void addMimeType( const QString & name );
+private slots:
   void updateButton();
+
+private:
+  void addMimeType( const QString & name );
 
   QLineEdit *commentEdit;
   QLineEdit *genNameEdit;

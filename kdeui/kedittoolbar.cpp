@@ -443,29 +443,37 @@ void KEditToolbarWidget::setupLayout()
   connect(m_activeList, SIGNAL(selectionChanged(QListViewItem *)),
           this,         SLOT(slotActiveSelected(QListViewItem *)));
 
+  QIconSet iconSet;
+  QPixmap pixMap;
+
   m_upAction     = new QPushButton(QString::null, this);
-  m_upAction->setPixmap(BarIcon("up", KIcon::SizeSmall));
+  iconSet = SmallIconSet( "up" );
+  m_upAction->setIconSet( iconSet );
+  pixMap = iconSet.pixmap( QIconSet::Small, QIconSet::Normal );
+  m_upAction->setFixedSize( pixMap.width()+8, pixMap.height()+8 );
   m_upAction->setEnabled(false);
-  connect(m_upAction, SIGNAL(clicked()),
-          this,       SLOT(slotUpButton()));
+  connect(m_upAction, SIGNAL(clicked()), SLOT(slotUpButton()));
 
   m_insertAction = new QPushButton(QString::null, this);
-  m_insertAction->setPixmap(BarIcon("forward", KIcon::SizeSmall));
+  iconSet = SmallIconSet( "forward" );
+  m_insertAction->setIconSet( iconSet );
+  m_insertAction->setFixedSize( pixMap.width()+8, pixMap.height()+8 );
   m_insertAction->setEnabled(false);
-  connect(m_insertAction, SIGNAL(clicked()),
-          this,           SLOT(slotInsertButton()));
+  connect(m_insertAction, SIGNAL(clicked()), SLOT(slotInsertButton()));
 
   m_removeAction = new QPushButton(QString::null, this);
-  m_removeAction->setPixmap(BarIcon("back", KIcon::SizeSmall));
+  iconSet = SmallIconSet( "back" );
+  m_removeAction->setIconSet( iconSet );
+  m_removeAction->setFixedSize( pixMap.width()+8, pixMap.height()+8 );
   m_removeAction->setEnabled(false);
-  connect(m_removeAction, SIGNAL(clicked()),
-          this,           SLOT(slotRemoveButton()));
+  connect(m_removeAction, SIGNAL(clicked()), SLOT(slotRemoveButton()));
 
   m_downAction   = new QPushButton(QString::null, this);
-  m_downAction->setPixmap(BarIcon("down", KIcon::SizeSmall));
+  iconSet = SmallIconSet( "down" );
+  m_downAction->setIconSet( iconSet );
+  m_downAction->setFixedSize( pixMap.width()+8, pixMap.height()+8 );
   m_downAction->setEnabled(false);
-  connect(m_downAction, SIGNAL(clicked()),
-          this,         SLOT(slotDownButton()));
+  connect(m_downAction, SIGNAL(clicked()), SLOT(slotDownButton()));
 
   d->m_helpArea = new QLabel(this);
   d->m_helpArea->setAlignment( Qt::WordBreak );

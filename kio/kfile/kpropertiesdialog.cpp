@@ -946,7 +946,7 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
 void KFilePropsPlugin::nameFileChanged(const QString &text )
 {
   properties->enableButtonOK(!text.isEmpty());
-  changed();
+  emit changed();
 }
 void KFilePropsPlugin::determineRelativePath( const QString & path )
 {
@@ -2008,13 +2008,21 @@ KApplicationPropsPlugin::KApplicationPropsPlugin( KPropertiesDialog *_props )
   d->m_frame = properties->dialog()->addPage(i18n("&Application"));
   QVBoxLayout *toplayout = new QVBoxLayout( d->m_frame, KDialog::spacingHint());
 
+  QIconSet iconSet;
+  QPixmap pixMap;
+
   addExtensionButton = new QPushButton( QString::null, d->m_frame );
-  addExtensionButton->setPixmap( BarIcon( "back", KIcon::SizeSmall ) );
+  iconSet = SmallIconSet( "back" );
+  addExtensionButton->setIconSet( iconSet );
+  pixMap = iconSet.pixmap( QIconSet::Small, QIconSet::Normal );
+  addExtensionButton->setFixedSize( pixMap.width()+8, pixMap.height()+8 );
   connect( addExtensionButton, SIGNAL( clicked() ),
             SLOT( slotAddExtension() ) );
 
   delExtensionButton = new QPushButton( QString::null, d->m_frame );
-  delExtensionButton->setPixmap( BarIcon( "forward", KIcon::SizeSmall ) );
+  iconSet = SmallIconSet( "forward" );
+  delExtensionButton->setIconSet( iconSet );
+  delExtensionButton->setFixedSize( pixMap.width()+8, pixMap.height()+8 );
   connect( delExtensionButton, SIGNAL( clicked() ),
             SLOT( slotDelExtension() ) );
 
@@ -2113,8 +2121,11 @@ KApplicationPropsPlugin::KApplicationPropsPlugin( KPropertiesDialog *_props )
 
   updateButton();
 
-  connect( availableExtensionsList, SIGNAL( selected( int ) ),
-           this, SIGNAL( changed() ) );
+  connect( extensionsList, SIGNAL( highlighted( int ) ),
+           this, SLOT( updateButton() ) );
+  connect( availableExtensionsList, SIGNAL( highlighted( int ) ),
+           this, SLOT( updateButton() ) );
+
   connect( addExtensionButton, SIGNAL( clicked() ),
            this, SIGNAL( changed() ) );
   connect( delExtensionButton, SIGNAL( clicked() ),
@@ -2125,6 +2136,8 @@ KApplicationPropsPlugin::KApplicationPropsPlugin( KPropertiesDialog *_props )
   connect( commentEdit, SIGNAL( textChanged( const QString & ) ),
            this, SIGNAL( changed() ) );
   connect( genNameEdit, SIGNAL( textChanged( const QString & ) ),
+           this, SIGNAL( changed() ) );
+  connect( availableExtensionsList, SIGNAL( selected( int ) ),
            this, SIGNAL( changed() ) );
   connect( extensionsList, SIGNAL( selected( int ) ),
            this, SIGNAL( changed() ) );
@@ -2142,8 +2155,8 @@ KApplicationPropsPlugin::~KApplicationPropsPlugin()
 
 void KApplicationPropsPlugin::updateButton()
 {
-    addExtensionButton->setEnabled(availableExtensionsList->count()>0);
-    delExtensionButton->setEnabled(extensionsList->count()>0);
+    addExtensionButton->setEnabled(availableExtensionsList->currentItem()>-1);
+    delExtensionButton->setEnabled(extensionsList->currentItem()>-1);
 }
 
 void KApplicationPropsPlugin::addMimeType( const QString & name )
