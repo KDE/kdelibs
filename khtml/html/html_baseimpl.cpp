@@ -83,16 +83,16 @@ void HTMLBodyElementImpl::parseAttribute(AttrImpl *attr)
     {
 	QString str;
 	str += attr->value().string() + "px";
-        addCSSProperty(CSS_PROP_PADDING_LEFT, str, false);
-        addCSSProperty(CSS_PROP_PADDING_RIGHT, str, false);
+        addCSSProperty(CSS_PROP_MARGIN_LEFT, str, false);
+        addCSSProperty(CSS_PROP_MARGIN_RIGHT, str, false);
 	break;
     }
     case ATTR_MARGINHEIGHT:
     {
 	QString str;
 	str += attr->value().string() + "px";
-        addCSSProperty(CSS_PROP_PADDING_TOP, str, false);
-        addCSSProperty(CSS_PROP_PADDING_BOTTOM, str, false);
+        addCSSProperty(CSS_PROP_MARGIN_TOP, str, false);
+        addCSSProperty(CSS_PROP_MARGIN_BOTTOM, str, false);
 	break;
     }
     case ATTR_BGCOLOR:

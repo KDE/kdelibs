@@ -27,9 +27,9 @@
 #include <kcharsets.h>
 
 #define MAXFONTSIZES 15
-const int defaultSmallFontSizes[MAXFONTSIZES] = { 7, 8, 10, 12, 14, 18, 24, 28, 34, 40, 48, 56, 68, 82, 100 };
-const int defaultMediumFontSizes[MAXFONTSIZES] = { 8, 10, 12, 14, 18, 24, 28, 34, 40, 48, 56, 68, 82, 100, 120 };
-const int defaultLargeFontSizes[MAXFONTSIZES] = { 10, 14, 18, 24, 28, 34, 40, 48, 56, 68, 82, 100, 120, 150 };
+const int defaultSmallFontSizes[MAXFONTSIZES] = { 6, 7, 8, 10, 12, 14, 18, 24, 28, 34, 40, 48, 56, 68, 82, 100 };
+const int defaultMediumFontSizes[MAXFONTSIZES] = { 7, 8, 10, 12, 14, 18, 24, 28, 34, 40, 48, 56, 68, 82, 100, 120 };
+const int defaultLargeFontSizes[MAXFONTSIZES] = { 8, 10, 14, 18, 24, 28, 34, 40, 48, 56, 68, 82, 100, 120, 150 };
 
 
 KHTMLSettings::KJavaScriptAdvice KHTMLSettings::strToAdvice(const QString& _str)
@@ -116,7 +116,7 @@ void KHTMLSettings::init( KConfig * config, bool reset )
 
   if ( reset || config->hasKey( "FontSize" ) )
   {
-    m_fontSize = config->readNumEntry( "FontSize" );
+    m_fontSize = config->readNumEntry( "FontSize", 0 );
         resetFontSizes();
   }
 

@@ -24,6 +24,7 @@
 
 #include <qfontmetrics.h>
 #include <qfontinfo.h>
+#include <qpaintdevice.h>
 
 #include "rendering/render_style.h"
 #include "css_valueimpl.h"
@@ -67,32 +68,32 @@ int khtml::computeLength(DOM::CSSPrimitiveValueImpl *val, RenderStyle *style, Me
         break;
     case CSSPrimitiveValue::CSS_CM:
         if(m == MetricScreen)
-            factor = 72./2.54; //72dpi/(2.54 cm/in)
+            factor = QPaintDevice::x11AppDpiY()/2.54; //72dpi/(2.54 cm/in)
         else
             factor = 300./2.54; //300dpi/(2.54 cm/in)
         break;
     case CSSPrimitiveValue::CSS_MM:
         if(m == MetricScreen)
-            factor = 72./25.4;
+            factor = QPaintDevice::x11AppDpiY()/25.4;
         else
             factor = 300./25.4;
         break;
     case CSSPrimitiveValue::CSS_IN:
         if(m == MetricScreen)
-            factor = 72.;
+            factor = QPaintDevice::x11AppDpiY();
         else
             factor = 300.;
         break;
     case CSSPrimitiveValue::CSS_PT:
         if(m == MetricScreen)
-            factor = 1.;
+            factor = QPaintDevice::x11AppDpiY()/72.;
         else
             factor = 300./72.;
         break;
     case CSSPrimitiveValue::CSS_PC:
         // 1 pc == 12 pt
         if(m == MetricScreen)
-            factor = 12.;
+            factor = QPaintDevice::x11AppDpiY()*12./72.;
         else
             factor = 300./72.*12.;
         break;

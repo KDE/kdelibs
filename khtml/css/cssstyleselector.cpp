@@ -1695,6 +1695,8 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
                                   * parentStyle->font().pointSize() / 100.);
             else
                 return;
+	    // size is now in pixels, for the font we need it in points
+	    size = (int) (size * 72.)/QPaintDevice::x11AppDpiY();
         }
 
         if(size <= 0) return;
@@ -1736,6 +1738,7 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
             if(diff < .15) // 15% deviation, otherwise we use a scaled font...
                 size = bestSize;
         }
+	//qDebug(" -->>> using %f point font", size);
         f.setPointSize(size);
         //KGlobal::charsets()->setQFont(f, e->ownerDocument()->view()->part()->settings()->charset);
         style->setFont(f);

@@ -49,7 +49,6 @@ script {
 
 body {
 	display: block;
-	padding: 5px; 
 	line-height: 1.05;
 	color: black;
 	margin: 5px;
@@ -125,14 +124,14 @@ embed {
       
 H1 { 
 	display: block;
-	font-size: 2em; 
+	font-size: 1.7em; 
 	margin: .67em auto;
 	font-weight: bolder;
 }
       
 H2 { 
 	display: block;
-	font-size: 1.5em; 
+	font-size: 1.4em; 
 	margin: .83em auto;
 	font-weight: bolder;
 }
