@@ -788,8 +788,8 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
     // buttons
     m_sizeDetermineButton = new QPushButton( i18n("Calculate"), d->m_frame );
     m_sizeStopButton = new QPushButton( i18n("Stop"), d->m_frame );
-    connect( m_sizeDetermineButton, SIGNAL( pressed() ), this, SLOT( slotSizeDetermine() ) );
-    connect( m_sizeStopButton, SIGNAL( pressed() ), this, SLOT( slotSizeStop() ) );
+    connect( m_sizeDetermineButton, SIGNAL( clicked() ), this, SLOT( slotSizeDetermine() ) );
+    connect( m_sizeStopButton, SIGNAL( clicked() ), this, SLOT( slotSizeStop() ) );
     sizelay->addWidget(m_sizeDetermineButton, 0);
     sizelay->addWidget(m_sizeStopButton, 0);
     sizelay->addStretch(10); // so that the buttons don't grow horizontally
@@ -1913,10 +1913,10 @@ KApplicationPropsPlugin::KApplicationPropsPlugin( KPropertiesDialog *_props )
   grid->addMultiCellWidget(extensionsList, 0, 3, 0, 0);
 
   grid->addWidget(addExtensionButton, 1, 1);
-  connect( addExtensionButton, SIGNAL( pressed() ),
+  connect( addExtensionButton, SIGNAL( clicked() ),
            this, SLOT( slotAddExtension() ) );
   grid->addWidget(delExtensionButton, 2, 1);
-  connect( delExtensionButton, SIGNAL( pressed() ),
+  connect( delExtensionButton, SIGNAL( clicked() ),
            this, SLOT( slotDelExtension() ) );
   grid->addMultiCellWidget(availableExtensionsList, 0, 3, 2, 2);
 
@@ -1959,9 +1959,9 @@ KApplicationPropsPlugin::KApplicationPropsPlugin( KPropertiesDialog *_props )
 
   connect( availableExtensionsList, SIGNAL( selected( int ) ),
            this, SIGNAL( changed() ) );
-  connect( addExtensionButton, SIGNAL( pressed() ),
+  connect( addExtensionButton, SIGNAL( clicked() ),
            this, SIGNAL( changed() ) );
-  connect( delExtensionButton, SIGNAL( pressed() ),
+  connect( delExtensionButton, SIGNAL( clicked() ),
            this, SIGNAL( changed() ) );
   connect( nameEdit, SIGNAL( textChanged( const QString & ) ),
            this, SIGNAL( changed() ) );
