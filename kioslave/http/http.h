@@ -20,7 +20,7 @@
 
 #include <kio_interface.h>
 #include <kio_base.h>
-#include <k2url.h>
+#include <kurl.h>
 
 class HTTPProtocol : public IOProtocol
 {
@@ -57,7 +57,7 @@ protected:
   size_t sendData();
 
   bool initSockaddr( struct sockaddr_in *server_name, const char *hostname, int port);
-  bool http_open( K2URL &_url, const char* _post_data, int _post_data_len, bool _reload, unsigned long _offset = 0 );
+  bool http_open( KURL &_url, const char* _post_data, int _post_data_len, bool _reload, unsigned long _offset = 0 );
   void http_close();
 
   void clearError() { m_iSavedError = 0; }

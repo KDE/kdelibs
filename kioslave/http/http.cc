@@ -23,7 +23,7 @@
 
 #include "http.h"
 
-#include <k2url.h>
+#include <kurl.h>
 
 bool open_CriticalDlg( const char *_titel, const char *_message, const char *_but1, const char *_but2 = 0L );
 bool open_PassDlg( const char *_head, string& _user, string& _pass );
@@ -237,7 +237,7 @@ HTTPProtocol::HTTPProtocol( Connection *_conn ) : IOProtocol( _conn )
   m_bUseProxy = ProtocolManager::self()->getUseProxy();
 
   if ( m_bUseProxy ) {
-    K2URL ur ( ProtocolManager::self()->getHttpProxy().data() );
+    KURL ur ( ProtocolManager::self()->getHttpProxy().data() );
 
     m_strProxyHost = ur.host();
     m_strProxyPort = ur.port();
@@ -265,9 +265,9 @@ bool HTTPProtocol::initSockaddr( struct sockaddr_in *server_name, const char *ho
   return true;
 }
 
-bool HTTPProtocol::http_open( K2URL &_url, const char* _post_data, int _post_data_size, bool _reload, unsigned long _offset )
+bool HTTPProtocol::http_open( KURL &_url, const char* _post_data, int _post_data_size, bool _reload, unsigned long _offset )
 {
-  string url = _url.url();
+  //QString url = _url.url();
 
   int port = _url.port();
   if ( port == -1 )
@@ -275,7 +275,7 @@ bool HTTPProtocol::http_open( K2URL &_url, const char* _post_data, int _post_dat
 
   m_sock = ::socket(PF_INET,SOCK_STREAM,0);
   if ( m_sock < 0 )  {
-    error( ERR_COULD_NOT_CREATE_SOCKET, url.c_str() );
+    error( ERR_COULD_NOT_CREATE_SOCKET, _url.url() );
     return false;
   }
 
@@ -339,7 +339,7 @@ bool HTTPProtocol::http_open( K2URL &_url, const char* _post_data, int _post_dat
   }
 
   // Let the path be "/" if it is empty ( => true )
-  string tmp = _url.encodedPathAndQuery( 0, true );
+  QString tmp = _url.encodedPathAndQuery( 0, true );
   command += tmp;
   
   command += " HTTP/1.1\r\n"; /* start header */
@@ -466,7 +466,7 @@ repeat2:
 	// Let's first send an error message
 	// this will be moved to slotErrorPage(), when it will be written
 	http_close();
-	error( ERR_ACCESS_DENIED, url.c_str() );
+	error( ERR_ACCESS_DENIED, _url.url() );
 	return false;
 
 	// Tell that we will only get an error page here.
@@ -486,8 +486,8 @@ repeat2:
     // In fact we should do redirection only if we got redirection code
     else if ( strncmp( buffer, "Location:", 9 ) == 0 ) {
       http_close();
-      K2URL u( _url, buffer + 10 );
-      redirection( u.url().c_str() );
+      KURL u( _url, buffer + 10 );
+      redirection( u.url() );
       return http_open( u, _post_data, _post_data_size, _reload, _offset );
     } else if ( strncmp( buffer, "WWW-Authenticate:", 17 ) == 0 ) {
       configAuth(buffer + 17);  
@@ -514,12 +514,11 @@ repeat2:
       m_strRealm = _url.host();
     if ( !open_PassDlg(m_strRealm.c_str(), user, pass) )
     {
-      string url = _url.url();
-      error( ERR_ACCESS_DENIED, url.c_str() );
+      error( ERR_ACCESS_DENIED, _url.url() );
       return false;
     }
     
-    K2URL u( _url );
+    KURL u( _url );
     u.setUser( user.c_str() );
     u.setPass( pass.c_str() );
     return http_open( u, _post_data, _post_data_size, _reload, _offset );
@@ -592,7 +591,7 @@ void HTTPProtocol::slotGetSize( const char *_url )
 {
   string url = _url;
   
-  K2URL usrc( _url );
+  KURL usrc( _url );
   if ( usrc.isMalformed() )
   {
     error( ERR_MALFORMED_URL, url.c_str() );
@@ -636,7 +635,7 @@ void HTTPProtocol::slotGet( const char *_url )
   unsigned int old_len=0;
   string url = _url;
   
-  K2URL usrc( _url );
+  KURL usrc( _url );
   if ( usrc.isMalformed() )
   {
     error( ERR_MALFORMED_URL, url.c_str() );
@@ -857,7 +856,7 @@ void HTTPProtocol::slotCopy( const char *_source, const char *_dest )
   string source = _source;
   string dest = _dest;
   
-  K2URL usrc( _source );
+  KURL usrc( _source );
   if ( usrc.isMalformed() )
   {
     error( ERR_MALFORMED_URL, source.c_str() );
@@ -865,7 +864,7 @@ void HTTPProtocol::slotCopy( const char *_source, const char *_dest )
     return;
   }
 
-  K2URL udest( _dest );
+  KURL udest( _dest );
   if ( udest.isMalformed() )
   {
     error( ERR_MALFORMED_URL, dest.c_str() );
@@ -880,33 +879,33 @@ void HTTPProtocol::slotCopy( const char *_source, const char *_dest )
     return;
   }
 
-  list<K2URL> lst;
-  if ( !K2URL::split( _dest, lst )  )
+  KURLList lst;
+  if ( !KURL::split( _dest, lst )  )
   {
     error( ERR_MALFORMED_URL, dest.c_str() );
     m_cmd = CMD_NONE;
     return;
   }
-  if ( lst.size() > 1 )
+  if ( lst.count() > 1 )
   {
     error( ERR_NOT_FILTER_PROTOCOL, "http" );
     m_cmd = CMD_NONE;
     return;
   }
   
-  string exec = ProtocolManager::self()->find( lst.back().protocol() );
+  string exec = ProtocolManager::self()->find( lst.getLast()->protocol() );
 
   if ( exec.empty() )
   {
-    error( ERR_UNSUPPORTED_PROTOCOL, lst.back().protocol() );
+    error( ERR_UNSUPPORTED_PROTOCOL, lst.getLast()->protocol() );
     m_cmd = CMD_NONE;
     return;
   }
 
   // Is the right most protocol a filesystem protocol ?
-  if ( ProtocolManager::self()->outputType( lst.back().protocol() ) != ProtocolManager::T_FILESYSTEM )
+  if ( ProtocolManager::self()->outputType( lst.getLast()->protocol() ) != ProtocolManager::T_FILESYSTEM )
   {
-    error( ERR_PROTOCOL_IS_NOT_A_FILESYSTEM, lst.back().protocol() );
+    error( ERR_PROTOCOL_IS_NOT_A_FILESYSTEM, lst.getLast()->protocol() );
     m_cmd = CMD_NONE;
     return;
   }
@@ -953,7 +952,7 @@ void HTTPProtocol::slotCopy( const char *_source, const char *_dest )
     bool resume = false;
     unsigned long offset = 0;
 
-    K2URL u1( fit->c_str() );
+    KURL u1( fit->c_str() );
     if ( u1.isMalformed() )
     {
       error( ERR_MALFORMED_URL, source.c_str() );
@@ -962,17 +961,17 @@ void HTTPProtocol::slotCopy( const char *_source, const char *_dest )
     }
       
       
-    list<K2URL> l( lst );
+    KURLList l( lst );
 
-    string filename = u1.filename();
-    if ( filename.empty() ) {
+    QString filename = u1.filename();
+    if ( filename.isEmpty() ) {
       filename = "index.html";
-      l.back().addPath( filename.c_str() );
+      l.getLast()->addPath( filename );
     }
     
-    string d;
-    list<K2URL>::iterator it = l.begin();
-    for( ; it != l.end(); it++ )
+    QString d;
+    KURL * it = l.first();
+    for( ; it ; it = l.next() )
       d += it->url();
     
     // Repeat until we got no error
@@ -1034,9 +1033,9 @@ void HTTPProtocol::slotCopy( const char *_source, const char *_dest )
 
       canResume( m_bCanResume ); // this will emit sigCanResume( m_bCanResume )
 
-      copyingFile( fit->c_str(), d.c_str() );
+      copyingFile( fit->c_str(), d );
     
-      job.put( d.c_str(), -1, overwrite_all || overwrite,
+      job.put( d, -1, overwrite_all || overwrite,
 	       resume_all || resume, m_iSize + offset );
 
       while( !job.isReady() && !job.hasFinished() )
@@ -1057,9 +1056,9 @@ void HTTPProtocol::slotCopy( const char *_source, const char *_dest )
 	    skip_copying = true;
 	    continue;
 	  }
-	  string tmp2 = l.back().url();
+	  QString tmp2 = l.getLast()->url();
 	  SkipDlg_Result r;
-	  r = open_SkipDlg( tmp2.c_str(), ( files.size() > 1 ) );
+	  r = open_SkipDlg( tmp2, ( files.size() > 1 ) );
 	  if ( r == S_CANCEL )
 	  {
 	    http_close();
@@ -1119,8 +1118,8 @@ void HTTPProtocol::slotCopy( const char *_source, const char *_dest )
 		m = (RenameDlg_Mode)( M_SINGLE | M_OVERWRITE);
 	    }
 
-	    string tmp2 = l.back().url();
-	    r = open_RenameDlg( fit->c_str(), tmp2.c_str(), m, n );
+	    QString tmp2 = l.getLast()->url();
+	    r = open_RenameDlg( fit->c_str(), tmp2, m, n );
 	  }
 	  if ( r == R_CANCEL ) 
 	  {
@@ -1131,13 +1130,13 @@ void HTTPProtocol::slotCopy( const char *_source, const char *_dest )
 	  }
 	  else if ( r == R_RENAME )
 	  {
-	    K2URL u( n.c_str() );
+	    KURL u( n.c_str() );
 	    // The Dialog should have checked this.
 	    if ( u.isMalformed() )
 	      assert( 0 );
 	    // Change the destination name of the current file
 // 	    l = lst;
-// 	    l.back().addPath( filename.c_str() );
+// 	    l.getLast()->addPath( filename.c_str() );
     
 // 	    list<K2URL>::iterator it = l.begin();
 // 	    for( ; it != l.end(); it++ )
@@ -1170,13 +1169,13 @@ void HTTPProtocol::slotCopy( const char *_source, const char *_dest )
 	  else if ( r == R_RESUME )
 	  {
 	    resume = true;
-	    offset = getOffset( l.back().url() );
+	    offset = getOffset( l.getLast()->url().data() );
 	    // Dont clear error => we will repeat the current command
 	  }
 	  else if ( r == R_RESUME_ALL )
 	  {
 	    resume_all = true;
-	    offset = getOffset( l.back().url() );
+	    offset = getOffset( l.getLast()->url().data() );
 	    // Dont clear error => we will repeat the current command
 	  }
 	  else
