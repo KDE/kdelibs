@@ -3,7 +3,7 @@
     Copyright (C) 1997, 1998 Richard Moore <rich@kde.org>
                   1998 Stephan Kulow <coolo@kde.org>
                   1998 Daniel Grana <grana@ie.iwi.unibe.ch>
-                  1999,2000,2001 Carsten Pfeiffer <pfeiffer@kde.org>
+                  1999,2000,2001,2002 Carsten Pfeiffer <pfeiffer@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -170,7 +170,7 @@ KFileDialog::KFileDialog(const QString& startDir, const QString& filter,
     setMainWidget( d->mainWidget );
     d->okButton = new KPushButton( KStdGuiItem::ok(), d->mainWidget );
     d->okButton->setDefault( true );
-    d->cancelButton = new KPushButton( KStdGuiItem::cancel(), d->mainWidget );
+    d->cancelButton = new KPushButton(KStdGuiItem::cancel(), d->mainWidget);
     connect( d->okButton, SIGNAL( clicked() ), SLOT( slotOk() ));
     connect( d->cancelButton, SIGNAL( clicked() ), SLOT( slotCancel() ));
     d->urlBar = new KURLBar( true, d->mainWidget, "url bar" );
@@ -191,15 +191,20 @@ KFileDialog::KFileDialog(const QString& startDir, const QString& filter,
         u.setPath( KGlobalSettings::documentPath() );
         d->urlBar->insertItem( u, i18n("Documents"), false, "document" );
         u.setPath( QDir::homeDirPath() );
-        d->urlBar->insertItem( u, i18n("Home Directory"), false, "folder_home" );
-        u.setPath( "/" );
-        d->urlBar->insertItem( u, i18n("Root Directory"), false, "folder_grey" );
+        d->urlBar->insertItem( u, i18n("Home Directory"), false, 
+                               "folder_home" );
+        u = "floppy:/";
+        if ( KProtocolInfo::isKnownProtocol( u ) )
+            d->urlBar->insertItem( u, i18n("Floppy"), false,
+                                   KProtocolInfo::icon( "floppy" ) );
         QStringList tmpDirs = KGlobal::dirs()->resourceDirs( "tmp" );
         u.setPath( tmpDirs.isEmpty() ? "/tmp" : tmpDirs.first() );
-        d->urlBar->insertItem( u, i18n("Temporary Files"), false, "file_temporary" );
+        d->urlBar->insertItem( u, i18n("Temporary Files"), false, 
+                               "file_temporary" );
         u = "lan:/";
         if ( KProtocolInfo::isKnownProtocol( u ) )
-            d->urlBar->insertItem( u, i18n("Network"), false, "network_local" );
+            d->urlBar->insertItem( u, i18n("Network"), false, 
+                                   "network_local" );
     }
 
 //     d->urlBar->setFixedWidth( d->urlBar->sizeHint().width() );
@@ -314,7 +319,7 @@ KFileDialog::KFileDialog(const QString& startDir, const QString& filter,
         new KToggleAction(i18n("Show Sidebar"), Key_F9, coll,"toggleSpeedbar");
     connect( showSidebarAction, SIGNAL( toggled( bool ) ),
              SLOT( toggleSpeedbar( bool )) );
-    
+
     KActionMenu *menu = new KActionMenu( i18n("Extras"), "misc", this, "extra menu" );
     menu->insert( coll->action( "mkdir" ));
     menu->insert( coll->action( "delete" ));
@@ -1556,7 +1561,7 @@ void KFileDialog::readConfig( KConfig *kc, const QString& group )
 					     KGlobalSettings::CompletionAuto );
     if ( cm != KGlobalSettings::completionMode() )
 	combo->setCompletionMode( cm );
-    
+
     cm = (KGlobalSettings::Completion)
          kc->readNumEntry( LocationComboCompletionMode,
                            KGlobalSettings::CompletionAuto );
@@ -1591,7 +1596,7 @@ void KFileDialog::writeConfig( KConfig *kc, const QString& group )
     kc->writeEntry( PathComboCompletionMode, d->pathCombo->completionMode() );
     kc->writeEntry(LocationComboCompletionMode,locationEdit->completionMode());
     kc->writeEntry( ShowSpeedbar, !d->urlBar->isHidden() );
-    
+
     ops->writeConfig( kc, group );
     kc->setGroup( oldGroup );
 }
