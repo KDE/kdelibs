@@ -51,7 +51,7 @@ public:
 protected:
     // the number of DOMObjects referencing this Node
     // An implementation object will delete itself, if it has
-    // no DOMObject referencing it, and no deleteMe() returns true.
+    // no DOMObject referencing it, and deleteMe() returns true.
     unsigned int _ref;
 };
 

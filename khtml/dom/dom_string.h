@@ -25,10 +25,6 @@
 
 #include <qstring.h>
 
-namespace khtml {
-    class Attribute;
-};
-
 namespace DOM {
 
 class DOMStringImpl;
@@ -45,7 +41,6 @@ class DOMStringImpl;
 class DOMString
 {
     friend class CharacterDataImpl;
-    friend class khtml::Attribute;
 
 public:
     /** default constructor. Gives an empty DOMString */

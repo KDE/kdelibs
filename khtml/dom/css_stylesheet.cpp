@@ -20,12 +20,12 @@
  *
  * $Id$
  */
+#include "dom_stringimpl.h"
 #include "css_stylesheet.h"
 #include "css_stylesheetimpl.h"
 #include "css_rule.h"
 
 #include "dom_node.h"
-#include "dom_string.h"
 #include "dom_exception.h"
 
 #include "misc/htmlhashes.h"
@@ -327,7 +327,7 @@ LinkStyle & LinkStyle::operator = (const LinkStyle &other)
 LinkStyle & LinkStyle::operator = (const Node &other)
 {
     if(node) node->deref();
-    node = 0;	
+    node = 0;
     // ### add processing instructions
     NodeImpl *n = other.handle();
     if(!n || !n->isElementNode()) return *this;
