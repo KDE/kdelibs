@@ -140,15 +140,11 @@ DOMString HTMLDocumentImpl::cookie() const
     QDataStream stream(params, IO_WriteOnly);
     stream << URL() << windowId;
     if (!kapp->dcopClient()->call("kcookiejar", "kcookiejar",
-                                  "findDOMCookies(QString, int)", params,
-                                  replyType, reply)) {
-         // Maybe it wasn't running (e.g. we're opening local html files)
-         KApplication::startServiceByDesktopName( "kcookiejar");
-         if (!kapp->dcopClient()->call("kcookiejar", "kcookiejar",
-                                       "findDOMCookies(QString)", params, replyType, reply)) {
-           kdWarning(6010) << "Can't communicate with cookiejar!" << endl;
-           return DOMString();
-         }
+                                  "findDOMCookies(QString,long int)", params,
+                                  replyType, reply)) 
+    {
+       kdWarning(6010) << "Can't communicate with cookiejar!" << endl;
+       return DOMString();
     }
 
     QDataStream stream2(reply, IO_ReadOnly);
