@@ -49,8 +49,10 @@
 #endif
 
 #ifdef HAVE_ALSA_ASOUNDLIB_H
+#	define HAVE_ALSA_SUPPORT
 #	include <alsa/asoundlib.h>
 #elif defined(HAVE_SYS_ASOUNDLIB_H)
+#	define HAVE_ALSA_SUPPORT
 #	include <sys/asoundlib.h>
 #else
 #ifdef HAVE_LIBASOUND2
