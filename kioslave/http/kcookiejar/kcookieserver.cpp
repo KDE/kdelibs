@@ -256,7 +256,7 @@ void KCookieServer::checkCookies( KHttpCookieList *cookieList)
                break;
 
            default:
-               qWarning("kcookieserver.cpp:253 Problen!");
+               qWarning(__FILE__":%d Problen!", __LINE__);
                cookie = mPendingCookies->next();
                break;
            }
