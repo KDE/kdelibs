@@ -911,7 +911,7 @@ bool HTTPProtocol::http_open()
 
   // check if we need to login
   if (!m_state.passwd.isNull() || !m_state.user.isNull()) {
-    if (Authentication == AUTH_Basic) {
+    if (Authentication == AUTH_Basic || Authentication == AUTH_None) {
       header += create_basic_auth("Authorization", m_state.user, m_state.passwd);
     } else if (Authentication == AUTH_Digest) {
       header += create_digest_auth("Authorization", m_state.user,
@@ -1718,6 +1718,8 @@ void HTTPProtocol::get( const KURL& url, bool reload )
   m_request.offset = 0;
   m_request.do_proxy = m_bUseProxy;
   m_request.url = url;
+  m_request.passwd = url.pass();
+  m_request.user = url.user();
 
   if (!http_open())
      return;
