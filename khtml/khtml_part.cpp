@@ -6,7 +6,7 @@
  *                     1999 Antti Koivisto <koivisto@kde.org>
  *                     2000 Simon Hausmann <hausmann@kde.org>
  *                     2000 Stefan Schimanski <1Stein@gmx.de>
- *                     2001 George Staikos <staikos@kde.org>
+ *                     2001-2003 George Staikos <staikos@kde.org>
  *                     2001-2003 Dirk Mueller <mueller@kde.org>
  *                     2002 Apple Computer, Inc.
  *
@@ -550,6 +550,7 @@ bool KHTMLPart::openURL( const KURL &url )
 
     if (p) {
       args.metaData().insert("ssl_session_id", p->d->m_ssl_session_id);
+      kdDebug(6050) << "Using a cached SSL session ID" << endl;
     }
   }
 
@@ -2802,6 +2803,7 @@ void KHTMLPart::urlSelected( const QString &url, int button, int state, const QS
 
     if (p) {
       args.metaData().insert("ssl_session_id", p->d->m_ssl_session_id);
+      kdDebug(6050) << "Using a cached SSL session ID" << endl;
     }
   }
 
@@ -3197,6 +3199,17 @@ bool KHTMLPart::requestObject( khtml::ChildFrame *child, const KURL &url, const 
   child->m_args.metaData().insert("ssl_was_in_use",
                                   d->m_ssl_in_use ? "TRUE":"FALSE");
   child->m_args.metaData().insert("ssl_activate_warnings", "TRUE");
+  {
+    KHTMLPart *p = this;
+    while (p && p->d->m_ssl_session_id.isEmpty()) {
+      p = p->parentPart();
+    }
+
+    if (p) {
+      child->m_args.metaData().insert("ssl_session_id", p->d->m_ssl_session_id);
+      kdDebug(6050) << "Using a cached SSL session ID" << endl;
+    }
+  }
 
   // We want a KHTMLPart if the HTML says <frame src=""> or <frame src="about:blank">
   if ((url.isEmpty() || url.url() == "about:blank") && args.serviceType.isEmpty())
@@ -3555,6 +3568,7 @@ void KHTMLPart::submitForm( const char *action, const QString &url, const QByteA
 
     if (p) {
       args.metaData().insert("ssl_session_id", p->d->m_ssl_session_id);
+      kdDebug(6050) << "Using a cached SSL session ID" << endl;
     }
   }
 
