@@ -246,6 +246,7 @@ if test -n "$LIBART_CONFIG"; then
      done
      LIBART_RPATH=`echo $LIBART_RPATH | sed -e "s/-L/-R/g"`
      LIBART_CFLAGS="`$LIBART_CONFIG --cflags`"
+     SVGICONS=svgicons
 
      AC_DEFINE_UNQUOTED(HAVE_LIBART, 1, [Defines if your system has the libart library])
   else
