@@ -468,12 +468,11 @@ void KHTMLView::drawContents( QPainter *p, int ex, int ey, int ew, int eh )
     d->repaintbooth++;
 #endif
 
-//     kdDebug( 6000 ) << "drawContents this="<< this <<" x=" << ex << ",y=" << ey << ",w=" << ew << ",h=" << eh << endl;
+    //kdDebug( 6000 ) << "drawContents this="<< this <<" x=" << ex << ",y=" << ey << ",w=" << ew << ",h=" << eh << endl;
     if(!m_part || !m_part->xmlDocImpl() || !m_part->xmlDocImpl()->renderer()) {
         p->fillRect(ex, ey, ew, eh, palette().active().brush(QColorGroup::Base));
         return;
     }
-//    QRect dbg_paint_rect(ex,ey,ew,eh);
 
     QPoint pt = contentsToViewport(QPoint(ex, ey));
     QRegion cr = QRect(pt.x(), pt.y(), ew, eh);
@@ -490,8 +489,13 @@ void KHTMLView::drawContents( QPainter *p, int ex, int ey, int ew, int eh )
 	    cr -= QRect(x, y, rw->width(), rw->height());
 	}
     }
+
+#if 0
+    // this is commonly the case with framesets. we still do
+    // want to paint them, otherwise the widgets don't get placed.
     if (cr.isEmpty())
 	return;
+#endif
 
 #ifndef DEBUG_NO_PAINT_BUFFER
     p->setClipRegion(cr);
@@ -517,13 +521,6 @@ void KHTMLView::drawContents( QPainter *p, int ex, int ey, int ew, int eh )
             d->tp->translate(-ex, -ey-py);
             d->tp->fillRect(ex, ey+py, ew, ph, palette().active().brush(QColorGroup::Base));
             m_part->xmlDocImpl()->renderer()->layer()->paint(d->tp, QRect(ex, ey+py, ew, ph));
-#ifdef BOX_DEBUG
-            if (m_part->xmlDocImpl()->focusNode())
-            {
-                d->tp->setBrush(Qt::NoBrush);
-                d->tp->drawRect(m_part->xmlDocImpl()->focusNode()->getRect());
-            }
-#endif
             d->tp->end();
 
 	    p->drawPixmap(ex, ey+py, *d->paintBuffer, 0, 0, ew, ph);
@@ -1823,7 +1820,6 @@ void KHTMLView::paint(QPainter *p, const QRect &rc, int yOff, bool *more)
 
 void KHTMLView::useSlowRepaints()
 {
-    kdDebug(0) << "slow repaints requested" << endl;
     d->useSlowRepaints = true;
     setStaticBackground(true);
 }
