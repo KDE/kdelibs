@@ -271,7 +271,7 @@ void KEditListBox::addItem()
 
     if (!alreadyInList)
     {
-        bool bock = m_listBox->signalsBlocked();
+        block = m_listBox->signalsBlocked();
         m_listBox->blockSignals( true );
         m_listBox->insertItem(currentTextLE);
         m_listBox->blockSignals( block );
