@@ -75,8 +75,9 @@ static bool isAdvanced()
   if (!s_advanced) 
   {
     s_advanced = new bool;
-    KGlobal::config()->setGroup( "Settings" );
-    (*s_advanced) = KGlobal::config()->readBoolEntry( "AdvancedAddBookmark", false );
+    KConfig config("kbookmarkrc", false, false);
+    config.setGroup("Bookmarks");
+    (*s_advanced) = config.readBoolEntry("AdvancedAddBookmark", false);
   }
   return (*s_advanced);
 }
