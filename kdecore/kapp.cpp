@@ -20,6 +20,9 @@
 // $Id$
 //
 // $Log$
+// Revision 1.94  1998/02/24 21:36:04  kulow
+// fix for invokeHTMLHelp: missing / behind the path
+//
 // Revision 1.93  1998/02/24 21:16:22  kulow
 // remove kde_minidir, since this is somehow stupid (I hard coded it in the
 // Makefiles as icondir/mini now) and added kde_sounddir
@@ -723,6 +726,8 @@ KApplication::~KApplication()
   KProcessController* ctrl = theKProcessController;
   theKProcessController = 0;
   delete ctrl; // Stephan: "there can be only one" ;)
+
+  KApp = 0; 
 }
 
 bool KApplication::x11EventFilter( XEvent *_event )
@@ -1251,6 +1256,7 @@ void KApplication::resizeAll()
 	  it.current()->resize( it.current()->size() );
 	  ++it;
 	}
+  delete widgetList;
 }
 
 
