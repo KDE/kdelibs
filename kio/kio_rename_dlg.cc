@@ -287,9 +287,9 @@ RenameDlg_Result open_RenameDlg( const char* _src, const char *_dest, RenameDlg_
 {
   if ( kapp == 0L )
   {
-    char* a[2] = { "dummy", 0L };
+    const char* a[2] = { "dummy", 0L };
     int b = 1;
-    (void)new KApplication( b, a );
+    (void)new KApplication( b, const_cast<char**>(a) );
   }
   
   KIORenameDlg dlg( 0L, _src, _dest, _mode, true );
