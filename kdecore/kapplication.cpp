@@ -509,7 +509,7 @@ bool KApplication::notify(QObject *receiver, QEvent *event)
     }
     if( t == QEvent::Show && receiver->isWidgetType())
     {
-    QWidget* w = static_cast< QWidget* >( receiver );
+        QWidget* w = static_cast< QWidget* >( receiver );
 #if defined Q_WS_X11
         if( w->isTopLevel() && !startupId().isEmpty()) // TODO better done using window group leader?
             KStartupInfo::setWindowStartupId( w->winId(), startupId());
@@ -524,6 +524,13 @@ bool KApplication::notify(QObject *receiver, QEvent *event)
             if( !d->app_started_timer->isActive())
                 d->app_started_timer->start( 0, true );
         }
+        if( w->isTopLevel() && ( w->icon() == NULL || w->icon()->isNull()))
+            {
+            w->setIcon( icon());
+#if defined Q_WS_X11
+            KWin::setIcons( w->winId(), icon(), miniIcon());
+#endif
+            }
     }
     return QApplication::notify(receiver, event);
 }
