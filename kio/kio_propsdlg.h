@@ -25,6 +25,7 @@
 #ifndef __propsdlg_h
 #define __propsdlg_h
 
+#include <sys/types.h>
 #include <sys/stat.h>
 #include <unistd.h>
 #include <stdio.h>
@@ -65,7 +66,7 @@ public:
      * @param _url the URL whose properties should be displayed
      * @param _mode the mode, as returned by stat(). Don't set if unknown.
      */
-    PropertiesDialog( const char *_url, mode_t _mode = -1);
+    PropertiesDialog( const char *_url, mode_t _mode = (mode_t) -1);
     ~PropertiesDialog();
 
     /// Returns a parsed URL
