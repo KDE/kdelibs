@@ -107,7 +107,7 @@ Completion ArrayProtoFunc::execute(const List &args)
   unsigned int length = thisObj.get("length").toUInt32();
   unsigned int middle;
   UString str = "", str2;
-  UString seperator = ",";
+  UString separator = ",";
 
   switch (id) {
   case ToLocaleString:
@@ -121,10 +121,10 @@ Completion ArrayProtoFunc::execute(const List &args)
     // fall trough
   case Join:
     if (!args[0].isA(UndefinedType))
-      seperator = args[0].toString().value();
+      separator = args[0].toString().value();
     for (unsigned int k = 0; k < length; k++) {
       if (k >= 1)
-	str += seperator;
+	str += separator;
       obj = thisObj.get(UString::from(k));
       if (!obj.isA(UndefinedType) && !obj.isA(NullType))
 	str += obj.toString().value();
@@ -199,6 +199,7 @@ Completion ArrayProtoFunc::execute(const List &args)
     break;
   case Slice: // http://developer.netscape.com/docs/manuals/js/client/jsref/array.htm#1193713
     {
+        result = Object::create(ArrayClass); // We return a new array
         int begin = args[0].toUInt32();
         int end = length;
         if (!args[1].isA(UndefinedType))
@@ -208,33 +209,86 @@ Completion ArrayProtoFunc::execute(const List &args)
             end += length;
         }
         // safety tests
-        if ( begin < 0 || end < 0 || begin > end ) {
+        if ( begin < 0 || end < 0 || begin >= end ) {
+            result.put("length", Number(0), DontEnum | DontDelete);
+            break;
+        }
+        //printf( "Slicing from %d to %d \n", begin, end );
+        for(unsigned int k = 0; k < (unsigned int) end-begin; k++) {
+            str = UString::from(k+begin);
+            str2 = UString::from(k);
+            if (thisObj.hasProperty(str)) {
+                obj = thisObj.get(str);
+                result.put(str2, obj);
+            }
+        }
+        result.put("length", end - begin, DontEnum | DontDelete);
+        break;
+    }
+  case Sort:
+    {
+#if 0
+        printf("KJS Array::Sort length=%d\n", length);
+        for ( unsigned int i = 0 ; i<length ; ++i )
+            printf("KJS Array::Sort: %d: %s\n", i, thisObj.get(UString::from(i)).toString().value().ascii() );
+#endif
+        Object sortFunction;
+        bool useSortFunction = !args[0].isA(UndefinedType);
+        if (useSortFunction)
+        {
+            sortFunction = args[0].toObject();
+            if (!sortFunction.implementsCall())
+                useSortFunction = false;
+        }
+
+        if (length == 0) {
             thisObj.put("length", Number(0), DontEnum | DontDelete);
             result = Undefined();
             break;
         }
-        //printf( "Slicing from %d to %d \n", begin, end );
-        if ( begin > 0 ) // we have some shifting to do
-            for(unsigned int k = 0; k < (unsigned int) end-begin; k++) {
-               str = UString::from(k+begin);
-               str2 = UString::from(k);
-               if (thisObj.hasProperty(str)) {
-                 obj = thisObj.get(str);
-                 thisObj.put(str2, obj);
-               } else
-                 thisObj.deleteProperty(str2);
+
+        // "Min" sort. Not the fastest, but definitely less code than heapsort
+        // or quicksort, and much less swapping than bubblesort/insertionsort.
+        for ( unsigned int i = 0 ; i<length-1 ; ++i )
+        {
+            KJSO iObj = thisObj.get(UString::from(i));
+            unsigned int themin = i;
+            KJSO minObj = iObj;
+            for ( unsigned int j = i+1 ; j<length ; ++j )
+            {
+                KJSO jObj = thisObj.get(UString::from(j));
+                int cmp;
+                if ( useSortFunction )
+                {
+                    List l;
+                    l.append(jObj);
+                    l.append(minObj);
+                    cmp = sortFunction.executeCall( Global::current(), &l ).toInt32();
+                }
+                else
+                    cmp = ( jObj.toString().value() < minObj.toString().value() ) ? -1 : 1;
+                if ( cmp < 0 )
+                {
+                    themin = j;
+                    minObj = jObj;
+                }
             }
-        for ( unsigned int k = end-begin; k < length; k++ ) {
-            str = UString::from(k);
-            thisObj.deleteProperty(str);
+            // Swap themin and i
+            if ( themin > i )
+            {
+                //printf("KJS Array::Sort: swapping %d and %d\n", i, themin );
+                thisObj.put( UString::from(i), minObj );
+                thisObj.put( UString::from(themin), iObj );
+            }
         }
-        thisObj.put("length", end - begin, DontEnum | DontDelete);
+#if 0
+        printf("KJS Array::Sort -- Resulting array:\n");
+        for ( unsigned int i = 0 ; i<length ; ++i )
+            printf("KJS Array::Sort: %d: %s\n", i, thisObj.get(UString::from(i)).toString().value().ascii() );
+#endif
         result = thisObj;
         break;
     }
-  case Sort: // TODO
-    result = Undefined();
-    break;
   // TODO Splice
   // TODO Unshift
   default:
