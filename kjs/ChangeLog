@@ -1,3 +1,8 @@
+2003-11-05  Zack Rusin  <zack@kde.org>
+
+	* value.cpp: (operator=): increment reference count on the copying
+	object before dereferencing the currently held value  
+
 2003-11-04  David Faure  <faure@kde.org>
 
 	* string_object.cpp: (StringProtoFuncImp::call): Don't do an early return, since that

@@ -249,16 +249,21 @@ Value::~Value()
 
 Value& Value::operator=(const Value &v)
 {
+  ValueImp *tmpRep = v.imp();
+
+  //Avoid the destruction of the object underneath us by
+  //incrementing the reference on it first
+  if (tmpRep) {
+    tmpRep->ref();
+    //fprintf(stderr, "Value::operator=(%p)(copying %p) imp=%p ref=%d\n", this, &v, tmpRep, tmpRep->refcount);
+  }
+
   if (rep) {
     rep->deref();
     //fprintf(stderr, "Value::operator=(%p)(copying %p) old imp=%p ref=%d\n", this, &v, rep, rep->refcount);
   }
-  rep = v.imp();
-  if (rep)
-  {
-    rep->ref();
-    //fprintf(stderr, "Value::operator=(%p)(copying %p) imp=%p ref=%d\n", this, &v, rep, rep->refcount);
-  }
+  rep = tmpRep;
+
   return *this;
 }
 
