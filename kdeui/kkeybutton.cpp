@@ -106,9 +106,13 @@ void KKeyButton::captureShortcut()
 	m_bEditing = true;
 	repaint();
 
+        {
 	KShortcutDialog dlg( m_cut, d->bQtShortcut, this );
 	if( dlg.exec() == KDialog::Accepted )
-		emit capturedShortcut( dlg.shortcut() );
+                cut = dlg.shortcut();
+        } // emit the signal after the dialog is destroyed, otherwise it still has grab
+        if( !cut.isNull())
+	    emit capturedShortcut( cut );
 
 	m_bEditing = false;
 	repaint();

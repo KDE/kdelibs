@@ -164,6 +164,13 @@ class KKeyChooser : public QWidget
 	QRadioButton* m_prbDef;
 	QRadioButton* m_prbCustom;
 
+ private:
+        bool promptForReassign( const KKeySequence& cut, const QString& sAction, ActionType action )
+;
+        bool isKeyPresentLocally( const KShortcut& cut, KKeyChooserItem* ignoreItem, bool bWarnUser );
+        void removeStandardShortcut( const QString& name );
+        void removeGlobalShortcut( const QString& name );
+        bool resetShortcut( const QString& name );
 
 #ifndef KDE_NO_COMPAT
  public:

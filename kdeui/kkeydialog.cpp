@@ -36,6 +36,7 @@
 
 #include <kaccel.h>
 #include <kaction.h>
+#include <kaccelaction.h>
 #include <kactionshortcutlist.h>
 #include <kapplication.h>
 #include <kconfig.h>
@@ -193,17 +194,17 @@ KKeyChooser::KKeyChooser( KGlobalAccel* actions, QWidget* parent,
 	insert( actions );
 }
 
-// list of all existing KKeyChooser's of type Global
-// used when checking global shortcut for a possible conflict
+// list of all existing KKeyChooser's
+// Used when checking global shortcut for a possible conflict
 // (just checking against kdeglobals isn't enough, the shortcuts
-// might have changed in KKeyChooser and not being saved yet)
-static QValueList< KKeyChooser* >* globalChoosers = NULL;
-static KStaticDeleter< QValueList< KKeyChooser* > > globalChoosersDeleter;
+// might have changed in KKeyChooser and not being saved yet).
+// Also used when reassigning a shortcut from one chooser to another.
+static QValueList< KKeyChooser* >* allChoosers = NULL;
+static KStaticDeleter< QValueList< KKeyChooser* > > allChoosersDeleter;
 
 KKeyChooser::~KKeyChooser()
 {
-        if( m_type == Global && globalChoosers != NULL )
-            globalChoosers->remove( this );
+        allChoosers->remove( this );
 	// Delete allocated KShortcutLists
 	for( uint i = 0; i < d->rgpListsAllocated.count(); i++ )
 		delete d->rgpListsAllocated[i];
@@ -405,11 +406,9 @@ void KKeyChooser::initGUI( ActionType type, bool bAllowLetterShortcuts )
   //if (type == Application || type == ApplicationGlobal)
   //  readStdKeys();
   connect( kapp, SIGNAL( settingsChanged( int )), SLOT( slotSettingsChanged( int )));
-  if( m_type == Global ) {
-      if( globalChoosers == NULL )
-          globalChoosers = globalChoosersDeleter.setObject( new QValueList< KKeyChooser* > );
-      globalChoosers->append( this );
-  }
+  if( allChoosers == NULL )
+        allChoosers = allChoosersDeleter.setObject( new QValueList< KKeyChooser* > );
+  allChoosers->append( this );
 }
 
 // Add all shortcuts to the list
@@ -517,11 +516,8 @@ void KKeyChooser::slotDefaultKey()
 {
 	// return if no key is selected
 	KKeyChooserItem* pItem = dynamic_cast<KKeyChooserItem*>( d->pList->currentItem() );
-	if( pItem ) {
-		pItem->setShortcut( pItem->shortcutDefault() );
-		updateButtons();
-		emit keyChange();
-	}
+	if( pItem ) // don't set it directly, check for conflicts
+		setShortcut( pItem->shortcutDefault() );
 }
 
 void KKeyChooser::slotCustomKey()
@@ -555,6 +551,10 @@ void KKeyChooser::fontChange( const QFont & )
         setMinimumWidth( 20+5*(widget_width+10) );
 }
 
+// KDE4 IMHO this shouldn't be here at all - it cannot check whether the default
+// shortcut don't conflict with some already changed ones (e.g. global shortcuts).
+// Also, I personally find reseting all shortcuts to default (i.e. hardcoded in the app)
+// ones after pressing the 'Default' button rather a misfeature.
 void KKeyChooser::allDefault()
 {
 	kdDebug(125) << "KKeyChooser::allDefault()" << endl;
@@ -705,42 +705,55 @@ bool KKeyChooser::isKeyPresent( const KShortcut& cut, bool bWarnUser )
 			KStdAccel::StdAccel id = KStdAccel::findStdAccel( seq );
 			if( id != KStdAccel::AccelNone
 			    && keyConflict( cut, KStdAccel::shortcut( id ) ) > -1 ) {
-				if( bWarnUser )
-					_warning( seq, KStdAccel::label(id), i18n("Conflict with Standard Application Shortcut") );
-				return true;
+				if( bWarnUser ) {
+					if( !promptForReassign( seq, KStdAccel::label(id), Standard ))
+                                                return true;
+                                        removeStandardShortcut( KStdAccel::label(id));
+                                }
 			}
 		}
 	}
 
-	QMap<QString, KShortcut>::ConstIterator it;
-	for( it = d->mapGlobals.begin(); it != d->mapGlobals.end(); ++it ) {
-		int iSeq = keyConflict( cut, (*it) );
-		if( iSeq > -1 ) {
-			if( m_type != Global || it.key() != pItem->actionName() ) {
-				if( bWarnUser )
-					_warning( cut.seq(iSeq), it.key(), i18n("Conflict with Global Shortcuts") );
-				return true;
+        bool has_global_chooser = false;
+        for( QValueList< KKeyChooser* >::ConstIterator it = allChoosers->begin();
+             it != allChoosers->end();
+             ++it )
+            has_global_chooser |= ((*it)->m_type == Global);
+        // only check the global keys if one of the keychoosers isn't global
+        if( !has_global_chooser ) {
+	    QMap<QString, KShortcut>::ConstIterator it;
+	    for( it = d->mapGlobals.begin(); it != d->mapGlobals.end(); ++it ) {
+		    int iSeq = keyConflict( cut, (*it) );
+		    if( iSeq > -1 ) {
+		    	if( m_type != Global || it.key() != pItem->actionName() ) {
+				if( !promptForReassign( cut.seq(iSeq), it.key(), Global ))
+                                        return true;
+                                removeGlobalShortcut( it.key());
 			}
 		}
-	}
+	    }
+        }
 
-        if( isKeyPresentLocally( cut, pItem, bWarnUser ? i18n("Key Conflict") : QString::null ))
+        if( isKeyPresentLocally( cut, pItem, bWarnUser ))
             return true;
 
-        // check also other Global KKeyChooser's
-        if( m_type == Global && globalChoosers != NULL ) {
-            for( QValueList< KKeyChooser* >::ConstIterator it = globalChoosers->begin();
-                 it != globalChoosers->end();
-                 ++it ) {
-                if( (*it) != this && (*it)->isKeyPresentLocally( cut, NULL,
-                    bWarnUser ? i18n("Key Conflict") : QString::null))
+        // check also other KKeyChooser's
+        for( QValueList< KKeyChooser* >::ConstIterator it = allChoosers->begin();
+             it != allChoosers->end();
+             ++it ) {
+            if( (*it) != this && (*it)->isKeyPresentLocally( cut, NULL, bWarnUser ))
                     return true;
             }
-        }
 	return false;
 }
 
+// KDE4 remove
 bool KKeyChooser::isKeyPresentLocally( const KShortcut& cut, KKeyChooserItem* ignoreItem, const QString& warnText )
+{
+    return isKeyPresentLocally( cut, ignoreItem, !warnText.isNull());
+}
+
+bool KKeyChooser::isKeyPresentLocally( const KShortcut& cut, KKeyChooserItem* ignoreItem, bool bWarnUser )
 {
     if ( cut.toString().isEmpty())
         return false;
@@ -751,16 +764,69 @@ bool KKeyChooser::isKeyPresentLocally( const KShortcut& cut, KKeyChooserItem* ig
 		if( pItem2 && pItem2 != ignoreItem ) {
 			int iSeq = keyConflict( cut, pItem2->shortcut() );
 			if( iSeq > -1 ) {
-				if( !warnText.isNull() )
-					_warning( cut.seq(iSeq), pItem2->text(0), warnText );
-				return true;
+				if( bWarnUser ) {
+                                        if( !promptForReassign( cut.seq(iSeq), pItem2->text(0), Application ))
+				                return true;
+                                        // else remove the shortcut from it
+                                        pItem2->setShortcut( KShortcut());
+                                        updateButtons();
+		                        emit keyChange();
+                                }
 			}
 		}
 	}
         return false;
 }
 
-/* antlarr: KDE 4: make them const QString & */
+void KKeyChooser::removeStandardShortcut( const QString& name )
+{
+    bool was_in_choosers = false;
+    for( QValueList< KKeyChooser* >::ConstIterator it = allChoosers->begin();
+         it != allChoosers->end();
+         ++it ) {
+        if( (*it) != this && (*it)->m_type == Standard ) {
+            was_in_choosers |= ( (*it)->resetShortcut( name ));
+        }
+    }
+    if( !was_in_choosers ) { // not edited, needs to be changed in config file
+        KStdAccel::ShortcutList std_list;
+        std_list.setShortcut( std_list.index( name ), KShortcut());
+        std_list.save();
+    }
+}
+
+void KKeyChooser::removeGlobalShortcut( const QString& name )
+{
+    bool was_in_choosers = false;
+    for( QValueList< KKeyChooser* >::ConstIterator it = allChoosers->begin();
+         it != allChoosers->end();
+         ++it ) {
+        if( (*it) != this && (*it)->m_type == Global ) {
+            was_in_choosers |= ( (*it)->resetShortcut( name ));
+        }
+    }
+    if( !was_in_choosers ) { // not edited, needs to be changed in config file
+        KAccelActions actions;
+        actions.insert( name, "", "", KShortcut(), KShortcut());
+	actions.writeActions( "Global Shortcuts", 0, true, true );
+    }
+}
+
+bool KKeyChooser::resetShortcut( const QString& name )
+{
+	for( QListViewItemIterator it( d->pList ); it.current(); ++it ) {
+		KKeyChooserItem* pItem2 = dynamic_cast<KKeyChooserItem*>(it.current());
+                    if( pItem2 && pItem2->actionName() == name ) {
+                        pItem2->setShortcut( KShortcut());
+                        updateButtons();
+		        emit keyChange();
+                        return true;
+                    }
+        }
+        return false;
+}
+
+// KDE4 remove this
 void KKeyChooser::_warning( const KKeySequence& cut, QString sAction, QString sTitle )
 {
 	sAction = sAction.stripWhiteSpace();
@@ -772,6 +838,34 @@ void KKeyChooser::_warning( const KKeySequence& cut, QString sAction, QString sT
 		arg(cut.toString()).arg(sAction);
 
 	KMessageBox::sorry( this, s, sTitle );
+}
+
+bool KKeyChooser::promptForReassign( const KKeySequence& cut, const QString& sAction, ActionType type )
+{
+        QString sTitle;
+        QString s;
+        if( type == Standard ) {
+                sTitle = i18n("Conflict with Standard Application Shortcut");
+		s = i18n("The '%1' key combination has already been allocated "
+		"to the standard action \"%2\".\n"
+		"Do you want to reassign it from that action to the current one?");
+        }
+        else if( type == Global ) {
+                sTitle = i18n("Conflict with Global Shortcut");
+		s = i18n("The '%1' key combination has already been allocated "
+		"to the global action \"%2\".\n"
+		"Do you want to reassign it from that action to the current one?");
+        }
+        else {
+                sTitle = i18n("Key Conflict");
+		s = i18n("The '%1' key combination has already been allocated "
+		"to the \"%2\" action.\n"
+		"Do you want to reassign it from that action to the current one?");
+        }
+	s =
+ s.arg(cut.toString()).arg(sAction.stripWhiteSpace());
+
+	return KMessageBox::warningYesNo( this, s, sTitle ) == KMessageBox::Yes;
 }
 
 //---------------------------------------------------
