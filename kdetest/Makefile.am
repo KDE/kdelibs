@@ -21,8 +21,10 @@
 INCLUDES = $(all_includes)
 LDFLAGS = -L$(topdir)/kdecore/.libs -L$(topdir)/kdeui/.libs \
           -L$(topdir)/kformula/.libs -L$(topdir)/kio/.libs\
+	  -L$(topdir)/kfile/.libs\
           -rpath $(topdir)/kdecore/.libs -rpath $(topdir)/kdeui/.libs \
           -rpath $(topdir)/kformula/.libs -rpath $(topdir)/kio/.libs \
+	  -rpath $(topdir)/kfile/.libs \
           $(QT_LDFLAGS) $(X_LDFLAGS) $(KDE_RPATH)
 
 LDADD = $(LIB_KIO) $(LIB_KDEUI)

@@ -15,7 +15,7 @@ bool check(QString txt, QString a, QString b)
 
 int main() 
 {
-  KURLList lst;
+  KURL::List lst;
 
   char * u1 = "file:/home/dfaure/my tar file.tgz#gzip:/decompress#tar:/";
   KURL url1(u1);
@@ -26,10 +26,12 @@ int main()
   check("KURL::host()", url1.host(), "");
   check("KURL::ref()", url1.ref(), "gzip:/decompress#tar:/");
   check("KURL::hasSubURL()", url1.hasSubURL() ? "yes" : "no", "yes");
-  KURL::split( u1, lst );
+  lst = KURL::split( u1 );
+/*
   KURL * u = lst.first();
   for ( ; u ; u = lst.next())
     printf("---> %s\n",u->url().data());
+*/
 
   KURL url2("file://atlas/dfaure");
   check("KURL::host()", url2.host(), "atlas"); // says Coolo
@@ -70,16 +72,16 @@ int main()
   printf("\n* URL is %s\n",u3);
   check("KURL::hasSubURL()", KURL(u3).hasSubURL() ? "yes" : "no", "no");
   lst.clear();
-  KURL::split( u3, lst );
+  lst = KURL::split( u3 );
   check("KURL::split()", lst.count()==1 ? "1" : "error", "1");
-  check("KURL::split()", lst.first()->url(), "ftp://host/dir1/dir2/myfile.txt");
+  check("KURL::split()", lst.getFirst().url(), "ftp://host/dir1/dir2/myfile.txt");
   // cdUp code
-  KURL * lastUrl = lst.getLast();
-  QString dir = lastUrl->directory( true, true );
+  KURL lastUrl = lst.getLast();
+  QString dir = lastUrl.directory( true, true );
   check( "KURL::directory(true,true)", dir, "/dir1/dir2");
-  lastUrl->setPath( dir );
+  lastUrl.setPath( dir );
   QString _url;
-  KURL::join( lst, _url );
+  _url = KURL::join( lst );
   check( "up one directory", _url, "ftp://host/dir1/dir2");
 
   KURL umail1 ( "mailto:faure@kde.org" );
