@@ -12,7 +12,7 @@ KAudio::KAudio()
   ServerContacted = false;
   bool l_b_contactError = false;
   unsigned short int port = 5007;	// !!! Change this
-  const char* host = "131.188.30.233"; //"faui08j";	// !!! and this
+  const char* host = "127.0.0.1"; //"faui08j";	// !!! and this
 
   // Create socket
   sockFD = ::socket( AF_INET, SOCK_STREAM, 0 );
@@ -106,7 +106,7 @@ bool KAudio::setFilename(const char *filename)
 #if 1
   for (int i= 0; i< l_l_expected; i++)
     cerr << "l_s_WAVname[" << i << "]= " << l_s_WAVname[i] << " \n";
-#endif 
+#endif
 
   // Write the name (but leave out trailing 0)
   int l_l_write = write(sockFD, l_s_WAVname, l_l_expected-1);
@@ -116,7 +116,7 @@ bool KAudio::setFilename(const char *filename)
     cerr << "Asking ARTS to play " << l_s_WAVname ;
 
   char l_s_artsAnswer[256];
-  
+
 
 
   return true;
