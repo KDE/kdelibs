@@ -22,6 +22,7 @@
 #include "kprinter.h"
 
 #include <klocale.h>
+#include <kguiitem.h>
 #include <kmessagebox.h>
 #include <kdebug.h>
 #include <qtextedit.h>
@@ -30,7 +31,7 @@
 #include <qpaintdevicemetrics.h>
 
 IppReportDlg::IppReportDlg(QWidget *parent, const char *name)
-: KDialogBase(parent, name, true, i18n("IPP Report"), Ok|User1)
+: KDialogBase(parent, name, true, i18n("IPP Report"), Close|User1, Close, false, KGuiItem(i18n("&Print"), "fileprint"))
 {
 	m_edit = new QTextEdit(this);
 	m_edit->setReadOnly(true);
