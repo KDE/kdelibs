@@ -57,8 +57,9 @@ public:
  * \code
  * static KStaticDeleter<MyClass> sd;
  *
- * MyClass::self() {
+ * MyClass &MyClass::self() {
  *   if (!_self) { sd.setObject(_self, new MyClass()); }
+ *   return *_self;
  * }
  * \endcode
  */
