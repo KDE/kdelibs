@@ -3,7 +3,7 @@
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
-    License version 2 as published by the Free Software Foundation. 
+    License version 2 as published by the Free Software Foundation.
 
     This library is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -25,11 +25,12 @@
 #include <kdelibs_export.h>
 
 /**
+* @short A pushbutton to display or allow user selection of a date.
+*
 * This widget can be used to display or allow user selection of a date.
 *
 * @see KDatePicker
 *
-* @short A pushbutton to display or allow user selection of a date.
 * @version $Id$
 */
 class KDEUI_EXPORT KDateWidget : public QWidget
