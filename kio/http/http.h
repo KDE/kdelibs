@@ -180,17 +180,6 @@ protected:
   bool readBody();
 
   /**
-    * Return the proper UserAgent string.
-    * Sure, I could make this configurable so
-    * someone could tweak this to their heart's
-    * delight, but right now, this should be
-    * left alone, so if someone complains,
-    * I"m getting weird errors, I can track
-    * down, what version they have.
-    */
-  const char *getUserAgentString();
-
-  /**
    * Send a cookie to the cookiejar
    */
   void addCookies( const QString &url, const QCString &cookieHeader);
@@ -271,7 +260,7 @@ protected: // Members
 
   // Proxy related members
   bool m_bUseProxy;  // Whether we want a proxy
-  int m_strProxyPort;
+  int m_iProxyPort;
   QString m_strNoProxyFor;
   QString m_strProxyHost;
   QString m_strProxyUser;

@@ -654,9 +654,9 @@ HTTPProtocol::http_openConnection()
 
     // do we still want a proxy after all that?
     if( m_state.do_proxy ) {
-      kdDebug(7103) << "http_openConnection " << m_strProxyHost << " " << m_strProxyPort << endl;
+      kdDebug(7103) << "http_openConnection " << m_strProxyHost << " " << m_iProxyPort << endl;
       // yep... open up a connection to the proxy instead of our host
-      if(!KSocket::initSockaddr(&m_proxySockaddr, m_strProxyHost.latin1(), m_strProxyPort)) {
+      if(!KSocket::initSockaddr(&m_proxySockaddr, m_strProxyHost.latin1(), m_iProxyPort)) {
         error(ERR_UNKNOWN_PROXY_HOST, m_strProxyHost);
         return false;
       }
@@ -851,9 +851,26 @@ bool HTTPProtocol::http_open()
 #else
   header += "Connection: Keep-Alive\r\n";
 #endif
-  header += "User-Agent: "; /* User agent */
-  header += getUserAgentString();
-  header += "\r\n";
+  QString agent = metaData("userAgent");
+  // If application did not specify a user agent,
+  // use one supplied by user or default!!
+  if( agent.isEmpty() )
+    agent = KProtocolManager::userAgentForHost( m_state.hostname );
+
+  if( !agent.isEmpty() )
+  {
+    header += "User-Agent: " + agent;
+#ifdef DO_MD5
+    header+="; Supports MD5-Digest";
+#endif
+#ifdef DO_GZIP
+    header+="; Supports gzip encoding";
+#endif
+#ifdef DO_SSL
+    header+="; Supports SSL/HTTPS";
+#endif
+    header += "\r\n";
+  }
 
   QString referrer = metaData("referrer");
   if (!referrer.isEmpty())
@@ -917,7 +934,9 @@ bool HTTPProtocol::http_open()
   }
 
   if (m_request.method == HTTP_POST) {
-    header += m_request.user_headers;
+//    header += m_request.user_headers; // DA: replaced with meta-data
+      header += metaData("content-type");
+      header += "\r\n";
   }
 
   int auth_type;
@@ -1685,85 +1704,6 @@ void HTTPProtocol::http_closeConnection()
   m_sock = 0;
 }
 
-
-const char *HTTPProtocol::getUserAgentString ()
-{
-  static QString prev_hostname = QString::null;
-  static QString user_agent = "Konqueror ($Revision$)";
-
-  // i'm not a big fan of this... however, i am very concerned that
-  // the regular expression matching later one could prove to be very
-  // CPU intensive.. especially when you consider that every single
-  // HTTP request (even those for gifs and pngs) will call this
-  // function.  so for now, we try to only match a pattern to a
-  // hostname once... as long as the requests all come in order
-  if ( prev_hostname == m_state.hostname )
-    return strdup(user_agent.latin1());
-
-  prev_hostname = m_state.hostname;
-
-  // try to load the user set UserAgents
-  if ( m_userAgentList.count() == 0 )
-  {
-    KConfig *config = new KConfig("kioslaverc");
-    KConfigGroupSaver saver(config, "Browser Settings/UserAgent");
-
-    int entries = config->readNumEntry( "EntriesCount", 0 );
-    m_userAgentList.clear();
-    for( int i = 0; i < entries; i++ )
-    {
-      QString key;
-      key.sprintf( "Entry%d", i );
-      QString entry = config->readEntry( key, "" );
-      m_userAgentList.append( entry );
-    }
-    delete config;
-  }
-
-  // make sure we have at least *one*, though
-  if ( m_userAgentList.count() == 0 )
-    m_userAgentList.append( "*:Konqueror ($Revision$)" );
-
-  // now, we need to do our pattern matching on the host name.
-  QStringList::Iterator it(m_userAgentList.begin());
-  for( ; it != m_userAgentList.end(); ++it)
-  {
-    QStringList split(QStringList::split( ':', (*it) ));
-
-    // if our user agent is null, we go to the next one
-    if ( split[1].isNull() )
-      continue;
-
-    QRegExp regexp(split[0], true, true);
-
-    // we also make sure our regexp is valid
-    if ( !regexp.isValid() )
-      continue;
-
-    // we look for a match
-    if ( regexp.match(m_state.hostname) > -1 )
-    {
-      user_agent = split[1];
-
-      // if the match was for '*', we keep trying.. otherwise, we are
-      // done
-      if ( split[0] != "*" )
-        break;
-    }
-  }
-
-#ifdef DO_MD5
-  user_agent+="; Supports MD5-Digest";
-#endif
-#ifdef DO_GZIP
-  user_agent+="; Supports gzip encoding";
-#endif
-#ifdef DO_SSL
-  user_agent+="; Supports SSL/HTTPS";
-#endif
-  return strdup(user_agent.latin1());
-}
-
 void HTTPProtocol::setHost(const QString& host, int port, const QString& user, const QString& pass)
 {
   m_request.hostname = host;
@@ -1991,8 +1931,7 @@ void HTTPProtocol::special( const QByteArray &data)
     case 1: // HTTP POST
     {
       KURL url;
-      stream >> url >> m_request.user_headers;
-      kdDebug() << "user_headers = " << m_request.user_headers.latin1() << endl;
+      stream >> url; // >> m_request.user_headers; //DA: replaced by a meta-data labeled"content-type"...
       post( url );
       break;
     }
@@ -2829,7 +2768,7 @@ void HTTPProtocol::reparseConfiguration()
       m_bUseProxy = true;
 
       m_strProxyHost = ur.host();
-      m_strProxyPort = ur.port();
+      m_iProxyPort = ur.port();
       m_strProxyUser = ur.user();
       m_strProxyPass = ur.pass();
 
