@@ -28,6 +28,7 @@ using namespace std;
 using namespace Arts;
 
 Buffer::Buffer() {
+	contents.reserve(128);
 	rpos = 0;
 	_readError = false;
 }
