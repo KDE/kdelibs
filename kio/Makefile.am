@@ -21,7 +21,7 @@ INCLUDES=  -I$(srcdir)/.. -I$(top_srcdir)/libltdl -I$(top_srcdir)/dcop $(all_inc
 SUBDIRS = . klauncher kded file http ftp tests
 
 lib_LTLIBRARIES = libkio.la libksycoca.la kio_uiserver.la libkmapnotify.la
-bin_PROGRAMS = kio_uiserver
+bin_PROGRAMS = kio_uiserver kmailservice
 
 libkmapnotify_la_LDFLAGS = -version-info 3:0 $(all_libraries) -R$(kde_libraries)
 libkmapnotify_la_LIBADD = ../libltdl/libltdlc.la $(LIB_X11)
@@ -114,6 +114,13 @@ EXTRA_DIST = $(kde_mime_DATA) $(parserfiles)
 
 dummy.cpp: uiserver.kidl
 	echo > dummy.cpp
+
+kmailservice_SOURCES = kmailservice.cpp
+kmailservice_LDADD = $(LIB_KDECORE)
+kmailservice_LDFLAGS = $(all_libraries)
+
+kmailprotocol_DATA = kmailservice.protocol
+kmailprotocoldir = $(kde_servicesdir)
 
 parser: $(parserfiles)
 	cd $(srcdir) ;\

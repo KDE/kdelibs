@@ -430,26 +430,6 @@ void KRun::init()
 {
   kdDebug(7010) << "INIT called" << endl;
 
-  if ( m_strURL.protocol() == "mailto" )
-  {
-    emit finished();
-
-    QString addr = m_strURL.path();
-    QString subj;
-
-    if (m_strURL.query().left(9) == "?subject=")
-    {
-       subj = KURL::decode_string( m_strURL.query().mid(9) );
-    }
-
-    kapp->invokeMailer( addr, subj );
-
-    if ( m_bAutoDelete )
-      delete this;
-
-    return;
-  }
-
   if ( !m_bIsLocalFile && m_strURL.isLocalFile() )
 
     m_bIsLocalFile = true;
