@@ -966,12 +966,12 @@ WebStyle::drawKToolBar
  int h,
  const QColorGroup & g,
  KToolBarPos /* pos */,
- QBrush * fill
+ QBrush * /* fill */
 )
 {
   p->save();
   p->setPen(g.background());
-  p->setBrush(0 == fill ? NoBrush : *fill);
+  p->setBrush(g.background());
   p->drawRect(x, y, w, h);
   p->restore();
 }
@@ -986,12 +986,12 @@ WebStyle::drawKBarHandle
  int h,
  const QColorGroup & g,
  KToolBarPos /* pos */,
- QBrush * fill
+ QBrush * /* fill */
 )
 {
   p->save();
-  p->setPen(g.mid());
-  p->setBrush(0 == fill ? NoBrush : *fill);
+  p->setPen(g.dark());
+  p->setBrush(g.mid());
   p->drawRect(x, y, w, h);
   p->restore();
 }
@@ -1006,7 +1006,7 @@ WebStyle::drawKMenuBar
  int h,
  const QColorGroup & g,
  bool /* macMode */,
- QBrush * fill
+ QBrush * /* fill */
 )
 {
   p->save();
@@ -1073,14 +1073,14 @@ WebStyle::drawKToolBarButton
     else if (raised)
     {
       borderColour  = g.highlight();
-      fillColour    = g.button();
-      textColour    = g.buttonText();
+      fillColour    = g.background();
+      textColour    = g.text();
     }
     else
     {
       borderColour  = g.mid();
-      fillColour    = g.button();
-      textColour    = g.buttonText();
+      fillColour    = g.background();
+      textColour    = g.text();
     }
   }
 
@@ -1095,7 +1095,6 @@ WebStyle::drawKToolBarButton
   p->drawPoint(x + w, y);
   p->drawPoint(x, y + h);
   p->drawPoint(x + w, y + h);
-
 
   switch (type)
   {
