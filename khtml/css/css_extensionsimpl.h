@@ -79,7 +79,7 @@ public:
     float getVerticalSpacing ( const float &verticalType );
     void setHorizontalSpacing ( const unsigned short &horizontalType, const float &value );
     void setVerticalSpacing ( const unsigned short &verticalType, const float &value );
-    void setInherit() (  );
+    void setInherit();
 };
 
 

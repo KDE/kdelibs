@@ -147,7 +147,7 @@ void CSS2BorderSpacingImpl::setVerticalSpacing( const unsigned short &verticalTy
 {
 }
 
-void CSS2BorderSpacingImpl::setInherit()(  )
+void CSS2BorderSpacingImpl::setInherit()
 {
 }
 
