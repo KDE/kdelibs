@@ -66,6 +66,16 @@ QString expandvars(const char *_input)
         result = result.replace(index, 14, "@exec_prefix@");
         changed = true;
     }
+    index = result.find("${libdir}");
+    if (index >= 0) {
+        result = result.replace(index, 9, "@libdir@");
+        changed = true;
+    }
+    index = result.find("$(libdir)");
+    if (index >= 0) {
+        result = result.replace(index, 9, "@libdir@");
+        changed = true;
+    }
     index = result.find("${sysconfdir}");
     if (index >= 0) {
         result = result.replace(index, 13, "@sysconfdir@");
@@ -203,26 +213,26 @@ int main(int argc, char **argv)
     if (!type.isEmpty())
     {
         const char *installprefixes[] = {
-            "apps",   "${datadir}/applnk",
-            "config", "${datadir}/config",
-            "kcfg",   "${datadir}/config.kcfg",
-            "data",   "${datadir}/apps",
-            "exe",    "${exec_prefix}/bin",
-            "html",   "${datadir}/doc/HTML",
-            "icon",   "${datadir}/icons",
-            "lib",    "${exec_prefix}/lib",
-            "module", "${exec_prefix}/lib/kde3",
-            "qtplugins", "${exec_prefix}/lib/kde3/plugins",
-            "locale", "${datadir}/locale",
-            "mime",   "${datadir}/mimelnk",
-            "services", "${datadir}/services",
-            "servicetypes", "${datadir}/servicetypes",
-            "sound", "${datadir}/sounds",
-            "templates", "${datadir}/templates",
-            "wallpaper", "${datadir}/wallpapers",
-            "xdgconf-menu", "${sysconfdir}/xdg/menus",
-            "xdgdata-apps", "${datadir}/applications",
-            "xdgdata-dirs", "${datadir}/desktop-directories",
+            "apps",   "@kde_appsdir@",
+            "config", "@kde_confdir@",
+            "kcfg",   "@kde_kcfgdir@",
+            "data",   "@kde_datadir@",
+            "exe",    "@kde_bindir@",
+            "html",   "@kde_htmldir@",
+            "icon",   "@kde_icondir@",
+            "lib",    "@libdir@",
+            "module", "@kde_moduledir@",
+            "qtplugins", "@kde_moduledir@/plugins",
+            "locale", "@kde_locale@",
+            "mime",   "@kde_mimedir@",
+            "services", "@kde_servicesdir@",
+            "servicetypes", "@kde_servicetypesdir@",
+            "sound", "@kde_sounddir@",
+            "templates", "@kde_templatesdir@",
+            "wallpaper", "@kde_wallpaperdir@",
+            "xdgconf-menu", "@xdg_menudir@",
+            "xdgdata-apps", "@xdg_appsdir@",
+            "xdgdata-dirs", "@xdg_directorydir@",
             0, 0
         };
         int index = 0;
