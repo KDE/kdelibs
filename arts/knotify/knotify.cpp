@@ -53,6 +53,8 @@
 #include <kglobal.h>
 #include <klocale.h>
 #include <kmessagebox.h>
+#include <kpassivepopup.h>
+#include <kiconloader.h>
 #include <kprocess.h>
 #include <kstandarddirs.h>
 #include <kuniqueapplication.h>
@@ -109,6 +111,8 @@ int main(int argc, char **argv)
     KNotify notify;
     app.dcopClient()->setDefaultObject( "Notify" );
     app.dcopClient()->setDaemonMode( true );
+    // kdDebug() << "knotify starting" << endl;
+
     return app.exec();
 }
 
@@ -182,8 +186,10 @@ void KNotify::notify(const QString &event, const QString &fromApp,
                      const QString &text, QString sound, QString file,
                      int present, int level)
 {
-//    kdDebug() << "event=" << event << " fromApp=" << fromApp << " text=" << text << " sound=" << sound <<
-//        " file=" << file << " present=" << present << " level=" << level << endl;
+    // kdDebug() << "event=" << event << " fromApp=" << fromApp << " text=" << text << " sound=" << sound <<
+    //    " file=" << file << " present=" << present << " level=" << level << endl;
+
+    QString commandline;
 
     // check for valid events
     if ( event.length()>0 )     {
@@ -236,11 +242,21 @@ void KNotify::notify(const QString &event, const QString &fromApp,
         // get default event level
         if( present & KNotifyClient::Messagebox )
             level = eventsFile->readNumEntry( "level", 0 );
+
+	// get command line
+	if (present & KNotifyClient::Execute ) {
+	    commandline = configFile->readEntry( "commandline" );
+	    if ( commandline.length()==0 )
+		commandline = eventsFile->readEntry( "default_commandline" );
+	}
     }
 
     // emit event
     if ( present & KNotifyClient::Sound ) // && QFile(sound).isReadable()
         notifyBySound( sound );
+
+    if ( present & KNotifyClient::PassivePopup )
+        notifyByPassivePopup( text, fromApp);
 
     if ( present & KNotifyClient::Messagebox )
         notifyByMessagebox( text, level );
@@ -250,6 +266,9 @@ void KNotify::notify(const QString &event, const QString &fromApp,
 
     if ( present & KNotifyClient::Stderr )
         notifyByStderr( text );
+
+    if ( present & KNotifyClient::Execute )
+	notifyByExecute( commandline );
 }
 
 
@@ -359,6 +378,53 @@ bool KNotify::notifyByMessagebox(const QString &text, int level)
     }
 
     return true;
+}
+
+bool KNotify::notifyByPassivePopup( const QString &text, const QString &appName )
+{
+    QCString senderId = kapp->dcopClient()->senderId();
+    int senderWinId = 0;
+    QCString compare = (appName + "-mainwindow").latin1();
+    int len = compare.length();
+    // kdDebug() << "notifyByPassivePopup: appName=" << appName << " sender=" << senderId << endl;
+    QCStringList objs = kapp->dcopClient()->remoteObjects( senderId );
+    for (QCStringList::ConstIterator it = objs.begin(); it != objs.end(); it++ ) {
+        QCString obj( *it );
+        if ( obj.left(len) == compare) {
+            // kdDebug( ) << "found " << obj << endl;
+            QCString replyType;
+            QByteArray data, replyData;
+            
+            if ( kapp->dcopClient()->call(senderId, obj, "getWinID()", data, replyType, replyData) ) {
+		QDataStream answer(replyData, IO_ReadOnly);
+		if (replyType == "int") {
+		    answer >> senderWinId;
+		    // kdDebug() << "SUCCESS, found getWinID(): type='" << QString(replyType) 
+                    //      << "' senderWinId=" << senderWinId << endl;
+		}
+            }
+            
+        }
+    }
+    if (senderWinId != 0) {
+	KIconLoader iconLoader( appName );
+	QPixmap icon = iconLoader.loadIcon( appName, KIcon::Desktop );
+	KPassivePopup::message(text, appName, icon, senderWinId);
+	return true;
+    }
+    return false;
+}
+
+bool KNotify::notifyByExecute(const QString &command) {
+    if (!command.isEmpty()) {
+	// kdDebug() << "executing command '" << command << "'" << endl;
+	KProcess p;
+	p.setUseShell(true);
+	p << command;
+	p.start(KProcess::DontCare);
+	return true;
+    }
+    return false;
 }
 
 

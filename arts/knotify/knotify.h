@@ -52,6 +52,8 @@ protected:
 	bool notifyByMessagebox(const QString &text, int level);
 	bool notifyByLogfile(const QString &text, const QString &file);
 	bool notifyByStderr(const QString &text);
+	bool notifyByPassivePopup(const QString &text, const QString &appName);
+	bool notifyByExecute(const QString &command);
 	
 	void connectSoundServer();
 	
