@@ -2016,7 +2016,7 @@ void Ftp::get( const KURL & url )
   if ( !resumeOffset.isEmpty() )
   {
       offset = resumeOffset.toLongLong();
-      kdDebug(7102) << "Ftp::get got offset from medata : " << (long)offset << endl;
+      kdDebug(7102) << "Ftp::get got offset from medata : " << offset << endl;
   }
 
   if ( !ftpOpenCommand( "retr", url.path(), textMode ? 'A' : 'I', ERR_CANNOT_OPEN_FOR_READING, offset ) ) {
@@ -2034,7 +2034,7 @@ void Ftp::get( const KURL & url )
   if ( m_size != UnknownSize )
     bytesLeft = m_size - offset;
 
-  kdDebug(7102) << "Ftp::get starting with offset=" << (long)offset << endl;
+  kdDebug(7102) << "Ftp::get starting with offset=" << offset << endl;
   KIO::fileoffset_t processed_size = offset;
 
   char buffer[ 2048 ];
@@ -2255,7 +2255,7 @@ void Ftp::put( const KURL& dest_url, int permissions, bool overwrite, bool resum
   // set the mode according to offset
   if ( resume ) {
     offset = m_size;
-    kdDebug(7102) << "Offset = " << (long)offset << "d" << endl;
+    kdDebug(7102) << "Offset = " << offset << "d" << endl;
   }
 
   if (! ftpOpenCommand( "stor", dest, 'I', ERR_COULD_NOT_WRITE, offset ) )
