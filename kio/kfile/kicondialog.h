@@ -157,6 +157,19 @@ public:
                 bool user = false );
 
     /**
+     * Allows you to set the same parameters as in the class method
+     * getIcon(), as well as two additional parameters to lock
+     * the choice between system and user dirs and to lock the custom user
+     * dir itself.
+     *
+     * @since 3.3
+     */
+
+    void setup( KIcon::Group group, KIcon::Context context,
+                bool strictIconSize, int iconSize, bool user, bool lockUser,
+                bool lockCustomDir );
+
+    /**
      * exec()utes this modal dialog and returns the name of the selected icon,
      * or QString::null if the dialog was aborted.
      * @returns the name of the icon, suitable for loading with KIconLoader.

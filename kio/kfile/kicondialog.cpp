@@ -182,9 +182,11 @@ class KIconDialog::KIconDialogPrivate
   public:
     KIconDialogPrivate() {
         m_bStrictIconSize = true;
+	m_bLockUser = false;
+	m_bLockCustomDir = false;
     }
     ~KIconDialogPrivate() {}
-    bool m_bStrictIconSize;
+    bool m_bStrictIconSize, m_bLockUser, m_bLockCustomDir;
     QString custom;
     QString customLocation;
 };
@@ -354,6 +356,25 @@ void KIconDialog::setup(KIcon::Group group, KIcon::Context context,
     mpCombo->setCurrentItem(mContext-1);
 }
 
+void KIconDialog::setup(KIcon::Group group, KIcon::Context context,
+                        bool strictIconSize, int iconSize, bool user,
+                        bool lockUser, bool lockCustomDir )
+{
+    d->m_bStrictIconSize = strictIconSize;
+    d->m_bLockUser = lockUser;
+    d->m_bLockCustomDir = lockCustomDir;
+    mGroupOrSize = (iconSize == 0) ? group : -iconSize;
+    mType = user ? 1 : 0;
+    mpRb1->setChecked(!user);
+    mpRb1->setEnabled( !lockUser || !user );
+    mpRb2->setChecked(user);
+    mpRb2->setEnabled( !lockUser || user );
+    mpCombo->setEnabled(!user);
+    mpBrowseBut->setEnabled( user && !lockCustomDir );
+    mContext = context;
+    mpCombo->setCurrentItem(mContext-1);
+}
+
 void KIconDialog::setCustomLocation( const QString& location )
 {
     d->customLocation = location;
@@ -436,7 +457,7 @@ void KIconDialog::slotButtonClicked(int id)
         if(mType!=1)
         {
             mType = 1;
-            mpBrowseBut->setEnabled(true);
+            mpBrowseBut->setEnabled( !d->m_bLockCustomDir );
             mpCombo->setEnabled(false);
             showIcons();
         }
