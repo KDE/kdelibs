@@ -42,6 +42,7 @@ private slots:
 private:
 	KProcess *m_script;
 	KScriptClientInterface *ScriptClientInterface;
+	QString m_scriptName;
 };
 
 #endif

@@ -28,33 +28,29 @@
 typedef KGenericFactory<ShellScript, KScriptClientInterface> ShellScriptFactory;
 K_EXPORT_COMPONENT_FACTORY( libshellscript, ShellScriptFactory( "ShellScript" ) )
 
-ShellScript::ShellScript(KScriptClientInterface *parent, const char *name, const QStringList &args )
+ShellScript::ShellScript(KScriptClientInterface *parent, const char *, const QStringList & ) : ScriptClientInterface(parent)
 {
-	ScriptClientInterface = parent;
 	m_script =  new KProcess();
 	connect ( m_script, SIGNAL(processExited(KProcess *)), SLOT(Exit(KProcess *)));
 	connect ( m_script, SIGNAL(receivedStdout(KProcess *, char *, int)), SLOT(stdOut(KProcess *, char *, int )));
 	connect ( m_script, SIGNAL(receivedStderr(KProcess *, char *, int)), SLOT(stdErr(KProcess *, char *, int )));
 	// Connect feedback signals and slots
-	kdDebug() << "Building new script engine" << endl;
+	//kdDebug() << "Building new script engine" << endl;
 }
 
 ShellScript::~ShellScript()
 {
-	kdDebug() << "Destroying script engine" << endl;
 }
 
 QString ShellScript::script() const
 {
-//	return m_script;
-	kdDebug() << "return script path" << endl;
-	return QString::null;
+	return m_scriptName;
 }
 
 void ShellScript::setScript( const QString &scriptFile  )
 {
-	kdDebug() << "set script " << kapp->dcopClient()->appId() << " " << scriptFile << endl;
-	*m_script << "sh" << scriptFile << kapp->dcopClient()->appId();
+	m_scriptName = scriptFile;
+	*m_script << "sh" << m_scriptName << kapp->dcopClient()->appId();
 }
 
 void ShellScript::setScript( const QString &, const QString & )
@@ -62,9 +58,8 @@ void ShellScript::setScript( const QString &, const QString & )
     // ### what is this?
 }
 
-void ShellScript::run(QObject *context, const QVariant &arg)
+void ShellScript::run(QObject *, const QVariant &)
 {
-	kdDebug() << "running the script" << endl;
 	 m_script->start(KProcess::NotifyOnExit,KProcess::All);
 }
 void ShellScript::kill()
@@ -75,25 +70,16 @@ void ShellScript::kill()
 
 void ShellScript::Exit(KProcess *proc)
 {
-	kdDebug () << "Done processing..." << endl;
-//	ScriptClientInteface->done(proc->exitStatus());
+	ScriptClientInterface->done((KScriptClientInterface::Result)proc->exitStatus(), "");
 }
 
-void ShellScript::stdErr(KProcess *proc, char *buffer, int buflen)
+void ShellScript::stdErr(KProcess *, char *buffer, int)
 {
-	kdDebug() << "Error" << endl;
-	char *data = (char *) malloc(buflen);
-	//kdDebug() << data << endl;
-	free(data);
+	ScriptClientInterface->error(buffer);
 }
-void ShellScript::stdOut(KProcess *proc, char *buffer, int buflen)
+void ShellScript::stdOut(KProcess *, char *buffer, int)
 {
-	kdDebug() << "Feedback" << endl;
-	char *data = (char *) malloc(buflen);
-	//kdDebug() << data << endl;
-	ScriptClientInterface->output("data");
-	free(data);
-
+	ScriptClientInterface->output(buffer);
 }
 
 #include "shellscript.moc"
