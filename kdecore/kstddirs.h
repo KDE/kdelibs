@@ -124,7 +124,7 @@ public:
 	 * @param relativename specifies a directory relative to the root
 	 * of the KFSSTND
 	 */
-	bool addResourceType( const QString& type,
+	bool addResourceType( const char *type,
 			      const QString& relativename );
 
 
@@ -141,7 +141,7 @@ public:
 	 * type. Non-existant directories may be saved but pruned.
 	 *
 	 */
-	bool addResourceDir( const QString& type,
+	bool addResourceDir( const char *type,
 			     const QString& absdir);
 
 	/**
@@ -152,7 +152,7 @@ public:
 	 * @return a full path to the filename specified in the second
 	 *         argument, or QString::null if not found.
 	 */
-	QString findResource( const QString& type,
+	QString findResource( const char *type,
 			      const QString& filename ) const;
 
 	/**
@@ -165,7 +165,7 @@ public:
 	 * @return a list of matching directories, or an empty
 	 *         list if the resource specified is not found.
 	 */
-	QStringList findDirs( const QString& type,
+	QStringList findDirs( const char *type,
                               const QString& reldir ) const;
 
 	/**
@@ -181,7 +181,7 @@ public:
 	 *         of resource specified is unknown or the resource
 	 *         cannot be found.
 	 */
-	QString findResourceDir( const QString& type,
+	QString findResourceDir( const char *type,
 				 const QString& filename) const;
 
 
@@ -202,7 +202,7 @@ public:
 	 * @return a list of directories matching the resource specified,
 	 *         or an empty list if the resource type is unknown.
 	 */
-	QStringList findAllResources( const QString& type,
+	QStringList findAllResources( const char *type,
 				       const QString& filter = QString::null,
 				       bool recursive = false,
 				       bool uniq = false) const;
@@ -226,7 +226,7 @@ public:
 	 * @return a list of directories matching the resource specified,
 	 *         or an empty list if the resource type is unknown.
 	 */
-	QStringList findAllResources( const QString& type,
+	QStringList findAllResources( const char *type,
 				       const QString& filter,
 				       bool recursive,
 				       bool uniq,
@@ -297,7 +297,7 @@ public:
 	 * The functions updates the cache if possible.  If the resource
 	 * type specified is unknown, it will return an empty list.
 	 */
-	QStringList resourceDirs(const QString& type) const;
+	QStringList resourceDirs(const char *type) const;
 
 	/**
 	 * Finds a location to save files into for the given type
@@ -313,7 +313,7 @@ public:
 	 * @return a path where resources of the specified type should be
 	 *         saved, or QString::null if the resource type is unknown.
 	 */
-	 QString saveLocation(const QString& type,
+	 QString saveLocation(const char *type,
 			      const QString& suffix = QString::null, 
 			      bool create = true) const;
 
@@ -333,7 +333,7 @@ public:
 	 *          instead.
 	 * @see #locate, #locateLocal
 	 */
-	static QString kde_default(const QString& type);
+	static QString kde_default(const char *type);
 
  private:
 
@@ -403,7 +403,7 @@ public:
  * But if you pass a KLibGlobal, then library->dirs() is
  * queried for the desired resource.
  **/
-QString locate( const QString& type, const QString& filename, const KInstance* instance = KGlobal::instance() );
+QString locate( const char *type, const QString& filename, const KInstance* instance = KGlobal::instance() );
 
 /**
  * This function is much like locate. However it returns a
@@ -413,6 +413,6 @@ QString locate( const QString& type, const QString& filename, const KInstance* i
  * specific file, filename must have a trailing slash.
  *
  **/
-QString locateLocal( const QString& type, const QString& filename, const KInstance* instance = KGlobal::instance() );
+QString locateLocal( const char *type, const QString& filename, const KInstance* instance = KGlobal::instance() );
 
 #endif // SSK_KSTDDIRS_H

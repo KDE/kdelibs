@@ -62,7 +62,7 @@ void KStandardDirs::addPrefix( QString dir )
     }
 }
 
-bool KStandardDirs::addResourceType( const QString& type,
+bool KStandardDirs::addResourceType( const char *type,
 				     const QString& relativename )
 {
     if (relativename.isNull())
@@ -84,7 +84,7 @@ bool KStandardDirs::addResourceType( const QString& type,
     return false;
 }
 
-bool KStandardDirs::addResourceDir( const QString& type,
+bool KStandardDirs::addResourceDir( const char *type,
 				    const QString& absdir)
 {
     QStringList *paths = absolutes.find(type);
@@ -103,7 +103,7 @@ bool KStandardDirs::addResourceDir( const QString& type,
     return false;
 }
 
-QString KStandardDirs::findResource( const QString& type,
+QString KStandardDirs::findResource( const char *type,
 				     const QString& filename ) const
 {
     if (filename.at(0) == '/')
@@ -115,7 +115,7 @@ QString KStandardDirs::findResource( const QString& type,
     else return dir + filename;
 }
 
-QStringList KStandardDirs::findDirs( const QString& type,
+QStringList KStandardDirs::findDirs( const char *type,
                                      const QString& reldir ) const
 {
     QStringList list;
@@ -132,12 +132,12 @@ QStringList KStandardDirs::findDirs( const QString& type,
     return list;
 }
 
-QString KStandardDirs::findResourceDir( const QString& type,
+QString KStandardDirs::findResourceDir( const char *type,
 					const QString& filename) const
 {
 #ifndef NDEBUG
     if (filename.isEmpty()) {
-      warning("filename for type %s in KStandardDirs::findResourceDir is not supposed to be empty!!", type.ascii());
+      warning("filename for type %s in KStandardDirs::findResourceDir is not supposed to be empty!!", type);
       return QString::null;
     }
 #endif
@@ -157,7 +157,7 @@ QString KStandardDirs::findResourceDir( const QString& type,
 #ifndef NDEBUG
     if(false && type != "locale")
       debug("KStdDirs::findResDir(): can't find \"%s\" in type \"%s\".",
-            filename.ascii(), type.ascii());
+            filename.ascii(), type);
 #endif
 
     return QString::null;
@@ -271,7 +271,7 @@ static void lookupPrefix(const QString& prefix, const QString& relpath,
 }
 
 QStringList
-KStandardDirs::findAllResources( const QString& type,
+KStandardDirs::findAllResources( const char *type,
 			         const QString& filter,
 				 bool recursive,
 			         bool uniq,
@@ -322,7 +322,7 @@ KStandardDirs::findAllResources( const QString& type,
 }
 
 QStringList
-KStandardDirs::findAllResources( const QString& type,
+KStandardDirs::findAllResources( const char *type,
 			         const QString& filter,
 				 bool recursive,
 			         bool uniq) const
@@ -331,7 +331,7 @@ KStandardDirs::findAllResources( const QString& type,
    return findAllResources(type, filter, recursive, uniq, relList);
 }
 
-QStringList KStandardDirs::resourceDirs(const QString& type) const
+QStringList KStandardDirs::resourceDirs(const char *type) const
 {
     QStringList *candidates = dircache.find(type);
     if (!candidates) { // filling cache
@@ -455,7 +455,7 @@ static int tokenize( QStringList& tokens, const QString& str,
     return tokens.count();
 }
 
-QString KStandardDirs::kde_default(const QString& type) {
+QString KStandardDirs::kde_default(const char *type) {
     if (type == "data")
 	return "share/apps/";
     if (type == "html")
@@ -486,17 +486,17 @@ QString KStandardDirs::kde_default(const QString& type) {
 	return "bin/";
     if (type == "lib")
 	return "lib/";
-    fatal("unknown resource type %s", type.ascii());
+    fatal("unknown resource type %s", type);
     return QString::null;
 }
 
-QString KStandardDirs::saveLocation(const QString& type,
+QString KStandardDirs::saveLocation(const char *type,
 				    const QString& suffix,
 				    bool create) const
 {
     QStringList *dirs = relatives.find(type);
     if (!dirs)
-	fatal("there are no relative suffixes for type %s registered", type.ascii());
+	fatal("there are no relative suffixes for type %s registered", type);
 
     struct stat st;
     QString local = localkdedir();
@@ -516,7 +516,7 @@ QString KStandardDirs::saveLocation(const QString& type,
     return fullPath;
 
     // I can't think of a case where this happens
-    debug("couldn't find save location for type %s", type.ascii());
+    debug("couldn't find save location for type %s", type);
     return local;
 }
 
@@ -630,13 +630,13 @@ QString KStandardDirs::localkdedir() const
 }
 
 // just to make code more readable without macros
-QString locate( const QString& type,
+QString locate( const char *type,
 		const QString& filename, const KInstance* inst )
 {
     return inst->dirs()->findResource(type, filename);
 }
 
-QString locateLocal( const QString& type,
+QString locateLocal( const char *type,
 	             const QString& filename, const KInstance* inst )
 {
     // try to find slashes. If there are some, we have to
