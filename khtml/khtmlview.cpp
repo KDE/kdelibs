@@ -359,6 +359,8 @@ void KHTMLView::viewportMousePressEvent( QMouseEvent *_mouse )
     long offset=0;
     m_part->docImpl()->mouseEvent( xm, ym, _mouse->stateAfter(), DOM::NodeImpl::MousePress, 0, 0, url, innerNode, offset );
 
+    d->underMouse = innerNode;
+    
     khtml::MousePressEvent event( _mouse, xm, ym, url, Node(innerNode), offset );
     QApplication::sendEvent( m_part, &event );
 }
