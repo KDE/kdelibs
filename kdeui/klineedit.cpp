@@ -385,6 +385,8 @@ void KLineEdit::mousePressEvent( QMouseEvent *ev )
         if( ev->button() == RightButton )
         {
             contextMenu->popup ( QCursor::pos() );
+	    return;
         }
     }
+    QLineEdit::mousePressEvent( ev );
 }
