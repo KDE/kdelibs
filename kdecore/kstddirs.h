@@ -25,7 +25,6 @@
 
 #include <qstring.h>
 #include <qdict.h>
-#include <qlist.h>
 #include <qstringlist.h>
 #include <kglobal.h>
 
@@ -55,9 +54,8 @@ class KConfig;
 * application was installed, and one is $HOME/.kde, but there
 * may be even more. Under these prefixes there are several well
 * defined suffixes where specific resource types are to be found.
-* For example, for the resourcet type "icon" the suffixes are be share/icons
-* and share/apps/<appname>/icons,
-* but also share/icons/large if the user prefers large icons.
+* For example, for the resource type "html" the suffixes could be
+* share/doc/HTML and share/doc/kde/HTML.
 * So the search algorithm basicly appends to each prefix each registered
 * suffix and tries to locate the file there.
 * To make the thing even more complex, it's also possible to register
@@ -68,7 +66,7 @@ class KConfig;
 *
 * @sect Standard resources that kdelibs allocates are:
 *
-* @li appdata - Application specific data dir (if created after KApplication).
+* @li appdata - Application specific data dir (actually by KApplication).
 * @li apps - Applications menu (.desktop files).
 * @li cgi - CGIs to run from kdehelp.
 * @li config - Configuration files.
@@ -85,16 +83,16 @@ class KConfig;
 * @li toolbar - Toolbar pictures.
 * @li wallpaper - Wallpapers.
 *
-* KStandardDirs supports the following environment variables:
+* @sect KStandardDirs supports the following environment variables:
 *
-* KDEDIRS: This may set an additional number of directories to
+* @li KDEDIRS: This may set an additional number of directory prefixes to
 *          search for resources. The directories should be seperated
 *          by ':'. The directories are searched in the order they are
 *          specified.
-* KDEDIR:  Used for backwards compatibility. As KDEDIRS but only a single
+* @li KDEDIR:  Used for backwards compatibility. As KDEDIRS but only a single
 *          directory may be specified. If KDEDIRS is set KDEDIR is
 *          ignored.
-* KDEHOME: The directory where changes are saved to. This directory is
+* @li KDEHOME: The directory where changes are saved to. This directory is
 *          used to search for resources first. If KDEHOME is not
 *          specified it defaults to "$HOME/.kde"
 *
@@ -103,7 +101,7 @@ class KStandardDirs
 {
 public:
         /**
-	 * @ref KStandardDirs constructor. It just initializes the cache.
+	 * @ref KStandardDirs constructor. It just initializes the caches.
 	 **/
 	KStandardDirs( );
 
@@ -116,24 +114,25 @@ public:
 	 * Add another search dir to front of the @p fsstnd list.
 	 *
 	 * @li When compiling kdelibs, the prefix is added to this.
-	 * @li When compiling a separate app, kapp adds the new prefix
+	 * @li KDEDIRS or KDEDIR is taking into account
 	 * @li Additional dirs may be loaded from kdeglobals.
 	 *
 	 * @param dir The directory to append relative paths to.
 	 */
-	void addPrefix( QString dir );
-
+	void addPrefix( const QString& dir );
 
 	/**
 	 * Add suffixes for types.
 	 *
-	 *  You may add as many as
-	 * you need, but it is advised that there is exactly one to make
-	 * writing definite.
+	 * You may add as many as you need, but it is advised that there
+	 * is exactly one to make writing definite.
 	 * All basic types (@ref kde_default) are added by @ref addKDEDefaults(),
 	 * but for those you can add more relative paths as well.
 	 *
-	 * The later a suffix is added, the higher its priority.
+	 * The later a suffix is added, the higher its priority. Note, that the
+	 * suffix should end with / but doesn't have to start with one (as prefixes
+	 * should end with one). So adding a suffix for app_pics would look
+	 * like KGlobal::dirs()->addResourceType("app_pics", "share/app/pics");
 	 *
 	 * @param type Specifies a short descriptive string to access
 	 * files of this type.
@@ -155,7 +154,7 @@ public:
 	 *
 	 * @param type Specifies a short descriptive string to access files
 	 * of this type.
-	 * @param absdir Soints to directory where to look for this specific
+	 * @param absdir Points to directory where to look for this specific
 	 * type. Non-existant directories may be saved but pruned.
 	 *
 	 */
@@ -165,7 +164,17 @@ public:
 	/**
 	 * Try to find resource in the following order:
 	 * @li All PREFIX/<relativename> paths (most recent first).
-	 * @li All hard paths (most recent first).
+	 * @li All absolute paths (most recent first).
+	 *
+	 * The filename should be a filename relative to the base dir
+	 * for resources. So is a way to get the path to libkdecore.la
+	 * to findResource("lib", "libkdecore.la"). KStandardDirs will
+	 * then look into the subdir lib of all elements of all prefixes
+	 * ($KDEDIRS) for a file libkdecore.la and return the path to
+	 * the first one it finds (e.g. /opt/kde/lib/libkdecore.la)
+	 *
+	 * @param type The type of the wanted resource
+	 * @param filename A relative filename of the resource.
 	 *
 	 * @return A full path to the filename specified in the second
 	 *         argument, or QString::null if not found.
@@ -175,7 +184,13 @@ public:
 
 	/**
 	 * Try to find all directories whose names consist of the
-	 * specified type and a relative path.
+	 * specified type and a relative path. So would
+	 * findDirs("applnk", "Settings") return
+	 * @li /opt/kde/share/applnk/Settings/
+	 * @li /home/joe/.kde/share/applnk/Settings/
+	 *
+	 * Note that it appends / to the end of the directories,
+	 * so you can use this right away as directory names.
 	 *
 	 * @param type The type of the base directory.
 	 * @param reldir Relative directory.
@@ -194,6 +209,10 @@ public:
 	 * This way the application can access a couple of files
 	 * that have been installed into the same directory without
 	 * having to look for each file.
+	 *
+	 * findResourceDir("lib", "libkdecore.la") would return the
+	 * path of the subdir libkdecore.la is found first in
+	 * (e.g. /opt/kde/lib/)
 	 *
 	 * @return The directory where the file specified in the second
 	 *         argument is located, or QString::null if the type
@@ -217,7 +236,7 @@ public:
 	 * @param recursive Specifies if the function should decend
 	 *        into subdirectories.
 	 * @param uniq If specified,  only return items which have
-	 *        unique suffixes.
+	 *        unique suffixes - supressing duplicated filenames.
 	 *
 	 * @return A list of directories matching the resource specified,
 	 *         or an empty list if the resource type is unknown.
@@ -243,6 +262,8 @@ public:
 	 * @param uniq If specified,  only return items which have
 	 *        unique suffixes.
 	 * @param list Of relative paths for the given type.
+	 * @param relPaths The list to store the relative paths into
+	 *        These can be used later to @ref locate the file
 	 *
 	 * @return A list of directories matching the resource specified,
 	 *         or an empty list if the resource type is unknown.
@@ -319,6 +340,9 @@ public:
 	bool addCustomized(KConfig *config);
 
 	/**
+	 * This function is used internally by almost all other function as
+	 * it serves and fills the directories cache.
+	 *
 	 * @return The list of possible directories for the specified @p type.
 	 * The function updates the cache if possible.  If the resource
 	 * type specified is unknown, it will return an empty list.
