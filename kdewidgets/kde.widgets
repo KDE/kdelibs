@@ -165,8 +165,8 @@ IncludeFile=knuminput.h
 Group=Input (KDE)
 
 [KDoubleNumInput]
-ToolTip=Float Number Input Widget (KDE)
-WhatsThis=An input widget for integer numbers, consisting of a spinbox and a slider.
+ToolTip=Floating Point Number Input Widget (KDE)
+WhatsThis=An input widget for floating point numbers, consisting of a spinbox and a slider.
 IncludeFile=knuminput.h
 Group=Input (KDE)
 

@@ -174,9 +174,9 @@ KDEWidgetsPlugin::KDEWidgetsPlugin()
 	m_widgets.insert("KDialog", widget);
 
 	widget.group = "Input (KDE)";
-	widget.iconSet = "knuminput.png";
+	widget.iconSet = "kdoublenuminput.png";
 	widget.includeFile = "knuminput.h";
-	widget.toolTip = "Float Number Input Widget (KDE)";
+	widget.toolTip = "Floating Point Number Input Widget (KDE)";
 	widget.whatsThis = "KDoubleNumInput";
 	widget.isContainer = false;
 	m_widgets.insert("KDoubleNumInput", widget);
