@@ -1,6 +1,7 @@
 [Misc]
 Name=Light Style, 2nd revision
 Name[ar]=نمط خفيف، التنقيح الثاني
+Name[bs]=Light stil, druga revizija
 Name[da]=Light Style, 2d revision
 Name[de]=Leichter Stil, 2. Fassung
 Name[es]=Estilo ligero, 2nda revisión
@@ -19,6 +20,7 @@ Name[xh]=Ukukanya Uhlobo, Impinda Yesibini
 Name[xx]=xx
 Comment=Second revision of the simple and elegant 'Light' widget style.
 Comment[ar]=التنقيح الثاني لنمط الكائن 'الخفيف' الأنيق والبسيط
+Comment[bs]=Druga revizija jednostavnog i elegantnog 'Light' stila ukrasa.
 Comment[da]=Anden revision af den simple og elegante 'Light' kontrol-stil.
 Comment[de]=Zweite Version des einfachen und eleganten "Leichten Stils"
 Comment[es]=Segunda revisión del elegante estilo de widgets 'Ligero'.
