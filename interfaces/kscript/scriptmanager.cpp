@@ -68,7 +68,7 @@ QStringList KScriptManager::scripts()
 	QStringList scriptList;
 	while ( it.current() )
 	{
-		scriptList.append(it.currentKey().latin1());
+		scriptList.append(it.currentKey());
 		++it;
 	}
 	return scriptList;
