@@ -60,7 +60,7 @@ public:
      * if the dialog is used to choose an application but not for some particular URLs.
      * @param parent parent widget
      */
-    KOpenWithDlg( const KURL::List& urls, QWidget *parent = (QWidget*)0 );
+    KOpenWithDlg( const KURL::List& urls, QWidget *parent = 0L );
 
     /**
      * Create a dialog that asks for a application to open a given
@@ -71,7 +71,7 @@ public:
      * @param value  is the initial value of the line
      * @param parent parent widget
      */
-    KOpenWithDlg( const KURL::List& urls, const QString& text, const QString& value, QWidget *parent /* = 0L  BCI! */);
+    KOpenWithDlg( const KURL::List& urls, const QString& text, const QString& value, QWidget *parent = 0L );
 
     /**
      * Create a dialog to select a service for a given service type.
