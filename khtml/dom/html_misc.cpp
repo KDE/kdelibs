@@ -158,3 +158,12 @@ bool HTMLCollection::isNull() const
 }
 
 
+// -----------------------------------------------------------------------------
+
+HTMLFormCollection::HTMLFormCollection(NodeImpl *base)
+    : HTMLCollection()
+{
+    impl = new HTMLFormCollectionImpl(base);
+    impl->ref();
+}
+

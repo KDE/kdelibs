@@ -116,7 +116,6 @@ public:
 class HTMLCollection
 {
     friend class HTMLDocument;
-    friend class HTMLFormElement;
     friend class HTMLSelectElement;
     friend class HTMLImageElement;
     friend class HTMLMapElement;
@@ -182,6 +181,13 @@ public:
 
 protected:
     HTMLCollectionImpl *impl;
+};
+
+class HTMLFormCollection : public HTMLCollection
+{
+    friend class HTMLFormElement;
+protected:
+    HTMLFormCollection(NodeImpl *base);
 };
 
 }; //namespace

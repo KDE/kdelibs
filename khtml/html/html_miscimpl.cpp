@@ -108,21 +108,6 @@ unsigned long HTMLCollectionImpl::calcLength(NodeImpl *current) const
 		if(e->id() == ID_AREA)
 		    len++;
 		break;
-	    case FORM_ELEMENTS:
-		switch(e->id())
-		{
-		case ID_INPUT:
-		case ID_BUTTON:
-		case ID_SELECT:
-		case ID_TEXTAREA:
-		case ID_ISINDEX:
-		    //case ID_LABEL: // ### does it really belong here???
-		    len++;
-		    break;
-		default:
-		    break;
-		}
-		break;
 	    case DOC_APPLETS:   // all OBJECT and APPLET elements
 		if(e->id() == ID_OBJECT || e->id() == ID_APPLET)
 		    len++;
@@ -202,21 +187,6 @@ NodeImpl *HTMLCollectionImpl::getItem(NodeImpl *current, int index, int &len) co
 	    case MAP_AREAS:
 		if(e->id() == ID_AREA)
 		    len++;
-		break;
-	    case FORM_ELEMENTS:
-		switch(e->id())
-		{
-		case ID_INPUT:
-		case ID_BUTTON:
-		case ID_SELECT:
-		case ID_TEXTAREA:
-		case ID_ISINDEX:
-		    //case ID_LABEL: // ### does it really belong here???
-		    len++;
-		    break;
-		default:
-		    break;
-		}
 		break;
 	    case DOC_APPLETS:   // all OBJECT and APPLET elements
 		if(e->id() == ID_OBJECT || e->id() == ID_APPLET)
@@ -305,21 +275,6 @@ NodeImpl *HTMLCollectionImpl::getNamedItem( NodeImpl *current, int attr_id,
 		if(e->id() == ID_AREA)
 		    check = true;
 		break;
-	    case FORM_ELEMENTS:
-		switch(e->id())
-		{
-		case ID_INPUT:
-		case ID_BUTTON:
-		case ID_SELECT:
-		case ID_TEXTAREA:
-		case ID_ISINDEX:
-		    //case ID_LABEL: // ### does it really belong here???
-		    check = true;
-		    break;
-		default:
-		    break;
-		}
-		break;
 	    case DOC_APPLETS:   // all OBJECT and APPLET elements
 		if(e->id() == ID_OBJECT || e->id() == ID_APPLET)
 		    check = true;
@@ -350,7 +305,7 @@ NodeImpl *HTMLCollectionImpl::getNamedItem( NodeImpl *current, int attr_id,
 	    if(deep && current->firstChild())
 		retval = getNamedItem(current->firstChild(), attr_id, name);
 	    if(retval)
-	    {	
+	    {
 		//kdDebug( 6030 ) << "got a return value " << retval << endl;
 		return retval;
 	    }
@@ -369,3 +324,48 @@ NodeImpl *HTMLCollectionImpl::namedItem( const DOMString &name ) const
 }
 
 
+// -----------------------------------------------------------------------------
+
+unsigned long HTMLFormCollectionImpl::calcLength(NodeImpl* current) const
+{
+    if(base->nodeType() == Node::ELEMENT_NODE)
+    {
+        HTMLElementImpl* e = static_cast<HTMLElementImpl*>(base);
+        if(e->id() == ID_FORM)
+            return static_cast<HTMLFormElementImpl*>(e)->formElements.count();
+    }
+
+    return 0;
+}
+
+NodeImpl* HTMLFormCollectionImpl::getItem(NodeImpl *current, int index, int& pos) const
+{
+    if(base->nodeType() == Node::ELEMENT_NODE)
+    {
+        HTMLElementImpl* e = static_cast<HTMLElementImpl*>(base);
+        if(e->id() == ID_FORM)
+            return static_cast<HTMLFormElementImpl*>(e)->formElements.at(index);
+
+    }
+
+    return 0;
+}
+
+NodeImpl* HTMLFormCollectionImpl::getNamedItem(NodeImpl* current, int attr_id, const DOMString& name) const
+{
+    if(base->nodeType() == Node::ELEMENT_NODE)
+    {
+        HTMLElementImpl* e = static_cast<HTMLElementImpl*>(base);
+        if(e->id() == ID_FORM)
+        {
+            HTMLGenericFormElementImpl* element;
+            HTMLFormElementImpl* f = static_cast<HTMLFormElementImpl*>(e);
+
+            for(element = f->formElements.first(); element; element = f->formElements.next())
+                if(element->getAttribute(attr_id) == name)
+                    return element;
+        }
+    }
+
+    return 0;
+}

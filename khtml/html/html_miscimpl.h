@@ -63,8 +63,6 @@ public:
 	TABLE_TBODIES, // all TBODY elements in this table
 	TSECTION_ROWS, // all rows elements in this table section
 	TR_CELLS,      // all CELLS in this row
-	// from FORM
-	FORM_ELEMENTS,
 	// from SELECT
 	SELECT_OPTIONS,
 	// from HTMLMap
@@ -74,15 +72,15 @@ public:
 
     HTMLCollectionImpl(NodeImpl *_base, int _tagId);
 
-    ~HTMLCollectionImpl();
+    virtual ~HTMLCollectionImpl();
     unsigned long length() const;
     NodeImpl *item ( unsigned long index ) const;
     NodeImpl *namedItem ( const DOMString &name ) const;
 
 protected:
-    unsigned long calcLength(NodeImpl *current) const;
-    NodeImpl *getItem(NodeImpl *current, int index, int &pos) const;
-    NodeImpl *getNamedItem( NodeImpl *current, int attr_id,
+    virtual unsigned long calcLength(NodeImpl *current) const;
+    virtual NodeImpl *getItem(NodeImpl *current, int index, int &pos) const;
+    virtual NodeImpl *getNamedItem( NodeImpl *current, int attr_id,
 			    const DOMString &name ) const;
    // the base node, the collection refers to
     NodeImpl *base;
@@ -94,6 +92,25 @@ protected:
     //NodeImpl *current;
     //int currentPos;
 };
+
+// this whole class is just a big hack to find form elements even in
+// malformed HTML elements
+// the famous <table><tr><form><td> problem
+class HTMLFormCollectionImpl : public HTMLCollectionImpl
+{
+public:
+    // base must inherit HTMLGenericFormElementImpl or this won't work
+    HTMLFormCollectionImpl(NodeImpl* _base)
+        : HTMLCollectionImpl(_base, 0)
+    {};
+    ~HTMLFormCollectionImpl() { };
+
+protected:
+    virtual unsigned long calcLength(NodeImpl* current) const;
+    virtual NodeImpl* getItem(NodeImpl *current, int index, int& pos) const;
+    virtual NodeImpl* getNamedItem(NodeImpl* current, int attr_id, const DOMString& name) const;
+};
+
 
 }; //namespace
 

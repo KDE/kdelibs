@@ -213,7 +213,7 @@ HTMLFormElement::~HTMLFormElement()
 HTMLCollection HTMLFormElement::elements() const
 {
     if(!impl) return HTMLCollection();
-    return HTMLCollection(impl, HTMLCollectionImpl::FORM_ELEMENTS);
+    return HTMLFormCollection(impl);
 }
 
 long HTMLFormElement::length() const

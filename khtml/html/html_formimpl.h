@@ -89,7 +89,6 @@ public:
     void removeFormElement(HTMLGenericFormElementImpl *);
 
     /*
-
      * state() and restoreState() are complimentary functions.
      */
     virtual QString state() { return QString::null; }
@@ -101,6 +100,7 @@ protected:
     void submit (  );
 
     friend class HTMLFormElement;
+    friend class HTMLFormCollectionImpl;
 
     QList<HTMLGenericFormElementImpl> formElements;
     DOMString m_url;
