@@ -240,35 +240,6 @@ inline bool KConfig::hasGroup(const QString &_pGroup) const
   return aEntryMap.contains(groupKey);
 }
 
-inline bool KConfig::hasKey(const QString &pKey) const
-{
-  KEntryKey aEntryKey;
-  KEntryMapConstIterator aIt;
-
-  //  cacheCheck();
-
-  if (!locale().isNull()) {
-    // try the localized key first
-    QString aKey = pKey + "[";
-    aKey += locale();
-    aKey += "]";
-    
-    aEntryKey.group = group();
-    aEntryKey.key = aKey;
-    
-    aIt = aEntryMap.find(aEntryKey);
-    if (aIt != aEntryMap.end() && !aIt->aValue.isNull())
-      return true;
-  }
-  
-  // try the non-localized version
-  aEntryKey.group = group();
-  aEntryKey.key = pKey;
-  
-  aIt = aEntryMap.find(aEntryKey);
-  return  (aIt != aEntryMap.end() && !aIt->aValue.isNull());
-}
-
 inline void KConfig::putData(const KEntryKey &_key, const KEntry &_data)
 {
   //  cacheCheck();
