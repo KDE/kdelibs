@@ -276,6 +276,8 @@ bool KConfigINIBackEnd::parseConfigFiles()
             break;
       }
     }
+    if (KGlobal::dirs()->isRestrictedResource(resType, mfileName))
+       bFileImmutable = true;
     QString currentLanguage;
     if (!bootLanguage.isEmpty())
     {
