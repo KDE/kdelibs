@@ -49,13 +49,33 @@ ResourceLDAP::ResourceLDAP( const KConfig *config )
   : Resource( config ), mPort( 389 ), mLdap( 0 )
 {
   if ( config ) {
-     mUser = config->readEntry( "LdapUser" );
-     mPassword = decryptStr( config->readEntry( "LdapPassword" ) );
-     mDn = config->readEntry( "LdapDn" );
-     mHost = config->readEntry( "LdapHost" );
-     mPort = config->readNumEntry( "LdapPort", 389 );
-     mFilter = config->readEntry( "LdapFilter" );
-     mAnonymous = config->readBoolEntry( "LdapAnonymous" );
+    mUser = config->readEntry( "LdapUser" );
+    mPassword = decryptStr( config->readEntry( "LdapPassword" ) );
+    mDn = config->readEntry( "LdapDn" );
+    mHost = config->readEntry( "LdapHost" );
+    mPort = config->readNumEntry( "LdapPort", 389 );
+    mFilter = config->readEntry( "LdapFilter" );
+    mAnonymous = config->readBoolEntry( "LdapAnonymous" );
+
+    QStringList attributes = config->readListEntry( "LdapAttributes" );
+    for ( uint pos = 0; pos < attributes.count(); pos += 2 )
+      mAttributes.insert( attributes[ pos ], attributes[ pos + 1 ] );
+  }
+
+  /**
+    If you want to add new attributes, append them here, add a
+    translation string in the ctor of AttributesDialog and
+    handel them in the load() method below.
+   */
+  if ( mAttributes.count() == 0 ) {
+    mAttributes.insert( "commonName", "cn" );
+    mAttributes.insert( "formattedName", "display-name" );
+    mAttributes.insert( "familyName", "sn" );
+    mAttributes.insert( "givenName", "givenname" );
+    mAttributes.insert( "mail", "mail" );
+    mAttributes.insert( "mailAlias", "mailalias" );
+    mAttributes.insert( "phoneNumber", "phoneNumber" );
+    mAttributes.insert( "uid", "uid" );
   }
 }
 
@@ -70,6 +90,13 @@ void ResourceLDAP::writeConfig( KConfig *config )
   config->writeEntry( "LdapPort", mPort );
   config->writeEntry( "LdapFilter", mFilter );
   config->writeEntry( "LdapAnonymous", mAnonymous );
+
+  QStringList attributes;
+  QMap<QString, QString>::Iterator it;
+  for ( it = mAttributes.begin(); it != mAttributes.end(); ++it )
+    attributes << it.key() << it.data();
+
+  config->writeEntry( "LdapAttributes", attributes );
 }
 
 Ticket *ResourceLDAP::requestSaveTicket()
@@ -144,27 +171,32 @@ bool ResourceLDAP::load()
   char *names;
   char **values;
 
-  const char *LdapSearchAttr[ 9 ] = {
-    "cn",
-    "display-name",
-    "givenname",
-    "mail",
-    "mailalias",
-    "phoneNumber",
-    "sn",
-    "uid",
-    0 };
+  char **LdapSearchAttr = new char*[ mAttributes.count() + 1 ];
+
+  QMap<QString, QString>::Iterator it;
+  int i = 0;
+  for ( it = mAttributes.begin(); it != mAttributes.end(); ++it, ++i ) {
+    LdapSearchAttr[ i ] = new char[ it.data().utf8().length() + 1 ];
+    memset( LdapSearchAttr[ i ], 0, it.data().utf8().length() + 1 );
+    memcpy( LdapSearchAttr[ i ], it.data().utf8(), it.data().utf8().length() );
+  }
+  LdapSearchAttr[ i ] = 0;
 
   QString filter = mFilter;
   if ( filter.isEmpty() )
-    filter = "objectclass=*";
+    filter = "objectclass=person";
 
   int result;
   if ( ( result = ldap_search_s( mLdap, mDn.local8Bit(), LDAP_SCOPE_SUBTREE, QString( "(%1)" ).arg( filter ).local8Bit(),
-       (char **)LdapSearchAttr, 0, &res ) != LDAP_SUCCESS ) ) {
+         LdapSearchAttr, 0, &res ) != LDAP_SUCCESS ) ) {
     addressBook()->error( i18n( "Unable to search on server '%1': %2" )
                           .arg( mHost )
                           .arg( ldap_err2string( result ) ) );
+
+    for ( i = 0; LdapSearchAttr[ i ]; ++i )
+      delete [] LdapSearchAttr[ i ];
+    delete [] LdapSearchAttr;
+
     return false;
   }
 
@@ -174,47 +206,33 @@ bool ResourceLDAP::load()
     for ( names = ldap_first_attribute( mLdap, msg, &track ); names; names = ldap_next_attribute( mLdap, msg, track ) ) {
       values = ldap_get_values( mLdap, msg, names );
       for ( int i = 0; i < ldap_count_values( values ); ++i ) {
-        QString name = QString::fromUtf8( names );
+        QString name = QString::fromUtf8( names ).lower();
         QString value = QString::fromUtf8( values[ i ] );
 
-        if ( name == "cn" ) {
+        if ( name == mAttributes[ "commonName" ].lower() ) {
           if ( !addr.formattedName().isEmpty() ) {
             QString fn = addr.formattedName();
             addr.setNameFromString( value );
             addr.setFormattedName( fn );
           } else
             addr.setNameFromString( value );
-          continue;
-        }
-        if ( name == "display-name" ) {
+        } else if ( name == mAttributes[ "formattedName" ].lower() ) {
           addr.setFormattedName( value );
-          continue;
-        }
-        if ( name == "givenname" ) {
+        } else if ( name == mAttributes[ "givenName" ].lower() ) {
           addr.setGivenName( value );
-          continue;
-        }
-        if ( name == "mail" ) {
+        } else if ( name == mAttributes[ "mail" ].lower() ) {
           addr.insertEmail( value, true );
-          continue;
-        }
-        if ( name == "mailalias" ) {
+        } else if ( name == mAttributes[ "mailAlias" ].lower() ) {
           addr.insertEmail( value, false );
-          continue;
-        }
-        if ( name == "phoneNumber" ) {
+        } else if ( name == mAttributes[ "phoneNumber" ].lower() ) {
           PhoneNumber phone;
           phone.setNumber( value );
           addr.insertPhoneNumber( phone );
           break; // read only the home number
-        }
-        if ( name == "sn" ) {
+        } else if ( name == mAttributes[ "familyName" ].lower() ) {
           addr.setFamilyName( value );
-          continue;
-        }
-        if ( name == "uid" ) {
+        } else if ( name == mAttributes[ "uid" ].lower() ) {
           addr.setUid( value );
-          continue;
         }
       }
       ldap_value_free( values );
@@ -225,6 +243,10 @@ bool ResourceLDAP::load()
   }
 
   ldap_msgfree( res );
+
+  for ( i = 0; LdapSearchAttr[ i ]; ++i )
+    delete [] LdapSearchAttr[ i ];
+  delete [] LdapSearchAttr;
 
   return true;
 }
@@ -239,25 +261,25 @@ bool ResourceLDAP::save( Ticket * )
       addModOp( &mods, "objectClass", "organizationalPerson" );
       addModOp( &mods, "objectClass", "person" );
       addModOp( &mods, "objectClass", "Top" );
-      addModOp( &mods, "cn", (*it).assembledName() );
-      addModOp( &mods, "display-name", (*it).formattedName() );
-      addModOp( &mods, "givenname", (*it).givenName() );
-      addModOp( &mods, "sn", (*it).familyName() );
-      addModOp( &mods, "uid", (*it).uid() );
+      addModOp( &mods, mAttributes[ "commonName" ].utf8(), (*it).assembledName() );
+      addModOp( &mods, mAttributes[ "formattedName" ].utf8(), (*it).formattedName() );
+      addModOp( &mods, mAttributes[ "givenName" ].utf8(), (*it).givenName() );
+      addModOp( &mods, mAttributes[ "familyName" ].utf8(), (*it).familyName() );
+      addModOp( &mods, mAttributes[ "uid" ].utf8(), (*it).uid() );
 
       QStringList emails = (*it).emails();
       QStringList::ConstIterator mailIt;
       bool first = true;
       for ( mailIt = emails.begin(); mailIt != emails.end(); ++mailIt ) {
         if ( first ) {
-          addModOp( &mods, "mail", (*mailIt) );
+          addModOp( &mods, mAttributes[ "mail" ].utf8(), (*mailIt) );
           first = false;
         } else
-          addModOp( &mods, "mailalias", (*mailIt) );
+          addModOp( &mods, mAttributes[ "mailAlias" ].utf8(), (*mailIt) );
       }
 
       PhoneNumber number = (*it).phoneNumber( PhoneNumber::Home );
-      addModOp( &mods, "phoneNumber", number.number() );
+      addModOp( &mods, mAttributes[ "phoneNumber" ].utf8(), number.number() );
 
       QString dn = "cn=" + (*it).assembledName() + "," + mDn;
 
@@ -368,6 +390,16 @@ bool ResourceLDAP::isAnonymous() const
   return mAnonymous;
 }
 
+void ResourceLDAP::setAttributes( const QMap<QString, QString> &attributes )
+{
+  mAttributes = attributes;
+}
+
+QMap<QString, QString> ResourceLDAP::attributes() const
+{
+  return mAttributes;
+}
+
 void addModOp( LDAPMod ***pmods, const QString &attr, const QString &value )
 {
   if ( value.isNull() )
@@ -393,8 +425,8 @@ void addModOp( LDAPMod ***pmods, const QString &attr, const QString &value )
 
   mods[ i ]->mod_op = 0;
   mods[ i ]->mod_type = strdup( attr.utf8() );
-  mods[ i ]->mod_values = new char*[2];
-  mods[ i ]->mod_values[0] = strdup( value.utf8() );
-  mods[ i ]->mod_values[1] = 0;
+  mods[ i ]->mod_values = new char*[ 2 ];
+  mods[ i ]->mod_values[ 0 ] = strdup( value.utf8() );
+  mods[ i ]->mod_values[ 1 ] = 0;
 }
 

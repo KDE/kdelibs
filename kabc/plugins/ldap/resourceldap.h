@@ -71,6 +71,9 @@ public:
   void setIsAnonymous( bool value );
   bool isAnonymous() const;
 
+  void setAttributes( const QMap<QString, QString> &attributes );
+  QMap<QString, QString> attributes() const;
+
 private:
   QString mUser;
   QString mPassword;
@@ -79,6 +82,7 @@ private:
   QString mFilter;
   int mPort;
   bool mAnonymous;
+  QMap<QString, QString> mAttributes;
 
   LDAP *mLdap;
 };

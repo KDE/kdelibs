@@ -21,12 +21,17 @@
 #ifndef RESOURCELDAPCONFIG_H
 #define RESOURCELDAPCONFIG_H
 
+#include <qmap.h>
 
+#include <kdialogbase.h>
 #include <kresources/resourceconfigwidget.h>
 
-class KLineEdit;
 class QCheckBox;
+class QPushButton;
 class QSpinBox;
+class QString;
+
+class KLineEdit;
 
 namespace KABC {
 
@@ -34,21 +39,40 @@ class ResourceLDAPConfig : public KRES::ResourceConfigWidget
 { 
   Q_OBJECT
 
-public:
-  ResourceLDAPConfig( QWidget* parent = 0, const char* name = 0 );
+  public:
+    ResourceLDAPConfig( QWidget* parent = 0, const char* name = 0 );
 
-public slots:
-  void loadSettings( KRES::Resource* );
-  void saveSettings( KRES::Resource* );
+  public slots:
+    void loadSettings( KRES::Resource* );
+    void saveSettings( KRES::Resource* );
 
-private:
-  KLineEdit* mUser;
-  KLineEdit* mPassword;
-  KLineEdit* mHost;
-  QSpinBox * mPort;
-  KLineEdit* mDn;
-  KLineEdit* mFilter;
-  QCheckBox* mAnonymous;
+  private slots:
+    void editAttributes();
+
+  private:
+    KLineEdit *mUser;
+    KLineEdit *mPassword;
+    KLineEdit *mHost;
+    QSpinBox  *mPort;
+    KLineEdit *mDn;
+    KLineEdit *mFilter;
+    QCheckBox *mAnonymous;
+    QPushButton *mEditButton;
+    QMap<QString, QString> mAttributes;
+};
+
+class AttributesDialog : public KDialogBase
+{
+  public:
+    AttributesDialog( const QMap<QString, QString> &attributes, QWidget *parent,
+                      const char *name = 0 );
+    ~AttributesDialog();
+
+    QMap<QString, QString> attributes() const;
+
+  private:
+    QDict<KLineEdit> mLineEditDict;
+    QDict<QString> mNameDict;
 };
 
 }

@@ -21,10 +21,13 @@
 #include <qcheckbox.h>
 #include <qlabel.h>
 #include <qlayout.h>
+#include <qpushbutton.h>
 #include <qspinbox.h>
 #include <qvbox.h>
 
+#include <kaccelmanager.h>
 #include <kdebug.h>
+#include <kdialogbase.h>
 #include <klocale.h>
 #include <klineedit.h>
 
@@ -35,10 +38,10 @@
 using namespace KABC;
 
 ResourceLDAPConfig::ResourceLDAPConfig( QWidget* parent,  const char* name )
-    : KRES::ResourceConfigWidget( parent, name )
+  : KRES::ResourceConfigWidget( parent, name )
 {
   resize( 250, 120 ); 
-  QGridLayout *mainLayout = new QGridLayout( this, 6, 2 );
+  QGridLayout *mainLayout = new QGridLayout( this, 8, 2 );
 
   QLabel *label = new QLabel( i18n( "User:" ), this );
   mUser = new KLineEdit( this );
@@ -84,8 +87,12 @@ ResourceLDAPConfig::ResourceLDAPConfig( QWidget* parent,  const char* name )
   mAnonymous = new QCheckBox( i18n( "Anonymous login" ), this );
   mainLayout->addMultiCellWidget( mAnonymous, 6, 6, 0, 1 );
 
+  mEditButton = new QPushButton( i18n( "Edit Attributes..." ), this );
+  mainLayout->addMultiCellWidget( mEditButton, 7, 7, 0, 1 );
+
   connect( mAnonymous, SIGNAL( toggled(bool) ), mUser, SLOT( setDisabled(bool) ) );
   connect( mAnonymous, SIGNAL( toggled(bool) ), mPassword, SLOT( setDisabled(bool) ) );
+  connect( mEditButton, SIGNAL( clicked() ), SLOT( editAttributes() ) );
 }
 
 void ResourceLDAPConfig::loadSettings( KRES::Resource *res )
@@ -104,6 +111,7 @@ void ResourceLDAPConfig::loadSettings( KRES::Resource *res )
   mDn->setText( resource->dn() );
   mFilter->setText( resource->filter() );
   mAnonymous->setChecked( resource->isAnonymous() );
+  mAttributes = resource->attributes();
 }
 
 void ResourceLDAPConfig::saveSettings( KRES::Resource *res )
@@ -122,7 +130,63 @@ void ResourceLDAPConfig::saveSettings( KRES::Resource *res )
   resource->setDn( mDn->text() );
   resource->setFilter( mFilter->text() );
   resource->setIsAnonymous( mAnonymous->isChecked() );
+  resource->setAttributes( mAttributes );
+}
+
+void ResourceLDAPConfig::editAttributes()
+{
+  AttributesDialog dlg( mAttributes, this );
+  if ( dlg.exec() )
+    mAttributes = dlg.attributes();
+}
+
+AttributesDialog::AttributesDialog( const QMap<QString, QString> &attributes,
+                                    QWidget *parent, const char *name )
+  : KDialogBase( Plain, i18n( "Attributes Configuration" ), Ok | Cancel,
+                 Ok, parent, name, true, true )
+{
+  mNameDict.setAutoDelete( true );
+  mNameDict.insert( "commonName", new QString( i18n( "Common Name" ) ) );
+  mNameDict.insert( "formattedName", new QString( i18n( "Formatted Name" ) ) );
+  mNameDict.insert( "familyName", new QString( i18n( "Family Name" ) ) );
+  mNameDict.insert( "givenName", new QString( i18n( "Given name" ) ) );
+  mNameDict.insert( "mail", new QString( i18n( "E-Mail" ) ) );
+  mNameDict.insert( "mailAlias", new QString( i18n( "E-Mail alias" ) ) );
+  mNameDict.insert( "phoneNumber", new QString( i18n( "Telephone Number" ) ) );
+  mNameDict.insert( "uid", new QString( i18n( "UID" ) ) );
+
+  QFrame *page = plainPage();
+  QGridLayout *layout = new QGridLayout( page, 2, attributes.count(),
+                                         marginHint(), spacingHint() );
+
+  QMap<QString, QString>::ConstIterator it;
+  int i;
+  for ( i = 0, it = attributes.begin(); it != attributes.end(); ++it, ++i ) {
+    QLabel *label = new QLabel( *mNameDict[ it.key() ] + ":", page );
+    KLineEdit *lineedit = new KLineEdit( page );
+    mLineEditDict.insert( it.key(), lineedit );
+    lineedit->setText( it.data() );
+    label->setBuddy( lineedit );
+    layout->addWidget( label, i, 0 );
+    layout->addWidget( lineedit, i, 1 );
+  }
+
+  KAcceleratorManager::manage( this );
+}
+
+AttributesDialog::~AttributesDialog()
+{
+}
+
+QMap<QString, QString> AttributesDialog::attributes() const
+{
+  QMap<QString, QString> map;
+
+  QDictIterator<KLineEdit> it( mLineEditDict );
+  for ( ; it.current(); ++it )
+    map.insert( it.currentKey(), it.current()->text() );
+
+  return map;
 }
 
 #include "resourceldapconfig.moc"
-
