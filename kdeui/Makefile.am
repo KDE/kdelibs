@@ -77,8 +77,3 @@ libkdeui_la_METASOURCES = kbutton.moc kbuttonbox.moc kcolorbtn.moc \
 	qxembed.moc kdialog.moc dialogbase.moc kaboutdialog.moc kauthicon.moc \
 	kdualcolorbtn.moc ktoolbarradiogroup.moc ktoolbarbutton.moc
 
-data_DATA = 
-# arrow_up.xbm arrow_down.xbm arrow_left.xbm arrow_right.xbm	
-datadir = $(kde_datadir)/kde/pics
-
-
