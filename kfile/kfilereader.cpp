@@ -136,7 +136,9 @@ void KFileReader::setURL(const KURL& url)
 		closedir(test);
 		if ( d->autoUpdate ) {
                     if (oldurl.isLocalFile()) {
+#ifdef __GNUC__
 			#warning fixme (KDirWatch)
+#endif
 			// d->dirWatch->removeDir( oldurl.path() );
                     }
 		    // d->dirWatch->addDir( path() );

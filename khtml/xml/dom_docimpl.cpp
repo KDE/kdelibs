@@ -458,7 +458,7 @@ void DocumentImpl::applyChanges(bool,bool force)
     setChanged(false);
 }
 
-void DocumentImpl::setChanged(bool b=true)
+void DocumentImpl::setChanged(bool b)
 {
     if (b)
 	changedNodes.append(this);

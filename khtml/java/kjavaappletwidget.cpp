@@ -188,7 +188,9 @@ void KJavaAppletWidget::swallowWindow( WId w )
 
    //KWM::prepareForSwallowing( w );
 
+#ifdef __GNUC__
 #warning FIXME, KWin guru! Check all this stuff :)
+#endif
 
    // NASTY WORKAROUND:
    // KWin reparents the window back to the root window if
