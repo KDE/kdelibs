@@ -138,8 +138,11 @@ void RenderRoot::layout()
 
     if (!m_printingMode) {
         m_view->resizeContents(docWidth(), docHeight());
+        // be optimistic and say that we never need a vertical
+        // scroll bar. fixes ugly cyclic recalculation chains
+        // with QScrollView. 
         QSize s = m_view->viewportSize(m_view->contentsWidth(),
-                                       m_view->contentsHeight());
+                                       0);
         setWidth( m_viewportWidth = s.width() );
         setHeight(  m_viewportHeight = s.height() );
     }
