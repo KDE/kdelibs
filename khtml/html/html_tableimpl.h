@@ -79,13 +79,13 @@ public:
     virtual tagStatus endTag() { return TABLEEndTag; }
 
     HTMLTableCaptionElementImpl *caption() const { return tCaption; }
-    void setCaption( HTMLTableCaptionElementImpl * );
+    NodeImpl *setCaption( HTMLTableCaptionElementImpl * );
 
     HTMLTableSectionElementImpl *tHead() const { return head; }
-    void setTHead( HTMLTableSectionElementImpl * );
+    NodeImpl *setTHead( HTMLTableSectionElementImpl * );
 
     HTMLTableSectionElementImpl *tFoot() const { return foot; }
-    void setTFoot( HTMLTableSectionElementImpl * );
+    NodeImpl *setTFoot( HTMLTableSectionElementImpl * );
 
     HTMLElementImpl *createTHead (  );
     void deleteTHead (  );
@@ -270,7 +270,7 @@ public:
 
     virtual tagStatus startTag() { return CAPTIONStartTag; }
     virtual tagStatus endTag() { return CAPTIONEndTag; }
-    
+
     virtual void parseAttribute(AttrImpl *attr);
 
 };

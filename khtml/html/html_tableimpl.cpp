@@ -69,44 +69,54 @@ ushort HTMLTableElementImpl::id() const
     return ID_TABLE;
 }
 
-void HTMLTableElementImpl::setCaption( HTMLTableCaptionElementImpl *c )
+NodeImpl* HTMLTableElementImpl::setCaption( HTMLTableCaptionElementImpl *c )
 {
+    kdDebug() << "HTMLTableElementImpl::setCaption" << endl;
     int exceptioncode;
+    NodeImpl* r;
     if(tCaption)
-	replaceChild ( c, tCaption, exceptioncode );
+	r = replaceChild ( c, tCaption, exceptioncode );
     else
-	insertBefore( c, firstChild(), exceptioncode );
+	r = insertBefore( c, firstChild(), exceptioncode );
     tCaption = c;
+    return r;
 }
 
-void HTMLTableElementImpl::setTHead( HTMLTableSectionElementImpl *s )
+NodeImpl* HTMLTableElementImpl::setTHead( HTMLTableSectionElementImpl *s )
 {
-    int exceptioncode; 
-    if(head)
-	replaceChild ( s, head, exceptioncode );
-    else if( foot )
-	insertBefore( s, foot, exceptioncode );
-    else if( firstBody )
-	insertBefore( s, firstBody, exceptioncode );
-    else
-	appendChild( s, exceptioncode );
-    head = s;
-}
-
-void HTMLTableElementImpl::setTFoot( HTMLTableSectionElementImpl *s )
-{
+    kdDebug() << "HTMLTableElementImpl::setTHead" << endl;
     int exceptioncode;
-    if(foot)
-	replaceChild ( s, foot, exceptioncode );
+    NodeImpl* r;
+    if(head)
+	r = replaceChild ( s, head, exceptioncode );
+    else if( foot )
+	r = insertBefore( s, foot, exceptioncode );
     else if( firstBody )
-	insertBefore( s, firstBody, exceptioncode );
+	r = insertBefore( s, firstBody, exceptioncode );
     else
-	appendChild( s, exceptioncode );
+	r = appendChild( s, exceptioncode );
+    head = s;
+    return r;
+}
+
+NodeImpl* HTMLTableElementImpl::setTFoot( HTMLTableSectionElementImpl *s )
+{
+    kdDebug() << "HTMLTableElementImpl::setTFoot" << endl;
+    int exceptioncode;
+    NodeImpl* r;
+    if(foot)
+	r = replaceChild ( s, foot, exceptioncode );
+    else if( firstBody )
+	r = insertBefore( s, firstBody, exceptioncode );
+    else
+	r = appendChild( s, exceptioncode );
     foot = s;
+    return r;
 }
 
 HTMLElementImpl *HTMLTableElementImpl::createTHead(  )
 {
+    kdDebug() << "*HTMLTableElementImpl::createTHead" << endl;
     if(!head)
     {
 	int exceptioncode;
@@ -132,6 +142,7 @@ void HTMLTableElementImpl::deleteTHead(  )
 
 HTMLElementImpl *HTMLTableElementImpl::createTFoot(  )
 {
+    kdDebug() << "*HTMLTableElementImpl::createTFoot" << endl;
     if(!foot)
     {
 	int exceptioncode;
@@ -155,6 +166,7 @@ void HTMLTableElementImpl::deleteTFoot(  )
 
 HTMLElementImpl *HTMLTableElementImpl::createCaption(  )
 {
+    kdDebug() << "*HTMLTableElementImpl::createCaption" << endl;
     if(!tCaption)
     {
 	int exceptioncode;
@@ -193,8 +205,8 @@ NodeImpl *HTMLTableElementImpl::addChild(NodeImpl *child)
     switch(child->id())
     {
     case ID_CAPTION:
-	setCaption(static_cast<HTMLTableCaptionElementImpl *>(child));
-	break;
+	return setCaption(static_cast<HTMLTableCaptionElementImpl *>(child));
+        break;
     case ID_COL:
     case ID_COLGROUP:
     	{
@@ -220,21 +232,20 @@ NodeImpl *HTMLTableElementImpl::addChild(NodeImpl *child)
 	return child;
     case ID_THEAD:
 	//	if(incremental && !columnPos[totalCols]);// calcColWidth();
-	setTHead(static_cast<HTMLTableSectionElementImpl *>(child));
+	return setTHead(static_cast<HTMLTableSectionElementImpl *>(child));
 	break;
     case ID_TFOOT:
 	//if(incremental && !columnPos[totalCols]);// calcColWidth();
-	setTFoot(static_cast<HTMLTableSectionElementImpl *>(child));
+	return setTFoot(static_cast<HTMLTableSectionElementImpl *>(child));
 	break;
     case ID_TBODY:
 	//if(incremental && !columnPos[totalCols]);// calcColWidth();
 	if(!firstBody)
 	    firstBody = static_cast<HTMLTableSectionElementImpl *>(child);
+        return HTMLElementImpl::addChild( child );
 	break;
-    default:	
- 	return 0;
     }
-    return HTMLElementImpl::addChild( child );
+    return 0;
 }
 
 void HTMLTableElementImpl::parseAttribute(AttrImpl *attr)
