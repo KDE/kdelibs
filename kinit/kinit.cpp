@@ -1343,6 +1343,15 @@ int main(int argc, char **argv, char **envp)
          exit(1);
       }
    }
+ 
+   if (!suicide)
+   {
+      QString konq = locate("lib", "libkonq.la", s_instance);
+      if (!konq.isEmpty())
+      {
+         lt_dlhandle result = lt_dlopen(QFile::encodeName(konq).data());
+      }
+   }
 
    if (launch_klauncher)
    {
