@@ -463,14 +463,14 @@ bool RegressionTest::runTests(QString relPath, bool mustExist)
 	m_currentBase = m_sourceFilesDir+"/"+relativeDir;
 	m_currentCategory = relativeDir;
 	m_currentTest = filename;
-	if (filename.endsWith(".html")) {
+	if (filename.endsWith(".html") || filename.endsWith( ".htm" )) {
 	    testStaticFile(relPath);
 	}
 	else if (filename.endsWith(".js")) {
 	    testJSFile(relPath);
 	}
 	else if (mustExist) {
-	    fprintf(stderr,"%s: Not a valid test file (must be .html or .js)\n",relPath.latin1());
+	    fprintf(stderr,"%s: Not a valid test file (must be .htm(l) or .js)\n",relPath.latin1());
 	    return false;
 	}
 
