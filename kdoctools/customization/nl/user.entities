@@ -8,12 +8,12 @@
 
 <!-- Credits (voor ROLES_OF_TRANSLATORS, en andere plaatsen) -->
 <!-- remains to check how the subelements are treated by the style sheets -->
-<!ENTITY Niels.Reedijk '<othercredit role="translator"><firstname>Niels</firstname><surname>Reedijk</surname><affiliation><address><email>nielx@kde.nl</email></address></affiliation><contrib>Vertaling van het handboek</contrib></othercredit>'>
-<!ENTITY Floris.Lambrechts '<othercredit role="translator"><firstname>Floris</firstname><surname>Lambrechts</surname><affiliation><address><email>floris.lambrechts@linuxfocus.org</email></address></affiliation><contrib>Vertaling van het handboek</contrib></othercredit>'>
-<!ENTITY Michel.Fontes '<othercredit role="translator"><firstname>Michel</firstname><surname>Fontes</surname><affiliation><address><email>michelfontes@hotmail.com</email></address></affiliation><contrib>Vertaling van het handboek</contrib></othercredit>'>
-<!ENTITY Jogchum.Reitsma '<othercredit role="translator"><firstname>Jogchum</firstname><surname>Reitsma</surname><affiliation><address><email>j.reitsma@hcc.net</email></address></affiliation><contrib>Vertaling van het handboek</contrib></othercredit>'>
-<!ENTITY Otto.Bruggeman '<othercredit role="translator"><firstname>Otto</firstname><surname>Bruggeman</surname><affiliation><address><email>bruggie@home.nl</email></address></affiliation><contrib>Vertaler</contrib></othercredit>'>
-
+<!ENTITY Niels.Reedijk      '<othercredit role="translator"><firstname>Niels</firstname><surname>Reedijk</surname><affiliation><address><email>nielx@kde.nl</email></address></affiliation><contrib>Vertaling van het handboek</contrib></othercredit>'>
+<!ENTITY Floris.Lambrechts  '<othercredit role="translator"><firstname>Floris</firstname><surname>Lambrechts</surname><affiliation><address><email>floris.lambrechts@linuxfocus.org</email></address></affiliation><contrib>Vertaling van het handboek</contrib></othercredit>'>
+<!ENTITY Michel.Fontes      '<othercredit role="translator"><firstname>Michel</firstname><surname>Fontes</surname><affiliation><address><email>michelfontes@hotmail.com</email></address></affiliation><contrib>Vertaling van het handboek</contrib></othercredit>'>
+<!ENTITY Jogchum.Reitsma    '<othercredit role="translator"><firstname>Jogchum</firstname><surname>Reitsma</surname><affiliation><address><email>j.reitsma@hcc.net</email></address></affiliation><contrib>Vertaling van het handboek</contrib></othercredit>'>
+<!ENTITY Otto.Bruggeman     '<othercredit role="translator"><firstname>Otto</firstname><surname>Bruggeman</surname><affiliation><address><email>bruggie@home.nl</email></address></affiliation><contrib>Vertaler/Nalezer</contrib></othercredit>'>
+<!ENTITY Douwe.vanderSchaaf '<othercredit role="translator"><firstname>Douwe</firstname><surname>van der Schaaf</surname><affiliation><address><email>dvdsch@chello.nl</email></address></affiliation><contrib>Vertaler/Nalezer</contrib></othercredit>'>
 
 <!ENTITY kde.nl.groep "<email>i18n@kde.nl</email>">
 
@@ -21,18 +21,20 @@
 <!ENTITY meld.fouten "<para>Op- of aanmerkingen over de vertalingen van de toepassing en haar documentatie kunt u naar &kde.nl.groep; sturen.</para>">
 
 <!-- Entities voor vertalers (voor CREDITS_FOR_TRANSLATORS)-->
-<!ENTITY vertaling.floris "<para>Dit document is vertaald naar het Nederlands door &Floris.Lambrechts;.</para>">
-<!ENTITY vertaling.niels "<para>Dit document is vertaald naar het Nederlands door &Niels.Reedijk;.</para>">
-<!ENTITY vertaling.michel "<para>Dit document is vertaald naar het Nederlands door &Michel.Fontes;.</para>">
+<!ENTITY vertaling.douwe   "<para>Dit document is vertaald naar het Nederlands door &Douwe.vanderSchaaf;.</para>">
+<!ENTITY vertaling.floris  "<para>Dit document is vertaald naar het Nederlands door &Floris.Lambrechts;.</para>">
 <!ENTITY vertaling.jogchum "<para>Dit document is vertaald naar het Nederlands door &Jogchum.Reitsma;.</para>">
-<!ENTITY vertaling.otto "<para>Dit document is vertaald naar het Nederlands door &Otto.Bruggeman;.</para>">
+<!ENTITY vertaling.michel  "<para>Dit document is vertaald naar het Nederlands door &Michel.Fontes;.</para>">
+<!ENTITY vertaling.niels   "<para>Dit document is vertaald naar het Nederlands door &Niels.Reedijk;.</para>">
+<!ENTITY vertaling.otto    "<para>Dit document is vertaald naar het Nederlands door &Otto.Bruggeman;.</para>">
 
 
-<!ENTITY nagelezen.floris "<para>De vertaling werd nagelezen door &Floris.Lambrechts;.</para>">
-<!ENTITY nagelezen.niels "<para>De vertaling werd nagelezen door &Niels.Reedijk;.</para>">
-<!ENTITY nagelezen.michel "<para>De vertaling werd nagelezen door &Michel.Fontes;.</para>">
+<!ENTITY nagelezen.douwe   "<para>De vertaling werd nagelezen door &Douwe.vanderSchaaf;.</para>">
+<!ENTITY nagelezen.floris  "<para>De vertaling werd nagelezen door &Floris.Lambrechts;.</para>">
 <!ENTITY nagelezen.jogchum "<para>De vertaling werd nagelezen door &Jogchum.Reitsma;.</para>">
-<!ENTITY nagelezen.otto "<para>De vertaling werd nagelezen door &Otto.Bruggeman;.</para>">
+<!ENTITY nagelezen.michel  "<para>De vertaling werd nagelezen door &Michel.Fontes;.</para>">
+<!ENTITY nagelezen.niels   "<para>De vertaling werd nagelezen door &Niels.Reedijk;.</para>">
+<!ENTITY nagelezen.otto    "<para>De vertaling werd nagelezen door &Otto.Bruggeman;.</para>">
 
 <!-- Algemene afkortingen -->
 <!ENTITY etc     "<abbrev>etc.</abbrev>"> <!-- enz is beter -->
