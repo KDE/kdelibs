@@ -219,7 +219,7 @@
                         <string>Enable the entry of multi-key shortcuts</string>
                     </property>
                     <property name="whatsThis" stdset="0">
-                        <string>Click this checkbox to enable the entry of multi-key shortcuts.  A multi-key shortcut consists of a sequence of up to 4 keys.  For example, you could assign "Ctrl+F,B" to Font-Italics and "Ctrl+F,U" to Font-Underline.</string>
+                        <string>Select this checkbox to enable the entry of multi-key shortcuts.  A multi-key shortcut consists of a sequence of up to 4 keys.  For example, you could assign "Ctrl+F,B" to Font-Bold and "Ctrl+F,U" to Font-Underline.</string>
                     </property>
                 </widget>
             </grid>
