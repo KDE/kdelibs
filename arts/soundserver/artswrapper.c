@@ -52,7 +52,7 @@ void adjust_priority()
 	int prio;
 
 	prio = getpriority(PRIO_PROCESS,getpid());
-	if(prio < -10)
+	if(prio > -10)
 	{
 		setpriority(PRIO_PROCESS,getpid(),-17);
 		prio = getpriority(PRIO_PROCESS,getpid());
