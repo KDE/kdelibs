@@ -110,7 +110,7 @@ void KMenuBar::show()
 {
     // work around a Qt bug
     // why is this still needed? (Simon)
-    if ( isVisible() && d->topLevel )
+    if ( d->topLevel && isVisible() )
 	return;
     return QMenuBar::show();
 }
@@ -149,7 +149,7 @@ bool KMenuBar::eventFilter(QObject *obj, QEvent *ev)
 }
 
 
-void KMenuBar::showEvent( QShowEvent* )
+void KMenuBar::showEvent( QShowEvent *e )
 {
     if ( d->topLevel ) {
         QRect area = QApplication::desktop()->screenGeometry();
@@ -158,6 +158,7 @@ void KMenuBar::showEvent( QShowEvent* )
         KWin::setStrut( winId(), 0, 0, height()-frameWidth()-2, 0 );
 #endif
     }
+    QMenuBar::showEvent(e);
 }
 
 #include "kmenubar.moc"
