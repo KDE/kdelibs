@@ -198,7 +198,7 @@ ushort HTMLEmbedElementImpl::id() const
 void HTMLEmbedElementImpl::parseAttribute(AttrImpl *attr)
 {
   DOM::DOMStringImpl *stringImpl = attr->val();
-  QString val = QConstString( stringImpl->s, stringImpl->l ).string();
+  QString val = QConstString( stringImpl->s, stringImpl->l ).string();  
 
   // export parameter
   param.append( attr->name().string() + "=\"" + val + "\"" );
@@ -206,7 +206,7 @@ void HTMLEmbedElementImpl::parseAttribute(AttrImpl *attr)
   switch ( attr->attrId )
   {
      case ATTR_TYPE:
-	serviceType = val;
+	serviceType = val.lower(); // FIXME: is this correct? are MIME types case insensitive???? look also into pluginscan.cpp
 	break;
      case ATTR_SRC:
 	url = val;
