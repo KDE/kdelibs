@@ -1,4 +1,3 @@
-
 /**
  * This file is part of the DOM implementation for KDE.
  *
@@ -60,6 +59,7 @@ HTMLTableElementImpl::HTMLTableElementImpl(DocumentPtr *doc)
 
     incremental = false;
     m_noBorder = true;
+    m_solid = false;
 
     // reset font color and sizes here, if we don't have strict parse mode.
     // this is 90% compatible to ie and mozilla, and the by way easiest solution...
@@ -313,7 +313,11 @@ void HTMLTableElementImpl::parseAttribute(AttrImpl *attr)
     case ATTR_BORDERCOLOR:
         if(!attr->value().isEmpty()) {
             addCSSProperty(CSS_PROP_BORDER_COLOR, attr->value());
-            addCSSProperty(CSS_PROP_BORDER_STYLE, CSS_VAL_SOLID);
+            addCSSProperty(CSS_PROP_BORDER_TOP_STYLE, CSS_VAL_SOLID);
+            addCSSProperty(CSS_PROP_BORDER_BOTTOM_STYLE, CSS_VAL_SOLID);
+            addCSSProperty(CSS_PROP_BORDER_LEFT_STYLE, CSS_VAL_SOLID);
+            addCSSProperty(CSS_PROP_BORDER_RIGHT_STYLE, CSS_VAL_SOLID);
+            m_solid = true;
         }
         break;
     case ATTR_BACKGROUND:
@@ -415,6 +419,14 @@ void HTMLTableElementImpl::parseAttribute(AttrImpl *attr)
 
 void HTMLTableElementImpl::attach()
 {
+    if (!m_noBorder) {
+        int v = m_solid ? CSS_VAL_SOLID : CSS_VAL_OUTSET;
+        addCSSProperty(CSS_PROP_BORDER_TOP_STYLE, v);
+        addCSSProperty(CSS_PROP_BORDER_BOTTOM_STYLE, v);
+        addCSSProperty(CSS_PROP_BORDER_LEFT_STYLE, v);
+        addCSSProperty(CSS_PROP_BORDER_RIGHT_STYLE, v);
+    }
+
     HTMLElementImpl::attach();
 }
 
@@ -445,7 +457,11 @@ void HTMLTablePartElementImpl::parseAttribute(AttrImpl *attr)
     {
         if(!attr->value().isEmpty()) {
             addCSSProperty(CSS_PROP_BORDER_COLOR, attr->value());
-            addCSSProperty(CSS_PROP_BORDER_STYLE, CSS_VAL_SOLID);
+            addCSSProperty(CSS_PROP_BORDER_TOP_STYLE, CSS_VAL_SOLID);
+            addCSSProperty(CSS_PROP_BORDER_BOTTOM_STYLE, CSS_VAL_SOLID);
+            addCSSProperty(CSS_PROP_BORDER_LEFT_STYLE, CSS_VAL_SOLID);
+            addCSSProperty(CSS_PROP_BORDER_RIGHT_STYLE, CSS_VAL_SOLID);
+            m_solid = true;
         }
         break;
     }
@@ -619,7 +635,7 @@ HTMLTableCellElementImpl::HTMLTableCellElementImpl(DocumentPtr *doc, int tag)
   _col = -1;
   _row = -1;
   cSpan = rSpan = 1;
-  nWrap = false;
+  m_nowrap = false;
   _id = tag;
   rowHeight = 0;
 }
@@ -633,7 +649,8 @@ void HTMLTableCellElementImpl::parseAttribute(AttrImpl *attr)
     switch(attr->attrId)
     {
     case ATTR_BORDER:
-        addCSSLength(CSS_PROP_BORDER_WIDTH, attr->value());
+        // euhm? not supported by other browsers as far as I can see (Dirk)
+        //addCSSLength(CSS_PROP_BORDER_WIDTH, attr->value());
         break;
     case ATTR_ROWSPAN:
         // ###
@@ -648,7 +665,7 @@ void HTMLTableCellElementImpl::parseAttribute(AttrImpl *attr)
         if(cSpan < 1 || cSpan > 1024) cSpan = 1;
         break;
     case ATTR_NOWRAP:
-        nWrap = (attr->val() != 0);
+        m_nowrap = (attr->val() != 0);
         break;
     case ATTR_WIDTH:
         if (!attr->value().isEmpty())
@@ -677,12 +694,20 @@ void HTMLTableCellElementImpl::attach()
 
     if(p) {
         HTMLTableElementImpl* table = static_cast<HTMLTableElementImpl*>(p);
-	//
-        if(table->m_noBorder && getAttribute(ATTR_BORDER).isNull()) {
+        if (table->m_noBorder) {
             addCSSProperty(CSS_PROP_BORDER_WIDTH, "0");
-	}
-        if(!table->getAttribute(ATTR_BORDERCOLOR).isNull())
-            addCSSProperty(CSS_PROP_BORDER_STYLE, CSS_VAL_SOLID);
+        }
+        else {
+            addCSSProperty(CSS_PROP_BORDER_WIDTH, "1px");
+            int v = (table->m_solid || m_solid) ? CSS_VAL_SOLID : CSS_VAL_INSET;
+            addCSSProperty(CSS_PROP_BORDER_TOP_STYLE, v);
+            addCSSProperty(CSS_PROP_BORDER_BOTTOM_STYLE, v);
+            addCSSProperty(CSS_PROP_BORDER_LEFT_STYLE, v);
+            addCSSProperty(CSS_PROP_BORDER_RIGHT_STYLE, v);
+
+            if (!m_solid)
+                addCSSProperty(CSS_PROP_BORDER_COLOR, "inherit");
+        }
     }
 
     setStyle(ownerDocument()->styleSelector()->styleForElement(this));
@@ -695,7 +720,7 @@ void HTMLTableCellElementImpl::attach()
             RenderTableCell *cell = static_cast<RenderTableCell *>(m_render);
             cell->setRowSpan(rSpan);
             cell->setColSpan(cSpan);
-            cell->setNoWrap(nWrap);
+            cell->setNoWrap(m_nowrap);
         }
         if(m_render) r->addChild(m_render, nextRenderer());
     }

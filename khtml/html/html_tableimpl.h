@@ -111,6 +111,7 @@ protected:
 
     bool incremental : 1;
     bool m_noBorder  : 1;
+    bool m_solid     : 1;
     friend class HTMLTableCellElementImpl;
 };
 
@@ -121,12 +122,15 @@ class HTMLTablePartElementImpl : public HTMLElementImpl
 {
 public:
     HTMLTablePartElementImpl(DocumentPtr *doc)
-        : HTMLElementImpl(doc)
+        : HTMLElementImpl(doc), m_solid(false)
         { }
 
     virtual void parseAttribute(AttrImpl *attr);
 
     void attach();
+
+protected:
+    bool m_solid : 1;
 };
 
 // -------------------------------------------------------------------------
@@ -199,9 +203,10 @@ protected:
     int _col;
     int rSpan;
     int cSpan;
-    bool nWrap;
     int _id;
     int rowHeight;
+
+    bool m_nowrap : 1;
 };
 
 // -------------------------------------------------------------------------
