@@ -20,7 +20,11 @@
 #ifndef _INCLUDE_KSSLUTILS_H
 #define _INCLUDE_KSSLUTILS_H
 
+#ifdef Q_WS_WIN
+#include "ksslconfig_win.h"
+#else
 #include "ksslconfig.h"
+#endif
 
 #include <unistd.h>
 #ifdef KSSL_HAVE_SSL

@@ -21,7 +21,11 @@
 #ifndef _KSSLPKCS12_H
 #define _KSSLPKCS12_H
 
+#ifdef Q_WS_WIN
+#include "ksslconfig_win.h"
+#else
 #include "ksslconfig.h"
+#endif
 
 #ifdef KSSL_HAVE_SSL
 #define crypt _openssl_crypt

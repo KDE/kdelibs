@@ -40,7 +40,7 @@ class QPushButton;
  * @see KSSL
  * @short KDE X.509 Certificate Dialog
  */
-class KSSLCertDlg : public KDialog {
+class KSSL_EXPORT KSSLCertDlg : public KDialog {
 	Q_OBJECT
 public:
 	/**
@@ -119,7 +119,7 @@ private:
 };
 
 
-class KSSLCertDlgRet {
+class KSSL_EXPORT KSSLCertDlgRet {
 public:
    bool ok;
    QString choice;
@@ -131,8 +131,8 @@ protected:
    KSSLCertDlgRetPrivate *d;
 };
 
-QDataStream& operator<<(QDataStream& s, const KSSLCertDlgRet& r);
-QDataStream& operator>>(QDataStream& s, KSSLCertDlgRet& r);
+KSSL_EXPORT QDataStream& operator<<(QDataStream& s, const KSSLCertDlgRet& r);
+KSSL_EXPORT QDataStream& operator>>(QDataStream& s, KSSLCertDlgRet& r);
 
 
 
