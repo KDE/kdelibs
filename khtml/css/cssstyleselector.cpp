@@ -215,11 +215,13 @@ RenderStyle *CSSStyleSelector::styleForElement(ElementImpl *e, int state)
                 ++smatch;
 
 		//qDebug("adding property" );
-                for ( unsigned int p = 0; p < selectorCache[i].props_size; p++ )
-		    static_cast<QList<CSSOrderedProperty>*>(propsToApply)->append( new CSSOrderedProperty(*properties[selectorCache[i].props[p]] ) );
+                for ( unsigned int p = 0; p < selectorCache[i].props_size; p += 2 )
+                    for ( unsigned int j = 0; j < (unsigned int )selectorCache[i].props[p+1]; ++j )
+                        static_cast<QList<CSSOrderedProperty>*>(propsToApply)->append( new CSSOrderedProperty(*properties[selectorCache[i].props[p]+j] ) );
 	    } else if ( selectorCache[i].state == AppliesPseudo ) {
-                for ( unsigned int p = 0; p < selectorCache[i].props_size; p++ )
-		    static_cast<QList<CSSOrderedProperty>*>(pseudoProps)->append(  properties[selectorCache[i].props[p]] );
+                for ( unsigned int p = 0; p < selectorCache[i].props_size; p += 2 )
+                    for ( unsigned int j = 0; j < (unsigned int) selectorCache[i].props[p+1]; ++j )
+                        static_cast<QList<CSSOrderedProperty>*>(pseudoProps)->append(  properties[selectorCache[i].props[p]+j] );
             }
         }
 	else
@@ -597,22 +599,31 @@ void CSSStyleSelector::buildLists()
 
     // This algorithm sucks badly. but hey, its performance shouldn't matter much ( Dirk )
     for ( unsigned int sel = 0; sel < selectors_size; ++sel ) {
-	int len = 0;
-	for ( unsigned int p = 0; p < properties_size - 1; ++p ) {
-	    if ( properties[p]->selector == sel )
-		len++;
-	}
-	selectorCache[sel].props_size = len;
-	if ( selectorCache[sel].props ) 
-	    delete [] selectorCache[sel].props;
-	selectorCache[sel].props = new int[len];
-	len = 0;
-	for ( unsigned int p = 0; p < properties_size - 1; ++p ) {
-	    if ( properties[p]->selector == sel ) {
-		selectorCache[sel].props[len] = p;
-		len++;
-	    }
-	}
+        prop = properties;
+        int len = 0;
+        int offset = 0;
+        bool matches = properties[0] ? properties[0]->selector == sel : false;
+        for ( unsigned int p = 0; p < properties_size; ++p ) {
+            if ( !properties[p] || ( matches != ( properties[p]->selector == sel ) )) {
+                if ( matches ) {
+                    int* newprops = new int[selectorCache[sel].props_size+2];
+                    for ( unsigned int i=0; i < selectorCache[sel].props_size; i++ )
+                        newprops[i] = selectorCache[sel].props[i];
+                    newprops[selectorCache[sel].props_size] = offset;
+                    newprops[selectorCache[sel].props_size+1] = len;
+                    delete selectorCache[sel].props;
+                    selectorCache[sel].props = newprops;
+                    selectorCache[sel].props_size += 2;
+                    matches = false;
+                }
+                else {
+                    matches = true;
+                    offset = p;
+                    len = 0;
+                }
+            }
+            ++len;
+        }
     }
 
 #if 0
