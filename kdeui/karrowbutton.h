@@ -55,9 +55,9 @@ class KArrowButton : public QPushButton
 		 * Defines in what direction the arrow is pointing to. Will repaint the
 		 * button if necessary.
 		 *
-		 * @param arrow The direction this arrow should be pointing in
+		 * @param a The direction this arrow should be pointing in
 		 */
-		void setArrowType(Qt::ArrowType arrow);
+		void setArrowType(Qt::ArrowType a);
 
 	protected:
 		/**
@@ -65,8 +65,19 @@ class KArrowButton : public QPushButton
 		 */
 		virtual void drawButton(QPainter *);
 
+		/**
+		 * @Internal
+		 */
+		void setArrow(Qt::ArrowType a);
+
+		/**
+		 * @Internal
+		 */
+		Qt::ArrowType arrow() const;
+
 	private:
-		ArrowType m_arrow;
+		class Private;
+		Private *d;
 };
 
 #endif // __karrowbutton_h__
