@@ -865,7 +865,7 @@ namespace KJS {
   class CaseClauseNode: public Node {
   public:
     CaseClauseNode(Node *e, StatListNode *l)
-      : expr(e), list(l->list) { l->list = 0; }
+      : expr(e) { if (l) { list = l; l->list = 0; } else { list = 0; } }
     virtual void ref();
     virtual bool deref();
     virtual Value evaluate(ExecState *exec) const;
