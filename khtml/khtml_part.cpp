@@ -88,6 +88,7 @@ using namespace DOM;
 #include <kssl.h>
 #include <ksslcertchain.h>
 #include <ksslinfodlg.h>
+#include <ksslsettings.h>
 
 #include <qtextcodec.h>
 
@@ -2909,6 +2910,40 @@ void KHTMLPart::submitForm( const char *action, const QString &url, const QByteA
     return;
   }
 
+  // Form security checks
+  //
+  
+  /* This is separate for a reason.  It has to be _before_ all script, etc,
+   * AND I don't want to break anything that uses checkLinkSecurity() in
+   * other places.
+   */
+  
+  if (u.protocol().left(5) != "https") {
+	if (d->m_ssl_in_use) {    // Going from SSL -> nonSSL
+		int rc = KMessageBox::warningContinueCancel(NULL, i18n("Warning:  This is a secure form but it is attempting to send your data back unencrypted."
+					"\nA third party may be able to intercept and viewthis information."
+					"\nAre you sure you wish to continue?"),
+				i18n("SSL"));
+		if (rc == KMessageBox::Cancel)
+			return;
+	} else {                  // Going from nonSSL -> nonSSL
+		if (KSSLSettings(true).warnOnUnencrypted()) {
+			int rc = KMessageBox::warningContinueCancel(NULL,
+					i18n("Warning: Your data is about to be transmitted across the network unencrypted."
+					"\nAre you sure you wish to continue?"),
+					i18n("KDE"),
+					QString::null,
+					QString::null,
+					"WarnOnUnencryptedForm");
+			if (rc == KMessageBox::Cancel)
+				return;
+		}
+	}
+  }
+
+  // End form security checks
+  //
+  
   QString urlstring = u.url();
 
   if ( urlstring.find( QString::fromLatin1( "javascript:" ), 0, false ) == 0 ) {
