@@ -42,6 +42,7 @@ namespace khtml
     class RenderTextArea;
     class RenderSelect;
     class RenderLineEdit;
+    class RenderRadioButton;
 
     typedef QValueList<QCString> encodingList;
 }
@@ -212,6 +213,7 @@ public:
 class HTMLInputElementImpl : public HTMLGenericFormElementImpl
 {
     friend class khtml::RenderLineEdit;
+    friend class khtml::RenderRadioButton;
 
 public:
     enum typeEnum {

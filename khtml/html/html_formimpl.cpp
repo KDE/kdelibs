@@ -517,8 +517,7 @@ void HTMLGenericFormElementImpl::attach()
     assert(!attached());
 
     if (m_render) {
-        assert(m_render->style() == 0);
-        m_render->setStyle(getDocument()->styleSelector()->styleForElement(this));
+        assert(m_render->style());
         parentNode()->renderer()->addChild(m_render, nextRenderer());
         m_render->updateFromElement();
     }
@@ -1010,7 +1009,9 @@ void HTMLInputElementImpl::attach()
     assert(!m_render);
     assert(parentNode());
 
-    if (parentNode()->renderer()) {
+    RenderStyle* _style = getDocument()->styleSelector()->styleForElement(this);
+    _style->ref();
+    if (parentNode()->renderer() && _style->display() != NONE) {
         switch(m_type)
         {
         case TEXT:
@@ -1027,7 +1028,11 @@ void HTMLInputElementImpl::attach()
         }
     }
 
+    if (m_render)
+        m_render->setStyle(_style);
+
     HTMLGenericFormElementImpl::attach();
+    _style->deref();
 }
 
 DOMString HTMLInputElementImpl::altText() const
@@ -1591,10 +1596,15 @@ void HTMLSelectElementImpl::attach()
     assert(parentNode());
     assert(!renderer());
 
-    if (parentNode()->renderer())
+    RenderStyle* _style = getDocument()->styleSelector()->styleForElement(this);
+    _style->ref();
+    if (parentNode()->renderer() && _style->display() != NONE) {
         m_render = new RenderSelect(this);
+        m_render->setStyle(_style);
+    }
 
     HTMLGenericFormElementImpl::attach();
+    _style->deref();
 }
 
 bool HTMLSelectElementImpl::encoding(const QTextCodec* codec, khtml::encodingList& encoded_values, bool)
@@ -2065,10 +2075,15 @@ void HTMLTextAreaElementImpl::attach()
     assert(!m_render);
     assert(parentNode());
 
-    if (parentNode()->renderer())
+    RenderStyle* _style = getDocument()->styleSelector()->styleForElement(this);
+    _style->ref();
+    if (parentNode()->renderer() && _style->display() != NONE) {
         m_render = new RenderTextArea(this);
+        m_render->setStyle(_style);
+    }
 
     HTMLGenericFormElementImpl::attach();
+    _style->deref();
 }
 
 bool HTMLTextAreaElementImpl::encoding(const QTextCodec* codec, encodingList& encoding, bool)

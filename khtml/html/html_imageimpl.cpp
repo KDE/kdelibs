@@ -168,12 +168,15 @@ void HTMLImageElementImpl::attach()
     assert(!m_render);
     assert(parentNode());
 
-    if (parentNode()->renderer()) {
+    RenderStyle* _style = getDocument()->styleSelector()->styleForElement(this);
+    _style->ref();
+    if (parentNode()->renderer() && _style->display() != NONE) {
         m_render = new RenderImage(this);
         m_render->setStyle(getDocument()->styleSelector()->styleForElement(this));
         parentNode()->renderer()->addChild(m_render, nextRenderer());
         m_render->updateFromElement();
     }
+    _style->deref();
 
     NodeBaseImpl::attach();
 }

@@ -454,6 +454,7 @@ void HTMLFrameSetElementImpl::attach()
     assert(parentNode());
     assert(parentNode()->renderer());
 
+    // ignore display: none
     m_render = new RenderFrameSet(this);
     m_render->setStyle(getDocument()->styleSelector()->styleForElement(this));
     parentNode()->renderer()->addChild(m_render, nextRenderer());
@@ -602,11 +603,14 @@ void HTMLIFrameElementImpl::attach()
     while ((part = part->parentPart()))
 	depth++;
 
-    if (depth < 7 && parentNode()->renderer()) {
+    RenderStyle* _style = getDocument()->styleSelector()->styleForElement(this);
+    _style->ref();
+    if (depth < 7 && parentNode()->renderer() && _style->display() != NONE) {
         m_render = new RenderPartObject(this);
-        m_render->setStyle(getDocument()->styleSelector()->styleForElement(this));
+        m_render->setStyle(_style);
         parentNode()->renderer()->addChild(m_render, nextRenderer());
     }
+    _style->deref();
 
     NodeBaseImpl::attach();
 
