@@ -63,17 +63,17 @@ KFileAudioPreview::KFileAudioPreview( QWidget *parent, const char *name )
     QVBoxLayout *layout = new QVBoxLayout( this );
     layout->addWidget( box );
 
-    m_autoPlay = new QCheckBox( i18n("Play &automatically"), box );
-    KConfigGroup config( KGlobal::config(), ConfigGroup );
-    m_autoPlay->setChecked( config.readBoolEntry( "Autoplay sounds", true ) );
-    connect( m_autoPlay, SIGNAL(toggled(bool)), SLOT(toggleAuto(bool)) );
+    (void) new QWidget( box ); // spacer
 
     d = new KFileAudioPreviewPrivate( box );
     KMediaPlayer::View *view = d->player->view();
     view->reparent( box, QPoint(0,0) );
     view->setEnabled( false );
 
-    (void) new QWidget( box ); // spacer
+    m_autoPlay = new QCheckBox( i18n("Play &automatically"), box );
+    KConfigGroup config( KGlobal::config(), ConfigGroup );
+    m_autoPlay->setChecked( config.readBoolEntry( "Autoplay sounds", true ) );
+    connect( m_autoPlay, SIGNAL(toggled(bool)), SLOT(toggleAuto(bool)) );
 }
 
 KFileAudioPreview::~KFileAudioPreview()
