@@ -107,7 +107,7 @@ static const char * const xNames[CHARSETS_COUNT] = {
     "jisx0208.1983-0",
     "ksc5601.1987-0",
     "tis620.2533-1",
-    "gb2312.1980-0",
+    "gbk-0",
     "gb2312.1980-0",
     "cns11643.1986-*",
     "big5-0",
@@ -597,6 +597,7 @@ QString KCharsets::xCharsetName(QFont::CharSet charSet) const
     case QFont::Set_Th_TH:
 	return "unknown";
 	case QFont::Set_GBK:
+        return "gbk-0";
 	case QFont::Set_Zh:
 	 return "gb2312.1980-0";
     case QFont::Set_Zh_TW:
