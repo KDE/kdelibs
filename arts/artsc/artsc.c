@@ -125,7 +125,10 @@ int arts_init()
 
 int arts_suspend()
 {
-	if (backend.available) backend.suspend();
+	int rc = ARTS_E_NOBACKEND;
+
+	if(backend.available) rc = backend.suspend();
+	return rc;
 }
 
 void arts_free()
