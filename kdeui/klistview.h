@@ -781,7 +781,6 @@ protected slots:
 protected:
   /**
    * Handle dropEvent when itemsMovable() is set to true.
-   * ### for 3.0 : make this virtual
    */
   virtual void movableDropEvent (QListViewItem* parent, QListViewItem* afterme);
 

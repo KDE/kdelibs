@@ -1313,10 +1313,8 @@ class KDialogBase : public KDialog
     /**
      * Activated when the Details button has been clicked.
      * @see detailsClicked(bool)
-     * (This function is not virtual to maintain BC)
-     * KDE3.0: Make virtual for consistency with the other functions.
      */
-    void slotDetails();
+    virtual void slotDetails();
 
     /**
      * Activated when the User3 button has been clicked.
