@@ -1,7 +1,10 @@
 # $Id$
 
+# necessary for artswrapper
+artsdpath = $(bindir)/artsd
+
 INCLUDES = -I$(top_srcdir)/arts/mcop -I$(top_srcdir)/arts/flow \
-   -I$(top_builddir)/arts/flow $(all_includes)
+   -I$(top_builddir)/arts/flow -DEXECUTE=\"$(artsdpath)\" $(all_includes)
 MCOPINC   = -I$(srcdir) -I$(top_srcdir)/arts/flow
 FLOWLIBS  = $(top_builddir)/arts/flow/libartsflow.la
 
@@ -49,7 +52,8 @@ artscat_SOURCES = artscat.cc
 artsplay_LDADD = libsoundserver_idl.la 
 artsplay_SOURCES = artsplay.cc
 
-artswrapper_OBJS = artswrapper.o
+artswrapper_SOURCES = artswrapper.c
+artswrapper_INCLUDES = -I$(top_builddir) -DEXECUTE=\"$(artsdpath)\"
 
 artsshell_LDADD = libsoundserver_idl.la $(FLOWLIBS)
 artsshell_SOURCES = artsshell.cc
@@ -87,13 +91,6 @@ simplesoundserver_impl.cc: soundserver.h artsversion.h
 soundserver_impl.cc: soundserver.h artsversion.h
 soundserverv2_impl.cc: soundserver.h artsversion.h
 samplestorage_impl.cc: soundserver.h artsversion.h
-
-bd = `echo '$(bindir)' |sed -e "s,\\",,g"`
-
-artswrapper.o: $(srcdir)/artswrapper.c
-	$(CC) -c $(DEFS) $(INCLUDES) -DEXECUTE=\"$(bd)/artsd\" \
-			$(srcdir)/artswrapper.c
-
 
 mcopclass_UNCONDITIONAL = FileInputStream.mcopclass
 
