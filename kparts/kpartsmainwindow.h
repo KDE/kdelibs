@@ -23,7 +23,8 @@ class MainWindowPrivate;
 /**
  * @short a KPart-aware main window, whose user interface is described in XML
  *
- * Inherit your main window from this class.
+ * Inherit your main window from this class
+ * and don't forget to call @setXMLFile in the inherited constructor
  *
  * It implements all internal interfaces in the case of a KTMainWindow as host:
  * the builder and servant interface (for menu merging)
@@ -32,10 +33,16 @@ class MainWindow : public KTMainWindow, public XMLGUIBuilder, public XMLGUIServa
 {
   Q_OBJECT
  public:
+  /**
+   * Constructor, same signature as @ref KTMainWindow.
+   */
   MainWindow( const char *name = 0L, WFlags f = WDestructiveClose );
+  /**
+   * Destructor
+   */
   virtual ~MainWindow();
 
-  /*
+  /**
    * Call this in the inherited class constructor
    * to set the name of the rc file containing the XML for the mainwindow
    *
@@ -44,10 +51,19 @@ class MainWindow : public KTMainWindow, public XMLGUIBuilder, public XMLGUIServa
    *             under a directory named like the application.
    */
   virtual void setXMLFile( QString file );
+
+  /**
+   * Call this instead of setXMLFile if your XML doesn't come from a file,
+   * but rather from a string.
+   */
   //TODO: return bool, to make it possible for the part to check whether its xml is invalid (Simon)
+  // Why only here and not in setXMLFile, which could be invalid as well ?
+  // Or perhaps the checks should rather be done in those methods anyway (David)
   virtual void setXML( const QString &document );
 
-  // Add your actions to this collection
+  /**
+   * Add your actions to this collection
+   */
   QActionCollection *actionCollection() { return &m_actionCollection; }
 
   XMLGUIFactory *guiFactory() const;

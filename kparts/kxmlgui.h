@@ -38,7 +38,11 @@ class XMLGUIFactoryPrivate;
  */
 
 /**
+ * @internal
  * Abstract interface for a "GUI builder", used by the GUIFactory
+ * This interface is implemented by @ref MainWindow for the case where
+ * the toplevel widget is a KTMainWindow. Other implementations may appear
+ * in the future (dialogs for instance)
  */
 class XMLGUIBuilder
 {
@@ -72,6 +76,7 @@ class XMLGUIServantPrivate;
 class XMLGUIFactory;
 
 /**
+ * @internal
  * Abstract interface for serving actions and xml to the GUI factory
  */
 class XMLGUIServant
@@ -104,6 +109,13 @@ class XMLGUIServant
 
 class XMLGUIContainerNode;
 
+/**
+ * @internal
+ * The GUI merging engine, core part of KParts.
+ * It is able to dynamically add or remove a "servant" without having to rebuild
+ * the whole GUI from scratch. Its author says it's not "big thing or new
+ * technology" but it really is.
+ */
 class XMLGUIFactory
 {
  public:
