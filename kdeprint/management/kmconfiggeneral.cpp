@@ -23,6 +23,8 @@
 #include <qgroupbox.h>
 #include <qcheckbox.h>
 #include <qsettings.h>
+#include <qlabel.h>
+#include <qwhatsthis.h>
 #include <kpushbutton.h>
 #include <klocale.h>
 #include <kurlrequester.h>
@@ -42,13 +44,16 @@ KMConfigGeneral::KMConfigGeneral(QWidget *parent)
 	setPageHeader(i18n("General settings"));
 	setPagePixmap("fileprint");
 
-	QGroupBox	*m_timerbox = new QGroupBox(0, Qt::Vertical, i18n("Timer delay (seconds)"), this);
+	QGroupBox	*m_timerbox = new QGroupBox(0, Qt::Vertical, i18n("Refresh print view (seconds)"), this);
 	m_timer = new KIntNumInput(m_timerbox,"Timer");
 	m_timer->setRange(0,30);
 	m_timer->setSpecialValueText(i18n("Disabled"));
+	QWhatsThis::add(m_timer, "<qt>"+i18n("This time controls the refresh rate of various "
+			                     "<b>KDE Print</b> components like the print manager "
+					     "and the job viewer.")+"</qt>");
 
 	QGroupBox	*m_testpagebox = new QGroupBox(0, Qt::Vertical, i18n("Test page"), this);
-	m_defaulttestpage = new QCheckBox(i18n("&Use non default test page:"), m_testpagebox, "TestPageCheck");
+	m_defaulttestpage = new QCheckBox(i18n("&Specify personal test page:"), m_testpagebox, "TestPageCheck");
 	m_testpage = new KURLRequester(m_testpagebox,"TestPage");
 	m_preview = new KPushButton(KGuiItem(i18n("Preview..."), "filefind"), m_testpagebox);
 	connect(m_defaulttestpage,SIGNAL(toggled(bool)),m_testpage,SLOT(setEnabled(bool)));
@@ -68,15 +73,15 @@ KMConfigGeneral::KMConfigGeneral(QWidget *parent)
 	lay0->addWidget(m_embedfonts);
 	lay0->addStretch(1);
 	QVBoxLayout	*lay1 = new QVBoxLayout(m_timerbox->layout(), 0);
-	lay1->addSpacing(10);
+	lay1->addSpacing(5);
 	lay1->addWidget(m_timer);
 	QVBoxLayout	*lay2 = new QVBoxLayout(m_testpagebox->layout(), 10);
 	QHBoxLayout	*lay3 = new QHBoxLayout(0, 0, 0);
 	lay2->addWidget(m_defaulttestpage);
 	lay2->addWidget(m_testpage);
 	lay2->addLayout(lay3);
-	lay3->addWidget(m_preview);
 	lay3->addStretch(1);
+	lay3->addWidget(m_preview);
         m_preview->setEnabled( !m_testpage->lineEdit()->text().isEmpty());
 }
 

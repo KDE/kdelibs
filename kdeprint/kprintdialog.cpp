@@ -212,7 +212,8 @@ KPrintDialog::~KPrintDialog()
 void KPrintDialog::setFlags(int f)
 {
 	SHOWHIDE(d->m_properties, (f & KMUiManager::Properties))
-	SHOWHIDE(d->m_default, (f & KMUiManager::Default))
+	d->m_default->hide();
+	//SHOWHIDE(d->m_default, (f & KMUiManager::Default))
 	SHOWHIDE(d->m_preview, (f & KMUiManager::Preview))
 	bool	on = (f & KMUiManager::OutputToFile);
 	SHOWHIDE(d->m_filelabel, on)
