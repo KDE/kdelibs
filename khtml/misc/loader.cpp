@@ -402,6 +402,7 @@ void CachedImage::ref( CachedObjectClient *c )
     kdDebug( 6060 ) << this << " CachedImage::ref(" << c << ") " << endl;
 #endif
 
+    m_clients.remove( c );
     m_clients.append(c);
 
     if( m ) {
@@ -965,21 +966,6 @@ QPixmap *Cache::nullPixmap = 0;
 QPixmap *Cache::brokenPixmap = 0;
 
 bool Cache::s_autoloadImages = true;
-
-unsigned long Cache::s_ulRefCnt = 0;
-
-void Cache::ref()
-{
-  s_ulRefCnt++;
-  init();
-}
-
-void Cache::deref()
-{
-  s_ulRefCnt--;
-  if ( s_ulRefCnt == 0 )
-    clear();
-}
 
 void Cache::init()
 {

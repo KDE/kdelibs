@@ -351,10 +351,6 @@ namespace khtml
     {
 	friend class DocLoader;
     public:
-
-        static void ref();
-	static void deref();
-
 	/**
 	 * init the cache in case it's not already. This needs to get called once
 	 * before using it.

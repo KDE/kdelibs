@@ -353,9 +353,10 @@ namespace khtml {
     class PartStyleSheetLoader : public CachedObjectClient
     {
     public:
-        PartStyleSheetLoader(KHTMLPartPrivate *part, DOM::DOMString url, DocLoader * /*docLoader*/)
+        PartStyleSheetLoader(KHTMLPart *part, KHTMLPartPrivate *priv, DOM::DOMString url, DocLoader * /*docLoader*/)
         {
 	    m_part = part;
+            m_priv = priv;
 	    // the "foo" is needed, so that the docloader for the empty document doesn't cancel this request.
 	    m_cachedSheet = Cache::requestStyleSheet(url, DOMString("foo"),false);
 	    m_cachedSheet->ref( this );
@@ -366,14 +367,18 @@ namespace khtml {
 	}
         virtual void setStyleSheet(const DOM::DOMString &url, const DOM::DOMString &sheet)
         {
-            m_part->m_userSheet = sheet;
-            m_part->m_userSheetUrl = url;
-	    khtml::CSSStyleSelector::setUserStyle( m_part->m_userSheet );
-	    if ( m_part->m_doc )
-		m_part->m_doc->applyChanges();
+            if ( m_part )
+            {
+                m_priv->m_userSheet = sheet;
+                m_priv->m_userSheetUrl = url;
+            }
+	    khtml::CSSStyleSelector::setUserStyle( sheet );
+	    if ( m_part && m_priv->m_doc )
+		m_priv->m_doc->applyChanges();
             delete this;
         }
-        KHTMLPartPrivate *m_part;
+        QGuardedPtr<KHTMLPart> m_part;
+        KHTMLPartPrivate *m_priv;
 	khtml::CachedCSSStyleSheet *m_cachedSheet;
     };
 };
@@ -435,8 +440,6 @@ KHTMLPart::KHTMLPart( KHTMLView *view, QObject *parent, const char *name, GUIPro
 
 void KHTMLPart::init( KHTMLView *view, GUIProfile prof )
 {
-  khtml::Cache::ref();
-
   if ( prof == DefaultGUI )
     setXMLFile( "khtml.rc" );
   else if ( prof == BrowserViewGUI )
@@ -551,7 +554,6 @@ KHTMLPart::~KHTMLPart()
   }
 
   delete d;
-  khtml::Cache::deref();
   KHTMLFactory::deregisterPart( this );
 }
 
@@ -1636,7 +1638,7 @@ void KHTMLPart::setUserStyleSheet(const KURL &url)
 {
     d->m_userSheetUrl = DOMString();
     d->m_userSheet = DOMString();
-    (void) new khtml::PartStyleSheetLoader(d, url.url(), d->m_doc ? d->m_doc->docLoader() : 0);
+    (void) new khtml::PartStyleSheetLoader(this, d, url.url(), d->m_doc ? d->m_doc->docLoader() : 0);
 }
 
 void KHTMLPart::setUserStyleSheet(const QString &styleSheet)

@@ -115,6 +115,7 @@ KParts::Part *KHTMLFactory::createPartObject( QWidget *parentWidget, const char 
 void KHTMLFactory::ref()
 {
     if ( !s_refcnt && !s_self )
+    {
         // we can't use a staticdeleter here, because that would mean
         // that the factory gets deleted from within a qPostRoutine, called
         // from the QApplication destructor. That however is too late, because
@@ -125,6 +126,8 @@ void KHTMLFactory::ref()
         // safe side ;-) -> let's use a simple reference counting scheme
         // (Simon)
         s_self = new KHTMLFactory;
+        khtml::Cache::init();
+    }
 
     s_refcnt++;
 }

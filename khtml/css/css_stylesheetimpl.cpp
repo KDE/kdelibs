@@ -237,7 +237,7 @@ bool CSSStyleSheetImpl::parseString(const DOMString &string, bool strict)
 #endif
 
     while (curP && (curP < endP))
-    {        
+    {
         CSSRuleImpl *rule = parseRule(curP, endP);
         if(rule)
 	{
@@ -291,6 +291,9 @@ void CSSStyleSheetImpl::setNonCSSHints()
 
 khtml::DocLoader *CSSStyleSheetImpl::docLoader()
 {
+    if ( !m_doc ) // doc is 0 for the user- and default-sheet!
+        return 0;
+
     // ### remove? (clients just use sheet->doc()->docLoader())
     return m_doc->docLoader();
 }
@@ -368,7 +371,7 @@ void MediaListImpl::del( const DOMString &oldMedium )
 	    m_lstMedia.remove(i);
 	    return;
 	}
-}	
+}
 
 void MediaListImpl::append( const DOMString &newMedium )
 {
