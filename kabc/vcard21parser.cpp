@@ -266,7 +266,6 @@ KABC::Addressee VCard21Parser::readFromString( const QString &data)
 
   //set the addressees name and formated name
   QStringList tmpList = mVCard->getValues(VCARD_N);
-  int tmpInt = 0;
   QString formattedName = "";
   if (tmpList.count() > 0)
     addressee.setFamilyName(tmpList[0]);
@@ -463,7 +462,6 @@ KABC::Addressee VCard21Parser::readFromString( const QString &data)
   addressee.setRole(tmpStr);
 
   return addressee;
-
 }
 
 
