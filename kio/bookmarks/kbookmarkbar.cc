@@ -59,6 +59,9 @@ class KBookmarkBarPrivate : public dPtrTemplate<KBookmarkBar, KBookmarkBarPrivat
 public:
     QPtrList<KAction> m_actions;
     bool m_readOnly;
+#if 0
+    KBookmarkManager* m_filteredMgr;
+#endif
 };
 QPtrDict<KBookmarkBarPrivate>* dPtrTemplate<KBookmarkBar, KBookmarkBarPrivate>::d_ptr = 0;
 
@@ -72,7 +75,6 @@ KBookmarkBar::KBookmarkBar( KBookmarkManager* mgr,
       m_actionCollection( coll ), m_pManager(mgr)
 {
     m_lstSubMenus.setAutoDelete( true );
-    dptr()->m_readOnly = false;
 
     if ( isAdvanced() )
     {
@@ -85,13 +87,36 @@ KBookmarkBar::KBookmarkBar( KBookmarkManager* mgr,
     connect( mgr, SIGNAL( changed(const QString &, const QString &) ),
              SLOT( slotBookmarksChanged(const QString &) ) );
 
+#if 0
+    dptr()->m_filteredMgr = 0;
+
+    if ( mgr->filteredToolbar() )
+    {
+        dptr()->m_readOnly = true;
+        dptr()->m_filteredMgr = ...;
+        // TODO
+        // * create a temporary kbookmarkmanager of our own
+        // * connect a dombuilder to the below signals
+        // * use this dombuilder to fill in the temp bookmarkmanager
+    }
+    else 
+
+    dptr()->m_readOnly = !!dptr()->m_filteredMgr;
+    KBookmarkGroup toolbar = dptr()->m_filteredMgr 
+                           ? dptr()->m_filteredMgr->root() 
+                           : mgr->toolbar();
+#else
+    dptr()->m_readOnly = false;
     KBookmarkGroup toolbar = mgr->toolbar();
+#endif
+
     fillBookmarkBar( toolbar );
 }
 
 KBookmarkBar::~KBookmarkBar()
 {
     clear();
+    // do funky dptr() delete stuff
 }
 
 void KBookmarkBar::clear()
@@ -109,6 +134,10 @@ void KBookmarkBar::clear()
 
 void KBookmarkBar::slotBookmarksChanged( const QString & group )
 {
+    // TODO
+    // handle the funky filtered toolbar case
+    // basically: always filter
+
     KBookmarkGroup tb = m_pManager->toolbar();
     if ( tb.isNull() )
         return;
@@ -349,17 +378,6 @@ bool KBookmarkBar::eventFilter( QObject *, QEvent *e ){
     return false;
 }
 
-// TODO
-// here
-// * fill in below code
-// * make each function passthrough the data via the signals
-// elsewhere
-// * create a kbookmarkmanager of our own, just temporary
-// * connect a dombuilder to the below signals
-// * use this dombuilder to fill in the temp bookmarkmanager
-// konqi
-// * in some cute and inventive way, make konqi use this filtered bookmarkmanager
-
 class ToolbarFilter : private KBookmarkGroupTraverser {
 public:
     ToolbarFilter() : m_visible(false) { ; }
@@ -381,16 +399,18 @@ private:
 void ToolbarFilter::visit( const KBookmark &/*bk*/ ) {
     // kdDebug() << "visit(" << bk.text() << ")" << endl;
     // make sure that visit never includes groups, if so, do a isgroup here
-    // if showintoolbar() then insert
+    // if showintoolbar() or visible then emit newBookmark or newSeparator
 }
 
 void ToolbarFilter::visitEnter( const KBookmarkGroup &/*grp*/ ) {
     // kdDebug() << "visitEnter(" << grp.text() << ")" << endl;
     // if showintoolbar() and not already visible then set entergroup and make visible
+    // if visible emit a newfolder
 }
 
 void ToolbarFilter::visitLeave( const KBookmarkGroup &/*grp*/ ) {
     // kdDebug() << "visitLeave()" << endl;
+    // if visible emit a endfolder
     // if entergroup then make invisible
 }
 
