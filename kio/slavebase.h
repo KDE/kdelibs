@@ -250,7 +250,11 @@ public:
 
     /**
      * Opens the connection (forced)
-     * Currently unused.
+     * When this function gets called the slave is operating in
+     * connection-oriented mode.
+     * When a connection gets lost while the slave operates in 
+     * connection oriented mode, the slave should report 
+     * ERR_CONNECTION_BROKEN instead of reconnecting.
      */
     virtual void openConnection();
 
@@ -258,6 +262,9 @@ public:
      * Closes the connection (forced)
      * Called when the application disconnects the slave to close
      * any open network connections.
+     *
+     * When the slave was operating in connection-oriented mode,
+     * it should reset itself to connectionless (default) mode.
      */
     virtual void closeConnection();
 

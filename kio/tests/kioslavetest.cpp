@@ -19,6 +19,7 @@
 #include <klocale.h>
 #include <kurl.h>
 #include <kio/job.h>
+#include <kio/scheduler.h>
 
 #include "kioslavetest.h"
 
@@ -159,6 +160,12 @@ KioslaveTest::KioslaveTest( QString src, QString dest, uint op, uint pr )
 
   main_widget->setMinimumSize( main_widget->sizeHint() );
   setCentralWidget( main_widget );
+
+  slave = KIO::Scheduler::getConnectedSlave(KURL("ftp://ftp.kde.org"));
+  KIO::Scheduler::connect(SIGNAL(slaveConnected(KIO::Slave*)),
+	this, SLOT(slotSlaveConnected()));
+  KIO::Scheduler::connect(SIGNAL(slaveError(KIO::Slave*,int,const QString&)),
+	this, SLOT(slotSlaveError()));
 }
 
 
@@ -171,6 +178,7 @@ void KioslaveTest::slotQuit(){
   if ( job ) {
     job->kill( true );  // kill the job quietly
   }
+  KIO::Scheduler::disconnectSlave(slave);
   kapp->quit();
 }
 
@@ -224,33 +232,35 @@ void KioslaveTest::startJob() {
     observe = false;
   }
 
+  SimpleJob *myJob = 0;
+
   switch ( selectedOperation ) {
   case List:
-    job = KIO::listDir( src );
-    connect(job, SIGNAL( entries( KIO::Job*, const KIO::UDSEntryList&)),
+    myJob = KIO::listDir( src );
+    connect(myJob, SIGNAL( entries( KIO::Job*, const KIO::UDSEntryList&)),
             SLOT( slotEntries( KIO::Job*, const KIO::UDSEntryList&)));
     break;
 
   case ListRecursive:
-    job = KIO::listRecursive( src );
-    connect(job, SIGNAL( entries( KIO::Job*, const KIO::UDSEntryList&)),
+    myJob = KIO::listRecursive( src );
+    connect(myJob, SIGNAL( entries( KIO::Job*, const KIO::UDSEntryList&)),
             SLOT( slotEntries( KIO::Job*, const KIO::UDSEntryList&)));
     break;
 
   case Stat:
-    job = KIO::stat( src );
+    myJob = KIO::stat( src );
     break;
 
   case Get:
-    job = KIO::get( src, true );
-    connect(job, SIGNAL( data( KIO::Job*, const QByteArray &)),
+    myJob = KIO::get( src, true );
+    connect(myJob, SIGNAL( data( KIO::Job*, const QByteArray &)),
             SLOT( slotData( KIO::Job*, const QByteArray &)));
     break;
 
   case Put:
     putBuffer = 0;
-    job = KIO::put( src, -1, true, false);
-    connect(job, SIGNAL( dataReq( KIO::Job*, QByteArray &)),
+    myJob = KIO::put( src, -1, true, false);
+    connect(myJob, SIGNAL( dataReq( KIO::Job*, QByteArray &)),
             SLOT( slotDataReq( KIO::Job*, QByteArray &)));
     break;
 
@@ -271,12 +281,17 @@ void KioslaveTest::startJob() {
     break;
 
   case Mkdir:
-    job = KIO::mkdir( src );
+    myJob = KIO::mkdir( src );
     break;
 
   case Mimetype:
-    job = KIO::mimetype( src );
+    myJob = KIO::mimetype( src );
     break;
+  }
+  if (myJob)
+  {
+    KIO::Scheduler::assignJobToSlave(slave, myJob);
+    job = myJob;
   }
 
   connect( job, SIGNAL( result( KIO::Job * ) ),
@@ -313,6 +328,16 @@ void KioslaveTest::slotResult( KIO::Job * _job )
      job = 0L;
   pbStart->setEnabled( true );
   pbStop->setEnabled( false );
+}
+
+void KioslaveTest::slotSlaveConnected()
+{
+   kdDebug() << "Slave connected." << endl;
+}
+
+void KioslaveTest::slotSlaveError()
+{
+   kdDebug() << "Error connected." << endl;
 }
 
 void KioslaveTest::printUDSEntry( const KIO::UDSEntry & entry )

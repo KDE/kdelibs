@@ -24,6 +24,7 @@
 #include "kio/job.h"
 #include "kio/global.h"
 #include "kio/statusbarprogress.h"
+#include "kio/slave.h"
 
 class KioslaveTest : public KMainWindow {
   Q_OBJECT
@@ -89,6 +90,8 @@ protected slots:
   void slotDataReq( KIO::Job *, QByteArray &data );
 
   void slotQuit();
+  void slotSlaveConnected();
+  void slotSlaveError();
 
 private:
   KIO::Job *job;
@@ -99,6 +102,7 @@ private:
   int selectedOperation;
   int progressMode;
   int putBuffer;
+  KIO::Slave *slave;
 };
 
 #endif // _KIOSLAVETEST_H
