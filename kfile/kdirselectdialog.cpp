@@ -67,8 +67,8 @@ KURL KDirSelectDialog::selectDirectory( const QString& startDir,
     root.setPath("/");
 
     KFileTreeView *view = myDialog.view();
-    int i = view->addBranch( root, "/" );
-    view->setDirOnlyMode( i, true );
+    KFileTreeBranch *rootBranch = view->addBranch( root, "/" );
+    view->setDirOnlyMode( rootBranch, true );
 
     if ( !caption.isNull() )
         myDialog.setCaption( caption );
