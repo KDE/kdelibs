@@ -292,6 +292,8 @@ void KWM::setMiniIcon(Window w, const QPixmap &pm){
 
 void KWM::setIcon(Window w, const QPixmap &pm){
   XWMHints *hints = XGetWMHints(qt_xdisplay(), w);
+  if (!hints)
+    hints = XAllocWMHints();
   QPixmap *p = new QPixmap;
   *p = pm;
   hints->icon_pixmap=p->handle();
@@ -650,6 +652,8 @@ QPixmap KWM::miniIcon(Window w, int width, int height){
     if (hints && (hints->flags & IconMaskHint)){
       p_mask = hints->icon_mask;
     }
+    if (hints)
+      XFree(hints);
   }
   else {
     p = (Pixmap) tmp[0];
@@ -694,8 +698,11 @@ QPixmap KWM::miniIcon(Window w, int width, int height){
 	(hints->flags & WindowGroupHint)
 	&& hints->window_group != None
 	&& hints->window_group != w){
+      XFree(hints);
       return miniIcon(hints->window_group, width, height);
     }
+    if (hints)
+      XFree(hints);
     Window trans = None;
     if (XGetTransientForHint(qt_xdisplay(), w, &trans)){
       if (trans != w)
@@ -758,8 +765,11 @@ QPixmap KWM::icon(Window w, int width, int height){
 	(hints->flags & WindowGroupHint)
 	&& hints->window_group != None
 	&& hints->window_group != w){
+      XFree(hints);
       return icon(hints->window_group, width, height);
     }
+    if (hints)
+      XFree(hints);
     Window trans = None;
     if (XGetTransientForHint(qt_xdisplay(), w, &trans)){
       if (trans != w)
