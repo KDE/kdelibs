@@ -661,7 +661,7 @@ Identifier_list : T_IDENTIFIER Identifier_list_rest {}
 
 member
 	: type Identifier_list T_SEMICOLON {}
-	| T_STATIC type T_IDENTIFIER T_SEMICOLON {}
+	| T_STATIC type T_IDENTIFIER default T_SEMICOLON {}
 	| type T_IDENTIFIER T_ARRAY_OPEN int_expression T_ARRAY_CLOSE T_SEMICOLON {}
 
 %%

@@ -32,6 +32,7 @@ public:
 		  const QPoint& point );
 
     SomeForwardFooPrivate *d;
+    static const int AUDIO_CD = 1;
 k_dcop:
     virtual QString url();
     virtual DCOPRef firstView();
