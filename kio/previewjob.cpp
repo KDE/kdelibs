@@ -69,8 +69,12 @@ struct KIO::PreviewJobPrivate
     // Size of thumbnail
     int width;
     int height;
+    // Whether the thumbnail should be scaled
+    bool bScale;
     // Whether we can save the thumbnail
     bool bCanSave;
+    // Whether we should save the thumbnail
+    bool bSave;
     // If the file to create a thumb for was a temp file, this is its name
     QString tempName;
     // Over that, it's too much
@@ -102,6 +106,8 @@ PreviewJob::PreviewJob( const KFileItemList &items, int width, int height,
     d->iconSize = iconSize;
     d->iconAlpha = iconAlpha;
     d->deleteItems = deleteItems;
+    d->bSave = save;
+    d->bScale = scale;
 
     // Load the list of plugins to determine which mimetypes are supported
     KTrader::OfferList plugins = KTrader::self()->query("ThumbCreator");
@@ -131,7 +137,7 @@ PreviewJob::PreviewJob( const KFileItemList &items, int width, int height,
         {
             item.plugin = *plugin;
             d->items.append(item);
-            if (!bNeedCache && (*plugin)->property("CacheThumbnail").toBool())
+            if (save && !bNeedCache && (*plugin)->property("CacheThumbnail").toBool())
                 bNeedCache = true;
         }
         else if (deleteItems)
@@ -226,8 +232,8 @@ void PreviewJob::removeItem( const KFileItem *item )
 
 void PreviewJob::determineNextFile()
 {
-    if (d->deleteItems && d->currentItem.item){kdDebug() << "*************** deleting " << d->currentItem.item->url().url() << endl;
-        delete d->currentItem.item;}
+    if (d->deleteItems && d->currentItem.item)
+        delete d->currentItem.item;
     // No more items ?
     if ( d->items.isEmpty() )
     {
@@ -497,6 +503,7 @@ QStringList PreviewJob::availablePlugins()
     KTrader::OfferList plugins = KTrader::self()->query("ThumbCreator");
     for (KTrader::OfferList::ConstIterator it = plugins.begin(); it != plugins.end(); ++it)
         result.append((*it)->desktopEntryName());
+    return result;
 }
 
 PreviewJob *KIO::filePreview( const KFileItemList &items, int width, int height,
