@@ -26,6 +26,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include <stdio.h>
 #include <assert.h>
 
+#include <config.h>
 #include <qstring.h>
 
 #define AMP_ENTITY "&amp;"
