@@ -22,14 +22,19 @@
 
 */
 
-#undef NETWMDEBUG
+//#undef NETWMDEBUG
+#define NETWMDEBUG
+
+#include "netwm.h"
 
 #include <string.h>
 #include <stdio.h>
 
 #include <X11/Xlibint.h>
+#include <X11/Xmd.h>
 
-#include "netwm.h"
+#include "netwm_p.h"
+
 
 // root window properties
 static Atom net_supported            = 0;
@@ -61,7 +66,7 @@ static Atom net_wm_icon_geometry     = 0;
 static Atom net_wm_icon              = 0;
 static Atom net_wm_pid               = 0;
 static Atom net_wm_handled_icons     = 0;
-static Atom net_kde_docking_window_for = 0;
+static Atom net_wm_kde_docking_window_for = 0;
 static Atom net_wm_kde_frame_strut   = 0;
 
 // application protocols
@@ -70,7 +75,7 @@ static Atom net_wm_ping              = 0;
 // used to determine whether application window is managed or not
 static Atom xa_wm_state              = 0;
 
-static bool netwm_atoms_created            = false;
+static Bool netwm_atoms_created      = False;
 
 
 static char *nstrdup(const char *s1) {
@@ -102,11 +107,13 @@ static Window *nwindup(Window *w1, int n) {
 
 
 static void refdec_nri(NETRootInfoPrivate *p) {
+
 #ifdef    NETWMDEBUG
     fprintf(stderr, "decrementing NETRootInfoPrivate::ref (%d)\n", p->ref - 1);
 #endif
 
     if (! --p->ref) {
+
 #ifdef    NETWMDEBUG
 	fprintf(stderr, "\tno more references, deleting\n");
 #endif
@@ -124,11 +131,13 @@ static void refdec_nri(NETRootInfoPrivate *p) {
 
 
 static void refdec_nwi(NETWinInfoPrivate *p) {
+
 #ifdef    NETWMDEBUG
     fprintf(stderr, "decrementing NETWinInfoPrivate::ref (%d)\n", p->ref - 1);
 #endif
 
     if (! --p->ref) {
+
 #ifdef    NETWMDEBUG
 	fprintf(stderr, "\tno more references, deleting\n");
 #endif
@@ -142,7 +151,7 @@ static void refdec_nwi(NETWinInfoPrivate *p) {
 }
 
 
-int wcmp(const void *a, const void *b) {
+static int wcmp(const void *a, const void *b) {
     return *((Window *) a) - *((Window *) b);
 }
 
@@ -209,7 +218,7 @@ static void create_atoms(Display *d) {
 	    &net_wm_handled_icons,
 	    &net_wm_ping,
 	    &net_kde_docking_windows,
-	    &net_kde_docking_window_for,
+	    &net_wm_kde_docking_window_for,
 	    &xa_wm_state,
 	    &net_wm_kde_frame_strut
 	    };
@@ -242,12 +251,13 @@ static void readIcon(NETWinInfoPrivate *p) {
     if (data_ret) XFree(data_ret);
 
     if (ret != Success || nitems_ret < 3 || type_ret != XA_CARDINAL ||
-	format_ret != 32)
+	format_ret != 32) {
 	// either we didn't get the property, or the property has less than
 	// 3 elements in it
 	// NOTE: 3 is the ABSOLUTE minimum:
 	//     width = 1, height = 1, length(data) = 1 (width * height)
 	return;
+    }
 
     // allocate space after_ret (bytes remaining in property) + 4
     // (the single 32bit quantity we just read)
@@ -266,7 +276,7 @@ static void readIcon(NETWinInfoPrivate *p) {
     }
 
     unsigned long i, j;
-    Q_UINT32 *d = (Q_UINT32 *) buffer;
+    CARD32 *d = (CARD32 *) buffer;
     for (i = 0, j = 0; i < proplen - 3; i++) {
 	p->icons[j].size.width = *d++;
 	i += 4;
@@ -278,8 +288,10 @@ static void readIcon(NETWinInfoPrivate *p) {
 	if ( i + s - 1 > proplen ) {
 	    break;
 	}
+
 	if (p->icons[j].data) delete [] p->icons[j].data;
-	p->icons[j].data = new Q_UINT32[ s/4 ];
+	CARD32 *d = new CARD32[s/4];
+	p->icons[j].data = (unsigned char *) d; // new CARD32[ s/4 ];
 	memcpy(p->icons[j].data, d, s);
 	i += s;
 	d += s/4;
@@ -297,7 +309,7 @@ RArray<Z>::RArray() {
 
 template <class Z>
 RArray<Z>::~RArray() {
-  if (d) delete [] d;
+    if (d) delete [] d;
 }
 
 
@@ -328,12 +340,11 @@ Z &RArray<Z>::operator[](int index) {
     return d[index];
 }
 
-template class RArray<NETRect>;
 
 // Construct a new NETRootInfo object.
 
-NETRootInfo::NETRootInfo(Display *dp, Window sw, const char *nm,
-			 unsigned long pr, int sc, bool doActivate)
+NETRootInfo::NETRootInfo(Display *display, Window supportWindow, const char *wmName,
+			 unsigned long properties, int screen, bool doActivate)
 {
 #ifdef    NETWMDEBUG
     fprintf(stderr, "NETRootInfo::NETRootInfo: using window manager constructor\n");
@@ -342,17 +353,18 @@ NETRootInfo::NETRootInfo(Display *dp, Window sw, const char *nm,
     p = new NETRootInfoPrivate;
     p->ref = 1;
 
-    p->display = dp;
-    p->name = nstrdup(nm);
+    p->display = display;
+    p->name = nstrdup(wmName);
 
-    if (sc != -1)
-	p->screen = sc;
-    else
+    if (screen != -1) {
+	p->screen = screen;
+    } else {
 	p->screen = DefaultScreen(p->display);
+    }
 
     p->root = RootWindow(p->display, p->screen);
-    p->supportwindow = sw;
-    p->protocols = pr;
+    p->supportwindow = supportWindow;
+    p->protocols = properties;
     p->number_of_desktops = p->current_desktop = 0;
     p->active = None;
     p->clients = p->stacking = p->virtual_roots = (Window *) 0;
@@ -364,31 +376,32 @@ NETRootInfo::NETRootInfo(Display *dp, Window sw, const char *nm,
 
     if (! netwm_atoms_created) create_atoms(p->display);
 
-    if ( doActivate )
-	activate();
-
+    if (doActivate) activate();
 }
 
 
-NETRootInfo::NETRootInfo(Display *d, unsigned long pr, int s, bool doActivate ) {
+NETRootInfo::NETRootInfo(Display *display, unsigned long properties, int screen,
+			 bool doActivate)
+{
     p = new NETRootInfoPrivate;
     p->ref = 1;
 
     p->name = 0;
 
-    p->display = d;
+    p->display = display;
 
-    if (s != -1)
-	p->screen = s;
-    else
+    if (screen != -1) {
+	p->screen = screen;
+    } else {
 	p->screen = DefaultScreen(p->display);
+    }
 
     p->root = RootWindow(p->display, p->screen);
     p->rootSize.width = WidthOfScreen(ScreenOfDisplay(p->display, p->screen));
     p->rootSize.height = HeightOfScreen(ScreenOfDisplay(p->display, p->screen));
 
     p->supportwindow = None;
-    p->protocols = pr;
+    p->protocols = properties;
     p->number_of_desktops = p->current_desktop = 0;
     p->active = None;
     p->clients = p->stacking = p->virtual_roots = (Window *) 0;
@@ -400,15 +413,14 @@ NETRootInfo::NETRootInfo(Display *d, unsigned long pr, int s, bool doActivate ) 
 
     if (! netwm_atoms_created) create_atoms(p->display);
 
-    if ( doActivate )
-	activate();
+    if (doActivate) activate();
 }
 
 
 // Copy an existing NETRootInfo object.
 
-NETRootInfo::NETRootInfo(const NETRootInfo &nri) {
-    p = nri.p;
+NETRootInfo::NETRootInfo(const NETRootInfo &rootinfo) {
+    p = rootinfo.p;
     p->ref++;
 }
 
@@ -424,28 +436,32 @@ NETRootInfo::~NETRootInfo() {
 
 void NETRootInfo::activate() {
     if (role == WindowManager) {
+
 #ifdef    NETWMDEBUG
 	fprintf(stderr,
 		"NETRootInfo::activate: setting supported properties on root\n");
 #endif
+
 	// force support for Supported and SupportingWMCheck for window managers
 	setSupported(p->protocols | Supported | SupportingWMCheck);
     } else {
+
 #ifdef    NETWMDEBUG
 	fprintf(stderr, "NETRootInfo::activate: updating client information\n");
 #endif
+
 	update(p->protocols);
     }
 }
 
 
-void NETRootInfo::setClientList(Window *wins, unsigned int num) {
+void NETRootInfo::setClientList(Window *windows, unsigned int count) {
     if (role != WindowManager) return;
 
-    p->clients_count = num;
+    p->clients_count = count;
 
     if (p->clients) delete [] p->clients;
-    p->clients = nwindup(wins, num);
+    p->clients = nwindup(windows, count);
 
 #ifdef    NETWMDEBUG
     fprintf(stderr, "NETRootInfo::setClientList: setting list with %ld windows\n",
@@ -458,12 +474,12 @@ void NETRootInfo::setClientList(Window *wins, unsigned int num) {
 }
 
 
-void NETRootInfo::setClientListStacking(Window *wins, unsigned int num) {
+void NETRootInfo::setClientListStacking(Window *windows, unsigned int count) {
     if (role != WindowManager) return;
 
-    p->stacking_count = num;
+    p->stacking_count = count;
     if (p->stacking) delete [] p->stacking;
-    p->stacking = nwindup(wins, num);
+    p->stacking = nwindup(windows, count);
 
 #ifdef    NETWMDEBUG
     fprintf(stderr, "NETRootInfo::SetClientListStacking: setting list with %ld windows\n",
@@ -476,12 +492,12 @@ void NETRootInfo::setClientListStacking(Window *wins, unsigned int num) {
 }
 
 
-void NETRootInfo::setKDEDockingWindows(Window *wins, unsigned int num) {
+void NETRootInfo::setKDEDockingWindows(Window *windows, unsigned int count) {
     if (role != WindowManager) return;
 
-    p->kde_docking_windows_count = num;
+    p->kde_docking_windows_count = count;
     if (p->kde_docking_windows) delete [] p->kde_docking_windows;
-    p->kde_docking_windows = nwindup(wins, num);
+    p->kde_docking_windows = nwindup(windows, count);
 
     XChangeProperty(p->display, p->root, net_kde_docking_windows, XA_WINDOW, 32,
 		    PropModeReplace,
@@ -490,9 +506,9 @@ void NETRootInfo::setKDEDockingWindows(Window *wins, unsigned int num) {
 }
 
 
-void NETRootInfo::setNumberOfDesktops(Q_UINT32 num) {
+void NETRootInfo::setNumberOfDesktops(int numberOfDesktops) {
     if (role == WindowManager) {
-	p->number_of_desktops = num;
+	p->number_of_desktops = numberOfDesktops;
 
 	XChangeProperty(p->display, p->root, net_number_of_desktops, XA_CARDINAL, 32,
 			PropModeReplace, (unsigned char *) &p->number_of_desktops, 1);
@@ -504,7 +520,7 @@ void NETRootInfo::setNumberOfDesktops(Q_UINT32 num) {
 	e.xclient.display = p->display;
 	e.xclient.window = p->root;
 	e.xclient.format = 32;
-	e.xclient.data.l[0] = num;
+	e.xclient.data.l[0] = numberOfDesktops;
 	e.xclient.data.l[1] = 0l;
 	e.xclient.data.l[2] = 0l;
 	e.xclient.data.l[3] = 0l;
@@ -515,41 +531,47 @@ void NETRootInfo::setNumberOfDesktops(Q_UINT32 num) {
 }
 
 
-void NETRootInfo::setCurrentDesktop(Q_UINT32 desk) {
-  if (role == WindowManager) {
-    p->current_desktop = desk;
-    Q_UINT32 d = p->current_desktop - 1;
-    XChangeProperty(p->display, p->root, net_current_desktop, XA_CARDINAL, 32,
-		    PropModeReplace, (unsigned char *) &d, 1);
-  } else {
-    XEvent e;
+void NETRootInfo::setCurrentDesktop(int desktop) {
+#ifdef    NETWMDEBUG
+    fprintf(stderr,
+	    "NETRootInfo::setCurrentDesktop: setting current desktop = %d (%s)\n",
+	    desktop, (role == WindowManager) ? "WM" : "Client");
+#endif 
+    
+    if (role == WindowManager) {
+	p->current_desktop = desktop;
+	CARD32 d = p->current_desktop - 1;
+	XChangeProperty(p->display, p->root, net_current_desktop, XA_CARDINAL, 32,
+			PropModeReplace, (unsigned char *) &d, 1);
+    } else {
+	XEvent e;
 
-    e.xclient.type = ClientMessage;
-    e.xclient.message_type = net_current_desktop;
-    e.xclient.display = p->display;
-    e.xclient.window = p->root;
-    e.xclient.format = 32;
-    e.xclient.data.l[0] = desk - 1;
-    e.xclient.data.l[1] = 0l;
-    e.xclient.data.l[2] = 0l;
-    e.xclient.data.l[3] = 0l;
-    e.xclient.data.l[4] = 0l;
+	e.xclient.type = ClientMessage;
+	e.xclient.message_type = net_current_desktop;
+	e.xclient.display = p->display;
+	e.xclient.window = p->root;
+	e.xclient.format = 32;
+	e.xclient.data.l[0] = desktop - 1;
+	e.xclient.data.l[1] = 0l;
+	e.xclient.data.l[2] = 0l;
+	e.xclient.data.l[3] = 0l;
+	e.xclient.data.l[4] = 0l;
 
-    XSendEvent(p->display, p->root, False, SubstructureRedirectMask, &e);
-  }
+	XSendEvent(p->display, p->root, False, SubstructureRedirectMask, &e);
+    }
 }
 
 
-void NETRootInfo::setDesktopName(Q_UINT32 desk, const char *name) {
+void NETRootInfo::setDesktopName(int desktop, const char *desktopName) {
     // return immediately if the requested desk is out of range
-    if (desk >= p->number_of_desktops) return;
+    if (desktop < 1 || desktop > p->number_of_desktops) return;
 
-    if (p->desktop_names[desk]) delete p->desktop_names[desk];
-    p->desktop_names[desk] = nstrdup(name);
+    if (p->desktop_names[desktop - 1]) delete p->desktop_names[desktop - 1];
+    p->desktop_names[desktop - 1] = nstrdup(desktopName);
 
     unsigned int i, proplen,
-	num = ((p->number_of_desktops < (unsigned) p->desktop_names.size()) ?
-	       p->number_of_desktops : (unsigned) p->desktop_names.size());
+	num = ((p->number_of_desktops < p->desktop_names.size()) ?
+	       p->number_of_desktops : p->desktop_names.size());
     for (i = 0, proplen = 0; i < num; i++)
 	proplen += strlen(p->desktop_names[i]) + 1;
 
@@ -563,10 +585,8 @@ void NETRootInfo::setDesktopName(Q_UINT32 desk, const char *name) {
 	    *propp++ = '\0';
 
 #ifdef    NETWMDEBUG
-    fprintf(stderr,
-	    "NETRootInfo::setDesktopName(%d, '%s')\n"
-	    "desktop_names (atom %ld:\n",
-	    desk, name, net_desktop_names);
+    fprintf(stderr, "NETRootInfo::setDesktopName(%d, '%s')\n",
+	    desktop, desktopName);
 #endif
 
     XChangeProperty(p->display, p->root, net_desktop_names, XA_STRING, 8,
@@ -576,16 +596,24 @@ void NETRootInfo::setDesktopName(Q_UINT32 desk, const char *name) {
 }
 
 
-void NETRootInfo::setDesktopGeometry(const NETSize &sz) {
+void NETRootInfo::setDesktopGeometry(int desktop, const NETSize &geometry) {
+    if (desktop <  1) return;
+    
     if (role == WindowManager) {
-	Q_UINT32 data[2];
-	data[0] = sz.width;
-	data[1] = sz.height;
+	p->geometry[desktop - 1] = geometry;
 
-	p->geometry = sz;
+	int d, i, l;
+	l = p->geometry.size() * 2;
+	CARD32 *data = new CARD32[l];
+	for (d = 0, i = 0; d < p->geometry.size(); d++) {
+	    data[i++] = p->geometry[d].width;
+	    data[i++] = p->geometry[d].height;
+	}
 
 	XChangeProperty(p->display, p->root, net_desktop_geometry, XA_CARDINAL, 32,
-			PropModeReplace, (unsigned char *) data, 2);
+			PropModeReplace, (unsigned char *) data, l);
+
+	delete [] data;
     } else {
 	XEvent e;
 
@@ -594,9 +622,9 @@ void NETRootInfo::setDesktopGeometry(const NETSize &sz) {
 	e.xclient.display = p->display;
 	e.xclient.window = p->root;
 	e.xclient.format = 32;
-	e.xclient.data.l[0] = sz.width;
-	e.xclient.data.l[1] = sz.height;
-	e.xclient.data.l[2] = 0l;
+	e.xclient.data.l[0] = desktop - 1;
+	e.xclient.data.l[1] = geometry.width;
+	e.xclient.data.l[2] = geometry.height;
 	e.xclient.data.l[3] = 0l;
 	e.xclient.data.l[4] = 0l;
 
@@ -605,16 +633,24 @@ void NETRootInfo::setDesktopGeometry(const NETSize &sz) {
 }
 
 
-void NETRootInfo::setDesktopViewport(const NETPoint &pt) {
+void NETRootInfo::setDesktopViewport(int desktop, const NETPoint &viewport) {
+    if (desktop < 1) return;
+    
     if (role == WindowManager) {
-	Q_UINT32 data[2];
-	data[0] = pt.x;
-	data[1] = pt.y;
+	p->viewport[desktop - 1] = viewport;
 
-	p->viewport = pt;
+	int d, i, l;
+	l = p->viewport.size() * 2;
+	CARD32 *data = new CARD32[l];
+	for (d = 0, i = 0; d < p->viewport.size(); d++) {
+	    data[i++] = p->viewport[d].x;
+	    data[i++] = p->viewport[d].y;
+	}
 
 	XChangeProperty(p->display, p->root, net_desktop_viewport, XA_CARDINAL, 32,
-			PropModeReplace, (unsigned char *) data, 2);
+			PropModeReplace, (unsigned char *) data, l);
+
+	delete [] data;
     } else {
 	XEvent e;
 
@@ -623,9 +659,9 @@ void NETRootInfo::setDesktopViewport(const NETPoint &pt) {
 	e.xclient.display = p->display;
 	e.xclient.window = p->root;
 	e.xclient.format = 32;
-	e.xclient.data.l[0] = pt.x;
-	e.xclient.data.l[1] = pt.y;
-	e.xclient.data.l[2] = 0l;
+	e.xclient.data.l[0] = desktop - 1;
+	e.xclient.data.l[1] = viewport.x;
+	e.xclient.data.l[2] = viewport.y;
 	e.xclient.data.l[3] = 0l;
 	e.xclient.data.l[4] = 0l;
 
@@ -721,7 +757,7 @@ void NETRootInfo::setSupported(unsigned long pr) {
 	atoms[pnum++] = net_wm_ping;
 
     if (p->protocols & WMKDEDockWinFor)
-	atoms[pnum++] = net_kde_docking_window_for;
+	atoms[pnum++] = net_wm_kde_docking_window_for;
 
     if (p->protocols & WMKDEFrameStrut)
 	atoms[pnum++] = net_wm_kde_frame_strut;
@@ -747,9 +783,16 @@ void NETRootInfo::setSupported(unsigned long pr) {
 }
 
 
-void NETRootInfo::setActiveWindow(Window win) {
+void NETRootInfo::setActiveWindow(Window window) {
+
+#ifdef    NETWMDEBUG
+    fprintf(stderr,
+            "NETRootInfo::setActiveWindow: set active window 0x%lx (%s)\n",
+            window, (role == WindowManager) ? "WM" : "Client");
+#endif
+
     if (role == WindowManager) {
-	p->active = win;
+	p->active = window;
 	XChangeProperty(p->display, p->root, net_active_window, XA_WINDOW, 32,
 			PropModeReplace, (unsigned char *) &(p->active), 1);
     } else {
@@ -760,7 +803,7 @@ void NETRootInfo::setActiveWindow(Window win) {
 	e.xclient.display = p->display;
 	e.xclient.window = p->root;
 	e.xclient.format = 32;
-	e.xclient.data.l[0] = win;
+	e.xclient.data.l[0] = window;
 	e.xclient.data.l[1] = 0l;
 	e.xclient.data.l[2] = 0l;
 	e.xclient.data.l[3] = 0l;
@@ -771,13 +814,13 @@ void NETRootInfo::setActiveWindow(Window win) {
 }
 
 
-void NETRootInfo::setWorkArea(Q_UINT32 desk, const NETRect &rect) {
-    if (role != WindowManager) return;
+void NETRootInfo::setWorkArea(int desktop, const NETRect &workarea) {
+    if (role != WindowManager || desktop < 1) return;
 
-    p->workarea[desk] = rect;
+    p->workarea[desktop - 1] = workarea;
 
-    Q_UINT32 *wa = new Q_UINT32[p->number_of_desktops * 4];
-    unsigned int i, o;
+    CARD32 *wa = new CARD32[p->number_of_desktops * 4];
+    int i, o;
     for (i = 0, o = 0; i < p->number_of_desktops; i++) {
 	wa[o++] = p->workarea[i].pos.x;
 	wa[o++] = p->workarea[i].pos.y;
@@ -791,11 +834,11 @@ void NETRootInfo::setWorkArea(Q_UINT32 desk, const NETRect &rect) {
 }
 
 
-void NETRootInfo::setVirtualRoots(Window *wins, int num) {
+void NETRootInfo::setVirtualRoots(Window *windows, unsigned int count) {
     if (role != WindowManager) return;
 
-    p->virtual_roots_count = num;
-    p->virtual_roots = wins;
+    p->virtual_roots_count = count;
+    p->virtual_roots = windows;
 
     XChangeProperty(p->display, p->root, net_virtual_roots, XA_WINDOW, 32,
 		    PropModeReplace, (unsigned char *) p->virtual_roots,
@@ -803,7 +846,7 @@ void NETRootInfo::setVirtualRoots(Window *wins, int num) {
 }
 
 
-void NETRootInfo::closeWindowRequest(Window win) {
+void NETRootInfo::closeWindowRequest(Window window) {
     XEvent e;
 
     e.xclient.type = ClientMessage;
@@ -811,7 +854,7 @@ void NETRootInfo::closeWindowRequest(Window win) {
     e.xclient.display = p->display;
     e.xclient.window = p->root;
     e.xclient.format = 32;
-    e.xclient.data.l[0] = win;
+    e.xclient.data.l[0] = window;
     e.xclient.data.l[1] = 0l;
     e.xclient.data.l[2] = 0l;
     e.xclient.data.l[3] = 0l;
@@ -821,67 +864,88 @@ void NETRootInfo::closeWindowRequest(Window win) {
 }
 
 
+void NETRootInfo::moveResizeRequest(Window window, int x_root, int y_root,
+				    Direction direction)
+{
+    XEvent e;
+
+    e.xclient.type = ClientMessage;
+    e.xclient.message_type = net_wm_moveresize;
+    e.xclient.display = p->display;
+    e.xclient.window = p->root;
+    e.xclient.format = 32;
+    e.xclient.data.l[0] = window;
+    e.xclient.data.l[1] = x_root;
+    e.xclient.data.l[2] = y_root;
+    e.xclient.data.l[3] = direction;
+    e.xclient.data.l[4] = 0l;
+
+    XSendEvent(p->display, p->root, False, SubstructureRedirectMask, &e);
+}
+
+
 // assignment operator
 
-const NETRootInfo &NETRootInfo::operator=(const NETRootInfo &nri) {
-    if (p != nri.p) {
+const NETRootInfo &NETRootInfo::operator=(const NETRootInfo &rootinfo) {
+    if (p != rootinfo.p) {
 	refdec_nri(p);
 
 	if (! p->ref) delete p;
     }
 
-    p = nri.p;
+    p = rootinfo.p;
     p->ref++;
 
     return *this;
 }
 
 
-unsigned long NETRootInfo::event(XEvent *e) {
+unsigned long NETRootInfo::event(XEvent *event) {
     unsigned long dirty = 0;
 
     // the window manager will be interested in client messages... no other
     // client should get these messages
-    if (role == WindowManager && e->type == ClientMessage &&
-	e->xclient.format == 32) {
-	if (e->xclient.message_type == net_number_of_desktops) {
+    if (role == WindowManager && event->type == ClientMessage &&
+	event->xclient.format == 32) {
+	if (event->xclient.message_type == net_number_of_desktops) {
 	    dirty = NumberOfDesktops;
 
-	    changeNumberOfDesktops(e->xclient.data.l[0]);
-	} else if (e->xclient.message_type == net_desktop_geometry) {
+	    changeNumberOfDesktops(event->xclient.data.l[0]);
+	} else if (event->xclient.message_type == net_desktop_geometry) {
 	    dirty = DesktopGeometry;
 
 	    NETSize sz;
-	    sz.width = e->xclient.data.l[0];
-	    sz.height = e->xclient.data.l[1];
+	    sz.width = event->xclient.data.l[0];
+	    sz.height = event->xclient.data.l[1];
 	    changeDesktopGeometry(sz);
-	} else if (e->xclient.message_type == net_desktop_viewport) {
+	} else if (event->xclient.message_type == net_desktop_viewport) {
 	    dirty = DesktopViewport;
 
 	    NETPoint pt;
-	    pt.x = e->xclient.data.l[0];
-	    pt.y = e->xclient.data.l[1];
+	    pt.x = event->xclient.data.l[0];
+	    pt.y = event->xclient.data.l[1];
 	    changeDesktopViewport(pt);
-	} else if (e->xclient.message_type == net_current_desktop) {
+	} else if (event->xclient.message_type == net_current_desktop) {
 	    dirty = CurrentDesktop;
 
-	    changeCurrentDesktop(e->xclient.data.l[0] + 1);
-	} else if (e->xclient.message_type == net_active_window) {
+	    changeCurrentDesktop(event->xclient.data.l[0] + 1);
+	} else if (event->xclient.message_type == net_active_window) {
 	    dirty = ActiveWindow;
 
-	    changeActiveWindow(e->xclient.data.l[0]);
-	} else if (e->xclient.message_type == net_wm_moveresize) {
-	    moveResize(e->xclient.window,
-		       e->xclient.data.l[0],
-		       e->xclient.data.l[1],
-		       e->xclient.data.l[2]);
-	} else if (e->xclient.message_type == net_close_window) {
-	    closeWindow(e->xclient.data.l[0]);
+	    fprintf(stderr, "change active window to 0x%lx\b", event->xclient.data.l[0]);
+	    changeActiveWindow(event->xclient.data.l[0]);
+	} else if (event->xclient.message_type == net_wm_moveresize) {
+	    moveResize(event->xclient.data.l[0],
+		       event->xclient.data.l[1],
+		       event->xclient.data.l[2],
+		       event->xclient.data.l[3]);
+	} else if (event->xclient.message_type == net_close_window) {
+	    closeWindow(event->xclient.data.l[0]);
 	}
     }
 
-    if (e->type == PropertyNotify) {
-	XEvent pe = *e;
+    if (event->type == PropertyNotify) {
+	XEvent pe = *event;
 
 	Bool done = False;
 	Bool compaction = False;
@@ -940,178 +1004,213 @@ void NETRootInfo::update(unsigned long dirty) {
 			       0l, (long) BUFSIZE, False, XA_WINDOW, &type_ret,
 			       &format_ret, &nitems_ret, &unused, &data_ret)
 	    == Success) {
-	    if (data_ret) {
-		if (type_ret == XA_WINDOW && format_ret == 32) {
-		    Window *wins = (Window *) data_ret;
+	    if (type_ret == XA_WINDOW && format_ret == 32) {
+		Window *wins = (Window *) data_ret;
 
-		    qsort(wins, nitems_ret, sizeof(Window), wcmp);
+		qsort(wins, nitems_ret, sizeof(Window), wcmp);
 
-		    if (p->clients) {
-			if (role == Client) {
-			    unsigned long new_index = 0, old_index = 0;
-			    unsigned long new_count = nitems_ret,
-					  old_count = p->clients_count;
+		if (p->clients) {
+		    if (role == Client) {
+			unsigned long new_index = 0, old_index = 0;
+			unsigned long new_count = nitems_ret,
+				      old_count = p->clients_count;
 
-			    while (old_index < old_count || new_index < new_count) {
-				if (old_index == old_count) {
-				    addClient(wins[new_index++]);
-				} else if (new_index == new_count) {
+			while (old_index < old_count || new_index < new_count) {
+			    if (old_index == old_count) {
+				addClient(wins[new_index++]);
+			    } else if (new_index == new_count) {
+				removeClient(p->clients[old_index++]);
+			    } else {
+				if (p->clients[old_index] <
+				    wins[new_index]) {
 				    removeClient(p->clients[old_index++]);
+				} else if (wins[new_index] <
+					   p->clients[old_index]) {
+				    addClient(wins[new_index++]);
 				} else {
-				    if (p->clients[old_index] <
-					wins[new_index]) {
-					removeClient(p->clients[old_index++]);
-				    } else if (wins[new_index] <
-					       p->clients[old_index]) {
-					addClient(wins[new_index++]);
-				    } else {
-					new_index++;
-					old_index++;
-				    }
+				    new_index++;
+				    old_index++;
 				}
 			    }
 			}
-
-			delete [] p->clients;
-		    } else {
-			unsigned long n;
-			for (n = 0; n < nitems_ret; n++) {
-			    addClient(wins[n]);
-			}
 		    }
 
-		    p->clients_count = nitems_ret;
-		    p->clients = nwindup(wins, p->clients_count);
+		    delete [] p->clients;
+		} else {
+		    unsigned long n;
+		    for (n = 0; n < nitems_ret; n++) {
+			addClient(wins[n]);
+		    }
 		}
 
-		XFree(data_ret);
+		p->clients_count = nitems_ret;
+		p->clients = nwindup(wins, p->clients_count);
 	    }
+
+	    XFree(data_ret);
 	}
     }
 
-    if (dirty & KDEDockingWindows)
+    if (dirty & KDEDockingWindows) {
 	if (XGetWindowProperty(p->display, p->root, net_kde_docking_windows,
 			       0l, (long) BUFSIZE, False, XA_WINDOW, &type_ret,
 			       &format_ret, &nitems_ret, &unused, &data_ret)
-	    == Success)
-	    if (data_ret) {
-		if (type_ret == XA_WINDOW && format_ret == 32) {
-		    Window *wins = (Window *) data_ret;
+	    == Success) {
+	    if (type_ret == XA_WINDOW && format_ret == 32) {
+		Window *wins = (Window *) data_ret;
 
-		    qsort(wins, nitems_ret, sizeof(Window), wcmp);
+		qsort(wins, nitems_ret, sizeof(Window), wcmp);
 
-		    if (p->kde_docking_windows) {
-			if (role == Client) {
-			    unsigned long new_index = 0, new_count = nitems_ret;
-			    unsigned long old_index = 0,
-					  old_count = p->kde_docking_windows_count;
+		if (p->kde_docking_windows) {
+		    if (role == Client) {
+			unsigned long new_index = 0, new_count = nitems_ret;
+			unsigned long old_index = 0,
+				      old_count = p->kde_docking_windows_count;
 
-			    while(old_index < old_count || new_index < new_count) {
-				if (old_index == old_count) {
-				    addDockWin(wins[new_index++]);
-				} else if (new_index == new_count) {
+			while(old_index < old_count || new_index < new_count) {
+			    if (old_index == old_count) {
+				addDockWin(wins[new_index++]);
+			    } else if (new_index == new_count) {
+				removeDockWin(p->kde_docking_windows[old_index++]);
+			    } else {
+				if (p->kde_docking_windows[old_index] <
+				    wins[new_index]) {
 				    removeDockWin(p->kde_docking_windows[old_index++]);
+				} else if (wins[new_index] <
+					   p->kde_docking_windows[old_index]) {
+				    addDockWin(wins[new_index++]);
 				} else {
-				    if (p->kde_docking_windows[old_index] <
-					wins[new_index]) {
-					removeDockWin(p->kde_docking_windows[old_index++]);
-				    } else if (wins[new_index] <
-					       p->kde_docking_windows[old_index]) {
-					addDockWin(wins[new_index++]);
-				    } else {
-					new_index++;
-					old_index++;
-				    }
+				    new_index++;
+				    old_index++;
 				}
 			    }
 			}
-
-			delete [] p->kde_docking_windows;
-		    } else {
-			unsigned long n;
-			for (n = 0; n < nitems_ret; n++)
-			    addDockWin(wins[n]);
 		    }
 
-		    p->kde_docking_windows_count = nitems_ret;
-		    p->kde_docking_windows =
-			nwindup(wins, p->kde_docking_windows_count);
+		    delete [] p->kde_docking_windows;
+		} else {
+		    unsigned long n;
+		    for (n = 0; n < nitems_ret; n++) {
+			addDockWin(wins[n]);
+		    }
 		}
 
-		XFree(data_ret);
+		p->kde_docking_windows_count = nitems_ret;
+		p->kde_docking_windows =
+		    nwindup(wins, p->kde_docking_windows_count);
 	    }
 
-    if (dirty & ClientListStacking)
+	    XFree(data_ret);
+	}
+    }
+
+    if (dirty & ClientListStacking) {
 	if (XGetWindowProperty(p->display, p->root, net_client_list_stacking,
 			       0, (long) BUFSIZE, False, XA_WINDOW, &type_ret,
 			       &format_ret, &nitems_ret, &unused, &data_ret)
-	    == Success)
-	    if (data_ret) {
-		if (type_ret == XA_WINDOW && format_ret == 32) {
-		    Window *wins = (Window *) data_ret;
+	    == Success) {
+	    if (type_ret == XA_WINDOW && format_ret == 32) {
+		Window *wins = (Window *) data_ret;
 
-		    if (p->stacking)
-			delete [] p->stacking;
-
-#ifdef    NETWMDEBUG
-		    fprintf(stderr,"NETRootInfo::update: ClientStacking updated, "
-			    "have %ld clients\n", nitems_ret);
-#endif
-
-		    p->stacking_count = nitems_ret;
-		    p->stacking = nwindup(wins, p->stacking_count);
+		if (p->stacking) {
+		    delete [] p->stacking;
 		}
 
-		XFree(data_ret);
+#ifdef    NETWMDEBUG
+		fprintf(stderr,"NETRootInfo::update: ClientStacking updated, "
+			"have %ld clients\n", nitems_ret);
+#endif
+
+		p->stacking_count = nitems_ret;
+		p->stacking = nwindup(wins, p->stacking_count);
 	    }
 
-    if (dirty & NumberOfDesktops)
+	    XFree(data_ret);
+	}
+    }
+
+    if (dirty & NumberOfDesktops) {
+	p->number_of_desktops = 0;
+
 	if (XGetWindowProperty(p->display, p->root, net_number_of_desktops,
 			       0l, 1l, False, XA_CARDINAL, &type_ret, &format_ret,
 			       &nitems_ret, &unused, &data_ret)
-	    == Success)
-	    if (data_ret) {
-		if (type_ret == XA_CARDINAL && format_ret == 32 && nitems_ret == 1)
-		    p->number_of_desktops = *((Q_UINT32 *) data_ret);
-
-		XFree(data_ret);
+	    == Success) {
+	    if (type_ret == XA_CARDINAL && format_ret == 32 && nitems_ret == 1) {
+		p->number_of_desktops = *((CARD32 *) data_ret);
 	    }
 
-    if (dirty & DesktopGeometry)
+	    XFree(data_ret);
+	}
+    }
+
+    if (dirty & DesktopGeometry) {
 	if (XGetWindowProperty(p->display, p->root, net_desktop_geometry,
 			       0l, 2l, False, XA_CARDINAL, &type_ret, &format_ret,
 			       &nitems_ret, &unused, &data_ret)
 	    == Success) {
-	    if (data_ret) {
-		if (type_ret == XA_CARDINAL && format_ret == 32 &&
-		    nitems_ret == 2) {
-		    Q_UINT32 *d = (Q_UINT32 *) data_ret;
-		    p->geometry.width  = d[0];
-		    p->geometry.height = d[1];
+	    if (type_ret == XA_CARDINAL && format_ret == 32 &&
+		nitems_ret >= 2) {
+		CARD32 *data = (CARD32 *) data_ret;
+
+		int d, i, n;
+		n = nitems_ret / 2;
+		for (d = 0, i = 0; d < n; d++) {
+		    p->geometry[d].width  = data[i++];
+		    p->geometry[d].height = data[i++];
 		}
 
-		XFree(data_ret);
+#ifdef    NETWMDEBUG
+		if (nitems_ret % 2 != 0) {
+		    fprintf(stderr,
+			    "NETRootInfo::update(): desktop geometry array "
+			    "size not a multipe of 2\n");
+		}
+#endif
 	    }
-        } else
-	    p->geometry = p->rootSize;
 
-    if (dirty & DesktopViewport)
+	    XFree(data_ret);
+	}
+    } else {
+	int i;
+	for (i = 0; i < p->geometry.size(); i++) {
+	    p->geometry[i] = p->rootSize;
+	}
+    }
+
+    if (dirty & DesktopViewport) {
 	if (XGetWindowProperty(p->display, p->root, net_desktop_viewport,
 			       0l, 2l, False, XA_CARDINAL, &type_ret, &format_ret,
 			       &nitems_ret, &unused, &data_ret)
 	    == Success) {
-	    if (data_ret) {
-		if (type_ret == XA_CARDINAL && format_ret == 32 &&
-		    nitems_ret == 2) {
-		    Q_UINT32 *d = (Q_UINT32 *) data_ret;
-		    p->viewport.x = d[0];
-		    p->viewport.y = d[1];
+	    if (type_ret == XA_CARDINAL && format_ret == 32 &&
+		nitems_ret == 2) {
+		CARD32 *data = (CARD32 *) data_ret;
+
+		int d, i, n;
+		n = nitems_ret / 2;
+		for (d = 0, i = 0; d < n; d++) {
+		    p->viewport[d].x = data[i++];
+		    p->viewport[d].y = data[i++];
 		}
 
-		XFree(data_ret);
+#ifdef    NETWMDEBUG
+		if (nitems_ret % 2 != 0) {
+		    fprintf(stderr,
+			    "NETRootInfo::update(): desktop viewport array "
+			    "size not a multipe of 2\n");
+		}
+#endif
 	    }
-        } else
-	    p->viewport.x = p->viewport.y = 0;
+
+	    XFree(data_ret);
+	}
+    } else {
+	int i;
+	for (i = 0; i < p->viewport.size(); i++) {
+	    p->viewport[i].x = p->viewport[i].y = 0;
+	}
+    }
 
     if (dirty & CurrentDesktop) {
 	p->current_desktop = 0;
@@ -1119,155 +1218,288 @@ void NETRootInfo::update(unsigned long dirty) {
 			       0l, 1l, False, XA_CARDINAL, &type_ret, &format_ret,
 			       &nitems_ret, &unused, &data_ret)
 	    == Success) {
-	    if (data_ret) {
-		if (type_ret == XA_CARDINAL && format_ret == 32 && nitems_ret == 1)
-		    p->current_desktop = *((Q_UINT32 *) data_ret) + 1;
-
-		XFree(data_ret);
+	    if (type_ret == XA_CARDINAL && format_ret == 32 && nitems_ret == 1) {
+		p->current_desktop = *((CARD32 *) data_ret) + 1;
 	    }
-        }
+
+	    XFree(data_ret);
+	}
     }
 
-    if (dirty & DesktopNames)
+    if (dirty & DesktopNames) {
 	if (XGetWindowProperty(p->display, p->root, net_current_desktop,
 			       0l, (long) BUFSIZE, False, XA_STRING, &type_ret,
 			       &format_ret, &nitems_ret, &unused, &data_ret)
-	    == Success)
-	    if (data_ret) {
-		if (type_ret == XA_STRING && format_ret == 8) {
-		    // force the last element in the data array to be NUL
-		    data_ret[nitems_ret - 1] = '\0';
+	    == Success) {
+	    if (type_ret == XA_STRING && format_ret == 8) {
+		// force the last element in the data array to be NUL
+		data_ret[nitems_ret - 1] = '\0';
 
-		    const char *d = (const char *) data_ret;
-		    unsigned int s, n, index;
+		const char *d = (const char *) data_ret;
+		unsigned int s, n, index;
 
-		    for (s = 0, n = 0, index = 0; n < nitems_ret; n++)
-			if (d[n] == '\0') {
-			    p->desktop_names[index++] = nstrndup((d + s), n - s);
-			    s = n + 1;
-			}
-
+		for (s = 0, n = 0, index = 0; n < nitems_ret; n++) {
+		    if (d[n] == '\0') {
+			p->desktop_names[index++] = nstrndup((d + s), n - s);
+			s = n + 1;
+		    }
 		}
 
-		XFree(data_ret);
 	    }
 
-    if (dirty & ActiveWindow)
+	    XFree(data_ret);
+	}
+    }
+
+    if (dirty & ActiveWindow) {
 	if (XGetWindowProperty(p->display, p->root, net_active_window, 0l, 1l,
 			       False, XA_WINDOW, &type_ret, &format_ret,
 			       &nitems_ret, &unused, &data_ret)
-	    == Success)
-	    if (data_ret) {
-		if (type_ret == XA_WINDOW && format_ret == 32 && nitems_ret == 1)
-		    p->active = *((Window *) data_ret);
-
-		XFree(data_ret);
+	    == Success) {
+	    if (type_ret == XA_WINDOW && format_ret == 32 && nitems_ret == 1) {
+		p->active = *((Window *) data_ret);
 	    }
 
-    if (dirty & WorkArea)
+	    XFree(data_ret);
+	}
+    }
+
+    if (dirty & WorkArea) {
 	if (XGetWindowProperty(p->display, p->root, net_workarea, 0l,
 			       (p->number_of_desktops * 4), False, XA_CARDINAL,
 			       &type_ret, &format_ret, &nitems_ret, &unused,
 			       &data_ret)
-	    == Success)
-	    if (data_ret) {
-		if (type_ret == XA_CARDINAL && format_ret == 32 &&
-		    nitems_ret == (p->number_of_desktops * 4)) {
-		    Q_UINT32 *d = (Q_UINT32 *) data_ret;
-		    Q_UINT32 i, j;
-		    for (i = 0, j = 0; i < p->number_of_desktops; i++) {
-			p->workarea[i].pos.x       = d[j++];
-			p->workarea[i].pos.y       = d[j++];
-			p->workarea[i].size.width  = d[j++];
-			p->workarea[i].size.height = d[j++];
-		    }
+	    == Success) {
+	    if (type_ret == XA_CARDINAL && format_ret == 32 &&
+		nitems_ret == (unsigned) (p->number_of_desktops * 4)) {
+		CARD32 *d = (CARD32 *) data_ret;
+		int i, j;
+		for (i = 0, j = 0; i < p->number_of_desktops; i++) {
+		    p->workarea[i].pos.x       = d[j++];
+		    p->workarea[i].pos.y       = d[j++];
+		    p->workarea[i].size.width  = d[j++];
+		    p->workarea[i].size.height = d[j++];
 		}
-
-		XFree(data_ret);
 	    }
 
+	    XFree(data_ret);
+	}
+    }
 
-    if (dirty & SupportingWMCheck)
+
+    if (dirty & SupportingWMCheck) {
 	if (XGetWindowProperty(p->display, p->root, net_supporting_wm_check,
 			       0l, 1l, False, XA_WINDOW, &type_ret, &format_ret,
 			       &nitems_ret, &unused, &data_ret)
-	    == Success)
-	    if (data_ret) {
-		if (type_ret == XA_WINDOW && format_ret == 32 && nitems_ret == 1) {
-		    p->supportwindow = *((Window *) data_ret);
+	    == Success) {
+	    if (type_ret == XA_WINDOW && format_ret == 32 && nitems_ret == 1) {
+		p->supportwindow = *((Window *) data_ret);
 
-		    unsigned char *name_ret;
-		    if (XGetWindowProperty(p->display, p->supportwindow,
-					   net_wm_name, 0l, (long) BUFSIZE, False,
-					   XA_STRING, &type_ret, &format_ret,
-					   &nitems_ret, &unused, &name_ret)
-			== Success)
-			if (name_ret) {
-			    if (type_ret == XA_STRING && format_ret == 8)
-				p->name = nstrdup((const char *) name_ret);
+		unsigned char *name_ret;
+		if (XGetWindowProperty(p->display, p->supportwindow,
+				       net_wm_name, 0l, (long) BUFSIZE, False,
+				       XA_STRING, &type_ret, &format_ret,
+				       &nitems_ret, &unused, &name_ret)
+		    == Success) {
+		    if (name_ret) {
+			if (type_ret == XA_STRING && format_ret == 8)
+			    p->name = nstrdup((const char *) name_ret);
 
-			    XFree(name_ret);
-			}
+			XFree(name_ret);
+		    }
 		}
-
-		XFree(data_ret);
 	    }
 
-    if (dirty & VirtualRoots)
+	    XFree(data_ret);
+	}
+    }
+
+    if (dirty & VirtualRoots) {
 	if (XGetWindowProperty(p->display, p->root, net_virtual_roots,
 			       0, (long) BUFSIZE, False, XA_WINDOW, &type_ret,
 			       &format_ret, &nitems_ret, &unused, &data_ret)
-	    == Success)
-	    if (data_ret) {
-		if (type_ret == XA_WINDOW && format_ret == 32) {
-		    Window *wins = (Window *) data_ret;
+	    == Success) {
+	    if (type_ret == XA_WINDOW && format_ret == 32) {
+		Window *wins = (Window *) data_ret;
 
-		    if (p->virtual_roots)
-			delete [] p->virtual_roots;
-
-		    p->virtual_roots_count = nitems_ret;
-		    p->virtual_roots = nwindup(wins, p->virtual_roots_count);
+		if (p->virtual_roots) {
+		    delete [] p->virtual_roots;
 		}
 
-		XFree(data_ret);
+		p->virtual_roots_count = nitems_ret;
+		p->virtual_roots = nwindup(wins, p->virtual_roots_count);
 	    }
+
+	    XFree(data_ret);
+	}
+    }
+}
+
+
+Display *NETRootInfo::x11Display() const {
+    return p->display;
+}
+
+
+Window NETRootInfo::rootWindow() const {
+    return p->root;
+}
+
+
+Window NETRootInfo::supportWindow() const { 
+    return p->supportwindow;
+}
+
+
+const char *NETRootInfo::wmName() const {
+    return p->name; }
+
+
+int NETRootInfo::screenNumber() const {
+    return p->screen;
+}
+
+
+unsigned long NETRootInfo::supported() const {
+    return p->protocols;
+}
+
+
+const Window *NETRootInfo::clientList() const {
+    return p->clients; 
+}
+
+
+int NETRootInfo::clientListCount() const {
+    return p->clients_count;
+}
+
+
+const Window *NETRootInfo::clientListStacking() const {
+    return p->stacking;
+}
+
+
+int NETRootInfo::clientListStackingCount() const {
+    return p->stacking_count;
+}
+
+
+const Window *NETRootInfo::kdeDockingWindows() const {
+    return p->kde_docking_windows;
+}
+
+
+int NETRootInfo::kdeDockingWindowsCount() const {
+    return p->kde_docking_windows_count;
+}
+
+
+NETSize NETRootInfo::desktopGeometry(int desktop) const {
+    if (desktop < 1) {
+	NETSize sz;
+	sz.width = sz.height = 0;
+	return sz;
+    }
+
+    return p->geometry[desktop - 1];
+}
+
+
+NETPoint NETRootInfo::desktopViewport(int desktop) const {
+    if (desktop < 1) {
+	NETPoint pt;
+	pt.x = pt.y = 0;
+	return pt;
+    }
+
+    return p->viewport[desktop - 1];
+}
+
+
+NETRect NETRootInfo::workArea(int desktop) const {
+    if (desktop < 1) {
+	NETRect rt;
+	rt.pos.x = rt.pos.y = rt.size.width = rt.size.height = 0;
+	return rt;
+    }
+
+    return p->workarea[desktop - 1];
+}
+
+
+const char *NETRootInfo::desktopName(int desktop) const {
+    if (desktop < 1) {
+	return 0;
+    }
+
+    return p->desktop_names[desktop - 1];
+}
+
+
+const Window *NETRootInfo::virtualRoots( ) const {
+    return p->virtual_roots;
+}
+
+
+int NETRootInfo::virtualRootsCount() const {
+    return p->virtual_roots_count;
+}
+
+
+int NETRootInfo::numberOfDesktops() const {
+    return p->number_of_desktops;
+}
+
+
+int NETRootInfo::currentDesktop() const {
+    return p->current_desktop;
+}
+
+
+Window NETRootInfo::activeWindow() const {
+    return p->active;
 }
 
 
 // NETWinInfo stuffs
 
-NETWinInfo::NETWinInfo(Display *d, Window win, Window rwin,
-		       unsigned long pr, Role rl)
+NETWinInfo::NETWinInfo(Display *display, Window window, Window rootWindow,
+		       unsigned long properties, Role role)
 {
     p = new NETWinInfoPrivate;
     p->ref = 1;
 
-    p->display = d;
-    p->window = win;
-    p->root = rwin;
+    p->display = display;
+    p->window = window;
+    p->root = rootWindow;
     p->mapping_state = Withdrawn;
     p->mapping_state_dirty = True;
-    p->state = 0;
+    p->state = Unknown;
     p->type = Unknown;
     p->name = (char *) 0;
     p->visible_name = (char *) 0;
     p->desktop = p->pid = p->handled_icons = 0;
+    p->strut.left = p->strut.right = p->strut.top = p->strut.bottom = 0;
     p->kde_dockwin_for = 0;
 
-    p->properties = pr;
+    p->properties = properties;
     p->icon_count = 0;
 
-    role = rl;
+    this->role = role;
 
-    if (! netwm_atoms_created) create_atoms(p->display);
+    if (! netwm_atoms_created) {
+	create_atoms(p->display);
+    }
 
-    if (p->properties)
+    if (p->properties) {
 	update(p->properties);
+    }
 }
 
 
-NETWinInfo::NETWinInfo(const NETWinInfo &nwi) {
-    p = nwi.p;
+NETWinInfo::NETWinInfo(const NETWinInfo &wininfo) {
+    p = wininfo.p;
     p->ref++;
 }
 
@@ -1286,7 +1518,7 @@ void NETWinInfo::setIcon(NETIcon icon, Bool replace) {
 	int i;
 	for (i = 0; i < p->icons.size(); i++) {
 	    if (p->icons[i].data) delete [] p->icons[i].data;
-	    p->icons[i].data = (Q_UINT32 *) 0;
+	    p->icons[i].data = 0;
 	    p->icons[i].size.width = 0;
 	    p->icons[i].size.height = 0;
 	}
@@ -1299,15 +1531,17 @@ void NETWinInfo::setIcon(NETIcon icon, Bool replace) {
 
     // do a deep copy, we want to own the data
     NETIcon& ni = p->icons[ p->icon_count - 1 ];
-    ni.data = new Q_UINT32[ ni.size.width * ni.size.height ];
+    CARD32 *d = new CARD32[ ni.size.width * ni.size.height ];
+    ni.data = (unsigned char *) d;
     (void) memcpy( ni.data, icon.data, ni.size.width * ni.size.height * 4 );
 
     int proplen, i;
-    for (i = 0, proplen = 0; i < p->icon_count; i++)
+    for (i = 0, proplen = 0; i < p->icon_count; i++) {
 	proplen += 2 + (p->icons[i].size.width *
 			p->icons[i].size.height);
+    }
 
-    Q_UINT32 *prop = new Q_UINT32[proplen], *pprop = prop;
+    CARD32 *prop = new CARD32[proplen], *pprop = prop;
     int sz;
     for (i = 0; i < p->icon_count; i++) {
        	*pprop++ = p->icons[i].size.width;
@@ -1325,16 +1559,16 @@ void NETWinInfo::setIcon(NETIcon icon, Bool replace) {
 }
 
 
-void NETWinInfo::setIconGeometry(NETRect rect) {
+void NETWinInfo::setIconGeometry(NETRect geometry) {
     if (role != Client) return;
 
-    p->icon_geom = rect;
+    p->icon_geom = geometry;
 
-    Q_UINT32 data[4];
-    data[0] = rect.pos.x;
-    data[1] = rect.pos.y;
-    data[2] = rect.size.width;
-    data[3] = rect.size.height;
+    CARD32 data[4];
+    data[0] = geometry.pos.x;
+    data[1] = geometry.pos.y;
+    data[2] = geometry.size.width;
+    data[3] = geometry.size.height;
 
     XChangeProperty(p->display, p->window, net_wm_icon_geometry, XA_CARDINAL,
 		    32, PropModeReplace, (unsigned char *) data, 4);
@@ -1346,7 +1580,7 @@ void NETWinInfo::setStrut(NETStrut strut) {
 
     p->strut = strut;
 
-    Q_UINT32 data[4];
+    CARD32 data[4];
     data[0] = strut.left;
     data[1] = strut.right;
     data[2] = strut.top;
@@ -1357,7 +1591,7 @@ void NETWinInfo::setStrut(NETStrut strut) {
 }
 
 
-void NETWinInfo::setState(unsigned long st, unsigned long msk) {
+void NETWinInfo::setState(unsigned long state, unsigned long mask) {
     if (p->mapping_state_dirty) update(XAWMState);
 
     if (role == Client && p->mapping_state != Withdrawn) {
@@ -1368,19 +1602,19 @@ void NETWinInfo::setState(unsigned long st, unsigned long msk) {
 	e.xclient.display = p->display;
 	e.xclient.window = p->window;
 	e.xclient.format = 32;
-	e.xclient.data.l[0] = st;
-	e.xclient.data.l[1] = msk;
+	e.xclient.data.l[0] = state;
+	e.xclient.data.l[1] = mask;
 	e.xclient.data.l[2] = 0l;
 	e.xclient.data.l[3] = 0l;
 	e.xclient.data.l[4] = 0l;
 
 	XSendEvent(p->display, p->root, False, SubstructureRedirectMask, &e);
     } else {
-	p->state &= ~msk;
-	p->state |= st;
+	p->state &= ~mask;
+	p->state |= state;
 
 	XChangeProperty(p->display, p->window, net_wm_state, XA_CARDINAL, 32,
-			PropModeReplace, (unsigned char *) &st, 1);
+			PropModeReplace, (unsigned char *) &(p->state), 1);
     }
 }
 
@@ -1388,7 +1622,7 @@ void NETWinInfo::setState(unsigned long st, unsigned long msk) {
 void NETWinInfo::setWindowType(WindowType type) {
     if (role != Client) return;
 
-    Q_UINT32 data= type;
+    CARD32 data = type;
     XChangeProperty(p->display, p->window, net_wm_window_type, XA_CARDINAL, 32,
 		    PropModeReplace, (unsigned char *) &data, 1);
 }
@@ -1405,24 +1639,24 @@ void NETWinInfo::setName(const char *name) {
 }
 
 
-void NETWinInfo::setVisibleName(const char *vname) {
+void NETWinInfo::setVisibleName(const char *visibleName) {
     if (role != WindowManager) return;
 
     if (p->visible_name) delete [] p->visible_name;
-    p->visible_name = nstrdup(vname);
+    p->visible_name = nstrdup(visibleName);
     XChangeProperty(p->display, p->window, net_wm_visible_name, XA_STRING, 8,
 		    PropModeReplace, (unsigned char *) p->visible_name,
 		    strlen(p->visible_name) + 1);
 }
 
 
-void NETWinInfo::setDesktop(Q_UINT32 desk) {
+void NETWinInfo::setDesktop(int desktop) {
     if (p->mapping_state_dirty) update(XAWMState);
 
     if (role == Client && p->mapping_state != Withdrawn) {
 	// we only send a ClientMessage if we are 1) a client and 2) managed
 
-	if ( desk == 0 )
+	if ( desktop == 0 )
 	    return; // we can't do that while being managed
 
 	XEvent e;
@@ -1432,7 +1666,7 @@ void NETWinInfo::setDesktop(Q_UINT32 desk) {
 	e.xclient.display = p->display;
 	e.xclient.window = p->window;
 	e.xclient.format = 32;
-	e.xclient.data.l[0] = desk - 1;
+	e.xclient.data.l[0] = desktop - 1;
 	e.xclient.data.l[1] = 0l;
 	e.xclient.data.l[2] = 0l;
 	e.xclient.data.l[3] = 0l;
@@ -1441,25 +1675,28 @@ void NETWinInfo::setDesktop(Q_UINT32 desk) {
 	XSendEvent(p->display, p->root, False, SubstructureRedirectMask, &e);
     } else {
 	// otherwise we just set or remove the property directly
-	p->desktop = desk;
-	Q_UINT32 d = desk;
+	p->desktop = desktop;
+	int d = desktop;
+	
 	if ( d != OnAllDesktops ) {
 	    if ( d == 0 ) {
 		XDeleteProperty( p->display, p->window, net_wm_desktop );
 		return;
 	    }
+	    
 	    d -= 1;
 	}
+	
 	XChangeProperty(p->display, p->window, net_wm_desktop, XA_CARDINAL, 32,
 			PropModeReplace, (unsigned char *) &d, 1);
     }
 }
 
 
-void NETWinInfo::setPid(Q_UINT32 pd) {
+void NETWinInfo::setPid(int pid) {
     if (role != Client) return;
 
-    p->pid = pd;
+    p->pid = pid;
     XChangeProperty(p->display, p->window, net_wm_pid, XA_CARDINAL, 32,
 		    PropModeReplace, (unsigned char *) &(p->pid), 1);
 }
@@ -1469,21 +1706,20 @@ void NETWinInfo::setHandledIcons(Bool handled) {
     if (role != Client) return;
 
     p->handled_icons = handled;
-    Q_UINT32 d = handled;
+    CARD32 d = handled;
     XChangeProperty(p->display, p->window, net_wm_handled_icons, XA_CARDINAL, 32,
 		    PropModeReplace, (unsigned char *) &d, 1);
 }
 
 
-void NETWinInfo::setKDEDockWinFor(Window win) {
+void NETWinInfo::setKDEDockWinFor(Window window) {
     if (role != Client) return;
 
-    p->kde_dockwin_for = win;
-    XChangeProperty(p->display, p->window, net_kde_docking_window_for,
-		    XA_WINDOW, 32, PropModeReplace,
+    p->kde_dockwin_for = window;
+    XChangeProperty(p->display, p->window, net_wm_kde_docking_window_for,
+		    XA_CARDINAL, 32, PropModeReplace,
 		    (unsigned char *) &(p->kde_dockwin_for), 1);
 }
-
 
 
 void NETWinInfo::setKDEFrameStrut(NETStrut strut) {
@@ -1491,7 +1727,7 @@ void NETWinInfo::setKDEFrameStrut(NETStrut strut) {
 
     p->frame_strut = strut;
 
-    Q_UINT32 d[4];
+    CARD32 d[4];
     d[0] = strut.left;
     d[1] = strut.right;
     d[2] = strut.top;
@@ -1501,19 +1737,20 @@ void NETWinInfo::setKDEFrameStrut(NETStrut strut) {
 		    PropModeReplace, (unsigned char *) d, 4);
 }
 
+
 void NETWinInfo::kdeGeometry(NETRect& frame, NETRect& window) {
     Window unused;
     int x, y;
     unsigned int w, h, junk;
     XGetGeometry(p->display, p->window, &unused, &x, &y, &w, &h, &junk, &junk);
     XTranslateCoordinates(p->display, p->window, p->root, 0, 0, &x, &y, &unused);
-	
+
     p->win_geom.pos.x = x;
     p->win_geom.pos.y = y;
-	
+
     p->win_geom.size.width = w;
     p->win_geom.size.height = h;
-	
+
     p->frame_geom.pos.x = x - p->frame_strut.left;
     p->frame_geom.pos.y = y - p->frame_strut.top;
 
@@ -1525,7 +1762,7 @@ void NETWinInfo::kdeGeometry(NETRect& frame, NETRect& window) {
 }
 
 
-NETIcon NETWinInfo::icon(int w, int h) const {
+NETIcon NETWinInfo::icon(int width, int height) const {
     NETIcon result;
 
     if ( !p->icons.size() ) {
@@ -1539,13 +1776,13 @@ NETIcon NETWinInfo::icon(int w, int h) const {
 
     // find the icon that's closest in size to w x h...
     // return the first icon if w and h are -1
-    if (w == h && h == -1) return result;
+    if (width == height && height == -1) return result;
 
     int i;
     for (i = 0; i < p->icons.size(); i++) {
-	if ((p->icons[i].size.width >= (unsigned) w &&
+	if ((p->icons[i].size.width >= width &&
 	     p->icons[i].size.width < result.size.width) &&
-	    (p->icons[i].size.height >= (unsigned) h &&
+	    (p->icons[i].size.height >= height &&
 	     p->icons[i].size.height < result.size.height))
 	    result = p->icons[i];
     }
@@ -1554,24 +1791,24 @@ NETIcon NETWinInfo::icon(int w, int h) const {
 }
 
 
-unsigned long NETWinInfo::event(XEvent *e) {
+unsigned long NETWinInfo::event(XEvent *event) {
     unsigned long dirty = 0;
 
-    if (role == WindowManager && e->type == ClientMessage &&
-	e->xclient.format == 32) {
-	if (e->xclient.message_type == net_wm_state) {
+    if (role == WindowManager && event->type == ClientMessage &&
+	event->xclient.format == 32) {
+	if (event->xclient.message_type == net_wm_state) {
 	    dirty = WMState;
 
-	    changeState(e->xclient.data.l[0], e->xclient.data.l[1]);
-	} else if (e->xclient.message_type == net_wm_desktop) {
+	    changeState(event->xclient.data.l[0], event->xclient.data.l[1]);
+	} else if (event->xclient.message_type == net_wm_desktop) {
 	    dirty = WMDesktop;
 
-	    changeDesktop(e->xclient.data.l[0] + 1);
+	    changeDesktop(event->xclient.data.l[0] + 1);
 	}
     }
 
-    if (e->type == PropertyNotify) {
-	XEvent pe = *e;
+    if (event->type == PropertyNotify) {
+	XEvent pe = *event;
 
 	Bool done = False;
 	Bool compaction = False;
@@ -1596,7 +1833,7 @@ unsigned long NETWinInfo::event(XEvent *e) {
 		dirty |= WMDesktop;
 	    else if (pe.xproperty.atom == net_wm_kde_frame_strut)
 		dirty |= WMKDEFrameStrut;
-	    else if (pe.xproperty.atom == net_kde_docking_window_for)
+	    else if (pe.xproperty.atom == net_wm_kde_docking_window_for)
 		dirty |= WMKDEDockWinFor;
 	    else {
 		if ( compaction )
@@ -1612,7 +1849,7 @@ unsigned long NETWinInfo::event(XEvent *e) {
 
 	update(dirty);
     }
-    
+
     return dirty;
 }
 
@@ -1623,50 +1860,50 @@ void NETWinInfo::update(unsigned long dirty) {
     unsigned long nitems_ret, unused;
     unsigned char *data_ret;
 
-    if (dirty & XAWMState)
+    if (dirty & XAWMState) {
 	if (XGetWindowProperty(p->display, p->window, xa_wm_state, 0l, 1l,
 			       False, xa_wm_state, &type_ret, &format_ret,
 			       &nitems_ret, &unused, &data_ret)
-	    == Success)
-	    if (data_ret) {
-		if (type_ret == xa_wm_state && format_ret == 32 &&
-		    nitems_ret == 1) {
-		    Q_UINT32 *state = (Q_UINT32 *) data_ret;
+	    == Success) {
+	    if (type_ret == xa_wm_state && format_ret == 32 &&
+		nitems_ret == 1) {
+		CARD32 *state = (CARD32 *) data_ret;
 
-		    switch(*state) {
-		    case IconicState:
-			p->mapping_state = Iconic;
-			break;
-		    case WithdrawnState:
-			p->mapping_state = Withdrawn;
-			break;
-		    case NormalState:
-		    default:
-			p->mapping_state = Visible;
+		switch(*state) {
+		case IconicState:
+		    p->mapping_state = Iconic;
+		    break;
+		case WithdrawnState:
+		    p->mapping_state = Withdrawn;
+		    break;
+		case NormalState:
+		default:
+		    p->mapping_state = Visible;
 
-		    }
-		
-		    p->mapping_state_dirty = False;
 		}
 
-		XFree(data_ret);
+		p->mapping_state_dirty = False;
 	    }
+
+	    XFree(data_ret);
+	}
+    }
 
     // we do this here because we *always* want to update WM_STATE
     dirty &= p->properties;
 
-    if (dirty & WMState)
+    if (dirty & WMState) {
 	if (XGetWindowProperty(p->display, p->window, net_wm_state, 0l, 1l,
 			       False, XA_CARDINAL, &type_ret, &format_ret,
 			       &nitems_ret, &unused, &data_ret)
-	    == Success)
-	    if (data_ret) {
-		if (type_ret == XA_CARDINAL && format_ret == 32 &&
-		    nitems_ret == 1)
-		    p->state = *((Q_UINT32 *) data_ret);
-
-		XFree(data_ret);
+	    == Success) {
+	    if (type_ret == XA_CARDINAL && format_ret == 32 && nitems_ret == 1) {
+		p->state = *((CARD32 *) data_ret);
 	    }
+
+	    XFree(data_ret);
+	}
+    }
 
     if (dirty & WMDesktop) {
 	p->desktop = 0;
@@ -1674,154 +1911,207 @@ void NETWinInfo::update(unsigned long dirty) {
 			       False, XA_CARDINAL, &type_ret,
 			       &format_ret, &nitems_ret,
 			       &unused, &data_ret)
-	    == Success)
-	    if (data_ret) {
-		if (type_ret == XA_CARDINAL && format_ret == 32 &&
-		    nitems_ret == 1) {
-		    p->desktop = *((Q_UINT32 *) data_ret);
+	    == Success) {
+	    if (type_ret == XA_CARDINAL && format_ret == 32 &&
+		nitems_ret == 1) {
+		p->desktop = *((CARD32 *) data_ret);
+		if ((signed) p->desktop != OnAllDesktops)
 		    p->desktop++;
-		    if ( p->desktop == 0 )
-			p->desktop = OnAllDesktops;
-		}
 
-		XFree(data_ret);
+		if ( p->desktop == 0 )
+		    p->desktop = OnAllDesktops;
 	    }
+
+	    XFree(data_ret);
+	}
     }
 
-    if (dirty & WMName)
+    if (dirty & WMName) {
 	if (XGetWindowProperty(p->display, p->window, net_wm_name, 0l,
 			       (long) BUFSIZE, False, XA_STRING, &type_ret,
 			       &format_ret, &nitems_ret, &unused, &data_ret)
-	    == Success)
-	    if (data_ret) {
-		if (type_ret == XA_STRING && format_ret == 8 &&
-		    nitems_ret > 0) {
-		    if (p->name) delete [] p->name;
-		    p->name = nstrndup((const char *) data_ret, nitems_ret);
-		}
-
-		XFree(data_ret);
+	    == Success) {
+	    if (type_ret == XA_STRING && format_ret == 8 && nitems_ret > 0) {
+		if (p->name) delete [] p->name;
+		p->name = nstrndup((const char *) data_ret, nitems_ret);
 	    }
 
-    if (dirty & WMVisibleName)
+	    XFree(data_ret);
+	}
+    }
+
+    if (dirty & WMVisibleName) {
 	if (XGetWindowProperty(p->display, p->window, net_wm_visible_name, 0l,
 			       (long) BUFSIZE, False, XA_STRING, &type_ret,
 			       &format_ret, &nitems_ret, &unused, &data_ret)
-	    == Success)
-	    if (data_ret) {
-		if (type_ret == XA_STRING && format_ret == 8 &&
-		    nitems_ret > 0) {
-		    if (p->visible_name) delete [] p->visible_name;
-		    p->visible_name = nstrndup((const char *) data_ret, nitems_ret);
-		}
-
-		XFree(data_ret);
+	    == Success) {
+	    if (type_ret == XA_STRING && format_ret == 8 &&
+		nitems_ret > 0) {
+		if (p->visible_name) delete [] p->visible_name;
+		p->visible_name = nstrndup((const char *) data_ret, nitems_ret);
 	    }
+
+	    XFree(data_ret);
+	}
+    }
 
     if (dirty & WMWindowType) {
 	p->type = Unknown;
 	if (XGetWindowProperty(p->display, p->window, net_wm_window_type, 0l, 1l,
 			       False, XA_CARDINAL, &type_ret, &format_ret,
 			       &nitems_ret, &unused, &data_ret)
-	    == Success)
-	    if (data_ret) {
-		if (type_ret == XA_CARDINAL && format_ret == 32 &&
-		    nitems_ret == 1)
-		    p->type = (WindowType) *((Q_UINT32 *) data_ret);
+	    == Success) {
+	    if (type_ret == XA_CARDINAL && format_ret == 32 &&
+		nitems_ret == 1)
+		p->type = (WindowType) *((CARD32 *) data_ret);
 
-		XFree(data_ret);
-	    }
+	    XFree(data_ret);
+	}
     }
 
-    if (dirty & WMStrut)
+    if (dirty & WMStrut) {
 	if (XGetWindowProperty(p->display, p->window, net_wm_strut, 0l, 4l,
 			       False, XA_CARDINAL, &type_ret, &format_ret,
 			       &nitems_ret, &unused, &data_ret)
-	    == Success)
-	    if (data_ret) {
-		if (type_ret == XA_CARDINAL && format_ret == 32 &&
-		    nitems_ret == 4) {
-		    Q_UINT32 *d = (Q_UINT32 *) data_ret;
-		    p->strut.left   = d[0];
-		    p->strut.right  = d[1];
-		    p->strut.top    = d[2];
-		    p->strut.bottom = d[3];
-		}
-
-		XFree(data_ret);
+	    == Success) {
+	    if (type_ret == XA_CARDINAL && format_ret == 32 &&
+		nitems_ret == 4) {
+		CARD32 *d = (CARD32 *) data_ret;
+		p->strut.left   = d[0];
+		p->strut.right  = d[1];
+		p->strut.top    = d[2];
+		p->strut.bottom = d[3];
 	    }
 
-    if (dirty & WMIconGeometry)
+	    XFree(data_ret);
+	}
+    }
+
+    if (dirty & WMIconGeometry) {
 	if (XGetWindowProperty(p->display, p->window, net_wm_icon_geometry, 0l, 4l,
 			       False, XA_CARDINAL, &type_ret, &format_ret,
 			       &nitems_ret, &unused, &data_ret)
-	    == Success)
-	    if (data_ret) {
-		if (type_ret == XA_CARDINAL && format_ret == 32 &&
-		    nitems_ret == 4) {
-		    Q_UINT32 *d = (Q_UINT32 *) data_ret;
-		    p->icon_geom.pos.x       = d[0];
-		    p->icon_geom.pos.y       = d[1];
-		    p->icon_geom.size.width  = d[2];
-		    p->icon_geom.size.height = d[3];
-		}
-
-		XFree(data_ret);
+	    == Success) {
+	    if (type_ret == XA_CARDINAL && format_ret == 32 &&
+		nitems_ret == 4) {
+		CARD32 *d = (CARD32 *) data_ret;
+		p->icon_geom.pos.x       = d[0];
+		p->icon_geom.pos.y       = d[1];
+		p->icon_geom.size.width  = d[2];
+		p->icon_geom.size.height = d[3];
 	    }
 
-    if (dirty & WMIcon)
+	    XFree(data_ret);
+	}
+    }
+
+    if (dirty & WMIcon) {
 	readIcon(p);
+    }
 
     if (dirty & WMKDEDockWinFor) {
 	p->kde_dockwin_for = 0;
-	if (XGetWindowProperty(p->display, p->window, net_kde_docking_window_for,
+	if (XGetWindowProperty(p->display, p->window, net_wm_kde_docking_window_for,
 			       0l, 1l, False, XA_WINDOW, &type_ret, &format_ret,
 			       &nitems_ret, &unused, &data_ret)
-	    == Success)
-	    if (data_ret) {
-		if (type_ret == XA_WINDOW && format_ret == 32 &&
-		    nitems_ret == 1) {
-		    p->kde_dockwin_for = *((Window *) data_ret);
-		    if ( p->kde_dockwin_for == 0 )
-			p->kde_dockwin_for = p->root;
-		}
-
-		XFree(data_ret);
+	    == Success) {
+	    if (type_ret == XA_WINDOW && format_ret == 32 &&
+		nitems_ret == 1) {
+		p->kde_dockwin_for = *((Window *) data_ret);
+		if ( p->kde_dockwin_for == 0 )
+		    p->kde_dockwin_for = p->root;
 	    }
+
+	    XFree(data_ret);
+        }
     }
 
-    if (dirty & WMKDEFrameStrut)
+    if (dirty & WMKDEFrameStrut) {
 	if (XGetWindowProperty(p->display, p->window, net_wm_kde_frame_strut,
 			       0l, 4l, False, XA_CARDINAL, &type_ret, &format_ret,
 			       &nitems_ret, &unused, &data_ret) == Success) {
 	    if (type_ret == XA_CARDINAL && format_ret == 32 && nitems_ret == 4) {
-		Q_UINT32 *d = (Q_UINT32 *) data_ret;
-		
+		CARD32 *d = (CARD32 *) data_ret;
+
 		p->frame_strut.left   = d[0];
 		p->frame_strut.right  = d[1];
 		p->frame_strut.top    = d[2];
 		p->frame_strut.bottom = d[3];
 	    }
-	
+
 	    XFree(data_ret);
 	}
+    }
 
     if (dirty & WMPid) {
 	p->pid = 0;
 	if (XGetWindowProperty(p->display, p->window, net_wm_pid, 0l, 1l,
-			       False, XA_CARDINAL, &type_ret,
-			       &format_ret, &nitems_ret,
-			       &unused, &data_ret)
-	    == Success)
-	    if (data_ret) {
-		if (type_ret == XA_CARDINAL && format_ret == 32 &&
-		    nitems_ret == 1) {
-		    p->pid = *((Q_UINT32 *) data_ret);
-		}
-
-		XFree(data_ret);
+			       False, XA_CARDINAL, &type_ret, &format_ret,
+			       &nitems_ret, &unused, &data_ret) == Success) {
+	    if (type_ret == XA_CARDINAL && format_ret == 32 && nitems_ret == 1) {
+		p->pid = *((CARD32 *) data_ret);
 	    }
+
+	    XFree(data_ret);
+	}
     }
+}
 
 
+NETRect NETWinInfo::iconGeometry() const {
+    return p->icon_geom;
+}
+
+
+unsigned long NETWinInfo::state() const {
+    return p->state;
+}
+
+
+NETStrut NETWinInfo::strut() const {
+    return p->strut;
+}
+
+
+NET::WindowType NETWinInfo::windowType() const {
+    return p->type;
+}
+
+
+const char *NETWinInfo::name() const {
+    return p->name;
+}
+
+
+const char *NETWinInfo::visibleName() const {
+    return p->visible_name;
+}
+
+
+int NETWinInfo::desktop() const {
+    return p->desktop;
+}
+
+int NETWinInfo::pid() const {
+    return p->pid;
+}
+
+
+Bool NETWinInfo::handledIcons() const {
+    return p->handled_icons;
+}
+
+
+Window NETWinInfo::kdeDockWinFor() const {
+    return p->kde_dockwin_for;
+}
+
+
+unsigned long NETWinInfo::properties() const {
+    return p->properties;
+}
+
+
+NET::MappingState NETWinInfo::mappingState() const {
+    return p->mapping_state;
 }
