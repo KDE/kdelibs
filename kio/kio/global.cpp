@@ -1871,7 +1871,8 @@ bool KIO::testFileSystemFlag(const QString& filename, FileSystemFlag flag)
   case SupportsChmod:
   case SupportsChown:
   case SupportsUTime:
-      return !isMsDos;
+  case SupportsSymlinks:
+      return !isMsDos; // it's amazing the number of things FAT doesn't support :)
   case CaseInsensitive:
       return isMsDos;
   }

@@ -379,7 +379,8 @@ namespace KIO
    */
   bool manually_mounted(const QString& filename);
 
-  enum FileSystemFlag { SupportsChmod, SupportsChown, SupportsUTime, CaseInsensitive };
+  enum FileSystemFlag { SupportsChmod, SupportsChown, SupportsUTime,
+                        SupportsSymlinks, CaseInsensitive };
   /**
    * Checks the capabilities of the filesystem to which a given file belongs.
    * given feature (e.g. chmod).
@@ -392,6 +393,8 @@ namespace KIO
    * @li SupportsChown: returns true if the filesystem supports chown
    * (e.g. msdos filesystems return false)
    * @li SupportsUtime: returns true if the filesystems supports utime
+   * (e.g. msdos filesystems return false)
+   * @li SupportsSymlinks: returns true if the filesystems supports symlinks
    * (e.g. msdos filesystems return false)
    * @li CaseInsensitive: returns true if the filesystem treats
    * "foo" and "FOO" as being the same file (true for msdos systems)
