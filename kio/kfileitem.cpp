@@ -135,14 +135,18 @@ void KFileItem::init( bool _determineMimeTypeOnDemand )
        * This is the reason for the -1
        */
       struct stat buf;
-      lstat( m_url.path( -1 ), &buf );
-      mode = buf.st_mode;
-
-      if ( S_ISLNK( mode ) )
+      if ( lstat( m_url.path( -1 ), &buf ) == 0 ) // set mode only if lstat succeeded! otherwise buf is
+                                                  // undefined! (Simon)
       {
-        m_bLink = true;
-        stat( m_url.path( -1 ), &buf );
         mode = buf.st_mode;
+
+        if ( S_ISLNK( mode ) )
+        {
+          m_bLink = true;
+          stat( m_url.path( -1 ), &buf ); // shouldn't we check if stat() succeeded or not? (before
+	                                  // taking buf.st_mode blindly ) (Simon)
+          mode = buf.st_mode;
+        }
       }
     }
     if ( m_fileMode == (mode_t) -1 )
