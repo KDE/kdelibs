@@ -179,6 +179,7 @@ void KHTMLView::initGUI()
     view = new KHTMLWidget( this, "" );
     CHECK_PTR( view );
     view->setView( this );
+    setFocusProxy( view );
     
     connect( view, SIGNAL( scrollVert( int ) ), SLOT( slotScrollVert( int ) ) );
     connect( view, SIGNAL( scrollHorz( int ) ), SLOT( slotScrollHorz( int ) ) );

@@ -57,7 +57,8 @@ public:
 	// This function places the element on the page using the
 	// absolute coordinates.  Also responsible for showing/hiding
 	// non-visible elements
-	virtual void position( int _x, int _y, int _width, int _height ) {}
+	virtual void position( int /*_x*/, int /*_y*/,
+			       int /*_width*/, int /*_height*/ ) {}
 
 	virtual QString encoding()
 		{	return QString( "" ); }

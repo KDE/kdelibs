@@ -732,15 +732,43 @@ void KHTMLWidget::keyPressEvent( QKeyEvent *_ke )
 {
     switch ( _ke->key() )
     {
+      //-------------------------------------
+      // KFM Extension
+      //-------------------------------------
+        case Key_Space:
+	  {
+	    cellSelected();
+	    flushKeys();
+	  }
+	break;
+        case Key_Escape:
+	  {
+	    cellContextMenu();
+	    flushKeys();
+	  }
+	break;
+        case Key_Return:
+	  {
+	    cellActivated();
+	    flushKeys();
+	  }
+	break;	
+      //-------------------------------------
+      // End KFM Extension
+      //-------------------------------------
 	case Key_Down:
 	    {
-		if ( docHeight() < height() ) break;
-		int newY = y_offset + 20;
-		if ( newY > docHeight() - height() )
+	        // KFM Extension
+	        if ( !cellDown() )
+		{    
+		  if ( docHeight() < height() ) break;
+		  int newY = y_offset + 20;
+		  if ( newY > docHeight() - height() )
 		    newY = docHeight() - height();
-		slotScrollVert( newY );
-		emit scrollVert( newY );
-
+		  slotScrollVert( newY );
+		  emit scrollVert( newY );
+		}
+		
 		flushKeys();
 	    }
 	    break;
@@ -760,14 +788,18 @@ void KHTMLWidget::keyPressEvent( QKeyEvent *_ke )
 
 	case Key_Up:
 	    {
+	      // KFM Extension
+	      if ( !cellUp() )
+	      {  
 		if ( docHeight() < height() ) break;
 		int newY = y_offset - 20;
 		if ( newY < 0 )
-		    newY = 0;
+		  newY = 0;
 		slotScrollVert( newY );
 		emit scrollVert( newY );
-
-		flushKeys();
+	      }
+	      
+	      flushKeys();
 	    }
 	    break;
 
@@ -786,27 +818,35 @@ void KHTMLWidget::keyPressEvent( QKeyEvent *_ke )
 
 	case Key_Right:
 	    {
+	      // KFM Extension
+	      if ( !cellRight() )
+	      {  
 		if ( docWidth() < width() ) break;
 		int newX = x_offset + 20;
 		if ( newX > docWidth() - width() )
-		    newX = docWidth() - width();
+		  newX = docWidth() - width();
 		slotScrollHorz( newX );
 		emit scrollHorz( newX );
-
-		flushKeys();
+	      }
+	      
+	      flushKeys();
 	    }
 	    break;
 
 	case Key_Left:
 	    {
+	      // KFM Extension
+	      if ( !cellLeft() )
+	      {  
 		if ( docWidth() < width() ) break;
 		int newX = x_offset - 20;
 		if ( newX < 0 )
-		    newX = 0;
+		  newX = 0;
 		slotScrollHorz( newX );
 		emit scrollHorz( newX );
-
-		flushKeys();
+	      }
+	      
+	      flushKeys();
 	    }
 	    break;
 
@@ -3451,11 +3491,12 @@ const char* KHTMLWidget::parseCell( HTMLClue *_clue, const char *str )
     HTMLClue::VAlign valign = HTMLClue::Top;
     HTMLClue::HAlign halign = gridHAlign;
     
-    HTMLClueV *vc = new HTMLClueV( 0, 0, cell_width, 0 ); // fixed width
+    HTMLClueV *vc = new HTMLCell( 0, 0, cell_width, 0, url, target ); // fixed width
+    
     _clue->append( vc );
     vc->setVAlign( valign );
     vc->setHAlign( halign );
-	flow = 0;
+    flow = 0;
     str = parseBody( vc, end );
 
     vc = new HTMLClueV( 0, 0, 10, 0 ); // fixed width
@@ -4520,6 +4561,423 @@ bool KHTMLWidget::setCharset(const char *name){
         if (painter) painter->setFont( *font_stack.top() );
 	return TRUE;
 }
+
+//-----------------------------------------------------------
+// FUNCTIONS used for KFM Extension
+//-----------------------------------------------------------
+
+bool KHTMLWidget::cellUp()
+{
+  if ( clue == 0L || parsing )
+    return true;
+  
+  QList<HTMLCellInfo> list;
+  list.setAutoDelete( true );
+  
+  clue->findCells( -x_offset + leftBorder, -y_offset + topBorder, list );
+
+  // A usual HTML page ?
+  if ( list.isEmpty() )
+    return false;
+  
+  HTMLCellInfo *curr = 0L;
+  HTMLCellInfo *next = 0L;
+  
+  // Find current marker
+  HTMLCellInfo *info;
+  for ( info = list.first(); info != 0L; info = list.next() )
+  {
+    if ( info->pCell->isMarked() )
+    {
+      curr = info;
+      break;
+    }
+  }
+
+  if ( curr == 0L )
+    next = list.first();
+  else
+  { 
+    while( list.current() )
+    {
+      if ( list.current()->baseAbs < curr->baseAbs )
+	break;
+      list.prev();
+    }
+
+    if ( list.current() == 0L )
+      return true;
+    
+    HTMLCellInfo *inf; 
+    int diff = 0xFFFFFFF;
+    for ( inf = list.current(); inf != 0L; inf = list.prev() )
+    {
+      int i = curr->xAbs - inf->xAbs;
+      if ( i < 0 ) i *= -1;
+      if ( i < diff )
+      {
+	diff = i;
+	next = inf;
+      }
+    }
+  }
+  
+  if ( next == 0L )
+    return false;
+  
+  bool new_painter = false;
+  if ( painter == 0L )
+  {
+    new_painter = true;
+    painter = new QPainter;
+    painter->begin( this );
+  }
+
+  if ( curr )
+    curr->pCell->setMarker( painter, next->tx, next->ty, false );
+  next->pCell->setMarker( painter, next->tx, next->ty, true );
+
+  if ( new_painter )
+  {
+    painter->end();
+    delete painter;
+    painter = 0L;
+  }
+
+  if ( next->ty + next->pCell->getYPos() - next->pCell->getAscent() < 0 )
+    emit scrollVert( y_offset + ( next->ty + next->pCell->getYPos() - next->pCell->getAscent() ) );
+
+  emit onURL( next->pCell->getURL() );
+
+  return true;
+}
+
+bool KHTMLWidget::cellDown()
+{
+  if ( clue == 0L || parsing )
+    return true;
+  
+  QList<HTMLCellInfo> list;
+  list.setAutoDelete( true );
+  
+  clue->findCells( -x_offset + leftBorder, -y_offset + topBorder, list );
+
+  // A usual HTML page ?
+  if ( list.isEmpty() )
+    return false;
+  
+  HTMLCellInfo *curr = 0L;
+  HTMLCellInfo *next = 0L;
+  
+  // Find current marker
+  HTMLCellInfo *info;
+  for ( info = list.first(); info != 0L; info = list.next() )
+  {
+    if ( info->pCell->isMarked() )
+    {
+      curr = info;
+      break;
+    }
+  }
+
+  if ( curr == 0L )
+    next = list.first();
+  else
+  { 
+    while( list.current() )
+    {
+      if ( list.current()->baseAbs > curr->baseAbs )
+	break;
+      list.next();
+    }
+
+    if ( list.current() == 0L )
+      return false;
+    
+    HTMLCellInfo *inf; 
+    int diff = 0xFFFFFFF;
+    for ( inf = list.current(); inf != 0L; inf = list.next() )
+    {
+      int i = curr->xAbs - inf->xAbs;
+      if ( i < 0 ) i *= -1;
+      if ( i < diff )
+      {
+	diff = i;
+	next = inf;
+      }
+    }
+  }
+  
+  if ( next == 0L )
+    return false;
+  
+  bool new_painter = false;
+  if ( painter == 0L )
+  {
+    new_painter = true;
+    painter = new QPainter;
+    painter->begin( this );
+  }
+
+  if ( curr )
+    curr->pCell->setMarker( painter, next->tx, next->ty, false );
+  next->pCell->setMarker( painter, next->tx, next->ty, true );
+
+  if ( new_painter )
+  {
+    painter->end();
+    delete painter;
+    painter = 0L;
+  }
+
+  if ( next->ty + next->pCell->getYPos() + next->pCell->getDescent() > height() )
+    emit scrollVert( y_offset + ( next->ty + next->pCell->getYPos() + next->pCell->getDescent() - height() ) );
+
+  emit onURL( next->pCell->getURL() );
+
+  return true;
+}
+
+bool KHTMLWidget::cellLeft()
+{
+  if ( clue == 0L || parsing )
+    return true;
+  
+  QList<HTMLCellInfo> list;
+  list.setAutoDelete( true );
+  
+  clue->findCells( -x_offset + leftBorder, -y_offset + topBorder, list );
+
+  if ( list.isEmpty() )
+    return false;
+  
+  HTMLCellInfo *curr = 0L;
+  HTMLCellInfo *next = 0L;
+  
+  // Find current marker
+  HTMLCellInfo *info;
+  for ( info = list.first(); info != 0L; info = list.next() )
+  {
+    if ( info->pCell->isMarked() )
+    {
+      curr = info;
+      break;
+    }
+  }
+
+  if ( curr == 0L )
+    next = list.first();
+  else
+    next = list.prev();
+  
+  if ( next == 0L )
+    return false;
+  
+  bool new_painter = false;
+  if ( painter == 0L )
+  {
+    new_painter = true;
+    painter = new QPainter;
+    painter->begin( this );
+  }
+
+  if ( curr )
+    curr->pCell->setMarker( painter, next->tx, next->ty, false );
+  next->pCell->setMarker( painter, next->tx, next->ty, true );
+
+  if ( new_painter )
+  {
+    painter->end();
+    delete painter;
+    painter = 0L;
+  }
+
+  if ( next->ty + next->pCell->getYPos() - next->pCell->getAscent() < 0 )
+    emit scrollVert( y_offset + ( next->ty + next->pCell->getYPos() - next->pCell->getAscent() ) );
+
+  emit onURL( next->pCell->getURL() );
+
+  return true;
+}
+
+bool KHTMLWidget::cellRight()
+{
+  if ( clue == 0L || parsing )
+    return true;
+  
+  QList<HTMLCellInfo> list;
+  list.setAutoDelete( true );
+  
+  clue->findCells( -x_offset + leftBorder, -y_offset + topBorder, list );
+
+  if ( list.isEmpty() )
+    return false;
+  
+  HTMLCellInfo *curr = 0L;
+  HTMLCellInfo *next = 0L;
+  
+  // Find current marker
+  HTMLCellInfo *info;
+  for ( info = list.first(); info != 0L; info = list.next() )
+  {
+    if ( info->pCell->isMarked() )
+    {
+      curr = info;
+      break;
+    }
+  }
+
+  if ( curr == 0L )
+    next = list.first();
+  else
+    next = list.next();
+  
+  if ( next == 0L )
+    return false;
+  
+  bool new_painter = false;
+  if ( painter == 0L )
+  {
+    new_painter = true;
+    painter = new QPainter;
+    painter->begin( this );
+  }
+
+  if ( curr )
+    curr->pCell->setMarker( painter, next->tx, next->ty, false );
+  next->pCell->setMarker( painter, next->tx, next->ty, true );
+
+  if ( new_painter )
+  {
+    painter->end();
+    delete painter;
+    painter = 0L;
+  }
+
+  emit onURL( next->pCell->getURL() );
+  
+  if ( next->ty + next->pCell->getYPos() + next->pCell->getDescent() > height() )
+    emit scrollVert( y_offset + ( next->ty + next->pCell->getYPos() + next->pCell->getDescent() - height() ) );
+
+  return true;
+}
+
+void KHTMLWidget::cellSelected()
+{
+  if ( clue == 0L || parsing )
+    return;
+  
+  QList<HTMLCellInfo> list;
+  list.setAutoDelete( true );
+  
+  clue->findCells( -x_offset + leftBorder, -y_offset + topBorder, list );
+
+  if ( list.isEmpty() )
+    return;
+  
+  HTMLCellInfo *curr = 0L;
+  
+  // Find current marker
+  HTMLCellInfo *info;
+  for ( info = list.first(); info != 0L; info = list.next() )
+  {
+    if ( info->pCell->isMarked() )
+    {
+      curr = info;
+      break;
+    }
+  }
+
+  if ( curr == 0L )
+    return;
+  if ( curr->pCell->getURL() == 0L )
+    return;
+  
+  QStrList urllist;
+  getSelected( urllist );
+
+  bool mode = true;
+  if ( urllist.find( curr->pCell->getURL() ) != -1 )
+    mode = false;
+  
+  selectByURL( 0L, curr->pCell->getURL(), mode );
+}
+
+void KHTMLWidget::cellActivated()
+{
+  if ( clue == 0L || parsing )
+    return;
+  
+  QList<HTMLCellInfo> list;
+  list.setAutoDelete( true );
+  
+  clue->findCells( -x_offset + leftBorder, -y_offset + topBorder, list );
+
+  if ( list.isEmpty() )
+    return;
+  
+  HTMLCellInfo *curr = 0L;
+  
+  // Find current marker
+  HTMLCellInfo *info;
+  for ( info = list.first(); info != 0L; info = list.next() )
+  {
+    if ( info->pCell->isMarked() )
+    {
+      curr = info;
+      break;
+    }
+  }
+
+  if ( curr == 0L )
+    return;
+  if ( curr->pCell->getURL() == 0L )
+    return;
+
+  emit URLSelected( curr->pCell->getURL(), LeftButton, curr->pCell->getTarget() );
+}
+
+void KHTMLWidget::cellContextMenu()
+{
+  if ( clue == 0L || parsing )
+    return;
+  
+  QList<HTMLCellInfo> list;
+  list.setAutoDelete( true );
+  
+  clue->findCells( -x_offset + leftBorder, -y_offset + topBorder, list );
+
+  if ( list.isEmpty() )
+    return;
+  
+  HTMLCellInfo *curr = 0L;
+  
+  // Find current marker
+  HTMLCellInfo *info;
+  for ( info = list.first(); info != 0L; info = list.next() )
+  {
+    if ( info->pCell->isMarked() )
+    {
+      curr = info;
+      break;
+    }
+  }
+
+  if ( curr == 0L )
+    return;
+  printf("curr->url='%s'\n",curr->pCell->getURL());
+  
+  if ( curr->pCell->getURL() == 0L )
+    return;
+
+  QPoint p( curr->tx, curr->ty );
+  
+  emit popupMenu( curr->pCell->getURL(), mapToGlobal( p ) );
+}
+
+//-----------------------------------------------------------
+// End KFM Extensions
+//-----------------------------------------------------------
 
 #include "html.moc"
 

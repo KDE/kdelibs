@@ -152,6 +152,8 @@ public:
 
     virtual HTMLAnchor* findAnchor( const char *_name, QPoint *_p );
 
+    virtual void findCells( int _tx, int _ty, QList<HTMLCellInfo> &_list );
+  
 protected:
     HTMLObject *head;
     HTMLObject *tail;
@@ -242,7 +244,7 @@ public:
     virtual int  getRightMargin( int _y );
     virtual int  getLeftClear( int _y );
     virtual int  getRightClear( int _y );
-
+  
 protected:
     void removeAlignedByParent( HTMLObject *p );
 
@@ -251,6 +253,32 @@ protected:
     // clue.  Child objects must wrap their contents around these.
     HTMLClueAligned *alignLeftList;
     HTMLClueAligned *alignRightList;
+};
+
+/**
+ * Used for KFMs HTML extension
+ */
+class HTMLCell : public HTMLClueV
+{
+public:
+  HTMLCell( int _x, int _y, int _max_width, int _percent = 100, const char *_url = 0L, const char *_target = 0L );
+  virtual ~HTMLCell() { }
+  
+  virtual const char* getURL() const { return url; }
+  virtual const char* getTarget() const { return target; }
+
+  virtual bool print( QPainter *_painter, int _x, int _y, int _width,
+		      int _height, int _tx, int _ty, bool toPrinter );
+
+  virtual bool isMarked() { return bIsMarked; }
+  virtual void setMarker( QPainter *_painter, int _tx, int _ty, bool _mode );
+  virtual void findCells( int _tx, int _ty, QList<HTMLCellInfo> &_list );
+
+protected:
+  const char *url;
+  const char *target;
+
+  bool bIsMarked;
 };
 
 //-----------------------------------------------------------------------------
@@ -370,6 +398,8 @@ public:
 	    int _width, int _height, int _tx, int _ty );
     virtual void print( QPainter *, int _tx, int _ty );
 
+    virtual void findCells( int _tx, int _ty, QList<HTMLCellInfo> &_list );
+  
 protected:
     void setCells( unsigned int r, unsigned int c, HTMLTableCell *cell );
     void calcColumnWidths();

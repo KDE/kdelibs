@@ -1,6 +1,12 @@
 KHTMLW CHANGES
 ==============
 
+Version 0.12.11 - 19 Feb. 1998 ( Torben )
+---------------
+
+Allows navigation between cell with cursor keys.
+This feature is used by KFM and depends on the <cell> tag.
+
 Version 0.12.10 - 15 February 1998
 ---------------
 

@@ -981,6 +981,29 @@ int HTMLTable::findPageBreak( int _y )
     return -1;
 }
 
+void HTMLTable::findCells( int _tx, int _ty, QList<HTMLCellInfo> &_list )
+{
+    _tx += x;
+    _ty += y - ascent;
+
+    unsigned int r, c;
+    HTMLTableCell *cell;
+
+    for ( r = 0; r < totalRows; r++ )
+    {
+	for ( c = 0; c < totalCols; c++ )
+	{
+	    if ( ( cell = cells[r][c] ) == 0 )
+		continue;
+	    if ( c < totalCols - 1 && cell == cells[r][c+1] )
+		continue;
+	    if ( r < totalRows - 1 && cells[r+1][c] == cell )
+		continue;
+	    cell->findCells( _tx, _ty, _list );
+	}
+    }
+}
+
 bool HTMLTable::print( QPainter *_painter, int _x, int _y, int _width, int _height, int _tx, int _ty, bool toPrinter )
 {
     if ( _y + _height < y - getAscent() || _y > y )
@@ -1291,6 +1314,17 @@ void HTMLClue::selectByURL( QPainter *_painter, const char *_url, bool _select, 
 
     for ( obj = head; obj != 0; obj = obj->next() )
 	obj->selectByURL( _painter, _url, _select, _tx, _ty );
+}
+
+void HTMLClue::findCells( int _tx, int _ty, QList<HTMLCellInfo> &_list )
+{
+    HTMLObject *obj;
+
+    _tx += x;
+    _ty += y - ascent;
+
+    for ( obj = head; obj != 0; obj = obj->next() )
+	obj->findCells( _tx, _ty, _list );
 }
 
 bool HTMLClue::selectText( QPainter *_painter, int _x1, int _y1,
@@ -1697,7 +1731,7 @@ bool HTMLClueV::print( QPainter *_painter, int _x, int _y, int _width, int _heig
 	clue->print( _painter, _tx + clue->parent()->getXPos(),
 		_ty + clue->parent()->getYPos() - clue->parent()->getAscent() );
     }
-
+    
     return rv;
 }
 
@@ -1876,6 +1910,76 @@ int HTMLClueV::getRightClear( int _y )
     }
 
     return clearPos;
+}
+
+//-----------------------------------------------------------------------------
+
+HTMLCell::HTMLCell( int _x, int _y, int _max_width, int _percent, const char *_url, const char *_target ) :
+  HTMLClueV( _x, _y, _max_width, _percent )
+{
+  url = _url;
+  target = _target;
+  bIsMarked = false;
+}
+
+bool HTMLCell::print( QPainter *_painter, int _x, int _y, int _width, int _height, int _tx, int _ty, bool toPrinter )
+{
+  bool rv = HTMLClueV::print( _painter, _x, _y, _width, _height, _tx, _ty, toPrinter );
+  
+  // print aligned objects
+  if ( _y + _height < y - getAscent() || _y > y )
+    return rv;
+  
+  _tx += x;
+  _ty += y - ascent;
+  
+  if ( !toPrinter && bIsMarked )
+  {
+    QPen pen( _painter->pen() );
+    _painter->setPen( black );
+    _painter->drawRect( _tx, _ty, width, ascent + descent );
+    _painter->setPen( pen );
+  }
+    
+  return rv;
+}
+
+void HTMLCell::findCells( int _tx, int _ty, QList<HTMLCellInfo> &_list )
+{
+    int old_ty = _ty;
+    int old_tx = _tx;
+  
+    _tx += x;
+    _ty += y - ascent;
+
+    HTMLObject *obj;
+
+    HTMLCellInfo *p = new HTMLCellInfo;
+    p->pCell = this;
+    p->xAbs = _tx;
+    p->baseAbs = old_ty + y;
+    p->tx = old_tx;
+    p->ty = old_ty;
+    
+    _list.append( p );
+
+    for ( obj = head; obj != 0; obj = obj->next() )
+	obj->findCells( _tx, _ty, _list );
+}
+
+void HTMLCell::setMarker( QPainter *_painter, int _tx, int _ty, bool _mode )
+{
+  if ( bIsMarked == _mode )
+    return;
+ 
+  bIsMarked = _mode;
+  
+  if ( bIsMarked )
+    _painter->setPen( black );
+  else
+    _painter->setPen( _painter->backgroundColor() );
+
+  _painter->drawRect( _tx + x, _ty + y - ascent, width, ascent + descent );
 }
 
 //-----------------------------------------------------------------------------

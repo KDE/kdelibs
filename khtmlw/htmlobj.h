@@ -50,6 +50,21 @@ class KHTMLWidget;
 
 #include "htmlfont.h"
 
+class HTMLCell;
+
+/**
+ * Used by @ref HTMLObject::findCells
+ */
+struct HTMLCellInfo
+{
+public:
+  HTMLCell *pCell;
+  int xAbs;
+  int baseAbs;
+  int tx;
+  int ty;
+};
+
 class HTMLAnchor;
 
 //-----------------------------------------------------------------------------
@@ -227,6 +242,8 @@ public:
     HTMLObject *next() const { return nextObj; }
 
     void printCount() { printf( "Object count: %d\n", objCount ); }
+
+    virtual void findCells( int, int, QList<HTMLCellInfo> & ) { }
 
 protected:
     int x;

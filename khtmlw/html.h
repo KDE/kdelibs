@@ -37,6 +37,7 @@
 
 class KHTMLWidget;
 
+
 #include "drag.h"
 #include "htmldata.h"
 #include "htmlobj.h"
@@ -535,7 +536,21 @@ public:
      *
      */
     bool setCharset(const char *name); 
-                                       
+
+    //-----------------------------------------------------------
+    // FUNCTIONS used for KFM Extension
+    // -----------------------------------------------------------
+    bool cellDown();
+    bool cellUp();
+    bool cellLeft();
+    bool cellRight();
+    void cellSelected();
+    void cellActivated();
+    void cellContextMenu();
+    //-----------------------------------------------------------
+    // End KFM Extensions
+    // -----------------------------------------------------------
+  
 signals:
     /**
      * This signal is emitted whenever the Widget wants to
@@ -682,7 +697,6 @@ public slots:
      */
     void slotScrollHorz( int _x );
 
-    /// Called if an file request is completed
     /**
      * Call when a file requested by @ref #fileRequest has been loaded.
      *
@@ -691,7 +705,7 @@ public slots:
      * the local filesystem.
      */
     void slotFileLoaded( const char *_url, const char *_filename );
-    
+  
 protected slots:
 //    void slotTimeout();
 
