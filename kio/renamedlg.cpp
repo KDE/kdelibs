@@ -1,3 +1,23 @@
+/* This file is part of the KDE libraries
+    Copyright (C) 2000 Stephan Kulow <coolo@kde.org>
+                       David Faure <faure@kde.org>
+
+    This library is free software; you can redistribute it and/or
+    modify it under the terms of the GNU Library General Public
+    License as published by the Free Software Foundation; either
+    version 2 of the License, or (at your option) any later version.
+
+    This library is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    Library General Public License for more details.
+
+    You should have received a copy of the GNU Library General Public License
+    along with this library; see the file COPYING.LIB.  If not, write to
+    the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+    Boston, MA 02111-1307, USA.
+*/
+
 #include "kio/renamedlg.h"
 
 #include <stdio.h>
@@ -7,26 +27,34 @@
 #include <qfileinfo.h>
 
 #include <kapp.h>
+#include <kio/global.h>
 #include <kdialog.h>
 #include <klocale.h>
+#include <kglobal.h>
 #include <kurl.h>
 #include <kprotocolmanager.h>
 
 using namespace KIO;
 
-RenameDlg::RenameDlg(QWidget *parent, const QString &_src, const QString &_dest,
-                     RenameDlg_Mode _mode, bool _srcNewer, bool _modal)
-  : QDialog ( parent, "" , _modal )
+RenameDlg::RenameDlg(QWidget *parent, const QString & _caption,
+                     const QString &_src, const QString &_dest,
+                     RenameDlg_Mode _mode,
+                     unsigned long sizeSrc,
+                     unsigned long sizeDest,
+                     time_t ctimeSrc,
+                     time_t ctimeDest,
+                     time_t mtimeSrc,
+                     time_t mtimeDest,
+                     bool _modal)
+  : QDialog ( parent, "KIO::RenameDialog" , _modal )
 {
   modal = _modal;
-  srcNewer = _srcNewer;
-
   src = _src;
   dest = _dest;
 
   b0 = b1 = b2 = b3 = b4 = b5 = b6 = b7 = 0L;
 
-  setCaption( i18n( "Rename File" ) );
+  setCaption( _caption );
 
   b0 = new QPushButton( i18n( "Cancel" ), this );
   connect(b0, SIGNAL(clicked()), this, SLOT(b0Pressed()));
@@ -75,25 +103,44 @@ RenameDlg::RenameDlg(QWidget *parent, const QString &_src, const QString &_dest,
     lb = new QLabel( i18n("This action would overwrite %1 with itself.\n"
 			  "Do you want to rename it instead?").arg(src), this );
   }  else if ( _mode & M_OVERWRITE ) {
-      QString sentense1;
-      if (srcNewer)
-	  sentense1 = i18n("An older item named %1 already exists.\n").arg(dest);
-      else
-	  sentense1 = i18n("A newer item named %1 already exists.\n").arg(dest);
+      QString sentence1;
 
-      lb = new QLabel( sentense1 +
-		       i18n("Do you want to replace it with %1,\n"
-			    "or rename it?").arg(src), this );
-  }  else if ( !(_mode & M_OVERWRITE ) ) {
-      QString sentense1;
-      if (srcNewer)
-	  sentense1 = i18n("An older item than %1 already exists.\n").arg(src);
+      // TODO rewrite this with a GridLayout and even icons, a la kpropsdlg
+      if (mtimeDest < mtimeSrc)
+	  sentence1 = i18n("An older item named %1 already exists\n"
+                           "    size %2\n    created on %3\n    modified on %4\n");
       else
-	  sentense1 = i18n("A newer item than %1 already exists.\n").arg(src);
+	  sentence1 = i18n("A newer item named %1 already exists\n"
+                           "    size %2\n    created on %3\n    modified on %4\n");
 
-      lb = new QLabel( sentense1 + i18n("Do you want to rename the existing item?"), this );
+      QDateTime dctime; dctime.setTime_t( ctimeDest );
+      QDateTime dmtime; dmtime.setTime_t( mtimeDest );
+
+      sentence1 = sentence1.arg(dest).
+          arg(KIO::convertSize(sizeDest)).
+          arg(KGlobal::locale()->formatDateTime(dctime)).
+          arg(KGlobal::locale()->formatDateTime(dmtime));
+
+      QString sentence2 = i18n("The original file is %1\n"
+                               "    size %2\n    created on %3\n    modified on %4\n");
+      dctime.setTime_t( ctimeSrc );
+      dmtime.setTime_t( mtimeSrc );
+      sentence2 = sentence2.arg(src).arg(KIO::convertSize(sizeSrc)).
+          arg(KGlobal::locale()->formatDateTime(dctime)).
+          arg(KGlobal::locale()->formatDateTime(dmtime));
+
+      lb = new QLabel( sentence1 + "\n" + sentence2, this );
   } else
-      assert( 0 );
+  {
+      // I wonder when this happens (David). And 'dest' isn't shown at all here...
+      QString sentence1;
+      if (mtimeDest < mtimeSrc)
+	  sentence1 = i18n("An older item than %1 already exists.\n").arg(src);
+      else
+	  sentence1 = i18n("A newer item than %1 already exists.\n").arg(src);
+
+      lb = new QLabel( sentence1 + i18n("Do you want to use another file name?"), this );
+  }
 
   m_pLayout->addWidget(lb);
   m_pLineEdit = new QLineEdit( this );
@@ -231,19 +278,29 @@ void RenameDlg::b7Pressed()
     emit result( this, 7, src, dest );
 }
 
-RenameDlg_Result KIO::open_RenameDlg( const QString & _src, const QString & _dest,
-				 RenameDlg_Mode _mode, bool _srcNewer,
-				 QString& _new )
+RenameDlg_Result KIO::open_RenameDlg( const QString & _caption,
+                                      const QString & _src, const QString & _dest,
+                                      RenameDlg_Mode _mode,
+                                      QString& _new,
+                                      unsigned long sizeSrc,
+                                      unsigned long sizeDest,
+                                      time_t ctimeSrc,
+                                      time_t ctimeDest,
+                                      time_t mtimeSrc,
+                                      time_t mtimeDest)
 {
   ASSERT(kapp);
 
-  RenameDlg dlg( 0L, _src, _dest, _mode, _srcNewer, true );
+  RenameDlg dlg( 0L, _caption, _src, _dest, _mode,
+                 sizeSrc, sizeDest, ctimeSrc, ctimeDest, mtimeSrc, mtimeDest,
+                 true /*modal*/ );
   int i = dlg.exec();
   _new = dlg.newName();
 
   return (RenameDlg_Result)i;
 }
 
+/*
 unsigned long KIO::getOffset( QString dest ) {
 
   if ( KProtocolManager::self().markPartial() )
@@ -255,5 +312,6 @@ unsigned long KIO::getOffset( QString dest ) {
 
   return info.size();
 }
+*/
 
 #include "renamedlg.moc"

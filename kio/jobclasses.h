@@ -95,7 +95,7 @@ namespace KIO {
          * message using %1.
          * Example for errid == ERR_CANNOT_OPEN_FOR_READING:
          *   i18n( "Could not read\n%1" ).arg( errortext );
-         * Use this to display the error yourself, but for a dialog box 
+         * Use this to display the error yourself, but for a dialog box
          * use @ref KIO::ErrorDialog.
          */
         QString errorString();
@@ -129,7 +129,7 @@ namespace KIO {
          */
         virtual void slotResult( KIO::Job *job );
 
-    
+
     protected:
         /**
          * Add a job that has to be finished before a result
@@ -181,7 +181,7 @@ namespace KIO {
          * work on this job.
          **/
         virtual void start( Slave *slave );
-    
+
         /**
          * @internal
          * Slave in use by this job
@@ -226,7 +226,7 @@ namespace KIO {
          * work on this job.
          */
         virtual void start( Slave *slave );
-    
+
     protected slots:
         void slotStatEntry( const KIO::UDSEntry & entry );
 
@@ -249,12 +249,12 @@ namespace KIO {
                     const QByteArray &_staticData = QByteArray());
 
         virtual void start(Slave *slave);
-    
+
         /**
          * Flow control. Suspend data processing from the slave.
          */
         void suspend();
-    
+
         /**
          * Flow control. Resume data processing from the slave.
          */
@@ -305,7 +305,7 @@ namespace KIO {
          * work on this job.
          */
         virtual void start( Slave *slave );
-    
+
     protected slots:
         virtual void slotData( KIO::Job *, const QByteArray &data);
         void slotMimetype( const QString &mimetype );
@@ -355,7 +355,7 @@ namespace KIO {
 
     class ListJob : public SimpleJob {
     Q_OBJECT
-    
+
     public:
         ListJob(const KURL& url, bool recursive = false, QString prefix = QString::null);
 
@@ -381,6 +381,7 @@ namespace KIO {
         QString linkDest; // for symlinks only
         mode_t permissions;
         mode_t type;
+        time_t ctime;
         time_t mtime;
         off_t size; // 0 for dirs
     };
@@ -388,7 +389,7 @@ namespace KIO {
     // Copy or Move
     class CopyJob : public Job {
     Q_OBJECT
-    
+
     public:
         CopyJob( const KURL::List& src, const KURL& dest, bool move = false );
 

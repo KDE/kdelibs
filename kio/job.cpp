@@ -855,6 +855,8 @@ void CopyJob::slotEntries(KIO::Job* job, const UDSEntryList& list)
                     break;
                 case UDS_MODIFICATION_TIME:
                     info.mtime = (time_t)((*it2).m_long);
+                case UDS_CREATION_TIME:
+                    info.ctime = (time_t)((*it2).m_long);
                 default:
                     break;
             }
@@ -1060,20 +1062,27 @@ void CopyJob::slotResultConflictCreatingDirs( KIO::Job * job )
     // The dir we were trying to create:
     QValueList<CopyInfo>::Iterator it = dirs.begin();
     // Its modification time:
-    time_t destmtime = (time_t)0;
+    time_t destmtime = (time_t)-1;
+    time_t destctime = (time_t)-1;
+    unsigned long destsize = 0;
     UDSEntry entry = ((KIO::StatJob*)job)->statResult();
     KIO::UDSEntry::ConstIterator it2 = entry.begin();
     for( ; it2 != entry.end(); it2++ ) {
-        if ((*it2).m_uds == UDS_MODIFICATION_TIME ) {
-            destmtime = (time_t)((*it2).m_long);
-            break;
+        switch ((*it2).m_uds) {
+            case UDS_MODIFICATION_TIME:
+                destmtime = (time_t)((*it2).m_long);
+                break;
+            case UDS_CREATION_TIME:
+                destctime = (time_t)((*it2).m_long);
+                break;
+            case UDS_SIZE:
+                destsize = (*it2).m_long;
+                break;
         }
     }
     subjobs.remove( job );
     assert ( subjobs.isEmpty() ); // We should have only one job at a time ...
 
-    // Is the source dir newer than the existing dest dir ?
-    bool srcnewer = (*it).mtime >= destmtime;
     // Always multi and skip (since there are files after that)
     RenameDlg_Mode mode = (RenameDlg_Mode)( M_MULTI | M_SKIP );
     // Overwrite only if the existing thing is a dir (no chance with a file)
@@ -1082,8 +1091,11 @@ void CopyJob::slotResultConflictCreatingDirs( KIO::Job * job )
 
     QString existingDest = (*it).uDest.path();
     QString newPath;
-    RenameDlg_Result r = open_RenameDlg( (*it).uSource.url(), existingDest,
-                                         mode, srcnewer, newPath );
+    RenameDlg_Result r = open_RenameDlg( i18n("Directory already exists"),
+                                         (*it).uSource.url(), existingDest, mode, newPath,
+                                         (*it).size, destsize,
+                                         (*it).ctime, destctime,
+                                         (*it).mtime, destmtime );
     switch ( r ) {
         case R_CANCEL:
             m_error = ERR_USER_CANCELED;
@@ -1243,18 +1255,25 @@ void CopyJob::slotResultConflictCopyingFiles( KIO::Job * job )
       || ( m_conflictError == ERR_DIR_ALREADY_EXIST ) )
     {
         // Its modification time:
-        time_t destmtime = (time_t)0;
+        time_t destmtime = (time_t)-1;
+        time_t destctime = (time_t)-1;
+        unsigned long destsize = 0;
         UDSEntry entry = ((KIO::StatJob*)job)->statResult();
         KIO::UDSEntry::ConstIterator it2 = entry.begin();
         for( ; it2 != entry.end(); it2++ ) {
-            if ((*it2).m_uds == UDS_MODIFICATION_TIME ) {
-                destmtime = (time_t)((*it2).m_long);
-                break;
+            switch ((*it2).m_uds) {
+                case UDS_MODIFICATION_TIME:
+                    destmtime = (time_t)((*it2).m_long);
+                    break;
+                case UDS_CREATION_TIME:
+                    destctime = (time_t)((*it2).m_long);
+                    break;
+                case UDS_SIZE:
+                    destsize = (*it2).m_long;
+                    break;
             }
         }
 
-        // Is the source file newer than the dest file ?
-        bool srcnewer = (*it).mtime >= destmtime;
         // Offer overwrite only if the existing thing is a file
         RenameDlg_Mode mode = (RenameDlg_Mode)
             ( m_conflictError == ERR_FILE_ALREADY_EXIST ? M_OVERWRITE : 0 );
@@ -1262,8 +1281,12 @@ void CopyJob::slotResultConflictCopyingFiles( KIO::Job * job )
             mode = (RenameDlg_Mode) ( mode | M_MULTI | M_SKIP );
         else
             mode = (RenameDlg_Mode) ( mode | M_SINGLE );
-        res = open_RenameDlg( (*it).uSource.url(), (*it).uDest.path(),
-                                             mode, srcnewer, newPath );
+        res = open_RenameDlg( m_conflictError == ERR_FILE_ALREADY_EXIST ?
+                                i18n("File already exists") : i18n("Already exists as a directory"),
+                              (*it).uSource.url(), (*it).uDest.path(), mode, newPath,
+                              (*it).size, destsize,
+                              (*it).ctime, destctime,
+                              (*it).mtime, destmtime );
     }
     else
     {
