@@ -24,21 +24,26 @@
 
 using namespace KABC;
 
-Geo::Geo() :
-  mLatitude( 0 ), mLongitude( 0 ), mValidLat( false ), mValidLong( false )
+Geo::Geo()
+  : mLatitude( 91 ), mLongitude( 181 ), mValidLat( false ), mValidLong( false )
 {
 }
 
-Geo::Geo( float latitude, float longitude ) :
-  mLatitude( latitude ), mLongitude( longitude ),
-  mValidLat( true ), mValidLong( true )
+Geo::Geo( float latitude, float longitude )
 {
+  setLatitude( latitude );
+  setLongitude( longitude );
 }
 
 void Geo::setLatitude( float latitude )
 {
-  mLatitude = latitude;
-  mValidLat = true;
+  if ( latitude >= -90 && latitude <= 90 ) {
+    mLatitude = latitude;
+    mValidLat = true;
+  } else {
+    mLatitude = 91;
+    mValidLat = false;
+  }
 }
 
 float Geo::latitude() const
@@ -48,8 +53,13 @@ float Geo::latitude() const
 
 void Geo::setLongitude( float longitude)
 {
-  mLongitude = longitude;
-  mValidLong = true;
+  if ( longitude >= -180 && longitude <= 180 ) {
+    mLongitude = longitude;
+    mValidLong = true;
+  } else {
+    mLongitude = 181;
+    mValidLong = false;
+  }
 }
 
 float Geo::longitude() const
