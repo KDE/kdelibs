@@ -9,3 +9,8 @@ InfoOutput=4
 # KRun debug info off
 [7010]
 InfoOutput=4
+
+# KOStore debug info off
+[30002]
+InfoOutput=4
+
