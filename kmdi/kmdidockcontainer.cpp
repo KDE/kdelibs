@@ -55,6 +55,8 @@ KMdiDockContainer::KMdiDockContainer(QWidget *parent, QWidget *win, int position
   mTabCnt=0;
   m_position = position;
   m_previousTab=-1;
+  m_width = 100;
+  m_height = 100;
 
   kdDebug(760)<<"KMdiDockContainer created"<<endl;
 
@@ -99,7 +101,7 @@ KMdiDockContainer::KMdiDockContainer(QWidget *parent, QWidget *win, int position
 }
 
 void KMdiDockContainer::setStyle(int style) {
-	if (m_tb)  m_tb->setStyle(KMultiTabBar::KMultiTabBarStyle(style));
+        if (m_tb)  m_tb->setStyle(KMultiTabBar::KMultiTabBarStyle(style));
 }
 
 KMdiDockContainer::~KMdiDockContainer()
@@ -252,8 +254,8 @@ void KMdiDockContainer::removeWidget(KDockWidget* dwdg)
   if (!m_map.contains(w)) return;
   int id=m_map[w];
   if (m_tb->isTabRaised(id)) {
-	  m_tb->setTab(id,false);
-	  tabClicked(id);
+          m_tb->setTab(id,false);
+          tabClicked(id);
   }
   m_tb->removeTab(id);
   m_ws->removeWidget(w);
@@ -280,9 +282,9 @@ void KMdiDockContainer::undockWidget(KDockWidget *dwdg)
 
   int id=m_map[w];
   if (m_tb->isTabRaised(id)) {
-	  kdDebug(760)<<"Wiget has been undocked, setting tab down"<<endl;
-	  m_tb->setTab(id,false);
-	  tabClicked(id);
+          kdDebug(760)<<"Wiget has been undocked, setting tab down"<<endl;
+          m_tb->setTab(id,false);
+          tabClicked(id);
   }
 }
 
@@ -299,7 +301,8 @@ void KMdiDockContainer::tabClicked(int t)
        m_ws->show ();
        parentDockWidget()->restoreFromForcedFixedSize();
     }
-      if (!m_ws->widget(t))
+
+    if (!m_ws->widget(t))
     {
       m_revMap[t]->manualDock(parentDockWidget(),KDockWidget::DockCenter,20);
       if (call_makeVisible) m_revMap[t]->makeDockVisible();//manualDock(parentDockWidget(),KDockWidget::DockCenter,20);
@@ -307,12 +310,21 @@ void KMdiDockContainer::tabClicked(int t)
       emit activated(this);
       return;
     }
+
     m_ws->raiseWidget(t);
+//kdDebug()<<"=== "<<m_width<<", "<<m_height<<endl;
     if (m_ws->widget(t)) {
       KDockWidget *tmpDw=static_cast<KDockWidget*>(m_ws->widget(t)->qt_cast("KDockWidget"));
-      if (tmpDw) {
+      if (tmpDw)
+      {
         if (tmpDw->getWidget()) tmpDw->getWidget()->setFocus();
-      } else kdDebug(760)<<"Something really weird is going on"<<endl;
+        if ( m_vertical )
+          parentDockWidget()->setForcedFixedWidth( m_width );
+        else
+          parentDockWidget()->setForcedFixedHeight( m_height );
+      }
+      else
+        kdDebug(760)<<"Something really weird is going on"<<endl;
     } else
       kdDebug(760)<<"KMdiDockContainer::tabClicked(int): m_ws->widget(t)==0 "<<endl;
 
@@ -333,7 +345,12 @@ void KMdiDockContainer::tabClicked(int t)
 //    ((KDockWidget*)m_ws->widget(t))->undock();
     }
     m_block=false;
+    if ( m_vertical )
+      m_width = m_ws->width();
+    else
+      m_height = m_ws->height();
     m_ws->hide ();
+
   kdDebug(760)<<"Fixed Width:"<<m_tb->width()<<endl;
   if (m_vertical)
   parentDockWidget()->setForcedFixedWidth(m_tb->width()+2); // strange why it worked before at all
@@ -507,6 +524,10 @@ void KMdiDockContainer::save(KConfig* cfg,const QString& group_or_prefix)
       cfg->writeEntry(m_ws->widget(it.current()->id())->name(),true);
   ++i;
   }
+
+  cfg->writeEntry( "width", m_width );
+  cfg->writeEntry( "height", m_height );
+
   cfg->sync();
   cfg->setGroup(grp);
 
@@ -522,7 +543,9 @@ void KMdiDockContainer::load(KConfig* cfg,const QString& group_or_prefix)
   else
     deactivateOverlapMode();
 
-
+  m_width = cfg->readNumEntry( "width", m_width );
+  m_height = cfg->readNumEntry( "height", m_height );
+kdDebug()<<"=== "<<m_width<<", "<<m_height<<endl;
   int i=0;
   QString raise;
   while (true)
