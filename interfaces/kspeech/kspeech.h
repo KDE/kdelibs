@@ -352,7 +352,7 @@
      ASYNC MyPart::sentenceStarted(const QCString& appId, const uint jobNum, const uint seq)
      {
          // Check appId to determine if this is our signal.
-         if (appId != dcopClient()->appId) return;
+         if (appId != dcopClient()->appId()) return;
          // Do something here.
      }
    @endverbatim
