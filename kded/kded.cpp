@@ -96,11 +96,9 @@ public:
 };
 
 
-Kded::Kded(bool checkUpdates, int pollInterval, int NFSPollInterval)
+Kded::Kded(bool checkUpdates)
   : DCOPObject("kbuildsycoca"), DCOPObjectProxy(), 
-    b_checkUpdates(checkUpdates),
-    m_PollInterval(pollInterval), 
-    m_NFSPollInterval(NFSPollInterval)
+    b_checkUpdates(checkUpdates)
 {
   QCString cPath;
   QCString ksycoca_env = getenv("KDESYCOCA");
@@ -114,7 +112,7 @@ Kded::Kded(bool checkUpdates, int pollInterval, int NFSPollInterval)
   QTimer::singleShot(100, this, SLOT(installCrashHandler()));
 
   m_pDirWatch = 0;
-  m_pDirWatchNfs = 0;
+
 //  connect(kapp->dcopClient(), SIGNAL(applicationRemoved(const QCString&)),
 //          this, SLOT(slotApplicationRemoved(const QCString&)));
 //  kapp->dcopClient()->setNotifications(true);
@@ -125,7 +123,6 @@ Kded::~Kded()
   m_pTimer->stop();
   delete m_pTimer;
   delete m_pDirWatch;
-  delete m_pDirWatchNfs;
 
   m_modules.setAutoDelete(true);
 }
@@ -260,17 +257,11 @@ void Kded::build()
   KBuildSycoca* kbs = KBuildSycoca::createBuildSycoca();
 
   delete m_pDirWatch;
-  delete m_pDirWatchNfs;
-  m_pDirWatch = new KDirWatch(m_PollInterval);
-  m_pDirWatchNfs = new KDirWatch(m_NFSPollInterval);
+  m_pDirWatch = new KDirWatch;
 
   QObject::connect( m_pDirWatch, SIGNAL(dirty(const QString&)),
            this, SLOT(update(const QString&)));
   QObject::connect( m_pDirWatch, SIGNAL(deleted(const QString&)),
-           this, SLOT(dirDeleted(const QString&)));
-  QObject::connect( m_pDirWatchNfs, SIGNAL(dirty(const QString&)),
-           this, SLOT(update(const QString&)));
-  QObject::connect( m_pDirWatchNfs, SIGNAL(deleted(const QString&)),
            this, SLOT(dirDeleted(const QString&)));
 
   // It is very important to build the servicetype one first
@@ -303,12 +294,7 @@ void Kded::build()
            it2 != dirs.end();
            ++it2 )
       {
-         if (KIO::probably_slow_mounted(*it2))
-         {   
-            readDirectory( *it2, m_pDirWatchNfs );
-         } else {
-            readDirectory( *it2, m_pDirWatch );
-         }
+	readDirectory( *it2 );
       }
     }
     factoryList->removeRef(factory);
@@ -383,13 +369,13 @@ bool Kded::process(const QCString &fun, const QByteArray &data,
 }
 
 
-void Kded::readDirectory( const QString& _path, KDirWatch *dirWatch )
+void Kded::readDirectory( const QString& _path )
 {
   QString path( _path );
   if ( path.right(1) != "/" )
     path += "/";
 
-  if ( dirWatch->contains( path ) ) // Already seen this one?
+  if ( m_pDirWatch->contains( path ) ) // Already seen this one?
      return;
 
   QDir d( _path, QString::null, QDir::Unsorted, QDir::Readable | QDir::Executable | QDir::Dirs | QDir::Hidden );
@@ -400,7 +386,7 @@ void Kded::readDirectory( const QString& _path, KDirWatch *dirWatch )
   //                           Setting dirs
   //************************************************************************
 
-  dirWatch->addDir(path);          // add watch on this dir
+  m_pDirWatch->addDir(path);          // add watch on this dir
 
   if ( !d.exists() )                            // exists&isdir?
   {
@@ -424,7 +410,7 @@ void Kded::readDirectory( const QString& _path, KDirWatch *dirWatch )
      file = path;                           // set full path
      file += d[i];                          // and add the file name.
 
-     readDirectory( file, dirWatch );      // yes, dive into it.
+     readDirectory( file );      // yes, dive into it.
   }
 }
 
@@ -433,17 +419,12 @@ static void sighandler(int /*sig*/)
     kapp->quit();
 }
 
-KUpdateD::KUpdateD(int pollInterval, int NFSPollInterval) :
-    m_PollInterval(pollInterval), 
-    m_NFSPollInterval(NFSPollInterval)
+KUpdateD::KUpdateD()
 {
-    m_pDirWatch = new KDirWatch(m_PollInterval);
-    m_pDirWatchNfs = new KDirWatch(m_NFSPollInterval);
+    m_pDirWatch = new KDirWatch;
     m_pTimer = new QTimer;
     connect(m_pTimer, SIGNAL(timeout()), this, SLOT(runKonfUpdate()));
     QObject::connect( m_pDirWatch, SIGNAL(dirty(const QString&)),
-           this, SLOT(slotNewUpdateFile()));
-    QObject::connect( m_pDirWatchNfs, SIGNAL(dirty(const QString&)),
            this, SLOT(slotNewUpdateFile()));
 
     QStringList dirs = KGlobal::dirs()->findDirs("data", "kconf_update");
@@ -454,17 +435,15 @@ KUpdateD::KUpdateD(int pollInterval, int NFSPollInterval) :
        QString path = *it;
        if (path[path.length()-1] != '/')
           path += "/";
-       KDirWatch *dirWatch = KIO::probably_slow_mounted(path) ? m_pDirWatchNfs : m_pDirWatch;
 
-       if (!dirWatch->contains(path))
-          dirWatch->addDir(path);
+       if (!m_pDirWatch->contains(path))
+          m_pDirWatch->addDir(path);
     }
 }
 
 KUpdateD::~KUpdateD()
 {
     delete m_pDirWatch;
-    delete m_pDirWatchNfs;
     delete m_pTimer;
 }
 
@@ -630,7 +609,7 @@ int main(int argc, char *argv[])
      bool bCheckHostname = config->readBoolEntry("CheckHostname", true);
      checkStamps = config->readBoolEntry("CheckFileStamps", true);
 
-     Kded *kded = new Kded(bCheckSycoca, PollInterval, NFSPollInterval); // Build data base
+     Kded *kded = new Kded(bCheckSycoca); // Build data base
 
      kded->recreate();
 
@@ -638,7 +617,7 @@ int main(int argc, char *argv[])
      KDEDApplication k(kded);
 
      if (bCheckUpdates)
-        (void) new KUpdateD(PollInterval, NFSPollInterval); // Watch for updates
+        (void) new KUpdateD; // Watch for updates
 
      runKonfUpdate(); // Run it once.
 

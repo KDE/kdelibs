@@ -41,7 +41,7 @@ class Kded : public QObject, public DCOPObject, public DCOPObjectProxy
 {
   Q_OBJECT
 public:
-   Kded(bool checkUpdates, int pollInterval, int NFSPollInterval);
+   Kded(bool checkUpdates);
    virtual ~Kded();
 
    /**
@@ -111,7 +111,7 @@ protected:
    /**
     * Scans dir for new files and new subdirectories.
     */
-   void readDirectory(const QString& dir, KDirWatch *dirWatch );
+   void readDirectory(const QString& dir );
 
    static void crashHandler(int);
    
@@ -120,16 +120,11 @@ protected:
    /**
     * Pointer to the dirwatch class which tells us, when some directories
     * changed.
+    * Slower polling for remote file systems is now done in KDirWatch (JW).
     */
    KDirWatch* m_pDirWatch;
-   /*
-    * A dirwatch used for remote file systems
-    */
-   KDirWatch* m_pDirWatchNfs;
 
    bool b_checkUpdates;
-   int m_PollInterval;
-   int m_NFSPollInterval;
 
    /**
     * When a desktop file is updated, a timer is started (5 sec)
@@ -148,7 +143,7 @@ class KUpdateD : public QObject
 {
    Q_OBJECT
 public:
-   KUpdateD(int pollInterval, int NFSPollInterval);
+   KUpdateD();
    ~KUpdateD();
    
 public slots:
@@ -159,15 +154,9 @@ private:
    /**
     * Pointer to the dirwatch class which tells us, when some directories
     * changed.
+    * Slower polling for remote file systems is now done in KDirWatch (JW).
     */
    KDirWatch* m_pDirWatch;
-   /*
-    * A dirwatch used for remote file systems
-    */
-   KDirWatch* m_pDirWatchNfs;
-
-   int m_PollInterval;
-   int m_NFSPollInterval;
 
    /**
     * When a desktop file is updated, a timer is started (5 sec)

@@ -62,5 +62,8 @@ noinst_HEADERS = kbuildsycoca.h kbuildservicetypefactory.h \
 servicetype_DATA = kdedmodule.desktop
 servicetypedir = $(kde_servicetypesdir)
 
+update_DATA = kded.upd
+updatedir = $(kde_datadir)/kconf_update
+
 dummy.cpp:
 	echo > dummy.cpp
