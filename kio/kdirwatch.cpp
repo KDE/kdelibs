@@ -35,25 +35,22 @@
 #endif
 
 #ifdef __linux__
-//#define HAVE_DNOTIFY
+#ifndef _GNU_SOURCE
+#define _GNU_SOURCE
+#endif
+#if defined(_XOPEN_SOURCE) && _XOPEN_SOURCE - 0 < 500
+#undef _XOPEN_SOURCE
+#define _XOPEN_SOURCE 500
+#endif
+#include <fcntl.h>
+#include <signal.h>
+#ifdef F_NOTIFY
+#define HAVE_DNOTIFY
+#endif
 #endif
 
 #ifdef HAVE_DNOTIFY
 #include <qintdict.h>
-#ifndef _GNU_SOURCE
-#define _GNU_SOURCE
-#endif
-#include <fcntl.h>
-#include <signal.h>
-// appeared in 2.4.0, but we need the #defines here in case
-// code is compiled on an older kernel and later run on a newer
-// one -> runtime check
-#ifndef F_NOTIFY
-#define F_NOTIFY        (F_LINUX_SPECIFIC_BASE+2)
-#define DN_CREATE       0x00000004      /* File created */
-#define DN_DELETE       0x00000008      /* File removed */
-#define DN_MULTISHOT    0x80000000      /* Don't remove notifier */
-#endif
 #endif
 
 enum directoryStatus { Normal = 0, NonExistent };
@@ -139,9 +136,9 @@ KDirWatch::KDirWatch (int _freq)
     d->use_fam=true;
     d->emitEvents = true;
     d->sn = new QSocketNotifier( FAMCONNECTION_GETFD(&(d->fc)),
-			      QSocketNotifier::Read, this);
+                                 QSocketNotifier::Read, this);
     connect( d->sn, SIGNAL(activated(int)),
-	     this, SLOT(famEventReceived()) );
+ 	     this, SLOT(famEventReceived()) );
   }
   else {
     kdDebug(7001) << "KDirWatch: Can't use FAM" << endl;
