@@ -118,7 +118,7 @@ public:
 protected:
 
   void paint( QPainter* _painter );
-  void drawButton( QPainter* _painter ) { paint( _painer ); }
+  void drawButton( QPainter* _painter ) { paint( _painter ); }
 };
 
 /**
