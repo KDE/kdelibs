@@ -72,7 +72,7 @@ protected:
 protected slots:
     virtual void closeButtonClicked();
     virtual void onLayoutChange();
-    virtual void showCloseButton();
+    virtual void enableCloseButton();
 
 private:
     QPoint mDragStart;
@@ -81,7 +81,7 @@ private:
     QMap<int, QColor> mTabColors;
     QTab *mHoverCloseButtonTab;
     QToolButton *mHoverCloseButton;
-    QTimer* mShowCloseButtonTimer;
+    QTimer* mEnableCloseButtonTimer;
 
     bool mHoverCloseButtonEnabled;
     bool mTabReorderingEnabled;
