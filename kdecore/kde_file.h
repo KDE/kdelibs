@@ -74,10 +74,12 @@
 #define KDE_stat		kdewin32_stat
 #define KDE_lstat		kdewin32_lstat
 #define KDE_open		kdewin32_open
+#define KDE_rename		kdewin32_rename
 #else /* unix */
 #define KDE_stat		::stat
 #define KDE_lstat		::lstat
 #define KDE_open		::open
+#define KDE_rename		::rename
 #endif
 
 #define KDE_fstat		::fstat
