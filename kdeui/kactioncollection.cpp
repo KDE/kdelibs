@@ -34,6 +34,7 @@
 #include <kapplication.h>
 #include <kdebug.h>
 #include <kxmlguifactory.h>
+#include <kxmlguiclient.h>
 
 class KActionCollection::KActionCollectionPrivate
 {
@@ -50,6 +51,7 @@ public:
     m_highlight = false;
     m_currentHighlightAction = 0;
     m_statusCleared = true;
+    m_parentGUIClient = 0L;
   }
 
   KInstance *m_instance;
@@ -69,6 +71,7 @@ public:
   bool m_highlight;
   KAction *m_currentHighlightAction;
   bool m_statusCleared;
+  const KXMLGUIClient *m_parentGUIClient;
 };
 
 KActionCollection::KActionCollection( QWidget *parent, const char *name,
@@ -119,6 +122,16 @@ KActionCollection::KActionCollection( const KActionCollection &copy )
   *this = copy;
 }
 // KDE 4: remove end
+
+
+KActionCollection::KActionCollection( const char *name, const KXMLGUIClient *parent )
+    : QObject( 0L, name )
+{
+  d = new KActionCollectionPrivate;
+  d->m_parentGUIClient=parent;
+  d->m_instance=parent->instance();
+}
+
 
 KActionCollection::~KActionCollection()
 {
@@ -609,6 +622,11 @@ KAction *KActionCollection::findAction( QWidget *container, int id )
   return 0;
 }
 
+const KXMLGUIClient *KActionCollection::parentGUIClient() const
+{
+	return d->m_parentGUIClient;
+}
+
 // KDE 4: remove
 KActionCollection KActionCollection::operator+(const KActionCollection &c ) const
 {
@@ -685,7 +703,9 @@ const KAction *KActionShortcutList::action( uint i) const
 
 bool KActionShortcutList::save() const
 {
-	kdDebug(129) << "KActionShortcutList::save(): xmlFile = " << m_actions.xmlFile() << endl;
+	const KXMLGUIClient* guiClient=m_actions.parentGUIClient();
+	const QString xmlFile=guiClient ? guiClient->xmlFile() : m_actions.xmlFile();
+	kdDebug(129) << "KActionShortcutList::save(): xmlFile = " << xmlFile << endl;
 
 	if( m_actions.xmlFile().isEmpty() )
 		return writeSettings();
@@ -697,7 +717,7 @@ bool KActionShortcutList::save() const
 	QString attrAccel     = QString::fromLatin1("accel"); // Depricated attribute
 
 	// Read XML file
-	QString sXml( KXMLGUIFactory::readConfigFile( m_actions.xmlFile(), false, instance() ) );
+	QString sXml( KXMLGUIFactory::readConfigFile( xmlFile, false, instance() ) );
 	QDomDocument doc;
 	doc.setContent( sXml );
 
@@ -760,7 +780,7 @@ bool KActionShortcutList::save() const
 	}
 
 	// Write back to XML file
-	return KXMLGUIFactory::saveConfigFile( doc, m_actions.xmlFile(), instance() );
+	return KXMLGUIFactory::saveConfigFile( doc, guiClient ? guiClient->localXMLFile() : m_actions.xmlFile(), instance() );
 }
 
 //---------------------------------------------------------------------

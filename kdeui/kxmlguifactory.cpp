@@ -547,7 +547,8 @@ int KXMLGUIFactory::configureShortcuts(bool bAllowLetterShortcuts , bool bSaveSe
 	while( (client=it.current()) !=0 )
 	{
 		++it;
-		dlg.insert( client->actionCollection() );
+		if(!client->xmlFile().isEmpty())
+			dlg.insert( client->actionCollection() );
 	}
 	return dlg.configure(bSaveSettings);
 }

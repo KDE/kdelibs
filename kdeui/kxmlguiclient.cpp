@@ -107,8 +107,10 @@ KAction *KXMLGUIClient::action( const char *name ) const
 KActionCollection *KXMLGUIClient::actionCollection() const
 {
   if ( !d->m_actionCollection )
-    d->m_actionCollection = new KActionCollection( 0, 0,
-      "KXMLGUIClient-KActionCollection" );
+  {
+    d->m_actionCollection = new KActionCollection(
+      "KXMLGUIClient-KActionCollection", this );
+  }
   return d->m_actionCollection;
 }
 
@@ -740,7 +742,7 @@ QString KXMLGUIClient::findVersionNumber( const QString &xml )
         pos = guipos + 2; //Position at i, so we're moved ahead to the next character by the ++;
         state = ST_AFTER_GUI;
         break;
-      }       
+      }
       case ST_AFTER_GUI:
         state = ST_EXPECT_VERSION;
         break;
@@ -766,7 +768,7 @@ QString KXMLGUIClient::findVersionNumber( const QString &xml )
           else //This shouldn't be here..
           {
             endpos = xml.length();
-          }                  
+          }
         }
 
         if (endpos != pos && endpos < xml.length() )
@@ -775,12 +777,12 @@ QString KXMLGUIClient::findVersionNumber( const QString &xml )
           return matchCandidate;
         }
 
-        state = ST_EXPECT_VERSION; //Try to match a well-formed version..            
+        state = ST_EXPECT_VERSION; //Try to match a well-formed version..
         break;
       } //case..
     } //switch
   } //for
- 
+
   return QString::null;
 }
 

@@ -67,6 +67,7 @@ class KActionCollection : public QObject
   friend class KXMLGUIClient;
 
   Q_OBJECT
+
 public:
   KActionCollection( QWidget *parent, const char *name = 0, KInstance *instance = 0 );
   /**
@@ -185,11 +186,12 @@ public:
   KInstance *instance() const;
 
   /**
-   * Use this to tell the KActionCollection what rc file its configuration
-   * is stored in.
+   * @deprecated
    */
   void setXMLFile( const QString& );
-  /** The rc file in which the current configuration is stored. */
+  /**
+   * @deprecated
+   */
   const QString& xmlFile() const;
 
   /**
@@ -233,6 +235,11 @@ public:
    * @see actionHighlighted()
    */
   void disconnectHighlight( QWidget *container, KAction *action );
+
+  /**
+   * The parent KXMLGUIClient, return 0L if not available.
+   */
+  const KXMLGUIClient *parentGUIClient() const;
 
 signals:
   void inserted( KAction* );
@@ -335,6 +342,7 @@ public slots:
 protected:
     virtual void virtual_hook( int id, void* data );
 private:
+    KActionCollection( const char* name, const KXMLGUIClient* parent );
     class KActionCollectionPrivate;
     KActionCollectionPrivate *d;
 };
