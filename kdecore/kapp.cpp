@@ -248,7 +248,7 @@ void KApplication::init(bool GUIenabled)
     resetCrashRecursion();
 
     // set default crash handler / set emergency save function to nothing
-    setCrashHandler(KDE_CRASH_DEFAULT);
+    setCrashHandler(KDE_CRASH_INTERNAL);
     setEmergencySaveFunction(KDE_SAVE_NONE);
 
     // this is important since we fork() to launch the help (Matthias)
