@@ -3,12 +3,13 @@
 #define __example_h__
 
 #include <kpart.h>
-#include <kshell.h>
 #include <kpartmanager.h>
+#include <ktmainwindow.h>
 
 class QVBox;
 class QSplitter;
 class QMultiLineEdit;
+class KTMainWindowGUIBuilder;
 
 class Shell : public KTMainWindow
 {

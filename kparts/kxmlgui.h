@@ -6,7 +6,9 @@
 #include <qaction.h>
 #include <qdom.h>
 
-// Serves actions and xml to the GUI builder
+class KXMLGUIBuilder;
+
+// Serves actions and xml to the GUI factory
 
 class KXMLGUIServant
 {
@@ -25,25 +27,6 @@ class KNullGUIServant : public KXMLGUIServant
 
   virtual QAction *action( const QDomElement & ) { return 0L; }
   virtual QString xml() { return QString::null; }
-};
-
-// Interface for a "GUI builder", used by the GUIFactory
-// Note : if the KTMainWindow GUI builder is going to be the only GUIBuilder,
-// there's even no need for an interface. The factory could use the builder
-// directly... But this way is cleaner though...
-class KXMLGUIBuilder
-{
- public:
-
-  /*
-   * Create a container (=some kind of generic notion?) from an element in the XML file
-   * @param parent the parent for the widget (not a widget ?)
-   *
-   * return 0L if you handled the element yourself (like for Separators
-   * for example)
-   */
-  virtual QWidget *createContainer( QObject *parent, const QDomElement &element ) = 0;
-
 };
 
 class KXMLGUIFactory

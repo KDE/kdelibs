@@ -1,5 +1,6 @@
 
 #include "kxmlgui.h"
+#include "kguibuilder.h"
 
 #include <qfile.h>
 

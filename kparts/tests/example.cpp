@@ -1,5 +1,6 @@
 
 #include "example.h"
+#include <kguibuilder.cpp>
 
 #include <qsplitter.h>
 #include <qlayout.h>
