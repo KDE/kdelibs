@@ -257,11 +257,19 @@ KDateTable::paintCell(QPainter *painter, int row, int col)
       if(offset<1)
         offset+=7;
       int d = calendar->day(date);
-      if( ((offset+d) == (pos+1)) && hasFocus())
+           if( (offset+d) == (pos+1))
         {
            // draw the currently selected date
+	   if (isEnabled())
+	   {
            painter->setPen(colorGroup().highlight());
            painter->setBrush(colorGroup().highlight());
+	   }
+	   else 
+	   {
+	   painter->setPen(colorGroup().text());
+           painter->setBrush(colorGroup().text());
+	   }
            pen=colorGroup().highlightedText();
         } else {
           painter->setBrush(paletteBackgroundColor());
