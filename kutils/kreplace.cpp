@@ -267,7 +267,7 @@ void KReplace::doReplace()
     if (m_options & KReplaceDialog::FindBackwards)
         m_index--;
     else
-        m_index += replacedLength;
+        m_index += replacedLength - 1;
 #ifdef DEBUG_REPLACE
     kdDebug() << k_funcinfo << "after adjustement: m_index=" << m_index << endl;
 #endif

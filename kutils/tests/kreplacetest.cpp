@@ -112,12 +112,24 @@ int main( int argc, char **argv )
   KApplication app;
 
   {
-    KReplaceTest test( QString( "yeah foo yeah" ) );
+    KReplaceTest test( QString( "a foo b" ) );
     test.replace( "foo", "foobar", 0 );
     QStringList textLines = test.textLines();
     assert( textLines.count() == 1 );
     if ( textLines[ 0 ] != "a foobar b" ) {
       kdError() << "ASSERT FAILED: replaced text is '" << textLines[ 0 ] << "' instead of 'a foobar b'" << endl;
+      return 1;
+    }
+  }
+
+  {
+    KReplaceTest test( QString( "hellohello" ) );
+    test.replace( "hello", "HELLO", 0 );
+    QStringList textLines = test.textLines();
+    assert( textLines.count() == 1 );
+    if ( textLines[ 0 ] != "HELLOHELLO" ) {
+      kdError() << "ASSERT FAILED: replaced text is '" << textLines[ 0 ] << "' instead of 'HELLOHELLO'" << endl;
+      return 1;
     }
   }
 
