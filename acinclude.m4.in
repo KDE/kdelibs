@@ -96,7 +96,7 @@ ac_x_includes=NO ac_x_libraries=NO
 AC_PATH_X_DIRECT
 AC_PATH_X_XMKMF
 if test "$ac_x_includes" = NO || test "$ac_x_libraries" = NO; then
-  AC_MSG_ERROR([Can't find X. Please add the correct paths. View configure --help for usage!])
+  AC_MSG_ERROR([Can't find X includes. Please check your installation and add the correct paths!])
 else
   # Record where we found X for the cache.
   ac_cv_have_x="have_x=yes \
