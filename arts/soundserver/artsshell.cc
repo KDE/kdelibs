@@ -93,7 +93,8 @@ Options:\n\
 \n\
 Commands:\n\
   suspend     - suspend sound server\n\
-  status      - display sound server status information\
+  status      - display sound server status information\n\
+  terminate   - terminate sound server (might confuse/kill apps using it)\
 " << endl;
 	exit(0);
 }
@@ -206,6 +207,21 @@ void status(Arts::SoundServer server)
 	cout << "server buffer time: " << server.serverBufferTime() << " ms" << endl;
 }           
 
+// terminate the sound server
+int terminate(Arts::SoundServer server)
+{
+	if(server.terminate())
+	{
+		cout << "sound server terminated" << endl;
+		exit(0);
+	}
+	else
+	{
+		cout << "there were problems terminating the sound server" << endl;
+		exit(1);
+	}
+}
+
 int main(int argc, char *argv[])
 {
 	Arts::Dispatcher dispatcher;
@@ -227,6 +243,11 @@ int main(int argc, char *argv[])
 
 	if (!strcmp(argv[optind], "status")) {
 		status(server);
+		return 0;
+	}
+
+	if(!strcmp(argv[optind], "terminate")) {
+		terminate(server);
 		return 0;
 	}
 	
