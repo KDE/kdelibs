@@ -45,6 +45,7 @@
 #include "khtml_part.h"
 #include "xml/dom2_eventsimpl.h"
 #include "xml/dom_docimpl.h"
+#include "html/html_documentimpl.h"
 
 using namespace KJS;
 
@@ -1085,6 +1086,15 @@ Value WindowFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
         //qDebug("opener set to %p (this Window's part) in new Window %p  (this Window=%p)",part,win,window);
         khtmlpart->setOpener(part);
         khtmlpart->setOpenedByJS(true);
+        if (khtmlpart->document().isNull()) {
+          khtmlpart->begin();
+          khtmlpart->write("<HTML>");
+          khtmlpart->end();
+	  if ( part->docImpl() ) {
+	    khtmlpart->docImpl()->setDomain( part->docImpl()->domain(), true );
+	    khtmlpart->docImpl()->setBaseURL( part->docImpl()->baseURL() );
+	  }
+        }
         uargs.serviceType = QString::null;
         if (uargs.frameName == "_blank")
           uargs.frameName = QString::null;
