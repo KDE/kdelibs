@@ -1191,3 +1191,9 @@ void KHTMLView::viewportWheelEvent(QWheelEvent* e)
     else
         QScrollView::viewportWheelEvent( e );
 }
+
+void KHTMLView::focusOutEvent( QFocusEvent *e )
+{
+    m_part->stopAutoScroll();
+    QScrollView::focusOutEvent( e );
+}

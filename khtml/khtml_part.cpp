@@ -3969,14 +3969,7 @@ void KHTMLPart::khtmlDrawContentsEvent( khtml::DrawContentsEvent * )
 
 bool KHTMLPart::eventFilter( QObject* o, QEvent* ev )
 {
-    if ( ev->type() == QEvent::FocusOut && o == d->m_view->viewport() )
-    {
-        if ( d->m_bMousePressed )
-        {
-            stopAutoScroll();
-            d->m_bMousePressed = false;
-        }
-    }
+    // ### BCI remove for 3.0 (no longer needed)
     return KParts::ReadOnlyPart::eventFilter( o, ev );
 }
 
