@@ -85,9 +85,9 @@ KMWPassword::KMWPassword(QWidget *parent, const char *name)
 bool KMWPassword::isValid(QString& msg)
 {
 	if ( !m_btngroup->selected() )
-		msg = i18n( "Select one option!" );
+		msg = i18n( "Select one option" );
 	else if (m_btngroup->selectedId() == 2 && m_login->text().isEmpty())
-		msg = i18n("User name is empty!");
+		msg = i18n("User name is empty.");
 	else
 		return true;
 	return false;

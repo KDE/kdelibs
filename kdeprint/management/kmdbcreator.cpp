@@ -168,7 +168,7 @@ void KMDBCreator::slotProcessExited(KProcess*)
 	m_status = (m_proc.normalExit() && m_proc.exitStatus() == 0);
 	if (!m_status)
 	{
-		KMFactory::self()->manager()->setErrorMsg(i18n("Error while creating driver database: abnormal child process termination!"));
+		KMFactory::self()->manager()->setErrorMsg(i18n("Error while creating driver database: abnormal child-process termination."));
 		// remove the incomplete driver DB file so that, it will be
 		// reconstructed on next check
 		QFile::remove(m_proc.args()[2]);

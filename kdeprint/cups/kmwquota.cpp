@@ -127,7 +127,7 @@ bool KMWQuota::isValid(QString& msg)
 {
 	if (m_period->value() >= 0 && m_sizelimit->value() == 0 && m_pagelimit->value() == 0)
 	{
-		msg = i18n("You must at least specify one quota limit!");
+		msg = i18n("You must specify at least one quota limit.");
 		return false;
 	}
 	return true;

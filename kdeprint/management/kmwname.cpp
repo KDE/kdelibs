@@ -45,7 +45,7 @@ bool KMWName::isValid(QString& msg)
 {
 	if (text(0).isEmpty())
 	{
-		msg = i18n("You must supply at least a name!");
+		msg = i18n("You must supply at least a name.");
 		return false;
 	}
 	else if (text(0).find(QRegExp("\\s")) != -1)
@@ -53,11 +53,11 @@ bool KMWName::isValid(QString& msg)
 		QString	conv = text(0);
 		conv.replace(QRegExp("\\s"), "");
 		int result = KMessageBox::warningYesNoCancel(this,
-					i18n("This is usually not a good idea to include spaces "
-					     "in printer name. This may prevent your printer from "
+					i18n("It is usually not a good idea to include spaces "
+					     "in printer name: it may prevent your printer from "
 					     "working correctly. The wizard can strip all spaces "
-					     "from the string you entered, resulting in %1. "
-					     "What do you want to do?").arg(conv),
+					     "from the string you entered, resulting in %1; "
+					     "what do you want to do?").arg(conv),
 					QString::null,
 					i18n("Strip"), i18n("Keep"));
 		switch (result)

@@ -76,7 +76,7 @@ bool KMWClass::isValid(QString& msg)
 {
 	if (m_list2->count() == 0)
 	{
-		msg = i18n("You must select at least one printer!");
+		msg = i18n("You must select at least one printer.");
 		return false;
 	}
 	return true;

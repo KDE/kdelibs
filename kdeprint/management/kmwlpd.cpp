@@ -41,8 +41,8 @@ KMWLpd::KMWLpd(QWidget *parent, const char *name)
 	m_title = i18n("LPD Queue Information");
 	m_nextpage = KMWizard::Driver;
 
-	setInfo(i18n("<p>Enter the information concerning the remote LPD queue. "
-		     "This wizard will check them before continuing.</p>"));
+	setInfo(i18n("<p>Enter the information concerning the remote LPD queue; "
+		     "this wizard will check it before continuing.</p>"));
 	setLabel(0,i18n("Host:"));
 	setLabel(1,i18n("Queue:"));
 }
@@ -51,14 +51,14 @@ bool KMWLpd::isValid(QString& msg)
 {
 	if (text(0).isEmpty() || text(1).isEmpty())
 	{
-		msg = i18n("Some information is missing!");
+		msg = i18n("Some information is missing.");
 		return false;
 	}
 
 	// check LPD queue
 	if (!checkLpdQueue(text(0).latin1(),text(1).latin1()))
 	{
-		if (KMessageBox::warningYesNo(this, i18n("Can't find queue %1 on server %2! Do you want to continue anyway?").arg(text(1)).arg(text(0))) == KMessageBox::No)
+		if (KMessageBox::warningYesNo(this, i18n("Can not find queue %1 on server %2; do you want to continue anyway?").arg(text(1)).arg(text(0))) == KMessageBox::No)
 			return false;
 	}
 	return true;

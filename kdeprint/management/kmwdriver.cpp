@@ -110,7 +110,7 @@ bool KMWDriver::isValid(QString& msg)
 		return true;
 	else
 	{
-		msg = i18n("Internal error: unable to locate the driver!");
+		msg = i18n("Internal error: unable to locate the driver.");
 		return false;
 	}
 }

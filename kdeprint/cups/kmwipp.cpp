@@ -49,14 +49,14 @@ bool KMWIpp::isValid(QString& msg)
 	// check informations
 	if (text(0).isEmpty())
 	{
-		msg = i18n("Empty server name!");
+		msg = i18n("Empty server name.");
 		return false;
 	}
 	bool	ok(false);
 	int	p = text(1).toInt(&ok);
 	if (!ok)
 	{
-		msg = i18n("Incorrect port number!");
+		msg = i18n("Incorrect port number.");
 		return false;
 	}
 
@@ -69,7 +69,7 @@ bool KMWIpp::isValid(QString& msg)
 	}
 	else
 	{
-		msg = i18n("<nobr>Unable to connect to <b>%1</b> on port <b>%2</b> !</nobr>").arg(text(0)).arg(p);
+		msg = i18n("<nobr>Unable to connect to <b>%1</b> on port <b>%2</b> .</nobr>").arg(text(0)).arg(p);
 		return false;
 	}
 }

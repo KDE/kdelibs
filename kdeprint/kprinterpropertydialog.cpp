@@ -135,7 +135,7 @@ void KPrinterPropertyDialog::setupPrinter(KMPrinter *pr, QWidget *parent)
 	KPrinterPropertyDialog	dlg(pr,parent,"PropertyDialog");
 	KMFactory::self()->uiManager()->setupPropertyDialog(&dlg);
 	if (dlg.m_pages.count() == 0)
-		KMessageBox::information(parent,i18n("No configurable options for that printer!"),i18n("Printer Configuration"));
+		KMessageBox::information(parent,i18n("No configurable options for that printer."),i18n("Printer Configuration"));
 	else if (dlg.exec())
 	{
 		QMap<QString,QString>	opts;
