@@ -2610,7 +2610,7 @@ void KActionCollection::slotHighlighted( int id )
   if ( !d->m_highlight )
     return;
 
-  const QWidget *container = static_cast<const QWidget *>( sender() );
+  QWidget *container = static_cast<QWidget *>( const_cast<QObject *>( sender() ) );
 
   QList<KAction> *actionList = d->m_dctHighlightContainers[ reinterpret_cast<void *>( container ) ];
 
@@ -2631,7 +2631,7 @@ void KActionCollection::slotHighlighted( int id )
 
 void KActionCollection::slotDestroyed()
 {
-  d->m_dctHighlightContainers.remove( reinterpret_cast<void *>( sender() ) );
+  d->m_dctHighlightContainers.remove( reinterpret_cast<void *>( const_cast<QObject *>(sender()) ) );
 }
 
 #include "kaction.moc"
