@@ -1715,8 +1715,9 @@ QString RenderTextArea::text()
                 txt += QString::fromLatin1("\n");
         }
     }
-    else
-        txt = w->text();
+    else 
+        if (w)
+            txt = w->text();
 
     return txt;
 }
