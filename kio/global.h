@@ -195,6 +195,16 @@ namespace KIO
     UDS_GUESSED_MIME_TYPE = 16392 | UDS_STRING
   };
 
+  enum CacheControl
+  {
+      CC_CacheOnly, // Fail request if not in cache
+      CC_Cache,     // Use cached entry if available
+      CC_Verify,    // Validate cached entry with remote site
+      CC_Reload     // Always fetch from remote site.
+  };
+
+  KIO::CacheControl parseCacheControl(const QString &cacheControl);
+
   /**
    * Returns the mount point where @p device is mounted
    * right now. This means, it has to be mounted, not just
@@ -215,7 +225,6 @@ namespace KIO
    * paths not yet mounted
    */
   bool probably_slow_mounted(const QString& filename);
-
 
 /************
  *

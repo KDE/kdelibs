@@ -50,6 +50,9 @@ namespace KIO {
 	 */
 	void flush();
 
+	/**
+	 *
+	 */
 	int creationDate();
 
 	// set creation date to current local machine time
@@ -60,8 +63,6 @@ namespace KIO {
 	void setExpireDate(int);
 
 	bool expired() { return difftime(time(0),expireDate())>=0; };
-
-
 
 	// the duration the cache entry is/was valid.
 	int expireTimeout();
@@ -178,18 +179,9 @@ namespace KIO {
 #ifdef CACHE_INFO
     /**
      * @param url Url to be checked.
-     * @param CacheControl
-     * possible values:
-     * - cache-only: sets the creation date to the current one for the cached copy, if cached.
-     * - cache: returns valid CacheInfo if available, else an empty one.
-     * - verify: returns empty CacheInfo if already expired
-     * - reload: cache entry for @p url is deleted. Returns empty CacheInfo
-     * @param expireDate Local machine time indicating when the entry is
-     * supposed to expire, counted from creation date. if the result is in the past,
-     * cache entry is considered expired.
      */
-    // KDE3.0 (BCI): use job::CacheControl instead
-    CacheInfo* getCacheInfo(const KURL& url, HTTP::CacheControl 
+    // KDE3.0 (BCI): use KIO::CacheControl instead
+    CacheInfo* getCacheInfo(const KURL& url);
 #endif
 
     /**

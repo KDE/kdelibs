@@ -2181,25 +2181,6 @@ void HTTPProtocol::buildURL()
     m_request.url.setQuery( m_request.query );
 }
 
-static HTTPProtocol::CacheControl parseCacheControl(const QString &cacheControl)
-{
-  HTTPProtocol::CacheControl _default = HTTPProtocol::CC_Verify;
-  if (cacheControl.isEmpty())
-     return _default;
-
-  QString tmp = cacheControl.lower();
-  if (tmp == "cacheonly")
-     return HTTPProtocol::CC_CacheOnly;
-  if (tmp == "cache")
-     return HTTPProtocol::CC_Cache;
-  if (tmp == "verify")
-     return HTTPProtocol::CC_Verify;
-  if (tmp == "reload")
-     return HTTPProtocol::CC_Reload;
-
-  return _default;
-}
-
 // We just return 'FILE' here.
 void HTTPProtocol::stat(const KURL& url)
 {
@@ -3858,6 +3839,7 @@ void HTTPProtocol::reparseConfiguration()
      }
   }
   delete cookieConfig;
+
 }
 
 void HTTPProtocol::resetSessionSettings()

@@ -1015,3 +1015,20 @@ bool KIO::probably_slow_mounted(const QString& filename)
 
     return (isslow == Right);
 }
+
+KIO::CacheControl KIO::parseCacheControl(const QString &cacheControl)
+{
+  QString tmp = cacheControl.lower();
+
+  if (tmp == "cacheonly")
+     return KIO::CC_CacheOnly;
+  if (tmp == "cache")
+     return KIO::CC_Cache;
+  if (tmp == "verify")
+     return KIO::CC_Verify;
+  if (tmp == "reload")
+     return KIO::CC_Reload;
+
+  kdWarning() << "unrecognized Cache control option:"<<cacheControl<<endl;
+  return KIO::CC_Verify;
+}

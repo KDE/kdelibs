@@ -20,6 +20,7 @@
 
 #include <qstringlist.h>
 #include <kapp.h>
+#include <global.h>
 
 // This value has been deprecated!! Use KProtocolManager::defaultUserAgent() instead.
 #define DEFAULT_USERAGENT_STRING \
@@ -234,7 +235,7 @@ public:
    * should be kept before they are deleted.
    */
   static int maxCacheSize(); // Maximum cache size in Kb.
-
+  
   /**
    * Sets timeout for read operations.
    * This applies to FTP and HTTP connections.
@@ -456,7 +457,7 @@ public:
    */
   static void setEnableSendUserAgent( bool );
 
-
+  KIO::CacheControl defaultCacheControl();
 
 private:
   static KConfig *config();

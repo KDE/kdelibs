@@ -29,7 +29,6 @@
 #include <klibloader.h>
 #include <kstaticdeleter.h>
 #include <kio/kpac.h>
-
 // CACHE SETTINGS
 #define DEFAULT_MAX_CACHE_SIZE          5120          //  5 MB
 #define DEFAULT_MAX_CACHE_AGE           60*60*24*14   // 14 DAYS
@@ -191,6 +190,13 @@ bool KProtocolManager::useCache()
   KConfig *cfg = config();
   cfg->setGroup( "Cache Settings" );
   return cfg->readBoolEntry( "UseCache", true );
+}
+
+KIO::CacheControl KProtocolManager::defaultCacheControl()
+{
+    KConfig *cfg = config();
+    cfg->setGroup("Cache Settings");
+    return KIO::parseCacheControl(cfg->readEntry("Default Cache Policy"));
 }
 
 int KProtocolManager::maxCacheAge()
