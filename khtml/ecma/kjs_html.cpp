@@ -73,6 +73,7 @@ UString::UString(const DOM::DOMString &d)
 {
   unsigned int len = d.length();
   UChar *dat = new UChar[len];
+  memcpy(dat, d.unicode(), len * sizeof(UChar));
   rep = new UStringData(dat, len);
 }
 
