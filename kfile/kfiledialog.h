@@ -177,6 +177,15 @@ public:
 				   QWidget *parent= 0,
 				   const QString& caption = QString::null);
 
+    /**
+     * This method creates a modal file dialog and returns the selected
+     * directory or an empty string if none was chosen. Note that with this
+     * method the user need not select an existing directory.
+     *
+     * @param dir This specifies the directory the dialog will start in.
+     * @param parent The widget the dialog will be centered on initially.
+     * @param caption The name of the dialog widget.
+     */
     static QString getExistingDirectory(const QString & dir = QString::null,
 					QWidget * parent = 0,
 					const QString& caption = QString::null);
