@@ -57,7 +57,7 @@ void KIOInputStream_impl::streamStart()
 	m_job = KIO::get(m_url, false, false);
 	m_job->addMetaData("accept", "audio/x-mp3");
 	m_job->addMetaData("UserAgent", QString::fromLatin1("aRts/") + QString::fromLatin1(ARTS_VERSION));
-	
+
 	QObject::connect(m_job, SIGNAL(data(KIO::Job *, const QByteArray &)),
 			 this, SLOT(slotData(KIO::Job *, const QByteArray &)));		     
 	QObject::connect(m_job, SIGNAL(result(KIO::Job *)),
@@ -66,15 +66,16 @@ void KIOInputStream_impl::streamStart()
 
 void KIOInputStream_impl::streamEnd()
 {
-	if(m_job == 0)
-		return;
-	QObject::disconnect(m_job, SIGNAL(data(KIO::Job *, const QByteArray &)),
-	                    this, SLOT(slotData(KIO::Job *, const QByteArray &)));
-	QObject::disconnect(m_job, SIGNAL(result(KIO::Job *)),
-			    this, SLOT(slotResult(KIO::Job *)));		     
-	
-	m_job->kill();
-	m_job = 0;
+	if(m_job != 0)
+	{
+		QObject::disconnect(m_job, SIGNAL(data(KIO::Job *, const QByteArray &)),
+	    				this, SLOT(slotData(KIO::Job *, const QByteArray &)));
+		QObject::disconnect(m_job, SIGNAL(result(KIO::Job *)),
+						this, SLOT(slotResult(KIO::Job *)));		     
+
+		m_job->kill();
+		m_job = 0;
+	}	
 
 	outdata.endPull();
 
@@ -107,14 +108,18 @@ void KIOInputStream_impl::slotData(KIO::Job *, const QByteArray &data)
 
 void KIOInputStream_impl::slotResult(KIO::Job *job)
 {
+	// jobs delete themselves after emitting their result
 	m_finished = true;
+	m_job = 0;
+
 	if(job->error())
 	    job->showErrorDialog();
 }
 
 bool KIOInputStream_impl::eof()
 {
-	return (m_finished && m_data.size() == 0 && m_sendqueue.empty());
+	return (m_finished && m_data.size() == 0
+	                   && m_sendqueue.size() == PACKET_COUNT);
 }
 
 bool KIOInputStream_impl::seekOk()
@@ -134,10 +139,13 @@ long KIOInputStream_impl::seek(long)
 
 void KIOInputStream_impl::processQueue()
 {
-	if(m_data.size() > ((m_sendqueue.size() + PACKET_BUFFER) * PACKET_SIZE) && !m_job->isSuspended())
-	    m_job->suspend();
-	else if(m_data.size() < ((m_sendqueue.size() + PACKET_BUFFER) * PACKET_SIZE) && m_job->isSuspended())
-	    m_job->resume();
+	if(m_job != 0)
+	{
+		if(m_data.size() > ((m_sendqueue.size() + PACKET_BUFFER) * PACKET_SIZE) && !m_job->isSuspended())
+	    	m_job->suspend();
+		else if(m_data.size() < ((m_sendqueue.size() + PACKET_BUFFER) * PACKET_SIZE) && m_job->isSuspended())
+	    	m_job->resume();
+	}
 
 	for(unsigned int i = 0; i < m_sendqueue.size(); i++)
 	{
@@ -145,7 +153,8 @@ void KIOInputStream_impl::processQueue()
 		
 	    packet->size = std::min(PACKET_SIZE, m_data.size());
 	    if(packet->size == 0)
-		return;	    
+			return;	    
+
 	    m_sendqueue.pop();
 	    memcpy(packet->contents, m_data.data(), packet->size);
 	    memmove(m_data.data(), m_data.data() + packet->size, m_data.size() - packet->size);
