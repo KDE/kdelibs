@@ -4,6 +4,7 @@
 #include <assert.h>
 
 #include <kio_interface.h>
+#include <kio_manager.h>
 
 #include <iostream.h>
 
@@ -22,7 +23,7 @@ Ftp::Ftp()
   m_error = 0;
   m_errorText = "";
   m_bLoggedOn = false;
-  m_bPersistent = false;
+  m_bPersistent = true;
 }
 
 
@@ -178,7 +179,7 @@ bool Ftp::ftpConnect( K2URL& _url )
  */
 bool Ftp::ftpConnect( const char *_host, int _port, const char *_user, const char *_pass, string& _path )
 {
-  m_bPersistent = false; // ProtocolManager::self()->isPersistent();
+  m_bPersistent = ProtocolManager::self()->getPersistent();
 
   if ( m_bLoggedOn )
     if ( m_bPersistent ) {
@@ -860,7 +861,7 @@ FtpEntry* Ftp::ftpStat( K2URL& _url )
 }
 
 
-bool Ftp::opendir( K2URL &_url )
+bool Ftp::opendir( K2URL& _url )
 {
   string path( _url.path(-1) );
   bool haspath = _url.hasPath();

@@ -959,14 +959,16 @@ void FtpProtocol::slotPut( const char *_url, int _mode, bool _overwrite, bool _r
     return;
   }
   
-  // Connect to the ftp server
-  if ( !ftp.ftpConnect( udest_orig ) )
-  {
-    error( ftp.error(), ftp.errorText() );
-    m_cmd = CMD_NONE;
-    finished();
-    return;
-  }
+  // Connect to the ftp server, only if we are not connected
+  // this prevents connecting twice in recursive copying ( mkdir connects first time )
+  if ( !ftp.isConnected() )
+    if ( !ftp.ftpConnect( udest_orig ) )
+      {
+	error( ftp.error(), ftp.errorText() );
+	m_cmd = CMD_NONE;
+	finished();
+	return;
+      }
 
   m_cmd = CMD_PUT;
 
@@ -1106,67 +1108,15 @@ void FtpProtocol::slotPut( const char *_url, int _mode, bool _overwrite, bool _r
 
 void FtpProtocol::slotDel( const char *_url )
 {
-  debug( "kio_ftp : Deleting file %s", _url );
-
-  K2URL usrc( _url );
-  if ( usrc.isMalformed() )
-    {
-      error( ERR_MALFORMED_URL, _url );
-      m_cmd = CMD_NONE;
-      return;
-    }
-
-  if ( strcmp( usrc.protocol(), "ftp" ) != 0L )
-    {
-      error(ERR_INTERNAL,"kio_ftp got non ftp file for delete command" );
-      m_cmd = CMD_NONE;
-      return;
-    }
-
-  // Connect to the ftp server
-  if ( ! ftp.isConnected() )
-    if ( !ftp.ftpConnect( usrc ) )
-      {
-	error( ftp.error(), ftp.errorText() );
-	m_cmd = CMD_NONE;
-	return;
-      }
-
-  FtpEntry* e = ftp.ftpStat( usrc );
-
-  if ( !e  ) {
-    error( ERR_DOES_NOT_EXIST, _url );
-    m_cmd = CMD_NONE;
-    return;
-  }
-
-  m_cmd = CMD_DEL;
-
-  deletingFile( _url );
-
-  totalSize( e->size );
-  totalFiles( 1 );
-  totalDirs( 0 );
-
-  if ( ftp.ftpDelete( usrc.path() ) )
-    {
-      error( ERR_CANNOT_DELETE, _url );
-      m_cmd = CMD_NONE;
-      return;
-    }
-
-  ftp.ftpDisconnect();
-
-  finished();
+  list<string> lst;
+  lst.push_back( _url );
   
-  m_cmd = CMD_NONE;
+  slotDel( lst );
 }
 
 
 void FtpProtocol::slotDel( list<string>& _source )
 {
-  m_cmd = CMD_MDEL;
-
   // Check wether the URLs are wellformed
   list<string>::iterator soit = _source.begin();
   for( ; soit != _source.end(); ++soit )
@@ -1186,27 +1136,90 @@ void FtpProtocol::slotDel( list<string>& _source )
       m_cmd = CMD_NONE;
       return;
     }
+  }
 
-    FtpEntry* e = ftp.ftpStat( usrc );
+  debug( "kio_ftp : All URLs ok" );
 
-    if ( !e  ) {
-      error( ERR_DOES_NOT_EXIST, usrc.path() );
-      m_cmd = CMD_NONE;
-      return;
-    }
+  // Get a list of all source files and directories
+  list<Copy> fs;
+  list<CopyDir> ds;
+  int size = 0;
+  debug( "kio_ftp : Iterating" );
 
-    debug( "kio_ftp : Deleting %s", usrc.path() );
+  soit = _source.begin();
+  debug( "kio_ftp : Looping" );
+  for( ; soit != _source.end(); ++soit )
+  {    
+    debug( "kio_ftp : Executing %s", soit->c_str() );
+    K2URL usrc( *soit );
+    debug( "kio_ftp : Parsed URL" );
 
-    deletingFile( usrc.path() );
-  
-    if ( ftp.ftpDelete( usrc.path() ) )
+    // Did an error occur ?
+    int s;
+//     if ( ( s = listRecursive( usrc.path(), fs, ds, false ) ) == -1 )
+//       {
+// 	// Error message is already sent
+// 	ftp.ftpDisconnect();
+// 	m_cmd = CMD_NONE;
+// 	return;
+//       }
+    // Sum up the total amount of bytes we have to copy
+    size += s;
+  }
+
+  debug( "kio_ftp : Recursive ok" );
+
+  if ( fs.size() == 1 )
+    m_cmd = CMD_DEL;
+  else
+    m_cmd = CMD_MDEL;
+
+  // Tell our client what we 'r' gonna do
+  totalSize( size );
+  totalFiles( fs.size() );
+  totalDirs( ds.size() );
+
+  /*****
+   * Delete files
+   *****/
+
+  list<Copy>::iterator fit = fs.begin();
+  for( ; fit != fs.end(); fit++ ) { 
+
+    string filename = fit->m_strAbsSource;
+    debug( "kio_ftp : Deleting file %s", filename.c_str() );
+
+    deletingFile( filename.c_str() );
+
+    if ( !ftp.ftpDelete( filename.c_str() ) ) // !!! use unlink ?
       {
-	error( ERR_CANNOT_DELETE, usrc.path() );
+	error( ERR_CANNOT_DELETE, filename.c_str() );
+	ftp.ftpDisconnect();
 	m_cmd = CMD_NONE;
 	return;
       }
   }
 
+  /*****
+   * Delete empty directories
+   *****/
+
+  list<CopyDir>::iterator dit = ds.begin();
+  for( ; dit != ds.end(); dit++ ) { 
+
+    string dirname = dit->m_strAbsSource;
+    debug( "kio_ftp : Deleting directory %s", dirname.c_str() );
+
+    deletingFile( dirname.c_str() );
+
+    if ( !ftp.ftpRmdir( dirname.c_str() ) ) {
+      error( ERR_COULD_NOT_RMDIR, dirname.c_str() );
+      ftp.ftpDisconnect();
+      m_cmd = CMD_NONE;
+      return;
+    }
+  }
+  
   finished();
   
   m_cmd = CMD_NONE;

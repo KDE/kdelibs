@@ -162,7 +162,7 @@ public:
   Ftp();
   virtual ~Ftp();
 
-  bool ftpConnect( K2URL &_url );
+  bool ftpConnect( K2URL& _url );
   /**
    * The counterpart to @ref #ftpConnect
    */
