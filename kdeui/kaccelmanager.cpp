@@ -128,6 +128,7 @@ void KAcceleratorManagerPrivate::manage(QWidget *widget)
 
   QString used;
   calculateAccelerators(root, used);
+  delete root;
 }
 
 
@@ -182,7 +183,8 @@ void KAcceleratorManagerPrivate::calculateAccelerators(Item *item, QString &used
 
 void KAcceleratorManagerPrivate::traverseChildren(QWidget *widget, Item *item)
 {
-  QObjectListIt it(*widget->queryList("QWidget", 0, false, false));
+  QObjectList *childList = widget->queryList("QWidget", 0, false, false);
+  QObjectListIt it(*childList);
   for ( ; it.current(); ++it)
   {
     QWidget *w = static_cast<QWidget*>(*it);
@@ -249,12 +251,14 @@ void KAcceleratorManagerPrivate::traverseChildren(QWidget *widget, Item *item)
 
     traverseChildren(w, item);
   }
+  delete childList;
 }
 
 
 void KAcceleratorManagerPrivate::manageWidgetStack(QWidgetStack *stack, Item *item)
 {
-  QObjectListIt it(*stack->queryList("QWidget", 0, false, false));
+  QObjectList *childList = stack->queryList("QWidget", 0, false, false);
+  QObjectListIt it(*childList);
   for ( ; it.current(); ++it)
   {
     QWidget *w = static_cast<QWidget*>(*it);
@@ -265,6 +269,7 @@ void KAcceleratorManagerPrivate::manageWidgetStack(QWidgetStack *stack, Item *it
 
     traverseChildren(w, _it);
   }
+  delete childList;
 }
 
 
@@ -642,8 +647,7 @@ void KPopupAccelManager::setMenuEntries(const KAccelStringList &list)
 void KPopupAccelManager::manage(QPopupMenu *popup)
 {
   // don't add more than one manager to a popup
-  QObjectListIt it(*popup->queryList("KPopupAccelManager", 0, false, false));
-  if (it.isEmpty())
+  if (popup->child(0, "KPopupAccelManager", false) == 0 )
     new KPopupAccelManager(popup);
 }
 
