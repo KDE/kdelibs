@@ -128,7 +128,7 @@ class KKeyChooser : public QWidget
 	bool insert( KAccel* );
 	bool insert( KGlobalAccel* );
 	bool insert( KShortcutList* );
-	void buildListView( uint iList, const QString &title );
+	void buildListView( uint iList, const QString &title = QString::null );
 
 	void readGlobalKeys();
 
