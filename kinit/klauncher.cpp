@@ -220,6 +220,11 @@ KLauncher::KLauncher(int _kdeinitSocket)
 
 KLauncher::~KLauncher()
 {
+   close();
+}
+
+void KLauncher::close()
+{
    if (!mPoolSocketName.isEmpty())
    {
       QCString filename = QFile::encodeName(mPoolSocketName);
@@ -235,7 +240,8 @@ KLauncher::~KLauncher()
 void
 KLauncher::destruct(int exit_code)
 {
-   delete kapp;
+   if (kapp) ((KLauncher*)kapp)->close();
+   // We don't delete kapp here, that's intentional.
    ::exit(exit_code);
 }
 
