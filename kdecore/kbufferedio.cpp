@@ -138,7 +138,8 @@ bool KBufferedIO::canReadLine() const
 	if (*p++ == '\n')
 	  return true;
       buf = buflist.next();
-      p = buf->data();
+      if (buf != NULL)
+	p = buf->data();
     }
 
   return false;			// no new line found

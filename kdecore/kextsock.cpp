@@ -804,7 +804,7 @@ bool KExtendedSocket::setBufferSize(int rsize, int wsize)
 	}
     }
 
-  if (wsize == 0 & d->flags & outputBufferedSocket)
+  if (wsize == 0 && d->flags & outputBufferedSocket)
     {
       // disabling output buffering
       d->flags &= ~outputBufferedSocket;
@@ -1339,6 +1339,7 @@ int KExtendedSocket::connect()
 	  setFlags(IO_Sequential | IO_Raw | IO_ReadWrite | IO_Open | IO_Async);
 	  setBufferSize(d->flags & inputBufferedSocket ? -1 : 0,
 			d->flags & outputBufferedSocket ? -1 : 0);
+	  emit connectionSuccess();
 //	  kdDebug(170) << "Socket " << sockfd << " connected\n";
 	  return 0;
 	}
@@ -1358,12 +1359,14 @@ int KExtendedSocket::connect()
 	  setFlags(IO_Sequential | IO_Raw | IO_ReadWrite | IO_Open | IO_Async);
 	  setBufferSize(d->flags & inputBufferedSocket ? -1 : 0,
 			d->flags & outputBufferedSocket ? -1 : 0);
+	  emit connectionSuccess();
 //	  kdDebug(170) << "Socket " << sockfd << " connected\n";
 	  return 0;		// it connected
 	}
     }
 
   // getting here means no socket connected or stuff like that
+  emit connectionFailed(d->syserror);
   kdDebug(170) << "Failed to connect\n";
   return -1;
 }
@@ -1708,7 +1711,7 @@ int KExtendedSocket::bytesAvailable() const
 
   // as of now, we don't do any extra processing
   // we only work in input-buffered sockets
-  if (d->flags * inputBufferedSocket)
+  if (d->flags & inputBufferedSocket)
     return KBufferedIO::bytesAvailable();
 
   return 0;			// TODO: FIONREAD ioctl
