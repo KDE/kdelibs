@@ -47,6 +47,7 @@
 #include <kconfig.h>
 #include <kglobal.h>
 #include <klocale.h>
+#include <kde_file.h>
 
 #include <sys/types.h>
 #include <dirent.h>
@@ -244,9 +245,9 @@ void DirectoryListThread::run()
 			if ( m_filter.isEmpty() || file.startsWith( m_filter ) ) {
 
 				if ( m_onlyExe || m_onlyDir || m_appendSlashToDir ) {
-					struct stat sbuff;
+					KDE_struct_stat sbuff;
 
-					if ( ::stat( dirEntry->d_name, &sbuff ) == 0 ) {
+					if ( KDE_stat( dirEntry->d_name, &sbuff ) == 0 ) {
 
 						// Verify executable
 
@@ -1273,11 +1274,11 @@ void KURLCompletion::postProcessMatch( QString *match ) const
 
 //			kdDebug() << "postProcess: stating " << copy << endl;
 
-			struct stat sbuff;
+			KDE_struct_stat sbuff;
 
 			QCString file = QFile::encodeName( copy );
 
-			if ( ::stat( (const char*)file, &sbuff ) == 0 ) {
+			if ( KDE_stat( (const char*)file, &sbuff ) == 0 ) {
 				if ( S_ISDIR ( sbuff.st_mode ) )
 					match->append( '/' );
 			}

@@ -17,12 +17,17 @@
     Boston, MA 02111-1307, USA.
 */
 
+#include "krun.h"
+
 #include <assert.h>
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include <typeinfo>
 
-#include "krun.h"
+#include <qwidget.h>
+#include <qguardedptr.h>
+
 #include "kuserprofile.h"
 #include "kmimetype.h"
 #include "kmimemagic.h"
@@ -51,9 +56,7 @@
 #include <kstartupinfo.h>
 #include <kmacroexpander.h>
 #include <kshell.h>
-#include <typeinfo>
-#include <qwidget.h>
-#include <qguardedptr.h>
+#include <kde_file.h>
 
 #ifdef Q_WS_X11
 #include <kwin.h>
@@ -761,8 +764,8 @@ void KRun::init()
   {
     if ( m_mode == 0 )
     {
-      struct stat buff;
-      if ( stat( QFile::encodeName(m_strURL.path()), &buff ) == -1 )
+      KDE_struct_stat buff;
+      if ( KDE_stat( QFile::encodeName(m_strURL.path()), &buff ) == -1 )
       {
         d->m_showingError = true;
         KMessageBoxWrapper::error( d->m_window, i18n( "<qt>Unable to run the command specified. The file or folder <b>%1</b> does not exist.</qt>" ).arg( m_strURL.htmlURL() ) );

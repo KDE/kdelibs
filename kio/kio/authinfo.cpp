@@ -33,6 +33,7 @@
 #include <kstandarddirs.h>
 #include <ksavefile.h>
 #include <kstaticdeleter.h>
+#include <kde_file.h>
 
 #include "kio/authinfo.h"
 
@@ -196,9 +197,9 @@ bool NetRC::lookup( const KURL& url, AutoLogin& login, bool userealnetrc,
 
 int NetRC::openf( const QString& f )
 {
-  struct stat sbuff;
+  KDE_struct_stat sbuff;
   QCString ef = QFile::encodeName(f);
-  if ( stat(ef, &sbuff) != 0 )
+  if ( KDE_stat(ef, &sbuff) != 0 )
     return -1;
 
   // Security check!!
@@ -206,7 +207,7 @@ int NetRC::openf( const QString& f )
        sbuff.st_uid != geteuid() )
     return -1;
 
-  return open( ef, O_RDONLY );
+  return KDE_open( ef, O_RDONLY );
 }
 
 QString NetRC::extract( const char* buf, const char* key, int& pos )
@@ -255,7 +256,7 @@ bool NetRC::parse( int fd )
   uint index = 0;
   bool isMacro = false;
   char* buf = new char[NETRC_READ_BUF_SIZE];
-  FILE* fstream = fdopen( fd,"rb" );
+  FILE* fstream = KDE_fdopen( fd,"rb" );
 
   while ( fgets (buf, NETRC_READ_BUF_SIZE, fstream) != 0L )
   {

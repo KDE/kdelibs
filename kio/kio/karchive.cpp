@@ -41,6 +41,7 @@
 #include <kdebug.h>
 #include <kfilterdev.h>
 #include <kfilterbase.h>
+#include <kde_file.h>
 
 #include "karchive.h"
 #include "klimitediodevice.h"
@@ -135,8 +136,8 @@ bool KArchive::addLocalFile( const QString& fileName, const QString& destName )
         return false;
     }
 
-    struct stat fi;
-    if (lstat(QFile::encodeName(fileName),&fi) == -1) {
+    KDE_struct_stat fi;
+    if (KDE_lstat(QFile::encodeName(fileName),&fi) == -1) {
         kdWarning() << "KArchive::addLocalFile stating " << fileName
         	<< " failed: " << strerror(errno) << endl;
         return false;

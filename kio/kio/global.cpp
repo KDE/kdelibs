@@ -36,6 +36,7 @@
 #include <klocale.h>
 #include <kglobal.h>
 #include <kprotocolmanager.h>
+#include <kde_file.h>
 
 #ifdef HAVE_VOLMGT
 #include <volmgt.h>
@@ -1603,15 +1604,15 @@ static QString get_mount_info(const QString& filename,
 
     if (!gotRoot)
     {
-       struct stat stat_buf;
-       stat("/", &stat_buf);
+       KDE_struct_stat stat_buf;
+       KDE_stat("/", &stat_buf);
        gotRoot = true;
        rootDevice = stat_buf.st_dev;
     }
 
     bool gotDevice = false;
-    struct stat stat_buf;
-    if (stat(QFile::encodeName(filename), &stat_buf) == 0)
+    KDE_struct_stat stat_buf;
+    if (KDE_stat(QFile::encodeName(filename), &stat_buf) == 0)
     {
        gotDevice = true;
        if (stat_buf.st_dev == rootDevice)

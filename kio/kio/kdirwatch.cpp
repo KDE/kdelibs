@@ -56,6 +56,7 @@
 #include <kconfig.h>
 #include <kglobal.h>
 #include <kstaticdeleter.h>
+#include <kde_file.h>
 
 #include "kdirwatch.h"
 #include "kdirwatch_p.h"
@@ -450,7 +451,7 @@ bool KDirWatchPrivate::useDNotify(Entry* e)
   if (e->isDir) {
     e->dirty = false;
     if (e->m_status == Normal) {
-      int fd = open(QFile::encodeName(e->path).data(), O_RDONLY);
+      int fd = KDE_open(QFile::encodeName(e->path).data(), O_RDONLY);
       // Migrate fd to somewhere above 128. Some libraries have
       // constructs like:
       //    fd = socket(...)
@@ -586,9 +587,9 @@ void KDirWatchPrivate::addEntry(KDirWatch* instance, const QString& _path,
 
   // we have a new path to watch
 
-  struct stat stat_buf;
+  KDE_struct_stat stat_buf;
   QCString tpath = QFile::encodeName(path);
-  bool exists = (stat(tpath, &stat_buf) == 0);
+  bool exists = (KDE_stat(tpath, &stat_buf) == 0);
 
   Entry newEntry;
   m_mapEntries.insert( path, newEntry );
@@ -810,8 +811,8 @@ bool KDirWatchPrivate::restartEntryScan( KDirWatch* instance, Entry* e,
   int ev = NoChange;
   if (wasWatching == 0) {
     if (!notify) {
-      struct stat stat_buf;
-      bool exists = (stat(QFile::encodeName(e->path), &stat_buf) == 0);
+      KDE_struct_stat stat_buf;
+      bool exists = (KDE_stat(QFile::encodeName(e->path), &stat_buf) == 0);
       if (exists) {
 	e->m_ctime = stat_buf.st_ctime;
 	e->m_status = Normal;
@@ -901,8 +902,8 @@ int KDirWatchPrivate::scanEntry(Entry* e)
     e->msecLeft += e->freq;
   }
 
-  struct stat stat_buf;
-  bool exists = (stat(QFile::encodeName(e->path), &stat_buf) == 0);
+  KDE_struct_stat stat_buf;
+  bool exists = (KDE_stat(QFile::encodeName(e->path), &stat_buf) == 0);
   if (exists) {
 
     if (e->m_status == NonExistent) {

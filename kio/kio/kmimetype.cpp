@@ -57,6 +57,7 @@
 #include <kstandarddirs.h>
 #include <kurl.h>
 #include <ksycoca.h>
+#include <kde_file.h>
 
 template class KSharedPtr<KMimeType>;
 template class QValueList<KMimeType::Ptr>;
@@ -172,8 +173,8 @@ KMimeType::Ptr KMimeType::findByURL( const KURL& _url, mode_t _mode,
 
   if ( !_fast_mode && _is_local_file && (_mode == 0 || _mode == (mode_t)-1) )
   {
-    struct stat buff;
-    if ( stat( QFile::encodeName(path), &buff ) != -1 )
+    KDE_struct_stat buff;
+    if ( KDE_stat( QFile::encodeName(path), &buff ) != -1 )
       _mode = buff.st_mode;
   }
 
