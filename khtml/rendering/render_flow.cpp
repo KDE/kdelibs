@@ -359,7 +359,7 @@ void RenderFlow::layoutBlockChildren( bool relayoutChildren )
     {
 
 	// make sure we relayout children if we need it.
-	if ( relayoutChildren )
+	if ( relayoutChildren || floatBottom() > m_y )
 	    child->setLayouted( false );
 
 //         kdDebug( 6040 ) << "   " << child->renderName() << " loop " << child << ", " << child->isInline() << ", " << child->layouted() << endl;
@@ -725,7 +725,7 @@ RenderFlow::rightRelOffset(int y, int fixedOffset, int *heightRemaining ) const
     QPtrListIterator<SpecialObject> it(*specialObjects);
     for ( ; (r = it.current()); ++it )
     {
-//      kdDebug( 6040 ) << "right: sy, ey, x, w " << //     r->startY << "," << r->endY << "," << r->left << "," << r->width << " " << endl;
+	//kdDebug( 6040 ) << "right: sy, ey, x, w " << r->startY << "," << r->endY << "," << r->left << "," << r->width << " " << endl;
         if (r->startY <= y && r->endY > y &&
             r->type == SpecialObject::FloatRight &&
             r->left < right) {
@@ -733,14 +733,14 @@ RenderFlow::rightRelOffset(int y, int fixedOffset, int *heightRemaining ) const
 	    if ( heightRemaining ) *heightRemaining = r->endY - y;
 	}
     }
-//    kdDebug( 6040 ) << "rightOffset(" << y << ") = " << right << endl;
+    //kdDebug( 6040 ) << "rightOffset(" << y << ") = " << right << endl;
     return right;
 }
 
 unsigned short
 RenderFlow::lineWidth(int y) const
 {
-//    kdDebug( 6040 ) << "lineWidth(" << y << ")=" << rightOffset(y) - leftOffset(y) << endl;
+    //kdDebug( 6040 ) << "lineWidth(" << y << ")=" << rightOffset(y) - leftOffset(y) << endl;
     return rightOffset(y) - leftOffset(y);
 }
 
@@ -895,7 +895,7 @@ RenderFlow::clearFloats()
     int offset = m_y;
 
     if ( parentHasFloats ) {
-	addOverHangingFloats( static_cast<RenderFlow *>( parent() ), 0, offset, false );
+	addOverHangingFloats( static_cast<RenderFlow *>( parent() ), parent()->borderLeft() + parent()->paddingLeft() , offset, false );
     }
 
     if(prev ) {

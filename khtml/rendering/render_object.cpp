@@ -613,7 +613,7 @@ void RenderObject::setStyle(RenderStyle *style)
         return;
 
     RenderStyle::Diff d = m_style ? m_style->diff( style ) : RenderStyle::Layout;
-//     qDebug("new style, diff=%d", d);
+    //qDebug("new style, diff=%d", d);
     // reset style flags
     m_floating = false;
     m_positioned = false;
@@ -649,9 +649,11 @@ void RenderObject::setStyle(RenderStyle *style)
     m_hasFirstLine = (style->getPseudoStyle(RenderStyle::FIRST_LINE) != 0);
 
     if ( d >= RenderStyle::Position && m_parent ) {
+	//qDebug("triggering relayout");
 	setMinMaxKnown(false);
 	setLayouted(false);
     } else if ( m_parent ) {
+	//qDebug("triggering repaint");
 	repaint();
     }
 }
