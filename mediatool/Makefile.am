@@ -28,7 +28,7 @@ libmediatool_la_SOURCES = kaudio.cpp chunk.c connect.c eventcounter.c filename.c
 
 include_HEADERS= 	mediatool.h kaudio.h
 
-libmediatool_la_LDFLAGS = -version-info 3:0 $(all_libraries)
+libmediatool_la_LDFLAGS = -version-info 3:0 $(all_libraries) -no-undefined
 libmediatool_la_LIBADD = $(LIB_QT) $(LIBCOMPAT)
 
 libmediatool_la_METASOURCES = AUTO
