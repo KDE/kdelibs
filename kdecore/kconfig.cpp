@@ -112,7 +112,7 @@ QStringList KConfig::groupList() const
          if (aIt.key().mKey.isEmpty())
             break; // Group is empty, next group
 
-         if (!(*aIt).bDeleted)
+         if (!aIt.key().bDefault && !(*aIt).bDeleted)
          {
             retList.append(QString::fromUtf8(group));
             aIt++;
@@ -282,7 +282,7 @@ bool KConfig::hasGroup(const QCString &group) const
      if (aIt.key().mKey.isEmpty())
         break;
 
-     if (!(*aIt).bDeleted)
+     if (!aIt.key().bDefault && !(*aIt).bDeleted)
         return true;
   }
   return false;
