@@ -31,6 +31,7 @@ public:
     ~KFileSpeedBar();
 
     virtual void save( KConfig *config );
+    virtual QSize sizeHint() const;
 
 private:
     bool m_initializeSpeedbar : 1;

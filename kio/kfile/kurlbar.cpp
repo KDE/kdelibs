@@ -39,6 +39,7 @@
 #include <klocale.h>
 #include <kmimetype.h>
 #include <kprotocolinfo.h>
+#include <kstringhandler.h>
 #include <kurldrag.h>
 #include <kurlrequester.h>
 
@@ -177,6 +178,7 @@ void KURLBarItem::paint( QPainter *p )
 {
     QListBox *box = listBox();
     int w = width( box );
+    static const int margin = KDialog::spacingHint();
 
     if ( m_parent->iconSize() < KIcon::SizeMedium ) {
         // small icon -> draw icon next to text
@@ -186,21 +188,24 @@ void KURLBarItem::paint( QPainter *p )
         const QPixmap *pm = pixmap();
         int yPos = QMAX( 0, (height(box) - pm->height())/2 );
 
-        p->drawPixmap( 3, yPos, *pm );
+        p->drawPixmap( margin, yPos, *pm );
         if ( !text().isEmpty() ) {
             QFontMetrics fm = p->fontMetrics();
             if ( pm->height() < fm.height() )
                 yPos = fm.ascent() + fm.leading()/2;
             else
                 yPos = pm->height()/2 - fm.height()/2 + fm.ascent();
-            p->drawText( pm->width() + 5, yPos, text() );
+
+            yPos += margin;
+            int stringWidth = box->width() - pm->width() - 2 - (margin * 2);
+            QString visibleText = KStringHandler::rPixelSqueeze( text(), fm, stringWidth );
+            p->drawText( pm->width() + margin + 2, yPos, visibleText );
         }
         // end cut & paste (modulo pixmap centering)
     }
 
     else {
         // big icons -> draw text below icon
-        static const int margin = 3;
         int y = margin;
         const QPixmap *pm = pixmap();
 
@@ -213,9 +218,13 @@ void KURLBarItem::paint( QPainter *p )
         if ( !text().isEmpty() ) {
             QFontMetrics fm = p->fontMetrics();
             y += pm->height() + fm.height() - fm.descent();
-            int x = (w - fm.width( text() )) / 2;
+
+            int stringWidth = box->width() - (margin * 2);
+            QString visibleText = KStringHandler::rPixelSqueeze( text(), fm, stringWidth );
+            int x = (w - fm.width( visibleText )) / 2;
             x = QMAX( x, margin );
-            p->drawText( x, y, text() );
+
+            p->drawText( x, y, visibleText );
         }
     }
 
@@ -233,18 +242,18 @@ QSize KURLBarItem::sizeHint() const
     const KURLBarListBox *lb =static_cast<const KURLBarListBox*>(listBox());
 
     if ( m_parent->iconSize() < KIcon::SizeMedium ) {
-        wmin = QListBoxPixmap::width( lb );
-        hmin = QListBoxPixmap::height( lb );
+        wmin = QListBoxPixmap::width( lb ) + KDialog::spacingHint() * 2;
+        hmin = QListBoxPixmap::height( lb ) + KDialog::spacingHint() * 2;
     }
     else {
-        wmin = QMAX(lb->fontMetrics().width(text()), pixmap()->width()) + 6;
-        hmin = lb->fontMetrics().lineSpacing() + pixmap()->height() + 6;
+        wmin = QMAX(lb->fontMetrics().width(text()), pixmap()->width()) + KDialog::spacingHint() * 2;
+        hmin = lb->fontMetrics().lineSpacing() + pixmap()->height() + KDialog::spacingHint() * 2;
     }
 
     if ( lb->isVertical() )
-        wmin = QMAX( wmin, lb->viewport()->sizeHint().width() );
+        wmin = QMIN( wmin, lb->viewport()->sizeHint().width() );
     else
-        hmin = QMAX( hmin, lb->viewport()->sizeHint().height() );
+        hmin = QMIN( hmin, lb->viewport()->sizeHint().height() );
 
     return QSize( wmin, hmin );
 }
@@ -696,7 +705,7 @@ void KURLBar::slotContextMenuRequested( QListBoxItem *_item, const QPoint& pos )
     int result = popup->exec( pos );
     switch ( result ) {
         case IconSize:
-            setIconSize( smallIcons ? KIcon::SizeMedium : KIcon::SizeSmall );
+            setIconSize( smallIcons ? KIcon::SizeMedium : KIcon::SizeSmallMedium );
             m_listBox->triggerUpdate( true );
             break;
         case AddItem:
@@ -896,7 +905,6 @@ KURLBarItemDialog::KURLBarItemDialog( bool allowGlobal, const KURL& url,
     label = new QLabel( i18n("Choose an &icon:"), grid );
     m_iconButton = new KIconButton( grid, "icon button" );
     m_iconButton->setIconSize( iconSize );
-    m_iconButton->setStrictIconSize( true );
     if ( icon.isEmpty() )
         icon = KMimeType::iconForURL( url );
     m_iconButton->setIcon( icon );

@@ -36,7 +36,7 @@ KFileSpeedBar::KFileSpeedBar( QWidget *parent, const char *name )
     KConfigGroupSaver cs( config, ConfigGroup );
     m_initializeSpeedbar = config->readBoolEntry( "Set speedbar defaults",
                                                    true );
-
+    setIconSize(KIcon::SizeSmallMedium);
     readConfig( KGlobal::config(), "KFileDialog Speedbar" );
 
     if ( m_initializeSpeedbar )
@@ -92,5 +92,15 @@ void KFileSpeedBar::save( KConfig *config )
     writeConfig( config, "KFileDialog Speedbar" );
 }
 
+QSize KFileSpeedBar::sizeHint() const
+{
+    QSize sizeHint = KURLBar::sizeHint();
+    int ems = fontMetrics().width("mmmmmmmmmmmm");
+    if (sizeHint.width() < ems)
+    {
+        sizeHint.setWidth(ems);
+    }
+    return sizeHint;
+}
 
 #include "kfilespeedbar.moc"
