@@ -30,6 +30,8 @@
 #include <kicontheme.h>
 #include "kiconeffect.h"
 
+#include <config.h>
+
 KIconEffect::KIconEffect()
 {
     init();

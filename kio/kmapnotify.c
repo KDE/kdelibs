@@ -28,6 +28,7 @@
 #include <X11/Xutil.h>
 
 #include <ltdl.h>
+#include <config.h>
 
 int XMapWindow(Display *, Window);
 int XMapRaised(Display *, Window);

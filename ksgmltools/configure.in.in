@@ -11,7 +11,7 @@ AC_ARG_WITH(sgml-cat,[  --with-sgml-cat=DIR     adds DIR to the search path for 
   IFS=$ac_save_IFS])
 
 dnl The order of the directories in this list matters
-dtd_paths="/usr/share/sgml/sgml-iso-entities-8879.1986 /usr/share/sgml/jade-1.2.1 /usr/share/sgml/docbook/sgml-dtd-3.1 /usr/share/sgml/docbook/dsssl-stylesheets-1.54 /usr/share/sgml /usr/local/share/sgml /etc /etc/sgml /usr/share/sgml /usr/share/sgml/docbk31 $USER_SGML_CAT_PATH"
+dtd_paths="/usr/share/sgml/sgml-iso-entities-8879.1986 /usr/share/sgml/jade-1.2.1 /usr/share/sgml/docbook/sgml-dtd-3.1 /usr/share/sgml/docbook/dsssl-stylesheets-1.54 /usr/share/sgml /usr/local/share/sgml /etc /etc/sgml /usr/share/sgml /usr/share/sgml/docbk31 /usr/local/lib/sgml $USER_SGML_CAT_PATH"
 
 AC_DEFUN(KDE_FIND_CAT,
 [
@@ -36,6 +36,10 @@ KDE_FIND_CAT(docbook/dsssl/modular/catalog)
 dnl These two lines are added for SuSE
 KDE_FIND_CAT(jade_dsl/catalog)
 KDE_FIND_CAT(docbkdsl/catalog)
+dnl These three lines are added for Tru64
+KDE_FIND_CAT(dtd/docbook-3.1/docbook.cat)
+KDE_FIND_CAT(stylesheets/nwalsh-modular/catalog)
+KDE_FIND_CAT(dsssl/catalog)
 
 AC_SUBST(SGML_CATALOGS)
 
