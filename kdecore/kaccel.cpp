@@ -34,6 +34,7 @@ KAccel::KAccel( QWidget * parent, const char * name ):
 	aAvailableId = 1;
 	bEnabled = true;
 	aGroup = "Keys";
+	bGlobal = false;
 	pAccel = new QAccel( parent, name );
 }
 
