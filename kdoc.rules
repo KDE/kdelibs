@@ -54,4 +54,4 @@ kparts_LIBS = -lkom -lkdecore -lqt
 kded_FILES = *.h
 #kded_FILES = *.idl *.h
 kded_PATH = corba/kded
-kded_LIBS = -lkom -lkdecore -lqt
+kded_LIBS = -lkom -lkio -lkdecore -lqt
