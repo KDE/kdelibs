@@ -104,7 +104,7 @@ static bool kdither_32_to_8( const QImage *src, QImage *dst )
     for ( y=0; y < src->height(); y++ ) {
 	p = (QRgb *)src->scanLine(y);
 	b = dst->scanLine(y);
-	int endian = (QImage::systemByteOrder() == QImage::BigEndian);
+	int endian = (QImage::systemBitOrder() == QImage::BigEndian);
 	int x;
 	uchar* q = src->scanLine(y);
 	uchar* q2 = src->scanLine(y+1 < src->height() ? y + 1 : 0);
@@ -156,7 +156,7 @@ static bool kdither_32_to_8( const QImage *src, QImage *dst )
 	    }
 	}
 
-	if (endian) {
+	if (!endian) {
 	    for (x=0; x<sw; x++)
 		*b++ = INDEXOF(pv[2][x],pv[1][x],pv[0][x]);
 	} else {
