@@ -8,8 +8,8 @@ void recursive_print( const KTarDirectory * dir, const QString & path )
   QStringList::Iterator it = l.begin();
   for( ; it != l.end(); ++it )
   {
-    printf("%s%s\n", path.latin1(), (*it).latin1());
     const KTarEntry* entry = dir->entry( (*it) );
+    printf("mode=%07o %s %s %s%s\n", entry->permissions(), entry->user().latin1(), entry->group().latin1(), path.latin1(), (*it).latin1());
     if (entry->isDirectory())
       recursive_print( (KTarDirectory *)entry, path+(*it)+"/" );
   }
