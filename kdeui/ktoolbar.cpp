@@ -1815,11 +1815,7 @@ void KToolBar::positionYourself( bool force )
 {
     if (force)
         d->positioned = false;
-    positionYourself();
-}
 
-void KToolBar::positionYourself()
-{
     if ( d->positioned || !mainWindow() )
     {
         //kdDebug(220) << "KToolBar::positionYourself d->positioned=true  ALREADY DONE" << endl;

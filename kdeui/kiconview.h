@@ -74,13 +74,6 @@ public:
    */
   Mode mode() const;
 
-  /**
-   * Returns the index of @p item or -1 if @p item doesn't exist
-   * in this icon view.
-   */
-  //BCI: Remove this function. The bug(crash for nonexistent items) will hopefully be fixed then.
-  int itemIndex( const QIconViewItem *item ) const;
-
 signals:
 
   /**

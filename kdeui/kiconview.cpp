@@ -85,28 +85,6 @@ KIconView::Mode KIconView::mode() const
     return d->mode;
 }
 
-
-int KIconView::itemIndex( const QIconViewItem *item ) const
-{
-    if ( !item )
-	return -1;
-
-    if ( item == firstItem() )
-	return 0;
-    else if ( item == lastItem() )
-	return count() - 1;
-    else {
-	QIconViewItem *i = firstItem();
-	int j = 0;
-	while ( i && i != item ) {
-	    i = i->nextItem();
-	    ++j;
-	}
-
-	return i ? j : -1;
-    }
-}
-
 void KIconView::slotOnItem( QIconViewItem *item )
 {
     if ( item && m_bChangeCursorOverItem && m_bUseSingle )
@@ -166,7 +144,7 @@ void KIconView::slotSettingsChanged(int category)
 void KIconView::slotAutoSelect()
 {
   // check that the item still exists
-  if( itemIndex( m_pCurrentItem ) == -1 || !d->doAutoSelect )
+  if( index( m_pCurrentItem ) == -1 || !d->doAutoSelect )
     return;
 
   //Give this widget the keyboard focus.

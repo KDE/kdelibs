@@ -372,11 +372,6 @@ void KToolBarButton::setDisabledPixmap( const QPixmap &pixmap )
   QButton::setPixmap( isEnabled() ? defaultPixmap : disabledPixmap );
 }
 
-void KToolBarButton::setPopup(QPopupMenu *p)
-{
-  setPopup(p,false);
-}
-
 void KToolBarButton::setPopup(QPopupMenu *p, bool toggle)
 {
   d->m_popup = p;

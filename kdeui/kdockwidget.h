@@ -982,11 +982,6 @@ private:
   QWidget* main;
 
   /**
-   * Dead. Scheduled for removing in 3.0. Do not use.
-   */
-  KDockMoveManager* mg;
-
-  /**
    * The dockwidget that is being dragged at the moment
    */
   KDockWidget* currentDragWidget;

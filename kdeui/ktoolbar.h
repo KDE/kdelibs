@@ -934,11 +934,7 @@ public:
     /**
      * @internal
      */
-    void positionYourself();
-    /**
-     * @internal
-     */
-    void positionYourself( bool force ); // BCI: to be merged
+    void positionYourself( bool force = false);
 
 signals:
     /**

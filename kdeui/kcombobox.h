@@ -462,18 +462,6 @@ protected slots:
     */
     virtual void makeCompletion( const QString& );
 
-    /**
-     * @deprecated
-     */
-    // BCI: Remove me in KDE 3.0
-    void slotAboutToShow() {}
-
-    /**
-     * @deprecated
-     */
-    // BCI: Remove me in KDE 3.0
-    void slotCancelled() {}
-
 protected:
     /*
     * This function simply sets the lineedit text and
