@@ -188,6 +188,8 @@ AC_CONFIG_SUBDIRS(libltdl)
 
 CXXFLAGS="$CXXFLAGS "'$(USE_RTTI)'
 
+KDE_COMPILER_REPO
+
 AC_OUTPUT(Makefile \
 	nana/Makefile \
 	kdecore/Makefile \
