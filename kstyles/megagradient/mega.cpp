@@ -1718,8 +1718,6 @@ void MegaStyle::drawFocusRect(QPainter *p, const QRect &r,
 
 void MegaStyle::polishPopupMenu(QPopupMenu *mnu)
 {
-
-    qWarning("Polishing popup menu");
     /*
     QObject::connect(mnu, SIGNAL(aboutToShow()), menuHandler,
                      SLOT(aboutToShowSlot()));
