@@ -84,9 +84,7 @@ public:
 private:
     char *catalogue;
     QString lang;
-    int enabled; // no longer used
     QIntDict<char> aliases;
-    static KLocale *pLocale; // no longer used
 };
 
 #endif

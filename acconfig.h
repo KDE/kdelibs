@@ -1,9 +1,9 @@
 /* Define if the C++ compiler supports BOOL */
 #undef HAVE_BOOL
 
-#define VERSION 0.9
+#undef VERSION
 
-#define PACKAGE kdelibs
+#undef PACKAGE
 
 /* defines if having libgif (always 1) */
 #undef HAVE_LIBGIF
