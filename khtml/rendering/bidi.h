@@ -101,6 +101,6 @@ public:
     struct BidiIterator;
     struct BidiState;
 
-};
+}
 
 #endif

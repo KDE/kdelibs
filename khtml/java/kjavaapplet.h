@@ -37,7 +37,6 @@
  * the Applet class files, and set the proper size of the Applet.  It also
  * has an interface for applets to resize themselves.
  *
- * @version $Id$
  * @author Richard J. Moore, rich@kde.org
  * @author Wynn Wilkes, wynnw@kde.org
  */
@@ -181,7 +180,7 @@ public:
      * Returns status of applet- whether it's been created or not
      */
     bool isCreated();
- 
+
     /**
      * Run the applet.
      */
@@ -201,9 +200,9 @@ public:
      * Set the applet ID.
      */
     void setAppletId( int id );
-    
+
     KJavaAppletContext* getContext() const { return context; }
-    
+
     /**
      * Get/Set the user name
      */

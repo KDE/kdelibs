@@ -1466,7 +1466,7 @@ RenderTextFragment::RenderTextFragment(DOM::NodeImpl* _node, DOM::DOMStringImpl*
     else
         m_end = 0;
 }
-    
+
 RenderTextFragment::~RenderTextFragment()
 {
     if (m_generatedContentStr)

@@ -290,7 +290,7 @@ class RenderFieldset : public RenderBlock
 {
 public:
     RenderFieldset(DOM::HTMLGenericFormElementImpl *element);
-    
+
     virtual const char *renderName() const { return "RenderFieldSet"; }
     virtual RenderObject* layoutLegend(bool relayoutChildren);
     virtual void setStyle(RenderStyle* _style);

@@ -302,7 +302,7 @@ public:
     void activate();
 
     void setUnsubmittedFormChange(bool unsubmitted) { m_unsubmittedFormChange = unsubmitted; }
-    
+
 protected:
 
     DOMString m_value;
