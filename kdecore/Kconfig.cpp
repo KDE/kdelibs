@@ -1,6 +1,9 @@
 // $Id$
 //
 /* $Log$
+ * Revision 1.2  1997/04/15 20:01:53  kalle
+ * Kalles changes for 0.8
+ *
  * Revision 1.1.1.1  1997/04/13 14:42:41  cvsuser
  * Source imported
  *
@@ -532,10 +535,7 @@ void KConfig::sync()
 	{
 	  // is it writable?
 	  if( pData->pAppStream->device()->isWritable() )
-		{
-		  writeConfigFile( *(QFile *)pData->pAppStream->device() );
 		  pData->pAppStream->device()->open( IO_ReadWrite );
-		}
 
 	  return; // we only write here, no need to go further
 	}
