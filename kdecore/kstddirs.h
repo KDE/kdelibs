@@ -49,7 +49,7 @@ class KConfig;
 * leave it up to @ref KStandardDirs::findResource("apps", "Home.desktop")
 * to apply this knowledge.
 *
-* The main idea behind KStandardDirs is that there are several
+* The main idea behind @ref KStandardDirs is that there are several
 * toplevel prefixes below which the files lie. One of these prefixes is
 * the one where the user installed kdelibs, one is where the
 * application was installed, and one is $HOME/.kde, but there
@@ -61,7 +61,7 @@ class KConfig;
 * So the search algorithm basicly appends to each prefix each registered
 * suffix and tries to locate the file there.
 * To make the thing even more complex, it's also possible to register
-* absolute paths that KStandardDirs looks up after not finding anything
+* absolute paths that @ref KStandardDirs looks up after not finding anything
 * in the former steps. They can be useful if the user wants to provide
 * specific directories that aren't in his $HOME/.kde directory for,
 * for example, icons.
@@ -90,20 +90,21 @@ class KStandardDirs
 {
 public:
         /**
-	 * KStandardDirs constructor. It just initializes the cache.
+	 * @ref KStandardDirs constructor. It just initializes the cache.
 	 **/
 	KStandardDirs( );
 
 	/**
-	 * KStandardDirs destructor.
+	 * @ref KStandardDirs destructor.
 	 */
 	virtual ~KStandardDirs();
 
 	/**
-	 * This adds another search dir to front of the fsstnd list.
+	 * Add another search dir to front of the @p fsstnd list.
+	 *
 	 * @li When compiling kdelibs, the prefix is added to this.
 	 * @li When compiling a separate app, kapp adds the new prefix
-	 * @li Wdditional dirs may be loaded from kdeglobals.
+	 * @li Additional dirs may be loaded from kdeglobals.
 	 *
 	 * @param dir The directory to append relative paths to.
 	 */
@@ -112,6 +113,7 @@ public:
 
 	/**
 	 * Add suffixes for types.
+	 *
 	 *  You may add as many as
 	 * you need, but it is advised that there is exactly one to make
 	 * writing definite.
@@ -132,7 +134,9 @@ public:
 	/**
 	 * Add absolute path at the end of the search path for
 	 * particular types (for example in case of icons where
-	 * the user specifies extra paths). You shouldn't need this
+	 * the user specifies extra paths).
+	 *
+	 * You shouldn't need this
 	 * function in 99% of all cases besides adding user-given
 	 * paths.
 	 *
@@ -173,6 +177,7 @@ public:
 	 * Try to find the directory the file is in.
 	 * It works the same as @ref findResource(), but it doesn't
 	 * return the filename but the name of the directory.
+	 *
 	 * This way the application can access a couple of files
 	 * that have been installed into the same directory without
 	 * having to look for each file.
@@ -188,6 +193,7 @@ public:
 
 	/**
 	 * Try to find all resources with the specified type.
+	 *
 	 * The function will look into all specified directories
 	 * and return all filenames in these directories.
 	 *
@@ -210,6 +216,7 @@ public:
 
 	/**
 	 * Try to find all resources with the specified type.
+	 *
 	 * The function will look into all specified directories
 	 * and return all filenames (full and relative paths) in
 	 * these directories.
@@ -234,7 +241,9 @@ public:
 				       QStringList &relPaths) const;
 
 	/**
-	 * Find the executable in the system path. A valid executable must
+	 * Find the executable in the system path.
+	 *
+	 * A valid executable must
 	 * be a file and have its executable bit set.
 	 *
 	 * @see findAllExe()
@@ -253,7 +262,7 @@ public:
 				bool ignoreExecBit=false );
 
 	/**
-	 * Finds all occurences of an executable in the system path.
+	 * Find all occurences of an executable in the system path.
 	 *
 	 * @see	findExe()
 	 *
@@ -276,7 +285,9 @@ public:
 
 	/**
 	 * This function adds the defaults that are used by the current
-	 * KDE version. It's a series of @ref addResourceTypes()
+	 * KDE version.
+	 *
+	 * It's a series of @ref addResourceTypes()
 	 * and @ref addPrefix() calls.
 	 * You normally wouldn't call this function because it's called
 	 * for you from @ref KGlobal.
@@ -322,6 +333,7 @@ public:
 
 	/**
 	 * Recursively create still-missing directories in the given path.
+	 *
 	 * The resulting permissions will depend on the current umask setting.
 	 * permission = mode & ~umask.
 	 *

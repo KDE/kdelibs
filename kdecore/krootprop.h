@@ -27,11 +27,11 @@ typedef unsigned long Atom;
 #include <qstringlist.h>
 
 /**
-* Access to KDE desktop resources stored on the root window.
+* Access KDE desktop resources stored on the root window.
 *
 * A companion to the @ref KConfig class.
 *
-* The KRootProp class is used for reading and writing configuration entries
+* The @ref KRootProp class is used for reading and writing configuration entries
 * to properties on the root window.
 *
 * All configuration entries are of the form "key=value".
@@ -52,7 +52,7 @@ protected:
 
 public:
   /**
-   * Construct a KRootProp object for the property @p rProp.
+   * Construct a @ref KRootProp object for the property @p rProp.
    *
    **/
    KRootProp( const QString& rProp = QString::null );
@@ -72,12 +72,14 @@ public:
    
    
    /**
-    *    Returns the property in which keys are searched.
+    * Retrieve the name of the property under which keys are searched.
     **/
    QString prop() const;
    
    /**
-    * Destroys the property completely. I.e. all entries will be cleared
+    * Destroy the property completely.
+    *
+    * I.e. all entries will be cleared
     * and the property will be removed from the root window.
     **/
  void destroy();

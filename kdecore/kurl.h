@@ -31,8 +31,8 @@ class QUrl;
  * A prototypical URL looks like:
  * <pre>protocol:/user:password@hostname:port/path/to/file.ext#reference</pre>
  *
- *  KURL has some restrictions regarding the path
- * encoding. KURL works internally with the decoded path and
+ *  @ref KURL has some restrictions regarding the path
+ * encoding. @ref KURL works internally with the decoded path and
  * and encoded query. For example,
  * <pre>
  * http://localhost/cgi-bin/test%20me.pl?cmd=Hello%20you
@@ -57,7 +57,7 @@ public:
    *             This is dangerous since even this simple path is assumed to be
    *             encoded. For example "/home/Torben%20Weis" will be decoded to
    *             "/home/Torben Weis". This means: If you have a usual UNIX like
-   *             path, you have to use @ref encode() first before you pass it to KURL.
+   *             path, you have to use @ref encode() first before you pass it to @ref KURL.
    */
   KURL( const QString& _url );
   /**
@@ -71,7 +71,7 @@ public:
   /**
    * Constructor allowing relative URLs.
    *
-   * Example : KURL u( QDir::currentDirPath()+"/", _url )
+   * Example : @ref KURL u( QDir::currentDirPath()+"/", _url )
    * Very useful for command-line parameters, where people tend to do
    * "myprog myfile.ext"
    *
@@ -349,7 +349,7 @@ public:
   QString url( int _trailing ) const;
 
   /**
-   * Test to see if the KURL is empty.
+   * Test to see if the @ref KURL is empty.
    **/
   bool isEmpty() const;
 

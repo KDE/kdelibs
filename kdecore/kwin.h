@@ -32,16 +32,16 @@
 #undef IconicState
 
 /**
-   The class KWin allows applications to get or modify window
-   properties and to interact with the windowmanager.
-
-   It implements the new NET-protocol, a common window manager
-   specification designed by various authors of X11 window managers.
-   TODO: Add more information here, links etc. once the spec is done
-   and fully implemented.
-
-   @short Class for interaction with the windowmanager.
-   @author Matthias Ettrich (ettrich@kde.org)
+ * Get or modify window
+ * properties and to interact with the windowmanager.
+ *
+ * It implements the new NET-protocol, a common window manager
+ * specification designed by various authors of X11 window managers.
+ * TODO: Add more information here, links etc. once the spec is done
+ * and fully implemented.
+ *
+ * @short Class for interaction with the windowmanager.
+ * @author Matthias Ettrich (ettrich@kde.org)
 */
 class KWin  {
 
@@ -102,7 +102,9 @@ public:
     static void setDockWindow(WId dockWin, WId forWin  = 0 );
 
     /**
-     * Tests whether the window @p dockWin is a docking window.  If
+     * Test whether the window @p dockWin is a docking window.
+     *
+     *  If
      * @p forWin is specified, @p forWin returns the window @p dockWin is
      * docking for.
      */
@@ -111,7 +113,9 @@ public:
 
     enum WindowState { WithdrawnState = 0, NormalState = 1, IconicState = 3 };
     /**
-     * Retrieve the state of the window @p win. Possible states are
+     * Retrieve the state of the window @p win.
+     *
+     * Possible states are
      * @p NormalState, @p IconicState and @p WithdrawnState
      */
     static WindowState windowState( WId win );

@@ -39,98 +39,101 @@
 
 
 /**
-  @short Child process invocation, monitoring and control.
-  @author Christian Czezakte e9025461@student.tuwien.ac.at
-
-  @sect 1) General usage and features
-
-  This class allows a KDE application to start child processes without having
-  to worry about UN*X signal handling issues and zombie process reaping.
-
-  Basically, this class distinguishes three different ways of running
-  child processes: 
-
-  @li  KProcess::DontCare -- The child process is invoked and both the child
-  process and the parent process continue concurrently. 
-
-  Starting a  DontCare child process means that the application is
-  not interested in any notification to determine whether the
-  child process has already exited or not.
-  
-  @li  KProcess::NotifyOnExit -- The child process is invoked both the
-  child and the parent process run concurrently.
-  
-  When the child process exits, the KProcess instance
-  corresponding to it emits the Qt signal @ref processExited().
-  
-  Since this signal is @bf not emitted from within a UN*X
-  signal handler, arbitrary function calls can be made.
-  
-  @li  KProcess::Block -- The child process starts and the parent process
-  is suspended until the child process exits. (@bf Really not recommended
-  for programs with a GUI.)
-
-  KProcess also provides several functions for determining the exit status
-  and the pid of the child process it represents. 
-
-  Furthermore it is possible to supply command-line arguments to the process
-  in a clean fashion (no null -- terminated stringlists and such...)
-
-  A small usage example:
-  <pre>
-  KProcess proc;
-
-  proc << "my_executable";
-  proc << "These" << "are" << "the" << "command" << "line" << "args";
-  QApplication::connect(&proc, SIGNAL(processExited(KProcess *)), 
-                        pointer_to_my_object, SLOT(my_objects_slot));
-  proc.start();
-  </pre>  
-
-  This will start "my_executable" with the commandline arguments "These"...
-  
-  When the child process exits, the respective Qt signal will be emitted.
-  
-  @sect 2) Communication with the child process
-  
-  KProcess supports communication with the child process through
-  stdin/stdout/stderr.
-  
-  The following functions are provided for getting data from the child
-  process or sending data to the child's stdin (For more information,
-  have a look at the documentation of each function):
-
-  @li bool @ref writeStdin(char  *buffer, int  buflen);
-  @li  -- Transmit data to the child process's stdin.
-  
-  @li bool @ref closeStdin();
-  @li -- Closes the child process's stdin (which causes it to see an  feof(stdin)).
-  Returns false if you try to close stdin for a process that has been started
-  without a communication channel to stdin.
-
-  @li bool @ref closeStdout();
-  @li -- Closes the child process's stdout.
-  Returns false if you try to close stdout for a process that has been started
-  without a communication channel to stdout.
-
-  @li bool @ref closeStdout();
-  @li -- Closes the child process's stderr.
-  Returns false if you try to close stderr for a process that has been started
-  without a communication channel to stderr.
-
-
-  @sect QT signals:
-
-  @li void @ref receivedStdout(KProcess  *proc, char  *buffer, int  buflen);
-  @li  void @ref receivedStderr(KProcess  *proc, char  *buffer, int  buflen);
-  @li  -- Indicates that new data has arrived from either the
-  child process's stdout or stderr.
-  
-  @li  void @ref wroteStdin(KProcess  *proc);
-  @li  -- Indicates that all data that has been sent to the child process
-  by a prior call to @ref writeStdin() has actually been transmitted to the
-  client .
-*/
+ *  Child process invocation, monitoring and control.
+ *
+ * @sect 1) General usage and features
+ *
+ *This class allows a KDE application to start child processes without having
+ *to worry about UN*X signal handling issues and zombie process reaping.
+ *
+ *Basically, this class distinguishes three different ways of running
+ *child processes: 
+ *
+ *@li  KProcess::DontCare -- The child process is invoked and both the child
+ *process and the parent process continue concurrently. 
+ *
+ *Starting a  DontCare child process means that the application is
+ *not interested in any notification to determine whether the
+ *child process has already exited or not.
+ *
+ *@li  KProcess::NotifyOnExit -- The child process is invoked both the
+ *child and the parent process run concurrently.
+ *
+ *When the child process exits, the KProcess instance
+ *corresponding to it emits the Qt signal @ref processExited().
+ *
+ *Since this signal is @bf not emitted from within a UN*X
+ *signal handler, arbitrary function calls can be made.
+ *
+ *@li  KProcess::Block -- The child process starts and the parent process
+ *is suspended until the child process exits. (@bf Really not recommended
+ *for programs with a GUI.)
+ *
+ *KProcess also provides several functions for determining the exit status
+ *and the pid of the child process it represents. 
+ *
+ *Furthermore it is possible to supply command-line arguments to the process
+ *in a clean fashion (no null -- terminated stringlists and such...)
+ *
+ *A small usage example:
+ *<pre>
+ *KProcess proc;
+ *
+ *proc << "my_executable";
+ *proc << "These" << "are" << "the" << "command" << "line" << "args";
+ *QApplication::connect(&proc, SIGNAL(processExited(KProcess *)), 
+ *                      pointer_to_my_object, SLOT(my_objects_slot));
+ *proc.start();
+ *</pre>  
+ *
+ *This will start "my_executable" with the commandline arguments "These"...
+ *
+ *When the child process exits, the respective Qt signal will be emitted.
+ *
+ *@sect 2) Communication with the child process
+ *
+ *KProcess supports communication with the child process through
+ *stdin/stdout/stderr.
+ *
+ *The following functions are provided for getting data from the child
+ *process or sending data to the child's stdin (For more information,
+ *have a look at the documentation of each function):
+ *
+ *@li bool @ref writeStdin(char  *buffer, int  buflen);
+ *@li  -- Transmit data to the child process's stdin.
+ *
+ *@li bool @ref closeStdin();
+ *@li -- Closes the child process's stdin (which causes it to see an  feof(stdin)).
+ *Returns false if you try to close stdin for a process that has been started
+ *without a communication channel to stdin.
+ *
+ *@li bool @ref closeStdout();
+ *@li -- Closes the child process's stdout.
+ *Returns false if you try to close stdout for a process that has been started
+ *without a communication channel to stdout.
+ *
+ *@li bool @ref closeStdout();
+ *@li -- Closes the child process's stderr.
+ *Returns false if you try to close stderr for a process that has been started
+ *without a communication channel to stderr.
+ *
+ *
+ *@sect QT signals:
+ *
+ *@li void @ref receivedStdout(KProcess  *proc, char  *buffer, int  buflen);
+ *@li  void @ref receivedStderr(KProcess  *proc, char  *buffer, int  buflen);
+ *@li  -- Indicates that new data has arrived from either the
+ *child process's stdout or stderr.
+ *
+ *@li  void @ref wroteStdin(KProcess  *proc);
+ *@li  -- Indicates that all data that has been sent to the child process
+ *by a prior call to @ref writeStdin() has actually been transmitted to the
+ *client .
+ *
+ *@author Christian Czezakte e9025461@student.tuwien.ac.at
+ *
+ *
+ **/
 class KProcess : public QObject
 {
   Q_OBJECT
@@ -139,6 +142,7 @@ public:
 
   /** 
    * Modes in which the communication channel can be opened.
+   *
    * If communication for more than one channel is required,
    * the values have to be or'ed together, for example to get
    * communication with stdout as well as with stdin, you would
@@ -154,6 +158,7 @@ public:
 
   /** 
    * Run-modes for a child process.       
+   *
    * @see  KProcess
   */
   enum RunMode { DontCare, NotifyOnExit, Block };
@@ -230,7 +235,7 @@ public:
   	Communication comm = NoCommunication);
 
   /**
-   * Stops the process (by sending it a signal).
+   * Stop the process (by sending it a signal).
    *
    * @param signo	The signal to send. The default is SIGTERM.
    * @return @p true if the signal was delivered successfully.
@@ -242,7 +247,9 @@ public:
   */
   bool isRunning();
 
-  /** Returns the process id of the process. If it is called after
+  /** Returns the process id of the process.
+   *
+   * If it is called after
    * the process has exited, it returns the process id of the last
    *  child process that was created by this instance of KProcess.
    *
@@ -268,7 +275,9 @@ public:
   bool normalExit();
 
   /** 
-   * The exit status of the process. Please use
+   * Retrieve the exit status of the process.
+   *
+   * Please use
    * @ref KProcess::normalExit() to check whether the process has exited
    * cleanly (i.e., @ref KProcess::normalExit() returns @p true) before calling
    * this function because if the process did not exit normally,
@@ -278,12 +287,14 @@ public:
 
    
   /**
-   *	 Transmit data to the child process's stdin. KProcess::writeStdin
+   *	 Transmit data to the child process's stdin.
+   *
+   * @ref KProcess::writeStdin
    *     may return false in the following cases:
    *
    *     @li The process is not currently running.
    *
-   *     @li Communication to stdin has not been requested in the "start" call.
+   *     @li Communication to stdin has not been requested in the @ref start() call.
    *
    *     @li Transmission of data to the child process by a previous call to 
    * @ref writeStdin() is still in progress. 
@@ -332,7 +343,7 @@ public:
   signals: 
 
   /**
-   * This signal gets emitted after the process has terminated when
+   * Emitted after the process has terminated when
    * the process was run in the @p NotfiyOnExit  (==default option to
    * @ref start()) or the @ref Block mode. 
    **/     
@@ -340,8 +351,10 @@ public:
 
  
   /**
-   * These signals get emitted, when output from the child process has
-   * been received on stdout.   To actually get
+   * Emitted, when output from the child process has
+   * been received on stdout. 
+   *
+   *  To actually get
    * these signals, the respective communication link (stdout/stderr)
    * has to be turned on in @ref start(). 
    *
@@ -354,8 +367,10 @@ public:
   void receivedStdout(KProcess *proc, char *buffer, int buflen);
 
   /**
-   * These signals get emitted when output from the child process has
-   * been received on stdout.  To actually get
+   * Emitted when output from the child process has
+   * been received on stdout.
+   *
+   *  To actually get
    * these signals, the respective communications link (stdout/stderr)
    * has to be turned on in @ref start() and the @p NoRead flag should
    * have been passed.
@@ -366,8 +381,9 @@ public:
 
 
   /**
-   * These signals get emitted, when output from the child process has
-   * been received on stderr. -- To actually get
+   * Emitted, when output from the child process has
+   * been received on stderr.
+   * To actually get
    * these signals, the respective communication link (stdout/stderr)
    * has to be turned on in @ref start(). 
    *
@@ -380,7 +396,7 @@ public:
   void receivedStderr(KProcess *proc, char *buffer, int buflen);
 
   /**
-   * This signal gets emitted after all the data that has been
+   * Emitted after all the data that has been
    * specified by a prior call to @ref writeStdin() has actually been
    * written to the child process. 
    **/

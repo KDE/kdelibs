@@ -24,8 +24,10 @@
 #include <dcopobject.h>
 
 /**
- * KUniqueApplication provides a way of maintaining only a single
- * instance of a running application at a time.  If another instance
+ * Maintain only a single
+ * instance of a running application at a time.
+ *
+ * If another instance
  * is started, it will determine (via DCOP) whether it is the first instance
  * or a second instance.  If it is a second instance, it will forward on
  * the information to the first instance and then quit.
@@ -48,6 +50,7 @@ public:
 
   /**
    * Fork and register with dcop.
+   *
    * The command line arguments are being sent via DCOP to @ref newInstance()
    * and will be received once the application enters the event loop.
    * @return @p true if registration is succesful.
@@ -91,14 +94,18 @@ public:
   virtual DCOPClient *dcopClient();
   
   /** 
-   * Dispatch any incoming DCOP message for a new instance.  If
+   * Dispatch any incoming DCOP message for a new instance.
+   *
+   *  If
    * it is not a request for a new instance, return @p false.
    */
   bool process(const QCString &fun, const QByteArray &data,
 	       QCString &replyType, QByteArray &replyData);
 
   /**
-   * Create a new "instance" of the application.  Usually this
+   * Create a new "instance" of the application.
+   *
+   *  Usually this
    * will involve making some calls into the GUI portion of your
    * application asking for a new window to be created, possibly with
    * some data already loaded based on the arguments received.

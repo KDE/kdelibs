@@ -53,7 +53,9 @@ typedef sockaddr_in ksockaddr_in;
 #endif
 
 /** 
- * A TCP/IP client socket. You can connect this socket to any Internet address. 
+ * A TCP/IP client socket.
+ *
+ * You can connect this socket to any Internet address. 
  *
  * The socket gives you three signals: When ready for reading, 
  * ready for writing or if the connection is broken.  
@@ -102,7 +104,7 @@ public:
     ~KSocket();
 
     /**
-      *  A small wrapper around gethostbyname() and such.
+      *  A small wrapper around @ref gethostbyname() and such.
       */
     static bool initSockaddr(ksockaddr_in *server_name, const char *hostname, unsigned short int port, int domain = PF_INET);
     
@@ -157,7 +159,8 @@ signals:
     
 public slots:
     /** 
-     * Connected to the writeNotifier.  
+     * Connected to the writeNotifier.
+     *
      * Called when
      *  the socket is ready for writing.
      */
@@ -165,6 +168,7 @@ public slots:
     
     /** 
      * Connected to the readNotifier.
+     *
      * Called when
      *  the socket is ready for reading.
      */

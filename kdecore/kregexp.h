@@ -5,12 +5,13 @@ class KRegExpPrivate;
 
 /**
  * Regular expression (regexp) matching with back-references. 
+ *
  * This was implemented
  * because @ref QRegExp does not support back-references.
  *
  * Back-references are parts of a regexp grouped with parentheses. If a
  * string matches the regexp, you can access the text that matched each
- * group with the @ref group method. This is similar to regexps in perl.
+ * group with the @ref group method. This is similar to regular expressions in Perl.
  *
  * Example:
  * <pre>
@@ -27,7 +28,7 @@ class KRegExpPrivate;
  *  Weis
  * </pre>
  *
- * Please notice that KRegExp does @bf not support unicode.
+ * Please notice that @ref KRegExp does @bf not support unicode.
  *
  * @author Torben Weis <weis@kde.org>
  * @version $Id$
@@ -37,12 +38,12 @@ class KRegExp
 public:
 
   /**
-   * Create a KRegExp object without a default pattern.
+   * Create a @ref KRegExp object without a default pattern.
    */
   KRegExp();
 
   /**
-   * Create a KRegExp object.
+   * Create a @ref KRegExp object.
    * @param _pattern	The regular expression to use for matches.
    * @param _mode	If this is "i", case-insensitive matches will be
    * 			performed.
@@ -69,7 +70,7 @@ public:
    * @return a grouped substring. A substring may be empty.
    *         In this case 0 is returned. Otherwise you may @bf not
    *         delete or modify the returned value. In addition the
-   *         returned value becomes invalid after the KRegExp instance
+   *         returned value becomes invalid after the @ref KRegExp instance
    *         is deleted or after @ref @match() was called again.
    *
    * @param _grp May be in the range [0..9]. If @p _grp is 0 then the complete
