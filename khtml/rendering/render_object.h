@@ -122,8 +122,10 @@ public:
     virtual RenderObject *firstChild() const { return 0; }
     virtual RenderObject *lastChild() const { return 0; }
 
+    virtual bool childAllowed() const { return false; }
+
     virtual RenderLayer* layer() const { return 0; }
-    RenderLayer* enclosingLayer();
+    RenderLayer* enclosingLayer() const;
     void addLayers(RenderLayer* parentLayer, RenderLayer* beforeChild=0);
     void removeLayers(RenderLayer* parentLayer);
     void moveLayers(RenderLayer* oldParent, RenderLayer* newParent);
