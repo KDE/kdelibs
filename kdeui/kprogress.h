@@ -283,10 +283,9 @@ class KProgressDialog : public KDialogBase
         /**
          * Returns true if the dialog will close upon completion,
          * or false otherwise
-         * @deprecated
          */
         // ### Remove this KDE 4.0
-        bool autoClose() KDE_DEPRECATED;
+        bool autoClose();
 
         /**
          * Returns true if the dialog will close upon completion,
@@ -304,10 +303,9 @@ class KProgressDialog : public KDialogBase
         /**
          * Returns true if the KProgress widget will be reset
          * upon completion, or false otherwise
-         * @deprecated
          */
         // ### Remove this KDE 4.0
-        bool autoReset() KDE_DEPRECATED;
+        bool autoReset();
 
         /**
          * Returns true if the KProgress widget will be reset
@@ -319,10 +317,9 @@ class KProgressDialog : public KDialogBase
          * Returns true if the dialog was closed or canceled
          * before completion. If the dialog is not cancellable
          * it will always return false.
-         * @deprecated
          */
         // ### Remove this KDE 4.0
-        bool wasCancelled() KDE_DEPRECATED;
+        bool wasCancelled();
 
         /**
          * Returns true if the dialog was closed or canceled
