@@ -42,6 +42,7 @@
 #include <ksslcertificatehome.h>
 #include <ksslcertdlg.h>
 #include <ksslpkcs12.h>
+#include <ksslx509v3.h>
 #include <kmessagebox.h>
 
 #include <klocale.h>
@@ -475,6 +476,17 @@ KSSLCertificateHome::KSSLAuthAction aa;
   // Ok, we're supposed to prompt the user....
   if (prompt || forcePrompt) {
      QStringList certs = KSSLCertificateHome::getCertificateList();
+
+	for (QStringList::Iterator it = certs.begin();
+				   it != certs.end();
+				   ++it) {
+		KSSLPKCS12 *pkcs = 
+			KSSLCertificateHome::getCertificateByName(*it);
+		if (!pkcs || !pkcs->getCertificate() ||
+		    !pkcs->getCertificate()->x509V3Extensions().certTypeSSLClient()) {
+			certs.remove(*it);
+		}
+	}
 
         if (certs.isEmpty()) return;  // we had nothing else, and prompt failed
 
