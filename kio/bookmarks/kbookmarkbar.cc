@@ -45,7 +45,7 @@ public:
 };
 template<> QPtrDict<KBookmarkBarPrivate>* dPtrTemplate<KBookmarkBar, KBookmarkBarPrivate>::d_ptr = 0;
 
-#define dptr() KBookmarkBarPrivate::d(this)
+#define dptr() KBookmarkBarPrivate::d(this) // TODO move into the class itself - inline of course
 
 // usage of KXBELBookmarkImporterImpl is just plain evil, but it reduces code dup. so...
 class ToolbarFilter : public KXBELBookmarkImporterImpl {
@@ -82,55 +82,64 @@ KBookmarkBar::KBookmarkBar( KBookmarkManager* mgr,
              SLOT( slotBookmarksChanged(const QString &) ) );
 
     dptr()->m_filteredMgr = 0;
+    KBookmarkGroup toolbar = getToolbar();
+    dptr()->m_readOnly = !!dptr()->m_filteredMgr;
+
+    fillBookmarkBar( toolbar );
+}
+
+KBookmarkGroup KBookmarkBar::getToolbar() {
 
     if ( KBookmarkSettings::self()->m_filteredtoolbar )
     {
-        QString fname = mgr->path() + ".ftbcache";
-        dptr()->m_filteredMgr = KBookmarkManager::managerForFile( fname, false );
+        QString fname = m_pManager->path() + ".ftbcache"; // never actually written to
+        if ( !dptr()->m_filteredMgr ) {
+            QFile::remove( fname );
+            dptr()->m_filteredMgr = KBookmarkManager::managerForFile( fname, false );
+        } else {
+            KBookmarkGroup bkRoot = dptr()->m_filteredMgr->root();
+            QValueList<KBookmark> bks;
+            for (KBookmark bm = bkRoot.first(); !bm.isNull(); bm = bkRoot.next(bm)) 
+                bks << bm;
+            for ( QValueListConstIterator<KBookmark> it = bks.begin(); it != bks.end(); ++it ) 
+                bkRoot.deleteBookmark( (*it) );
+        }
         ToolbarFilter filter;
         KBookmarkDomBuilder builder( dptr()->m_filteredMgr->root(), 
                                      dptr()->m_filteredMgr );
         builder.connectImporter( &filter );
-        filter.filter( mgr->root() );
+        filter.filter( m_pManager->root() );
     }
 
-    dptr()->m_readOnly = !!dptr()->m_filteredMgr;
-    KBookmarkGroup toolbar = dptr()->m_filteredMgr 
-                           ? dptr()->m_filteredMgr->root() 
-                           : mgr->toolbar();
-
-    fillBookmarkBar( toolbar );
+    return dptr()->m_filteredMgr 
+         ? dptr()->m_filteredMgr->root() 
+         : m_pManager->toolbar();
 }
 
 KBookmarkBar::~KBookmarkBar()
 {
     clear();
-    // do funky dptr() delete stuff
+    KBookmarkBarPrivate::delete_d(this);
 }
 
 void KBookmarkBar::clear()
 {
-    m_lstSubMenus.clear();
-    if ( m_toolBar )
-        m_toolBar->clear();
-
     QPtrListIterator<KAction> it( dptr()->m_actions );
-    for (; it.current(); ++it )
-        it.current()->unplugAll();
-
+    for (; it.current(); ++it ) {
+        (*it)->unplugAll();
+    }
     dptr()->m_actions.clear();
+    m_lstSubMenus.clear();
 }
 
 void KBookmarkBar::slotBookmarksChanged( const QString & group )
 {
-    // TODO
-    // handle the funky filtered toolbar case
-    // basically: always filter
+    KBookmarkGroup tb = getToolbar(); // heavy for non cached toolbar version
+    kdDebug(7043) << "slotBookmarksChanged( " << group << " )" << endl;
 
-    KBookmarkGroup tb = m_pManager->toolbar();
     if ( tb.isNull() )
         return;
-    if ( tb.address() == group )
+    if ( tb.address() == group || KBookmarkSettings::self()->m_filteredtoolbar )
     {
         clear();
         fillBookmarkBar( tb );
@@ -143,7 +152,6 @@ void KBookmarkBar::slotBookmarksChanged( const QString & group )
             it.current()->slotBookmarksChanged( group );
         }
     }
-
 }
 
 void KBookmarkBar::fillBookmarkBar(KBookmarkGroup & parent)
@@ -184,7 +192,7 @@ void KBookmarkBar::fillBookmarkBar(KBookmarkGroup & parent)
                                                            "bookmarkbar-actionmenu");
             action->setProperty( "address", bm.address() );
             action->setProperty( "readOnly", dptr()->m_readOnly );
-            action->setDelayed(false);
+            action->setDelayed( false );
 
             // this flag doesn't have any UI yet
             KGlobal::config()->setGroup( "Settings" );

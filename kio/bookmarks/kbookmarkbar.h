@@ -71,6 +71,8 @@ protected:
     bool eventFilter( QObject *o, QEvent *e );
 
 private:
+    KBookmarkGroup getToolbar();
+
     KBookmarkOwner *m_pOwner;
     QGuardedPtr<KToolBar> m_toolBar;
     KActionCollection *m_actionCollection;
