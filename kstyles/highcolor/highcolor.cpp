@@ -80,14 +80,13 @@ Q_EXPORT_PLUGIN( HighColorStylePlugin )
 // ---------------------------------------------------
 
 
-// ### Remove globals
-QBitmap lightBmp;
-QBitmap grayBmp;
-QBitmap dgrayBmp;
-QBitmap centerBmp;
-QBitmap maskBmp;
-QBitmap xBmp;
-QIntDict<GradientSet> gDict;
+static QBitmap lightBmp;
+static QBitmap grayBmp;
+static QBitmap dgrayBmp;
+static QBitmap centerBmp;
+static QBitmap maskBmp;
+static QBitmap xBmp;
+static QIntDict<GradientSet> gDict;
 
 static const int itemFrame       = 1;
 static const int itemHMargin     = 3;
