@@ -1097,16 +1097,11 @@ KURL KCmdLineArgs::makeURL( const char *urlArg )
       return result; // Absolute path.
    }
 
-   const char *a = strchr(urlArg, ':');
-   if (a)
-   {
-      const char *b = strchr(urlArg, '/');
-      if (b && b>a)
-         return KURL(QString::fromLocal8Bit(urlArg)); // Argument is a URL
-   }
+   if ( !KURL::isRelativeURL( QString::fromLocal8Bit(urlArg) ) )
+     return KURL(QString::fromLocal8Bit(urlArg)); // Argument is a URL
 
    KURL result;
-   result.setPath( cwd()+"/"+QFile::decodeName( urlArg));
+   result.setPath( cwd()+"/"+QFile::decodeName( urlArg ));
    result.cleanPath();
    return result;  // Relative path
 }
