@@ -1086,9 +1086,10 @@ BidiIterator RenderFlow::findNextLineBreak(BidiIterator &start)
 #endif
 		    if ( !isPre && w + tmpW > width && w == 0 ) {
 			int fb = floatBottom();
-			if(!w && m_height < fb && width < lineWidth(fb)) {
+			int newLineWidth = lineWidth(fb);
+			if(!w && m_height < fb && width < newLineWidth) {
 			    m_height = fb;
-			    width = lineWidth(m_height);
+			    width = newLineWidth;
 #ifdef DEBUG_LINEBREAKS
 			    kdDebug() << "RenderFlow::findNextLineBreak new position at " << m_height << " newWidth " << width << endl;
 #endif
@@ -1124,9 +1125,10 @@ BidiIterator RenderFlow::findNextLineBreak(BidiIterator &start)
 	    //kdDebug() << "start=" << start.obj << " current=" << o << endl;
             // if we have floats, try to get below them.
             int fb = floatBottom();
-            if(!w && m_height < fb && width < lineWidth(fb)) {
+	    int newLineWidth = lineWidth(fb);
+            if( !w && m_height < fb && width < newLineWidth ) {
                 m_height = fb;
-                width = lineWidth(m_height);
+                width = newLineWidth;
 #ifdef DEBUG_LINEBREAKS
                 kdDebug() << "RenderFlow::findNextLineBreak new position at " << m_height << " newWidth " << width << endl;
 #endif
@@ -1147,7 +1149,7 @@ BidiIterator RenderFlow::findNextLineBreak(BidiIterator &start)
                 else
                     lBreak.pos = pos;
             }
-            break;
+            goto end;
         }
 
         last = o;
