@@ -130,7 +130,8 @@ void KPQtPage::init()
 
 	if (!KXmlCommandManager::self()->checkCommand("psnup"))
 		m_nupbox->setEnabled(false);
-	if (KPrinter::applicationType() != KPrinter::Dialog)
+	if (KPrinter::applicationType() != KPrinter::Dialog
+			&& KPrinter::applicationType() >= 0 )
 	{
 		m_orientbox->setEnabled(false);
 		m_colorbox->setEnabled(false);

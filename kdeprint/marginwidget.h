@@ -32,7 +32,7 @@ class MarginWidget : public QWidget
 {
 	Q_OBJECT
 public:
-	MarginWidget(QWidget *parent = 0, const char *name = 0);
+	MarginWidget(QWidget *parent = 0, const char *name = 0, bool allowMetricUnit = true);
 	~MarginWidget();
 
 	void setSymetricMargins(bool on);

@@ -213,8 +213,10 @@ void KMInstancePage::slotSettings()
 		KMPrinter	*pr = KMFactory::self()->virtualManager()->findInstance(m_printer,src);
 		if (pr && (pr->isSpecial() || KMFactory::self()->manager()->completePrinterShort(pr)))
 		{
-			KPrinter::setApplicationType(KPrinter::StandAlone);
+			int oldAppType = KMFactory::self()->settings()->application;
+			KMFactory::self()->settings()->application = -1;
 			KPrinterPropertyDialog::setupPrinter(pr, this);
+			KMFactory::self()->settings()->application = oldAppType;
 			if (pr->isEdited())
 			{ // printer edited, need to save changes
 				pr->setDefaultOptions(pr->editedOptions());

@@ -29,7 +29,7 @@
 #include <klocale.h>
 #include <kglobal.h>
 
-MarginWidget::MarginWidget(QWidget *parent, const char* name)
+MarginWidget::MarginWidget(QWidget *parent, const char* name, bool allowMetricUnit)
 : QWidget(parent, name), m_default(4, 0)
 {
 	m_symetric = m_block = false;
@@ -47,8 +47,11 @@ MarginWidget::MarginWidget(QWidget *parent, const char* name)
 	m_right->setLabel(i18n("&Right:"), Qt::AlignLeft|Qt::AlignVCenter);
 	m_units = new QComboBox(this);
 	m_units->insertItem(i18n("Pixels"));
-	m_units->insertItem(i18n("Inches (in)"));
-	m_units->insertItem(i18n("Centimeters (cm)"));
+	if ( allowMetricUnit )
+	{
+		m_units->insertItem(i18n("Inches (in)"));
+		m_units->insertItem(i18n("Centimeters (cm)"));
+	}
 	m_units->setCurrentItem(0);
 	connect(m_units, SIGNAL(activated(int)), m_top, SLOT(setMode(int)));
 	connect(m_units, SIGNAL(activated(int)), m_bottom, SLOT(setMode(int)));
@@ -84,12 +87,15 @@ MarginWidget::MarginWidget(QWidget *parent, const char* name)
 	l3->addWidget(m_units, 6, 0);
 	l3->addMultiCellWidget(m_preview, 0, 6, 1, 1);
 
-	int	mode = (KGlobal::locale()->measureSystem() == KLocale::Metric ? 2 : 1);
-	m_top->setMode(mode);
-	m_bottom->setMode(mode);
-	m_left->setMode(mode);
-	m_right->setMode(mode);
-	m_units->setCurrentItem(mode);
+	if ( allowMetricUnit )
+	{
+		int	mode = (KGlobal::locale()->measureSystem() == KLocale::Metric ? 2 : 1);
+		m_top->setMode(mode);
+		m_bottom->setMode(mode);
+		m_left->setMode(mode);
+		m_right->setMode(mode);
+		m_units->setCurrentItem(mode);
+	}
 }
 
 MarginWidget::~MarginWidget()

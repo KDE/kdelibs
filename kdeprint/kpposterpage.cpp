@@ -83,7 +83,8 @@ KPPosterPage::KPPosterPage( QWidget *parent, const char *name )
 	connect( m_selection, SIGNAL( textChanged( const QString& ) ), m_preview, SLOT( setSelectedPages( const QString& ) ) );
 	connect( m_preview, SIGNAL( selectionChanged( const QString& ) ), m_selection, SLOT( setText( const QString& ) ) );
 
-	if ( KMFactory::self()->settings()->application != KPrinter::Dialog )
+	if ( KMFactory::self()->settings()->application != KPrinter::Dialog 
+			&& KMFactory::self()->settings()->application >= 0 )
 	{
 		m_printsize->hide();
 		m_lockbtn->hide();

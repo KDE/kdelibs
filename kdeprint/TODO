@@ -43,3 +43,16 @@ WISHES
 - show information from Foomatic DB in some way (comments)
 
 - "Save as new instance" possibility in the print dialog
+
+- raw printing option
+
+- add a generic option edit line to lewt the user specify any option
+  he wants
+
+- support new options for N-up printing in CUPS, put everything in
+  a separate page with graphical widgets, and replace the N-up zone
+  of the "General" page with Color/GrayScale.
+
+- allow to set the job title in kprinter
+
+- preview multi files sequentially

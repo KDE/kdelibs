@@ -150,7 +150,8 @@ void KMUiManager::setupPropertyDialog(KPrinterPropertyDialog *dlg)
 
 #ifdef KDEPRINT_USE_MARGINS
 		// add margin page
-		if (prt && !prt->fullPage() && prt->applicationType() == KPrinter::Dialog)
+		if ( ( prt && !prt->fullPage() && prt->applicationType() == KPrinter::Dialog )
+					|| prt->applicationType() < 0 )
 			dlg->addPage(new KPMarginPage(prt, driver, dlg, "MarginPage"));
 #endif
 
@@ -168,7 +169,8 @@ void KMUiManager::setupPropertyDialog(KPrinterPropertyDialog *dlg)
 
 void KMUiManager::setupPrinterPropertyDialog(KPrinterPropertyDialog *dlg)
 {
-	if (KMFactory::self()->settings()->application == KPrinter::Dialog)
+	if (KMFactory::self()->settings()->application == KPrinter::Dialog
+			|| KMFactory::self()->settings()->application < 0 )
 		dlg->addPage(new KPQtPage(dlg,"QtPage"));
 }
 

@@ -44,7 +44,7 @@ KPMarginPage::KPMarginPage(KPrinter *prt, DrMain *driver, QWidget *parent, const
 	m_usedriver = true;
 
 	QGroupBox	*box = new QGroupBox(1, Qt::Vertical, i18n("Margins"), this);
-	m_margin = new MarginWidget(box);
+	m_margin = new MarginWidget(box, "MarginWidget", (m_printer != 0));
 	//m_margin->setSymetricMargins(true);
 	if (m_printer)
 		m_margin->setResolution(m_printer->resolution());

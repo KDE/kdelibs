@@ -390,10 +390,12 @@ bool KMCupsJobManager::editJobAttributes(KMJob *j)
 		return false;
 	}
 	KMManager::self()->completePrinterShort(prt);
+	KPrinter::ApplicationType oldAppType = KPrinter::applicationType();
 	KPrinter::setApplicationType(KPrinter::StandAlone);
 	KPrinterPropertyDialog	dlg(prt);
 	dlg.setDriver(KMManager::self()->loadPrinterDriver(prt));
 	KMFactory::self()->uiManager()->setupPrinterPropertyDialog(&dlg);
+	KPrinter::setApplicationType( oldAppType );
 	if (dlg.driver())
 		dlg.addPage(new KPDriverPage(prt, dlg.driver(), &dlg));
 	dlg.addPage(new KPCopiesPage(0, &dlg));
