@@ -31,7 +31,6 @@
  </Menu>
 </MenuBar>
 <ToolBar name="mainToolBar"><text>Main Toolbar</text>
- <Action name="printFrame" />
  <Action name="find" /> 
  <Action name="incFontSizes" />
  <Action name="decFontSizes" />
