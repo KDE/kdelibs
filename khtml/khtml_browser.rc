@@ -1,5 +1,5 @@
 <!DOCTYPE kpartgui SYSTEM "kpartgui.dtd">
-<kpartgui name="khtmlpart" version="14">
+<kpartgui name="khtmlpart" version="15">
 <MenuBar>
  <Menu name="file"><text>&amp;File</text>
   <Action name="saveBackground" />
@@ -18,7 +18,6 @@
   <Action name="incFontSizes" />
   <Action name="decFontSizes" />
   <Action name="viewDocumentSource" />
-  <Action name="viewFrameSource" />
   <Action name="viewPageInfo" />
   <Action name="security" />
   <Action name="setEncoding" />

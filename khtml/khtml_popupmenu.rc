@@ -1,4 +1,4 @@
-<!DOCTYPE kpartgui SYSTEM "kpartgui.dtd"><kpartgui name="khtmlpart_popupmenu" version="9">
+<!DOCTYPE kpartgui SYSTEM "kpartgui.dtd"><kpartgui name="khtmlpart_popupmenu" version="10">
 <Menu name="popupmenu">
  <Menu name="frame"><text>Frame</text>
   <Action name="frameinwindow"/>
@@ -24,8 +24,6 @@
  <Action name="copylinklocation" />
  <Action name="stopanimations" />
  <Separator weakSeparator="1" />
- <Action name="viewDocumentSource" />
- <Action name="viewPageInfo" />
  <Action name="security" />
  <Action name="setEncoding" />
 </Menu>
