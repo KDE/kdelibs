@@ -159,11 +159,11 @@ int ioctl (int fd, int request, void *argp)
           channels = (*arg)?2:1;
           settings |= 4;
           break;
-#if 0
+
         case SNDCTL_DSP_GETBLKSIZE:
-          *arg = ESD_BUF_SIZE;
+          *arg = stream?arts_stream_get(stream,ARTS_P_PACKET_SIZE):16384;
           break;
-#endif
+
         case SNDCTL_DSP_GETFMTS:
           *arg = 0x38;
           break;
@@ -201,7 +201,10 @@ int close(int fd)
     {
       artsdspdebug ("aRts: /dev/dsp close...\n");
       if(stream)
+      {
         arts_close_stream(stream);
+        stream = 0;
+      }
 
       arts_free();
 

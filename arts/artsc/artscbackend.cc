@@ -210,6 +210,8 @@ public:
 			case ARTS_P_BUFFER_SPACE:
 			case ARTS_P_SERVER_LATENCY:
 			case ARTS_P_TOTAL_LATENCY:
+			case ARTS_P_PACKET_SIZE:
+			case ARTS_P_PACKET_COUNT:
 				return ARTS_E_NOIMPL;
 		}
 		return ARTS_E_NOIMPL;
@@ -236,6 +238,12 @@ public:
 
 			case ARTS_P_BLOCKING:
 				return blockingIO;
+
+			case ARTS_P_PACKET_SIZE:
+				return packetCapacity;
+
+			case ARTS_P_PACKET_COUNT:
+				return packetCount;
 		}
 		return ARTS_E_NOIMPL;
 	}

@@ -57,7 +57,9 @@ enum arts_parameter_t_enum {
     ARTS_P_BUFFER_SPACE = 3,
     ARTS_P_SERVER_LATENCY = 4,
     ARTS_P_TOTAL_LATENCY = 5,
-    ARTS_P_BLOCKING = 6
+    ARTS_P_BLOCKING = 6,
+    ARTS_P_PACKET_SIZE = 7,
+    ARTS_P_PACKET_COUNT = 8
 };
 
 /**
@@ -101,6 +103,17 @@ enum arts_parameter_t_enum {
  *   when not all data can be read/written successfully, and wait until it
  *   works. If this parameter is 0, arts_read/arts_write will return
  *   the number of successfully read/written bytes immediately.
+ *
+ * @li ARTS_P_PACKET_SIZE (r)
+ *   This returns the size of the packets used for buffering. The optimal
+ *   size for arts_stream_write is always writing one packet. The buffering of
+ *   streams works with audio packets. So the ARTS_P_BUFFER_SIZE parameter of
+ *   streams (which specifies how many bytes of a stream are prebuffered),
+ *   really consists of (ARTS_P_PACKET_SIZE) * (ARTS_P_PACKET_COUNT).
+ *
+ * @li ARTS_P_PACKET_COUNT (r)
+ *   This returns the number of the packets are used for buffering. See 
+ *   ARTS_P_PACKET_SIZE for more.
  */
 typedef enum arts_parameter_t_enum arts_parameter_t;
 
