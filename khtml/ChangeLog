@@ -1,3 +1,8 @@
+2003-11-24  Dirk Mueller  <mueller@kde.org>
+
+	* html/html_formimpl.cpp (defaultEventHandler): ignore stale keyup events.
+	Only react when we saw a matching keydown before. 
+
 2003-11-24  David Faure  <faure@kde.org>
 
 	* html/htmlparser.cpp (popInlineBlocks): Fixed infinite loop due to 

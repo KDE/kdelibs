@@ -891,7 +891,7 @@ void HTMLButtonElementImpl::defaultEventHandler(EventImpl *evt)
 	bool act = (evt->id() == EventImpl::DOMACTIVATE_EVENT);
 	if (!act && evt->id()==EventImpl::KHTML_KEYUP_EVENT) {
 	    QKeyEvent *ke = static_cast<TextEventImpl *>(evt)->qKeyEvent;
-	    if (ke && (ke->key() == Qt::Key_Return || ke->key() == Qt::Key_Enter || ke->key() == Qt::Key_Space))
+	    if (ke && active() && (ke->key() == Qt::Key_Return || ke->key() == Qt::Key_Enter || ke->key() == Qt::Key_Space))
 		act = true;
 	}
 	if (act)
@@ -1451,7 +1451,7 @@ void HTMLInputElementImpl::defaultEventHandler(EventImpl *evt)
 	    bool act = (evt->id() == EventImpl::DOMACTIVATE_EVENT);
 	    if (!act && evt->id() == EventImpl::KHTML_KEYUP_EVENT) {
 		QKeyEvent *ke = static_cast<TextEventImpl *>(evt)->qKeyEvent;
-		if (ke && (ke->key() == Qt::Key_Return || ke->key() == Qt::Key_Enter || ke->key() == Qt::Key_Space))
+		if (ke && active() && (ke->key() == Qt::Key_Return || ke->key() == Qt::Key_Enter || ke->key() == Qt::Key_Space))
 		    act = true;
 	    }
 	    if (act)
