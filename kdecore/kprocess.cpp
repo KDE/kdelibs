@@ -165,6 +165,11 @@ bool KProcess::start(RunMode runmode, Communication comm)
 
 	if(!commSetupDoneC())
 	  debug("Could not finish comm setup in child!");
+
+	// Matthias
+	if (run_mode == DontCare) 
+	  setpgrp();
+	
 	execvp(process, arglist);
 	exit(-1);
 
