@@ -741,15 +741,15 @@ void KApplication::parseCommandLine( )
 // David.
 
         //if (strstr(args->arg(0),"/"))
-        {
+        //{
 #warning can someone fix this?
 //            KCrash::setApplicationPath(QCString().setStr(args->arg(0)));
-        }
-        else
-        {
+        //}
+        //else
+        //{
 #warning can someone fix this?
 //KCrash::setApplicationPath(KStandardDirs::findExe(QCString(args->arg(0)),NULL,0));
-        }
+        //}
 
 #warning can someone fix this?
 //        KCrash::setApplicationName(QString(KInstance::instanceName));
