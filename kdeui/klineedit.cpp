@@ -265,7 +265,7 @@ void KLineEdit::keyPressEvent( QKeyEvent *e )
         if ( ( mode == KGlobalSettings::CompletionAuto || mode == KGlobalSettings::CompletionPopupAuto ) && noModifier )
 	{
             if ( !d->userSelection && ( e->key() == Key_Left || e->key() == Key_Right ) &&
-                 e->state()==NoButton && d->backspacePerformsCompletion )
+                 e->state()==NoButton )
             {
 
                 QString old_txt = text();
@@ -313,7 +313,7 @@ void KLineEdit::keyPressEvent( QKeyEvent *e )
                 {
                     if ( e->key() == Key_Backspace )
                     {
-                        if ( hadSelection && !hasUserSelection && d->backspacePerformsCompletion )
+                        if ( hadSelection && !hasUserSelection )
                         {
                             backspace();
                             txt = text();
@@ -365,11 +365,10 @@ void KLineEdit::keyPressEvent( QKeyEvent *e )
                    e->key() == Key_Backspace || e->key() == Key_Delete) )
             {
 
-                if (e->key() == Key_Backspace && d->completionBox &&
-		    d->completionBox->isVisible() )
+                if ( e->key() == Key_Backspace )
                 {
 
-                    if ( hadSelection && !hasUserSelection && d->backspacePerformsCompletion )
+                    if ( hadSelection && !hasUserSelection )
                     {
                         backspace();
                         txt = text();
