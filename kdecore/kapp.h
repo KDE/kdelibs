@@ -227,28 +227,31 @@ public:
   /** 
 	* Is the application restored from the session manager? 
 	*
-	* @ In this case the getSessionConfig()-object probably contains 
-	* @ important data.
+	* @return If true, this application was restored by the session manager.
+	*	Note that this may mean the config object returned by 
+	*	getSessionConfig() contains data saved by a session closedown.
+	* @see #getSessionConfig
 	*/
   bool isRestored() const { return bIsRestored; }
 
   /** 
 	* Enable session management
 	*
-	* @ If userdefined = True then the WmCommand can be defined with setWmCommand.
-	* @ Note that you do not get an instance specific config object with
-	* @ getSessionConfig() in this case!
-	* @
-	* @ Session management will apply to the top widget.
+	* If userdefined = True then the WmCommand can be defined with setWmCommand.
+	* Note that you do not get an instance specific config object with
+	* @ref #getSessionConfig in this case!
+	*  
+	* Session management will apply to the top widget.
 	*/
   void enableSessionManagement(bool userdefined = FALSE);
 
   /** 
 	* Set the WmCommand for the session manager.
 	*
-	* @ This has an effekt if either session management is disabled (then it
-	* @ is used for pseudo session managemt) or ith session management is
-	* @ enabled with userdefined=True.
+	* This has an effect if either session management is disabled (then it
+	* is used for pseudo session management) or if session management is
+	* enabled with userdefined=True.
+	* @see #enableSessionManagement
 	*/
   void setWmCommand(const char*);
   
@@ -719,13 +722,14 @@ public:
 	* Connect to this signal in order to save your data. Do NOT
 	* manipulate the UI in that slot, it is blocked by kwm.
 	*
-	* Use the getSessionConfig() Kconfig object to store all
+	* Use the @ref ::getSessionConfig KConfig object to store all
 	* your instance specific datas.
 	*
-	* Note: you should not do that if you are using the KTopLevelWidget.
-	*       Overload saveProperties(...)/readProperties(...) in that case.
-	*       This gives you also the possibillity to handle multiple windows
-	*       application in an easy manner.
+	* Note: You should not use this if you are using the KTopLevelWidget.
+	*       Overload @ref KTopLevelWidget::saveProperties and 
+	*	@ref KTopLevelWidget::readProperties in that case.
+	*	This allows you to simply handle applications with multiple
+	*	toplevel windows.
 	*/
   void saveYourself();
 };
