@@ -265,8 +265,6 @@ bool Scheduler::startJobScheduled(ProtocolInfo *protInfo)
 //       kdDebug(7006) << "Scheduling job" << endl;
     debug_info();
     SimpleJob *job = protInfo->joblist.at(0);
-    // Look for a slave matching the protocol we want to use, i.e.
-    // the slaveProtocol. For FTP-proxy, it's http.
 
     bool newSlave = false;
 
@@ -320,8 +318,6 @@ bool Scheduler::startJobDirect()
     QString protocol = job->url().protocol();
     ProtocolInfo *protInfo = protInfoDict->get(protocol);
 
-    // Look for a slave matching the protocol we want to use, i.e.
-    // the slaveProtocol. For FTP-proxy, it's http.
     bool newSlave = false;
 
     // Look for matching slave

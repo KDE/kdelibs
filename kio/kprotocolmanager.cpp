@@ -271,8 +271,8 @@ bool KProtocolManager::hasProxyConfigScript()
 
 QString KProtocolManager::slaveProtocol( const QString & protocol )
 {
-  return ( protocol == "ftp" && useProxy() && !proxyFor("ftp").isEmpty() )
-           ? QString::fromLatin1("ftp-proxy") : protocol;
+  return ( useProxy() && !proxyFor(protocol).isEmpty() )
+           ? QString::fromLatin1("http") : protocol;
 }
 
 void KProtocolManager::setReadTimeout( int _timeout )

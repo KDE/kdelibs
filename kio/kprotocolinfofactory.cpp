@@ -87,17 +87,10 @@ KProtocolInfoFactory::findProtocol(const QString &protocol)
   if (!m_sycocaDict) return 0; // Error!
 
   int offset;
-  QString prot(protocol);
 
-  // This is where we insert a small hack for FTP-Proxy.
-  // If we want to use FTP-Proxy, then it's kio_http we want.
-  if (protocol == "ftp")
-  {
-     if (KProtocolManager::useProxy() && !KProtocolManager::ftpProxy().isEmpty())
-       prot = "http";
-     else
-       prot = "ftp";
-  }
+  // Get the real protocol to be used to retreive the
+  // requested resource.
+  QString prot = KProtocolManager::slaveProtocol( protocol );
 
   offset = m_sycocaDict->find_string( prot );
 
