@@ -893,7 +893,7 @@ void KDirListerCache::slotFileDeleted( const QString& _file )
 
 void KDirListerCache::slotEntries( KIO::Job *job, const KIO::UDSEntryList &entries )
 {
-  KURL url = static_cast<KIO::ListJob *>(job)->url();
+  KURL url = joburl( static_cast<KIO::ListJob *>(job) );
   url.adjustPath(-1);
   QString urlStr = url.url();
 
@@ -967,7 +967,7 @@ void KDirListerCache::slotResult( KIO::Job *j )
   KIO::ListJob *job = static_cast<KIO::ListJob *>( j );
   jobs.remove( job );
 
-  KURL jobUrl = job->url();
+  KURL jobUrl = joburl( job );
   jobUrl.adjustPath(-1);  // need remove trailing slashes again, in case of redirections
   QString jobUrlStr = jobUrl.url();
 
@@ -975,33 +975,17 @@ void KDirListerCache::slotResult( KIO::Job *j )
 #ifdef DEBUG_CACHE
   printDebug();
 #endif
-  
-  KDirLister *kdl;
 
   QPtrList<KDirLister> *listers = urlsCurrentlyListed.take( jobUrlStr );
   Q_ASSERT( listers );
-
-  // FIXME: this case happens when stop() was called right after a redirection
-  // and the job hasn't updated its url(). Then the job can't be killed and will
-  // continue running, finally calling slotResult() with the updated url().
-  if ( !listers )
-  {
-    kdWarning(7004) << "A job finished listing \"" << jobUrlStr 
-                    << "\", but there is no lister listing it anymore!!" << endl;
- 
-    listers = urlsCurrentlyHeld[jobUrlStr];
-    for ( kdl = listers->first(); kdl; kdl = listers->next() )
-      kdl->jobDone( job );
-
-    // do not emit canceled() or completed() again, has been done in stop already
-    return;
-  }
 
   // move the directory to the held directories, do it before emitting
   // the signals to make sure it exists in KDirListerCache in case someone
   // calls listDir during the signal emission
   Q_ASSERT( !urlsCurrentlyHeld[jobUrlStr] );
   urlsCurrentlyHeld.insert( jobUrlStr, listers );
+
+  KDirLister *kdl;
 
   if ( job->error() )
   {
@@ -1047,7 +1031,7 @@ void KDirListerCache::slotResult( KIO::Job *j )
 void KDirListerCache::slotRedirection( KIO::Job *job, const KURL &url )
 {
   Q_ASSERT( job );
-  KURL oldUrl = static_cast<KIO::ListJob *>( job )->url();
+  KURL oldUrl = static_cast<KIO::ListJob *>( job )->url();  // here we really need the old url!
 
   // strip trailing slashes
   oldUrl.adjustPath(-1);
@@ -1247,7 +1231,7 @@ void KDirListerCache::slotUpdateResult( KIO::Job * j )
   Q_ASSERT( j );
   KIO::ListJob *job = static_cast<KIO::ListJob *>( j );
 
-  KURL jobUrl = job->url();
+  KURL jobUrl = joburl( job );
   jobUrl.adjustPath(-1);  // need remove trailing slashes again, in case of redirections
   QString jobUrlStr = jobUrl.url();
 
@@ -1434,11 +1418,19 @@ KIO::ListJob *KDirListerCache::jobForUrl( const QString& url )
   while ( it != jobs.end() )
   {
     job = it.key();
-    if ( job->url().url(-1) == url )
+    if ( joburl( job ).url(-1) == url )
        return job;
     ++it;
   }
   return 0;
+}
+
+const KURL& KDirListerCache::joburl( KIO::ListJob *job )
+{
+  if ( job->redirectionURL().isValid() )
+     return job->redirectionURL();
+  else
+     return job->url();
 }
 
 void KDirListerCache::killJob( KIO::ListJob *job )
@@ -1592,7 +1584,7 @@ void KDirListerCache::printDebug()
   QMap< KIO::ListJob *, QValueList<KIO::UDSEntry> >::Iterator jit = jobs.begin();
   kdDebug(7004) << "Jobs: " << endl;
   for ( ; jit != jobs.end() ; ++jit )
-    kdDebug(7004) << "   " << jit.key() << " listing " << jit.key()->url().prettyURL() << ": " << (*jit).count() << " entries." << endl;
+    kdDebug(7004) << "   " << jit.key() << " listing " << joburl( jit.key() ).prettyURL() << ": " << (*jit).count() << " entries." << endl;
 
   kdDebug(7004) << "Items in cache: " << endl;
   QCacheIterator<DirItem> itc( itemsCached );

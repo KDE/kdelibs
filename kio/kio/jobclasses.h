@@ -1336,6 +1336,13 @@ namespace KIO {
         virtual void start( Slave *slave );
 
         /**
+         * Returns the ListJob's redirection URL. This will be invalid if there
+         * was no redirection.
+         * @return the redirection url
+         */
+        const KURL& redirectionURL() const { return m_redirectionURL; }
+
+        /**
          * Do not apply any KIOSK restrictions to this job.
          * @since 3.2
          */
