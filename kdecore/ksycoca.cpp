@@ -123,7 +123,7 @@ bool KSycoca::openDatabase( bool openDummyIfNotFound )
 
 // Read-write constructor - only for KBuildSycoca
 KSycoca::KSycoca( bool /* dummy */ )
-  : DCOPObject("kbuildsycoca"), m_lstFactories(0), m_str(0), bNoDatabase(false),
+  : DCOPObject("ksycoca_building"), m_lstFactories(0), m_str(0), bNoDatabase(false),
     m_sycoca_size(0), m_sycoca_mmap(0)
 {
    d = new KSycocaPrivate;
