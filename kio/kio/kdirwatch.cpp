@@ -838,9 +838,9 @@ void KDirWatchPrivate::emitEvent(Entry* e, int event, const QString &fileName)
 }
 
 struct EmitEntry {
-  EmitEntry(KDirWatchPrivate::Entry _entry, int _event)
-    : entry(_entry), event(_event) {};
-  KDirWatchPrivate::Entry entry; int event;
+  EmitEntry(QString _path, int _event)
+    : path(_path), event(_event) {};
+  QString path; int event;
 };
 
 /* Scan all entries to be watched for changes. This is done regularly
@@ -850,7 +850,7 @@ void KDirWatchPrivate::slotRescan()
 {
   EntryMap::Iterator it;
 
-  // Buffer events to be emitted, so that it won't crash if an app
+  // Buffer dirty entry paths, so that it won't crash if an app
   // calls removeDir() in slotDirty().
   QPtrList<EmitEntry> emitList;
   emitList.setAutoDelete(true);
@@ -898,11 +898,12 @@ void KDirWatchPrivate::slotRescan()
 #endif
 
     if ( ev != NoChange )
-      emitList.append(new EmitEntry(*it, ev));
+      emitList.append(new EmitEntry((*it).path, ev));
   }
 
   for(EmitEntry* e = emitList.first(); e; e = emitList.next() ) {
-    emitEvent( &e->entry, e->event);
+    if (m_mapEntries.contains( e->path ))
+      emitEvent( & m_mapEntries[e->path], e->event);
   }
 
 #ifdef HAVE_DNOTIFY
@@ -958,7 +959,16 @@ void KDirWatchPrivate::checkFAMEvent(FAMEvent* fe)
     if (strncmp(fe->filename, ".xsession-errors", 16) == 0) return;
   }
 
-  Entry* e = static_cast<Entry*>(fe->userdata);
+  Entry* e = 0;
+  EntryMap::Iterator it = m_mapEntries.begin();
+  for( ; it != m_mapEntries.end(); ++it )
+    if (FAMREQUEST_GETREQNUM(&( (*it).fr )) ==
+       FAMREQUEST_GETREQNUM(&(fe->fr)) ) {
+      e = &(*it);
+      break;
+    }
+
+  // Entry* e = static_cast<Entry*>(fe->userdata);
 
   kdDebug(7001) << "Processing FAM event ("
 		<< ((fe->code == FAMChanged) ? "FAMChanged" :
@@ -971,7 +981,7 @@ void KDirWatchPrivate::checkFAMEvent(FAMEvent* fe)
 		    (fe->code == FAMExists) ? "FAMExists" :
 		    (fe->code == FAMEndExist) ? "FAMEndExist" : "Unknown Code")
 		<< ", " << fe->filename
-		<< ", Req " << FAMREQUEST_GETREQNUM(&(e->fr))
+		<< ", Req " << FAMREQUEST_GETREQNUM(&(fe->fr))
 		<< ")" << endl;
 
   if (!e) {
