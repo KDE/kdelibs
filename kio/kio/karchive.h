@@ -148,12 +148,6 @@ public:
      * // TODO(BIC) make virtual. For now virtual_hook allows reimplementing it.
      */
     bool writeData( const char* data, uint size );
-    /** @internal for virtual_hook */
-    struct WriteDataParams {
-        const char* data;
-        uint size;
-        bool retval;
-    };
 
     /**
      * Call @ref doneWriting after writing the data.
@@ -209,6 +203,14 @@ private:
     char m_mode;
 protected:
     virtual void virtual_hook( int id, void* data );
+    /* @internal for virtual_hook */
+    enum { VIRTUAL_WRITE_DATA = 1 };
+    bool writeData_impl( const char* data, uint size );
+    struct WriteDataParams {
+        const char* data;
+        uint size;
+        bool retval;
+    };
 private:
     class KArchivePrivate;
     KArchivePrivate * d;

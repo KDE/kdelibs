@@ -508,11 +508,16 @@ bool KArchive::writeData( const char* data, uint size )
     return params.retval;
 }
 
+bool KArchive::writeData_impl( const char* data, uint size )
+{
+    return device()->writeBlock( data, size ) == (Q_LONG)size;
+}
+
 void KArchive::virtual_hook( int id, void* data )
 {
-    if ( id == 1 ) {
+    if ( id == VIRTUAL_WRITE_DATA ) {
         WriteDataParams* params = reinterpret_cast<WriteDataParams *>(data);
-        params->retval = device()->writeBlock( params->data, params->size ) == (Q_LONG)params->size;
+        params->retval = writeData_impl( params->data, params->size );
     } else {
         /*BASE::virtual_hook( id, data );*/
     }

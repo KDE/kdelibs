@@ -708,7 +708,7 @@ bool KZip::doneWriting( uint size )
 
 void KZip::virtual_hook( int id, void* data )
 {
-    if ( id == 1 ) {
+    if ( id == VIRTUAL_WRITE_DATA ) {
         WriteDataParams* params = reinterpret_cast<WriteDataParams *>(data);
         params->retval = writeData( params->data, params->size );
     } else {
@@ -716,7 +716,13 @@ void KZip::virtual_hook( int id, void* data )
     }
 }
 
+// made virtual using virtual_hook
 bool KZip::writeData(const char * c, uint i)
+{
+    return KArchive::writeData( c, i );
+}
+
+bool KZip::writeData_impl(const char * c, uint i)
 {
     Q_ASSERT( d->m_currentFile );
     Q_ASSERT( d->m_currentDev );

@@ -163,6 +163,9 @@ protected:
 
 protected:
     virtual void virtual_hook( int id, void* data );
+    /** @internal for virtual_hook */
+    // from KArchive
+    bool writeData_impl( const char* data, uint size );
 private:
     QString m_filename;
     class KZipPrivate;
