@@ -420,7 +420,7 @@ void KBookmarkMenu::fillBookmarkMenu()
        KBookmarkManager::DynMenuInfo info;
        info = m_pManager->showDynamicBookmarks((*it));
 
-       if ( !info.first || !QFile::exists( info.second ) )
+       if ( !info.show || !QFile::exists( info.location ) )
           continue;
 
        if (!haveSep) 
@@ -429,10 +429,11 @@ void KBookmarkMenu::fillBookmarkMenu()
           haveSep = true;
        }
 
+       QString icon = info.type;
        KActionMenu * actionMenu = 
-          new KImportedBookmarksActionMenu( menuName, (*it), m_actionCollection, 0L );
-       actionMenu->setProperty( "type", (*it) );
-       actionMenu->setProperty( "location", info.second );
+          new KImportedBookmarksActionMenu( menuName, icon, m_actionCollection, 0L );
+       actionMenu->setProperty( "type", info.type );
+       actionMenu->setProperty( "location", info.location );
 
        actionMenu->plug( m_parentMenu );
        m_actions.append( actionMenu );

@@ -152,18 +152,6 @@ public:
      */
     bool showNSBookmarks() const;
 
-    struct DynMenuInfo {
-       bool first;
-       QString second;
-    } ;
-
-    /**
-     * @return dynmenu info block for the given dynmenu name
-     * @param 
-     * @since 3.2
-     */
-    DynMenuInfo showDynamicBookmarks( const QString &name ) const;
-
     /**
      * Shows an extra menu for NS bookmarks. Set this to false, if you don't
      * want this.
@@ -171,14 +159,37 @@ public:
     void setShowNSBookmarks( bool show );
     
     /**
+     * Structure used for storing information about 
+     * the dynamic menu setting
+     */
+    struct DynMenuInfo {
+       bool show;
+       QString location;
+       QString type;
+    } ;
+
+    /**
+     * @return dynmenu info block for the given dynmenu name
+     * @param 
+     * @since 3.2
+     */
+    DynMenuInfo showDynamicBookmarks( const QString &id ) const;
+
+    /**
      * Shows an extra menu for the given bookmarks file and type. 
      * Upgrades from option inside XBEL to option in rc file
      * on first call of this function.
-     * @param type see KBookmarkImporterBase
-     * @param filename the filename of the to be included menu
+     * @param id the unique identification for the dynamic menu
+     * @param info a DynMenuInfo struct containing the to be added/modified data
      * @since 3.2
      */
-    void setDynamicBookmarks( const QString &type, const QString &filename, bool show );
+    void setDynamicBookmarks( const QString &id, const DynMenuInfo &info );
+
+    /**
+     * @return list of dynamic menu ids
+     * @since 3.2
+     */
+    QStringList dynamicBookmarksList() const;
 
     /**
      * This static function will return an instance of the
