@@ -58,6 +58,9 @@ namespace KParts
 
 struct URLArgsPrivate
 {
+    URLArgsPrivate() {
+      doPost = false;
+    }
     QString contentType; // for POST
     QMap<QString, QString> metaData;
     bool doPost;
