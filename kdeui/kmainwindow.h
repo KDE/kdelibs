@@ -547,7 +547,7 @@ public:
          * calls createGUI() once ToolBar, Keys and Statusbar have been
          * taken care of.  @see createGUI
          */
-        Create = 16,
+        Create = 16
     };
 
     /**
