@@ -207,6 +207,9 @@ KLauncher::destruct(int exit_code)
    ::signal( SIGTERM, SIG_IGN);
    if (kapp)
    {
+      // work around braindead QApplication mutex handling
+      if (kapp->locked())
+         kapp->unlock(false);
       delete kapp;
    }
    ::exit(exit_code);
