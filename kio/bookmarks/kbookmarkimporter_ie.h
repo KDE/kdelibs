@@ -26,8 +26,6 @@
 
 /**
  * A class for importing IE bookmarks
- * KEditBookmarks uses it to insert bookmarks into its DOM tree,
- * and KActionMenu uses it to create actions directly. (TODO)
  */
 class KIEBookmarkImporter : public QObject
 {
@@ -42,28 +40,9 @@ public:
     static QString IEBookmarksDir();
 
 signals:
-
-    /**
-     * Notify about a new bookmark
-     * Use "html" for the icon
-     */
     void newBookmark( const QString & text, const QCString & url, const QString & additionalInfo );
-
-    /**
-     * Notify about a new folder
-     * Use "bookmark_folder" for the icon
-     */
     void newFolder( const QString & text, bool open, const QString & additionalInfo );
-
-    /**
-     * Notify about a new separator
-     */
     void newSeparator();
-
-    /**
-     * Tell the outside world that we're going down
-     * one menu
-     */
     void endFolder();
 
 protected:
@@ -71,7 +50,18 @@ protected:
     void parseIEBookmarks_url_file( QString filename, QString name );
 
     QString m_fileName;
+};
 
+/**
+ * A class for importing IE bookmarks
+ * @since 3.2
+ */
+class KIEBookmarkImporterImpl : public KBookmarkImporterBase
+{
+public:
+    KIEBookmarkImporterImpl() { }
+    virtual void parse();
+    virtual QString findDefaultLocation(bool forSaving = false) const;
 };
 
 #endif

@@ -16,7 +16,6 @@
    Boston, MA 02111-1307, USA.
 */
 
-#include "kbookmarkimporter_ie.h"
 #include <kfiledialog.h>
 #include <kstringhandler.h>
 #include <klocale.h>
@@ -28,10 +27,8 @@
 #include <dirent.h>
 #include <sys/stat.h>
 
-// TODO - what sort of url's can we get???
-// QTextCodec * codec = QTextCodec::codecForName("UTF-8");
-// Q_ASSERT(codec);
-// if (!codec) return;
+#include "kbookmarkimporter.h"
+#include "kbookmarkimporter_ie.h"
 
 #define LINELIMIT 4096
 
@@ -108,11 +105,20 @@ void KIEBookmarkImporter::parseIEBookmarks( )
     parseIEBookmarks_dir( m_fileName );
 }
 
-QString KIEBookmarkImporter::IEBookmarksDir( )
+QString KIEBookmarkImporter::IEBookmarksDir()
 {
-    // TODO - add suggestive paths to kfile dialog somehow?
-    // e.g /mnt/windows/blha blah blah
-    return KFileDialog::getExistingDirectory( );
+   static KIEBookmarkImporterImpl importer;
+   return importer.findDefaultLocation();
+}
+
+void KIEBookmarkImporterImpl::parse() {
+   KIEBookmarkImporter importer(m_fileName);
+   importer.parseIEBookmarks();
+}
+
+QString KIEBookmarkImporterImpl::findDefaultLocation(bool) const
+{
+    return KFileDialog::getExistingDirectory();
 }
 
 #include "kbookmarkimporter_ie.moc"
