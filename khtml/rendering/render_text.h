@@ -186,16 +186,17 @@ public:
     virtual short marginRight() const { return style()->marginRight().minWidth(0); }
 
     virtual void repaint();
-    
+
     bool hasBreakableChar() const { return m_hasBreakableChar; }
     QFontMetrics metrics(bool firstLine) const;
-    
+
 protected:
     TextSlave * findTextSlave( int offset, int &pos );
     TextSlaveArray m_lines;
     QFontMetrics *fm;
     DOM::DOMStringImpl *str; //
 
+    friend class TextSlave;
     int m_lineHeight;
     short m_minWidth;
     short m_maxWidth;

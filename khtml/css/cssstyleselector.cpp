@@ -345,7 +345,7 @@ void CSSStyleSelector::checkSelector(int selIndex, DOM::ElementImpl *e)
     bool single = false;
     if ( sel->tag == -1 )
 	single = true;
-    
+
     // first selector has to match
     if(!checkOneSelector(sel, e)) return;
 
@@ -639,34 +639,31 @@ void CSSStyleSelector::buildLists()
     }
     *prop = 0;
 
-    // This algorithm sucks badly. but hey, its performance shouldn't matter much ( Dirk )
-    for ( unsigned int sel = 0; sel < selectors_size; ++sel ) {
-        prop = properties;
-        int len = 0;
-        int offset = 0;
-        bool matches = properties[0] ? properties[0]->selector == sel : false;
-        for ( unsigned int p = 0; p < properties_size; ++p ) {
-            if ( !properties[p] || ( matches != ( properties[p]->selector == sel ) )) {
-                if ( matches ) {
-                    int* newprops = new int[selectorCache[sel].props_size+2];
-                    for ( unsigned int i=0; i < selectorCache[sel].props_size; i++ )
-                        newprops[i] = selectorCache[sel].props[i];
-                    newprops[selectorCache[sel].props_size] = offset;
-                    newprops[selectorCache[sel].props_size+1] = len;
-                    delete [] selectorCache[sel].props;
-                    selectorCache[sel].props = newprops;
-                    selectorCache[sel].props_size += 2;
-                    matches = false;
-                }
-                else {
-                    matches = true;
-                    offset = p;
-                    len = 0;
-                }
+    unsigned int* offsets = new unsigned int[selectors_size];
+    if(properties[0])
+	offsets[properties[0]->selector] = 0;
+    for(unsigned int p = 1; p < properties_size; ++p) {
+
+	if(!properties[p] || (properties[p]->selector != properties[p - 1]->selector)) {
+	    unsigned int sel = properties[p - 1]->selector;
+            int* newprops = new int[selectorCache[sel].props_size+2];
+            for ( unsigned int i=0; i < selectorCache[sel].props_size; i++ )
+                newprops[i] = selectorCache[sel].props[i];
+
+	    newprops[selectorCache[sel].props_size] = offsets[sel];
+	    newprops[selectorCache[sel].props_size+1] = p - offsets[sel];
+            delete [] selectorCache[sel].props;
+            selectorCache[sel].props = newprops;
+            selectorCache[sel].props_size += 2;
+
+	    if(properties[p]) {
+		sel = properties[p]->selector;
+		offsets[sel] = p;
             }
-            ++len;
         }
     }
+    delete [] offsets;
+
 
 #if 0
     // and now the same for the selector map
@@ -2057,11 +2054,11 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
         if(!primitiveValue) return;
         int type = primitiveValue->primitiveType();
         if(primitiveValue->getIdent() == CSS_VAL_NORMAL)
-            lineHeight = Length(100, Percent);
+            lineHeight = Length(-100, Percent);
         else if(type > CSSPrimitiveValue::CSS_PERCENTAGE && type < CSSPrimitiveValue::CSS_DEG)
-                lineHeight = Length(computeLength(primitiveValue, style, paintDeviceMetrics), Fixed);
+            lineHeight = Length(computeLength(primitiveValue, style, paintDeviceMetrics), Fixed);
         else if(type == CSSPrimitiveValue::CSS_PERCENTAGE)
-            lineHeight = Length(int(primitiveValue->getFloatValue(CSSPrimitiveValue::CSS_PERCENTAGE)), Percent);
+            lineHeight = Length(int( style->font().pixelSize() * int( primitiveValue->getFloatValue(CSSPrimitiveValue::CSS_PERCENTAGE)) ) / 100, Fixed);
         else if(type == CSSPrimitiveValue::CSS_NUMBER)
             lineHeight = Length(int(primitiveValue->getFloatValue(CSSPrimitiveValue::CSS_NUMBER)*100), Percent);
         else
@@ -2116,7 +2113,7 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
 	    right = convertToLength( rect->right(), style, paintDeviceMetrics );
 	    bottom = convertToLength( rect->bottom(), style, paintDeviceMetrics );
 	    left = convertToLength( rect->left(), style, paintDeviceMetrics );
-	    
+
 	} else if ( primitiveValue->getIdent() != CSS_VAL_AUTO ) {
 	    break;
 	}
@@ -2128,11 +2125,11 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
 	style->setClipRight( right );
 	style->setClipBottom( bottom );
 	style->setClipLeft( left );
-	    
+
         // rect, ident
         break;
     }
-    
+
 // lists
     case CSS_PROP_CONTENT:
         // list of string, uri, counter, attr, i
