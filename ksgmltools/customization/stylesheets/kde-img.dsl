@@ -41,13 +41,16 @@
 		     usemap
 		     border)))
     (make sequence
-      (make empty-element gi: "IMG"
-	    attributes: (list '("BORDER" "0") '("CLASS" "nexttoclickable")
-			      '("ALT" "Clickable image") ; to be localised if accepted!
-			      (list "SRC"
-				    (string-append %kde-doc-common-path%
-						   "question"
-						   %graphic-default-extension%))))
+      (if csim?
+	  (make empty-element gi: "IMG"
+		attributes: (list '("BORDER" "0") 
+				  '("CLASS" "nexttoclickable")
+				  '("ALT" "Clickable image") ; to be localised if accepted!
+				  (list "SRC"
+					(string-append %kde-doc-common-path%
+						       "question"
+						       %graphic-default-extension%))))
+	  (empty-sosofo))
       (make empty-element gi: "IMG"
 	    attributes: img-attr))))
 
