@@ -366,7 +366,8 @@ void MidiPlayer::parseSpecialEvents(void)
                     {
                       lasttexttime=pspev->absmilliseconds;
                       lasttexttype=pspev->type;
-                      strcpy(lasttext,pspev->text);
+                      strncpy(lasttext, pspev->text, 1024);
+                      lasttext[1023] = 0;
 #endif
                       pspev->next=new SpecialEvent;
 #ifdef PLAYERDEBUG

@@ -327,15 +327,18 @@ bool KTar::writeDir( const QString& name, const QString& user, const QString& gr
         strcpy( buffer, "././@LongLink" );
         fillBuffer( buffer, "     0", dirName.length()+1, 'L', user.local8Bit(), group.local8Bit() );
         device()->writeBlock( buffer, 0x200 );
-        memset( buffer, 0, 0x200 );
-        strcpy( buffer, QFile::encodeName(dirName) );
+        strncpy( buffer, QFile::encodeName(dirName), 0x200 );
+        buffer[0x200] = 0;
         // write long name
         device()->writeBlock( buffer, 0x200 );
         // not even needed to reclear the buffer, tar doesn't do it
     }
     else
+    {
         // Write name
-        strcpy( buffer, QFile::encodeName(dirName) );
+        strncpy( buffer, QFile::encodeName(dirName), 0x200 );
+        buffer[0x200] = 0;
+    }
 
     fillBuffer( buffer, " 40755", 0, 0x35, user.local8Bit(), group.local8Bit());
 
@@ -392,15 +395,18 @@ bool KTar::prepareWriting( const QString& name, const QString& user, const QStri
         fillBuffer( buffer, "     0", fileName.length()+1, 'L', user.local8Bit(), group.local8Bit() );
         device()->writeBlock( buffer, 0x200 );
 
-        memset( buffer, 0, 0x200 );
-        strcpy( buffer, QFile::encodeName(fileName) );
+        strncpy( buffer, QFile::encodeName(fileName), 0x200 );
+        buffer[0x200] = 0;
         // write long name
         device()->writeBlock( buffer, 0x200 );
         // not even needed to reclear the buffer, tar doesn't do it
     }
     else
+    {
         // Write name
-        strcpy( buffer, QFile::encodeName(fileName) );
+        strncpy( buffer, QFile::encodeName(fileName), 0x200 );
+        buffer[0x200] = 0;
+    }
 
     fillBuffer( buffer, "100644", size, 0x30, user.local8Bit(), group.local8Bit() );
 
