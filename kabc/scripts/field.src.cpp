@@ -127,35 +127,46 @@ QString Field::value( const KABC::Addressee &a )
       return a.url().prettyURL();
     case FieldImpl::HomePhone:
     {
-      // check for preferred number
-      PhoneNumber::List list = a.phoneNumbers( PhoneNumber::Home | PhoneNumber::Pref );
-      PhoneNumber::List::Iterator it;
-      for ( it = list.begin(); it != list.end(); ++it )
-        if ( ((*it).type() & ~(PhoneNumber::Pref)) == PhoneNumber::Home )
-          return (*it).number();
+      PhoneNumber::List::ConstIterator it;
 
-      // check for normal home number
-      list = a.phoneNumbers( PhoneNumber::Home );
-      for ( it = list.begin(); it != list.end(); ++it )
-        if ( ((*it).type() & ~(PhoneNumber::Pref)) == PhoneNumber::Home )
-          return (*it).number();
+      {
+        // check for preferred number
+        const PhoneNumber::List list = a.phoneNumbers( PhoneNumber::Home | PhoneNumber::Pref );
+        for ( it = list.begin(); it != list.end(); ++it )
+          if ( ((*it).type() & ~(PhoneNumber::Pref)) == PhoneNumber::Home )
+            return (*it).number();
+      }
+
+      {
+        // check for normal home number
+        const PhoneNumber::List list = a.phoneNumbers( PhoneNumber::Home );
+        for ( it = list.begin(); it != list.end(); ++it )
+          if ( ((*it).type() & ~(PhoneNumber::Pref)) == PhoneNumber::Home )
+            return (*it).number();
+      }
 
       return QString::null;
     }
     case FieldImpl::BusinessPhone:
     {
-      // check for preferred number
-      PhoneNumber::List list = a.phoneNumbers( PhoneNumber::Work | PhoneNumber::Pref );
-      PhoneNumber::List::Iterator it;
-      for ( it = list.begin(); it != list.end(); ++it )
-        if ( ((*it).type() & ~(PhoneNumber::Pref)) == PhoneNumber::Work )
-          return (*it).number();
+      PhoneNumber::List::ConstIterator it;
 
-      // check for normal work number
-      list = a.phoneNumbers( PhoneNumber::Work );
-      for ( it = list.begin(); it != list.end(); ++it )
-        if ( ((*it).type() & ~(PhoneNumber::Pref)) == PhoneNumber::Work )
-          return (*it).number();
+      {
+        // check for preferred number
+        const PhoneNumber::List list = a.phoneNumbers( PhoneNumber::Work | PhoneNumber::Pref );
+        for ( it = list.begin(); it != list.end(); ++it )
+          if ( ((*it).type() & ~(PhoneNumber::Pref)) == PhoneNumber::Work )
+            return (*it).number();
+      }
+
+      {
+        // check for normal work number
+        const PhoneNumber::List list = a.phoneNumbers( PhoneNumber::Work );
+        for ( it = list.begin(); it != list.end(); ++it )
+          if ( ((*it).type() & ~(PhoneNumber::Pref)) == PhoneNumber::Work )
+            return (*it).number();
+      }
+
       return QString::null;
     }
     case FieldImpl::MobilePhone:
@@ -265,17 +276,17 @@ void Field::deleteFields()
 {
   Field::List::ConstIterator it;
 
-  for( it = mAllFields.begin(); it != mAllFields.end(); ++it ) {
+  for ( it = mAllFields.constBegin(); it != mAllFields.constEnd(); ++it ) {
     delete (*it);
   }
   mAllFields.clear();
 
-  for( it = mDefaultFields.begin(); it != mDefaultFields.end(); ++it ) {
+  for ( it = mDefaultFields.constBegin(); it != mDefaultFields.constEnd(); ++it ) {
     delete (*it);
   }
   mDefaultFields.clear();
 
-  for( it = mCustomFields.begin(); it != mCustomFields.end(); ++it ) {
+  for ( it = mCustomFields.constBegin(); it != mCustomFields.constEnd(); ++it ) {
     delete (*it);
   }
   mCustomFields.clear();
@@ -322,7 +333,7 @@ Field::List Field::restoreFields( const QString &identifier )
 
 Field::List Field::restoreFields( KConfig *cfg, const QString &identifier )
 {
-  QValueList<int> fieldIds = cfg->readIntListEntry( identifier );
+  const QValueList<int> fieldIds = cfg->readIntListEntry( identifier );
 
   Field::List fields;
 

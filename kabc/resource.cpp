@@ -278,10 +278,10 @@ void Resource::removeAddressee( const Addressee &addr )
 
 Addressee Resource::findByUid( const QString &uid )
 {
-  Addressee::Map::iterator itr = mAddrMap.find( uid );
+  Addressee::Map::ConstIterator it = mAddrMap.find( uid );
 
-  if ( itr != mAddrMap.end() )
-    return itr.data();
+  if ( it != mAddrMap.end() )
+    return it.data();
 
   return Addressee();
 }
@@ -290,7 +290,7 @@ Addressee::List Resource::findByName( const QString &name )
 {
   Addressee::List results;
 
-  Iterator it;
+  ConstIterator it;
   for ( it = begin(); it != end(); ++it ) {
     if ( name == (*it).name() )
       results.append( *it );
@@ -302,13 +302,12 @@ Addressee::List Resource::findByName( const QString &name )
 Addressee::List Resource::findByEmail( const QString &email )
 {
   Addressee::List results;
-  QStringList mailList;
-  QString lowerEmail = email.lower();
+  const QString lowerEmail = email.lower();
 
-  Iterator it;
+  ConstIterator it;
   for ( it = begin(); it != end(); ++it ) {
-    mailList = (*it).emails();
-    for ( QStringList::Iterator ite = mailList.begin(); ite != mailList.end(); ++ite ) {
+    const QStringList mailList = (*it).emails();
+    for ( QStringList::ConstIterator ite = mailList.begin(); ite != mailList.end(); ++ite ) {
       if ( lowerEmail == (*ite).lower() )
         results.append( *it );
     }
@@ -321,7 +320,7 @@ Addressee::List Resource::findByCategory( const QString &category )
 {
   Addressee::List results;
 
-  Iterator it;
+  ConstIterator it;
   for ( it = begin(); it != end(); ++it ) {
     if ( (*it).hasCategory( category) ) {
       results.append( *it );

@@ -114,9 +114,9 @@ QString Address::typeLabel() const
   QString label;
   bool first = true;
 
-  TypeList list = typeList();
+  const TypeList list = typeList();
 
-  TypeList::Iterator it;
+  TypeList::ConstIterator it;
   for ( it = list.begin(); it != list.end(); ++it ) {
     if ( ( type() & (*it) ) && ( (*it) != Pref ) ) {
       label.append( ( first ? "" : "/" ) + typeLabel( *it ) );
@@ -273,9 +273,10 @@ QString Address::labelLabel()
 
 Address::TypeList Address::typeList()
 {
-  TypeList list;
+  static TypeList list;
 
-  list << Dom << Intl << Postal << Parcel << Home << Work << Pref;
+  if ( list.isEmpty() )
+    list << Dom << Intl << Postal << Parcel << Home << Work << Pref;
 
   return list;
 }
@@ -325,8 +326,8 @@ void Address::dump() const
 }
 
 
-QString Address::formattedAddress( const QString &realName
-                                 , const QString &orgaName ) const
+QString Address::formattedAddress( const QString &realName,
+                                   const QString &orgaName ) const
 {
   QString ciso;
   QString addrTemplate;
@@ -546,8 +547,8 @@ QString Address::countryToISO( const QString &cname )
 QString Address::ISOtoCountry( const QString &ISOname )
 {
   // get country name from ISO country code (e.g. "no" -> i18n("Norway"))
-  if (ISOname.simplifyWhiteSpace().isEmpty())
-	return QString::null;
+  if ( ISOname.simplifyWhiteSpace().isEmpty() )
+    return QString::null;
 
   QString mapfile = KGlobal::dirs()->findResource( "data", 
           QString::fromLatin1( "kabc/countrytransl.map" ) );
@@ -558,10 +559,10 @@ QString Address::ISOtoCountry( const QString &ISOname )
     QString searchStr = "\t" + ISOname.simplifyWhiteSpace().lower();
     QString strbuf = s.readLine();
     int pos;
-    while( !strbuf.isNull() ) {
-      if ( (pos=strbuf.find( searchStr )) != -1 ) {
+    while ( !strbuf.isNull() ) {
+      if ( (pos = strbuf.find( searchStr )) != -1 ) {
         file.close();
-        return i18n(strbuf.left(pos).utf8());
+        return i18n( strbuf.left( pos ).utf8() );
       }
       strbuf = s.readLine();
     }

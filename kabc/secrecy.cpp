@@ -56,10 +56,10 @@ int Secrecy::type() const
 
 Secrecy::TypeList Secrecy::typeList()
 {
-  TypeList list;
-  list << Public;
-  list << Private;
-  list << Confidential;
+  static TypeList list;
+
+  if ( list.isEmpty() )
+    list << Public << Private << Confidential;
 
   return list;
 }

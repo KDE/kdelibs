@@ -63,13 +63,13 @@ struct AddressBook::ConstIterator::ConstIteratorData
 };
 
 AddressBook::Iterator::Iterator()
+  : d( new IteratorData )
 {
-  d = new IteratorData;
 }
 
 AddressBook::Iterator::Iterator( const AddressBook::Iterator &i )
+  : d( new IteratorData )
 {
-  d = new IteratorData;
   d->mIt = i.d->mIt;
   d->mResources = i.d->mResources;
   d->mCurrRes = i.d->mCurrRes;
@@ -77,18 +77,22 @@ AddressBook::Iterator::Iterator( const AddressBook::Iterator &i )
 
 AddressBook::Iterator &AddressBook::Iterator::operator=( const AddressBook::Iterator &i )
 {
-  if( this == &i ) return *this; // guard against self assignment
+  if ( this == &i )
+    return *this; // guard against self assignment
+
   delete d; // delete the old data the Iterator was completely constructed before
   d = new IteratorData;
   d->mIt = i.d->mIt;
   d->mResources = i.d->mResources;
   d->mCurrRes = i.d->mCurrRes;
+
   return *this;
 }
 
 AddressBook::Iterator::~Iterator()
 {
   delete d;
+  d = 0;
 }
 
 const Addressee &AddressBook::Iterator::operator*() const
@@ -178,13 +182,13 @@ bool AddressBook::Iterator::operator!=( const Iterator &it )
 
 
 AddressBook::ConstIterator::ConstIterator()
+  : d( new ConstIteratorData )
 {
-  d = new ConstIteratorData;
 }
 
 AddressBook::ConstIterator::ConstIterator( const AddressBook::ConstIterator &i )
+  : d( new ConstIteratorData )
 {
-  d = new ConstIteratorData;
   d->mIt = i.d->mIt;
   d->mResources = i.d->mResources;
   d->mCurrRes = i.d->mCurrRes;
@@ -200,18 +204,22 @@ AddressBook::ConstIterator::ConstIterator( const AddressBook::Iterator &i )
 
 AddressBook::ConstIterator &AddressBook::ConstIterator::operator=( const AddressBook::ConstIterator &i )
 {
-  if( this  == &i ) return *this; // guard for self assignment
+  if ( this  == &i )
+    return *this; // guard for self assignment
+
   delete d; // delete the old data because the Iterator was really constructed before
   d = new ConstIteratorData;
   d->mIt = i.d->mIt;
   d->mResources = i.d->mResources;
   d->mCurrRes = i.d->mCurrRes;
+
   return *this;
 }
 
 AddressBook::ConstIterator::~ConstIterator()
 {
   delete d;
+  d = 0;
 }
 
 const Addressee &AddressBook::ConstIterator::operator*() const
@@ -294,8 +302,8 @@ bool AddressBook::ConstIterator::operator!=( const ConstIterator &it )
 
 
 AddressBook::AddressBook()
+  : d( new AddressBookData )
 {
-  d = new AddressBookData;
   d->mErrorHandler = 0;
   d->mConfig = 0;
   d->mManager = new KRES::Manager<Resource>( "contact" );
@@ -304,8 +312,8 @@ AddressBook::AddressBook()
 }
 
 AddressBook::AddressBook( const QString &config )
+  : d( new AddressBookData )
 {
-  d = new AddressBookData;
   d->mErrorHandler = 0;
   if ( config.isEmpty() )
     d->mConfig = 0;
@@ -574,7 +582,7 @@ Addressee::List AddressBook::allAddressees()
 {
   Addressee::List list;
 
-  Iterator it;
+  ConstIterator it;
   for ( it = begin(); it != end(); ++it )
     list.append( *it );
 
@@ -650,8 +658,9 @@ Field::List AddressBook::fields( int category )
 
   Field::List result;
   Field::List::ConstIterator it;
-  for( it = d->mAllFields.begin(); it != d->mAllFields.end(); ++it ) {
-    if ( (*it)->category() & category ) result.append( *it );
+  for ( it = d->mAllFields.constBegin(); it != d->mAllFields.constEnd(); ++it ) {
+    if ( (*it)->category() & category )
+      result.append( *it );
   }
 
   return result;

@@ -105,9 +105,9 @@ QString PhoneNumber::typeLabel() const
   QString label;
   bool first = true;
 
-  TypeList list = typeList();
+  const TypeList list = typeList();
 
-  TypeList::Iterator it;
+  TypeList::ConstIterator it;
   for ( it = list.begin(); it != list.end(); ++it ) {
     if ( ( type() & (*it) ) && ( (*it) != Pref ) ) {
       label.append( ( first ? "" : "/" ) + typeLabel( *it ) );
@@ -126,10 +126,12 @@ QString PhoneNumber::label() const
 
 PhoneNumber::TypeList PhoneNumber::typeList()
 {
-  TypeList list;
-  
-  list << Home << Work << Msg << Pref << Voice << Fax << Cell << Video
-       << Bbs << Modem << Car << Isdn << Pcs << Pager;
+  static TypeList list;
+
+  if ( list.isEmpty() ) {
+    list << Home << Work << Msg << Pref << Voice << Fax << Cell << Video
+         << Bbs << Modem << Car << Isdn << Pcs << Pager;
+  }
 
   return list;
 }

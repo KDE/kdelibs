@@ -195,7 +195,7 @@ bool DistributionListManager::load()
   d->mMissingEntries.clear();
 
   QMap<QString,QString>::ConstIterator it;
-  for( it = entryMap.begin(); it != entryMap.end(); ++it ) {
+  for( it = entryMap.constBegin(); it != entryMap.constEnd(); ++it ) {
     QString name = it.key();
     QStringList value = cfg.readListEntry( name );
 
@@ -204,8 +204,8 @@ bool DistributionListManager::load()
     DistributionList *list = new DistributionList( this, name );
 
     MissingEntryList missingEntries;
-    QStringList::ConstIterator entryIt = value.begin();
-    while( entryIt != value.end() ) {
+    QStringList::ConstIterator entryIt = value.constBegin();
+    while( entryIt != value.constEnd() ) {
       QString id = *entryIt++;
       QString email = *entryIt;
 
@@ -243,7 +243,7 @@ bool DistributionListManager::save()
     kdDebug(5700) << "  Saving '" << list->name() << "'" << endl;
 
     QStringList value;
-    DistributionList::Entry::List entries = list->entries();
+    const DistributionList::Entry::List entries = list->entries();
     DistributionList::Entry::List::ConstIterator it;
     for( it = entries.begin(); it != entries.end(); ++it ) {
       value.append( (*it).addressee.uid() );
@@ -251,7 +251,7 @@ bool DistributionListManager::save()
     }
 
     if ( d->mMissingEntries.find( list->name() ) != d->mMissingEntries.end() ) {
-      MissingEntryList missList = d->mMissingEntries[ list->name() ];
+      const MissingEntryList missList = d->mMissingEntries[ list->name() ];
       MissingEntryList::ConstIterator missIt;
       for ( missIt = missList.begin(); missIt != missList.end(); ++missIt ) {
         value.append( (*missIt).first );
