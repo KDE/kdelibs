@@ -209,45 +209,6 @@ void KDirWatch::setFileDirty( const QString & _file )
   emit fileDirty( _file );
 }
 
-/*******************************************************************/
-/*
-int main (int argc, char **argv)
-{
-
-  kdebug( KDEBUG_INFO, 7001,"You must create directory test in your home");
-  kdebug( KDEBUG_INFO, 7001,"Directory test will be watched, but skipped");
-  kdebug( KDEBUG_INFO, 7001,"When test is changed, you will be notified on console");
-  kdebug( KDEBUG_INFO, 7001,"Open kfms on home and test and move/copy files between them and root");
-  kdebug( KDEBUG_INFO, 7001,"Note that there will allways be output for test");
-
-  KDirWatch *dirwatch;
-
-  KApplication a(argc, argv);
-  dirwatch = new KDirWatch();
-
-  QString home = getenv ("HOME");
-  QString desk = getenv ("HOME");
-  home.prepend("file:");
-  desk.prepend("file:");
-  desk.append("/Desktop/");
-  home.append("/");
-  kdebug( KDEBUG_INFO, 7001,"Watching:");
-  kdebug( KDEBUG_INFO, 7001,home.data());
-  kdebug( KDEBUG_INFO, 7001,desk.data());
-  dirwatch->addDirListEntry(home.data());
-  home.append("test/");
-  dirwatch->addDirListEntry(home.data());
-  dirwatch->addDirListEntry(desk.data());
-  kdebug( KDEBUG_INFO, 7001,"Watching: (but skipped)");
-  kdebug( KDEBUG_INFO, 7001,home.data());
-
-  dirwatch->startScan();
-  if (!dirwatch->stopDirScan(home.data()))
-    kdebug( KDEBUG_ERROR, 7001,"stopDirScan: error");
-
-  return a.exec();
-}
-*/
 #include "kdirwatch.moc"
 
 //sven
