@@ -876,7 +876,6 @@ NodeImpl *KHTMLParser::getElement(Token* t)
 
 // anchor
     case ID_A:
-        popBlock(ID_A);
         n = new HTMLAnchorElementImpl(document);
         break;
 
