@@ -224,7 +224,10 @@ public:
 	 * Finds a location to save files into for the given type
 	 * in the user's home directory.
 	 * 
-	 * @param suffix makes it easier for you to create subdirectories
+	 * @param suffix makes it easier for you to create subdirectories.
+		       You can't pass filenames here, you _have_ to pass
+		       directory names only and add possible filename in
+		       that directory yourself
 	 * @param create if set, getSaveLocation will create the directories
 	 *        needed (including those given by suffix)
 	 */
