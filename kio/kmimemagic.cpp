@@ -61,6 +61,7 @@ void KMimeMagic::initStatic()
  * data structures and related constants
  */
 #define MIME_MAGIC_DEBUG_TABLE 0
+//#define DEBUG_MIMEMAGIC 1
 
 #define DECLINED 999
 #define ERROR    998
@@ -277,6 +278,18 @@ static struct names {
 	},
 	{
 		"<H1>", L_HTML
+	},
+	{
+		"<a", L_HTML
+	},
+	{
+		"<A", L_HTML
+	},
+	{
+		"<img", L_HTML
+	},
+	{
+		"<IMG", L_HTML
 	},
 	{
 		"<!--", L_HTML
@@ -1684,10 +1697,14 @@ KMimeMagic::ascmagic(unsigned char *buf, int nbytes)
 	// first collect all possible types and count matches
 	while ((token = strtok((char *) s, " \t\n\r\f,;")) != NULL) {
 		s = NULL;       /* make strtok() keep on tokin' */
-                //kdDebug() << "KMimeMagic::ascmagic token=" << token << endl;
+#ifdef DEBUG_MIMEMAGIC
+                kdDebug() << "KMimeMagic::ascmagic token=" << token << endl;
+#endif
 		for (p = names; p->name ; p++) {
 			if (STREQ(p->name, token)) {
-                                //kdDebug() << "KMimeMagic::ascmagic token matches ! name=" << p->name << " type=" << p->type << endl;
+#ifdef DEBUG_MIMEMAGIC
+                                kdDebug() << "KMimeMagic::ascmagic token matches ! name=" << p->name << " type=" << p->type << endl;
+#endif
 			        tokencount++;
 				typeset |= p->type;
 				if (p->type == L_JAVA)
@@ -1762,7 +1779,9 @@ KMimeMagic::ascmagic(unsigned char *buf, int nbytes)
 		    maxpct = pct;
 		    mostaccurate = i;
 		  }
-		  //kdDebug(7018) << "" << types[i].type << " has " << typecount[i] << " hits, " << types[i].kwords << " kw, weight " << types[i].weight << ", " << pct << " -> max = " << maxpct << "\n" << endl;
+#ifdef DEBUG_MIMEMAGIC
+		  kdDebug(7018) << "" << types[i].type << " has " << typecount[i] << " hits, " << types[i].kwords << " kw, weight " << types[i].weight << ", " << pct << " -> max = " << maxpct << "\n" << endl;
+#endif
 	  }
 	}
 	if (mostaccurate >= 0.0) {
