@@ -104,7 +104,7 @@ DocumentImpl::DocumentImpl() : NodeBaseImpl( new DocumentPtr() )
     document->doc = this;
     m_styleSelector = 0;
     m_view = 0;
-    m_docLoader = new DocLoader();
+    m_docLoader = new DocLoader(0);
     visuallyOrdered = false;
     m_loadingSheet = false;
     m_sheet = 0;
@@ -131,7 +131,7 @@ DocumentImpl::DocumentImpl(KHTMLView *v) : NodeBaseImpl( new DocumentPtr() )
     document->doc = this;
     m_styleSelector = 0;
     m_view = v;
-    m_docLoader = new DocLoader();
+    m_docLoader = new DocLoader(v->part());
     visuallyOrdered = false;
     m_loadingSheet = false;
     m_sheet = 0;
@@ -683,6 +683,7 @@ void DocumentImpl::updateRendering()
 void DocumentImpl::attach(KHTMLView *w)
 {
     m_view = w;
+    m_docLoader->m_part = w->part();
     setPaintDevice( m_view );
     if(!m_styleSelector) createSelector();
     m_render = new RenderRoot(w);
@@ -1337,13 +1338,13 @@ void DocumentImpl::setFocusNode(ElementImpl *n)
         {
             if (m_focusNode->active()) m_focusNode->setActive(false);
             m_focusNode->setFocus(false);
-            
+
 	    int exceptioncode;
-	    
+
 	    UIEventImpl *ue = new UIEventImpl(EventImpl::DOMFOCUSOUT_EVENT,
 	                                      true,false,defaultView(),
 					      0);
-					      
+
 	    ue->ref();
 	    m_focusNode->dispatchEvent(ue,exceptioncode);
 	    ue->deref();
@@ -1353,11 +1354,11 @@ void DocumentImpl::setFocusNode(ElementImpl *n)
         if (n)
 	{
 	    int exceptioncode;
-	    
+
 	    UIEventImpl *ue = new UIEventImpl(EventImpl::DOMFOCUSIN_EVENT,
 	                                      true,false,defaultView(),
 					      0);
-					      
+
 	    ue->ref();
 	    m_focusNode->dispatchEvent(ue,exceptioncode);
 	    ue->deref();

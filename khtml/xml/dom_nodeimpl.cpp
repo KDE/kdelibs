@@ -405,7 +405,7 @@ bool NodeImpl::dispatchEvent(EventImpl *evt, int &/*exceptioncode*/)
     NodeImpl *n;
     for (n = this; n; n = n->parentNode()) {
         n->ref();
-        nodeChain.insert(0,n);
+        nodeChain.prepend(n);
     }
 
     // trigger any capturing event handlers on our way down
@@ -448,7 +448,7 @@ bool NodeImpl::dispatchEvent(EventImpl *evt, int &/*exceptioncode*/)
     // copy this over into a local variable, as the following deref() calls might cause this to be deleted.
     DocumentPtr *doc = document;
     doc->ref();
-    
+
     // deref all nodes in chain
     it.toFirst();
     for (; it.current(); ++it)
@@ -457,7 +457,7 @@ bool NodeImpl::dispatchEvent(EventImpl *evt, int &/*exceptioncode*/)
     if (doc->document())
         doc->document()->updateRendering();
     doc->deref();
-    
+
     return !evt->defaultPrevented(); // ### what if defaultPrevented was called before dispatchEvent?
 }
 
@@ -570,9 +570,11 @@ void NodeImpl::handleLocalEvents(EventImpl *evt, bool useCapture)
     QListIterator<RegisteredEventListener> it(*m_regdListeners);
     bool found = false;
     Event ev = evt;
-    for (; it.current() && !found; ++it)
+    for (; it.current() && !found; ++it) {
         if (it.current()->id == evt->id() && it.current()->useCapture == useCapture)
             it.current()->listener->handleEvent(ev);
+    }
+
 }
 
 void NodeImpl::defaultEventHandler(EventImpl */*evt*/)
