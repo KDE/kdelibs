@@ -1116,6 +1116,20 @@ CC=$ac_save_cc
 CFLAGS=$ac_save_cflags
 ])
 
+AC_DEFUN(KDE_DO_IT_ALL,
+[
+AC_CANONICAL_SYSTEM
+AC_ARG_PROGRAM   
+AM_DISABLE_LIBRARIES
+AM_INIT_AUTOMAKE($1, $2)
+AC_PREFIX_DEFAULT$(${KDEDIR:-/usr/local/kde})
+AM_CONFIG_HEADER(config.h)
+AC_CHECK_COMPILERS
+KDE_PROG_LIBTOOL
+AM_KDE_WITH_NLS
+AC_PATH_KDE
+])
+
 AC_DEFUN(AC_CHECK_RPATH,
 [
 AC_MSG_CHECKING(for rpath)
@@ -1165,6 +1179,7 @@ dnl This is a merge of some macros out of the gettext aclocal.m4
 dnl since we don't need anything, I took the things we need
 AC_DEFUN(AM_KDE_WITH_NLS,
   [AC_MSG_CHECKING([whether NLS is requested])
+    AC_LANG_CPLUSPLUS
     dnl Default is enabled NLS
     AC_ARG_ENABLE(nls,
       [  --disable-nls           do not use Native Language Support],
