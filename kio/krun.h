@@ -126,13 +126,14 @@ public:
    * @param _name The logical name of the application, for example
    *        "Netscape 4.06".
    * @param _icon The icon which should be used by the application.
-   * @param _miniicon The icon which should be used by the application.
+   * @param _obsolete1 Do not use!
+   * @param _obsolete2 Do not use!
    */
   static pid_t run( const QString& _exec, const KURL::List& _urls,
 		   const QString& _name = QString::null,
 		   const QString& _icon = QString::null,
-		   const QString& _mini_icon = QString::null,
-		   const QString& _desktop_file = QString::null );
+		   const QString& _obsolete1 = QString::null, 
+		   const QString& _obsolete2 = QString::null );
 
   /**
    * Open the given URL.
@@ -171,6 +172,19 @@ public:
    */
   static void shellQuote( QString &_str );
 
+  /**
+   * Processes a Exec= line as found in .desktop files.
+   * @param _service the service to extract information from.
+   * @param _urls The urls the service should open.
+   * @param has_shell If true, the arguments are going to be fed into a 
+   *        shell e.g by using system(). 
+   *        If false, the arguments are going to be fed into a exec() kind 
+   *        call. 
+   *        If the arguments are intended for an exec() kind of call and 
+   *        the Exec line contains shell commands then "/bin/sh -c" is added.
+   * @return a list of arguments suitable for either system() or exec().
+   */
+  static QStringList processDesktopExec(const KService &_service, const KURL::List &_urls, bool has_shell);
 
 signals:
   void finished();
@@ -222,49 +236,6 @@ protected:
 
   class KRunPrivate;
   KRunPrivate *d;
-
-  /**
-   * For remote URLs to be opened with apps that don't support
-   * remote URLs. Uses kfmexec.
-   */
-  static pid_t runOldApplication( const QString& _exec,
-                                 const KURL::List& _urls,
-				 bool _allow_multiple );
-
-  /**
-   * Runs a shell command.
-   *
-   * @p _cmd must be a quoted shell command. You must not append "&"
-   * to it, since the function will do that for you. An example is
-   * "<tt>greet 'Hello Torben'</tt>".
-   *
-   * @return PID of running command, 0 if it could not be started, 0 - (PID
-   * of running command) if command was unsafe for map notification.
-   */
-  static pid_t run( const QString& _cmd );
-
-  /**
-   * @deprecated
-   * Use @ref KStartupInfo instead.
-   */
-  static void clientStarted(
-    const QString & name,
-    const QString & iconName,
-    pid_t pid,
-    const QString & resName,
-    bool compliant,
-    int screen_number = 0 );
-
-  /**
-   * Extracts binary name from Exec command line
-   * @param execLine the command line
-   * @param removePath if true, /usr/bin/konqueror will be returned as "konqueror"
-   *                   if false, it will be returned with the path.
-   */
-  static QString binaryName( const QString & execLine, bool removePath = true );
-  
-  static pid_t runCommandInternal( KProcess* poc, const QString& binName,
-      const QString& execName, const QString& iconName );
 };
 
 /**

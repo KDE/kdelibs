@@ -141,15 +141,8 @@ protected:
 
    void autoStart();
 
-   bool allowMultipleFiles(const KService::Ptr service);
-
    void createArgs( KLaunchRequest *request, const KService::Ptr service,
                     const QStringList &url);
-
-   void replaceArg( QValueList<QCString> &args, const QCString &target,
-                    const QCString &replace, const char *replacePrefix = 0);
-
-   void removeArg( QValueList<QCString> &args, const QCString &target);
 
    pid_t requestHoldSlave(const KURL &url, const QString &app_socket);
    pid_t requestSlave(const QString &protocol, const QString &host,

@@ -670,31 +670,8 @@ pid_t KDEDesktopMimeType::runApplication( const KURL& , const QString & _service
     // The error message was already displayed, so we can just quit here
     return 0;
 
-  QString user = s.username();
-  QString opts = s.terminalOptions();
-  if (opts.isNull())
-    opts = "";
-
-  QString cmd = s.exec();
-  if (s.substituteUid() && !user.isEmpty())
-  {
-    if (s.terminal())
-      cmd = QString("konsole %1 -e su %2 -c %3").arg(opts).arg(user).arg(cmd);
-    else
-      cmd = QString("kdesu -u %1 -- %2").arg(user).arg(cmd);
-  } else if (s.terminal())
-    cmd = QString("konsole %1 -e %2").arg(opts).arg(cmd);
-  else
-  {
-    // No special options, do straight run
-    KURL::List lst;
-    return KRun::run( s, lst );
-  }
-
-  KURL::List empty;
-  pid_t res = KRun::run( cmd, empty, s.name(), s.icon(), s.icon(), _serviceFile );
-
-  return res;
+  KURL::List lst;
+  return KRun::run( s, lst );
 }
 
 pid_t KDEDesktopMimeType::runLink( const KURL& _url, const KSimpleConfig &cfg )
@@ -854,8 +831,7 @@ void KDEDesktopMimeType::executeService( const KURL::List& urls, KDEDesktopMimeT
   {
     kdDebug() << "KDEDesktopMimeType::executeService " << _service.m_strName
               << " first url's path=" << urls.first().path() << " exec=" << _service.m_strExec << endl;
-    KRun::run( _service.m_strExec, urls, _service.m_strName, _service.m_strIcon,
-	       _service.m_strIcon, urls.first().path() );
+    KRun::run( _service.m_strExec, urls, _service.m_strName, _service.m_strIcon, _service.m_strIcon );
     // The action may update the desktop file. Example: eject unmounts (#5129).
     KDirNotify_stub allDirNotify("*", "KDirNotify*");
     allDirNotify.FilesChanged( urls );

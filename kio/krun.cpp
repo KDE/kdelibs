@@ -79,7 +79,7 @@ pid_t KRun::runURL( const KURL& u, const QString& _mimetype )
     {
       QString path = u.path();
       shellQuote( path );
-      return (KRun::run(path)); // just execute the url as a command
+      return (KRun::runCommand(path)); // just execute the url as a command
     }
   }
 
@@ -111,114 +111,265 @@ void KRun::shellQuote( QString &_str )
     _str = res;
 }
 
-pid_t KRun::run( const KService& _service, const KURL::List& _urls )
+static QStringList breakup(const QString &exec, bool *need_shell = 0)
 {
-  kdDebug(7010) << "KRun::run " << _service.desktopEntryPath() << endl;
-
-  if (!_urls.isEmpty()) {
-    kdDebug(7010) << "First url " << _urls.first().url() << endl;
-  }
-
-  QString exec = _service.exec();
-  QString miniicon = _service.icon();
-  QString user = _service.username();
-  if (_service.substituteUid() && !user.isEmpty())
+  QStringList result;
+  // This small state machine is used to parse "exec" in order
+  // to cut arguments at spaces, but also treat "..." and '...'
+  // as a single argument even if they contain spaces. Those simple
+  // and double quotes are also removed.
+  enum { PARSE_ANY, PARSE_QUOTED, PARSE_DBLQUOTED } state = PARSE_ANY;
+  QString arg;
+  for ( uint pos = 0; pos < exec.length() ; ++pos )
   {
-    if (_service.terminal())
-      exec = QString("konsole %1 -e su %2 -c %3").arg(_service.terminalOptions()).arg(user).arg(exec);
-    else
-      exec = QString("kdesu -u %1 -- %2").arg(user).arg(exec);
-  } else if (_service.terminal())
-     // Keep in mind that exec could include spaces. No quotes around %2, then.
-     exec = QString("konsole %1 -e %2").arg(_service.terminalOptions()).arg(exec);
-  else
-  {
-  QString error;
-  int /*pid_t*/ pid;
-
-  // First try using startServiceByDesktopPath, since that one benefits from kdeinit.
-  // But only if we don't need kfmexec (i.e. url is local, or app supports remote urls)
-  bool b_local_app = ( exec.find( "%u" ) == -1 && exec.find( "%U" ) == -1 );
-  bool b_local_files = true;
-  KURL::List::ConstIterator it = _urls.begin();
-  for( ; it != _urls.end(); ++it )
-    if ( !(*it).isLocalFile() )
-      b_local_files = false;
-
-  if ( !b_local_app || b_local_files )
-  {
-    QString error;
-
-    int i = KApplication::startServiceByDesktopPath(
-        _service.desktopEntryPath(), _urls.toStringList(), &error, 0L, &pid
-        );
-
-    if (i == 0)
-    {
-      kdDebug(7010) << "startServiceByDesktopPath worked fine" << endl;
-      return pid;
-
-    } else {
-
-      kdDebug(7010) << error << endl;
-      KMessageBox::sorry( 0L, error );
-      return 0;
-    }
+      QChar ch = exec[pos];
+      switch (state) {
+          case PARSE_ANY:
+              if ( ch == '\'' && arg.isEmpty() )
+                  state = PARSE_QUOTED;
+              else if ( ch == '"' && arg.isEmpty() )
+                  state = PARSE_DBLQUOTED;
+              else if ( ch == ' ' )
+              {
+                  if (!arg.isEmpty())
+                      result.append(arg);
+                  arg = QString::null;
+                  state = PARSE_ANY;
+              }
+              else if (( ch == ';' ) || (ch == '|') || (ch == '<'))
+              {
+                  if (!arg.isEmpty())
+                      result.append(arg);
+                  result.append(QString(ch));
+                  arg = QString::null;
+                  state = PARSE_ANY;
+                  if (need_shell)
+                     *need_shell = true;
+              }
+              else
+                  arg += ch;
+              break;
+          case PARSE_QUOTED:
+              if ( ch == '\'' )
+              {
+                  result.append(arg);
+                  arg = QString::null;
+                  state = PARSE_ANY;
+              }
+              else
+                  arg += ch;
+              break;
+          case PARSE_DBLQUOTED:
+              if ( ch == '"' )
+              {
+                  result.append(arg);
+                  arg = QString::null;
+                  state = PARSE_ANY;
+              }
+              else
+                  arg += ch;
+              break;
+      }
   }
+  if (!arg.isEmpty())
+          result.append(arg);
+  if (need_shell && !result.isEmpty())
+  {
+     if (result[0].contains('='))
+        *need_shell = true;
   }
-
-  // Fall back on normal running
-  QString name = _service.name();
-  QString icon = _service.icon();
-  return KRun::run( exec, _urls, name, icon, miniicon );
+  return result;          
 }
 
-pid_t KRun::run( const QString& _exec, const KURL::List& _urls, const QString& _name,
-                const QString& _icon, const QString& _mini_icon, const QString& _desktop_file )
+static QString conditionalQuote(const QString &s, bool quote)
 {
-  bool b_local_files = true;
+   if (!quote) return s;
+   QString r = s;
+   KRun::shellQuote(r);
+   return r;
+}
 
-  QString U = "",F = "",D = "",N = "";
+static QString substitution(int option, const KURL &_url, bool quote)
+{
+   if (option == 'u')
+      return conditionalQuote(_url.isLocalFile() ? _url.path() : _url.url(), quote);
+   if (option == 'd')
+      return conditionalQuote(_url.directory(), quote);
+   if (option == 'f')
+      return conditionalQuote(_url.path(), quote);
+   if (option == 'n')
+      return conditionalQuote(_url.fileName(), quote);
+   if (option == 'v')
+   {
+      if ( _url.isLocalFile() && QFile::exists( _url.path() ) )
+      {
+          KDesktopFile desktopFile(_url.path(), true);
+          return conditionalQuote(desktopFile.readEntry( "Dev" ), quote);
+      }
+   }
+}
 
-  KURL::List::ConstIterator it = _urls.begin();
-  for( ; it != _urls.end(); ++it )
+static QStringList substitution(int option, const KService &_service, bool quote)
+{
+   QStringList result;
+   if (option == 'c')
+      result << conditionalQuote(_service.name(), quote);
+   else if (option == 'i')
+      result << "-icon" << conditionalQuote(_service.icon(), quote);
+   else if (option == 'm')
+      result << "-miniicon" << conditionalQuote(_service.icon(), quote);
+   else if (option == 'k')
+      result << conditionalQuote(_service.desktopEntryPath(), quote);
+      
+   if (result.isEmpty())
+      result << QString::null;
+   return result;
+}
+
+static QStringList substitution(int option, const KURL::List &_urls, bool quote)
+{
+   QStringList result;
+   option = option - 'A' + 'a'; // To lower
+   for(KURL::List::ConstIterator it = _urls.begin();
+       it != _urls.end(); ++it)
+   {
+       result.append(substitution(option, *it, quote));
+   }
+   return result;
+}
+
+static void substitute(QStringList &_list, QStringList::Iterator &it, const KService &_service, const KURL::List &_urls, bool quote, bool service_only=false)
+{
+  QString &arg = *it;
+  if ((arg.length() == 2) && (arg[0] == '%'))
   {
-    KURL url( *it );
-    if ( url.isMalformed() )
-    {
-      QString tmp = i18n( "Malformed URL" );
-      tmp += "\n";
-      tmp += (*it).url();
-      KMessageBoxWrapper::error( 0L, tmp);
-      return 0;
-    }
+     int option = arg[1].unicode();
+     QStringList subs;
+     switch(option)
+     {
+        case 'U':
+        case 'F':
+        case 'D':
+        case 'N':
+          if (service_only)
+             return;
+          subs = substitution(option, _urls, quote);
+          break;
+          
+        case 'u':
+        case 'f':
+        case 'd':
+        case 'n':
+        case 'v':
+          if (service_only)
+             return;
+          if (_urls.count())
+             subs.append(substitution(option, _urls.first(), quote));
+          break;
 
-    if ( !url.isLocalFile() )
-      b_local_files = false;
+        case 'c':
+        case 'i':
+        case 'm':
+        case 'k':
+          subs = substitution(option, _service, quote);
+          break;
+     }
 
-    QString tmp = (*it).isLocalFile() ? (*it).path() : (*it).url(); // Non-kde applications prefer paths when possible (eg xmms)
-    shellQuote( tmp );
-    U += tmp;
-    U += " ";
-    tmp = url.directory();
-    shellQuote( tmp );
-    D += tmp;
-    D += " ";
-    tmp = url.fileName();
-    shellQuote( tmp );
-    N += tmp;
-    N += " ";
-    tmp = url.path( -1 );
-    shellQuote( tmp );
-    F += tmp;
-    F += " ";
+     if (subs.count() == 1)
+     {
+        arg = subs[0];
+     }
+     else
+     {
+        for(QStringList::Iterator it_subs = subs.begin();
+            it_subs != subs.end(); ++it_subs)
+        {
+           _list.insert(it, *it_subs);
+        }
+        QStringList::Iterator delete_it = it;
+        --it;
+        _list.remove(delete_it);
+     }
+     return;
   }
 
-  QString exec = _exec;
-  bool b_local_app = false;
-  if ( exec.find( "%u" ) == -1 && exec.find( "%U" ) == -1 )
-    b_local_app = true;
+  QStringList args = breakup(arg);
+  if (args.isEmpty())
+  {
+     arg = QString::null;
+     return;
+  }
+  else if (args.count() != 1)
+  {
+     arg = QString::null;
+     for(QStringList::Iterator it = args.begin();
+         it != args.end(); ++it)
+     {
+        substitute(args, it, _service, _urls, true, service_only);
+     }
+     arg = QString::null;
+     for(QStringList::Iterator it = args.begin();
+         it != args.end(); ++it)
+     {
+        if (!arg.isEmpty())
+           arg += " ";
+        arg += *it;
+     }
+     if (quote)
+        KRun::shellQuote(arg);
+     return;
+  }
+  arg = args[0];
 
+  bool need_quote = false;
+  int l = arg.length();
+  int p = 0;
+  while (p < l-1)
+  {
+     if (arg[p] == '%')
+     {
+        need_quote = true;
+        int option = arg[++p].unicode();
+        if (service_only &&
+            ((option == 'u') || (option == 'f') || (option == 'd') || (option == 'n')))
+           continue;
+
+        QString sub;
+        QStringList subs;
+        switch(option)
+        {
+          case 'u':
+          case 'f':
+          case 'd':
+          case 'n':
+          case 'v':
+            sub = substitution(option, _urls.first(), false);
+            break;
+
+          case 'c':
+          case 'k':
+            subs = substitution(option, _service, false);
+            if (!subs.isEmpty())
+               sub = subs[0];
+            break;
+        }        
+
+        arg.replace(p-1, 2, sub);
+        p += sub.length()-2;
+        l = arg.length();
+     }
+     p++;
+  }
+  if (quote && need_quote)
+  {
+     KRun::shellQuote(arg);
+  }
+}
+
+QStringList KRun::processDesktopExec(const KService &_service, const KURL::List& _urls, bool has_shell)
+{
+  QString exec = _service.exec();
+  QString user = _service.username();
   // Did the user forget to append something like '%f' ?
   // If so, then assume that '%f' is the right choice => the application
   // accepts only local files.
@@ -227,144 +378,124 @@ pid_t KRun::run( const QString& _exec, const KURL::List& _urls, const QString& _
        exec.find( "%N" ) == -1 && exec.find( "%D" ) == -1 && exec.find( "%v" ) == -1 )
     exec += " %f";
 
-  // Can we pass multiple files on the command line or do we have to start the application for every single file ?
-  bool b_allow_multiple = false;
-  if ( exec.find( "%F" ) != -1 || exec.find( "%U" ) != -1 || exec.find( "%N" ) != -1 ||
-       exec.find( "%D" ) != -1 )
-    b_allow_multiple = true;
+  bool terminal_su = false;
+  bool terminal_sh = false;
+  bool kdesu = false;
 
-  int pos;
-
-  QString name = _name;
-  shellQuote( name );
-  while ( ( pos = exec.find( "%c" ) ) != -1 )
-    exec.replace( pos, 2, name );
-
-  QString icon = _icon;
-  shellQuote( icon );
-  if ( !icon.isEmpty() )
-    icon.insert( 0, "-icon " );
-  while ( ( pos = exec.find( "%i" ) ) != -1 )
-    exec.replace( pos, 2, icon );
-
-  QString _bin_name = binaryName ( _exec, false /*keep path*/ );
-
-  QString mini_icon = _mini_icon;
-  shellQuote( mini_icon );
-  if ( !mini_icon.isEmpty() )
-    mini_icon.insert( 0, "-miniicon " );
-  while ( ( pos = exec.find( "%m" ) ) != -1 )
-    exec.replace( pos, 2, mini_icon );
-
-  while ( ( pos = exec.find( "%k" ) ) != -1 )
-    exec.replace( pos, 2, _desktop_file );
-
-  while ( ( pos = exec.find( "%v" ) ) != -1 )
+  if (_service.substituteUid() && !user.isEmpty())
   {
-      if ( QFile::exists( QFile::encodeName( _desktop_file ) ) )
-      {
-          KDesktopFile desktopFile(_desktop_file, true);
-          exec.replace( pos, 2, desktopFile.readEntry( "Dev" ) );
-      }
+    if (_service.terminal())
+      terminal_su = true;
+    else
+      kdesu = true;
+  } 
+  else if (_service.terminal())
+  {
+    terminal_sh = true;
   }
+    
+  // Check if we need kfmexec.
+  bool b_local_app = ( exec.find( "%u" ) == -1 && exec.find( "%U" ) == -1 );
+  bool b_local_files = true;
+  KURL::List::ConstIterator it = _urls.begin();
+  for( ; it != _urls.end(); ++it )
+    if ( !(*it).isLocalFile() )
+      b_local_files = false;
 
-  // The application accepts only local files ?
   if ( b_local_app && !b_local_files )
   {
-      //kdDebug(7010) << "Using runOldApplication" << endl;
-      return runOldApplication( exec, _urls, b_allow_multiple );
+     // We need to run the app through kfmexec
+     QStringList result = breakup(exec);
+     
+     // Substitute everything that isn't file-related.
+     for(QStringList::Iterator it = result.begin();
+         it != result.end(); ++it)
+     {
+         substitute(result, it, _service, _urls, true, true);
+     }
+     QString cmd = result.join(" ");
+     if (has_shell)
+        shellQuote(cmd);
+     result.clear();
+     result << "kfmexec" << cmd;
+     KURL::List::ConstIterator it = _urls.begin();
+     for( ; it != _urls.end(); ++it )
+     {
+        QString url = (*it).url();
+        if (has_shell)
+           shellQuote(url);
+        result << url;
+     }
+     return result;
   }
 
-  pid_t retval = 0;
-
-  if ( b_allow_multiple || _urls.isEmpty() )
+qWarning("Exec = '%s'", exec.latin1());
+  
+  // Move args to result
+  bool need_shell = false;
+  QStringList result = breakup(exec, &need_shell);
+     
+  for(QStringList::Iterator it = result.begin();
+      it != result.end(); ++it)
   {
-    KURL firstURL = (_urls.isEmpty()) ? KURL() : _urls.first();
-    while ( ( pos = exec.find( "%f" )) != -1 )
-    {
-      QString f ( firstURL.path( -1 ) );
-      shellQuote( f );
-      exec.replace( pos, 2, f );
-    }
-    while ( ( pos = exec.find( "%n" )) != -1 )
-    {
-      QString n ( firstURL.fileName() );
-      shellQuote( n );
-      exec.replace( pos, 2, n );
-    }
-    while ( ( pos = exec.find( "%d" )) != -1 )
-    {
-      QString d ( firstURL.directory() );
-      shellQuote( d );
-      exec.replace( pos, 2, d );
-    }
-    while ( ( pos = exec.find( "%u" )) != -1 )
-    {
-      // Non-kde applications prefer paths when possible (eg xmms)
-      QString u ( firstURL.isLocalFile() ? firstURL.path() : firstURL.url() );
-      shellQuote( u );
-      exec.replace( pos, 2, u );
-    }
-
-    while ( ( pos = exec.find( "%F" )) != -1 )
-      exec.replace( pos, 2, F );
-    while ( ( pos = exec.find( "%N" )) != -1 )
-      exec.replace( pos, 2, N );
-    while ( ( pos = exec.find( "%D" )) != -1 )
-      exec.replace( pos, 2, D );
-    while ( ( pos = exec.find( "%U" )) != -1 )
-      exec.replace( pos, 2, U );
-
-    retval = KRun::runCommand( exec, _bin_name, mini_icon );
+      substitute(result, it, _service, _urls, has_shell || need_shell);
   }
-  else
+
+  if (need_shell && !terminal_su && !kdesu &&
+      (!has_shell || terminal_sh))
   {
-    it = _urls.begin();
-    for( ; it != _urls.end(); ++it )
+     QString cmd = result.join(" ");
+     result.clear();
+     result << "/bin/sh" << "-c" << cmd;
+  }  
+
+  if (terminal_su)
+  {
+    QString cmd = result.join(" ");
+    result = breakup(QString("konsole -caption=%c %i %m %1 -e su %2 -c").arg(_service.terminalOptions()).arg(user));
+    for(QStringList::Iterator it = result.begin();
+        it != result.end(); ++it)
     {
-      QString e = exec;
-      KURL url( *it );
-      Q_ASSERT( !url.isMalformed() );
-      QString f ( url.path( -1 ) );
-      shellQuote( f );
-      QString d ( url.directory() );
-      shellQuote( d );
-      QString n ( url.fileName() );
-      shellQuote( n );
-      // Non-kde applications prefer paths when possible (eg xmms)
-      QString u ( url.isLocalFile() ? url.path() : url.url() );
-      shellQuote( u );
-
-      while ( ( pos = e.find( "%f" )) != -1 )
-        e.replace( pos, 2, f );
-      while ( ( pos = e.find( "%n" )) != -1 )
-        e.replace( pos, 2, n );
-      while ( ( pos = e.find( "%d" )) != -1 )
-        e.replace( pos, 2, d );
-      while ( ( pos = e.find( "%u" )) != -1 )
-        e.replace( pos, 2, u );
-
-      retval = KRun::runCommand( e, _bin_name, mini_icon );
+        substitute(result, it, _service, _urls, has_shell);
     }
+    result.append(cmd);
+  } 
+  else if (terminal_sh)
+  {
+     QStringList cmd = result;
+     result = breakup(QString("konsole -caption=%c %i %m %1 -e").arg(_service.terminalOptions()));
+     for(QStringList::Iterator it = result.begin();
+         it != result.end(); ++it)
+     {
+         substitute(result, it, _service, _urls, has_shell);
+     }
+      result += cmd;
+  }
+  else if (kdesu)
+  {
+     result = breakup(QString("kdesu -u %1 --").arg(user))+result;
   }
 
-  return retval;
+  return result;
 }
 
-pid_t KRun::runCommand( QString cmd )
+static QString binaryName( const QString & execLine, bool removePath )
 {
-  return KRun::runCommand( cmd, QString::null, QString::null );
+  QString _bin_name = execLine;
+
+  // Remove parameters and/or trailing spaces.
+
+  int firstSpace = _bin_name.find(' ');
+
+  if (-1 != firstSpace)
+    _bin_name = _bin_name.left(firstSpace);
+
+  // Remove path if wanted
+
+  return removePath ? _bin_name.mid(_bin_name.findRev('/') + 1) : _bin_name;
 }
 
-pid_t KRun::runCommand( const QString& cmd, const QString &execName, const QString & iconName )
-{
-  kdDebug(7010) << "runCommand " << cmd << "," << execName << endl;
-  KShellProcess * proc = new KShellProcess;
-  *proc << cmd;
-  return runCommandInternal( proc, binaryName( cmd, false ), execName, iconName );
-}
-
-pid_t KRun::runCommandInternal( KProcess* proc, const QString& binName,
+static pid_t runCommandInternal( KProcess* proc, const QString& binName,
     const QString &execName_P, const QString & iconName_P )
 {
   QString bin = binaryName( binName, false );
@@ -430,75 +561,97 @@ pid_t KRun::runCommandInternal( KProcess* proc, const QString& binName,
 #endif
 }
 
-pid_t KRun::run( const QString& _cmd )
+static pid_t runTempService( const KService& _service, const KURL::List& _urls )
 {
-  kdDebug(7010) << "Running " << _cmd << endl;
-
-  KShellProcess * proc = new KShellProcess;
-  *proc << _cmd;
-  // CHECKME I think it's better without app-start notification here
-  // This version can't check whether the binary exists
-  return KProcessRunner::run(proc, QString::null);
-}
-
-
-pid_t KRun::runOldApplication( const QString& app, const KURL::List& _urls, bool _allow_multiple )
-{
-  // find kfmexec in $PATH
-  QString kfmexec = KStandardDirs::findExe( "kfmexec" );
-  if (kfmexec.isEmpty())
-  {
-    // this is written this way to avoid a new string to translate
-    KMessageBox::sorry( 0L, i18n("Couldn't launch %1").arg( "kfmexec" ) );
-    return 0;
+  if (!_urls.isEmpty()) {
+    kdDebug(7010) << "First url " << _urls.first().url() << endl;
   }
 
-  if ( _allow_multiple )
+  QStringList args;
+  if ((_urls.count() > 1) && !_service.allowMultipleFiles())
   {
-    kdDebug(7010) << "Allow Multiple" << endl;
-
-    KProcess * proc = new KProcess;
-    *proc << kfmexec;
-    *proc << app;
-    KURL::List::ConstIterator it = _urls.begin();
-    for( ; it != _urls.end(); ++it )
-        *proc << (*it).url();
-
-    return runCommandInternal( proc, binaryName( app, false ), "", "" );
+      // We need to launch the application N times. That sucks.
+      // We ignore the result for application 2 to N.
+      // For the first file we launch the application in the
+      // usual way. The reported result is based on this
+      // application.
+      KURL::List::ConstIterator it = _urls.begin();
+      for(++it; it != _urls.end(); ++it)
+      {
+         KURL::List singleUrl;
+         singleUrl.append(*it);
+         runTempService( _service, singleUrl );
+      }
+      KURL::List singleUrl;
+      singleUrl.append(_urls.first());
+      args = KRun::processDesktopExec(_service, singleUrl, false);
   }
   else
   {
-    kdDebug(7010) << "Not multiple" << endl;
-    KURL::List::ConstIterator it = _urls.begin();
-    pid_t retval = 0;
-    for( ; it != _urls.end(); ++it )
-    {
-        KProcess * proc = new KProcess;
-        *proc << kfmexec;
-        *proc << app;
-        *proc << (*it).url();
-
-        retval = runCommandInternal( proc, binaryName( app, false ), "", "" );
-    }
-
-    return retval;
+      args = KRun::processDesktopExec(_service, _urls, false);
   }
+
+  KProcess * proc = new KProcess;
+  for(QStringList::Iterator it = args.begin();
+      it != args.end(); ++it)
+  {
+     QString arg = *it;
+     *proc << arg;
+  }
+  return runCommandInternal( proc, _service.exec(), _service.name(), _service.icon() );
 }
 
-QString KRun::binaryName( const QString & execLine, bool removePath )
+pid_t KRun::run( const KService& _service, const KURL::List& _urls )
 {
-  QString _bin_name = execLine;
+  if (_service.desktopEntryPath().isEmpty())
+  {
+     return runTempService(_service, _urls);
+  }
 
-  // Remove parameters and/or trailing spaces.
+  kdDebug(7010) << "KRun::run " << _service.desktopEntryPath() << endl;
 
-  int firstSpace = _bin_name.find(' ');
+  if (!_urls.isEmpty()) {
+    kdDebug(7010) << "First url " << _urls.first().url() << endl;
+  }
 
-  if (-1 != firstSpace)
-    _bin_name = _bin_name.left(firstSpace);
+  QString error;
+  pid_t pid = 0;
 
-  // Remove path if wanted
+  int i = KApplication::startServiceByDesktopPath(
+        _service.desktopEntryPath(), _urls.toStringList(), &error, 0L, &pid
+        );
 
-  return removePath ? _bin_name.mid(_bin_name.findRev('/') + 1) : _bin_name;
+  if (i != 0)
+  {
+     kdDebug(7010) << error << endl;
+     KMessageBox::sorry( 0L, error );
+     return 0;
+  }
+
+  kdDebug(7010) << "startServiceByDesktopPath worked fine" << endl;
+  return pid;
+}
+
+
+pid_t KRun::run( const QString& _exec, const KURL::List& _urls, const QString& _name,
+                const QString& _icon, const QString&, const QString&)
+{
+  KService::Ptr service = new KService(_name, _exec, _icon);
+
+  return run(*service, _urls);
+}
+
+pid_t KRun::runCommand( QString cmd )
+{
+  return KRun::runCommand( cmd, QString::null, QString::null );
+}
+
+pid_t KRun::runCommand( const QString& cmd, const QString &execName, const QString & iconName )
+{
+  kdDebug(7010) << "runCommand " << cmd << "," << execName << endl;
+  KShellProcess * proc = new KShellProcess;
+  *proc << cmd;
+  return runCommandInternal( proc, binaryName( cmd, false ), execName, iconName );
 }
 
 KRun::KRun( const KURL& _url, mode_t _mode, bool _is_local_file, bool _showProgressInfo )
@@ -867,19 +1020,6 @@ void KRun::abort()
 
   // will emit the error and autodelete this
   m_timer.start( 0, true );
-}
-
-// obsolete
-void KRun::clientStarted(
-  const QString &,
-  const QString &,
-  pid_t,
-  const QString &,
-  bool,
-  int
-)
-{
-  kdDebug(7010) << "obsolete clientStarted called" << endl;
 }
 
 /****************/

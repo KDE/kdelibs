@@ -30,9 +30,10 @@
 #include <kurl.h>
 #include <kprotocolmanager.h>
 #include <kprotocolinfo.h>
-#include <ktempfile.h>
+#include <krun.h>
 #include <kstandarddirs.h>
 #include <kstartupinfo.h>
+#include <ktempfile.h>
 
 #include "kio/global.h"
 #include "kio/connection.h"
@@ -804,7 +805,7 @@ KLauncher::start_service(KService::Ptr service, const QStringList &_urls,
    KLaunchRequest *request = new KLaunchRequest;
    request->autoStart = autoStart;
 
-   if ((urls.count() > 1) && !allowMultipleFiles(service))
+   if ((urls.count() > 1) && !service->allowMultipleFiles())
    {
       // We need to launch the application N times. That sucks.
       // We ignore the result for application 2 to N.
@@ -977,169 +978,17 @@ KLauncher::slotDequeue()
    bProcessingQueue = false;
 }
 
-bool
-KLauncher::allowMultipleFiles(const KService::Ptr service)
-{
-  QString exec = service->exec();
-
-  // Can we pass multiple files on the command line or do we have to start the application for every single file ?
-  if ( exec.find( "%F" ) != -1 || exec.find( "%U" ) != -1 || exec.find( "%N" ) != -1 ||
-       exec.find( "%D" ) != -1 )
-    return true;
-  else
-    return false;
-}
-
 void
 KLauncher::createArgs( KLaunchRequest *request, const KService::Ptr service ,
                        const QStringList &urls)
 {
-  QString exec = service->exec();
-  bool b_local_app = false;
-  if ( exec.find( "%u" ) == -1 )
-    b_local_app = true;
+  QStringList params = KRun::processDesktopExec(*service, urls, false);
 
-  // Did the user forget to append something like '%f' ?
-  // If so, then assume that '%f' is the right choice => the application
-  // accepts only local files.
-  if ( exec.find( "%f" ) == -1 && exec.find( "%u" ) == -1 && exec.find( "%n" ) == -1 &&
-      exec.find( "%d" ) == -1 && exec.find( "%F" ) == -1 && exec.find( "%U" ) == -1 &&
-      exec.find( "%N" ) == -1 && exec.find( "%D" ) == -1 )
-    exec += " %F";
-
-  // Put args in request->arg_list;
+  for(QStringList::ConstIterator it = params.begin();
+      it != params.end(); ++it)
   {
-      // This small state machine is used to parse "exec" in order
-      // to cut arguments at spaces, but also treat "..." and '...'
-      // as a single argument even if they contain spaces. Those simple
-      // and double quotes are also removed.
-      enum { PARSE_ANY, PARSE_QUOTED, PARSE_DBLQUOTED } state = PARSE_ANY;
-      QString arg;
-      for ( uint pos = 0; pos < exec.length() ; ++pos )
-      {
-          QChar ch = exec[pos];
-          switch (state) {
-              case PARSE_ANY:
-                  if ( ch == '\'' && arg.isEmpty() )
-                      state = PARSE_QUOTED;
-                  else if ( ch == '"' && arg.isEmpty() )
-                      state = PARSE_DBLQUOTED;
-                  else if ( ch == ' ' )
-                  {
-                      if (!arg.isEmpty())
-                          request->arg_list.append(arg.local8Bit());
-                      arg = QString::null;
-                      state = PARSE_ANY;
-                  }
-                  else
-                      arg += ch;
-                  break;
-              case PARSE_QUOTED:
-                  if ( ch == '\'' )
-                  {
-                      request->arg_list.append(arg.local8Bit());
-                      arg = QString::null;
-                      state = PARSE_ANY;
-                  }
-                  else
-                      arg += ch;
-                  break;
-              case PARSE_DBLQUOTED:
-                  if ( ch == '"' )
-                  {
-                      request->arg_list.append(arg.local8Bit());
-                      arg = QString::null;
-                      state = PARSE_ANY;
-                  }
-                  else
-                      arg += ch;
-                  break;
-          }
-      }
-      if (!arg.isEmpty())
-          request->arg_list.append(arg.local8Bit());
+     request->arg_list.append((*it).local8Bit());
   }
-
-  // Service Name
-  replaceArg(request->arg_list, "%c", service->name().local8Bit());
-
-  // Icon
-  if (service->icon().isEmpty())
-    removeArg(request->arg_list, "%i");
-  else
-    replaceArg(request->arg_list, "%i", service->icon().local8Bit(), "-icon");
-
-  // Mini-icon
-  if (service->icon().isEmpty())
-    removeArg(request->arg_list, "%m");
-  else
-    replaceArg(request->arg_list, "%m", service->icon().local8Bit(), "-miniicon");
-
-  // Desktop-file
-  replaceArg(request->arg_list, "%k", QFile::encodeName(service->desktopEntryPath()));
-
-  for(QStringList::ConstIterator it = urls.begin();
-      it != urls.end();
-      ++it)
-  {
-    QString url = *it;
-    KURL kurl = url;
-
-    QCString f ( QFile::encodeName(kurl.path( -1 )) );
-    QCString d ( QFile::encodeName(kurl.directory()) );
-    QCString n ( QFile::encodeName(kurl.fileName()) );
-
-    replaceArg(request->arg_list, "%f", f);
-    replaceArg(request->arg_list, "%F", f, "%F");
-
-    replaceArg(request->arg_list, "%n", n);
-    replaceArg(request->arg_list, "%N", n, "%N");
-
-    replaceArg(request->arg_list, "%d", d);
-    replaceArg(request->arg_list, "%D", d, "%D");
-
-    replaceArg(request->arg_list, "%u", url.ascii());
-    replaceArg(request->arg_list, "%U", url.ascii(), "%U");
-  }
-
-  removeArg(request->arg_list, "%f");
-  removeArg(request->arg_list, "%n");
-  removeArg(request->arg_list, "%d");
-  removeArg(request->arg_list, "%u");
-  removeArg(request->arg_list, "%F");
-  removeArg(request->arg_list, "%N");
-  removeArg(request->arg_list, "%D");
-  removeArg(request->arg_list, "%U");
-}
-
-void
-KLauncher::replaceArg( QValueList<QCString> &args, const QCString &target,
-                       const QCString &replace, const char *replacePrefix)
-{
-   QValueList<QCString>::Iterator it = args.begin();
-   while(1) {
-      it = args.find( it, target);
-      if (it == args.end())
-         return;
-      if (replacePrefix)
-      {
-         args.insert(it, QCString(replacePrefix));
-      }
-      args.insert(it, replace);
-      it = args.remove( it );
-   }
-}
-
-void
-KLauncher::removeArg( QValueList<QCString> &args, const QCString &target)
-{
-   QValueList<QCString>::Iterator it = args.begin();
-   while(1) {
-      it = args.find( it, target);
-      if (it == args.end())
-         return;
-      it = args.remove( it );
-   }
 }
 
 ///// IO-Slave functions
