@@ -422,7 +422,7 @@ bool KEditToolbarWidget::save()
     if ( (*it).m_type == XmlData::Merged )
       continue;
 
-    dump_xml((*it).m_document.toDocument());
+    dump_xml((*it).m_document);
 
     // if we got this far, we might as well just save it
     KXMLGUIFactory::saveConfigFile((*it).m_document, (*it).m_xmlFile);
@@ -785,7 +785,7 @@ void KEditToolbarWidget::slotToolbarSelected(const QString& _text)
         loadActionList(d->m_currentToolbarElem);
 
         if ((*xit).m_type == XmlData::Part || (*xit).m_type == XmlData::Shell)
-          setXML(KXMLGUIFactory::documentToXML((*xit).m_document.toDocument()));
+          setDOMDocument( (*xit).m_document );
         return;
       }
     }
@@ -961,7 +961,10 @@ void KEditToolbarWidget::slotUpButton()
       m_activeList->ensureItemVisible(clone);
 
       // and do the real move in the DOM
-      d->m_currentToolbarElem.insertBefore(elem, elem.previousSibling());
+      QDomNode prev = elem.previousSibling();
+      while ( prev.toElement().tagName() == QString( "WeakSeparator" ) )
+        prev = prev.previousSibling();
+      d->m_currentToolbarElem.insertBefore(elem, prev);
 
       // and set this container as a noMerge
       d->m_currentToolbarElem.setAttribute( attrNoMerge, "1");
@@ -1018,7 +1021,10 @@ void KEditToolbarWidget::slotDownButton()
       m_activeList->ensureItemVisible(clone);
 
       // and do the real move in the DOM
-      d->m_currentToolbarElem.insertAfter(elem, elem.nextSibling());
+      QDomNode next = elem.nextSibling();
+      while ( next.toElement().tagName() == QString( "WeakSeparator" ) )
+        next = next.nextSibling();
+      d->m_currentToolbarElem.insertAfter(elem, next);
 
       // and set this container as a noMerge
       d->m_currentToolbarElem.setAttribute( attrNoMerge, "1");
