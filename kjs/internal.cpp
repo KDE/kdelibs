@@ -616,7 +616,10 @@ bool KJScriptImp::evaluate(const UChar *code, unsigned int length, Imp *thisV,
   if (debugger())
     debugger()->setSourceId(sid);
 #endif
-  if (recursion > 0) {
+  if (recursion > 7) {
+    fprintf(stderr, "KJS: breaking out of recursion\n");
+    return true;
+  } else if (recursion > 0) {
 #ifndef NDEBUG
     fprintf(stderr, "KJS: entering recursion level %d\n", recursion);
 #endif
