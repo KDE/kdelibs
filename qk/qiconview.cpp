@@ -2193,6 +2193,8 @@ void QIconView::slotUpdate()
 
 	    w = QMAX( w, item->x() + item->width() );
 	    h = QMAX( h, item->y() + item->height() );
+	    if ( d->alignMode == East )
+		h = QMAX( h, y );
 	
 	    item = item->next;
 	}
@@ -2568,7 +2570,9 @@ void QIconView::alignItemsInGrid( bool update )
 	item = makeRowLayout( item, y );
 	w = QMAX( w, item->x() + item->width() );
 	h = QMAX( h, item->y() + item->height() );
-
+	if ( d->alignMode == East )
+	    h = QMAX( h, y );
+	
 	if ( !item || !item->next )
 	    break;
 
@@ -4487,7 +4491,7 @@ QIconViewItem *QIconView::makeRowLayout( QIconViewItem *begin, int &y )
 		    item->move( item->prev->x() + item->prev->width() + d->spacing,
 				y + ih - item->iconRect().height() );
 		if ( y + h < item->y() + item->height() )
-		    h = QMAX( h, ih + item->textRect().height() ); 
+		    h = QMAX( h, ih + item->textRect().height() );
 		if ( item == end )
 		    break;
 		item = item->next;
@@ -4558,7 +4562,7 @@ QIconViewItem *QIconView::makeRowLayout( QIconViewItem *begin, int &y )
 		    i += r;
 		}
 		if ( y + h < item->y() + item->height() )
-		    h = QMAX( h, ih + item->textRect().height() ); 
+		    h = QMAX( h, ih + item->textRect().height() );
 		if ( item == end )
 		    break;
 		item = item->next;
