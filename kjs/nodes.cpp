@@ -442,7 +442,7 @@ KJSO ConditionalNode::evaluate()
 {
   KJSO e = logical->evaluate();
   KJSO v = e.getValue();
-  Boolean b = e.toBoolean();
+  Boolean b = v.toBoolean();
 
   if (b.value())
     e = expr1->evaluate();
