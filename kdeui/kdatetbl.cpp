@@ -453,7 +453,7 @@ void KDateInternalMonthPicker::mouseMoveEvent(QMouseEvent *e)
 	    }
 	}
 	if ( tmpRow > -1 ) // repaint the former active cell
-	    updateCell( tmpRow, tmpCol, true ), debug("**** repainting former active cell....");
+	    updateCell( tmpRow, tmpCol, true );
     }
 }
 
