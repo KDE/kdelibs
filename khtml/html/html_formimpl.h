@@ -39,7 +39,7 @@ namespace khtml
     class RenderTextArea;
     class RenderSelect;
 
-    typedef class QValueList<QByteArray> encodingList;
+    typedef QValueList<QByteArray> encodingList;
 }
 
 namespace DOM {
