@@ -595,7 +595,7 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
         kdWarning(250) << "Warning : editing a mimetype file out of the mimetype dirs!" << endl;
       // for Application desktop files, no problem : we can editing a .desktop file anywhere...
     } else
-      while ( m_sRelativePath.left( 1 ).at(0) == '/' ) m_sRelativePath.remove( 0, 1 );
+      while ( m_sRelativePath.at(0) == '/' ) m_sRelativePath.remove( 0, 1 );
   }
 
   d->m_frame = properties->dialog()->addPage (i18n("&General"));
