@@ -293,7 +293,7 @@ void KHTMLPart::init( KHTMLView *view )
   d->m_paPrintFrame = new KAction( i18n( "Print Frame" ), "fileprint", 0, this, SLOT( slotPrintFrame() ), actionCollection(), "printFrame" );
 
   d->m_paSelectAll = KStdAction::selectAll( this, SLOT( slotSelectAll() ), actionCollection(), "selectAll" );
-  
+
   /*
     if ( !autoloadImages() )
       d->m_paLoadImages = new KAction( i18n( "Display Images on Page" ), "image", 0, this, SLOT( slotLoadImages() ), actionCollection(), "loadImages" );
@@ -2411,12 +2411,12 @@ void KHTMLPart::slotPrintFrame()
 void KHTMLPart::slotSelectAll()
 {
   KHTMLPart *part = this;
-  
+
   if ( d->m_frames.count() > 0 )
     part = static_cast<KHTMLPart *>( partManager()->activePart() );
-  
+
   assert( part );
-  
+
   part->selectAll();
 }
 
@@ -2444,9 +2444,9 @@ void KHTMLPart::slotAutoScroll()
 
 void KHTMLPart::selectAll()
 {
-  NodeImpl *first = d->m_doc->body(); 
+  NodeImpl *first = d->m_doc->body();
   NodeImpl *next;
-  
+
   while ( first && first->id() != ID_TEXT )
   {
     next = first->firstChild();
@@ -2459,7 +2459,7 @@ void KHTMLPart::selectAll()
     }
     first = next;
   }
-  
+
   NodeImpl *last = d->m_doc->body();
   while ( last && last->id() != ID_TEXT )
   {
@@ -2473,12 +2473,12 @@ void KHTMLPart::selectAll()
     }
     last = next;
   }
-  
+
   if ( !first || !last )
     return;
-  
-  d->m_doc->setSelection( first, 0, last, static_cast<TextImpl *>( last )->string()->l-1 );
-} 
+
+  d->m_doc->setSelection( first, 0, last, static_cast<TextImpl *>( last )->string()->l );
+}
 
 KHTMLPartBrowserExtension::KHTMLPartBrowserExtension( KHTMLPart *parent, const char *name )
 : KParts::BrowserExtension( parent, name )
@@ -2549,7 +2549,7 @@ KHTMLPopupGUIClient::KHTMLPopupGUIClient( KHTMLPart *khtml, const QString &doc, 
   setInstance( khtml->instance() );
 
   actionCollection()->insert( khtml->actionCollection()->action( "selectAll" ) );
-  
+
   // frameset? -> add "Reload Frame"
   if ( khtml->parentPart() )
   {
