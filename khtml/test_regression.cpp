@@ -753,22 +753,25 @@ bool RegressionTest::checkOutput(const QString &againstFilename)
     QString absFilename = QFileInfo(m_baseDir + "/baseline/" + againstFilename).absFilePath();
     bool result = true;
 
-    if (!m_genOutput) {
-	// compare result to existing file
+    // compare result to existing file
 
-	QFile file(absFilename);
-	if (!file.open(IO_ReadOnly)) {
-	    fprintf(stderr,"Error reading file %s\n",absFilename.latin1());
-	    exit(1);
-	}
+    QFile file(absFilename);
+    if (!file.open(IO_ReadOnly)) {
+        fprintf(stderr,"Error reading file %s\n",absFilename.latin1());
+        exit(1);
+    }
 
-	QTextStream stream ( &file );
-        stream.setEncoding( QTextStream::UnicodeUTF8 );
+    QTextStream stream ( &file );
+    stream.setEncoding( QTextStream::UnicodeUTF8 );
 
-        QString fileData = stream.read();
+    QString fileData = stream.read();
 
-	result = ( fileData == data );
+    result = ( fileData == data );
 
+    if ( m_genOutput ) {
+        if ( result ) // no need to regenerate
+            return true;
+    } else {
         absFilename = QFileInfo(m_baseDir + "/output/" + againstFilename).absFilePath();
         if ( result ) {
             ::unlink( QFile::encodeName( absFilename ) );
@@ -776,20 +779,19 @@ bool RegressionTest::checkOutput(const QString &againstFilename)
         }
     }
 
-
     // generate result file
 
     QFileInfo info(absFilename);
     createMissingDirs(info.dirPath());
-    QFile file(absFilename);
-    if (!file.open(IO_WriteOnly)) {
+    QFile file2(absFilename);
+    if (!file2.open(IO_WriteOnly)) {
         fprintf(stderr,"Error writing to file %s\n",absFilename.latin1());
         exit(1);
     }
 
-    QTextStream stream(&file);
-    stream.setEncoding( QTextStream::UnicodeUTF8 );
-    stream << data;
+    QTextStream stream2(&file2);
+    stream2.setEncoding( QTextStream::UnicodeUTF8 );
+    stream2 << data;
     if ( m_genOutput )
         printf("Generated %s\n",againstFilename.latin1());
 
