@@ -155,8 +155,8 @@ class kdbgstream {
     }
     kdbgstream &form(const char *format, ...);
     /** Operator to print out basic information about a QWidget.
-     *  Output of class names only works if the class uses Q_OBJECT
-     *  and links a moc file. */ 
+     *  Output of class names only works if the class is moc'ified
+     */
     kdbgstream& operator << (QWidget* widget);
  private:
     QString output;
