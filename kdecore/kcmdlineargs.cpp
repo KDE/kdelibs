@@ -206,10 +206,10 @@ KCmdLineArgs::addCmdLineOptions( const KCmdLineOptions *options, const char *nam
       if (!id && !args->id)
          return; // Options already present.
 
-      if (id && args->id && (strcmp(id, args->id) == 0))
+      if (id && args->id && (::qstrcmp(id, args->id) == 0))
 	 return; // Options already present.
 
-      if (afterId && args->id && (strcmp(afterId, args->id) == 0))
+      if (afterId && args->id && (::qstrcmp(afterId, args->id) == 0))
          pos = i+1;
    }
 
@@ -292,7 +292,7 @@ KCmdLineArgs *KCmdLineArgs::parsedArgs(const char *id)
    KCmdLineArgs *args = argsList ? argsList->first() : 0;
    while(args)
    {
-      if ((id && strcmp(args->id, id) == 0) || (!id && !args->id))
+      if ((id && ::qstrcmp(args->id, id) == 0) || (!id && !args->id))
       {
           if (!parsed)
              parseAllArgs();
@@ -318,7 +318,7 @@ void KCmdLineArgs::removeArgs(const char *id)
    KCmdLineArgs *args = argsList ? argsList->first() : 0;
    while(args)
    {
-      if (args->id && id && strcmp(args->id, id) == 0)
+      if (args->id && id && ::qstrcmp(args->id, id) == 0)
       {
           if (!parsed)
              parseAllArgs();
@@ -520,7 +520,7 @@ KCmdLineArgs::parseAllArgs()
                continue;
             }
          }
-         if (strcmp(option, "help") == 0)
+         if (::qstrcmp(option, "help") == 0)
          {
             usage(0);
          }
@@ -528,21 +528,21 @@ KCmdLineArgs::parseAllArgs()
          {
             usage(option+5);
          }
-         else if ( (strcmp(option, "version") == 0) ||
-                   (strcmp(option, "v") == 0))
+         else if ( (::qstrcmp(option, "version") == 0) ||
+                   (::qstrcmp(option, "v") == 0))
          {
             printQ( QString("Qt: %1\n").arg(qVersion()));
             printQ( QString("KDE: %1\n").arg(KDE_VERSION_STRING));
             printQ( QString("%1: %2\n").
 			arg(about->programName()).arg(about->version()));
             exit(0);
-         } else if ( (strcmp(option, "license") == 0) )
+         } else if ( (::qstrcmp(option, "license") == 0) )
          {
             enable_i18n();
             printQ( about->license() );
             printQ( "\n" );
             exit(0);
-         } else if ( strcmp( option, "author") == 0 ) {
+         } else if ( ::qstrcmp( option, "author") == 0 ) {
              enable_i18n();
 	     if ( about ) {
 		 const QValueList<KAboutPerson> authors = about->authors();
@@ -748,14 +748,14 @@ KCmdLineArgs::usage(const char *id)
 
    args = argsList->first(); // Sets current to 1st.
 
-   bool showAll = id && (strcmp(id, "all") == 0);
+   bool showAll = id && (::qstrcmp(id, "all") == 0);
 
    if (!showAll)
    {
      while(args)
      {
        if (!id && !args->id) break;
-       if (id && (strcmp(args->id, id) == 0)) break;
+       if (id && (::qstrcmp(args->id, id) == 0)) break;
        args = argsList->next();
      }
    }
@@ -867,7 +867,7 @@ KCmdLineArgs::KCmdLineArgs( const KCmdLineOptions *_options,
 {
   parsedOptionList = 0;
   parsedArgList = 0;
-  isQt = (qstrcmp(id, "qt") == 0);
+  isQt = (::qstrcmp(id, "qt") == 0);
 }
 
 /**
