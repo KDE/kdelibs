@@ -370,7 +370,7 @@ public:
      * reside.
      */
      static QString cacheRoot()
-	{ return cachePath; }
+	{ return *cachePath; }
   
     /**
      * Trim url, that is remove all parts of url that should not be
@@ -404,7 +404,7 @@ private:
      * This dictionary is used to store information about every
      * document currently in cache. 
      */
-    static QDict<KIOCacheEntry> cacheDict;
+    static QDict<KIOCacheEntry> *cacheDict;
 
     /**
      * A list of protocols that should be handled by the cache.
@@ -412,7 +412,7 @@ private:
      * section of the applications config file. Defaults to 'http' and
      * 'cgi' if not set.
      */
-    static QStrList cacheProtocols;
+    static QStrList *cacheProtocols;
 
     /**
      * A list of host/domain names that should be excluded from
@@ -421,13 +421,13 @@ private:
      * User configurable through the entry 'ExcludeHosts' in the 'Cache'
      * section of the applications config file. Empty by default.
      */
-    static QStrList excludeHosts;
+    static QStrList *excludeHosts;
 
     /**
      * The path where KIOCache stores the cached documents and related
      * information.
      */
-    static QString cachePath;
+    static QString *cachePath;
 
     /**
      * This flag tells wheter the cache is enabled or not. If
