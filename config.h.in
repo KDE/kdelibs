@@ -36,9 +36,9 @@
 
 #define PACKAGE kdelibs
 
-#undef HAVE_GIFLIB 
+#undef HAVE_LIBGIF
 
-#undef HAVE_JPEGLIB
+#undef HAVE_LIBJPEG
 
 /* Define if you have the socket function.  */
 #undef HAVE_SOCKET
