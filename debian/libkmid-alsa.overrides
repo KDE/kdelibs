@@ -1,0 +1,2 @@
+#
+libkmid-alsa: shlib-missing-in-control-file knotify usr/lib/knotify.so

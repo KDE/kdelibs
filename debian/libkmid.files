@@ -1,0 +1,10 @@
+usr/bin/knotify
+usr/share/man/man1/knotif*
+usr/lib/knotify.so
+usr/lib/knotify.la
+usr/lib/libkmid.so.0.0.95
+usr/lib/libkmid.so.0
+usr/lib/libkmid.la
+/usr/lib/libqtmcop.so.0.0.0
+/usr/lib/libqtmcop.so.0
+/usr/lib/libqtmcop.la

@@ -114,5 +114,4 @@ kdelibs3: shlib-missing-in-control-file kgzipfilter usr/lib/kde2/kgzipfilter.so
 kdelibs3: shlib-missing-in-control-file kio_ftp usr/lib/kde2/kio_ftp.so
 kdelibs3: shlib-missing-in-control-file kio_uiserver usr/lib/kio_uiserver.so
 kdelibs3: shlib-missing-in-control-file klegacystyle usr/lib/klegacystyle.so
-kdelibs3: shlib-missing-in-control-file knotify usr/lib/knotify.so
 kdelibs3: unused-shlib-entry-in-control-file libkssl-nossl

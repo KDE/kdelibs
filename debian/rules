@@ -85,23 +85,28 @@ binary-arch:  build
 	install -d debian/tmp/etc/kde2
 	install -d debian/tmp/usr/share/lintian/overrides
 	install -d debian/libarts-alsa/usr/share/lintian/overrides
-	install -d debian/libarts-alsa/usr/share/man/man1
+	install -d debian/libkmid-alsa/usr/share/lintian/overrides
+	install -d debian/libkmid-alsa/usr/bin
 	make DESTDIR=`pwd`/debian/tmp/ install
 	make -C arts/ clean
 	make -C libkmid/ clean
 	./configure $(configkde) --with-alsa --without-ssl \
 		--includedir=/usr/include/kde
-	make -C libkmid/ DESTDIR=`pwd`/debian/libarts-alsa/ install
+	make -C libkmid/ DESTDIR=`pwd`/debian/libkmid-alsa/ install
 	make -C arts/ DESTDIR=`pwd`/debian/libarts-alsa/ install
-	-rm -f `find debian/libarts-alsa/ -name "*notify*"`
-	-rm -f `find debian/libarts-alsa/ -name "*qtmcop*"`
+	-mv debian/libarts-alsa/usr/bin/knotify debian/libkmid-alsa/usr/bin/
+	-mv debian/libarts-alsa/usr/lib/*notify* debian/libkmid-alsa/usr/lib/
+	-mv debian/libarts-alsa/usr/lib/*qtmcop* debian/libkmid-alsa/usr/lib/
 	-rm -f debian/tmp/usr/share/doc/kde/HTML/default
 	# messy cleanup
-	-rm -rf debian/libarts-alsa/usr/include build-stamp 
+	-rm -rf debian/libarts-alsa/usr/include build-stamp
+	-rm -rf debian/libkmid-alsa/usr/include
 	-rm -f `find debian/libarts-alsa/usr/lib -type l -name "*.so"`
+	-rm -f `find debian/libkmid-alsa/usr/lib -type l -name "*.so"`
 	cp debian/kdelibs3.override debian/tmp/usr/share/lintian/overrides/kdelibs3
 	cp debian/libarts.override debian/tmp/usr/share/lintian/overrides/libarts
 	cp debian/libarts-alsa.override debian/libarts-alsa/usr/share/lintian/overrides/libarts-alsa
+	cp debian/libkmid-alsa.override debian/libkmid-alsa/usr/share/lintian/overrides/libkmid-alsa
 	debianrc=debian/tmp/etc/kde2/system.kdeglobals ;\
 	install -d `dirname $$debianrc` ;\
 	echo "[Directories]" > $$debianrc ;\
@@ -144,6 +149,8 @@ binary-arch:  build
 	#to get rid of self-dependency
 	echo -n `cat debian/libarts.substvars` > debian/libarts-alsa.substvars
 	echo ", libasound1 (>= 0.5.5)" >> debian/libarts-alsa.substvars
+	echo -n `cat debian/libkmid.substvars` > debian/libkmid-alsa.substvars
+	echo ", libasound1 (>= 0.5.5)" >> debian/libkmid-alsa.substvars
 	dh_gencontrol 
 	cd debian/tmp && find ./etc -type f -print | sed -e 's#^./#/#' > DEBIAN/conffiles
 	chmod 644 debian/tmp/DEBIAN/conffiles
