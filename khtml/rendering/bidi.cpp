@@ -199,7 +199,7 @@ BidiContext *RenderFlow::bidiReorderLine(BidiStatus &status, const BidiIterator 
     BidiIterator sor = start;
     BidiIterator eor = start;
 
-#if 1
+#ifndef QT_NO_UNICODETABLES
     BidiIterator current = start;
     BidiIterator last = current;
     while(current != end) {
@@ -853,7 +853,7 @@ void RenderFlow::layoutInlineChildren()
 #ifndef QT_NO_UNICODETABLES
                 while(!start.atEnd() && start.direction() == QChar::DirWS )
 #else
-                while(!start.atEnd() && start.direction() == ' ' )
+                while(!start.atEnd() && start.current() == ' ' )
 #endif
                     ++start;
             }
