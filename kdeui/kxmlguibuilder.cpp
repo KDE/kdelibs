@@ -322,9 +322,7 @@ int KXMLGUIBuilder::createCustomElement( QWidget *parent, int index, const QDomE
     if ( parent->inherits( "KPopupMenu" ) )
     {
       QString i18nText;
-      QCString text = element.namedItem( d->attrText1 ).toElement().text().utf8();
-      if ( text.isEmpty() ) // try with capital T
-        text = element.namedItem( d->attrText2 ).toElement().text().utf8();
+      QCString text = element.text().utf8();
 
       if ( text.isEmpty() )
         i18nText = i18n( "No text!" );
