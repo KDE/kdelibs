@@ -70,10 +70,17 @@ class KJASConsoleStream
     
     // Should be enought for the console
     public void write(byte[] bytes, int offset, int length) {
-        String msg = new String(bytes, offset, length);
-        synchronized(txt) {
-            txt.append(msg);
-        }
+	try { // Just in case
+	    String msg = new String(bytes, offset, length);
+	    synchronized(txt) {
+		txt.append(msg);
+		// Attempt to move carret beyond text length
+		// results carret to be placed at the end
+		// Just what we need without calculating text length
+		txt.setCaretPosition(100000);
+	    }
+	}
+	catch(Throwable t) {}
     }
 }
 

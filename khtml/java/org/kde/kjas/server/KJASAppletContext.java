@@ -12,6 +12,10 @@ import java.awt.event.*;
  * <H3>Change Log</H3>
  * <PRE>
  * $Log$
+ * Revision 1.8  2000/05/21 19:27:28  rogozin
+ *
+ * Fix reload exception
+ *
  * Revision 1.7  2000/03/23 03:20:38  rogozin
  *
  * Fix resize issues for jdk 1.1.8.
@@ -158,20 +162,20 @@ public class KJASAppletContext implements AppletContext
 
    public void showDocument( URL url )
    {
-      System.out.println( "showdocument!" + url );
+      System.out.println( "NOT IMPLEMENTED: showdocument!" + url );
    }
 
    public void showDocument( URL url, String targetFrame )
    {
        if ( ( url != null ) && ( targetFrame != null ) )
-	   System.out.println( "showurlinframe!" + url + "!" + targetFrame );
+	   System.out.println( "NOT IMPLEMENTED: showurlinframe!" + url + "!" + targetFrame );
        else
 	   System.err.println( "Warning applet attempted to show " + url + " in frame " + targetFrame );
    }
 
    public void showStatus( String message )
    {
-      System.out.println( "showstatus!" + message );
+      System.out.println( "NOT IMPLEMENTED: showstatus!" + message );
    }
 
    class AppletPanel 

@@ -10,6 +10,10 @@ import java.awt.*;
  * <H3>Change Log</H3>
  * <PRE>
  * $Log$
+ * Revision 1.4  2000/05/21 19:27:28  rogozin
+ *
+ * Fix reload exception
+ *
  * Revision 1.3  2000/01/29 04:22:28  rogozin
  * Preliminary support for archive tag.
  * Fix size problem.
@@ -84,26 +88,44 @@ public class KJASAppletRunner
       if ( context == null )
 	 throw new IllegalArgumentException( "Invalid contextId passed to createApplet() "
                                              + contextId );
-
+      URL docBaseURL = null;
       try {
-	 URL docBaseURL = new URL( docBase );
-         URL codeBaseURL;
-         if(codeBase != null) {
-             if(!codeBase.endsWith("/"))
-                 codeBase = codeBase + "/";
-             codeBaseURL = new URL( docBaseURL, codeBase );
-         }
-         else
-             codeBaseURL = new URL( docBase );
-         
-         context.createApplet( appletId, className, 
-			       codeBaseURL, docBaseURL, 
-                               jars, name, size );
+	  docBaseURL = new URL( docBase );
       }
-      catch ( MalformedURLException mue )
-         {
-            throw new IllegalArgumentException( mue.toString() );
-         }
+      catch ( MalformedURLException mue ) {
+	  throw new IllegalArgumentException( mue.toString() );
+      }
+
+      URL codeBaseURL = null;
+      if(codeBase != null) {
+	  if(!codeBase.endsWith("/"))
+	      codeBase = codeBase + "/";
+	  try {
+	      codeBaseURL = new URL( docBaseURL, codeBase );
+	  }
+	  catch(Exception e) {}
+      }
+      
+      if(codeBaseURL == null) {
+	  String urlString = docBaseURL.getFile();
+	  int i = urlString.lastIndexOf('/');
+	  if (i >= 0 &&
+	      i < urlString.length() - 1) {
+	      try {
+		  codeBaseURL = new URL(docBaseURL, urlString.substring(0, i + 1));
+	      } 
+	      catch (Exception e) {}
+	  }
+      }
+      
+      // codeBaseURL can not be null. This should not happen, 
+      // but if it does we fall back to document base
+      if(codeBaseURL == null)
+	  codeBaseURL = docBaseURL;
+      
+      context.createApplet( appletId, className, 
+			    codeBaseURL, docBaseURL, 
+			    jars, name, size );
    }
 
    public void destroyApplet( String contextId, String appletId )
