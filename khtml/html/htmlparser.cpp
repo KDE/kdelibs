@@ -23,7 +23,7 @@
 //----------------------------------------------------------------------------
 //
 // KDE HTML Widget -- HTML Parser
-//#define PARSER_DEBUG
+#define PARSER_DEBUG
 
 #include "htmlparser.h"
 
@@ -70,7 +70,7 @@ using namespace khtml;
 // 2 form elements
 // 3 regular block level elements
 // 4 lists (OL UL DIR MENU)
-// 5 TD TH
+// 5 TD TH SELECT
 // 6 TR
 // 7 tbody thead tfoot caption  object
 // 8 table
@@ -154,7 +154,7 @@ const unsigned short tagPriority[] = {
     1, // ID_S
     1, // ID_SAMP
     1, // ID_SCRIPT
-    2, // ID_SELECT
+    5, // ID_SELECT
     1, // ID_SMALL
     1, // ID_SPAN
     1, // ID_STRIKE
