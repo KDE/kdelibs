@@ -106,6 +106,8 @@ void KGlobalSettings::initStatic()
     // Desktop Path
     *s_desktopPath = QDir::homeDirPath() + "/Desktop/";
     *s_desktopPath = config->readEntry( "Desktop", *s_desktopPath);
+    if ( (*s_desktopPath)[0] != '/' )
+      s_desktopPath->prepend( QDir::homeDirPath() + "/" );
     *s_desktopPath = QDir::cleanDirPath( *s_desktopPath );
     if ( s_desktopPath->right(1) != "/")
 	*s_desktopPath += "/";
@@ -120,6 +122,8 @@ void KGlobalSettings::initStatic()
     // Autostart Path
     *s_autostartPath = KGlobal::dirs()->localkdedir() + "Autostart/";
     *s_autostartPath = config->readEntry( "Autostart" , *s_autostartPath);
+    if ( (*s_autostartPath)[0] != '/' )
+      s_autostartPath->prepend( QDir::homeDirPath() + "/" );
     *s_autostartPath = QDir::cleanDirPath( *s_autostartPath );
     if ( s_autostartPath->right(1) != "/")
 	*s_autostartPath += "/";
