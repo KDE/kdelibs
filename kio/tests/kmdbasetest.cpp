@@ -133,16 +133,16 @@ void MD5_string (const char *input)
 int main (int argc, char *argv[])
 {
     const char *version = "v0.0.5";
-    const char *description = I18N_NOOP("Unit test for KDE's MD5 implementation...");
+    const char *description = "Unit test for KDE's MD5 implementation...";
 
     KCmdLineOptions options[] =
     {
-	{ "c <digest>", I18N_NOOP("compare this digest with digest of a string or file."), 0 },
-        { "f", I18N_NOOP("calculate digest for the file(s)"), "default" },
-        { "s", I18N_NOOP("calculate digest for the string(s)"), 0 },
-        { "t", I18N_NOOP("perform a timed test"), 0 },
-        { "x", I18N_NOOP("run a preset test-suite"), 0 },
-        { "+command", I18N_NOOP("[input1, input2,...]"), 0 },
+	{ "c <digest>", "compare this digest with digest of a string or file.", 0 },
+        { "f", "calculate digest for the file(s)", "default" },
+        { "s", "calculate digest for the string(s)", 0 },
+        { "t", "perform a timed test", 0 },
+        { "x", "run a preset test-suite", 0 },
+        { "+command", "[input1, input2,...]", 0 },
         { 0, 0, 0 }
     };
 
