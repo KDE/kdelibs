@@ -35,8 +35,11 @@ namespace KJS {
 
   class WindowFunc;
   class WindowQObject;
+  class Location;
 
   class Window : public HostImp {
+    friend QGuardedPtr<KHTMLPart> getInstance();
+    friend class Location;
     friend class WindowFunc;
     friend class WindowQObject;
     friend Window *newWindow(KHTMLPart*);

@@ -1,3 +1,4 @@
+// -*- c-basic-offset: 2 -*-
 /*
  *  This file is part of the KDE libraries
  *  Copyright (C) 2000 Harri Porten (porten@kde.org)
@@ -393,29 +394,31 @@ void Window::put(const UString &p, const KJSO &v)
     String s = v.toString();
     part->setJSDefaultStatusBarText(s.value().qstring());
   } else if (p == "location") {
-       DOM::HTMLDocument doc;
-       if (!opener.isNull()) {
-               doc = opener->htmlDocument();
-       }
-       QString str;
-       if (!doc.isNull()) {
-               KURL parent (doc.URL().string());
-               KURL next = v.toString().value().qstring();
-               if (!parent.protocol().isNull() && !next.protocol().isNull())
-                       next.setProtocol (parent.protocol());
-               if (parent.hasUser() && !next.hasUser())
-                       next.setUser (parent.user());
-               if (parent.hasPass() && !next.hasPass())
-                       next.setPass (parent.pass());
-               if (parent.hasHost() && !next.hasHost())
-                       next.setHost (parent.host());
-               if (parent.port() && !next.port())
-                       next.setPort (parent.port());
-               str = next.url();
-       } else {
-               str = v.toString().value().qstring().prepend( "target://_self/#" );
-       }
-    part->scheduleRedirection(0, str);
+    QString str = v.toString().value().qstring();
+
+//     if (!opener.isNull()) {
+//       DOM::HTMLDocument doc = opener->htmlDocument();
+//       KURL parent (doc.URL().string());
+//       KURL next = v.toString().value().qstring();
+
+//       if (!parent.protocol().isNull() && !next.protocol().isNull())
+//         next.setProtocol (parent.protocol());
+//       if (parent.hasUser() && !next.hasUser())
+//         next.setUser (parent.user());
+//       if (parent.hasPass() && !next.hasPass())
+//         next.setPass (parent.pass());
+//       if (parent.hasHost() && !next.hasHost())
+//         next.setHost (parent.host());
+//       if (parent.port() && !next.port())
+//         next.setPort (parent.port());
+//       str = next.url();
+//       str = v.toString().value().qstring();
+//     }
+    /*else*/ {
+      KJS::Window* w = newWindow(getInstance());
+      part->scheduleRedirection(0, (w->part ? w->part : part)->
+                                completeURL(str).url().prepend( "target://_self/#" ));
+    }
   } else if (p == "onload") {
     if (isSafeScript() && v.isA(ConstructorType)) {
       DOM::DOMString s = ((FunctionImp*)v.imp())->name().string() + "()";
@@ -851,17 +854,12 @@ void Location::put(const UString &p, const KJSO &v)
     return;
 
   QString str = v.toString().value().qstring();
+  KURL url;
 
-  KURL url = part->url();
-
-  if (p == "href") url = part->completeURL(str); // ### this is wrong, here
-                                                 // we have to construct the
-                                                 // new URL with the base URL
-                                                 // of the part _calling_ this
-                                                 // javascript code, _not_ the
-                                                 // the one it points to! But
-                                                 // I have no idea how to
-                                                 // pass that url through :-(
+  if (p == "href") {
+       KJS::Window* w =  newWindow(getInstance());
+       url = (w && w->part ? w->part : part)->completeURL(str);
+  }
   else if (p == "hash") url.setRef(str);
   else if (p == "host") {
     // danimo: KURL doesn't have a way to
@@ -879,9 +877,7 @@ void Location::put(const UString &p, const KJSO &v)
     HostImp::put(p, v);
     return;
   }
-
   part->scheduleRedirection(0, url.url().prepend( "target://_self/#" ) );
-
 }
 
 KJSO Location::toPrimitive(Type) const

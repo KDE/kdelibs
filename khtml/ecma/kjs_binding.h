@@ -63,6 +63,12 @@ namespace KJS {
 
   bool originCheck(const QString & url1, const QString & url2);
 
+  /**
+   * returns a pointer to the khtmlpart this javascript interpreting instance
+   * was called from.
+   */
+  QGuardedPtr<KHTMLPart> getInstance();
+
 }; // namespace
 
 #endif
