@@ -223,16 +223,11 @@ public:
 	// constructors / destructor
 	/**
 	 * Contructor. This also restores/saves the state from a previous KPrinter object created within
-	 * the same application run.
-	 */
-	KPrinter();
-	/**
-	 * Contructor. This also restores/saves the state from a previous KPrinter object created within
 	 * the same application run, if @p restore is true. Setting @p restore to false may
 	 * be useful if you want an independant/clean KPrinter object.
 	 * @param restore if true, options will be restored/saved between successive KPrinter objects
 	 */
-	KPrinter(bool restore);	// BIC: merge with previous contructor
+	KPrinter(bool restore = true);
 	/**
 	 * Destructor. This also saves the current KPrinter state for future printing
 	 */

@@ -88,12 +88,6 @@ public:
 // KPrinter class
 //**************************************************************************************
 
-KPrinter::KPrinter()
-: QPaintDevice(QInternal::Printer|QInternal::ExternalDevice)
-{
-	init(true);
-}
-
 KPrinter::KPrinter(bool restore)
 : QPaintDevice(QInternal::Printer|QInternal::ExternalDevice)
 {
