@@ -168,7 +168,15 @@ public:
    * "Configure Audio Plugin"
    **/
   virtual void setCaption(const QString &caption);
-  
+ 
+  /**
+   * Ignore the specified child widget when performing an action.  Doesn't
+   * effect widgets that were added with addPage() only their children.
+   * @param widget - Pointer to the widget that should be ignored.
+   * Note: Widgets that don't have a name are ignored automatically.
+   **/ 
+  void ignoreSubWidget( QWidget *widget );
+
 protected slots:
   /**
    * Some setting was modified, updates the Apply and Default buttons.

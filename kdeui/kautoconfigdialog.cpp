@@ -124,6 +124,10 @@ void KAutoConfigDialog::setCaption(const QString &caption){
   kdialogbase->setCaption(caption);
 }
 
+void KAutoConfigDialog::ignoreSubWidget( QWidget *widget ){
+  kautoconfig->ignoreSubWidget(widget);
+}
+
 void KAutoConfigDialog::show(bool track){
   if(!d->shown){
     kdialogbase->enableButton(KDialogBase::Default, kautoconfig->retrieveSettings(track));
