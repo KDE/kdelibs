@@ -150,7 +150,6 @@ bool KMWSocketUtil::checkPrinter(const QString& IPstr, int port, QString* hostna
 	KExtendedSocket	sock(IPstr, port, KExtendedSocket::inetSocket|KExtendedSocket::streamSocket);
 	bool	result(false);
 	sock.setTimeout(0, timeout_ * 1000);
-	sock.setBlockingMode(true);
 	if (sock.connect() == 0)
 	{
 		if (hostname)
