@@ -977,7 +977,7 @@ void RenderFlow::calcMinMaxWidth()
                         continue;
                     }
                 }
-                if (noBreak)
+                if (noBreak || child->isFloating())
                 {
                     inlineMin += childMin;
                     inlineMax += childMax;
