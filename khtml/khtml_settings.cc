@@ -39,7 +39,7 @@
 //   {  9, 10, 11, 12, 14, 16, 20, 24, 28, 34, 40, 48, 56, 68, 82 };
 // const int defaultXLargeFontSizes[MAXFONTSIZES] =
 //   { 10, 12, 14, 16, 24, 28, 34, 40, 48, 56, 68, 82, 100, 120, 150 };
-const int defaultFontSizes[MAXFONTSIZES] =
+const int defaultFontSizes[24] =
   { 3, 4, 5, 6, 7, 8, 9, 10, 12, 14, 16, 24, 28, 34, 40, 48, 56, 68, 82, 100, 120, 150, 180, 240 };
 
 typedef QMap<QString,KHTMLSettings::KJavaScriptAdvice> PolicyMap;
