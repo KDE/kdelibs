@@ -62,6 +62,11 @@ using namespace DOM;
 #include "cssproperties.c"
 #include "cssvalues.c"
 
+
+static QPtrList<CSSProperty>* m_propList = 0;
+static bool m_bImportant = FALSE;
+static bool m_bnonCSSHint = FALSE;
+
 int DOM::getPropertyID(const char *tagStr, int len)
 {
     const struct props *propsPtr = findProp(tagStr, len);
@@ -2603,7 +2608,7 @@ StyleBaseImpl::parseUnit(const QChar * curP, const QChar *endP, int allowedUnits
     return 0;
 }
 
-CSSStyleRuleImpl *
+CSSRuleImpl *
 StyleBaseImpl::parseStyleRule(const QChar *&curP, const QChar *endP)
 {
     //kdDebug( 6080 ) << "style rule is \'" << QString(curP, endP-curP) << "\'" << endl;

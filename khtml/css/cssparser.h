@@ -180,7 +180,9 @@ public:
 	CSSPrimitiveValueImpl *parseUnit(const QChar * curP, const QChar *endP, int allowedUnits);
 
 	CSSRuleImpl *parseAtRule(const QChar *&curP, const QChar *endP);
-	CSSStyleRuleImpl *parseStyleRule(const QChar *&curP, const QChar *endP);
+
+	// the caller is responible for deleting the returned lists in the next to methods
+	CSSRuleImpl *parseStyleRule(const QChar *&curP, const QChar *endP);
 	CSSRuleImpl *parseRule(const QChar *&curP, const QChar *endP);
 
 	virtual bool parseString(const DOMString &/*cssString*/, bool = false) { return false; }
@@ -190,15 +192,13 @@ public:
 	void setStrictParsing( bool b ) { strictParsing = b; }
 	bool useStrictParsing() const { return strictParsing; }
 
-    private:
-        QPtrList<CSSProperty> *m_propList;
     protected:
 	StyleBaseImpl *m_parent;
 	bool hasInlinedDecl : 1;
 	bool strictParsing : 1;
     private:
-	bool m_bImportant : 1;
-        bool m_bnonCSSHint : 1;
+// 	bool m_bImportant : 1;
+//         bool m_bnonCSSHint : 1;
     };
 
     // a style class which has a list of children (StyleSheets for example)
@@ -236,7 +236,8 @@ public:
     void setValue(CSSValueImpl *val);
     CSSValueImpl *value();
 
-    int  m_id;
+    // make sure the following fits in 4 bytes.
+    int  m_id 		: 29;
     bool m_bImportant 	: 1;
     bool nonCSSHint 	: 1;
 protected:
