@@ -3,7 +3,7 @@ Section: libs
 Priority: optional
 Maintainer: Debian Qt/KDE Maintainers <debian-qt-kde@lists.debian.org>
 Uploaders: Christopher L Cheney <ccheney@debian.org>
-Build-Depends: automake1.8, debhelper (>> 4.2.0), docbook-to-man, gawk, gettext, libart-2.0-dev, libarts1-dev (>> 1.2.1), libbz2-dev, libcupsys2-dev, libfam-dev, libldap2-dev, libdb4.1-dev, libpam0g-dev, libpcre3-dev, libsasl2-dev, libssl-dev, libtiff3g-dev, libxml2-dev, libxml2-utils, libxrender-dev, libxslt1-dev, qt3-doc, sharutils, texinfo, xlibmesa-glu-dev
+Build-Depends: automake1.8, debhelper (>> 4.2.0), docbook-to-man, gawk, gettext, libart-2.0-dev, libarts1-dev, libbz2-dev, libcupsys2-dev, libdb4.2-dev, libfam-dev, libjasper-1.701-dev, libldap2-dev, libpam0g-dev, libpcre3-dev, libsasl2-dev, libssl-dev, libtiff4-dev, libxml2-dev, libxml2-utils, libxrender-dev, libxslt1-dev, qt3-doc, sharutils, texinfo, xlibmesa-glu-dev
 Build-Depends-Indep: doxygen, qt3-doc
 Standards-Version: 3.6.1.0
 
@@ -23,8 +23,7 @@ Description: KDE core libraries metapackage
 Package: kdelibs-bin
 Section: libs
 Architecture: any
-Depends: ${shlibs:Depends}, netpbm, python
-Recommends: menu-xdg
+Depends: ${shlibs:Depends}, menu-xdg, netpbm, python
 Conflicts: kdelibs-dev (<< 4:3.0.0), kdelibs3-bin (<< 4:3.0.0), kdelibs3-cups (<< 4:3.0.0), libkmid (<< 4:3.0.0), libkmid-alsa (<< 4:3.0.0)
 Replaces: kdelibs-dev (<< 4:3.0.0), kdelibs3-bin (<< 4:3.0.0), kdelibs3-cups (<< 4:3.0.0), konqueror (<< 4:3.2.0), libkmid (<< 4:3.0.0), libkmid-alsa (<< 4:3.0.0)
 Description: KDE core binaries
@@ -57,7 +56,7 @@ Description: KDE core shared data
 Package: kdelibs4
 Section: libs
 Architecture: any
-Depends: ${shlibs:Depends}, kdelibs-bin (= ${Source-Version}), kdelibs-data (>= 4:3.2.1), xbase-clients
+Depends: ${shlibs:Depends}, kdelibs-bin (= ${Source-Version}), kdelibs-data (>= 4:3.2.3), xbase-clients
 Conflicts: kdelibs3 (<< 4:3.0.0), kdepim-libs (<< 4:3.0.0), libkmid (<< 4:3.0.0), libkmid-alsa (<< 4:3.0.0)
 Replaces: kdelibs3 (<< 4:3.0.0), kdepim-libs (<< 4:3.0.0), libkmid (<< 4:3.0.0), libkmid-alsa (<< 4:3.0.0)
 Description: KDE core libraries
@@ -74,7 +73,7 @@ Description: KDE core libraries
 Package: kdelibs4-dev
 Section: libdevel
 Architecture: any
-Depends: kdelibs4 (= ${Source-Version}), kdelibs-bin (= ${Source-Version}), libart-2.0-dev, libarts1-dev (>> 1.2.1), libcupsys2-dev, libfam-dev, libpcre3-dev, libssl-dev, libxml2-utils, libxrender-dev
+Depends: kdelibs4 (= ${Source-Version}), kdelibs-bin (= ${Source-Version}), libart-2.0-dev, libarts1-dev (>> 1.2.3), libcupsys2-dev, libfam-dev, libpcre3-dev, libssl-dev, libxml2-utils, libxrender-dev
 Provides: kdelibs-dev
 Conflicts: kdelibs-dev (<< 4:3.0.0), kdelibs3 (<< 4:3.0.0), kdelibs3-bin (<< 4:3.0.0), kdepim-libs (<< 4:3.0.0), libarts (<< 4:3.0.0), libarts-alsa (<< 4:3.0.0), libarts-dev (<< 4:3.0.0), libkmid (<< 4:3.0.0), libkmid-alsa (<< 4:3.0.0), libkmid-dev (<< 4:3.0.0), libkonq-dev (<< 4:3.0.0)
 Replaces: kate (<< 4:3.0.0), kdebase-dev (<< 4:3.0.0), kdelibs-dev (<< 4:3.0.0), kdelibs3 (<< 4:3.0.0), kdelibs3-bin (<< 4:3.0.0), kdelibs4 (<< 4:3.2.0), kdepim-dev (<< 4:3.0.0), kdepim-libs (<< 4:3.0.0), libarts (<< 4:3.0.0), libarts-alsa (<< 4:3.0.0), libarts-dev (<< 4:3.0.0), libkmid (<< 4:3.0.0), libkmid-alsa (<< 4:3.0.0), libkmid-dev (<< 4:3.0.0), libkonq-dev (<< 4:3.0.0), libkonq4-dev (<< 4:3.2.0)

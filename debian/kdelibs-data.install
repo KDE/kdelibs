@@ -273,6 +273,7 @@ debian/tmp/usr/share/apps/kdewidgets/pics/kurllabel.png
 debian/tmp/usr/share/apps/kdewidgets/pics/kurlrequester.png
 debian/tmp/usr/share/apps/khtml/css/html4.css
 debian/tmp/usr/share/apps/khtml/css/quirks.css
+debian/tmp/usr/share/apps/khtml/domain_info
 debian/tmp/usr/share/apps/khtml/icons/crystalsvg/128x128/actions/bug.png
 debian/tmp/usr/share/apps/khtml/icons/crystalsvg/16x16/actions/bug.png
 debian/tmp/usr/share/apps/khtml/icons/crystalsvg/16x16/actions/images_display.png
@@ -3439,6 +3440,7 @@ debian/tmp/usr/share/services/http.protocol
 debian/tmp/usr/share/services/http_cache_cleaner.desktop
 debian/tmp/usr/share/services/https.protocol
 debian/tmp/usr/share/services/ico.kimgio
+debian/tmp/usr/share/services/jp2.kimgio
 debian/tmp/usr/share/services/jpeg.kimgio
 debian/tmp/usr/share/services/katepart.desktop
 debian/tmp/usr/share/services/kbzip2filter.desktop

@@ -46,6 +46,8 @@ debian/tmp/usr/lib/kde3/kimg_eps.la
 debian/tmp/usr/lib/kde3/kimg_eps.so
 debian/tmp/usr/lib/kde3/kimg_ico.la
 debian/tmp/usr/lib/kde3/kimg_ico.so
+debian/tmp/usr/lib/kde3/kimg_jp2.la
+debian/tmp/usr/lib/kde3/kimg_jp2.so
 debian/tmp/usr/lib/kde3/kimg_pcx.la
 debian/tmp/usr/lib/kde3/kimg_pcx.so
 debian/tmp/usr/lib/kde3/kimg_tga.la
