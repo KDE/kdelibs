@@ -27,11 +27,6 @@ class KGlobalAccelPrivate : public QWidget, public KAccelBase
 	virtual bool disconnectKey( KAccelAction&, const KKeyServer::Key& );
 	virtual bool disconnectKey( const KKeyServer::Key& );
 
- signals:
-	void activated();
-	void activated( int );
-	void activated( const QString& sAction, const QString& sDesc, const KKeySequence& seq );
-
  protected:
 	/**
 	 * @internal

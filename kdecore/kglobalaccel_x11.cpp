@@ -8,6 +8,8 @@
 #include <qpopupmenu.h>
 #include <qregexp.h>
 #include <qwidget.h>
+#include <qmetaobject.h>
+#include <private/qucomextra_p.h>
 #include <kapplication.h>
 #include <kdebug.h>
 #include <kkeynative.h>
@@ -254,11 +256,16 @@ bool KGlobalAccelPrivate::x11KeyPress( const XEvent *pEvent )
 	KAccelAction* pAction = m_rgCodeModToAction[codemod];
 
 	if( !pAction ) {
-		QPopupMenu* pMenu = createPopupMenu( 0, KKeySequence(key) );
-		connect( pMenu, SIGNAL(activated(int)), this, SLOT(slotActivated(int)) );
-		pMenu->exec( QPoint( 0, 0 ) );
-		disconnect( pMenu, SIGNAL(activated(int)), this, SLOT(slotActivated(int)));
-		delete pMenu;
+                static bool recursion_block = false;
+                if( !recursion_block ) {
+                        recursion_block = true;
+		        QPopupMenu* pMenu = createPopupMenu( 0, KKeySequence(key) );
+		        connect( pMenu, SIGNAL(activated(int)), this, SLOT(slotActivated(int)) );
+		        pMenu->exec( QPoint( 0, 0 ) );
+		        disconnect( pMenu, SIGNAL(activated(int)), this, SLOT(slotActivated(int)));
+		        delete pMenu;
+                        recursion_block = false;
+                }
 	} else if( !pAction->objSlotPtr() || !pAction->isEnabled() )
 		return false;
 	else
@@ -281,17 +288,27 @@ void KGlobalAccelPrivate::activate( KAccelAction* pAction, const KKeySequence& s
 	if( rexPassIndex.search( pAction->methodSlotPtr() ) >= 0 && rexIndex.search( pAction->name() ) >= 0 ) {
 		int n = rexIndex.cap(1).toInt();
 		kdDebug(125) << "Calling " << pAction->methodSlotPtr() << " int = " << n << endl;
-		connect( this, SIGNAL(activated(int)), pAction->objSlotPtr(), pAction->methodSlotPtr() );
-		emit activated( n );
-		disconnect( this, SIGNAL(activated(int)), pAction->objSlotPtr(), pAction->methodSlotPtr() );
+                int slot_id = pAction->objSlotPtr()->metaObject()->findSlot( pAction->methodSlotPtr() + 1, true );
+                if( slot_id >= 0 ) {
+                    QUObject o[2];
+                    static_QUType_int.set(o+1,n);
+                    const_cast< QObject* >( pAction->objSlotPtr())->qt_invoke( slot_id, o );
+                }
 	} else if( rexPassInfo.search( pAction->methodSlotPtr() ) ) {
-		connect( this, SIGNAL(activated(const QString&, const QString&, const KKeySequence&)), pAction->objSlotPtr(), pAction->methodSlotPtr() );
-		emit activated( pAction->name(), pAction->label(), seq );
-		disconnect( this, SIGNAL(activated(const QString&, const QString&, const KKeySequence&)), pAction->objSlotPtr(), pAction->methodSlotPtr() );
+                int slot_id = pAction->objSlotPtr()->metaObject()->findSlot( pAction->methodSlotPtr() + 1, true );
+                if( slot_id >= 0 ) {
+                    QUObject o[4];
+                    static_QUType_QString.set(o+1,pAction->name());
+                    static_QUType_QString.set(o+2,pAction->label());
+                    static_QUType_ptr.set(o+3,&seq);
+                    const_cast< QObject* >( pAction->objSlotPtr())->qt_invoke( slot_id, o );
+                }
 	} else {
-		connect( this, SIGNAL(activated()), pAction->objSlotPtr(), pAction->methodSlotPtr() );
-		emit activated();
-		disconnect( this, SIGNAL(activated()), pAction->objSlotPtr(), pAction->methodSlotPtr() );
+                int slot_id = pAction->objSlotPtr()->metaObject()->findSlot( pAction->methodSlotPtr() + 1, true );
+                if( slot_id >= 0 ) {
+                    QUObject o[1];
+                    const_cast< QObject* >( pAction->objSlotPtr())->qt_invoke( slot_id, o );
+                }
 	}
 }
 
