@@ -1015,6 +1015,8 @@ int KExtendedSocket::listen(int N)
 
       // ok, socket has bound
       // kdDebug(170) << "Socket bound: " << sockfd << endl;
+
+      m_status = bound;
       break;
     }
 
