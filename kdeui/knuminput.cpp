@@ -696,10 +696,11 @@ void KDoubleNumInput::resizeEvent(QResizeEvent* e)
             m_slider->setGeometry(w, h, e->size().width() - w, m_sizeEdit.height());
     }
     else if(m_slider) {
-        int spinWidth = d->spin->sizeHint().width();
-        m_slider->setGeometry(w, h, e->size().width() - (m_colw2 + spinWidth - KDialog::spacingHint()), m_sizeEdit.height());
-        d->spin->setGeometry(w + m_slider->width() + KDialog::spacingHint(), h, 
-                             spinWidth, m_sizeEdit.height());
+        m_slider->setGeometry(w, h, e->size().width() -
+                                    (m_colw1 + m_colw2 + KDialog::spacingHint()),
+                              m_sizeEdit.height());
+        d->spin->setGeometry(w + m_slider->width() + KDialog::spacingHint(), h,
+                             m_colw2, m_sizeEdit.height());
     }
     else {
         d->spin->setGeometry(w, h, e->size().width() - w, m_sizeEdit.height());
