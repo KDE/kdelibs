@@ -449,7 +449,7 @@ void KProtocolManager::setUserAgentList( const QStringList& agentList )
   QStringList::ConstIterator it = agentList.begin();
   if ( count )
   {
-    while( it++ != agentList.end() );
+    for( ; it != agentList.end(); ++it )
       cfg->writeEntry( QString("Entry%1").arg(i++), *it );
   }
   cfg->sync();
