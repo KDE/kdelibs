@@ -12,7 +12,7 @@ AC_DEFUN(AC_CHECK_LIBAUDIOIO,
   AC_LANG_C
   AC_CHECK_HEADER(libaudioio.h,
   [
-    AC_CHECK_LIB(audioio,GetAudioIOVersion,[
+    AC_CHECK_LIB(audioio,AudioIOGetVersion,[
       dnl LDFLAGS in case it's in KDEDIR/lib
       LIBAUDIOIO="$LDFLAGS -laudioio"
       AC_DEFINE(HAVE_LIBAUDIOIO, 1,
