@@ -170,9 +170,8 @@ public:
 
   /**
    * Returns a pointer to an DCOPClient for the application.
-   * (overridden in KUniqueApplication)
    */
-  virtual DCOPClient *dcopClient();
+  DCOPClient *dcopClient();
 
   // See kapp.cpp for explanation
   /*
@@ -389,9 +388,6 @@ private:
   QColor activeTitleColor_;
   QColor activeTextColor_;
   int contrast_;
-  bool doubleClick_;
-  enum Completion { CompletionNone=1, CompletionAuto, CompletionEOL };
-  Completion completionMode_;
   int captionLayout;
 
 public:
@@ -401,28 +397,6 @@ public:
   QColor activeTitleColor() const;
   QColor activeTextColor() const;
   int contrast() const;
-
-  /**
-   * Returns whether KDE runs in single (default) or double click
-   * mode.
-   *
-   * @return false means single click mode
-   *         true means double click mode
-   *
-   * see @ref http://developer.kde.org/documentation/standards/kde/style/mouse/index.html
-   **/
-  bool useDoubleClicks() const;
-  
-  /**
-   * Returns the configured completion mode
-   *
-   * see @ref http://developer.kde.org/documentation/standards/kde/style/keys/completion.html
-   *
-   * @return CompletionNone, completion should be disabled
-   *         CompletionAuto, automatic completion
-   *         CompletionEOL, manual completion at end of line (with Right/End keys)
-   **/
-  Completion completionMode() const;
 
   /**
       @internal
