@@ -62,6 +62,14 @@ QString expandvars(const char *_input)
         return result;
 }
 
+void printResult(const QString &s)
+{
+    if (s.isEmpty())
+        printf("\n");
+    else
+        printf("%s\n", s.local8Bit().data());
+}
+
 int main(int argc, char **argv)
 {
     KLocale::setMainCatalogue("kdelibs");
@@ -81,19 +89,19 @@ int main(int argc, char **argv)
 
     if (args->isSet("prefix"))
     {
-        printf("%s\n", expandvars("@prefix@").latin1());
+        printResult(expandvars("@prefix@"));
         return 0;
     }
 
     if (args->isSet("exec-prefix"))
     {
-        printf("%s\n", expandvars("@exec_prefix@").latin1());
+        printResult(expandvars("@exec_prefix@"));
         return 0;
     }
 
     if (args->isSet("localprefix"))
     {
-        printf("%s\n", KGlobal::dirs()->localkdedir().latin1());
+        printResult(KGlobal::dirs()->localkdedir());
         return 0;
     }
 
@@ -145,8 +153,7 @@ int main(int argc, char **argv)
     QString type = args->getOption("path");
     if (!type.isEmpty())
     {
-        printf("%s\n", KGlobal::dirs()->resourceDirs(type.latin1()).
-               join(":").latin1());
+        printResult(KGlobal::dirs()->resourceDirs(type.latin1()).join(":"));
         return 0;
     }
 
@@ -154,15 +161,15 @@ int main(int argc, char **argv)
     if (!type.isEmpty())
     {
         if ( type == "desktop" )
-            printf("%s\n", KGlobalSettings::desktopPath().local8Bit().data() );
+            printResult(KGlobalSettings::desktopPath());
         else if ( type == "autostart" )
-            printf("%s\n", KGlobalSettings::autostartPath().local8Bit().data() );
+            printResult(KGlobalSettings::autostartPath());
         else if ( type == "trash" )
-            printf("%s\n", KGlobalSettings::trashPath().local8Bit().data() );
+            printResult(KGlobalSettings::trashPath());
         else if ( type == "document" )
-            printf("%s\n", KGlobalSettings::documentPath().local8Bit().data() );
+            printResult(KGlobalSettings::documentPath());
         else
-            printf("%s", i18n("%1 - unknown type of userpath\n").arg(type).local8Bit().data() );
+            fprintf(stderr, "%s", i18n("%1 - unknown type of userpath\n").arg(type).local8Bit().data() );
         return 0;
     }
 
@@ -191,9 +198,9 @@ int main(int argc, char **argv)
             index += 2;
         }
         if (installprefixes[index]) {
-            printf("%s\n", expandvars(installprefixes[index+1]).latin1());
+            printResult(expandvars(installprefixes[index+1]));
         } else {
-            printf("NONE\n"); // no i18n here as for scripts
+            printResult("NONE"); // no i18n here as for scripts
         }
     }
     return 0;
