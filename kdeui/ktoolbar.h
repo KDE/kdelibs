@@ -358,13 +358,13 @@ public:
 
     /**
      * Inserts a separator into the toolbar with the given id.
-     * Returns the separator's index
+     * @return the separator's index
      */
     int insertSeparator( int index = -1, int id = -1 );
 
     /**
      * Inserts a line separator into the toolbar with the given id.
-     * Returns the separator's index
+     * @return the separator's index
      */
     int insertLineSeparator( int index = -1, int id = -1 );
 
@@ -529,7 +529,7 @@ public:
     void setLinedText (int id, const QString& text);
 
   /**
-   * Returns a line editor text.
+   * @return the line editor text.
    */
     QString getLinedText (int id) const;
 
@@ -568,7 +568,7 @@ public:
     void clearCombo (int id);
 
   /**
-   * Returns text of item @p index from combobox @p id.
+   * @return text of item @p index from combobox @p id.
    *
    * @p index = -1 refers to current item.
    */
@@ -576,7 +576,7 @@ public:
     QString getComboItem (int id, int index=-1) const;
 
     /**
-   * Returns a pointer to the combobox.
+   * @return a pointer to the combobox.
    *
    * Example:
    * <pre>
@@ -588,7 +588,7 @@ public:
     KComboBox * getCombo(int id);
 
     /**
-   * Returns a pointer to KToolBarLined.
+   * @return a pointer to KToolBarLined.
    *
    * Example:
    * <pre>
@@ -601,7 +601,7 @@ public:
     KLineEdit * getLined (int id);
 
     /**
-   * Returns a pointer to KToolBarButton.
+   * @return a pointer to KToolBarButton.
    *
    * Example:
    * <pre>
@@ -623,7 +623,7 @@ public:
     void alignItemRight (int id, bool right = true);
 
     /**
-   * Returns a pointer to an inserted widget.
+   * @return a pointer to an inserted widget.
    *
    * Wrong ids are not tested.
    * You can do with this whatever you want,
@@ -631,10 +631,8 @@ public:
    * you will probably have to call QToolBar::updateRects(true)
    * @see QWidget
    * @see updateRects()
-   * 
-   * KDE4: make this const!
    */
-    QWidget *getWidget (int id);
+    QWidget *getWidget (int id); // ### KDE4: make this const!
 
     /**
    * Set item autosized.
@@ -683,18 +681,14 @@ public:
     void showItem (int id);
 
     /**
-   * Returns the index of the given item.
-   *
-   * KDE4: make this const!
+   * @return the index of the given item.
    */
-    int itemIndex (int id);
+    int itemIndex (int id); // ### KDE4: make this const!
 
     /**
-   * Returns the id of the item at the given index.
-   *
-   * KDE4: make this const!
+   * @return the id of the item at the given index.
    */
-    int idAt(int index);
+    int idAt(int index); // ### KDE4: make this const!
 
     /**
    * Set toolbar to full parent size (default).
@@ -711,8 +705,7 @@ public:
     void setFullSize(bool flag = true);
 
     /**
-   * @return @p true if the full-size mode is enabled. Otherwise
-   * it returns @false.
+   * @return @p true iff the full-size mode is enabled.
    */
     bool fullSize() const;
 
@@ -729,7 +722,7 @@ public:
     void setBarPos (BarPosition bpos);
 
     /**
-   * Returns position of toolbar.
+   * @return position of toolbar.
    */
     BarPosition barPos() const;
 
@@ -752,7 +745,7 @@ public:
   /**
    * @deprecated
    * Use maximumHeight() instead.
-   * Returns the value that was set with @ref setMaxHeight().
+   * @return the value that was set with @ref setMaxHeight().
    */
     int maxHeight();
 
@@ -766,7 +759,7 @@ public:
   /**
    * @deprecated
    * Use maximumWidth() instead.
-   * Returns the value that was set with @ref setMaxWidth().
+   * @return the value that was set with @ref setMaxWidth().
    */
     int maxWidth();
 
@@ -847,9 +840,7 @@ public:
     void setEnableContextMenu(bool enable = true);
 
   /**
-   * Returns whether or not the context menu is disabled
-   *
-   * @return The context menu state
+   * @return true iff the context menu is disabled
    */
     bool contextMenuEnabled() const;
 
@@ -897,9 +888,9 @@ public:
    *
    * @param xmlfile The XML-GUI resource file to write to
    * @param xml     The DOM document for the XML-GUI building
+   * @internal
    */
   //  void setXML(const QString& xmlfile, const QDomDocument& xml);
-  /* @internal */
     void setXMLGUIClient( KXMLGUIClient *client );
 
   /**
