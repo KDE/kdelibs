@@ -111,9 +111,12 @@ void KTipDatabase::addTips(const QString& tipFile )
     int pos = -1;
     while ((pos = content.find("<html>", pos + 1, false)) != -1)
     {
-	QString tip = content.mid(pos + 6, content.find("</html>", pos, false) - pos - 6);
-	if (tip.startsWith("\n"))
-		tip = tip.mid(1);
+	const QString tip = content.mid(pos + 6, content.find("</html>", pos, false) - pos - 6).stripWhiteSpace();
+        if (tip.isEmpty())
+        {
+            kdDebug() << "Empty tip found! Skipping! " << pos << endl;
+            continue;
+        }
 	mTips.append(tip);
     }
 
