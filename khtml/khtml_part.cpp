@@ -396,6 +396,17 @@ bool KHTMLPart::openURL( const KURL &url )
     closeURL();
   }
 
+  // initializing m_url to the new url breaks relative links when opening such a link after this call and _before_ begin() is called (when the first
+  // data arrives) (Simon)
+  m_url = url;
+  if(m_url.protocol().startsWith( "http" ) && !m_url.host().isEmpty() &&
+     m_url.path().isEmpty()) {
+    m_url.setPath("/");
+    emit d->m_extension->setLocationBarURL( m_url.prettyURL() );
+  }
+  // copy to m_workingURL after fixing m_url above
+  d->m_workingURL = m_url;
+
   args.metaData().insert("main_frame_request", parentPart() == 0 ? "TRUE" : "FALSE" );
   args.metaData().insert("PropagateHttpHeader", "true");
   args.metaData().insert("ssl_was_in_use", d->m_ssl_in_use ? "TRUE" : "FALSE" );
@@ -407,14 +418,14 @@ bool KHTMLPart::openURL( const KURL &url )
   else
      d->m_cachePolicy = KIO::CC_Verify;
 
-  if ( args.doPost() && (url.protocol().startsWith("http")) )
+  if ( args.doPost() && (m_url.protocol().startsWith("http")) )
   {
-      d->m_job = KIO::http_post( url, args.postData, false );
+      d->m_job = KIO::http_post( m_url, args.postData, false );
       d->m_job->addMetaData("content-type", args.contentType() );
   }
   else
   {
-      d->m_job = KIO::get( url, false, false );
+      d->m_job = KIO::get( m_url, false, false );
       d->m_job->addMetaData("cache", KIO::getCacheControlString(d->m_cachePolicy));
   }
 
@@ -444,16 +455,6 @@ bool KHTMLPart::openURL( const KURL &url )
   d->m_bJavaEnabled = KHTMLFactory::defaultHTMLSettings()->isJavaEnabled(url.host());
   d->m_bPluginsEnabled = KHTMLFactory::defaultHTMLSettings()->isPluginsEnabled(url.host());
 
-  // initializing m_url to the new url breaks relative links when opening such a link after this call and _before_ begin() is called (when the first
-  // data arrives) (Simon)
-  m_url = url;
-  if(m_url.protocol().startsWith( "http" ) && !m_url.host().isEmpty() &&
-     m_url.path().isEmpty()) {
-    m_url.setPath("/");
-    emit d->m_extension->setLocationBarURL( m_url.prettyURL() );
-  }
-  // copy to m_workingURL after fixing m_url above
-  d->m_workingURL = m_url;
 
   kdDebug( 6050 ) << "KHTMLPart::openURL now (before started) m_url = " << m_url.url() << endl;
 
