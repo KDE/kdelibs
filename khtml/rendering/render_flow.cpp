@@ -47,7 +47,7 @@
 using namespace DOM;
 using namespace khtml;
 
-#define TABLECELLMARGIN -0x4000;
+#define TABLECELLMARGIN -0x4000
 
 static inline int collapseMargins(int a, int b)
 {
