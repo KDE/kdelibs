@@ -271,18 +271,13 @@ PropertyMapNode *PropertyMap::getNode(const UString &name) const
 {
   PropertyMapNode *node = root;
 
-  while (true) {
-    if (!node)
-      return 0;
-
+  while (node) {
     int cmp = uscompare(name, node->name);
-    if (cmp < 0)
-      node = node->left;
-    else if (cmp > 0)
-      node = node->right;
-    else
+    if (cmp == 0)
       return node;
+    node = cmp < 0 ? node->left : node->right;
   }
+  return 0;
 }
 
 PropertyMapNode *PropertyMap::first() const
