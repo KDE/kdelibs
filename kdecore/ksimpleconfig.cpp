@@ -19,6 +19,10 @@
 // $Id$
 //
 // $Log$
+// Revision 1.15  1999/04/18 09:15:12  kulow
+// taking out config.h from Header files. I don't know if I haven't noticed
+// before, but this is even very dangerous
+//
 // Revision 1.14  1999/03/01 23:33:42  kulow
 // CVS_SILENT ported to Qt 2.0
 //
@@ -75,6 +79,7 @@
 #include <ksimpleconfig.h>
 #include "config.h"
 #include <qfileinfo.h>
+#include <qtextstream.h>
 
 KSimpleConfig::KSimpleConfig( const QString& pFile )
 {

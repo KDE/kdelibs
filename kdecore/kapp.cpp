@@ -19,6 +19,8 @@
 
 // $Id$
 
+#include "config.h"
+
 #include <qdir.h> // must be at the front
 #include <qobjcoll.h>
 #include <qstrlist.h>

@@ -25,6 +25,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <stdarg.h>
+#include <qtextstream.h>
 #include <qfontinfo.h>
 #include <qintdict.h>
 #include <kapp.h>
