@@ -14,6 +14,7 @@
 <!ENTITY pex 	"por exemplo"> <!-- English: &eg; -->
 <!ENTITY eg 	"isto é">
 <!ENTITY Enter	"<keycap>Enter</keycap>">
+<!ENTITY Tab	"<keycap>Tab</keycap>">
 <!ENTITY Esc	"<keycap>Esc</keycap>">
 <!ENTITY etc    "<abbrev>etc.</abbrev>">
 <!ENTITY FAQ	'<acronym>FAQ</acronym>'>
