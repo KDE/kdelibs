@@ -33,7 +33,11 @@ class QListViewItem;
 class KEditToolbarWidget;
 class KEditToolbarPrivate;
 class KEditToolbarWidgetPrivate;
-
+namespace
+{
+  class ToolbarItem;
+  class ToolbarListView;
+}
 /**
  * This is a dialog used to customize or configure toolbars.
  *
@@ -383,6 +387,8 @@ protected slots:
   void slotInactiveSelected(QListViewItem *item);
   void slotActiveSelected(QListViewItem *item);
 
+  void slotDropped(KListView *list, QDropEvent *e, QListViewItem *after);
+
   void slotInsertButton();
   void slotRemoveButton();
   void slotUpButton();
@@ -396,6 +402,8 @@ private slots:
 protected:
   void setupLayout();
 
+  void insertActive(ToolbarItem *item, QListViewItem *before, bool prepend = false);
+  void removeActive(ToolbarItem *item);
   void initNonKPart(KActionCollection *collection, const QString& file, bool global);
   void initKPart(KXMLGUIFactory* factory);
   void loadToolbarCombo(const QString& defaultToolbar = QString::null);
@@ -403,8 +411,8 @@ protected:
   void updateLocal(QDomElement& elem);
 
 private:
-  KListView *m_inactiveList;
-  KListView *m_activeList;
+  ToolbarListView *m_inactiveList;
+  ToolbarListView *m_activeList;
   QComboBox *m_toolbarCombo;
 
   QToolButton *m_upAction;
