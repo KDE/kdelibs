@@ -52,9 +52,9 @@ KAboutKDE::KAboutKDE( QWidget *parent, const char *name, bool modal )
     "severity called \"Wishlist\"." );
 
   const QString text3 = i18n(""
-    "You don't have to be a software developer to be a member of the "
+    "You do not have to be a software developer to be a member of the "
     "KDE team. You can join the national teams that translate "
-    "program interfaces. You can provide graphics, themes, sounds and "
+    "program interfaces. You can provide graphics, themes, sounds, and "
     "improved documentation. You decide!"
     "<br><br>"
     "Visit "
@@ -65,7 +65,7 @@ KAboutKDE::KAboutKDE( QWidget *parent, const char *name, bool modal )
     "<A HREF=\"http://developer.kde.org/\">http://developer.kde.org</A> "
     "will provide you with what you need.");
   const QString text4 = i18n(""
-    "KDE is available free of charge, but making it is not for free.<br><br>"
+    "KDE is available free of charge, but making it is not free.<br><br>"
     "Thus, the KDE team formed the KDE e.V., a non-profit organization"
     " legally founded in Tuebingen, Germany. The KDE e.V. represents"
     " the KDE project in legal and financial matters."
