@@ -86,8 +86,7 @@ class kdbgstream {
     kdbgstream(const char * initialString, unsigned int _area, unsigned int _level, bool _print = true) :
       output(QString::fromLatin1(initialString)), area(_area), level(_level),  print(_print) { }
     /// Copy constructor
-    kdbgstream(kdbgstream &str) :
-      output(str.output), area(str.area), level(str.level), print(str.print) { str.output.truncate(0); }
+    kdbgstream(kdbgstream &str);
     kdbgstream(const kdbgstream &str) :
       output(str.output), area(str.area), level(str.level), print(str.print) {}
     ~kdbgstream();

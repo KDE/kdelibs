@@ -329,6 +329,12 @@ kdbgstream kdWarning(bool cond, int area) { if (cond) return kdbgstream("WARNING
 kdbgstream kdFatal(int area) { return kdbgstream("FATAL: ", area, KDEBUG_FATAL); }
 kdbgstream kdFatal(bool cond, int area) { if (cond) return kdbgstream("FATAL: ", area, KDEBUG_FATAL); else return kdbgstream(0,0,false); }
 
+kdbgstream::kdbgstream(kdbgstream &str)
+ : output(str.output), area(str.area), level(str.level), print(str.print) 
+{ 
+    str.output.truncate(0); 
+}
+
 void kdbgstream::flush() {
     if (output.isEmpty() || !print)
 	return;
