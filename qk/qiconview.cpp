@@ -137,7 +137,7 @@ struct QIconViewPrivate
     bool wordWrapIconText;
     int cachedContentsX, cachedContentsY;
     int resizeEvents;
-    
+
     struct SingleClickConfig {
 	SingleClickConfig()
 	    : normalText( 0 ), normalTextCol( 0 ),
@@ -763,7 +763,8 @@ void QIconViewItem::init()
 
 QIconViewItem::~QIconViewItem()
 {
-    view->removeItem( this );
+    if ( view )
+	view->removeItem( this );
     delete d;
     delete f;
     delete c;
@@ -2046,7 +2047,7 @@ QIconView::QIconView( QWidget *parent, const char *name, WFlags f )
     d->clearing = FALSE;
     d->fullRedrawTimer = new QTimer( this );
     d->resizeEvents = 0;
-    
+
     connect( d->adjustTimer, SIGNAL( timeout() ),
 	     this, SLOT( adjustItems() ) );
     connect( d->updateTimer, SIGNAL( timeout() ),
@@ -2909,7 +2910,7 @@ void QIconView::clear()
     QIconViewItem *item = d->firstItem, *tmp;
     while ( item ) {
 	tmp = item->next;
-	item->setView(0);
+	item->view = 0;
 	delete item;
 	item = tmp;
     }
@@ -3629,7 +3630,7 @@ void QIconView::resizeEvent( QResizeEvent* e )
     if ( d->resizeMode == Adjust ) {
 	if ( d->adjustTimer->isActive() )
 	    d->adjustTimer->stop();
-	if ( d->resizeEvents > 2 ) 
+	if ( d->resizeEvents > 2 )
 	    d->adjustTimer->start( 100, TRUE );
 	else
 	    alignItemsInGrid( FALSE );
