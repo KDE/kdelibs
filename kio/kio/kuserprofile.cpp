@@ -70,6 +70,13 @@ void KServiceTypeProfile::initStatic()
     KService::Ptr pService = KService::serviceByMenuId(appId);
     if (!pService) 
        pService = KService::serviceByDesktopPath( appId );
+    if (!pService)
+    {
+       appId = appId.mid(appId.findRev('/')+1);
+       if (appId.endsWith(".desktop"))
+          appId.truncate(appId.length()-8);
+       pService = KService::serviceByDesktopName( appId );
+    }
 
     if ( pService ) {
       QString application = pService->name();
