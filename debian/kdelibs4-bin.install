@@ -1,7 +1,5 @@
 debian/tmp/usr/bin/artsmessage
 debian/tmp/usr/bin/checkXML
-debian/tmp/usr/bin/cupsdconf
-debian/tmp/usr/bin/cupsdoprint
 debian/tmp/usr/bin/dcop
 debian/tmp/usr/bin/dcopclient
 debian/tmp/usr/bin/dcopfind
@@ -24,6 +22,7 @@ debian/tmp/usr/bin/kdeinit_shutdown
 debian/tmp/usr/bin/kdeinit_wrapper
 debian/tmp/usr/bin/kdesu_stub
 debian/tmp/usr/bin/kdontchangethehostname
+debian/tmp/usr/bin/kfile
 debian/tmp/usr/bin/kimage_concat
 debian/tmp/usr/bin/kinstalltheme
 debian/tmp/usr/bin/kio_http_cache_cleaner
@@ -35,10 +34,10 @@ debian/tmp/usr/bin/knotify
 debian/tmp/usr/bin/kpac_dhcp_helper
 debian/tmp/usr/bin/ksendbugmail
 debian/tmp/usr/bin/kshell
+debian/tmp/usr/bin/ksvgtopng
 debian/tmp/usr/bin/ktelnetservice
 debian/tmp/usr/bin/kwrapper
 debian/tmp/usr/bin/lnusertemp
-debian/tmp/usr/bin/make_driver_db_cups
 debian/tmp/usr/bin/make_driver_db_lpr
 debian/tmp/usr/bin/preparetips
 debian/tmp/usr/bin/xml2man

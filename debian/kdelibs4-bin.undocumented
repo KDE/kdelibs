@@ -1,7 +1,5 @@
 artsmessage.1
 checkXML.1
-cupsdconf.1
-cupsdoprint.1
 dcop.1
 dcopclient.1
 dcopfind.1
@@ -38,7 +36,6 @@ kshell.1
 ktelnetservice.1
 kwrapper.1
 lnusertemp.1
-make_driver_db_cups.1
 make_driver_db_lpr.1
 preparetips.1
 xml2man.1
