@@ -35,6 +35,10 @@
 
 // $Id$
 // $Log$
+// Revision 1.1  1998/07/28 17:16:36  radej
+// sven: initial import; don't make it a part of build process yet. See notice
+//       in files
+//
 
 #include <qpainter.h>
 #include <qtooltip.h> 
@@ -269,11 +273,6 @@ bool KBaseBarButton::eventFilter (QObject *o, QEvent *ev)
 
 void KBaseBarButton::drawButton( QPainter *_painter )
 {
-  // We are not using KButton any more!
-  
-  // Dman, this has so meny returns that I have to do my job here:
-
-  
   if ( raised )
   {
     if ( style() == WindowsStyle )
@@ -305,7 +304,6 @@ void KBaseBarButton::drawButton( QPainter *_painter )
         ++dy;
       }
       _painter->drawPixmap( dx, dy, *pixmap() );
-      //return;
     }
   }
   else if (icontext == 1) // icon and text (if any)
@@ -337,7 +335,6 @@ void KBaseBarButton::drawButton( QPainter *_painter )
         _painter->setPen(blue);
       _painter->drawText(dx, 0, width()-dx, height(), tf, btext);
     }
-    //return;
   }
   else if (icontext == 2) // only text, even if there is a icon
   {
@@ -353,7 +350,6 @@ void KBaseBarButton::drawButton( QPainter *_painter )
         _painter->setPen(blue);
       _painter->drawText(dx, 0, width()-dx, height(), tf, btext);
     }
-    //return;
   }
 
   if (myPopup)
@@ -462,6 +458,7 @@ void KBaseBarButton::modeChange()
 void KBaseBarButton::showMenu()
 {
   // calculate that position carefully!!
+  // Later
   QPoint p (parentWidget->mapToGlobal(pos()));
   p.setY(p.y()+height());
   raised = true;
@@ -504,8 +501,8 @@ void KBaseBarButton::ButtonReleased()
 {
   // if popup is visible we don't get this
   // (gram of praxis weights more than ton of theory)
-  if (myPopup && myPopup->isVisible())
-    return;
+  //if (myPopup && myPopup->isVisible())
+  //  return;
 
   if (myPopup && delayPopup)
     delayTimer->stop();
@@ -600,8 +597,6 @@ void KBaseBar::init()
   context->insertItem( klocale->translate("Right"), CONTEXT_RIGHT );
   context->insertItem( klocale->translate("Bottom"), CONTEXT_BOTTOM );
   context->insertItem( klocale->translate("Floating"), CONTEXT_FLOAT );
-//   connect( context, SIGNAL( activated( int ) ), this,
-// 	   SLOT( ContextCallback( int ) ) );
   
   //MD (17-9-97) Toolbar full width by default
   fullWidth=true;
@@ -674,6 +669,7 @@ void KBaseBar::slotReadConfig()
 
 void KBaseBar::drawContents ( QPainter *)
 {
+ // draw what?
 }
 
 
@@ -867,16 +863,6 @@ void KBaseBar::updateRects( bool res )
       resize (toolbarWidth, toolbarHeight);
       localResize = false;
     }
-  /*
-   I needed to call processEvents () to flush pending resizeEvent after
-   doing resize from here so that resizeEvent () sees the semaphore
-   localResize. After examining qt source, I saw that QWidget::resize() calls
-   QApplication::sendEvent() which, as far as I understand, notifies
-   this->resizeEvent() immediatelly, without waiting. Even worse - it seems
-   that it really works. "Worse?", I hear you asking. Yes, even worse indeed
-   it is, because I lost my mind trying to get rid of excess resizes, and now
-   they vanished mysteriously all by itself (all except two)
-   */
 }
 
 void KBaseBar::mousePressEvent ( QMouseEvent *m )
@@ -893,7 +879,6 @@ void KBaseBar::mousePressEvent ( QMouseEvent *m )
 	}
       else
       {
-        //QRect rr(KWM::geometry(Parent->winId(), false));
         QRect rr(Parent->geometry());
         ox = rr.x();
         oy = rr.y();
@@ -1041,6 +1026,7 @@ void KBaseBar::paintEvent(QPaintEvent *e)
   QColorGroup g = QWidget::colorGroup();
   QPainter *paint = new QPainter();
   paint->begin( this );
+  paint->setClipRect(e->rect());
   if (moving)
   {
     // Took higlighting handle from kmenubar - sven 040198
@@ -1109,11 +1095,8 @@ void KBaseBar::paintEvent(QPaintEvent *e)
     }
   } //endif moving
 
-  if (position != Floating)
-    if ( style() == MotifStyle )
-      qDrawShadePanel(paint, 0, 0, width(), height(), g , false, 1);
-    //else
-      //qDrawShadeRect(paint, 0, 0, width(), height(), g , true, 1);
+  if ((position != Floating) && (style() == MotifStyle))
+    qDrawShadePanel(paint, 0, 0, width(), height(), g , false, 1);
 
   paint->end();
   delete paint;
