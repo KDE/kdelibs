@@ -432,14 +432,16 @@ void RenameDlg::b8Pressed()
   if ( d->m_pLineEdit->text().isEmpty() )
     return;
 
-  QString basename, dotSuffix, tmp;
-  QFileInfo info ( d->m_pLineEdit->text() );
-  basename = info.baseName();
-  dotSuffix = info.extension();
+  QString dotSuffix, tmp;
+  QString basename = d->m_pLineEdit->text();
 
-  if ( !dotSuffix.isEmpty() )
-    dotSuffix = '.' + dotSuffix;
-
+  int index = basename.find( '.' );
+  if ( index != -1 ) {
+    dotSuffix = basename.mid( index );
+    basename.truncate( index );
+  } else
+    dotSuffix = QString::null;
+  
   pos = basename.findRev('_' );
   if(pos != -1 ){
     bool ok;
