@@ -30,8 +30,15 @@
 #include "internal.h"
 #include "operations.h"
 #include "regexp_object.h"
+#include "debugger.h"
 
 using namespace KJS;
+
+#ifdef KJS_DEBUGGER
+#define KJS_BREAKPOINT if (!hitStatement()) return Completion(Normal);
+#else
+#define KJS_BREAKPOINT
+#endif
 
 int   Node::nodeCount = 0;
 
@@ -79,6 +86,16 @@ KJSO Node::throwError(ErrorType e, const char *msg)
 {
   return Error::create(e, msg, lineNo());
 }
+
+#ifdef KJS_DEBUGGER
+bool StatementNode::hitStatement()
+{
+  if (KJScriptImp::current()->debugger())
+    return KJScriptImp::current()->debugger()->hit(firstLine());
+  else
+    return true;
+}
+#endif
 
 KJSO NullNode::evaluate()
 {
@@ -314,12 +331,38 @@ KJSO FunctionCallNode::evaluate()
   if (o.isA(ActivationType))
     o = Null();
 
+#ifdef KJS_DEBUGGER
+  steppingInto(true);
+#endif
+
   KJSO result = v.executeCall(o, argList);
+
+#ifdef KJS_DEBUGGER
+  steppingInto(false);
+#endif
 
   delete argList;
 
   return result;
 }
+
+#ifdef KJS_DEBUGGER
+void FunctionCallNode::steppingInto(bool in)
+{
+  Debugger *dbg = KJScriptImp::current()->debugger();
+  if (!dbg)
+    return;
+  if (in) {
+    // before entering function. Don't step inside if 'Next' is chosen.
+    previousMode = dbg->mode();
+    if (previousMode == Debugger::Next)
+      dbg->setMode(Debugger::Continue);
+  } else {
+    // restore mode after leaving function
+    dbg->setMode(previousMode);
+  }
+}
+#endif
 
 KJSO ArgumentsNode::evaluate()
 {
@@ -893,6 +936,8 @@ Completion ForInNode::execute()
 // ECMA 12.4
 Completion ExprStatementNode::execute()
 {
+  KJS_BREAKPOINT;
+
   KJSO e = expr->evaluate();
   KJSO v = e.getValue();
 
@@ -902,6 +947,8 @@ Completion ExprStatementNode::execute()
 // ECMA 12.5
 Completion IfNode::execute()
 {
+  KJS_BREAKPOINT;
+
   KJSO e = expr->evaluate();
   KJSO v = e.getValue();
   Boolean b = v.toBoolean();
@@ -921,6 +968,8 @@ Completion IfNode::execute()
 // ECMA 12.6.1
 Completion DoWhileNode::execute()
 {
+  KJS_BREAKPOINT;
+
   KJSO be, bv;
   Completion c;
   KJSO value;
@@ -948,6 +997,8 @@ Completion DoWhileNode::execute()
 // ECMA 12.6.2
 Completion WhileNode::execute()
 {
+  KJS_BREAKPOINT;
+
   KJSO be, bv;
   Completion c;
   Boolean b(false);
@@ -982,6 +1033,8 @@ Completion WhileNode::execute()
 // ECMA 12.7
 Completion ContinueNode::execute()
 {
+  KJS_BREAKPOINT;
+
   KJSO dummy;
   return Context::current()->seenLabels()->contains(ident) ?
     Completion(Continue, dummy, ident) :
@@ -992,6 +1045,8 @@ Completion ContinueNode::execute()
 // ECMA 12.8
 Completion BreakNode::execute()
 {
+  KJS_BREAKPOINT;
+
   KJSO dummy;
   return Context::current()->seenLabels()->contains(ident) ?
     Completion(Break, dummy, ident) :
@@ -1002,6 +1057,8 @@ Completion BreakNode::execute()
 // ECMA 12.9
 Completion ReturnNode::execute()
 {
+  KJS_BREAKPOINT;
+
   if (!value)
     return Completion(ReturnValue, Undefined());
 
@@ -1014,6 +1071,8 @@ Completion ReturnNode::execute()
 // ECMA 12.10
 Completion WithNode::execute()
 {
+  KJS_BREAKPOINT;
+
   KJSO e = expr->evaluate();
   KJSO v = e.getValue();
   Object o = v.toObject();
@@ -1038,6 +1097,8 @@ ClauseListNode* ClauseListNode::append(CaseClauseNode *c)
 // ECMA 12.11
 Completion SwitchNode::execute()
 {
+  KJS_BREAKPOINT;
+
   KJSO e = expr->evaluate();
   KJSO v = e.getValue();
   Completion res = block->evalBlock(v);
@@ -1147,6 +1208,8 @@ Completion LabelNode::execute()
 // ECMA 12.13
 Completion ThrowNode::execute()
 {
+  KJS_BREAKPOINT;
+
   KJSO v = expr->evaluate().getValue();
 
   return Completion(Throw, v);
@@ -1155,6 +1218,8 @@ Completion ThrowNode::execute()
 // ECMA 12.14
 Completion TryNode::execute()
 {
+  KJS_BREAKPOINT;
+
   Completion c, c2;
 
   c = block->execute();

@@ -21,10 +21,11 @@
 #ifndef _NODES_H_
 #define _NODES_H_
 
+#include "internal.h"
 #include "ustring.h"
 #include "object.h"
 #include "types.h"
-#include "internal.h"
+#include "debugger.h"
 
 namespace KJS {
 
@@ -85,16 +86,15 @@ namespace KJS {
   public:
 #ifdef KJS_DEBUGGER
     StatementNode() : l0(-1), l1(-1) { }
+    void setLoc(int line0, int line1) { l0 = line0; l1 = line1; }
+    int firstLine() const { return l0; }
+    int lastLine() const { return l1; }
+    bool hitStatement();
 #endif
     virtual Completion execute() = 0;
     void pushLabel(const UString *id) {
       if (id) ls.push(*id);
     }
-#ifdef KJS_DEBUGGER
-    void setLoc(int line0, int line1) { l0 = line0; l1 = line1; }
-    int firstLine() const { return l0; }
-    int lastLine() const { return l1; }
-#endif
   protected:
     LabelStack ls;
   private:
@@ -276,6 +276,10 @@ namespace KJS {
   public:
     FunctionCallNode(Node *e, ArgumentsNode *a) : expr(e), args(a) {}
     KJSO evaluate();
+#ifdef KJS_DEBUGGER
+    void steppingInto(bool in);
+    Debugger::Mode previousMode;
+#endif
   private:
     Node *expr;
     ArgumentsNode *args;

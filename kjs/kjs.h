@@ -33,6 +33,9 @@ namespace KJS {
   class Object;
   class Imp;
   class KJScriptImp;
+#ifdef KJS_DEBUGGER
+  class Debugger;
+#endif
 };
 
 /**
@@ -126,6 +129,10 @@ private:
   // not implemented
   KJScript(const KJScript&);
   KJScript operator=(const KJScript&);
+
+#ifdef KJS_DEBUGGER
+  friend class KJS::Debugger;
+#endif
 };
 
 #endif

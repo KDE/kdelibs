@@ -22,7 +22,6 @@
 
 #include <assert.h>
 #include <stdio.h>
-#include <iostream.h>
 
 #include "kjs.h"
 #include "object.h"
@@ -32,6 +31,7 @@
 #include "nodes.h"
 #include "lexer.h"
 #include "collector.h"
+#include "debugger.h"
 
 #define I18N_NOOP(s) s
 
@@ -429,6 +429,9 @@ KJScriptImp* KJScriptImp::hook = 0L;
 KJScriptImp::KJScriptImp()
   : initialized(false),
     glob(0L),
+#ifdef KJS_DEBUGGER
+    dbg(0L),
+#endif
     exVal(0L),
     retVal(0L)
 {
@@ -438,6 +441,10 @@ KJScriptImp::KJScriptImp()
 
 KJScriptImp::~KJScriptImp()
 {
+#ifdef KJS_DEBUGGER
+  attachDebugger(0L);
+#endif
+
   clear();
 
   KJScriptImp::curr = this;
@@ -585,6 +592,23 @@ bool KJScriptImp::evaluate(const UChar *code, unsigned int length, Imp *thisV,
 
   return !errType;
 }
+
+#ifdef KJS_DEBUGGER
+void KJScriptImp::attachDebugger(Debugger *d)
+{
+  static bool detaching = false;
+  if (detaching) // break circular detaching
+    return;
+
+  if (dbg) {
+    detaching = true;
+    dbg->detach();
+    detaching = false;
+  }
+
+  dbg = d;
+}
+#endif
 
 bool PropList::contains(const UString &name)
 {

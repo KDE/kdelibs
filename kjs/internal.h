@@ -21,6 +21,10 @@
 #ifndef _INTERNAL_H_
 #define _INTERNAL_H_
 
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
 #include "kjs.h"
 #include "object.h"
 #include "function.h"
@@ -34,6 +38,9 @@ namespace KJS {
   class RegExp;
   class Node;
   class ProgramNode;
+#ifdef KJS_DEBUGGER
+  class Debugger;
+#endif
 
   class UndefinedImp : public Imp {
   public:
@@ -268,6 +275,15 @@ namespace KJS {
     static KJScriptImp *current();
     static void setException(Imp *e) { assert(curr); curr->exVal = e; }
     static Imp *exception() { assert(curr); return curr->exVal; }
+
+#ifdef KJS_DEBUGGER
+    /**
+     * Attach debugger d to this engine. If there already was another instance
+     * attached it will be detached.
+     */
+    void attachDebugger(Debugger *d);
+    Debugger *debugger() const { return dbg; }
+#endif
   private:
     /**
      * Initialize global object and context. For internal use only.
@@ -288,6 +304,9 @@ namespace KJS {
     Global glob;
     int errType, errLine;
     UString errMsg;
+#ifdef KJS_DEBUGGER
+    Debugger *dbg;
+#endif
     Imp *exVal;
     Imp *retVal;
     int recursion;
