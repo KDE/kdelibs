@@ -19,6 +19,12 @@
 // $Id$
 //
 // $Log$
+// Revision 1.6  1998/01/18 14:38:34  kulow
+// reverted the changes, Jacek commited.
+// Only the RCS comments were affected, but to keep them consistent, I
+// thought, it's better to revert them.
+// I checked twice, that only comments are affected ;)
+//
 // Revision 1.4  1997/10/16 11:14:28  torben
 // Kalle: Copyright headers
 // kdoctoolbar removed
@@ -68,6 +74,24 @@ KColorGroup::~KColorGroup()
 {
   delete pQColorGroup;
 }
+
+
+KColorGroup::KColorGroup( const KColorGroup& group )
+{
+  pQColorGroup = new QColorGroup( *group.pQColorGroup );
+}
+
+
+KColorGroup& KColorGroup::operator= ( const KColorGroup& group )
+{
+  if( this != &group ) {
+	delete pQColorGroup;
+	pQColorGroup = new QColorGroup( *group.pQColorGroup );
+  }
+
+  return *this;
+}
+	
 
 void KColorGroup::load( KConfig& rConfig, QString* pString )
 {

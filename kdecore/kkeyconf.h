@@ -79,16 +79,19 @@ const QString keyToString( uint keyCode );
 */
 class KKeyConfig 
 {
+  friend void initKKeyConfig( KConfig* );
  friend KKeyWidgetEntry;
  friend KKeyConfigure;
+
+protected:
+  /** 
+   * Construct a KKeyConfig object. 
+   * Do not use directly this constructor; use initKKeyConfig() instead. 
+   */
+  KKeyConfig( KConfig* pConfig);
+	
 	
  public:
-	/** 
-	 * Construct a KKeyConfig object. 
-	 * Do not use directly this constructor; use initKKeyConfig() instead. 
-	 */
-	KKeyConfig( KConfig* pConfig);
-	
 	/** 
 	 * Call sync() and destroy the KKeyConfig object. 
 	 */

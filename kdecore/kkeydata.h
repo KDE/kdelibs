@@ -77,6 +77,11 @@ class KKeyWidgetEntry : public QObject
 	
  protected slots:
 	void widgetDestroyed();
+
+private:
+  // Disallow assignment and copy-construction
+  KKeyWidgetEntry( const KKeyWidgetEntry& ) {};
+  KKeyWidgetEntry& operator= ( const KKeyWidgetEntry& ) { return *this; }
 };
 
 /**
@@ -197,6 +202,11 @@ class KKeyConfigure : public QDialog
 	const QString item( uint keyCode, const QString& entryKey );
 	bool isKeyPresent();
 	void setKey( uint kCode );
+
+private:
+  // Disallow assignment and copy-construction
+  KKeyConfigure( const KKeyConfigure& ) {};
+  KKeyConfigure& operator= ( const KKeyConfigure& ) { return *this; }
 };
 
 

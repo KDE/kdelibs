@@ -1,5 +1,5 @@
 /* 
-   $Id:$
+   $Id$
    
    This file is part of the KDE libraries
    Copyright (C) 1997 Christoph Neerfeld (Christoph.Neerfeld@boon.netsurf.de)
@@ -19,7 +19,10 @@
    the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
    Boston, MA 02111-1307, USA.
    
-   $Log:$
+   $Log$
+   Revision 1.9  1998/03/08 18:50:23  wuebben
+   Bernd: fixed up the kiconloader class -- it was completely busted
+
 
 */
 
@@ -157,6 +160,10 @@ protected:
 private:
 
   void addPath(QString path);
+
+  // Disallow assignment and copy-construction
+  KIconLoader( const KIconLoader& ) {};
+  KIconLoader& operator= ( const KIconLoader& ) { return *this; }
 
 };
 

@@ -19,6 +19,12 @@
 // $Id$
 //
 // $Log$
+// Revision 1.7  1998/01/18 14:38:36  kulow
+// reverted the changes, Jacek commited.
+// Only the RCS comments were affected, but to keep them consistent, I
+// thought, it's better to revert them.
+// I checked twice, that only comments are affected ;)
+//
 // Revision 1.5  1997/10/21 20:44:43  kulow
 // removed all NULLs and replaced it with 0L or "".
 // There are some left in mediatool, but this is not C++
@@ -83,6 +89,12 @@ public:
   KColorGroup( const QColor& rForeground, const QColor& rBackground,
 	       const QColor& rLight, const QColor& rMid, const QColor&
 	       rDark, const QColor& rText, const QColor& rBase );
+
+  /** Copy-constructor */
+  KColorGroup( const KColorGroup& );
+  
+  /** assignment operator */
+  KColorGroup& operator= ( const KColorGroup& );
 
   /// KColorGroup destructor
   /** KColorGroup destructor */

@@ -109,6 +109,11 @@ public:
    const KCharsetConversionResult & convertTag(const char *tag,int &len);
    const char * outputCharset()const;
    bool ok()const{ return isOK; }
+
+private:
+  // Disallow assignment and copy-construction
+  KCharsetConverterData( const KCharsetConverterData& ) {};
+  KCharsetConverterData& operator= ( const KCharsetConverterData& ) { return *this; }
 };
 
 /**
@@ -178,6 +183,11 @@ public:
   QString fromX(const QString &name);
   QString toX(const QString &name);
   const QIntDict<KDispCharEntry> * getDisplayableDict();
+
+private:
+  // Disallow assignment and copy-construction
+  KCharsetsData( const KCharsetsData& ) {};
+  KCharsetsData& operator= ( const KCharsetsData& ) { return *this; }
 };
 
 #ifdef KCH_DEBUG

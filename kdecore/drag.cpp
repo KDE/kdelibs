@@ -20,6 +20,11 @@
  * $Id$
  * 
  * $Log$
+ * Revision 1.19  1998/03/09 20:21:52  kulow
+ * just remove the dragZone from the dragZoneList, if kapp is still exist.
+ * If this happens in the end of the application, big problems accour (the
+ * reason, for many segfaults of applications at exit)
+ *
  * Revision 1.18  1998/01/18 14:38:28  kulow
  * reverted the changes, Jacek commited.
  * Only the RCS comments were affected, but to keep them consistent, I
@@ -211,6 +216,7 @@ KDNDDropZone::~KDNDDropZone()
   if (kapp)
      kapp->removeDropZone( this );
 }
+
 
 void KDNDWidget::startDrag( KDNDIcon *_icon, char *_data, int _size, int _type, int _dx, int _dy )
 {
@@ -515,6 +521,22 @@ KDNDIcon::KDNDIcon( QPixmap &_pixmap, int _x, int _y ) :
   setGeometry( _x, _y, _pixmap.width(), _pixmap.height() );
   show();
 }
+
+
+KDNDIcon::KDNDIcon( const KDNDIcon& icon )
+{
+  pixmap = icon.pixmap; // implicitly ref-counted
+}
+
+
+KDNDIcon& KDNDIcon::operator= ( const KDNDIcon& icon )
+{
+  if( this != &icon )
+	pixmap = icon.pixmap;
+
+  return *this;
+}
+
 
 void KDNDIcon::paintEvent( QPaintEvent * ) 
 {

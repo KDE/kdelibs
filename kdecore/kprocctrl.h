@@ -63,6 +63,10 @@ private:
 
   int fd[2];
   QSocketNotifier *notifier;
+
+  // Disallow assignment and copy-construction
+  KProcessController( const KProcessController& ) {};
+  KProcessController& operator= ( const KProcessController& ) { return *this; }
 };
 
 extern KProcessController *theKProcessController;

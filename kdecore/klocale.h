@@ -184,6 +184,10 @@ private:
     QString lc_numeric;
     bool numeric_enabled;
     QString langs;
+
+  // Disallow assignment and copy-construction
+  KLocale( const KLocale& ) {};
+  KLocale& operator= ( const KLocale& ) { return *this; };
 };
 
 #endif

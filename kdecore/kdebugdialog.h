@@ -125,6 +125,11 @@ public:
 
 public slots:
   void showHelp();
+
+private:
+  // Disallow assignment and copy-construction
+  KDebugDialog( const KDebugDialog& ) {};
+  KDebugDialog& operator= ( const KDebugDialog& ) { return *this; }
 };
 
 #endif

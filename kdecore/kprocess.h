@@ -488,6 +488,11 @@ protected:
   */
   friend class KProcessController;
 
+
+private:
+  // Disallow assignment and copy-construction
+  KProcess( const KProcess& ) {};
+  KProcess& operator= ( const KProcess& ) { return *this; }
 };
 
 /**
@@ -551,6 +556,10 @@ private:
 
 
   char *shell;
+
+  // Disallow assignment and copy-construction
+  KShellProcess( const KShellProcess& ) {};
+  KShellProcess& operator= ( const KShellProcess& ) { return *this; }
 };
 
 

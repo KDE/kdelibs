@@ -19,6 +19,9 @@
 // $Id$
 //
 // $Log$
+// Revision 1.49  1998/05/28 20:35:26  kalle
+// On Matthias' request: ICON(x) in addition to Icon(x)
+//
 // Revision 1.48  1998/05/09 15:19:29  kulow
 // spanish updates by Boris
 //
@@ -790,6 +793,9 @@ public:
 	*	toplevel windows.
 	*/
   void saveYourself();
+
+private:
+  // Disallow assignment and copy-construction is already done in base class
 };
 
 

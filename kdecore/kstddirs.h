@@ -192,6 +192,10 @@ private:
 
 	QString UserDir;
 	const char * const KDEDir;
+
+  // Disallow assignment and copy-construction
+  KStandardDirs( const KStandardDirs& ) {};
+  KStandardDirs& operator= ( const KStandardDirs& ) {};
 };
 
 #endif // SSK_KSTDDIRS_H

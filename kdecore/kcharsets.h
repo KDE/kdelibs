@@ -342,6 +342,11 @@ public:
 */
    const KCharsetConversionResult & convertTag(const char *tag);
    const KCharsetConversionResult & convertTag(const char *tag,int &l);
+
+private:
+  // Disallow assignment and copy-construction
+  KCharsetConverter( const KCharsetConverter& ) {};
+  KCharsetConverter& operator= ( const KCharsetConverter& ) { return *this; }
 };
     
 /**
@@ -583,6 +588,11 @@ public:
    const KCharsetConversionResult & convertTag(const char *tag,int &len);
   
    KCharset defaultCharset()const;
+
+private:
+  // Disable assignment and copy-construction
+  KCharsets( const KCharsets& ) {};
+  KCharsets& operator= ( const KCharsets& ) { return *this; }
 };
 
 #endif

@@ -19,6 +19,9 @@
 /* $Id$
  *
  * $Log$
+ * Revision 1.15  1998/05/08 20:45:08  kulow
+ * took out the #undef I added
+ *
  * Revision 1.14  1998/05/08 16:09:59  kulow
  * undef Color and GrayScale after including X11/X.h. This stupid header breaks
  * everything!
@@ -153,6 +156,16 @@ public:
 * left corner in global coordinates.
 */
   KDNDIcon( QPixmap &pixmap , int _x, int _y );
+
+  /**
+   * Copy constructor 
+   */
+  KDNDIcon( const KDNDIcon& icon );
+  
+  /**
+   * Assignment operator
+   */
+  KDNDIcon& operator= ( const KDNDIcon& icon );
 
 /** 
 * Destructor 
@@ -545,6 +558,11 @@ protected:
 * The last window we entered with the mouse pointer.
 */
   Window dndLastWindow;
+
+private:
+  // Disallow assignment and copy-construction
+  KDNDWidget( const KDNDWidget& ) {};
+  KDNDWidget& operator= ( const KDNDWidget& ) { return *this; };
 };
 
 #endif
