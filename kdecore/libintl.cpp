@@ -61,7 +61,7 @@ Cambridge, MA 02139, USA.  */
 #endif     
 
 #include <stdlib.h>
-#ifdef __ALPHA
+#ifdef __alpha
 #define __USE_GNU
 #endif
 #include <string.h>
