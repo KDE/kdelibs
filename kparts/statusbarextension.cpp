@@ -105,11 +105,11 @@ StatusBarExtension *StatusBarExtension::childObject( QObject *obj )
 
 bool StatusBarExtension::eventFilter(QObject * watched, QEvent* ev)
 {
-
-  if (!watched->inherits("KParts::ReadOnlyPart") || !statusBar())
-      return QObject::eventFilter(watched, ev);
-
   KStatusBar * sb = statusBar();
+
+  if (!sb || !GUIActivateEvent::test( ev ) ||
+      !watched->inherits("KParts::ReadOnlyPart")  )
+      return QObject::eventFilter(watched, ev);
 
   GUIActivateEvent *gae = static_cast<GUIActivateEvent*>(ev);
 
