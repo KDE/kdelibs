@@ -112,6 +112,54 @@ void KTextEdit::keyPressEvent( QKeyEvent *e )
         e->accept();
         return;
     }
+    else if ( KStdAccel::backwardWord().contains( key ) )
+    {
+      moveCursor(MoveWordBackward, false );
+      e->accept();
+      return;
+    }
+    else if ( KStdAccel::forwardWord().contains( key ) )
+    {
+      moveCursor( MoveWordForward, false );
+      e->accept();
+      return;
+    }
+    else if ( KStdAccel::next().contains( key ) )
+    {
+      moveCursor( MovePgDown, false );
+      e->accept();
+      return;
+    }
+    else if ( KStdAccel::prior().contains( key ) )
+    {
+      moveCursor( MovePgUp, false );
+      e->accept();
+      return;
+    }
+    else if ( KStdAccel::home().contains( key ) )
+    {
+      moveCursor( MoveHome, false );
+      e->accept();
+      return;
+    }
+    else if ( KStdAccel::end().contains( key ) )
+    {
+      moveCursor( MoveEnd, false );
+      e->accept();
+      return;
+    }
+    else if ( KStdAccel::beginningOfLine().contains( key ) )
+    {
+      moveCursor( MoveLineStart, false );
+      e->accept();
+      return;
+    }
+    else if ( KStdAccel::endOfLine().contains( key ) )
+    {
+      moveCursor(MoveLineEnd, false);
+      e->accept();
+      return;
+    }
 
     else if ( e->key() == Key_Insert &&
               (e->state() == (ShiftButton | ControlButton)) )

@@ -491,6 +491,30 @@ void KLineEdit::keyPressEvent( QKeyEvent *e )
         e->accept();
         return;
     }
+    else if ( KStdAccel::backwardWord().contains( key ) )
+    {
+      cursorWordBackward(false);
+      e->accept();
+      return;
+    }
+    else if ( KStdAccel::forwardWord().contains( key ) )
+    {
+      cursorWordForward(false);
+      e->accept();
+      return;
+    }
+    else if ( KStdAccel::beginningOfLine().contains( key ) )
+    {
+      home(false);
+      e->accept();
+      return;
+    }
+    else if ( KStdAccel::endOfLine().contains( key ) )
+    {
+      end(false);
+      e->accept();
+      return;
+    }
     
 
     // Filter key-events if EchoMode is normal and
@@ -1095,6 +1119,14 @@ bool KLineEdit::overrideAccel (const QKeyEvent* e)
     else if (KStdAccel::deleteWordBack().contains( key ))
         return true;
     else if (KStdAccel::deleteWordForward().contains( key ))
+        return true;
+    else if (KStdAccel::forwardWord().contains( key ))
+        return true;
+    else if (KStdAccel::backwardWord().contains( key ))
+        return true;
+    else if (KStdAccel::beginningOfLine().contains( key ))
+        return true;
+    else if (KStdAccel::endOfLine().contains( key ))
         return true;
 
     if (d->completionBox && d->completionBox->isVisible ())

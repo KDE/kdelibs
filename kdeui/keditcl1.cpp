@@ -499,6 +499,38 @@ void KEdit::keyPressEvent ( QKeyEvent *e)
     setModified(true);
     slotCursorPositionChanged();
   }
+  else if ( KStdAccel::backwardWord().contains( key ) ) {
+    moveCursor(MoveWordBackward, false );
+    slotCursorPositionChanged();
+  }
+  else if ( KStdAccel::forwardWord().contains( key ) ) {
+    moveCursor( MoveWordForward, false );
+    slotCursorPositionChanged();
+  }
+  else if ( KStdAccel::next().contains( key ) ) {
+    moveCursor( MovePgDown, false );
+    slotCursorPositionChanged();
+  }
+  else if ( KStdAccel::prior().contains( key ) ) {
+    moveCursor( MovePgUp, false );
+    slotCursorPositionChanged();
+  }
+  else if ( KStdAccel::home().contains( key ) ) {
+    moveCursor( MoveHome, false );
+    slotCursorPositionChanged();
+  }
+  else if ( KStdAccel::end().contains( key ) ) {
+    moveCursor( MoveEnd, false );
+    slotCursorPositionChanged();
+  }
+  else if ( KStdAccel::beginningOfLine().contains( key ) ) {
+    moveCursor( MoveLineStart, false);
+    slotCursorPositionChanged();
+  }
+  else if ( KStdAccel::endOfLine().contains( key ) ) {
+    moveCursor( MoveLineEnd, false);
+    slotCursorPositionChanged();
+  }
   else if ( key == Key_Insert ) {
     if (d->overwriteEnabled)
     {
