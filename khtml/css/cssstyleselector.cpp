@@ -1079,6 +1079,9 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
         default:
             return;
         }
+        if (f!=FNONE && style->display()==LIST_ITEM)
+            style->setDisplay(BLOCK);
+        
         style->setFloating(f);
         break;
     }
