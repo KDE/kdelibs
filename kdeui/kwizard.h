@@ -48,11 +48,11 @@ public:
 /**
 * Constructor
 */
-  KWizard(QWidget *parent = 0, const char *name = 0, bool modal = false, WFlags f = 0);
+  KWizard(QWidget *parent = 0, const char *name = 0, bool modal = false, WFlags f = 0) : QWizard(parent, name, modal, f) {}
 /**
 * Destructor
 */
-  ~KWizard() {};
+  ~KWizard() {}
 };
 
 #endif // __KWIZARD_H
