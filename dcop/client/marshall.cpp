@@ -220,9 +220,6 @@ QCString demarshal( QDataStream &stream, const QString &type )
         for (; i < count; ++i )
         {
             QCString arg = demarshal( stream, nestedType );
-            if ( arg.isEmpty() )
-                continue;
-
             result += arg;
 
             if ( i < count - 1 )
