@@ -361,6 +361,11 @@ QString KAction::statusText() const
 
 int KAction::plug( QWidget *w, int index )
 {
+  if (w == 0) {
+	kdDebug() << "KAction::plug called with 0 argument\n";
+ 	return -1;
+  }
+	
   if ( w->inherits("QPopupMenu") )
   {
     QPopupMenu* menu = static_cast<QPopupMenu*>( w );
