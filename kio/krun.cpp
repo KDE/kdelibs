@@ -108,7 +108,7 @@ pid_t KRun::run( const KService& _service, const KURL::List& _urls )
     if ( !(*it).isLocalFile() )
       b_local_files = false;
 
-  if ( !b_local_app || !b_local_files )
+  if ( !b_local_app || b_local_files )
   {
     QString error;
     if (KApplication::startServiceByDesktopPath( _service.desktopEntryPath(),
