@@ -1203,7 +1203,9 @@ void Ftp::listDir( const KURL &url )
     realURL.setProtocol( QString::fromLatin1("ftp") );
     if ( m_user != FTP_LOGIN )
       realURL.setUser( m_user );
-    // Setting the passw is probably a bad idea...
+    // We set the password, so that we don't ask for it if it was given
+    if ( m_pass != FTP_PASSWD )
+      realURL.setPass( m_pass );
     realURL.setHost( m_host );
     realURL.setPort( m_port );
     if ( m_initialPath.isEmpty() )
