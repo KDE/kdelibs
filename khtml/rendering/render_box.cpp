@@ -317,7 +317,8 @@ void RenderBox::close()
 
 short RenderBox::containingBlockWidth() const
 {
-    if (style()->htmlHacks() && style()->flowAroundFloats() && containingBlock()->isFlow() )
+    if (style()->htmlHacks() && style()->flowAroundFloats() && containingBlock()->isFlow() 
+            && style()->width().isVariable())
         return static_cast<RenderFlow*>(containingBlock())->lineWidth(m_y);
     else
         return containingBlock()->contentWidth();
