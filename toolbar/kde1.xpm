@@ -1,0 +1,36 @@
+/* XPM */
+/* Drawn  by Jonathan Buzzard for the K Desktop Environment */
+/* See http://www.kde.org */
+static char*kde1[]={
+"22 22 8 1",
+"a c #ffffff",
+"b c #c0c0c0",
+"# c #a0a0a4",
+"d c #808080",
+"e c #303030",
+"c c #303030",
+"f c #000000",
+". c None",
+"......................",
+"......................",
+"..........##..........",
+"....###..#aa#..###....",
+"...#aaa##aaaa##bab#...",
+"...#aaaaaaaaaaaaab#...",
+"...ccaaaaaaaaaaabde...",
+".#####aaabdccaaade###.",
+"#baaaaaabdeffcaaaaaaa#",
+"#aaaaaaabedbccaaaaaaad",
+"c###aaaaaddddbaaadddde",
+"cccc#aaaaaaaaaaaddeeee",
+"ccc#aaaaaaaaaaaaabdeee",
+".c#aaaaaaaaaaaaaaaa#e.",
+"..#aaabbaaaaa###aaa#..",
+"..cbbcce#aaa#ece###c..",
+"..ccccce#aaa#eccceed..",
+"..cccccc#bab#ecccddd..",
+"...cc...c###e..eccc...",
+"........cccce.........",
+"........eccce.........",
+".........ccc.........."};
+
