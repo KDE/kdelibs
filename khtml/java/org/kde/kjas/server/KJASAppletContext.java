@@ -398,12 +398,14 @@ public class KJASAppletContext implements AppletContext
     public int[] getMember(String appletID, int objid, String name, StringBuffer value)
     {
         Main.debug("getMember: " + name);
-        Object o;
+        Object o = null;
         if (objid != 0)
             o = jsReferencedObjects.get(new Integer(objid));
-        else
-            o = ((KJASAppletStub) stubs.get( appletID )).getApplet();
-            
+        else {
+            KJASAppletStub stub = (KJASAppletStub) stubs.get( appletID );
+            if (stub != null)
+                o = ((KJASAppletStub) stubs.get( appletID )).getApplet();
+        } 
         int ret[] = { JError, objid };
         if (o == null)
             return ret;
@@ -435,11 +437,14 @@ public class KJASAppletContext implements AppletContext
             jsobject = null;
             return true;
         }
-        Object o;
+        Object o = null;
         if (objid != 0)
             o = jsReferencedObjects.get(new Integer(objid));
-        else
-            o = ((KJASAppletStub) stubs.get( appletID )).getApplet();
+        else {
+            KJASAppletStub stub = (KJASAppletStub) stubs.get( appletID );
+            if (stub != null)
+                o = ((KJASAppletStub) stubs.get( appletID )).getApplet();
+        }
         if (o == null) {
             Main.debug("Error in putValue: applet " + appletID + " not found");
             return false;
@@ -572,11 +577,14 @@ public class KJASAppletContext implements AppletContext
     
     public int[] callMember(String appletID, int objid, String name, StringBuffer value, java.util.List args)
     {
-        Object o;
+        Object o = null;
         if (objid != 0)
             o = jsReferencedObjects.get(new Integer(objid));
-        else
-            o = ((KJASAppletStub) stubs.get( appletID )).getApplet();
+        else {
+            KJASAppletStub stub = (KJASAppletStub) stubs.get( appletID );
+            if (stub != null)
+                o = ((KJASAppletStub) stubs.get( appletID )).getApplet();
+        }
 
         int [] ret = { JError, objid };
         if(o == null)
