@@ -788,7 +788,16 @@ void RenderPartObject::updateWidget()
 	embed->param.append( QString::fromLatin1("__KHTML__CLASSID=\"%1\"").arg( o->classId ) ); 
 	embed->param.append( QString::fromLatin1("__KHTML__CODEBASE=\"%1\"").arg( static_cast<ElementImpl *>(o)->getAttribute(ATTR_CODEBASE).string() ) ); 
 
-        part->requestObject( this, url, serviceType, embed->param );
+	// Check if serviceType can be handled by ie. nsplugin
+	// else default to the activexhandler if there is a classid
+	// and a codebase, where we may download the ocx if it's missing (Niko)
+	bool retval = part->requestObject( this, url, serviceType, embed->param );
+
+	if(!retval && !o->classId.isEmpty() && !( static_cast<ElementImpl *>(o)->getAttribute(ATTR_CODEBASE).string() ).isEmpty() )
+	{
+	    serviceType = "application/x-activex-handler";
+	    part->requestObject( this, url, serviceType, embed->param );
+	}
      }
   } else if ( m_obj->id() == ID_EMBED ) {
 
