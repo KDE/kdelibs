@@ -1786,7 +1786,7 @@ bool HTTPProtocol::readHeader()
     }
 
     kdDebug(7103) << "(" << getpid() << ") Request URI's user: "<< m_request.url.user() << endl;
-    bool result = openPassDlg( msg, user, passwd, !m_request.url.user().isEmpty() );
+    bool result = openPassDlg( msg, user, passwd, (!m_request.user.isEmpty() && m_iAuthFailed == 1) );
     if( result )
     {
       // Note that a single io-slave cannot be doing
@@ -2213,9 +2213,12 @@ void HTTPProtocol::stat(const KURL& url)
   atom.m_long = S_IRUSR | S_IRGRP | S_IROTH; // readable by everybody
   entry.append( atom );
 
-  atom.m_uds = KIO::UDS_SIZE;
-  atom.m_long = m_iSize;
-  entry.append( atom );
+  if ( m_iSize != -1 )
+  {
+    atom.m_uds = KIO::UDS_SIZE;
+    atom.m_long = m_iSize;
+    entry.append( atom );
+  }
 
   statEntry( entry );
 
