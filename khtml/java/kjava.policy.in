@@ -1,4 +1,4 @@
-grant codeBase "file:@prefix@/share/apps/kjava/-"
+grant codeBase "file:@kde_datadir@/kjava/-"
 {
     permission java.security.AllPermission;
 };
