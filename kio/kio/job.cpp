@@ -2461,7 +2461,7 @@ void CopyJob::copyNextFile()
         }
 
         m_bCurrentOperationIsLink = false;
-        KIO::Job * newjob;
+        KIO::Job * newjob = 0L;
         if ( m_mode == Link )
         {
             //kdDebug(7007) << "Linking" << endl;
