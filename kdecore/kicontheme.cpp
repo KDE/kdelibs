@@ -42,7 +42,7 @@ class KIconThemePrivate
 public:
     QString example, screenshot;
     QString linkOverlay, lockOverlay, zipOverlay, shareOverlay;
-    bool hidden; 
+    bool hidden;
 };
 
 /**
@@ -91,7 +91,7 @@ KIconTheme::KIconTheme(const QString& name, const QString& appName)
     // "hicolor" icon themes. For these, the _global_ theme description
     // files are used..
 
-    if (!appName.isEmpty() && 
+    if (!appName.isEmpty() &&
        ( name == "crystalsvg" || name== "hicolor" || name == "locolor" ) )
     {
 	icnlibs = KGlobal::dirs()->resourceDirs("data");
@@ -266,13 +266,13 @@ QStringList KIconTheme::queryIcons(int size, KIcon::Context context) const
         dir = dirs.current();
         if ((context != KIcon::Any) && (context != dir->context()))
             continue;
-        if ((dir->type() == KIcon::Fixed) && (dir->size() == size)) 
+        if ((dir->type() == KIcon::Fixed) && (dir->size() == size))
         {
             result += dir->iconList();
             continue;
         }
         if ((dir->type() == KIcon::Scalable) &&
-            (size >= dir->minSize()) && (size <= dir->maxSize())) 
+            (size >= dir->minSize()) && (size <= dir->maxSize()))
         {
             result += dir->iconList();
             continue;
@@ -283,7 +283,7 @@ QStringList KIconTheme::queryIcons(int size, KIcon::Context context) const
     }
 
     return result;
-        
+
     dirs.toFirst();
 
     // Find close match
@@ -359,10 +359,34 @@ KIcon KIconTheme::iconPath(const QString& name, int size, KIcon::MatchType match
                 continue;
         } else
         {
+          // dw < 0 means need to scale up to get an icon of the requested size
+          if (dir->type() == KIcon::Fixed)
+          {
             dw = dir->size() - size;
-            if (dir->type() != KIcon::Threshold &&
-               ((dw > 7) || (abs(dw) >= abs(delta))))
-                continue;
+          } else if (dir->type() == KIcon::Scalable)
+          {
+            if (size < dir->minSize())
+              dw = dir->minSize() - size;
+            else if (size > dir->maxSize())
+              dw = dir->maxSize() - size;
+            else
+              dw = 0;
+          } else if (dir->type() == KIcon::Threshold)
+          {
+            if (size < dir->size() - dir->threshold())
+              dw = dir->size() - dir->threshold() - size;
+            else if (size > dir->size() + dir->threshold())
+              dw = dir->size() + dir->threshold() - size;
+            else
+              dw = 0;
+          }
+          /* Skip this if we've found a closer one, unless
+             it's a downscale, and we only had upscales befores.
+             This is to avoid scaling up unless we have to,
+             since that looks very ugly */
+          if ((abs(dw) >= abs(delta)) &&
+              !(delta > 0 && dw < 0))
+            continue;
         }
 
         path = dir->iconPath(name);
