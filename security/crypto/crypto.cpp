@@ -423,7 +423,7 @@ QString whatstr;
 
 #ifdef HAVE_SSL
   grid = new QGridLayout(tabSSLCOpts, 9, 4, KDialog::marginHint(), KDialog::spacingHint());
-  mWarnSelfSigned = new QCheckBox(i18n("Warn on &self signed certificates or unknown CA's"), tabSSLCOpts);
+  mWarnSelfSigned = new QCheckBox(i18n("Warn on &self-signed certificates or unknown CA's"), tabSSLCOpts);
   connect(mWarnSelfSigned, SIGNAL(clicked()), SLOT(configChanged()));
   mWarnExpired = new QCheckBox(i18n("Warn on &expired certificates"), tabSSLCOpts);
   connect(mWarnExpired, SIGNAL(clicked()), SLOT(configChanged()));
