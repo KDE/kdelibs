@@ -510,7 +510,7 @@ void ElementImpl::detach()
 void ElementImpl::applyChanges(bool top, bool force)
 {
     // ### find a better way to handle non-css attributes
-    if(!m_render) return;
+    setChanged(false);
 
     if (top)
 	recalcStyle();
@@ -522,6 +522,9 @@ void ElementImpl::applyChanges(bool top, bool force)
 	n->applyChanges(false,force || changed());
 	n = n->nextSibling();
     }
+
+    if (!m_render)
+	return;
 
     // calc min and max widths starting from leafs
     // might belong to renderer, but this is simple to do here
@@ -541,7 +544,7 @@ void ElementImpl::applyChanges(bool top, bool force)
 
 void ElementImpl::recalcStyle()
 {
-    if(!m_render) return;
+    if(!m_style) return;
     bool faf = m_style->flowAroundFloats();
     EDisplay oldDisplay = m_style->display();
 
