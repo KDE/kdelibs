@@ -12,11 +12,9 @@
 #include <qobjectlist.h>
 
 #include <kaction.h>
+#include <kdebug.h>
 
 using namespace KParts;
-
-// Less debug output for now..
-// #define DEBUG_BUILDER
 
 namespace KParts
 {
@@ -103,12 +101,10 @@ void MainWindow::setXML( const QString &document )
 
 QObject *MainWindow::createContainer( QWidget *parent, int index, const QDomElement &element, const QByteArray &containerStateBuffer )
 {
-#ifdef DEBUG_BUILDER
-  qDebug( "KPartsMainWindow::createContainer()" );
-  qDebug( "tagName() : %s", element.tagName().ascii() );
+  kDebugInfo( 1001, "KPartsMainWindow::createContainer()" );
+  kDebugInfo( 1001, "tagName() : %s", element.tagName().ascii() );
   if ( parent )
-   qDebug( "parent.className() : %s", parent->className() );
-#endif
+   kDebugInfo( 1001, "parent.className() : %s", parent->className() );
 
   if ( element.tagName() == "MenuBar" )
     return menuBar();
@@ -246,7 +242,7 @@ QByteArray MainWindow::removeContainer( QObject *container, QWidget *parent )
 
 void MainWindow::createGUI( Part * part )
 {
-  qDebug(QString("KPartsMainWindow::createGUI for %1").arg(part?part->name():"0L"));
+  kDebugInfo( 1000, QString("KPartsMainWindow::createGUI for %1").arg(part?part->name():"0L"));
   // start the factory with this as an input (shell servant),
   // the part servant (or none) as the other input, and this as an output (GUI builder)
 
@@ -254,7 +250,7 @@ void MainWindow::createGUI( Part * part )
 
   if ( d->m_activePart )
   {
-    qDebug( "deactivating GUI for %s", d->m_activePart->name() );
+    kDebugInfo( 1000, "deactivating GUI for %s", d->m_activePart->name() );
     QListIterator<XMLGUIServant> pIt( *d->m_activePart->pluginServants() );
     pIt.toLast();
     for (; pIt.current(); --pIt )

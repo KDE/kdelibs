@@ -1,10 +1,9 @@
 
 #include "kpartmanager.h"
 #include "kpart.h"
+#include <kdebug.h>
 
 #include <qapplication.h>
-
-#include <assert.h>
 
 using namespace KParts;
 
@@ -45,13 +44,14 @@ bool PartManager::eventFilter( QObject *obj, QEvent *ev )
     part = findPartFromWidget( w );
     if ( part && part != m_activePart )
     {
-      qDebug(QString("Part %1 made active because %2 got event").arg(part->name()).arg(w->className()));
+      kDebugInfo( 1000, QString("Part %1 made active because %2 got event").arg(part->name()).arg(w->className()) );
       setActivePart( part );
       // I suppose we don't return here in case of child parts, right ?
       // But it means we'll emit the event for each intermediate parent ? (David)
       // Perhaps we should store the new part and emit at the end ?
 
       // I think we should return here (Simon)
+      return false; // Ok, let's return. We'll test child parts later on. (David)
     }
 
     w = w->parentWidget();
@@ -90,7 +90,7 @@ void PartManager::addPart( Part *part )
   if ( part->widget()->focusPolicy() == QWidget::NoFocus ||
        part->widget()->focusPolicy() == QWidget::TabFocus )
   {
-    qDebug(QString("Part %1 must have at least a ClickFocus policy. Prepare for trouble !").arg(part->name()));
+    kDebugWarning( 1000, QString("Part %1 must have at least a ClickFocus policy. Prepare for trouble !").arg(part->name()) );
   }
 
   part->widget()->show();
@@ -101,13 +101,12 @@ void PartManager::removePart( Part *part )
 {
   if ( m_parts.findRef( part ) == -1 )
   {
-    qDebug(QString("Can't remove part %1, not in KPartManager's list.").arg(part->name()));
-    abort();
+    kDebugFatal (1000, QString("Can't remove part %1, not in KPartManager's list.").arg(part->name()) );
     return;
   }
   disconnect( part, SIGNAL( destroyed() ), this, SLOT( slotObjectDestroyed() ) );
 
-  qDebug(QString("Part %1 removed").arg(part->name()));
+  kDebugInfo( 1000, QString("Part %1 removed").arg(part->name()) );
   m_parts.removeRef( part );
 
   if ( part == m_activePart )
@@ -124,7 +123,7 @@ void PartManager::setActivePart( Part *part )
 
 void PartManager::slotObjectDestroyed()
 {
-  qDebug("KPartManager::slotObjectDestroyed()");
+  kDebugInfo( 1000, "KPartManager::slotObjectDestroyed()" );
   removePart( (Part *)sender() );
 }
 

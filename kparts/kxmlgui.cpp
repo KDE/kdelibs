@@ -20,6 +20,7 @@
 #include "kxmlgui.h"
 
 #include <qfile.h>
+#include <kdebug.h>
 
 using namespace KParts;
 
@@ -323,7 +324,7 @@ void XMLGUIFactory::buildRecursive( const QDomElement &element, XMLGUIContainerN
       {	
         if ( parentNode->container() && !parentNode->container()->isWidgetType() )
         {
-          qDebug( "cannot create container widget with non-widget as parent!" );
+          kDebugInfo( 1000,"cannot create container widget with non-widget as parent!" );
     	  continue;
         }
 

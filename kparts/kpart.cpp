@@ -15,6 +15,7 @@
 #include <stdio.h>
 #include <unistd.h>
 #include <assert.h>
+#include <kdebug.h>
 
 using namespace KParts;
 
@@ -59,7 +60,7 @@ Part::~Part()
     // We need to disconnect first, to avoid calling it !
     disconnect( m_widget, SIGNAL( destroyed() ),
                 this, SLOT( slotWidgetDestroyed() ) );
-    qDebug(QString("***** deleting widget '%1'").arg(m_widget->name()));
+    kDebugInfo( 1000, QString("***** deleting widget '%1'").arg(m_widget->name()) );
     delete (QWidget *)m_widget;
   }
 
@@ -81,8 +82,7 @@ QStringList Part::plugins()
   if ( !instance() )
     return QStringList();
 
-#warning FIX THIS WHEN MOVING TO KDELIBS
-  return instance()->dirs()->findAllResources( "appdata", "*", true, false );
+  return instance()->dirs()->findAllResources( "data", instance()->instanceName()+"/kpartplugins/*", true, false );
 }
 
 QValueList<QDomDocument> Part::pluginDocuments()
@@ -190,20 +190,20 @@ Plugin* Part::plugin( const char* libname )
     KLibLoader* loader = KLibLoader::self();
     if ( !loader )
     {
-	qDebug("KPart: No library loader installed");
+	kDebugError( 1000, "KPart: No library loader installed" );
 	return 0;
     }
 
     KLibFactory* f = loader->factory( libname );
     if ( !f )
     {
-	qDebug("KPart: Could not initialize library");
+	kDebugError( 1000, "KPart: Could not initialize library" );
 	return 0;
     }
     QObject* obj = f->create( this, libname, "KPlugin" );
     if ( !obj->inherits("KPlugin" ) )
     {
-	qDebug("The library does not feature an object of class Plugin");
+	kDebugError( 1000, "The library does not feature an object of class Plugin" );
 	delete obj;
 	return 0;
     }
@@ -231,7 +231,7 @@ QAction *Part::action( const QDomElement &element )
 
 void Part::slotWidgetDestroyed()
 {
-  debug(QString(" ********** KPart::slotWidgetDestroyed(), deleting part '%1'").arg(name()));
+  kDebugInfo( 1000, QString(" ********** KPart::slotWidgetDestroyed(), deleting part '%1'").arg(name()) );
   m_widget = 0;
   delete this;
 }
