@@ -208,7 +208,7 @@ namespace KJS {
       thisObj->ObjectImp::put(exec, propertyName, value, attr);
     else if (entry->attr & ReadOnly) // readonly! Can't put!
 #ifdef KJS_VERBOSE
-      fprintf(stderr,"Attempt to change value of readonly property '%s'\n",propertyName.ascii());
+      fprintf(stderr,"WARNING: Attempt to change value of readonly property '%s'\n",propertyName.ascii());
 #else
       ; // do nothing
 #endif
