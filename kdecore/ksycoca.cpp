@@ -257,7 +257,7 @@ QDataStream * KSycoca::findFactory(KSycocaFactoryId id)
            triedLaunchingKdeinit = true;
            kdDebug(7011) << "findFactory: we have no database.... launching kdeinit" << endl;
            KProcess proc;
-           proc << locate("exe","kdeinit");
+           proc << locate("exe","kdeinit") << "--suicide";
            proc.start( KProcess::Block );
            // Ok, the new database should be here now, open it.
          }
