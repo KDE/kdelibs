@@ -989,7 +989,7 @@ void KCookieJar::eatCookie(KHttpCookiePtr cookiePtr)
 void KCookieJar::eatCookiesForDomain(const QString &domain)
 {
    KHttpCookieList *cookieList = cookieDomains[domain];
-   if (cookieList->isEmpty()) return;
+   if (!cookieList || cookieList->isEmpty()) return;
 
    cookieList->clear();
    if (cookieList->getAdvice() == KCookieDunno)
@@ -1006,7 +1006,8 @@ void KCookieJar::eatAllCookies()
     for ( QStringList::Iterator it=domainList.begin();
     	  it != domainList.end();)
     {
-        eatCookiesForDomain(*it++);
+        QString domain = *it++;
+        eatCookiesForDomain(domain); // This might remove domain from domainList!
     }
 }
 
