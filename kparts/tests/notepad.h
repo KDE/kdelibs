@@ -17,7 +17,7 @@ public:
   NotepadPart( QObject *parent, QWidget * parentWidget );
   virtual ~NotepadPart();
 
-  virtual bool save();
+  virtual bool saveFile();
 
 protected:
   virtual bool openFile();

@@ -58,7 +58,7 @@ bool NotepadPart::openFile()
   return true;
 }
 
-bool NotepadPart::save()
+bool NotepadPart::saveFile()
 {
   if ( !isReadWrite() )
     return false;

@@ -324,15 +324,6 @@ public:
   virtual bool closeURL();
 
   /**
-   * Save the file in the location from which it was opened.
-   *
-   * In the implementation, save to @p m_file and then "return saveToURL();"
-   * (You might want to ask for a confirmation first.)
-   * @ref saveToURL() takes care of resetting the modified flag as well, so
-   * you should really call it :)
-   */
-  virtual bool save() = 0;
-  /**
    * Save the file to a new location.
    *
    * Calls @ref save(), no need to reimplement
@@ -347,7 +338,21 @@ public slots:
    */
   virtual void setModified();
 
+  /**
+   * Save the file in the location from which it was opened.
+   * You can connect this to the "save" action.
+   * Calls @ref saveFile and @ref saveToURL, no need to reimplement.
+   */
+  virtual bool save();
+
 protected:
+  /**
+   * Save to a local file.
+   * You need to implement it, to save to @p m_file.
+   * The framework takes care of re-uploading afterwards.
+   */
+  virtual bool saveFile() = 0;
+
   /**
    * Save the file.
    *
@@ -364,6 +369,7 @@ protected slots:
 private:
   bool m_bModified;
   bool m_bReadWrite;
+  bool m_bClosing;
 };
 
 };

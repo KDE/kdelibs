@@ -298,7 +298,7 @@ void ReadOnlyPart::slotJobError( int, int, const char * text )
 //////////////////////////////////////////////////
 
 ReadWritePart::ReadWritePart( QObject *parent, const char *name )
- : ReadOnlyPart( parent, name ), m_bModified( false )
+ : ReadOnlyPart( parent, name ), m_bModified( false ), m_bClosing( false )
 {
   setReadWrite( false );
 }
@@ -337,7 +337,8 @@ bool ReadWritePart::closeURL()
 
     switch(res) {
     case KMessageBox::Yes :
-      return save(); // TODO : wait for upload to finish, and clean up temp file !
+      m_bClosing = true; // remember to clean up the temp file
+      return save();
     case KMessageBox::No :
       return true;
     default : // case KMessageBox::Cancel :
@@ -348,12 +349,17 @@ bool ReadWritePart::closeURL()
   return ReadOnlyPart::closeURL();
 }
 
+bool ReadWritePart::save()
+{
+  return saveFile() && saveToURL();
+}
+
 bool ReadWritePart::saveAs( const KURL & kurl )
 {
   if (kurl.isMalformed())
       return false;
   m_url = kurl; // Store where to upload in saveToURL
-  return save() && saveToURL(); // Save local file and upload local file
+  return save(); // Save local file and upload local file
 }
 
 bool ReadWritePart::saveToURL()
@@ -361,6 +367,7 @@ bool ReadWritePart::saveToURL()
   if ( m_url.isLocalFile() )
   {
     m_bModified = false;
+    emit completed();
     return true; // Nothing to do
   }
   else
@@ -377,6 +384,8 @@ bool ReadWritePart::saveToURL()
 void ReadWritePart::slotUploadFinished( int /*_id*/ )
 {
   m_bModified = false;
+  if ( m_bClosing )
+    ReadOnlyPart::closeURL();
   emit completed();
 }
 
