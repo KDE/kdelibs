@@ -62,7 +62,7 @@ static QString getDescrFromNum(unsigned short _num)
   for ( KDebugEntry *ent = KDebugCache->first();
 		  ent != 0; ent = KDebugCache->next()) {
 	  if (ent->number == _num) {
-		  return ent->descr.copy();
+		  return ent->descr;
 	  }
   }
 
@@ -127,49 +127,63 @@ void kDebugBackend( unsigned short nLevel, unsigned short nArea,
                     const char * pFormat, va_list arguments )
 {
 
-  KConfig * pConfig = 0L;
-  if ( KGlobal::_instance )
+  static KConfig * pConfig = 0L;
+  if ( !pConfig && KGlobal::_instance )
   {
       pConfig = new KConfig( "kdebugrc", false );
-      pConfig->setGroup( QString::number(static_cast<int>(nArea)) );
+      pConfig->setGroup("0");
+  }
+ 
+  static QString aAreaName;
+  static int oldarea = 0;
+  if (pConfig && oldarea != nArea) {
+    pConfig->setGroup( QString::number(static_cast<int>(nArea)) );
+    oldarea = nArea;
+    if ( nArea > 0)
+      aAreaName = getDescrFromNum(nArea);
+    if (aAreaName.isEmpty())
+      aAreaName = KGlobal::instance()->instanceName();
   }
 
-  /* Determine output */
-  int nPriority = 0; // for syslog
-  QString aCaption;
-  QString aAreaName;
-  if ( nArea > 0 && KGlobal::_instance )
-    aAreaName = getDescrFromNum(nArea);
-  if (aAreaName.isEmpty() && KGlobal::_instance)
-    aAreaName = KGlobal::instance()->instanceName();
+  static short nOutput = 2;
+  static ushort oldLevel = KDEBUG_FATAL + 1;
+  static int nPriority = 0;
+  static QString aCaption;
+  
+  if (oldLevel != nLevel) {
+    /* Determine output */
 
-  QString key;
-  switch( nLevel )
-        {
-        case KDEBUG_INFO:
-          key = "InfoOutput";
-          aCaption = "Info";
-          nPriority = LOG_INFO;
-          break;
-        case KDEBUG_WARN:
-          key = "WarnOutput";
-          aCaption = "Warning";
-          nPriority = LOG_WARNING;
-          break;
-        case KDEBUG_FATAL:
-          key = "FatalOutput";
-          aCaption = "Fatal Error";
-          nPriority = LOG_CRIT;
-          break;
-        case KDEBUG_ERROR:
-        default:
-          /* Programmer error, use "Error" as default */
-          key = "ErrorOutput";
-          aCaption = "Error";
-          nPriority = LOG_ERR;
-          break;
-        };
-  short nOutput = pConfig ? pConfig->readNumEntry(key, 2) : 2;
+    QString key;
+    switch( nLevel )
+      {
+      case KDEBUG_INFO:
+	key = "InfoOutput";
+	aCaption = "Info";
+	nPriority = LOG_INFO;
+	break;
+      case KDEBUG_WARN:
+	key = "WarnOutput";
+	aCaption = "Warning";
+	nPriority = LOG_WARNING;
+	break;
+      case KDEBUG_FATAL:
+	key = "FatalOutput";
+	aCaption = "Fatal Error";
+	nPriority = LOG_CRIT;
+	break;
+      case KDEBUG_ERROR:
+      default:
+	/* Programmer error, use "Error" as default */
+	key = "ErrorOutput";
+	aCaption = "Error";
+	nPriority = LOG_ERR;
+	break;
+      }
+
+    nOutput = pConfig ? pConfig->readNumEntry(key, 2) : 2;
+  }
+  
+  
 
   // Output
   switch( nOutput )
@@ -249,7 +263,11 @@ void kDebugBackend( unsigned short nLevel, unsigned short nArea,
   if( ( nLevel == KDEBUG_FATAL ) && pConfig &&
           ( pConfig->readNumEntry( "AbortFatal", 0 ) ) )
         abort();
+
+#ifdef NDEBUG
   delete pConfig;
+  pConfig = 0;
+#endif
 }
 
 
