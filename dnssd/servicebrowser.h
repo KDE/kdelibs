@@ -113,20 +113,22 @@ public:
 	
 	\code
 	switch(DNSSD::ServiceBrowser::isAvailable()) {	    
+	  case DNSSD::ServiceBrowser::Working:
+	    return "";
           case DNSSD::ServiceBrowser::Stopped:
-          return i18n("<p>The Zeroconf daemon is not running. See the Service Discovery Handbook"
-                      " for more information.<br/>"
-	              "Other users will not see this system when browsing"
-	              " the network via zeroconf, but normal access will still work.</p>");
+            return i18n("<p>The Zeroconf daemon is not running. See the Service Discovery Handbook"
+                        " for more information.<br/>"
+	                "Other users will not see this system when browsing"
+	                " the network via zeroconf, but normal access will still work.</p>");
           case DNSSD::ServiceBrowser::Unsupported:
-          return i18n("<p>Zeroconf support is not available in this version of KDE."
-                      " See the Service Discovery Handbook for more information.<br/>"
-                      "Other users will not see this system when browsing"
-                      " the network via zeroconf, but normal access will still work.</p>");
+            return i18n("<p>Zeroconf support is not available in this version of KDE."
+                        " See the Service Discovery Handbook for more information.<br/>"
+                        "Other users will not see this system when browsing"
+                        " the network via zeroconf, but normal access will still work.</p>");
           default:
-          return i18n("<p>Unknown error with Zeroconf.<br/>"
-                      "Other users will not see this system when browsing"
-                      " the network via zeroconf, but normal access will still work.</p>");
+            return i18n("<p>Unknown error with Zeroconf.<br/>"
+                        "Other users will not see this system when browsing"
+                        " the network via zeroconf, but normal access will still work.</p>");
         }
 	\endcode
 
