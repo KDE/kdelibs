@@ -24,7 +24,7 @@
 KStdAccel::KStdAccel(KConfig* /* cfg */) //: KKeyConfig(cfg)
 {
   config = new KConfig; // we want the global stuff, and only the global stuff
-  config->setGroup("Keys");
+  config->setGroup("Standard Keys");
 }
 
 KStdAccel::~KStdAccel()
