@@ -1245,7 +1245,7 @@ void RenderTable::layoutRow(int r)
 
     	if (style()->direction()==RTL)
     	{
-	    cell->setPos( columnPos[totalCols]-columnPos[indx+cell->colSpan()],
+	    cell->setPos( columnPos[(int)totalCols]-columnPos[(int)(indx+cell->colSpan())],
 	    	rowHeights[rindx] );
 	}
 	else
