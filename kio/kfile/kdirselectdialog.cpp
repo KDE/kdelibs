@@ -404,21 +404,21 @@ void KDirSelectDialog::slotMkdir()
     bool selectDirectory = true;
     bool writeOk = false;
     bool exists = false;
-    KURL url( url() );
+    KURL folderurl( url() );
 
     QStringList dirs = QStringList::split( QDir::separator(), directory );
     QStringList::ConstIterator it = dirs.begin();
 
     for ( ; it != dirs.end(); ++it )
     {
-        url.addPath( *it );
-        exists = KIO::NetAccess::exists( url, false, 0 );
-        writeOk = !exists && KIO::NetAccess::mkdir( url, topLevelWidget() );
+        folderurl.addPath( *it );
+        exists = KIO::NetAccess::exists( folderurl, false, 0 );
+        writeOk = !exists && KIO::NetAccess::mkdir( folderurl, topLevelWidget() );
     }
 
     if ( exists ) // url was already existant
     {
-        QString which = url.isLocalFile() ? url.path() : url.prettyURL();
+        QString which = folderurl.isLocalFile() ? folderurl.path() : folderurl.prettyURL();
         KMessageBox::sorry(this, i18n("A file or folder named %1 already exists.").arg(which));
         selectDirectory = false;
     }
@@ -426,7 +426,7 @@ void KDirSelectDialog::slotMkdir()
         KMessageBox::sorry(this, i18n("You do not have permission to create that folder." ));
     }
     else if ( selectDirectory ) {
-        setCurrentURL( url );
+        setCurrentURL( folderurl );
     }
 }
 
