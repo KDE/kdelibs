@@ -57,7 +57,7 @@ public:
    *   copy the options in _ksc.
    *  This constructor also sets up the dialog.
    */
-  KSpellConfig (QWidget *parent=0, char *name=0,
+  KSpellConfig (QWidget *parent=0, const char *name=0,
 		KSpellConfig *_ksc=0);
 
   KSpellConfig (const KSpellConfig &);

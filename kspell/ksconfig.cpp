@@ -28,7 +28,7 @@ KSpellConfig::KSpellConfig (const KSpellConfig &_ksc)
   nodialog=TRUE;
 }
 
-KSpellConfig::KSpellConfig (QWidget *parent, char *name,
+KSpellConfig::KSpellConfig (QWidget *parent, const char *name,
 			    KSpellConfig *_ksc) : QWidget (parent, name)
 {
   kc=KGlobal::config();
