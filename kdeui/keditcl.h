@@ -235,7 +235,7 @@ public:
         into the document. OPEN_INSERT means that the file will be inserted
         into the current document at the current cursor position.
     */
-    int 	loadFile( QString filename , int mode );
+    int 	loadFile( const QString& filename , int mode );
 
 
     /** Returns the filename of the currnet file. You can use setName() to set the
@@ -291,7 +291,7 @@ public:
 
     /** Returns the Indent Mode. TRUE = Indent  mode on, FALSE = Indent mode off.
      */
-    bool        autoIndentMode(){ return autoIndMode; };
+    bool        autoIndentMode(){ return autoIndent; };
 
     /** Install a Popup Menue for KEdit. The Popup Menu will be activated on
         a right mouse button press event.
@@ -444,7 +444,6 @@ private:
 private:
 
     QString	killbufferstring;
-    QWidget     *p_parent;
     QFileDialog *fbox;
     KEdSrch 	*srchdialog;
     KEdReplace 	*replace_dialog;
@@ -459,7 +458,7 @@ private:
     QString     current_directory;
 
     bool 	modified;
-    bool 	autoIndMode;
+    bool 	autoIndent;
     bool 	can_replace;
     bool	killing;
     bool 	killtrue;

@@ -53,7 +53,7 @@ KEdit::KEdit(KApplication *a, QWidget *parent, const char *name,
     fill_column_is_set = TRUE;
     word_wrap_is_set = TRUE;
     fill_column_value = 80;
-    autoIndMode = false;
+    autoIndent = false;
     reduce_white_on_justify = true;
 
     current_directory = QDir::currentDirPath();
@@ -74,7 +74,10 @@ KEdit::KEdit(KApplication *a, QWidget *parent, const char *name,
 
 
 KEdit::~KEdit(){
-
+  delete srchdialog;
+  delete replace_dialog;
+  //  delete file_dialog;
+  delete gotodialog;
 }
 
 void KEdit::repaintAll(){
@@ -122,7 +125,7 @@ void  KEdit::setFillColumnMode(int line, bool set){
 }
 
 
-int KEdit::loadFile(QString name, int mode){
+int KEdit::loadFile(const QString& name, int mode){
 
     int fdesc;
     struct stat s;
@@ -732,7 +735,7 @@ void KEdit::keyPressEvent ( QKeyEvent *e){
 	    if (isReadOnly())
 	      return;
 	    int line, col;
-	    cursorPosition(&line, &col);
+	    getCursorPosition(&line, &col);
 	    QMultiLineEdit::insertAt("\t", line, col);
 	  }
 	  else{
@@ -813,7 +816,7 @@ void KEdit::keyPressEvent ( QKeyEvent *e){
       if (isReadOnly())
 	return;
       int line, col;
-      cursorPosition(&line, &col);
+      getCursorPosition(&line, &col);
       QMultiLineEdit::insertAt("\t", line, col);
       emit CursorPositionChanged();
       return;
@@ -854,7 +857,7 @@ void KEdit::keyPressEvent ( QKeyEvent *e){
     if (isReadOnly())
       return;
     int line, col;
-    cursorPosition(&line, &col);
+    getCursorPosition(&line, &col);
     QMultiLineEdit::insertAt("\t", line, col);
     emit CursorPositionChanged();
     return;
@@ -887,7 +890,7 @@ bool KEdit::format(QStrList& par){
 
   for( k = 0, l = 0; k < (int) mstring.length() && l <= fill_column_value; k++){
 
-    if(mstring.data()[k] == '\t')
+    if(mstring.at(k) == '\t')
       l +=8 - l%8;
     else
       l ++;
@@ -921,13 +924,13 @@ bool KEdit::format(QStrList& par){
     space_pos = -1; //Matthias
     for( k = 0, l = 0; k < (int) pstring.length() /* && l <= fill_column_value */; k++){//Matthias: commented out
 
-      if(pstring.data()[k] == '\t')
+      if(pstring.at(k) == '\t')
         l +=8 - l%8;
       else
 	l ++;
 
       if ((!space_pos||l<=fill_column_value) &&
-	  (pstring.data()[k]==' '||pstring.data()[k]=='\t')) //Matthias
+	  (pstring.at(k)==' '||pstring.at(k)=='\t')) //Matthias
 	space_pos = k;
 
       if( l <= fill_column_value )
@@ -949,25 +952,25 @@ bool KEdit::format(QStrList& par){
       if(i < (int)par.count() - 1){
 	QString temp1 = par.at(i+1);
 	QString temp2;
-	if(autoIndMode){
+	if(autoIndent){
 	  temp1 = temp1.mid(prefixString(temp1).length(),temp1.length());
 	}
 	temp2 = pstring.mid(last_ok +1,pstring.length()) + (QString) " " + temp1;
 	temp1 = temp2.copy();
-	if(autoIndMode)
+	if(autoIndent)
 	  temp1 = prefixString(pstring) + temp1;
 	par.remove(i+1);
 	par.insert(i+1,temp1);
       }
       else{
-	if(autoIndMode)
+	if(autoIndent)
 	  par.append(prefixString(pstring) + pstring.mid(last_ok + 1,pstring.length()));
 	else
 	  par.append(pstring.mid(last_ok +1,pstring.length()));
       }
       if(i==0){
 	cursor_offset = pstring.length() - last_ok -1;
-	if(autoIndMode)
+	if(autoIndent)
 	  cursor_offset += prefixString(pstring).length();
 	//printf("CURSOROFFSET1 %d\n",cursor_offset);
       }
@@ -982,25 +985,25 @@ bool KEdit::format(QStrList& par){
       if(i < (int)par.count() - 1){
 	QString temp1 = par.at(i+1);
 	QString temp2;
-	if(autoIndMode){
+	if(autoIndent){
 	  temp1 = temp1.mid(prefixString(temp1).length(),temp1.length());
 	}
 	temp2 = pstring.mid(space_pos +1,pstring.length()) + (QString) " " + temp1;
 	temp1 = temp2.copy();
-	if(autoIndMode)
+	if(autoIndent)
 	  temp1 = prefixString(pstring) + temp1;
 	par.remove(i+1);
 	par.insert(i+1,temp1);
       }
       else{
-	if(autoIndMode)
+	if(autoIndent)
 	  par.append(prefixString(pstring) + pstring.mid(space_pos + 1,pstring.length()));
 	else
 	  par.append(pstring.mid(space_pos+1,pstring.length()));
       }
       if(i==0){
 	cursor_offset = pstring.length() - space_pos -1;
-	if(autoIndMode)
+	if(autoIndent)
 	  cursor_offset += prefixString(pstring).length();
 	//	printf("CURSOROFFSET2 %d\n",cursor_offset);
       }
@@ -1060,7 +1063,7 @@ bool KEdit::format2(QStrList& par, int& upperbound){
 
   for( k = 0, l = 0; k < (int) prefix.length(); k++){
 
-    if(prefix.data()[k] == '\t')
+    if(prefix.at(k) == '\t')
       l +=8 - l%8;
     else
       l ++;
@@ -1096,13 +1099,13 @@ bool KEdit::format2(QStrList& par, int& upperbound){
     space_pos = -1; //Matthias
     for( k = 0, l = 0; k < (int) pstring.length() /* && l <= fill_column_value */; k++){ //Matthias: commented out
 
-      if(pstring.data()[k] == '\t')
+      if(pstring.at(k) == '\t')
         l +=8 - l%8;
       else
 	l ++;
 
       if ((!space_pos||l<=fill_column_value) &&
-	  (pstring.data()[k]==' '||pstring.data()[k]=='\t')) //Matthias
+	  (pstring.at(k)==' '||pstring.at(k)=='\t')) //Matthias
 	space_pos = k;
 
       if( l <= fill_column_value )
@@ -1123,26 +1126,26 @@ bool KEdit::format2(QStrList& par, int& upperbound){
       if(i < (int)par.count() - 1){
 	QString temp1 = par.at(i+1);
 	QString temp2;
-	if(autoIndMode){
+	if(autoIndent){
 	  temp1 = temp1.mid(prefixString(temp1).length(),temp1.length());
 	}
 	temp2 = pstring.mid(last_ok +1,pstring.length()) + (QString) " " + temp1;
 	temp1 = temp2.copy();
-	if(autoIndMode)
+	if(autoIndent)
 	  temp1 = prefixString(pstring) + temp1;
 	par.remove(i+1);
 	par.insert(i+1,temp1);
 
       }
       else{
-	if(autoIndMode)
+	if(autoIndent)
 	  par.append(prefixString(pstring) + pstring.mid(last_ok + 1,pstring.length()));
 	else
 	  par.append(pstring.mid(last_ok +1,pstring.length()));
       }
       if(i==0){
 	cursor_offset = pstring.length() - last_ok -1;
-	if(autoIndMode)
+	if(autoIndent)
 	  cursor_offset += prefixString(pstring).length();
 	//printf("CURSOROFFSET1 %d\n",cursor_offset);
       }
@@ -1157,25 +1160,25 @@ bool KEdit::format2(QStrList& par, int& upperbound){
       if(i < (int)par.count() - 1){
 	QString temp1 = par.at(i+1);
 	QString temp2;
-	if(autoIndMode){
+	if(autoIndent){
 	  temp1 = temp1.mid(prefixString(temp1).length(),temp1.length());
 	}
 	temp2 = pstring.mid(space_pos +1,pstring.length()) + (QString) " " + temp1;
 	temp1 = temp2.copy();
-	if(autoIndMode)
+	if(autoIndent)
 	  temp1 = prefixString(pstring) + temp1;
 	par.remove(i+1);
 	par.insert(i+1,temp1);
       }
       else{
-	if(autoIndMode)
+	if(autoIndent)
 	  par.append(prefixString(pstring) + pstring.mid(space_pos + 1,pstring.length()));
 	else
 	  par.append(pstring.mid(space_pos+1,pstring.length()));
       }
       if(i==0){
 	cursor_offset = pstring.length() - space_pos -1;
-	if(autoIndMode)
+	if(autoIndent)
 	  cursor_offset += prefixString(pstring).length();
 	//	printf("CURSOROFFSET2 %d\n",cursor_offset);
       }
@@ -1203,7 +1206,7 @@ bool KEdit::format2(QStrList& par, int& upperbound){
 
     for( k = 0, l = 0; k < (int) pstring.length() && l <= fill_column_value; k++){
 
-      if(pstring.data()[k] == '\t')
+      if(pstring.at(k) == '\t')
         l +=8 - l%8;
       else
 	l ++;
@@ -1222,7 +1225,7 @@ bool KEdit::format2(QStrList& par, int& upperbound){
 
     for( k = 0, l = 0; k < (int) mstring.length() && l <= fill_column_value; k++){
 
-      if(mstring.data()[k] == '\t')
+      if(mstring.at(k) == '\t')
         l +=8 - l%8;
       else
 	l ++;
@@ -1359,7 +1362,7 @@ void KEdit::mynewLine(){
 
   setModified();
 
-  if(!autoIndMode){ // if not indent mode
+  if(!autoIndent){ // if not indent mode
     newLine();
     return;
   }
@@ -1391,7 +1394,7 @@ void KEdit::mynewLine(){
 
   if(found_one){
     newLine();
-    insertAt(string.data(),line2 + 1,0);
+    insertAt(string,line2 + 1,0);
   }
   else{
     newLine();
@@ -1400,7 +1403,7 @@ void KEdit::mynewLine(){
 
 void KEdit::setAutoIndentMode(bool mode){
 
-  autoIndMode = mode;
+  autoIndent = mode;
 
 }
 
@@ -1681,7 +1684,7 @@ int KEdit::doSave( const QString& _name ){
 }
 
 
-void KEdit::setName( const QString&_name ){
+void KEdit::setName( const QString& _name ){
 
     filename = _name;
 }
