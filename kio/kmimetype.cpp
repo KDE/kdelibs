@@ -441,6 +441,26 @@ QString KDEDesktopMimeType::icon( const KURL& _url, bool _is_local ) const
   return icon;
 }
 
+QPixmap KDEDesktopMimeType::pixmap( const KURL& _url, KIconLoader::Size _size, QString * _path ) const
+{
+  QString _icon = icon( _url, _url.isLocalFile() );
+  QPixmap pix = KGlobal::iconLoader()->loadApplicationIcon( _icon, _size, _path, true );
+  if (pix.isNull())
+  {
+    KSimpleConfig cfg( _url.path(), true );
+    cfg.setDesktopGroup();
+    QString type = cfg.readEntry( "Type" );
+    if ( type == "FSDevice" )
+    {
+      //kdebug(KDEBUG_INFO, 7009, "trying to load devices/%s",_icon.latin1());
+      // KDE-1.x kdelnks contain "cdrom_mount.xpm" instead of "devices/cdrom_mount"
+      return KGlobal::iconLoader()->loadApplicationIcon( QString("devices/"+_icon), _size, _path, false );
+    }
+    return KGlobal::iconLoader()->loadApplicationIcon("unknown", _size, _path, false);
+  }
+  return pix;
+}
+
 QString KDEDesktopMimeType::comment( const QString& _url, bool _is_local ) const
 {
   if ( !_is_local || _url.isEmpty() )
@@ -694,7 +714,7 @@ void KDEDesktopMimeType::executeService( const QString& _url, KDEDesktopMimeType
   }
   else if ( _service.m_type == ST_MOUNT || _service.m_type == ST_UNMOUNT )
   {
-    kdebug( KDEBUG_INFO, 7009, "MOUNT&UNMOUNT" );
+    //kdebug( KDEBUG_INFO, 7009, "MOUNT&UNMOUNT" );
 
     KSimpleConfig cfg( u.path(), true );
     cfg.setDesktopGroup();

@@ -87,7 +87,7 @@ public:
    * @param _size Size requested for the pixmap, see KIconLoader
    * @param _path Output parameter to get the full path. Seldom needed.
    */
-  QPixmap pixmap( KIconLoader::Size _size, QString * _path = 0L ) const;
+  virtual QPixmap pixmap( KIconLoader::Size _size, QString * _path = 0L ) const;
   /**
    * Find the pixmap for a given file of this mimetype
    * Convenience method that uses icon(), but also locates and load the pixmap
@@ -95,7 +95,7 @@ public:
    * @param _size Size requested for the pixmap, see KIconLoader
    * @param _path Output parameter to get the full path. Seldom needed.
    */
-  QPixmap pixmap( const KURL& _url, KIconLoader::Size _size, QString * _path = 0L ) const;
+  virtual QPixmap pixmap( const KURL& _url, KIconLoader::Size _size, QString * _path = 0L ) const;
 
   /**
    * Convenience method to find the pixmap for a URL
@@ -248,6 +248,7 @@ public:
 
   virtual QString icon( const QString& _url, bool _is_local ) const;
   virtual QString icon( const KURL& _url, bool _is_local ) const;
+  virtual QPixmap pixmap( const KURL& _url, KIconLoader::Size _size, QString * _path = 0L ) const;
   virtual QString comment( const QString& _url, bool _is_local ) const;
   virtual QString comment( const KURL& _url, bool _is_local ) const;
 
