@@ -7,6 +7,7 @@
 #include <kprotocolmanager.h>
 
 #include <kurl.h>
+#include <ksock.h>
 
 #include <iostream.h>
 
@@ -268,7 +269,6 @@ bool Ftp::ftpConnect( const char *_host, int _port, const char *_user, const cha
 bool Ftp::ftpConnect2( const char *host, int _port )
 {
   struct sockaddr_in sin;
-  struct hostent *phe;
   struct servent *pse;
   int on = 1;
 
@@ -280,19 +280,16 @@ bool Ftp::ftpConnect2( const char *host, int _port )
   if ( _port == -1 && ( pse = getservbyname( "ftp", "tcp" ) ) == NULL )
     _port = 21;
   else if ( _port == -1 )
-    sin.sin_port = pse->s_port;
+    _port = pse->s_port;
 
-  if ( ( phe = gethostbyname( host ) ) == NULL )
-  {
+  if (!KSocket::initSockaddr(&sin, host, _port)) {
     m_error = ERR_UNKNOWN_HOST;
     m_errorText = host;
     return false;
   }
 
-  memcpy((char *)&sin.sin_addr, phe->h_addr, phe->h_length);
   sControl = socket( PF_INET, SOCK_STREAM, IPPROTO_TCP );
-  if ( sControl == 0 )
-  {
+  if ( sControl == 0 ) {
     m_error = ERR_COULD_NOT_CREATE_SOCKET;
     m_errorText = host;
   }
