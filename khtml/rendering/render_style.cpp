@@ -23,6 +23,9 @@
 
 #include "render_style.h"
 
+#include "xml/dom_stringimpl.h"
+#include "misc/loader.h"
+
 #include "kdebug.h"
 
 using namespace khtml;
@@ -313,10 +316,16 @@ bool RenderStyle::operator==(const RenderStyle& o) const
 
 RenderStyle* RenderStyle::getPseudoStyle(PseudoId pid)
 {
+    
+    if (_styleType!=NOPSEUDO)
+        return 0;
+    
     RenderStyle *ps = pseudoStyle;
 
     while (ps) {
-        if (ps->_styleType==pid) return ps;
+        if (ps->_styleType==pid) 
+            return ps;
+
         ps = ps->pseudoStyle;
     }
 
@@ -329,7 +338,10 @@ RenderStyle* RenderStyle::addPseudoStyle(PseudoId pid)
 
     if (!ps)
     {
-        ps = new RenderStyle(*this); // use the real copy constructor to get an identical copy
+        if (pid==BEFORE || pid==AFTER)
+            ps = new RenderPseudoElementStyle();
+        else
+            ps = new RenderStyle(*this); // use the real copy constructor to get an identical copy
         ps->ref();
         ps->_styleType = pid;
         ps->pseudoStyle = pseudoStyle;
@@ -368,4 +380,71 @@ void RenderStyle::cleanup()
     _default = 0;
 //    counter = 0;
 //    SharedData::counter = 0;
+}
+
+RenderPseudoElementStyle::RenderPseudoElementStyle() : RenderStyle() 
+{ 
+    _contentType = CONTENT_NONE; 
+}
+
+RenderPseudoElementStyle::RenderPseudoElementStyle(bool b) : RenderStyle(b) 
+{ 
+    _contentType = CONTENT_NONE; 
+}
+RenderPseudoElementStyle::RenderPseudoElementStyle(const RenderStyle& r) : RenderStyle(r) 
+{ 
+    _contentType = CONTENT_NONE; 
+}
+
+RenderPseudoElementStyle::~RenderPseudoElementStyle() { clearContent(); }
+
+
+void RenderPseudoElementStyle::setContent(CachedObject* o)
+{
+    clearContent();
+//    o->ref();
+    _content.object = o;
+    _contentType = CONTENT_OBJECT;        
+}
+
+void RenderPseudoElementStyle::setContent(DOM::DOMStringImpl* s)
+{
+    clearContent();
+    _content.text = s;
+    _content.text->ref();
+    _contentType = CONTENT_TEXT;        
+}    
+
+DOM::DOMStringImpl* RenderPseudoElementStyle::contentText()
+{
+    if (_contentType==CONTENT_TEXT)
+        return _content.text;   
+    else
+        return 0;
+}
+
+CachedObject* RenderPseudoElementStyle::contentObject()
+{
+    if (_contentType==CONTENT_OBJECT)
+        return _content.object;   
+    else
+        return 0;
+}
+
+
+void RenderPseudoElementStyle::clearContent()
+{
+    switch (_contentType)
+    {
+        case CONTENT_OBJECT:
+//            _content.object->deref();
+            _content.object = 0;
+            break;
+        case CONTENT_TEXT:
+            _content.text->deref();
+            _content.text = 0;
+        default: 
+            ;
+    }
+
 }

@@ -1250,6 +1250,10 @@ void RenderFlow::addChild(RenderObject *newChild, RenderObject *beforeChild)
 
 	}
     }
+    
+    
+    insertPseudoChild(RenderStyle::BEFORE, newChild, beforeChild);  
+    
     bool nonInlineInChild = false;
 
     if (beforeChild && beforeChild->parent() != this) {
@@ -1417,6 +1421,8 @@ void RenderFlow::addChild(RenderObject *newChild, RenderObject *beforeChild)
     setLayouted(false);
     RenderBox::addChild(newChild,beforeChild);
     // ### care about aligned stuff
+    
+    insertPseudoChild(RenderStyle::AFTER, newChild, beforeChild);  
 }
 
 void RenderFlow::makeChildrenNonInline()

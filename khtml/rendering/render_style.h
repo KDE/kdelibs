@@ -41,14 +41,21 @@
 
 #include <khtmllayout.h>
 
+#include <assert.h>
+
 // rikkus: workaround for gcc 2.95.3 (!= for bitfield is broken)
 #define SET_VAR(group,variable,value) \
     if (!(group->variable == value)) \
         group.access()->variable = value;
 
+namespace DOM {    
+    class DOMStringImpl;
+}
+
 namespace khtml {
 
     class CachedImage;
+    class CachedObject;    
 
 template <class DATA>
 class DataRef
@@ -514,7 +521,7 @@ public:
     static void cleanup();
 
     // static pseudo styles. Dynamic ones are produced on the fly.
-    enum PseudoId { NOPSEUDO, FIRST_LINE, FIRST_LETTER };
+    enum PseudoId { NOPSEUDO, FIRST_LINE, FIRST_LETTER, BEFORE, AFTER };
 
 protected:
     void setBitDefaults();
@@ -554,7 +561,7 @@ protected:
 
     bool _flowAroundFloats :1;
 
-    PseudoId _styleType : 2;
+    PseudoId _styleType : 3;
     bool _hasHover : 1;
     bool _hasFocus : 1;
     bool _hasActive : 1;
@@ -586,7 +593,7 @@ public:
     RenderStyle(bool);
     RenderStyle(const RenderStyle&);
     
-    ~RenderStyle();
+    virtual ~RenderStyle();
     
     void inheritFrom(const RenderStyle* inheritParent);
 
@@ -844,7 +851,55 @@ public:
     }
 
 
+    enum ContentType
+    {
+        CONTENT_NONE, CONTENT_OBJECT, CONTENT_TEXT, CONTENT_COUNTER
+    };            
+        
+    virtual ContentType contentType() { return CONTENT_NONE; }
+
+    virtual void setContent(DOM::DOMStringImpl* s) { assert(false); }
+    virtual void setContent(CachedObject* o) { assert(false); }
+    
+    virtual DOM::DOMStringImpl* contentText() { assert(false); return 0; }
+    virtual CachedObject* contentObject() { assert(false); return 0; }
+    
 };
+
+
+class RenderPseudoElementStyle : public RenderStyle
+{
+public:    
+       
+    RenderPseudoElementStyle();
+    RenderPseudoElementStyle(bool b);
+    RenderPseudoElementStyle(const RenderStyle& r);
+
+    virtual ~RenderPseudoElementStyle();
+    
+    ContentType contentType() { return _contentType; }
+
+    void setContent(DOM::DOMStringImpl* s);
+    void setContent(CachedObject* o);
+    
+    DOM::DOMStringImpl* contentText();
+    CachedObject* contentObject();
+    
+                    
+private:        
+        
+    void clearContent();
+        
+    ContentType _contentType;
+        
+    union {
+        CachedObject* object;
+        DOM::DOMStringImpl* text;
+        // counters...
+    } _content ;
+        
+};
+
 
 } // namespace
 

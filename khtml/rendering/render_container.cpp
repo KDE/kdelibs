@@ -26,6 +26,8 @@
 #include "render_container.h"
 #include "render_table.h"
 
+#include "render_text.h"
+
 #include <kdebug.h>
 #include <assert.h>
 
@@ -165,9 +167,45 @@ void RenderContainer::removeChild(RenderObject *oldChild)
     }
 }
 
+
+void RenderContainer::insertPseudoChild(RenderStyle::PseudoId type, RenderObject* child, RenderObject* beforeChild)
+{
+    
+    if (child->isText())
+        return;
+    
+    RenderStyle* pseudo = child->style()->getPseudoStyle(type);
+
+    if (pseudo)
+    {            
+        if (pseudo->contentType()==RenderStyle::CONTENT_TEXT)   
+        {                
+            RenderObject* po = new RenderFlow();    
+            po->setStyle(pseudo);
+            
+            addChild(po, beforeChild);
+                  
+            RenderText* t = new RenderText(pseudo->contentText());
+            t->setStyle(pseudo);
+            
+//            kdDebug() << DOM::DOMString(pseudo->contentText()).string() << endl;
+
+            po->addChild(t);
+            
+            t->close();
+            po->close();
+        }
+
+    }
+           
+}
+
+
 void RenderContainer::appendChildNode(RenderObject* newChild)
 {
+    
     assert(newChild->parent() == 0);
+            
     newChild->setParent(this);
     RenderObject* lChild = lastChild();
 
@@ -189,6 +227,7 @@ void RenderContainer::appendChildNode(RenderObject* newChild)
             o = o->parent();
         }
     }
+        
 }
 
 void RenderContainer::insertChildNode(RenderObject* child, RenderObject* beforeChild)
@@ -197,10 +236,10 @@ void RenderContainer::insertChildNode(RenderObject* child, RenderObject* beforeC
         appendChildNode(child);
 	return;
     }
-
+            
     assert(!child->parent());
     assert(beforeChild->parent() == this);
-
+    
     if(beforeChild == firstChild())
         setFirstChild(child);
 

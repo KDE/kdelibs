@@ -260,10 +260,19 @@ RenderStyle *CSSStyleSelector::styleForElement(ElementImpl *e, int state)
             CSSOrderedProperty *ordprop = pseudoProps->first();
             while( ordprop ) {
                 RenderStyle *pseudoStyle;
-                pseudoStyle = style->addPseudoStyle(ordprop->pseudoId);
-
-                if ( pseudoStyle )
+                pseudoStyle = style->getPseudoStyle(ordprop->pseudoId);
+                
+                if (!pseudoStyle)
+                {
+                    pseudoStyle = style->addPseudoStyle(ordprop->pseudoId);
+                    if (pseudoStyle && (ordprop->pseudoId==RenderStyle::BEFORE ||
+                            ordprop->pseudoId==RenderStyle::AFTER))
+                        pseudoStyle->inheritFrom(e->parentNode()->style());                    
+                }
+                
+                if ( pseudoStyle )                                     
                     applyRule(pseudoStyle, ordprop->prop, e);
+
                 ordprop = pseudoProps->next();
             }
         }
@@ -396,8 +405,7 @@ void CSSStyleSelector::checkSelector(int selIndex, DOM::ElementImpl *e)
 	    //kdDebug() << "CSSOrderedRule::checkSelector" << endl;
 	    ElementImpl *elem = static_cast<ElementImpl *>(n);
 	    // a selector is invalid if something follows :first-xxx
-	    if ( dynamicPseudo == RenderStyle::FIRST_LINE ||
-		 dynamicPseudo == RenderStyle::FIRST_LETTER ) {
+	    if ( dynamicPseudo != RenderStyle::NOPSEUDO ) {
 		return;
 	    }
 	    if(!checkOneSelector(sel, elem)) return;
@@ -527,7 +535,7 @@ bool CSSStyleSelector::checkOneSelector(DOM::CSSSelector *sel, DOM::ElementImpl 
         // Pseudo elements. We need to check first child here. No dynamic pseudo
         // elements for the moment
 	const QString& value = sel->value.string();
-	//kdDebug() << "CSSOrderedRule::pseudo " << value << endl;
+//	kdDebug() << "CSSOrderedRule::pseudo " << value << endl;
 	if(value == "first-child") {
 	    // first-child matches the first child that is an element!
 	    DOM::NodeImpl *n = e->parentNode()->firstChild();
@@ -567,7 +575,13 @@ bool CSSStyleSelector::checkOneSelector(DOM::CSSSelector *sel, DOM::ElementImpl 
 		selectorDynamicState |= StyleSelector::Active;
 		return true;
 	    }
-	}
+	} else if ( value == "before" ) {
+            dynamicPseudo = RenderStyle::BEFORE; 
+            return true;
+        } else if ( value == "after" ) {
+            dynamicPseudo = RenderStyle::AFTER; 
+            return true;
+        }
 	return false;
     }
     // ### add the rest of the checks...
@@ -2137,6 +2151,19 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
 // lists
     case CSS_PROP_CONTENT:
         // list of string, uri, counter, attr, i
+    {
+        if(primitiveValue 
+            && primitiveValue->primitiveType()==CSSPrimitiveValue::CSS_STRING)
+        {
+            if (style->styleType()==RenderStyle::BEFORE ||  
+                style->styleType()==RenderStyle::AFTER)
+            {
+                style->setContent(primitiveValue->getStringValue());                   
+            }
+        }
+        break;
+    }
+        
     case CSS_PROP_COUNTER_INCREMENT:
         // list of CSS2CounterIncrement
     case CSS_PROP_COUNTER_RESET:

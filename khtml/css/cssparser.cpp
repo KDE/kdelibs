@@ -1137,8 +1137,7 @@ bool StyleBaseImpl::parseValue( const QChar *curP, const QChar *endP, int propId
       case CSS_PROP_QUOTES:               // [<string> <string>]+ | none | inherit
       case CSS_PROP_TEXT_SHADOW:          // none | [<color> || <length> <length> <length>? ,]*
 	//    [<color> || <length> <length> <length>?] | inherit
-      case CSS_PROP_CONTENT:              // [ <string> | <uri> | <counter> | attr(X) | open-quote |
-	// close-quote | no-open-quote | no-close-quote ]+ | inherit
+
       case CSS_PROP_UNICODE_BIDI:         // normal | embed | bidi-override | inherit
       case CSS_PROP_WHITE_SPACE:          // normal | pre | nowrap | inherit
       case CSS_PROP_FONT_STRETCH:
@@ -1161,6 +1160,14 @@ bool StyleBaseImpl::parseValue( const QChar *curP, const QChar *endP, int propId
 	  // ### To be done
 	  break;
 	}
+        
+      case CSS_PROP_CONTENT:              // [ <string> | <uri> | <counter> | attr(X) | open-quote |
+	// close-quote | no-open-quote | no-close-quote ]+ | inherit
+        {
+            if (len>0)
+               parsedValue = new CSSPrimitiveValueImpl(DOMString(value), CSSPrimitiveValue::CSS_STRING);                  
+            break;
+        }
 
       case CSS_PROP_CLIP:                 // <shape> | auto | inherit
       {

@@ -49,13 +49,15 @@ public:
     virtual void insertChildNode(RenderObject* child, RenderObject* before);
 
     
-private:
+private:       
         
     void setFirstChild(RenderObject *first) { m_first = first; }
     void setLastChild(RenderObject *last) { m_last = last; }
                             
 protected:
-        
+
+    void insertPseudoChild(RenderStyle::PseudoId type, RenderObject* child, RenderObject* before);        
+                
     RenderObject *m_first;
     RenderObject *m_last;
 };
