@@ -15,11 +15,10 @@ CXXFLAGS = @CXXFLAGS@ -DKDEDIR=\"@KDEDIR@\"
 include_HEADERS = Kconfig.h Kconfigdata.h kcolorgroup.h kapp.h\
 	kurl.h ksock.h drag.h kkeyconf.h kkeydata.h ckey.h kmisc.h	\
 	kprocess.h kprocctrl.h klocale.h
-noinst_HEADERS = libintlP.h
 
 libkdecore_la_SOURCES = Kconfig.cpp kcolorgroup.cpp kapp.cpp kurl.cpp \
 	ksock.cpp drag.cpp kkeyconf.cpp	kprocess.cpp kprocctrl.cpp \
-	klocale.cpp libintl.c
+	klocale.cpp libintl.cpp
 
 libkdecore_la_LIBADD = @MISCOBJS@
 libkdecore_la_DEPENDENCIES = @MISCOBJS@ 

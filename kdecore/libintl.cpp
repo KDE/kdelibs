@@ -36,8 +36,229 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.  */
 # include <limits.h>
 #endif
 
-#define USE_COMBINED_HEADER 1
-#include "libintlP.h"
+#include <stdlib.h>
+#include <string.h>
+
+
+// #line 44 "loadinfo.h"
+
+/* Encoding of locale name parts.  */
+#define CEN_REVISION		1
+#define CEN_SPONSOR		2
+#define CEN_SPECIAL		4
+#define XPG_NORM_CODESET	8
+#define XPG_CODESET		16
+#define TERRITORY		32
+#define CEN_AUDIENCE		64
+#define XPG_MODIFIER		128
+
+#define CEN_SPECIFIC	(CEN_REVISION|CEN_SPONSOR|CEN_SPECIAL|CEN_AUDIENCE)
+#define XPG_SPECIFIC	(XPG_CODESET|XPG_NORM_CODESET|XPG_MODIFIER)
+
+
+struct loaded_l10nfile
+{
+  const char *filename;
+  int decided;
+
+  const void *data;
+
+  struct loaded_l10nfile *next;
+  struct loaded_l10nfile *successor[1];
+};
+
+
+static const char *_nl_normalize_codeset (const char *codeset,
+				   size_t name_len);
+
+static struct loaded_l10nfile *
+_nl_make_l10nflist (struct loaded_l10nfile **l10nfile_list,
+		    const char *dirlist, size_t dirlist_len, int mask,
+		    const char *language, const char *territory,
+		    const char *codeset,
+		    const char *normalized_codeset,
+		    const char *modifier, const char *special,
+		    const char *sponsor, const char *revision,
+		    const char *filename, int do_allocate);
+
+
+static const char *_nl_expand_alias (const char *name);
+
+static int _nl_explode_name (char *name, const char **language,
+		      const char **modifier,
+		      const char **territory,
+		      const char **codeset,
+		      const char **normalized_codeset,
+		      const char **special,
+		      const char **sponsor,
+		      const char **revision);
+
+
+//#line 44 "libgettext.h"
+
+#ifndef NULL
+# if !defined __cplusplus || defined __GNUC__
+#  define NULL ((void *) 0)
+# else
+#  define NULL (0)
+# endif
+#endif
+
+#if !HAVE_LC_MESSAGES
+/* This value determines the behaviour of the gettext() and dgettext()
+   function.  But some system does not have this defined.  Define it
+   to a default value.  */
+# define LC_MESSAGES (-1)
+#endif
+
+
+/* Declarations for gettext-using-catgets interface.  Derived from
+   Jim Meyering's libintl.h.  */
+struct _msg_ent
+{
+  const char *_msg;
+  int _msg_number;
+};
+
+/* For automatical extraction of messages sometimes no real
+   translation is needed.  Instead the string itself is the result.  */
+#define gettext_noop(Str) (Str)
+
+
+/* The magic number of the GNU message catalog format.  */
+#define _MAGIC 0x950412de
+#define _MAGIC_SWAPPED 0xde120495
+
+/* Revision number of the currently used .mo (binary) file format.  */
+#define MO_REVISION_NUMBER 0
+
+/* The following contortions are an attempt to use the C preprocessor
+   to determine an unsigned integral type that is 32 bits wide.  An
+   alternative approach is to use autoconf's AC_CHECK_SIZEOF macro, but
+   doing that would require that the configure script compile and *run*
+   the resulting executable.  Locally running cross-compiled executables
+   is usually not possible.  */
+
+#define UINT_MAX_32_BITS 4294967295U
+
+/* If UINT_MAX isn't defined, assume it's a 32-bit type.
+   This should be valid for all systems GNU cares about because
+   that doesn't include 16-bit systems, and only modern systems
+   (that certainly have <limits.h>) have 64+-bit integral types.  */
+
+#ifndef UINT_MAX
+# define UINT_MAX UINT_MAX_32_BITS
+#endif
+
+#if UINT_MAX == UINT_MAX_32_BITS
+typedef unsigned nls_uint32;
+#else
+# if USHRT_MAX == UINT_MAX_32_BITS
+typedef unsigned short nls_uint32;
+# else
+#  if ULONG_MAX == UINT_MAX_32_BITS
+typedef unsigned long nls_uint32;
+#  else
+  /* The following line is intended to throw an error.  Using #error is
+     not portable enough.  */
+  "Cannot determine unsigned 32-bit data type."
+#  endif
+# endif
+#endif
+
+
+/* Header for binary .mo file format.  */
+struct mo_file_header
+{
+  /* The magic number.  */
+  nls_uint32 magic;
+  /* The revision number of the file format.  */
+  nls_uint32 revision;
+  /* The number of strings pairs.  */
+  nls_uint32 nstrings;
+  /* Offset of table with start offsets of original strings.  */
+  nls_uint32 orig_tab_offset;
+  /* Offset of table with start offsets of translation strings.  */
+  nls_uint32 trans_tab_offset;
+  /* Size of hashing table.  */
+  nls_uint32 hash_tab_size;
+  /* Offset of first hashing entry.  */
+  nls_uint32 hash_tab_offset;
+};
+
+struct string_desc
+{
+  /* Length of addressed string.  */
+  nls_uint32 length;
+  /* Offset of string in file.  */
+  nls_uint32 offset;
+};
+
+#ifndef W
+# define W(flag, data) ((flag) ? SWAP (data) : (data))
+#endif
+
+
+static inline nls_uint32
+SWAP (nls_uint32 i)
+{
+  return (i << 24) | ((i & 0xff00) << 8) | ((i >> 8) & 0xff00) | (i >> 24);
+}
+
+struct loaded_domain
+{
+  const char *data;
+  int must_swap;
+  nls_uint32 nstrings;
+  struct string_desc *orig_tab;
+  struct string_desc *trans_tab;
+  nls_uint32 hash_size;
+  nls_uint32 *hash_tab;
+};
+
+struct binding
+{
+  struct binding *next;
+  char *domainname;
+  char *dirname;
+};
+
+static struct loaded_l10nfile *_nl_find_domain (const char *__dirname,
+					 char *__locale,
+					 const char *__domainname);
+static void _nl_load_domain (struct loaded_l10nfile *__domain);
+
+//#line 22 "hash-string.h"
+
+/* We assume to have `unsigned long int' value with at least 32 bits.  */
+#define HASHWORDBITS 32
+
+
+/* Defines the so called `hashpjw' function by P.J. Weinberger
+   [see Aho/Sethi/Ullman, COMPILERS: Principles, Techniques and Tools,
+   1986, 1987 Bell Telephone Laboratories, Inc.]  */
+
+static inline unsigned long
+hash_string (const char *str_param)
+{
+  unsigned long int hval, g;
+  const char *str = str_param;
+
+  /* Compute the hash value for the given string.  */
+  hval = 0;
+  while (*str != '\0')
+    {
+      hval <<= 4;
+      hval += (unsigned long) *str++;
+      g = hval & ((unsigned long) 0xf << (HASHWORDBITS - 4));
+      if (g != 0)
+	{
+	  hval ^= g >> (HASHWORDBITS - 8);
+	  hval ^= g;
+	}
+    }
+  return hval;
+}
 
 #include <errno.h>
 
@@ -71,9 +292,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.  */
 
 #ifndef HAVE_STPCPY
 static char *
-stpcpy (dest, src)
-     char *dest;
-     const char *src;
+stpcpy (char *dest, const char *src)
 {
   while ((*dest++ = *src++) != '\0')
     /* Do nothing. */ ;
@@ -81,18 +300,25 @@ stpcpy (dest, src)
 }
 #endif
 
-/* Contains the default location of the message catalogs.  */
-extern const char _nl_default_dirname[];
 
-/* List with bindings of specific domains.  */
-extern struct binding *_nl_domain_bindings;
+/* Name of the default domain used for gettext(3) prior any call to
+   textdomain(3).  The default value for this is "messages".  */
+const char _nl_default_default_domain[] = "messages";
+
+/* Value used as the default domain for gettext(3).  */
+const char *_nl_current_default_domain = _nl_default_default_domain;
+
+/* Contains the default location of the message catalogs.  */
+const char _nl_default_dirname[] = GNULOCALEDIR;
+
+/* List with bindings of specific domains created by bindtextdomain()
+   calls.  */
+struct binding *_nl_domain_bindings;
 
 /* Specify that the DOMAINNAME message catalog will be found
    in DIRNAME rather than in the system locale data base.  */
 char *
-bindtextdomain (domainname, dirname)
-     const char *domainname;
-     const char *dirname;
+k_bindtextdomain (const char *domainname, const char *dirname)
 {
   struct binding *binding;
 
@@ -232,26 +458,12 @@ char *getcwd ();
 # define HAVE_LOCALE_NULL
 #endif
 
-/* Name of the default domain used for gettext(3) prior any call to
-   textdomain(3).  The default value for this is "messages".  */
-const char _nl_default_default_domain[] = "messages";
-
-/* Value used as the default domain for gettext(3).  */
-const char *_nl_current_default_domain = _nl_default_default_domain;
-
-/* Contains the default location of the message catalogs.  */
-const char _nl_default_dirname[] = GNULOCALEDIR;
-
-/* List with bindings of specific domains created by bindtextdomain()
-   calls.  */
-struct binding *_nl_domain_bindings;
-
 /* Prototypes for local functions.  */
-static char *find_msg PARAMS ((struct loaded_l10nfile *domain_file,
-			       const char *msgid));
-static const char *category_to_name PARAMS ((int category));
-static const char *guess_category_value PARAMS ((int category,
-						 const char *categoryname));
+static char *find_msg (struct loaded_l10nfile *domain_file,
+		       const char *msgid);
+static const char *category_to_name (int category);
+static const char *guess_category_value (int category,
+					 const char *categoryname);
 
 
 /* For those loosing systems which don't have `alloca' we have to add
@@ -293,10 +505,7 @@ struct block_list
 /* Look up MSGID in the DOMAINNAME message catalog for the current CATEGORY
    locale.  */
 char *
-dcgettext (domainname, msgid, category)
-     const char *domainname;
-     const char *msgid;
-     int category;
+k_dcgettext (const char *domainname, const char *msgid, const int category)
 {
 #ifndef HAVE_ALLOCA
   struct block_list *block_list = NULL;
@@ -309,6 +518,7 @@ dcgettext (domainname, msgid, category)
   char *single_locale;
   char *retval;
   int saved_errno = errno;
+  const char *_domainname = (domainname == NULL) ? domainname : _nl_current_default_domain;
 
   /* If no real MSGID is given return NULL.  */
   if (msgid == NULL)
@@ -317,13 +527,13 @@ dcgettext (domainname, msgid, category)
   /* If DOMAINNAME is NULL, we are interested in the default domain.  If
      CATEGORY is not LC_MESSAGES this might not make much sense but the
      defintion left this undefined.  */
-  if (domainname == NULL)
-    domainname = _nl_current_default_domain;
+  //  if (domainname == NULL)
+  //    domainname = _nl_current_default_domain;
 
   /* First find matching binding.  */
   for (binding = _nl_domain_bindings; binding != NULL; binding = binding->next)
     {
-      int compare = strcmp (domainname, binding->domainname);
+      int compare = strcmp (_domainname, binding->domainname);
       if (compare == 0)
 	/* We found it!  */
 	break;
@@ -382,14 +592,14 @@ dcgettext (domainname, msgid, category)
   categoryvalue = guess_category_value (category, categoryname);
 
   xdomainname = (char *) alloca (strlen (categoryname)
-				 + strlen (domainname) + 5);
+				 + strlen (_domainname) + 5);
   ADD_BLOCK (block_list, xdomainname);
   /* We don't want libintl.a to depend on any other library.  So we
      avoid the non-standard function stpcpy.  In GNU C Library this
      function is available, though.  Also allow the symbol HAVE_STPCPY
      to be defined.  */
   stpcpy (stpcpy (stpcpy (stpcpy (xdomainname, categoryname), "/"),
-		  domainname),
+		  _domainname),
 	  ".mo");
 
   /* Creating working area.  */
@@ -465,9 +675,7 @@ dcgettext (domainname, msgid, category)
 }
 
 static char *
-find_msg (domain_file, msgid)
-     struct loaded_l10nfile *domain_file;
-     const char *msgid;
+find_msg (struct loaded_l10nfile *domain_file, const char *msgid)
 {
   size_t top, act=0, bottom;
   struct loaded_domain *domain;
@@ -553,8 +761,7 @@ find_msg (domain_file, msgid)
 
 /* Return string representation of locale CATEGORY.  */
 static const char *
-category_to_name (category)
-     int category;
+category_to_name (int category)
 {
   const char *retval;
 
@@ -611,9 +818,7 @@ category_to_name (category)
 }
 
 /* Guess value of current locale from value of the environment variables.  */
-static const char *guess_category_value (category, categoryname)
-     int category;
-     const char *categoryname;
+static const char *guess_category_value (int /*category*/, const char *categoryname)
 {
   const char *retval;
 
@@ -653,11 +858,9 @@ static const char *guess_category_value (category, categoryname)
 /* Look up MSGID in the DOMAINNAME message catalog of the current
    LC_MESSAGES locale.  */
 char *
-dgettext (domainname, msgid)
-     const char *domainname;
-     const char *msgid;
+k_dgettext (const char *domainname, const char *msgid)
 {
-  return dcgettext (domainname, msgid, LC_MESSAGES);
+  return k_dcgettext (domainname, msgid, LC_MESSAGES);
 }
 
 //#line 62 "finddomain.c"
@@ -669,11 +872,8 @@ static struct loaded_l10nfile *_nl_loaded_domains;
 /* Return a data structure describing the message catalog described by
    the DOMAINNAME and CATEGORY parameters with respect to the currently
    established bindings.  */
-struct loaded_l10nfile *
-_nl_find_domain (dirname, locale, domainname)
-     const char *dirname;
-     char *locale;
-     const char *domainname;
+static struct loaded_l10nfile *
+_nl_find_domain (const char *dirname, char *locale, const char *domainname)
 {
   struct loaded_l10nfile *retval;
   const char *language;
@@ -792,10 +992,9 @@ _nl_find_domain (dirname, locale, domainname)
    LC_MESSAGES locale.  If not found, returns MSGID itself (the default
    text).  */
 char *
-gettext (msgid)
-     const char *msgid;
+k_gettext (const char *msgid)
 {
-  return dgettext (NULL, msgid);
+  return k_dgettext ((const char *)NULL, msgid);
 }
 
 //#line 41 "loadmsgcat.c"
@@ -808,9 +1007,8 @@ int _nl_msg_cat_cntr;
 
 /* Load the message catalogs specified by FILENAME.  If it is no valid
    message catalog do nothing.  */
-void
-_nl_load_domain (domain_file)
-     struct loaded_l10nfile *domain_file;
+static void
+_nl_load_domain (struct loaded_l10nfile *domain_file)
 {
   int fd;
   struct stat st;
@@ -943,19 +1141,11 @@ _nl_load_domain (domain_file)
 }
 //#line 42 "textdomain.c"
 
-/* Name of the default text domain.  */
-extern const char _nl_default_default_domain[];
-
-/* Default text domain in which entries for gettext(3) are to be found.  */
-extern const char *_nl_current_default_domain;
-
-
 /* Set the current default message catalog to DOMAINNAME.
    If DOMAINNAME is null, return the current default.
    If DOMAINNAME is "", reset to the default of "messages".  */
 char *
-textdomain (domainname)
-     const char *domainname;
+k_textdomain (const char *domainname)
 {
   char *old;
 
@@ -989,12 +1179,9 @@ textdomain (domainname)
 
 #if !defined HAVE___ARGZ_COUNT
 /* Returns the number of strings in ARGZ.  */
-static size_t argz_count__ PARAMS ((const char *argz, size_t len));
  
 static size_t
-argz_count__ (argz, len)
-     const char *argz;
-     size_t len;
+argz_count__ (const char *argz, size_t len)
 {
   size_t count = 0;
   while (len > 0)
@@ -1013,13 +1200,9 @@ argz_count__ (argz, len)
 #if !defined HAVE___ARGZ_STRINGIFY
 /* Make '\0' separated arg vector ARGZ printable by converting all the '\0's
    except the last into the character SEP.  */
-static void argz_stringify__ PARAMS ((char *argz, size_t len, int sep));
  
 static void
-argz_stringify__ (argz, len, sep)
-     char *argz;
-     size_t len;
-     int sep;
+argz_stringify__ (char *argz, size_t len, int sep)
 {
   while (len > 0)
     {
@@ -1035,14 +1218,9 @@ argz_stringify__ (argz, len, sep)
 #endif  /* !HAVE___ARGZ_STRINGIFY */
  
 #if !defined HAVE___ARGZ_NEXT
-static char *argz_next__ PARAMS ((char *argz, size_t argz_len,
-                                  const char *entry));
  
 static char *
-argz_next__ (argz, argz_len, entry)
-     char *argz;
-     size_t argz_len;
-     const char *entry;
+argz_next__ (char *argz, size_t argz_len, const char *entry)
 {
   if (entry)
     {
@@ -1063,11 +1241,8 @@ argz_next__ (argz, argz_len, entry)
  
  
 /* Return number of bits set in X.  */
-static int pop PARAMS ((int x));
- 
 static inline int
-pop (x)
-     int x;
+pop (int x)
 {
   /* We assume that no more than 16 bits are used.  */
   x = ((x & ~0x5555) >> 1) + (x & 0x5555);
@@ -1078,24 +1253,15 @@ pop (x)
   return x;
 }
  
-struct loaded_l10nfile *
-_nl_make_l10nflist (l10nfile_list, dirlist, dirlist_len, mask, language,
-                    territory, codeset, normalized_codeset, modifier, special,
-                    sponsor, revision, filename, do_allocate)
-     struct loaded_l10nfile **l10nfile_list;
-     const char *dirlist;
-     size_t dirlist_len;
-     int mask;
-     const char *language;
-     const char *territory;
-     const char *codeset;
-     const char *normalized_codeset;
-     const char *modifier;
-     const char *special;
-     const char *sponsor;
-     const char *revision;
-     const char *filename;
-     int do_allocate;
+static struct loaded_l10nfile *
+_nl_make_l10nflist (struct loaded_l10nfile **l10nfile_list,
+		    const char *dirlist, size_t dirlist_len,
+		    int mask, const char *language,
+                    const char *territory, const char *codeset,
+		    const char *normalized_codeset, const char *modifier,
+		    const char *special, const char *sponsor,
+		    const char *revision, const char *filename,
+		    int do_allocate)
 {
   char *abs_filename;
   struct loaded_l10nfile *last = NULL;
@@ -1265,14 +1431,40 @@ static size_t nmap = 0;
 static size_t maxmap = 0;
 
 /* Prototypes for local functions.  */
-static void extend_alias_table PARAMS ((void));
-static int alias_compare PARAMS ((const struct alias_map *map1,
-                                  const struct alias_map *map2));
+static void extend_alias_table (void);
+
+static int
+alias_compare (const struct alias_map *map1, const struct alias_map *map2)
+{
+#if defined HAVE_STRCASECMP
+  return strcasecmp (map1->alias, map2->alias);
+#else
+  const unsigned char *p1 = (const unsigned char *) map1->alias;
+  const unsigned char *p2 = (const unsigned char *) map2->alias;
+  unsigned char c1, c2;
+ 
+  if (p1 == p2)
+    return 0;
+ 
+  do
+    {
+     /* I know this seems to be odd but the tolower() function in
+         some systems libc cannot handle nonalpha characters.  */
+      c1 = isupper (*p1) ? tolower (*p1) : *p1;
+      c2 = isupper (*p2) ? tolower (*p2) : *p2;
+      if (c1 == '\0')
+        break;
+      ++p1;
+      ++p2;
+    }
+  while (c1 == c2);
+ 
+  return c1 - c2;
+#endif
+}
 
 static size_t
-read_alias_file (fname, fname_len)
-     const char *fname;
-     int fname_len;
+read_alias_file (const char *fname, int fname_len)
 {
 #ifndef HAVE_ALLOCA
   struct block_list *block_list = NULL;
@@ -1397,15 +1589,14 @@ read_alias_file (fname, fname_len)
 
   if (added > 0)
     qsort (map, nmap, sizeof (struct alias_map),
-	   (int (*) PARAMS ((const void *, const void *))) alias_compare);
+	   (int (*) (const void *, const void *)) alias_compare);
 
   FREE_BLOCKS (block_list);
   return added;
 }
 
-const char *
-_nl_expand_alias (name)
-    const char *name;
+static const char *
+_nl_expand_alias (const char *name)
 {
   static const char *locale_alias_path = LOCALE_ALIAS_PATH;
   struct alias_map *retval;
@@ -1420,8 +1611,8 @@ _nl_expand_alias (name)
       if (nmap > 0)
 	retval = (struct alias_map *) bsearch (&item, map, nmap,
 					       sizeof (struct alias_map),
-					       (int (*) PARAMS ((const void *,
-								 const void *))
+					       (int (*) (const void *,
+							 const void *)
 						) alias_compare);
       else
 	retval = NULL;
@@ -1474,50 +1665,13 @@ extend_alias_table ()
   maxmap = new_size;
 }
 
-static int
-alias_compare (map1, map2)
-     const struct alias_map *map1;
-     const struct alias_map *map2;
-{
-#if defined HAVE_STRCASECMP
-  return strcasecmp (map1->alias, map2->alias);
-#else
-  const unsigned char *p1 = (const unsigned char *) map1->alias;
-  const unsigned char *p2 = (const unsigned char *) map2->alias;
-  unsigned char c1, c2;
- 
-  if (p1 == p2)
-    return 0;
- 
-  do
-    {
-     /* I know this seems to be odd but the tolower() function in
-         some systems libc cannot handle nonalpha characters.  */
-      c1 = isupper (*p1) ? tolower (*p1) : *p1;
-      c2 = isupper (*p2) ? tolower (*p2) : *p2;
-      if (c1 == '\0')
-        break;
-      ++p1;
-      ++p2;
-    }
-  while (c1 == c2);
- 
-  return c1 - c2;
-#endif
-}
 
-int
-_nl_explode_name (name, language, modifier, territory, codeset,
-		  normalized_codeset, special, sponsor, revision)
-     char *name;
-     const char **language;
-     const char **modifier;
-     const char **territory;
-     const char **codeset;
-     const char **normalized_codeset;
-     const char **special;
-     const char **sponsor;
-     const char **revision;
+static int
+_nl_explode_name (char *name, const char **language,
+		  const char **modifier, const char **territory,
+		  const char **codeset, const char **normalized_codeset,
+		  const char **special, const char **sponsor,
+		  const char **revision)
 {
   enum { undecided, xpg, cen } syntax;
   char *cp;
@@ -1653,10 +1807,8 @@ _nl_explode_name (name, language, modifier, territory, codeset,
 /* Normalize codeset name.  There is no standard for the codeset
    names.  Normalization allows the user to use any of the common
    names.  */
-const char *
-_nl_normalize_codeset (codeset, name_len)
-     const char *codeset;
-     size_t name_len;
+static const char *
+_nl_normalize_codeset (const char *codeset, size_t name_len)
 {
   int len = 0;
   int only_digit = 1;

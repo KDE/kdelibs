@@ -7,9 +7,36 @@
 #include <locale.h>
 #endif
 
-extern "C" {
-#include <libintlP.h>
-}
+/**
+  * Stephan: I don't want to put this in an extra header file, since
+  * this would make people think, they can use it within C files, but
+  * this is not the case.
+  **/
+
+/* Look up MSGID in the current default message catalog for the current
+   LC_MESSAGES locale.  If not found, returns MSGID itself (the default
+   text).  */
+char *k_gettext (const char *__msgid);
+
+/* Look up MSGID in the DOMAINNAME message catalog for the current
+   LC_MESSAGES locale.  */
+char *k_dgettext (const char *__domainname, const char *__msgid);
+
+/* Look up MSGID in the DOMAINNAME message catalog for the current CATEGORY
+   locale.  */
+char *k_dcgettext (const char *__domainname, const char *__msgid,
+		   const int __category);
+
+/* Set the current default message catalog to DOMAINNAME.
+   If DOMAINNAME is null, return the current default.
+   If DOMAINNAME is "", reset to the default of "messages".  */
+char *k_textdomain (const char *__domainname);
+
+/* Specify that the DOMAINNAME message catalog will be found
+   in DIRNAME rather than in the system locale data base.  */
+char *k_bindtextdomain (const char *__domainname,
+			const char *__dirname);  
+
 
 #include "klocale.h"
 #include <kapp.h>
@@ -46,8 +73,8 @@ KLocale::KLocale( const char *_catalogue )
     }
     
     /* Set the text message domain.  */
-    bindtextdomain ( catalogue , kapp->kdedir() + "/locale");
-    bindtextdomain ( SYSTEM_MESSAGES,  kapp->kdedir() + "/locale");
+    k_bindtextdomain ( catalogue , kapp->kdedir() + "/locale");
+    k_bindtextdomain ( SYSTEM_MESSAGES,  kapp->kdedir() + "/locale");
 }
 
 KLocale::~KLocale()
@@ -57,19 +84,19 @@ KLocale::~KLocale()
 
 const char *KLocale::translate(const char *msgid)
 {
-    char *text = dcgettext( catalogue, msgid, LC_MESSAGES);
+    char *text = k_dcgettext( catalogue, msgid, LC_MESSAGES);
     if (text == msgid) // just compare the pointers
-	return dcgettext( SYSTEM_MESSAGES, msgid, LC_MESSAGES);
+	return k_dcgettext( SYSTEM_MESSAGES, msgid, LC_MESSAGES);
     else
 	return text;
 }
 
 const char *KLocale::translate(const char *index, const char *d_text)
 {
-    char *text = dcgettext( catalogue, index, LC_MESSAGES);
+    char *text = k_dcgettext( catalogue, index, LC_MESSAGES);
 
     if (text == index) { // just compare the pointers
-	text =  dcgettext( SYSTEM_MESSAGES, index, LC_MESSAGES);
+	text =  k_dcgettext( SYSTEM_MESSAGES, index, LC_MESSAGES);
 	if (text == index)
 	    return d_text;
     }
