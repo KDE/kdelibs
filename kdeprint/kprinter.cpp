@@ -484,8 +484,6 @@ QValueList<int> KPrinter::pageList() const
 			if (!option("kde-range").isEmpty())
 			{
 				QStringList	ranges = QStringList::split(',',option("kde-range"),false);
-				// use a temporary map to insure uniqueness of pages.
-				QMap<int,int>	pages;
 				for (QStringList::ConstIterator it=ranges.begin();it!=ranges.end();++it)
 				{
 					int	p = (*it).find('-');
@@ -494,7 +492,7 @@ QValueList<int> KPrinter::pageList() const
 					{
 						int	pp = (*it).toInt(&ok);
 						if (ok && pp >= mp && pp <= MP)
-							pages[pp] = 1;
+							list.append(pp);
 					}
 					else
 					{
@@ -507,15 +505,10 @@ QValueList<int> KPrinter::pageList() const
 							p1 = QMAX(mp,p1);
 							p2 = QMIN(MP,p2);
 							for (int i=p1;i<=p2;i++)
-								pages[i] = 1;
+								list.append(i);
 						}
 					}
 				}
-				// translate the map into the list
-				for (QMap<int,int>::ConstIterator it=pages.begin();it!=pages.end();++it)
-					list.append(it.key());
-				// sort the list
-				qHeapSort(list);
 			}
 			else
 			{ // add all pages between min and max
@@ -694,7 +687,7 @@ bool KPrinter::autoConfigure(const QString& prname, QWidget *parent)
 
 void reportError(KPrinter *p)
 {
-	if (!KNotifyClient::event("printerror",i18n("<p><nobr>A print error occurred. Error message received from system:</nobr></p><br>%1").arg(p->errorMessage())))
+	if (!KNotifyClient::event(0,"printerror",i18n("<p><nobr>A print error occurred. Error message received from system:</nobr></p><br>%1").arg(p->errorMessage())))
 		kdDebug(500) << "could not send notify event" << endl;
 }
 
