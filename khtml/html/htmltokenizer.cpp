@@ -89,43 +89,37 @@ static const char titleEnd [] = "</title";
 #define fixUpChar(x)
 #else
 #define fixUpChar(x) \
-            if (!(x).row() ) { \
-                switch ((x).cell()) \
-                { \
-                /* ALL of these should be changed to Unicode SOON */ \
-                case 0x80: (x) = 0x20ac; break; \
-                case 0x82: (x) = ',';    break; \
-                case 0x83: (x) = 0x0192; break; \
-                case 0x84: (x) = '"';    break; \
-                case 0x85: (x) = 0x2026; break; \
-                case 0x86: (x) = 0x2020; break; \
-                case 0x87: (x) = 0x2021; break; \
-                case 0x88: (x) = 0x02C6; break; \
-                case 0x89: (x) = 0x2030; break; \
-                case 0x8A: (x) = 0x0160; break; \
-                case 0x8b: (x) = '<';    break; \
-                case 0x8C: (x) = 0x0152; break; \
-\
-                case 0x8E: (x) = 0x017D; break; \
-\
-\
-                case 0x91: (x) = '\'';   break; \
-                case 0x92: (x) = '\'';   break; \
-                case 0x93: (x) = '"';    break; \
-                case 0x94: (x) = '"';    break; \
-                case 0x95: (x) = '*';    break; \
-                case 0x96: (x) = '-';    break; \
-                case 0x97: (x) = '-';    break; \
-                case 0x98: (x) = '~';    break; \
-                case 0x99: (x) = 0x2122; break; \
-                case 0x9A: (x) = 0x0161; break; \
-                case 0x9b: (x) = '>';    break; \
-                case 0x9C: (x) = 0x0153; break; \
-\
-                case 0x9E: (x) = 0x017E; break; \
-                case 0x9F: (x) = 0x0178; break; \
-                default: break; \
-                } \
+            switch ((x).unicode()) \
+            { \
+            /* ALL of these should be changed to Unicode SOON */ \
+            case 0x80: (x) = 0x20ac; break; \
+            case 0x82: (x) = ',';    break; \
+            case 0x83: (x) = 0x0192; break; \
+            case 0x84: (x) = '"';    break; \
+            case 0x85: (x) = 0x2026; break; \
+            case 0x86: (x) = 0x2020; break; \
+            case 0x87: (x) = 0x2021; break; \
+            case 0x88: (x) = 0x02C6; break; \
+            case 0x89: (x) = 0x2030; break; \
+            case 0x8A: (x) = 0x0160; break; \
+            case 0x8b: (x) = '<';    break; \
+            case 0x8C: (x) = 0x0152; break; \
+            case 0x8E: (x) = 0x017D; break; \
+            case 0x91: (x) = '\'';   break; \
+            case 0x92: (x) = '\'';   break; \
+            case 0x93: (x) = '"';    break; \
+            case 0x94: (x) = '"';    break; \
+            case 0x95: (x) = '*';    break; \
+            case 0x96: (x) = '-';    break; \
+            case 0x97: (x) = '-';    break; \
+            case 0x98: (x) = '~';    break; \
+            case 0x99: (x) = 0x2122; break; \
+            case 0x9A: (x) = 0x0161; break; \
+            case 0x9b: (x) = '>';    break; \
+            case 0x9C: (x) = 0x0153; break; \
+            case 0x9E: (x) = 0x017E; break; \
+            case 0x9F: (x) = 0x0178; break; \
+            default: break; \
             }
 #endif
 
@@ -419,8 +413,7 @@ void HTMLTokenizer::scriptHandler()
         write( prependingSrc, false );
 }
 
-// KDE 4: Make scriptURL a const QString &
-void HTMLTokenizer::scriptExecution( const QString& str, QString scriptURL,
+void HTMLTokenizer::scriptExecution( const QString& str, const QString& scriptURL,
                                      int baseLine)
 {
     bool oldscript = script;
@@ -456,10 +449,10 @@ void HTMLTokenizer::parseComment(DOMStringIt &src)
                 checkScriptBuffer();
                 scriptCode[ scriptCodeSize ] = 0;
                 scriptCode[ scriptCodeSize + 1 ] = 0;
-                currToken.id = ID_COMMENT;
+                currToken.tid = ID_COMMENT;
                 processListing(DOMStringIt(scriptCode, scriptCodeSize - 2));
                 processToken();
-                currToken.id = ID_COMMENT + ID_CLOSE_TAG;
+                currToken.tid = ID_COMMENT + ID_CLOSE_TAG;
                 processToken();
 #endif
                 scriptCodeSize = 0;
@@ -1545,9 +1538,9 @@ void HTMLTokenizer::processToken()
     if(l) {
         kdDebug( 6036 ) << "Attributes: " << l << endl;
         for (unsigned long i = 0; i < l; ++i) {
-            NodeImpl::Id id = currToken.attrs->idAt(i);
+            NodeImpl::Id tid = currToken.attrs->idAt(i);
             DOMString value = currToken.attrs->valueAt(i);
-            kdDebug( 6036 ) << "    " << id << " " << parser->doc()->getDocument()->attrNames()->getName(id).string()
+            kdDebug( 6036 ) << "    " << tid << " " << parser->doc()->getDocument()->attrNames()->getName(tid).string()
                             << "=\"" << value.string() << "\"" << endl;
         }
     }
