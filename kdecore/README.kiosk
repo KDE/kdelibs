@@ -429,6 +429,10 @@ start_new_session
 	- defines whether the user may start a second X session.
           See also the kdm configuration.
 
+skip_drm
+	- defines if the user may omit DRM checking.
+          Currently only used by kpdf
+
 Screensaver related:
 opengl_screensavers
 	- defines whether OpenGL screensavers are allowed to be used.
