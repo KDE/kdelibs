@@ -369,7 +369,7 @@ const QString keyToString( uint keyCode )
 		}
 	}
 	
-	return QString(NULL);
+	return QString((void *)NULL);
 }
 
 uint stringToKey(const QString& key )
