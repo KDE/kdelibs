@@ -76,6 +76,14 @@ extern "C" void usleep(unsigned int);
 void usleep(unsigned int);
 #endif
 #endif
+#ifdef __cplusplus  
+extern "C" {
+#endif
+#include <sys/mount.h>
+int getmntinfo(struct statfs **mntbufp, int flags);
+#ifdef __cplusplus
+}
+#endif
 #endif
 
 /*
