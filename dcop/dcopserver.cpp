@@ -28,6 +28,9 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include <sys/types.h>
 #include <sys/stat.h>
 
+#include <qfile.h>
+#include <qtextstream.h>
+
 #include "dcopserver.moc"
 #include <dcopglobal.h>
 #include <qdatastream.h>
@@ -552,8 +555,13 @@ CloseListeners ()
   exit(0);
 }
 
-static void sighandler(int)
+static void sighandler(int sig)
 {
+  if (sig == SIGHUP) {
+    signal(SIGHUP, sighandler);
+    return;
+  }
+
   CloseListeners();
 }
 
@@ -592,6 +600,7 @@ DCOPServer::DCOPServer()
       FILE *f;
       f = ::fopen(fName.data(), "w+");
       fprintf(f, IceComposeNetworkIdList(numTransports, listenObjs));
+      fprintf(f, "\n%i\n", getpid());
       fclose(f);
     }
 
@@ -791,15 +800,28 @@ int main( int argc, char* argv[] )
   QCString fName(::getenv("HOME"));
   fName += "/.DCOPserver";
   if (::access(fName.data(), R_OK) == 0) {
+    QFile f(fName);
+    f.open(IO_ReadOnly);
+    QTextStream t(&f);
+    t.readLine(); // skip over connection list
+    bool ok = false;
+    pid_t pid = t.readLine().toUInt(&ok);
+    f.close();
+    if (ok && (kill(pid, SIGHUP) == 0)) {
       qWarning( "---------------------------------\n"
 		"It looks like dcopserver is already running. If you are sure\n"
 		"that it is not already running, remove %s\n"
-		"and start dcopserver again\n"
+		"and start dcopserver again.\n"
 		"---------------------------------\n",
 		fName.data() );
-
+      
       // lock file present, die silently.
-    exit(0);
+      exit(0);
+    } else {
+      // either we couldn't read the PID or kill returned an error.
+      // remove lockfile and continue
+      unlink(fName.data());
+    }
   }
 
   QApplication a( argc, argv );
@@ -817,6 +839,7 @@ int main( int argc, char* argv[] )
   if (fork() > 0)
     exit(0); // get rid of controlling terminal
 
+  signal(SIGHUP, sighandler);
   signal(SIGTERM, sighandler);
 
   return a.exec();
