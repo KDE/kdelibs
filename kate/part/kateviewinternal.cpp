@@ -387,7 +387,7 @@ void KateViewInternal::scrollPos(KateTextCursor& c, bool force)
 
     if (QABS(viewLinesScrolled) < lines) {
       // temporary fix for scroll() not translating pending paint events
-      KApplication::kApplication()->processEvents();
+      //KApplication::kApplication()->processEvents();
 
       updateView(false, viewLinesScrolled);
       int scrollHeight = -(viewLinesScrolled * m_doc->viewFont.fontHeight);
