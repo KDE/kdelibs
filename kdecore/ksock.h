@@ -38,10 +38,13 @@
 #include <netinet/in.h>
 class QSocketNotifier;
 
-// This is here for compatibility with old applications still using the constants
-// Never use them in new programs
+#ifdef INET6
+typedef sockaddr_in6 ksockaddr_in;
+#define KSOCK_DEFAULT_DOMAIN PF_INET6
+#else
 typedef sockaddr_in ksockaddr_in;
 #define KSOCK_DEFAULT_DOMAIN PF_INET
+#endif
 
 class KSocketPrivate;
 class KServerSocketPrivate;
@@ -96,8 +99,6 @@ public:
 
     /**
       *  A small wrapper around @ref gethostbyname() and such.
-      *  Don't use this in new programs. Use @ref KExtendedSocket::lookup
-      *  @deprecated
       */
     static bool initSockaddr(ksockaddr_in *server_name, const char *hostname, unsigned short int port, int domain = PF_INET);
     
@@ -130,10 +131,6 @@ public:
     
     /**
      * Return address.
-     * This function is dumb. Don't ever use it
-     * if you need the peer address of this socket, use @ref KExtendedSocket::peerAddress(int)
-     * instead
-     * @deprecated
      */
     unsigned long ipv4_addr();
     
@@ -185,8 +182,7 @@ protected:
     bool connect( const char *_path );
   
     bool init_sockaddr( const QString& hostname, unsigned short int port );
-
-    /* These are only here because I can't remove them */
+    
     ksockaddr_in server_name;
     struct sockaddr_un unix_addr;
 
@@ -209,6 +205,8 @@ private:
 
     KSocketPrivate *d;
     
+    static char *cachedHostname;
+    static ksockaddr_in *cachedServerName;
 };
 
 
@@ -253,7 +251,6 @@ public:
      *                  socket.
      */
     KServerSocket( const char *_path, bool _bind );
-
     /**
      * @deprecated
      * Same as above with _bind true.
@@ -287,9 +284,6 @@ public:
 
     /** 
      * The address.
-     * This is dumb. Don't use it
-     * Refer to @ref KExtendedSocket::localAddress(int)
-     * @deprecated
      */
     unsigned long ipv4_addr();
 
@@ -297,7 +291,7 @@ public slots:
     /** 
      * Called when someone connected to our port.
      */
-    virtual void slotAccept( int ); // why is this virtual?
+    virtual void slotAccept( int );
 
 signals:
     /**
@@ -333,13 +327,21 @@ private:
 
 // Here are a whole bunch of hackish macros that allow one to
 // get at the correct member of ksockaddr_in
-// But since ksockaddr_in is IPv4-only, and deprecated...
 
+#ifdef INET6
+#define get_sin_addr(x) x.sin6_addr
+#define get_sin_port(x) x.sin6_port
+#define get_sin_family(x) x.sin6_family
+#define get_sin_paddr(x) x->sin6_addr
+#define get_sin_pport(x) x->sin6_port
+#define get_sin_pfamily(x) x->sin6_family
+#else
 #define get_sin_addr(x) x.sin_addr
 #define get_sin_port(x) x.sin_port
 #define get_sin_family(x) x.sin_family
 #define get_sin_paddr(x) x->sin_addr
 #define get_sin_pport(x) x->sin_port
 #define get_sin_pfamily(x) x->sin_family
+#endif
 
 #endif

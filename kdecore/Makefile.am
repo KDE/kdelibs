@@ -36,7 +36,6 @@ include_HEADERS = kconfig.h kconfigdata.h ksimpleconfig.h kconfigbase.h \
 	krandomsequence.h kstringhandler.h knotifyclient.h kiconeffect.h \
 	kaudioplayer.h kdestyle.h kdcoppropertyproxy.h kdatastream.h  netwm.h \
 	netwm_def.h netwm_p.h kpixmapprovider.h kunload.h kstaticdeleter.h \
-	ksockaddr.h kextsock.h \
 	kurldrag.h kmimesourcefactory.h kpixmapsplitter.h
 
 libkdefakes_la_SOURCES = fakes.c vsnprintf.c
@@ -59,7 +58,6 @@ libkdecore_la_SOURCES = libintl.cpp kdebug.cpp kstddirs.cpp \
 	ksavefile.cpp krandomsequence.cpp kstringhandler.cpp kcompletion.cpp \
 	kcmdlineargs.cpp kaboutdata.cpp kcompletionbase.cpp knotifyclient.cpp \
 	kaudioplayer.cpp kdestyle.cpp kdcoppropertyproxy.cpp \
-	ksockaddr.cpp kextsock.cpp \
 	kpixmapprovider.cpp kurldrag.cpp kpixmapsplitter.cpp
 
 kcharset.cpp: kentities.c

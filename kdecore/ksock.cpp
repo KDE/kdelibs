@@ -39,8 +39,6 @@ extern "C" {
 }
 #include "kdebug.h"
 #include "ksock.h"
-#include "kextsock.h"
-#include "ksockaddr.h"
 
 extern "C" {
 #include <errno.h>
@@ -74,6 +72,13 @@ extern "C" {
 #include <qapplication.h>
 #include <qsocketnotifier.h>
 
+#ifndef UNIX_PATH_MAX
+#define UNIX_PATH_MAX 108 // this is the value, I found under Linux
+#endif
+
+char *KSocket::cachedHostname = 0;
+ksockaddr_in *KSocket::cachedServerName = 0;
+
 // I moved this into here so we could accurately detect the domain, for
 // posterity.  Really.
 KSocket::KSocket( int _sock)
@@ -94,15 +99,33 @@ KSocket::KSocket( int _sock)
 }
 
 KSocket::KSocket( const char *_host, unsigned short int _port, int _timeout ) :
-  sock( -1 ), domain( AF_UNSPEC ), readNotifier( 0L ), writeNotifier( 0L )
+  sock( -1 ), readNotifier( 0L ), writeNotifier( 0L )
 {
     timeOut = _timeout;
+#ifdef INET6
+    // Setup the resolver to look for IPv6 addresses and then
+    // as a fall back, look for IPv4.  This means we don't need further
+    // ifdefs to use gethostbyname2. (Taken from rfc2133)
+    res_init();
+    _res.options |= RES_USE_INET6;
+
+    // Also we do this because gethostbyname will return IPv4 mapped on to
+    // IPv6 addresses when set like this and use 16 byte hostents, so we
+    // should be safe and use sockaddr_in6, etc, and by setting the domain to
+    // PF_INET6, anyone who checks our sockaddr stuff will avoid buffer
+    // overflows by seeing that it's new style.
+    domain = PF_INET6;
+#else
+    domain = PF_INET;
+#endif
     connect( _host, _port );
 }
 
 KSocket::KSocket( const char *_path ) :
-  sock( -1 ), domain( AF_UNSPEC ), readNotifier( 0L ), writeNotifier( 0L )
+  sock( -1 ), readNotifier( 0L ), writeNotifier( 0L )
 {
+  timeOut = 0; // Not used
+  domain = PF_UNIX;
   connect( _path );
 }
 
@@ -156,11 +179,13 @@ void KSocket::slotWrite( int )
 }
 
 /*
- * This function is not used
+ * Initializes a sockaddr structure. Do this after creating a socket and
+ * before connecting to any other socket. Here you must specify the
+ * host and port you want to connect to.
  */
 bool KSocket::init_sockaddr( const QString& hostname, unsigned short int port )
 {
-  return false;
+  return initSockaddr(&server_name, hostname.ascii(), port, domain);
 }
 
 /*
@@ -168,16 +193,32 @@ bool KSocket::init_sockaddr( const QString& hostname, unsigned short int port )
  */
 bool KSocket::connect( const char *_path )
 {
-  KExtendedSocket ks("*", _path, KExtendedSocket::unixSocket);
+  if ( domain != PF_UNIX )
+      kdFatal() << "Connecting a PF_INET socket to a PF_UNIX domain socket\n";
 
-  ks.connect();
-  sock = ks.fd();
-  ks.release();
+  assert(sock == -1);
+  sock = ::socket(PF_UNIX,SOCK_STREAM,0);
+  if (sock < 0)
+	return false;
 
-  /* In this case, we are sure domain is PF_UNIX */
-  domain = PF_UNIX;
+  unix_addr.sun_family = AF_UNIX;
+  int l = strlen( _path );
+  if ( l > UNIX_PATH_MAX - 1 )
+  {
+      kdWarning() << "Too long PF_UNIX domain name '" << _path << "'\n";
+      return false;
+  }
+  strcpy( unix_addr.sun_path, _path );
 
-  return sock >= 0;
+  if ( 0 > ::connect( sock, (struct sockaddr*)(&unix_addr),
+					  sizeof( unix_addr ) ) )
+  {
+      ::close( sock );
+      sock = -1;
+      return false;
+  }
+
+  return true;
 }
 
 /*
@@ -185,64 +226,153 @@ bool KSocket::connect( const char *_path )
  */
 bool KSocket::connect( const QString& _host, unsigned short int _port )
 {
-  KExtendedSocket ks(_host, _port);
-  ks.setTimeout(timeOut, 0);
+#ifdef INET6
+  if ( (domain != PF_INET6) && (domain != PF_INET) )
+#else
+  if ( domain != PF_INET )
+#endif
+      kdFatal() <<  "Connecting a PF_UNIX domain socket to a PF_INET domain socket" << endl;
 
-  ks.connect();
-  sock = ks.fd();
-  if (sock >= 0)
-    {
-      KSocketAddress *sa = ks.localAddress();
-      if (sa != NULL)
-	domain = sa->family();
-    }
-  ks.release();
+  sock = ::socket(domain, SOCK_STREAM, 0);
+  if (sock < 0)
+	return false;
 
-  return sock >= 0;
+  if ( !init_sockaddr( _host, _port) ) {
+	  ::close( sock );
+	  sock = -1;
+	  return false;
+  }
+
+  fcntl(sock, F_SETFL, ( fcntl(sock,F_GETFL)|O_NDELAY) );
+
+  errno = 0;
+  if (::connect(sock, (struct sockaddr*)(&server_name), sizeof(server_name))){
+      if(errno != EINPROGRESS && errno != EWOULDBLOCK) {
+          ::close( sock );
+          sock = -1;
+          return false;
+      }
+  } else
+      return true;
+
+  fd_set rd, wr;
+  struct timeval timeout;
+
+  int n = timeOut*10; // Timeout in 1/10th's of a second
+  while(n--){
+      FD_ZERO(&rd);
+      FD_ZERO(&wr);
+      FD_SET(sock, &rd);
+      FD_SET(sock, &wr);
+
+      timeout.tv_usec = 100*1000; // 1/10th sec
+      timeout.tv_sec = 0;
+
+      select(sock + 1, &rd, &wr, (fd_set *)0, &timeout);
+
+      if (FD_ISSET(sock, &rd) || FD_ISSET(sock, &wr))
+      {
+         int errcode;
+         ksize_t len = sizeof(errcode);
+         int ret = getsockopt(sock, SOL_SOCKET, SO_ERROR, (char*)&errcode, &len);
+         if ((ret == -1) || (errcode != 0))
+         {
+            ::close(sock);
+            sock = -1;
+            return false;
+         }
+         return true;
+      }
+      qApp->processEvents();
+      qApp->flushX();
+  }
+  kdWarning() << "Timeout connecting socket..." << endl;
+  ::close( sock );
+  sock = -1;
+  return false;
 }
 
 unsigned long KSocket::ipv4_addr()
 {
-  unsigned long retval = 0;
-  KSocketAddress *sa = KExtendedSocket::peerAddress(sock);
-  if (sa == NULL)
+  if ( domain != PF_INET )
     return 0;
 
-  if (sa->address() != NULL && (sa->address()->sa_family == PF_INET ||
-				sa->address()->sa_family == PF_INET6))
-    {
-      KInetSocketAddress *ksin = (KInetSocketAddress*)sa;
-      const sockaddr_in *sin = ksin->addressV4();
-      if (sin != NULL)
-	retval = *(unsigned long*)&sin->sin_addr; // I told you this was dumb
-    }
-  delete sa;
-  return retval;
+  sockaddr_in name; ksize_t len = sizeof(name);
+  getsockname(sock, (struct sockaddr *) &name, &len);
+  if (name.sin_family == AF_INET) // It's IPv4
+    return ntohl(name.sin_addr.s_addr);
+#ifdef INET6
+  else if (name.sin_family == AF_INET6) // It's IPv6 Ah.
+    return 0;
+#endif
+  else // We dunno what it is
+    return 0;
 }
 
 bool KSocket::initSockaddr (ksockaddr_in *server_name, const char *hostname, unsigned short int port, int domain)
 {
-  // This function is now IPv4 only
-  // if you want something better, you should use KExtendedSocket::lookup yourself
-
-  kdWarning() << "deprecated KSocket::initSockaddr called" << endl;
-
-  memset(server_name, 0, sizeof(*server_name));
-
-  if (domain != PF_INET)
+  if (
+#ifdef INET6
+     ( domain != PF_INET6 ) &&
+#endif
+     ( domain != PF_INET ) )
     return false;
 
-  QList<KAddressInfo> list = KExtendedSocket::lookup(hostname, QString::number(port),
-						     KExtendedSocket::ipv4Socket);
-  list.setAutoDelete(true);
+  if (cachedHostname && (strcmp(hostname, cachedHostname) == 0))
+  {
+     memcpy( server_name, cachedServerName, sizeof(ksockaddr_in));
+#ifdef INET6
+     server_name->sin6_port = htons( port );
+#else
+     get_sin_pport(server_name) = htons( port );
+#endif
+     return true;
+  }
 
-  // We are sure that only KInetSocketAddress objects are in the list
-  KInetSocketAddress *sin = (KInetSocketAddress*)list.getFirst()->address();
-  if (sin == NULL)
+  memset(server_name, 0, sizeof(ksockaddr_in));
+
+  struct hostent *hostinfo;
+  hostinfo = gethostbyname( hostname );
+
+  if ( hostinfo == 0 )
+  {
+#ifdef HAVE_RES_INIT
+    res_init();
+#endif
+#ifdef INET6
+    // Setup the resolver to look for IPv6 addresses and then
+    // as a fall back, look for IPv4.  This means we don't need further
+    // ifdefs to use gethostbyname2. (Taken from rfc2133)
+    _res.options |= RES_USE_INET6;
+#endif
+    hostinfo = gethostbyname( hostname );
+  }
+
+  if ( hostinfo == 0 )
     return false;
 
-  memcpy(server_name, sin->addressV4(), sizeof(*server_name));
-  kdDebug(170) << "KSocket::initSockaddr: returning " << sin->pretty() << endl;
+#ifdef INET6
+  if (domain == PF_INET6) {
+    server_name->sin6_family = hostinfo->h_addrtype;
+    server_name->sin6_port = htons( port );
+    memcpy(&server_name->sin6_addr, hostinfo->h_addr_list[0], hostinfo->h_length);
+  } else
+#endif
+  {
+    get_sin_pfamily(server_name) = hostinfo->h_addrtype;
+    get_sin_pport(server_name) = htons( port );
+    memcpy(&get_sin_paddr(server_name), hostinfo->h_addr_list[0], hostinfo->h_length);
+  }
+
+  // update our primitive cache
+  delete [] cachedHostname;
+  cachedHostname = new char[ strlen(hostname)+1 ];
+  strcpy(cachedHostname, hostname);
+
+  if (!cachedServerName)
+     cachedServerName = new ksockaddr_in;
+  memcpy( cachedServerName, server_name, sizeof(ksockaddr_in));
+
   return true;
 }
 
@@ -262,7 +392,6 @@ public:
    bool bind;
    QCString path;
    unsigned short int port;
-   KExtendedSocket *ks;
 };
 
 
@@ -289,6 +418,7 @@ KServerSocket::KServerSocket( const char *_path, bool _bind ) :
 KServerSocket::KServerSocket( unsigned short int _port ) :
   notifier( 0L ), sock( -1 )
 {
+  domain = PF_INET;
   d = new KServerSocketPrivate();
   d->bind = true;
 
@@ -298,6 +428,7 @@ KServerSocket::KServerSocket( unsigned short int _port ) :
 KServerSocket::KServerSocket( unsigned short int _port, bool _bind ) :
   notifier( 0L ), sock( -1 ), d(0)
 {
+  domain = PF_INET;
   d = new KServerSocketPrivate();
   d->bind = _bind;
 
@@ -309,13 +440,22 @@ bool KServerSocket::init( const char *_path )
   if ( domain != PF_UNIX )
     return false;
 
+  int l = strlen( _path );
+  if ( l > UNIX_PATH_MAX - 1 )
+  {
+      kdWarning() <<  "Too long PF_UNIX domain name '" << _path << "'\n";
+      return false;
+  }
+
+  sock = ::socket( PF_UNIX, SOCK_STREAM, 0 );
+  if (sock < 0)
+  {
+    kdWarning() << "Could not create socket\n";
+    return false;
+  }
+
   unlink(_path );
   d->path = _path;
-
-  KExtendedSocket *ks = new KExtendedSocket("*", _path, KExtendedSocket::passiveSocket |
-					    KExtendedSocket::unixSocket);
-  d->ks = ks;
-
   if (d->bind)
     return bindAndListen();
   return true;
@@ -324,10 +464,21 @@ bool KServerSocket::init( const char *_path )
 
 bool KServerSocket::init( unsigned short int _port )
 {
+  if (
+#ifdef INET6
+      ( domain != PF_INET6 ) &&
+#endif
+      ( domain != PF_INET  ) )
+    return false;
+
+  sock = ::socket( domain, SOCK_STREAM, 0 );
+  if (sock < 0)
+  {
+    kdWarning() << "Could not create socket\n";
+    return false;
+  }
+
   d->port = _port;
-  KExtendedSocket *ks;
-  ks = new KExtendedSocket("*", _port, KExtendedSocket::passiveSocket);
-  d->ks = ks;
 
   if (d->bind)
     return bindAndListen();
@@ -336,23 +487,68 @@ bool KServerSocket::init( unsigned short int _port )
 
 bool KServerSocket::bindAndListen()
 {
-  if (d == NULL || d->ks == NULL)
-    return false;
+  if (domain == PF_UNIX)
+  {
+    struct sockaddr_un name;
+    name.sun_family = AF_UNIX;
+    strcpy( name.sun_path, d->path.data() );
 
-  if (d->ks->listen(SOMAXCONN ) < 0)
+    if ( bind( sock, (struct sockaddr*) &name,sizeof( name ) ) < 0 )
     {
-        kdWarning() << "Error listening on socket\n";
-	delete d->ks;
-	d->ks = NULL;
-	sock = -1;
-	return false;
+      kdWarning() << "Could not bind to socket\n";
+      ::close( sock );
+      sock = -1;
+      return false;
     }
 
-  KSocketAddress *sa = d->ks->localAddress();
-  if (sa != NULL)
-    domain = sa->family();
+    if ( chmod( d->path.data(), 0600) < 0 )
+    {
+      kdWarning() << "Could not setup permissions for server socket\n";
+      ::close( sock );
+      sock = -1;
+      return false;
+    }
+  }
+  else if (domain == AF_INET) {
 
-  sock = d->ks->fd();
+    sockaddr_in name;
+
+    name.sin_family = domain;
+    name.sin_port = htons( d->port );
+    name.sin_addr.s_addr = htonl(INADDR_ANY);
+
+    if ( bind( sock, (struct sockaddr*) &name,sizeof( name ) ) < 0 ) {
+          kdWarning() << "Could not bind to socket\n";
+	  ::close( sock );
+	  sock = -1;
+	  return false;
+    }
+  }
+#ifdef INET6
+  else if (domain == AF_INET6) {
+    sockaddr_in6 name;
+
+    name.sin6_family = domain;
+    name.sin6_flowinfo = 0;
+    name.sin6_port = htons(d->port);
+    memcpy(&name.sin6_addr, &in6addr_any, sizeof(in6addr_any));
+
+    if ( bind( sock, (struct sockaddr*) &name,sizeof( name ) ) < 0 ) {
+          kdWarning() << "Could not bind to socket\n";
+	  ::close( sock );
+	  sock = -1;
+	  return false;
+    }
+  }
+#endif
+
+  if ( listen( sock, SOMAXCONN ) < 0 )
+    {
+        kdWarning() << "Error listening on socket\n";
+	  ::close( sock );
+	  sock = -1;
+	  return false;
+    }
 
   notifier = new QSocketNotifier( sock, QSocketNotifier::Read );
   connect( notifier, SIGNAL( activated(int) ), this, SLOT( slotAccept(int) ) );
@@ -362,75 +558,69 @@ bool KServerSocket::bindAndListen()
 
 unsigned short int KServerSocket::port()
 {
-  if (d == NULL || d->ks == NULL || sock == -1)
-    return 0;
-  KSocketAddress *sa = d->ks->localAddress();
+  if ( domain != PF_INET )
+    return false;
 
-  // we can use sockaddr_in here even if it isn't IPv4
-  sockaddr_in *sin = (sockaddr_in*)sa->address();
-
-  if (sin->sin_family == PF_INET)
-    // correct family
-    return sin->sin_port;
-  else if (sin->sin_family == PF_INET6)
-    {
-      sockaddr_in6 *sin6 = (sockaddr_in6*)sin;
-      return sin6->sin6_port;
-    }
-  return 0;			// not a port we know
+  ksockaddr_in name; ksize_t len = sizeof(name);
+  getsockname(sock, (struct sockaddr *) &name, &len);
+  return ntohs(get_sin_port(name));
 }
 
 unsigned long KServerSocket::ipv4_addr()
 {
-  if (d == NULL || d->ks == NULL || sock == -1)
+  if ( domain != PF_INET )
     return 0;
-  KSocketAddress *sa = d->ks->localAddress();
-  
-  const sockaddr_in *sin = (sockaddr_in*)sa->address();
 
-  if (sin->sin_family == PF_INET)
-    // correct family
-    return ntohl(*(unsigned long*)&sin->sin_addr);
-  else if (sin->sin_family == PF_INET6)
-    {
-      KInetSocketAddress *ksin = (KInetSocketAddress*)sa;
-      sin = ksin->addressV4();
-      if (sin != NULL)
-	return *(unsigned long*)&sin->sin_addr;
-    }
-  return 0;			// this is dumb, isn't it?
+  sockaddr_in name; ksize_t len = sizeof(name);
+  getsockname(sock, (struct sockaddr *) &name, &len);
+  if (name.sin_family == AF_INET) // It's IPv4
+    return ntohl(name.sin_addr.s_addr);
+#ifdef INET6
+  else if (name.sin_family == AF_INET6) // It's IPv6 Ah.
+    return 0;
+#endif
+  else // We dunno what it is
+    return 0;
 }
 
 void KServerSocket::slotAccept( int )
 {
-  if (d == NULL || d->ks == NULL || sock == -1)
-    return;			// nothing!
+  if ( domain == PF_INET )
+  {
+    ksockaddr_in clientname;
+    int new_sock;
 
-  KExtendedSocket *s;
-  if (d->ks->accept(s) < 0)
+    ksize_t size = sizeof(clientname);
+
+    if ((new_sock = accept (sock, (struct sockaddr *) &clientname, &size)) < 0)
     {
         kdWarning() << "Error accepting\n";
         return;
     }
-  
-  int new_sock = s->fd();
-  s->release();			// we're getting rid of the KExtendedSocket
-  delete s;
+    emit accepted( new KSocket( new_sock ) );
+  }
+  else if ( domain == PF_UNIX )
+  {
+    struct sockaddr_un clientname;
+    int new_sock;
 
-  emit accepted( new KSocket( new_sock ) );
+    ksize_t size = sizeof(clientname);
+
+    if ((new_sock = accept (sock, (struct sockaddr *) &clientname, &size)) < 0)
+    {
+        kdWarning() << "Error accepting\n";
+        return;
+    }
+
+    emit accepted( new KSocket( new_sock ) );
+  }
 }
 
 KServerSocket::~KServerSocket()
 {
+  delete d;
   delete notifier;
-  if (d != NULL)
-    {
-      if (d->ks != NULL)
-	delete d->ks;
-      delete d;
-    }
-  // deleting d->ks closes the socket
-  //  ::close( sock );
+  ::close( sock );
 }
 
 #include "ksock.moc"
