@@ -175,7 +175,7 @@ do two things:
 
 1) Disable the KDE crash handler. This can be done either by using the 
 --nocrashhandler command line option or by setting the KDE_DEBUG environment
-variable to some value e.g. KDEDEBUG=true.
+variable to some value e.g. KDE_DEBUG=true.
 
 2) Enable core dump generation by changing the so called 'ulimits' with the
 following command: 
