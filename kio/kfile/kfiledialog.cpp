@@ -1631,21 +1631,13 @@ void KFileDialog::readConfig( KConfig *kc, const QString& group )
     if ( cm != KGlobalSettings::completionMode() )
 	locationEdit->setCompletionMode( cm );
 
-
-    int w, h;
-    QWidget *desk = QApplication::desktop();
-    w = QMIN( 530, (int) (desk->width() * 0.5)); // maximum default width = 530
-    h = (int) (desk->height() * 0.4);
-
-    w = kc->readNumEntry( DialogWidth.arg( desk->width()), w );
-    h = kc->readNumEntry( DialogHeight.arg( desk->height()), h );
-
     int w1 = minimumSize().width();
     int w2 = toolbar->sizeHint().width() + 10;
     if (w1 < w2)
         setMinimumWidth(w2);
 
-    resize(w, h);
+    QSize size = configDialogSize( group );
+    resize( size );
     kc->setGroup( oldGroup );
 }
 
@@ -1660,8 +1652,7 @@ void KFileDialog::writeConfig( KConfig *kc, const QString& group )
 
     QWidget *desk = QApplication::desktop();
     kc->writeEntry( RecentURLs, d->pathCombo->urls() );
-    kc->writeEntry( DialogWidth.arg( desk->width() ), width() );
-    kc->writeEntry( DialogHeight.arg( desk->height() ), height() );
+    saveDialogSize( group, true );
     kc->writeEntry( PathComboCompletionMode, d->pathCombo->completionMode() );
     kc->writeEntry(LocationComboCompletionMode,locationEdit->completionMode());
 
