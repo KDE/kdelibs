@@ -34,3 +34,11 @@ RenderBR::RenderBR(RenderStyle *style)
 RenderBR::~RenderBR()
 {
 }
+
+short RenderBR::verticalPositionHint() const
+{
+    if (previousSibling() && !previousSibling()->isBR())
+    	return 0;
+    else
+    	return RenderText::verticalPositionHint();
+}

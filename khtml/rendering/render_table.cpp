@@ -1312,8 +1312,11 @@ void RenderTable::print( QPainter *p, int _x, int _y,
 #ifdef TABLE_DEBUG
     kdDebug(300) << "RenderTable::print() w/h = (" << width() << "/" << height() << ")" << endl;
 #endif
-    if((_ty > _y + _h) || (_ty + height() < _y)) return;
-    if((_tx > _x + _w) || (_tx + width() < _x)) return;
+    if (!containsPositioned())
+    {
+    	if((_ty > _y + _h) || (_ty + height() < _y)) return;
+    	if((_tx > _x + _w) || (_tx + width() < _x)) return;
+    }
 
 #ifdef DEBUG_LAYOUT
      kdDebug(300) << "RenderTable::print(2) " << _tx << "/" << _ty << " (" << _x << "/" << _y << ")" << endl;
@@ -1639,8 +1642,8 @@ void RenderTableCell::print(QPainter *p, int _x, int _y,
     _ty += m_y + cellTopExtra();
 
     // check if we need to do anything at all...
-    if((_ty-_topExtra > _y + _h)
-    	|| (_ty + m_height+_topExtra+_bottomExtra < _y)) return;
+    if(!containsPositioned() && ((_ty-_topExtra > _y + _h)
+    	|| (_ty + m_height+_topExtra+_bottomExtra < _y))) return;
 
     printObject(p, _x, _y, _w, _h, _tx, _ty);
 }

@@ -123,7 +123,7 @@ void RenderFlow::print(QPainter *p, int _x, int _y, int _w, int _h,
     }
 
     // check if we need to do anything at all...
-    if(!isInline())
+    if(!isInline() && !containsPositioned() && !isRelPositioned() && !isPositioned() )
     {
 	int h = m_height;
 	if(specialObjects && floatBottom() > h) h = floatBottom();
@@ -1030,9 +1030,13 @@ void RenderFlow::addChild(RenderObject *newChild)
 	newChild->setParent(this);
     }
 
-    if(newChild->isFloating())
+    switch (newChild->style()->position())
     {
-    	//insertFloat(newChild);
+    	case RELATIVE:
+	case FIXED:
+	case ABSOLUTE:
+    	    setContainsPositioned(true);
+	default: ;
     }
 
     setLayouted(false);

@@ -104,11 +104,15 @@ public:
     virtual void setIsAnonymousBox(bool) { }
 
     bool isFloating() const { return m_floating; }
-    bool isPositioned() const { return m_positioned; } // absolute or fixed positioning
+    bool isPositioned() const { return m_positioned; } // absolute or fixed positioning    
     bool isRelPositioned() const { return m_relPositioned; } // relative positioning
     bool layouted() const   { return m_layouted; }
     bool parsing() const    { return m_parsing;     }
     bool minMaxKnown() const{ return m_minMaxKnown; }
+    bool containsPositioned() const { return m_containsPositioned; } 
+    	// absolute relative or fixed positioning
+    
+    void setContainsPositioned(bool p);
 
     void setLayouted(bool b=true) { m_layouted = b; }
     void setParsing(bool b=true) { m_parsing = b; }
@@ -330,6 +334,7 @@ protected:
     bool m_minMaxKnown    : 1;
     bool m_floating       : 1;
     bool m_positioned     : 1;
+    bool m_containsPositioned     : 1;
     bool m_relPositioned  : 1;
     bool m_printSpecial   : 1; // if the box has something special to print (background, border, etc)
 

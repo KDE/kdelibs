@@ -100,6 +100,9 @@ RenderObject::RenderObject(RenderStyle* style)
 
     m_floating = false;
     m_positioned = false;
+    m_relPositioned = false;
+    
+    m_containsPositioned = false;    
 
     m_printSpecial = false;
     if( m_style->backgroundColor().isValid() || m_style->hasBorder() || m_bgImage )
@@ -300,8 +303,9 @@ bool RenderObject::isSpecial() const
 
 void RenderObject::printTree(int indent) const
 {
-    for (int i=0; i<indent; i++) kdDebug(300) << " " << endl;
-    kdDebug(300) << renderName() << ": " << (void*)this << " il=" << isInline()
+    QString ind;
+    ind.fill(' ', indent);
+    kdDebug(300) << ind << renderName() << ": " << (void*)this << " il=" << isInline()
                  << " fl=" << isFloating() << " rp=" << isReplaced()
                  << " laytd=" << layouted()
                  << " (" << xPos() << "," << yPos() << "," << width() << "," << height() << ")" << endl;
@@ -342,4 +346,34 @@ void RenderObject::relativePositionOffset(int &tx, int &ty)
 	ty += m_style->top().width(containingBlockHeight());
     else if(!m_style->bottom().isUndefined())
 	ty -= m_style->bottom().width(containingBlockHeight());
+}
+
+void RenderObject::setContainsPositioned(bool p)
+{
+    if (p)
+    {
+    	m_containsPositioned = true;
+    	if (containingBlock()!=this)
+    	    containingBlock()->setContainsPositioned(true);
+    }
+    else
+    {
+	RenderObject *n;
+	bool c=false;
+
+	for( n = m_first; n != 0; n = n->nextSibling() )
+	{
+	    if (n->isPositioned() || n->containsPositioned())
+	    	c=true;
+	}
+	
+	if (c)
+	    return;
+	else
+	{
+	    m_containsPositioned = false;
+	    if (containingBlock()!=this)
+    	    	containingBlock()->setContainsPositioned(false);	    
+	}        
+    }
 }
