@@ -73,8 +73,6 @@ KHTMLImage::KHTMLImage( QWidget *parentWidget, const char *widgetName,
 
     setWidget( box );
 
-    setXMLFile( m_khtml->xmlFile() );
-
     m_ext = new KHTMLImageBrowserExtension( this, "be" );
 
     connect( m_khtml->browserExtension(), SIGNAL( popupMenu( KXMLGUIClient *, const QPoint &, const KURL &, const QString &, mode_t ) ),
