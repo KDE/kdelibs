@@ -409,7 +409,7 @@ void kDebugPError( unsigned short area, const char* fmt, ... )
     kDebugError( area, "%s: %s", buf, strerror(errno) );
 }
 
-kdbgstream &perror( kdbgstream &s) { return s << " " << strerror(errno); }
+kdbgstream &perror( kdbgstream &s) { return s << " " << QString::fromLocal8Bit(strerror(errno)); }
 kdbgstream kdDebug(int area) { return kdbgstream(area, KDEBUG_INFO); }
 kdbgstream kdDebug(bool cond, int area) { if (cond) return kdbgstream(area, KDEBUG_INFO); else return kdbgstream(0, 0, false); }
 
