@@ -251,23 +251,25 @@ bool Scheduler::startStep(ProtocolInfo *protInfo)
        Slave *slave = 0;
        if (!slave)
        {
-//WABA:
-// Make somehow sure that the job wants to do a GET.
           if (slaveOnHold)
           {
-             if (job->url() == urlOnHold)
+             // Make sure that the job wants to do a GET or a POST
+             if (job->command() == CMD_GET || (job->inherits("KIO::TransferJob") && (job->command() == CMD_SPECIAL)))
              {
-//kdDebug(7006) << "HOLD: Reusing hold slave." << endl;
-                slave = slaveOnHold;
-                protInfo->idleSlaves++; // Will be decreased later on.
+                if (job->url() == urlOnHold)
+                {
+kdDebug(7006) << "HOLD: Reusing held slave for " << urlOnHold.prettyURL() << endl;
+                   slave = slaveOnHold;
+                   protInfo->idleSlaves++; // Will be decreased later on.
+                }
+                else
+                {
+kdDebug(7006) << "HOLD: Discarding held slave (" << urlOnHold.prettyURL() << ")" << endl;
+                   slaveOnHold->kill();
+                }
+                slaveOnHold = 0;
+                urlOnHold = KURL();
              }
-             else
-             {
-//kdDebug(7006) << "HOLD: Discarding hold slave." << endl;
-                slaveOnHold->kill();
-             }
-             slaveOnHold = 0;
-             urlOnHold = KURL();
           }
        }
 

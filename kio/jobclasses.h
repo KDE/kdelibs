@@ -309,6 +309,11 @@ namespace KIO {
          */
         Slave *slave() { return m_slave; }
 
+        /**
+         * @internal
+         */
+        int command() { return m_command; }
+
     protected slots:
         /**
          * Called when the slave marks the job
