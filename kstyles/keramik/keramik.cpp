@@ -955,7 +955,7 @@ void KeramikStyle::drawPrimitive( PrimitiveElement pe,
 				: opt.lineWidth();
 			if (lw)
 			{
-				p->setPen(cg.dark());
+				p->setPen(cg.mid());
 				p->drawLine(x2, y, x2, y2);
 			}
 
@@ -996,7 +996,7 @@ void KeramikStyle::drawPrimitive( PrimitiveElement pe,
 						cg.button(), true);
 
 					//Right end-line
-					p->setPen(cg.dark());
+					p->setPen(cg.mid());
 					p->drawLine(x2, y, x2, y2);
 				}
 				else
@@ -1015,7 +1015,7 @@ void KeramikStyle::drawPrimitive( PrimitiveElement pe,
 						cg.button(), false);
 
 					//Bottom end-line
-					p->setPen(cg.dark());
+					p->setPen(cg.mid());
 					p->drawLine(x, y2, x2, y2);
 				}
 			}
@@ -1394,8 +1394,14 @@ void KeramikStyle::drawControl( ControlElement element,
 			              tabBar->shape() == QTabBar::TriangularBelow;
 
 			if ( flags & Style_Selected )
-				Keramik::ActiveTabPainter( bottom ).draw( p, r, cg.button().light(110), cg.background(), !tabBar->isEnabled(), pmode());
-
+			{
+				QRect tabRect = r;
+				//If not the last tab, readjust the painting to be one pixel wider
+				//to avoid a doubled line
+				if (tabBar->indexOf( opt.tab()->identifier() ) != (tabBar->count() - 1))
+					tabRect.setWidth( tabRect.width() + 1);
+				Keramik::ActiveTabPainter( bottom ).draw( p, tabRect, cg.button().light(110), cg.background(), !tabBar->isEnabled(), pmode());
+			}
 			else
 			{
 				Keramik::InactiveTabPainter::Mode mode;
@@ -2234,6 +2240,9 @@ int KeramikStyle::pixelMetric(PixelMetric m, const QWidget *widget) const
 		case PM_TabBarTabVSpace:
 			return 12;
 
+		case PM_TabBarTabOverlap:
+			return 0;
+
 		case PM_TitleBarHeight:
 			return titleBarH;
 
@@ -2651,7 +2660,7 @@ bool KeramikStyle::eventFilter( QObject* object, QEvent* event )
 
 		Keramik::GradientPainter::renderGradient( &p, QRect(0 , 0, wr.width(), wr.height()),
 			widget->colorGroup().button(), tr.width() > tr.height() );
-		p.setPen( toolbar->colorGroup().dark() );
+		p.setPen( toolbar->colorGroup().mid() );
 		if ( toolbar->orientation() == Qt::Horizontal )
 			p.drawLine( wr.width()-1, 0, wr.width()-1, wr.height()-1 );
 		else
