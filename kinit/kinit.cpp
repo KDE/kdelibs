@@ -832,12 +832,15 @@ static void kdeinit_library_path()
       fprintf(stderr, "can't initialize dynamic loading: %s\n", ltdlError != 0 ? ltdlError : "(null)" );
    }
 
-   char *display = getenv("DISPLAY");
-   if (!display)
+   QCString display = getenv("DISPLAY");
+   if (display.isEmpty())
    {
      fprintf(stderr, "Aborting. $DISPLAY is not set.\n");
      exit(255);
    }
+   int i;
+   if((i = display.findRev('.')) > display.findRev(':') && i >= 0)
+     display.truncate(i);
 
    QCString socketName = QFile::encodeName(locateLocal("socket", QString("kdeinit-%1").arg(display), s_instance));
    if (socketName.length() >= MAX_SOCK_FILE)
