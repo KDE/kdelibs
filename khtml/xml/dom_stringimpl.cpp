@@ -91,10 +91,19 @@ DOMStringImpl *DOMStringImpl::copy() const
 
 static Length parseLength(QChar *s, unsigned int l)
 {
-    if ( *(s+l-1) == QChar('%'))
-	return Length(QConstString(s, l-1).string().toInt(), Percent);
+    const QChar* last = s+l-1;
 
-    if ( *(s+l-1) == QChar('*'))
+    if ( *last == QChar('%')) {
+        // CSS allows one decimal after the point, like
+        //  42.2%, but not 42.22%
+        // we ignore the non-integer part for speed/space reasons
+        int i = QConstString(s, l).string().findRev('.');
+        if(i >= 0 && i<l-1)  l = i + 1;
+
+	return Length(QConstString(s, l-1).string().toInt(), Percent);
+    }
+
+    if ( *last == QChar('*'))
     {
 	if(l == 1)
 	    return Length(1, Relative);
@@ -102,16 +111,15 @@ static Length parseLength(QChar *s, unsigned int l)
 	    return Length(QConstString(s, l-1).string().toInt(), Relative);
     }
 
+    // should we strip of the non-integer part here also?
+    // CSS says no, all important browsers do so, including Mozilla. sigh.
     bool ok;
     int v = QConstString(s, l).string().toInt(&ok);
     if(ok)
 	return Length(v, Fixed);
-    if(l == 4)
-    {
-	QString str(s, l);
-	if(str.lower() == "auto")
-	    return Length(0, Variable);
-    }
+    if(l == 4 && QConstString(s, l).string().contains("auto", false))
+        return Length(0, Variable);
+
     return Length(0, Undefined);
 }
 
