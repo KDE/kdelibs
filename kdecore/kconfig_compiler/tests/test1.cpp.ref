@@ -4,7 +4,7 @@
 #include "test1.h"
 
 #include <qdir.h>
-Test1::Test1(  const QString &transport, const QString &folder )
+Test1::Test1(  const QString & transport, const QString & folder )
   : KConfigSkeleton( QString::fromLatin1( "examplerc" ) )
   , mParamtransport(transport)
   , mParamfolder(folder)

@@ -14,7 +14,7 @@ class Test1 : public KConfigSkeleton
       enum type { One, Two, Three, COUNT };
     };
 
-    Test1( const QString &transport, const QString &folder );
+    Test1( const QString & transport, const QString & folder );
     ~Test1();
 
     /**

@@ -175,6 +175,11 @@ class CfgEntry
     QString mMax;
 };
 
+class Param {
+public:
+  QString name;
+  QString type;
+};
 
 static QString varName(const QString &n)
 {
@@ -717,20 +722,20 @@ QString paramString(const QString &s, const CfgEntry *e, int i)
   return result;
 }
 
-QString paramString(const QString &group, const QStringList &parameters)
+QString paramString(const QString &group, const QValueList<Param> &parameters)
 {
   QString paramString = group;
   QString arguments;
   int i = 1;
-  for( QStringList::ConstIterator it = parameters.begin();
+  for (QValueList<Param>::ConstIterator it = parameters.begin();
        it != parameters.end(); ++it)
   {
-     if (paramString.contains("$("+*it+")"))
+     if (paramString.contains("$("+(*it).name+")"))
      {
        QString tmp;
        tmp.sprintf("%%%d", i++);
-       paramString.replace("$("+*it+")", tmp);
-       arguments += ".arg( mParam"+*it+" )";
+       paramString.replace("$("+(*it).name+")", tmp);
+       arguments += ".arg( mParam"+(*it).name+" )";
      }
   }
   if (arguments.isEmpty())
@@ -848,7 +853,7 @@ int main( int argc, char **argv )
 
   QString cfgFileName;
   bool cfgFileNameArg = false;
-  QStringList parameters;
+  QValueList<Param> parameters;
   QStringList includes;
 
   QPtrList<CfgEntry> entries;
@@ -872,7 +877,12 @@ int main( int argc, char **argv )
       for( n2 = e.firstChild(); !n2.isNull(); n2 = n2.nextSibling() ) {
         QDomElement e2 = n2.toElement();
         if ( e2.tagName() == "parameter" ) {
-          parameters.append( e2.attribute( "name" ) );
+          Param p;
+          p.name = e2.attribute( "name" );
+          p.type = e2.attribute( "type" );
+          if (p.type.isEmpty())
+             p.type = "String";
+          parameters.append( p );
         }
       }
 
@@ -1016,12 +1026,12 @@ int main( int argc, char **argv )
     h << "    " << className << "(";
     if (cfgFileNameArg)
        h << " KSharedConfig::Ptr config" << (parameters.isEmpty() ? " " : ", ");
-    for (QStringList::ConstIterator it = parameters.begin();
+    for (QValueList<Param>::ConstIterator it = parameters.begin();
          it != parameters.end(); ++it)
     {
        if (it != parameters.begin())
          h << ",";
-       h << " const QString &" << *it;
+       h << " " << param((*it).type) << " " << (*it).name;
     }
     h << " );" << endl;
   } else {
@@ -1141,10 +1151,10 @@ int main( int argc, char **argv )
   }
 
   // Class Parameters
-  for (QStringList::ConstIterator it = parameters.begin();
+  for (QValueList<Param>::ConstIterator it = parameters.begin();
        it != parameters.end(); ++it)
   {
-     h << "    QString mParam" << *it << ";" << endl;
+     h << "    " << cppType((*it).type) << " mParam" << (*it).name << ";" << endl;
   }
 
   QString group;
@@ -1237,12 +1247,12 @@ int main( int argc, char **argv )
   cpp << className << "::" << className << "( ";
   if (cfgFileNameArg)
      cpp << " KSharedConfig::Ptr config" << (parameters.isEmpty() ? " " : ", ");
-  for (QStringList::ConstIterator it = parameters.begin();
+  for (QValueList<Param>::ConstIterator it = parameters.begin();
        it != parameters.end(); ++it)
   {
      if (it != parameters.begin())
        cpp << ",";
-     cpp << " const QString &" << *it;
+     cpp << " " << param((*it).type) << " " << (*it).name;
   }
   cpp << " )" << endl;
 
@@ -1253,10 +1263,10 @@ int main( int argc, char **argv )
   cpp << ")" << endl;
 
   // Store parameters
-  for (QStringList::ConstIterator it = parameters.begin();
+  for (QValueList<Param>::ConstIterator it = parameters.begin();
        it != parameters.end(); ++it)
   {
-     cpp << "  , mParam" << *it << "(" << *it << ")" << endl;
+     cpp << "  , mParam" << (*it).name << "(" << (*it).name << ")" << endl;
   }
 
   cpp << "{" << endl;
