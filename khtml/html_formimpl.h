@@ -333,6 +333,8 @@ public:
 
     virtual void close();
 
+    virtual bool childrenRendered() { return false; }
+
 protected:
     int _size;
     bool _disabled;

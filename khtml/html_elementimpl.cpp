@@ -900,7 +900,7 @@ NodeImpl *HTMLBlockElementImpl::calcParagraph(NodeImpl *_start, bool pre)
 	}	
 
 	NodeImpl *child = current->firstChild();
-	if(child)
+	if(child && current->childrenRendered())
 	{	
 	    nodeStack.push(current);
 	    current = child;

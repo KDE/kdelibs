@@ -162,6 +162,12 @@ void HTMLAppletElementImpl::setYPos( int yPos )
     }
 }
 
+bool HTMLAppletElementImpl::childrenRendered()
+{
+    if(!view) return false;
+    return !view->javaEnabled();
+}
+
 // -------------------------------------------------------------------------
 
 HTMLObjectElementImpl::HTMLObjectElementImpl(DocumentImpl *doc) : HTMLElementImpl(doc)

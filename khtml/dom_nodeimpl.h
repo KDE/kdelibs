@@ -111,6 +111,7 @@ public:
     virtual bool isInline() { return true; }
     virtual bool isFloating() { return false; }
     virtual bool isRendered() { return false; }
+    virtual bool childrenRendered() { return true; }
     virtual unsigned short id() const { return 0; };
 
     /*

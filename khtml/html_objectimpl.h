@@ -57,6 +57,7 @@ public:
     virtual void setYPos( int yPos );
 
     virtual bool isRendered() { return true; }
+    virtual bool childrenRendered();
 
  protected:
     DOMStringImpl *base;
