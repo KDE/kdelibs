@@ -28,6 +28,7 @@
 #include <sys/types.h>
 #include <fcntl.h>
 #include <unistd.h>
+#include <kstddirs.h>
 
 QString* UserPaths::s_desktopPath = 0;
 QString* UserPaths::s_templatesPath = 0;
@@ -44,7 +45,7 @@ void UserPaths::initStatic()
   s_autostartPath = new QString();
   s_trashPath = new QString();
 
-  KSimpleConfig *config = new KSimpleConfig(kapp->localconfigdir()+"/kfmrc", true);
+  KSimpleConfig *config = new KSimpleConfig(locate("config", "kfmrc"), true);
   config->setGroup( "Paths" );
 
   // Desktop Path

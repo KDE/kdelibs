@@ -39,58 +39,18 @@
 #include "kconfig.h"
 #include <qtimer.h>
 
-KConfig::KConfig( const QString& pGlobalFileName,
-		  const QString& pLocalFileName,
+KConfig::KConfig( const QString& fileName,
 		  bool bReadOnly, bool bUseKderc )
   : KConfigBase(), flushInterval(30)
 {
-  QString aGlobalFileName, aLocalFileName;
-
   // set the object's read-only status.
   setReadOnly(bReadOnly);
-
-  if (!pGlobalFileName.isNull()) {
-    aGlobalFileName = pGlobalFileName;
-    if (!bReadOnly) {
-      // the file should exist in any case if the object is not read only.
-      QFileInfo info( aGlobalFileName );
-      if (!info.exists()) {
-	// Can we allow the write? (see above)
-	if (checkAccess( aGlobalFileName, W_OK )) {
-	  // Yes, write OK, create empty file
-	  QFile file( aGlobalFileName );
-	  file.open( IO_WriteOnly );
-	  file.close();
-	}
-      }
-    }
-  }
-
-  if (!pLocalFileName.isNull()) {
-    aLocalFileName = pLocalFileName;
-    if (!bReadOnly) {
-      // the file should exist in any case if the object is not read only.
-      QFileInfo info( aLocalFileName );
-      if (!info.exists()) {
-	// Can we allow the write? (see above)
-	if (checkAccess( pLocalFileName, W_OK )) {
-	  // Yes, write OK, create empty file
-	  QFile file( pLocalFileName );
-	  file.open( IO_WriteOnly );
-	  // Set uid/gid (necessary for SUID programs)
-	  chown(file.name().ascii(), getuid(), getgid());
-	  file.close();
-	}
-      }
-    }
-  }
 
   // for right now we will hardcode that we are using the INI
   // back end driver.  In the future this should be converted over to
   // a object factory of some sorts.
   KConfigINIBackEnd *aBackEnd = new KConfigINIBackEnd(this,
-						      aGlobalFileName,
-						      aLocalFileName,
+						      fileName,
 						      bUseKderc);
   // set the object's back end pointer to this new backend
   backEnd = aBackEnd;

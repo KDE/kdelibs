@@ -257,7 +257,7 @@ bool KRegistry::save( const QString& _dbfile ) const
 {
   QString f;
   if ( _dbfile.isEmpty() )
-    f = kapp->localconfigdir() + "/kregistry";
+    f = locate("config", "kregistry");
   else
     f = _dbfile;
 

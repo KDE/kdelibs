@@ -38,8 +38,10 @@
 #include "ksimpleconfig.moc"
 
 KSimpleConfig::KSimpleConfig(const QString &pFileName, bool bReadOnly)
-  : KConfig(pFileName, QString::null, bReadOnly, false)
+  : KConfig(pFileName, bReadOnly, false)
 {
+  // the difference between KConfig and KSimpleConfig is just that 
+  // for KSimpleConfig an absolute filename is guaranteed
 }
 
 QString KSimpleConfig::deleteEntry( const QString& pKey, bool bLocalized )

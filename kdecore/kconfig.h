@@ -54,8 +54,7 @@ public:
    * @param bReadOnly Set the config object's read-only status.
    * @param bUseKderc Toggle reading the global KDE configuration file.
    */
-  KConfig( const QString& pGlobalFileName = QString::null,
-	   const QString& pLocalFileName = QString::null,
+  KConfig( const QString& fileName = QString::null,
 	   bool bReadOnly = false, bool bUseKderc = true);
 
   /** 
@@ -206,10 +205,12 @@ private:
   int flushInterval;
 
   /**
+   * @internal
    * copy-construction and assignment are not allowed
    */
   KConfig( const KConfig& );
   /**
+   * @internal
    * copy-construction and assignment are not allowed
    */
   KConfig& operator= ( const KConfig& rConfig );

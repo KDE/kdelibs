@@ -63,8 +63,7 @@ KIOListBox::~KIOListBox()
 
 void KIOListBox::readConfig(void)
 {
-  KConfig* conf = new KConfig(KApplication::kde_configdir() + "/kioslaverc",
-			      KApplication::localconfigdir() + "/kioslaverc" );
+  KConfig* conf = new KConfig("kioslaverc");
 
   int beg, end, i, w;
   int cols = numCols(),fixedmin=MINIMUM_SPACE;
@@ -101,8 +100,7 @@ void KIOListBox::readConfig(void)
 
 void KIOListBox::writeConfig(void)
 {
-  KConfig* conf = new KConfig(KApplication::kde_configdir() + "/kioslaverc",
-			      KApplication::localconfigdir() + "/kioslaverc" );
+  KConfig* conf = new KConfig("kioslaverc");
 
   int t;
   QString str;
@@ -360,17 +358,14 @@ void KIOListProgressDlg::updateToolBar()
 
 void KIOListProgressDlg::readSettings() {
 
-  KConfig config(KApplication::kde_configdir() + "/kioslaverc",
-		 KApplication::localconfigdir() + "/kioslaverc" );
-
+  KConfig config("kioslaverc");
   config.setGroup( "ListProgress" );
 }
 
 
 void KIOListProgressDlg::writeSettings() {
 
-  KConfig config(KApplication::kde_configdir() + "/kioslaverc",
-		 KApplication::localconfigdir() + "/kioslaverc" );
+  KConfig config("kioslaverc");
 
   config.setGroup( "ListProgress" );
 

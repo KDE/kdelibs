@@ -61,8 +61,7 @@ public:
    *        imported into the config object.  If false, only the filenames
    *        specified will be dealt with.
    */
-  KConfigBackEnd(KConfigBase *_config, const QString &_globalFileName,
-		 const QString &_localFileName, bool _useKderc);
+  KConfigBackEnd(KConfigBase *_config, const QString &_fileName, bool _useKderc);
   
   /**
    * Destructor.
@@ -92,17 +91,14 @@ public:
    * change the filenames associated with this back end.  You should
    * probably reparse your config info after doing this.
    */
-  void changeFileNames(const QString &_globalFileName, 
-		       const QString &_localFileName,
-		       bool _useKderc) 
-    { aGlobalFileName = _globalFileName; aLocalFileName = _localFileName;
-    useKderc = _useKderc; }
-
+  void changeFileName(const QString &_fileName, 
+		      bool _useKderc) 
+    { fileName = _fileName; useKderc = _useKderc; }
+  
 protected:
   KConfigBase *pConfig;
 
-  QString aGlobalFileName;
-  QString aLocalFileName;
+  QString fileName;
   bool useKderc;
 };
 
@@ -133,9 +129,8 @@ public:
    *        imported into the config object.  If false, only the filenames
    *        specified will be dealt with.
    */
-  KConfigINIBackEnd(KConfigBase *_config, const QString &_globalFileName,
-		    const QString &_localFileName, bool _useKderc = true)
-    : KConfigBackEnd(_config, _globalFileName, _localFileName, _useKderc) {}
+  KConfigINIBackEnd(KConfigBase *_config, const QString &_fileName, bool _useKderc = true)
+    : KConfigBackEnd(_config, _fileName, _useKderc) {}
   
   /**
    * Destructor.

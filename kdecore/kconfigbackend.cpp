@@ -29,6 +29,8 @@
 
 #include "kconfigbackend.h"
 #include "kconfigbase.h"
+#include <kglobal.h>
+#include <kstddirs.h>
 
 #ifdef HAVE_SYS_STAT_H
 #include <sys/stat.h>
@@ -39,20 +41,6 @@
 #ifdef HAVE_TEST
 #include <test.h>
 #endif
-
-static const char* globalConfigFileNames[] =
-{
-  // !!! If you add/remove pathnames here, update CONFIGFILECOUNT a few lines
-  // below!!!
-  "/etc/kderc",
-  KDEDIR"/share/config/kdeglobals",
-  "/usr/lib/KDE/system.kdeglobals",
-  "/usr/local/lib/KDE/system.kdeglobals",
-  "~/.kde/share/config/kdeglobals",
-};
-
-const int CONFIGFILECOUNT = 5; // number of entries in globalConfigFileNames[]
-
 
 /* translate escaped escape sequences to their actual values. */
 static QString printableToString(const QString& s)
@@ -105,10 +93,8 @@ static QString stringToPrintable(const QString& s){
   return result;
 }
 
-KConfigBackEnd::KConfigBackEnd(KConfigBase *_config, const QString &_globalFileName,
-			       const QString &_localFileName, bool _useKderc)
-  : pConfig(_config), aGlobalFileName(_globalFileName),
-    aLocalFileName(_localFileName), useKderc(_useKderc)
+KConfigBackEnd::KConfigBackEnd(KConfigBase *_config, const QString &_fileName, bool _useKderc)
+  : pConfig(_config), fileName(_fileName), useKderc(_useKderc)
 {}
 
 bool KConfigINIBackEnd::parseConfigFiles()
@@ -117,48 +103,36 @@ bool KConfigINIBackEnd::parseConfigFiles()
 
   // Parse the general config files
   if (useKderc) {
-    // only parse the system kderc files if we have been directed to.
-    for (int i = 0; i < CONFIGFILECOUNT; i++) {
-      QString aFileName = globalConfigFileNames[i];
-      // replace a leading tilde with the home directory
-      // is there a more portable way to find out the home directory?
-      if (aFileName[0] == '~')
-	aFileName.replace( 0, 1, QDir::homeDirPath() );
+    QStringList kdercs = KGlobal::dirs()->findAllResources("config", "kdeglobals");
+    kdercs += KGlobal::dirs()->findAllResources("config", "system.kdeglobals");
+    if (access("/etc/kderc", R_OK)) 
+      kdercs += "/etc/kderc";
 
-      QFile aConfigFile( aFileName );
-      QFileInfo aInfo( aConfigFile );
-      // only work with existing files currently
-      if (!aInfo.exists())
-	continue;
+    QStringList::ConstIterator it;
+    
+    for (it = kdercs.begin(); it != kdercs.end(); it++) {
+
+      QFile aConfigFile( *it );
       aConfigFile.open( IO_ReadOnly );
       parseSingleConfigFile( aConfigFile, 0L, true );
       aConfigFile.close();
     }
   }
 
-  // Parse app-specific config files if available
-  if (!aGlobalFileName.isEmpty()) {
-    QFile aConfigFile( aGlobalFileName );
-    // we can already be sure that this file exists
-    aConfigFile.open( IO_ReadOnly );
-    parseSingleConfigFile( aConfigFile, 0L, false );
-    aConfigFile.close();
-  }
+  if (!fileName.isEmpty()) {
+    QStringList list = KGlobal::dirs()->findAllResources("config", fileName);
+    QStringList::ConstIterator it;
 
-  if (!aLocalFileName.isEmpty()) {
-    QFile aConfigFile(aLocalFileName );
-    // we can't be sure that this file exists
-    if (!aConfigFile.open( IO_ReadOnly)) {
-      aLocalFileName =
-	QString("%1/share/config/%2").arg(KApplication::localkdedir()).arg(aLocalFileName);
+    for (it = list.begin(); it != list.end(); it++) {
+      
+      QFile aConfigFile( *it );
+      // we can already be sure that this file exists
+      aConfigFile.open( IO_ReadOnly );
+      parseSingleConfigFile( aConfigFile, 0L, false );
       aConfigFile.close();
-      aConfigFile.setName(aLocalFileName);
-      aConfigFile.open(IO_ReadOnly);
     }
-
-    parseSingleConfigFile( aConfigFile, 0L, false );
-    aConfigFile.close();
   }
+
   return true;
 }
 
@@ -169,6 +143,7 @@ void KConfigINIBackEnd::parseSingleConfigFile(QFile &rFile,
   if (!rFile.isOpen()) // come back, if you have real work for us ;->
     return;
 
+  debug("parse file %s", rFile.name().ascii());
   QString aCurrentLine;
   QString aCurrentGroup;
 
@@ -233,9 +208,12 @@ void KConfigINIBackEnd::sync(bool bMerge)
   bool bEntriesLeft = true;
   bool bLocalGood = false;
 
+  
   // find out the file to write to (most specific writable file)
   // try local app-specific file first
-  if (!aLocalFileName.isEmpty()) {
+  
+  if (!fileName.isEmpty()) {
+    QString aLocalFileName = KGlobal::dirs()->getSaveLocation("config") + fileName;
     // Can we allow the write? We can, if the program
     // doesn't run SUID. But if it runs SUID, we must
     // check if the user would be allowed to write if
@@ -251,54 +229,47 @@ void KConfigINIBackEnd::sync(bool bMerge)
       aConfigFile.close();
     }
   }
-
-  // If we could not write to the local app-specific config file,
-  // we can try the global app-specific one. This will only work
-  // as root, but is worth a try.
-  if (!bLocalGood && !aGlobalFileName.isEmpty()) {
+  /*
+    // If we could not write to the local app-specific config file,
+    // we can try the global app-specific one. This will only work
+    // as root, but is worth a try.
+    if (!bLocalGood) {
     // Can we allow the write? (see above)
     if (checkAccess( aGlobalFileName, W_OK )) {
-      // is it writable?
-      QFile aConfigFile( aGlobalFileName );
-      aConfigFile.open( IO_ReadWrite );
-      bEntriesLeft = writeConfigFile( aConfigFile, false, bMerge );
-      bLocalGood = true;
-      aConfigFile.close();
+    // is it writable?
+    QFile aConfigFile( aGlobalFileName );
+    aConfigFile.open( IO_ReadWrite );
+    bEntriesLeft = writeConfigFile( aConfigFile, false, bMerge );
+    bLocalGood = true;
+    aConfigFile.close();
     }
-  }
+    }
+  */
 
   // only write out entries to the kderc file if there are any
   // entries marked global (indicated by bEntriesLeft) and
   // the useKderc flag is set.
   if (bEntriesLeft && useKderc) {
-    // If there are entries left, either something went wrong with
-    // the app-specific files or there were global entries to write.
-    // try other files
-    for (int i = CONFIGFILECOUNT-1; i >= 0; i--) {
-      QString aFileName = globalConfigFileNames[i];
-      // replace a leading tilde with the home directory
-      // is there a more portable way to find out the home directory?
-      if (aFileName[0] == '~')
-	aFileName.replace(0, 1, QDir::homeDirPath());
 
-      QFile aConfigFile( aFileName );
-      QFileInfo aInfo( aConfigFile );
-      // can we allow the write? (see above)
-      if (checkAccess ( aFileName, W_OK )) {
-	aConfigFile.open( IO_ReadWrite );
-	// Set uid/gid (neccesary for SUID programs)
-	chown(aConfigFile.name().ascii(), getuid(), getgid());
-	writeConfigFile( aConfigFile, true, bMerge );
-	aConfigFile.close();
-      }
+    QString aFileName = KGlobal::dirs()->getSaveLocation("config") + "kdeglobals";
+    QFile aConfigFile( aFileName );
+    
+    // can we allow the write? (see above)
+    if (checkAccess ( aFileName, W_OK )) {
+      aConfigFile.open( IO_ReadWrite );
+      // Set uid/gid (neccesary for SUID programs)
+      chown(aConfigFile.name().ascii(), getuid(), getgid());
+      writeConfigFile( aConfigFile, true, bMerge );
+      aConfigFile.close();
     }
   }
-
+  
 }
 
 bool KConfigINIBackEnd::writeConfigFile(QFile &rConfigFile, bool bGlobal,
 					bool bMerge)
 {
+  debug("writeConfig %s", rConfigFile.name().ascii());
   KEntryMap aTempMap;
   bool bEntriesLeft = false;
 

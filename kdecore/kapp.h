@@ -212,28 +212,6 @@ public:
   void unregisterTopWidget();
 
   /**
-	* Possible return values for getConfigState().
-	*
-	* @see #getConfigState
-	*/
-  enum ConfigState { APPCONFIG_NONE, APPCONFIG_READONLY,
-					 APPCONFIG_READWRITE };
-
-  /**
-	* Retrieve the state of the app-config object.
-	*
-	* Possible return values
-	* are APPCONFIG_NONE (the application-specific config file could not be
-	* opened neither read-write nor read-only), APPCONFIG_READONLY (the
-	* application-specific config file is opened read-only, but not
-	* read-write) and APPCONFIG_READWRITE (the application-specific config
-	* file is opened read-write).
-	*
-	* @see #ConfigState
-	*/
-  ConfigState getConfigState() const { return eConfigState; }
-
-  /**
 	* Invoke the kdehelp HTML help viewer.
 	*
 	* @param aFilename	The filename that is to be loaded. Its
@@ -310,14 +288,6 @@ public:
    * @return the name of the directory
    */
   static QString localkdedir();
-
-
-  /**
-	* Get the local KDE config dir
-	*
-	* This is usually $HOME/.kde/share/config
-	*/
-  static QString localconfigdir();
 
   /**
 	* Find a file using standard KDE search paths.
@@ -488,7 +458,6 @@ private:
   QWidget* pTopWidget;
   QString aCaption; // the name for the window title
   QString aWmCommand; // for userdefined session management
-  ConfigState eConfigState;
   static QStrList* pSearchPaths;
   void* dummy2; // do not use these without asking kalle@kde.org
   void* dummy3;
@@ -630,6 +599,9 @@ private:
 #endif
 
 // $Log$
+// Revision 1.87  1999/06/17 22:06:21  kulow
+// thanks kde_toolbardir for the hard work you've done for us...
+//
 // Revision 1.86  1999/06/16 18:43:11  mario
 // Mario: made aboutKDE(), aboutQt() and aboutApp() public slots. No need to hide it
 //

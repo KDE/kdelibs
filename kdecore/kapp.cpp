@@ -141,78 +141,10 @@ void KApplication::init()
   styleHandle = 0;
   pKStyle = 0;
 
-  // create the config directory ~/.kde/share/config
-  QString configPath = KApplication::localkdedir();
-  // We should check if  mkdir() succeeds, but since we cannot do much anyway...
-  // But we'll check at least for access permissions (for SUID case)
-  if ( (QDir::home() != QDir::root()) && checkAccess(configPath, W_OK) ) { 
-    if ( mkdir (configPath.ascii(), 0755) == 0) {  // make it public(?)
-      chown(configPath.ascii(), getuid(), getgid());
-      configPath += "/share";
-      if ( checkAccess(configPath, W_OK) ) {
-        if ( mkdir (configPath.ascii(), 0755) == 0 ) { // make it public
-          chown(configPath.ascii(), getuid(), getgid());
-          configPath += "/config";
-          if ( checkAccess(configPath, W_OK) ) {
-            if ( mkdir (configPath.ascii(), 0700) == 0 ) // make it private
-              chown(configPath.ascii(), getuid(), getgid());
-          }
-        }
-      }
-    }
-  }
-
   // try to read a global application file
-  QString aGlobalAppConfigName = kde_configdir() + "/" + name() + "rc";
+  QString aAppConfigName = QString(name()) + "rc";
 
-  // try to open read-only
-  bool bSuccess = !::access(aGlobalAppConfigName.ascii(), R_OK);
-  if( !bSuccess )
-    // there is no global app config file or we can't read it
-    aGlobalAppConfigName = "";
-
-  // now for the local app config file
-  QString aConfigName = KApplication::localkdedir();
-  aConfigName += "/share/config/";
-  aConfigName += name();
-  aConfigName += "rc";
-
-  QFile aConfigFile( aConfigName );
-
-  // We may write to the file
-  if ( ! checkAccess(aConfigName, W_OK ) )
-    bSuccess = false;
-  else {
-  // Open the application-specific config file. It will be created if
-  // it does not exist yet.
-    bSuccess = aConfigFile.open( IO_ReadWrite );
-    // Set uid/gid (neccesary for SUID programs)
-    if ( bSuccess )
-      chown(aConfigFile.name().ascii(), getuid(), getgid());
-  }
-  if( !bSuccess )
-	{
-	  // try to open at least read-only
-	  bSuccess = aConfigFile.open( IO_ReadOnly );
-	  if( !bSuccess )
-		{
-		  // we didn't succeed to open an local app-config file
-		  pConfig = new KConfig( aGlobalAppConfigName );
-		  eConfigState = APPCONFIG_NONE;
-		}
-	  else
-		{
-		  // we succeeded to open an local app-config file read-only
-		  pConfig = new KConfig( aGlobalAppConfigName, aConfigName );
-		  eConfigState = APPCONFIG_READONLY;
-		}
-	}
-  else
-	{
-	  // we succeeded to open an local app-config file read-write
-	  pConfig = new KConfig( aGlobalAppConfigName, aConfigName );
-	  eConfigState = APPCONFIG_READWRITE;
-	}
+  pConfig = new KConfig( aAppConfigName );
 
   // Drag 'n drop stuff taken from kfm
   display = desktop()->x11Display();
@@ -261,9 +193,9 @@ void KApplication::init()
 KConfig* KApplication::getSessionConfig() {
   if (pSessionConfig)
     return pSessionConfig;
+
   // create a instance specific config object
-  QString aConfigName = KApplication::localkdedir();
-  aConfigName += "/share/config/";
+  QString aConfigName = KGlobal::dirs()->getSaveLocation("config");
   aConfigName += name();
   aConfigName += "rc";
 
@@ -1224,23 +1156,13 @@ QString KApplication::kde_mimedir()
 
 QString KApplication::localkdedir()
 {
+  warning("localkdedir is obsolete. Try to use KStandardDirs instead");
   return ( QDir::homeDirPath() + "/.kde" );
 }
 
-
-QString KApplication::localconfigdir()
-{
-  return ( localkdedir() + "/share/config" );
-}
-
-
 bool KApplication::getKDEFonts(QStringList &fontlist)
 {
-  QString fontfilename;
-
-  fontfilename = localconfigdir();
-  fontfilename += "/kdefonts";
-
+  QString fontfilename = KGlobal::dirs()->getSaveLocation("config") + "kdefonts";
   QFile fontfile(fontfilename);
 
   if (!fontfile.exists())

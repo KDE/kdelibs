@@ -19,9 +19,9 @@ KProtocolManager::KProtocolManager()
   
   s_pManager = this;
 
-  scanConfig( KApplication::kde_configdir() + "/protocols", FALSE );
-
-  scanConfig( KApplication::localconfigdir() + "/protocols", TRUE );
+  QStringList list = KGlobal::dirs()->findAllResources("config", "protocols");
+  for (QStringList::ConstIterator it = list.begin(); it != list.end(); it++)
+    scanConfig( *it , true);
 }
 
 void KProtocolManager::scanConfig( const QString& _dir, bool _islocal )
@@ -243,188 +243,138 @@ KProtocolManager::Type KProtocolManager::outputType( const QString& _protocol ) 
 
 int KProtocolManager::readTimeout() const
 {
-  KConfig config(KApplication::kde_configdir() + "/kioslaverc",
-		 KApplication::localconfigdir() + "/kioslaverc" );
-
+  KConfig config("kioslaverc", true, false);
   return config.readNumEntry( "ReadTimeout", 15 ); // 15 seconds
 }
 
 bool KProtocolManager::markPartial() const
 {
-  KConfig config(KApplication::kde_configdir() + "/kioslaverc",
-		 KApplication::localconfigdir() + "/kioslaverc" );
-  
+  KConfig config("kioslaverc", true, false);
   return config.readBoolEntry( "MarkPartial", TRUE );
 }
 
 int KProtocolManager::minimumKeepSize() const
 {
-  KConfig config(KApplication::kde_configdir() + "/kioslaverc",
-		 KApplication::localconfigdir() + "/kioslaverc" );
-
-  return config.readNumEntry( "MinimumKeepSize", 5000 ); // 5000 bytes
+  KConfig config("kioslaverc", true, false);
+  return config.readNumEntry( "MinimumKeepSize", 5000 ); // 5000 bytey
 }
 
 bool KProtocolManager::autoResume() const
 {
-  KConfig config(KApplication::kde_configdir() + "/kioslaverc",
-		 KApplication::localconfigdir() + "/kioslaverc" );
-
+  KConfig config("kioslaverc", true, false);
   return config.readBoolEntry( "AutoResume", FALSE );
 }
 
 bool KProtocolManager::persistentConnections() const
 {
-  KConfig config(KApplication::kde_configdir() + "/kioslaverc",
-		 KApplication::localconfigdir() + "/kioslaverc" );
-
+  KConfig config("kioslaverc", true, false);
   return config.readBoolEntry( "PersistentConnections", TRUE );
 }
 
 bool KProtocolManager::useProxy() const
 {
-  KConfig config(KApplication::kde_configdir() + "/kioslaverc",
-		 KApplication::localconfigdir() + "/kioslaverc" );
-
+  KConfig config("kioslaverc", true, false);
   return config.readBoolEntry( "UseProxy", false );
 }
 
 QString KProtocolManager::ftpProxy() const
 {
-  KConfig config(KApplication::kde_configdir() + "/kioslaverc",
-		 KApplication::localconfigdir() + "/kioslaverc" );
-
+  KConfig config("kioslaverc", true, false);
   return config.readEntry( "FtpProxy" );
 }
 
 QString KProtocolManager::httpProxy() const
 {
-  KConfig config(KApplication::kde_configdir() + "/kioslaverc",
-		  KApplication::localconfigdir() + "/kioslaverc" );
-
+  KConfig config("kioslaverc", true, false);
   return config.readEntry( "HttpProxy" );
 }
 
 QString KProtocolManager::noProxyFor() const
 {
-  KConfig config(KApplication::kde_configdir() + "/kioslaverc",
-		  KApplication::localconfigdir() + "/kioslaverc" );
-
+  KConfig config("kioslaverc", true, false);
   return config.readEntry( "NoProxyFor" );
 }
 
 QString KProtocolManager::remoteFileProtocol() const
 {
-  KConfig config(KApplication::kde_configdir() + "/kioslaverc",
-		  KApplication::localconfigdir() + "/kioslaverc" );
-
+  KConfig config("kioslaverc", true, false);
   return config.readEntry( "RemoteFileProtocol" );
 }
 
 void KProtocolManager::setReadTimeout( int _timeout )
 {
-  KConfig config(KApplication::kde_configdir() + "/kioslaverc",
-		 KApplication::localconfigdir() + "/kioslaverc" );
-
+  KConfig config("kioslaverc", false, false);
   config.writeEntry( "ReadTimeout", _timeout );
-  
   config.sync();
 }
 
 
 void KProtocolManager::setMarkPartial( bool _mode )
 {
-  KConfig config(KApplication::kde_configdir() + "/kioslaverc",
-		  KApplication::localconfigdir() + "/kioslaverc" );
-  
+  KConfig config("kioslaverc", false, false);
   config.writeEntry( "MarkPartial", _mode );
-  
   config.sync();
 }
 
 
 void KProtocolManager::setMinimumKeepSize( int _size )
 {
-  KConfig config(KApplication::kde_configdir() + "/kioslaverc",
-		 KApplication::localconfigdir() + "/kioslaverc" );
-  
+  KConfig config("kioslaverc", false, false);
   config.writeEntry( "MinimumKeepSize", _size );
-  
   config.sync();
 }
 
 
 void KProtocolManager::setAutoResume( bool _mode )
 {
-  KConfig config(KApplication::kde_configdir() + "/kioslaverc",
-		 KApplication::localconfigdir() + "/kioslaverc" );
-  
+  KConfig config("kioslaverc", false, false);
   config.writeEntry( "AutoResume", _mode );
-  
   config.sync();
 }
 
 
 void KProtocolManager::setPersistentConnections( bool _mode )
 {
-  KConfig config(KApplication::kde_configdir() + "/kioslaverc",
-		 KApplication::localconfigdir() + "/kioslaverc" );
-  
+  KConfig config("kioslaverc", false, false);
   config.writeEntry( "PersistentConnections", _mode );
-  
   config.sync();
 }
 
 
 void KProtocolManager::setUseProxy( bool _mode )
 {
-  KConfig config(KApplication::kde_configdir() + "/kioslaverc",
-		 KApplication::localconfigdir() + "/kioslaverc" );
-  
+  KConfig config("kioslaverc", false, false);
   config.writeEntry( "UseProxy", _mode );
-
   config.sync();
 }
 
 
 void KProtocolManager::setFtpProxy( const QString& _proxy )
 {
-  KConfig config(KApplication::kde_configdir() + "/kioslaverc",
-		 KApplication::localconfigdir() + "/kioslaverc" );
-
+  KConfig config("kioslaverc", false, false);
   config.writeEntry( "FtpProxy", _proxy );
-
   config.sync();
 }
 
 
 void KProtocolManager::setHttpProxy( const QString& _proxy )
 {
-  KConfig config(KApplication::kde_configdir() + "/kioslaverc",
-		  KApplication::localconfigdir() + "/kioslaverc" );
-  
+  KConfig config("kioslaverc", false, false);
   config.writeEntry( "HttpProxy", _proxy );
-  
   config.sync();
 }
 
 
 void KProtocolManager::setNoProxyFor( const QString& _noproxy )
 {
-  KConfig config(KApplication::kde_configdir() + "/kioslaverc",
-		 KApplication::localconfigdir() + "/kioslaverc" );
-  
+  KConfig config("kioslaverc", false, false);
   config.writeEntry( "NoProxyFor", _noproxy );
-
   config.sync();
 }
 
 void KProtocolManager::setRemoteFileProtocol(const QString &remoteFileProtocol)
 {
-  KConfig config(KApplication::kde_configdir() + "/kioslaverc",
-		 KApplication::localconfigdir() + "/kioslaverc" );
-  
+  KConfig config("kioslaverc", false, false);
   config.writeEntry( "RemoteFileProtocol", remoteFileProtocol );
-
   config.sync();
 }
