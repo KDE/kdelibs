@@ -452,13 +452,30 @@ public:
 	 */
 	void setMargins(QSize m);
 	/**
-	 * Returns the page metric in dot unit ( 1 dot = 1/72th in ). This method is intended for
-	 * internal use, if you want to access actual page metric, use a QPaintDeviceMetrics object
-	 * instead. Note that the metric returned by this method does not take resolution into
-	 * account, and that it can returns NULL if no page metic was found in the printer driver.
+	 * Returns the page size in dot unit ( 1 dot = 1/72th in ). This method is intended for
+	 * internal use, if you want to access actual page size, use a QPaintDeviceMetrics object
+	 * instead. Note that the size returned by this method does not take resolution into
+	 * account, and that it can returns invalid size if no page metric was found in the printer
+	 * driver. DO NOT USE, WILL BE REMOVED.
 	 * @see setRealPageSize
+	 * @obsolete
 	 */
-	DrPageSize* realPageSize() const;
+	QSize realPageSize() const;
+	/**
+	 * DO NOT USE, WILL BE REMOVED.
+	 * @obsolete
+	 */
+	void setRealPageSize( QSize p );
+	/**
+	 * DO NOT USE, WILL BE REMOVED.
+	 * @obsolete
+	 */
+	void setRealDrawableArea( const QRect& r );
+	/**
+	 * DO NOT USE, WILL BE REMOVED.
+	 * @obsolete
+	 */
+	QRect realDrawableArea() const;
 
 	void margins( uint *top, uint *left, uint *bottom, uint *right ) const;
 	void setMargins( uint top, uint left, uint bottom, uint right );
@@ -752,5 +769,10 @@ protected:
 
 KPrinter::PageSize pageNameToPageSize(const QString& name);
 const char* pageSizeToPageName(KPrinter::PageSize s);
+/**
+ * DO NOT USE, WILL BE REMOVED.
+ * @obsolete
+ */
+QSize rangeToSize( const QString& );
 
 #endif

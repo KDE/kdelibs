@@ -768,28 +768,12 @@ const char* pageSizeToPageName(KPrinter::PageSize s)
 	}
 }
 
-#if 0
-static QSize rangeToSize(const QString& s)
+// FIXME: remove for 4.0
+QSize rangeToSize( const QString& )
 {
-	QString	range = s;
-	int	p(-1);
-	int	from, to;
-
-	if ((p=range.find(',')) != -1)
-		range.truncate(p);
-	if ((p=range.find('-')) != -1)
-	{
-		from = range.left(p).toInt();
-		to = range.right(range.length()-p-1).toInt();
-	}
-	else if (!range.isEmpty())
-		from = to = range.toInt();
-	else
-		from = to = 0;
-
-	return QSize(from,to);
+	kdWarning( 500 ) << "rangeToSize(QString) is obsolete, do not use (no effect)" << endl;
+	return QSize();
 }
-#endif
 
 static void dumpOptions(const QMap<QString,QString>& opts)
 {
@@ -967,11 +951,40 @@ void KPrinter::setMargins( uint top, uint left, uint bottom, uint right )
 	setOption( "kde-margin-right", QString::number( right ), true );
 }
 
-DrPageSize* KPrinter::realPageSize() const
-{ return d->m_pagesize; }
+// FIXME: remove for 4.0
+QSize KPrinter::realPageSize() const
+{
+	kdWarning( 500 ) << "KPrinter::realPageSize() is obsolete, do not use" << endl;
+	if ( d->m_pagesize )
+		return d->m_pagesize->pageSize();
+	else
+		return QSize();
+}
 
 void KPrinter::setRealPageSize(DrPageSize *p)
 { d->m_pagesize = p; }
+
+// FIXME: remove for 4.0
+void KPrinter::setRealPageSize( QSize )
+{
+	kdWarning( 500 ) << "KPrinter::setRealPageSize(QSize) is obsolete, do not use (no effect)" << endl;
+}
+
+// FIXME: remove for 4.0
+void KPrinter::setRealDrawableArea( const QRect& )
+{
+	kdWarning( 500 ) << "KPrinter::setRealDrawableArea(QRect) is obsolete, do not use (no effect)" << endl;
+}
+
+// FIXME: remove for 4.0
+QRect KPrinter::realDrawableArea() const
+{
+	kdWarning( 500 ) << "KPrinter::realDrawableArea() is obsolete, do not use" << endl;
+	if ( d->m_pagesize )
+		return d->m_pagesize->pageRect();
+	else
+		return QRect();
+}
 
 QString KPrinter::errorMessage() const
 { return d->m_errormsg; }
