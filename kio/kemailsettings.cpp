@@ -207,7 +207,7 @@ void KEMailSettings::setSetting(KEMailSettings::Setting s, const QString  &v)
 
 void KEMailSettings::setDefault(const QString &s)
 {
-	kdDebug() << "setDefault called with " << s << endl;
+	kdDebug(7030) << "setDefault called with " << s << endl;
 	p->m_pConfig->setGroup("Defaults");
 	p->m_pConfig->writeEntry("Profile", s);
 	p->m_pConfig->sync();
@@ -217,8 +217,8 @@ void KEMailSettings::setDefault(const QString &s)
 
 void KEMailSettings::setProfile (const QString &s)
 {
-	QString groupname="PROFILE_";
-	groupname.append(s);
+	QCString groupname="PROFILE_";
+	groupname.append(s.latin1());
 	p->m_sCurrentProfile=s;
 	if (!p->m_pConfig->hasGroup(groupname)) { // Create a group if it doesn't exist
 		p->m_pConfig->setGroup(groupname);
@@ -252,18 +252,18 @@ KEMailSettings::KEMailSettings()
 	}
 
 	p->m_pConfig->setGroup("Defaults");
-	p->m_sDefaultProfile=p->m_pConfig->readEntry("Profile", i18n("Default"));
+	p->m_sDefaultProfile=p->m_pConfig->readEntry("Profile", QString::null);
 	if (p->m_sDefaultProfile != QString::null) {
 		if (!p->m_pConfig->hasGroup(QString("PROFILE_")+p->m_sDefaultProfile))
-			setDefault(i18n("Default"));
+			setDefault("Default");
 		else
 			setDefault(p->m_sDefaultProfile);
 	} else {
 			if (p->profiles.count()) {
-				kdDebug() << "WE ALREADY HAVE PROFILES DAMNIT" << endl;
+				kdDebug(7030) << "we already have profiles, when we shouldn't!" << endl;
 				setDefault(p->profiles[0]);
 			} else
-				setDefault(i18n("Default"));
+				setDefault("Default");
 	}
 	setProfile(defaultProfileName());
 }

@@ -1,5 +1,5 @@
 /*-
- * Copyright (c) 2000 Alex Zepeda
+ * Copyright (c) 2000 Alex Zepeda <zipzippy@sonic.net>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -40,7 +40,7 @@ class KEMailSettingsPrivate;
   * a sane way, and allowing any program to manage multiple e-mail 
   * profiles effortlessly
   *
-  * @author Alex Zepeda jazepeda@pacbell.net
+  * @author Alex Zepeda zipzippy@sonic.net
   **/
 class KEMailSettings {
 public:
