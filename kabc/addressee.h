@@ -20,7 +20,6 @@
 */
 #ifndef KABC_ADDRESSEE_H
 #define KABC_ADDRESSEE_H
-// $Id$
 
 #include <qvaluelist.h>
 #include <qstring.h>
