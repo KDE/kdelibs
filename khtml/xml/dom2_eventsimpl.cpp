@@ -885,7 +885,8 @@ RegisteredEventListener::RegisteredEventListener(EventImpl::EventId _id, EventLi
     listener->ref();
 }
 
-RegisteredEventListener::~RegisteredEventListener() {
+RegisteredEventListener::~RegisteredEventListener()
+{
     listener->deref();
 }
 
