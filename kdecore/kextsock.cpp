@@ -2130,6 +2130,9 @@ QPtrList<KAddressInfo> KExtendedSocket::lookup(const QString& host, const QStrin
 	l.append(ai);
       }
 
+  if ( error )
+      *error = 0;               // all is fine!
+
   kde_freeaddrinfo(res);	// this one we know where it came from
   return l;
 }
