@@ -37,6 +37,10 @@ namespace Arts {
 	{
 		protected:
 			SampleStorage _sampleStorage;
+
+			void rebuildTraderCache(const std::string& directory,
+									std::vector<TraderOffer> *offers);
+
 		public:
 			SoundServerV2_impl();
 
