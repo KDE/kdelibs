@@ -1119,7 +1119,6 @@ bool StyleBaseImpl::parseValue(const QChar *curP, const QChar *endP, int propId,
     case CSS_PROP_PAGE_BREAK_BEFORE:
     case CSS_PROP_PAGE_BREAK_INSIDE:
     case CSS_PROP_PITCH:
-    case CSS_PROP_PLAY_DURING:
     case CSS_PROP_POSITION:
     case CSS_PROP_QUOTES:
     case CSS_PROP_SIZE:
@@ -1130,7 +1129,6 @@ bool StyleBaseImpl::parseValue(const QChar *curP, const QChar *endP, int propId,
     case CSS_PROP_SPEECH_RATE:
     case CSS_PROP_TABLE_LAYOUT:
     case CSS_PROP_TEXT_ALIGN:
-        //case CSS_PROP_TEXT_DECORATION:
     case CSS_PROP_TEXT_TRANSFORM:
     case CSS_PROP_UNICODE_BIDI:
     case CSS_PROP_VERTICAL_ALIGN:
@@ -1154,7 +1152,9 @@ bool StyleBaseImpl::parseValue(const QChar *curP, const QChar *endP, int propId,
             parsedValue = new CSSPrimitiveValueImpl(cssval->id);
             goto end;
             // ### FIXME: should check if the identifier makes sense with the property
-        }
+       } else {
+            kdDebug( 6080 ) << "illegal value for" << val << endl;
+       }
     }
     default:
         break;
@@ -1164,7 +1164,18 @@ bool StyleBaseImpl::parseValue(const QChar *curP, const QChar *endP, int propId,
 
     switch(propId)
     {
-// ident only properties
+    /* Dublicated Case Value
+     * We allready check them in the above switch statemtent and
+     * here we do nothing with them
+     *
+     * -> We support those CSS properties only partially, meaning
+     *    if they are not added above, they will not be added
+     *    here.
+     * It has to be checked for every of them, what is missing
+     * to fully support it or if we ever get here at all, meaning
+     * that they are handled by the switch above.
+     */
+
     case CSS_PROP_BACKGROUND_ATTACHMENT:
     case CSS_PROP_BACKGROUND_REPEAT:
     case CSS_PROP_BORDER_COLLAPSE:
@@ -1189,8 +1200,6 @@ bool StyleBaseImpl::parseValue(const QChar *curP, const QChar *endP, int propId,
     case CSS_PROP_PAGE_BREAK_AFTER:
     case CSS_PROP_PAGE_BREAK_BEFORE:
     case CSS_PROP_PAGE_BREAK_INSIDE:
-    case CSS_PROP_PAUSE_AFTER:
-    case CSS_PROP_PAUSE_BEFORE:
     case CSS_PROP_POSITION:
     case CSS_PROP_SPEAK:
     case CSS_PROP_SPEAK_HEADER:
@@ -1201,12 +1210,38 @@ bool StyleBaseImpl::parseValue(const QChar *curP, const QChar *endP, int propId,
     case CSS_PROP_UNICODE_BIDI:
     case CSS_PROP_VISIBILITY:
     case CSS_PROP_WHITE_SPACE:
-        break;
+    case CSS_PROP_AZIMUTH: 	// CSS2Azimuth
+    case CSS_PROP_SIZE: 	// ### look up
+    case CSS_PROP_QUOTES: 	// list of strings or i
+    case CSS_PROP_CURSOR: 	// CSS2Cursor, should also support URI, but let's ignore that for now.
+    case CSS_PROP_CLIP: 	// rect rect, ident
 
-    case CSS_PROP_FONT_WEIGHT:
-        // 100 - 900 values
+    /* All the CSS properties are not checked in the 
+     * swtich stmt above and therefore not supported at the moment */
+	    
+    case CSS_PROP_PAUSE_AFTER:
+    case CSS_PROP_PAUSE_BEFORE:
+    case CSS_PROP_PAUSE:
+    case CSS_PROP_PLAY_DURING: 	// CSS2PlayDuring
+    case CSS_PROP_TEXT_SHADOW: 	// list of CSS2TextShadow
+    case CSS_PROP_CUE:
+    case CSS_PROP_VOICE_FAMILY: // list of strings and i
+    case CSS_PROP_TEXT_ALIGN: 	// string only for table columns.
     {
+	break;
+    }
+	
+    /* Start of supported CSS properties */
 
+    /* TWICE means that we allready check them in the above case stmt
+     * It has to be checked, wether this makes sense, if the first
+     * switch stmt will not allways fail, therefore being unnecessary.
+     */
+    case CSS_PROP_FONT_WEIGHT: // 100 - 900 values // TWICE
+    {
+#ifdef CSS_DEBUG
+        kdDebug( 6080 ) << "CSS_PROP_FONT_WEIGHT 2 " << val << endl;
+#endif
         value = value.stripWhiteSpace();
         int id = 0;
         if ( value == "100" || value == "200" || value == "300" || value == "400" || value == "500" )
@@ -1219,13 +1254,8 @@ bool StyleBaseImpl::parseValue(const QChar *curP, const QChar *endP, int propId,
             return false;
         break;
     }
-
-// special properties (css_extensions)
-    case CSS_PROP_AZIMUTH:
-        // CSS2Azimuth
-      break;
     case CSS_PROP_BACKGROUND_POSITION:
-      {
+    {
 #ifdef CSS_DEBUG
         kdDebug( 6080 ) << "CSS_PROP_BACKGROUND_POSITION: " << val << endl;
 #endif
@@ -1233,8 +1263,6 @@ bool StyleBaseImpl::parseValue(const QChar *curP, const QChar *endP, int propId,
 	 * In case of 'center' center defines X and Y coords
 	 * In case of 'center top', center defines the Y coord
 	 * in case of 'center left', center defines the X coord
-	 *
-	 * -> Some sort of look ahead needs to be done
 	 */
 	bool isLast;
 	const QChar* nextP = getNext(curP, endP, isLast);
@@ -1293,7 +1321,7 @@ bool StyleBaseImpl::parseValue(const QChar *curP, const QChar *endP, int propId,
         setParsedValue( CSS_PROP_KONQ_BGPOS_Y, important, propList,
                         new CSSPrimitiveValueImpl(valY, CSSPrimitiveValue::CSS_PERCENTAGE));
         return true;
-      }
+    }
     case CSS_PROP_KONQ_BGPOS_X:
     case CSS_PROP_KONQ_BGPOS_Y:
     {
@@ -1303,34 +1331,27 @@ bool StyleBaseImpl::parseValue(const QChar *curP, const QChar *endP, int propId,
         parsedValue = parseUnit(curP, endP, PERCENT | NUMBER | LENGTH);
         break;
     }
-    case CSS_PROP_CURSOR:
-        // CSS2Cursor
-        // ### should also support URI, but let's ignore that for now.
-        break;
-    case CSS_PROP_PLAY_DURING:
-        // CSS2PlayDuring
-    case CSS_PROP_TEXT_SHADOW:
-        // list of CSS2TextShadow
-        break;
-    case CSS_PROP_BORDER_SPACING: // should be able to have two values
+    case CSS_PROP_BORDER_SPACING: 
+    {
+    	// should be able to have two values
         parsedValue = parseUnit(curP, endP, LENGTH);
         break;
-
-
-// colors || inherit
-    case CSS_PROP_OUTLINE_COLOR:
-        // outline has "invert" as additional keyword. we handle
-        // it as invalid color and add a special case during rendering
+    }
+    case CSS_PROP_OUTLINE_COLOR:	// colors || inherit
+    {
+    	// outline has "invert" as additional keyword. we handle
+    	// it as invalid color and add a special case during rendering
         if ( value == "invert" ) {
             parsedValue = new CSSPrimitiveValueImpl( QColor() );
             break;
         }
+    }
+    case CSS_PROP_COLOR:
     case CSS_PROP_BACKGROUND_COLOR:
     case CSS_PROP_BORDER_TOP_COLOR:
     case CSS_PROP_BORDER_RIGHT_COLOR:
     case CSS_PROP_BORDER_BOTTOM_COLOR:
     case CSS_PROP_BORDER_LEFT_COLOR:
-    case CSS_PROP_COLOR:
     case CSS_PROP_TEXT_DECORATION_COLOR:
     {
         value = value.stripWhiteSpace();
@@ -1342,9 +1363,7 @@ bool StyleBaseImpl::parseValue(const QChar *curP, const QChar *endP, int propId,
         parsedValue = new CSSPrimitiveValueImpl(c);
         break;
     }
-
-// uri || inherit
-    case CSS_PROP_BACKGROUND_IMAGE:
+    case CSS_PROP_BACKGROUND_IMAGE:	// uri || inherit  
     case CSS_PROP_LIST_STYLE_IMAGE:
     {
         const struct css_value *cssval = findValue(val, value.length());
@@ -1367,112 +1386,94 @@ bool StyleBaseImpl::parseValue(const QChar *curP, const QChar *endP, int propId,
             break;
         }
     }
-    case CSS_PROP_CUE_AFTER:
-    case CSS_PROP_CUE_BEFORE:
+    case CSS_PROP_CUE_AFTER:  // TWICE
+    case CSS_PROP_CUE_BEFORE: // TWICE
     {
         DOMString value(curP, endP - curP);
         value = khtml::parseURL(value);
         parsedValue = new CSSPrimitiveValueImpl(value, CSSPrimitiveValue::CSS_URI);
         break;
     }
-
-// length
-    case CSS_PROP_BORDER_TOP_WIDTH:
+    case CSS_PROP_BORDER_TOP_WIDTH: 	// length  
     case CSS_PROP_BORDER_RIGHT_WIDTH:
     case CSS_PROP_BORDER_BOTTOM_WIDTH:
     case CSS_PROP_BORDER_LEFT_WIDTH:
     case CSS_PROP_MARKER_OFFSET:
-    case CSS_PROP_LETTER_SPACING:
-    case CSS_PROP_OUTLINE_WIDTH:
-    case CSS_PROP_WORD_SPACING:
-        {
-            const struct css_value *cssval = findValue(val, value.length());
-            if (cssval) {
-                if(cssval->id == CSS_VAL_THIN || cssval->id == CSS_VAL_MEDIUM ||
-                   cssval->id == CSS_VAL_THICK )
-                    //kdDebug( 6080 ) << "got value " << cssval->id << endl;
-                    parsedValue = new CSSPrimitiveValueImpl(cssval->id);
-                break;
-            }
-            parsedValue = parseUnit(curP, endP, LENGTH);
+    case CSS_PROP_LETTER_SPACING: // TWICE
+    case CSS_PROP_OUTLINE_WIDTH: // TWICE
+    case CSS_PROP_WORD_SPACING: // TWICE
+    {
+    	const struct css_value *cssval = findValue(val, value.length());
+        if (cssval) {
+            if(cssval->id == CSS_VAL_THIN || cssval->id == CSS_VAL_MEDIUM ||
+         	cssval->id == CSS_VAL_THICK )
+                //kdDebug( 6080 ) << "got value " << cssval->id << endl;
+                parsedValue = new CSSPrimitiveValueImpl(cssval->id);
             break;
         }
-
-// length, percent
-    case CSS_PROP_PADDING_TOP:
+        parsedValue = parseUnit(curP, endP, LENGTH);
+        break;
+    }
+    case CSS_PROP_PADDING_TOP:		// length, percent   
     case CSS_PROP_PADDING_RIGHT:
     case CSS_PROP_PADDING_BOTTOM:
     case CSS_PROP_PADDING_LEFT:
     case CSS_PROP_TEXT_INDENT:
-    case CSS_PROP_BOTTOM:
-    case CSS_PROP_FONT_SIZE:
+    case CSS_PROP_BOTTOM: // TWICE
+    case CSS_PROP_FONT_SIZE: // TWICE
     case CSS_PROP_HEIGHT:
-    case CSS_PROP_LEFT:
-    case CSS_PROP_MARGIN_TOP:
-    case CSS_PROP_MARGIN_RIGHT:
-    case CSS_PROP_MARGIN_BOTTOM:
-    case CSS_PROP_MARGIN_LEFT:
-    case CSS_PROP_MAX_HEIGHT:
-    case CSS_PROP_MAX_WIDTH:
+    case CSS_PROP_LEFT: // TWICE
+    case CSS_PROP_MARGIN_TOP: // TWICE
+    case CSS_PROP_MARGIN_RIGHT: // TWICE
+    case CSS_PROP_MARGIN_BOTTOM: // TWICE
+    case CSS_PROP_MARGIN_LEFT: // TWICE
+    case CSS_PROP_MAX_HEIGHT: // TWICE
+    case CSS_PROP_MAX_WIDTH: // TWICE
     case CSS_PROP_MIN_HEIGHT:
     case CSS_PROP_MIN_WIDTH:
-    case CSS_PROP_RIGHT:
-    case CSS_PROP_TOP:
-    case CSS_PROP_VERTICAL_ALIGN:
-    case CSS_PROP_WIDTH:
+    case CSS_PROP_RIGHT: // TWICE
+    case CSS_PROP_TOP: // TWICE
+    case CSS_PROP_VERTICAL_ALIGN: // TWICE
+    case CSS_PROP_WIDTH: // TWICE
+    {
         parsedValue = parseUnit(curP, endP, LENGTH | PERCENT );
         break;
-
-// angle
-    case CSS_PROP_ELEVATION:
+    }
+    case CSS_PROP_ELEVATION:		// angle // TWICE
+    {
         parsedValue = parseUnit(curP, endP, ANGLE);
         break;
-
-// number
-    case CSS_PROP_FONT_SIZE_ADJUST:
+    }
+    case CSS_PROP_FONT_SIZE_ADJUST:	// number // TWICE
     case CSS_PROP_ORPHANS:
     case CSS_PROP_PITCH_RANGE:
     case CSS_PROP_RICHNESS:
-    case CSS_PROP_SPEECH_RATE:
+    case CSS_PROP_SPEECH_RATE: // TWICE
     case CSS_PROP_STRESS:
     case CSS_PROP_WIDOWS:
-    case CSS_PROP_Z_INDEX:
+    case CSS_PROP_Z_INDEX: // TWICE
+    {
         parsedValue = parseUnit(curP, endP, NUMBER);
         break;
-
-// length, percent, number
-    case CSS_PROP_LINE_HEIGHT:
-        //kdDebug(0) << "line-height: '" << QString(curP, endP-curP) << "'" << endl;
+    }
+    case CSS_PROP_LINE_HEIGHT:		// length, percent, number // TWICE
+    {
         parsedValue = parseUnit(curP, endP, LENGTH | PERCENT | NUMBER);
         break;
-
-// number, percent
-    case CSS_PROP_VOLUME:
+    }
+    case CSS_PROP_VOLUME:		// number, percent // TWICE
+    {
         parsedValue = parseUnit(curP, endP, PERCENT | NUMBER);
         break;
-
-// frequency
-    case CSS_PROP_PITCH:
+    }
+    case CSS_PROP_PITCH:		 // frequency // TWICE
+    {
         parsedValue = parseUnit(curP, endP, FREQUENCY);
         break;
-
-// string
-    case CSS_PROP_TEXT_ALIGN:
-        // only for table columns.
-        break;
-
-// rect
-    case CSS_PROP_CLIP:
-        // rect, ident
-        break;
-
-// lists
-    case CSS_PROP_CONTENT:
-        // list of string, uri, counter, attr, i
-    case CSS_PROP_COUNTER_INCREMENT:
-        // list of CSS2CounterIncrement
-    case CSS_PROP_COUNTER_RESET:
-        // list of CSS2CounterReset
+    }
+    case CSS_PROP_CONTENT:		// list of string, uri, counter, attr, // TWICE
+    case CSS_PROP_COUNTER_INCREMENT: 	// list of CSS2CounterIncrement // TWICE
+    case CSS_PROP_COUNTER_RESET: 	// list of CSS2CounterReset // TWICE
     {
         CSSValueListImpl *list = new CSSValueListImpl;
         QString str(curP, endP-curP);
@@ -1498,9 +1499,7 @@ bool StyleBaseImpl::parseValue(const QChar *curP, const QChar *endP, int propId,
             delete list;
         break;
     }
-
-    case CSS_PROP_FONT_FAMILY:
-        // list of strings and ids
+    case CSS_PROP_FONT_FAMILY:		// list of strings and ids
     {
         CSSValueListImpl *list = new CSSValueListImpl;
         QString str(curP, endP-curP);
@@ -1523,13 +1522,7 @@ bool StyleBaseImpl::parseValue(const QChar *curP, const QChar *endP, int propId,
             delete list;
         break;
     }
-    case CSS_PROP_QUOTES:
-        // list of strings or i
-    case CSS_PROP_SIZE:
-        // ### look up
-        break;
-    case CSS_PROP_TEXT_DECORATION:
-        // list of ident
+    case CSS_PROP_TEXT_DECORATION:	 // list of ident
     {
         CSSValueListImpl *list = new CSSValueListImpl;
         QString str(curP, endP-curP);
@@ -1558,22 +1551,20 @@ bool StyleBaseImpl::parseValue(const QChar *curP, const QChar *endP, int propId,
         break;
     }
 
-    case CSS_PROP_VOICE_FAMILY:
-        // list of strings and i
-        break;
+    /* shorthand properties */
 
-// shorthand properties
     case CSS_PROP_BACKGROUND:
+    {
       return parseBackground(curP, endP, important, propList);
-
-// add all shorthand properties to the list...
+    }
     case CSS_PROP_BORDER:
     case CSS_PROP_BORDER_TOP:
     case CSS_PROP_BORDER_RIGHT:
     case CSS_PROP_BORDER_BOTTOM:
     case CSS_PROP_BORDER_LEFT:
-        case CSS_PROP_OUTLINE:
+    case CSS_PROP_OUTLINE:
     {
+    	// add all shorthand properties to the list...
 #ifdef CSS_DEBUG
         kdDebug(6080) << "parsing border property" << endl;
 #endif
@@ -1606,7 +1597,6 @@ bool StyleBaseImpl::parseValue(const QChar *curP, const QChar *endP, int propId,
 
         return parseShortHand(curP, endP, properties, 3, important, propList, false);
     }
-
     case CSS_PROP_BORDER_COLOR:
     {
         const struct css_value *cssval = findValue(val, value.length());
@@ -1664,21 +1654,21 @@ bool StyleBaseImpl::parseValue(const QChar *curP, const QChar *endP, int propId,
             };
         return parse4Values(curP, endP, properties, important, propList);
     }
-
-    case CSS_PROP_CUE:
-        break;
     case CSS_PROP_FONT:
     {
         QString fontStr = QString( curP, endP - curP );
         return parseFont( curP, endP, important, propList );
     }
     case CSS_PROP_LIST_STYLE:
-      {
-        const int properties[3] = { CSS_PROP_LIST_STYLE_TYPE, CSS_PROP_LIST_STYLE_POSITION, CSS_PROP_LIST_STYLE_IMAGE };
+    {
+        const int properties[3] = { 
+	    CSS_PROP_LIST_STYLE_TYPE, 
+	    CSS_PROP_LIST_STYLE_POSITION, 
+	    CSS_PROP_LIST_STYLE_IMAGE 
+	    };
         return  parseShortHand(curP, endP, properties, 3, important, propList, false);
-      }
-    case CSS_PROP_PAUSE:
-        break;
+    }
+    
 #ifdef CSS_DEBUG
     default:
         kdDebug( 6080 ) << "illegal property!" << endl;
@@ -1687,11 +1677,11 @@ bool StyleBaseImpl::parseValue(const QChar *curP, const QChar *endP, int propId,
 
  end:
 
-    if ( parsedValue ) {
+    if ( parsedValue ) 
+    {
         setParsedValue( propId, important, propList, parsedValue );
         return true;
     }
-
     return false;
 }
 
@@ -1723,7 +1713,7 @@ bool StyleBaseImpl::parseShortHand(const QChar *curP, const QChar *endP, const i
   for( int i = 0; i < num; i++ )
     fnd[i] = false;
   while(!last) {
-    const QChar *nextP = getNext( curP, endP, last );;
+    const QChar *nextP = getNext( curP, endP, last );
       bool found = false;
 #ifdef CSS_DEBUG
       kdDebug(6080) << "parsing \"" << QString(curP, nextP - curP) << "\"" << endl;
@@ -1777,7 +1767,7 @@ bool StyleBaseImpl::parseBackground(const QChar *curP, const QChar *endP, bool i
     if(!found && !fnd[2]) {
       found = parseValue(curP, nextP, CSS_PROP_BACKGROUND_COLOR, important, propList);
       if( found ) {
-          //kdDebug() << "color!!!" << endl;
+	//kdDebug() << "color!!!" << endl;
         fnd[2] = true;
       }
     }
