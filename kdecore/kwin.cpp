@@ -190,7 +190,7 @@ int KWin::currentDesktop()
 void KWin::setCurrentDesktop( int desktop )
 {
     createAtoms();
-    sendClientMessageToRoot( qt_xrootwin(), net_current_desktop, desktop );
+    ::sendClientMessageToRoot( qt_xrootwin(), net_current_desktop, desktop );
 }
 
 
@@ -217,7 +217,7 @@ WId KWin::activeWindow()
 void KWin::setActiveWindow( WId win)
 {
     createAtoms();
-    sendClientMessageToRoot( win, net_active_window, 0);
+    ::sendClientMessageToRoot( win, net_active_window, 0);
 }
 
 
@@ -324,7 +324,7 @@ public:
 			       &root_x, &root_y, &lx, &ly, &state );
 	    } while  ( child != None && child != w );
 	
-	    sendClientMessage(w, wm_protocols, net_wm_context_help);
+	    ::sendClientMessage(w, wm_protocols, net_wm_context_help);
 	    XEvent e = *ev;
 	    e.xbutton.window = w;
 	    e.xbutton.subwindow = w;
