@@ -778,7 +778,9 @@ int KHTMLParser::parseBody( HTMLClue *__clue, const int *_end, bool toplevel )
 		   KCharsetConversionResult *r;
 		   for(r=rl.first();r;r=rl.next()){ 
 		        debugM("Getting result string...");
-		      	char *str1= ht->newString(*r);
+			char *tmp = r->copy();
+		      	char *str1= ht->newString(tmp);
+			delete tmp;
 		        debugM("Got: %s",str1);
 			debugM("Getting current font...");
 		        HTMLFont f=*currentFont();
@@ -845,7 +847,7 @@ int KHTMLParser::parseBody( HTMLClue *__clue, const int *_end, bool toplevel )
 
 		const KCharsetConversionResult &r=charsets->convertTag(str,l);
 		
-		str1=r;					 
+		str1=r.copy();
 		
 		if (str1 && l){
 		    HTMLFont f=*fp;
@@ -862,6 +864,7 @@ int KHTMLParser::parseBody( HTMLClue *__clue, const int *_end, bool toplevel )
 		{
 		    insertText((char *)str, currentFont());
 		}
+		delete str1;
 	    }	    
 	    else
 	    {
