@@ -226,8 +226,7 @@ KTabListBox::KTabListBox(QWidget *parent, const char *name, int columns,
 
   initMetaObject();
 
-  f = kapp->kdedir();
-  f.detach();
+  f = kapp->kdedir().data();
   f += "/share/apps/khtmlw/pics/khtmlw_dnd.xpm";
   dndDefaultPixmap.load(f.data());
 

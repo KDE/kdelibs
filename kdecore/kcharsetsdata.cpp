@@ -410,7 +410,7 @@ bool KCharsetConverterData::createFromUnicodeDict(){
 
 KCharsetsData::KCharsetsData(){
 
-  QString fileName=KApplication::kdedir();
+  QString fileName=KApplication::kdedir().copy();
   fileName+="/share/config/charsets";
   config=new KSimpleConfig(fileName);
   config->setGroup("general");

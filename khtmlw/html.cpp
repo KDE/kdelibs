@@ -188,8 +188,7 @@ KHTMLWidget::KHTMLWidget( QWidget *parent, const char *name, const char * )
     pal.setNormal( newGroup );
     setPalette( pal );
 
-    QString f = kapp->kdedir();
-    f.detach();
+    QString f = kapp->kdedir().copy();
     f += "/share/apps/khtmlw/pics/khtmlw_dnd.xpm";
     dndDefaultPixmap.load( f.data() );
     
