@@ -38,33 +38,39 @@ class KURLCompletionPrivate;
  *
  * @short Completion of a single URL
  * @author David Smith <dsmith@algonet.se>
- * @version $Id:
+ * @version $Id$
  */
 class KURLCompletion : public KCompletion
 {
 	Q_OBJECT
 
 public:
-	KURLCompletion();
-	virtual ~KURLCompletion();
-
 	/**
 	 * Determines how completion is done
 	 * ExeCompletion - executables in $PATH or with full path
 	 * FileCompletion - all files with full path or in dir(), URLs are listed
 	 *                  using KIO
 	 */
-	enum Mode { ExeCompletion=1, FileCompletion };
-	
+    enum Mode { ExeCompletion=1, FileCompletion };
+
+	KURLCompletion();
+	/**
+	 * This overloaded constructor allows you to set the Mode to ExeCompletion
+	 * or FileCompletion without using @ref setMode
+	 */
+	KURLCompletion(Mode);
+
+	virtual ~KURLCompletion();
+
 	/**
 	 * Find completions to the given text
 	 *
 	 * Remote URLs are listed with KIO. For performance reasons, local files
-	 * are listed with KIO only if KURLCOMPLETION_LOCAL_KIO is set. 
+	 * are listed with KIO only if KURLCOMPLETION_LOCAL_KIO is set.
 	 * The completion is done asyncronously if KIO is used.
 	 *
 	 * Returns the first match for user, environment, and local dir completion
-	 * and QString::null for asyncronous completion (KIO) 
+	 * and QString::null for asyncronous completion (KIO)
 	 */
 	virtual QString makeCompletion(const QString&);
 
@@ -80,7 +86,7 @@ public:
 	virtual QString dir() { return m_dir; };
 
 	/**
-	 * Returns true if asyncronous completion is in progress 
+	 * Returns true if asyncronous completion is in progress
 	 */
 	virtual bool isRunning() { return m_running; };
 
@@ -132,6 +138,7 @@ private:
 
 	// List the next dir in m_dirs
 	QString listDirectories();
+	void init();
 
 	QString m_last_path_listed;
 	QString m_last_file_listed;
@@ -140,7 +147,7 @@ private:
 
 	QString m_dir; // "current directory" = base dir for completion
 	
-	Mode m_mode; // ExeCompletion or FileCompletion 
+	Mode m_mode; // ExeCompletion or FileCompletion
 	bool m_replace_env;
 	bool m_replace_home;
 
@@ -148,8 +155,8 @@ private:
 
 	bool m_list_exe; // true = only list executables
 	bool m_running; // flag set when all dirs have been listed
-	QString m_prepend; // text to prepend to listed items 
-	QString m_compl_text; // text to pass on to KCompletion 
+	QString m_prepend; // text to prepend to listed items
+	QString m_compl_text; // text to pass on to KCompletion
 
 	QStringList m_dirs; // dirs to be listed
 	QString m_file_filter; // filter for listed files

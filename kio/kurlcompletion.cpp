@@ -20,6 +20,8 @@
     Boston, MA 02111-1307, USA.
 */
 
+#include <qdir.h>
+
 #include <stdlib.h>
 #include <assert.h>
 #include <kdebug.h>
@@ -36,7 +38,7 @@
 #include <unistd.h>
 #include <sys/stat.h>
 #include <pwd.h>
- 
+
 #include "kurlcompletion.h"
 
 static void listEnvVar( QStringList * );
@@ -45,7 +47,27 @@ static bool qstrBeginEq( const QString &s1, const QString &s2 );
 
 KURLCompletion::KURLCompletion() : KCompletion()
 {
-	m_dir = QString::fromLocal8Bit( ::getenv("HOME") );
+	init();
+}
+
+
+KURLCompletion::KURLCompletion( Mode mode ) : KCompletion()
+{
+	init();
+	m_mode = mode;
+}
+
+
+KURLCompletion::~KURLCompletion()
+{
+	if ( m_current_url )
+		delete m_current_url;
+}
+
+
+void KURLCompletion::init()
+{
+	m_dir = QDir::homeDirPath();
 
 	m_word_break_char = QChar(' ');
 	m_quote_char1 = QChar('\"');
@@ -59,26 +81,20 @@ KURLCompletion::KURLCompletion() : KCompletion()
 	m_replace_env = true;
 }
 
-KURLCompletion::~KURLCompletion() 
-{
-	if ( m_current_url ) 
-		delete m_current_url;
-}
-
 /*
  * makeCompletion()
  *
- * Entry point for file name completion 
+ * Entry point for file name completion
  */
 QString KURLCompletion::makeCompletion(const QString &text)
 {
 	// Note: we don't kill a running list job here, since
-	// we then might restart the same job again 
+	// we then might restart the same job again
 
 
 	// Remove quotes from the text
 	//
-	QString text_copy = unquote(text); 
+	QString text_copy = unquote(text);
 	
 	// Split "/dir/file" => "/dir/" and "file" (we only complete "file")
 	//
@@ -94,10 +110,10 @@ QString KURLCompletion::makeCompletion(const QString &text)
 
 	// Check if we have the wanted list job running already
 	//
-	if ( m_running 
-		&& pathPart == m_last_path_listed 
+	if ( m_running
+		&& pathPart == m_last_path_listed
 		&& qstrBeginEq( m_last_file_listed, filePart )
-		&& m_mode == m_last_mode ) 
+		&& m_mode == m_last_mode )
 	{
 		//kDebugInfo("KURLCompletion: The wanted list job is already running");
 
@@ -122,15 +138,15 @@ QString KURLCompletion::makeCompletion(const QString &text)
 	
 	// User name completion
 	//
-	if ( m_replace_home 
-		&& pathPart.isEmpty() 
-		&& filePart[0] == QChar('~') ) 
+	if ( m_replace_home
+		&& pathPart.isEmpty()
+		&& filePart[0] == QChar('~') )
 	{
 
 		//kDebugInfo("User name completion : '%s'", filePart.latin1());
 	
 		m_prepend = "";
-		m_compl_text = filePart; 
+		m_compl_text = filePart;
 		
 		// Get new values if needed
 		//
@@ -146,7 +162,7 @@ QString KURLCompletion::makeCompletion(const QString &text)
 				addItem( QString("~") + *it );
 				
 			// A single tilde is also a match...
-			addItem( QString("~") ); 
+			addItem( QString("~") );
 		}
 		// Expand the directory if completion is done again
 		// on the same text
@@ -201,8 +217,8 @@ QString KURLCompletion::makeCompletion(const QString &text)
 		// Expand the directory if completion is done again
 		// on the same text
 		//
-		else if ( filePart == m_last_file_listed 
-				&& pathPart == m_last_path_listed) 
+		else if ( filePart == m_last_file_listed
+				&& pathPart == m_last_path_listed)
 		{
 			QString filePartExpanded = filePart;
 			
@@ -222,8 +238,8 @@ QString KURLCompletion::makeCompletion(const QString &text)
 		}
 
 		m_last_compl_type = 2;
-		m_last_path_listed = pathPart; 
-		m_last_file_listed = filePart; 
+		m_last_path_listed = pathPart;
+		m_last_file_listed = filePart;
 	}
 
 	// File completion if not user/env completion
@@ -237,34 +253,34 @@ QString KURLCompletion::makeCompletion(const QString &text)
 		kDebugInfo("0. last_mode = '%d'", m_last_mode);
 		kDebugInfo("0. last_type = '%d'", m_last_compl_type);
 */
-		m_compl_text = pathPart + filePart; 
+		m_compl_text = pathPart + filePart;
 		m_prepend = pathPart;
 
 		// Get new values if needed
 		//
-		if ( m_last_compl_type != 3 
-			|| m_last_path_listed != pathPart 
+		if ( m_last_compl_type != 3
+			|| m_last_path_listed != pathPart
 			|| !qstrBeginEq( m_last_file_listed, filePart )
-			|| m_last_mode != m_mode ) 
+			|| m_last_mode != m_mode )
 		{
 			clear();
 
 			// Save these before expansion
 			//
-			m_last_path_listed = pathPart; 
-			m_last_file_listed = filePart; 
+			m_last_path_listed = pathPart;
+			m_last_file_listed = filePart;
 			
 			// Replace tilde, environment variables, and current dir (m_dir)
 			//
 			// XXX use KURIFilter here ?
 			//
-			QString pathPartExpanded = pathPart; 
+			QString pathPartExpanded = pathPart;
 
 			if ( m_replace_home ) expandTilde(pathPartExpanded);
 			if ( m_replace_env ) expandEnv(pathPartExpanded);
 
-			if ( !m_dir.isNull() 
-				&& pathPartExpanded.left(2) == QString("./") ) 
+			if ( !m_dir.isNull()
+				&& pathPartExpanded.left(2) == QString("./") )
 			{
 				pathPartExpanded.replace( 0, 1, m_dir );
 			}
@@ -284,7 +300,7 @@ QString KURLCompletion::makeCompletion(const QString &text)
 
 				m_list_exe = true;
 
-				// Completion of full path 
+				// Completion of full path
 				//
 				if ( pathPartExpanded[0] == QChar('/') ) {
 					m_dirs.append( pathPartExpanded );
@@ -292,12 +308,12 @@ QString KURLCompletion::makeCompletion(const QString &text)
 				// Exe completion in $PATH
 				//
 				else if ( !filePart.isEmpty() && pathPartExpanded.isEmpty() ) {
-					QStringList dirs = 
-						QStringList::split(':', 
+					QStringList dirs =
+						QStringList::split(':',
 							QString::fromLocal8Bit(::getenv("PATH")));
 
-					for ( QStringList::Iterator it = dirs.begin(); 
-						  it != dirs.end(); it++ ) 
+					for ( QStringList::Iterator it = dirs.begin();
+						  it != dirs.end(); it++ )
 					{
 						m_dirs.append( (*it) + '/' );
 					}
@@ -313,27 +329,27 @@ QString KURLCompletion::makeCompletion(const QString &text)
 
 				m_list_exe = false;
 
-				// Completion of full path 
+				// Completion of full path
 				//
 				if ( pathPartExpanded[0] == QChar('/') ) {
 					m_dirs.append( pathPartExpanded );
 				}
 				// Completion in the current dir (m_dir)
 				//
-				else if ( !m_dir.isNull() 
-					&& (urlPath.isLocalFile() || urlPath.isMalformed() ) ) 
+				else if ( !m_dir.isNull()
+					&& (urlPath.isLocalFile() || urlPath.isMalformed() ) )
 				{
 					m_dirs.append( m_dir + '/' + pathPartExpanded );
 				}
-				// The actual URL completion... 
+				// The actual URL completion...
 				//
 				else {
 					m_dirs.append( pathPartExpanded );
 				}
 			}
 
-			m_last_compl_type = 3; 
-			m_last_mode = m_mode; 
+			m_last_compl_type = 3;
+			m_last_mode = m_mode;
 			
 			m_running = true;
 /*
@@ -368,18 +384,18 @@ QString KURLCompletion::makeCompletion(const QString &text)
  */
 void KURLCompletion::postProcessMatch( QString *match )
 {
-	//kDebugInfo("KURLCompletion::postProcessMatch() -- in: '%s'", 
+	//kDebugInfo("KURLCompletion::postProcessMatch() -- in: '%s'",
 	//	match->latin1());
 
 	if ( *match == QString::null )
 		return;
 		
-	if ( match->right(1) == QChar('/') ) 
+	if ( match->right(1) == QChar('/') )
 		quoteText( match, false, true ); // don't quote the trailing '/'
 	else
 		quoteText( match, false, false ); // quote the whole text
 
-	//kDebugInfo("KURLCompletion::postProcessMatch() -- ut: '%s'", 
+	//kDebugInfo("KURLCompletion::postProcessMatch() -- ut: '%s'",
 	//	match->latin1());
 }
 
@@ -392,7 +408,7 @@ void KURLCompletion::postProcessMatches( QStringList *matches )
 	{
 		if ( (*it) != QString::null ) {
 
-			if ( (*it).right(1) == QChar('/') ) 
+			if ( (*it).right(1) == QChar('/') )
 				quoteText( &(*it), false, true ); // don't quote trailing '/'
 			else
 				quoteText( &(*it), false, false ); // quote the whole text
@@ -401,7 +417,7 @@ void KURLCompletion::postProcessMatches( QStringList *matches )
 }
 
 /*
- * unquote 
+ * unquote
  *
  * Remove quotes and return the result in a new string
  *
@@ -444,7 +460,7 @@ QString KURLCompletion::unquote(const QString &text)
 }
 
 /*
- * unescape 
+ * unescape
  *
  * Remove escapes and return the result in a new string
  *
@@ -453,21 +469,21 @@ QString KURLCompletion::unescape(const QString &text)
 {
 	QString result;
 
-	for (uint pos = 0; pos < text.length(); pos++) 
-		if ( text[pos] != m_escape_char ) 
+	for (uint pos = 0; pos < text.length(); pos++)
+		if ( text[pos] != m_escape_char )
 			result.insert( result.length(), text[pos] );
 		
 	return result;
 }
 
-/* 
+/*
  * list()
  *
  * Add directory listing to 'matches'.
  * Only executables beginning with 'filter' are listed
  * If 'add_dir' is true 'dir' is prepended to the matches
  */
-void KURLCompletion::list(QString dir, QString filter, 
+void KURLCompletion::list(QString dir, QString filter,
 		QStringList &matches, bool only_exe)
 {
 	DIR *dp;
@@ -497,13 +513,13 @@ void KURLCompletion::list(QString dir, QString filter,
 	
 			//kDebugInfo("  list match: '%s'", full_path.latin1() );
 
-			if ( stat( full_path.latin1(), &sbuff ) == 0 ) { 
+			if ( stat( full_path.latin1(), &sbuff ) == 0 ) {
 				// Verify executable
 				//
-				if ( only_exe && 0 == (sbuff.st_mode & (S_IXUSR | S_IXGRP | S_IXOTH) ) ) 
+				if ( only_exe && 0 == (sbuff.st_mode & (S_IXUSR | S_IXGRP | S_IXOTH) ) )
 					continue;
 				
-				// Add '/' to directories 
+				// Add '/' to directories
 				//
 				if ( S_ISDIR ( sbuff.st_mode ) )
 					file.append( '/' );
@@ -527,7 +543,7 @@ void KURLCompletion::list(QString dir, QString filter,
  * quoteText()
  *
  * Add quotations to 'text' if needed or if 'force' = true
- * Returns true if quotes were added 
+ * Returns true if quotes were added
  *
  * skip_last => ignore the last charachter (we add a space or '/' to all filenames)
  */
@@ -558,17 +574,17 @@ bool KURLCompletion::quoteText(QString *text, bool force, bool skip_last)
 	if ( force || (pos >= 0) ) {
 		
 		// Escape \ in the string
-		text->replace( QRegExp( m_escape_char ), 
-					  QString( m_escape_char ) + m_escape_char ); 
+		text->replace( QRegExp( m_escape_char ),
+					  QString( m_escape_char ) + m_escape_char );
 		
 		// Escape " in the string
-		text->replace( QRegExp( m_quote_char1 ), 
-					  QString( m_escape_char ) + m_quote_char1 ); 
+		text->replace( QRegExp( m_quote_char1 ),
+					  QString( m_escape_char ) + m_quote_char1 );
 		
 		// " at the beginning
 		text->insert( 0, m_quote_char1 );
 
-		// " at the end 
+		// " at the end
 		if ( skip_last )
 			text->insert( text->length()-1, m_quote_char1 );
 		else
@@ -601,7 +617,7 @@ bool KURLCompletion::expandEnv( QString &text )
 		if ( text[pos-1] == m_escape_char ) {
 			pos++;
 		}
-		// Variable found => expand 
+		// Variable found => expand
 		//
 		else {
 			// Find the end of the variable = next '/' or ' '
@@ -621,7 +637,7 @@ bool KURLCompletion::expandEnv( QString &text )
 			if ( pos2 >= 0 ) {
 				int     len   = pos2 - pos;
 				QString key   = text.mid( pos+1, len-1);
-				QString value = 
+				QString value =
 					QString::fromLocal8Bit( ::getenv(key.local8Bit()) );
 
 				if ( !value.isEmpty() ) {
@@ -644,7 +660,7 @@ bool KURLCompletion::expandEnv( QString &text )
 /*
  * expandTilde
  *
- * Replace "~user" with the users home directory 
+ * Replace "~user" with the users home directory
  * Return true if expansion was made.
  */
 bool KURLCompletion::expandTilde(QString &text)
@@ -662,7 +678,7 @@ bool KURLCompletion::expandTilde(QString &text)
 	if ( pos2 == -1 || (pos_tmp != -1 && pos_tmp < pos2) )
 		pos2 = pos_tmp;
 
-	if ( pos2 == -1 ) 
+	if ( pos2 == -1 )
 		pos2 = text.length();
 
 	// Replace ~user if the user name is terminated by '/' or ' '
@@ -675,14 +691,14 @@ bool KURLCompletion::expandTilde(QString &text)
 		// A single ~ is replaced with $HOME
 		//
 		if ( user.isEmpty() ) {
-			dir = QString::fromLocal8Bit( ::getenv("HOME") );
+		        dir = QDir::homeDirPath();
 		}
-		// ~user is replaced with the dir from passwd 
+		// ~user is replaced with the dir from passwd
 		//
 		else {
 			struct passwd *pw = ::getpwnam( user.local8Bit() );
 
-			if ( pw ) 
+			if ( pw )
 				dir = QString::fromLocal8Bit( pw->pw_dir );
 				
 			::endpwent();
@@ -701,7 +717,7 @@ bool KURLCompletion::expandTilde(QString &text)
  * listDirectories
  *
  * List directories in m_dirs.
- * Remote urls are always listed with KIO.  Local diretories are listed 
+ * Remote urls are always listed with KIO.  Local diretories are listed
  * with KIO if KURLCOMPLETION_LOCAL_KIO is set.
  *
  * Returns: the match from makeCompletion() if local listing is used and
@@ -752,7 +768,7 @@ QString KURLCompletion::listDirectories()
 	else {
 
 		// Sort of ugly to modify m_last_file_listed here, but for now
-		// we don't use it with KIO, and this might enable us to avoid 
+		// we don't use it with KIO, and this might enable us to avoid
 		// some unneseccary list jobs
 		//
 		m_last_file_listed = QString("");
@@ -764,7 +780,7 @@ QString KURLCompletion::listDirectories()
 
 			m_current_url = new KURL( m_dirs.first() );
 
-			//kDebugInfo("listDirectories() -- dir = '%s'", 
+			//kDebugInfo("listDirectories() -- dir = '%s'",
 			//	m_current_url->url().latin1());
 		
 			m_list_job = KIO::listDir( (*m_current_url) );
@@ -774,7 +790,7 @@ QString KURLCompletion::listDirectories()
 			connect(m_list_job, SIGNAL(result(KIO::Job*)),
 					SLOT(slotIOFinished(KIO::Job*)));
 
-			connect(m_list_job, 
+			connect(m_list_job,
 					SIGNAL( entries( KIO::Job*, const KIO::UDSEntryList&)),
 					SLOT( slotEntries( KIO::Job*, const KIO::UDSEntryList&)));
 
@@ -788,7 +804,7 @@ QString KURLCompletion::listDirectories()
 /*
  * slotEntries
  *
- * addItem() the files listed by KIO 
+ * addItem() the files listed by KIO
  */
 #define S_IXUGO (S_IXUSR | S_IXGRP | S_IXOTH)
 
@@ -830,7 +846,7 @@ void KURLCompletion::slotEntries(KIO::Job*, const KIO::UDSEntryList& entries)
 				addItem( m_prepend + name );
 		}
     }
-} 
+}
 
 /*
  * slotIOFinished
@@ -842,18 +858,18 @@ void KURLCompletion::slotIOFinished( KIO::Job * job )
 {
     m_list_job = 0L;
 
-    if (job && job->error() 
-		&& job->error() != KIO::ERR_DOES_NOT_EXIST 
+    if (job && job->error()
+		&& job->error() != KIO::ERR_DOES_NOT_EXIST
 		&& job->error() != KIO::ERR_CANNOT_ENTER_DIRECTORY)
 	{
-		job->showErrorDialog(); 
+		job->showErrorDialog();
 	}
 
 	//kDebugInfo("slotIOFinished() -- %d dirs to go", m_dirs.count());
 
 	// Continue listing the next directory in the list
 	//
-	if ( m_dirs.count() > 0 ) 
+	if ( m_dirs.count() > 0 )
 		listDirectories();
 	// No more directories? Then were ready to find completions
 	//
@@ -909,7 +925,7 @@ static void listUsers( QStringList *l )
 /*
  * qstrBeginEq
  *
- * Return true if the first part of s2 equals s1 
+ * Return true if the first part of s2 equals s1
  */
 static bool qstrBeginEq( const QString &s1, const QString &s2 )
 {
