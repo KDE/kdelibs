@@ -483,7 +483,7 @@ KPaletteTable::KPaletteTable( QWidget *parent, int minWidth, int cols)
 
   setFixedSize( sizeHint());
   connect( combo, SIGNAL(activated(const QString &)), 
-	this, SLOT(setPalette( const QString &)));
+	this, SLOT(slotSetPalette( const QString &)));
 }
 
 QString
@@ -511,38 +511,44 @@ KPaletteTable::readNamedColor( void )
     0
   };
 
-  QFile file;
+  //
+  // Code inspired by KPalette.
+  //
   for( int i=0; path[i] != 0; i++ )
   {
-    QFile file( path[i] );
-    if( file.open( IO_ReadOnly ) == false )
+    QFile paletteFile( path[i] );
+    if( paletteFile.open( IO_ReadOnly ) == false )
     {
       continue;
     }
     
+    QString line;
     QStringList list;
-    char line[100], name[100];
-
-    while( file.readLine( line, 99 ) != -1 )
+    while( paletteFile.readLine( line, 100 ) != -1 )
     {
-      //
-      // I hope the format is the same on all systems :)
-      //
-      int val = sscanf( line, "%*d %*d %*d %[^\n]", name );
-      if( val == 1 )
-      {
+      int red, green, blue;
+      int pos = 0;
+
+      if( sscanf(line.ascii(), "%d %d %d%n", &red, &green, &blue, &pos ) == 3 )
+      {	
 	//
 	// Remove duplicates. Every name with a space and every name
 	// that start with "gray".
 	//
-	if( strchr( name, ' ' ) == 0 && strncmp( name, "gray", 4) != 0 )
+	QString name = line.mid(pos).stripWhiteSpace();
+	if( name.isNull() == true || name.find(' ') != -1 || 
+	    name.find( "gray" ) != -1 )
 	{
-	  list.append( name );
+	  continue;
 	}
+	list.append( name );
       }
     }
+
     list.sort();
-    mNamedColorList->insertStringList( list );  
+    mNamedColorList->insertStringList( list );
+    //mNamedColorList->setCurrentItem(0);
+
     break;
   }
 
@@ -560,6 +566,31 @@ KPaletteTable::readNamedColor( void )
   }
 }
 
+//
+// 2000-02-12 Espen Sand
+// Set the color in two steps. The setPalette() slot will not emit a signal
+// with the current color setting. The reason is that setPalette() is used
+// by the color selector dialog on startup. In the color selector dialog
+// we normally want to display a startup color which we specify 
+// when the dialog is started. The slotSetPalette() slot below will 
+// set the palette and then use the information to emit a signal with the
+// new color setting. It is only used by the combobox widget.
+//
+void
+KPaletteTable::slotSetPalette( const QString &_paletteName )
+{
+  setPalette( _paletteName );
+  if( mNamedColorList->isVisible() == true )
+  {
+    int item = mNamedColorList->currentItem();
+    mNamedColorList->setCurrentItem( item < 0 ? 0 : item );
+    slotColorTextSelected( mNamedColorList->currentText() );
+  }
+  else
+  {
+    slotColorCellSelected(0); // FIXME: We need to save the current value!!
+  }
+}
 
 
 void
@@ -593,7 +624,16 @@ KPaletteTable::setPalette( const QString &_paletteName )
   else if (paletteName == i18n_recentColors)
      paletteName = recentColors;
 
-  if (!mPalette || (mPalette->name() != paletteName))
+
+  //
+  // 2000-02-12 Espen Sand
+  // The palette mode "i18n_namedColors" does not use the KPalette class. 
+  // In fact, 'mPalette' and 'cells' are 0 when in this mode. The reason 
+  // for this is maninly that KPalette reads from and writes to files using 
+  // "locate()". The colors used in "i18n_namedColors" mode comes from the 
+  // X11 diretory and is not writable. I dont think this fit in KPalette.
+  //
+  if( mPalette == 0 || mPalette->name() != paletteName )
   {
     if( paletteName == i18n_namedColors )
     {
@@ -630,9 +670,9 @@ KPaletteTable::setPalette( const QString &_paletteName )
       sv->updateScrollBars();
     }
   }
-
-
 }
+
+
 
 void 
 KPaletteTable::slotColorCellSelected( int col )
@@ -663,8 +703,12 @@ KPaletteTable::addToCustomColors( const QColor &color)
 void 
 KPaletteTable::addToRecentColors( const QColor &color)
 {
+  //
+  // 2000-02-12 Espen Sand.
+  // The 'mPalette' is always 0 when current mode is i18n_namedColors
+  //
   bool recentIsSelected = false;
-  if (mPalette->name() == recentColors)
+  if ( mPalette != 0 && mPalette->name() == recentColors)
   {
      delete mPalette;
      mPalette = 0;
@@ -680,6 +724,8 @@ KPaletteTable::addToRecentColors( const QColor &color)
   if (recentIsSelected)
      setPalette(i18n_recentColors);
 }
+
+
 
 KColorDialog::KColorDialog( QWidget *parent, const char *name, bool modal )
   :KDialogBase( parent, name, modal, i18n("Select Color"), Help|Ok|Cancel,
