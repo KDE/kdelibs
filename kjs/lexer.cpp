@@ -101,6 +101,7 @@ void Lexer::setCode(const UChar *c, unsigned int len)
   pos = 0;
   code = c;
   length = len;
+  skipLF = false;
 #ifndef KJS_PURE_ECMA
   bol = true;
 #endif
@@ -137,6 +138,7 @@ int Lexer::lex()
   pos8 = pos16 = 0;
   done = false;
   terminator = false;
+  skipLF = false;
 
   // did we push a token on the stack previously ?
   // (after an automatic semicolon insertion)
@@ -147,6 +149,13 @@ int Lexer::lex()
   }
 
   while (!done) {
+    if (skipLF && current != '\n') // found \r but not \n afterwards
+        skipLF = false;
+    if (skipLF) // found \r\n, eat \n and move on
+    {
+        skipLF = false;
+        shift(1);
+    }
     switch (state) {
     case Start:
       if (isWhiteSpace()) {
@@ -175,8 +184,6 @@ int Lexer::lex()
 	  token = ';';
 	  setDone(Other);
 	}
-      } else if (isIgnored()) {
-          break;
       } else if (current == '"' || current == '\'') {
 	state = InString;
 	stringType = current;
@@ -219,8 +226,6 @@ int Lexer::lex()
 	setDone(String);
       } else if (current == 0 || isLineTerminator()) {
 	setDone(Bad);
-      } else if (isIgnored()) {
-          break;
       } else if (current == '\\') {
 	state = InEscapeSequence;
       } else {
@@ -249,9 +254,7 @@ int Lexer::lex()
 	state = InHexEscape;
       else if (current == 'u')
 	state = InUnicodeEscape;
-      else if (isIgnored()) {
-          break;
-      } else {
+      else {
 	record16(singleEscape(current));
 	state = InString;
       }
@@ -499,14 +502,13 @@ bool Lexer::isWhiteSpace() const
 	  current == 0x0b || current == 0x0c);
 }
 
-bool Lexer::isIgnored() const
+bool Lexer::isLineTerminator()
 {
-  return (current == '\r');
-}
-
-bool Lexer::isLineTerminator() const
-{
-  return (current == '\n');
+  bool cr = (current == '\r');
+  bool lf = (current == '\n');
+  if (cr)
+      skipLF = true;
+  return cr || lf;
 }
 
 bool Lexer::isIdentLetter(unsigned short c)

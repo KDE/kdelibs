@@ -81,6 +81,7 @@ namespace KJS {
     bool restrKeyword;
     // encountered delimiter like "'" and "}" on last run
     bool delimited;
+    bool skipLF;
     int stackToken;
 
     State state;
@@ -90,8 +91,7 @@ namespace KJS {
     int lookupKeyword(const char *);
 
     bool isWhiteSpace() const;
-    bool isLineTerminator() const;
-    bool isIgnored() const;
+    bool isLineTerminator();
     bool isHexDigit(unsigned short c) const;
     bool isOctalDigit(unsigned short c) const;
 
