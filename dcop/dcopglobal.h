@@ -1,17 +1,17 @@
 /*
    Copyright (c) 1999 Preston Brown <pbrown@kde.org>
    Copyright (c) 1999 Matthias Ettrich <ettrich@kde.org>
- 
+
    Permission is hereby granted, free of charge, to any person obtaining a copy
    of this software and associated documentation files (the "Software"), to deal
    in the Software without restriction, including without limitation the rights
    to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
    copies of the Software, and to permit persons to whom the Software is
    furnished to do so, subject to the following conditions:
- 
+
    The above copyright notice and this permission notice shall be included in
    all copies or substantial portions of the Software.
- 
+
    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL THE
@@ -36,6 +36,10 @@
 #define DCOPReplyDelayed 6
 
 /**
+ * DCOP Protocol description
+ * ================
+ *
+ *
  * A DCOPSend message does not expect any reply.
  * data: << fromId << toId << objId << fun << dataSize + data[dataSize]
  *
@@ -47,15 +51,22 @@
  * data: << replyType << replyData
  *
  * DCOPReplyFailed indicates failure of a DCOPCall message
- * data: 
+ * data:
  *
- * DCOPReplyWait indicates that a DCOPCall message is succesfully 
+ * DCOPReplyWait indicates that a DCOPCall message is succesfully
  * being processed but that response will come later.
  * data: << transactionId
- * 
+ *
  * DCOPReplyDelayed is the successfull reply to a DCOPCall message
  * after a DCOPReplyWait message.
  * data: << fromId << toId << transactionId << replyType << replyData
+ *
+ * All c-strings (fromId, toId, objId and fun), are marshalled with
+ * their respective  length as 32 bit unsigned integer first:
+ * data: << length << string[length]
+ * Note: This happens automatically when using QCString on a
+ * QDataStream.
+ *
  */
 
 int DCOPAuthCount = 1;
