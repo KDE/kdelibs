@@ -1,7 +1,7 @@
 INCLUDES=$(all_includes) $(SSL_INCLUDES)
 
 lib_LTLIBRARIES = libkssl.la
-KSSLVERSION=	2.0.0
+KSSLVERSION=	2.2.0
 KSSLPATCH=	0
 METASOURCES= AUTO
 
@@ -34,8 +34,7 @@ libkssl_la_SOURCES	= \
 			kopenssl.cc		  \
 			ksslx509map.cc
 
-# libkssl_la_LDFLAGS = $(SSL_LDFLAGS) $(all_libraries) -version-info 2:0 -no-undefined
-libkssl_la_LDFLAGS = $(all_libraries) -version-info 2:0 -no-undefined
+libkssl_la_LDFLAGS = $(all_libraries) -version-info 2:2 -no-undefined
 libkssl_la_LIBADD = $(LIB_KDEUI) 
 libkssl_la_DEPENDENCIES = $(LIB_KDEUI)
 
