@@ -478,12 +478,17 @@ KCmdLineArgs::parseAllArgs()
             usage(option+5);
          }
          else if ( (strcmp(option, "version") == 0) ||
-                   (strcmp(option, "V") == 0))
+                   (strcmp(option, "v") == 0))
          {
             printQ( QString("Qt: %1\n").arg(qVersion()));
             printQ( QString("KDE: %1\n").arg(VERSION));
             printQ( QString("%1: %2\n").
 			arg(about->appName()).arg(about->version()));
+            exit(0);
+         } else if ( (strcmp(option, "license") == 0) )
+         {
+            printQ( about->license() );
+            printQ( "\n" );
             exit(0);
          } else if ( strcmp( option, "author") == 0 ) {
              enable_i18n();
@@ -499,7 +504,7 @@ KCmdLineArgs::parseAllArgs()
 		 printQ( QString(about->appName()) + " " + i18n("was written by somebody who wants to remain anonymous.") );
 	     }
 	     exit(0);
-         }else {
+         } else {
            if ((option[0] == 'n') && (option[1] == 'o'))
            {
               option += 2;
@@ -680,7 +685,8 @@ KCmdLineArgs::usage(const char *id)
 
    printQ(optionFormatString.arg("--help-all",-25).arg(i18n("Show all options")));
    printQ(optionFormatString.arg("--author",-25).arg(i18n("Show author information")));
-   printQ(optionFormatString.arg("-V, --version",-25).arg(i18n("Show version information")));
+   printQ(optionFormatString.arg("-v, --version",-25).arg(i18n("Show version information")));
+   printQ(optionFormatString.arg("--license",-25).arg(i18n("Show license information")));
    printQ(optionFormatString.arg("--", -25).arg(i18n("End of options")));
 
    args = argsList->first(); // Sets current to 1st.
@@ -945,7 +951,7 @@ QCStringList
 KCmdLineArgs::getOptionList(const char *_opt)
 {
    QCStringList result;
-   if (!parsedOptionList) 
+   if (!parsedOptionList)
       return result;
 
    while(true)

@@ -170,8 +170,16 @@ KAboutData::license() const
 {
   if( mLicenseKey != 0 )
   {
-    // TODO put standard license texts in some files under $KDEDIR
-    return( QString("Key based license text not yet implemented." ) );
+      QString l;
+      switch ( mLicenseKey ) {
+      case License_GPL:  l = "GPL"; break;
+      case License_LGPL:  l = "LGPL"; break;
+      case License_BSD:  l = "BSD"; break;
+      case License_Artistic:  l = "Artistic"; break;
+      case License_QPL:  l = "QPL"; break;
+      default: l = "Please check the sources"; break;
+      }
+      return i18n("This program is distributed under the terms of the %1.").arg( l );
   }
   else
   {
