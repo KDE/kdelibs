@@ -153,6 +153,9 @@ bool KSimpleConfig::deleteGroup( const char* pGroup, bool bDeep )
 		  // dictionary is set to autoDelete, the items will be deleted,
 		  // too
 		  data()->aGroupDict.remove( pGroup );
+		  return true;
+	// no such group
+	return false;
 }
 
 /** Write back the configuration data.
