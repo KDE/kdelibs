@@ -16,6 +16,7 @@
     the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
     Boston, MA 02111-1307, USA.
 */
+
 #ifndef KURL_H
 #define KURL_H
 
@@ -248,6 +249,7 @@ public:
      * then exact this string is going to be returned.
      */
     QString parentURL();
+
     /**
      * This call returnes the other part of the URL, the part that is stripped by @ref #parentURL.
      * It returns always the right most subprotocol. If there is no subprotocol, the call
@@ -256,6 +258,7 @@ public:
      * would return rpm:/doc/index.html#section.
      */
     QString childURL();
+
     /**
      * This function behaves like @ref #childURL, but if there is no subprotocol,
      * this function returns the same @ref #url returns instead of an empty string.
@@ -391,7 +394,7 @@ protected:
     QString host_part;
     QString path_part;
     QString path_part_decoded;
-	 QString search_part;
+    QString search_part;
     QString ref_part;
     // This variable is only valid after calling 'directory'.
     QString dir_part;
@@ -402,8 +405,4 @@ private:
     void detach();
 };
 
-
-
 #endif
-
-
