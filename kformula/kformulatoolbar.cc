@@ -12,7 +12,7 @@
 #include "pics/brackets.xpm"
 #include "pics/abs.xpm"
 
-KFormulaToolBar::KFormulaToolBar(QWidget *parent=0L, const char *name=0L, int _item_size = -1)
+KFormulaToolBar::KFormulaToolBar(QWidget *parent, const char *name, int _item_size)
   : KToolBar(parent, name, _item_size)
 {
   insertButton(QPixmap((const char **)index2), POWER, true, "Power");
