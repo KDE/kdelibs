@@ -67,7 +67,7 @@ class KABC_EXPORT NameSortMode : public SortMode
 
       @param type The name type.
      */
-    NameSortMode( NameType type );
+    NameSortMode( NameType type, bool ascending = true );
 
     /**
       Returns whether the first contact is 'smaller' then the second.
@@ -76,6 +76,7 @@ class KABC_EXPORT NameSortMode : public SortMode
 
   private:
     NameType mNameType;
+    bool mAscendingOrder;
 
     class NameSortModePrivate;
     NameSortModePrivate *d;
@@ -91,7 +92,7 @@ class KABC_EXPORT FieldSortMode : public SortMode
 
       @param field The field.
      */
-    FieldSortMode( KABC::Field *field );
+    FieldSortMode( KABC::Field *field, bool ascending = true );
 
     /**
       Returns whether the first contact is 'smaller' then the second.
@@ -100,6 +101,7 @@ class KABC_EXPORT FieldSortMode : public SortMode
 
   private:
     KABC::Field *mField;
+    bool mAscendingOrder;
 
     class FieldSortModePrivate;
     FieldSortModePrivate *d;

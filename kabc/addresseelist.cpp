@@ -230,7 +230,7 @@ void AddresseeList::sortByField( Field *field )
   if ( count() == 0 )
     return;
 
-  KABC::FieldSortMode *mode = new KABC::FieldSortMode( sActiveField );
+  KABC::FieldSortMode *mode = new KABC::FieldSortMode( sActiveField, !mReverseSorting );
 
   KABC::Addressee::setSortMode( mode );
   qHeapSort( *this );

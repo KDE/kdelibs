@@ -25,36 +25,43 @@
 using namespace KABC;
 
 NameSortMode::NameSortMode()
- : mNameType( FormattedName ), d( 0 )
+ : mNameType( FormattedName ), mAscendingOrder( true ), d( 0 )
 {
   mNameType = FormattedName;
 }
 
-NameSortMode::NameSortMode( NameType type )
-  : mNameType( type ), d( 0 )
+NameSortMode::NameSortMode( NameType type, bool ascending )
+  : mNameType( type ), mAscendingOrder( ascending ), d( 0 )
 {
 }
 
 bool NameSortMode::lesser( const KABC::Addressee &first, const KABC::Addressee &second ) const
 {
+  bool lesser = false;
+
   switch ( mNameType ) {
     case FormattedName:
-      return ( QString::localeAwareCompare( first.formattedName(), second.formattedName() ) < 0 );
+      lesser = QString::localeAwareCompare( first.formattedName(), second.formattedName() ) < 0;
       break;
     case FamilyName:
-      return ( QString::localeAwareCompare( first.familyName(), second.familyName() ) < 0 );
+      lesser = QString::localeAwareCompare( first.familyName(), second.familyName() ) < 0;
       break;
     case GivenName:
-      return ( QString::localeAwareCompare( first.givenName(), second.givenName() ) < 0 );
+      lesser = QString::localeAwareCompare( first.givenName(), second.givenName() ) < 0;
       break;
     default:
-      return false;
+      lesser = false;
       break;
   }
+
+  if ( !mAscendingOrder )
+    lesser = !lesser;
+
+  return lesser;
 }
 
-FieldSortMode::FieldSortMode( KABC::Field *field )
-  : mField( field ), d( 0 )
+FieldSortMode::FieldSortMode( KABC::Field *field, bool ascending )
+  : mField( field ), mAscendingOrder( ascending ), d( 0 )
 {
 }
 
@@ -62,7 +69,11 @@ bool FieldSortMode::lesser( const KABC::Addressee &first, const KABC::Addressee 
 {
   if ( !mField )
     return false;
-  else
-    return ( QString::localeAwareCompare( mField->value( first ), mField->value( second ) ) < 0 );
-}
+  else {
+    bool lesser = QString::localeAwareCompare( mField->value( first ), mField->value( second ) ) < 0;
+    if ( !mAscendingOrder )
+      lesser = !lesser;
 
+    return lesser;
+  }
+}
