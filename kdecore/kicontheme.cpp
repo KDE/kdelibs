@@ -381,7 +381,7 @@ QString KIconTheme::current()
     if (_theme->isEmpty())
     {
         if (QPixmap::defaultDepth() > 8)
-            *_theme = QString::fromLatin1("hicolor");
+            *_theme = defaultThemeName();
         else
             *_theme = QString::fromLatin1("locolor");
     }
@@ -425,6 +425,12 @@ void KIconTheme::reconfigure()
     _theme=0L;
     delete _theme_list;
     _theme_list=0L;
+}
+
+// static
+QString KIconTheme::defaultThemeName()
+{
+    return QString::fromLatin1("hicolor");
 }
 
 /*** KIconThemeDir ***/

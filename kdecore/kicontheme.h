@@ -211,6 +211,11 @@ public:
 
     static void reconfigure();
 
+    /**
+     * Returns the default icon theme.
+     */
+    static QString defaultThemeName();
+
 private:
     int mDefSize[8];
     QValueList<int> mSizes[8];
