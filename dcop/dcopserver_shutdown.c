@@ -82,6 +82,7 @@ static void getDCOPFile(char *dcop_file, char *dcop_file_old, int max_length)
   n = max_length;
   home_dir = getenv("HOME");
   strncpy(dcop_file, home_dir, n);
+  dcop_file[ n - 1 ] = '\0';
   n -= strlen(home_dir);
   
   strncat(dcop_file, "/.DCOPserver_", n);
