@@ -292,7 +292,7 @@ DrMain* KMManager::loadDriver(KMPrinter *p, bool config)
 
 bool KMManager::savePrinterDriver(KMPrinter*,DrMain*)
 {
-	return false;
+	return notImplemented();
 }
 
 bool KMManager::uncompressFile(const QString& filename, QString& destname)
