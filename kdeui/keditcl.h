@@ -283,8 +283,9 @@ public:
 
     QString selectWordUnderCursor();
 
+    /// @since 3.3
     QPopupMenu *createPopupMenu( const QPoint& pos );
-    
+
     void setAutoUpdate(bool b);
 
 signals:
