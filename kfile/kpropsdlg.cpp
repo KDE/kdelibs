@@ -65,6 +65,7 @@ extern "C" {
 #include <kdirsize.h>
 #include <kdirwatch.h>
 #include <kdirnotify_stub.h>
+#include <kdiskfreesp.h>
 #include <kdebug.h>
 #include <kdesktopfile.h>
 #include <kicondialog.h>
@@ -563,6 +564,7 @@ public:
   KDirSize * dirSizeJob;
   QFrame *m_frame;
   bool bMultiple;
+  QLabel *m_freeSpaceLabel;
 };
 
 KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
@@ -801,6 +803,21 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
       m_sizeStopButton->setEnabled( false );
   }
 
+  if ( isLocal )
+  {
+      QString mountPoint = KIO::findPathMountPoint( properties->item()->url().path() );
+
+      l = new QLabel(i18n("Free space on %1:").arg(mountPoint), d->m_frame );
+      grid->addWidget(l, curRow, 0);
+
+      d->m_freeSpaceLabel = new QLabel( d->m_frame );
+      grid->addWidget( d->m_freeSpaceLabel, curRow++, 2 );
+
+      KDiskFreeSp * job = new KDiskFreeSp;
+      job->readDF( mountPoint );
+      connect( job, SIGNAL( foundMountPoint( const QString &, unsigned long, unsigned long, unsigned long ) ),
+               this, SLOT( slotFoundMountPoint( const QString &, unsigned long, unsigned long, unsigned long ) ) );
+  }
 
   if (!d->bMultiple && item->isLink()) {
     l = new QLabel(i18n("Points to:"), d->m_frame );
@@ -889,6 +906,14 @@ void KFilePropsPlugin::determineRelativePath( const QString & path )
       // for Application desktop files, no problem : we can editing a .desktop file anywhere...
     } else
         while ( m_sRelativePath.at(0) == '/' ) m_sRelativePath.remove( 0, 1 );
+}
+
+void KFilePropsPlugin::slotFoundMountPoint( const QString &, unsigned long kBSize, unsigned long kBUsed, unsigned long kBAvail )
+{
+    d->m_freeSpaceLabel->setText( i18n("Available space out of total partition size (percent used)", "%1/%2 (%3% used)")
+                               .arg(KIO::convertSize(kBAvail*1024))
+                               .arg(KIO::convertSize(kBSize*1024))
+                               .arg( (int)(100.0 * kBUsed / kBSize) ) );
 }
 
 void KFilePropsPlugin::slotDirSizeFinished( KIO::Job * job )

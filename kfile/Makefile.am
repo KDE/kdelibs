@@ -42,7 +42,7 @@ libkfile_la_SOURCES = kfilebookmark.cpp kfiledialogconf.cpp \
 	kfiledetailview.cpp kcombiview.cpp kurlrequester.cpp \
 	kfilepreview.cpp kurlcombobox.cpp kurlrequesterdlg.cpp \
 	kopenwith.cpp kpropsdlg.cpp kicondialog.cpp kdirsize.cpp \
-	krecentdirs.cpp
+	krecentdirs.cpp kdiskfreesp.cpp
 
 EXTRA_DIST = NOTES
 
