@@ -40,10 +40,10 @@ static KIDNA_utf8ace_to_utf8_t KIDNA_utf8ace_to_utf8; // = 0
 static void KIDNA_load_lib()
 {
    KIDNA_lib_load_failed = true; // Unless proven otherwise
-   KIDNA_lib = lt_dlopen("/usr/local/lib/libidn.so");
+   KIDNA_lib = lt_dlopen("/usr/local/lib/libidn.la");
    if (!KIDNA_lib) 
    {
-      KIDNA_lib = lt_dlopen("/usr/lib/libidn.so");
+      KIDNA_lib = lt_dlopen("/usr/lib/libidn.la");
    }
    
    if (!KIDNA_lib) 
