@@ -130,7 +130,7 @@ void RenderInline::splitInlines(RenderBlock* fromBlock, RenderBlock* toBlock,
     while (o) {
         RenderObject* tmp = o;
         o = tmp->nextSibling();
-        clone->appendChildNode(removeChildNode(tmp));
+        clone->addChildToFlow(removeChildNode(tmp), 0);
         tmp->setNeedsLayoutAndMinMaxRecalc();
     }
 
@@ -148,7 +148,7 @@ void RenderInline::splitInlines(RenderBlock* fromBlock, RenderBlock* toBlock,
         clone = cloneInline(curr);
 
         // Insert our child clone as the first child.
-        clone->appendChildNode(cloneChild);
+        clone->addChildToFlow(cloneChild, 0);
 
         // Hook the clone up as a continuation of |curr|.
         RenderFlow* oldCont = curr->continuation();

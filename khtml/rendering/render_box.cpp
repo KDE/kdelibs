@@ -32,6 +32,7 @@
 #include "rendering/render_replaced.h"
 #include "rendering/render_canvas.h"
 #include "rendering/render_table.h"
+#include "rendering/render_inline.h"
 #include "rendering/render_block.h"
 #include "render_layer.h"
 #include "misc/htmlhashes.h"
@@ -69,8 +70,53 @@ RenderBox::RenderBox(DOM::NodeImpl* node)
     m_layer = 0;
 }
 
+RenderBlock* RenderBox::createAnonymousBlock()
+{
+    RenderStyle *newStyle = new RenderStyle();
+    newStyle->inheritFrom(style());
+    newStyle->setDisplay(BLOCK);
+
+    RenderBlock *newBox = new (renderArena()) RenderBlock(document() /* anonymous*/);
+    newBox->setStyle(newStyle);
+    return newBox;
+}
+
+void RenderBox::restructureParentFlow() {
+    if (!parent() || parent()->childrenInline() == isInline())
+        return;
+    // We have gone from not affecting the inline status of the parent flow to suddenly
+    // having an impact.  See if there is a mismatch between the parent flow's
+    // childrenInline() state and our state.
+    if (!isInline()) {
+        if (parent()->isRenderInline()) {
+            // We have to split the parent flow.
+            RenderInline* parentInline = static_cast<RenderInline*>(parent());
+            RenderBlock* newBox = parentInline->createAnonymousBlock();
+            
+            RenderFlow* oldContinuation = parent()->continuation();
+            parentInline->setContinuation(newBox);
+
+            RenderObject* beforeChild = nextSibling();
+            parent()->removeChildNode(this);
+            parentInline->splitFlow(beforeChild, newBox, this, oldContinuation);
+        }
+        else if (parent()->isRenderBlock())
+            static_cast<RenderBlock*>(parent())->makeChildrenNonInline();
+    }
+    else {
+        // An anonymous block must be made to wrap this inline.
+        RenderBlock* box = createAnonymousBlock();
+        parent()->insertChildNode(box, this);
+        box->appendChildNode(parent()->removeChildNode(this));
+    }
+}
+ 
 void RenderBox::setStyle(RenderStyle *_style)
 {
+    bool affectsParent = style() && isFloatingOrPositioned() &&
+         (!_style->isFloating() && _style->position() != ABSOLUTE && _style->position() != FIXED) &&
+         parent() && (parent()->isBlockFlow() || parent()->isInlineFlow());
+    
     RenderObject::setStyle(_style);
 
     // The root always paints its background/border.
@@ -132,6 +178,8 @@ void RenderBox::setStyle(RenderStyle *_style)
     // ### outlineSize() and outlineOffset() not merged yet
     if (style()->outlineWidth() > 0 && style()->outlineWidth() > maximalOutlineSize(PaintActionOutline))
         static_cast<RenderCanvas*>(document()->renderer())->setMaximalOutlineSize(style()->outlineWidth());
+    if (affectsParent)
+        restructureParentFlow();
 }
 
 RenderBox::~RenderBox()

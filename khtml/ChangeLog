@@ -1,3 +1,22 @@
+2004-11-09  Germain Garand  <germain@ebooksfrance.org>
+
+        fix globeandmail.com famlily of crashes (#65715)
+
+        * rendering/render_box.cpp (createAnonymousBlock): moved from RenderFlow
+        (restructureParentFlow): check soundness of parent's flow structure with regard to
+        the child's new display. Adapted from WebCore.
+        (setStyle): check parent if floats or positioned objects become in-flow
+        and thus affects flow structure.
+
+        * rendering/render_flow.cpp (createAnonymousBlock): moved.
+
+        * rendering/render_inline.cpp (splitInlines): use addChildToFlow
+        rather than appendChildNode
+
+        * rendering/render_line.cpp: display COMPACT cleanups
+
+        * rendering/render_object.cpp: ditto.
+
 2004-11-06  Allan Sandfeld Jensen <kde@carewolf.com>
 
         Implement CSS3 property box-sizing to match MacIE, Opera and Mozilla

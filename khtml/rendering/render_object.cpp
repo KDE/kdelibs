@@ -1560,8 +1560,7 @@ bool RenderObject::nodeAtPoint(NodeInfo& info, int _x, int _y, int _tx, int _ty,
         (( !isRenderBlock() ||
            !static_cast<RenderBlock*>( this )->isPointInScrollbar( _x, _y, _tx, _ty )) &&
         (overhangingContents() || inOverflowRect || isInline() || isRoot() || isCanvas() ||
-        isTableRow() || isTableSection() || inside || mouseInside() ||
-        (childrenInline() && firstChild() && firstChild()->style()->display() == COMPACT )))) {
+        isTableRow() || isTableSection() || inside || mouseInside() ))) {
         if ( hitTestAction == HitTestChildrenOnly )
             inside = false;
         if ( style()->hidesOverflow() && layer() )

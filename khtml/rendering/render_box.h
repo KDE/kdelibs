@@ -32,6 +32,8 @@ namespace khtml {
 enum WidthType { Width, MinWidth, MaxWidth };
 enum HeightType { Height, MinHeight, MaxHeight };
 
+class RenderBlock;
+
 class RenderBox : public RenderContainer
 {
 
@@ -110,6 +112,7 @@ public:
     virtual void caretPos(int offset, int flags, int &_x, int &_y, int &width, int &height);
 
     void calcHorizontalMargins(const Length& ml, const Length& mr, int cw);
+    RenderBlock* createAnonymousBlock();
 
 private:
     int calcBoxWidth(int w) const;
@@ -141,6 +144,8 @@ protected:
 
     QRect getOverflowClipRect(int tx, int ty);
     QRect getClipRect(int tx, int ty);
+
+    void restructureParentFlow();
 
 
     // the actual height of the contents + borders + padding
