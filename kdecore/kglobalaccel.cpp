@@ -225,7 +225,7 @@ bool KGlobalAccel::insertItem(  const QString& descr, const QString& action, uin
 bool KGlobalAccel::insertItem( const QString& descr, const QString& action,
 					   const QString& keyCode, bool configurable )
 {
-	uint iKeyCode = stringToKey( keyCode );
+	uint iKeyCode = KAccel::stringToKey( keyCode );
 	return insertItem(descr, action, iKeyCode, configurable);
 }
 
@@ -279,7 +279,7 @@ void KGlobalAccel::readSettings()
 		if ( s.isNull() )
 			pE->aConfigKeyCode = pE->aDefaultKeyCode;
 		else
-			pE->aConfigKeyCode = stringToKey( s );
+			pE->aConfigKeyCode = KAccel::stringToKey( s );
 		
 		pE->aCurrentKeyCode = pE->aConfigKeyCode;
 		
@@ -476,7 +476,7 @@ void KGlobalAccel::writeSettings()
 	while ( aKeyIt.current() ) {
 	  if ( aKeyIt.current()->bConfigurable ){
 		  pConfig->writeEntry( aKeyIt.currentKey(),
-				       QString(keyToString( aKeyIt.current()->aCurrentKeyCode)),
+				       KAccel::keyToString( aKeyIt.current()->aCurrentKeyCode),
 				       true, true);
 	  }
 		++aKeyIt;
@@ -549,7 +549,7 @@ uint keyToXSym( uint keyCode )
 	int nb_toks = 0;
 
 	uint keysym = 0;
-	QString s = keyToString( keyCode);
+	QString s = KAccel::keyToString( keyCode);
 	
 	if ( s.isEmpty() ) return keysym;
 

@@ -35,7 +35,7 @@ KStdAccel::~KStdAccel()
 uint KStdAccel::readKey(KAccel::StdAccel accel, uint defaultKey) const
 {
   QString s = config->readEntry(KAccel::stdAction(accel));
-  int v = stringToKey(s);
+  int v = KAccel::stringToKey(s);
   return v?v:defaultKey;
 
 }

@@ -528,7 +528,7 @@ void KKeyChooser::readGlobalKeys()
   QMap<QString, QString>::Iterator gIt(tmpMap.begin());
   for (; gIt != tmpMap.end(); ++gIt) {
     keyCode = new int;
-	  *keyCode = stringToKey( *gIt );
+	  *keyCode = KAccel::stringToKey( *gIt );
 	  globalDict->insert( gIt.key(), keyCode);
   }
   
@@ -556,7 +556,7 @@ void KKeyChooser::readStdKeys()
   QMap<QString, QString>::Iterator sIt(tmpMap.begin());
   for (; sIt != tmpMap.end(); ++sIt) {
     keyCode = new int;
-    *keyCode = stringToKey( *sIt );
+    *keyCode = KAccel::stringToKey( *sIt );
     stdDict->insert( sIt.key(), keyCode);
   }
   
@@ -600,7 +600,7 @@ void KKeyChooser::toChange( int index )
 		if ( kSCode == Key_Alt ) cAlt->setChecked(FALSE);
 		else cAlt->setChecked( kCode & ALT );
 		
-		QString str = keyToString( kSCode );
+		QString str = KAccel::keyToString( kSCode );
 		bChange->setText(str);
 		
 	} else {
@@ -618,7 +618,7 @@ void KKeyChooser::toChange( int index )
 		if ( kSCode == Key_Alt ) cAlt->setChecked(FALSE);
 		else cAlt->setChecked( kCode & ALT );
 		
-		QString str = keyToString( kSCode );
+		QString str = KAccel::keyToString( kSCode );
 		bChange->setText(str); //eKey->setText(str);
 		//bChange->setEnabled( TRUE ); //bDefault->setEnabled( TRUE );
 		
@@ -817,7 +817,7 @@ const QString KKeyChooser::item( uint keyCode, const QString& entryKey )
 	QString str = entryKey;
 	str = str.leftJustify(MAX_FCTN_LENGTH, ' ', TRUE);
 	str += " : ";
-	str += keyToString(keyCode, true);
+	str += KAccel::keyToString(keyCode, true);
 	str = str.leftJustify( MAX_FCTN_LENGTH + 3 +
 						   MAX_KEY_LENGTH+MAX_KEY_MODIFIER_LENGTH, ' ', TRUE );
 	return str;
@@ -932,7 +932,7 @@ void KKeyChooser::keyPressEvent( QKeyEvent *e )
 	/* check the given key :
 	   if it is a non existent key (=0) : keep the old value and say
 	   what happened. */
-	if ( keyToString(kCode).isNull() ) {
+	if ( KAccel::keyToString(kCode).isNull() ) {
 		lInfo->setText( i18n("Undefined key") );
 		return;
 	}
@@ -990,7 +990,7 @@ void KKeyChooser::editEnd()
 {
 	debug("Called editEnd() which relies on eKey widget");
 	
-	//uint kCode = stringToKey(eKey->text());
+	//uint kCode = KAccel::stringToKey(eKey->text());
 	uint kCode = 0;
 	if ( kCode==0 || (kCode & (SHIFT | CTRL | ALT)) ) {
 		lInfo->setText( i18n("Incorrect key") );
@@ -1015,7 +1015,7 @@ bool KKeyChooser::isKeyPresent()
 			QString actionName( gIt.currentKey() );
 			actionName.stripWhiteSpace();
 
-			QString keyName = keyToString( *gIt.current() );
+			QString keyName = KAccel::keyToString( *gIt.current() );
 			
 			QString str =
 			    i18n("The %1 key combination has already been "
@@ -1043,7 +1043,7 @@ bool KKeyChooser::isKeyPresent()
 			QString actionName( sIt.currentKey() );
 			actionName.stripWhiteSpace();
 
-			QString keyName = keyToString( *sIt.current() );
+			QString keyName = KAccel::keyToString( *sIt.current() );
 			
 			QString str = 
 			    i18n("The %1 key combination has already "
@@ -1069,7 +1069,7 @@ bool KKeyChooser::isKeyPresent()
 			QString actionName( aIt->currentKey() );
 			actionName.stripWhiteSpace();
 
-			QString keyName = keyToString( aIt->current()->aConfigKeyCode );
+			QString keyName = KAccel::keyToString( aIt->current()->aConfigKeyCode );
 			
 			QString str = 
 			    i18n("The %1 key combination has already "

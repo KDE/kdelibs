@@ -61,7 +61,7 @@ void KAccel::connectItem( const QString& action,
 			  const QObject* receiver, const char *member,
 			  bool activate )
 {
-  if (!action)
+  if (action.isNull())
     return;
     KKeyEntry *pEntry = aKeyDict[ action ];
 
@@ -76,8 +76,12 @@ void KAccel::connectItem( const QString& action,
 	pEntry->aAccelId = aAvailableId;
 	aAvailableId++;
 	
-	pAccel->insertItem( pEntry->aCurrentKeyCode, pEntry->aAccelId );
-	pAccel->connectItem( pEntry->aAccelId, receiver, member );
+        // Qt does strange things if a QAccel contains a accelerator
+        // with key code 0, so leave it out here.
+        if (pEntry->aCurrentKeyCode) {
+            pAccel->insertItem( pEntry->aCurrentKeyCode, pEntry->aAccelId );
+            pAccel->connectItem( pEntry->aAccelId, receiver, member );
+        }
 	
 	if ( !activate )
 	    setItemEnabled( action, false );
@@ -85,11 +89,13 @@ void KAccel::connectItem( const QString& action,
 
 void KAccel::connectItem( StdAccel accel,
 			  const QObject* receiver, const char *member,
-			  bool activate ){
-  if (!stdAction(accel).isNull() && !aKeyDict[ stdAction(accel) ]){
+			  bool activate )
+{
+  QString action(stdAction(accel));
+  if (!action.isNull() && !aKeyDict[ action ]){
     insertStdItem(accel);
   }
-  connectItem(stdAction(accel), receiver, member, activate);
+  connectItem(action, receiver, member, activate);
 }
 
 uint KAccel::count() const
@@ -145,7 +151,7 @@ QString KAccel::findKey( int key ) const
 		return aKeyIt.currentKey();
 	    ++aKeyIt;
 	}
-	return 0;	
+	return QString::null;
 }
 
 bool KAccel::insertItem( const QString& descr, const QString& action, uint keyCode,
@@ -214,13 +220,13 @@ void KAccel::changeMenuAccel ( QPopupMenu *menu, int id,
 	const QString& action )
 {
 	QString s = menu->text( id );
-	if ( !s ) return;
-	if (!action) return;
+	if ( s.isNull() ) return;
+	if (action.isNull()) return;
 	
 	int i = s.find('\t');
 	
 	QString k = keyToString( currentKey( action), true );
-	if( !k ) return;
+	if( k.isNull() ) return;
 	
 	if ( i >= 0 )
 		s.replace( i+1, s.length()-i, k );
@@ -647,8 +653,10 @@ bool KAccel::configurable( const char * action ) const
     }
 
     pEntry->aCurrentKeyCode = keyCode;
-    pAccel->insertItem( pEntry->aCurrentKeyCode, pEntry->aAccelId );
-    pAccel->connectItem( pEntry->aAccelId, pEntry->receiver, pEntry->member );
+    if (pEntry->aCurrentKeyCode) {
+      pAccel->insertItem( pEntry->aCurrentKeyCode, pEntry->aAccelId );
+      pAccel->connectItem( pEntry->aAccelId, pEntry->receiver, pEntry->member );
+    }
     return true;
   } else
     return false;
@@ -672,7 +680,7 @@ void KAccel::removeDeletedMenu(QPopupMenu *menu)
 
 
 /*****************************************************************************/
-QString keyToString( uint keyCode, bool i18_n )
+QString KAccel::keyToString( uint keyCode, bool i18_n )
 {
 	QString res = "";
 	
@@ -705,13 +713,16 @@ QString keyToString( uint keyCode, bool i18_n )
 	return QString::null;
 }
 
-uint stringToKey(const QString& key)
+uint KAccel::stringToKey(const QString& key)
 {
+        // Empty string is interpreted as code zero, which is
+        // consistent with the behaviour of other KAccel methods
+
 	if ( key.isNull() ) {
-		kdebug(KDEBUG_WARN, 125, "stringToKey::Null key");
+//		kdebug(KDEBUG_WARN, 125, "stringToKey::Null key");
 		return 0;
 	} else if ( key.isEmpty() ) {
-		kdebug(KDEBUG_WARN, 125, "stringToKey::Empty key");
+//		kdebug(KDEBUG_WARN, 125, "stringToKey::Empty key");
 		return 0;
 	}
 
