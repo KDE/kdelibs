@@ -41,14 +41,14 @@ Constructor::Constructor(Object *proto, int len)
   put("length", len, DontEnum);
 }
 
-KJSO* Constructor::execute(Context *)
+KJSO* Constructor::execute(const List &)
 {
   /* TODO: call construct instead ? */
   return newUndefined();
 }
 
 // ECMA 10.1.7 (draft April 98, 10.1.6 previously)
-Activation::Activation(Function *f, List *args)
+Activation::Activation(Function *f, const List *args)
 {
   func = f;
 
@@ -79,7 +79,7 @@ Activation::~Activation()
 
 // ECMA 10.2
 Context::Context(CodeType type, Context *callingContext,
-		       Function *func, List *args, KJSO *thisV)
+		       Function *func, const List *args, KJSO *thisV)
 {
   Global *glob = KJScript::global();
   assert(glob);
@@ -158,7 +158,7 @@ void Context::popScope()
 }
 
 // ECMA 10.1.3
-void Function::processParameters(List *args)
+void Function::processParameters(const List *args)
 {
   KJSO *variable = KJScript::context()->variableObject();
 
@@ -186,21 +186,21 @@ DeclaredFunction::DeclaredFunction(ParamList *p, StatementNode *b)
   param = p;
 }
 
-KJSO* DeclaredFunction::execute(Context *)
+KJSO* DeclaredFunction::execute(const List &)
 {
  /* TODO */
   return block->evaluate();
 }
 
-KJSO* AnonymousFunction::execute(Context *)
+KJSO* AnonymousFunction::execute(const List &)
 {
  /* TODO */
   return 0L;
 }
 
-KJSO *DebugPrint::execute(Context *context)
+KJSO *DebugPrint::execute(const List &args)
 {
-  Ptr v = context->arg(0);
+  Ptr v = args[0];
   Ptr s = toString(v);
   fprintf(stderr, "---> %s\n", s->stringVal().cstring().c_str());
 

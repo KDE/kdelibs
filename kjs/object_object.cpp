@@ -23,16 +23,15 @@
 
 using namespace KJS;
 
-KJSO *ObjectObject::execute(Context *context)
+KJSO *ObjectObject::execute(const List &args)
 {
   Ptr result;
-  int numArgs = context->numArgs();
 
   List argList;
-  if (numArgs == 0) {
+  if (args.isEmpty()) {
     result = construct(argList);
   } else {
-    KJSO *arg = context->arg(0);
+    Ptr arg = args[0];
     if (arg->isA(NullType) || arg->isA(UndefinedType)) {
       argList.append(arg);
       result = construct(argList);
@@ -46,7 +45,7 @@ KJSO *ObjectObject::execute(Context *context)
 Object* ObjectObject::construct(const List &args)
 {
   // if no arguments have been passed ...
-  if (args.size() == 0)
+  if (args.isEmpty())
     return Object::create(ObjectClass);
 
   KJSO *arg = args.begin();
@@ -95,10 +94,10 @@ ObjectProtoFunc::ObjectProtoFunc(int i)
 }
 
 // ECMA 15.2.4.2 + 15.2.4.3
-KJSO *ObjectProtoFunc::execute(Context *)
+KJSO *ObjectProtoFunc::execute(const List &)
 {
   Ptr result;
-  KJSO *thisVal = KJScript::context()->thisValue();
+  KJSO *thisVal = thisValue();
 
   /* TODO: what to do with non-objects. Is this possible at all ? */
   if (!thisVal->isA(ObjectType)) {

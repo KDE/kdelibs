@@ -29,7 +29,7 @@ namespace KJS {
   public:
     NumberObject(Object *proto) : Constructor(proto, 1) { }
     KJSO *get(const UString &p);
-    KJSO* execute(Context *);
+    KJSO* execute(const List &);
     Object* construct(const List &);
   };
 

@@ -40,7 +40,7 @@ using namespace KJS;
 class GlobalFunc : public InternalFunction {
 public:
   GlobalFunc(int i) : id(i) { }
-  KJSO *execute(Context *c);
+  KJSO *execute(const List &c);
   enum { Eval, ParseInt, ParseFloat };
 private:
   int id;
@@ -93,11 +93,11 @@ Global::Global()
   put("Math", zeroRef(new Math()), DontEnum);
 }
 
-KJSO *GlobalFunc::execute(Context *c)
+KJSO *GlobalFunc::execute(const List &args)
 {
   if (id == Eval) { // eval()
     Ptr res;
-    Ptr x = c->arg(0);
+    Ptr x = args[0];
     if (x->type() != StringType)
       res = x;
     else {

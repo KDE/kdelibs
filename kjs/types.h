@@ -114,7 +114,7 @@ namespace KJS {
 
   class Activation : public KJSO {
   public:
-    Activation(Function *f, List *args);
+    Activation(Function *f, const List *args);
     virtual ~Activation();
     Type type() const { return ObjectType; }
   private:
@@ -125,7 +125,7 @@ namespace KJS {
   public:
     DeclaredFunction(ParamList *p, StatementNode *b);
     Type type() const { return DeclaredFunctionType; }
-    KJSO* execute(Context *);
+    KJSO* execute(const List &);
     CodeType codeType() const { return FunctionCode; }
   private:
     StatementNode *block;
@@ -135,7 +135,7 @@ namespace KJS {
   public:
     AnonymousFunction() { /* TODO */ }
     Type type() const { return AnonymousFunctionType; }
-    KJSO* execute(Context *);
+    KJSO* execute(const List &);
     CodeType codeType() const { return AnonymousCode; }
   };
 

@@ -28,7 +28,7 @@ namespace KJS {
   class BooleanObject : public Constructor {
   public:
     BooleanObject(Object *p) : Constructor(p, 1) { }
-    KJSO* execute(Context *);
+    KJSO* execute(const List &);
     Object* construct(const List &);
   };
 
@@ -42,7 +42,7 @@ namespace KJS {
   class BooleanProtoFunc : public InternalFunction {
   public:
     BooleanProtoFunc(int i);
-    KJSO *execute(Context *);
+    KJSO *execute(const List &);
   private:
     int id;
   };

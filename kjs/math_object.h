@@ -36,7 +36,7 @@ namespace KJS {
   class MathFunc : public InternalFunction {
   public:
     MathFunc(int i) : id(i) { }
-    KJSO *execute(Context *);
+    KJSO *execute(const List &);
   private:
     int id;
   };

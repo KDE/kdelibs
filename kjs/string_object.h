@@ -28,7 +28,7 @@ namespace KJS {
   class StringObject : public Constructor {
   public:
     StringObject(Object *proto) : Constructor(proto, 1) { }
-    KJSO* execute(Context *);
+    KJSO* execute(const List &);
     Object* construct(const List &);
   };
 
@@ -41,7 +41,7 @@ namespace KJS {
   class StringProtoFunc : public InternalFunction {
   public:
     StringProtoFunc(int i);
-    KJSO *execute(Context *);
+    KJSO *execute(const List &);
 
     enum { ToString, ValueOf, CharAt, CharCodeAt, IndexOf, LastIndexOf,
 	   Substr, Substring, FromCharCode };

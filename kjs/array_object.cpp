@@ -24,15 +24,10 @@
 using namespace KJS;
 
 // ECMA 15.6.1
-KJSO* ArrayObject::execute(Context *context)
+KJSO* ArrayObject::execute(const List &args)
 {
   // equivalent to 'new Array(....)'
-  List argList;
-  unsigned int numArgs = (unsigned int) context->numArgs();
-  for (unsigned int u = 0; u < numArgs; u++)
-    argList.append(context->arg(u));
-
-  Ptr result = construct(argList);
+  Ptr result = construct(args);
 
   return newCompletion(Normal, result);
 }
@@ -79,7 +74,7 @@ ArrayProtoFunc::ArrayProtoFunc(int i, Global *global)
 }
 
 // ECMA 15.4.4
-KJSO *ArrayProtoFunc::execute(Context *context)
+KJSO *ArrayProtoFunc::execute(const List &args)
 {
   /* TODO */
 }

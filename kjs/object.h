@@ -187,7 +187,7 @@ namespace KJS {
 
     // function call
     bool implementsCall() const;
-    KJSO *executeCall(KJSO *thisV, List *args);
+    KJSO *executeCall(KJSO *thisV, const List *args);
 
     // constructor
     void setConstructor(KJSO *c);
@@ -306,10 +306,11 @@ namespace KJS {
     int size() const;
     KJSO *at(int i) const;
     KJSO *operator[](int i) const { return at(i); }
+    static const List *empty();
   private:
     void erase(ListIterator it);
-  private:
     ListNode *hook;
+    static List *emptyList;
   };
 
   /**

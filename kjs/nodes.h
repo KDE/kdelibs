@@ -65,7 +65,7 @@ namespace KJS {
     Node();
     virtual ~Node();
     virtual KJSO *evaluate() = 0;
-    int lineNo() { return line; }
+    int lineNo() const { return line; }
     static ProgramNode *progNode() { return prog; }
     static void deleteAllNodes();
   protected:

@@ -44,8 +44,8 @@ namespace KJS {
   class Function : public KJSO {
   public:
     Function() { attr = ImplicitNone; }
-    void processParameters(List *);
-    virtual KJSO* execute(Context *) = 0;
+    void processParameters(const List *);
+    virtual KJSO* execute(const List &) = 0;
     virtual bool hasAttribute(FunctionAttribute a) const { return (attr & a); }
     virtual CodeType codeType() const = 0;
     KJSO *thisValue() const;
@@ -64,7 +64,7 @@ namespace KJS {
      * @return @ref InternalFunctionType
      */
     virtual Type type() const { return InternalFunctionType; }
-    virtual KJSO* execute(Context *) = 0;
+    virtual KJSO* execute(const List &) = 0;
     /**
      * @return @ref HostCode
      */
@@ -82,7 +82,7 @@ namespace KJS {
      * @return @ref ConstructorType
      */
     virtual Type type() const { return ConstructorType; }
-    virtual KJSO* execute(Context *);
+    virtual KJSO* execute(const List &);
     virtual Object* construct(const List &args) = 0;
   };
 
@@ -93,15 +93,13 @@ namespace KJS {
   class Context {
   public:
     Context(CodeType type = GlobalCode, Context *callingContext = 0L,
-	       Function *func = 0L, List *args = 0L, KJSO *thisV = 0L);
+	       Function *func = 0L, const List *args = 0L, KJSO *thisV = 0L);
     virtual ~Context();
     const List *pScopeChain() const { return scopeChain; }
     void pushScope(KJSO *s);
     void popScope();
     List *copyOfChain() { /* TODO */ return scopeChain; }
     KJSO *variableObject() const { return variable; }
-    KJSO *arg(int i);
-    int numArgs();
     KJSO *thisValue() const { return thisVal; }
   private:
     KJSO *thisVal;
@@ -115,7 +113,7 @@ namespace KJS {
    */
   class DebugPrint : public InternalFunction {
   public:
-    KJSO* execute(KJS::Context *);
+    KJSO* execute(const List &args);
   };
 
 }; // namespace

@@ -26,15 +26,14 @@ using namespace KJS;
 /* TODO: fromCharCode() */
 
 // ECMA 15.8.1
-KJSO* StringObject::execute(Context *context)
+KJSO* StringObject::execute(const List &args)
 {
   Ptr v, s;
-  int numArgs = context->numArgs();
 
-  if (numArgs == 0)
+  if (args.isEmpty())
     s = newString("");
   else {
-    v = context->arg(0);
+    v = args[0];
     s = toString(v);
   }
 
@@ -93,7 +92,7 @@ StringProtoFunc::StringProtoFunc(int i)
 }
 
 // ECMA 15.8.4.2 - 15.8.4.20
-KJSO *StringProtoFunc::execute(Context *context)
+KJSO *StringProtoFunc::execute(const List &args)
 {
   Ptr result;
   KJSO *thisVal = thisValue();
@@ -115,8 +114,8 @@ KJSO *StringProtoFunc::execute(Context *context)
   Ptr v = thisObj->internalValue();
   Ptr s = toString(v);
   int len = (int) s->stringVal().size();
-  Ptr a0 = context->arg(0);
-  Ptr a1 = context->arg(1);
+  Ptr a0 = args[0];
+  Ptr a1 = args[1];
 
   switch (id) {
   case ToString:

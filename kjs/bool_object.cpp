@@ -24,15 +24,14 @@
 using namespace KJS;
 
 // ECMA 15.6.1
-KJSO* BooleanObject::execute(Context *context)
+KJSO* BooleanObject::execute(const List &args)
 {
   Ptr v, b;
-  int numArgs = context->numArgs();
 
-  if (numArgs == 0)
+  if (args.isEmpty())
     b = newBoolean(false);
   else {
-    v = context->arg(0);
+    v = args[0];
     b = toBoolean(v);
   }
 
@@ -75,7 +74,7 @@ BooleanProtoFunc::BooleanProtoFunc(int i)
 }
 
 // ECMA 15.6.4.2 + 15.6.4.3
-KJSO *BooleanProtoFunc::execute(Context *)
+KJSO *BooleanProtoFunc::execute(const List &)
 {
   Ptr result;
   KJSO *thisVal = thisValue();

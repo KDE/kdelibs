@@ -32,13 +32,13 @@ KJSO *Math::get(const UString &p)
   return KJSO::get(p);
 }
 
-KJSO* MathFunc::execute(Context *context)
+KJSO* MathFunc::execute(const List &args)
 {
-  Ptr v = context->arg(0);
+  Ptr v = args[0];
   Ptr n = toNumber(v);
   double arg = n->doubleVal();
 
-  Ptr v2 = context->arg(1);
+  Ptr v2 = args[1];
   Ptr n2 = toNumber(v2);
   double arg2 = n2->doubleVal();
   double result;

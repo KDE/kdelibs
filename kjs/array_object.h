@@ -28,7 +28,7 @@ namespace KJS {
   class ArrayObject : public Constructor {
   public:
     ArrayObject(Object *p) : Constructor(p, 1) { }
-    KJSO* execute(Context *);
+    KJSO* execute(const List &);
     Object* construct(const List &);
   };
 
@@ -40,7 +40,7 @@ namespace KJS {
   class ArrayProtoFunc : public InternalFunction {
   public:
     ArrayProtoFunc(int i, Global *global);
-    KJSO *execute(Context *);
+    KJSO *execute(const List &);
   private:
     int id;
   };

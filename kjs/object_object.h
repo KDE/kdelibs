@@ -28,7 +28,7 @@ namespace KJS {
   class ObjectObject : public Constructor {
   public:
     ObjectObject(Object *proto) : Constructor(proto, 1) { }
-    KJSO* execute(Context *);
+    KJSO* execute(const List &);
     Object* construct(const List &);
   };
 
@@ -42,7 +42,7 @@ namespace KJS {
   class ObjectProtoFunc : public InternalFunction {
   public:
     ObjectProtoFunc(int i);
-    KJSO *execute(Context *);
+    KJSO *execute(const List &);
   private:
     int id;
   };

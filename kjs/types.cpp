@@ -52,18 +52,6 @@ Reference::~Reference()
   value.base->deref();
 }
 
-KJSO *Context::arg(int i)
-{
-  UString str(i);
-  return activation->get(str);
-}
-
-int Context::numArgs()
-{
-  Ptr obj = activation->get("length");
-  return obj->intVal();
-}
-
 Error::Error(ErrorCode e, Node *n)
   : errNo(e)
 {
@@ -170,5 +158,15 @@ KJSO *List::at(int i) const
   while ((j++ < i))
     it++;
 
-  return it;
+  return it->ref();
+}
+
+List *List::emptyList = 0L;
+
+const List *List::empty()
+{
+  if (!emptyList)
+    emptyList = new List;
+
+  return emptyList;
 }

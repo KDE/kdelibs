@@ -40,7 +40,7 @@ KJSO *NumberObject::get(const UString &p)
 }
 
 // ECMA 15.7.1
-KJSO* NumberObject::execute(Context * /*context*/)
+KJSO* NumberObject::execute(const List & /*context*/)
 {
   /* TODO */
   return newUndefined();

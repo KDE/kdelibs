@@ -194,8 +194,11 @@ bool KJSO::implementsCall() const
 }
 
 // [[call]]
-KJSO *KJSO::executeCall(KJSO *thisV, List *args)
+KJSO *KJSO::executeCall(KJSO *thisV, const List *args)
 {
+  if (!args)
+    args = List::empty();
+
   Function *func = static_cast<Function*>(this);
 
   Context *save = KJScript::context();
@@ -204,10 +207,9 @@ KJSO *KJSO::executeCall(KJSO *thisV, List *args)
   KJScript::setContext(new Context(ctype, save, func, args, thisV));
 
   // assign user supplied arguments to parameters
-  if (args)
-    func->processParameters(args);
+  func->processParameters(args);
 
-  Ptr comp = func->execute(KJScript::context());
+  Ptr comp = func->execute(*args);
 
   delete KJScript::context();
   KJScript::setContext(save);
