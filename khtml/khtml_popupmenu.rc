@@ -1,6 +1,7 @@
-<!DOCTYPE kpartgui SYSTEM "kpartgui.dtd"><kpartgui name="khtmlpart_popupmenu" version="6">
+<!DOCTYPE kpartgui SYSTEM "kpartgui.dtd"><kpartgui name="khtmlpart_popupmenu" version="7">
 <Menu name="popupmenu">
  <Action name="reloadframe" group="reload" />
+ <Action name="printFrame" group="print" />
  <Separator weakSeparator="1" />
  <Action name="savelinkas" />
  <Action name="saveimageas" />
