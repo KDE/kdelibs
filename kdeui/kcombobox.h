@@ -471,33 +471,11 @@ private slots:
     void lineEditDeleted();
 
 private:
-    // Constants that represent the ID's of the popup menu.
-    // TODO: See if we can replace this mess with KActionMenu
-    // in the future though this is working lovely.
-    enum MenuID {
-        Default=0,
-        Cut,
-        Copy,
-        Paste,
-        Clear,
-        Unselect,
-        SelectAll,
-        NoCompletion,
-        AutoCompletion,
-        ShellCompletion,
-        PopupCompletion,
-        SemiAutoCompletion
-    };
-
     /**
      * Initializes the variables upon construction.
      */
     void init();
-
-    // BC: No longer needed...
-    bool m_bEnableMenu;
-
-    // Flag to determine whether return-key events should be propagated...
+    bool m_bEnableMenu; // ### BCI: unused, remove in KDE4
     bool m_trapReturnKey; // ### BCI: unused, remove in KDE4
 
 protected:
