@@ -151,6 +151,13 @@ KJSO Window::get(const UString &p) const
     return Function(new WindowFunc(this, WindowFunc::SetTimeout));
   else if (p == "clearTimeout")
     return Function(new WindowFunc(this, WindowFunc::ClearTimeout));
+  else if (p == "focus")
+    return Function(new WindowFunc(this, WindowFunc::Focus));
+  else if (p == "blur")
+    return Function(new WindowFunc(this, WindowFunc::Blur));
+  else if (p == "close")
+    return Function(new WindowFunc(this, WindowFunc::Close));
+
   else if (p == "frames")
     return new FrameArray(part);
 
@@ -317,15 +324,27 @@ Completion WindowFunc::tryExecute(const List &args)
     result = Undefined();
     (const_cast<Window*>(window))->clearTimeout(v.toInt32());
     break;
+  case Focus:
+    result = Undefined();
+    // TODO
+    break;
+  case Blur:
+    result = Undefined();
+    // TODO
+    break;
+  case Close:
+    result = Undefined();
+    // TODO
+    break;
   }
   return Completion(Normal, result);
+  
 }
 
 void WindowFunc::setStatusBarText(KHTMLPart *p, const QString &s)
 {
   p->setStatusBarText(s);
 }
-
 void WindowFunc::initJScript(KHTMLPart *p)
 {
   (void)p->jScript(); // dummy call to create an interpreter
