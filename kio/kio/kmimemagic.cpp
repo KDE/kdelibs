@@ -1402,6 +1402,7 @@ KMimeMagic::process(const QString & fn)
 	unsigned char buf[HOWMANY + 1];	/* one extra for terminating '\0' */
 	struct stat sb;
 	int nbytes = 0;         /* number of bytes read from a datafile */
+        int tagbytes = 0;       /* size of prefixed tag */
         QCString fileName = QFile::encodeName( fn );
 
 	/*
@@ -1428,8 +1429,16 @@ KMimeMagic::process(const QString & fn)
 		kdError(7018) << "" << fn << " read failed (" << strerror(errno) << ")." << endl;
 		resultBuf = MIME_BINARY_UNREADABLE;
 		return;
-		/* NOTREACHED */
 	}
+        if (tagbytes = tagmagic(buf, nbytes)) {
+		// Read buffer at new position
+		lseek(fd, tagbytes, SEEK_SET);
+		nbytes = read(fd, (char*)buf, HOWMANY);
+		if (nbytes < 0) {
+			resultBuf = MIME_BINARY_UNREADABLE;
+			return;
+		}
+        }
 	if (nbytes == 0) {
 		resultBuf = MIME_BINARY_ZEROSIZE;
 	} else {
@@ -1720,6 +1729,30 @@ KMimeMagic::match(unsigned char *s, int nbytes)
 #endif
 	return 0;               /* no match at all */
 }
+
+// Try to parse prefixed tags before matching on content
+// Sofar only ID3v2 tags (<=.4) are handled
+int
+KMimeMagic::tagmagic(unsigned char *buf, int nbytes)
+{
+	if(nbytes<40) return 0;
+	if(buf[0] == 'I' && buf[1] == 'D' && buf[2] == '3') {
+		int size = 10;
+		// Sanity (known version, no unknown flags)
+		if(buf[3] > 4) return 0;
+		if(buf[5] & 0x0F) return 0;
+		// Tag has v4 footer
+		if(buf[5] & 0x10) size += 10;
+		// Calculated syncsafe size
+		size += buf[9];
+		size += buf[8] << 7;
+		size += buf[7] << 14;
+		size += buf[6] << 21;
+		return size;
+	}
+	return 0;
+}
+
 
 /* an optimization over plain strcmp() */
 #define    STREQ(a, b)    (*(a) == *(b) && strcmp((a), (b)) == 0)

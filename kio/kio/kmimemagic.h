@@ -223,6 +223,7 @@ private:
   int apprentice(const QString &configFile);
   int ascmagic(unsigned char *, int);
   int textmagic(unsigned char *, int);
+  int tagmagic(unsigned char *, int);
 
   struct config_rec *conf; // this is also our "d pointer"
   int accuracy;
