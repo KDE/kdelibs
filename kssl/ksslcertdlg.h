@@ -46,6 +46,11 @@ public:
 
   bool saveChoice();
 
+private slots:
+  void slotSend();
+  void slotDont();
+
+
 private:
   class KSSLCertDlgPrivate;
   KSSLCertDlgPrivate *d;
@@ -55,6 +60,23 @@ private:
   QPushButton *_ok;
 
 };
+
+
+class KSSLCertDlgRet {
+public:
+   bool ok;
+   QString choice;
+   bool send;
+   bool save;
+
+protected:
+   class KSSLCertDlgRetPrivate;
+   KSSLCertDlgRetPrivate *d;
+};
+
+QDataStream& operator<<(QDataStream& s, const KSSLCertDlgRet& r);
+QDataStream& operator>>(QDataStream& s, KSSLCertDlgRet& r);
+
 
 
 

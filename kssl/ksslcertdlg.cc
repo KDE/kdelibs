@@ -34,6 +34,8 @@
 #include <kglobal.h>
 #include <klocale.h>
 #include <kglobalsettings.h>
+#include <kseparator.h>
+#include <kdebug.h>
 
 
 class KSSLCertDlg::KSSLCertDlgPrivate {
@@ -48,9 +50,11 @@ KSSLCertDlg::KSSLCertDlg(QWidget *parent, const char *name, bool modal)
 
    _send = new QRadioButton(i18n("Send certificate..."), this);
    grid->addMultiCellWidget(_send, 0, 0, 0, 2);
+   connect(_send, SIGNAL(clicked()), SLOT(slotSend()));
 
    _dont = new QRadioButton(i18n("Do not send a certificate"), this);
    grid->addMultiCellWidget(_dont, 1, 1, 0, 2);
+   connect(_dont, SIGNAL(clicked()), SLOT(slotDont()));
 
    _certs = new QListView(this);
    grid->addMultiCellWidget(_certs, 0, 4, 3, 5);
@@ -58,6 +62,8 @@ KSSLCertDlg::KSSLCertDlg(QWidget *parent, const char *name, bool modal)
 
    _save = new QCheckBox(i18n("Save selection for this host."), this);
    grid->addMultiCellWidget(_save, 5, 5, 0, 3);
+
+   grid->addMultiCellWidget(new KSeparator(KSeparator::HLine, this), 6, 6, 0, 5);
 
    _ok = new QPushButton(i18n("&Ok"), this);
    grid->addWidget(_ok, 7, 5);
@@ -76,6 +82,7 @@ void KSSLCertDlg::setup(QStringList certs, bool saveChecked, bool sendChecked) {
   _save->setChecked(saveChecked);
   _send->setChecked(sendChecked);
   _dont->setChecked(!sendChecked);
+  _certs->setEnabled(saveChecked);
 
   for (QStringList::Iterator i = certs.begin();
                              i != certs.end();
@@ -85,6 +92,7 @@ void KSSLCertDlg::setup(QStringList certs, bool saveChecked, bool sendChecked) {
     new QListViewItem(_certs, *i);
   }
 
+  _certs->setSelected(_certs->firstChild(), true);
 }
 
 
@@ -100,6 +108,34 @@ bool KSSLCertDlg::wantsToSend() {
 
 QString KSSLCertDlg::getChoice() {
    return _certs->selectedItem()->text(0);
+}
+
+
+void KSSLCertDlg::slotSend() {
+   _dont->setChecked(false);
+   _certs->setEnabled(true);
+}
+
+
+void KSSLCertDlg::slotDont() {
+   _send->setChecked(false);
+   _certs->setEnabled(false);
+}
+
+
+QDataStream& operator<<(QDataStream& s, const KSSLCertDlgRet& r) {
+   s << Q_INT8(r.ok?1:0) <<  r.choice << Q_INT8(r.save?1:0) << Q_INT8(r.send?1:0);
+   return s;
+}
+
+
+QDataStream& operator>>(QDataStream& s, KSSLCertDlgRet& r) {
+Q_INT8 tmp;
+   s >> tmp; r.ok = (tmp == 1);
+   s >> r.choice;
+   s >> tmp; r.save = (tmp == 1);
+   s >> tmp; r.send = (tmp == 1);
+   return s;
 }
 
 
