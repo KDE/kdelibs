@@ -330,7 +330,7 @@ void KJS::HTMLDocument::putValue(ExecState *exec, int token, const Value& value,
     {
       KHTMLPart *part = view->part();
       QString str = value.toString(exec).qstring();
-      part->scheduleRedirection(0, str);
+      part->scheduleRedirection(-1, str);
     }
     break;
   }
@@ -1098,6 +1098,8 @@ Value KJS::HTMLElement::tryGet(ExecState *exec, const UString &propertyName) con
       // Check if we're retrieving an element (by index or by name)
       bool ok;
       uint u = propertyName.toULong(&ok);
+      qDebug("accessing item: %d", u);
+
       if (ok)
         return getDOMNode(exec,form.elements().item(u));
       KJS::HTMLCollection coll(exec, form.elements(), KJS::HTMLCollection::ReturnNode);
