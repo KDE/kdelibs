@@ -148,7 +148,7 @@ void Event::preventDefault()
     if (!impl)
 	throw DOMException(DOMException::INVALID_STATE_ERR);
 
-    impl->preventDefault();
+    impl->preventDefault(true);
 }
 
 void Event::initEvent(const DOMString &eventTypeArg, bool canBubbleArg, bool cancelableArg)

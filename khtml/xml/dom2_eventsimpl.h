@@ -107,8 +107,8 @@ public:
     bool cancelable() const { return m_cancelable; }
     DOMTimeStamp timeStamp();
     void stopPropagation(bool stop) { m_propagationStopped = stop; }
+    void preventDefault(bool prevent) { if ( m_cancelable ) m_defaultPrevented = prevent; }
 
-    void preventDefault() { m_defaultPrevented = m_cancelable; }
     void initEvent(const DOMString &eventTypeArg, bool canBubbleArg, bool cancelableArg);
 
     virtual bool isUIEvent() { return false; }
