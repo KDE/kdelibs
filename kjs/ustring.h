@@ -53,6 +53,8 @@ namespace KJS {
      * Construct a character with value 0.
      */
     UChar();
+    UChar(char u);
+    UChar(unsigned char u);
     /**
      * Construct a character with the value denoted by the arguments.
      * @param h higher byte
@@ -102,6 +104,8 @@ namespace KJS {
 
   inline UChar::UChar() : uc(0) { }
   inline UChar::UChar(unsigned char h , unsigned char l) : uc(h << 8 | l) { }
+  inline UChar::UChar(char u) : uc((unsigned char)u) { }
+  inline UChar::UChar(unsigned char u) : uc(u) { }
   inline UChar::UChar(unsigned short u) : uc(u) { }
 
   /**
@@ -195,20 +199,30 @@ namespace KJS {
     struct Rep {
       friend class UString;
       friend bool operator==(const UString&, const UString&);
+
       static Rep *create(UChar *d, int l);
-      inline UChar *data() const { return dat; }
-      inline int size() const { return len; }
+      void destroy();
+
+      UChar *data() const { return dat; }
+      int size() const { return len; }
+
+      int hash() const { if (_hash == 0) _hash = computeHash(dat, len); return
+_hash; }
 
       static unsigned computeHash(const UChar *, int length);
       static unsigned computeHash(const char *);
 
-      void ref() { rc++; }
-      int deref() { return --rc; }
+      void ref() { ++rc; }
+      void deref() { if (--rc == 0) destroy(); }
 
       UChar *dat;
       int len;
+      int capacity;
       int rc;
+      mutable int _hash;
+
       static Rep null;
+      static Rep empty;
     };
 
   public:
@@ -253,10 +267,14 @@ namespace KJS {
      */
     UString(const DOM::DOMString &);
     /**
+     * Concatenation constructor. Makes operator+ more efficient.
+     */
+    UString(const UString &, const UString &);
+    /**
      * Destructor. If this handle was the only one holding a reference to the
      * string the data will be freed.
      */
-    ~UString();
+    ~UString() { release(); }
 
     /**
      * Constructs a string from an int.
@@ -266,6 +284,10 @@ namespace KJS {
      * Constructs a string from an unsigned int.
      */
     static UString from(unsigned int u);
+    /**
+     * Constructs a string from a long.
+     */
+    static UString from(long l);
     /**
      * Constructs a string from a double.
      */
@@ -373,12 +395,14 @@ namespace KJS {
      * -1 if the search was not successful.
      */
     int find(const UString &f, int pos = 0) const;
+    int find(UChar, int pos = 0) const;
     /**
      * @return Position of first occurence of f searching backwards from
      * position pos.
      * -1 if the search was not successful.
      */
     int rfind(const UString &f, int pos) const;
+    int rfind(UChar, int pos) const;
     /**
      * @return The sub string starting at position pos and length len.
      */
@@ -394,6 +418,7 @@ namespace KJS {
     static void globalClear();
 #endif
   private:
+    UString(Rep *r) { attach(r); }
     void attach(Rep *r);
     void detach();
     void release();
@@ -419,7 +444,11 @@ namespace KJS {
     return !KJS::operator==(s1, s2);
   }
   bool operator==(const CString& s1, const CString& s2);
-  UString operator+(const UString& s1, const UString& s2);
+  inline UString operator+(const UString& s1, const UString& s2) {
+    return UString(s1, s2);
+  }
+
+  int compare(const UString &, const UString &);
 
 }; // namespace
 

@@ -2,18 +2,19 @@
 /*
  *  This file is part of the KDE libraries
  *  Copyright (C) 1999-2000 Harri Porten (porten@kde.org)
+ *  Copyright (C) 2002 Apple Computer, Inc.
  *
  *  This library is free software; you can redistribute it and/or
- *  modify it under the terms of the GNU Lesser General Public
+ *  modify it under the terms of the GNU Library General Public
  *  License as published by the Free Software Foundation; either
  *  version 2 of the License, or (at your option) any later version.
  *
  *  This library is distributed in the hope that it will be useful,
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- *  Lesser General Public License for more details.
+ *  Library General Public License for more details.
  *
- *  You should have received a copy of the GNU Lesser General Public License
+ *  You should have received a copy of the GNU Library General Public License
  *  along with this library; see the file COPYING.LIB.  If not, write to
  *  the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
  *  Boston, MA 02111-1307, USA.
@@ -114,9 +115,12 @@ bool KJS::operator==(const KJS::CString& c1, const KJS::CString& c2)
 }
 
 UChar UChar::null;
-UString::Rep UString::Rep::null = { 0, 0, 1 };
+UString::Rep UString::Rep::null = { 0, 0, 0, 1, 1 };
+UString::Rep UString::Rep::empty = { 0, 0, 0, 1, 1 };
 UString UString::null;
+static const int normalStatBufferSize = 4096;
 static char *statBuffer = 0L;
+static int statBufferSize = 0;
 
 UChar UChar::toLower() const
 {
@@ -124,7 +128,7 @@ UChar UChar::toLower() const
   if (uc >= 256 || islower(uc))
     return *this;
 
-  return UChar(tolower(uc));
+  return UChar((unsigned char)tolower(uc));
 }
 
 UChar UChar::toUpper() const
@@ -132,7 +136,7 @@ UChar UChar::toUpper() const
   if (uc >= 256 || isupper(uc))
     return *this;
 
-  return UChar(toupper(uc));
+  return UChar((unsigned char)toupper(uc));
 }
 
 UCharReference& UCharReference::operator=(UChar c)
@@ -164,9 +168,16 @@ UString::Rep *UString::Rep::create(UChar *d, int l)
   Rep *r = new Rep;
   r->dat = d;
   r->len = l;
+  r->capacity = l;
   r->rc = 1;
-
+  r->_hash = 0;
   return r;
+}
+
+void UString::Rep::destroy()
+{
+  delete [] dat;
+  delete this;
 }
 
 unsigned UString::Rep::computeHash(const UChar *s, int length)
@@ -215,12 +226,27 @@ UString::UString(char c)
 
 UString::UString(const char *c)
 {
-  attach(&Rep::null);
-  operator=(c);
+  if (!c) {
+    attach(&Rep::null);
+    return;
+  }
+  int length = strlen(c);
+  if (length == 0) {
+    attach(&Rep::empty);
+    return;
+  }
+  UChar *d = new UChar[length];
+  for (int i = 0; i < length; i++)
+    d[i].uc = c[i];
+  rep = Rep::create(d, length);
 }
 
 UString::UString(const UChar *c, int length)
 {
+  if (length == 0) {
+    attach(&Rep::empty);
+    return;
+  }
   UChar *d = allocateChars(length);
   memcpy(d, c, length * sizeof(UChar));
   rep = Rep::create(d, length);
@@ -228,6 +254,10 @@ UString::UString(const UChar *c, int length)
 
 UString::UString(UChar *c, int length, bool copy)
 {
+  if (length == 0) {
+    attach(&Rep::empty);
+    return;
+  }
   UChar *d;
   if (copy) {
     d = allocateChars(length);
@@ -237,25 +267,68 @@ UString::UString(UChar *c, int length, bool copy)
   rep = Rep::create(d, length);
 }
 
-UString::~UString()
+UString::UString(const UString &a, const UString &b)
 {
-  release();
+  int aSize = a.size();
+  int bSize = b.size();
+  int length = aSize + bSize;
+  if (length == 0) {
+    attach(&Rep::empty);
+    return;
+  }
+  UChar *d = allocateChars(length);;
+  memcpy(d, a.data(), aSize * sizeof(UChar));
+  memcpy(d + aSize, b.data(), bSize * sizeof(UChar));
+  rep = Rep::create(d, length);
 }
 
 UString UString::from(int i)
 {
-  char buf[40];
-  sprintf(buf, "%d", i);
-
-  return UString(buf);
+  return from((long)i);
 }
 
 UString UString::from(unsigned int u)
 {
-  char buf[40];
-  sprintf(buf, "%u", u);
+  UChar buf[20];
+  UChar *end = buf + 20;
+  UChar *p = end;
 
-  return UString(buf);
+  if (u == 0) {
+    *--p = '0';
+  } else {
+    while (u) {
+      *--p = (unsigned short)((u % 10) + '0');
+      u /= 10;
+    }
+  }
+
+  return UString(p, end - p);
+}
+
+UString UString::from(long l)
+{
+  UChar buf[20];
+  UChar *end = buf + 20;
+  UChar *p = end;
+
+  if (l == 0) {
+    *--p = '0';
+  } else {
+    bool negative = false;
+    if (l < 0) {
+      negative = true;
+      l = -l;
+    }
+    while (l) {
+      *--p = (unsigned short)((l % 10) + '0');
+      l /= 10;
+    }
+    if (negative) {
+      *--p = '-';
+    }
+  }
+
+  return UString(p, end - p);
 }
 
 UString UString::from(double d)
@@ -286,11 +359,22 @@ UString UString::from(double d)
 UString &UString::append(const UString &t)
 {
   int l = size();
+  int tLen = t.size();
+  int newLen = l + tLen;
+  if (rep->rc == 1 && newLen <= rep->capacity) {
+    memcpy(rep->dat+l, t.data(), tLen * sizeof(UChar));
+    rep->len = newLen;
+    rep->_hash = 0;
+    return *this;
+  }
+
+  int newCapacity = (newLen * 3 + 1) / 2;
   UChar *n = allocateChars(l+t.size());
   memcpy(n, data(), l * sizeof(UChar));
-  memcpy(n+l, t.data(), t.size() * sizeof(UChar));
+  memcpy(n+l, t.data(), tLen * sizeof(UChar));
   release();
-  rep = Rep::create(n, l + t.size());
+  rep = Rep::create(n, newLen);
+  rep->capacity = newCapacity;
 
   return *this;
 }
@@ -302,13 +386,28 @@ CString UString::cstring() const
 
 char *UString::ascii() const
 {
-  if (statBuffer)
+  // Never make the buffer smaller than normalStatBufferSize.
+  // Thus we almost never need to reallocate.
+  int length = size();
+  int neededSize = length + 1;
+  if (neededSize < normalStatBufferSize) {
+    neededSize = normalStatBufferSize;
+  }
+  if (neededSize != statBufferSize) {
     delete [] statBuffer;
+    statBuffer = new char [neededSize];
+    statBufferSize = neededSize;
+  }
 
-  statBuffer = new char[size()+1];
-  for(int i = 0; i < size(); i++)
-    statBuffer[i] = data()[i].low();
-  statBuffer[size()] = '\0';
+  const UChar *p = data();
+  char *q = statBuffer;
+  const UChar *limit = p + length;
+  while (p != limit) {
+    *q = p->uc;
+    ++p;
+    ++q;
+  }
+  *q = '\0';
 
   return statBuffer;
 }
@@ -318,17 +417,24 @@ void UString::globalClear()
 {
   delete [] statBuffer;
   statBuffer = 0L;
+  statBufferSize = 0;
 }
 #endif
 
 UString &UString::operator=(const char *c)
 {
-  release();
   int l = c ? strlen(c) : 0;
-  UChar *d = allocateChars(l);
+  UChar *d;
+  if (rep->rc == 1 && l <= rep->capacity) {
+    d = rep->dat;
+    rep->_hash = 0;
+  } else {
+    release();
+    d = allocateChars(l);
+    rep = Rep::create(d, l);
+  }
   for (int i = 0; i < l; i++)
-    d[i].uc = (unsigned char)c[i];
-  rep = Rep::create(d, l);
+    d[i].uc = c[i];
 
   return *this;
 }
@@ -345,9 +451,12 @@ UString &UString::operator=(const UString &str)
 bool UString::is8Bit() const
 {
   const UChar *u = data();
-  for(int i = 0; i < size(); i++, u++)
+  const UChar *limit = u + size();
+  while (u < limit) {
     if (u->uc > 0xFF)
       return false;
+    ++u;
+  }
 
   return true;
 }
@@ -373,8 +482,7 @@ double UString::toDouble( bool tolerant ) const
   if (!is8Bit())
     return NaN;
 
-  CString str = cstring();
-  const char *c = str.c_str();
+  const char *c = ascii();
 
   // skip leading white space
   while (isspace(*c))
@@ -462,14 +570,31 @@ UString UString::toUpper() const
 
 int UString::find(const UString &f, int pos) const
 {
-  if (isNull())
+  int sz = size();
+  int fsz = f.size();
+  if (sz < fsz)
     return -1;
-  long fsize = f.size() * sizeof(UChar);
   if (pos < 0)
     pos = 0;
-  const UChar *end = data() + size() - f.size();
+  if (fsz == 0)
+    return pos;
+  const UChar *end = data() + sz - fsz;
+  long fsizeminusone = (fsz - 1) * sizeof(UChar);
+  const UChar *fdata = f.data();
   for (const UChar *c = data() + pos; c <= end; c++)
-    if (!memcmp((void*)c, (void*)f.data(), fsize))
+    if (*c == *fdata && !memcmp(c + 1, fdata + 1, fsizeminusone))
+      return (c-data());
+
+  return -1;
+}
+
+int UString::find(UChar ch, int pos) const
+{
+  if (pos < 0)
+    pos = 0;
+  const UChar *end = data() + size();
+  for (const UChar *c = data() + pos; c < end; c++)
+    if (*c == ch)
       return (c-data());
 
   return -1;
@@ -477,13 +602,34 @@ int UString::find(const UString &f, int pos) const
 
 int UString::rfind(const UString &f, int pos) const
 {
-  if (isNull())
+  int sz = size();
+  int fsz = f.size();
+  if (sz < fsz)
     return -1;
-  if (pos + f.size() >= size())
-    pos = size() - f.size();
-  long fsize = f.size() * sizeof(UChar);
+  if (pos < 0)
+    pos = 0;
+  if (pos > sz - fsz)
+    pos = sz - fsz;
+  if (fsz == 0)
+    return pos;
+  long fsizeminusone = (fsz - 1) * sizeof(UChar);
+  const UChar *fdata = f.data();
   for (const UChar *c = data() + pos; c >= data(); c--) {
-    if (!memcmp((void*)c, (void*)f.data(), fsize))
+    if (*c == *fdata && !memcmp(c + 1, fdata + 1, fsizeminusone))
+      return (c-data());
+  }
+
+  return -1;
+}
+
+int UString::rfind(UChar ch, int pos) const
+{
+  if (isEmpty())
+    return -1;
+  if (pos + 1 >= size())
+    pos = size() - 1;
+  for (const UChar *c = data() + pos; c >= data(); c--) {
+    if (*c == ch)
       return (c-data());
   }
 
@@ -530,10 +676,7 @@ void UString::detach()
 
 void UString::release()
 {
-  if (!rep->deref()) {
-    delete [] rep->dat;
-    delete rep;
-  }
+  rep->deref();
 }
 
 bool KJS::operator==(const UString& s1, const UString& s2)
@@ -547,21 +690,20 @@ bool KJS::operator==(const UString& s1, const UString& s2)
 
 bool KJS::operator==(const UString& s1, const char *s2)
 {
-  if (s2 == 0L && s1.isNull())
-    return true;
-
-  if (s1.size() != (int) strlen(s2))
-    return false;
+  if (s2 == 0) {
+    return s1.isEmpty();
+  }
 
   const UChar *u = s1.data();
-  while (*s2) {
-    if (u->uc != *s2 )
+  const UChar *uend = u + s1.size();
+  while (u != uend && *s2) {
+    if (u->uc != (unsigned char)*s2)
       return false;
     s2++;
     u++;
   }
 
-  return true;
+  return u == uend && *s2 == 0;
 }
 
 bool KJS::operator<(const UString& s1, const UString& s2)
@@ -583,10 +725,24 @@ bool KJS::operator<(const UString& s1, const UString& s2)
   return (l1 < l2);
 }
 
-UString KJS::operator+(const UString& s1, const UString& s2)
+int KJS::compare(const UString& s1, const UString& s2)
 {
-  UString tmp(s1);
-  tmp.append(s2);
+  const int l1 = s1.size();
+  const int l2 = s2.size();
+  const int lmin = l1 < l2 ? l1 : l2;
+  const UChar *c1 = s1.data();
+  const UChar *c2 = s2.data();
+  int l = 0;
+  while (l < lmin && *c1 == *c2) {
+    c1++;
+    c2++;
+    l++;
+  }
+  if (l < lmin)
+    return (c1->uc > c2->uc) ? 1 : -1;
 
-  return tmp;
+  if (l1 == l2) {
+    return 0;
+  }
+  return (l1 < l2) ? 1 : -1;
 }
