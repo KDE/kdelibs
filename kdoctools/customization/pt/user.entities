@@ -36,5 +36,3 @@
    </guiicon> icon'>
 <!ENTITY kmenu  "menu <guimenu>K</guimenu>">
 <!ENTITY kinfocenter "<application>Centro de Informação do KDE</application>" >
-<!ENTITY klickety "<application>Klickety</application>" >
-<!ENTITY krfb "<application>KRfb</application>" >
