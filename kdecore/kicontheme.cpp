@@ -384,8 +384,8 @@ KIcon KIconTheme::iconPath(const QString& name, int size, KIcon::MatchType match
              it's a downscale, and we only had upscales befores.
              This is to avoid scaling up unless we have to,
              since that looks very ugly */
-          if ((abs(dw) >= abs(delta)) &&
-              !(delta > 0 && dw < 0))
+          if ((abs(dw) >= abs(delta)) ||
+              (delta > 0 && dw < 0))
             continue;
         }
 
