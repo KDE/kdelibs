@@ -286,7 +286,7 @@ namespace KJS {
     Lexer *lex;
     Context *con;
     Global glob;
-    int errType;
+    int errType, errLine;
     UString errMsg;
     Imp *exVal;
     Imp *retVal;

@@ -75,6 +75,11 @@ int KJScript::errorType() const
   return rep->errType;
 }
 
+int KJScript::errorLine() const
+{
+  return rep->errLine;
+}
+
 const char* KJScript::errorMsg() const
 {
   return rep->errMsg.ascii();

@@ -555,11 +555,13 @@ bool KJScriptImp::evaluate(const UChar *code, unsigned int length, Imp *thisV)
   if (context->hadError()) {
     KJSO err = context->error();
     errType = 99; /* TODO */
+    errLine = err.get("line").toInt32();
     errMsg = err.get("name").toString().value() + ". ";
     errMsg += err.get("message").toString().value();
     context->clearError();
   } else {
     errType = 0;
+    errLine = -1;
     errMsg = "";
 
     // catch return value

@@ -100,6 +100,10 @@ public:
    */
   int errorType() const;
   /**
+   * @return Return line of last error. -1 if last call didn't have an error.
+   */
+  int errorLine() const;
+  /**
    * @return Error message from last call to @ref evaluate(). Empty string
    * if no error occured.
    */
