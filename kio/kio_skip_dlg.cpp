@@ -11,7 +11,7 @@
 #include <klocale.h>
 #include <kurl.h>
 
-KIOSkipDlg::KIOSkipDlg(QWidget *parent, const char *_dest, bool _multi, bool _modal ) :
+KIOSkipDlg::KIOSkipDlg(QWidget *parent, const char *_dest, bool _multi, QString _error_text, bool _modal ) :
   QDialog ( parent, "" , _modal )
 {
   modal = _modal;
@@ -46,7 +46,7 @@ KIOSkipDlg::KIOSkipDlg(QWidget *parent, const char *_dest, bool _multi, bool _mo
   lb->setMinimumWidth( lb->sizeHint().width() );
   vlayout->addWidget( lb );
 
-  lb = new QLabel( i18n("Permission denied!"), this );
+  lb = new QLabel( _error_text, this );
   lb->setFixedHeight( lb->sizeHint().height() );
   lb->setMinimumWidth( lb->sizeHint().width() );
   vlayout->addWidget( lb );
@@ -108,7 +108,7 @@ void KIOSkipDlg::b2Pressed()
     emit result( this, 2 );
 }
 
-SkipDlg_Result open_SkipDlg( const char *_dest, bool _multi )
+SkipDlg_Result open_SkipDlg( const char *_dest, bool _multi, QString _error_text )
 {
   if ( kapp == 0L )
   {
@@ -117,7 +117,11 @@ SkipDlg_Result open_SkipDlg( const char *_dest, bool _multi )
     (void)new KApplication( b, const_cast<char**>(a), "skip_dlg" );
   }
   
-  KIOSkipDlg dlg( 0L, _dest, _multi, true );
+  QString tmps = _error_text;
+  if ( tmps.isEmpty() ) {
+    tmps = i18n("Permission denied!");
+  }
+  KIOSkipDlg dlg( 0L, _dest, _multi, tmps, true );
   int i = dlg.exec();
   return (SkipDlg_Result)i;
 }

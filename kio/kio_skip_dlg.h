@@ -9,13 +9,13 @@
 #include <qlayout.h>
 
 enum SkipDlg_Result { S_SKIP = 1, S_AUTO_SKIP = 2, S_CANCEL = 0 };
-SkipDlg_Result open_SkipDlg( const char *_dest, bool _multi );
+SkipDlg_Result open_SkipDlg( const char *_dest, bool _multi, QString _error_text="" );
 
 class KIOSkipDlg : public QDialog
 {
   Q_OBJECT
 public:
-  KIOSkipDlg( QWidget *parent, const char *_dest, bool _multi, bool _modal = false );
+  KIOSkipDlg( QWidget *parent, const char *_dest, bool _multi, QString _error_text, bool _modal = false );
   ~KIOSkipDlg();
     
 protected:
