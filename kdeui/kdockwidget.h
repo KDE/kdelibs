@@ -162,7 +162,7 @@ public:
   /**
    * @return the dockwidget where this belongs to
    */
-  KDockWidget* dockWidget(){ return dw; }
+  KDockWidget* dockWidget() const { return dw; }
 
 private:
   /** the dockwidget where this belongs to */
@@ -250,7 +250,7 @@ public:
    */
   void setDragPanel( KDockWidgetHeaderDrag* nd );
 
-  bool dragEnabled();
+  bool dragEnabled() const;
   void setDragEnabled(bool b);
 
 #ifndef NO_KDE2
@@ -442,7 +442,7 @@ public:
   /**
    * @return Where it is either possible or impossible for this to dock to another dockwidget (an OR'ed set of DockPositions).
    */
-  int enableDocking(){ return eDocking; }
+  int enableDocking() const { return eDocking; }
 
   /**
    * Specify where it is either possible or impossible for another dockwidget to dock to this.
@@ -454,7 +454,7 @@ public:
   /**
    * @return There it is either possible or impossible for another dockwidget to dock to this (an OR'ed set of @p DockPositions).
    */
-  int dockSite(){ return sDocking; }
+  int dockSite() const { return sDocking; }
 
   /**
    * Set the embedded widget.
@@ -470,7 +470,7 @@ public:
    *
    * @return The pointer to the dockwidget's child widget, 0L if there's no such child.
    */
-  QWidget* getWidget() { return widget; };
+  QWidget* getWidget() const { return widget; };
 
   /**
    * Set the header of this dockwidget.
@@ -498,7 +498,7 @@ public:
    * @li The parent of this is the @ref KDockMainWindow.
    * @li It isn't able to dock to another widget.
    */
-  bool mayBeHide();
+  bool mayBeHide() const;
 
   /**
    * @return If it may be possible to show this.
@@ -507,12 +507,12 @@ public:
    * @li It is already visible ;-)
    * @li The parent of this is the @p KDockMainWindow.
    */
-  bool mayBeShow();
+  bool mayBeShow() const;
 
   /**
    * @return The dockmanager that is responsible for this.
    */
-  KDockManager* dockManager(){ return manager; }
+  KDockManager* dockManager() const { return manager; }
 
   /**
    * Stores a string for a tooltip.
@@ -529,12 +529,12 @@ public:
   /**
    * @return The tooltip string being shown on the appropriate tab page header when in dock-centered mode.
    */
-  const QString& toolTipString() { return toolTipStr; };
+  const QString& toolTipString() const { return toolTipStr; };
 
   /**
    * @return result @p true, if a dockback is possible, otherwise @p false.
    */
-  bool isDockBackPossible();
+  bool isDockBackPossible() const;
 
   /**
    * Set a string that is used for the label of the tab page when in tab page mode
@@ -545,7 +545,7 @@ public:
   /**
    * @return A string that is used for the label of the tab page when in tab page mode.
    */
-  const QString& tabPageLabel() { return tabPageTitle; };
+  const QString& tabPageLabel() const { return tabPageTitle; };
 
   /**
    * Catches and processes some @ref QWidget events that are interesting for dockwidgets.
@@ -559,7 +559,7 @@ public:
   /**
    * @return the parent widget of this if it inherits class KDockTabGroup
    */
-  KDockTabGroup* parentDockTabGroup() { return parentTabGroup(); };
+  KDockTabGroup* parentDockTabGroup() const { return parentTabGroup(); };
 
 #ifndef NO_KDE2
 
@@ -602,7 +602,7 @@ protected:
    * @return the parent widget of this if it inherits class KDockTabGroup
    * Warning: This will be removed in KDE-3.0. Use parentDockTabGroup instead.
    */
-  KDockTabGroup* parentTabGroup();
+  KDockTabGroup* parentTabGroup() const;
 
   /**
    * Check some conditions and show or hide the dockwidget header (drag panel).
@@ -822,7 +822,7 @@ public:
    * @param w any widget that is supposed to be encapsulated by one of the controlled dockwidgets
    * @return the dockwidget that encapsulates that widget, otherwise 0
    */
-  KDockWidget* findWidgetParentDock( QWidget* w);
+  KDockWidget* findWidgetParentDock( QWidget* w) const;
 
   /**
    * Works like makeDockVisible() but can be called for widgets that covered by a dockwidget.
@@ -834,7 +834,7 @@ public:
   /**
    * @return the popupmenu for showing/hiding dockwidgets
    */
-  QPopupMenu* dockHideShowMenu(){ return menu; }
+  QPopupMenu* dockHideShowMenu() const { return menu; }
 
   /**
    * @param dockName an internal QObject name
@@ -1139,7 +1139,7 @@ public:
    * Returns the dockmanager of this. (see @ref KDockManager)
    * @return pointer to the wanted dockmanager
    */
-  KDockManager* manager(){ return dockManager; }
+  KDockManager* manager() const { return dockManager; }
 
   /**
    * Sets a new main dockwidget.
@@ -1154,7 +1154,7 @@ public:
    *
    * @return pointer to the main dockwidget
    */
-  KDockWidget* getMainDockWidget(){ return mainDockWidget; }
+  KDockWidget* getMainDockWidget() const { return mainDockWidget; }
 
   /**
    * This is one of the most important methods!
@@ -1210,7 +1210,7 @@ public:
    *
    * @return the wanted popup menu
    */
-  QPopupMenu* dockHideShowMenu(){ return dockManager->dockHideShowMenu(); }
+  QPopupMenu* dockHideShowMenu() const { return dockManager->dockHideShowMenu(); }
 
   /**
    * This method shows the given dockwidget.

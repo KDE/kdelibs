@@ -106,7 +106,7 @@ void KDockSplitter::setSeparatorPos(int pos, bool do_resize)
     resizeEvent(0);
 }
 
-int KDockSplitter::separatorPos()
+int KDockSplitter::separatorPos() const
 {
   return xpos;
 }
@@ -138,7 +138,7 @@ void KDockSplitter::resizeEvent(QResizeEvent *ev)
   }
 }
 
-int KDockSplitter::checkValue( int position )
+int KDockSplitter::checkValue( int position ) const
 {
   if (initialised){
     if (orientation == Vertical){
@@ -227,7 +227,7 @@ bool KDockSplitter::event( QEvent* e )
   return QWidget::event(e);
 }
 
-QWidget* KDockSplitter::getAnother( QWidget* w )
+QWidget* KDockSplitter::getAnother( QWidget* w ) const
 {
   return ( w == child0 ) ? child1 : child0;
 }

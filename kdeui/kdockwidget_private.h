@@ -48,15 +48,15 @@ public:
   void activate(QWidget *c0, QWidget *c1 = 0L);
   void deactivate();
 
-  int separatorPos();
+  int separatorPos() const;
   void setSeparatorPos(int pos, bool do_resize = true);
 
   virtual bool eventFilter(QObject *, QEvent *);
   virtual bool event( QEvent * );
 
-  QWidget* getFirst(){ return child0; }
-  QWidget* getLast(){ return child1; }
-  QWidget* getAnother( QWidget* );
+  QWidget* getFirst() const { return child0; }
+  QWidget* getLast() const { return child1; }
+  QWidget* getAnother( QWidget* ) const;
   void updateName();
 
   void setOpaqueResize(bool b=true);
@@ -69,7 +69,7 @@ public:
   bool highResolution() const;
 
 protected:
-  int checkValue( int );
+  int checkValue( int ) const;
   virtual void resizeEvent(QResizeEvent *);
 
 private:

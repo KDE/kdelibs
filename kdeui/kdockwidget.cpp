@@ -290,7 +290,7 @@ void KDockWidgetHeader::slotStayClicked()
   setDragEnabled(!stayButton->isOn());
 }
 
-bool KDockWidgetHeader::dragEnabled()
+bool KDockWidgetHeader::dragEnabled() const
 {
   return drag->isEnabled();
 }
@@ -699,7 +699,7 @@ KDockWidget* KDockWidget::manualDock( KDockWidget* target, DockPosition dockPos,
   return newDock;
 }
 
-KDockTabGroup* KDockWidget::parentTabGroup()
+KDockTabGroup* KDockWidget::parentTabGroup() const
 {
   if ( !parent() ) return 0L;
   QWidget* candidate = parentWidget()->parentWidget();
@@ -875,13 +875,13 @@ void KDockWidget::setDockTabName( KDockTabGroup* tab )
       ((KDockSplitter*)(tab->parentWidget()->parent()))->updateName();
 }
 
-bool KDockWidget::mayBeHide()
+bool KDockWidget::mayBeHide() const
 {
   bool f = (parent() != manager->main);
   return ( !isGroup && !isTabGroup && f && isVisible() && ( eDocking != (int)KDockWidget::DockNone ) );
 }
 
-bool KDockWidget::mayBeShow()
+bool KDockWidget::mayBeShow() const
 {
   bool f = (parent() != manager->main);
   return ( !isGroup && !isTabGroup && f && !isVisible() );
@@ -962,7 +962,7 @@ void KDockWidget::dockBack()
     makeDockVisible();
 }
 
-bool KDockWidget::isDockBackPossible()
+bool KDockWidget::isDockBackPossible() const
 {
   if( (formerBrotherDockWidget == 0L) || !(formerBrotherDockWidget->dockSite() & formerDockPos))
     return false;
@@ -1500,7 +1500,7 @@ static QStrList listEntry(QDomElement &base, const QString &tagName, const QStri
 }
 
 
-void KDockManager::writeConfig(QDomElement &base)
+void KDockManager::writeConfig(QDomElement &base) 
 {
     // First of all, clear the tree under base
     while (!base.firstChild().isNull())
@@ -1718,7 +1718,7 @@ void KDockManager::readConfig(QDomElement &base)
 
 
 #ifndef NO_KDE2
-void KDockManager::writeConfig( KConfig* c, QString group )
+void KDockManager::writeConfig( KConfig* c, QString group ) 
 {
   //debug("BEGIN Write Config");
   if ( !c ) c = kapp->config();
@@ -1978,7 +1978,7 @@ void KDockManager::readConfig( KConfig* c, QString group )
 }
 #endif
 
-KDockWidget* KDockManager::getDockWidgetFromName( const QString& dockName )
+KDockWidget* KDockManager::getDockWidgetFromName( const QString& dockName ) 
 {
   QObjectListIt it( *childDock );
   KDockWidget * obj;
@@ -2054,7 +2054,7 @@ void KDockManager::slotMenuActivated( int id )
   data->dock->changeHideShowState();
 }
 
-KDockWidget* KDockManager::findWidgetParentDock( QWidget* w )
+KDockWidget* KDockManager::findWidgetParentDock( QWidget* w ) const
 {
   QObjectListIt it( *childDock );
   KDockWidget * dock;

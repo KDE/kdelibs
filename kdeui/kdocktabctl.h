@@ -163,7 +163,7 @@ public:
    * @param id the identification number of that desired tab page
    * @return the current text colour of that tab page
    */
-  const QColor& textColor( int id );
+  const QColor& textColor( int id ) const;
 
   /**
    * Removes the tab page with that @p id.
@@ -177,7 +177,7 @@ public:
    *
    * @return The @p id of the tab page.
    */
-  int  currentTab(){ return _currentTab; }
+  int  currentTab() const { return _currentTab; }
 
   /**
    * Set the current tab page to the page with that @p id.
@@ -195,7 +195,7 @@ public:
   /**
    * Returns if the tab page with that @p id is enabled or disabled.
    */
-  bool isTabEnabled( int id);
+  bool isTabEnabled( int id) const;
 
   /**
    * Set the title of the tab page with that @p id.
@@ -210,7 +210,7 @@ public:
    *
    * @param id the identification number of that desired page
    */
-  QString tabCaption( int id );
+  QString tabCaption( int id ) const;
 
   /**
    * Calls @ref QWidget::show() and @ref showPage() for the current tab
@@ -231,7 +231,7 @@ public:
   /**
    * Returns if the icons for the tab pages are shown in the header.
    */
-  bool isShowTabIcon(){ return iconShow; }
+  bool isShowTabIcon() const { return iconShow; }
 
 signals:
 
@@ -289,7 +289,7 @@ private:
   void updateHeight();
 
   /** For internal use */
-  KDockTabBar_PrivateStruct* findData( int id );
+  KDockTabBar_PrivateStruct* findData( int id ) const;
   /** For internal use */
   int tabsWidth();
   /** For internal use */
@@ -329,10 +329,10 @@ class EXPORT_DOCKCLASS KDockTabBarPainter : public QWidget
 
 public:
   /** returns the tooltip string of the tab at this position */
-  QString tip( const QPoint & p );
+  QString tip( const QPoint & p ) const;
 
   /** returns the tab rectangle at this position */
-  QRect findBarRectByPos( int x, int y);
+  QRect findBarRectByPos( int x, int y) const;
 
 private:
 
@@ -340,7 +340,7 @@ private:
   ~KDockTabBarPainter();
 
   void drawBuffer();
-  int findBarByPos( int x, int y );
+  int findBarByPos( int x, int y ) const;
 
   QPixmap* buffer;
   int mousePressTab;
@@ -410,7 +410,7 @@ public:
   /**
    * Returns the current tab position of its docktabbar.
    */
-  KDockTabBar::TabPos getTabPos(){ return tabPos; }
+  KDockTabBar::TabPos getTabPos() const { return tabPos; }
 
   /**
    * Inserts a new tab page in the encapsulated docktabbar.
@@ -445,15 +445,15 @@ public:
    * @param w the widget for that we want to know its caption
    * @return a string containing the title of the page
    */
-  QString pageCaption( QWidget* w);
+  QString pageCaption( QWidget* w) const;
 
   /** This is an overloaded member function, provided for convenience.
    *  It differs from the above function only in what argument(s) it accepts. 
    */
-  QString pageCaption( int id ){ return pageCaption( page(id) ); }
+  QString pageCaption( int id ) const { return pageCaption( page(id) ); }
   
   void captionAutoSet( bool autoSet ){ m_autoSetCaption = autoSet; }
-  bool isCaptionAutoSet() { return m_autoSetCaption; }
+  bool isCaptionAutoSet() const { return m_autoSetCaption; }
 
   /**
    * Sets an icon for the tab page (shown in the tab header).
@@ -496,24 +496,24 @@ public:
    * 
    * @param w the widget we want to ask for its text colour
    */
-  const QColor& tabTextColor( QWidget* w);
+  const QColor& tabTextColor( QWidget* w) const;
 
   /** This is an overloaded member function, provided for convenience.
    *  It differs from the above function only in what argument(s) it accepts. 
    */
-  const QColor& tabTextColor( int id ){ return tabTextColor( page(id) ); }
+  const QColor& tabTextColor( int id ) const { return tabTextColor( page(id) ); }
   
   /**
    * Returns if the tab page is enabled (if it can get the focus).
    * 
    * @param w the widget we want to ask if its page is enabled
    */
-  bool isPageEnabled( QWidget* w);
+  bool isPageEnabled( QWidget* w) const;
 
   /** This is an overloaded member function, provided for convenience.
    *  It differs from the above function only in what argument(s) it accepts. 
    */
-  bool isPageEnabled( int id ){ return isPageEnabled( page(id) ); }
+  bool isPageEnabled( int id ) const { return isPageEnabled( page(id) ); }
 
   /**
    * Enable or disable the tab page (whether it can get the focus or not).
@@ -535,21 +535,21 @@ public:
    * 
    * @param id the identification number of the page
    */
-  QWidget* page( int id);
+  QWidget* page( int id) const;
 
   /**
    * Returns the widget's Id.
    *
    * @param w the widget that should return its id
    */
-  int id( QWidget* w);
+  int id( QWidget* w) const;
 
   /**
    * Returns the widget's index. (tab page position)
    *
    * @param w the widget that should return its index
    */
-  int index( QWidget* w);
+  int index( QWidget* w) const;
 
   /**
    * Removes the tab page from the covered tab bar.
@@ -567,12 +567,12 @@ public:
   /**
    * Returns the current (visible) tab page.
    */
-  QWidget* visiblePage();
+  QWidget* visiblePage() const;
 
   /**
    * Returns the id of the current (visible) tab page.
    */
-  int visiblePageId(){ return id( visiblePage() ); }
+  int visiblePageId() const { return id( visiblePage() ); }
 
   /**
    * Sets the given tab page as the active (and visible) one.
@@ -589,7 +589,7 @@ public:
    * Returns the font for the tab pages.
    * It simply calls @ref KDockTabBar::tabFont .
    */
-  QFont tabFont();
+  QFont tabFont() const;
 
   /**
    * Enables or disables the showing of the icons for every tab page.
@@ -601,12 +601,12 @@ public:
    * Returns if the tab icon is shown.
    * It simply calls @ref KDockTabBar::isShowTabIcon .
    */
-  bool isShowTabIcon();
+  bool isShowTabIcon() const;
 
   /**
    * Returns the number of inserted tab pages.
    */
-  int  pageCount(){ return mainData->count(); }
+  int  pageCount() const { return mainData->count(); }
 
   /**
    * Returns the first tab page in its KDockTabBar.
@@ -687,12 +687,12 @@ protected:
   /**
    * Returns the appropriate data for the widget from the parameter list.
    */
-  KDockTabCtl_PrivateStruct* findData( QWidget* );
+  KDockTabCtl_PrivateStruct* findData( QWidget* ) const;
 
   /**
    * Returns the appropriate data for the widget from the parameter list described by its id.
    */
-  KDockTabCtl_PrivateStruct* findData( int id );
+  KDockTabCtl_PrivateStruct* findData( int id ) const;
 
   /**
    * Shows the tab page.
