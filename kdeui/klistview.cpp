@@ -489,16 +489,18 @@ void KListView::contentsMouseMoveEvent( QMouseEvent *e )
             viewport()->setCursor( d->oldCursor );
         }
     }
-
-  QListView::contentsMouseMoveEvent( e );
-
-  if (dragEnabled() &&
+  
+  bool dragOn = dragEnabled();
+  if (dragOn &&
       d->validDrag && (d->startDragPos - e->pos()).manhattanLength() > QApplication::startDragDistance())
     {
       startDrag();
       d->startDragPos = QPoint();
       d->validDrag = false;
     }
+
+  if (!dragOn || d->startDragPos.isNull() || !d->validDrag)
+    QListView::contentsMouseMoveEvent (e);
 }
 
 void KListView::contentsMouseDoubleClickEvent ( QMouseEvent *e )
