@@ -42,7 +42,7 @@ public:
     Attribute(const DOMStringImpl *name, DOMStringImpl *val);
     Attribute(int _id, const DOMString &val)
 	{
-	    _id = id;
+	    id = _id;
 	    v = val.implementation();
 	    v->ref();
 	}

@@ -147,6 +147,8 @@ ushort HTMLFrameElementImpl::id() const
 
 void HTMLFrameElementImpl::parseAttribute(Attribute *attr)
 {
+    printf("parsing attribute %d=%s\n", attr->id, attr->value().string().ascii());
+    
     switch(attr->id)
     {
     case ATTR_SRC:
