@@ -39,6 +39,7 @@ class DOMString;
 class AttrImpl;
 class ElementImpl;
 class NamedAttrMapImpl;
+class DocumentImpl;
 
 /**
  * The <code> Attr </code> interface represents an attribute in an
@@ -87,6 +88,7 @@ class Attr : public Node
 {
     friend class Element;
     friend class Document;
+    friend class DocumentImpl;
     friend class HTMLDocument;
     friend class ElementImpl;
     friend class NamedAttrMapImpl;

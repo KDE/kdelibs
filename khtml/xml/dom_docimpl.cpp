@@ -363,16 +363,7 @@ ProcessingInstructionImpl *DocumentImpl::createProcessingInstruction ( const DOM
 
 Attr DocumentImpl::createAttribute( NodeImpl::Id id )
 {
-    return Attr();
-#warning FIXME
-#if 0
-    return createAttributeNS(DOMString(), 0);
-
-    AttrImpl *attr = new AttrImpl( docPtr(), name );
-    int exceptioncode = 0; // ### propagate
-    attr->setValue("", exceptioncode);
-    return attr;
-#endif
+    return new AttrImpl(0, new AttributeImpl(id, DOMString("").implementation()));
 }
 
 EntityReferenceImpl *DocumentImpl::createEntityReference ( const DOMString &name )
