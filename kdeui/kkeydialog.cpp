@@ -355,21 +355,6 @@ void KKeyChooser::init( KAccelActions& actions,
   //
   // CHOOSE KEY GROUP LAYOUT MANAGER
   //
-  /*QGridLayout *grid = new QGridLayout( d->fCArea, 6, 4, KDialog::spacingHint() );
-  grid->setRowStretch(0,10);
-  grid->setRowStretch(1,10);
-  grid->setRowStretch(2,10);
-  grid->setRowStretch(3,10);
-  grid->setRowStretch(4,10);
-  grid->setRowStretch(5,10);
-
-  grid->setColStretch(0,0);
-  grid->setColStretch(1,10);
-  grid->setColStretch(2,90);
-  grid->setColStretch(3,0);
-
-  grid->addRowSpacing(0,15);
-  grid->addRowSpacing(5,1);*/
   QGridLayout *grid = new QGridLayout( d->fCArea, 3, 4, KDialog::spacingHint() );
   grid->addRowSpacing( 0, 5 );
 

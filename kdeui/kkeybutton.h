@@ -26,7 +26,7 @@ public:
   virtual ~KKeyButton();
 
   void setShortcut( const KShortcut& cut );
-  KShortcut getShortcut() const
+  const KShortcut& getShortcut() const
     { return m_cut; }
 
   /**

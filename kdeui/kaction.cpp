@@ -2710,10 +2710,6 @@ void KActionCollection::insert( KAction* action )
   d->m_actionDict.insert( action->name(), action );
 
   emit inserted( action );
-
-  KShortcut cut( action->accel() );
-  //d->m_keyMap.insertAction( action->name(), action->plainText(), QString::null,
-  //    cuts, cuts );
 }
 
 void KActionCollection::remove( KAction* action )
