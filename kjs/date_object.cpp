@@ -691,11 +691,8 @@ time_t KJS::KRFCDate_parseDate(const UString &_date)
         if ((minute < 0) || (minute > 59))
            return result; // Invalid date
 
-        if (!*dateString)
-           return result;  // Invalid date
-
         // ':40 GMT'
-        if (*dateString != ':' && !isspace(*dateString))
+        if (*dateString && *dateString != ':' && !isspace(*dateString))
            return result;  // Invalid date
 
         // seconds are optional in rfc822 + rfc2822
@@ -707,8 +704,6 @@ time_t KJS::KRFCDate_parseDate(const UString &_date)
 
            if ((second < 0) || (second > 59))
               return result; // Invalid date
-        } else {
-           dateString++;
         }
 
         while(*dateString && isspace(*dateString))
