@@ -241,7 +241,8 @@ bool KConfigBase::entryIsImmutable(const QString &key) const
   if (aEntryData.bImmutable)
     return true;
 
-  entryKey.c_key = key.utf8().data();
+  QCString utf8_key = key.utf8();
+  entryKey.c_key = utf8_key.data();
   aEntryData = lookupData(entryKey); // Normal entry
   if (aEntryData.bImmutable)
     return true;
