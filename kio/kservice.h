@@ -77,6 +77,10 @@ public:
   virtual ~KService();
 
   /**
+   * @return the type of the service ("Application" or "Service").
+   */
+  virtual QString type() const { return m_strType; }
+  /**
    * @return the name of the service.
    */
   virtual QString name() const { return m_strName; }
@@ -210,6 +214,7 @@ public:
   static List allServices();
 
 private:
+  QString m_strType;
   QString m_strName;
   QString m_strExec;
   QString m_strCORBAExec;

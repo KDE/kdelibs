@@ -23,7 +23,6 @@
 #include "kservice.h"
 
 #include <qstring.h>
-#include <kmessagebox.h>
 
 #include <klocale.h>
 #include <kdebug.h>

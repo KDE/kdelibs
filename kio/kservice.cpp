@@ -48,8 +48,10 @@ KService::KService( const QString& _name, const QString& _exec, const QString &_
 		    const QStringList& _repo_ids,
 		    const QString& _lib, int _minor, int _major, const QStringList& deps )
 {
+  // Is this constructor useful ?
   m_bValid = true;
 
+  m_strType = "Application"; // hack
   m_strName = _name;
   m_strExec = _exec;
   m_strCORBAExec = _corbaexec;
@@ -79,6 +81,21 @@ KService::KService( KSimpleConfig& config )
   m_bValid = true;
 
   config.setDesktopGroup();
+  m_strType = config.readEntry( "Type" );
+  if ( m_strType.isEmpty() )
+  {
+    kdebug( KDEBUG_WARN, 7012, "The desktop entry file has no Type=... entry. "
+            "It should be \"Application\", or \"Service\"");
+    m_bValid = false;
+    return;
+  }
+  if ( m_strType != "Application" && m_strType != "Service" )
+  {
+    kdebug( KDEBUG_WARN, 7012, QString("The desktop entry file has Type=%1 "
+            "instead of \"Application\" or \"Service\"").arg(m_strType) );
+    m_bValid = false;
+    return;
+  }
   m_strExec = config.readEntry( "Exec" );
   m_strName = config.readEntry( "Name" );
   if ( m_strName.isEmpty() )
@@ -136,7 +153,7 @@ void KService::load( QDataStream& s )
 {
   Q_INT8 b;
 
-  s >> m_strName >> m_strExec >> m_strCORBAExec >> m_strIcon >> m_strTerminalOptions
+  s >> m_strType >> m_strName >> m_strExec >> m_strCORBAExec >> m_strIcon >> m_strTerminalOptions
     >> m_strPath >> m_strComment >> m_lstServiceTypes >> b >> m_mapProps
     >> m_strActivationMode >> m_strLibrary >> m_libraryMajor >> m_libraryMinor >> m_lstRepoIds;
   m_bAllowAsDefault = b;
@@ -149,7 +166,7 @@ void KService::save( QDataStream& s )
   KSycocaEntry::save( s );
   Q_INT8 b = m_bAllowAsDefault;
 
-  s << m_strName << m_strExec << m_strCORBAExec << m_strIcon << m_strTerminalOptions
+  s << m_strType << m_strName << m_strExec << m_strCORBAExec << m_strIcon << m_strTerminalOptions
     << m_strPath << m_strComment << m_lstServiceTypes << b << m_mapProps
     << m_strActivationMode << m_strLibrary << m_libraryMajor << m_libraryMinor << m_lstRepoIds;
 }
@@ -172,7 +189,9 @@ KService::PropertyPtr KService::property( const QString& _name ) const
 {
   QVariant* p = 0;
 
-  if ( _name == "Name" )
+  if ( _name == "Type" )
+    p = new QVariant( m_strType );
+  else if ( _name == "Name" )
     p = new QVariant( m_strName );
   else if ( _name == "Exec" )
     p = new QVariant( m_strExec );
@@ -224,6 +243,7 @@ QStringList KService::propertyNames() const
   for( ; it != m_mapProps.end(); ++it )
     res.append( it.key() );
 
+  res.append( "Type" );
   res.append( "Name" );
   res.append( "Comment" );
   res.append( "Icon" );
