@@ -831,7 +831,6 @@ void B2Style::drawKToolBar(QPainter *p, int x, int y, int w, int h,
                            const QColorGroup &g, bool)
 {
     qDrawShadePanel(p, x, y, w, h, g, false, 1, &g.brush(QColorGroup::Button));
-    p->setPen(g.button());
 }
 
 void B2Style::drawKToolBarButton(QPainter *p, int x, int y, int w, int h,
