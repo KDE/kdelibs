@@ -99,7 +99,8 @@ namespace KJS {
 		   ErrBaseNoRef,
 		   ErrExprNoObject,
 		   ErrNoConstruct,
-		   ErrResNoObject
+		   ErrResNoObject,
+		   ErrNoDefault
   };
 
   // XChar2b and QChar compatible character representation

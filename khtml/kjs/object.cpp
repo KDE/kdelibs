@@ -26,6 +26,7 @@
 #include "nodes.h"
 #include "math_object.h"
 
+
 namespace KJS {
   const double NaN = 0.0/0.;
   const double Inf = 1.0/.0;
@@ -115,7 +116,8 @@ KJSO *KJSO::executeCall(KJSO *thisV, KJSArgList *args)
   KJSWorld::context = new KJSContext(ctype, save, func, args, thisV);
 
   // assign user supplied arguments to parameters
-  func->processParameters(args);
+  if (args)
+    func->processParameters(args);
 
   Ptr compl = func->execute();
 

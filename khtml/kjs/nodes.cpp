@@ -735,7 +735,9 @@ KJSO *AlertNode::evaluate()
   Ptr s = toString(v);
 
   cout << "---> " << s->sVal().ascii() << endl;
-  QMessageBox::information(0L, "KJS", QString(s->sVal().ascii()));
+  UString u = s->sVal();
+  QString str = QString((QChar*) u.unicode(), u.length());
+  QMessageBox::information(0L, "KJS", str);
 
   return new KJSCompletion(Normal);
 }

@@ -34,7 +34,8 @@ KJSO *KJS::toPrimitive(KJSO *obj, Type preferred)
     return obj->ref();
   }
 
-  /* TODO */
+  return obj->defaultValue();
+  /* TODO: is there still any need to throw a runtime error _here_ ? */
 }
 
 // ECMA 9.2

@@ -131,23 +131,36 @@ void KJSO::deleteProperty(const CString &p)
   }
 }
 
-// ECMA 8.6.2.6
-KJSO KJSO::defaultValue(Hint hint)
+// ECMA 8.6.2.6 (new draft)
+KJSO* KJSO::defaultValue(Hint hint)
 {
+  Ptr o, s;
+
   if (hint == NoneHint)
     hint = NumberHint;
 
-  if (hint == StringHint) {
-    KJSO *o = get("toString");
-    if (!o->isA(Undefined)) {
-      //      o.toString();
-      /* TODO */
-    }
+  if (hint == StringHint)
+    o = get("toString");
+  else
     o = get("valueOf");
-    /* TODO */
-  } else {
-    KJSO *o = get("valueOf");
-    /* TODO */
+
+  if (o->implementsCall()) { // spec says "not primitive type" but ...
+    s = o->executeCall(this, 0L);
+    if (!s->isA(Object))
+      return s->ref();
   }
+
+  if (hint == StringHint)
+    o = get("valueOf");
+  else
+    o = get("toString");
+
+  if (o->implementsCall()) {
+    s = o->executeCall(this, 0L);
+    if (!s->isA(Object))
+      return s->ref();
+  }
+
+  return new KJSError(ErrNoDefault, this);
 }
 

@@ -68,7 +68,7 @@ public:
   void put(const CString &p, KJSO *v, int attr = None);
   bool canPut(const CString &p) const;
   void deleteProperty(const CString &p);
-  KJSO defaultValue(Hint hint = NoneHint);
+  KJSO *defaultValue(Hint hint = NoneHint);
   void dump(int level = 0);
   virtual KJSO *construct() { return 0L; }
 
@@ -245,6 +245,7 @@ class KJSObject : public KJSO {
 public:
   KJSObject() {}
   Type type() const { return Object; }
+  virtual SubType subType() const = 0;
 };
 
 class KJSScope : public KJSO {
