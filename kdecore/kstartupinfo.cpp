@@ -61,7 +61,6 @@ DEALINGS IN THE SOFTWARE.
 #include <kwinmodule.h> 
 #include <kxmessages.h> 
 #include <kwin.h>
-extern Time qt_x_time;
 #endif
 
 static const char* const NET_STARTUP_MSG = "_NET_STARTUP_INFO";
