@@ -1054,6 +1054,8 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
                         scriptSrc = parser->doc()->completeURL(khtml::parseURL( a->value() ).string() );
                     if ( ( a = currToken.attrs->getIdItem( ATTR_CHARSET ) ) )
                         scriptSrcCharset = a->value().string().stripWhiteSpace();
+                    if ( scriptSrcCharset.isEmpty() )
+                        scriptSrcCharset = parser->doc()->view()->part()->encoding();
                     a = currToken.attrs->getIdItem( ATTR_LANGUAGE );
                 }
                 javascript = true;
