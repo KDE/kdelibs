@@ -1783,15 +1783,35 @@ void KApplication::invokeHTMLHelp( const QString& _filename, const QString& topi
 
 void KApplication::invokeMailer(const QString &address, const QString &subject)
 {
-   KURL mailtoURL;
-   mailtoURL.setProtocol("mailto");
-   mailtoURL.setPath(address);
-   mailtoURL.setQuery("?subject=" + KURL::encode_string(subject));
-   invokeMailer(mailtoURL);
+   invokeMailer(address, QString::null, QString::null, subject, QString::null, QString::null, QStringList());
 }
 
-
 void KApplication::invokeMailer(const KURL &mailtoURL)
+{
+   QString address = KURL::decode_string(mailtoURL.path()), subject, cc, bcc, body, attach;
+   QStringList queries = QStringList::split('&', mailtoURL.query().mid(1));
+   for (QStringList::Iterator it = queries.begin(); it != queries.end(); ++it)
+     if ((*it).startsWith("subject="))
+       subject = KURL::decode_string((*it).mid(8));
+     else
+     if ((*it).startsWith("cc="))
+       cc = KURL::decode_string((*it).mid(3));
+     else
+     if ((*it).startsWith("bcc="))
+       bcc = KURL::decode_string((*it).mid(4));
+     else
+     if ((*it).startsWith("body="))
+       body = KURL::decode_string((*it).mid(5));
+     //else
+     //  if ((*it).startsWith("attach="))
+     //    attach = KURL::decode_string((*it).mid(7));
+
+   invokeMailer( address, cc, bcc, subject, body, QString::null, QStringList() );
+}
+
+void KApplication::invokeMailer(const QString &to, const QString &cc, const QString &bcc,
+                                const QString &subject, const QString &body,
+                                const QString & /*messageFile TODO*/, const QStringList &attachURLs)
 {
    KConfig config("emaildefaults");
    config.setGroup( QString::fromLatin1("PROFILE_Default") );
@@ -1808,24 +1828,6 @@ void KApplication::invokeMailer(const KURL &mailtoURL)
    if (config.readBoolEntry("TerminalClient", false))
       command = "konsole -e " + command;
 
-   QString address = KURL::decode_string(mailtoURL.path()), subject, cc, bcc, body, attach;
-   QStringList queries = QStringList::split('&', mailtoURL.query().mid(1));
-   for (QStringList::Iterator it = queries.begin(); it != queries.end(); ++it)
-     if ((*it).startsWith("subject="))
-       subject = KURL::decode_string((*it).mid(8));
-     else
-     if ((*it).startsWith("cc="))
-       cc = KURL::decode_string((*it).mid(3));
-     else
-     if ((*it).startsWith("bcc="))
-       bcc = KURL::decode_string((*it).mid(4));
-     else
-     if ((*it).startsWith("body="))
-       body = KURL::decode_string((*it).mid(5));
-     else
-     if ((*it).startsWith("attach="))
-       attach = KURL::decode_string((*it).mid(7));
-
    // WARNING: This will only work as long as the path of the
    // email client doesn't contain spaces (this is currently
    // impossible due to an evil hack in kcmemail but should
@@ -1833,10 +1835,13 @@ void KApplication::invokeMailer(const KURL &mailtoURL)
    QStringList cmdTokens = QStringList::split(' ', command.simplifyWhiteSpace());
    QString cmd = cmdTokens[0];
    cmdTokens.remove(cmdTokens.begin());
+   QString lastToken;
+   QStringList newTokens;
 
    for (QStringList::Iterator it = cmdTokens.begin(); it != cmdTokens.end(); ++it)
+   {
      if ((*it).find("%t") >= 0)
-       (*it).replace(QRegExp("%t"), address);
+       (*it).replace(QRegExp("%t"), to);
      else
      if ((*it).find("%s") >= 0)
        (*it).replace(QRegExp("%s"), subject);
@@ -1851,8 +1856,24 @@ void KApplication::invokeMailer(const KURL &mailtoURL)
        (*it).replace(QRegExp("%B"), body);
      else
      if ((*it).find("%A") >= 0)
-       (*it).replace(QRegExp("%A"), attach);
-
+     {
+         QStringList::ConstIterator urlit = attachURLs.begin();
+         QStringList::ConstIterator urlend = attachURLs.end();
+         if ( urlit != urlend )
+         {
+             (*it).replace(QRegExp("%A"), (*urlit));
+             ++urlit;
+             QStringList::Iterator nextit = it; nextit++;
+             for ( ; urlit != urlend ; ++urlit )
+             {
+                 it = cmdTokens.insert( nextit, lastToken );
+                 it = cmdTokens.insert( nextit, (*urlit) );
+             }
+         } else
+             (*it).replace(QRegExp("%A"), QString::null);
+     }
+     lastToken = (*it);
+   }
    QString error;
 
    if (kdeinitExec(cmd, cmdTokens, &error))

@@ -308,6 +308,22 @@ public:
   void invokeMailer( const KURL &mailtoURL );
 
   /**
+   * Convenience method; invokes the standard email application.
+   *
+   * All parameters are optional.
+   *
+   * @param to          The destination address.
+   * @param cc          The Cc field
+   * @param bcc         The Bcc field
+   * @param subject     Subject string
+   * @param body        A string containing the body of the mail (exclusive with messageFile)
+   * @param messageFile A file (URL) containing the body of the mail (exclusive with body) - currently unsupported
+   * @param attachURLs  List of URLs to be attached to the mail.
+   */
+  void invokeMailer(const QString &to, const QString &cc, const QString &bcc,
+                    const QString &subject, const QString &body,
+                    const QString &messageFile = QString::null, const QStringList &attachURLs = QStringList());
+  /**
    * Invokes the standard browser.
    *
    * @param url The destination address
@@ -819,7 +835,7 @@ public:
        See @ref QApplication::saveState() for documentation.
 
        This function is just a convenience version to avoid subclassing KApplication.
-       
+
        Return true to indicate a successful state save or false to
        indicate a problem and to halt the shutdown process (will
        implicitly call sm.cancel() ).
@@ -829,7 +845,7 @@ public:
        See @ref QApplication::commitData() for documentation.
 
        This function is just a convenience version to avoid subclassing KApplication.
-       
+
        Return true to indicate a successful commit of data or false to
        indicate a problem and to halt the shutdown process (will
        implicitly call sm.cancel() ).
