@@ -29,29 +29,30 @@
          Somehow Netscape manages to interpret "inherit" as bright green. 
          Yuck.  */
 
-/* 
-BODY { background-color: rgb(255,255,255);
-       font-family: Helvetica, Arial, sans-serif; /* or just generic font? 
-       color: rgb(0,0,0);
-       margin-top: 1.5em;
-       margin-left: 1.5em;
-       margin-bottom: 1.5em;
-       margin-right: 1em;
-}*/
-  
+/* Make the main contents of the page not slide up under the top banner */
+
 #bodytext { position: relative;
-	    top: 100px;
-	   }
+	    top: 100px;	   }
 
-left, left :link, center, center :link, right, right :link { color: white;
-	background-color: #525052; }
+/* Nice link colors for the main text, and bottom navigation */
 
-left, left :visited, center, center :visited, right, right :visited { color: #cccccc;
-	background-color: #525052; }
+:link { color: rgb(170,0,0);
+        background-color: white; /* should be inherit */ }
+:visited { color: rgb(170,0,85);
+           background-color: white; /* should be inherit */ }
+:active { color: rgb(170,0,0);
+          background-color: white; /* should be inherit */ }
 
-:active {color: #cccccc; 
+/* Link colors for the top navigation */
+
+.left, .left :link, .center, .center :link, .right, .right :link { color: rgb(255,255,255);
+	background-color: rgb(82,80,82); }
+
+.left, .left :visited, .center, .center :visited, .right, .right :visited { color: rgb(186,182,186);
+	background-color: rgb(82,80,82); }
+
+:active {color: rgb(186,182,186); 
 	 background-color: transparent; }
-
 
 TABLE { padding: 5px; } 
 
@@ -61,13 +62,13 @@ TABLE { padding: 5px; }
 
 /* set Navigation header to span width of page, no margins */
 
-.navheader { width: 100%; 
+/* .navheader { width: 100%; 
              margin-left: 0px;
              margin-right: 0px; 
              background: url("common/doctop2.png") repeat-x; }
-}
+}  */
 
-.headline { background: url("doctop1a.png") no-repeat; }
+/* .headline { background: url("doctop1a.png") no-repeat; } */
 
 /* tile the lines on the bottom image */
 
