@@ -1,5 +1,7 @@
 2004-01-25  Dirk Mueller  <mueller@kde.org>
 
+	* misc/loader.cpp (class ImageSource): by default, we're rewindable.
+
 	* rendering/render_block.cpp (positionNewFloats): when somebody says
 	clear: both;, he usually means it (#68068).
 
