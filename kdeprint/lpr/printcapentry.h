@@ -38,6 +38,7 @@ public:
 		value = f.value;
 		return (*this);
 	}
+	QString toString() const;
 
 	Type	type;
 	QString	name;

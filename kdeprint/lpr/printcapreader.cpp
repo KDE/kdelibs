@@ -139,7 +139,17 @@ PrintcapEntry* PrintcapReader::nextEntry()
                     if (p == -1)
                     {
                         f.type = Field::Boolean;
-                        f.name = (*it);
+			p = (*it).find('@');
+			if (p == -1)
+			{
+				f.name = (*it);
+				f.value = "1";
+			}
+			else
+			{
+				f.name = (*it).left(p);
+				f.value = "0";
+			}
                     }
                     else
                     {

@@ -27,6 +27,7 @@
 #include "susehandler.h"
 #include "lprsettings.h"
 #include "driver.h"
+#include "editentrydialog.h"
 
 #include <qfileinfo.h>
 #include <qlist.h>
@@ -35,6 +36,8 @@
 #include <kdebug.h>
 #include <kprinter.h>
 #include <kprocess.h>
+#include <kaction.h>
+#include <kmessagebox.h>
 
 #include <stdlib.h>
 #include <unistd.h>
@@ -47,6 +50,7 @@ KMLprManager::KMLprManager(QObject *parent, const char *name)
 	m_entries.setAutoDelete(true);
 
 	m_lpchelper = new LpcHelper(this);
+	m_currentprinter = 0;
 
 	setHasManagement(getuid() == 0);
 	setPrinterOperationMask(
@@ -429,3 +433,35 @@ QString KMLprManager::printOptions(KPrinter *prt)
 	}
 	return QString::null;
 }
+
+void KMLprManager::createPluginActions(KActionCollection *coll)
+{
+	KAction	*act = new KAction(i18n("&Edit printap entry..."), "kdeprint_report", 0, this, SLOT(slotEditPrintcap()), coll, "plugin_editprintcap");
+	act->setGroup("plugin");
+}
+
+void KMLprManager::validatePluginActions(KActionCollection *coll, KMPrinter *prt)
+{
+	m_currentprinter = prt;
+	coll->action("plugin_editprintcap")->setEnabled(hasManagement() && prt && !prt->isSpecial());
+}
+
+void KMLprManager::slotEditPrintcap()
+{
+	if (!m_currentprinter ||
+	    KMessageBox::warningYesNo(NULL,
+	    i18n("Editing a printcap entry manually should only be "
+		 "done by confirmed system administrator. This may "
+		 "prevent your printer from working. Do you want to "
+		 "continue?"), QString::null, QString::null, QString::null,
+	    "editPrintcap") == KMessageBox::No)
+		return;
+
+	PrintcapEntry	*entry = findEntry(m_currentprinter);
+	EditEntryDialog	dlg(entry, NULL);
+	if (dlg.exec())
+	{
+	}
+}
+
+#include "kmlprmanager.moc"

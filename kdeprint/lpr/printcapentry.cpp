@@ -19,6 +19,25 @@
 
 #include "printcapentry.h"
 
+QString Field::toString() const
+{
+	QString	s = name;
+	switch (type)
+	{
+		case String:
+			s += ("=" + value);
+			break;
+		case Integer:
+			s += ("#" + value);
+			break;
+		case Boolean:
+			if (!value.toInt())
+				s += "@";
+			break;
+	}
+	return s;
+}
+
 bool PrintcapEntry::writeEntry(QTextStream& t)
 {
 	t << comment << endl;

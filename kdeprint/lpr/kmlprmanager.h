@@ -34,6 +34,7 @@ class KPrinter;
 
 class KMLprManager : public KMManager
 {
+	Q_OBJECT
 public:
 	KMLprManager(QObject *parent = 0, const char *name = 0);
 
@@ -53,6 +54,12 @@ public:
 	LpcHelper* lpcHelper()	{ return m_lpchelper; }
 	QString printOptions(KPrinter*);
 
+	void createPluginActions(KActionCollection*);
+	void validatePluginActions(KActionCollection*, KMPrinter*);
+
+protected slots:
+	void slotEditPrintcap();
+
 protected:
 	void listPrinters();
 	void initHandlers();
@@ -68,6 +75,7 @@ private:
 	QDict<PrintcapEntry>	m_entries;
 	QDateTime		m_updtime;
 	LpcHelper		*m_lpchelper;
+	KMPrinter		*m_currentprinter;
 };
 
 #endif
