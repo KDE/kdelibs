@@ -145,6 +145,8 @@ public:
     virtual void cursorPos(int offset, int &_x, int &_y, int &height);
     virtual void absolutePosition(int &/*xPos*/, int &/*yPos*/);
 
+    virtual short marginLeft() const { return m_style->marginLeft().minWidth(0); }
+    virtual short marginRight() const { return m_style->marginRight().minWidth(0); }    
 
 protected:
     short m_minWidth;
