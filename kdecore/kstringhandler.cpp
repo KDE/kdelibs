@@ -397,20 +397,21 @@ QString KStringHandler::rsqueeze( const QString & str, uint maxlen )
   else return str;
 }
 
-QString KStringHandler::lEmSqueeze(QString name, const QFontMetrics& fontMetrics, uint maxlen)
+QString KStringHandler::lEmSqueeze( const QString &name, const QFontMetrics& fontMetrics, uint maxlen)
 {
   return lPixelSqueeze(name, fontMetrics, fontMetrics.maxWidth() * maxlen);
 }
 
-QString KStringHandler::lPixelSqueeze(QString name, const QFontMetrics& fontMetrics, uint maxPixels)
+QString KStringHandler::lPixelSqueeze( const QString& name, const QFontMetrics& fontMetrics, uint maxPixels)
 {
   uint nameWidth = fontMetrics.width(name);
+  QString tmp = name;
   
   if (maxPixels < nameWidth)
   {
     maxPixels -= fontMetrics.width("...");
     const uint em = fontMetrics.maxWidth();
-    while (maxPixels < nameWidth && !name.isEmpty())
+    while (maxPixels < nameWidth && !tmp.isEmpty())
     {
       int delta = (nameWidth - maxPixels) / em;
 
@@ -419,29 +420,30 @@ QString KStringHandler::lPixelSqueeze(QString name, const QFontMetrics& fontMetr
         break;
       }
 
-      name.remove(0, delta);
-      nameWidth = fontMetrics.width(name);
+      tmp.remove(0, delta);
+      nameWidth = fontMetrics.width(tmp);
     }
-    return ("..." + name);
+    return ("..." + tmp);
   }
 
-  return name;
+  return tmp;
 }
 
-QString KStringHandler::cEmSqueeze(QString name, const QFontMetrics& fontMetrics, uint maxlen)
+QString KStringHandler::cEmSqueeze(const QString& name, const QFontMetrics& fontMetrics, uint maxlen)
 {
   return cPixelSqueeze(name, fontMetrics, fontMetrics.maxWidth() * maxlen);
 }
 
-QString KStringHandler::cPixelSqueeze(QString name, const QFontMetrics& fontMetrics, uint maxPixels)
+QString KStringHandler::cPixelSqueeze(const QString& name, const QFontMetrics& fontMetrics, uint maxPixels)
 {
   uint nameWidth = fontMetrics.width(name);
+  QString tmp = name;
   
   if (maxPixels < nameWidth)
   {
     maxPixels -= fontMetrics.width("...");
     const uint em = fontMetrics.maxWidth();
-    while (maxPixels < nameWidth && !name.isEmpty())
+    while (maxPixels < nameWidth && !tmp.isEmpty())
     {
       int delta = (nameWidth - maxPixels) / em;
 
@@ -450,30 +452,31 @@ QString KStringHandler::cPixelSqueeze(QString name, const QFontMetrics& fontMetr
         break;
       }
 
-      name.remove((name.length() / 2) - (delta / 2), delta);
-      nameWidth = fontMetrics.width(name);
+      tmp.remove((tmp.length() / 2) - (delta / 2), delta);
+      nameWidth = fontMetrics.width(tmp);
     }
 
-    name.insert((name.length() + 1) / 2, "...");
+    tmp.insert((tmp.length() + 1) / 2, "...");
   }
 
-  return name;
+  return tmp;
 }
 
-QString KStringHandler::rEmSqueeze(QString name, const QFontMetrics& fontMetrics, uint maxlen)
+QString KStringHandler::rEmSqueeze(const QString& name, const QFontMetrics& fontMetrics, uint maxlen)
 {
   return rPixelSqueeze(name, fontMetrics, fontMetrics.maxWidth() * maxlen);
 }
 
-QString KStringHandler::rPixelSqueeze(QString name, const QFontMetrics& fontMetrics, uint maxPixels)
+QString KStringHandler::rPixelSqueeze(const QString& name, const QFontMetrics& fontMetrics, uint maxPixels)
 {
   uint nameWidth = fontMetrics.width(name);
+  QString tmp = name;
 
   if (maxPixels < nameWidth)
   {
     maxPixels -= fontMetrics.width("...");
     const uint em = fontMetrics.maxWidth();
-    while (maxPixels < nameWidth && !name.isEmpty())
+    while (maxPixels < nameWidth && !tmp.isEmpty())
     {
       int delta = (nameWidth - maxPixels) / em;
 
@@ -482,14 +485,14 @@ QString KStringHandler::rPixelSqueeze(QString name, const QFontMetrics& fontMetr
         break;
       }
 
-      name.remove(name.length() - delta, delta);
-      nameWidth = fontMetrics.width(name);
+      tmp.remove(tmp.length() - delta, delta);
+      nameWidth = fontMetrics.width(tmp);
     }
 
-    return (name + "...");
+    return (tmp + "...");
   }
 
-  return name;
+  return tmp;
 }
 
 ///// File name patterns (like *.txt)
@@ -609,7 +612,7 @@ KStringHandler::perlSplit(const QRegExp & sep, const QString & s, uint max)
  QString
 KStringHandler::tagURLs( const QString& text )
 {
-    /*static*/ QRegExp urlEx("(www\\.|(f|ht)tp(|s)://)[\\d\\w\\./,:_~\\?=&;#@\\-\\+]+[\\d\\w/]");
+    /*static*/ QRegExp urlEx("(www\\.(?!\\.)|(f|ht)tp(|s)://)[\\d\\w\\./,:_~\\?=&;#@\\-\\+\\%]+[\\d\\w/]");
 
     QString richText( text );
     int urlPos = 0, urlLen;
@@ -617,9 +620,15 @@ KStringHandler::tagURLs( const QString& text )
     {
         urlLen = urlEx.matchedLength();
         QString href = richText.mid( urlPos, urlLen );
-        QString anchor( "<a href=\"%1\">%2</a>" );
-        anchor = anchor.arg( href ).arg( href );
+        // Qt doesn't support (?<=pattern) so we do it here
+        if((urlPos > 0) && richText[urlPos-1].isLetterOrNumber()){
+            urlPos++;
+            continue;
+        }
+        // Don't use QString::arg since %01, %20, etc could be in the string
+        QString anchor = "<a href=\"" + href + "\">" + href + "</a>";
         richText.replace( urlPos, urlLen, anchor );
+
 
         urlPos += anchor.length();
     }

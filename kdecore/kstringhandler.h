@@ -218,7 +218,7 @@ public:
      * @return the modified string
      * @since 3.2
      */
-    static QString lEmSqueeze( QString name, 
+    static QString lEmSqueeze( const QString & name, 
                                const QFontMetrics& fontMetrics, 
                                uint maxlen = 30 );
 
@@ -231,7 +231,7 @@ public:
      * @return the modified string
      * @since 3.2
      */
-    static QString lPixelSqueeze( QString name, 
+    static QString lPixelSqueeze( const QString & name, 
                                   const QFontMetrics& fontMetrics, 
                                   uint maxPixels );
 
@@ -253,7 +253,7 @@ public:
      * @return the modified string
      * @since 3.2
      */
-    static QString cEmSqueeze( QString name, 
+    static QString cEmSqueeze( const QString & name, 
                                const QFontMetrics& fontMetrics, 
                                uint maxlen = 30 );
 
@@ -266,7 +266,7 @@ public:
      * @return the modified string
      * @since 3.2
      */
-    static QString cPixelSqueeze( QString name,
+    static QString cPixelSqueeze( const QString & name,
                                   const QFontMetrics& fontMetrics, 
                                   uint maxPixels );
 
@@ -288,7 +288,7 @@ public:
      * @return the modified string
      * @since 3.2
      */
-    static QString rEmSqueeze( QString name, 
+    static QString rEmSqueeze( const QString & name, 
                                const QFontMetrics& fontMetrics, 
                                uint maxlen = 30 );
 
@@ -301,7 +301,7 @@ public:
      * @return the modified string
      * @since 3.2
      */
-    static QString rPixelSqueeze( QString name, 
+    static QString rPixelSqueeze( const QString & name, 
                                   const QFontMetrics& fontMetrics,
                                   uint maxPixels );
 
