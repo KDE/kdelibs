@@ -187,6 +187,8 @@ private:
   void forgetDirInternal( KDirLister *lister, const KURL &_url );
   // common for slotRedirection and FileRenamed
   void renameDir( const KURL &oldUrl, const KURL &url );
+  // common for deleteUnmarkedItems and FilesRemoved
+  void deleteDir( const KURL& dirUrl );
   // remove directory from cache (itemsCached), including all child dirs
   void removeDirFromCache( const KURL& dir );
   // helper for renameDir

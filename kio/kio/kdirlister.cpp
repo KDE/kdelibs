@@ -608,7 +608,25 @@ void KDirListerCache::FilesAdded( const KURL &dir )
 
 void KDirListerCache::FilesRemoved( const KURL::List &fileList )
 {
-  kdWarning(7004) << k_funcinfo << "NOT IMPLEMENTED YET!" << endl;
+  kdDebug(7004) << k_funcinfo << endl;
+  KURL::List::ConstIterator it = fileList.begin();
+  for ( ; it != fileList.end() ; ++it )
+  {
+    // emit the deleteItem signal if this file was shown in any view
+    KFileItem* fileitem = findByURL( 0, *it );
+    if ( fileitem )
+    {
+      KURL parentDir( fileitem->url() );
+      parentDir.setPath( parentDir.directory() );
+      QPtrList<KDirLister> *listers = urlsCurrentlyHeld[parentDir.url()];
+      if ( listers )
+        for ( KDirLister *kdl = listers->first(); kdl; kdl = listers->next() )
+          kdl->emitDeleteItem( fileitem );
+    }
+    // in case of a dir, check if we have any known children, there's much to do in that case
+    // (stopping jobs, removing dirs from cache etc.)
+    deleteDir( *it );
+  }
 }
 
 // TODO:
@@ -1231,65 +1249,7 @@ void KDirListerCache::deleteUnmarkedItems( QPtrList<KDirLister> *listers, KFileI
 
       if ( really )
       {
-        // unregister and remove the childs of the deleted item.
-        // Idea: tell all the KDirListers that they should forget the dir
-        //       and then remove it from the cache.
-
-        QDictIterator<DirItem> itu( itemsInUse );
-        while ( itu.current() )
-        {
-          KURL deletedUrl = itu.currentKey();
-          if ( item->url().isParentOf( deletedUrl ) )
-          {
-            // stop all jobs for deletedUrl
-
-            QPtrList<KDirLister> *kdls = urlsCurrentlyListed[deletedUrl.url()];
-            if ( kdls )  // yeah, I lack good names
-            {
-              // we need a copy because stop modifies the list
-              kdls = new QPtrList<KDirLister>( *kdls );
-              for ( KDirLister *kdl = kdls->first(); kdl; kdl = kdls->next() )
-                stop( kdl, deletedUrl );
-
-              delete kdls;
-            }
-
-            // tell listers holding deletedUrl to forget about it
-            // this will stop running updates for deletedUrl as well
-
-            kdls = urlsCurrentlyHeld[deletedUrl.url()];
-            if ( kdls )
-            {
-              // we need a copy because forgetDirs modifies the list
-              kdls = new QPtrList<KDirLister>( *kdls );
-
-              for ( KDirLister *kdl = kdls->first(); kdl; kdl = kdls->next() )
-              {
-                // lister's root is the deleted item
-                if ( kdl->d->url == deletedUrl )
-                {
-                  forgetDirs( kdl );
-                  emit kdl->deleteItem( kdl->d->rootFileItem );
-                  kdl->d->rootFileItem = 0;
-                }
-                else
-                  forgetDirs( kdl, deletedUrl );
-              }
-              delete kdls;
-            }
-
-            // delete the entry for deletedUrl - should not be needed, it's in
-            // items cached now
-
-            DirItem *dir = itemsInUse.take( deletedUrl.url() );
-            Q_ASSERT( !dir );
-          }
-          else
-            ++itu;
-        }
-
-        // remove the children from the cache
-        removeDirFromCache( item->url() );
+        deleteDir( item->url() );
 
         // finally actually delete the item
         lstItems->take();
@@ -1298,6 +1258,69 @@ void KDirListerCache::deleteUnmarkedItems( QPtrList<KDirLister> *listers, KFileI
     }
     else
       lstItems->next();
+}
+
+void KDirListerCache::deleteDir( const KURL& dirUrl )
+{
+  // unregister and remove the childs of the deleted item.
+  // Idea: tell all the KDirListers that they should forget the dir
+  //       and then remove it from the cache.
+
+  QDictIterator<DirItem> itu( itemsInUse );
+  while ( itu.current() )
+  {
+    KURL deletedUrl = itu.currentKey();
+    if ( dirUrl.isParentOf( deletedUrl ) )
+    {
+      // stop all jobs for deletedUrl
+
+      QPtrList<KDirLister> *kdls = urlsCurrentlyListed[deletedUrl.url()];
+      if ( kdls )  // yeah, I lack good names
+      {
+        // we need a copy because stop modifies the list
+        kdls = new QPtrList<KDirLister>( *kdls );
+        for ( KDirLister *kdl = kdls->first(); kdl; kdl = kdls->next() )
+          stop( kdl, deletedUrl );
+
+        delete kdls;
+      }
+
+      // tell listers holding deletedUrl to forget about it
+      // this will stop running updates for deletedUrl as well
+
+      kdls = urlsCurrentlyHeld[deletedUrl.url()];
+      if ( kdls )
+      {
+        // we need a copy because forgetDirs modifies the list
+        kdls = new QPtrList<KDirLister>( *kdls );
+
+        for ( KDirLister *kdl = kdls->first(); kdl; kdl = kdls->next() )
+        {
+          // lister's root is the deleted item
+          if ( kdl->d->url == deletedUrl )
+          {
+            forgetDirs( kdl );
+            emit kdl->deleteItem( kdl->d->rootFileItem );
+            kdl->d->rootFileItem = 0;
+          }
+          else
+            forgetDirs( kdl, deletedUrl );
+        }
+        delete kdls;
+      }
+
+      // delete the entry for deletedUrl - should not be needed, it's in
+      // items cached now
+
+      DirItem *dir = itemsInUse.take( deletedUrl.url() );
+      Q_ASSERT( !dir );
+    }
+    else
+      ++itu;
+  }
+
+  // remove the children from the cache
+  removeDirFromCache( dirUrl );
 }
 
 void KDirListerCache::processPendingUpdates()
