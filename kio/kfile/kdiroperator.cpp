@@ -171,45 +171,73 @@ void KDirOperator::setSorting( QDir::SortSpec spec )
 
 void KDirOperator::resetCursor()
 {
-    QApplication::restoreOverrideCursor();
-    progress->hide();
+   QApplication::restoreOverrideCursor();
+   progress->hide();
 }
 
 void KDirOperator::insertViewDependentActions()
 {
-    // If we have a new view actionCollection(), insert its actions
-    // into viewActionMenu.
+   // If we have a new view actionCollection(), insert its actions
+   // into viewActionMenu.
 
-    if( m_fileView && viewActionCollection != m_fileView->actionCollection() )
-    {
-        viewActionCollection = m_fileView->actionCollection();
+   if( !m_fileView )
+      return;
+       
+   if ( (viewActionMenu->popupMenu()->count() == 0) || 			// Not yet initialized or...
+        (viewActionCollection != m_fileView->actionCollection()) )	// ...changed since.
+   {
+      if (viewActionCollection)
+      {
+         disconnect( viewActionCollection, SIGNAL( inserted( KAction * )),
+               this, SLOT( slotViewActionAdded( KAction * )));
+         disconnect( viewActionCollection, SIGNAL( removed( KAction * )),
+               this, SLOT( slotViewActionRemoved( KAction * )));
+      }
+    
+      viewActionMenu->popupMenu()->clear();
+//      viewActionMenu->insert( shortAction );
+//      viewActionMenu->insert( detailedAction );
+//      viewActionMenu->insert( actionSeparator );
+      viewActionMenu->insert( myActionCollection->action( "short view" ) );
+      viewActionMenu->insert( myActionCollection->action( "detailed view" ) );
+      viewActionMenu->insert( actionSeparator );
+      viewActionMenu->insert( showHiddenAction );
+//      viewActionMenu->insert( myActionCollection->action( "single" ));
+      viewActionMenu->insert( separateDirsAction );
+      // Warning: adjust slotViewActionAdded() and slotViewActionRemoved()
+      // when you add/remove actions here!
 
-        if ( !viewActionCollection->isEmpty() ) {
-            viewActionMenu->insert( d->viewActionSeparator );
+      viewActionCollection = m_fileView->actionCollection();
+      if (!viewActionCollection)
+         return;
 
-            // first insert the normal actions, then the grouped ones
-            QStringList groups = viewActionCollection->groups();
-            groups.prepend( QString::null ); // actions without group
-            QStringList::ConstIterator git = groups.begin();
-            KActionPtrList list;
-            KAction *sep = actionCollection()->action("separator");
-            for ( ; git != groups.end(); ++git )
-            {
-                if ( git != groups.begin() )
-                    viewActionMenu->insert( sep );
+      if ( !viewActionCollection->isEmpty() ) 
+      {
+         viewActionMenu->insert( d->viewActionSeparator );
+
+         // first insert the normal actions, then the grouped ones
+         QStringList groups = viewActionCollection->groups();
+         groups.prepend( QString::null ); // actions without group
+         QStringList::ConstIterator git = groups.begin();
+         KActionPtrList list;
+         KAction *sep = actionCollection()->action("separator");
+         for ( ; git != groups.end(); ++git )
+         {
+            if ( git != groups.begin() )
+               viewActionMenu->insert( sep );
                 
-                list = viewActionCollection->actions( *git );
-                KActionPtrList::ConstIterator it = list.begin();
-                for ( ; it != list.end(); ++it )
-                    viewActionMenu->insert( *it );
-            }
-        }
+            list = viewActionCollection->actions( *git );
+            KActionPtrList::ConstIterator it = list.begin();
+            for ( ; it != list.end(); ++it )
+               viewActionMenu->insert( *it );
+         }
+      }
 
-        connect( viewActionCollection, SIGNAL( inserted( KAction * )),
-                 SLOT( slotViewActionAdded( KAction * )));
-        connect( viewActionCollection, SIGNAL( removed( KAction * )),
-                 SLOT( slotViewActionRemoved( KAction * )));
-    }
+      connect( viewActionCollection, SIGNAL( inserted( KAction * )),
+               SLOT( slotViewActionAdded( KAction * )));
+      connect( viewActionCollection, SIGNAL( removed( KAction * )),
+               SLOT( slotViewActionRemoved( KAction * )));
+   }
 }
 
 void KDirOperator::activatedMenu( const KFileItem *, const QPoint& pos )
@@ -1210,19 +1238,6 @@ void KDirOperator::setupMenu(int whichActions)
     sortActionMenu->insert( reverseAction );
     sortActionMenu->insert( dirsFirstAction );
     sortActionMenu->insert( caseInsensitiveAction );
-
-    viewActionMenu->popupMenu()->clear();
-//     viewActionMenu->insert( shortAction );
-//     viewActionMenu->insert( detailedAction );
-//     viewActionMenu->insert( actionSeparator );
-    viewActionMenu->insert( myActionCollection->action( "short view" ) );
-    viewActionMenu->insert( myActionCollection->action( "detailed view" ) );
-    viewActionMenu->insert( actionSeparator );
-    viewActionMenu->insert( showHiddenAction );
-//    viewActionMenu->insert( myActionCollection->action( "single" ));
-    viewActionMenu->insert( separateDirsAction );
-    // Warning: adjust slotViewActionAdded() and slotViewActionRemoved()
-    // when you add/remove actions here!
 
     // now plug everything into the popupmenu
     actionMenu->popupMenu()->clear();
