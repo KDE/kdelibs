@@ -37,20 +37,13 @@
 
 #include "kapplication.h"
 #include "ksavefile.h"
+#include "kstandarddirs.h"
 
 KSaveFile::KSaveFile(const QString &filename, int mode)
  : mTempFile(true)
 {
-
    // follow symbolic link, if any
-   QString real_filename = filename;
-
-   QFileInfo file_info(real_filename);
-   int c=0;
-   while(file_info.isSymLink() && ++c<6) {
-      real_filename = file_info.readLink();
-      file_info.setFile( real_filename );
-   }
+   QString real_filename = KStandardDirs::realFilePath(filename);
 
    // we only check here if the directory can be written to
    // the actual filename isn't written to, but replaced later
@@ -69,11 +62,23 @@ KSaveFile::KSaveFile(const QString &filename, int mode)
       // permissions are the same as existing file so the existing
       // file's permissions are preserved
       struct stat stat_buf;
-      if ((stat(QFile::encodeName(real_filename), &stat_buf)==0)
-          && (stat_buf.st_uid == getuid())
-          && (stat_buf.st_gid == getgid()))
+      if (stat(QFile::encodeName(real_filename), &stat_buf)==0)
       {
-         fchmod(mTempFile.handle() , stat_buf.st_mode);
+         // But only if we own the existing file
+         if (stat_buf.st_uid == getuid())
+         {
+            bool changePermission = true;
+            if (stat_buf.st_gid != getgid())
+      {
+               if (fchown(mTempFile.handle(), (uid_t) -1, stat_buf.st_gid) != 0)
+               {
+                  // Use standard permission if we can't set the group
+                  changePermission = false;
+               }
+            }
+            if (changePermission)
+               fchmod(mTempFile.handle(), stat_buf.st_mode);
+         }
       }
    }
    return;
