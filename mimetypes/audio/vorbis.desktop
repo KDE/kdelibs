@@ -3,6 +3,5 @@ Encoding=UTF-8
 Type=MimeType
 MimeType=audio/vorbis
 Icon=sound
-Patterns=*.ogg;*.OGG;
 X-KDE-IsAlso=audio/x-vorbis
 Comment=OggVorbis Audio

@@ -4,6 +4,8 @@
 # application/ogg "inherits" from it, so that apps associated with x-ogg can open ogg files.
 Encoding=UTF-8
 Type=MimeType
+MimeType=application/x-ogg
+Icon=multimedia
 Comment=Ogg Multimedia
 Comment[ar]=وسائط Ogg متعددة
 Comment[ca]=Multimèdia ogg
@@ -49,5 +51,3 @@ Comment[xx]=xxOgg Multimediaxx
 Comment[zh_CN]=Ogg 多媒体
 Comment[zh_TW]=Ogg 多媒體
 Comment[zu]=Onozindaba be-Ogg
-MimeType=application/x-ogg
-Icon=multimedia

@@ -1,6 +1,10 @@
 [Desktop Entry]
 Encoding=UTF-8
 Type=MimeType
+MimeType=application/ogg
+Icon=multimedia
+# Previous name of this mimetype
+X-KDE-IsAlso=application/x-ogg
 Comment=Ogg Multimedia
 Comment[ar]=وسائط Ogg متعددة
 Comment[ca]=Multimèdia ogg
@@ -46,9 +50,3 @@ Comment[xx]=xxOgg Multimediaxx
 Comment[zh_CN]=Ogg 多媒体
 Comment[zh_TW]=Ogg 多媒體
 Comment[zu]=Onozindaba be-Ogg
-MimeType=application/ogg
-Icon=multimedia
-Patterns=*.ogg;*.OGG
-# Previous name of this mimetype
-X-KDE-HasSubtypes=true
-X-KDE-IsAlso=application/x-ogg
