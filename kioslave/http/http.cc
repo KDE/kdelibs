@@ -1244,9 +1244,7 @@ QString HTTPProtocol::davError( int code /* = -1 */, QString url )
 
       } else if ( m_request.method == DAV_LOCK ) {
         kError = ERR_ACCESS_DENIED;
-        errorString = i18n("The included lock token was not enforceable on this "
-                           "resource or the server could not satisfy the "
-                           "request in the lockinfo XML element. %1").arg( ow );
+        errorString = i18n("The requested lock could not be granted. %1").arg( ow );
       }
       break;
     case 415:
@@ -1281,11 +1279,11 @@ QString HTTPProtocol::davError( int code /* = -1 */, QString url )
   }
 
   // if ( kError != ERR_SLAVE_DEFINED )
-  errorString += " (" + url + ")";
+  //errorString += " (" + url + ")";
 
   if ( callError ) {
     httpClose();
-    error( kError, errorString );
+    error( ERR_SLAVE_DEFINED, errorString );
   }
 
   return errorString;
