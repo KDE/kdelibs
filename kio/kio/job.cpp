@@ -652,6 +652,8 @@ void StatJob::slotFinished()
         SimpleJob::slotFinished();
     } else {
         //kdDebug(7007) << "StatJob: Redirection to " << m_redirectionURL.prettyURL() << endl;
+        if (queryMetaData("permanent-redirect")=="true")
+            emit permanentRedirection(this, m_url, m_redirectionURL);
         m_url = m_redirectionURL;
         m_redirectionURL = KURL();
         m_packedArgs.truncate(0);
@@ -745,6 +747,8 @@ void TransferJob::slotFinished()
         SimpleJob::slotFinished();
     else {
         //kdDebug(7007) << "TransferJob: Redirection to " << m_redirectionURL.prettyURL() << endl;
+        if (queryMetaData("permanent-redirect")=="true")
+            emit permanentRedirection(this, m_url, m_redirectionURL);
         // Honour the redirection
         // We take the approach of "redirecting this same job"
         // Another solution would be to create a subjob, but the same problem
@@ -1116,6 +1120,8 @@ void MimetypeJob::slotFinished( )
         TransferJob::slotFinished();
     } else {
         //kdDebug(7007) << "MimetypeJob: Redirection to " << m_redirectionURL.prettyURL() << endl;
+        if (queryMetaData("permanent-redirect")=="true")
+            emit permanentRedirection(this, m_url, m_redirectionURL);
         staticData.truncate(0);
         m_suspended = false;
         m_url = m_redirectionURL;
@@ -1630,6 +1636,8 @@ void ListJob::slotFinished()
         SimpleJob::slotFinished();
     } else {
         kdDebug(7007) << "ListJob: Redirection to " << m_redirectionURL.prettyURL() << endl;
+        if (queryMetaData("permanent-redirect")=="true")
+            emit permanentRedirection(this, m_url, m_redirectionURL);
         m_url = m_redirectionURL;
         m_redirectionURL = KURL();
         m_packedArgs.truncate(0);

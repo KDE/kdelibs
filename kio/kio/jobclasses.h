@@ -514,6 +514,12 @@ namespace KIO {
          */
         void redirection( KIO::Job *, const KURL &url );
 
+        /**
+         * Signals a permanent redirection.
+         * The redirection itself is handled internally.
+         */
+        void permanentRedirection( KIO::Job *, const KURL &fromUrl, const KURL &toUrl );
+
     protected slots:
         void slotStatEntry( const KIO::UDSEntry & entry );
         void slotRedirection( const KURL &url);
@@ -604,6 +610,12 @@ namespace KIO {
          * The redirection itself is handled internally.
          */
         void redirection( KIO::Job *, const KURL &url );
+
+        /**
+         * Signals a permanent redirection.
+         * The redirection itself is handled internally.
+         */
+        void permanentRedirection( KIO::Job *, const KURL &fromUrl, const KURL &toUrl );
 
         /**
          * Mimetype determined
@@ -832,6 +844,12 @@ namespace KIO {
          * The redirection itself is handled internally.
          */
         void redirection( KIO::Job *, const KURL &url );
+
+        /**
+         * Signals a permanent redirection.
+         * The redirection itself is handled internally.
+         */
+        void permanentRedirection( KIO::Job *, const KURL &fromUrl, const KURL &toUrl );
 
     protected slots:
         virtual void slotFinished( );
