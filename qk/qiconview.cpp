@@ -2239,6 +2239,9 @@ void QIconView::removeItem( QIconViewItem *item )
     if ( !item )
 	return;
 
+    bool block = signalsBlocked();
+    blockSignals( TRUE );
+    
     QRect r = item->rect();
 
     if ( d->currentItem == item ) {
@@ -2275,6 +2278,8 @@ void QIconView::removeItem( QIconViewItem *item )
 	repaintContents( r.x(), r.y(), r.width(), r.height(), TRUE );
 
     d->count--;
+
+    blockSignals( block );
 }
 
 /*!
@@ -3258,7 +3263,8 @@ void QIconView::contentsMousePressEvent( QMouseEvent *e )
     emit mouseButtonPressed( e->button(), item, e->globalPos() );
     emit pressed( item );
     emit pressed( item, e->globalPos() );
-
+    item = findItem( e->pos() );
+    
     if ( d->currentItem )
 	d->currentItem->renameItem();
 
@@ -3352,6 +3358,7 @@ void QIconView::contentsMouseReleaseEvent( QMouseEvent *e )
     emit mouseButtonClicked( e->button(), item, e->globalPos() );
     emit clicked( item );
     emit clicked( item, e->globalPos() );
+    item = findItem( e->pos() );
 
     d->mousePressed = FALSE;
     d->startDrag = FALSE;
