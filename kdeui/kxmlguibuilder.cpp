@@ -46,6 +46,8 @@ public:
   QString tagSeparator;
   QString tagTearOffHandle;
 
+  QString attrLineSeparator;
+
   KInstance *m_instance;
 };
 
@@ -62,6 +64,8 @@ KXMLGUIBuilder::KXMLGUIBuilder( QWidget *widget )
 
   d->tagSeparator = QString::fromLatin1( "separator" );
   d->tagTearOffHandle = QString::fromLatin1( "tearoffhandle" );
+
+  d->attrLineSeparator = QString::fromLatin1( "lineseparator" );
   
   d->m_instance = 0;
 }
@@ -118,16 +122,16 @@ QWidget *KXMLGUIBuilder::createContainer( QWidget *parent, int index, const QDom
 
     QString icon = element.attribute( "icon" );
     QPixmap pix;
-    
+
     if ( !icon.isEmpty() )
     {
       KInstance *instance = d->m_instance;
       if ( !instance )
         instance = KGlobal::instance();
-      
+
       pix = SmallIcon( icon, 16, KIcon::DefaultState, instance );
     }
-    
+
     if ( parent && parent->inherits( "KMenuBar" ) )
     {
       if ( !icon.isEmpty() )
@@ -275,7 +279,30 @@ int KXMLGUIBuilder::createCustomElement( QWidget *parent, int index, const QDomE
     else if ( parent->inherits( "QMenuBar" ) )
        return static_cast<QMenuBar *>(parent)->insertSeparator( index );
     else if ( parent->inherits( "KToolBar" ) )
-      return static_cast<KToolBar *>(parent)->insertSeparator( index );
+    {
+      KToolBar *bar = static_cast<KToolBar *>( parent );
+    
+      bool isLineSep = false;
+      
+      QDomNamedNodeMap attributes = element.attributes();
+      unsigned int i = 0;
+      for (; i < attributes.length(); i++ )
+      {
+        QDomAttr attr = attributes.item( i ).toAttr();
+	
+        if ( attr.name().lower() == d->attrLineSeparator &&
+	     attr.value().lower() == "true" )
+	{
+	  isLineSep = true;
+	  break;
+	}
+      }
+      
+      if ( isLineSep )
+        return bar->insertLineSeparator( index );
+      
+      return bar->insertSeparator( index );
+    }
   }
   else if ( element.tagName().lower() == d->tagTearOffHandle )
   {
@@ -297,10 +324,10 @@ void KXMLGUIBuilder::removeCustomElement( QWidget *parent, int id )
 
 KInstance *KXMLGUIBuilder::builderInstance() const
 {
-  return d->m_instance; 
+  return d->m_instance;
 }
 
 void KXMLGUIBuilder::setBuilderInstance( KInstance *instance )
 {
-  d->m_instance = instance; 
-} 
+  d->m_instance = instance;
+}
