@@ -21,6 +21,9 @@
 
  // $Id$
  // $Log$
+ // Revision 1.37  1998/04/05 18:18:44  radej
+ // Reverted to old interface (before Matthias' changes)
+ //
 
 
 
@@ -99,8 +102,8 @@ KTopLevelWidget::~KTopLevelWidget()
           //        (But emit a signal before)
           // Sven: set topwidget to 0 but don't quit. KFM.
 	  
-          kapp->setTopWidget( 0 );
-          debug ("KTW destructor: topwidget 0");
+	  if (kapp && kapp->topWidget() == this)
+	    kapp->setTopWidget( 0 );
         }
         debug ("KTW destructor: dead as a dodo (exiting)");
 }
