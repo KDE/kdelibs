@@ -90,8 +90,10 @@ void Test::convert(){
   inputEdit->setFont(fnt);
 
   QString text=inputEdit->text();
-  KCharsetConverter converter(inputCharsetCombo->currentText(),TRUE,
-                              outputCharsetCombo->currentText(),TRUE);
+  KCharsetConverter converter(inputCharsetCombo->currentText(),
+                              outputCharsetCombo->currentText(),
+			      KCharsetConverter::INPUT_AMP_SEQUENCES
+			      |KCharsetConverter::OUTPUT_AMP_SEQUENCES);
   if (converter.ok())
     outputEdit->setText(converter.convert(text));
   else
