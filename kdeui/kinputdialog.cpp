@@ -239,7 +239,7 @@ QString KInputDialog::getText( const QString &caption, const QString &label,
 
   QString result;
   if ( _ok )
-    result = dlg->lineEdit()->text();
+    result = dlg->lineEdit()->text().stripWhiteSpace();
 
   delete dlg;
   return result;
@@ -351,7 +351,7 @@ void KInputDialog::slotEditTextChanged( const QString &text )
     on = ( lineEdit()->validator()->validate( str, index )
       == QValidator::Acceptable );
   } else {
-    on = !text.isEmpty();
+    on = !text.stripWhiteSpace().isEmpty();
   }
 
   enableButton( Ok, on );
