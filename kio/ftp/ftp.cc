@@ -20,7 +20,6 @@
 // $Id$
 
 #include "ftp.h"
-#include <kio/passdlg.h>
 
 #include <errno.h>
 #include <assert.h>

@@ -17,7 +17,7 @@
 #    Boston, MA 02111-1307, USA.
 
 INCLUDES= -I$(top_srcdir) -I$(top_srcdir)/kio $(all_includes)
-LDADD = $(top_builddir)/kio/libkio.la
+LDADD = $(top_builddir)/kio/libksycoca.la
 LDFLAGS = $(all_libraries) $(KDE_RPATH)
 
 check_PROGRAMS = ksycocatest getalltest kruntest ktartest kopenwithtest \
@@ -25,14 +25,20 @@ check_PROGRAMS = ksycocatest getalltest kruntest ktartest kopenwithtest \
 
 METASOURCES = AUTO
 
+## libkio only
+speed_LDADD = $(top_builddir)/kio/libkio.la
 speed_SOURCES = speed.cpp
+kioslavetest_LDADD = $(top_builddir)/kio/libkio.la
+kioslavetest_SOURCES = kioslavetest.cpp
+ktartest_LDADD = $(top_builddir)/kio/libkio.la
+ktartest_SOURCES = ktartest.cpp
+kshredtest_LDADD = $(top_builddir)/kio/libkio.la
 kshredtest_SOURCES = kshredtest.cpp
+
+## libksycoca
 ksycocatest_SOURCES = ksycocatest.cpp
 getalltest_SOURCES = getalltest.cpp
 kruntest_SOURCES = kruntest.cpp
-ktartest_SOURCES = ktartest.cpp
 kopenwithtest_SOURCES = kopenwithtest.cpp
-kioslavetest_SOURCES = kioslavetest.cpp
 kdirwatchtest_SOURCES = kdirwatchtest.cpp kdirwatchtest.h
-
 

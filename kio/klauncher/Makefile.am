@@ -24,11 +24,11 @@ bin_PROGRAMS = klauncher
 lib_LTLIBRARIES = libklauncher.la
 
 libklauncher_la_LDFLAGS = $(all_libraries) -no-version -module
-libklauncher_la_LIBADD = $(LIB_KIO)
+libklauncher_la_LIBADD = $(LIB_KSYCOCA)
 libklauncher_la_SOURCES = klauncher.cpp main.cpp
 
 klauncher_LDFLAGS = $(all_libraries) $(KDE_RPATH)
-klauncher_LDADD = $(LIB_KIO)
+klauncher_LDADD = $(LIB_KSYCOCA)
 klauncher_SOURCES = klauncher.cpp main.cpp
 
 METASOURCES = AUTO

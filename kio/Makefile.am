@@ -20,39 +20,49 @@ INCLUDES=  -I$(srcdir)/.. -I$(top_srcdir)/libltdl $(all_includes)
 
 SUBDIRS = . klauncher kded file http ftp tests
 
-lib_LTLIBRARIES = libkio.la #libkioslave.la
+lib_LTLIBRARIES = libkio.la libksycoca.la #libkioslave.la
 #libkioslave_la_LDFLAGS = -version-info 3:0
 #libkioslave_la_LIBADD = ../kdeui/libkdeui.la
 #libkioslave_la_SOURCES = slavebase.cpp connection.cpp passdlg.cpp
 
-libkio_la_LDFLAGS = -version-info 3:0
-libkio_la_LIBADD = ../kdeui/libkdeui.la
-
-libkio_la_SOURCES = \
-	kopenwith.cpp ktraderparsetree.cpp \
+libksycoca_la_LDFLAGS = -version-info 3:0
+libksycoca_la_LIBADD = ./libkio.la
+	
+libksycoca_la_SOURCES = \
+	ktrader.cpp ktraderparse.cpp ktraderparsetree.cpp \
 	ksycoca.cpp ksycocadict.cpp ksycocafactory.cpp \
         kservicetypefactory.cpp kservicetype.cpp \
-	kmimetype.cpp kmimemagic.cpp kshred.cpp \
+	kmimetype.cpp \
 	kservice.cpp kservicefactory.cpp \
-	kautomount.cpp kdirwatch.cpp scheduler.cpp \
-	connection.cpp filter.cpp \
-	slaveinterface.cpp job.cpp  \
-	global.cpp renamedlg.cpp \
-	skipdlg.cpp ktar.cpp krun.cpp \
-	kuserpaths.cpp kuserprofile.cpp slave.cpp \
-	netaccess.cpp ktrader.cpp ktraderparse.cpp \
-	paste.cpp \
-        slavebase.cpp passdlg.cpp \
+	kuserpaths.cpp kuserprofile.cpp \
+	kdirwatch.cpp \
+	kautomount.cpp \
+	kopenwith.cpp krun.cpp \
 	yacc.c lex.c
-# progressbase.cpp simpleprogress_dlg.cpp
-# littleprogress_dlg.cpp listprogressdlg.cpp
-
-METASOURCES = AUTO
 
 include_HEADERS = ksycoca.h ksycocaentry.h ksycocatype.h \
         kservicetype.h kmimetype.h kmimemagic.h kservice.h \
         krun.h kdirwatch.h kautomount.h kuserprofile.h kuserpaths.h \
 	kshred.h ktar.h ktrader.h kopenwith.h
+
+libkio_la_LDFLAGS = -version-info 3:0
+libkio_la_LIBADD = ../kdeui/libkdeui.la
+
+libkio_la_SOURCES = \
+	kshred.cpp ktar.cpp \
+	scheduler.cpp \
+	connection.cpp filter.cpp \
+	slaveinterface.cpp job.cpp  \
+	global.cpp renamedlg.cpp skipdlg.cpp \
+	slave.cpp \
+	netaccess.cpp paste.cpp \
+	kmimemagic.cpp \
+	slavebase.cpp passdlg.cpp
+
+# progressbase.cpp simpleprogress_dlg.cpp
+# littleprogress_dlg.cpp listprogressdlg.cpp
+
+METASOURCES = AUTO
 
 kioincludedir = $(includedir)/kio
 kioinclude_HEADERS = connection.h renamedlg.h \
@@ -62,7 +72,6 @@ kioinclude_HEADERS = connection.h renamedlg.h \
 
 # progressbase.h simpleprogressdlg.h
 # littleprogress_dlg.h listprogressdlg.h
-
 
 # Internal
 noinst_HEADERS = ksycocafactory.h kservicetypefactory.h kservicefactory.h \
@@ -86,6 +95,6 @@ parser: $(parserfiles)
 bin_PROGRAMS = kioslave
 
 kioslave_SOURCES = kioslave.cpp slavewrapper.cpp
-kioslave_LDADD = libkio.la
+kioslave_LDADD = libksycoca.la
 kioslave_LDFLAGS = $(KDE_RPATH)
 

@@ -247,7 +247,6 @@ protected: // Members
   HTTPRequest m_request;
 
   bool m_bEOF;
-  int m_cmd;
   int m_sock;
   FILE* m_fsocket;
   enum HTTP_REV m_HTTPrev;

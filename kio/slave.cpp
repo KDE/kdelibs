@@ -114,7 +114,7 @@ Slave* Slave::createSlave( const KURL& url, int& error, QString& error_text )
     if (!client->isApplicationRegistered( "kioslave" ))
     {
         kDebugInfo("Trying to start kioslave");
-#if 1
+#if 0 // doesn't work with the new split. Better use klauncher I'd say (David)
         // Launch the kioslave service
         QString error;
         QCString dcopName;

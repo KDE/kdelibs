@@ -45,7 +45,7 @@ kde_toolbar_DATA = configure.png
 EXTRA_DIST = configure.png KFile.kdoc NOTES
 
 libkfile_la_LDFLAGS = -no-undefined -version-info 3:0
-libkfile_la_LIBADD =  $(top_builddir)/kio/libkio.la
+libkfile_la_LIBADD =  $(top_builddir)/kio/libksycoca.la
 
 check_PROGRAMS = kfstest
 kfstest_LDFLAGS = $(KDE_RPATH)

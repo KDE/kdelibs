@@ -136,6 +136,8 @@ LIB_KFORMULA='$(top_builddir)/kformula/libkformula.la'
 AC_SUBST(LIB_KFORMULA)
 LIB_KIO='$(top_builddir)/kio/libkio.la'
 AC_SUBST(LIB_KIO)
+LIB_KSYCOCA='$(top_builddir)/kio/libksycoca.la'
+AC_SUBST(LIB_KSYCOCA)
 LIB_KFILE='$(top_builddir)/kfile/libkfile.la'
 AC_SUBST(LIB_KFILE)
 LIB_KAB='$(top_builddir)/kab/libkab.la'

@@ -46,7 +46,6 @@
 
 #include "http.h"
 
-#include <kio/skipdlg.h>
 #include <klocale.h>
 #include <kprotocolmanager.h>
 #include <ksock.h>
@@ -57,9 +56,6 @@
 #include <kdebug.h>
 #include <dcopclient.h>
 #include <kservice.h>
-
-#include <kio/slaveinterface.h>
-#include <kio/passdlg.h>
 
 using namespace KIO;
 
@@ -302,7 +298,6 @@ HTTPProtocol::HTTPProtocol( KIO::Connection *_conn, const QCString &protocol )
 {
   m_protocol = protocol;
   m_maxCacheAge = 0;
-  m_cmd = CMD_NONE;
   m_fsocket = 0L;
   m_sock = 0;
   m_fcache = 0;
@@ -1152,11 +1147,11 @@ void HTTPProtocol::addEncoding(QString encoding, QStack<char> *encs)
     m_bChunked = true;
 //    encs->push("chunked");
     // Anyone know of a better way to handle unknown sizes possibly/ideally with unsigned ints?
-    if ( m_cmd != CMD_COPY )
+    //if ( m_cmd != CMD_COPY )
       m_iSize = 0;
   } else if ((encoding.lower() == "x-gzip") || (encoding.lower() == "gzip") || (encoding.lower() == "x-deflate") || (encoding.lower() == "deflate")) {
     encs->push(strdup(encoding.lower()));
-    if ( m_cmd != CMD_COPY )
+    //if ( m_cmd != CMD_COPY )
       m_iSize = 0;
   } else {
     kDebugInfo( 7103, "Unknown encoding encountered.  Please write code. Pid = %d Encoding = \"%s\"", getpid(), encoding.ascii());
@@ -1294,17 +1289,13 @@ void HTTPProtocol::slotGetSize(const char *_url)
   KURL usrc(_url);
   if (usrc.isMalformed()) {
     error(ERR_MALFORMED_URL, _url);
-    m_cmd = CMD_NONE;
     return;
   }
 
   if (!isValidProtocol(&usrc)) {
     error(ERR_INTERNAL, "kio_http got non http/https/httpf url");
-    m_cmd = CMD_NONE;
     return;
   }
-
-  m_cmd = CMD_GET_SIZE;
 
   m_bIgnoreErrors = false;
   if (http_open(usrc, 0, false)) {
@@ -1317,7 +1308,6 @@ void HTTPProtocol::slotGetSize(const char *_url)
     finished();
   }
 
-  m_cmd = CMD_NONE;
   return;
 }
 #endif
