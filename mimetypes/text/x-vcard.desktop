@@ -25,7 +25,7 @@ Comment[he]=כרטיס ביקור אלקטרוני
 Comment[hr]=Elektronska vizit karta
 Comment[hu]=Elektronikus névjegykártya
 Comment[id]=Kartu Nama Elektronis
-Comment[is]=RafrÃ¦nt nafnspjald
+Comment[is]=Rafrænt nafnspjald
 Comment[it]=Biglietto da visita elettronico
 Comment[ja]=電子ビジネスカード
 Comment[ko]=전자 비즈니스 카드
@@ -47,6 +47,7 @@ Comment[ro]=Card de afaceri electronic
 Comment[ru]=Электронная визитка
 Comment[sk]=Elektronická vizitka
 Comment[sl]=Elektronska vizitka
+Comment[sr]=Elektronska vizit karta
 Comment[sv]=Elektroniskt visitkort
 Comment[ta]=Á¢ý ¦¾¡Æ¢Äð¨¼
 Comment[tr]=Electronik Ticaret Kartı
@@ -60,7 +61,7 @@ Comment[zu]= Ikhadi Lebhizinisi Likagesi
 Icon=vcard
 Type=MimeType
 MimeType=text/x-vcard
-Patterns=*.vct
+Patterns=*.vct;*.vcf;*.VCT;*.VCF
 
 [Property::X-KDE-text]
 Type=bool

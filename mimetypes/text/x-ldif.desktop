@@ -1,0 +1,12 @@
+[Desktop Entry]
+Encoding=UTF-8
+Comment=LDAP Addressbook Document
+Comment[de]=LDAP Addressbuch Dokument
+Icon=vcard
+Type=MimeType
+MimeType=text/x-ldif
+Patterns=*.ldif;*.LDIF
+
+[Property::X-KDE-text]
+Type=bool
+Value=true

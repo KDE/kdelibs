@@ -674,6 +674,9 @@
 0	string		BEGIN:VCARD	text/x-vcard
 0	string		begin:vcard	text/x-vcard
 
+# LDIF / LDAP interchange format
+0	string		dn:\ cn=	text/x-ldif
+
 # applix
 #------------------------------------------------------------------------------
 # applix:  file(1) magic for Applixware
