@@ -24,7 +24,7 @@
 // -------------------------------------------------------------------------
 //#define DEBUG
 //#define DEBUG_LAYOUT
-#define BOX_DEBUG
+//#define BOX_DEBUG
 
 
 #include "dom_string.h"
