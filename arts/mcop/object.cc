@@ -219,6 +219,7 @@ void Object_skel::_defaultNotify(const Notification& notification)
 					arts_assert(count == 0);
 				}
 			}
+			dp->processed();
 		}
 	}
 }
