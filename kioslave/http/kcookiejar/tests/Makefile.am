@@ -15,3 +15,4 @@ check-local: kcookiejartest
 	./kcookiejartest $(srcdir)/cookie.test
 	./kcookiejartest $(srcdir)/cookie_rfc.test
 	./kcookiejartest $(srcdir)/cookie_saving.test
+	./kcookiejartest $(srcdir)/cookie_settings.test

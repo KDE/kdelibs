@@ -141,7 +141,7 @@ static void processCookie(QCString &line)
    {
       KCookieAdvice cookieAdvice = jar->cookieAdvice(cookie);
       if (cookieAdvice != expectedAdvice)
-         FAIL(QString("In '%1'\nGot advice '%2' expected '%3'").arg(line)
+         FAIL(urlStr+QString("\n'%2'\nGot advice '%3' expected '%4'").arg(line)
               .arg(KCookieJar::adviceToStr(cookieAdvice))
               .arg(KCookieJar::adviceToStr(expectedAdvice)));
       jar->addCookie(cookie);
@@ -162,7 +162,7 @@ static void processCheck(QCString &line)
 
    QString cookies = jar->findCookies(urlStr, false, 0, 0).stripWhiteSpace();
    if (cookies != expectedCookies)
-      FAIL(QString("Got '%1' expected '%2'")
+      FAIL(urlStr+QString("\nGot '%1' expected '%2'")
               .arg(cookies, expectedCookies));
 }
 
@@ -184,6 +184,7 @@ static void processConfig(QCString &line)
    if (key.isEmpty())
       FAIL(QString("Missing Key"));
 
+   config->setGroup("Cookie Policy");
    config->writeEntry(key.data(), line.data());
    jar->loadConfig(config, false);
 }
@@ -217,7 +218,6 @@ static void processLine(QCString line)
       saveCookies();
    else
       FAIL(QString("Unknown command '%1'").arg(command));
-qWarning("COMMAND: %s OK", command.data());
 }
 
 static void runRegression(const QString &filename)
@@ -237,6 +237,7 @@ static void runRegression(const QString &filename)
       }
       processLine(buf);
    }
+   qWarning("%s OK", filename.local8Bit().data());
 }
 
 int main(int argc, char *argv[])
