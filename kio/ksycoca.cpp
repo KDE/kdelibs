@@ -43,7 +43,7 @@ KSycoca::KSycoca()
    }
    str = new QDataStream(database);
    m_lstFactories = new KSycocaFactoryList();
-   self = this;
+   _self = this;
 }
 
 // Read-write constructor - only for KBuildSycoca
@@ -58,7 +58,14 @@ KSycoca::KSycoca( bool /* dummy */ )
    }
    str = new QDataStream(database);
    m_lstFactories = new KSycocaFactoryList();
-   self = this;
+   _self = this;
+}
+
+KSycoca * KSycoca::self()
+{
+  if (!_self)
+    _self = new KSycoca();
+  return _self;
 }
 
 KSycoca::~KSycoca()
@@ -74,17 +81,7 @@ KSycoca::~KSycoca()
    delete m_lstFactories;
 }
 
-//static
-QDataStream *
-KSycoca::findEntry(int offset, KSycocaType &type)
-{
-   if (!self)
-      self = new KSycoca();
-   return self->_findEntry(offset, type);
-}
-
-QDataStream *
-KSycoca::_findEntry(int offset, KSycocaType &type)
+QDataStream * KSycoca::findEntry(int offset, KSycocaType &type)
 {
    //kdebug( KDEBUG_INFO, 7011, QString("KSycoca::_findEntry(offset=%1)").arg(offset,8,16));
    str->device()->at(offset);
@@ -95,17 +92,7 @@ KSycoca::_findEntry(int offset, KSycocaType &type)
    return str;
 }
 
-//static
-QDataStream *
-KSycoca::registerFactory(KSycocaFactoryId id)
-{
-   if (!self)
-      self = new KSycoca();
-   return self->_registerFactory( id );
-}
-
-QDataStream *
-KSycoca::_registerFactory(KSycocaFactoryId id)
+QDataStream * KSycoca::registerFactory(KSycocaFactoryId id)
 {
    str->device()->at(0);
    Q_INT32 aId;
@@ -130,17 +117,7 @@ fprintf(stderr, "KSycoca: Error, KSycocaFactory (id = %d) not found!\n", id);
    return 0;
 }
 
-//static
-QDataStream *
-KSycoca::findOfferList()
-{
-   if (!self)
-      self = new KSycoca();
-   return self->_findOfferList();
-}
-
-QDataStream *
-KSycoca::_findOfferList()
+QDataStream * KSycoca::findOfferList()
 {
    str->device()->at(0);
    Q_INT32 aId;
@@ -161,14 +138,6 @@ KSycoca::_findOfferList()
    return str;
 }
 
-//static
-bool KSycoca::isBuilding()
-{
-  if (!self)
-    self = new KSycoca();
-  return self->_isBuilding();
-}
-
-KSycoca * KSycoca::self = 0;
+KSycoca * KSycoca::_self = 0L;
 
 #include "ksycoca.moc"

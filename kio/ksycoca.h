@@ -36,12 +36,21 @@ class KSycoca : public QObject
 protected:
    /**
     * @internal
+    * Building database
     */
-   KSycoca( bool buildDatabase );
+   KSycoca( bool /* buildDatabase */ );
 
 public:
 
+   /**
+    * Read-only database
+    */
    KSycoca();
+
+   /**
+    * Get or create the only instance of KSycoca (read-only)
+    */
+   static KSycoca *self();
 
    virtual ~KSycoca();
 
@@ -49,32 +58,26 @@ public:
     * @internal - called by factories in read-only mode
     * This is how factories get a stream to an entry
     */
-   static QDataStream *findEntry(int offset, KSycocaType &type);
+   QDataStream *findEntry(int offset, KSycocaType &type);
    /**
     * @internal - called by factories in read-only mode
     */
-   static QDataStream *registerFactory( KSycocaFactoryId id);
+   QDataStream *registerFactory( KSycocaFactoryId id);
    /**
     * @internal - returns stream to the offers index
     */
-   static QDataStream *findOfferList();
+   QDataStream *findOfferList();
     
    /**
     * @internal
     * @return true if building (i.e. if a KBuildSycoca);
     */
-   static bool isBuilding();
-
-protected:
-   QDataStream *_findEntry(int offset, KSycocaType &type);
-   QDataStream *_registerFactory( KSycocaFactoryId id);
-   QDataStream *_findOfferList();
-   virtual bool _isBuilding() { return false; }
+   virtual bool isBuilding() { return false; }
 
 protected:
    KSycocaFactoryList *m_lstFactories;
    QDataStream *str;
-   static KSycoca *self;
+   static KSycoca *_self;
 };
 
 #endif

@@ -33,7 +33,7 @@
 KServiceFactory::KServiceFactory()
  : KSycocaFactory( KST_KServiceFactory )
 {
-   if (KSycoca::isBuilding())
+   if (KSycoca::self()->isBuilding())
    {
       (*m_pathList) += KGlobal::dirs()->resourceDirs( "apps" );
       (*m_pathList) += KGlobal::dirs()->resourceDirs( "services" );
@@ -98,7 +98,7 @@ KService* KServiceFactory::createService(int offset)
 {
    KService * newEntry = 0L;
    KSycocaType type; 
-   QDataStream *str = KSycoca::findEntry(offset, type);
+   QDataStream *str = KSycoca::self()->findEntry(offset, type);
    switch(type)
    {
      case KST_KService:
@@ -124,7 +124,7 @@ KService::List KServiceFactory::allServices()
    KService::List list;
    // Assume we're NOT building a database
    // Get stream to factory start
-   QDataStream *str = KSycoca::registerFactory( factoryId() );
+   QDataStream *str = KSycoca::self()->registerFactory( factoryId() );
    // Read the dict offset - will serve as an end point for the list of entries
    Q_INT32 sycocaDictOffset;
    (*str) >> sycocaDictOffset;
@@ -149,7 +149,7 @@ KService::List KServiceFactory::offers( int serviceTypeOffset )
   kdebug(KDEBUG_INFO, 7011, QString("KServiceFactory::offers ( %1 )").arg(serviceTypeOffset,8,16));
   KService::List list;
   // Jump to offer list
-  QDataStream *str = KSycoca::findOfferList();
+  QDataStream *str = KSycoca::self()->findOfferList();
   Q_INT32 aServiceTypeOffset;
   Q_INT32 aServiceOffset;
   // We might want to do a binary search instead of a linear search

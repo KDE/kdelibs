@@ -17,7 +17,7 @@ class KBuildSycoca : public KSycoca
   Q_OBJECT
 public:
    KBuildSycoca();
-   ~KBuildSycoca();
+   virtual ~KBuildSycoca();
    
    /**
     * Add a factory for building, triggers directory parsing
@@ -59,7 +59,11 @@ protected:
     */
    void readDirectory(const QString& dir, KSycocaFactory * factory );
    
-   virtual bool _isBuilding() { return true; }
+   /**
+    * @internal
+    * @return true if building (i.e. if a KBuildSycoca);
+    */
+   virtual bool isBuilding() { return true; }
 
 protected slots:
 

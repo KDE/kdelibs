@@ -9,7 +9,7 @@
 
 main(int argc, char *argv[])
 {
-   KApplication k(argc,argv); // KMessageBox needs KApp for makeStdCaption
+   KApplication k(argc,argv,"whatever",false/*noGUI*/); // KMessageBox needs KApp for makeStdCaption
 
    debug("Trying to look for text/plain");
    KMimeType::Ptr s1 = KMimeType::mimeType("text/plain");
