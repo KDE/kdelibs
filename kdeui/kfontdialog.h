@@ -155,6 +155,16 @@ public:
   QColor color() const;
 
   /**
+   * Sets the background color to use in the preview.
+   */
+  void setBackgroundColor( const QColor & col );
+
+  /**
+   * @return The background color currently used in the preview (default: white)
+   */
+  QColor backgroundColor() const;
+
+  /**
    * Sets the state of the checkbox indicating whether the font size
    * is to be interpreted as relative size.
    * NOTE: If parameter sizeIsRelative was not set in the constructor

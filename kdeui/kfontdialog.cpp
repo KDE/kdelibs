@@ -87,9 +87,11 @@ static int minimumListHeight( const QListBox *list, int numVisibleEntry )
 class KFontChooser::KFontChooserPrivate
 {
 public:
-    KFontChooserPrivate() { m_color = Qt::black; }
+    KFontChooserPrivate()
+        { m_palette.setColor(QPalette::Active, QColorGroup::Text, Qt::black);
+          m_palette.setColor(QPalette::Active, QColorGroup::Base, Qt::white); }
     QLabel *charsetLabel;
-    QColor m_color;
+    QPalette m_palette;
 };
 
 KFontChooser::KFontChooser(QWidget *parent, const char *name,
@@ -363,7 +365,7 @@ void KFontChooser::fillSizeList() {
 
 void KFontChooser::setColor( const QColor & col )
 {
-  d->m_color = col;
+  d->m_palette.setColor( QPalette::Active, QColorGroup::Text, col );
   QPalette pal = sampleEdit->palette();
   pal.setColor( QPalette::Active, QColorGroup::Text, col );
   sampleEdit->setPalette( pal );
@@ -371,7 +373,20 @@ void KFontChooser::setColor( const QColor & col )
 
 QColor KFontChooser::color() const
 {
-  return d->m_color;
+  return d->m_palette.color( QPalette::Active, QColorGroup::Text );
+}
+
+void KFontChooser::setBackgroundColor( const QColor & col )
+{
+  d->m_palette.setColor( QPalette::Active, QColorGroup::Base, col );
+  QPalette pal = sampleEdit->palette();
+  pal.setColor( QPalette::Active, QColorGroup::Base, col );
+  sampleEdit->setPalette( pal );
+}
+
+QColor KFontChooser::backgroundColor() const
+{
+  return d->m_palette.color( QPalette::Active, QColorGroup::Base );
 }
 
 void KFontChooser::setSizeIsRelative( QButton::ToggleState relative )
@@ -805,6 +820,9 @@ int KFontDialog::getFontAndText( QFont &theFont, QString &theString,
 ****************************************************************************
 *
 * $Log$
+* Revision 1.83  2001/12/28 11:09:27  zander
+* Various fixes in updating the font styles and sizes shown
+*
 * Revision 1.82  2001/12/21 20:32:08  zander
 * Remove a method that is not used and can only work on X11 systems. Remove it also since it was the source of ambiguous-errors elsewhere.
 *
