@@ -23,10 +23,10 @@
 #define _KDE_VERSION_H_
 
 #define KDE_VERSION 309
-#define KDE_VERSION_STRING "3.0.98 (KDE 3.1 RC2)"
+#define KDE_VERSION_STRING "3.0.99 (KDE 3.1 RC3)"
 #define KDE_VERSION_MAJOR 3
 #define KDE_VERSION_MINOR 0
-#define KDE_VERSION_RELEASE 98
+#define KDE_VERSION_RELEASE 99
 
 /**
  * Namespace for general KDE functions.
