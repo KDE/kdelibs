@@ -43,7 +43,7 @@ class KImageFilePreview : public KPreviewWidgetBase
 		virtual void clearPreview();
 
 	protected slots:
-		void showPreview() { showPreview( currentURL, true ); }
+		void showPreview();
 		void showPreview( const KURL& url, bool force );
 
 		void toggleAuto(bool);

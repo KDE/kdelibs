@@ -74,6 +74,13 @@ KImageFilePreview::~KImageFilePreview()
     config->writeEntry( "Automatic Preview", autoPreview->isChecked() );
 }
 
+void KImageFilePreview::showPreview()
+{
+    // Pass a copy since clearPreview() will clear currentURL
+    KURL url = currentURL;
+    showPreview( url, true );
+}
+
 // called via KPreviewWidgetBase interface
 void KImageFilePreview::showPreview( const KURL& url )
 {
@@ -115,7 +122,7 @@ void KImageFilePreview::toggleAuto( bool a )
     autoMode = a;
     if ( autoMode )
     {
-        // Pass a copy since clearPreview() may will currentURL
+        // Pass a copy since clearPreview() will clear currentURL
         KURL url = currentURL;
         showPreview( url, true );
     }
