@@ -156,7 +156,7 @@ void KAccelPrivate::slotKeyPressed( int id )
 		// This is needed for when there are multiple actions
 		//  with the same shortcut where all but one is disabled.
 		// pMenu->count() also counts the menu title, so one shortcut will give count = 2.
-		if( pMenu->count() == 2 && pMenu->accel(1).count() == 0 ) { // ### use the faster isEmpty() once we require Qt 3.1 (Simon)
+		if( pMenu->count() == 2 && static_cast<int>( pMenu->accel(1) ) == 0 ) { // ### use the faster isEmpty() once we require Qt 3.1 (Simon)
 			int iAction = pMenu->idAt(1);
 			slotMenuActivated( iAction );
 		} else {
