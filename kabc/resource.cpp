@@ -275,6 +275,62 @@ void Resource::removeAddressee( const Addressee &addr )
   mAddressees.remove( addr );
 }
 
+Addressee Resource::findByUid( const QString &uid )
+{
+  Iterator it;
+  for ( it = begin(); it != end(); ++it ) {
+    if ( uid == (*it).uid() ) {
+      return *it;
+    }
+  }
+
+  return Addressee();
+}
+
+Addressee::List Resource::findByName( const QString &name )
+{
+  Addressee::List results;
+
+  Iterator it;
+  for ( it = begin(); it != end(); ++it ) {
+    if ( name == (*it).name() )
+      results.append( *it );
+  }
+
+  return results;
+}
+
+Addressee::List Resource::findByEmail( const QString &email )
+{
+  Addressee::List results;
+  QStringList mailList;
+
+  Iterator it;
+  for ( it = begin(); it != end(); ++it ) {
+    mailList = (*it).emails();    
+    for ( QStringList::Iterator ite = mailList.begin(); ite != mailList.end(); ++ite ) {
+      if ( email == (*ite) )
+        results.append( *it );
+    }
+  }
+
+  return results;
+}
+
+Addressee::List Resource::findByCategory( const QString &category )
+{
+  Addressee::List results;
+
+  Iterator it;
+  for ( it = begin(); it != end(); ++it ) {
+    if ( (*it).hasCategory( category) ) {
+      results.append( *it );
+    }
+  }
+
+  return results;
+}
+
 void Resource::cleanUp()
 {
   // do nothing

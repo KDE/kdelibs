@@ -229,6 +229,39 @@ class Resource : public KRES::Resource
     virtual bool asyncSave( Ticket *ticket ) = 0;
 
     /**
+      Searches an addressee with the specified unique identifier.
+
+      @param uid The unique identifier you are looking for.
+      @return The addressee with the specified unique identifier or an
+              empty addressee.
+     */
+    virtual Addressee findByUid( const QString &uid );
+
+    /**
+      Searches all addressees which match the specified name.
+
+      @param name The name you are looking for.
+      @return A list of all matching addressees.
+     */
+    virtual Addressee::List findByName( const QString &name );
+
+    /**
+      Searches all addressees which match the specified email address.
+
+      @param email The email address you are looking for.
+      @return A list of all matching addressees.
+     */
+    virtual Addressee::List findByEmail( const QString &email );
+
+    /**
+      Searches all addressees which belongs to the specified category.
+
+      @param category The category you are looking for.
+      @return A list of all matching addressees.
+     */
+    virtual Addressee::List findByCategory( const QString &category );
+
+    /**
       This method is called by an error handler if the application
       crashed. You should remove all you locks inside this function.
      */

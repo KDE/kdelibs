@@ -559,9 +559,8 @@ AddressBook::Iterator AddressBook::find( const Addressee &a )
 {
   Iterator it;
   for ( it = begin(); it != end(); ++it ) {
-    if ( a.uid() == (*it).uid() ) {
+    if ( a.uid() == (*it).uid() )
       return it;
-    }
   }
 
   return end();
@@ -569,11 +568,11 @@ AddressBook::Iterator AddressBook::find( const Addressee &a )
 
 Addressee AddressBook::findByUid( const QString &uid )
 {
-  Iterator it;
-  for ( it = begin(); it != end(); ++it ) {
-    if ( uid == (*it).uid() ) {
-      return *it;
-    }
+  KRES::Manager<Resource>::ActiveIterator it;
+  for ( it = d->mManager->activeBegin(); it != d->mManager->activeEnd(); ++it ) {
+    Addressee addr = (*it)->findByUid( uid );
+    if ( !addr.isEmpty() )
+      return addr;
   }
 
   return Addressee();
@@ -594,12 +593,9 @@ Addressee::List AddressBook::findByName( const QString &name )
 {
   Addressee::List results;
 
-  Iterator it;
-  for ( it = begin(); it != end(); ++it ) {
-    if ( name == (*it).name() ) {
-      results.append( *it );
-    }
-  }
+  KRES::Manager<Resource>::ActiveIterator it;
+  for ( it = d->mManager->activeBegin(); it != d->mManager->activeEnd(); ++it )
+    results += (*it)->findByName( name );
 
   return results;
 }
@@ -607,17 +603,10 @@ Addressee::List AddressBook::findByName( const QString &name )
 Addressee::List AddressBook::findByEmail( const QString &email )
 {
   Addressee::List results;
-  QStringList mailList;
 
-  Iterator it;
-  for ( it = begin(); it != end(); ++it ) {
-    mailList = (*it).emails();    
-    for ( QStringList::Iterator ite = mailList.begin(); ite != mailList.end(); ++ite ) {
-      if ( email == (*ite) ) {
-        results.append( *it );
-      }
-    }
-  }
+  KRES::Manager<Resource>::ActiveIterator it;
+  for ( it = d->mManager->activeBegin(); it != d->mManager->activeEnd(); ++it )
+    results += (*it)->findByEmail( email );
 
   return results;
 }
@@ -626,12 +615,9 @@ Addressee::List AddressBook::findByCategory( const QString &category )
 {
   Addressee::List results;
 
-  Iterator it;
-  for ( it = begin(); it != end(); ++it ) {
-    if ( (*it).hasCategory( category) ) {
-      results.append( *it );
-    }
-  }
+  KRES::Manager<Resource>::ActiveIterator it;
+  for ( it = d->mManager->activeBegin(); it != d->mManager->activeEnd(); ++it )
+    results += (*it)->findByEmail( category );
 
   return results;
 }
