@@ -238,10 +238,11 @@ void KIconLoader::init( const QString& _appname, KStandardDirs *_dirs )
     for (QStringList::ConstIterator it = dirs.begin(); it != dirs.end(); it++)
 	d->mpDirs->addResourceDir("appicon", *it);
 
+#ifndef NDEBUG
     QString dbgString = "Theme tree: ";
     d->mpThemeRoot->printTree(dbgString);
     kdDebug(264) << dbgString << endl;
-
+#endif
 }
 
 KIconLoader::~KIconLoader()
