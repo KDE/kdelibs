@@ -1936,7 +1936,6 @@ void HTTPProtocol::http_close()
      {
         QString filename = m_state.cef + ".new";
         unlink( filename.latin1());
-        return;
      }
   }
   if (!m_bKeepAlive)
