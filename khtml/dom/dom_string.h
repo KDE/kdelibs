@@ -115,17 +115,14 @@ protected:
 bool operator==( const DOMString &a, const DOMString &b );
 bool operator==( const DOMString &a, const QString &b );
 bool operator==( const DOMString &a, const char *b );
-bool operator==( const DOMString &a, int );
-bool operator!=( const DOMString &a, const DOMString &b );
-bool operator!=( const DOMString &a, const QString &b );
-bool operator!=( const DOMString &a, const char *b );
-bool operator!=( const DOMString &a, int );
+inline bool operator!=( const DOMString &a, const DOMString &b ) { return !(a==b); };
+inline bool operator!=( const DOMString &a, const QString &b ) { return !(a==b); };
+inline bool operator!=( const DOMString &a, const char *b )  { return !(a==b); };
+inline bool strcmp( const DOMString &a, const DOMString &b ) { return a != b; }
 
-bool strncmp( const DOMString &a, const DOMString &b, unsigned int len );
-int strcmp( const DOMString &a, const DOMString &b );
-
-int strncasecmp( const DOMString &a, const DOMString &b, unsigned int l );
-int strcasecmp( const DOMString &a, const DOMString &b );
+// returns false when equal, true otherwise (ignoring case)
+bool strcasecmp( const DOMString &a, const DOMString &b );
+bool strcasecmp( const DOMString& a, const char* b );
 
 };
 #endif

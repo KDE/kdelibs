@@ -23,6 +23,9 @@
 
 #include "dom_string.h"
 #include "dom_stringimpl.h"
+
+#include <kglobal.h>
+
 using namespace DOM;
 
 
@@ -217,43 +220,36 @@ DOMString DOMString::copy() const
 
 // ------------------------------------------------------------------------
 
-bool DOM::strncmp( const DOMString &a, const DOMString &b, unsigned int len)
+bool DOM::strcasecmp( const DOMString &as, const DOMString &bs )
 {
-    if(a.length() < len || b.length() < len) return false;
+    if ( as.length() != bs.length() ) return true;
 
-    if(memcmp(a.unicode(), b.unicode(), len*sizeof(QChar)))
-	return true;
+    const QChar *a = as.unicode();
+    const QChar *b = bs.unicode();
+    if ( a == b )  return false;
+    if ( !( a && b ) )  return true;
+    int l = as.length();
+    while ( l-- ) {
+        if ( *a != *b && a->lower() != b->lower() ) return true;
+	a++,b++;
+    }
     return false;
 }
 
-int DOM::strcmp( const DOMString &a, const DOMString &b )
+bool DOM::strcasecmp( const DOMString &as, const char* bs )
 {
-    unsigned int l = a.length();
-    if( l != b.length() ) return -1;
-    return strncmp(a, b, l);
-}
-
-int DOM::strncasecmp( const DOMString &s1, const DOMString &s2, unsigned int l )
-{
-    const QChar *a = s1.unicode();
-    const QChar *b = s2.unicode();
-
-    while ( l-- )
-    {
-	if( a->lower() != b->lower() )
-	    return a->lower() - b->lower();
-	a++,b++;
+    const QChar *a = as.unicode();
+    int l = as.length();
+    if ( !bs ) return ( l != 0 );
+    while ( l-- ) {
+        if ( a->latin1() != *bs ) {
+            char cc = ( ( *bs >= 'A' ) && ( *bs <= 'Z' ) ) ? ( ( *bs ) + 'a' - 'A' ) : ( *bs );
+            if ( a->lower().latin1() != cc ) return true;
+        }
+        a++, bs++;
     }
-    return 0;
+    return ( *bs != '\0' );
 }
-
-int DOM::strcasecmp( const DOMString &a, const DOMString &b )
-{
-    unsigned int l = a.length();
-    if( l != b.length() ) return -1;
-    return strncasecmp(a, b, l);
-}
-
 
 bool DOMString::isEmpty() const
 {
@@ -305,29 +301,5 @@ bool DOM::operator==( const DOMString &a, const char *b )
     return true;
 }
 
-bool DOM::operator==( const DOMString &a, int )
-{
-    return (a.length() == 0);
-}
-
-bool DOM::operator!=( const DOMString &a, const DOMString &b )
-{
-    return !(a==b);
-}
-
-bool DOM::operator!=( const DOMString &a, int )
-{
-    return (a.length() != 0);
-}
-
-bool DOM::operator!=( const DOMString &a, const QString &b )
-{
-    return !(a==b);
-}
-
-bool DOM::operator!=( const DOMString &a, const char *b )
-{
-    return !(a==b);
-}
 
 
