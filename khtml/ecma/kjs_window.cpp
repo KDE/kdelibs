@@ -1483,6 +1483,7 @@ Value WindowFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
 
 ////////////////////// ScheduledAction ////////////////////////
 
+// KDE 4: Make those parameters const ... &
 ScheduledAction::ScheduledAction(Object _func, List _args, bool _singleShot)
 {
   //kdDebug(6070) << "ScheduledAction::ScheduledAction(isFunction) " << this << endl;
@@ -1492,6 +1493,7 @@ ScheduledAction::ScheduledAction(Object _func, List _args, bool _singleShot)
   singleShot = _singleShot;
 }
 
+// KDE 4: Make it const QString &
 ScheduledAction::ScheduledAction(QString _code, bool _singleShot)
 {
   //kdDebug(6070) << "ScheduledAction::ScheduledAction(!isFunction) " << this << endl;

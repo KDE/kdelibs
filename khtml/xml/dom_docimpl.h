@@ -269,6 +269,7 @@ public:
     void finishParsing (  );
 
     QString URL() const { return m_url; }
+    /* KDE 4: make it const QString & */
     void setURL(QString url) { m_url = url; }
 
     QString baseURL() const { return m_baseURL.isEmpty() ? m_url : m_baseURL; }

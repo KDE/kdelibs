@@ -436,6 +436,7 @@ void HTMLTokenizer::scriptHandler()
         write( prependingSrc, false );
 }
 
+// KDE 4: Make scriptURL a const QString &
 void HTMLTokenizer::scriptExecution( const QString& str, QString scriptURL,
                                      int baseLine)
 {

@@ -166,7 +166,7 @@ k_dcop:
      * Finds the anchor named @p name.
      *
      * If the anchor is found, the widget
-     * scrolls to the closest position. Returns @p if the anchor has
+     * scrolls to the closest position. Returns @p true if the anchor has
      * been found.
      */
     bool gotoAnchor( const QString &name );

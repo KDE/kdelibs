@@ -413,6 +413,7 @@ void ProcessingInstructionImpl::setStyleSheet(CSSStyleSheetImpl* sheet)
 
 // -------------------------------------------------------------------------
 
+/* KDE 4: Make it const QString & */
 XMLAttributeReader::XMLAttributeReader(QString _attrString)
 {
     m_attrString = _attrString;

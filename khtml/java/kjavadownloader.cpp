@@ -44,6 +44,7 @@ private:
 };
 
 
+/* KDE 4: Make them const QString & */
 KJavaDownloader::KJavaDownloader( QString& ID, QString& url )
 {
     kdDebug(6100) << "KJavaDownloader for ID = " << ID << " and url = " << url << endl;
