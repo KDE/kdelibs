@@ -304,3 +304,10 @@ bool KJSCPUGuard::confirmTerminate()
 {
     return false;
 }
+
+#include <ksslsettings.h>
+
+bool KSSLSettings::warnOnEnter() const       { return false; }
+bool KSSLSettings::warnOnUnencrypted() const { return false; }
+bool KSSLSettings::warnOnLeave() const       { return false; }
+
