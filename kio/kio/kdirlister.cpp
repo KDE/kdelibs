@@ -87,6 +87,7 @@ void KDirListerCache::listDir( KDirLister* lister, const KURL& _u,
 {
   // like this we don't have to worry about trailing slashes any further
   KURL _url( _u.url(-1) );
+  _url.cleanPath(); // kill consecutive slashes
 
 #ifdef DEBUG_CACHE
   printDebug();
@@ -418,7 +419,7 @@ void KDirListerCache::forgetDirs( KDirLister *lister )
   // itemsInUse does not contain. (otherwise it might crash in findByName()).
   KURL::List lstDirsCopy = lister->d->lstDirs;
   lister->d->lstDirs.clear();
-  
+
   for ( KURL::List::Iterator it = lstDirsCopy.begin();
         it != lstDirsCopy.end(); ++it )
   {
