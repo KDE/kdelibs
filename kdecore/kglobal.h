@@ -51,6 +51,46 @@ public:
     static QFont                generalFont();
     static QFont                fixedFont();
 
+    /**
+     * Returns a treshold in pixels for drag & drop operations.
+     * As long as the mouse movement has not exceeded this number
+     * of pixels in either X or Y direction no drag operation may
+     * be started. This prevents spurious drags when the user intended
+     * to click on something but moved the mouse a bit while doing so.
+     *
+     * For this to work you must save the position of the mouse (oldPos)
+     * in the mousePressEvent. When the position of the mouse (newPos) 
+     * in a  mouseMoveEvent exceeds this treshold you may start a drag 
+     * which should originate from 'oldPos'. 
+     * 
+     * Example code:
+     * void KColorCells::mousePressEvent( QMouseEvent *e )
+     * {
+     *    mOldPos = e->pos();
+     * }
+     *
+     * void KColorCells::mouseMoveEvent( QMouseEvent *e )
+     * {
+     *    if( !(e->state() && LeftButton)) return;
+     *
+     *    int delay = KGlobal::dndEventDelay();
+     *    QPoint newPos = e->pos();
+     *    if(newPos->x() > mOldPos.x()+delay || newPos->x() < mOldPos.x()-delay ||
+     *       newPos->y() > mOldPos.y()+delay || newPos->y() < mOldPos.y()-delay)
+     *    {
+     *       // Drag color object
+     *       int cell = posToCell(mOldPos); // Find color at mOldPos
+     *       if ((cell != -1) && colors[cell].isValid())
+     *       {
+     *          KColorDrag *d = KColorDrag::makeDrag( colors[cell], this);
+     *          d->dragCopy();
+     *       }
+     *    }
+     * }
+     *
+     *
+     */
+
     static  int                 dndEventDelay();
 
     /**
