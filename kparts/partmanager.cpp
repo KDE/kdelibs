@@ -120,7 +120,7 @@ bool PartManager::eventFilter( QObject *obj, QEvent *ev )
   if ( !obj->isWidgetType() )
     return false;
 
-  QWidget *w = (QWidget *)obj;
+  QWidget *w = static_cast<QWidget *>( obj );
 
   if ( ( w->testWFlags( WStyle_Dialog ) && w->isModal() ) ||
        w->testWFlags( WType_Popup ) || w->testWFlags( WStyle_Tool ) )
@@ -132,10 +132,8 @@ bool PartManager::eventFilter( QObject *obj, QEvent *ev )
     QPoint pos;
 
     if ( ev->type() == QEvent::MouseButtonPress || ev->type() == QEvent::MouseButtonDblClick )
-      pos = ((QMouseEvent *)ev)->globalPos();
+      pos = static_cast<QMouseEvent *>( ev )->globalPos();
 
-    //    if ( w->topLevelWidget() != ((QWidget *)parent())->topLevelWidget() )
-    //      return false;
     if ( !d->m_managedTopLevelWidgets.containsRef( w->topLevelWidget() ) )
       return false;
 
@@ -264,8 +262,15 @@ void PartManager::setActivePart( Part *part, QWidget *widget )
 {
   //check whether nested parts are disallowed and activate the top parent part then, by traversing the
   //tree recursively (Simon)
-  if ( part && !d->m_bAllowNestedParts && part->parent() && part->parent()->inherits( "KParts::Part" ) )
-    setActivePart( (KParts::Part *)part->parent() );
+  if ( part && !d->m_bAllowNestedParts )
+  {
+    QObject *parentPart = part->parent(); // ### this relies on people using KParts::Factory!
+    if ( parentPart && parentPart->inherits( "KParts::Part" ) )
+    {
+      setActivePart( static_cast<KParts::Part *>( parentPart ) );
+      return;
+    }
+  }
 
   KParts::Part *oldActivePart = d->m_activePart;
   QWidget *oldActiveWidget = d->m_activeWidget;
@@ -371,13 +376,13 @@ QWidget *PartManager::selectedWidget() const
 void PartManager::slotObjectDestroyed()
 {
   kdDebug(1000) << "KPartManager::slotObjectDestroyed()" << endl;
-  removePart( (Part *)sender() );
+  removePart( const_cast<Part *>( static_cast<const Part *>( sender() ) ) );
 }
 
 void PartManager::slotWidgetDestroyed()
 {
   kdDebug(1000) << "KPartsManager::slotWidgetDestroyed()" << endl;
-  if ( (QWidget *)sender() == d->m_activeWidget )
+  if ( static_cast<const QWidget *>( sender() ) == d->m_activeWidget )
     setActivePart( 0L ); //do not remove the part because if the part's widget dies, then the
                          //part will delete itself anyway (which ends up in a slotObjectDestroyed() call
 }
