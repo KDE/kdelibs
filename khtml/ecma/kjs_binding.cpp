@@ -203,10 +203,13 @@ bool KJS::originCheck(const KURL &kurl1, const KURL &kurl2)
 
   if (kurl1.protocol() == kurl2.protocol() &&
       kurl1.host() == kurl2.host() &&
-      kurl1.port() == kurl2.port() &&
+      //kurl1.port() == kurl2.port() && // commented out, to fix www.live365.com (uses ports 80 and 89)
       kurl1.user() == kurl2.user() &&
       kurl1.pass() == kurl2.pass())
     return true;
   else
+  {
+    kdDebug(6070) << "KJS::originCheck DENIED! " << kurl1.url() << " <-> " << kurl2.url() << endl;
     return false;
+  }
 }
