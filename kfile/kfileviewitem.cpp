@@ -72,7 +72,6 @@ KFileViewItem::KFileViewItem(const QString& baseURL, const KIO::UDSEntry &e)
 	    break;
 	case KIO::UDS_MODIFICATION_TIME:
 	    myDate_t = ( *it ).m_long;
-	    myDate = dateTime( myDate_t );
 	    break;
 	case KIO::UDS_USER:
 	    myOwner = ( *it ).m_str;
@@ -82,7 +81,6 @@ KFileViewItem::KFileViewItem(const QString& baseURL, const KIO::UDSEntry &e)
 	    break;
 	case KIO::UDS_ACCESS:
 	    myPermissions = ( *it ).m_long;
-	    parsePermissions(myPermissions);
 	    break;
 	case KIO::UDS_FILE_TYPE:
 	    myIsDir = (( *it ).m_long & S_IFDIR) != 0;

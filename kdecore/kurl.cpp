@@ -625,11 +625,6 @@ bool KURL::hasSubURL() const
   return ( KProtocolManager::self().isFilterProtocol( m_strProtocol ) && !m_strRef_encoded.isEmpty() );
 }
 
-QString KURL::url() const
-{
-  return url( 0 );
-}
-
 QString KURL::url( int _trailing ) const
 {
    if( m_bIsMalformed )

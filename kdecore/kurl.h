@@ -46,7 +46,7 @@ class QStringList;
 class KURL
 {
 public:
-  class List : public QValueList<KURL> 
+  class List : public QValueList<KURL>
   {
   public:
       List() { }
@@ -332,11 +332,6 @@ public:
    */
   bool cd( const QString& _dir, bool zapRef = true );
 
-  /**
-   * @return The complete encoded URL.
-   */
-  QString url() const;
-
   /*
    * Convenience method
    * @return The complete decoded URL, for instance to be displayed to the user.
@@ -350,7 +345,7 @@ public:
    *                  a trailing '/' if there is none yet and 0 returns the
    *                  path unchanged.
    */
-  QString url( int _trailing ) const;
+  QString url( int _trailing = 0 ) const;
 
   /**
    * Test to see if the @ref KURL is empty.

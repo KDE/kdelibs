@@ -105,7 +105,6 @@ class KActionPrivate
 public:
   KActionPrivate()
   {
-    m_iconName = QString::null;
   }
   ~KActionPrivate()
   {
@@ -116,21 +115,21 @@ public:
 KAction::KAction( const QString& text, int accel, QObject* parent, const char* name )
  : QAction( text, accel, parent, name ), kaccel(0)
 {
-  d = new KActionPrivate;
+    d = new KActionPrivate;
 }
 
 KAction::KAction( const QString& text, int accel,
 	           const QObject* receiver, const char* slot, QObject* parent, const char* name )
  : QAction( text, accel, receiver, slot, parent, name ), kaccel(0)
 {
-  d = new KActionPrivate;
+    d = new KActionPrivate;
 }
 
 KAction::KAction( const QString& text, const QIconSet& pix, int accel,
                     QObject* parent, const char* name )
  : QAction( text, pix, accel, parent, name ), kaccel(0)
 {
-  d = new KActionPrivate;
+    d = new KActionPrivate;
 }
 
 KAction::KAction( const QString& text, const QString& pix, int accel,
@@ -163,7 +162,7 @@ KAction::KAction( QObject* parent, const char* name )
 
 KAction::~KAction()
 {
-  delete d; d = 0;
+    delete d;
 }
 
 int KAction::plug( QWidget *w, int index )
@@ -192,7 +191,7 @@ int KAction::plug( QWidget *w, int index )
 
     return containerCount() - 1;
   }
- 
+
   return QAction::plug( w, index );
 }
 
@@ -258,16 +257,16 @@ void KAction::setText( const QString& text )
 void KAction::setText( int i, const QString &text )
 {
    QWidget *w = container( i );
-   
+
    if ( w->inherits( "KToolBar" ) )
    {
      QWidget *button = ((KToolBar *)w)->getWidget( menuId( i ) );
      if ( button->inherits( "KToolBarButton" ) )
        ((KToolBarButton *)button)->setText( text );
    }
-   
+
    QAction::setText( i, text );
-} 
+}
 
 void KAction::setIcon( const QString &icon )
 {
@@ -276,8 +275,8 @@ void KAction::setIcon( const QString &icon )
 
 void KAction::setIconSet( const QIconSet &iconSet )
 {
-  QAction::setIconSet( iconSet ); 
-} 
+  QAction::setIconSet( iconSet );
+}
 
 void KAction::setIconSet( int id, const QIconSet& iconSet )
 {
@@ -436,9 +435,9 @@ void KToggleAction::unplug( QWidget *w )
 
     return;
   }
-  
+
   QToggleAction::unplug( w );
-} 
+}
 
 void KToggleAction::setChecked( bool c )
 {
@@ -474,30 +473,30 @@ void KToggleAction::setChecked( bool c )
 void KToggleAction::setChecked( int id, bool checked )
 {
   QWidget *w = container( id );
-  
-  if ( w->inherits( "KToolBar" ) ) 
+
+  if ( w->inherits( "KToolBar" ) )
   {
     QWidget* r = ( (KToolBar*)w )->getButton( menuId( id ) );
     if ( r->inherits( "KToolBarButton" ) )
       ( (KToolBar*)w )->setButton( menuId( id ), checked );
   }
-   
-  QToggleAction::setChecked( id, checked ); 
-} 
+
+  QToggleAction::setChecked( id, checked );
+}
 
 void KToggleAction::setText( int i, const QString &text )
 {
    QWidget *w = container( i );
-   
+
    if ( w->inherits( "KToolBar" ) )
    {
      QWidget *button = ((KToolBar *)w)->getWidget( menuId( i ) );
      if ( button->inherits( "KToolBarButton" ) )
        ((KToolBarButton *)button)->setText( text );
    }
- 
-  QToggleAction::setText( i, text ); 
-} 
+
+  QToggleAction::setText( i, text );
+}
 
 void KToggleAction::slotActivated()
 {
@@ -625,13 +624,13 @@ void KSelectAction::setCurrentItem( int id )
 }
 
 void KSelectAction::setItems( const QStringList &lst )
-{ 
-    QSelectAction::setItems( lst); 
+{
+    QSelectAction::setItems( lst);
 }
 
 void KSelectAction::clear()
-{ 
-    QSelectAction::clear(); 
+{
+    QSelectAction::clear();
 }
 
 void KSelectAction::setCurrentItem( int id, int index )
@@ -644,9 +643,9 @@ void KSelectAction::setCurrentItem( int id, int index )
       b->setCurrentItem( index );
     }
   }
- 
-  QSelectAction::setCurrentItem( id, index ); 
-} 
+
+  QSelectAction::setCurrentItem( id, index );
+}
 
 void KSelectAction::setItems( int id, const QStringList& lst )
 {
@@ -1330,7 +1329,7 @@ void KActionMenu::setEnabled( int id, bool b )
 void KActionMenu::setText( int id, const QString& text )
 {
   QWidget *w = container( id );
- 
+
   if ( w->inherits( "KToolBar" ) )
   {
     QWidget *button = ((KToolBar *)w)->getWidget( menuId( id ) );

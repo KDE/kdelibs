@@ -246,7 +246,7 @@ KFileDialog::KFileDialog(const QString& dirName, const QString& filter,
     	     SLOT( slotOk()));
 
     // Get the config object
-    KSimpleConfig *kc = new KSimpleConfig(QString::fromLatin1("kdeglobals"), 
+    KSimpleConfig *kc = new KSimpleConfig(QString::fromLatin1("kdeglobals"),
                                           false);
     QString oldGroup = kc->group();
     kc->setGroup( ConfigGroup );
@@ -360,7 +360,7 @@ void KFileDialog::slotStatResult(KIO::Job* job) {
 void KFileDialog::accept()
 {
     *lastDirectory = ops->url();
-    KSimpleConfig *c = new KSimpleConfig(QString::fromLatin1("kdeglobals"), 
+    KSimpleConfig *c = new KSimpleConfig(QString::fromLatin1("kdeglobals"),
                                          false);
     saveConfig( c, ConfigGroup );
     delete c;
@@ -677,12 +677,7 @@ void KFileDialog::fillBookmarkMenu( KFileBookmark *parent, QPopupMenu *menu, int
 
 void KFileDialog::toolbarCallback(int i) // SLOT
 {
-    KSimpleConfig *c = new KSimpleConfig(QString::fromLatin1("kdeglobals"), 
-                                         false);
-    KConfigGroupSaver cs(c, ConfigGroup);
-    QString cmd;
-    switch(i) {
-    case CONFIGURE_BUTTON: {
+    if (i == CONFIGURE_BUTTON) {
 	KFileDialogConfigureDlg conf(this, "filedlgconf");
 	if (conf.exec() == QDialog::Accepted) {
 	
@@ -696,12 +691,7 @@ void KFileDialog::toolbarCallback(int i) // SLOT
 
 	    initGUI(); // add them back to the layout managment
 	}
-	break;
     }
-    default:
-        break;
-    }
-	delete c;
 }
 
 
@@ -1083,11 +1073,11 @@ void KFileDialog::readConfig( KConfig *kc, const QString& group )
     ops->readConfig( kc, group );
 
     KDirComboBox *combo = d->pathCombo;
-    combo->setMaxItems( kc->readNumEntry( RecentURLsNumber, 
+    combo->setMaxItems( kc->readNumEntry( RecentURLsNumber,
 					  DefaultRecentURLsNumber ) );
     combo->setURLs( kc->readListEntry( RecentURLs ) );
     combo->setURL( ops->url() );
-    
+
 
     int w, h;
     QWidget *desk = QApplication::desktop();
