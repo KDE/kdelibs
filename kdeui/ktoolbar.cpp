@@ -166,9 +166,9 @@ QSizePolicy KToolBarSeparator::sizePolicy() const
 }
 
 KToolBar::KToolBar( QWidget *parent, const char *name, bool b, bool readConfig )
-    : QToolBar( QString( name ), 
-      parent && parent->inherits( "QMainWindow" ) ? (QMainWindow*)parent : 0, 
-      parent, FALSE, 
+    : QToolBar( QString( name ),
+      parent && parent->inherits( "QMainWindow" ) ? (QMainWindow*)parent : 0,
+      parent, FALSE,
       name ? name : "mainToolBar")
 {
     init( readConfig, b );
@@ -305,6 +305,11 @@ int KToolBar::insertCombo (QStrList *list, int id, bool writable,
                             QComboBox::Policy policy )
 {
     KComboBox *combo = new KComboBox ( writable, this );
+    // make the combo shrinkable even if the contents are longer than the
+    // combo width
+    combo->setSizePolicy( QSizePolicy( QSizePolicy::Expanding, 
+				       QSizePolicy::Fixed ));
+    
     inserted.removeRef( combo );
     insertWidgetInternal( combo, index, id );
     inserted.append( combo );
@@ -330,6 +335,11 @@ int KToolBar::insertCombo (const QStringList &list, int id, bool writable,
                             QComboBox::Policy policy )
 {
     KComboBox *combo = new KComboBox ( writable, this );
+    // make the combo shrinkable even if the contents are longer than the
+    // combo width
+    combo->setSizePolicy( QSizePolicy( QSizePolicy::Expanding, 
+				       QSizePolicy::Fixed ));
+    
     inserted.removeRef( combo );
     insertWidgetInternal( combo, index, id );
     inserted.append( combo );
@@ -355,6 +365,11 @@ int KToolBar::insertCombo (const QString& text, int id, bool writable,
                             QComboBox::Policy policy )
 {
     KComboBox *combo = new KComboBox ( writable, this );
+    // make the combo shrinkable even if the contents are longer than the
+    // combo width
+    combo->setSizePolicy( QSizePolicy( QSizePolicy::Expanding, 
+				       QSizePolicy::Fixed ));
+    
     inserted.removeRef( combo );
     insertWidgetInternal( combo, index, id );
     inserted.append( combo );
@@ -1429,7 +1444,7 @@ void KToolBar::slotReadConfig()
 {
     // Use global file.
     KConfig *config = KGlobal::config();
-    applySettings(config, QString::null); 
+    applySettings(config, QString::null);
 }
 
 void KToolBar::applySettings(KConfig *config, const QString &_configGroup)
