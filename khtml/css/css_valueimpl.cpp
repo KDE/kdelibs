@@ -631,6 +631,8 @@ FontFamilyValueImpl::FontFamilyValueImpl( const QString &string)
     QString face = string.lower();
     // a languge tag is often added in braces at the end. Remove it.
     face = face.replace(QRegExp(" \\(.*\\)$"), "");
+    // remove [Xft] qualifiers
+    face = face.replace(QRegExp(" \\[.*\\]$"), "");
     //kdDebug(0) << "searching for face '" << face << "'" << endl;
     if(face == "serif" ||
        face == "sans-serif" ||
