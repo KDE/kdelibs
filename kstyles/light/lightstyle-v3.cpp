@@ -30,6 +30,7 @@
 #include "qframe.h"
 #include "qpushbutton.h"
 #include "qdrawutil.h"
+#include "qprogressbar.h"
 #include "qscrollbar.h"
 #include "qtabbar.h"
 #include "qguardedptr.h"
@@ -1781,6 +1782,25 @@ QSize LightStyleV3::sizeFromContents( ContentsType contents,
 	    ret = QSize(w, h);
 	    break;
 	}
+	
+    case CT_ProgressBar:
+	{
+	    const QProgressBar* pb = static_cast<const QProgressBar*>(widget);
+	    
+	    //If we have to display the indicator, and we do it on RHS, give some more room
+	    //for it. This tries to match the logic and the spacing in SR_ProgressBarGroove/Contents
+	    //sizing in QCommonStyle.
+	    if (pb->percentageVisible() && 
+	        (pb->indicatorFollowsStyle() || ! pb->centerIndicator()))
+	    {
+		int addw = pb->fontMetrics().width("100%" + 6);
+		return QSize(contentsSize.width() + addw, contentsSize.height());
+	    }
+	    else
+	    	return contentsSize; //Otherwise leave unchanged
+	    
+	    break;
+	}    
 
     default:
 	ret = QCommonStyle::sizeFromContents(contents, widget, contentsSize, data);
