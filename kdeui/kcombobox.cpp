@@ -93,6 +93,11 @@ void KComboBox::init()
     // Enable context menu by default if widget
     // is editable.
     setContextMenuEnabled( true );
+
+    // for wheelscrolling
+    installEventFilter( this );
+    if ( lineEdit() )
+        lineEdit()->installEventFilter( this );
 }
 
 
@@ -186,12 +191,12 @@ bool KComboBox::eventFilter( QObject* o, QEvent* ev )
 {
     QLineEdit *edit = lineEdit();
 
+    int type = ev->type();
 
     if ( o == edit )
     {
         KCursor::autoHideEventFilter( edit, ev );
 
-        int type = ev->type();
         if ( type == QEvent::KeyPress )
         {
             QKeyEvent *e = static_cast<QKeyEvent *>( ev );
@@ -210,6 +215,30 @@ bool KComboBox::eventFilter( QObject* o, QEvent* ev )
             }
         }
     }
+
+    
+    // wheel-scrolling changes the current item
+    if ( type == QEvent::Wheel ) {
+        if ( !listBox() || listBox()->isHidden() ) {
+            QWheelEvent *e = static_cast<QWheelEvent*>( ev );
+            static const int WHEEL_DELTA = 120;
+            int skipItems = e->delta() / WHEEL_DELTA;
+            if ( e->state() & ControlButton ) // fast skipping
+                skipItems *= 10;
+            
+            int newItem = currentItem() - skipItems;
+
+            if ( newItem < 0 )
+                newItem = 0;
+            else if ( newItem >= count() )
+                newItem = count() -1;
+            
+            setCurrentItem( newItem );
+            e->accept();
+            return true;
+        }
+    }
+    
     return QComboBox::eventFilter( o, ev );
 }
 
