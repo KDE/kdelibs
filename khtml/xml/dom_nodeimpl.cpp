@@ -1326,20 +1326,6 @@ bool NodeBaseImpl::checkSameDocument( NodeImpl *newChild, int &exceptioncode )
     return false;
 }
 
-// check for being (grand-..)father:
-// ### remove in favor or isAncestor()
-bool NodeBaseImpl::checkNoOwner( NodeImpl *newChild, int &exceptioncode )
-{
-  //check if newChild is parent of this...
-  NodeImpl *n;
-  for( n = this; (n != getDocument()) && (n!= 0); n = n->parentNode() )
-      if(n == newChild) {
-          exceptioncode = DOMException::HIERARCHY_REQUEST_ERR;
-          return true;
-      }
-  return false;
-}
-
 // check for being child:
 bool NodeBaseImpl::checkIsChild( NodeImpl *oldChild, int &exceptioncode )
 {

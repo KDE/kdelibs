@@ -411,9 +411,6 @@ public:
     virtual unsigned long childNodeCount();
     virtual NodeImpl *childNode(unsigned long index);
 
-    // check for being (grand-..)father:
-    bool checkNoOwner( NodeImpl *other, int &exceptioncode );
-
 protected:
     NodeImpl *_first;
     NodeImpl *_last;
