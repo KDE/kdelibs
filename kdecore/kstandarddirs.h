@@ -535,16 +535,6 @@ public:
 	QString kfsstnd_prefixes();
 
 	/**
-	 * @internal (for use by sycoca only)
-	 */
-	QString kfsstnd_xdg_conf_prefixes();
-
-	/**
-	 * @internal (for use by sycoca only)
-	 */
-	QString kfsstnd_xdg_data_prefixes();
-
-	/**
 	 * Returns the toplevel directory in which KStandardDirs
 	 * will store things. Most likely $HOME/.kde
 	 * Don't use this function if you can use locateLocal
@@ -581,16 +571,6 @@ public:
 	 * @since 3.1
          */
         static QString realPath(const QString &dirname);
-
-        /**
-         * Expands all symbolic links and resolves references to
-         * '/./', '/../' and extra  '/' characters in @p filename
-         * and returns the canonicalized absolute pathname.
-         * The resulting path will have no symbolic link, '/./'
-         * or '/../' components.
-	 * @since 3.4
-         */
-        static QString realFilePath(const QString &filename);
  private:
 
 	QStringList prefixes;

@@ -19,12 +19,14 @@
 
 #include <config.h>
 
+#include <stdlib.h>
 #include <sys/types.h>
 
 #ifdef HAVE_SYS_STAT_H
 #include <sys/stat.h>
 #endif
 
+#include <sys/param.h>
 #include <unistd.h>
 #include <fcntl.h>
 
@@ -39,11 +41,26 @@
 #include "ksavefile.h"
 #include "kstandarddirs.h"
 
+static QString realFilePath(const QString &filename)
+{
+    char realpath_buffer[MAXPATHLEN + 1];
+    memset(realpath_buffer, 0, MAXPATHLEN + 1);
+
+    /* If the path contains symlinks, get the real name */
+    if (realpath( QFile::encodeName(filename).data(), realpath_buffer) != 0) {
+        // succes, use result from realpath
+        return QFile::decodeName(realpath_buffer);
+    }
+
+    return filename;
+}
+
+
 KSaveFile::KSaveFile(const QString &filename, int mode)
  : mTempFile(true)
 {
    // follow symbolic link, if any
-   QString real_filename = KStandardDirs::realFilePath(filename);
+   QString real_filename = realFilePath(filename);
 
    // we only check here if the directory can be written to
    // the actual filename isn't written to, but replaced later
