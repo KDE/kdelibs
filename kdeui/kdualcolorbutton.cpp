@@ -109,12 +109,16 @@ void KDualColorButton::setForeground(const QColor &c)
 {
     fg = QBrush(c, SolidPattern);
     repaint(false);
+
+    emit fgChanged(fg.color());
 }
 
 void KDualColorButton::setBackground(const QColor &c)
 {
     bg = QBrush(c, SolidPattern);
     repaint(false);
+
+    emit bgChanged(bg.color());
 }
 
 void KDualColorButton::setCurrentColor(const QColor &c)
