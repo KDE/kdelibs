@@ -33,53 +33,51 @@
 /**
  * A combined button, line-edit and a popup list widget.
  *
+ * @sect Detail
+ *
  * This widget inherits from @ref QComboBox and implements
- * the following additional functionalities:  A completion
+ * the following additional functionalities:  a completion
  * object that provides both automatic and manual text
  * completion as well as text rotation features, configurable
- * key-bindings to activate these features and a popup-menu
+ * key-bindings to activate these features, and a popup-menu
  * item that can be used to allow the user to set text completion
  * modes on the fly based on their preference.
  *
- * @sect Detail
- *
  * To support these new features @ref KComboBox also emits a few
  * more additional signals as well.  The main ones are the
- * @ref completion() and @ref rotation() signals.  The completion signal
- * is intended to be connected to a slot that will assist the user
- * in filling out the remaining text while the rotation signals, both
- * @ref rotateUp() and @ref rotateDown(), are intended to be used to
- * trasverse through some kind of list in opposing directions.
- * The @ref previousMatch() and @ref nextMatch() signals are used to
- * iterate through all possible matches whenever there is more than
- * one possible text completion match and the @ref returnPressed()
- * signal is emitted when the user presses the Enter key.
+ * @ref completion( const QString& ) and @ref textRotation( KeyBindgingType )
+ * signals.  The completion signal is intended to be connected to a slot
+ * that will assist the user in filling out the remaining text while
+ * the rotation signals is intended to be used to trasverse through all
+ * possible matches whenever text completion results in multiple matches.
+ * The @ref returnPressed() and @ref returnPressed( const QString& )
+ * signal is emitted when the user presses the Enter/Return key.
  *
  * This widget by default creates a completion object when you invoke
- * the @ref completionObject() member function for the first time or use
- * @ref setCompletionObject() to assign your own completion object.
- * Additionally, to make this widget more functional, @ref KComboBox will
- * automatically handle the iteration and completion signals internally
- * when a completion object is created through either one of the methods
- * mentioned above.  If you do not need these feature, simply use
- * @ref KCompletionBase::setHandleSignals() or alternatively the boolean
- * parameter in @ref setCompletionObject(), to turn them off.
+ * the @ref completionObject( bool ) member function for the first time
+ * or use @ref setCompletionObject( KCompletion*, bool ) to assign your
+ * own completion object.  Additionally, to make this widget more functional,
+ * @ref KComboBox will by default handle the text rotation and completion
+ * events internally whenever a completion object is created through either
+ * one of the methods mentioned above.  If you do not need this functionality,
+ * simply use @ref KCompletionBase::setHandleSignals( bool ) or alternatively
+ * set the boolean parameter in the above methods to FALSE.
  *
- * The default key-binding for completion and rotation is determined
+ * The default key-bindings for completion and rotation is determined
  * from the global settings in @ref KStdAccel.  These values, however,
- * can be set locally to override the global settings through the
- * @ref setKeyBinding() member function.  To default the values back,
- * simply invoke @ref useGlobalSettings().  You can also default
- * individual key-binding by simply calling the @ref setKeyBinding() member
- * function with the default the second argument.
+ * can be overriden locally by invoking @ref KCompletionBase::setKeyBinding().
+ * The values can easily be reverted back to the default setting, by simply
+ * calling @ref useGlobalSettings(). An alternate method would be to default
+ * individual key-bindings by usning @ref setKeyBinding() with the default
+ * second argument.
  *
- * Note that if this widget is not editable, i.e. it is constructed as a
- * "select-only" widget, then only one completion mode, @p CompletionAuto,
- * is allowed.  All the other modes are simply ignored.  The @p CompletionAuto
- * mode in this case allows you to automatically select an item from the list
- * that matches the key-code of the first key pressed.
+ * Note that if this widget is not editable ( i.e. select-only ), then only
+ * one completion mode, @p CompletionAuto, will work.  All the other modes are
+ * simply ignored.  The @p CompletionAuto mode in this case allows you to
+ * automatically select an item from the list by trying to match the pressed
+ * keycode with the first letter of the enteries in the combo box.
  *
- * @sect Example:
+ * @sect Example
  *
  * To enable the basic completion feature:
  *
