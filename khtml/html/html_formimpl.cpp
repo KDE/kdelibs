@@ -313,17 +313,33 @@ void HTMLFormElementImpl::setBoundary( const DOMString& bound )
     m_boundary = bound;
 }
 
-bool HTMLFormElementImpl::submit(  )
+bool HTMLFormElementImpl::prepareSubmit()
 {
-    if(m_doingsubmit || !view || !view->part() || view->part()->onlyLocalReferences())
-        return m_doingsubmit;
-
-    if ( m_insubmit )
-        return ( m_doingsubmit = true );
+    if(m_insubmit || !view || !view->part() || view->part()->onlyLocalReferences())
+        return m_insubmit;
 
     m_insubmit = true;
-    if ( !dispatchHTMLEvent(EventImpl::SUBMIT_EVENT,true,true) && !m_doingsubmit)
-        return ( m_insubmit = false );
+    m_doingsubmit = false;
+
+    if ( dispatchHTMLEvent(EventImpl::SUBMIT_EVENT,true,true) && !m_doingsubmit )
+        m_doingsubmit = true;
+
+    m_insubmit = false;
+
+    if ( m_doingsubmit )
+        submit();
+
+    return m_doingsubmit;
+}
+
+void HTMLFormElementImpl::submit(  )
+{
+    if ( m_insubmit ) {
+        m_doingsubmit = true;
+        return;
+    }
+
+    m_insubmit = true;
 
 #ifdef FORMS_DEBUG
     kdDebug( 6030 ) << "submitting!" << endl;
@@ -356,7 +372,6 @@ bool HTMLFormElementImpl::submit(  )
     }
 
     m_doingsubmit = m_insubmit = false;
-    return true;
 }
 
 void HTMLFormElementImpl::reset(  )
@@ -682,7 +697,7 @@ void HTMLButtonElementImpl::defaultEventHandler(EventImpl *evt)
 
         if(m_form && m_type == SUBMIT) {
             m_activeSubmit = true;
-            m_form->submit();
+            m_form->prepareSubmit();
             m_activeSubmit = false; // in case we were canceled
         }
         if(m_form && m_type == RESET) m_form->reset();
@@ -1272,11 +1287,11 @@ void HTMLInputElementImpl::defaultEventHandler(EventImpl *evt)
 	    m_form->reset();
         else {
             m_activeSubmit = true;
-	    if (!m_form->submit()) {
+	    if (!m_form->prepareSubmit()) {
 		xPos = 0;
 		yPos = 0;
 	    }
-            m_activeSubmit = false; // in case we were canceled
+            m_activeSubmit = false;
         }
     }
 }

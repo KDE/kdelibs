@@ -93,7 +93,8 @@ public:
     virtual QString state() { return QString::null; }
     virtual void restoreState(const QString &) { };
 
-    bool submit();
+    bool prepareSubmit();
+    void submit();
     void reset();
 
     static void i18nData();

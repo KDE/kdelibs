@@ -544,7 +544,7 @@ void RenderLineEdit::slotReturnPressed()
 
     HTMLFormElementImpl* fe = m_element->form();
     if ( fe )
-	fe->submit();
+	fe->prepareSubmit();
 }
 
 void RenderLineEdit::calcMinMaxWidth()
@@ -706,7 +706,7 @@ void RenderFileButton::layout( )
 void RenderFileButton::slotReturnPressed()
 {
     if (m_element->form())
-	m_element->form()->submit();
+	m_element->form()->prepareSubmit();
 }
 
 void RenderFileButton::slotTextChanged(const QString &string)
