@@ -544,7 +544,7 @@ public:
    *
    * @return List of langauge codes
    *
-   * @sa languageList
+   * @see languageList
    */
   QStringList languagesTwoAlpha() const;
 
@@ -554,7 +554,7 @@ public:
    *
    * @return List of language codes
    *
-   * @sa languagesTwoAlpha
+   * @see languagesTwoAlpha
    */
   QStringList languageList() const;
 
@@ -566,7 +566,7 @@ public:
    *
    * @return Name of the prefered charset for fonts
    *
-   * @sa encoding
+   * @see encoding
    */
 #ifndef KDE_NO_COMPAT
   QString charset() const;
@@ -577,8 +577,8 @@ public:
    *
    * @return The name of the prefered encoding
    *
-   * @sa codecForEncoding
-   * @sa encodingMib
+   * @see codecForEncoding
+   * @see encodingMib
    */
   const char * encoding() const;
 
@@ -587,8 +587,8 @@ public:
    *
    * @return The Mib of the prefered encoding
    *
-   * @sa encoding
-   * @sa codecForEncoding
+   * @see encoding
+   * @see codecForEncoding
    */
   int encodingMib() const;
   /**
@@ -596,8 +596,8 @@ public:
    *
    * @return The codec for the prefered encoding
    *
-   * @sa encoding
-   * @sa encodingMib
+   * @see encoding
+   * @see encodingMib
    */
   QTextCodec * codecForEncoding() const;
 
