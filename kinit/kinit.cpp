@@ -977,7 +977,7 @@ int main(int argc, char **argv, char **envp)
    {
       pid = launch( 1, "klauncher", 0 );
 #ifndef NDEBUG
-      fprintf(stderr, "kdeinit: Launched KLauncher, pid = %ld [%ld] result = %d\n", (long) pid, d.result);
+      fprintf(stderr, "kdeinit: Launched KLauncher, pid = %ld result = %d\n", (long) pid, d.result);
 #endif
       WaitPid(pid);
    }
