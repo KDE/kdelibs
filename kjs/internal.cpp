@@ -491,7 +491,7 @@ bool KJScriptImp::evaluate(const UChar *code, unsigned int length, Imp *thisV)
   assert(progNode);
   KJSO res = progNode->evaluate();
   recursion--;
-  
+
   if (context->hadError()) {
     /* TODO */
     errType = 99;
@@ -520,10 +520,53 @@ bool PropList::contains(const UString &name)
 {
   PropList *p = this;
   while (p) {
-    if(name == p->name)
+    if (name == p->name)
       return true;
     p = p->next;
   }
   return false;
 }
 
+bool LabelStack::push(const UString &id)
+{
+  if (id.isEmpty() || contains(id))
+    return false;
+
+  StackElm *newtos = new StackElm;
+  newtos->id = id;
+  newtos->prev = tos;
+  tos = newtos;
+  return true;
+}
+
+bool LabelStack::contains(const UString &id) const
+{
+  if (id.isEmpty())
+    return true;
+
+  for (StackElm *curr = tos; curr; curr = curr->prev)
+    if (curr->id == id)
+      return true;
+
+  return false;
+}
+
+void LabelStack::pop()
+{
+  if (tos) {
+    StackElm *prev = tos->prev;
+    delete tos;
+    tos = prev;
+  }
+}
+
+LabelStack::~LabelStack()
+{
+  StackElm *prev;
+
+  while (tos) {
+    prev = tos->prev;
+    delete tos;
+    tos = prev;
+  }
+}

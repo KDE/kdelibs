@@ -372,7 +372,7 @@ KJSO RelationalNode::evaluate()
   if (oper == OpLess || oper == OpGreaterEq) {
     int r = relation(v1, v2);
     if (r < 0)
-      b = false; 
+      b = false;
     else
       b = (oper == OpLess) ? r : !r;
   } else if (oper == OpGreater || oper == OpLessEq) {
@@ -720,12 +720,9 @@ Completion StatListNode::execute()
     return Completion(Throw, KJSO(ex));
   }
 
-  if (!l.isValueCompletion())
-    return e;
-
   KJSO v = e.isValueCompletion() ? e.value() : l.value();
 
-  return Completion(e.complType(), v /* e.target */);
+  return Completion(e.complType(), v, e.target() );
 }
 
 // ECMA 12.2
@@ -783,6 +780,7 @@ Completion ForNode::execute()
 {
   KJSO e, v, cval;
   Boolean b;
+
   if (expr1) {
     e = expr1->evaluate();
     v = e.getValue();
@@ -793,15 +791,17 @@ Completion ForNode::execute()
       v = e.getValue();
       b = v.toBoolean();
       if (b.value() == false)
-	return Completion(Normal);
+	return Completion(Normal, cval);
     }
     Completion c = stat->execute();
     if (c.isValueCompletion())
       cval = c.value();
-    if (c.complType() == Break)
-      return Completion(Normal, cval);
-    if (c.complType() == ReturnValue)
+    if (!((c.complType() == Continue) && ls.contains(c.target()))) {
+      if ((c.complType() == Break) && ls.contains(c.target()))
+        return Completion(Normal, cval);
+      if (c.complType() != Normal)
       return c;
+    }
     if (expr3) {
       e = expr3->evaluate();
       v = e.getValue();
@@ -841,11 +841,14 @@ Completion ForInNode::execute()
     c = stat->execute();
     if (c.isValueCompletion())
       retval = c.value();
-    if (c.complType() == Break) /* TODO: consider target */
-      break;
-    if (c.complType() == ReturnValue) {
-      delete lst;
-      return c;
+
+    if (!((c.complType() == Continue) && ls.contains(c.target()))) {
+      if ((c.complType() == Break) && ls.contains(c.target()))
+        break;
+      if (c.complType() != Normal) {
+        delete lst;
+        return c;
+      }
     }
 
     curr = curr->next;
@@ -892,9 +895,13 @@ Completion DoWhileNode::execute()
 
   do {
     c = statement->execute();
-    /* TODO */
-    if (c.complType() != Normal)
-      return c;
+    if (!((c.complType() == Continue) && ls.contains(c.target()))) {
+      if ((c.complType() == Break) && ls.contains(c.target()))
+        return Completion(Normal, value);
+      if (c.complType() != Normal)
+        return c;
+    }
+
     be = expr->evaluate();
     bv = be.getValue();
   } while (bv.toBoolean().value());
@@ -916,32 +923,39 @@ Completion WhileNode::execute()
     b = bv.toBoolean();
 
     if (!b.value())
-      break;
+      return Completion(Normal, value);
 
     c = statement->execute();
     if (c.isValueCompletion())
       value = c.value();
-    if (c.complType() == Break)
-      break;
-    if (c.complType() == Continue)
+
+    if ((c.complType() == Continue) && ls.contains(c.target()))
       continue;
-    if (c.complType() == ReturnValue)
+    if ((c.complType() == Break) && ls.contains(c.target()))
+      return Completion(Normal, value);
+    if (c.complType() != Normal)
       return c;
   }
-
-  return Completion(Normal, value);
 }
 
 // ECMA 12.7
 Completion ContinueNode::execute()
 {
-  return Completion(Continue);
+  KJSO dummy;
+  return Context::current()->seenLabels()->contains(ident) ?
+    Completion(Continue, dummy, ident) :
+    Completion(Throw,
+	       throwError(SyntaxError, "Label not found in containing block"));
 }
 
 // ECMA 12.8
 Completion BreakNode::execute()
 {
-  return Completion(Break);
+  KJSO dummy;
+  return Context::current()->seenLabels()->contains(ident) ?
+    Completion(Break, dummy, ident) :
+    Completion(Throw,
+	       throwError(SyntaxError, "Label not found in containing block"));
 }
 
 // ECMA 12.9
@@ -987,7 +1001,10 @@ Completion SwitchNode::execute()
   KJSO v = e.getValue();
   Completion res = block->evalBlock(v);
 
-  return res.complType() != Break ? res : Completion(Normal, res.value());
+  if ((res.complType() == Break) && ls.contains(res.target()))
+    return Completion(Normal, res.value());
+  else
+    return res;
 }
 
 // ECMA 12.11
@@ -1071,12 +1088,19 @@ Completion CaseClauseNode::evalStatements()
 // ECMA 12.12
 Completion LabelNode::execute()
 {
-  KJSO e;
+  Completion e;
 
+  if (!Context::current()->seenLabels()->push(label)) {
+    return Completion( Throw,
+		       throwError(SyntaxError, "Duplicated label found" ));
+  };
   e = stat->execute();
-  /* TODO */
+  Context::current()->seenLabels()->pop();
 
-  return Completion(Normal);
+  if ((e.complType() == Break) && (e.target() == label))
+    return Completion(Normal, e.value());
+  else
+    return e;
 }
 
 // ECMA 12.13
@@ -1091,15 +1115,15 @@ Completion ThrowNode::execute()
 Completion TryNode::execute()
 {
   Completion c, c2;
-  
+
   c = block->execute();
-  
+
   if (!_finally) {
     if (c.complType() != Throw)
       return c;
     return _catch->execute(c.value());
   }
-  
+
   if (!_catch) {
     c2 = _finally->execute();
     return (c2.complType() == Normal) ? c : c2;

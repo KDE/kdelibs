@@ -24,6 +24,7 @@
 #include "ustring.h"
 #include "object.h"
 #include "types.h"
+#include "internal.h"
 
 namespace KJS {
 
@@ -83,6 +84,11 @@ namespace KJS {
   class StatementNode : public Node {
   public:
     virtual Completion execute() = 0;
+    void pushLabel(const UString *id) {
+      if (id) ls.push(*id);
+    }
+  protected:
+    LabelStack ls;
   private:
     KJSO evaluate() { return Undefined(); }
   };

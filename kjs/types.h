@@ -158,6 +158,7 @@ namespace KJS {
     Compl complType() const;
     bool isValueCompletion() const;
     KJSO value() const;
+    UString target() const;
   };
 
   class List;

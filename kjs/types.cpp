@@ -141,6 +141,12 @@ KJSO Completion::value() const
   return ((CompletionImp*)rep)->value();
 }
 
+UString Completion::target() const
+{
+  assert(rep);
+  return ((CompletionImp*)rep)->target();
+}
+
 ListIterator::ListIterator(const List &l)
   : node(l.hook->next)
 {

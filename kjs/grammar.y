@@ -519,7 +519,9 @@ DefaultClause:
 ;
 
 LabelledStatement:
-    IDENT ':' Statement            { $$ = new LabelNode($1, $3); delete $1; }
+    IDENT ':' Statement            { $3->pushLabel($1);
+                                     $$ = new LabelNode($1, $3);
+                                     delete $1; }
 ;
 
 ThrowStatement:

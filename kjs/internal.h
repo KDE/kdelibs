@@ -166,6 +166,36 @@ namespace KJS {
   };
 
   /**
+   * @short The "label set" in Ecma-262 spec
+   */
+  class LabelStack {
+  public:
+    LabelStack(): tos(0L) {}
+    ~LabelStack();
+
+    /**
+     * If id is not empty and is not in the stack already, puts it on top of
+     * the stack and returns true, otherwise returns false
+     */
+    bool push(const UString &id);
+    /**
+     * Is the id in the stack?
+     */
+    bool contains(const UString &id) const;
+    /**
+     * Removes from the stack the last pushed id (what else?)
+     */
+    void pop();
+  private:
+    struct StackElm {
+      UString id;
+      StackElm *prev;
+    };
+
+    StackElm *tos;
+  };
+
+  /**
    * @short Execution context.
    */
   class Context {
@@ -186,7 +216,9 @@ namespace KJS {
     void setError(const KJSO& e) { errObj = e; err = true; }
     void clearError() { err = false; errObj = KJSO(); }
     KJSO error() { return errObj; }
+    LabelStack *seenLabels() { return &ls; }
   private:
+    LabelStack ls;
     Imp *thisVal;
     KJSO activation;
     KJSO variable;
@@ -277,7 +309,7 @@ namespace KJS {
     PropList *next;
     bool contains(const UString &name);
   };
-  
+
 }; // namespace
 
 
