@@ -436,7 +436,7 @@ void KEditToolbarWidget::initKPart(KXMLGUIFactory* factory)
 
 bool KEditToolbarWidget::save()
 {
-  //kdDebug() << "KEditToolbarWidget::save" << endl;
+  //kdDebug(240) << "KEditToolbarWidget::save" << endl;
   XmlDataList::Iterator it = d->m_xmlFiles.begin();
   for ( ; it != d->m_xmlFiles.end(); ++it)
   {
@@ -458,24 +458,26 @@ bool KEditToolbarWidget::save()
     return true;
 
   QPtrList<KXMLGUIClient> clients(factory()->clients());
-  //kdDebug() << "factory: " << clients.count() << " clients" << endl;
+  //kdDebug(240) << "factory: " << clients.count() << " clients" << endl;
 
   // remove the elements starting from the last going to the first
   KXMLGUIClient *client = clients.last();
   while ( client )
   {
-    //kdDebug() << "factory->removeClient " << client << endl;
+    //kdDebug(240) << "factory->removeClient " << client << endl;
     factory()->removeClient( client );
     client = clients.prev();
   }
 
-  client = clients.first();
-  KXMLGUIClient *firstClient = client;
+  KXMLGUIClient *firstClient = clients.first();
 
   // now, rebuild the gui from the first to the last
-  //kdDebug() << "rebuildling the gui" << endl;
-  for (; client; client = clients.next() )
+  //kdDebug(240) << "rebuilding the gui" << endl;
+  QPtrListIterator<KXMLGUIClient> cit( clients );
+  for( ; cit.current(); ++cit)
   {
+    KXMLGUIClient* client = cit.current();
+    //kdDebug(240) << "updating client " << client << " " << client->instance()->instanceName() << "  xmlFile=" << client->xmlFile() << endl;
     QString file( client->xmlFile() ); // before setting ui_standards!
     if ( !file.isEmpty() )
     {
@@ -489,11 +491,14 @@ bool KEditToolbarWidget::save()
         // and this forces it to use the *new* XML file
         client->setXMLFile( file, client == firstClient /* merge if shell */ );
     }
-
-    //kdDebug() << "factory->addClient " << client << endl;
-    // finally, do all the real work
-    factory()->addClient( client );
   }
+
+  // Now we can add the clients to the factory
+  // We don't do it in the loop above because adding a part automatically
+  // adds its plugins, so we must make sure the plugins were updated first.
+  cit.toFirst();
+  for( ; cit.current(); ++cit)
+    factory()->addClient( cit.current() );
 
   return true;
 }
@@ -1121,6 +1126,9 @@ void KEditToolbarWidget::slotChangeIcon()
   KProcIO proc;
   QString kdialogExe = KStandardDirs::findExe(QString::fromLatin1("kdialog"));
   proc << kdialogExe;
+  // This was supposed to make it modal to the toolbar editor, but it prevents any repaints!!!
+  //proc << "--embed";
+  //proc << QString::number( topLevelWidget()->winId() );
   proc << "--geticon";
   proc << "Toolbar";
   proc << "Actions";
