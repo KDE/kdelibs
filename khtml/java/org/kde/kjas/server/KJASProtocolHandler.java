@@ -252,26 +252,35 @@ public class KJASProtocolHandler
                             job.thread.interrupt();
                         } catch (SecurityException sex) {}
                         job.thread = null;
-                        Thread.currentThread().yield();
                     }
                 }
             }
+            Thread.currentThread().yield();
         } else
         if (cmd_code_value == GetMember)
         {
-            int ticketnr = Integer.parseInt( getArg( command ) );
-            String contextID = getArg( command );
-            String appletID  = getArg( command );
-            int objid  = Integer.parseInt( getArg( command ) );
-            String name  = getArg( command );
-            int [] ret_type_obj = { -1, 0 };
-            StringBuffer value = new StringBuffer();
-            int type = 0;
-            KJASAppletContext context = (KJASAppletContext) contexts.get( contextID );
-            if ( context != null )
-                ret_type_obj = context.getMember(appletID, objid, name, value);
-            Main.debug( "GetMember " + name + "=" + value.toString());
-            sendMemberValue(contextID, GetMember, ticketnr, ret_type_obj[0], ret_type_obj[1], value.toString()); 
+            new Thread("CallMember") {
+                byte [] command;
+                public void run() {
+                    int ticketnr = Integer.parseInt( getArg( command ) );
+                    String contextID = getArg( command );
+                    String appletID  = getArg( command );
+                    int objid  = Integer.parseInt( getArg( command ) );
+                    String name  = getArg( command );
+                    int [] ret_type_obj = { -1, 0 };
+                    StringBuffer value = new StringBuffer();
+                    int type = 0;
+                    KJASAppletContext context = (KJASAppletContext) contexts.get( contextID );
+                    if ( context != null )
+                        ret_type_obj = context.getMember(appletID, objid, name, value);
+                    Main.debug( "GetMember " + name + "=" + value.toString());
+                    sendMemberValue(contextID, GetMember, ticketnr, ret_type_obj[0], ret_type_obj[1], value.toString()); 
+                }
+                void startIt(byte [] cmd) {
+                    command = cmd;
+                    start();
+                }
+            }.startIt(command);
         } else
         if (cmd_code_value == PutMember)
         {

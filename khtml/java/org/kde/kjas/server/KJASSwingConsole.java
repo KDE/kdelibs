@@ -191,7 +191,7 @@ public class KJASSwingConsole extends javax.swing.JFrame implements Console {
     // End of variables declaration//GEN-END:variables
 
     public void append(String txt) {
-        if (txt == null) {
+        if (txt == null || !isVisible()) {
             return;
         }
         int length = txt.length();
