@@ -33,9 +33,9 @@ class QWidget;
  * Currently, the only themed cursor is a hand shaped cursor.
  *
  * A typical usage would be
- * <PRE>
- * 	setCursor(KCursor::handCursor());
- * </PRE>
+ * \code
+ * setCursor(KCursor::handCursor());
+ * \endcode
  *
  * @short A QCursor wrapper allowing "themed" cursors and auto-hiding cursors.
  * @author Kurt Granroth <granroth@kde.org>

@@ -404,9 +404,9 @@ public:
    *
    * If you want url() to return
    * for example "file:/tmp/test.html", you can use the following code:
-   * <PRE>
+   * \code
    * view->begin( KURL("file:/tmp/test.html" ) );
-   * </PRE>
+   * \endcode
    *
    * @param url is the url of the document to be displayed.  Even if you
    * are generating the HTML on the fly, it may be useful to specify

@@ -81,7 +81,7 @@ public:
   *
   * Your program mainwidget should inherit KMdiMainFrm. Then usually you'll just need
   * addWindow() and removeWindowFromMdi() to control the views.
-  *   <PRE>
+  *   \code
   *   class MyMainWindow : public KMdiMainFrm
   *   { .... };
   *   ...
@@ -89,7 +89,7 @@ public:
   *   qApp->setMainWidget(&mainframe);
   *   mainframe->addWindow(view1); // put it under MDI control
   *   mainframe->addWindow(view2);
-  *   </PRE>
+  *   \endcode
   *
   * Most public and protected methods of this class are for program calls of the actions
   * the user could click.<br>
@@ -99,14 +99,14 @@ public:
   *
   * This class provides already the "Window" menu needed in common MDI applications. Just
   * insert it in your main menu:
-  * <PRE>
+  * \code
   * if (!isFakingSDIApplication()) {
   *    menuBar()->insertItem( tr("&Window"), windowMenu());
   * }
-  * </PRE>
+  * \endcode
   *
   * Synchronize the positions of the MDI control buttons inserted in your mainmenu:
-  * <PRE>
+  * \code
   * void B_MainModuleWidget::initMenuBar()
   * {
   *   setMenuForSDIModeSysButtons( menuBar());
@@ -116,12 +116,12 @@ public:
   *   KMdiMainFrm::resizeEvent( e);
   *   setSysButtonsAtMenuPosition();
   * }
-  * </PRE>
+  * \endcode
   *
   * You can dynamically change the shape of the attached MDI views using setFrameDecorOfAttachedViews().
   *
   * Additionally, here's a hint how to restore the mainframe's settings from config file:
-  * <PRE>
+  * \code
   * #ifdef NO_KDE // KDE2 comes with its own style
   *    int guiStyle = config->readIntEntry( "mainmodule session", "GUI style", 0);
   *    mainframe->setGUIStyle( guiStyle);
@@ -153,7 +153,7 @@ public:
   *    // restore a possible maximized Childframe mode
   *    bool maxChildFrmMode = config->readBoolEntry( "mainmodule session", "maximized childframes", true);
   *    mainframe->setEnableMaximizedChildFrmMode(maxChildFrmMode);
-  * </PRE>
+  * \endcode
   * The maximized-Childframe mode means that currently all views are maximized in Childframe mode's application desktop.
   *
   * This class provides placing algorithms in Childframe mode. Call tilePragma(), tileAnodine(), tileVertically(),
@@ -172,7 +172,7 @@ public:
   * The tool-views can be added as floating dockwidgets or as stay-on-top desktop windows in tool style.
   *
   * Here's an example how you can suggest things for the adding of views to the MDI control via flags:
-  * <PRE>
+  * \code
   * m_mapOfMdiWidgets.insert( pWnd, mh);
   * unsigned int mdiFlags = KMdi::StandardAdd;
   * if( !bShow)
@@ -193,7 +193,7 @@ public:
   *    }
   * }
   * m_pMdiMainFrm->addWindow( pWnd, KMdi::AddWindowFlags(mdiFlags));
-  * </PRE>
+  * \endcode
   *
   * Further note: Pay attention to the fact that when you click on the close button of MDI views that their
   * close event should be redirected to closeWindow(). Otherwise the mainframe class will
@@ -253,15 +253,15 @@ protected:
    QTimer*                 m_pDragEndTimer;
 
    bool                    m_bSwitching;
-   
+
    KMdiDockWidget*         m_leftContainer;
    KMdiDockWidget*         m_rightContainer;
    KMdiDockWidget*         m_topContainer;
    KMdiDockWidget*         m_bottomContainer;
-   
+
 private:
    KMdiMainFrmPrivate*     d;
-   
+
 // methods
 public:
    /**
@@ -676,7 +676,7 @@ signals:
    * Signals that a child view has been detached (undocked to desktop)
    */
    void childViewIsDetachedNow(QWidget*);
-   
+
    void collapseOverlapContainers();
 };
 

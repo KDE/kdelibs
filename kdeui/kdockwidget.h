@@ -392,7 +392,7 @@ private:
  * a dockmovemanager (internal class) that handles the dock process.
  *
  * Usually you create an KDockWidget that covers the actual widget in this way:
- * <PRE>
+ * \code
  * ...
  * KDockMainWindow* mainWidget;
  * ...
@@ -402,7 +402,7 @@ private:
  * dock->setWidget( actualWidget); // embed it
  * dock->setToolTipString(i18n("That's me")); // available when appearing as tab page
  * ...
- * </PRE>
+ * \endcode
  *
  * See KDockMainWindow how a dockwidget is docked in.
  *
@@ -1215,7 +1215,7 @@ private:
  *
  * If you've got some dockwidgets, you can dock them to the dockmainwindow to initialize a start scene:
  * Here an example:
- * <PRE>
+ * \code
  * DockApplication::DockApplication( const char* name) : KDockMainWindow( name)
  * {
  *   ...
@@ -1238,7 +1238,7 @@ private:
  *                         KDockWidget::DockLeft, // dock site
  *                         20 );                  // relation target/this (in percent)
  *   ...
- * </PRE>
+ * \endcode
  *
  * Docking is fully dynamical at runtime. That means you can always move dockwidgets via drag and drop.
  *

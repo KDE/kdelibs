@@ -45,11 +45,11 @@ class KToggleToolBarAction;
  * In general, using standard actions should be a drop in replacement
  * for regular actions.  For example, if you previously had:
  *
- * <PRE>
+ * \code
  * KAction *newAct = new KAction(i18n("&New"), QIconSet(BarIcon("filenew")),
  *                               KStdAccel::key(KStdAccel::New), this,
  *                               SLOT(fileNew()), actionCollection());
- * </PRE>
+ * \endcode
  *
  * You could drop that and replace it with:
  *

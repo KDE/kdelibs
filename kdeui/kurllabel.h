@@ -40,16 +40,16 @@ class QPixmap;
  *
  * A typical usage would be something like so:
  *
- * <PRE>
- *     KURLLabel *address = new KURLLabel(this);
- *     address->setText("My homepage");
- *     address->setURL("http://www.home.com/~me");
- *     connect(address, SIGNAL(leftClickedURL(const QString&)),
- *                      SLOT(processMyURL(const QString&)));
- * </PRE>
+ * \code
+ * KURLLabel *address = new KURLLabel(this);
+ * address->setText("My homepage");
+ * address->setURL("http://www.home.com/~me");
+ * connect(address, SIGNAL(leftClickedURL(const QString&)),
+ *                  SLOT(processMyURL(const QString&)));
+ * \endcode
  *
  * In this example, the text "My homepage" would be displayed
- * as blue, underlined text.  When the mouse passed over it, 
+ * as blue, underlined text.  When the mouse passed over it,
  * it would "glow" red.  When the user clicks on the text, the
  * signal leftClickedURL() would be emitted with "http://www.home.com/~me"
  * as its argument.
@@ -60,7 +60,7 @@ class QPixmap;
  * @author Kurt Granroth <granroth@kde.org> (Interface)
  * @author Peter Putzer <putzer@kde.org> (Rewrite)
  * @version $Id$
- * 
+ *
  */
 class KURLLabel : public QLabel
 {
@@ -72,7 +72,7 @@ class KURLLabel : public QLabel
   Q_PROPERTY (bool floatEnabled READ isFloatEnabled WRITE setFloat )
   Q_PROPERTY (bool useTips READ useTips WRITE setUseTips )
   Q_PROPERTY (bool useCursor READ useCursor WRITE setUseCursor )
- 
+
 public:
   /**
    * Default constructor.
@@ -124,7 +124,7 @@ public:
   bool useCursor () const;
 
   /**
-   * When this is on, the text will switch to the selected 
+   * When this is on, the text will switch to the selected
    * color whenever the mouse passes over it.
    */
   bool isGlowEnabled () const;
@@ -190,14 +190,14 @@ public slots:
    * color (non-selected).  By default, it is @p blue.
    */
   void setHighlightedColor(const QColor& highcolor);
-  
+
   /**
    * This is an overloaded version for convenience.
    *
    * @see setHighlightedColor()
    */
   void setHighlightedColor(const QString& highcolor);
-  
+
   /**
    * Sets the selected color.
    *
@@ -206,7 +206,7 @@ public slots:
    * when it is selected (clicked).  By default, it is @p red.
    */
   void setSelectedColor(const QColor& selcolor);
-  
+
   /**
    * This is an overloaded version for convenience.
    *
@@ -227,7 +227,7 @@ public slots:
   void setUseCursor (bool on, QCursor* cursor = 0L);
 
   /**
-   * Turns on or off the "glow" feature. 
+   * Turns on or off the "glow" feature.
    *
    * When this is on, the text will switch to the
    * selected color whenever the mouse
@@ -239,7 +239,7 @@ public slots:
    * Turns on or off the "float" feature.
    *
    * This feature is very similar to the "glow" feature in
-   * that the color of the label switches to the selected 
+   * that the color of the label switches to the selected
    * color when the cursor passes over it. In addition,
    * underlining is turned on for as long as the mouse is overhead.
    * Note that if "glow" and underlining are both already turned
@@ -249,7 +249,7 @@ public slots:
   void setFloat (bool do_float = true);
 
   /**
-   * Sets the "alt" pixmap. 
+   * Sets the "alt" pixmap.
    *
    * This pixmap will be displayed when the
    * cursor passes over the label.  The effect is similar to the
@@ -265,60 +265,60 @@ signals:
    * Emitted when the mouse has passed over the label.
    *
    * @param url The URL for this label.
-   */ 
+   */
   void enteredURL (const QString& url);
 
   /**
    * Emitted when the mouse has passed over the label.
-   */ 
+   */
   void enteredURL ();
 
   /**
    * Emitted when the mouse is no longer over the label.
    *
    * @param url The URL for this label.
-   */ 
+   */
   void leftURL (const QString& url);
 
   /**
    * Emitted when the mouse is no longer over the label.
-   */ 
+   */
   void leftURL ();
 
   /**
    * Emitted when the user clicked the left mouse button on this label.
    *
    * @param url The URL for this label.
-   */ 
+   */
   void leftClickedURL(const QString& url);
-  
+
   /**
    * Emitted when the user clicked the left mouse button on this label.
-   */ 
+   */
   void leftClickedURL();
-  
+
   /**
    * Emitted when the user clicked the right mouse button on this label.
    *
    * @param url The URL for this label.
-   */ 
+   */
   void rightClickedURL(const QString& url);
-  
+
   /**
    * Emitted when the user clicked the left mouse button on this label.
-   */ 
+   */
   void rightClickedURL();
-  
+
   /**
    * Emitted when the user clicked the middle mouse button on this label.
    *
    * @param url The URL for this label.
-   */ 
+   */
   void middleClickedURL(const QString& url);
-  
+
   /**
    * Emitted when the user clicked the left mouse button on this label.
-   */ 
+   */
   void middleClickedURL();
 
 protected:

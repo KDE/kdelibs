@@ -48,14 +48,16 @@
  *
  * \b Usage:\n
  *
- * <PRE>
+ * \code
  * QCString input = "Aladdin:open sesame";
  * QCString result = KCodecs::base64Encode(input);
  * cout << "Result: " << result.data() << endl;
+ * \endcode
  *
+ * <pre>
  * Output should be
  * Result: QWxhZGRpbjpvcGVuIHNlc2FtZQ==
- * </PRE>
+ * </pre>
  *
  * The above example makes use of the convenience functions
  * (ones that accept/return null-terminated strings) to encode/decode
@@ -377,25 +379,25 @@ class KMD5Private;
  *
  * A common usage of this class:
  *
- * <PRE>
- *  const char* test1;
- *  KMD5::Digest rawResult;
+ * \code
+ * const char* test1;
+ * KMD5::Digest rawResult;
  *
- *  test1 = "This is a simple test.";
- *  KMD5 context (test1);
- *  cout << "Hex Digest output: " << context.hexDigest().data() << endl;
- * </PRE>
+ * test1 = "This is a simple test.";
+ * KMD5 context (test1);
+ * cout << "Hex Digest output: " << context.hexDigest().data() << endl;
+ * \endcode
  *
  * To cut down on the unnecessary overhead of creating multiple KMD5
  * objects, you can simply invoke reset() to reuse the same object
  * in making another calculation:
  *
- * <PRE>
- *  context.reset ();
- *  context.update ("TWO");
- *  context.update ("THREE");
- *  cout << "Hex Digest output: " << context.hexDigest().data() << endl;
- * </PRE>
+ * \code
+ * context.reset ();
+ * context.update ("TWO");
+ * context.update ("THREE");
+ * cout << "Hex Digest output: " << context.hexDigest().data() << endl;
+ * \endcode
  *
  * @short An adapted C++ implementation of RSA Data Securities MD5 algorithm.
  * @author Dirk Mueller <mueller@kde.org>, Dawit Alemayehu <adawit@kde.org>
