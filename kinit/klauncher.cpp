@@ -227,7 +227,7 @@ KLauncher::process(const QCString &fun, const QByteArray &data,
        || (fun == "exec_blind(QCString,QValueList<QCString>,QValueList<QCString>,QCString)"))
    {
       QDataStream stream(data, IO_ReadOnly);
-
+      replyType = "void";
       QCString name;
       QValueList<QCString> arg_list;
       QCString startup_id = "0";
@@ -330,7 +330,7 @@ KLauncher::process(const QCString &fun, const QByteArray &data,
       KURL url;
       QString app_socket;
       stream >> url >> app_socket;
-      replyType = "pid";
+      replyType = "pid_t";
       pid_t pid = requestHoldSlave(url, app_socket);
       QDataStream stream2(replyData, IO_WriteOnly);
       stream2 << pid;
@@ -402,6 +402,44 @@ KLauncher::process(const QCString &fun, const QByteArray &data,
    }
    kdWarning(7016) << "Got unknown DCOP function: " << fun << endl;
    return false;
+}
+
+QCStringList
+KLauncher::interfaces()
+{
+    QCStringList ifaces = KUniqueApplication::interfaces();
+    ifaces += "KLauncher";
+    return ifaces;
+}
+
+QCStringList
+KLauncher::functions()
+{
+    QCStringList funcs = KUniqueApplication::functions();
+    funcs << "void exec_blind(QCString,QValueList<QCString>)";
+    funcs << "void exec_blind(QCString,QValueList<QCString>,QValueList<QCString>,QCString)";
+    funcs << "serviceResult start_service_by_name(QString,QStringList)";
+    funcs << "serviceResult start_service_by_desktop_path(QString,QStringList)";
+    funcs << "serviceResult start_service_by_desktop_name(QString,QStringList)";
+    funcs << "serviceResult kdeinit_exec(QString,QStringList)";
+    funcs << "serviceResult kdeinit_exec_wait(QString,QStringList)";
+    funcs << "serviceResult start_service_by_name(QString,QStringList,QValueList<QCString>,QCString)";
+    funcs << "serviceResult start_service_by_desktop_path(QString,QStringList,QValueList<QCString>,QCString)";
+    funcs << "serviceResult start_service_by_desktop_name(QString,QStringList,QValueList<QCString>,QCString)";
+    funcs << "serviceResult start_service_by_name(QString,QStringList,QValueList<QCString>,QCString,bool)";
+    funcs << "serviceResult start_service_by_desktop_path(QString,QStringList,QValueList<QCString>,QCString,bool)";
+    funcs << "serviceResult start_service_by_desktop_name(QString,QStringList,QValueList<QCString>,QCString,bool)";
+    funcs << "serviceResult kdeinit_exec(QString,QStringList,QValueList<QCString>)";
+    funcs << "serviceResult kdeinit_exec_wait(QString,QStringList,QValueList<QCString>)";
+    funcs << "QString requestSlave(QString,QString,QString)";
+    funcs << "pid_t requestHoldSlave(KURL,QString)";
+    funcs << "void waitForSlave(pid_t)";
+    funcs << "void setLaunchEnv(QCString,QCString)";
+    funcs << "void reparseConfiguration()";
+//    funcs << "void terminateKDE()";
+    funcs << "void autoStart()";
+    funcs << "void autoStart(int)";
+    return funcs;
 }
 
 void KLauncher::setLaunchEnv(const QCString &name, const QCString &_value)
