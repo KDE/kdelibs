@@ -23,6 +23,7 @@
 #include <qlist.h>
 #include <qdom.h>
 #include <qmap.h>
+#include <qlist.h>
 
 class QAction;
 class KXMLGUIFactoryPrivate;
