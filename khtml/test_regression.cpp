@@ -37,6 +37,7 @@
 #include <dom_string.h>
 #include "rendering/render_style.h"
 #include "rendering/render_layer.h"
+#include "khtmldefaults.h"
 
 #include <kaction.h>
 #include <kcmdlineargs.h>
@@ -44,6 +45,7 @@
 #include <kio/job.h>
 #include <kmainwindow.h>
 #include <ksimpleconfig.h>
+#include <kglobalsettings.h>
 
 #include <qcolor.h>
 #include <qcursor.h>
@@ -358,8 +360,20 @@ int main(int argc, char *argv[])
     sc1.writeEntry( "OnUnencrypted",  false );
     a.config()->setGroup( "Notification Messages" );
     a.config()->writeEntry( "kjscupguard_alarmhandler", true );
-    a.config()->setGroup("HTML Settings");
-    a.config()->writeEntry("ReportJSErrors", false);
+    KConfig cfg( "khtmlrc" );
+    cfg.setGroup("HTML Settings");
+    cfg.writeEntry("ReportJSErrors", false);
+    cfg.writeEntry( "StandardFont", KGlobalSettings::generalFont().family() );
+    cfg.writeEntry( "FixedFont", KGlobalSettings::fixedFont().family() );
+    cfg.writeEntry( "SerifFont", HTML_DEFAULT_VIEW_SERIF_FONT );
+    cfg.writeEntry( "SansSerifFont", HTML_DEFAULT_VIEW_SANSSERIF_FONT );
+    cfg.writeEntry( "CursiveFont", HTML_DEFAULT_VIEW_CURSIVE_FONT );
+    cfg.writeEntry( "FantasyFont", HTML_DEFAULT_VIEW_FANTASY_FONT );
+    cfg.writeEntry( "MinimumFontSize", HTML_DEFAULT_MIN_FONT_SIZE );
+    cfg.writeEntry( "MediumFontSize", 10 );
+    cfg.writeEntry( "Fonts", QStringList() );
+    cfg.writeEntry( "DefaultEncoding", "" );
+    cfg.sync();
 
     KCmdLineArgs *args = KCmdLineArgs::parsedArgs( );
     int rv = 1;
