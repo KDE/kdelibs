@@ -47,7 +47,7 @@ font-weight: bolder;
 padding-right: 1em;
 }
 
-.toc {
+.toc, .list-of-tables {
 padding-left: 1em;
 }
 
@@ -86,36 +86,42 @@ font-weight: bold;
 
 /* Nice link colors for the main text */
 
-:link { color: rgb(170,0,0);
+:link { color: #41597a;
         background: white none; /* should be inherit */ }
-:visited { color: rgb(170,0,85);
+:visited { color: #597ba8;
            background: white none; /* should be inherit */ }
 /* :active { color: rgb(170,0,0);
           background: white none;  should be inherit  } */
 
+.navigation {
+	
+}
+
 .navLeft {
-text-align: left;
-font-weight: bold;
-padding-left: 0.5em;
-background: #3E91EB none;
-color: white;
+position: absolute; 
+left: 0px;
 }
 
 .navRight {
-text-align: right;
-font-weight: bold;
-padding-right: 0.5em;
-background: #3E91EB none;
-color: white;
+position: absolute; 
+right: 20px;
 }
 
 .navCenter {
 text-align: center;
-font-weight: bold;
-padding-left: 0.5em;
-padding-right: 0.5em;
-background: #3E91EB none;
-color: white;
+align: center;
+}
+
+.bannerBottom {
+	
+}
+
+.bannerBottomLeft {
+position: absolute; left: 0px;
+}
+
+.bannerBottomRight {
+position: absolute; right: 0px;
 }
 
 .header {
