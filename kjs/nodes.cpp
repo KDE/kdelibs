@@ -864,7 +864,7 @@ Completion WithNode::execute()
   KJSO e = expr->evaluate();
   KJSO v = e.getValue();
   Object o = v.toObject();
-  Context::current()->pushScope(&o);
+  Context::current()->pushScope(o);
   Completion res = stat->execute();
   Context::current()->popScope();
 
@@ -984,22 +984,56 @@ Completion LabelNode::execute()
 // ECMA 12.13
 Completion ThrowNode::execute()
 {
-  /* TODO */
-  return Completion(Normal);
+  KJSO v = expr->evaluate().getValue();
+
+  return Completion(Throw, v);
 }
 
 // ECMA 12.14
 Completion TryNode::execute()
 {
-  /* TODO */
-  return Completion(Normal);
+  Completion c, c2;
+  
+  c = block->execute();
+  
+  if (!_finally) {
+    if (c.complType() != Throw)
+      return c;
+    return _catch->execute(c.value());
+  }
+  
+  if (!_catch) {
+    c2 = _finally->execute();
+    return (c2.complType() == Normal) ? c : c2;
+  }
+
+  if (c.complType() == Throw) {
+    c2 = _catch->execute(c.value());
+    if (c2.complType() != Normal)
+      c = c2;
+  }
+
+  c2 = _finally->execute();
+  return (c2.complType() == Normal) ? c : c2;
+}
+
+Completion CatchNode::execute()
+{
+  // should never be reached. execute(const KJS &arg) is used instead
+  assert(0L);
+  return Completion();
 }
 
 // ECMA 12.14
-Completion CatchNode::execute()
+Completion CatchNode::execute(const KJSO &arg)
 {
-  /* TODO */
-  return Completion(Normal);
+  Object obj;
+  obj.put(ident, arg, DontDelete);
+  Context::current()->pushScope(obj);
+  Completion c = block->execute();
+  Context::current()->popScope();
+
+  return c;
 }
 
 // ECMA 12.14

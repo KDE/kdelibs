@@ -512,13 +512,13 @@ ThrowStatement:
 ;
 
 TryStatement:
-    TRY Block Catch                { $$ = new TryNode(); /* TODO */ }
-  | TRY Block Finally              { $$ = new TryNode(); /* TODO */ }
-  | TRY Block Catch Finally        { $$ = new TryNode(); /* TODO */ }
+    TRY Block Catch                { $$ = new TryNode($2, $3); }
+  | TRY Block Finally              { $$ = new TryNode($2, 0L, $3); }
+  | TRY Block Catch Finally        { $$ = new TryNode($2, $3, $4); }
 ;
 
 Catch:
-    CATCH '(' IDENT ')' Block      { $$ = new CatchNode(); /* TODO */ }
+    CATCH '(' IDENT ')' Block      { $$ = new CatchNode($3, $5); delete $3; }
 ;
 
 Finally:

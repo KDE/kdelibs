@@ -92,6 +92,7 @@
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
+#include <config.h>
 #include "kjs.h"
 #include "nodes.h"
 #include "lexer.h"
@@ -1759,19 +1760,19 @@ case 171:
     break;}
 case 172:
 #line 514 "grammar.y"
-{ yyval.stat = new TryNode(); /* TODO */ ;
+{ yyval.stat = new TryNode(yyvsp[-1].stat, yyvsp[0].node); ;
     break;}
 case 173:
 #line 515 "grammar.y"
-{ yyval.stat = new TryNode(); /* TODO */ ;
+{ yyval.stat = new TryNode(yyvsp[-1].stat, 0L, yyvsp[0].node); ;
     break;}
 case 174:
 #line 516 "grammar.y"
-{ yyval.stat = new TryNode(); /* TODO */ ;
+{ yyval.stat = new TryNode(yyvsp[-2].stat, yyvsp[-1].node, yyvsp[0].node); ;
     break;}
 case 175:
 #line 520 "grammar.y"
-{ yyval.node = new CatchNode(); /* TODO */ ;
+{ yyval.node = new CatchNode(yyvsp[-2].ustr, yyvsp[0].stat); delete yyvsp[-2].ustr; ;
     break;}
 case 176:
 #line 524 "grammar.y"

@@ -639,8 +639,12 @@ namespace KJS {
 
   class CatchNode : public StatementNode {
   public:
-    CatchNode() {}
+    CatchNode(UString *i, StatementNode *b) : ident(*i), block(b) {}
     Completion execute();
+    Completion execute(const KJSO &arg);
+  private:
+    UString ident;
+    StatementNode *block;
   };
 
   class FinallyNode : public StatementNode {
@@ -653,8 +657,13 @@ namespace KJS {
 
   class TryNode : public StatementNode {
   public:
-    TryNode() {}
+    TryNode(StatementNode *b, Node *c = 0L, Node *f = 0L)
+      : block(b), _catch((CatchNode*)c), _finally((FinallyNode*)f) {}
     Completion execute();
+  private:
+    StatementNode *block;
+    CatchNode *_catch;
+    FinallyNode *_finally;
   };
 
   class ParameterNode : public Node {

@@ -292,9 +292,9 @@ void Context::setCurrent(Context *c)
   KJScriptImp::current()->con = c;
 }
 
-void Context::pushScope(KJSO *s)
+void Context::pushScope(const KJSO &s)
 {
-  scopeChain->prepend(*s);
+  scopeChain->prepend(s);
 }
 
 void Context::popScope()

@@ -184,7 +184,7 @@ namespace KJS {
     static Context *current();
     static void setCurrent(Context *c);
     const List *pScopeChain() const { return scopeChain; }
-    void pushScope(KJSO *s);
+    void pushScope(const KJSO &s);
     void popScope();
     List *copyOfChain();
     KJSO variableObject() const { return variable; }
