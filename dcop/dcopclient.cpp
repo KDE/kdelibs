@@ -77,6 +77,7 @@ extern "C" {
 #endif
 }
 
+// #define DCOPCLIENT_DEBUG	1
 
 extern QMap<QCString, DCOPObject *> * kde_dcopObjMap; // defined in dcopobject.cpp
 
@@ -627,6 +628,24 @@ DCOPClient::DCOPClient()
 
 DCOPClient::~DCOPClient()
 {
+#ifdef DCOPCLIENT_DEBUG
+    qWarning("d->messages.count() = %d", d->messages.count());
+    QPtrListIterator<DCOPClientMessage> it (d->messages );
+    DCOPClientMessage* msg ;
+    while ( ( msg = it.current() ) ) {
+        ++it;
+        d->messages.removeRef( msg );
+        qWarning("DROPPING UNHANDLED DCOP MESSAGE:");
+        qWarning("         opcode = %d key = %d", msg->opcode, msg->key);
+        QDataStream ds( msg->data, IO_ReadOnly );
+
+        QCString fromApp, app, objId, fun;
+        ds >> fromApp >> app >> objId >> fun;
+        qWarning("         from = %s", fromApp.data()); 
+        qWarning("         to = %s / %s / %s", app.data(), objId.data(), fun.data());
+        delete msg;
+    }
+#endif
 #ifdef Q_OS_UNIX
     if (d->iceConn)
         if (IceConnectionStatus(d->iceConn) == IceConnectAccepted)
@@ -638,6 +657,7 @@ DCOPClient::~DCOPClient()
 
     delete d->notifier;
     delete d->transactionList;
+    d->messages.setAutoDelete(true);
     delete d;
 
     if ( mainClient() == this )
