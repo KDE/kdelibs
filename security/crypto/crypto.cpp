@@ -525,7 +525,7 @@ QString whatstr;
   defCertBG = new QVButtonGroup(i18n("Default Action"), tabAuth);
   defSend = new QRadioButton(i18n("&Send"), defCertBG);
   defPrompt = new QRadioButton(i18n("&Prompt"), defCertBG);
-  defDont = new QRadioButton(i18n("Do&n't send"), defCertBG);
+  defDont = new QRadioButton(i18n("Do &not send"), defCertBG);
   grid->addMultiCellWidget(defCertBG, 1, 3, 0, 2);
   grid->addMultiCellWidget(new QLabel(i18n("Default certificate:"), tabAuth), 1, 1, 3, 5);
   defCertBox = new KComboBox(false, tabAuth);
@@ -1011,7 +1011,7 @@ void KCryptoConfig::save()
 #ifdef HAVE_SSL
   if (!mUseSSLv2->isChecked() &&
       !mUseSSLv3->isChecked())
-    KMessageBox::information(this, i18n("If you don't select at least one"
+    KMessageBox::information(this, i18n("If you do not select at least one"
                                        " SSL algorithm, either SSL will not"
                                        " work or the application may be"
                                        " forced to choose a suitable default."),
@@ -1063,7 +1063,7 @@ void KCryptoConfig::save()
   }
 
   if (mUseSSLv2->isChecked() && ciphercount == 0)
-    KMessageBox::information(this, i18n("If you don't select at least one"
+    KMessageBox::information(this, i18n("If you do not select at least one"
                                        " cipher, SSLv2 will not work."),
                                    i18n("SSLv2 Ciphers"));
 
@@ -1082,7 +1082,7 @@ void KCryptoConfig::save()
   KSSLCertificateCache _cc;
 
   if (mUseSSLv3->isChecked() && ciphercount == 0)
-    KMessageBox::information(this, i18n("If you don't select at least one"
+    KMessageBox::information(this, i18n("If you do not select at least one"
                                        " cipher, SSLv3 will not work."),
                                    i18n("SSLv3 Ciphers"));
   // SSL Policies code
@@ -1377,7 +1377,7 @@ OtherCertItem *x = static_cast<OtherCertItem *>(otherSSLBox->selectedItem());
         kce.setCertificate(cert);
         kce.exec();
         delete cert;
-     } else KMessageBox::sorry(this, i18n("Couldn't open the certificate."),
+     } else KMessageBox::sorry(this, i18n("Could not open the certificate."),
                                      i18n("SSL"));
    }
 }
