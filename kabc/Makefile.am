@@ -1,5 +1,8 @@
 SUBDIRS = scripts vcard vcardparser . formats plugins
 
+# FIXME: doesn't work with final for now
+KDE_OPTIONS = nofinal
+
 # Make sure $(all_includes) remains last!
 INCLUDES = -I$(top_builddir)/kabc -I$(srcdir)/vcard/include -I$(srcdir)/vcard/include/generated \
   -I$(top_srcdir)/kabc -I$(top_srcdir)/kab -I$(srcdir)/vcardparser $(all_includes)
@@ -17,7 +20,7 @@ COMPILE_FIRST = addressee.h
 
 lib_LTLIBRARIES   = libkabc.la
 libkabc_la_COMPILE_FIRST = addressee.h
-libkabc_la_LDFLAGS = $(all_libraries) -no-undefined -version-info 3:0:2 -module
+libkabc_la_LDFLAGS = $(all_libraries) -no-undefined -version-info 3:0:2
 libkabc_la_LIBADD  = vcard/libvcard.la vcardparser/libvcards.la ../kdeui/libkdeui.la ../kio/libkio.la \
   ../kresources/libkresources.la
 

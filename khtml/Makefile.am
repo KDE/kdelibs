@@ -46,7 +46,7 @@ if include_VERSION_SCRIPT
 VSCRIPT = -Wl,--version-script=$(srcdir)/libkhtml.map
 endif
 
-libkhtml_la_LDFLAGS = -version-info 6:0:2 -module -no-undefined $(VSCRIPT) $(all_libraries)
+libkhtml_la_LDFLAGS = -version-info 6:0:2 -no-undefined $(VSCRIPT) $(all_libraries)
 libkhtml_la_LIBADD = ./xml/libkhtmlxml.la ./html/libkhtmlhtml.la \
 	./rendering/libkhtmlrender.la ./css/libkhtmlcss.la \
 	./misc/libkhtmlmisc.la ecma/libkjs_html.la ./dom/libkhtmldom.la $(LIBKJAVA) \

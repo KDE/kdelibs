@@ -17,7 +17,7 @@ libcupsdconf_la_SOURCES = cupsdconf.cpp cupsddialog.cpp cupsdpage.cpp cupsdcomme
 			  locationdialog.cpp addressdialog.cpp cups-util.c \
 			  qdirmultilineedit.cpp sizewidget.cpp
 libcupsdconf_la_METASOURCES = AUTO
-libcupsdconf_la_LDFLAGS = $(all_libraries) -module -avoid-version -no-undefined
+libcupsdconf_la_LDFLAGS = $(all_libraries) -avoid-version -no-undefined
 libcupsdconf_la_LIBADD = $(LIB_KIO) $(LIB_CUPS)
 
 noinst_HEADERS = cupsdconf.h cupsdpage.h cupsddialog.h cupsdcomment.h cupsdsplash.h \
