@@ -373,19 +373,19 @@ void KHTMLView::cancelAllRequests()
 
 void KHTMLView::slotDocumentStarted( KHTMLView *_view )
 {
-    debug( "emit documentStarted( _view );" );
+    // debug( "emit documentStarted( _view );" );
     emit documentStarted( _view );
 }
 
 void KHTMLView::slotDocumentStarted()
 {
-    debug( "emit documentStarted( this );" );
+    // debug( "emit documentStarted( this );" );
     emit documentStarted( this );
 }
 
 void KHTMLView::slotDocumentDone( KHTMLView *_view )
 {
-    debug( "emit documentDone( _view );" );
+    // debug( "emit documentDone( _view );" );
     emit documentDone( _view );
 }
 
@@ -405,7 +405,7 @@ void KHTMLView::slotDocumentDone()
     scrollToY = 0;
   }
   
-  debug( "emit documentDone( this );" );
+  // debug( "emit documentDone( this );" );
   emit documentDone( this );
 }
 
@@ -546,7 +546,7 @@ void KHTMLView::select( QRegExp& _pattern, bool _select )
 
 void KHTMLView::openURL( const char *_url )
 {
-    debug( "openURL : %s", _url );
+    // debug( "openURL : %s", _url );
     emit documentRequest( this, _url );
 }
 
