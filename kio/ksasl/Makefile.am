@@ -2,7 +2,7 @@
 
 INCLUDES = -I$(top_srcdir)/kio $(all_includes)
 
-SUBDIRS = . auth_PLAIN auth_CRAM-MD5
+SUBDIRS = . auth_PLAIN auth_CRAM-MD5 auth_DIGEST-MD5
 
 lib_LTLIBRARIES = libksasl.la
 libksasl_la_LDFLAGS = -module $(KDE_PLUGIN)
