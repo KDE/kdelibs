@@ -47,7 +47,7 @@ class KCMError : public KCModule
 		{
 			QVBoxLayout* topLayout = new QVBoxLayout( this );
 			topLayout->addWidget( new QLabel( msg, this ) );
-      topLayout->addWidget( new QLabel( details, this ) );
+			topLayout->addWidget( new QLabel( details, this ) );
 		}
 };
 /***************************************************************/
@@ -124,8 +124,8 @@ KCModule* KCModuleLoader::loadModule(const KCModuleInfo &mod, ErrorReporting rep
   if ( !mod.service() )
   {
     return reportError( report,
-        i18n("The module %1(the desktop file to be exact) could not be found.")
-        .arg( mod.fileName() ), QString::null, parent );
+        i18n("The module %1 could not be found.")
+        .arg( mod.moduleName() ), i18n("<qt><p>The diagnostics is:<br>The desktop file %1 could not be found.</qt>").arg(mod.fileName()), parent );
   }
 
   if (!mod.library().isEmpty())
@@ -143,6 +143,9 @@ KCModule* KCModuleLoader::loadModule(const KCModuleInfo &mod, ErrorReporting rep
       module = load(mod, "libkcm_%1", loader, report, parent, name, args );
     if (module)
       return module;
+    return reportError( report,
+        i18n("The module %1 could not be loaded.")
+        .arg( mod.moduleName() ), QString::null, parent );
   }
 
   /*
@@ -154,7 +157,16 @@ KCModule* KCModuleLoader::loadModule(const KCModuleInfo &mod, ErrorReporting rep
    *
    */
   if(withfallback)
+  {
     KApplication::startServiceByDesktopPath(mod.fileName(), QString::null);
+  }
+  else
+  {
+    return reportError( report,
+        i18n("The module %1 is not a valid configuration module.")
+        .arg( mod.moduleName() ), i18n("<qt><p>The diagnostics is:<br>The desktop file %1 does not specify a library.</qt>").arg(mod.fileName()), parent );
+  }
+
   return 0;
 }
 

@@ -122,16 +122,6 @@ class KUTILS_EXPORT KCModuleLoader
         const QStringList & args = QStringList());
 
     /**
-     * If one of the loadModule functions returned zero you can use this
-     * function to create a KCModule that shows the error message so the user
-     * knows what's going on.
-     *
-     * @param parent The same pointer that you used in loadModule for parent.
-     * @since 3.4
-     */
-    static KCModule *errorModule( QWidget *parent = 0 );
-
-    /**
      * Unloads the module's library
      * @param mod What module to unload for
      */
