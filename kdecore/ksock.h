@@ -18,91 +18,6 @@
 */
 
 /*
- * $Id$
- *
- * $Log$
- * Revision 1.20.2.1  1999/02/14 02:06:08  granroth
- * Converted a lot of 'const char*' to 'QString'.  This compiles... but
- * it's entirely possible that nothing will run linked to it :-P
- *
- * Revision 1.20  1998/11/11 00:02:55  thufir
- * addes ability to set a connect Time Out, breaks binary compatability
- *
- * Revision 1.19  1998/09/01 20:21:33  kulow
- * I renamed all old qt header files to the new versions. I think, this looks
- * nicer (and gives the change in configure a sense :)
- *
- * Revision 1.18  1998/08/22 20:02:47  kulow
- * make kdecore have nicer output, when compiled with -Weffc++ :)
- *
- * Revision 1.17  1998/03/28 11:02:08  kulow
- * undef NULL for egcs's sake
- *
- * Revision 1.16  1998/03/26 22:06:41  torben
- * Torben: Little bug fix in copy constructor
- *
- * Revision 1.15  1998/01/24 11:13:58  kulow
- * changed the order of the header files
- *
- * Revision 1.14  1998/01/24 00:12:02  kulow
- * added sys/socket.h
- *
- * Revision 1.13  1998/01/23 02:23:40  torben
- * Torben: Supports UNIX domain sockets now.
- *
- * Revision 1.12  1998/01/18 14:39:05  kulow
- * reverted the changes, Jacek commited.
- * Only the RCS comments were affected, but to keep them consistent, I
- * thought, it's better to revert them.
- * I checked twice, that only comments are affected ;)
- *
- * Revision 1.10  1997/12/18 01:56:25  torben
- * Torben: Secure string operations. Use instead of QString::sprintf
- *
- * Revision 1.9  1997/10/21 20:44:53  kulow
- * removed all NULLs and replaced it with 0L or "".
- * There are some left in mediatool, but this is not C++
- *
- * Revision 1.8  1997/10/16 11:15:03  torben
- * Kalle: Copyright headers
- * kdoctoolbar removed
- *
- * Revision 1.7  1997/09/18 12:16:05  kulow
- * corrected some header dependencies. Removed most of them in drag.h and put
- * them in drag.cpp. Now it should compile even under SunOS 4.4.1 ;)
- *
- * Revision 1.6  1997/08/30 08:32:56  kdecvs
- * Coolo: changed the location of the include files to get rid of the
- * hardcoded HAVE_STDC_HEADERS
- *
- * Revision 1.5  1997/07/27 13:43:59  kalle
- * Even more SGI and SCC patches, security patch for kapp, various fixes for ksock
- *
- * Revision 1.4  1997/07/25 19:46:43  kalle
- * SGI changes
- *
- * Revision 1.3  1997/07/18 05:49:18  ssk
- * Taj: All kdecore doc now in javadoc format (hopefully).
- *
- * Revision 1.2  1997/06/25 14:22:13  ssk
- * Taj: updated some documentation.
- *
- * Revision 1.1.1.1  1997/04/13 14:42:42  cvsuser
- * Source imported
- *
- * Revision 1.1.1.1  1997/04/09 00:28:07  cvsuser
- * Sources imported
- *
- * Revision 1.4  1997/01/15 20:34:14  kalle
- * merged changes from 0.52
- *
- * Revision 1.3  1996/12/07 22:23:07  kalle
- * autoconf, documentation
- *
- * Revision 1.2  1996/12/07 18:32:00  kalle
- * RCS header
- *
- *
  * The KDE Socket Classes.
  *
  * Torben Weis
@@ -176,6 +91,11 @@ public:
      * Destructor. Closes the socket if it is still open.
      */
     ~KSocket();
+
+    /**
+      *  A small wrapper around gethostbyname and such
+      */
+    static bool initSockaddr(struct sockaddr_in *server_name, const char *hostname, unsigned int port);
     
     /** 
      * Returns a file descriptor for this socket.

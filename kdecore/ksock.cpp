@@ -16,113 +16,9 @@
     the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
     Boston, MA 02111-1307, USA.
 */
+
 /*
- * $Id$
  * $Log$
- * Revision 1.26  1999/03/01 23:33:44  kulow
- * CVS_SILENT ported to Qt 2.0
- *
- * Revision 1.25  1999/02/24 12:47:34  dfaure
- * getdtablesize() -> getrlimit(). Fixes #447 and removes a #ifdef HPUX.
- *
- * Revision 1.24  1999/01/18 10:56:25  kulow
- * .moc files are back in kdelibs. Built fine here using automake 1.3
- *
- * Revision 1.23  1999/01/15 09:30:42  kulow
- * it's official - kdelibs builds with srcdir != builddir. For this I
- * automocifized it, the generated rules are easier to maintain than
- * selfwritten rules. I have to fight with some bugs of this tool, but
- * generally it's better than keeping them updated by hand.
- *
- * Revision 1.22  1999/01/11 23:09:51  thufir
- * fix: fixes bug where it would loop n - tries, after a successful connect (would cause a pause after successful connect)
- *
- * Revision 1.21  1998/11/11 00:02:54  thufir
- * addes ability to set a connect Time Out, breaks binary compatability
- *
- * Revision 1.20  1998/08/02 14:49:31  kalle
- * ANother try at the socket problem. Hope that this works on _all_ platforms now.
- *
- * Revision 1.19  1998/07/29 12:39:17  kalle
- * Don't hardcode maximum of pending connections in listen(). Should work on all platforms including QNX.
- *
- * Revision 1.18  1998/02/20 02:37:25  torben
- * Torben: Fixes permissions
- *
- * Revision 1.17  1998/01/23 11:25:28  kulow
- * Solaris doesn't define UNIX_PATH_MAX
- *
- * Revision 1.16  1998/01/23 02:23:38  torben
- * Torben: Supports UNIX domain sockets now.
- *
- * Revision 1.15  1998/01/18 14:39:03  kulow
- * reverted the changes, Jacek commited.
- * Only the RCS comments were affected, but to keep them consistent, I
- * thought, it's better to revert them.
- * I checked twice, that only comments are affected ;)
- *
- * Revision 1.13  1997/12/18 01:56:24  torben
- * Torben: Secure string operations. Use instead of QString::sprintf
- *
- * Revision 1.12  1997/11/29 17:58:48  kalle
- * Alpha patches
- *
- * Revision 1.11  1997/11/09 01:52:47  torben
- * Torben: Fixed port number bug
- *
- * Revision 1.10  1997/10/21 20:44:52  kulow
- * removed all NULLs and replaced it with 0L or "".
- * There are some left in mediatool, but this is not C++
- *
- * Revision 1.9  1997/10/16 11:15:03  torben
- * Kalle: Copyright headers
- * kdoctoolbar removed
- *
- * Revision 1.8  1997/09/18 12:16:04  kulow
- * corrected some header dependencies. Removed most of them in drag.h and put
- * them in drag.cpp. Now it should compile even under SunOS 4.4.1 ;)
- *
- * Revision 1.7  1997/08/30 08:32:54  kdecvs
- * Coolo: changed the location of the include files to get rid of the
- * hardcoded HAVE_STDC_HEADERS
- *
- * Revision 1.6  1997/07/27 13:43:58  kalle
- * Even more SGI and SCC patches, security patch for kapp, various fixes for ksock
- *
- * Revision 1.5  1997/07/17 18:43:18  kalle
- * Kalle: new stopsign.xpm
- * 			KConfig: environment variables are resolved in readEntry()
- * 			(meaning you can write() an entry with an environment
- * 			variable and read it back in, and the value gets properly
- * 			expanded).
- * 			Fixed three bugs in ksock.cpp
- * 			Added KFloater
- * 			Added KCombo
- * 			Added KLineEdit
- * 			New KToolbar
- * 			New KToplevelWidget
- *
- * Revision 1.4  1997/05/30 20:04:38  kalle
- * Kalle:
- * 30.05.97:	signal handler for reaping zombie help processes reinstalls itself
- * 		patch to KIconLoader by Christian Esken
- * 		slightly better look for KTabCtl
- * 		kdecore Makefile does not expect current dir to be in path
- * 		Better Alpha support
- *
- * Revision 1.3  1997/05/09 15:10:11  kulow
- * Coolo: patched ltconfig for FreeBSD
- * removed some stupid warnings
- *
- * Revision 1.2  1997/04/28 06:57:46  kalle
- * Various widgets moved from apps to libs
- * Added KSeparator
- * Several bugs fixed
- * Patches from Matthias Ettrich
- * Made ksock.cpp more alpha-friendly
- * Removed XPM-Loading from KPixmap
- * Reaping zombie KDEHelp childs
- * WidgetStyle of KApplication objects configurable via kdisplay
  */
 
 #include <qapplication.h>
@@ -377,6 +273,21 @@ unsigned long KSocket::getAddr()
   struct sockaddr_in name; ksize_t len = sizeof(name);
   getsockname(sock, (struct sockaddr *) &name, &len);
   return ntohl(name.sin_addr.s_addr);
+}
+
+bool KSocket::initSockaddr (struct sockaddr_in *server_name, const char *hostname, unsigned int port)
+{
+  struct hostent *hostinfo;
+  server_name->sin_family = AF_INET;
+  server_name->sin_port = htons( port );
+
+  hostinfo = gethostbyname( hostname );
+
+  if ( hostinfo == 0L )
+    return false;
+
+  server_name->sin_addr = *(struct in_addr*) hostinfo->h_addr;
+  return true;
 }
 
 KSocket::~KSocket()
