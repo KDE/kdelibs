@@ -304,6 +304,10 @@ public:
      * The border plus highlight width of the widget.
      */
     int decoWidth(WidgetType widget) const;
+    /**
+     * The extent (width for vertical, height for horizontal) requested
+     * for the scrollbars.
+     */
     int getSBExtent() const;
     /**
      * The scrollbar button layout.
@@ -354,7 +358,13 @@ public:
      * True if rounded slider grooves are requested.
      */
     bool roundSlider() const;
+    /**
+     * True if a line should be drawn on the bottom of active tabs.
+     */
     bool activeTabLine() const;
+    /**
+     * True if a line should be drawn on the bottom of inactive tabs.
+     */
     bool inactiveTabLine() const;
     /**
      * Returns the current uncached pixmap for the given widget. This will

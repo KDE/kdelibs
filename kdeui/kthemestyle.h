@@ -90,6 +90,9 @@ public:
     virtual void drawBevelButton(QPainter *p, int x, int y, int w, int h,
                                  const QColorGroup &g, bool sunken = FALSE,
                                  const QBrush *fill = 0);
+    /**
+     * Draws a toolbar button.
+     */
     virtual void drawKToolBarButton(QPainter *p, int x, int y, int w, int h,
                                     const QColorGroup &g, bool sunken=false,
                                     bool raised = true, bool enabled = true,
@@ -97,9 +100,15 @@ public:
                                     const QString &btext=QString::null,
                                     const QPixmap *icon=NULL,
                                     QFont *font=NULL);             
+    /**
+     * Draws the handle used in menu and toolbars.
+     */
     virtual void drawKBarHandle(QPainter *p, int x, int y, int w, int h,
                                 const QColorGroup &g, bool horizontal = false,
                                 QBrush *fill = NULL);
+    /**
+     * Draws a toolbar.
+     */
     virtual void drawKToolBar(QPainter *p, int x, int y, int w, int h,
                               const QColorGroup &g, bool floating = false);
     /**
@@ -160,10 +169,16 @@ public:
     virtual void drawIndicator(QPainter* p, int x, int y, int w, int h,
                                const QColorGroup &g, int state,
                                bool down = FALSE, bool enabled = TRUE);
+    /**
+     * Draws a combobox.
+     */
     virtual void drawComboButton(QPainter *p, int x, int y, int w, int h,
                                  const QColorGroup &g, bool sunken = FALSE,
                                  bool editable = FALSE, bool enabled = TRUE,
                                  const QBrush *fill = 0);
+    /**
+     * Draws a pushbutton.
+     */
     virtual void drawPushButton(QPushButton* btn, QPainter *p);
     /**
      * Returns the amount of button content displacement specified by the
@@ -195,12 +210,21 @@ public:
      * Returns the configurable default slider length.
      */
     virtual int sliderLength() const;
+    /**
+     * Draws a slider control.
+     */
     virtual void drawSlider(QPainter *p, int x, int y, int w, int h,
                             const QColorGroup &g, Orientation, bool tickAbove,
                             bool tickBelow);
+    /**
+     * Draws a slider groove.
+     */
     void drawSliderGroove(QPainter *p, int x, int y, int w, int h,
                           const QColorGroup& g, QCOORD c,
                           Orientation );
+    /**
+     * Draws the mask for a slider (both the control and groove.
+     */
     virtual void drawSliderMask(QPainter *p, int x, int y, int w, int h,
                                 Orientation, bool tickAbove, bool tickBelow);
 //    void drawSliderGrooveMask(QPainter *p,int x, int y, int w, int h,
@@ -233,10 +257,18 @@ public:
     virtual void drawShade(QPainter *p, int x, int y, int w, int h,
                            const QColorGroup &g, bool sunken, bool rounded,
                            int hWidth, int bWidth, ShadeStyle style);
+    /**
+     * Draws the text for a pushbutton.
+     */
     virtual void drawPushButtonLabel(QPushButton *btn, QPainter *p);
-
+    /**
+     * Draws a menubar.
+     */
     virtual void drawKMenuBar(QPainter *p, int x, int y, int w, int h,
                               const QColorGroup &g, QBrush *fill=NULL);
+    /**
+     * Draws a menubar item.
+     */
     virtual void drawKMenuItem(QPainter *p, int x, int y, int w, int h,
                                const QColorGroup &g, bool active,
                                QMenuItem *item, QBrush *fill=NULL);  
@@ -244,20 +276,39 @@ public:
      * Returns the width of the splitter as specified in the config file.
      */
     virtual int splitterWidth() const;
+    /**
+     * Draws a splitter widget.
+     */
     virtual void drawSplitter(QPainter *p, int x, int y, int w, int h,
                               const QColorGroup &g, Orientation);
+    /**
+     * Draws a checkmark.
+     */
     virtual void drawCheckMark(QPainter *p, int x, int y, int w, int h,
                                const QColorGroup &g, bool act, bool dis);
+    /**
+     * Draws a menu item. Note: This method manually handles applying
+     * inactive menu backgrounds to the entire widget.
+     */
     virtual void drawPopupMenuItem(QPainter *p, bool checkable, int maxpmw,
                                   int tab, QMenuItem *mi, const QPalette &pal,
                                   bool act, bool enabled, int x, int y, int w,
                                    int h);
     int popupMenuItemHeight(bool checkable, QMenuItem *mi,
                             const QFontMetrics &fm);
+    /**
+     * Draws the focus rectangle.
+     */
     void drawFocusRect(QPainter *p, const QRect &r, const QColorGroup &g,
                        const QColor *c=0, bool atBorder=false);
+    /**
+     * Draws a KProgess Bar.
+     */
     virtual void drawKProgressBlock(QPainter *p, int x, int y, int w, int h,
                                     const QColorGroup &g, QBrush *fill);
+    /**
+     * Returns the background for KProgress.
+     */
     virtual void getKProgressBackground(const QColorGroup &g, QBrush &bg);
     virtual void tabbarMetrics(const QTabBar*, int&, int&, int&);
     virtual void drawTab(QPainter*, const QTabBar*, QTab*, bool selected);    
