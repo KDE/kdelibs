@@ -74,7 +74,10 @@
 			<Include>
 				<And>
 				<Category>Education</Category>
+				<Or>
+				<Category>Languages</Category>
 				<Category>X-KDE-Edu-Language</Category>
+				</Or>
 				</And>
 			</Include>
 		</Menu>
@@ -95,9 +98,11 @@
 				<And>
 				<Category>Education</Category>
 				<Not>
+				<Category>Languages</Category>
 				<Category>X-KDE-Edu-Language</Category>
 				<Category>Math</Category>
 				<Category>Science</Category>
+				<Category>Teaching</Category>
 				<Category>X-KDE-Edu-Teaching</Category>
 				</Not>
 				</And>
@@ -119,7 +124,10 @@
 			<Include>
 				<And>
 				<Category>Education</Category>
+				<Or>
+				<Category>Teaching</Category>
 				<Category>X-KDE-Edu-Teaching</Category>
+				</Or>
 				</And>
 			</Include>
 		</Menu>
