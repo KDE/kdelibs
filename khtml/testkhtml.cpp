@@ -62,9 +62,16 @@ int main(int argc, char *argv[])
     QObject::connect( doc->browserExtension(), SIGNAL( openURLRequest( const KURL &, const KParts::URLArgs & ) ),
 		      dummy, SLOT( slotOpenURL( const KURL&, const KParts::URLArgs & ) ) );
 
-     doc->openURL( args->url(0) );
-     DOMTreeView * dtv = new DOMTreeView(0, doc, "DomTreeView");
-     dtv->show();
+    if (args->url(0).url().right(4).find(".xml", 0, false) == 0) {
+        KParts::URLArgs ags(doc->browserExtension()->urlArgs());
+        ags.serviceType = "text/xml";
+        doc->browserExtension()->setURLArgs(ags);
+    }
+
+    doc->openURL( args->url(0) );
+
+    DOMTreeView * dtv = new DOMTreeView(0, doc, "DomTreeView");
+    dtv->show();
 
     toplevel->setCentralWidget( doc->widget() );
     toplevel->resize( 640, 800);
@@ -90,11 +97,7 @@ int main(int argc, char *argv[])
 
     doc->setJScriptEnabled(true);
     doc->setJavaEnabled(true);
-#if QT_VERSION < 300
-    doc->setURLCursor(QCursor(PointingHandCursor));
-#else
     doc->setURLCursor(QCursor(Qt::PointingHandCursor));
-#endif
     a.setTopWidget(doc->widget());
     QWidget::connect(doc, SIGNAL(setWindowCaption(const QString &)),
 		     doc->widget(), SLOT(setCaption(const QString &)));
