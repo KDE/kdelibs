@@ -647,7 +647,7 @@ bool HTTPProtocol::http_open()
   {
      m_fcache = checkCacheEntry( );
 
-     if ((m_request.cache == CC_Reload && m_fcache) || m_bIsSSL )
+     if (m_request.cache == CC_Reload && m_fcache)
      {
         if (m_fcache)
           fclose(m_fcache);
@@ -1608,6 +1608,13 @@ bool HTTPProtocol::readHeader()
   // Do not cache pages originating from password
   // protected sites.
   if ( !hasCacheDirective && Authentication != AUTH_None )
+  {
+    m_bCachedWrite = false;
+    mayCache = false;
+  }
+
+  // Do not cache any text from SSL sites.
+  if (m_bIsSSL && m_strMimeType.startsWith("text/"))
   {
     m_bCachedWrite = false;
     mayCache = false;
