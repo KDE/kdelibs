@@ -1245,6 +1245,9 @@ void KHTMLWidget::slotTimeout()
 
     painter->setFont( oldFont );
 
+	// FE: synchronize painter's backgroundColor
+	painter->setBackgroundColor(backgroundColor());
+
     // If the visible rectangle was not filled before the parsing and
     // if we have something to display in the visible area now then repaint.
     if ( lastHeight - y_offset < height() * 2 && docHeight() - y_offset > 0 )

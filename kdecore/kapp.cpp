@@ -1,6 +1,9 @@
 // $Id$
 // Revision 1.87  1998/01/27 20:17:01  kulow
 // $Log$
+// Revision 1.48  1997/10/08 13:44:48  kulow
+// corrected the path creation due to Torben's changes
+//
 // Revision 1.47  1997/10/08 02:18:15  torben
 // Torben: Monster-Patch for KDEFSSTD, see posting
 // added KIconLoaderButton, changed search pathes in
@@ -311,8 +314,6 @@
 // I'm not sure, why this have been removed, but I'm sure, they are
 // needed.
 //
-  rootDropZone = 0L;
-    
 // Revision 1.59  1997/10/16 11:14:27  torben
 // Kalle: Copyright headers
 // kdoctoolbar removed
@@ -330,8 +331,6 @@
 // KApplication::tempSaveName() and KApplication::checkRecoverFile()
 // now implemented as documented.
 // The change in kapp.h is only in the documentation and thus *-compatible.
-  rootDropZone = 0L;
-
 //
 // Revision 1.53  1997/10/11 22:39:27  ettrich
 // Matthias: BINARY INCOMPATIBLE CHANGES
@@ -343,8 +342,9 @@
 //
 // Revision 1.50  1997/10/10 22:09:17  ettrich
 
-#include <kapp.h>
+#include "kapp.moc"
 
+#include <kapp.h>
   if (NULL == theKProcessController) 
 #include <kiconloader.h>
 #include <klocale.h>

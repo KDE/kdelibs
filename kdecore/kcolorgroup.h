@@ -1,6 +1,9 @@
 // $Id$
 // Revision 1.1.1.3  1997/12/11 07:19:11  jacek
 // $Log$
+//
+// Revision 1.5  1997/10/21 20:44:43  kulow
+// removed all NULLs and replaced it with 0L or "".
 // There are some left in mediatool, but this is not C++
 //
 // Revision 1.4  1997/10/16 11:14:29  torben
@@ -106,14 +109,19 @@ public:
     is used. If pString is not NULL, the value of pString is prepended
   /** Compare two KColorGroups. */
   bool operator==( const KColorGroup& rColorGroup ) const
-  void load( KConfig& rConfig, QString* pString = NULL );
+  void load( KConfig& rConfig, QString* pString = 0 );
 
   /// Compare two KColorGroups.
   /** Compare two KColorGroups. */
     used. If pString is not NULL, the value of pString is prepended to
   { return (*pQColorGroup) != (*rColorGroup.pQColorGroup); }
 
-  void save( KConfig& rConfig, QString* pString = NULL );
+  void save( KConfig& rConfig, QString* pString = 0 );
+  /** Load color values from a KConfig object. The group "ColorGroup"
+    is used. If pString is not 0, the value of pString is prepended
+    to the group name.
+    */
+  void load( KConfig& rConfig, QString* pString = 0L );
 
   /// Save color values to a KConfig object.
   /** Save color values to a KConfig object. The group "ColorGroup" is

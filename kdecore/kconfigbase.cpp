@@ -1,6 +1,10 @@
 // $Id$
 //
 // $Log$
+// There are some left in mediatool, but this is not C++
+//
+// Revision 1.11  1997/10/16 21:51:15  torben
+// Torben: Beta1, binary incompatible
 //
 // Revision 1.10  1997/10/16 11:14:30  torben
 // Kalle: Copyright headers
@@ -75,12 +79,12 @@ void KConfigBase::setLocale()
 
 void KConfigBase::parseOneConfigFile( QFile& rFile, 
 				      KGroupDict* pWriteBackDict,
-      if( nLeftBracket == 0 && nRightBracket != -1 )
+      if( nLeftBracket != -1 && nRightBracket != -1 )
 {
     if (!rFile.isOpen()) // come back, if you have real work for us ;->
       return;
 
-	    aCurrentLine.mid( 1, nRightBracket-1 );
+	    aCurrentLine.mid( nLeftBracket+1, nRightBracket-1 );
   QString aCurrentGroup = "";
 
   QDict<KEntryDict> *pDict;

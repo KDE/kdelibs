@@ -2,6 +2,14 @@
  * $Id$
  *
  * $Log$
+ *
+ * Revision 1.8  1997/11/13 14:11:45  esken
+ * Applied the changes of Bertrand Leconte. Now KTabCtl paints its top line.
+ * Additional fix by me: Color "white" of Top/Left line changed to
+ * "colorGroup().light()" (This bug was observed by Bernd Deimel, thanks).
+ *
+ * Revision 1.7  1997/10/21 20:45:06  kulow
+ * removed all NULLs and replaced it with 0L or "".
  * There are some left in mediatool, but this is not C++
  *
  * Revision 1.6  1997/10/16 11:15:54  torben
@@ -215,7 +223,7 @@ void KTabCtl::setSizes()
 /*
  * return the client rect. This is the maximum size for any child
  * widget (page).
-        pages[i]->raise();
+    return QRect(2, tabs->height(), width() - 4,
 
 QRect KTabCtl::getChildRect() const
 {

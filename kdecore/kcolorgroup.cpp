@@ -1,6 +1,9 @@
 // $Id$
 // Revision 1.1.1.3  1997/12/11 07:19:11  jacek
 // $Log$
+// Imported sources from KDE CVS
+//
+// Revision 1.1.1.1  1997/12/09 22:02:45  jacek
 // Imported sorces fromkde
 //
 // Revision 1.4  1997/10/16 11:14:28  torben
@@ -19,7 +22,7 @@
 // Revision 1.1.1.1  1997/04/09 00:28:05  cvsuser
 // Sources imported
 //
-#include <kcolorgroup.h>
+// Revision 1.2  1996/12/14 12:49:11  kalle
 // method names start with a small letter
 //
 // Revision 1.1  1996/11/24 12:54:16  kalle
@@ -45,7 +48,9 @@ KColorGroup::KColorGroup( const QColor& rForeground, const QColor& rBackground,
 			  const QColor& rBase )
 {
   pQColorGroup = new QColorGroup( rForeground, rBackground, rLight, rMid,
-  QString aGroupName = *pString;
+				  rDark, rText, rBase );
+}
+
 KColorGroup::~KColorGroup()
 {
   delete pQColorGroup;
@@ -68,7 +73,9 @@ void KColorGroup::load( KConfig& rConfig, QString* pString )
   QColor aDarkColor( rConfig.readColorEntry( "Dark" ) );
   QColor aTextColor( rConfig.readColorEntry( "Text" ) );
   QColor aBaseColor( rConfig.readColorEntry( "Base" ) );
-  QString aGroupName = *pString;
+
+  pQColorGroup = new QColorGroup( aForeColor, aBackColor, aLightColor, 
+								  aMidColor, aDarkColor, aTextColor, 
 								  aBaseColor );
 
   rConfig.setGroup( aOldGroup );
@@ -84,6 +91,10 @@ void KColorGroup::save( KConfig& rConfig, QString* pString )
   aGroupName += "ColorGroup";
   rConfig.setGroup( aGroupName );
   
+
+  rConfig.writeEntry( "Foreground", pQColorGroup->foreground() );
+  rConfig.writeEntry( "Background", pQColorGroup->background() );
+  rConfig.writeEntry( "Light", pQColorGroup->light() );
   rConfig.writeEntry( "Mid", pQColorGroup->mid() );
   rConfig.writeEntry( "Dark", pQColorGroup->dark() );
   rConfig.writeEntry( "Text", pQColorGroup->text() );
