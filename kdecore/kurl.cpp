@@ -903,7 +903,7 @@ void KURL::setFileName( const QString& _txt )
   else
     tmp = _txt;
 
-  QString path = m_strPath_encoded;
+  QString path = m_strPath;
   if ( path.isEmpty() )
     path = "/";
   else
@@ -920,7 +920,7 @@ void KURL::setFileName( const QString& _txt )
   }
 
   path += tmp;
-  setEncodedPath( path );
+  setPath( path );
   cleanPath();
 }
 
