@@ -212,8 +212,6 @@ KFileDialog::KFileDialog(const QString& startDir, const QString& filter,
     d->pathCombo = combo;
     QToolTip::add( d->pathCombo, i18n("Often used directories") );
 
-    bookmarksMenu = 0L;
-
     if (!lastDirectory)
     {
         lastDirectory = ldd.setObject(new KURL());
@@ -268,7 +266,7 @@ KFileDialog::KFileDialog(const QString& startDir, const QString& filter,
     coll->action( "reload" )->plugAccel( accel );
     coll->action( "delete" )->plugAccel( accel );
 
-    bookmarks= new KFileBookmarkManager();
+    bookmarks = new KFileBookmarkManager();
     CHECK_PTR( bookmarks );
     connect( bookmarks, SIGNAL( changed() ),
              this, SLOT( bookmarksChanged() ) );
@@ -277,9 +275,16 @@ KFileDialog::KFileDialog(const QString& startDir, const QString& filter,
     if (!bmFile.isNull())
         bookmarks->read(bmFile);
 
+    bookmarksMenu = new QPopupMenu( this );
     toolbar->insertButton(QString::fromLatin1("bookmark"),
-                          (int)HOTLIST_BUTTON, true,
-                          i18n("Bookmarks"));
+                                   (int)HOTLIST_BUTTON, true, 
+                                   i18n("Bookmarks"));
+    toolbar->getButton(HOTLIST_BUTTON)->setPopup( bookmarksMenu, true);
+
+    connect( bookmarksMenu, SIGNAL( aboutToShow() ), 
+             SLOT( buildBookmarkPopup()));
+    connect( bookmarksMenu, SIGNAL( activated( int )), 
+             SLOT( bookmarkMenuActivated( int )));
     /*
     toolbar->insertButton(QString::fromLatin1("configure"),
                           (int)CONFIGURE_BUTTON, true,
@@ -301,9 +306,6 @@ KFileDialog::KFileDialog(const QString& startDir, const QString& filter,
 
     connect(toolbar, SIGNAL(clicked(int)),
             SLOT(toolbarCallback(int)));
-    // for the bookmark "menu"
-    connect(toolbar, SIGNAL(pressed(int)),
-            this, SLOT(toolbarPressedCallback(int)));
 
     toolbar->insertWidget(PATH_COMBO, 0, d->pathCombo);
 
@@ -984,7 +986,8 @@ void KFileDialog::bookmarksChanged() // SLOT
     //    kdDebug(kfile_area) << "bookmarksChanged" << endl;
 }
 
-void KFileDialog::fillBookmarkMenu( KFileBookmark *parent, QPopupMenu *menu, int &id )
+void KFileDialog::fillBookmarkMenu( KFileBookmark *parent, QPopupMenu *menu, 
+                                    int &id )
 {
     KFileBookmark *bm;
 
@@ -1035,50 +1038,34 @@ void KFileDialog::toolbarCallback(int i) // SLOT
 
 void KFileDialog::toolbarPressedCallback(int i)
 {
-    int id= idStart;
-    if (i == HOTLIST_BUTTON) {
-        // Build the menu on first use
-        if (bookmarksMenu == 0) {
-            bookmarksMenu= new QPopupMenu;
-            bookmarksMenu->insertItem(i18n("Add to bookmarks"), this,
-                                      SLOT(addToBookmarks()));
-            bookmarksMenu->insertSeparator();
-            fillBookmarkMenu( bookmarks->getRoot(), bookmarksMenu, id );
-        }
+}
 
-        QPoint p;
-        KToolBarButton *btn= toolbar->getButton(HOTLIST_BUTTON);
-        p= btn->mapToGlobal(QPoint(0, btn->height()));
-        bookmarksMenu->move(p);
+void KFileDialog::buildBookmarkPopup()
+{
+    bookmarksMenu->clear();
+    bookmarksMenu->insertItem(i18n("Add to bookmarks"), (int) 0 );
+    bookmarksMenu->insertSeparator();
+    int id = 1;
+    fillBookmarkMenu( bookmarks->getRoot(), bookmarksMenu, id );
+}
 
-        int choice= bookmarksMenu->exec();
-        QEvent ev(QEvent::Leave);
-        QMouseEvent mev (QEvent::MouseButtonRelease,
-                         QCursor::pos(), LeftButton, LeftButton);
-        QApplication::sendEvent(btn, &ev);
-        QApplication::sendEvent(btn, &mev);
-
-        if (choice == 0) {
-            // add current to bookmarks
-            addToBookmarks();
-        }
-        else if (choice > 0) {
-            // Select a bookmark (this will not work if there are submenus)
-            int i= 1;
-            kdDebug(kfile_area) << "Bookmark: choice was " << choice << endl;
-            KFileBookmark *root= bookmarks->getRoot();
-            for (KFileBookmark *b= root->getChildren().first();
-                 b != 0; b= root->getChildren().next()) {
-                if (i == choice) {
-                    kdDebug(kfile_area) << "Bookmark: opening " << b->getURL() << endl;
-                    setURL(b->getURL(), true);
-                }
-                i++;
+void KFileDialog::bookmarkMenuActivated( int choice )
+{
+    if (choice == 0) { // add current to bookmarks
+        addToBookmarks();
+    }
+    else if (choice > 0) {
+        // Select a bookmark (this will not work if there are submenus)
+        int i = 1;
+        kdDebug(kfile_area) << "Bookmark: choice was " << choice << endl;
+        KFileBookmark *root= bookmarks->getRoot();
+        for (KFileBookmark *b= root->getChildren().first();
+             b != 0; b= root->getChildren().next()) {
+            if (i == choice) {
+                setURL(b->getURL(), true);
             }
+            i++;
         }
-
-        delete bookmarksMenu;
-        bookmarksMenu= 0;
     }
 }
 

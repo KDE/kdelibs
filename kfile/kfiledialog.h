@@ -678,7 +678,7 @@ protected slots:
     void pathComboReturnPressed( const QString& url );
     void locationActivated( const QString& url );
     void toolbarCallback(int);
-    void toolbarPressedCallback(int);
+    void toolbarPressedCallback(int); // ### remove
     void slotFilterChanged();
     void pathComboChanged( const QString& );
     void fileHighlighted(const KFileViewItem *i);
@@ -701,6 +701,10 @@ protected slots:
     void addToBookmarks();
     void bookmarksChanged();
     void fillBookmarkMenu( KFileBookmark *parent, QPopupMenu *menu, int &id );
+
+private slots:
+    void buildBookmarkPopup();
+    void bookmarkMenuActivated( int choice );
 
 private:
     KFileDialog(const KFileDialog&);

@@ -141,7 +141,9 @@ void KImageFilePreview::gotPreview( const KFileItem* item, const QPixmap& pm )
 
 void KImageFilePreview::slotFailed( const KFileItem* item )
 {
-    if ( item->url() == currentURL ) // should always be the case
+    if ( item->isDir() )
+        imageLabel->setPixmap( QPixmap() );
+    else if ( item->url() == currentURL ) // should always be the case
         imageLabel->setPixmap( SmallIcon( "file_broken", KIcon::SizeLarge,
                                           KIcon::DisabledState ));
 }
