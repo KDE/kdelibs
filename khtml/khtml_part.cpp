@@ -1008,7 +1008,8 @@ void KHTMLPart::urlSelected( const QString &url, int button, int state, const QS
 
   if ( !target.isEmpty() )
   {
-    khtml::ChildFrame *frame = recursiveFrameRequest( cURL, args, false, true );
+      // unknown frame names shuld open in a new window.
+      khtml::ChildFrame *frame = recursiveFrameRequest( cURL, args, false, true );
     if ( frame )
     {
       requestObject( frame, cURL, args );
