@@ -1313,7 +1313,7 @@ void RenderFlow::addChild(RenderObject *newChild, RenderObject *beforeChild)
 	&& ( pseudoStyle=style()->getPseudoStyle(RenderStyle::FIRST_LETTER) ) )
     {
 
-        if (newChild->isText()) {
+        if (newChild->isText() && !newChild->isBR()) {
 	    RenderText* newTextChild = static_cast<RenderText*>(newChild);
 
 	    //kdDebug( 6040 ) << "first letter" << endl;
