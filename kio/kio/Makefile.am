@@ -42,7 +42,6 @@ libksycoca_la_SOURCES = \
 	kdatatool.cpp karchive.cpp kfilefilter.cpp \
 	kfilemetainfo.cpp kdcopservicestarter.cpp \
 	dataslave.cpp dataprotocol.cpp
-libksycoca_la_COMPILE_FIRST = kdirnotify_stub.h
 
 include_HEADERS = \
 	kservicetype.h kmimetype.h kmimemagic.h kservice.h \

@@ -58,7 +58,7 @@ libkfile_la_SOURCES = \
 	kpropertiesdesktopadvbase.ui kpropertiesmimetypebase.ui \
 	kencodingfiledialog.cpp
 
-libkfile_la_COMPILE_FIRST = ../kio/kdirnotify_stub.h
+libkfile_la_COMPILE_FIRST = $(srcdir)/../kio/kdirnotify_stub.h
 
 EXTRA_DIST = NOTES
 
