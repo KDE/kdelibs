@@ -129,6 +129,11 @@ public:
    * @param parent is the parent of the dialog widget.
    * @param name is the internal name.
    * @param modal tells the dialog whether it should be modal.
+   * IMPORTANT: This constructor, together with modal=true, leads to a grave
+   * display bug (due to KIO::stat() being run before the dialog has all the
+   * necessary information). Do not use this combination for now.
+   * For local files with a known, simply create a KFileItem and pass it to the other constructor.
+   *
    * @param autoShow tells the dialog whethr it should show itself automatically.
    */
   KPropertiesDialog( const KURL& _url,
