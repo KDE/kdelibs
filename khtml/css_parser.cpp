@@ -656,6 +656,7 @@ CSSValueImpl *StyleBaseImpl::parseValue(const QChar *curP, const QChar *endP, in
     case CSS_PROP_LETTER_SPACING:
     case CSS_PROP_OUTLINE_WIDTH:
     case CSS_PROP_WORD_SPACING:
+	return parseUnit(curP, endP, LENGTH);
 	break;
 
 // length, percent
@@ -680,6 +681,7 @@ CSSValueImpl *StyleBaseImpl::parseValue(const QChar *curP, const QChar *endP, in
     case CSS_PROP_TOP:
     case CSS_PROP_VERTICAL_ALIGN:
     case CSS_PROP_WIDTH:
+	return parseUnit(curP, endP, LENGTH | PERCENT );
 	break;
 
 // rect
@@ -708,7 +710,7 @@ CSSValueImpl *StyleBaseImpl::parseValue(const QChar *curP, const QChar *endP, in
 	
 // angle
     case CSS_PROP_ELEVATION:
-	// angle, i
+	parseUnit(curP, endP, ANGLE);
 	break;
 	
 // number
@@ -720,18 +722,22 @@ CSSValueImpl *StyleBaseImpl::parseValue(const QChar *curP, const QChar *endP, in
     case CSS_PROP_STRESS:
     case CSS_PROP_WIDOWS:
     case CSS_PROP_Z_INDEX:
+	parseUnit(curP, endP, NUMBER);
 	break;
 
 // length, percent, number
     case CSS_PROP_LINE_HEIGHT:
+	parseUnit(curP, endP, LENGTH | PERCENT | NUMBER);
 	break;
 
 // number, percent
     case CSS_PROP_VOLUME:
+	parseUnit(curP, endP, PERCENT | NUMBER);
 	break;
 	
 // frequency
     case CSS_PROP_PITCH:
+	parseUnit(curP, endP, FREQUENCY);
 	break;
 
 // string
@@ -762,6 +768,150 @@ CSSValueImpl *StyleBaseImpl::parseValue(const QChar *curP, const QChar *endP, in
 
     return 0;
 }	
+
+CSSValueImpl *
+StyleBaseImpl::parseUnit(const QChar * curP, const QChar *endP, int allowedUnits)
+{
+    const QChar *split = endP;
+    // splt up number and unit
+    while( (*split < '0' || *split > '9') && *split != '.' && split > curP)
+	split--;
+    split++;
+    
+    QString s(curP, split-curP);
+    printf("number = %s\n", s.ascii());
+
+    bool isInt = false;
+    if(s.find('.') == -1) isInt = true;
+
+    bool ok;
+    float value = s.toFloat(&ok);
+    if(!ok) return 0;
+
+    if(split > endP) // no unit
+    {
+	if(!(allowedUnits & (NUMBER | INTEGER)))
+	    return 0;
+
+	if(allowedUnits & NUMBER)
+	    return new CSSPrimitiveValueImpl(value, CSSPrimitiveValue::CSS_NUMBER);
+	    
+	if(allowedUnits & INTEGER && isInt) // ### DOM CSS doesn't seem to define something for integer
+	    return new CSSPrimitiveValueImpl(value, CSSPrimitiveValue::CSS_NUMBER);
+
+	if(allowedUnits & LENGTH && value == 0)
+	    return new CSSPrimitiveValueImpl(0, CSSPrimitiveValue::CSS_UNKNOWN);
+	
+	return 0;
+    }
+
+    CSSPrimitiveValue::UnitTypes type = CSSPrimitiveValue::CSS_UNKNOWN;
+    int unit = 0;
+    
+    switch(split->lower().latin1())
+    {
+    case '%':
+	type = CSSPrimitiveValue::CSS_PERCENTAGE;
+	unit = PERCENT;
+    case 'e':
+	split++;
+	if(split > endP) break;
+	if(split->latin1() == 'm' || split->latin1() == 'M') 
+	{
+	    type = CSSPrimitiveValue::CSS_EMS;
+	    unit = LENGTH;
+	}
+	else if(split->latin1() == 'x' || split->latin1() == 'X') 
+	{
+	    type = CSSPrimitiveValue::CSS_EXS;
+	    unit = LENGTH;
+	}
+	break;
+    case 'p':
+	split++;
+	if(split > endP) break;
+	if(split->latin1() == 'x' || split->latin1() == 'X') 
+	{
+	    type = CSSPrimitiveValue::CSS_PX;
+	    unit = LENGTH;
+	}
+	else if(split->latin1() == 't' || split->latin1() == 'T') 
+	{
+	    type = CSSPrimitiveValue::CSS_PT;
+	    unit = LENGTH;
+	}
+	else if(split->latin1() == 'c' || split->latin1() == 'C') 
+	{
+	    type = CSSPrimitiveValue::CSS_PC;
+	    unit = LENGTH;
+	}
+	break;
+    case 'c':
+	split++;
+	if(split > endP) break;
+	if(split->latin1() == 'm' || split->latin1() == 'M') 
+	{
+	    type = CSSPrimitiveValue::CSS_CM;
+	    unit = LENGTH;
+	}
+	break;
+    case 'm':
+	split++;
+	if(split > endP) break;
+	if(split->latin1() == 'm' || split->latin1() == 'M') 
+	{
+	    type = CSSPrimitiveValue::CSS_MM;
+	    unit = LENGTH;
+	}
+	else if(split->latin1() == 's' || split->latin1() == 'S') 
+	{
+	    type = CSSPrimitiveValue::CSS_MS;
+	    unit = TIME;
+	}
+	break;
+    case 'i':
+	split++;
+	if(split > endP) break;
+	if(split->latin1() == 'n' || split->latin1() == 'N') 
+	{
+	    type = CSSPrimitiveValue::CSS_IN;
+	    unit = LENGTH;
+	}
+	break;
+    case 'd':
+	type = CSSPrimitiveValue::CSS_DEG;
+	unit = ANGLE;
+	break;
+    case 'r':
+	type = CSSPrimitiveValue::CSS_RAD;
+	unit = ANGLE;
+	break;
+    case 'g':
+	type = CSSPrimitiveValue::CSS_GRAD;
+	unit = ANGLE;
+	break;
+    case 's':
+	type = CSSPrimitiveValue::CSS_S;
+	unit = TIME;
+	break;
+    case 'h':
+        type = CSSPrimitiveValue::CSS_HZ;
+	unit = FREQUENCY;
+	break;
+    case 'k':
+	type = CSSPrimitiveValue::CSS_KHZ;
+	unit = FREQUENCY;
+	break;
+    }
+
+    if(unit & allowedUnits)
+    {
+	printf("found allowed number %f, unit %d\n", value, type);
+	return new CSSPrimitiveValueImpl(value, type);
+    }
+    
+    return 0;
+}
 
 CSSStyleRuleImpl *
 StyleBaseImpl::parseStyleRule(const QChar *&curP, const QChar *endP)

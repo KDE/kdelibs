@@ -83,8 +83,24 @@ namespace DOM {
 	CSSProperty *parseProperty(const QChar *curP, const QChar *endP);
 	QList<CSSProperty> *parseProperties(const QChar *curP, const QChar *endP);
 
+	/* parses generic CSSValues */
 	CSSValueImpl *parseValue(const QChar *curP, const QChar *endP, int propId);
 
+	// defines units allowed for a certain property, used in parseUnit
+	enum Units
+	{
+	    INTEGER   = 0x0001,
+	    NUMBER    = 0x0002,  // real numbers
+	    PERCENT   = 0x0004,
+	    LENGTH    = 0x0008,
+	    ANGLE     = 0x0010,
+	    TIME      = 0x0020,
+	    FREQUENCY = 0x0040
+	};
+	    
+	/* called by parseValue, parses numbers+units */
+	CSSValueImpl *parseUnit(const QChar * curP, const QChar *endP, int allowedUnits);
+	
 	CSSRuleImpl *parseAtRule(const QChar *&curP, const QChar *endP);
 	CSSStyleRuleImpl *parseStyleRule(const QChar *&curP, const QChar *endP);
 	CSSRuleImpl *parseRule(const QChar *&curP, const QChar *endP);
