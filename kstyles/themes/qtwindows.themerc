@@ -11,6 +11,7 @@ Name[ro]=Windows Qt
 Name[sk]=Qt Okná
 Name[ta]=Qt Å¢ñ§¼¡
 Comment=Built-in unthemed Windows 9x style
+Comment[az]=Yerləşmiş, örtüsüz Windows 98 tərzi
 Comment[ca]=Estil incorporat Windows 9x sense temes
 Comment[cs]=Zabudovaný Windows 9x styl (bez motivu)
 Comment[da]=Indbygget Windows 9x stil uden tema

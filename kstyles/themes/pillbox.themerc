@@ -1,5 +1,6 @@
 [Misc]
 Name=Pillbox
+Name[az]=Həb Qutusu
 Name[da]=Pilleboks
 Name[de]=Pillenschachtel
 Name[eo]=Pilolujo
@@ -18,6 +19,7 @@ Name[sv]=Bunker
 Name[tr]=Hap Kutusu
 Name[uk]=Маленька скринька
 Comment=Pillbox unthemed style.
+Comment[az]=Örtüsüz Həb Qutusu tərzi
 Comment[ca]=Estil sense tema Pillbox.
 Comment[cs]=Pillbox styl (bez motivu)
 Comment[da]=Pilleboksstil uden tema

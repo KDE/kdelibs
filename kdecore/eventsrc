@@ -2,6 +2,7 @@
 # go = The K-icon from kicker
 IconName=go
 Comment=KDE System Notifications
+Comment[az]=KDE Sistem Bildirişləri
 Comment[ca]=Notificacions del sistema KDE
 Comment[cs]=Systémová hlášení prostředí KDE
 Comment[da]=KDE system bekendtgørelser
@@ -43,6 +44,7 @@ Comment[zh_TW.Big5]=KDE 系統通知
 
 [Textcompletion: rotation]
 Name=Textcompletion: rotation
+Name[az]=Textcompletion: döndərmə
 Name[ca]=Textcompletion: rotació
 Name[cs]=Doplňování textu: rotace
 Name[da]=Tekstkomplettering: rotation
@@ -81,6 +83,7 @@ Name[uk]=Доповнення тексту: обертання
 Name[zh_CN.GB2312]=文字补齐：轮转
 Name[zh_TW.Big5]=完整本文: 旋轉
 Comment=The end of the list of matches has been reached.
+Comment[az]=Oxşar siyahısının sonuna gəlindi.
 Comment[ca]=S'ha arribat al final de la llista de coincidències.
 Comment[cs]=Dosaženo konce seznamu odpovídajích položek.
 Comment[da]=Slutningen på liste af tilpasninger nået.
@@ -123,6 +126,7 @@ default_presentation=1
 
 [Textcompletion: no match]
 Name=Textcompletion: no match
+Name[az]=Textcompletion: oxşarı Yoxdur
 Name[ca]=Textcompletion: cap coincidència
 Name[cs]=Doplňování textu: žádná shoda
 Name[da]=Tekstkomplettering: ingen tilpasning
@@ -162,6 +166,7 @@ Name[uk]=Доповнення тексту: немає відповідних з
 Name[zh_CN.GB2312]=文字补齐：没有匹配
 Name[zh_TW.Big5]=完整本文: 沒有符合
 Comment=No matching completion was found.
+Comment[az]=Oxşar tapıla bilmədi.
 Comment[ca]=No s'ha trobat cap coincidència completable.
 Comment[cs]=Nenalezeno žádné vhodné doplnění.
 Comment[da]=Ingen passende komplettering fundet.
@@ -204,6 +209,7 @@ default_presentation=1
 
 [Textcompletion: partial match]
 Name=Textcompletion: partial match
+Name[az]=Textcompletion: qismi oxşar
 Name[ca]=Textcompletion: coincidència parcial
 Name[cs]=Doplňování textu: částečná shoda
 Name[da]=Tekstkomplettering: delvis tilpasning
@@ -243,6 +249,7 @@ Name[uk]=Доповнення тексту: часткове співпадан�
 Name[zh_CN.GB2312]=文字补齐：部分匹配
 Name[zh_TW.Big5]=完整本文: 部份符合
 Comment=There is more than one possible match.
+Comment[az]=Birden çox oxşarı var.
 Comment[ca]=Hi ha més d'una possible coincidència.
 Comment[cs]=Existuje více vhodných odpovídajících položek.
 Comment[da]=Der er mere end én mulig tilpasning.
@@ -285,6 +292,7 @@ default_presentation=1
 
 [cannotopenfile]
 Name=Cannot Open File
+Name[az]=Fayl Açıla bilmir
 Name[ca]=No es pot obrir el fitxer
 Name[cs]=Není možné otevřít soubor
 Name[da]=Kan ikke åbne fil
@@ -326,6 +334,7 @@ Name[uk]=Неможливо відкрити файл
 Name[zh_CN.GB2312]=无法打开文件
 Name[zh_TW.Big5]=無法開啟檔案
 Comment=The selected file cannot be opened for reading or writing
+Comment[az]=Seçili fayl oxunmaq ya da yazılmaq üçün açıla bilmir
 Comment[ca]=El fitxer seleccionat no es pot obrir per llegir o escriure
 Comment[cs]=Vybraný soubor není možné otevřít pro čtení nebo zápis.
 Comment[da]=Den valgte fil kan ikke åbnes til læsning eller skrivning
@@ -369,6 +378,7 @@ default_presentation=0
 
 [fatalerror]
 Name=Fatal Error
+Name[az]=Ölümcül Xəta
 Name[ca]=Error fatal
 Name[cs]=Závažná chyba
 Name[da]=Fatal fejl
@@ -409,6 +419,7 @@ Name[uk]=Фатальна помилка
 Name[zh_CN.GB2312]=致命错误
 Name[zh_TW.Big5]=致命錯誤
 Comment=There was a serious error causing the program to exit.
+Comment[az]=Proqramın qapanmasına səbəb olan ciddi bir xəta oldu.
 Comment[ca]=Hi ha hagut un error seriós causant de la fi del programa.
 Comment[cs]=Nastala závažná chyba, která způsobila ukončení programu.
 Comment[da]=Der var et alvorligt problem der fik programmet til at afslutte.
@@ -453,6 +464,7 @@ level=4
 
 [notification]
 Name=Notification
+Name[az]=Xəbərdarlıq
 Name[ca]=Notificació
 Name[cs]=Oznámení
 Name[da]=Bekendtgørelser
@@ -492,6 +504,7 @@ Name[uk]=Повідомлення
 Name[zh_CN.GB2312]=通知
 Name[zh_TW.Big5]=告知
 Comment=Something Special Happened in the Program
+Comment[az]=Proqramda Xüsusi Bir Vəziyyət Meydana Gəldi
 Comment[ca]=Ha passat quelcom d'especial al programa
 Comment[cs]=Něco zvláštního se stalo s programem.
 Comment[da]=Der skete noget specielt i programmet
@@ -537,6 +550,7 @@ level=1
 
 [warning]
 Name=Warning
+Name[az]=Diqqət
 Name[ca]=Avís
 Name[cs]=Varování
 Name[da]=Advarsel
@@ -577,6 +591,7 @@ Name[uk]=Попередження
 Name[zh_CN.GB2312]=警告
 Name[zh_TW.Big5]=警告
 Comment=There was an error in the program which may cause problems.
+Comment[az]=Proqramda ciddi bir xəta oldu.
 Comment[ca]=Hi ha hagut un error en el programa que podria causar problemes.
 Comment[cs]=Nastala chyba v programu, která může způsobit problémy.
 Comment[da]=Der var et alvorligt problem, der kan forårsage problemer.
@@ -620,6 +635,7 @@ level=2
 
 [catastrophe]
 Name=Catastrophe
+Name[az]=Faciə
 Name[ca]=Catàstrofe
 Name[cs]=Katastrofa
 Name[da]=Katastrofe
@@ -658,6 +674,7 @@ Name[uk]=Катастрофа
 Name[zh_CN.GB2312]=严重问题
 Name[zh_TW.Big5]=大災難
 Comment=A very serious error occured, at least causing the program to exit
+Comment[az]=Proqramın qapanmasına səbəb olan ciddi bir xəta oldu və programdan çıxıldı.
 Comment[ca]=Hi ha hagut un error molt seriós, com a mínim ha causat la sortida del programa
 Comment[cs]=Nastala velmi závažná chyba, která přinejmenšim způsobila ukončení programu.
 Comment[da]=Der var et meget alvorligt problem, i det mindste fik det programmet til at afslutte.
@@ -700,6 +717,7 @@ default_presentation=2
 level=8
 [startkde]
 Name=Login
+Name[az]=Giriş
 Name[bg]=Ëîãîí
 Name[ca]=Connexió
 Name[cs]=Přihlášení
@@ -734,6 +752,7 @@ Name[uk]=Реєстрація
 Name[zh_CN.GB2312]=登录
 Name[zh_TW.Big5]=登入
 Comment=KDE is Starting Up
+Comment[az]=KDE Masa üstü Başlayır
 Comment[bg]=KDE ñå Ñòàðòèðà
 Comment[ca]=KDE està engegant
 Comment[cs]=Spouští se prostředí KDE
@@ -778,6 +797,7 @@ default_sound=KDE_Startup.wav
  
 [exitkde]
 Name=Logout
+Name[az]=Çıxış
 Name[ca]=Desconnexió
 Name[cs]=Odhlášení
 Name[da]=Logaf
@@ -813,6 +833,7 @@ Name[uk]=Кінець сеансу
 Name[zh_CN.GB2312]=注消
 Name[zh_TW.Big5]=登出
 Comment=KDE is Exiting
+Comment[az]="KDE"dən Çıxılır
 Comment[bg]=KDE ñå Ñïèðà
 Comment[ca]=KDE està aturant
 Comment[cs]=Ukončuje se prostředí KDE
