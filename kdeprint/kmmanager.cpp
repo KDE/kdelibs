@@ -29,6 +29,7 @@
 #include <qfile.h>
 #include <kstddirs.h>
 #include <kconfig.h>
+#include <klocale.h>
 #include <kdebug.h>
 #include <kapp.h>
 #include <unistd.h>
@@ -48,7 +49,7 @@ KMManager::~KMManager()
 
 bool KMManager::notImplemented()
 {
-	setErrorMsg("This operation is not implemented.");
+	setErrorMsg(i18n("This operation is not implemented."));
 	return false;
 }
 
@@ -142,7 +143,7 @@ KMPrinter* KMManager::findPrinter(const QString& name)
 	QListIterator<KMPrinter>	it(m_printers);
 	for (;it.current();++it)
 		if (it.current()->name() == name) return it.current();
-	setErrorMsg(QString::fromLatin1("%1: printer not found.").arg(name));
+	setErrorMsg(i18n("%1: printer not found.").arg(name));
 	return 0;
 }
 
