@@ -230,7 +230,7 @@ void RenderCanvas::paintObject(QPainter *p, int _x, int _y, int _w, int _h,
 }
 
 void RenderCanvas::paintBoxDecorations(QPainter *p,int _x, int _y,
-                                       int _w, int _h, int _tx, int _ty)
+                                       int _w, int _h, int /*_tx*/, int /*_ty*/)
 {
     if ((firstChild() && firstChild()->style()->visibility() == VISIBLE) || !view())
         return;
