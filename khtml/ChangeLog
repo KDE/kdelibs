@@ -1,3 +1,8 @@
+2004-02-15  Dirk Mueller  <mueller@kde.org>
+
+	* css/css_base.cpp (specificity): fix detection of the *
+	selector (#73214).
+
 2004-02-13  Zack Rusin  <zack@kde.org>
 
 	* xml/xml_tokenizer (XMLIncrementalSource): implementing
