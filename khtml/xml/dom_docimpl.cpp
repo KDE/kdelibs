@@ -1032,6 +1032,7 @@ void DocumentImpl::open(  )
 
     clear();
     m_tokenizer = createTokenizer();
+    m_decoderMibEnum = 0;
     connect(m_tokenizer,SIGNAL(finishedParsing()),this,SIGNAL(finishedParsing()));
     m_tokenizer->begin();
 
@@ -1990,6 +1991,11 @@ void DocumentImpl::removeWindowEventListener(int id)
 EventListener *DocumentImpl::createHTMLEventListener(QString code)
 {
     return view()->part()->createHTMLEventListener(code);
+}
+
+void DocumentImpl::setDecoderCodec(const QTextCodec *codec)
+{
+    m_decoderMibEnum = codec->mibEnum();
 }
 
 // ----------------------------------------------------------------------------

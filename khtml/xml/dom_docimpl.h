@@ -38,6 +38,7 @@
 #include <kurl.h>
 
 class QPaintDevice;
+class QTextCodec;
 class QPaintDeviceMetrics;
 class KHTMLView;
 class Tokenizer;
@@ -201,6 +202,8 @@ public:
 
     // to get visually ordered hebrew and arabic pages right
     void setVisuallyOrdered();
+    // to get URL decoding right
+    void setDecoderCodec(const QTextCodec *codec);
 
     void setSelection(NodeImpl* s, int sp, NodeImpl* e, int ep);
     void clearSelection();
@@ -222,7 +225,7 @@ public:
     QString baseTarget() const { return m_baseTarget; }
     void setBaseTarget(const QString& baseTarget) { m_baseTarget = baseTarget; }
 
-    QString completeURL(const QString& url) { return KURL(baseURL(),url).url(); };
+    QString completeURL(const QString& url) { return KURL(baseURL(),url,m_decoderMibEnum).url(); };
 
     // from cachedObjectClient
     virtual void setStyleSheet(const DOM::DOMString &url, const DOM::DOMString &sheetStr);
@@ -428,6 +431,7 @@ protected:
     bool m_styleSelectorDirty;
 
     DOMString m_title;
+    int m_decoderMibEnum;
 };
 
 class DocumentFragmentImpl : public NodeBaseImpl

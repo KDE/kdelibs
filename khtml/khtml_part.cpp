@@ -1348,6 +1348,7 @@ void KHTMLPart::write( const char *str, int len )
   //kdDebug(6050) << "KHTMLPart::write haveEnc = " << d->m_haveEncoding << endl;
       // ### this is still quite hacky, but should work a lot better than the old solution
       if(d->m_decoder->visuallyOrdered()) d->m_doc->setVisuallyOrdered();
+      d->m_doc->setDecoderCodec(d->m_decoder->codec());
       d->m_doc->recalcStyle( NodeImpl::Force );
   }
 
