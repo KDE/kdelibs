@@ -1,6 +1,8 @@
 # $Id$
 # Makefile.am of kdebase/kioslave/http
 
+SUBDIRS = kcookiejar
+
 INCLUDES=	$(all_includes) $(SSL_INCLUDES)
 LDFLAGS =       $(all_libraries) $(SSL_LDFLAGS) $(KDE_RPATH)
 LDADD	=	$(LIB_KIO) $(LIBZ) $(LIBSSL)
