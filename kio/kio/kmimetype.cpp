@@ -902,6 +902,14 @@ QValueList<KDEDesktopMimeType::Service> KDEDesktopMimeType::userDefinedServices(
     //kdDebug(7009) << "CURRENT KEY = " << (*it) << endl;
 
     QString group = *it;
+
+    if (group == "_SEPARATOR_")
+    {
+        Service s;
+        result.append(s);
+        continue;
+    }
+
     group.prepend( "Desktop Action " );
 
     bool bInvalidMenu = false;

@@ -497,6 +497,7 @@ public:
   struct Service
   {
     Service() { m_display = true; }
+    bool isEmpty() const { return m_strName.isEmpty(); }
     QString m_strName;
     QString m_strIcon;
     QString m_strExec;
@@ -529,7 +530,9 @@ public:
   static QValueList<Service> builtinServices( const KURL& _url );
   /**
    * Returns a list of services defined by the user as possible actions
-   * on the given .desktop file.
+   * on the given .desktop file. May include empty actions which represent where
+   * visual separators should appear in user-visible representations of those actions,
+   * such as separators in a menu.
    * @param path the path to the desktop file describing the services
    * @param bLocalFiles true if those services are to be applied to local files only
    * (if false, services that don't have %u or %U in the Exec line won't be taken into account).
