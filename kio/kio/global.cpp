@@ -1690,6 +1690,11 @@ kdDebug() << "***** point: " << mountPoint << ", " << FSNAME(me) << ", " << MOUN
             // mounted /a/b/c can't be automounted. At least IMO.
             if (ismanual == Unseen)
             {
+                // The next GETMNTENT call may destroy 'me'
+                // Copy out the info that we need
+                QCString fsname_me = FSNAME(me);
+                QCString mounttype_me = MOUNTTYPE(me);
+            
                 STRUCT_SETMNTENT fstab;
                 // TODO: #define FSTAB (FSTAB_FILE?), important for Solaris
                 if ((fstab = SETMNTENT("/etc/fstab", "r")) == 0)
@@ -1699,7 +1704,7 @@ kdDebug() << "***** point: " << mountPoint << ", " << FSNAME(me) << ", " << MOUN
                 STRUCT_MNTENT fe;
                 while (GETMNTENT(fstab, fe))
                 {
-                    if (!strcmp(FSNAME(me), FSNAME(fe)))
+                    if (fsname_me == FSNAME(fe))
                     {
 kdDebug() << "***** found: " << MOUNTPOINT(fe) << ", " << FSNAME(fe) <<endl;
                         found = true;
@@ -1709,7 +1714,7 @@ kdDebug() << "***** found: " << MOUNTPOINT(fe) << ", " << FSNAME(fe) <<endl;
                         break;
                     }
                 }
-                if (!found || !strcmp(MOUNTTYPE(me), "supermount"))
+                if (!found || (mounttype_me == "supermount"))
                   ismanual = Right;
 
                 ENDMNTENT(fstab);
