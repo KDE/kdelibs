@@ -1,5 +1,5 @@
-#ifndef __iojob_h__
-#define __iojob_h__ "$Id$"
+#ifndef __iobase_h__
+#define __iobase_h__ "$Id$"
 
 #include "kio_interface.h"
 
