@@ -277,7 +277,6 @@ bool DCOPClient::isAttached() const
 
 QCString DCOPClient::registerAs( const QCString& appId )
 {
-    qDebug("registeras %s", appId.data() );
     QCString result;
     if ( !isAttached() ) {
 	if ( !attachInternal( FALSE ) ) {
