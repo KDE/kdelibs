@@ -490,17 +490,17 @@ QPixmap KFileTreeView::itemIcon( KFileTreeViewItem *item, int gap ) const
       }
       else
       {
-      // TODO: different modes, user Pixmaps ?
-      pix = item->fileItem()->pixmap( KIcon::SizeSmall ); // , KIcon::DefaultState);
+         // TODO: different modes, user Pixmaps ?
+         pix = item->fileItem()->pixmap( KIcon::SizeSmall ); // , KIcon::DefaultState);
 
-      /* Only if it is a dir and the user wants open dir pixmap and it is open,
-       * change the fileitem's pixmap to the open folder pixmap. */
-      if( item->isDir() && m_wantOpenFolderPixmaps )
-      {
-	 if( isOpen( static_cast<QListViewItem*>(item)))
-	     pix = m_openFolderPixmap;
+         /* Only if it is a dir and the user wants open dir pixmap and it is open,
+          * change the fileitem's pixmap to the open folder pixmap. */
+         if( item->isDir() && m_wantOpenFolderPixmaps )
+         {
+            if( isOpen( static_cast<QListViewItem*>(item)))
+               pix = m_openFolderPixmap;
+         }
       }
-   }
    }
 
    return pix;
@@ -516,7 +516,6 @@ void KFileTreeView::slotAnimation()
       KFileTreeViewItem *item = it.key();
       if (!isValidItem(item))
       {
-         MapCurrentOpeningFolders::Iterator deleteIt = it;
          ++it;
          m_mapCurrentOpeningFolders.remove(item);
          continue;
