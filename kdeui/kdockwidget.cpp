@@ -1267,6 +1267,11 @@ bool KDockManager::eventFilter( QObject *obj, QEvent *event )
     KDockWidget* pDockWdgAtCursor = 0L;
     KDockWidget* curdw = ((KDockWidgetAbstractHeaderDrag*)obj)->dockWidget();
     switch ( event->type() ){
+      case QEvent::MouseButtonDblClick:
+        if (curdw->currentDockPos == KDockWidget::DockDesktop)  curdw->dockBack();
+        else curdw->manualDock (0, KDockWidget::DockDesktop);
+        break;
+    
       case QEvent::MouseButtonPress:
         if ( ((QMouseEvent*)event)->button() == LeftButton ){
           if ( curdw->eDocking != (int)KDockWidget::DockNone ){
