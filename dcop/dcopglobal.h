@@ -8,6 +8,7 @@
 #define DCOPSend 2
 #define DCOPCall 3
 #define DCOPReply 4
+#define DCOPReplyFailed 5
 
 int DCOPAuthCount = 1;
 char *DCOPAuthNames[] = {"MIT-MAGIC-COOKIE-1"};

@@ -149,24 +149,26 @@ void DCOPServer::processMessage( IceConn iceConn, int opcode, unsigned long leng
 	pMsg->length += datalen;
 	IceWriteData( target->ice_conn, datalen, (char *) ba.data());
 	IceFlush( target->ice_conn );
-      } else if ( app = "DCOPserver" ) {
-	IceGetHeader( iceConn, majorOpcode, DCOPReply, 
-		      sizeof(DCOPMsg), DCOPMsg, pMsg );
-	QString obj, fun;
-	QByteArray data;
-	ds >> obj >> fun >> data;
+      } else { 
 	QByteArray replyData;
-	receive( app, obj, fun, data, replyData );
+	bool b = FALSE;
+	if ( app = "DCOPserver" ) {
+	  QString obj, fun;
+	  QByteArray data;
+	  ds >> obj >> fun >> data;
+	  b = receive( app, obj, fun, data, replyData );
+	}
 	int datalen = replyData.size();
+	IceGetHeader( iceConn, majorOpcode, b? DCOPReply : DCOPReplyFailed, 
+		      sizeof(DCOPMsg), DCOPMsg, pMsg );
 	pMsg->length += datalen;
 	IceWriteData( iceConn, datalen, (char *) replyData.data());
 	IceFlush( iceConn );
-      } else {
-	qDebug("target %s invalid", app.latin1() );
       }
     }
     break;
   case DCOPReply:
+  case DCOPReplyFailed:
     {
       DCOPMsg *pMsg = 0;
       IceReadMessageHeader(iceConn, sizeof(DCOPMsg), DCOPMsg, pMsg);
@@ -176,7 +178,7 @@ void DCOPServer::processMessage( IceConn iceConn, int opcode, unsigned long leng
       if ( con ) {
 	DCOPConnection* conreply = clients.find( con->waitingForReply.pop() );
 	if ( conreply ) {
-	  IceGetHeader( conreply->ice_conn, majorOpcode, DCOPReply, 
+	  IceGetHeader( conreply->ice_conn, majorOpcode, opcode, 
 			sizeof(DCOPMsg), DCOPMsg, pMsg );
 	  int datalen = ba.size();
 	  pMsg->length += datalen;
