@@ -560,6 +560,7 @@ private slots:
   void dcopBlockUserInput( bool );
   void x11FilterDestroyed();
   void kstyleDestroyed();
+  void slotAboutToQuit();
 
 private:
   KApplicationPrivate* d;
@@ -787,6 +788,10 @@ private:
 #endif
 
 // $Log$
+// Revision 1.200  2000/12/07 18:34:28  molnarc
+//
+// Updated date - significant # of changes
+//
 // Revision 1.199  2000/11/29 19:55:05  waba
 // -   * @param length Generate a string of this length.  If negative, the
 // -   *               length will be random as well (from 0 to RAND_MAX)
