@@ -575,8 +575,10 @@ bool KJScriptImp::evaluate(const UChar *code, unsigned int length, Imp *thisV,
   Context *context = Context::current();
   context->clearError();
 
-  if (thisV)
-    Context::current()->setThisValue(thisV);
+  if (thisV) {
+    context->setThisValue(thisV);
+    context->pushScope(thisV);
+  }
 
   recursion++;
   assert(progNode);
@@ -603,6 +605,9 @@ bool KJScriptImp::evaluate(const UChar *code, unsigned int length, Imp *thisV,
 	retVal = com->value().imp();
     }
   }
+
+  if (thisV)
+    context->popScope();
 
   if (progNode)
     progNode->deleteStatements();
