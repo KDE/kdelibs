@@ -21,6 +21,9 @@
  * $Id$
  *
  * $Log$
+ * Revision 1.18  2001/04/16 22:08:43  pfeiffer
+ * don't assume that the first item of an enum is 0
+ *
  * Revision 1.17  2000/09/12 19:15:53  pfeiffer
  * Stefan Hellwig in cooperation with Joerg Habenicht:
  * Draw nicer LEDs, especially sunken ones.
@@ -615,6 +618,18 @@ void
 KLed::off()
 {
   setState(Off);
+}
+
+QSize
+KLed::sizeHint() const
+{
+  return QSize(16, 16);
+}
+
+QSize
+KLed::minimumSizeHint() const
+{
+  return QSize(16, 16 );
 }
 
 #include "kled.moc"

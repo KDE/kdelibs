@@ -243,9 +243,8 @@ public:
    */
   void setLook( Look look );
 
-  // XXX KDE 3.0: BCI: add these but put implementation in cpp file ! (rikkus)
-  // virtual QSize sizeHint() const { return QSize(16, 16); }
-  // virtual QSize minimumSizeHint() const { return QSize(16, 16); }
+  virtual QSize sizeHint() const;
+  virtual QSize minimumSizeHint() const;
 
 public slots:
     

@@ -92,21 +92,6 @@ void KPasswordEdit::erase()
     setText("");
 }
 
-void KPasswordEdit::mousePressEvent(QMouseEvent *)
-{
-    // Do nothing.
-}
-
-void KPasswordEdit::mouseMoveEvent(QMouseEvent *)
-{
-    // Do nothing.
-}
-
-void KPasswordEdit::mouseReleaseEvent(QMouseEvent *)
-{
-    // Do nothing.
-}
-
 void KPasswordEdit::focusInEvent(QFocusEvent *e)
 {
     QString txt = text();

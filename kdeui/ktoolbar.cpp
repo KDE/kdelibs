@@ -391,21 +391,11 @@ int KToolBar::insertCombo (const QString& text, int id, bool writable,
     return index;
 }
 
-int KToolBar::insertSeparator( int index )
-{
-    return insertSeparator( index, -1 );
-}
-
 int KToolBar::insertSeparator(int index, int id)
 {
     QWidget *w = new KToolBarSeparator( orientation(), FALSE, this, "tool bar separator" );
     insertWidgetInternal( w, index, id );
     return index;
-}
-
-int KToolBar::insertLineSeparator(int index)
-{
-    return insertLineSeparator( index, -1 );
 }
 
 int KToolBar::insertLineSeparator(int index, int id)
