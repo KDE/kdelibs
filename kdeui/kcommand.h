@@ -70,6 +70,7 @@ protected:
 };
 
 /**
+ * @deprecated
  * A command which stores its name.
  * This class mostly exists for compatibility with KDE-2.x
  * It is more memory-efficient to use KCommand and to implement the name() method.

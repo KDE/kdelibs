@@ -84,8 +84,9 @@ class KStatusBar : public QStatusBar
     
 public:
   /**
-   *  WARNING: This enum is only for backward compatibility and it may be removed.
-   *  No method here uses it.
+   * @deprecated 
+   * WARNING: This enum is only for backward compatibility and it may be removed.
+   * No method here uses it.
    */
   enum BarStatus{ Toggle, Show, Hide };
   

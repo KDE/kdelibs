@@ -183,11 +183,14 @@ public:
     void setKeyboardShortcutsExecute(bool enable);
 
     /**
+     * @deprecated
      * Obsolete method provided for backwards compatibility only. Use the
      * normal constructor and insertTitle instead.
      */
     KPopupMenu(const QString &title, QWidget *parent=0, const char *name=0);
+
     /**
+     * @deprecated
      * Obsolete method provided for backwards compatibility only. Use
      * insertTitle and changeTitle instead.
      */

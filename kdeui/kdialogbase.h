@@ -1270,7 +1270,7 @@ class KDialogBase : public KDialog
 
     /**
      * Do not use this signal. Is is kept for compatibility reasons.
-     * Use @ref applyClicked() instead.
+     * @deprecated Use @ref applyClicked() instead.
      */
     void apply();
 
@@ -1412,6 +1412,7 @@ class KDialogBase : public KDialog
     virtual void slotClose();
 
     /**
+     * @deprecated 
      * Do not use this slot. Is is kept for compatibility reasons.
      * Activated when the Apply button has been clicked
      */

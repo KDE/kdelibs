@@ -23,8 +23,8 @@
 
 #ifndef KDE_NO_COMPAT
 /**
+ * @deprecated 
  * This class is obsolete, it is provided for compatibility only.
- * 
  * Use KSystemTray instead.
  */
 class KDockWindow : public KSystemTray
