@@ -21,13 +21,13 @@
 SUBDIRS = kdecore kdeui jscript kimgio khtmlw kfmlib kfile mediatool kspell \
 		po doc toolbar kdetest
 
-acinclude.m4: acinclude.m4.in libtool.m4.in
-	cat acinclude.m4.in libtool.m4.in   > acinclude.m4
+acinclude.m4: admin/acinclude.m4.in admin/libtool.m4.in
+	cat admin/acinclude.m4.in admin/libtool.m4.in   > acinclude.m4
 
 messages:
 	$(XGETTEXT) -C -ktranslate -ki18n */*.cpp */*.cc && mv messages.po po/kdelibs.pot
 	$(XGETTEXT) -C -ktranslate -ki18n po/texts.cpp && mv messages.po po/kde.pot
 	(cd po && $(MAKE) merge)
 
-EXTRA_DIST = acinclude.m4.in libtool.m4.in
+EXTRA_DIST = admin/acinclude.m4.in admin/libtool.m4.in
 
