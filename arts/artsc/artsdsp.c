@@ -36,6 +36,7 @@
 #include <sys/soundcard.h>
 #include <sys/ioctl.h>
 #include <sys/stat.h>
+#include <sys/mman.h>
 #include <fcntl.h>
 
 #include <artsc.h>
@@ -220,6 +221,7 @@ int ioctl (int fd, ioctl_request_t request, ...)
   static int channels;
   static int bits;
   static int speed;
+  int space, size, latency, odelay;
 
   /*
    * FreeBSD needs ioctl with varargs. However I have no idea how to "forward"
@@ -246,7 +248,6 @@ int ioctl (int fd, ioctl_request_t request, ...)
       switch (request)
         {
         struct audio_buf_info *audiop;
-        struct count_info *ci;
 #ifdef SNDCTL_DSP_RESET
 		case SNDCTL_DSP_RESET:              /* _SIO  ('P', 0) */
 		  artsdspdebug("aRts: SNDCTL_DSP_RESET unsupported\n");
@@ -316,7 +317,7 @@ int ioctl (int fd, ioctl_request_t request, ...)
 
 #ifdef SNDCTL_DSP_SETFRAGMENT
         case SNDCTL_DSP_SETFRAGMENT:        /* _SIOWR('P',10, int) */
-		  artsdspdebug("aRts: SNDCTL_DSP_SETFRAGMENT(%d) unsupported\n",*arg);
+		  artsdspdebug("aRts: SNDCTL_DSP_SETFRAGMENT(%x) unsupported\n",*arg);
 		  break;
 #endif
 
@@ -424,7 +425,12 @@ int ioctl (int fd, ioctl_request_t request, ...)
 
 #ifdef SNDCTL_DSP_GETODELAY
 		case SNDCTL_DSP_GETODELAY:          /* _SIOR ('P', 23, int) */
-		  artsdspdebug("aRts: SNDCTL_DSP_GETODELAY unsupported\n");
+		  space = arts_stream_get(stream, ARTS_P_BUFFER_SPACE);
+		  size = arts_stream_get(stream, ARTS_P_BUFFER_SIZE);
+		  latency = arts_stream_get(stream, ARTS_P_SERVER_LATENCY);
+		  odelay = size - space + (latency * speed) / 1000;
+		  artsdspdebug("aRts: SNDCTL_DSP_GETODELAY returning %d\n", odelay);
+		  *arg = odelay;
 		  break;
 #endif
 
@@ -555,10 +561,6 @@ int munmap(void *start, size_t length)
 
 FILE* fopen(const char *path, const char *mode)
 {
-  const char *mptr;
-  int open_mode = 0, sndfd = -1;
-  FILE *result = 0;
-
   CHECK_INIT();
 
   if (strcmp(path,"/dev/dsp"))    /* original open for anything but sound */
