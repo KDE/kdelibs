@@ -429,7 +429,7 @@ KDateTable::contentsMousePressEvent(QMouseEvent *e)
   if (  e->button() == Qt::RightButton && d->popupMenuEnabled )
   {
 	KPopupMenu *menu = new KPopupMenu();
-	menu->insertTitle( clickedDate.toString() );
+	menu->insertTitle( KGlobal::locale()->formatDate(clickedDate) );
 	emit aboutToShowContextMenu( menu, clickedDate );
 	menu->popup(e->globalPos());
   }
