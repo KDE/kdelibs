@@ -1,0 +1,51 @@
+
+              The basic design on KConfig for KDE 2.0:
+              ----------------------------------------
+
+KConfig is a hierarchy of classes for loading and saving configuration
+data in KDE.  KConfigBase is an abstract data type (ADT) with pure
+virtual functions which describes the API for accessing configuration
+data.  It cannot be instantiated directly; only subclasses which
+actually implement the API may be created.  The reason for this design
+is that different ways of storing configuration data in _memory_ may
+be desired.  The default design uses a QMap (red-black tree) for
+storing values in memory once they are read from disk.  However, a
+different design might use a shared database or something similar to
+achieve shared memory config values.  The possibilities are endless,
+and with this design we insure that future designs will not break
+compatibility.
+
+This means that most classes that currently take pointers to KConfig
+objects should be changed to take pointers to KConfigBase objects.
+The virtual functions and c++ polymorphism will make sure that the
+correct function in the actual, instantiated object are called, but
+this lets the user/programmer change the type of KConfig that has been
+implemented at runtime without changing other code.
+
+Similarly, there is a abstract data type KConfigBackEnd.  All
+reading/writing of the physical, on-disk configuration should be done
+through a subclass of KConfigBackEnd.  The only class that is
+currently implemented right now is KConfigINIBackEnd, which
+reads/writes the standard windows INI-style configuration files that
+KDE has used since KDE 1.x days.  However, it is conceivable that one
+might program an XML backend, or even a database/registry style
+backend.  Again, this abstract data type approach provides flexibility
+for the future.  Currently KConfig and KSimpleConfig hardcode that
+they are using a KConfigINIBackEnd in the constructor.  If more back
+ends are implemented, this will have to be changed to use a factory
+method of some sort to create the backend; all they maintain is a
+pointer to a KConfigBackEnd, so the actual type of backend does not
+matter.
+
+If you are interested in using KConfig, you need simply to look at the
+public members of KConfigBase.  They will provide you with everything
+you need to do to look up data, change and write data, etc.  If you
+are interested in implementing a new KConfig format, look at KConfig
+for ideas.  Likewise if you want to implement a backend, look at
+KConfigINIBackEnd for inspiration.  The KDoc-style API documentation
+should be complete.  If there is anything confusing, please either fix
+it in CVS yourself or mail me with your questions, and we will make
+sure things get clarified.
+
+
+- Preston Brown <pbrown@kde.org>
