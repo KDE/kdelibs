@@ -1,5 +1,13 @@
 2003-11-11  Dirk Mueller  <mueller@kde.org>
 
+	* rendering/render_style.h (StyleBoxData>): fix SunProCC 
+	compatibility problem.
+
+	* xml/dom_elementimpl.cpp (attach): don't attach a renderobject
+	to a parent that does not support childs (childAllowed()).
+	* html/html_objectimpl.cpp (attach): check for childAllowed().
+	* xml/dom_textimpl.cpp (attach): check for childAllowed().
+
 	* misc/loader.cpp (CachedCSSStyleSheet): add "*/*;q=0.1" to the
 	accept header (#67803).
 

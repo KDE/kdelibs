@@ -275,8 +275,8 @@ public:
 
     Length vertical_align;
 
-    Q_INT32 z_index :31;
-    bool z_auto     : 1;
+    signed int z_index :31;
+    bool z_auto        : 1;
 };
 
 //------------------------------------------------
@@ -323,7 +323,7 @@ public:
     }
 
     LengthBox clip;
-    int textDecoration : 4; // Text decorations defined *only* by this element.
+    unsigned textDecoration : 4; // Text decorations defined *only* by this element.
 
     short counter_increment; //ok, so these are not visual mode spesific
     short counter_reset;     //can't go to inherited, since these are not inherited
@@ -834,7 +834,7 @@ public:
     void setTextTransform(ETextTransform v) { inherited_flags.f._text_transform = v; }
     void addToTextDecorationsInEffect(int v) { inherited_flags.f._text_decorations |= v; }
     void setTextDecorationsInEffect(int v) { inherited_flags.f._text_decorations = v; }
-    void setTextDecoration(int v) { SET_VAR(visual, textDecoration, v); }
+    void setTextDecoration(unsigned v) { SET_VAR(visual, textDecoration, v); }
     void setTextDecorationColor(const QColor &v) { SET_VAR(inherited,decoration_color,v) }
     void setDirection(EDirection v) { inherited_flags.f._direction = v; }
     void setLineHeight(Length v) { SET_VAR(inherited,line_height,v) }

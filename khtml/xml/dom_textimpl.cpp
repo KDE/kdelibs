@@ -350,7 +350,7 @@ void TextImpl::attach()
     assert(parentNode() && parentNode()->isElementNode());
 
     ElementImpl* element = static_cast<ElementImpl*>(parentNode());
-    if (element->renderer() && !element->renderer()->isWidget()) {
+    if (element->renderer() && element->renderer()->childAllowed()) {
         khtml::RenderStyle* _style = element->renderer()->style();
         m_render = new (getDocument()->renderArena()) RenderText(this, str);
         m_render->setStyle(_style);

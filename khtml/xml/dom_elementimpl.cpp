@@ -438,7 +438,7 @@ void ElementImpl::attach()
     assert(parentNode());
 
 #if SPEED_DEBUG < 1
-    if (parentNode()->renderer()) {
+    if (parentNode()->renderer() && parentNode()->renderer()->childAllowed()) {
         RenderStyle* _style = getDocument()->styleSelector()->styleForElement(this);
         _style->ref();
         m_render = RenderObject::createObject(this, _style);

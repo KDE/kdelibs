@@ -187,7 +187,8 @@ void HTMLObjectBaseElementImpl::attach() {
     RenderStyle* _style = getDocument()->styleSelector()->styleForElement(this);
     _style->ref();
 
-    if (parentNode()->renderer() && _style->display() != NONE) 
+    if (parentNode()->renderer() && parentNode()->renderer()->childAllowed() &&
+        _style->display() != NONE)
     {
         needWidgetUpdate = false;
         bool imagelike = serviceType.startsWith("image/");

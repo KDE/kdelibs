@@ -43,6 +43,8 @@ public:
 
     virtual const char *renderName() const { return "RenderReplaced"; }
 
+    virtual bool childAllowed() const { return false; }
+
     virtual void calcMinMaxWidth();
 
     virtual void paint( QPainter *, int x, int y, int w, int h,
