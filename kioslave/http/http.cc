@@ -62,6 +62,8 @@
 #include <kdatastream.h>
 #include <kapplication.h>
 #include <kstandarddirs.h>
+#include <kstringhandler.h>
+#include <kremoteencoding.h>
 
 #include "kio/ioslave_defaults.h"
 #include "kio/http_slave_defaults.h"
@@ -629,6 +631,12 @@ void HTTPProtocol::davSetRequest( const QCString& requestXML )
     m_bufPOST.truncate( m_bufPOST.size() - 1 );
 }
 
+class KRemoteWebDavEncoding : public KRemoteEncoding
+{
+public:
+   int encodingMib() { return codec->mibEnum(); }
+};
+
 void HTTPProtocol::davStatList( const KURL& url, bool stat )
 {
   UDSEntry entry;
@@ -715,7 +723,12 @@ void HTTPProtocol::davStatList( const KURL& url, bool stat )
     {
       entry.clear();
 
-      KURL thisURL ( href.text() );
+      QString urlStr = href.text();
+      int encoding = ((KRemoteWebDavEncoding*)remoteEncoding())->encodingMib();
+      if ((encoding == 106) && (!KStringHandler::isUtf8(KURL::decode_string(urlStr, 4).latin1())))
+        encoding = 4; // Use latin1 if the file is not actually utf-8
+
+      KURL thisURL ( urlStr, encoding );
 
       atom.m_uds = KIO::UDS_NAME;
 
