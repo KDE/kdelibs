@@ -128,7 +128,7 @@ void KFileFilter::setMimeFilter( const QStringList& types, const QString& defaul
             allTypes += ' ';
         }
 
-	kdDebug() << *it << endl;
+	kdDebug(kfile_area) << *it << endl;
         KMimeType::Ptr type = KMimeType::mimeType( *it );
         filters.append( type->name() );
         if ( m_allTypes )

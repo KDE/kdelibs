@@ -218,7 +218,7 @@ void KPropertiesDialog::init (bool modal, bool autoShow)
 
   insertPages();
 
-  //kdDebug() << "KPropertiesDialog sizeHint " << sizeHint().width() << "x" << sizeHint().height() << endl;
+  //kdDebug(250) << "KPropertiesDialog sizeHint " << sizeHint().width() << "x" << sizeHint().height() << endl;
   // This HACK forces KDialogBase to recompute the layout
   // It is necessary for the case where init is not called from the constructor,
   // but from slotStatResult. And I'm way too lazy to look into KDialogBase...
@@ -443,7 +443,7 @@ void KPropertiesDialog::insertPages()
 void KPropertiesDialog::updateUrl( const KURL& _newUrl )
 {
   ASSERT( m_items.count() == 1 );
-  kdDebug() << "KPropertiesDialog::updateUrl " << _newUrl.url() << endl;
+  kdDebug(250) << "KPropertiesDialog::updateUrl " << _newUrl.url() << endl;
   m_singleUrl = _newUrl;
   m_items.first()->setURL( _newUrl );
   assert(!m_singleUrl.isEmpty());
@@ -460,7 +460,7 @@ void KPropertiesDialog::updateUrl( const KURL& _newUrl )
 void KPropertiesDialog::rename( const QString& _name )
 {
   ASSERT( m_items.count() == 1 );
-  kdDebug() << "KPropertiesDialog::rename " << _name << endl;
+  kdDebug(250) << "KPropertiesDialog::rename " << _name << endl;
   KURL newUrl;
   // if we're creating from a template : use currentdir
   if ( !m_currentDir.isEmpty() )
@@ -580,7 +580,7 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
 {
   d = new KFilePropsPluginPrivate;
   d->bMultiple = (properties->items().count() > 1);
-  kdDebug() << "KFilePropsPlugin::KFilePropsPlugin bMultiple=" << d->bMultiple << endl;
+  kdDebug(250) << "KFilePropsPlugin::KFilePropsPlugin bMultiple=" << d->bMultiple << endl;
 
   // We set this data from the first item, and we'll
   // check that the other items match against it, resetting when not.
@@ -665,7 +665,7 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
     for ( ++it /*no need to check the first one again*/ ; it.current(); ++it )
     {
       KURL url = (*it)->url();
-      kdDebug() << "KFilePropsPlugin::KFilePropsPlugin " << url.prettyURL() << endl;
+      kdDebug(250) << "KFilePropsPlugin::KFilePropsPlugin " << url.prettyURL() << endl;
       // The list of things we check here should match the variables defined
       // at the beginning of this method.
       if ( url.isLocalFile() != isLocal )
@@ -952,8 +952,8 @@ void KFilePropsPlugin::slotDirSizeFinished( KIO::Job * job )
 void KFilePropsPlugin::slotSizeDetermine()
 {
   m_sizeLabel->setText( i18n("Calculating...") );
-  kdDebug() << " KFilePropsPlugin::slotSizeDetermine() properties->item()=" <<  properties->item() << endl;
-  kdDebug() << " URL=" << properties->item()->url().url() << endl;
+  kdDebug(250) << " KFilePropsPlugin::slotSizeDetermine() properties->item()=" <<  properties->item() << endl;
+  kdDebug(250) << " URL=" << properties->item()->url().url() << endl;
   d->dirSizeJob = KDirSize::dirSizeJob( properties->items() );
   connect( d->dirSizeJob, SIGNAL( result( KIO::Job * ) ),
            SLOT( slotDirSizeFinished( KIO::Job * ) ) );
@@ -1048,7 +1048,7 @@ void KFilePropsPlugin::applyChanges()
 
 void KFilePropsPlugin::slotCopyFinished( KIO::Job * job )
 {
-  kdDebug() << "KFilePropsPlugin::slotCopyFinished" << endl;
+  kdDebug(250) << "KFilePropsPlugin::slotCopyFinished" << endl;
   if (job)
   {
     // allow apply() to return
