@@ -622,7 +622,7 @@ void KBookmarkMenu::fillBookmarkMenu()
   bool separatorInserted = false;
   for ( KBookmark bm = parentBookmark.first(); !bm.isNull();  bm = parentBookmark.next(bm) )
   {
-    QString text = bm.fullText();
+    QString text = KStringHandler::csqueeze(bm.fullText(), 60);
     text.replace( '&', "&&" );
     if ( !separatorInserted && m_bIsRoot) {
       // inserted before the first konq bookmark, to avoid the separator if no konq bookmark
