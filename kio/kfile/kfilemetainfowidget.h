@@ -31,8 +31,19 @@ class KIO_EXPORT KFileMetaInfoWidget: public QWidget
 {
     Q_OBJECT
 public:
+    enum Mode
+    {
+      ReadOnly  = 1,  ///Only display the meta infos, and do not permit the user to edit them
+      ReadWrite = 0,  ///Permits user to edit the displayed meta-info
+      Reserve = 0xff
+    };
+  
     KFileMetaInfoWidget(KFileMetaInfoItem item, QValidator* val = 0,
                         QWidget* parent = 0, const char* name = 0);
+
+    KFileMetaInfoWidget(KFileMetaInfoItem item, Mode mode, QValidator* val = 0,
+                        QWidget* parent = 0, const char* name = 0);
+
     virtual ~KFileMetaInfoWidget();
 
     bool apply()
@@ -72,6 +83,8 @@ private slots:
     void slotDateTimeChanged(const QDateTime& value);
 
 private:
+    void init(KFileMetaInfoItem item, Mode mode);
+
     QVariant          m_value;  // the value will be saved here until apply() is called
     KFileMetaInfoItem m_item;
     QWidget*          m_widget;

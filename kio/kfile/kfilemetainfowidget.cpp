@@ -55,10 +55,27 @@ KFileMetaInfoWidget::KFileMetaInfoWidget(KFileMetaInfoItem item,
       m_item(item),
       m_validator(val)
 {
+    init(item, ReadWrite);
+}
+
+KFileMetaInfoWidget::KFileMetaInfoWidget(KFileMetaInfoItem item,
+                                         Mode mode,
+                                         QValidator* val,
+                                         QWidget* parent, const char* name)
+    : QWidget(parent, name),
+      m_value(item.value()),
+      m_item(item),
+      m_validator(val)
+{
+    init(item, mode);
+}
+
+void KFileMetaInfoWidget::init(KFileMetaInfoItem item, Mode mode)
+{
     kdDebug(7033) << "*** item "  << m_item.key()
                   << " is a " << value().typeName() << endl;
 
-    if (m_item.isEditable())
+    if (m_item.isEditable() && !(mode & ReadOnly))
         m_widget = makeWidget();
     else
         switch (m_value.type())

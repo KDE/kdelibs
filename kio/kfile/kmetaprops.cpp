@@ -191,7 +191,7 @@ void KFileMetaPropsPlugin::createLayout()
                 iit!=readItems.end(); ++iit)
         {
             (new QLabel((*iit).translatedKey() + ":", groupBox));
-            (new KFileMetaInfoWidget(*iit, 0L, groupBox));
+            (new KFileMetaInfoWidget(*iit, KFileMetaInfoWidget::ReadOnly, 0L, groupBox));
         }
     }
 
