@@ -37,7 +37,7 @@ kiconeffect.cpp
 kiconloader.cpp
 kicontheme.cpp
 kinstance.cpp 		Stephan Kulow <coolo@kde.org>
-kipc.cpp
+kipc.cpp        	Lubos Lunak <l.lunak@kde.org>
 kkey_x11.cpp		Ellis Whitehead <ellis@kde.org>
 kkeynative_x11.cpp	Ellis Whitehead <ellis@kde.org>
 kkeysequence.cpp	Ellis Whitehead <ellis@kde.org>
@@ -56,7 +56,7 @@ kprocio.cpp		Waldo Bastian <bastian@kde.org>
 krandomsequence.cpp	Waldo Bastian <bastian@kde.org>
 kregexp.cpp
 krfcdate.cpp		Waldo Bastian <bastian@kde.org>
-krootprop.cpp
+krootprop.cpp   	Lubos Lunak <l.lunak@kde.org>
 ksavefile.cpp		Waldo Bastian <bastian@kde.org>
 kshortcut.cpp		Ellis Whitehead <ellis@kde.org>
 ksimpleconfig.cpp	Waldo Bastian <bastian@kde.org>
@@ -75,9 +75,9 @@ ktempfile.cpp		Waldo Bastian <bastian@kde.org>
 kuniqueapplication.cpp	Waldo Bastian <bastian@kde.org>
 kurl.cpp		Waldo Bastian <bastian@kde.org>
 kurldrag.cpp		David Faure <faure@kde.org>
-kwin.cpp
-kwinmodule.cpp
+kwin.cpp        	Lubos Lunak <l.lunak@kde.org>
+kwinmodule.cpp  	Lubos Lunak <l.lunak@kde.org>
 kxmessages.cpp		Lubos Lunak <l.lunak@kde.org>
 libintl.cpp		Hans Petter Bieker <bieker@kde.org>
 netsupp.cpp
-netwm.cpp
+netwm.cpp       	Lubos Lunak <l.lunak@kde.org>
