@@ -631,7 +631,7 @@ pid_t KRun::run( const KService& _service, const KURL::List& _urls )
   KURL::List::ConstIterator it = _urls.begin();
   for(; it != _urls.end(); ++it) {
      //kdDebug(7010) << "KRecentDocument::adding " << (*it).url() << endl;
-     KRecentDocument::add( *it );
+     KRecentDocument::add( *it, _service.desktopEntryName() );
   }
 
   if (_service.desktopEntryPath().isEmpty())
