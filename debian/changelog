@@ -1,3 +1,11 @@
+kdelibs (4:3.1.2-2.1) unstable; urgency=low
+
+  * NMU
+  * kdelibs4-dev Depends: libxml2-utils.
+    Closes: #196222, #196958, #199044, #200483, #200484
+
+ -- LaMont Jones <lamont@debian.org>  Wed,  9 Jul 2003 15:26:11 -0600
+
 kdelibs (4:3.1.2-2) unstable; urgency=low
 
   * Add xlibs-pic to kdelibs-dev Depends. (Closes: #193863)
