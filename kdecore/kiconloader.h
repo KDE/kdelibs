@@ -145,12 +145,8 @@ public:
      
 	@param name	The name of the icon to load. Absolute pathnames are
 	 		allowed.
-  	@param w	The max width of the resulting pixmap. Larger icons
-			are scaled down. The default is no maximum.
-  	@param h	The max height of the resulting pixmap. Larger icons
-			are scaled down. The default is no maximum.
 	@param canReturnNull	If this is false, this function will return
-		the "unknown.png" icon if the requested icon is not found.
+		the "unknown" icon if the requested icon is not found.
 		The default is to return null.
 
 	@return	The loaded icon.
@@ -170,16 +166,16 @@ public:
   QPixmap reloadIcon( const QString& name);
 
   /**
-   * The loadApplication-Icon functions are similar to the
-   * usual loadIcon functions except that they look in
-   * kdedir()/share/icon first.
+   * The loadApplication-Icon is for applications icons
+   * (the ones found under apps/)
    *
-   * These function should be used if you are loading the
-   * application icons. Normally KApplication does this for
-   * you, but special programs like kicker need to load the
-   * application icons of foreign applications.
-   *
-   * @see loadIcon, loadApplicationMiniIcon
+   * @param name icon name, without extension
+   * @param size
+   * @param path_store output parameter, will contain the full path to the icon
+   * @param canReturnNull If this is false, this function will return
+		the "unknown" icon if the requested icon is not found.
+		The default is to return null.
+   * @see loadIcon
    */
   QPixmap loadApplicationIcon( const QString& name, Size size = Medium,
                                QString *path_store = 0, bool canReturnNull = true);
@@ -189,8 +185,8 @@ public:
 
 	@param name	The name of the icon to search for.
 	@param always_valid If true, the function will return the path to
-		unknown.xpm if the icon is not found. Note that it will
-		return null if unknown.xpm was also not found.
+		"unknown" if the icon is not found. Note that it will
+		return null if "unknown" was also not found.
 
 	@return the physical path to the named icon.
   */
