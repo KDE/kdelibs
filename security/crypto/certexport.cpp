@@ -84,14 +84,13 @@ void KCertExport::setCertificate(KSSLCertificate *c) {
 
 
 void KCertExport::slotExport() {
+QByteArray cert;
    if (_filename->text().isEmpty()) return;
 
    if (!_c) {
       KMessageBox::sorry(this, i18n("Internal error.  Please report to kfm-devel@kde.org."), i18n("SSL"));
       return;
    }
-
-   QByteArray cert;
 
    if (_der->isChecked()) {
       cert = _c->toDer();
@@ -117,7 +116,6 @@ void KCertExport::slotExport() {
 
       outFile.writeBlock(cert);
       outFile.close();
-
 
 accept();
 }
