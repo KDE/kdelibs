@@ -121,16 +121,8 @@ public:
      *
      * KMainWindows must be created on the heap with 'new', like:
      *  <pre> KMainWindow *kmw = new KMainWindow (...</pre>
-     *
-     * This constructor automatically creates the "Show Toolbar" action
      **/
     KMainWindow( QWidget* parent = 0, const char *name = 0, WFlags f = WType_TopLevel | WDestructiveClose );
-
-    /*
-     * this constructor exists for BIC reasons. It allows specifying, if the "Show Toolbar" action should be created
-     * automatically. The default is going to be true in KDE 4
-     **/
-    KMainWindow( QWidget* parent, const char *name, WFlags f, bool createToolbarAction);
 
 
     /**
@@ -393,6 +385,31 @@ public:
      */
     void saveMainWindowSettings(KConfig *config, const QString &groupName = QString::null);
 
+    /**
+     * Sets whether KMainWindow should provide a menu that allows showing/hiding
+     * the available toolbars ( using @ref KToggleToolBarAction ) . In case there
+     * is only one toolbar configured a simple 'Show <toolbar name here>' menu item
+     * is shown.
+     *
+     * The menu / menu item is implemented using xmlgui. It will be inserted in your
+     * menu structure in the 'Settings' menu.
+     *
+     * If your application uses a non-standard xmlgui resource file then you can
+     * specify the exact position of the menu / menu item by adding a
+     * &lt;Merge name="StandardToolBarMenuHandler" /&gt;
+     * line to the settings menu section of your resource file ( usually appname.rc ).
+     *
+     * Note that you should enable this feature before calling createGUI() ( or similar ) .
+     * You enable/disable it anytime if you pass false to the conserveMemory argument of createGUI.
+     */
+    void setStandardToolBarMenuEnabled( bool enable );
+    bool isStandardToolBarMenuEnabled() const;
+
+    /**
+     * Returns a pointer to the mainwindows action responsible for the toolbars menu
+     */
+    KAction *toolBarMenuAction();
+
     // why do we support old gcc versions? using KXMLGUIBuilder::finalizeGUI;
     virtual void finalizeGUI( KXMLGUIClient *client );
 
@@ -497,11 +514,6 @@ public slots:
      */
     void setSettingsDirty();
 
-   /**
-    * Returns a pointer to the mainwindows action responsible for the toolbars menu
-    */
-    KToolBarMenuAction *toolBarMenuAction();
-    void removeToolBarMenuAction();
 protected:
     void paintEvent( QPaintEvent* e );
     void childEvent( QChildEvent* e);
@@ -687,7 +699,7 @@ protected:
     virtual void virtual_hook( int id, void* data );
 private:
     KMainWindowPrivate *d;
-    void initKMainWindow(bool createToolbarAction,const char *name);
+    void initKMainWindow(const char *name);
 };
 
 #define RESTORE(type) { int n = 1;\

@@ -24,6 +24,7 @@
 
 #include "kmainwindow.h"
 #include "kmainwindowiface.h"
+#include "ktoolbarhandler.h"
 #include <qsessionmanager.h>
 #include <qobjectlist.h>
 #include <qstyle.h>
@@ -60,7 +61,7 @@ public:
     QString autoSaveGroup;
     KAccel * kaccel;
     KMainWindowInterface *m_interface;
-    KToolBarMenuAction *toolbarMenu;
+    KDEPrivate::ToolBarHandler *toolBarHandler;
 };
 
 QPtrList<KMainWindow>* KMainWindow::memberList = 0L;
@@ -154,31 +155,15 @@ static bool beeing_first = true;
 KMainWindow::KMainWindow( QWidget* parent, const char *name, WFlags f )
     : QMainWindow( parent, name, f ), KXMLGUIBuilder( this ), helpMenu2( 0 ), factory_( 0 )
 {
-    initKMainWindow(true,name);
+    initKMainWindow(name);
 }
 
-KMainWindow::KMainWindow( QWidget* parent, const char *name,WFlags f, bool createToolbarAction)
-    : QMainWindow( parent, name, f ), KXMLGUIBuilder( this ), helpMenu2( 0 ), factory_( 0 )
+void KMainWindow::initKMainWindow(const char *name)
 {
-    initKMainWindow(createToolbarAction,name);
-}
-
-void KMainWindow::removeToolBarMenuAction()
-{
-	delete d->toolbarMenu;
-	d->toolbarMenu=0;
-}
-
-void KMainWindow::initKMainWindow(bool createToolbarAction,const char *name)
-{
-  if (createToolbarAction)
-    kdDebug(200) << "KMainWindow::init called with createToolbarAction=true"<< endl;
-
     setDockMenuEnabled( FALSE );
     mHelpMenu = 0;
     kapp->setTopWidget( this );
     actionCollection()->setWidget( this );
-    actionCollection()->setMainActionCollectionFor(this);
     connect(kapp, SIGNAL(shutDown()), this, SLOT(shuttingDown()));
     if( !memberList )
         memberList = new QPtrList<KMainWindow>;
@@ -208,10 +193,7 @@ void KMainWindow::initKMainWindow(bool createToolbarAction,const char *name)
     d->autoSaveSettings = false;
     d->autoSaveWindowSize = true; // for compatibility
     d->kaccel = actionCollection()->kaccel();
-    if (createToolbarAction)
-    {
-       d->toolbarMenu=new KToolBarMenuAction(this,"options_show_toolbar");
-    } else d->toolbarMenu=0;
+    d->toolBarHandler = 0;
     if ((d->care_about_geometry = beeing_first)) {
         beeing_first = false;
         if ( kapp->geometryArgument().isNull() ) // if there is no geometry, it doesn't mater
@@ -228,9 +210,12 @@ void KMainWindow::initKMainWindow(bool createToolbarAction,const char *name)
         setDockWindowsMovable(false);
 }
 
-KToolBarMenuAction *KMainWindow::toolBarMenuAction()
+KAction *KMainWindow::toolBarMenuAction()
 {
-	return d->toolbarMenu;
+    if ( !d->toolBarHandler )
+	return 0;
+
+    return d->toolBarHandler->toolBarMenuAction();
 }
 
 void KMainWindow::parseGeometry(bool parsewidth)
@@ -634,6 +619,33 @@ void KMainWindow::saveMainWindowSettings(KConfig *config, const QString &configG
     }
 }
 
+void KMainWindow::setStandardToolBarMenuEnabled( bool enable )
+{
+    if ( enable ) {
+	if ( d->toolBarHandler )
+	    return;
+
+	d->toolBarHandler = new KDEPrivate::ToolBarHandler( this );
+
+	if ( factory() ) 
+	    factory()->addClient( d->toolBarHandler );
+    } else {
+	if ( !d->toolBarHandler )
+	    return;
+
+	if ( factory() )
+	    factory()->removeClient( d->toolBarHandler );
+
+	delete d->toolBarHandler;
+	d->toolBarHandler = 0;
+    }
+}
+
+bool KMainWindow::isStandardToolBarMenuEnabled() const
+{
+    return ( d->toolBarHandler != 0 );
+}
+
 bool KMainWindow::readPropertiesInternal( KConfig *config, int number )
 {
     if ( number == 1 )
@@ -725,13 +737,9 @@ void KMainWindow::finalizeGUI( bool force )
     // we call positionYourself again for each of them, but this time
     // the toolbariterator should give them in the proper order.
     // Both the XMLGUI and applySettings call this, hence "force" for the latter.
-    if (d->toolbarMenu) d->toolbarMenu->clear();
     QPtrListIterator<KToolBar> it( toolBarIterator() );
     for ( ; it.current() ; ++ it )
-        {
-            if (d->toolbarMenu) d->toolbarMenu->addToolbar(it.current());
             it.current()->positionYourself( force );
-        }
 
     d->settingsDirty = false;
 }

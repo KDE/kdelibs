@@ -282,11 +282,6 @@ KToggleAction *showMenubar( const QObject *recvr, const char *slot, KActionColle
 KToggleAction *showToolbar( const QObject *recvr, const char *slot, KActionCollection* parent, const char *name )
 {
     KToggleAction *ret;
-        if ((!name) && (parent->mainActionCollectionFor()))
-        {
-                parent->mainActionCollectionFor()->removeToolBarMenuAction();
-        }
-
     ret = new KToggleAction(i18n("Show &Toolbar"), 0, recvr, slot, parent,
                             name ? name : stdName(ShowToolbar));
     ret->setChecked(true);
@@ -296,10 +291,6 @@ KToggleAction *showToolbar( const QObject *recvr, const char *slot, KActionColle
 
 KToggleToolBarAction *showToolbar( const char* toolBarName, KActionCollection* parent, const char *name )
 {
-    if ((!name) && (parent->mainActionCollectionFor()))
-        {
-                parent->mainActionCollectionFor()->removeToolBarMenuAction();
-        }
     KToggleToolBarAction *ret;
     ret = new KToggleToolBarAction(toolBarName, i18n("Show &Toolbar"), parent,
                             name ? name : stdName(ShowToolbar));

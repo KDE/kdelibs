@@ -2723,176 +2723,6 @@ int KActionMenu::plug( QWidget* widget, int index )
 
 ////////
 
-
-class KToolBarMenuAction::KToolBarMenuActionPrivate
-{
-	public:
-	KMainWindow *window;
-	QMap<KToolBar*,	KToggleToolBarAction*> toolbarActionMap;
-        KPopupMenu *popup;
-
-};
-
-class KToolBarMenuAction::NullItem: public QCustomMenuItem
-{
-public:
-	NullItem():QCustomMenuItem(){;}
-	virtual ~NullItem(){;}
-	virtual QSize sizeHint(){return QSize(0,0);}
-	virtual	void paint ( QPainter * /*p*/, const QColorGroup & /*cg*/, bool /*act*/, bool /*enabled*/, int /*x*/, int /*y*/, int /*w*/, int /*h*/ ) {
-		return;
-	}
-};
-
-KToolBarMenuAction::KToolBarMenuAction( KMainWindow* parent,
-                 const char* name):KAction(parent->actionCollection(),name)
-{
-	d=new KToolBarMenuActionPrivate;
-	d->window=parent;
-        d->popup = new KPopupMenu(parent,"KToolBarMenuAction::KToolBarMenuAction");
-}
-
-KToolBarMenuAction::~KToolBarMenuAction()
-{
-	delete d;
- 	d=0;
-}   
-
-void KToolBarMenuAction::clear()
-{
-	d->popup->clear();
-	for (QMap<KToolBar*,KToggleToolBarAction*>::iterator it=d->toolbarActionMap.begin();it!=d->toolbarActionMap.end();++it)
-	{
-		delete it.data();
-	}
-	d->toolbarActionMap.clear();
-}
-
-void KToolBarMenuAction::addToolbar(KToolBar *bar)
-{
-	uint oldcount=d->toolbarActionMap.count();
-	KToggleToolBarAction *act;
-	d->toolbarActionMap.insert(bar,act=new KToggleToolBarAction(
-                bar->name(), i18n("Show %1").arg(bar->label()),
-                0, 0));
-	connect(act,SIGNAL(activated()),this,SLOT(slotActivated()));
-	if (oldcount==0)
-	{
-		setText(i18n("Show %1").arg(d->toolbarActionMap.begin().key()->label()));
-		connect(act,SIGNAL(toggled(bool)),this,SLOT(singleBarToggled(bool)));
-		act->plug(d->popup);
-		for (int i=0;i<containerCount();i++)
-		{
-		  	if ( container(i)->inherits("QPopupMenu") )
-			{
-
-				QPopupMenu *menu=static_cast<QPopupMenu*>(container(i));
-				int id=itemId(i);
-				int pos=menu->indexOf(id);
-				unplug(menu);
-				plug(menu,pos);
-//				menu->removeItem(id);  I don't know why that doesn't work
-//				menu->insertItem(text(),d->popup,id,pos);		I don't know why that doesn't work
-			}
-		}
-	}
-	else if (oldcount==1)
-	{
-		setText(i18n("Toolbars"));
-		act->plug(d->popup);
-		for (int i=0;i<containerCount();i++)
-		{
-		  	if ( container(i)->inherits("QPopupMenu") )
-			{
-
-				QPopupMenu *menu=static_cast<QPopupMenu*>(container(i));
-				int id=itemId(i);
-				int pos=menu->indexOf(id);
-				unplug(menu);
-				plug(menu,pos);
-//				menu->removeItem(id);  I don't know why that doesn't work
-//				menu->insertItem(text(),d->popup,id,pos);		I don't know why that doesn't work
-			}
-		}
-
-	}
-	else
-	{
-		act->plug(d->popup);
-	}
-}
-
-void KToolBarMenuAction::removeToolbar(KToolBar * /*bar*/)
-{
-//	d->toolbarActionMap.remove(bar);
-
-}
-
-int KToolBarMenuAction::plug( QWidget* widget, int index )
-{
-//  return KAction::plug(widget,index);
-  if (kapp && !kapp->authorizeKAction(name()))
-    return -1;
-  kdDebug(129) << "KAction::plug( " << widget << ", " << index << " )" << endl; // remove -- ellis
-  if ( widget->inherits("QPopupMenu") )
-  {
-    QPopupMenu* menu = static_cast<QPopupMenu*>( widget );
-    int id;
-      if (d->toolbarActionMap.count()>1)
-	      id = menu->insertItem( text(), d->popup, -1, index );
-	else 
-	if (d->toolbarActionMap.count()==1)
-	{
-		id=menu->insertItem(text(),-1,index);
-		menu->setItemChecked(id,d->toolbarActionMap.begin().data()->isChecked());
-		menu->connectItem(id,d->toolbarActionMap.begin().data(),SLOT(slotActivated()));
-		
-	}
-	else 
-	{
-		id=menu->insertItem(new KToolBarMenuAction::NullItem(),-1,index);
-//		id=menu->insertItem(text(),-1,index);
-		menu->setItemEnabled(id,false);
-	}
-
-    if ( !isEnabled() )
-        menu->setItemEnabled( id, false );
-
-    addContainer( menu, id );
-    connect( menu, SIGNAL( destroyed() ), this, SLOT( slotDestroyed() ) );
-
-    return containerCount() - 1;
-  } else return -1;
-}
-
-
-void KToolBarMenuAction::singleBarToggled(bool)
-{
-	if (d->toolbarActionMap.count()==1)
-	{
-		bool checked=d->toolbarActionMap.begin().data()->isChecked();
-                for (int i=0;i<containerCount();i++)
-                {
-                        if ( container(i)->inherits("QPopupMenu") )
-                        {
-
-                                QPopupMenu *menu=static_cast<QPopupMenu*>(container(i));
-                                int id=itemId(i);
-				menu->setItemChecked(id,checked);
-                        }
-                }
-	
-	}
-	
-}
-
-void KToolBarMenuAction::slotActivated()
-{
-	emit activated();
-}
-
-////////
-
 KToolBarPopupAction::KToolBarPopupAction( const QString& text,
                                           const QString& icon,
                                           const KShortcut& cut,
@@ -3197,7 +3027,6 @@ public:
     m_highlight = false;
     m_currentHighlightAction = 0;
     m_statusCleared = true;
-    m_mw=0;
   }
 
   KInstance *m_instance;
@@ -3218,7 +3047,6 @@ public:
   bool m_highlight;
   KAction *m_currentHighlightAction;
   bool m_statusCleared;
-  KMainWindow *m_mw;
 };
 
 KActionCollection::KActionCollection( QWidget *parent, const char *name,
@@ -3283,10 +3111,6 @@ KActionCollection::~KActionCollection()
   delete d->m_builderKAccel;
   delete d; d = 0;
 }
-
-void KActionCollection::setMainActionCollectionFor(KMainWindow *w){d->m_mw=w;}
-KMainWindow *KActionCollection::mainActionCollectionFor(){return d->m_mw;}
-
 
 void KActionCollection::setWidget( QWidget* w )
 {

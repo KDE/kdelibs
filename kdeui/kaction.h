@@ -1487,35 +1487,6 @@ private:
     KActionMenuPrivate *d;
 };
 
-
-/**
- Automatically handle toolbars created by the xmlgui framework
- */
-
-class KToolBarMenuAction: public KAction
-{
-    Q_OBJECT
-public:
-    KToolBarMenuAction( KMainWindow* parent = 0,
-                 const char* name = 0 );
-    virtual ~KToolBarMenuAction();
-    void addToolbar(KToolBar *bar);
-    void removeToolbar(KToolBar *bar);
-    void clear();
-    virtual int plug( QWidget* widget, int index =-1);
-
-    class NullItem;
-
-private:
-    class KToolBarMenuActionPrivate;
-    KToolBarMenuActionPrivate *d;
-protected slots:
-    virtual void slotActivated();
-    void singleBarToggled(bool);
-
-};
-
-
 /**
  * This action is a normal action everywhere, except in a toolbar
  * where it also has a popupmenu (optionnally delayed). This action is designed
@@ -1909,12 +1880,6 @@ protected:
 private:
     class KActionCollectionPrivate;
     KActionCollectionPrivate *d;
-
-protected:
-	friend class KMainWindow;
-	void setMainActionCollectionFor(KMainWindow *);
-public:
-	KMainWindow *mainActionCollectionFor();
 };
 
 #endif
