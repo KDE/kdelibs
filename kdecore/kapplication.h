@@ -1030,8 +1030,8 @@ private:
   static bool s_dcopClientNeedsPostInit;
   QString aCaption; // the name for the window title
   bool bSessionManagement;
-  QPixmap aIconPixmap;
-  QPixmap aMiniIconPixmap;
+  QPixmap aIconPixmap; // BIC (KDE 4) make a pointer, to avoid creating if noGUI
+  QPixmap aMiniIconPixmap; // BIC (KDE 4) make a pointer, to avoid creating if noGUI
   QString aIconName;
   QString aMiniIconName;
   bool useStyles;
