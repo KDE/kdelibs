@@ -1,6 +1,6 @@
 # $Id$
 
-INCLUDES = $(all_includes)
+INCLUDES = -I$(top_srcdir)/kio $(all_includes)
 
 SUBDIRS = . auth_PLAIN
 
