@@ -2,6 +2,7 @@
 Type=G3
 Header=II
 Name=g3 fax files
+Name[cs]=Faxové soubory ve formátu g3
 Name[da]=g3 fax filer
 Name[de]=G3-Faxdatei
 Name[eo]=Faks-G3-dosieroj

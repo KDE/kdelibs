@@ -1,6 +1,6 @@
 [!Global!]
 Name=KDE Global
-Name[cs]=Globální pro KDE
+Name[cs]=Globální pro prostředí KDE
 Name[da]=KDE global
 Name[de]=KDE allgemein
 Name[et]=KDE globaal
@@ -73,6 +73,7 @@ Name[pt]=Completação de texto: dei a volta
 Name[pt_BR]=Completar Texto: rotação
 Name[ro]=Completare text: rotaţie
 Name[sl]=Dopolnjevanje: vrtenje
+Name[sv]=Textkomplettering: rotation
 Name[ta]=உைரமுழுைம: சுழலஂ
 Name[uk]=Доповнення тексту: обертання
 Comment=The end of the list of matches has been reached.

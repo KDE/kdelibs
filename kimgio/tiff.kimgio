@@ -2,6 +2,7 @@
 Type=TIFF
 Header=[MI][MI]
 Name=TIFF-Pictures
+Name[cs]=Obrázky ve formátu TIFF
 Name[da]=TIFF-Billeder
 Name[de]=TIFF-Bilder
 Name[eo]=TIFF-bildoj

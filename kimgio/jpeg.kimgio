@@ -2,6 +2,7 @@
 Type=JPEG
 Header=
 Name=JPEG-Pictures
+Name[cs]=Obrázky ve formátu JPEG
 Name[da]=JPEG-Billeder
 Name[de]=JPEG-Bilder
 Name[eo]=JPEG-bildoj

@@ -2,6 +2,7 @@
 Type=BMP
 Header=
 Name=MSWindows Pixmaps
+Name[cs]=MSWindows pixmapa
 Name[da]=MSWindows billeder
 Name[de]=Windows-Pixmaps
 Name[eo]=Vindozaj rastrobildoj

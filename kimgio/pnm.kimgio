@@ -2,6 +2,7 @@
 Type=PNM
 Header=
 Name=PNM-Pictures
+Name[cs]=Obrázky ve formátu PNM
 Name[da]=PNM-Billeder
 Name[de]=PNM-Bilder
 Name[eo]=PNM-bildoj

@@ -2,6 +2,7 @@
 Type=XBM
 Header=
 Name=XWindow Bitmaps
+Name[cs]=XWindow bitmapy
 Name[de]=XWindow-Bitmaps
 Name[eo]=XFenestraj bildoj
 Name[fi]=XWindow-bittikartat
