@@ -478,8 +478,10 @@ QDataStream & operator>> (QDataStream & s, KURL & a)
       >> malf >> a.m_iPort;
     a.m_bIsMalformed = (malf != 0);
 
-    if ( QueryFromWire.isEmpty() )
+    if ( QueryFromWire.isNull() )
       a.m_strQuery_encoded = QString::null;
+    else if ( QueryFromWire.length() == 1 ) // empty query
+      a.m_strQuery_encoded = "";
     else
       a.m_strQuery_encoded = QueryFromWire.mid(1);
 
