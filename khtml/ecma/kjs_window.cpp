@@ -536,9 +536,17 @@ Value Window::get(ExecState *exec, const Identifier &p) const
     default:
       break;
     }
-  } else if (!part)
+  } else if (!part) {
+    // not a  KHTMLPart
+    QString rvalue;
+    KParts::LiveConnectExtension::Type rtype;
+    unsigned long robjid;
+    if (m_frame->m_liveconnect &&
+        isSafeScript(exec) &&
+        m_frame->m_liveconnect->get(0, p.qstring(), rtype, robjid, rvalue))
+      return getLiveConnectValue(m_frame->m_liveconnect, p.qstring(), rtype, rvalue, robjid);
     return Undefined();
-
+  }
   // properties that only work on safe windows
   if (isSafeScript(exec) &&  entry)
   {
