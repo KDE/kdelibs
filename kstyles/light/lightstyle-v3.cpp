@@ -1023,6 +1023,12 @@ void LightStyleV3::drawControl( ControlElement control,
 			       p, sr, cg, flags);
 	    break;
 	}
+	
+    case CE_MenuBarEmptyArea:
+	{
+	    p->fillRect(r, cg.brush(QColorGroup::Button));
+	    break;
+	}
 
     case CE_MenuBarItem:
 	{

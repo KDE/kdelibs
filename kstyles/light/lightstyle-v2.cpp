@@ -137,12 +137,20 @@ void LightStyleV2::drawPrimitive( PrimitiveElement pe,
 {
     switch (pe) {
     case PE_HeaderSection:
-	p->fillRect(r, cg.brush(QColorGroup::Base));
-	p->setPen(cg.dark());
-	p->drawLine(r.right(), r.bottom() - 1, r.right(), (r.height() / 2) - 1);
-	p->drawLine(r.bottomLeft(), r.bottomRight());
-	break;
+	{
+	    flags = ((flags | Style_Sunken) ^ Style_Sunken) | Style_Raised; 
+	    	//Don't show pressed too often (as in light 3)
+	    const QBrush *fill;
+	    if (flags & QStyle::Style_Enabled) {
+		    fill = &cg.brush(QColorGroup::Button);
+	    } else
+		fill = &cg.brush(QColorGroup::Background);
 
+	    drawLightBevel(p, r, cg, flags, fill);
+	    p->setPen( cg.buttonText() );
+	    break;
+	}
+	
     case PE_ButtonCommand:
     case PE_ButtonBevel:
     case PE_ButtonTool:
@@ -608,66 +616,147 @@ void LightStyleV2::drawControl( ControlElement control,
     switch (control) {
     case CE_TabBarTab:
 	{
+	    const QTabBar* tb = static_cast<const QTabBar*>(widget);
+	    bool below = false;
 	    QRect tr(r);
 	    QRect fr(r);
 
 	    tr.addCoords(0, 0,  0, -1);
 	    fr.addCoords(2, 2, -2, -2);
-
+	    
+	    if ( tb->shape() == QTabBar::RoundedBelow || tb->shape() == QTabBar::TriangularBelow) {
+		tr = r; tr.addCoords(0, 1, 0, 0);
+		fr = r; fr.addCoords(2, 2,-2, -4);
+		below = true;
+	    }
+		
 	    if (! (flags & Style_Selected)) {
-		tr.addCoords(0, 1, 0, 0);
-		fr.addCoords(0, 1, 0, 0);
+		if (below) {
+		    tr.addCoords(0, 0, 0, -1);
+		    tr.addCoords(0, 0, 0, -1);
+		} else {
+		    tr.addCoords(0, 1, 0, 0);
+		    fr.addCoords(0, 1, 0, 0);
+		}
 
 		p->setPen(cg.dark());
 		p->drawRect(tr);
 
 		if (tr.left() == 0)
-		    p->drawPoint(tr.left(), tr.bottom() + 1);
+		    if (below) 
+			p->drawPoint(tr.left(), tr.top() - 1);
+		    else
+			p->drawPoint(tr.left(), tr.bottom() + 1);
 
 		p->setPen(cg.light());
-		p->drawLine(tr.left() + 1, tr.bottom() - 1,
-			    tr.left() + 1, tr.top() + 2);
-		p->drawLine(tr.left() + 1, tr.top() + 1,
-			    tr.right() - 1, tr.top() + 1);
-		if (tr.left() == 0)
-		    p->drawLine(tr.left() + 1, tr.bottom() + 1,
-				tr.right(), tr.bottom() + 1);
-		else
-		    p->drawLine(tr.left(), tr.bottom() + 1,
-				tr.right(), tr.bottom() + 1);
-
-		p->setPen(cg.mid());
-		p->drawLine(tr.right() - 1, tr.top() + 2,
+		if (below) {
+		    p->drawLine(tr.left() + 1, tr.top() + 1,
+			    tr.left() + 1, tr.bottom() - 2);
+		    p->drawLine(tr.left() + 1, tr.bottom() - 1,
 			    tr.right() - 1, tr.bottom() - 1);
+		} else {
+		    p->drawLine(tr.left() + 1, tr.bottom() - 1,
+			    tr.left() + 1, tr.top() + 2);
+		    p->drawLine(tr.left() + 1, tr.top() + 1,
+			    tr.right() - 1, tr.top() + 1);
+		}
+		
+		if (below) {
+		    if (tr.left() == 0)
+			p->drawLine(tr.left() + 1, tr.top() - 1,
+				    tr.right(), tr.top() - 1);
+		    else
+		    {
+			p->setPen(cg.mid()); //To match lower border of the frame
+			p->drawLine(tr.left(), tr.top() - 1,
+				    tr.right(), tr.top() - 1);
+		    }
+		} else {
+		    if (tr.left() == 0)
+			p->drawLine(tr.left() + 1, tr.bottom() + 1,
+				    tr.right(), tr.bottom() + 1);
+		    else
+			p->drawLine(tr.left(), tr.bottom() + 1,
+				    tr.right(), tr.bottom() + 1);
+		}
+		
+		p->setPen(cg.mid());
+		
+		if (below) {
+		    p->drawLine(tr.right() - 1, tr.bottom() - 2,
+				tr.right() - 1, tr.top() + 1);
+		} else {
+		    p->drawLine(tr.right() - 1, tr.top() + 2,
+				tr.right() - 1, tr.bottom() - 1);
+		}
 	    } else {
 		p->setPen(cg.dark());
 		if (tr.left() == 0)
-		    p->drawLine(tr.left(), tr.bottom() + 1,
-				tr.left(), tr.top() + 1);
+		    if (below)
+			p->drawLine(tr.left(), tr.top() - 1,
+				    tr.left(), tr.bottom() - 1);
+		    else
+			p->drawLine(tr.left(), tr.bottom() + 1,
+				    tr.left(), tr.top() + 1);
 		else
+		    if (below)
+			p->drawLine(tr.left(), tr.bottom(),
+				    tr.left(), tr.top() + 1);
+		    else
+			p->drawLine(tr.left(), tr.bottom(),
+				    tr.left(), tr.top() + 1);
+				    
+		if (below) {
 		    p->drawLine(tr.left(), tr.bottom(),
-				tr.left(), tr.top() + 1);
-		p->drawLine(tr.left(), tr.top(),
-			    tr.right(), tr.top());
-		p->drawLine(tr.right(), tr.top() + 1,
-			    tr.right(), tr.bottom());
+				tr.right(), tr.bottom());
+		    p->drawLine(tr.right(), tr.bottom() - 1,
+				tr.right(), tr.top());
+
+		} else {
+		    p->drawLine(tr.left(), tr.top(),
+				tr.right(), tr.top());
+		    p->drawLine(tr.right(), tr.top() + 1,
+				tr.right(), tr.bottom());
+		}
 
 		p->setPen(cg.light());
 		if (tr.left() == 0)
-		    p->drawLine(tr.left() + 1, tr.bottom() + 2,
-				tr.left() + 1, tr.top() + 2);
+		    if (below)
+			p->drawLine(tr.left() + 1, tr.top() - 2,
+				    tr.left() + 1, tr.bottom() - 2);
+		    else
+			p->drawLine(tr.left() + 1, tr.bottom() + 2,
+				    tr.left() + 1, tr.top() + 2);
 		else {
-		    p->drawLine(tr.left() + 1, tr.bottom(),
-				tr.left() + 1, tr.top() + 2);
-		    p->drawPoint(tr.left(), tr.bottom() + 1);
-		}
-		p->drawLine(tr.left() + 1, tr.top() + 1,
-			    tr.right() - 1, tr.top() + 1);
-		p->drawPoint(tr.right(), tr.bottom() + 1);
+		    if (below) {
+			p->drawLine(tr.left() + 1, tr.top(),
+				    tr.left() + 1, tr.bottom() - 2);
+			p->drawPoint(tr.left(), tr.top() - 1);
 
-		p->setPen(cg.mid());
-		p->drawLine(tr.right() - 1, tr.top() + 2,
-			    tr.right() - 1, tr.bottom());
+		    } else {
+			p->drawLine(tr.left() + 1, tr.bottom(),
+				    tr.left() + 1, tr.top() + 2);
+			p->drawPoint(tr.left(), tr.bottom() + 1);
+		    }
+		}
+		
+		if (below) {
+		    p->drawLine(tr.left() + 1, tr.bottom() - 1,
+				tr.right() - 1, tr.bottom() - 1);
+		    p->drawPoint(tr.right(), tr.top() - 1);
+
+		    p->setPen(cg.mid());
+		    p->drawLine(tr.right() - 1, tr.bottom() - 2,
+				tr.right() - 1, tr.top());
+		} else {
+		    p->drawLine(tr.left() + 1, tr.top() + 1,
+				tr.right() - 1, tr.top() + 1);
+		    p->drawPoint(tr.right(), tr.bottom() + 1);
+
+		    p->setPen(cg.mid());
+		    p->drawLine(tr.right() - 1, tr.top() + 2,
+				tr.right() - 1, tr.bottom());
+		}
 	    }
 
 	    p->fillRect(fr, ((flags & Style_Selected) ?
@@ -827,6 +916,19 @@ void LightStyleV2::drawControl( ControlElement control,
 		drawPrimitive( (reverse ? PE_ArrowLeft : PE_ArrowRight), p, sr, cg, flags);
 	    break;
 	}
+	
+    case CE_MenuBarEmptyArea:
+	{
+	    p->fillRect(r, cg.brush(QColorGroup::Button));
+	    break;
+	}
+	
+    case CE_DockWindowEmptyArea:
+	{
+	    p->fillRect(r, cg.brush(QColorGroup::Button));
+	    break;
+	}
+
 
     case CE_MenuBarItem:
 	{
@@ -1341,6 +1443,11 @@ int LightStyleV2::pixelMetric( PixelMetric metric,
     case PM_DockWindowSeparatorExtent:
 	ret = 4;
 	break;
+	
+    case PM_SplitterWidth:
+	ret = 6;
+	break;
+
 
     case PM_SliderLength:
     case PM_SliderControlThickness:
