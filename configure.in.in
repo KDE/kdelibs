@@ -77,7 +77,7 @@ ac_cpp_safe=$ac_cpp
 ac_CPPFLAGS_safe=$CPPFLAGS
 CPPFLAGS="$CPPFLAGS $X_INCLUDES"
 ac_cpp='$CXXCPP $CPPFLAGS'
-KDE_CHECK_HEADERS(X11/extensions/shape.h)
+KDE_CHECK_HEADERS(X11/extensions/shape.h,,, [#include <X11/Xlib.h>])
 KDE_CHECK_HEADERS(X11/extensions/XShm.h, 
   [have_mitshm=yes], [have_mitshm=no], [#include <X11/Xlib.h>])
 KDE_CHECK_HEADERS(X11/ICE/ICElib.h)
@@ -96,7 +96,6 @@ AC_LANG_RESTORE
 
 dnl check if the compiler has bool
 AC_CHECK_BOOL
-dnl AC_CHECK_GNU_EXTENSIONS
 
 dnl Checks for library functions.
 AC_CHECK_SETENV
