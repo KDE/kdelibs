@@ -22,7 +22,22 @@
 
 #include "kclipboard.h"
 
-
+/*
+ * This class provides an automatic synchronization of the X11 Clipboard and Selection
+ * buffers. There are two configuration options in the kdeglobals configuration file,
+ * in the [General] section:
+ * - SynchronizeClipboardAndSelection - whenever the Selection changes, Clipboard is
+ *   set to the same value. This can be also enabled in Klipper.
+ * - ClipboardSetSelection - whenever the Clipboard changes, Selection is set
+ *   to the same value. This setting is only for die-hard fans of the old broken
+ *   KDE1/2 behavior, which can potentionally leads to unexpected problems,
+ *   and this setting therefore can be enabled only in the configuration dialog.
+ *
+ *  Whenever reporting any bug only remotely related to clipboard, first make
+ *  sure you can reproduce it when both these two options are turned off,
+ *  especially the second one. 
+ */
+ 
 class KClipboard::MimeSource : public QMimeSource
 {
 public:
@@ -82,7 +97,7 @@ private:
 
 KClipboard * KClipboard::s_self = 0L;
 bool KClipboard::s_sync = false;
-bool KClipboard::s_implicitSelection = false;
+bool KClipboard::s_reverse_sync = false;
 bool KClipboard::s_blocked = false;
 
 KClipboard * KClipboard::self()
@@ -100,20 +115,28 @@ KClipboard::KClipboard( QObject *parent, const char *name )
 
     KConfigGroup config( KGlobal::config(), "General" );
     s_sync = config.readBoolEntry( "SynchronizeClipboardAndSelection", s_sync);
-    s_implicitSelection = config.readBoolEntry( "ImplicitlySetSelection",
-                                                s_implicitSelection );
+    s_reverse_sync = config.readBoolEntry( "ClipboardSetSelection",
+                                                s_reverse_sync );
 
-    QClipboard *clip = QApplication::clipboard();
-    connect( clip, SIGNAL( selectionChanged() ),
-             SLOT( slotSelectionChanged() ));
-    connect( clip, SIGNAL( dataChanged() ),
-             SLOT( slotClipboardChanged() ));
+    setupSignals();
 }
 
 KClipboard::~KClipboard()
 {
     if ( s_self == this )
         s_self = 0L;
+}
+
+void KClipboard::setupSignals()
+{
+    QClipboard *clip = QApplication::clipboard();
+    disconnect( clip, NULL, this, NULL );
+    if( s_sync )
+        connect( clip, SIGNAL( selectionChanged() ),
+                 SLOT( slotSelectionChanged() ));
+    if( s_reverse_sync )
+        connect( clip, SIGNAL( dataChanged() ),
+                 SLOT( slotClipboardChanged() ));
 }
 
 void KClipboard::slotSelectionChanged()
@@ -124,11 +147,8 @@ void KClipboard::slotSelectionChanged()
     if ( s_blocked || !clip->ownsSelection() )
         return;
 
-    if ( s_sync )
-    {
-        setClipboard( new MimeSource( clip->data( QClipboard::Selection) ),
-                      QClipboard::Clipboard );
-    }
+    setClipboard( new MimeSource( clip->data( QClipboard::Selection) ),
+                  QClipboard::Clipboard );
 }
 
 void KClipboard::slotClipboardChanged()
@@ -139,11 +159,8 @@ void KClipboard::slotClipboardChanged()
     if ( s_blocked || !clip->ownsClipboard() )
         return;
 
-    if ( s_implicitSelection || s_sync )
-    {
-        setClipboard( new MimeSource( clip->data( QClipboard::Clipboard ) ),
-                      QClipboard::Selection );
-    }
+    setClipboard( new MimeSource( clip->data( QClipboard::Clipboard ) ),
+                  QClipboard::Selection );
 }
 
 void KClipboard::setClipboard( QMimeSource *data, QClipboard::Mode mode )
@@ -166,11 +183,23 @@ void KClipboard::setClipboard( QMimeSource *data, QClipboard::Mode mode )
     s_blocked = false;
 }
 
+void KClipboard::setSynchronizing( bool sync )
+{
+    s_sync = sync;
+    self()->setupSignals();
+}
+
+void KClipboard::setReverseSynchronizing( bool enable )
+{
+    s_reverse_sync = enable;
+    self()->setupSignals();
+}
+
 // private, called by KApplication
 void KClipboard::newConfiguration( int config )
 {
     s_sync = (config & Synchronize);
-    s_implicitSelection = (config & ImplicitSelection);
+    self()->setupSignals();
 }
 
 #include "kclipboard.moc"

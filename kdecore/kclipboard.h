@@ -25,18 +25,7 @@
 #include <qstrlist.h>
 
 /**
- * This class is mostly of internal use. You probably don't need it :)
- *
- * It provides an automatic synchronization of the X11 Clipboard and Selection
- * buffers. It connects to the selectionChanged() and dataChanged() signals of
- * QClipboard and copies the buffer's contents to the other buffer, if configured.
- *
- * Additionally to keeping them in sync, there is the option to automatically copy
- * the clipboard buffer to the selection buffer, when your application sets the
- * clipboard buffer. That is the default behavior in KDE.
- *
- * If you don't want any synchronizing or implicit copying, you can disable this
- * with the methods below.
+ * This class is only for internal use.
  *
  * @short Allowing to automatically synchronize the X11 Clipboard and Selection buffers.
  * @author Carsten Pfeiffer <pfeiffer@kde.org>
@@ -57,16 +46,13 @@ public:
     static KClipboard *self();
 
     /**
-     * Configures KClipboard to synchronize the Clipboard and Selection buffers
-     * whenever one changes.
+     * Configures KClipboard to synchronize the Selection to Clipboard whenever
+     * it changes.
      *
      * Default is false.
      * @see #isSynchronizing
      */
-    static void setSynchronizing( bool sync )
-    {
-        s_sync = sync;
-    }
+    static void setSynchronizing( bool sync );
 
     /**
      * Checks whether Clipboard and Selection will be synchronized upon changes.
@@ -86,24 +72,22 @@ public:
      *
      * @param enable true to enable implicit selection, false otherwise.
      * Default is true.
-     * @see #implicitSelection
+     * @see #selectionSetting
      */
-    static void setImplicitSelection( bool enable )
-    {
-        s_implicitSelection = enable;
-    }
+    static void setReverseSynchronizing( bool enable );
 
     /**
      * Checks whether the  Clipboard buffer will be copied to the Selection
      * buffer upon changes.
      * @returns whether the Clipboard buffer will be copied to the Selection
      * buffer upon changes.
-     * @see #setImplicitSelection
+     * @see #setSelectionSetting
      */
-    static bool implicitSelection()
+    static bool isReverseSynchronizing()
     {
-        return s_implicitSelection;
+        return s_reverse_sync;
     }
+
 
 protected:
     ~KClipboard();
@@ -114,23 +98,22 @@ private slots:
 
 private:
     KClipboard( QObject *parent = 0, const char *name = 0L );
+    void setupSignals();
 
-    // does not restore the old selection mode.
     static void setClipboard( QMimeSource* data, QClipboard::Mode mode );
 
     static KClipboard *s_self;
     static bool s_sync;
-    static bool s_implicitSelection;
+    static bool s_reverse_sync;
     static bool s_blocked;
 
     class MimeSource;
 
 private:
     // needed by klipper
-    enum Configuration { Synchronize = 1, ImplicitSelection = 2 };
+    enum Configuration { Synchronize = 1 };
     // called by KApplication upon kipc message, invoked by klipper
     static void newConfiguration( int config );
-
 
 };
 
