@@ -694,6 +694,22 @@ public:
 	 * @see setup()
 	 */
 	bool autoConfigure(const QString& prname = QString::null, QWidget *parent = 0);
+	/**
+	 * Set the default document filename. This filename will be used as the
+	 * default basename for the output file, instead of the default "print".
+	 * For exmaple, by using setDocFileName("my_document"), the default
+	 * output file will be $HOME/my_document.ps.
+	 * @param filename the default document basename to use
+	 * @see docFileName()
+	 */
+	void setDocFileName(const QString& filename);
+	/**
+	 * Get the default document filename, that is the default basename used for
+	 * the output file.
+	 * @returns the default document basename
+	 * @see setDocFileName()
+	 */
+	QString docFileName() const;
 
 protected:
 	virtual bool cmd(int, QPainter*, QPDevCmdParam*);

@@ -327,6 +327,8 @@ void KPrintDialog::initialize(KPrinter *printer)
 	// Initialize output filename
 	if (!d->m_printer->outputFileName().isEmpty())
 		d->m_file->lineEdit()->setText(d->m_printer->outputFileName());
+	else if (!d->m_printer->docFileName().isEmpty())
+		d->m_file->lineEdit()->setText(QDir::homeDirPath()+"/"+d->m_printer->docFileName()+".ps");
 
 	// update with KPrinter options
 	if (d->m_printer->option("kde-preview") == "1" || d->m_printer->previewOnly())

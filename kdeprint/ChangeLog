@@ -314,3 +314,14 @@ Since 2.2 release, Michael Goffioul <goffioul@imec.be>
   * started the implementation of a new LPR/LPRng plugin: this implementation
     is designed to be modular to provide support for various systems like
     Foomatic, APSFilter, GNUlpr or Printtool(RH).
+
+17/01/2002 Michael Goffioul <goffioul@imec.be>
+  * LPR: first implementation of a job manager. Make use of asynchronous
+    lpc and lpq processes. Major problem: delay between new state and
+    screen update due to the fact that data are started to be updated when
+    the info is needed for showing. As data are retrieved asynchronously,
+    they are not available for the update.
+  * general: clean up refresh code of the job viewer
+  * KPrinter: added the DocFileName feature (suggested by David) to define
+    the default basename for output file.
+  * test: updated to Qt3 and demonstrate the use of the DocFileName feature

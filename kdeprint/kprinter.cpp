@@ -84,6 +84,7 @@ public:
 	bool		m_restore;
 	bool		m_previewonly;
 	WId		m_parentId;
+	QString		m_docfilename;
 };
 
 //**************************************************************************************
@@ -819,3 +820,9 @@ void KPrinter::setPreviewOnly(bool on)
 
 bool KPrinter::previewOnly() const
 { return d->m_previewonly; }
+
+void KPrinter::setDocFileName(const QString& s)
+{ d->m_docfilename = s; }
+
+QString KPrinter::docFileName() const
+{ return d->m_docfilename; }
