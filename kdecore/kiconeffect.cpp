@@ -63,16 +63,16 @@ void KIconEffect::init()
 	// Default effects
 	mEffect[i][0] = NoEffect;
 	mEffect[i][1] = NoEffect;
-	mEffect[i][2] = NoEffect;        
+	mEffect[i][2] = NoEffect;
 	mTrans[i][0] = false;
 	mTrans[i][1] = false;
-	mTrans[i][2] = true;        
-        mValue[i][0] = 1.0;          
-        mValue[i][1] = 1.0;          
-        mValue[i][2] = 1.0;          
-        mColor[i][0] = QColor(144,128,248); 
-        mColor[i][1] = QColor(169,156,255); 
-        mColor[i][2] = QColor(34,202,0); 
+	mTrans[i][2] = true;
+        mValue[i][0] = 1.0;
+        mValue[i][1] = 1.0;
+        mValue[i][2] = 1.0;
+        mColor[i][0] = QColor(144,128,248);
+        mColor[i][1] = QColor(169,156,255);
+        mColor[i][2] = QColor(34,202,0);
 
 	config->setGroup(*it + "Icons");
 	for (it2=states.begin(), j=0; it2!=states.end(); it2++, j++)
@@ -106,7 +106,7 @@ QString KIconEffect::fingerprint(int group, int state)
     s += ":";
     s += tmp.setNum(mValue[group][state]);
     s += ":";
-    s += mTrans[group][state] ? QString::fromLatin1("trans") 
+    s += mTrans[group][state] ? QString::fromLatin1("trans")
 	    : QString::fromLatin1("notrans");
     if (mEffect[group][state] == Colorize)
     {
@@ -115,7 +115,7 @@ QString KIconEffect::fingerprint(int group, int state)
     }
     return s;
 }
-    
+
 QImage KIconEffect::apply(QImage image, int group, int state)
 {
     if (state >= KIcon::LastState)
@@ -158,10 +158,10 @@ QImage KIconEffect::apply(QImage image, int effect, float value, QColor col, boo
         toGamma(image, value);
         break;
     }
-    if (trans == true) 
+    if (trans == true)
     {
-	semiTransparent(image);  
-    } 
+	semiTransparent(image);
+    }
     return image;
 }
 
@@ -177,11 +177,11 @@ QPixmap KIconEffect::apply(QPixmap pixmap, int group, int state)
 	kdDebug(264) << "Illegal icon group: " << group << "\n";
 	return pixmap;
     }
-    return apply(pixmap, mEffect[group][state], mValue[group][state], 
+    return apply(pixmap, mEffect[group][state], mValue[group][state],
 	    mColor[group][state], mTrans[group][state]);
 }
 
-QPixmap KIconEffect::apply(QPixmap pixmap, int effect, float value, 
+QPixmap KIconEffect::apply(QPixmap pixmap, int effect, float value,
 	const QColor col, bool trans)
 {
     QPixmap result;
@@ -203,7 +203,7 @@ QPixmap KIconEffect::apply(QPixmap pixmap, int effect, float value,
         tmpImg = pixmap.convertToImage();
         tmpImg = apply(tmpImg, effect, value, col, trans);
         result.convertFromImage(tmpImg);
-    }                                                                           
+    }
 
     return result;
 }
@@ -222,13 +222,13 @@ void KIconEffect::toGray(QImage &img, float value)
     {
 	val = qGray(data[i]);
 	alpha = qAlpha(data[i]);
-	if (value < 1.0) 
-	{ 
+	if (value < 1.0)
+	{
 	    rval = static_cast<int>(value*val+(1.0-value)*qRed(data[i]));
 	    gval = static_cast<int>(value*val+(1.0-value)*qGreen(data[i]));
 	    bval = static_cast<int>(value*val+(1.0-value)*qBlue(data[i]));
 	    data[i] = qRgba(rval, gval, bval, alpha);
-	} else 
+	} else
 	    data[i] = qRgba(val, val, val, alpha);
     }
 }
@@ -259,8 +259,8 @@ void KIconEffect::colorize(QImage &img, const QColor &col, float value)
              gval = static_cast<int>((val-128)*(2-gcol/128)+gcol-1);
              bval = static_cast<int>((val-128)*(2-bcol/128)+bcol-1);
         }
-	if (value < 1.0) 
-	{ 
+	if (value < 1.0)
+	{
 	    rval = static_cast<int>(value*rval+(1.0 - value)*qRed(data[i]));
 	    gval = static_cast<int>(value*gval+(1.0 - value)*qGreen(data[i]));
 	    bval = static_cast<int>(value*bval+(1.0 - value)*qBlue(data[i]));
@@ -462,6 +462,8 @@ KIconEffect::visualActivate(QWidget * widget, QRect rect)
 
     unsigned int actDelay = (1000 * (100 - actSpeed)) / actCount;
 
+    //kdDebug() << "actCount=" << actCount << " actDelay=" << actDelay << endl;
+
     QPoint c = rect.center();
 
     QPainter p(widget);
@@ -473,13 +475,18 @@ KIconEffect::visualActivate(QWidget * widget, QRect rect)
     // The spacing between the rects we draw.
     // Use the minimum of width and height to avoid painting outside the
     // pixmap area.
-    unsigned int delta(QMIN(rect.width() / actCount, rect.height() / actCount));
+    //unsigned int delta(QMIN(rect.width() / actCount, rect.height() / actCount));
+
+    // Support for rectangles by David
+    unsigned int deltaX = rect.width() / actCount;
+    unsigned int deltaY = rect.height() / actCount;
 
     for (unsigned int i = 1; i < actCount; i++) {
 
-        int sz = i * delta;
+        int w = i * deltaX;
+        int h = i * deltaY;
 
-        rect.setRect(c.x() - sz / 2, c.y() - sz / 2, sz, sz);
+        rect.setRect(c.x() - w / 2, c.y() - h / 2, w, h);
 
         p.drawRect(rect);
         p.flush();
