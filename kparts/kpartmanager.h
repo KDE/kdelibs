@@ -4,13 +4,18 @@
 
 #include <qobject.h>
 
+class KXMLGUIBuilder;
+
 class KPart;
 
 class KPartManager : public QObject
 {
   Q_OBJECT
 public:
-  KPartManager( QObject *parent = 0, const char *name = 0 );
+  // The partmanager know about the builder (interface) so that
+  // when the active part changes, the builder slot (createGUI) gets
+  // automatically called. (That's not docu, it's internal stuff !)
+  KPartManager( KXMLGUIBuilder * builder );
   virtual ~KPartManager();
   
   virtual bool eventFilter( QObject *obj, QEvent *ev );

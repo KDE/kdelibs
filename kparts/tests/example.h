@@ -23,7 +23,6 @@ protected slots:
   void slotFileOpenRemote();
   void slotFileEdit();
   void slotFileCloseEditor();
-  void slotActivePartChanged( KPart *newPart, KPart *oldPart );
 
 protected:
   virtual void resizeEvent( QResizeEvent * );

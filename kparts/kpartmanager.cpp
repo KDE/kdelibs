@@ -1,15 +1,21 @@
 
 #include "kpartmanager.h"
 #include "kpart.h"
+#include "kguibuilder.h"
 
 #include <qapplication.h>
 
 #include <assert.h>
 
-KPartManager::KPartManager( QObject *parent, const char *name )
- : QObject( parent, name )
+KPartManager::KPartManager( KXMLGUIBuilder * builder )
+ : QObject( builder, "KPartManager" )
 {
   m_activePart = 0;
+
+  // Oh oh, found a nice trick :-) Now I know why it's (new part, old part) 
+  // and not the other way round :)  (David)
+  connect( this, SIGNAL( activePartChanged( KPart *, KPart * ) ),
+           builder, SLOT( createGUI( KPart * ) ) );
   
   qApp->installEventFilter( this );
 }

@@ -39,23 +39,18 @@ Shell::Shell()
   (void)new KAction( i18n( "Yet another menu item" ), 0, coll, "shell_yami" );
   (void)new KAction( i18n( "Yet another submenu item" ), 0, coll, "shell_yasmi" );
 
-  m_manager = new KPartManager( this );
+  m_manager = new KPartManager( m_builder );
 
-  connect( m_manager, SIGNAL( activePartChanged( KPart *, KPart * ) ),
-           this, SLOT( slotActivePartChanged( KPart *, KPart * ) ) );
-  
   setView( m_splitter );
 
   m_splitter->show();
   
-  //m_part1->embed( m_splitter );
-  //m_part2->embed( m_splitter );
-
   m_manager->addPart( m_part1 );
   m_manager->addPart( m_part2 );
   m_editorpart = 0;
 
-  slotActivePartChanged( m_part1, 0 );
+  // Create initial GUI, setting part1 active
+  m_builder->createGUI( m_part1 );
 }
 
 Shell::~Shell()
@@ -82,8 +77,7 @@ void Shell::embedEditor()
   m_part2 = 0L;
   m_editorpart = new NotepadPart( m_splitter );
   m_manager->addPart( m_editorpart );
-// TODO : setActivePart or something like that
-// (or slotActivePartChanged( m_editorpart, whatever the old part was ))
+// TODO : set the active part to m_editorpart
 }
 
 void Shell::slotFileCloseEditor()
@@ -102,15 +96,6 @@ void Shell::slotFileEdit()
   // TODO use KFileDialog to allow testing remote files
   if ( ! m_editorpart->openURL( QDir::current().absPath()+"/example_shell.rc" ) )
     KMessageBox::error(this,"Couldn't open file !");
-}
-
-void Shell::slotActivePartChanged( KPart *newPart, KPart *oldPart )
-
-{
-  qDebug( "%s -> %s", oldPart ? oldPart->name() : "0L",
-                      newPart ? newPart->name() : "0L");
-
-  m_builder->createGUI( newPart );
 }
 
 void Shell::resizeEvent( QResizeEvent * )

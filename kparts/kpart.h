@@ -42,6 +42,8 @@ public:
 
     /**
 	 * Embed this part into a host widget.
+	 * You don't need to do this if you created the widget with the
+	 * correct parent widget - this is just a reparent().
      * Note that the KPart is still the holder 
 	 * of the QWidget, meaning that if you delete the KPart,
      * then the widget gets destroyed as well, and vice-versa (TODO).
