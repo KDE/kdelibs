@@ -569,7 +569,7 @@ wakeup_pipe_write (gint wakeup_pipe[2])
       
       do
 	r = write (wakeup_pipe[1], &data, 1);
-      while (r < 0 && (errno == EINTR || errno == ERESTART));
+      while (r < 0 && errno == EINTR);
     }
 }
 
@@ -583,7 +583,7 @@ wakeup_pipe_read_all (gint wakeup_pipe[2])
       
       do
 	r = read (wakeup_pipe[0], data, sizeof (data));
-      while ((r < 0 && (errno == EINTR || errno == ERESTART)) || r == sizeof (data));
+      while ((r < 0 && errno == EINTR) || r == sizeof (data));
     }
 }
 

@@ -6,7 +6,7 @@
 #include <malloc.h>
 #include <unistd.h>
 #include <stdio.h>
-#include <stdint.h>
+#include <inttypes.h>
 
 
 gpointer g_malloc         (gulong        n_bytes) { void*p = malloc(n_bytes); GSL_ASSERT(p!=0); return p; }
@@ -2031,7 +2031,7 @@ printf_string_upper_bound (const gchar *format,
 		    }
 		  break;
 		case 'j':
-		  if (sizeof(intmax_t) > 4)
+		  if (sizeof(int64_t) > 4)
 		    {
 		      spec.mod_long = TRUE;
 		      spec.mod_extra_long = TRUE;

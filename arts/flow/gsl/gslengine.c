@@ -456,9 +456,6 @@ _op_debug (OpDebugLevel lvl,
 	   const gchar *format,
 	   ...)
 {
-  extern int vasprintf(char**,const char*,va_list);
-  extern int dprintf(int,const char*,...);
-  extern void free(void*);
   if (lvl & op_debug_levels)
     {
       va_list var_args;
@@ -474,10 +471,10 @@ _op_debug (OpDebugLevel lvl,
 	default:		l = "UNKNOWN";	break;
 	}
       va_start (var_args, format);
-      vasprintf (&s, format, var_args);
+      s = g_strdup_vprintf (format, var_args);
       va_end (var_args);
-      dprintf (2, "DEBUG_%s(%p): %s\n", l, gsl_thread_self (), s);
-      free (s);
+      g_print ("DEBUG_%s(%p): %s\n", l, gsl_thread_self (), s);
+      g_free (s);
     }
 }
 
@@ -609,3 +606,5 @@ gsl_engine_wait_on_trans (void)
   /* call all free() functions */
   _op_collect_trans ();
 }
+
+/* vim:set ts=8 sts=2 sw=2: */
