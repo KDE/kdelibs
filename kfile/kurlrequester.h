@@ -57,19 +57,13 @@ class KURLRequester : public QHBox
 public:
     /**
      * Constructs a KURLRequester widget.
-     * @param modal specifies whether the filedialog should be opened as modal
-     * or not.
      */
-    KURLRequester( QWidget *parent=0, const char *name=0, bool modal = true );
+    KURLRequester( QWidget *parent=0, const char *name=0 );
 
     /**
-     * Constructs a KURLRequester widget with the default URL @p url
-     * @param modal specifies whether the filedialog should be opened as modal
-     * or not.
+     * Constructs a KURLRequester widget with the initial URL @p url.
      */
-    KURLRequester( const QString& url, QWidget *parent=0, const char *name=0,
-		   bool modal = true );
-
+    KURLRequester( const QString& url, QWidget *parent=0, const char *name=0 );
     /**
      * Special constructor, which creates a KURLRequester widget with a custom
      * edit-widget. The edit-widget can be either a KComboBox or a KLineEdit
@@ -78,9 +72,7 @@ public:
      * @param modal specifies whether the filedialog should be opened as modal
      * or not.
      */
-    KURLRequester( QWidget *editWidget, QWidget *parent, const char *name=0,
-		   bool modal = true );
-
+    KURLRequester( QWidget *editWidget, QWidget *parent, const char *name=0 );
     /**
      * Destructs the KURLRequester.
      */
@@ -208,7 +200,6 @@ protected:
 
     QPushButton *	myButton; // FIXME: make it private KURLDragPushButton
     KURLCompletion *    myCompletion;
-    bool 		myModal;
 
 
 private:

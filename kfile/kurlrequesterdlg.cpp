@@ -44,21 +44,21 @@ KURLRequesterDlg::KURLRequesterDlg( const QString& urlName, QWidget *parent,
     :   KDialogBase( Plain, QString::null, Ok|Cancel|User1, Ok, parent, name,
                 modal, true, i18n("Clear") )
 {
-  initDialog(i18n( "Location:" ),urlName,modal);
+  initDialog(i18n( "Location:" ), urlName);
 }
 
 KURLRequesterDlg::KURLRequesterDlg( const QString& urlName, const QString& _text, QWidget *parent, const char *name, bool modal )
     :   KDialogBase( Plain, QString::null, Ok|Cancel|User1, Ok, parent, name,
                 modal, true, i18n("Clear") )
 {
-  initDialog(_text,urlName,modal);
+  initDialog(_text, urlName);
 }
 
 KURLRequesterDlg::~KURLRequesterDlg()
 {
 }
 
-void KURLRequesterDlg::initDialog(const QString &text,const QString &urlName,bool modal)
+void KURLRequesterDlg::initDialog(const QString &text,const QString &urlName)
 {
    QVBoxLayout * topLayout = new QVBoxLayout( plainPage(), 0,
             spacingHint() );
@@ -66,8 +66,7 @@ void KURLRequesterDlg::initDialog(const QString &text,const QString &urlName,boo
     QLabel * label = new QLabel( text , plainPage() );
     topLayout->addWidget( label );
 
-    urlRequester_ = new KURLRequester( urlName, plainPage(),
-            "urlRequester", modal );
+    urlRequester_ = new KURLRequester( urlName, plainPage(), "urlRequester" );
     urlRequester_->setMinimumWidth( urlRequester_->sizeHint().width() * 3 );
     topLayout->addWidget( urlRequester_ );
     urlRequester_->setFocus();

@@ -43,26 +43,26 @@ public:
     /**
      * Constructs a KURLRequesterDlg.
      *
-     * @param urlName   The url of the directory to start in. Use QString::null
-     *                  to start in the current working directory, or the last
-     *                  directory where a file has been selected.
-     * @param modal     Specifies whether the dialog should be opened as modal
-     *                  or not.
+     * @param url    The url of the directory to start in. Use QString::null
+     *               to start in the current working directory, or the last
+     *               directory where a file has been selected.
+     * @param modal  Specifies whether the dialog should be opened as modal
+     *               or not.
      */
-    KURLRequesterDlg( const QString& urlName, QWidget *parent,
+    KURLRequesterDlg( const QString& url, QWidget *parent,
                       const char *name, bool modal = true );
 
     /**
      * Constructs a KURLRequesterDlg.
      * 
-     * @param urlName   The url of the directory to start in. Use QString::null
-     *                  to start in the current working directory, or the last
-     *                  directory where a file has been selected.
-     * @param text      Text of the label
-     * @param modal     Specifies whether the dialog should be opened as modal
+     * @param url    The url of the directory to start in. Use QString::null
+     *               to start in the current working directory, or the last
+     *               directory where a file has been selected.
+     * @param text   Text of the label
+     * @param modal  Specifies whether the dialog should be opened as modal
      *                  or not.
      */
-    KURLRequesterDlg( const QString& urlName, const QString& text,
+    KURLRequesterDlg( const QString& url, const QString& text,
                       QWidget *parent, const char *name, bool modal=true );
     /**
      * Destructs the dialog.
@@ -96,7 +96,7 @@ private slots:
     void slotClear();
  
 private:
-    void initDialog(const QString &_text,const QString &urlName,bool modal);
+    void initDialog(const QString &text, const QString &url);
     KURLRequester *urlRequester_;
 
     class KURLRequesterDlgPrivate;

@@ -143,10 +143,9 @@ public:
 
 
 KURLRequester::KURLRequester( QWidget *editWidget, QWidget *parent,
-			      const char *name, bool modal )
+			      const char *name )
   : QHBox( parent, name )
 {
-    myModal = modal;
     d = new KURLRequesterPrivate;
 
     // must have this as parent
@@ -158,20 +157,18 @@ KURLRequester::KURLRequester( QWidget *editWidget, QWidget *parent,
 }
 
 
-KURLRequester::KURLRequester( QWidget *parent, const char *name, bool modal )
+KURLRequester::KURLRequester( QWidget *parent, const char *name )
   : QHBox( parent, name )
 {
-    myModal = modal;
     d = new KURLRequesterPrivate;
     init();
 }
 
 
 KURLRequester::KURLRequester( const QString& url, QWidget *parent,
-			      const char *name, bool modal )
+			      const char *name )
   : QHBox( parent, name )
 {
-    myModal = modal;
     d = new KURLRequesterPrivate;
     init();
     setURL( url );
@@ -277,7 +274,7 @@ KFileDialog * KURLRequester::fileDialog() const
     if ( !myFileDialog ) {
 	QWidget *p = parentWidget();
 	myFileDialog = new KFileDialog( QString::null, QString::null, p,
-					"file dialog", myModal );
+					"file dialog", true );
 	
 	myFileDialog->setMode( d->fileDialogMode );
         if (!d->fileDialogFilter.isEmpty())
