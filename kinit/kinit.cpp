@@ -966,7 +966,7 @@ int main(int argc, char **argv, char **envp)
       init_kdeinit_socket();
    }
 
-   printf("Pre Launcher, pid = %d\n", getpid());
+   printf("Pre Launcher, pid = %ld\n", (long)getpid());
 
    if (launch_dcop)
    {
