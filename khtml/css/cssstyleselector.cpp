@@ -79,7 +79,7 @@ static CSSStyleSelector::Encodedurl *encodedurl;
 CSSStyleSelector::CSSStyleSelector(DocumentImpl * doc)
 {
     strictParsing = doc->parseMode() == DocumentImpl::Strict;
-    if(!defaultStyle) loadDefaultStyle(doc->view()->part()->settings());
+    if(!defaultStyle) loadDefaultStyle(doc->view()?doc->view()->part()->settings():0);
 
     selectors = 0;
     selectorCache = 0;
@@ -98,7 +98,7 @@ CSSStyleSelector::CSSStyleSelector(DocumentImpl * doc)
 //     if ( userStyle )
 //     kdDebug() << "CSSStyleSelector: user style has " << userStyle->count() << " elements"<< endl;
 
-    KURL u = doc->view()->part()->baseURL();
+    KURL u = doc->baseURL().string();
     u.setQuery( QString::null );
     u.setRef( QString::null );
     encodedurl.file = u.url();
