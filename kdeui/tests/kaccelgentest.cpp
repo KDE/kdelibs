@@ -22,10 +22,12 @@ void check( const QString &what, const QStringList &expected, const QStringList 
 int main()
 {
     QStringList input;
-    input << "foo" << "bar item" << "&baz" << "bif" << "boz" << "boz 2";
+    input << "foo" << "bar item" << "&baz" << "bif" << "boz" << "boz 2"
+	      << "yoyo && dyne";
 
     QStringList expected;
-    expected << "&foo" << "bar &item" << "&baz" << "bif" << "b&oz" << "boz &2";
+    expected << "&foo" << "bar &item" << "&baz" << "bif" << "b&oz" << "boz &2"
+	         << "&yoyo && dyne";
 
     QStringList output;
     KAccelGen::generate( input, output );

@@ -174,7 +174,7 @@ generate(Iter begin, Iter end, QStringList& target)
         // Attempt to find a good accelerator, but only if the user
         // has not manually hardcoded one.
         int user_ampersand = item.find(QChar('&'));
-        if( user_ampersand < 0 ) {
+        if( user_ampersand < 0 || item[user_ampersand+1] == '&') {
             bool found = false;
             uint found_idx;
             uint j;
