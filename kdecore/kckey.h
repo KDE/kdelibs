@@ -10,7 +10,7 @@ typedef struct {
 
 #define MAX_KEY_LENGTH 15
 #define MAX_KEY_MODIFIER_LENGTH 15
-#define NB_KEYS 221
+#define NB_KEYS 234
 
 extern KKey KKeys[NB_KEYS];
 

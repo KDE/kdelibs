@@ -7,7 +7,7 @@ typedef struct {
 
 #define MAX_KEY_LENGTH 15
 #define MAX_KEY_MODIFIER_LENGTH 15
-#define NB_KEYS 232
+#define NB_KEYS 234
 
 // Please, everybody who inserts new keys _must_ update NB_KEYS!!!!
 
@@ -78,6 +78,8 @@ KKey KKeys[NB_KEYS] = {
 	{ "Super_L", 0x1053 },
 	{ "Super_R", 0x1054 },
 	{ "Menu", 0x1055 },
+	{ "Hyper_L", 0x1056 },
+	{ "Hyper_R", 0x1057 },
 	{ "Space", 0x20 },
 	{ "Exclam", 0x21 },
 	{ "QuoteDbl", 0x22 },
