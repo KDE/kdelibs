@@ -197,6 +197,8 @@ public:
 protected:
     void printTextOutline(QPainter *p, int tx, int ty, const QRect &prevLine, const QRect &thisLine, const QRect &nextLine);
 
+    // Find the text slave that includes the character at @p offset
+    // and return pos, which is the position of the char in the slave.
     TextSlave * findTextSlave( int offset, int &pos );
 
 protected: // members
