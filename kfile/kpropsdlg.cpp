@@ -43,8 +43,8 @@ extern "C" {
 #include <grp.h>
 #include <time.h>
 }
-#include <cerrno>
-#include <cassert>
+#include <errno.h>
+#include <assert.h>
 
 #include <qfile.h>
 #include <qapplication.h>
