@@ -18,10 +18,11 @@
     the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
     Boston, MA 02111-1307, USA.
 */
-
 #ifdef HAVE_CONFIG_H
 #include <config.h>
 #endif
+
+#undef ENABLE_NLS
 
 // Overloading of all standard locale functions makes no sense
 // Let application use them
@@ -1004,18 +1005,6 @@ void KLocale::insertCatalogue( const QString& ) {
 
 void KLocale::setLanguage(
   const QString & /* _lang */)
-{
-}
-
-void KLocale::setCountry(
-  const QString &/*_number*/,
-  const QString &/*_money*/,
-  const QString &/*_time*/)
-{
-}
-
-void KLocale::setCountry(
-  const QString & /* _country */)
 {
 }
 
