@@ -164,37 +164,38 @@ void KNewPanner::showLabels(bool newval)
 
 int KNewPanner::seperatorPos()
 {
-    int value;
-
-    if (currentunits == Percent)
-	value= position * 100 / (orientation == Vertical?width():height());
-    else
-	value= position;
-	    
-    return value;
+  return position;
 }
 
 void KNewPanner::setSeperatorPos(int pos)
 {
-    if (currentunits == Percent)
-	setAbsSeperatorPos(pos * (orientation == Vertical?width():height()) / 100);
-    else
-	setAbsSeperatorPos(pos);
+  position = pos;
 }
 
-void KNewPanner::setAbsSeperatorPos(int pos)
+void KNewPanner::setAbsSeperatorPos(int pos, bool do_resize)
 {
     pos= checkValue(pos);
 
-    if (pos != position) {
+    if (pos != absSeperatorPos()) {
+      if (currentunits == Percent)
+	position= pos * 100 / (orientation == Vertical?width():height());
+      else
 	position= pos;
+      if (do_resize)
 	resizeEvent(0);
     }
 }
 
 int KNewPanner::absSeperatorPos()
 {
-    return position;
+    int value;
+
+    if (currentunits == Percent)
+	value= (orientation == Vertical?width():height())*position/100;
+    else
+	value= position;
+	    
+    return value;
 }
 
 KNewPanner::Units KNewPanner::units()
@@ -211,25 +212,29 @@ void KNewPanner::resizeEvent(QResizeEvent*)
 {
   if (initialised) {
      if (orientation == Horizontal) {
-      child0->setGeometry(0, 0, width(), position);
-      child1->setGeometry(0, position+4, width(), height()-position-4);
-      divider->setGeometry(0, position, width(), 4);
+      child0->setGeometry(0, 0, width(), absSeperatorPos());
+      child1->setGeometry(0, absSeperatorPos()+4, width(), 
+			  height()-absSeperatorPos()-4);
+      divider->setGeometry(0, absSeperatorPos(), width(), 4);
     }
     else {
       if (showlabels) {
 	label0->move(0,0);
-	label0->resize(position, label0->height());
-	label1->move(position+4, 0);
-	label1->resize(width()-position-4, label1->height());
+	label0->resize(absSeperatorPos(), label0->height());
+	label1->move(absSeperatorPos()+4, 0);
+	label1->resize(width()-absSeperatorPos()-4, label1->height());
 	startHeight= label0->height();
       }
       else {
 	 startHeight= 0;
       }
-      child0->setGeometry(0, startHeight, position, (height())-startHeight);
-      child1->setGeometry(position+4, startHeight,
-			  (width())-(position+4), (height())-startHeight);
-      divider->setGeometry(position, startHeight, 4, (height())-startHeight);
+      child0->setGeometry(0, startHeight, absSeperatorPos(), 
+			  (height())-startHeight);
+      child1->setGeometry(absSeperatorPos()+4, startHeight,
+			  (width())-(absSeperatorPos()+4), 
+			  (height())-startHeight);
+      divider->setGeometry(absSeperatorPos(), startHeight, 4, 
+			   (height())-startHeight);
     }
   }
 }
@@ -271,15 +276,14 @@ bool KNewPanner::eventFilter(QObject *, QEvent *e)
 	mev= (QMouseEvent *)e;
 	child0->setUpdatesEnabled(false);
 	child1->setUpdatesEnabled(false);
-	divider->raise();
 	if (orientation == Horizontal) {
-	    position= checkValue(position+mev->y());
-	    divider->setGeometry(0, position, width(), 4);
+	    setAbsSeperatorPos(divider->mapToParent(mev->pos()).y(), false);
+	    divider->setGeometry(0, absSeperatorPos(), width(), 4);
 	    divider->repaint(0);
 	}
 	else {
-	    position= checkValue(position+mev->x());
-	    divider->setGeometry(position, 0, 4, height());
+	    setAbsSeperatorPos(divider->mapToParent(mev->pos()).x(), false);
+	    divider->setGeometry(absSeperatorPos(), 0, 4, height());
 	    divider->repaint(0);
 	}
 	handled= true;
@@ -291,17 +295,15 @@ bool KNewPanner::eventFilter(QObject *, QEvent *e)
 	child1->setUpdatesEnabled(true);
 
 	if (orientation == Horizontal) {
-	    setAbsSeperatorPos(absSeperatorPos());
 	    resizeEvent(0);
-	    child0->repaint(true);
-	    child1->repaint(true);
+// 	    child0->repaint(true);
+// 	    child1->repaint(true);
 	    divider->repaint(true);
 	}
 	else {
-	    setAbsSeperatorPos(absSeperatorPos());
 	    resizeEvent(0);
-	    child0->repaint(true);
-	    child1->repaint(true);
+// 	    child0->repaint(true);
+// 	    child1->repaint(true);
 	    divider->repaint(true);
 	}
 	handled= true;
@@ -310,8 +312,6 @@ bool KNewPanner::eventFilter(QObject *, QEvent *e)
 
     return handled;
 }
-
-#include "knewpanner.moc"
 
 
 

@@ -81,16 +81,16 @@ public:
      */
     virtual ~KNewPanner();
 
-    /**
-     * Begin managing these two widgets. If you want to set the minimum or
-     * maximum sizes of the children then you should do it before calling this
-     * method.
-     */
-    void activate(QWidget *c0, QWidget *c1);
+  /**
+   * Begin managing these two widgets. If you want to set the minimum or
+   * maximum sizes of the children then you should do it before calling this
+   * method.
+   */
+  void activate(QWidget *c0, QWidget *c1);
 
   /**
-   * Stops the panner to allow you to reactivate the panner with different
-   * child widgets.
+   * Call this method to restore the panner to it's initial state. This allows you
+   * to call activate() a second time with different children.
    */
   void deactivate();
 
@@ -129,7 +129,7 @@ public:
      * The position is specified in absolute units (pixels) irrespective
      * of the the currently selected units.
      */
-    void setAbsSeperatorPos(int pos);
+    void setAbsSeperatorPos(int pos, bool do_resize = true);
 
     /**
      * Get the current units.
