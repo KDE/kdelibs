@@ -139,8 +139,7 @@ FrameList::Iterator FrameList::find( const QString &name )
     return it;
 }
 
-KHTMLPart::KHTMLPart( QWidget *parentWidget, const char *widgetname, QObject *parent, const char *name,
-                      GUIProfile prof )
+KHTMLPart::KHTMLPart( QWidget *parentWidget, const char *widgetname, QObject *parent, const char *name, GUIProfile prof )
 : KParts::ReadOnlyPart( parent, name )
 {
     d = 0;
@@ -452,6 +451,11 @@ bool KHTMLPart::openURL( const KURL &url )
 {
   kdDebug( 6050 ) << "KHTMLPart(" << this << ")::openURL " << url.url() << endl;
 
+  // If the hostnames are different, we definitely don't want to use the old
+  // session ID so that we can prompt for a client certificate, etc.
+  if (url.host() != m_url.host())
+    d->m_ssl_session_id = QString::null;
+
   d->m_redirectionTimer.stop();
 
   // check to see if this is an "error://" URL. This is caused when an error
@@ -541,18 +545,22 @@ bool KHTMLPart::openURL( const KURL &url )
   args.metaData().insert("PropagateHttpHeader", "true");
   args.metaData().insert("ssl_was_in_use", d->m_ssl_in_use ? "TRUE" : "FALSE" );
   args.metaData().insert("ssl_activate_warnings", "TRUE" );
-  d->m_ssl_session_id = QString::null;
-  {
+
+  // If we don't already have a session ID, look up for one that matches
+  if (d->m_ssl_session_id.isEmpty()) {
     KHTMLPart *p = parentPart();
-    while (p && p->d->m_ssl_session_id.isEmpty()) {
+    while (p && (p->d->m_ssl_session_id.isEmpty() ||
+		 p->m_url.host() != url.host())) {
       p = p->parentPart();
     }
 
     if (p) {
-      args.metaData().insert("ssl_session_id", p->d->m_ssl_session_id);
+      d->m_ssl_session_id = p->d->m_ssl_session_id;
+      args.metaData().insert("ssl_session_id", d->m_ssl_session_id);
       kdDebug(6050) << "Using a cached SSL session ID" << endl;
     }
   }
+
 
   if (d->m_restored)
      d->m_cachePolicy = KIO::CC_Cache;
@@ -2794,15 +2802,19 @@ void KHTMLPart::urlSelected( const QString &url, int button, int state, const QS
   args.metaData().insert("PropagateHttpHeader", "true");
   args.metaData().insert("ssl_was_in_use", d->m_ssl_in_use ? "TRUE":"FALSE");
   args.metaData().insert("ssl_activate_warnings", "TRUE");
-  d->m_ssl_session_id = QString::null;
-  {
+  if (m_url.host() != cURL.host())
+    d->m_ssl_session_id = QString::null;
+  // If we don't already have a session ID, look up for one that matches
+  if (d->m_ssl_session_id.isEmpty()) {
     KHTMLPart *p = parentPart();
-    while (p && p->d->m_ssl_session_id.isEmpty()) {
+    while (p && (p->d->m_ssl_session_id.isEmpty() ||
+		 p->m_url.host() != cURL.host())) {
       p = p->parentPart();
     }
 
     if (p) {
-      args.metaData().insert("ssl_session_id", p->d->m_ssl_session_id);
+      d->m_ssl_session_id = p->d->m_ssl_session_id;
+      args.metaData().insert("ssl_session_id", d->m_ssl_session_id);
       kdDebug(6050) << "Using a cached SSL session ID" << endl;
     }
   }
@@ -3201,13 +3213,14 @@ bool KHTMLPart::requestObject( khtml::ChildFrame *child, const KURL &url, const 
   child->m_args.metaData().insert("ssl_activate_warnings", "TRUE");
   {
     KHTMLPart *p = this;
-    while (p && p->d->m_ssl_session_id.isEmpty()) {
+    while (p && (p->d->m_ssl_session_id.isEmpty() ||
+		 p->m_url.host() != url.host())) {
       p = p->parentPart();
     }
 
     if (p) {
       child->m_args.metaData().insert("ssl_session_id", p->d->m_ssl_session_id);
-      kdDebug(6050) << "Using a cached SSL session ID" << endl;
+      kdDebug(6050) << "Trying to use a cached SSL session ID in the child frame." << endl;
     }
   }
 
@@ -3559,16 +3572,22 @@ void KHTMLPart::submitForm( const char *action, const QString &url, const QByteA
   args.metaData().insert("ssl_was_in_use", d->m_ssl_in_use ? "TRUE":"FALSE");
   args.metaData().insert("ssl_activate_warnings", "TRUE");
   args.frameName = _target.isEmpty() ? d->m_doc->baseTarget() : _target ;
-  d->m_ssl_session_id = QString::null;
-  {
+
+  // posting elsewhere
+  if (u.host() != m_url.host())
+    d->m_ssl_session_id = QString::null;
+
+  if (d->m_ssl_session_id.isEmpty()) {
     KHTMLPart *p = parentPart();
-    while (p && p->d->m_ssl_session_id.isEmpty()) {
+    while (p && (p->d->m_ssl_session_id.isEmpty() ||
+		 p->m_url.host() != u.host())) {
       p = p->parentPart();
     }
 
     if (p) {
+      d->m_ssl_session_id = p->d->m_ssl_session_id;
       args.metaData().insert("ssl_session_id", p->d->m_ssl_session_id);
-      kdDebug(6050) << "Using a cached SSL session ID" << endl;
+      kdDebug(6050) << "Using a cached SSL session ID for form post" << endl;
     }
   }
 
