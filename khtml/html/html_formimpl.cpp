@@ -1045,7 +1045,8 @@ bool HTMLInputElementImpl::encoding(const QTextCodec* codec, khtml::encodingList
         case FILE:
         {
             // can't submit file on GET
-            if(!multipart)
+            // don't submit if display: none or display: hidden
+            if(!multipart || !renderer() || !renderer()->isVisible())
                 return false;
 
             QString local;
@@ -1115,7 +1116,8 @@ DOMString HTMLInputElementImpl::value() const
     if(m_value.isNull())
         return DOMString(""); // some JS sites obviously need this
 
-    return m_value;
+    // Readonly support for type=file
+    return m_type == FILE ? m_filename : m_value;
 }
 
 
