@@ -8,7 +8,11 @@
 #define DO_GZIP
 #endif
 
-#ifndef HTTPS
+#ifdef HTTPS
+#ifndef HAVE_SSL
+#define NOT_IMPLEMENTED
+#endif
+#else
 #undef HAVE_SSL
 #undef DO_SSL
 #endif
@@ -738,6 +742,10 @@ HTTPProtocol::http_openConnection()
  */
 bool HTTPProtocol::http_open()
 {
+#ifdef NOT_IMPLEMENTED
+  error( ERR_UNSUPPORTED_PROTOCOL, mProtocol );
+  return false;
+#else
   http_checkConnection();
 
   m_fcache = 0;
@@ -1052,6 +1060,7 @@ bool HTTPProtocol::http_open()
   infoMessage( i18n( "%1 contacted. Waiting for reply..." ).arg( m_request.hostname ) );
 
   return res;
+#endif
 }
 
 
