@@ -218,7 +218,7 @@ QDataStream * KSycoca::findHeader()
    return m_str;
 }
 
-QString KSycoca::determineRelativePath( const QString & _fullpath, const QString & _resource )
+QString KSycoca::determineRelativePath( const QString & _fullpath, const char *_resource )
 {
   QString sRelativeFilePath;
   QStringList dirs = KGlobal::dirs()->resourceDirs( _resource );

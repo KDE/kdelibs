@@ -27,7 +27,7 @@
 #include <kdebug.h>
 #include <qsmartptr.h>
 
-KServiceType::KServiceType( const QString & _fullpath, const QString & _resource )
+KServiceType::KServiceType( const QString & _fullpath, const char *_resource )
 {
   m_strRelativeFilePath = KSycoca::determineRelativePath( _fullpath, _resource );
   KSimpleConfig config( _fullpath, true );
@@ -75,7 +75,7 @@ KServiceType::KServiceType( const QString & _fullpath, const QString & _resource
 }
 
 KServiceType::KServiceType( const QString & _fullpath, const QString& _type, 
-                            const QString& _icon, const QString& _comment, const QString & _resource )
+                            const QString& _icon, const QString& _comment, const char *_resource )
 {
   m_strRelativeFilePath = KSycoca::determineRelativePath( _fullpath, _resource );
   m_strName = _type;

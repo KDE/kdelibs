@@ -55,13 +55,13 @@ public:
    */
   KServiceType( const QString & _fullpath, const QString& _name,
                 const QString& _icon, const QString& _comment, 
-                const QString& _resource = "servicetypes" );
+                const char * _resource = "servicetypes" );
   /**
    * Construct a service type and take all informations from a @ref KSimpleConfig object.
    * @param _fullpath set to "" if calling from a inherited constructor
    * and reimplement determineRelativePath in the inherited class.
    */
-  KServiceType( const QString & _fullpath, const QString& _resource = "servicetypes" );
+  KServiceType( const QString & _fullpath, const char *_resource = "servicetypes" );
   /**
    * @internal construct a service from a stream. 
    * The stream must already be positionned at the correct offset

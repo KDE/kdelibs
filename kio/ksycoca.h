@@ -96,7 +96,7 @@ public:
    /**
     * Determine relative path for a .desktop file from a full path and a resource name
     */
-   static QString determineRelativePath( const QString & _fullpath, const QString & _resource );
+   static QString determineRelativePath( const QString & _fullpath, const char *_resource );
 
 signals:
    /**
