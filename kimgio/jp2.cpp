@@ -1,6 +1,10 @@
 // This library is distributed under the conditions of the GNU LGPL.
 #include "config.h"
 
+#ifdef HAVE_SYS_TYPES_H
+#include <sys/types.h>
+#endif
+
 #ifdef HAVE_JASPER
 
 #include "jp2.h"
