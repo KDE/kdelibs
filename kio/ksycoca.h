@@ -24,6 +24,7 @@
 #include "ksycocatype.h"
 
 class QDataStream;
+class KSycocaPrivate;
 class KSycocaFactory;
 class KSycocaFactoryList;
 
@@ -124,6 +125,9 @@ protected:
    size_t m_sycoca_size;
    const char *m_sycoca_mmap;
    Q_UINT32 m_timeStamp;
+
+private:
+   KSycocaPrivate *d;
 };
 
 #endif

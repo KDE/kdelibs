@@ -42,13 +42,20 @@
 
 template class QList<KSycocaFactory>;
 
+struct KSycocaPrivate {
+    KSycocaPrivate() {
+        database = 0;
+    }
+    QFile *database;
+};
+
 // Read-only constructor
 KSycoca::KSycoca()
   : DCOPObject("ksycoca")
 {
+   d = new KSycocaPrivate;
    openDatabase();
    _self = this;
-
    // Register app as able to receive DCOP messages
    if (kapp && !kapp->dcopClient()->isAttached())
    {
@@ -60,6 +67,7 @@ bool KSycoca::openDatabase( bool ignoreErrors )
 {
    m_sycoca_mmap = 0;
    QString path = KGlobal::dirs()->saveLocation("config") + "ksycoca";
+   if (d->database != 0) delete d->database;
    QFile *database = new QFile(path);
    if (database->open( IO_ReadOnly ))
    {
@@ -104,6 +112,7 @@ bool KSycoca::openDatabase( bool ignoreErrors )
    }
    m_lstFactories = new KSycocaFactoryList();
    m_lstFactories->setAutoDelete( true );
+   d->database = database;
    return true;
 }
 
@@ -111,6 +120,7 @@ bool KSycoca::openDatabase( bool ignoreErrors )
 KSycoca::KSycoca( bool /* dummy */ )
   : DCOPObject("kbuildsycoca")
 {
+   d = new KSycocaPrivate;
    m_lstFactories = new KSycocaFactoryList();
    m_lstFactories->setAutoDelete( true );
    _self = this;
@@ -133,6 +143,8 @@ KSycoca::~KSycoca()
 {
    closeDatabase();
    delete m_lstFactories;
+   if (d->database != 0) delete d->database;
+   delete d;
    _self = 0L;
 }
 
