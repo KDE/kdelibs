@@ -187,8 +187,11 @@ action/help_whats_this
 action/help_report_bug
 action/help_about_app
 action/help_about_kde
+action/fullscreen
 
-
+Notes:
+* action/options_show_toolbar will also disable the "Toolbars" submenu
+  if present.
 
 Applications may use additional actions that they defined themselves.
 You can get a list of the actions used by a certain applications by using the
@@ -237,6 +240,7 @@ run_command
         - defines whether the "Run Command" (Alt-F2) option is available.
 movable_toolbars
         - define whether toolbars may be moved around by the user.
+          See also action/options_show_toolbar.
 
 Another interesting question is what the exact scope of a certain action should
 be. Looking at the "custom .desktop files" action there are two ways to prevent
