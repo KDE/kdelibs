@@ -29,6 +29,7 @@
 #include <xml/dom2_eventsimpl.h>
 #include <rendering/render_object.h>
 #include <htmltags.h>
+#include <kdebug.h>
 
 #include "kjs_text.h"
 #include "kjs_dom.h"
