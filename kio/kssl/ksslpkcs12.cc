@@ -134,8 +134,8 @@ bool KSSLPKCS12::changePassword(QString pold, QString pnew) {
 #ifdef KSSL_HAVE_SSL
    // OpenSSL makes me cast away the const here.  argh
    return (0 == kossl->PKCS12_newpass(_pkcs, 
-                                      (char *)pold.latin1(), 
-                                      (char *)pnew.latin1()));
+                           pold.isNull() ? (char *)"" : (char *)pold.latin1(), 
+                           pnew.isNull() ? (char *)"" : (char *)pnew.latin1()));
 #endif
 return false;
 }
