@@ -45,6 +45,8 @@
 class GUSOut : public MidiOut
 {
   private:
+    class GUSOutPrivate;
+    GUSOutPrivate *d;
 //    friend class DeviceManager; 
 
 

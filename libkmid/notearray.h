@@ -36,7 +36,9 @@
  */
 class NoteArray
 {
-
+  private:
+  class NoteArrayPrivate;
+  NoteArrayPrivate *d;
   struct noteCmd {
     /**
      * ms from beginning of song 

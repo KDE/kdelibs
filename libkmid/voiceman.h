@@ -35,6 +35,9 @@
 class VoiceManager
 {
   private:
+    class VoiceManagerPrivate;
+    VoiceManagerPrivate *d;
+
     /**
      * Number of voices managed by this object.
      */

@@ -126,6 +126,9 @@ struct MidiEvent
 class MidiTrack
 {
   private:
+    class MidiTrackPrivate;
+    MidiTrackPrivate *d;
+
     int	id;
 
     ulong size;

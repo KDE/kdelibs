@@ -40,6 +40,9 @@
 class MidiStatus
 {
   private:
+    class MidiStatusPrivate;
+    MidiStatusPrivate *d;
+
     ulong tempo;
 
     unsigned char chn_patch   [16];

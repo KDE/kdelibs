@@ -251,6 +251,8 @@ class AlsaOut : public MidiOut
   virtual void sync        (int i=0);  
 //#endif
 
+  class AlsaOutPrivate;
+  AlsaOutPrivate *d;
 };
 #endif // HAVE_LIBASOUND
 

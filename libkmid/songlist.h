@@ -26,6 +26,10 @@
 
 class SongList
 {
+private:
+class SongListPrivate;
+SongListPrivate *d;
+
 protected:
 int ntotal;
 

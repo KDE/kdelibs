@@ -501,6 +501,9 @@ class DeviceManager
      */
     const char *type(int i);
 
+  private:
+    class DeviceManagerPrivate;
+    DeviceManagerPrivate *d;
 };
 
 #endif

@@ -43,6 +43,8 @@
 class FMOut : public MidiOut
 {
   private:
+    class FMOutPrivate;
+    FMOutPrivate *d;
 //    friend class DeviceManager; 
 
     int patchloaded[256];

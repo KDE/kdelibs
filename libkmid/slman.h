@@ -26,6 +26,10 @@
 
 class SLManager
 {
+private:
+class SLManagerPrivate;
+SLManagerPrivate *d;
+
 protected:
 int ntotal;
 

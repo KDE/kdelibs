@@ -252,6 +252,8 @@ struct PlayerController
  */
 class MidiPlayer
 {
+  class MidiPlayerPrivate;
+  MidiPlayerPrivate *d;
 
   DeviceManager *midi;
   MidiFileInfo *info;

@@ -56,6 +56,8 @@
 class MidiMapper
 {
   private:
+    class MidiMapperPrivate;
+    MidiMapperPrivate *d;
 
     /**
      * @internal

@@ -50,6 +50,10 @@
  */
 class MidiOut
 {
+  private:
+    class MidiOutPrivate;
+    MidiOutPrivate *d;
+
   protected:
 
   /**
