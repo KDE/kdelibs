@@ -2,6 +2,7 @@
 Name=Qt CDE
 Name[de]=Qt-CDE
 Name[no_NY]=Qt-CDE
+Name[ro]=CDE Qt
 Comment=Built-in unthemed CDE style
 Comment[ca]=Estil incorporat CDE sense temes
 Comment[cs]=Zabudovaný CDE styl (bez motivu)
@@ -27,6 +28,7 @@ Comment[no_NY]=Innebygd CDE-stil utan tema
 Comment[pl]=Wbudowany styl CDE, bez motywów
 Comment[pt]=Estilo embutido CDE
 Comment[pt_BR]=Estilo predefinido CDE
+Comment[ro]=Stil CDE fără temă, intern
 Comment[ru]=Встроенный стиль CDE
 Comment[sk]=Zabudovaný netémový CDE štýl
 Comment[sl]=Vgrajen običajni stil CDE
