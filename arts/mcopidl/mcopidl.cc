@@ -894,7 +894,7 @@ void doStructHeader(FILE *header)
 		int first = 0;
 		for(i=d.contents.begin();i != d.contents.end();i++)
 		{
-			string name = createTypeCode(i->type,i->name,MODEL_ARG);
+			string name = createTypeCode(i->type,"_a_" + i->name,MODEL_ARG);
 			if(first != 0) fprintf(header,", ");
 			first++;
 			fprintf(header,"%s",name.c_str());
@@ -950,14 +950,17 @@ void doStructSource(FILE *source)
 		int first = 0;
 		for(i=d.contents.begin();i != d.contents.end();i++)
 		{
-			string name = createTypeCode(i->type,i->name,MODEL_ARG);
+			string name = createTypeCode(i->type,"_a_" + i->name,MODEL_ARG);
 			if(first != 0) fprintf(source,", ");
 			first++;
 			fprintf(source,"%s",name.c_str());
 		}
 		fprintf(source,")\n{\n");
 		for(i=d.contents.begin();i != d.contents.end();i++)
-			fprintf(source,"\tthis->%s = %s;\n",i->name.c_str(),i->name.c_str());
+		{
+			string n = "_a_" + i->name;
+			fprintf(source,"\tthis->%s = %s;\n",i->name.c_str(),n.c_str());
+		}
 		fprintf(source,"}\n\n");
 
 		/** constructor from stream **/
