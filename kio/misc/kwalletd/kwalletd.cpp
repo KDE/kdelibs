@@ -23,6 +23,7 @@
 #include "kwalletd.h"
 
 #include <dcopclient.h>
+#include <dcopref.h>
 #include <kapplication.h>
 #include <kconfig.h>
 #include <kdebug.h>
@@ -97,14 +98,22 @@ return rc;
 }
 
 
+void KWalletD::openAsynchronous(const QString& wallet, const QCString& returnObject) {
+	DCOPClient *dc = callingDcopClient();
+	int rc = open(wallet);
+
+	DCOPRef(dc->senderId(), returnObject).send("walletOpenResult", rc);
+}
+
+
 int KWalletD::open(const QString& wallet) {
 	if (!_enabled) { // guard
 		return -1;
 	}
 
-DCOPClient *dc = callingDcopClient();
-int rc = -1;
-bool brandNew = false;
+	DCOPClient *dc = callingDcopClient();
+	int rc = -1;
+	bool brandNew = false;
 
 	if (!QRegExp("^[A-Za-z0-9]+[A-Za-z0-9\\s\\-_]*$").exactMatch(wallet)) {
 		return -1;

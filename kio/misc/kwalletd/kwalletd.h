@@ -46,6 +46,10 @@ class KWalletD : public KDEDModule {
 		// Open and unlock the wallet
 		virtual int open(const QString& wallet);
 
+		// Asynchronous open - must give the object to return the handle
+		// to.
+		virtual void openAsynchronous(const QString& wallet, const QCString& returnObject);
+
 		// Close and lock the wallet
 		// If force = true, will close it for all users.  Behave.  This
 		// can break applications, and is generally intended for use by
