@@ -84,6 +84,9 @@ AudioIOOSS::AudioIOOSS()
 	 */
 	param(samplingRate) = 44100;
 	paramStr(deviceName) = "/dev/dsp";
+	/* check for devfs-only installation: */
+	if(access("/dev/dsp",F_OK) != 0 && access("/dev/sound/dsp0",F_OK) == 0)
+		paramStr(deviceName) = "/dev/sound/dsp0";
 	requestedFragmentSize = param(fragmentSize) = 1024;
 	requestedFragmentCount = param(fragmentCount) = 7;
 	param(channels) = 2;
