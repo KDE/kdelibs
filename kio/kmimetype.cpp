@@ -163,7 +163,7 @@ KMimeType::Ptr KMimeType::findByURL( const KURL& _url, mode_t _mode,
     if ( _is_local_file )
     {
       QString path ( _url.path( 0 ) );
-      if ( access( QFile::encodeFilename(path), R_OK ) == -1 )
+      if ( access( QFile::encodeName(path), R_OK ) == -1 )
 	return mimeType( "inode/directory-locked" );
     }
     return mimeType( "inode/directory" );
