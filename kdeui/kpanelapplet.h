@@ -99,7 +99,7 @@ class KPanelApplet : public QFrame
 
 public:
 
-  enum Type { Normal = 0, Stretch, TopLevel };
+  enum Type { Normal = 0, Stretch };
   enum Action { About = 1, Help = 2, Preferences = 4 };
   enum Direction { Up = 0, Down, Left, Right };
 
@@ -161,7 +161,7 @@ public:
    * The height you return is granted.
    **/
   virtual int heightForWidth(int width) const { return width; }
-    
+
   /**
    * Always use this @ref KConfig object to save/load your applets configuration.
    *
@@ -213,6 +213,11 @@ public:
    * current panel layout.
    **/
   void updateLayout();
+   
+  /**
+   * Request keyboard focus from the panel.
+   **/
+  void requestFocus();
 
 
  public slots:
@@ -266,14 +271,14 @@ public:
    * See @ref  popupDirectionChange()
    **/
   Direction popupDirection() const { return _dir; }
-    
-    
-    /** 
+
+
+    /**
      * The popup direction changed tp @p direction. Reimplement this
      * change handler in order to adjust the look of your applet.
      **/
   virtual void popupDirectionChange( Direction /*direction*/ ) {}
-    
+
 
  private:
   Type         _type;
