@@ -1257,7 +1257,7 @@ void KDirOperator::setupActions()
     connect( showHiddenAction, SIGNAL( toggled( bool ) ),
              SLOT( slotToggleHidden( bool ) ));
 
-    new KAction( i18n("Properties..."), KShortcut(ALT+Key_Return), this,
+    new KAction( i18n("Properties"), KShortcut(ALT+Key_Return), this,
                  SLOT(slotProperties()), myActionCollection, "properties" );
 }
 
