@@ -116,6 +116,7 @@ private:
 
   static void traverseChildren(QWidget *widget, Item *item);
 
+  static void manageWidget(QWidget *widget, Item *item);
   static void manageMenuBar(QMenuBar *mbar, Item *item);
   static void manageTabBar(QTabBar *bar, Item *item);
 
@@ -180,7 +181,7 @@ void KAcceleratorManagerPrivate::manage(QWidget *widget)
 
     Item *root = new Item;
 
-    traverseChildren(widget, root);
+    manageWidget(widget, root);
 
     QString used;
     calculateAccelerators(root, used);
@@ -263,86 +264,89 @@ void KAcceleratorManagerPrivate::traverseChildren(QWidget *widget, Item *item)
     if ( !w->isVisibleTo( widget ) )
         continue;
 
-    // first treat the special cases
-
-    if (w->inherits("QTabBar"))
-    {
-        manageTabBar(static_cast<QTabBar*>(w), item);
-        continue;
-    }
-
-    if (w->inherits("QPopupMenu"))
-    {
-        // create a popup accel manager that can deal with dynamic menus
-        KPopupAccelManager::manage(static_cast<QPopupMenu*>(w));
-        continue;
-    }
-
-    if (w->inherits("QMenuBar"))
-    {
-        manageMenuBar(static_cast<QMenuBar*>(w), item);
-        continue;
-    }
-
-    if (w->inherits("QComboBox") || w->inherits("QLineEdit") ||
-        w->inherits("QTextEdit") || w->inherits("QTextView") ||
-        w->inherits("QSpinBox"))
-        continue;
-
-    // now treat 'ordinary' widgets
-    if (w->isFocusEnabled() || (w->inherits("QLabel") && static_cast<QLabel*>(w)->buddy()) || w->inherits("QGroupBox"))
-    {
-      QString content;
-      QVariant variant;
-      int tprop = w->metaObject()->findProperty("text", true);
-      if (tprop != -1)  {
-          const QMetaProperty* p = w->metaObject()->property( tprop, true );
-          if ( p && p->isValid() )
-              w->qt_property( tprop, 1, &variant );
-          else
-              tprop = -1;
-      }
-
-      if (tprop == -1)  {
-          tprop = w->metaObject()->findProperty("title", true);
-          if (tprop != -1)  {
-              const QMetaProperty* p = w->metaObject()->property( tprop, true );
-              if ( p && p->isValid() )
-                  w->qt_property( tprop, 1, &variant );
-          }
-      }
-
-      if (variant.isValid())
-          content = variant.toString();
-
-      if (!content.isEmpty())
-      {
-          Item *i = new Item;
-          i->m_widget = w;
-
-          // put some more weight on the usual action elements
-          int weight = KAccelManagerAlgorithm::DEFAULT_WEIGHT;
-          if (w->inherits("QPushButton") || w->inherits("QCheckBox") || w->inherits("QRadioButton") || w->inherits("QLabel"))
-              weight = KAccelManagerAlgorithm::ACTION_ELEMENT_WEIGHT;
-
-          // don't put weight on group boxes, as usually the contents are more important
-          if (w->inherits("QGroupBox"))
-              weight = KAccelManagerAlgorithm::GROUP_BOX_WEIGHT;
-
-          // put a lot of extra weight on the KDialogBaseButton's
-          if (w->inherits("KDialogBaseButton"))
-              weight += KAccelManagerAlgorithm::DIALOG_BUTTON_EXTRA_WEIGHT;
-
-          i->m_content = KAccelString(content, weight);
-          item->addChild(i);
-      }
-    }
-
-    traverseChildren(w, item);
+    manageWidget(w, item);
   }
   delete childList;
 }
 
+void KAcceleratorManagerPrivate::manageWidget(QWidget *w, Item *item)
+{
+  // first treat the special cases
+
+  if (w->inherits("QTabBar"))
+  {
+      manageTabBar(static_cast<QTabBar*>(w), item);
+      return;
+  }
+  
+  if (w->inherits("QPopupMenu"))
+  {
+      // create a popup accel manager that can deal with dynamic menus
+      KPopupAccelManager::manage(static_cast<QPopupMenu*>(w));
+      return;
+  }
+
+  if (w->inherits("QMenuBar"))
+  {
+      manageMenuBar(static_cast<QMenuBar*>(w), item);
+      return;
+  }
+
+  if (w->inherits("QComboBox") || w->inherits("QLineEdit") ||
+      w->inherits("QTextEdit") || w->inherits("QTextView") ||
+      w->inherits("QSpinBox"))
+      return;
+
+  // now treat 'ordinary' widgets
+  if (w->isFocusEnabled() || (w->inherits("QLabel") && static_cast<QLabel*>(w)->buddy()) || w->inherits("QGroupBox"))
+  {
+    QString content;
+    QVariant variant;
+    int tprop = w->metaObject()->findProperty("text", true);
+    if (tprop != -1)  {
+        const QMetaProperty* p = w->metaObject()->property( tprop, true );
+        if ( p && p->isValid() )
+            w->qt_property( tprop, 1, &variant );
+        else
+            tprop = -1;
+    }
+
+    if (tprop == -1)  {
+        tprop = w->metaObject()->findProperty("title", true);
+        if (tprop != -1)  {
+            const QMetaProperty* p = w->metaObject()->property( tprop, true );
+            if ( p && p->isValid() )
+                w->qt_property( tprop, 1, &variant );
+        }
+    }
+
+    if (variant.isValid())
+        content = variant.toString();
+
+    if (!content.isEmpty())
+    {
+        Item *i = new Item;
+        i->m_widget = w;
+
+        // put some more weight on the usual action elements
+        int weight = KAccelManagerAlgorithm::DEFAULT_WEIGHT;
+        if (w->inherits("QPushButton") || w->inherits("QCheckBox") || w->inherits("QRadioButton") || w->inherits("QLabel"))
+            weight = KAccelManagerAlgorithm::ACTION_ELEMENT_WEIGHT;
+
+        // don't put weight on group boxes, as usually the contents are more important
+        if (w->inherits("QGroupBox"))
+            weight = KAccelManagerAlgorithm::GROUP_BOX_WEIGHT;
+
+        // put a lot of extra weight on the KDialogBaseButton's
+        if (w->inherits("KDialogBaseButton"))
+            weight += KAccelManagerAlgorithm::DIALOG_BUTTON_EXTRA_WEIGHT;
+
+        i->m_content = KAccelString(content, weight);
+        item->addChild(i);
+    }
+  }
+  traverseChildren(w, item);
+}
 
 void KAcceleratorManagerPrivate::manageTabBar(QTabBar *bar, Item *item)
 {
