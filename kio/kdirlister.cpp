@@ -371,7 +371,7 @@ void KDirLister::slotRedirection( KIO::Job *job, const KURL & url )
   {
     for ( KFileItem *item = m_lstFileItems.first(); item; item = m_lstFileItems.next() )
     {
-      if ( oldUrl.isParentOf( item->url() ) )
+      if ( oldUrl.isParentOf( item->url() ) && (!oldUrl.cmp(item->url())) )
         item->unmark();
       else
         item->mark();

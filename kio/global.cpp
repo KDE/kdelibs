@@ -227,7 +227,8 @@ QString KIO::buildErrorString(int errorCode, const QString &errorText)
       result = i18n( "The protocol %1\nis only a filter protocol.\n").arg( errorText );
       break;
     case  KIO::ERR_UNSUPPORTED_ACTION:
-      result = i18n( "Unsupported action\n%1" ).arg( errorText );
+      result = m_errorText;
+//       result = i18n( "Unsupported action\n%1" ).arg( errorText );
       break;
     case  KIO::ERR_IS_DIRECTORY:
       result = i18n( "%1\n is a directory,\nbut a file was expected." ).arg( errorText );
