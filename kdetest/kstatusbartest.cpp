@@ -42,6 +42,8 @@ testWindow::testWindow (QWidget *, const char *name)
     setStatusBar (statusbar);
     setView (widget);
 
+	setCaption( KApplication::getKApplication()->getCaption() );
+
     smenu = new QPopupMenu;
   
     smenu->insertItem("50%");
