@@ -925,13 +925,13 @@ void UIServer::cancelCurrent() {
   QListViewItemIterator it( listProgress );
   ProgressItem *item;
 
-  // kill all selected jobs
-  while ( it.current() ) {
+  // kill selected jobs
+  for ( ; it.current() ; ++it )
+  {
     if ( it.current()->isSelected() ) {
       item = (ProgressItem*) it.current();
       killJob( item->appId(), item->jobId() );
-    } else {
-      it++; // update counts
+      return;
     }
   }
 }
