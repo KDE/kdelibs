@@ -224,6 +224,8 @@ protected:
 
 
 private:
+    // Returns whether item is still a valid item in the tree
+    bool isValidItem( QListViewItem *item);
     void clearTree();
 
 
