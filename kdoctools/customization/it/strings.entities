@@ -13,14 +13,14 @@
 <!ENTITY FDLInvariantSections "nessuna sezione invariante">
 <![%FDLFCT;[
 <!ENTITY FDLFCTTitles "LISTA"><!-- keep capitals -->
-<!ENTITY FDLFrontCoverText "i testi di Front-Cover essendo &FDLFCTTitles;">
+<!ENTITY FDLFrontCoverText "i testi di copertina anteriore essendo &FDLFCTTitles;">
  ]]>
-<!ENTITY FDLFrontCoverText "nessun testo di Front-Cover">
+<!ENTITY FDLFrontCoverText "nessun testo di copertina anteriore">
 <![%FDLBCT;[
 <!ENTITY FDLBCTTitles "LISTA DEI LORO TITOLI"><!-- keep capitals -->
-<!ENTITY FDLBackCoverText "i testi di Back-Cover essendo &FDLBCTTitles;">
+<!ENTITY FDLBackCoverText "i testi di copertina posteriore essendo &FDLBCTTitles;">
  ]]>
-<!ENTITY FDLBackCoverText "nessun testo di Back-Cover">
+<!ENTITY FDLBackCoverText "nessun testo di copertina posteriore">
 
 <!-- modespec entity: must be adapted in accordance with the normal usage
      for documents in a language; the most likely candidates are the value
