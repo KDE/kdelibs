@@ -26,6 +26,8 @@
 #include <ktempfile.h>
 #include <kdebug.h>
 
+#include <assert.h>
+
 using namespace KParts;
 
 BrowserRun::BrowserRun( const KURL& url, const KParts::URLArgs& args,
