@@ -120,7 +120,7 @@ void RenderHR::calcMinMaxWidth()
     // a bit hacky....
     calcWidth();
     length = m_width;
-    m_width = intrinsicWidth();
+    //m_width = intrinsicWidth();
 
     switch(w.type)
     {

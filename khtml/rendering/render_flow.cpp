@@ -315,7 +315,7 @@ void RenderFlow::layoutBlockChildren()
         m_height += paddingTop();
         toAdd += paddingBottom();
     }
-    xPos += marginLeft();
+    //xPos += marginLeft();
 
     if( m_style->direction() == RTL ) {
 	xPos = marginLeft() + m_width - paddingRight() - borderRight();
@@ -358,7 +358,7 @@ void RenderFlow::layoutBlockChildren()
 
         child->layout();
 
-	int chPos = xPos;
+	int chPos = xPos + child->marginLeft();
 	if( m_style->textAlign() == KONQ_CENTER ) {
 	    //kdDebug() << "should align to center" << endl;
 	    chPos += ( width() - child->width() )/2;
