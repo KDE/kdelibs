@@ -7,8 +7,7 @@
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
-    License as published by the Free Software Foundation; either
-    version 2 of the License, or (at your option) any later version.
+    License version 2 as published by the Free Software Foundation.
 
     This library is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -35,6 +34,8 @@ class KLineEdit;
 class KToolBar;
 class KToolBarItemList;
 class KToolBoxManager;
+
+class KToolBarPrivate;
 
  /**
   * A KDE-style toolbar.
@@ -65,9 +66,8 @@ class KToolBoxManager;
   * @version $Id$
   * @author Stephan Kulow <coolo@kde.org>, Sven Radej <radej@kde.org>.
   */
- class KToolBar : public QFrame
-  {
-
+class KToolBar : public QFrame
+{
   Q_OBJECT
 
   friend class KToolBarButton;
@@ -101,7 +101,7 @@ public:
    * @ref setIconText() .
    * Setting size in constructor is not recommended.
    */
-  KToolBar(QWidget *parent=0L, const char *name=0L, int _item_size = -1, bool _honor_mode=false);
+  KToolBar(QWidget *parent=0L, const char *name=0L, bool _honor_mode=false);
 
   /**
    * Destructor.
@@ -109,6 +109,42 @@ public:
    *  If toolbar is floating it will cleanup itself.
    */
   virtual ~KToolBar();
+
+  /**
+   * Insert a pushbutton (a KButton) with a pixmap.  The pixmap is
+   * loaded by the button itself based on the toolbar it's inserted
+   * into.
+   *
+   * You should connect to one or more signals in
+   * KToolBar: @ref clicked() , @ref pressed() , @ref released() ,
+   * or @ref highlighted()  and
+   * if the button is a toggle button (@ref setToggle() ) @ref toggled() . 
+   * Those
+   * signals have @p id of a button that caused the signal.
+   * If you want to bind a popup to button, see  @ref setButton().
+   *
+   * @param index The position of the button. (-1 = at end).
+   * @return Item index.
+   */
+  int insertButton(const QString& icon, int id, bool enabled = true,
+                   const QString& ToolTipText = QString::null, int index=-1 );
+
+   /**
+   * This is the same as above, but with specified signals and
+   * slots to which this button will be connected.
+   *
+   * Button emits
+   * signals @ref KButton::pressed(), @ref KButton::clicked(), and
+   * @ref KButton::released(), and
+   * if toolbar is toggle button ( @ref setToggle() ) @ref toggled().
+   * You can add more signals with @ref addConnection().
+   * @return Item index.
+   */
+  int insertButton(const QString& icon, int ID, const char *signal,
+                   const QObject *receiver, const char *slot,
+                   bool enabled = true,
+                   const QString& tooltiptext = QString::null,
+                   int index=-1 );
 
   /**
    * Insert a pushbutton (a KButton) with a pixmap.
@@ -255,10 +291,9 @@ public:
   /**
    * Insert a user-defined widget.
    *
-   *  Widget must have a QWidget for
-   * base class.
-   * Widget can be autosized to full width. If you forget about it, you
-   * can get a pointer to this widget with @ref getWidget().
+   * Widget must have a QWidget for base class.  Widget can be
+   * autosized to full width. If you forget about it, you can get a
+   * pointer to this widget with @ref getWidget().
    * @see setItemAutoSized()
    * @return Item index.
    */
@@ -576,7 +611,7 @@ public:
   /**
    * Retrieve position of toolbar.
    */
-  BarPosition barPos() {return position;}
+  BarPosition barPos();
 
   /**
    * Show, hide, or toggle toolbar.
@@ -605,10 +640,7 @@ public:
   /**
    * Retrieve the value that was set with @ref setMaxHeight().
    */
-  int maxHeight()
-  {
-      return (maxVerHeight);
-  }
+  int maxHeight();
 
   /**
    * Set maximal width of horizontal (top or bottom) toolbar.
@@ -622,10 +654,7 @@ public:
   /**
    * Retrieve the value that was set with @ref setMaxWidth().
    */
-  int maxWidth()
-  {
-      return (maxHorWidth);
-  }
+  int maxWidth();
 
   /**
    * Set title for toolbar when it floats.
@@ -633,7 +662,7 @@ public:
    * Titles are however not (yet)
    * visible. You can't change toolbar's title while it's floating.
    */
-  void setTitle (const QString& _title) {title = _title;}
+  void setTitle (const QString& _title);
 
   /**
    * Enable or disable floating.
@@ -664,6 +693,16 @@ public:
    * @return The current kind of painting for buttons.
    */
   IconText iconText() const;
+
+  /**
+   * This will inform a toolbar button to ignore certain style
+   * changes.  Specifically, it will ignore IconText (always IconOnly)
+   * and will not allow image effects to apply.
+   *
+   * @param id The button to exclude from styles
+   * @param no_style If true, then it is excluded (default: true).
+   */
+  void setItemNoStyle(int id, bool no_style = true);
 
   /**
    * Arrange the toolbar items and calculates their
@@ -809,39 +848,6 @@ signals:
      */
     void modechange ();
 
-private:
-
-  KToolBarItemList *items;
-
-  QString title;
-  bool fullSizeMode;
-  BarPosition position;
-  bool moving;
-  QWidget *Parent;
-  int toolbarWidth;
-  int toolbarHeight;
-
-  int oldX;
-  int oldY;
-  int oldWFlags;
-
-  int min_width;
-  int min_height;
-
-  int maxHorWidth;
-  int maxVerHeight;
-
-  BarPosition lastPosition; // Where was I last time I was?
-  BarPosition movePos;      // Where was I moved to?
-  bool mouseEntered;  // Did the mouse touch the cheese?
-  bool horizontal;    // Do I stand tall?
-  bool localResize;   // Am I trying to understand recursion?
-  bool wasfullSize;  // Was I loong when I was?
-  bool haveAutoSized; // Do I have a problem?
-
-  KToolBoxManager *mgr;
-  bool buttonDownOnHandle;
-
 protected:
   QPopupMenu *context;
 
@@ -857,6 +863,11 @@ protected:
   void layoutHorizontal(int maxHorWidth);
   void leaveEvent (QEvent *e);
 
+  /**
+   * This will return a pointer to the list of toolbar items
+   */
+  KToolBarItemList *items();
+  bool highlight() const;
 
 private slots:
   void ButtonClicked(int);
@@ -870,17 +881,30 @@ private slots:
   void slotReadConfig ();
   void slotHotSpot (int i);
 
-
 private:
-   QPoint pointerOffset;
-   QPoint parentOffset;
-   int item_size;  // normal: 26
-   IconText icon_text;
-   bool highlight; // yes/no
-   QSize szh;      // Size for sizeHint
-   bool fixed_size; // do not change the toolbar size
-   bool transparent; // type of moving
-   bool honor_mode; // honor the icon_text variable
-  };
+  bool fullSizeMode;
+  bool moving;
+  int toolbarWidth;
+  int toolbarHeight;
+
+  int oldX;
+  int oldY;
+  int oldWFlags;
+
+  int min_width;
+  int min_height;
+
+  BarPosition lastPosition; // Where was I last time I was?
+  BarPosition movePos;      // Where was I moved to?
+  bool mouseEntered;  // Did the mouse touch the cheese?
+  bool localResize;   // Am I trying to understand recursion?
+  bool wasfullSize;  // Was I loong when I was?
+  bool haveAutoSized; // Do I have a problem?
+
+  KToolBoxManager *mgr;
+  bool buttonDownOnHandle;
+
+  KToolBarPrivate *d;
+};
 
 #endif

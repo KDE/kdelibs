@@ -727,7 +727,7 @@ KToolBar *KTMainWindow::toolBar( int ID )
       ;
   if (!result) {
     bool honor_mode = (ID == 0) ? true : false;
-    result  = new KToolBar(this, 0, -1, honor_mode);
+    result  = new KToolBar(this, 0, honor_mode);
     toolbars.append( result );
     while (int(toolbars.count()) < ID){
       toolbars.append( result );
@@ -889,7 +889,7 @@ QWidget *KTMainWindow::createContainer( QWidget *parent, int index, const QDomEl
   if ( element.tagName().lower() == "toolbar" )
   {
     bool honor = (element.attribute( "name" ) == "mainToolBar") ? true : false;
-    KToolBar *bar = new KToolBar(this, element.attribute( "name" ).utf8(), -1, honor);
+    KToolBar *bar = new KToolBar(this, element.attribute( "name" ).utf8(), honor);
 
     addToolBar( bar );
 

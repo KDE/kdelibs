@@ -8,8 +8,7 @@
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
-    License as published by the Free Software Foundation; either
-    version 2 of the License, or (at your option) any later version.
+    License version 2 as published by the Free Software Foundation.
 
     This library is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -63,78 +62,81 @@ enum {
     CONTEXT_TEXTUNDER = 9
 };
 
+class KToolBarPrivate
+{
+public:
+  KToolBarPrivate()
+  {
+    m_iconSize     = "Normal";
+    m_iconText     = KToolBar::IconOnly;
+    m_position     = KToolBar::Top;
+    m_highlight    = true;
+    m_transparent  = true;
+    m_honorStyle   = false;
+    m_isHorizontal = true;
+
+    m_items = new KToolBarItemList;
+    m_items->setAutoDelete(true);
+
+    m_maxItemWidth  = 0;
+    m_maxItemHeight = 0;
+
+    m_maxHorWidth   = -1;
+    m_maxVerHeight  = -1;
+
+    m_approxItemSize = 26;
+  }
+  ~KToolBarPrivate()
+  {
+    delete m_items; m_items = 0;
+  }
+  QString m_iconSize;
+  QString m_title;
+  KToolBar::IconText    m_iconText;
+  KToolBar::BarPosition m_position;
+  bool m_highlight;
+  bool m_transparent;
+  bool m_honorStyle;
+  bool m_isHorizontal;
+
+  KToolBarItemList *m_items;
+  QWidget          *m_parent;
+
+  int m_maxItemWidth;
+  int m_maxItemHeight;
+  int m_maxHorWidth;
+  int m_maxVerHeight;
+
+  int m_approxItemSize;
+};
+
 // this should be adjustable (in faar future... )
 #define MIN_AUTOSIZE 150
 
 /****************************** Tolbar **************************************/
 
-KToolBar::KToolBar(QWidget *parent, const char *name, int _item_size, bool _honor_mode)
+KToolBar::KToolBar(QWidget *parent, const char *name, bool _honor_mode)
   : QFrame( parent, name )
 {
-  items = new KToolBarItemList();
-  item_size = _item_size;
-  honor_mode = _honor_mode;
-  fixed_size =  (item_size > 0);
-  if (!fixed_size)
-  item_size = 30;
-  maxHorWidth = maxVerHeight = -1;
+  d = new KToolBarPrivate;
+  d->m_honorStyle = _honor_mode;
+  d->m_parent     = parent;        // our father
+
   init();
-  Parent = parent;        // our father
-  mouseEntered=false;
-  localResize=false;
-  buttonDownOnHandle = FALSE;
 }
 
-void KToolBar::ContextCallback( int )
+KToolBar::~KToolBar()
 {
-  int i = context->exec();
-  switch ( i )
-    {
-    case CONTEXT_LEFT:
-      setBarPos( Left );
-      break;
-    case CONTEXT_RIGHT:
-      setBarPos( Right );
-      break;
-    case CONTEXT_TOP:
-      setBarPos( Top );
-      break;
-    case CONTEXT_BOTTOM:
-      setBarPos( Bottom );
-      break;
-    case CONTEXT_FLOAT:
-      if (position == Floating)
-        setBarPos (lastPosition);
-      else
-      {
-        setBarPos( Floating );
-        move(QCursor::pos());
-        show();
-      }
-      break;
-    case CONTEXT_FLAT:
-      setFlat (position != Flat);
-      break;
-    case CONTEXT_ICONS:
-      setIconText( IconOnly );
-      break;
-    case CONTEXT_TEXTRIGHT:
-      setIconText( IconTextRight );
-      break;
-    case CONTEXT_TEXT:
-      setIconText( TextOnly );
-      break;
-    case CONTEXT_TEXTUNDER:
-      setIconText( IconTextBottom );
-      break;
-    }
+  delete d;
 
-  mouseEntered=false;
-  repaint(false);
+  // I would never guess that (sven)
+  if (!QApplication::closingDown())
+     delete context;
 }
 
 void KToolBar::init()
 {
+  // construct our context popup menu
   context = new QPopupMenu( 0, "context" );
   context->insertItem( i18n("Left"), CONTEXT_LEFT );
   context->insertItem( i18n("Top"),  CONTEXT_TOP );
@@ -142,6 +144,7 @@ void KToolBar::init()
   context->insertItem( i18n("Bottom"), CONTEXT_BOTTOM );
   context->insertItem( i18n("Floating"), CONTEXT_FLOAT );
   context->insertItem( i18n("Flat"), CONTEXT_FLAT );
+  context->insertSeparator(-1);
 
   QPopupMenu *mode = new QPopupMenu( context, "mode" );
   mode->insertItem( i18n("Icons only"), CONTEXT_ICONS );
@@ -150,739 +153,847 @@ void KToolBar::init()
   mode->insertItem( i18n("Text under icons"), CONTEXT_TEXTUNDER );
 
   context->insertItem( i18n("Mode"), mode );
-//   connect( context, SIGNAL( activated( int ) ), this,
-// 	   SLOT( ContextCallback( int ) ) );
 
-  //MD (17-9-97) Toolbar full width by default
-  fullSizeMode=true;
+  // set some more defaults
+  fullSizeMode  = true;
+  mouseEntered  = false;
+  localResize   = false;
+  buttonDownOnHandle = FALSE;
+  moving        = true;
+  min_width     = -1;
+  min_height    = -1;
+  haveAutoSized = false;
+  mgr           = 0L;
 
-  position = Top;
-  moving = true;
-  icon_text = IconOnly;
-  highlight = 0;
   setFrameStyle(NoFrame);
   setLineWidth( 1 );
-  transparent = false;
-  min_width = min_height = -1;
   updateGeometry();
-
-  items->setAutoDelete(true);
-  enableFloating (true);
-  // To make touch-sensitive handle - sven 040198
+  enableFloating(true);
   setMouseTracking(true);
-  haveAutoSized=false;      // do we have autosized item - sven 220198
-  connect (kapp, SIGNAL(appearanceChanged()), this, SLOT(slotReadConfig()));
-  slotReadConfig();
 
-  mgr =0;
+  connect(kapp, SIGNAL(appearanceChanged()), this, SLOT(slotReadConfig()));
+
+  // finally, read in our configurable settings
+  slotReadConfig();
 }
 
 void KToolBar::slotReadConfig()
 {
+  // read in the global ('kdeglobals') config file
   KConfig *config = KGlobal::config();
   QString group = config->group();
-  config->setGroup(QString::fromLatin1("Toolbar style"));
+
+  static QString grpToolbar = QString::fromLatin1("Toolbar style");
+  static QString grpKDE     = QString::fromLatin1("KDE");
+
+  static QString attrIconText  = QString::fromLatin1("IconText");
+  static QString attrHighlight = QString::fromLatin1("Highlighting");
+  static QString attrTrans     = QString::fromLatin1("TransparentMoving");
+  static QString attrIconStyle = QString::fromLatin1("KDEIconStyle");
+
+  // first, get the toolbar specific settings
+  config->setGroup(grpToolbar);
+  bool highlight  = (bool)config->readNumEntry(attrHighlight, 1);
+  int transparent = config->readBoolEntry(attrTrans, true);
+
+  // we read in the IconText property *only* if we intend on actually
+  // honoring it
   IconText icontext;
-  if (honor_mode)
-    icontext = (IconText)config->readNumEntry(QString::fromLatin1("IconText"), IconOnly);
+  if (d->m_honorStyle)
+    icontext = (IconText)config->readNumEntry(attrIconText, IconOnly);
   else
     icontext = IconOnly;
-  int tsize=config->readNumEntry(QString::fromLatin1("Size"), 30);
-  int _highlight =config->readNumEntry(QString::fromLatin1("Highlighting"), 1);
-  int _transparent = config->readBoolEntry(QString::fromLatin1("TransparentMoving"), true);
+
+  // now get the other global settings
+  config->setGroup(grpKDE);
+  QString iconstyle = config->readEntry(attrIconStyle, "Normal");
+
+  // the actual size of the toolbar will be dependent on the buttons..
+  // but we can make some guesses now
+  if (iconstyle == "Large")
+    d->m_approxItemSize = 36;
+  else if (iconstyle == "Small")
+    d->m_approxItemSize = 20;
+  else
+    d->m_approxItemSize = 26;
+
+  // revert back to the old group
   config->setGroup(group);
 
-  bool doUpdate=false;
+  bool doUpdate = false;
 
-  if (!fixed_size && tsize != item_size && tsize>20)
+  // check if the icon/text has changed
+  if (icontext != d->m_iconText)
   {
-    item_size = tsize;
-    doUpdate=true;
+    d->m_iconText = icontext;
+    doUpdate = true;
   }
 
-  if (icontext != icon_text)
+  // ...and check if the icon size has changed
+  if (iconstyle != d->m_iconSize)
   {
-    if (icontext == IconTextBottom)
-      item_size = (item_size < 44) ? 44 : item_size;
-    icon_text=icontext;
-    doUpdate=true;
+    d->m_iconSize = iconstyle;
+    doUpdate = true;
   }
 
-  if (_highlight != highlight)
+  // ...and if we should highlight
+  if (highlight != d->m_highlight)
   {
-    highlight = _highlight;
-    doUpdate=true;
+    d->m_highlight = highlight;
+    doUpdate = true;
   }
 
-  if (_transparent != transparent)
+  // ...and if we should move transparently
+  if (transparent != d->m_transparent)
   {
-    transparent= _transparent;
-    doUpdate=false;
+    d->m_transparent = transparent;
+    doUpdate = false;
   }
 
   if (doUpdate)
     emit modechange(); // tell buttons what happened
   if (isVisible ())
-	  updateRects(true);
+    updateRects(true);
 }
 
 void KToolBar::drawContents ( QPainter *)
 {
 }
 
-KToolBar::~KToolBar()
+void KToolBar::setMaxHeight(int h)
 {
-  delete items;
-
-  // I would never guess that (sven)
-  if (!QApplication::closingDown())
-	   delete context;
+  d->m_maxVerHeight = h;
+  updateRects(true);
 }
 
-void KToolBar::setMaxHeight (int h)
+int KToolBar::maxHeight()
 {
-	maxVerHeight = h;
-	updateRects(true);
+  return d->m_maxVerHeight;
 }
 
 void KToolBar::setMaxWidth (int w)
 {
-	maxHorWidth = w;
-	updateRects(true);
+  d->m_maxHorWidth = w;
+  updateRects(true);
 }
 
-void
-KToolBar::layoutHorizontal(int w)
+int KToolBar::maxWidth()
 {
-	int xOffset = 4 + 9 + 3;
-	int yOffset = 1;
-	int widest = 0;
-	int tallest = 0;
+  return d->m_maxHorWidth;
+}
 
-	horizontal = true;
+void KToolBar::setTitle(const QString& title)
+{
+  d->m_title = title;
+}
 
-	/* For the horizontal layout we have to iterate twice through the toolbar
-	 * items. During the first iteration we position the left aligned items,
-	 * find the auto-size item and accumulate the total with for the left
-	 * aligned widgets. */
-	KToolBarItem* autoSizeItem = 0;
-	/* This variable is used to accumulate the horizontal space the
-	 * left aligned items need. This includes the 3 pixel space
-	 * between the items. */
-	int totalRightItemWidth = 0;
+void KToolBar::layoutHorizontal(int w)
+{
+  int xOffset = 4 + 9 + 3;
+  int yOffset = 1;
+  int widest  = 0;
+  int tallest = 0;
 
-	/* First iteration */
-	QListIterator<KToolBarItem> qli(*items);
-	for (; *qli; ++qli)
+  /* We are, obviously, a horizontal toolbar */
+  d->m_isHorizontal = true;
+
+  /* For the horizontal layout we have to iterate three times through
+   * the toolbar items.  During the first iteration, we find out the
+   * size of the largest (non-autosized and non-right-aligned) button */
+  QListIterator<KToolBarItem> qli(*d->m_items);
+  if (d->m_honorStyle)
+  {
+    for (; *qli; ++qli)
     {
-        /* check for the line */
-        Item *item = (*qli)->getItem();
-        if (item->inherits("QFrame"))
-        {
-            QFrame *frame = (QFrame*)item;
-            if (frame->frameShape() == QFrame::HLine)
-            {
-                frame->setFrameShape(QFrame::VLine);
-                frame->resize(5, item_size - 2);
-                continue;
-            }
-        }
+      /* make sure this is a button */
+      if ((*qli)->itemType() != KToolBarItem::Button)
+        continue;
 
-		if (!(*qli)->isRight())
-		{
-			int itemWidth = (*qli)->width();
-			if ((*qli)->isAuto())
-			{
-				itemWidth = MIN_AUTOSIZE;
-				autoSizeItem = *qli;
-			}
+      if ((*qli)->width() > d->m_maxItemWidth)
+        d->m_maxItemWidth = (*qli)->width();
 
-			if (xOffset + 3 + itemWidth > w)
-			{
-				/* The current line is full. We need to wrap-around and start
-				 * a new line. */
-				xOffset = 4 + 9 + 3;
-				yOffset += tallest + 3;
-				tallest = 0;
-			}
+      if ((*qli)->height() > d->m_maxItemHeight)
+        d->m_maxItemHeight = (*qli)->height();
+    }
+  }
 
-			(*qli)->move(xOffset, yOffset);
-			xOffset += 3 + itemWidth;
+  /* During the second iteration we resize and position the left
+   * aligned items, find the auto-size item and accumulate the total
+   * width for the left aligned widgets. */
+  KToolBarItem* autoSizeItem = 0;
 
-			/* We need to save the tallest height and the widest width. */
-			if (itemWidth > widest)
-				widest = itemWidth;
-			if ((*qli)->height() > tallest)
-				tallest = (*qli)->height();
-		}
-		else
-		{
-			totalRightItemWidth += (*qli)->width() + 3;
-			if ((*qli)->isAuto())
-				debug("Right aligned toolbar item cannot be auto-sized!");
-		}
+  /* This variable is used to accumulate the horizontal space the
+   * left aligned items need. This includes the 3 pixel space
+   * between the items. */
+  int totalRightItemWidth = 0;
+
+  /* Second iteration */
+  for (qli.toFirst(); *qli; ++qli)
+  {
+    /* check for the line */
+    Item *item = (*qli)->getItem();
+
+    /* handle vertical separator lines */
+    if (item->inherits("QFrame"))
+    {
+      QFrame *frame = (QFrame*)item;
+      if (frame->frameShape() == QFrame::HLine)
+      {
+        frame->setFrameShape(QFrame::VLine);
+        frame->resize(5, tallest - 2);
+        continue;
+      }
     }
 
-	int newXOffset = w - (3 + (totalRightItemWidth + 3) % w);
-	if (newXOffset < xOffset)
-	{
-		/* right aligned items do not fit in the current line, so we start
-		 * a new line */
-		if (autoSizeItem)
-		{
-			/* The auto-sized widget extends from the last normal left-alined
-			 * item to the right edge of the widget */
-			autoSizeItem->resize(w - xOffset - 3 + MIN_AUTOSIZE,
-								 autoSizeItem->height());
-		}
-		yOffset += tallest + 3;
-		tallest = 0;
-	}
-	else
-	{
-		/* Right aligned items do fit in the current line. The auto-space
-		 * item may fill the space between left and right aligned items. */
-		if (autoSizeItem)
-			autoSizeItem->resize(newXOffset - xOffset - 3 + MIN_AUTOSIZE,
-								 autoSizeItem->height());
-	}
-	xOffset = newXOffset;
+    // now handle this item if it is NOT right aligned
+    if ((*qli)->isRight() == false)
+    {
+      int itemWidth  = (*qli)->width();
+      int itemHeight = (*qli)->height();
+      if ((*qli)->isAuto())
+      {
+        itemWidth = MIN_AUTOSIZE;
+        autoSizeItem = *qli;
+      }
+      else
+      {
+        /* if this isn't autosized, then make sure that it is the same
+         * size as the maximum width IF it is a button */
+        if ((itemWidth < d->m_maxItemWidth) &&
+            ((*qli)->itemType() == KToolBarItem::Button))
+        {
+          (*qli)->resize(d->m_maxItemWidth, d->m_maxItemHeight);
+          itemWidth  = d->m_maxItemWidth;
+          itemHeight = d->m_maxItemHeight;
+        }
+      }
 
-	/* During the second iteration we position the left aligned items. */
-	for (qli.toFirst(); *qli; ++qli)
-		if ((*qli)->isRight())
-		{
-			if (xOffset + 3 + (*qli)->width() > w)
-			{
-				xOffset = 4 + 9 + 3;
-				yOffset += tallest + 3;
-				tallest = 0;
-			}
+      /* make sure that it is the standard height */
+      if ((itemHeight < d->m_maxItemHeight) &&
+          ((*qli)->itemType() == KToolBarItem::Button))
+        (*qli)->resize(d->m_maxItemWidth, d->m_maxItemHeight);
 
-			(*qli)->move(xOffset, yOffset);
-			xOffset += 3 + (*qli)->width();
+      if (xOffset + 3 + itemWidth > w)
+      {
+        /* The current line is full. We need to wrap-around and start
+         * a new line. */
+        xOffset = 4 + 9 + 3;
+        yOffset += tallest + 3;
+        tallest = 0;
+      }
 
-			/* We need to save the tallest height and the widest width. */
-			if ((*qli)->width() > widest)
-				widest = (*qli)->width();
-			if ((*qli)->height() > tallest)
-				tallest = (*qli)->height();
-		}
+      /* position the button (or item.. whatever) */
+      (*qli)->move(xOffset, yOffset);
+      xOffset += 3 + itemWidth;
 
-	toolbarWidth = w;
-	toolbarHeight = yOffset + tallest + 1;
-	min_width = 4 + 9 + 3 + widest + 3;
-	min_height = toolbarHeight;
-	updateGeometry();
+      /* We need to save the tallest height and the widest width. */
+      if (itemWidth > widest)
+        widest = itemWidth;
+      if ((*qli)->height() > tallest)
+        tallest = (*qli)->height();
+    }
+    else
+    {
+      totalRightItemWidth += (*qli)->width() + 3;
+    }
+  }
+
+  int newXOffset = w - (3 + (totalRightItemWidth + 3) % w);
+  if (newXOffset < xOffset)
+  {
+    /* right aligned items do not fit in the current line, so we start
+     * a new line */
+    if (autoSizeItem)
+    {
+      /* The auto-sized widget extends from the last normal left-alined
+       * item to the right edge of the widget */
+      autoSizeItem->resize(w - xOffset - 3 + MIN_AUTOSIZE,
+                           autoSizeItem->height());
+    }
+    yOffset += tallest + 3;
+    tallest = 0;
+  }
+  else
+  {
+    /* Right aligned items do fit in the current line. The auto-space
+     * item may fill the space between left and right aligned items. */
+    if (autoSizeItem)
+      autoSizeItem->resize(newXOffset - xOffset - 3 + MIN_AUTOSIZE,
+                           autoSizeItem->height());
+  }
+  xOffset = newXOffset;
+
+  /* During the last iteration we position the right aligned items. */
+  for (qli.toFirst(); *qli; ++qli)
+  {
+    if ((*qli)->isRight())
+    {
+      if (xOffset + 3 + (*qli)->width() > w)
+      {
+        xOffset = 4 + 9 + 3;
+        yOffset += tallest + 3;
+        tallest = 0;
+      }
+
+      (*qli)->move(xOffset, yOffset);
+      xOffset += 3 + (*qli)->width();
+
+      /* We need to save the tallest height and the widest width. */
+      if ((*qli)->width() > widest)
+        widest = (*qli)->width();
+      if ((*qli)->height() > tallest)
+        tallest = (*qli)->height();
+    }
+  }
+
+  toolbarWidth = w;
+  toolbarHeight = yOffset + tallest + 1;
+  min_width = 4 + 9 + 3 + widest + 3;
+  min_height = toolbarHeight;
+  updateGeometry();
 }
 
 int
 KToolBar::heightForWidth(int w) const
 {
-	if (!w) return min_height;
+  if (!w) return min_height;
 
-	/* This function only works for Top, Bottom or Floating tool
-	 * bars. For other positions it should never be called. To be save
-	 * on the save side the current minimum height is returned. */
-	if (position != Top && position != Bottom && position != Floating)
-		return (min_height);
+  /* This function only works for Top, Bottom or Floating tool
+   * bars. For other positions it should never be called. To be save
+   * on the save side the current minimum height is returned. */
+  if (d->m_position != Top && d->m_position != Bottom && d->m_position != Floating)
+    return (min_height);
 
-	int xOffset = 4 + 9 + 3;
-	int yOffset = 1;
-	int tallest = 0;
+  int xOffset = 4 + 9 + 3;
+  int yOffset = 1;
+  int tallest = 0;
 
-	/* This variable is used to accumulate the horizontal space the
-	 * left aligned items need. This includes the 3 pixel space
-	 * between the items. */
-	int totalRightItemWidth = 0;
-	QListIterator<KToolBarItem> qli(*items);
-	for (; *qli; ++qli)
-	{
-		if (!(*qli)->isRight())
-		{
-			if (xOffset + 3 + (*qli)->width() > w)
-			{
-				xOffset = 4 + 9 + 3;
-				yOffset += tallest + 3;
-				tallest = 0;
-			}
+  /* This variable is used to accumulate the horizontal space the
+   * left aligned items need. This includes the 3 pixel space
+   * between the items. */
+  int totalRightItemWidth = 0;
+  QListIterator<KToolBarItem> qli(*d->m_items);
+  for (; *qli; ++qli)
+  {
+    if (!(*qli)->isRight())
+    {
+      if (xOffset + 3 + (*qli)->width() > w)
+      {
+        xOffset = 4 + 9 + 3;
+        yOffset += tallest + 3;
+        tallest = 0;
+      }
 
-			xOffset += 3 + (*qli)->width();
+      xOffset += 3 + (*qli)->width();
 
-			/* We need to save the tallest height. */
-			if ((*qli)->height() > tallest)
-				tallest = (*qli)->height();
-		}
-		else
-		   totalRightItemWidth += (*qli)->width() + 3;
-	}
+      /* We need to save the tallest height. */
+      if ((*qli)->height() > tallest)
+        tallest = (*qli)->height();
+    }
+    else
+       totalRightItemWidth += (*qli)->width() + 3;
+  }
 
-	int newXOffset = w - (3 + (totalRightItemWidth + 3) % w);
-	if (newXOffset < xOffset)
-	{
-		xOffset = 4 + 9 + 3;
-		yOffset += tallest + 3;
-		tallest = 0;
-	}
-	else
-		xOffset = newXOffset;
+  int newXOffset = w - (3 + (totalRightItemWidth + 3) % w);
+  if (newXOffset < xOffset)
+  {
+    xOffset = 4 + 9 + 3;
+    yOffset += tallest + 3;
+    tallest = 0;
+  }
+  else
+    xOffset = newXOffset;
 
-	/* During the second iteration we position the left aligned items. */
-	for (qli.toFirst(); (*qli); ++qli)
-	{
-		if ((*qli)->isRight())
-		{
-			if (xOffset + 3 + (*qli)->width() > w)
-			{
-				xOffset = 4 + 9 + 3;
-				yOffset += tallest + 3;
-				tallest = 0;
-			}
+  /* During the second iteration we position the left aligned items. */
+  for (qli.toFirst(); (*qli); ++qli)
+  {
+    if ((*qli)->isRight())
+    {
+      if (xOffset + 3 + (*qli)->width() > w)
+      {
+        xOffset = 4 + 9 + 3;
+        yOffset += tallest + 3;
+        tallest = 0;
+      }
 
-			xOffset += 3 + (*qli)->width();
+      xOffset += 3 + (*qli)->width();
 
-			/* We need to save the tallest height. */
-			if ((*qli)->height() > tallest)
-				tallest = (*qli)->height();
-		}
-	}
+      /* We need to save the tallest height. */
+      if ((*qli)->height() > tallest)
+        tallest = (*qli)->height();
+    }
+  }
 
-	return (yOffset + tallest + 1);
+  return (yOffset + tallest + 1);
 }
 
 void
 KToolBar::layoutVertical(int h)
 {
-	int xOffset = 3;
-	int yOffset = 3 + 9 + 4;
-	int widest = 0;
-	int tallest = 0;
+  int xOffset = 3;
+  int yOffset = 3 + 9 + 4;
+  int widest = 0;
+  int tallest = 0;
 
-	horizontal = false;
+  /* we are, of course, not a horizontal toolbar */
+  d->m_isHorizontal = false;
 
-	QListIterator<KToolBarItem> qli(*items);
-	for (; *qli; ++qli)
-	{
-        /* check for the line */
-        Item *item = (*qli)->getItem();
-        if (item->inherits("QFrame"))
-        {
-            QFrame *frame = (QFrame*)item;
-            if (frame->frameShape() == QFrame::VLine)
-            {
-                frame->setFrameShape(QFrame::HLine);
-                frame->resize(item_size - 2, 5);
-            }
-        }
+  /* For vertical toolbars, we have to iterate twice.. once to get the
+   * sizes and another time to resize and position things */
+  QListIterator<KToolBarItem> qli(*d->m_items);
+  if (d->m_honorStyle)
+  {
+    for (; *qli; ++qli)
+    {
+      /* make sure this is a button */
+      if ((*qli)->itemType() != KToolBarItem::Button)
+        continue;
 
-		if (yOffset + (*qli)->height() + 3 > h)
-		{
-			/* A column has been filled. We need to start a new column */
-			yOffset = 4 + 9 + 3;
-			xOffset += widest + 3;
-			widest = 0;
-		}
+      if ((*qli)->width() > d->m_maxItemWidth)
+        d->m_maxItemWidth = (*qli)->width();
 
-		/* arrange the toolbar item */
-		(*qli)->move(xOffset, yOffset);
-		/* auto-size items are set to the minimum auto-size or the width of
-		 * the widest widget so far. Wider widgets that follow have no
-		 * impact on the auto-size widgets that are above in the column. We
-		 * might want to improve this later. */
-		if ((*qli)->isAuto())
-			(*qli)->resize((widest > MIN_AUTOSIZE) ?
-					  widest : MIN_AUTOSIZE, (*qli)->height());
+      if ((*qli)->height() > d->m_maxItemHeight)
+        d->m_maxItemHeight = (*qli)->height();
+    }
+  }
 
-		/* adjust yOffset */
-		yOffset += (*qli)->height() + 3;
-		/* keep track of the maximum with of the column */
-		if ((*qli)->width() > widest)
-			widest = (*qli)->width();
-		/* keep track of the tallest overall widget */
-		if ((*qli)->height() > tallest)
-			tallest = (*qli)->height();
-	}
+  /* Second iteration */
+  for (qli.toFirst(); *qli; ++qli)
+  {
+    /* check for the line */
+    Item *item = (*qli)->getItem();
+    if (item->inherits("QFrame"))
+    {
+      QFrame *frame = (QFrame*)item;
+      if (frame->frameShape() == QFrame::VLine)
+      {
+        frame->setFrameShape(QFrame::HLine);
+        frame->resize(d->m_approxItemSize - 2, 5);
+      }
+    }
 
-	toolbarHeight = h;
-	toolbarWidth = min_width = xOffset + widest + 3;
-	min_height = 4 + 9 + 3 + tallest + 3;
-	updateGeometry();
+    /* resize the buttons if necessary */
+    if ((*qli)->itemType() == KToolBarItem::Button)
+    {
+      int itemWidth  = (*qli)->width();
+      int itemHeight = (*qli)->height();
+      if ((itemWidth < d->m_maxItemWidth) || (itemHeight  < d->m_maxItemHeight))
+      {
+        (*qli)->resize(d->m_maxItemWidth, d->m_maxItemHeight);
+        itemWidth  = d->m_maxItemWidth;
+        itemHeight = d->m_maxItemHeight;
+      }
+    }
+
+    if (yOffset + (*qli)->height() + 3 > h)
+    {
+      /* A column has been filled. We need to start a new column */
+      yOffset = 4 + 9 + 3;
+      xOffset += widest + 3;
+      widest = 0;
+    }
+
+    /* arrange the toolbar item */
+    (*qli)->move(xOffset, yOffset);
+
+    /* auto-size items are set to the minimum auto-size or the width of
+     * the widest widget so far. Wider widgets that follow have no
+     * impact on the auto-size widgets that are above in the column. We
+     * might want to improve this later. */
+    if ((*qli)->isAuto())
+      (*qli)->resize((widest > MIN_AUTOSIZE) ?
+            widest : MIN_AUTOSIZE, (*qli)->height());
+
+    /* adjust yOffset */
+    yOffset += (*qli)->height() + 3;
+    /* keep track of the maximum with of the column */
+    if ((*qli)->width() > widest)
+      widest = (*qli)->width();
+    /* keep track of the tallest overall widget */
+    if ((*qli)->height() > tallest)
+      tallest = (*qli)->height();
+  }
+
+  toolbarHeight = h;
+  toolbarWidth = min_width = xOffset + widest + 3;
+  min_height = 4 + 9 + 3 + tallest + 3;
+  updateGeometry();
 }
 
 int
 KToolBar::widthForHeight(int h) const
 {
-	/* This function only works for Top, Bottom or Floating tool
-	 * bars. For other positions it should never be called. To be on
-	 * the save side the current minimum height is returned. */
-	if (position != Left && position != Right && position != Floating)
-		return (min_height);
+  /* This function only works for Top, Bottom or Floating tool
+   * bars. For other positions it should never be called. To be on
+   * the save side the current minimum height is returned. */
+  if (d->m_position != Left && d->m_position != Right && d->m_position != Floating)
+    return (min_height);
 
-	int xOffset = 3;
-	int yOffset = 3 + 9 + 4;
-	int widest = 0;
-	int tallest = 0;
+  int xOffset = 3;
+  int yOffset = 3 + 9 + 4;
+  int widest = 0;
+  int tallest = 0;
 
-	QListIterator<KToolBarItem> qli(*items);
-	for (; *qli; ++qli)
-	{
-		if (yOffset + (*qli)->height() + 3 > h)
-		{
-			/* A column has been filled. We need to start a new column */
-			yOffset = 4 + 9 + 3;
-			xOffset += widest + 3;
-			widest = 0;
-		}
+  QListIterator<KToolBarItem> qli(*d->m_items);
+  for (; *qli; ++qli)
+  {
+    if (yOffset + (*qli)->height() + 3 > h)
+    {
+      /* A column has been filled. We need to start a new column */
+      yOffset = 4 + 9 + 3;
+      xOffset += widest + 3;
+      widest = 0;
+    }
 
-		int itemWidth = (*qli)->width();
-		/* auto-size items are set to the minimum auto-size or the width of
-		 * the widest widget so far. Wider widgets that follow have no
-		 * impact on the auto-size widgets that are above in the column. We
-		 * might want to improve this later. */
-		if ((*qli)->isAuto())
-			itemWidth = (widest > MIN_AUTOSIZE) ? widest : MIN_AUTOSIZE;
+    int itemWidth = (*qli)->width();
+    /* auto-size items are set to the minimum auto-size or the width of
+     * the widest widget so far. Wider widgets that follow have no
+     * impact on the auto-size widgets that are above in the column. We
+     * might want to improve this later. */
+    if ((*qli)->isAuto())
+      itemWidth = (widest > MIN_AUTOSIZE) ? widest : MIN_AUTOSIZE;
 
-		/* adjust yOffset */
-		yOffset += (*qli)->height() + 3;
-		/* keep track of the maximum with of the column */
-		if (itemWidth > widest)
-			widest = itemWidth;
-		/* keep track of the tallest overall widget */
-		if ((*qli)->height() > tallest)
-			tallest = (*qli)->height();
-	}
+    /* adjust yOffset */
+    yOffset += (*qli)->height() + 3;
+    /* keep track of the maximum with of the column */
+    if (itemWidth > widest)
+      widest = itemWidth;
+    /* keep track of the tallest overall widget */
+    if ((*qli)->height() > tallest)
+      tallest = (*qli)->height();
+  }
 
-	return(xOffset + widest + 3);
+  return(xOffset + widest + 3);
 }
 
 void
 KToolBar::updateRects(bool res)
 {
-	switch (position)
-	{
-	case Flat:
-		min_width = 30;
-		min_height = 10;
-		updateGeometry();
-		break;
+  switch (d->m_position)
+  {
+  case Flat:
+    min_width = 30;
+    min_height = 10;
+    updateGeometry();
+    break;
 
-	case Top:
-	case Bottom:
-	{
-		int mw = width();
-		if (!fullSizeMode)
-		{
-			/* If we are not in full size mode and the user has requested a
-			 * certain width, this will be used. If no size has been requested
-			 * and the parent width is larger than the maximum width, we use
-			 * the maximum width. */
-			if (maxHorWidth != -1)
-				mw = maxHorWidth;
-			else if (width() > maximumSizeHint().width())
-				mw = maximumSizeHint().width();
-		}	
-		layoutHorizontal(mw);
-		break;
-	}
+  case Top:
+  case Bottom:
+  {
+    int mw = width();
+    if (!fullSizeMode)
+    {
+      /* If we are not in full size mode and the user has requested a
+       * certain width, this will be used. If no size has been requested
+       * and the parent width is larger than the maximum width, we use
+       * the maximum width. */
+      if (d->m_maxHorWidth != -1)
+        mw = d->m_maxHorWidth;
+      else if (width() > maximumSizeHint().width())
+        mw = maximumSizeHint().width();
+    }  
+    layoutHorizontal(mw);
+    break;
+  }
 
-	case Left:
-	case Right:
-	{
-		int mh = height();
-		if (!fullSizeMode)
-		{
-			/* If we are not in fullSize mode and the user has requested a
-			 * certain height, this will be used. If no size has been requested
-			 * and the parent height is larger than the maximum height, we use
-			 * the maximum height. */
-			if (maxVerHeight != -1)
-				mh = maxVerHeight;
-			else if (height() > maximumSizeHint().height())
-				mh = maximumSizeHint().height();
-		}
-		layoutVertical(mh);
-		break;
-	}
-	default:
-		return;
-	}
+  case Left:
+  case Right:
+  {
+    int mh = height();
+    if (!fullSizeMode)
+    {
+      /* If we are not in fullSize mode and the user has requested a
+       * certain height, this will be used. If no size has been requested
+       * and the parent height is larger than the maximum height, we use
+       * the maximum height. */
+      if (d->m_maxVerHeight != -1)
+        mh = d->m_maxVerHeight;
+      else if (height() > maximumSizeHint().height())
+        mh = maximumSizeHint().height();
+    }
+    layoutVertical(mh);
+    break;
+  }
+  default:
+    return;
+  }
 
-	if (res == true)
-	{
-		localResize = true;
-		resize(toolbarWidth, toolbarHeight);
-		localResize = false;
-	}
+  if (res == true)
+  {
+    localResize = true;
+    resize(toolbarWidth, toolbarHeight);
+    localResize = false;
+  }
 }
 
 QSize
 KToolBar::sizeHint() const
 {
-	switch (position)
-	{
-	case Floating:
-		/* Floating bars are under direct control of the WM. sizeHint() is
-		 * ignored. */
-		break;
+  switch (d->m_position)
+  {
+  case Floating:
+    /* Floating bars are under direct control of the WM. sizeHint() is
+     * ignored. */
+    break;
 
-	case Top:
-	case Bottom:
-		if (!fullSizeMode && (maxHorWidth != -1))
-		{
-			/* If fullSize mode is disabled and the user has requested a
-			 * specific width, then we use this value. */
-			return (QSize(maxHorWidth, min_height));
-		}
-		break;
-	case Right:
-	case Left:
-		if (!fullSizeMode && (maxVerHeight != -1))
-		{
-			/* If fullSize mode is disabled and the user has requested a
-			 * specific height, then we use this value. */
-			return (QSize(min_width, maxVerHeight));
-		}
-		break;
-	default:
-		break;
-	}
-	
-	return (QSize(min_width, min_height));
+  case Top:
+  case Bottom:
+    if (!fullSizeMode && (d->m_maxHorWidth != -1))
+    {
+      /* If fullSize mode is disabled and the user has requested a
+       * specific width, then we use this value. */
+      return (QSize(d->m_maxHorWidth, min_height));
+    }
+    break;
+  case Right:
+  case Left:
+    if (!fullSizeMode && (d->m_maxVerHeight != -1))
+    {
+      /* If fullSize mode is disabled and the user has requested a
+       * specific height, then we use this value. */
+      return (QSize(min_width, d->m_maxVerHeight));
+    }
+    break;
+  default:
+    break;
+  }
+  
+  return (QSize(min_width, min_height));
 }
 
 QSize
 KToolBar::maximumSizeHint() const
 {
-	/* This function returns the maximum size the bar can have. All toolbar
-	 * items are placed in a single line. */
-	int prefWidth = -1;
-	int prefHeight = -1;
+  /* This function returns the maximum size the bar can have. All toolbar
+   * items are placed in a single line. */
+  int prefWidth = -1;
+  int prefHeight = -1;
 
-	QListIterator<KToolBarItem> qli(*items);
+  QListIterator<KToolBarItem> qli(*d->m_items);
 
-	switch (position)
-	{
-	case Flat:
-		prefWidth = 30;
-		prefHeight = 10;
-		break;
+  switch (d->m_position)
+  {
+  case Flat:
+    prefWidth = 30;
+    prefHeight = 10;
+    break;
 
-	case Floating:
-	case Top:
-	case Bottom:
-		prefWidth = 4 + 9 + 3;
-		prefHeight = 0;
+  case Floating:
+  case Top:
+  case Bottom:
+    prefWidth = 4 + 9 + 3;
+    prefHeight = 0;
 
-		for (; *qli; ++qli)
-		{
-			int itemWidth = (*qli)->width();
-			if ((*qli)->isAuto())
-				itemWidth = MIN_AUTOSIZE;
+    for (; *qli; ++qli)
+    {
+      int itemWidth = (*qli)->width();
+      if ((*qli)->isAuto())
+        itemWidth = MIN_AUTOSIZE;
 
-			prefWidth += 3 + itemWidth;
-			if ((*qli)->height() > prefHeight)
-				prefHeight = (*qli)->height();
-		}
-		prefWidth += 3;		/* 3 more pixels to the right */
-		prefHeight += 2;	/* one more pixels above and below */
-		break;
+      prefWidth += 3 + itemWidth;
+      if ((*qli)->height() > prefHeight)
+        prefHeight = (*qli)->height();
+    }
+    prefWidth += 3;    /* 3 more pixels to the right */
+    prefHeight += 2;  /* one more pixels above and below */
+    break;
 
-	case Left:
-	case Right:	
-		prefWidth = 0;
-		prefHeight = 4 + 9 + 3;
+  case Left:
+  case Right:  
+    prefWidth = 0;
+    prefHeight = 4 + 9 + 3;
 
-		for (; *qli; ++qli)
-		{
-			prefHeight += (*qli)->height() + 3;
-			/* keep track of the maximum with of the column */
-			if ((*qli)->isAuto())
-			{
-				if (MIN_AUTOSIZE > prefWidth)
-					prefWidth = MIN_AUTOSIZE;
-			}
-			else
-			{
-				if ((*qli)->width() > prefWidth)
-					prefWidth = (*qli)->width();
-			}
-		}
-		prefWidth += 2;		/* one more pixels to the left and right */
-		prefHeight += 3;	/* 3 more pixels below */
-		break;
-	}
-	return (QSize(prefWidth, prefHeight));
+    for (; *qli; ++qli)
+    {
+      prefHeight += (*qli)->height() + 3;
+      /* keep track of the maximum with of the column */
+      if ((*qli)->isAuto())
+      {
+        if (MIN_AUTOSIZE > prefWidth)
+          prefWidth = MIN_AUTOSIZE;
+      }
+      else
+      {
+        if ((*qli)->width() > prefWidth)
+          prefWidth = (*qli)->width();
+      }
+    }
+    prefWidth += 2;    /* one more pixels to the left and right */
+    prefHeight += 3;  /* 3 more pixels below */
+    break;
+  }
+  return (QSize(prefWidth, prefHeight));
 }
 
 QSize
 KToolBar::minimumSizeHint() const
 {
-	return (sizeHint());
+  return (sizeHint());
 }
 
 QSizePolicy
 KToolBar::sizePolicy() const
 {
-	switch (position)
-	{
-	case Floating:
-		/* Floating bars are under direct control of the WM. sizePolicy() is
-		 * ignored. */
-		return QSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
+  switch (d->m_position)
+  {
+  case Floating:
+    /* Floating bars are under direct control of the WM. sizePolicy() is
+     * ignored. */
+    return QSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
 
-	case Top:
-	case Bottom:
-		return QSizePolicy(QSizePolicy::Minimum, QSizePolicy::Fixed);
+  case Top:
+  case Bottom:
+    return QSizePolicy(QSizePolicy::Minimum, QSizePolicy::Fixed);
 
-	case Left:
-	case Right:
-		return QSizePolicy(QSizePolicy::Fixed, QSizePolicy::Minimum);	
+  case Left:
+  case Right:
+    return QSizePolicy(QSizePolicy::Fixed, QSizePolicy::Minimum);  
 
-	default:
-		return QSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
-	}
+  default:
+    return QSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
+  }
 }
 
 void KToolBar::mouseMoveEvent ( QMouseEvent *mev)
 {
     if (!moving)
-	return;
+  return;
     
-	/* The toolbar handles are hightlighted when the mouse moves over
+  /* The toolbar handles are hightlighted when the mouse moves over
      * the handle. */
-	if ((horizontal && (mev->x() < 0 || mev->x() > 9)) ||
-		(!horizontal && (mev->y() < 0 || mev->y() > 9)))
-	{
-		/* Mouse is outside of the handle. If it's still hightlighed we have
-		 * to de-highlight it. */
-		if (mouseEntered)
-		{
-			mouseEntered = false;
-			repaint(false);
-		}
-		return;
-	}
-	else
-	{
-		/* Mouse is over the handle. If the handle is not yet hightlighted we
-		 * have to to it now. */
-		if (!mouseEntered)
-		{
-			mouseEntered = true;
-			repaint(false);
-		}
-	}
-		
-	if (!buttonDownOnHandle)
-		return;
-	buttonDownOnHandle = FALSE;
+  if ((d->m_isHorizontal && (mev->x() < 0 || mev->x() > 9)) ||
+    (!d->m_isHorizontal && (mev->y() < 0 || mev->y() > 9)))
+  {
+    /* Mouse is outside of the handle. If it's still hightlighed we have
+     * to de-d->m_highlight it. */
+    if (mouseEntered)
+    {
+      mouseEntered = false;
+      repaint(false);
+    }
+    return;
+  }
+  else
+  {
+    /* Mouse is over the handle. If the handle is not yet hightlighted we
+     * have to to it now. */
+    if (!mouseEntered)
+    {
+      mouseEntered = true;
+      repaint(false);
+    }
+  }
+    
+  if (!buttonDownOnHandle)
+    return;
+  buttonDownOnHandle = FALSE;
 
-	if (position != Flat)
-	{
-		int ox, oy, ow, oh;
+  if (d->m_position != Flat)
+  {
+    int ox, oy, ow, oh;
 
-		QRect rr(Parent->geometry());
-		ox = rr.x();
-		oy = rr.y();
-		ow = rr.width();
-		oh = rr.height();
-		if (Parent->inherits("KTMainWindow"))
-		{
-			QRect mainView = ((KTMainWindow*) Parent)->mainViewGeometry();
+    QRect rr(d->m_parent->geometry());
+    ox = rr.x();
+    oy = rr.y();
+    ow = rr.width();
+    oh = rr.height();
+    if (d->m_parent->inherits("KTMainWindow"))
+    {
+      QRect mainView = ((KTMainWindow*) d->m_parent)->mainViewGeometry();
 
-			ox += mainView.left();
-			oy += mainView.top();
-			ow = mainView.width();
-			oh = mainView.height();
-		}
+      ox += mainView.left();
+      oy += mainView.top();
+      ow = mainView.width();
+      oh = mainView.height();
+    }
 
-		int fat = 25; //ness
+    int fat = 25; //ness
 
-		mgr = new KToolBoxManager(this, transparent);
+    mgr = new KToolBoxManager(this, d->m_transparent);
 
-		//Firt of all discover _your_ position
+    //Firt of all discover _your_ position
 
-		if (position == Top )
-			mgr->addHotSpot(geometry(), true);             // I'm on top
-		else
-			mgr->addHotSpot(rr.x(), oy, rr.width(), fat); // top
+    if (d->m_position == Top )
+      mgr->addHotSpot(geometry(), true);             // I'm on top
+    else
+      mgr->addHotSpot(rr.x(), oy, rr.width(), fat); // top
 
-		if (position == Bottom)
-			mgr->addHotSpot(geometry(), true);           // I'm on bottom
-		else
-			mgr->addHotSpot(rr.x(), oy+oh-fat, rr.width(), fat); // bottom
+    if (d->m_position == Bottom)
+      mgr->addHotSpot(geometry(), true);           // I'm on bottom
+    else
+      mgr->addHotSpot(rr.x(), oy+oh-fat, rr.width(), fat); // bottom
 
-		if (position == Left)
-			mgr->addHotSpot(geometry(), true);           // I'm on left
-		else
-			mgr->addHotSpot(ox, oy, fat, oh); // left
+    if (d->m_position == Left)
+      mgr->addHotSpot(geometry(), true);           // I'm on left
+    else
+      mgr->addHotSpot(ox, oy, fat, oh); // left
 
-		if (position == Right)
-			mgr->addHotSpot(geometry(), true);           // I'm on right
-		else
-			mgr->addHotSpot(ox+ow-fat, oy, fat, oh); //right
+    if (d->m_position == Right)
+      mgr->addHotSpot(geometry(), true);           // I'm on right
+    else
+      mgr->addHotSpot(ox+ow-fat, oy, fat, oh); //right
 
-		movePos = position;
-		connect (mgr, SIGNAL(onHotSpot(int)), SLOT(slotHotSpot(int)));
-		if (transparent)
-			mgr->doMove(true, false, true);
-		else
-		{
-			/*
-			  QList<KToolBarItem> ons;
-			  for (KToolBarItem *b = items->first(); b; b=items->next())
-			  {
-			  if (b->isEnabled())
-			  ons.append(b);
-			  b->setEnabled(false);
-			  }
-			*/
-			mgr->doMove(true, false, false);
-			/*
-			  for (KToolBarItem *b = ons.first(); b; b=ons.next())
-			  b->setEnabled(true);
-			*/
-		}
-		if (transparent)
-		{
-			setBarPos (movePos);
+    movePos = d->m_position;
+    connect (mgr, SIGNAL(onHotSpot(int)), SLOT(slotHotSpot(int)));
+    if (d->m_transparent)
+      mgr->doMove(true, false, true);
+    else
+    {
+      /*
+        QList<KToolBarItem> ons;
+        for (KToolBarItem *b = d->m_items->first(); b; b = d->m_items->next())
+        {
+        if (b->isEnabled())
+        ons.append(b);
+        b->setEnabled(false);
+        }
+      */
+      mgr->doMove(true, false, false);
+      /*
+        for (KToolBarItem *b = ons.first(); b; b=ons.next())
+        b->setEnabled(true);
+      */
+    }
+    if (d->m_transparent)
+    {
+      setBarPos (movePos);
 
-			if (movePos == Floating)
-				move (mgr->x(), mgr->y());
-			if (!isVisible())
-				show();
-		}
-		mouseEntered = false;
-		delete mgr;
-		mgr=0;
-		repaint (false);
-	}
+      if (movePos == Floating)
+        move (mgr->x(), mgr->y());
+      if (!isVisible())
+        show();
+    }
+    mouseEntered = false;
+    delete mgr;
+    mgr=0;
+    repaint (false);
+  }
 }
 
 void KToolBar::mouseReleaseEvent ( QMouseEvent *m)
 {
     buttonDownOnHandle = FALSE;
     if (!moving)
-	return;
+  return;
     
     if (mgr)
-	mgr->stop();
-    if ( position != Floating &&
-	 ((horizontal && m->x()<9) || (!horizontal && m->y()<9)) ) {
-	setFlat (position != Flat);
+  mgr->stop();
+    if ( d->m_position != Floating &&
+   ((d->m_isHorizontal && m->x()<9) || (!d->m_isHorizontal && m->y()<9)) ) {
+  setFlat (d->m_position != Flat);
     }
 }
 
 void KToolBar::mousePressEvent ( QMouseEvent *m )
 {
-    buttonDownOnHandle |=   ((horizontal && m->x()<9) || (!horizontal && m->y()<9));
+    buttonDownOnHandle |=   ((d->m_isHorizontal && m->x()<9) || (!d->m_isHorizontal && m->y()<9));
 
   if (moving)
       if (m->button() == RightButton)
-	{
-	    context->popup( mapToGlobal( m->pos() ), 0 );
-	    buttonDownOnHandle = FALSE;
-	    ContextCallback(0);
+  {
+      context->popup( mapToGlobal( m->pos() ), 0 );
+      buttonDownOnHandle = FALSE;
+      ContextCallback(0);
         }
 }
 
@@ -890,7 +1001,7 @@ void KToolBar::slotHotSpot(int hs)
 {
   if (mgr == 0)
     return;
-  if (!transparent) // opaque
+  if (!d->m_transparent) // opaque
   {
     switch (hs)
     {
@@ -914,9 +1025,9 @@ void KToolBar::slotHotSpot(int hs)
         setBarPos(Floating);
         break;
     }
-    if (position != Floating)
+    if (d->m_position != Floating)
     {
-      QPoint p(Parent->mapToGlobal(pos())); // OH GOOOOODDDD!!!!!
+      QPoint p(d->m_parent->mapToGlobal(pos())); // OH GOOOOODDDD!!!!!
       mgr->setGeometry(p.x(), p.y(), width(), height());
     }
     if (!isVisible())
@@ -956,46 +1067,42 @@ void KToolBar::slotHotSpot(int hs)
 
 void KToolBar::resizeEvent(QResizeEvent*)
 {
-	/*
-	 * The resize can affect the arrangement of the toolbar items so
-	 * we have to call updateRects(). But we need not trigger another
-	 * resizeEvent!  */
-	updateRects();
+  /*
+   * The resize can affect the arrangement of the toolbar items so
+   * we have to call updateRects(). But we need not trigger another
+   * resizeEvent!  */
+  updateRects();
 
-	if (position == Floating)
-	{
-		/* It's flicker time again. If the size is under direct control of
-		 * the WM we have to force the height to make the heightForWidth
-		 * feature work. */
-		if (horizontal)
-		{
-			/* horizontal bar */
-			if (height() != heightForWidth(width()))
-				resize(width(), heightForWidth(width()));
-		}
-		else
-		{
-			/* vertical bar */
-			if (width() != widthForHeight(height()))
-				resize(height(), widthForHeight(height()));
-		}
-	}
+  if (d->m_position == Floating)
+  {
+    /* It's flicker time again. If the size is under direct control of
+     * the WM we have to force the height to make the heightForWidth
+     * feature work. */
+    if (d->m_isHorizontal)
+    {
+      /* horizontal bar */
+      if (height() != heightForWidth(width()))
+        resize(width(), heightForWidth(width()));
+    }
+    else
+    {
+      /* vertical bar */
+      if (width() != widthForHeight(height()))
+        resize(height(), widthForHeight(height()));
+    }
+  }
 }
 
 void KToolBar::paintEvent(QPaintEvent *)
 {
   if (mgr)
     return;
-  //MD Lots of rewrite
-
-  // This code should be shared with the aequivalent in kmenubar!
-  // (Marcin Dalecki).
 
   toolbarHeight = height ();
-  if (position == Flat)
-	  toolbarWidth = min_width;
+  if (d->m_position == Flat)
+    toolbarWidth = min_width;
   else
-	  toolbarWidth = width ();
+    toolbarWidth = width ();
 
   int stipple_height;
 
@@ -1004,7 +1111,7 @@ void KToolBar::paintEvent(QPaintEvent *)
   QColorGroup g = QWidget::colorGroup();
   // Took higlighting handle from kmenubar - sven 040198
   QBrush b;
-  if (mouseEntered && highlight)
+  if (mouseEntered && d->m_highlight)
       b = colorGroup().highlight(); // this is much more logical then
   // the hardwired value used before!!
   else
@@ -1015,9 +1122,9 @@ void KToolBar::paintEvent(QPaintEvent *)
 
   if(kapp->kstyle()){
       kapp->kstyle()->drawKToolBar(paint, 0, 0, toolbarWidth, toolbarHeight,
-                                   colorGroup(), position == Floating);
+                                   colorGroup(), d->m_position == Floating);
       if(moving){
-          if(horizontal)
+          if(d->m_isHorizontal)
               kapp->kstyle()->drawKBarHandle(paint, 0, 0, 9, toolbarHeight,
                                              colorGroup(), true,  &b);
           else
@@ -1031,7 +1138,7 @@ void KToolBar::paintEvent(QPaintEvent *)
   if (moving)
   {
     // Handle point
-    if (horizontal)
+    if (d->m_isHorizontal)
     {
       qDrawShadePanel( paint, 0, 0, 9, toolbarHeight,
                        g , false, 1, &b);
@@ -1082,7 +1189,7 @@ void KToolBar::paintEvent(QPaintEvent *)
 
 void KToolBar::closeEvent (QCloseEvent *e)
 {
-  if (position == Floating)
+  if (d->m_position == Floating)
    {
      setBarPos(lastPosition);
      e->ignore();
@@ -1131,18 +1238,16 @@ void KToolBar::ButtonHighlighted(int id, bool on )
 
 /***** BUTTONS *****/
 
-/// Inserts a button.
-int KToolBar::insertButton( const QPixmap& pixmap, int id, bool enabled,
-			    const QString&_text, int index )
+// insert a button
+int KToolBar::insertButton( const QString& icon, int id, bool enabled,
+          const QString&_text, int index )
 {
-  KToolBarButton *button = new KToolBarButton( pixmap, id, this, 0L, item_size,
-                                               _text);
-  KToolBarItem *item = new KToolBarItem(button, ITEM_BUTTON, id,
-                                        true);
+  KToolBarButton *button = new KToolBarButton( icon, id, this, 0L, _text);
+  KToolBarItem *item = new KToolBarItem(button, KToolBarItem::Button, id, true);
   if ( index == -1 )
-    items->append( item );
+    d->m_items->append( item );
   else
-    items->insert( index, item );
+    d->m_items->insert( index, item );
 
   connect(button, SIGNAL(clicked(int)), this, SLOT(ButtonClicked(int)));
   connect(button, SIGNAL(doubleClicked(int)), this, SLOT(ButtonDblClicked(int)));
@@ -1152,26 +1257,51 @@ int KToolBar::insertButton( const QPixmap& pixmap, int id, bool enabled,
           SLOT(ButtonHighlighted(int, bool)));
 
   item->setEnabled( enabled );
-  if (position != Flat)
+  if (d->m_position != Flat)
     item->show();
   updateRects(true);
-  return items->at();
+  return d->m_items->at();
+}
+
+/// Inserts a button.
+int KToolBar::insertButton( const QPixmap& pixmap, int id, bool enabled,
+          const QString&_text, int index )
+{
+  KToolBarButton *button = new KToolBarButton( pixmap, id, this, 0L, _text);
+  KToolBarItem *item = new KToolBarItem(button, KToolBarItem::Button, id,
+                                        true);
+  if ( index == -1 )
+    d->m_items->append( item );
+  else
+    d->m_items->insert( index, item );
+
+  connect(button, SIGNAL(clicked(int)), this, SLOT(ButtonClicked(int)));
+  connect(button, SIGNAL(doubleClicked(int)), this, SLOT(ButtonDblClicked(int)));
+  connect(button, SIGNAL(released(int)), this, SLOT(ButtonReleased(int)));
+  connect(button, SIGNAL(pressed(int)), this, SLOT(ButtonPressed(int)));
+  connect(button, SIGNAL(highlighted(int, bool)), this,
+          SLOT(ButtonHighlighted(int, bool)));
+
+  item->setEnabled( enabled );
+  if (d->m_position != Flat)
+    item->show();
+  updateRects(true);
+  return d->m_items->at();
 }
 
 /// Inserts a button with popup.
 int KToolBar::insertButton( const QPixmap& pixmap, int id, QPopupMenu *_popup,
                             bool enabled, const QString&_text, int index)
 {
-  KToolBarButton *button = new KToolBarButton( pixmap, id, this,
-                                               0L, item_size, _text);
-  KToolBarItem *item = new KToolBarItem(button, ITEM_BUTTON, id,
+  KToolBarButton *button = new KToolBarButton( pixmap, id, this, 0L, _text);
+  KToolBarItem *item = new KToolBarItem(button, KToolBarItem::Button, id,
                                         true);
   button->setPopup(_popup);
 
   if ( index == -1 )
-    items->append( item );
+    d->m_items->append( item );
   else
-    items->insert( index, item );
+    d->m_items->insert( index, item );
 
   item->setEnabled( enabled );
 
@@ -1182,28 +1312,26 @@ int KToolBar::insertButton( const QPixmap& pixmap, int id, QPopupMenu *_popup,
   connect(button, SIGNAL(highlighted(int, bool)), this,
           SLOT(ButtonHighlighted(int, bool)));
 
-  if (position != Flat)
+  if (d->m_position != Flat)
     item->show();
   updateRects(true);
-  return items->at();
+  return d->m_items->at();
 }
 
 
 /// Inserts a button with connection.
-
-int KToolBar::insertButton( const QPixmap& pixmap, int id, const char *signal,
-			    const QObject *receiver, const char *slot, bool enabled,
-			    const QString&_text, int index )
+int KToolBar::insertButton( const QString& icon, int id, const char *signal,
+          const QObject *receiver, const char *slot, bool enabled,
+          const QString&_text, int index )
 {
-  KToolBarButton *button = new KToolBarButton( pixmap, id, this,
-                                               0L, item_size, _text);
-  KToolBarItem *item = new KToolBarItem(button, ITEM_BUTTON, id,
-                                        true);
+  KToolBarButton *button = new KToolBarButton( icon, id, this, 0L, _text);
+  KToolBarItem *item = new KToolBarItem(button, KToolBarItem::Button, id, true);
 
+  /* now do checks to make sure that this is the right size */
   if ( index == -1 )
-    items->append( item );
+    d->m_items->append( item );
   else
-    items->insert( index, item );
+    d->m_items->insert( index, item );
 
   connect(button, SIGNAL(clicked(int)), this, SLOT(ButtonClicked(int)));
   connect(button, SIGNAL(doubleClicked(int)), this, SLOT(ButtonDblClicked(int)));
@@ -1214,10 +1342,38 @@ int KToolBar::insertButton( const QPixmap& pixmap, int id, const char *signal,
 
   connect( button, signal, receiver, slot );
   item->setEnabled( enabled );
-  if (position != Flat)
+  if (d->m_position != Flat)
     item->show();
   updateRects(true);
-  return items->at();
+  return d->m_items->at();
+}
+
+int KToolBar::insertButton( const QPixmap& pixmap, int id, const char *signal,
+          const QObject *receiver, const char *slot, bool enabled,
+          const QString&_text, int index )
+{
+  KToolBarButton *button = new KToolBarButton( pixmap, id, this, 0L, _text);
+  KToolBarItem *item = new KToolBarItem(button, KToolBarItem::Button, id,
+                                        true);
+
+  if ( index == -1 )
+    d->m_items->append( item );
+  else
+    d->m_items->insert( index, item );
+
+  connect(button, SIGNAL(clicked(int)), this, SLOT(ButtonClicked(int)));
+  connect(button, SIGNAL(doubleClicked(int)), this, SLOT(ButtonDblClicked(int)));
+  connect(button, SIGNAL(released(int)), this, SLOT(ButtonReleased(int)));
+  connect(button, SIGNAL(pressed(int)), this, SLOT(ButtonPressed(int)));
+  connect(button, SIGNAL(highlighted(int, bool)), this,
+          SLOT(ButtonHighlighted(int, bool)));
+
+  connect( button, signal, receiver, slot );
+  item->setEnabled( enabled );
+  if (d->m_position != Flat)
+    item->show();
+  updateRects(true);
+  return d->m_items->at();
 }
 
 /********* SEPARATOR *********/
@@ -1226,18 +1382,18 @@ int KToolBar::insertButton( const QPixmap& pixmap, int id, const char *signal,
 int KToolBar::insertSeparator( int index )
 {
   KToolBarButton *separ = new KToolBarButton( this );
-  KToolBarItem *item = new KToolBarItem(separ, ITEM_BUTTON, -1,
+  KToolBarItem *item = new KToolBarItem(separ, KToolBarItem::Separator, -1,
                                         true);
 
   if ( index == -1 )
-    items->append( item );
+    d->m_items->append( item );
   else
-    items->insert( index, item );
-	
-  if (position == Flat)
+    d->m_items->insert( index, item );
+  
+  if (d->m_position == Flat)
     item->hide();
   updateRects(true);
-  return items->at();
+  return d->m_items->at();
 }
 
 
@@ -1249,18 +1405,18 @@ int KToolBar::insertLineSeparator( int index )
 
   KSeparator *separ = new KSeparator(QFrame::VLine, this);
 
-  KToolBarItem *item = new KToolBarItem(separ, ITEM_FRAME, -1, true);
-  item->resize( 5, item_size - 2 );
+  KToolBarItem *item = new KToolBarItem(separ, KToolBarItem::Frame, -1, true);
+  item->resize( 5, d->m_approxItemSize - 2 );
 
   if ( index == -1 )
-    items->append( item );
+    d->m_items->append( item );
   else
-    items->insert( index, item );
-	
-  if (position == Flat)
+    d->m_items->insert( index, item );
+  
+  if (d->m_position == Flat)
     item->hide();
   updateRects(true);
-  return items->at();
+  return d->m_items->at();
 }
 
 
@@ -1278,34 +1434,34 @@ int KToolBar::insertFrame (int _id, int _size, int _index)
   frame = new QFrame (this);
   mine = true;
 
-  KToolBarItem *item = new KToolBarItem(frame, ITEM_FRAME, _id, mine);
+  KToolBarItem *item = new KToolBarItem(frame, KToolBarItem::Frame, _id, mine);
 
   if (_index == -1)
-    items->append (item);
+    d->m_items->append (item);
   else
-    items->insert(_index, item);
-  item-> resize (_size, item_size-2);
-  if (position != Flat)
+    d->m_items->insert(_index, item);
+  item-> resize (_size, d->m_approxItemSize-2);
+  if (d->m_position != Flat)
     item->show();
   updateRects(true);
-  return items->at();
+  return d->m_items->at();
 }
 /* A poem all in G-s! No, any widget */
 
 int KToolBar::insertWidget(int _id, int _size, QWidget *_widget,
-		int _index )
+    int _index )
 {
-  KToolBarItem *item = new KToolBarItem(_widget, ITEM_FRAME, _id, false);
+  KToolBarItem *item = new KToolBarItem(_widget, KToolBarItem::Frame, _id, false);
 
   if (_index == -1)
-    items->append (item);
+    d->m_items->append (item);
   else
-    items->insert(_index, item);
-  item-> resize (_size, item_size-2);
-  if (position != Flat)
+    d->m_items->insert(_index, item);
+  item-> resize (_size, d->m_approxItemSize-2);
+  if (d->m_position != Flat)
     item->show();
   updateRects(true);
-  return items->at();
+  return d->m_items->at();
 }
 
 /************** LINE EDITOR **************/
@@ -1313,28 +1469,28 @@ int KToolBar::insertWidget(int _id, int _size, QWidget *_widget,
 //  another signal, tabPressed, for completions.
 
 int KToolBar::insertLined(const QString& text, int id, const char *signal,
-			  const QObject *receiver, const char *slot,
-			  bool enabled, const QString& tooltiptext, int size, int index)
+        const QObject *receiver, const char *slot,
+        bool enabled, const QString& tooltiptext, int size, int index)
 {
   KLineEdit *lined = new KLineEdit (this, 0);
-  KToolBarItem *item = new KToolBarItem(lined, ITEM_LINED, id,
+  KToolBarItem *item = new KToolBarItem(lined, KToolBarItem::Lined, id,
                                         true);
 
 
   if (index == -1)
-    items->append (item);
+    d->m_items->append (item);
   else
-    items->insert(index, item);
+    d->m_items->insert(index, item);
   if (!tooltiptext.isNull())
     QToolTip::add( lined, tooltiptext );
   connect( lined, signal, receiver, slot );
   lined->setText(text);
-  item->resize(size, item_size-2);
+  item->resize(size, d->m_approxItemSize-2);
   item->setEnabled(enabled);
-  if (position != Flat)
+  if (d->m_position != Flat)
     item->show();
   updateRects(true);
-  return items->at();
+  return d->m_items->at();
 }
 
 /************** COMBO BOX **************/
@@ -1348,13 +1504,13 @@ int KToolBar::insertCombo (QStrList *list, int id, bool writable,
                            QComboBox::Policy policy)
 {
   QComboBox *combo = new QComboBox (writable, this);
-  KToolBarItem *item = new KToolBarItem(combo, ITEM_COMBO, id,
+  KToolBarItem *item = new KToolBarItem(combo, KToolBarItem::Combo, id,
                                         true);
 
   if (index == -1)
-    items->append (item);
+    d->m_items->append (item);
   else
-    items->insert (index, item);
+    d->m_items->insert (index, item);
   combo->insertStrList (list);
   combo->setInsertionPolicy(policy);
   if (!tooltiptext.isNull())
@@ -1363,10 +1519,10 @@ int KToolBar::insertCombo (QStrList *list, int id, bool writable,
   combo->setAutoResize(false);
   item->resize(size, 24);
   item->setEnabled(enabled);
-  if (position != Flat)
+  if (d->m_position != Flat)
     item->show();
   updateRects(true);
-  return items->at();
+  return d->m_items->at();
 }
 
 /// Inserts comboBox with QStringList
@@ -1379,13 +1535,13 @@ int KToolBar::insertCombo (const QStringList &list, int id, bool writable,
                            QComboBox::Policy policy)
 {
   QComboBox *combo = new QComboBox (writable, this);
-  KToolBarItem *item = new KToolBarItem(combo, ITEM_COMBO, id,
+  KToolBarItem *item = new KToolBarItem(combo, KToolBarItem::Combo, id,
                                         true);
 
   if (index == -1)
-    items->append (item);
+    d->m_items->append (item);
   else
-    items->insert (index, item);
+    d->m_items->insert (index, item);
   combo->insertStringList (list);
   combo->setInsertionPolicy(policy);
   if (!tooltiptext.isNull())
@@ -1394,10 +1550,10 @@ int KToolBar::insertCombo (const QStringList &list, int id, bool writable,
   combo->setAutoResize(false);
   item->resize(size, 24);
   item->setEnabled(enabled);
-  if (position != Flat)
+  if (d->m_position != Flat)
     item->show();
   updateRects(true);
-  return items->at();
+  return d->m_items->at();
 }
 
 
@@ -1410,13 +1566,13 @@ int KToolBar::insertCombo (const QString& text, int id, bool writable,
                            QComboBox::Policy policy)
 {
   QComboBox *combo = new QComboBox (writable, this);
-  KToolBarItem *item = new KToolBarItem(combo, ITEM_COMBO, id,
+  KToolBarItem *item = new KToolBarItem(combo, KToolBarItem::Combo, id,
                                         true);
 
   if (index == -1)
-    items->append (item);
+    d->m_items->append (item);
   else
-    items->insert (index, item);
+    d->m_items->insert (index, item);
   combo->insertItem (text);
   combo->setInsertionPolicy(policy);
   if (!tooltiptext.isNull())
@@ -1425,19 +1581,19 @@ int KToolBar::insertCombo (const QString& text, int id, bool writable,
   combo->setAutoResize(false);
   item->resize(size, 24);
   item->setEnabled(enabled);
-  if (position != Flat)
+  if (d->m_position != Flat)
     item->show();
   updateRects(true);
-  return items->at();
+  return d->m_items->at();
 }
 
 void KToolBar::clear ()
 {
-  for (KToolBarItem *b = items->first(); b; b=items->next())
+  for (KToolBarItem *b = d->m_items->first(); b; b=d->m_items->next())
   {
       if(b->isAuto())
         haveAutoSized=false;
-      items->remove();
+      d->m_items->remove();
   }
   updateRects(true);
 }
@@ -1446,19 +1602,19 @@ void KToolBar::clear ()
 
 void KToolBar::removeItem (int id)
 {
-  for (KToolBarItem *b = items->first(); b; b=items->next())
+  for (KToolBarItem *b = d->m_items->first(); b; b=d->m_items->next())
     if (b->ID() == id )
     {
       if(b->isAuto())
         haveAutoSized=false;
-      items->remove();
+      d->m_items->remove();
     }
   updateRects(true);
 }
 
 void KToolBar::showItem (int id)
 {
-  for (KToolBarItem *b = items->first(); b; b=items->next())
+  for (KToolBarItem *b = d->m_items->first(); b; b=d->m_items->next())
     if (b->ID() == id )
     {
       if(b->isAuto())
@@ -1470,7 +1626,7 @@ void KToolBar::showItem (int id)
 
 void KToolBar::hideItem (int id)
 {
-  for (KToolBarItem *b = items->first(); b; b=items->next())
+  for (KToolBarItem *b = d->m_items->first(); b; b=d->m_items->next())
     if (b->ID() == id )
     {
       if(b->isAuto())
@@ -1485,7 +1641,7 @@ void KToolBar::hideItem (int id)
 void KToolBar::addConnection (int id, const char *signal,
                               const QObject *receiver, const char *slot)
 {
-  for (KToolBarItem *b = items->first(); b; b=items->next())
+  for (KToolBarItem *b = d->m_items->first(); b; b=d->m_items->next())
     if (b->ID() == id )
            connect (b->getItem(), signal, receiver, slot);
 }
@@ -1493,36 +1649,46 @@ void KToolBar::addConnection (int id, const char *signal,
 /// Common
 void KToolBar::setItemEnabled( int id, bool enabled )
 {
-  for (KToolBarItem *b = items->first(); b; b=items->next())
+  for (KToolBarItem *b = d->m_items->first(); b; b=d->m_items->next())
     if (b->ID() == id )
       b->setEnabled(enabled);
 }
 
 void KToolBar::setItemAutoSized ( int id, bool enabled )
 {
-  for (KToolBarItem *b = items->first(); b; b=items->next())
+  for (KToolBarItem *b = d->m_items->first(); b; b=d->m_items->next())
     if (b->ID() == id )
     {
       b->autoSize(enabled);
       haveAutoSized = true;
-	  updateRects(true);
+    updateRects(true);
     }
 }
 
 void KToolBar::alignItemRight(int id, bool yes)
 {
-  for (KToolBarItem *b = items->first(); b; b=items->next())
+  for (KToolBarItem *b = d->m_items->first(); b; b=d->m_items->next())
     if (b->ID() == id )
     {
       b->alignRight (yes);
-	  updateRects();
+    updateRects();
+    }
+}
+
+void KToolBar::setItemNoStyle(int id, bool no_style)
+{
+  for (KToolBarItem *b = d->m_items->first(); b; b=d->m_items->next())
+    if (b->ID() == id )
+    {
+      ((KToolBarButton *)b->getItem())->setNoStyle(no_style);
+      break;
     }
 }
 
 /// Butoons
 void KToolBar::setButtonPixmap( int id, const QPixmap& _pixmap )
 {
-  for (KToolBarItem *b = items->first(); b; b=items->next())
+  for (KToolBarItem *b = d->m_items->first(); b; b=d->m_items->next())
     if (b->ID() == id )
       ((KToolBarButton *) b->getItem())->setPixmap( _pixmap );
 }
@@ -1530,7 +1696,7 @@ void KToolBar::setButtonPixmap( int id, const QPixmap& _pixmap )
 
 void KToolBar::setDelayedPopup (int id , QPopupMenu *_popup, bool toggle )
 {
-  for (KToolBarItem *b = items->first(); b; b=items->next())
+  for (KToolBarItem *b = d->m_items->first(); b; b=d->m_items->next())
     if (b->ID() == id )
       ((KToolBarButton *) b->getItem())->setDelayedPopup(_popup, toggle);
 }
@@ -1539,10 +1705,10 @@ void KToolBar::setDelayedPopup (int id , QPopupMenu *_popup, bool toggle )
 /// Toggle buttons
 void KToolBar::setToggle ( int id, bool yes )
 {
-  for (KToolBarItem *b = items->first(); b; b=items->next())
+  for (KToolBarItem *b = d->m_items->first(); b; b=d->m_items->next())
     if (b->ID() == id )
     {
-      ((KToolBarButton *) b->getItem())->beToggle(yes);
+      ((KToolBarButton *) b->getItem())->setToggle(yes);
       connect (b->getItem(), SIGNAL(toggled(int)),
                this, SLOT(ButtonToggled(int)));
     }
@@ -1550,7 +1716,7 @@ void KToolBar::setToggle ( int id, bool yes )
 
 void KToolBar::toggleButton (int id)
 {
-  for (KToolBarItem *b = items->first(); b; b=items->next())
+  for (KToolBarItem *b = d->m_items->first(); b; b=d->m_items->next())
     if (b->ID() == id )
     {
       if (((KToolBarButton *) b->getItem())->isToggleButton() == true)
@@ -1560,7 +1726,7 @@ void KToolBar::toggleButton (int id)
 
 void KToolBar::setButton (int id, bool on)
 {
-  for (KToolBarItem *b = items->first(); b; b=items->next())
+  for (KToolBarItem *b = d->m_items->first(); b; b=d->m_items->next())
     if (b->ID() == id )
       ((KToolBarButton *) b->getItem())->on(on);
 }
@@ -1568,7 +1734,7 @@ void KToolBar::setButton (int id, bool on)
 //Autorepeat buttons
 void KToolBar::setAutoRepeat (int id, bool flag /*, int delay, int repeat */)
 {
-  for (KToolBarItem *b = items->first(); b; b=items->next())
+  for (KToolBarItem *b = d->m_items->first(); b; b=d->m_items->next())
     if (b->ID() == id )
       ((KToolBarButton *) b->getItem())->setAutoRepeat(flag);
 }
@@ -1576,7 +1742,7 @@ void KToolBar::setAutoRepeat (int id, bool flag /*, int delay, int repeat */)
 
 bool KToolBar::isButtonOn (int id)
 {
-  for (KToolBarItem *b = items->first(); b; b=items->next())
+  for (KToolBarItem *b = d->m_items->first(); b; b=d->m_items->next())
     if (b->ID() == id )
     {
       if (((KToolBarButton *) b->getItem())->isToggleButton() == true)
@@ -1588,7 +1754,7 @@ bool KToolBar::isButtonOn (int id)
 /// Lined
 void KToolBar::setLinedText (int id, const QString& text)
 {
-  for (KToolBarItem *b = items->first(); b; b=items->next())
+  for (KToolBarItem *b = d->m_items->first(); b; b=d->m_items->next())
     if (b->ID() == id )
     {
       ((KLineEdit *) b->getItem())->setText(text);
@@ -1597,7 +1763,7 @@ void KToolBar::setLinedText (int id, const QString& text)
 
 QString KToolBar::getLinedText (int id )
 {
-  for (KToolBarItem *b = items->first(); b; b=items->next())
+  for (KToolBarItem *b = d->m_items->first(); b; b=d->m_items->next())
     if (b->ID() == id )
       return ((KLineEdit *) b->getItem())->text();
   return QString::null;
@@ -1606,7 +1772,7 @@ QString KToolBar::getLinedText (int id )
 /// Combos
 void KToolBar::insertComboItem (int id, const QString& text, int index)
 {
-  for (KToolBarItem *b = items->first(); b; b=items->next())
+  for (KToolBarItem *b = d->m_items->first(); b; b=d->m_items->next())
     if (b->ID() == id )
     {
       ((QComboBox *) b->getItem())->insertItem(text, index);
@@ -1615,21 +1781,21 @@ void KToolBar::insertComboItem (int id, const QString& text, int index)
 
 void KToolBar::insertComboList (int id, QStrList *list, int index)
 {
-  for (KToolBarItem *b = items->first(); b; b=items->next())
+  for (KToolBarItem *b = d->m_items->first(); b; b=d->m_items->next())
     if (b->ID() == id )
-	((QComboBox *) b->getItem())->insertStrList(list, index);
+  ((QComboBox *) b->getItem())->insertStrList(list, index);
 }
 
 void KToolBar::insertComboList (int id, const QStringList &list, int index)
 {
-  for (KToolBarItem *b = items->first(); b; b=items->next())
+  for (KToolBarItem *b = d->m_items->first(); b; b=d->m_items->next())
     if (b->ID() == id )
-	((QComboBox *) b->getItem())->insertStringList(list, index);
+  ((QComboBox *) b->getItem())->insertStringList(list, index);
 }
 
 void KToolBar::setCurrentComboItem (int id, int index)
 {
-  for (KToolBarItem *b = items->first(); b; b=items->next())
+  for (KToolBarItem *b = d->m_items->first(); b; b=d->m_items->next())
     if (b->ID() == id )
     {
       ((QComboBox *) b->getItem())->setCurrentItem(index);
@@ -1638,14 +1804,14 @@ void KToolBar::setCurrentComboItem (int id, int index)
 
 void KToolBar::removeComboItem (int id, int index)
 {
-  for (KToolBarItem *b = items->first(); b; b=items->next())
+  for (KToolBarItem *b = d->m_items->first(); b; b=d->m_items->next())
     if (b->ID() == id )
       ((QComboBox *) b->getItem())->removeItem(index);
 }
 
 void KToolBar::changeComboItem  (int id, const QString& text, int index)
 {
-  for (KToolBarItem *b = items->first(); b; b=items->next())
+  for (KToolBarItem *b = d->m_items->first(); b; b=d->m_items->next())
     if (b->ID() == id )
     {
       if (index == -1)
@@ -1662,14 +1828,14 @@ void KToolBar::changeComboItem  (int id, const QString& text, int index)
 
 void KToolBar::clearCombo (int id)
 {
-  for (KToolBarItem *b = items->first(); b; b=items->next())
+  for (KToolBarItem *b = d->m_items->first(); b; b=d->m_items->next())
     if (b->ID() == id )
-	((QComboBox *) b->getItem())->clear();
+  ((QComboBox *) b->getItem())->clear();
 }
 
 QString KToolBar::getComboItem (int id, int index)
 {
-  for (KToolBarItem *b = items->first(); b; b=items->next())
+  for (KToolBarItem *b = d->m_items->first(); b; b=d->m_items->next())
     if (b->ID() == id )
     {
       if (index == -1)
@@ -1681,7 +1847,7 @@ QString KToolBar::getComboItem (int id, int index)
 
 QComboBox *KToolBar::getCombo (int id)
 {
-  for (KToolBarItem *b = items->first(); b; b=items->next())
+  for (KToolBarItem *b = d->m_items->first(); b; b=d->m_items->next())
     if (b->ID() == id )
       return ((QComboBox *) b->getItem());
   return 0;
@@ -1689,7 +1855,7 @@ QComboBox *KToolBar::getCombo (int id)
 
 KLineEdit *KToolBar::getLined (int id)
 {
-  for (KToolBarItem *b = items->first(); b!=NULL; b=items->next())
+  for (KToolBarItem *b = d->m_items->first(); b!=NULL; b=d->m_items->next())
     if (b->ID() == id )
       return ((KLineEdit *) b->getItem());
   return 0;
@@ -1698,7 +1864,7 @@ KLineEdit *KToolBar::getLined (int id)
 
 KToolBarButton* KToolBar::getButton( int id )
 {
-  for( KToolBarItem* b = items->first(); b != NULL; b = items->next() )
+  for( KToolBarItem* b = d->m_items->first(); b != NULL; b = d->m_items->next() )
     if(b->ID() == id )
       return ((KToolBarButton *) b->getItem());
   return 0;
@@ -1706,7 +1872,7 @@ KToolBarButton* KToolBar::getButton( int id )
 
 QFrame *KToolBar::getFrame (int id)
 {
-  for (KToolBarItem *b = items->first(); b; b=items->next())
+  for (KToolBarItem *b = d->m_items->first(); b; b = d->m_items->next())
     if (b->ID() == id )
       return ((QFrame *) b->getItem());
   return 0;
@@ -1714,7 +1880,7 @@ QFrame *KToolBar::getFrame (int id)
 
 QWidget *KToolBar::getWidget (int id)
 {
-  for (KToolBarItem *b = items->first(); b; b=items->next())
+  for (KToolBarItem *b = d->m_items->first(); b; b = d->m_items->next())
     if (b->ID() == id )
       return (b->getItem());
   return 0;
@@ -1730,7 +1896,7 @@ void KToolBar::setFullWidth(bool flag)
 
 bool KToolBar::fullSize() const
 {
-	return (fullSizeMode);
+  return (fullSizeMode);
 }
 
 void KToolBar::enableMoving(bool flag)
@@ -1740,65 +1906,70 @@ void KToolBar::enableMoving(bool flag)
 
 void KToolBar::setBarPos(BarPosition bpos)
 {
-	if (position != bpos)
-	{
-		if (bpos == Floating)
-		{
-			lastPosition = position;
-			position = bpos;
-			oldX = x();
-			oldY = y();
-			oldWFlags = getWFlags();
-			QPoint p = mapToGlobal(QPoint(0,0));
-			parentOffset = pos();
-			hide();
-			emit moved (bpos);  // this sets up KTW but not toolbar which floats
-			updateRects(false); // we need this to set us up
-			recreate(0, 0, p, false);
-			XSetTransientForHint( qt_xdisplay(), winId(), Parent->topLevelWidget()->winId());
-			KWM::setDecoration(winId(), 2);
-			KWM::moveToDesktop(winId(), KWM::desktop(Parent->winId()));
-			setCaption(QString::null); // this triggers a qt bug
-			if (!title.isNull()){
-				setCaption(title);
-			} else {
-				QString s = Parent->caption();
-				s.append(QString::fromLatin1(" [tools]"));
-				setCaption(s);
-			}
-			context->changeItem (i18n("UnFloat"), CONTEXT_FLOAT);
-			context->setItemEnabled (CONTEXT_FLAT, FALSE);
-			setMouseTracking(true);
-			mouseEntered=false;
-			return;
-		}
-		else if (position == Floating) // was floating
-		{
-			position = bpos;
-			hide();
-			recreate(Parent, oldWFlags, QPoint(oldX, oldY), true);
-			emit moved (bpos); // another bar::updateRects (damn) No! It's ok.
-			context->changeItem (i18n("Float"), CONTEXT_FLOAT);
-			context->setItemEnabled (CONTEXT_FLAT, TRUE);
-			setMouseTracking(true);
-			mouseEntered = false;
-			updateRects ();
-			return;
-		}
-		else
-		{
-			if (bpos == Flat)
-			{
-				setFlat (true);
-				return;
-			}
-			position = bpos;
-			enableFloating (true);
-			emit moved ( bpos );
-			updateRects();
-			return;
-		}
-	}
+  if (d->m_position != bpos)
+  {
+    if (bpos == Floating)
+    {
+      lastPosition = d->m_position;
+      d->m_position = bpos;
+      oldX = x();
+      oldY = y();
+      oldWFlags = getWFlags();
+      QPoint p = mapToGlobal(QPoint(0,0));
+      hide();
+      emit moved (bpos);  // this sets up KTW but not toolbar which floats
+      updateRects(false); // we need this to set us up
+      recreate(0, 0, p, false);
+      XSetTransientForHint( qt_xdisplay(), winId(), d->m_parent->topLevelWidget()->winId());
+      KWM::setDecoration(winId(), 2);
+      KWM::moveToDesktop(winId(), KWM::desktop(d->m_parent->winId()));
+      setCaption(QString::null); // this triggers a qt bug
+      if (!d->m_title)
+        setCaption(d->m_title);
+      else
+      {
+        QString s = d->m_parent->caption();
+        s.append(QString::fromLatin1(" [tools]"));
+        setCaption(s);
+      }
+      context->changeItem (i18n("UnFloat"), CONTEXT_FLOAT);
+      context->setItemEnabled (CONTEXT_FLAT, FALSE);
+      setMouseTracking(true);
+      mouseEntered=false;
+      return;
+    }
+    else if (d->m_position == Floating) // was floating
+    {
+      d->m_position = bpos;
+      hide();
+      recreate(d->m_parent, oldWFlags, QPoint(oldX, oldY), true);
+      emit moved (bpos); // another bar::updateRects (damn) No! It's ok.
+      context->changeItem (i18n("Float"), CONTEXT_FLOAT);
+      context->setItemEnabled (CONTEXT_FLAT, TRUE);
+      setMouseTracking(true);
+      mouseEntered = false;
+      updateRects ();
+      return;
+    }
+    else
+    {
+      if (bpos == Flat)
+      {
+        setFlat (true);
+        return;
+      }
+      d->m_position = bpos;
+      enableFloating (true);
+      emit moved ( bpos );
+      updateRects();
+      return;
+    }
+  }
+}
+
+KToolBar::BarPosition KToolBar::barPos()
+{
+  return d->m_position;
 }
 
 void KToolBar::enableFloating (bool arrrrrrgh)
@@ -1808,27 +1979,27 @@ void KToolBar::enableFloating (bool arrrrrrgh)
 
 void KToolBar::setIconText(IconText icontext)
 {
-    bool doUpdate=false;
+  bool doUpdate=false;
 
-    if (icontext != icon_text)
-    {
-        if (icontext == IconTextBottom)
-            item_size = (item_size < 44) ? 44 : item_size;
-        else
-            item_size = 30;
-        icon_text=icontext;
-        doUpdate=true;
-    }
+  if (icontext != d->m_iconText)
+  {
+    d->m_maxItemWidth  = 0;
+    d->m_maxItemHeight = 0;
 
-    if (doUpdate)
-        emit modechange(); // tell buttons what happened
-    if (isVisible ())
-		updateRects(true);
+    d->m_iconText = icontext;
+    doUpdate=true;
+  }
+
+  if (doUpdate)
+    emit modechange(); // tell buttons what happened
+
+  if (isVisible())
+    updateRects(true);
 }
 
 KToolBar::IconText KToolBar::iconText() const
 {
-  return icon_text;
+  return d->m_iconText;
 }
 
 bool KToolBar::enable(BarStatus stat)
@@ -1836,16 +2007,11 @@ bool KToolBar::enable(BarStatus stat)
   bool mystat = isVisible();
 
   if ( (stat == Toggle && mystat) || stat == Hide )
-   {
-     //if (position == Floating)
-       //iconify();
-     //else
-     hide();       //Sven 09.12.1998: hide in both cases
-   }
+    hide();
   else
     show();
 
-  emit moved (position); // force KTM::updateRects (David)
+  emit moved (d->m_position); // force KTM::updateRects (David)
   return ( isVisible() == mystat );
 }
 
@@ -1872,20 +2038,20 @@ void KToolBar::setFlat (bool flag)
 
 #define also
 
-  if (position == Floating )
+  if (d->m_position == Floating )
     return;
-  if ( flag == (position == Flat))
+  if ( flag == (d->m_position == Flat))
     also return;
 
 
   if (flag) //flat
   {
     context->changeItem (i18n("UnFlat"), CONTEXT_FLAT);
-    lastPosition = position; // test float. I did and it works by miracle!?
+    lastPosition = d->m_position; // test float. I did and it works by miracle!?
     //debug ("Flat");
-    position = Flat;
-    horizontal = false;
-    for (KToolBarItem *b = items->first(); b; b=items->next())
+    d->m_position = Flat;
+    d->m_isHorizontal = false;
+    for (KToolBarItem *b = d->m_items->first(); b; b = d->m_items->next())
       b->hide();       // move items out of sight
     enableFloating(false);
   }
@@ -1894,8 +2060,11 @@ void KToolBar::setFlat (bool flag)
     context->changeItem (i18n("Flat"), CONTEXT_FLAT);
     //debug ("Unflat");
     setBarPos(lastPosition);
-    for (KToolBarItem *b = items->first(); b; b=items->next())
-      b->show();
+    for (KToolBarItem *b = d->m_items->first(); b; b = d->m_items->next())
+    {
+      if (b->itemType() != KToolBarItem::Separator)
+        b->show();
+    }
     enableFloating(true);
   }
   emit moved(Flat); // KTM will block this->updateRects
@@ -1904,7 +2073,65 @@ void KToolBar::setFlat (bool flag)
 
 int KToolBar::count()
 {
-  return items->count();
+  return d->m_items->count();
+}
+
+void KToolBar::ContextCallback( int )
+{
+  int i = context->exec();
+  switch ( i )
+    {
+    case CONTEXT_LEFT:
+      setBarPos( Left );
+      break;
+    case CONTEXT_RIGHT:
+      setBarPos( Right );
+      break;
+    case CONTEXT_TOP:
+      setBarPos( Top );
+      break;
+    case CONTEXT_BOTTOM:
+      setBarPos( Bottom );
+      break;
+    case CONTEXT_FLOAT:
+      if (d->m_position == Floating)
+        setBarPos (lastPosition);
+      else
+      {
+        setBarPos( Floating );
+        move(QCursor::pos());
+        show();
+      }
+      break;
+    case CONTEXT_FLAT:
+      setFlat (d->m_position != Flat);
+      break;
+    case CONTEXT_ICONS:
+      setIconText( IconOnly );
+      break;
+    case CONTEXT_TEXTRIGHT:
+      setIconText( IconTextRight );
+      break;
+    case CONTEXT_TEXT:
+      setIconText( TextOnly );
+      break;
+    case CONTEXT_TEXTUNDER:
+      setIconText( IconTextBottom );
+      break;
+    }
+
+  mouseEntered=false;
+  repaint(false);
+}
+
+KToolBarItemList *KToolBar::items()
+{
+  return d->m_items;
+}
+
+bool KToolBar::highlight() const
+{
+  return d->m_highlight;
 }
 
 #include "ktoolbar.moc"

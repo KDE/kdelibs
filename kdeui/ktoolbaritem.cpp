@@ -4,11 +4,11 @@
               (C) 1997, 1998 Sven Radej (radej@kde.org)
               (C) 1997, 1998 Matthias Ettrich (ettrich@kde.org)
 			  (C) 1999 Chris Schlaeger (cs@kde.org)
+              (C) 2000 Kurt Granroth (granroth@kde.org)
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
-    License as published by the Free Software Foundation; either
-    version 2 of the License, or (at your option) any later version.
+    License version 2 as published by the Free Software Foundation.
 
     This library is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -22,17 +22,6 @@
 */
 
 // $Id$
-// $Log$
-// Revision 1.3  1999/12/13 23:01:49  kulow
-// some "real C++" fixes. I wish gcc -ansi would serve real ANSI ;(
-//
-// Revision 1.2  1999/10/31 19:44:47  bero
-// More template definitions for -frepo
-//
-// Revision 1.1  1999/09/21 11:03:53  waba
-// WABA: Clean up interface
-//
-
 #ifdef HAVE_CONFIG_H
 #include <config.h>
 #endif
@@ -40,7 +29,7 @@
 #include "ktoolbaritem.h"
 
 
-KToolBarItem::KToolBarItem (Item *_item, itemType _type, int _id,
+KToolBarItem::KToolBarItem (Item *_item, ItemType _type, int _id,
                             bool _myItem)
 {
   id = _id;

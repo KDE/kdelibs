@@ -3,11 +3,11 @@
               (C) 1997, 1998 Sven Radej (radej@kde.org)
               (C) 1997, 1998 Mark Donohoe (donohoe@kde.org)
               (C) 1997, 1998 Matthias Ettrich (ettrich@kde.org)
+              (C) 2000 Kurt Granroth (granroth@kde.org)
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
-    License as published by the Free Software Foundation; either
-    version 2 of the License, or (at your option) any later version.
+    License version 2 as published by the Free Software Foundation.
 
     This library is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -18,17 +18,8 @@
     along with this library; see the file COPYING.LIB.  If not, write to
     the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
     Boston, MA 02111-1307, USA.
-    */
-
+*/
 // $Id$
-// $Log$
-// Revision 1.2  1999/11/02 08:50:00  ssk
-// More internal flags.
-//
-// Revision 1.1  1999/09/21 11:03:54  waba
-// WABA: Clean up interface
-//
-
 #ifndef _KTOOLBARITEM_H
 #define _KTOOLBARITEM_H
 
@@ -36,17 +27,10 @@
 #include <qlist.h>
 
 class KToolBar;
+class KToolBarItemPrivate;
 
 typedef QWidget Item;
 
-enum itemType {
-    ITEM_LINED = 0,
-    ITEM_BUTTON = 1,
-    ITEM_COMBO = 2,
-    ITEM_FRAME = 3,
-    ITEM_TOGGLE = 4,
-    ITEM_ANYWIDGET=5
-};
 
 /**
  * A toolbar item. Used internally by KToolBar, use KToolBar methods
@@ -56,9 +40,16 @@ enum itemType {
 class KToolBarItem
 {
 public:
-  KToolBarItem (Item *_item, itemType _type, int _id,
+  enum ItemType
+  {
+    Lined = 0, Button, Combo, Frame, Toggle, AnyWidget, Separator
+  };
+
+  KToolBarItem (Item *_item, ItemType _type, int _id,
                 bool _myItem=true);
   ~KToolBarItem ();
+
+  ItemType itemType() const { return type; }
 
   void resize (int w, int h) { item->resize(w, h); };
   void move(int x, int y) { item->move(x, y); };
@@ -84,8 +75,10 @@ private:
   bool right;
   bool autoSized;
   Item *item;
-  itemType type;
+  ItemType type;
   bool myItem;
+
+  KToolBarItemPrivate *d;
 };
 
 /** 
