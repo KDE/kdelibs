@@ -43,6 +43,7 @@ public:
     bool autoUpdate;
     bool urlChanged;
     QString nameFilter;
+    QString mimeFilter;
 };
 
 KDirLister::KDirLister( bool _delayedMimeTypes )
@@ -180,7 +181,7 @@ void KDirLister::slotResult( KIO::Job * job )
 
 void KDirLister::slotEntries( KIO::Job*, const KIO::UDSEntryList& entries )
 {
-  KFileItemList lstNewItems;
+  KFileItemList lstNewItems, lstFilteredItems;
   KIO::UDSEntryListConstIterator it = entries.begin();
   KIO::UDSEntryListConstIterator end = entries.end();
 
@@ -210,19 +211,25 @@ void KDirLister::slotEntries( KIO::Job*, const KIO::UDSEntryList& entries )
       //kdDebug(7003)<< "Adding " << u.prettyURL() << endl;
       KFileItem* item = createFileItem( *it, m_url, m_bDelayedMimeTypes);
       assert( item != 0L );
-      if ( (m_bDirOnlyMode && !item->isDir()) || !matchesFilter( item ))
+      bool isNamedFilterMatch = ((m_bDirOnlyMode && !item->isDir()) ||
+                                 !matchesFilter( item ));
+      bool isMimeFilterMatch = !matchesMimeFilter( item );
+      if ( isNamedFilterMatch || isMimeFilterMatch )
       {
-        delete item;
+        if ( !isNamedFilterMatch && isMimeFilterMatch )
+          lstFilteredItems.append( item );
+        else
+          delete item;
         continue;
       }
-
       lstNewItems.append( item );
       m_lstFileItems.append( item );
-
     }
   }
   if (!lstNewItems.isEmpty())
-      emit newItems( lstNewItems );
+    emit newItems( lstNewItems );
+  if ( !lstFilteredItems.isEmpty() )
+    emit itemsFilteredByMime( lstFilteredItems );
 }
 
 void KDirLister::slotRedirection( KIO::Job *, const KURL & url )
@@ -285,7 +292,7 @@ void KDirLister::slotUpdateResult( KIO::Job * job )
     return;
   }
 
-  KFileItemList lstNewItems;
+  KFileItemList lstNewItems, lstFilteredItems;
   KFileItemList lstRefreshItems;
   KURL::List::Iterator pendingIt = d->lstPendingUpdates.find( m_url );
   if ( pendingIt != d->lstPendingUpdates.end() )
@@ -363,10 +370,15 @@ void KDirLister::slotUpdateResult( KIO::Job * job )
       else // This is a new file
       {
         //kdDebug(7003) << "slotUpdateFinished : inserting " << name << endl;
-
-        if ( (m_bDirOnlyMode && !item->isDir()) || !matchesFilter( item ))
+        bool isNamedFilterMatch = ((m_bDirOnlyMode && !item->isDir()) ||
+                                   !matchesFilter( item ));
+        bool isMimeFilterMatch = !matchesMimeFilter( item );
+        if ( isNamedFilterMatch || isMimeFilterMatch )
         {
-          delete item;
+          if ( !isNamedFilterMatch && isMimeFilterMatch )
+            lstFilteredItems.append( item );
+          else
+            delete item;
           continue;
         }
 
@@ -382,6 +394,8 @@ void KDirLister::slotUpdateResult( KIO::Job * job )
       emit newItems( lstNewItems );
   if ( !lstRefreshItems.isEmpty() )
       emit refreshItems( lstRefreshItems );
+  if ( !lstFilteredItems.isEmpty() )
+      emit itemsFilteredByMime( lstFilteredItems );
 
   deleteUnmarkedItems();
 
@@ -515,6 +529,16 @@ bool KDirLister::matchesFilter( const KFileItem *item ) const
     return matchesFilter( item->text() );
 }
 
+bool KDirLister::matchesMimeFilter( const KFileItem *item ) const
+{
+    assert( item != 0L );
+
+    if ( d->mimeFilter.isEmpty() )
+        return true;
+
+    return matchesMimeFilter( item->mimetype() );
+}
+
 bool KDirLister::matchesFilter(const QString& name) const
 {
     bool matched = false;
@@ -525,6 +549,19 @@ bool KDirLister::matchesFilter(const QString& name) const
         }
 
     return matched;
+}
+
+bool KDirLister::matchesMimeFilter(const QString& mime) const
+{
+    if ( d->mimeFilter.isEmpty() )
+        return false;
+
+    QStringList list = QStringList::split(' ', d->mimeFilter);
+    QStringList::Iterator it = list.begin();
+    for ( ; it != list.end(); ++it )
+        if ( (*it) == mime ) break;
+
+    return ( it != list.end() );
 }
 
 void KDirLister::setNameFilter(const QString& nameFilter)
@@ -542,9 +579,19 @@ void KDirLister::setNameFilter(const QString& nameFilter)
     }
 }
 
+void KDirLister::setMimeFilter( const QString& mimefilter )
+{
+    d->mimeFilter = mimefilter;
+}
+
 const QString& KDirLister::nameFilter() const
 {
     return d->nameFilter;
+}
+
+const QString& KDirLister::mimeFilter() const
+{
+    return d->mimeFilter;
 }
 
 void KDirLister::FilesAdded( const KURL & directory )

@@ -197,9 +197,30 @@ public:
   void setNameFilter(const QString&);
 
   /**
+   * Set mime-based filter to only list items matching the given mimetype
+   *
+   * You can set more than one filter by separating them with whitespace,
+   * e.g "text/plain image/x-png". If this method is invoked with a null
+   * argument, @p setMimeFilter(QString::null), mime based filtering will
+   * be diabled. NOTE: setting the filter does not automatically reload
+   * the direcory.  Also calling this function will not affect any named
+   * filter already set.
+   *
+   * @see #matchesMimeFilter
+   *
+   * @param a list of mime-types speparated by space.
+   */
+  void setMimeFilter(const QString&);
+
+  /**
    * @returns the current name filter, as set via @ref setNameFilter()
    */
   const QString& nameFilter() const;
+
+  /**
+   * @returns the current mime filter as set via @ref setMimeFilter()
+   */
+  const QString& mimeFilter() const;
 
   /**
    * @returns true if @p name matches a filter in the list,
@@ -207,6 +228,14 @@ public:
    * @see #setNameFilter
    */
   bool matchesFilter( const QString& name ) const;
+
+  /**
+   * @returns true if @p name matches a filter in the list,
+   * otherwise false. Also @see #setNameFilter.
+   *
+   * @param mime the mimetype to find in the filter list.
+   */
+  bool matchesMimeFilter( const QString& mime ) const;
 
   /**
    * Notify that files have been added in @p directory
@@ -263,8 +292,12 @@ signals:
   /** Signal new items, @p complete is true when the directory loading has
    *  finished */
   void newItems( const KFileItemList & items );
+
+  /** Send a list of items filtered-out by mime-type. */
+  void itemsFilteredByMime( const KFileItemList & items );
   /** Signal an item to remove */
   void deleteItem( KFileItem * _fileItem );
+
   /**
    * Signal an item to refresh (its mimetype/icon/name has changed)
    * Note: KFileItem::refresh has already been called on those items.
@@ -313,6 +346,12 @@ protected:
    * @see #setNameFilter
    */
   virtual bool matchesFilter( const KFileItem * ) const;
+
+  /**
+   *
+   *
+   */
+  bool matchesMimeFilter( const KFileItem * ) const;
 
   /**
    * Unregister dirs from kdirwatch and clear list of dirs
