@@ -21,6 +21,6 @@ kpartsinclude_HEADERS = part.h plugin.h partmanager.h mainwindow.h xmlgui.h even
 
 libkparts_la_METASOURCES = AUTO
 
-servicetype_DATA = kpart.desktop krop.desktop
+servicetype_DATA = kpart.desktop krop.desktop krwp.desktop
 servicetypedir = $(kde_servicetypesdir)
 
