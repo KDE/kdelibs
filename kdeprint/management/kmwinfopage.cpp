@@ -41,8 +41,8 @@ KMWInfoPage::KMWInfoPage(QWidget *parent, const char *name)
 		"It will guide you through the various steps of the process of installing "
 		"and configuring a printer for your printing system. At each step, you "
 		"can always go back using the <b>Back</b> button.</p><br>"
-		"<p>We hope you'll enjoy this tool !</p><br>"
-		"<p align=right>Contact: <a href=\"mailto:goffioul@imec.be\"><i>"
+		"<p>We hope you'll enjoy this tool!</p><br>"
+		"<p align=right><a href=\"http://printing.kde.org\"><i>"
 		"The KDE printing team</i></a>.</p>"));
 
 	QVBoxLayout	*main_ = new QVBoxLayout(this, 0, 0);
