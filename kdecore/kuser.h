@@ -57,11 +57,14 @@ public:
    * Creates an object that contains information about the current user.
    * (as returned by getuid(2) or geteuid(2), taking $LOGNAME/$USER into
    * account).
-   * @param mode if @ref UseEffectiveUID is passed the effective user is returned. 
-   *        If @ref UseRealUserID is passed the real user will be returned. 
-   *        The RUID will be different than the EUID in setuid programs; in  
-   *        such a case use the EUID for checking permissions, and the RUID 
-   *        for displaying information about the user.
+   * @param mode if #UseEffectiveUID is passed the effective
+   *             user is returned. 
+   *        If #UseRealUserID is passed the real user will be
+   *        returned. 
+   *        The real UID will be different than the effective UID in setuid
+   *        programs; in  
+   *        such a case use the effective UID for checking permissions, and
+   *        the real UID for displaying information about the user.
    */
   // XXX KDE4: Make this explicit
   KUser(UIDMode mode = UseEffectiveUID);
@@ -256,11 +259,13 @@ public:
 
   /**
    * Create an object from the group of the current user.
-   * @param mode if @ref UseEffectiveUID is passed the effective user will be used.
-   *        If @ref UseRealUserID is passed the real user will be used. 
-   *        The RUID will be different than the EUID in setuid programs; in  
-   *        such a case use the EUID for checking permissions, and the RUID 
-   *        for displaying information about the group.
+   * @param mode if #KUser::UseEffectiveUID is passed the effective user
+   *        will be used. If #KUser::UseRealUserID is passed the real user
+   *        will be used. 
+   *        The real UID will be different than the effective UID in setuid
+   *        programs; in  such a case use the effective UID for checking
+   *        permissions, and the real UID for displaying information about
+   *        the group associated with the user.
    */
   explicit KUserGroup(KUser::UIDMode mode = KUser::UseEffectiveUID);
   
