@@ -4818,8 +4818,6 @@ void HTTPProtocol::configAuth( char *p, bool b )
     kdWarning(7113) << "(" << m_pid << ") Request Authorization: " << p << endl;
   }
 
-  kdDebug(7113) << "(" << m_pid << ") Got auth: " << f << endl;
-
   /*
      This check ensures the following:
      1.) Rejection of any unknown/unsupported authentication schemes
@@ -4827,28 +4825,35 @@ void HTTPProtocol::configAuth( char *p, bool b )
          and when multiple Proxy-Authenticate or WWW-Authenticate
          header field is sent.
   */
-  if ( f == AUTH_None ||
-       (b && m_iProxyAuthCount > 0 && f < ProxyAuthentication) ||
-       (!b && m_iWWWAuthCount > 0 && f < Authentication) )
+  if (b)
   {
-    // Since I purposefully made the Proxy-Authentication settings
-    // persistent to reduce the number of round-trips to kdesud we
-    // have to take special care when an unknown/unsupported auth-
-    // scheme is received. This check accomplishes just that...
-    if ( b )
+    if ((f == AUTH_None) || 
+        ((m_iProxyAuthCount > 0) && (f < ProxyAuthentication)))
     {
-      if ( !m_iProxyAuthCount )
+      // Since I purposefully made the Proxy-Authentication settings
+      // persistent to reduce the number of round-trips to kdesud we
+      // have to take special care when an unknown/unsupported auth-
+      // scheme is received. This check accomplishes just that...
+      if ( m_iProxyAuthCount == 0)
         ProxyAuthentication = f;
-      m_iProxyAuthCount++;
+      kdDebug(7113) << "(" << m_pid << ") Rejected proxy auth method: " << f << endl;
+      return;
+    } 
+    m_iProxyAuthCount++;   
+    kdDebug(7113) << "(" << m_pid << ") Accepted proxy auth method: " << f << endl;
+  }
+  else
+  {
+    if ((f == AUTH_None) || 
+        ((m_iWWWAuthCount > 0) && (f < Authentication)))
+    {
+      kdDebug(7113) << "(" << m_pid << ") Rejected auth method: " << f << endl;
+      return;
     }
-    else
-      m_iWWWAuthCount++;
-
-  kdDebug(7113) << "(" << m_pid << ") Rejected auth: " << f << endl;
-    return;
+    m_iWWWAuthCount++;
+    kdDebug(7113) << "(" << m_pid << ") Accepted auth method: " << f << endl;
   }
 
-  kdDebug(7113) << "(" << m_pid << ") Accepted auth: " << f << endl;
 
   while (*p)
   {
