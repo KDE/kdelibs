@@ -760,14 +760,7 @@ void FileProtocol::special( const QByteArray &data)
     switch (tmp) {
     case 1:
       {
-	QString point;
-	stream >> point;
-	unmount( point );
-      }
-      break;
-    case 2:
-      {
-	QString fstype, dev, point;
+		QString fstype, dev, point;
 	Q_INT8 iRo;
 	
 	stream >> iRo >> fstype >> dev >> point;
@@ -777,6 +770,14 @@ void FileProtocol::special( const QByteArray &data)
 	kDebugInfo(7006 ,"!!!!!!!!! MOUNTING %s %s %s",
 		   debugString(fstype), debugString(dev), debugString(point) );
 	mount( ro, fstype, dev, point );
+	
+      }
+      break;
+    case 2:
+      {
+	QString point;
+	stream >> point;
+	unmount( point );
       }
       break;
       
