@@ -1,6 +1,7 @@
 [KDE Print Entry]
 PrintSystem=lpr
 Comment=LPR/LPRng print system
+Comment[ar]=نظام طباعة LPR/LPRng
 Comment[da]=LPR/LPRng udskriftssystem
 Comment[de]=LPR/LPRng-Drucksystem
 Comment[es]=Sistema de impresión LPR/LPRNg
@@ -13,6 +14,7 @@ Comment[pt]=O sistema de impressão LPR/LPRng
 Comment[pt_BR]=O sistema de impressão LPR/LPRng
 Comment[sk]=Tlačový systém LPR/LPRng
 Comment[sv]=LPR/LPRNG-skrivarsystem
+Comment[ta]=LPR/LPRng «îÍò¦¾¡Ì¾¢
 Comment[xx]=xx
 DetectUris=service:/printer
 DetectPrecedence=0
