@@ -447,6 +447,10 @@ ExprOpt:
 
 ContinueStatement:
     CONTINUE ';'                   { $$ = new ContinueNode(); }
+  | CONTINUE error                 { if (automatic())
+                                       $$ = new ContinueNode();
+                                     else
+				       YYABORT; }
   | CONTINUE IDENT ';'             { $$ = new ContinueNode($2); delete $2; }
   | CONTINUE IDENT error           { if (automatic()) {
                                        $$ = new ContinueNode($2); delete $2;
@@ -456,6 +460,10 @@ ContinueStatement:
 
 BreakStatement:
     BREAK ';'                      { $$ = new BreakNode(); }
+  | BREAK error                    { if (automatic())
+                                       $$ = new BreakNode();
+                                     else
+				       YYABORT; }
   | BREAK IDENT ';'                { $$ = new BreakNode($2); delete $2; }
   | BREAK IDENT error              { if (automatic()) {
                                        $$ = new BreakNode($2); delete $2;
@@ -465,6 +473,10 @@ BreakStatement:
 
 ReturnStatement:
     RETURN ';'                     { $$ = new ReturnNode(0L); }
+  | RETURN error                   { if (automatic())
+                                       $$ = new ReturnNode(0L);
+                                     else
+				       YYABORT; }
   | RETURN Expr ';'                { $$ = new ReturnNode($2); }
   | RETURN Expr error              { if (automatic())
                                        $$ = new ReturnNode($2);
