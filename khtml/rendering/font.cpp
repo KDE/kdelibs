@@ -167,7 +167,7 @@ void Font::drawText( QPainter *p, int x, int y, QChar *str, int slen, int pos, i
 	    if (deco)
 	        drawDecoration(p, eff_x, uy, y - uy, segmentWidth, h, deco);
 	    return;
-	}/*end if*/
+	}
 
 	// We are using two passes. In the first pass, the widths are collected,
 	// and stored. In the second, the actual characters are drawn.
@@ -228,7 +228,7 @@ void Font::drawText( QPainter *p, int x, int y, QChar *str, int slen, int pos, i
 		(onSegment ? segmentWidth : preSegmentWidth) += chw;
 	    }
 
-	}/*next i*/
+	}
 
 	// close last word
 	Q_ASSERT(onSegment);
@@ -269,13 +269,13 @@ void Font::drawText( QPainter *p, int x, int y, QChar *str, int slen, int pos, i
 		    x += chw;
 	    }
 
-	}/*next i*/
+	}
 
 	// don't forget to draw last word
 	if (mode == WordWise) {
 	    closeAndDrawWord(p, d, x, y, widthList, str, pos, lastWordBegin, to);
 	}
-        
+
 	if (deco)
 	    drawDecoration(p, d == QPainter::RTL ? x-segmentWidth : x, uy,
 	    		y - uy, segmentWidth, h, deco);
