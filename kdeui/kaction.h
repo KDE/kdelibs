@@ -2,6 +2,7 @@
 #define __kaction_h__ $Id$
 
 #include <qaction.h>
+#include <qfontdatabase.h>
 
 class KAction : public QAction
 {
@@ -74,9 +75,25 @@ public:
 
     virtual void setCurrentItem( int i );	
     void setItems( const QStringList& lst );
-
+    void clear();
+    
 protected slots:
     virtual void slotActivated( int );
+
+};
+
+class KFontAction : public KSelectAction
+{
+    Q_OBJECT
+public:
+    KFontAction( const QString& text, int accel = 0, QObject* parent = 0, const char* name = 0 );
+    KFontAction( const QString& text, int accel,
+		 QObject* receiver, const char* slot, QObject* parent, const char* name = 0 );
+    KFontAction( const QString& text, const QIconSet& pix, int accel = 0,
+		 QObject* parent = 0, const char* name = 0 );
+    KFontAction( const QString& text, const QIconSet& pix, int accel,
+		 QObject* receiver, const char* slot, QObject* parent, const char* name = 0 );
+    KFontAction( QObject* parent = 0, const char* name = 0 );
 
 };
 

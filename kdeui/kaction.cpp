@@ -5,6 +5,67 @@
 #include <ktoolbarbutton.h>
 #include <kmenubar.h>
 #include <qobjectlist.h>
+#include <kapp.h>
+
+#include <X11/Xlib.h>
+
+static void get_fonts( QStringList &lst )
+{
+    int numFonts;
+    Display *kde_display;
+    char** fontNames;
+    char** fontNames_copy;
+    QString qfontname;
+
+    kde_display = kapp->getDisplay();
+
+    bool have_installed = kapp->kdeFonts( lst );
+
+    if ( have_installed )
+	return;
+
+    fontNames = XListFonts( kde_display, "*", 32767, &numFonts );
+    fontNames_copy = fontNames;
+
+    for( int i = 0; i < numFonts; i++ ) {
+
+	if ( **fontNames != '-' ) {
+	    fontNames ++;
+	    continue;
+	};
+
+	qfontname = "";
+	qfontname = *fontNames;
+	int dash = qfontname.find ( '-', 1, TRUE );
+
+	if ( dash == -1 ) {
+	    fontNames ++;
+	    continue;
+	}
+
+	int dash_two = qfontname.find ( '-', dash + 1 , TRUE );
+
+	if ( dash == -1 ) {
+	    fontNames ++;
+	    continue;
+	}
+
+
+	qfontname = qfontname.mid( dash +1, dash_two - dash -1 );
+
+	if ( !qfontname.contains( "open look", TRUE ) ) {
+	    if( qfontname != "nil" ){
+		if( lst.find( qfontname ) == lst.end() )
+		    lst.append( qfontname );
+	    }
+	}
+
+	fontNames ++;
+
+    }
+
+    XFreeFontNames( fontNames_copy );
+}
 
 static int get_toolbutton_id()
 {
@@ -425,7 +486,7 @@ int KSelectAction::plug( QWidget *widget )
     return -1;
 }
 
-void QSelectAction::clear()
+void KSelectAction::clear()
 {
     if ( popupMenu() )
 	popupMenu()->clear();
@@ -444,6 +505,54 @@ void QSelectAction::clear()
 	else if ( w->inherits( "QActionWidget" ) )
 	    ((QActionWidget*)w)->updateAction( this );	
     }
+}
+
+KFontAction::KFontAction( const QString& text, int accel, QObject* parent, const char* name )
+    : KSelectAction( text, accel, parent, name )
+{
+    QStringList fonts;
+    get_fonts( fonts );
+    setItems( fonts );
+    setEditable( TRUE );
+}
+
+KFontAction::KFontAction( const QString& text, int accel,
+	       QObject* receiver, const char* slot, QObject* parent, const char* name )
+    : KSelectAction( text, accel, receiver, slot, parent, name )
+{
+    QStringList fonts;
+    get_fonts( fonts );
+    setItems( fonts );
+    setEditable( TRUE );
+}
+
+KFontAction::KFontAction( const QString& text, const QIconSet& pix, int accel,
+	       QObject* parent, const char* name )
+    : KSelectAction( text, pix, accel, parent, name )
+{
+    QStringList fonts;
+    get_fonts( fonts );
+    setItems( fonts );
+    setEditable( TRUE );
+}
+
+KFontAction::KFontAction( const QString& text, const QIconSet& pix, int accel,
+	       QObject* receiver, const char* slot, QObject* parent, const char* name )
+    : KSelectAction( text, pix, accel, receiver, slot, parent, name )
+{
+    QStringList fonts;
+    get_fonts( fonts );
+    setItems( fonts );
+    setEditable( TRUE );
+}
+
+KFontAction::KFontAction( QObject* parent, const char* name )
+    : KSelectAction( parent, name )
+{
+    QStringList fonts;
+    get_fonts( fonts );
+    setItems( fonts );
+    setEditable( TRUE );
 }
 
 #include "kaction.moc"
