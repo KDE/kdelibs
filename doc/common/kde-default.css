@@ -132,6 +132,19 @@ P, H1, H2, H3, H4, H5, TD, TH { font-family: Helvetica, Arial, sans-serif;
          text-decoration: underline;
          }
 
+.option, .command { background-color: rgb(255,255,255);
+		  color: rgb(0,96,160);
+		  font-weight: bold;
+		  }
+
+
+h1, h2, h3, h4, h5, h6 { color: rgb(82,80,82);
+		   }
+.arg { background-color: rgb(255,255,255);
+	   color: rgb(0,128,64);
+	   font-style: italic;
+	   }
+
 DIV.mediaobject { /* float: right; */ /* might make it much nicer. although someone has to understand the rules ;-)  You also don't want it to be surrounded by text it doesn't refer to ...  But that may be among others a question of writing style. */
                   text-align: center; /* a bit of a hack: it should position _images_ */
                   }
