@@ -400,12 +400,18 @@ int KAction::plug( QWidget *w, int index )
   // Plug into the KMainWindow accel so that keybindings work for
   // actions that are only plugged into a toolbar, and in case of
   // hiding the menubar.
-  if (!d->m_kaccel) // only if not already plugged into a kaccel
+  if (!d->m_kaccel && d->m_accel) // only if not already plugged into a kaccel, and only if there is a shortcut !
   {
-    QWidget * tl = w->topLevelWidget();
+    // Note: topLevelWidget() stops too early, we can't use it.
+    QWidget * tl = w;
+    while ( tl->parentWidget() )
+        tl = tl->parentWidget();
+
     KMainWindow * mw = dynamic_cast<KMainWindow *>(tl); // try to see if it's a kmainwindow
     if (mw)
       plugAccel( mw->accel() );
+    else
+      kdDebug() << "KAction::plug: Toplevel widget isn't a KMainWindow, can't plug accel. " << tl << endl;
   }
 
   if ( w->inherits("QPopupMenu") )
