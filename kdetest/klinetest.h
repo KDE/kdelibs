@@ -5,7 +5,7 @@
 
 #include <qwidget.h>
 #include <qlabel.h>
-#include <kintegerline.h>
+#include <knumlineedit.h>
 
 /** test: a small test program for KmwIntegerLine.
     */
@@ -31,8 +31,8 @@ private:
   QLabel         *m_plb2;
   QLabel         *m_plb3;
 
-  KIntegerLine *m_ple1;
-  KIntegerLine *m_ple2;
-  KIntegerLine *m_ple3;
+  KIntLineEdit *m_ple1;
+  KIntLineEdit *m_ple2;
+  KIntLineEdit *m_ple3;
 };
 #endif // TEST_H

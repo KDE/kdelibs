@@ -39,7 +39,7 @@ int main(int argc, char **argv)
     QHBoxLayout *layout = new QHBoxLayout(p, 5);
     label->setAlignment(Qt::AlignCenter);
     label->setFixedSize(300, 200);
-    layout->addWidget(l);
+    layout->addWidget(label);
     QString title = QString("%1. page").arg(i);
     wiz->addPage(p, title);
     wiz->setFinishEnabled(p, (i==10));

@@ -7,15 +7,15 @@
 
 #include <stdlib.h>
 
-#include "klinetest.h"
 #include <kapp.h>
 
 #include "klinetest.h"
 
+
 Test::Test( QWidget *parent, const char *name )
   : QWidget( parent, name )
 {
-  setCaption("Testing KIntegerLine");
+  setCaption("Testing KIntLineEdit");
 
   QWidget *d = qApp->desktop();
   setGeometry((d->width()-600)>>1, (d->height()-400)>>1, 280, 100);
@@ -33,9 +33,15 @@ Test::~Test()
 void Test::createFields()
 {
   int x = 10, y = 10;
-  m_ple1 = new KIntegerLine(this, "line1", KEditTypeOct);
-  m_ple2 = new KIntegerLine(this, "line2", KEditTypeDec);
-  m_ple3 = new KIntegerLine(this, "line3", KEditTypeHex);
+  m_ple1 = new KIntLineEdit(this, "line1");
+  m_ple1->setBase(8);
+  
+  m_ple2 = new KIntLineEdit(this, "line2");
+  m_ple2->setBase(10);
+  
+  m_ple3 = new KIntLineEdit(this, "line3");
+  m_ple3->setBase(16);
+  
 
   m_plb1 = new QLabel("Octal",       this, "_octal");
   m_plb2 = new QLabel("Decimal",     this, "_decimal");

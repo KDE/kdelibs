@@ -55,15 +55,8 @@ void Test::createFields()
   string+="Locale charset: ";
   string+=KGlobal::locale()->charset()+"\n";
 
-  KCharset charset=KGlobal::locale()->charset();
-  string+="Is it ok?: ";
-  string+=charset.ok()?"yes":"no";
-  string+="\n";
-  if (charset.ok()){
-    string+="Canonical name: ";
-    string+=charset.name();
-    string+="\n";
-  }  
+  QFont charset=KGlobal::locale()->charset();
+  string+="Charset name: " + charset.rawName() + "\n";
   string+="Locale categories: \n";
   string+=showLocale("LC_MESSAGES");
   string+=showLocale("LC_CTYPE");
@@ -106,7 +99,7 @@ void Test::createFields()
   
   label=new QLabel(string,this,"Label");
   label->setGeometry(10,10,400,400);
-  label->setFont(kapp->generalFont());
+  label->setFont(KGlobal::generalFont());
   label->show();
 }
 
