@@ -31,6 +31,7 @@
 #include "types.h"
 #include "internal.h"
 #include "operations.h"
+#include "collector.h"
 #include "error_object.h"
 
 namespace KJS {
@@ -767,8 +768,7 @@ void Imp::setConstructor(const KJSO& c)
 
 void* Imp::operator new(size_t s)
 {
-  /* TODO */
-  return malloc(s);
+  return Collector::allocate(s);
 }
 
 void Imp::operator delete(void*, size_t)

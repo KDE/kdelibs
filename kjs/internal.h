@@ -32,6 +32,7 @@ namespace KJS {
   class String;
   class Object;
   class RegExp;
+  class Collector;
 
   class UndefinedImp : public Imp {
   public:
@@ -278,6 +279,7 @@ namespace KJS {
     static KJScriptImp *curr;
     bool initialized;
     Lexer *lex;
+    Collector *collector;
     Context *con;
     Global glob;
     int errType;

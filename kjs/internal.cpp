@@ -30,6 +30,7 @@
 #include "regexp.h"
 #include "nodes.h"
 #include "lexer.h"
+#include "collector.h"
 
 extern int kjsyyparse();
 
@@ -414,9 +415,12 @@ void KJScriptImp::init()
   KJScriptImp::curr = this;
 
   if (!initialized) {
+    assert(Collector::current());
+    collector = Collector::current();
     con = new Context();
     initialized = true;
-  }
+  } else
+    Collector::attach(collector);
 }
 
 void KJScriptImp::clear()
@@ -426,8 +430,8 @@ void KJScriptImp::clear()
 
     Node::deleteAllNodes();
 
-    delete con;
-    con = 0L;
+    delete con; con = 0L;
+    delete collector; collector = 0L;
 
     initialized = false;
   }

@@ -24,12 +24,14 @@
 #include "kjs.h"
 #include "types.h"
 #include "internal.h"
+#include "collector.h"
 
 using namespace KJS;
 
 KJScript::KJScript()
-  : rep(new KJScriptImp())
 {
+  Collector::detach();
+  rep = new KJScriptImp();
   rep->init();
   enableDebug();
 }

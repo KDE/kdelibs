@@ -18,13 +18,134 @@
  */
 
 #include "collector.h"
+#include "object.h"
+
+#include <stdio.h>
+#include <string.h>
+#include <assert.h>
+
+namespace KJS {
+
+  class CollectorBlock {
+  public:
+    CollectorBlock(int s);
+    ~CollectorBlock();
+    int size;
+    int filled;
+    void** mem;
+    CollectorBlock *prev, *next;
+  };
+
+}; // namespace
 
 using namespace KJS;
 
+CollectorBlock::CollectorBlock(int s)
+  : size(s),
+    filled(0),
+    prev(0L),
+    next(0L)
+{
+  mem = new void*[size];
+  memset(mem, 0, size * sizeof(void*));
+}
+
+CollectorBlock::~CollectorBlock()
+{
+  delete mem;
+}
+
+Collector* Collector::curr = 0L;
+
 Collector::Collector()
+  : root(0L),
+    count(0)
 {
 }
 
 Collector::~Collector()
 {
+  privateCollect();
+#ifdef KJS_DEBUG_MEM
+  assert(count == 0);
+#endif
+  
+  delete root;
+
+  if (curr == this)
+    curr = 0L;
 }
+
+Collector* Collector::init()
+{
+  return (curr = new Collector());
+}
+
+void* Collector::allocate(size_t s)
+{
+  if (!curr)
+    init();
+
+  if (s == 0)
+    return 0L;
+
+  if (!curr->root) {
+    curr->root = new CollectorBlock(BlockSize);
+    curr->currentBlock = curr->root;
+  }
+
+  CollectorBlock *block = curr->currentBlock;
+
+  assert(block->filled <= block->size);
+  if (block->filled >= block->size) {
+#ifdef KJS_DEBUG_MEM
+    printf("allocating new block of size %d\n", block->size);
+#endif
+    CollectorBlock *tmp = new CollectorBlock(BlockSize);
+    block->next = tmp;
+    block = curr->currentBlock = tmp;
+  }
+  void *m = malloc(s);
+  void **r = block->mem + block->filled;
+  *r = m;
+  curr->count++;
+  block->filled++;
+
+  return m;
+}
+
+void Collector::collect()
+{
+  if (!curr)
+    return;
+
+  curr->privateCollect();
+}
+
+void Collector::privateCollect()
+{
+#ifdef KJS_DEBUG_MEM
+  printf("collecting %d objects total\n", Imp::count);
+#endif
+
+  CollectorBlock *block = root;
+  while (block) {
+#ifdef KJS_DEBUG_MEM
+    printf("cleaning block filled %d out of %d\n", block->filled, block->size);
+#endif
+    Imp **r = (Imp**)block->mem;
+    for (int i = 0; i < block->filled; i++, r++)
+      if (*r) {
+	// emulate 'operator delete()'
+	(*r)->~Imp();
+	free(*r);
+	count--;
+      }
+    CollectorBlock *next = block->next;
+    delete block;
+    block = next;
+  }
+  root = 0L;
+}
+
+

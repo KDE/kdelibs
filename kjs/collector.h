@@ -20,15 +20,76 @@
 #ifndef _KJSCOLLECTOR_H_
 #define _KJSCOLLECTOR_H_
 
+#include <stdlib.h>
+
 namespace KJS {
+
+  class CollectorBlock;
 
   /**
    * @short Garbage collector.
    */
   class Collector {
-  public:
+    CollectorBlock* root;
+    CollectorBlock* currentBlock;
+    int count;
+    enum { BlockSize = 1000 };
+    /**
+     * Pointer to the current collector instance.
+     */
+    static Collector *curr;
+    // disallow direct construction/destruction
     Collector();
+  public:
+    /**
+     * Destructor. Will call @ref collect() before destruction.
+     */
     ~Collector();
+    /**
+     * Create and initialize an instance of the garbage collector.
+     * In case you are not interested in obtaining a handle this call may
+     * be omitted as it will be called implicitly on the first @ref allocate()
+     * call.
+     * @return A pointer to the newly created instance.
+     */
+    static Collector* init();
+    /**
+     * @return The current collector instance.
+     */
+    static Collector* current() { return curr; }
+    /**
+     * Query the current collector and attach to the specified collector.
+     * @param c Pointer to a collector created earlier with @ref init().
+     */
+    static void attach(Collector *c) { curr = c; }
+    /**
+     * Detach from the current collector. The next call to @ref allocate()
+     * will create a new instance.
+     */
+    static void detach() { curr = 0L; }
+    /**
+     * Register an object with the collector. The following assumptions are
+     * made:
+     * @li the operator new() of the object class is overloaded.
+     * @li the correct size of memory has been reserved with a malloc() call.
+     * @li operator delete() has been overloaded as well and does not free
+     * the memory on its own.
+     *
+     * @param p Pointer to the memory allocated for the object.
+     * @return A pointer identical to parameter p.
+     */
+    static void* allocate(size_t s);
+    /**
+     * Run the garbage collection. This involves calling the delete operator
+     * on each object and freeing the used memory.
+     * In the current implemenation this will basically free all registered
+     * object regardless whether they are still references by others or not.
+     * 
+     */
+    static void collect();
+    int size() const { return count; }
+  private:
+    void privateCollect();
   };
 
 };
