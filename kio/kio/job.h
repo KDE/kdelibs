@@ -476,6 +476,27 @@ namespace KIO {
     CopyJob *linkAs( const KURL& src, const KURL& dest, bool showProgressInfo = true );
 
     /**
+     * Trash a file or directory.
+     * This is currently only supported for local files and directories.
+     * Use "KURL src; src.setPath( path );" to create a URL from a path.
+     *
+     * @param src file to delete
+     * @param showProgressInfo true to show progress information
+     * @return the job handling the operation
+     */
+    CopyJob *trash( const KURL& src, bool showProgressInfo = true );
+
+    /**
+     * Trash a list of files or directories.
+     * This is currently only supported for local files and directories.
+     *
+     * @param src the files to delete
+     * @param showProgressInfo true to show progress information
+     * @return the job handling the operation
+     */
+    CopyJob *trash( const KURL::List& src, bool showProgressInfo = true );
+
+    /**
      * Delete a file or directory.
      *
      * @param src file to delete

@@ -3592,6 +3592,18 @@ CopyJob *KIO::linkAs(const KURL& src, const KURL& destDir, bool showProgressInfo
     return new CopyJob( srcList, destDir, CopyJob::Link, false, showProgressInfo );
 }
 
+CopyJob *KIO::trash(const KURL& src, bool showProgressInfo )
+{
+    KURL::List srcList;
+    srcList.append( src );
+    return new CopyJob( srcList, KURL( "trash:/" ), CopyJob::Move, false, showProgressInfo );
+}
+
+CopyJob *KIO::trash(const KURL::List& srcList, bool showProgressInfo )
+{
+    return new CopyJob( srcList, KURL( "trash:/" ), CopyJob::Move, false, showProgressInfo );
+}
+
 //////////
 
 DeleteJob::DeleteJob( const KURL::List& src, bool /*shred*/, bool showProgressInfo )

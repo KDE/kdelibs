@@ -1383,6 +1383,7 @@ namespace KIO {
 	class ListJobPrivate* d;
     };
 
+    /// @internal
     struct CopyInfo
     {
         KURL uSource;
