@@ -123,7 +123,11 @@ void KCharSelectTable::paintCell( class QPainter* p, int row, int col )
 	p->setPen( colorGroup().highlightedText() );
 	vPos = QPoint( col, row );
     } else {
-	p->setBrush( QBrush( colorGroup().base() ) );
+	QFontMetrics fm = QFontMetrics( QFont(vFont) );
+	if( fm.inFont( c ) )
+	    p->setBrush( QBrush( colorGroup().base() ) );
+	else
+	    p->setBrush( QBrush( colorGroup().mid() ) );
 	p->setPen( NoPen );
 	p->drawRect( 0, 0, w, h );
 	p->setPen( colorGroup().text() );
@@ -387,8 +391,8 @@ void KCharSelect::fillFontCombo()
 	fontDataBase = new QFontDatabase();
 	qAddPostRoutine( cleanupFontDatabase );
     }
-    fontCombo->insertStringList( fontDataBase->families() );
     fontList=fontDataBase->families();
+    fontCombo->insertStringList( fontList );
 }
 
 //==================================================================
