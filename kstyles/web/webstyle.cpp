@@ -800,6 +800,12 @@ WebStyle::drawExclusiveIndicatorMask
  bool /* on */
 )
 {
+  if (0 == w % 2)
+    --w;
+
+  if (0 == h % 2)
+    --h;
+
   p->setPen(Qt::color1);
   p->setBrush(Qt::color1);
   p->drawEllipse(x, y, w, h);
