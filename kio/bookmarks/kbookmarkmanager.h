@@ -84,7 +84,7 @@ public:
 
     /**
      * Set the update flag. Defaults to true. TODO - check
-     * @param update iff true will KBookmarkManager listen to DCOP update requests.
+     * @param update if true then KBookmarkManager will listen to DCOP update requests.
      */
     void setUpdate( bool update );
 
