@@ -73,7 +73,7 @@ public:
     bool isTopLevelMenu() const;
 
     // TT are overloading virtuals :(
-    virtual void setGeometry( const QRect &r ) { setGeometry( r.x(), r.y(), r.width(), r.height()); }
+    virtual void setGeometry( const QRect &r );
     virtual void setGeometry( int x, int y, int w, int h );
     virtual void resize( int w, int h );
     void resize( const QSize& s ) { resize( s.width(), s.height()); }

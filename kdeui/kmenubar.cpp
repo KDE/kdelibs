@@ -305,6 +305,11 @@ void KMenuBar::resizeEvent( QResizeEvent *e )
 
 bool KMenuBar::block_resize = false;
 
+void KMenuBar::setGeometry( const QRect& r )
+{
+    setGeometry( r.x(), r.y(), r.width(), r.height() );
+}
+
 void KMenuBar::setGeometry( int x, int y, int w, int h )
 {
     if( block_resize )
