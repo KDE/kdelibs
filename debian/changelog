@@ -1,6 +1,7 @@
 kdelibs (4:2.2-cvs20010507-1) experimental; urgency=low
 
   * New upstream CVS pull
+  * SSL support is smart now, removing ssl hacks to see if we need them anymore
 
  -- Ivan E. Moore II <rkrusty@debian.org>  Mon, 07 May 2001 06:15:00 -0700
 
