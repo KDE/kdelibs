@@ -1373,9 +1373,6 @@ void KDialogBase::setMainWidget( QWidget *widget )
 }
 
 
-// For compatibility only.
-QWidget *KDialogBase::getMainWidget() { return mainWidget(); }
-
 QWidget *KDialogBase::mainWidget()
 {
   return( mMainWidget );

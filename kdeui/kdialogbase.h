@@ -772,11 +772,6 @@ class KDialogBase : public KDialog
      * @return The current main widget. Can be 0 if no widget has been defined.
      */
     QWidget *mainWidget();
-    /**
-     * @deprecated
-     * Use @ref mainWidget() instead
-     */
-    QWidget *getMainWidget();
 
     /**
      * Convenience method.
