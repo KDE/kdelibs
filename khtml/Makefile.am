@@ -69,7 +69,3 @@ parser:
 	bash maketags && \
 	bash makeprop 
 
-#bin_PROGRAMS = debugkhtml
-#debugkhtml_LDADD = -lkhtml -lkdecore -lqt
-#
-#debugkhtml_SOURCES = debugkhtml.cpp

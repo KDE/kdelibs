@@ -1205,7 +1205,7 @@ void KHTMLWidget::begin( QString _url, int _x_offset, int _y_offset )
     actualURL = "";
     baseURL = "";
 
-    if ( _url != 0 )
+    if ( !_url.isEmpty() )
     {
         actualURL = _url;
         reference = actualURL.ref();
