@@ -386,25 +386,43 @@ void KHTMLSettings::init( KConfig * config, bool reset )
     d->global.dump("init global");
 
     // The domain-specific settings.
-    bool check_old_java_script_settings = true;
-    if ( reset || config->hasKey("DomainSettings") ) {
-      check_old_java_script_settings = false;
-      QStringList domainList = config->readListEntry( "DomainSettings" );
-      QString js_group_save = config->group();
-      for ( QStringList::ConstIterator it = domainList.begin();
-                it != domainList.end(); ++it)
-      {
-        QString domain = (*it).lower();
-	config->setGroup(domain);
-        readDomainSettings(config,reset,false,d->domainPolicy[domain]);
-	d->domainPolicy[domain].dump("init "+domain);
+
+    static const char *const domain_keys[] = {	// always keep order of keys
+    	"ECMADomains", "JavaDomains", "PluginDomains"
+    };
+    bool check_old_ecma_settings = true;
+    bool check_old_java_settings = true;
+    // merge all domains into one list
+    QMap<QString,int> domainList;	// why can't Qt have a QSet?
+    for (unsigned i = 0; i < sizeof domain_keys/sizeof domain_keys[0]; i++) {
+      if ( reset || config->hasKey(domain_keys[i]) ) {
+        if (i == 0) check_old_ecma_settings = false;
+	else if (i == 1) check_old_java_settings = false;
+        QStringList dl = config->readListEntry( domain_keys[i] );
+	QMap<QString,int>::Iterator notfound = domainList.end();
+	QStringList::ConstIterator it;
+	for (it = dl.begin(); it != dl.end(); ++it) {
+	  QString domain = (*it).lower();
+	  QMap<QString,int>::Iterator pos = domainList.find(domain);
+	  if (pos == notfound) domainList.insert(domain,0);
+	}/*next it*/
       }
-      config->setGroup(js_group_save);
+    }/*next i*/
+
+    QString js_group_save = config->group();
+    for ( QMap<QString,int>::ConstIterator it = domainList.begin();
+                it != domainList.end(); ++it)
+    {
+      QString domain = it.key();
+      config->setGroup(domain);
+      readDomainSettings(config,reset,false,d->domainPolicy[domain]);
+      d->domainPolicy[domain].dump("init "+domain);
     }
+    config->setGroup(js_group_save);
 
     bool check_old_java = true;
     if( ( reset || config->hasKey( "JavaDomainSettings" ) )
-    	&& check_old_java_script_settings )
+    	&& check_old_java_settings )
     {
       check_old_java = false;
       QStringList domainList = config->readListEntry( "JavaDomainSettings" );
@@ -423,7 +441,7 @@ void KHTMLSettings::init( KConfig * config, bool reset )
 
     bool check_old_ecma = true;
     if( ( reset || config->hasKey( "ECMADomainSettings" ) )
-    	&& check_old_java_script_settings )
+	&& check_old_ecma_settings )
     {
       check_old_ecma = false;
       QStringList domainList = config->readListEntry( "ECMADomainSettings" );
@@ -442,7 +460,7 @@ void KHTMLSettings::init( KConfig * config, bool reset )
 
     if( ( reset || config->hasKey( "JavaScriptDomainAdvice" ) )
              && ( check_old_java || check_old_ecma )
-	     && check_old_java_script_settings )
+	     && ( check_old_ecma_settings || check_old_java_settings ) )
     {
       QStringList domainList = config->readListEntry( "JavaScriptDomainAdvice" );
       for ( QStringList::ConstIterator it = domainList.begin();
