@@ -68,26 +68,10 @@ AC_CHECK_BOOL
 AC_CHECK_GNU_EXTENSIONS
 
 dnl Checks for library functions. 
-AC_CHECK_FUNCS(socket vsnprintf usleep)
+AC_CHECK_FUNCS(socket vsnprintf)
+AC_CHECK_USLEEP
 AC_CHECK_SETENV
-
-AC_LANG_CPLUSPLUS
-
-AC_MSG_CHECKING(for getdomainname)
-AC_TRY_COMPILE([
-#include <stdlib.h>
-#include <unistd.h>
-],
-[
-char buffer[200];
-getdomainname(buffer, 200);
-],
-ac_cv_func_getdomainname=yes,
-ac_cv_func_getdomainname=no)
-AC_MSG_RESULT($ac_cv_func_getdomainname)
-if eval "test \"`echo `$ac_cv_func_getdomainname\" = yes"; then
-  AC_DEFINE(HAVE_GETDOMAINNAME)
-fi
+AC_CHECK_GETDOMAINNAME
 AC_CHECK_KSIZE_T
 
 dnl Perform program name transformation

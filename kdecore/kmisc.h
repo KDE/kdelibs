@@ -25,6 +25,6 @@ int setenv(const char *name, const char *value, int overwrite) ;
 #endif      
 
 #ifndef HAVE_USLEEP
-void usleep(int usec);
+void usleep(unsigned int usec);
 #endif
 

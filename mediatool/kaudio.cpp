@@ -29,7 +29,9 @@ extern "C" {
 #include <mediatool.h>
 }
 #include "kaudio.h"
-
+#ifdef HAVE_SYSENT_H
+#include <sysent.h>
+#endif
 
 
 /******************************************************************************

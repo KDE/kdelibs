@@ -396,6 +396,47 @@ else
 fi
 ])
 
+AC_DEFUN(AC_CHECK_GETDOMAINNAME,
+[
+AC_LANG_CPLUSPLUS
+
+AC_MSG_CHECKING(for getdomainname)
+AC_TRY_COMPILE([
+#include <stdlib.h>
+#include <unistd.h>
+],
+[
+char buffer[200];
+getdomainname(buffer, 200);
+],
+ac_cv_func_getdomainname=yes,
+ac_cv_func_getdomainname=no)
+AC_MSG_RESULT($ac_cv_func_getdomainname)
+if eval "test \"`echo `$ac_cv_func_getdomainname\" = yes"; then
+  AC_DEFINE(HAVE_GETDOMAINNAME)
+fi
+])
+
+AC_DEFUN(AC_CHECK_USLEEP,
+[
+AC_LANG_CPLUSPLUS
+
+AC_MSG_CHECKING(for usleep)
+AC_TRY_COMPILE([
+#include <stdlib.h>
+#include <unistd.h>
+],
+[
+usleep(200);
+],
+ac_cv_func_usleep=yes,
+ac_cv_func_usleep=no)
+AC_MSG_RESULT($ac_cv_func_usleep)
+if eval "test \"`echo `$ac_cv_func_usleep\" = yes"; then
+  AC_DEFINE(HAVE_USLEEP)
+fi
+])
+
 AC_DEFUN(AC_FIND_GIF,
    [AC_MSG_CHECKING(for giflib)
 AC_CACHE_VAL(ac_cv_lib_gif,

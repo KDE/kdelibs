@@ -31,3 +31,7 @@
 
 /* Define if you have getdomainname */
 #undef HAVE_GETDOMAINNAME
+
+/* Define if you have usleep */
+#undef HAVE_USLEEP
+
