@@ -22,7 +22,7 @@ INCLUDES = $(all_includes)
 lib_LTLIBRARIES = libkjs.la
 
 libkjs_la_SOURCES =  ustring.cpp internal.cpp collector.cpp nodes.cpp \
-		     lexer.cpp lookup.cpp grammar.cpp operations.cpp \
+		     grammar.cpp lexer.cpp lookup.cpp operations.cpp \
 		     regexp.cpp function_object.cpp string_object.cpp \
 		     bool_object.cpp number_object.cpp date_object.cpp \
 		     array_object.cpp math_object.cpp object_object.cpp \

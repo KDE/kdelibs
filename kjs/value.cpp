@@ -40,12 +40,6 @@
 
 using namespace KJS;
 
-// ### use same constant as internal.cpp
-namespace KJS {
-  static const double D16 = 65536.0;
-  static const double D32 = 4294967296.0;
-};
-
 // ------------------------------ ValueImp -------------------------------------
 
 ValueImp::ValueImp() : refcount(0), _flags(0)
