@@ -81,7 +81,10 @@ public:
 	void release()
 	{
 		if(content)
+		{
 			content->_removeWeakReference(this);
+			content = 0;
+		}
 	}
 	inline operator SmartWrapper() const
 	{
