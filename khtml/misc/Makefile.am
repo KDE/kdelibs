@@ -23,6 +23,7 @@ noinst_LTLIBRARIES = libkhtmlmisc.la
 libkhtmlmisc_la_SOURCES = \
 	decoder.cpp    loader.cpp loader_jpeg.cpp \
 	htmlhashes.cpp helper.cpp 
+libkhtmlmisc_la_LIBADD = $(LIBJPEG)
 
 libkhtmlmisc_la_METASOURCES = AUTO
 
