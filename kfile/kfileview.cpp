@@ -21,6 +21,7 @@
 #include <assert.h>
 #include <stdlib.h>
 
+#include <kaction.h>
 #include <kapp.h>
 #include <kdebug.h>
 #include <kglobal.h>
@@ -36,8 +37,25 @@
 
 QDir::SortSpec KFileView::defaultSortSpec = static_cast<QDir::SortSpec>(QDir::Name | QDir::IgnoreCase | QDir::DirsFirst);
 
+class KFileView::KFileViewPrivate
+{
+public:
+    KFileViewPrivate() {
+        actions = new KActionCollection();
+    }
+
+    ~KFileViewPrivate() {
+	actions->clear();
+        delete actions;
+    }
+
+    KActionCollection *actions;
+};
+
+
 KFileView::KFileView()
 {
+    d = new KFileViewPrivate();
     reversed   = false;        // defaults
     itemListDirty = true;
     mySortMode = KFile::Increasing;
@@ -61,6 +79,7 @@ KFileView::KFileView()
 
 KFileView::~KFileView()
 {
+    delete d;
     delete sig;
     delete itemList;
     delete selectedList;
@@ -531,7 +550,7 @@ void KFileView::removeItem( const KFileViewItem *item )
 	itemList->removeRef( item );
     if ( selectedList )
 	selectedList->removeRef( item );
-    
+
     KFileViewItem *it = myFirstItem;
     if ( it == item )
 	myFirstItem = it->next();
@@ -546,6 +565,11 @@ void KFileView::removeItem( const KFileViewItem *item )
 	    it = it->next();
 	}
     }
+}
+
+KActionCollection * KFileView::actionCollection() const
+{
+    return d->actions;
 }
 
 #include "kfileview.moc"

@@ -26,6 +26,7 @@
 #include <qpixmap.h>
 #include <qtooltip.h>
 
+#include <kaction.h>
 #include <kapp.h>
 #include <klocale.h>
 #include <kfileviewitem.h>
@@ -41,16 +42,38 @@ KFileIconViewItem::~KFileIconViewItem()
 	setViewItem(static_cast<KFileIconView*>(iconView()), (const void*)0);
 }
 
+class KFileIconView::KFileIconViewPrivate
+{
+public:
+    KFileIconViewPrivate( KFileIconView *parent ) {
+	smallColumns = new KRadioAction( i18n("Small Columns"), 0, parent,
+					 SLOT( slotSmallColumns() ), 
+					 parent->actionCollection(),
+					 "small columns" );
+
+	largeRows = new KRadioAction( i18n("Large Rows"), 0, parent,
+				      SLOT( slotLargeRows() ), 
+				      parent->actionCollection(),
+				      "large rows" );
+	
+	smallColumns->setExclusiveGroup(QString::fromLatin1("IconView mode"));
+	largeRows->setExclusiveGroup(QString::fromLatin1("IconView mode"));
+    }
+    
+    ~KFileIconViewPrivate() {}
+    
+    KRadioAction *smallColumns, *largeRows;
+};
+
 KFileIconView::KFileIconView(QWidget *parent, const char *name)
     : KIconView(parent, name), KFileView()
 {
+    d = new KFileIconViewPrivate( this );
+    
     setViewName( i18n("Icon View") );
-    myIconSize = KIcon::SizeSmall;
 
     toolTip = 0;
     setResizeMode( Adjust );
-    setArrangement( TopToBottom );
-    setItemTextPos( Right );
     setGridX( 120 );
     setWordWrapIconText( FALSE );
     setAutoArrange( TRUE );
@@ -99,11 +122,40 @@ KFileIconView::KFileIconView(QWidget *parent, const char *name)
     else
 	connect( this, SIGNAL( selectionChanged( QIconViewItem * )),
 		 SLOT( highlighted( QIconViewItem * )));
-}
+
+    readConfig();
+ }
 
 KFileIconView::~KFileIconView()
 {
+    writeConfig();
     removeToolTip();
+    delete d;
+}
+
+void KFileIconView::readConfig()
+{
+    KConfig *kc = KGlobal::config();
+    KConfigGroupSaver cs( kc, "KFileIconView" );
+    QString small = QString::fromLatin1("SmallColumns");
+
+    if ( kc->readEntry("ViewMode", small ) == small ) {
+	d->smallColumns->setChecked( true );
+	slotSmallColumns();
+    }
+    else {
+	d->largeRows->setChecked( true );
+	slotLargeRows();
+    }
+}
+
+void KFileIconView::writeConfig()
+{
+    KConfig *kc = KGlobal::config();
+    KConfigGroupSaver cs( kc, "KFileIconView" );
+    kc->writeEntry( "ViewMode", d->smallColumns->isChecked() ? 
+		    QString::fromLatin1("SmallColumns") :
+		    QString::fromLatin1("LargeRows") );
 }
 
 void KFileIconView::removeToolTip()
@@ -123,7 +175,8 @@ void KFileIconView::showToolTip( QIconViewItem *item )
     int w = maxItemWidth() - ( itemTextPos() == QIconView::Bottom ? 0 :
 			       item->pixmapRect().width() ) - 4;
     if ( fontMetrics().width( item->text() ) >= w ) {
-	toolTip = new QLabel( QString::fromLatin1(" %1 ").arg(item->text()), 0, "myToolTip",
+	toolTip = new QLabel( QString::fromLatin1(" %1 ").arg(item->text()), 0,
+			      "myToolTip",
 			      WStyle_Customize | WStyle_NoBorder |
 			      WStyle_Tool );
 	toolTip->setFrameStyle( QFrame::Plain | QFrame::Box );
@@ -300,6 +353,7 @@ void KFileIconView::setIconSize( int size )
 {
     myIconSize = size;
     updateView( true );
+    arrangeItemsInGrid();
 }
 
 
@@ -312,10 +366,23 @@ void KFileIconView::ensureItemVisible( const KFileViewItem *i )
 	KIconView::ensureItemVisible( item );
 }
 
-
 void KFileIconView::slotSelectionChanged()
 {
     highlight( 0L );
+}
+
+void KFileIconView::slotSmallColumns()
+{
+    setItemTextPos( Right );
+    setArrangement( TopToBottom );
+    setIconSize( KIcon::SizeSmall );
+}
+
+void KFileIconView::slotLargeRows()
+{
+    setItemTextPos( Bottom );
+    setArrangement( LeftToRight );
+    setIconSize( KIcon::SizeMedium );
 }
 
 #include "kfileiconview.moc"

@@ -102,6 +102,9 @@ private slots:
     void slotDoubleClicked( QIconViewItem * );
     void slotSelectionChanged();
 
+    void slotSmallColumns();
+    void slotLargeRows();
+
 private:
     QLabel *toolTip;
     int th;
@@ -110,6 +113,9 @@ private:
     virtual void setSelectionMode(QIconView::SelectionMode m) { KIconView::setSelectionMode(m); }
     virtual void setSelected(QIconViewItem *i, bool a, bool b) { KIconView::setSelected(i, a, b); }
 
+    void readConfig();
+    void writeConfig();
+    
 private:
     class KFileIconViewPrivate;
     KFileIconViewPrivate *d;

@@ -354,6 +354,7 @@ KFileDialog::KFileDialog(const QString& startDir, const QString& filter,
 
     setSelection(d->url.url());
     ops->setView(KFile::Default);
+    
 
     ops->clearHistory();
 }

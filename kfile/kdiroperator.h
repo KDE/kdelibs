@@ -382,8 +382,8 @@ private slots:
     void slotIOFinished();
     void slotRedirected( const KURL& );
 
-//     void slotViewActionAdded( KAction * );
-//     void slotViewActionRemoved( KAction * );
+    void slotViewActionAdded( KAction * );
+    void slotViewActionRemoved( KAction * );
     void slotViewSortingChanged();
 
 signals:

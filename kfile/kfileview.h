@@ -23,6 +23,7 @@
 
 class QSignal;
 class QPoint;
+class KActionCollection;
 
 #include <qwidget.h>
 
@@ -146,8 +147,7 @@ public:
     /**
       * specifies the sorting of the internal list. Newly added files
       * are added through this sorting.
-      *
-      **/
+      */
     QDir::SortSpec sorting() const { return mySorting; }
 
     /**
@@ -337,6 +337,13 @@ public:
      */
     bool updateNumbers(const KFileViewItem *i);
 
+    /**
+     * @returns the view-specific action-collection. Every view should
+     * add its actions here (if it has any) to make them available to
+     * e.g. the KDirOperator's popup-menu.
+     */
+    KActionCollection * actionCollection() const;
+
 protected:
 
     /**
@@ -396,7 +403,6 @@ protected:
     }
 
 private:
-
     bool reversed;
     QDir::SortSpec mySorting;
     static QDir::SortSpec defaultSortSpec;
