@@ -505,7 +505,7 @@ Value Plugin::get(ExecState *exec, const Identifier &propertyName) const
   if (!val.isA(UndefinedType))
     return val;
 
-  return lookupGet<PluginFunc,Plugin,ObjectImp>(exec, propertyName, &MimeTypeTable, this );
+  return lookupGet<PluginFunc,Plugin,ObjectImp>(exec, propertyName, &PluginTable, this );
 }
 
 Value Plugin::mimeByName(ExecState* exec, const QString& name) const
