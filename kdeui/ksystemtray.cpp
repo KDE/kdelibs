@@ -24,6 +24,17 @@
 #include <kwin.h>
 #include <kiconloader.h>
 
+#include <qapplication.h>
+#include <X11/Xlib.h>
+const int XFocusOut = FocusOut;
+const int XFocusIn = FocusIn;
+#undef FocusOut
+#undef FocusIn
+#undef KeyPress
+#undef KeyRelease
+
+extern Time qt_x_time;
+
 KSystemTray::KSystemTray( QWidget* parent, const char* name )
     : QLabel( parent, name, WType_TopLevel )
 {
@@ -53,6 +64,23 @@ void KSystemTray::showEvent( QShowEvent * )
 	    menu->insertItem(SmallIcon("exit"), i18n("&Quit"), qApp, SLOT(closeAllWindows() ) );
 	}
 	hasQuit = 1;
+    }
+}
+
+void KSystemTray::enterEvent( QEvent* )
+{
+    if ( !qApp->focusWidget() ) {
+	XEvent ev;
+	memset(&ev, 0, sizeof(ev));
+	ev.xfocus.display = qt_xdisplay();
+	ev.xfocus.type = XFocusIn;
+	ev.xfocus.window = winId();
+	ev.xfocus.mode = NotifyNormal;
+	ev.xfocus.detail = NotifyAncestor;
+	Time time = qt_x_time;
+	qt_x_time = 1;
+	qApp->x11ProcessEvent( &ev );
+	qt_x_time = time;
     }
 }
 

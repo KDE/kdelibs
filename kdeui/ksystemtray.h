@@ -48,7 +48,7 @@ class KSystemTrayPrivate;
  * case you need to provide something special (such as an additional
  * popupmenu on a click with the left mouse button), you can subclass
  * anyway, of course.
- * 
+ *
  * Having an icon on the system tray is a useful technique for
  * daemon-like applications that may run for some time without user
  * interaction but have to be there immediately when the user needs
@@ -120,7 +120,12 @@ protected:
        Reimplemented for internal reasons.
      */
     void showEvent( QShowEvent * );
-
+    
+    /**
+       Reimplemented for internal reasons.
+     */
+    void enterEvent( QEvent* );
+    
 private slots:
     void toggleMinimizeRestore();
 
