@@ -139,7 +139,7 @@ public final class KJASAppletStub
         failed = true;
         loader.removeStatusListener(panel);
         panel.stopAnimation();
-        panel.showFailed(why);
+        panel.showFailed();
         Main.protocol.sendAppletFailed(context.getID(), appletID, why); 
     }
     

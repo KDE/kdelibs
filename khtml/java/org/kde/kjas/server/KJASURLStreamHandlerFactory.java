@@ -429,6 +429,14 @@ final class KJASHttpURLConnection extends HttpURLConnection
     }
     public int getResponseCode() throws IOException {
         Main.debug ("KIO getResponseCode");
+        if (kioconnection.responseCode == -1) {
+            try {
+                connect();
+            } catch (IOException e) {
+                if (kioconnection.responseCode == -1)
+                    throw e;
+            }
+        }
         responseMessage = kioconnection.responseMessage;
         return kioconnection.responseCode;
     }
