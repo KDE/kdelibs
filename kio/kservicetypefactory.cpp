@@ -24,9 +24,10 @@
 #include "kmimetype.h"
 
 #include <klocale.h>
+#include <kapp.h>
 #include <kglobal.h>
 #include <kstddirs.h>
-#include <kmessagebox.h>
+#include <kmessageboxwrapper.h>
 #include <kdebug.h>
 #include <assert.h>
 
@@ -60,7 +61,7 @@ KServiceTypeFactory::createEntry(const QString &file)
   {
     QString tmp = i18n( "The service/mime type config file\n%1\n"
 			"does not contain a ServiceType=...\nor MimeType=... entry").arg( file );
-    KMessageBox::error( 0L, tmp);
+    KMessageBoxWrapper::error( 0L, tmp);
     return 0;
   }
   

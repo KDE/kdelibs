@@ -56,7 +56,7 @@ include_HEADERS = ksycocaentry.h ksycocatype.h \
 
 # Internal
 noinst_HEADERS = ksycocafactory.h kservicetypefactory.h kservicefactory.h \
-	ksycocadict.h ksycoca.h \
+	ksycocadict.h ksycoca.h kmessageboxwrapper.h \
 	ktraderparse.h ktraderparsetree.h yacc.h
 
 magic_DATA = magic

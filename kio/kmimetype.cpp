@@ -36,7 +36,7 @@
 #include "kautomount.h"
 
 #include <qstring.h>
-#include <kmessagebox.h>
+#include <kmessageboxwrapper.h>
 
 #include <ksimpleconfig.h>
 #include <kapp.h>
@@ -68,7 +68,7 @@ void KMimeType::check()
   // No Mime-Types installed ?
   // Lets do some rescue here.
   if ( !KServiceTypeFactory::self()->checkMimeTypes() )
-    KMessageBox::error( 0L, i18n( "No mime types installed!" ) );
+    KMessageBoxWrapper::error( 0L, i18n( "No mime types installed!" ) );
 	
   if ( KMimeType::mimeType( "inode/directory" ) == s_pDefaultType )
     errorMissingMimeType( "inode/directory" );
@@ -94,7 +94,7 @@ void KMimeType::errorMissingMimeType( const QString& _type )
 {
   QString tmp = i18n( "Could not find mime type\n%1" ).arg( _type );
 
-  KMessageBox::sorry( 0, tmp );
+  KMessageBoxWrapper::sorry( 0, tmp );
 
   // We can't emulate missing mimetypes anymore...
   /*
@@ -484,7 +484,7 @@ bool KDEDesktopMimeType::run( const QString& _url, bool _is_local )
   {
     QString tmp = i18n("The desktop entry file\n%1\n"
 		       "has no Type=... entry").arg(_url );
-    KMessageBox::error( 0, tmp);
+    KMessageBoxWrapper::error( 0, tmp);
     return false;
   }
 
@@ -501,7 +501,7 @@ bool KDEDesktopMimeType::run( const QString& _url, bool _is_local )
 
 
   QString tmp = i18n("The desktop entry of type\n%1\nis unknown").arg( type );
-  KMessageBox::error( 0, tmp);
+  KMessageBoxWrapper::error( 0, tmp);
 
   return false;
 }
@@ -514,7 +514,7 @@ bool KDEDesktopMimeType::runFSDevice( const QString& _url, KSimpleConfig &cfg )
   if ( dev.isEmpty() )
   {
     QString tmp = i18n("The desktop entry file\n%1\nis of type FSDevice but has no Dev=... entry").arg( _url );
-    KMessageBox::error( 0, tmp);
+    KMessageBoxWrapper::error( 0, tmp);
     return false;
   }
 
@@ -561,7 +561,7 @@ bool KDEDesktopMimeType::runLink( const QString& _url, KSimpleConfig &cfg )
   if ( url.isEmpty() )
   {
     QString tmp = i18n("The desktop entry file\n%1\nis of type Link but has no URL=... entry").arg( _url );
-    KMessageBox::error( 0, tmp );
+    KMessageBoxWrapper::error( 0, tmp );
     return false;
   }
 
@@ -597,7 +597,7 @@ QValueList<KDEDesktopMimeType::Service> KDEDesktopMimeType::builtinServices( con
     if ( dev.isEmpty() )
     {
       QString tmp = i18n("The desktop entry file\n%1\nis of type FSDevice but has no Dev=... entry").arg( _url.path() );
-      KMessageBox::error( 0, tmp);
+      KMessageBoxWrapper::error( 0, tmp);
     }
     else
     {
@@ -675,7 +675,7 @@ QValueList<KDEDesktopMimeType::Service> KDEDesktopMimeType::userDefinedServices(
     if ( bInvalidMenu ) 
     {
       QString tmp = i18n("The desktop entry file\n%1\n has an invalid menu entry\n%2").arg( _url.path()).arg( *it );
-      KMessageBox::error( 0, tmp );
+      KMessageBoxWrapper::error( 0, tmp );
     }
   }
 
@@ -706,7 +706,7 @@ void KDEDesktopMimeType::executeService( const QString& _url, KDEDesktopMimeType
     if ( dev.isEmpty() )
     {
       QString tmp = i18n("The desktop entry file\n%1\nis of type FSDevice but has no Dev=... entry").arg( u.path() );
-      KMessageBox::error( 0, tmp );
+      KMessageBoxWrapper::error( 0, tmp );
       return;
     }
     QString mp = KIOJob::findDeviceMountPoint( dev.ascii() );

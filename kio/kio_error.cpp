@@ -1,11 +1,11 @@
 #include "kio_interface.h"
 #include "kio_error.h"
 
-#include <kmessagebox.h>
+#include <kmessageboxwrapper.h>
 
 void kioErrorDialog( int _errid, const char *_errortext )
 {
   QString tmp = KIO::kioErrorString( _errid, _errortext );
   
-  KMessageBox::error( 0, tmp);
+  KMessageBoxWrapper::error( 0, tmp);
 }
