@@ -628,10 +628,9 @@ StyleBaseImpl::parseSelector(const QChar *curP, const QChar *endP)
 }
 
 
-void StyleBaseImpl::parseProperty(const QChar *curP, const QChar *endP, QList<CSSProperty> *propList)
+void StyleBaseImpl::parseProperty(const QChar *curP, const QChar *endP)
 {
-    bool important = false;
-    const QChar *colon;
+    m_bImportant = false;
     // Get rid of space in front of the declaration
 
     curP = parseSpace(curP, endP);
@@ -639,11 +638,11 @@ void StyleBaseImpl::parseProperty(const QChar *curP, const QChar *endP, QList<CS
         return;
 
     // Search for the required colon or white space
-    colon = parseToChar(curP, endP, ':', true);
+    const QChar *colon = parseToChar(curP, endP, ':', true);
     if (!colon)
         return;
 
-    QString propName( curP, colon - curP );
+    const QString propName( curP, colon - curP );
 #ifdef CSS_DEBUG
     kdDebug( 6080 ) << "Property-name = \"" << propName << "\"" << endl;
 #endif
@@ -673,7 +672,7 @@ void StyleBaseImpl::parseProperty(const QChar *curP, const QChar *endP, QList<CS
         s = s.lower();
         if(s != "important")
             return;
-        important = true;
+        m_bImportant = true;
         endP = exclam;
 #ifdef CSS_DEBUG
         kdDebug( 6080 ) << "important property!" << endl;
@@ -688,9 +687,8 @@ void StyleBaseImpl::parseProperty(const QChar *curP, const QChar *endP, QList<CS
         endP--;
     }
 
-
-    QString propVal( curP , endP - curP );
 #ifdef CSS_DEBUG
+    QString propVal( curP , endP - curP );
     kdDebug( 6080 ) << "Property-value = \"" << propVal.latin1() << "\"" << endl;
 #endif
 
@@ -703,21 +701,20 @@ void StyleBaseImpl::parseProperty(const QChar *curP, const QChar *endP, QList<CS
          return;
     }
 
-    unsigned int numProps = propList->count();
-    if(!parseValue(curP, endP, propPtr->id, important, propList)) {
+    unsigned int numProps = m_propList->count();
+    if(!parseValue(curP, endP, propPtr->id)) {
 #ifdef CSS_DEBUG
-        kdDebug(6080) << "invalid property, removing added properties from propList" << endl;
+        kdDebug(6080) << "invalid property, removing added properties from m_propList" << endl;
 #endif
-        while(propList->count() > numProps)
-            propList->removeLast();
+        while(m_propList->count() > numProps)
+            m_propList->removeLast();
     }
 }
 
 QList<CSSProperty> *StyleBaseImpl::parseProperties(const QChar *curP, const QChar *endP)
 {
-    QList<CSSProperty> *propList=0;
-    propList = new QList<CSSProperty>;
-    propList->setAutoDelete(true);
+    m_propList = new QList<CSSProperty>;
+    m_propList->setAutoDelete(true);
 
     while (curP < endP)
     {
@@ -731,17 +728,18 @@ QList<CSSProperty> *StyleBaseImpl::parseProperties(const QChar *curP, const QCha
         kdDebug( 6080 ) << "Property = \"" << propVal.latin1() << "\"" << endl;
 #endif
 
-        parseProperty(startP, curP, propList);
+        parseProperty(startP, curP);
         curP++;
     }
-    if(!propList->isEmpty())
-        return propList;
-
+    if(!m_propList->isEmpty()) {
+        return m_propList;
+    } else {
 #ifdef CSS_DEBUG
-    kdDebug( 6080 ) << "empty property list" << endl;
+        kdDebug( 6080 ) << "empty property list" << endl;
 #endif
-    delete propList;
-    return 0;
+        delete m_propList;
+        return 0;
+    }
 }
 
 static const QChar *getNext( const QChar *curP, const QChar *endP, bool &last )
@@ -994,8 +992,7 @@ public:
     }
 };
 
-bool StyleBaseImpl::parseFont(const QChar *curP, const QChar *endP,
-                              bool important, QList<CSSProperty> *propList)
+bool StyleBaseImpl::parseFont(const QChar *curP, const QChar *endP)
 {
     QString str( curP, endP - curP );
     QString fstyle;
@@ -1023,28 +1020,22 @@ bool StyleBaseImpl::parseFont(const QChar *curP, const QChar *endP,
 //                     lheight.latin1() );
             if(!fstyle.isNull())
                 parseValue(fstyle.unicode(), fstyle.unicode()+fstyle.length(),
-                           CSS_PROP_FONT_STYLE,
-                           important, propList);
+                           CSS_PROP_FONT_STYLE);
             if(!fvariant.isNull())
                 parseValue(fvariant.unicode(), fvariant.unicode()+fvariant.length(),
-                           CSS_PROP_FONT_VARIANT,
-                           important, propList);
+                           CSS_PROP_FONT_VARIANT);
             if(!fweight.isNull())
                 parseValue(fweight.unicode(), fweight.unicode()+fweight.length(),
-                           CSS_PROP_FONT_WEIGHT,
-                           important, propList);
+                           CSS_PROP_FONT_WEIGHT);
             if(!fsize.isNull())
                 parseValue(fsize.unicode(), fsize.unicode()+fsize.length(),
-                           CSS_PROP_FONT_SIZE,
-                           important, propList);
+                           CSS_PROP_FONT_SIZE);
             if(!lheight.isNull())
                 parseValue(lheight.unicode(), lheight.unicode()+lheight.length(),
-                           CSS_PROP_LINE_HEIGHT,
-                           important, propList);
+                           CSS_PROP_LINE_HEIGHT);
             if(!ffamily.isNull())
                 parseValue(ffamily.unicode(), ffamily.unicode()+ffamily.length(),
-                           CSS_PROP_FONT_FAMILY,
-                           important, propList);
+                           CSS_PROP_FONT_FAMILY);
 
             return true;
         }
@@ -1054,9 +1045,15 @@ bool StyleBaseImpl::parseFont(const QChar *curP, const QChar *endP,
 
 // ---------------- end font property --------------------------
 
-
 bool StyleBaseImpl::parseValue( const QChar *curP, const QChar *endP, int propId, bool important,
                                 QList<CSSProperty> *propList)
+{
+  m_bImportant = important;
+  m_propList = propList;
+  return parseValue(curP, endP, propId);
+}
+
+bool StyleBaseImpl::parseValue( const QChar *curP, const QChar *endP, int propId)
 {
    QString value(curP, endP - curP);
    value = value.lower();
@@ -1247,7 +1244,7 @@ bool StyleBaseImpl::parseValue( const QChar *curP, const QChar *endP, int propId
                                                      property1.string().length());
         if ( !cssval1 ) {
             int properties[2] = { CSS_PROP_KONQ_BGPOS_X, CSS_PROP_KONQ_BGPOS_Y };
-            return parseShortHand(curP, endP, properties, 2, important, propList);
+            return parseShortHand(curP, endP, properties, 2);
         }
         const struct css_value *cssval2 = 0;
 #ifdef CSS_DEBUG
@@ -1295,9 +1292,9 @@ bool StyleBaseImpl::parseValue( const QChar *curP, const QChar *endP, int propId
          * -> No mix between keywords and other units.
          */
         if (valX !=-1 && valY !=-1) {
-                setParsedValue( CSS_PROP_KONQ_BGPOS_X, important, propList,
+                setParsedValue( CSS_PROP_KONQ_BGPOS_X,
                                 new CSSPrimitiveValueImpl(valX, CSSPrimitiveValue::CSS_PERCENTAGE));
-                setParsedValue( CSS_PROP_KONQ_BGPOS_Y, important, propList,
+                setParsedValue( CSS_PROP_KONQ_BGPOS_Y,
                                 new CSSPrimitiveValueImpl(valY, CSSPrimitiveValue::CSS_PERCENTAGE));
                 return true;
         }
@@ -1686,43 +1683,43 @@ bool StyleBaseImpl::parseValue( const QChar *curP, const QChar *endP, int propId
 #ifdef CSS_DEBUG
         kdDebug(6080) << "CSS_PROP_BACKGROUND" << endl;
 #endif
-        return parseBackground(curP, endP, important, propList);
+        return parseBackground(curP, endP);
     }
     case CSS_PROP_BORDER:               // [ 'border-width' || 'border-style' || <color> ] | inherit
     {
         const int properties[3] = { CSS_PROP_BORDER_WIDTH, CSS_PROP_BORDER_STYLE,
                                     CSS_PROP_BORDER_COLOR };
-        return parseShortHand(curP, endP, properties, 3, important, propList);
+        return parseShortHand(curP, endP, properties, 3);
     }
     case CSS_PROP_BORDER_TOP:           // [ 'border-top-width' || 'border-style' || <color> ] | inherit
     {
         const int properties[3] = { CSS_PROP_BORDER_TOP_WIDTH, CSS_PROP_BORDER_TOP_STYLE,
                                     CSS_PROP_BORDER_TOP_COLOR};
-        return parseShortHand(curP, endP, properties, 3, important, propList);
+        return parseShortHand(curP, endP, properties, 3);
     }
     case CSS_PROP_BORDER_RIGHT:         // [ 'border-right-width' || 'border-style' || <color> ] | inherit
     {
         const int properties[3] = { CSS_PROP_BORDER_RIGHT_WIDTH, CSS_PROP_BORDER_RIGHT_STYLE,
                                     CSS_PROP_BORDER_RIGHT_COLOR };
-        return parseShortHand(curP, endP, properties, 3, important, propList);
+        return parseShortHand(curP, endP, properties, 3);
     }
     case CSS_PROP_BORDER_BOTTOM:        // [ 'border-bottom-width' || 'border-style' || <color> ] | inherit
     {
         const int properties[3] = { CSS_PROP_BORDER_BOTTOM_WIDTH, CSS_PROP_BORDER_BOTTOM_STYLE,
                                     CSS_PROP_BORDER_BOTTOM_COLOR };
-        return parseShortHand(curP, endP, properties, 3, important, propList);
+        return parseShortHand(curP, endP, properties, 3);
     }
     case CSS_PROP_BORDER_LEFT:          // [ 'border-left-width' || 'border-style' || <color> ] | inherit
     {
         const int properties[3] = { CSS_PROP_BORDER_LEFT_WIDTH, CSS_PROP_BORDER_LEFT_STYLE,
                                     CSS_PROP_BORDER_LEFT_COLOR };
-        return parseShortHand(curP, endP, properties, 3, important, propList);
+        return parseShortHand(curP, endP, properties, 3);
     }
     case CSS_PROP_OUTLINE:              // [ 'outline-color' || 'outline-style' || 'outline-width' ] | inherit
     {
         const int properties[3] = { CSS_PROP_OUTLINE_COLOR, CSS_PROP_OUTLINE_STYLE,
                                     CSS_PROP_OUTLINE_WIDTH };
-        return parseShortHand(curP, endP, properties, 3, important, propList);
+        return parseShortHand(curP, endP, properties, 3);
     }
     case CSS_PROP_BORDER_COLOR:         // <color>{1,4} | transparent | inherit
     {
@@ -1735,44 +1732,44 @@ bool StyleBaseImpl::parseValue( const QChar *curP, const QChar *endP, int propId
         }
         const int properties[4] = { CSS_PROP_BORDER_TOP_COLOR, CSS_PROP_BORDER_RIGHT_COLOR,
                                     CSS_PROP_BORDER_BOTTOM_COLOR, CSS_PROP_BORDER_LEFT_COLOR };
-        return parse4Values(curP, endP, properties, important, propList);
+        return parse4Values(curP, endP, properties);
     }
     case CSS_PROP_BORDER_WIDTH:         // <border-width>{1,4} | inherit
     {
         const int properties[4] = { CSS_PROP_BORDER_TOP_WIDTH, CSS_PROP_BORDER_RIGHT_WIDTH,
                                     CSS_PROP_BORDER_BOTTOM_WIDTH, CSS_PROP_BORDER_LEFT_WIDTH };
-        return parse4Values(curP, endP, properties, important, propList);
+        return parse4Values(curP, endP, properties);
     }
     case CSS_PROP_BORDER_STYLE:         // <border-style>{1,4} | inherit
     {
         const int properties[4] = { CSS_PROP_BORDER_TOP_STYLE, CSS_PROP_BORDER_RIGHT_STYLE,
                                     CSS_PROP_BORDER_BOTTOM_STYLE, CSS_PROP_BORDER_LEFT_STYLE };
-        return parse4Values(curP, endP, properties, important, propList);
+        return parse4Values(curP, endP, properties);
     }
     case CSS_PROP_MARGIN:               // <margin-width>{1,4} | inherit
     {
         const int properties[4] = { CSS_PROP_MARGIN_TOP, CSS_PROP_MARGIN_RIGHT,
                                     CSS_PROP_MARGIN_BOTTOM, CSS_PROP_MARGIN_LEFT };
-        return parse4Values(curP, endP, properties, important, propList);
+        return parse4Values(curP, endP, properties);
     }
     case CSS_PROP_PADDING:              // <padding-width>{1,4} | inherit
     {
         const int properties[4] = { CSS_PROP_PADDING_TOP, CSS_PROP_PADDING_RIGHT,
                                     CSS_PROP_PADDING_BOTTOM, CSS_PROP_PADDING_LEFT };
-        return parse4Values(curP, endP, properties, important, propList);
+        return parse4Values(curP, endP, properties);
     }
     case CSS_PROP_FONT:                 // [ [ 'font-style' || 'font-variant' || 'font-weight' ]?
                                         // 'font-size' [ / 'line-height' ]? 'font-family' ] |
                                         // caption | icon | menu | message-box | small-caption |
                                         // status-bar | inherit
     {
-        return parseFont( curP, endP, important, propList );
+        return parseFont(curP, endP);
     }
     case CSS_PROP_LIST_STYLE:
     {
         const int properties[3] = { CSS_PROP_LIST_STYLE_TYPE, CSS_PROP_LIST_STYLE_POSITION,
                                     CSS_PROP_LIST_STYLE_IMAGE };
-        return  parseShortHand(curP, endP, properties, 3, important, propList);
+        return  parseShortHand(curP, endP, properties, 3);
     }
 
     default:
@@ -1784,22 +1781,21 @@ bool StyleBaseImpl::parseValue( const QChar *curP, const QChar *endP, int propId
     }
    }
    if ( parsedValue ) {
-     setParsedValue( propId, important, propList, parsedValue );
+     setParsedValue(propId, parsedValue);
      return true;
    } else {
 #ifndef CSS_AURAL
      return false;
 #endif
 #ifdef CSS_AURAL
-     return parseAuralValue( curP, endP, propId, important, propList);
+     return parseAuralValue(curP, endP, propId);
 #endif
    }
 }
 
 #ifdef CSS_AURAL
 /* parseAuralValue */
-bool StyleBaseImpl::parseAuralValue( const QChar *curP, const QChar *endP, int propId, bool important,
-                                     QList<CSSProperty> *propList)
+bool StyleBaseImpl::parseAuralValue( const QChar *curP, const QChar *endP, int propId )
 {
     QString value(curP, endP - curP);
     value = value.lower();
@@ -1829,7 +1825,7 @@ bool StyleBaseImpl::parseAuralValue( const QChar *curP, const QChar *endP, int p
         const int properties[2] = {
                 CSS_PROP_CUE_BEFORE,
                 CSS_PROP_CUE_AFTER};
-        return parse2Values(curP, endP, properties, important, propList);
+        return parse2Values(curP, endP, properties);
     }
     case CSS_PROP_CUE_AFTER:            // <uri> | none | inherit
     case CSS_PROP_CUE_BEFORE:           // <uri> | none | inherit
@@ -1932,35 +1928,34 @@ bool StyleBaseImpl::parseAuralValue( const QChar *curP, const QChar *endP, int p
     }
    }
    if ( parsedValue ) {
-     setParsedValue( propId, important, propList, parsedValue );
+     setParsedValue( propId, parsedValue );
         return true;
    }
    return false;
 }
 #endif
 
-void StyleBaseImpl::setParsedValue(int propId, bool important, QList<CSSProperty> *propList, CSSValueImpl *parsedValue)
+void StyleBaseImpl::setParsedValue(int propId, const CSSValueImpl *parsedValue)
 {
-    QListIterator<CSSProperty> propIt(*propList);
+    QListIterator<CSSProperty> propIt(*m_propList);
     propIt.toLast(); // just remove the top one - not sure what should happen if we have multiple instances of the property
     while (propIt.current() && propIt.current()->m_id != propId)
         --propIt;
     if (propIt.current())
-        propList->removeRef(propIt.current());
+        m_propList->removeRef(propIt.current());
 
     CSSProperty *prop = new CSSProperty();
     prop->m_id = propId;
-    prop->setValue(parsedValue);
-    prop->m_bImportant = important;
+    prop->setValue((CSSValueImpl *) parsedValue);
+    prop->m_bImportant = m_bImportant;
 
-    propList->append(prop);
+    m_propList->append(prop);
 #ifdef CSS_DEBUG
     kdDebug( 6080 ) << "added property: " << propId << ", value: " << parsedValue->cssText().string() << endl;
 #endif
 }
 
-bool StyleBaseImpl::parseShortHand( const QChar *curP, const QChar *endP, const int *properties, int num, bool important,
-                                    QList<CSSProperty> *propList)
+bool StyleBaseImpl::parseShortHand(const QChar *curP, const QChar *endP, const int *properties, int num)
 {
   /* We try to match as many properties as possible
    * We setup an array of booleans to mark which property has been found,
@@ -1982,7 +1977,7 @@ bool StyleBaseImpl::parseShortHand( const QChar *curP, const QChar *endP, const 
 #ifdef CSS_DEBUG
         kdDebug(6080) << "PSH: parsing \"" << QString(curP, nextP - curP) << "\"" << endl;
 #endif
-        bool found = parseValue(curP, nextP, properties[propIndex], important, propList);
+        bool found = parseValue(curP, nextP, properties[propIndex]);
         if (found) {
           fnd[propIndex] = true;
           foundAnything = true;
@@ -2005,40 +2000,8 @@ bool StyleBaseImpl::parseShortHand( const QChar *curP, const QChar *endP, const 
   }
   return foundAnything;
 }
-#if 0
-  bool last = false;
-  bool fnd[10]; // 10 should be big enough...
-  for( int i = 0; i < num; i++ )
-    fnd[i] = false;
-  while(!last) {
-      const QChar *nextP = getNext( curP, endP, last );
-      bool found = false;
-#ifdef CSS_DEBUG
-      kdDebug(6080) << "parsing \"" << QString(curP, nextP - curP) << "\"" << endl;
-#endif
-      int i = 0;
-      while ( !found && i < num ) {
-        if( multiple || !fnd[i] )
-          found = parseValue(curP, nextP, properties[i], important, propList);
-        if( found ) {
-            //kdDebug() << "found " << i << endl;
-          fnd[i] = true;
-        }
-        i++;
-      }
-      if(!found) {
-#ifdef CSS_DEBUG
-          kdDebug(6080) << "invalid property" << endl;
-#endif
-          return false;
-      }
-      curP = nextP+1;
-      if(curP >= endP) break;
-  }
-  return true;
-#endif
 
-bool StyleBaseImpl::parseBackground(const QChar *curP, const QChar *endP, bool important, QList<CSSProperty> *propList)
+bool StyleBaseImpl::parseBackground(const QChar *curP, const QChar *endP)
 {
   // ### implement background position
   bool last = false;
@@ -2052,7 +2015,7 @@ bool StyleBaseImpl::parseBackground(const QChar *curP, const QChar *endP, bool i
       bool l;
       const QChar *second = getNext( nextP+1, endP, l );
       if(!fnd[0]) {
-        found = parseValue(curP, second, CSS_PROP_BACKGROUND_POSITION, important, propList);
+        found = parseValue(curP, second, CSS_PROP_BACKGROUND_POSITION);
         if( found ) {
           fnd[0] = true;
           nextP = second;
@@ -2063,7 +2026,7 @@ bool StyleBaseImpl::parseBackground(const QChar *curP, const QChar *endP, bool i
     kdDebug(6080) << "parsing \"" << QString(curP, nextP - curP) << "\"" << endl;
 #endif
     if(!found && !fnd[2]) {
-      found = parseValue(curP, nextP, CSS_PROP_BACKGROUND_COLOR, important, propList);
+      found = parseValue(curP, nextP, CSS_PROP_BACKGROUND_COLOR);
       if( found ) {
         //kdDebug() << "color!!!" << endl;
         fnd[2] = true;
@@ -2102,17 +2065,17 @@ bool StyleBaseImpl::parseBackground(const QChar *curP, const QChar *endP, bool i
         break;
       }
       if( id != -1 )
-        found = parseValue(curP, nextP, prop, important, propList);
+        found = parseValue(curP, nextP, prop);
     }
     if(!found && !fnd[1]) {
-      found = parseValue(curP, nextP, CSS_PROP_BACKGROUND_IMAGE, important, propList);
+      found = parseValue(curP, nextP, CSS_PROP_BACKGROUND_IMAGE);
       if( found ) {
         kdDebug( 6080 ) << "image!!!" << endl;
         fnd[1] = true;
       }
     }
     if(!found && !fnd[0]) {
-      found = parseValue(curP, nextP, CSS_PROP_BACKGROUND_POSITION, important, propList);
+      found = parseValue(curP, nextP, CSS_PROP_BACKGROUND_POSITION);
       if( found )
         fnd[0] = true;
     }
@@ -2157,19 +2120,18 @@ QList<QChar> StyleBaseImpl::splitShorthandProperties(const QChar *curP, const QC
 
 #ifdef CSS_AURAL
 // used for shorthand properties xxx{1,2}
-bool StyleBaseImpl::parse2Values(const QChar *curP, const QChar *endP, const int *properties,
-                                 bool important, QList<CSSProperty> *propList)
+bool StyleBaseImpl::parse2Values( const QChar *curP, const QChar *endP, const int *properties)
 {
     QList<QChar> list = splitShorthandProperties(curP, endP);
     switch(list.count())
     {
     case 2:
-        if(!parseValue(list.at(0), list.at(1), properties[0], important, propList)) return false;
-        setParsedValue(properties[1], important, propList, propList->last()->value());
+        if(!parseValue(list.at(0), list.at(1), properties[0])) return false;
+        setParsedValue(properties[1], m_propList->last()->value());
         return true;
     case 4:
-        if(!parseValue(list.at(0), list.at(1), properties[0], important, propList)) return false;
-        if(!parseValue(list.at(2), list.at(3), properties[1], important, propList)) return false;
+        if(!parseValue(list.at(0), list.at(1), properties[0])) return false;
+        if(!parseValue(list.at(2), list.at(3), properties[1])) return false;
         return true;
     default:
         return false;
@@ -2178,8 +2140,7 @@ bool StyleBaseImpl::parse2Values(const QChar *curP, const QChar *endP, const int
 #endif
 
 // used for shorthand properties xxx{1,4}
-bool StyleBaseImpl::parse4Values(const QChar *curP, const QChar *endP, const int *properties,
-                                 bool important, QList<CSSProperty> *propList)
+bool StyleBaseImpl::parse4Values( const QChar *curP, const QChar *endP, const int *properties)
 {
     /* From the CSS 2 specs, 8.3
      * If there is only one value, it applies to all sides. If there are two values, the top and
@@ -2193,28 +2154,28 @@ bool StyleBaseImpl::parse4Values(const QChar *curP, const QChar *endP, const int
     switch(list.count())
     {
     case 2:
-        if(!parseValue(list.at(0), list.at(1), properties[0], important, propList)) return false;
-        setParsedValue(properties[1], important, propList, propList->last()->value());
-        setParsedValue(properties[2], important, propList, propList->last()->value());
-        setParsedValue(properties[3], important, propList, propList->last()->value());
+        if(!parseValue(list.at(0), list.at(1), properties[0])) return false;
+        setParsedValue(properties[1], m_propList->last()->value());
+        setParsedValue(properties[2], m_propList->last()->value());
+        setParsedValue(properties[3], m_propList->last()->value());
         return true;
     case 4:
-        if(!parseValue(list.at(0), list.at(1), properties[0], important, propList)) return false;
-        setParsedValue(properties[2], important, propList, propList->last()->value());
-        if(!parseValue(list.at(2), list.at(3), properties[1], important, propList)) return false;
-        setParsedValue(properties[3], important, propList, propList->last()->value());
+        if(!parseValue(list.at(0), list.at(1), properties[0])) return false;
+        setParsedValue(properties[2], m_propList->last()->value());
+        if(!parseValue(list.at(2), list.at(3), properties[1])) return false;
+        setParsedValue(properties[3], m_propList->last()->value());
         return true;
     case 6:
-        if(!parseValue(list.at(0), list.at(1), properties[0], important, propList)) return false;
-        if(!parseValue(list.at(2), list.at(3), properties[1], important, propList)) return false;
-        setParsedValue(properties[3], important, propList, propList->last()->value());
-        if(!parseValue(list.at(4), list.at(5), properties[2], important, propList)) return false;
+        if(!parseValue(list.at(0), list.at(1), properties[0])) return false;
+        if(!parseValue(list.at(2), list.at(3), properties[1])) return false;
+        setParsedValue(properties[3], m_propList->last()->value());
+        if(!parseValue(list.at(4), list.at(5), properties[2])) return false;
         return true;
     case 8:
-        if(!parseValue(list.at(0), list.at(1), properties[0], important, propList)) return false;
-        if(!parseValue(list.at(2), list.at(3), properties[1], important, propList)) return false;
-        if(!parseValue(list.at(4), list.at(5), properties[2], important, propList)) return false;
-        if(!parseValue(list.at(6), list.at(7), properties[3], important, propList)) return false;
+        if(!parseValue(list.at(0), list.at(1), properties[0])) return false;
+        if(!parseValue(list.at(2), list.at(3), properties[1])) return false;
+        if(!parseValue(list.at(4), list.at(5), properties[2])) return false;
+        if(!parseValue(list.at(6), list.at(7), properties[3])) return false;
         return true;
     default:
         return false;

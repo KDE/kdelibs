@@ -131,29 +131,23 @@ public:
 	CSSSelector *parseSelector1(const QChar *curP, const QChar *endP);
 	QList<CSSSelector> *parseSelector(const QChar *curP, const QChar *endP);
 
-	void parseProperty(const QChar *curP, const QChar *endP, QList<CSSProperty> *propList);
+	void parseProperty(const QChar *curP, const QChar *endP);
 	QList<CSSProperty> *parseProperties(const QChar *curP, const QChar *endP);
 
 	/* parses generic CSSValues, return true, if it found a valid value */
-	bool parseValue(const QChar *curP, const QChar *endP, int propId, bool important,
-			QList<CSSProperty> *propList);	
-	bool parseShortHand(const QChar *curP, const QChar *endP, const int *properties,
-			    int num, bool important, QList<CSSProperty> *propList);
-	bool parseBackground(const QChar *curP, const QChar *endP, bool important,
-			     QList<CSSProperty> *propList);
-	bool parse4Values(const QChar *curP, const QChar *endP, const int *properties,
-			  bool important, QList<CSSProperty> *propList);
-	bool parseFont(const QChar *curP, const QChar *endP,
-		       bool important, QList<CSSProperty> *propList);
-	void setParsedValue(int propId, bool important, QList<CSSProperty> *propList,
-			    CSSValueImpl *parsedValue);
+	bool parseValue(const QChar *curP, const QChar *endP, int propId);	
+	bool parseValue(const QChar *curP, const QChar *endP, int propId, 
+			bool important, QList<CSSProperty> *propList);	
+	bool parseFont(const QChar *curP, const QChar *endP);
+	bool parseBackground(const QChar *curP, const QChar *endP);
+	bool parse4Values(const QChar *curP, const QChar *endP, const int *properties);
+	bool parseShortHand(const QChar *curP, const QChar *endP, const int *properties, int num);
+	void setParsedValue(int propId, const CSSValueImpl *parsedValue);
 	QList<QChar> splitShorthandProperties(const QChar *curP, const QChar *endP);
 	
 	/* define CSS_AURAL in cssparser.cpp if you want to parse CSS2 Aural properties */
-	bool parse2Values(const QChar *curP, const QChar *endP, const int *properties,
-			  bool important, QList<CSSProperty> *propList);
-	bool parseAuralValue(const QChar *curP, const QChar *endP, int propId, bool important,
-			     QList<CSSProperty> *propList);
+	bool parse2Values(const QChar *curP, const QChar *endP, const int *properties);
+	bool parseAuralValue(const QChar *curP, const QChar *endP, int propId);
 
 	// defines units allowed for a certain property, used in parseUnit
 	enum Units
@@ -186,6 +180,10 @@ public:
 	StyleBaseImpl *m_parent;
 	bool hasInlinedDecl : 1;
 	bool strictParsing : 1;
+	
+    private:
+	bool m_bImportant;
+        QList<CSSProperty> *m_propList;
     };
 
     // a style class which has a list of children (StyleSheets for example)
@@ -223,7 +221,7 @@ public:
     void setValue(CSSValueImpl *val);
     CSSValueImpl *value();
 
-    int   m_id;
+    int  m_id;
     bool m_bImportant 	: 1;
     bool nonCSSHint 	: 1;
 protected:
@@ -233,6 +231,3 @@ protected:
 }; // namespace
 
 #endif
-
-
-
