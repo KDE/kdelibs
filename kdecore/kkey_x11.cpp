@@ -24,8 +24,6 @@
 
 #include "kkey_x11.h"
 
-#include <iostream.h>	// Remove me -ellis
-
 #include <qmap.h>
 #include <qstringlist.h>
 #include <kckey.h>
@@ -51,6 +49,8 @@ const int XKeyRelease = KeyRelease;
 #endif
 
 //-------------------------------------------------------------------
+static int calcModX( int keyModExplicit );
+static int calcModExplicit( int keyModX );
 static void calcKeySym( KKeySequence& key );
 static int calcKeyQt( int keySymX, int keyModX );
 
@@ -151,13 +151,13 @@ QString KKeySequence::toString( KKeySequence::I18N bi18n ) const
 		return (bi18n) ? i18n("Unknown Key", "Unset") : QString("Unset");
 
 	QString sMods, sSym;
-	uint keyModX = m_keyModExplicit;
+	uint keyMod = m_keyModExplicit;
 	uint keySymX = m_keySymExplicit;
 
-	if( keyModX & KKeyX11::keyModXMeta() ) sMods += ToI18N("Meta") + "+";
-	if( keyModX & KKeyX11::keyModXAlt() )  sMods += ToI18N("Alt") + "+";
-	if( keyModX & ControlMask )   sMods += ToI18N("Ctrl") + "+";
-	if( keyModX & ShiftMask )     sMods += ToI18N("Shift") + "+";
+	if( keyMod & Mod4Mask )      sMods += ToI18N("Meta") + "+";
+	if( keyMod & Mod1Mask )      sMods += ToI18N("Alt") + "+";
+	if( keyMod & ControlMask )   sMods += ToI18N("Ctrl") + "+";
+	if( keyMod & ShiftMask )     sMods += ToI18N("Shift") + "+";
 
 	if( g_mapSymToInfo.contains( keySymX ) ) {
 		const KKeySymX& sym = g_mapSymToInfo[keySymX];
@@ -167,6 +167,10 @@ QString KKeySequence::toString( KKeySequence::I18N bi18n ) const
 		if( sSym.isEmpty() )
 			return (bi18n) ? i18n("Unknown Key", "Unknown") : QString("Unknown");
 	}
+
+	// If a key has been specified, but the code for that key is not available,
+	if( m_keySymExplicit && !m_keySym && !m_keyCombQt )
+		sSym += (bi18n) ? i18n(" <Unavailable>") : QString(" <Unavailable>");
 
 	return sMods + sSym;
 }
@@ -189,6 +193,8 @@ KKeySequences KKeySequence::stringToKeys( QString sKey )
 	sKey = sKey.lower().stripWhiteSpace();
 	if( sKey.startsWith( "default(" ) && sKey.endsWith( ")" ) )
 		sKey = sKey.mid( 8, sKey.length() - 9 );
+	if( sKey.endsWith( " <unavailable>" ) )
+		sKey = sKey.left( sKey.length() - 14 );
 	QStringList rgs = QStringList::split( '+', sKey, true );
 
 	uint i;
@@ -222,10 +228,13 @@ KKeySequences KKeySequence::stringToKeys( QString sKey )
 				key.m_keyCombQtExplicit = ::calcKeyQt( key.m_keySymExplicit, key.m_keyModExplicit );
 				for( int iCode = 0; iCode < (*it).nCodes; iCode++ ) {
 					key.m_keyCode = (*it).rgCodes[iCode];
-					key.m_keyMod = (*it).rgMods[iCode] | key.m_keyModExplicit;
+					key.m_keyMod = calcModX( key.m_keyModExplicit | (*it).rgMods[iCode] );
+					// If the explicit modifiers are not available,
+					if( key.m_keyModExplicit && !key.m_keyMod )
+						key.m_keyCode = 0;
 					calcKeySym( key );
 					if( key.m_keySym != key.m_keySymExplicit || key.m_keyMod != key.m_keyModExplicit )
-						key.m_keyCombQt = ::calcKeyQt( key.m_keySym, key.m_keyMod );
+						key.m_keyCombQt = ::calcKeyQt( key.m_keySym, key.m_keyModExplicit | (*it).rgMods[iCode] );
 					else
 						key.m_keyCombQt = key.m_keyCombQtExplicit;
 					rgKeys.push_back( key );
@@ -243,7 +252,6 @@ KKeySequences KKeySequence::stringToKeys( QString sKey )
 				rgKeys.push_back( key );
 		}
 	}
-
 
 	if( rgKeys.size() <= 1 ) {
 		kdDebug(125) << "stringToKeys( " << sKey << " ):"
@@ -276,6 +284,59 @@ KKeySequences KKeySequence::stringToKeys( QString sKey )
 	return rgKeys;
 }
 
+static int calcModX( int keyModExplicit )
+{
+	int keyModX = 0;
+
+	if( keyModExplicit & ShiftMask )   keyModX |= ShiftMask;
+	if( keyModExplicit & LockMask )    keyModX |= LockMask;
+	if( keyModExplicit & ControlMask ) keyModX |= ControlMask;
+	
+	if( keyModExplicit & Mod1Mask ) {
+		if( !KKeyX11::keyModXAlt() )
+			return 0;
+		keyModX |= KKeyX11::keyModXAlt();
+	}
+	if( keyModExplicit & Mod2Mask ) {
+		if( !KKeyX11::keyModXNumLock() )
+			return 0;
+		keyModX |= KKeyX11::keyModXNumLock();
+	}
+	if( keyModExplicit & Mod3Mask ) {
+		if( !KKeyX11::keyModXModeSwitch() )
+			return 0;
+		keyModX |= KKeyX11::keyModXModeSwitch();
+	}
+	if( keyModExplicit & Mod4Mask ) {
+		if( !KKeyX11::keyModXMeta() )
+			return 0;
+		keyModX |= KKeyX11::keyModXMeta();
+	}
+	if( keyModExplicit & Mod5Mask ) {
+		if( !KKeyX11::keyModXScrollLock() )
+			return 0;
+		keyModX |= KKeyX11::keyModXScrollLock();
+	}
+
+	return keyModX;
+}
+
+static int calcModExplicit( int keyModX )
+{
+	int keyModExplicit = 0;
+
+	if( keyModX & ShiftMask )                     keyModExplicit |= ShiftMask;
+	if( keyModX & LockMask )                      keyModExplicit |= LockMask;
+	if( keyModX & ControlMask )                   keyModExplicit |= ControlMask;
+	if( keyModX & KKeyX11::keyModXAlt() )         keyModExplicit |= Mod1Mask;
+	if( keyModX & KKeyX11::keyModXNumLock() )     keyModExplicit |= Mod2Mask;
+	if( keyModX & KKeyX11::keyModXModeSwitch() )  keyModExplicit |= Mod3Mask;
+	if( keyModX & KKeyX11::keyModXMeta() )        keyModExplicit |= Mod4Mask;
+	if( keyModX & KKeyX11::keyModXScrollLock() )  keyModExplicit |= Mod5Mask;
+
+	return keyModExplicit;
+}
+
 static void calcKeySym( KKeySequence& key )
 {
 	// Alt+Print = Sys_Req
@@ -304,7 +365,7 @@ static void calcKeySym( KKeySequence& key )
 	}
 }
 
-static int calcKeyQt( int keySymX, int keyModX )
+static int calcKeyQt( int keySymX, int keyModExplicit )
 {
 	int keyCombQt = 0;
 
@@ -334,10 +395,18 @@ static int calcKeyQt( int keySymX, int keyModX )
 	}
 
 	if( keyCombQt ) {
-		if( keyModX & KKeyX11::keyModXMeta() ) keyCombQt |= (Qt::ALT<<1);
-		if( keyModX & KKeyX11::keyModXAlt() )  keyCombQt |= Qt::ALT;
-		if( keyModX & ControlMask )            keyCombQt |= Qt::CTRL;
-		if( keyModX & ShiftMask )              keyCombQt |= Qt::SHIFT;
+		if( keyModExplicit & Mod4Mask ) {
+			if( !KKeyX11::keyModXMeta() )
+				return 0;
+			keyCombQt |= (Qt::ALT<<1);
+		}
+		if( keyModExplicit & Mod1Mask ) {
+			if( !KKeyX11::keyModXAlt() )
+				return 0;
+			keyCombQt |= Qt::ALT;
+		}
+		if( keyModExplicit & ControlMask ) keyCombQt |= Qt::CTRL;
+		if( keyModExplicit & ShiftMask )   keyCombQt |= Qt::SHIFT;
 	}
 
 	return keyCombQt;
@@ -529,6 +598,11 @@ static void readKeyMapping()
 	//}
 }
 
+void KKeyX11::init()
+{
+	Initialize();
+}
+
 KKeySequence KKeyX11::keyEventXToKey( const XEvent* pEvent )
 {
 	KKeySequence key;
@@ -539,7 +613,7 @@ KKeySequence KKeyX11::keyEventXToKey( const XEvent* pEvent )
 
 	calcKeySym( key );
 	key.m_keySymExplicit = key.m_keySym;
-	key.m_keyModExplicit = key.m_keyMod;
+	key.m_keyModExplicit = calcModExplicit( key.m_keyMod );
 	return key;
 }
 

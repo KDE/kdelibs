@@ -53,7 +53,8 @@ public:
 	//  keyEvent-	An X or Qt key event
 	// Example:
 	//  keyCodeXToKeyQt() converts the X11 key code & mod into a Qt shortcut key
-	static uint stringToKey( const QString& keyStr, uchar *pKeyCodeX, uint *pKeySymX, uint *pKeyModX );
+	//static uint stringToKey( const QString& keyStr, uchar *pKeyCodeX, uint *pKeySymX, uint *pKeyModX );
+	static void init();
 	static uint keyCodeXToKeySymX( uchar keyCodeX, uint keyModX );
 
 	enum ModKeysIndex {
