@@ -533,7 +533,7 @@ KCmdLineArgs::parseAllArgs()
 		     for (QValueList<KAboutPerson>::ConstIterator it = authors.begin(); it != authors.end(); ++it ) {
 			 authorlist += QString("    ") + (*it).name() + " <" + (*it).emailAddress() + ">\n";
 		     }
-		     printQ( i18n("%2 is a list of name+address, one on each line","%1 was written by\n%2").arg ( QString(about->programName()) ).arg( authorlist ) );
+		     printQ( i18n("the 2nd argument is a list of name+address, one on each line","%1 was written by\n%2").arg ( QString(about->programName()) ).arg( authorlist ) );
 		 }
 	     } else {
 		 printQ( i18n("%1 was written by somebody who wants to remain anonymous.").arg(about->programName()) );
