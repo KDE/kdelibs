@@ -628,7 +628,7 @@ AddressBook::ErrorCode AddressBook::load(const QString& filename)
 		{
 		  emit(setStatus(i18n("New file.")));
 		} else { // ----- do not close here, stick with the old file:
-		  emit(setStatus(i18n("Cancelled.")));
+		  emit(setStatus(i18n("Canceled.")));
 		}
 	    }
 	}

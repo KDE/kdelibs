@@ -122,7 +122,7 @@ QString KMJob::stateString()
 			str = i18n("Error");
 			break;
 		case KMJob::Cancelled:
-			str = i18n("Cancelled");
+			str = i18n("Canceled");
 			break;
 		case KMJob::Aborted:
 			str = i18n("Aborted");
