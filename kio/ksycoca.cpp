@@ -49,7 +49,7 @@ KSycoca::KSycoca()
    }
 }
 
-void KSycoca::openDatabase()
+bool KSycoca::openDatabase( bool abortOnError )
 {
    QString path = KGlobal::dirs()->saveLocation("config") + "ksycoca";
    QFile *database = new QFile(path);
@@ -59,6 +59,8 @@ void KSycoca::openDatabase()
    }
    else
    {
+     if (!abortOnError)
+       return false;
      // No database file
      // TODO launch kded here, using KProcess, and upon completion
      // retry again (but not more than once)
@@ -73,6 +75,7 @@ void KSycoca::openDatabase()
    }
    m_lstFactories = new KSycocaFactoryList();
    m_lstFactories->setAutoDelete( true );
+   return true;
 }
 
 // Read-write constructor - only for KBuildSycoca
@@ -160,7 +163,8 @@ QDataStream * KSycoca::findEntry(int offset, KSycocaType &type)
 bool KSycoca::checkVersion(bool abortOnError)
 {
    if ( !m_str )
-      openDatabase();
+      if( !openDatabase(abortOnError) )
+        return false; // No database and don't abort on error
    m_str->device()->at(0);
    Q_INT32 aVersion;
    (*m_str) >> aVersion;
