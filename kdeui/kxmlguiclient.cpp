@@ -25,12 +25,12 @@
 #include <qfile.h>
 #include <qdom.h>
 #include <qtextstream.h>
+#include <qregexp.h>
 
 #include <kinstance.h>
 #include <kstandarddirs.h>
 #include <kdebug.h>
 #include <kaction.h>
-#include <kregexp.h>
 
 class KXMLGUIClientPrivate
 {
@@ -680,7 +680,8 @@ QString KXMLGUIClient::findVersionNumber( const QString &_xml )
 {
   QString xml = _xml;
 
-  KRegExp versionExpr( ".*<kpartgui.+version=\"([0-9]+)\".*>.*", "i" );
+  QRegExp versionExpr( ".*<kpartgui.+version=\"([0-9]+)\".*>.*" );
+  versionExpr.setCaseSensitive( false );
 
   QTextStream stream( xml, IO_ReadOnly );
   stream.setEncoding( QTextStream::UnicodeUTF8 );
@@ -690,8 +691,8 @@ QString KXMLGUIClient::findVersionNumber( const QString &_xml )
     if ( line.isEmpty() )
       continue;
 
-    if ( versionExpr.match( line.local8Bit() ) )
-        return QString::fromLocal8Bit( versionExpr.group(1) );
+    if ( versionExpr.search( line ) > -1 )
+        return versionExpr.cap( 1 );
   }
 
   return QString::null;
