@@ -72,7 +72,7 @@ Comment[xx]=xxTar Archivexx
 Comment[zh_CN]=Tar 归档
 Comment[zh_TW]=Tar 壓縮文件
 Comment[zu]=Umqulu we-Tar
-X-KDE-IsAlso=inode/directory
+
 [Property::X-KDE-LocalProtocol]
 Type=QString
 Value=tar
