@@ -107,8 +107,10 @@ void KAccelPrivate::slotKeyPressed( int id )
 	if( m_mapIDToSpec.contains( id ) ) {
 		KKeySequence seq( m_mapIDToSpec[id] );
 		QPopupMenu* pMenu = createPopupMenu( kapp->mainWidget(), seq );
-		pMenu->exec();
 		connect( pMenu, SIGNAL(activated(int)), this, SLOT(slotMenuActivated(int)));
+		pMenu->exec();
+		disconnect( pMenu, SIGNAL(activated(int)), this, SLOT(slotMenuActivated(int)));
+		delete pMenu;
 	}
 }
 
