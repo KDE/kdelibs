@@ -457,14 +457,17 @@ bool KDirLister::matchesFilter(const QString& name) const
 void KDirLister::setNameFilter(const QString& nameFilter)
 {
     m_lstFilters.clear();
-    // Split on white space
-    char *s = qstrdup(nameFilter.latin1());
-    char *g = strtok(s, " ");
-    while (g) {
-	m_lstFilters.append(new QRegExp(QString::fromLatin1(g), false, true ));
-	g = strtok(0, " ");
+
+    if ( !nameFilter.isEmpty() ) {
+        // Split on white space
+        char *s = qstrdup(nameFilter.latin1());
+        char *g = strtok(s, " ");
+        while (g) {
+            m_lstFilters.append(new QRegExp(QString::fromLatin1(g), false, true ));
+            g = strtok(0, " ");
+        }
+        delete [] s;
     }
-    delete [] s;
 
     for ( QStringList::Iterator it = m_lstDirs.begin(); it != m_lstDirs.end(); ++it )
 	updateDirectory( *it ); // update all directories

@@ -124,7 +124,12 @@ public:
   bool dirOnlyMode() { return m_bDirOnlyMode; }
 
   /**
-   * Set the (list of) name filter(s).
+   * Set a name filter to only list items matching this name, e.g. "*.cpp".
+   * 
+   * You can set more than one filter by separating them with whitespace, e.g
+   * "*.cpp *.h".
+   * Call setNameFilter( QString::null ) to disable filtering.
+   *  
    * @see #matchesFilter
    */
   void setNameFilter(const QString&);
