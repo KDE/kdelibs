@@ -273,6 +273,7 @@ void HTMLEmbedElementImpl::attach(KHTMLView *w)
 {
    setStyle(ownerDocument()->styleSelector()->styleForElement( this ));
    khtml::RenderObject *r = _parent->renderer();
+   RenderPartObject* p = 0;
    if ( !r )
       return;
 
@@ -280,7 +281,7 @@ void HTMLEmbedElementImpl::attach(KHTMLView *w)
    {
      if ( _parent->id()!=ID_OBJECT )
      {
-        RenderPartObject *p = new RenderPartObject( w, this );
+        p = new RenderPartObject( w, this );
         m_render = p;
         m_render->setStyle(m_style);
         r->addChild( m_render, _next ? _next->renderer() : 0 );
@@ -289,6 +290,9 @@ void HTMLEmbedElementImpl::attach(KHTMLView *w)
    }
 
   NodeBaseImpl::attach( w );
+
+  if ( p )
+      p->updateWidget();
 }
 
 void HTMLEmbedElementImpl::detach()
