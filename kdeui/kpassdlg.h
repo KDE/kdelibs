@@ -48,23 +48,27 @@ public:
      */
     KPasswordEdit(QWidget *parent=0, const char *name=0);
     // KDE4: either of the two must go! add default values for parameters
+    
     /**
      * Constructs a password input widget using echoMode as "echo mode".
      * Note that echoMode is a QLineEdit::EchoMode.
      * @since 3.0
      */
     KPasswordEdit(EchoMode echoMode, QWidget *parent, const char *name);
+
     /**
      * Constructs a password input widget using echoMode as "echo mode".
      * Note that echoMode is a KPasswordEdit::EchoModes.
      * @since 3.2
      */
     KPasswordEdit(EchoModes echoMode, QWidget *parent, const char *name);
+
     /**
      * @deprecated, will be removed in KDE 4.0
      * Creates a password input widget using echoMode as "echo mode".
      */
     KPasswordEdit(QWidget *parent, const char *name, int echoMode) KDE_DEPRECATED;
+
     /**
      * Destructs the widget.
      */
@@ -152,6 +156,7 @@ public:
          * The user is asked to enter a password.
          */
         Password,
+
         /**
          * The user is asked to enter a password and to confirm it
          * a second time. This is usually used when the user
@@ -176,14 +181,29 @@ public:
      */
     KPasswordDialog(Types type, bool enableKeep, int extraBttn,
                     QWidget *parent=0, const char *name=0);
+
     /**
      * @deprecated Variant of the previous constructor without the
      * possibility to specify a parent. Will be removed in KDE 4.0
      */
-    // note that this implicitly deprecates the 'prompt' variants of
-    // getPassword() below. i guess the above constructor needs to be extended.
     KPasswordDialog(int type, QString prompt, bool enableKeep=false,
 	    int extraBttn=0) KDE_DEPRECATED;
+    // note that this implicitly deprecates the 'prompt' variants of
+    // getPassword() below. i guess the above constructor needs to be extended.
+
+    /**
+     * Construct a password dialog. Essentially the same as above but allows the 
+     * icon in the password dialog to be set via @p iconName.
+     * @param type if NewPassword is given here, the dialog contains two
+     * input fields, so that the user must confirm his password
+     * and possible typos are detected immediately
+     * @param iconName the name of the icon to be shown in the dialog. If empty, 
+     * a default icon is used
+     * @since 3.3
+     */
+    KPasswordDialog(Types type, bool enableKeep, int extraBttn, 
+	    QWidget *parent = 0, const char *name = 0, const QString& iconName=0 );
+
     /**
      * Destructs the password dialog.
      */
@@ -193,6 +213,7 @@ public:
      * Sets the password prompt.
      */
     void setPrompt(QString prompt);
+
     /**
      * Returns the password prompt.
      */
@@ -202,6 +223,7 @@ public:
      * Adds a line of information to the dialog.
      */
     void addLine(QString key, QString value);
+
     /**
      * Returns the password entered. The memory is freed in the destructor,
      * so you should make a copy.
@@ -265,6 +287,7 @@ private:
     void init();
     void erase();
 
+    // KDE4 d pointer.. d pointer..
     int m_Keep, m_Type, m_Row;
     QLabel *m_pHelpLbl;
     QGridLayout *m_pGrid;

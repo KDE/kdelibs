@@ -29,6 +29,7 @@
 #include <qcheckbox.h>
 
 #include <kglobal.h>
+#include <kdebug.h>
 #include <kapplication.h>
 #include <klocale.h>
 #include <kiconloader.h>
@@ -48,8 +49,12 @@
 
 class KPasswordDialog::KPasswordDialogPrivate
 {
-public:
-  QLabel *m_MatchLabel;
+    public:
+	KPasswordDialogPrivate()
+	    : m_MatchLabel( 0 ), iconName( 0 )
+	    {}
+	QLabel *m_MatchLabel;
+	QString iconName;
 };
 
 const int KPasswordEdit::PassLen = 100;
@@ -238,6 +243,17 @@ KPasswordDialog::KPasswordDialog(Types type, bool enableKeep, int extraBttn,
     init();
 }
 
+KPasswordDialog::KPasswordDialog(Types type, bool enableKeep, int extraBttn, 
+				  QWidget *parent, const char *name, const QString& icon )
+    : KDialogBase(parent, name, true, "", Ok|Cancel|extraBttn,
+                  Ok, true), m_Keep(enableKeep? 1 : 0), m_Type(type), d(new KPasswordDialogPrivate)
+{
+    if ( icon.stripWhiteSpace().isEmpty() )
+	d->iconName = "password";
+    else
+	d->iconName = icon;
+    init();
+}
 
 KPasswordDialog::KPasswordDialog(int type, QString prompt, bool enableKeep,
                                  int extraBttn)
@@ -247,7 +263,6 @@ KPasswordDialog::KPasswordDialog(int type, QString prompt, bool enableKeep,
     init();
     setPrompt(prompt);
 }
-
 
 void KPasswordDialog::init()
 {
@@ -265,13 +280,13 @@ void KPasswordDialog::init()
 
     // Row 1: pixmap + prompt
     QLabel *lbl;
-    QPixmap pix(locate("data", QString::fromLatin1("kdeui/pics/keys.png")));
+    QPixmap pix( KGlobal::iconLoader()->loadIcon( d->iconName, KIcon::NoGroup, KIcon::SizeHuge, 0, 0, true));
     if (!pix.isNull()) {
 	lbl = new QLabel(m_pMain);
 	lbl->setPixmap(pix);
-	lbl->setAlignment(AlignLeft|AlignVCenter);
+	lbl->setAlignment(AlignHCenter|AlignVCenter);
 	lbl->setFixedSize(lbl->sizeHint());
-	m_pGrid->addWidget(lbl, 0, 0, AlignLeft);
+	m_pGrid->addWidget(lbl, 0, 0, AlignCenter);
     }
 
     m_pHelpLbl = new QLabel(m_pMain);
