@@ -1012,7 +1012,7 @@ void Loader::servePendingRequests()
   KURL u(req->object->url().string());
   KIO::TransferJob* job = KIO::get( u, false, false /*no GUI*/);
 
-  job->addMetaData("cache", getCacheControlString(req->object->cachePolicy()));
+  job->addMetaData("cache", KIO::getCacheControlString(req->object->cachePolicy()));
   if (!req->object->accept().isEmpty())
       job->addMetaData("accept", req->object->accept());
   if ( req->m_docLoader )  {
