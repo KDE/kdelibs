@@ -22,6 +22,10 @@
 #ifndef KMPRINTER_H
 #define KMPRINTER_H
 
+#if !defined( _KDEPRINT_COMPILE ) && defined( __GNUC__ )
+#warning internal header, do not use except if you are a KDEPrint developer
+#endif
+
 #include <qstring.h>
 #include <qstringlist.h>
 #include <qptrlist.h>
@@ -34,6 +38,13 @@ class DrMain;
 class KPrinter;
 class QWidget;
 
+/**
+ * @internal
+ * This class is internal to KDEPrint and is not intended to be
+ * used outside it. Please do not make use of this header, except
+ * if you're a KDEPrint developer. The API might change in the
+ * future and binary compatibility might be broken.
+ */
 class KMPrinter : public KMObject
 {
 public:

@@ -22,6 +22,10 @@
 #ifndef KPRINTDIALOG_H
 #define KPRINTDIALOG_H
 
+#if !defined( _KDEPRINT_COMPILE ) && defined( __GNUC__ )
+#warning internal header, do not use except if you are a KDEPrint developer
+#endif
+
 #include <kdialog.h>
 #include <qptrlist.h>
 #include <kdeprint/kpreloadobject.h>
@@ -29,6 +33,13 @@
 class KPrinter;
 class KPrintDialogPage;
 
+/**
+ * @internal
+ * This class is internal to KDEPrint and is not intended to be
+ * used outside it. Please do not make use of this header, except
+ * if you're a KDEPrint developer. The API might change in the
+ * future and binary compatibility might be broken.
+ */
 class KPrintDialog : public KDialog, public KPReloadObject
 {
 	Q_OBJECT

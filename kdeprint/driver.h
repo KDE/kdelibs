@@ -22,6 +22,10 @@
 #ifndef DRIVER_H
 #define DRIVER_H
 
+#if !defined( _KDEPRINT_COMPILE ) && defined( __GNUC__ )
+#warning internal header, do not use except if you are a KDEPrint developer
+#endif
+
 #include <qstring.h>
 #include <qptrlist.h>
 #include <qdict.h>
@@ -46,6 +50,13 @@ class DrPageSize;
  * Base class for all driver objects *
  *************************************/
 
+/**
+ * @internal
+ * This class is internal to KDEPrint and is not intended to be
+ * used outside it. Please do not make use of this header, except
+ * if you're a KDEPrint developer. The API might change in the
+ * future and binary compatibility might be broken.
+ */
 class DrBase
 {
 public:
@@ -84,6 +95,13 @@ protected:
  * Option group class *
  **********************/
 
+/**
+ * @internal
+ * This class is internal to KDEPrint and is not intended to be
+ * used outside it. Please do not make use of this header, except
+ * if you're a KDEPrint developer. The API might change in the
+ * future and binary compatibility might be broken.
+ */
 class DrGroup : public DrBase
 {
 public:
@@ -124,6 +142,13 @@ protected:
  * Main driver class *
  *********************/
 
+/**
+ * @internal
+ * This class is internal to KDEPrint and is not intended to be
+ * used outside it. Please do not make use of this header, except
+ * if you're a KDEPrint developer. The API might change in the
+ * future and binary compatibility might be broken.
+ */
 class DrMain : public DrGroup
 {
 public:
@@ -149,6 +174,13 @@ protected:
  * Choice group class: a choice that involve a sub-option *
  **********************************************************/
 
+/**
+ * @internal
+ * This class is internal to KDEPrint and is not intended to be
+ * used outside it. Please do not make use of this header, except
+ * if you're a KDEPrint developer. The API might change in the
+ * future and binary compatibility might be broken.
+ */
 class DrChoiceGroup : public DrGroup
 {
 public:
@@ -162,6 +194,13 @@ public:
  * String option class *
  ***********************/
 
+/**
+ * @internal
+ * This class is internal to KDEPrint and is not intended to be
+ * used outside it. Please do not make use of this header, except
+ * if you're a KDEPrint developer. The API might change in the
+ * future and binary compatibility might be broken.
+ */
 class DrStringOption : public DrBase
 {
 public:
@@ -179,6 +218,13 @@ protected:
  * Integer numerical option class *
  **********************************/
 
+/**
+ * @internal
+ * This class is internal to KDEPrint and is not intended to be
+ * used outside it. Please do not make use of this header, except
+ * if you're a KDEPrint developer. The API might change in the
+ * future and binary compatibility might be broken.
+ */
 class DrIntegerOption : public DrBase
 {
 public:
@@ -197,6 +243,13 @@ protected:
  * Float numerical option class *
  ********************************/
 
+/**
+ * @internal
+ * This class is internal to KDEPrint and is not intended to be
+ * used outside it. Please do not make use of this header, except
+ * if you're a KDEPrint developer. The API might change in the
+ * future and binary compatibility might be broken.
+ */
 class DrFloatOption : public DrBase
 {
 public:
@@ -215,6 +268,13 @@ protected:
  * Single choice class *
  ***********************/
 
+/**
+ * @internal
+ * This class is internal to KDEPrint and is not intended to be
+ * used outside it. Please do not make use of this header, except
+ * if you're a KDEPrint developer. The API might change in the
+ * future and binary compatibility might be broken.
+ */
 class DrListOption : public DrBase
 {
 public:
@@ -240,9 +300,16 @@ protected:
 	DrBase		*m_current;
 };
 
-// just an overloaded class, with different type.
+/**
+ * @internal
+ * This class is internal to KDEPrint and is not intended to be
+ * used outside it. Please do not make use of this header, except
+ * if you're a KDEPrint developer. The API might change in the
+ * future and binary compatibility might be broken.
+ */
 class DrBooleanOption : public DrListOption
 {
+	/* just an overloaded class, with different type */
 public:
 	DrBooleanOption() : DrListOption() { m_type = DrBase::Boolean; }
 	~DrBooleanOption() {}
@@ -252,6 +319,13 @@ public:
  * Constraint class *
  ********************/
 
+/**
+ * @internal
+ * This class is internal to KDEPrint and is not intended to be
+ * used outside it. Please do not make use of this header, except
+ * if you're a KDEPrint developer. The API might change in the
+ * future and binary compatibility might be broken.
+ */
 class DrConstraint
 {
 public:
@@ -270,6 +344,13 @@ protected:
  * Page Size class *
  *******************/
 
+/**
+ * @internal
+ * This class is internal to KDEPrint and is not intended to be
+ * used outside it. Please do not make use of this header, except
+ * if you're a KDEPrint developer. The API might change in the
+ * future and binary compatibility might be broken.
+ */
 class DrPageSize
 {
 public:
