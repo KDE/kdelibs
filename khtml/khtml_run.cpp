@@ -47,7 +47,7 @@ void KHTMLRun::foundMimeType( const QString &_type )
             !m_strURL.isLocalFile() ) // ... and remote URL
        {
            KService::Ptr offer = KServiceTypeProfile::preferredService(mimeType, true);
-           if ( askSave( m_strURL, offer, m_suggestedFilename ) ) // ... -> ask whether to save
+           if ( askSave( m_strURL, offer, mimeType, m_suggestedFilename ) ) // ... -> ask whether to save
            { // true: saving done or canceled
                m_bFinished = true;
                m_bFault = true; // make Konqueror think there was an error, in order to stop the spinning wheel
@@ -91,15 +91,17 @@ bool KHTMLRun::isExecutable( const QString &serviceType )
              serviceType == "application/x-shellscript" );
 }
 
-bool KHTMLRun::askSave( const KURL & url, KService::Ptr offer, const QString & suggestedFilename )
+bool KHTMLRun::askSave( const KURL & url, KService::Ptr offer, const QString & mimeType, const QString & suggestedFilename )
 {
     QString surl = KStringHandler::csqueeze( url.prettyURL() );
     // Inspired from kmail
     QString question = offer ? i18n("Open '%1' using '%2'?").
                                arg( surl ).arg(offer->name())
                        : i18n("Open '%1' ?").arg( surl );
-    int choice = KMessageBox::warningYesNoCancel(0L, question, QString::null,
-                                                 i18n("Save to disk"), i18n("Open"));
+    int choice = KMessageBox::warningYesNoCancel(
+        0L, question, QString::null,
+        i18n("Save to disk"), i18n("Open"),
+        QString::fromLatin1("askSave")+mimeType); // dontAskAgainName  
     if ( choice == KMessageBox::Yes ) // Save
         KHTMLPopupGUIClient::saveURL( m_part->widget(), i18n( "Save As..." ), url, QString::null, 0, suggestedFilename );
 
