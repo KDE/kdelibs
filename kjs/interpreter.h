@@ -457,6 +457,10 @@ namespace KJS {
      * request for ending execution with an exception
      */
     static void requestTerminate() { terminate_request = true; }
+    /*
+     * optional confirmation for ending execution after requestTerminate()
+     */
+    static bool (*confirmTerminate)();
   private:
     ExecState(Interpreter *interp, ContextImp *con)
         : _interpreter(interp), _context(con) { }

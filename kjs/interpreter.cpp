@@ -369,10 +369,17 @@ void ExecState::clearException()
 
 bool ExecState::terminate_request = false;
 
+static bool defaultConfirm() { return true; }
+
+bool (*ExecState::confirmTerminate)() = defaultConfirm;
+
 bool ExecState::hadException()
 {
-  if (terminate_request)
-    _exception = Error::create((ExecState*)this);
+  if (terminate_request) {
+    if (confirmTerminate())
+      _exception = Error::create((ExecState*)this);
+    terminate_request = false;
+  }
   return _exception.isValid();
 }
 

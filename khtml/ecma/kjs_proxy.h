@@ -79,6 +79,7 @@ public:
 private:
   void (*oldAlarmHandler)(int);
   static void alarmHandler(int);
+  static bool confirmTerminate();
   itimerval oldtv; 
 };
 

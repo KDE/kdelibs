@@ -391,8 +391,12 @@ void KJSCPUGuard::stop()
   signal(SIGVTALRM, oldAlarmHandler);
 }
 
-void KJSCPUGuard::alarmHandler(int) {
+bool KJSCPUGuard::confirmTerminate() {
   kdDebug(6070) << "alarmhandler" << endl;
-  if (KMessageBox::warningYesNo(0L, i18n("A script on this page is causing KHTML to freeze. If it continues to run, other applications may become less responsive.\nDo you want to abort the script?"), i18n("JavaScript"), i18n("Abort"), KStdGuiItem::cont(), "kjscupguard_alarmhandler") == KMessageBox::Yes)
+  return KMessageBox::warningYesNo(0L, i18n("A script on this page is causing KHTML to freeze. If it continues to run, other applications may become less responsive.\nDo you want to abort the script?"), i18n("JavaScript"), i18n("Abort"), KStdGuiItem::cont(), "kjscupguard_alarmhandler") == KMessageBox::Yes;
+}
+
+void KJSCPUGuard::alarmHandler(int) {
     ExecState::requestTerminate();
+    ExecState::confirmTerminate = KJSCPUGuard::confirmTerminate;
 }
