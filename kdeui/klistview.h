@@ -400,6 +400,7 @@ signals:
    * You should normally not need to use this. In most cases it´s better
    * to use @ref #executed() instead.
    */
+  // KDE 4: Remove this signal...already in QListView
   void doubleClicked( QListViewItem *item, const QPoint &pos, int c );
 
   /**
