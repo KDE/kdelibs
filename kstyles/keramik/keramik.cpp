@@ -106,6 +106,9 @@ namespace
 	const int arrowHMargin    = 6;
 	const int rightBorder     = 12;
 	const char* kdeToolbarWidget = "kde toolbar widget";
+	
+	const int smallButMaxW    = 27;
+	const int smallButMaxH    = 20;
 }
 // ---------------------------------------------------------------------------
 
@@ -441,7 +444,7 @@ void KeramikStyle::drawPrimitive( PrimitiveElement pe,
 
 			int  name;
 
-			if ( w < 28 || h <= 20 )
+			if ( w <= smallButMaxW || h <= smallButMaxH )
 			{
 				if (sunken)
 					name = keramik_pushbutton_small_pressed;
@@ -605,7 +608,8 @@ void KeramikStyle::drawPrimitive( PrimitiveElement pe,
 				painter.draw( p, r, down? cg.buttonText() : cg.button(), cg.background(), disabled, pmode() );
 
 				p->setPen( cg.buttonText() );
-				p->drawLine(r.x()+r.width()/2 - 1, r.y()+ 5, r.x()+r.width()/2-1, r.y()+r.height() - 5);
+				p->drawLine(r.x()+r.width()/2 - 1, r.y() + r.height()/2 - 3,
+				            r.x()+r.width()/2 - 1, r.y() + r.height()/2 + 3);
 
 
 				drawKeramikArrow(p, cg, QRect(r.x(), r.y(), r.width()/2, r.height()), PE_ArrowLeft, down, !disabled);
@@ -619,7 +623,8 @@ void KeramikStyle::drawPrimitive( PrimitiveElement pe,
 				painter.draw( p, r, down? cg.buttonText() : cg.button(), cg.background(), disabled, pmode() );
 
 				p->setPen( cg.buttonText() );
-				p->drawLine(r.x()+4, r.y()+r.height()/2, r.x()+r.width() - 6, r.y()+r.height()/2);
+				p->drawLine(r.x()+r.width()/2 - 4, r.y()+r.height()/2, 
+				            r.x()+r.width()/2 + 2, r.y()+r.height()/2);
 
 
 				drawKeramikArrow(p, cg, QRect(r.x(), r.y(), r.width(), r.height()/2), PE_ArrowUp, down, !disabled);
@@ -1186,7 +1191,8 @@ void KeramikStyle::drawControl( ControlElement element,
 								r.x() + r.width() - 1, r.y() + r.height() - 1 );
 					}
 				}
-				else nr.setWidth(r.width()-2); //Account for shadow
+				else if ( w > smallButMaxW && h > smallButMaxH )
+					nr.setWidth(r.width()-2); //Account for shadow
 			}
 
 			KStyle::drawControl(element, p, widget, nr, cg, flags, opt);
