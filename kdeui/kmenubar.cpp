@@ -75,6 +75,8 @@ KMenuBar::KMenuBar(QWidget *parent, const char *name)
   handle->raise();
   buttonDownOnHandle = FALSE;
   init();
+  if(kapp->kstyle())
+      menu->setFrameStyle(NoFrame);
 }
 
 void KMenuBar::show() {
