@@ -1,6 +1,12 @@
 // $Id$
 // Revision 1.87  1998/01/27 20:17:01  kulow
 // $Log$
+// Revision 1.47  1997/10/08 02:18:15  torben
+// Torben: Monster-Patch for KDEFSSTD, see posting
+// added KIconLoaderButton, changed search pathes in
+// kiconloader to match home directory, too
+// Changed config files of KFm in kfmlib
+//
 // Revision 1.46  1997/10/07 06:52:15  kulow
 // my new path modell
 //
@@ -352,6 +358,8 @@
 #include <fcntl.h>
 #include <X11/Xlib.h>
 #include <X11/Xatom.h>
+#include <qobjcoll.h>
+#include <qstrlist.h>
 #include <qfile.h>
 #include <qmsgbox.h>
 #include <qtstream.h>
