@@ -198,6 +198,22 @@ action/help_about_app
 action/help_about_kde
 action/fullscreen
 
+Actions in the KDE File Dialog:
+action/home		// Go to home directory
+action/up		// Go to parent directory
+action/back		// Go to previous directory
+action/forward		// Go to next directory
+action/reload		// Reload directory
+action/mkdir		// Create new directory
+action/toggleSpeedbar	// Show/hide sidebar
+action/sorting menu	// Sorting options
+action/short view	// Select short view
+action/detailed view	// Select detailed view
+action/show hidden	// Show/hide hidden files
+action/preview		// Show/hide preview
+action/separate dirs	// Show/hide separate directories
+
+
 Konqueror & KDesktop related:
 action/editfiletype
 action/properties
