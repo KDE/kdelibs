@@ -914,8 +914,9 @@ void HTMLInputElementImpl::parseAttribute(AttrImpl *attr)
         addCSSProperty(CSS_PROP_TEXT_ALIGN, attr->value() );
         break;
     case ATTR_WIDTH:
-        if(getAttribute(ATTR_SIZE).isEmpty())
-            addCSSLength(CSS_PROP_WIDTH, attr->value() );
+        // ignore this attribute,  do _not_ add
+        // a CSS_PROP_WIDTH here!
+        // webdesigner are stupid - and IE/NS behave the same
         break;
     case ATTR_HEIGHT:
         addCSSLength(CSS_PROP_HEIGHT, attr->value() );
@@ -1763,6 +1764,13 @@ void HTMLOptGroupElementImpl::recalcSelectOptions()
         static_cast<HTMLSelectElementImpl*>(select)->recalcListItems();
 }
 
+void HTMLOptGroupElementImpl::setChanged( bool b )
+{
+    HTMLGenericFormElementImpl::setChanged( b );
+    if ( b )
+        recalcSelectOptions();
+}
+
 // -------------------------------------------------------------------------
 
 HTMLOptionElementImpl::HTMLOptionElementImpl(DocumentPtr *doc, HTMLFormElementImpl *f)
@@ -1843,6 +1851,13 @@ HTMLSelectElementImpl *HTMLOptionElementImpl::getSelect()
     return static_cast<HTMLSelectElementImpl*>(select);
 }
 
+void HTMLOptionElementImpl::setChanged( bool b )
+{
+    HTMLGenericFormElementImpl::setChanged( b );
+    HTMLSelectElementImpl* s;
+    if ( b && ( s = getSelect() ) )
+        s->recalcListItems();
+}
 
 // -------------------------------------------------------------------------
 

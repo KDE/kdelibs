@@ -443,6 +443,8 @@ public:
     virtual NodeImpl *appendChild ( NodeImpl *newChild, int &exceptioncode );
     virtual void parseAttribute(AttrImpl *attr);
     void recalcSelectOptions();
+    virtual void setChanged(bool);
+
 };
 
 
@@ -474,6 +476,7 @@ public:
 
     HTMLSelectElementImpl *getSelect();
 
+    virtual void setChanged(bool);
 
 protected:
     DOMString m_value;
