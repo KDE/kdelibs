@@ -87,7 +87,7 @@ void KDatePicker::init( const QDate &dt )
   line = new KLineEdit(this);
   val = new KDateValidator(this);
   table = new KDateTable(this);
-  fontsize = 10;
+  fontsize = KGlobalSettings::generalFont().pointSize()+1;
  
   d->selectWeek = new QToolButton( this );
   d->selectWeek->setAutoRaise(true);
@@ -101,7 +101,7 @@ void KDatePicker::init( const QDate &dt )
   QToolTip::add(selectYear, i18n("Select a year"));
 
   // -----
-  setFontSize(10);
+  setFontSize(fontsize);
   line->setValidator(val);
   line->installEventFilter( this );
   yearForward->setPixmap(BarIcon(QString::fromLatin1("2rightarrow")));
@@ -166,7 +166,7 @@ KDatePicker::resizeEvent(QResizeEvent* e)
 void
 KDatePicker::dateChangedSlot(QDate date)
 {
-    kdDebug() << "KDatePicker::dateChangedSlot: date changed (" << date.year() << "/" << date.month() << "/" << date.day() << ")." << endl;
+    kdDebug(298) << "KDatePicker::dateChangedSlot: date changed (" << date.year() << "/" << date.month() << "/" << date.day() << ")." << endl;
 
     const KCalendarSystem * calendar = KGlobal::locale()->calendar();
 
@@ -181,7 +181,7 @@ KDatePicker::dateChangedSlot(QDate date)
 void
 KDatePicker::tableClickedSlot()
 {
-  kdDebug() << "KDatePicker::tableClickedSlot: table clicked." << endl;
+  kdDebug(298) << "KDatePicker::tableClickedSlot: table clicked." << endl;
   emit(dateSelected(table->getDate()));
   emit(tableClicked());
 }
@@ -214,7 +214,7 @@ KDatePicker::setDate(const QDate& date)
 	line->setText(KGlobal::locale()->formatDate(date, true));
 	return true;
     } else {
-	kdDebug() << "KDatePicker::setDate: refusing to set invalid date." << endl;
+	kdDebug(298) << "KDatePicker::setDate: refusing to set invalid date." << endl;
 	return false;
     }
 }
@@ -384,12 +384,12 @@ KDatePicker::lineEnterPressed()
   // -----
   if(val->date(line->text(), temp)==QValidator::Acceptable)
     {
-	kdDebug() << "KDatePicker::lineEnterPressed: valid date entered." << endl;
+	kdDebug(298) << "KDatePicker::lineEnterPressed: valid date entered." << endl;
 	emit(dateEntered(temp));
 	setDate(temp);
     } else {
       KNotifyClient::beep();
-      kdDebug() << "KDatePicker::lineEnterPressed: invalid date entered." << endl;
+      kdDebug(298) << "KDatePicker::lineEnterPressed: invalid date entered." << endl;
     }
 }
 
