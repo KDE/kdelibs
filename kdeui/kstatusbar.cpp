@@ -219,6 +219,7 @@ bool KStatusBar::enable( BarStatus stat )
     hide();
   else
     show();
+  emit moved (); // force KTM::updateRects (David)
   return ( isVisible() == mystat );
 }	
 

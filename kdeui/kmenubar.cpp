@@ -863,6 +863,17 @@ void KMenuBar::enableFloating (bool arrrrrrgh)
   context->setItemEnabled (CONTEXT_FLOAT, arrrrrrgh);
 }
 
+bool KMenuBar::enable( BarStatus stat )
+{
+  bool mystat = isVisible();
+  if ( (stat == Toggle && mystat) || stat == Hide )
+    hide();
+  else
+    show();
+  emit moved (position); // force KTM::updateRects (David)
+  return ( isVisible() == mystat );
+}
+
 /*******************************************************/
 
 uint KMenuBar::count()
@@ -971,7 +982,7 @@ void KMenuBar::setFlat (bool flag)
     handle->resize(30, 10);
     frame->move(100, 100); // move menubar out of sight
     enableFloating(false);
-    emit moved(Flat); // KTM will block this->updateRects
+    emit moved(Flat); // KTM will call this->updateRects
   }
   else //unflat
   {

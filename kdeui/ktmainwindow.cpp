@@ -932,6 +932,7 @@ KStatusBar *KTMainWindow::statusBar()
 void KTMainWindow::setStatusBar (KStatusBar *statusbar)
 {
   kstatusbar = statusbar;
+  connect( kstatusbar, SIGNAL( moved() ), this, SLOT( updateRects() ) );
   updateRects ();
 }
 

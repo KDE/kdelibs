@@ -65,6 +65,11 @@ class KMenuBar : public QFrame
    enum menuPosition{Top, Bottom, Floating, Flat, FloatingSystem};
 
    /**
+    * Argument for enable().
+    */
+   enum BarStatus{ Toggle, Show, Hide }; 
+
+   /**
     * Constructor. For all details about inserting items see
     * @ref QMenuBar
     */
@@ -101,6 +106,12 @@ class KMenuBar : public QFrame
     * Sets title for floating menu bar. Default is Main widget title.
     */
    void setTitle(const QString&_title) {title = _title;};
+
+   /**
+    * Enable disable status bar. You can get the same effect with show
+    * or hide, but if you do that the signal @ref #moved won't be emitted.
+    */
+   bool enable( BarStatus stat );
 
    /**
     * The rest is standard QMenuBar interface. See Qt docs for

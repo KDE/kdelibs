@@ -184,7 +184,7 @@ public:
 
   /**
    * Enable disable status bar. You can get the same effect with show
-   * or hide.
+   * or hide, but if you do that the signal @ref #moved won't be emitted.
    */
   bool enable( BarStatus stat );
 
@@ -237,6 +237,17 @@ signals:
    * events.
    */
   void released(int);
+
+  /**
+   * Emits when toolbar changes its position (not implemented!), or when
+   * item is removed from toolbar. This is normaly connected to
+   * @ref KTopLevelWidget::updateRects.
+   * If you subclass @ref KTopLevelWidget and reimplement
+   * @ref KTopLevelWidget::resizeEvent or
+   * @ref KTopLevelWidget::updateRects, be sure to connect to
+   * this signal.
+   */
+  void moved();
 
 protected:
   void drawContents ( QPainter * );
