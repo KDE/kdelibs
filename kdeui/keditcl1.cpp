@@ -63,8 +63,8 @@ KEdit::KEdit(QWidget *_parent, const char *name)
 
     setAcceptDrops(true);
     KCursor::setAutoHideCursor( this, true );
-    
-    connect(this, SIGNAL(cursorPositionChanged(int,int)), 
+
+    connect(this, SIGNAL(cursorPositionChanged(int,int)),
             this, SLOT(slotCursorPositionChanged()));
 }
 
@@ -235,7 +235,7 @@ KEdit::saveText(QTextStream *stream, bool softWrap)
    int line_count = numLines()-1;
    if (line_count < 0)
       return;
-   
+
    if (softWrap || (wordWrap() == NoWrap))
    {
       for(int i = 0; i < line_count; i++)
@@ -317,10 +317,10 @@ void KEdit::computePosition()
      for(int i = 0; i < line; i++)
         line_pos += linesOfParagraph(i);
   }
-  
+
   int line_offset = lineOfChar(line, col);
   line_pos += line_offset;
-  
+
   // We now calculate where the current line starts in the paragraph.
   QString linetext = textLine(line);
   int start_of_line = 0;
@@ -330,7 +330,7 @@ void KEdit::computePosition()
      while(lineOfChar(line, --start_of_line) == line_offset);
      start_of_line++;
   }
-  
+
 
   // O.K here is the deal: The function getCursorPositoin returns the character
   // position of the cursor, not the screenposition. I.e,. assume the line
@@ -347,7 +347,7 @@ void KEdit::computePosition()
 
   // if you understand the following algorithm you are worthy to look at the
   // kedit+ sources -- if not, go away ;-)
-  
+
 
   while(find >=0 && find <= coltemp- 1 ){
     find = linetext.find('\t', find+start_of_line, TRUE )-start_of_line;
@@ -371,8 +371,14 @@ void KEdit::computePosition()
 }
 
 
-void KEdit::keyPressEvent ( QKeyEvent *e){
-
+void KEdit::keyPressEvent ( QKeyEvent *e)
+{
+  // ignore Ctrl-Return so that KDialogBase can catch them
+  if ( e->key() == Key_Return && e->state() == ControlButton ) {
+      e->ignore();
+      return;
+  }
+    
   KKey key(e);
   int keyQt = key.keyCodeQt();
 
@@ -454,7 +460,7 @@ void KEdit::keyPressEvent ( QKeyEvent *e){
   if ( KStdAccel::copy().contains( key ) )
     copy();
   else if ( isReadOnly() )
-    QMultiLineEdit::keyPressEvent( e );       
+    QMultiLineEdit::keyPressEvent( e );
   // If this is an unmodified printable key, send it directly to QMultiLineEdit.
   else if ( (key.keyCodeQt() & (CTRL | ALT)) == 0 && !e->text().isEmpty() && e->text().unicode()->isPrint() )
     QMultiLineEdit::keyPressEvent( e );
@@ -525,12 +531,12 @@ void KEdit::doGotoLine() {
       setFocus();
       return;
    }
-  
+
    int max_parag = paragraphs();
-     
+
    int line = 0;
    int parag = -1;
-   int lines_in_parag = 0; 
+   int lines_in_parag = 0;
    while ((++parag < max_parag) && (line + lines_in_parag < target_line))
    {
       line += lines_in_parag;
