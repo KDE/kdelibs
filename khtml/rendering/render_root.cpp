@@ -216,7 +216,9 @@ void RenderRoot::updateHeight()
 
     if (parsing())
     {
-        if (!updateTimer.isNull() && updateTimer.elapsed()<1000) {
+        if (!updateTimer.isNull() &&
+            updateTimer.elapsed() <
+            (docHeight() < m_view->visibleHeight() ? 100 : 1000)) {
             return;
         } else
             updateTimer.start();
