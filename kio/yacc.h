@@ -26,4 +26,4 @@ typedef union
 #define	FLOAT	274
 
 
-extern YYSTYPE yylval;
+extern YYSTYPE kiotraderlval;

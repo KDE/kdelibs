@@ -1,4 +1,6 @@
 %{
+#define yylval kiotraderlval
+#define yywrap kiotraderwrap
 
 #include "yacc.h"
 #include <string.h>

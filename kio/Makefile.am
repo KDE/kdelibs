@@ -137,5 +137,5 @@ updatedir = $(kde_datadir)/kconf_update
 
 parser: $(parserfiles)
 	cd $(srcdir) ;\
-	flex lex.l && mv lex.yy.c lex.c ;\
-	bison -d yacc.y && mv yacc.tab.c yacc.c; mv yacc.tab.h yacc.h
+	flex -olex.c -Pkiotrader lex.l ;\
+	bison -d -p kiotrader yacc.y && mv yacc.tab.c yacc.c; mv yacc.tab.h yacc.h
