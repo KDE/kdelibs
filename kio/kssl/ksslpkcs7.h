@@ -106,6 +106,7 @@ public:
    *   Check the chain to make sure it's valid.
    */
   KSSLCertificate::KSSLValidation validate();
+  KSSLCertificate::KSSLValidation validate(KSSLCertificate::KSSLPurpose p);
 
 
   /*
@@ -113,6 +114,7 @@ public:
    *   Ignore any cached validation result.
    */
   KSSLCertificate::KSSLValidation revalidate();
+  KSSLCertificate::KSSLValidation revalidate(KSSLCertificate::KSSLPurpose p);
 
 
   /*

@@ -238,8 +238,13 @@ return false;
 
 
 KSSLCertificate::KSSLValidation KSSLPKCS12::validate() {
+	return validate(KSSLCertificate::SSLServer);
+}
+
+
+KSSLCertificate::KSSLValidation KSSLPKCS12::validate(KSSLCertificate::KSSLPurpose p) {
 #ifdef HAVE_SSL
-KSSLCertificate::KSSLValidation xx = _cert->validate();
+KSSLCertificate::KSSLValidation xx = _cert->validate(p);
    if (1 != kossl->X509_check_private_key(_cert->getCert(), _pkey)) {
       xx = KSSLCertificate::PrivateKeyFailed;
    }
@@ -252,12 +257,22 @@ return KSSLCertificate::NoSSL;
 
 
 KSSLCertificate::KSSLValidation KSSLPKCS12::revalidate() {
-   return _cert->revalidate();
+   return revalidate(KSSLCertificate::SSLServer);
+}
+
+
+KSSLCertificate::KSSLValidation KSSLPKCS12::revalidate(KSSLCertificate::KSSLPurpose p) {
+   return _cert->revalidate(p);
 }
 
 
 bool KSSLPKCS12::isValid() {
-return (validate() == KSSLCertificate::Ok);
+return isValid(KSSLCertificate::SSLServer);
+}
+
+
+bool KSSLPKCS12::isValid(KSSLCertificate::KSSLPurpose p) {
+return (validate(p) == KSSLCertificate::Ok);
 }
 
 

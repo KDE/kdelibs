@@ -113,6 +113,7 @@ public:
    *   Check the X.509 and private key to make sure they're valid.
    */
   KSSLCertificate::KSSLValidation validate();
+  KSSLCertificate::KSSLValidation validate(KSSLCertificate::KSSLPurpose p);
 
 
   /*
@@ -120,12 +121,14 @@ public:
    *   Ignore any cached validation result.
    */
   KSSLCertificate::KSSLValidation revalidate();
+  KSSLCertificate::KSSLValidation revalidate(KSSLCertificate::KSSLPurpose p);
 
 
   /*
    *   Return true if the X.509 and private key are valid.
    */
   bool isValid();
+  bool isValid(KSSLCertificate::KSSLPurpose p);
 
 
 
