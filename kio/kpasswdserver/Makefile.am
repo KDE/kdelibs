@@ -10,4 +10,4 @@ kde_module_LTLIBRARIES = kded_kpasswdserver.la
 kded_kpasswdserver_la_SOURCES = kpasswdserver.cpp kpasswdserver.skel 
 kded_kpasswdserver_la_METASOURCES = AUTO
 kded_kpasswdserver_la_LDFLAGS = $(all_libraries) -module -avoid-version
-kded_kpasswdserver_la_LIBADD = $(LIB_KIO)
+kded_kpasswdserver_la_LIBADD = $(top_builddir)/kwallet/client/libkwalletclient.la $(LIB_KIO)
