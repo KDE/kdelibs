@@ -18,15 +18,14 @@
  * Boston, MA 02111-1307, USA.
  */
 
+#include "ksslsession.h"
+
 #ifdef HAVE_CONFIG_H
 #include <config.h>
 #endif
 
 #include <kopenssl.h>
 #include <kmdcodec.h>
-
-#include "ksslsession.h"
-
 
 KSSLSession::KSSLSession() : _session(0L) {
 }
