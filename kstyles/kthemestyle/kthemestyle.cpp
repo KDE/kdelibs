@@ -5,7 +5,7 @@
  Copyright (C) 1999 Daniel M. Duley <mosfet@kde.org>
 
  KDE3 port (C) 2001-2002 Maksim Orlovich <mo002j@mail.rochester.edu>
-Port version 0.9.5
+Port version 0.9.6
 
  Includes code portions from the dotNET style, and the KDE HighColor style.
 
@@ -95,19 +95,11 @@ static const int rightBorder = 12;
 
 /*
 BUGS:
-
-Crashes on 8bpp displays with Marble -- well, when one re-enables running on them.
-Spin widget for system++
-
-Vertical sliders flash a bit -- anything else?
-Possibly some bugs unpolishing menus..
+Sliders flash a bit -- anything else?
 
 TODO:
 Nicer disabled buttons.
 Sliders are not disabled properly
-
-Drop the ToolBarButton NoBackground workaround when/if the patch to konsole
-is commited. 
 */
 
 
@@ -557,7 +549,7 @@ void KThemeStyle::unPolish( QWidget* w )
     if ( w->inherits( "QMenuBar" ) || w->inherits( "QPopupMenu" ) || w->inherits( "QMenuItem" ) ||
             w->inherits( "QScrollBar" ) || w->inherits( "QToolBar" )  || w->inherits ("QToolButton") )
         w->setBackgroundMode( QWidget::PaletteBackground );
-    else if ( w->inherits( "QPopupMenu" ) )
+    if ( w->inherits( "QPopupMenu" )  || w->inherits( "QMenuItem" ) )
         w->unsetPalette();
     else if ( w->inherits( "QCheckBox" ) )
         w->unsetPalette();
