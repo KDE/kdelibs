@@ -349,8 +349,6 @@ void HTMLObjectElementImpl::parseAttribute(AttrImpl *attr)
       classId = val;
       needWidgetUpdate = true;
       break;
-//    case ATTR_TABINDEX:
-        // ###
     default:
       HTMLElementImpl::parseAttribute( attr );
   }
@@ -379,7 +377,7 @@ void HTMLObjectElementImpl::attach(KHTMLView *w)
 void HTMLObjectElementImpl::applyChanges(bool top, bool force)
 {
     if (needWidgetUpdate) {
-	static_cast<RenderPartObject*>(m_render)->updateWidget();
+        if(m_render)  static_cast<RenderPartObject*>(m_render)->updateWidget();
 	needWidgetUpdate = false;
     }
     HTMLElementImpl::applyChanges(top,force);
