@@ -48,6 +48,7 @@ class KMimeType : public KServiceType
 public:
   typedef KSharedPtr<KMimeType> Ptr;
   typedef QValueList<Ptr> List;
+public: // KDoc seems to barf on those typedefs and generates no docs after them
   /**
    * Constructor.  You may pass in arguments to create a mimetype with
    * specific properties
