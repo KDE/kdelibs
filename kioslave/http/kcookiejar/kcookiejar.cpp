@@ -256,7 +256,7 @@ KCookieJar::~KCookieJar()
     // Not much to do here
 }
 
-static void removeDuplicateFromList(KHttpCookieList *list, KHttpCookie *cookiePtr, bool nameMatchOnly=false)
+static void removeDuplicateFromList(KHttpCookieList *list, KHttpCookie *cookiePtr, bool nameMatchOnly=false, bool updateWindowId=false)
 {
     QString domain1 = cookiePtr->domain();
     if (domain1.isEmpty())
@@ -276,6 +276,18 @@ static void removeDuplicateFromList(KHttpCookieList *list, KHttpCookie *cookiePt
             )
           )
        {
+          if (updateWindowId)
+          {
+            for(QValueList<long>::ConstIterator it = cookie->windowIds().begin();
+                it != cookie->windowIds().end(); ++it)
+            {
+               long windowId = *it;
+               if (windowId && (cookiePtr->windowIds().find(windowId) == cookiePtr->windowIds().end()))
+               {
+                  cookiePtr->windowIds().append(windowId);
+               }
+            }
+          }
           KHttpCookiePtr old_cookie = cookie;
           cookie = list->next();
           list->removeRef( old_cookie );
@@ -871,7 +883,7 @@ void KCookieJar::addCookie(KHttpCookiePtr &cookiePtr)
         KHttpCookieList *list= m_cookieDomains[key];
         if ( !list ) continue;
 
-        removeDuplicateFromList(list, cookiePtr);
+        removeDuplicateFromList(list, cookiePtr, false, true);
     }
 
     QString domain = stripDomain( cookiePtr );
