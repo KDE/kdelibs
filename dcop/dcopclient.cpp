@@ -176,7 +176,7 @@ struct ReplyStruct
     Q_INT32 replyId;
 };
 
-QCString dcopServerFile()
+QCString DCOPClient::dcopServerFile()
 {
    QCString fName = ::getenv("HOME");
    if (fName.isEmpty())

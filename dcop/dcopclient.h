@@ -513,6 +513,11 @@ class DCOPClient : public QObject
     */
   static void emergencyClose();
 
+  /**
+    * @internal File with information how to reach the dcopserver.
+    */
+  static QCString dcopServerFile();
+
 signals:
   /**
    * Indicate that the application @p appId has been registered with
