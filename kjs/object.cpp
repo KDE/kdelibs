@@ -140,7 +140,26 @@ bool Object::implementsCall() const
 
 Value Object::call(ExecState *exec, Object &thisObj, const List &args)
 {
-  return static_cast<ObjectImp*>(rep)->call(exec,thisObj,args);
+#if KJS_MAX_STACK > 0
+  static int depth = 0; // sum of all concurrent interpreters
+  if (++depth > KJS_MAX_STACK) {
+#ifndef NDEBUG
+    fprintf(stderr, "Exceeded maximum function call depth\n");
+#endif
+    Object err = Error::create(exec, RangeError,
+                               "Maximum call stack size exceeded.");
+    exec->setException(err);
+    return err;
+  }
+#endif
+
+  Value ret = static_cast<ObjectImp*>(rep)->call(exec,thisObj,args);
+
+#if KJS_MAX_STACK > 0
+  --depth;
+#endif
+
+  return ret;
 }
 
 bool Object::implementsHasInstance() const
