@@ -49,6 +49,7 @@ void KHTMLPartBrowserExtension::restoreState( QDataStream &stream )
 
 void KHTMLPartBrowserExtension::copy()
 {
+  kdDebug( 6050 ) << "************! KHTMLPartBrowserExtension::copy()" << endl;
   // get selected text and paste to the clipboard
   QString text = m_part->selectedText();
   QClipboard *cb = QApplication::clipboard();
@@ -105,7 +106,7 @@ KHTMLPopupGUIClient::KHTMLPopupGUIClient( KHTMLPart *khtml, const QString &doc, 
 
   if ( !url.isEmpty() )
   {
-    d->m_paSaveLinkAs = new KAction( i18n( "&Save Link As ..." ), 0, this, SLOT( slotSaveLinkAs() ),
+    d->m_paSaveLinkAs = new KAction( i18n( "&Save Link As..." ), 0, this, SLOT( slotSaveLinkAs() ),
                                      actionCollection(), "savelinkas" );
     d->m_paCopyLinkLocation = new KAction( i18n( "Copy Link Location" ), 0, this, SLOT( slotCopyLinkLocation() ),
                                            actionCollection(), "copylinklocation" );
@@ -117,7 +118,7 @@ KHTMLPopupGUIClient::KHTMLPopupGUIClient( KHTMLPart *khtml, const QString &doc, 
   if ( !e.isNull() && e.elementId() == ID_IMG )
   {
     d->m_imageURL = KURL( d->m_khtml->url(), e.getAttribute( "src" ).string() );
-    d->m_paSaveImageAs = new KAction( i18n( "Save Image As ..." ), 0, this, SLOT( slotSaveImageAs() ),
+    d->m_paSaveImageAs = new KAction( i18n( "Save Image As..." ), 0, this, SLOT( slotSaveImageAs() ),
                                       actionCollection(), "saveimageas" );
     d->m_paCopyImageLocation = new KAction( i18n( "Copy Image Location" ), 0, this, SLOT( slotCopyImageLocation() ),
                                             actionCollection(), "copyimagelocation" );
