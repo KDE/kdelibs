@@ -55,6 +55,7 @@ void yyerror( const char *s )
 %token T_PRIVATE
 %token T_VIRTUAL
 %token T_CONST
+%token T_RETURN
 %token T_SIGNAL
 %token T_SLOT
 %token T_TYPEDEF
@@ -64,13 +65,19 @@ void yyerror( const char *s )
 %token T_LESS
 %token T_GREATER
 %token T_AMPERSAND
+%token T_ACCESS
 %token T_ENUM
 %token T_UNKNOWN
+%token T_TRUE
+%token T_FALSE
+%token T_STATIC
 %token T_EQUAL
 %token T_SCOPE
 %token T_NULL
 %token T_DCOP
 %token T_DCOP_AREA
+%token T_SIGNED
+%token T_UNSIGNED
 
 %type <_str> body
 %type <_str> class_header
@@ -85,6 +92,8 @@ void yyerror( const char *s )
 %type <_str> return
 %type <_str> return_params
 %type <_str> qualifier
+%type <_str> prequalifier
+%type <_str> Identifier
 
 %%
 
@@ -107,17 +116,23 @@ includes
         ;
 
 rest
-	: T_CLASS T_IDENTIFIER class_header T_DCOP body T_SEMICOLON
+	: T_CLASS Identifier class_header T_DCOP body T_SEMICOLON rest
 	  {
-		printf("<CLASS name=\"%s\">\n%s\n%s</CLASS>\n", $2->latin1(), $3->latin1(), $5->latin1() );
+		printf("<CLASS name=\"%s\">\n%s%s</CLASS>\n", $2->latin1(), $3->latin1(), $5->latin1() );
 	  }
-	| T_CLASS T_IDENTIFIER T_SEMICOLON main
-	  {
-	  }
-	| T_STRUCT T_IDENTIFIER T_SEMICOLON main
+	| T_CLASS Identifier class_header body T_SEMICOLON rest
 	  {
 	  }
+	| T_CLASS Identifier T_SEMICOLON main
+	  {
+	  }
+	| T_STRUCT Identifier T_SEMICOLON main
+	  {
+	  }
+	| {}
 	;
+
+bool_value: T_TRUE | T_FALSE;
 
 nodcop_area: T_PRIVATE | T_PROTECTED | T_PUBLIC ;
 
@@ -134,14 +149,25 @@ dcop_area_begin
 	{
 	  dcop_area = 1;
 	}
+
+Identifier
+	: T_IDENTIFIER {
+	  $$ = $1;
+	}
+	| T_IDENTIFIER T_SCOPE Identifier {
+	   $$ = new QString( *($1) + *($3) );
+	}
+	;
+		
 super_class_name
-	: T_IDENTIFIER
+	: Identifier
 	  {
-		QString* tmp = new QString( "<SUPER name=\"%1\"/>" );
+		QString* tmp = new QString( "<SUPER name=\"%1\"/>\n" );
 		*tmp = tmp->arg( *($1) );
 		$$ = tmp;
 	  }
 	;
+
 
 super_class
 	: T_VIRTUAL T_PUBLIC super_class_name
@@ -208,26 +234,40 @@ body
 	;
 
 typedef
-	: T_TYPEDEF T_IDENTIFIER T_LESS typedef_params T_GREATER T_IDENTIFIER T_SEMICOLON
+	: T_TYPEDEF Identifier T_LESS typedef_params T_GREATER Identifier T_SEMICOLON
 	  {
-		QString* tmp = new QString("<TYPEDEF name=\"%1\" template=\"%2\">%3</TYPEDEF>\n");
-		*tmp = tmp->arg( *($6) ).arg( *($2) ).arg( *($4) );
-		$$ = tmp;
+		if (dcop_area) {
+ 		  QString* tmp = new QString("<TYPEDEF name=\"%1\" template=\"%2\">%3</TYPEDEF>\n");
+		  *tmp = tmp->arg( *($6) ).arg( *($2) ).arg( *($4) );
+		  $$ = tmp;
+		} else {
+		  $$ = new QString("");
+		}
 	  }
 	;
 
 typedef_params
-	: T_IDENTIFIER
+	: Identifier
 	  {
 		QString* tmp = new QString("<PARAM type=\"%1\"/>");
 		*tmp = tmp->arg( *($1) );
 		$$ = tmp;
 	  }
-	| T_IDENTIFIER T_COMMA typedef_params
+	| Identifier T_ASTERISK
+	  {
+		if (dcop_area)
+		  yyerror("pointers are not allowed in dcop area!");
+	  }
+	| Identifier T_COMMA typedef_params
 	  {
 		QString* tmp = new QString("<PARAM type=\"%1\"/>%2");
 		*tmp = tmp->arg( *($1) ).arg( *($3) );
 		$$ = tmp;
+	  }
+	| Identifier T_ASTERISK T_COMMA typedef_params
+	  {
+		if (dcop_area)
+		  yyerror("pointers are not allowed in dcop area!");
 	  }
 	;
 
@@ -243,36 +283,46 @@ qualifier
 	;
 
 return_params
-	: T_IDENTIFIER
+	: Identifier
 	  {
 		$$ = $1;
 	  }
-	| T_IDENTIFIER T_COMMA return_params
+	| Identifier T_COMMA return_params
 	  {
 		$$ = new QString( *($1) + "," + *($3) );
 	  }
 	;
 
+prequalifier
+	: T_SIGNED { $$ = new QString("signed"); }
+	| T_UNSIGNED { $$ = new QString("unsigned"); }
+
 return
-	: T_IDENTIFIER
+	: Identifier
 	  {
 		QString* tmp = new QString("<RET type=\"%1\"/>");
 		*tmp = tmp->arg( *($1) );
 		$$ = tmp;		
 	  }
-	| T_CONST T_IDENTIFIER T_AMPERSAND
+	| prequalifier Identifier
+	  {
+		QString* tmp = new QString("<RET type=\"%1%2\"/>");
+		*tmp = tmp->arg( *($1) ).arg( *($2) );
+		$$ = tmp;		
+	  }
+	| T_CONST Identifier T_AMPERSAND
 	  {
 		QString* tmp = new QString("<RET type=\"%1\" qleft=\"const\" qright=\"" AMP_ENTITY "\"/>");
 		*tmp = tmp->arg( *($2) );
 		$$ = tmp;		
 	  }
-	| T_IDENTIFIER T_LESS return_params T_GREATER
+	| Identifier T_LESS return_params T_GREATER
 	  {
 		QString* tmp = new QString("<RET type=\"%1<%2>\"/>");
 		*tmp = tmp->arg( *($1) ).arg( *($3) );
 		$$ = tmp;		
 	  }
-	| T_CONST T_IDENTIFIER T_LESS return_params T_GREATER T_AMPERSAND
+	| T_CONST Identifier T_LESS return_params T_GREATER T_AMPERSAND
 	  {
 		QString* tmp = new QString("<RET type=\"%1<%2>\" qleft=\"const\" qright=\"" AMP_ENTITY "\"/>");
 		*tmp = tmp->arg( *($2) ).arg( *($4) );
@@ -286,9 +336,13 @@ return
 	;
 
 pointer_type
-	: T_CONST T_IDENTIFIER T_LESS return_params T_GREATER T_ASTERISK {}
-	| T_IDENTIFIER T_LESS return_params T_GREATER T_ASTERISK {}
-	| T_IDENTIFIER T_ASTERISK {}
+	: T_CONST Identifier T_LESS return_params T_GREATER T_ASTERISK {}
+	| Identifier T_LESS return_params T_GREATER T_ASTERISK {}
+	| Identifier T_ASTERISK {}
+	| T_CONST Identifier T_ASTERISK {}
+	| Identifier T_LESS return_params T_ASTERISK T_GREATER T_ASTERISK {}
+	| Identifier T_LESS return_params T_ASTERISK T_GREATER {}
+	;
 
 params
 	: /* empty */
@@ -306,38 +360,45 @@ params
 	;
 
 param
-	: T_CONST T_IDENTIFIER T_AMPERSAND T_IDENTIFIER default
+	: T_CONST Identifier T_AMPERSAND Identifier default
 	  {
 		QString* tmp = new QString("<ARG name=\"%1\" type=\"%2\" qleft=\"const\" qright=\"" AMP_ENTITY "\"/>");
 		*tmp = tmp->arg( *($4) );
 		*tmp = tmp->arg( *($2) );
 		$$ = tmp;		
 	  }
-	| T_IDENTIFIER T_IDENTIFIER default
+	| Identifier default
+	  {
+		if (dcop_area) {
+		  yyerror("in dcoparea you have to specify paramater names!");
+		}
+		$$ = 0;
+	  }
+	| Identifier Identifier default
 	  {
 		QString* tmp = new QString("<ARG name=\"%1\" type=\"%2\"/>");
 		*tmp = tmp->arg( *($2) ).arg( *($1) );
 		$$ = tmp;		
 	  }
-	| T_IDENTIFIER T_LESS return_params T_GREATER T_IDENTIFIER
+	| Identifier T_LESS return_params T_GREATER Identifier
 	  {
 		QString* tmp = new QString("<ARG name=\"%1\" type=\"%2<%3>\"/>");
 		*tmp = tmp->arg( *($5) ).arg( *($1) ).arg( *($3) );
 		$$ = tmp;		
 	  }
-	| T_IDENTIFIER T_LESS return_params T_GREATER T_AMPERSAND T_IDENTIFIER
+	| Identifier T_LESS return_params T_GREATER T_AMPERSAND Identifier
 	  {
 		QString* tmp = new QString("<ARG name=\"%1\" type=\"%2<%3>\" qright=\"" AMP_ENTITY "\"/>");
 		*tmp = tmp->arg( *($6) ).arg( *($1) ).arg( *($3) );
 		$$ = tmp;		
 	  }
-	| T_CONST T_IDENTIFIER T_LESS return_params T_GREATER T_AMPERSAND T_IDENTIFIER
+	| T_CONST Identifier T_LESS return_params T_GREATER T_AMPERSAND Identifier
 	  {
 		QString* tmp = new QString("<ARG name=\"%1\" type=\"%1<%2>\" qleft=\"const\" qright=\"" AMP_ENTITY "\"/>");
 		*tmp = tmp->arg( *($7) ).arg( *($2) ).arg( *($4) );
 		$$ = tmp;		
 	  }
-	| pointer_type T_IDENTIFIER {
+	| pointer_type Identifier default {
 	       if (dcop_area)
 	           yyerror("pointers are not allowed in kdcop areas!");
 	       $$ = new QString("");
@@ -363,13 +424,14 @@ default
 	| T_EQUAL T_NULL
 	  {
 	  }
-	| T_EQUAL T_IDENTIFIER T_SCOPE T_IDENTIFIER
+	| T_EQUAL Identifier
 	  {
 	  }
+	| T_EQUAL bool_value
 	;
 
 function
-	: T_VIRTUAL return T_IDENTIFIER T_LEFT_PARANTHESIS params T_RIGHT_PARANTHESIS qualifier T_EQUAL T_NULL T_SEMICOLON
+	: T_VIRTUAL return Identifier T_LEFT_PARANTHESIS params T_RIGHT_PARANTHESIS qualifier T_EQUAL T_NULL function_body
 	  {
 	     if (dcop_area) {
 		QString* tmp = new QString("<FUNC name=\"%1\" qual=\"%4\">%2%3</FUNC>\n");
@@ -381,19 +443,19 @@ function
    	     } else
 	        $$ = new QString("");
 	  }
-	| T_IDENTIFIER T_LEFT_PARANTHESIS params T_RIGHT_PARANTHESIS T_SEMICOLON
+	| Identifier T_LEFT_PARANTHESIS params T_RIGHT_PARANTHESIS function_body
 	  {
 	      /* The constructor */
 	      assert(!dcop_area);
               $$ = new QString("");
 	  }
-	| T_TILDE T_IDENTIFIER T_LEFT_PARANTHESIS T_RIGHT_PARANTHESIS T_SEMICOLON
+	| T_TILDE Identifier T_LEFT_PARANTHESIS T_RIGHT_PARANTHESIS function_body
 	  {
-	    /* The destructor */
-	    assert(!dcop_area);
-            $$ = new QString("");
+	      /* The destructor */
+  	      assert(!dcop_area);
+              $$ = new QString("");
 	  }
-	| return T_IDENTIFIER T_LEFT_PARANTHESIS params T_RIGHT_PARANTHESIS qualifier T_EQUAL T_NULL T_SEMICOLON
+	|  return Identifier T_LEFT_PARANTHESIS params T_RIGHT_PARANTHESIS qualifier T_EQUAL T_NULL function_body
 	  {
 	     if (dcop_area) {
 		QString* tmp = new QString("<FUNC name=\"%1\" qual=\"%4\">%2%3</FUNC>\n");
@@ -402,7 +464,7 @@ function
 	     } else
 	        $$ = new QString("");
 	  }
-	| T_VIRTUAL return T_IDENTIFIER T_LEFT_PARANTHESIS params T_RIGHT_PARANTHESIS qualifier T_SEMICOLON
+	| T_VIRTUAL return Identifier T_LEFT_PARANTHESIS params T_RIGHT_PARANTHESIS qualifier function_body
 	  {
 	     if (dcop_area) {
 		QString* tmp = new QString("<FUNC name=\"%1\" qual=\"%4\">%2%3</FUNC>\n");
@@ -411,7 +473,7 @@ function
 	     } else
 	        $$ = new QString("");
 	  }
-	| return T_IDENTIFIER T_LEFT_PARANTHESIS params T_RIGHT_PARANTHESIS qualifier T_SEMICOLON
+	| return Identifier T_LEFT_PARANTHESIS params T_RIGHT_PARANTHESIS qualifier function_body
 	  {
 	     if (dcop_area) {
 		QString* tmp = new QString("<FUNC name=\"%1\" qual=\"%4\">%2%3</FUNC>\n");
@@ -423,13 +485,30 @@ function
 	     } else
 	        $$ = new QString("");
 	  }
+	| T_STATIC return Identifier T_LEFT_PARANTHESIS params T_RIGHT_PARANTHESIS qualifier function_body
+	  {
+		if (dcop_area)
+		  yyerror("static is not allowed in dcop area!");
+		$$ = new QString();
+	  }
+	;
+
+function_body
+	: T_SEMICOLON
+	| T_LEFT_CURLY_BRACKET function_lines T_RIGHT_CURLY_BRACKET
+	| T_LEFT_CURLY_BRACKET function_lines T_RIGHT_CURLY_BRACKET T_SEMICOLON
+
+function_lines
+	: T_RETURN Identifier T_SEMICOLON function_lines {}
+	| T_RETURN Identifier T_ACCESS T_IDENTIFIER T_SEMICOLON function_lines {}
+	| T_RETURN Identifier T_ACCESS T_IDENTIFIER T_LEFT_PARANTHESIS params T_RIGHT_PARANTHESIS T_SEMICOLON function_lines {}
+	| T_IDENTIFIER T_EQUAL T_IDENTIFIER T_SEMICOLON function_lines {}
+	| /* empty */ {}
 	;
 
 member
-	: return T_SEMICOLON {
-	   debug("member %s", ($1)->ascii());
-	}
-	;
+	: return T_IDENTIFIER T_SEMICOLON {}
+	| T_STATIC return T_IDENTIFIER T_SEMICOLON {}
 
 %%
 

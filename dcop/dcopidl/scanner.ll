@@ -115,8 +115,7 @@ Float_Literal5		"."{Digits}(e|E)("+"|"-")?{Digits}
 
 /*--------------------------------------------------------------------------*/
 
-Kidl_Identifier2	[_a-zA-Z][a-zA-Z0-9_]*
-Kidl_Identifier          ({Kidl_Identifier2}::)*{Kidl_Identifier2}
+Kidl_Identifier		[_a-zA-Z][a-zA-Z0-9_]*
 
 /*--------------------------------------------------------------------------*/
 
@@ -159,6 +158,8 @@ Kidl_Identifier          ({Kidl_Identifier2}::)*{Kidl_Identifier2}
 ">"			return T_GREATER;
 "::"			return T_SCOPE;
 "="			return T_EQUAL;
+"."			return T_ACCESS;
+"->"			return T_ACCESS;
 
 const			return T_CONST;
 enum			return T_ENUM;
@@ -166,10 +167,18 @@ class			return T_CLASS;
 struct			return T_STRUCT;
 virtual			return T_VIRTUAL;
 public			return T_PUBLIC;
+static			return T_STATIC;
+signed			return T_SIGNED;
+unsigned		return T_UNSIGNED;
 protected		return T_PROTECTED;
 private			return T_PRIVATE;
 signal			return T_SIGNAL;
-slot			return T_SLOT;
+return			return T_RETURN;
+slots			return T_SLOT;
+true			return T_TRUE;
+false			return T_FALSE;
+TRUE			return T_TRUE;
+FALSE			return T_FALSE;
 "k_dcop"		return T_DCOP_AREA;
 typedef			return T_TYPEDEF;
 K_DCOP			return T_DCOP;
@@ -211,9 +220,7 @@ Q_OBJECT		;
                           yylval._str = new QString( s.mid( 1, s.length() - 2 ) );
 			  return T_STRING_LITERAL;
 			}
-.                       {
-                          return T_UNKNOWN;
-                        }
+.			return T_UNKNOWN;
 
 %%
 
