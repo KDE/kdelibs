@@ -73,8 +73,9 @@
     KDE-DOCBOOK-HTML 		 uses KDE-DOCBOOK DOCBOOK-HTML
     KDE-DOCBOOK-HTML-BOOK 	 uses KDE-DOCBOOK-HTML
     KDE-DOCBOOK-HTML-ARTICLE	 uses KDE-DOCBOOK-HTML
-    HTML 			 = KDE-DOCBOOK-HTML-BOOK
     PRINT 			 uses KDE-DOCBOOK-TEX
+
+    HTML 			 = KDE-DOCBOOK-HTML-BOOK
     TEX 			 = KDE-DOCBOOK-TEX
     DEFAULT-HTML 		 = DOCBOOK-HTML
     DEFAULT-PRINT 		 = DOCBOOK-PRINT
@@ -197,6 +198,7 @@
 ;(define %body-font-family% "\textrm")
 ;(define %admon-font-family% "\textsf")
 ;(define %guilabel-font-family% "\textsf")
+
 ; Localised? - to country
 (define %paper-type% "A4")
 
