@@ -28,7 +28,7 @@
 #include "loader.h"
 
 // up to which size is a picture for sure cacheable
-#define MAXCACHEABLE 10*1024
+#define MAXCACHEABLE 40*1024
 // max. size of a single picture in percent of the total cache size
 // to be cacheable
 #define MAXPERCENT 10
@@ -63,7 +63,7 @@ void CachedObject::computeStatus()
 	m_status = Uncacheable;
 	m_size = 0;
     }
-    else
+   else
 	m_status = Cached;
 }
 
@@ -239,8 +239,22 @@ namespace khtml
 	 */
 	void setEOF( bool state );
 
-    private:
+        /*!
+          KHTMLImageSource's is rewindable.
+        */
+        bool rewindable() const;
 
+        /*!
+          Enables rewinding.  No special action is taken.
+        */
+        void enableRewind(bool on);
+
+        /*
+          Calls reset() on the QIODevice.
+        */
+        void rewind();
+
+    private:
 	QByteArray buffer;
 	bool rew;
 	int pos;
@@ -291,6 +305,29 @@ void ImageSource::setEOF( bool state )
 {
   eof = state;
 }
+
+// ImageSource's is rewindable.
+bool ImageSource::rewindable() const
+{
+    return TRUE;
+}
+
+// Enables rewinding.  No special action is taken.
+void ImageSource::enableRewind(bool on)
+{
+    rew = on;
+}
+
+// Calls reset() on the QIODevice.
+void ImageSource::rewind()
+{
+    pos = 0;
+    if (!rew) {
+        QDataSource::rewind();
+    } else
+        ready();
+}
+
 
 static QString buildAcceptHeader()
 {
@@ -574,6 +611,9 @@ void CachedImage::data ( QBuffer &_buffer, bool eof )
 
     if(eof)
     {
+        // QMovie currently doesn't support jpegs for progressive loading/animation
+        // so we need to use a QPixmap here when we finished loading the complete
+        // picture and display it then all at once.
         if(typeChecked && !formatType)
         {
             p = new QPixmap();
@@ -886,20 +926,10 @@ void Cache::init()
 
 void Cache::clear()
 {
-    //kdDebug( 6060 ) << "Cache::clear()" << endl;
-    if(cache) delete cache;
-    cache = 0;
-    if(lru) delete lru;
-    lru = 0;
-
-    if ( nullPixmap )
-      delete nullPixmap;
-    nullPixmap = 0;
-
-    if ( m_loader )
-      delete m_loader;
-
-    m_loader = 0;
+    delete cache; cache = 0;
+    delete lru;   lru = 0;
+    delete nullPixmap; nullPixmap = 0;
+    delete m_loader;   m_loader = 0;
 }
 
 CachedImage *Cache::requestImage( const DOMString & url, const DOMString &baseUrl, bool reload )
