@@ -26,7 +26,6 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include <qtextstream.h>
 #include <qlayout.h>
 #include <qlabel.h>
-#include <qframe.h>
 #include <qcheckbox.h>
 #include <qpushbutton.h>
 
@@ -39,7 +38,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include <kaboutdata.h>
 #include <ktextbrowser.h>
 #include <kiconloader.h>
-
+#include <kseparator.h>
 
 #include "ktip.h"
 
@@ -164,9 +163,8 @@ KTipDialog::KTipDialog(KTipDatabase *db, QWidget *parent, const char *name)
   _tipText = new KTextBrowser(this);
   vbox->addWidget(_tipText);
 
-  QFrame *f = new QFrame(this);
-  f->setFrameStyle(QFrame::Sunken|QFrame::HLine);
-  vbox->addWidget(f);
+  KSeparator* sep = new KSeparator( KSeparator::HLine, this);
+  vbox->addWidget(sep);
 
   hbox = new QHBoxLayout(vbox);
 
