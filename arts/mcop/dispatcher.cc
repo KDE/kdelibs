@@ -59,6 +59,7 @@ public:
 	InterfaceRepo interfaceRepo;
 	AuthAccept *accept;
 	LoopbackConnection *loopbackConnection;
+	bool allowNoAuthentication;
 };
 
 };
@@ -114,6 +115,7 @@ Dispatcher::Dispatcher(IOManager *ioManager, StartServer startServer)
 	}
 	else tcpServer = 0;
 
+	d->allowNoAuthentication = startServer & noAuthentication;
 	d->accept = 0;
 	d->loopbackConnection = new LoopbackConnection(serverID);
 
@@ -448,18 +450,37 @@ void Dispatcher::handle(Connection *conn, Buffer *buffer, long messageType)
 
 				if(!valid) break;		// invalid hello received -> forget it
 
+				conn->setServerID(h.serverID);
+
 				/*
-				 * check if md5auth (the only authentication protocol we support)
-				 * is offered by the server
+				 * check if md5auth or noauth is offered by the server
 				 */
 				bool md5authSupported = false;
+				bool noauthSupported = false;
 				vector<string>::iterator ai;
 				for(ai = h.authProtocols.begin(); ai != h.authProtocols.end(); ai++)
-					if(*ai == "md5auth") md5authSupported = true;
-
-				if(md5authSupported)
 				{
-					conn->setServerID(h.serverID);
+					if(*ai == "md5auth") md5authSupported = true;
+					if(*ai == "noauth")  noauthSupported = true;
+				}
+
+				if(noauthSupported)		// noauth is usually easier to pass ;)
+				{
+					Buffer *helloBuffer = new Buffer;
+
+					Header header(MCOP_MAGIC,0,mcopClientHello);
+					header.writeType(*helloBuffer);
+					ClientHello clientHello(serverID,"noauth","");
+					clientHello.writeType(*helloBuffer);
+
+					helloBuffer->patchLength();
+
+					conn->qSendBuffer(helloBuffer);
+					conn->setConnState(Connection::expectAuthAccept);
+					return;		/* everything ok - leave here */
+				}
+				else if(md5authSupported)
+				{
 
 					Buffer *helloBuffer = new Buffer;
 
@@ -508,7 +529,9 @@ void Dispatcher::handle(Connection *conn, Buffer *buffer, long messageType)
 				bool valid = (!buffer->readError() && !buffer->remaining());
 				delete buffer;
 
-				if(valid && c.authData == conn->cookie()) /* do only md5auth */
+				if(valid && (
+				       (c.authProtocol == "md5auth" && c.authData == conn->cookie())
+					|| (c.authProtocol == "noauth"  && d->allowNoAuthentication) ))
 				{
 					conn->setServerID(c.serverID);
 	
@@ -728,6 +751,9 @@ void Dispatcher::initiateConnection(Connection *connection)
 {
 	vector<string> authProtocols;
 	authProtocols.push_back("md5auth");
+
+	if(d->allowNoAuthentication)
+		authProtocols.push_back("noauth");
 
 	char *authSeed = md5_auth_mkcookie();
 	char *authResult = md5_auth_mangle(authSeed);

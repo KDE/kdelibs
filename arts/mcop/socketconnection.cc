@@ -98,7 +98,7 @@ void SocketConnection::qSendBuffer(Buffer *buffer)
 static void connection_hex_dump(unsigned char *buffer, long len)
 {
 	int i = 0;
-	printf("Connection: received %ld bytes:\n\n");
+	printf("Connection: received %ld bytes:\n\n",len);
 	while (i < len)
 	{
 		unsigned int j, n, d[16];

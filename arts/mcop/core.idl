@@ -306,6 +306,26 @@ interface InterfaceRepo {
 	 * queries the definition of an enum value
 	 */
 	EnumDef queryEnum(string name);
+
+	/**
+	 * queries all interfaces that inherit a given interface
+	 */
+	sequence<string> queryChildren(string name);
+
+	/**
+	 * queries all interfaces
+	 */
+	sequence<string> queryInterfaces();
+
+	/**
+	 * queries all types
+	 */
+	sequence<string> queryTypes();
+
+	/**
+	 * queries all enums
+	 */
+	sequence<string> queryEnums();
 };
 
 /**

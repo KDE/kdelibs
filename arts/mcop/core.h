@@ -300,6 +300,10 @@ public:
 	virtual Arts::InterfaceDef queryInterface(const std::string& name) = 0;
 	virtual Arts::TypeDef queryType(const std::string& name) = 0;
 	virtual Arts::EnumDef queryEnum(const std::string& name) = 0;
+	virtual std::vector<std::string> * queryChildren(const std::string& name) = 0;
+	virtual std::vector<std::string> * queryInterfaces() = 0;
+	virtual std::vector<std::string> * queryTypes() = 0;
+	virtual std::vector<std::string> * queryEnums() = 0;
 };
 
 class InterfaceRepo_stub : virtual public InterfaceRepo_base, virtual public Arts::Object_stub {
@@ -314,6 +318,10 @@ public:
 	Arts::InterfaceDef queryInterface(const std::string& name);
 	Arts::TypeDef queryType(const std::string& name);
 	Arts::EnumDef queryEnum(const std::string& name);
+	std::vector<std::string> * queryChildren(const std::string& name);
+	std::vector<std::string> * queryInterfaces();
+	std::vector<std::string> * queryTypes();
+	std::vector<std::string> * queryEnums();
 };
 
 class InterfaceRepo_skel : virtual public InterfaceRepo_base, virtual public Arts::Object_skel {
@@ -375,6 +383,10 @@ public:
 	inline Arts::InterfaceDef queryInterface(const std::string& name);
 	inline Arts::TypeDef queryType(const std::string& name);
 	inline Arts::EnumDef queryEnum(const std::string& name);
+	inline std::vector<std::string> * queryChildren(const std::string& name);
+	inline std::vector<std::string> * queryInterfaces();
+	inline std::vector<std::string> * queryTypes();
+	inline std::vector<std::string> * queryEnums();
 };
 
 class FlowSystemSender_base : virtual public Arts::Object_base {
@@ -1053,6 +1065,26 @@ inline Arts::TypeDef Arts::InterfaceRepo::queryType(const std::string& name)
 inline Arts::EnumDef Arts::InterfaceRepo::queryEnum(const std::string& name)
 {
 	return _cache?static_cast<Arts::InterfaceRepo_base*>(_cache)->queryEnum(name):static_cast<Arts::InterfaceRepo_base*>(_method_call())->queryEnum(name);
+}
+
+inline std::vector<std::string> * Arts::InterfaceRepo::queryChildren(const std::string& name)
+{
+	return _cache?static_cast<Arts::InterfaceRepo_base*>(_cache)->queryChildren(name):static_cast<Arts::InterfaceRepo_base*>(_method_call())->queryChildren(name);
+}
+
+inline std::vector<std::string> * Arts::InterfaceRepo::queryInterfaces()
+{
+	return _cache?static_cast<Arts::InterfaceRepo_base*>(_cache)->queryInterfaces():static_cast<Arts::InterfaceRepo_base*>(_method_call())->queryInterfaces();
+}
+
+inline std::vector<std::string> * Arts::InterfaceRepo::queryTypes()
+{
+	return _cache?static_cast<Arts::InterfaceRepo_base*>(_cache)->queryTypes():static_cast<Arts::InterfaceRepo_base*>(_method_call())->queryTypes();
+}
+
+inline std::vector<std::string> * Arts::InterfaceRepo::queryEnums()
+{
+	return _cache?static_cast<Arts::InterfaceRepo_base*>(_cache)->queryEnums():static_cast<Arts::InterfaceRepo_base*>(_method_call())->queryEnums();
 }
 
 inline void Arts::FlowSystemSender::processed()

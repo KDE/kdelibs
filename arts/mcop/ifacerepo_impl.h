@@ -73,6 +73,11 @@ public:
 	InterfaceDef queryInterface(const std::string& name);
 	TypeDef queryType(const std::string& name);
 	EnumDef queryEnum(const std::string& name);
+
+	std::vector<string> *queryChildren(const std::string& name);
+	std::vector<string> *queryInterfaces();
+	std::vector<string> *queryTypes();
+	std::vector<string> *queryEnums();
 };
 };
 #endif /* IFACEREPO_H */

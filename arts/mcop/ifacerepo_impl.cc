@@ -191,3 +191,60 @@ EnumDef InterfaceRepo_impl::queryEnum(const string& name)
 		 << name << " is known" << endl;
 	return EnumDef();
 }
+
+vector<string> *InterfaceRepo_impl::queryChildren(const std::string& name)
+{
+	vector<string> *result = new vector<string>;
+	list<InterfaceEntry *>::iterator ii;
+
+	for(ii = interfaces.begin();ii != interfaces.end();ii++)
+	{
+		bool found = false;
+		vector<string>::iterator j;
+
+		for(j = (*ii)->inheritedInterfaces.begin();
+		       j != (*ii)->inheritedInterfaces.end() && !found; j++)
+		{
+			if(*j == name)
+			{
+				result->push_back((*ii)->name);
+				found = true;
+			}
+		}
+	}
+
+	return result;
+}
+
+vector<string> *InterfaceRepo_impl::queryInterfaces()
+{
+	vector<string> *result = new vector<string>;
+	list<InterfaceEntry *>::iterator ii;
+
+	for(ii = interfaces.begin();ii != interfaces.end();ii++)
+		result->push_back((*ii)->name);
+
+	return result;
+}
+
+vector<string> *InterfaceRepo_impl::queryTypes()
+{
+	vector<string> *result = new vector<string>;
+	list<TypeEntry *>::iterator ti;
+
+	for(ti = types.begin();ti != types.end();ti++)
+		result->push_back((*ti)->name);
+
+	return result;
+}
+
+vector<string> *InterfaceRepo_impl::queryEnums()
+{
+	vector<string> *result = new vector<string>;
+	list<EnumEntry *>::iterator ei;
+
+	for(ei = enums.begin();ei != enums.end();ei++)
+		result->push_back((*ei)->name);
+
+	return result;
+}

@@ -54,6 +54,7 @@ static void exitUsage(const char *progname)
 	fprintf(stderr,"-h                  display this help and exit\n");
 	fprintf(stderr,"-n                  enable network transparency\n");
 	fprintf(stderr,"-p <port>           set TCP port to use (implies -n)\n");
+	fprintf(stderr,"-u                  public, no authentication (dangerous!)\n");
 	fprintf(stderr,"-d                  enable full duplex operation\n");
 	fprintf(stderr,"-F <fragments>      number of fragments\n");
 	fprintf(stderr,"-S <size>           fragment size in bytes\n");
@@ -70,7 +71,7 @@ static bool  					cfgFullDuplex	= 0;
 static void handleArgs(int argc, char **argv)
 {
 	int optch;
-	while((optch = getopt(argc,argv,"r:p:nF:S:hd")) > 0)
+	while((optch = getopt(argc,argv,"r:p:nuF:S:hd")) > 0)
 	{
 		switch(optch)
 		{
@@ -84,6 +85,8 @@ static void handleArgs(int argc, char **argv)
 			case 'S': cfgFragmentSize = atoi(optarg);
 				break;
 			case 'd': cfgFullDuplex = true;
+				break;
+			case 'u': cfgServers = static_cast<Dispatcher::StartServer>( cfgServers | Dispatcher::noAuthentication);
 				break;
 			case 'h':
 			default: 

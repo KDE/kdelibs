@@ -79,9 +79,10 @@ protected:
 
 public:
 	enum StartServer {
-		noServer = 0,
-		startUnixServer = 1,
-		startTCPServer = 2
+		noServer = 0,					// don't be a server
+		startUnixServer = 1,			// listen on a unix domain socket
+		startTCPServer = 2,				// listen on a tcp port
+		noAuthentication = 4			// don't require authentication
 	};
 
 	Dispatcher(IOManager *ioManager = 0, StartServer startServer = noServer);
