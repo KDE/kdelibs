@@ -601,5 +601,41 @@ void RenderWidget::deref()
         arenaDelete(renderArena());
 }
 
+FindSelectionResult RenderReplaced::checkSelectionPoint(int _x, int _y, int _tx, int _ty, DOM::NodeImpl*& node, int &offset, SelPointState &)
+{
+#if 0
+    kdDebug(6040) << "RenderReplaced::checkSelectionPoint(_x="<<_x<<",_y="<<_y<<",_tx="<<_tx<<",_ty="<<_ty<<")" << endl
+                    << "xPos: " << xPos() << " yPos: " << yPos() << " width: " << width() << " height: " << height() << endl
+                << "_ty + yPos: " << (_ty + yPos()) << " + height: " << (_ty + yPos() + height()) << "; _tx + xPos: " << (_tx + xPos()) << " + width: " << (_tx + xPos() + width()) << endl;
+#endif
+    node = element();
+    offset = 0;
+
+    if ( _y < _ty + yPos() )
+        return SelectionPointBefore; // above -> before
+
+    if ( _y > _ty + yPos() + height() ) {
+        // below -> after
+        // Set the offset to the max
+        offset = 1;
+        return SelectionPointAfter;
+    }
+    if ( _x > _tx + xPos() + width() ) {
+        // to the right
+        // ### how to regard bidi in replaced elements? (LS)
+        offset = 1;
+        return SelectionPointAfterInLine;
+    }
+
+    // The Y matches, check if we're on the left
+    if ( _x < _tx + xPos() ) {
+        // ### how to regard bidi in replaced elements? (LS)
+        return SelectionPointBeforeInLine;
+    }
+
+    offset = _x > _tx + xPos() + width()/2;
+    return SelectionPointInside;
+}
+
 #include "render_replaced.moc"
 

@@ -1,3 +1,10 @@
+2003-10-28  Leo Savernik  <l.savernik@aon.at>
+
+	* rendering/render_replaced.cpp (checkSelectionPoint):
+	Readded RenderReplaced::checkSelectionPoint to fix disrupted selection
+	of sole inline images within block elements (<p><img ...></p>).
+	Also fixes caret placement issues.
+
 2003-10-28  David Faure  <faure@kde.org>
 
 	* ecma/kjs_window.cpp (goURL): Compare the URLs without the ref, fixes
