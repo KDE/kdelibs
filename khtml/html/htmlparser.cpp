@@ -5,6 +5,7 @@
               (C) 1997 Torben Weis (weis@kde.org)
               (C) 1999,2001 Lars Knoll (knoll@kde.org)
               (C) 2000,2001 Dirk Mueller (mueller@kde.org)
+              (C) 2003 Apple Computer, Inc.
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -233,7 +234,7 @@ void KHTMLParser::parseToken(Token *t)
         if(inBody && !skipMode() &&
            current->id() != ID_STYLE && current->id() != ID_TITLE &&
            current->id() != ID_SCRIPT &&
-           t->text->l > 2) haveContent = true;
+           !t->text->containsOnlyWhitespace()) haveContent = true;
 #ifdef PARSER_DEBUG
         kdDebug(6035) << "length="<< t->text->l << " text='" << QConstString(t->text->s, t->text->l).string() << "'" << endl;
 #endif
@@ -350,11 +351,10 @@ bool KHTMLParser::insertNode(NodeImpl *n, bool flat)
         bool handled = false;
 
 	// never create anonymous objects just to hold a space.
-	if ( id == ID_TEXT &&
-	     static_cast<TextImpl *>(n)->string()->l == 1 &&
-	     (static_cast<TextImpl *>(n)->string()->s[0] == ' ' ||
-              static_cast<TextImpl *>(n)->string()->s[0] == '\n'))
-	    return false;
+        if ( id == ID_TEXT &&
+             static_cast<TextImpl *>(n)->string()->l == 1 &&
+             static_cast<TextImpl *>(n)->string()->s[0] == ' ' )
+            return false;
 
         // switch according to the element to insert
         switch(id)
@@ -362,7 +362,7 @@ bool KHTMLParser::insertNode(NodeImpl *n, bool flat)
         case ID_COMMENT:
             break;
         case ID_HEAD:
-            // ### alllow not having <HTML> in at all, as per HTML spec
+            // ### allow not having <HTML> in at all, as per HTML spec
             if (!current->isDocumentNode() && current->id() != ID_HTML )
                 return false;
             break;
@@ -551,6 +551,12 @@ bool KHTMLParser::insertNode(NodeImpl *n, bool flat)
                     handled = true;
                 }
                 break;
+            case ID_TEXT: {
+                TextImpl *t = static_cast<TextImpl *>(n);
+                if (t->containsOnlyWhitespace())
+                    return false;
+                /* Fall through to default */
+            }
             default:
                 if ( haveFrameSet ) break;
                 e = new HTMLBodyElementImpl(document);
@@ -590,6 +596,8 @@ bool KHTMLParser::insertNode(NodeImpl *n, bool flat)
             case ID_TEXT:
             {
                 TextImpl *t = static_cast<TextImpl *>(n);
+                if (t->containsOnlyWhitespace())
+                    return false;
                 DOMStringImpl *i = t->string();
                 unsigned int pos = 0;
                 while(pos < i->l && ( *(i->s+pos) == QChar(' ') ||
@@ -604,14 +612,16 @@ bool KHTMLParser::insertNode(NodeImpl *n, bool flat)
 
                 NodeImpl *parentparent = parent->parentNode();
 
-                if(( node->id() == ID_TR &&
+                if (n->isTextNode() ||
+                    ( node->id() == ID_TR &&
                      ( parent->id() == ID_THEAD ||
                        parent->id() == ID_TBODY ||
                        parent->id() == ID_TFOOT ) && parentparent->id() == ID_TABLE ) ||
                    ( !checkChild( ID_TR, id ) && ( node->id() == ID_THEAD || node->id() == ID_TBODY || node->id() == ID_TFOOT ) &&
                      parent->id() == ID_TABLE ) )
                 {
-                    node = ( node->id() == ID_TR ) ? parentparent : parent;
+                    node = (node->id() == ID_TABLE) ? node :
+                            ((node->id() == ID_TR ) ? parentparent : parent);
                     NodeImpl *parent = node->parentNode();
                     int exceptioncode = 0;
                     parent->insertBefore(n, node, exceptioncode);
@@ -881,12 +891,9 @@ NodeImpl *KHTMLParser::getElement(Token* t)
         n = new HTMLMenuElementImpl(document);
         break;
     case ID_LI:
-    {
         popBlock(ID_LI);
-        HTMLElementImpl *e = new HTMLLIElementImpl(document);
-        n = e;
+        n = new HTMLLIElementImpl(document);
         break;
-    }
 // formatting elements (block)
     case ID_BLOCKQUOTE:
         n = new HTMLGenericElementImpl(document, t->tid);

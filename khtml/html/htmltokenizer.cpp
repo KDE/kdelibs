@@ -169,7 +169,7 @@ void HTMLTokenizer::reset()
         KHTML_DELETE_QCHAR_VEC(scriptCode);
     scriptCode = 0;
     scriptCodeSize = scriptCodeMaxSize = scriptCodeResync = 0;
-    
+
     currToken.reset();
 }
 
@@ -388,7 +388,7 @@ void HTMLTokenizer::scriptHandler()
             cachedScript.enqueue(cs);
 
         if (cs) {
-            pendingSrc.prepend(src);            
+            pendingSrc.prepend(src);
             setSrc(TokenizerString());
             scriptCodeSize = scriptCodeResync = 0;
             cs->ref(this);
@@ -1199,7 +1199,7 @@ void HTMLTokenizer::addPending()
             assert(0);
         }
     }
-    else if ( pre )
+    else
     {
         int p;
 
@@ -1228,10 +1228,6 @@ void HTMLTokenizer::addPending()
             assert(0);
             break;
         }
-    }
-    else
-    {
-        *dest++ = ' ';
     }
 
     pending = NonePending;
@@ -1388,8 +1384,24 @@ void HTMLTokenizer::write( const TokenizerString &str, bool appendData )
         }
         else if (( cc == '\n' ) || ( cc == '\r' ))
         {
-            if ( pre || textarea)
+            if (select && !script)
             {
+                if (discard == LFDiscard)
+                {
+                    // Ignore this LF
+                    discard = NoneDiscard; // We have discarded 1 LF
+                }
+                else if(discard == AllDiscard)
+                {
+                }
+                else
+                {
+                     // Process this LF
+                    if (pending == NonePending)
+                        pending = LFPending;
+                }
+            }
+            else {
                 if (discard == LFDiscard || discard == AllDiscard)
                 {
                     // Ignore this LF
@@ -1403,23 +1415,7 @@ void HTMLTokenizer::write( const TokenizerString &str, bool appendData )
                     pending = LFPending;
                 }
             }
-            else
-            {
-                if (discard == LFDiscard)
-                {
-                    // Ignore this LF
-                    discard = NoneDiscard; // We have discarded 1 LF
-                }
-                else if(discard == AllDiscard)
-                {
-                }
-                else
-                {
-                    // Process this LF
-                    if (pending == NonePending)
-                        pending = LFPending;
-                }
-            }
+            
             /* Check for MS-DOS CRLF sequence */
             if (cc == '\r')
             {
@@ -1429,31 +1425,27 @@ void HTMLTokenizer::write( const TokenizerString &str, bool appendData )
         }
         else if (( cc == ' ' ) || ( cc == '\t' ))
         {
-            if ( pre || textarea)
-            {
-                if (discard == SpaceDiscard || discard == AllDiscard)
-                {
-                    // Ignore this LF
-                    discard = NoneDiscard; // We have discarded 1 LF
-                }
-                else {
-                    if (pending)
-                        addPending();
-                    if (cc == ' ')
-                        pending = SpacePending;
-                    else
-                        pending = TabPending;
-                }
-            }
-            else
-            {
+            if (select && !script) {
                 if(discard == SpaceDiscard)
                     discard = NoneDiscard;
                 else if(discard == AllDiscard)
                 { }
                 else
-                    pending = SpacePending;
+                        pending = SpacePending;
+            
             }
+            else {
+                if (discard == AllDiscard)
+                    discard = NoneDiscard;
+            
+                if (pending)
+                    addPending();
+                if (cc == ' ')
+                    pending = SpacePending;
+                else
+                    pending = TabPending;
+            }
+            
             ++src;
         }
         else
@@ -1472,7 +1464,7 @@ void HTMLTokenizer::write( const TokenizerString &str, bool appendData )
             ++src;
         }
     }
-    
+
     if (noMoreData && cachedScript.isEmpty() && !m_executingScript )
         end(); // this actually causes us to be deleted
 }

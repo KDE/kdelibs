@@ -510,7 +510,7 @@ class StyleCSS3InheritedData : public Shared<StyleCSS3InheritedData>
 // this applies to decoration_color too
 
 enum EWhiteSpace {
-  NORMAL, PRE, NOWRAP, KHTML_NOWRAP
+    NORMAL, PRE, NOWRAP, PRE_WRAP, PRE_LINE, KHTML_NOWRAP
 };
 
 enum ETextAlign {
@@ -651,7 +651,7 @@ protected:
 
     // inherit
     struct InheritedFlags {
-    // 64 bit inherited, don't add to the struct, or the operator will break.
+    // 64 bit inherited, update unused when adding to the struct, or the operator will break.
 	bool operator==( const InheritedFlags &other ) const
         {    return _iflags ==other._iflags;    }
 	bool operator!=( const InheritedFlags &other ) const
@@ -672,12 +672,13 @@ protected:
 
                 EDirection _direction : 1;
                 bool _border_collapse : 1 ;
-                EWhiteSpace _white_space : 2;
+                EWhiteSpace _white_space : 3;
                 // non CSS2 inherited
                 bool _visuallyOrdered : 1;
                 bool _htmlHacks :1;
                 EUserInput _user_input : 2;
-                unsigned int unused : 30;
+                
+                unsigned int unused : 29;
             } f;
             Q_UINT64 _iflags;
         };
@@ -685,7 +686,7 @@ protected:
 
 // don't inherit
     struct NonInheritedFlags {
-    // 64 bit non-inherited, don't add to the struct, or the operator will break.
+    // 64 bit non-inherited, update unused when adding to the struct, or the operator will break.
 	bool operator==( const NonInheritedFlags &other ) const
         {   return _niflags == other._niflags;    }
 	bool operator!=( const NonInheritedFlags &other ) const
@@ -907,7 +908,24 @@ public:
     Length lineHeight() const { return inherited->line_height; }
 
     EWhiteSpace whiteSpace() const { return inherited_flags.f._white_space; }
-
+    bool autoWrap() const {
+        if (whiteSpace() == NORMAL || whiteSpace() == PRE_WRAP || whiteSpace() == PRE_LINE)
+            return true;
+        // nowrap | pre
+        return false;
+    }
+    bool preserveLF() const {
+        if (whiteSpace() == PRE || whiteSpace() == PRE_WRAP || whiteSpace() == PRE_LINE)
+            return true;
+        // normal | nowrap
+        return false;
+    }
+    bool preserveWS() const {
+        if (whiteSpace() == PRE || whiteSpace() == PRE_WRAP)
+            return true;
+        // normal | nowrap | pre-line
+        return false;
+    }
 
     const QColor & backgroundColor() const { return background->color; }
     CachedImage *backgroundImage() const { return background->image; }

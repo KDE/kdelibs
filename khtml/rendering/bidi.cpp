@@ -432,7 +432,7 @@ static void checkMidpoints(BidiIterator& lBreak, BidiState &bidi)
         if (currpoint == lBreak) {
             // We hit the line break before the start point.  Shave off the start point.
             sNumMidpoints--;
-            if (endpoint.obj->style()->whiteSpace() != PRE)
+            if (!endpoint.obj->style()->preserveWS())
                 endpoint.pos--;
         }
     }
@@ -734,7 +734,7 @@ void RenderBlock::computeHorizontalPositionsForLine(InlineFlowBox* lineBox, Bidi
                 KHTMLAssert(spaces <= numSpaces);
 
                 // Only justify text with white-space: normal.
-                if (r->obj->style()->whiteSpace() != PRE) {
+                if (r->obj->style()->whiteSpace() == NORMAL) {
                     spaceAdd = (availableWidth - totWidth)*spaces/numSpaces;
                     static_cast<InlineTextBox*>(r->box)->setSpaceAdd(spaceAdd);
                     totWidth += spaceAdd;
@@ -1381,7 +1381,7 @@ void RenderBlock::layoutInlineChildren(bool relayoutChildren)
                     adjustEmbedding = true;
                     end.increment(bidi);
                     adjustEmbedding = false;
-                } else if (end.obj && end.obj->style()->whiteSpace() == PRE && end.current() == QChar('\n')) {
+                } else if (end.obj && end.obj->style()->preserveLF() && end.current() == QChar('\n')) {
                     adjustEmbedding = true;
                     end.increment(bidi);
                     adjustEmbedding = false;
@@ -1435,7 +1435,7 @@ BidiIterator RenderBlock::findNextLineBreak(BidiIterator &start, BidiState &bidi
     // eliminate spaces at beginning of line
     // remove leading spaces.  Any inline flows we encounter will be empty and should also
     // be skipped.
-    while (!start.atEnd() && (start.obj->isInlineFlow() || (start.obj->style()->whiteSpace() != PRE && !start.obj->isBR() &&
+    while (!start.atEnd() && (start.obj->isInlineFlow() || (!start.obj->style()->preserveWS() && !start.obj->isBR() &&
 #ifndef QT_NO_UNICODETABLES
         ( (start.current().unicode() == (ushort)0x0020) || // ASCII space
           (start.current().unicode() == (ushort)0x0009) || // ASCII tab
@@ -1476,6 +1476,7 @@ BidiIterator RenderBlock::findNextLineBreak(BidiIterator &start, BidiState &bidi
 
     // This variable is used only if whitespace isn't set to PRE, and it tells us whether
     // or not we are currently ignoring whitespace.
+    // ### Obsoleted by cleaning code in renderText
     bool ignoringSpaces = false;
     BidiIterator ignoreStart;
 
@@ -1502,7 +1503,6 @@ BidiIterator RenderBlock::findNextLineBreak(BidiIterator &start, BidiState &bidi
             if( w + tmpW <= width ) {
                 lBreak.obj = o;
                 lBreak.pos = 0;
-//                lBreak.increment(bidi);
 
                 // A <br> always breaks a line, so don't let the line be collapsed
                 // away. Also, the space at the end of a line with a <br> does not
@@ -1632,7 +1632,8 @@ BidiIterator RenderBlock::findNextLineBreak(BidiIterator &start, BidiState &bidi
             const Font *f = t->htmlFont( m_firstLine );
             // proportional font, needs a bit more work.
             int lastSpace = pos;
-            bool isPre = o->style()->whiteSpace() == PRE;
+            bool autoWrap = o->style()->autoWrap();
+            bool preserveWS = o->style()->preserveWS();
 #ifdef APPLE_CHANGES
             int wordSpacing = o->style()->wordSpacing();
 #endif
@@ -1643,15 +1644,15 @@ BidiIterator RenderBlock::findNextLineBreak(BidiIterator &start, BidiState &bidi
             while(len) {
                 bool previousCharacterIsSpace = currentCharacterIsSpace;
                 const QChar c = str[pos];
-                currentCharacterIsSpace = c == ' ' || (!isPre && c == '\n');
+                currentCharacterIsSpace = c == ' ';
 
-                if (isPre || !currentCharacterIsSpace)
+                if (preserveWS || !currentCharacterIsSpace)
                     isLineEmpty = false;
 
 #ifdef APPLE_CHANGES    // KDE applies wordspacing differently
                 bool applyWordSpacing = false;
 #endif
-                if ( (isPre && c == '\n') || (!isPre && isBreakable( str, pos, strlen )) ) {
+                if ( c == '\n' || (autoWrap && isBreakable( str, pos, strlen )) ) {
                     if (ignoringSpaces) {
                         if (!currentCharacterIsSpace) {
                             // Stop ignoring spaces and begin at this
@@ -1681,7 +1682,7 @@ BidiIterator RenderBlock::findNextLineBreak(BidiIterator &start, BidiState &bidi
 #ifdef DEBUG_LINEBREAKS
                     kdDebug(6041) << "found space at " << pos << " in string '" << QString( str, strlen ).latin1() << "' adding " << tmpW << " new width = " << w << endl;
 #endif
-                    if ( !isPre && w + tmpW > width && w == 0 ) {
+                    if ( autoWrap && w + tmpW > width && w == 0 ) {
                         int fb = nearestFloatBottom(m_height);
                         int newLineWidth = lineWidth(fb);
                         // See if |tmpW| will fit on the new line.  As long as it does not,
@@ -1702,11 +1703,11 @@ BidiIterator RenderBlock::findNextLineBreak(BidiIterator &start, BidiState &bidi
                         }
                     }
 
-                    if (w + tmpW > width && o->style()->whiteSpace() == NORMAL) {
+                    if (w + tmpW > width && autoWrap) {
                         goto end;
                     }
 
-                    if( *(str+pos) == '\n' && isPre) {
+                    if( *(str+pos) == '\n' ) {
                         lBreak.obj = o;
                         lBreak.pos = pos;
 
@@ -1716,7 +1717,7 @@ BidiIterator RenderBlock::findNextLineBreak(BidiIterator &start, BidiState &bidi
                         return lBreak;
                     }
 
-                    if (o->style()->whiteSpace() == NORMAL) {
+                    if ( autoWrap ) {
                         w += tmpW;
                         tmpW = 0;
                         lBreak.obj = o;
@@ -1728,7 +1729,7 @@ BidiIterator RenderBlock::findNextLineBreak(BidiIterator &start, BidiState &bidi
                     if (applyWordSpacing)
                         w += wordSpacing;
 #endif
-                    if (!ignoringSpaces && !isPre) {
+                    if (!ignoringSpaces && !preserveWS) {
                         // If we encounter a newline, or if we encounter a
                         // second space, we need to go ahead and break up this
                         // run and enter a mode where we start collapsing spaces.
@@ -1757,9 +1758,9 @@ BidiIterator RenderBlock::findNextLineBreak(BidiIterator &start, BidiState &bidi
                     ignoreStart.pos = pos;
                 }
 
-                if (!isPre && currentCharacterIsSpace && !ignoringSpaces)
+                if (!preserveWS && currentCharacterIsSpace && !ignoringSpaces)
                     trailingSpaceObject = o;
-                else if (isPre || !currentCharacterIsSpace)
+                else if (preserveWS || !currentCharacterIsSpace)
                     trailingSpaceObject = 0;
 
                 pos++;
@@ -1777,21 +1778,19 @@ BidiIterator RenderBlock::findNextLineBreak(BidiIterator &start, BidiState &bidi
             KHTMLAssert( false );
 
         RenderObject* next = Bidinext(start.par, o, bidi);
-        bool isNormal = o->style()->whiteSpace() == NORMAL;
+        bool isNormal = o->style()->autoWrap();
         bool checkForBreak = isNormal;
-        if (w && w + tmpW > width+1 && lBreak.obj && o->style()->whiteSpace() == NOWRAP)
+        if (w && w + tmpW > width+1 && lBreak.obj && !o->style()->preserveLF())
             checkForBreak = true;
         else if (next && o->isText() && next->isText() && !next->isBR()) {
-            if (isNormal || (next->style()->whiteSpace() == NORMAL)) {
+            if (isNormal || next->style()->autoWrap()) {
                 if (currentCharacterIsSpace)
                     checkForBreak = true;
                 else {
                     RenderText* nextText = static_cast<RenderText*>(next);
                     int strlen = nextText->stringLength();
                     QChar *str = nextText->text();
-                    if (strlen &&
-                        ((str[0].unicode() == ' ') ||
-                            (next->style()->whiteSpace() != PRE && str[0] == '\n')))
+                    if (strlen && str[0] == ' ')
                         // If the next item on the line is text, and if we did not end with
                         // a space, then the next text run continues our word (and so it needs to
                         // keep adding to |tmpW|.  Just update and continue.
@@ -1814,7 +1813,7 @@ BidiIterator RenderBlock::findNextLineBreak(BidiIterator &start, BidiState &bidi
             //kdDebug() << " too wide w=" << w << " tmpW = " << tmpW << " width = " << width << endl;
             //kdDebug() << "start=" << start.obj << " current=" << o << endl;
             // if we have floats, try to get below them.
-            if (currentCharacterIsSpace && !ignoringSpaces && o->style()->whiteSpace() != PRE)
+            if (currentCharacterIsSpace && !ignoringSpaces && !o->style()->preserveWS())
                 trailingSpaceObject = 0;
 
             int fb = nearestFloatBottom(m_height);
@@ -1845,7 +1844,7 @@ BidiIterator RenderBlock::findNextLineBreak(BidiIterator &start, BidiState &bidi
         last = o;
         o = next;
 
-        if (!last->isFloatingOrPositioned() && last->isReplaced() && last->style()->whiteSpace() == NORMAL) {
+        if (!last->isFloatingOrPositioned() && last->isReplaced() && last->style()->autoWrap()) {
             // Go ahead and add in tmpW.
             w += tmpW;
             tmpW = 0;
@@ -1855,7 +1854,7 @@ BidiIterator RenderBlock::findNextLineBreak(BidiIterator &start, BidiState &bidi
 
         // Clear out our character space bool, since inline <pre>s don't collapse whitespace
         // with adjacent inline normal/nowrap spans.
-        if (last->style()->whiteSpace() == PRE)
+        if (last->style()->preserveWS())
             currentCharacterIsSpace = false;
 
         pos = 0;
@@ -1864,7 +1863,7 @@ BidiIterator RenderBlock::findNextLineBreak(BidiIterator &start, BidiState &bidi
 #ifdef DEBUG_LINEBREAKS
     kdDebug( 6041 ) << "end of par, width = " << width << " linewidth = " << w + tmpW << endl;
 #endif
-    if( w + tmpW <= width || (last && last->style()->whiteSpace() == NOWRAP)) {
+    if( w + tmpW <= width || (last && !last->style()->autoWrap())) {
         lBreak.obj = 0;
         lBreak.pos = 0;
     }

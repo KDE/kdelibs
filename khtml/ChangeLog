@@ -1,3 +1,17 @@
+2004-12-29  Allan Sandfeld Jensen <kde@carewolf.com>
+        
+        Implement CSS 2.1 white-space: pre, pre-line and pre-wrap
+
+        * html/htmltokenizer.cpp: Merge white-space related parsing from Webcore
+        * html/htmlparser.cpp: Ditto
+        * rendering/render_text.cpp: Introduce text transformation that cleans excess 
+        white-space and linefeeds when style()->whitespace() changes.
+        * rendering/render_style.h: Introduce pre-wrap and pre-line. 
+        Add helper functions autoWrap(), preserveLF() and preserveWS()
+        * rendering/bidi.cpp: Replace checks of whiteSpace==PRE/NORMAL with new the 
+        more finegrained autoWrap, preserveLF and preserveWS functions.
+        * css/*: Add pre-line and pre-wrap as possible CSS values
+
 2004-12-29  Germain Garand  <germain@ebooksfrance.org>
 
         merge bug fix for suboptimal updating of layer hierarchy

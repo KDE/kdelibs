@@ -282,6 +282,15 @@ visible
 #hidden
 collapse
 #
+# CSS_PROP_WHITE_SPACE:
+#
+#normal
+nowrap
+pre
+pre-wrap
+pre-line
+-khtml-nowrap
+#
 # Unordered rest
 #
 above
@@ -310,11 +319,9 @@ marquee
 mix
 no-close-quote
 no-open-quote
-nowrap
 open-quote
 overline
 portrait
-pre
 relative
 scroll
 separate
@@ -323,7 +330,6 @@ static
 thick
 thin
 underline
--khtml-nowrap
 #
 # CSS_PROP__KHTML_FLOW_MODE
 -khtml-normal

@@ -277,7 +277,7 @@ void InlineTextBox::paintShadow(QPainter *pt, const Font *f, int _tx, int _ty, c
  *	amount of pixels distributed during this call subtracted.
  * @return number of pixels to distribute
  */
-inline int justifyWidth(int &numSpaces, int &toAdd) {
+static inline int justifyWidth(int &numSpaces, int &toAdd) {
   int a = 0;
   if ( numSpaces ) {
     a = toAdd/numSpaces;
@@ -527,8 +527,10 @@ RenderText::RenderText(DOM::NodeImpl* node, DOMStringImpl *_str)
 void RenderText::setStyle(RenderStyle *_style)
 {
     if ( style() != _style ) {
-        bool changedText = (!style() && (_style->textTransform() != TTNONE)) ||
-            ((style() && style()->textTransform() != _style->textTransform()) );
+        bool changedText = ((!style() && ( _style->textTransform() != TTNONE || 
+                                           !_style->preserveLF() || !_style->preserveWS() )) ||
+                            (style() && (style()->textTransform() != _style->textTransform() ||
+                                         style()->whiteSpace() != _style->whiteSpace())));
 
         RenderObject::setStyle( _style );
         m_lineHeight = RenderObject::lineHeight(false);
@@ -1174,21 +1176,78 @@ const QFont &RenderText::font()
     return style()->font();
 }
 
+// A helper function for setText to treat white-space
+static DOMStringImpl* cleanString (DOMStringImpl *str, bool preserveLF, bool preserveWS) {
+    if (!str) return 0;
+    
+    if (preserveLF && preserveWS) return str;
+
+    const int len = str->l;
+    QString n;
+    bool collapsing = false;   // collapsing white-space
+    bool collapsingLF = false; // collapsing around linefeed
+    for(unsigned int i=0; i<len; i++) {
+        QChar ch = str->s[i];
+        if (!preserveLF && ch == '\n')
+            // ### Not strictly correct according to CSS3 text-module. 
+            // - In ideographic languages linefeed should be ignored
+            // - and in Thai and Khmer it should be treated as a zero-width space
+            ch = ' '; // Treat as space
+        if (collapsing) {
+            if (ch == ' ')
+                continue;
+            if (ch == '\n') {
+                collapsingLF = true;
+                continue;
+            }
+            
+            n.append((collapsingLF) ? '\n' : ' ');
+            collapsing = false;
+            collapsingLF = false;
+        }
+        
+        if (!preserveWS && ch == ' ') {
+            collapsing = true;
+        }
+        else 
+        if (!preserveWS && ch == '\n') {
+            collapsing = true;
+            collapsingLF = true;
+        }    
+        else
+            n.append(ch);
+    }
+    if (collapsing)
+        n.append((collapsingLF) ? '\n' : ' ');
+//    if (!n.length()) return 0;
+    
+    DOMStringImpl *out = new DOMStringImpl(n.unicode(), n.length());
+    return out;
+}
+
 void RenderText::setText(DOMStringImpl *text, bool force)
 {
     if( !force && str == text ) return;
-    if(str) str->deref();
-    str = text;
+    
+    DOMStringImpl *oldstr = str;
+    if(style())
+        str = cleanString(text, style()->preserveLF(), style()->preserveWS());
+    else
+        str = text;
+    if(str) str->ref();
+    if(oldstr) oldstr->deref();
 
     if ( str && style() ) {
-	switch(style()->textTransform()) {
+        oldstr = str;
+        switch(style()->textTransform()) {
 	case CAPITALIZE:   str = str->capitalize();  break;
 	case UPPERCASE:   str = str->upper();       break;
 	case LOWERCASE:  str = str->lower();       break;
 	case NONE:
 	default:;
 	}
-	str->ref();
+        str->ref();
+        oldstr->deref();
     }
 
     // ### what should happen if we change the text of a
