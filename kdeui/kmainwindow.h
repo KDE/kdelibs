@@ -430,10 +430,10 @@ public:
      *   long/small translations, large toolbars, and other factors.
      * - Put the setAutoSaveSettings ( or setupGUI() ) call after all widgets
      *   have been created and placed inside the main window (i.e. for 99% of
-     *   apps setCentralWidget()) 
-     * - Widgets that inherit from QWidget (like game boards) should overload 
+     *   apps setCentralWidget())
+     * - Widgets that inherit from QWidget (like game boards) should overload
      *   "virtual QSize sizeHint() const;" to specify a default size rather
-     *   than letting QWidget::adjust use the default size of 0x0. 
+     *   than letting QWidget::adjust use the default size of 0x0.
      */
     void setAutoSaveSettings( const QString & groupName = QString::fromLatin1("MainWindow"),
                               bool saveWindowSize = true );
@@ -557,7 +557,7 @@ public:
         /**
          * auto-saves (and loads) the toolbar/menubar/statusbar settings and
          * window size using the default name.  @see setAutoSaveSettings
-         * 
+         *
          * Typically you want to let the default window size be determined by
          * the widgets size hints. Make sure that setupGUI() is called after
          * all the widgets are created ( including setCentralWidget ) so the
@@ -591,6 +591,12 @@ public:
      * @since 3.1
      */
     KAction *toolBarMenuAction();
+
+    /**
+     * @internal for KToolBar
+     * @since 3.3.1
+     */
+    void setupToolbarMenuActions();
 
     // why do we support old gcc versions? using KXMLGUIBuilder::finalizeGUI;
     /// @since 3.1

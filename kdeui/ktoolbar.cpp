@@ -94,7 +94,6 @@ public:
         m_enableContext  = true;
 
         m_xmlguiClient   = 0;
-        m_configurePlugged = false;
 
         oldPos = Qt::DockUnmanaged;
 
@@ -117,7 +116,6 @@ public:
     bool m_honorStyle : 1;
     bool m_isHorizontal : 1;
     bool m_enableContext : 1;
-    bool m_configurePlugged : 1;
     bool modified : 1;
     bool positioned : 1;
 
@@ -1098,7 +1096,7 @@ void KToolBar::saveSettings(KConfig *config, const QString &_configGroup)
     KMainWindow *kmw = dynamic_cast<KMainWindow *>(mainWindow());
     // don't save if there's only one toolbar
 
-    // Don't use kmw->toolBarIterator() because you might 
+    // Don't use kmw->toolBarIterator() because you might
     // mess up someone else's iterator.  Make the list on your own
     QPtrList<KToolBar> toolbarList;
     QPtrList<QToolBar> lst;
@@ -1115,7 +1113,7 @@ void KToolBar::saveSettings(KConfig *config, const QString &_configGroup)
         config->writeEntry("Index", index);
     else
         config->revertToDefault("Index");
-   
+
     if(!config->hasDefault("Offset") && offset() == d->OffsetDefault )
       config->revertToDefault("Offset");
     else
@@ -1163,6 +1161,7 @@ void KToolBar::mousePressEvent ( QMouseEvent *m )
     if ( mw->toolBarsMovable() && d->m_enableContext ) {
         if ( m->button() == RightButton ) {
             int i = contextMenu()->exec( m->globalPos(), 0 );
+            slotContextAboutToHide();
             switch ( i ) {
             case -1:
                 return; // popup canceled
@@ -1976,7 +1975,6 @@ KPopupMenu *KToolBar::contextMenu()
 {
   if ( context )
     return context;
-
   // Construct our context popup menu. Name it qt_dockwidget_internal so it
   // won't be deleted by QToolBar::clear().
   context = new KPopupMenu( this, "qt_dockwidget_internal" );
@@ -2052,7 +2050,7 @@ KPopupMenu *KToolBar::contextMenu()
                   break;
               }
           }
-      }  
+      }
   }
 
   context->insertItem( i18n("Orientation"), orient );
@@ -2061,38 +2059,37 @@ KPopupMenu *KToolBar::contextMenu()
   context->setItemChecked(CONTEXT_ICONS, true);
   context->insertItem( i18n("Icon Size"), size );
 
-  KMainWindow *kmw = dynamic_cast<KMainWindow *>(mainWindow());
-  if ( kmw )
-  {
-      if ( kmw->toolBarMenuAction() && kmw->hasMenuBar() )
-          kmw->toolBarMenuAction()->plug(context);
-  }
-
   connect( context, SIGNAL( aboutToShow() ), this, SLOT( slotContextAboutToShow() ) );
-  connect( context, SIGNAL( aboutToHide() ), this, SLOT( slotContextAboutToHide() ) );
+  // Unplugging a submenu from abouttohide leads to the popupmenu floating around
+  // So better simply call that code from after exec() returns (DF)
+  //connect( context, SIGNAL( aboutToHide() ), this, SLOT( slotContextAboutToHide() ) );
   return context;
 }
 
 void KToolBar::slotContextAboutToShow()
 {
-  if (!d->m_configurePlugged)
-  {
-    // try to find "configure toolbars" action
-    KXMLGUIClient *xmlGuiClient = d->m_xmlguiClient;
-
-    KMainWindow *kmw = dynamic_cast<KMainWindow *>(mainWindow());
-    if ( !xmlGuiClient && kmw )
-      xmlGuiClient = kmw;
-    if ( xmlGuiClient )
-    {
-        KAction *configureAction = xmlGuiClient->actionCollection()->action(KStdAction::stdName(KStdAction::ConfigureToolbars));
-        if ( configureAction )
-        {
-          configureAction->plug(context);
-          d->m_configurePlugged = true;
-        }
-    }
+  // The idea here is to reuse the "static" part of the menu to save time.
+  // But the "Toolbars" action is dynamic (can be a single action or a submenu)
+  // and ToolBarHandler::setupActions() deletes it, so better not keep it around.
+  // So we currently plug/unplug the last two actions of the menu.
+  // Another way would be to keep around the actions and plug them all into a (new each time) popupmenu.
+  KMainWindow *kmw = dynamic_cast<KMainWindow *>(mainWindow());
+  if ( kmw ) {
+      kmw->setupToolbarMenuActions();
+      // Only allow hiding a toolbar if the action is also plugged somewhere else (e.g. menubar)
+      if ( kmw->toolBarMenuAction()->containerCount() > 0 )
+          kmw->toolBarMenuAction()->plug(context);
   }
+
+  // try to find "configure toolbars" action
+  KAction *configureAction = 0;
+  const char* actionName = KStdAction::name(KStdAction::ConfigureToolbars);
+  if ( d->m_xmlguiClient )
+    configureAction = d->m_xmlguiClient->actionCollection()->action(actionName);
+  if ( !configureAction && kmw )
+    configureAction = kmw->actionCollection()->action(actionName);
+  if ( configureAction )
+    configureAction->plug(context);
   KEditToolbar::setDefaultToolbar(QObject::name());
 
   for(int i = CONTEXT_ICONS; i <= CONTEXT_TEXTUNDER; ++i)
@@ -2153,6 +2150,23 @@ void KToolBar::slotContextAboutToShow()
 
 void KToolBar::slotContextAboutToHide()
 {
+  // We have to unplug whatever slotContextAboutToShow plugged into the menu.
+  // Unplug the toolbar menu action
+  KMainWindow *kmw = dynamic_cast<KMainWindow *>(mainWindow());
+  if ( kmw && kmw->toolBarMenuAction() )
+    if ( kmw->toolBarMenuAction()->containerCount() > 1 )
+      kmw->toolBarMenuAction()->unplug(context);
+
+  // Unplug the configure toolbars action too, since it's afterwards anyway
+  KAction *configureAction = 0;
+  const char* actionName = KStdAction::name(KStdAction::ConfigureToolbars);
+  if ( d->m_xmlguiClient )
+    configureAction = d->m_xmlguiClient->actionCollection()->action(actionName);
+  if ( !configureAction && kmw )
+    configureAction = kmw->actionCollection()->action(actionName);
+  if ( configureAction )
+    configureAction->unplug(context);
+
   QPtrListIterator<QWidget> it( widgets );
   QWidget *wdg;
   while ( ( wdg = it.current() ) != 0 ) {

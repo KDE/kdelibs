@@ -1799,7 +1799,6 @@ KToolBarPopupAction::KToolBarPopupAction( const KGuiItem& item,
 
 KToolBarPopupAction::~KToolBarPopupAction()
 {
-  if ( m_popup )
     delete m_popup;
 }
 
