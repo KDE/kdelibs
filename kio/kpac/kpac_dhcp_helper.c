@@ -18,6 +18,9 @@
 
 /* $Id$ */
 
+#include <config.h>
+#include <grp.h>
+
 #include <unistd.h>
 #include <stdlib.h>
 #include <stdio.h>
@@ -38,7 +41,7 @@ int init_socket(void);
 uint32_t send_request(int);
 void get_reply(int, uint32_t);
 
-/* All functions do an exit(1) on the slightest error */
+/* All functions below do an exit(1) on the slightest error */
 
 /* Returns the UDP port number for the given service name */
 int get_port(const char *service)
@@ -71,7 +74,11 @@ int init_socket()
 		bind(sock, (struct sockaddr *)&addr, sizeof(addr)) == -1)
 		exit(1);
 
-	if (setuid(getuid()) != 0 || /* we don't need it anymore */
+	if (
+#ifdef HAVE_SETGROUPS
+		setgroups(0, 0) != 0 ||
+#endif
+	    setuid(getuid()) != 0 || /* we don't need it anymore */
 		setgid(getgid()) != 0)
 		exit(1);
 	return sock;
@@ -129,7 +136,7 @@ void get_reply(int sock, uint32_t xid)
 {
 	struct dhcp_msg reply;
 	int len;
-	char wpad[DHCP_OPT_LEN];
+	char wpad[DHCP_OPT_LEN + 1];
 	uint8_t wpad_len;
 	uint8_t *offs = reply.options;
 	uint8_t *end;
@@ -166,7 +173,7 @@ void get_reply(int sock, uint32_t xid)
 				if (wpad_len > end - offs)
 					wpad_len = end - offs;
 				strncpy(wpad, (char *)offs, wpad_len);
-				wpad[len] = 0;
+				wpad[wpad_len] = 0;
 				printf("%s\n", wpad);
 				close(sock);
 				exit(0);
