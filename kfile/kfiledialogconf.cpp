@@ -159,7 +159,7 @@ KFileDialogConfigure::KFileDialogConfigure(QWidget *parent,
   QString oldgroup;
   QString dirview;
 
-  c= kapp->getConfig();
+  c= KGlobal::config();
   oldgroup= c->group();
   c->setGroup("KFileDialog Settings");
 
@@ -194,7 +194,7 @@ KFileDialogConfigure::saveConfiguration()
   QString oldgroup;
   QString dirview;
 
-  c= kapp->getConfig();
+  c= KGlobal::config();
   oldgroup= c->group();
   c->setGroup("KFileDialog Settings");
 

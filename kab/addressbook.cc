@@ -19,6 +19,8 @@
 #include <kapp.h>
 #include <klocale.h>
 #include "debug.h"
+#include <kglobal.h>
+#include <kstddirs.h>
 
 extern "C" {
 #include <sys/types.h>
@@ -84,8 +86,7 @@ AddressBook::AddressBook(bool readonly_)
       LG(GUARD, "AddressBook constructor: done.\n");
     }
   LG(GUARD, "AddressBook constructor: checking user directory.\n");
-  dir=KApplication::localkdedir();
-  dir+=(string)"/share/apps/kab/";
+  dir = KGlobal::dirs()->getSaveLocation("data", "kab", false);
   if(access(dir.c_str(), F_OK)!=0)
     {
       cerr << i18n

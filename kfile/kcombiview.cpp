@@ -86,13 +86,14 @@ KCombiView::KCombiView(  FileView dirs,  FileView files,
     }
     */
 
-    bool dirsLeft = kapp->getConfig()->readBoolEntry("ShowDirsLeft", 
+    KConfig *pConfig = KGlobal::config();
+    bool dirsLeft = pConfig->readBoolEntry("ShowDirsLeft", 
 						     DefaultShowDirsLeft);
 
     moveToFirst( dirsLeft ? dirList->widget() : fileList->widget());
 
-    int pan = kapp->getConfig()->readNumEntry("PannerPosition", 
-					      DefaultPannerPosition);
+    int pan = pConfig->readNumEntry("PannerPosition", 
+				    DefaultPannerPosition);
     setRubberband(pan);
 
     dirList->connectDirSelected(this, SLOT(dirActivated(KFileInfo*)));
@@ -102,7 +103,7 @@ KCombiView::KCombiView(  FileView dirs,  FileView files,
 
 KCombiView::~KCombiView() 
 {
-    KConfig *c = kapp->getConfig();
+    KConfig *c = KGlobal::config();
     QString oldgroup = c->group();
     c->setGroup("KFileDialog Settings");
     //    c->writeEntry("PannerPosition", separatorPos(), true, true);

@@ -107,7 +107,7 @@ KFileBaseDialog::KFileBaseDialog(const QString& dirName, const QString& filter,
 void KFileBaseDialog::init()
 {
     // Get the config object
-    KConfig *c= kapp->getConfig();
+    KConfig *c= KGlobal::config();
     QString oldgroup= c->group();
     c->setGroup("KFileDialog Settings");
 
@@ -149,16 +149,9 @@ void KFileBaseDialog::init()
     connect( bookmarks, SIGNAL( changed() ),
 	     this, SLOT( bookmarksChanged() ) );
 
-    QString bmFile = KApplication::localkdedir() +
-	"/share/apps/kdeui/";
-
-    QDir tmpdir( bmFile );
-    if ( !tmpdir.exists() )
-      tmpdir.mkdir( bmFile );
-
-    bmFile += "bookmarks.html";
-
-    bookmarks->read(bmFile);
+    QString bmFile = locate("data", "kdeui/bookmarks.html");
+    if (!bmFile.isNull())
+	bookmarks->read(bmFile);
 
     toolbar->insertButton(ICON("flag.xpm"),
 			  HOTLIST_BUTTON, true,
@@ -368,7 +361,7 @@ KFileBaseDialog::~KFileBaseDialog()
     delete bookmarks;
     delete visitedDirs;
     delete dir;
-    KConfig *c = kapp->getConfig();
+    KConfig *c = KGlobal::config();
     QString oldgroup= c->group();
     c->setGroup("KFileDialog Settings");
     c->writeEntry("Width", width(), true, true);
@@ -384,7 +377,7 @@ void KFileBaseDialog::help() // SLOT
 
 bool KFileDialog::getShowFilter()
 {
-    return kapp->getConfig()->readBoolEntry("ShowFilter", DefaultShowFilter);
+    return KGlobal::config()->readBoolEntry("ShowFilter", DefaultShowFilter);
 }
 
 void KFileBaseDialog::filterChanged() // SLOT
@@ -816,7 +809,7 @@ void KFileBaseDialog::fillBookmarkMenu( KFileBookmark *parent, QPopupMenu *menu,
 
 void KFileBaseDialog::toolbarCallback(int i) // SLOT
 {
-    KConfig *c= kapp->getConfig();
+    KConfig *c= KGlobal::config();
     QString oldgroup= c->group();
     c->setGroup("KFileDialog Settings");
     QString cmd;
@@ -1084,20 +1077,20 @@ KFileInfoContents *KFileDialog::initFileList( QWidget *parent )
 {
 
     bool mixDirsAndFiles =
-	kapp->getConfig()->readBoolEntry("MixDirsAndFiles",
+	KGlobal::config()->readBoolEntry("MixDirsAndFiles",
 					 DefaultMixDirsAndFiles);
 
     bool showDetails =
-	(kapp->getConfig()->readEntry("ViewStyle",
+	(KGlobal::config()->readEntry("ViewStyle",
 				      DefaultViewStyle) == "DetailView");
 
     bool useSingleClick =
-	kapp->getConfig()->readBoolEntry("SingleClick", DefaultSingleClick);
+	KGlobal::config()->readBoolEntry("SingleClick", DefaultSingleClick);
 
     QDir::SortSpec sort = static_cast<QDir::SortSpec>(dir->sorting() &
                                                       QDir::SortByMask);
 
-    if (kapp->getConfig()->readBoolEntry("KeepDirsFirst",
+    if (KGlobal::config()->readBoolEntry("KeepDirsFirst",
 					 DefaultKeepDirsFirst))
         sort = static_cast<QDir::SortSpec>(sort | QDir::DirsFirst);
 
@@ -1250,7 +1243,7 @@ KDirDialog::KDirDialog(const QString& url, QWidget *parent, const char *name)
 KFileInfoContents *KDirDialog::initFileList( QWidget *parent )
 {
     bool useSingleClick =
-	kapp->getConfig()->readBoolEntry("SingleClick", DefaultSingleClick);
+	KGlobal::config()->readBoolEntry("SingleClick", DefaultSingleClick);
     return new KDirListBox( useSingleClick, dir->sorting(), parent, "_dirs" );
 }
 
@@ -1364,12 +1357,12 @@ KFilePreviewDialog::KFilePreviewDialog(const QString& dirName, const QString& fi
 KFileInfoContents *KFilePreviewDialog::initFileList( QWidget *parent )
 {
     bool useSingleClick =
-	kapp->getConfig()->readBoolEntry("SingleClick", DefaultSingleClick);
+	KGlobal::config()->readBoolEntry("SingleClick", DefaultSingleClick);
 
     QDir::SortSpec sort = static_cast<QDir::SortSpec>(dir->sorting() &
                                                       QDir::SortByMask);
 
-    if (kapp->getConfig()->readBoolEntry("KeepDirsFirst",
+    if (KGlobal::config()->readBoolEntry("KeepDirsFirst",
 					 DefaultKeepDirsFirst))
         sort = static_cast<QDir::SortSpec>(sort | QDir::DirsFirst);
 
@@ -1450,7 +1443,7 @@ QString KFilePreviewDialog::getSaveFileURL(const QString& url, const QString& fi
 
 bool KFilePreviewDialog::getShowFilter()
 {
-    return kapp->getConfig()->readBoolEntry("ShowFilter", DefaultShowFilter);
+    return KGlobal::config()->readBoolEntry("ShowFilter", DefaultShowFilter);
 }
 
 void KFilePreviewDialog::registerPreviewModule( const char * format,

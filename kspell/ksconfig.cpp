@@ -30,7 +30,7 @@ KSpellConfig::KSpellConfig (const KSpellConfig &_ksc)
 KSpellConfig::KSpellConfig (QWidget *parent, char *name,
 			    KSpellConfig *_ksc) : QWidget (parent, name)
 {
-  kc=kapp->getConfig();
+  kc=KGlobal::config();
 
   if (_ksc==0)
     {

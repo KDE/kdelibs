@@ -23,6 +23,9 @@
 
 // $Id$
 // $Log$
+// Revision 1.122  1999/06/15 20:36:33  cschlaeg
+// some more cleanup in ktmlayout; fixed random toolbar handle highlighting
+//
 // Revision 1.121  1999/06/13 21:43:54  cschlaeg
 // fixed-size main widgets are now working; support for fixed-width widget or heightForWidth-widget needs a different concept; will think about it; floating toolbars are still broken
 //
@@ -1007,18 +1010,13 @@ void KToolBar::init()
 
 void KToolBar::slotReadConfig()
 {
-  int tsize;
-  int _highlight;
-  int icontext;
-  bool _transparent;
-
-  KConfig *config = kapp->getConfig();
+  KConfig *config = KGlobal::config();
   QString group = config->group();
   config->setGroup("Toolbar style");
-  icontext=config->readNumEntry("IconText", 0);
-  tsize=config->readNumEntry("Size", 26);
-  _highlight =config->readNumEntry("Highlighting", 1);
-  _transparent = config->readBoolEntry("TransparentMoving", true);
+  int icontext=config->readNumEntry("IconText", 0);
+  int tsize=config->readNumEntry("Size", 26);
+  int _highlight =config->readNumEntry("Highlighting", 1);
+  int _transparent = config->readBoolEntry("TransparentMoving", true);
   config->setGroup(group);
 
   bool doUpdate=false;

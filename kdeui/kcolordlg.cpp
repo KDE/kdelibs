@@ -714,7 +714,7 @@ void KColorDialog::readSettings()
 	QColor col;
 	QString key;
 
-	KConfig* config = kapp->getConfig();
+	KConfig* config = KGlobal::config();
 
 	QString oldgroup = config->group();
 	config->setGroup( "Custom Colors");
@@ -733,7 +733,7 @@ void KColorDialog::writeSettings()
 	QColor color;
 	QString key;
 
-	KConfig* config = kapp->getConfig();
+	KConfig* config = KGlobal::config();
 
 	QString oldgroup = config->group();
 	config->setGroup( "Custom Colors");
