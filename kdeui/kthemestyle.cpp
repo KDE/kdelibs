@@ -130,11 +130,11 @@ void KThemeStyle::drawBaseButton(QPainter *p, int x, int y, int w, int h,
     // handle reverse bevel here since it uses decowidth differently
     if(gradientHint(type) == GrReverseBevel){
         int i;
+        bitBlt(p->device(), x, y, scalePixmap(w, h, type), 0, 0, w, h,
+               Qt::CopyROP, true);
         p->setPen(g.text());
         for(i=0; i < borderWidth(type); ++i, ++x, ++y, w-=2, h-=2)
             p->drawRect(x, y, w, h);
-        bitBlt(p->device(), x+i, y+i, scalePixmap(w-i*2, h-i*2, type),
-               0, 0, w-i*2, h-i*2, Qt::CopyROP, true);
     }
     else{
         if(borderPixmap(type)) // have to do this first
