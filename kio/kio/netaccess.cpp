@@ -164,20 +164,12 @@ bool NetAccess::move( const KURL::List& srcList, const KURL& target, QWidget* wi
 
 bool NetAccess::exists( const KURL & url )
 {
-  return NetAccess::exists( url, true, 0 );
+  return NetAccess::exists( url, false, 0 );
 }
 
 bool NetAccess::exists( const KURL & url, QWidget* window )
 {
-// Is there any reason why this code is duplicated ?
-#if 0
-  if ( url.isLocalFile() )
-    return QFile::exists( url.path() );
-  NetAccess kioNet;
-  return kioNet.statInternal( url, 0 /*no details*/, true /*source assumed*/, window );
-#endif
-
-  return NetAccess::exists( url, true, window );
+  return NetAccess::exists( url, false, window );
 }
 
 bool NetAccess::exists( const KURL & url, bool source )
