@@ -689,10 +689,10 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
         }
     }
 
-    oldName = filename;
-
     // Make it human-readable (%2F => '/', ...)
     filename = KIO::decodeFileName( filename );
+
+    oldName = filename;
 
     QString path;
 
