@@ -62,6 +62,8 @@ k_dcop:
 	       
   bool cacheIsPermanent(KSSLCertificate cert);
 
+  void cacheReload();
+
   //
   //  Certificate Home methods
   //

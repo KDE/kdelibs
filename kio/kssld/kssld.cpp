@@ -131,6 +131,14 @@ void KSSLD::cacheSaveToDisk() {
 }
 
 
+void KSSLD::cacheReload() {
+	cacheClearList();
+	delete cfg;
+	cfg = new KSimpleConfig("ksslpolicies", false);
+	cacheLoadDefaultPolicies();
+}
+
+
 void KSSLD::cacheClearList() {
   KSSLCNode *node;
 
