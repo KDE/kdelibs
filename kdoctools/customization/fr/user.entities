@@ -148,6 +148,9 @@
 <!ENTITY traducteurPenelopeSorveyron   '<othercredit role="translator"><firstname>Pénélope</firstname><surname>Sorveyron</surname><affiliation><address><email></email>goneri@free.fr</address></affiliation><contrib>Traduction française</contrib></othercredit>'>
 <!ENTITY relecteurPenelopeSorveyron    '<othercredit role="reviewer"><firstname>Pénélope</firstname><surname>Sorveyron</surname><affiliation><address><email>goneri@free.fr</email></address></affiliation><contrib>Relecture de la documentation française</contrib></othercredit>'>
 
+<!ENTITY traducteurNicolasTernisien  '<othercredit role="translator"><firstname>Nicolas</firstname><surname>Ternisien</surname><affiliation><address><email>nicolast@libertysurf.fr</email></address></affiliation><contrib>Traduction française</contrib></othercredit>'>
+<!ENTITY relecteurNicolasTernisien   '<othercredit role="relecteur"><firstname>Gilles</firstname><surname>Ternisien</surname><affiliation><address><email>nicolast@libertysurf.fr</email></address></affiliation><contrib>Relecture de la documentation française</contrib></othercredit>'>
+
 <!ENTITY traducteurGillesThioliere  '<othercredit role="translator"><firstname>Gilles</firstname><surname>Thioliere</surname><affiliation><address><email>zhovirax@wanadoo.fr</email></address></affiliation><contrib>Traduction française</contrib></othercredit>'>
 <!ENTITY relecteurGillesThioliere   '<othercredit role="relecteur"><firstname>Gilles</firstname><surname>Thioliere</surname><affiliation><address><email>zhovirax@wanadoo.fr</email></address></affiliation><contrib>Relecture de la documentation française</contrib></othercredit>'>
 
@@ -203,6 +206,7 @@
 <!ENTITY DamienRaudeMorvan 'Damien  Raude-Morvan <email>drazzib@drazzib.com</email>'>
 <!ENTITY ChristopheRolland 'Christophe Rolland <email>crolland@freesurf.fr</email>'>
 <!ENTITY PenelopeSorveyron 'Pénélope Sorveyron <email>goneri@free.fr</email>'>
+<!ENTITY NicolasTernissien   'Nicolas Ternissien <email>nicolast@libertysurf.fr</email>'>
 <!ENTITY GillesThioliere   'Gilles Thiolière <email>zhovirax@wanadoo.fr</email>'>
 <!ENTITY YannVerley   ' Yann Verley<email>yann.verley@free.fr</email>'>
 
