@@ -173,10 +173,10 @@ binary-arch:  build install
 	dh_makeshlibs -V
 	dh_installdeb -a
 	dh_shlibdeps -a -l`pwd`/debian/kdelibs3/usr/lib:`pwd`/debian/libarts/usr/lib:`pwd`/debian/libkmid/usr/lib:`pwd`/debian/kdelibs3-cups/usr/lib
-	echo -n `cat debian/libarts.substvars` > debian/libarts-alsa.substvars
-	echo ", libasound2 (>= 0.9.0beta4-1)" >> debian/libarts-alsa.substvars
-	echo -n `cat debian/libkmid.substvars` > debian/libkmid-alsa.substvars
-	echo ", libasound2 (>= 0.9.0beta4-1)" >> debian/libkmid-alsa.substvars
+	echo -n `cat debian/libarts.substvars.debhelper` > debian/libarts-alsa.substvars.debhelper
+	echo ", libasound2 (>= 0.9.0beta4-1)" >> debian/libarts-alsa.substvars.debhelper
+	echo -n `cat debian/libkmid.substvars.debhelper` > debian/libkmid-alsa.substvars.debhelper
+	echo ", libasound2 (>= 0.9.0beta4-1)" >> debian/libkmid-alsa.substvars.debhelper
 	dh_gencontrol 
 	dh_md5sums 
 	dh_builddeb -a
