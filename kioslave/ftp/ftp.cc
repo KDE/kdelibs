@@ -613,9 +613,7 @@ bool Ftp::ftpSendCmd( const QCString& cmd, int maxretries )
 
   if ( cmd.left(4).lower() != "pass" ) // don't print out the password
     kdDebug(7102) << cmd.data() << endl;
-  void (*oldsighandler)(int) = signal(SIGPIPE, SIG_IGN);
   int num = KSocks::self()->write(sControl, buf.data(), buf.length());
-  signal(SIGPIPE, oldsighandler);
   if (num <= 0 )  {
     error( ERR_COULD_NOT_WRITE, QString::null );
     return false;
