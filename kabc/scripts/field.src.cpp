@@ -135,7 +135,7 @@ QString Field::value( const KABC::Addressee &a )
       return a.phoneNumber( PhoneNumber::Home | PhoneNumber::Fax ).number();
     case FieldImpl::BusinessFax:
       return a.phoneNumber( PhoneNumber::Work | PhoneNumber::Fax ).number();
-    case FieldImpl::Car:
+    case FieldImpl::CarPhone:
       return a.phoneNumber( PhoneNumber::Car ).number();
     case FieldImpl::Isdn:
       return a.phoneNumber( PhoneNumber::Isdn ).number();

@@ -27,17 +27,35 @@ namespace KABC {
 class AddressBook;
 class Addressee;
 
-/*
+/**
   @short binary file format for addressbook entries.
 */
 class BinaryFormat : public FormatPlugin
 {
 public:
+  /**
+   * Load single addressee from file.
+   */
   bool load( Addressee &, QFile *file );
+
+  /**
+   * Load whole addressee from file.
+   */
   bool loadAll( AddressBook *, Resource *, QFile *file );
+
+  /**
+   * Save single addressee to file.
+   */
   void save( const Addressee &, QFile *file );
+
+  /**
+   * Save all addressees to file.
+   */
   void saveAll( AddressBook *, Resource *, QFile *file );
 
+  /**
+   * Check for valid format of a file.
+   */
   bool checkFormat( QFile *file ) const;
 
 private:

@@ -53,7 +53,7 @@ public:
   /**
    * Consturctor.
    *
-   * @param data  The raw data of the agent.
+   * @param addressee  The addressee object of the agent.
    */
   Agent( Addressee *addressee );
 
@@ -76,19 +76,19 @@ public:
   void setUrl( const QString &url );
 
   /**
-   * Sets the raw data of the agent. When using this function,
+   * Sets the addressee of the agent. When using this function,
    * @ref isIntern() will return 'true' until you use @ref setUrl().
    *
-   * @param data  The raw data of the agent.
+   * @param addressee  The addressee object of the agent.
    */
   void setAddressee( Addressee *addressee );
 
   /**
    * Returns whether the agent is described by a URL (extern) or
-   * by the raw data (intern).
+   * by a addressee (intern).
    * When this method returns 'true' you can use @ref addressee() to
-   * get the raw data. Otherwise you can request the URL of this
-   * agent by @ref url() and load the raw data from that location.
+   * get a @ref Addressee object. Otherwise you can request the URL
+   * of this agent by @ref url() and load the data from that location.
    */
   bool isIntern() const;
 
@@ -98,7 +98,7 @@ public:
   QString url() const;
 
   /**
-   * Returns the raw data of this agent.
+   * Returns the addressee object of this agent.
    */
   Addressee* addressee() const;
 

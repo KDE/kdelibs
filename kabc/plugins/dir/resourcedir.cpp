@@ -159,7 +159,7 @@ bool ResourceDir::save( Ticket *ticket )
       continue;
 
     QFile file( mPath + "/" + (*it).uid() );
-    if ( !file.open( IO_ReadWrite ) ) {
+    if ( !file.open( IO_WriteOnly ) ) {
       addressBook()->error( i18n( "Unable to open file '%1' for writing" ).arg( file.name() ) );
       continue;
     }

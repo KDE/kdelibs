@@ -26,7 +26,7 @@
 
 namespace KABC {
 
-/*
+/**
   @short Postal address information.
   
   This class represents information about a postal address.

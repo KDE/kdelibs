@@ -45,12 +45,12 @@ bool VCardFormatPlugin::loadAll( AddressBook *addressBook, Resource *resource, Q
 
 void VCardFormatPlugin::save( const Addressee &addressee, QFile *file )
 {
-  return mImpl->save( addressee, file );
+  mImpl->save( addressee, file );
 }
 
 void VCardFormatPlugin::saveAll( AddressBook *addressBook, Resource *resource, QFile *file )
 {
-  return mImpl->saveAll( addressBook, resource, file );
+  mImpl->saveAll( addressBook, resource, file );
 }
 
 bool VCardFormatPlugin::checkFormat( QFile *file ) const

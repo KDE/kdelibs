@@ -38,7 +38,7 @@ class DistributionListManager;
 /**
   @short Frontend to create distribution lists
  
-  Creating a new DistributionListEditor does automatically
+  Creating a new DistributionListDialog does automatically
   load all addressees and distribution lists from the config
   files. The changes will be saved when clicking the 'OK'
   button.
@@ -46,10 +46,10 @@ class DistributionListManager;
   Example:
  
   <pre>
-  KABC::DistributionListEditor *editor = new
-          KABC::DistributionListEditor( KABC::StdAddressBook::self(), this );
+  KABC::DistributionListDialog *dlg = new
+          KABC::DistributionListDialog( KABC::StdAddressBook::self(), this );
  
-  editor->exec();
+  dlg->exec();
   </pre>
 */
 class DistributionListDialog : public KDialogBase
