@@ -217,7 +217,8 @@ QWidget* KFileMetaInfoWidget::makeStringWidget()
         connect( edit, SIGNAL( textChanged() ),
                  this, SLOT( slotMultiLineEditChanged() ));
         // can't use a validator with a QTextEdit, but we may need to delete it
-        reparentValidator( edit, m_validator );
+        if ( m_validator )
+            reparentValidator( edit, m_validator );
         return edit;
     }
 
