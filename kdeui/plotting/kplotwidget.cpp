@@ -17,10 +17,8 @@
 
 #include <math.h> //for log10(), pow(), modf()
 #include <kdebug.h>
-#include <qcolor.h>
 #include <qpainter.h>
 #include <qpixmap.h>
-#include <qstring.h>
 
 #include "kplotwidget.h"
 

@@ -18,8 +18,6 @@
 #ifndef KPLOTOBJECT_H
 #define KPLOTOBJECT_H
 
-#include <qpoint.h>
-#include <qptrlist.h>
 
 class QString;
 class QPainter;

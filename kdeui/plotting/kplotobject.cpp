@@ -15,10 +15,7 @@
  *                                                                         *
  ***************************************************************************/
 
-#include <qcolor.h>
 #include <qpainter.h>
-#include <qrect.h>
-#include <qstring.h>
 #include <kdebug.h>
 #include <klocale.h>
 #include "kplotobject.h"
