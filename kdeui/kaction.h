@@ -1207,8 +1207,11 @@ public:
     virtual int plug( QWidget* widget, int index = -1 );
     virtual void unplug( QWidget* widget );
 
+    // To be removed (BCI)
+    virtual void setEnabled(bool b) { KAction::setEnabled(b); }
 protected:
-    virtual void setEnabled( int id, bool b );
+    // To be removed (BCI)
+    virtual void setEnabled(int i, bool enable);
 
     virtual void setText( int id, const QString& text );
 

@@ -2139,13 +2139,9 @@ void KActionMenu::unplug( QWidget* widget )
     KAction::unplug( widget );
 }
 
+// To be removed (BCI)
 void KActionMenu::setEnabled( int id, bool b )
 {
-  QWidget *w = container( id );
-
-  if ( w->inherits( "KToolBar" ) )
-    ((KToolBar *)w)->setItemEnabled( menuId( id ), b );
-
   KAction::setEnabled( id, b );
 }
 
@@ -2508,8 +2504,8 @@ void KActionCollection::setHighlightingEnabled( bool enable )
 
 bool KActionCollection::highlightingEnabled() const
 {
-  return d->m_highlight; 
-} 
+  return d->m_highlight;
+}
 
 void KActionCollection::connectHighlight( QWidget *container, KAction *action )
 {
