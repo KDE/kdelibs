@@ -44,6 +44,8 @@ void KHTMLRun::foundMimeType( const QString &_type )
     if ( static_cast<KHTMLPart *>(m_part)->processObjectRequest( m_child, m_strURL, mimeType ) )
         m_bFinished = true;
     else {
+        if ( m_bFinished ) // abort was called (this happens with the activex fallback for instance)
+            return;
         // Couldn't embed -> call BrowserRun::handleNonEmbeddable()
         KParts::BrowserRun::NonEmbeddableResult res = handleNonEmbeddable( mimeType );
         if ( res == KParts::BrowserRun::Delayed )
