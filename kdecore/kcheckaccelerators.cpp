@@ -187,6 +187,7 @@ void KCheckAccelerators::checkAccelerators( bool automatic ) {
     if ( !l )
         return;
     QMenuBar* mbar = 0;
+    QObject *p;
     for ( QObject *o = l->first(); o; o = l->next() ) {
         if ( ( static_cast<QWidget *>(o) )->isVisibleTo( actWin ) ) {
     	    QWidget *w = static_cast<QWidget *>(o);
@@ -197,9 +198,15 @@ void KCheckAccelerators::checkAccelerators( bool automatic ) {
                      ++i )
                     findAccel( w->className(), mbar->text( mbar->idAt( i )), accels );
             }
-            if (w->inherits("QLineEdit") || w->inherits("QComboBox") || w->inherits("QTextEdit") || w->inherits("QTextView") ||
-				!w->isFocusEnabled())
-                continue;
+	    if (w->inherits("QLineEdit") || w->inherits("QComboBox") || w->inherits("QTextEdit") || w->inherits("QTextView") )
+		continue;
+
+	    // Skip widgets that are children of non-visible objects
+	    p = w->parent();
+	    while ( p && p->inherits("QWidget") && static_cast<QWidget *>(p)->isVisible() )
+		p = p->parent();
+	    if ( p )
+		continue;
 
 	    QMetaObject *mo = w->metaObject();
 	    const QMetaProperty* text = mo->property( mo->findProperty( "text", TRUE ), TRUE );
