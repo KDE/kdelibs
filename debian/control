@@ -1,5 +1,5 @@
 Source: kdelibs
-Build-Depends: debhelper (>> 3.0.0), flex, bison, gettext, libqt-dev (>= 2:2.3.1-11), libtiff3g-dev | libtiff-dev, libaudiofile-dev, libasound1-dev, docbook, libbz2-dev, libpcre3-dev, libcupsys2-dev | cupsys-dev, libxml2-dev (>= 2.4.1), libsasl-dev
+Build-Depends: debhelper (>> 3.0.0), flex, bison, gettext, libqt-dev (>= 2:2.3.1-11), uic (>= 2.3.1-11), libtiff3g-dev | libtiff-dev, libaudiofile-dev, libasound1-dev, docbook, libbz2-dev, libpcre3-dev, libcupsys2-dev | cupsys-dev, libxml2-dev (>= 2.4.1), libsasl-dev
 Build-Depends-Indep: kdoc, qt-doc
 Build-Conflicts: nas-lib, qt3-tools
 Section: libs
@@ -134,7 +134,7 @@ Package: kdelibs-dev
 Architecture: any
 Section: devel
 Replaces: kdelibs2g-dev
-Depends: kdelibs3 (= ${Source-Version}), libarts-dev (= ${Source-Version}), libkmid-dev (= ${Source-Version}), libqt-dev (>= 2:2.3.1-7), uic (>= 2:2.3.1-7), libaudiofile-dev, gettext, libtiff3g-dev | libtiff-dev, docbook, libpcre3-dev, libbz2-dev
+Depends: kdelibs3 (= ${Source-Version}), libarts-dev (= ${Source-Version}), libkmid-dev (= ${Source-Version}), libqt-dev (>= 2:2.3.1-7), uic (>= 2:2.3.1-7) | kde-designer, libaudiofile-dev, gettext, libtiff3g-dev | libtiff-dev, docbook, libpcre3-dev, libbz2-dev
 Recommends: kdelibs3-cups (= ${Source-Version})
 Conflicts: kdelibs2g-dev, qt3-tools
 Suggests: kdelibs3-doc, kdoc, libxml2-dev, libxslt1-dev
