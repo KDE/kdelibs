@@ -515,6 +515,7 @@ TransferJob::TransferJob( const KURL& url, int command,
     : SimpleJob(url, command, packedArgs, showProgressInfo), staticData( _staticData)
 {
     m_suspended = false;
+    m_errorPage = false;
     m_subJob = 0L;
 }
 
@@ -689,6 +690,9 @@ void TransferJob::start(Slave *slave)
     connect( slave, SIGNAL(metaData( const KIO::MetaData& ) ),
              SLOT( slotMetaData( const KIO::MetaData& ) ) );
 
+    connect( slave, SIGNAL(errorPage() ),
+             SLOT( slotErrorPage() ) );
+
     connect( slave, SIGNAL( needSubURLData() ),
              SLOT( slotNeedSubURLData() ) );
 
@@ -736,6 +740,11 @@ void TransferJob::slotSubURLData(KIO::Job*, const QByteArray &data)
     staticData = data;
     m_subJob->suspend(); // Put job on hold until we have delivered the data.
     resume(); // Activate ourselves again.
+}
+
+void TransferJob::slotErrorPage()
+{
+    m_errorPage = true;
 }
 
 void TransferJob::slotResult( KIO::Job *job)

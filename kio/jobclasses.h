@@ -434,6 +434,13 @@ namespace KIO {
          */
         QString queryMetaData(const QString &key);
 
+        /**
+         * @return true if we got an (HTML) error page from the server
+         * instead of what we asked for. This currently only happens with
+         * HTTP urls. Call this from your slot connected to result().
+         */
+        bool isErrorPage() const { return m_errorPage; }
+
     signals:
         /**
          * Data from the slave has arrived.
@@ -472,9 +479,11 @@ namespace KIO {
         virtual void slotMetaData( const KIO::MetaData &_metaData);
         virtual void slotNeedSubURLData();
         virtual void slotSubURLData(KIO::Job*, const QByteArray &);
+        void slotErrorPage();
 
     protected:
         bool m_suspended;
+        bool m_errorPage;
         QByteArray staticData;
         KURL m_redirectionURL;
         KURL::List m_redirectionList;
