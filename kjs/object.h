@@ -21,6 +21,8 @@
 #ifndef _KJS_OBJECT_H_
 #define _KJS_OBJECT_H_
 
+#include <stdlib.h>
+
 #include "ustring.h"
 
 /**
@@ -263,7 +265,12 @@ namespace KJS {
      */
     Imp *imp() const { return rep; }
 
-    //    static int count;
+#ifdef KJS_DEBUG_MEM
+    /**
+     * @internal
+     */
+    static int count;
+#endif
   protected:
     /**
      * Pointer to the internal implementation.
@@ -313,7 +320,15 @@ namespace KJS {
     void setPrototype(const KJSO& p);
     void setConstructor(const KJSO& c);
 
-    //    static int count;
+    void* operator new(size_t);
+    void operator delete(void*, size_t);
+
+#ifdef KJS_DEBUG_MEM
+    /**
+     * @internal
+     */
+    static int count;
+#endif
   private:
     Imp(const Imp&);
     Imp& operator=(const Imp&);

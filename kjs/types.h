@@ -265,7 +265,13 @@ namespace KJS {
      * function has a @ref KJS::List parameter.
      */
     static const List *empty();
-    //    static int count;
+
+#ifdef KJS_DEBUG_MEM
+    /**
+     * @internal
+     */
+    static int count;
+#endif
   private:
     void erase(ListNode *n);
     ListNode *hook;

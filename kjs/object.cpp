@@ -511,9 +511,9 @@ Object Object::dynamicCast(const KJSO &obj)
 }
 
 #ifdef KJS_DEBUG_MEM
-unsigned int KJSO::count = 0;
-unsigned int Imp::count = 0;
-unsigned int List::count = 0;
+int KJSO::count = 0;
+int Imp::count = 0;
+int List::count = 0;
 #endif
 
 Imp::Imp()
@@ -763,6 +763,17 @@ void Imp::setPrototype(const KJSO& p)
 void Imp::setConstructor(const KJSO& c)
 {
   put("constructor", c, DontEnum | DontDelete | ReadOnly);
+}
+
+void* Imp::operator new(size_t s)
+{
+  /* TODO */
+  return malloc(s);
+}
+
+void Imp::operator delete(void*, size_t)
+{
+  // Do nothing. So far.
 }
 
 ObjectImp::ObjectImp(Class c) : cl(c) { }
