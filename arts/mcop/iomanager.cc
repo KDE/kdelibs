@@ -245,9 +245,14 @@ void StdIOManager::processOneEvent(bool blocking)
 				match = 0;
 
 			if(match) {
+				w->notify()->notifyIO(w->fd(),match);
+				break;
+			}
+/*!!!
+			if(match) {
 				tonotify++;
 				notifyStack.push(make_pair(w,match));
-			}
+			}*/
 		}
 		
 		while(tonotify != 0)
