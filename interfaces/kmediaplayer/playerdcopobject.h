@@ -30,9 +30,12 @@
 namespace KMediaPlayer
 {
 
-class PlayerDCOPObject : virtual public DCOPObject
+class PlayerDCOPObject : public DCOPObject
 {
 K_DCOP
+
+public:
+	PlayerDCOPObject(void);
 
 k_dcop:
 	virtual bool openURL(const KURL &file) = 0;

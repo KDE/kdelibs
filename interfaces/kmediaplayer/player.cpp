@@ -23,9 +23,13 @@
 
 #include <kmediaplayer/player.h>
 
+KMediaPlayer::PlayerDCOPObject::PlayerDCOPObject(void)
+	: DCOPObject("KMediaPlayer")
+{
+}
+
 KMediaPlayer::Player::Player(QObject *parent, const char *name, bool)
 	: KParts::ReadOnlyPart(parent, name)
-	, DCOPObject("KMediaPlayerEngine")
 	, currentLooping(false)
 	, currentState(Empty)
 	, d(0)

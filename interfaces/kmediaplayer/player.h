@@ -31,7 +31,7 @@
 namespace KMediaPlayer
 {
 
-class Player : public KParts::ReadOnlyPart, virtual public PlayerDCOPObject
+class Player : public KParts::ReadOnlyPart, public PlayerDCOPObject
 {
 Q_OBJECT
 
