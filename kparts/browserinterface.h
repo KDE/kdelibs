@@ -4,6 +4,8 @@
 #include <qobject.h>
 #include <qvariant.h>
 
+#include <kdelibs_export.h>
+
 namespace KParts
 {
 
@@ -29,7 +31,7 @@ namespace KParts
  *       void goHistory( int );
  *
  */
-class BrowserInterface : public QObject
+class KPARTS_EXPORT BrowserInterface : public QObject
 {
     Q_OBJECT
 public:

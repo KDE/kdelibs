@@ -54,7 +54,7 @@ struct URLArgsPrivate;
  * This can also be used the other way round, when a part asks
  * for a URL to be opened (with openURLRequest or createNewWindow).
  */
-struct URLArgs
+struct KPARTS_EXPORT URLArgs
 {
   URLArgs();
   URLArgs( const URLArgs &args );
@@ -169,7 +169,7 @@ struct WindowArgsPrivate;
  * call (see the createNewWindow variant that uses WindowArgs).
  * The primary reason for this is the javascript window.open function.
  */
-struct WindowArgs
+struct KPARTS_EXPORT WindowArgs
 {
     WindowArgs();
     WindowArgs( const WindowArgs &args );
@@ -197,7 +197,7 @@ struct WindowArgs
     WindowArgsPrivate *d; // yes, I am paranoid :-)
 };
 
-class OpenURLEvent : public Event
+class KPARTS_EXPORT OpenURLEvent : public Event
 {
 public:
   OpenURLEvent( ReadOnlyPart *part, const KURL &url, const URLArgs &args = URLArgs() );
@@ -283,7 +283,7 @@ class BrowserExtensionPrivate;
   * @li @p setSaveViewPropertiesLocally( bool ): If @p true, view properties are saved into .directory
   *                                       otherwise, they are saved globally.
   */
-class BrowserExtension : public QObject
+class KPARTS_EXPORT BrowserExtension : public QObject
 {
   Q_OBJECT
   Q_PROPERTY( bool urlDropHandling READ isURLDropHandlingEnabled WRITE setURLDropHandlingEnabled )
@@ -655,7 +655,7 @@ private:
  * other parts.
  * For instance a KHTMLPart hosts one part per frame.
  */
-class BrowserHostExtension : public QObject
+class KPARTS_EXPORT BrowserHostExtension : public QObject
 {
   Q_OBJECT
 public:
@@ -723,7 +723,7 @@ private:
  * A part can have an object hierarchie by using objid as a reference
  * to an object.
  */
-class LiveConnectExtension : public QObject
+class KPARTS_EXPORT LiveConnectExtension : public QObject
 {
   Q_OBJECT
 public:

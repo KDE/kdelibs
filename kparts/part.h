@@ -54,7 +54,7 @@ class PartBasePrivate;
  *
  *  @short Base class for all parts.
  */
-class PartBase : virtual public KXMLGUIClient
+class KPARTS_EXPORT PartBase : virtual public KXMLGUIClient
 {
     friend class PartBasePrivate;
 public:
@@ -178,7 +178,7 @@ private:
  * framework for a "viewer" part and for an "editor"-like part.
  * Use Part directly only if your part doesn't fit into those.
  */
-class Part : public QObject, public PartBase
+class KPARTS_EXPORT Part : public QObject, public PartBase
 {
     Q_OBJECT
 
@@ -327,7 +327,7 @@ class ReadOnlyPartPrivate;
  * If you want another caption, set it in openFile() and
  * (if the part might ever be used with a part manager) in guiActivateEvent()
  */
-class ReadOnlyPart : public Part
+class KPARTS_EXPORT ReadOnlyPart : public Part
 {
   Q_OBJECT
   friend class ReadWritePart;
@@ -532,7 +532,7 @@ private:
  * The part probably wants to reimplement setReadWrite, disable those
  * actions. Don't forget to call the parent setReadWrite.
  */
-class ReadWritePart : public ReadOnlyPart
+class KPARTS_EXPORT ReadWritePart : public ReadOnlyPart
 {
   Q_OBJECT
 public:

@@ -23,6 +23,8 @@
 #include <qdict.h>
 #include <qobject.h>
 
+#include <kdelibs_export.h>
+
 namespace KParts {
 
 /**
@@ -36,7 +38,7 @@ namespace KParts {
  *
  * @author Carsten Pfeiffer <pfeiffer@kde.org>
  */
-class HistoryProvider : public QObject
+class KPARTS_EXPORT HistoryProvider : public QObject
 {
     Q_OBJECT
 

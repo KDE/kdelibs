@@ -24,6 +24,8 @@
 #include <qwidget.h>
 #include <qvaluelist.h>
 
+#include <kdelibs_export.h>
+
 class KStatusBar;
 class KMainWindow;
 class QEvent;

@@ -21,15 +21,14 @@
 #include "statusbarextension.h"
 
 #include <qvaluelist.h>
+#include <qobjectlist.h>
 
 #include <kstatusbar.h>
 #include <kmainwindow.h>
-
+#include <kdebug.h>
+#include <kdelibs_export.h>
 #include <kparts/part.h>
 #include <kparts/event.h>
-
-#include <kdebug.h>
-#include <qobjectlist.h>
 
 using namespace KParts;
 

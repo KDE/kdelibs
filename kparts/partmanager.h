@@ -25,6 +25,8 @@
 #include <qwidget.h>
 #include <qptrlist.h>
 
+#include <kdelibs_export.h>
+
 class KInstance;
 
 namespace KParts
@@ -45,7 +47,7 @@ class PartManagerPrivate;
  * Parts know about the part manager to add nested parts to it.
  * See also KParts::Part::manager() and KParts::Part::setManager().
  */
-class PartManager : public QObject
+class KPARTS_EXPORT PartManager : public QObject
 {
   Q_OBJECT
   Q_ENUMS( SelectionPolicy )

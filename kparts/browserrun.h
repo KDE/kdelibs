@@ -36,7 +36,7 @@ namespace KParts {
      * - generation of SSL metadata depending on the previous URL shown by the part
      * @author David Faure <faure@kde.org>
      */
-    class BrowserRun : public KRun
+    class KPARTS_EXPORT BrowserRun : public KRun
     {
         Q_OBJECT
     public:

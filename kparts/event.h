@@ -22,6 +22,8 @@
 
 #include <qevent.h>
 
+#include <kdelibs_export.h>
+
 class QWidget;
 
 namespace KParts
@@ -31,7 +33,7 @@ class Part;
 /**
  * Base class for all KParts events.
  */
-class Event : public QCustomEvent
+class KPARTS_EXPORT Event : public QCustomEvent
 {
 public:
   Event( const char *eventName );
@@ -49,7 +51,7 @@ public:
  * only for parts that have GUI elements, and only if using KParts::MainWindow.
  * @see KParts::Part::guiActivateEvent()
  */
-class GUIActivateEvent : public Event
+class KPARTS_EXPORT GUIActivateEvent : public Event
 {
 public:
   GUIActivateEvent( bool activated ) : Event( s_strGUIActivateEvent ), m_bActivated( activated ) {}
@@ -71,7 +73,7 @@ private:
  * with activated=true, part=newPart, widget=newWidget.
  * @see KParts::Part::partActivateEvent
  */
-class PartActivateEvent : public Event
+class KPARTS_EXPORT PartActivateEvent : public Event
 {
 public:
   PartActivateEvent( bool activated, Part *part, QWidget *widget ) : Event( s_strPartActivateEvent ), m_bActivated( activated ), m_part( part ), m_widget( widget ) {}
@@ -94,7 +96,7 @@ private:
  * This event is sent when a part is selected or deselected.
  * @see KParts::PartManager::setSelectionPolicy
  */
-class PartSelectEvent : public Event
+class KPARTS_EXPORT PartSelectEvent : public Event
 {
 public:
   PartSelectEvent( bool selected, Part *part, QWidget *widget ) : Event( s_strPartSelectEvent ), m_bSelected( selected ), m_part( part ), m_widget( widget ) {}
