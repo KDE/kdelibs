@@ -56,37 +56,37 @@ KLocale::KLocale( const char *_catalogue )
 #endif
     
     if ( ! _catalogue )
-	_catalogue = kapp->appName().data();
+      _catalogue = kapp->appName().data();
     
     catalogue = new char[ strlen(_catalogue) + 12 ];
     strcpy(catalogue, _catalogue);
-
+    
     QString languages;
     const char *g_lang = getenv("LANG");
-
+    
     if (! g_lang ) {
-	/*	KConfig config;
-	config.setGroup("Locale");
-	languages = config.readEntry("Language", "C");
-	*/
-	languages = "C";
+      
+      KConfig config;
+      config.setGroup("Locale");
+      languages = config.readEntry("Language", "C");
     } else
-	languages = g_lang;
-   
+      languages = g_lang;
+    
     if (languages.isEmpty())
-	languages = "C";
+      languages = "C";
     else languages += ":C";
-
-    QString directory = kapp->kdedir() + "/share/locale";
-
+    
+    QString directory = KApplication::kdedir() + "/share/locale";
+    
     while (1) {
-	lang = languages.left(languages.find(':'));
-	languages = languages.right(languages.length() - lang.length() - 1);
-	if (lang.isEmpty() || lang == "C")
-	    break;
-	QDir d(directory + "/" +  lang + "/LC_MESSAGES");
-	if (d.exists(QString(catalogue) + ".mo") && d.exists(QString(SYSTEM_MESSAGES) + ".mo"))
-	    break;
+      lang = languages.left(languages.find(':'));
+      languages = languages.right(languages.length() - lang.length() - 1);
+      if (lang.isEmpty() || lang == "C")
+	break;
+      QDir d(directory + "/" +  lang + "/LC_MESSAGES");
+      if (d.exists(QString(catalogue) + ".mo") && 
+	  d.exists(QString(SYSTEM_MESSAGES) + ".mo"))
+	break;
     }
     /* Set the text message domain.  */
     k_bindtextdomain ( catalogue , directory);
