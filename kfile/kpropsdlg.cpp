@@ -209,9 +209,6 @@ void KPropertiesDialog::init (bool modal, bool autoShow)
 
   insertPages();
 
-  connect( this, SIGNAL( okClicked() ), this, SLOT( slotApply() ) );
-  connect( this, SIGNAL( cancelClicked() ), this, SLOT( slotCancel() ) );
-
   resize(sizeHint());
 
   if (autoShow)
@@ -256,7 +253,7 @@ bool KPropertiesDialog::canDisplay( KFileItemList _items )
          KDevicePropsPlugin::supports( _items );
 }
 
-void KPropertiesDialog::slotApply()
+void KPropertiesDialog::slotOk()
 {
   KPropsDlgPlugin *page;
   d->m_aborted = false;
@@ -293,12 +290,12 @@ void KPropertiesDialog::slotApply()
     filePropsPlugin->postApplyChanges();
 
   if ( !d->m_aborted )
+  {
     emit applied();
-  // else, well, partly applied and partly canceled...
-
-  emit propertiesClosed();
-
-  QTimer::singleShot( 0, this, SLOT( slotDeleteMyself() ) );
+    emit propertiesClosed();
+    QTimer::singleShot( 0, this, SLOT( slotDeleteMyself() ) );
+    accept();
+  } // else, keep dialog open for user to fix the problem.
 }
 
 void KPropertiesDialog::slotCancel()
@@ -307,6 +304,7 @@ void KPropertiesDialog::slotCancel()
   emit propertiesClosed();
 
   QTimer::singleShot( 0, this, SLOT( slotDeleteMyself() ) );
+  done( Rejected );
 }
 
 void KPropertiesDialog::insertPages()
@@ -883,6 +881,8 @@ void KFilePropsPlugin::slotCopyFinished( KIO::Job * job )
     if ( job->error() )
     {
         job->showErrorDialog( d->m_frame );
+        // Didn't work. Revert the URL to the old one
+        properties->updateUrl( static_cast<KIO::CopyJob*>(job)->srcURLs().first() );
         properties->abortApplying(); // Don't apply the changes to the wrong file !
         return;
     }

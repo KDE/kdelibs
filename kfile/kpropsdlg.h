@@ -244,8 +244,8 @@ public slots:
   /**
    * Called when the user presses 'Ok'.
    */
-  void slotApply();      // Deletes the PropertiesDialog instance
-  void slotCancel();     // Deletes the PropertiesDialog instance
+  virtual void slotOk();      // Deletes the PropertiesDialog instance
+  virtual void slotCancel();     // Deletes the PropertiesDialog instance
 
 signals:
   /**
