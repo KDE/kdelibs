@@ -1,8 +1,4 @@
-<para>Permission is granted to copy, distribute and/or modify this
-document under the terms of the GNU Free Documentation License,
-Version 1.1 or any later version published by the Free Software
-Foundation; with &FDLInvariantSections;, with &FDLFrontCoverText;, and
-with &FDLBackCoverText;.  A copy of the license is included in <xref linkend="gnu-fdl"/>.</para>
+<para>Käesolevat dokumenti võib kopeerida, edasi levitada ja/või muuta vastavalt GNU Vaba Dokumentatsiooni Litsentsi tingimustele, nagu need on avaldanud Vaba Tarkvara Fond; kas Litsentsi versioon 1.1 või ükskõik milline hilisem versioon; kaasa arvatud &FDLInvariantSections;, &FDLFrontCoverText;, ja &FDLBackCoverText;.  Litsentsi koopiaga võimaldab tutvuda <xref linkend="gnu-fdl"/>.</para>
 <!--
 Local variables:
 mode: sgml
