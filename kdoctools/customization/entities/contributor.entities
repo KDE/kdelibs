@@ -58,6 +58,8 @@
 <!ENTITY Waldo.Bastian.mail '<email>bastian@kde.org</email>'>
 <!ENTITY Andreas.Beckermann '<personname><firstname>Andreas</firstname><surname>Beckermann</surname></personname>'>
 <!ENTITY Andreas.Beckermann.mail '<email>b_mann@gmx.de</email>'>
+<!ENTITY Orville.Bennett '<personname><firstname>Orville</firstname><surname>Bennett</surname></personname>'>
+<!ENTITY Orville.Bennett.mail '<email>obennett@hartford.edu</email>'>
 <!ENTITY Nick.Betcher '<personname><firstname>Nick</firstname><surname>Betcher</surname></personname>'>
 <!ENTITY Nick.Betcher.mail '<email>nbetcher@usewest.net</email>'>
 <!ENTITY Stephan.Binner '<personname><firstname>Stephan</firstname><surname>Binner</surname></personname>'>
