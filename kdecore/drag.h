@@ -19,6 +19,9 @@
 /* $Id$
  *
  * $Log$
+ * Revision 1.18  1998/08/22 20:02:34  kulow
+ * make kdecore have nicer output, when compiled with -Weffc++ :)
+ *
  * Revision 1.17  1998/07/16 14:52:32  ssk
  * Removed stub inline implementations for disallowed copy constructor and
  * operator= (not a good idea since it still allows KApp to call them).
@@ -415,8 +418,8 @@ public:
 /** 
 * Constructor. 
 */
-  KDNDWidget( QWidget *parent=0, const char *name=0, WFlags f=0 ) : 
-      QWidget( parent, name, f ) , drag(false), dndData(0L), 
+  KDNDWidget( QWidget *_parent=0, const char *_name=0, WFlags f=0 ) : 
+      QWidget( _parent, _name, f ) , drag(false), dndData(0L), 
       dndSize(0), dndType(0), dndOffsetX(0), dndOffsetY(0), dndIcon(0L), 
       dndLastWindow(0)
     {}

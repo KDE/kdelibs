@@ -19,6 +19,9 @@
 // $Id$
 //
 // $Log$
+// Revision 1.32  1998/07/29 09:07:48  ssk
+// Fixed a whole lot of -Wall -ansi -pedantic warnings.
+//
 // Revision 1.31  1998/05/26 14:14:57  kalle
 // Two bugfixes in KConfig:
 //
@@ -310,7 +313,7 @@ const QString KConfigBase::readEntry( const char* pKey,
 {
   if( !data()->bLocaleInitialized && kapp && kapp->localeConstructed() ) 
       {
-	  KConfigBase *that = (KConfigBase*)this;
+	  KConfigBase *that = const_cast<KConfigBase*>(this);
 	  that->setLocale();
       }
   // const_cast<KConfigBase*>(this)->setLocale();

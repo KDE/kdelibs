@@ -20,6 +20,9 @@
 // $Id$
 //
 // $Log$
+// Revision 1.107  1998/08/11 00:24:57  steffen
+// KProcess stuff removed
+//
 // Revision 1.106  1998/07/23 20:55:11  ettrich
 // Matthias: new configurable keybindings
 //
@@ -652,7 +655,7 @@ bool KApplication::eventFilter ( QObject*, QEvent* e )
 void KApplication::parseCommandLine( int& argc, char** argv )
 {
   enum parameter_code { unknown = 0, caption, icon, miniicon, restore };
-  char *parameter_strings[] = { "-caption", "-icon", "-miniicon", "-restore" , 0 };
+  const char *parameter_strings[] = { "-caption", "-icon", "-miniicon", "-restore" , 0 };
 
   aDummyString2 = " ";
   int i = 1;

@@ -19,6 +19,10 @@
 // $Id$
 //
 // $Log$
+// Revision 1.15  1998/07/23 12:05:15  ettrich
+// Matthias: small bugfix. Writing of simple KConfig objects (without
+//  arguments constructed) was broken.
+//
 // Revision 1.14  1998/06/15 12:49:31  kulow
 // applied patch to replace .kde with localkdedir()
 //
@@ -86,7 +90,7 @@
 #include <unistd.h>
 #endif
 
-static char* aConfigFileName[] = 
+static const char* aConfigFileName[] = 
 { 
   // !!! If you add/remove pathnames here, update CONFIGFILECOUNT a few lines
   // below!!!
