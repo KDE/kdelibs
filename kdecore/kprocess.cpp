@@ -251,9 +251,9 @@ KProcess::KProcess()
     input_total(0),
     d(0)
 {
-  if (0 == KProcessController::theKProcessController) {
+  d = new KProcessPrivate;
+  if (KProcessController::theKProcessController == 0) {
         (void) new KProcessController();
-        Q_CHECK_PTR(KProcessController::theKProcessController);
   }
 
   KProcessController::theKProcessController->addKProcess(this);
@@ -265,30 +265,27 @@ KProcess::KProcess()
 void
 KProcess::setEnvironment(const QString &name, const QString &value)
 {
-   if (!d)
-      d = new KProcessPrivate;
    d->env.insert(name, value);
 }
 
 void
 KProcess::setWorkingDirectory(const QString &dir)
 {
-   if (!d)
-      d = new KProcessPrivate;
    d->wd = dir;   
 } 
 
 void 
 KProcess::setupEnvironment()
 {
-   if (d)
+   QMap<QString,QString>::Iterator it;
+   for(it = d->env.begin(); it != d->env.end(); ++it)
    {
-      QMap<QString,QString>::Iterator it;
-      for(it = d->env.begin(); it != d->env.end(); ++it)
-         setenv(QFile::encodeName(it.key()).data(),
-                QFile::encodeName(it.data()).data(), 1);
-      if (!d->wd.isEmpty())
-         chdir(QFile::encodeName(d->wd).data());
+      setenv(QFile::encodeName(it.key()).data(),
+             QFile::encodeName(it.data()).data(), 1);
+   }
+   if (!d->wd.isEmpty())
+   {
+      chdir(QFile::encodeName(d->wd).data());
    }
 }
 
@@ -343,9 +340,6 @@ void KProcess::detach()
 
 void KProcess::setBinaryExecutable(const char *filename)
 {
-   if (!d)
-      d = new KProcessPrivate;
-   
    d->executable = filename;
 }
 
@@ -398,7 +392,7 @@ bool KProcess::start(RunMode runmode, Communication comm)
   uint n = arguments.count();
   char **arglist;
 
-  if (runs || (0 == n)) {
+  if (runs || (n == 0)) {
         return false;  // cannot start a process that is already running
         // or if no executable has been assigned
   }
@@ -406,7 +400,7 @@ bool KProcess::start(RunMode runmode, Communication comm)
   status = 0;
 
   QCString shellCmd;
-  if (d && d->useShell)
+  if (d->useShell)
   {
       if (d->shell.isEmpty())
       {
@@ -448,7 +442,7 @@ bool KProcess::start(RunMode runmode, Communication comm)
 #endif
 
   int fd[2];
-  if (0 > pipe(fd))
+  if (pipe(fd) < 0)
   {
      fd[0] = fd[1] = -1; // Pipe failed.. continue
   }
@@ -461,7 +455,7 @@ bool KProcess::start(RunMode runmode, Communication comm)
   // vfork() has unclear semantics and is not standardized.
   pid_ = fork();
 
-  if (0 == pid_) {
+  if (pid_ == 0) {
         if (fd[0] >= 0)
            close(fd[0]);
 
@@ -498,27 +492,27 @@ bool KProcess::start(RunMode runmode, Communication comm)
 
         // We set the close on exec flag.
         // Closing of fd[1] indicates that the execvp succeeded!
-        if (fd[1])
+        if (fd[1] >= 0)
           fcntl(fd[1], F_SETFD, FD_CLOEXEC);
 
         const char *executable = arglist[0];
-        if (d && !d->executable.isEmpty())
+        if (!d->executable.isEmpty())
            executable = d->executable.data();
 
         execvp(executable, arglist);
 
         char resultByte = 1;
-        if (fd[1])
+        if (fd[1] >= 0)
           write(fd[1], &resultByte, 1);
         _exit(-1);
-  } else if (-1 == pid_) {
+  } else if (pid_ == -1) {
         // forking failed
 
         runs = false;
         free(arglist);
         return false;
   } else {
-        if (fd[1])
+        if (fd[1] >= 0)
           close(fd[1]);
         // the parent continues here
 
@@ -577,7 +571,7 @@ bool KProcess::kill(int signo)
 {
   bool rv=false;
 
-  if (0 != pid_)
+  if (pid_ != 0)
     rv= (-1 != ::kill(pid_, signo));
   // probably store errno somewhere...
   return rv;
@@ -622,7 +616,7 @@ bool KProcess::writeStdin(const char *buffer, int buflen)
   // if there is still data pending, writing new data
   // to stdout is not allowed (since it could also confuse
   // kprocess...
-  if (0 != input_data)
+  if (input_data != 0)
     return false;
 
   if (runs && (communication & Stdin)) {
@@ -727,24 +721,18 @@ void KProcess::slotSendData(int)
 
 void KProcess::setUseShell(bool useShell, const char *shell)
 {
-  if (!d)
-    d = new KProcessPrivate;
   d->useShell = useShell;
   d->shell = (shell && *shell) ? shell : "/bin/sh";
 }
 
 void KProcess::setUsePty(bool usePty, bool addUtmp)
 {
-  if (!d)
-    d = new KProcessPrivate;
   d->usePty = usePty;
   d->addUtmp = addUtmp;  
 }
   
 void KProcess::setPtySize(int lines, int columns)
 {
-  if (!d)
-    d = new KProcessPrivate;
   d->ptySize.ws_row = (unsigned short)lines;
   d->ptySize.ws_col = (unsigned short)columns;
   if(d->ptyMasterFd < 0) return;
@@ -754,8 +742,6 @@ void KProcess::setPtySize(int lines, int columns)
   
 void KProcess::setPtyXonXoff(bool useXonXoff)
 {
-  if (!d)
-    d = new KProcessPrivate;
   d->ptyXonXoff = useXonXoff;
 }
 
@@ -829,7 +815,7 @@ int KProcess::childOutput(int fdno)
 
      len = ::read(fdno, buffer, 1024);
      
-     if ( 0 < len) {
+     if (len > 0) {
         buffer[len] = 0; // Just in case.
         emit receivedStdout(this, buffer, len);
      }
@@ -846,16 +832,13 @@ int KProcess::childError(int fdno)
 
   len = ::read(fdno, buffer, 1024);
 
-  if ( 0 < len)
+  if ( len > 0)
         emit receivedStderr(this, buffer, len);
   return len;
 }
 
 void KProcess::openMasterPty()
 {
-  if (!d)
-    d = new KProcessPrivate;
-
   d->ptyNeedGrantPty = true;
 
   // Find a master pty that we can open ////////////////////////////////
@@ -997,9 +980,6 @@ void KProcess::openMasterPty()
 
 void KProcess::openSlavePty()
 {
-  if (!d)
-    d = new KProcessPrivate;
-
   if (d->ptyMasterFd < 0) // no master pty could be opened
   {
     fprintf(stdout,"opening master pty failed.\n");
@@ -1070,7 +1050,7 @@ void KProcess::openSlavePty()
 int KProcess::setupCommunication(Communication comm)
 {
   // PTY stuff //
-  if (d && d->usePty)
+  if (d->usePty)
   {
     openMasterPty();
     if (d->ptyMasterFd < 0)
@@ -1123,7 +1103,7 @@ int KProcess::commSetupDoneP()
 {
   int ok = 1;
   // PTY stuff //
-  if (d && d->usePty)
+  if (d->usePty)
   {
     if (d->ptySlaveFd >= 0)
     {
@@ -1180,7 +1160,7 @@ int KProcess::commSetupDoneC()
 {
   int ok = 1;
   // PTY stuff //
-  if (d && d->usePty)
+  if (d->usePty)
   {
     openSlavePty();
     dup2(d->ptySlaveFd, STDIN_FILENO);
@@ -1313,7 +1293,7 @@ int KProcess::commSetupDoneC()
 void KProcess::commClose()
 {
   // PTY stuff //
-  if (d && d->usePty)
+  if (d->usePty)
   {
 #ifdef HAVE_UTEMPTER
      if (d->addUtmp)
