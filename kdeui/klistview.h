@@ -27,7 +27,7 @@ class QDragObject;
 /**
  * This Widget extends the functionality of QListView to honor the system
  * wide settings for Single Click/Double Click mode, Auto Selection and
- * Change Cursor over Link.
+ * Change Cursor Over Link (tm).
  *
  * There is a new signal executed(). It gets connected to either
  * QListView::clicked() or QListView::doubleClicked() depending on the KDE
@@ -36,14 +36,34 @@ class QDragObject;
  * need to care about the current settings.
  * If you want to get informed when the user selects something connect to the
  * QListView::selectionChanged() signal.
- **/
+ *
+ * Drag-and-Drop is supported with the signal @ref dropped, just setAcceptDrops (true)
+ * and connect it to a suitable slot.
+ * To see where you are dropping, @ref setDropVisualizer(true).
+ *
+ * KListView is drag-enabled, too: to benefit from that you've got derive from it.
+ * Reimplement @ref dragObject() and (possibly) @ref startDrag(),
+ * and @ref setDragEnabled(true).
+ *
+ * @version $Id$
+ */
 class KListView : public QListView
 {
-    Q_OBJECT
-
+  Q_OBJECT
+   
 public:
-    KListView( QWidget *parent = 0, const char *name = 0 );
-    ~KListView();
+  /**
+   * Constructor.
+   *
+   * The parameters @p parent and @p name are handled by
+   * @ref QListView, as usual.
+   */
+  KListView (QWidget *parent = 0, const char *name = 0);
+  
+  /**
+   * Destructor.
+   */
+  virtual ~KListView();
 
   /**
    * This function determines whether the given coordinates are within the
@@ -56,19 +76,39 @@ public:
    */
   virtual bool isExecuteArea( const QPoint& point);
 
+  /**
+   * @return a list containing the currently selected items.
+   */
   QList<QListViewItem> selectedItems() const;
+
+  /**
+   * Arbitrarily move @p item to @p parent, positioned immediately after item @p after.
+   */
   void moveItem(QListViewItem *item, QListViewItem *parent, QListViewItem *after);
 
-
+  /**
+   * @return the last item of this listview.
+   */
   QListViewItem *lastItem() const;
 
   /**
    * For future expansions.
    * 
    * Do not use.
+   * @deprecated
    */
   bool itemsMovable() const;
+
+  /**
+   * @return whether inplace-renaming has been enabled.
+   *
+   * @see #setItemsRenameable
+   */
   bool itemsRenameable() const;
+
+  /**
+   * @return whether dragging is enabled.
+   */
   bool dragEnabled() const;
   bool autoOpen() const;
   bool isRenameable (int column) const;
@@ -79,6 +119,7 @@ public:
    * For future expansions.
    * 
    * Do not use.
+   * @deprecated
    */
   bool createChildren() const;
   bool dropHighlighter() const;
@@ -121,7 +162,7 @@ signals:
    *
    * This signal is more or less here for the sake of completeness.
    * You should normally not need to use this. In most cases it´s better
-   * to use @ref #executed instead.
+   * to use @ref executed instead.
    */
   void doubleClicked( QListViewItem *item, const QPoint &pos, int c );
 
@@ -131,6 +172,7 @@ signals:
    * For future expansions.
    * 
    * Do not use.
+   * @deprecated
    */
   void moved();
 
@@ -138,6 +180,9 @@ signals:
   void itemRenamed(QListViewItem * item);
 
 public slots:
+  /**
+   * Rename colum @p c of @p item.
+   */
   virtual void rename(QListViewItem *item, int c);
 
   /**
@@ -153,22 +198,35 @@ public slots:
    * For future expansions.
    * 
    * Do not use.
+   * @deprecated
    */
   virtual void setItemsMovable(bool b);
+
+  /**
+   * Enables inplace-renaming of items.
+   *
+   * @see itemsRenameable
+   * @see setRenameable
+   */
   virtual void setItemsRenameable(bool b);
   virtual void setDragEnabled(bool b);
   virtual void setAutoOpen(bool b);
   virtual void setDropVisualizer(bool b);
   virtual void setTooltipColumn(int column);
   /**
+   * For future expansion.
+   * 
+   * Do not use.
+   * @deprecated
    * Highlight a parent if I drop into it's children
-   **/
+   */
   virtual void setDropHighlighter(bool b);
 
   /**
    * For future expansions.
    * 
    * Do not use.
+   * @deprecated
    */
   virtual void setCreateChildren(bool b);
 
@@ -204,7 +262,8 @@ protected:
    * An overloaded version of below(const QRect&, const QPoint&).
    *
    * It differs from the above only in what arguments it takes.
-   * Note that @p p is assumed to be in contents coordinates!
+   *
+   * Note: @p p is assumed to be in contents coordinates.
    */
   inline bool below (QListViewItem* i, const QPoint& p)
   {
@@ -215,7 +274,15 @@ protected:
 
   virtual void focusOutEvent( QFocusEvent *fe );
   virtual void leaveEvent( QEvent *e );
-  virtual QString tooltip(QListViewItem*, int column) const;
+
+  /**
+   * @return the tooltip for @p column of @p item.
+   */
+  virtual QString tooltip(QListViewItem* item, int column) const;
+
+  /**
+   * @return whether the tooltip for @p column of @p item shall be shown at point @p pos.
+   */
   virtual bool showTooltip(QListViewItem *item, const QPoint &pos, int column) const;
 
   /**
@@ -230,9 +297,18 @@ protected:
   virtual void contentsDropEvent (QDropEvent*);
   virtual void contentsDragEnterEvent (QDragEnterEvent *);
 
+  /**
+   * @return a dragobject encoding the current selection.
+   *
+   * @see setDragEnabled
+   */
   virtual QDragObject *dragObject() const;
 
-  virtual bool acceptDrag(QDropEvent*) const;
+  /**
+   * @return true if the @p event provides some acceptable
+   * format.
+   */
+  virtual bool acceptDrag (QDropEvent* event) const;
 
   /**
    * Paint the drag line. If painter is null, don't try to :)
@@ -248,7 +324,7 @@ protected:
    *
    * Do not use.
    *
-   * Highlight @arg item.  painter may be null
+   * Highlight @p item.  painter may be null
    * return the rect drawn to
    * @deprecated
    */
