@@ -378,18 +378,17 @@ signals:
     void rotateDown();
 
 protected slots:
-    virtual void doCopy()       { copy(); }
-    virtual void doCut()        { cut(); }
-    virtual void doPaste()      { paste(); }
-    virtual void doClear()      { clear(); }
-    virtual void doSelect()     { selectAll(); }
-    virtual void doUnselect()   { deselect(); }
+    virtual void slotCopy()       { copy(); }
+    virtual void slotCut()        { cut(); }
+    virtual void slotPaste()      { paste(); }
+    virtual void slotClear()      { clear(); }
+    virtual void slotSelect()     { selectAll(); }
+    virtual void slotUnselect()   { deselect(); }
 
-    virtual void modeNone()     { setCompletionMode( KGlobal::CompletionNone ); }
-    virtual void modeManual()   { setCompletionMode( KGlobal::CompletionMan );  }
-    virtual void modeAuto()     { setCompletionMode( KGlobal::CompletionAuto ); }
-    virtual void modeShell()    { setCompletionMode( KGlobal::CompletionShell );  }
-
+    virtual void slotModeNone()   { setCompletionMode( KGlobal::CompletionNone ); }
+    virtual void slotModeManual() { setCompletionMode( KGlobal::CompletionMan );  }
+    virtual void slotModeAuto()   { setCompletionMode( KGlobal::CompletionAuto ); }
+    virtual void slotModeShell()  { setCompletionMode( KGlobal::CompletionShell );}
 
     virtual void slotShowContextMenu();
     virtual void slotShowSubMenu( int );

@@ -341,7 +341,7 @@ void KLineEdit::initialize( bool showMenu, bool showChanger )
     // Assign the default completion type to use.
     m_iCompletionMode = KGlobal::completionMode();
 
-    // Create and connect to the completion object
+    // Initialize the pointer to the completion object.
     comp = 0;
 
     // Connect the signals and slots.
@@ -355,8 +355,7 @@ void KLineEdit::initialize( bool showMenu, bool showChanger )
 void KLineEdit::keyPressEvent( QKeyEvent *ev )
 {
     // Filter key-events if EchoMode is normal and
-    // the completion mode is not CompletionNone or
-    // it is disabled.
+    // the completion mode is not CompletionNone.
     if(  m_iCompletionMode != KGlobal::CompletionNone &&
          echoMode() == QLineEdit::Normal )
     {
