@@ -197,9 +197,17 @@ void KBugReport::slotSetFrom()
   delete m_process;
   KConfig emailConf( QString::fromLatin1("emaildefaults") );
   emailConf.setGroup( QString::fromLatin1("UserInfo") );
-  struct passwd *p;
-  p = getpwuid(getuid());
-  m_from->setText( emailConf.readEntry( QString::fromLatin1("EmailAddress"), QString::fromLatin1(p->pw_name) ) );
+  QString fromaddr = emailConf.readEntry( QString::fromLatin1("EmailAddress") );
+  if (fromaddr.isEmpty()) {
+     struct passwd *p;
+     p = getpwuid(getuid());  
+     fromaddr = QString::fromLatin1(p->pw_name);
+  } else {
+     QString name = emailConf.readEntry( QString::fromLatin1("FullName"));
+     if (!name.isEmpty())
+        fromaddr = name + QString::fromLatin1(" <") + fromaddr + QString::fromLatin1(">");
+  }
+  m_from->setText( fromaddr );
 }
 
 void KBugReport::slotUrlClicked(const QString &urlText)
