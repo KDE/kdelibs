@@ -62,7 +62,7 @@ KComboBox::KComboBox( bool rw, QWidget *parent, const char *name )
 	KCursor::setAutoHideCursor( lineEdit(), true, true );
 	m_pEdit->installEventFilter( this );
     }
-    
+
     init();
 }
 
@@ -131,7 +131,8 @@ void KComboBox::setCompletedText( const QString& text, bool marked )
 //     }
 
     int pos = cursorPosition();
-    setEditText( text );
+    if ( m_pEdit && text != m_pEdit->text() ) // no need to flicker
+	setEditText( text );
     // Hightlight the text whenever appropriate.
     if( marked && m_pEdit )
     {
