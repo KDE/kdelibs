@@ -607,6 +607,7 @@ static const KCmdLineOptions qt_options[] =
 {
    { "display <displayname>", I18N_NOOP("Use the X-server display 'displayname'"), 0},
    { "font <fontname>",  I18N_NOOP("Set default font to 'fontname'"), 0},
+   { "session <sessionId>", I18N_NOOP("Restore the application for the given 'sessionId'"), 0},
    { 0, 0, 0 }
 };
 
