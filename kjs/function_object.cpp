@@ -40,9 +40,9 @@ FunctionPrototypeImp::FunctionPrototypeImp(ExecState *exec)
   : InternalFunctionImp(0)
 {
   Value protect(this);
-  put(exec, "toString", new FunctionProtoFuncImp(exec, this,FunctionProtoFuncImp::ToString, 0), DontEnum);
-  put(exec, "apply",    new FunctionProtoFuncImp(exec, this,FunctionProtoFuncImp::Apply,    2), DontEnum);
-  put(exec, "call",     new FunctionProtoFuncImp(exec, this,FunctionProtoFuncImp::Call,     1), DontEnum);
+  put(exec, "toString", Object(new FunctionProtoFuncImp(exec, this, FunctionProtoFuncImp::ToString, 0)), DontEnum);
+  put(exec, "apply",    Object(new FunctionProtoFuncImp(exec, this, FunctionProtoFuncImp::Apply,    2)), DontEnum);
+  put(exec, "call",     Object(new FunctionProtoFuncImp(exec, this, FunctionProtoFuncImp::Call,     1)), DontEnum);
 }
 
 FunctionPrototypeImp::~FunctionPrototypeImp()
@@ -170,7 +170,7 @@ FunctionObjectImp::FunctionObjectImp(ExecState *exec, FunctionPrototypeImp *func
   : InternalFunctionImp(funcProto)
 {
   Value protect(this);
-  put(exec,"prototype",funcProto,DontEnum|DontDelete|ReadOnly);
+  put(exec,"prototype", Object(funcProto), DontEnum|DontDelete|ReadOnly);
 
   // no. of arguments for constructor
   put(exec,"length", Number(1), ReadOnly|DontDelete|DontEnum);
@@ -214,7 +214,7 @@ Object FunctionObjectImp::construct(ExecState *exec, const List &args)
     bool cont = dbg->sourceParsed(exec,sid,body,errLine);
     if (!cont) {
       dbg->imp()->abort();
-      return new ObjectImp();
+      return Object(new ObjectImp());
     }
   }
 
@@ -276,7 +276,8 @@ Object FunctionObjectImp::construct(ExecState *exec, const List &args)
 
   Object objCons = exec->interpreter()->builtinObject();
   Object prototype = objCons.construct(exec,List::empty());
-  prototype.put(exec,"constructor",fimp,DontEnum|DontDelete|ReadOnly);
+  prototype.put(exec, "constructor",
+		Object(fimp), DontEnum|DontDelete|ReadOnly);
   fimp->put(exec,"prototype",prototype,DontEnum|DontDelete|ReadOnly);
   fimp->put(exec,"arguments",Null(),DontEnum|DontDelete|ReadOnly);
   return ret;

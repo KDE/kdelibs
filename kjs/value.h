@@ -274,7 +274,6 @@ namespace KJS {
   class Undefined : public Value {
   public:
     Undefined();
-    Undefined(UndefinedImp *v);
     Undefined(const Undefined &v);
     virtual ~Undefined();
 
@@ -290,6 +289,10 @@ namespace KJS {
      * @return The value converted to an Undefined
      */
     static Undefined dynamicCast(const Value &v);
+  private:
+    friend class UndefinedImp;
+    explicit Undefined(UndefinedImp *v);
+
   };
 
   /**
@@ -300,7 +303,6 @@ namespace KJS {
   class Null : public Value {
   public:
     Null();
-    Null(NullImp *v);
     Null(const Null &v);
     virtual ~Null();
 
@@ -316,6 +318,9 @@ namespace KJS {
      * @return The value converted to a Null
      */
     static Null dynamicCast(const Value &v);
+  private:
+    friend class NullImp;
+    explicit Null(NullImp *v);
   };
 
   /**
@@ -324,7 +329,6 @@ namespace KJS {
   class Boolean : public Value {
   public:
     Boolean(bool b = false);
-    Boolean(BooleanImp *v);
     Boolean(const Boolean &v);
     virtual ~Boolean();
 
@@ -342,6 +346,9 @@ namespace KJS {
     static Boolean dynamicCast(const Value &v);
 
     bool value() const;
+  private:
+    friend class BooleanImp;
+    explicit Boolean(BooleanImp *v);
   };
 
   /**
@@ -350,7 +357,6 @@ namespace KJS {
   class String : public Value {
   public:
     String(const UString &s = "");
-    String(StringImp *v);
     String(const String &v);
     virtual ~String();
 
@@ -368,6 +374,9 @@ namespace KJS {
     static String dynamicCast(const Value &v);
 
     UString value() const;
+  private:
+    friend class StringImp;
+    explicit String(StringImp *v);
   };
 
   extern const double NaN;
@@ -383,7 +392,6 @@ namespace KJS {
     Number(double d = 0.0);
     Number(long int l);
     Number(long unsigned int l);
-    Number(NumberImp *v);
     Number(const Number &v);
     virtual ~Number();
 
@@ -405,6 +413,9 @@ namespace KJS {
      * @return The value converted to a Number
      */
     static Number dynamicCast(const Value &v);
+  private:
+    friend class NumberImp;
+    explicit Number(NumberImp *v);
   };
 
 }; // namespace

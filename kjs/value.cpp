@@ -82,12 +82,12 @@ void ValueImp::operator delete(void*)
 // ECMA 9.4
 int ValueImp::toInteger(ExecState *exec) const
 {
-  return int(roundValue(exec,const_cast<ValueImp*>(this)));
+  return int(roundValue(exec, Value(const_cast<ValueImp*>(this))));
 }
 
 int ValueImp::toInt32(ExecState *exec) const
 {
-  double d = roundValue(exec,const_cast<ValueImp*>(this));
+  double d = roundValue(exec, Value(const_cast<ValueImp*>(this)));
   double d32 = fmod(d, D32);
 
   if (d32 >= D32 / 2.0)
@@ -98,7 +98,7 @@ int ValueImp::toInt32(ExecState *exec) const
 
 unsigned int ValueImp::toUInt32(ExecState *exec) const
 {
-  double d = roundValue(exec,const_cast<ValueImp*>(this));
+  double d = roundValue(exec, Value(const_cast<ValueImp*>(this)));
   double d32 = fmod(d, D32);
 
   return static_cast<unsigned int>(d32);
@@ -106,7 +106,7 @@ unsigned int ValueImp::toUInt32(ExecState *exec) const
 
 unsigned short ValueImp::toUInt16(ExecState *exec) const
 {
-  double d = roundValue(exec,const_cast<ValueImp*>(this));
+  double d = roundValue(exec, Value(const_cast<ValueImp*>(this)));
   double d16 = fmod(d, D16);
 
   return static_cast<unsigned short>(d16);
@@ -140,7 +140,7 @@ UString ValueImp::getPropertyName(ExecState * /*exec*/) const
 Value ValueImp::getValue(ExecState *exec) const
 {
   if (type() != ReferenceType)
-    return const_cast<ValueImp*>(this);
+    return Value(const_cast<ValueImp*>(this));
 
   Value o = getBase(exec);
 
@@ -358,9 +358,9 @@ Undefined& Undefined::operator=(const Undefined &v)
 Undefined Undefined::dynamicCast(const Value &v)
 {
   if (v.isNull() || v.type() != UndefinedType)
-    return 0;
+    return Undefined(0);
 
-  return static_cast<UndefinedImp*>(v.imp());
+  return Undefined(static_cast<UndefinedImp*>(v.imp()));
 }
 
 // ------------------------------ Null -----------------------------------------
@@ -390,9 +390,9 @@ Null& Null::operator=(const Null &v)
 Null Null::dynamicCast(const Value &v)
 {
   if (v.isNull() || v.type() != NullType)
-    return 0;
+    return Null(0);
 
-  return static_cast<NullImp*>(v.imp());
+  return Null(static_cast<NullImp*>(v.imp()));
 }
 
 // ------------------------------ Boolean --------------------------------------
@@ -466,9 +466,9 @@ UString String::value() const
 String String::dynamicCast(const Value &v)
 {
   if (v.isNull() || v.type() != StringType)
-    return 0;
+    return String(0);
 
-  return static_cast<StringImp*>(v.imp());
+  return String(static_cast<StringImp*>(v.imp()));
 }
 
 // ------------------------------ Number ---------------------------------------
@@ -507,9 +507,9 @@ Number& Number::operator=(const Number &v)
 Number Number::dynamicCast(const Value &v)
 {
   if (v.isNull() || v.type() != NumberType)
-    return 0;
+    return Number((NumberImp*)0);
 
-  return static_cast<NumberImp*>(v.imp());
+  return Number(static_cast<NumberImp*>(v.imp()));
 }
 
 double Number::value() const

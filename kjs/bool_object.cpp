@@ -47,13 +47,13 @@ BooleanInstanceImp::BooleanInstanceImp(const Object &proto)
 BooleanPrototypeImp::BooleanPrototypeImp(ExecState *exec,
                                          ObjectPrototypeImp *objectProto,
                                          FunctionPrototypeImp *funcProto)
-  : BooleanInstanceImp(objectProto)
+  : BooleanInstanceImp(Object(objectProto))
 {
   Value protect(this);
   // The constructor will be added later by InterpreterImp::InterpreterImp()
 
-  put(exec,"toString", new BooleanProtoFuncImp(exec,funcProto,BooleanProtoFuncImp::ToString,0), DontEnum);
-  put(exec,"valueOf",  new BooleanProtoFuncImp(exec,funcProto,BooleanProtoFuncImp::ValueOf,0),  DontEnum);
+  put(exec,"toString", Object(new BooleanProtoFuncImp(exec,funcProto,BooleanProtoFuncImp::ToString,0)), DontEnum);
+  put(exec,"valueOf",  Object(new BooleanProtoFuncImp(exec,funcProto,BooleanProtoFuncImp::ValueOf,0)),  DontEnum);
   setInternalValue(Boolean(false));
 }
 
@@ -104,7 +104,7 @@ BooleanObjectImp::BooleanObjectImp(ExecState *exec, FunctionPrototypeImp *funcPr
   : InternalFunctionImp(funcProto)
 {
   Value protect(this);
-  put(exec,"prototype",booleanProto,DontEnum|DontDelete|ReadOnly);
+  put(exec,"prototype", Object(booleanProto),DontEnum|DontDelete|ReadOnly);
 
   // no. of arguments for constructor
   put(exec,"length", Number(1), ReadOnly|DontDelete|DontEnum);

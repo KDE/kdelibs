@@ -111,7 +111,7 @@ const ClassInfo ArrayPrototypeImp::info = {"Array", &ArrayInstanceImp::info, &ar
 // ECMA 15.4.4
 ArrayPrototypeImp::ArrayPrototypeImp(ExecState *exec,
                                      ObjectPrototypeImp *objProto)
-  : ArrayInstanceImp(objProto)
+  : ArrayInstanceImp(Object(objProto))
 {
   Value protect(this);
   setInternalValue(Null());
@@ -478,7 +478,7 @@ ArrayObjectImp::ArrayObjectImp(ExecState *exec,
 {
   Value protect(this);
   // ECMA 15.4.3.1 Array.prototype
-  put(exec,"prototype",arrayProto,DontEnum|DontDelete|ReadOnly);
+  put(exec,"prototype", Object(arrayProto), DontEnum|DontDelete|ReadOnly);
 
   // no. of arguments for constructor
   put(exec,"length", Number(1), ReadOnly|DontDelete|DontEnum);
@@ -492,7 +492,7 @@ bool ArrayObjectImp::implementsConstruct() const
 // ECMA 15.4.2
 Object ArrayObjectImp::construct(ExecState *exec, const List &args)
 {
-  Object result = new ArrayInstanceImp(exec->interpreter()->builtinArrayPrototype());
+  Object result(new ArrayInstanceImp(exec->interpreter()->builtinArrayPrototype()));
 
   unsigned int len;
   ListIterator it = args.begin();

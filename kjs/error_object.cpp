@@ -35,15 +35,15 @@ using namespace KJS;
 ErrorPrototypeImp::ErrorPrototypeImp(ExecState *exec,
                                      ObjectPrototypeImp *objectProto,
                                      FunctionPrototypeImp *funcProto)
-  : ObjectImp(objectProto)
+  : ObjectImp(Object(objectProto))
 {
   Value protect(this);
   setInternalValue(Undefined());
   // The constructor will be added later in ErrorObjectImp's constructor
 
-  put(exec,"name",     String("Error"),          DontEnum);
-  put(exec,"message",  String("Unknown error"), DontEnum);
-  put(exec,"toString", new ErrorProtoFuncImp(exec,funcProto),    DontEnum);
+  put(exec, "name",     String("Error"), DontEnum);
+  put(exec, "message",  String("Unknown error"), DontEnum);
+  put(exec, "toString", Object(new ErrorProtoFuncImp(exec,funcProto)), DontEnum);
 }
 
 // ------------------------------ ErrorProtoFuncImp ----------------------------
@@ -86,7 +86,7 @@ ErrorObjectImp::ErrorObjectImp(ExecState *exec, FunctionPrototypeImp *funcProto,
 {
   Value protect(this);
   // ECMA 15.11.3.1 Error.prototype
-  put(exec,"prototype",errorProto,DontEnum|DontDelete|ReadOnly);
+  put(exec, "prototype", Object(errorProto), DontEnum|DontDelete|ReadOnly);
   //put(exec, "name", String(n));
 }
 
@@ -99,7 +99,7 @@ bool ErrorObjectImp::implementsConstruct() const
 Object ErrorObjectImp::construct(ExecState *exec, const List &args)
 {
   Object proto = Object::dynamicCast(exec->interpreter()->builtinErrorPrototype());
-  Object obj = new ObjectImp(proto);
+  Object obj(new ObjectImp(proto));
 
   if (!args.isEmpty() && args[0].type() != UndefinedType) {
     obj.put(exec,"message", String(args[0].toString(exec)));
@@ -124,7 +124,7 @@ Value ErrorObjectImp::call(ExecState *exec, Object &/*thisObj*/, const List &arg
 
 NativeErrorPrototypeImp::NativeErrorPrototypeImp(ExecState *exec, ErrorPrototypeImp *errorProto,
                                                  ErrorType et, UString name, UString message)
-  : ObjectImp(errorProto)
+  : ObjectImp(Object(errorProto))
 {
   Value protect(this);
   errType = et;
@@ -154,7 +154,7 @@ bool NativeErrorImp::implementsConstruct() const
 
 Object NativeErrorImp::construct(ExecState *exec, const List &args)
 {
-  Object obj = new ObjectImp(proto);
+  Object obj(new ObjectImp(Object(proto)));
   if (args[0].type() != UndefinedType)
     obj.put(exec, "message", String(args[0].toString(exec)));
   return obj;

@@ -100,7 +100,7 @@ Interpreter::Interpreter(const Object &global) : rep(0)
 
 Interpreter::Interpreter()
 {
-  Object global = new ObjectImp();
+  Object global(new ObjectImp());
   rep = new InterpreterImp(this,global);
 }
 
@@ -346,7 +346,7 @@ void ExecState::setException(const Value &e)
 
 void ExecState::clearException()
 {
-  rep->exception = 0;
+  rep->exception = Value();
 }
 
 Value ExecState::exception() const

@@ -606,7 +606,7 @@ namespace KJS {
     /**
      * Array of error names corresponding to @ref ErrorType
      */
-    static const char **errorNames;
+    static const char * const * const errorNames;
   };
 
 }; // namespace

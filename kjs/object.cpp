@@ -78,14 +78,14 @@ bool Object::inherits(const ClassInfo *cinfo) const
 Object Object::dynamicCast(const Value &v)
 {
   if (v.isNull() || v.type() != ObjectType)
-    return 0;
+    return Object(0);
 
-  return static_cast<ObjectImp*>(v.imp());
+  return Object(static_cast<ObjectImp*>(v.imp()));
 }
 
 Value Object::prototype() const
 {
-  return static_cast<ObjectImp*>(rep)->prototype();
+  return Value(static_cast<ObjectImp*>(rep)->prototype());
 }
 
 UString Object::className() const
@@ -242,7 +242,7 @@ bool ObjectImp::inherits(const ClassInfo *info) const
     return false;
 
   const ClassInfo *ci = classInfo();
-  if (!ci || !info)
+  if (!ci)
     return false;
 
   while (ci && ci != info)
@@ -258,7 +258,7 @@ Type ObjectImp::type() const
 
 Value ObjectImp::prototype() const
 {
-  return _proto;
+  return Value(_proto);
 }
 
 void ObjectImp::setPrototype(const Value &proto)
@@ -287,7 +287,7 @@ Value ObjectImp::get(ExecState *exec, const UString &propertyName) const
 
   ValueImp *imp = getDirect(propertyName);
   if ( imp )
-    return imp;
+    return Value(imp);
 
   Object proto = Object::dynamicCast(prototype());
   if (proto.isNull())
@@ -412,7 +412,7 @@ Value ObjectImp::defaultValue(ExecState *exec, Type hint) const
     v = get(exec,"valueOf");
 
   if (v.type() == ObjectType) {
-    Object o = static_cast<ObjectImp*>(v.imp());
+    Object o = Object(static_cast<ObjectImp*>(v.imp()));
     if (o.implementsCall()) { // spec says "not primitive type" but ...
       Object thisObj = Object(const_cast<ObjectImp*>(this));
       Value def = o.call(exec,thisObj,List::empty());
@@ -431,7 +431,7 @@ Value ObjectImp::defaultValue(ExecState *exec, Type hint) const
     v = get(exec,"toString");
 
   if (v.type() == ObjectType) {
-    Object o = static_cast<ObjectImp*>(v.imp());
+    Object o = Object(static_cast<ObjectImp*>(v.imp()));
     if (o.implementsCall()) { // spec says "not primitive type" but ...
       Object thisObj = Object(const_cast<ObjectImp*>(this));
       Value def = o.call(exec,thisObj,List::empty());
@@ -471,7 +471,7 @@ bool ObjectImp::implementsConstruct() const
 Object ObjectImp::construct(ExecState */*exec*/, const List &/*args*/)
 {
   assert(false);
-  return 0;
+  return Object(0);
 }
 
 bool ObjectImp::implementsCall() const
@@ -482,7 +482,7 @@ bool ObjectImp::implementsCall() const
 Value ObjectImp::call(ExecState */*exec*/, Object &/*thisObj*/, const List &/*args*/)
 {
   assert(false);
-  return 0;
+  return Object(0);
 }
 
 bool ObjectImp::implementsHasInstance() const
@@ -517,7 +517,7 @@ List ObjectImp::propList(ExecState *exec, bool recursive)
   PropertyMapNode *node = _prop->first();
   while (node) {
     if (!(node->attr & DontEnum))
-      list.append(Reference(this,node->name));
+      list.append(Reference(Object(this), node->name));
     node = node->next();
   }
 
@@ -529,7 +529,7 @@ List ObjectImp::propList(ExecState *exec, bool recursive)
       const HashEntry *e = info->propHashTable->entries;
       for (int i = 0; i < size; ++i, ++e) {
         if ( e->s && !(e->attr & DontEnum) )
-          list.append(Reference(this,e->s)); /// ######### check for duplicates with the propertymap
+          list.append(Reference(Object(this), e->s)); /// ######### check for duplicates with the propertymap
       }
     }
     info = info->parentClass;
@@ -540,7 +540,7 @@ List ObjectImp::propList(ExecState *exec, bool recursive)
 
 Value ObjectImp::internalValue() const
 {
-  return _internalValue;
+  return Value(_internalValue);
 }
 
 void ObjectImp::setInternalValue(const Value &v)
@@ -605,7 +605,7 @@ Object ObjectImp::toObject(ExecState */*exec*/) const
 
 // ------------------------------ Error ----------------------------------------
 
-const char *errorNamesArr[] = {
+const char * const errorNamesArr[] = {
   I18N_NOOP("Error"), // GeneralError
   I18N_NOOP("Evaluation error"), // EvalError
   I18N_NOOP("Range error"), // RangeError
@@ -615,7 +615,7 @@ const char *errorNamesArr[] = {
   I18N_NOOP("URI error"), // URIError
 };
 
-const char **Error::errorNames = errorNamesArr;
+const char * const * const Error::errorNames = errorNamesArr;
 
 Object Error::create(ExecState *exec, ErrorType errtype, const char *message,
                      int lineno, int sourceId)

@@ -39,8 +39,8 @@ ObjectPrototypeImp::ObjectPrototypeImp(ExecState *exec,
   : ObjectImp() // [[Prototype]] is Null()
 {
   Value protect(this);
-  put(exec,"toString", new ObjectProtoFuncImp(exec,funcProto,ObjectProtoFuncImp::ToString, 0), DontEnum);
-  put(exec,"valueOf",  new ObjectProtoFuncImp(exec,funcProto,ObjectProtoFuncImp::ValueOf,  0), DontEnum);
+  put(exec,"toString", Object(new ObjectProtoFuncImp(exec,funcProto,ObjectProtoFuncImp::ToString, 0)), DontEnum);
+  put(exec,"valueOf",  Object(new ObjectProtoFuncImp(exec,funcProto,ObjectProtoFuncImp::ValueOf,  0)), DontEnum);
 }
 
 
@@ -80,7 +80,7 @@ ObjectObjectImp::ObjectObjectImp(ExecState *exec,
 {
   Value protect(this);
   // ECMA 15.2.3.1
-  put(exec,"prototype",objProto,DontEnum|DontDelete|ReadOnly);
+  put(exec,"prototype", Object(objProto), DontEnum|DontDelete|ReadOnly);
 
   // no. of arguments for constructor
   put(exec,"length", Number(1), ReadOnly|DontDelete|DontEnum);
@@ -98,7 +98,7 @@ Object ObjectObjectImp::construct(ExecState *exec, const List &args)
   // if no arguments have been passed ...
   if (args.isEmpty()) {
     Object proto = exec->interpreter()->builtinObjectPrototype();
-    Object result = new ObjectImp(proto);
+    Object result(new ObjectImp(proto));
     return result;
   }
 
@@ -118,7 +118,7 @@ Object ObjectObjectImp::construct(ExecState *exec, const List &args)
   case NullType:
   case UndefinedType:
     Object proto = exec->interpreter()->builtinObjectPrototype();
-    return new ObjectImp(proto);
+    return Object(new ObjectImp(proto));
   }
 }
 

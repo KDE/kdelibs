@@ -127,7 +127,7 @@ const ClassInfo DatePrototypeImp::info = {"Date", 0, &dateTable, 0};
 
 DatePrototypeImp::DatePrototypeImp(ExecState *,
                                    ObjectPrototypeImp *objectProto)
-  : DateInstanceImp(objectProto)
+  : DateInstanceImp(Object(objectProto))
 {
   Value protect(this);
   setInternalValue(Number(NaN));
@@ -321,10 +321,10 @@ DateObjectImp::DateObjectImp(ExecState *exec,
 {
   Value protect(this);
   // ECMA 15.9.4.1 Date.prototype
-  put(exec,"prototype",dateProto,DontEnum|DontDelete|ReadOnly);
+  put(exec,"prototype", Object(dateProto), DontEnum|DontDelete|ReadOnly);
 
-  put(exec,"parse", new DateObjectFuncImp(exec,funcProto,DateObjectFuncImp::Parse, 1), DontEnum);
-  put(exec,"UTC",   new DateObjectFuncImp(exec,funcProto,DateObjectFuncImp::UTC,   7),   DontEnum);
+  put(exec,"parse", Object(new DateObjectFuncImp(exec,funcProto,DateObjectFuncImp::Parse, 1)), DontEnum);
+  put(exec,"UTC",   Object(new DateObjectFuncImp(exec,funcProto,DateObjectFuncImp::UTC,   7)),   DontEnum);
 
   // no. of arguments for constructor
   put(exec,"length", Number(7), ReadOnly|DontDelete|DontEnum);
@@ -385,7 +385,7 @@ Object DateObjectImp::construct(ExecState *exec, const List &args)
     value = Number(mktime(&t) * 1000.0 + ms);
   }
 
-  ObjectImp *proto = static_cast<ObjectImp*>(exec->interpreter()->builtinDatePrototype().imp());
+  Object proto = exec->interpreter()->builtinDatePrototype();
   Object ret(new DateInstanceImp(proto));
   ret.setInternalValue(timeClip(value));
   return ret;

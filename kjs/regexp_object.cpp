@@ -41,16 +41,16 @@ using namespace KJS;
 RegExpPrototypeImp::RegExpPrototypeImp(ExecState *exec,
                                        ObjectPrototypeImp *objProto,
                                        FunctionPrototypeImp *funcProto)
-  : ObjectImp(objProto)
+  : ObjectImp(Object(objProto))
 {
   Value protect(this);
   setInternalValue(String(""));
 
   // The constructor will be added later in RegExpObject's constructor (?)
 
-  put(exec,"exec",     new RegExpProtoFuncImp(exec,funcProto,RegExpProtoFuncImp::Exec,     0), DontEnum);
-  put(exec,"test",     new RegExpProtoFuncImp(exec,funcProto,RegExpProtoFuncImp::Test,     0), DontEnum);
-  put(exec,"toString", new RegExpProtoFuncImp(exec,funcProto,RegExpProtoFuncImp::ToString, 0), DontEnum);
+  put(exec, "exec",     Object(new RegExpProtoFuncImp(exec,funcProto,RegExpProtoFuncImp::Exec,     0)), DontEnum);
+  put(exec, "test",     Object(new RegExpProtoFuncImp(exec,funcProto,RegExpProtoFuncImp::Test,     0)), DontEnum);
+  put(exec, "toString", Object(new RegExpProtoFuncImp(exec,funcProto,RegExpProtoFuncImp::ToString, 0)), DontEnum);
 }
 
 // ------------------------------ RegExpProtoFuncImp ---------------------------
@@ -92,7 +92,7 @@ Value RegExpProtoFuncImp::call(ExecState *exec, Object &thisObj, const List &arg
     if (!globalFlag)
       i = 0;
     if (i < 0 || i > length) {
-      thisObj.put(exec,"lastIndex", 0, DontDelete | DontEnum);
+      thisObj.put(exec,"lastIndex", Number(0), DontDelete | DontEnum);
       return Null();
     }
     RegExpObjectImp* regExpObj = static_cast<RegExpObjectImp*>(exec->interpreter()->builtinRegExp().imp());
@@ -134,7 +134,7 @@ Value RegExpProtoFuncImp::call(ExecState *exec, Object &thisObj, const List &arg
 const ClassInfo RegExpImp::info = {"RegExp", 0, 0, 0};
 
 RegExpImp::RegExpImp(RegExpPrototypeImp *regexpProto)
-  : ObjectImp(regexpProto), reg(0L)
+  : ObjectImp(Object(regexpProto)), reg(0L)
 {
 }
 
@@ -152,7 +152,7 @@ RegExpObjectImp::RegExpObjectImp(ExecState *exec,
 {
   Value protect(this);
   // ECMA 15.10.5.1 RegExp.prototype
-  put(exec,"prototype",regProto,DontEnum|DontDelete|ReadOnly);
+  put(exec,"prototype", Object(regProto), DontEnum|DontDelete|ReadOnly);
 
   // no. of arguments for constructor
   put(exec,"length", Number(2), ReadOnly|DontDelete|DontEnum);

@@ -110,9 +110,9 @@ namespace KJS {
       /*if (cachedVal)
         fprintf(stderr, "lookupOrCreateFunction: Function -> looked up in ObjectImp, found type=%d\n", cachedVal->type());*/
       if (cachedVal)
-        return cachedVal;
+        return Value(cachedVal);
 
-      Value val = new FuncImp(exec,token, params);
+      Value val = Value(new FuncImp(exec,token, params));
       ObjectImp *thatObj = const_cast<ObjectImp *>(thisObj);
       thatObj->ObjectImp::put(exec, propertyName, val, attr);
       return val;

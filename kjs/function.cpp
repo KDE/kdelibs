@@ -258,7 +258,7 @@ Object DeclaredFunctionImp::construct(ExecState *exec, const List &args)
   Object proto;
   Value p = get(exec,"prototype");
   if (p.type() == ObjectType)
-    proto = static_cast<ObjectImp*>(p.imp());
+    proto = Object(static_cast<ObjectImp*>(p.imp()));
   else
     proto = exec->interpreter()->builtinObjectPrototype();
 
@@ -295,7 +295,7 @@ ArgumentsImp::ArgumentsImp(ExecState *exec, FunctionImp *func, const List &args)
   : ObjectImp(exec->interpreter()->builtinObjectPrototype())
 {
   Value protect(this);
-  put(exec,"callee", func, DontEnum);
+  put(exec,"callee", Object(func), DontEnum);
   put(exec,"length", Number(args.size()), DontEnum);
   if (!args.isEmpty()) {
     ListIterator arg = args.begin();
@@ -315,7 +315,7 @@ ActivationImp::ActivationImp(ExecState *exec, FunctionImp *f, const List &args)
 {
   Value protect(this);
   arguments = new ArgumentsImp(exec,f, args);
-  put(exec,"arguments", arguments, Internal|DontDelete);
+  put(exec, "arguments", Object(arguments), Internal|DontDelete);
 }
 
 ActivationImp::~ActivationImp()

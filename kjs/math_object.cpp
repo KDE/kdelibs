@@ -73,7 +73,7 @@ const ClassInfo MathObjectImp::info = { "Math", 0, &mathTable, 0 };
 
 MathObjectImp::MathObjectImp(ExecState * /*exec*/,
                              ObjectPrototypeImp *objProto)
-  : ObjectImp(objProto)
+  : ObjectImp(Object(objProto))
 {
 }
 

@@ -112,34 +112,34 @@ ValueImp* ListIterator::operator->() const
     //    operator Value* () const { return node->member; }
 Value ListIterator::operator*() const
 {
-  return node->member;
+  return Value(node->member);
 }
 
     //    operator Value*() const { return node->member; }
 Value ListIterator::operator++()
 {
   node = node->next;
-  return node->member;
+  return Value(node->member);
 }
 
 Value ListIterator::operator++(int)
 {
   const ListNode *n = node;
   ++*this;
-  return n->member;
+  return Value(n->member);
 }
 
 Value ListIterator::operator--()
 {
   node = node->prev;
-  return node->member;
+  return Value(node->member);
 }
 
 Value ListIterator::operator--(int)
 {
   const ListNode *n = node;
   --*this;
-  return n->member;
+  return Value(n->member);
 }
 
 bool ListIterator::operator==(const ListIterator &it) const

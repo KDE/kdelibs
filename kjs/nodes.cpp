@@ -212,7 +212,7 @@ Value ResolveNode::evaluate(ExecState *exec)
     if (o->hasProperty(exec,ident)) {
       //cout << "Resolve: FOUND '" << ident.ascii() << "'"
       //     << " in " << (void*)o << " " << o->classInfo()->className << endl;
-      return Reference(o, ident);
+      return Reference(Object(o), ident);
     }
     scope++;
   }
@@ -315,13 +315,13 @@ Value ElementNode::evaluate(ExecState *exec)
   KJS_CHECKEXCEPTIONVALUE
 
   if (list) {
-    array = static_cast<ObjectImp*>(list->evaluate(exec).imp());
+    array = Object(static_cast<ObjectImp*>(list->evaluate(exec).imp()));
     KJS_CHECKEXCEPTIONVALUE
     val = node->evaluate(exec).getValue(exec);
     length = array.get(exec,"length").toInt32(exec);
   } else {
     Value newArr = exec->interpreter()->builtinArray().construct(exec,List::empty());
-    array = static_cast<ObjectImp*>(newArr.imp());
+    array = Object(static_cast<ObjectImp*>(newArr.imp()));
     val = node->evaluate(exec).getValue(exec);
     KJS_CHECKEXCEPTIONVALUE
   }
@@ -364,12 +364,12 @@ Value ArrayNode::evaluate(ExecState *exec)
   KJS_CHECKEXCEPTIONVALUE
 
   if (element) {
-    array = static_cast<ObjectImp*>(element->evaluate(exec).imp());
+    array = Object(static_cast<ObjectImp*>(element->evaluate(exec).imp()));
     KJS_CHECKEXCEPTIONVALUE
     length = opt ? array.get(exec,"length").toInt32(exec) : 0;
   } else {
     Value newArr = exec->interpreter()->builtinArray().construct(exec,List::empty());
-    array = static_cast<ObjectImp*>(newArr.imp());
+    array = Object(static_cast<ObjectImp*>(newArr.imp()));
     length = 0;
   }
 
@@ -441,12 +441,12 @@ Value PropertyValueNode::evaluate(ExecState *exec)
 {
   Object obj;
   if (list) {
-    obj = static_cast<ObjectImp*>(list->evaluate(exec).imp());
+    obj = Object(static_cast<ObjectImp*>(list->evaluate(exec).imp()));
     KJS_CHECKEXCEPTIONVALUE
   }
   else {
     Value newObj = exec->interpreter()->builtinObject().construct(exec,List::empty());
-    obj = static_cast<ObjectImp*>(newObj.imp());
+    obj = Object(static_cast<ObjectImp*>(newObj.imp()));
   }
   Value n = name->evaluate(exec);
   KJS_CHECKEXCEPTIONVALUE
@@ -680,7 +680,7 @@ Value NewExprNode::evaluate(ExecState *exec)
     return throwError(exec, TypeError, "Expression is no object. Cannot be new'ed");
   }
 
-  Object constr = static_cast<ObjectImp*>(v.imp());
+  Object constr = Object(static_cast<ObjectImp*>(v.imp()));
   if (!constr.implementsConstruct()) {
     return throwError(exec, TypeError, "Expression is no constructor.");
   }
@@ -733,7 +733,7 @@ Value FunctionCallNode::evaluate(ExecState *exec)
     return throwError(exec, TypeError, "Expression is no object. Cannot be called.");
   }
 
-  Object func = static_cast<ObjectImp*>(v.imp());
+  Object func = Object(static_cast<ObjectImp*>(v.imp()));
 
   if (!func.implementsCall()) {
 #ifndef NDEBUG
@@ -841,7 +841,7 @@ Value DeleteNode::evaluate(ExecState *exec)
     return Boolean(true);
   }
 
-  Object o = static_cast<ObjectImp*>(b.imp());
+  Object o = Object(static_cast<ObjectImp*>(b.imp()));
 
   bool ret = o.deleteProperty(exec,n);
 
@@ -1282,14 +1282,14 @@ Value RelationalNode::evaluate(ExecState *exec)
       if (v2.type() != ObjectType)
           return throwError(exec,  TypeError,
                              "Shift expression not an object into IN expression." );
-      Object o2 = static_cast<ObjectImp*>(v2.imp());
+      Object o2(static_cast<ObjectImp*>(v2.imp()));
       b = o2.hasProperty(exec,v1.toString(exec));
   } else {
     if (v2.type() != ObjectType)
         return throwError(exec,  TypeError,
                            "Called instanceof operator on non-object." );
 
-    Object o2 = static_cast<ObjectImp*>(v2.imp());
+    Object o2(static_cast<ObjectImp*>(v2.imp()));
     if (!o2.implementsHasInstance()) {
       // According to the spec, only some types of objects "imlement" the [[HasInstance]] property.
       // But we are supposed to throw an exception where the object does not "have" the [[HasInstance]]
@@ -2760,7 +2760,7 @@ Completion CatchNode::execute(ExecState *exec, const Value &arg)
 
   exec->clearException();
 
-  Object obj = new ObjectImp();
+  Object obj(new ObjectImp());
   obj.put(exec, ident, arg, DontDelete);
   exec->context().imp()->pushScope(obj);
   Completion c = block->execute(exec);

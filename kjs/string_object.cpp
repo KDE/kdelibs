@@ -85,7 +85,7 @@ const ClassInfo StringPrototypeImp::info = {"String", &StringInstanceImp::info, 
 // ECMA 15.5.4
 StringPrototypeImp::StringPrototypeImp(ExecState *exec,
                                        ObjectPrototypeImp *objProto)
-  : StringInstanceImp(objProto)
+  : StringInstanceImp(Object(objProto))
 {
   Value protect(this);
   // The constructor will be added later, after StringObjectImp has been built
@@ -297,7 +297,7 @@ Value StringProtoFuncImp::call(ExecState *exec, Object &thisObj, const List &arg
     u = s;
     i = p0 = 0;
     d = (a1.type() != UndefinedType) ? a1.toInteger(exec) : -1; // optional max number
-    if (a0.type() == ObjectType && Object::dynamicCast(a0.imp()).inherits(&RegExpImp::info)) {
+    if (a0.type() == ObjectType && Object::dynamicCast(a0).inherits(&RegExpImp::info)) {
       Object obj0 = Object::dynamicCast(a0);
       RegExp reg(obj0.get(exec,"source").toString(exec));
       if (u.isEmpty() && !reg.match(u, 0).isNull()) {
@@ -457,9 +457,9 @@ StringObjectImp::StringObjectImp(ExecState *exec,
 {
   Value protect(this);
   // ECMA 15.5.3.1 String.prototype
-  put(exec,"prototype",stringProto,DontEnum|DontDelete|ReadOnly);
+  put(exec,"prototype", Object(stringProto), DontEnum|DontDelete|ReadOnly);
 
-  put(exec,"fromCharCode", new StringObjectFuncImp(exec,funcProto), DontEnum);
+  put(exec,"fromCharCode", Object(new StringObjectFuncImp(exec,funcProto)), DontEnum);
 
   // no. of arguments for constructor
   put(exec,"length", Number(1), ReadOnly|DontDelete|DontEnum);
