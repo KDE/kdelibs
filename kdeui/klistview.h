@@ -156,10 +156,6 @@ public:
    */
   inline int dropVisualizerWidth () const { return mDropVisualizerWidth; }
 
-  /**
-   * Set the width of the (default) drop-visualizer.
-   */
-  void setDropVisualizerWidth (int w);
 
 signals:
 
@@ -285,6 +281,11 @@ public slots:
   virtual void setDropVisualizer(bool b);
 
   /**
+   * Set the width of the (default) drop-visualizer.
+   */
+  void setDropVisualizerWidth (int w);
+
+  /**
    * Set which column should be used for automatic tooltips.
    *
    * @param column is the column for which tooltips will be shown.
@@ -311,33 +312,12 @@ public slots:
 
 protected slots:
   /**
-   * Accessory slot for AutoSelect
-   * @internal
-   */
-  void slotOnItem( QListViewItem *item );
-
-  /**
-   * Accessory slot for AutoSelect/ChangeCursorOverItem
-   * @internal
-   */
-  void slotOnViewport();
-
-  /**
    * Update internal settings whenever the global ones change.
    * @internal
    */
   void slotSettingsChanged(int);
 
-  /**
-   * Process AutoSelection.
-   * @internal
-   */
-  void slotAutoSelect();
 
-  /**
-   * Repaint the rect where I was drawing the drop line.
-   */
-  void cleanDropVisualizer();
 
 protected:
   /**
@@ -507,14 +487,6 @@ protected:
   virtual QRect drawItemHighlighter(QPainter *painter, QListViewItem *item);
 
   /**
-   * For future expansion. 
-   *
-   * Do not use.
-   * @deprecated
-   */
-  void cleanItemHighlighter ();
-
-  /**
    * This method calls @ref dragObject() and starts the drag.
    *
    * Reimplement it to do fancy stuff like setting a pixmap or
@@ -525,6 +497,37 @@ protected:
 private slots:
   void slotMouseButtonClicked( int btn, QListViewItem *item, const QPoint &pos, int c );
   void doneEditing(QListViewItem *item, int row);
+  /**
+   * Repaint the rect where I was drawing the drop line.
+   */
+  void cleanDropVisualizer();
+  /**
+   * For future expansion.
+   *
+   * Do not use.
+   * @deprecated
+   */
+  void cleanItemHighlighter ();
+
+  /**
+   * Accessory slot for AutoSelect
+   * @internal
+   */
+  void slotOnItem( QListViewItem *item );
+
+  /**
+   * Accessory slot for AutoSelect/ChangeCursorOverItem
+   * @internal
+   */
+  void slotOnViewport();
+
+  /**
+   * Process AutoSelection.
+   * @internal
+   */
+  void slotAutoSelect();
+
+
 
 private:
   /**
