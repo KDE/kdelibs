@@ -89,7 +89,7 @@ KLocale::KLocale( const QString & catalog, KConfig * config )
   if (!cfg) cfg = KGlobal::instance()->config();
   this_klocale = 0;
   Q_ASSERT( cfg );
-   
+
   d->appName = catalog;
   initLanguageList( cfg, config == 0);
   initMainCatalogues(catalog);
@@ -413,13 +413,13 @@ bool KLocale::setLanguage(const QString & language)
 bool KLocale::setLanguage(const QStringList & languages)
 {
   QStringList languageList( languages );
-  // This list might contain 
+  // This list might contain
   // 1) some empty strings that we have to eliminate
-  // 2) duplicate entries like in de:fr:de, where we have to keep the first occurrance of a language in order 
+  // 2) duplicate entries like in de:fr:de, where we have to keep the first occurrance of a language in order
   //    to preserve the order of precenence of the user => iterate backwards
   // 3) languages into which the application is not translated. For those languages we should not even load kdelibs.mo or kio.po.
   //    these langugage have to be dropped. Otherwise we get strange side effects, e.g. with Hebrew:
-  //    the right/left switch for languages that write from 
+  //    the right/left switch for languages that write from
   //    right to left (like Hebrew or Arabic) is set in kdelibs.mo. If you only have kdelibs.mo
   //    but nothing from appname.mo, you get a mostly English app with layout from right to left.
   //    That was considered to be a bug by the Hebrew translators.
@@ -433,10 +433,10 @@ bool KLocale::setLanguage(const QStringList & languages)
       it = languageList.remove( it );
     }
   }
-  // now this has left the first element of the list unchecked. 
+  // now this has left the first element of the list unchecked.
   // The question why this is the case is left as an exercise for the reader...
   // Besides the list might have been empty all the way, so check that too.
-  if ( languageList.begin() != languageList.end() ) { 
+  if ( languageList.begin() != languageList.end() ) {
      QStringList::Iterator it = languageList.begin(); // now pointing to the first element
      // kdDebug() << "checking " << (*it) << endl;
      if( (*it).isEmpty() || !(isApplicationTranslatedInto( *it )) ) {
@@ -466,12 +466,12 @@ bool KLocale::isApplicationTranslatedInto( const QString & language)
   if ( language.isEmpty() ) {
     return false;
   }
-  
+
   if ( language == defaultLanguage() ) {
     // en_us is always "installed"
     return true;
   }
-  
+
   QString appName = d->appName;
   if (maincatalogue) {
     appName = QString::fromLatin1(maincatalogue);
@@ -1687,6 +1687,7 @@ QTime KLocale::readTime(const QString &intstr, ReadTimeFlags flags, bool *ok) co
 
  error:
   if (ok) *ok = false;
+  // ######## KDE4: remove this
   return QTime(-1, -1, -1); // return invalid date if it didn't work
 }
 
