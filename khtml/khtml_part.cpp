@@ -1458,7 +1458,6 @@ void KHTMLPart::stopAnimations()
 
 void KHTMLPart::slotFinishedParsing()
 {
-  qDebug( "slotFinishedParsing: %s", kdBacktrace( ).latin1( ) ) ;  
   d->m_doc->setParsing(false);
   checkEmitLoadEvent();
   disconnect(d->m_doc,SIGNAL(finishedParsing()),this,SLOT(slotFinishedParsing()));
