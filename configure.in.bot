@@ -22,6 +22,17 @@ if test "x$have_ssl" != xyes; then
   all_tests=bad
 fi
 
+if test -z "x$LIBPCRE"; then
+  echo ""
+  echo "You're missing libpcre."
+  echo "Some web pages (using regular expressions in Javascript code) will not "
+  echo "work correctly, the regexp support being limited without libpcre. "
+  echo "If you plan to use Konqueror as a Web Browser, download libpcre from "
+  echo "http://www.pcre.org or find a binary package for your platform."
+  echo ""
+  all_tests=bad
+fi
+
 if test "$all_tests" = "fine"; then
   echo ""
   echo "Good - your configure finished. Start make now"
