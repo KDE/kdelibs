@@ -16,12 +16,6 @@
 #------------------------------------------------------------------------------
 
 #------------------------------------------------------------------------------
-# Java
-
-0	short		0xcafe
->2	short		0xbabe		application/java
-
-#------------------------------------------------------------------------------
 # audio:  file(1) magic for sound formats
 #
 # from Jan Nicolai Langfeldt <janl@ifi.uio.no>,
@@ -177,6 +171,18 @@
 0       string          #!/usr/local/bin/perl           application/x-perl
 0       string          #!\ /usr/local/bin/perl         application/x-perl
 0       string          eval\ "exec\ /usr/local/bin/perl application/x-perl
+
+# python.
+#
+0       string          #!/bin/python                     application/x-python
+0       string          #!\ /bin/python                   application/x-python
+0       string          eval\ "exec\ /bin/python          application/x-python
+0       string          #!/usr/bin/python                 application/x-python
+0       string          #!\ /usr/bin/python               application/x-python
+0       string          eval\ "exec\ /usr/bin/python      application/x-python
+0       string          #!/usr/local/bin/python           application/x-python
+0       string          #!\ /usr/local/bin/python         application/x-python
+0       string          eval\ "exec\ /usr/local/bin/python application/x-python
 
 #------------------------------------------------------------------------------
 # compress:  file(1) magic for pure-compression formats (no archives)
@@ -548,6 +554,12 @@
 0		string	\#\ KDE\ Config\ File	application/x-desktop
 # xmcd database file for kscd
 0		string	\#\ xmcd                text/xmcd
+
+#------------------------------------------------------------------------------
+# Java
+
+0	short		0xcafe
+>2	short		0xbabe		application/java
 
 # news and mail
 0       string          Return-Path:    message/rfc822
