@@ -36,7 +36,7 @@
  * Plugin capability, cleanups and port to KDialogBase by
  *  Simon Hausmann <hausmann@kde.org>
  */
- 
+
 #include <config.h>
 #include <pwd.h>
 #include <grp.h>
@@ -608,23 +608,36 @@ KFilePropsPage::KFilePropsPage( KPropertiesDialog *_props )
   l->setText( directory );
   grid->addWidget(l, curRow++, 2);
 
-  if ( S_ISREG(item->mode()) ||
-       S_ISDIR(item->mode()) && item->url().isLocalFile() ) {
-    // TODO: perhaps a button to manually ask for dir size on remote protocols ?
+  //if ( S_ISREG(item->mode()) ||
+  //     S_ISDIR(item->mode()) && item->url().isLocalFile() )
+  {
     l = new QLabel(i18n("Size:"), d->m_frame );
     grid->addWidget(l, curRow, 0);
 
-    sizeLabel = new QLabel(QString::fromLatin1("..."), d->m_frame );
-    grid->addWidget(sizeLabel, curRow++, 2);
-    if (S_ISREG(item->mode()))
+    QHBoxLayout * sizelay = new QHBoxLayout(KDialog::spacingHint());
+    grid->addLayout( sizelay, curRow++, 2 );
+    m_sizeLabel = new QLabel( d->m_frame );
+    sizelay->addWidget(m_sizeLabel, 0);
+
+    if (S_ISREG(item->mode())) // File (or symlink to file)
     {
-        sizeLabel->setText(KIO::convertSize(item->size()));
+        m_sizeLabel->setText(KIO::convertSize(item->size()));
+        m_sizeDetermineButton = 0L;
+        m_sizeStopButton = 0L;
     }
-    else
+    else // Directory
     {
-        d->dirSizeJob = KDirSize::dirSizeJob( item->url() );
-        connect( d->dirSizeJob, SIGNAL( result( KIO::Job * ) ),
-                 SLOT( slotDirSizeFinished( KIO::Job * ) ) );
+        // buttons
+        m_sizeDetermineButton = new QPushButton( i18n("Calculate"), d->m_frame );
+        m_sizeStopButton = new QPushButton( i18n("Stop"), d->m_frame );
+        connect( m_sizeDetermineButton, SIGNAL( pressed() ), this, SLOT( slotSizeDetermine() ) );
+        connect( m_sizeStopButton, SIGNAL( pressed() ), this, SLOT( slotSizeStop() ) );
+        sizelay->addWidget(m_sizeDetermineButton, 0);
+        sizelay->addWidget(m_sizeStopButton, 0);
+
+        // auto-launch for local dirs only, and not for '/'
+        if ( item->url().isLocalFile() && item->url().path().length() > 1 )
+          slotSizeDetermine();
     }
   }
 
@@ -692,8 +705,34 @@ void KFilePropsPage::slotDirSizeFinished( KIO::Job * job )
   if (job->error())
     job->showErrorDialog( properties->dialog() );
   else
-    sizeLabel->setText(KIO::convertSize(static_cast<KDirSize*>(job)->totalSize() ) );
+    m_sizeLabel->setText(KIO::convertSize(static_cast<KDirSize*>(job)->totalSize() ) );
+  m_sizeStopButton->setEnabled(false);
+  // just in case you change something and try again :)
+  m_sizeDetermineButton->setText( i18n("Refresh") );
+  m_sizeDetermineButton->setEnabled(true);
   d->dirSizeJob = 0L;
+}
+
+void KFilePropsPage::slotSizeDetermine()
+{
+  m_sizeLabel->setText( i18n("Calculating...") );
+  d->dirSizeJob = KDirSize::dirSizeJob( properties->item()->url() );
+  connect( d->dirSizeJob, SIGNAL( result( KIO::Job * ) ),
+           SLOT( slotDirSizeFinished( KIO::Job * ) ) );
+  m_sizeStopButton->setEnabled(true);
+  m_sizeDetermineButton->setEnabled(false);
+}
+
+void KFilePropsPage::slotSizeStop()
+{
+  if ( d->dirSizeJob )
+  {
+    m_sizeLabel->setText( i18n("Stopped") );
+    d->dirSizeJob->kill();
+    d->dirSizeJob = 0;
+  }
+  m_sizeStopButton->setEnabled(false);
+  m_sizeDetermineButton->setEnabled(true);
 }
 
 KFilePropsPage::~KFilePropsPage()

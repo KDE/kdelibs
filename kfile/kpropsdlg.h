@@ -349,12 +349,16 @@ protected slots:
   void slotCopyFinished( KIO::Job * );
   void slotFileRenamed( KIO::Job *, const KURL &, const KURL & );
   void slotDirSizeFinished( KIO::Job * );
+  void slotSizeStop();
+  void slotSizeDetermine();
 
 private:
   QWidget *iconArea;
   QWidget *nameArea;
 
-  QLabel *sizeLabel;
+  QLabel *m_sizeLabel;
+  QPushButton *m_sizeDetermineButton;
+  QPushButton *m_sizeStopButton;
 
   QString m_sRelativePath;
   bool m_bFromTemplate;
