@@ -86,7 +86,7 @@ that we would like to make for the next binary incompatible release.
 
 - Do we need to have factory arguments in the KCM API? (who would use it anyway?)
 
-- KCModuleInfo and KService should use d-pointer. Perhaps there is more classes.
+- KCModuleInfo should use d-pointer. Perhaps there is more classes.
 
 - The config options in kdeglobals needs to be cleaned up a little. Perhaps I'm being picky..
 	* They should be named properly, for example "enableIcons" instead of "EnableIcons". Or atleast
