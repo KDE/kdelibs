@@ -350,7 +350,22 @@ public:
      * @return true if there is text selected.
      */
      bool isTextSelected() const;
-  
+
+    /**
+     * Initiate a text search.
+     */
+     void findTextBegin();
+
+    /**
+     * Find the next occurrance of the expression.
+     */
+     bool findTextNext( const QRegExp &exp );
+
+    /**
+     * end a text search.
+     */
+     void findTextEnd();
+
     /**
      * This function allows you to customize the behavior of the
      * @ref KHTMLWidget.

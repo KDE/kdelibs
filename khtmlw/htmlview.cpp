@@ -674,6 +674,21 @@ bool KHTMLView::isTextSelected() const
     return view->isTextSelected();
 }
 
+void KHTMLView::findTextBegin()
+{
+    view->findTextBegin();
+}
+
+bool KHTMLView::findTextNext( const QRegExp &exp )
+{
+    return view->findTextNext( exp );
+}
+
+void KHTMLView::findTextEnd()
+{
+    view->findTextEnd();
+}
+
 void KHTMLView::setMarginWidth( int _w )
 {
     view->setMarginWidth( _w );
