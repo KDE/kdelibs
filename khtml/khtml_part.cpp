@@ -3893,7 +3893,10 @@ bool KHTMLPart::processObjectRequest( khtml::ChildFrame *child, const KURL &_url
   else if ( !url.isEmpty() )
   {
       //kdDebug( 6050 ) << "opening " << url.url() << " in frame " << child->m_part << endl;
-      return child->m_part->openURL( url );
+      bool b = child->m_part->openURL( url );
+      if (child->m_bCompleted)
+          checkCompleted();
+      return b;
   }
   else
   {
