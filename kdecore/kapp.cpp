@@ -850,8 +850,8 @@ void KApplication::applyGUIStyle(GUIStyle /* newstyle */) {
 
     if(styleHandle){
         warning(i18n("KApp: Unloading previous style plugin."));
-        lt_dlclose(*(lt_dlhandle*)styleHandle);
-        styleHandle = NULL;
+        lt_dlclose((lt_dlhandle*)styleHandle);
+        styleHandle = 0;
     }
 
     if(styleStr == "Platinum"){
@@ -890,7 +890,6 @@ void KApplication::applyGUIStyle(GUIStyle /* newstyle */) {
             }
         }
         styleStr = dir.path() + "/" + styleStr;
-	styleHandle = new lt_dlhandle;
         styleHandle = lt_dlopen(styleStr);
 
         if(!styleHandle){
