@@ -141,6 +141,8 @@ RenderStyle::RenderStyle()
 
 RenderStyle::RenderStyle(bool)
 {
+    setBitDefaults();
+
     box.init();
     box.access()->setDefaultValues();    	
     visual.init();
@@ -155,18 +157,10 @@ RenderStyle::RenderStyle(bool)
         
 }
 
-RenderStyle::RenderStyle(const RenderStyle& other)
+RenderStyle::RenderStyle(const RenderStyle& other) 
 {
-    _styleType=NOPSEUDO;
-    pseudoStyle=0;
-        
-//    counter++;
-    box = other.box;
-    visual = other.visual;
-    background = other.background;
-    surround = other.surround;
 
-    inherited = other.inherited;
+    _display = other._display;
 
     _border_collapse = other._border_collapse;
     _empty_cells = other._empty_cells;
@@ -176,23 +170,36 @@ RenderStyle::RenderStyle(const RenderStyle& other)
     _visiblity = other._visiblity;
     _text_align = other._text_align;
     _direction = other._direction;
-    _text_decoration = other._text_decoration;
     _white_space = other._white_space;
-
-    _vertical_align = other._vertical_align;
-    _clear = other._clear;
-    _overflow = other._overflow;
-    _table_layout = other._table_layout;
-    _position = other._position;
-    _floating = other._floating;
-    _bg_repeat = other._bg_repeat;
-    _bg_attachment = other._bg_attachment;
+    _text_decoration = other._text_decoration;
     _visuallyOrdered = other._visuallyOrdered;
-
-    _display = other._display;
+    _cursor = other._cursor;
 
     _htmlHacks = other._htmlHacks;
+
+    _overflow = other._overflow;
+    _vertical_align = other._vertical_align;
+    _clear = other._clear;
+    _table_layout = other._table_layout;
+    _bg_repeat = other._bg_repeat;
+    _bg_attachment = other._bg_attachment;
+    _position = other._position;
+    _floating = other._floating;
+
     _flowAroundFloats = other._flowAroundFloats;
+
+    _styleType=NOPSEUDO;
+
+//    counter++;
+    box = other.box;
+    visual = other.visual;
+    background = other.background;
+    surround = other.surround;
+
+    inherited = other.inherited;
+
+    pseudoStyle=0;
+
 }
 
 RenderStyle::RenderStyle(const RenderStyle* inheritParent)

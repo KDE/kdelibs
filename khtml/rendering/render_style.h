@@ -494,6 +494,9 @@ public:
     enum PseudoId { NOPSEUDO, FIRST_LINE, FIRST_LETTER, HOVER, LINK };
 
 protected:
+    void setBitDefaults();
+
+// !START SYNC!: Keep this in sync with the copy constructor in render_style.cpp
 
     EDisplay _display : 5;
 
@@ -528,8 +531,6 @@ protected:
 
     PseudoId _styleType:3;
 
-    static RenderStyle* _default;
-
 // non-inherited attributes
     DataRef<StyleBoxData> box;
     DataRef<StyleVisualData> visual;
@@ -542,7 +543,10 @@ protected:
 // list of associated pseudo styles
     RenderStyle* pseudoStyle;
 
-    void setBitDefaults();
+// !END SYNC!
+
+// static default style
+    static RenderStyle* _default;
 
 public:
 
@@ -770,8 +774,6 @@ public:
 
     int zIndex() const { return box->z_index; }
     void setZIndex(int v) { SET_VAR(box,z_index,v) }
-
-
 
 };
 
