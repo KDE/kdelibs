@@ -46,4 +46,4 @@ typedef union
 #define	IDENTIFIER	296
 
 
-extern YYSTYPE yylval;
+extern YYSTYPE yyjscriptlval;

@@ -5,6 +5,13 @@
 
 #define YYBISON 1  /* Identify Bison output.  */
 
+#define yyparse yyjscriptparse
+#define yylex yyjscriptlex
+#define yyerror yyjscripterror
+#define yylval yyjscriptlval
+#define yychar yyjscriptchar
+#define yydebug yyjscriptdebug
+#define yynerrs yyjscriptnerrs
 #define	FUNCTION	258
 #define	IF	259
 #define	ELSE	260
@@ -366,7 +373,7 @@ static const short yycheck[] = {     1,
     -1,    -1,    -1,    -1,    -1,    58
 };
 /* -*-C-*-  Note some compilers choke on comments on `#line' lines.  */
-#line 3 "/usr/lib/bison.simple"
+#line 3 "/opt/local/GNU/share/bison.simple"
 
 /* Skeleton output parser for bison,
    Copyright (C) 1984, 1989, 1990 Free Software Foundation, Inc.
@@ -559,7 +566,7 @@ __yy_memcpy (char *to, char *from, int count)
 #endif
 #endif
 
-#line 196 "/usr/lib/bison.simple"
+#line 196 "/opt/local/GNU/share/bison.simple"
 
 /* The user can define YYPARSE_PARAM as the name of an argument to be passed
    into yyparse.  The argument should have type void *.
@@ -1301,7 +1308,7 @@ case 111:
     break;}
 }
    /* the action file gets copied in in place of this dollarsign */
-#line 498 "/usr/lib/bison.simple"
+#line 498 "/opt/local/GNU/share/bison.simple"
 
   yyvsp -= yylen;
   yyssp -= yylen;

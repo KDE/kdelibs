@@ -52,16 +52,16 @@ ID       [a-z][a-z0-9]*
 "&=" { return BAAS; }
 "|=" { return BOAS; }
 
-"\""[^\"]*"\"" { yylval.name = putString( yytext ); return STRING; }
-"'"[^']*"'" { yylval.name = putString( yytext ); return STRING; }
+"\""[^\"]*"\"" { yyjscriptlval.name = putString( yytext ); return STRING; }
+"'"[^']*"'" { yyjscriptlval.name = putString( yytext ); return STRING; }
 
-{DIGIT}+  { yylval.vali = atoi( yytext ); return NUM; }
+{DIGIT}+  { yyjscriptlval.vali = atoi( yytext ); return NUM; }
 
-{DIGIT}*"\."{DIGIT}+ { yylval.vald = atof( yytext ); return FLOAT; }
+{DIGIT}*"\."{DIGIT}+ { yyjscriptlval.vald = atof( yytext ); return FLOAT; }
 
-{ID}  { yylval.name = putSymbol( yytext ); return IDENTIFIER; }
+{ID}  { yyjscriptlval.name = putSymbol( yytext ); return IDENTIFIER; }
 
-">"|"<"|"^"|"&"|"\|"|"="|";"|"\."|"+"|"-"|"*"|"/"|"("|")"|"{"|"}"|"["|"]"|","  { yylval.name = 0L; return (int)(*yytext); }
+">"|"<"|"^"|"&"|"\|"|"="|";"|"\."|"+"|"-"|"*"|"/"|"("|")"|"{"|"}"|"["|"]"|","  { yyjscriptlval.name = 0L; return (int)(*yytext); }
 
 [ \t\n]+          /* eat up whitespace */
 

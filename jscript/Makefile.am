@@ -24,7 +24,7 @@ INCLUDES	= $(QT_INCLUDES) $(X_INCLUDES)
 lib_LTLIBRARIES = libjscript.la
 YACC		= bison -y
 LEX		= flex
-YFLAGS 		= -d
+YFLAGS 		= -d -p yyjscript
 SOMAJOR 	= 90
 SOMINOR 	= 0
 
@@ -37,10 +37,10 @@ libjscript_la_LIBADD =
 include_HEADERS = bison2cpp.h jstree.h jsexec.h jserror.h builtin.h
 
 grammarfiles: t1.y t2.l
-	$(YACC) $(YFLAGS) t1.y $< && mv y.tab.c $@
+	$(YACC) $(YFLAGS) t1.y $< && mv y.tab.c t1.c
 	if test -f y.tab.h; then \
-	if cmp -s y.tab.h $*.h; then rm -f y.tab.h; \
-	else mv y.tab.h $*.h; fi \
+	if cmp -s y.tab.h t1.h; then rm -f y.tab.h; \
+	else mv y.tab.h t1.h; fi \
 	else :; fi
-	$(LEX) $< && mv lex.yy.c $@
+	$(LEX) -Pyyjscript t2.l && mv lex.yyjscript.c t2.c
 
