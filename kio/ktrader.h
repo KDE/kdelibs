@@ -15,31 +15,123 @@
    the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
    Boston, MA 02111-1307, USA.
 */
-#ifndef __ko_trader_h__
-#define __ko_trader_h__
+#ifndef __ktrader_h__
+#define __ktrader_h__
 
 #include <qstring.h>
 #include <qobject.h>
 #include <kservice.h>
 
 /**
+ * This class implements a Trader interface -- similar to the CORBA
+ * Trader.  Basically, it provides a way for an application to query
+ * all KDE services (that is, applications and components) that match
+ * a specific set of requirements.  This allows you to find an
+ * application in real-time without you having to hard-code the name
+ * and/or path of the application.  It is mostly used when you want to
+ * do complex queries that @ref KServiceTypeProfile can't handle.
+ *
+ * A few examples will make this a lot more clear.
+ *
+ * Say you have an application that will display HTML.  In this
+ * example, you don't want to link to khtml... and furthermore, you
+ * really don't care if the HTML browser is ours or not, as long as
+ * it works.  The way that you formulate your query as well as the way
+ * that you execute the browser depends on whether or not you want the
+ * browser to run stand-alone or embedded.
+ *
+ * If you want the browser to run standalone, then you will limit the
+ * query to search for all services that handle 'text/html' AND
+ * furthermore, they must be applications (Type=Application).  You
+ * then will use @ref KRun::run to invoke the application.  In "trader-speak",
+ * this looks like so:
+ * <PRE>
+ * KTrader::OfferList offers = KTrader::self()->query("text/plain", "Type == 'Application'");
+ * KService::Ptr ptr = offers.first();
+ * KURL::List lst;
+ * lst.append("http://www.kde.org/index.html");
+ * KRun::run(*ptr, lst);
+ * </PRE>
+ *
+ * It should be noted that in the above example, using @ref
+ * KServiceTypeProfile would be the better choice since you would
+ * probably want the preferred service and the trader doesn't take
+ * this into account.  The trader does allow you to do more complex
+ * things, though.  Say, for instance, you want to only choose
+ * Netscape.  You can do it with the constraint: "(Type ==
+ * 'Application') and (Name == 'Netscape')"
+ *
+ * More the likely, though, you will only use the trader for such
+ * things as finding components.  In our continuing example, we say
+ * that we want to load any KParts component that can handle HTML.  We
+ * will need to use the @ref KLibFactory and @ref KLibLoader to
+ * actually do something with our query, then.  Our code would look
+ * like so:
+ * <PRE>
+ * KTrader::OfferList offers = KTrader::self()->query("text/html", "'KParts/ReadOnlyPart' in ServiceTypes");
+ * KService::Ptr ptr = offers.begin();
+ * KLibFactory *factory = KLibLoader::self()->factory( ptr->library() );
+ * if (factory)
+ *   part = static_cast<KParts::ReadOnlyPart *>(factory->create(this, ptr->name(), "KParts::ReadOnlyPart"));
+ * </PRE>
+ *
+ * @short Provides a way to query the KDE infrastructure for specific
+ *        applications or components
+ * @author Torben Weis <weis@kde.org>
  */
 class KTrader : public QObject
 {
     Q_OBJECT
 public:
-    // A list of services
+    /**
+     * A list of services.
+     */
     typedef QValueList<KService::Ptr> OfferList;
 
+    /**
+     * Standard destructor
+     */
     virtual ~KTrader();
 
+    /**
+     * This is the main (almost only) function in the KTrader class.
+     * It will return a list of services that match your
+     * specifications.  The only required parameter is the service
+     * type.  This is something like 'text/plain' or 'text/html'.  The
+     * constraint parameter is used to limit the possible choices
+     * returned based on the constraints you give it.
+     *
+     * The constraint language is rather full.  The most common
+     * keywords are AND, OR, NOT, IN, and EXIST.. all used in an
+     * almost spoken-word form.  An example is:
+     * <PRE>
+     * (Type == 'Service') and (('KPart::ReadOnlyPart in 'ServiceType') or (exist Exec))
+     * </PRE>
+     *
+     * The keys used in the query (Type, ServiceType, Exec) are all
+     * fields found in the .desktop files.
+     *
+     * @param servicetype A service type like 'text/plain' or 'text/html'
+     * @param constraint  A constraint to limit the choices returned
+     * @param preferences Indicates a particular preference to return
+     *
+     * @return A list of services that satisfy the query
+     */
     virtual OfferList query( const QString& servicetype,
 			     const QString& constraint = QString::null,
 			     const QString& preferences = QString::null) const;
 
+    /**
+     * This is a static pointer to a KTrader instance.  You will need
+     * to use this to access the KTrader functionality since the
+     * constuctors are protected.
+     *
+     * @return Static KTrader instance
+     */
     static KTrader* self();
 
 protected:
+    /** @internal */
     KTrader();
 
 private:
