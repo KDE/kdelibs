@@ -18,7 +18,7 @@ class KIOListViewItem : public QObject, public QListViewItem, KIO {
 
 public:
 
-  KIOListViewItem( KIOListView* view, KIOJob *job );
+  KIOListViewItem( KIOListView* view, QListViewItem *after, KIOJob *job );
   ~KIOListViewItem() {}
 
   void update();

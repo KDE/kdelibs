@@ -31,8 +31,8 @@ static int defaultColumnWidth[] = { 70,  // SIZE_OPERATION
 
 #define NUM_COLS  9
 
-KIOListViewItem::KIOListViewItem( KIOListView* view, KIOJob *job )
-  : QListViewItem( view ) {
+KIOListViewItem::KIOListViewItem( KIOListView* view, QListViewItem *after, KIOJob *job )
+  : QListViewItem( view, after ) {
 
   listView = view;
   m_pJob = job;
@@ -346,9 +346,12 @@ void KIOListProgressDlg::addJob( KIOJob *job ) {
       item->update();
       return;
     }
+    if ( it.current()->itemBelow() == 0L ) { // this will find the end of list
+      break;
+    }
   }
 
-  item = new KIOListViewItem( myListView, job );
+  item = new KIOListViewItem( myListView, it.current(), job );
   connect( item, SIGNAL( statusChanged( QListViewItem* ) ),
 	   SLOT( slotStatusChanged( QListViewItem* ) ) );
 }
