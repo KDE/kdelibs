@@ -98,7 +98,7 @@ public:
      *
      * @param parent The parent object of this widget.
      * @param name The name of this widget.
-     * @param options A bitfield of the Options to be enabled.
+     * @param options A bitfield of the Options to be checked.
      * @param findStrings The find history, see findHistory()
      * @param hasSelection Whether a selection exists
      */
@@ -111,7 +111,7 @@ public:
      * @param modal set to false to get a non-modal dialog
      * @param parent The parent object of this widget.
      * @param name The name of this widget.
-     * @param options A bitfield of the Options to be enabled.
+     * @param options A bitfield of the Options to be checked.
      * @param findStrings The find history, see findHistory()
      * @param hasSelection Whether a selection exists
      */
@@ -158,7 +158,7 @@ public:
     void setHasCursor( bool hasCursor );
 
     /**
-     * Set the options which are enabled.
+     * Set the options which are checked.
      *
      * @param options The setting of the Options.
      */
