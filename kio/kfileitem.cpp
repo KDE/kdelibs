@@ -266,9 +266,9 @@ QString KFileItem::linkDest() const
 
 KIO::filesize_t KFileItem::size() const
 {
-  if ( d->size > (KIO::filesize_t) -1 )
+  if ( d->size != (KIO::filesize_t) -1 )
     return d->size;
-    
+
   // Extract it from the KIO::UDSEntry
   KIO::UDSEntry::ConstIterator it = m_entry.begin();
   for( ; it != m_entry.end(); it++ )
@@ -302,7 +302,7 @@ time_t KFileItem::time( unsigned int which ) const
       break;
   }
 
-  if ( d->time[mappedWhich] > (time_t) -1 )
+  if ( d->time[mappedWhich] != (time_t) -1 )
     return d->time[mappedWhich];
 
   // Extract it from the KIO::UDSEntry
@@ -318,7 +318,7 @@ time_t KFileItem::time( unsigned int which ) const
   {
     KDE_struct_stat buf;
     KDE_stat( QFile::encodeName(m_url.path( -1 )), &buf );
-    d->time[mappedWhich] = (which == KIO::UDS_MODIFICATION_TIME) ? 
+    d->time[mappedWhich] = (which == KIO::UDS_MODIFICATION_TIME) ?
                            buf.st_mtime :
                            (which == KIO::UDS_ACCESS_TIME) ? buf.st_atime :
                            static_cast<time_t>(0); // We can't determine creation time for local files
