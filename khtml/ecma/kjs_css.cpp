@@ -172,37 +172,28 @@ void DOMCSSStyleDeclaration::tryPut(ExecState *exec, const UString &propertyName
 Value DOMCSSStyleDeclarationProtoFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
 {
   DOM::CSSStyleDeclaration styleDecl = static_cast<DOMCSSStyleDeclaration *>(thisObj.imp())->toStyleDecl();
-  Value result;
   String str = args[0].toString(exec);
   DOM::DOMString s = str.value().string();
 
   switch (id) {
     case DOMCSSStyleDeclaration::GetPropertyValue:
-      result = getString(styleDecl.getPropertyValue(s));
-      break;
+      return getString(styleDecl.getPropertyValue(s));
     case DOMCSSStyleDeclaration::GetPropertyCSSValue:
-      result = Undefined(); // ###
-      break;
+      return getDOMCSSValue(exec,styleDecl.getPropertyCSSValue(s));
     case DOMCSSStyleDeclaration::RemoveProperty:
-      result = getString(styleDecl.removeProperty(s));
-      break;
+      return getString(styleDecl.removeProperty(s));
     case DOMCSSStyleDeclaration::GetPropertyPriority:
-      result = getString(styleDecl.getPropertyPriority(s));
-      break;
+      return getString(styleDecl.getPropertyPriority(s));
     case DOMCSSStyleDeclaration::SetProperty:
       styleDecl.setProperty(args[0].toString(exec).string(),
                             args[1].toString(exec).string(),
                             args[2].toString(exec).string());
-      result = Undefined();
-      break;
+      return Undefined();
     case DOMCSSStyleDeclaration::Item:
-      result = getString(styleDecl.item(args[0].toInteger(exec)));
-      break;
+      return getString(styleDecl.item(args[0].toInteger(exec)));
     default:
-      result = Undefined();
+      return Undefined();
   }
-
-  return result;
 }
 
 Value KJS::getDOMCSSStyleDeclaration(ExecState *exec, DOM::CSSStyleDeclaration s)
@@ -648,6 +639,9 @@ const ClassInfo* DOMCSSRule::classInfo() const
 */
 Value DOMCSSRule::tryGet(ExecState *exec, const UString &propertyName) const
 {
+#ifdef KJS_VERBOSE
+  kdDebug(6070) << "DOMCSSRule::tryGet " << propertyName.qstring() << endl;
+#endif
   const HashTable* table = classInfo()->propHashTable; // get the right hashtable
   const HashEntry* entry = Lookup::findEntry(table, propertyName);
   if (entry) {
