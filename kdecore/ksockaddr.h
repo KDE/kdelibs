@@ -213,12 +213,14 @@ public:
   /**
    * Creates an IPv4 socket from raw sockaddr_in
    * @param sin		a sockaddr_in structure to copy from
+   * @param len		the socket address length
    */
   KInetSocketAddress(const sockaddr_in* sin, ksocklen_t len);
 
   /**
    * Creates an IPv6 socket from raw sockaddr_in6
    * @param sin6       	a sockaddr_in6 structure to copy from
+   * @param len		the socket address length
    */
   KInetSocketAddress(const sockaddr_in6* sin6, ksocklen_t len);
 
@@ -238,8 +240,11 @@ public:
 
   /**
    * Creates a socket from text representation
+   *
+   * @see setAddress
    * @param addr	a text representation of the address
    * @param port	a port number
+   * @param family	the family for this address
    */
   KInetSocketAddress(const QString& addr, unsigned short port, int family = -1);
 
@@ -257,12 +262,14 @@ public:
   /**
    * Sets this socket to given raw socket
    * @param sin		the raw socket
+   * @param len		the socket address length
    */
   bool setAddress(const sockaddr_in* sin, ksocklen_t len);
 
   /**
    * Sets this socket to given raw socket
-   * @param sin6		the raw socket
+   * @param sin6	the raw socket
+   * @param len		the socket address length
    */
   bool setAddress(const sockaddr_in6* sin6, ksocklen_t len);
 
@@ -282,6 +289,16 @@ public:
 
   /**
    * Sets this socket to text address and port
+   *
+   * You can use the @p family parameter to specify what kind of socket
+   * you want this to be. It could be AF_INET or AF_INET6 or -1.
+   *
+   * If the value is -1 (default), this function will make an effort to
+   * discover what is the family. That isn't too hard, actually, and it
+   * works in all cases. But, if you want to be sure that your socket
+   * is of the type you want, use this parameter.
+   *
+   * This function returns false if the socket address was not valid.
    * @param addr	the address
    * @param port	the port number
    * @param family	the address family, -1 for any
@@ -314,8 +331,10 @@ public:
   bool setPort(unsigned short port);
 
   /**
-   * Turns this into an IPv4 or IPv6 address
-   * returns 0 if this is v6 and information was lost
+   * Turns this into an IPv4 or IPv6 address.
+   *
+   * returns false if this is v6 and information was lost. That doesn't
+   * mean the conversion was unsuccessful.
    */
   bool setFamily(int family);
 
@@ -348,8 +367,12 @@ public:
   virtual QString serviceName() const;
 
   /**
-   * Returns the socket address
-   * This will be NULL if this is a non-convertible v6
+   * Returns the socket address.
+   *
+   * This will be NULL if this is a non-convertible v6.
+   * This function will return an IPv4 socket if this IPv6
+   * socket is a v4-mapped address. That is, if it's really
+   * an IPv4 address, but in v6 disguise.
    */
   const sockaddr_in* addressV4() const;
 
@@ -359,13 +382,14 @@ public:
   const sockaddr_in6* addressV6() const;
 
   /**
-   * Returns the host address
+   * Returns the host address.
    * Might be empty
    */
   in_addr hostV4() const;
 
   /**
-   * Returns the host address
+   * Returns the host address.
+   *
    * WARNING: this function is not defined if there is no IPv6 support
    */
   in6_addr hostV6() const;
@@ -398,8 +422,9 @@ public:
   /* operators */
 
   /**
-   * Returns the socket address
-   * This will be NULL if this is a non-convertible v6
+   * Returns the socket address.
+   * This will be NULL if this is a non-convertible v6.
+   * @see addressV4
    */
   operator const sockaddr_in*() const
   { return addressV4(); }
@@ -514,7 +539,7 @@ public:
   virtual QString pretty() const;
 
   /*
-   * Returns the path in the form of a QString
+   * Returns the path in the form of a QString.
    * This can be fed into KExtendedSocket
    */
   virtual QString serviceName() const;

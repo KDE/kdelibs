@@ -43,12 +43,9 @@
  * KBufferedIO already provides a powerful internal buffering algorithm. However,
  * this does not include the I/O itself, which must be implemented in
  * derived classes. Thus, to implement a class that does some I/O, you must
- * override, in addition to the pure virtual QIODevice methods, these three:
- * <ul>
- *  <li>closeNow</li>
- *  <li>waitForMore</li>
- *  <li></li>
- * </ul>
+ * override, in addition to the pure virtual QIODevice methods, these two:
+ * @li closeNow
+ * @li waitForMore
  *
  * If your derived class reimplements the buffering algorithm, you must then
  * decide which buffering functions to override. For instance, you may want to
@@ -96,14 +93,18 @@ public:
   virtual void closeNow() = 0;
 
   /**
-   * Sets the internal buffer size to value. 
+   * Sets the internal buffer size to value.
+   *
    * Not all implementations support this.
+   *
    * The parameters may be 0 to make the class unbuffered or -1
-   * to let the class choose the size, which may be unlimited or
+   * to let the class choose the size (which may be unlimited) or
    * -2 to leave the buffer size untouched.
+   *
    * Note that setting the write buffer size to any value smaller than
    * the current size of the buffer will force it to flush first,
    * which can make this call blocking.
+   *
    * Returns true if setting both was ok. If false is returned, the
    * buffers were left unchanged.
    *
@@ -152,8 +153,10 @@ public:
    * Reads into the user buffer at most maxlen bytes, but does not
    * consume that data from the read buffer. This is useful to check
    * whether we already have the needed data to process something.
+   *
    * This function may want to try and read more data from the system
    * provided it won't block.
+   *
    * Returns the number of bytes actually copied.
    * @param data	the user buffer pointer, at least maxlen bytes long
    * @param maxlen	the maximum length to be peeked
@@ -164,6 +167,7 @@ public:
    * Unreads some data. That is, write the data to the beginning of the
    * read buffer, so that next calls to readBlock or peekBlock will see
    * this data instead.
+   *
    * Note not all devices implement this since this could mean a semantic
    * problem. For instance, sockets are sequential devices, so they won't
    * accept unreading.
@@ -175,6 +179,7 @@ public:
 signals:
   /**
    * This signal gets sent whenever bytes are written from the buffer.
+   * The @p nbytes parameter contains the number of bytes sent.
    */
   void bytesWritten(int nbytes);
 
@@ -184,13 +189,13 @@ signals:
   /**
    * This signal gets sent when the stream is closed. The @p state parameter
    * will give the current state, in OR-ed bits:
-   *   availRead	read buffer contains data to be read
-   *   dirtyWrite	write buffer wasn't empty when the stream closed
-   *   involuntary	the stream wasn't closed due to user request
+   * @li availRead:	read buffer contains data to be read
+   * @li dirtyWrite:	write buffer wasn't empty when the stream closed
+   * @li involuntary:	the stream wasn't closed due to user request
    *			(i.e., call to close). Probably remote end closed it
-   *   delayed		the stream was closed voluntarily by the user, but it
+   * @li delayed:	the stream was closed voluntarily by the user, but it
    *			happened only after the write buffer was emptied
-   *   closedNow       	the stream was closed voluntarily by the user, by
+   * @li closedNow:	the stream was closed voluntarily by the user, by
    *			explicitly calling @ref closeNow, which means the
    *			write buffer's contents may have been discarded
    */
@@ -224,10 +229,11 @@ protected:
   virtual unsigned consumeReadBuffer(unsigned nbytes, char *destbuffer, bool discard = true);
 
   /**
-   * Consumes data from the output buffer
+   * Consumes data from the output buffer.
    * Since this is called whenever we managed to send data out the wire, we
    * can only discard this amount from the buffer. There is no copying and no
    * "peeking" for the output buffer.
+   *
    * Note this function should be called AFTER the data was sent. After it
    * is called, the data is no longer available in the buffer. And don't pass
    * wrong nbytes values.

@@ -205,7 +205,7 @@ public:
   { return m_flags; }
 
   /**
-   * Sets the hostname to the given value
+   * Sets the hostname to the given value.
    * Returns true on success, false on error
    * @param host	the hostname
    */
@@ -221,6 +221,11 @@ public:
    * @param port	the port
    */
   bool setPort(int port);
+
+  /**
+   * Sets the port/service
+   * @param port	the port
+   */
   bool setPort(const QString& service);
 
   /**
@@ -229,14 +234,14 @@ public:
   QString port() const;
 
   /**
-   * Sets the address where we will connect to
+   * Sets the address where we will connect to.
    * @param host	the hostname
    * @param port	port number
    */
   bool setAddress(const QString& host, int port);
 
   /**
-   * Sets the address where we will connect to
+   * Sets the address where we will connect to.
    * @param host	the hostname
    * @param serv	the service
    */
@@ -255,7 +260,7 @@ public:
   bool unsetBindHost();
 
   /**
-   * Returns the hostname to which the socket will be/is bound
+   * Returns the hostname to which the socket will be/is bound.
    */
   QString bindHost() const;
 
@@ -264,6 +269,11 @@ public:
    * @param port	the port number
    */
   bool setBindPort(int port);
+
+  /**
+   * Sets the port/service to which we will bind before connecting.
+   * @param port	the port number
+   */
   bool setBindPort(const QString& service);
 
   /**
@@ -278,7 +288,7 @@ public:
 
   /**
    * Sets both host and port to which we will bind the socket. Will return
-   * -1 if this is a passiveSocket
+   * false if this is a passiveSocket.
    * @param host	the hostname
    * @param port	the port number
    */
@@ -286,7 +296,7 @@ public:
 
   /**
    * Sets both host and service to which we will bind the socket. Will return
-   * -1 if this is a passiveSocket
+   * false if this is a passiveSocket.
    * @param host	the hostname
    * @param serv	the service
    */
@@ -294,15 +304,17 @@ public:
 
   /**
    * Unsets the bind address for the socket. That means that we won't
-   * attempt to bind to an address before connecting
+   * attempt to bind to an address before connecting.
    */
   bool unsetBindAddress();
 
   /**
-   * Sets the timeout value for the connection, if this is not passiveSocket, or
-   * acception, if this is a passiveSocket. In the event the given function
+   * Sets the timeout value for the connection (if this is not passiveSocket) or
+   * acception (if it is). In the event the given function
    * (connect or accept) returns due to time out, it's possible to call it again.
+   *
    * Setting the timeout to 0 disables the timeout feature.
+   *
    * Returns false if setting timeout makes no sense in the context.
    * @param secs	the timeout length, in seconds
    * @param usecs	the timeout complement, in microseconds
@@ -317,8 +329,9 @@ public:
   /**
    * Sets/unsets blocking mode for the socket. When non-blocking mode is enabled,
    * I/O operations might return error and set errno to EWOULDBLOCK. Also,
-   * it's not recommended to use this when using signals. Returns false on
-   * error.
+   * it's not recommended to use this when using the class signals.
+   *
+   * Returns false on error.
    * @param enable	if true, set blocking mode. False, non-blocking mode.
    */
   bool setBlockingMode(bool enable);
@@ -330,6 +343,7 @@ public:
 
   /**
    * Sets/unsets address reusing flag for this socket.
+   *
    * This function returns true if the value was set correctly. That is NOT
    * the result of the set.
    * @param enable	if true, set address reusable
@@ -337,7 +351,7 @@ public:
   bool setAddressReusable(bool enable);
 
   /**
-   * Returns whether this socket can be reused
+   * Returns whether this socket's address can be reused
    */
   bool addressReusable();
 
@@ -346,17 +360,17 @@ public:
    *
    * This implementation allows any size for both parameters. The value given
    * will be interpreted as the maximum size allowed for the buffers, after
-   * which the functions will stop buffering. The value of -1 will be
-   * interpreted as "unlimited" size.
+   * which the I/O functions will stop buffering. The value of -1 will be
+   * interpreted as "unlimited" size. The value of -2 means "no change".
    *
    * Note: changing the buffer size to 0 for any buffer will cause the given
    * buffer's to be discarded. Likewise, setting the size to a value less than
    * the current size will cause the buffer to be shrunk to the wanted value,
    * as if the data had been read.
    *
-   * Note 2: if we are not doing input buffering, the #ref closed signal will
-   * not be emitted for remote connection closing. That happens because we aren't
-   * reading from the connection, so we don't know when it closed.
+   * Note 2: The @ref closed signal will only be emitted for a connection closed
+   * by the remote end if we are doing input buffering. That happens because if we aren't
+   * reading from the connection, we don't know when it closed.
    * @param rsize	read buffer size
    * @param wsize	write buffer size
    */
@@ -384,25 +398,30 @@ public:
    */
 
   /**
-   * Performs lookup on the addresses we were given before
-   * Returns 0 or an error. Codes are the same as for <em>getaddrinfo</em>
+   * Performs lookup on the addresses we were given before.
+   *
+   * Returns 0 or an error.
    * This will perform lookups on the bind addresses if they were given
    */
   virtual int lookup();
 
   /**
-   * Starts an asynchronous lookup for the addresses given
+   * Starts an asynchronous lookup for the addresses given.
+   *
    * This function returns 0 on success or -1 on error. Note that
    * returning 0 means that either we are in the process of doing
    * lookup or that it has finished already.
+   *
    * When the lookup is done, the lookupReady signal will be emitted.
+   *
    * Note that, depending on the parameters for the lookup, this function might
    * know the results without the need for blocking or queueing an
    * asynchronous lookup. That means that the lookupReady signal might be
    * emitted by this function, so your code should be prepared for that.
+   *
    * One such case is when noResolve flag is set.
-   * If this function were able to determine the results without queueing
-   * and we found an error during lookup, this function will return -1.
+   * If this function is able to determine the results without queueing
+   * and the lookup failed, this function will return -1.
    */
   virtual int startAsyncLookup();
 
@@ -432,13 +451,13 @@ public:
 
   /**
    * Attempts to connect to the remote host. The return values are:
-   * 0: success
-   * -1: system error, errno was set accordingly
-   * -2: this socket cannot connect(); this is a passiveSocket. It can also
+   * @li 0: success
+   * @li -1: system error, errno was set accordingly
+   * @li -2: this socket cannot connect(); this is a passiveSocket. It can also
    *   mean that the function was unable to make a connection with the given
    *   bind address or that an asynchronous connection attempt is already
    *   in progress.
-   * -3: connection timed out
+   * @li -3: connection timed out
    */
   virtual int connect();
 
@@ -448,6 +467,7 @@ public:
    * return either 0 on successful queueing of the connect or -1 on error. If
    * this function returns 0, then the connectionSuccess or the connectionFailed
    * signals will be emitted.
+   *
    * Note that those signals might be emitted before this function returns, so your
    * code should be prepared for that condition.
    */
@@ -488,10 +508,13 @@ public:
    * Releases the socket and anything we have holding on it. The class cannot
    * be used anymore. In other words, this is just like closeNow(), but it does
    * not actually close the socket.
+   *
    * This is useful if you just want to connect and don't need the rest of the
    * class.
-   * Note that the buffers' contents will be discarded. And usage of this
-   * method is discouraged, because the socket created might be such that
+   *
+   * Note that the buffers' contents will be discarded. 
+   *
+   * Use of this method is discouraged, because the socket created might be such that
    * normal library routines can't handle (read, write, close, etc.)
    */
   virtual void release();
@@ -507,9 +530,11 @@ public:
    * at this moment, you can call this function. It will try to send as much
    * data as possible, but it will stop as soon as the kernel cannot receive
    * any more data, and would possibly block.
+   *
    * By repeatedly calling this function, the behaviour will be like that of
    * a blocking socket. Indeed, if this function is called with the kernel not
    * ready to receive data, it will block, unless this is a non-blocking socket.
+   *
    * This function does not touch the read buffer. You can empty it by calling
    * @ref readBlock with a null destination buffer.
    */
@@ -548,6 +573,7 @@ public:
    * (see @ref setBlockingMode) and there is not enough data to be read in the
    * Operating System yet. If we are in non-blocking operation, the call will
    * fail in this case.
+   *
    * However, if we are buffering, this function will instead read from the
    * buffer while there is available data. This function will never block
    * in buffering mode, which means that if you try to read while the buffers
@@ -560,9 +586,10 @@ public:
    * @p maxlen, then this function encountered a situation in which no more
    * bytes were available. Subsequent calls might cause this function to one
    * of these behaviours:
-   * - block, if we are not buffering and we are not in non-blocking mode
-   * - return an error, with EWOULDBLOCK system error, if we buffering
+   * @li return an error, with EWOULDBLOCK system error, if we buffering
    *   or we are in non-blocking mode
+   * @li otherwise, it'll block
+   *
    * This function returns 0, if the function detected end-of-file condition
    * (socket was closed)
    *
@@ -580,8 +607,9 @@ public:
    * the operating system buffers are full for this socket. If we are in
    * non-blocking mode and the operating system buffers are full, this function
    * will return -1 and the system error will be set to EWOULDBLOCK.
+   *
    * If we are buffering, this function will simply transfer the data into the
-   * write buffer. This function will always succeed, as long as there is
+   * write buffer. This function will then always succeed, as long as there is
    * enough room in the buffer. If the buffer size was limited and that limit
    * is reached, this function will copy no more bytes than that limit. Trying
    * to write with a full buffer will return -1 and set system error to
@@ -597,11 +625,14 @@ public:
   virtual Q_LONG writeBlock(const char *data, Q_ULONG len);
 
   /**
-   * peeks at a block of data from the socket
+   * peeks at a block of data from the socket.
+   *
    * This is exactly like read, except that the data won't be flushed from the
    * read buffer.
+   *
    * If this socket is not buffered, this function will always return with
    * 0 bytes copied.
+   *
    * The return value of 0 does not mean end-of-file condition.
    * @param data	where to store the data
    * @param maxlen	how many bytes to copy, at most
@@ -616,9 +647,10 @@ public:
   virtual int unreadBlock(const char *data, uint len);
 
   /**
-   * Waits @p msec milliseconds for more data to be available, or 0 to
-   * wait forever. The return value is the amount of data available for
+   * Waits @p msec milliseconds for more data to be available (use 0 to
+   * wait forever). The return value is the amount of data available for
    * read in the read buffer.
+   *
    * This function returns -1 in case of system error and -2 in case of
    * invalid socket state
    * @param msec	milliseconds to wait
@@ -643,7 +675,8 @@ public:
   { return -1; }
 
   /**
-   * Toggles the emission of the readyRead signal
+   * Toggles the emission of the readyRead signal.
+   *
    * Note that this signal is emitted every time more data is available to be
    * read, so you might get flooded with it being emitted every time, when in
    * non-buffered mode. However, in buffered mode, this signal will be
@@ -654,7 +687,8 @@ public:
   virtual void enableRead(bool enable);
 
   /**
-   * Toggles the emission of the readyWrite signal
+   * Toggles the emission of the readyWrite signal.
+   *
    * Note that this signal is emitted only when the OS is ready to receive more
    * data, which means that the write buffer is empty. And when that is reached,
    * this signal will possibly be emitted on every loop, so you might
@@ -723,17 +757,22 @@ protected:
 
 public:
   /**
-   * Performs resolution on the given socket address
+   * Performs resolution on the given socket address.
+   *
    * That is, tries to resolve the raw form of the socket address into a textual
    * representation.
+   *
+   * Returns 0 on success.
    * @param sockaddr	the socket address
    * @param host	where the hostname will be written
    * @param port	where the service-port will be written
    * @param flags	the same flags as getnameinfo()
-   *
-   * @return 0 on success
    */
   static int resolve(sockaddr* sock, ksocklen_t len, QString& host, QString& port, int flags = 0);
+
+  /**
+   * Same as above. @ref resolve.
+   */
   static int resolve(KSocketAddress* sock, QString& host, QString& port, int flags = 0);
 
   /**
@@ -754,6 +793,7 @@ public:
    * @param error	pointer to a variable holding the error code
    */
   static QPtrList<KAddressInfo> lookup(const QString& host, const QString& port, int flags = 0, int *error = 0);
+
   /**
    * Returns the local socket address
    * Remember to delete the returned object when it is no longer needed.
