@@ -215,13 +215,15 @@ bool KPrinterImpl::filterFiles(KPrinter *printer, QStringList& files, bool flag)
 	}
 	kdDebug() << "kdeprint: filter command: " << filtercmd << endl;
 
-	QRegExp	rin("%in"), rout("%out");
+	QRegExp	rin("%in"), rout("%out"), rps("%psl");
+	QString	ps = pageSizeToPageName(printer->pageSize());
 	for (QStringList::Iterator it=files.begin(); it!=files.end(); ++it)
 	{
 		QString	tmpfile = tempFile();
 		QString	cmd(filtercmd);
 		cmd.replace(rin,*it);
 		cmd.replace(rout,tmpfile);
+		cmd.replace(rps,ps.lower());
 		if (system(cmd.latin1()) != 0)
 		{
 			printer->setErrorMessage(i18n("Error while filtering. Command was: <b>%1</b>.").arg(filtercmd));

@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <kprintfilter name="psnup">
-	<filtercommand data="psnup %filterargs %filterinput %filteroutput" />
+	<filtercommand data="psnup -p%psl %filterargs %filterinput %filteroutput" />
 	<filterargs>
 		<filterarg name="nup" description="Pages per sheet" format="-%value" type="list" default="1">
 			<value name="1" description="1" />
@@ -8,14 +8,6 @@
 			<value name="4" description="4" />
 			<value name="8" description="8" />
 			<value name="16" description="16" />
-		</filterarg>
-		<filterarg name="papersize" description="Paper size" format="-p%value" type="list" default="a4">
-			<value name="letter" description="US Letter" />
-			<value name="legal" description="US Legal" />
-			<value name="executive" description="Executive" />
-			<value name="a3" description="A3" />
-			<value name="a4" description="A4" />
-			<value name="a5" description="A5" />
 		</filterarg>
 		<filterarg name="box" description="Box width" format="-d%value" type="int" min="0" max="20" default="1" />
 		<filterarg name="margin" description="Additional margin" format="-b%value" type="int" min="0" max="100" default="0" />

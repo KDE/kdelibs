@@ -1,15 +1,7 @@
 <?xml version="1.0"?>
 <kprintfilter name="psbook">
-	<filtercommand data="psbook %filterinput | psnup -2 %filterargs %filteroutput" />
+	<filtercommand data="psbook %filterinput | psnup -2 -p%psl %filterargs %filteroutput" />
 	<filterargs>
-		<filterarg name="papersize" description="Paper size" format="-p%value" type="list" default="a4">
-			<value name="letter" description="US Letter" />
-			<value name="legal" description="US Legal" />
-			<value name="executive" description="Executive" />
-			<value name="a3" description="A3" />
-			<value name="a4" description="A4" />
-			<value name="a5" description="A5" />
-		</filterarg>
 	</filterargs>
 	<filterinput>
 		<filterarg name="file" format="%in" />

@@ -1,14 +1,7 @@
 <?xml version="1.0"?>
 <kprintfilter name="pdfwrite">
-	<filtercommand data="gs -q -dNOPAUSE -sDEVICE=pdfwrite -sOutputFile=%filteroutput %filterargs -c save pop -f %filterinput" />
+	<filtercommand data="gs -q -dNOPAUSE -sDEVICE=pdfwrite -sPAPERSIZE=%psl -sOutputFile=%filteroutput %filterargs -c save pop -f %filterinput" />
 	<filterargs>
-		<filterarg name="papersize" description="Paper size" format="-sPAPERSIZE=%value" type="list" default="letter">
-			<value name="a3" description="A3" />
-			<value name="a4" description="A4" />
-			<value name="a5" description="A5" />
-			<value name="letter" description="US Letter" />
-			<value name="legal" description="US Legal" />
-		</filterarg>
 	</filterargs>
 	<filterinput>
 		<filterarg name="file" format="%in" />
