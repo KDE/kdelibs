@@ -50,7 +50,7 @@ void KAudioPlayer::play(QString filename)
 void KAudioPlayer::play()
 {
 	KNotifyClient::userEvent("KAudioPlayer event",
-							KNotifyClient::Sound,d->filename);
+							KNotifyClient::Sound,KNotifyClient::Notification,d->filename);
 }
 
 #include "kaudioplayer.moc"

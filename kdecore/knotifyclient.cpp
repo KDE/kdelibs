@@ -24,30 +24,43 @@
 #include <kconfig.h>
 #include <dcopclient.h>
 
+class KNotifyClient::KNotifyClientPrivate
+{
+public:
+	QString message;
+	QString text;
+	int present;
+	int level;
+	QString sound;
+	QString file;
+	DCOPClient *client;
+};
 
 KNotifyClient::KNotifyClient(QObject *parent, const QString &message, const QString &text,
-                             int present, const QString &sound, const QString &file,
+                             int present, int level, const QString &sound, const QString &file,
                              DCOPClient* client) : QObject(parent)
 {
 	if (!client) client=KApplication::kApplication()->dcopClient();
-	levent=new Event;
-	levent->message=message;
-	levent->text=text;
-	levent->present=present;
-	levent->sound=sound;
-	levent->file=file;
-	levent->client=client;
+	
+	d=new KNotifyClientPrivate;
+	d->message=message;
+	d->text=text;
+	d->present=present;
+	d->level=level;
+	d->sound=sound;
+	d->file=file;
+	d->client=client;
 	startDaemon();
 }
 
 KNotifyClient::~KNotifyClient()
 {
-	delete levent;
+	delete d;
 }
 
 bool KNotifyClient::send()
 {
-	DCOPClient *client=levent->client;
+	DCOPClient *client=d->client;
 	if (!client->isAttached())
 		client->attach();
 	if (!client->isAttached())
@@ -56,9 +69,9 @@ bool KNotifyClient::send()
 	QByteArray data;
 	QDataStream ds(data, IO_WriteOnly);
 	QString appname = kapp->name();
-	ds << levent->message << appname << levent->text << levent->sound << levent->file << levent->present;
+	ds << d->message << appname << d->text << d->sound << d->file << d->present << d->level;
 
-	return client->send("knotify", "Notify", "notify(QString,QString,QString,QString,QString,int)", data, true);
+	return client->send("knotify", "Notify", "notify(QString,QString,QString,QString,QString,int,int)", data, true);
 }
 
 bool KNotifyClient::event(const QString &message, const QString &text)
@@ -67,10 +80,10 @@ bool KNotifyClient::event(const QString &message, const QString &text)
 	return c.send();
 }
 
-bool KNotifyClient::userEvent(const QString &text, int present,
+bool KNotifyClient::userEvent(const QString &text, int present, int level,
                               const QString &sound, const QString &file)
 {
-	KNotifyClient c(0,0, text, present, sound, file);
+	KNotifyClient c(0,0, text, present, level, sound, file);
 	return c.send();
 }
 

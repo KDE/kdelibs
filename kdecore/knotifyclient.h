@@ -73,6 +73,14 @@ public:
 		Stderr=8
 	};
 	
+	enum {
+		Notification=1,
+		Question=2,
+		Warning=4,
+		Error=8,
+		Catastrophe=16
+	};
+	
 public:
 	/**
 	 * The Default constructor.  You should have little use
@@ -85,13 +93,14 @@ public:
 	 *             will happen for an error level of 2 or more.
 	 * @param present How to present it.  If "Default" is chosen, the server
 	 *                will decide according to the config
+	 * @param level How important is this message
 	 * @param sound The sound to play (KDEDIR/share/sounds/ if not absolute)
 	 * @param file file to write to (if selected)
 	 * @param client The DCOPClient to use.  Usually it pulls the one from
 	 *               your KApplication.
      */
 	KNotifyClient(QObject *parent, const QString &message, const QString &text=0,
-	             int present=Default,
+	             int present=Default, int level=Default,
 	             const QString &sound=0, const QString &file=0,
 	             DCOPClient* client=0);
 
@@ -130,7 +139,7 @@ public: //static methods
 	 * @param present The error message level, defaulting to "Default"
 	 * @param file The sound file to play if selected with present
 	 */
-	static bool userEvent(const QString &text=0, int present=Default,
+	static bool userEvent(const QString &text=0, int present=Default, int level=Default,
 	                      const QString &sound=0, const QString &file=0);
 	
 	/**
@@ -163,21 +172,6 @@ public: //static methods
 	static QString getDefaultFile(const QString &eventname, int present);
 
 private:
-	/**
-	 * Why does kdoc include this? This is an internal structure that's actually
-	 * declared under "private"
-	 * @internal
-	 */
-	struct Event
-	{
-		QString message;
-		QString text;
-		int present;
-		QString sound;
-		QString file;
-		DCOPClient *client;
-	} *levent;
-	
     class KNotifyClientPrivate;
     KNotifyClientPrivate *d;
 };
