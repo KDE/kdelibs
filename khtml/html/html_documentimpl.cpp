@@ -26,7 +26,7 @@
 
 #include "htmlparser.h"
 #include "htmltokenizer.h"
-#include "khtmlfont.h"
+//#include "khtmlfont.h"
 #include "khtmldata.h"
 #include "khtml.h"
 #include "khtml_part.h"
@@ -66,11 +66,6 @@ HTMLDocumentImpl::HTMLDocumentImpl() : DocumentImpl()
     tokenizer = 0;
 
     bodyElement = 0;
-
-    if (!pFontManager)
-	pFontManager = new khtml::FontManager();
-    if (!pSettings)
-	pSettings = new khtml::Settings();
 }
 
 HTMLDocumentImpl::HTMLDocumentImpl(KHTMLWidget *v)
@@ -81,11 +76,6 @@ HTMLDocumentImpl::HTMLDocumentImpl(KHTMLWidget *v)
     tokenizer = 0;
 
     bodyElement = 0;
-
-    if (!pFontManager)
-	pFontManager = new khtml::FontManager();
-    if (!pSettings)
-	pSettings = new khtml::Settings(*(view->part()->settings()));
 
     m_styleSelector = new CSSStyleSelector(this);
 }

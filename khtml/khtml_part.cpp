@@ -595,7 +595,7 @@ void KHTMLPart::slotRedirect()
 // ####
 bool KHTMLPart::setCharset( const QString &name, bool override )
 {
-  // ### hack: FIXME
+  // ### hack: FIXME, use QFontDatabase!!!!!
   KCharsets *c = KGlobal::charsets();
   if(!c->isAvailable(name))
   {
@@ -662,51 +662,6 @@ void KHTMLPart::setStandardFont( const QString &name )
 void KHTMLPart::setFixedFont( const QString &name )
 {
   d->m_defaultSettings->fixedFontFace = name;
-}
-
-void KHTMLPart::setDefaultBGColor( const QColor &col )
-{
-  printf("setting default bgColor\n");
-  d->m_defaultSettings->bgColor = col;
-  
-  QMap<QString,khtml::ChildFrame>::ConstIterator it = d->m_frames.begin();
-  QMap<QString,khtml::ChildFrame>::ConstIterator end = d->m_frames.end();
-  
-  for (; it != end; ++it )
-    if( it.data().m_part && it.data().m_part->inherits( "KHTMLPart" ) )
-      static_cast<KHTMLPart *>((KParts::ReadOnlyPart *)it.data().m_part)->setDefaultBGColor( col );
-  
-  /*
-    Child *c;
-    for ( c = m_lstChildren.first(); c != 0L; c = m_lstChildren.next() )
-	c->m_pBrowser->setDefaultBGColor( bgcolor );
-  */	
-}
-
-void KHTMLPart::setDefaultTextColors( const QColor &normal, const QColor &link, const QColor &vlink )
-{
-  printf("setting default text colors\n");
-
-  d->m_defaultSettings->fontBaseColor = normal;
-  d->m_defaultSettings->linkColor = link;
-  d->m_defaultSettings->vLinkColor = vlink;
-
-  QMap<QString,khtml::ChildFrame>::ConstIterator it = d->m_frames.begin();
-  QMap<QString,khtml::ChildFrame>::ConstIterator end = d->m_frames.end();
-  for (; it != end; ++it )
-    if ( it.data().m_part && it.data().m_part->inherits( "KHTMLPart" ) )
-    static_cast<KHTMLPart *>((KParts::ReadOnlyPart *)it.data().m_part)->setDefaultTextColors( normal, link, vlink );
-
-    /*
-    Child *c;
-    for ( c = m_lstChildren.first(); c != 0L; c = m_lstChildren.next() )
-	c->m_pBrowser->setDefaultTextColors( _textc, _linkc, _vlinkc );
-    */	
-}
-
-void KHTMLPart::setUnderlineLinks( bool ul )
-{
-  d->m_defaultSettings->underlineLinks = ul;
 }
 
 void KHTMLPart::setURLCursor( const QCursor &c )

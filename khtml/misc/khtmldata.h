@@ -57,24 +57,12 @@ public:
 
     int     fontSizes[MAXFONTSIZES];
     int     fixedFontSizes[MAXFONTSIZES];
-    QColor  fontBaseColor;
-    QString fontBaseFace;
 
+    QString fontBaseFace;
     QString fixedFontFace;
 
-    QColor  linkColor;
-    QColor  vLinkColor;
-
-    QColor  bgColor;
-
-    QFont::CharSet charset; 
-
-    bool    underlineLinks;
-
-    static const int fontBaseSize;
+    QFont::CharSet charset;
 };
-
-extern Settings* pSettings;
 
 };
 

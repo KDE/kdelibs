@@ -98,15 +98,39 @@ public:
 
   void scheduleRedirection( int delay, const KURL &url );
 
+  /**
+   * sets the charset to use for displaying html pages. If override is true,
+   * it will override charset specifications of the document.
+   */
   bool setCharset( const QString &name, bool override = false );
 
-  bool gotoAnchor( const QString &name );
+  /**
+   * set the encoding the page uses. This can be different form the charset.
+   */
+  bool setEncoding( const QString &name, bool override = false );
+
+  /**
+   * set a user defined style sheet to be used on top of the HTML 4 default style
+   * sheet. This gives a wide range of possibilities to change the layout of the
+   * page
+   */
+  void setUserStyleSheet(const KURL &url);
+
+  /**
+   * set a user defined style sheet to be used on top of the HTML 4 default style
+   * sheet. This gives a wide range of possibilities to change the layout of the
+   * page
+   */
+  void setUserStyleSheet(const QString &styleSheet);
+
 
   /**
    * Sets point sizes to be associated with the HTML-sizes used in
    * <FONT size=Html-Font-Size>
    *
    * Html-Font-Sizes range from 1 (smallest) to 7 (biggest).
+   *
+   * They are related to the CSS font sizes by 1 == xx-small to 7 == xx-large.
    */
   void setFontSizes(const int *newFontSizes, const int *newFixedFontSizes=0);
 
@@ -115,6 +139,8 @@ public:
    * <FONT size=Html-Font-Size>
    *
    * Html-Font-Sizes range from 1 (smallest) to 7 (biggest).
+   *
+   * They are related to the CSS font sizes by 1 == xx-small to 7 == xx-large.
    */
   void fontSizes(int *fontSizes, int *fixedFontSizes=0);
 
@@ -141,22 +167,7 @@ public:
    */
   void setFixedFont( const QString &name );
 
-  /**
-   * Sets the default background color to use when one isn't specified
-   * explicitly by <tt>&lt;body bgcolor=...&gt;</tt>
-   */
-  void setDefaultBGColor( const QColor &col );
-
-  /**
-   * Sets the default text colors.
-   */
-  void setDefaultTextColors( const QColor &normal, const QColor &link,
-			     const QColor &vlink );
-
-  /**
-   * Set whether links are drawn in underlined text.
-   */
-  void setUnderlineLinks( bool ul );
+  bool gotoAnchor( const QString &name );
 
   /**
    * Sets the cursor to use when the cursor is on a link.

@@ -1243,12 +1243,15 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
 	    default:
 		return;
 	    }
+	    // ################### FIXME!!!!!
+#if 0	
 	    int fontSizes[7], fixedFontSizes[7];
 	    if(khtml::pSettings) khtml::pSettings->getFontSizes(fontSizes, fixedFontSizes);
 	    if(f.fixedPitch())
 		f.setPointSize(fixedFontSizes[sizeToUse]);
 	    else
 		f.setPointSize(fontSizes[sizeToUse]);
+#endif
 	    style->setFont(f);
 	    style->setFontSize(sizeToUse);
 	    return;

@@ -38,8 +38,6 @@
 #include "dom_exception.h"
 
 #include "htmlhashes.h"
-#include "khtmlfont.h"
-#include "htmlhashes.h"
 #include "khtml.h"
 
 #include "render_box.h"

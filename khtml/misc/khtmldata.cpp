@@ -34,8 +34,6 @@ using namespace khtml;
 #include <config.h>
 #endif
 
-Settings* khtml::pSettings = 0;
-
 // most of these sizes are standard X font sizes, so all of our fonts
 // display nicely.
 
@@ -45,20 +43,10 @@ Settings::Settings()
 {
     memcpy( fontSizes, defaultFontSizes, sizeof(fontSizes) );
     memcpy( fixedFontSizes, defaultFontSizes, sizeof(fixedFontSizes) );
-    fontBaseColor = Qt::black;
     fontBaseFace  = KGlobal::generalFont().family();
-
     fixedFontFace = KGlobal::fixedFont().family();
 
-    linkColor     = Qt::blue;
-    vLinkColor    = Qt::darkMagenta;
-
-    // leave bgColor undefined, so we can get the themed background.
-    //bgColor       = Qt::lightGray;
-
     charset	  = QFont::Latin1;
-
-    underlineLinks = true;
 }
 
 void Settings::setFontSizes(const int *newFontSizes, const int *newFixedFontSizes)
@@ -93,40 +81,22 @@ Settings::Settings( const Settings &s )
 {
     memcpy( fontSizes, s.fontSizes, sizeof(fontSizes) );
     memcpy( fixedFontSizes, s.fixedFontSizes, sizeof(fixedFontSizes) );
-    fontBaseColor = s.fontBaseColor;
-    fontBaseFace  = s.fontBaseFace;
 
+    fontBaseFace  = s.fontBaseFace;
     fixedFontFace = s.fixedFontFace;
 
-    linkColor     = s.linkColor;
-    vLinkColor    = s.vLinkColor;
-
-    bgColor       = s.bgColor;
-
     charset       = s.charset;
-
-    underlineLinks = s.underlineLinks;
 }
 
 const Settings &Settings::operator=( const Settings &s )
 {
     memcpy( fontSizes, s.fontSizes, sizeof(fontSizes) );
     memcpy( fixedFontSizes, s.fixedFontSizes, sizeof(fixedFontSizes) );
-    fontBaseColor = s.fontBaseColor;
+
     fontBaseFace  = s.fontBaseFace;
-
     fixedFontFace = s.fixedFontFace;
-
-    linkColor     = s.linkColor;
-    vLinkColor    = s.vLinkColor;
-
-    bgColor       = s.bgColor;
 
     charset       = s.charset;
 
-    underlineLinks = s.underlineLinks;
-
     return *this;
 }
-
-const int Settings::fontBaseSize = 3;

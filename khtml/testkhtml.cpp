@@ -13,8 +13,6 @@
 #include "khtml_part.h"
 #undef protected
 #include "qpushbutton.h"
-#include "khtmldata.h"
-#include "khtmlfont.h"
 #include "testkhtml.h"
 #include "testkhtml.moc"
 #include "misc/loader.h"
@@ -58,8 +56,6 @@ int main(int argc, char *argv[])
     delete p;
     delete doc;
 
-    delete khtml::pSettings;
-    delete khtml::pFontManager;
     khtml::Cache::clear();
     //if(KBrowser::lstViews) delete KBrowser::lstViews;
 }
