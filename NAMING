@@ -1,0 +1,26 @@
+Within KDE the following conventions are used for DSOs 
+(Dynamic Shared Objects):
+
+KDEInit Loadable Modules
+========================
+Name: <appname>.la
+LDFLAGS: -module -avoid version
+
+
+KParts
+======
+Name: lib<appname>part.la
+LDFLAGS: $(KDE_PLUGIN)
+
+
+KImageIO plugin
+===============
+Name: kimg_<imageformat>.la
+LDFLAGS: -module $(KIMGIO_PLUGIN)
+
+
+KWin plugin
+===========
+Name: libkwin<clientname>.la
+LDFLAGS: $(KDE_PLUGIN)
+
