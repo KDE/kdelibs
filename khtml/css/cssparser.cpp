@@ -277,12 +277,20 @@ StyleBaseImpl::parseAtRule(const QChar *&curP, const QChar *endP)
     {
         startP = curP++;
         curP = parseToChar(startP, endP, '{', false);
+	//qDebug("mediaList = '%s'", mediaList.latin1() );
         if ( !curP || curP >= endP ) return 0;
+	QString mediaList = QString( startP, curP - startP);
         curP++;
+	startP = curP;
+	if ( curP >= endP ) return 0;
         curP = parseToChar(curP, endP, '}', false);
+	if ( !curP || startP >= curP )
+	    return 0;
 #ifdef CSS_DEBUG
         kdDebug( 6080 ) << "media rule = " << QString(startP, curP - startP) << endl;
 #endif
+	if ( mediaList.contains( "screen" ) || mediaList.contains( "all" ) )
+	    return parseStyleRule(startP, curP);
     }
     else if(rule == "page")
     {
