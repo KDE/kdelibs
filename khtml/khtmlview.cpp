@@ -139,6 +139,7 @@ public:
         repaintTimerId = 0;
         complete = false;
         firstRelayout = true;
+        dirtyLayout = false;
         layoutSchedulingEnabled = true;
         updateRect = QRect();
     }
@@ -174,6 +175,7 @@ public:
     int repaintTimerId;
     bool complete;
     bool firstRelayout;
+    bool dirtyLayout;
     bool layoutSchedulingEnabled;
     QRect updateRect;
     KHTMLToolTip *tooltip;
@@ -967,6 +969,16 @@ QString KHTMLView::mediaType() const
     return m_medium;
 }
 
+void KHTMLView::setWidgetVisible(RenderWidget* w, bool vis)
+{
+    if (vis) {
+        assert(w->widget());
+        d->visibleWidgets.replace(w, w->widget());
+    }
+    else
+        d->visibleWidgets.remove(w);
+}
+
 void KHTMLView::print()
 {
     if(!m_part->xmlDocImpl()) return;
@@ -1412,11 +1424,13 @@ void KHTMLView::timerEvent ( QTimerEvent *e )
         d->firstRelayout = false;
         killTimer(d->timerId);
 
+        d->dirtyLayout = true;
         d->layoutSchedulingEnabled=false;
         layout();
         d->layoutSchedulingEnabled=true;
 
         d->timerId = 0;
+
 
         //scheduleRepaint(contentsX(),contentsY(),visibleWidth(),visibleHeight());
 	d->updateRect = QRect(contentsX(),contentsY(),visibleWidth(),visibleHeight());
@@ -1439,6 +1453,24 @@ void KHTMLView::timerEvent ( QTimerEvent *e )
 //        kdDebug() << "scheduled repaint "<< d->repaintTimerId  << endl;
     killTimer(d->repaintTimerId);
     updateContents( d->updateRect );
+
+    if (d->dirtyLayout && !d->visibleWidgets.isEmpty()) {
+        d->dirtyLayout = false;
+
+        QRect visibleRect(contentsX(), contentsY(), visibleWidth(), visibleHeight());
+        QPtrList<RenderWidget> toRemove;
+        QWidget* w;
+        for (QPtrDictIterator<QWidget> it(d->visibleWidgets); it.current(); ++it) {
+            int xp = 0, yp = 0;
+            w = it.current();
+            if (!static_cast<RenderWidget*>(it.currentKey())->absolutePosition(xp, yp) ||
+                !visibleRect.intersects(QRect(xp, yp, w->width(), w->height())) )
+                toRemove.append(static_cast<RenderWidget*>(it.currentKey()));
+        }
+        for (RenderWidget* r = toRemove.first(); r; r = toRemove.next())
+            if ( (w = d->visibleWidgets.take(r) ) )
+                addChild(w, 0, -500000);
+    }
 
     d->repaintTimerId = 0;
 }

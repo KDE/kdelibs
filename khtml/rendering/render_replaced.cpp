@@ -138,8 +138,11 @@ void RenderWidget::detach()
     remove();
 
     if ( m_widget ) {
-        if ( m_view )
+        if ( m_view ) {
+            m_view->setWidgetVisible(this, false);
             m_view->removeChild( m_widget );
+            m_view = 0;
+        }
 
         m_widget->removeEventFilter( this );
         m_widget->setMouseTracking( false );
@@ -150,6 +153,7 @@ void RenderWidget::detach()
 RenderWidget::~RenderWidget()
 {
     KHTMLAssert( refCount() <= 0 );
+    assert(!m_view);
 
     if(m_widget) {
         m_widget->hide();
@@ -197,7 +201,8 @@ void RenderWidget::setQWidget(QWidget *widget)
             else
                 setPos(xPos(), -500000);
         }
-	m_view->addChild( m_widget, -500000, 0 );
+        m_view->setWidgetVisible(this, false);
+	m_view->addChild( m_widget, 0, -500000);
     }
 }
 
@@ -284,6 +289,7 @@ void RenderWidget::printObject(QPainter* /*p*/, int, int, int, int, int _tx, int
 	xPos = xNew;
 	yPos = yNew;
     }
+    m_view->setWidgetVisible(this, true);
     m_view->addChild(m_widget, xPos, yPos );
     m_widget->show();
 }
