@@ -169,7 +169,7 @@ public:
 #endif
 
   /**
-   * @deprecated do not use it at all, it will make your application crash, use KCmdineArgs
+   * @deprecated do not use it at all, it will make your application crash, use KCmdLineArgs
    *
    * Constructor. Parses command-line arguments.
    *
