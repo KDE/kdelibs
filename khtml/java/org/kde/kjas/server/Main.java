@@ -46,8 +46,17 @@ public class Main
 
     public static void main( String[] args )
     {
-        if( System.getProperty("kjas.showConsole") != null )
+	// Check for Java version. We do not support Java 1.1
+	// This function can call exit()
+	boolean bad_jdk = checkForJavaVersion(); 
+
+        if( bad_jdk || System.getProperty("kjas.showConsole") != null )
             (new KJASConsole()).show();
+	
+	if(bad_jdk) {
+	    System.err.println("\nERROR: This version of Java is not supported for security reasons.\nERROR: Please use Java version 1.2 or higher.");
+	    return;
+	}
 
         KJASAppletRunner runner = new KJASAppletRunner();
         protocol = new KJASProtocolHandler( System.in, stdout,
@@ -68,5 +77,11 @@ public class Main
                 kjas_err( "Serious error: " + t, t );
             }
         }
+    }
+
+    private static boolean checkForJavaVersion()
+    {
+	String version  = System.getProperty("java.version");;
+	return version.startsWith("1.1");	
     }
 }

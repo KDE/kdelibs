@@ -9,13 +9,15 @@ import java.security.*;
 /**
  * ClassLoader used to download and instantiate Applets.
  * <P>
- * <FONT COLOR="red">Warning: No security implemented - do not use unless
- * you *really* know what you're doing.</FONT>
- * It should work ok with both Java 1.1 and Java 2.
+ * NOTE: The class loader extends Java 1.2 specific class. 
+ * Java 1.1 is not supported anymore. 
  *
  * <H3>Change Log</H3>
  * <PRE>
  * $Log$
+ * Revision 1.11  2000/11/16 00:32:44  wynnw
+ * added a main function to test class loading from a certain url
+ *
  * Revision 1.10  2000/11/15 19:54:48  wynnw
  * This update:
  * * Updates the parsing to handle the new KJAS protocol
@@ -109,10 +111,9 @@ public class KJASAppletClassLoader
         catch( ClassNotFoundException e )
         {
             Main.kjas_debug( "super couldn't load class: " + name + ", exception = " + e );
-            e.printStackTrace();
+            
+	    throw e;
         }
-
-        return null;
     }
 
 
@@ -133,14 +134,9 @@ public class KJASAppletClassLoader
         catch( ClassNotFoundException e )
         {
             Main.kjas_debug( "could not find the class: " + name + ", exception = " + e );
+
+	    throw e;
         }
-
-        throw new ClassNotFoundException( name );
-    }
-
-    public URL findResource( String name )
-    {
-        return super.findResource( name );
     }
 
     public void addCodeBase( URL url )
@@ -178,14 +174,12 @@ public class KJASAppletClassLoader
             KJASAppletClassLoader loader = KJASAppletClassLoader.createLoader( new URL(args[0]) );
             Class foo = loader.loadClass( args[1] );
 
-            if( foo == null )
-                System.out.println( "couldn't load class: " + args[1] );
-            else
-                System.out.println( "loaded class: " + foo );
-        } catch( Exception e )
+	    System.out.println( "loaded class: " + foo );
+        } 
+	catch( Exception e )
         {
-            System.out.println( "Caught exception: " + e );
+            System.out.println( "Couldn't load class " + args[1] );
+	    e.printStackTrace();
         }
     }
-
 }
