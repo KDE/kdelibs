@@ -1062,7 +1062,10 @@ void KHTMLPart::clear()
   if ( d->m_jscript )
     d->m_jscript->clear();
 
-  // do not dereference the document before the jscript is cleared, as some destructors
+  if ( d->m_view )
+    d->m_view->clear();
+
+  // do not dereference the document before the jscript and view are cleared, as some destructors
   // might still try to access the document.
   if ( d->m_doc )
     d->m_doc->deref();
@@ -1071,9 +1074,6 @@ void KHTMLPart::clear()
   delete d->m_decoder;
 
   d->m_decoder = 0;
-
-  if ( d->m_view )
-    d->m_view->clear();
 
   {
     ConstFrameIt it = d->m_frames.begin();
