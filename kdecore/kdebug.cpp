@@ -19,8 +19,6 @@
 
 // $Id$
 
-#error ?!
-
 #include "kdebugdialog.h"
 #include "kdebug.h"
 #include "kapp.h"
