@@ -151,12 +151,12 @@ void HTMLClue::getSelected( QStringList &_list )
 	obj->getSelected( _list );
 }
 
-void HTMLClue::getSelectedText( QString &_str )
+void HTMLClue::getSelectedText( QString &_str, bool getAll )
 {
     HTMLObject *obj;
 
     for ( obj = head; obj != 0; obj = obj->next() )
-	obj->getSelectedText( _str );
+	obj->getSelectedText( _str, getAll );
 }
 
 void HTMLClue::select( bool _select )
@@ -1444,17 +1444,17 @@ bool HTMLClueFlow::selectText( KHTMLWidget *_htmlw, HTMLChain *_chain,
     return isSel;
 }
 
-void HTMLClueFlow::getSelectedText( QString &_str )
+void HTMLClueFlow::getSelectedText( QString &_str, bool getAll )
 {
     HTMLObject *obj;
 
     for ( obj = head; obj != 0; obj = obj->next() )
     {
 	if ( obj != head || !obj->isSeparator() )
-	    obj->getSelectedText( _str );
+	    obj->getSelectedText( _str, getAll );
     }
 
-    if ( tail && tail->isSelected() )
+    if ( tail && (getAll || tail->isSelected()) )
 	_str += '\n';
 }
 

@@ -137,7 +137,7 @@ public:
     virtual bool selectText( KHTMLWidget *_htmlw, HTMLChain *_chain, int _x1,
 	int _y1, int _x2, int _y2, int _tx, int _ty );
     virtual void getSelected( QStringList & );
-    virtual void getSelectedText( QString & );
+    virtual void getSelectedText( QString &, bool );
 
     virtual void calcAbsolutePos( int _x, int _y );
     virtual bool getObjectPosition( const HTMLObject *objp, int &xp, int &yp );

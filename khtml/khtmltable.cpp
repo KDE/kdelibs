@@ -47,6 +47,21 @@
 
 //#define CLUE_DEBUG
 
+#define FOR_EACH_CELL(r,c,cell) \
+    for ( unsigned int r = 0; r < totalRows; r++ )                    \
+    {                                                                 \
+        for ( unsigned int c = 0; c < totalCols; c++ )                \
+        {                                                             \
+            HTMLTableCell *cell = cells[r][c];                        \
+            if (!cell)                                                \
+                continue;                                             \
+	    if ( (c < totalCols - 1) && (cell == cells[r][c+1]) )     \
+	        continue;                                             \
+	    if ( (r < totalRows - 1) && (cells[r+1][c] == cell) )     \
+	        continue;                                             
+
+#define END_FOR_EACH } }
+
 //-----------------------------------------------------------------------------
 
 HTMLTableCell::HTMLTableCell( int _percent, int _width, int rs, int cs, int pad )
@@ -262,50 +277,25 @@ void HTMLTable::calcAbsolutePos( int _x, int _y )
 {
     int lx = _x + x;
     int ly = _y + y - ascent;
-    HTMLTableCell *cell;
 
-    unsigned int r, c;
-
-    for ( r = 0; r < totalRows; r++ )
+    FOR_EACH_CELL( r, c, cell)
     {
-	for ( c = 0; c < totalCols; c++ )
-	{
-	    if ( ( cell = cells[r][c] ) == 0 )
-		continue;
-	    if ( c < totalCols - 1 && cell == cells[r][c+1] )
-		continue;
-	    if ( r < totalRows - 1 && cells[r+1][c] == cell )
-		continue;
-
-	    cell->calcAbsolutePos( lx, ly );
-	}
+        cell->calcAbsolutePos( lx, ly );
     }
+    END_FOR_EACH
 }
 
 bool HTMLTable::getObjectPosition( const HTMLObject *objp, int &xp, int &yp )
 {
-    HTMLTableCell *cell;
-
     xp += x;
     yp += (y - ascent);
 
-    unsigned int r, c;
-
-    for ( r = 0; r < totalRows; r++ )
+    FOR_EACH_CELL( r, c, cell)
     {
-	for ( c = 0; c < totalCols; c++ )
-	{
-	    if ( ( cell = cells[r][c] ) == 0 )
-		continue;
-	    if ( c < totalCols - 1 && cell == cells[r][c+1] )
-		continue;
-	    if ( r < totalRows - 1 && cells[r+1][c] == cell )
-		continue;
-
-	    if ( cell->getObjectPosition( objp, xp, yp ) )
-		return true;
-	}
+        if ( cell->getObjectPosition( objp, xp, yp ) )
+            return true;
     }
+    END_FOR_EACH
     
     xp -= x;
     yp -= (y - ascent);
@@ -316,29 +306,17 @@ bool HTMLTable::getObjectPosition( const HTMLObject *objp, int &xp, int &yp )
 HTMLAnchor* HTMLTable::findAnchor( QString _name, int &_x, int &_y )
 {
     HTMLAnchor *ret;
-    HTMLTableCell *cell;
 
     _x += x;
     _y += y - ascent;
  
-    unsigned int r, c;
-
-    for ( r = 0; r < totalRows; r++ )
+    FOR_EACH_CELL( r, c, cell)
     {
-	for ( c = 0; c < totalCols; c++ )
-	{
-	    if ( ( cell = cells[r][c] ) == 0 )
-		continue;
-	    if ( c < totalCols - 1 && cell == cells[r][c+1] )
-		continue;
-	    if ( r < totalRows - 1 && cells[r+1][c] == cell )
-		continue;
-
-	    ret = cell->findAnchor( _name, _x, _y );
-	    if ( ret != 0 )
-		return ret;
-	}
+        ret = cell->findAnchor( _name, _x, _y );
+        if (ret)
+	    return ret;
     }
+    END_FOR_EACH
 	
     _x -= x;
     _y -= y - ascent;
@@ -348,37 +326,24 @@ HTMLAnchor* HTMLTable::findAnchor( QString _name, int &_x, int &_y )
 
 void HTMLTable::reset()
 {
-    unsigned int r, c;
-    HTMLTableCell *cell;
-
-    for ( r = 0; r < totalRows; r++ )
+    FOR_EACH_CELL( r, c, cell)
     {
-	for ( c = 0; c < totalCols; c++ )
-	{
-	    if ( ( cell = cells[r][c] ) == 0 )
-		continue;
-	    if ( c < totalCols - 1 && cell == cells[r][c+1] )
-		continue;
-	    if ( r < totalRows - 1 && cells[r+1][c] == cell )
-		continue;
-
-	    cell->reset();
-	}
+        cell->reset();
     }
+    END_FOR_EACH
+
     calcColInfoI();
 }
 
 void HTMLTable::calcSize( HTMLClue * )
 {
-    unsigned int r, c;
     int indx;
-    HTMLTableCell *cell;
 
     // Do the final layout based on width
     calcColInfoII();
 
     // If it doesn't fit... MAKE IT FIT!
-    for ( c = 0; c < totalCols; c++ )
+    for ( unsigned int c = 0; c < totalCols; c++ )
     {
         if (columnPos[c+1] > width-border)
         {
@@ -388,25 +353,16 @@ void HTMLTable::calcSize( HTMLClue * )
     }
 
     // set cell widths and then calculate cell sizes
-    for ( r = 0; r < totalRows; r++ )
+    FOR_EACH_CELL( r, c, cell)
     {
-	for ( c = 0; c < totalCols; c++ )
-	{
-	    if ( ( cell = cells[r][c] ) == 0 )
-		continue;
-	    if ( c < totalCols - 1 && cell == cells[r][c+1] )
-		continue;
-	    if ( r < totalRows - 1 && cell == cells[r+1][c] )
-		continue;
+	if ( ( indx = c-cell->colSpan()+1 ) < 0 )
+	    indx = 0;
 
-	    if ( ( indx = c-cell->colSpan()+1 ) < 0 )
-		indx = 0;
-
-	    cell->setMaxWidth( columnPos[c+1] - columnPos[ indx ] - spacing -
-		 padding - padding );
-	    cell->calcSize();
-	}
+	cell->setMaxWidth( columnPos[c+1] - columnPos[ indx ] - spacing -
+	         padding - padding );
+	cell->calcSize();
     }
+    END_FOR_EACH
 
     if ( caption )
     {
@@ -420,7 +376,7 @@ void HTMLTable::calcSize( HTMLClue * )
     calcRowHeights();
 
     // set cell positions
-    for ( r = 0; r < totalRows; r++ )
+    for ( unsigned int r = 0; r < totalRows; r++ )
     {
 	int cellHeight;
 
@@ -428,10 +384,11 @@ void HTMLTable::calcSize( HTMLClue * )
 	if ( caption && capAlign == HTMLClue::Top )
 	    ascent += caption->getHeight();
 
-	for ( c = 0; c < totalCols; c++ )
+	for ( unsigned int c = 0; c < totalCols; c++ )
 	{
-	    if ( ( cell = cells[r][c] ) == 0 )
-		continue;
+            HTMLTableCell *cell = cells[r][c];                        \
+            if (!cell)                                                \
+                continue;                                             \
 	    if ( c < totalCols - 1 && cell == cells[r][c+1] )
 		continue;
 	    if ( r < totalRows - 1 && cell == cells[r+1][c] )
@@ -1402,10 +1359,6 @@ void HTMLTable::setMaxAscent( int _a )
 
 HTMLObject *HTMLTable::checkPoint( int _x, int _y )
 {
-    unsigned int r, c;
-    HTMLObject *obj;
-    HTMLTableCell *cell;
-
     if ( (_x < x) || (_x > x + width) || 
          (_y > y + descent) || (_y < y - ascent)
        )
@@ -1413,32 +1366,19 @@ HTMLObject *HTMLTable::checkPoint( int _x, int _y )
 	return 0L;
     }
 
-    for ( r = 0; r < totalRows; r++ )
+    FOR_EACH_CELL(r, c, cell)
     {
-	for ( c = 0; c < totalCols; c++ )
-	{
-	    if ( ( cell = cells[r][c] ) == 0 )
-		continue;
-
-	    if ( c < totalCols - 1 && cell == cells[r][c+1] )
-		continue;
-	    if ( r < totalRows - 1 && cells[r+1][c] == cell )
-		continue;
-
-	    if ((obj = cell->checkPoint( _x-x, _y-(y - ascent) )) != 0)
-		return obj;
-	}
+        HTMLObject *obj = cell->checkPoint( _x-x, _y-(y - ascent) );
+        if (obj);
+	    return obj;
     }
+    END_FOR_EACH
 
     return 0L;
 }
 
 HTMLObject *HTMLTable::mouseEvent( int _x, int _y, int button, int state )
 {
-    unsigned int r, c;
-    HTMLObject *obj;
-    HTMLTableCell *cell;
-
     if ( (_x < x) || (_x > x + width) || 
          (_y > y + descent) || (_y < y - ascent)
        )
@@ -1446,23 +1386,14 @@ HTMLObject *HTMLTable::mouseEvent( int _x, int _y, int button, int state )
 	return 0;
     }
 
-    for ( r = 0; r < totalRows; r++ )
+    FOR_EACH_CELL(r, c, cell)
     {
-	for ( c = 0; c < totalCols; c++ )
-	{
-	    if ( ( cell = cells[r][c] ) == 0 )
-		continue;
-
-	    if ( c < totalCols - 1 && cell == cells[r][c+1] )
-		continue;
-	    if ( r < totalRows - 1 && cells[r+1][c] == cell )
-		continue;
-
-	    if ( ( obj = cell->mouseEvent( _x-x, _y-(y - ascent), button,
-		    state ) ) != 0 )
-		return obj;
-	}
+        HTMLObject *obj = cell->mouseEvent( _x-x, _y-(y - ascent), 
+                                            button, state );
+        if (obj)
+	    return obj;
     }
+    END_FOR_EACH
 
     return 0;
 }
@@ -1470,29 +1401,16 @@ HTMLObject *HTMLTable::mouseEvent( int _x, int _y, int button, int state )
 void HTMLTable::selectByURL( KHTMLWidget *_htmlw, HTMLChain *_chain,
     QString _url, bool _select, int _tx, int _ty )
 {
-    unsigned int r, c;
-    HTMLTableCell *cell;
-
     _tx += x;
     _ty += y - ascent;
 
     _chain->push( this );
 
-    for ( r = 0; r < totalRows; r++ )
+    FOR_EACH_CELL(r, c, cell)
     {
-	for ( c = 0; c < totalCols; c++ )
-	{
-	    if ( ( cell = cells[r][c] ) == 0 )
-		continue;
-
-	    if ( c < totalCols - 1 && cell == cells[r][c+1] )
-		continue;
-	    if ( r < totalRows - 1 && cells[r+1][c] == cell )
-		continue;
-
-	    cell->selectByURL( _htmlw, _chain, _url, _select, _tx, _ty );
-	}
+	cell->selectByURL( _htmlw, _chain, _url, _select, _tx, _ty );
     }
+    END_FOR_EACH
 
     _chain->pop();
 }
@@ -1500,29 +1418,16 @@ void HTMLTable::selectByURL( KHTMLWidget *_htmlw, HTMLChain *_chain,
 void HTMLTable::select( KHTMLWidget *_htmlw, HTMLChain *_chain,
     QRegExp& _pattern, bool _select, int _tx, int _ty )
 {
-    unsigned int r, c;
-    HTMLTableCell *cell;
-
     _tx += x;
     _ty += y - ascent;
 
     _chain->push( this );
 
-    for ( r = 0; r < totalRows; r++ )
+    FOR_EACH_CELL(r, c, cell)
     {
-	for ( c = 0; c < totalCols; c++ )
-	{
-	    if ( ( cell = cells[r][c] ) == 0 )
-		continue;
-
-	    if ( c < totalCols - 1 && cell == cells[r][c+1] )
-		continue;
-	    if ( r < totalRows - 1 && cells[r+1][c] == cell )
-		continue;
-
-	    cell->select( _htmlw, _chain, _pattern, _select, _tx, _ty );
-	}
+	cell->select( _htmlw, _chain, _pattern, _select, _tx, _ty );
     }
+    END_FOR_EACH
 
     _chain->pop();
 }
@@ -1530,29 +1435,16 @@ void HTMLTable::select( KHTMLWidget *_htmlw, HTMLChain *_chain,
 void HTMLTable::select( KHTMLWidget *_htmlw, HTMLChain *_chain,
     bool _select, int _tx, int _ty )
 {
-    unsigned int r, c;
-    HTMLTableCell *cell;
-
     _tx += x;
     _ty += y - ascent;
 
     _chain->push( this );
 
-    for ( r = 0; r < totalRows; r++ )
+    FOR_EACH_CELL(r, c, cell)
     {
-	for ( c = 0; c < totalCols; c++ )
-	{
-	    if ( ( cell = cells[r][c] ) == 0 )
-		continue;
-
-	    if ( c < totalCols - 1 && cell == cells[r][c+1] )
-		continue;
-	    if ( r < totalRows - 1 && cells[r+1][c] == cell )
-		continue;
-
-	    cell->select( _htmlw, _chain, _select, _tx, _ty );
-	}
+        cell->select( _htmlw, _chain, _select, _tx, _ty );
     }
+    END_FOR_EACH
 
     _chain->pop();
 }
@@ -1560,108 +1452,70 @@ void HTMLTable::select( KHTMLWidget *_htmlw, HTMLChain *_chain,
 void HTMLTable::select( KHTMLWidget *_htmlw, HTMLChain *_chain,
     QRect & _rect, int _tx, int _ty )
 {
-    unsigned int r, c;
-    HTMLTableCell *cell;
-
     _tx += x;
     _ty += y - ascent;
 
     _chain->push( this );
 
-    for ( r = 0; r < totalRows; r++ )
+    FOR_EACH_CELL(r, c, cell)
     {
-	for ( c = 0; c < totalCols; c++ )
-	{
-	    if ( ( cell = cells[r][c] ) == 0 )
-		continue;
-
-	    if ( c < totalCols - 1 && cell == cells[r][c+1] )
-		continue;
-	    if ( r < totalRows - 1 && cells[r+1][c] == cell )
-		continue;
-
-	    cell->select( _htmlw, _chain, _rect, _tx, _ty );
-	}
+	cell->select( _htmlw, _chain, _rect, _tx, _ty );
     }
+    END_FOR_EACH
 
     _chain->pop();
 }
 
 void HTMLTable::select( bool _select )
 {
-    unsigned int r, c;
-    HTMLTableCell *cell;
-
-    for ( r = 0; r < totalRows; r++ )
+    FOR_EACH_CELL(r, c, cell)
     {
-	for ( c = 0; c < totalCols; c++ )
-	{
-	    if ( ( cell = cells[r][c] ) == 0 )
-		continue;
-
-	    if ( c < totalCols - 1 && cell == cells[r][c+1] )
-		continue;
-	    if ( r < totalRows - 1 && cells[r+1][c] == cell )
-		continue;
-
-	    cell->select( _select );
-	}
+	cell->select( _select );
     }
+    END_FOR_EACH
 }
 
 bool HTMLTable::selectText( KHTMLWidget *_htmlw, HTMLChain *_chain,
 	int _x1, int _y1, int _x2, int _y2, int _tx, int _ty )
 {
     bool isSel = false;
-    unsigned int r, c;
-    HTMLTableCell *cell;
 
     _tx += x;
     _ty += y - ascent;
 
     _chain->push( this );
 
-    for ( r = 0; r < totalRows; r++ )
+    FOR_EACH_CELL(r, c, cell)
     {
-	for ( c = 0; c < totalCols; c++ )
+	if ( _y1 < y - ascent && _y2 > y )
 	{
-	    if ( ( cell = cells[r][c] ) == 0 )
-		continue;
-
-	    if ( c < totalCols - 1 && cell == cells[r][c+1] )
-		continue;
-	    if ( r < totalRows - 1 && cells[r+1][c] == cell )
-		continue;
-
-	    if ( _y1 < y - ascent && _y2 > y )
-	    {
-		isSel = cell->selectText( _htmlw, _chain, 0, _y1 - ( y - ascent ),
+	    isSel = cell->selectText( _htmlw, _chain, 0, _y1 - ( y - ascent ),
 			width + 1, _y2 - ( y - ascent ), _tx, _ty ) || isSel;
-	    }
-	    else if ( _y1 < y - ascent )
-	    {
-		isSel = cell->selectText( _htmlw, _chain, 0, _y1 - ( y - ascent ),
+	}
+	else if ( _y1 < y - ascent )
+	{
+	    isSel = cell->selectText( _htmlw, _chain, 0, _y1 - ( y - ascent ),
 			_x2 - x, _y2 - ( y - ascent ), _tx, _ty ) || isSel;
-	    }
-	    else if ( _y2 > y )
-	    {
-		isSel = cell->selectText( _htmlw, _chain, _x1 - x,
+	}
+	else if ( _y2 > y )
+	{
+	    isSel = cell->selectText( _htmlw, _chain, _x1 - x,
 			_y1 - ( y - ascent ), width + 1, _y2 - ( y - ascent ),
 			_tx, _ty ) || isSel;
-	    }
-	    else if ( (_x1 - x < cell->getXPos() + cell->getWidth() &&
+	}
+	else if ( (_x1 - x < cell->getXPos() + cell->getWidth() &&
 			_x2 - x > cell->getXPos() ) )
-	    {
-		isSel = cell->selectText( _htmlw, _chain, _x1 - x,
-			_y1 - ( y - ascent ), _x2 - x, _y2 - ( y - ascent ),
+	{
+	    isSel = cell->selectText( _htmlw, _chain, _x1 - x,
+	                _y1 - ( y - ascent ), _x2 - x, _y2 - ( y - ascent ),
 			_tx, _ty ) || isSel;
-	    }
-	    else
-	    {
-		cell->selectText( _htmlw, _chain, 0, 0, 0, 0, _tx, _ty );
-	    }
+	}
+	else
+	{
+	    cell->selectText( _htmlw, _chain, 0, 0, 0, 0, _tx, _ty );
 	}
     }
+    END_FOR_EACH
 
     _chain->pop();
 
@@ -1670,81 +1524,43 @@ bool HTMLTable::selectText( KHTMLWidget *_htmlw, HTMLChain *_chain,
 
 void HTMLTable::getSelected( QStringList &_list )
 {
-    unsigned int r, c;
-    HTMLTableCell *cell;
-
-    for ( r = 0; r < totalRows; r++ )
+    FOR_EACH_CELL(r, c, cell)
     {
-	for ( c = 0; c < totalCols; c++ )
-	{
-	    if ( ( cell = cells[r][c] ) == 0 )
-		continue;
-
-	    if ( c < totalCols - 1 && cell == cells[r][c+1] )
-		continue;
-	    if ( r < totalRows - 1 && cells[r+1][c] == cell )
-		continue;
-
-	    cell->getSelected( _list );
-	}
+        cell->getSelected( _list );
     }
+    END_FOR_EACH
 }
 
-void HTMLTable::getSelectedText( QString &_str )
+void HTMLTable::getSelectedText( QString &_str, bool getAll )
 {
-    unsigned int r, c;
-    HTMLTableCell *cell;
-
-    for ( r = 0; r < totalRows; r++ )
+    FOR_EACH_CELL(r, c, cell)
     {
-	for ( c = 0; c < totalCols; c++ )
-	{
-	    if ( ( cell = cells[r][c] ) == 0 )
-		continue;
-
-	    if ( c < totalCols - 1 && cell == cells[r][c+1] )
-		continue;
-	    if ( r < totalRows - 1 && cells[r+1][c] == cell )
-		continue;
-
-	    cell->getSelectedText( _str );
-	}
+	cell->getSelectedText( _str, getAll );
     }
+    END_FOR_EACH
 }
 int HTMLTable::findPageBreak( int _y )
 {
     if ( _y > y )
 	return -1;
 
-    unsigned int r, c;
-    HTMLTableCell *cell;
     int pos, minpos = 0x7FFFFFFF;
     QArray<bool> colsDone( totalCols );
     colsDone.fill( false );
 
-    for ( r = 0; r < totalRows; r++ )
+    FOR_EACH_CELL(r, c, cell)
     {
-	for ( c = 0; c < totalCols; c++ )
+	if ( colsDone[c] )
+	    continue;
+
+	pos = cell->findPageBreak( _y - ( y - ascent ) );
+	if ( pos >= 0 && pos < minpos )
 	{
-	    if ( ( cell = cells[r][c] ) == 0 )
-		continue;
-
-	    if ( c < totalCols - 1 && cell == cells[r][c+1] )
-		continue;
-	    if ( r < totalRows - 1 && cells[r+1][c] == cell )
-		continue;
-	    if ( colsDone[c] )
-		continue;
-
-	    pos = cell->findPageBreak( _y - ( y - ascent ) );
-	    if ( pos >= 0 && pos < minpos )
-	    {
-		colsDone[c] = true;
-		minpos = pos;
-	    }
+	    colsDone[c] = true;
+	    minpos = pos;
 	}
-
     }
+    END_FOR_EACH
 
     if ( minpos != 0x7FFFFFFF )
 	return ( minpos + y - ascent );
@@ -1757,22 +1573,11 @@ void HTMLTable::findCells( int _tx, int _ty, QList<HTMLCellInfo> &_list )
     _tx += x;
     _ty += y - ascent;
 
-    unsigned int r, c;
-    HTMLTableCell *cell;
-
-    for ( r = 0; r < totalRows; r++ )
+    FOR_EACH_CELL(r, c, cell)
     {
-	for ( c = 0; c < totalCols; c++ )
-	{
-	    if ( ( cell = cells[r][c] ) == 0 )
-		continue;
-	    if ( c < totalCols - 1 && cell == cells[r][c+1] )
-		continue;
-	    if ( r < totalRows - 1 && cells[r+1][c] == cell )
-		continue;
-	    cell->findCells( _tx, _ty, _list );
-	}
+	cell->findCells( _tx, _ty, _list );
     }
+    END_FOR_EACH
 }
 
 bool HTMLTable::print( QPainter *_painter, int _x, int _y, int _width, int _height, int _tx, int _ty, bool toPrinter )
@@ -1783,9 +1588,7 @@ bool HTMLTable::print( QPainter *_painter, int _x, int _y, int _width, int _heig
     _tx += x;
     _ty += y - ascent;
 
-    unsigned int r, c;
     int cindx, rindx;
-    HTMLTableCell *cell;
     QArray<bool> colsDone( totalCols );
     colsDone.fill( false );
 
@@ -1796,25 +1599,17 @@ bool HTMLTable::print( QPainter *_painter, int _x, int _y, int _width, int _heig
     }
 
     // draw the cells
-    for ( r = 0; r < totalRows; r++ )
+    FOR_EACH_CELL(r, c, cell)
     {
-	for ( c = 0; c < totalCols; c++ )
-	{
-	    if ( ( cell = cells[r][c] ) == 0 )
-		continue;
-	    if ( c < totalCols - 1 && cell == cells[r][c+1] )
-		continue;
-	    if ( r < totalRows - 1 && cells[r+1][c] == cell )
-		continue;
 //@@WABA: What does this do?
-	    if ( colsDone[c] )
-		continue;
+        if ( colsDone[c] )
+            continue; // Next cell
 
-	    if ( cell->print( _painter, _x - x, _y - (y - ascent),
+        if ( cell->print( _painter, _x - x, _y - (y - ascent),
 		    _width, _height, _tx, _ty, toPrinter ) )
-		colsDone[c] = true;
-	}
+	colsDone[c] = true;
     }
+    END_FOR_EACH
 
     // draw the border - needs work to print to printer
     if ( border && !toPrinter )
@@ -1827,34 +1622,24 @@ bool HTMLTable::print( QPainter *_painter, int _x, int _y, int _width, int _heig
 	qDrawShadePanel( _painter, _tx, _ty + capOffset, width,
 	    rowHeights[totalRows] + border, colorGrp, false, border );
 
-	// draw borders around each cell
-	for ( r = 0; r < totalRows; r++ )
-	{
-	    for ( c = 0; c < totalCols; c++ )
-	    {
-		if ( ( cell = cells[r][c] ) == 0 )
-		    continue;
-		if ( c < totalCols - 1 && cell == cells[r][c+1] )
-		    continue;
-		if ( r < totalRows - 1 && cells[r+1][c] == cell )
-		    continue;
+        FOR_EACH_CELL(r, c, cell)
+        {
+	    if ( ( cindx = c-cell->colSpan()+1 ) < 0 )
+	        cindx = 0;
+	    if ( ( rindx = r-cell->rowSpan()+1 ) < 0 )
+	        rindx = 0;
 
-		if ( ( cindx = c-cell->colSpan()+1 ) < 0 )
-		    cindx = 0;
-		if ( ( rindx = r-cell->rowSpan()+1 ) < 0 )
-		    rindx = 0;
-
-		qDrawShadePanel(_painter,
-		    _tx + columnPos[cindx],
-		    _ty + rowHeights[rindx] + capOffset,
-		    columnPos[c+1] - columnPos[cindx] - spacing,
-		    rowHeights[r+1] - rowHeights[rindx] - spacing,
-		    colorGrp, TRUE, 1 );
-	    }
+	    qDrawShadePanel(_painter,
+	         _tx + columnPos[cindx],
+	         _ty + rowHeights[rindx] + capOffset,
+	         columnPos[c+1] - columnPos[cindx] - spacing,
+	         rowHeights[r+1] - rowHeights[rindx] - spacing,
+	         colorGrp, TRUE, 1 );
 	}
+        END_FOR_EACH
     }
 
-    for ( c = 0; c < totalCols; c++ )
+    for ( unsigned int c = 0; c < totalCols; c++ )
     {
 	if ( colsDone[c] == true )
 	    return true;
@@ -1886,23 +1671,12 @@ void HTMLTable::print( QPainter *_painter, HTMLObject *_obj, int _x, int _y, int
     _tx += x;
     _ty += y - ascent;
 
-    unsigned int r, c;
-    HTMLTableCell *cell;
-
-    for ( r = 0; r < totalRows; r++ )
+    FOR_EACH_CELL(r, c, cell)
     {
-	for ( c = 0; c < totalCols; c++ )
-	{
-	    if ( ( cell = cells[r][c] ) == 0 )
-		continue;
-	    if ( c < totalCols - 1 && cell == cells[r][c+1] )
-		continue;
-	    if ( r < totalRows - 1 && cells[r+1][c] == cell )
-		continue;
-	    cell->print( _painter, _obj, _x - x, _y - (y - ascent),
+	cell->print( _painter, _obj, _x - x, _y - (y - ascent),
 		_width, _height, _tx, _ty );
-	}
     }
+    END_FOR_EACH
 }
 
 void HTMLTable::print( QPainter *_painter, int _tx, int _ty )
@@ -1912,7 +1686,6 @@ void HTMLTable::print( QPainter *_painter, int _tx, int _ty )
 
 HTMLTable::~HTMLTable()
 {
-
     for ( unsigned int r = 0; r < totalRows; r++ )
     {
 	for ( unsigned int c = 0; c < totalCols; c++ )
@@ -1956,19 +1729,10 @@ HTMLTable::printDebug( bool propagate, int indent, bool printObjects )
     
     // ok... go through the children
     indent++;
-    for ( unsigned int r = 0; r < totalRows; r++ )
+    FOR_EACH_CELL(r, c, cell)
     {
-	for ( unsigned int c = 0; c < totalCols; c++ )
-	{
-            HTMLTableCell *cell = cells[r][c];
-	    if (!cell)
-		continue;
-	    if ( (c < totalCols - 1) && (cell == cells[r][c+1]) )
-		continue;
-	    if ( (r < totalRows - 1) && (cells[r+1][c] == cell) )
-		continue;
-printf((iStr + "CELL[%d, %d]\n").ascii(), r,c);
-            cell->printDebug( propagate, indent, printObjects);
-	}
+        printf((iStr + "CELL[%d, %d]\n").ascii(), r,c);
+        cell->printDebug( propagate, indent, printObjects);
     }
+    END_FOR_EACH
 }

@@ -242,6 +242,14 @@ public:
     virtual void getSelectedText( QString &_str );
 
     /**
+     * Get all text.
+     *
+     * @param _str is the QString which will contain all text.  
+     * The text is appended to any text currently in _str.
+     */
+    virtual void getAllText( QString &_str );
+
+    /**
      * Has the user selected any text?  Call @ref #getSelectedText to
      * retrieve the selected text.
      *

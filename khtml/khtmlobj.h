@@ -191,7 +191,7 @@ public:
 	int _y1, int _x2, int _y2, int _tx, int _ty );
 
     virtual void getSelected( QStringList & );
-    virtual void getSelectedText( QString & ) {}
+    virtual void getSelectedText( QString &, bool /* getAll */ ) {}
 
     /**
      * Some objects may need to know their absolute position on the page.
@@ -400,7 +400,7 @@ public:
     virtual void print( QPainter *, int _tx, int _ty );
 
     virtual void recalcBaseSize( QPainter *_painter );
-    virtual void getSelectedText( QString & );
+    virtual void getSelectedText( QString &, bool );
 
     virtual const char * objectName() const { return "HTMLHSpace"; }
 
@@ -420,7 +420,7 @@ public:
 
     virtual bool selectText( KHTMLWidget *_htmlw, HTMLChain *_chain, int _x1,
 	int _y1, int _x2, int _y2, int _tx, int _ty );
-    virtual void getSelectedText( QString & );
+    virtual void getSelectedText( QString &, bool );
     virtual void recalcBaseSize( QPainter *_painter );
     virtual bool print( QPainter *_painter, int _x, int _y, int _width,
 	    int _height, int _tx, int _ty, bool toPrinter );
@@ -482,7 +482,7 @@ public:
     virtual HTMLFitType fitLine( bool startOfLine, bool firstRun, int widthLeft );
     virtual bool selectText( KHTMLWidget *_htmlw, HTMLChain *_chain, int _x1,
 			     int _y1, int _x2, int _y2, int _tx, int _ty );
-    virtual void getSelectedText( QString & ) { } // Handled by master
+    virtual void getSelectedText( QString &, bool ) { } // Handled by master
     virtual bool print( QPainter *_painter, int _x, int _y, int _width,
 	    int _height, int _tx, int _ty, bool toPrinter );
     virtual void print( QPainter *, int _tx, int _ty );
@@ -607,7 +607,7 @@ public:
     HTMLVSpace( int _vspace, Clear c = CNone );
     virtual ~HTMLVSpace() { }
 
-    virtual void getSelectedText( QString & );
+    virtual void getSelectedText( QString &, bool );
 
     Clear clear()
 	{ return cl; }

@@ -262,9 +262,9 @@ HTMLVSpace::HTMLVSpace( int _vspace, Clear c ) : HTMLObject()
     cl = c;
 }
 
-void HTMLVSpace::getSelectedText( QString &_str )
+void HTMLVSpace::getSelectedText( QString &_str, bool getAll )
 {
-    if ( isSelected() )
+    if ( getAll || isSelected() )
 	_str += '\n';
 }
 
@@ -293,9 +293,9 @@ void HTMLHSpace::recalcBaseSize( QPainter *_painter )
     _painter->setFont( oldFont );
 }
 
-void HTMLHSpace::getSelectedText( QString &_str )
+void HTMLHSpace::getSelectedText( QString &_str, bool getAll )
 {
-    if ( !isHidden() && isSelected() )
+    if ( !isHidden() && (getAll || isSelected()) )
     {
         _str += ' ';
     }
@@ -482,15 +482,15 @@ int HTMLText::getCharIndex( int _xpos )
     return index;
 }
 
-void HTMLText::getSelectedText( QString &_str )
+void HTMLText::getSelectedText( QString &_str, bool getAll )
 {
-    if ( isSelected() )
+    if ( getAll || isSelected() )
     {
 	if ( isNewline() )
 	    _str += '\n';
 	else
 	{
-	    int i = selStart;
+	    int i = getAll ? 0 : selStart;
 
 	    // skip white space at the start of a line.
 	    if ( !_str.isEmpty() && _str[ _str.length() - 1 ] == '\n' )
@@ -498,8 +498,8 @@ void HTMLText::getSelectedText( QString &_str )
 		while ( text[ i ] == ' ' )
 		    i++;
 	    }
-
-	    while ( i < selEnd )
+            int end = getAll ? text.length() : selEnd;
+	    while ( i < end )
 	    {
 		_str += text[ i ];
 		i++;
@@ -1979,8 +1979,11 @@ void HTMLBackground::pixmapChanged(QPixmap *p)
 	setPixmap( p );
 }
 
-bool HTMLBackground::print( QPainter *_painter, int _x, int _y, int _w, int _h, int _xoff, int _yoff, bool toPrint)
+bool HTMLBackground::print( QPainter *_painter, int _x, int _y, int _w, int _h, int _xoff, int _yoff, bool toPrinter)
 {
+  if (toPrinter)
+     return false;
+
   if ( !pixmap )
     {
       if( !bgColor.isValid() )
@@ -2046,7 +2049,7 @@ HTMLBackground::setBorder( int left, int right, int top, int bottom )
 }
 
 void
-HTMLBackground::printDebug( bool propagate, int indent, bool printObjects )
+HTMLBackground::printDebug( bool, int indent, bool printObjects )
 {
     // return if printing out the objects is not desired
     if(!printObjects) return;

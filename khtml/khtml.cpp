@@ -968,7 +968,15 @@ void KHTMLWidget::getSelectedText( QString &_str )
     if ( clue == 0 )
 	return;
     
-    clue->getSelectedText( _str );
+    clue->getSelectedText( _str, false );
+}
+
+void KHTMLWidget::getAllText( QString &_str )
+{
+    if ( clue == 0 )
+	return;
+    
+    clue->getSelectedText( _str, true );
 }
 
 // Print the current document to the printer.
