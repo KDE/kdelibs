@@ -39,12 +39,15 @@
 #endif
 
 #include "dom/dom_string.h"
+#include "xml/dom_nodeimpl.h"
+#include "html/html_documentimpl.h"
 
 class KHTMLView;
 class HTMLStackElem;
 
 namespace DOM {
     class HTMLDocumentImpl;
+    class DocumentPtr;
     class HTMLElementImpl;
     class NodeImpl;
     class HTMLFormElementImpl;
@@ -66,8 +69,8 @@ class KHTMLParser;
 class KHTMLParser
 {
 public:
-    KHTMLParser( KHTMLView *w, DOM::HTMLDocumentImpl *i );
-    KHTMLParser( DOM::DocumentFragmentImpl *frag, DOM::HTMLDocumentImpl *doc );
+    KHTMLParser( KHTMLView *w, DOM::DocumentPtr *i );
+    KHTMLParser( DOM::DocumentFragmentImpl *frag, DOM::DocumentPtr *doc );
     virtual ~KHTMLParser();
 
     /**
@@ -84,12 +87,13 @@ public:
 
     bool skipMode() const { return (discard_until != 0); }
 
-    DOM::HTMLDocumentImpl *doc() const { return document; }
+    DOM::HTMLDocumentImpl *doc() const { return static_cast<DOM::HTMLDocumentImpl *>(document->document()); }
+    DOM::DocumentPtr *docPtr() const { return document; }
 
 protected:
 
     KHTMLView *HTMLWidget;
-    DOM::HTMLDocumentImpl *document;
+    DOM::DocumentPtr *document;
 
     /*
      * generate an element from the token

@@ -43,7 +43,7 @@ class StyleSheetImpl;
 class HTMLBaseElementImpl : public HTMLElementImpl
 {
 public:
-    HTMLBaseElementImpl(DocumentImpl *doc);
+    HTMLBaseElementImpl(DocumentPtr *doc);
 
     ~HTMLBaseElementImpl();
 
@@ -68,7 +68,7 @@ protected:
 class HTMLLinkElementImpl : public khtml::CachedObjectClient, public HTMLElementImpl
 {
 public:
-    HTMLLinkElementImpl(DocumentImpl *doc);
+    HTMLLinkElementImpl(DocumentPtr *doc);
 
     ~HTMLLinkElementImpl();
 
@@ -105,7 +105,7 @@ protected:
 class HTMLMetaElementImpl : public HTMLElementImpl
 {
 public:
-    HTMLMetaElementImpl(DocumentImpl *doc);
+    HTMLMetaElementImpl(DocumentPtr *doc);
 
     ~HTMLMetaElementImpl();
 
@@ -128,7 +128,7 @@ protected:
 class HTMLScriptElementImpl : public HTMLElementImpl
 {
 public:
-    HTMLScriptElementImpl(DocumentImpl *doc);
+    HTMLScriptElementImpl(DocumentPtr *doc);
 
     ~HTMLScriptElementImpl();
 
@@ -144,7 +144,7 @@ public:
 class HTMLStyleElementImpl : public HTMLElementImpl
 {
 public:
-    HTMLStyleElementImpl(DocumentImpl *doc);
+    HTMLStyleElementImpl(DocumentPtr *doc);
 
     ~HTMLStyleElementImpl();
 
@@ -176,7 +176,7 @@ protected:
 class HTMLTitleElementImpl : public HTMLElementImpl
 {
 public:
-    HTMLTitleElementImpl(DocumentImpl *doc);
+    HTMLTitleElementImpl(DocumentPtr *doc);
 
     ~HTMLTitleElementImpl();
 

@@ -43,7 +43,7 @@ using namespace khtml;
 
 #include <kdebug.h>
 
-HTMLBaseElementImpl::HTMLBaseElementImpl(DocumentImpl *doc)
+HTMLBaseElementImpl::HTMLBaseElementImpl(DocumentPtr *doc)
     : HTMLElementImpl(doc)
 {
 }
@@ -80,7 +80,7 @@ void HTMLBaseElementImpl::parseAttribute(AttrImpl *attr)
 
 void HTMLBaseElementImpl::attach(KHTMLView *v)
 {
-    setStyle(document->styleSelector()->styleForElement(this));
+    setStyle(ownerDocument()->styleSelector()->styleForElement(this));
     if(_href.length())
     {
       v->part()->setBaseURL( KURL( v->part()->url(), _href.string() ) );
@@ -94,7 +94,7 @@ void HTMLBaseElementImpl::attach(KHTMLView *v)
 
 // -------------------------------------------------------------------------
 
-HTMLLinkElementImpl::HTMLLinkElementImpl(DocumentImpl *doc) : HTMLElementImpl(doc)
+HTMLLinkElementImpl::HTMLLinkElementImpl(DocumentPtr *doc) : HTMLElementImpl(doc)
 {
     m_sheet = 0;
     m_loading = false;
@@ -120,7 +120,7 @@ ushort HTMLLinkElementImpl::id() const
 // other stuff...
 void HTMLLinkElementImpl::attach(KHTMLView *v)
 {
-    setStyle(document->styleSelector()->styleForElement(this));
+    setStyle(ownerDocument()->styleSelector()->styleForElement(this));
 
     QString type = m_type.string().lower();
     QString rel = m_rel.string().lower();
@@ -132,7 +132,7 @@ void HTMLLinkElementImpl::attach(KHTMLView *v)
         if( m_media.isNull() || m_media.contains("screen") || m_media.contains("all") || m_media.contains("print") )
         {
             m_loading = true;
-            HTMLDocumentImpl *doc = static_cast<HTMLDocumentImpl *>(document);
+            HTMLDocumentImpl *doc = static_cast<HTMLDocumentImpl *>(ownerDocument());
             // we must have a doc->docLoader() !
             QString chset = getAttribute( ATTR_CHARSET ).string();
             m_cachedSheet = doc->docLoader()->requestStyleSheet(m_url, doc->baseURL(), chset);
@@ -184,7 +184,7 @@ bool HTMLLinkElementImpl::isLoading() const
 
 void HTMLLinkElementImpl::sheetLoaded()
 {
-    document->createSelector();
+    ownerDocument()->createSelector();
 }
 
 StyleSheetImpl *HTMLLinkElementImpl::sheet() const
@@ -203,7 +203,7 @@ StyleSheetImpl *HTMLLinkElementImpl::sheet() const
 
 // -------------------------------------------------------------------------
 
-HTMLMetaElementImpl::HTMLMetaElementImpl(DocumentImpl *doc) : HTMLElementImpl(doc)
+HTMLMetaElementImpl::HTMLMetaElementImpl(DocumentPtr *doc) : HTMLElementImpl(doc)
 {
 }
 
@@ -239,7 +239,7 @@ void HTMLMetaElementImpl::parseAttribute(AttrImpl *attr)
 
 void HTMLMetaElementImpl::attach(KHTMLView *v)
 {
-    setStyle(document->styleSelector()->styleForElement(this));
+    setStyle(ownerDocument()->styleSelector()->styleForElement(this));
 //    kdDebug() << "meta::attach() equiv=" << _equiv.string() << ", content=" << _content.string() << endl;
     if(strcasecmp(_equiv, "refresh") == 0 && !_content.isNull() && v->part()->metaRefreshEnabled())
     {
@@ -281,8 +281,8 @@ void HTMLMetaElementImpl::attach(KHTMLView *v)
         {
             // KIO::http_update_cache(m_url, false, d->m_doc->docLoader()->expire_date);
             // moved to khtml_part.cpp::slotFinished(KIO::Job *) (Tobias)
-            if (document->docLoader())
-                document->docLoader()->setExpireDate(expire_date);
+            if (ownerDocument()->docLoader())
+                ownerDocument()->docLoader()->setExpireDate(expire_date);
         }
     }
     else if(strcasecmp(_equiv, "pragma") == 0 && !_content.isNull())
@@ -299,7 +299,7 @@ void HTMLMetaElementImpl::attach(KHTMLView *v)
 
 // -------------------------------------------------------------------------
 
-HTMLScriptElementImpl::HTMLScriptElementImpl(DocumentImpl *doc) : HTMLElementImpl(doc)
+HTMLScriptElementImpl::HTMLScriptElementImpl(DocumentPtr *doc) : HTMLElementImpl(doc)
 {
 }
 
@@ -319,7 +319,7 @@ ushort HTMLScriptElementImpl::id() const
 
 // -------------------------------------------------------------------------
 
-HTMLStyleElementImpl::HTMLStyleElementImpl(DocumentImpl *doc) : HTMLElementImpl(doc)
+HTMLStyleElementImpl::HTMLStyleElementImpl(DocumentPtr *doc) : HTMLElementImpl(doc)
 {
     m_sheet = 0;
 }
@@ -381,7 +381,7 @@ bool HTMLStyleElementImpl::isLoading() const
 
 void HTMLStyleElementImpl::sheetLoaded()
 {
-    document->createSelector();
+    ownerDocument()->createSelector();
 }
 
 void HTMLStyleElementImpl::reparseSheet()
@@ -400,12 +400,12 @@ void HTMLStyleElementImpl::reparseSheet()
     if(m_sheet) m_sheet->deref();
     m_sheet = new CSSStyleSheetImpl(this);
     m_sheet->ref();
-    m_sheet->parseString( text, (document->parseMode() == DocumentImpl::Strict) );
+    m_sheet->parseString( text, (ownerDocument()->parseMode() == DocumentImpl::Strict) );
 }
 
 // -------------------------------------------------------------------------
 
-HTMLTitleElementImpl::HTMLTitleElementImpl(DocumentImpl *doc)
+HTMLTitleElementImpl::HTMLTitleElementImpl(DocumentPtr *doc)
     : HTMLElementImpl(doc)
 {
 }
@@ -433,6 +433,6 @@ void HTMLTitleElementImpl::setTitle()
     s.compose();
 
 
-    HTMLDocumentImpl *d = static_cast<HTMLDocumentImpl *>(document);
+    HTMLDocumentImpl *d = static_cast<HTMLDocumentImpl *>(ownerDocument());
     emit d->view()->part()->setWindowCaption( s.visual() );
 }

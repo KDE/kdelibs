@@ -41,8 +41,8 @@ class AttrImpl : public NodeImpl
 
 public:
     AttrImpl();
-    AttrImpl(DocumentImpl *doc, const DOMString &name);
-    AttrImpl(DocumentImpl *doc, int id);
+    AttrImpl(DocumentPtr *doc, const DOMString &name);
+    AttrImpl(DocumentPtr *doc, int id);
     AttrImpl(const AttrImpl &other);
 
     AttrImpl &operator = (const AttrImpl &other);
@@ -73,8 +73,8 @@ public:
     virtual bool childTypeAllowed( unsigned short type );
 
 protected:
-    AttrImpl(const DOMString &name, const DOMString &value, DocumentImpl *doc);
-    AttrImpl(int _id, const DOMString &value, DocumentImpl *doc);
+    AttrImpl(const DOMString &name, const DOMString &value, DocumentPtr *doc);
+    AttrImpl(int _id, const DOMString &value, DocumentPtr *doc);
 
     void setName(const DOMString &n);
 
@@ -95,7 +95,7 @@ class ElementImpl : public NodeBaseImpl
     friend class AttrImpl;
 
 public:
-    ElementImpl(DocumentImpl *doc);
+    ElementImpl(DocumentPtr *doc);
     ~ElementImpl();
 
     virtual bool isInline() const;
@@ -148,8 +148,8 @@ public:
     virtual void recalcStyle();
 
     virtual bool prepareMouseEvent( int x, int y,
-				    int _tx, int _ty,
-				    MouseEvent *ev);
+                                    int _tx, int _ty,
+                                    MouseEvent *ev);
     virtual void setFocus(bool = true);
     virtual void setActive(bool = true);
     virtual void mouseEventHandler( MouseEvent */*ev*/, bool /*inside*/ ) {};
@@ -185,8 +185,8 @@ class XMLElementImpl : public ElementImpl
 {
 
 public:
-    XMLElementImpl(DocumentImpl *doc, DOMStringImpl *_name);
-    XMLElementImpl(DocumentImpl *doc, DOMStringImpl *_name, DOMStringImpl *_namespaceURI);
+    XMLElementImpl(DocumentPtr *doc, DOMStringImpl *_name);
+    XMLElementImpl(DocumentPtr *doc, DOMStringImpl *_name, DOMStringImpl *_namespaceURI);
     ~XMLElementImpl();
 
     virtual const DOMString nodeName() const;

@@ -3,7 +3,7 @@
  *
  * Copyright (C) 1999 Lars Knoll (knoll@kde.org)
  *           (C) 1999 Antti Koivisto (koivisto@kde.org)
- *	     (C) 2000 Simon Hausmann <hausmann@kde.org>
+ *           (C) 2000 Simon Hausmann <hausmann@kde.org>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -47,7 +47,7 @@ class DOMString;
 class HTMLBodyElementImpl : public HTMLElementImpl
 {
 public:
-    HTMLBodyElementImpl(DocumentImpl *doc);
+    HTMLBodyElementImpl(DocumentPtr *doc);
     ~HTMLBodyElementImpl();
 
     virtual const DOMString nodeName() const;
@@ -74,7 +74,7 @@ class HTMLFrameElementImpl : public HTMLElementImpl
     friend class khtml::RenderFrame;
     friend class khtml::RenderPartObject;
 public:
-    HTMLFrameElementImpl(DocumentImpl *doc);
+    HTMLFrameElementImpl(DocumentPtr *doc);
 
     ~HTMLFrameElementImpl();
 
@@ -113,7 +113,7 @@ class HTMLFrameSetElementImpl : public HTMLElementImpl
 {
     friend class khtml::RenderFrameSet;
 public:
-    HTMLFrameSetElementImpl(DocumentImpl *doc);
+    HTMLFrameSetElementImpl(DocumentPtr *doc);
 
     ~HTMLFrameSetElementImpl();
 
@@ -127,8 +127,8 @@ public:
     virtual void attach(KHTMLView *w);
 
     virtual bool prepareMouseEvent( int _x, int _y,
-				    int _tx, int _ty,
-				    MouseEvent *ev );
+                                    int _tx, int _ty,
+                                    MouseEvent *ev );
     virtual void defaultEventHandler(EventImpl *evt);
 
     virtual khtml::FindSelectionResult findSelectionNode( int _x, int _y, int _tx, int _ty,
@@ -146,7 +146,7 @@ protected:
 
     // returns true if layout needs to be redone
     bool verifyLayout();
-    
+
     QList<khtml::Length> *m_rows;
     QList<khtml::Length> *m_cols;
 
@@ -168,7 +168,7 @@ protected:
 class HTMLHeadElementImpl : public HTMLElementImpl
 {
 public:
-    HTMLHeadElementImpl(DocumentImpl *doc);
+    HTMLHeadElementImpl(DocumentPtr *doc);
 
     ~HTMLHeadElementImpl();
 
@@ -184,7 +184,7 @@ public:
 class HTMLHtmlElementImpl : public HTMLElementImpl
 {
 public:
-    HTMLHtmlElementImpl(DocumentImpl *doc);
+    HTMLHtmlElementImpl(DocumentPtr *doc);
 
     ~HTMLHtmlElementImpl();
 
@@ -204,7 +204,7 @@ public:
 class HTMLIFrameElementImpl : public HTMLFrameElementImpl
 {
 public:
-    HTMLIFrameElementImpl(DocumentImpl *doc);
+    HTMLIFrameElementImpl(DocumentPtr *doc);
 
     ~HTMLIFrameElementImpl();
 

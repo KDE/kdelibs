@@ -57,8 +57,8 @@ void HTMLUListElementImpl::parseAttribute(AttrImpl *attr)
 void HTMLUListElementImpl::attach(KHTMLView *w)
 {
     HTMLElementImpl::attach(w);
-    if(document->parseMode() != DocumentImpl::Strict )
-	style()->setFlowAroundFloats(true);
+    if(ownerDocument()->parseMode() != DocumentImpl::Strict )
+        style()->setFlowAroundFloats(true);
 }
 
 // -------------------------------------------------------------------------
@@ -76,8 +76,8 @@ ushort HTMLDirectoryElementImpl::id() const
 void HTMLDirectoryElementImpl::attach(KHTMLView *w)
 {
     HTMLElementImpl::attach(w);
-    if(document->parseMode() != DocumentImpl::Strict )
-	style()->setFlowAroundFloats(true);
+    if(ownerDocument()->parseMode() != DocumentImpl::Strict )
+        style()->setFlowAroundFloats(true);
 }
 
 // -------------------------------------------------------------------------
@@ -95,8 +95,8 @@ ushort HTMLMenuElementImpl::id() const
 void HTMLMenuElementImpl::attach(KHTMLView *w)
 {
     HTMLElementImpl::attach(w);
-    if(document->parseMode() != DocumentImpl::Strict )
-	style()->setFlowAroundFloats(true);
+    if(ownerDocument()->parseMode() != DocumentImpl::Strict )
+        style()->setFlowAroundFloats(true);
 }
 
 // -------------------------------------------------------------------------
@@ -137,8 +137,8 @@ void HTMLOListElementImpl::parseAttribute(AttrImpl *attr)
 void HTMLOListElementImpl::attach(KHTMLView *w)
 {
     HTMLElementImpl::attach(w);
-    if(document->parseMode() != DocumentImpl::Strict )
-	style()->setFlowAroundFloats(true);
+    if(ownerDocument()->parseMode() != DocumentImpl::Strict )
+        style()->setFlowAroundFloats(true);
 }
 
 // -------------------------------------------------------------------------
@@ -161,12 +161,12 @@ void HTMLLIElementImpl::parseAttribute(AttrImpl *attr)
     case ATTR_VALUE:
         isValued = true;
         requestedValue = attr->val() ? attr->val()->toInt() : 0;
-        
+
         if(m_render && m_render->isListItem())
         {
             RenderListItem *list = static_cast<RenderListItem *>(m_render);
             // ### work out what to do when attribute removed - use default of some sort?
-            
+
             list->setValue(requestedValue);
         }
         break;
@@ -197,15 +197,15 @@ void HTMLLIElementImpl::attach(KHTMLView *w)
     if (parentNode() && parentNode()->id() == ID_OL)
     {
         HTMLOListElementImpl *ol = static_cast<HTMLOListElementImpl *>(parentNode());
-        
+
         if(ol->firstChild() && ol->firstChild() == this &&  m_render)
            static_cast<RenderListItem*>(m_render)->setValue(ol->start());
     }
-    
+
     // If we had a value attr.
     if (isValued && m_render)
         static_cast<RenderListItem*>(m_render)->setValue(requestedValue);
-    
+
 }
 
 

@@ -39,22 +39,22 @@
 using namespace DOM;
 
 
-RangeImpl::RangeImpl(DocumentImpl *_ownerDocument)
+RangeImpl::RangeImpl(DocumentPtr *_ownerDocument)
 {
     m_ownerDocument = _ownerDocument;
     m_ownerDocument->ref();
-    m_startContainer = _ownerDocument;
+    m_startContainer = _ownerDocument->document();
     m_startContainer->ref();
-    m_endContainer = _ownerDocument;
+    m_endContainer = _ownerDocument->document();
     m_endContainer->ref();
     m_startOffset = 0;
     m_endOffset = 0;
     m_detached = false;
 }
 
-RangeImpl::RangeImpl(DocumentImpl *_ownerDocument,
-	      NodeImpl *_startContainer, long _startOffset,
-	      NodeImpl *_endContainer, long _endOffset)
+RangeImpl::RangeImpl(DocumentPtr *_ownerDocument,
+              NodeImpl *_startContainer, long _startOffset,
+              NodeImpl *_endContainer, long _endOffset)
 {
     m_ownerDocument = _ownerDocument;
     m_startContainer = _startContainer;
@@ -69,14 +69,14 @@ RangeImpl::~RangeImpl()
     m_ownerDocument->deref();
     int exceptioncode;
     if (!m_detached)
-	detach(exceptioncode);
+        detach(exceptioncode);
 }
 
 NodeImpl *RangeImpl::startContainer(int &exceptioncode) const
 {
     if (m_detached) {
-	exceptioncode = DOMException::INVALID_STATE_ERR;
-	return 0;
+        exceptioncode = DOMException::INVALID_STATE_ERR;
+        return 0;
     }
 
     return m_startContainer;
@@ -85,8 +85,8 @@ NodeImpl *RangeImpl::startContainer(int &exceptioncode) const
 long RangeImpl::startOffset(int &exceptioncode) const
 {
     if (m_detached) {
-	exceptioncode = DOMException::INVALID_STATE_ERR;
-	return 0;
+        exceptioncode = DOMException::INVALID_STATE_ERR;
+        return 0;
     }
 
     return m_startOffset;
@@ -95,8 +95,8 @@ long RangeImpl::startOffset(int &exceptioncode) const
 NodeImpl *RangeImpl::endContainer(int &exceptioncode) const
 {
     if (m_detached) {
-	exceptioncode = DOMException::INVALID_STATE_ERR;
-	return 0;
+        exceptioncode = DOMException::INVALID_STATE_ERR;
+        return 0;
     }
 
     return m_endContainer;
@@ -105,8 +105,8 @@ NodeImpl *RangeImpl::endContainer(int &exceptioncode) const
 long RangeImpl::endOffset(int &exceptioncode) const
 {
     if (m_detached) {
-	exceptioncode = DOMException::INVALID_STATE_ERR;
-	return 0;
+        exceptioncode = DOMException::INVALID_STATE_ERR;
+        return 0;
     }
 
     return m_endOffset;
@@ -115,13 +115,13 @@ long RangeImpl::endOffset(int &exceptioncode) const
 NodeImpl *RangeImpl::commonAncestorContainer(int &exceptioncode)
 {
     if (m_detached) {
-	exceptioncode = DOMException::INVALID_STATE_ERR;
-	return 0;
+        exceptioncode = DOMException::INVALID_STATE_ERR;
+        return 0;
     }
 
     NodeImpl *com = commonAncestorContainer(m_startContainer,m_endContainer);
     if (!com) //  should never happen
-	exceptioncode = DOMException::WRONG_DOCUMENT_ERR;
+        exceptioncode = DOMException::WRONG_DOCUMENT_ERR;
     return com;
 }
 
@@ -129,8 +129,8 @@ NodeImpl *RangeImpl::commonAncestorContainer(NodeImpl *containerA, NodeImpl *con
 {
     NodeImpl *parentStart;
 
-    for (parentStart = containerA; parentStart; parentStart = parentStart->parentNode()) {	
-	NodeImpl *parentEnd = containerB;
+    for (parentStart = containerA; parentStart; parentStart = parentStart->parentNode()) {
+        NodeImpl *parentEnd = containerB;
         while( parentEnd && (parentStart != parentEnd) )
             parentEnd = parentEnd->parentNode();
 
@@ -143,8 +143,8 @@ NodeImpl *RangeImpl::commonAncestorContainer(NodeImpl *containerA, NodeImpl *con
 bool RangeImpl::collapsed(int &exceptioncode) const
 {
     if (m_detached) {
-	exceptioncode = DOMException::INVALID_STATE_ERR;
-	return 0;
+        exceptioncode = DOMException::INVALID_STATE_ERR;
+        return 0;
     }
 
     return (m_startContainer == m_endContainer && m_startOffset == m_endOffset);
@@ -153,23 +153,23 @@ bool RangeImpl::collapsed(int &exceptioncode) const
 void RangeImpl::setStart( NodeImpl *refNode, long offset, int &exceptioncode )
 {
     if (m_detached) {
-	exceptioncode = DOMException::INVALID_STATE_ERR;
-	return;
+        exceptioncode = DOMException::INVALID_STATE_ERR;
+        return;
     }
 
     if (!refNode) {
-	exceptioncode = DOMException::NOT_FOUND_ERR;
-	return;
+        exceptioncode = DOMException::NOT_FOUND_ERR;
+        return;
     }
 
-    if (refNode->getDocument() != m_ownerDocument) {
-	exceptioncode = DOMException::WRONG_DOCUMENT_ERR;
-	return;
+    if (refNode->getDocument() != m_ownerDocument->document()) {
+        exceptioncode = DOMException::WRONG_DOCUMENT_ERR;
+        return;
     }
 
     checkNodeWOffset( refNode, offset, exceptioncode );
     if (exceptioncode)
-	return;
+        return;
 
     setStartContainer(refNode);
     m_startOffset = offset;
@@ -177,37 +177,37 @@ void RangeImpl::setStart( NodeImpl *refNode, long offset, int &exceptioncode )
     // check if different root container
     NodeImpl *endRootContainer = m_endContainer;
     while (endRootContainer->parentNode())
-	endRootContainer = endRootContainer->parentNode();
+        endRootContainer = endRootContainer->parentNode();
     NodeImpl *startRootContainer = m_startContainer;
     while (startRootContainer->parentNode())
-	startRootContainer = startRootContainer->parentNode();
+        startRootContainer = startRootContainer->parentNode();
     if (startRootContainer != endRootContainer)
-	collapse(true,exceptioncode);
+        collapse(true,exceptioncode);
     // check if new start after end
     else if (compareBoundaryPoints(m_startContainer,m_startOffset,m_endContainer,m_endOffset) > 0)
-	collapse(true,exceptioncode);
+        collapse(true,exceptioncode);
 }
 
 void RangeImpl::setEnd( NodeImpl *refNode, long offset, int &exceptioncode )
 {
     if (m_detached) {
-	exceptioncode = DOMException::INVALID_STATE_ERR;
-	return;
+        exceptioncode = DOMException::INVALID_STATE_ERR;
+        return;
     }
 
     if (!refNode) {
-	exceptioncode = DOMException::NOT_FOUND_ERR;
-	return;
+        exceptioncode = DOMException::NOT_FOUND_ERR;
+        return;
     }
 
-    if (refNode->getDocument() != m_ownerDocument) {
-	exceptioncode = DOMException::WRONG_DOCUMENT_ERR;
-	return;
+    if (refNode->getDocument() != m_ownerDocument->document()) {
+        exceptioncode = DOMException::WRONG_DOCUMENT_ERR;
+        return;
     }
 
     checkNodeWOffset( refNode, offset, exceptioncode );
     if (exceptioncode)
-	return;
+        return;
 
     setEndContainer(refNode);
     m_endOffset = offset;
@@ -215,22 +215,22 @@ void RangeImpl::setEnd( NodeImpl *refNode, long offset, int &exceptioncode )
     // check if different root container
     NodeImpl *endRootContainer = m_endContainer;
     while (endRootContainer->parentNode())
-	endRootContainer = endRootContainer->parentNode();
+        endRootContainer = endRootContainer->parentNode();
     NodeImpl *startRootContainer = m_startContainer;
     while (startRootContainer->parentNode())
-	startRootContainer = startRootContainer->parentNode();
+        startRootContainer = startRootContainer->parentNode();
     if (startRootContainer != endRootContainer)
-	collapse(false,exceptioncode);
+        collapse(false,exceptioncode);
     // check if new end before start
     if (compareBoundaryPoints(m_startContainer,m_startOffset,m_endContainer,m_endOffset) > 0)
- 	collapse(false,exceptioncode);
+        collapse(false,exceptioncode);
 }
 
 void RangeImpl::collapse( bool toStart, int &exceptioncode )
 {
     if (m_detached) {
-	exceptioncode = DOMException::INVALID_STATE_ERR;
-	return;
+        exceptioncode = DOMException::INVALID_STATE_ERR;
+        return;
     }
 
     if( toStart )   // collapse to start
@@ -248,19 +248,19 @@ void RangeImpl::collapse( bool toStart, int &exceptioncode )
 short RangeImpl::compareBoundaryPoints( Range::CompareHow how, RangeImpl *sourceRange, int &exceptioncode )
 {
     if (m_detached) {
-	exceptioncode = DOMException::INVALID_STATE_ERR;
-	return 0;
+        exceptioncode = DOMException::INVALID_STATE_ERR;
+        return 0;
     }
 
     if (!sourceRange) {
-	exceptioncode = DOMException::NOT_FOUND_ERR;
-	return 0;
+        exceptioncode = DOMException::NOT_FOUND_ERR;
+        return 0;
     }
 
     NodeImpl *thisCont = commonAncestorContainer(exceptioncode);
     NodeImpl *sourceCont = sourceRange->commonAncestorContainer(exceptioncode);
     if (exceptioncode)
-	return 0;
+        return 0;
 
     if (thisCont->ownerDocument() != sourceCont->ownerDocument()) { // ### what about if in separate DocumentFragments?
         exceptioncode = DOMException::WRONG_DOCUMENT_ERR;
@@ -306,14 +306,14 @@ short RangeImpl::compareBoundaryPoints( NodeImpl *containerA, long offsetA, Node
     // case 2: node C (container B or an ancestor) is a child node of A
     NodeImpl *c = containerB;
     while (c && c->parentNode() != containerA)
-	c = c->parentNode();
+        c = c->parentNode();
     if (c) {
-	int offsetC = 0;
-	NodeImpl *n = n = containerA->firstChild();
-	while (n != c) {
-	    offsetC++;
-	    n = n->nextSibling();
-	}
+        int offsetC = 0;
+        NodeImpl *n = n = containerA->firstChild();
+        while (n != c) {
+            offsetC++;
+            n = n->nextSibling();
+        }
 
         if( offsetA == offsetC )  return 0;    // A is equal to B
         if( offsetA < offsetC )  return -1;    // A is before B
@@ -323,14 +323,14 @@ short RangeImpl::compareBoundaryPoints( NodeImpl *containerA, long offsetA, Node
     // case 3: node C (container A or an ancestor) is a child node of B
     c = containerA;
     while (c && c->parentNode() != containerB)
-	c = c->parentNode();
+        c = c->parentNode();
     if (c) {
-	int offsetC = 0;
-	NodeImpl *n = n = containerB->firstChild();
-	while (n != c) {
-	    offsetC++;
-	    n = n->nextSibling();
-	}
+        int offsetC = 0;
+        NodeImpl *n = n = containerB->firstChild();
+        while (n != c) {
+            offsetC++;
+            n = n->nextSibling();
+        }
 
         if( offsetC == offsetB )  return 0;    // A is equal to B
         if( offsetC < offsetB )  return -1;    // A is before B
@@ -341,22 +341,22 @@ short RangeImpl::compareBoundaryPoints( NodeImpl *containerA, long offsetA, Node
     NodeImpl *cmnRoot = commonAncestorContainer(containerA,containerB);
     NodeImpl *childA = containerA;
     while (childA->parentNode() != cmnRoot)
-	childA = childA->parentNode();
+        childA = childA->parentNode();
     NodeImpl *childB = containerB;
     while (childB->parentNode() != cmnRoot)
-	childB = childB->parentNode();
-	
+        childB = childB->parentNode();
+
     NodeImpl *n = cmnRoot->firstChild();
     int i = 0;
     int childAOffset = -1;
     int childBOffset = -1;
     while (childAOffset < 0 || childBOffset < 0) {
-	if (n == childA)
-	    childAOffset = i;
-	if (n == childB)
-	    childBOffset = i;
-	n = n->nextSibling();
-	i++;
+        if (n == childA)
+            childAOffset = i;
+        if (n == childB)
+            childBOffset = i;
+        n = n->nextSibling();
+        i++;
     }
 
     if( childAOffset == childBOffset )  return 0;    // A is equal to B
@@ -375,8 +375,8 @@ bool RangeImpl::boundaryPointsValid(  )
 
 void RangeImpl::deleteContents( int &exceptioncode ) {
     if (m_detached) {
-	exceptioncode = DOMException::INVALID_STATE_ERR;
-	return;
+        exceptioncode = DOMException::INVALID_STATE_ERR;
+        return;
     }
 
     processContents(DELETE_CONTENTS,exceptioncode);
@@ -390,17 +390,17 @@ DocumentFragmentImpl *RangeImpl::processContents ( ActionType action, int &excep
     // ### perhaps disable node deletion notification for this range while we do this?
 
     if (collapsed(exceptioncode))
-	return 0;
+        return 0;
     if (exceptioncode)
-	return 0;
-	
+        return 0;
+
     NodeImpl *cmnRoot = commonAncestorContainer(exceptioncode);
     if (exceptioncode)
-	return 0;
-	
+        return 0;
+
     DocumentFragmentImpl *fragment = 0;
     if (action == EXTRACT_CONTENTS || action == CLONE_CONTENTS)
-	fragment = new DocumentFragmentImpl(m_ownerDocument);
+        fragment = new DocumentFragmentImpl(m_ownerDocument);
 
     // Simple case: the start and end containers are the same. We just grab
     // everything >= start offset and < end offset
@@ -409,14 +409,14 @@ DocumentFragmentImpl *RangeImpl::processContents ( ActionType action, int &excep
            m_startContainer->nodeType() == Node::CDATA_SECTION_NODE ||
            m_startContainer->nodeType() == Node::COMMENT_NODE) {
 
-	    if (action == EXTRACT_CONTENTS || action == CLONE_CONTENTS) {
-		CharacterDataImpl *c = static_cast<CharacterDataImpl*>(m_startContainer->cloneNode(true,exceptioncode));
-		c->deleteData(m_endOffset,static_cast<CharacterDataImpl*>(m_startContainer)->length()-m_endOffset,exceptioncode);
-		c->deleteData(0,m_startOffset,exceptioncode);
-		fragment->appendChild(c,exceptioncode);
-	    }
-	    if (action == EXTRACT_CONTENTS || action == DELETE_CONTENTS)
-		static_cast<CharacterDataImpl*>(m_startContainer)->deleteData(m_startOffset,m_endOffset-m_startOffset,exceptioncode);
+            if (action == EXTRACT_CONTENTS || action == CLONE_CONTENTS) {
+                CharacterDataImpl *c = static_cast<CharacterDataImpl*>(m_startContainer->cloneNode(true,exceptioncode));
+                c->deleteData(m_endOffset,static_cast<CharacterDataImpl*>(m_startContainer)->length()-m_endOffset,exceptioncode);
+                c->deleteData(0,m_startOffset,exceptioncode);
+                fragment->appendChild(c,exceptioncode);
+            }
+            if (action == EXTRACT_CONTENTS || action == DELETE_CONTENTS)
+                static_cast<CharacterDataImpl*>(m_startContainer)->deleteData(m_startOffset,m_endOffset-m_startOffset,exceptioncode);
         }
         else if (m_startContainer->nodeType() == Node::PROCESSING_INSTRUCTION_NODE) {
             // ### operate just on data ?
@@ -428,16 +428,16 @@ DocumentFragmentImpl *RangeImpl::processContents ( ActionType action, int &excep
                 n = n->nextSibling();
             NodeImpl *next = n->nextSibling();
             while (n && i < m_endOffset) { // delete until m_endOffset
-		if (action == EXTRACT_CONTENTS)
-		    fragment->appendChild(n,exceptioncode); // will remove n from it's parent
-		else if (action == CLONE_CONTENTS)
-		    fragment->appendChild(n->cloneNode(true,exceptioncode),exceptioncode);
-		else	
-		    m_startContainer->removeChild(n,exceptioncode);		
-		n = next;
-		next = next->nextSibling();
-		i++;
-	    }
+                if (action == EXTRACT_CONTENTS)
+                    fragment->appendChild(n,exceptioncode); // will remove n from it's parent
+                else if (action == CLONE_CONTENTS)
+                    fragment->appendChild(n->cloneNode(true,exceptioncode),exceptioncode);
+                else
+                    m_startContainer->removeChild(n,exceptioncode);
+                n = next;
+                next = next->nextSibling();
+                i++;
+            }
         }
         collapse(true,exceptioncode);
         return fragment;
@@ -462,151 +462,151 @@ DocumentFragmentImpl *RangeImpl::processContents ( ActionType action, int &excep
 
     NodeImpl *leftContents = 0;
     if (m_startContainer != cmnRoot) {
-	// process the left-hand side of the range, up until the last ancestor of
-	// m_startContainer before cmnRoot
-	if(m_startContainer->nodeType() == Node::TEXT_NODE ||
-	   m_startContainer->nodeType() == Node::CDATA_SECTION_NODE ||
-	   m_startContainer->nodeType() == Node::COMMENT_NODE) {
-	
-	    if (action == EXTRACT_CONTENTS || action == CLONE_CONTENTS) {
-		CharacterDataImpl *c = static_cast<CharacterDataImpl*>(m_startContainer->cloneNode(true,exceptioncode));
-		c->deleteData(0,m_startOffset,exceptioncode);
-		leftContents = c;
-	    }
-	    if (action == EXTRACT_CONTENTS || action == DELETE_CONTENTS)
-		static_cast<CharacterDataImpl*>(m_startContainer)->deleteData(
-		    m_startOffset,static_cast<CharacterDataImpl*>(m_startContainer)->length()-m_startOffset,exceptioncode);
-	}
-	else if (m_startContainer->nodeType() == Node::PROCESSING_INSTRUCTION_NODE) {
-	    // ### operate just on data ?
-	    // leftContents = ...
-	}
-	else {
-	    leftContents = m_startContainer->parentNode()->cloneNode(false,exceptioncode);
-	    NodeImpl *n = m_startContainer->firstChild();
-	    unsigned long i;
-	    for(i = 0; i < m_startOffset; i++) // skip until m_startOffset
-		n = n->nextSibling();
-	    NodeImpl *next = n->nextSibling();
-	    while (n) { // process until end
-		if (action == EXTRACT_CONTENTS)
-		    leftContents->appendChild(n,exceptioncode); // will remove n from m_startContainer
-		else if (action == CLONE_CONTENTS)
-		    leftContents->appendChild(n->cloneNode(true,exceptioncode),exceptioncode);
-		else	
-		    m_startContainer->removeChild(n,exceptioncode);
-		n = next;
-		next = next->nextSibling();
-	    }
-	}
-	
-	NodeImpl *leftParent = m_startContainer->parentNode();
-	NodeImpl *n = m_startContainer->nextSibling();
-	for (; leftParent != cmnRoot; leftParent = leftParent->parentNode()) {
-	    NodeImpl *leftContentsParent = leftParent->cloneNode(false,exceptioncode);
-	    leftContentsParent->appendChild(leftContents,exceptioncode);
-	    leftContents = leftContentsParent;
-	
-	    NodeImpl *next;
-	    for (; n; n = next ) {
-		next = n->nextSibling();
-		if (action == EXTRACT_CONTENTS)
-		    leftContents->appendChild(n,exceptioncode); // will remove n from leftParent
-		else if (action == CLONE_CONTENTS)
-		    leftContents->appendChild(n->cloneNode(true,exceptioncode),exceptioncode);
-		else
-		    leftParent->removeChild(n,exceptioncode);
-	    }
-	    n = leftParent->nextSibling();
-	}
+        // process the left-hand side of the range, up until the last ancestor of
+        // m_startContainer before cmnRoot
+        if(m_startContainer->nodeType() == Node::TEXT_NODE ||
+           m_startContainer->nodeType() == Node::CDATA_SECTION_NODE ||
+           m_startContainer->nodeType() == Node::COMMENT_NODE) {
+
+            if (action == EXTRACT_CONTENTS || action == CLONE_CONTENTS) {
+                CharacterDataImpl *c = static_cast<CharacterDataImpl*>(m_startContainer->cloneNode(true,exceptioncode));
+                c->deleteData(0,m_startOffset,exceptioncode);
+                leftContents = c;
+            }
+            if (action == EXTRACT_CONTENTS || action == DELETE_CONTENTS)
+                static_cast<CharacterDataImpl*>(m_startContainer)->deleteData(
+                    m_startOffset,static_cast<CharacterDataImpl*>(m_startContainer)->length()-m_startOffset,exceptioncode);
+        }
+        else if (m_startContainer->nodeType() == Node::PROCESSING_INSTRUCTION_NODE) {
+            // ### operate just on data ?
+            // leftContents = ...
+        }
+        else {
+            leftContents = m_startContainer->parentNode()->cloneNode(false,exceptioncode);
+            NodeImpl *n = m_startContainer->firstChild();
+            unsigned long i;
+            for(i = 0; i < m_startOffset; i++) // skip until m_startOffset
+                n = n->nextSibling();
+            NodeImpl *next = n->nextSibling();
+            while (n) { // process until end
+                if (action == EXTRACT_CONTENTS)
+                    leftContents->appendChild(n,exceptioncode); // will remove n from m_startContainer
+                else if (action == CLONE_CONTENTS)
+                    leftContents->appendChild(n->cloneNode(true,exceptioncode),exceptioncode);
+                else
+                    m_startContainer->removeChild(n,exceptioncode);
+                n = next;
+                next = next->nextSibling();
+            }
+        }
+
+        NodeImpl *leftParent = m_startContainer->parentNode();
+        NodeImpl *n = m_startContainer->nextSibling();
+        for (; leftParent != cmnRoot; leftParent = leftParent->parentNode()) {
+            NodeImpl *leftContentsParent = leftParent->cloneNode(false,exceptioncode);
+            leftContentsParent->appendChild(leftContents,exceptioncode);
+            leftContents = leftContentsParent;
+
+            NodeImpl *next;
+            for (; n; n = next ) {
+                next = n->nextSibling();
+                if (action == EXTRACT_CONTENTS)
+                    leftContents->appendChild(n,exceptioncode); // will remove n from leftParent
+                else if (action == CLONE_CONTENTS)
+                    leftContents->appendChild(n->cloneNode(true,exceptioncode),exceptioncode);
+                else
+                    leftParent->removeChild(n,exceptioncode);
+            }
+            n = leftParent->nextSibling();
+        }
     }
 
     NodeImpl *rightContents = 0;;
     if (m_endContainer != cmnRoot) {
-	// delete the right-hand side of the range, up until the last ancestor of
-	// m_endContainer before cmnRoot
-	if(m_endContainer->nodeType() == Node::TEXT_NODE ||
-	   m_endContainer->nodeType() == Node::CDATA_SECTION_NODE ||
-	   m_endContainer->nodeType() == Node::COMMENT_NODE) {
+        // delete the right-hand side of the range, up until the last ancestor of
+        // m_endContainer before cmnRoot
+        if(m_endContainer->nodeType() == Node::TEXT_NODE ||
+           m_endContainer->nodeType() == Node::CDATA_SECTION_NODE ||
+           m_endContainer->nodeType() == Node::COMMENT_NODE) {
 
-	    if (action == EXTRACT_CONTENTS || action == CLONE_CONTENTS) {
-		CharacterDataImpl *c = static_cast<CharacterDataImpl*>(m_endContainer->cloneNode(true,exceptioncode));
-		c->deleteData(m_endOffset,static_cast<CharacterDataImpl*>(m_endContainer)->length()-m_endOffset,exceptioncode);
-		rightContents = c;
-	    }
-	    if (action == EXTRACT_CONTENTS || action == DELETE_CONTENTS)
-		static_cast<CharacterDataImpl*>(m_endContainer)->deleteData(0,m_endOffset,exceptioncode);
-	}
-	else if (m_startContainer->nodeType() == Node::PROCESSING_INSTRUCTION_NODE) {
-	    // ### operate just on data ?
-	    // rightContents = ...
-	}
-	else {
-	    rightContents = m_endContainer->parentNode()->cloneNode(false,exceptioncode);
-	    NodeImpl *n = m_endContainer->firstChild();
-	    unsigned long i;
-	    for(i = 0; i+1 < m_endOffset; i++) // skip to m_endOffset
-		n = n->nextSibling();
-	    NodeImpl *prev;
-	    for (; n; n = prev ) {
-		prev = n->previousSibling();
-		if (action == EXTRACT_CONTENTS)
-		    rightContents->insertBefore(n,rightContents->firstChild(),exceptioncode); // will remove n from it's parent
-		else if (action == CLONE_CONTENTS)
-		    rightContents->insertBefore(n->cloneNode(true,exceptioncode),rightContents->firstChild(),exceptioncode);
-		else
-		    m_endContainer->removeChild(n,exceptioncode);
-	    }
-	}
+            if (action == EXTRACT_CONTENTS || action == CLONE_CONTENTS) {
+                CharacterDataImpl *c = static_cast<CharacterDataImpl*>(m_endContainer->cloneNode(true,exceptioncode));
+                c->deleteData(m_endOffset,static_cast<CharacterDataImpl*>(m_endContainer)->length()-m_endOffset,exceptioncode);
+                rightContents = c;
+            }
+            if (action == EXTRACT_CONTENTS || action == DELETE_CONTENTS)
+                static_cast<CharacterDataImpl*>(m_endContainer)->deleteData(0,m_endOffset,exceptioncode);
+        }
+        else if (m_startContainer->nodeType() == Node::PROCESSING_INSTRUCTION_NODE) {
+            // ### operate just on data ?
+            // rightContents = ...
+        }
+        else {
+            rightContents = m_endContainer->parentNode()->cloneNode(false,exceptioncode);
+            NodeImpl *n = m_endContainer->firstChild();
+            unsigned long i;
+            for(i = 0; i+1 < m_endOffset; i++) // skip to m_endOffset
+                n = n->nextSibling();
+            NodeImpl *prev;
+            for (; n; n = prev ) {
+                prev = n->previousSibling();
+                if (action == EXTRACT_CONTENTS)
+                    rightContents->insertBefore(n,rightContents->firstChild(),exceptioncode); // will remove n from it's parent
+                else if (action == CLONE_CONTENTS)
+                    rightContents->insertBefore(n->cloneNode(true,exceptioncode),rightContents->firstChild(),exceptioncode);
+                else
+                    m_endContainer->removeChild(n,exceptioncode);
+            }
+        }
 
-	NodeImpl *rightParent = m_endContainer->parentNode();
-	NodeImpl *n = m_endContainer->previousSibling();
-	for (; rightParent != cmnRoot; rightParent = rightParent->parentNode()) {
-	    NodeImpl *rightContentsParent = rightParent->cloneNode(false,exceptioncode);
-	    rightContentsParent->appendChild(rightContents,exceptioncode);
-	    rightContents = rightContentsParent;
-	
-	    NodeImpl *prev;
-	    for (; n; n = prev ) {
-		prev = n->previousSibling();
-		if (action == EXTRACT_CONTENTS)
-		    rightContents->insertBefore(n,rightContents->firstChild(),exceptioncode); // will remove n from it's parent
-		else if (action == CLONE_CONTENTS)
-		    rightContents->insertBefore(n->cloneNode(true,exceptioncode),rightContents->firstChild(),exceptioncode);
-		else		
-		    rightParent->removeChild(n,exceptioncode);
-		
-	    }
-	    n = rightParent->previousSibling();
-	}
+        NodeImpl *rightParent = m_endContainer->parentNode();
+        NodeImpl *n = m_endContainer->previousSibling();
+        for (; rightParent != cmnRoot; rightParent = rightParent->parentNode()) {
+            NodeImpl *rightContentsParent = rightParent->cloneNode(false,exceptioncode);
+            rightContentsParent->appendChild(rightContents,exceptioncode);
+            rightContents = rightContentsParent;
+
+            NodeImpl *prev;
+            for (; n; n = prev ) {
+                prev = n->previousSibling();
+                if (action == EXTRACT_CONTENTS)
+                    rightContents->insertBefore(n,rightContents->firstChild(),exceptioncode); // will remove n from it's parent
+                else if (action == CLONE_CONTENTS)
+                    rightContents->insertBefore(n->cloneNode(true,exceptioncode),rightContents->firstChild(),exceptioncode);
+                else
+                    rightParent->removeChild(n,exceptioncode);
+
+            }
+            n = rightParent->previousSibling();
+        }
     }
 
     // delete all children of cmnRoot between the start and end container
 
     NodeImpl *processStart; // child of cmnRooot
     if (m_startContainer == cmnRoot) {
-	unsigned long i;
-	processStart = m_startContainer->firstChild();
-	for (i = 0; i < m_startOffset; i++)
-	    processStart = processStart->nextSibling();
+        unsigned long i;
+        processStart = m_startContainer->firstChild();
+        for (i = 0; i < m_startOffset; i++)
+            processStart = processStart->nextSibling();
     }
     else {
-	processStart = m_startContainer;
-	while (processStart->parentNode() != cmnRoot)
-	    processStart = processStart->parentNode();
-	processStart = processStart->nextSibling();
+        processStart = m_startContainer;
+        while (processStart->parentNode() != cmnRoot)
+            processStart = processStart->parentNode();
+        processStart = processStart->nextSibling();
     }
     NodeImpl *processEnd; // child of cmnRooot
     if (m_endContainer == cmnRoot) {
-	unsigned long i;
-	processEnd = m_endContainer->firstChild();
-	for (i = 0; i < m_endOffset; i++)
-	    processEnd = processEnd->nextSibling();
+        unsigned long i;
+        processEnd = m_endContainer->firstChild();
+        for (i = 0; i < m_endOffset; i++)
+            processEnd = processEnd->nextSibling();
     }
     else {
-	processEnd = m_endContainer;
-	while (processEnd->parentNode() != cmnRoot)
-	    processEnd = processEnd->parentNode();
+        processEnd = m_endContainer;
+        while (processEnd->parentNode() != cmnRoot)
+            processEnd = processEnd->parentNode();
     }
 
     // Now add leftContents, stuff in between, and rightContents to the fragment
@@ -618,16 +618,16 @@ DocumentFragmentImpl *RangeImpl::processContents ( ActionType action, int &excep
     NodeImpl *next;
     NodeImpl *n;
     if (processStart) {
-	for (n = processStart; n && n != processEnd; n = next) {
-	    next = n->nextSibling();
-	
-	    if (action == EXTRACT_CONTENTS)
-		fragment->appendChild(n,exceptioncode); // will remove from cmnRoot
-	    else if (action == CLONE_CONTENTS)
-		fragment->appendChild(n->cloneNode(true,exceptioncode),exceptioncode);
-	    else
-		cmnRoot->removeChild(n,exceptioncode);
-	}
+        for (n = processStart; n && n != processEnd; n = next) {
+            next = n->nextSibling();
+
+            if (action == EXTRACT_CONTENTS)
+                fragment->appendChild(n,exceptioncode); // will remove from cmnRoot
+            else if (action == CLONE_CONTENTS)
+                fragment->appendChild(n->cloneNode(true,exceptioncode),exceptioncode);
+            else
+                cmnRoot->removeChild(n,exceptioncode);
+        }
     }
 
     if ((action == EXTRACT_CONTENTS || action == CLONE_CONTENTS) && rightContents)
@@ -642,8 +642,8 @@ DocumentFragmentImpl *RangeImpl::processContents ( ActionType action, int &excep
 DocumentFragmentImpl *RangeImpl::extractContents( int &exceptioncode )
 {
     if (m_detached) {
-	exceptioncode = DOMException::INVALID_STATE_ERR;
-	return 0;
+        exceptioncode = DOMException::INVALID_STATE_ERR;
+        return 0;
     }
 
     return processContents(EXTRACT_CONTENTS,exceptioncode);
@@ -652,8 +652,8 @@ DocumentFragmentImpl *RangeImpl::extractContents( int &exceptioncode )
 DocumentFragmentImpl *RangeImpl::cloneContents( int &exceptioncode  )
 {
     if (m_detached) {
-	exceptioncode = DOMException::INVALID_STATE_ERR;
-	return 0;
+        exceptioncode = DOMException::INVALID_STATE_ERR;
+        return 0;
     }
 
     return processContents(CLONE_CONTENTS,exceptioncode);
@@ -662,48 +662,48 @@ DocumentFragmentImpl *RangeImpl::cloneContents( int &exceptioncode  )
 void RangeImpl::insertNode( NodeImpl *newNode, int &exceptioncode )
 {
     if (m_detached) {
-	exceptioncode = DOMException::INVALID_STATE_ERR;
-	return;
+        exceptioncode = DOMException::INVALID_STATE_ERR;
+        return;
     }
 
     // NO_MODIFICATION_ALLOWED_ERR: Raised if an ancestor container of either boundary-point of
     // the Range is read-only.
     NodeImpl *n = m_startContainer;
     while (n && !n->readOnly())
-	n = n->parentNode();
+        n = n->parentNode();
     if (n) {
-	exceptioncode = DOMException::NO_MODIFICATION_ALLOWED_ERR;
-	return;
+        exceptioncode = DOMException::NO_MODIFICATION_ALLOWED_ERR;
+        return;
     }
 
     n = m_endContainer;
     while (n && !n->readOnly())
-	n = n->parentNode();
+        n = n->parentNode();
     if (n) {
-	exceptioncode = DOMException::NO_MODIFICATION_ALLOWED_ERR;
-	return;
+        exceptioncode = DOMException::NO_MODIFICATION_ALLOWED_ERR;
+        return;
     }
 
     // WRONG_DOCUMENT_ERR: Raised if newParent and the container of the start of the Range were
     // not created from the same document.
     if (newNode->getDocument() != m_startContainer->getDocument()) {
-	exceptioncode = DOMException::WRONG_DOCUMENT_ERR;
-	return;
+        exceptioncode = DOMException::WRONG_DOCUMENT_ERR;
+        return;
     }
 
 
     // HIERARCHY_REQUEST_ERR: Raised if the container of the start of the Range is of a type that
     // does not allow children of the type of newNode or if newNode is an ancestor of the container.
     if (!m_startContainer->childTypeAllowed(newNode->nodeType())) {
-	exceptioncode = DOMException::HIERARCHY_REQUEST_ERR;
-	return;
+        exceptioncode = DOMException::HIERARCHY_REQUEST_ERR;
+        return;
     }
 
     for (n = m_startContainer; n; n = n->parentNode()) {
-	if (n == newNode) {
-	    exceptioncode = DOMException::HIERARCHY_REQUEST_ERR;
-	    return;
-	}
+        if (n == newNode) {
+            exceptioncode = DOMException::HIERARCHY_REQUEST_ERR;
+            return;
+        }
     }
 
     // INVALID_NODE_TYPE_ERR: Raised if newNode is an Attr, Entity, Notation, or Document node.
@@ -716,15 +716,15 @@ void RangeImpl::insertNode( NodeImpl *newNode, int &exceptioncode )
     }
 
     if( m_startContainer->nodeType() == Node::TEXT_NODE ||
-	m_startContainer->nodeType() == Node::CDATA_SECTION_NODE )
+        m_startContainer->nodeType() == Node::CDATA_SECTION_NODE )
     {
         TextImpl *newText = static_cast<TextImpl*>(m_startContainer)->splitText(m_startOffset,exceptioncode);
         if (exceptioncode)
-	    return;
-	if (!m_startContainer->parentNode()) {
-	    exceptioncode = DOMException::NOT_SUPPORTED_ERR; // ### what are we supposed to do here?
-	    return;
-	}
+            return;
+        if (!m_startContainer->parentNode()) {
+            exceptioncode = DOMException::NOT_SUPPORTED_ERR; // ### what are we supposed to do here?
+            return;
+        }
         m_startContainer->parentNode()->insertBefore( newNode, newText, exceptioncode );
     }
     else {
@@ -735,37 +735,37 @@ void RangeImpl::insertNode( NodeImpl *newNode, int &exceptioncode )
 DOMString RangeImpl::toString( int &exceptioncode )
 {
     if (m_detached) {
-	exceptioncode = DOMException::INVALID_STATE_ERR;
-	return 0;
+        exceptioncode = DOMException::INVALID_STATE_ERR;
+        return 0;
     }
 
     DOMString text = "";
     NodeImpl *n = m_startContainer;
     while(n) {
-	if(n->nodeType() == DOM::Node::TEXT_NODE ||
-	   n->nodeType() == DOM::Node::CDATA_SECTION_NODE) {
-	
-	    DOMString str = static_cast<TextImpl *>(n)->data().copy();
-	    if (n == m_endContainer)
-		str.truncate(m_endOffset);
-	    if (n == m_startContainer)
-		str.remove(0,m_startOffset);
-	    text += str;
-	    if (n == m_endContainer)
-		break;
-	}
-	else if (n->parentNode() == m_endContainer && !n->nextSibling()) {
-	    break;
-	}
-	//if (n == m_endContainer) break;
-	NodeImpl *next = n->firstChild();
-	if (!next) next = n->nextSibling();
-	
-	while( !next && n->parentNode() ) {
-	    n = n->parentNode();
-	    next = n->nextSibling();
-	}
-	n = next;
+        if(n->nodeType() == DOM::Node::TEXT_NODE ||
+           n->nodeType() == DOM::Node::CDATA_SECTION_NODE) {
+
+            DOMString str = static_cast<TextImpl *>(n)->data().copy();
+            if (n == m_endContainer)
+                str.truncate(m_endOffset);
+            if (n == m_startContainer)
+                str.remove(0,m_startOffset);
+            text += str;
+            if (n == m_endContainer)
+                break;
+        }
+        else if (n->parentNode() == m_endContainer && !n->nextSibling()) {
+            break;
+        }
+        //if (n == m_endContainer) break;
+        NodeImpl *next = n->firstChild();
+        if (!next) next = n->nextSibling();
+
+        while( !next && n->parentNode() ) {
+            n = n->parentNode();
+            next = n->nextSibling();
+        }
+        n = next;
     }
     return text;
 }
@@ -782,15 +782,15 @@ DOMString RangeImpl::toHTML(  )
 void RangeImpl::detach( int &exceptioncode )
 {
     if (m_detached) {
-	exceptioncode = DOMException::INVALID_STATE_ERR;
-	return;
+        exceptioncode = DOMException::INVALID_STATE_ERR;
+        return;
     }
 
     if (m_startContainer)
-	m_startContainer->deref();
+        m_startContainer->deref();
     m_startContainer = 0;
     if (m_endContainer)
-	m_endContainer->deref();
+        m_endContainer->deref();
     m_endContainer = 0;
     m_detached = true;
 }
@@ -810,7 +810,7 @@ void RangeImpl::checkNode( const NodeImpl *n, int &exceptioncode ) const
 {
     checkCommon(exceptioncode);
     if (exceptioncode)
-	return;
+        return;
 
     if( !n ) {
         exceptioncode = DOMException::NOT_FOUND_ERR;
@@ -836,28 +836,28 @@ void RangeImpl::checkNodeWOffset( NodeImpl *n, int offset, int &exceptioncode) c
 {
     checkNode( n, exceptioncode );
     if (exceptioncode)
-	return;
+        return;
 
     if( offset < 0 ) {
         exceptioncode = DOMException::INDEX_SIZE_ERR;
     }
 
     switch (n->nodeType()) {
-	case Node::TEXT_NODE:
-	case Node::COMMENT_NODE:
-	case Node::CDATA_SECTION_NODE:
-	    if ( (unsigned long)offset > static_cast<CharacterDataImpl*>(n)->length() )
-		exceptioncode = DOMException::INDEX_SIZE_ERR;
-	    break;
-	case Node::PROCESSING_INSTRUCTION_NODE:
-	    // ### are we supposed to check with just data or the whole contents?
-	    if ( (unsigned long)offset > static_cast<ProcessingInstructionImpl*>(n)->data().length() )
-		exceptioncode = DOMException::INDEX_SIZE_ERR;
-	    break;
-	default:
-	    if ( (unsigned long)offset > n->childNodeCount() )
-		exceptioncode = DOMException::INDEX_SIZE_ERR;
-	    break;
+        case Node::TEXT_NODE:
+        case Node::COMMENT_NODE:
+        case Node::CDATA_SECTION_NODE:
+            if ( (unsigned long)offset > static_cast<CharacterDataImpl*>(n)->length() )
+                exceptioncode = DOMException::INDEX_SIZE_ERR;
+            break;
+        case Node::PROCESSING_INSTRUCTION_NODE:
+            // ### are we supposed to check with just data or the whole contents?
+            if ( (unsigned long)offset > static_cast<ProcessingInstructionImpl*>(n)->data().length() )
+                exceptioncode = DOMException::INDEX_SIZE_ERR;
+            break;
+        default:
+            if ( (unsigned long)offset > n->childNodeCount() )
+                exceptioncode = DOMException::INDEX_SIZE_ERR;
+            break;
     }
 }
 
@@ -865,7 +865,7 @@ void RangeImpl::checkNodeBA( const NodeImpl *n, int &exceptioncode ) const
 {
     checkNode( n, exceptioncode );
     if (exceptioncode)
-	return;
+        return;
 
     if( n->nodeType() == Node::DOCUMENT_NODE ||
         n->nodeType() == Node::DOCUMENT_FRAGMENT_NODE ||
@@ -879,8 +879,8 @@ void RangeImpl::checkNodeBA( const NodeImpl *n, int &exceptioncode ) const
 RangeImpl *RangeImpl::cloneRange(int &exceptioncode)
 {
     if (m_detached) {
-	exceptioncode = DOMException::INVALID_STATE_ERR;
-	return 0;
+        exceptioncode = DOMException::INVALID_STATE_ERR;
+        return 0;
     }
 
     return new RangeImpl(m_ownerDocument,m_startContainer,m_startOffset,m_endContainer,m_endOffset);
@@ -889,23 +889,23 @@ RangeImpl *RangeImpl::cloneRange(int &exceptioncode)
 void RangeImpl::setStartAfter( NodeImpl *refNode, int &exceptioncode )
 {
     if (m_detached) {
-	exceptioncode = DOMException::INVALID_STATE_ERR;
-	return;
+        exceptioncode = DOMException::INVALID_STATE_ERR;
+        return;
     }
 
     if (!refNode) {
-	exceptioncode = DOMException::NOT_FOUND_ERR;
-	return;
+        exceptioncode = DOMException::NOT_FOUND_ERR;
+        return;
     }
 
-    if (refNode->getDocument() != m_ownerDocument) {
-	exceptioncode = DOMException::WRONG_DOCUMENT_ERR;
-	return;
+    if (refNode->getDocument() != m_ownerDocument->document()) {
+        exceptioncode = DOMException::WRONG_DOCUMENT_ERR;
+        return;
     }
 
     checkNodeBA( refNode, exceptioncode );
     if (exceptioncode)
-	return;
+        return;
 
     setStart( refNode->parentNode(), refNode->index()+1, exceptioncode );
 }
@@ -913,23 +913,23 @@ void RangeImpl::setStartAfter( NodeImpl *refNode, int &exceptioncode )
 void RangeImpl::setEndBefore( NodeImpl *refNode, int &exceptioncode )
 {
     if (m_detached) {
-	exceptioncode = DOMException::INVALID_STATE_ERR;
-	return;
+        exceptioncode = DOMException::INVALID_STATE_ERR;
+        return;
     }
 
     if (!refNode) {
-	exceptioncode = DOMException::NOT_FOUND_ERR;
-	return;
+        exceptioncode = DOMException::NOT_FOUND_ERR;
+        return;
     }
 
     if (refNode->getDocument() != m_ownerDocument) {
-	exceptioncode = DOMException::WRONG_DOCUMENT_ERR;
-	return;
+        exceptioncode = DOMException::WRONG_DOCUMENT_ERR;
+        return;
     }
 
     checkNodeBA( refNode, exceptioncode );
     if (exceptioncode)
-	return;
+        return;
 
     setEnd( refNode->parentNode(), refNode->index(), exceptioncode );
 }
@@ -937,23 +937,23 @@ void RangeImpl::setEndBefore( NodeImpl *refNode, int &exceptioncode )
 void RangeImpl::setEndAfter( NodeImpl *refNode, int &exceptioncode )
 {
     if (m_detached) {
-	exceptioncode = DOMException::INVALID_STATE_ERR;
-	return;
+        exceptioncode = DOMException::INVALID_STATE_ERR;
+        return;
     }
 
     if (!refNode) {
-	exceptioncode = DOMException::NOT_FOUND_ERR;
-	return;
+        exceptioncode = DOMException::NOT_FOUND_ERR;
+        return;
     }
 
-    if (refNode->getDocument() != m_ownerDocument) {
-	exceptioncode = DOMException::WRONG_DOCUMENT_ERR;
-	return;
+    if (refNode->getDocument() != m_ownerDocument->document()) {
+        exceptioncode = DOMException::WRONG_DOCUMENT_ERR;
+        return;
     }
 
     checkNodeBA( refNode, exceptioncode );
     if (exceptioncode)
-	return;
+        return;
 
     setEnd( refNode->parentNode(), refNode->index()+1, exceptioncode );
 
@@ -962,13 +962,13 @@ void RangeImpl::setEndAfter( NodeImpl *refNode, int &exceptioncode )
 void RangeImpl::selectNode( NodeImpl *refNode, int &exceptioncode )
 {
     if (m_detached) {
-	exceptioncode = DOMException::INVALID_STATE_ERR;
-	return;
+        exceptioncode = DOMException::INVALID_STATE_ERR;
+        return;
     }
 
     if (!refNode) {
-	exceptioncode = DOMException::NOT_FOUND_ERR;
-	return;
+        exceptioncode = DOMException::NOT_FOUND_ERR;
+        return;
     }
 
     // INVALID_NODE_TYPE_ERR: Raised if an ancestor of refNode is an Entity, Notation or
@@ -976,54 +976,54 @@ void RangeImpl::selectNode( NodeImpl *refNode, int &exceptioncode )
     // node.
     NodeImpl *anc;
     for (anc = refNode->parentNode(); anc; anc = anc->parentNode()) {
-	if (anc->nodeType() == Node::ENTITY_NODE ||
-	    anc->nodeType() == Node::NOTATION_NODE ||
-	    anc->nodeType() == Node::DOCUMENT_TYPE_NODE) {
-	
-	    exceptioncode = RangeException::INVALID_NODE_TYPE_ERR + RangeException::_EXCEPTION_OFFSET;
-	    return;
-	}
+        if (anc->nodeType() == Node::ENTITY_NODE ||
+            anc->nodeType() == Node::NOTATION_NODE ||
+            anc->nodeType() == Node::DOCUMENT_TYPE_NODE) {
+
+            exceptioncode = RangeException::INVALID_NODE_TYPE_ERR + RangeException::_EXCEPTION_OFFSET;
+            return;
+        }
     }
 
     if (refNode->nodeType() == Node::DOCUMENT_NODE ||
-	refNode->nodeType() == Node::DOCUMENT_FRAGMENT_NODE ||
-	refNode->nodeType() == Node::ATTRIBUTE_NODE ||
-	refNode->nodeType() == Node::ENTITY_NODE ||
-	refNode->nodeType() == Node::NOTATION_NODE) {
-	
-	exceptioncode = RangeException::INVALID_NODE_TYPE_ERR + RangeException::_EXCEPTION_OFFSET;
-	return;
+        refNode->nodeType() == Node::DOCUMENT_FRAGMENT_NODE ||
+        refNode->nodeType() == Node::ATTRIBUTE_NODE ||
+        refNode->nodeType() == Node::ENTITY_NODE ||
+        refNode->nodeType() == Node::NOTATION_NODE) {
+
+        exceptioncode = RangeException::INVALID_NODE_TYPE_ERR + RangeException::_EXCEPTION_OFFSET;
+        return;
     }
 
     setStartBefore( refNode, exceptioncode );
     if (exceptioncode)
-	return;
+        return;
     setEndAfter( refNode, exceptioncode );
 }
 
 void RangeImpl::selectNodeContents( NodeImpl *refNode, int &exceptioncode )
 {
     if (m_detached) {
-	exceptioncode = DOMException::INVALID_STATE_ERR;
-	return;
+        exceptioncode = DOMException::INVALID_STATE_ERR;
+        return;
     }
 
     if (!refNode) {
-	exceptioncode = DOMException::NOT_FOUND_ERR;
-	return;
+        exceptioncode = DOMException::NOT_FOUND_ERR;
+        return;
     }
 
     // INVALID_NODE_TYPE_ERR: Raised if refNode or an ancestor of refNode is an Entity, Notation
     // or DocumentType node.
     NodeImpl *n;
     for (n = refNode; n; n = n->parentNode()) {
-	if (n->nodeType() == Node::ENTITY_NODE ||
-	    n->nodeType() == Node::NOTATION_NODE ||
-	    n->nodeType() == Node::DOCUMENT_TYPE_NODE) {
-	
-	    exceptioncode = RangeException::INVALID_NODE_TYPE_ERR + RangeException::_EXCEPTION_OFFSET;
-	    return;
-	}
+        if (n->nodeType() == Node::ENTITY_NODE ||
+            n->nodeType() == Node::NOTATION_NODE ||
+            n->nodeType() == Node::DOCUMENT_TYPE_NODE) {
+
+            exceptioncode = RangeException::INVALID_NODE_TYPE_ERR + RangeException::_EXCEPTION_OFFSET;
+            return;
+        }
     }
 
     setStartContainer(refNode);
@@ -1035,12 +1035,12 @@ void RangeImpl::selectNodeContents( NodeImpl *refNode, int &exceptioncode )
 void RangeImpl::surroundContents( NodeImpl *newParent, int &exceptioncode )
 {
     if (m_detached) {
-	exceptioncode = DOMException::INVALID_STATE_ERR;
-	return;
+        exceptioncode = DOMException::INVALID_STATE_ERR;
+        return;
     }
 
     if( !newParent ) {
-	exceptioncode = DOMException::NOT_FOUND_ERR;
+        exceptioncode = DOMException::NOT_FOUND_ERR;
         return;
     }
 
@@ -1059,105 +1059,105 @@ void RangeImpl::surroundContents( NodeImpl *newParent, int &exceptioncode )
     // NO_MODIFICATION_ALLOWED_ERR: Raised if an ancestor container of either boundary-point of
     // the Range is read-only.
     if (readOnly()) {
-	exceptioncode = DOMException::NO_MODIFICATION_ALLOWED_ERR;
-	return;
+        exceptioncode = DOMException::NO_MODIFICATION_ALLOWED_ERR;
+        return;
     }
 
     NodeImpl *n = m_startContainer;
     while (n && !n->readOnly())
-	n = n->parentNode();
+        n = n->parentNode();
     if (n) {
-	exceptioncode = DOMException::NO_MODIFICATION_ALLOWED_ERR;
-	return;
+        exceptioncode = DOMException::NO_MODIFICATION_ALLOWED_ERR;
+        return;
     }
 
     n = m_endContainer;
     while (n && !n->readOnly())
-	n = n->parentNode();
+        n = n->parentNode();
     if (n) {
-	exceptioncode = DOMException::NO_MODIFICATION_ALLOWED_ERR;
-	return;
+        exceptioncode = DOMException::NO_MODIFICATION_ALLOWED_ERR;
+        return;
     }
 
     // WRONG_DOCUMENT_ERR: Raised if newParent and the container of the start of the Range were
     // not created from the same document.
     if (newParent->getDocument() != m_startContainer->getDocument()) {
-	exceptioncode = DOMException::WRONG_DOCUMENT_ERR;
-	return;
+        exceptioncode = DOMException::WRONG_DOCUMENT_ERR;
+        return;
     }
 
     // HIERARCHY_REQUEST_ERR: Raised if the container of the start of the Range is of a type that
     // does not allow children of the type of newParent or if newParent is an ancestor of the container
     // or if node would end up with a child node of a type not allowed by the type of node.
     if (!m_startContainer->childTypeAllowed(newParent->nodeType())) {
-	exceptioncode = DOMException::HIERARCHY_REQUEST_ERR;
-	return;
+        exceptioncode = DOMException::HIERARCHY_REQUEST_ERR;
+        return;
     }
 
     for (n = m_startContainer; n; n = n->parentNode()) {
-	if (n == newParent) {
-	    exceptioncode = DOMException::HIERARCHY_REQUEST_ERR;
-	    return;
-	}
+        if (n == newParent) {
+            exceptioncode = DOMException::HIERARCHY_REQUEST_ERR;
+            return;
+        }
     }
 
     // ### check if node would end up with a child node of a type not allowed by the type of node
 
     // BAD_BOUNDARYPOINTS_ERR: Raised if the Range partially selects a non-text node.
     if (m_startContainer->nodeType() != Node::TEXT_NODE &&
-	m_startContainer->nodeType() != Node::COMMENT_NODE &&
-	m_startContainer->nodeType() != Node::CDATA_SECTION_NODE &&
-	m_startContainer->nodeType() != Node::PROCESSING_INSTRUCTION_NODE) {
-	
-	if (m_startOffset > 0 && m_startOffset < m_startContainer->childNodeCount()) {
-	    exceptioncode = RangeException::BAD_BOUNDARYPOINTS_ERR + RangeException::_EXCEPTION_OFFSET;
-	    return;
-	}
+        m_startContainer->nodeType() != Node::COMMENT_NODE &&
+        m_startContainer->nodeType() != Node::CDATA_SECTION_NODE &&
+        m_startContainer->nodeType() != Node::PROCESSING_INSTRUCTION_NODE) {
+
+        if (m_startOffset > 0 && m_startOffset < m_startContainer->childNodeCount()) {
+            exceptioncode = RangeException::BAD_BOUNDARYPOINTS_ERR + RangeException::_EXCEPTION_OFFSET;
+            return;
+        }
     }
 
     if (m_endContainer->nodeType() != Node::TEXT_NODE &&
-	m_endContainer->nodeType() != Node::COMMENT_NODE &&
-	m_endContainer->nodeType() != Node::CDATA_SECTION_NODE &&
-	m_endContainer->nodeType() != Node::PROCESSING_INSTRUCTION_NODE) {
-	
-	if (m_endOffset > 0 && m_endOffset < m_endContainer->childNodeCount()) {
-	    exceptioncode = RangeException::BAD_BOUNDARYPOINTS_ERR + RangeException::_EXCEPTION_OFFSET;
-	    return;
-	}
+        m_endContainer->nodeType() != Node::COMMENT_NODE &&
+        m_endContainer->nodeType() != Node::CDATA_SECTION_NODE &&
+        m_endContainer->nodeType() != Node::PROCESSING_INSTRUCTION_NODE) {
+
+        if (m_endOffset > 0 && m_endOffset < m_endContainer->childNodeCount()) {
+            exceptioncode = RangeException::BAD_BOUNDARYPOINTS_ERR + RangeException::_EXCEPTION_OFFSET;
+            return;
+        }
     }
 
     DocumentFragmentImpl *fragment = extractContents(exceptioncode);
     if (exceptioncode)
-	return;
+        return;
     insertNode( newParent, exceptioncode );
     if (exceptioncode)
-	return;
+        return;
     newParent->appendChild( fragment, exceptioncode );
     if (exceptioncode)
-	return;
+        return;
     selectNode( newParent, exceptioncode );
 }
 
 void RangeImpl::setStartBefore( NodeImpl *refNode, int &exceptioncode )
 {
     if (m_detached) {
-	exceptioncode = DOMException::INVALID_STATE_ERR;
-	return;
+        exceptioncode = DOMException::INVALID_STATE_ERR;
+        return;
     }
 
     if (!refNode) {
-	exceptioncode = DOMException::NOT_FOUND_ERR;
-	return;
+        exceptioncode = DOMException::NOT_FOUND_ERR;
+        return;
     }
 
-    if (refNode->getDocument() != m_ownerDocument) {
-	exceptioncode = DOMException::WRONG_DOCUMENT_ERR;
-	return;
+    if (refNode->getDocument() != m_ownerDocument->document()) {
+        exceptioncode = DOMException::WRONG_DOCUMENT_ERR;
+        return;
     }
 
     checkNodeBA( refNode, exceptioncode );
     if (exceptioncode)
-	return;
+        return;
 
     setStart( refNode->parentNode(), refNode->index(), exceptioncode );
 }
@@ -1165,23 +1165,23 @@ void RangeImpl::setStartBefore( NodeImpl *refNode, int &exceptioncode )
 void RangeImpl::setStartContainer(NodeImpl *_startContainer)
 {
     if (m_startContainer == _startContainer)
-	return;
-	
+        return;
+
     if (m_startContainer)
-	m_startContainer->deref();
+        m_startContainer->deref();
     m_startContainer = _startContainer;
     if (m_startContainer)
-	m_startContainer->ref();
+        m_startContainer->ref();
 }
 
 void RangeImpl::setEndContainer(NodeImpl *_endContainer)
 {
     if (m_endContainer == _endContainer)
-	return;
-	
+        return;
+
     if (m_endContainer)
-	m_endContainer->deref();
+        m_endContainer->deref();
     m_endContainer = _endContainer;
     if (m_endContainer)
-	m_endContainer->ref();
+        m_endContainer->ref();
 }

@@ -38,7 +38,7 @@ class DOMString;
 class HTMLUListElementImpl : public HTMLElementImpl
 {
 public:
-    HTMLUListElementImpl(DocumentImpl *doc) : HTMLElementImpl(doc) {}
+    HTMLUListElementImpl(DocumentPtr *doc) : HTMLElementImpl(doc) {}
     virtual ~HTMLUListElementImpl() {}
 
     virtual const DOMString nodeName() const;
@@ -58,7 +58,7 @@ public:
 class HTMLDirectoryElementImpl : public HTMLElementImpl
 {
 public:
-    HTMLDirectoryElementImpl(DocumentImpl *doc) : HTMLElementImpl(doc) {}
+    HTMLDirectoryElementImpl(DocumentPtr *doc) : HTMLElementImpl(doc) {}
     virtual ~HTMLDirectoryElementImpl() {}
 
     virtual const DOMString nodeName() const;
@@ -75,7 +75,7 @@ public:
 class HTMLMenuElementImpl : public HTMLElementImpl
 {
 public:
-    HTMLMenuElementImpl(DocumentImpl *doc) : HTMLElementImpl(doc) {}
+    HTMLMenuElementImpl(DocumentPtr *doc) : HTMLElementImpl(doc) {}
     virtual ~HTMLMenuElementImpl() {}
 
     virtual const DOMString nodeName() const;
@@ -92,7 +92,7 @@ public:
 class HTMLOListElementImpl : public HTMLUListElementImpl
 {
 public:
-    HTMLOListElementImpl(DocumentImpl *doc)
+    HTMLOListElementImpl(DocumentPtr *doc)
         : HTMLUListElementImpl(doc) { _start = 1; }
     virtual ~HTMLOListElementImpl() {}
 
@@ -116,7 +116,7 @@ private:
 class HTMLLIElementImpl : public HTMLElementImpl
 {
 public:
-    HTMLLIElementImpl(DocumentImpl *doc)
+    HTMLLIElementImpl(DocumentPtr *doc)
         : HTMLElementImpl(doc) { isValued = false; }
     virtual ~HTMLLIElementImpl() {}
 
@@ -140,7 +140,7 @@ private:
 class HTMLDListElementImpl : public HTMLElementImpl
 {
 public:
-    HTMLDListElementImpl(DocumentImpl *doc) : HTMLElementImpl(doc) {}
+    HTMLDListElementImpl(DocumentPtr *doc) : HTMLElementImpl(doc) {}
     virtual ~HTMLDListElementImpl() {}
 
     virtual const DOMString nodeName() const;

@@ -35,10 +35,10 @@ class RangeImpl : public DomShared
 {
     friend class DocumentImpl;
 public:
-    RangeImpl(DocumentImpl *_ownerDocument);
-    RangeImpl(DocumentImpl *_ownerDocument,
-	      NodeImpl *_startContainer, long _startOffset,
-	      NodeImpl *_endContainer, long _endOffset);
+    RangeImpl(DocumentPtr *_ownerDocument);
+    RangeImpl(DocumentPtr *_ownerDocument,
+              NodeImpl *_startContainer, long _startOffset,
+              NodeImpl *_endContainer, long _endOffset);
 
     ~RangeImpl();
 
@@ -76,16 +76,16 @@ public:
     void setStartBefore( NodeImpl *refNode, int &exceptioncode );
 
     enum ActionType {
-	DELETE_CONTENTS,
-	EXTRACT_CONTENTS,
-	CLONE_CONTENTS
+        DELETE_CONTENTS,
+        EXTRACT_CONTENTS,
+        CLONE_CONTENTS
     };
     DocumentFragmentImpl *processContents ( ActionType action, int &exceptioncode );
 
     bool readOnly() { return false; }
 
 protected:
-    DocumentImpl *m_ownerDocument;
+    DocumentPtr *m_ownerDocument;
     NodeImpl *m_startContainer;
     unsigned long m_startOffset;
     NodeImpl *m_endContainer;

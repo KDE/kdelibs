@@ -44,7 +44,7 @@ Range::Range()
 
 Range::Range(const Document rootContainer)
 {
-    impl = new RangeImpl(static_cast<DocumentImpl*>(rootContainer.handle()));
+    impl = new RangeImpl(rootContainer.handle()->docPtr());
     impl->ref();
 }
 
@@ -57,15 +57,15 @@ Range::Range(const Range &other)
 Range::Range(const Node startContainer, const long startOffset, const Node endContainer, const long endOffset)
 {
     if (startContainer.isNull() || endContainer.isNull()) {
-	throw DOMException(DOMException::NOT_FOUND_ERR);
+        throw DOMException(DOMException::NOT_FOUND_ERR);
     }
 
     if (!startContainer.handle()->getDocument() ||
-	startContainer.handle()->getDocument() != endContainer.handle()->getDocument()) {
-	throw DOMException(DOMException::WRONG_DOCUMENT_ERR);	
+        startContainer.handle()->getDocument() != endContainer.handle()->getDocument()) {
+        throw DOMException(DOMException::WRONG_DOCUMENT_ERR);
     }
 
-    impl = new RangeImpl(startContainer.handle()->getDocument(),startContainer.handle(),startOffset,endContainer.handle(),endOffset);
+    impl = new RangeImpl(startContainer.handle()->docPtr(),startContainer.handle(),startOffset,endContainer.handle(),endOffset);
     impl->ref();
 }
 
@@ -92,8 +92,8 @@ Range::~Range()
 Node Range::startContainer() const
 {
     if (!impl)
-	throw DOMException(DOMException::INVALID_STATE_ERR);
-	
+        throw DOMException(DOMException::INVALID_STATE_ERR);
+
     int exceptioncode = 0;
     NodeImpl *r = impl->startContainer(exceptioncode);
     throwException(exceptioncode);
@@ -103,7 +103,7 @@ Node Range::startContainer() const
 long Range::startOffset() const
 {
     if (!impl)
-	throw DOMException(DOMException::INVALID_STATE_ERR);
+        throw DOMException(DOMException::INVALID_STATE_ERR);
 
     int exceptioncode = 0;
     long r = impl->startOffset(exceptioncode);
@@ -115,7 +115,7 @@ long Range::startOffset() const
 Node Range::endContainer() const
 {
     if (!impl)
-	throw DOMException(DOMException::INVALID_STATE_ERR);
+        throw DOMException(DOMException::INVALID_STATE_ERR);
 
     int exceptioncode = 0;
     NodeImpl *r = impl->endContainer(exceptioncode);
@@ -126,7 +126,7 @@ Node Range::endContainer() const
 long Range::endOffset() const
 {
     if (!impl)
-	throw DOMException(DOMException::INVALID_STATE_ERR);
+        throw DOMException(DOMException::INVALID_STATE_ERR);
 
     int exceptioncode = 0;
     long r = impl->endOffset(exceptioncode);
@@ -137,7 +137,7 @@ long Range::endOffset() const
 bool Range::collapsed() const
 {
     if (!impl)
-	throw DOMException(DOMException::INVALID_STATE_ERR);
+        throw DOMException(DOMException::INVALID_STATE_ERR);
 
     int exceptioncode = 0;
     bool r = impl->collapsed(exceptioncode);
@@ -148,7 +148,7 @@ bool Range::collapsed() const
 Node Range::commonAncestorContainer()
 {
     if (!impl)
-	throw DOMException(DOMException::INVALID_STATE_ERR);
+        throw DOMException(DOMException::INVALID_STATE_ERR);
 
     int exceptioncode = 0;
     NodeImpl *r = impl->commonAncestorContainer(exceptioncode);
@@ -159,7 +159,7 @@ Node Range::commonAncestorContainer()
 void Range::setStart( const Node &refNode, long offset )
 {
     if (!impl)
-	throw DOMException(DOMException::INVALID_STATE_ERR);
+        throw DOMException(DOMException::INVALID_STATE_ERR);
 
     int exceptioncode = 0;
     impl->setStart(refNode.handle(),offset,exceptioncode);
@@ -169,7 +169,7 @@ void Range::setStart( const Node &refNode, long offset )
 void Range::setEnd( const Node &refNode, long offset )
 {
     if (!impl)
-	throw DOMException(DOMException::INVALID_STATE_ERR);
+        throw DOMException(DOMException::INVALID_STATE_ERR);
 
     int exceptioncode = 0;
     impl->setEnd(refNode.handle(),offset,exceptioncode);
@@ -179,7 +179,7 @@ void Range::setEnd( const Node &refNode, long offset )
 void Range::setStartBefore( const Node &refNode )
 {
     if (!impl)
-	throw DOMException(DOMException::INVALID_STATE_ERR);
+        throw DOMException(DOMException::INVALID_STATE_ERR);
 
 
     int exceptioncode = 0;
@@ -190,7 +190,7 @@ void Range::setStartBefore( const Node &refNode )
 void Range::setStartAfter( const Node &refNode )
 {
     if (!impl)
-	throw DOMException(DOMException::INVALID_STATE_ERR);
+        throw DOMException(DOMException::INVALID_STATE_ERR);
 
     int exceptioncode = 0;
     impl->setStartAfter(refNode.handle(),exceptioncode);
@@ -200,7 +200,7 @@ void Range::setStartAfter( const Node &refNode )
 void Range::setEndBefore( const Node &refNode )
 {
     if (!impl)
-	throw DOMException(DOMException::INVALID_STATE_ERR);
+        throw DOMException(DOMException::INVALID_STATE_ERR);
 
     int exceptioncode = 0;
     impl->setEndBefore(refNode.handle(),exceptioncode);
@@ -210,7 +210,7 @@ void Range::setEndBefore( const Node &refNode )
 void Range::setEndAfter( const Node &refNode )
 {
     if (!impl)
-	throw DOMException(DOMException::INVALID_STATE_ERR);
+        throw DOMException(DOMException::INVALID_STATE_ERR);
 
     int exceptioncode = 0;
     impl->setEndAfter(refNode.handle(),exceptioncode);
@@ -220,7 +220,7 @@ void Range::setEndAfter( const Node &refNode )
 void Range::collapse( bool toStart )
 {
     if (!impl)
-	throw DOMException(DOMException::INVALID_STATE_ERR);
+        throw DOMException(DOMException::INVALID_STATE_ERR);
 
     int exceptioncode = 0;
     impl->collapse(toStart,exceptioncode);
@@ -230,7 +230,7 @@ void Range::collapse( bool toStart )
 void Range::selectNode( const Node &refNode )
 {
     if (!impl)
-	throw DOMException(DOMException::INVALID_STATE_ERR);
+        throw DOMException(DOMException::INVALID_STATE_ERR);
 
     int exceptioncode = 0;
     impl->selectNode(refNode.handle(),exceptioncode);
@@ -240,7 +240,7 @@ void Range::selectNode( const Node &refNode )
 void Range::selectNodeContents( const Node &refNode )
 {
     if (!impl)
-	throw DOMException(DOMException::INVALID_STATE_ERR);
+        throw DOMException(DOMException::INVALID_STATE_ERR);
 
     int exceptioncode = 0;
     impl->selectNodeContents(refNode.handle(),exceptioncode);
@@ -250,8 +250,8 @@ void Range::selectNodeContents( const Node &refNode )
 short Range::compareBoundaryPoints( CompareHow how, const Range &sourceRange )
 {
     if (!impl)
-	throw DOMException(DOMException::INVALID_STATE_ERR);
-	
+        throw DOMException(DOMException::INVALID_STATE_ERR);
+
     int exceptioncode = 0;
     short r = impl->compareBoundaryPoints(how,sourceRange.handle(),exceptioncode);
     throwException(exceptioncode);
@@ -261,7 +261,7 @@ short Range::compareBoundaryPoints( CompareHow how, const Range &sourceRange )
 bool Range::boundaryPointsValid(  )
 {
     if (!impl)
-	throw DOMException(DOMException::INVALID_STATE_ERR);
+        throw DOMException(DOMException::INVALID_STATE_ERR);
 
     return impl->boundaryPointsValid();
 }
@@ -269,7 +269,7 @@ bool Range::boundaryPointsValid(  )
 void Range::deleteContents(  )
 {
     if (!impl)
-	throw DOMException(DOMException::INVALID_STATE_ERR);
+        throw DOMException(DOMException::INVALID_STATE_ERR);
 
     int exceptioncode = 0;
     impl->deleteContents(exceptioncode);
@@ -279,7 +279,7 @@ void Range::deleteContents(  )
 DocumentFragment Range::extractContents(  )
 {
     if (!impl)
-	throw DOMException(DOMException::INVALID_STATE_ERR);
+        throw DOMException(DOMException::INVALID_STATE_ERR);
 
     int exceptioncode = 0;
     DocumentFragmentImpl *r = impl->extractContents(exceptioncode);
@@ -290,7 +290,7 @@ DocumentFragment Range::extractContents(  )
 DocumentFragment Range::cloneContents(  )
 {
     if (!impl)
-	throw DOMException(DOMException::INVALID_STATE_ERR);
+        throw DOMException(DOMException::INVALID_STATE_ERR);
 
     int exceptioncode = 0;
     DocumentFragmentImpl *r = impl->cloneContents(exceptioncode);
@@ -301,7 +301,7 @@ DocumentFragment Range::cloneContents(  )
 void Range::insertNode( const Node &newNode )
 {
     if (!impl)
-	throw DOMException(DOMException::INVALID_STATE_ERR);
+        throw DOMException(DOMException::INVALID_STATE_ERR);
 
     int exceptioncode = 0;
     impl->insertNode(newNode.handle(),exceptioncode);
@@ -311,7 +311,7 @@ void Range::insertNode( const Node &newNode )
 void Range::surroundContents( const Node &newParent )
 {
     if (!impl)
-	throw DOMException(DOMException::INVALID_STATE_ERR);
+        throw DOMException(DOMException::INVALID_STATE_ERR);
 
     int exceptioncode = 0;
     impl->surroundContents(newParent.handle(),exceptioncode);
@@ -321,7 +321,7 @@ void Range::surroundContents( const Node &newParent )
 Range Range::cloneRange(  )
 {
     if (!impl)
-	throw DOMException(DOMException::INVALID_STATE_ERR);
+        throw DOMException(DOMException::INVALID_STATE_ERR);
 
     int exceptioncode = 0;
     RangeImpl *r = impl->cloneRange(exceptioncode);
@@ -332,7 +332,7 @@ Range Range::cloneRange(  )
 DOMString Range::toString(  )
 {
     if (!impl)
-	throw DOMException(DOMException::INVALID_STATE_ERR);
+        throw DOMException(DOMException::INVALID_STATE_ERR);
 
     int exceptioncode = 0;
     DOMString r = impl->toString(exceptioncode);
@@ -344,7 +344,7 @@ DOMString Range::toString(  )
 DOMString Range::toHTML(  )
 {
     if (!impl)
-	throw DOMException(DOMException::INVALID_STATE_ERR);
+        throw DOMException(DOMException::INVALID_STATE_ERR);
 
     return impl->toHTML();
 }
@@ -352,7 +352,7 @@ DOMString Range::toHTML(  )
 void Range::detach(  )
 {
     if (!impl)
-	throw DOMException(DOMException::INVALID_STATE_ERR);
+        throw DOMException(DOMException::INVALID_STATE_ERR);
 
     int exceptioncode = 0;
     impl->detach(exceptioncode);
@@ -362,7 +362,7 @@ void Range::detach(  )
 bool Range::isDetached() const
 {
     if (!impl)
-	throw DOMException(DOMException::INVALID_STATE_ERR);
+        throw DOMException(DOMException::INVALID_STATE_ERR);
 
     return impl->isDetached();
 }
@@ -380,13 +380,13 @@ bool Range::isNull() const
 void Range::throwException(int exceptioncode) const
 {
     if (!exceptioncode)
-	return;
-	
+        return;
+
     // ### also check for CSS & other exceptions?
     if (exceptioncode >= RangeException::_EXCEPTION_OFFSET && exceptioncode <= RangeException::_EXCEPTION_MAX)
-	throw RangeException(static_cast<RangeException::RangeExceptionCode>(exceptioncode-RangeException::_EXCEPTION_OFFSET));
+        throw RangeException(static_cast<RangeException::RangeExceptionCode>(exceptioncode-RangeException::_EXCEPTION_OFFSET));
     else
-	throw DOMException(exceptioncode);
+        throw DOMException(exceptioncode);
 }
 
 

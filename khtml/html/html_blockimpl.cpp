@@ -35,7 +35,7 @@
 using namespace khtml;
 using namespace DOM;
 
-HTMLBlockquoteElementImpl::HTMLBlockquoteElementImpl(DocumentImpl *doc)
+HTMLBlockquoteElementImpl::HTMLBlockquoteElementImpl(DocumentPtr *doc)
     : HTMLElementImpl(doc)
 {
 }
@@ -57,13 +57,13 @@ ushort HTMLBlockquoteElementImpl::id() const
 void HTMLBlockquoteElementImpl::attach(KHTMLView *w)
 {
     HTMLElementImpl::attach(w);
-    if(document->parseMode() != DocumentImpl::Strict )
-	style()->setFlowAroundFloats(true);
+    if(ownerDocument()->parseMode() != DocumentImpl::Strict )
+        style()->setFlowAroundFloats(true);
 }
 
 // -------------------------------------------------------------------------
 
-HTMLDivElementImpl::HTMLDivElementImpl(DocumentImpl *doc)
+HTMLDivElementImpl::HTMLDivElementImpl(DocumentPtr *doc)
     : HTMLElementImpl(doc)
 {
 }
@@ -88,20 +88,20 @@ void HTMLDivElementImpl::parseAttribute(AttrImpl *attr)
     {
     case ATTR_ALIGN:
     {
-	DOMString v = attr->value();
-	if ( strcasecmp( attr->value(), "center" ) == 0 )
-	    v = "konq-center";
-	addCSSProperty(CSS_PROP_TEXT_ALIGN, v);
-	break;
+        DOMString v = attr->value();
+        if ( strcasecmp( attr->value(), "center" ) == 0 )
+            v = "konq-center";
+        addCSSProperty(CSS_PROP_TEXT_ALIGN, v);
+        break;
     }
     default:
-	HTMLElementImpl::parseAttribute(attr);
+        HTMLElementImpl::parseAttribute(attr);
     }
 }
 
 // -------------------------------------------------------------------------
 
-HTMLHRElementImpl::HTMLHRElementImpl(DocumentImpl *doc)
+HTMLHRElementImpl::HTMLHRElementImpl(DocumentPtr *doc)
     : HTMLElementImpl(doc)
 {
 }
@@ -152,7 +152,7 @@ void HTMLHRElementImpl::parseAttribute(AttrImpl *attr)
             addCSSLength(CSS_PROP_BORDER_BOTTOM_WIDTH, DOMString(w));
             addCSSLength(CSS_PROP_BORDER_TOP_WIDTH, DOMString(w));
         }
-	break;
+        break;
     }
     case ATTR_WIDTH:
     {
@@ -165,7 +165,7 @@ void HTMLHRElementImpl::parseAttribute(AttrImpl *attr)
             addCSSLength(CSS_PROP_WIDTH, "1");
         else
             addCSSLength(CSS_PROP_WIDTH, attr->value());
-	break;
+        break;
     }
     case ATTR_NOSHADE:
         addCSSProperty(CSS_PROP_BORDER_STYLE, "solid");
@@ -174,20 +174,20 @@ void HTMLHRElementImpl::parseAttribute(AttrImpl *attr)
         addCSSProperty(CSS_PROP_BORDER_COLOR, attr->value());
         break;
     default:
-	HTMLElementImpl::parseAttribute(attr);
+        HTMLElementImpl::parseAttribute(attr);
     }
 }
 
 void HTMLHRElementImpl::attach(KHTMLView *w)
 {
     HTMLElementImpl::attach(w);
-    if(document->parseMode() != DocumentImpl::Strict )
+    if(ownerDocument()->parseMode() != DocumentImpl::Strict )
         style()->setFlowAroundFloats(true);
 }
 
 // -------------------------------------------------------------------------
 
-HTMLHeadingElementImpl::HTMLHeadingElementImpl(DocumentImpl *doc, ushort _tagid) : HTMLElementImpl(doc)
+HTMLHeadingElementImpl::HTMLHeadingElementImpl(DocumentPtr *doc, ushort _tagid) : HTMLElementImpl(doc)
 {
     _id = _tagid;
 }
@@ -212,16 +212,16 @@ void HTMLHeadingElementImpl::parseAttribute(AttrImpl *attr)
     switch(attr->attrId)
     {
     case ATTR_ALIGN:
-	addCSSProperty(CSS_PROP_TEXT_ALIGN, attr->value());
-	break;
+        addCSSProperty(CSS_PROP_TEXT_ALIGN, attr->value());
+        break;
     default:
-	HTMLElementImpl::parseAttribute(attr);
+        HTMLElementImpl::parseAttribute(attr);
     }
 }
 
 // -------------------------------------------------------------------------
 
-HTMLParagraphElementImpl::HTMLParagraphElementImpl(DocumentImpl *doc)
+HTMLParagraphElementImpl::HTMLParagraphElementImpl(DocumentPtr *doc)
     : HTMLElementImpl(doc)
 {
 }
@@ -245,10 +245,10 @@ void HTMLParagraphElementImpl::parseAttribute(AttrImpl *attr)
     switch(attr->attrId)
     {
     case ATTR_ALIGN:
-	addCSSProperty(CSS_PROP_TEXT_ALIGN, attr->value());
-	break;
+        addCSSProperty(CSS_PROP_TEXT_ALIGN, attr->value());
+        break;
     default:
-	HTMLElementImpl::parseAttribute(attr);
+        HTMLElementImpl::parseAttribute(attr);
     }
 }
 
@@ -259,7 +259,7 @@ void HTMLParagraphElementImpl::attach(KHTMLView *w)
 
 // -------------------------------------------------------------------------
 
-HTMLPreElementImpl::HTMLPreElementImpl(DocumentImpl *doc)
+HTMLPreElementImpl::HTMLPreElementImpl(DocumentPtr *doc)
     : HTMLElementImpl(doc)
 {
 }
@@ -291,7 +291,7 @@ void HTMLPreElementImpl::setWidth( long /*w*/ )
 
 // ------------------------------------------------------------------------
 
-HTMLLayerElementImpl::HTMLLayerElementImpl(DocumentImpl *doc)
+HTMLLayerElementImpl::HTMLLayerElementImpl(DocumentPtr *doc)
     : HTMLDivElementImpl( doc )
 {
     addCSSProperty(CSS_PROP_POSITION, "absolute" );
@@ -318,36 +318,36 @@ void HTMLLayerElementImpl::parseAttribute(AttrImpl *attr)
     int cssprop;
     bool page = false;
     switch(attr->attrId) {
-	case ATTR_PAGEX:
-	    page = true;
-	case ATTR_LEFT:
-	    cssprop = CSS_PROP_LEFT;
-	    break;
-	case ATTR_PAGEY:
-	    page = true;
-	case ATTR_TOP:
-	    cssprop = CSS_PROP_TOP;
-	    break;
-	case ATTR_WIDTH:
-	    cssprop = CSS_PROP_WIDTH;
-	    break;
-	case ATTR_HEIGHT:
-	    cssprop = CSS_PROP_HEIGHT;
-	    break;
-	case ATTR_Z_INDEX:
-	    cssprop = CSS_PROP_Z_INDEX;
-	    break;
-	case ATTR_VISIBILITY:
-	    cssprop = CSS_PROP_VISIBILITY;
-	    break;
-	default:
-	    HTMLDivElementImpl::parseAttribute(attr);
-	    return;
+        case ATTR_PAGEX:
+            page = true;
+        case ATTR_LEFT:
+            cssprop = CSS_PROP_LEFT;
+            break;
+        case ATTR_PAGEY:
+            page = true;
+        case ATTR_TOP:
+            cssprop = CSS_PROP_TOP;
+            break;
+        case ATTR_WIDTH:
+            cssprop = CSS_PROP_WIDTH;
+            break;
+        case ATTR_HEIGHT:
+            cssprop = CSS_PROP_HEIGHT;
+            break;
+        case ATTR_Z_INDEX:
+            cssprop = CSS_PROP_Z_INDEX;
+            break;
+        case ATTR_VISIBILITY:
+            cssprop = CSS_PROP_VISIBILITY;
+            break;
+        default:
+            HTMLDivElementImpl::parseAttribute(attr);
+            return;
     }
     addCSSProperty(cssprop, attr->value());
     if ( !fixed && page ) {
-	addCSSProperty(CSS_PROP_POSITION, "fixed");
-	fixed = true;
+        addCSSProperty(CSS_PROP_POSITION, "fixed");
+        fixed = true;
     }
 }
 

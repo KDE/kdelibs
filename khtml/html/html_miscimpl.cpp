@@ -31,7 +31,7 @@ using namespace DOM;
 
 #include <kdebug.h>
 
-HTMLBaseFontElementImpl::HTMLBaseFontElementImpl(DocumentImpl *doc) : HTMLElementImpl(doc)
+HTMLBaseFontElementImpl::HTMLBaseFontElementImpl(DocumentPtr *doc) : HTMLElementImpl(doc)
 {
 }
 
@@ -68,74 +68,74 @@ unsigned long HTMLCollectionImpl::calcLength(NodeImpl *current) const
     unsigned long len = 0;
     while(current)
     {
-	if(current->nodeType() == Node::ELEMENT_NODE)
-	{
-	    bool deep = true;
-	    HTMLElementImpl *e = static_cast<HTMLElementImpl *>(current);
-	    switch(type)
-	    {
-	    case DOC_IMAGES:
-		if(e->id() == ID_IMG)
-		    len++;
-		break;
-	    case DOC_FORMS:
-		if(e->id() == ID_FORM)
-		    len++;
-		break;
-	    case TABLE_TBODIES:
-		if(e->id() == ID_TBODY)
-		    len++;
-		else if(e->id() == ID_TABLE)
-		    deep = false;
-		break;
-	    case TR_CELLS:
-		if(e->id() == ID_TD)
-		    len++;
-		else if(e->id() == ID_TABLE)
-		    deep = false;
-		break;
-	    case TABLE_ROWS:
-	    case TSECTION_ROWS:
-		if(e->id() == ID_TR || e->id() == ID_TH)
-		    len++;
-		else if(e->id() == ID_TABLE)
-		    deep = false;
-		break;
-	    case SELECT_OPTIONS:
-		if(e->id() == ID_OPTION)
-		    len++;
-		break;
-	    case MAP_AREAS:
-		if(e->id() == ID_AREA)
-		    len++;
-		break;
-	    case DOC_APPLETS:   // all OBJECT and APPLET elements
-		if(e->id() == ID_OBJECT || e->id() == ID_APPLET)
-		    len++;
-		break;
-	    case DOC_LINKS:     // all A _and_ AREA elements with a value for href
-		if(e->id() == ID_A || e->id() == ID_AREA)
-		    if(e->getAttribute(ATTR_HREF) != 0)
-			len++;
-		break;
-	    case DOC_ANCHORS:      // all A elements with a value for name and all elements with an id attribute
-		if ( e->hasID() )
-		    len++;
-		else if(e->id() == ID_A) {
-		    if(e->getAttribute(ATTR_NAME) != 0)
-			len++;
-		}  
-		break;
-	    case DOC_ALL:      // "all" elements
-		len++;
-		break;
-	    default:
-		kdDebug( 6030 ) << "Error in HTMLCollection, wrong tagId!" << endl;
-	    }
-	    if(deep && current->firstChild())
-		len += calcLength(current->firstChild());
-	}
-	current = current->nextSibling();
+        if(current->nodeType() == Node::ELEMENT_NODE)
+        {
+            bool deep = true;
+            HTMLElementImpl *e = static_cast<HTMLElementImpl *>(current);
+            switch(type)
+            {
+            case DOC_IMAGES:
+                if(e->id() == ID_IMG)
+                    len++;
+                break;
+            case DOC_FORMS:
+                if(e->id() == ID_FORM)
+                    len++;
+                break;
+            case TABLE_TBODIES:
+                if(e->id() == ID_TBODY)
+                    len++;
+                else if(e->id() == ID_TABLE)
+                    deep = false;
+                break;
+            case TR_CELLS:
+                if(e->id() == ID_TD)
+                    len++;
+                else if(e->id() == ID_TABLE)
+                    deep = false;
+                break;
+            case TABLE_ROWS:
+            case TSECTION_ROWS:
+                if(e->id() == ID_TR || e->id() == ID_TH)
+                    len++;
+                else if(e->id() == ID_TABLE)
+                    deep = false;
+                break;
+            case SELECT_OPTIONS:
+                if(e->id() == ID_OPTION)
+                    len++;
+                break;
+            case MAP_AREAS:
+                if(e->id() == ID_AREA)
+                    len++;
+                break;
+            case DOC_APPLETS:   // all OBJECT and APPLET elements
+                if(e->id() == ID_OBJECT || e->id() == ID_APPLET)
+                    len++;
+                break;
+            case DOC_LINKS:     // all A _and_ AREA elements with a value for href
+                if(e->id() == ID_A || e->id() == ID_AREA)
+                    if(e->getAttribute(ATTR_HREF) != 0)
+                        len++;
+                break;
+            case DOC_ANCHORS:      // all A elements with a value for name and all elements with an id attribute
+                if ( e->hasID() )
+                    len++;
+                else if(e->id() == ID_A) {
+                    if(e->getAttribute(ATTR_NAME) != 0)
+                        len++;
+                }
+                break;
+            case DOC_ALL:      // "all" elements
+                len++;
+                break;
+            default:
+                kdDebug( 6030 ) << "Error in HTMLCollection, wrong tagId!" << endl;
+            }
+            if(deep && current->firstChild())
+                len += calcLength(current->firstChild());
+        }
+        current = current->nextSibling();
     }
     return len;
 }
@@ -151,76 +151,76 @@ NodeImpl *HTMLCollectionImpl::getItem(NodeImpl *current, int index, int &len) co
 {
     while(current)
     {
-	if(current->nodeType() == Node::ELEMENT_NODE)
-	{
-	    bool deep = true;
-	    HTMLElementImpl *e = static_cast<HTMLElementImpl *>(current);
-	    switch(type)
-	    {
-	    case DOC_IMAGES:
-		if(e->id() == ID_IMG)
-		    len++;
-		break;
-	    case DOC_FORMS:
-		if(e->id() == ID_FORM)
-		    len++;
-		break;
-	    case TABLE_TBODIES:
-		if(e->id() == ID_TBODY)
-		    len++;
-		else if(e->id() == ID_TABLE)
-		    deep = false;
-		break;
-	    case TR_CELLS:
-		if(e->id() == ID_TD)
-		    len++;
-		else if(e->id() == ID_TABLE)
-		    deep = false;
-		break;
-	    case TABLE_ROWS:
-	    case TSECTION_ROWS:
-		if(e->id() == ID_TR || e->id() == ID_TH)
-		    len++;
-		else if(e->id() == ID_TABLE)
-		    deep = false;
-		break;
-	    case SELECT_OPTIONS:
-		if(e->id() == ID_OPTION)
-		    len++;
-		break;
-	    case MAP_AREAS:
-		if(e->id() == ID_AREA)
-		    len++;
-		break;
-	    case DOC_APPLETS:   // all OBJECT and APPLET elements
-		if(e->id() == ID_OBJECT || e->id() == ID_APPLET)
-		    len++;
-		break;
-	    case DOC_LINKS:     // all A _and_ AREA elements with a value for href
-		if(e->id() == ID_A || e->id() == ID_AREA)
-		    if(e->getAttribute(ATTR_HREF) != 0)
-			len++;
-		break;
-	    case DOC_ANCHORS:      // all A elements with a value for name or an id attribute
-		if( e->hasID() )
-		    len++;
-		else if(e->id() == ID_A)
-		    if(e->getAttribute(ATTR_NAME) != 0)
-			len++;
-		break;
-	    case DOC_ALL:
-		len++;
-		break;
-	    default:
-		kdDebug( 6030 ) << "Error in HTMLCollection, wrong tagId!" << endl;
-	    }
-	    if(len == (index + 1)) return current;
-	    NodeImpl *retval=0;
-	    if(deep && current->firstChild())
-		retval = getItem(current->firstChild(), index, len);
-	    if(retval) return retval;
-	}
-	current = current->nextSibling();
+        if(current->nodeType() == Node::ELEMENT_NODE)
+        {
+            bool deep = true;
+            HTMLElementImpl *e = static_cast<HTMLElementImpl *>(current);
+            switch(type)
+            {
+            case DOC_IMAGES:
+                if(e->id() == ID_IMG)
+                    len++;
+                break;
+            case DOC_FORMS:
+                if(e->id() == ID_FORM)
+                    len++;
+                break;
+            case TABLE_TBODIES:
+                if(e->id() == ID_TBODY)
+                    len++;
+                else if(e->id() == ID_TABLE)
+                    deep = false;
+                break;
+            case TR_CELLS:
+                if(e->id() == ID_TD)
+                    len++;
+                else if(e->id() == ID_TABLE)
+                    deep = false;
+                break;
+            case TABLE_ROWS:
+            case TSECTION_ROWS:
+                if(e->id() == ID_TR || e->id() == ID_TH)
+                    len++;
+                else if(e->id() == ID_TABLE)
+                    deep = false;
+                break;
+            case SELECT_OPTIONS:
+                if(e->id() == ID_OPTION)
+                    len++;
+                break;
+            case MAP_AREAS:
+                if(e->id() == ID_AREA)
+                    len++;
+                break;
+            case DOC_APPLETS:   // all OBJECT and APPLET elements
+                if(e->id() == ID_OBJECT || e->id() == ID_APPLET)
+                    len++;
+                break;
+            case DOC_LINKS:     // all A _and_ AREA elements with a value for href
+                if(e->id() == ID_A || e->id() == ID_AREA)
+                    if(e->getAttribute(ATTR_HREF) != 0)
+                        len++;
+                break;
+            case DOC_ANCHORS:      // all A elements with a value for name or an id attribute
+                if( e->hasID() )
+                    len++;
+                else if(e->id() == ID_A)
+                    if(e->getAttribute(ATTR_NAME) != 0)
+                        len++;
+                break;
+            case DOC_ALL:
+                len++;
+                break;
+            default:
+                kdDebug( 6030 ) << "Error in HTMLCollection, wrong tagId!" << endl;
+            }
+            if(len == (index + 1)) return current;
+            NodeImpl *retval=0;
+            if(deep && current->firstChild())
+                retval = getItem(current->firstChild(), index, len);
+            if(retval) return retval;
+        }
+        current = current->nextSibling();
     }
     return 0;
 }
@@ -232,93 +232,93 @@ NodeImpl *HTMLCollectionImpl::item( unsigned long index ) const
 }
 
 NodeImpl *HTMLCollectionImpl::getNamedItem( NodeImpl *current, int attr_id,
-					    const DOMString &name ) const
+                                            const DOMString &name ) const
 {
     if(name.isEmpty())
-	return 0;
+        return 0;
 
     while(current)
     {
-	if(current->nodeType() == Node::ELEMENT_NODE)
-	{
-	    bool deep = true;
-	    bool check = false;
-	    HTMLElementImpl *e = static_cast<HTMLElementImpl *>(current);
-	    switch(type)
-	    {
-	    case DOC_IMAGES:
-		if(e->id() == ID_IMG)
-		    check = true;
-		break;
-	    case DOC_FORMS:
-		if(e->id() == ID_FORM)
-		    check = true;
-		break;
-	    case TABLE_TBODIES:
-		if(e->id() == ID_TBODY)
-		    check = true;
-		else if(e->id() == ID_TABLE)
-		    deep = false;
-		break;
-	    case TR_CELLS:
-		if(e->id() == ID_TD)
-		    check = true;
-		else if(e->id() == ID_TABLE)
-		    deep = false;
-		break;
-	    case TABLE_ROWS:
-	    case TSECTION_ROWS:
-		if(e->id() == ID_TR || e->id() == ID_TH)
-		    check = true;
-		else if(e->id() == ID_TABLE)
-		    deep = false;
-		break;
-	    case SELECT_OPTIONS:
-		if(e->id() == ID_OPTION)
-		    check = true;
-		break;
-	    case MAP_AREAS:
-		if(e->id() == ID_AREA)
-		    check = true;
-		break;
-	    case DOC_APPLETS:   // all OBJECT and APPLET elements
-		if(e->id() == ID_OBJECT || e->id() == ID_APPLET)
-		    check = true;
-		break;
-	    case DOC_LINKS:     // all A _and_ AREA elements with a value for href
-		if(e->id() == ID_A || e->id() == ID_AREA)
-		    if(e->getAttribute(ATTR_HREF) != 0)
-			check = true;
-		break;
-	    case DOC_ANCHORS:      // all A elements with a value for name
-		if( e->hasID() )
-		    check = true;
-		else if(e->id() == ID_A)
-		    if(e->getAttribute(ATTR_NAME) != 0)
-			check = true;
-		break;
-	    case DOC_ALL:
-		check = true;
-		break;
-	    default:
-		kdDebug( 6030 ) << "Error in HTMLCollection, wrong tagId!" << endl;
-		break;
-	    }
-	    if(check && e->getAttribute(attr_id) == name)
-	    {
-		//kdDebug( 6030 ) << "found node: " << e << " " << current << " " << e->id() << endl;
-		return current;
-	    }
-	    NodeImpl *retval = 0;
-	    if(deep && current->firstChild())
-		retval = getNamedItem(current->firstChild(), attr_id, name);
-	    if(retval)
-	    {
-		//kdDebug( 6030 ) << "got a return value " << retval << endl;
-		return retval;
-	    }
-	}
-	current = current->nextSibling();
+        if(current->nodeType() == Node::ELEMENT_NODE)
+        {
+            bool deep = true;
+            bool check = false;
+            HTMLElementImpl *e = static_cast<HTMLElementImpl *>(current);
+            switch(type)
+            {
+            case DOC_IMAGES:
+                if(e->id() == ID_IMG)
+                    check = true;
+                break;
+            case DOC_FORMS:
+                if(e->id() == ID_FORM)
+                    check = true;
+                break;
+            case TABLE_TBODIES:
+                if(e->id() == ID_TBODY)
+                    check = true;
+                else if(e->id() == ID_TABLE)
+                    deep = false;
+                break;
+            case TR_CELLS:
+                if(e->id() == ID_TD)
+                    check = true;
+                else if(e->id() == ID_TABLE)
+                    deep = false;
+                break;
+            case TABLE_ROWS:
+            case TSECTION_ROWS:
+                if(e->id() == ID_TR || e->id() == ID_TH)
+                    check = true;
+                else if(e->id() == ID_TABLE)
+                    deep = false;
+                break;
+            case SELECT_OPTIONS:
+                if(e->id() == ID_OPTION)
+                    check = true;
+                break;
+            case MAP_AREAS:
+                if(e->id() == ID_AREA)
+                    check = true;
+                break;
+            case DOC_APPLETS:   // all OBJECT and APPLET elements
+                if(e->id() == ID_OBJECT || e->id() == ID_APPLET)
+                    check = true;
+                break;
+            case DOC_LINKS:     // all A _and_ AREA elements with a value for href
+                if(e->id() == ID_A || e->id() == ID_AREA)
+                    if(e->getAttribute(ATTR_HREF) != 0)
+                        check = true;
+                break;
+            case DOC_ANCHORS:      // all A elements with a value for name
+                if( e->hasID() )
+                    check = true;
+                else if(e->id() == ID_A)
+                    if(e->getAttribute(ATTR_NAME) != 0)
+                        check = true;
+                break;
+            case DOC_ALL:
+                check = true;
+                break;
+            default:
+                kdDebug( 6030 ) << "Error in HTMLCollection, wrong tagId!" << endl;
+                break;
+            }
+            if(check && e->getAttribute(attr_id) == name)
+            {
+                //kdDebug( 6030 ) << "found node: " << e << " " << current << " " << e->id() << endl;
+                return current;
+            }
+            NodeImpl *retval = 0;
+            if(deep && current->firstChild())
+                retval = getNamedItem(current->firstChild(), attr_id, name);
+            if(retval)
+            {
+                //kdDebug( 6030 ) << "got a return value " << retval << endl;
+                return retval;
+            }
+        }
+        current = current->nextSibling();
     }
     return 0;
 }

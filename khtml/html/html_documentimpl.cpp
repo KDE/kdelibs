@@ -65,12 +65,12 @@ HTMLDocumentImpl::HTMLDocumentImpl() : DocumentImpl()
 
 /* dynamic history stuff to be fixed later (pfeiffer)
     connect( KHTMLFactory::vLinks(), SIGNAL( inserted( const QString& )),
-	     SLOT( slotHistoryChanged() ));
+             SLOT( slotHistoryChanged() ));
     connect( KHTMLFactory::vLinks(), SIGNAL( removed( const QString& )),
-	     SLOT( slotHistoryChanged() ));
+             SLOT( slotHistoryChanged() ));
 */
     connect( KHTMLFactory::vLinks(), SIGNAL( cleared()),
-	     SLOT( slotHistoryChanged() ));
+             SLOT( slotHistoryChanged() ));
 }
 
 HTMLDocumentImpl::HTMLDocumentImpl(KHTMLView *v)
@@ -84,12 +84,12 @@ HTMLDocumentImpl::HTMLDocumentImpl(KHTMLView *v)
 
 /*
     connect( KHTMLFactory::vLinks(), SIGNAL( inserted( const QString& )),
-	     SLOT( slotHistoryChanged() ));
+             SLOT( slotHistoryChanged() ));
     connect( KHTMLFactory::vLinks(), SIGNAL( removed( const QString& )),
-	     SLOT( slotHistoryChanged() ));
+             SLOT( slotHistoryChanged() ));
 */
     connect( KHTMLFactory::vLinks(), SIGNAL( cleared()),
-	     SLOT( slotHistoryChanged() ));
+             SLOT( slotHistoryChanged() ));
 }
 
 HTMLDocumentImpl::~HTMLDocumentImpl()
@@ -113,10 +113,10 @@ HTMLElementImpl *HTMLDocumentImpl::body()
 {
     NodeImpl *de = documentElement();
     if (!de)
-	return 0;
+        return 0;
     NodeImpl *b = de->firstChild();
     while (b && b->id() != ID_BODY && b->id() != ID_FRAMESET)
-	b = b->nextSibling();
+        b = b->nextSibling();
     return static_cast<HTMLElementImpl *>(b);
 }
 
@@ -126,15 +126,15 @@ void HTMLDocumentImpl::setBody(HTMLElementImpl *_body)
     HTMLElementImpl *b = body();
     if ( !_body && !b ) return;
     if ( !_body )
-	documentElement()->removeChild( body(), exceptioncode );
+        documentElement()->removeChild( body(), exceptioncode );
     if ( !b )
-	documentElement()->appendChild( _body, exceptioncode );
+        documentElement()->appendChild( _body, exceptioncode );
     documentElement()->replaceChild( _body, body(), exceptioncode );
 }
 
 Tokenizer *HTMLDocumentImpl::createTokenizer()
 {
-    return new HTMLTokenizer(this,m_view);
+    return new HTMLTokenizer(docPtr(),m_view);
 }
 
 NodeListImpl *HTMLDocumentImpl::getElementsByName( const DOMString &elementName )
@@ -157,7 +157,7 @@ void HTMLDocumentImpl::detach()
 {
     NodeImpl *b = body();
     if (b)
-	b->dispatchHTMLEvent(EventImpl::UNLOAD_EVENT,false,false);
+        b->dispatchHTMLEvent(EventImpl::UNLOAD_EVENT,false,false);
 
     kdDebug( 6090 ) << "HTMLDocumentImpl::detach()" << endl;
     m_view = 0;
@@ -172,7 +172,7 @@ void HTMLDocumentImpl::slotFinishedParsing()
 
     NodeImpl *b = body();
     if (b)
-	b->dispatchHTMLEvent(EventImpl::LOAD_EVENT,false,false);
+        b->dispatchHTMLEvent(EventImpl::LOAD_EVENT,false,false);
 }
 
 bool HTMLDocumentImpl::childAllowed( NodeImpl *newChild )
@@ -194,7 +194,7 @@ QList<StyleSheetImpl> HTMLDocumentImpl::authorStyleSheets()
 void HTMLDocumentImpl::slotHistoryChanged()
 {
     if ( true || !m_render ) // disabled for now
-	return;
+        return;
 
     recalcStyle();
     m_render->repaint();
@@ -211,9 +211,9 @@ HTMLMapElementImpl* HTMLDocumentImpl::getMap(const DOMString& _url)
     QMapConstIterator<QString,HTMLMapElementImpl*> it = mapMap.find(s);
 
     if (it != mapMap.end())
-	return *it;
+        return *it;
     else
-	return 0;
+        return 0;
 }
 
 //-----------------------------------------------------------------------------
@@ -233,7 +233,7 @@ XHTMLDocumentImpl::~XHTMLDocumentImpl()
 
 Tokenizer *XHTMLDocumentImpl::createTokenizer()
 {
-    return new XMLTokenizer(this,m_view);
+    return new XMLTokenizer(docPtr(),m_view);
 }
 
 

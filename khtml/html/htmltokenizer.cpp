@@ -92,7 +92,7 @@ static const QChar textareaEnd [] = { '<','/','t','e','x','t','a','r','e','a','>
 
 // ----------------------------------------------------------------------------
 
-HTMLTokenizer::HTMLTokenizer(DOM::HTMLDocumentImpl *_doc, KHTMLView *_view)
+HTMLTokenizer::HTMLTokenizer(DOM::DocumentPtr *_doc, KHTMLView *_view)
 {
     view = _view;
     buffer = 0;
@@ -107,7 +107,7 @@ HTMLTokenizer::HTMLTokenizer(DOM::HTMLDocumentImpl *_doc, KHTMLView *_view)
     reset();
 }
 
-HTMLTokenizer::HTMLTokenizer(DOM::HTMLDocumentImpl *_doc, DOM::DocumentFragmentImpl *i)
+HTMLTokenizer::HTMLTokenizer(DOM::DocumentPtr *_doc, DOM::DocumentFragmentImpl *i)
 {
     view = 0;
     buffer = 0;
@@ -886,9 +886,9 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
                     else {
                         AttrImpl* a;
                         if(*buffer)
-                            a = new AttrImpl(parser->doc(), (int)*buffer);
+                            a = new AttrImpl(parser->docPtr(), (int)*buffer);
                         else
-                            a = new AttrImpl(parser->doc(), attrName);
+                            a = new AttrImpl(parser->docPtr(), attrName);
 
                         a->setValue("");
                         currToken.insertAttr(a);
@@ -944,9 +944,9 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
                         AttrImpl* a;
 
                         if(*buffer)
-                            a = new AttrImpl(parser->doc(), (int)*buffer);
+                            a = new AttrImpl(parser->docPtr(), (int)*buffer);
                         else
-                            a = new AttrImpl(parser->doc(), DOMString(attrName));
+                            a = new AttrImpl(parser->docPtr(), DOMString(attrName));
 
                         if(a->attrId || !attrName.isNull())
                         {
@@ -996,9 +996,9 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
                         // no quotes. Every space means end of value
                         AttrImpl* a;
                         if(*buffer)
-                            a = new AttrImpl(parser->doc(), (int)*buffer);
+                            a = new AttrImpl(parser->docPtr(), (int)*buffer);
                         else
-                            a = new AttrImpl(parser->doc(), DOMString(attrName));
+                            a = new AttrImpl(parser->docPtr(), DOMString(attrName));
 
                         a->setValue(DOMString(buffer+1, dest-buffer-1));
                         currToken.insertAttr(a);

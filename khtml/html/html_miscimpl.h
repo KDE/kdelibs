@@ -35,7 +35,7 @@ class HTMLCollection;
 class HTMLBaseFontElementImpl : public HTMLElementImpl
 {
 public:
-    HTMLBaseFontElementImpl(DocumentImpl *doc);
+    HTMLBaseFontElementImpl(DocumentPtr *doc);
 
     ~HTMLBaseFontElementImpl();
 
@@ -53,22 +53,22 @@ class HTMLCollectionImpl : public DomShared
     friend class DOM::HTMLCollection;
 public:
     enum Type {
-	// from HTMLDocument
-	DOC_IMAGES,    // all IMG elements in the document
-	DOC_APPLETS,   // all OBJECT and APPLET elements
-	DOC_FORMS,     // all FORMS
-	DOC_LINKS,     // all A _and_ AREA elements with a value for href
-	DOC_ANCHORS,      // all A elements with a value for name
-	// from HTMLTable, HTMLTableSection, HTMLTableRow
-	TABLE_ROWS,    // all rows in this table or tablesection
-	TABLE_TBODIES, // all TBODY elements in this table
-	TSECTION_ROWS, // all rows elements in this table section
-	TR_CELLS,      // all CELLS in this row
-	// from SELECT
-	SELECT_OPTIONS,
-	// from HTMLMap
-	MAP_AREAS,
-	DOC_ALL        // "all" elements
+        // from HTMLDocument
+        DOC_IMAGES,    // all IMG elements in the document
+        DOC_APPLETS,   // all OBJECT and APPLET elements
+        DOC_FORMS,     // all FORMS
+        DOC_LINKS,     // all A _and_ AREA elements with a value for href
+        DOC_ANCHORS,      // all A elements with a value for name
+        // from HTMLTable, HTMLTableSection, HTMLTableRow
+        TABLE_ROWS,    // all rows in this table or tablesection
+        TABLE_TBODIES, // all TBODY elements in this table
+        TSECTION_ROWS, // all rows elements in this table section
+        TR_CELLS,      // all CELLS in this row
+        // from SELECT
+        SELECT_OPTIONS,
+        // from HTMLMap
+        MAP_AREAS,
+        DOC_ALL        // "all" elements
     };
 
     HTMLCollectionImpl(NodeImpl *_base, int _tagId);
@@ -82,7 +82,7 @@ protected:
     virtual unsigned long calcLength(NodeImpl *current) const;
     virtual NodeImpl *getItem(NodeImpl *current, int index, int &pos) const;
     virtual NodeImpl *getNamedItem( NodeImpl *current, int attr_id,
-			    const DOMString &name ) const;
+                            const DOMString &name ) const;
    // the base node, the collection refers to
     NodeImpl *base;
     // The collection list the following elements

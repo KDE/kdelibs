@@ -50,26 +50,26 @@ class HTMLTableElementImpl : public HTMLElementImpl
 {
 public:
     enum Rules {
-	None    = 0x00,
-	RGroups = 0x01,
-	CGroups = 0x02,
-	Groups  = 0x03,
-	Rows    = 0x05,
-	Cols    = 0x0a,
-	All     = 0x0f
+        None    = 0x00,
+        RGroups = 0x01,
+        CGroups = 0x02,
+        Groups  = 0x03,
+        Rows    = 0x05,
+        Cols    = 0x0a,
+        All     = 0x0f
     };
     enum Frame {
-	Void   = 0x00,
-	Above  = 0x01,
-	Below  = 0x02,
-	Lhs    = 0x04,
-	Rhs    = 0x08,
-	Hsides = 0x03,
-	Vsides = 0x0c,
-	Box    = 0x0f
+        Void   = 0x00,
+        Above  = 0x01,
+        Below  = 0x02,
+        Lhs    = 0x04,
+        Rhs    = 0x08,
+        Hsides = 0x03,
+        Vsides = 0x0c,
+        Box    = 0x0f
     };
 
-    HTMLTableElementImpl(DocumentImpl *doc);
+    HTMLTableElementImpl(DocumentPtr *doc);
     ~HTMLTableElementImpl();
 
     virtual const DOMString nodeName() const;
@@ -122,9 +122,9 @@ class HTMLTablePartElementImpl : public HTMLElementImpl
 
 {
 public:
-    HTMLTablePartElementImpl(DocumentImpl *doc)
-	: HTMLElementImpl(doc)
-	{ }
+    HTMLTablePartElementImpl(DocumentPtr *doc)
+        : HTMLElementImpl(doc)
+        { }
 
     virtual void parseAttribute(AttrImpl *attr);
 
@@ -136,7 +136,7 @@ public:
 class HTMLTableSectionElementImpl : public HTMLTablePartElementImpl
 {
 public:
-    HTMLTableSectionElementImpl(DocumentImpl *doc, ushort tagid);
+    HTMLTableSectionElementImpl(DocumentPtr *doc, ushort tagid);
 
     ~HTMLTableSectionElementImpl();
 
@@ -161,7 +161,7 @@ protected:
 class HTMLTableRowElementImpl : public HTMLTablePartElementImpl
 {
 public:
-    HTMLTableRowElementImpl(DocumentImpl *doc);
+    HTMLTableRowElementImpl(DocumentPtr *doc);
 
     ~HTMLTableRowElementImpl();
 
@@ -189,7 +189,7 @@ protected:
 class HTMLTableCellElementImpl : public HTMLTablePartElementImpl
 {
 public:
-    HTMLTableCellElementImpl(DocumentImpl *doc, int tagId);
+    HTMLTableCellElementImpl(DocumentPtr *doc, int tagId);
 
     ~HTMLTableCellElementImpl();
 
@@ -226,7 +226,7 @@ protected:
 class HTMLTableColElementImpl : public HTMLElementImpl
 {
 public:
-    HTMLTableColElementImpl(DocumentImpl *doc, ushort i);
+    HTMLTableColElementImpl(DocumentPtr *doc, ushort i);
 
     ~HTMLTableColElementImpl();
 
@@ -257,7 +257,7 @@ protected:
 class HTMLTableCaptionElementImpl : public HTMLTablePartElementImpl
 {
 public:
-    HTMLTableCaptionElementImpl(DocumentImpl *doc);
+    HTMLTableCaptionElementImpl(DocumentPtr *doc);
 
     ~HTMLTableCaptionElementImpl();
 

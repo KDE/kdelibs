@@ -38,8 +38,8 @@ namespace DOM {
 class CharacterDataImpl : public NodeWParentImpl
 {
 public:
-    CharacterDataImpl(DocumentImpl *doc, const DOMString &_text);
-    CharacterDataImpl(DocumentImpl *doc);
+    CharacterDataImpl(DocumentPtr *doc, const DOMString &_text);
+    CharacterDataImpl(DocumentPtr *doc);
     virtual ~CharacterDataImpl();
 
     DOMString data() const;
@@ -69,8 +69,8 @@ protected:
 class CommentImpl : public CharacterDataImpl
 {
 public:
-    CommentImpl(DocumentImpl *doc, const DOMString &_text);
-    CommentImpl(DocumentImpl *doc);
+    CommentImpl(DocumentPtr *doc, const DOMString &_text);
+    CommentImpl(DocumentPtr *doc);
     virtual ~CommentImpl();
 
     virtual const DOMString nodeName() const;
@@ -86,8 +86,8 @@ public:
 class TextImpl : public CharacterDataImpl
 {
 public:
-    TextImpl(DocumentImpl *impl, const DOMString &_text);
-    TextImpl(DocumentImpl *impl);
+    TextImpl(DocumentPtr *impl, const DOMString &_text);
+    TextImpl(DocumentPtr *impl);
     virtual ~TextImpl();
 
     virtual const DOMString nodeName() const;
@@ -106,8 +106,8 @@ public:
     virtual void applyChanges(bool top=true, bool force=true);
 
     virtual bool prepareMouseEvent( int _x, int _y,
-				    int _tx, int _ty,
-				    MouseEvent *ev);
+                                    int _tx, int _ty,
+                                    MouseEvent *ev);
 
     virtual khtml::FindSelectionResult findSelectionNode( int _x, int _y, int _tx, int _ty,
                                                    DOM::Node & node, int & offset );
@@ -123,8 +123,8 @@ class CDATASectionImpl : public TextImpl
 {
 // ### should these have id==ID_TEXT
 public:
-    CDATASectionImpl(DocumentImpl *impl, const DOMString &_text);
-    CDATASectionImpl(DocumentImpl *impl);
+    CDATASectionImpl(DocumentPtr *impl, const DOMString &_text);
+    CDATASectionImpl(DocumentPtr *impl);
     virtual ~CDATASectionImpl();
     virtual const DOMString nodeName() const;
     virtual unsigned short nodeType() const;

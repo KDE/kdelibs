@@ -193,10 +193,10 @@ public:
     void setPaintDevice( QPaintDevice *dev );
 
     enum ParseMode {
-	Unknown,
-	Compat,
-	Transitional,
-	Strict
+        Unknown,
+        Compat,
+        Transitional,
+        Strict
     };
     void determineParseMode( const QString &str );
     void setParseMode( ParseMode m ) { pMode = m; }
@@ -219,8 +219,8 @@ public:
 
     // overrides NodeImpl
     virtual bool prepareMouseEvent( int x, int y,
-				    int _tx, int _ty,
-				    MouseEvent *ev );
+                                    int _tx, int _ty,
+                                    MouseEvent *ev );
 
     virtual bool childAllowed( NodeImpl *newChild );
     virtual bool childTypeAllowed( unsigned short nodeType );
@@ -237,7 +237,7 @@ public:
     void setFocusNode(ElementImpl *);
 
     virtual DocumentImpl *getDocument()
-	{ return this; }
+        { return this; }
 
     void attachNodeIterator(NodeIteratorImpl *ni);
     void detachNodeIterator(NodeIteratorImpl *ni);
@@ -297,7 +297,7 @@ protected:
 class DocumentFragmentImpl : public NodeBaseImpl
 {
 public:
-    DocumentFragmentImpl(DocumentImpl *doc);
+    DocumentFragmentImpl(DocumentPtr *doc);
     DocumentFragmentImpl(const DocumentFragmentImpl &other);
 
     virtual const DOMString nodeName() const;
@@ -312,7 +312,7 @@ protected:
 class DocumentTypeImpl : public NodeImpl
 {
 public:
-    DocumentTypeImpl(DocumentImpl *doc);
+    DocumentTypeImpl(DocumentPtr *doc);
     ~DocumentTypeImpl();
 
     virtual const DOMString name() const;

@@ -55,7 +55,7 @@ class HTMLOptionElementImpl;
 class HTMLFormElementImpl : public HTMLElementImpl
 {
 public:
-    HTMLFormElementImpl(DocumentImpl *doc);
+    HTMLFormElementImpl(DocumentPtr *doc);
     virtual ~HTMLFormElementImpl();
 
     virtual const DOMString nodeName() const { return "FORM"; }
@@ -123,8 +123,8 @@ class HTMLGenericFormElementImpl : public HTMLElementImpl
     friend class khtml::RenderFormElement;
 
 public:
-    HTMLGenericFormElementImpl(DocumentImpl *doc);
-    HTMLGenericFormElementImpl(DocumentImpl *doc, HTMLFormElementImpl *f);
+    HTMLGenericFormElementImpl(DocumentPtr *doc);
+    HTMLGenericFormElementImpl(DocumentPtr *doc, HTMLFormElementImpl *f);
     virtual ~HTMLGenericFormElementImpl();
 
     HTMLFormElementImpl *form() { return m_form; }
@@ -175,8 +175,8 @@ protected:
 class HTMLButtonElementImpl : public HTMLGenericFormElementImpl
 {
 public:
-    HTMLButtonElementImpl(DocumentImpl *doc);
-    HTMLButtonElementImpl(DocumentImpl *doc, HTMLFormElementImpl *f);
+    HTMLButtonElementImpl(DocumentPtr *doc);
+    HTMLButtonElementImpl(DocumentPtr *doc, HTMLFormElementImpl *f);
 
     virtual ~HTMLButtonElementImpl();
 
@@ -216,8 +216,8 @@ protected:
 class HTMLFieldSetElementImpl : public HTMLGenericFormElementImpl
 {
 public:
-    HTMLFieldSetElementImpl(DocumentImpl *doc);
-    HTMLFieldSetElementImpl(DocumentImpl *doc, HTMLFormElementImpl *f);
+    HTMLFieldSetElementImpl(DocumentPtr *doc);
+    HTMLFieldSetElementImpl(DocumentPtr *doc, HTMLFormElementImpl *f);
 
     virtual ~HTMLFieldSetElementImpl();
 
@@ -247,8 +247,8 @@ public:
         ISINDEX
     };
 
-    HTMLInputElementImpl(DocumentImpl *doc);
-    HTMLInputElementImpl(DocumentImpl *doc, HTMLFormElementImpl *f);
+    HTMLInputElementImpl(DocumentPtr *doc);
+    HTMLInputElementImpl(DocumentPtr *doc, HTMLFormElementImpl *f);
     virtual ~HTMLInputElementImpl();
 
     virtual const DOMString nodeName() const;
@@ -317,7 +317,7 @@ private:
 class HTMLLabelElementImpl : public HTMLElementImpl
 {
 public:
-    HTMLLabelElementImpl(DocumentImpl *doc);
+    HTMLLabelElementImpl(DocumentPtr *doc);
     virtual ~HTMLLabelElementImpl();
 
     virtual const DOMString nodeName() const;
@@ -341,8 +341,8 @@ public:
 class HTMLLegendElementImpl : public HTMLGenericFormElementImpl
 {
 public:
-    HTMLLegendElementImpl(DocumentImpl *doc);
-    HTMLLegendElementImpl(DocumentImpl *doc, HTMLFormElementImpl *f);
+    HTMLLegendElementImpl(DocumentPtr *doc);
+    HTMLLegendElementImpl(DocumentPtr *doc, HTMLFormElementImpl *f);
     virtual ~HTMLLegendElementImpl();
 
     virtual const DOMString nodeName() const;
@@ -358,8 +358,8 @@ public:
 class HTMLSelectElementImpl : public HTMLGenericFormElementImpl
 {
 public:
-    HTMLSelectElementImpl(DocumentImpl *doc);
-    HTMLSelectElementImpl(DocumentImpl *doc, HTMLFormElementImpl *f);
+    HTMLSelectElementImpl(DocumentPtr *doc);
+    HTMLSelectElementImpl(DocumentPtr *doc, HTMLFormElementImpl *f);
 
     virtual const DOMString nodeName() const { return "SELECT"; }
     virtual ushort id() const;
@@ -418,8 +418,8 @@ protected:
 class HTMLOptGroupElementImpl : public HTMLGenericFormElementImpl
 {
 public:
-    HTMLOptGroupElementImpl(DocumentImpl *doc);
-    HTMLOptGroupElementImpl(DocumentImpl *doc, HTMLFormElementImpl *f);
+    HTMLOptGroupElementImpl(DocumentPtr *doc);
+    HTMLOptGroupElementImpl(DocumentPtr *doc, HTMLFormElementImpl *f);
     virtual ~HTMLOptGroupElementImpl();
 
     virtual const DOMString nodeName() const { return "OPTGROUP"; }
@@ -442,8 +442,8 @@ public:
 class HTMLOptionElementImpl : public HTMLGenericFormElementImpl
 {
 public:
-    HTMLOptionElementImpl(DocumentImpl *doc);
-    HTMLOptionElementImpl(DocumentImpl *doc, HTMLFormElementImpl *f);
+    HTMLOptionElementImpl(DocumentPtr *doc);
+    HTMLOptionElementImpl(DocumentPtr *doc, HTMLFormElementImpl *f);
 
     virtual const DOMString nodeName() const;
     virtual ushort id() const;
@@ -481,8 +481,8 @@ public:
         ta_Physical
     };
 
-    HTMLTextAreaElementImpl(DocumentImpl *doc);
-    HTMLTextAreaElementImpl(DocumentImpl *doc, HTMLFormElementImpl *f);
+    HTMLTextAreaElementImpl(DocumentPtr *doc);
+    HTMLTextAreaElementImpl(DocumentPtr *doc, HTMLFormElementImpl *f);
 
     virtual const DOMString nodeName() const { return "TEXTAREA"; }
     virtual ushort id() const;
@@ -527,8 +527,8 @@ protected:
 class HTMLIsIndexElementImpl : public HTMLInputElementImpl
 {
 public:
-    HTMLIsIndexElementImpl(DocumentImpl *doc);
-    HTMLIsIndexElementImpl(DocumentImpl *doc, HTMLFormElementImpl *f);
+    HTMLIsIndexElementImpl(DocumentPtr *doc);
+    HTMLIsIndexElementImpl(DocumentPtr *doc, HTMLFormElementImpl *f);
 
     ~HTMLIsIndexElementImpl();
 

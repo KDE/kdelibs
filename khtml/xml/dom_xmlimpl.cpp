@@ -30,7 +30,7 @@
 
 using namespace DOM;
 
-EntityImpl::EntityImpl(DocumentImpl *doc) : NodeBaseImpl(doc)
+EntityImpl::EntityImpl(DocumentPtr *doc) : NodeBaseImpl(doc)
 {
     m_publicId = 0;
     m_systemId = 0;
@@ -38,27 +38,27 @@ EntityImpl::EntityImpl(DocumentImpl *doc) : NodeBaseImpl(doc)
     m_name = 0;
 }
 
-EntityImpl::EntityImpl(DocumentImpl *doc, DOMString _name) : NodeBaseImpl(doc)
+EntityImpl::EntityImpl(DocumentPtr *doc, DOMString _name) : NodeBaseImpl(doc)
 {
     m_publicId = 0;
     m_systemId = 0;
     m_notationName = 0;
     m_name = _name.implementation();
     if (m_name)
-	m_name->ref();
+        m_name->ref();
 }
 
-EntityImpl::EntityImpl(DocumentImpl *doc, DOMString _publicId, DOMString _systemId, DOMString _notationName) : NodeBaseImpl(doc)
+EntityImpl::EntityImpl(DocumentPtr *doc, DOMString _publicId, DOMString _systemId, DOMString _notationName) : NodeBaseImpl(doc)
 {
     m_publicId = _publicId.implementation();
     if (m_publicId)
-	m_publicId->ref();
+        m_publicId->ref();
     m_systemId = _systemId.implementation();
     if (m_systemId)
-	m_systemId->ref();
+        m_systemId->ref();
     m_notationName = _notationName.implementation();
     if (m_notationName)
-	m_notationName->ref();
+        m_notationName->ref();
     m_name = 0;
 }
 
@@ -66,13 +66,13 @@ EntityImpl::EntityImpl(DocumentImpl *doc, DOMString _publicId, DOMString _system
 EntityImpl::~EntityImpl()
 {
     if (m_publicId)
-	m_publicId->deref();
+        m_publicId->deref();
     if (m_systemId)
-	m_systemId->deref();
+        m_systemId->deref();
     if (m_notationName)
-	m_notationName->deref();
+        m_notationName->deref();
     if (m_name)
- 	m_name->deref();
+        m_name->deref();
 }
 
 const DOMString EntityImpl::nodeName() const
@@ -104,16 +104,16 @@ DOMString EntityImpl::notationName() const
 bool EntityImpl::childTypeAllowed( unsigned short type )
 {
     switch (type) {
-	case Node::ELEMENT_NODE:
-	case Node::PROCESSING_INSTRUCTION_NODE:
-	case Node::COMMENT_NODE:
-	case Node::TEXT_NODE:
-	case Node::CDATA_SECTION_NODE:
-	case Node::ENTITY_REFERENCE_NODE:
-	    return true;
-	    break;
-	default:
-	    return false;
+        case Node::ELEMENT_NODE:
+        case Node::PROCESSING_INSTRUCTION_NODE:
+        case Node::COMMENT_NODE:
+        case Node::TEXT_NODE:
+        case Node::CDATA_SECTION_NODE:
+        case Node::ENTITY_REFERENCE_NODE:
+            return true;
+            break;
+        default:
+            return false;
     }
 }
 
@@ -125,22 +125,22 @@ NodeImpl *EntityImpl::cloneNode ( bool /*deep*/, int &exceptioncode )
 
 // -------------------------------------------------------------------------
 
-EntityReferenceImpl::EntityReferenceImpl(DocumentImpl *doc) : NodeBaseImpl(doc)
+EntityReferenceImpl::EntityReferenceImpl(DocumentPtr *doc) : NodeBaseImpl(doc)
 {
     m_entityName = 0;
 }
 
-EntityReferenceImpl::EntityReferenceImpl(DocumentImpl *doc, DOMStringImpl *_entityName) : NodeBaseImpl(doc)
+EntityReferenceImpl::EntityReferenceImpl(DocumentPtr *doc, DOMStringImpl *_entityName) : NodeBaseImpl(doc)
 {
     m_entityName = _entityName;
     if (m_entityName)
-	m_entityName->ref();
+        m_entityName->ref();
 }
 
 EntityReferenceImpl::~EntityReferenceImpl()
 {
     if (m_entityName)
-	m_entityName->deref();
+        m_entityName->deref();
 }
 
 const DOMString EntityReferenceImpl::nodeName() const
@@ -157,59 +157,59 @@ unsigned short EntityReferenceImpl::nodeType() const
 bool EntityReferenceImpl::childTypeAllowed( unsigned short type )
 {
     switch (type) {
-	case Node::ELEMENT_NODE:
-	case Node::PROCESSING_INSTRUCTION_NODE:
-	case Node::COMMENT_NODE:
-	case Node::TEXT_NODE:
-	case Node::CDATA_SECTION_NODE:
-	case Node::ENTITY_REFERENCE_NODE:
-	    return true;
-	    break;
-	default:
-	    return false;
+        case Node::ELEMENT_NODE:
+        case Node::PROCESSING_INSTRUCTION_NODE:
+        case Node::COMMENT_NODE:
+        case Node::TEXT_NODE:
+        case Node::CDATA_SECTION_NODE:
+        case Node::ENTITY_REFERENCE_NODE:
+            return true;
+            break;
+        default:
+            return false;
     }
 }
 
 NodeImpl *EntityReferenceImpl::cloneNode ( bool deep, int &exceptioncode )
 {
-    EntityReferenceImpl *clone = new EntityReferenceImpl(document,m_entityName);
+    EntityReferenceImpl *clone = new EntityReferenceImpl(docPtr(),m_entityName);
     // ### make sure children are readonly
     // ### since we are a reference, should we clone children anyway (even if not deep?)
     if (deep)
-	cloneChildNodes(clone,exceptioncode);
+        cloneChildNodes(clone,exceptioncode);
     return clone;
 }
 
 // -------------------------------------------------------------------------
 
-NotationImpl::NotationImpl(DocumentImpl *doc) : NodeBaseImpl(doc)
+NotationImpl::NotationImpl(DocumentPtr *doc) : NodeBaseImpl(doc)
 {
     m_publicId = 0;
     m_systemId = 0;
     m_name = 0;
 }
 
-NotationImpl::NotationImpl(DocumentImpl *doc, DOMString _name, DOMString _publicId, DOMString _systemId) : NodeBaseImpl(doc)
+NotationImpl::NotationImpl(DocumentPtr *doc, DOMString _name, DOMString _publicId, DOMString _systemId) : NodeBaseImpl(doc)
 {
     m_name = _name.implementation();
     if (m_name)
-	m_name->ref();
+        m_name->ref();
     m_publicId = _publicId.implementation();
     if (m_publicId)
-	m_publicId->ref();
+        m_publicId->ref();
     m_systemId = _systemId.implementation();
     if (m_systemId)
-	m_systemId->ref();
+        m_systemId->ref();
 }
 
 NotationImpl::~NotationImpl()
 {
     if (m_name)
-	m_name->deref();
+        m_name->deref();
     if (m_publicId)
-	m_publicId->deref();
+        m_publicId->deref();
     if (m_systemId)
-	m_systemId->deref();
+        m_systemId->deref();
 }
 
 const DOMString NotationImpl::nodeName() const
@@ -246,28 +246,28 @@ NodeImpl *NotationImpl::cloneNode ( bool /*deep*/, int &exceptioncode )
 
 // -------------------------------------------------------------------------
 
-ProcessingInstructionImpl::ProcessingInstructionImpl(DocumentImpl *doc) : NodeBaseImpl(doc)
+ProcessingInstructionImpl::ProcessingInstructionImpl(DocumentPtr *doc) : NodeBaseImpl(doc)
 {
     m_target = 0;
     m_data = 0;
 }
 
-ProcessingInstructionImpl::ProcessingInstructionImpl(DocumentImpl *doc, DOMString _target, DOMString _data) : NodeBaseImpl(doc)
+ProcessingInstructionImpl::ProcessingInstructionImpl(DocumentPtr *doc, DOMString _target, DOMString _data) : NodeBaseImpl(doc)
 {
     m_target = _target.implementation();
     if (m_target)
-	m_target->ref();
+        m_target->ref();
     m_data = _data.implementation();
     if (m_data)
-	m_data->ref();
+        m_data->ref();
 }
 
 ProcessingInstructionImpl::~ProcessingInstructionImpl()
 {
     if (m_target)
-	m_target->deref();
+        m_target->deref();
     if (m_data)
-	m_data->deref();	
+        m_data->deref();
 }
 
 const DOMString ProcessingInstructionImpl::nodeName() const
@@ -298,10 +298,10 @@ DOMString ProcessingInstructionImpl::data() const
 void ProcessingInstructionImpl::setData( const DOMString &_data )
 {
     if (m_data)
-	m_data->deref();
+        m_data->deref();
     m_data = _data.implementation();
     if (m_data)
-	m_data->ref();
+        m_data->ref();
 }
 
 // DOM Section 1.1.1
@@ -312,7 +312,7 @@ bool ProcessingInstructionImpl::childTypeAllowed( unsigned short /*type*/ )
 
 NodeImpl *ProcessingInstructionImpl::cloneNode ( bool /*deep*/, int &/*exceptioncode*/ )
 {
-    return new ProcessingInstructionImpl(document,m_target,m_data);
+    return new ProcessingInstructionImpl(docPtr(),m_target,m_data);
 }
 
 

@@ -3,7 +3,7 @@
  *
  * Copyright (C) 1999 Lars Knoll (knoll@kde.org)
  *           (C) 1999 Antti Koivisto (koivisto@kde.org)
- *	     (C) 2000 Simon Hausmann <hausmann@kde.org>
+ *           (C) 2000 Simon Hausmann <hausmann@kde.org>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -34,7 +34,7 @@ class DOMString;
 class HTMLAnchorElementImpl : public HTMLElementImpl
 {
 public:
-    HTMLAnchorElementImpl(DocumentImpl *doc);
+    HTMLAnchorElementImpl(DocumentPtr *doc);
 
     virtual ~HTMLAnchorElementImpl();
 
@@ -51,8 +51,8 @@ public:
 
     virtual void parseAttribute(AttrImpl *attr);
     virtual bool prepareMouseEvent( int x, int y,
-				    int _tx, int _ty,
-				    MouseEvent *ev);
+                                    int _tx, int _ty,
+                                    MouseEvent *ev);
 protected:
     DOMStringImpl *href;
     DOMStringImpl *target;
@@ -66,7 +66,7 @@ class HTMLBRElementImpl : public HTMLElementImpl
 {
 public:
 
-    HTMLBRElementImpl(DocumentImpl *doc);
+    HTMLBRElementImpl(DocumentPtr *doc);
 
     ~HTMLBRElementImpl();
 
@@ -86,7 +86,7 @@ public:
 class HTMLFontElementImpl : public HTMLElementImpl
 {
 public:
-    HTMLFontElementImpl(DocumentImpl *doc);
+    HTMLFontElementImpl(DocumentPtr *doc);
 
     ~HTMLFontElementImpl();
 
@@ -105,7 +105,7 @@ public:
 class HTMLModElementImpl : public HTMLElementImpl
 {
 public:
-    HTMLModElementImpl(DocumentImpl *doc, ushort tagid);
+    HTMLModElementImpl(DocumentPtr *doc, ushort tagid);
 
     ~HTMLModElementImpl();
 
@@ -126,7 +126,7 @@ class DOMString;
 class HTMLQuoteElementImpl : public HTMLElementImpl
 {
 public:
-    HTMLQuoteElementImpl(DocumentImpl *doc);
+    HTMLQuoteElementImpl(DocumentPtr *doc);
 
     ~HTMLQuoteElementImpl();
 

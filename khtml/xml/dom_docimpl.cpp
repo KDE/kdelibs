@@ -92,15 +92,16 @@ bool DOMImplementationImpl::hasFeature ( const DOMString &feature, const DOMStri
     QString lower = feature.string().lower();
     if ((lower == "html" || lower == "xml") &&
         (version == "1.0" || version == "" || version.isNull()))
-	return true;
+        return true;
     else
-	return false;
+        return false;
 }
 
 // ------------------------------------------------------------------------
 
-DocumentImpl::DocumentImpl() : NodeBaseImpl(0)
+DocumentImpl::DocumentImpl() : NodeBaseImpl( new DocumentPtr() )
 {
+    document->doc = this;
     m_styleSelector = 0;
     m_view = 0;
     m_docLoader = new DocLoader();
@@ -109,7 +110,7 @@ DocumentImpl::DocumentImpl() : NodeBaseImpl(0)
     m_sheet = 0;
     m_elemSheet = 0;
     m_tokenizer = 0;
-    m_doctype = new DocumentTypeImpl(this);
+    m_doctype = new DocumentTypeImpl( docPtr() );
     m_doctype->ref();
     m_implementation = new DOMImplementationImpl();
     m_implementation->ref();
@@ -125,8 +126,9 @@ DocumentImpl::DocumentImpl() : NodeBaseImpl(0)
     m_defaultView->ref();
 }
 
-DocumentImpl::DocumentImpl(KHTMLView *v) : NodeBaseImpl(0)
+DocumentImpl::DocumentImpl(KHTMLView *v) : NodeBaseImpl( new DocumentPtr() )
 {
+    document->doc = this;
     m_styleSelector = 0;
     m_view = v;
     m_docLoader = new DocLoader();
@@ -135,7 +137,7 @@ DocumentImpl::DocumentImpl(KHTMLView *v) : NodeBaseImpl(0)
     m_sheet = 0;
     m_elemSheet = 0;
     m_tokenizer = 0;
-    m_doctype = new DocumentTypeImpl(this);
+    m_doctype = new DocumentTypeImpl( docPtr() );
     m_doctype->ref();
     m_implementation = new DOMImplementationImpl();
     m_implementation->ref();
@@ -153,23 +155,24 @@ DocumentImpl::DocumentImpl(KHTMLView *v) : NodeBaseImpl(0)
 
 DocumentImpl::~DocumentImpl()
 {
+    document->doc = 0;
     delete m_sheet;
     delete m_styleSelector;
     delete m_docLoader;
     if (m_elemSheet )
-	m_elemSheet->deref();
+        m_elemSheet->deref();
     if (m_tokenizer)
-	delete m_tokenizer;
+        delete m_tokenizer;
     m_doctype->deref();
     m_implementation->deref();
     delete m_paintDeviceMetrics;
 
     if (m_elementNames) {
-	unsigned short id;
-	for (id = 0; id < m_elementNameCount; id++) {
-	    m_elementNames[id]->deref();
-	}
-	delete [] m_elementNames;
+        unsigned short id;
+        for (id = 0; id < m_elementNameCount; id++) {
+            m_elementNames[id]->deref();
+        }
+        delete [] m_elementNames;
     }
     m_defaultView->deref();
 }
@@ -194,7 +197,7 @@ ElementImpl *DocumentImpl::documentElement() const
 
 ElementImpl *DocumentImpl::createElement( const DOMString &name )
 {
-    return new XMLElementImpl(this,name.implementation());
+    return new XMLElementImpl( document, name.implementation() );
 }
 
 ElementImpl *DocumentImpl::createElementNS ( const DOMString &_namespaceURI, const DOMString &_qualifiedName )
@@ -202,12 +205,12 @@ ElementImpl *DocumentImpl::createElementNS ( const DOMString &_namespaceURI, con
     ElementImpl *e = 0;
     // ### somehow set the namespace for html elements to http://www.w3.org/1999/xhtml ?
     if (_namespaceURI == "http://www.w3.org/1999/xhtml") {
-	QString qName = _qualifiedName.string();
-	int colonPos = qName.find(':',0);
-	e = createHTMLElement(colonPos ? qName.mid(colonPos+1) : qName);
+        QString qName = _qualifiedName.string();
+        int colonPos = qName.find(':',0);
+        e = createHTMLElement(colonPos ? qName.mid(colonPos+1) : qName);
     }
     if (!e)
-	e = new XMLElementImpl(this,_qualifiedName.implementation(),_namespaceURI.implementation());
+        e = new XMLElementImpl( document, _qualifiedName.implementation(), _namespaceURI.implementation() );
     return e;
 }
 
@@ -219,216 +222,216 @@ ElementImpl *DocumentImpl::createHTMLElement( const DOMString &name )
     switch(id)
     {
     case ID_HTML:
-	n = new HTMLHtmlElementImpl(this);
-	break;
+        n = new HTMLHtmlElementImpl(docPtr());
+        break;
     case ID_HEAD:
-	n = new HTMLHeadElementImpl(this);
-	break;
+        n = new HTMLHeadElementImpl(docPtr());
+        break;
     case ID_BODY:
-	n = new HTMLBodyElementImpl(this);
-	break;
+        n = new HTMLBodyElementImpl(docPtr());
+        break;
 
 // head elements
     case ID_BASE:
-	n = new HTMLBaseElementImpl(this);
-	break;
+        n = new HTMLBaseElementImpl(docPtr());
+        break;
     case ID_LINK:
-	n = new HTMLLinkElementImpl(this);
-	break;
+        n = new HTMLLinkElementImpl(docPtr());
+        break;
     case ID_META:
-	n = new HTMLMetaElementImpl(this);
-	break;
+        n = new HTMLMetaElementImpl(docPtr());
+        break;
     case ID_STYLE:
-	n = new HTMLStyleElementImpl(this);
-	break;
+        n = new HTMLStyleElementImpl(docPtr());
+        break;
     case ID_TITLE:
-	n = new HTMLTitleElementImpl(this);
-	break;
+        n = new HTMLTitleElementImpl(docPtr());
+        break;
 
 // frames
     case ID_FRAME:
-	n = new HTMLFrameElementImpl(this);
-	break;
+        n = new HTMLFrameElementImpl(docPtr());
+        break;
     case ID_FRAMESET:
-	n = new HTMLFrameSetElementImpl(this);
-	break;
+        n = new HTMLFrameSetElementImpl(docPtr());
+        break;
     case ID_IFRAME:
-	n = new HTMLIFrameElementImpl(this);
-	break;
+        n = new HTMLIFrameElementImpl(docPtr());
+        break;
 
 // form elements
 // ### FIXME: we need a way to set form dependency after we have made the form elements
     case ID_FORM:
-	    n = new HTMLFormElementImpl(this);
-	break;
+            n = new HTMLFormElementImpl(docPtr());
+        break;
     case ID_BUTTON:
-            n = new HTMLButtonElementImpl(this);
-	break;
+            n = new HTMLButtonElementImpl(docPtr());
+        break;
     case ID_FIELDSET:
-            n = new HTMLFieldSetElementImpl(this);
-	break;
+            n = new HTMLFieldSetElementImpl(docPtr());
+        break;
     case ID_INPUT:
-            n = new HTMLInputElementImpl(this);
-	break;
+            n = new HTMLInputElementImpl(docPtr());
+        break;
     case ID_ISINDEX:
-	    n = new HTMLIsIndexElementImpl(this);
-	break;
+            n = new HTMLIsIndexElementImpl(docPtr());
+        break;
     case ID_LABEL:
-            n = new HTMLLabelElementImpl(this);
-	break;
+            n = new HTMLLabelElementImpl(docPtr());
+        break;
     case ID_LEGEND:
-            n = new HTMLLegendElementImpl(this);
-	break;
+            n = new HTMLLegendElementImpl(docPtr());
+        break;
     case ID_OPTGROUP:
-            n = new HTMLOptGroupElementImpl(this);
-	break;
+            n = new HTMLOptGroupElementImpl(docPtr());
+        break;
     case ID_OPTION:
-            n = new HTMLOptionElementImpl(this);
-	break;
+            n = new HTMLOptionElementImpl(docPtr());
+        break;
     case ID_SELECT:
-            n = new HTMLSelectElementImpl(this);
-	break;
+            n = new HTMLSelectElementImpl(docPtr());
+        break;
     case ID_TEXTAREA:
-            n = new HTMLTextAreaElementImpl(this);
-	break;
+            n = new HTMLTextAreaElementImpl(docPtr());
+        break;
 
 // lists
     case ID_DL:
-	n = new HTMLDListElementImpl(this);
-	break;
+        n = new HTMLDListElementImpl(docPtr());
+        break;
     case ID_DD:
-	n = new HTMLGenericElementImpl(this, id);
-	break;
+        n = new HTMLGenericElementImpl(docPtr(), id);
+        break;
     case ID_DT:
-	n = new HTMLGenericElementImpl(this, id);
-	break;
+        n = new HTMLGenericElementImpl(docPtr(), id);
+        break;
     case ID_UL:
-	n = new HTMLUListElementImpl(this);
-	break;
+        n = new HTMLUListElementImpl(docPtr());
+        break;
     case ID_OL:
-	n = new HTMLOListElementImpl(this);
-	break;
+        n = new HTMLOListElementImpl(docPtr());
+        break;
     case ID_DIR:
-	n = new HTMLDirectoryElementImpl(this);
-	break;
+        n = new HTMLDirectoryElementImpl(docPtr());
+        break;
     case ID_MENU:
-	n = new HTMLMenuElementImpl(this);
-	break;
+        n = new HTMLMenuElementImpl(docPtr());
+        break;
     case ID_LI:
-	n = new HTMLLIElementImpl(this);
-	break;
+        n = new HTMLLIElementImpl(docPtr());
+        break;
 
 // formatting elements (block)
     case ID_BLOCKQUOTE:
-	n = new HTMLBlockquoteElementImpl(this);
-	break;
+        n = new HTMLBlockquoteElementImpl(docPtr());
+        break;
     case ID_DIV:
-	n = new HTMLDivElementImpl(this);
-	break;
+        n = new HTMLDivElementImpl(docPtr());
+        break;
     case ID_H1:
     case ID_H2:
     case ID_H3:
     case ID_H4:
     case ID_H5:
     case ID_H6:
-	n = new HTMLHeadingElementImpl(this, id);
-	break;
+        n = new HTMLHeadingElementImpl(docPtr(), id);
+        break;
     case ID_HR:
-	n = new HTMLHRElementImpl(this);
-	break;
+        n = new HTMLHRElementImpl(docPtr());
+        break;
     case ID_P:
-	n = new HTMLParagraphElementImpl(this);
-	break;
+        n = new HTMLParagraphElementImpl(docPtr());
+        break;
     case ID_PRE:
-	n = new HTMLPreElementImpl(this);
-	break;
+        n = new HTMLPreElementImpl(docPtr());
+        break;
 
 // font stuff
     case ID_BASEFONT:
-	n = new HTMLBaseFontElementImpl(this);
-	break;
+        n = new HTMLBaseFontElementImpl(docPtr());
+        break;
     case ID_FONT:
-	n = new HTMLFontElementImpl(this);
-	break;
+        n = new HTMLFontElementImpl(docPtr());
+        break;
 
 // ins/del
     case ID_DEL:
     case ID_INS:
-	n = new HTMLModElementImpl(this, id);
-	break;
+        n = new HTMLModElementImpl(docPtr(), id);
+        break;
 
 // anchor
     case ID_A:
-	n = new HTMLAnchorElementImpl(this);
-	break;
+        n = new HTMLAnchorElementImpl(docPtr());
+        break;
 
 // images
     case ID_IMG:
-	n = new HTMLImageElementImpl(this);
-	break;
+        n = new HTMLImageElementImpl(docPtr());
+        break;
     case ID_MAP:
-	n = new HTMLMapElementImpl(this);
-	/*n = map;*/
-	break;
+        n = new HTMLMapElementImpl(docPtr());
+        /*n = map;*/
+        break;
     case ID_AREA:
-	n = new HTMLAreaElementImpl(this);
-	break;
+        n = new HTMLAreaElementImpl(docPtr());
+        break;
 
 // objects, applets and scripts
     case ID_APPLET:
-	n = new HTMLAppletElementImpl(this);
-	break;
+        n = new HTMLAppletElementImpl(docPtr());
+        break;
     case ID_OBJECT:
-	n = new HTMLObjectElementImpl(this);
-	break;
+        n = new HTMLObjectElementImpl(docPtr());
+        break;
     case ID_PARAM:
-	n = new HTMLParamElementImpl(this);
-	break;
+        n = new HTMLParamElementImpl(docPtr());
+        break;
     case ID_SCRIPT:
-	n = new HTMLScriptElementImpl(this);
-	break;
+        n = new HTMLScriptElementImpl(docPtr());
+        break;
 
 // tables
     case ID_TABLE:
-	n = new HTMLTableElementImpl(this);
-	break;
+        n = new HTMLTableElementImpl(docPtr());
+        break;
     case ID_CAPTION:
-	n = new HTMLTableCaptionElementImpl(this);
-	break;
+        n = new HTMLTableCaptionElementImpl(docPtr());
+        break;
     case ID_COLGROUP:
     case ID_COL:
-	n = new HTMLTableColElementImpl(this, id);
-	break;
+        n = new HTMLTableColElementImpl(docPtr(), id);
+        break;
     case ID_TR:
-	n = new HTMLTableRowElementImpl(this);
-	break;
+        n = new HTMLTableRowElementImpl(docPtr());
+        break;
     case ID_TD:
     case ID_TH:
-	n = new HTMLTableCellElementImpl(this, id);
-	break;
+        n = new HTMLTableCellElementImpl(docPtr(), id);
+        break;
     case ID_THEAD:
     case ID_TBODY:
     case ID_TFOOT:
-	n = new HTMLTableSectionElementImpl(this, id);
-	break;
+        n = new HTMLTableSectionElementImpl(docPtr(), id);
+        break;
 
 // inline elements
     case ID_BR:
-	n = new HTMLBRElementImpl(this);
-	break;
+        n = new HTMLBRElementImpl(docPtr());
+        break;
     case ID_Q:
-	n = new HTMLQuoteElementImpl(this);
-	break;
+        n = new HTMLQuoteElementImpl(docPtr());
+        break;
 
 // elements with no special representation in the DOM
 
 // block:
     case ID_ADDRESS:
     case ID_CENTER:
-	n = new HTMLGenericElementImpl(this, id);
-	break;
+        n = new HTMLGenericElementImpl(docPtr(), id);
+        break;
 // inline
-	// %fontstyle
+        // %fontstyle
     case ID_TT:
     case ID_U:
     case ID_B:
@@ -438,7 +441,7 @@ ElementImpl *DocumentImpl::createHTMLElement( const DOMString &name )
     case ID_BIG:
     case ID_SMALL:
 
-	// %phrase
+        // %phrase
     case ID_EM:
     case ID_STRONG:
     case ID_DFN:
@@ -450,23 +453,23 @@ ElementImpl *DocumentImpl::createHTMLElement( const DOMString &name )
     case ID_ABBR:
     case ID_ACRONYM:
 
-	// %special
+        // %special
     case ID_SUB:
     case ID_SUP:
     case ID_SPAN:
-	n = new HTMLGenericElementImpl(this, id);
-	break;
+        n = new HTMLGenericElementImpl(docPtr(), id);
+        break;
 
     case ID_BDO:
-	break;
+        break;
 
 // text
     case ID_TEXT:
         kdDebug( 6020 ) << "Use document->createTextNode()" << endl;
-	break;
+        break;
 
     default:
-	break;
+        break;
     }
     return n;
 }
@@ -516,16 +519,16 @@ QStringList DocumentImpl::state()
 
 RangeImpl *DocumentImpl::createRange()
 {
-    return new RangeImpl(this);
+    return new RangeImpl( docPtr() );
 }
 
 NodeIteratorImpl *DocumentImpl::createNodeIterator(NodeImpl *root, unsigned long whatToShow,
-						   NodeFilter filter, bool entityReferenceExpansion,
-						   int &exceptioncode)
+                                                   NodeFilter filter, bool entityReferenceExpansion,
+                                                   int &exceptioncode)
 {
     if (!root) {
-	exceptioncode = DOMException::NOT_SUPPORTED_ERR;
-	return 0;
+        exceptioncode = DOMException::NOT_SUPPORTED_ERR;
+        return 0;
     }
 
     return new NodeIteratorImpl(root,whatToShow,filter,entityReferenceExpansion);
@@ -578,7 +581,7 @@ DOMImplementationImpl *DocumentImpl::implementation() const
 void DocumentImpl::setChanged(bool b)
 {
     if (b)
-	changedNodes.append(this);
+        changedNodes.append(this);
     NodeBaseImpl::setChanged(b);
 }
 
@@ -604,13 +607,13 @@ void DocumentImpl::recalcStyle()
     m_style->setFont(f);
 
     if ( parseMode() != Strict )
-	m_style->setHtmlHacks(true); // enable html specific rendering tricks
+        m_style->setHtmlHacks(true); // enable html specific rendering tricks
     if(m_render)
-	m_render->setStyle(m_style);
+        m_render->setStyle(m_style);
 
     NodeImpl *n;
     for (n = _first; n; n = n->nextSibling())
-	n->recalcStyle();
+        n->recalcStyle();
     kdDebug( 6020 ) << "TIME: recalcStyle() dt=" << qt.elapsed() << endl;
 }
 
@@ -620,32 +623,32 @@ void DocumentImpl::recalcStyle()
 
 DocumentFragmentImpl *DocumentImpl::createDocumentFragment(  )
 {
-    return new DocumentFragmentImpl(this);
+    return new DocumentFragmentImpl( docPtr() );
 }
 
 TextImpl *DocumentImpl::createTextNode( const DOMString &data )
 {
-    return new TextImpl(this, data);
+    return new TextImpl( docPtr(), data);
 }
 
 CommentImpl *DocumentImpl::createComment ( const DOMString &data )
 {
-    return new CommentImpl(this,data);
+    return new CommentImpl( docPtr(), data );
 }
 
 CDATASectionImpl *DocumentImpl::createCDATASection ( const DOMString &data )
 {
-    return new CDATASectionImpl(this,data);
+    return new CDATASectionImpl( docPtr(), data );
 }
 
 ProcessingInstructionImpl *DocumentImpl::createProcessingInstruction ( const DOMString &target, const DOMString &data )
 {
-    return new ProcessingInstructionImpl(this,target,data);
+    return new ProcessingInstructionImpl( docPtr(),target,data);
 }
 
 AttrImpl *DocumentImpl::createAttribute( const DOMString &name )
 {
-    AttrImpl *attr = new AttrImpl(this, name);
+    AttrImpl *attr = new AttrImpl( docPtr(), name );
     attr->setValue("");
     return attr;
 }
@@ -659,7 +662,7 @@ AttrImpl *DocumentImpl::createAttributeNS( const DOMString &/*_namespaceURI*/, c
 
 EntityReferenceImpl *DocumentImpl::createEntityReference ( const DOMString &name )
 {
-    return new EntityReferenceImpl(this, name.implementation());
+    return new EntityReferenceImpl(docPtr(), name.implementation());
 }
 
 NodeListImpl *DocumentImpl::getElementsByTagName( const DOMString &tagname )
@@ -671,8 +674,8 @@ void DocumentImpl::updateRendering()
 {
     QListIterator<NodeImpl> it(changedNodes);
     for (; it.current(); ++it) {
-	if( it.current()->changed() )
-	    it.current()->applyChanges( true, true );
+        if( it.current()->changed() )
+            it.current()->applyChanges( true, true );
     }
      changedNodes.clear();
 }
@@ -721,7 +724,7 @@ void DocumentImpl::clearSelection()
 
 Tokenizer *DocumentImpl::createTokenizer()
 {
-    return new XMLTokenizer(this,m_view);
+    return new XMLTokenizer(docPtr(),m_view);
 }
 
 void DocumentImpl::setPaintDevice( QPaintDevice *dev )
@@ -841,7 +844,7 @@ CSSStyleSheetImpl* DocumentImpl::elementSheet()
 {
     if (!m_elemSheet) {
         m_elemSheet = new CSSStyleSheetImpl(this, baseURL());
-	m_elemSheet->ref();
+        m_elemSheet->ref();
     }
     return m_elemSheet;
 }
@@ -854,8 +857,8 @@ static bool isTransitional(const QString &spec, int start)
        (spec.find("LATIN1", start, false ) != -1 ) ||
        (spec.find("SYMBOLS", start, false ) != -1 ) ||
        (spec.find("SPECIAL", start, false ) != -1 ) ) {
-	//kdDebug() << "isTransitional" << endl;
-	return true;
+        //kdDebug() << "isTransitional" << endl;
+        return true;
     }
     return false;
 }
@@ -881,91 +884,91 @@ void DocumentImpl::determineParseMode( const QString &str )
     int pos = 0;
     int doctype = str.find("!doctype", 0, false);
     if( doctype > 2 )
-	pos = doctype - 2;
+        pos = doctype - 2;
 
     // get the first tag (or the doctype tag
     int start = str.find('<', pos);
     int stop = str.find('>', pos);
     if( start > -1 && stop > start ) {
-	QString spec = str.mid( start + 1, stop - start - 1 );
-	//kdDebug() << "DocumentImpl::determineParseMode dtd=" << spec<< endl;
-	start = 0;
-	int quote = -1;
-	if( doctype != -1 ) {
-	    while( (quote = spec.find( "\"", start )) != -1 ) {
-		int quote2 = spec.find( "\"", quote+1 );
-		if(quote2 < 0) quote2 = spec.length();
-		QString val = spec.mid( quote+1, quote2 - quote-1 );
-		//kdDebug() << "DocumentImpl::determineParseMode val = " << val << endl;
-		// find system id
-		pos = val.find("http://www.w3.org/tr/", 0, false);
-		if ( pos != -1 ) {
-		    // loose or strict dtd?
-		    if ( val.find("strict.dtd", pos, false) != -1 )
-			systemId = Strict;
-		    else if (isTransitional(val, pos))
-			systemId = Transitional;
-		}
+        QString spec = str.mid( start + 1, stop - start - 1 );
+        //kdDebug() << "DocumentImpl::determineParseMode dtd=" << spec<< endl;
+        start = 0;
+        int quote = -1;
+        if( doctype != -1 ) {
+            while( (quote = spec.find( "\"", start )) != -1 ) {
+                int quote2 = spec.find( "\"", quote+1 );
+                if(quote2 < 0) quote2 = spec.length();
+                QString val = spec.mid( quote+1, quote2 - quote-1 );
+                //kdDebug() << "DocumentImpl::determineParseMode val = " << val << endl;
+                // find system id
+                pos = val.find("http://www.w3.org/tr/", 0, false);
+                if ( pos != -1 ) {
+                    // loose or strict dtd?
+                    if ( val.find("strict.dtd", pos, false) != -1 )
+                        systemId = Strict;
+                    else if (isTransitional(val, pos))
+                        systemId = Transitional;
+                }
 
-		// find public id
-		pos = val.find("//dtd", 0, false );
-		if ( pos != -1 ) {
-		    if( val.find( "xhtml", pos+6, false ) != -1 ) {
-			htmlMode = XHtml;
-			if( isTransitional( val, pos ) )
-			    publicId = Transitional;
-			else
-			    publicId = Strict;
-		    } else if ( val.find( "15445:1999", pos+6 ) != -1 ) {
-			htmlMode = Html4;
-			publicId = Strict;
-		    } else {
-			int tagPos = val.find( "html", pos+6, false );
-			if( tagPos == -1 )
-			    tagPos = val.find( "hypertext markup", pos+6, false );
-			if ( tagPos != -1 ) {
-			    tagPos = val.find(QRegExp("[0-9]"), tagPos );
-			    int version = val.mid( tagPos, 1 ).toInt();
-			    //kdDebug() << "DocumentImpl::determineParseMode tagPos = " << tagPos << " version=" << version << endl;
-			    if( version > 3 ) {
-				htmlMode = Html4;
-				if( isTransitional( val, tagPos ) )
-				    publicId = Transitional;
-				else
-				    publicId = Strict;
-			    }
-			}
-		    }
-		}
-		start = quote2 + 1;
-	    }
-	}
+                // find public id
+                pos = val.find("//dtd", 0, false );
+                if ( pos != -1 ) {
+                    if( val.find( "xhtml", pos+6, false ) != -1 ) {
+                        htmlMode = XHtml;
+                        if( isTransitional( val, pos ) )
+                            publicId = Transitional;
+                        else
+                            publicId = Strict;
+                    } else if ( val.find( "15445:1999", pos+6 ) != -1 ) {
+                        htmlMode = Html4;
+                        publicId = Strict;
+                    } else {
+                        int tagPos = val.find( "html", pos+6, false );
+                        if( tagPos == -1 )
+                            tagPos = val.find( "hypertext markup", pos+6, false );
+                        if ( tagPos != -1 ) {
+                            tagPos = val.find(QRegExp("[0-9]"), tagPos );
+                            int version = val.mid( tagPos, 1 ).toInt();
+                            //kdDebug() << "DocumentImpl::determineParseMode tagPos = " << tagPos << " version=" << version << endl;
+                            if( version > 3 ) {
+                                htmlMode = Html4;
+                                if( isTransitional( val, tagPos ) )
+                                    publicId = Transitional;
+                                else
+                                    publicId = Strict;
+                            }
+                        }
+                    }
+                }
+                start = quote2 + 1;
+            }
+        }
 
-	if( systemId == publicId )
-	    pMode = publicId;
-	else if ( systemId == Unknown ) {
-	    pMode = publicId;
-	    if ( publicId == Transitional && htmlMode == Html4 )
-		pMode = Compat;
-	} else if ( publicId == Transitional && systemId == Strict ) {
-	    if ( htmlMode == Html3 )
-		pMode = Compat;
-	    else
-		pMode = Strict;
-	} else
-	    pMode = Compat;
+        if( systemId == publicId )
+            pMode = publicId;
+        else if ( systemId == Unknown ) {
+            pMode = publicId;
+            if ( publicId == Transitional && htmlMode == Html4 )
+                pMode = Compat;
+        } else if ( publicId == Transitional && systemId == Strict ) {
+            if ( htmlMode == Html3 )
+                pMode = Compat;
+            else
+                pMode = Strict;
+        } else
+            pMode = Compat;
 
-	if ( htmlMode == XHtml )
-	    pMode = Strict;
+        if ( htmlMode == XHtml )
+            pMode = Strict;
     }
     //kdDebug() << "DocumentImpl::determineParseMode: publicId =" << publicId << " systemId = " << systemId << endl;
     //kdDebug() << "DocumentImpl::determineParseMode: htmlMode = " << htmlMode<< endl;
     if( pMode == Strict )
-	kdDebug() << " using strict parseMode" << endl;
+        kdDebug() << " using strict parseMode" << endl;
     else if (pMode == Compat )
-	kdDebug() << " using compatibility parseMode" << endl;
+        kdDebug() << " using compatibility parseMode" << endl;
     else
-	kdDebug() << " using transitional parseMode" << endl;
+        kdDebug() << " using transitional parseMode" << endl;
 }
 
 // Please see if there`s a possibility to merge that code
@@ -1007,61 +1010,61 @@ NodeImpl *DocumentImpl::findElement( int id )
 ElementImpl *DocumentImpl::findSelectableElement(NodeImpl *start, bool forward)
 {
     if (!start)
-	start = forward?_first:_last;
+        start = forward?_first:_last;
     if (!start)
-	return 0;
+        return 0;
     if (forward)
-	while(1)
-	{
-	    if (!start->isSelectable() && start->firstChild())
-		start = start->firstChild();
-	    else if (start->nextSibling())
-		start = start->nextSibling();
-	    else // find the next sibling of the first parent that has a nextSibling
-	    {
-		NodeImpl *pa = start;
-		while (pa)
-		{
-		    pa = pa->parentNode();
-		    if (!pa)
-			return 0;
-		    if (pa->nextSibling())
-		    {
-			start = pa->nextSibling();
-			pa = 0;
-		    }
-		}
-	    }
-	    if (start->isElementNode() && start->isSelectable())
-		return static_cast<ElementImpl*>(start);
-	}
+        while(1)
+        {
+            if (!start->isSelectable() && start->firstChild())
+                start = start->firstChild();
+            else if (start->nextSibling())
+                start = start->nextSibling();
+            else // find the next sibling of the first parent that has a nextSibling
+            {
+                NodeImpl *pa = start;
+                while (pa)
+                {
+                    pa = pa->parentNode();
+                    if (!pa)
+                        return 0;
+                    if (pa->nextSibling())
+                    {
+                        start = pa->nextSibling();
+                        pa = 0;
+                    }
+                }
+            }
+            if (start->isElementNode() && start->isSelectable())
+                return static_cast<ElementImpl*>(start);
+        }
     else
-	while (1)
-	{
-	    if (!start->isSelectable() && start->lastChild())
-		start = start->lastChild();
-	    else if (start->previousSibling())
-		start = start->previousSibling();
-	    else
-	    {
-		NodeImpl *pa = start;
-		while (pa)
-		{
-		  // find the previous sibling of the first parent that has a prevSibling
-		    pa = pa->parentNode();
-		    if (!pa)
-			return 0;
-		    if (pa->previousSibling())
-		    {
-			start = pa->previousSibling();
-			pa = 0;
-			break;
-		    }
-		}
-	    }
-	    if (start->isElementNode() && start->isSelectable())
-		return static_cast<ElementImpl*>(start);
-	}
+        while (1)
+        {
+            if (!start->isSelectable() && start->lastChild())
+                start = start->lastChild();
+            else if (start->previousSibling())
+                start = start->previousSibling();
+            else
+            {
+                NodeImpl *pa = start;
+                while (pa)
+                {
+                  // find the previous sibling of the first parent that has a prevSibling
+                    pa = pa->parentNode();
+                    if (!pa)
+                        return 0;
+                    if (pa->previousSibling())
+                    {
+                        start = pa->previousSibling();
+                        pa = 0;
+                        break;
+                    }
+                }
+            }
+            if (start->isElementNode() && start->isSelectable())
+                return static_cast<ElementImpl*>(start);
+        }
     kdFatal(6000) << "some error in findElement\n";
 }
 
@@ -1075,30 +1078,30 @@ int DocumentImpl::findHighestTabIndex()
     int tmpval;
     while(n)
     {
-	//find out tabindex of current element, if availiable
-	if (n->isElementNode())
+        //find out tabindex of current element, if availiable
+        if (n->isElementNode())
         {
-	    a=static_cast<ElementImpl *>(n);
-	    tmpval=a->tabIndex();
-	    if (tmpval>retval)
-		retval=tmpval;
+            a=static_cast<ElementImpl *>(n);
+            tmpval=a->tabIndex();
+            if (tmpval>retval)
+                retval=tmpval;
         }
-	//iterate to next element.
-	if (!n->isSelectable() && n->firstChild())
-	    n=n->firstChild();
-	else if (n->nextSibling())
-	    n=n->nextSibling();
-	else
+        //iterate to next element.
+        if (!n->isSelectable() && n->firstChild())
+            n=n->firstChild();
+        else if (n->nextSibling())
+            n=n->nextSibling();
+        else
         {
-	    next=0;
-	    while(!next)
+            next=0;
+            while(!next)
             {
-		n=n->parentNode();
-		if (!n)
-		    return retval;
-		next=n->nextSibling();
+                n=n->parentNode();
+                if (!n)
+                    return retval;
+                next=n->nextSibling();
             }
-	    n=next;
+            n=next;
         }
     }
     return retval;
@@ -1111,11 +1114,11 @@ ElementImpl *DocumentImpl::findNextLink(ElementImpl *cur, bool forward)
     switch(curTabIndex)
     {
     case -1:
-	return notabindex(cur, forward);
+        return notabindex(cur, forward);
     case 0:
-	return tabindexzero(cur, forward);
+        return tabindexzero(cur, forward);
     default:
-	return intabindex(cur, forward);
+        return intabindex(cur, forward);
     }
 }
 
@@ -1133,9 +1136,9 @@ ElementImpl *DocumentImpl::findLink(ElementImpl *n, bool forward, int tabIndexHi
 
     do
     {
-	n = findSelectableElement(n, forward);
-	// this is alright even for non-tabindex-searches,
-	// because DOM::NodeImpl::tabIndex() defaults to -1.
+        n = findSelectableElement(n, forward);
+        // this is alright even for non-tabindex-searches,
+        // because DOM::NodeImpl::tabIndex() defaults to -1.
     } while (n && (n->tabIndex()!=tabIndexHint));
     return n;
 }
@@ -1185,14 +1188,14 @@ ElementImpl *DocumentImpl::tabindexzero(ElementImpl *cur, bool forward)
 }
 
 bool DocumentImpl::prepareMouseEvent( int _x, int _y,
-				      int, int,
-				      MouseEvent *ev )
+                                      int, int,
+                                      MouseEvent *ev )
 {
     NodeImpl *n = documentElement();
     if ( n )
         return n->prepareMouseEvent( _x, _y, 0, 0, ev );
     else
-	return false;
+        return false;
 }
 
 // DOM Section 1.1.1
@@ -1206,14 +1209,14 @@ bool DocumentImpl::childAllowed( NodeImpl *newChild )
 bool DocumentImpl::childTypeAllowed( unsigned short type )
 {
     switch (type) {
-	case Node::ELEMENT_NODE:
-	case Node::PROCESSING_INSTRUCTION_NODE:
-	case Node::COMMENT_NODE:
-	case Node::DOCUMENT_TYPE_NODE:
-	    return true;
-	    break;
-	default:
-	    return false;
+        case Node::ELEMENT_NODE:
+        case Node::PROCESSING_INSTRUCTION_NODE:
+        case Node::COMMENT_NODE:
+        case Node::DOCUMENT_TYPE_NODE:
+            return true;
+            break;
+        default:
+            return false;
     }
 }
 
@@ -1230,26 +1233,26 @@ unsigned short DocumentImpl::elementId(DOMStringImpl *_name)
     // note: this does not take namespaces into account, as it is only really used for css at the moment
 
     if (_name->isLower()) // use the html id instead (if one exists)
-	id = khtml::getTagID(DOMString(_name).string().ascii(), _name->l);
+        id = khtml::getTagID(DOMString(_name).string().ascii(), _name->l);
     if (id)
-	return id;
+        return id;
 
     // first try and find the element
     for (id = 0; id < m_elementNameCount; id++)
-	if (!strcmp(m_elementNames[id],_name))
-	    return id+1000;
+        if (!strcmp(m_elementNames[id],_name))
+            return id+1000;
 
     // we don't have it yet, assign it an id
     if (m_elementNameCount+1 > m_elementNameAlloc) {
-	m_elementNameAlloc += 100;
-	DOMStringImpl **newNames = new DOMStringImpl* [m_elementNameAlloc];
-	if (m_elementNames) {
-	    unsigned short i;
-	    for (i = 0; i < m_elementNameCount; i++)
-		newNames[i] = m_elementNames[i];
-	    delete [] m_elementNames;
-	}
-	m_elementNames = newNames;
+        m_elementNameAlloc += 100;
+        DOMStringImpl **newNames = new DOMStringImpl* [m_elementNameAlloc];
+        if (m_elementNames) {
+            unsigned short i;
+            for (i = 0; i < m_elementNameCount; i++)
+                newNames[i] = m_elementNames[i];
+            delete [] m_elementNames;
+        }
+        m_elementNames = newNames;
     }
     id = m_elementNameCount++;
     m_elementNames[id] = _name;
@@ -1261,9 +1264,9 @@ unsigned short DocumentImpl::elementId(DOMStringImpl *_name)
 DOMStringImpl *DocumentImpl::elementName(unsigned short _id) const
 {
     if (_id >= 1000)
-	return m_elementNames[_id-1000];
+        return m_elementNames[_id-1000];
     else
-	return getTagName(_id).implementation()->lower();
+        return getTagName(_id).implementation()->lower();
 }
 
 QList<StyleSheetImpl> DocumentImpl::authorStyleSheets()
@@ -1274,10 +1277,10 @@ QList<StyleSheetImpl> DocumentImpl::authorStyleSheets()
     QList<StyleSheetImpl> list;
     QListIterator<StyleSheetImpl> xmlIt(xml);
     for (; xmlIt.current(); ++xmlIt)
-	list.append(xmlIt.current());
+        list.append(xmlIt.current());
     QListIterator<StyleSheetImpl> htmlIt(html);
     for (; htmlIt.current(); ++htmlIt)
-	list.append(htmlIt.current());
+        list.append(htmlIt.current());
     return list;
 }
 
@@ -1286,30 +1289,30 @@ QList<StyleSheetImpl> DocumentImpl::htmlAuthorStyleSheets()
     QList<StyleSheetImpl> list;
     NodeImpl *n = this;
     while (n) {
-	StyleSheetImpl *sheet = 0;
-	if (n->isElementNode() && static_cast<ElementImpl*>(n)->isHTMLElement()) {
-	    if (n->id() == ID_LINK)
-		sheet = static_cast<HTMLLinkElementImpl*>(n)->sheet();
-	    else if (n->id() == ID_STYLE)
-		sheet = static_cast<HTMLStyleElementImpl*>(n)->sheet();
-	    else if (n->id() == ID_BODY && static_cast<HTMLBodyElementImpl*>(n)->sheet())
-		sheet = static_cast<HTMLBodyElementImpl*>(n)->sheet();
-	}
+        StyleSheetImpl *sheet = 0;
+        if (n->isElementNode() && static_cast<ElementImpl*>(n)->isHTMLElement()) {
+            if (n->id() == ID_LINK)
+                sheet = static_cast<HTMLLinkElementImpl*>(n)->sheet();
+            else if (n->id() == ID_STYLE)
+                sheet = static_cast<HTMLStyleElementImpl*>(n)->sheet();
+            else if (n->id() == ID_BODY && static_cast<HTMLBodyElementImpl*>(n)->sheet())
+                sheet = static_cast<HTMLBodyElementImpl*>(n)->sheet();
+        }
 
-	if ( sheet )
-	    list.append( sheet );
-	if (n->id() == ID_BODY)
-	    n = 0; // no style info should be beyond here anyway
-	else if (n->firstChild())
-	    n = n->firstChild();
-	else if (n->nextSibling())
-	    n = n->nextSibling();
-	else {
-	    while (n && !n->nextSibling())
-		n = n->parentNode();
-	    if (n)
-		n = n->nextSibling();
-	}
+        if ( sheet )
+            list.append( sheet );
+        if (n->id() == ID_BODY)
+            n = 0; // no style info should be beyond here anyway
+        else if (n->firstChild())
+            n = n->firstChild();
+        else if (n->nextSibling())
+            n = n->nextSibling();
+        else {
+            while (n && !n->nextSibling())
+                n = n->parentNode();
+            if (n)
+                n = n->nextSibling();
+        }
     }
     return list;
 }
@@ -1324,15 +1327,15 @@ void DocumentImpl::setFocusNode(ElementImpl *n)
     // ### add check for same Document
     if (m_focusNode != n)
     {
-	if (m_focusNode)
-	{
-	    if (m_focusNode->active()) m_focusNode->setActive(false);
-	    m_focusNode->setFocus(false);
-	}
-	m_focusNode = n;
-	//kdDebug(6020)<<"DOM::DocumentImpl::setFocusNode("<<n<<")"<<endl;
-	if (n)
-	    n->setFocus();
+        if (m_focusNode)
+        {
+            if (m_focusNode->active()) m_focusNode->setActive(false);
+            m_focusNode->setFocus(false);
+        }
+        m_focusNode = n;
+        //kdDebug(6020)<<"DOM::DocumentImpl::setFocusNode("<<n<<")"<<endl;
+        if (n)
+            n->setFocus();
     }
 }
 
@@ -1355,7 +1358,7 @@ void DocumentImpl::notifyBeforeNodeRemoval(NodeImpl *n)
 {
     QListIterator<NodeIteratorImpl> it(m_nodeIterators);
     for (; it.current(); ++it)
-	it.current()->notifyBeforeNodeRemoval(n);
+        it.current()->notifyBeforeNodeRemoval(n);
 }
 
 AbstractViewImpl *DocumentImpl::defaultView() const
@@ -1366,22 +1369,22 @@ AbstractViewImpl *DocumentImpl::defaultView() const
 EventImpl *DocumentImpl::createEvent(const DOMString &eventType, int &exceptioncode)
 {
     if (eventType == "UIEvents")
-	return new UIEventImpl();
+        return new UIEventImpl();
     else if (eventType == "MouseEvents")
-	return new MouseEventImpl();
+        return new MouseEventImpl();
     else if (eventType == "MutationEvents")
-	return new MutationEventImpl();
+        return new MutationEventImpl();
     else if (eventType == "HTMLEvents")
-	return new EventImpl();
+        return new EventImpl();
     else {
-	exceptioncode = DOMException::NOT_SUPPORTED_ERR;
-	return 0;
+        exceptioncode = DOMException::NOT_SUPPORTED_ERR;
+        return 0;
     }
 }
 
 // ----------------------------------------------------------------------------
 
-DocumentFragmentImpl::DocumentFragmentImpl(DocumentImpl *doc) : NodeBaseImpl(doc)
+DocumentFragmentImpl::DocumentFragmentImpl(DocumentPtr *doc) : NodeBaseImpl(doc)
 {
 }
 
@@ -1404,31 +1407,31 @@ unsigned short DocumentFragmentImpl::nodeType() const
 bool DocumentFragmentImpl::childTypeAllowed( unsigned short type )
 {
     switch (type) {
-	case Node::ELEMENT_NODE:
-	case Node::PROCESSING_INSTRUCTION_NODE:
-	case Node::COMMENT_NODE:
-	case Node::TEXT_NODE:
-	case Node::CDATA_SECTION_NODE:
-	case Node::ENTITY_REFERENCE_NODE:
-	    return true;
-	    break;
-	default:
-	    return false;
+        case Node::ELEMENT_NODE:
+        case Node::PROCESSING_INSTRUCTION_NODE:
+        case Node::COMMENT_NODE:
+        case Node::TEXT_NODE:
+        case Node::CDATA_SECTION_NODE:
+        case Node::ENTITY_REFERENCE_NODE:
+            return true;
+            break;
+        default:
+            return false;
     }
 }
 
 NodeImpl *DocumentFragmentImpl::cloneNode ( bool deep, int &exceptioncode )
 {
-    DocumentFragmentImpl *clone = new DocumentFragmentImpl(document);
+    DocumentFragmentImpl *clone = new DocumentFragmentImpl( docPtr() );
     if (deep)
-	cloneChildNodes(clone,exceptioncode);
+        cloneChildNodes(clone,exceptioncode);
     return clone;
 }
 
 
 // ----------------------------------------------------------------------------
 
-DocumentTypeImpl::DocumentTypeImpl(DocumentImpl *doc) : NodeImpl(doc)
+DocumentTypeImpl::DocumentTypeImpl(DocumentPtr *doc) : NodeImpl(doc)
 {
     m_entities = new GenericRONamedNodeMapImpl();
     m_entities->ref();

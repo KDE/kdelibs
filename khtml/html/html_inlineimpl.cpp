@@ -3,7 +3,7 @@
  *
  * Copyright (C) 1999 Lars Knoll (knoll@kde.org)
  *           (C) 1999 Antti Koivisto (koivisto@kde.org)
- *	     (C) 2000 Simon Hausmann <hausmann@kde.org>
+ *           (C) 2000 Simon Hausmann <hausmann@kde.org>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -39,7 +39,7 @@ using namespace DOM;
 
 using namespace khtml;
 
-HTMLAnchorElementImpl::HTMLAnchorElementImpl(DocumentImpl *doc)
+HTMLAnchorElementImpl::HTMLAnchorElementImpl(DocumentPtr *doc)
     : HTMLElementImpl(doc)
 {
     href = 0;
@@ -63,20 +63,20 @@ ushort HTMLAnchorElementImpl::id() const
 }
 
 bool HTMLAnchorElementImpl::prepareMouseEvent( int _x, int _y,
-					       int _tx, int _ty,
-					       MouseEvent *ev)
+                                               int _tx, int _ty,
+                                               MouseEvent *ev)
 {
     bool inside = HTMLElementImpl::prepareMouseEvent( _x, _y, _tx, _ty, ev);
 
     if ( inside && ev->url==0 && !ev->noHref
          && (!(m_render && m_render->style() && m_render->style()->visiblity() == HIDDEN)) )
     {
-	//kdDebug() << "HTMLAnchorElementImpl::prepareMouseEvent" << _tx << "/" << _ty <<endl;
-	// set the url
-	if(target && href)
-	    ev->url = DOMString("target://") + DOMString(target) + DOMString("/#") + DOMString(href);
-	else
-	    ev->url = href;
+        //kdDebug() << "HTMLAnchorElementImpl::prepareMouseEvent" << _tx << "/" << _ty <<endl;
+        // set the url
+        if(target && href)
+            ev->url = DOMString("target://") + DOMString(target) + DOMString("/#") + DOMString(href);
+        else
+            ev->url = href;
     }
 
     return inside;
@@ -94,17 +94,17 @@ void HTMLAnchorElementImpl::parseAttribute(AttrImpl *attr)
         break;
     }
     case ATTR_TARGET:
-    	target = attr->val();
+        target = attr->val();
         target->ref();
-	break;
+        break;
     default:
-	HTMLElementImpl::parseAttribute(attr);
+        HTMLElementImpl::parseAttribute(attr);
     }
 }
 
 // -------------------------------------------------------------------------
 
-HTMLBRElementImpl::HTMLBRElementImpl(DocumentImpl *doc) : HTMLElementImpl(doc)
+HTMLBRElementImpl::HTMLBRElementImpl(DocumentPtr *doc) : HTMLElementImpl(doc)
 {
 }
 
@@ -128,33 +128,33 @@ void HTMLBRElementImpl::parseAttribute(AttrImpl *attr)
     {
     case ATTR_CLEAR:
     {
-	DOMString str = attr->value();
-	if( strcasecmp (str,"all")==0 || str.isEmpty() ) str = "both";
-	addCSSProperty(CSS_PROP_CLEAR, str);
-	break;
+        DOMString str = attr->value();
+        if( strcasecmp (str,"all")==0 || str.isEmpty() ) str = "both";
+        addCSSProperty(CSS_PROP_CLEAR, str);
+        break;
     }
     default:
-    	HTMLElementImpl::parseAttribute(attr);
+        HTMLElementImpl::parseAttribute(attr);
     }
 }
 
 void HTMLBRElementImpl::attach(KHTMLView *w)
 {
     //kdDebug( 6030 ) << "HTMLBRElementImpl::attach" << endl;
-    setStyle(document->styleSelector()->styleForElement(this));
+    setStyle(ownerDocument()->styleSelector()->styleForElement(this));
     khtml::RenderObject *r = _parent->renderer();
     if(r)
     {
-	m_render = new RenderBR();
-	m_render->setStyle(m_style);
-	r->addChild(m_render, _next ? _next->renderer() : 0);
+        m_render = new RenderBR();
+        m_render->setStyle(m_style);
+        r->addChild(m_render, _next ? _next->renderer() : 0);
     }
     NodeBaseImpl::attach( w );
 }
 
 // -------------------------------------------------------------------------
 
-HTMLFontElementImpl::HTMLFontElementImpl(DocumentImpl *doc)
+HTMLFontElementImpl::HTMLFontElementImpl(DocumentPtr *doc)
     : HTMLElementImpl(doc)
 {
 }
@@ -179,54 +179,54 @@ void HTMLFontElementImpl::parseAttribute(AttrImpl *attr)
     {
     case ATTR_SIZE:
     {
-	DOMString s = attr->value();
-	if(s != 0) {
-	    int num = s.toInt();
-	    if ( *s.unicode() == '+' || *s.unicode() == '-' ) {
-		num += 3;
-	    }
-	    DOMString size;
-	    switch (num)
-	    {
-		// size = 3 is the normal size according to html specs
-		case 1:
-		    size = "x-small";
-		    break;
-		case 2:
-		    size = "small";
-		    break;
-		case 3:
-		    size = "medium";
-		    break;
-		case 4:
-		    size = "large";
-		    break;
-		case 5:
-		    size = "x-large";
-		    break;
-		default:
-		    if (num >= 6)
-			size = "xx-large";
-		    else if (num < 1)
-			size = "xx-small";
+        DOMString s = attr->value();
+        if(s != 0) {
+            int num = s.toInt();
+            if ( *s.unicode() == '+' || *s.unicode() == '-' ) {
+                num += 3;
+            }
+            DOMString size;
+            switch (num)
+            {
+                // size = 3 is the normal size according to html specs
+                case 1:
+                    size = "x-small";
+                    break;
+                case 2:
+                    size = "small";
+                    break;
+                case 3:
+                    size = "medium";
+                    break;
+                case 4:
+                    size = "large";
+                    break;
+                case 5:
+                    size = "x-large";
+                    break;
+                default:
+                    if (num >= 6)
+                        size = "xx-large";
+                    else if (num < 1)
+                        size = "xx-small";
 
-		    break;
-	    }
-	    if( !size.isNull() )
-		addCSSProperty(CSS_PROP_FONT_SIZE, size);
-	}
-	break;
+                    break;
+            }
+            if( !size.isNull() )
+                addCSSProperty(CSS_PROP_FONT_SIZE, size);
+        }
+        break;
     }
     case ATTR_COLOR:
-	addCSSProperty(CSS_PROP_COLOR, attr->value());
-	// HTML4 compatibility hack
-	addCSSProperty(CSS_PROP_TEXT_DECORATION_COLOR, attr->value());
-	break;
+        addCSSProperty(CSS_PROP_COLOR, attr->value());
+        // HTML4 compatibility hack
+        addCSSProperty(CSS_PROP_TEXT_DECORATION_COLOR, attr->value());
+        break;
     case ATTR_FACE:
-	addCSSProperty(CSS_PROP_FONT_FAMILY, attr->value());
-	break;
+        addCSSProperty(CSS_PROP_FONT_FAMILY, attr->value());
+        break;
     default:
-	HTMLElementImpl::parseAttribute(attr);
+        HTMLElementImpl::parseAttribute(attr);
     }
 }
 
@@ -241,14 +241,14 @@ void HTMLFontElementImpl::attach(KHTMLView *w)
     setStyle(document->styleSelector()->styleForElement(this));
     if(_parent && _parent->renderer())
     {
-	if(_parent->style()->display() != INLINE)
-	    m_style->setDisplay(BLOCK);
-	m_render = khtml::RenderObject::createObject(this);
+        if(_parent->style()->display() != INLINE)
+            m_style->setDisplay(BLOCK);
+        m_render = khtml::RenderObject::createObject(this);
 
-	if(m_render)
-	{
-	    _parent->renderer()->addChild(m_render, _next ? _next->renderer() : 0);
-	}
+        if(m_render)
+        {
+            _parent->renderer()->addChild(m_render, _next ? _next->renderer() : 0);
+        }
     }
 
     NodeBaseImpl::attach(w);
@@ -258,7 +258,7 @@ void HTMLFontElementImpl::attach(KHTMLView *w)
 
 // -------------------------------------------------------------------------
 
-HTMLModElementImpl::HTMLModElementImpl(DocumentImpl *doc, ushort tagid) : HTMLElementImpl(doc)
+HTMLModElementImpl::HTMLModElementImpl(DocumentPtr *doc, ushort tagid) : HTMLElementImpl(doc)
 {
     _id = tagid;
 }
@@ -279,7 +279,7 @@ ushort HTMLModElementImpl::id() const
 
 // -------------------------------------------------------------------------
 
-HTMLQuoteElementImpl::HTMLQuoteElementImpl(DocumentImpl *doc)
+HTMLQuoteElementImpl::HTMLQuoteElementImpl(DocumentPtr *doc)
     : HTMLElementImpl(doc)
 {
 }

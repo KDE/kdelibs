@@ -39,12 +39,12 @@ using namespace DOM;
 using namespace khtml;
 
 
-CharacterDataImpl::CharacterDataImpl(DocumentImpl *doc) : NodeWParentImpl(doc)
+CharacterDataImpl::CharacterDataImpl(DocumentPtr *doc) : NodeWParentImpl(doc)
 {
     str = 0;
 }
 
-CharacterDataImpl::CharacterDataImpl(DocumentImpl *doc, const DOMString &_text)
+CharacterDataImpl::CharacterDataImpl(DocumentPtr *doc, const DOMString &_text)
     : NodeWParentImpl(doc)
 {
 //    str = new DOMStringImpl(_text.impl->s,_text.impl->l);
@@ -82,8 +82,8 @@ DOMString CharacterDataImpl::substringData( const unsigned long offset, const un
 {
     exceptioncode = 0;
     if (offset > str->l ) {
-	exceptioncode = DOMException::INDEX_SIZE_ERR;
-	return DOMString();
+        exceptioncode = DOMException::INDEX_SIZE_ERR;
+        return DOMString();
     }
     return str->substring(offset,count);
 }
@@ -96,7 +96,7 @@ void CharacterDataImpl::appendData( const DOMString &arg )
       (static_cast<RenderText*>(m_render))->setText(str);
     setChanged(true);
     if (_parent)
-	_parent->setChanged(true);
+        _parent->setChanged(true);
 }
 
 void CharacterDataImpl::insertData( const unsigned long offset, const DOMString &arg, int &exceptioncode )
@@ -104,8 +104,8 @@ void CharacterDataImpl::insertData( const unsigned long offset, const DOMString 
     detachString();
     exceptioncode = 0;
     if (offset > str->l) {
-	exceptioncode = DOMException::INDEX_SIZE_ERR;
-	return;
+        exceptioncode = DOMException::INDEX_SIZE_ERR;
+        return;
     }
     str->insert(arg.impl, offset);
     if (m_render)
@@ -118,8 +118,8 @@ void CharacterDataImpl::deleteData( const unsigned long offset, const unsigned l
     detachString();
     exceptioncode = 0;
     if (offset > str->l) {
-	exceptioncode = DOMException::INDEX_SIZE_ERR;
-	return;
+        exceptioncode = DOMException::INDEX_SIZE_ERR;
+        return;
     }
 
     str->remove(offset,count);
@@ -133,15 +133,15 @@ void CharacterDataImpl::replaceData( const unsigned long offset, const unsigned 
     detachString();
     exceptioncode = 0;
     if (offset > str->l) {
-	exceptioncode = DOMException::INDEX_SIZE_ERR;
-	return;
+        exceptioncode = DOMException::INDEX_SIZE_ERR;
+        return;
     }
 
     unsigned long realCount;
     if (offset + count > str->l)
-	realCount = str->l-offset;
+        realCount = str->l-offset;
     else
-	realCount = count;
+        realCount = count;
 
     str->remove(offset,realCount);
     str->insert(arg.impl, offset);
@@ -162,12 +162,12 @@ void CharacterDataImpl::detachString()
 
 // ---------------------------------------------------------------------------
 
-CommentImpl::CommentImpl(DocumentImpl *doc, const DOMString &_text)
+CommentImpl::CommentImpl(DocumentPtr *doc, const DOMString &_text)
     : CharacterDataImpl(doc, _text)
 {
 }
 
-CommentImpl::CommentImpl(DocumentImpl *doc)
+CommentImpl::CommentImpl(DocumentPtr *doc)
     : CharacterDataImpl(doc)
 {
 }
@@ -198,7 +198,7 @@ ushort CommentImpl::id() const
 
 NodeImpl *CommentImpl::cloneNode(bool /*deep*/, int &/*exceptioncode*/)
 {
-    return document->createComment( str );
+    return ownerDocument()->createComment( str );
 }
 
 // DOM Section 1.1.1
@@ -211,12 +211,12 @@ bool CommentImpl::childTypeAllowed( unsigned short /*type*/ )
 
 // ### allow having children in text nodes for entities, comments etc.
 
-TextImpl::TextImpl(DocumentImpl *doc, const DOMString &_text)
+TextImpl::TextImpl(DocumentPtr *doc, const DOMString &_text)
     : CharacterDataImpl(doc, _text)
 {
 }
 
-TextImpl::TextImpl(DocumentImpl *doc)
+TextImpl::TextImpl(DocumentPtr *doc)
     : CharacterDataImpl(doc)
 {
 }
@@ -229,26 +229,26 @@ TextImpl *TextImpl::splitText( const unsigned long offset, int &exceptioncode )
 {
     exceptioncode = 0;
     if (offset > str->l || (long)offset < 0) {
-	exceptioncode = DOMException::INDEX_SIZE_ERR;
-	return 0;
+        exceptioncode = DOMException::INDEX_SIZE_ERR;
+        return 0;
     }
 
     TextImpl *newText = static_cast<TextImpl*>(cloneNode(true,exceptioncode));
     if ( exceptioncode )
-	return 0;
+        return 0;
     newText->deleteData(0,offset,exceptioncode);
     if ( exceptioncode )
-	return 0;
+        return 0;
     deleteData(offset,str->l-offset,exceptioncode);
     if ( exceptioncode )
-	return 0;
+        return 0;
     if (_parent)
-	_parent->insertBefore(newText,_next, exceptioncode );
+        _parent->insertBefore(newText,_next, exceptioncode );
     if ( exceptioncode )
-	return 0;
+        return 0;
 
     if (m_render)
-	(static_cast<RenderText*>(m_render))->setText(str);
+        (static_cast<RenderText*>(m_render))->setText(str);
     setChanged(true);
     return newText;
 }
@@ -273,9 +273,9 @@ void TextImpl::attach(KHTMLView *w)
     RenderObject *r = _parent->renderer();
     if(r && style())
     {
-	m_render = new RenderText(str);
-	m_render->setStyle(style());
-	r->addChild(m_render, _next ? _next->renderer() : 0);
+        m_render = new RenderText(str);
+        m_render->setStyle(style());
+        r->addChild(m_render, _next ? _next->renderer() : 0);
     }
     CharacterDataImpl::attach(w);
 }
@@ -290,7 +290,7 @@ void TextImpl::detach()
 void TextImpl::applyChanges(bool,bool force)
 {
     if (force || changed())
-	recalcStyle();
+        recalcStyle();
     setChanged(false);
 }
 
@@ -300,8 +300,8 @@ khtml::RenderStyle *TextImpl::style() const
 }
 
 bool TextImpl::prepareMouseEvent( int _x, int _y,
-				  int _tx, int _ty,
-				  MouseEvent *ev)
+                                  int _tx, int _ty,
+                                  MouseEvent *ev)
 {
     //kdDebug( 6020 ) << "Text::prepareMouseEvent" << endl;
 
@@ -315,17 +315,17 @@ bool TextImpl::prepareMouseEvent( int _x, int _y,
 
     if(m_render->parent() && m_render->parent()->isAnonymousBox())
     {
-	// we need to add the offset of the anonymous box
-	_tx += m_render->parent()->xPos();
-	_ty += m_render->parent()->yPos();
+        // we need to add the offset of the anonymous box
+        _tx += m_render->parent()->xPos();
+        _ty += m_render->parent()->yPos();
     }
 
     if( static_cast<RenderText *>(m_render)->checkPoint(_x, _y, _tx, _ty) )
     {
-	ev->innerNode = Node(this);
+        ev->innerNode = Node(this);
         ev->nodeAbsX = origTx;
         ev->nodeAbsY = origTy;
-	return true;
+        return true;
     }
     return false;
 }
@@ -339,9 +339,9 @@ khtml::FindSelectionResult TextImpl::findSelectionNode( int _x, int _y, int _tx,
 
     if(m_render->parent() && m_render->parent()->isAnonymousBox())
     {
-	// we need to add the offset of the anonymous box
-	_tx += m_render->parent()->xPos();
-	_ty += m_render->parent()->yPos();
+        // we need to add the offset of the anonymous box
+        _tx += m_render->parent()->xPos();
+        _ty += m_render->parent()->yPos();
     }
 
     node = this;
@@ -355,13 +355,13 @@ ushort TextImpl::id() const
 
 NodeImpl *TextImpl::cloneNode(bool /*deep*/, int &/*exceptioncode*/)
 {
-    return document->createTextNode(str);
+    return ownerDocument()->createTextNode(str);
 }
 
 void TextImpl::recalcStyle()
 {
     if (!parentNode())
-	return;
+        return;
     if(m_render) m_render->setStyle(parentNode()->style());
 }
 
@@ -373,11 +373,11 @@ bool TextImpl::childTypeAllowed( unsigned short /*type*/ )
 
 // ---------------------------------------------------------------------------
 
-CDATASectionImpl::CDATASectionImpl(DocumentImpl *impl, const DOMString &_text) : TextImpl(impl,_text)
+CDATASectionImpl::CDATASectionImpl(DocumentPtr *impl, const DOMString &_text) : TextImpl(impl,_text)
 {
 }
 
-CDATASectionImpl::CDATASectionImpl(DocumentImpl *impl) : TextImpl(impl)
+CDATASectionImpl::CDATASectionImpl(DocumentPtr *impl) : TextImpl(impl)
 {
 }
 
@@ -397,7 +397,7 @@ unsigned short CDATASectionImpl::nodeType() const
 
 NodeImpl *CDATASectionImpl::cloneNode(bool /*deep*/, int &/*exceptioncode*/)
 {
-    return document->createCDATASection(str);
+    return ownerDocument()->createCDATASection(str);
 }
 
 // DOM Section 1.1.1

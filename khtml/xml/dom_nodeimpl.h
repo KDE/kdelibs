@@ -54,6 +54,18 @@ class CSSStyleDeclarationImpl;
 class RegisteredEventListener;
 class EventImpl;
 
+    class DocumentPtr : public DomShared
+    {
+    public:
+        DocumentImpl *document() const { return doc; }
+    private:
+        DocumentPtr() { doc = 0; }
+        void resetDocument() { doc = 0; }
+        friend class DocumentImpl;
+
+        DocumentImpl *doc;
+    };
+
 // Skeleton of a node. No children and no parents are allowed.
 // We use this class as a basic Node Implementation, and derive all other
 // Node classes from it. This is done to reduce memory overhead.
@@ -65,7 +77,7 @@ class EventImpl;
 class NodeImpl : public DomShared
 {
 public:
-    NodeImpl(DocumentImpl *doc);
+    NodeImpl(DocumentPtr *doc);
     virtual ~NodeImpl();
 
     virtual const DOMString nodeName() const;
@@ -97,7 +109,7 @@ public:
     virtual NamedNodeMapImpl *attributes();
 
     DocumentImpl *ownerDocument() const
-	{ return document; }
+        { return document->document(); }
 
     virtual NodeImpl *insertBefore ( NodeImpl *newChild, NodeImpl *refChild, int &exceptioncode );
 
@@ -129,11 +141,11 @@ public:
     virtual unsigned short id() const { return 0; };
 
     enum MouseEventType {
-	MousePress,
-	MouseRelease,
-	MouseClick,
-	MouseDblClick,
-	MouseMove
+        MousePress,
+        MouseRelease,
+        MouseClick,
+        MouseDblClick,
+        MouseMove
     };
 
     struct MouseEvent
@@ -171,8 +183,8 @@ public:
      * false otherwise
      */
     virtual bool prepareMouseEvent( int /*_x*/, int /*_y*/,
-				    int /*_tx*/, int /*_ty*/,
-				    MouseEvent */*ev*/ ) { return false; }
+                                    int /*_tx*/, int /*_ty*/,
+                                    MouseEvent */*ev*/ ) { return false; }
 
     virtual khtml::FindSelectionResult findSelectionNode( int /*_x*/, int /*_y*/, int /*_tx*/, int /*_ty*/,
                                                    DOM::Node & /*node*/, int & /*offset*/ )
@@ -245,14 +257,14 @@ public:
     unsigned long index() const;
 
     virtual DocumentImpl *getDocument()
-	{ return document; } // different from ownerDocument() in that it is never null
+        { return document->document(); } // different from ownerDocument() in that it is never null
 
     virtual void addEventListener(int id, EventListener *listener, const bool useCapture);
     virtual void addEventListener(const DOMString &type, EventListener *listener,
-				  const bool useCapture, int &exceptioncode);
+                                  const bool useCapture, int &exceptioncode);
     virtual void removeEventListener(int id, EventListener *listener, bool useCapture);
     virtual void removeEventListener(const DOMString &type, EventListener *listener,
-				     bool useCapture,int &exceptioncode);
+                                     bool useCapture,int &exceptioncode);
     virtual void removeHTMLEventListener(int id);
 
     virtual bool dispatchEvent(EventImpl *evt, int &exceptioncode);
@@ -268,9 +280,14 @@ public:
     virtual bool childTypeAllowed( unsigned short /*type*/ ) { return false; }
     virtual unsigned long childNodeCount();
     virtual NodeImpl *childNode(unsigned long index);
-	
+
+    DocumentPtr *docPtr() const { return document; }
+
+private:
+    DocumentPtr *document;
+    friend DocumentImpl;
+
 protected:
-    DocumentImpl *document;
     khtml::RenderObject *m_render;
     bool m_complexText : 1;
     bool m_hasEvents : 1;
@@ -297,7 +314,7 @@ protected:
 class NodeWParentImpl : public NodeImpl
 {
 public:
-    NodeWParentImpl(DocumentImpl *doc);
+    NodeWParentImpl(DocumentPtr *doc);
 
     virtual ~NodeWParentImpl();
 
@@ -328,7 +345,7 @@ protected:
 class NodeBaseImpl : public NodeWParentImpl
 {
 public:
-    NodeBaseImpl(DocumentImpl *doc);
+    NodeBaseImpl(DocumentPtr *doc);
 
     virtual ~NodeBaseImpl();
 

@@ -44,7 +44,7 @@ using namespace khtml;
 
 // -------------------------------------------------------------------------
 
-HTMLAppletElementImpl::HTMLAppletElementImpl(DocumentImpl *doc)
+HTMLAppletElementImpl::HTMLAppletElementImpl(DocumentPtr *doc)
   : HTMLElementImpl(doc)
 {
     codeBase = 0;
@@ -128,7 +128,7 @@ void HTMLAppletElementImpl::parseAttribute(AttrImpl *attr)
 
 void HTMLAppletElementImpl::attach(KHTMLView *_view)
 {
-  setStyle(document->styleSelector()->styleForElement(this));
+  setStyle(ownerDocument()->styleSelector()->styleForElement(this));
   if(!code)
       return;
 
@@ -178,7 +178,7 @@ void HTMLAppletElementImpl::detach()
 
 // -------------------------------------------------------------------------
 
-HTMLEmbedElementImpl::HTMLEmbedElementImpl(DocumentImpl *doc)
+HTMLEmbedElementImpl::HTMLEmbedElementImpl(DocumentPtr *doc)
     : HTMLElementImpl(doc)
 {
 }
@@ -271,7 +271,7 @@ void HTMLEmbedElementImpl::parseAttribute(AttrImpl *attr)
 
 void HTMLEmbedElementImpl::attach(KHTMLView *w)
 {
-   setStyle(document->styleSelector()->styleForElement( this ));
+   setStyle(ownerDocument()->styleSelector()->styleForElement( this ));
    khtml::RenderObject *r = _parent->renderer();
    if ( !r )
       return;
@@ -298,7 +298,7 @@ void HTMLEmbedElementImpl::detach()
 
 // -------------------------------------------------------------------------
 
-HTMLObjectElementImpl::HTMLObjectElementImpl(DocumentImpl *doc) : HTMLElementImpl(doc)
+HTMLObjectElementImpl::HTMLObjectElementImpl(DocumentPtr *doc) : HTMLElementImpl(doc)
 {
     needWidgetUpdate = false;
 }
@@ -352,11 +352,11 @@ void HTMLObjectElementImpl::parseAttribute(AttrImpl *attr)
       break;
     case ATTR_ONLOAD: // ### support load/unload on object elements
         removeHTMLEventListener(EventImpl::LOAD_EVENT);
-        addEventListener(EventImpl::LOAD_EVENT,new HTMLEventListener(document->view()->part(),DOMString(attr->value()).string()),false);
+        addEventListener(EventImpl::LOAD_EVENT,new HTMLEventListener(ownerDocument()->view()->part(),DOMString(attr->value()).string()),false);
         break;
     case ATTR_ONUNLOAD:
         removeHTMLEventListener(EventImpl::UNLOAD_EVENT);
-        addEventListener(EventImpl::UNLOAD_EVENT,new HTMLEventListener(document->view()->part(),DOMString(attr->value()).string()),false);
+        addEventListener(EventImpl::UNLOAD_EVENT,new HTMLEventListener(ownerDocument()->view()->part(),DOMString(attr->value()).string()),false);
         break;
     default:
       HTMLElementImpl::parseAttribute( attr );
@@ -365,7 +365,7 @@ void HTMLObjectElementImpl::parseAttribute(AttrImpl *attr)
 
 void HTMLObjectElementImpl::attach(KHTMLView *w)
 {
-  setStyle(document->styleSelector()->styleForElement( this ));
+  setStyle(ownerDocument()->styleSelector()->styleForElement( this ));
 
   khtml::RenderObject *r = _parent->renderer();
   if ( !r )
@@ -397,14 +397,14 @@ void HTMLObjectElementImpl::applyChanges(bool top, bool force)
 {
     if (needWidgetUpdate) {
         if(m_render)  static_cast<RenderPartObject*>(m_render)->updateWidget();
-	needWidgetUpdate = false;
+        needWidgetUpdate = false;
     }
     HTMLElementImpl::applyChanges(top,force);
 }
 
 // -------------------------------------------------------------------------
 
-HTMLParamElementImpl::HTMLParamElementImpl(DocumentImpl *doc)
+HTMLParamElementImpl::HTMLParamElementImpl(DocumentPtr *doc)
     : HTMLElementImpl(doc)
 {
     m_name = 0;

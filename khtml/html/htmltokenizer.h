@@ -59,7 +59,7 @@ class KHTMLParser;
 class KHTMLView;
 
 namespace DOM {
-    class HTMLDocumentImpl;
+    class DocumentPtr;
     class DocumentFragmentImpl;
 }
 
@@ -150,8 +150,8 @@ class HTMLTokenizer : public Tokenizer, public khtml::CachedObjectClient
 {
     Q_OBJECT
 public:
-    HTMLTokenizer(DOM::HTMLDocumentImpl *, KHTMLView * = 0);
-    HTMLTokenizer(DOM::HTMLDocumentImpl *, DOM::DocumentFragmentImpl *frag);
+    HTMLTokenizer(DOM::DocumentPtr *, KHTMLView * = 0);
+    HTMLTokenizer(DOM::DocumentPtr *, DOM::DocumentFragmentImpl *frag);
     virtual ~HTMLTokenizer();
 
     void begin();

@@ -37,7 +37,7 @@ class DOMString;
 class HTMLBlockquoteElementImpl : public HTMLElementImpl
 {
 public:
-    HTMLBlockquoteElementImpl(DocumentImpl *doc);
+    HTMLBlockquoteElementImpl(DocumentPtr *doc);
 
     ~HTMLBlockquoteElementImpl();
 
@@ -57,7 +57,7 @@ class DOMString;
 class HTMLDivElementImpl : public HTMLElementImpl
 {
 public:
-    HTMLDivElementImpl(DocumentImpl *doc);
+    HTMLDivElementImpl(DocumentPtr *doc);
 
     ~HTMLDivElementImpl();
 
@@ -75,7 +75,7 @@ public:
 class HTMLHRElementImpl : public HTMLElementImpl
 {
 public:
-    HTMLHRElementImpl(DocumentImpl *doc);
+    HTMLHRElementImpl(DocumentPtr *doc);
 
     ~HTMLHRElementImpl();
 
@@ -95,7 +95,7 @@ public:
 class HTMLHeadingElementImpl : public HTMLElementImpl
 {
 public:
-    HTMLHeadingElementImpl(DocumentImpl *doc, ushort _tagid);
+    HTMLHeadingElementImpl(DocumentPtr *doc, ushort _tagid);
 
     ~HTMLHeadingElementImpl();
 
@@ -122,7 +122,7 @@ protected:
 class HTMLParagraphElementImpl : public HTMLElementImpl
 {
 public:
-    HTMLParagraphElementImpl(DocumentImpl *doc);
+    HTMLParagraphElementImpl(DocumentPtr *doc);
 
     ~HTMLParagraphElementImpl();
 
@@ -141,7 +141,7 @@ public:
 class HTMLPreElementImpl : public HTMLElementImpl
 {
 public:
-    HTMLPreElementImpl(DocumentImpl *doc);
+    HTMLPreElementImpl(DocumentPtr *doc);
 
     ~HTMLPreElementImpl();
 
@@ -160,18 +160,18 @@ public:
 
 class HTMLLayerElementImpl : public HTMLDivElementImpl
 {
-public:   
-    HTMLLayerElementImpl( DocumentImpl *doc );
+public:
+    HTMLLayerElementImpl( DocumentPtr *doc );
     ~HTMLLayerElementImpl();
-    
+
     virtual const DOMString nodeName() const;
     virtual ushort id() const;
-    
+
     virtual tagStatus startTag() const { return LAYERStartTag; }
     virtual tagStatus endTag() const { return LAYEREndTag; }
 
     virtual void parseAttribute(AttrImpl *);
-    
+
     bool fixed;
 };
 

@@ -37,7 +37,7 @@ class HTMLImageElementImpl
     : public HTMLElementImpl
 {
 public:
-    HTMLImageElementImpl(DocumentImpl *doc);
+    HTMLImageElementImpl(DocumentPtr *doc);
 
     ~HTMLImageElementImpl();
 
@@ -50,8 +50,8 @@ public:
     virtual void parseAttribute(AttrImpl *);
 
     virtual bool prepareMouseEvent( int _x, int _y,
-				    int _tx, int _ty,
-				    MouseEvent *ev );
+                                    int _tx, int _ty,
+                                    MouseEvent *ev );
 
     virtual void attach(KHTMLView *w);
     virtual void applyChanges(bool top=true, bool force=true);
@@ -83,7 +83,7 @@ public:
 
     enum Shape { Default, Poly, Rect, Circle, Unknown };
 
-    HTMLAreaElementImpl(DocumentImpl *doc);
+    HTMLAreaElementImpl(DocumentPtr *doc);
     ~HTMLAreaElementImpl();
 
     virtual const DOMString nodeName() const;
@@ -116,7 +116,7 @@ protected:
 class HTMLMapElementImpl : public HTMLElementImpl
 {
 public:
-    HTMLMapElementImpl(DocumentImpl *doc);
+    HTMLMapElementImpl(DocumentPtr *doc);
 
     ~HTMLMapElementImpl();
 

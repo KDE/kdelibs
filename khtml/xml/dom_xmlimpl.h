@@ -35,9 +35,9 @@ class DOMString;
 class EntityImpl : public NodeBaseImpl
 {
 public:
-    EntityImpl(DocumentImpl *doc);
-    EntityImpl(DocumentImpl *doc, DOMString _name);
-    EntityImpl(DocumentImpl *doc, DOMString _publicId, DOMString _systemId, DOMString _notationName);
+    EntityImpl(DocumentPtr *doc);
+    EntityImpl(DocumentPtr *doc, DOMString _name);
+    EntityImpl(DocumentPtr *doc, DOMString _publicId, DOMString _systemId, DOMString _notationName);
     virtual ~EntityImpl();
 
     virtual const DOMString nodeName() const;
@@ -59,8 +59,8 @@ protected:
 class EntityReferenceImpl : public NodeBaseImpl
 {
 public:
-    EntityReferenceImpl(DocumentImpl *doc);
-    EntityReferenceImpl(DocumentImpl *doc, DOMStringImpl *_entityName);
+    EntityReferenceImpl(DocumentPtr *doc);
+    EntityReferenceImpl(DocumentPtr *doc, DOMStringImpl *_entityName);
     virtual ~EntityReferenceImpl();
 
     virtual const DOMString nodeName() const;
@@ -74,8 +74,8 @@ protected:
 class NotationImpl : public NodeBaseImpl
 {
 public:
-    NotationImpl(DocumentImpl *doc);
-    NotationImpl(DocumentImpl *doc, DOMString _name, DOMString _publicId, DOMString _systemId);
+    NotationImpl(DocumentPtr *doc);
+    NotationImpl(DocumentPtr *doc, DOMString _name, DOMString _publicId, DOMString _systemId);
     virtual ~NotationImpl();
 
     virtual const DOMString nodeName() const;
@@ -95,8 +95,8 @@ protected:
 class ProcessingInstructionImpl : public NodeBaseImpl
 {
 public:
-    ProcessingInstructionImpl(DocumentImpl *doc);
-    ProcessingInstructionImpl(DocumentImpl *doc, DOMString _target, DOMString _data);
+    ProcessingInstructionImpl(DocumentPtr *doc);
+    ProcessingInstructionImpl(DocumentPtr *doc, DOMString _target, DOMString _data);
     virtual ~ProcessingInstructionImpl();
 
     virtual const DOMString nodeName() const;

@@ -226,7 +226,7 @@ public:
  *    element or ignore the tag.
  *
  */
-KHTMLParser::KHTMLParser( KHTMLView *_parent, HTMLDocumentImpl *doc)
+KHTMLParser::KHTMLParser( KHTMLView *_parent, DocumentPtr *doc)
 {
     //kdDebug( 6035 ) << "parser constructor" << endl;
 #if SPEED_DEBUG > 0
@@ -235,6 +235,7 @@ KHTMLParser::KHTMLParser( KHTMLView *_parent, HTMLDocumentImpl *doc)
 
     HTMLWidget    = _parent;
     document      = doc;
+    document->ref();
 
     blockStack = 0;
 
@@ -244,10 +245,12 @@ KHTMLParser::KHTMLParser( KHTMLView *_parent, HTMLDocumentImpl *doc)
     reset();
 }
 
-KHTMLParser::KHTMLParser( DOM::DocumentFragmentImpl *i, HTMLDocumentImpl *doc )
+KHTMLParser::KHTMLParser( DOM::DocumentFragmentImpl *i, DocumentPtr *doc )
 {
     HTMLWidget = 0;
     document = doc;
+    document->ref();
+
     forbiddenTag = new ushort[ID_CLOSE_TAG+1];
 
     blockStack = 0;
@@ -263,6 +266,8 @@ KHTMLParser::~KHTMLParser()
     kdDebug( ) << "TIME: parsing time was = " << qt.elapsed() << endl;
 #endif
 
+    document->deref();
+
     freeBlock();
 
     delete [] forbiddenTag;
@@ -271,7 +276,7 @@ KHTMLParser::~KHTMLParser()
 
 void KHTMLParser::reset()
 {
-    current = document;
+    current = document->document();
 
     freeBlock();
 
@@ -315,7 +320,7 @@ void KHTMLParser::parseToken(Token *t)
 
     // holy shit. apparently some sites use </br> instead of <br>
     // be compatible with IE and NS
-    if(document->parseMode() != DocumentImpl::Strict && t->id == ID_BR+ID_CLOSE_TAG)
+    if(document->document()->parseMode() != DocumentImpl::Strict && t->id == ID_BR+ID_CLOSE_TAG)
         t->id -= ID_CLOSE_TAG;
 
     if(t->id > ID_CLOSE_TAG)
@@ -527,22 +532,22 @@ bool KHTMLParser::insertNode(NodeImpl *n)
             break;
             // SCRIPT and OBJECT are allowd in the body.
         case ID_BODY:
-            if(inBody && document->body()) {
+            if(inBody && doc()->body()) {
                 // we have another <BODY> element.... apply attributes to existing one
                 // make sure we don't overwrite already existing attributes
                 // some sites use <body bgcolor=rightcolor>...<body bgcolor=wrongcolor>
                 NamedAttrMapImpl *map = static_cast<NamedAttrMapImpl*>(n->attributes());
-                NamedAttrMapImpl *bodymap = static_cast<NamedAttrMapImpl*>(document->body()->attributes());
+                NamedAttrMapImpl *bodymap = static_cast<NamedAttrMapImpl*>(doc()->body()->attributes());
                 unsigned long attrNo;
                 int exceptioncode;
                 bool changed = false;
                 for (attrNo = 0; map && attrNo < map->length(); attrNo++)
                     if(!bodymap->getNamedItem(static_cast<AttrImpl*>(map->item(attrNo))->name())) {
-                        document->body()->setAttributeNode(static_cast<AttrImpl*>(map->item(attrNo)->cloneNode(false,exceptioncode)), exceptioncode);
+                        doc()->body()->setAttributeNode(static_cast<AttrImpl*>(map->item(attrNo)->cloneNode(false,exceptioncode)), exceptioncode);
                         changed = true;
                     }
                 if ( changed )
-                    document->body()->applyChanges();
+                    doc()->body()->applyChanges();
                 noRealBody = false;
             } else if ( current->isDocumentNode() )
                 break;
@@ -927,7 +932,7 @@ NodeImpl *KHTMLParser::getElement(Token *t)
         popBlock(ID_HEAD);
         if ( inBody && noRealBody && !haveFrameSet) {
             popBlock( ID_BODY );
-            document->setBody( 0 );
+            doc()->setBody( 0 );
             inBody = false;
             noRealBody = true;
         }
@@ -1353,13 +1358,13 @@ void KHTMLParser::freeBlock()
 
 void KHTMLParser::createHead()
 {
-    if(head || !document->firstChild())
+    if(head || !doc()->firstChild())
         return;
 
     head = new HTMLHeadElementImpl(document);
-    HTMLElementImpl *body = document->body();
+    HTMLElementImpl *body = doc()->body();
     int exceptioncode = 0;
-    document->firstChild()->insertBefore(head, body, exceptioncode);
+    doc()->firstChild()->insertBefore(head, body, exceptioncode);
     if ( exceptioncode ) {
 #ifdef PARSER_DEBUG
         kdDebug( 6035 ) << "creation of head failed!!!!" << endl;

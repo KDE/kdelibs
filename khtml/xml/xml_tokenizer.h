@@ -43,7 +43,7 @@ namespace DOM {
 class XMLHandler : public QXmlDefaultHandler
 {
 public:
-    XMLHandler(DOM::DocumentImpl *_doc, KHTMLView *_view);
+    XMLHandler(DOM::DocumentPtr *_doc, KHTMLView *_view);
     virtual ~XMLHandler();
 
     // return the error protocol if parsing failed
@@ -81,18 +81,18 @@ public:
 
 private:
     QString errorProt;
-    DOM::DocumentImpl *m_doc;
+    DOM::DocumentPtr *m_doc;
     KHTMLView *m_view;
     DOM::NodeImpl *m_currentNode;
     DOM::NodeImpl *m_rootNode;
 
     enum State {
-	StateInit,
-	StateDocument,
-	StateQuote,
-	StateLine,
-	StateHeading,
-	StateP
+        StateInit,
+        StateDocument,
+        StateQuote,
+        StateLine,
+        StateHeading,
+        StateP
     };
     State state;
 };
@@ -102,7 +102,7 @@ class XMLTokenizer : public Tokenizer, public khtml::CachedObjectClient
 {
     Q_OBJECT
 public:
-    XMLTokenizer(DOM::DocumentImpl *, KHTMLView * = 0);
+    XMLTokenizer(DOM::DocumentPtr *, KHTMLView * = 0);
     virtual ~XMLTokenizer();
     virtual void begin();
     virtual void write( const QString &str, bool );
@@ -113,7 +113,7 @@ public:
     void notifyFinished(khtml::CachedObject *finishedObj);
 
 protected:
-    DocumentImpl *m_doc;
+    DocumentPtr *m_doc;
     KHTMLView *m_view;
 
     void executeScripts();
@@ -130,11 +130,11 @@ protected:
 class XMLStyleSheetLoader : public khtml::CachedObjectClient
 {
 public:
-    XMLStyleSheetLoader(DocumentImpl *_doc, DOM::DOMString url);
+    XMLStyleSheetLoader(DocumentPtr *_doc, DOM::DOMString url);
     virtual ~XMLStyleSheetLoader();
     virtual void setStyleSheet(const DOM::DOMString &url, const DOM::DOMString &sheet);
 protected:
-    DocumentImpl *m_doc;
+    DocumentPtr *m_doc;
     khtml::CachedCSSStyleSheet *m_cachedSheet;
 };
 
