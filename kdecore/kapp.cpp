@@ -1562,7 +1562,21 @@ void KApplication::kdisplaySetPalette()
     highlightVal = 100 + (2*contrast_+4)*16/10;
     lowlightVal = 100 + (2*contrast_+4)*10;
 
-    QColorGroup disabledgrp(foreground, background,
+    QColor disfg = foreground;
+
+    int h, s, v;
+    disfg.hsv( &h, &s, &v );
+    if (v > 128)
+	// dark bg, light fg - need a darker disabled fg
+	disfg = disfg.dark(lowlightVal);
+    else if (disfg != black)
+	// light bg, dark fg - need a lighter disabled fg - but only if !black
+	disfg = disfg.light(highlightVal);
+    else
+	// black fg - use darkgrey disabled fg
+	disfg = Qt::darkGray;
+
+    QColorGroup disabledgrp(disfg, background,
                             background.light(highlightVal),
                             background.dark(lowlightVal),
                             background.dark(120),
