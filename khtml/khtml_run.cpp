@@ -33,6 +33,9 @@ KHTMLRun::KHTMLRun( KHTMLPart *part, khtml::ChildFrame *child, const KURL &url,
                           false, false, hideErrorDialog ),
   m_child( child )
 {
+    // Don't use an external browser for parts of a webpage we are rendering. (iframes at least are one example)
+    setEnableExternalBrowser(false);
+
     // get the wheel to start spinning
     part->started(0L);
 }
