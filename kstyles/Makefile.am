@@ -1,3 +1,3 @@
 
-SUBDIRS=utils themes \
+SUBDIRS=utils themes highcolor \
 	basicplugin klegacy riscos
