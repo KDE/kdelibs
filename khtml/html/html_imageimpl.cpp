@@ -250,10 +250,7 @@ HTMLMapElementImpl::mapMouseEvent(int x_, int y_, int width_, int height_,
 	    current = current->nextSibling();
 	    continue;
 	}
-	// ### What is the ID_P supposed to do here? This can
-	// only lead to memory corruption or a segfault, since P does
-	// not inherit form Area!
-	if(current->id()==ID_AREA)// || current->id()==ID_P)
+	if(current->id()==ID_AREA)
 	{
 	    //cout << "area found " << endl;
 	    HTMLAreaElementImpl* area=static_cast<HTMLAreaElementImpl*>(current);
@@ -420,7 +417,7 @@ void HTMLAreaElementImpl::parseAttribute(AttrImpl *attr)
 
 bool
 HTMLAreaElementImpl::mapMouseEvent(int x_, int y_, int width_, int height_,
-				   int /*button_*/, MouseEventType /*type*/, DOMString& url_)
+				   int button, MouseEventType type, DOMString& url_)
 {
     //cout << "area:mapMouseEvent " << endl;
     bool inside = false;
@@ -441,6 +438,9 @@ HTMLAreaElementImpl::mapMouseEvent(int x_, int y_, int width_, int height_,
 	else
 	    url_ = href;
     }
+    // dynamic HTML...
+    if(inside || mouseInside()) mouseEventHandler(button, type, inside);
+
     return inside;
 }	
 
