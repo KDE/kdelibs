@@ -47,6 +47,7 @@
 #include <kimageio.h>
 #include <kdebug.h>
 #include <kglobalsettings.h>
+#include <kcursor.h>
 
 #include <qlist.h>
 #include <qrect.h>
@@ -113,7 +114,7 @@ KHTMLView::KHTMLView( KHTMLPart *part, QWidget *parent, const char *name)
     KImageIO::registerFormats();
 
     setCursor(arrowCursor);
-    linkCursor = QCursor(PointingHandCursor);
+    linkCursor = KCursor::handCursor();
     init();
 
     viewport()->show();
