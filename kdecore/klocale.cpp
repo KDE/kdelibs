@@ -553,30 +553,7 @@ QString KLocale::monthNamePossessive(int i, bool shortName) const
 
 QString KLocale::weekDayName (int i, bool shortName) const
 {
-  if ( shortName )
-    switch ( i )
-      {
-      case 1:  return translate("Monday", "Mon");
-      case 2:  return translate("Tuesday", "Tue");
-      case 3:  return translate("Wednesday", "Wed");
-      case 4:  return translate("Thursday", "Thu");
-      case 5:  return translate("Friday", "Fri");
-      case 6:  return translate("Saturday", "Sat");
-      case 7:  return translate("Sunday", "Sun");
-      }
-  else
-    switch ( i )
-      {
-      case 1:  return translate("Monday");
-      case 2:  return translate("Tuesday");
-      case 3:  return translate("Wednesday");
-      case 4:  return translate("Thursday");
-      case 5:  return translate("Friday");
-      case 6:  return translate("Saturday");
-      case 7:  return translate("Sunday");
-      }
-
-  return QString::null;
+  return calendar()->weekDayName(i, shortName);
 }
 
 void KLocale::insertCatalogue( const QString & catalog )

@@ -456,10 +456,7 @@ bool KCalendarSystemHebrew::setYMD(QDate & date, int y, int m, int d) const
 
 QString KCalendarSystemHebrew::weekDayName(int day, bool shortName) const
 {
-  // Don't change this into locale()->calendar()->weekDayName, even though
-  // the documentation for KLocale::weekDayName says though. This would
-  // introduce an endless recursion.
-  return locale()->weekDayName(day, shortName);
+  return KCalendarSystem::weekDayName(day, shortName);
 }
 
 // Ok
