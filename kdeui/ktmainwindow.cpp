@@ -26,6 +26,7 @@
 #include <qstrlist.h>
 #include <kmenubar.h>
 #include <kwm.h>
+#include <ktmlayout.h>
 //#include <qobjcoll.h>
 
 // a static pointer (too bad we cannot have static objects in libraries)
