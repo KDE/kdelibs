@@ -98,6 +98,8 @@ public:
     void submit (  );
     void reset();
 
+    static void i18nData();
+
     friend class HTMLFormElement;
     friend class HTMLFormCollectionImpl;
 

@@ -139,6 +139,24 @@ inline static QCString fixUpfromUnicode(const QTextCodec* codec, const QString& 
     return str;
 }
 
+void HTMLFormElementImpl::i18nData()
+{
+    QString foo1 = i18n( "You're about to send data to the Internet\n"
+                         "via an unencrypted connection.\nIt might be possible "
+                         "for others to see this information.\n\n"
+                         "Do you want to continue?");
+    QString foo2 = i18n("KDE Web browser");
+    QString foo3 = i18n("When you send a password unencrypted to the Internet,\n"
+                        "it might be possible for others to capture it as plain text.\n\n"
+                        "Do you want to continue?");
+    QString foo4 = i18n("You're about to transfer the following files from\n"
+                        "your local computer to the internet.\n\n"
+                        "Do you really want to continue?");
+    QString foo5 = i18n("Your data submission is redirected to\n"
+                        "an insecure site. The data is sent unencrypted.\n\n"
+                        "Do you want to continue?");
+}
+
 
 QByteArray HTMLFormElementImpl::formData()
 {
@@ -1046,7 +1064,7 @@ bool HTMLInputElementImpl::encoding(const QTextCodec* codec, khtml::encodingList
                 }
             }
             else {
-                KMessageBox::sorry(0L, i18n("Error downloading file:\n%1").arg(KIO::NetAccess::lastErrorString()));
+                KMessageBox::sorry(0L, i18n("Error fetching file for submission:\n%1").arg(KIO::NetAccess::lastErrorString()));
                 return false;
             }
             break;
