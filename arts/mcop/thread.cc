@@ -56,6 +56,16 @@ ThreadCondition_impl::~ThreadCondition_impl()
 {
 }
 
+// Semaphore
+Semaphore::~Semaphore()
+{
+	delete impl;
+}
+
+Semaphore_impl::~Semaphore_impl()
+{
+}
+
 // No threading:
 
 namespace Arts {
@@ -74,12 +84,13 @@ private:
 	Thread *thread;
 public:
 	SystemThreadsNoThread_impl(Thread *thread) : thread(thread) {}
+	void setPriority(int) {}
 	void start() {
 		systemThreadsNoneLevel++;
 		thread->run();
 		systemThreadsNoneLevel--;
 	}
-	void waitDone() {};
+	void waitDone() {}
 };
 
 class SystemThreadsNoThreadCondition_impl : public ThreadCondition_impl {
@@ -87,6 +98,14 @@ public:
 	void wakeOne() {};
 	void wakeAll() {};
 	void wait(Mutex_impl *) {};
+};
+
+class SystemThreadsNoSemaphore_impl : public Semaphore_impl {
+public:
+	void wait() {}
+	int tryWait() { return 0; }
+	void post() {}
+	int getValue() { return 0; }
 };
 
 class SystemThreadsNone : public SystemThreads {
@@ -111,6 +130,9 @@ public:
 		/* doesn't generate more than 256 distinct thread identifiers - but
 		 * that should be enough, considering we run no threads here */
 		memset(id,1+systemThreadsNoneLevel,ARTS_SIZEOF_THREAD_ID);
+	}
+	Semaphore_impl *createSemaphore_impl(int, int) {
+		return new SystemThreadsNoSemaphore_impl();
 	}
 };
 

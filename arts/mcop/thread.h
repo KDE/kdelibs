@@ -29,6 +29,7 @@ class Mutex_impl;
 class Thread_impl;
 class ThreadCondition_impl;
 class Thread;
+class Semaphore_impl;
 
 /**
  * Encapsulates the operating system threading facilities
@@ -63,6 +64,7 @@ public:
 	virtual Mutex_impl *createRecMutex_impl() = 0;
 	virtual Thread_impl *createThread_impl(Thread *thread) = 0;
 	virtual ThreadCondition_impl *createThreadCondition_impl() = 0;
+	virtual Semaphore_impl *createSemaphore_impl(int, int) = 0;
 	virtual ~SystemThreads();
 
 	/**
@@ -79,6 +81,7 @@ public:
 class Thread_impl
 {
 public:
+	virtual void setPriority(int) =0;
 	virtual void start() = 0;
 	virtual void waitDone() = 0;
 	virtual ~Thread_impl();
@@ -106,6 +109,14 @@ public:
 	virtual ~ThreadCondition_impl();
 };
 
+class Semaphore_impl {
+public:
+	virtual void wait() = 0;
+	virtual int tryWait() = 0;
+	virtual void post() = 0;
+	virtual int getValue() = 0;
+	virtual ~Semaphore_impl();
+};
 
 /**
  * A thread of execution
@@ -136,6 +147,15 @@ public:
 	}
 	
 	virtual ~Thread();
+
+	/**
+	 * set the priority parameters for the thread
+	 * 
+	 * FIXME: what should be minimum, maximum, recommended?
+	 */
+	inline void setPriority(int priority) {
+		impl->setPriority(priority);
+	}
 
 	/**
 	 * starts the run() method in a thread
@@ -302,6 +322,38 @@ public:
 	}
 };
 
+class Semaphore {
+private:
+	Semaphore_impl *impl;
+
+public:
+	Semaphore(int shared=0, int count=0)
+	{
+		impl = SystemThreads::the()->createSemaphore_impl(shared, count);
+	}
+
+	virtual ~Semaphore();
+
+	inline void wait()
+	{
+		impl->wait();
+	}
+
+	inline int tryWait()
+	{
+		return impl->tryWait();
+	}
+
+	inline void post()
+	{
+		impl->post();
+	}
+
+	inline int getValue()
+	{
+		return impl->getValue();
+	}
+};
 
 };
 

@@ -28,6 +28,7 @@
 #ifdef HAVE_LIBPTHREAD
 
 #include <pthread.h>
+#include <semaphore.h>
 #include <debug.h>
 #include <string.h>
 
@@ -178,11 +179,14 @@ protected:
 public:
 	Thread_impl(Thread *thread) : thread(thread) {
 	}
+	void setPriority(int priority) {
+		struct sched_param sp;
+		sp.sched_priority = priority;
+		if (pthread_setschedparam(pthread, SCHED_FIFO, &sp))
+			arts_debug("Thread::setPriority: sched_setscheduler failed");
+	}
 	void start() {
-		pthread_attr_t attrs;
-			 
-		pthread_attr_init(&attrs);
-	    pthread_create(&pthread,&attrs,threadStartInternal,thread);
+		pthread_create(&pthread,0,threadStartInternal,thread);
 	}
 	void waitDone() {
     	void *foo;
@@ -223,6 +227,38 @@ public:
 	}
 };
 
+class Semaphore_impl : public Arts::Semaphore_impl
+{
+private:
+	sem_t semaphore;
+
+public:
+	Semaphore_impl(int shared, int count) {
+		sem_init(&semaphore, shared, count);
+	}
+
+	~Semaphore_impl() {
+		sem_destroy(&semaphore);
+	}
+
+	void wait() {
+		sem_wait(&semaphore);
+	}
+
+	int tryWait() {
+		return sem_trywait(&semaphore);
+	}
+
+	void post() {
+		sem_post(&semaphore);
+	}
+
+	int getValue() {
+		int retval;
+		sem_getvalue(&semaphore, &retval);
+		return retval;
+	}
+};
 
 class PosixThreads : public SystemThreads {
 private:
@@ -249,6 +285,9 @@ public:
 	void getCurrentThread(void *id) {
 		pthread_t *result = static_cast<pthread_t*>(id);
 		*result = pthread_self();
+	}
+	Arts::Semaphore_impl *createSemaphore_impl(int shared, int count) {
+		return new Semaphore_impl(shared, count);
 	}
 };
 
