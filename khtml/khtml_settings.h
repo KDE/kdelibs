@@ -114,6 +114,8 @@ public:
     QString settingsToCSS() const;
     QString availableFamilies() const { return availFamilies; }
 
+    QString userStyleSheet() const;
+    
 private:
     void setFont(const QFont::CharSet &charset, int i, const QString &n);
     QString lookupFont(const QFont::CharSet &charset, int i) const;
@@ -132,7 +134,8 @@ private:
     QFont::CharSet m_defaultCharset;
     bool enforceCharset;
     QString m_encoding;
-
+    QString m_userSheet;
+    
     QColor m_textColor;
     QColor m_linkColor;
     QColor m_vLinkColor;

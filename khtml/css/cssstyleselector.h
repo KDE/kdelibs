@@ -26,6 +26,7 @@
 #include <qlist.h>
 
 #include "rendering/render_style.h"
+#include "dom/dom_string.h"
 
 class KHTMLSettings;
 
@@ -92,7 +93,7 @@ namespace khtml
 	void addSheet(DOM::StyleSheetImpl *sheet);
 	
 	static void loadDefaultStyle(const KHTMLSettings *s = 0);
-	static void setUserStyle(DOM::StyleSheetImpl *sheet);
+	static void setUserStyle(const DOM::DOMString &sheet);
 	static void clear();
 	
 	virtual RenderStyle *styleForElement(DOM::ElementImpl *e);

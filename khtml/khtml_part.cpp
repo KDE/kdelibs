@@ -41,6 +41,7 @@
 #include "misc/htmlhashes.h"
 #include "misc/loader.h"
 #include "xml/dom_textimpl.h"
+#include "css/cssstyleselector.h"
 #include "java/kjavaappletcontext.h"
 using namespace DOM;
 
@@ -329,20 +330,26 @@ namespace khtml {
     public:
         PartStyleSheetLoader(KHTMLPartPrivate *part, DOM::DOMString url, DocLoader *docLoader)
         {
-            m_part = part;
-            if (docLoader)
-                docLoader->requestStyleSheet(url, DOMString());
-            else
-                Cache::requestStyleSheet(url, DOMString(),false);
+	    m_part = part;
+	    // the "foo" is needed, so that the docloader for the empty document doesn't cancel this request.
+	    m_cachedSheet = Cache::requestStyleSheet(url, DOMString("foo"),false);
+	    m_cachedSheet->ref( this );
         }
-
+	virtual ~PartStyleSheetLoader()
+	{
+	    if ( m_cachedSheet ) m_cachedSheet->deref(this);
+	}
         virtual void setStyleSheet(const DOM::DOMString &url, const DOM::DOMString &sheet)
         {
             m_part->m_userSheet = sheet;
             m_part->m_userSheetUrl = url;
+	    khtml::CSSStyleSelector::setUserStyle( sheet );
+	    if ( m_part->m_doc )
+		m_part->m_doc->applyChanges();
             delete this;
         }
         KHTMLPartPrivate *m_part;
+	khtml::CachedCSSStyleSheet *m_cachedSheet;
     };
 };
 
@@ -445,7 +452,10 @@ void KHTMLPart::init( KHTMLView *view, GUIProfile prof )
   d->m_bJScriptEnabled = KHTMLFactory::defaultHTMLSettings()->isJavaScriptEnabled();
   d->m_bJavaEnabled = KHTMLFactory::defaultHTMLSettings()->isJavaEnabled();
   d->m_bPluginsEnabled = KHTMLFactory::defaultHTMLSettings()->isPluginsEnabled();
-
+  QString userStyleSheet = KHTMLFactory::defaultHTMLSettings()->userStyleSheet();
+  if ( !userStyleSheet.isEmpty() )
+      setUserStyleSheet( KURL( userStyleSheet ) );
+  
   connect( this, SIGNAL( completed() ),
            this, SLOT( updateActions() ) );
   connect( this, SIGNAL( started( KIO::Job * ) ),
@@ -1486,6 +1496,7 @@ void KHTMLPart::setUserStyleSheet(const QString &styleSheet)
 {
     d->m_userSheet = styleSheet;
     d->m_userSheetUrl = DOMString();
+    khtml::CSSStyleSelector::setUserStyle( styleSheet );
 }
 
 

@@ -196,6 +196,8 @@ void KHTMLSettings::init( KConfig * config, bool reset )
     if ( reset || config->hasKey( "EnableCSS" ) )
         m_bEnableCSS = config->readBoolEntry( "EnableCSS", true );
 
+    if ( reset || config->hasKey( "UserStyleSheet" ) )
+        m_userSheet = config->readEntry( "UserStyleSheet", "" );
   }
 
   if( reset || config->hasGroup( "Java/JavaScript Settings" ) ) {
@@ -446,4 +448,9 @@ void KHTMLSettings::internalSetCharset( QFont::CharSet c )
 { 
     m_charset = c; 
     availFamilies = KGlobal::charsets()->availableFamilies( m_charset ).join(",");
+}
+
+QString KHTMLSettings::userStyleSheet() const
+{
+    return m_userSheet;
 }

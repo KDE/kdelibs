@@ -143,11 +143,16 @@ void CSSStyleSelector::addSheet(StyleSheetImpl *sheet)
     authorStyle->append(sheet);
 }
 
-void CSSStyleSelector::setUserStyle(StyleSheetImpl *sheet)
+void CSSStyleSelector::setUserStyle(const DOM::DOMString &str)
 {
     if(userStyle) delete userStyle;
+    if(userSheet) delete userSheet;
+
+    userSheet = new DOM::CSSStyleSheetImpl((DOM::CSSStyleSheetImpl *)0);
+    userSheet->parseString( str );
+
     userStyle = new CSSStyleSelectorList();
-    userStyle->append(sheet);
+    userStyle->append(userSheet);
 }
 
 void CSSStyleSelector::loadDefaultStyle(const KHTMLSettings *s)
