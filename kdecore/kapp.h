@@ -25,7 +25,7 @@
 
 // Version macros. Never put this further down.
 #define KDE_VERSION 210
-#define KDE_VERSION_STRING "2.0.9 >= 20001128"
+#define KDE_VERSION_STRING "2.0.9 >= 20001207"
 #define KDE_VERSION_MAJOR 2
 #define KDE_VERSION_MINOR 1
 #define KDE_VERSION_RELEASE 0
@@ -787,6 +787,13 @@ private:
 #endif
 
 // $Log$
+// Revision 1.199  2000/11/29 19:55:05  waba
+// -   * @param length Generate a string of this length.  If negative, the
+// -   *               length will be random as well (from 0 to RAND_MAX)
+// +   * @param length Generate a string of this length.
+// Whoever added this must have severe brain damage. Why would you want to
+// generate a string with an average length of 1Gb?
+//
 // Revision 1.198  2000/11/29 19:00:48  mueller
 // docu fix
 //
