@@ -875,24 +875,20 @@ void RenderSelect::updateFromElement()
             }
             else if (listItems[listIndex]->id() == ID_OPTION) {
                 HTMLOptionElementImpl* optElem = static_cast<HTMLOptionElementImpl*>(listItems[listIndex]);
-                DOMString text = optElem->text();
-                if (text.isNull())
-                    text = "";
+                QString text = optElem->text().string();
                 if (optElem->parentNode()->id() == ID_OPTGROUP)
                 {
                     // Prefer label if set
                     DOMString label = optElem->getAttribute(ATTR_LABEL);
                     if (!label.isEmpty())
-                        text = label;
-                    text = DOMString("    ")+text;
+                        text = label.string();
+                    text = QString::fromLatin1("    ")+text;
                 }
 
                 if(m_useListBox)
-                    static_cast<KListBox*>(m_widget)
-                        ->insertItem(QString(text.implementation()->s, text.implementation()->l), listIndex);
+                    static_cast<KListBox*>(m_widget)->insertItem(text.stripWhiteSpace(), listIndex);
                 else
-                    static_cast<KComboBox*>(m_widget)
-                        ->insertItem(QString(text.implementation()->s, text.implementation()->l), listIndex);
+                    static_cast<KComboBox*>(m_widget)->insertItem(text.stripWhiteSpace(), listIndex);
             }
             else
                 KHTMLAssert(false);
