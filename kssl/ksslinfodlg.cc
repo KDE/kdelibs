@@ -138,13 +138,27 @@ void KSSLInfoDlg::setup(KSSLCertificate *cert,
 
     layout->addWidget(new QLabel(i18n("Chain:"), this), 0, 0);
     d->_chain = new QComboBox(this);
-    layout->addMultiCellWidget(d->_chain, 1, 0, 1, 2);
+    layout->addMultiCellWidget(d->_chain, 1, 1, 0, 1);
     connect(d->_chain, SIGNAL(activate(int)), SLOT(slotChain(int)));
 
-    layout->addWidget(new QLabel(i18n("Peer Certificate:"), this), 0, 0);
-    layout->addWidget(buildCertInfo(cert->getSubject()), 1, 0);
-    layout->addWidget(new QLabel(i18n("Issuer:"), this), 0, 1);
-    layout->addWidget(buildCertInfo(cert->getIssuer()), 1, 1);
+    d->_chain->clear();
+
+    if (cert->chain().isValid() && cert->chain().depth() > 1) {
+       d->_chain->setEnabled(true);
+       d->_chain->insertItem(i18n("0 - Site Certificate"));
+       int cnt = 0;
+       QPtrList<KSSLCertificate> cl = cert->chain().getChain();
+       for (KSSLCertificate *c = cl.first(); c != 0; c = cl.next()) {
+         KSSLX509Map map(c->getSubject());
+         d->_chain->insertItem(QString::number(++cnt)+" - "+map.getValue("CN"));
+       }
+       d->_chain->setCurrentItem(0);
+    } else d->_chain->setEnabled(false);
+
+    layout->addWidget(new QLabel(i18n("Peer Certificate:"), this), 2, 0);
+    layout->addWidget(buildCertInfo(cert->getSubject()), 3, 0);
+    layout->addWidget(new QLabel(i18n("Issuer:"), this), 2, 1);
+    layout->addWidget(buildCertInfo(cert->getIssuer()), 3, 1);
     d->m_layout->addMultiCell(layout, 1, 1, 0, 2);
 
     layout = new QGridLayout(8, 2, KDialog::spacingHint());
