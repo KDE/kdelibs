@@ -147,6 +147,16 @@ Context::~Context()
     // delete activation;
 }
 
+Context *Context::current()
+{
+  return KJScript::current()->con;
+}
+
+void Context::setCurrent(Context *c)
+{
+  KJScript::current()->con = c;
+}
+
 void Context::pushScope(KJSO *s)
 {
   scopeChain->prepend(s);
@@ -160,7 +170,7 @@ void Context::popScope()
 // ECMA 10.1.3
 void Function::processParameters(const List *args)
 {
-  KJSO *variable = KJScript::context()->variableObject();
+  KJSO *variable = Context::current()->variableObject();
 
   assert(args);
 
@@ -177,7 +187,7 @@ void Function::processParameters(const List *args)
 
 KJSO *Function::thisValue() const
 {
-  return KJScript::context()->thisValue();
+  return Context::current()->thisValue();
 }
 
 DeclaredFunction::DeclaredFunction(ParamList *p, StatementNode *b)

@@ -97,14 +97,14 @@ KJSO *StringNode::evaluate()
 // ECMA 11.1.1
 KJSO *ThisNode::evaluate()
 {
-  return KJScript::context()->thisValue();
+  return Context::current()->thisValue();
 }
 
 // ECMA 11.1.2 & 10.1.4
 KJSO *ResolveNode::evaluate()
 {
-  assert(KJScript::context());
-  const List *chain = KJScript::context()->pScopeChain();
+  assert(Context::current());
+  const List *chain = Context::current()->pScopeChain();
   ListIterator scope = chain->begin();
 
   while (scope != chain->end()) {
@@ -615,7 +615,7 @@ KJSO *VarStatementNode::evaluate()
 // ECMA 12.2
 KJSO *VarDeclNode::evaluate()
 {
-  KJSO *variable = KJScript::context()->variableObject();
+  KJSO *variable = Context::current()->variableObject();
 
   // TODO: coded with help of 10.1.3. Correct ?
   if (!variable->hasProperty(ident)) {
@@ -798,9 +798,9 @@ KJSO *WithNode::evaluate()
   Ptr e = expr->evaluate();
   Ptr v = e->getValue();
   Ptr o = toObject(v);
-  KJScript::context()->pushScope(o);
+  Context::current()->pushScope(o);
   Ptr res = stat->evaluate();
-  KJScript::context()->popScope();
+  Context::current()->popScope();
 
   return res->ref();
 }

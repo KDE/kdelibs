@@ -119,7 +119,7 @@ void KJScript::clear()
 
     KJS::Node::deleteAllNodes();
 
-    delete context();
+    delete Context::current();
     global()->deref();
 
     initialized = false;
@@ -131,7 +131,7 @@ void KJScript::init()
   if (!initialized) {
     KJScriptLock lock(this);
     setGlobal(new Global());
-    setContext(new Context());
+    Context::setCurrent(new Context());
     initialized = true;
   }
 }

@@ -201,18 +201,18 @@ KJSO *KJSO::executeCall(KJSO *thisV, const List *args)
 
   Function *func = static_cast<Function*>(this);
 
-  Context *save = KJScript::context();
+  Context *save = Context::current();
 
   CodeType ctype = func->codeType();
-  KJScript::setContext(new Context(ctype, save, func, args, thisV));
+  Context::setCurrent(new Context(ctype, save, func, args, thisV));
 
   // assign user supplied arguments to parameters
   func->processParameters(args);
 
   Ptr comp = func->execute(*args);
 
-  delete KJScript::context();
-  KJScript::setContext(save);
+  delete Context::current();
+  Context::setCurrent(save);
 
   if (comp->isValueCompletion())
     return comp->complValue();
@@ -516,6 +516,15 @@ Object* Object::create(Class c, KJSO *val, Object *p)
       break;
     case NumberClass:
       prot = global->numProto;
+      break;
+    case DateClass:
+      prot = global->dateProto;
+      break;
+    case RegExpClass:
+      prot = global->regProto;
+      break;
+    case ErrorClass:
+      prot = global->errProto;
       break;
     case UndefClass:
       prot = 0L;

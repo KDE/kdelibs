@@ -129,6 +129,8 @@ namespace KJS {
     Context(CodeType type = GlobalCode, Context *callingContext = 0L,
 	       Function *func = 0L, const List *args = 0L, KJSO *thisV = 0L);
     virtual ~Context();
+    static Context *current();
+    static void setCurrent(Context *c);
     const List *pScopeChain() const { return scopeChain; }
     void pushScope(KJSO *s);
     void popScope();

@@ -90,14 +90,12 @@ public:
   static KJS::Error *error() { return current()->err; }
   static void setError(KJS::Error *e) { current()->err = e; }
 
-  static KJS::Context *context() { return current()->con; }
-  static void setContext(KJS::Context *c) { current()->con = c; }
-
   static KJS::Global *global() { return current()->glob; }
   static void setGlobal(KJS::Global *g) { current()->glob = g; }
 
   static KJS::Lexer *lexer() { return current()->lex; }
   static void setLexer(KJS::Lexer *l) { current()->lex = l; }
+  friend KJS::Context;
 private:
   bool initialized;
   static KJScript *curr;
