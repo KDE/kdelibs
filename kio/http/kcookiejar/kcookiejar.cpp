@@ -944,8 +944,44 @@ void KCookieJar::eatCookiesForDomain(const QString &domain)
        cookieDomains.remove(domain);
        domainList.remove(domain);
    }
-   cookiesChanged = true;    
+   cookiesChanged = true;
 }
+
+void KCookieJar::eatSessionCookies( int winId )
+{
+    QStringList::Iterator it=domainList.begin();
+    for ( ; it != domainList.end(); ++it )
+        eatSessionCookies( *it, winId, false );
+}
+
+void KCookieJar::eatSessionCookies( const QString& fqdn, int winId, bool isFQDN )
+{
+    KHttpCookieList* cookieList;
+    if ( isFQDN )
+    {
+        QString domain;
+        stripDomain( fqdn, domain );
+        cookieList = cookieDomains[domain];
+    }
+    else
+        cookieList = cookieDomains[fqdn];
+
+    if ( cookieList )
+    {
+        KHttpCookiePtr cookie=cookieList->first();
+        for (; cookie != 0;)
+        {
+            if (cookie->windowId() == winId &&
+                (cookie->expireDate() == 0))
+            {
+                KHttpCookiePtr old_cookie = cookie;
+                cookie = cookieList->next();
+                cookieList->removeRef( old_cookie );
+            }
+        }
+    }
+}
+
 
 void KCookieJar::eatAllCookies()
 {

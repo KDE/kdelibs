@@ -275,6 +275,18 @@ public:
     void eatAllCookies();
 
     /**
+     * Removes all end of session cookies set by the
+     * session @p windId.
+     */
+    void eatSessionCookies( int windId );
+
+    /**
+     * Removes all end of session cookies set by the
+     * session @p windId.
+     */
+    void eatSessionCookies( const QString& fqdn, int windId, bool isFQDN = true );
+
+    /**
      * Parses _url and returns the FQDN (_fqdn) and path (_path).
      */
     static bool parseURL(const QString &_url,
@@ -286,9 +298,9 @@ public:
      */
     static bool extractDomains(const QString &_fqdn,
                                QStringList &_domainList);
-                               
+
     static QString adviceToStr(KCookieAdvice _advice);
-    static KCookieAdvice strToAdvice(const QString &_str);                               
+    static KCookieAdvice strToAdvice(const QString &_str);
 
     // Save this in the config file...
     int defaultRadioButton; // 0 = This cookie, 1 = domain, 2 = all cookies

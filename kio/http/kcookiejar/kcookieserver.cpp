@@ -475,6 +475,22 @@ KCookieServer::deleteCookiesFromDomain(QString domain)
       saveCookieJar();
 }
 
+void
+KCookieServer::deleteSessionCookies( long winId )
+{
+  mCookieJar->eatSessionCookies( winId );
+  if(!mTimer)
+    saveCookieJar();
+}
+
+void
+KCookieServer::deleteSessionCookiesFor(QString fqdn, long winId)
+{
+  mCookieJar->eatSessionCookies( fqdn, winId );
+  if(!mTimer)
+    saveCookieJar();
+}
+
 // DCOP function
 void
 KCookieServer::deleteAllCookies()

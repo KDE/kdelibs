@@ -52,6 +52,8 @@ k_dcop:
   void addCookies(QString, QCString, long);
   void deleteCookie(QString, QString, QString, QString);
   void deleteCookiesFromDomain(QString);
+  void deleteSessionCookies(long);
+  void deleteSessionCookiesFor(QString, long);
   void deleteAllCookies();
   void addDOMCookies(QString, QCString, long);
   void setDomainAdvice(QString, QString);
