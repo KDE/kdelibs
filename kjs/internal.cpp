@@ -1057,6 +1057,10 @@ Completion InterpreterImp::evaluate(const UString &code, const Value &thisV)
     ContextImp *ctx = new ContextImp(globalObj, exec1, thisObj);
     ExecState *newExec = new ExecState(m_interpreter,ctx);
 
+    // create variables (initialized to undefined until var statements
+    // with optional initializers are executed)
+    progNode->processVarDecls(newExec);
+
     res = progNode->execute(newExec);
 
     delete newExec;
