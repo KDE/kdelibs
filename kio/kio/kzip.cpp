@@ -453,7 +453,9 @@ kdDebug(7040) << "dev->at() now : " << dev->at() << endl;
 	    ParseFileInfo *pfi = new ParseFileInfo();
 	    pfi_map.insert(filename.data(), pfi);
 
-	    // read and parse extra field
+            // read and parse the beginning of the extra field,
+            // skip rest of extra field in case it is too long
+            unsigned int extraFieldEnd = dev->at() + extralen;
 	    pfi->extralen = extralen;
 	    int handledextralen = QMIN(extralen, (int)sizeof buffer);
 	    
@@ -466,6 +468,10 @@ kdDebug(7040) << "dev->at() now : " << dev->at() << endl;
 	        kdWarning(7040) << "Invalid ZIP File. Broken ExtraField." << endl;
 	        return false;
 	    }
+
+            // jump to end of extra field
+            dev->at( extraFieldEnd );
+
 	    // we have to take care of the 'general purpose bit flag'.
             // if bit 3 is set, the header doesn't contain the length of
             // the file and we look for the signature 'PK\7\8'.
