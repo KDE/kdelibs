@@ -230,7 +230,6 @@ KPTextPage::KPTextPage(DrMain *driver, QWidget *parent, const char *name)
 	m_margin->setPageSize(595, 842);
 
 	QGridLayout	*l0 = new QGridLayout(this, 2, 2, 0, 10);
-	 //FIXME: insert WhatsThis here
 	l0->addWidget(formatbox, 0, 0);
 	l0->addWidget(prettybox, 0, 1);
 	l0->addMultiCellWidget(marginbox, 1, 1, 0, 1);
