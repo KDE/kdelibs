@@ -33,6 +33,8 @@
 #include "kcrash.h"
 
 #include <sys/types.h>
+#include <sys/time.h>
+#include <sys/resource.h>
 #include <sys/wait.h>
 
 #include <qwindowdefs.h> 
@@ -207,6 +209,12 @@ KCrash::defaultCrashHandler (int signal)
       {
         // Close dcop connections
         DCOPClient::emergencyClose();
+        // Close all remaining file descriptors
+        struct rlimit rlp;
+        getrlimit(RLIMIT_NOFILE, &rlp);
+        for (int i = 0; i < (int)rlp.rlim_cur; i++)
+           close(i);
+
         // wait for child to exit
         waitpid(pid, NULL, 0);
         _exit(253);
