@@ -189,7 +189,7 @@ public:
 	 * more details. The toolbar wrapping limitation is disabled by
 	 * default.
 	 */
-	void setMaximumToolBarWraps(unsigned wraps);
+	void setMaximumToolBarWraps(unsigned int wraps);
 
     /**
      * Returns a pointer to the toolbar with the specified ID.

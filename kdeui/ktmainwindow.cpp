@@ -544,7 +544,7 @@ void KTMainWindow::setFrameBorderWidth(int size){
 
 }
 
-void KTMainWindow::setMaximumToolBarWraps(unsigned wraps)
+void KTMainWindow::setMaximumToolBarWraps(unsigned int wraps)
 {
 	layoutMgr->setMaximumWraps(wraps);
 }
