@@ -341,6 +341,9 @@ KFontChooser::KFontChooser(QWidget *parent, const char *name,
   setFont( KGlobalSettings::generalFont(), usingFixed );
   // Create displayable charsets list
   fillCharsetsCombo();
+  // check or uncheck the "relative" checkbox
+  if( sizeIsRelativeFlag && sizeIsRelativeCheckBox )
+    sizeIsRelativeCheckBox->setChecked( *sizeIsRelativeFlag );
 
   KConfig *config = KGlobal::config();
   KConfigGroupSaver saver(config, QString::fromLatin1("General"));
@@ -761,6 +764,9 @@ int KFontDialog::getFontAndText( QFont &theFont, QString &theString,
 ****************************************************************************
 *
 * $Log$
+* Revision 1.75  2001/12/14 19:09:30  khz
+* adjusted CVS comment: corrected Alexander\'s misspelled alias
+*
 * Revision 1.74  2001/12/14 19:02:50  khz
 * (a) changed "lypanov"s patch (to prevent from breaking compatibility)
 * (b) added sizeIsRelative checkbox under size listbox to enable
