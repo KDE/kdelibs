@@ -374,13 +374,13 @@ void KListView::slotMouseButtonClicked( int btn, QListViewItem *item, const QPoi
 
 void KListView::dragEnterEvent(QDragEnterEvent* event)
 {
-    KListView::dragEnterEvent(event);
+    QListView::dragEnterEvent(event);
     event->accept(event->source()==this);
 }
 
 void KListView::dropEvent(QDropEvent* event)
 {
-    KListView::dropEvent(event);
+    QListView::dropEvent(event);
     cleanRect();
     QListViewItem *afterme=findDrop(event->pos());
 	
@@ -402,7 +402,7 @@ void KListView::dropEvent(QDropEvent *event, QListView *parent, QListViewItem *a
 
 void KListView::dragMoveEvent(QDragMoveEvent *event)
 {
-    KListView::dragMoveEvent(event);
+    QListView::dragMoveEvent(event);
     if (!event->isAccepted()) return;
 
     //Clean up the view
@@ -418,7 +418,7 @@ void KListView::dragMoveEvent(QDragMoveEvent *event)
 
 void KListView::dragLeaveEvent(QDragLeaveEvent *event)
 {
-    KListView::dragLeaveEvent(event);
+    QListView::dragLeaveEvent(event);
     cleanRect();
 }
 
@@ -477,7 +477,7 @@ void KListView::contentsMouseReleaseEvent( QMouseEvent *e )
 {
     delete pressPos;
     pressPos=0;
-	QListView::contentsMouseReleaseEvent( e );
+    QListView::contentsMouseReleaseEvent( e );
 }
 
 
