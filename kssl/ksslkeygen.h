@@ -24,17 +24,31 @@
 
 #include <qstring.h>
 #include <qstringlist.h>
+#include <kdialog.h>
 
 
-class KSSLKeyGen {
+class KOpenSSLProxy;
+
+class KSSLKeyGen : public KDialog {
+	Q_OBJECT
  
 public:
-  static QStringList supportedKeySizes();
+	KSSLKeyGen(QWidget *parent=0, const char *name=0, bool modal=false);
+	virtual ~KSSLKeyGen();
+
+	// Static methods for various tasks
+	static QStringList supportedKeySizes();
+	static int generateCSR(QString name, QString pass, int bits, int e = 0x10001);
+
+	// this is an index into supportedKeySizes();
+	void setKeySize(int idx) { _idx = idx; }
 
 private:
  
-  class KSSLKeyGenPrivate;
-  KSSLKeyGenPrivate *d;
+	class KSSLKeyGenPrivate;
+	KSSLKeyGenPrivate *d;
+	int _idx;
+	KOpenSSLProxy *kossl;
  
 protected:
 
