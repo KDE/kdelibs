@@ -9,10 +9,11 @@
     <Separator/>
     <Action name="file_save"/>
     <Action name="file_save_as"/>
-    <Action name="file_revert"/>
     <MergeLocal name="save_merge"/>
+    <Action name="file_revert"/>
     <Separator/>
     <Action name="file_close"/>
+    <MergeLocal name="close_merge"/>
     <Separator/>
     <Action name="file_print"/>
     <Action name="file_print_preview"/>
@@ -68,7 +69,7 @@
     <Action name="view_zoom_in"/>
     <Action name="view_zoom_out"/>
     <Action name="view_zoom"/>
-    <Separator/>
+    <WeakSeparator/>
     <Action name="view_redisplay"/>
     <Separator/>
     <MergeLocal/>
