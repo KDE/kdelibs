@@ -362,6 +362,7 @@ public:
    *
    * @param url the url to check
    * @return true if the protocol can rename/move files from the local file system
+   * @since 3.4
    */
   static bool canRenameFromFile( const KURL &url );
 
@@ -376,6 +377,7 @@ public:
    *
    * @param url the url to check
    * @return true if the protocol can rename files to the local file system
+   * @since 3.4
    */
   static bool canRenameToFile( const KURL &url );
 
@@ -389,6 +391,7 @@ public:
    *
    * @param url the url to check
    * @return true if the protocol can delete non-empty directories by itself.
+   * @since 3.4
    */
   static bool canDeleteRecursive( const KURL &url );
 
@@ -408,6 +411,7 @@ public:
    *
    * @param url the url to check
    * @return how to generate the filename in the destination directory when copying/moving
+   * @since 3.4
    */
   static FileNameUsedForCopying fileNameUsedForCopying( const KURL &url );
 

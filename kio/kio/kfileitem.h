@@ -188,6 +188,7 @@ public:
    * (remote files), we may return true even though it can't be written to.
    * @return true if the file or directory can be written to - more precisely,
    *         false if we know for sure it can't
+   * @since 3.4
    */
   bool isWritable() const;
 
@@ -207,9 +208,10 @@ public:
    * Returns the local path if isLocalFile() == true or the KIO item has
    * a UDS_LOCAL_PATH atom.
    * @return the item local path, or QString::null if not known
+   * @since 3.4
    */
   QString localPath() const;
-  
+
   /**
    * Returns the size of the file, if known.
    * @return the file size, or 0 if not known
@@ -483,7 +485,7 @@ private:
    * The given boolean indicates if the returned url is local or not.
    */
   KURL mostLocalURL(bool &local) const;
-  
+
   /**
    * We keep a copy of the UDSEntry since we need it for getStatusBarInfo
    */
