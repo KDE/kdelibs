@@ -31,6 +31,7 @@
 #include "mcoputils.h"
 #include "loopback.h"
 #include "debug.h"
+#include "ifacerepo_impl.h"
 
 #include <sys/stat.h>
 #include <stdio.h>
@@ -118,6 +119,7 @@ Dispatcher::Dispatcher(IOManager *ioManager, StartServer startServer)
 	d->allowNoAuthentication = startServer & noAuthentication;
 	d->accept = 0;
 	d->loopbackConnection = new LoopbackConnection(serverID);
+	d->interfaceRepo = InterfaceRepo::_from_base(new InterfaceRepo_impl());
 
 	_flowSystem = 0;
 	referenceClean = new ReferenceClean(objectPool);

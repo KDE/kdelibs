@@ -20,66 +20,7 @@
 
     */
 
-#include "core.h"
-
-namespace Arts {
-
-class InterfaceRepo_impl : virtual public InterfaceRepo_skel {
-	class Entry {
-	public:
-		long moduleID;
-		Entry(long moduleID) : moduleID(moduleID)
-		{
-		}
-	};
-	class EnumEntry : public EnumDef, public Entry {
-	public:
-		EnumEntry(Buffer& stream, long moduleID)
-				:EnumDef(stream), Entry(moduleID)
-		{
-		}
-	};
-	class TypeEntry : public TypeDef, public Entry {
-	public:
-		TypeEntry(Buffer& stream, long moduleID)
-				:TypeDef(stream), Entry(moduleID)
-		{
-		}
-	};
-	class InterfaceEntry : public InterfaceDef, public Entry {
-	public:
-		InterfaceEntry(Buffer& stream, long moduleID)
-				:InterfaceDef(stream), Entry(moduleID)
-		{
-		};
-	};
-
-	std::list<EnumEntry *> enums;
-	std::list<TypeEntry *> types;
-	std::list<InterfaceEntry *> interfaces;
-
-	long nextModuleID;
-
-	InterfaceDef queryInterfaceLocal(const std::string& name);
-public:
-
-	InterfaceRepo_impl();
-
-	long insertModule(const ModuleDef& newModule);
-	void removeModule(long moduleID);
-	InterfaceDef queryInterface(const std::string& name);
-	TypeDef queryType(const std::string& name);
-	EnumDef queryEnum(const std::string& name);
-
-	std::vector<std::string> *queryChildren(const std::string& name);
-	std::vector<std::string> *queryInterfaces();
-	std::vector<std::string> *queryTypes();
-	std::vector<std::string> *queryEnums();
-};
-
-REGISTER_IMPLEMENTATION(InterfaceRepo_impl);
-};
-
+#include "ifacerepo_impl.h"
 #include "debug.h"
 #include <iostream>
 #include <stdio.h>
