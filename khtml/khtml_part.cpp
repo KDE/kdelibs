@@ -100,6 +100,8 @@ namespace khtml
 
 };
 
+int kjs_lib_count = 0;
+
 typedef QMap<QString,khtml::ChildFrame>::ConstIterator ConstFrameIt;
 typedef QMap<QString,khtml::ChildFrame>::Iterator FrameIt;
 
@@ -140,7 +142,7 @@ public:
       delete m_extension;
     delete m_settings;
     delete m_jscript;
-    if ( m_kjs_lib )
+    if ( m_kjs_lib && !--kjs_lib_count )
       delete m_kjs_lib;
   }
 
@@ -571,6 +573,7 @@ KJSProxy *KHTMLPart::jScript()
     initFunction initSym = (initFunction) sym;
     d->m_jscript = (*initSym)(this);
     d->m_kjs_lib = lib;
+    kjs_lib_count++;
   }
 
   return d->m_jscript;
