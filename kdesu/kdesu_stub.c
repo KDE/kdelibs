@@ -220,6 +220,8 @@ int main()
 	printf("kdesu_stub: user %s does not exist!\n", params[P_USER].value);
 	exit(1);
     }
+    sprintf(buf, "%s/.kde/", pw->pw_dir);
+    xsetenv("KDEHOME", buf);
 
     /* Set scheduling/priority */
 
