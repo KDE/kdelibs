@@ -13,6 +13,7 @@ DockTest::DockTest( QWidget* parent )
   //m_blueDock->setDetachable( false );
   m_blueDock->setEnableDocking( KDockWidget::DockFullSite );
   KDockWidgetHeader *header = new KDockWidgetHeader( m_blueDock, "Blue Header" );
+  header->forceCloseButtonHidden();
   m_blueDock->setHeader( header );
   m_blueDock->setCaption( "Blue" );
   m_blueDock->setGeometry( 50, 50, 100, 100 );

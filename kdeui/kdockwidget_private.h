@@ -176,16 +176,19 @@ public:
   KDockWidgetHeaderPrivate( QObject* parent )
         : QObject( parent )
   {
+    forceCloseButtonHidden=false;
     toDesktopButton = 0;
     showToDesktopButton = true;
     topLevel = false;
+    dummy=0;
   }
   KDockButton_Private* toDesktopButton;
 
   bool showToDesktopButton;
   bool topLevel;
   QPtrList<KDockButton_Private> btns;
-
+  bool forceCloseButtonHidden;
+  QWidget *dummy;
 };
 
 #endif

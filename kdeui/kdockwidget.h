@@ -268,6 +268,8 @@ public:
   /// @since 3.1
   void showUndockButton(bool show);
 
+  /// @since 3.2
+  void forceCloseButtonHidden(bool enable=true);
 #ifndef NO_KDE2
   /**
    * Saves the current button state to a KDE config container object.
