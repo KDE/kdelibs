@@ -48,22 +48,15 @@ int khtml::computeLength(DOM::CSSPrimitiveValueImpl *val, RenderStyle *style, QP
     switch(type)
     {
     case CSSPrimitiveValue::CSS_EMS:
+       	factor = style->font().pixelSize();
+		break;
     case CSSPrimitiveValue::CSS_EXS:
-    {
-        if(type == CSSPrimitiveValue::CSS_EMS)
-        {
-            factor = style->font().pixelSize();
-
-            //kdDebug( 6080 ) << "EM = " << factor << endl;
-        }
-        else
-        {
-            QFontMetrics fm = khtml::fontMetrics(style->font());
-            QRect b = fm.boundingRect('x');
-            factor = b.height();
-        }
+	{
+        QFontMetrics fm = khtml::fontMetrics(style->font());
+        QRect b = fm.boundingRect('x');
+        factor = b.height();
         break;
-    }
+	}
     case CSSPrimitiveValue::CSS_PX:
         break;
     case CSSPrimitiveValue::CSS_CM:
