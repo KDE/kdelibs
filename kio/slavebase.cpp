@@ -91,7 +91,11 @@ return false; }
 
    KEntry lookupData(const KEntryKey &key) const
    { 
-     KEntry entry; entry.mValue = slave->metaData(key.c_key).utf8(); return entry; 
+     KEntry entry;
+     QString value = slave->metaData(key.c_key);
+     if (!value.isNull())
+        entry.mValue = value.utf8(); 
+     return entry; 
    }
 protected:
    SlaveBase *slave;
