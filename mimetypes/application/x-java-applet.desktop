@@ -2,7 +2,9 @@
 Encoding=UTF-8
 Type=MimeType
 Comment=Java Applet
+Comment[pt_BR]=Applet Java
+Comment[sv]=Javaminiprogram
 MimeType=application/x-java-applet
 Icon=binary
-Patterns=*.class;*.CLASS;*.jar;*.JAR;
+Patterns=
 X-KDE-AutoEmbed=true
