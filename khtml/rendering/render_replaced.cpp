@@ -113,8 +113,7 @@ short RenderReplaced::baselinePosition( bool ) const
 
 void RenderReplaced::position(InlineBox* box, int /*from*/, int /*len*/, bool /*reverse*/, int)
 {
-    m_x = box->xPos() + marginLeft();
-    m_y = box->yPos() + marginTop();
+    setPos( box->xPos() + marginLeft(), box->yPos() + marginTop() );
 }
 
 // -----------------------------------------------------------------------------
