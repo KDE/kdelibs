@@ -21,7 +21,7 @@
 #ifndef _CHARSETSDATA_H
 #define _CHARSETSDATA_H
 
-#define KCH_DEBUG
+// #define KCH_DEBUG
 
 #ifdef HAVE_CONFIG_H
 #include <config.h>
