@@ -459,7 +459,7 @@ void KIconButton::setIconType(int group, int context, bool user)
     mbUser = user;
 }
 
-void KIconButton::setIcon(QString icon)
+void KIconButton::setIcon(const QString& icon)
 {
     mIcon = icon;
     setPixmap(mpLoader->loadIcon(mIcon, mGroup));

@@ -207,7 +207,7 @@ public:
     /**
      * Sets the button's initial icon.
      */
-    void setIcon(QString icon);
+    void setIcon(const QString& icon);
 
     /**
      * Resets the icon (reverts to an empty button).
