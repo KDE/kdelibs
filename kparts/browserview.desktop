@@ -18,5 +18,5 @@ Type=bool
 [PropertyDef::X-KDE-BrowserView-Toggable]
 Type=bool
 
-[PropertyDef::X-KDE-BrowserView-ToggleView-Orientation]
+[PropertyDef::X-KDE-BrowserView-ToggableView-Orientation]
 Type=QString
