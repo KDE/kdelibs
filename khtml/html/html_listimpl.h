@@ -92,7 +92,7 @@ public:
 class HTMLOListElementImpl : public HTMLUListElementImpl
 {
 public:
-    HTMLOListElementImpl(DocumentImpl *doc) : _start(1), HTMLUListElementImpl(doc) {}
+    HTMLOListElementImpl(DocumentImpl *doc) : HTMLUListElementImpl(doc),_start(1) {}
     virtual ~HTMLOListElementImpl() {}
 
     virtual const DOMString nodeName() const;
@@ -115,7 +115,7 @@ private:
 class HTMLLIElementImpl : public HTMLElementImpl
 {
 public:
-    HTMLLIElementImpl(DocumentImpl *doc) : isValued(false), HTMLElementImpl(doc) {}
+    HTMLLIElementImpl(DocumentImpl *doc) : HTMLElementImpl(doc), isValued(false) {}
     virtual ~HTMLLIElementImpl() {}
 
     virtual const DOMString nodeName() const;
@@ -125,7 +125,7 @@ public:
     virtual tagStatus endTag() const { return LIEndTag; }
 
     virtual void parseAttribute(AttrImpl *attr);
-    
+
     virtual void attach(KHTMLView *);
 
 private:

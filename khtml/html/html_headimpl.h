@@ -78,7 +78,7 @@ public:
     virtual tagStatus startTag() const { return LINKStartTag; }
     virtual tagStatus endTag() const { return LINKEndTag; }
 
-    StyleSheetImpl *sheet() const { return m_sheet; }
+    StyleSheetImpl *sheet() const;
 
     // overload from HTMLElementImpl
     virtual void attach(KHTMLView *w);
@@ -94,7 +94,7 @@ protected:
     StyleSheetImpl *m_sheet;
     DOMString m_url;
     DOMString m_type;
-    DOMString m_media;
+    QString m_media;
     DOMString m_rel;
     bool m_loading;
     QString m_data; // needed for temporarily storing the loaded style sheet data

@@ -248,7 +248,8 @@ StyleBaseImpl::parseAtRule(const QChar *&curP, const QChar *endP)
                 curP++;
         }
         // ### only media="", "screen and "all" are imported for the moment...
-        if( !media.isEmpty() && !(media.contains("all") || media.contains("screen")) )
+        // ### add at least "print" here once the MediaList class is implemented
+        if( !media.isEmpty() && !(media.contains("all") || media.contains("screen") ) )
             return 0;
         if(!this->isCSSStyleSheet()) return 0;
         return new CSSImportRuleImpl(this, url, 0);
@@ -266,8 +267,8 @@ StyleBaseImpl::parseAtRule(const QChar *&curP, const QChar *endP)
     {
         startP = curP++;
         curP = parseToChar(startP, endP, '{', false);
-	if ( !curP || curP >= endP ) return 0;
-	curP++;
+        if ( !curP || curP >= endP ) return 0;
+        curP++;
         curP = parseToChar(curP, endP, '}', false);
 #ifdef CSS_DEBUG
         kdDebug( 6080 ) << "font rule = " << QString(startP, curP - startP) << endl;
@@ -277,8 +278,8 @@ StyleBaseImpl::parseAtRule(const QChar *&curP, const QChar *endP)
     {
         startP = curP++;
         curP = parseToChar(startP, endP, '{', false);
-	if ( !curP || curP >= endP ) return 0;
-	curP++;
+        if ( !curP || curP >= endP ) return 0;
+        curP++;
         curP = parseToChar(curP, endP, '}', false);
 #ifdef CSS_DEBUG
         kdDebug( 6080 ) << "media rule = " << QString(startP, curP - startP) << endl;
@@ -288,8 +289,8 @@ StyleBaseImpl::parseAtRule(const QChar *&curP, const QChar *endP)
     {
         startP = curP++;
         curP = parseToChar(startP, endP, '{', false);
-	if ( !curP || curP >= endP ) return 0;
-	curP++;
+        if ( !curP || curP >= endP ) return 0;
+        curP++;
         curP = parseToChar(curP, endP, '}', false);
 #ifdef CSS_DEBUG
         kdDebug( 6080 ) << "page rule = " << QString(startP, curP - startP) << endl;
@@ -307,16 +308,16 @@ static DOMString getValue( const QChar *curP, const QChar *endP, const QChar *&e
     endVal = curP;
     endVal++; // ignore first char (could be the ':' form the pseudo classes)
     while( endVal < endP && *endVal != '.' && *endVal != ':' && *endVal != '[' )
-	endVal++;
+        endVal++;
     const QChar *end = endVal;
     if(endVal == endP)
-	endVal = 0;
+        endVal = 0;
     return DOMString( curP, end - curP);
 }
 
 CSSSelector *
 StyleBaseImpl::parseSelector2(const QChar *curP, const QChar *endP,
-			      CSSSelector::Relation relation)
+                              CSSSelector::Relation relation)
 {
     CSSSelector *cs = new CSSSelector();
 #ifdef CSS_DEBUG
@@ -387,11 +388,11 @@ StyleBaseImpl::parseSelector2(const QChar *curP, const QChar *endP,
                 kdDebug( 6080 ) << "tag = " << tag << endl;
 #endif
                 const QChar *closebracket = parseToChar(curP, endP, ']', false);
-		if (!closebracket)
-		{
-		    kdWarning()<<"error in css: closing bracket not found!"<<endl;
-		    return 0;
-		}
+                if (!closebracket)
+                {
+                    kdWarning()<<"error in css: closing bracket not found!"<<endl;
+                    return 0;
+                }
                 QString attr;
                 const QChar *equal = parseToChar(curP, closebracket, '=', false);
                 if(!equal)
@@ -402,7 +403,7 @@ StyleBaseImpl::parseSelector2(const QChar *curP, const QChar *endP,
                     kdDebug( 6080 ) << "attr = '" << attr << "'" << endl;
 #endif
                     cs->match = CSSSelector::Set;
-		    endVal = closebracket + 1;
+                    endVal = closebracket + 1;
                 }
                 else
                 {
@@ -434,33 +435,33 @@ StyleBaseImpl::parseSelector2(const QChar *curP, const QChar *endP,
                         delete cs;
                         return 0;
                     }
-		    endVal = equal;
-		    bool hasQuote = false;
+                    endVal = equal;
+                    bool hasQuote = false;
                     if(*equal == '\'') {
                         equal++;
-			endVal++;
+                        endVal++;
                         while(endVal < endP && *endVal != '\'')
                             endVal++;
-			hasQuote = true;
+                        hasQuote = true;
                     } else if(*equal == '\"') {
                         equal++;
-			endVal++;
+                        endVal++;
                         while(endVal < endP && *endVal != '\"')
                             endVal++;
-			hasQuote = true;
+                        hasQuote = true;
                     } else {
-		      while(endVal < endP && *endVal != ']')
-			endVal++;
-		    }
+                      while(endVal < endP && *endVal != ']')
+                        endVal++;
+                    }
                     cs->value = DOMString(equal, endVal - equal);
-		    if ( hasQuote ) {
-		      while( endVal < endP - 1 && *endVal != ']' )
-			endVal++;
-		    }
-		    endVal++;
-		    // ### fixme we ignore everything after [..]
-		    if( endVal == endP )
-			endVal = 0;
+                    if ( hasQuote ) {
+                      while( endVal < endP - 1 && *endVal != ']' )
+                        endVal++;
+                    }
+                    endVal++;
+                    // ### fixme we ignore everything after [..]
+                    if( endVal == endP )
+                        endVal = 0;
                 }
                 break;
             }
@@ -479,18 +480,18 @@ StyleBaseImpl::parseSelector2(const QChar *curP, const QChar *endP,
             cs->tag = -1;
         }
         else {
-	    StyleBaseImpl *root = this;
-	    DocumentImpl *doc = 0;
-	    while (root->parent())
-		root = root->parent();
-	    if (root->isCSSStyleSheet())
-		doc = static_cast<CSSStyleSheetImpl*>(root)->doc();
-	    if (doc && !doc->isHTMLDocument()) {
-		DOMString s = tag;
-		cs->tag = doc->elementId(s.implementation());
-	    }
-	    else
-		cs->tag = khtml::getTagID(tag.lower().ascii(), tag.length());
+            StyleBaseImpl *root = this;
+            DocumentImpl *doc = 0;
+            while (root->parent())
+                root = root->parent();
+            if (root->isCSSStyleSheet())
+                doc = static_cast<CSSStyleSheetImpl*>(root)->doc();
+            if (doc && !doc->isHTMLDocument()) {
+                DOMString s = tag;
+                cs->tag = doc->elementId(s.implementation());
+            }
+            else
+                cs->tag = khtml::getTagID(tag.lower().ascii(), tag.length());
         }
    }
    if (cs->tag == 0)
@@ -535,27 +536,27 @@ StyleBaseImpl::parseSelector1(const QChar *curP, const QChar *endP)
     {
         if ((curP == endP) || isspace(*curP) || *curP == '+' || *curP == '>')
         {
-	    CSSSelector *newsel = parseSelector2(startP, curP, relation);
+            CSSSelector *newsel = parseSelector2(startP, curP, relation);
             if (!newsel) {
-		delete selecStack;
-		return 0;
-	    }
-	    CSSSelector *end = newsel;
-	    while( end->tagHistory )
-		end = end->tagHistory;
-	    end->tagHistory = selecStack;
-	    end->relation = relation;
-	    selecStack = newsel;
+                delete selecStack;
+                return 0;
+            }
+            CSSSelector *end = newsel;
+            while( end->tagHistory )
+                end = end->tagHistory;
+            end->tagHistory = selecStack;
+            end->relation = relation;
+            selecStack = newsel;
 
             curP = parseSpace(curP, endP);
             if (!curP) {
 #ifdef CSS_DEBUG
-		kdDebug( 6080 ) << "selector stack is:" << endl;
-		selecStack->print();
-		kdDebug( 6080 ) << endl;
+                kdDebug( 6080 ) << "selector stack is:" << endl;
+                selecStack->print();
+                kdDebug( 6080 ) << endl;
 #endif
                 return(selecStack);
-	    }
+            }
             relation = CSSSelector::Descendant;
             if(*curP == '+')
             {
@@ -768,55 +769,55 @@ public:
     bool strictParsing;
 
     int getChar() {
-	return ( yyPos == yyIn.length() ) ? QChar('\0') : QChar(yyIn[yyPos++]);
+        return ( yyPos == yyIn.length() ) ? QChar('\0') : QChar(yyIn[yyPos++]);
     }
 
     void startTokenizer( const QString& str, bool _strictParsing ) {
-	yyIn = str.simplifyWhiteSpace();
-	yyPos = 0;
-	yyCh = getChar();
-	strictParsing = _strictParsing;
-	yyTok = Tok_None;
+        yyIn = str.simplifyWhiteSpace();
+        yyPos = 0;
+        yyCh = getChar();
+        strictParsing = _strictParsing;
+        yyTok = Tok_None;
     }
 
     int getToken()
     {
-	yyStr = QString::null;
+        yyStr = QString::null;
 
-	if ( yyCh == '\0' )
-	    return Tok_Eoi;
-	if ( yyCh == QChar(' ') )
-	    yyCh = getChar();
+        if ( yyCh == '\0' )
+            return Tok_Eoi;
+        if ( yyCh == QChar(' ') )
+            yyCh = getChar();
 
-	if ( yyCh == QChar('/') ) {
-	    yyCh = getChar();
-	    return Tok_Slash;
-	} else if ( yyCh == QChar(',') ) {
-	    yyCh = getChar();
-	    return Tok_Comma;
-	} else if ( yyCh == QChar('"') ) {
-	    yyCh = getChar();
-	    while ( yyCh != QChar('"') && yyCh != '\0' ) {
-		yyStr += yyCh;
-		yyCh = getChar();
-	    }
-	    yyCh = getChar();
-	    return Tok_String;
-	} else if ( yyCh == QChar('\'') ) {
-	    yyCh = getChar();
-	    while ( yyCh != QChar('\'') && yyCh != '\0' ) {
-		yyStr += yyCh;
-		yyCh = getChar();
-	    }
-	    yyCh = getChar();
-	    return Tok_String;
-	} else {
-	    while ( yyCh != '/' && yyCh != ',' && yyCh != '\0' && yyCh != ' ') {
-		yyStr += yyCh;
-		yyCh = getChar();
-	    }
-	    return Tok_Symbol;
-	}
+        if ( yyCh == QChar('/') ) {
+            yyCh = getChar();
+            return Tok_Slash;
+        } else if ( yyCh == QChar(',') ) {
+            yyCh = getChar();
+            return Tok_Comma;
+        } else if ( yyCh == QChar('"') ) {
+            yyCh = getChar();
+            while ( yyCh != QChar('"') && yyCh != '\0' ) {
+                yyStr += yyCh;
+                yyCh = getChar();
+            }
+            yyCh = getChar();
+            return Tok_String;
+        } else if ( yyCh == QChar('\'') ) {
+            yyCh = getChar();
+            while ( yyCh != QChar('\'') && yyCh != '\0' ) {
+                yyStr += yyCh;
+                yyCh = getChar();
+            }
+            yyCh = getChar();
+            return Tok_String;
+        } else {
+            while ( yyCh != '/' && yyCh != ',' && yyCh != '\0' && yyCh != ' ') {
+                yyStr += yyCh;
+                yyCh = getChar();
+            }
+            return Tok_Symbol;
+        }
     }
 
     int yyTok;
@@ -824,154 +825,154 @@ public:
 
     bool match( int tok )
     {
-	bool matched = ( yyTok == tok );
-	if ( matched )
-	    yyTok = getToken();
-	return matched;
+        bool matched = ( yyTok == tok );
+        if ( matched )
+            yyTok = getToken();
+        return matched;
     }
 
     bool matchFontStyle( QString *fstyle )
     {
-	bool matched = ( yyTok == Tok_Symbol &&
-			 (yyStr == "normal" || yyStr == "italic" ||
-			  yyStr == "oblique" || yyStr == "inherit") );
-	if ( matched ) {
-	    *fstyle = yyStr;
-	    yyTok = getToken();
-	}
-	return matched;
+        bool matched = ( yyTok == Tok_Symbol &&
+                         (yyStr == "normal" || yyStr == "italic" ||
+                          yyStr == "oblique" || yyStr == "inherit") );
+        if ( matched ) {
+            *fstyle = yyStr;
+            yyTok = getToken();
+        }
+        return matched;
     }
 
     bool matchFontVariant( QString *fvariant )
     {
-	bool matched = ( yyTok == Tok_Symbol &&
-			 (yyStr == "normal" || yyStr == "small-caps"
-			  || yyStr == "inherit") );
-	if ( matched ) {
-	    *fvariant = yyStr;
-	    yyTok = getToken();
-	}
-	return matched;
+        bool matched = ( yyTok == Tok_Symbol &&
+                         (yyStr == "normal" || yyStr == "small-caps"
+                          || yyStr == "inherit") );
+        if ( matched ) {
+            *fvariant = yyStr;
+            yyTok = getToken();
+        }
+        return matched;
     }
 
     bool matchFontWeight( QString *fweight )
     {
-	bool matched = ( yyTok == Tok_Symbol );
-	if ( matched ) {
-	    if ( yyStr.length() == 3 ) {
-		matched = ( yyStr[0].unicode() >= '1' &&
-			    yyStr[0].unicode() <= '9' &&
-			    yyStr.right(2) == QString::fromLatin1("00") );
-	    } else {
-		matched = ( yyStr == "normal" || yyStr == "bold" ||
-			    yyStr == "bolder" || yyStr == "lighter" ||
-			    yyStr == "inherit" );
-	    }
-	}
-	if ( matched ) {
-	    *fweight = yyStr;
-	    yyTok = getToken();
-	}
-	return matched;
+        bool matched = ( yyTok == Tok_Symbol );
+        if ( matched ) {
+            if ( yyStr.length() == 3 ) {
+                matched = ( yyStr[0].unicode() >= '1' &&
+                            yyStr[0].unicode() <= '9' &&
+                            yyStr.right(2) == QString::fromLatin1("00") );
+            } else {
+                matched = ( yyStr == "normal" || yyStr == "bold" ||
+                            yyStr == "bolder" || yyStr == "lighter" ||
+                            yyStr == "inherit" );
+            }
+        }
+        if ( matched ) {
+            *fweight = yyStr;
+            yyTok = getToken();
+        }
+        return matched;
     }
 
     bool matchFontSize( QString *fsize )
     {
-	bool matched = ( yyTok == Tok_Symbol );
-	if ( matched ) {
-	    *fsize = yyStr;
-	    yyTok = getToken();
-	}
-	return matched;
+        bool matched = ( yyTok == Tok_Symbol );
+        if ( matched ) {
+            *fsize = yyStr;
+            yyTok = getToken();
+        }
+        return matched;
     }
 
     bool matchLineHeight( QString *lheight )
     {
-	bool matched = ( yyTok == Tok_Symbol );
-	if ( matched ) {
-	    *lheight = yyStr;
-	    yyTok = getToken();
-	}
-	return matched;
+        bool matched = ( yyTok == Tok_Symbol );
+        if ( matched ) {
+            *lheight = yyStr;
+            yyTok = getToken();
+        }
+        return matched;
     }
 
     bool matchNameFamily( QString *ffamily )
     {
-	bool matched = false;
-	if ( yyTok == Tok_Symbol || ( yyTok == Tok_String && !strictParsing ) ) {
-	    // accept quoted "serif" only in non strict mode.
-	    *ffamily = yyStr;
-	    // unquoted courier new should return courier new
-	    while( (yyTok = getToken()) == Tok_Symbol )
-		*ffamily += " " + yyStr;
-	    matched = true;
-	} else if ( yyTok == Tok_String ) {
-	    if ( yyStr != "serif" && yyStr != "sans-serif" &&
-		 yyStr != "cursive" && yyStr != "fantasy" &&
-		 yyStr != "monospace" ) {
-		*ffamily = yyStr;
-		yyTok = getToken();
-		matched = true;
-	    }
-	}
-	return matched;
+        bool matched = false;
+        if ( yyTok == Tok_Symbol || ( yyTok == Tok_String && !strictParsing ) ) {
+            // accept quoted "serif" only in non strict mode.
+            *ffamily = yyStr;
+            // unquoted courier new should return courier new
+            while( (yyTok = getToken()) == Tok_Symbol )
+                *ffamily += " " + yyStr;
+            matched = true;
+        } else if ( yyTok == Tok_String ) {
+            if ( yyStr != "serif" && yyStr != "sans-serif" &&
+                 yyStr != "cursive" && yyStr != "fantasy" &&
+                 yyStr != "monospace" ) {
+                *ffamily = yyStr;
+                yyTok = getToken();
+                matched = true;
+            }
+        }
+        return matched;
     }
 
     bool matchFontFamily( QString *ffamily )
     {
-	QStringList t;
-	if ( !matchFontFamily( &t ) )
-	    return false;
+        QStringList t;
+        if ( !matchFontFamily( &t ) )
+            return false;
 
-	*ffamily = t.join(", ");
-	return TRUE;
+        *ffamily = t.join(", ");
+        return TRUE;
     }
 
     bool matchFontFamily ( QStringList *ffamily )
     {
-	if ( yyTok == Tok_None )
-	    yyTok = getToken();
+        if ( yyTok == Tok_None )
+            yyTok = getToken();
 #if 0
-	// ###
-	if ( yyTok == Tok_String && yyStr == "inherit" ) {
-	    ffamily->clear();
-	    yyTok = getToken();
-	    return TRUE;
-	}
+        // ###
+        if ( yyTok == Tok_String && yyStr == "inherit" ) {
+            ffamily->clear();
+            yyTok = getToken();
+            return TRUE;
+        }
 #endif
 
-	QString name;
-	do {
-	    if ( !matchNameFamily(&name) )
-		return FALSE;
-	    ffamily->append( name );
-	} while ( match(Tok_Comma) );
+        QString name;
+        do {
+            if ( !matchNameFamily(&name) )
+                return FALSE;
+            ffamily->append( name );
+        } while ( match(Tok_Comma) );
 
-	return true;
+        return true;
     }
 
     bool matchRealFont( QString *fstyle, QString *fvariant, QString *fweight,
-			       QString *fsize, QString *lheight, QString *ffamily )
+                               QString *fsize, QString *lheight, QString *ffamily )
     {
-	bool metFstyle = matchFontStyle( fstyle );
-	bool metFvariant = matchFontVariant( fvariant );
-	matchFontWeight( fweight );
-	if ( !metFstyle )
-	    metFstyle = matchFontStyle( fstyle );
-	if ( !metFvariant )
-	    matchFontVariant( fvariant );
-	if ( !metFstyle )
-	    matchFontStyle( fstyle );
+        bool metFstyle = matchFontStyle( fstyle );
+        bool metFvariant = matchFontVariant( fvariant );
+        matchFontWeight( fweight );
+        if ( !metFstyle )
+            metFstyle = matchFontStyle( fstyle );
+        if ( !metFvariant )
+            matchFontVariant( fvariant );
+        if ( !metFstyle )
+            matchFontStyle( fstyle );
 
-	if ( !matchFontSize(fsize) )
-	    return FALSE;
-	if ( match(Tok_Slash) ) {
-	    if ( !matchLineHeight(lheight) )
-		return FALSE;
-	}
-	if ( !matchFontFamily(ffamily) )
-	    return FALSE;
-	return true;
+        if ( !matchFontSize(fsize) )
+            return FALSE;
+        if ( match(Tok_Slash) ) {
+            if ( !matchLineHeight(lheight) )
+                return FALSE;
+        }
+        if ( !matchFontFamily(ffamily) )
+            return FALSE;
+        return true;
     }
 };
 
@@ -999,7 +1000,7 @@ bool StyleBaseImpl::parseFont(const QChar *curP, const QChar *endP,
         f.yyTok = f.getToken();
         if ( f.matchRealFont(&fstyle, &fvariant, &fweight, &fsize, &lheight,
                            &ffamily) ) {
-// 	    qDebug( "  %s %s %s %s / %s", fstyle.latin1(),
+//          qDebug( "  %s %s %s %s / %s", fstyle.latin1(),
 //                     fvariant.latin1(), fweight.latin1(), fsize.latin1(),
 //                     lheight.latin1() );
             if(!fstyle.isNull())
@@ -1186,20 +1187,20 @@ bool StyleBaseImpl::parseValue(const QChar *curP, const QChar *endP, int propId,
         break;
 
     case CSS_PROP_FONT_WEIGHT:
-	// 100 - 900 values
+        // 100 - 900 values
     {
 
-	value = value.stripWhiteSpace();
-	int id = 0;
-	if ( value == "100" || value == "200" || value == "300" || value == "400" || value == "500" )
-	    id = CSS_VAL_NORMAL;
-	else if ( value == "600" || value == "700" || value == "800" || value == "900" )
-	    id = CSS_VAL_BOLD;
-	if ( id )
-	    parsedValue = new CSSPrimitiveValueImpl(id);
-	else
-	    return false;
-	break;
+        value = value.stripWhiteSpace();
+        int id = 0;
+        if ( value == "100" || value == "200" || value == "300" || value == "400" || value == "500" )
+            id = CSS_VAL_NORMAL;
+        else if ( value == "600" || value == "700" || value == "800" || value == "900" )
+            id = CSS_VAL_BOLD;
+        if ( id )
+            parsedValue = new CSSPrimitiveValueImpl(id);
+        else
+            return false;
+        break;
     }
 
 // special properties (css_extensions)
@@ -1208,47 +1209,47 @@ bool StyleBaseImpl::parseValue(const QChar *curP, const QChar *endP, int propId,
       break;
     case CSS_PROP_BACKGROUND_POSITION:
       {
-	// special handling of "background-position: center;"
-	  const struct css_value *cssval = findValue(val, value.length());
-	  if ( cssval && cssval->id == CSS_VAL_CENTER ) {
-	      parsedValue = new CSSPrimitiveValueImpl( 50, CSSPrimitiveValue::CSS_PERCENTAGE );
-	      CSSProperty *prop = new CSSProperty();
-	      prop->m_id = CSS_PROP_KONQ_BGPOS_Y;
-	      prop->setValue(parsedValue);
-	      prop->m_bImportant = important;
-	      propList->append(prop);
-	  }
-	  int properties[2] = { CSS_PROP_KONQ_BGPOS_X, CSS_PROP_KONQ_BGPOS_Y };
-	  return parseShortHand(curP, endP, properties, 2, important, propList);
+        // special handling of "background-position: center;"
+          const struct css_value *cssval = findValue(val, value.length());
+          if ( cssval && cssval->id == CSS_VAL_CENTER ) {
+              parsedValue = new CSSPrimitiveValueImpl( 50, CSSPrimitiveValue::CSS_PERCENTAGE );
+              CSSProperty *prop = new CSSProperty();
+              prop->m_id = CSS_PROP_KONQ_BGPOS_Y;
+              prop->setValue(parsedValue);
+              prop->m_bImportant = important;
+              propList->append(prop);
+          }
+          int properties[2] = { CSS_PROP_KONQ_BGPOS_X, CSS_PROP_KONQ_BGPOS_Y };
+          return parseShortHand(curP, endP, properties, 2, important, propList);
       }
       break;
     case CSS_PROP_KONQ_BGPOS_X:
     case CSS_PROP_KONQ_BGPOS_Y:
       {
         const struct css_value *cssval = findValue(val, value.length());
-	int val = -1;
+        int val = -1;
         if (cssval)
         {
-	  switch( cssval->id ) {
-	  case CSS_VAL_TOP:
-	  case CSS_VAL_LEFT:
-	    val = 0;
-	    break;
-	  case CSS_VAL_CENTER:
-	    val = 50;
-	    break;
-	  case CSS_VAL_BOTTOM:
-	  case CSS_VAL_RIGHT:
-	    val = 100;
-	    break;
-	  default:
-	    break;
-	  }
-	}
-	if(val == -1)
-	  parsedValue = parseUnit(curP, endP, PERCENT | NUMBER);
-	else if(!parsedValue)
-	  parsedValue = new CSSPrimitiveValueImpl(val, CSSPrimitiveValue::CSS_PERCENTAGE);
+          switch( cssval->id ) {
+          case CSS_VAL_TOP:
+          case CSS_VAL_LEFT:
+            val = 0;
+            break;
+          case CSS_VAL_CENTER:
+            val = 50;
+            break;
+          case CSS_VAL_BOTTOM:
+          case CSS_VAL_RIGHT:
+            val = 100;
+            break;
+          default:
+            break;
+          }
+        }
+        if(val == -1)
+          parsedValue = parseUnit(curP, endP, PERCENT | NUMBER);
+        else if(!parsedValue)
+          parsedValue = new CSSPrimitiveValueImpl(val, CSSPrimitiveValue::CSS_PERCENTAGE);
         break;
       }
     case CSS_PROP_CURSOR:
@@ -1267,12 +1268,12 @@ bool StyleBaseImpl::parseValue(const QChar *curP, const QChar *endP, int propId,
 
 // colors || inherit
     case CSS_PROP_OUTLINE_COLOR:
-	// outline has "invert" as additional keyword. we handle
+        // outline has "invert" as additional keyword. we handle
         // it as invalid color and add a special case during rendering
-	if ( value == "invert" ) {
-	    parsedValue = new CSSPrimitiveValueImpl( QColor() );
-	    break;
-	}
+        if ( value == "invert" ) {
+            parsedValue = new CSSPrimitiveValueImpl( QColor() );
+            break;
+        }
     case CSS_PROP_BACKGROUND_COLOR:
     case CSS_PROP_BORDER_TOP_COLOR:
     case CSS_PROP_BORDER_RIGHT_COLOR:
@@ -1431,10 +1432,10 @@ bool StyleBaseImpl::parseValue(const QChar *curP, const QChar *endP, int propId,
             QString face = str.mid(pos, pos2-pos);
             face = face.stripWhiteSpace();
             if(face.length() == 0) break;
-	    // ### single quoted is missing...
+            // ### single quoted is missing...
             if(face[0] == '\"') face.remove(0, 1);
             if(face[face.length()-1] == '\"') face = face.left(face.length()-1);
-	    //kdDebug( 6080 ) << "found face '" << face << "'" << endl;
+            //kdDebug( 6080 ) << "found face '" << face << "'" << endl;
             list->append(new CSSPrimitiveValueImpl(DOMString(face), CSSPrimitiveValue::CSS_STRING));
             pos = pos2 + 1;
             if(pos2 == -1) break;
@@ -1452,18 +1453,18 @@ bool StyleBaseImpl::parseValue(const QChar *curP, const QChar *endP, int propId,
     {
         CSSValueListImpl *list = new CSSValueListImpl;
         QString str(curP, endP-curP);
-	// css2 compatible parsing...
-	FontParser fp;
-	fp.startTokenizer( str, strictParsing );
-	QStringList families;
-	if ( !fp.matchFontFamily( &families ) )
-	    return false;
-	for ( QStringList::Iterator it = families.begin(); it != families.end(); ++it ) {
-	    if( *it != QString::null ) {
-	       list->append(new CSSPrimitiveValueImpl(DOMString(*it), CSSPrimitiveValue::CSS_STRING));
-	       //kdDebug() << "StyleBaseImpl::parsefont: family='" << *it << "'" << endl;
-	    }
-	}
+        // css2 compatible parsing...
+        FontParser fp;
+        fp.startTokenizer( str, strictParsing );
+        QStringList families;
+        if ( !fp.matchFontFamily( &families ) )
+            return false;
+        for ( QStringList::Iterator it = families.begin(); it != families.end(); ++it ) {
+            if( *it != QString::null ) {
+               list->append(new CSSPrimitiveValueImpl(DOMString(*it), CSSPrimitiveValue::CSS_STRING));
+               //kdDebug() << "StyleBaseImpl::parsefont: family='" << *it << "'" << endl;
+            }
+        }
         //kdDebug( 6080 ) << "got " << list->length() << " faces" << endl;
         if(list->length())
             parsedValue = list;
@@ -1520,7 +1521,7 @@ bool StyleBaseImpl::parseValue(const QChar *curP, const QChar *endP, int propId,
     case CSS_PROP_BORDER_RIGHT:
     case CSS_PROP_BORDER_BOTTOM:
     case CSS_PROP_BORDER_LEFT:
-	case CSS_PROP_OUTLINE:
+        case CSS_PROP_OUTLINE:
     {
 #ifdef CSS_DEBUG
         kdDebug(6080) << "parsing border property" << endl;
@@ -1536,8 +1537,8 @@ bool StyleBaseImpl::parseValue(const QChar *curP, const QChar *endP, int propId,
             CSS_PROP_BORDER_LEFT_WIDTH, CSS_PROP_BORDER_LEFT_STYLE, CSS_PROP_BORDER_LEFT_COLOR };
         const int properties_border_right[3] = {
             CSS_PROP_BORDER_RIGHT_WIDTH, CSS_PROP_BORDER_RIGHT_STYLE, CSS_PROP_BORDER_RIGHT_COLOR };
-	const int properties_outline[3] =
-	{ CSS_PROP_OUTLINE_COLOR, CSS_PROP_OUTLINE_STYLE, CSS_PROP_OUTLINE_WIDTH };
+        const int properties_outline[3] =
+        { CSS_PROP_OUTLINE_COLOR, CSS_PROP_OUTLINE_STYLE, CSS_PROP_OUTLINE_WIDTH };
         if(propId == CSS_PROP_BORDER)
             properties = properties_border;
         else if(propId == CSS_PROP_BORDER_TOP)
@@ -1622,8 +1623,8 @@ bool StyleBaseImpl::parseValue(const QChar *curP, const QChar *endP, int propId,
     }
     case CSS_PROP_LIST_STYLE:
       {
-	const int properties[3] = { CSS_PROP_LIST_STYLE_TYPE, CSS_PROP_LIST_STYLE_POSITION, CSS_PROP_LIST_STYLE_IMAGE };
-        return 	parseShortHand(curP, endP, properties, 3, important, propList);
+        const int properties[3] = { CSS_PROP_LIST_STYLE_TYPE, CSS_PROP_LIST_STYLE_POSITION, CSS_PROP_LIST_STYLE_IMAGE };
+        return  parseShortHand(curP, endP, properties, 3, important, propList);
       }
     case CSS_PROP_PAUSE:
         break;
@@ -1690,19 +1691,19 @@ bool StyleBaseImpl::parseShortHand(const QChar *curP, const QChar *endP, const i
 #endif
       int i = 0;
       while ( !found && i < num ) {
-	if( multiple || !fnd[i] )
-	  found = parseValue(curP, nextP, properties[i], important, propList);
-	if( found ) {
-	    //kdDebug() << "found " << i << endl;
-	  fnd[i] = true;
-	}
-	i++;
+        if( multiple || !fnd[i] )
+          found = parseValue(curP, nextP, properties[i], important, propList);
+        if( found ) {
+            //kdDebug() << "found " << i << endl;
+          fnd[i] = true;
+        }
+        i++;
       }
       if(!found) {
 #ifdef CSS_DEBUG
-	  kdDebug(6080) << "invalid property" << endl;
+          kdDebug(6080) << "invalid property" << endl;
 #endif
-	  return false;
+          return false;
       }
       curP = nextP+1;
       if(curP >= endP) break;
@@ -1724,11 +1725,11 @@ bool StyleBaseImpl::parseBackground(const QChar *curP, const QChar *endP, bool i
       bool l;
       const QChar *second = getNext( nextP+1, endP, l );
       if(!fnd[0]) {
-	found = parseValue(curP, second, CSS_PROP_BACKGROUND_POSITION, important, propList);
-	if( found ) {
-	  fnd[0] = true;
-	  nextP = second;
-	}
+        found = parseValue(curP, second, CSS_PROP_BACKGROUND_POSITION, important, propList);
+        if( found ) {
+          fnd[0] = true;
+          nextP = second;
+        }
       }
     }
 #ifdef CSS_DEBUG
@@ -1737,8 +1738,8 @@ bool StyleBaseImpl::parseBackground(const QChar *curP, const QChar *endP, bool i
     if(!found && !fnd[2]) {
       found = parseValue(curP, nextP, CSS_PROP_BACKGROUND_COLOR, important, propList);
       if( found ) {
-	  //kdDebug() << "color!!!" << endl;
-	fnd[2] = true;
+          //kdDebug() << "color!!!" << endl;
+        fnd[2] = true;
       }
     }
     if( !found ) {
@@ -1746,47 +1747,47 @@ bool StyleBaseImpl::parseBackground(const QChar *curP, const QChar *endP, bool i
       QString value(curP, nextP - curP);
       const struct css_value *cssval = findValue(value.latin1(), value.length());
       if (cssval)
-	id = cssval->id;
+        id = cssval->id;
       int prop = -1;
       switch(id) {
       case CSS_VAL_REPEAT:
       case CSS_VAL_REPEAT_X:
       case CSS_VAL_REPEAT_Y:
       case CSS_VAL_NO_REPEAT:
-	prop = CSS_PROP_BACKGROUND_REPEAT;
-	fnd[3] = true;
-	found = true;
-	break;
+        prop = CSS_PROP_BACKGROUND_REPEAT;
+        fnd[3] = true;
+        found = true;
+        break;
       case CSS_VAL_SCROLL:
       case CSS_VAL_FIXED:
-	prop = CSS_PROP_BACKGROUND_ATTACHMENT;
-	fnd[4] = true;
-	found = true;
+        prop = CSS_PROP_BACKGROUND_ATTACHMENT;
+        fnd[4] = true;
+        found = true;
       case CSS_VAL_CENTER:
       case CSS_VAL_TOP:
       case CSS_VAL_BOTTOM:
       case CSS_VAL_LEFT:
       case CSS_VAL_RIGHT:
-	// #### remove this, do background position correctly
-	found = true;
-	break;
+        // #### remove this, do background position correctly
+        found = true;
+        break;
       default:
-	break;
+        break;
       }
       if( id != -1 )
-	found = parseValue(curP, nextP, prop, important, propList);
+        found = parseValue(curP, nextP, prop, important, propList);
     }
     if(!found && !fnd[1]) {
       found = parseValue(curP, nextP, CSS_PROP_BACKGROUND_IMAGE, important, propList);
       if( found ) {
-	kdDebug( 6080 ) << "image!!!" << endl;
-	fnd[1] = true;
+        kdDebug( 6080 ) << "image!!!" << endl;
+        fnd[1] = true;
       }
     }
     if(!found && !fnd[0]) {
       found = parseValue(curP, nextP, CSS_PROP_BACKGROUND_POSITION, important, propList);
       if( found )
-	fnd[0] = true;
+        fnd[0] = true;
     }
     if(!found) {
       //#ifdef CSS_DEBUG
@@ -1900,9 +1901,9 @@ StyleBaseImpl::parseUnit(const QChar * curP, const QChar *endP, int allowedUnits
         if(allowedUnits & INTEGER && isInt) // ### DOM CSS doesn't seem to define something for integer
             return new CSSPrimitiveValueImpl(value, CSSPrimitiveValue::CSS_NUMBER);
 
-	// ### according to the css specs only 0 is allowed without unit.
-	// there are however too many web pages out there using CSS without units
-	// cause ie and ns allow them. We do so if the document is not using a strict dtd
+        // ### according to the css specs only 0 is allowed without unit.
+        // there are however too many web pages out there using CSS without units
+        // cause ie and ns allow them. We do so if the document is not using a strict dtd
         if(allowedUnits & LENGTH  && (value == 0 || !strictParsing ))
             return new CSSPrimitiveValueImpl(value, CSSPrimitiveValue::CSS_PX);
 
@@ -2091,13 +2092,13 @@ StyleBaseImpl::parseRule(const QChar *&curP, const QChar *endP)
     while (startP && (startP < endP))
     {
        if(*startP == comment[count])
-	 count++;
+         count++;
        else
-	 break;
+         break;
        if(count == 4)
        {
-	  curP = ++startP;
-	  break;
+          curP = ++startP;
+          break;
        }
        ++startP;
     }
@@ -2106,13 +2107,13 @@ StyleBaseImpl::parseRule(const QChar *&curP, const QChar *endP)
     while (startP && (startP < endP))
     {
        if(*startP == comment[count])
-	 count++;
+         count++;
        else
-	 break;
+         break;
        if(count == 3)
        {
-	  curP = ++startP;
-	  break;
+          curP = ++startP;
+          break;
        }
        ++startP;
     }
@@ -2181,9 +2182,9 @@ QString StyleBaseImpl::preprocess(const QString &str)
             } else if ( *ch == '/' )
                 firstChar = true;
             else if ( *ch == '}' ) {
-		processed += *ch;
-		processed += QChar(' ');
-	    } else
+                processed += *ch;
+                processed += QChar(' ');
+            } else
                 processed += *ch;
         }
         else
@@ -2234,7 +2235,7 @@ void CSSSelector::print(void)
 {
     kdDebug( 6080 ) << "[Selector: tag = " <<       tag << ", attr = \"" << attr << "\", value = \"" << value.string().latin1() << "\" relation = " << (int)relation << endl;
     if ( tagHistory )
-	tagHistory->print();
+        tagHistory->print();
 }
 
 int CSSSelector::specificity()

@@ -31,6 +31,7 @@
 #include "htmlhashes.h"
 
 #include "misc/loader.h"
+#include "misc/helper.h"
 
 #include "css/cssstyleselector.h"
 #include "css/css_stylesheetimpl.h"
@@ -126,10 +127,9 @@ void HTMLLinkElementImpl::attach(KHTMLView *v)
 
     if((type.contains("text/css") || rel == "stylesheet") && !rel.contains("alternate"))
     {
-        QString str = m_media.string().lower();
         // no need to load style sheets which aren't for the screen output
         // ### there may be in some situations e.g. for an editor or script to manipulate
-        if(m_media.isNull() || str.contains("screen") || str.contains("all"))
+        if( m_media.isNull() || m_media.contains("screen") || m_media.contains("all") || m_media.contains("print") )
         {
             m_loading = true;
             HTMLDocumentImpl *doc = static_cast<HTMLDocumentImpl *>(document);
@@ -154,7 +154,7 @@ void HTMLLinkElementImpl::parseAttribute(AttrImpl *attr)
     case ATTR_TYPE:
         m_type = attr->value(); break;
     case ATTR_MEDIA:
-        m_media = attr->value(); break;
+        m_media = attr->value().string().lower(); break;
     case ATTR_DISABLED:
         // ###
     default:
@@ -187,6 +187,20 @@ void HTMLLinkElementImpl::sheetLoaded()
 {
     document->createSelector();
 }
+
+StyleSheetImpl *HTMLLinkElementImpl::sheet() const
+{
+    if ( khtml::printpainter ) {
+        // we're currently printing, return all and print style sheets
+        if( m_media.isNull() || m_media.contains("all") || m_media.contains("print") )
+            return m_sheet;
+    } else {
+        if( m_media.isNull() || m_media.contains("screen") || m_media.contains("all") )
+            return m_sheet;
+    }
+    return 0;
+}
+
 
 // -------------------------------------------------------------------------
 
@@ -256,7 +270,7 @@ void HTMLMetaElementImpl::attach(KHTMLView *v)
             if(strncasecmp(str, "url=", 4) == 0)
             {
                 str = str.mid(4).simplifyWhiteSpace();
-		str = parseURL( DOMString(str) ).string();
+                str = parseURL( DOMString(str) ).string();
                 if ( ok )
                     v->part()->scheduleRedirection(delay, str);
             }
@@ -269,10 +283,10 @@ void HTMLMetaElementImpl::attach(KHTMLView *v)
         KURL url = v->part()->url();
         if (url.protocol().startsWith("http"))
         {
-	    // KIO::http_update_cache(m_url, false, d->m_doc->docLoader()->expire_date);
-	    // moved to khtml_part.cpp::slotFinished(KIO::Job *) (Tobias)
-	    if (document->docLoader())
-		document->docLoader()->setExpireDate(expire_date);
+            // KIO::http_update_cache(m_url, false, d->m_doc->docLoader()->expire_date);
+            // moved to khtml_part.cpp::slotFinished(KIO::Job *) (Tobias)
+            if (document->docLoader())
+                document->docLoader()->setExpireDate(expire_date);
         }
     }
     else if(strcasecmp(_equiv, "pragma") == 0 && !_content.isNull())
@@ -356,8 +370,8 @@ void HTMLStyleElementImpl::setChanged(bool b)
     // TextImpl sets it's parent to be changed when appendData() is called (hack)
     // ### make this work properly in all situations
     if (b) {
-	reparseSheet();
-	sheetLoaded();
+        reparseSheet();
+        sheetLoaded();
     }
     HTMLElementImpl::setChanged(b);
 }
@@ -379,10 +393,10 @@ void HTMLStyleElementImpl::reparseSheet()
     DOMString text = "";
     NodeImpl *n;
     for (n = _first; n; n = n->nextSibling()) {
-	if (n->nodeType() == Node::TEXT_NODE ||
-	    n->nodeType() == Node::CDATA_SECTION_NODE ||
-	    n->nodeType() == Node::COMMENT_NODE)
-	text += static_cast<CharacterDataImpl*>(n)->data();
+        if (n->nodeType() == Node::TEXT_NODE ||
+            n->nodeType() == Node::CDATA_SECTION_NODE ||
+            n->nodeType() == Node::COMMENT_NODE)
+        text += static_cast<CharacterDataImpl*>(n)->data();
     }
 
     kdDebug( 6030 ) << "style: parsing sheet '" << text.string() << "'" << endl;
