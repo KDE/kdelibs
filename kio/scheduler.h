@@ -34,6 +34,7 @@ namespace KIO {
 
     class Scheduler : public QObject, virtual public DCOPObject {
 	Q_OBJECT
+        class ProtocolInfo;
 
     public:
 	~Scheduler();
@@ -68,6 +69,7 @@ namespace KIO {
         void slotCleanIdleSlaves();
 
     protected:
+        bool startStep(ProtocolInfo *protInfo);
 	Scheduler();
 
     public: // InfoDict needs Info, so we can't declare it private
@@ -86,7 +88,6 @@ namespace KIO {
         void _putSlaveOnHold(KIO::SimpleJob *job, const KURL &url);
         void _removeSlaveOnHold();
 
-	QList<SimpleJob> joblist;
 	QTimer mytimer;
 	QTimer cleanupTimer;
 	bool busy;

@@ -39,8 +39,10 @@ Scheduler *Scheduler::instance = 0;
 class KIO::Scheduler::ProtocolInfo
 {
   public:
-     ProtocolInfo() : activeSlaves(0), idleSlaves(0), maxSlaves(5) { }
+     ProtocolInfo() : activeSlaves(0), idleSlaves(0), maxSlaves(5) 
+	{ joblist.setAutoDelete(false); }
 
+     QList<SimpleJob> joblist;
      int activeSlaves;
      int idleSlaves;
      int maxSlaves;
@@ -86,7 +88,6 @@ Scheduler::Scheduler()
 	    SLOT(startStep()));
     connect(&cleanupTimer, SIGNAL(timeout()),
 	    SLOT(slotCleanIdleSlaves()));
-    joblist.setAutoDelete(false);
     busy = false;
 }
 
@@ -164,7 +165,9 @@ QCStringList Scheduler::functions()
 }
 
 void Scheduler::_doJob(SimpleJob *job) {
-    joblist.append(job);
+    QString protocol = job->url().protocol();
+    ProtocolInfo *protInfo = protInfoDict->get(protocol);
+    protInfo->joblist.append(job);
     mytimer.start(0, true);
 }
 	
@@ -178,19 +181,30 @@ void Scheduler::_cancelJob(SimpleJob *job) {
         _jobFinished( job, slave );
 	slotSlaveDied( slave);
     } else { // was not yet running (don't call this on a finished job!)
-        joblist.remove(job);
+        QString protocol = job->url().protocol();
+        ProtocolInfo *protInfo = protInfoDict->get(protocol);
+        protInfo->joblist.remove(job);
     }
 }
 
 void Scheduler::startStep()
 {
-    while (joblist.count())
+    QDictIterator<KIO::Scheduler::ProtocolInfo> it(*protInfoDict);
+    while(it.current())
+    {
+       if (startStep(it.current())) return;
+       ++it;
+    }
+}
+
+bool Scheduler::startStep(ProtocolInfo *protInfo)
+{
+    while (protInfo->joblist.count())
     {
 //       kdDebug(7006) << "Scheduling job" << endl;
        debug_info();
-       SimpleJob *job = joblist.at(0);
+       SimpleJob *job = protInfo->joblist.at(0);
        QString protocol = job->url().protocol();
-       ProtocolInfo *protInfo = protInfoDict->get(protocol);
        QString host = job->url().host();
        int port = job->url().port();
        QString user = job->url().user();
@@ -258,9 +272,9 @@ void Scheduler::startStep()
              {
                  kdError() << "ERROR " << error << ": couldn't create slave : "
                            << errortext << endl;
-                 joblist.remove(job);
+                 protInfo->joblist.remove(job);
                  job->slotError( error, errortext );
-                 return;
+                 return false;
              }
           }
        }
@@ -280,13 +294,13 @@ void Scheduler::startStep()
        {
 //          kdDebug(7006) << "No slaves available" << endl;
 //          kdDebug(7006) << " -- active: " << protInfo->activeSlaves << " idle: " << protInfo->idleSlaves << endl;
-	  return;
+	  return false;
        }
 
        protInfo->idleSlaves--;
        protInfo->activeSlaves++;
        idleSlaves->removeRef(slave);
-       joblist.removeRef(job);
+       protInfo->joblist.removeRef(job);
 //       kdDebug(7006) << "scheduler: job started " << job << endl;
        if ((newSlave) ||
            (slave->host() != host) ||
@@ -297,7 +311,14 @@ void Scheduler::startStep()
            slave->setHost(host, port, user, passwd);
        }
        job->start(slave);
+kdDebug(7006) << "PROTOCOL = " << protocol << " idle = " << protInfo->idleSlaves << endl;
+       if (protInfo->idleSlaves)
+          mytimer.start(20, true);
+       else
+          mytimer.start(100, true);
+       return true;
     }
+    return false;
 }
 
 #if 0
@@ -317,23 +338,17 @@ void Scheduler::_jobFinished(SimpleJob *job, Slave *slave)
     ProtocolInfo *protInfo = protInfoDict->get(slave->protocol());
     slave->disconnect(job);
     protInfo->activeSlaves--;
-//    kdDebug(7006) << "Scheduler: job finished job = " << job << " pid = " << slave->slave_pid() << endl;
     if (slave->isAlive())
     {
        idleSlaves->append(slave);
        protInfo->idleSlaves++;
        slave->setIdle();
        _scheduleCleanup();
-       if (joblist.count())
-       {
-//           kdDebug(7006) << "Scheduler has now " << joblist.count() << " jobs" << endl;
-           mytimer.start(0, true);
-       }
        slave->connection()->send( CMD_SLAVE_STATUS );
     }
-    else
+    if (protInfo->joblist.count())
     {
-//       kdDebug(7006) << "Scheduler: Slave is dead pid = " << slave->slave_pid() << endl;
+       mytimer.start(0, true);
     }
 }
 
