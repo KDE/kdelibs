@@ -759,6 +759,7 @@ void RenderText::setText(DOMStringImpl *text, bool force)
     KHTMLAssert(!str->l || str->s);
 
     setLayouted(false);
+    setMinMaxKnown(false);
 #ifdef BIDI_DEBUG
     QConstString cstr(str->s, str->l);
     kdDebug( 6040 ) << "RenderText::setText( " << cstr.string().length() << " ) '" << cstr.string() << "'" << endl;
