@@ -293,10 +293,10 @@ void SlaveBase::mimeType( const QString &_type)
        break;
     }
 // WABA: cmd can be "CMD_NONE" or "CMD_GET" (in which case the slave
-// had been put on hold.)
+// had been put on hold.) [or special, for http posts].
 // Something else is basically an error
     kdDebug(7019) << "mimetype: reading " << cmd << endl;
-    assert( (cmd == CMD_NONE) || (cmd == CMD_GET) );
+    ASSERT( (cmd == CMD_NONE) || (cmd == CMD_GET) || (cmd == CMD_SPECIAL) );
 }
 
 // ?
