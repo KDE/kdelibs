@@ -282,6 +282,12 @@ class PageNode
 			for( List::Iterator it = m_children.begin(); it != end; ++it )
 				if( ( *it )->insert( group ) )
 					return true;
+			// no parent with the right parentid
+			if( Root == m_type )
+			{
+				m_children.append( new PageNode( group, this ) );
+				return true;
+			}
 			return false;
 		}
 
@@ -307,6 +313,12 @@ class PageNode
 			for( List::Iterator it = m_children.begin(); it != end; ++it )
 				if( ( *it )->insert( info, parentid ) )
 					return true;
+			// no parent with the right parentid
+			if( Root == m_type )
+			{
+				m_children.append( new PageNode( info, this ) );
+				return true;
+			}
 			return false;
 		}
 
