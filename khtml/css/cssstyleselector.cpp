@@ -599,13 +599,12 @@ void CSSStyleSelector::buildLists()
 
     // This algorithm sucks badly. but hey, its performance shouldn't matter much ( Dirk )
     for ( unsigned int sel = 0; sel < selectors_size; ++sel ) {
-
         prop = properties;
         int len = 0;
         int offset = 0;
-        bool matches = false;
-        for ( unsigned int p = 0; p < properties_size-1; ++p ) {
-            if ( matches != ( properties[p]->selector == sel ) ) {
+        bool matches = properties[0] ? properties[0]->selector == sel : false;
+        for ( unsigned int p = 0; p < properties_size; ++p ) {
+            if ( !properties[p] || matches != properties[p]->selector == sel ) {
                 if ( matches ) {
                     int* newprops = new int[selectorCache[sel].props_size+2];
                     for ( unsigned int i=0; i < selectorCache[sel].props_size; i++ )
