@@ -1,0 +1,11 @@
+[Desktop Entry]
+Encoding=UTF-8
+Type=MimeType
+Comment=Java Applet
+Comment[hu]=Java kisalkalmazás
+Comment[pt_BR]=Applet Java
+Comment[sv]=Javaminiprogram
+MimeType=application/x-java-applet
+Icon=binary
+Patterns=
+X-KDE-AutoEmbed=true
