@@ -180,6 +180,8 @@ class KAction : public QObject
   Q_PROPERTY( QString toolTip READ toolTip WRITE setToolTip )
   Q_PROPERTY( QString icon READ icon WRITE setIcon )
 public:
+    enum Scope { ScopeUnspecified, ScopeWidget, ScopeBuilder, ScopeGlobal };
+
     /**
      * Constructs an action with text, potential keyboard
      * shortcut, and a SLOT to call when this action is invoked by
@@ -315,13 +317,11 @@ public:
     virtual int plug( QWidget *w, int index = -1 );
 
     /**
+     * @deprecated.  Shouldn't be used.  No substitute available.
+     *
      * "Plug" or insert this action into a given KAccel.
      *
-     * It is sometimes useful to use the action paradigm for
-     * actions that are not associated with some widget (ie actions
-     * that are only activated by keyboard).
-     *
-     * @param cut The KAccel which activates this action
+     * @param accel The KAccel collection which holds this accel
      * @param configurable If the shortcut is configurable via
      * the KAccel configuration dialog (this is somehow deprecated since
      * there is now a KAction key configuration dialog).
@@ -343,6 +343,7 @@ public:
     virtual void unplug( QWidget *w );
 
     /**
+     * @deprecated.  Complement method to plugAccel().
      * Disconnect this action from the KAccel.
      */
     virtual void unplugAccel();
@@ -368,6 +369,7 @@ public:
     int itemId( int index ) const;
     QWidget* representative( int index ) const;
     int containerCount() const;
+    uint kaccelCount() const;
 
     virtual bool hasIcon() const;
 #ifndef KDE_NO_COMPAT
@@ -525,10 +527,17 @@ signals:
     void enabled( bool );
 
 private:
-    QString whatsThisWithIcon() const;
-
     void initPrivate( const QString& text, const KShortcut& cut,
                   const QObject* receiver, const char* slot );
+    KAccel* kaccelCurrent();
+    bool initShortcut( const KShortcut& );
+    void plugShortcut();
+    bool updateKAccelShortcut( KAccel* kaccel );
+    void insertKAccel( KAccel* );
+    /** @internal To be used exclusively by KActionCollection::removeWidget(). */
+    void removeKAccel( KAccel* );
+
+    QString whatsThisWithIcon() const;
 
 #ifndef KDE_NO_COMPAT
 public:
@@ -1701,6 +1710,7 @@ typedef QValueList<KAction *> KActionPtrList;
 class KActionCollection : public QObject
 {
   friend class KAction;
+  friend class KXMLGUIClient;
 
   Q_OBJECT
 public:
@@ -1719,12 +1729,54 @@ public:
    * You only need to call this if a null pointer was passed in the constructor.
    */
   virtual void setWidget( QWidget *widget );
+  
+  /**
+   * This indicates whether new actions which are created in this collection
+   * should have their keyboard shortcuts automatically connected on
+   * construction.  Set to 'false' if you will be loading XML-based settings.
+   * This is automatically done by KParts.  The default is 'true'.
+   */
+  void setAutoConnectShortcuts( bool );
+  
+  bool isAutoConnectShortcuts();
+  
+  /**
+   * This sets the default shortcut scope for new actions created in this
+   * collection.  The default is ScopeUnspecified.  Ideally the default
+   * would have been ScopeWidget, but that would cause some backwards
+   * compatibility problems.
+   */
+  void setDefaultScope( KAction::Scope );
+  
+  /**
+   * Doc/View model.  This lets you add the action collection of a document
+   * to a view's action collection.
+   */
+  bool addDocCollection( KActionCollection* pDoc );
+
+  /** Returns the number of widgets which this collection is associated with. */
+  //uint widgetCount() const;
 
   /**
-   * Return the collection's KAccel object
+   * Returns true if the collection has its own KAccel object.  This will be
+   * the case if it was constructed with a valid widget ptr or if setWidget()
+   * was called.
    */
+  //bool ownsKAccel() const;
+
+  /** @deprecated  Deprecated because of ambiguous name.  Use kaccel() */
   virtual KAccel* accel();
   virtual const KAccel* accel() const;
+
+  /** Returns the KAccel object of the most recently set widget. */
+  KAccel* kaccel();
+  const KAccel* kaccel() const;
+
+  /** Returns the KAccel object associated with widget #. */
+  //KAccel* widgetKAccel( uint i );
+  //const KAccel* widgetKAccel( uint i ) const;
+
+  /* Returns the number of actions in the collection **/
   virtual uint count() const;
   bool isEmpty() const { return count() == 0; }
   virtual KAction* action( int index ) const;
@@ -1770,7 +1822,18 @@ signals:
   void clearStatusText();
 
 private:
-  void findMainWindow( QWidget *w );
+  /** 
+   * @internal Only to be called by KXMLGUIFactory::addClient().
+   * When actions are being connected, KAction needs to know what
+   * widget it should connect widget-scope actions to, and what
+   * main window it should connect
+   */
+  void beginXMLPlug( QWidget *widget );
+  void endXMLPlug();
+  /** @internal.  Only to be called by KXMLGUIFactory::removeClient() */
+  void prepareXMLUnplug();
+  void unplugShortcuts( KAccel* kaccel );
+  
   void _clear();
   void _insert( KAction* );
   void _remove( KAction* );

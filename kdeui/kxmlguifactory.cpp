@@ -199,6 +199,7 @@ KXMLGUIFactory::~KXMLGUIFactory()
 
 void KXMLGUIFactory::addClient( KXMLGUIClient *client )
 {
+    kdDebug(129) << "KXMLGUIFactory::addClient( " << client << " )" << endl; // ellis
     static const QString &actionPropElementName = KGlobal::staticQString( "ActionProperties" );
 
 //    QTime dt; dt.start();
@@ -212,7 +213,10 @@ void KXMLGUIFactory::addClient( KXMLGUIClient *client )
     if ( d->m_clients.containsRef( client ) == 0 )
         d->m_clients.append( client );
 
-    client->actionCollection()->setWidget( d->builder->widget() ); // ellis
+    // Tell the client that plugging in is process and
+    //  let it know what builder widget its mainwindow shortcuts
+    //  should be attached to.
+    client->beginXMLPlug( d->builder->widget() );
 
     // try to use the build document for building the client's GUI, as the build document
     // contains the correct container state information (like toolbar positions, sizes, etc.) .
@@ -264,6 +268,8 @@ void KXMLGUIFactory::addClient( KXMLGUIClient *client )
     // reset some variables, for safety
     d->BuildState::reset();
 
+    client->endXMLPlug();
+
     emit clientAdded( client );
 
     // build child clients
@@ -280,6 +286,8 @@ void KXMLGUIFactory::addClient( KXMLGUIClient *client )
 
 void KXMLGUIFactory::removeClient( KXMLGUIClient *client )
 {
+    kdDebug(129) << "KXMLGUIFactory::removeClient( " << client << " )" << endl; // ellis
+
     // don't try to remove the client's GUI if we didn't build it
     if ( client->factory() != this )
         return;
@@ -321,7 +329,19 @@ void KXMLGUIFactory::removeClient( KXMLGUIClient *client )
     // reset some variables
     d->BuildState::reset();
 
+    // This will destruct the KAccel object built around the given widget.
+    client->prepareXMLUnplug( d->builder->widget() );
+
     emit clientRemoved( client );
+
+    // remove child clients
+    if ( client->childClients()->count() > 0 )
+    {
+        const QPtrList<KXMLGUIClient> *children = client->childClients();
+        QPtrListIterator<KXMLGUIClient> childIt( *children );
+        for (; childIt.current(); ++childIt )
+            removeClient( childIt.current() );
+    }
 }
 
 QPtrList<KXMLGUIClient> KXMLGUIFactory::clients() const

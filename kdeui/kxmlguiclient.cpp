@@ -55,6 +55,7 @@ public:
   QDomDocument m_buildDocument;
   KXMLGUIFactory *m_factory;
   KXMLGUIClient *m_parent;
+  //QPtrList<KXMLGUIClient> m_supers;
   QPtrList<KXMLGUIClient> m_children;
   KXMLGUIBuilder *m_builder;
   QString m_xmlFile;
@@ -77,9 +78,14 @@ KXMLGUIClient::~KXMLGUIClient()
   if ( d->m_parent )
     d->m_parent->removeChildClient( this );
 
+  /*QPtrListIterator<KXMLGUIClient> superIt( d->m_supers );
+  for (; superIt.current(); ++superIt )
+    superIt.current()->d->m_children.removeRef( this );
+
   QPtrListIterator<KXMLGUIClient> childIt( d->m_children );
   for (; childIt.current(); ++childIt )
-    childIt.current()->d->m_parent = 0L;
+    childIt.current()->d->m_supers.removeRef( this );
+  */
 
   /*
   d->m_children.setAutoDelete( true );
@@ -91,7 +97,16 @@ KXMLGUIClient::~KXMLGUIClient()
 
 KAction *KXMLGUIClient::action( const char *name ) const
 {
-  return actionCollection()->action( name );
+  KAction* act = actionCollection()->action( name );
+  if ( !act ) {
+    QPtrListIterator<KXMLGUIClient> childIt( d->m_children );
+    for (; childIt.current(); ++childIt ) {
+      act = childIt.current()->actionCollection()->action( name );
+      if ( act )
+        break;
+    }
+  }
+  return act;
 }
 
 KActionCollection *KXMLGUIClient::actionCollection() const
@@ -546,18 +561,23 @@ KXMLGUIClient *KXMLGUIClient::parentClient() const
 
 void KXMLGUIClient::insertChildClient( KXMLGUIClient *child )
 {
-  if ( child->d->m_parent )
-    child->d->m_parent->removeChildClient( child );
-
-  d->m_children.append( child );
-  child->d->m_parent = this;
+  //if ( child->addSuperClient( this ) )
+    d->m_children.append( child );
 }
 
 void KXMLGUIClient::removeChildClient( KXMLGUIClient *child )
 {
   d->m_children.removeRef( child );
-  child->d->m_parent = 0;
+  //child->d->m_supers.removeRef( this );
 }
+
+/*bool KXMLGUIClient::addSuperClient( KXMLGUIClient *super )
+{
+  if ( d->m_supers.contains( super ) )
+    return false;
+  d->m_supers.append( super );
+  return true;
+}*/
 
 const QPtrList<KXMLGUIClient> *KXMLGUIClient::childClients()
 {
@@ -843,9 +863,32 @@ void KXMLGUIClient::stateChanged(const QString &newstate, KXMLGUIClient::Reverse
     KAction *action = actionCollection()->action((*it).latin1());
     if (action) action->setEnabled(setFalse);
   }
-    
+
+}
+
+void KXMLGUIClient::beginXMLPlug( QWidget *w )
+{
+  actionCollection()->beginXMLPlug( w );
+  QPtrListIterator<KXMLGUIClient> childIt( d->m_children );
+  for (; childIt.current(); ++childIt )
+    childIt.current()->actionCollection()->beginXMLPlug( w );
+}
+
+void KXMLGUIClient::endXMLPlug()
+{
+  actionCollection()->endXMLPlug();
+  QPtrListIterator<KXMLGUIClient> childIt( d->m_children );
+  for (; childIt.current(); ++childIt )
+    childIt.current()->actionCollection()->endXMLPlug();
+}
+
+void KXMLGUIClient::prepareXMLUnplug( QWidget * )
+{
+  actionCollection()->prepareXMLUnplug();
+  QPtrListIterator<KXMLGUIClient> childIt( d->m_children );
+  for (; childIt.current(); ++childIt )
+    childIt.current()->actionCollection()->prepareXMLUnplug();
 }
 
 void KXMLGUIClient::virtual_hook( int, void* )
 { /*BASE::virtual_hook( id, data );*/ }
-

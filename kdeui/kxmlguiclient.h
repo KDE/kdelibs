@@ -24,6 +24,7 @@
 #include <qmap.h>
 #include <qstringlist.h>
 
+class QWidget;
 class KAction;
 class KActionCollection;
 class KInstance;
@@ -64,7 +65,7 @@ public:
   virtual ~KXMLGUIClient();
 
   /**
-   * Retrieves an action of the client by name.
+   * Retrieves an action of the client by name.  If not found, it looks in its child clients.
    * This method is provided for convenience, as it uses @ref #actionCollection()
    * to get the action object.
    */
@@ -200,7 +201,17 @@ public:
 
   StateChange getActionsToChangeForState(const QString& state);
 
+  void beginXMLPlug( QWidget * );
+  void endXMLPlug();
+  void prepareXMLUnplug( QWidget * );
+
 protected:
+  /**
+   * Returns true if client was added to super client list.
+   * Returns false if client was already in list.
+   */
+  //bool addSuperClient( KXMLGUIClient * );
+
   /**
    * Sets the instance (@ref KInstance) for this part.
    *
@@ -254,7 +265,7 @@ protected:
    * a <State> </State> group of the XMLfile. During program execution the
    * programmer can call stateChanged() to set actions to a defined state.
    *
-   * @param newstate Name of a State in the XMLfile. 
+   * @param newstate Name of a State in the XMLfile.
    * @param reverse If the flag reverse is set to StateReverse, the State is reversed.
    * (actions to be enabled will be disabled and action to be disabled will be enabled)
    * Default is reverse=false.

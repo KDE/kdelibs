@@ -1,4 +1,3 @@
-
 /* This file is part of the KDE libraries
     Copyright (C) 1999 Reginald Stadlbauer <reggie@kde.org>
               (C) 1999 Simon Hausmann <hausmann@kde.org>
@@ -87,6 +86,7 @@
 * It is set by KXMLGUIFactory.
 */
 
+static KAccel* s_kaccelXML = 0;
 static QFontDatabase *fontDataBase = 0;
 
 static void cleanupFontDatabase()
@@ -141,11 +141,9 @@ public:
     m_kaccel = 0;
     m_configurable = true;
   }
-  ~KActionPrivate()
-  {
-  }
 
   KAccel *m_kaccel;
+  QValueList<KAccel*> m_kaccelList;
 
   QString m_groupText;
   QString m_group;
@@ -211,7 +209,7 @@ KAction::KAction( const KGuiItem& item, const KShortcut& cut,
 		connect( this, SIGNAL(activated()), receiver, slot );
 }
 
-#ifndef KDE_NO_COMPAT
+#if KDE_VERSION < 400
 KAction::KAction( const QString& text, const KShortcut& cut,
                   QObject* parent, const char* name )
  : QObject( parent, name )
@@ -269,15 +267,23 @@ KAction::KAction( QObject* parent, const char* name )
  : QObject( parent, name )
 {
     initPrivate( QString::null, KShortcut(), 0, 0 );
-    d = new KActionPrivate;
 }
-#endif
+#endif // KDE_VERSION < 400
 
 KAction::~KAction()
 {
     kdDebug(129) << "KAction::~KAction( this = \"" << name() << "\" )" << endl; // -- ellis
-    if (d->m_kaccel)
-      unplugAccel();
+#ifndef KDE_NO_COMPAT
+     if (d->m_kaccel)
+       unplugAccel();
+#endif
+
+    // If actionCollection hasn't already been destructed,
+    if ( m_parentCollection ) {
+        m_parentCollection->take( this );
+        for( uint i = 0; i < d->m_kaccelList.count(); i++ )
+            d->m_kaccelList[i]->remove( name() );
+    }
 
     // Do not call unplugAll from here, as tempting as it sounds.
     // KAction is designed around the idea that you need to plug
@@ -285,9 +291,6 @@ KAction::~KAction()
     // slowdown when e.g. closing the window, in which case we simply
     // want to destroy everything asap, not to remove actions one by one
     // from the GUI.
-
-    if ( m_parentCollection )
-      m_parentCollection->take( this );
 
     delete d; d = 0;
 }
@@ -300,11 +303,13 @@ void KAction::initPrivate( const QString& text, const KShortcut& cut,
     d->m_cutDefault = cut;
 
     m_parentCollection = dynamic_cast<KActionCollection *>( parent() );
-    kdDebug(129) << "KAction::initPrivate(): name = \"" << name() << "\" cut = " << cut.toStringInternal() << " m_parentCollection = " << m_parentCollection << endl;
+    kdDebug(129) << "KAction::initPrivate(): this = " << this << " name = \"" << name() << "\" cut = " << cut.toStringInternal() << " m_parentCollection = " << m_parentCollection << endl;
     if ( m_parentCollection )
         m_parentCollection->insert( this );
 
-    setShortcut( cut );
+    if( !cut.isNull() && qstrcmp( name(), "unnamed" ) == 0 )
+        kdWarning(129) << "KAction::initPrivate(): trying to assign a shortcut (" << cut.toStringInternal() << ") to an unnamed action." << endl;
+    initShortcut( cut );
     d->setText( text );
 
     if ( receiver )
@@ -313,53 +318,164 @@ void KAction::initPrivate( const QString& text, const KShortcut& cut,
 
 bool KAction::isPlugged() const
 {
-  if (d->m_kaccel)
-    return true;
-  else
-    return ( containerCount() > 0 );
+  return (containerCount() > 0) || d->m_kaccel;
 }
 
 bool KAction::isPlugged( const QWidget *container, int id ) const
 {
   int i = findContainer( container );
-
-  if ( i == -1 )
-    return false;
-
-  if ( itemId( i ) != id )
-    return false;
-
-  return true;
+  return ( i > -1 && itemId( i ) == id );
 }
 
 bool KAction::isPlugged( const QWidget *container, const QWidget *_representative ) const
 {
   int i = findContainer( container );
+  return ( i > -1 && representative( i ) == _representative );
+}
 
-  if ( i == -1 )
-    return false;
 
-  if ( representative( i ) != _representative )
-    return false;
+/*
+Three actionCollection conditions:
+	1) Scope is known on creation and KAccel object is created (e.g. KMainWindow)
+	2) Scope is unknown and no KAccel object is available (e.g. KXMLGUIClient)
+		a) addClient() will be called on object
+		b) we just want to add the actions to another KXMLGUIClient object
 
-  return true;
+The question is how to do we incorporate #2b into the XMLGUI framework?
+
+
+We have a KCommandHistory object with undo and redo actions in a passed actionCollection
+We have a KoDoc object which holds a KCommandHistory object and the actionCollection
+We have two KoView objects which both point to the same KoDoc object
+Undo and Redo should be available in both KoView objects, and
+	calling the undo->setEnabled() should affect both KoViews
+
+When addClient is called, it needs to be able to find the undo and redo actions
+When it calls plug() on them, they need to be inserted into the KAccel object of the appropriate KoView
+
+In this case, the actionCollection belongs to KoDoc and we need to let it know that its shortcuts
+have the same scope as the KoView actionCollection
+
+KXMLGUIClient::addSubActionCollection
+
+Document:
+	create document actions
+
+View
+	create view actions
+	add document actionCollection as sub-collection
+
+A parentCollection is created
+Scenario 1: parentCollection has a focus widget set (e.g. via KMainWindow)
+	A KAccel object is created in the parentCollection
+	A KAction is created with parent=parentCollection
+	The shortcut is inserted into this actionCollection
+	Scenario 1a: xml isn't used
+		done
+	Scenario 1b: KXMLGUIBuilder::addClient() called
+		setWidget is called -- ignore
+		shortcuts are set
+Scenario 2: parentCollection has no focus widget (e.g., KParts)
+	A KAction is created with parent=parentCollection
+	Scenario 2a: xml isn't used
+		no shortcuts
+	Scenario 2b: KXMLGUIBuilder::addClient() called
+		setWidget is called
+		shortcuts are inserted into current KAccel
+		shortcuts are set in all other KAccels, if the action is present in the other KAccels
+*/
+
+/*
+shortcut may be set:
+	- on construction
+	- on plug
+	- on reading XML
+	- on plugAccel (deprecated)
+
+On Construction: [via initShortcut()]
+	insert into KAccel of m_parentCollection, 
+		if kaccel() && isAutoConnectShortcuts() exists
+
+On Plug: [via plug() -> plugShortcut()]
+	insert into KAccel of m_parentCollection, if exists and not already inserted into
+
+On Read XML: [via setShortcut()]
+	set in all current KAccels
+	insert into KAccel of m_parentCollection, if exists and not already inserted into
+*/
+
+KAccel* KAction::kaccelCurrent()
+{
+  KAccel* kaccel = 0;
+  
+  if( s_kaccelXML )
+    kaccel = s_kaccelXML;
+  else if( m_parentCollection && m_parentCollection->kaccel() ) 
+    kaccel = m_parentCollection->kaccel();
+
+  return kaccel;
+}
+
+// Only to be called from initPrivate()
+bool KAction::initShortcut( const KShortcut& cut )
+{
+    d->m_cut = cut;
+
+    // Only insert action into KAccel if it has a valid name,
+    if( qstrcmp( name(), "unnamed" ) != 0 &&
+        m_parentCollection &&
+        m_parentCollection->isAutoConnectShortcuts() &&
+        m_parentCollection->kaccel() )
+    {
+        insertKAccel( m_parentCollection->kaccel() );
+        return true;
+    } else
+        return false;
+ }
+
+// Only to be called from plug()
+void KAction::plugShortcut()
+{
+  KAccel* kaccel = kaccelCurrent();
+
+  //kdDebug(129) << "KAction::plugShortcut(): this = " << this << " kaccel() = " << (m_parentCollection ? m_parentCollection->kaccel() : 0) << endl;
+  if( kaccel && qstrcmp( name(), "unnamed" ) != 0 ) {
+    // Check if already plugged into current KAccel object
+    for( uint i = 0; i < d->m_kaccelList.count(); i++ ) {
+      if( d->m_kaccelList[i] == kaccel )
+        return;
+    }
+
+    insertKAccel( kaccel );
+  }
 }
 
 bool KAction::setShortcut( const KShortcut& cut )
 {
-  KShortcut oldShortcut = d->m_cut;
+  bool bChanged = (d->m_cut != cut);
   d->m_cut = cut;
 
-  if( !d->m_kaccel ) {
-    // Only insert action into KAccel if it has a valid shortcut and name,
-    if( !d->m_cut.isNull() && qstrcmp( name(), "unnamed" ) != 0
-        && m_parentCollection && m_parentCollection->accel() )
-      plugAccel( m_parentCollection->accel() );
+  KAccel* kaccel = kaccelCurrent();
+  bool bInsertRequired = true;
+  // Apply new shortcut to all existing KAccel objects
+  for( uint i = 0; i < d->m_kaccelList.count(); i++ ) {
+    // Check whether shortcut has already been plugged into
+    //  the current kaccel object.
+    if( d->m_kaccelList[i] == kaccel )
+      bInsertRequired = false;
+    if( bChanged )
+      updateKAccelShortcut( d->m_kaccelList[i] );
   }
-  else
-    d->m_kaccel->setShortcut( name(), cut );
 
-  if( oldShortcut != cut ) {
+  // Only insert action into KAccel if it has a valid name,
+  if( kaccel && bInsertRequired && qstrcmp( name(), "unnamed" ) )
+    insertKAccel( kaccel );
+
+  if( bChanged ) {
+#if KDE_VERSION < 400
+    if ( d->m_kaccel )
+      d->m_kaccel->setShortcut( name(), cut );
+#endif
       int len = containerCount();
       for( int i = 0; i < len; ++i )
           updateShortcut( i );
@@ -367,10 +483,57 @@ bool KAction::setShortcut( const KShortcut& cut )
   return true;
 }
 
+bool KAction::updateKAccelShortcut( KAccel* kaccel )
+{
+  bool b = true;
+
+  if ( !kaccel->actions().actionPtr( name() ) ) {
+    if( !d->m_cut.isNull() ) {
+      b = kaccel->insert( name(), d->plainText(), QString::null,
+          d->m_cut,
+          this, SLOT(slotActivated()),
+          isShortcutConfigurable(), isEnabled() );
+      if( !b )
+        kdWarning(129) << "KAction::updateKAccelShortcut: KAccel::insert() failed." << endl;
+    }
+  }
+  else
+    b = kaccel->setShortcut( name(), d->m_cut );
+
+  return b;
+}
+
+void KAction::insertKAccel( KAccel* kaccel )
+{
+  //kdDebug(129) << "KAction::_plugAccel( " << kaccel << " ): this = " << this << endl;
+  if ( !kaccel->actions().actionPtr( name() ) ) {
+    if( updateKAccelShortcut( kaccel ) )
+      d->m_kaccelList.append( kaccel );
+    else
+      kdWarning(129) << "KAction::insertKAccel: KAccel::insert() failed." << endl;
+  }
+  else
+    kdWarning(129) << "KAction::insertKAccel( kaccel = " << kaccel << " ): KAccel object already contains an action name \"" << name() << "\"" << endl; // -- ellis
+}
+
+void KAction::removeKAccel( KAccel* kaccel )
+{
+  //kdDebug(129) << "KAction::removeKAccel( " << i << " ): this = " << this << endl;
+  for( uint i = 0; i < d->m_kaccelList.count(); i++ ) {
+    if( d->m_kaccelList[i] == kaccel ) {
+      kaccel->remove( name() );
+      d->m_kaccelList.remove( d->m_kaccelList.at( i ) );
+      break;
+    }
+  }
+}
+
+#if KDE_VERSION < 400
 void KAction::setAccel( int keyQt )
 {
   setShortcut( KShortcut(keyQt) );
 }
+#endif
 
 void KAction::updateShortcut( int i )
 {
@@ -388,11 +551,14 @@ void KAction::updateShortcut( int i )
     static_cast<QMenuBar*>(w)->setAccel( d->m_cut.keyCodeQt(), id );
 }
 
+// TODO: continue copying over diffs! -- ellis xxx
+
 void KAction::updateShortcut( QPopupMenu* menu, int id )
 {
+  //kdDebug(129) << "KAction::updateShortcut(): this = " << this << " d->m_kaccelList.count() = " << d->m_kaccelList.count() << endl;
   // If the action has a KAccel object,
   //  show the string representation of its shortcut.
-  if ( d->m_kaccel ) {
+  if ( d->m_kaccel || d->m_kaccelList.count() ) {
     QString s = menu->text( id );
     int i = s.find( '\t' );
     if ( i >= 0 )
@@ -411,7 +577,7 @@ void KAction::updateShortcut( QPopupMenu* menu, int id )
     // This is a fall-hack in case the KAction is missing a proper parent collection.
     //  It should be removed eventually. --ellis
     menu->setAccel( d->m_cut.keyCodeQt(), id );
-    kdWarning(129) << "KAction::updateShortcut(): " << name() << ". No KAccel, probably missing a parent collection." << endl;
+    kdWarning(129) << "KAction::updateShortcut(): name = \"" << name() << "\", cut = " << d->m_cut.toStringInternal() << "; No KAccel, probably missing a parent collection." << endl;
   }
 }
 
@@ -483,46 +649,36 @@ void KAction::updateToolTip( int i )
   QWidget *w = container( i );
 
   if ( w->inherits( "KToolBar" ) )
-     QToolTip::add( static_cast<KToolBar*>(w)->getWidget( itemId( i ) ), d->toolTip() );
+    QToolTip::add( static_cast<KToolBar*>(w)->getWidget( itemId( i ) ), d->toolTip() );
 }
 
 QString KAction::toolTip() const
 {
-  return d->toolTip( );
+  return d->toolTip();
 }
 
 int KAction::plug( QWidget *w, int index )
 {
   //kdDebug(129) << "KAction::plug( " << w << ", " << index << " )" << endl;
   if (w == 0) {
-	kdWarning() << "KAction::plug called with 0 argument\n";
+	kdWarning(129) << "KAction::plug called with 0 argument\n";
  	return -1;
   }
+  if( !d->m_cut.isNull() && (!m_parentCollection || !m_parentCollection->kaccel()) )
+    kdWarning(129) << "KAction::plug(): has no KAccel object; this = " << this << " name = " << name() << " parentCollection = " << m_parentCollection << endl; // ellis
+
+  // Check if action is permitted
   if (kapp && !kapp->authorizeKAction(name()))
     return -1;
 
-  // Plug into the KMainWindow accel so that keybindings work for
-  // actions that are only plugged into a toolbar, and in case of
-  // hiding the menubar.
-  //if (!d->m_kaccel && !d->m_cut.isNull()) // only if not already plugged into a kaccel, and only if there is a shortcut !
-  //  plugMainWindowAccel( w );
-
-  // Application actions should be plugged into an accel upon construction,
-  //  but for KParts actions, they should only be connected when they are
-  //  either explicitly given a K
-  if( !d->m_kaccel ) {
-    // Only insert action into KAccel if it has a valid shortcut and name,
-    if( !d->m_cut.isNull() && qstrcmp( name(), "unnamed" ) != 0
-        && m_parentCollection && m_parentCollection->accel() )
-      plugAccel( m_parentCollection->accel() );
-  }
+  plugShortcut();
 
   if ( w->inherits("QPopupMenu") )
   {
     QPopupMenu* menu = static_cast<QPopupMenu*>( w );
     int id;
     // Don't insert shortcut into menu if it's already in a KAccel object.
-    int keyQt = (d->m_kaccel) ? 0 : d->m_cut.keyCodeQt();
+    int keyQt = (d->m_kaccelList.count() || d->m_kaccel) ? 0 : d->m_cut.keyCodeQt();
 
     if ( d->hasIcon() )
     {
@@ -542,11 +698,8 @@ int KAction::plug( QWidget *w, int index )
 
     // If the shortcut is already in a KAccel object, then
     //  we need to set the menu item's shortcut text.
-    if ( d->m_kaccel )
+    if ( d->m_kaccelList.count() || d->m_kaccel )
         updateShortcut( menu, id );
-    else if ( !d->m_cut.isNull() )
-        // FIXME: make kdWarning() post 3.0
-        kdDebug(129) << "KAction::plug(): has no KAccel object; this = " << this << " name = " << name() << " parentCollection = " << m_parentCollection << endl; // ellis
 
     // call setItemEnabled only if the item really should be disabled,
     // because that method is slow and the item is per default enabled
@@ -637,6 +790,7 @@ void KAction::unplug( QWidget *w )
 
 void KAction::plugAccel(KAccel *kacc, bool configurable)
 {
+  kdWarning(129) << "KAction::plugAccel(): call to deprecated action." << endl;
   //kdDebug(129) << "KAction::plugAccel( kacc = " << kacc << " ): name \"" << name() << "\"" << endl;
   if ( d->m_kaccel )
     unplugAccel();
@@ -655,7 +809,7 @@ void KAction::plugAccel(KAccel *kacc, bool configurable)
         this, SLOT(slotActivated()),
         configurable, isEnabled());
     connect(d->m_kaccel, SIGNAL(destroyed()), this, SLOT(slotDestroyed()));
-    connect(d->m_kaccel, SIGNAL(keycodeChanged()), this, SLOT(slotKeycodeChanged()));
+    //connect(d->m_kaccel, SIGNAL(keycodeChanged()), this, SLOT(slotKeycodeChanged()));
   }
   else
     kdWarning(129) << "KAction::plugAccel( kacc = " << kacc << " ): KAccel object already contains an action name \"" << name() << "\"" << endl; // -- ellis
@@ -688,11 +842,17 @@ void KAction::plugMainWindowAccel( QWidget *w )
 
 void KAction::setEnabled(bool enable)
 {
-  if (d->m_kaccel)
-    d->m_kaccel->setEnabled(name(), enable);
-
+  //kdDebug(129) << "KAction::setEnabled( " << enable << " ): this = " << this << " d->m_kaccelList.count() = " << d->m_kaccelList.count() << endl;
   if ( enable == d->isEnabled() )
     return;
+
+#if KDE_VERSION < 400
+  if (d->m_kaccel)
+    d->m_kaccel->setEnabled(name(), enable);
+#endif
+
+  for ( uint i = 0; i < d->m_kaccelList.count(); i++ )
+    d->m_kaccelList[i]->setEnabled( name(), enable );
 
   d->setEnabled( enable );
 
@@ -722,9 +882,16 @@ void KAction::setShortcutConfigurable( bool b )
 
 void KAction::setText( const QString& text )
 {
-  if (d->m_kaccel)
-  {
+#if KDE_VERSION < 400
+  if (d->m_kaccel) {
     KAccelAction* pAction = d->m_kaccel->actions().actionPtr(name());
+    if (pAction)
+      pAction->setLabel( text );
+  }
+#endif
+
+  for( uint i = 0; i < d->m_kaccelList.count(); i++ ) {
+    KAccelAction* pAction = d->m_kaccelList[i]->actions().actionPtr(name());
     if (pAction)
       pAction->setLabel( text );
   }
@@ -860,7 +1027,7 @@ void KAction::updateWhatsThis( int i )
 
 QString KAction::whatsThis() const
 {
-  return d->whatsThis( );
+  return d->whatsThis();
 }
 
 QString KAction::whatsThisWithIcon() const
@@ -902,6 +1069,11 @@ int KAction::containerCount() const
   return d->m_containers.count();
 }
 
+uint KAction::kaccelCount() const
+{
+  return d->m_kaccelList.count();
+}
+
 void KAction::addContainer( QWidget* c, int id )
 {
   KActionPrivate::Container p;
@@ -931,13 +1103,15 @@ void KAction::slotActivated()
 void KAction::slotDestroyed()
 {
   kdDebug(129) << "KAction::slotDestroyed(): sender = " << sender() << endl;
-  if ( sender() == d->m_kaccel )
+  const QObject* o = sender();
+
+#if KDE_VERSION < 400
+  if ( o == d->m_kaccel )
   {
     d->m_kaccel = 0;
     return;
   }
-
-  const QObject* o = sender();
+#endif
 
   int i;
   do
@@ -979,6 +1153,7 @@ void KAction::removeContainer( int index )
   }
 }
 
+// FIXME: Remove this (ellis)
 void KAction::slotKeycodeChanged()
 {
   kdDebug(129) << "KAction::slotKeycodeChanged()" << endl; // -- ellis
@@ -2784,20 +2959,30 @@ public:
   KActionCollectionPrivate()
   {
     m_instance = 0;
-    m_kaccel = 0;
-    m_mainwindow = 0;
+    //m_bOneKAccelOnly = false;
+    //m_iWidgetCurrent = 0;
+    m_bAutoConnectShortcuts = true;
+    m_widget = m_builderWidget = 0;
+    m_kaccel = m_builderKAccel = 0;
     m_dctHighlightContainers.setAutoDelete( true );
     m_highlight = false;
     m_currentHighlightAction = 0;
     m_statusCleared = true;
   }
-  ~KActionCollectionPrivate()
-  {
-  }
+  
   KInstance *m_instance;
   QString m_sXMLFile;
+  bool m_bAutoConnectShortcuts;
+  //bool m_bOneKAccelOnly;
+  //int m_iWidgetCurrent;
+  //QValueList<QWidget*> m_widgetList;
+  //QValueList<KAccel*> m_kaccelList;
+  QValueList<KActionCollection*> m_docList;
+  QWidget *m_widget;
   KAccel *m_kaccel;
-  KMainWindow *m_mainwindow;
+  QWidget *m_builderWidget;
+  KAccel *m_builderKAccel;
+  
   QAsciiDict<KAction> m_actionDict;
   QPtrDict< QPtrList<KAction> > m_dctHighlightContainers;
   bool m_highlight;
@@ -2812,7 +2997,8 @@ KActionCollection::KActionCollection( QWidget *parent, const char *name,
   kdDebug(129) << "KActionCollection::KActionCollection( " << parent << ", " << name << " ): this = " << this << endl; // ellis
   d = new KActionCollectionPrivate;
   if( parent )
-    d->m_kaccel = new KAccel( parent, "KActionCollection-KAccel" );
+    setWidget( parent );
+  //d->m_bOneKAccelOnly = (d->m_kaccelList.count() > 0);
   setInstance( instance );
 }
 
@@ -2823,11 +3009,12 @@ KActionCollection::KActionCollection( QWidget *watch, QObject* parent, const cha
   kdDebug(129) << "KActionCollection::KActionCollection( " << watch << ", " << parent << ", " << name << " ): this = " << this << endl; //ellis
   d = new KActionCollectionPrivate;
   if( watch )
-    d->m_kaccel = new KAccel( watch, this, "KActionCollection-KAccel" );
+    setWidget( watch );
+  //d->m_bOneKAccelOnly = (d->m_kaccelList.count() > 0);
   setInstance( instance );
 }
 
-#ifndef KDE_NO_COMPAT
+#if KDE_VERSION < 400
 KActionCollection::KActionCollection( QObject *parent, const char *name,
                                       KInstance *instance )
   : QObject( parent, name )
@@ -2836,48 +3023,188 @@ KActionCollection::KActionCollection( QObject *parent, const char *name,
   d = new KActionCollectionPrivate;
   QWidget* w = dynamic_cast<QWidget*>( parent );
   if( w )
-    d->m_kaccel = new KAccel( w, this, "KActionCollection-KAccel" );
+    setWidget( w );
+  //d->m_bOneKAccelOnly = (d->m_kaccelList.count() > 0);
   setInstance( instance );
 }
-#endif
 
 KActionCollection::KActionCollection( const KActionCollection &copy )
     : QObject()
 {
+  kdWarning(129) << "KActionCollection::KActionCollection( const KActionCollection & ): function is severely deprecated." << endl;
   d = new KActionCollectionPrivate;
-  d->m_kaccel = copy.d->m_kaccel;
-  d->m_actionDict = copy.d->m_actionDict;
-  setInstance( copy.instance() );
+  *this = copy;
 }
+#endif
 
 KActionCollection::~KActionCollection()
 {
-  QAsciiDictIterator<KAction> it( d->m_actionDict );
-  for (; it.current(); ++it ) {
-    if ( it.current()->m_parentCollection == this ) {
-      it.current()->m_parentCollection = 0L;
-      if( it.current()->d->m_kaccel == d->m_kaccel )
-        it.current()->d->m_kaccel = 0;
-    }
+  kdDebug(129) << "KActionCollection::~KActionCollection()" << endl;
+  for ( QAsciiDictIterator<KAction> it( d->m_actionDict ); it.current(); ++it ) {
+    KAction* pAction = it.current();
+    if ( pAction->m_parentCollection == this )
+      pAction->m_parentCollection = 0L;
   }
 
+  delete d->m_kaccel;
+  delete d->m_builderKAccel;
   delete d; d = 0;
 }
 
-// TODO: If there are already actions in the collection, insert their shortcuts
-//  into this accel.
 void KActionCollection::setWidget( QWidget* w )
 {
-  kdDebug(129) << "KActionCollection::setWidget( " << w << " ): this = " << this << endl;
-  if ( !d->m_kaccel ) {
-    if ( w )
-      d->m_kaccel = new KAccel( w, "KActionCollection-KAccel" );
+  if ( d->m_actionDict.count() > 0 )
+    kdError(129) << "KActionCollection::setWidget(): must be called before any actions are added to collection!" << endl;
+  else if ( !d->m_widget ) {
+    d->m_widget = w;
+    d->m_kaccel = new KAccel( w, this, "KActionCollection-KAccel" );
   }
-  else
-    kdDebug(129) << "KActionCollection::setWidget( " << w << " ): d->m_kaccel already set to " << d->m_kaccel << endl;
+  else if ( d->m_widget != w )
+    kdWarning(129) << "KActionCollection::setWidget(): tried to change widget from " << d->m_widget << " to " << w << endl;
 }
 
-void KActionCollection::findMainWindow( QWidget *w )
+void KActionCollection::setAutoConnectShortcuts( bool b )
+{
+  d->m_bAutoConnectShortcuts = b;
+}
+
+bool KActionCollection::isAutoConnectShortcuts()
+{
+  return d->m_bAutoConnectShortcuts;
+}
+
+bool KActionCollection::addDocCollection( KActionCollection* pDoc )
+{
+	d->m_docList.append( pDoc );
+	return true;
+}
+
+void KActionCollection::beginXMLPlug( QWidget *widget )
+{
+	kdDebug(129) << "KActionCollection::beginXMLPlug( buildWidget = " << widget << " ): this = " <<  this << " d->m_kaccel = " << d->m_kaccel << endl;
+	if( d->m_builderWidget )
+		kdWarning() << "KActionCollection::beginXMLPlug() already called!" << endl;
+
+	d->m_builderWidget = widget;
+	
+	if( d->m_kaccel )
+		s_kaccelXML = d->m_kaccel;
+	else {
+		d->m_builderKAccel = new KAccel( widget, this, "KActionCollection-BuilderKAccel" );
+		s_kaccelXML = d->m_builderKAccel;
+	}
+}
+
+void KActionCollection::endXMLPlug()
+{
+	kdDebug(129) << "KActionCollection::endXMLPlug(): this = " <<  this << endl;
+	s_kaccelXML = 0;
+}
+
+void KActionCollection::prepareXMLUnplug()
+{
+	kdDebug(129) << "KActionCollection::prepareXMLUnplug(): this = " <<  this << endl;
+	unplugShortcuts( d->m_kaccel );
+
+	d->m_builderWidget = 0;
+	if( d->m_builderKAccel ) {
+		unplugShortcuts( d->m_builderKAccel );
+		delete d->m_builderKAccel;
+		d->m_builderKAccel = 0;
+	}
+}
+
+void KActionCollection::unplugShortcuts( KAccel* kaccel )
+{
+  for ( QAsciiDictIterator<KAction> it( d->m_actionDict ); it.current(); ++it ) {
+    KAction* pAction = it.current();
+    pAction->removeKAccel( kaccel );
+  }
+
+  for( uint i = 0; i < d->m_docList.count(); i++ )
+    unplugShortcuts( kaccel );
+}
+
+/*void KActionCollection::addWidget( QWidget* w )
+{
+  if( !d->m_bOneKAccelOnly ) {
+    kdDebug(129) << "KActionCollection::addWidget( " << w << " ): this = " << this << endl;
+    for( uint i = 0; i < d->m_widgetList.count(); i++ ) {
+      if( d->m_widgetList[i] == w ) {
+        d->m_iWidgetCurrent = i;
+        return;
+      }
+  }
+    d->m_iWidgetCurrent = d->m_widgetList.count();
+    d->m_widgetList.append( w );
+    d->m_kaccelList.append( new KAccel( w, this, "KActionCollection-KAccel" ) );
+  }
+}
+
+void KActionCollection::removeWidget( QWidget* w )
+{
+  if( !d->m_bOneKAccelOnly ) {
+    kdDebug(129) << "KActionCollection::removeWidget( " << w << " ): this = " << this << endl;
+    for( uint i = 0; i < d->m_widgetList.count(); i++ ) {
+      if( d->m_widgetList[i] == w ) {
+        // Remove KAccel object from children.
+        KAccel* pKAccel = d->m_kaccelList[i];
+        for ( QAsciiDictIterator<KAction> it( d->m_actionDict ); it.current(); ++it ) {
+          KAction* pAction = it.current();
+          if ( pAction->m_parentCollection == this ) {
+            pAction->removeKAccel( pKAccel );
+          }
+        }
+        delete pKAccel;
+
+        d->m_widgetList.remove( d->m_widgetList.at( i ) );
+        d->m_kaccelList.remove( d->m_kaccelList.at( i ) );
+
+        if( d->m_iWidgetCurrent == (int)i )
+          d->m_iWidgetCurrent = -1;
+        else if( d->m_iWidgetCurrent > (int)i )
+          d->m_iWidgetCurrent--;
+        return;
+      }
+    }
+    kdWarning(129) << "KActionCollection::removeWidget( " << w << " ): widget not in list." << endl;
+  }
+}
+
+bool KActionCollection::ownsKAccel() const
+{
+  return d->m_bOneKAccelOnly;
+}
+
+uint KActionCollection::widgetCount() const
+{
+  return d->m_widgetList.count();
+}
+
+const KAccel* KActionCollection::widgetKAccel( uint i ) const
+{
+  return d->m_kaccelList[i];
+}*/
+
+KAccel* KActionCollection::kaccel()
+{
+  //if( d->m_kaccelList.count() > 0 )
+  //  return d->m_kaccelList[d->m_iWidgetCurrent];
+  //else
+  //  return 0;
+  return d->m_kaccel;
+}
+
+const KAccel* KActionCollection::kaccel() const
+{
+  //if( d->m_kaccelList.count() > 0 )
+  //  return d->m_kaccelList[d->m_iWidgetCurrent];
+  //else
+  //  return 0;
+  return d->m_kaccel;
+}
+
+/*void KActionCollection::findMainWindow( QWidget *w )
 {
   // Note: topLevelWidget() stops too early, we can't use it.
   QWidget * tl = w;
@@ -2889,7 +3216,7 @@ void KActionCollection::findMainWindow( QWidget *w )
     d->m_mainwindow = mw;
   else
     kdDebug(129) << "KAction::plugMainWindowAccel: Toplevel widget isn't a KMainWindow, can't plug accel. " << tl << endl;
-}
+}*/
 
 void KActionCollection::_insert( KAction* action )
 {
@@ -2928,16 +3255,8 @@ void KActionCollection::insert( KAction* action )   { _insert( action ); }
 void KActionCollection::remove( KAction* action )   { _remove( action ); }
 KAction* KActionCollection::take( KAction* action ) { return _take( action ); }
 void KActionCollection::clear()                     { _clear(); }
-
-KAccel* KActionCollection::accel()
-{
-  return d->m_kaccel;
-}
-
-const KAccel* KActionCollection::accel() const
-{
-  return d->m_kaccel;
-}
+KAccel* KActionCollection::accel()                  { return kaccel(); }
+const KAccel* KActionCollection::accel() const      { return kaccel(); }
 
 KAction* KActionCollection::action( const char* name, const char* classname ) const
 {
@@ -2961,37 +3280,6 @@ KAction* KActionCollection::action( int index ) const
   return it.current();
 //  return d->m_actions.at( index );
 }
-
-/*void KActionCollection::createKeyMap( KAccelActions& map ) const
-{
-  kdDebug(129) << "KActionPtrList::createKeyMap( " << &map << ")" << endl; // -- ellis
-  map.clear();
-  QAsciiDictIterator<KAction> it( d->m_actionDict );
-  for( ; it.current(); ++it ) {
-    KAction* action = it.current();
-    if( action->isShortcutConfigurable() ) {
-      map.insert( action->name(), action->plainText(), QString::null,
-        action->shortcutDefault(), action->shortcutDefault() );
-      if( action->shortcut() != action->shortcutDefault() ) {
-        KAccelAction* pAccelAction = map.actionPtr( action->name() );
-        if( pAccelAction )
-          pAccelAction->setShortcut( action->shortcut() );
-      }
-    }
-  }
-}
-
-void KActionCollection::setKeyMap( const KAccelActions& map )
-{
-  kdDebug(129) << "KActionCollection::setKeyMap( " << &map << " )" << endl; // -- ellis
-  for( uint i = 0; i < map.count(); i++ )
-  {
-    const KAccelAction* aa = map.actionPtr( i );
-    KAction* act = action( aa->name().latin1() );
-    if( act )
-      act->setShortcut( aa->shortcut() );
-  }
-}*/
 
 bool KActionCollection::readShortcutSettings( const QString& sConfigGroup, KConfigBase* pConfig )
 {
@@ -3212,9 +3500,10 @@ KAction *KActionCollection::findAction( QWidget *container, int id )
   return 0;
 }
 
-#ifndef KDE_NO_COMPAT
+#if KDE_VERSION < 400
 KActionCollection KActionCollection::operator+(const KActionCollection &c ) const
 {
+  kdWarning(129) << "KActionCollection::operator+(): function is severely deprecated." << endl;
   KActionCollection ret( *this );
 
   QValueList<KAction *> actions = c.actions();
@@ -3226,16 +3515,23 @@ KActionCollection KActionCollection::operator+(const KActionCollection &c ) cons
   return ret;
 }
 
-KActionCollection &KActionCollection::operator=( const KActionCollection &c )
+KActionCollection &KActionCollection::operator=( const KActionCollection &copy )
 {
-  d->m_kaccel = c.d->m_kaccel;
-  d->m_actionDict = c.d->m_actionDict;
-  setInstance( c.instance() );
+  kdWarning(129) << "KActionCollection::operator=(): function is severely deprecated." << endl;
+  //d->m_bOneKAccelOnly = copy.d->m_bOneKAccelOnly;
+  //d->m_iWidgetCurrent = copy.d->m_iWidgetCurrent;
+  //d->m_widgetList = copy.d->m_widgetList;
+  //d->m_kaccelList = copy.d->m_kaccelList;
+  d->m_widget = copy.d->m_widget;
+  d->m_kaccel = copy.d->m_kaccel;
+  d->m_actionDict = copy.d->m_actionDict;
+  setInstance( copy.instance() );
   return *this;
 }
 
 KActionCollection &KActionCollection::operator+=( const KActionCollection &c )
 {
+  kdWarning(129) << "KActionCollection::operator+=(): function is severely deprecated." << endl;
   QAsciiDictIterator<KAction> it(c.d->m_actionDict);
   for ( ; it.current(); ++it )
     insert( it.current() );
