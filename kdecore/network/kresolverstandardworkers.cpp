@@ -870,5 +870,8 @@ void KNetwork::Internal::initStandardWorkers()
   // special case in KResolverManager::findWorker
 
   KResolverWorkerFactoryBase::registerNewWorker(new KResolverWorkerFactory<KStandardWorker>);
+
+#ifdef HAVE_GETADDRINFO
   KResolverWorkerFactoryBase::registerNewWorker(new KResolverWorkerFactory<KGetAddrinfoWorker>);
+#endif
 }
