@@ -2,6 +2,7 @@
 //  MAIN -- a little demo of the capabilities of the "KProcess" class
 //
 //  version 0.2, Aug 2nd 1997
+//  $ld $
 //
 //  (C) Christian Czezatke
 //  e9025461@student.tuwien.ac.at
@@ -54,15 +55,14 @@ int main(int argc, char *argv[])
 
 
  //
- // A kvt doing a "ls-l" to demonstrate how to pass command line options to a process
- // with "KProcess" (is run non blocking too) -- This will run only a short time
- // so all you might get to see is a "kvt" popping up and disappearing again immediatedly
+ // A konsole with tcsh to demonstrate how to pass command line options to a process
+ // with "KProcess" (is run blocking)
  //
 
- printf("Starting kvt for doing a ls (will only run a short time)\n");
- p2 << "kvt" << "-e" << "-ls -l";
+ printf("Starting konsole with /bin/tcsh as shell (close to continue)\n");
+ p2 << "konsole" << "-e" << "/bin/tcsh";
  QObject::connect(&p2, SIGNAL(processExited(KProcess *)),  &dummy, SLOT(printMessage(KProcess *)));
- p2.start();
+ p2.start(KProcess::Block);
 
  //
  // Getting the output from a process. "ls" with parameter "-l" is called and it output is captured
