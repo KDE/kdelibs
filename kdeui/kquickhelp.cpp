@@ -26,7 +26,6 @@
 // ---------------------------------------------------------------------------
 
 #include "kquickhelp.h"
-#include "kquickhelp.h"
 #include <qpainter.h>
 #include <qpixmap.h>
 #include <stdio.h>
@@ -235,8 +234,8 @@ void KQuickHelp::hyperlinkRequested(QString link) {
       // to do with it
       if(fork() > 0) {
 	// drop setuid, setgid
-	seteuid(getuid());
-	setegid(getgid());
+	setgid(getgid());
+	setuid(getuid());
 	
 	QString s = "kfmclient exec " + link + " &";
 	execlp("kfmclient", "kfmclient", "exec", link.data(), 0);
