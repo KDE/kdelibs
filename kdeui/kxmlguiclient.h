@@ -33,16 +33,36 @@ class KXMLGUIBuilder;
 class KXMLGUIClient
 {
 public:
+  /**
+   * Constructs a KXMLGUIClient which can be used with a @ref KXMLGUIFactory to create a GUI from actions and an XML document,
+   * and which can be dynamically merged with other KXMLGUIClients.
+   */
   KXMLGUIClient();
+  /**
+   * Constructs a KXMLGUIClient which can be used with a @ref KXMLGUIFactory to create a GUI from actions and an XML document,
+   * and which can be dynamically merged with other KXMLGUIClients.
+   *
+   * This constructor takes an additional @p parent argument, which makes the client a child client of the parent.
+   *
+   * Child clients are automatically added to the GUI if the parent is added.
+   *
+   */
   KXMLGUIClient( KXMLGUIClient *parent );
+
+  /**
+   * Destructor
+   */
   virtual ~KXMLGUIClient();
 
   /**
-   * Retrieve an action by name.
+   * Retrieve an action of the client by name. This method is provided for convenience, as it uses @ref actionCollection
+   * to get the action object.
+   * (This method is called by the other (virtual) @ref action method )
    */
   KAction* action( const char* name );
   /**
-   * Retrieve an action for a given @ref QDomElement.
+   * Retrieve an action for a given @ref QDomElement. The default implementation uses the
+   * "name" attribute to query the action object via the other @ref action method.
    */
   virtual KAction *action( const QDomElement &element );
   /**
@@ -57,7 +77,7 @@ public:
 
   /**
    * @return The parsed XML in a @ref QDomDocument, set by @ref
-   * setXMLFile() or @ref setXML()
+   * setXMLFile() or @ref setXML() . This document describes the layout of the GUI.
    */
   virtual QDomDocument document() const;
 
@@ -99,16 +119,49 @@ public:
    */
   QMap<QString,QByteArray> containerStates() const;
 
+  /**
+   * This method is called by the @ref KXMLGUIFactory as soon as the client is added to the KXMLGUIFactory's GUI.
+   */
   void setFactory( KXMLGUIFactory *factory );
+  /**
+   * Retrieve a pointer to the @ref KXMLGUIFactory this client is associated with (will return 0L if the client's GUI
+   * has not been built by a KXMLGUIFactory.
+   */
   KXMLGUIFactory *factory() const;
 
+  /**
+   * KXMLGUIClients can form a simple child/parent object tree. This method returns a pointer to the parent client or
+   * 0L if it has no parent client assigned.
+   */
   KXMLGUIClient *parentClient() const;
 
+  /**
+   * Use this method to make a client a child client of another client. Usually you don't need to call this method, as it
+   * is called automatically when using the second constructor, which takes a parent argument.
+   */
   void insertChildClient( KXMLGUIClient *child );
+
+  /**
+   * Remove the given @p child from the client's children list.
+   */
   void removeChildClient( KXMLGUIClient *child );
+
+  /**
+   * Retrieve a list of all child clients.
+   */
   const QList<KXMLGUIClient> *childClients();
 
+  /**
+   * A client can have an own @ref KXMLGUIBuilder . Use this method to assign your builder instance to the client (so that the
+   * @ref KXMLGUIFactory can use it when building the client's GUI)
+   *
+   * Client specific guibuilders are useful if you want to create custom container widgets for your GUI.
+   */
   void setClientBuilder( KXMLGUIBuilder *builder );
+
+  /**
+   * Retrieve the client's GUI builder or 0L if no client specific builder has been assigned via @ref setClientBuilder
+   */
   KXMLGUIBuilder *clientBuilder() const;
 
 protected:
