@@ -2758,7 +2758,7 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
         } else {
             int type = primitiveValue->primitiveType();
             if(type > CSSPrimitiveValue::CSS_PERCENTAGE && type < CSSPrimitiveValue::CSS_DEG) {
-                if ( !khtml::printpainter && type != CSSPrimitiveValue::CSS_EMS && type != CSSPrimitiveValue::CSS_EXS && 
+                if ( !khtml::printpainter && type != CSSPrimitiveValue::CSS_EMS && type != CSSPrimitiveValue::CSS_EXS &&
                      element && element->getDocument()->view())
                     size = int( primitiveValue->computeLengthFloat(parentStyle, paintDeviceMetrics) *
                                 element->getDocument()->view()->part()->zoomFactor() ) / 100;
@@ -3273,6 +3273,14 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
         }
         else if (isInitial)
             style->resetOutline();
+        break;
+    case CSS_PROP__KHTML_BOX_SIZING:
+        if (!primitiveValue) return;
+        if (primitiveValue->getIdent() == CSS_VAL_CONTENT_BOX)
+            style->setBoxSizing(CONTENT_BOX);
+        else
+        if (primitiveValue->getIdent() == CSS_VAL_BORDER_BOX)
+            style->setBoxSizing(BORDER_BOX);
         break;
     case CSS_PROP__KHTML_MARQUEE:
         if (value->cssValueType() != CSSValue::CSS_INHERIT || !parentNode) return;

@@ -32,7 +32,7 @@
 using namespace khtml;
 using namespace DOM;
 
-/* CSS says Fixde for the default padding value, but we treat variable as 0 padding anyways, and like
+/* CSS says Fixed for the default padding value, but we treat variable as 0 padding anyways, and like
  * this is works fine for table paddings aswell
  */
 StyleSurroundData::StyleSurroundData()
@@ -58,6 +58,7 @@ StyleBoxData::StyleBoxData()
 {
     min_width = min_height = RenderStyle::initialMinSize();
     max_width = max_height = RenderStyle::initialMaxSize();
+    box_sizing = RenderStyle::initialBoxSizing();
 }
 
 StyleBoxData::StyleBoxData(const StyleBoxData& o )
@@ -65,6 +66,7 @@ StyleBoxData::StyleBoxData(const StyleBoxData& o )
       width( o.width ), height( o.height ),
       min_width( o.min_width ), max_width( o.max_width ),
       min_height ( o.min_height ), max_height( o.max_height ),
+      box_sizing( o.box_sizing),
       z_index( o.z_index ), z_auto( o.z_auto )
 {
 }
@@ -78,6 +80,7 @@ bool StyleBoxData::operator==(const StyleBoxData& o) const
 	    max_width == o.max_width &&
 	    min_height == o.min_height &&
 	    max_height == o.max_height &&
+            box_sizing == o.box_sizing &&
 	    z_index == o.z_index &&
             z_auto == o.z_auto;
 }

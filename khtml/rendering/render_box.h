@@ -112,6 +112,8 @@ public:
     void calcHorizontalMargins(const Length& ml, const Length& mr, int cw);
 
 private:
+    int calcBoxWidth(int w) const;
+    int calcBoxHeight(int h) const;
 
     int calcWidthUsing(WidthType widthType, int cw, LengthType& lengthType);
     int calcHeightUsing(const Length& height);

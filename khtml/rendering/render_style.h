@@ -288,6 +288,10 @@ public:
 //------------------------------------------------
 // Box attributes. Not inherited.
 
+enum EBoxSizing {
+    BORDER_BOX, CONTENT_BOX
+};
+
 class StyleBoxData : public Shared<StyleBoxData>
 {
 public:
@@ -315,6 +319,8 @@ public:
     Length max_height;
 
     Length vertical_align;
+
+    EBoxSizing box_sizing;
 
     signed int z_index :31;
     bool z_auto        : 1;
@@ -713,7 +719,7 @@ protected:
 
 	noninherited_flags._niflags = 0L; // for safety: without this, the equality method sometimes
 	                                  // makes use of uninitialised bits according to valgrind
-	
+
         noninherited_flags.f._display = noninherited_flags.f._originalDisplay = initialDisplay();
 	noninherited_flags.f._bg_repeat = initialBackgroundRepeat();
 	noninherited_flags.f._bg_attachment = initialBackgroundAttachment();
@@ -895,6 +901,7 @@ public:
     EPageBreak pageBreakAfter() const { return noninherited_flags.f._page_break_after; }
 
     // CSS3 Getter Methods
+    EBoxSizing boxSizing() const { return box->box_sizing; }
     EUserInput userInput() const { return inherited_flags.f._user_input; }
 
     Length marqueeIncrement() { return css3NonInheritedData->marquee->increment; }
@@ -1041,6 +1048,7 @@ public:
     void setPageBreakAfter(EPageBreak b) { noninherited_flags.f._page_break_after = b; }
 
     // CSS3 Setters
+    void setBoxSizing( EBoxSizing b ) { SET_VAR(box,box_sizing,b); }
     void setUserInput(EUserInput ui) { inherited_flags.f._user_input = ui; }
 
     void setMarqueeIncrement(const Length& f) { SET_VAR(css3NonInheritedData.access()->marquee, increment, f); }
@@ -1102,6 +1110,7 @@ public:
     static EPosition initialPosition() { return STATIC; }
     static ETableLayout initialTableLayout() { return TAUTO; }
     static EUnicodeBidi initialUnicodeBidi() { return UBNormal; }
+    static EBoxSizing initialBoxSizing() { return CONTENT_BOX; }
     static ETextTransform initialTextTransform() { return TTNONE; }
     static EVisibility initialVisibility() { return VISIBLE; }
     static EWhiteSpace initialWhiteSpace() { return NORMAL; }

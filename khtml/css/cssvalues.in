@@ -317,12 +317,17 @@ thick
 thin
 underline
 -khtml-nowrap
-# CSS_PROP__KONQ_FLOW_MODE
+#
+# CSS_PROP__KHTML_FLOW_MODE
 -khtml-normal
 -khtml-around-floats
 
 # CSS3 Values
-# CSS_PROP__KONQ_USER_INPUT
+# CSS_PROP__KHTML_BOX_SIZING
+border-box
+content-box
+
+# CSS_PROP__KHTML_USER_INPUT
 enabled
 disabled
 #none

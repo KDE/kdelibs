@@ -115,6 +115,7 @@ border-right
 border-bottom
 border-left
 border-width
+-khtml-box-sizing
 font
 list-style
 margin

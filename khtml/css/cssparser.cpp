@@ -1079,6 +1079,10 @@ bool CSSParser::parseValue( int propId, bool important, int expected )
         break;
 
     /* CSS3 properties */
+    case CSS_PROP__KHTML_BOX_SIZING:        // border-box | content-box
+        if ( id == CSS_VAL_BORDER_BOX || id == CSS_VAL_CONTENT_BOX )
+            valid_primitive = true;
+        break;
     case CSS_PROP__KHTML_USER_INPUT:        // none | enabled | disabled | inherit
         if ( id == CSS_VAL_NONE || id == CSS_VAL_ENABLED || id == CSS_VAL_DISABLED )
             valid_primitive = true;

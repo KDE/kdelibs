@@ -204,6 +204,23 @@ void RenderBox::setHeight( int height )
 {
     m_height = height;
 }
+
+int RenderBox::calcBoxHeight(int h) const
+{
+    if (style()->boxSizing() == CONTENT_BOX)
+        h += borderTop() + borderBottom() + paddingTop() + paddingBottom();
+
+    return h;
+}
+
+int RenderBox::calcBoxWidth(int w) const
+{
+    if (style()->boxSizing() == CONTENT_BOX)
+        w += borderLeft() + borderRight() + paddingLeft() + paddingRight();
+
+    return w;
+}
+
 // --------------------- painting stuff -------------------------------
 
 void RenderBox::paint(PaintInfo& i, int _tx, int _ty)
@@ -679,10 +696,8 @@ void RenderBox::calcWidth()
             m_marginRight = mr.minWidth(cw);
             if (treatAsReplaced)
             {
-                m_width = w.width(cw);
-                m_width += paddingLeft() + paddingRight() + style()->borderLeftWidth() + style()->borderRightWidth();
-
-                if(m_width < m_minWidth) m_width = m_minWidth;
+                m_width = calcBoxWidth(w.width(cw));
+                m_width = KMAX(m_width, m_minWidth);
             }
 
             return;
@@ -691,8 +706,7 @@ void RenderBox::calcWidth()
         {
             LengthType widthType, minWidthType, maxWidthType;
             if (treatAsReplaced) {
-                m_width = w.width(cw);
-                m_width += paddingLeft() + paddingRight() + borderLeft() + borderRight();
+                m_width = calcBoxWidth(w.width(cw));
                 widthType = w.type();
             } else {
                 m_width = calcWidthUsing(Width, cw, widthType);
@@ -757,16 +771,13 @@ int RenderBox::calcWidthUsing(WidthType widthType, int cw, LengthType& lengthTyp
 
         // size to max width?
         if (sizesToMaxWidth()) {
-            if (width < m_minWidth)
-                width = m_minWidth;
-            if (width > m_maxWidth)
-                width = m_maxWidth;
+            width = KMAX(width, (int)m_minWidth);
+            width = KMIN(width, (int)m_maxWidth);
         }
     }
     else
     {
-        width = w.width(cw);
-        width += paddingLeft() + paddingRight() + borderLeft() + borderRight();
+        width = calcBoxWidth(w.width(cw));
     }
 
     return width;
@@ -851,10 +862,11 @@ void RenderBox::calcHeight()
             height = kMin(maxH, height);
             height = kMax(minH, height);
         }
-        else
+        else {
             // The only times we don't check min/max height are when a fixed length has
             // been given as an override.  Just use that.
-            height = h.value() + borderTop() + paddingTop() + borderBottom() + paddingBottom();
+            height = calcBoxHeight(h.value());
+        }
 
         if (height<m_height && !overhangingContents() && style()->overflow()==OVISIBLE)
             setOverhangingContents();
@@ -880,7 +892,7 @@ int RenderBox::calcHeightUsing(const Length& h)
         else if (h.isPercent())
             height = calcPercentageHeight(h);
         if (height != -1) {
-            height += borderTop() + paddingTop() + borderBottom() + paddingBottom();
+            height = calcBoxHeight(height);
             return height;
         }
     }
@@ -898,11 +910,14 @@ int RenderBox::calcPercentageHeight(const Length& height)
         result = static_cast<RenderTableCell*>(cb)->cellPercentageHeight();
         if (result == 0)
             return -1;
+
         // It is necessary to use the border-box to match WinIE's broken
         // box model.  This is essential for sizing inside
         // table cells using percentage heights.
-        result -= (borderTop() + paddingTop() + borderBottom() + paddingBottom());
-        result = kMax(0, result);
+        if (style()->boxSizing() != BORDER_BOX) {
+            result -= (borderTop() + paddingTop() + borderBottom() + paddingBottom());
+            result = kMax(0, result);
+        }
     }
 
     // Otherwise we only use our percentage height if our containing block had a specified
