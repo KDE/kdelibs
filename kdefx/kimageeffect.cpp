@@ -3722,7 +3722,7 @@ void KImageEffect::normalize(QImage &image)
 {
     struct double_packet high, low, intensity, *histogram;
     struct short_packet *normalize_map;
-    long long number_pixels;
+    Q_INT64 number_pixels;
     int x, y;
     unsigned int *p, *q;
     register long i;
@@ -3764,7 +3764,7 @@ void KImageEffect::normalize(QImage &image)
     /*
     Find the histogram boundaries by locating the 0.1 percent levels.
     */
-    number_pixels = (long long)image.width()*image.height();
+    number_pixels = (Q_INT64)image.width()*image.height();
     threshold_intensity = number_pixels/1000;
 
     /* red */
