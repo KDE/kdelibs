@@ -35,9 +35,9 @@
 // a proxy with some creative network address translation..  HTTP_PORT
 // is used for HTTP and WebDAV/WebFolders, HTTPS_PORT is well used for
 // HTTPS. Duh.
-#define DEFAULT_HTTP_PORT	80
-#define DEFAULT_HTTPS_PORT	443
-#define DEFAULT_FTP_PORT	21
+#define DEFAULT_HTTP_PORT       80
+#define DEFAULT_HTTPS_PORT      443
+#define DEFAULT_FTP_PORT        21
 
 class DCOPClient;
 
@@ -322,7 +322,6 @@ protected:
   HTTP_AUTH Authentication;
   HTTP_AUTH ProxyAuthentication;
   bool m_bUnauthorized;
-  bool m_bRepeatAuthFail;
 
   // Persistant connections
   bool m_bKeepAlive;

@@ -914,7 +914,8 @@ bool HTTPProtocol::http_open()
 
 #ifdef DO_GZIP
   // Content negotiation
-  header += "Accept-Encoding: x-gzip; q=1.0, x-deflate, gzip; q=1.0, deflate, identity\r\n";
+  // header += "Accept-Encoding: x-gzip; q=1.0, x-deflate, gzip; q=1.0, deflate, identity\r\n";
+    header += "Accept-Encoding: x-gzip; q=1.0, gzip; q=1.0, identity\r\n";
 #endif
 
   // Charset negotiation:
@@ -963,8 +964,9 @@ bool HTTPProtocol::http_open()
   }
 
   // Only check the cached copy if the previous
-  // response was 401.
-  if ( m_prevResponseCode != 401 )
+  // response was NOT a 401 or 407
+  if ( m_prevResponseCode != 401 &&
+       m_prevResponseCode != 407 )
   {
     AuthInfo info;
     info.url = m_request.url;
@@ -1383,20 +1385,12 @@ bool HTTPProtocol::readHeader()
       }
       // Unauthorized access
       else if (m_responseCode == 401 || m_responseCode == 407) {
-        if ( m_prevResponseCode == m_responseCode )
-        {
-            if ( !m_bRepeatAuthFail )
-                m_bRepeatAuthFail = true;
-        }
-        else
-        {
-            if ( m_bRepeatAuthFail )
-                m_bRepeatAuthFail = false;
-            saveAuthorization();
-        }
+        if ( m_prevResponseCode != m_responseCode )
+          saveAuthorization();
 
         if ( !m_bUnauthorized )
-            m_bUnauthorized = true;
+          m_bUnauthorized = true;
+
         m_bCachedWrite = false; // Don't put in cache
         mayCache = false;
       }
@@ -1455,7 +1449,7 @@ bool HTTPProtocol::readHeader()
       else if ( m_responseCode == 206 )
       {
         if ( m_request.offset )
-            m_bCanResume = true;
+          m_bCanResume = true;
       }
       else if (m_responseCode == 100)
       {
@@ -1650,8 +1644,6 @@ bool HTTPProtocol::readHeader()
         return false;
     }
     m_bUnauthorized = false;
-    if ( m_bRepeatAuthFail )
-        m_bRepeatAuthFail = false;
   }
   // We need to do a redirect
   else if (!locationStr.isEmpty())
@@ -3204,7 +3196,6 @@ void HTTPProtocol::resetSessionSettings()
 
   m_bCanResume = false;
   m_bUnauthorized = false;
-  m_bRepeatAuthFail = false;
 }
 
 void HTTPProtocol::retrieveContent( bool check_ssl )
@@ -3257,9 +3248,13 @@ bool HTTPProtocol::retrieveHeader( bool close_connection )
 bool HTTPProtocol::getAuthorization()
 {
     AuthInfo info;
-    bool result = false;
     info.verifyPath = true;
-    if ( m_bRepeatAuthFail )
+
+    bool result = false;
+    bool repeatFailure = (m_prevResponseCode == m_responseCode);
+    kdDebug(7113) << "m_prevResponseCode = " << m_prevResponseCode
+                  << ", m_responseCode = " << m_responseCode << endl;
+    if ( repeatFailure )
     {
         switch ( m_responseCode )
         {
@@ -3325,17 +3320,15 @@ bool HTTPProtocol::getAuthorization()
             break;
     }
 
-    // Retry the cache since we now have more information.
-    // However, we only retry if this is NOT a repeat failure!!
-    if ( !m_bRepeatAuthFail )
+    if ( !repeatFailure )
     {
         result = checkCachedAuthentication( info );
         if ((m_responseCode == 401 &&
              m_request.user == info.username &&
              m_request.passwd == info.password) ||
             (m_responseCode == 407 &&
-             m_request.user == info.username &&
-             m_request.passwd == info.password))
+             m_proxyURL.user() == info.username &&
+             m_proxyURL.pass() == info.password))
              result = false;
     }
 
