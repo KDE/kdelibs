@@ -41,6 +41,12 @@
 #include "kresolverworkerbase.h"
 #include "ksocketaddress.h"
 
+#ifndef HAVE_GETNAMEINFO
+// FIXME KDE4:
+// move to syssocket or adapt
+# include "netsupp.h"
+#endif
+
 using namespace KNetwork;
 using namespace KNetwork::Internal;
 
