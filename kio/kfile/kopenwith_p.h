@@ -1,4 +1,4 @@
-// "$Id$"
+//
 /* This file is part of the KDE libraries
     Copyright (C) 2000 David Faure <faure@kde.org>
 

@@ -94,7 +94,6 @@ signals:
   *
   * @short A base class for views of the KDE file selector
   * @author Stephan Kulow <coolo@kde.org>
-  * @version $Id$
   **/
 class KIO_EXPORT KFileView {
 
