@@ -459,9 +459,9 @@ void RenderObject::print( QPainter *p, int x, int y, int w, int h, int tx, int t
     printObject(p, x, y, w, h, tx, ty);
 }
 
-void RenderObject::repaintRectangle(int x, int y, int w, int h)
+void RenderObject::repaintRectangle(int x, int y, int w, int h, bool f)
 {
-    if(parent()) parent()->repaintRectangle(x, y, w, h);
+    if(parent()) parent()->repaintRectangle(x, y, w, h, f);
 }
 
 void RenderObject::printTree(int indent) const

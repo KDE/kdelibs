@@ -213,9 +213,15 @@ void RenderRoot::printObject(QPainter *p, int _x, int _y,
 }
 
 
-void RenderRoot::repaintRectangle(int x, int y, int w, int h)
+void RenderRoot::repaintRectangle(int x, int y, int w, int h, bool f)
 {
-    //kdDebug( 6040 ) << "updating views contents (" << x << "/" << y << ") (" << w << "/" << h << ")" << endl;
+//    kdDebug( 6040 ) << "updating views contents (" << x << "/" << y << ") (" << w << "/" << h << ")" << endl;
+    if ( f && m_view ) 
+    {
+	    x += m_view->contentsX();
+	    y += m_view->contentsY();
+    }
+
     if (m_view) m_view->updateContents(x, y, w, h);
 }
 

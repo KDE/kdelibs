@@ -274,7 +274,7 @@ public:
 
     // force a complete repaint 
     virtual void repaint() { if(m_parent) m_parent->repaint(); }
-    virtual void repaintRectangle(int x, int y, int w, int h);
+    virtual void repaintRectangle(int x, int y, int w, int h, bool f=false);
 
     virtual unsigned int length() const { return 1; }
 

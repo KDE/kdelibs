@@ -221,8 +221,8 @@ void RenderBox::printBackground(QPainter *p, const QColor &c, CachedImage *bg, i
         int sy = 0;        
 	    int cw,ch;
         int cx,cy;
-        int vpab = borderRight() + borderLeft() + paddingLeft() + paddingRight();
-        int hpab = borderTop() + borderBottom() + paddingTop() + paddingBottom();
+        int vpab = borderRight() + borderLeft();
+        int hpab = borderTop() + borderBottom();
 
         // CSS2 chapter 14.2.1
         
@@ -243,7 +243,7 @@ void RenderBox::printBackground(QPainter *p, const QColor &c, CachedImage *bg, i
                 sx =  pixw - ((sptr->backgroundXPosition().minWidth(pw-pixw)) % pixw );
             }
             
-            cx += borderLeft() + paddingLeft();
+            cx += borderLeft();
 
             if( (bgr == NO_REPEAT || bgr == REPEAT_X) && h > pixh ) {
                 ch = pixh;
@@ -254,7 +254,7 @@ void RenderBox::printBackground(QPainter *p, const QColor &c, CachedImage *bg, i
                 sy = pixh - ((sptr->backgroundYPosition().minWidth(ph-pixh)) % pixh );
             }            
             
-            cy += borderTop() + paddingTop();
+            cy += borderTop();
         } 
         else
         {
@@ -443,13 +443,16 @@ void RenderBox::repaint()
     repaintRectangle(-ow, -ow, m_width+ow*2, m_height+ow*2);
 }
 
-void RenderBox::repaintRectangle(int x, int y, int w, int h)
+void RenderBox::repaintRectangle(int x, int y, int w, int h, bool f)
 {
     x += m_x;
     y += m_y;
+    
+    if (style()->position()==FIXED) f=true;
+            
     // kdDebug( 6040 ) << "RenderBox(" << renderName() << ")::repaintRectangle (" << x << "/" << y << ") (" << w << "/" << h << ")" << endl;
     RenderObject *o = container();
-    if( o ) o->repaintRectangle(x, y, w, h);
+    if( o ) o->repaintRectangle(x, y, w, h, f);
 }
 
 void RenderBox::relativePositionOffset(int &tx, int &ty)

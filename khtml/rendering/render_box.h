@@ -82,7 +82,7 @@ public:
 
     virtual void repaint();
 
-    virtual void repaintRectangle(int x, int y, int w, int h);
+    virtual void repaintRectangle(int x, int y, int w, int h, bool f=false);
 
     virtual void setPixmap(const QPixmap &, const QRect&, CachedImage *, bool *manualUpdate);
 
