@@ -48,12 +48,19 @@ protected slots: // this is why this class needs to be in the .h
  */
 class KFileShare
 {
+
+  
 public:
     /**
-     * Called on application startup, to initialize authorization and shareList
-     * Can also be called later, when the configuration changes
+     * Reads the file share configuration file
      */
     static void readConfig();
+    
+    /**
+     * Reads the list of shared folders
+     */
+    static void readShareList();
+
 
     /**
      * Call this to know if a directory is currently shared
@@ -68,11 +75,41 @@ public:
 
     static QString findExe( const char* exeName );
 
+    /**
+     * Uses a suid perl script to share the given path 
+     * with NFS and Samba
+     * @param path the path to share
+     * @param wether the path should be shared or not
+     * @returns wether the perl script was successful
+     */
     static bool setShared( const QString& path, bool shared );
+    
+    enum ShareMode { Simple, Advanced };
+    
+    /**
+     * Returns the configured share mode
+     */
+    static ShareMode shareMode();
+    
+    /**
+     * Returns wether Samba is enabled
+     */
+    static bool sambaEnabled();
+    
+    /** 
+     * Returns wether NFS is enabled
+     */
+    static bool nfsEnabled();
 
 private:
     static Authorization s_authorization;
     static QStringList* s_shareList;
+    static ShareMode s_shareMode;
+    static bool s_sambaEnabled;
+    static bool s_nfsEnabled;
+    
+    static Authorization getAuthFromScript();
+    
 };
 
 #endif

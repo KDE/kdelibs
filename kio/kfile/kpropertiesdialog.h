@@ -257,9 +257,21 @@ public:
   void abortApplying();
 
   /**
+   * Shows the page that was previously set by
+   * setFileSharingPage, or does nothing if no page
+   * was set yet.
+   * #see setFileSharingPage
    * @since 3.1
    */
   void showFileSharingPage();
+  
+  /**
+   * Sets the file sharing page.
+   * This page is shown when calling showFileSharingPage.
+   * #see showFileSharingPage
+   * @since 3.3
+   */
+  void setFileSharingPage(QWidget* page);
 
    /**
     * Call this to make the filename lineedit readonly, to prevent the user

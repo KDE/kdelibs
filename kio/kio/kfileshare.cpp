@@ -30,17 +30,23 @@
 #include <stdlib.h>
 #include <errno.h>
 #include <kdirnotify_stub.h>
+#include <ksimpleconfig.h>
 
 KFileShare::Authorization KFileShare::s_authorization = NotInitialized;
 QStringList* KFileShare::s_shareList = 0L;
 static KStaticDeleter<QStringList> sdShareList;
 
+KFileShare::ShareMode KFileShare::s_shareMode;
+bool KFileShare::s_sambaEnabled;
+bool KFileShare::s_nfsEnabled;
+
+#define FILESHARECONF "/etc/security/fileshare.conf"
 
 KFileSharePrivate::KFileSharePrivate()
 {
-  if (KStandardDirs::exists("/etc/security/fileshare.conf")) {
+  if (KStandardDirs::exists(FILESHARECONF)) {
         m_watchFile=new KDirWatch();
-        m_watchFile->addFile("/etc/security/fileshare.conf");
+        m_watchFile->addFile(FILESHARECONF);
         m_watchFile->startScan();
         connect(m_watchFile, SIGNAL(dirty (const QString&)),this,
    	        SLOT(slotFileChange(const QString &)));
@@ -66,14 +72,95 @@ KFileSharePrivate* KFileSharePrivate::self()
 
 void KFileSharePrivate::slotFileChange(const QString &file)
 {
-  if(file=="/etc/security/fileshare.conf")
-    KFileShare::readConfig();
+  if(file==FILESHARECONF) {
+     KFileShare::readConfig();
+     KFileShare::readShareList();
+  }    
 }
+
 
 void KFileShare::readConfig() // static
 {
-  KFileSharePrivate::self();
-    s_authorization = UserNotAllowed;
+    KSimpleConfig config(QString::fromLatin1(FILESHARECONF),true);
+    
+//    bool restrict = config.readEntry("RESTRICT", "yes") == "yes";
+//    m_ccgui->shareGrp->setChecked( ! restrict );
+
+    bool restrict = config.readEntry("RESTRICT", "yes") == "yes";
+    
+    if (restrict)
+        s_authorization = UserNotAllowed;
+    else
+        s_authorization = Authorized;
+                
+    if (config.readEntry("SHARINGMODE", "simple") == "simple") {
+        s_shareMode = Simple;
+        s_authorization = getAuthFromScript();
+    }        
+    else        
+        s_shareMode = Advanced;
+          
+        
+    s_sambaEnabled = config.readEntry("SAMBA", "yes") == "yes";
+    s_nfsEnabled = config.readEntry("NFS", "yes") == "yes";
+}
+
+KFileShare::Authorization KFileShare::getAuthFromScript() {
+    // /usr/sbin on Mandrake, $PATH allows flexibility for other distributions
+    QString exe = findExe( "filesharelist" );
+    if (exe.isEmpty()) {
+        return ErrorNotFound;
+    }
+    
+    KProcIO proc;
+    proc << exe;
+    if ( !proc.start( KProcess::Block ) ) {
+        kdError() << "Can't run " << exe << endl;
+        return ErrorNotFound;
+    }
+
+    if ( proc.normalExit() ) {
+      switch (proc.exitStatus())
+      {
+        case 0:
+          kdDebug(7000) << "KFileShare::readConfig: s_authorization = Authorized" << endl;
+          return Authorized;
+        case 1:
+          kdDebug(7000) << "KFileShare::readConfig: s_authorization = UserNotAllowed" << endl;
+          return UserNotAllowed;
+        default:
+          break;
+      }  
+    }
+    
+    return UserNotAllowed;
+}
+
+KFileShare::ShareMode KFileShare::shareMode() {
+  if ( s_authorization == NotInitialized )
+      readConfig();
+  
+  return s_shareMode;
+}
+    
+bool KFileShare::sambaEnabled() {
+  if ( s_authorization == NotInitialized )
+      readConfig();
+  
+  return s_sambaEnabled;
+}
+    
+bool KFileShare::nfsEnabled() {
+  if ( s_authorization == NotInitialized )
+      readConfig();
+  
+  return s_nfsEnabled;
+}
+
+
+void KFileShare::readShareList() 
+{
+    KFileSharePrivate::self();
     if ( !s_shareList )
         sdShareList.setObject( s_shareList, new QStringList );
     else
@@ -106,31 +193,13 @@ void KFileShare::readConfig() // static
             kdDebug(7000) << "Shared dir:" << line << endl;
         }
     } while (length > -1);
-
-    //kdDebug(7000) << "KFileShare: normalExit()=" << proc.normalExit() << " exitStatus()=" << proc.exitStatus() << endl;
-    if ( proc.normalExit() )
-        switch (proc.exitStatus())
-        {
-        case 0:
-            s_authorization = Authorized;
-            kdDebug(7000) << "KFileShare::readConfig: s_authorization = Authorized" << endl;
-	    // move while loop here
-            return;
-        case 1:
-            s_authorization = UserNotAllowed;
-            kdDebug(7000) << "KFileShare::readConfig: s_authorization = UserNotAllowed" << endl;
-            return;
-        default:
-            break;
-        }
-    s_authorization = UserNotAllowed;
 }
+
 
 bool KFileShare::isDirectoryShared( const QString& _path )
 {
-    // The app should do this on startup, but if it doesn't, let's do here.
-    if ( s_authorization == NotInitialized )
-        readConfig();
+    if ( ! s_shareList )
+        readShareList();
 
     QString path( _path );
     if ( path[path.length()-1] != '/' )
@@ -160,27 +229,52 @@ bool KFileShare::setShared( const QString& path, bool shared )
 {
     kdDebug(7000) << "KFileShare::setShared " << path << "," << shared << endl;
     QString exe = KFileShare::findExe( "fileshareset" );
-    if (!exe.isEmpty())
-    {
-        KProcess proc;
-        proc << exe;
-        if ( shared )
-            proc << "--add";
-        else
-            proc << "--remove";
-        proc << path;
-        proc.start( KProcess::Block ); // should be ok, the perl script terminates fast
-        bool ok = proc.normalExit() && (proc.exitStatus() == 0);
-        kdDebug(7000) << "KFileSharePropsPlugin::setShared ok=" << ok << endl;
-        if ( proc.normalExit() )
-          switch( proc.exitStatus() )
-          case 1:
-          {
-                  // TODO KMessageBox
-          }
-        return ok;
-    }
-    return false;
+    if (exe.isEmpty())
+        return false;
+        
+    KProcess proc;
+    proc << exe;
+    if ( shared )
+        proc << "--add";
+    else
+        proc << "--remove";
+    proc << path;
+    proc.start( KProcess::Block ); // should be ok, the perl script terminates fast
+    bool ok = proc.normalExit() && (proc.exitStatus() == 0);
+    kdDebug(7000) << "KFileSharePropsPlugin::setShared normalExit=" 
+                  << proc.normalExit() << endl;
+    kdDebug(7000) << "KFileSharePropsPlugin::setShared exitStatus=" 
+                  << proc.exitStatus() << endl;
+    if ( proc.normalExit() ) {
+      switch( proc.exitStatus() ) {
+        case 1: 
+          // User is not authorized
+          break;
+        case 3:
+          // Called script with --add, but path was already shared before.
+          // Result is nevertheless what the client wanted, so
+          // this is alright.
+          ok = true;
+          break;
+        case 4:
+          // Invalid mount point
+          break;
+        case 5: 
+          // Called script with --remove, but path was not shared before.
+          // Result is nevertheless what the client wanted, so
+          // this is alright.
+          ok = true; 
+          break;
+        case 6:
+          // There is no export method
+          break;                      
+        case 255:
+          // Abitrary error
+          break;                
+      }
+    } 
+    
+    return ok;
 }
 
 #include "kfileshare.moc"

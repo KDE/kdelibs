@@ -134,11 +134,13 @@ public:
   KPropertiesDialogPrivate()
   {
     m_aborted = false;
+    fileSharePage = 0;
   }
   ~KPropertiesDialogPrivate()
   {
   }
   bool m_aborted:1;
+  QWidget* fileSharePage;
 };
 
 KPropertiesDialog::KPropertiesDialog (KFileItem* item,
@@ -271,18 +273,15 @@ void KPropertiesDialog::init (bool modal, bool autoShow)
 
 void KPropertiesDialog::showFileSharingPage()
 {
-    KPropsDlgPlugin *it;
-
-    for ( it=m_pageList.first(); it != 0L; it=m_pageList.next() )
-    {
-        KFileSharePropsPlugin* plugin = dynamic_cast<KFileSharePropsPlugin*>(it);
-        if ( plugin )
-        {
-            showPage( pageIndex( plugin->page() ) );
-            break;
-        }
-    }
+  if (d->fileSharePage) {
+     showPage( pageIndex( d->fileSharePage));
+  }            
 }
+
+void KPropertiesDialog::setFileSharingPage(QWidget* page) {
+  d->fileSharePage = page;
+}
+
 
 void KPropertiesDialog::setFileNameReadOnly( bool ro )
 {
@@ -429,18 +428,10 @@ void KPropertiesDialog::insertPages()
     insertPlugin (p);
   }
 
-
   if ( KFileSharePropsPlugin::supports( m_items ) )
   {
-
-      QString path = m_items.first()->url().path(-1);
-      bool isLocal = m_items.first()->url().isLocalFile();
-      bool isIntoTrash = isLocal && path.startsWith(KGlobalSettings::trashPath());
-      if ( !isIntoTrash )
-      {
-          KPropsDlgPlugin *p = new KFileSharePropsPlugin( this );
-          insertPlugin (p);
-      }
+    KPropsDlgPlugin *p = new KFileSharePropsPlugin( this );
+    insertPlugin (p);
   }
 
   //plugins

@@ -37,29 +37,40 @@
 #include <kseparator.h>
 #include <qpushbutton.h>
 #include <kapplication.h>
+#include <ksimpleconfig.h>
+#include <kmessagebox.h>
 
 class KFileSharePropsPlugin::Private
 {
 public:
     QVBox *m_vBox;
+
 };
 
 KFileSharePropsPlugin::KFileSharePropsPlugin( KPropertiesDialog *_props )
     : KPropsDlgPlugin( _props )
 {
-    d = new Private;
-    d->m_vBox = _props->addVBoxPage( i18n("Local Net Sharing") );
-    m_widget = 0L;
-    init();
+  d = new Private;
+  d->m_vBox = _props->addVBoxPage( i18n("&Share") );
+  properties->setFileSharingPage(d->m_vBox);
+  m_widget = 0L;
+  init();
 }
 
 KFileSharePropsPlugin::~KFileSharePropsPlugin()
-{
+{  
     delete d;
 }
 
 bool KFileSharePropsPlugin::supports( const KFileItemList& items )
 {
+    // Do not show dialog if in advanced mode, 
+    // because the advanced dialog is shown already.
+    if (KFileShare::shareMode() == KFileShare::Advanced) {
+        kdDebug() << "KFileSharePropsPlugin::supports: false because sharemode is advanced" << endl; 
+        return false;
+    }        
+        
     KFileItemListIterator it( items );
     for ( ; it.current(); ++it )
     {
@@ -115,8 +126,8 @@ void KFileSharePropsPlugin::init()
         else
         {
             // Everything ok, show the share/unshare GUI
-            vbox->setSpacing( 20 );
-            vbox->setMargin( 20 );
+            vbox->setSpacing( KDialog::spacingHint() );
+            vbox->setMargin( KDialog::marginHint() );
 
             QButtonGroup *rbGroup = new QButtonGroup( m_widget );
             rbGroup->hide();
@@ -190,30 +201,34 @@ void KFileSharePropsPlugin::applyChanges()
     kdDebug() << "KFileSharePropsPlugin::applyChanges" << endl;
     if ( m_rbShare && m_rbUnShare )
     {
-        if ( m_rbShare->isChecked() )
-        {
-            // Share selected directories
-            KFileItemList items = properties->items();
-            KFileItemListIterator it( items );
-            bool ok = true;
-            for ( ; it.current() && ok; ++it ) {
-                QString path = (*it)->url().path();
-                ok = setShared( path, true );
-            }
+        bool share = m_rbShare->isChecked();
+        KFileItemList items = properties->items();
+        KFileItemListIterator it( items );
+        bool ok = true;
+        for ( ; it.current() && ok; ++it ) {
+             QString path = (*it)->url().path();
+             ok = setShared( path, share );
+             if (!ok) {
+                if (share) 
+                  KMessageBox::detailedError(properties,
+                    i18n("Sharing folder '%1' failed!").arg(path),
+                    i18n("An error ocurred while trying to share folder '%1'. "
+                         "Make sure that the Perl script 'fileshareset' is set suid root!")
+                         .arg(path));
+                else                    
+                  KMessageBox::error(properties,
+                    i18n("Unsharing folder '%1' failed!").arg(path),
+                    i18n("An error ocurred while trying to unshare folder '%1'. "
+                         "Make sure that the Perl script 'fileshareset' is set suid root!")
+                         .arg(path));
+                         
+                properties->abortApplying();
+                break;                         
+             }                  
         }
-        else if ( m_rbUnShare->isChecked() )
-        {
-            // Unshare selected directories
-            KFileItemList items = properties->items();
-            KFileItemListIterator it( items );
-            bool ok = true;
-            for ( ; it.current() && ok; ++it ) {
-                QString path = (*it)->url().path();
-                ok = setShared( path, false );
-            }
-        }
+        
         // Get the change back into our cached info
-        KFileShare::readConfig();
+        KFileShare::readShareList();
     }
 }
 
