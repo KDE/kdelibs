@@ -142,6 +142,7 @@ bool Kded::process(const QCString &obj, const QCString &fun,
   if (!module)
      return false; 
 
+  module->setCallingDcopClient(kapp->dcopClient());
   return module->process(fun, data, replyType, replyData);
 }
 
@@ -616,6 +617,7 @@ public:
       long windowId;
       QDataStream arg( data, IO_ReadOnly );
       arg >> windowId;
+      Kded::self()->setCallingDcopClient(callingDcopClient());
       Kded::self()->registerWindowId(windowId);
       return true;
     }
@@ -623,6 +625,7 @@ public:
       long windowId;
       QDataStream arg( data, IO_ReadOnly );
       arg >> windowId;
+      Kded::self()->setCallingDcopClient(callingDcopClient());
       Kded::self()->unregisterWindowId(windowId);
       return true;
     }
