@@ -26,7 +26,7 @@ kfile_LIBS= -lkio -lkdecore -lkdeui -lqt
 kspell_FILES = *.h
 kspell_LIBS = -lkdecore -lkdeui -lqt
 
-kjs_FILES = kjs.h object.h types.h function.h operations.h ustring.h
+kjs_FILES = value.h types.h object.h interpreter.h operations.h ustring.h
 kjs_LIBS = -lqt
 
 khtml_FILES = *.h dom/*.h
