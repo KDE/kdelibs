@@ -100,7 +100,7 @@ bool NetAccess::copy( const KURL & src, const KURL & target )
 bool NetAccess::dircopy( const KURL & src, const KURL & target )
 {
   NetAccess kioNet;
-  return kioNet.dircopyInternal( src, target, false /*not overwrite*/ );
+  return kioNet.dircopyInternal( src, target );
 }
 
 bool NetAccess::exists( const KURL & url )
@@ -158,11 +158,11 @@ bool NetAccess::copyInternal(const KURL& src, const KURL& target, bool overwrite
   return bJobOK;
 }
 
-bool NetAccess::dircopyInternal(const KURL& src, const KURL& target, bool overwrite)
+bool NetAccess::dircopyInternal(const KURL& src, const KURL& target)
 {
   bJobOK = true; // success unless further error occurs
 
-  KIO::Job * job = KIO::copy( src, target, overwrite );
+  KIO::Job * job = KIO::copy( src, target );
   connect( job, SIGNAL( result (KIO::Job *) ),
            this, SLOT( slotResult (KIO::Job *) ) );
 
@@ -225,6 +225,7 @@ void qt_leave_modal( QWidget *widget );
 void NetAccess::enter_loop()
 {
   QWidget dummy(0,0,WType_Dialog | WShowModal);
+  dummy.setFocusPolicy( QWidget::NoFocus );
   qt_enter_modal(&dummy);
   qApp->enter_loop();
   qt_leave_modal(&dummy);

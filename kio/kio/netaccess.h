@@ -218,7 +218,7 @@ private:
      * Internal methods
      */
     bool copyInternal(const KURL& src, const KURL& target, bool overwrite);
-    bool dircopyInternal(const KURL& src, const KURL& target, bool overwrite);
+    bool dircopyInternal(const KURL& src, const KURL& target);
     bool statInternal(const KURL & url);
     UDSEntry m_entry;
     bool delInternal(const KURL & url);
