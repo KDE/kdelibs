@@ -529,9 +529,9 @@ uint keyToXSym( int keyCode )
 	// Fill the keycode with infos
 	bool  keyFound = false;
 	for ( int i=0; i<nb_toks; i++ ) {
-		if (stricmp(toks[i], "SHIFT") != 0 &&
-		    stricmp(toks[i], "CTRL")  != 0 &&
-		    stricmp(toks[i], "ALT")   != 0) {
+		if (qstricmp(toks[i], "SHIFT") != 0 &&
+		    qstricmp(toks[i], "CTRL")  != 0 &&
+		    qstricmp(toks[i], "ALT")   != 0) {
 		   if ( keyFound ) return 0;
 		   keyFound = true;
 		   QCString l = toks[i];

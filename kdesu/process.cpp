@@ -353,7 +353,7 @@ int PtyProcess::waitForChild()
 	    QCString line = readLine(false);
 	    while (!line.isNull()) 
 	    {
-		if (!m_Exit.isEmpty() && !strnicmp(line, m_Exit, m_Exit.length()))
+		if (!m_Exit.isEmpty() && !qstrnicmp(line, m_Exit, m_Exit.length()))
 		    kill(m_Pid, SIGTERM);
 		if (m_bTerminal) 
 		{
