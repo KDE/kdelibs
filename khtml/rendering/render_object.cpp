@@ -407,13 +407,8 @@ int RenderObject::scrollHeight() const
 void RenderObject::setLayouted(bool b)
 {
     m_layouted = b;
-    if (b) {
-        RenderLayer* l = layer();
-        if (l)
-            l->layout();
-    }
-    else {
-        RenderObject *o = m_parent;
+    if (!b) {
+        RenderObject *o = container();
         RenderObject *root = this;
 
         // If an attempt is made to setLayouted(false) an object
@@ -424,17 +419,17 @@ void RenderObject::setLayouted(bool b)
         // necessary.  -dwh
 
         RenderObject* clippedObj =
-            (style()->overflow() == OHIDDEN && !isText()) ? this : 0;
+            (style()->hidesOverflow() && !isText()) ? this : 0;
 
         while( o ) {
             root = o;
             o->m_layouted = false;
-            if (o->style()->overflow() == OHIDDEN && !clippedObj)
+            if (o->style()->hidesOverflow() && !clippedObj)
                 clippedObj = o;
-            o = o->m_parent;
+            o = o->container();
         }
 
-        root->scheduleRelayout(true);
+        root->scheduleRelayout(clippedObj);
     }
 }
 
@@ -1098,10 +1093,24 @@ RenderObject *RenderObject::container() const
 {
     EPosition pos = m_style->position();
     RenderObject *o = 0;
-    if( pos == FIXED )
-        o = canvas();
-    else if ( pos == ABSOLUTE )
-        o = containingBlock();
+    if( pos == FIXED ) {
+        // container() can be called on an object that is not in the
+        // tree yet.  We don't call canvas() since it will assert if it
+        // can't get back to the canvas.  Instead we just walk as high up
+        // as we can.  If we're in the tree, we'll get the root.  If we
+        // aren't we'll get the root of our little subtree (most likely
+        // we'll just return 0).
+        o = parent();
+        while ( o && o->parent() ) o = o->parent();
+    }
+    else if ( pos == ABSOLUTE ) {
+        // Same goes here.  We technically just want our containing block, but
+        // we may not have one if we're part of an uninstalled subtree.  We'll
+        // climb as high as we can though.
+        o = parent();
+        while (o && o->style()->position() == STATIC && !o->isRoot() && !o->isCanvas())
+            o = o->parent();
+    }
     else
         o = parent();
     return o;
