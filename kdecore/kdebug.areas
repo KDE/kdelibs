@@ -223,6 +223,12 @@
 25004        Kafka (kafkaobjectmgr)
 25005        Kafka (kafkadom)
 
+# KSVG
+26000	KSVG
+26001	KSVG - Parser
+26002	KSVG - Rendering
+26003	KSVG - KPart
+
 # libkscan / kooka
 28000   Kooka
 29000   libkscan
