@@ -95,7 +95,8 @@ void KLineEdit::init()
 void KLineEdit::setCompletionMode( KGlobalSettings::Completion mode )
 {
     KGlobalSettings::Completion oldMode = completionMode();
-    if ( oldMode != mode && oldMode == KGlobalSettings::CompletionPopup )
+    if ( oldMode != mode &&
+         oldMode == KGlobalSettings::CompletionPopup )
         hideCompletionBox();
 
     // If the widgets echo mode is not Normal, no completion
@@ -154,14 +155,18 @@ void KLineEdit::makeCompletion( const QString& txt )
     if ( !comp )
        return;  // No completion object...
 
-    QString match = comp->makeCompletion( txt );
+    QString match = comp->makeCompletion(txt);
     KGlobalSettings::Completion mode = completionMode();
-    if ( mode == KGlobalSettings::CompletionPopup ||
-         mode == KGlobalSettings::CompletionShell )
+    if ( mode == KGlobalSettings::CompletionPopup )
     {
-       if ( match.isNull() )
-        hideCompletionBox();
-       else
+        if ( match.isNull() )
+            hideCompletionBox();
+        else
+            setCompletedItems( comp->allMatches() );
+    }
+    else if ( mode == KGlobalSettings::CompletionShell &&
+              comp->hasMultipleMatches(true) )
+    {
         setCompletedItems( comp->allMatches() );
     }
     else
@@ -169,7 +174,7 @@ void KLineEdit::makeCompletion( const QString& txt )
         // All other completion modes
         // If no match or the same match, simply return without completing.
         if ( match.isNull() || match == txt )
-            return;
+          return;
         bool marked = ( mode == KGlobalSettings::CompletionAuto ||
                         mode == KGlobalSettings::CompletionMan );
         setCompletedText( match, marked );
@@ -510,24 +515,16 @@ KCompletionBox * KLineEdit::completionBox()
     return d->completionBox;
 }
 
-KCompletionBox * KLineEdit::completionBox( bool create )
+KCompletionBox* KLineEdit::completionBox( bool create )
 {
     if ( create )
-	makeCompletionBox();
-	
+      makeCompletionBox();
+
     return d->completionBox;
 }
 
 void KLineEdit::setCompletionObject( KCompletion* comp, bool hsig )
 {
-    KCompletion *oldComp = completionObject( false, false ); // don't create!
-    if ( oldComp && handleSignals() )
-        disconnect( oldComp, SIGNAL( matches( const QStringList& )),
-                    this, SLOT( setCompletedItems( const QStringList& )));
-    if ( comp && hsig )
-      connect( comp, SIGNAL( matches( const QStringList& )),
-               this, SLOT( setCompletedItems( const QStringList& )));
-
     KCompletionBase::setCompletionObject( comp, hsig );
 }
 

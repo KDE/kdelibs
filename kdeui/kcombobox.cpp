@@ -195,13 +195,17 @@ void KComboBox::makeCompletion( const QString& txt )
 
         QString match = comp->makeCompletion( txt );
         KGlobalSettings::Completion mode = completionMode();
-        if ( mode == KGlobalSettings::CompletionPopup ||
-             mode == KGlobalSettings::CompletionShell )
+        if ( mode == KGlobalSettings::CompletionPopup )
         {
             if ( match.isNull() )
                 hideCompletionBox();
             else
                 setCompletedItems( comp->allMatches() );
+        }
+        else if ( mode == KGlobalSettings::CompletionShell &&
+                  comp->hasMultipleMatches(true) )
+        {
+            setCompletedItems( comp->allMatches() );
         }
         else
         {
@@ -210,7 +214,7 @@ void KComboBox::makeCompletion( const QString& txt )
             if( match.isNull() || match == txt )
                 return;
             bool marked = ( mode == KGlobalSettings::CompletionAuto ||
-                                   mode == KGlobalSettings::CompletionMan );
+                            mode == KGlobalSettings::CompletionMan );
             setCompletedText( match, marked );
         }
     }
@@ -620,16 +624,6 @@ KCompletionBox * KComboBox::completionBox( bool create )
 
 void KComboBox::setCompletionObject( KCompletion* comp, bool hsig )
 {
-    KCompletion *oldComp = completionObject( false, false ); // don't create!
-
-    if ( oldComp && handleSignals() )
-      disconnect( oldComp, SIGNAL( matches( const QStringList& )),
-                  this, SLOT( setCompletedItems( const QStringList& )));
-
-    if ( comp && hsig )
-      connect( comp, SIGNAL( matches( const QStringList& )),
-               this, SLOT( setCompletedItems( const QStringList& )));
-
     KCompletionBase::setCompletionObject( comp, hsig );
 }
 
