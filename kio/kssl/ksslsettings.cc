@@ -216,7 +216,7 @@ QString clist = "";
     for (unsigned int i = 0; i < cipherSort.count(); i++) {
       CipherNode *j = 0L;
       while ((j = cipherSort.at(i)) != 0L) {
-        if (j->name.left(3) == "ADH") {
+        if (j->name.contains("ADH-")) {
           cipherSort.remove(j);
         } else {
           break;
