@@ -330,29 +330,33 @@ void HTMLElementImpl::addHTMLAlignment( DOMString alignment )
     // vertical alignment with respect to the current baseline of the text
     // right or left means floating images
     int propfloat = -1;
-    int propver = -1;
-    if ( strcasecmp( alignment, "left" ) == 0 ) {
+    int propvalign = -1;
+    if ( strcasecmp( alignment, "absmiddle" ) == 0 ) {
+        propvalign = CSS_VAL_MIDDLE;
+    } else if ( strcasecmp( alignment, "absbottom" ) == 0 ) {
+        propvalign = CSS_VAL_BOTTOM;
+    } else if ( strcasecmp( alignment, "left" ) == 0 ) {
 	propfloat = CSS_VAL_LEFT;
-	propver = CSS_VAL_TOP;
+	propvalign = CSS_VAL_TOP;
     } else if ( strcasecmp( alignment, "right" ) == 0 ) {
 	propfloat = CSS_VAL_RIGHT;
-	propver = CSS_VAL_TOP;
+	propvalign = CSS_VAL_TOP;
     } else if ( strcasecmp( alignment, "top" ) == 0 ) {
-	propver = CSS_VAL_TOP;
+	propvalign = CSS_VAL_TOP;
     } else if ( strcasecmp( alignment, "middle" ) == 0 ) {
-	propver = CSS_VAL__KONQ_BASELINE_MIDDLE;
+	propvalign = CSS_VAL__KONQ_BASELINE_MIDDLE;
     } else if ( strcasecmp( alignment, "center" ) == 0 ) {
-	propver = CSS_VAL_MIDDLE;
+	propvalign = CSS_VAL_MIDDLE;
     } else if ( strcasecmp( alignment, "bottom" ) == 0 ) {
-	propver = CSS_VAL_BASELINE;
+	propvalign = CSS_VAL_BASELINE;
     } else if ( strcasecmp ( alignment, "texttop") == 0 ) {
-	propver = CSS_VAL_TEXT_TOP;
+	propvalign = CSS_VAL_TEXT_TOP;
     }
 
     if ( propfloat != -1 )
 	addCSSProperty( CSS_PROP_FLOAT, propfloat );
-    if ( propver != -1 )
-	addCSSProperty( CSS_PROP_VERTICAL_ALIGN, propver );
+    if ( propvalign != -1 )
+	addCSSProperty( CSS_PROP_VERTICAL_ALIGN, propvalign );
 }
 
 
