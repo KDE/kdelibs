@@ -186,6 +186,12 @@ public:
  * A typesafe function to determine the absolute value of the argument.
  */
 #define KABS(a)	kAbs(a)
+/**
+ * \relates KGlobal
+ * A typesafe function that returns x if it's between low and high values.
+ * low if x is smaller than then low and high if x is bigger than high.
+ */
+#define KCLAMP(x,low,high) kClamp(x,low,high)
 
 template<class T>
 inline const T& kMin (const T& a, const T& b) { return a < b ? a : b; }
@@ -195,6 +201,14 @@ inline const T& kMax (const T& a, const T& b) { return b < a ? a : b; }
 
 template<class T>
 inline T kAbs (const T& a) { return a < 0 ? -a : a; }
+
+template<class T>
+inline const T& kClamp( const T& x, const T& low, const T& high )
+{
+    if ( x < low )       return low;
+    else if ( x > high ) return high;
+    else                 return x;
+}
 
 /**
  * \mainpage The KDE Core Functionality Library
