@@ -322,7 +322,7 @@ UString::UString(const UString &a, const UString &b)
     attach(&Rep::empty);
     return;
   }
-  UChar *d = allocateChars(length);;
+  UChar *d = allocateChars(length);
   memcpy(d, a.data(), aSize * sizeof(UChar));
   memcpy(d + aSize, b.data(), bSize * sizeof(UChar));
   rep = Rep::create(d, length);

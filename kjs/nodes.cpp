@@ -73,7 +73,7 @@ using namespace KJS;
 
 #define KJS_CHECKEXCEPTIONREFERENCE \
   if (exec->hadException()) \
-    return Reference::makeValueReference(Undefined());; \
+    return Reference::makeValueReference(Undefined()); \
   if (Collector::outOfMemory()) \
     return Reference::makeValueReference(Undefined()); // will be picked up by KJS_CHECKEXCEPTION
 

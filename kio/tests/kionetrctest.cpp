@@ -37,7 +37,7 @@ void output( const KURL& u )
 int main(int argc, char **argv)
 {
     const char *version = "0.5";
-    const char *description = "Unit test for .netrc and kionetrc parser.";                              ;
+    const char *description = "Unit test for .netrc and kionetrc parser.";
     KCmdLineOptions options[] =
     {
         { "+command", "[url1,url2 ,...]", 0 },

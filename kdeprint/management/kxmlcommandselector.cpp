@@ -168,7 +168,7 @@ QString KXmlCommandSelector::command() const
 
 void KXmlCommandSelector::setCommand(const QString& cmd)
 {
-	int	index = m_cmdlist.findIndex(cmd);;
+	int	index = m_cmdlist.findIndex(cmd);
 
 	if (m_usefilter)
 		m_usefilter->setChecked(index != -1);

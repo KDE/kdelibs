@@ -256,7 +256,7 @@ void testWindow::slotToggled(int)
 
 void testWindow::slotInsertClock()
 {
-  //DigitalClock *clock = new DigitalClock(tb1);;
+  //DigitalClock *clock = new DigitalClock(tb1);
   //clock->setFrameStyle(QFrame::NoFrame);
   //tb1->insertWidget(8, 70, clock);
 }

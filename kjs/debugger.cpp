@@ -69,7 +69,7 @@ void Debugger::attach(Interpreter *interp)
     AttachedInterpreter *ai = rep->interps;
     while (ai->next)
       ai = ai->next;
-    ai->next = new AttachedInterpreter(interp);;
+    ai->next = new AttachedInterpreter(interp);
   }
 }
 

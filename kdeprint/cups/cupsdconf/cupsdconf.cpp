@@ -578,7 +578,7 @@ bool CupsLocation::parseOption(const QString& line)
 kdDebug() << "warning: empty option \"" << (*(wordlist_.at(0))) << "\", adding a pseudo empty argument" << endl;
 		wordlist_.append(QString(""));
 	}
-	QString	opt = *(wordlist_.at(0)), value = *(wordlist_.at(1));;
+	QString	opt = *(wordlist_.at(0)), value = *(wordlist_.at(1));
 	if (opt.lower() == "authtype")
 	{
 		if (value.lower() == "none") authtype_ = AUTHTYPE_NONE;

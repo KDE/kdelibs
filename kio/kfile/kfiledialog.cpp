@@ -2057,7 +2057,7 @@ void KFileDialog::updateLocationEditExtension (const QString &lastExtension)
         KIO::UDSEntry t;
         if (KIO::NetAccess::stat (url, t, NULL))
         {
-            kdDebug (kfile_area) << "\tfile exists" << endl;;
+            kdDebug (kfile_area) << "\tfile exists" << endl;
 
             if (isDirectory (t))
             {

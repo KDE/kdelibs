@@ -1062,7 +1062,7 @@ void KEditToolbarWidget::updateLocal(QDomElement& elem)
     ToolbarList::Iterator it = (*xit).m_barList.begin();
     for ( ; it != (*xit).m_barList.end(); ++it)
     {
-      QString name( (*it).attribute( attrName ) );;
+      QString name( (*it).attribute( attrName ) );
       QString tag( (*it).tagName() );
       if ( (tag != elem.tagName()) || (name != elem.attribute(attrName)) )
         continue;

@@ -7,7 +7,7 @@
 int main(int argc, char** argv)
 {
   KApplication app(argc, argv, "klineedittest");
-  KLineEditDlg dialog( "_text", "_value", 0L );;
+  KLineEditDlg dialog( "_text", "_value", 0L );
   if(dialog.exec())
     {
       qDebug("Accepted.");

@@ -260,7 +260,7 @@ bool KPrinterImpl::startPrinting(const QString& cmd, KPrinter *printer, const QS
 		if (QFile::exists(*it))
 		{
 			// quote and encode filenames
-			filestr.append(quote(QFile::encodeName(*it))).append(" ");;
+			filestr.append(quote(QFile::encodeName(*it))).append(" ");
 			printfiles.append(*it);
 		}
 		else

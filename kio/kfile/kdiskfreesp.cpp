@@ -86,7 +86,7 @@ int KDiskFreeSp::readDF( const QString & mountPoint )
   dfProc->clearArguments();
   (*dfProc) << QString::fromLocal8Bit(DF_COMMAND) << QString::fromLocal8Bit(DF_ARGS);
   if (!dfProc->start( KProcess::NotifyOnExit, KProcess::AllOutput ))
-     kdError() << "could not execute ["<< DF_COMMAND << "]" << endl;;
+     kdError() << "could not execute ["<< DF_COMMAND << "]" << endl;
   return 1;
 }
 

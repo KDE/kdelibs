@@ -444,7 +444,7 @@ void LightStyleV2::drawPrimitive( PrimitiveElement pe,
 
     case PE_ScrollBarSubLine:
 	{
-	    QRect fr = r, ar = r;;
+	    QRect fr = r, ar = r;
 	    PrimitiveElement pe;
 
 	    p->setPen(cg.dark());

@@ -1502,7 +1502,7 @@ KMimeMagic::fsmagic(const char *fn, struct stat *sb)
 			/* TODO add code to handle V7 MUX and Blit MUX files */
 #ifdef    S_IFIFO
 		case S_IFIFO:
-			resultBuf = MIME_INODE_FIFO;;
+			resultBuf = MIME_INODE_FIFO;
 			return 1;
 #endif
 #ifdef    S_IFLNK

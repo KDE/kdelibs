@@ -224,7 +224,7 @@ QRect KeramikStyle::subRect(SubRect r, const QWidget *widget) const
 			{
 				QRect bounding = cb->rect();
 				QSize checkDim = loader.size( keramik_checkbox_on);
-				int   cw = checkDim.width();;
+				int   cw = checkDim.width();
 				int   ch = checkDim.height();
 
 				QRect checkbox(bounding.x() + 1, bounding.y() + 1 + (bounding.height() - ch)/2,
@@ -502,7 +502,7 @@ void KeramikStyle::drawPrimitive( PrimitiveElement pe,
 					//### What should we draw at sides?
 					//nr = QRect(r.x(), r.y(),
 					//	QMIN(r.width(), r.height()), r.width() ) );
-					nr = QRect(r.x(), r.y(), r.width()-1, r.height() );;
+					nr = QRect(r.x(), r.y(), r.width()-1, r.height() );
 
 				}
 				else

@@ -696,7 +696,7 @@ QCString Decoder::automaticDetectionForHebrew( const unsigned char* ptr, int siz
         }
 
         if ( ptr[ i ] == 0xDF )
-            return "iso-8859-8";;
+            return "iso-8859-8";
     }
 
     return "iso-8859-8";

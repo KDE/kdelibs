@@ -143,7 +143,7 @@ bool KMJobManager::sendCommand(const QPtrList<KMJob>& jobs, int action, const QS
 		return false;
 	if (csystem.count() > 0 && !sendCommandSystemJob(csystem, action, args))
 		return false;
-	return true;;
+	return true;
 }
 
 bool KMJobManager::sendCommandSystemJob(const QPtrList<KMJob>&, int, const QString&)
