@@ -45,7 +45,7 @@
 #include <sys/types.h>
 #include <sys/acl.h>
 
-#include <qlist.h>
+#include <qptrlist.h>
 #include <qstring.h>
 
 namespace KPOSIX1e {
@@ -78,7 +78,7 @@ public:
 	virtual void SetPath (const QCString &);
 	virtual QString Path () {return path;}
 
-	QList<KACLEntry> entries;
+	QPtrList<KACLEntry> entries;
 
 protected:
 	QCString path;
