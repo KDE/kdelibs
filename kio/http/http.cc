@@ -59,6 +59,8 @@
 
 #include "http.h"
 
+#include <qregexp.h>
+
 #include <kapp.h>
 #include <klocale.h>
 #include <kprotocolmanager.h>
@@ -1566,6 +1568,20 @@ void HTTPProtocol::stat(const QString& path, const QString& query)
 
 const char *HTTPProtocol::getUserAgentString ()
 {
+  static QString prev_hostname = QString::null;
+  static QString user_agent = "Konqueror ($Revision$)";
+
+  // i'm not a big fan of this... however, i am very concerned that
+  // the regular expression matching later one could prove to be very
+  // CPU intensive.. especially when you consider that every single
+  // HTTP request (even those for gifs and pngs) will call this
+  // function.  so for now, we try to only match a pattern to a
+  // hostname once... as long as the requests all come in order
+  if ( prev_hostname == m_state.hostname )
+    return strdup(user_agent.ascii());
+
+  prev_hostname = m_state.hostname;
+
   // try to load the user set UserAgents
   if ( m_userAgentList.count() == 0 )
   {
@@ -1584,22 +1600,37 @@ const char *HTTPProtocol::getUserAgentString ()
     delete config;
   }
 
-
   // make sure we have at least *one*, though
   if ( m_userAgentList.count() == 0 )
     m_userAgentList.append( "*:Konqueror ($Revision$)" );
 
   // now, we need to do our pattern matching on the host name.
-  // for this commit, we'll just take the first one, though
-  QStringList split(QStringList::split( ':', m_userAgentList.first() ));
-  QString pattern(split[0]);
-  QString agent(split[1]);
+  QStringList::Iterator it(m_userAgentList.begin());
+  for( ; it != m_userAgentList.end(); ++it)
+  {
+    QStringList split(QStringList::split( ':', (*it) ));
 
-  // one tiny failsafe
-  if ( agent.isNull() )
-    agent = "Konqueror ($Revision$)";
+    // if our user agent is null, we go to the next one
+    if ( split[1].isNull() )
+      continue;
 
-  QString user_agent(agent);
+    QRegExp regexp(split[0], true, true);
+
+    // we also make sure our regexp is valid
+    if ( !regexp.isValid() )
+      continue;
+
+    // we look for a match
+    if ( regexp.match(m_state.hostname) > -1 )
+    {
+      user_agent = split[1];
+      
+      // if the match was for '*', we keep trying.. otherwise, we are
+      // done
+      if ( split[0] != "*" )
+        break;
+    }
+  }
 
 #ifdef DO_MD5
   user_agent+="; Supports MD5-Digest";
