@@ -249,20 +249,34 @@ protected:
     bool isSSLTunnelEnabled();
 
     /**
-     * Set up SSL tunneling mode.
+     * Sets up SSL tunneling through a proxy server.
      *
-     * Call this function with a @p enable set to true to temprarly
-     * ignore the @p m_bIsSSL flag setting and make a non-SSL connection.
-     * It is mostly useful for making connections to SSL sites through
-     * a non-transparent proxy server (i.e. most proxy servers out there).
+     * Call this function with a @p enable paramter set to true to
+     * temprarly ignore the ssl flag setting and make a non-SSL
+     * connection.  It is mostly useful for making connections to
+     * SSL sites through a non-transparent proxy server (i.e. most
+     * proxy servers out there).
      *
      * Note that once you have successfully "tunneled" through the
      * proxy server you must call this function with its argument
      * set to false to properly connect to the SSL site.
      *
-     * @param enable if true SSL Tunneling will be enabled
+     * @param enable    true enables SSL Tunneling.
      */
     void setEnableSSLTunnel( bool enable );
+
+    /**
+     * Sets up the the real hostname for an SSL connection
+     * that goes through a proxy server.
+     *
+     * This function is essential in making sure that the
+     * real hostname is used for validating certificates from
+     * SSL sites!
+     *
+     * @param realHost the actual host name we are connecting to
+     */
+    void setRealHost( const QString& realHost );
+
 
     // don't use me!
     void doConstructorStuff();

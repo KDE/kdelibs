@@ -60,19 +60,21 @@ class TCPSlaveBase::TcpSlaveBasePrivate
 public:
   TcpSlaveBasePrivate() : militantSSL(false) {}
   ~TcpSlaveBasePrivate() {}
+
   KSSL *kssl;
   bool usingTLS;
   KSSLCertificateCache *cc;
   QString host;
+  QString realHost;
   QString ip;
   DCOPClient *dcc;
   KSSLPKCS12 *pkcs;
 
-    int status;
-    int timeout;
-    bool block;
-    bool useSSLTunneling;
-    bool needSSLHandShake;
+  int status;
+  int timeout;
+  bool block;
+  bool useSSLTunneling;
+  bool needSSLHandShake;
 
   bool militantSSL;
 };
@@ -88,8 +90,8 @@ TCPSlaveBase::TCPSlaveBase(unsigned short int default_port,
 {
     // We have to have two constructors, so don't add anything
     // else in here. Put it in doConstructorStuff() instead.
-        doConstructorStuff();
-        m_bIsSSL = false;
+    doConstructorStuff();
+    m_bIsSSL = false;
 }
 
 TCPSlaveBase::TCPSlaveBase(unsigned short int default_port,
@@ -101,9 +103,9 @@ TCPSlaveBase::TCPSlaveBase(unsigned short int default_port,
               m_iSock(-1), m_bIsSSL(useSSL), m_iDefaultPort(default_port),
               m_sServiceName(protocol), fp(0)
 {
-        doConstructorStuff();
-        if (useSSL)
-           m_bIsSSL = InitializeSSL();
+    doConstructorStuff();
+    if (useSSL)
+        m_bIsSSL = InitializeSSL();
 }
 
 // The constructor procedures go here now.
@@ -148,7 +150,8 @@ ssize_t TCPSlaveBase::Read(void *data, ssize_t len)
     {
         if ( d->needSSLHandShake )
             (void) doSSLHandShake( true );
-        return d->kssl->read(data, len);
+        ssize_t size = d->kssl->read(data, len);
+        return size;
     }
     return KSocks::self()->read(m_iSock, data, len);
 }
@@ -215,7 +218,7 @@ bool TCPSlaveBase::ConnectToHost( const QString &host,
 
    //  - leaving SSL - warn before we even connect
    if (metaData("ssl_activate_warnings") == "TRUE" &&
-              metaData("ssl_was_in_use") == "TRUE" &&
+       metaData("ssl_was_in_use") == "TRUE" &&
        !m_bIsSSL) {
       KSSLSettings kss;
       if (kss.warnOnLeave()) {
@@ -325,7 +328,7 @@ void TCPSlaveBase::CleanSSL()
 
     if (m_bIsSSL || d->usingTLS) {
         delete d->kssl;
-	d->kssl = NULL;
+				d->kssl = NULL;
         d->usingTLS = false;
         setMetaData("ssl_in_use", "FALSE");
     }
@@ -345,7 +348,7 @@ int TCPSlaveBase::startTLS()
     d->kssl = new KSSL(false);
     if (!d->kssl->TLSInit()) {
         delete d->kssl;
-	d->kssl = NULL;
+				d->kssl = NULL;
         return -1;
     }
 
@@ -354,7 +357,7 @@ int TCPSlaveBase::startTLS()
     int rc = d->kssl->connect(m_iSock);
     if (rc < 0) {
         delete d->kssl;
-	d->kssl = NULL;
+        d->kssl = NULL;
         return -2;
     }
 
@@ -365,7 +368,7 @@ int TCPSlaveBase::startTLS()
         setMetaData("ssl_in_use", "FALSE");
         d->usingTLS = false;
         delete d->kssl;
-	d->kssl = NULL;
+        d->kssl = NULL;
         return -3;
     }
 
@@ -382,7 +385,7 @@ void TCPSlaveBase::stopTLS()
 
     if (d->usingTLS) {
         delete d->kssl;
-	d->kssl = NULL;
+        d->kssl = NULL;
         d->usingTLS = false;
         setMetaData("ssl_in_use", "FALSE");
     }
@@ -511,8 +514,8 @@ KSSLCertificateHome::KSSLAuthAction aa;
     // but to save the choice
   if (!send) {
      if (save) {
-            KSSLCertificateHome::setDefaultCertificate(certname, d->host,
-                                                       false, false);
+        KSSLCertificateHome::setDefaultCertificate(certname, d->host,
+                                                   false, false);
      }
      return;
   }
@@ -585,17 +588,12 @@ KSSLCertificateHome::KSSLAuthAction aa;
       }
       d->pkcs = pkcs;
    }
-
 }
-
-
-
 
 bool TCPSlaveBase::usingTLS()
 {
     return d->usingTLS;
 }
-
 
 //  Returns 0 for failed verification, -1 for rejected cert and 1 for ok
 int TCPSlaveBase::verifyCertificate()
@@ -608,9 +606,9 @@ int TCPSlaveBase::verifyCertificate()
 
 
     if (!hasMetaData("ssl_militant") || metaData("ssl_militant") == "FALSE")
-		d->militantSSL = false;
+        d->militantSSL = false;
     else if (metaData("ssl_militant") == "TRUE")
-		d->militantSSL = true;
+        d->militantSSL = true;
 
     if (!d->cc) d->cc = new KSSLCertificateCache;
 
@@ -654,8 +652,8 @@ int TCPSlaveBase::verifyCertificate()
       //  - validation code
       if (ksv != KSSLCertificate::Ok || !_IPmatchesCN) {
          if (d->militantSSL)
-		return -1;
-         if (cp == KSSLCertificateCache::Unknown || 
+            return -1;
+         if (cp == KSSLCertificateCache::Unknown ||
              cp == KSSLCertificateCache::Ambiguous) {
             cp = KSSLCertificateCache::Prompt;
          } else {
@@ -762,7 +760,7 @@ int TCPSlaveBase::verifyCertificate()
           setMetaData("ssl_action", "accept");
         } else {
          if (d->militantSSL)
-		return -1;
+            return -1;
           result = messageBox(WarningYesNo,
                               i18n("The certificate is valid but does not appear to have been assigned to this server.  Do you wish to continue loading?"),
                               i18n("Server Authentication"));
@@ -776,7 +774,7 @@ int TCPSlaveBase::verifyCertificate()
         }
       } else {
         if (d->militantSSL)
-		return -1;
+            return -1;
         if (cp == KSSLCertificateCache::Accept) {
            if (certAndIPTheSame) {    // success
              rc = 1;
@@ -786,11 +784,11 @@ int TCPSlaveBase::verifyCertificate()
                                  i18n("You have indicated that you wish to accept this certificate, but it is not issued to the server who is presenting it.  Do you wish to continue loading?"),
                                  i18n("Server Authentication"));
 	     if (result == KMessageBox::Yes) {
-	       rc = 1;
-               setMetaData("ssl_action", "accept");
-	     } else {
-               rc = -1;
-               setMetaData("ssl_action", "reject");
+          rc = 1;
+          setMetaData("ssl_action", "accept");
+       } else {
+          rc = -1;
+          setMetaData("ssl_action", "reject");
 	     }
            }
         } else if (cp == KSSLCertificateCache::Reject) {      // fail
@@ -1012,6 +1010,11 @@ bool TCPSlaveBase::isSSLTunnelEnabled()
     return d->useSSLTunneling;
 }
 
+void TCPSlaveBase::setRealHost( const QString& realHost )
+{
+    d->realHost = realHost;
+}
+
 void TCPSlaveBase::setEnableSSLTunnel( bool enable )
 {
     d->useSSLTunneling = enable;
@@ -1019,6 +1022,14 @@ void TCPSlaveBase::setEnableSSLTunnel( bool enable )
 
 bool TCPSlaveBase::doSSLHandShake( bool sendError )
 {
+    kdDebug(7029) << "TCPSlaveBase::doSSLHandShake: " << d->realHost << endl;
+    
+    if ( d->needSSLHandShake && !d->realHost.isNull() )
+    {
+      kdDebug(7029) << "Setting Real Host" << endl;
+      d->kssl->setProxy(true, d->realHost);
+    }
+
     d->kssl->reInitialize();
     certificatePrompt();
     d->status = d->kssl->connect(m_iSock);
@@ -1037,6 +1048,7 @@ bool TCPSlaveBase::doSSLHandShake( bool sendError )
             error( ERR_COULD_NOT_CONNECT, d->host);
         return false;
     }
+
     d->needSSLHandShake = false;
     return true;
 }

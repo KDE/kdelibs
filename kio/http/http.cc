@@ -184,7 +184,7 @@ void HTTPProtocol::reparseConfiguration()
 }
 
 void HTTPProtocol::resetSessionSettings()
-{  
+{
   // Do not reset the URL on redirection if the proxy
   // URL, username or password has not changed!
   KURL proxy = config()->readEntry("UseProxy");
@@ -195,6 +195,10 @@ void HTTPProtocol::resetSessionSettings()
   {
     m_proxyURL = proxy;
     m_bUseProxy = m_proxyURL.isValid();
+
+    // Tell parent class about the real hostname
+    setRealHost( m_request.hostname );
+
     kdDebug(7103) << "(" << getpid() << ") Proxy realm value: " << m_strRealm << endl;
     kdDebug(7103) << "(" << getpid() << ") Proxy URL is now: " << m_proxyURL.url() << endl;
   }
@@ -204,7 +208,7 @@ void HTTPProtocol::resetSessionSettings()
   m_strCacheDir = config()->readEntry("CacheDir");
   m_maxCacheAge = config()->readNumEntry("MaxCacheAge");
   m_request.window = config()->readEntry("window-id");
-  
+
   // Deal with cache cleaning.
   // TODO: Find a smart way to deal with caching.
   if ( m_bUseCache )
@@ -306,7 +310,7 @@ bool HTTPProtocol::retrieveHeader( bool close_connection )
 
         if ( isSSLTunnelEnabled() &&  m_bIsSSL && !m_bUnauthorized
              && !m_bError )
-        {       
+        {
             // Only disable tunneling if the error    
             if ( m_responseCode < 400 )
             {
@@ -3189,7 +3193,7 @@ bool HTTPProtocol::getAuthorization()
         }
       }
     }
-    
+
     if ( prompt && !retryPrompt() )
       return false;
   }
@@ -3282,7 +3286,7 @@ bool HTTPProtocol::getAuthorization()
     }
     return true;
   }
-  
+
   return false;
 }
 
