@@ -185,6 +185,7 @@ bool Part::isSelectable() const
   return d->m_bSelectable;
 }
 
+#if QT_VERSION < 300
 bool Part::event( QEvent *event )
 {
   if ( QObject::event( event ) )
@@ -210,6 +211,30 @@ bool Part::event( QEvent *event )
 
   return false;
 }
+#else
+void Part::customEvent( QCustomEvent *event )
+{
+  if ( PartActivateEvent::test( event ) )
+  {
+    partActivateEvent( (PartActivateEvent *)event );
+    return;
+  }
+
+  if ( PartSelectEvent::test( event ) )
+  {
+    partSelectEvent( (PartSelectEvent *)event );
+    return;
+  }
+
+  if ( GUIActivateEvent::test( event ) )
+  {
+    guiActivateEvent( (GUIActivateEvent *)event );
+    return;
+  }
+
+  QObject::customEvent( event );
+}
+#endif
 
 void Part::partActivateEvent( PartActivateEvent * )
 {

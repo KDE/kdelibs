@@ -204,10 +204,14 @@ protected:
      */
     virtual void setWidget( QWidget * widget );
 
+#if QT_VERSION < 300
     /**
      * @internal
      */
     virtual bool event( QEvent *event );
+#else
+    virtual void customEvent( QCustomEvent *event );
+#endif
 
     /**
      * Convenience method which is called when the Part received a @ref PartActivateEvent .
