@@ -471,7 +471,7 @@ static int input YY_PROTO(( void ));
 #endif
 #endif
 
-#if YY_STACK_USED
+#ifdef YY_STACK_USED
 static int yy_start_stack_ptr = 0;
 static int yy_start_stack_depth = 0;
 static int *yy_start_stack = 0;
