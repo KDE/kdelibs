@@ -23,12 +23,6 @@
 
     USAGE
 
-TEMPORARY FIX: Do not use a three-place version number in the DOCTYPE
-declarations.  The docbook tools contain a bug such that it cannot
-handle these.  The fix consists of using the version number V4.1
-instead of 4.1.2.  Reverting to 4.1 seems to introduce a pile of
-catalog errors I'd rather stay away from (they're easy to fix though).
-
     Refer to this DTD as
 
       "-//KDE//DTD DocBook XML V4.1.2-Based Variant V1.1//EN"

@@ -26,8 +26,7 @@
 
     Refer to this file as
 
-      "-//KDE//ENTITIES DocBook XML General Entity Declarations
- V1.0//EN"
+      "-//KDE//ENTITIES DocBook XML General Entity Declarations V1.0//EN"
 
     This file contains what dbgenent.mod should contain and is read
     after all other files just like dbgenent.mod should be.
