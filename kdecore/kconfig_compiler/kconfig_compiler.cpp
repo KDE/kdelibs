@@ -972,7 +972,7 @@ int main( int argc, char **argv )
         h << "    class " << enumName(e->param()) << endl;
         h << "    {" << endl;
         h << "      public:" << endl;
-        h << "      enum { " << values.join( ", " ) << ", COUNT };" << endl;
+        h << "      enum type { " << values.join( ", " ) << ", COUNT };" << endl;
         h << "      static const char* const enumToString[];" << endl;
         h << "    };" << endl;
         cppPreamble += "const char* const " + className + "::" + enumName(e->param()) + "::enumToString[] = " +

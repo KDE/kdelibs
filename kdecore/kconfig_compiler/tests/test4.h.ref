@@ -16,7 +16,7 @@ class Test4 : public KConfigSkeleton
     class EnumButton
     {
       public:
-      enum { right, mid, left, COUNT };
+      enum type { right, mid, left, COUNT };
       static const char* const enumToString[];
     };
 
