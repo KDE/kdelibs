@@ -140,7 +140,7 @@ KPPosterPage::KPPosterPage( QWidget *parent, const char *name )
 			" keywords of its driver PPD file. </p> "
 			" </qt>" );
 
-	QString whatsThisTileselectionPosterPage = i18n( " <qt> "
+	QString whatsThisTileOrderSelectionPosterPage = i18n( " <qt> "
                         " <b>Order and number of tile pages to be printed</b> "
 			" <p>This field displays and sets the individual tiles to be printed, as well as the order "
 			" for their printout. </p> "
@@ -187,9 +187,9 @@ KPPosterPage::KPPosterPage( QWidget *parent, const char *name )
 	m_cutmargin->setLabel( i18n( "C&ut margin (% of media):" ) );
 	m_cutmargin->setRange( 0, 100, 2, true );                     // step width was too big, changed from 10 to 2 (-kp-)
 	m_selection = new QLineEdit( dummy );
-          QWhatsThis::add(m_selection, whatsThisTileselectionPosterPage);
+          QWhatsThis::add(m_selection, whatsThisTileOrderSelectionPosterPage);
 	QLabel *selectionlab = new QLabel( i18n( "&Tile pages (to be printed):" ), dummy );
-          QWhatsThis::add(selectionlab, whatsThisTileSelectionPosterPage);
+          QWhatsThis::add(selectionlab, whatsThisTileOrderSelectionPosterPage);
 	selectionlab->setBuddy( m_selection );
 	m_lockbtn->setToggleButton( true );
 	m_lockbtn->setPixmap( SmallIcon( "encrypted" ) );
