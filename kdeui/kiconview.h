@@ -114,7 +114,7 @@ signals:
    * connected to this signal.
    *
    * This signal is more or less here for the sake of completeness.
-   * You should normally not need to use this. In most cases it's better
+   * You should normally not need to use this. In most cases it´s better
    * to use @ref #executed() instead.
    */
   void doubleClicked( QIconViewItem *item, const QPoint &pos );
@@ -195,22 +195,6 @@ public:
     KIconViewItem( QIconView *parent, QIconViewItem *after, const QString &text, const QPicture &picture )
         : QIconViewItem( parent, after, text, picture ) { init(); }
     virtual ~KIconViewItem();
-
-    /**
-     * Sets the size reserved for the pixmap. This size is claimed for the
-     * pixmap even if the actual pixmap is smaller than this.
-     *
-     * @param size the size that the item should always reserve for the
-     *             pixmap, even if it is not (yet) needed.
-     *
-     * @since 3.2
-     */
-    void setReservedPixmapSize( const QSize& size );
-    /**
-     * @returns the reserved pixmap size. See @ref setReservedPixmapSize()
-     * @since 3.2
-     */
-    QSize reservedPixmapSize() const;
 
 protected:
     void init();

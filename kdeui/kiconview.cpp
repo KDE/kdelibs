@@ -355,7 +355,6 @@ QPixmap KIconView::selectedIconPixmap( QPixmap *pix, const QColor &col ) const
 
 struct KIconViewItem::KIconViewItemPrivate
 {
-    QSize reservedPixmapSize;
 };
 
 void KIconViewItem::init()
@@ -369,21 +368,6 @@ KIconViewItem::~KIconViewItem()
 {
     delete m_wordWrap;
     delete d;
-}
-
-void KIconViewItem::setReservedPixmapSize( const QSize& size )
-{
-    if ( !d ) d = new KIconViewItemPrivate;
-    if ( d->reservedPixmapSize != size )
-    {
-        d->reservedPixmapSize = size;
-        calcRect();
-    }
-}
-
-QSize KIconViewItem::reservedPixmapSize() const
-{
-    return d ? d->reservedPixmapSize : QSize();
 }
 
 void KIconViewItem::calcRect( const QString& text_ )
@@ -429,12 +413,6 @@ void KIconViewItem::calcRect( const QString& text_ )
         pw = pixmap()->width() + 2;
         ph = pixmap()->height() + 2;
     }
-    if ( d )
-    {
-        pw = QMAX( pw, d->reservedPixmapSize.width() + 2 );
-        ph = QMAX( ph, d->reservedPixmapSize.height() + 2 );
-    }
-
     itemIconRect.setWidth( pw );
     itemIconRect.setHeight( ph );
     //kdDebug() << "KIconViewItem::calcRect itemIconRect[tmp]=" << itemIconRect.x() << "," << itemIconRect.y()
@@ -557,8 +535,8 @@ void KIconViewItem::paintItem( QPainter *p, const QColorGroup &cg )
     KIconView *kview = static_cast<KIconView *>(iconView());
     int textX = textRect( FALSE ).x();
     int textY = textRect( FALSE ).y();
-    int iconX = pixmapRect( FALSE ).center().x();
-    int iconY = pixmapRect( FALSE ).center().y();
+    int iconX = pixmapRect( FALSE ).x();
+    int iconY = pixmapRect( FALSE ).y();
 
     p->save();
 
@@ -577,14 +555,10 @@ void KIconViewItem::paintItem( QPainter *p, const QColorGroup &cg )
         if ( isSelected() ) {
             if ( pix && !pix->isNull() ) {
                 QPixmap selectedPix = kview->selectedIconPixmap( pix, cg.highlight() );
-                p->drawPixmap( iconX - selectedPix.width() / 2,
-                               iconY - selectedPix.height() / 2,
-                               selectedPix );
+                p->drawPixmap( iconX, iconY, selectedPix );
             }
         } else {
-            p->drawPixmap( iconX - pix->width() / 2,
-                           iconY - pix->height() / 2,
-                           *pix );
+            p->drawPixmap( iconX, iconY, *pix );
         }
     }
 
