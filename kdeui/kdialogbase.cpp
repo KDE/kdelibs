@@ -147,6 +147,35 @@ KDialogBase::KDialogBase( int dialogFace, const QString &caption,
   setupLayout();
 }
 
+KDialogBase::KDialogBase( int dialogFace, const QString &caption,
+			  int buttonMask, ButtonCode defaultButton,
+			  QWidget *parent, const char *name, bool modal, WFlags f,
+			  bool separator, const KGuiItem &user1,
+			  const KGuiItem &user2, const KGuiItem &user3 )
+  :KDialog( parent, name, modal, f ),
+   mTopLayout(0), mMainWidget(0), mUrlHelp(0), mJanus(0), mActionSep(0),
+   mIsActivated(false), mShowTile(false), mMessageBoxMode(false),
+   mButtonOrientation(Horizontal)
+{
+  d = new KDialogBasePrivate;
+  setCaption( caption );
+
+  makeRelay();
+  connect( this, SIGNAL(layoutHintChanged()), this, SLOT(updateGeometry()) );
+
+  mJanus = new KJanusWidget( this, "janus", dialogFace );
+  connect(mJanus, SIGNAL(aboutToShowPage(QWidget *)),
+          this, SIGNAL(aboutToShowPage(QWidget *)));
+
+  if( mJanus == 0 || mJanus->isValid() == false ) { return; }
+
+  enableButtonSeparator( separator );
+  makeButtonBox( buttonMask, defaultButton, user1, user2, user3 );
+
+  mIsActivated = true;
+  setupLayout();
+}
+
 KDialogBase::KDialogBase( const QString &caption, int buttonMask,
 			  ButtonCode defaultButton, ButtonCode escapeButton,
 			  QWidget *parent, const char *name, bool modal,
