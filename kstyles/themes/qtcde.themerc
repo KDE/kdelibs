@@ -1,5 +1,6 @@
 [Misc]
 Name=Qt CDE
+Name[ro]=Stil CDE Qt
 Comment=Built-in unthemed CDE style
 Comment[af]=Ingeboude temalose CDE style
 Comment[ca]=Estil incorporat CDE sense temes
@@ -18,6 +19,7 @@ Comment[no]=Innebygget CDE-stil uten tema
 Comment[no_NY]=Innebygd CDE-stil
 Comment[pt]=Estilo embutido CDE
 Comment[pt_BR]=Estilo embutido CDE
+Comment[ro]=Stil CDE fãrã temã, intern
 Comment[sl]=Vgrajen obièajni stil CDE
 Comment[sr]=Ugraðeni, bez teme, CDE stil
 Comment[sv]=Inbyggd otemad CDE-stil

@@ -1,6 +1,7 @@
 [Misc]
 Name=Qt Motif
 Name[eo]=Qt-Motif
+Name[ro]=Stil Motif Qt
 Comment=Built-in unthemed Motif style
 Comment[af]=Ingeboude temalose Motif style
 Comment[ca]=Estil incorporat Motif sense temes
@@ -19,6 +20,7 @@ Comment[no]=Innebygget Motif-stil uten tema
 Comment[no_NY]=Innebygd Motif-stil
 Comment[pt]=Estilo embutido Motif
 Comment[pt_BR]=Estilo embutido Motif
+Comment[ro]=Stil Motif fãrã temã, intern
 Comment[sl]=Vgrajen obièajni stil Motif
 Comment[sr]=Ugraðeni, bez teme, Motif stil
 Comment[sv]=Inbyggd otemad Motif-stil
