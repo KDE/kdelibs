@@ -60,6 +60,7 @@
 #include <klocale.h>
 #include <kmessagebox.h>
 #include <kmimetype.h>
+#include <kpopupmenu.h>
 #include <kprocess.h>
 #include <kprotocolinfo.h>
 #include <krecentdirs.h>
@@ -291,9 +292,13 @@ KFileDialog::KFileDialog(const QString& startDir, const QString& filter,
     menu->insert( coll->action( "sorting menu" ));
     menu->insert( coll->action( "separator" ));
     menu->insert( coll->action( "view menu" ));
+    menu->insert( coll->action( "separator" ));
+    menu->insert( coll->action( "properties" ));
     menu->setDelayed( false );
+    connect( menu->popupMenu(), SIGNAL( aboutToShow() ),
+             ops, SLOT( updateSelectionDependentActions() ));
     menu->plug( toolbar );
-    
+
     connect(toolbar, SIGNAL(clicked(int)),
             SLOT(toolbarCallback(int)));
     // for the bookmark "menu"
@@ -1495,7 +1500,7 @@ KURL KFileDialog::getSaveURL(const QString& dir, const QString& filter,
 
 void KFileDialog::show()
 {
-    QDialog::show();
+    KDialogBase::show();
 }
 
 void KFileDialog::setMode( KFile::Mode m )

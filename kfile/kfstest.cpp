@@ -24,7 +24,6 @@
 #include <stdlib.h>
 #include <sys/stat.h>
 #include <qdir.h>
-#include <qfiledialog.h>
 #include <qlayout.h>
 #include <qstringlist.h>
 #include <qwidget.h>
@@ -84,6 +83,7 @@ int main(int argc, char **argv)
     else if (argv1 == QString::fromLatin1("heap")) {
 	KFileDialog *dlg = new KFileDialog( QString::null, QString::null, 0L,
 					    "file dialog", true );
+
 	if ( dlg->exec() == KDialog::Accepted )
 	    name1 = dlg->selectedURL().url();
     }

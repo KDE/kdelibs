@@ -94,7 +94,7 @@ public:
       *             by a filedialog in any application that specified the
       *             same keyword.
       *
-      * @param filter A shell glob or a mime-type-filter that specifies 
+      * @param filter A shell glob or a mime-type-filter that specifies
                       which files to display.
       * See @ref setFilter() for details on how to use this argument.
       *
@@ -189,7 +189,7 @@ public:
      * want to show the suffix to select by a specific filter, you must
      * repeat it.
      *
-     * If the filter contains a '/', a mimetype-filter is assumed. You can 
+     * If the filter contains a '/', a mimetype-filter is assumed. You can
      * specify multiple mimetypes like this (separated with space):
      *
      * <pre>
@@ -705,7 +705,6 @@ protected slots:
 private:
     KFileDialog(const KFileDialog&);
     KFileDialog operator=(const KFileDialog&);
-
 
 protected:
     KFileDialogPrivate *d;

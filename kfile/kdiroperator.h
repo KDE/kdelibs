@@ -45,43 +45,115 @@ namespace KIO {
   class DeleteJob;
 }
 
+/**
+ * This widget works as a network transparent filebrowser. You specify a URL
+ * to display and this url will be loaded via @ref KDirLister. The user can
+ * browse through directories, highlight and select files, delete or rename
+ * files.
+ *
+ * It supports different views, e.g. a detailed view (see @KFileDetailView),
+ * a simple icon view (see @KFileIconView), a combination of two views,
+ * separating directories and files (@see KFileCombiView). 
+ *
+ * Additionally, a preview view is available (see @KFilePreview), which can 
+ * show either a simple or detailed view and additionally a preview widget 
+ * (see @ref setPreviewWidget()). @ref KImageFilePreview is one implementation
+ * of a preview widget, that displays previews for all supported filetypes
+ * utilizing KIO::PreviewJob.
+ *
+ * This widget is the one used in the KFileDialog.
+ *
+ * @short A widget for displaying files and browsing directories.
+ * @author Stephan Kulow <coolo@kde.org>, Carsten Pfeiffer <pfeiffer@kde.org>
+ */
 class KDirOperator : public QWidget
 {
     Q_OBJECT
 
  public:
     /**
-     * You need to call listDirectory() to actually load the directory,
-     * this constructor only initializes and doesn't start loading.
+     * Constructs the KDirOperator with no initial view. As the views are
+     * configurable, call @ref readConfig() to load the user's configuration
+     * and then @ref setView to explicitly set a view.
+     * 
+     * This constructor doesn't start loading the url, @ref setView will do it.
      */
     KDirOperator(const KURL& urlName = KURL(),
 		 QWidget *parent = 0, const char* name = 0);
+    /**
+     * Destroys the KDirOperator.
+     */
     virtual ~KDirOperator();
 
+    /**
+     * Enable/disable showing hidden files.
+     */
     void setShowHiddenFiles ( bool s ) { showHiddenAction->setChecked( s ); }
+
+    /**
+     * @returns true when hidden files are shown or false otherwise.
+     */
     bool showHiddenFiles () const { return showHiddenAction->isChecked(); }
 
+    /**
+     * Stops loading immediately. You don't need to call this, usually.
+     */
     void close();
 
     /**
-     * Set a filter like "*.cpp *.h *.o". Call @ref rereadDir() to apply it.
+     * Set a filter like "*.cpp *.h *.o". Only files matching that filter
+     * will be shown. Call @ref rereadDir() to apply it.
+     * 
+     * @see KDirLister::setNameFilter
+     * @see #nameFilter
      */
     void setNameFilter(const QString& filter);
 
     /**
      * @returns the current namefilter.
+     * @see #setNameFilter
      */
     const QString& nameFilter() const { return dir->nameFilter(); }
 
+    /**
+     * Sets a list of mimetypes as filter. Only files of those mimetypes
+     * will be shown.
+     *
+     * Example:
+     * <pre>
+     * QStringList filter;
+     * filter << "text/html" << "image/png" << "inode/directory";
+     * dirOperator->setMimefilter( filter );
+     * </pre>
+     *
+     * Node: Without the mimetype inode/directory, only files would be shown.
+     *
+     * @see KDirLister::setMimeFilter
+     * @see #mimeFilter
+     */
     void setMimeFilter( const QStringList& mimetypes );
 
+    QStringList mimeFilter() const { return dir->mimeFilter(); }
+    
+    /**
+     * Clears both the namefilter and mimetype filter, so that all files and
+     * directories will be shown.
+     *
+     * @see #setMimeFilter
+     * @see #setNameFilter
+     */
     void clearFilter();
 
     /**
-     * local URLs (i.e. directories) always have file: prepended.
+     * @returns the current url
      */
     KURL url() const;
 
+    /**
+     * Sets a new url to list.
+     * @param clearforward specifies whether the "forward" history should be
+     * cleared.
+     */
     void setURL(const KURL& url, bool clearforward);
 
     /**
@@ -90,23 +162,53 @@ class KDirOperator : public QWidget
      */
     void setCurrentItem( const QString& filename );
 
-    //this also reads the current url(), so you better call this after setURL()
+    /**
+     * Sets a new KFileView to be used for showing and browsing files.
+     * Note: this will read the current @ref url() to fill the view.
+     *
+     * @see KFileView
+     * @see #view
+     */
     void setView(KFileView *view);
+
+    /**
+     * @returns the currently used view.
+     * @see #setView
+     */
     // ### make non-const
     const KFileView * view() const { return fileView; }
 
     /**
      * Returns the widget of the current view. 0L if there is no view/widget.
+     * (KFileView itself is not a widget.)
      */
     QWidget * viewWidget() const { return fileView ? fileView->widget() : 0L; }
 
+    /**
+     * Sets one of the predefine fileviews
+     * @see KFile::FileView
+     */
     void setView(KFile::FileView view);
 
+    /**
+     * Sets the way to sort files and directories.
+     */
     void setSorting( QDir::SortSpec );
+    
+    /**
+     * @returns the current way of sorting files and directories
+     */
     QDir::SortSpec sorting() const { return mySorting; }
 
+    /**
+     * @returns true if we are displaying the root directory of the current url
+     */
     bool isRoot() const;
 
+    /**
+     * @returns the object listing the directory (KFileReader inherits 
+     * KDirLister).
+     */
     KFileReader *fileReader() const { return dir; }
 
     /**
@@ -123,7 +225,8 @@ class KDirOperator : public QWidget
      * @li ExistingOnly
      * @li LocalOnly
      *
-     * You cannot mix File and Files of course.
+     * You cannot mix File and Files of course, as the former means 
+     * single-selection mode, the latter multi-selection.
      */
     void setMode( KFile::Mode m );
     KFile::Mode mode() const;
@@ -136,18 +239,30 @@ class KDirOperator : public QWidget
     void setPreviewWidget(const QWidget *w);
 
     /**
-     * @returns a list of all currently selected items. If there is no view, then
-     * 0L is returned.
+     * @returns a list of all currently selected items. If there is no view, 
+     * then 0L is returned.
      */
     const KFileViewItemList * selectedItems() const {
 	return ( fileView ? fileView->selectedItems() : 0L );
     }
+    
+    /**
+     * @returns true if @p item is currently selected, or false otherwise.
+     */
     inline bool isSelected( const KFileViewItem *item ) const {
 	return ( fileView ? fileView->isSelected( item ) : false );
     }
 
-
+    /**
+     * @returns the number of directories in the currently listed url.
+     * Returns 0 if there is no view.
+     */
     int numDirs() const;
+    
+    /**
+     * @returns the number of files in the currently listed url.
+     * Returns 0 if there is no view.
+     */
     int numFiles() const;
 
     /**
@@ -173,6 +288,7 @@ class KDirOperator : public QWidget
     KCompletion *dirCompletionObject() const {
 	return const_cast<KCompletion *>( &myDirCompletion );
     }
+
     /**
      * an accessor to a collection of all available Actions. The actions
      * are static, they will be there all the time (no need to connect to
@@ -203,6 +319,7 @@ class KDirOperator : public QWidget
      * @li separate dirs : shows directories in a separate pane
      * @li preview  : shows a preview next to the fileview
      * @li single : hides the separate view for directories or the preview
+     * @li properties : shows a KPropertiesDialog for the selected files
      *
      * The short and detailed view are in an exclusive group. The sort-by
      * actions are in an exclusive group as well. Also the "separate dirs",
@@ -222,9 +339,16 @@ class KDirOperator : public QWidget
      * Also reads the sorting and whether hidden files should be shown.
      * Note: the default view will not be set - you have to call
      * <pre>@ref setView( KFile::Default )</pre> to apply it.
+     *
+     * @see #saveConfig
      */
     virtual void readConfig( KConfig *, const QString& group = QString::null );
 
+    /**
+     * Saves the current settings like sorting, simple or detailed view.
+     *
+     * @see #readConfig
+     */
     virtual void saveConfig( KConfig *, const QString& group = QString::null );
 
 
@@ -257,6 +381,12 @@ class KDirOperator : public QWidget
      */
     bool mkdir( const QString& directory, bool enterDirectory = true );
 
+    /**
+     * Starts and returns a @ref KIO::DeleteJob to delete the given @p items.
+     *
+     * @param ask specifies whether a confirmation dialog should be shown
+     * @param showProgress passed to the DeleteJob to show a progress dialog
+     */
     KIO::DeleteJob * del( const KFileViewItemList& items,
                           bool ask = true, bool showProgress = true );
 
@@ -285,14 +415,206 @@ class KDirOperator : public QWidget
     bool dirHighlighting() const;
 
 protected:
+    /**
+     * Sets a custom KFileReader to list directories.
+     */
     void setFileReader( KFileReader *reader );
+    
+    /**
+     * @reimplemented
+     */
     void resizeEvent( QResizeEvent * );
+    
+    /**
+     * Sets up all the actions. Called from the constructor, you usually 
+     * better not call this.
+     */
     void setupActions();
+    
+    /**
+     * Updates the sorting-related actions to comply with the current sorting
+     * @see #sorting
+     */
     void updateSortActions();
+
+    /**
+     * Updates the view-related actions to comply with the current 
+     * KFile::FileView
+     */
     void updateViewActions();
+
+    /**
+     * Sets up the context-menu with all the necessary actions. Called from the
+     * constructor, you usually don't need to call this.
+     */
     void setupMenu();
+
+    /**
+     * Synchronizes the completion objects with the entries of the 
+     * currently listed url.
+     *
+     * Automatically called from @ref makeCompletion() and 
+     * @ref makeDirCompletion()
+     */
     void prepareCompletionObjects();
+
+    /**
+     * Checks if there support from @ref KIO::PreviewJob for the currently
+     * shown files, taking @ref mimeFilter() and @ref nameFilter() into account
+     */
     bool checkPreviewSupport();
+
+public slots:
+    /**
+     * Goes one step back in the history and opens that url.
+     */
+    void back();
+
+    /**
+     * Goes one step forward in the history and opens that url.
+     */
+    void forward();
+    
+    /**
+     * Enters the home directory.
+     */
+    void home();
+
+    /**
+     * Goes one directory up from the current url.
+     */
+    void cdUp();
+
+    /**
+     * Re-reads the current url.
+     */
+    void rereadDir();
+
+    /**
+     * Opens a dialog to create a new directory.
+     */
+    void mkdir();
+
+    /**
+     * Deletes the currently selected files/directories.
+     */
+    void deleteSelected();
+
+    /**
+     * Enables/disables actions that are selection dependent. Call this e.g.
+     * when you are about to show a popup menu using some of KDirOperators
+     * actions.
+     */
+    void updateSelectionDependentActions();
+    
+    /**
+     * Tries to complete the given string (only completes files).
+     */
+    QString makeCompletion(const QString&);
+
+    /**
+     * Tries to complete the given string (only completes directores).
+     */
+    QString makeDirCompletion(const QString&);
+
+protected slots:
+    /**
+     * Restores the normal cursor after showing the busy-cursor. Also hides
+     * the progressbar.
+     */
+    void resetCursor();
+
+    /**
+     * @internal
+     */
+    // ### make private
+    void readNextMimeType();
+
+    /**
+     * Called after @ref setURL() to load the directory, update the history, 
+     * etc.
+     */
+    void pathChanged();
+
+    /**
+     * @internal
+     */
+    // ### remove for KDE 3
+    void filterChanged();
+
+    /**
+     * Adds a new list of KFileItems to the view
+     * (coming from KFileReader/KDirLister)
+     */
+    void insertNewFiles(const KFileItemList &newone);
+
+    /**
+     * Removes the given KFileItem item from the view (usually called from
+     * KFileReader/KDirLister).
+     */
+    void itemDeleted(KFileItem *);
+
+    /**
+     * Enters the directory specified by the given @p item.
+     */
+    void selectDir(const KFileViewItem *item );
+
+    /**
+     * Emits fileSelected( item )
+     */
+    void selectFile(const KFileViewItem *item);
+
+    /**
+     * Emits fileHighlighted( i )
+     */
+    void highlightFile(const KFileViewItem* i) { emit fileHighlighted( i ); }
+
+    /**
+     * Called upon right-click to activate the popupmenu.
+     */
+    virtual void activatedMenu( const KFileViewItem * );
+
+    /**
+     * Changes sorting to sort by name
+     */
+    void sortByName() 		{ byNameAction->setChecked( true ); }
+
+    /**
+     * Changes sorting to sort by size
+     */
+    void sortBySize() 		{ bySizeAction->setChecked( true ); }
+
+    /**
+     * Changes sorting to sort by date
+     */
+    void sortByDate() 		{ byDateAction->setChecked( true ); }
+
+    /**
+     * Changes sorting to reverse sorting
+     */
+    void sortReversed() 	{ reverseAction->setChecked( !reverseAction->isChecked() ); }
+
+    /**
+     * Toggles showing directories first / having them sorted like files.
+     */
+    void toggleDirsFirst() 	{ dirsFirstAction->setChecked( !dirsFirstAction->isChecked() ); }
+
+    /**
+     * Toggles case sensitive / case insensitive sorting
+     */
+    void toggleIgnoreCase() 	{ caseInsensitiveAction->setChecked( !caseInsensitiveAction->isChecked() ); }
+
+    /**
+     * @p internal
+     */
+    // ### make private
+    void deleteOldView();
+
+    /**
+     * Tries to make the given @p match as current item in the view and emits
+     * completion( match )
+     */
+    void slotCompletionMatch(const QString& match);
 
 private:
     /**
@@ -367,48 +689,22 @@ private:
 
     KActionCollection *myActionCollection;
 
- public slots:
-    void back();
-    void forward();
-    void home();
-    void cdUp();
-    void rereadDir();
-    void mkdir();
-    /**
-     * Deletes the currently selected files/directories.
-     */
-    void deleteSelected();
-
-    QString makeCompletion(const QString&);
-    QString makeDirCompletion(const QString&);
-
-  protected slots:
-    void resetCursor();
-    void readNextMimeType();
-    void pathChanged();
-    void filterChanged();
-    void insertNewFiles(const KFileItemList &newone);
-    void itemDeleted(KFileItem *);
-
-    void selectDir(const KFileViewItem*);
-    void selectFile(const KFileViewItem*);
-    void highlightFile(const KFileViewItem* i) { emit fileHighlighted( i ); }
+signals:
+    void urlEntered(const KURL& );
+    void updateInformation(int files, int dirs);
+    void completion(const QString&);
+    void finishedLoading();
 
     /**
-     * Called upon right-click to activate the popupmenu.
+     * Emitted whenever the current fileview is changed, either by an explicit
+     * call to @ref setView() or by the user selecting a different view thru
+     * the GUI.
      */
-    virtual void activatedMenu( const KFileViewItem * );
+    void viewChanged( KFileView * newView );
 
-    void sortByName() 		{ byNameAction->setChecked( true ); }
-    void sortBySize() 		{ bySizeAction->setChecked( true ); }
-    void sortByDate() 		{ byDateAction->setChecked( true ); }
-    void sortReversed() 	{ reverseAction->setChecked( !reverseAction->isChecked() ); }
-    void toggleDirsFirst() 	{ dirsFirstAction->setChecked( !dirsFirstAction->isChecked() ); }
-    void toggleIgnoreCase() 	{ caseInsensitiveAction->setChecked( !caseInsensitiveAction->isChecked() ); }
-
-    void deleteOldView();
-
-    void slotCompletionMatch(const QString&);
+    void fileHighlighted(const KFileViewItem*);
+    void dirActivated(const KFileViewItem*);
+    void fileSelected(const KFileViewItem*);
 
 private slots:
     void slotDetailedView();
@@ -435,23 +731,8 @@ private slots:
     void slotViewActionAdded( KAction * );
     void slotViewActionRemoved( KAction * );
     void slotViewSortingChanged();
-
-signals:
-    void urlEntered(const KURL& );
-    void updateInformation(int files, int dirs);
-    void completion(const QString&);
-    void finishedLoading();
-
-    /**
-     * Emitted whenever the current fileview is changed, either by an explicit
-     * call to @ref setView() or by the user selecting a different view thru
-     * the GUI.
-     */
-    void viewChanged( KFileView * newView );
-
-    void fileHighlighted(const KFileViewItem*);
-    void dirActivated(const KFileViewItem*);
-    void fileSelected(const KFileViewItem*);
+    
+    void slotProperties();
 
 private:
     class KDirOperatorPrivate;

@@ -46,6 +46,7 @@
 #include <kio/jobclasses.h>
 #include <kio/netaccess.h>
 #include <kio/previewjob.h>
+#include <kpropsdlg.h>
 #include <kservicetypefactory.h>
 
 #include "config-kfile.h"
@@ -196,11 +197,17 @@ void KDirOperator::activatedMenu( const KFileViewItem * )
     // when the view changed the sorting.
     slotViewSortingChanged();
 
-    bool enableDelete = fileView && fileView->selectedItems() &&
-                        !fileView->selectedItems()->isEmpty();
-    myActionCollection->action( "delete" )->setEnabled( enableDelete );
-
+    updateSelectionDependentActions();
+    
     actionMenu->popup( QCursor::pos() );
+}
+
+void KDirOperator::updateSelectionDependentActions()
+{
+    bool hasSelection = fileView && fileView->selectedItems() &&
+                        !fileView->selectedItems()->isEmpty();
+    myActionCollection->action( "delete" )->setEnabled( hasSelection );
+    myActionCollection->action( "properties")->setEnabled( hasSelection );
 }
 
 void KDirOperator::setPreviewWidget(const QWidget *w)
@@ -1176,6 +1183,9 @@ void KDirOperator::setupActions()
     connect( showHiddenAction, SIGNAL( toggled( bool ) ),
              SLOT( slotToggleHidden( bool ) ));
 
+    KAction *props = new KAction( i18n("Properties..."), 0, this, 
+                                  SLOT(slotProperties()), this, "properties" );
+    
     // insert them into the actionCollection
     myActionCollection = new KActionCollection( this, "action collection" );
     myActionCollection->insert( actionMenu );
@@ -1201,6 +1211,7 @@ void KDirOperator::setupActions()
     myActionCollection->insert( singleAction );
     myActionCollection->insert( previewAction );
     myActionCollection->insert( separateDirsAction );
+    myActionCollection->insert( props );
 }
 
 
@@ -1241,6 +1252,8 @@ void KDirOperator::setupMenu()
     actionMenu->insert( sortActionMenu );
     actionMenu->insert( actionSeparator );
     actionMenu->insert( viewActionMenu );
+    actionMenu->insert( actionSeparator );
+    actionMenu->insert( myActionCollection->action( "properties" ) );
 }
 
 
@@ -1498,6 +1511,19 @@ void KDirOperator::setEnableDirHighlighting( bool enable )
 bool KDirOperator::dirHighlighting() const
 {
     return d->dirHighlighting;
+}
+
+void KDirOperator::slotProperties()
+{
+    if ( fileView ) {
+        KFileItemList list; // now this sucks :(
+        KFileViewItemListIterator it( *fileView->selectedItems() );
+        for ( ; it.current(); ++it )
+            list.append( it.current() );
+        
+        if ( !list.isEmpty() )
+            (void) new KPropertiesDialog( list, this, "props dlg", true );
+    }
 }
 
 #include "kdiroperator.moc"
