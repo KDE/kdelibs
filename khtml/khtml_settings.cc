@@ -42,7 +42,7 @@ struct KPerDomainSettings {
     KHTMLSettings::KJSWindowFocusPolicy m_windowFocusPolicy : 1;
     KHTMLSettings::KJSWindowMovePolicy m_windowMovePolicy : 1;
     KHTMLSettings::KJSWindowResizePolicy m_windowResizePolicy : 1;
-    
+
 #ifdef DEBUG_SETTINGS
     void dump(const QString &infix = QString::null) const {
       kdDebug() << "KPerDomainSettings " << infix << " @" << this << ":" << endl;
@@ -708,7 +708,7 @@ const QString &KHTMLSettings::availableFamilies()
         }
         s.sort();
 
-        *avFamilies = s.join(",");
+        *avFamilies = ',' + s.join(",") + ',';
     }
 
   return *avFamilies;
