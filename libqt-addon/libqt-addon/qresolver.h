@@ -348,35 +348,6 @@ public:
     };
 
   /**
-   * Flags for the reverse resolution.
-   *
-   * These flags are used by the @ref reverseResolve static functions for
-   * setting resolution parameters. The possible values are:
-   * @li NumericHost: don't try to resolve the host address to a text form.
-   *		Instead, convert the address to its numeric textual representation.
-   * @li NumericService: the same as NumericHost, but for the service name
-   * @li NodeNameOnly: returns the node name only (i.e., not the Fully
-   *		Qualified Domain Name)
-   * @li Datagram: in case of ambiguity in the service name, prefer the
-   *		name associated with the datagram protocol
-   * @li NumericScope: for those addresses which have the concept of scope,
-   *            resolve using the numeric value instead of the proper scope name.
-   * @li ResolutionRequired: normally, when resolving, if the name resolution
-   *            fails, the process then converts the numeric address into its
-   *            presentation forms. This flag causes the function to return
-   *            with error instead.
-   */
-  enum ReverseFlags
-    {
-      NumericHost = 0x01,
-      NumericService = 0x02,
-      NodeNameOnly = 0x04,
-      Datagram = 0x08,
-      NumericScope = 0x10,
-      ResolutionRequired = 0x20
-    };
-
-  /**
    * Error codes
    *
    * These are the possible error values that objects of this class
@@ -445,7 +416,6 @@ public:
       //Canceled = -100,	// already defined above
       Failed = -101
     };
-
 
   /**
    * Default constructor.
@@ -795,43 +765,6 @@ public:
   static bool resolveAsync(QObject* userObj, const char *userSlot,
 			   const QString& host, const QString& service,
 			   int flags = 0, int families = QResolver::InternetFamily);
-
-  /**
-   * Resolves a socket address to its textual representation
-   *
-   * FIXME!! How can we do this in a non-blocking manner!?
-   *
-   * This function is used to resolve a socket address from its
-   * binary representation to a textual form, even if numeric only.
-   *
-   * @param addr	the socket address to be resolved
-   * @param node	the QString where we will store the resolved node
-   * @param serv	the QString where we will store the resolved service
-   * @param flags	flags to be used for this resolution.
-   * @return true if the resolution succeeded, false if not
-   * @see ReverseFlags for the possible values for @p flags
-   */
-  static bool reverseResolve(const QSocketAddress& addr, QString& node, 
-			     QString& serv, int flags = 0);
-
-  /**
-   * Resolves a socket address to its textual representation
-   *
-   * FIXME!! How can we do this in a non-blocking manner!?
-   *
-   * This function behaves just like the above one, except it takes
-   * a sockaddr structure and its size as parameters.
-   *
-   * @param sa	the sockaddr structure containing the address to be resolved
-   * @param salen	the length of the sockaddr structure
-   * @param node	the QString where we will store the resolved node
-   * @param serv	the QString where we will store the resolved service
-   * @param flags	flags to be used for this resolution.
-   * @return true if the resolution succeeded, false if not
-   * @see ReverseFlags for the possible values for @p flags
-   */
-  static bool reverseResolve(const struct sockaddr* sa, Q_UINT16 salen, 
-			     QString& node, QString& serv, int flags = 0);
 
   /**
    * Returns the domain name in an ASCII Compatible Encoding form, suitable

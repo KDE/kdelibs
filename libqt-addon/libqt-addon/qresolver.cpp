@@ -610,37 +610,6 @@ bool QResolver::resolveAsync(QObject* userObj, const char *userSlot,
   return qres->start();
 }
 
-bool QResolver::reverseResolve(const QSocketAddress& addr, QString& node,
-			       QString& serv, int flags)
-{
-  return reverseResolve(addr.address(), addr.length(), node, serv, flags);
-}
-
-bool QResolver::reverseResolve(const struct sockaddr* sa, Q_UINT16 salen,
-			      QString& host, QString& serv, int flags)
-{
-  int err;
-  char h[NI_MAXHOST], s[NI_MAXSERV];
-  int niflags = 0;
-
-  h[0] = s[0] = '\0';
-
-  if (flags & NumericHost)
-    niflags |= NI_NUMERICHOST;
-  if (flags & NumericService)
-    niflags |= NI_NUMERICSERV;
-  if (flags & NodeNameOnly)
-    niflags |= NI_NOFQDN;
-  if (flags & Datagram)
-    niflags |= NI_DGRAM;
-
-  err = getnameinfo(sa, salen, h, sizeof(h) - 1, s, sizeof(s) - 1, niflags);
-  host = domainToUnicode(QString::fromLatin1(h));
-  serv = QString::fromLatin1(s);
-
-  return err != 0;
-}
-
 #ifdef NEED_MUTEX
 QMutex getXXbyYYmutex;
 #endif
@@ -1089,6 +1058,5 @@ static QString ToUnicode(const QString& label)
   return label;
 #endif
 }
-
 
 #include "qresolver.moc"
