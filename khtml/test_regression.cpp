@@ -757,16 +757,20 @@ bool RegressionTest::checkOutput(const QString &againstFilename)
 
     QFile file(absFilename);
     if (!file.open(IO_ReadOnly)) {
-        fprintf(stderr,"Error reading file %s\n",absFilename.latin1());
-        exit(1);
+        if ( !m_genOutput ) {
+            fprintf(stderr,"Error reading file %s\n",absFilename.latin1());
+            exit(1);
+        }
+        result = false;
+    } else {
+
+        QTextStream stream ( &file );
+        stream.setEncoding( QTextStream::UnicodeUTF8 );
+
+        QString fileData = stream.read();
+
+        result = ( fileData == data );
     }
-
-    QTextStream stream ( &file );
-    stream.setEncoding( QTextStream::UnicodeUTF8 );
-
-    QString fileData = stream.read();
-
-    result = ( fileData == data );
 
     if ( m_genOutput ) {
         if ( result ) // no need to regenerate
