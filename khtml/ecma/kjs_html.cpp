@@ -1866,7 +1866,7 @@ Value KJS::HTMLElementFunction::tryCall(ExecState *exec, Object &thisObj, const 
 void KJS::HTMLElement::tryPut(ExecState *exec, const UString &propertyName, const Value& value, int attr)
 {
 #ifdef KJS_VERBOSE
-  DOM::DOMString str = value.isA(NullType) ? DOM::DOMString(0) : value.toString(exec).string();
+  DOM::DOMString str = value.isA(NullType) ? DOM::DOMString() : value.toString(exec).string();
   DOM::HTMLElement element = static_cast<DOM::HTMLElement>(node);
   kdDebug(6070) << "KJS::HTMLElement::tryPut " << propertyName.qstring()
                 << " thisTag=" << element.tagName().string()
