@@ -1,5 +1,8 @@
 #!/bin/sh
-LIBDIR="`kde-config --install data --expandvars`/dcopidlng"
+if test -z "$KDECONFIG"; then
+    KDECONFIG=kde-config
+fi
+LIBDIR="`$KDECONFIG --install data --expandvars`/dcopidlng"
 perl -I"$LIBDIR" "$LIBDIR/kalyptus" --allow_k_dcop_accessors -f dcopidl $1 2>/tmp/dcopidlng.stderr.$$
 RET=$?
 if [ $RET -ne 0 ]
