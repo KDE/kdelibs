@@ -211,8 +211,7 @@ void KHTMLParser::parseToken(Token *t)
     if(t->id == ID_BR+ID_CLOSE_TAG && document->document()->parseMode() != DocumentImpl::Strict)
         t->id -= ID_CLOSE_TAG;
 
-    if (t->flat)
-        flat = true;
+    flat = t->flat;
 
     if(t->id > ID_CLOSE_TAG)
     {
