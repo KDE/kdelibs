@@ -1774,9 +1774,11 @@ void FileCopyJob::slotResult( KIO::Job *job)
         if (m_getJob)
           m_getJob->kill(true);
       }
-      m_error = job->error();
-      m_errorText = job->errorText();
-      emitResult();
+      if ( m_getJob == 0 && m_putJob == 0 ) {
+          m_error = job->error();
+          m_errorText = job->errorText();
+          emitResult();
+      }
       return;
    }
 
