@@ -75,6 +75,53 @@ KInstance *KGenericFactoryBase<T>::instance()
     return s_instance;
 }
 
+/**
+ * This template provides a generic implementation of a @ref KLibFactory ,
+ * for use with shared library components. It implements the pure virtual
+ * createObject method of KLibFactory and instantiates objects of the
+ * specified class (template argument) when the class name argument of
+ * createObject matches a class name in the given hierarchy.
+ *
+ * Note that the class specified as template argument needs to provide
+ * a certain constructor:
+ * <ul>
+ *     <li>If the class is derived from QObject then it needs to have
+ *         a constructor like:
+ *         <code>MyClass( QObject *parent, const char *name,
+ *                        const QStringList &args );</code>
+ *     <li>If the class is derived from QWidget then it needs to have
+ *         a constructor like:
+ *         <code>MyWidget( QWidget *parent, const char *name,
+ *                         const QStringList &args);</code>
+ *     <li>If the class is derived from KParts::Part then it needs to have
+ *         a constructor like:
+ *         <code>MyPart( QWidget *parentWidget, const char *widgetName,
+ *                       QObject *parent, const char *name,
+ *                       const QStringList &args );</code>
+ * </ul>
+ * The args QStringList passed to the constructor is the args string list
+ * that the caller passed to KLibFactory's create method.
+ *
+ *
+ * In addition upon instantiation this template provides a central 
+ * @ref KInstance object for your component, accessible through the
+ * static @ref instance() method. The instanceName argument of the
+ * KGenericFactory constructor is passed to the KInstance object.
+ *
+ * Example of usage:
+ * <pre>
+ *     class MyPlugin : public KParts::Plugin
+ *     {
+ *         Q_OBJECT
+ *     public:
+ *         MyPlugin( QObject *parent, const char *name,
+ *                   const QStringList &args );
+ *         ...
+ *     };
+ *
+ *     K_EXPORT_COMPONENT_FACTORY( libmyplugin, KGenericFactory&lt;MyPlugin&gt; );
+ * </pre>
+ */
 template <class T>
 class KGenericFactory : public KLibFactory, public KGenericFactoryBase<T>
 {
@@ -91,6 +138,63 @@ protected:
     }
 };
 
+/**
+ * This template provides a generic implementation of a @ref KLibFactory ,
+ * for use with shared library components. It implements the pure virtual
+ * createObject method of KLibFactory and instantiates objects of the
+ * specified classes in the given typelist template argument when the class 
+ * name argument of createObject matches a class names in the given hierarchy
+ * of classes.
+ * 
+ * Note that each class in the specified in the typelist template argument 
+ * needs to provide a certain constructor:
+ * <ul>
+ *     <li>If the class is derived from QObject then it needs to have
+ *         a constructor like:
+ *         <code>MyClass( QObject *parent, const char *name,
+ *                        const QStringList &args );</code>
+ *     <li>If the class is derived from QWidget then it needs to have
+ *         a constructor like:
+ *         <code>MyWidget( QWidget *parent, const char *name,
+ *                         const QStringList &args);</code>
+ *     <li>If the class is derived from KParts::Part then it needs to have
+ *         a constructor like:
+ *         <code>MyPart( QWidget *parentWidget, const char *widgetName,
+ *                       QObject *parent, const char *name,
+ *                       const QStringList &args );</code>
+ * </ul>
+ * The args QStringList passed to the constructor is the args string list
+ * that the caller passed to KLibFactory's create method.
+ *
+ * In addition upon instantiation this template provides a central 
+ * @ref KInstance object for your component, accessible through the
+ * static @ref instance() method. The instanceName argument of the
+ * KGenericFactory constructor is passed to the KInstance object.
+ *
+ * Example of usage:
+ * <pre>
+ *     class MyPlugin : public KParts::Plugin
+ *     {
+ *         Q_OBJECT
+ *     public:
+ *         MyPlugin( QObject *parent, const char *name,
+ *                   const QStringList &args );
+ *         ...
+ *     };
+ *
+ *     class MyDialogComponent : public KDialogBase
+ *     {
+ *         Q_OBJECT
+ *     public:
+ *         MyDialogComponent( QWidget *parentWidget, const char *name,
+ *                            const QStringList &args );
+ *         ...
+ *     };
+ *
+ *     typedef K_TYPELIST_2( MyPlugin MyDialogComponent ) Products;
+ *     K_EXPORT_COMPONENT_FACTORY( libmyplugin, KGenericFactory&lt;Products&gt; );
+ * </pre>
+ */
 template <class T1, class T2>
 class KGenericFactory< KTypeList<T1, T2> > : public KLibFactory,
                                              public KGenericFactoryBase< KTypeList<T1, T2> >
