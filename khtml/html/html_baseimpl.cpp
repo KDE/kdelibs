@@ -179,6 +179,14 @@ void HTMLBodyElementImpl::attach()
 
 }
 
+bool HTMLBodyElementImpl::prepareMouseEvent(int _x, int _y, int _tx, int _ty, MouseEvent *ev)
+{
+    bool inside = HTMLElementImpl::prepareMouseEvent(_x, _y, _tx, _ty, ev);
+    if(!inside)
+	ev->innerNode = this;
+    return !inside;
+}
+
 // -------------------------------------------------------------------------
 
 HTMLFrameElementImpl::HTMLFrameElementImpl(DocumentPtr *doc)

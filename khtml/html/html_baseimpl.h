@@ -24,7 +24,7 @@
  */
 
 #ifndef HTML_BASEIMPL_H
-#define HTML_BASEIMPL_H 1
+#define HTML_BASEIMPL_H
 
 #include "dtd.h"
 #include "html_elementimpl.h"
@@ -58,6 +58,10 @@ public:
 
     virtual void parseAttribute(AttrImpl *);
     void attach();
+
+    virtual bool prepareMouseEvent( int _x, int _y,
+                                    int _tx, int _ty,
+                                    MouseEvent *ev );
 
     CSSStyleSheetImpl *sheet() const { return m_styleSheet; }
 

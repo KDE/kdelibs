@@ -27,6 +27,9 @@
 #include <kjs/function.h>
 
 #include "kjs_binding.h"
+#define protected public
+#include "kjs_events.h"
+#undef protected
 
 class QTimer;
 class KHTMLView;
