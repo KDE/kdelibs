@@ -27,7 +27,7 @@ libkdeui_la_LDFLAGS = -no-undefined $(QT_LDFLAGS) $(X_LDFLAGS) $(USER_LDFLAGS) -
 # we should get this to work when libtool 1.3 is released
 libkdeui_la_LIBADD = ../kdecore/libkdecore.la
 
-include_HEADERS = kledlamp.h kprogress.h kpanner.h kcolordlg.h kselect.h \
+include_HEADERS = kledlamp.h kprogress.h kcolordlg.h kselect.h \
 		kdatepik.h kdatetbl.h kfontdialog.h kmsgbox.h kpopmenu.h \
 		ktabctl.h kstatusbar.h ktopwidget.h \
 		ktmainwindow.h ktmlayout.h ktoolbar.h kmenubar.h \
@@ -35,7 +35,7 @@ include_HEADERS = kledlamp.h kprogress.h kpanner.h kcolordlg.h kselect.h \
 		kseparator.h klined.h kcombo.h krestrictedline.h \
 		kcolorbtn.h kiconloaderdialog.h \
 		kwmmapp.h kbuttonbox.h ktablistbox.h kcontainer.h \
-		knewpanner.h kcontrol.h keditcl.h ktoolboxmgr.h kled.h \
+		kcontrol.h keditcl.h ktoolboxmgr.h kled.h \
 		kdbtn.h ktabbar.h kwizard.h kkeydialog.h \
 		kurllabel.h kruler.h kquickhelp.h kcursor.h kaccelmenu.h \
 		klineeditdlg.h kurlcompletion.h kwidgetid.h kthemebase.h \
@@ -48,14 +48,14 @@ include_HEADERS = kledlamp.h kprogress.h kpanner.h kcolordlg.h kselect.h \
 # the order is predictated by the use of X11 header files
 libkdeui_la_SOURCES = kthemestyle.cpp kurllabel.cpp  \
 		kiconloaderdialog.cpp ktablistbox.cpp ktoolbar.cpp \
-		klined.cpp kledlamp.cpp kprogress.cpp kpanner.cpp \
+		klined.cpp kledlamp.cpp kprogress.cpp \
 		kcolordlg.cpp kselect.cpp kdatepik.cpp kdatetbl.cpp \
 		kfontdialog.cpp kmsgbox.cpp kpopmenu.cpp ktabctl.cpp \
 		kstatusbar.cpp ktopwidget.cpp ktmainwindow.cpp \
 		ktmlayout.cpp kmenubar.cpp kbutton.cpp kslider.cpp \
 		kseparator.cpp kcombo.cpp krestrictedline.cpp \
 		kcontrol.cpp kcolorbtn.cpp kwmmapp.cpp kbuttonbox.cpp\
-		knewpanner.cpp keditcl1.cpp keditcl2.cpp \
+		keditcl1.cpp keditcl2.cpp \
 		ktoolboxmgr.cpp kled.cpp kdbtn.cpp \
 		ktabbar.cpp kwizard.cpp kcontainer.cpp kkeydialog.cpp \
 		kruler.cpp kquickhelp.cpp kcursor.cpp \
@@ -69,8 +69,8 @@ libkdeui_la_METASOURCES = kbutton.moc kbuttonbox.moc kcolorbtn.moc \
 	kcolordlg.moc kcombo.moc kcontainer.moc kcontrol.moc \
 	kdatepik.moc kdatetbl.moc kdbtn.moc keditcl.moc kfontdialog.moc \
 	kiconloaderdialog.moc kkeydialog.moc kled.moc \
-	kledlamp.moc klined.moc kmenubar.moc kmsgbox.moc knewpanner.moc \
-	kpanner.moc kpopmenu.moc kprogress.moc \
+	kledlamp.moc klined.moc kmenubar.moc kmsgbox.moc \
+	kpopmenu.moc kprogress.moc \
 	kquickhelp.moc krestrictedline.moc kruler.moc kselect.moc \
 	kslider.moc kstatusbar.moc ktabbar.moc ktabctl.moc \
 	ktablistbox.moc ktmainwindow.moc ktoolbar.moc ktoolboxmgr.moc \
