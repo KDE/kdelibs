@@ -81,13 +81,24 @@
 >
 
 <!-- Defines both Standard and app-specific actions. An action can appear in a menu, a toolbar or in a
-     menubar . -->
+     menubar.
+     Attributes:
+     - name of the action: this is matched with the KAction name.
+     - group: this is used to control the placement of the action when merging 
+              e.g. a part, it matches the name of a DefineGroup in the mainwindow's rc file.
+     - append: this is used to control the placement of the action during the
+               merging with ui_standards.rc. This is mapped to MergeLocal tags there.
+               Note that this feature is currently only available for the mainwindow, not for parts/plugins.
+     - text, whatsThis, toolTip, shortText, shortcut, icon: all those are mapped
+       to KAction properties.
+ -->
 <!ELEMENT Action EMPTY>
 <!-- We defined only a few standard KAction properties here. Theoritically we can have
      any property here -->
 <!ATTLIST Action
   name CDATA #REQUIRED
   group CDATA #IMPLIED
+  append CDATA #IMPLIED
   text CDATA #IMPLIED
   whatsThis CDATA #IMPLIED
   toolTip CDATA #IMPLIED
