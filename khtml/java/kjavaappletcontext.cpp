@@ -54,7 +54,7 @@ KJavaAppletContext::KJavaAppletContext()
 {
     d = new KJavaAppletContextPrivate;
     server = KJavaAppletServer::allocateJavaServer();
-    connect(server->javaProcess(), SIGNAL(exited()), this, SLOT(javaProcessExited()));
+    connect(server->javaProcess(), SIGNAL(exited(int)), this, SLOT(javaProcessExited(int)));
 
     id = contextCount;
     server->createContext( id, this );
@@ -240,7 +240,7 @@ void KJavaAppletContext::received( const QString& cmd, const QStringList& arg )
     }
 }
 
-void KJavaAppletContext::javaProcessExited() {
+void KJavaAppletContext::javaProcessExited(int) {
     AppletMap::iterator it = d->applets.begin();
     for (; it != d->applets.end(); it++)
         if (!(*it).isNull() && (*it)->isCreated() && !(*it)->failed()) {

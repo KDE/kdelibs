@@ -11,7 +11,8 @@ public class KJASSecurityManager extends SecurityManager
     static Hashtable confirmRequests = new Hashtable();
     static int confirmId = 0;
     Hashtable grantedPermissions = new Hashtable();
-    Hashtable deniedPermissions = new Hashtable();
+    HashSet grantAllPermissions = new HashSet();
+    HashSet rejectAllPermissions = new HashSet();
 
     public KJASSecurityManager()
     {
@@ -33,28 +34,29 @@ public class KJASSecurityManager extends SecurityManager
                 throw se;
 
             // Collect certificates
-            HashSet set = new HashSet();
+            HashSet signers = new HashSet();
             Class [] cls = getClassContext();
             for (int i = 1; i < cls.length; i++) {
                 Object[] objs = cls[i].getSigners();
                 if (objs != null && objs.length > 0)
                     for (int j = 0; j < objs.length; j++)
-                        set.add(objs[j]);
+                        signers.add(objs[j]);
             }
-            Main.debug("Certificates " + set.size() + " for " + perm);
-            if (set.size() == 0)
+            Main.debug("Certificates " + signers.size() + " for " + perm);
+            if (signers.size() == 0)
                 throw se;
 
             // Check granted/denied permission
             String text = new String();
-            for (Iterator i = set.iterator(); i.hasNext(); ) {
+            for (Iterator i = signers.iterator(); i.hasNext(); ) {
                 Object cert = i.next();
+                if ( grantAllPermissions.contains(cert) )
+                    return;
+                if ( rejectAllPermissions.contains(cert) )
+                    throw se;
                 Permissions permissions = (Permissions) grantedPermissions.get(cert);
                 if (permissions != null && permissions.implies(perm))
                     return;
-                permissions = (Permissions) deniedPermissions.get(cert);
-                if (permissions != null && permissions.implies(perm))
-                    throw se;
                 if (cert instanceof X509Certificate)
                     text += ((X509Certificate) cert).getIssuerDN().getName();
                 else
@@ -64,34 +66,53 @@ public class KJASSecurityManager extends SecurityManager
             String id = "" + confirmId++;
             confirmRequests.put(id, Thread.currentThread());
             Main.protocol.sendSecurityConfirm(text + perm, id);
-            boolean ok = false;
+            boolean granted = false;
             try {
                 Thread.currentThread().sleep(300000);
             } catch (InterruptedException ie) {
-                Hashtable permstore = deniedPermissions;
-                if (((String) confirmRequests.get(id)).equals("1")) {
-                    ok = true;
-                    permstore = grantedPermissions;
-                }
-                for (Iterator it = set.iterator(); it.hasNext(); ) {
-                    Object cert = it.next();
-                    Permissions permissions = (Permissions) permstore.get(cert);
-                    if (permissions == null) {
-                        permissions = new Permissions();
-                        permstore.put(cert, permissions);
+                if (((String) confirmRequests.get(id)).equals("yes")) {
+                    granted = true;
+                    for (Iterator it = signers.iterator(); it.hasNext(); ) {
+                        Object cert = it.next();
+                        Permissions permissions = (Permissions) grantedPermissions.get(cert);
+                        if (permissions == null) {
+                            permissions = new Permissions();
+                            grantedPermissions.put(cert, permissions);
+                        }
+                        permissions.add(perm);
                     }
-                    permissions.add(perm);
-                }
+                } else if (((String) confirmRequests.get(id)).equals("grant")) {
+                    grantAllPermissions.addAll( signers );
+                    granted = true;
+                } else if (((String) confirmRequests.get(id)).equals("reject")) {
+                    rejectAllPermissions.addAll( signers );
+                } // else "no"
             } finally {
                 confirmRequests.remove(id);
             }
-            if (!ok) {
+            if (!granted) {
                 Main.debug("Permission denied" + perm);
                 throw se;
             }
         }
     }
 
+    // keytool -genkey -keystore mystore -alias myalias
+    // keytool -export -keystore mystore -alias myalias -file mycert
+    // keytool -printcert -file mycert
+    // keytool -import -keystore myotherstore -alias myalias -file mycert
+    // jarsigner -keystore mystore myjar.jar myalias
+    // jarsigner -verify -keystore myotherstore myjar.jar
+    //
+    // policy file (use policytool and check java.security):
+    // keystore "file:myotherstore", "JKS"
+    // grant signedBy "myalias"
+    // {
+    //     permission java.io.FilePermission "<<ALL FILES>>", "read"
+    // }
+    // 
+    // java code:
+    // KeyStore store = KeyStore.getInstance("JKS", "SUN");
     public void disabled___checkPermission(Permission perm) throws SecurityException, NullPointerException
     {
         // does not seem to work as expected, Problems with proxy - and it seems that the default

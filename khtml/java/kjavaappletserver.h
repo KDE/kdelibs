@@ -156,4 +156,21 @@ private:
 
 };
 
+
+class PermissionDialog : public QObject
+{
+    Q_OBJECT
+public:
+    PermissionDialog( QWidget* );
+    ~PermissionDialog();
+
+    QCString exec( const QString & title, const QString & msg );
+
+private slots:
+     void clicked();
+
+private:
+    QCString m_button;
+};
+
 #endif // KJAVAAPPLETSERVER_H

@@ -31,7 +31,6 @@
 #include <kparts/browserextension.h>
 #include <kapplication.h>
 #include <kstandarddirs.h>
-#include <kmessagebox.h>
 
 #include <kio/job.h>
 #include <kio/kprotocolmanager.h>
@@ -42,6 +41,10 @@
 #include <qdir.h>
 #include <qeventloop.h>
 #include <qapplication.h>
+#include <qlabel.h>
+#include <qdialog.h>
+#include <qpushbutton.h>
+#include <qlayout.h>
 
 #include <stdlib.h>
 #include <assert.h>
@@ -597,7 +600,7 @@ void KJavaAppletServer::slotJavaRequest( const QByteArray& qb )
         case KJAS_SECURITY_CONFIRM: {
             kdDebug(6100) << "Security confirm " << args[0] << endl;
             QStringList sl;
-            sl.push_front( KMessageBox::warningYesNo(qApp->activeWindow(), args[0], i18n("Security alert")) == KMessageBox::Yes ? "1" : "0");
+            sl.push_front( QString( PermissionDialog( qApp->activeWindow() ).exec( i18n("Security Alert"), args[0] ) ) );
             sl.push_front(QString::number(ID_num));
             process->send( KJAS_SECURITY_CONFIRM, sl );
             return;
@@ -682,6 +685,63 @@ void KJavaAppletServer::derefObject( QStringList & args ) {
 
 bool KJavaAppletServer::usingKIO() {
     return d->useKIO;
+}
+
+
+PermissionDialog::PermissionDialog( QWidget* parent ) 
+    : QObject(parent), m_button("no")
+{}
+
+QCString PermissionDialog::exec( const QString & title, const QString & msg ) {
+    QGuardedPtr<QDialog> dialog = new QDialog( static_cast<QWidget*>(parent()), "PermissionDialog");
+
+    dialog->setSizePolicy( QSizePolicy( (QSizePolicy::SizeType)1, (QSizePolicy::SizeType)1, 0, 0, dialog->sizePolicy().hasHeightForWidth() ) );
+    dialog->setModal( true );
+    dialog->setCaption( title );
+
+    QVBoxLayout * dialogLayout = new QVBoxLayout( dialog, 11, 6, "dialogLayout");
+
+    QLabel * message = new QLabel( msg, dialog, "message" );
+    dialogLayout->addWidget( message );
+    QSpacerItem * spacer2 = new QSpacerItem( 20, 40, QSizePolicy::Minimum, QSizePolicy::Expanding );
+    dialogLayout->addItem( spacer2 );
+
+    QHBoxLayout * buttonLayout = new QHBoxLayout( 0, 0, 6, "buttonLayout");
+
+    QPushButton * no = new QPushButton( i18n("&No"), dialog, "no" );
+    no->setDefault( true );
+    buttonLayout->addWidget( no );
+
+    QPushButton * reject = new QPushButton( i18n("&Reject All"), dialog, "reject" );
+    buttonLayout->addWidget( reject );
+
+    QPushButton * yes = new QPushButton( i18n("&Yes"), dialog, "yes" );
+    buttonLayout->addWidget( yes );
+
+    QPushButton * grant = new QPushButton( i18n("&Grant All"), dialog, "grant" );
+    buttonLayout->addWidget( grant );
+    dialogLayout->addLayout( buttonLayout );
+    dialog->resize( dialog->minimumSizeHint() );
+    //clearWState( WState_Polished );
+
+    connect( no, SIGNAL( clicked() ), this, SLOT( clicked() ) );
+    connect( reject, SIGNAL( clicked() ), this, SLOT( clicked() ) );
+    connect( yes, SIGNAL( clicked() ), this, SLOT( clicked() ) );
+    connect( grant, SIGNAL( clicked() ), this, SLOT( clicked() ) );
+
+    dialog->exec();
+    delete dialog;
+
+    return m_button;
+}
+
+PermissionDialog::~PermissionDialog()
+{}
+
+void PermissionDialog::clicked()
+{
+    m_button = sender()->name();
+    static_cast<const QWidget*>(sender())->parentWidget()->close();
 }
 
 #include "kjavaappletserver.moc"

@@ -131,7 +131,7 @@ protected:
 
 protected slots:
     void received( const QString& cmd, const QStringList& arg );
-    void javaProcessExited();
+    void javaProcessExited(int);
 
 private:
     int id;
