@@ -122,6 +122,7 @@ protected:
     void parseScript(const char * &str);
     void parseListing(const char * &str);
     void parseTag(const char * &str);
+    void parseEntity(const char * &str);
     
 protected:
     // Internal buffers

@@ -370,8 +370,190 @@ void HTMLTokenizer::parseComment( const char * &src)
     }
 }
 
+void HTMLTokenizer::parseEntity( const char * &src)
+{
+    KCharsets *charsets=KApplication::getKApplication()->getCharsets();
+
+    while ( *src != 0 )
+    {
+	// do we need to enlarge the buffer?
+	if ( (dest - buffer) > size )
+	{
+	    char *newbuf = new char [ size + 1024 + 20 ];
+	    memcpy( newbuf, buffer, dest - buffer + 1 );
+	    dest = newbuf + ( dest - buffer );
+	    delete [] buffer;
+	    buffer = newbuf;
+	    size += 1024;
+	}
+
+        unsigned long entityValue = 0;
+	QString res = 0;
+	int bytesConverted = 0; // 0 bytes --> all converted
+
+	searchBuffer[ searchCount+1] = *src;
+	searchBuffer[ searchCount+2] = '\0';
+	    
+	// Check for '&#000' or '&#x0000' sequence
+	if (searchBuffer[2] == '#')
+	{
+	    if ((searchCount > 1) && 
+	        (!isdigit(*src)) &&
+	        (searchBuffer[3] != 'x'))    
+	    {	
+	        // '&#000'
+	        searchBuffer[ searchCount+1] = '\0';
+	        entityValue = strtoul( &(searchBuffer[3]), 
+	    	    			NULL, 10 );
+	        charEntity = false;
+	    } 
+	    if ((searchCount > 1) && 
+	        (!isalnum(*src)) &&
+	        (searchBuffer[3] == 'x'))    
+	    {
+	        // '&#x0000'	
+	        searchBuffer[ searchCount+1] = '\0';
+	        entityValue = strtoul( &(searchBuffer[4]), 
+	    	    			NULL, 16 );
+	        charEntity = false;
+	    }
+	}
+	else
+	{
+	    // Check for &abc12 sequence
+	    if (!isalnum(*src))
+	    {
+	        charEntity = false;
+	        searchBuffer[ searchCount+1] = '\0';
+	        res = charsets->convertTag(searchBuffer+1, bytesConverted).copy();
+	        if (bytesConverted <= 0)
+	        {
+	            bytesConverted = 0;
+	            res = 0;
+		}
+	    }
+	}
+	    
+	if (searchCount > 8)
+	{
+	    // This sequence is too long.. we ignore it
+	    charEntity = false;
+            memcpy(dest,searchBuffer+1, searchCount);
+	    dest += searchCount;
+	    //*dest++ = *src++;
+	    if ( pre )
+	        prePos += searchCount;	    
+	}
+	else if (charEntity)
+	{
+	    // Keep searching for end of character entity 	
+	    searchCount++;
+	    src++;
+	}
+	else
+	{
+	    // We have a complete sequence
+	    if (res && (res.length() == 1))
+	    {
+	        entityValue = *((unsigned char *)res.data());
+	    }
+
+	    if (
+	        (
+	         (entityValue < 128) &&
+	         (entityValue > 0)
+	        ) 
+	         ||
+	         (entityValue == 160)
+	       )
+	    {
+	        // Just insert plain ascii
+	        *dest++ = (char) entityValue;
+	        if (pre)
+	            prePos++;
+		if (*src == ';')
+		    src++;
+	    }	    	
+	    else if ((!entityValue && !res) ||
+	             (tag && ( (*src != ';') || 
+	                       (bytesConverted != searchCount) 
+	                     ) 
+	             ))
+	    {
+	        // ignore the sequence, add it to the buffer as plaintext
+	        *dest++ = '&';
+	        memcpy(dest,searchBuffer+2, searchCount-1);
+	        dest += searchCount-1;
+	        if (pre)
+	            prePos += searchCount;
+		bytesConverted = 0;
+	    }
+	    else if (!tag && !textarea && !select && !title) 
+	    {
+	        // add current token first
+	        if (dest > buffer)
+	        {
+		    *dest=0;
+		    appendToken(buffer,dest-buffer);
+		    dest = buffer;
+		}
+		    
+		// add token with the amp-sequence for further conversion
+		((unsigned char *)searchBuffer)[1] = ID_ENTITY; 
+		if (bytesConverted > 0)
+		    appendToken(searchBuffer, bytesConverted+1);
+		else
+		    appendToken(searchBuffer, searchCount+1);
+		dest = buffer;
+		// Assume a width of 1
+		if (pre)
+		    prePos++;
+		if (*src == ';')
+		    src++;
+	    }
+	    else if (res)
+	    {
+	        // insert the characters, assuming iso-8859-1
+	        memcpy(dest, res.data(), res.length());
+	        dest += res.length();
+	        if (pre)
+	            prePos += res.length();
+		if (*src == ';')
+		    src++;
+	    }
+	    else if (entityValue > 0) 
+	    {
+	        // insert the character, assuming iso-8859-1
+	        *dest++ = (char) entityValue;
+	        if (pre)
+	            prePos++;
+		if (*src == ';')
+		    src++;
+	    }
+	    if (bytesConverted > 0)
+	    {
+	        memcpy(dest, searchBuffer+1+bytesConverted, searchCount-bytesConverted);
+	        dest += searchCount-bytesConverted;
+                if ( pre )
+                    prePos += searchCount-bytesConverted;
+	    }
+	    searchCount = 0;
+	    return;
+	 }
+    }
+}
+
 void HTMLTokenizer::parseTag( const char * &src)
 {
+    // TODO:
+    // &-entities can occur in attributes! We should take care of that!
+    // Best thing is probably moving the entity-stuff to a seperate function
+    // as well.
+    //
+    // Waba
+    if (charEntity)
+        parseEntity(src);
+
     while ( *src != 0 )
     {
 	// do we need to enlarge the buffer?
@@ -599,6 +781,20 @@ printf("Unknown tag: \"%s\"\n", tagStr);
 	        discard = SpaceDiscard; // Ignore following spaces
 	    }
 	}
+	else if ( *src == '&' ) 
+	{
+            src++;
+	    
+	    discard = NoneDiscard; 
+	    if (pending)
+	    	addPending();
+	    
+	    charEntity = true;
+            searchBuffer[0] = TAG_ESCAPE;
+            searchBuffer[1] = '&';
+            searchCount = 1;
+            parseEntity(src);
+	}
 	else
 	{
 	    discard = NoneDiscard;
@@ -711,7 +907,6 @@ void HTMLTokenizer::write( const char *str )
     // this function.
     char *srcPtr = 0L;
 
-    KCharsets *charsets=KApplication::getKApplication()->getCharsets();
     
     if ( str == 0L || buffer == 0L )
 	return;
@@ -728,6 +923,8 @@ void HTMLTokenizer::write( const char *str )
         parseListing(src);
     else if (tag)
         parseTag(src);
+    else if (charEntity)
+        parseEntity(src);
 
     while ( *src != 0 )
     {
@@ -750,146 +947,6 @@ void HTMLTokenizer::write( const char *str )
 	{
 	    src++;
 	} 
-	else if (charEntity)
-	{
-            unsigned long entityValue = 0;
-	    QString res = 0;
-
-	    searchBuffer[ searchCount+1] = *src;
-	    searchBuffer[ searchCount+2] = '\0';
-	    
-	    // Check for '&#000' or '&#x0000' sequence
-	    if (searchBuffer[2] == '#')
-	    {
-		if ((searchCount > 1) && 
-		    (!isdigit(*src)) &&
-		    (searchBuffer[3] != 'x'))    
-	        {	
-	            // '&#000'
-	    	    searchBuffer[ searchCount+1] = '\0';
-	    	    entityValue = strtoul( &(searchBuffer[3]), 
-	    	    			NULL, 10 );
-	    	    charEntity = false;
-	        } 
-		if ((searchCount > 1) && 
-		    (!isalnum(*src)) &&
-		    (searchBuffer[3] == 'x'))    
-	        {
-	            // '&#x0000'	
-	    	    searchBuffer[ searchCount+1] = '\0';
-	    	    entityValue = strtoul( &(searchBuffer[4]), 
-	    	    			NULL, 16 );
-	    	    charEntity = false;
-	        }
-	    }
-	    else
-	    {
-	        // Check for &abc12 sequence
-	        if (!isalnum(*src))
-	        {
-                    int len;
-		    charEntity = false;
-	    	    searchBuffer[ searchCount+1] = '\0';
-		    res = charsets->convertTag(searchBuffer+1, len).copy();
-		    if (len <= 0)
-		    {
-		    	res = 0;
-		    }
-	        }
-	    }
-	    
-	    if (searchCount > 8)
-	    {
-	    	// This sequence is too long.. we ignore it
-	        charEntity = false;
-                memcpy(dest,searchBuffer+1, searchCount);
-		dest += searchCount;
-		//*dest++ = *src++;
-		if ( pre )
-		    prePos += searchCount;	    
-	    }
-	    else if (charEntity)
-	    {
-	    	// Keep searching for end of character entity 	
-	        searchCount++;
-	        src++;
-	    }
-	    else
-	    {
-	    	
-	    	// We have a complete sequence
-	    	if (res && (res.length() == 1))
-	    	{
-	    	    entityValue = *((unsigned char *)res.data());
-	    	}
-
-		if (
-		    (
-		     (entityValue < 128) &&
-		     (entityValue > 0)
-		    ) 
-		    ||
-		    (entityValue == 160)
-		   )
-		{
-		    // Just insert plain ascii
-		    *dest++ = (char) entityValue;
-		    if (pre)
-		    	prePos++;
-		    if (*src == ';')
-		        src++;
-		}	    	
-		else if (!entityValue && !res)
-		{
-		    // ignore the sequence, add it to the buffer as plaintext
-		    *dest++ = '&';
-		    memcpy(dest,searchBuffer+2, searchCount-1);
-		    dest += searchCount-1;
-		    if (pre)
-		    	prePos += searchCount;
-		}
-		else if (!tag && !textarea && !select && !title) 
-		{
-		    // add current token first
-		    if (dest > buffer)
-		    {
-		        *dest=0;
-		        appendToken(buffer,dest-buffer);
-		        dest = buffer;
-		    }
-		    
-		    // add token with the amp-sequence for further conversion
-		    ((unsigned char *)searchBuffer)[1] = ID_ENTITY; 
-		    appendToken(searchBuffer, searchCount+1);
-		    dest = buffer;
-		    // Assume a width of 1
-		    if (pre)
-		    	prePos++;
-		    if (*src == ';')
-		        src++;
-		}
-		else if (res)
-		{
-		    // insert the characters, assuming iso-8859-1
-		    memcpy(dest, res.data(), res.length());
-		    dest += res.length();
-		    if (pre)
-		    	prePos += res.length();
-		    if (*src == ';')
-		        src++;
-		}
-		else if (entityValue > 0) 
-		{
-		    // insert the character, assuming iso-8859-1
-		    *dest++ = (char) entityValue;
-		    if (pre)
-		    	prePos++;
-		    if (*src == ';')
-		        src++;
-		}
-		searchCount = 0;
-	    }
-	}
 	else if ( startTag)
 	{
 	    startTag = false;
@@ -950,6 +1007,7 @@ void HTMLTokenizer::write( const char *str )
             searchBuffer[0] = TAG_ESCAPE;
             searchBuffer[1] = '&';
             searchCount = 1;
+            parseEntity(src);
 	}
 	else if ( *src == '<')
 	{
