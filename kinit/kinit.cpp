@@ -506,6 +506,7 @@ static pid_t launch(int argc, const char *_name, const char *args,
           startup_id.setupStartupEnv();
 #endif
      {
+       int r;
        QCString procTitle( name );
        d.argv = (char **) malloc(sizeof(char *) * (argc+1));
        d.argv[0] = (char *) _name;
@@ -520,10 +521,15 @@ static pid_t launch(int argc, const char *_name, const char *args,
        d.argv[argc] = 0;
 
        /** Give the process a new name **/
-       kdeinit_setproctitle( "%s", procTitle.data() );
 #ifdef Q_OS_LINUX
        /* set the process name, so that killall works like intended */
-       prctl(PR_SET_NAME, (unsigned long) name.data(), 0, 0, 0);
+       r = prctl(PR_SET_NAME, (unsigned long) name.data(), 0, 0, 0);
+       if ( r == 0 )
+           kdeinit_setproctitle( "%s [kdeinit] %s", name.data(), procTitle.data() );
+       else
+           kdeinit_setproctitle( "kdeinit: %s", procTitle.data() );
+#else
+       kdeinit_setproctitle( "kdeinit: %s", procTitle.data() );
 #endif
      }
 
@@ -580,8 +586,8 @@ static pid_t launch(int argc, const char *_name, const char *args,
      if (!d.sym )
      {
         d.sym = lt_dlsym( d.handle, "kdemain" );
-        if ( !d.sym ) 
-        { 
+        if ( !d.sym )
+        {
 #if ! KDE_IS_VERSION( 3, 90, 0 )
            d.sym = lt_dlsym( d.handle, "main");
 #endif
@@ -1688,7 +1694,7 @@ int main(int argc, char **argv, char **envp)
 
    /** Prepare to change process name **/
    kdeinit_initsetproctitle(argc, argv, envp);
-   kdeinit_setproctitle("Starting up...");
+   kdeinit_setproctitle("kdeinit Starting up...");
    kdeinit_library_path();
    // don't change envvars before kdeinit_initsetproctitle()
    unsetenv("LD_BIND_NOW");
@@ -1822,7 +1828,7 @@ int main(int argc, char **argv, char **envp)
    }
    free (safe_argv);
 
-   kdeinit_setproctitle("Running...");
+   kdeinit_setproctitle("kdeinit Running...");
 
    if (!keep_running)
       return 0;
