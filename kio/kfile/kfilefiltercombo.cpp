@@ -107,6 +107,12 @@ QString KFileFilterCombo::currentFilter() const
 	return f.left(tab);
 }
 
+void KFileFilterCombo::setCurrentFilter( const QString& filter )
+{
+    setCurrentText( filter );
+    filterChanged();
+}
+
 void KFileFilterCombo::setMimeFilter( const QStringList& types, 
                                       const QString& defaultType )
 {
