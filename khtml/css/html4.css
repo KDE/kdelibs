@@ -401,6 +401,10 @@ INPUT[type="hidden"] {
 INPUT[type="radio"], INPUT[type="checkbox"] {
         margin: 0 0.5ex;
 }
+
+INPUT[type="text"] {
+	cursor: text;
+}
       
 OPTION, 
 OPTGROUP, 

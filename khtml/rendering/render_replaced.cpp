@@ -41,6 +41,8 @@
 #include "xml/dom_docimpl.h" // ### remove dependency
 #include <kdebug.h>
 
+bool khtml::allowWidgetPaintEvents = false;
+
 using namespace khtml;
 using namespace DOM;
 
@@ -208,6 +210,7 @@ void RenderWidget::setQWidget(QWidget *widget)
         if (m_widget) {
             connect( m_widget, SIGNAL( destroyed()), this, SLOT( slotWidgetDestructed()));
             m_widget->installEventFilter(this);
+	    m_widget->setBackgroundMode(QWidget::NoBackground);
             if (m_widget->focusPolicy() > QWidget::StrongFocus)
                 m_widget->setFocusPolicy(QWidget::StrongFocus);
             // if we're already layouted, apply the calculated space to the
@@ -328,7 +331,7 @@ void RenderWidget::setStyle(RenderStyle *_style)
     setShouldPaintBackgroundOrBorder(false);
 }
 
-void RenderWidget::paintObject(QPainter* /*p*/, int, int, int, int, int _tx, int _ty,
+void RenderWidget::paintObject(QPainter* p, int x, int y, int w, int h, int _tx, int _ty,
 			       PaintAction paintPhase)
 {
     if (!m_widget || !m_view || paintPhase != PaintActionForeground)
@@ -382,6 +385,54 @@ void RenderWidget::paintObject(QPainter* /*p*/, int, int, int, int, int _tx, int
     m_view->setWidgetVisible(this, true);
     m_view->addChild(m_widget, xPos, yPos );
     m_widget->show();
+
+    paint(p, m_widget, x, y, w, h, _tx, _ty);
+}
+
+#include <private/qinternal_p.h>
+
+
+void RenderWidget::paint(QPainter *p, QWidget *widget, int x, int y, int w, int h, int tx, int ty)
+{
+    // We have some problems here, as we can't redirect some of the widgets.
+    allowWidgetPaintEvents = true;
+
+    QPixmap pm;
+    if (!widget->inherits("QScrollView")) {
+	bool dsbld = QSharedDoubleBuffer::isDisabled();
+	QSharedDoubleBuffer::setDisabled(true);
+	pm = QPixmap(widget->width(), widget->height());
+	if (widget->inherits("QLineEdit")) {
+	    // even hackier!
+	    pm.fill(widget, QPoint(0, 0));
+	} else {
+	    QPoint pt(tx, ty);
+	    pt = p->xForm(pt);
+	    bitBlt(&pm, 0, 0, p->device(), pt.x(), pt.y());
+	}
+	QPainter::redirect(widget, &pm);
+	QPaintEvent e( widget->rect(), FALSE );
+	QApplication::sendEvent( widget, &e );
+	QPainter::redirect(widget, 0);
+	QSharedDoubleBuffer::setDisabled(dsbld);
+    } else {
+	// QScrollview is difficult and I currently know of no way to get
+	// the stuff on screen without flicker.
+	//
+	// This still doesn't work nicely for textareas. Probably need
+	// to fix qtextedit for that.
+	//
+	// Currently the stuff is disabled for QScrollView derived classes in
+	// KHTMLView::eventFilter()
+	QPaintEvent e( widget->rect(), FALSE );
+	QApplication::sendEvent( widget, &e );
+	QScrollView *sv = static_cast<QScrollView *>(widget);
+	sv->viewport()->repaint(true);
+	pm = QPixmap::grabWindow(widget->winId());
+    }
+
+    allowWidgetPaintEvents = false;
+    p->drawPixmap(tx, ty, pm);
 }
 
 bool RenderWidget::eventFilter(QObject* /*o*/, QEvent* e)
@@ -409,39 +460,13 @@ bool RenderWidget::eventFilter(QObject* /*o*/, QEvent* e)
 //             if ( ext )  ext->editableWidgetFocused( m_widget );
 //         }
         break;
-    case QEvent::MouseButtonPress:
-    case QEvent::MouseButtonRelease:
-    break;
-    case QEvent::MouseButtonDblClick:
-    break;
-    case QEvent::MouseMove:
-//     {
-//         int absX, absY;
-//         absolutePosition(absX,absY);
-//         QMouseEvent* _e = static_cast<QMouseEvent*>(e);
-//         QMouseEvent e2(e->type(),QPoint(absX,absY)+_e->pos(),_e->button(),_e->state());
-//         element()->dispatchMouseEvent(&e2);
-//         // ### change cursor like in KHTMLView?
-//     }
-    break;
-    case QEvent::Wheel:
-        // don't allow the widget to react to wheel event unless its
-        // currently focused. this avoids accidentally changing a select box
-        // or something while wheeling a webpage.
-        if (qApp->focusWidget() != m_widget &&
-            m_widget->focusPolicy() <= QWidget::StrongFocus)  {
-            static_cast<QWheelEvent*>(e)->ignore();
-	    if (m_view)
-		QApplication::sendEvent(m_view, e);
-            filtered = true;
-        }
-    break;
     case QEvent::KeyPress:
     case QEvent::KeyRelease:
         if (!element()->dispatchKeyEvent(static_cast<QKeyEvent*>(e)))
             filtered = true;
         break;
-    default: break;
+    default:
+	break;
     };
 
     element()->deref();

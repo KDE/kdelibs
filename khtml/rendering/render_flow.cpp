@@ -1895,18 +1895,18 @@ bool RenderFlow::nodeAtPoint(NodeInfo& info, int _x, int _y, int _tx, int _ty)
                                                    sty + o->startY + o->node->marginTop() - o->node->yPos() );
         }
 
-        if (layer()) {
-            // special case - special objects in root are relative to viewport
-	    KHTMLView *view = static_cast<RenderCanvas*>(this)->view();
-            if (isCanvas() && view) {
-                stx += view->contentsX();
-                sty += view->contentsY();
-            }
-            for (RenderLayer* l=m_layer->firstChild(); l; l=l->nextSibling()) {
-                if (l->renderer()->isPositioned())
-                    inBox |= l->renderer()->nodeAtPoint(info, _x, _y, stx, sty);
-            }
-        }
+//         if (layer()) {
+//             // special case - special objects in root are relative to viewport
+// 	    KHTMLView *view = static_cast<RenderCanvas*>(this)->view();
+//             if (isCanvas() && view) {
+//                 stx += view->contentsX();
+//                 sty += view->contentsY();
+//             }
+//             for (RenderLayer* l=m_layer->firstChild(); l; l=l->nextSibling()) {
+//                 if (l->renderer()->isPositioned())
+//                     inBox |= l->renderer()->nodeAtPoint(info, _x, _y, stx, sty);
+//             }
+//         }
     }
 
     inBox |= RenderBox::nodeAtPoint(info, _x, _y, _tx, _ty);

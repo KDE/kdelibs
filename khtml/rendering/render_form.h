@@ -64,7 +64,6 @@ class DocLoader;
 
 class RenderFormElement : public khtml::RenderWidget
 {
-    Q_OBJECT
 public:
     RenderFormElement(DOM::HTMLGenericFormElementImpl* node);
     virtual ~RenderFormElement();
@@ -80,11 +79,6 @@ public:
 
     DOM::HTMLGenericFormElementImpl *element() const
     { return static_cast<DOM::HTMLGenericFormElementImpl*>(RenderObject::element()); }
-
-public slots:
-    virtual void slotClicked();
-    void slotPressed();
-    void slotReleased();
 
 protected:
     virtual bool isRenderButton() const { return false; }
@@ -137,7 +131,6 @@ public slots:
 
 class RenderRadioButton : public RenderButton
 {
-    Q_OBJECT
 public:
     RenderRadioButton(DOM::HTMLInputElementImpl* node);
 
@@ -147,9 +140,6 @@ public:
     virtual void updateFromElement();
 
     QRadioButton *widget() const { return static_cast<QRadioButton*>(m_widget); }
-
-public slots:
-    void slotClicked();
 };
 
 // -------------------------------------------------------------------------
@@ -248,10 +238,8 @@ public:
 
 protected:
     virtual bool event( QEvent *e );
+    virtual void mouseMoveEvent(QMouseEvent *e);
     virtual QPopupMenu *createPopupMenu();
-signals:
-    void pressed();
-    void released();
 private slots:
     void extendedMenuActivated( int id);
     void slotCheckSpelling();
@@ -315,7 +303,6 @@ public:
     const QPushButton* pushButton() const { return m_button; }
 
 public slots:
-    virtual void slotClicked();
     virtual void slotReturnPressed();
     virtual void slotTextChanged(const QString &string);
 

@@ -449,7 +449,7 @@ void KHTMLToolTip::maybeTip(const QPoint& p)
 #endif
 
 KHTMLView::KHTMLView( KHTMLPart *part, QWidget *parent, const char *name)
-    : QScrollView( parent, name, WResizeNoErase | WRepaintNoErase | WPaintUnclipped )
+    : QScrollView( parent, name, WResizeNoErase | WRepaintNoErase )
 {
     m_medium = "screen";
 
@@ -462,6 +462,9 @@ KHTMLView::KHTMLView( KHTMLPart *part, QWidget *parent, const char *name)
 
     // initialize QScrollview
     enableClipper(true);
+    // hack to get unclipped painting on the viewport.
+    static_cast<KHTMLView *>(static_cast<QWidget *>(viewport()))->setWFlags(WPaintUnclipped);
+
     setResizePolicy(Manual);
     viewport()->setMouseTracking(true);
     viewport()->setBackgroundMode(NoBackground);
@@ -580,6 +583,7 @@ void KHTMLView::drawContents( QPainter *p, int ex, int ey, int ew, int eh )
         p->fillRect(ex, ey, ew, eh, palette().active().brush(QColorGroup::Base));
         return;
     }
+
     if (eh > PAINT_BUFFER_HEIGHT && ew <= 10) {
         if ( d->vertPaintBuffer->height() < visibleHeight() )
             d->vertPaintBuffer->resize(10, visibleHeight());
@@ -764,12 +768,6 @@ void KHTMLView::viewportMousePressEvent( QMouseEvent *_mouse )
     DOM::NodeImpl::MouseEvent mev( _mouse->stateAfter(), DOM::NodeImpl::MousePress );
     m_part->xmlDocImpl()->prepareMouseEvent( false, xm, ym, &mev );
 
-    // Qt bug: sometimes Qt sends us events that should be sent
-    // to the widget instead
-    if ( mev.innerNode.handle() && mev.innerNode.handle()->renderer() &&
-         mev.innerNode.handle()->renderer()->isWidget() )
-        return;
-
     if (d->clickCount > 0 &&
         QPoint(d->clickX-xm,d->clickY-ym).manhattanLength() <= QApplication::startDragDistance())
 	d->clickCount++;
@@ -783,6 +781,10 @@ void KHTMLView::viewportMousePressEvent( QMouseEvent *_mouse )
                                            d->clickCount,_mouse,true,DOM::NodeImpl::MousePress);
     if (mev.innerNode.handle())
 	mev.innerNode.handle()->setPressed();
+
+    khtml::RenderObject* r = mev.innerNode.handle() ? mev.innerNode.handle()->renderer() : 0;
+    if (r && r->isWidget())
+	_mouse->ignore();
 
     if (!swallowEvent) {
 	khtml::MousePressEvent event( _mouse, xm, ym, mev.url, mev.target, mev.innerNode );
@@ -822,6 +824,10 @@ void KHTMLView::viewportMouseDoubleClickEvent( QMouseEvent *_mouse )
     if (mev.innerNode.handle())
 	mev.innerNode.handle()->setPressed();
 
+    khtml::RenderObject* r = mev.innerNode.handle() ? mev.innerNode.handle()->renderer() : 0;
+    if (r && r->isWidget())
+	_mouse->ignore();
+
     if (!swallowEvent) {
 	khtml::MouseDoubleClickEvent event( _mouse, xm, ym, mev.url, mev.target, mev.innerNode, d->clickCount );
 	QApplication::sendEvent( m_part, &event );
@@ -847,12 +853,6 @@ void KHTMLView::viewportMouseMoveEvent( QMouseEvent * _mouse )
 
     DOM::NodeImpl::MouseEvent mev( _mouse->stateAfter(), DOM::NodeImpl::MouseMove );
     m_part->xmlDocImpl()->prepareMouseEvent( false, xm, ym, &mev );
-
-    // Qt bug: sometimes Qt sends us events that should be sent
-    // to the widget instead
-    if ( mev.innerNode.handle() && mev.innerNode.handle()->renderer() &&
-         mev.innerNode.handle()->renderer()->isWidget() )
-        return;
 
     bool swallowEvent = dispatchMouseEvent(EventImpl::MOUSEMOVE_EVENT,mev.innerNode.handle(),false,
                                            0,_mouse,true,DOM::NodeImpl::MouseMove);
@@ -923,9 +923,15 @@ void KHTMLView::viewportMouseMoveEvent( QMouseEvent * _mouse )
             for (KHTMLPart* p = m_part; p; p = p->parentPart())
                 p->view()->viewport()->unsetCursor();
         }
-        else
+        else {
             viewport()->setCursor( c );
+	}
     }
+    if (r && r->isWidget()) {
+// 	static_cast<RenderWidget *>(r)->widget()->setCursor(c);
+	_mouse->ignore();
+    }
+
 
     d->prevMouseX = xm;
     d->prevMouseY = ym;
@@ -948,11 +954,11 @@ void KHTMLView::viewportMouseReleaseEvent( QMouseEvent * _mouse )
     DOM::NodeImpl::MouseEvent mev( _mouse->stateAfter(), DOM::NodeImpl::MouseRelease );
     m_part->xmlDocImpl()->prepareMouseEvent( false, xm, ym, &mev );
 
-    // Qt bug: sometimes Qt sends us events that should be sent
-    // to the widget instead
-    if ( mev.innerNode.handle() && mev.innerNode.handle()->renderer() &&
-         mev.innerNode.handle()->renderer()->isWidget() )
-        return;
+//     // Qt bug: sometimes Qt sends us events that should be sent
+//     // to the widget instead
+//     if ( mev.innerNode.handle() && mev.innerNode.handle()->renderer() &&
+//          mev.innerNode.handle()->renderer()->isWidget() )
+//         return;
 
     bool swallowEvent = dispatchMouseEvent(EventImpl::MOUSEUP_EVENT,mev.innerNode.handle(),true,
                                            d->clickCount,_mouse,false,DOM::NodeImpl::MouseRelease);
@@ -964,6 +970,10 @@ void KHTMLView::viewportMouseReleaseEvent( QMouseEvent * _mouse )
 
     if (mev.innerNode.handle())
 	mev.innerNode.handle()->setPressed(false);
+
+    khtml::RenderObject* r = mev.innerNode.handle() ? mev.innerNode.handle()->renderer() : 0;
+    if (r && r->isWidget())
+	_mouse->ignore();
 
     if (!swallowEvent) {
 	khtml::MouseReleaseEvent event( _mouse, xm, ym, mev.url, mev.target, mev.innerNode );
@@ -1208,31 +1218,124 @@ void KHTMLView::doAutoScroll()
 
 bool KHTMLView::eventFilter(QObject *o, QEvent *e)
 {
-  if ( e->type() == QEvent::AccelOverride ) {
-    QKeyEvent* ke = (QKeyEvent*) e;
+    if ( e->type() == QEvent::AccelOverride ) {
+	QKeyEvent* ke = (QKeyEvent*) e;
 //kdDebug(6200) << "QEvent::AccelAvailable" << endl;
-    if (m_part->isEditable() || m_part->isCaretMode()
-        || (m_part->xmlDocImpl() && m_part->xmlDocImpl()->focusNode()
-	    && m_part->xmlDocImpl()->focusNode()->contentEditable())) {
+	if (m_part->isEditable() || m_part->isCaretMode()
+	    || (m_part->xmlDocImpl() && m_part->xmlDocImpl()->focusNode()
+		&& m_part->xmlDocImpl()->focusNode()->contentEditable())) {
 //kdDebug(6200) << "editable/navigable" << endl;
-      if ( ke->state() & ControlButton ) {
-        switch ( ke->key() ) {
-          case Key_Left:
-          case Key_Right:
-          case Key_Up:
-          case Key_Down:
-          case Key_Home:
-          case Key_End:
-            ke->accept();
+	    if ( ke->state() & ControlButton ) {
+		switch ( ke->key() ) {
+		case Key_Left:
+		case Key_Right:
+		case Key_Up:
+		case Key_Down:
+		case Key_Home:
+		case Key_End:
+		    ke->accept();
 //kdDebug(6200) << "eaten" << endl;
-            return true;
-          default:
-            break;
-        }/*end switch*/
-      }/*end if*/
+		    return true;
+		default:
+		    break;
+		}/*end switch*/
+	    }/*end if*/
+	}/*end if*/
     }/*end if*/
-  }/*end if*/
-  return QScrollView::eventFilter(o, e);
+
+    QWidget *view = viewport();
+
+    if (o == view) {
+	// we need to install an event filter on all children of the viewport to
+	// be able to get correct stacking of children within the document.
+	if(e->type() == QEvent::ChildInserted) {
+	    QObject *c = static_cast<QChildEvent *>(e)->child();
+	    if (c->isWidgetType()) {
+		QWidget *w = static_cast<QWidget *>(c);
+		// don't install the event filter on toplevels
+		if (w->parentWidget(true) == view) {
+		    if (w->inherits("QScrollView")) {
+			QScrollView *sv = static_cast<QScrollView *>(w);
+			sv->viewport()->installEventFilter(this);
+			QWidget *clipper = sv->clipper();
+			if (clipper != viewport())
+			    clipper->installEventFilter(this);
+		    } else {
+			w->installEventFilter(this);
+			w->unsetCursor();
+		    }
+		}
+	    }
+	}
+    } else if (o->isWidgetType()) {
+	QWidget *v = static_cast<QWidget *>(o);
+	while (v && v != view) {
+	    v = v->parentWidget(true);
+	}
+	if (v) {
+	    bool block = false;
+	    QWidget *w = static_cast<QWidget *>(o);
+	    switch(e->type()) {
+	    case QEvent::Paint:
+		if (!allowWidgetPaintEvents) {
+		    // eat the event. Like this we can control exactly when the widget
+		    // get's repainted.
+		    block = true;
+		    int x, y;
+		    viewportToContents( w->x(), w->y(), x, y );
+		    QPaintEvent *pe = static_cast<QPaintEvent *>(e);
+		    scheduleRepaint(x + pe->rect().x(), y + pe->rect().y(),
+				    pe->rect().width(), pe->rect().height());
+		}
+		break;
+	    case QEvent::Wheel:
+		// don't allow the widget to react to wheel event unless its
+		// currently focused. this avoids accidentally changing a select box
+		// or something while wheeling a webpage.
+		if (qApp->focusWidget() != w &&
+		    w->focusPolicy() <= QWidget::StrongFocus)  {
+		    static_cast<QWheelEvent*>(e)->ignore();
+		    QApplication::sendEvent(this, e);
+		    block = true;
+		}
+		break;
+	    case QEvent::MouseMove:
+	    case QEvent::MouseButtonPress:
+	    case QEvent::MouseButtonRelease:
+	    case QEvent::MouseButtonDblClick: {
+		QMouseEvent *me = static_cast<QMouseEvent *>(e);
+		if (me->pos().x() > w->width() || me->pos().y() > w->height()) {
+		    // we sometimes seem to get bogus mouse events.
+		    block = true;
+		    break;
+		}
+// 		qDebug("me: %d/%d, w=%d/%d", me->pos().x(), me->pos().y(), w->pos().x(), w->pos().y());
+		QPoint pt = (me->pos() + w->pos());
+// 		qDebug("    trnslated: %d/%d",  pt.x(), pt.y());
+		QMouseEvent me2(me->type(), pt, me->button(), me->state());
+
+		if (e->type() == QEvent::MouseMove)
+		    viewportMouseMoveEvent(&me2);
+		else if(e->type() == QEvent::MouseButtonPress)
+		    viewportMousePressEvent(&me2);
+		else if(e->type() == QEvent::MouseButtonRelease)
+		    viewportMouseReleaseEvent(&me2);
+		else
+		    viewportMouseDoubleClickEvent(&me2);
+		block = me2.isAccepted();
+		break;
+		}
+	    default:
+		break;
+	    }
+	    if (block) {
+// 		qDebug("eating event");
+		return true;
+	    }
+	}
+    }
+
+    return QScrollView::eventFilter(o, e);
 }
 
 
@@ -1773,6 +1876,7 @@ bool KHTMLView::dispatchMouseEvent(int eventId, DOM::NodeImpl *targetNode, bool 
 	    m_part->xmlDocImpl()->prepareMouseEvent( true, d->prevMouseX, d->prevMouseY, &mev );
 	    oldUnder = mev.innerNode.handle();
 	}
+// 	qDebug("oldunder=%p (%s), target=%p (%s) x/y=%d/%d", oldUnder, oldUnder ? oldUnder->renderer()->renderName() : 0, targetNode,  targetNode ? targetNode->renderer()->renderName() : 0, _mouse->x(), _mouse->y());
 	if (oldUnder != targetNode) {
 	    // send mouseout event to the old node
 	    if (oldUnder){

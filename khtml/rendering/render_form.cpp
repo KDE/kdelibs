@@ -95,32 +95,6 @@ void RenderFormElement::layout()
         setLayouted();
 }
 
-void RenderFormElement::slotClicked()
-{
-    RenderArena *arena = ref();
-    QMouseEvent e2( QEvent::MouseButtonRelease, m_mousePos, 1, m_state);
-
-    element()->dispatchMouseEvent(&e2, EventImpl::CLICK_EVENT, m_isDoubleClick + 1);
-    m_isDoubleClick = false;
-    deref(arena);
-}
-
-void RenderFormElement::slotPressed()
-{
-    RenderArena *arena = ref();
-    QMouseEvent e2( QEvent::MouseButtonPress, m_mousePos, 1, m_state);
-    element()->dispatchMouseEvent(&e2, EventImpl::MOUSEDOWN_EVENT, 1);
-    deref(arena);
-}
-
-void RenderFormElement::slotReleased()
-{
-    RenderArena *arena = ref();
-    QMouseEvent e2( QEvent::MouseButtonRelease, m_mousePos, 1, m_state);
-    element()->dispatchMouseEvent(&e2, EventImpl::MOUSEUP_EVENT, 1);
-    deref(arena);
-}
-
 // -------------------------------------------------------------------------
 
 RenderButton::RenderButton(HTMLGenericFormElementImpl *element)
@@ -151,9 +125,6 @@ RenderCheckBox::RenderCheckBox(HTMLInputElementImpl *element)
     b->setMouseTracking(true);
     setQWidget(b);
     connect(b,SIGNAL(stateChanged(int)),this,SLOT(slotStateChanged(int)));
-    connect(b, SIGNAL(clicked()), this, SLOT(slotClicked()));
-    connect(b, SIGNAL(pressed()), this, SLOT(slotPressed()));
-    connect(b, SIGNAL(released()), this, SLOT(slotReleased()));
 }
 
 
@@ -191,9 +162,6 @@ RenderRadioButton::RenderRadioButton(HTMLInputElementImpl *element)
     b->setAutoMask(true);
     b->setMouseTracking(true);
     setQWidget(b);
-    connect(b, SIGNAL(clicked()), this, SLOT(slotClicked()));
-    connect(b, SIGNAL(pressed()), this, SLOT(slotPressed()));
-    connect(b, SIGNAL(released()), this, SLOT(slotReleased()));
 }
 
 void RenderRadioButton::updateFromElement()
@@ -201,14 +169,6 @@ void RenderRadioButton::updateFromElement()
     widget()->setChecked(element()->checked());
 
     RenderButton::updateFromElement();
-}
-
-void RenderRadioButton::slotClicked()
-{
-    element()->setChecked(true);
-
-    // emit mouseClick event etc
-    RenderButton::slotClicked();
 }
 
 void RenderRadioButton::calcMinMaxWidth()
@@ -234,9 +194,6 @@ RenderSubmitButton::RenderSubmitButton(HTMLInputElementImpl *element)
     setQWidget(p);
     p->setAutoMask(true);
     p->setMouseTracking(true);
-    connect(p, SIGNAL(clicked()), this, SLOT(slotClicked()));
-    connect(p, SIGNAL(pressed()), this, SLOT(slotPressed()));
-    connect(p, SIGNAL(released()), this, SLOT(slotReleased()));
 }
 
 QString RenderSubmitButton::rawText()
@@ -426,6 +383,9 @@ void LineEditWidget::extendedMenuActivated( int id)
 
 bool LineEditWidget::event( QEvent *e )
 {
+    if (KLineEdit::event(e))
+	return true;
+
     if ( e->type() == QEvent::AccelAvailable && isReadOnly() ) {
         QKeyEvent* ke = (QKeyEvent*) e;
         if ( ke->state() & ControlButton ) {
@@ -442,12 +402,17 @@ bool LineEditWidget::event( QEvent *e )
             }
         }
     }
-    else if ( e->type() == QEvent::MouseButtonPress )
-        emit pressed();
-    else if ( e->type() == QEvent::MouseButtonRelease )
-        emit released();
-    return KLineEdit::event( e );
+    return false;
 }
+
+void LineEditWidget::mouseMoveEvent(QMouseEvent *e)
+{
+    // hack to prevent Qt from calling setCursor on the widget
+    setDragEnabled(false);
+    KLineEdit::mouseMoveEvent(e);
+    setDragEnabled(true);
+}
+
 
 // -----------------------------------------------------------------------------
 
@@ -457,8 +422,6 @@ RenderLineEdit::RenderLineEdit(HTMLInputElementImpl *element)
     LineEditWidget *edit = new LineEditWidget(element, view(), view()->viewport());
     connect(edit,SIGNAL(returnPressed()), this, SLOT(slotReturnPressed()));
     connect(edit,SIGNAL(textChanged(const QString &)),this,SLOT(slotTextChanged(const QString &)));
-    connect(edit,SIGNAL(pressed()), this, SLOT(slotPressed()));
-    connect(edit,SIGNAL(released()), this, SLOT(slotReleased()));
     if(element->inputType() == HTMLInputElementImpl::PASSWORD)
         edit->setEchoMode( QLineEdit::Password );
 
@@ -786,9 +749,6 @@ RenderFileButton::RenderFileButton(HTMLInputElementImpl *element)
 
     m_button = new QPushButton(i18n("Browse..."), w);
     m_button->setFocusPolicy(QWidget::ClickFocus);
-    connect(m_button,SIGNAL(clicked()), this, SLOT(slotClicked()));
-    connect(m_button, SIGNAL(pressed()), this, SLOT(slotPressed()));
-    connect(m_button, SIGNAL(released()), this, SLOT(slotReleased()));
 
     w->setStretchFactor(m_edit, 2);
     w->setFocusProxy(m_edit);
@@ -824,15 +784,6 @@ void RenderFileButton::handleFocusOut()
     if ( m_edit && m_edit->edited() ) {
         element()->onChange();
         m_edit->setEdited( false );
-    }
-}
-
-void RenderFileButton::slotClicked()
-{
-    QString file_name = KFileDialog::getOpenFileName(QString::null, QString::null, 0, i18n("Browse"));
-    if (!file_name.isNull()) {
-        element()->m_value = DOMString(file_name);
-        m_edit->setText(file_name);
     }
 }
 
@@ -894,6 +845,8 @@ ComboBoxWidget::ComboBoxWidget(QWidget *parent)
 
 bool ComboBoxWidget::event(QEvent *e)
 {
+    if (KComboBox::event(e))
+	return true;
     if (e->type()==QEvent::KeyPress)
     {
 	QKeyEvent *ke = static_cast<QKeyEvent *>(e);
@@ -905,10 +858,10 @@ bool ComboBoxWidget::event(QEvent *e)
 	    ke->accept();
 	    return true;
 	default:
-	    return KComboBox::event(e);
+	    return false;
 	}
     }
-    return KComboBox::event(e);
+    return false;
 }
 
 bool ComboBoxWidget::eventFilter(QObject *dest, QEvent *e)
