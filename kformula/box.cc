@@ -90,6 +90,8 @@ void box::offset(int xoffs, int yoffs)
 //of the children and then arranging them.
 //Making it work was not easy, but making it readable is
 //far harder.
+//Now the 0 of the bounding rect represents the "midline" to which
+//everything is valigned-- Andrea Rizzi's idea
 void box::calculate(QPainter &p, int setFontsize)
 {
   if(!dirty) return;
@@ -119,6 +121,7 @@ void box::calculate(QPainter &p, int setFontsize)
 	// the size of + is the size of the square.
 	rect = fm.boundingRect("+");
 	rect.setRect(-SPACE, rect.y(), SPACE * 2, rect.height());
+	rect.moveBy(0, -rect.center().y());
 
 	//operators where the left box is optional don't get a little
 	//square drawn.  These are the -, the parentheses, the square
@@ -133,6 +136,7 @@ void box::calculate(QPainter &p, int setFontsize)
       }
       //if the box is not empty:
       rect = fm.boundingRect(text);
+      rect.moveBy(0, -fm.boundingRect("+").center().y());
       break;
       
       //all the operators which just get drawn along with the text:
@@ -147,7 +151,8 @@ void box::calculate(QPainter &p, int setFontsize)
       rect = b1->getRect();
       tmp1 = fm.boundingRect( QChar( (char)type ) );
       relx += rect.right() + SPACE; //where the operator will be drawn
-      tmp1.moveBy(rect.right() + SPACE, 0);
+      rely += -fm.boundingRect("+").center().y();
+      tmp1.moveBy(relx, rely);
       rect = rect.unite(tmp1);
       b2x += -b2->getRect().left() + rect.right() + SPACE;
       tmp1 = b2->getRect();
@@ -177,7 +182,8 @@ void box::calculate(QPainter &p, int setFontsize)
       
       tmp1 = QRect(1, -DOTSIZE / 2 - fm.height() / 2, DOTSIZE + 1, DOTSIZE);
       relx += rect.right() + SPACE + 1; //where the dot will be drawn.
-      rely -= fm.height() / 2 - DOTSIZE - 1;
+      rely -= fm.height() / 2 - DOTSIZE - 1 +
+	fm.boundingRect("+").center().y();
       tmp1.moveBy(rect.right() + SPACE, 0);
       rect = rect.unite(tmp1);
       b2x += -b2->getRect().left() + rect.right() + SPACE;
@@ -217,8 +223,7 @@ void box::calculate(QPainter &p, int setFontsize)
       rect.setRect(rect.x() - SPACE * 2, rect.y(),
 		   rect.width() + SPACE * 4, rect.height());
       //the next line sets the position of the bar to the vertical center.
-      offset(0, - rely - fm.boundingRect("+").height() / 2
-	     - fm.boundingRect("+").bottom() - SPACE - 1);
+      offset(0, -rely - 2);
       break;
 
       // for the superscript
@@ -247,6 +252,28 @@ void box::calculate(QPainter &p, int setFontsize)
       rect = rect.unite(tmp1);
       break;      
 
+    case ABOVE: // the smaller one above the normal one
+      b1->calculate(p, fontsize);
+      b2->calculate(p, fontsize * 3 / 4);
+      rect = b1->getRect();
+      tmp1 = b2->getRect();
+      b2y += -tmp1.bottom() + rect.top() - SPACE;
+      b2x += -tmp1.center().x() + rect.center().x();
+      tmp1.moveBy(b2x, b2y);
+      rect = rect.unite(tmp1);
+      break;
+
+    case BELOW: // the smaller one below the normal one
+      b1->calculate(p, fontsize);
+      b2->calculate(p, fontsize * 3 / 4);
+      rect = b1->getRect();
+      tmp1 = b2->getRect();
+      b2y += -tmp1.top() + rect.bottom() + SPACE;
+      b2x += -tmp1.center().x() + rect.center().x();
+      tmp1.moveBy(b2x, b2y);
+      rect = rect.unite(tmp1);
+      break;
+
       //we must make room for the radical.
     case SQRT:
       b2->calculate(p, fontsize);
@@ -263,31 +290,27 @@ void box::calculate(QPainter &p, int setFontsize)
 	tmp1.moveBy(b1x, b1y);
 	rect = rect.unite(tmp1);
       }
-      offset(0, -b2->getRect().center().y() -
-	     fm.boundingRect("+").height() / 2 -
-	     fm.boundingRect("+").bottom() - SPACE - 1);
       break;     
       
     case PAREN:
       b2->calculate(p, fontsize);
       rect = b2->getRect();
+      rect.setRect(rect.x(), QMIN(rect.top(), -rect.bottom()),
+		   rect.width(), QMAX(-rect.top(), rect.bottom()) * 2);
       b2x += fontsize / 3 + rect.height() / 10;
       rect.setRect(rect.x(), rect.y() - b2x,
 		   rect.width() + b2x * 2, rect.height() + b2x * 2);
 
-      offset(0, - rect.center().y() - fm.boundingRect("+").height() / 2
-	     - fm.boundingRect("+").bottom() - SPACE - 1);
       break;
 
     case ABS:
       b2->calculate(p, fontsize);
       rect = b2->getRect();
+      rect.setRect(rect.x(), QMIN(rect.top(), -rect.bottom()),
+		   rect.width(), QMAX(-rect.top(), rect.bottom()) * 2);
       b2x += SPACE + 2;
       rect.setRect(rect.x(), rect.y() - b2x,
 		   rect.width() + b2x * 2, rect.height() + b2x * 2);
-
-      offset(0, - rect.center().y() - fm.boundingRect("+").height() / 2
-	     - fm.boundingRect("+").bottom() - SPACE - 1);
 
       break;
 
@@ -330,6 +353,8 @@ void box::draw(QPainter &p, int x, int y)
 
   p.setFont(lastFont);
 
+  QFontMetrics fm(p.fontMetrics());
+
   QRect tmp;
   int i;
   char tmpstr[2] = " "; //a one-char string for operators
@@ -358,8 +383,8 @@ void box::draw(QPainter &p, int x, int y)
       break;
     }
 
-    //if not empty, draw the text.
-    p.drawText(x, y, text);
+    //if not empty, draw the text (offset to the baseline).
+    p.drawText(x, y - fm.boundingRect("+").center().y(), text);
     break;
 
   case PLUS:
@@ -406,6 +431,8 @@ void box::draw(QPainter &p, int x, int y)
 
   case POWER: //already children drawn
   case SUB:
+  case ABOVE:
+  case BELOW:
     break;
 
   case SQRT:
@@ -491,7 +518,9 @@ QRect box::getCursorPos(charinfo i, int x, int y)
   }
 
   //set the height of the rectangle proportional to the font height:
-  tmp.setRect(x, -fm.height() * 2 / 3 + y, 1,
+  //and offset to the baseline
+  tmp.setRect(x, -fm.height() * 2 / 3 + y -
+	      fm.boundingRect("+").center().y(), 1,
 	      fm.height() * 3 / 4);
 
   switch(type) {

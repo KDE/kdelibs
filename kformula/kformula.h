@@ -5,10 +5,7 @@
 #include <qpainter.h>
 #include <qcstring.h>
 #include <qrect.h>
-
-#define SPECIAL "+-*/@^#{}_(=<>|\\"
-
-class box;
+#include "box.h"
 
 struct charinfo { // used to determine where each character gets
                   // sent during parsing
@@ -23,6 +20,52 @@ int operator==(struct charinfo a, struct charinfo b);
 //make up a formula
 
 class KFormula {
+private:
+
+  static QString *SPECIAL; //all the special characters
+  static QString *INTEXT;  //plus minus slash times relationals
+  static QString *LOC;     //powers, subscripts, above, below
+  static QString *DELIM;   //parentheses, absolute value, etc
+
+  static void initStrings(void) {
+    if(SPECIAL) return;
+    SPECIAL = new QString();
+    DELIM = new QString();
+    LOC = new QString();
+    INTEXT = new QString();
+    
+    SPECIAL->append('{');
+    SPECIAL->append('}');
+    SPECIAL->append(PLUS);
+    SPECIAL->append(MINUS);
+    SPECIAL->append(TIMES);
+    SPECIAL->append(DIVIDE);
+    SPECIAL->append(POWER);
+    SPECIAL->append(SQRT);
+    SPECIAL->append(ABS);
+    SPECIAL->append(SUB);
+    SPECIAL->append(PAREN);
+    SPECIAL->append(EQUAL);
+    SPECIAL->append(MORE);
+    SPECIAL->append(LESS);
+    SPECIAL->append(CAT);
+    SPECIAL->append(SLASH);
+    SPECIAL->append(ABOVE);
+    SPECIAL->append(BELOW);
+    INTEXT->append(PLUS);
+    INTEXT->append(MINUS);
+    INTEXT->append(TIMES);
+    INTEXT->append(EQUAL);
+    INTEXT->append(MORE);
+    INTEXT->append(LESS);
+    INTEXT->append(SLASH);
+    LOC->append(POWER);
+    LOC->append(SUB);
+    LOC->append(ABOVE);
+    LOC->append(BELOW);
+    DELIM->append(ABS);
+    DELIM->append(PAREN);
+  }
 
 public:
   KFormula();
@@ -44,7 +87,14 @@ protected:
 private:
   void parenthesize(QString &temp, int i, QArray<charinfo> *info);
   box * makeBoxes(QString str, int offset, int maxlen, QArray<charinfo> *info);
+
+public:
+  static QString special() { initStrings(); return *SPECIAL; }
+  static QString intext() { initStrings();  return *INTEXT; }
+  static QString loc() { initStrings(); return *LOC; }
+  static QString delim() { initStrings(); return *DELIM; }
 };
+
 
 
 #endif // KFORMULA_H_INCLUDED

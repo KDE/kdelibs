@@ -2,6 +2,12 @@
 #include "box.h"
 #include <stdio.h>
 
+//initialize the static members:
+QString *KFormula::SPECIAL = NULL;
+QString *KFormula::DELIM = NULL;
+QString *KFormula::INTEXT = NULL;
+QString *KFormula::LOC = NULL;
+
 //This class stores and displays the formula
 
 //---------------------CONSTRUCTORS AND DESTRUCTORS-----------------
@@ -152,14 +158,15 @@ void KFormula::parse(QString text, QArray<charinfo> *info)
   for(i = 0; i < ((int)text.length() - 1); i++)
     {
       j = i + 1;
-      if(j > (int)text.length()) continue;
+      if(j > (int)text.length() - 1) continue;
       if(text[j] != '{' && text[i] != '}') continue;
       if(text[i] == '}' && text[j] == '{') {
 	text.insert(j, CAT);
 	INSERTED(j);
       }
+
       if((char)text[i] && (char)text[j] &&
-          strchr(SPECIAL, text[i]) && strchr(SPECIAL, text[j])) continue;
+          special().contains(text[i]) && special().contains(text[j])) continue;
       text.insert(j, CAT);
       INSERTED(j);
     }
@@ -195,9 +202,10 @@ void KFormula::parse(QString text, QArray<charinfo> *info)
     i++;
   }
 
-  //exponents and subscripts: should not be reversed despite order of ops.
+  //locational things: should not be reversed despite order of ops.
   for(i = (int)text.length() - 1; i >= 0; i--) {
-    if(text[i] != POWER && text[i] != SUB) continue;
+    if(text[i] != POWER && text[i] != SUB &&
+       text[i] != ABOVE && text[i] != BELOW) continue;
     parenthesize(text, i, info);
     i++;
   }

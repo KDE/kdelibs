@@ -28,7 +28,9 @@ enum BoxType {
   MORE = '>',
   LESS = '<',
   ABS = '|',
-  SLASH = '\\'
+  SLASH = '\\',
+  ABOVE = '[', //something useless
+  BELOW = ']'
 };
 
 //a box is a unit of a formula.

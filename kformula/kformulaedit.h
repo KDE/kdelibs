@@ -35,7 +35,7 @@ protected:
   QPixmap pm;       //double buffering
   KFormula *form;
   QString formText; //the text that gets converted into the formula
-  QString clipText; //clipboard
+  static QString clipText; //clipboard
   int cursorPos;
   QArray<charinfo> info; //where each character of formText
                          //ends up in the formula
@@ -61,8 +61,12 @@ protected:
   int textSelected;
   int selectStart;
   int selectStartOrig;
+  int isInString(int pos, const QString &str);
 
   QRect getCursorPos(int pos);
+
+public slots:
+  void insertChar(QChar c);
 
 protected slots:
   void toggleCursor();
