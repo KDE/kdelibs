@@ -2377,13 +2377,9 @@ void CopyJob::slotEntries(KIO::Job* job, const UDSEntryList& list)
                             url.addPath( displayName );
 		    }
                     break;
-                case UDS_FILENAME:
-                    destFileName = (*it2).m_str;
-                    break;
                 case UDS_URL:
                     url = KURL((*it2).m_str);
-                    if ( destFileName.isEmpty() )
-                        destFileName = url.fileName();
+                    destFileName = url.fileName();
                     break;
                 case UDS_LINK_DEST:
                     info.linkDest = (*it2).m_str;
@@ -2406,7 +2402,6 @@ void CopyJob::slotEntries(KIO::Job* job, const UDSEntryList& list)
         }
         if (displayName != ".." && displayName != ".")
         {
-            //kdDebug(7007) << "CopyJob::slotEntries '" << displayName << "'" << endl;
             info.uSource = url;
             info.uDest = m_currentDest;
             //kdDebug(7007) << " uSource=" << info.uSource << " uDest(1)=" << info.uDest << endl;
@@ -3550,7 +3545,7 @@ void KIO::CopyJob::setDefaultPermissions( bool b )
 
 CopyJob *KIO::copy(const KURL& src, const KURL& dest, bool showProgressInfo )
 {
-    //kdDebug(7007) << "KIO::copy src=" << src.url() << " dest=" << dest.url() << endl;
+    //kdDebug(7007) << "KIO::copy src=" << src << " dest=" << dest << endl;
     KURL::List srcList;
     srcList.append( src );
     return new CopyJob( srcList, dest, CopyJob::Copy, false, showProgressInfo );
@@ -3558,7 +3553,7 @@ CopyJob *KIO::copy(const KURL& src, const KURL& dest, bool showProgressInfo )
 
 CopyJob *KIO::copyAs(const KURL& src, const KURL& dest, bool showProgressInfo )
 {
-    //kdDebug(7007) << "KIO::copyAs src=" << src.url() << " dest=" << dest.url() << endl;
+    //kdDebug(7007) << "KIO::copyAs src=" << src << " dest=" << dest << endl;
     KURL::List srcList;
     srcList.append( src );
     return new CopyJob( srcList, dest, CopyJob::Copy, true, showProgressInfo );

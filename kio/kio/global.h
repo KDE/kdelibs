@@ -298,9 +298,9 @@ namespace KIO
     /// Filename - as displayed in directory listings etc.
     /// "." has the usual special meaning of "current directory"
     UDS_NAME = 64 | UDS_STRING,
-    /// Real underlying filename - used *only* when moving/copying to another directory
-    /// @since 3.4
-    UDS_FILENAME = 72 | UDS_STRING,
+
+    // available: 72, 80, 88, 92, 100 etc.
+
     /// Access permissions (part of the mode returned by stat)
     UDS_ACCESS = 128 | UDS_LONG,
     /// The last time the file was modified
