@@ -190,7 +190,7 @@ void KConfigINIBackEnd::parseSingleConfigFile(QFile &rFile,
       
       if (pWriteBackMap) {
 	// add the special group key indicator
-	KEntryKey groupKey = { aCurrentGroup, QString::null };
+	KEntryKey groupKey = { aCurrentGroup, QString() };
 	pWriteBackMap->insert(groupKey, KEntry());
       } 
       continue;
@@ -336,7 +336,7 @@ bool KConfigINIBackEnd::writeConfigFile(QFile &rConfigFile, bool bGlobal,
 	  if (aTempMap.contains(entryKey))
 	    aTempMap.replace(entryKey, currentEntry);
 	  else {
-	    KEntryKey groupKey = { entryKey.group, QString::null };
+	    KEntryKey groupKey = { entryKey.group, QString() };
 	    
 	    // add special group key
 	    if (!aTempMap.contains(groupKey))
@@ -375,7 +375,7 @@ bool KConfigINIBackEnd::writeConfigFile(QFile &rConfigFile, bool bGlobal,
   pStream = new QTextStream( &rConfigFile );
  
   // write back -- start with the default group
-  KEntryKey groupKey = { "<default>", QString::null };
+  KEntryKey groupKey = { "<default>", QString() };
   KEntryMapIterator aWriteIt = aTempMap.find(groupKey);
 
   for (; aWriteIt.key().group == "<default>" && aWriteIt != aTempMap.end();

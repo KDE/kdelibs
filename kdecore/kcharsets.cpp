@@ -305,7 +305,7 @@ bool KCharset::printable(int chr){
 
 QString KCharset::xCharset(){
 
-  if (!entry) return QString();
+  if (!entry) return QString::null;
   QString xch=data->toX(entry->name);
   if ( !xch.isEmpty() ) return xch; 
   if (strnicmp(entry->name,"iso-",4)==0){

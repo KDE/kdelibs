@@ -702,7 +702,7 @@ QString keyToString( uint keyCode, bool i18_n )
 		}
 	}
 	
-	return QString();
+	return QString::null;
 }
 
 uint stringToKey(const QString& key)

@@ -64,7 +64,7 @@ QString KSimpleConfig::deleteEntry( const QString& pKey, bool bLocalized )
     aEntryMap.remove(aIt);
     return retValue;
   } else 
-    return QString();
+    return QString::null;
 }
 
 
@@ -72,7 +72,7 @@ bool KSimpleConfig::deleteGroup( const QString& pGroup, bool bDeep )
 {
   
   KEntryMapIterator aIt;
-  KEntryKey groupKey = { pGroup, QString::null };
+  KEntryKey groupKey = { pGroup, QString() };
 
   aIt = aEntryMap.find(groupKey);
   if (aIt != aEntryMap.end()) {

@@ -992,7 +992,7 @@ QString KCharsetsData::fromX(QString name)
       return key;
     }
   }
-  return QString(); 
+  return QString::null;
 }
 
 QString KCharsetsData::toX(QString name){

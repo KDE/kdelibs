@@ -209,7 +209,7 @@ QString KProtocolManager::executable( const QString& _protocol ) const
   if ( it == m_protocols.end() )
   {    
     kdebug( KDEBUG_ERROR, 7008, "Protocol %s not found", _protocol.ascii() );
-    return QString();
+    return QString::null;
   }
   
   return it.data().executable;

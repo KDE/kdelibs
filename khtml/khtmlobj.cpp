@@ -323,8 +323,8 @@ void HTMLHSpace::print( QPainter *_painter, int _tx, int _ty )
     if ( isSelected() && _painter->device()->devType() != QInternal::Printer )
     {
 	_painter->fillRect( x + _tx, y - ascent + _ty,
-		width, ascent + descent, kapp->palette()->normal().highlight() );
-	_painter->setPen( kapp->palette()->normal().highlightedText() );
+		width, ascent + descent, kapp->palette().normal().highlight() );
+	_painter->setPen( kapp->palette().normal().highlightedText() );
     }
     else
     {
@@ -544,8 +544,8 @@ void HTMLText::print( QPainter *_painter, int _tx, int _ty )
 	int fillStart = _painter->fontMetrics().width( text, selStart );
 	int fillEnd = _painter->fontMetrics().width( text, selEnd );
 	_painter->fillRect( x + fillStart + _tx, y - ascent + _ty,
-		fillEnd - fillStart, ascent + descent, kapp->palette()->normal().highlight() );
-	_painter->setPen( kapp->palette()->normal().highlightedText() );
+		fillEnd - fillStart, ascent + descent, kapp->palette().normal().highlight() );
+	_painter->setPen( kapp->palette().normal().highlightedText() );
 	_painter->drawText( x + _tx + fillStart, y + _ty, text + selStart,
 		selEnd - selStart );
 	_painter->setPen( font->textColor() );
@@ -1089,8 +1089,8 @@ void HTMLTextSlave::print( QPainter *_painter, int _tx, int _ty )
 	    	int fillStart = 0;
 	        int fillEnd = _painter->fontMetrics().width( text, posLen );
 	        _painter->fillRect( x + fillStart + _tx, y - ascent + _ty,
-		    fillEnd - fillStart, ascent + descent, kapp->palette()->normal().highlight() );
-	        _painter->setPen( kapp->palette()->normal().highlightedText() );
+		    fillEnd - fillStart, ascent + descent, kapp->palette().normal().highlight() );
+	        _painter->setPen( kapp->palette().normal().highlightedText() );
 	        _painter->drawText( x + _tx + fillStart, y + _ty, text,
 	            posLen );
 	        return;
@@ -1116,8 +1116,8 @@ void HTMLTextSlave::print( QPainter *_painter, int _tx, int _ty )
 	    	int fillStart = _painter->fontMetrics().width( text, selStart );
 	        int fillEnd = _painter->fontMetrics().width( text, selEnd );
 	        _painter->fillRect( x + fillStart + _tx, y - ascent + _ty,
-		    fillEnd - fillStart, ascent + descent, kapp->palette()->normal().highlight() );
-	        _painter->setPen( kapp->palette()->normal().highlightedText() );
+		    fillEnd - fillStart, ascent + descent, kapp->palette().normal().highlight() );
+	        _painter->setPen( kapp->palette().normal().highlightedText() );
 	        _painter->drawText( x + _tx + fillStart, y + _ty, text + selStart,
 	            selEnd - selStart );
 	        _painter->setPen( font->textColor() );
@@ -1529,7 +1529,7 @@ void HTMLImage::print( QPainter *_painter, int _tx, int _ty )
 	    QPainter p( &pm );
 //	    p.setRasterOp( NotEraseROP );
 //	    p.fillRect( 0, 0, pm.width(), pm.height(), blue );
-	    QBrush b( kapp->palette()->normal().highlight(), Qt::Dense4Pattern );
+	    QBrush b( kapp->palette().normal().highlight(), Qt::Dense4Pattern );
 	    p.fillRect( 0, 0, pm.width(), pm.height(), b );
 	}
 
