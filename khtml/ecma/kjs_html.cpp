@@ -23,6 +23,7 @@
 #include <html_element.h>
 #include <html_head.h>
 #include <html_inline.h>
+#include <html_image.h>
 #include <dom_string.h>
 
 #include "kjs.h"
@@ -211,6 +212,7 @@ KJSO *KJS::HTMLElement::get(const CString &p) const
   DOM::HTMLBodyElement body;
   DOM::HTMLLinkElement link;
   DOM::HTMLAnchorElement anchor;
+  DOM::HTMLImageElement image;
 
   fprintf(stderr, "HTMLElement::get(%s) id: %d\n",
 	  p.ascii(), element.elementId());
@@ -291,6 +293,37 @@ KJSO *KJS::HTMLElement::get(const CString &p) const
     else
       break;
     return new KJSString(str);
+  case ID_IMG:
+    image = element;
+    if (p == "lowSrc")
+      str = image.lowSrc();
+    else if (p == "name")
+      str = image.name();
+    else if (p == "align")
+      str = image.align();
+    else if (p == "alt")
+      str = image.alt();
+    else if (p == "border")
+      str = image.border();
+    else if (p == "height")
+      str = image.height();
+    else if (p == "hspace")
+      str = image.hspace();
+    else if (p == "isMap")
+      return new KJSBoolean(image.isMap());
+    else if (p == "longDesc")
+      str = image.longDesc();
+    else if (p == "src")
+      str = image.src();
+    else if (p == "useMap")
+      str = image.useMap();
+    else if (p == "vspace")
+      str = image.vspace();
+    else if (p == "width")
+      str = image.width();
+    else
+      break;
+    return new KJSString(str);
   }
 
   // generic properties
@@ -318,6 +351,7 @@ void KJS::HTMLElement::put(const CString &p, KJSO *v, int)
   DOM::HTMLLinkElement link;
   DOM::HTMLBodyElement body;
   DOM::HTMLAnchorElement anchor;
+  DOM::HTMLImageElement image;
 
   Ptr s = toString(v);
   DOM::DOMString str = s->sVal().string();
@@ -395,6 +429,37 @@ void KJS::HTMLElement::put(const CString &p, KJSO *v, int)
       anchor.setTarget(str);
     else if (p == "type")
       anchor.setType(str);
+    else
+      break;
+    return;
+  case ID_IMG:
+    image = element;
+    if (p == "lowSrc")
+      image.setLowSrc(str);
+    else if (p == "name")
+      image.setName(str);
+    else if (p == "align")
+      image.setAlign(str);
+    else if (p == "alt")
+      image.setAlt(str);
+    else if (p == "border")
+      image.setBorder(str);
+    else if (p == "height")
+      image.setHeight(str);
+    else if (p == "hspace")
+      image.setHspace(str);
+    else if (p == "isMap")
+      image.setIsMap(b->bVal());
+    else if (p == "longDesc")
+      image.setLongDesc(str);
+    else if (p == "src")
+      image.setSrc(str);
+    else if (p == "useMap")
+      image.setUseMap(str);
+    else if (p == "vspace")
+      image.setVspace(str);
+    else if (p == "width")
+      image.setWidth(str);
     else
       break;
     return;
