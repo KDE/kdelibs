@@ -1,6 +1,11 @@
 // $Id$
 // Revision 1.41  1998/01/06 22:54:29  kulow
 // $Log$
+// Revision 1.19  1997/09/10 15:26:35  kdecvs
+// Coolo: moved the define of klocale back to kapp, because a define in klocale.h
+// 	would break KParts (I didn't thought about this, sorry)
+// Note: this will break perhaps something, because it needs now kapp.h
+//
 // Revision 1.18  1997/09/04 16:31:58  kdecvs
 // Coolo: I have introduced some dependecies, that I can't resolve.
 // 	Kalle knows about it.
@@ -212,6 +217,11 @@ class KCharsets;
 * file), nothing is done. 
 */ 
   void restoreTopLevelGeometry() const;
+
+*/
+*/ 
+class KApplication : public QApplication
+/** 
 * Destructor 
 */
   /** 

@@ -1,6 +1,11 @@
 // $Id$
 //
 /* $Log$
+ * Revision 1.26  1997/09/10 11:55:35  kdecvs
+ * Kalle:
+ * - new features in KConfig as announced on Monday
+ * - new KIconLoader from Christoph
+ *
  * Revision 1.25  1997/09/04 19:48:36  kdecvs
  * Coolo: if no real language available, use "C". This leads to a problem!
  * 	Since we have currently no kpanel translation, you can not

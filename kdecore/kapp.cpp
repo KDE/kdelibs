@@ -1,6 +1,9 @@
 // $Id$
 // Revision 1.87  1998/01/27 20:17:01  kulow
 // $Log$
+// Revision 1.27  1997/09/06 20:43:51  kdecvs
+// Coolo: doc are now in share. locale support still missing, but I have plans
+//
 // Revision 1.26  1997/09/04 19:51:26  kdecvs
 // Coolo: set KApp first, if we can make sure, that the current instance is
 // 	complete
@@ -184,6 +187,8 @@
 // Revision 1.68  1997/11/03 13:50:15  kulow
 #endif
 
+// Revision 1.67  1997/10/30 13:30:15  ettrich
+// Matthias: fix for setWmCommand: now setWmCommand can also be used for
 //   PseudoSessionManagement (this is the default when session management
 #include <stdlib.h> // getenv()
 //   Now KApplication should work as promised in kapp.h :-)
@@ -342,6 +347,9 @@ void KApplication::init()
   // try to open read-only
   bool bSuccess = aGlobalAppConfigFile.open( IO_ReadOnly );
   if( !bSuccess )
+	// there is no global app config file
+	aGlobalAppConfigName = "";
+  aGlobalAppConfigFile.close();
   KDEChangePalette = XInternAtom( display, "KDEChangePalette", False );
   KDEChangeGeneral = XInternAtom( display, "KDEChangeGeneral", False );
   KDEChangeStyle = XInternAtom( display, "KDEChangeStyle", False);
@@ -363,6 +371,72 @@ void KApplication::init()
 KIconLoader* KApplication::getIconLoader()
   id = pMenu->insertItem( klocale->translate( "About KDE" ) );
   if( !pIconLoader )
+    pIconLoader = new KIconLoader();
+
+  return pIconLoader;
+}
+
+
+QPopupMenu* KApplication::getHelpMenu( bool /*bAboutQtMenu*/, 
+									   const char* aboutAppText )
+{
+  QPopupMenu* pMenu = new QPopupMenu();
+
+  int id = pMenu->insertItem( klocale->translate( "&Help..." ) );
+  pMenu->connectItem( id, this, SLOT( appHelpActivated() ) );
+
+		  pDialog->setInfoOutput( pConfig->readNumEntry( "InfoOutput", 1 ) );
+
+  id = pMenu->insertItem( QString(klocale->translate( "&About" )) + " " + aAppName + "...");
+  pMenu->connectItem( id, this, SLOT( aboutApp() ) );
+		  pDialog->setWarnOutput( pConfig->readNumEntry( "WarnOutput", 1 ) );
+
+  id = pMenu->insertItem( klocale->translate( "About &KDE..." ) );
+  pMenu->connectItem( id, this, SLOT( aboutKDE() ) );
+		  pDialog->setErrorOutput( pConfig->readNumEntry( "ErrorOutput", 1 ) );
+	if( bAboutQtMenu )
+	{
+	id = pMenu->insertItem( klocale->translate( "About Qt" ) );
+		  pDialog->setFatalOutput( pConfig->readNumEntry( "FatalOutput", 1 ) );
+	}
+  */
+										 "Please report bug at http://buglist.kde.org.\n\n\n"
+}
+
+
+void KApplication::appHelpActivated()
+{
+  invokeHTMLHelp( aAppName + "/" + "index.html", "" );
+}
+
+
+void KApplication::aboutKDE()
+{
+  QMessageBox::about( NULL, klocale->translate( "About KDE" ),
+					  klocale->translate( 
+										 "The KDE Desktop Environment was written by "
+										 "the KDE team.\n\n"
+										 "Please report bugs at http://buglist.kde.org.\n\n\n"
+										 "KDE was developed with Qt, a cross-platform GUI library.\n\n"
+										 "Qt is a product of Troll Tech (http://www.troll.no, info@troll.no).\n" 
+										 "Qt may be used freely to develop free software on the X Window System.\n"
+										 )
+					  );
+void KApplication::aboutApp()
+{
+  QMessageBox::about( NULL, getCaption(), aAppAboutString );
+}
+ 
+
+void KApplication::aboutQt()
+{
+  //  QMessageBox::aboutQt( NULL, getCaption() );
+}
+
+
+KLocale* KApplication::getLocale()
+{
+  if( !pLocale )
 void KApplication::restoreTopLevelGeometry() const
 {
   QWidget* mw = kapp->mainWidget();
@@ -390,6 +464,8 @@ void KApplication::restoreTopLevelGeometry() const
         aIconPixmap = QPixmap(argv[i+1]);
       else
         aIconPixmap = getIconLoader()->loadApplicationIcon( argv[i+1] );
+      if (aMiniIconPixmap.isNull()){
+
   /* If there is a main level widget, save its position and size */
   QWidget* w = kapp->mainWidget();
   if( !w )

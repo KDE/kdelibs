@@ -2,6 +2,9 @@
 
 /* $Log$
  *
+ * Revision 1.5  1997/09/11 19:44:57  kalle
+ * New debugging scheme for KDE (binary incompatible!)
+ *
  * Revision 1.4  1997/09/10 13:53:11  kdecvs
  * Kalle: Use KApplication instead of QApplication
  *
@@ -93,6 +96,7 @@
 // adapted from Qt widgets demo
 
 
+#include <kapp.h>
 #include <qdialog.h>
 #include <qfile.h>
 #include <qfileinf.h>
@@ -257,6 +261,8 @@ void KConfigTestView::keyEditReturnPressed()
     }
 }
 
+void KConfigTestView::writeButtonClicked()
+  KDEBUG( KDEBUG_INFO, 1, "Entry written" );
   pConfig->writeEntry( pKeyEdit->text(), QString( pValueEdit->text() ) );
   pInfoLabel2->setText( "Entry written" );
 

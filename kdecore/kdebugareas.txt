@@ -1,0 +1,54 @@
+Area codes for KDebug system
+============================
+
+1-100 kdesupport
+
+101-1000 kdelibs
+
+101-110 KApplication
+111-120 KConfig
+151-200 widgets
+201-300 khtmlw
+301-400 jscript
+401-500 libmediatool
+501-600 libkfm
+601-700 libkwm
+
+1000-30000 applications
+
+1000-1100 kwm
+1100-1200 kpanel
+1200-1300 kfm
+1300-1400 kcalc
+1400-1500 kedit
+1500-1600 khexdit
+1600-1700 kdisplay
+1700-1800 kscreensavers
+1800-1900 kdehelp
+1900-2000 kfind
+2000-2100 kdm
+2100-2200 kfontmanager
+2200-2300 klogout
+2300-2400 kvt
+2400-2500 kacli
+2500-2600 karm
+2600-2700 kfax
+2700-2800 kghostview
+2800-2900 kjots
+2900-3000 knotes
+3000-3100 kpaint
+3100-3200 kpat
+3200-3300 kreversi
+3300-3400 krn
+3400-3500 kmail
+3500-3600 kscd
+3600-3700 ktetris
+3700-3800 kview
+
+
+30001-65534 koffice
+
+30001-31000 kxcl
+31001-32000 kword
+32001-33000 kpresenter
+

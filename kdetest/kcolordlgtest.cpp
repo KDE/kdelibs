@@ -1,5 +1,5 @@
 
-#include <qapp.h>
+#include <kapp.h>
 #include "kcolordlg.h"
 #include <Kconfig.h>
 
@@ -10,7 +10,7 @@ int main( int argc, char *argv[] )
 	aConfig.setGroup( "KColorDialog-test" );
 
 	QApplication::setColorMode( QApplication::CustomColors );
-	QApplication a( argc, argv );
+	KApplication a( argc, argv );
 
 	color = aConfig.readColorEntry( "Chosen" );
 	int nRet = KColorDialog::getColor( color );
