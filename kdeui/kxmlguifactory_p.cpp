@@ -588,6 +588,8 @@ void BuildHelper::processActionOrCustomElement( const QDomElement &e, bool isAct
 
 bool BuildHelper::processActionElement( const QDomElement &e, int idx )
 {
+    assert( m_state.guiClient );
+
     // look up the action and plug it in
     KAction *action = m_state.guiClient->action( e );
 

@@ -62,6 +62,16 @@ public:
     {
         delete m_rootNode;
     }
+    
+    void pushState()
+    {
+        m_stateStack.push( *this );
+    }
+
+    void popState()
+    {
+        BuildState::operator=( m_stateStack.pop() );
+    }
 
     ContainerNode *m_rootNode;
 
@@ -80,6 +90,8 @@ public:
     QString tagActionList;
 
     QString attrName;
+
+    BuildStateStack m_stateStack;
 };
 
 QString KXMLGUIFactory::readConfigFile( const QString &filename, const KInstance *instance )
@@ -202,6 +214,8 @@ void KXMLGUIFactory::addClient( KXMLGUIClient *client )
     kdDebug(129) << "KXMLGUIFactory::addClient( " << client << " )" << endl; // ellis
     static const QString &actionPropElementName = KGlobal::staticQString( "ActionProperties" );
 
+    d->pushState();
+
 //    QTime dt; dt.start();
 
     d->guiClient = client;
@@ -270,6 +284,8 @@ void KXMLGUIFactory::addClient( KXMLGUIClient *client )
 
     client->endXMLPlug();
 
+    d->popState();
+
     emit clientAdded( client );
 
     // build child clients
@@ -306,6 +322,8 @@ void KXMLGUIFactory::removeClient( KXMLGUIClient *client )
 
     kdDebug(1002) << "KXMLGUIFactory::removeServant, calling removeRecursive" << endl;
 
+    d->pushState();
+
     // cache some variables
 
     d->guiClient = client;
@@ -334,6 +352,8 @@ void KXMLGUIFactory::removeClient( KXMLGUIClient *client )
     // This will destruct the KAccel object built around the given widget.
     client->prepareXMLUnplug( d->builder->widget() );
 
+    d->popState();
+
     emit clientRemoved( client );
 
     // remove child clients
@@ -354,6 +374,7 @@ QPtrList<KXMLGUIClient> KXMLGUIFactory::clients() const
 QWidget *KXMLGUIFactory::container( const QString &containerName, KXMLGUIClient *client,
                                     bool useTagName )
 {
+    d->pushState();
     d->m_containerName = containerName;
     d->guiClient = client;
 
@@ -361,6 +382,8 @@ QWidget *KXMLGUIFactory::container( const QString &containerName, KXMLGUIClient 
 
     d->guiClient = 0L;
     d->m_containerName = QString::null;
+
+    d->popState();
 
     return result;
 }
@@ -437,6 +460,7 @@ QPtrList<QWidget> KXMLGUIFactory::findRecursive( KXMLGUI::ContainerNode *node,
 void KXMLGUIFactory::plugActionList( KXMLGUIClient *client, const QString &name,
                                      const QPtrList<KAction> &actionList )
 {
+    d->pushState();
     d->guiClient = client;
     d->actionListName = name;
     d->actionList = actionList;
@@ -445,10 +469,12 @@ void KXMLGUIFactory::plugActionList( KXMLGUIClient *client, const QString &name,
     d->m_rootNode->plugActionList( *d );
 
     d->BuildState::reset();
+    d->popState();
 }
 
 void KXMLGUIFactory::unplugActionList( KXMLGUIClient *client, const QString &name )
 {
+    d->pushState();
     d->guiClient = client;
     d->actionListName = name;
     d->clientName = client->domDocument().documentElement().attribute( d->attrName );
@@ -456,6 +482,7 @@ void KXMLGUIFactory::unplugActionList( KXMLGUIClient *client, const QString &nam
     d->m_rootNode->unplugActionList( *d );
 
     d->BuildState::reset();
+    d->popState();
 }
 
 void KXMLGUIFactory::applyActionProperties( const QDomElement &actionPropElement )

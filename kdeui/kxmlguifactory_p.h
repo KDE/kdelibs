@@ -22,6 +22,7 @@
 #include <qstringlist.h>
 #include <qmap.h>
 #include <qdom.h>
+#include <qvaluestack.h>
 
 #include <kaction.h>
 
@@ -241,6 +242,8 @@ struct BuildState
     QStringList clientBuilderCustomTags;
     QStringList clientBuilderContainerTags;
 };
+
+typedef QValueStack<BuildState> BuildStateStack;
 
 };
 
