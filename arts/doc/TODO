@@ -11,6 +11,11 @@
 - try to fix autoSuspend in conjunction with full duplex
 - obsoleting: use V2 implementations even if user requests a normal
   implementation, since they have a newer version
+- mcopidl: use unsigned char arrays instead of strings for inline marshalled
+  data in idl files - this will fix the "maximum string length" warnings and
+  while doing this improve space and speed
+- implement a preferences system for the trader, to be able to choose one
+  implementation over another if they both implement the same interface
 
 ## aRts SoundServer
 
