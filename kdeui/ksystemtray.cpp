@@ -80,7 +80,7 @@ KSystemTray::KSystemTray( QWidget* parent, const char* name )
     {
         connect(quitAction, SIGNAL(activated()), parentWidget(), SLOT(close()));
         new KAction(i18n("Minimize"), KShortcut(), 
-                    this, SLOT( toggleMinimizeRestore() ), 
+                    this, SLOT( minimizeRestoreAction() ),
                     d->actionCollection, "minimizeRestore");
     }
     else
@@ -145,7 +145,7 @@ void KSystemTray::mousePressEvent( QMouseEvent *e )
 
     switch ( e->button() ) {
     case LeftButton:
-        toggleMinimizeRestore();
+        activateOrHide();
 	break;
     case MidButton:
 	// fall through
@@ -166,8 +166,6 @@ void KSystemTray::mousePressEvent( QMouseEvent *e )
     }
 }
 
-
-
 void KSystemTray::mouseReleaseEvent( QMouseEvent * )
 {
 }
@@ -178,7 +176,21 @@ void KSystemTray::contextMenuAboutToShow( KPopupMenu* )
 }
 
 
-void KSystemTray::toggleMinimizeRestore()
+// called from the popup menu - always do what the menu entry says,
+// i.e. if the window is shown, no matter if active or not, the menu
+// entry is "minimize", otherwise it's "restore"
+void KSystemTray::minimizeRestoreAction()
+{
+    if ( parentWidget() ) {
+        bool restore = !( parentWidget()->isVisible() );
+	minimizeRestore( restore );
+    }
+}
+
+// called when left-clicking the tray icon
+// if the window is not the active one, show it if needed, and activate it
+// (just like taskbar); otherwise hide it
+void KSystemTray::activateOrHide()
 {
     QWidget *pw = parentWidget();
 
@@ -197,12 +209,20 @@ void KSystemTray::toggleMinimizeRestore()
         KWin::setActiveWindow( pw->winId() );
         return;
     }
+    minimizeRestore( !visible );
+}
 
-    if ( !visible )
+void KSystemTray::minimizeRestore( bool restore )
+{
+    QWidget* pw = parentWidget();
+    if( !pw )
+	return;
+    if ( restore )
     {
 #ifndef Q_WS_QWS //FIXME
 	// TODO what to do with OnAllDesktops windows? (#32783)
 	KWin::setOnDesktop( pw->winId(), KWin::currentDesktop());
+	KWin::Info info = KWin::info( pw->winId() );
         pw->move( info.geometry.topLeft() ); // avoid placement policies
         pw->show();
 	KWin::setActiveWindow( pw->winId() );
