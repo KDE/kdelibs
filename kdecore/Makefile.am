@@ -23,18 +23,19 @@ EXTRA_DIST = convert_key.c
 lib_LTLIBRARIES = libkdecore.la
 
 include_HEADERS = kconfig.h kconfigdata.h ksimpleconfig.h kconfigbase.h \
-	kcolorgroup.h kapp.h\
+	kcolorgroup.h kapp.h kcharsets.h \
 	kurl.h ksock.h drag.h kkeyconf.h kkeydata.h ckey.h kmisc.h	\
 	kprocess.h kprocctrl.h klocale.h kiconloader.h kdebug.h	\
 	kstdaccel.h kwm.h krootprop.h
 
-noinst_HEADERS = kdebugdialog.h
+noinst_HEADERS = kdebugdialog.h kcharsetsdata.h
 
 libkdecore_la_SOURCES = kconfig.cpp kconfigbase.cpp ksimpleconfig.cpp \
-	kcolorgroup.cpp kapp.cpp kurl.cpp \
-	ksock.cpp drag.cpp kkeyconf.cpp	kprocess.cpp kprocctrl.cpp \
-	klocale.cpp libintl.cpp fakes.cpp kiconloader.cpp kdebug.cpp	\
-	kstdaccel.cpp kwm.cpp krootprop.cpp
+	kcolorgroup.cpp kapp.cpp kurl.cpp ksock.cpp drag.cpp \
+	kkeyconf.cpp kprocess.cpp kprocctrl.cpp klocale.cpp \
+	libintl.cpp fakes.cpp kiconloader.cpp kdebug.cpp \
+	kstdaccel.cpp kwm.cpp krootprop.cpp kcharsets.cpp kcharsetsdata.cpp \
+	kchartables.cpp
 
 libkdecore_la_LDFLAGS = -version-info 0:11 -allow-undefined
 libkdecore_la_LIBADD = 
