@@ -1104,20 +1104,20 @@ void KListView::keyPressEvent (QKeyEvent* e)
         konquerorKeyPressEvent (e);
 }
 
+//this one is only called in konq_listviewwidget, aleXXX
+void KListView::selectCurrentItemAndEnableSelectedBySimpleMoveMode()
+{
+   d->selectedBySimpleMove=true;
+   if ((currentItem()!=0) && (hasFocus()))
+   {
+      currentItem()->setSelected(true);
+      currentItem()->repaint();
+      emit selectionChanged();
+   };
+};
+
 void KListView::konquerorKeyPressEvent (QKeyEvent* e)
 {
-   //this happens if the listing of files in konqy is finished, aleXXX
-   if (e->text()=="MajorHack")
-   {
-      d->selectedBySimpleMove=true;
-      if ((currentItem()!=0) && (hasFocus()))
-      {
-         currentItem()->setSelected(true);
-         currentItem()->repaint();
-         emit selectionChanged();
-      };
-      return;
-   };
    //don't care whether it's on the keypad or not
     int e_state=(e->state() & ~Keypad);
 
@@ -1152,247 +1152,241 @@ void KListView::konquerorKeyPressEvent (QKeyEvent* e)
     else if (selectedItems>1)
        d->selectedBySimpleMove=false;
 
+    bool emitSelectionChanged(false);
+
     switch (e->key())
     {
-        case Key_Escape:
-            selectAll(FALSE);
-            emit selectionChanged();
-            break;
+    case Key_Escape:
+       selectAll(FALSE);
+       emitSelectionChanged=TRUE;
+       break;
 
-        case Key_Space:
-            //toggle selection of current item
-           if (d->selectedBySimpleMove)
-           {
-              d->selectedBySimpleMove=false;
-           }
-           else
-           {
-              item->setSelected(!item->isSelected());
-              item->repaint();
-           };
-           emit selectionChanged();
-            break;
+    case Key_Space:
+       //toggle selection of current item
+       if (d->selectedBySimpleMove)
+          d->selectedBySimpleMove=false;
+       else
+       {
+          item->setSelected(!item->isSelected());
+          item->repaint();
+          emitSelectionChanged=TRUE;
+       };
+       break;
 
-        case Key_Insert:
-            //toggle selection of current item and move to the next item
-           if (d->selectedBySimpleMove)
-           {
-              d->selectedBySimpleMove=false;
-           }
-           else
-           {
-              item->setSelected(!item->isSelected());
-           };
-            item->repaint();
+    case Key_Insert:
+       //toggle selection of current item and move to the next item
+       if (d->selectedBySimpleMove)
+       {
+          d->selectedBySimpleMove=false;
+          if (!item->isSelected()) item->setSelected(TRUE);
+       }
+       else
+       {
+          item->setSelected(!item->isSelected());
+       };
 
-            nextItem=item->itemBelow();
-            if (nextItem!=0)
-            {
-                setCurrentItem(nextItem);
-                ensureItemVisible(nextItem);
-            };
-            emit selectionChanged();
-            break;
+       nextItem=item->itemBelow();
 
-        case Key_Down:
-            nextItem=item->itemBelow();
-            //toggle selection of current item and move to the next item
-            if (shiftOrCtrl)
-            {
-               if (d->selectedBySimpleMove)
-                  d->selectedBySimpleMove=false;
-               else
-                  item->setSelected(!item->isSelected());
-            }
-            else if ((d->selectedBySimpleMove) && (nextItem!=0))
-               item->setSelected(false);
-            item->repaint();
+       if (nextItem!=0)
+       {
+          ensureItemVisible(nextItem);
+          setCurrentItem(nextItem);
+       };
+       item->repaint();
+       emitSelectionChanged=TRUE;
+       break;
 
-            if (nextItem!=0)
-            {
-               if (d->selectedBySimpleMove)
-                  nextItem->setSelected(true);
-                setCurrentItem(nextItem);
-                ensureItemVisible(nextItem);
-            };
-            /*if ((shiftOrCtrl) || (d->selectedBySimpleMove))
-            {
+    case Key_Down:
+       nextItem=item->itemBelow();
+       //toggle selection of current item and move to the next item
+       if (shiftOrCtrl)
+       {
+          if (d->selectedBySimpleMove)
+             d->selectedBySimpleMove=false;
+          else
+             item->setSelected(!item->isSelected());
+       }
+       else if ((d->selectedBySimpleMove) && (nextItem!=0))
+          item->setSelected(false);
+
+
+       if (nextItem!=0)
+       {
+          if (d->selectedBySimpleMove)
+             nextItem->setSelected(true);
+          ensureItemVisible(nextItem);
+          setCurrentItem(nextItem);
+       };
+       item->repaint();
+       emitSelectionChanged=TRUE;
+       break;
+
+    case Key_Up:
+       nextItem=item->itemAbove();
+       //move to the prev. item and toggle selection of this one
+       // => No, can't select the last item, with this. For symmetry, let's
+       // toggle selection and THEN move up, just like we do in down (David)
+       if (shiftOrCtrl)
+       {
+          if (d->selectedBySimpleMove)
+             d->selectedBySimpleMove=false;
+          else
+             item->setSelected(!item->isSelected());
+       }
+       else if ((d->selectedBySimpleMove) && (nextItem!=0))
+          item->setSelected(false);
+
+       if (nextItem!=0)
+       {
+          if (d->selectedBySimpleMove)
+             nextItem->setSelected(true);
+          ensureItemVisible(nextItem);
+          setCurrentItem(nextItem);
+       };
+       item->repaint();
+       emitSelectionChanged=TRUE;
+       break;
+
+    case Key_End:
+       //move to the last item and toggle selection of all items inbetween
+       nextItem=item;
+       if (d->selectedBySimpleMove)
+          item->setSelected(false);
+       if (shiftOrCtrl)
+          d->selectedBySimpleMove=false;
+
+       while(nextItem!=0)
+       {
+          if (shiftOrCtrl)
+             nextItem->setSelected(!nextItem->isSelected());
+          if (nextItem->itemBelow()==0)
+          {
+             if (d->selectedBySimpleMove)
+                nextItem->setSelected(true);
+             nextItem->repaint();
+             ensureItemVisible(nextItem);
+             setCurrentItem(nextItem);
+          }
+          nextItem=nextItem->itemBelow();
+       }
+       emitSelectionChanged=TRUE;
+       break;
+
+    case Key_Home:
+       //move to the last item and toggle selection of all items inbetween
+       nextItem=item;
+       if (d->selectedBySimpleMove)
+          item->setSelected(false);
+       if (shiftOrCtrl)
+          d->selectedBySimpleMove=false;
+
+       while(nextItem!=0)
+       {
+          if (shiftOrCtrl)
+             nextItem->setSelected(!nextItem->isSelected());
+          if (nextItem->itemAbove()==0)
+          {
+             if (d->selectedBySimpleMove)
+                nextItem->setSelected(true);
+             nextItem->repaint();
+             ensureItemVisible(nextItem);
+             setCurrentItem(nextItem);
+          }
+          nextItem=nextItem->itemAbove();
+       }
+       emitSelectionChanged=TRUE;
+       break;
+
+    case Key_Next:
+       items=visibleHeight()/item->height();
+       nextItem=item;
+       if (d->selectedBySimpleMove)
+          item->setSelected(false);
+       if (shiftOrCtrl)
+          d->selectedBySimpleMove=false;
+
+       for (int i=0; i<items; i++)
+       {
+          if (shiftOrCtrl)
+             nextItem->setSelected(!nextItem->isSelected());
+          //the end
+          if ((i==items-1) || (nextItem->itemBelow()==0))
+
+          {
+             if (shiftOrCtrl)
+                nextItem->setSelected(!nextItem->isSelected());
+             if (d->selectedBySimpleMove)
+                nextItem->setSelected(true);
+             nextItem->repaint();
+             ensureItemVisible(nextItem);
+             setCurrentItem(nextItem);
+             if ((shiftOrCtrl) || (d->selectedBySimpleMove))
+             {
                 emit selectionChanged();
-            }*/
-            break;
+             }
+             return;
+          }
+          nextItem=nextItem->itemBelow();
+       }
+       break;
 
-        case Key_Up:
-            nextItem=item->itemAbove();
-            //move to the prev. item and toggle selection of this one
-            // => No, can't select the last item, with this. For symmetry, let's
-            // toggle selection and THEN move up, just like we do in down (David)
-            if (shiftOrCtrl)
-            {
-               if (d->selectedBySimpleMove)
-                  d->selectedBySimpleMove=false;
-               else
-                item->setSelected(!item->isSelected());
-            }
-            else if ((d->selectedBySimpleMove) && (nextItem!=0))
-               item->setSelected(false);
-            item->repaint();
+    case Key_Prior:
+       items=visibleHeight()/item->height();
+       nextItem=item;
+       if (d->selectedBySimpleMove)
+          item->setSelected(false);
+       if (shiftOrCtrl)
+          d->selectedBySimpleMove=false;
 
-            if (nextItem!=0)
-            {
-               if (d->selectedBySimpleMove)
-                  nextItem->setSelected(true);
-                setCurrentItem(nextItem);
-                ensureItemVisible(nextItem);
-            };
-            /*if ((shiftOrCtrl) || (d->selectedBySimpleMove))
-            {
+       for (int i=0; i<items; i++)
+       {
+          if ((nextItem!=item) &&(shiftOrCtrl))
+             nextItem->setSelected(!nextItem->isSelected());
+          //the end
+          if ((i==items-1) || (nextItem->itemAbove()==0))
+
+          {
+             if (d->selectedBySimpleMove)
+                nextItem->setSelected(true);
+             nextItem->repaint();
+             ensureItemVisible(nextItem);
+             setCurrentItem(nextItem);
+             if ((shiftOrCtrl) || (d->selectedBySimpleMove))
+             {
                 emit selectionChanged();
-            }*/
-            break;
+             }
+             return;
+          }
+          nextItem=nextItem->itemAbove();
+       }
+       break;
 
-        case Key_End:
-            //move to the last item and toggle selection of all items inbetween
-            nextItem=item;
-            if (d->selectedBySimpleMove)
-               item->setSelected(false);
-            if (shiftOrCtrl)
-               d->selectedBySimpleMove=false;
+    case Key_Minus:
+       if ( item->isOpen() )
+          setOpen( item, FALSE );
+       break;
+    case Key_Plus:
+       if (  !item->isOpen() && (item->isExpandable() || item->childCount()) )
+          setOpen( item, TRUE );
+       break;
+    default:
 
-            while(nextItem!=0)
-            {
-                if (shiftOrCtrl)
-                    nextItem->setSelected(!nextItem->isSelected());
-                if (nextItem->itemBelow()==0)
-                {
-                   if (d->selectedBySimpleMove)
-                      nextItem->setSelected(true);
-                    nextItem->repaint();
-                    ensureItemVisible(nextItem);
-                    setCurrentItem(nextItem);
-                }
-                nextItem=nextItem->itemBelow();
-            }
-            /*if ((shiftOrCtrl) || (d->selectedBySimpleMove))
-            {
-                emit selectionChanged();
-            }*/
-            break;
-
-        case Key_Home:
-            //move to the last item and toggle selection of all items inbetween
-            nextItem=item;
-            if (d->selectedBySimpleMove)
-               item->setSelected(false);
-            if (shiftOrCtrl)
-               d->selectedBySimpleMove=false;
-
-            while(nextItem!=0)
-            {
-                if (shiftOrCtrl)
-                    nextItem->setSelected(!nextItem->isSelected());
-                if (nextItem->itemAbove()==0)
-                {
-                   if (d->selectedBySimpleMove)
-                      nextItem->setSelected(true);
-                    nextItem->repaint();
-                    ensureItemVisible(nextItem);
-                    setCurrentItem(nextItem);
-                }
-                nextItem=nextItem->itemAbove();
-            }
-            /*if ((shiftOrCtrl) || (d->selectedBySimpleMove))
-            {
-                emit selectionChanged();
-            }*/
-            break;
-
-        case Key_Next:
-            items=visibleHeight()/item->height();
-            nextItem=item;
-            if (d->selectedBySimpleMove)
-               item->setSelected(false);
-            if (shiftOrCtrl)
-               d->selectedBySimpleMove=false;
-            for (int i=0; i<items; i++)
-            {
-                if (shiftOrCtrl)
-                    nextItem->setSelected(!nextItem->isSelected());
-                //the end
-                if ((i==items-1) || (nextItem->itemBelow()==0))
-
-                {
-                    if (shiftOrCtrl)
-                        nextItem->setSelected(!nextItem->isSelected());
-                   if (d->selectedBySimpleMove)
-                      nextItem->setSelected(true);
-                    nextItem->repaint();
-                    ensureItemVisible(nextItem);
-                    setCurrentItem(nextItem);
-                    if ((shiftOrCtrl) || (d->selectedBySimpleMove))
-                    {
-                        emit selectionChanged();
-                    }
-                    return;
-                }
-                nextItem=nextItem->itemBelow();
-            }
-            break;
-
-        case Key_Prior:
-            items=visibleHeight()/item->height();
-            nextItem=item;
-            if (d->selectedBySimpleMove)
-               item->setSelected(false);
-            if (shiftOrCtrl)
-               d->selectedBySimpleMove=false;
-            for (int i=0; i<items; i++)
-            {
-                if ((nextItem!=item) &&(shiftOrCtrl))
-                    nextItem->setSelected(!nextItem->isSelected());
-                //the end
-                if ((i==items-1) || (nextItem->itemAbove()==0))
-
-                {
-                   if (d->selectedBySimpleMove)
-                      nextItem->setSelected(true);
-                    nextItem->repaint();
-                    ensureItemVisible(nextItem);
-                    setCurrentItem(nextItem);
-                    if ((shiftOrCtrl) || (d->selectedBySimpleMove))
-                    {
-                        emit selectionChanged();
-                    }
-                    return;
-                }
-                nextItem=nextItem->itemAbove();
-            }
-            break;
-
-        case Key_Minus:
-            if ( item->isOpen() )
-                setOpen( item, FALSE );
-            break;
-        case Key_Plus:
-            if (  !item->isOpen() && (item->isExpandable() || item->childCount()) )
-                setOpen( item, TRUE );
-            break;
-        default:
-
-           if (d->selectedBySimpleMove)
-              item->setSelected(false);
-            //this is mainly for the "goto filename beginning with pressed char" feature (aleXXX)
-            setSelectionMode (QListView::Multi);
-            QListView::keyPressEvent (e);
-            setSelectionMode (QListView::Extended);
-            if (d->selectedBySimpleMove)
-            {
-               currentItem()->setSelected(true);
-               currentItem()->repaint();
-//               emit selectionChanged();
-            }
-            break;
+       if (d->selectedBySimpleMove)
+          item->setSelected(false);
+       //this is mainly for the "goto filename beginning with pressed char" feature (aleXXX)
+       setSelectionMode (QListView::Multi);
+       QListView::keyPressEvent (e);
+       setSelectionMode (QListView::Extended);
+       if (d->selectedBySimpleMove)
+       {
+          currentItem()->setSelected(true);
+          currentItem()->repaint();
+          emitSelectionChanged=TRUE;
+       }
+       break;
     }
-    if ((shiftOrCtrl) || (d->selectedBySimpleMove))
+
+    if (emitSelectionChanged)
        emit selectionChanged();
 }
 

@@ -692,6 +692,12 @@ protected:
    */
   virtual void viewportPaintEvent(QPaintEvent*);
 
+  /**
+   * Only called by konq_listviewwidget to select the current item
+   * after listing. For more information look in konquerorKeyPressEvent().
+   */
+  void selectCurrentItemAndEnableSelectedBySimpleMoveMode();
+
 protected slots:
   /**
    * Update internal settings whenever the global ones change.
