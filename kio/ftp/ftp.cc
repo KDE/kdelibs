@@ -210,7 +210,7 @@ void Ftp::closeConnection()
   {
     if( sControl != 0 )
     {
-      ftpSendCmd( "quit", '2' );
+      (void) ftpSendCmd( "quit", '2' );
       free( nControl );
       ::close( sControl );
       sControl = 0;
@@ -397,12 +397,12 @@ bool Ftp::ftpLogin( const QString & user, const QString & _pass )
   {
     if( !strncmp( rspbuf, "215 Windows_NT version", 22 ) ) // should do for any version
     {
-      ftpSendCmd( "site dirstyle", '2' );
+      (void)ftpSendCmd( "site dirstyle", '2' );
       // Check if it was already in Unix style
       // Patch from Keith Refson <Keith.Refson@earth.ox.ac.uk>
       if( !strncmp( rspbuf, "200 MSDOS-like directory output is on", 37 ))
          //It was in Unix style already!
-         ftpSendCmd( "site dirstyle", '2' );
+         (void)ftpSendCmd( "site dirstyle", '2' );
 
     }
   }
@@ -439,9 +439,12 @@ bool Ftp::ftpLogin( const QString & user, const QString & _pass )
 
 
 /**
- * ftpSendCmd - send a command (@p cmd) and wait for expected response
+ * ftpSendCmd - send a command (@p cmd) and read response
  *
- * @param expresp the expected first char. '\0' for no check
+ * @param expresp the expected first char. '\001' for no check
+ * @param maxretries number of time it should retry. Since it recursively
+ * calls itself if it can't read the answer (this happens especially after
+ * timeouts), we need to limit the recursiveness ;-)
  *
  * return true if proper response received, false on error
  * or if @p expresp doesn't match
@@ -461,8 +464,10 @@ bool Ftp::ftpSendCmd( const QCString& cmd, char expresp, int maxretries )
   }
 
   char rsp = readresp();
-  if (!rsp) // TODO: or if we got "421 No Transfer Timeout (300 seconds): closing control connection"
+  if (!rsp || ( rsp == '4' /* && ... */))
   {
+    // The 4 is for "421 No Transfer Timeout (300 seconds): closing control connection"
+    // I don't know if other 4 codes can mean something else. I should read RFC 959.
     if ( maxretries > 0 )
     {
       // It might mean a timeout occured, let's try logging in again
@@ -483,7 +488,7 @@ bool Ftp::ftpSendCmd( const QCString& cmd, char expresp, int maxretries )
       return false;
     }
   }
-  return rsp == expresp;
+  return (expresp != 0) && (rsp == expresp);
 }
 
 /*
@@ -1030,10 +1035,10 @@ void Ftp::listDir( const QString & _path, const QString& /*query*/ )
   while( ( e = ftpReadDir() ) )
   {
     kdDebug(7102) << e->name << endl;
-    if ( S_ISDIR( (mode_t)e->type ) )
-    {
-        kdDebug(7102) << "is a dir" << endl;
-    }
+    //if ( S_ISDIR( (mode_t)e->type ) )
+    //{
+    //   kdDebug(7102) << "is a dir" << endl;
+    //}
     entry.clear();
     createUDSEntry( e->name, e, entry );
     listEntry( entry, false );

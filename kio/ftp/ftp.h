@@ -125,9 +125,9 @@ private:
   bool ftpLogin( const QString & user, const QString & pass );
 
   /**
-   * ftpSendCmd - send a command (@p cmd) and wait for expected response
+   * ftpSendCmd - send a command (@p cmd) and read response
    *
-   * @param expresp the expected first char. '\0' for no check
+   * @param expresp the expected first char, if you want the builtin check
    * @param maxretries number of time it should retry. Since it recursively
    * calls itself if it can't read the answer (this happens especially after
    * timeouts), we need to limit the recursiveness ;-)
