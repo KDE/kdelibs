@@ -400,25 +400,34 @@ void KBookmarkMenu::fillBookmarkMenu()
 
     bool haveSep = false;
 
-    QString type = "netscape";
-    QPair<bool, QString> info = m_pManager->showDynamicBookmarks(type);
+    QMap<QString,QString> dynMenui18nMap; // make const
+    dynMenui18nMap["netscape"] = i18n("Netscape Bookmarks");
 
-    if ( info.first && QFile::exists( info.second ) )
+    QValueList<QString> keys = dynMenui18nMap.keys();
+    QValueList<QString>::const_iterator it;
+    for ( it = keys.begin(); it != keys.end(); ++it ) 
     {
-      if (!haveSep) {
-         m_parentMenu->insertSeparator();
-         haveSep = true;
-      }
+       QString menuName = dynMenui18nMap[(*it)];
+       QPair<bool, QString> info = m_pManager->showDynamicBookmarks((*it));
 
-      KActionMenu * actionMenu = new KActionMenu( i18n("Netscape Bookmarks"), "netscape",
-                                                  m_actionCollection, 0L );
-      actionMenu->plug( m_parentMenu );
-      m_actions.append( actionMenu );
-      KBookmarkMenu *subMenu = new KBookmarkMenu( m_pManager, m_pOwner, actionMenu->popupMenu(),
-                                                  m_actionCollection, false,
-                                                  m_bAddBookmark, QString::null );
-      m_lstSubMenus.append(subMenu);
-      connect(actionMenu->popupMenu(), SIGNAL(aboutToShow()), subMenu, SLOT(slotNSLoad()));
+       if ( info.first && QFile::exists( info.second ) )
+       {
+         if (!haveSep) 
+         {
+            m_parentMenu->insertSeparator();
+            haveSep = true;
+         }
+
+         KActionMenu * actionMenu = new KActionMenu( menuName, (*it),
+                                                     m_actionCollection, 0L );
+         actionMenu->plug( m_parentMenu );
+         m_actions.append( actionMenu );
+         KBookmarkMenu *subMenu = new KBookmarkMenu( m_pManager, m_pOwner, actionMenu->popupMenu(),
+                                                     m_actionCollection, false,
+                                                     m_bAddBookmark, QString::null );
+         m_lstSubMenus.append(subMenu);
+         connect(actionMenu->popupMenu(), SIGNAL(aboutToShow()), subMenu, SLOT(slotNSLoad()));
+       }
     }
   }
 
@@ -580,6 +589,7 @@ void KBookmarkMenu::slotBookmarkSelected()
 
 void KBookmarkMenu::slotNSLoad()
 {
+  // only fill menu once
   m_parentMenu->disconnect(SIGNAL(aboutToShow()));
 
   KBookmarkMenuNSImporter importer( m_pManager, this, m_actionCollection );
