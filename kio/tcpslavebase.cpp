@@ -3,6 +3,8 @@
  *
  * Copyright (C) 2000 Alex Zepeda <jazepeda@pacbell.net>
  * Copyright (C) 2001 George Staikos <staikos@kde.org>
+ * Copyright (C) 2001 Dawit Alemayehu <adawit@kde.org>
+ *
  * This file is part of the KDE project
  *
  * This library is free software; you can redistribute it and/or
@@ -25,15 +27,13 @@
 #include <config.h>
 #endif
 
-#include <sys/types.h>
 #include <sys/uio.h>
-
+#include <sys/time.h>
+#include <sys/socket.h>
 #include <netinet/in.h>
 #include <netdb.h>
 #include <unistd.h>
 
-#include "kio/tcpslavebase.h"
-#include "kextsock.h"
 #include <ksocks.h>
 #include <kdebug.h>
 #include <kssl.h>
@@ -51,11 +51,12 @@
 #include <ksslpkcs12.h>
 #include <kapp.h>
 
+#include "kio/tcpslavebase.h"
+
 using namespace KIO;
 
-
-
-class TCPSlaveBase::TcpSlaveBasePrivate {
+class TCPSlaveBase::TcpSlaveBasePrivate
+{
 public:
   KSSL *kssl;
   bool usingTLS;
@@ -64,20 +65,37 @@ public:
   QString ip;
   DCOPClient *dcc;
   KSSLPKCS12 *pkcs;
+
+    int status;
+    int timeout;
+    bool block;
+    bool useSSLTunneling;
+    bool needSSLHandShake;
 };
 
 
-TCPSlaveBase::TCPSlaveBase(unsigned short int default_port, const QCString &protocol, const QCString &pool_socket, const QCString &app_socket)
-	: SlaveBase (protocol, pool_socket, app_socket), m_iDefaultPort(default_port), m_iSock(-1), m_sServiceName(protocol), fp(0)
+TCPSlaveBase::TCPSlaveBase(unsigned short int default_port,
+                           const QCString &protocol,
+                           const QCString &pool_socket,
+                           const QCString &app_socket)
+             :SlaveBase (protocol, pool_socket, app_socket),
+              m_iSock(-1), m_iDefaultPort(default_port),
+              m_sServiceName(protocol), fp(0)
 {
-// We have to have two constructors, so don't add anything else in here.
-// put it in doConstructorStuff() instead.
+    // We have to have two constructors, so don't add anything
+    // else in here. Put it in doConstructorStuff() instead.
         doConstructorStuff();
         m_bIsSSL = false;
 }
 
-TCPSlaveBase::TCPSlaveBase(unsigned short int default_port, const QCString &protocol, const QCString &pool_socket, const QCString &app_socket, bool useSSL)
-	: SlaveBase (protocol, pool_socket, app_socket), m_bIsSSL(useSSL), m_iDefaultPort(default_port), m_iSock(-1), m_sServiceName(protocol), fp(0)
+TCPSlaveBase::TCPSlaveBase(unsigned short int default_port,
+                           const QCString &protocol,
+                           const QCString &pool_socket,
+                           const QCString &app_socket,
+                           bool useSSL)
+             :SlaveBase (protocol, pool_socket, app_socket),
+              m_iSock(-1), m_bIsSSL(useSSL), m_iDefaultPort(default_port),
+              m_sServiceName(protocol), fp(0)
 {
         doConstructorStuff();
         if (useSSL)
@@ -87,72 +105,91 @@ TCPSlaveBase::TCPSlaveBase(unsigned short int default_port, const QCString &prot
 // The constructor procedures go here now.
 void TCPSlaveBase::doConstructorStuff()
 {
-        d = new TcpSlaveBasePrivate;
-        d->kssl = NULL;
-        d->ip = "";
-        d->cc = NULL;
-        d->usingTLS = false;
-	d->dcc = NULL;
-        d->pkcs = NULL;
+    d = new TcpSlaveBasePrivate;
+    d->kssl = 0L;
+    d->ip = "";
+    d->cc = 0L;
+    d->usingTLS = false;
+    d->dcc = 0L;
+    d->pkcs = 0L;
+    d->status = -1;
+    d->timeout = -1;
+    d->block = false;
+    d->useSSLTunneling = false;
 }
 
 TCPSlaveBase::~TCPSlaveBase()
 {
-	CleanSSL();
-        if (d->usingTLS) delete d->kssl;
-        if (d->dcc) delete d->dcc;
-        if (d->pkcs) delete d->pkcs;
-        delete d;
+    CleanSSL();
+    if (d->usingTLS) delete d->kssl;
+    if (d->dcc) delete d->dcc;
+    if (d->pkcs) delete d->pkcs;
+    delete d;
 }
 
 ssize_t TCPSlaveBase::Write(const void *data, ssize_t len)
 {
-        if (m_bIsSSL || d->usingTLS)
-           return d->kssl->write(data, len);
-	return KSocks::self()->write(m_iSock, data, len);
+    if ( (m_bIsSSL || d->usingTLS) && !d->useSSLTunneling )
+    {
+        if ( d->needSSLHandShake )
+            (void) doSSLHandShake( true );
+        return d->kssl->write(data, len);
+    }
+    return KSocks::self()->write(m_iSock, data, len);
 }
 
 ssize_t TCPSlaveBase::Read(void *data, ssize_t len)
 {
-        if (m_bIsSSL || d->usingTLS)
-           return d->kssl->read(data, len);
-	return KSocks::self()->read(m_iSock, data, len);
+    if ( (m_bIsSSL || d->usingTLS) && !d->useSSLTunneling )
+    {
+        if ( d->needSSLHandShake )
+            (void) doSSLHandShake( true );
+        return d->kssl->read(data, len);
+    }
+    return KSocks::self()->read(m_iSock, data, len);
 }
 
 ssize_t TCPSlaveBase::ReadLine(char *data, ssize_t len)
 {
-        // let's not segfault!
-        if (!data) return -1;
+    // let's not segfault!
+    if (!data) return -1;
 
-        *data = 0;
-           // ugliness alert!!  calling read() so many times can't be good...
-           int clen = 0;
-           char *buf = data;
-           while (clen < len) {
-              int rc;
-              if (m_bIsSSL || d->usingTLS) rc = d->kssl->read(buf, 1);
-	      else rc = KSocks::self()->read(m_iSock, buf, 1);
-              if (rc < 0) return -1;
-              clen++;
-              if (*buf++ == '\n')
-                 break;
-           }
-           *buf = 0; 
-           return clen;
+    *data = 0;
+    // ugliness alert!!  calling read() so many times can't be good...
+    int clen = 0;
+    char *buf = data;
+    while (clen < len) {
+        int rc;
+        if ( (m_bIsSSL || d->usingTLS) && !d->useSSLTunneling ) {
+            if ( d->needSSLHandShake )
+                (void) doSSLHandShake( true );
+            rc = d->kssl->read(buf, 1);
+        }
+        else
+            rc = KSocks::self()->read(m_iSock, buf, 1);
+            if (rc < 0) return -1;
+                clen++;
+            if (*buf++ == '\n')
+                break;
+    }
+    *buf = 0;
+    return clen;
 }
 
 unsigned short int TCPSlaveBase::GetPort(unsigned short int _port)
 {
-	unsigned short int port;
-	if (_port <= 0) {
-		struct servent *srv=getservbyname(m_sServiceName, "tcp");
-		if (srv) {
-			port=ntohs(srv->s_port);
-		} else
-			port=m_iDefaultPort;
-	} else
-		port=_port;
-	return port;
+    unsigned short int port;
+    if (_port <= 0) {
+        struct servent *srv=getservbyname(m_sServiceName, "tcp");
+        if (srv) {
+            port=ntohs(srv->s_port);
+        }
+        else
+            port=m_iDefaultPort;
+    }
+    else
+        port=_port;
+    return port;
 }
 
   // This function is simply a wrapper to establish the connection
@@ -161,152 +198,166 @@ unsigned short int TCPSlaveBase::GetPort(unsigned short int _port)
   // a port, and if so use it, otherwise we check to see if there
   // is a port specified in /etc/services, and if so use that
   // otherwise as a last resort use the supplied default port.
-bool TCPSlaveBase::ConnectToHost(const QCString &host, unsigned short int _port)
+bool TCPSlaveBase::ConnectToHost(const QCString &host,
+                                 unsigned short int _port)
 {
-	unsigned short int port;
-	KExtendedSocket ks;
+    return ConnectToHost( host, _port, true );
+}
 
-        d->host = host;
-	port = GetPort(_port);
+bool TCPSlaveBase::ConnectToHost( const QString &host,
+                                  unsigned int _port,
+                                  bool sendError )
+{
+    unsigned short int port;
+    KExtendedSocket ks;
 
-	ks.setAddress(host, port);
-	if (ks.connect() < 0)
-	  {
-	    if (ks.status() == IO_LookupError)
-	      error( ERR_UNKNOWN_HOST, host);
-	    else
-	      error( ERR_COULD_NOT_CONNECT, host);
-	    return false;
-	  }
+    d->status = -1;
+    d->host = host;
+    d->needSSLHandShake = m_bIsSSL;
+    port = GetPort(_port);
+    ks.setAddress(host, port);
+    if ( d->timeout > -1 )
+        ks.setTimeout( d->timeout );
 
-	m_iSock = ks.fd();
+    if (ks.connect() < 0)
+    {
+        d->status = ks.status();
+        if ( sendError )
+        {
+            if (d->status == IO_LookupError)
+                error( ERR_UNKNOWN_HOST, host);
+            else if ( d->status != -1 )
+                error( ERR_COULD_NOT_CONNECT, host);
+        }
+        return false;
+    }
 
-        // store the IP for later
-        const KSocketAddress *sa = ks.peerAddress();
-        d->ip = sa->nodeName();
+    m_iSock = ks.fd();
 
-	ks.release();		// KExtendedSocket no longer applicable
+    // store the IP for later
+    const KSocketAddress *sa = ks.peerAddress();
+    d->ip = sa->nodeName();
 
-        if (m_bIsSSL) {
-           d->kssl->reInitialize();
-           certificatePrompt();
-           int rc = d->kssl->connect(m_iSock);
-           if (rc < 0) { 
-              CloseDescriptor();
-	      error( ERR_COULD_NOT_CONNECT, host);
-              return false;
-           }
-           setMetaData("ssl_in_use", "TRUE");
-           rc = verifyCertificate();
-           if (rc != 1) {
-              CloseDescriptor();
-	      error( ERR_COULD_NOT_CONNECT, host);
-              return false;
-           }
-        } else setMetaData("ssl_in_use", "FALSE");
+    ks.release();		// KExtendedSocket no longer applicable
 
-	// Since we want to use stdio on the socket,
-	// we must fdopen it to get a file pointer,
-	// if it fails, close everything up
-	if ((fp = fdopen(m_iSock, "w+")) == 0) {
-		CloseDescriptor();
-		return false;
-	}
-	m_iPort=port;
+    if ( d->block != ks.blockingMode() )
+        ks.setBlockingMode( d->block );
 
-	return true;
+    if (m_bIsSSL && !d->useSSLTunneling) {
+        if ( !doSSLHandShake( sendError ) )
+            return false;
+    }
+    else
+        setMetaData("ssl_in_use", "FALSE");
+
+    // Since we want to use stdio on the socket,
+    // we must fdopen it to get a file pointer,
+    // if it fails, close everything up
+    if ((fp = fdopen(m_iSock, "w+")) == 0) {
+        CloseDescriptor();
+        return false;
+    }
+    m_iPort=port;
+
+    return true;
 }
 
 void TCPSlaveBase::CloseDescriptor()
 {
-        stopTLS();
-	if (fp) {
-		fclose(fp);
-		fp=0;
-		m_iSock=-1;
-                if (m_bIsSSL)
-                   d->kssl->close();
-	}
-	if (m_iSock != -1) {
-		close(m_iSock);
-		m_iSock=-1;
-	}
-        d->ip = "";
-        d->host = "";
+    stopTLS();
+    if (fp) {
+        fclose(fp);
+        fp=0;
+        m_iSock=-1;
+        if (m_bIsSSL)
+            d->kssl->close();
+    }
+    if (m_iSock != -1) {
+        close(m_iSock);
+        m_iSock=-1;
+    }
+    d->ip = "";
+    d->host = "";
 }
 
 bool TCPSlaveBase::InitializeSSL()
 {
-   if (m_bIsSSL) {
-      if (KSSL::doesSSLWork()) {
-         d->kssl = new KSSL;
-         return true;
-      } else return false;
-   } else return false;
+    if (m_bIsSSL) {
+        if (KSSL::doesSSLWork()) {
+            d->kssl = new KSSL;
+            return true;
+        }
+        else
+            return false;
+    }
+    else
+        return false;
 }
 
 void TCPSlaveBase::CleanSSL()
 {
-   delete d->cc;
+    delete d->cc;
 
-   if (m_bIsSSL) {
-      delete d->kssl;
-   }
+    if (m_bIsSSL) {
+        delete d->kssl;
+    }
 }
 
 bool TCPSlaveBase::AtEOF()
 {
-	return feof(fp);
+    return feof(fp);
 }
 
 int TCPSlaveBase::startTLS()
 {
-        if (d->usingTLS || m_bIsSSL || !KSSL::doesSSLWork()) return false;
+    if (d->usingTLS || d->useSSLTunneling || m_bIsSSL || !KSSL::doesSSLWork())
+        return false;
 
-        d->kssl = new KSSL(false);
-        if (!d->kssl->TLSInit()) {
-           delete d->kssl;
-           return -1;
-        }
+    d->kssl = new KSSL(false);
+    if (!d->kssl->TLSInit()) {
+        delete d->kssl;
+        return -1;
+    }
 
-        certificatePrompt();
+    certificatePrompt();
 
-        int rc = d->kssl->connect(m_iSock);
-        if (rc < 0) {
-           delete d->kssl;
-           return -2;
-        }
+    int rc = d->kssl->connect(m_iSock);
+    if (rc < 0) {
+        delete d->kssl;
+        return -2;
+    }
 
-        d->usingTLS = true;
-        setMetaData("ssl_in_use", "TRUE");
-        rc = verifyCertificate();
-        if (rc != 1) {
-           setMetaData("ssl_in_use", "FALSE");
-           d->usingTLS = false;
-           delete d->kssl;
-           return -3;
-        }
+    d->usingTLS = true;
+    setMetaData("ssl_in_use", "TRUE");
+    rc = verifyCertificate();
+    if (rc != 1) {
+        setMetaData("ssl_in_use", "FALSE");
+        d->usingTLS = false;
+        delete d->kssl;
+        return -3;
+    }
 
-return (d->usingTLS ? 1 : 0);
+    return (d->usingTLS ? 1 : 0);
 }
 
 
 void TCPSlaveBase::stopTLS()
 {
-        if (d->usingTLS) {
-           delete d->kssl;
-           d->usingTLS = false;
-           setMetaData("ssl_in_use", "FALSE");
-        }
+    if (d->usingTLS) {
+        delete d->kssl;
+        d->usingTLS = false;
+        setMetaData("ssl_in_use", "FALSE");
+    }
 }
 
 
 bool TCPSlaveBase::canUseTLS()
 {
-        if (m_bIsSSL || !KSSL::doesSSLWork()) return false;
+    if (m_bIsSSL || d->needSSLHandShake || !KSSL::doesSSLWork())
+        return false;
 
-KSSLSettings kss;
-        return kss.tlsv1();
+    KSSLSettings kss;
+    return kss.tlsv1();
 }
 
 
@@ -342,12 +393,13 @@ bool send = false, prompt = false, save = false, forcePrompt = false;
 
   // Look for a certificate on a per-host basis
   if (certname.isEmpty())
-     certname = KSSLCertificateHome::getDefaultCertificateName(d->host, &send, &prompt);
-
+        certname = KSSLCertificateHome::getDefaultCertificateName(d->host,
+                                                                  &send,
+                                                                  &prompt);
   // Look for a general certificate
   if (certname.isEmpty() && !prompt && !forcePrompt) {
-     certname = 
-      KSSLCertificateHome::getDefaultCertificateName(&send, &prompt);
+        certname = KSSLCertificateHome::getDefaultCertificateName(&send,
+                                                                  &prompt);
   }
 
   if (certname.isEmpty() && !prompt)
@@ -359,7 +411,7 @@ bool send = false, prompt = false, save = false, forcePrompt = false;
   if ((certname.isEmpty() && prompt) || forcePrompt) {
      QStringList certs = KSSLCertificateHome::getCertificateList();
 
-     if (certs.isEmpty()) return;  // we had nothing else, and prompt failed..
+        if (certs.isEmpty()) return;  // we had nothing else, and prompt failed
 
      if (!d->dcc) {
         d->dcc = new DCOPClient;
@@ -374,8 +426,9 @@ bool send = false, prompt = false, save = false, forcePrompt = false;
      QCString rettype;
      QDataStream arg(data, IO_WriteOnly);
      arg << certs;
-     bool rc = d->dcc->call("kio_uiserver", "UIServer", 
-                     "showSSLCertDialog(QStringList)", data, rettype, retval);
+     bool rc = d->dcc->call("kio_uiserver", "UIServer",
+                               "showSSLCertDialog(QStringList)",
+                               data, rettype, retval);
 
      if (rc && rettype == "KSSLCertDlgRet") {
         QDataStream retStream(retval, IO_ReadOnly);
@@ -389,10 +442,12 @@ bool send = false, prompt = false, save = false, forcePrompt = false;
      }
   }
 
-  // The user may have said to not send the certificate, but to save the choice
+    // The user may have said to not send the certificate,
+    // but to save the choice
   if (!send) {
      if (save) {
-        KSSLCertificateHome::setDefaultCertificate(certname, d->host, false, false);
+            KSSLCertificateHome::setDefaultCertificate(certname, d->host,
+                                                       false, false);
      }
      return;
   }
@@ -413,10 +468,10 @@ bool send = false, prompt = false, save = false, forcePrompt = false;
         ai.keepPassword = false;
         qds << ai;
 
-        bool rc = d->dcc->call("kio_uiserver", "UIServer", 
-                      "openPassDlg(KIO::AuthInfo)", authdata, rettype, authval);
+        bool rc = d->dcc->call("kio_uiserver", "UIServer",
+                                   "openPassDlg(KIO::AuthInfo)",
+                                   authdata, rettype, authval);
         if (!rc) break;
-                
         if (rettype != "QByteArray") continue;
 
         QDataStream qdret(authval, IO_ReadOnly);
@@ -428,9 +483,11 @@ bool send = false, prompt = false, save = false, forcePrompt = false;
         pass = ai.password;
 
         pkcs = KSSLCertificateHome::getCertificateByName(certname, pass);
+
         if (!pkcs) {
-           int rc = messageBox(WarningYesNo, 
-              i18n("Couldn't open the certificate.  Try a new password?"), 
+                int rc = messageBox(WarningYesNo, i18n("Couldn't open the "
+                                                       "certificate.  Try a "
+                                                       "new password?"),
               i18n("SSL"));
               if (rc == KMessageBox::No) break;
         }
@@ -440,12 +497,16 @@ bool send = false, prompt = false, save = false, forcePrompt = false;
    // If we could open the certificate, let's send it
    if (pkcs) {
       if (!d->kssl->setClientCertificate(pkcs)) {
-         messageBox(Information, i18n("Sorry, the procedure to set the client certificate for the session failed."), i18n("SSL"));
+            messageBox(Information, i18n("Sorry, the procedure to set the "
+                                         "client certificate for the session "
+                                         "failed."), i18n("SSL"));
          delete pkcs;  // we don't need this anymore
-      } else {
+        }
+        else {
          setMetaData("ssl_using_client_cert", "TRUE");
          if (save) {
-           KSSLCertificateHome::setDefaultCertificate(certname, d->host, false, false);
+                KSSLCertificateHome::setDefaultCertificate(certname, d->host,
+                                                           false, false);
          }
       }
       d->pkcs = pkcs;
@@ -458,7 +519,7 @@ bool send = false, prompt = false, save = false, forcePrompt = false;
 
 bool TCPSlaveBase::usingTLS()
 {
-        return d->usingTLS;
+    return d->usingTLS;
 }
 
 
@@ -477,31 +538,22 @@ bool _IPmatchesCN = false;
 
    KSSLCertificate::KSSLValidation ksv = pc.validate();
 
-   /*
-    *     Setting the various bits of meta-info that will be needed.
-    */
-   setMetaData("ssl_peer_cert_subject",
-                                                             pc.getSubject());
-   setMetaData("ssl_peer_cert_issuer", 
-                                                              pc.getIssuer());
-   setMetaData("ssl_cipher",
-                                       d->kssl->connectionInfo().getCipher());
-   setMetaData("ssl_cipher_desc", 
+    /* Setting the various bits of meta-info that will be needed. */
+    setMetaData("ssl_peer_cert_subject", pc.getSubject());
+    setMetaData("ssl_peer_cert_issuer", pc.getIssuer());
+    setMetaData("ssl_cipher", d->kssl->connectionInfo().getCipher());
+   setMetaData("ssl_cipher_desc",
                             d->kssl->connectionInfo().getCipherDescription());
-   setMetaData("ssl_cipher_version", 
+   setMetaData("ssl_cipher_version",
                                 d->kssl->connectionInfo().getCipherVersion());
-   setMetaData("ssl_cipher_used_bits", 
+   setMetaData("ssl_cipher_used_bits",
               QString::number(d->kssl->connectionInfo().getCipherUsedBits()));
-   setMetaData("ssl_cipher_bits", 
+   setMetaData("ssl_cipher_bits",
                   QString::number(d->kssl->connectionInfo().getCipherBits()));
-   setMetaData("ssl_peer_ip", 
-                                                                       d->ip);
-   setMetaData("ssl_cert_state", 
-                                                        QString::number(ksv));
-   setMetaData("ssl_good_from", 
-                                                           pc.getNotBefore());
-   setMetaData("ssl_good_until", 
-                                                            pc.getNotAfter());
+    setMetaData("ssl_peer_ip", d->ip);
+    setMetaData("ssl_cert_state", QString::number(ksv));
+    setMetaData("ssl_good_from", pc.getNotBefore());
+    setMetaData("ssl_good_until", pc.getNotAfter());
 
    if (ksv == KSSLCertificate::Ok) {
       rc = 1;
@@ -510,7 +562,8 @@ bool _IPmatchesCN = false;
 
    if (!hasMetaData("parent_frame") || metaData("parent_frame") == "TRUE") {
       //  - Read from cache and see if there is a policy for this
-      KSSLCertificateCache::KSSLCertificatePolicy cp = d->cc->getPolicyByCertificate(pc);
+        KSSLCertificateCache::KSSLCertificatePolicy cp =
+        d->cc->getPolicyByCertificate(pc);
 
       _IPmatchesCN = d->kssl->peerInfo().certMatchesAddress();
 
@@ -519,7 +572,8 @@ bool _IPmatchesCN = false;
          if (cp == KSSLCertificateCache::Unknown || 
              cp == KSSLCertificateCache::Ambiguous) {
             cp = KSSLCertificateCache::Prompt;
-         } else {
+            }
+            else {
             // A policy was already set so let's honour that.
             permacache = d->cc->isPermanent(pc);
          }
@@ -539,14 +593,16 @@ bool _IPmatchesCN = false;
            int result;
              do {
                 if (ksv == KSSLCertificate::Ok && !_IPmatchesCN) {
-                  QString msg = i18n("The IP address of the host %1 does not "
-                               "match the one the certificate was issued to.");
+                        QString msg = i18n("The IP address of the host %1 "
+                                           "does not match the one the "
+                                           "certificate was issued to.");
                    result = messageBox( WarningYesNoCancel,
                               msg.arg(d->host),
                               i18n("Server Authentication"),
                               i18n("&Details..."),
                               i18n("Co&ntinue") );
-                } else {
+                    }
+                    else {
                    QString msg = i18n("The server certificate failed the "
                                       "authenticity test (%1).");
                    result = messageBox( WarningYesNoCancel,
@@ -565,11 +621,10 @@ bool _IPmatchesCN = false;
                    QCString ignoretype;
                    QDataStream arg(data, IO_WriteOnly);
                    arg << theurl << mOutgoingMetaData;
-                   d->dcc->call("kio_uiserver", 
-                                "UIServer", 
+                        d->dcc->call("kio_uiserver", "UIServer",
                                 "showSSLInfoDialog(QString,KIO::MetaData)",
                                 data, ignoretype, ignore);
-                } 
+                }
              } while (result == KMessageBox::Yes);
 
              if (result == KMessageBox::No) {
@@ -581,19 +636,24 @@ bool _IPmatchesCN = false;
                                        "certificate forever without "
                                        "being prompted?"),
                                   i18n("Server Authentication"),
-                                  i18n("&Forever"), i18n("&Current Sessions Only"));
-                   if (result == KMessageBox::Yes) permacache = true;
-                   else permacache = false;
-             } else {
+                                         i18n("&Forever"),
+                                         i18n("&Current Sessions Only"));
+                    if (result == KMessageBox::Yes)
+                        permacache = true;
+                    else
+                        permacache = false;
+                }
+                else {
                 setMetaData("ssl_action", "reject");
                 rc = -1;
                 cp = KSSLCertificateCache::Prompt;
              }
-           }
           break;
+            }
          default:
           kdDebug(7029) << "TCPSlaveBase/SSL error in cert code."
-                    << "  Please report this to kfm-devel@kde.org." << endl;
+                              << "Please report this to kfm-devel@kde.org."
+                              << endl;
           break;
          }
       }
@@ -603,10 +663,11 @@ bool _IPmatchesCN = false;
       d->cc->addCertificate(pc, cp, permacache);
       d->cc->saveToDisk();    // So that other slaves can get at it.
       // FIXME: we should be able to notify other slaves of this here.
-
-   } else {        // Child frame
+    }
+    else {
+        // Child frame
       //  - Read from cache and see if there is a policy for this
-      KSSLCertificateCache::KSSLCertificatePolicy cp =  
+      KSSLCertificateCache::KSSLCertificatePolicy cp =
                                              d->cc->getPolicyByCertificate(pc);
       isChild = true;
       // FIXME - finish this!
@@ -624,14 +685,19 @@ bool _IPmatchesCN = false;
    //  - entering SSL
    if (metaData("ssl_was_in_use") == "FALSE" &&
                                         d->kssl->settings()->warnOnEnter()) {
-      int result = messageBox( WarningYesNo,
-                             i18n("You are about to enter secure mode."
-                                  " All transmissions will be encrypted unless"
-                                  " otherwise noted.\nThis means that no third"
-                                  " party will be able to easily observe your"
+            int result = messageBox( WarningYesNo, i18n("You are about to "
+                                                        "enter secure mode.  "
+                                                        "All transmissions "
+                                                        "will be encrypted "
+                                                        "unless otherwise "
+                                                        "noted.\nThis means "
+                                                        "that no third party "
+                                                        "will be able to "
+                                                        "easily observe your "
                                   " data in transfer."),
                              i18n("Security information"),
-                             i18n("Display SSL Information"),
+                                                   i18n("Display SSL "
+                                                        "Information"),
                              i18n("Continue") );
       if ( result == KMessageBox::Yes )
       {
@@ -645,11 +711,11 @@ bool _IPmatchesCN = false;
    if (metaData("ssl_was_in_use") == "TRUE" &&
                                          d->kssl->settings()->warnOnLeave()) {
       int result = messageBox( WarningContinueCancel,
-                             i18n("You are about to leave secure mode."
-                                  " Transmissions will no longer be "
-                                  "encrypted.\nThis means that a "
-                                  "third party could observe your data "
-                                  "in transit."),
+                                     i18n("You are about to leave secure "
+                                          "mode.  Transmissions will no "
+                                          "longer be encrypted.\nThis "
+                                          "means that a third party could "
+                                          "observe your data in transit."),
                              i18n("Security information"),
                              i18n("Continue Loading") );
       if ( result == KMessageBox::Cancel )
@@ -659,14 +725,14 @@ bool _IPmatchesCN = false;
    }
 
    //  - mixed SSL/nonSSL
-   // I assert that if any two portions of a loaded document are of opposite
-   // SSL status then either one of them must be different than the parent.
-   // Therefore we can only compare each child against the parent both here
-   // and in non-SSL mode.
-   // The problem which remains is how to have this notification appear only
-   // once per page.
-   if (isChild && d->kssl->settings()->warnOnMixed() && 
-                                       metaData("ssl_was_in_use") != "TRUE") {
+        // I assert that if any two portions of a loaded document are of
+        // opposite SSL status then either one of them must be different
+        // than the parent.  Therefore we can only compare each child
+        // against the parent both here and in non-SSL mode.
+        // The problem which remains is how to have this notification
+        // appear only once per page.
+   if ( isChild && d->kssl->settings()->warnOnMixed() &&
+        metaData("ssl_was_in_use") != "TRUE") {
       // FIXME: do something!
    }
 
@@ -676,9 +742,8 @@ bool _IPmatchesCN = false;
 kdDebug(7029) << "SSL connection information follows:" << endl
           << "+-----------------------------------------------" << endl
           << "| Cipher: " << d->kssl->connectionInfo().getCipher() << endl
-          << "| Description: " << d->kssl->connectionInfo().getCipherDescription()
-          << "| Version: " << d->kssl->connectionInfo().getCipherVersion()
-<< endl
+          << "| Description: " << d->kssl->connectionInfo().getCipherDescription() << endl
+          << "| Version: " << d->kssl->connectionInfo().getCipherVersion() << endl
           << "| Strength: " << d->kssl->connectionInfo().getCipherUsedBits()
           << " of " << d->kssl->connectionInfo().getCipherBits()
           << " bits used." << endl
@@ -695,4 +760,103 @@ return rc;
 }
 
 
+bool TCPSlaveBase::isConnectionValid()
+{
+    if ( m_iSock == -1 )
+      return false;
 
+    fd_set rdfs;
+    FD_ZERO(&rdfs);
+    FD_SET(m_iSock , &rdfs);
+
+    struct timeval tv;
+    tv.tv_usec = 0;
+    tv.tv_sec = 0;
+    int retval = select(m_iSock+1, &rdfs, NULL, NULL, &tv);
+    // retval ==  0 ==> Connection Idle
+    // retval >=  1 ==> Connection Active
+    if ( retval == -1 )
+        return false;       // should really never happen, but just in-case...
+    else if ( retval > 0 )
+    {
+      char buffer[100];
+      retval = recv(m_iSock, buffer, 80, MSG_PEEK);
+      // retval ==  0 ==> Connection clased
+      if ( retval == 0 )
+        return false;
+    }
+    return true;
+}
+
+
+bool TCPSlaveBase::waitForResponse( int t )
+{
+    fd_set rd, wr;
+    struct timeval timeout;
+
+    int n = t; // Timeout in seconds
+    while(n--)
+    {
+        FD_ZERO(&rd);
+        FD_ZERO(&wr);
+        FD_SET(m_iSock, &rd);
+
+        timeout.tv_usec = 0;
+        timeout.tv_sec = 1; // 1 second
+
+        select(m_iSock+1, &rd, &wr, (fd_set *)0, &timeout);
+
+        if (FD_ISSET(m_iSock, &rd))
+            return true;
+    }
+    return false; // Timed out!
+}
+
+int TCPSlaveBase::connectResult()
+{
+    return d->status;
+}
+
+void TCPSlaveBase::setBlockConnection( bool b )
+{
+    d->block = b;
+}
+
+void TCPSlaveBase::setConnectTimeout( int t )
+{
+    d->timeout = t;
+}
+
+bool TCPSlaveBase::isSSLTunnelEnabled()
+{
+    return d->useSSLTunneling;
+}
+
+void TCPSlaveBase::setEnableSSLTunnel( bool enable )
+{
+    d->useSSLTunneling = enable;
+}
+
+bool TCPSlaveBase::doSSLHandShake( bool sendError )
+{
+    d->kssl->reInitialize();
+    certificatePrompt();
+    d->status = d->kssl->connect(m_iSock);
+    if (d->status < 0) {
+        CloseDescriptor();
+        if ( sendError )
+            error( ERR_COULD_NOT_CONNECT, d->host);
+        return false;
+    }
+    setMetaData("ssl_in_use", "TRUE");
+    int rc = verifyCertificate();
+    if ( rc != 1 ) {
+        d->status = -1;
+        CloseDescriptor();
+        if ( sendError )
+            error( ERR_COULD_NOT_CONNECT, d->host);
+        return false;
+    }
+    d->needSSLHandShake = false;
+    return true;
+}
