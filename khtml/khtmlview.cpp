@@ -926,7 +926,6 @@ void KHTMLView::print()
         }
         kdDebug(6000) << "printing: scaled html width = " << pageWidth
                       << " height = " << pageHeight << endl;
-#endif
         int top = 0;
         while(top < root->docHeight()) {
             if(top > 0) printer->newPage();
