@@ -518,8 +518,8 @@ void ListImp::prependList(const List& lst)
   ListIterator it = lst.end();
   ListIterator e = lst.begin();
   while(it != e) {
-    prepend(*it);
     --it;
+    prepend(*it);
   }
 }
 
@@ -571,6 +571,7 @@ ListImp *ListImp::copy() const
     ++it;
   }
 
+  //fprintf( stderr, "ListImp::copy returning newList=%p\n", newList );
   return newList;
 }
 
