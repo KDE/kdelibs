@@ -260,7 +260,7 @@ bool KRun::runOldApplication( const char *_exec, QStrList& _urls, bool _allow_mu
     if ( ( pid = fork() ) == 0 )
     {    
       execvp( argv[0], argv );
-      exit(1);
+      _exit(1);
     }
   }
   else
@@ -277,7 +277,7 @@ bool KRun::runOldApplication( const char *_exec, QStrList& _urls, bool _allow_mu
       if ( ( pid = fork() ) == 0 )
       {    
 	execvp( argv[0], argv );
-	exit(1);
+	_exit(1);
       }
     }
   }
