@@ -230,6 +230,48 @@ KEntryMap KConfig::internalEntryMap(const QString &pGroup) const
   return tmpEntryMap;
 }
 
+void KConfig::putData(const KEntryKey &_key, const KEntry &_data)
+{
+  //  cacheCheck();
+
+  // check to see if the special group key is present,
+  // and if not, put it in.
+  if (!hasGroup(_key.group)) {
+    KEntryKey groupKey = { _key.group, QString() };
+    aEntryMap.insert(groupKey, KEntry());
+  }
+
+  // now either add or replace the data
+  KEntryMapIterator aIt = aEntryMap.find(_key);
+  if (aIt != aEntryMap.end())
+    aEntryMap.replace(_key, _data);
+  else
+    aEntryMap.insert(_key, _data);
+}
+  
+KEntry KConfig::lookupData(const KEntryKey &_key) const
+{
+  //  cacheCheck();
+
+  KEntryMapConstIterator aIt;
+
+  aIt = aEntryMap.find(_key);
+  if (aIt != aEntryMap.end())
+    return *aIt;
+  else {
+    return KEntry();
+  }
+}
+
+void KConfig::cacheCheck() const
+{
+  KConfig *that = (KConfig *)this;
+  that->lastIoOp = QTime::currentTime();
+  if (!isCached) {
+    that->reparseConfiguration();
+  }
+}
+
 void KConfig::flushCache()
 {
   if (!isCached) {

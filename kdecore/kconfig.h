@@ -240,46 +240,4 @@ inline bool KConfig::hasGroup(const QString &_pGroup) const
   return aEntryMap.contains(groupKey);
 }
 
-inline void KConfig::putData(const KEntryKey &_key, const KEntry &_data)
-{
-  //  cacheCheck();
-
-  // check to see if the special group key is present,
-  // and if not, put it in.
-  if (!hasGroup(_key.group)) {
-    KEntryKey groupKey = { _key.group, QString() };
-    aEntryMap.insert(groupKey, KEntry());
-  }
-
-  // now either add or replace the data
-  KEntryMapIterator aIt = aEntryMap.find(_key);
-  if (aIt != aEntryMap.end())
-    aEntryMap.replace(_key, _data);
-  else
-    aEntryMap.insert(_key, _data);
-}
-  
-inline KEntry KConfig::lookupData(const KEntryKey &_key) const
-{
-  //  cacheCheck();
-
-  KEntryMapConstIterator aIt;
-
-  aIt = aEntryMap.find(_key);
-  if (aIt != aEntryMap.end())
-    return *aIt;
-  else {
-    return KEntry();
-  }
-}
-
-inline void KConfig::cacheCheck() const
-{
-  KConfig *that = (KConfig *)this;
-  that->lastIoOp = QTime::currentTime();
-  if (!isCached) {
-    that->reparseConfiguration();
-  }
-}
-
 #endif
