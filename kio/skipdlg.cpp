@@ -30,6 +30,7 @@
 #include <kapp.h>
 #include <klocale.h>
 #include <kurl.h>
+#include <kwin.h>
 
 using namespace KIO;
 
@@ -38,6 +39,11 @@ SkipDlg::SkipDlg(QWidget *parent, bool _multi, const QString& _error_text, bool 
 {
   // TODO : port to KDialogBase
   modal = _modal;
+
+  // Set "StaysOnTop", because this dialog is typically used in kio_uiserver,
+  // i.e. in a separate process.
+  if (modal)
+    KWin::setState( winId(), NET::StaysOnTop );
 
   b0 = b1 = b2 = 0L;
 

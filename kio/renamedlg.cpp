@@ -33,6 +33,7 @@
 #include <kglobal.h>
 #include <kurl.h>
 #include <kmimetype.h>
+#include <kwin.h>
 
 using namespace KIO;
 
@@ -49,6 +50,11 @@ RenameDlg::RenameDlg(QWidget *parent, const QString & _caption,
   : QDialog ( parent, "KIO::RenameDialog" , _modal )
 {
   modal = _modal;
+  // Set "StaysOnTop", because this dialog is typically used in kio_uiserver,
+  // i.e. in a separate process.
+  if (modal)
+    KWin::setState( winId(), NET::StaysOnTop );
+
   src = _src;
   dest = _dest;
 
