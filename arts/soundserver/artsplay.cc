@@ -25,6 +25,7 @@
 #include "soundserver.h"
 #include "artsversion.h"
 
+#include <sys/param.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
