@@ -183,7 +183,7 @@ void KNSBookmarkImporter::parseNSBookmarks( bool utf8 )
                 name = name.left(name.findRev('<'));
                 if ( name.right(4) == "</A>" )
                     name = name.left( name.length() - 4 );
-                QString qname = resolveEntities( codec->toUnicode( name ) );
+                QString qname = KCharsets::resolveEntities( codec->toUnicode( name ) );
                 QCString additionnalInfo = t.mid( secondQuotes+1, endTag-secondQuotes-1 );
 
                 emit newBookmark( KStringHandler::csqueeze(qname),
@@ -194,7 +194,7 @@ void KNSBookmarkImporter::parseNSBookmarks( bool utf8 )
                 int endTag = t.find('>', 7);
                 QCString name = t.mid(endTag+1);
                 name = name.left(name.findRev('<'));
-                QString qname = resolveEntities( codec->toUnicode( name ) );
+                QString qname = KCharsets::resolveEntities( codec->toUnicode( name ) );
                 QCString additionnalInfo = t.mid( 8, endTag-8 );
                 bool folded = (additionnalInfo.left(6) == "FOLDED");
                 if (folded) additionnalInfo.remove(0,7);
@@ -227,52 +227,6 @@ QString KNSBookmarkImporter::mozillaBookmarksFile( bool forSaving )
     else
         return KFileDialog::getOpenFileName( QDir::homeDirPath() + "/.mozilla",
                                              i18n("*.html|HTML files (*.html)") );
-}
-
-QString KNSBookmarkImporter::resolveEntities( const QString &input )
-{
-    QString text = input;
-    const QChar *p = text.unicode();
-    const QChar *end = p + text.length();
-    const QChar *ampersand = 0;
-    bool scanForSemicolon = false;
-
-    for ( ; p < end; ++p ) {
-        QChar ch = *p;
-
-        if ( ch == '&' ) {
-            ampersand = p;
-            scanForSemicolon = true;
-            continue;
-        }
-
-        if ( ch != ';' || scanForSemicolon == false )
-            continue;
-
-        assert( ampersand );
-
-        scanForSemicolon = false;
-
-        const QChar *entityBegin = ampersand + 1;
-
-        uint entityLength = p - entityBegin;
-        if ( entityLength == 0 )
-            continue;
-
-        QChar entityValue = KCharsets::fromEntity( QConstString( entityBegin, entityLength ).string() );
-        if ( entityValue.isNull() )
-            continue;
-
-        uint ampersandPos = ampersand - text.unicode();
-
-        text[ ampersandPos ] = entityValue;
-        text.remove( ampersandPos + 1, entityLength + 1 );
-        p = text.unicode() + ampersandPos;
-        end = text.unicode() + text.length();
-        ampersand = 0;
-    }
-
-    return text;
 }
 
 #include "kbookmarkimporter.moc"
