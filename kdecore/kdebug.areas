@@ -117,6 +117,7 @@
 7108	kio_info
 7109	kio_tar
 7110	kio_gzip
+7113	kio_http_debug
 
 # old stuff
 8000	corba
