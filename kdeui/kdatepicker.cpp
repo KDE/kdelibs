@@ -36,6 +36,8 @@
 #include <qvalidator.h>
 #include <kdebug.h>
 #include <knotifyclient.h>
+#include <kcalendarsystem.h>
+
 #include "kdatetbl.h"
 #include "kdatepicker.moc"
 
@@ -164,10 +166,14 @@ void
 KDatePicker::dateChangedSlot(QDate date)
 {
     kdDebug() << "KDatePicker::dateChangedSlot: date changed (" << date.year() << "/" << date.month() << "/" << date.day() << ")." << endl;
+
+    const KCalendarSystem * calendar = KGlobal::locale()->calendar();
+
     line->setText(KGlobal::locale()->formatDate(date, true));
-    d->selectWeek->setText(i18n("Week %1").arg(weekOfYear(date)));
-    selectMonth->setText(KGlobal::locale()->monthName(date.month(), false));
-    selectYear->setText(date.toString("yyyy"));
+    d->selectWeek->setText(i18n("Week %1").arg(calendar->weekNumber(date)));
+    selectMonth->setText(calendar->monthName(date, false));
+    selectYear->setText(QString().setNum(calendar->year(date)));
+
     emit(dateChanged(date));
 }
 
@@ -195,12 +201,14 @@ bool
 KDatePicker::setDate(const QDate& date)
 {
     if(date.isValid()) {
+        const KCalendarSystem * calendar = KGlobal::locale()->calendar();
+
 	QString temp;
 	// -----
 	table->setDate(date);
-	d->selectWeek->setText(i18n("Week %1").arg(weekOfYear(date)));
-	selectMonth->setText(KGlobal::locale()->monthName(date.month(), false));
-	temp.setNum(date.year());
+	d->selectWeek->setText(i18n("Week %1").arg(calendar->weekNumber(date)));
+	selectMonth->setText(calendar->monthName(date, false));
+	temp.setNum(calendar->year(date));
 	selectYear->setText(temp);
 	line->setText(KGlobal::locale()->formatDate(date, true));
 	return true;
@@ -213,33 +221,49 @@ KDatePicker::setDate(const QDate& date)
 void
 KDatePicker::monthForwardClicked()
 {
-    setDate( table->getDate().addMonths(1) );
+    QDate temp;
+    temp = KGlobal::locale()->calendar()->addMonths( table->getDate(), 1 );
+  
+    setDate( temp );
 }
 
 void
 KDatePicker::monthBackwardClicked()
 {
-    setDate( table->getDate().addMonths(-1) );
+    QDate temp;
+    temp = KGlobal::locale()->calendar()->addMonths( table->getDate(), -1 );
+  
+    setDate( temp );
 }
 
 void
 KDatePicker::yearForwardClicked()
 {
-    setDate( table->getDate().addYears(1) );
+    QDate temp;
+    temp = KGlobal::locale()->calendar()->addYears( table->getDate(), 1 );
+  
+    setDate( temp );
 }
 
 void
 KDatePicker::yearBackwardClicked()
 {
-    setDate( table->getDate().addYears(-1) );
+    QDate temp;
+    temp = KGlobal::locale()->calendar()->addYears( table->getDate(), -1 );
+  
+    setDate( temp );
 }
 
 void
 KDatePicker::selectWeekClicked()
 {
-  int week;
+  const KCalendarSystem * calendar = KGlobal::locale()->calendar();
+
+  QDate date = table->getDate();
+
   KPopupFrame* popup = new KPopupFrame(this);
   KDateInternalWeekSelector* picker = new KDateInternalWeekSelector(fontsize, popup);
+  picker->setMaxWeek(calendar->weeksInYear(calendar->year(date)));
   // -----
   picker->resize(picker->sizeHint());
   popup->setMainWidget(picker);
@@ -247,36 +271,35 @@ KDatePicker::selectWeekClicked()
   picker->setFocus();
   if(popup->exec(d->selectWeek->mapToGlobal(QPoint(0, d->selectWeek->height()))))
     {
-      QDate date;
-      int year;
-      // -----
-      week=picker->getWeek();
-      date=table->getDate();
-      year=date.year();
-      // ----- find the first selectable day in this week (hacky solution :)
-      date.setYMD(year, 1, 1);
-      while (weekOfYear(date)>50)
-          date=date.addDays(1);
-      while (weekOfYear(date)<week && (week!=53 || (week==53 &&
-            (weekOfYear(date)!=52 || weekOfYear(date.addDays(1))!=1))))
-          date=date.addDays(1);
-      if (week==53 && weekOfYear(date)==52)
-          while (weekOfYear(date.addDays(-1))==52)
-              date=date.addDays(-1);
-      // ----- set this date
+      int week = picker->getWeek();
+      int year = calendar->year(date);
+
+      calendar->setYMD(date, year, 1, 1);
+      date = calendar->addDays(date, -7);
+      while (calendar->weekNumber(date) != 1)
+	date = calendar->addDays(date, 1);
+
+      // date is now first day in week 1 some day in week 1
+      date = calendar->addDays(date, (week - calendar->weekNumber(date)) * 7);
+
       setDate(date);
-    } else {
-         KNotifyClient::beep();
     }
+  else
+    {
+      KNotifyClient::beep();
+    }
+
   delete popup;
 }
 
 void
 KDatePicker::selectMonthClicked()
 {
+  const KCalendarSystem * calendar = KGlobal::locale()->calendar();
+
   int month;
   KPopupFrame* popup = new KPopupFrame(this);
-  KDateInternalMonthPicker* picker = new KDateInternalMonthPicker(fontsize, popup);
+  KDateInternalMonthPicker* picker = new KDateInternalMonthPicker(table->getDate(), fontsize, popup);
   // -----
   picker->resize(picker->sizeHint());
   popup->setMainWidget(picker);
@@ -289,10 +312,12 @@ KDatePicker::selectMonthClicked()
       // -----
       month=picker->getResult();
       date=table->getDate();
-      day=date.day();
+      day=calendar->day(date);
       // ----- construct a valid date in this month:
-      date.setYMD(date.year(), month, 1);
-      date.setYMD(date.year(), month, QMIN(day, date.daysInMonth()));
+      //date.setYMD(date.year(), month, 1);
+      //date.setYMD(date.year(), month, QMIN(day, date.daysInMonth()));
+      calendar->setYMD(date, calendar->year(date), month,
+		      QMIN(day, calendar->daysInMonth(date)));
       // ----- set this month
       setDate(date);
     } else {
@@ -304,6 +329,8 @@ KDatePicker::selectMonthClicked()
 void
 KDatePicker::selectYearClicked()
 {
+  const KCalendarSystem * calendar = KGlobal::locale()->calendar();
+
   int year;
   KPopupFrame* popup = new KPopupFrame(this);
   KDateInternalYearSelector* picker = new KDateInternalYearSelector(fontsize, popup);
@@ -319,10 +346,12 @@ KDatePicker::selectYearClicked()
       // -----
       year=picker->getYear();
       date=table->getDate();
-      day=date.day();
+      day=calendar->day(date);
       // ----- construct a valid date in this month:
-      date.setYMD(year, date.month(), 1);
-      date.setYMD(year, date.month(), QMIN(day, date.daysInMonth()));
+      //date.setYMD(year, date.month(), 1);
+      //date.setYMD(year, date.month(), QMIN(day, date.daysInMonth()));
+      calendar->setYMD(date, year, calendar->month(date),
+		      QMIN(day, calendar->daysInMonth(date)));
       // ----- set this month
       setDate(date);
     } else {
@@ -393,9 +422,12 @@ KDatePicker::setFontSize(int s)
       buttons[count]->setFont(font);
     }
   QFontMetrics metrics(selectMonth->fontMetrics());
-  for(int i=1; i <= 12; ++i)
-    { // maxMonthRect is used by sizeHint()
-      r=metrics.boundingRect(KGlobal::locale()->monthName(i, false));
+
+  for (int i = 1; ; ++i)
+    {
+      QString str = KGlobal::locale()->calendar()->monthName(i, false);
+      if (str.isNull()) break;
+      r=metrics.boundingRect(str);
       maxMonthRect.setWidth(QMAX(r.width(), maxMonthRect.width()));
       maxMonthRect.setHeight(QMAX(r.height(),  maxMonthRect.height()));
     }
@@ -432,39 +464,6 @@ KDatePicker::setCloseButton( bool enable )
 bool KDatePicker::hasCloseButton() const
 {
     return (d->closeButton != 0L);
-}
-
-int KDatePicker::weekOfYear(QDate date)
-{
-    // Calculate ISO 8601 week number (taken from glibc/Gnumeric)
-    int year, week, wday, jan1wday, nextjan1wday;
-    QDate jan1date, nextjan1date;
-
-    year=date.year();
-    wday=date.dayOfWeek();
-
-    jan1date=QDate(year,1,1);
-    jan1wday=jan1date.dayOfWeek();
-
-    week = (date.dayOfYear()-1 + jan1wday-1)/7 + ((jan1wday-1) == 0 ? 1 : 0);
-
-    /* Does date belong to last week of previous year? */
-    if ((week == 0) && (jan1wday > 4 /*THURSDAY*/)) {
-        QDate tmpdate=QDate(year-1,12,31);
-        return weekOfYear(tmpdate);
-    }
-
-    if ((jan1wday <= 4 /*THURSDAY*/) && (jan1wday > 1 /*MONDAY*/))
-        week++;
-
-    if (week == 53) {
-        nextjan1date=QDate(year+1, 1, 1);
-        nextjan1wday = nextjan1date.dayOfWeek();
-        if (nextjan1wday <= 4 /*THURSDAY*/)
-            week = 1;
-    }
-
-    return week;
 }
 
 void KDatePicker::virtual_hook( int /*id*/, void* /*data*/ )

@@ -38,6 +38,7 @@
 #include <klocale.h>
 #include <kdebug.h>
 #include <knotifyclient.h>
+#include <kcalendarsystem.h>
 #include "kdatepicker.h"
 #include "kdatetbl.h"
 #include <qdatetime.h>
@@ -99,6 +100,8 @@ KDateTable::KDateTable(QWidget *parent, QDate date_, const char* name, WFlags f)
 void
 KDateTable::paintCell(QPainter *painter, int row, int col)
 {
+  const KCalendarSystem * calendar = KGlobal::locale()->calendar();
+
   QRect rect;
   QString text;
   QPen pen;
@@ -118,9 +121,10 @@ KDateTable::paintCell(QPainter *painter, int row, int col)
       bool normalday = true;
       QString daystr;
       if ( col+firstWeekDay < 8 )
-          daystr = KGlobal::locale()->weekDayName(col+firstWeekDay, true);
+          daystr = calendar->weekDayName(col+firstWeekDay, true);
       else
-          daystr = KGlobal::locale()->weekDayName(col+firstWeekDay-7, true);
+          daystr = calendar->weekDayName(col+firstWeekDay-7, true);
+      // ### HPB Use the KCalendarSystem here?
       if ( daystr==i18n("Sunday", "Sun") || daystr==i18n("Saturday", "Sat") )
           normalday=false;
 
@@ -166,7 +170,7 @@ KDateTable::paintCell(QPainter *painter, int row, int col)
         }
 
       pen=painter->pen();
-      if(firstday+date.day()-1==pos)
+      if(firstday+calendar->day(date)-1==pos)
         {
           if(hasFocus())
             { // draw the currently selected date
@@ -184,9 +188,9 @@ KDateTable::paintCell(QPainter *painter, int row, int col)
         }
 
       QDate cur_date = QDate::currentDate();
-      if ( (date.year()  == cur_date.year()) &&
-           (date.month() == cur_date.month()) &&
-           (firstday+cur_date.day()-1 == pos) )
+      if ( (calendar->year(date)  == calendar->year(cur_date)) &&
+           (calendar->month(date) == calendar->month(cur_date)) &&
+           (firstday+calendar->day(cur_date)-1 == pos) )
       {
          painter->setPen(KGlobalSettings::textColor());
       }
@@ -202,35 +206,40 @@ KDateTable::paintCell(QPainter *painter, int row, int col)
 void
 KDateTable::keyPressEvent( QKeyEvent *e )
 {
+    const KCalendarSystem * calendar = KGlobal::locale()->calendar();
+    QDate temp = date;
+
     if ( e->key() == Qt::Key_Prior ) {
-        setDate(date.addMonths(-1));
+        temp = calendar->addMonths( date, -1 );
+        setDate(temp);
         return;
     }
     if ( e->key() == Qt::Key_Next ) {
-        setDate(date.addMonths(1));
+        temp = calendar->addMonths( date, 1 );
+        setDate(temp);
         return;
     }
 
     if ( e->key() == Qt::Key_Up ) {
-        if ( date.day() > 7 ) {
+        if ( calendar->day(date) > 7 ) {
             setDate(date.addDays(-7));
             return;
         }
     }
     if ( e->key() == Qt::Key_Down ) {
-        if ( date.day() <= date.daysInMonth()-7 ) {
+        if ( calendar->day(date) <= calendar->daysInMonth(date)-7 ) {
             setDate(date.addDays(7));
             return;
         }
     }
     if ( e->key() == Qt::Key_Left ) {
-        if ( date.day() > 1 ) {
+        if ( calendar->day(date) > 1 ) {
             setDate(date.addDays(-1));
             return;
         }
     }
     if ( e->key() == Qt::Key_Right ) {
-        if ( date.day() < date.daysInMonth() ) {
+        if ( calendar->day(date) < calendar->daysInMonth(date) ) {
             setDate(date.addDays(1));
             return;
         }
@@ -294,6 +303,8 @@ KDateTable::wheelEvent ( QWheelEvent * e )
 void
 KDateTable::contentsMousePressEvent(QMouseEvent *e)
 {
+  const KCalendarSystem * calendar = KGlobal::locale()->calendar();
+
   if(e->type()!=QEvent::MouseButtonPress)
     { // the KDatePicker only reacts on mouse press events:
       return;
@@ -332,17 +343,21 @@ KDateTable::contentsMousePressEvent(QMouseEvent *e)
   
   if(pos + dayoff % 7 <= firstday)
     { // this day is in the previous month
-      setDate(date.addDays(-1 * (date.day() + firstday - pos - dayoff % 7)));
+      setDate(date.addDays(-1 * (calendar->day(date) + firstday - pos - dayoff % 7)));
       return;
     }
   if(firstday + numdays < pos + dayoff % 7)
     { // this date is in the next month
-      setDate(date.addDays(pos - firstday - date.day() + dayoff % 7));
+      setDate(date.addDays(pos - firstday - calendar->day(date) + dayoff % 7));
       return;
     }
-  temp = firstday + date.day() - dayoff % 7 - 1;
+  temp = firstday + calendar->day(date) - dayoff % 7 - 1;
 
-  setDate(QDate(date.year(), date.month(), pos - firstday + dayoff % 7));
+  // setDate(QDate(date.year(), date.month(), pos - firstday + dayoff % 7));
+  QDate newDate;
+  calendar->setYMD(newDate, calendar->year(date), calendar->month(date),
+		   pos - firstday + dayoff % 7);
+  setDate(newDate);
 
   updateCell(temp/7+1, temp%7); // Update the previously selected cell
   updateCell(row, col); // Update the selected cell
@@ -366,17 +381,18 @@ KDateTable::setDate(const QDate& date_)
       date=date_;
       changed=true;
     }
-  temp.setYMD(date.year(), date.month(), 1);
+  const KCalendarSystem * calendar = KGlobal::locale()->calendar();
+  
+  calendar->setYMD(temp, calendar->year(date), calendar->month(date), 1);
+  //temp.setYMD(date.year(), date.month(), 1);
+  kdDebug() << "firstDayInWeek: " << temp.toString() << endl;
   firstday=temp.dayOfWeek();
   if(firstday==1) firstday=8;
-  numdays=date.daysInMonth();
-  if(date.month()==1)
-    { // set to december of previous year
-      temp.setYMD(date.year()-1, 12, 1);
-    } else { // set to previous month
-      temp.setYMD(date.year(), date.month()-1, 1);
-    }
-  numDaysPrevMonth=temp.daysInMonth();
+  //numdays=date.daysInMonth();
+  numdays=calendar->daysInMonth(date);
+
+  temp = calendar->addMonths(temp, -1);
+  numDaysPrevMonth=calendar->daysInMonth(temp);
   if(changed)
     {
       repaintContents(false);
@@ -429,7 +445,6 @@ KDateInternalWeekSelector::KDateInternalWeekSelector
   font.setPointSize(fontsize);
   setFont(font);
   setFrameStyle(QFrame::NoFrame);
-  val->setRange(1, 53);
   setValidator(val);
   connect(this, SIGNAL(returnPressed()), SLOT(weekEnteredSlot()));
 }
@@ -465,8 +480,14 @@ KDateInternalWeekSelector::setWeek(int week)
   setText(temp);
 }
 
+void
+KDateInternalWeekSelector::setMaxWeek(int max)
+{
+  val->setRange(1, max);
+}
+
 KDateInternalMonthPicker::KDateInternalMonthPicker
-(int fontsize, QWidget* parent, const char* name)
+(const QDate & date, int fontsize, QWidget* parent, const char* name)
   : QGridView(parent, name),
     result(0) // invalid
 {
@@ -481,17 +502,23 @@ KDateInternalMonthPicker::KDateInternalMonthPicker
   setHScrollBarMode(AlwaysOff);
   setVScrollBarMode(AlwaysOff);
   setFrameStyle(QFrame::NoFrame);
-  setNumRows(4);
   setNumCols(3);
+  // For monthsInYear != 12
+  if( KGlobal::locale()->calendar()->monthsInYear(date) % 3 == 0 )
+     setNumRows( KGlobal::locale()->calendar()->monthsInYear(date) / 3 );
+  else
+     setNumRows( KGlobal::locale()->calendar()->monthsInYear(date) / 3 + 1);
   // enable to find drawing failures:
   // setTableFlags(Tbl_clipCellPainting);
   viewport()->setEraseColor(KGlobalSettings::baseColor()); // for consistency with the datepicker
   // ----- find the preferred size
   //       (this is slow, possibly, but unfortunatly it is needed here):
   QFontMetrics metrics(font);
-  for(int i=1; i <= 12; ++i)
+  for(int i = 1; ; ++i)
     {
-      rect=metrics.boundingRect(KGlobal::locale()->monthName(i, false));
+      QString str = KGlobal::locale()->calendar()->monthName(i, false);
+      if (str.isNull()) break;
+      rect=metrics.boundingRect(str);
       if(max.width()<rect.width()) max.setWidth(rect.width());
       if(max.height()<rect.height()) max.setHeight(rect.height());
     }
@@ -531,7 +558,7 @@ KDateInternalMonthPicker::paintCell(QPainter* painter, int row, int col)
   QString text;
   // ----- find the number of the cell:
   index=3*row+col+1;
-  text=KGlobal::locale()->monthName(index, false);
+  text=KGlobal::locale()->calendar()->monthName(index, false);
   painter->drawText(0, 0, cellWidth(), cellHeight(), AlignCenter, text);
   if ( activeCol == col && activeRow == row )
       painter->drawRect( 0, 0, cellWidth(), cellHeight() );
@@ -660,7 +687,8 @@ KDateInternalYearSelector::yearEnteredSlot()
       KNotifyClient::beep();
       return;
     }
-  date.setYMD(year, 1, 1);
+  //date.setYMD(year, 1, 1);
+  KGlobal::locale()->calendar()->setYMD(date, year, 1, 1);
   if(!date.isValid())
     {
       KNotifyClient::beep();

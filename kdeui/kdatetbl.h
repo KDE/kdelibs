@@ -38,6 +38,7 @@ protected:
   int result;
 public slots:
   void weekEnteredSlot();
+  void setMaxWeek(int max);
 signals:
   void closeMe(int);
 public:
@@ -84,7 +85,7 @@ public:
   /**
    * The constructor.
    */
-  KDateInternalMonthPicker(int fontsize, QWidget* parent, const char* name=0);
+  KDateInternalMonthPicker(const QDate & date, int fontsize, QWidget* parent, const char* name=0);
   /**
    * The size hint.
    */

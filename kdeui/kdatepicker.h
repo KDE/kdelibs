@@ -215,8 +215,6 @@ private:
   void init( const QDate &dt );
   class KDatePickerPrivate;
   KDatePickerPrivate *d;
-  // calculate ISO 8601 week number
-  int weekOfYear(QDate);
 };
 
 #endif //  KDATEPICKER_H

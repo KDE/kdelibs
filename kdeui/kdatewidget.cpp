@@ -25,6 +25,7 @@
 #include "knuminput.h"
 #include "kglobal.h"
 #include "klocale.h"
+#include "kcalendarsystem.h"
 //#include "kdatepicker.h"
 #include "kdialog.h"
 
@@ -72,12 +73,17 @@ void KDateWidget::init()
   KLocale *locale = KGlobal::locale();
   QHBoxLayout *layout = new QHBoxLayout(this, 0, KDialog::spacingHint());
   layout->setAutoAdd(true);
-  d->m_day = new KDateWidgetSpinBox(1, 31, this);
+  d->m_day = new KDateWidgetSpinBox(1, 1, this);
   d->m_month = new QComboBox(false, this);
-  for(int i = 1; i <= 12; i++)
-    d->m_month->insertItem(locale->monthName(i));
+  for (int i = 1; ; ++i)
+  {
+    QString str = locale->calendar()->monthName(i);
+    if (str.isNull()) break;
+    d->m_month->insertItem(str);
+  }
 
-  d->m_year = new KDateWidgetSpinBox(1970, 2038, this);
+  d->m_year = new KDateWidgetSpinBox(locale->calendar()->minValidYear(),
+				     locale->calendar()->maxValidYear(), this);
 
   connect(d->m_day, SIGNAL(valueChanged(int)), this, SLOT(slotDateChanged()));
   connect(d->m_month, SIGNAL(activated(int)), this, SLOT(slotDateChanged()));
@@ -91,14 +97,16 @@ KDateWidget::~KDateWidget()
 // ### HPB change QDate to const QDate & in KDE 4.0
 void KDateWidget::setDate( QDate date )
 {
+  const KCalendarSystem * calendar = KGlobal::locale()->calendar();
+
   d->m_day->blockSignals(true);
   d->m_month->blockSignals(true);
   d->m_year->blockSignals(true);
 
-  d->m_day->setMaxValue(date.daysInMonth());
-  d->m_day->setValue(date.day());
-  d->m_month->setCurrentItem(date.month()-1);
-  d->m_year->setValue(date.year());
+  d->m_day->setMaxValue(calendar->daysInMonth(date));
+  d->m_day->setValue(calendar->day(date));
+  d->m_month->setCurrentItem(calendar->month(date)-1);
+  d->m_year->setValue(calendar->year(date));
 
   d->m_day->blockSignals(false);
   d->m_month->blockSignals(false);
@@ -115,16 +123,23 @@ QDate KDateWidget::date() const
 
 void KDateWidget::slotDateChanged( )
 {
+  const KCalendarSystem * calendar = KGlobal::locale()->calendar();
+
   QDate date;
   int y,m,day;
+
   y = d->m_year->value();
-  y = QMIN(QMAX(y, 1970), 2038);
+  y = QMIN(QMAX(y, calendar->minValidYear()), calendar->maxValidYear());
+
+  calendar->setYMD(date, y, 1, 1);
   m = d->m_month->currentItem()+1;
-  m = QMIN(QMAX(m,1), 12);
-  date.setYMD(y,m,1);
+  m = QMIN(QMAX(m,1), calendar->monthsInYear(date));
+
+  calendar->setYMD(date, y, m, 1);
   day = d->m_day->value();
-  day = QMIN(QMAX(day,1), date.daysInMonth());
-  date.setYMD(y,m,day);
+  day = QMIN(QMAX(day,1), calendar->daysInMonth(date));
+
+  calendar->setYMD(date, y, m, day);
   setDate(date);
 }
 
