@@ -16,7 +16,26 @@
    Boston, MA 02111-1307, USA.
 */
 
-#include "config.h"
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
+#include <sys/param.h>
+
+#include <assert.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
+
+#if HAVE_LIMITS_H
+#include <limits.h>
+#endif
+
+#include <qlist.h>
+#include <qfile.h>
+#include <qasciidict.h>
+#include <qstrlist.h>
 
 #include "kcmdlineargs.h"
 #include <kaboutdata.h>
@@ -24,20 +43,6 @@
 #include <kapp.h>
 #include <kglobal.h>
 #include <kstringhandler.h>
-#include <assert.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <unistd.h>
-#include <sys/param.h>
-#include <qlist.h>
-#include <qfile.h>
-#include <qasciidict.h>
-#include <qstrlist.h>
-
-#if HAVE_LIMITS_H
-#include <limits.h>
-#endif
 
 template class QAsciiDict<QCString>;
 template class QList<KCmdLineArgs>;
@@ -123,9 +128,11 @@ KCmdLineArgs::init(int _argc, char **_argv, const KAboutData *_about, bool noKAp
    argv = _argv;
    
    // Strip path from argv[0]
-   char *p = strrchr( argv[0], '/');
-   if (p)
-      argv[0] = p+1;
+   if (argc) {
+     char *p = strrchr( argv[0], '/');
+     if (p)
+       argv[0] = p+1;
+   }
 
    about = _about;
    parsed = false;
