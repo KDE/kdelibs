@@ -857,53 +857,57 @@ QString KLocale::formatDate(const QDate &pDate, bool shortfmt) const
 
     for ( uint format_index = 0; format_index < rst.length(); format_index++ )
     {
-        switch ( rst.at( format_index ).unicode() )
-        {
-        case '%':
-            if ( escape ) {
-                buffer[index++] = '%';
-                escape = false;
-            } else
-                escape = true;
-            continue;
-        case 'Y':
-            put_it_in( buffer, index, pDate.year() / 100 );
-        case 'y':
-            put_it_in( buffer, index, pDate.year() % 100 );
-            break;
-	case 'n':
-            number = pDate.month();
-        case 'e':
-            // to share the code
-            if ( rst.at( format_index ).unicode() == 'e' )
-                number = pDate.day();
-            if ( number / 10 )
-                buffer[index++] = number / 10 + '0';
-            buffer[index++] = number % 10 + '0';
-            break;
-	case 'm':
-            put_it_in( buffer, index, pDate.month() );
-            break;
-	case 'b':
-            put_it_in( buffer, index, monthName(pDate.month(), true) );
-            break;
-	case 'B':
-            put_it_in( buffer, index, monthName(pDate.month(), false) );
-            break;
-	case 'd':
-            put_it_in( buffer, index, pDate.day() );
-            break;
-	case 'a':
-            put_it_in( buffer, index, weekDayName(pDate.dayOfWeek(), true) );
-            break;
-	case 'A':
-            put_it_in( buffer, index, weekDayName(pDate.dayOfWeek(), false) );
-            break;
-	default:
-            buffer[index++] = rst.at( format_index );
-            break;
-        }
-        escape = false;
+	if ( !escape )
+	{
+	    if ( rst.at( format_index ).unicode() == '%' )
+		escape = true;
+	    else
+		buffer[index++] = rst.at( format_index );
+	} else {
+	    switch ( rst.at( format_index ).unicode() )
+	    {
+	    case '%':
+		buffer[index++] = '%';
+		break;
+	    case 'Y':
+		put_it_in( buffer, index, pDate.year() / 100 );
+	    case 'y':
+		put_it_in( buffer, index, pDate.year() % 100 );
+		break;
+	    case 'n':
+		number = pDate.month();
+	    case 'e':
+		// to share the code
+		if ( rst.at( format_index ).unicode() == 'e' )
+		    number = pDate.day();
+		if ( number / 10 )
+		    buffer[index++] = number / 10 + '0';
+		buffer[index++] = number % 10 + '0';
+		break;
+	    case 'm':
+		put_it_in( buffer, index, pDate.month() );
+		break;
+	    case 'b':
+		put_it_in( buffer, index, monthName(pDate.month(), true) );
+		break;
+	    case 'B':
+		put_it_in( buffer, index, monthName(pDate.month(), false) );
+		break;
+	    case 'd':
+		put_it_in( buffer, index, pDate.day() );
+		break;
+	    case 'a':
+		put_it_in( buffer, index, weekDayName(pDate.dayOfWeek(), true) );
+		break;
+	    case 'A':
+		put_it_in( buffer, index, weekDayName(pDate.dayOfWeek(), false) );
+		break;
+	    default:
+		buffer[index++] = rst.at( format_index );
+		break;
+	    }
+	    escape = false;
+	}
     }
     QString ret( buffer, index );
     delete [] buffer;
@@ -1249,56 +1253,59 @@ QString KLocale::formatTime(const QTime &pTime, bool includeSecs) const
 
     for ( uint format_index = 0; format_index < rst.length(); format_index++ )
     {
-        switch ( rst.at( format_index ).unicode() )
-        {
-        case '%':
-            if ( escape ) {
-                buffer[index++] = '%';
-                escape = false;
-            } else
-                escape = true;
-            continue;
-        case 'H':
-            put_it_in( buffer, index, pTime.hour() );
-            break;
-        case 'I':
-            put_it_in( buffer, index, ( pTime.hour() + 11) % 12 + 1 );
-            break;
-        case 'M':
-            put_it_in( buffer, index, pTime.minute() );
-            break;
-        case 'S':
-            if (includeSecs)
-                put_it_in( buffer, index, pTime.second() );
-            else { // we remove the seperator sign before the seconds and assume that works everywhere
-                --index;
-                break;
-            }
-            break;
-        case 'k':
-            number = pTime.hour();
-            break;
-        case 'l':
-            // to share the code
-            if ( rst.at( format_index ).unicode() == 'l' )
-                number = (pTime.hour() + 11) % 12 + 1;
-            if ( number / 10 )
-                buffer[index++] = number / 10 + '0';
-            buffer[index++] = number % 10 + '0';
-            break;
-        case 'p': {
-            QString s;
-            if ( pTime.hour() >= 12 )
-                put_it_in( buffer, index, translate("pm") );
-            else
-                put_it_in( buffer, index, translate("am") );
-            break;
-        }
-        default:
-            buffer[index++] = rst.at( format_index );
-            break;
-        }
-        escape = false;
+	if ( !escape )
+	{
+	    if ( rst.at( format_index ).unicode() == '%' )
+		escape = true;
+	    else
+		buffer[index++] = rst.at( format_index );
+	} else {
+	    switch ( rst.at( format_index ).unicode() )
+	    {
+	    case '%':
+		buffer[index++] = '%';
+		break;
+	    case 'H':
+		put_it_in( buffer, index, pTime.hour() );
+		break;
+	    case 'I':
+		put_it_in( buffer, index, ( pTime.hour() + 11) % 12 + 1 );
+		break;
+	    case 'M':
+		put_it_in( buffer, index, pTime.minute() );
+		break;
+	    case 'S':
+		if (includeSecs)
+		    put_it_in( buffer, index, pTime.second() );
+		else { // we remove the seperator sign before the seconds and assume that works everywhere
+		    --index;
+		    break;
+		}
+		break;
+	    case 'k':
+		number = pTime.hour();
+	    case 'l':
+		// to share the code
+		if ( rst.at( format_index ).unicode() == 'l' )
+		    number = (pTime.hour() + 11) % 12 + 1;
+		if ( number / 10 )
+		    buffer[index++] = number / 10 + '0';
+		buffer[index++] = number % 10 + '0';
+		break;
+	    case 'p': {
+		QString s;
+		if ( pTime.hour() >= 12 )
+		    put_it_in( buffer, index, translate("pm") );
+		else
+		    put_it_in( buffer, index, translate("am") );
+		break;
+	    }
+	    default:
+		buffer[index++] = rst.at( format_index );
+		break;
+	    }
+	    escape = false;
+	}
     }
     QString ret( buffer, index );
     delete [] buffer;
