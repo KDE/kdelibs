@@ -127,4 +127,10 @@ void KApplet::init( Orientation /* orientation */, int width, int height  )
 }
 
 
+QSize KApplet::sizeHint() const
+{
+    return size();
+}
+
+
 #include "kapplet.moc"

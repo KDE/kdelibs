@@ -52,6 +52,7 @@ public:
      */
     virtual void init( Orientation orientation, int width, int height );
 
+    QSize sizeHint() const;
 
 private:
 
