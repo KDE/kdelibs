@@ -33,9 +33,6 @@
 #include <qcstring.h>
 #include <qmemarray.h>
 
-#include <kdebug.h>
-
-
 class KHTMLView;
 class QTextCodec;
 
@@ -303,6 +300,7 @@ public:
     void setUnsubmittedFormChange(bool unsubmitted) { m_unsubmittedFormChange = unsubmitted; }
 
 protected:
+    void parseType(const DOMString& t);
 
     DOMString m_value;
     int       xPos;
@@ -313,6 +311,7 @@ protected:
     typeEnum m_type : 4;
     bool m_clicked : 1 ;
     bool m_checked : 1;
+    bool m_haveType : 1;
     bool m_activeSubmit : 1;
     bool m_autocomplete : 1;
     bool m_inited : 1;

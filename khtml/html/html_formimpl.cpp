@@ -651,7 +651,7 @@ void HTMLFormElementImpl::reset(  )
 #endif
 
     // ### DOM2 labels this event as not cancelable, however
-    // common browsers( sick! ) allow it be canceled.
+    // common browsers( sick! ) allow it be cancelled.
     if ( !dispatchHTMLEvent(EventImpl::RESET_EVENT,true, true) ) {
         m_inreset = false;
         return;
@@ -960,7 +960,7 @@ void HTMLGenericFormElementImpl::defaultEventHandler(EventImpl *evt)
 	    // What is it good for? It should be renamed and only emitted in case of a repeat. -gg
 	    if ( evt->id() == EventImpl::KEYDOWN_EVENT || evt->id() == EventImpl::KHTML_KEYPRESS_EVENT ) {
 	        QKeyEvent* const k = static_cast<TextEventImpl *>(evt)->qKeyEvent();
-	        if ( k && (k->key() == Qt::Key_Tab || k->key() == Qt::Key_BackTab) && 
+	        if ( k && (k->key() == Qt::Key_Tab || k->key() == Qt::Key_BackTab) &&
 	             (evt->id() == EventImpl::KEYDOWN_EVENT || k->isAutoRepeat()) ) {
 		    QWidget* const widget = static_cast<RenderWidget*>(m_render)->widget();
 		    if (widget)
@@ -1141,6 +1141,7 @@ HTMLInputElementImpl::HTMLInputElementImpl(DocumentPtr *doc, HTMLFormElementImpl
     m_clicked = false;
     m_checked = false;
 
+    m_haveType = false;
     m_activeSubmit = false;
     m_autocomplete = true;
     m_inited = false;
@@ -1163,9 +1164,53 @@ NodeImpl::Id HTMLInputElementImpl::id() const
     return ID_INPUT;
 }
 
-void HTMLInputElementImpl::setType(const DOMString& /*t*/)
+// Called from JS. Can't merge with parseType since we
+// also need to actually set ATTR_TYPE, which can't be done there.
+void HTMLInputElementImpl::setType(const DOMString& t)
 {
-    // ###
+    setAttribute(ATTR_TYPE, t);
+}
+
+void HTMLInputElementImpl::parseType(const DOMString& t)
+{
+    typeEnum newType;
+
+    if ( strcasecmp( t, "password" ) == 0 )
+        newType = PASSWORD;
+    else if ( strcasecmp( t, "checkbox" ) == 0 )
+        newType = CHECKBOX;
+    else if ( strcasecmp( t, "radio" ) == 0 )
+        newType = RADIO;
+    else if ( strcasecmp( t, "submit" ) == 0 )
+        newType = SUBMIT;
+    else if ( strcasecmp( t, "reset" ) == 0 )
+        newType = RESET;
+    else if ( strcasecmp( t, "file" ) == 0 )
+        newType = FILE;
+    else if ( strcasecmp( t, "hidden" ) == 0 )
+        newType = HIDDEN;
+    else if ( strcasecmp( t, "image" ) == 0 )
+        newType = IMAGE;
+    else if ( strcasecmp( t, "button" ) == 0 )
+        newType = BUTTON;
+    else if ( strcasecmp( t, "khtml_isindex" ) == 0 )
+        newType = ISINDEX;
+    else
+        newType = TEXT;
+
+    // ### IMPORTANT: Don't allow the type to be changed to FILE after the first
+    // type change, otherwise a JavaScript programmer would be able to set a text
+    // field's value to something like /etc/passwd and then change it to a file field.
+    if (m_type != newType) {
+        if (newType == FILE && m_haveType) {
+            // Set the attribute back to the old value.
+            // Note that this calls parseAttribute again.
+            setAttribute(ATTR_TYPE, type());
+        } else {
+            m_type = newType;
+        }
+    }
+    m_haveType = true;
 }
 
 DOMString HTMLInputElementImpl::type() const
@@ -1246,7 +1291,7 @@ void HTMLInputElementImpl::parseAttribute(AttributeImpl *attr)
         m_autocomplete = strcasecmp( attr->value(), "off" );
         break;
     case ATTR_TYPE:
-        // ignore to avoid that javascript can change a type field to file
+        parseType(attr->value());
         break;
     case ATTR_VALUE:
         if (m_value.isNull()) // We only need to setChanged if the form is looking
@@ -1272,6 +1317,9 @@ void HTMLInputElementImpl::parseAttribute(AttributeImpl *attr)
         m_size = attr->val() ? attr->val()->toInt() : 20;
         break;
     case ATTR_ALT:
+        // TODO: Webcore has:
+        // if (m_render && m_type == IMAGE)
+        //   static_cast<RenderImage*>(m_render)->updateAltText();
     case ATTR_SRC:
         if (m_render && m_type == IMAGE) m_render->updateFromElement();
         break;
@@ -1308,35 +1356,13 @@ void HTMLInputElementImpl::attach()
     assert(parentNode());
 
     if (!m_inited) {
-        const DOMString type = getAttribute(ATTR_TYPE);
-        if ( strcasecmp( type, "password" ) == 0 )
-            m_type = PASSWORD;
-        else if ( strcasecmp( type, "checkbox" ) == 0 )
-            m_type = CHECKBOX;
-        else if ( strcasecmp( type, "radio" ) == 0 )
-            m_type = RADIO;
-        else if ( strcasecmp( type, "submit" ) == 0 )
-            m_type = SUBMIT;
-        else if ( strcasecmp( type, "reset" ) == 0 )
-            m_type = RESET;
-        else if ( strcasecmp( type, "file" ) == 0 )
-            m_type = FILE;
-        else if ( strcasecmp( type, "hidden" ) == 0 )
-            m_type = HIDDEN;
-        else if ( strcasecmp( type, "image" ) == 0 )
-            m_type = IMAGE;
-        else if ( strcasecmp( type, "button" ) == 0 )
-            m_type = BUTTON;
-        else if ( strcasecmp( type, "khtml_isindex" ) == 0 )
-            m_type = ISINDEX;
-        else
-            m_type = TEXT;
-
+        // FIXME: This needs to be dynamic, doesn't it, since someone could set this
+        // after attachment?
         if ((uint) m_type <= ISINDEX && !m_value.isEmpty()) {
             const QString value = m_value.string();
             // remove newline stuff..
             QString nvalue;
-	    unsigned int valueLength = value.length();
+            unsigned int valueLength = value.length();
             for (unsigned int i = 0; i < valueLength; ++i)
                 if (value[i] >= ' ')
                     nvalue += value[i];

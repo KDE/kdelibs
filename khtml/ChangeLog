@@ -1,3 +1,12 @@
+2005-03-01  David Faure  <faure@kde.org>
+
+        * html/html_formimpl.cpp (setType): Implemented, to make it possible
+        to set the type of an input element created with createElement.
+        Partially inspired by WebCore's setType(), but for getAttribute("type")
+        to work, setType() must set ATTR_TYPE. So parseAttribute() has to call
+        another method which doesn't do that, which is now parseType(), to
+        avoid an infinite recursion. Testcase forms/input_setType.html
+
 2005-02-28  Harri Porten  <porten@kde.org>
 
         * xml/dom2_eventsimpl.cpp: always return a non-zero keyCode()
@@ -7,7 +16,7 @@
 2005-02-28  David Faure  <faure@kde.org>
 
         * html/html_formimpl.cpp (setName): Also set ATTR_NAME so that
-        form.foo finds the input element. Testcase forms/input_clone.html.
+        form.foo finds the input element. Testcase forms/input_setName.html.
 
 2005-02-27  Leo Savernik  <l.savernik@aon.at>
 
