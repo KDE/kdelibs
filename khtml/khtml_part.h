@@ -964,6 +964,10 @@ protected:
   enum PageSecurity { NotCrypted, Encrypted, Mixed };
   void setPageSecurity( PageSecurity sec );
 
+  virtual bool doOpenStream( const QString& mimeType );
+  virtual bool doWriteStream( const QByteArray& data );
+  virtual bool doCloseStream();
+
 public slots:
 
   /**

@@ -1727,8 +1727,31 @@ void KHTMLPart::end()
     if(d->m_decoder)
         write(d->m_decoder->flush());
     if (d->m_doc)
-	d->m_doc->finishParsing();
+        d->m_doc->finishParsing();
 }
+
+bool KHTMLPart::doOpenStream( const QString& mimeType )
+{
+    if ( mimeType == "text/html" || mimeType == "text/xml" || mimeType == "application/xhtml+xml" )
+    {
+        begin( url() );
+        return true;
+    }
+    return false;
+}
+
+bool KHTMLPart::doWriteStream( const QByteArray& data )
+{
+    write( data.data(), data.size() );
+    return true;
+}
+
+bool KHTMLPart::doCloseStream()
+{
+    end();
+    return true;
+}
+
 
 void KHTMLPart::paint(QPainter *p, const QRect &rc, int yOff, bool *more)
 {
