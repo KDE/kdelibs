@@ -319,7 +319,13 @@ KJSO DOMMouseEvent::tryGet(const UString &p) const
   else if (p == "metaKey")
     return Boolean(static_cast<DOM::MouseEvent>(event).metaKey());
   else if (p == "button")
-    return Number((unsigned int)static_cast<DOM::MouseEvent>(event).button());
+  {
+    // Tricky. The DOM (and khtml) use 0 for LMB, 1 for MMB and 2 for RMB
+    // but MSIE uses 1=LMB, 2=RMB, 4=MMB, as a bitfield
+    int domButton = static_cast<DOM::MouseEvent>(event).button();
+    int button = domButton==0 ? 1 : domButton==1 ? 4 : domButton==2 ? 2 : 0;
+    return Number( (unsigned int)button );
+  }
   else if (p == "relatedTarget")
     return getDOMNode(static_cast<DOM::MouseEvent>(event).relatedTarget());
   else if (p == "initMouseEvent")
