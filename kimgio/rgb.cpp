@@ -289,28 +289,28 @@ void RLEData::print(QString desc) const
 {
 	QString s = desc + ": ";
 	for (uint i = 0; i < size(); i++)
-		s += QString::number(this->at(i)) + ",";
+		s += QString::number(at(i)) + ",";
 	kdDebug() << "--- " << s << endl;
 }
 
 
 void RLEData::write(QDataStream& s)
 {
-	for (unsigned i = 0; i < this->size(); i++)
-		s << this->at(i);
+	for (unsigned i = 0; i < size(); i++)
+		s << at(i);
 }
 
 
 bool RLEData::operator<(const RLEData& b) const
 {
 	uchar ac, bc;
-	for (unsigned i = 0; i < QMIN(this->size(), b.size()); i++) {
+	for (unsigned i = 0; i < QMIN(size(), b.size()); i++) {
 		ac = at(i);
 		bc = b[i];
 		if (ac != bc)
 			return ac < bc;
 	}
-	return this->size() < b.size();
+	return size() < b.size();
 }
 
 
@@ -329,8 +329,7 @@ uint RLEMap::insert(const uchar *d, uint l)
 QPtrVector<RLEData> RLEMap::vector()
 {
 	QPtrVector<RLEData> v(size());
-	Iterator end(end());
-	for (Iterator it = begin(); it != end; it++)
+	for (Iterator it = begin(); it != end(); it++)
 		v.insert(it.data(), &it.key());
 
 	return v;
@@ -547,7 +546,6 @@ bool SGIImage::writeImage(QImage& img)
 	m_pixmax = 0;
 	m_colormap = NORMAL;
 
-	uint i;
 	m_numrows = m_ysize * m_zsize;
 
 	// compressing a row with up to 11 pixels takes 11 or more bytes
@@ -569,7 +567,7 @@ bool SGIImage::writeImage(QImage& img)
 
 	long verbatim_size = m_numrows * m_xsize;
 	long rle_size = m_numrows * 2 * sizeof(Q_UINT32);
-	for (i = 0; i < m_rlevector.size(); i++)
+	for (uint i = 0; i < m_rlevector.size(); i++)
 		rle_size += m_rlevector[i]->size();
 
 	kdDebug(399) << "minimum intensity: " << m_pixmin << endl;
