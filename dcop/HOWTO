@@ -8,10 +8,10 @@
 Motivation and Background:
 --------------------------
 
-The motivation behind building a protocol like DCOP was simple.  For
+The motivation behind building a protocol like DCOP is simple.  For
 the past year, we have been attempting to enable interprocess
 communication between KDE applications. KDE already has an extremely
-simple IPC mechanism called KWMcom, which is used for communicating
+simple IPC mechanism called KWMcom, which is (was!) used for communicating
 between the panel and the window manager for instance.  It is about as
 simple as it gets, passing messages via X Atoms.  For this reason it
 is limited in the size and complexity of the data that can be passed
@@ -23,7 +23,7 @@ intensive for simple use.  It also has no authentication available.
 
 What we really needed was an extremely simple protocol with basic
 authorization, along the lines of MIT-MAGIC-COOKIE, as used by X.  It
-would not be able to do NEARLY was CORBA was able to do, but for the
+would not be able to do NEARLY what CORBA was able to do, but for the
 simple tasks required it would be sufficient. Some examples of such
 tasks might be an application sending a message to the panel saying,
 "I have started, stop displaying the 'application starting' wait
@@ -56,12 +56,13 @@ messages, which do not block, and "calls," which block waiting for
 some data to be returned.
 
 Any data that will be sent is serialized (marshalled, for you CORBA
-types) with the built in QDataStream operators available in all of the
+types) using the built-in QDataStream operators available in all of the
 Qt classes.  This is fast and easy.  Currently, there is no
-type-checking or parameter checking available for RPC, but this may be
+type checking or parameter checking available for RPC, but this may be
 provided at some time in the future in the form of a simple IDL-like
-compiler.  Until that is available, you will have to code some things
-by hand that normally the compiler or CORBA take care of
+compiler (NOTE: 5 days later the IDL compiler is already started; 
+look in kdelibs/kidl).  Until that is available, you will have to code
+some things by hand that normally the compiler or CORBA take care of
 automatically, but it is not a lot of work.
 
 Establishing the Connection:
@@ -118,25 +119,29 @@ Sending Data to a Remote Application:
 
 To actually communicate, you have one of two choices.  You may either
 call the "send" or the "call" method.  Both methods require three
-parameters: an application identifier, a remote object, a remote
-function, Sending is asynchronous (i.e. it returns immediately) and
-may or may not result in your own application being sent a message at
-some point in the future.
+identification parameters: an application identifier, a remote object,
+a remote function. Sending is asynchronous (i.e. it returns immediately)
+and may or may not result in your own application being sent a message at
+some point in the future. Then "send" requires one and "call" requires 
+two data parameters.
 
 The remote object must be specified as an object hierarchy.  That is,
 if the toplevel object is called "fooObject" and has the child
 "barObject", you would reference this object as "fooObject/barObject".
 Functions must be described by a full function signature.  If the
-remote function is clled "doIt", it returns a QString, and it takes an
+remote function is called "doIt", it returns a QString, and it takes an
 int, it would be described as "QString doIt(int)".
 
 In order to actually get the data to the remote client, it must be
-"serialized" via a QDataStream operating on a QByteArray.  A few
-examples will make how this works clear.
+"serialized" via a QDataStream operating on a QByteArray. This is how
+the data parameter is "built". A few examples will make clear how this
+works.
 
 Say you want to call "doIt" as described above, and not block (or wait
-for a response).  You will not receive the return value, but you will
-not hang while the RPC is processed either.
+for a response).  You will not receive the return value of the remotely
+called function, but you will not hang while the RPC is processed either.
+The return value of send() indicates whether DCOP communication succeeded
+or not. 
 
 QByteArray params;
 QDataStream stream(params, IO_WriteOnly);
@@ -145,9 +150,11 @@ if (!client->send("someAppId", "fooObject/barObject", "QString doIt(int)",
 	          params))
   qDebug("there was some error using DCOP.");
 
-OK, now let's say we wanted to get the data back.  You have to execute
-a call() instead of a send().  The actual return value of call() is
-still whether or not DCOP communication was successful.
+OK, now let's say we wanted to get the data back from the remotely 
+called function.  You have to execute a call() instead of a send().
+The returned value will then be available in the data parameter "reply".
+The actual return value of call() is still whether or not DCOP
+communication was successful.
 
 QByteArray params, reply;
 QDataStream stream(params, IO_WriteOnly);
