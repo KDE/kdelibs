@@ -157,13 +157,13 @@ public:
      * Loads and initializes a library. Loading a library multiple times is
      * handled gracefully.
      *
-     * @param is the library name without extension. Usually that is something like
-     *        "libkspread". The function will then search for a file named
-     *        "libkspread.la" in the KDE library paths.
-     *        The *.la files are created by libtool and contain
-     *        important information especially about the libraries dependencies
-     *        on other shared libs. Loading a "libfoo.so" could not solve the
-     *        dependencies problem.
+     * @param libname  This is the library name without extension. Usually that is something like
+     *                 "libkspread". The function will then search for a file named
+     *                 "libkspread.la" in the KDE library paths.
+     *                 The *.la files are created by libtool and contain
+     *                 important information especially about the libraries dependencies
+     *                 on other shared libs. Loading a "libfoo.so" could not solve the
+     *                 dependencies problem.
      *
      * @see #factory
      */
