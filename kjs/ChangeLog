@@ -1,5 +1,10 @@
 2003-10-26  Harri Porten  <porten@kde.org>
 
+	* date_object.cpp (call): respect optional arguments in set*
+	functions.
+
+	* ustring.cpp: more and correct use of memcpy()
+	
 	* ustring.*: store length within CString to be able to have
 	null bytes in the string (JavaScriptCore)
 	
