@@ -203,8 +203,10 @@ public:
   QString resource() const;
 
   /**
-   * Returns the value of the "DocPath=" entry.
-   * @return The value of the "DocPath=" entry.
+   * Returns the value of the "X-DocPath=" Or "DocPath=" entry.
+	 * X-DocPath should be used and DocPath is depreciated and will
+	 * one day be not supported.
+   * @return The value of the "X-DocPath=" Or "DocPath=" entry.
    * @since 3.1
    */
   QString readDocPath() const;

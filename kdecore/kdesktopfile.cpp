@@ -327,7 +327,12 @@ void KDesktopFile::virtual_hook( int id, void* data )
 
 QString KDesktopFile::readDocPath() const
 {
-	return readPathEntry( "DocPath" );
+  // Depreciated, remove in KDE4 or 5?
+  // See: http://www.freedesktop.org/Standards/desktop-entry-spec
+  if(hasKey( "DocPath" ))
+    return readPathEntry( "DocPath" );
+
+  return readPathEntry( "X-DocPath" );
 }
 
 KDesktopFile* KDesktopFile::copyTo(const QString &file) const
