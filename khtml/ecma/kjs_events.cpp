@@ -69,15 +69,19 @@ void JSEventListener::handleEvent(DOM::Event &evt)
     List * scope = 0L;
     List oldScope = listener.scope();
     //if (thisVal.type() != NullType)
-    if ( !thisObj.isNull() )
+    if ( !thisObj.isNull() ) {
       scope = static_cast<DOMNode*>(thisObj.imp())->eventHandlerScope();
-    if (scope)
-      listener.setScope( *scope );
+      if (scope) {
+        List curScope = oldScope.copy();
+        curScope.prependList( *scope );
+        listener.setScope( curScope );
+      }
+    }
 
     Window *window = static_cast<Window*>(win.imp());
-
     // Set the event we're handling in the Window object
     window->setCurrentEvent( &evt );
+
     ExecState *exec = interpreter->globalExec();
     Value retval = listener.call(exec, thisObj, args);
     QVariant ret = ValueToVariant(exec, retval);
