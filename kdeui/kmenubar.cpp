@@ -41,6 +41,9 @@
 
 // $Id$
 // $Log$
+// Revision 1.63.2.1  1999/03/06 21:45:58  radej
+// sven: Flat/Unflat with LMB too. Arrows and animation to come.
+//
 // Revision 1.63  1999/02/05 19:16:54  ettrich
 // fixed mac-style toggling for applications with multiple toplevel windows
 //
@@ -194,6 +197,23 @@ _menuBar::~_menuBar ()
  {
  }
 
+
+// workaround for qt-1.44's slightly changed menu bar handling
+
+void _menuBar::resizeEvent( QResizeEvent* e)
+{
+    static bool inHere = FALSE;
+    
+    if (inHere)
+	return;
+    
+    inHere = TRUE;
+    QMenuBar::resizeEvent( e );
+    inHere = FALSE;
+    // ignore;
+}
+
+
 static bool standalone_menubar = FALSE;
 
 static QPixmap* miniGo = 0;
@@ -241,6 +261,7 @@ void KMenuBar::resizeEvent (QResizeEvent *)
   int hwidth = 9;
   if (standalone_menubar)
     hwidth = 20;
+  
 
   frame->setGeometry(hwidth , 0, width()-hwidth,
                      menu->heightForWidth(width()-hwidth));
@@ -493,7 +514,7 @@ bool KMenuBar::eventFilter(QObject *ob, QEvent *ev){
         toggleFlatOnRelease=true;
       return TRUE;
     }
-    
+
     if (ev->type() == Event_MouseMove &&
         ((QMouseEvent*) ev)->state() == LeftButton &&
         toggleFlatOnRelease)
@@ -537,7 +558,7 @@ bool KMenuBar::eventFilter(QObject *ob, QEvent *ev){
         //debug ("KMenuBar: moving done");
         return true; // Or false? Never knew what evFilter returns...
       }
-    
+
     if (ev->type() == Event_MouseButtonRelease)
 	return TRUE;
 	if (mgr)

@@ -20,6 +20,9 @@
 
 //$Id$
 //$Log$
+//Revision 1.15  1998/12/16 01:27:14  ettrich
+//fixed slightly broken macstyle removal
+//
 //Revision 1.14  1998/11/25 13:24:53  radej
 //sven: Someone changed protected things to private (was it me?).
 //
@@ -58,6 +61,8 @@ class _menuBar : public QMenuBar
  public:
    _menuBar(QWidget *parent=0, const char *name=0);
    ~_menuBar();
+protected:
+     void resizeEvent( QResizeEvent* );
  };
 
 #include <qmenubar.h>
