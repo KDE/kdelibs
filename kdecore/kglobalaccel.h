@@ -55,9 +55,6 @@ uint keyToXSym( uint keyCode );
  * connected. Accelerator items can be connected so that a key will activate
  * two different slots.
  *
- * KApplication::x11EventFilter must be re-implemented to call
- * KAccel::x11EventFilter so that a KAccel object can handle all key events.
- *
  * Key binding configuration during run time can be prevented by specifying
  * that an accelerator item is not configurable when it is inserted.
  *
@@ -67,11 +64,6 @@ uint keyToXSym( uint keyCode );
  * The translated first argument for insertItem is only used in the
  * configuration dialog.
  *
- * MyApp::x11EventFilter( XEvent *ev ) {
- * if ( myObject->ga->x11EventFilter( ev ) )
- *		return true;
- * }
- *
  * ...
  *
  * ga = new KGlobalAccel();
@@ -80,7 +72,10 @@ uint keyToXSym( uint keyCode );
  *
  * ga->readSettings();
  *
- */
+*/
+
+class KGlobalAccelPrivate;
+
 class KGlobalAccel : public QObject
 {
 	Q_OBJECT
@@ -99,7 +94,7 @@ class KGlobalAccel : public QObject
 	*/
 	KGlobalAccel(QWidget * parent, const char *name = 0, bool _do_not_grab = false);
 
-    
+
 	/**
 	 * Destroys the accelerator object.and ungrabs any allocated key bindings.
 	 */
@@ -180,7 +175,7 @@ class KGlobalAccel : public QObject
 	 * removed..
 	 * 	
 	 */
-	bool insertItem( const QString& descr, const QString& action, 
+	bool insertItem( const QString& descr, const QString& action,
 			 uint defaultKeyCode,
 			 bool configurable = true );
 	
@@ -203,7 +198,7 @@ class KGlobalAccel : public QObject
 	 * will be removed..
 
 	 */
-	bool insertItem( const QString& descr, const QString& action, 
+	bool insertItem( const QString& descr, const QString& action,
 			 const QString& defaultKeyCode,
 			 bool configurable = true );
 	
@@ -272,14 +267,18 @@ class KGlobalAccel : public QObject
 	 * configuration files
 	 */	
 	void writeSettings();
-	
-	/**
+
+    
+    	/**
 	 * Filters X11 events ev for key bindings in the accelerator dictionary.
 	 * If a match is found the activated activated is emitted and the function
 	 * returns true. Return false if the event is not processed.
+	 *
+	 * This is public for compatibility only. You do not need to call it.
 	 */
 	bool x11EventFilter(const XEvent *);
-	
+
+
 signals:
 	void activated();	
 
@@ -289,6 +288,7 @@ protected:
 	bool bEnabled;
 	QString aGroup;
 	bool do_not_grab;
+	KGlobalAccelPrivate* d;
 
  protected:
 };

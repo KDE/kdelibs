@@ -39,6 +39,26 @@
 // NOTE ABOUT CONFIGURATION CHANGES
 // Test if keys enabled because these keys have made X server grabs
 
+class  KGlobalAccelPrivate : public QWidget
+{
+public:
+    KGlobalAccelPrivate( KGlobalAccel* a)
+	:QWidget(), accel( a )
+    {
+	kapp->installX11EventFilter( this );
+    }
+    
+protected:
+    bool x11Event( XEvent * e )
+    {
+	return accel->x11EventFilter( e );
+    }
+    
+    
+private:
+    KGlobalAccel* accel;
+};
+
 KGlobalAccel::KGlobalAccel(bool _do_not_grab)
  : QObject(), aKeyDict(100)
 {
@@ -46,6 +66,9 @@ KGlobalAccel::KGlobalAccel(bool _do_not_grab)
 	bEnabled = true;
 	aGroup = "Global Keys";
 	do_not_grab =_do_not_grab;
+	d = 0;
+	if ( !do_not_grab )
+	    d = new KGlobalAccelPrivate( this );
 }
 
 KGlobalAccel::KGlobalAccel(QWidget * parent, const char *name, bool _do_not_grab)
@@ -54,12 +77,15 @@ KGlobalAccel::KGlobalAccel(QWidget * parent, const char *name, bool _do_not_grab
 	bEnabled = true;
 	aGroup = "Global Keys";
 	do_not_grab =_do_not_grab;
-
+	d = 0;
+	if ( !do_not_grab )
+	    d = new KGlobalAccelPrivate( this );
 }
 
 KGlobalAccel::~KGlobalAccel()
 {
 	setEnabled( false );
+	delete d;
 }
 
 void KGlobalAccel::clear()
@@ -120,7 +146,7 @@ void KGlobalAccel::disconnectItem( const QString& action,
     KKeyEntry *pEntry = aKeyDict[ action ];
     if ( !pEntry )
 	return;
-    
+
 }
 
 QString KGlobalAccel::findKey( int key ) const
@@ -496,7 +522,7 @@ bool KGlobalAccel::x11EventFilter( const XEvent *event_ ) {
 	QDictIterator<KKeyEntry> *aKeyIt = new QDictIterator<KKeyEntry>( aKeyDict );
 	aKeyIt->toFirst();
 #define pE aKeyIt->current()
-	while( pE ) { 
+	while( pE ) {
 		int kc = pE->aCurrentKeyCode;
 		if ( mod == keyToXMod( kc ) && keysym == keyToXSym( kc ) ) {
 		break;
