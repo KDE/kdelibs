@@ -210,7 +210,9 @@ void RenderWidget::setQWidget(QWidget *widget)
         if (m_widget) {
             connect( m_widget, SIGNAL( destroyed()), this, SLOT( slotWidgetDestructed()));
             m_widget->installEventFilter(this);
-	    m_widget->setBackgroundMode(QWidget::NoBackground);
+
+	    if (!::qt_cast<QScrollView *>(m_widget))
+		m_widget->setBackgroundMode(QWidget::NoBackground);
             if (m_widget->focusPolicy() > QWidget::StrongFocus)
                 m_widget->setFocusPolicy(QWidget::StrongFocus);
             // if we're already layouted, apply the calculated space to the
@@ -399,7 +401,7 @@ void RenderWidget::paintWidget(QPainter *p, QWidget *widget, int, int, int, int,
 	bool dsbld = QSharedDoubleBuffer::isDisabled();
 	QSharedDoubleBuffer::setDisabled(true);
 	pm = QPixmap(widget->width(), widget->height());
-	if (p->device()->isExtDev() || widget->inherits("QLineEdit")) {
+	if (p->device()->isExtDev() || ::qt_cast<QLineEdit *>(widget)) {
 	    // even hackier!
 	    pm.fill(widget, QPoint(0, 0));
 	} else {
