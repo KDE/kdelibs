@@ -87,7 +87,11 @@ void KDatePicker::init( const QDate &dt )
   line = new KLineEdit(this);
   val = new KDateValidator(this);
   table = new KDateTable(this);
-  fontsize = KGlobalSettings::generalFont().pointSize()+1;
+  fontsize = KGlobalSettings::generalFont().pointSize();
+  if (fontsize == -1)
+     fontsize = QFontInfo(KGlobalSettings::generalFont()).pointSize();
+
+  fontsize++; // Make a little bigger
  
   d->selectWeek = new QToolButton( this );
   d->selectWeek->setAutoRaise(true);

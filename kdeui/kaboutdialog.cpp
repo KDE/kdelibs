@@ -438,7 +438,10 @@ void KAboutContainerBase::fontChange( const QFont &/*oldFont*/ )
   {
     QFont f( KGlobalSettings::generalFont() );
     f.setBold( true );
-    f.setPointSize( f.pointSize()+2 ); // Lets not make it too big
+    int fs = f.pointSize();
+    if (fs == -1)
+       fs = QFontInfo(f).pointSize();
+    f.setPointSize( fs+2 ); // Lets not make it too big
     mTitleLabel->setFont(f);
   }
 
