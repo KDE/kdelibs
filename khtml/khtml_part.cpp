@@ -516,6 +516,7 @@ void KHTMLPart::init( KHTMLView *view, GUIProfile prof )
   connect( &d->m_redirectionTimer, SIGNAL( timeout() ),
            this, SLOT( slotRedirect() ) );
 
+  d->m_view->viewport()->installEventFilter( this );
   new KHTMLToolTip( this );
 }
 
@@ -3606,6 +3607,19 @@ void KHTMLPart::khtmlMouseReleaseEvent( khtml::MouseReleaseEvent *event )
 
 void KHTMLPart::khtmlDrawContentsEvent( khtml::DrawContentsEvent * )
 {
+}
+
+bool KHTMLPart::eventFilter( QObject* o, QEvent* ev )
+{
+    if ( ev->type() == QEvent::FocusOut && o == d->m_view->viewport() )
+    {
+        if ( d->m_bMousePressed )
+        {
+            stopAutoScroll();
+            d->m_bMousePressed = false;
+        }
+    }
+    return KParts::ReadOnlyPart::eventFilter( o, ev );
 }
 
 void KHTMLPart::guiActivateEvent( KParts::GUIActivateEvent *event )

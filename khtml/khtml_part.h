@@ -632,6 +632,7 @@ signals:
 protected:
 
   virtual bool event( QEvent *event );
+  virtual bool eventFilter( QObject *o, QEvent *event );
 
   virtual void khtmlMousePressEvent( khtml::MousePressEvent *event );
   virtual void khtmlMouseDoubleClickEvent( khtml::MouseDoubleClickEvent * );
