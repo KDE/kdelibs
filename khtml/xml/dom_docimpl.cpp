@@ -323,6 +323,7 @@ DocumentImpl::DocumentImpl(DOMImplementationImpl *_implementation, KHTMLView *v)
 {
     document->doc = this;
     m_paintDeviceMetrics = 0;
+    m_paintDevice = 0;
     m_decoderMibEnum = 0;
     m_textColor = Qt::black;
 
@@ -1129,9 +1130,11 @@ Tokenizer *DocumentImpl::createTokenizer()
 
 void DocumentImpl::setPaintDevice( QPaintDevice *dev )
 {
-    m_paintDevice = dev;
-    delete m_paintDeviceMetrics;
-    m_paintDeviceMetrics = new QPaintDeviceMetrics( dev );
+    if (m_paintDevice != dev) {
+        m_paintDevice = dev;
+        delete m_paintDeviceMetrics;
+        m_paintDeviceMetrics = new QPaintDeviceMetrics( dev );
+    }
 }
 
 void DocumentImpl::open(  )
@@ -1225,8 +1228,9 @@ CSSStyleSheetImpl* DocumentImpl::elementSheet()
 
 void DocumentImpl::determineParseMode( const QString &/*str*/ )
 {
-    // For xML documents, use string parse mode
+    // For XML documents, use string parse mode
     pMode = Strict;
+    hMode = XHtml;
     kdDebug(6020) << " using strict parseMode" << endl;
 }
 
@@ -1497,7 +1501,8 @@ void DocumentImpl::processHttpEquiv(const DOMString &equiv, const DOMString &con
             bool ok = false;
             int delay = 0;
 	    delay = content.implementation()->toInt(&ok);
-            if(ok) v->part()->scheduleRedirection(delay, v->part()->url().url() );
+            if(ok)
+                v->part()->scheduleRedirection(delay, v->part()->url().url(), delay < 2 );
         } else {
             int delay = 0;
             int fract = pos;
@@ -1519,7 +1524,7 @@ void DocumentImpl::processHttpEquiv(const DOMString &equiv, const DOMString &con
                 str.setLength(str.length()-1);
             str = parseURL( DOMString(str) ).string();
             if ( ok  || !fract)
-                v->part()->scheduleRedirection(delay, getDocument()->completeURL( str ));
+                v->part()->scheduleRedirection(delay, getDocument()->completeURL( str ),  delay < 2);
         }
     }
     else if(strcasecmp(equiv, "expires") == 0)
