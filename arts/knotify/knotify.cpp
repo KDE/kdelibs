@@ -361,12 +361,6 @@ void KNotify::notify(const QString &event, const QString &fromApp,
         }
     }
 
-    QByteArray qbd;
-    QDataStream ds(qbd, IO_WriteOnly);
-    ds << event << fromApp << text << sound << file << present << level
-        << winId << eventId;
-    emitDCOPSignal("notifySignal(QString,QString,QString,QString,QString,int,int,int,int)", qbd);
-
     // emit event
     if ( present & KNotifyClient::Sound ) // && QFile(sound).isReadable()
         notifyBySound( sound, fromApp, eventId );
@@ -388,6 +382,13 @@ void KNotify::notify(const QString &event, const QString &fromApp,
 
     if ( present & KNotifyClient::Taskbar )
         notifyByTaskbar( checkWinId( fromApp, winId ));
+
+    QByteArray qbd;
+    QDataStream ds(qbd, IO_WriteOnly);
+    ds << event << fromApp << text << sound << file << present << level
+        << winId << eventId;
+    emitDCOPSignal("notifySignal(QString,QString,QString,QString,QString,int,int,int,int)", qbd);
+
 }
 
 
