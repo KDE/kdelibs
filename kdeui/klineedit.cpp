@@ -223,7 +223,6 @@ void KLineEdit::makeCompletion( const QString& text )
 void KLineEdit::keyPressEvent( QKeyEvent *e )
 {
     KKey key( e );
-    int keyQt = key.keyCodeQt();
 
     if ( KStdAccel::copy().contains( key ) )
         copy();
@@ -549,6 +548,8 @@ QPopupMenu *KLineEdit::createPopupMenu()
         subMenu->insertItem( i18n("Dropdown List") + QString(" + ") +
                              i18n("Automatic"), PopupAutoCompletion );
 
+        subMenu->setAccel( KStdAccel::completion(), ShellCompletion );
+        
         KGlobalSettings::Completion mode = completionMode();
         subMenu->setItemChecked( NoCompletion,
                                  mode == KGlobalSettings::CompletionNone );
