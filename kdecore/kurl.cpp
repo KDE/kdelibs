@@ -455,7 +455,7 @@ KURL::KURL( const KURL& _u, const QString& _rel_url, int encoding_hint )
         m_strPath = QString::null;
         m_strPath_encoded = QString::null;
     }
-    else
+    else if ( rUrl[0] != '?' )
     {
        int pos = m_strPath.findRev( '/' );
        if (pos >= 0)
