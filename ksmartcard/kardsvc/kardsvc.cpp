@@ -159,9 +159,9 @@ QString res;
 
 	for (unsigned int i = 0; i < kres.size(); i++) {
 		if (i == 0) {
-			res = "0x" + QString::number(kres[0], 16);
+			res.sprintf("0x%02x", kres[0]);
 		} else {
-			res += " 0x" + QString::number(kres[i], 16);
+			res.sprintf("%s 0x%02x", (const char *)res.local8Bit(), kres[i]);
 		}
 	}
 	
