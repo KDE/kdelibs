@@ -55,7 +55,7 @@
 #include <unistd.h>
 #include <time.h>
 
-typedef QDict<KSycocaEntry> myEntryDict;
+typedef QDict<KSycocaEntry> KBSEntryDict;
 typedef QValueList<KSycocaEntry::List> KSycocaEntryListList;
 
 static Q_UINT32 newTimestamp = 0;
@@ -66,7 +66,8 @@ static KSycocaFactory *g_factory = 0;
 static KCTimeInfo *g_ctimeInfo = 0;
 static QDict<Q_UINT32> *g_ctimeDict = 0;
 static const char *g_resource = 0;
-static myEntryDict *g_entryDict = 0;
+static KBSEntryDict *g_entryDict = 0;
+static KBSEntryDict *g_serviceGroupEntryDict = 0;
 static KSycocaEntryListList *g_allEntries = 0;
 static QStringList *g_changeList = 0;
 static QStringList *g_allResourceDirs = 0;
@@ -179,6 +180,7 @@ KSycocaEntry *KBuildSycoca::createEntry(const QString &file)
    {
       timeStamp = KGlobal::dirs()->calcResourceHash( g_resource, file, true);
    }
+   bool skip = false;
    KSycocaEntry* entry = 0;
    if (g_allEntries)
    {
@@ -189,7 +191,20 @@ KSycocaEntry *KBuildSycoca::createEntry(const QString &file)
       if (timeStamp && (timeStamp == oldTimestamp))
       {
          // Re-use old entry
-         entry = g_entryDict->find(file);
+         if (g_factory == g_bsgf) // Strip .directory from service-group entries
+         {
+            entry = g_entryDict->find(file.left(file.length()-10));
+         }
+         else if (g_factory == g_bsf)
+         {
+            entry = g_entryDict->find(file);
+            if (!entry)
+               skip = true;
+         }
+         else
+         {
+            entry = g_entryDict->find(file);
+         }
          // remove from g_ctimeDict; if g_ctimeDict is not empty
          // after all files have been processed, it means
          // some files were removed since last time
@@ -207,7 +222,7 @@ KSycocaEntry *KBuildSycoca::createEntry(const QString &file)
       }
    }
    g_ctimeInfo->addCTime(file, timeStamp );
-   if (!entry)
+   if (!entry && !skip)
    {
       // Create a new entry
       entry = g_factory->createEntry( file, g_resource );
@@ -229,11 +244,11 @@ void KBuildSycoca::slotCreateEntry(const QString &file, KService **service)
 // returns false if the database is up to date
 bool KBuildSycoca::build()
 {
-  typedef QPtrList<myEntryDict> myEntryDictList;
-  myEntryDictList *entryDictList = 0;
-  myEntryDict *serviceEntryDict = 0;
+  typedef QPtrList<KBSEntryDict> KBSEntryDictList;
+  KBSEntryDictList *entryDictList = 0;
+  KBSEntryDict *serviceEntryDict = 0;
 
-  entryDictList = new myEntryDictList();
+  entryDictList = new KBSEntryDictList();
   // Convert for each factory the entryList to a Dict.
   int i = 0;
   // For each factory
@@ -241,7 +256,7 @@ bool KBuildSycoca::build()
        factory;
        factory = m_lstFactories->next() )
   {
-     myEntryDict *entryDict = new myEntryDict();
+     KBSEntryDict *entryDict = new KBSEntryDict();
      if (g_allEntries)
      {
          KSycocaEntry::List list = (*g_allEntries)[i++];
@@ -254,6 +269,8 @@ bool KBuildSycoca::build()
      }
      if (factory == g_bsf)
         serviceEntryDict = entryDict;
+     else if (factory == g_bsgf)
+        g_serviceGroupEntryDict = entryDict;
      entryDictList->append(entryDict);
   }
 
@@ -352,7 +369,7 @@ bool KBuildSycoca::build()
              
      VFolderMenu::SubMenu *kdeMenu = g_vfolder->parseMenu("applications.menu", true);
 
-     g_bsgf->addNew("/", QString::null);
+     g_bsgf->addNew("/", QString::null, 0);
      createMenu(QString::null, kdeMenu);
      
      (void) existingResourceDirs();
@@ -376,7 +393,31 @@ void KBuildSycoca::createMenu(QString name, VFolderMenu::SubMenu *menu)
   for(VFolderMenu::SubMenu *subMenu = menu->subMenus.first(); subMenu; subMenu = menu->subMenus.next())
   {
      QString subName = name+subMenu->name+"/";
-     g_bsgf->addNew(subName, subMenu->directoryFile);
+
+     QString directoryFile = subMenu->directoryFile;
+     if (directoryFile.isEmpty())
+        directoryFile = subName+".directory";
+     Q_UINT32 timeStamp = g_ctimeInfo->ctime(directoryFile);
+     if (!timeStamp)
+     {
+        timeStamp = KGlobal::dirs()->calcResourceHash( g_resource, directoryFile, true);
+     }
+
+     KServiceGroup* entry = 0;
+     if (g_allEntries)
+     {
+        Q_UINT32 *timeP = (*g_ctimeDict)[directoryFile];
+        Q_UINT32 oldTimestamp = timeP ? *timeP : 0;
+
+        if (timeStamp && (timeStamp == oldTimestamp))
+        {
+            entry = dynamic_cast<KServiceGroup *> (g_serviceGroupEntryDict->find(subName));
+            // TODO: Check that old version uses same directoryFile
+        }
+     }
+     g_ctimeInfo->addCTime(directoryFile, timeStamp);
+
+     g_bsgf->addNew(subName, subMenu->directoryFile, entry);
      createMenu(subName, subMenu);
   }
   if (name.isEmpty())

@@ -72,9 +72,8 @@ void KBuildServiceGroupFactory::addNewEntryTo( const QString &menuName, KService
 }
 
 void
-KBuildServiceGroupFactory::addNew( const QString &menuName, const QString& file)
+KBuildServiceGroupFactory::addNew( const QString &menuName, const QString& file, KServiceGroup *entry)
 {
-  KServiceGroup *entry = 0;
   KSycocaEntry::Ptr *ptr = m_entryDict->find(menuName);
   if (ptr)
   {
@@ -83,7 +82,9 @@ KBuildServiceGroupFactory::addNew( const QString &menuName, const QString& file)
   }
 
   // Create new group entry
-  entry = new KServiceGroup(file, menuName);
+  if (!entry)
+     entry = new KServiceGroup(file, menuName);
+
   addEntry( entry, "apps" ); // "vfolder" ??
 
   if (menuName != "/")
@@ -140,6 +141,7 @@ KBuildServiceGroupFactory::addEntry( KSycocaEntry *newEntry, const char *resourc
 {
    KSycocaFactory::addEntry(newEntry, resource);
    KServiceGroup * serviceGroup = (KServiceGroup *) newEntry;
+   serviceGroup->m_serviceList.clear();
 
    if ( !serviceGroup->baseGroupName().isEmpty() )
    {
