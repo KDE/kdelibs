@@ -118,7 +118,7 @@ short RenderButton::baselinePosition( bool f ) const
 RenderCheckBox::RenderCheckBox(HTMLInputElementImpl *element)
     : RenderButton(element)
 {
-    QCheckBox* b = new QCheckBox(view()->viewport());
+    QCheckBox* b = new QCheckBox(view()->viewport(), "__khtml");
     b->setAutoMask(true);
     b->setMouseTracking(true);
     setQWidget(b);
@@ -156,7 +156,7 @@ void RenderCheckBox::slotStateChanged(int state)
 RenderRadioButton::RenderRadioButton(HTMLInputElementImpl *element)
     : RenderButton(element)
 {
-    QRadioButton* b = new QRadioButton(view()->viewport());
+    QRadioButton* b = new QRadioButton(view()->viewport(), "__khtml");
     b->setMouseTracking(true);
     setQWidget(b);
 }
@@ -187,7 +187,7 @@ void RenderRadioButton::calcMinMaxWidth()
 RenderSubmitButton::RenderSubmitButton(HTMLInputElementImpl *element)
     : RenderButton(element)
 {
-    QPushButton* p = new QPushButton(view()->viewport());
+    QPushButton* p = new QPushButton(view()->viewport(), "__khtml");
     setQWidget(p);
     p->setAutoMask(true);
     p->setMouseTracking(true);
@@ -283,7 +283,7 @@ QString RenderPushButton::defaultLabel()
 // -------------------------------------------------------------------------------
 
 LineEditWidget::LineEditWidget(DOM::HTMLInputElementImpl* input, KHTMLView* view, QWidget* parent)
-    : KLineEdit(parent), m_input(input), m_view(view), m_spell(0)
+    : KLineEdit(parent, "__khtml"), m_input(input), m_view(view), m_spell(0)
 {
     setMouseTracking(true);
     KActionCollection *ac = new KActionCollection(this);
@@ -714,7 +714,7 @@ void RenderFieldset::paintBorderMinusLegend(QPainter *p, int _tx, int _ty, int w
 RenderFileButton::RenderFileButton(HTMLInputElementImpl *element)
     : RenderFormElement(element)
 {
-    KURLRequester* w = new KURLRequester( view()->viewport() );
+    KURLRequester* w = new KURLRequester( view()->viewport(), "__khtml" );
 
     connect(w->lineEdit(), SIGNAL(returnPressed()), this, SLOT(slotReturnPressed()));
     connect(w->lineEdit(), SIGNAL(textChanged(const QString &)),this,SLOT(slotTextChanged(const QString &)));
@@ -807,7 +807,7 @@ RenderLegend::RenderLegend(HTMLGenericFormElementImpl *element)
 // -------------------------------------------------------------------------------
 
 ComboBoxWidget::ComboBoxWidget(QWidget *parent)
-    : KComboBox(false, parent)
+    : KComboBox(false, parent, "__khtml")
 {
     setAutoMask(true);
     if (listBox()) listBox()->installEventFilter(this);

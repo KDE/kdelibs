@@ -1207,7 +1207,7 @@ bool KHTMLView::eventFilter(QObject *o, QEvent *e)
 		QWidget *w = static_cast<QWidget *>(c);
 		// don't install the event filter on toplevels
 		if (w->parentWidget(true) == view) {
-		    if (!::qt_cast<QScrollView *>(w)) {
+		    if (!strcmp(w->name(), "__khtml")) {
 			w->installEventFilter(this);
 			w->unsetCursor();
 			w->setBackgroundMode( QWidget::NoBackground );
@@ -1230,10 +1230,12 @@ bool KHTMLView::eventFilter(QObject *o, QEvent *e)
 	}
     } else if (o->isWidgetType()) {
 	QWidget *v = static_cast<QWidget *>(o);
+        QWidget *c = v;
 	while (v && v != view) {
+            c = v;
 	    v = v->parentWidget(true);
 	}
-	if (v) {
+	if (v && !strcmp(c->name(), "__khtml")) {
 	    bool block = false;
 	    QWidget *w = static_cast<QWidget *>(o);
 	    switch(e->type()) {

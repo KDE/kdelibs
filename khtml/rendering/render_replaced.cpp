@@ -202,7 +202,7 @@ void RenderWidget::setQWidget(QWidget *widget)
             connect( m_widget, SIGNAL( destroyed()), this, SLOT( slotWidgetDestructed()));
             m_widget->installEventFilter(this);
 
-            if ( !::qt_cast<QScrollView*>( m_widget ) )
+            if ( !strcmp(m_widget->name(), "__khtml"))
                 m_widget->setBackgroundMode( QWidget::NoBackground );
 
             if (m_widget->focusPolicy() > QWidget::StrongFocus)
@@ -417,7 +417,7 @@ void RenderWidget::paintWidget(QPainter *p, QWidget *widget, int, int, int, int,
     // We have some problems here, as we can't redirect some of the widgets.
     allowWidgetPaintEvents = true;
 
-    if (!::qt_cast<QScrollView *>(widget)) {
+    if (!strcmp(widget->name(), "__khtml")) {
         bool dsbld = QSharedDoubleBuffer::isDisabled();
         QSharedDoubleBuffer::setDisabled(true);
 	QPixmap pm = copyWidget(tx, ty, p, widget);
