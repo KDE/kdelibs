@@ -25,9 +25,14 @@ class QEvent;
 class KJScript;
 class KHTMLPart;
 
+namespace DOM {
+  class Node;
+};
+
 // callback functions for KJSProxy
 typedef KJScript* (KJSCreateFunc)(KHTMLPart *);
-typedef bool (KJSEvalFunc)(KJScript *script, const QChar *, unsigned int);
+typedef bool (KJSEvalFunc)(KJScript *script, const QChar *, unsigned int,
+			   const DOM::Node &);
 typedef void (KJSClearFunc)(KJScript *script);
 typedef bool (KJSEventFunc)(KJScript *script, QEvent *, void *);
 typedef bool (KJSMaskFunc)(KJScript *script, int);
@@ -54,7 +59,7 @@ public:
     : create(cr), script(s), eval(e), clr(c), event(ev),
       mask(m), spec(sp), destr(d) { };
   ~KJSProxy() { (*destr)(script); }
-  bool evaluate(const QChar *c, unsigned int l);
+  bool evaluate(const QChar *c, unsigned int l, const DOM::Node &n);
   bool processEvent(QEvent *e, void *unknown);
   bool eventMask(int e);
   const char *special(const char *c);
@@ -71,10 +76,11 @@ private:
   KJSDestroyFunc *destr;
 };
 
-inline bool KJSProxy::evaluate(const QChar *c, unsigned int l) {
+inline bool KJSProxy::evaluate(const QChar *c, unsigned int l,
+			       const DOM::Node &n) {
   if (!script)
     script = (*create)(khtml);
-  return (*eval)(script, c, l);
+  return (*eval)(script, c, l, n);
 }
 
 inline bool KJSProxy::processEvent(QEvent *e, void *unknown) {

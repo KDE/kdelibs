@@ -46,6 +46,7 @@ namespace DOM
   class HTMLIFrameElementImpl;
   class HTMLObjectElementImpl;
   class HTMLFormElementImpl;
+  class Node;
 };
 
 namespace khtml
@@ -201,6 +202,7 @@ public:
    * and the code returned true itself or @p false otherwise.
    */
   bool executeScript( const QString &script );
+  bool executeScript( const DOM::Node &n, const QString &script );
 
   void setDNDEnabled( bool b );
   bool dndEnabled() const;

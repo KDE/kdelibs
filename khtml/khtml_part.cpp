@@ -524,7 +524,19 @@ bool KHTMLPart::executeScript( const QString &script )
   if (!proxy)
     return false;
 
-  bool ret = proxy->evaluate( script.unicode(), script.length() );
+  bool ret = proxy->evaluate( script.unicode(), script.length(), Node() );
+  d->m_doc->updateRendering();
+  return ret;
+}
+
+bool KHTMLPart::executeScript( const DOM::Node &n, const QString &script )
+{
+  KJSProxy *proxy = jScript();
+
+  if (!proxy)
+    return false;
+
+  bool ret = proxy->evaluate( script.unicode(), script.length(), n );
   d->m_doc->updateRendering();
   return ret;
 }

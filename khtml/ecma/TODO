@@ -10,7 +10,5 @@ Has to be done
 
 Could be done
 =============
-- should we support Microsoft's document.all property ? It's not part of the
-  DOM and use should be discouraged. We'd need HTMLDocument::all() for that.
 - make navigator.userAgent configurable for those sites that test for Netscape
   or Explorer explicitly
