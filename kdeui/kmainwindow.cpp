@@ -215,8 +215,11 @@ void KMainWindow::initKMainWindow(bool createToolbarAction,const char *name)
     }
 
     setCaption( kapp->caption() );
-	// attach dcop interface
-	d->m_interface = new KMainWindowInterface(this);
+    // attach dcop interface
+    d->m_interface = new KMainWindowInterface(this);
+    
+    if (!kapp->authorize("movable_toolbars"))
+        setDockWindowsMovable(false);
 }
 
 KToolBarMenuAction *KMainWindow::toolBarMenuAction()
