@@ -473,7 +473,7 @@ void KDirListerCache::forgetDirs( KDirLister *lister, const KURL& url, bool noti
 
       if ( notify )
       {
-        lister->d->lstDirs.remove( url.url() );
+        lister->d->lstDirs.remove( urlStr );
         emit lister->clear( url );
       }
 
@@ -597,7 +597,8 @@ KFileItem* KDirListerCache::findByName( const KDirLister *lister, const QString&
 
 KFileItem* KDirListerCache::findByURL( const KDirLister *lister, const KURL& _u ) const
 {
-  QString _url = _u.url(-1);
+  KURL _url = _u;
+  _url.adjustPath(-1);
 
   KURL parentDir( _url );
   parentDir.setPath( parentDir.directory() );
