@@ -104,7 +104,7 @@ KHelpMenu::~KHelpMenu()
 
 KPopupMenu* KHelpMenu::menu()
 {
-  if( mMenu == 0 && kapp->authorize("help"))
+  if( mMenu == 0 )
   {
     //
     // 1999-12-02 Espen Sand:
