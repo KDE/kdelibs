@@ -1727,6 +1727,8 @@ KJSO Image::tryGet(const UString &p) const
 
   if (p == "src")
     result = String(src);
+  else if (p == "complete")
+    result = Boolean(!img || img->status() >= khtml::CachedObject::Persistent);
   else
     result = DOMObject::tryGet(p);
 
