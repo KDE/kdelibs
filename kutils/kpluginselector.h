@@ -88,7 +88,7 @@ class KPluginSelector : public QWidget
          *                     plugins being enabled or not. By default it will
          *                     use instance->config(). It is recommended to
          *                     always pass a KConfig object if you use
-         *                     KCDPluginPage since you never know from where the
+         *                     KSettings::PluginPage since you never know from where the
          *                     page will be called (think global config app).
          *                     For example KViewCanvas passes KSimpleConfig(
          *                     "kviewcanvas" ).
@@ -126,7 +126,7 @@ class KPluginSelector : public QWidget
          *                     plugins being enabled or not. By default it will
          *                     use KGlobal::config(). It is recommended to
          *                     always pass a KConfig object if you use
-         *                     KCDPluginPage since you never know from where the
+         *                     KSettings::PluginPage since you never know from where the
          *                     page will be called (think global config app).
          *                     For example KViewCanvas passes KSimpleConfig(
          *                     "kviewcanvas" ).
