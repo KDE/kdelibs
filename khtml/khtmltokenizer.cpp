@@ -216,7 +216,7 @@ void HTMLTokenizer::parseListing( HTMLStringIt &src)
     // which is either </script> or </style>,
     // otherwise print out every received character
 
-  printf("HTMLTokenizer::parseListing()\n");
+  //printf("HTMLTokenizer::parseListing()\n");
 
     while ( src.length() )
     {
@@ -244,7 +244,7 @@ void HTMLTokenizer::parseListing( HTMLStringIt &src)
 	        /* Parse scriptCode containing <script> info */
 		// ### use KHTMLWidget::executeScript...
 	        KJSWorld *jscript = view->jScript();
-		printf("scriptcode is: %s\n", QString(scriptCode, scriptCodeSize).ascii());
+		//printf("scriptcode is: %s\n", QString(scriptCode, scriptCodeSize).ascii());
 		if(jscript) jscript->evaluate((KJS::UnicodeChar*)scriptCode, scriptCodeSize);
 	    }
 	    else if (style)

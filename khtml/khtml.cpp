@@ -588,7 +588,7 @@ void KHTMLWidget::slotData( int /*_id*/, const char *_p, int _len )
 void KHTMLWidget::data( HTMLURLRequestJob *job, const char *_data, int _len, bool _eof )
 {
 
-    printf("HTMLWidget::data()\n");
+  //printf("HTMLWidget::data()\n");
     HTMLURLRequest *p = job->m_req;
     if ( !p )
     {	
@@ -648,7 +648,7 @@ void KHTMLWidget::slotError( int /*_id*/, int _err, const char *_text )
 void KHTMLWidget::requestFile( HTMLURLRequester *_obj, const QString &_url,
 			       bool )
 {
-  printf("==== REQUEST %s  ====\n", _url.latin1() );
+  //printf("==== REQUEST %s  ====\n", _url.latin1() );
 
   HTMLURLRequest *r = m_lstPendingURLRequests[ _url ];
   if ( r )
@@ -692,7 +692,7 @@ void KHTMLWidget::servePendingURLRequests()
       return;
   }
 
-  printf("starting URLRequestJob\n");
+  //printf("starting URLRequestJob\n");
   QDictIterator<HTMLURLRequest> it( m_lstPendingURLRequests );
   HTMLURLRequest *req = it.current();
   HTMLURLRequestJob* j = new HTMLURLRequestJob( this, req, m_bReload );
@@ -775,7 +775,6 @@ void KHTMLWidget::urlSelected( const QString &_url, int _button, const QString &
 	  return;
       }
 
-      printf("searching...\n");
       KHTMLWidget *v = topView()->findChildView( target );
       if ( !v )
 	  v = findFrame( target );
@@ -1009,7 +1008,7 @@ void KHTMLWidget::checkCompleted()
 void KHTMLWidget::resizeEvent ( QResizeEvent * event )
 {
 
-    printf("resizeEvent\n");
+  //printf("resizeEvent\n");
     layout();
 
     if(document && document->body())
@@ -1079,7 +1078,7 @@ void KHTMLWidget::viewportPaintEvent ( QPaintEvent* pe  )
 	py += PAINT_BUFFER_HEIGHT;
     }
 
-    printf("TIME: print() dt=%d\n",qt.elapsed());
+    //printf("TIME: print() dt=%d\n",qt.elapsed());
 }
 
 void KHTMLWidget::layout()

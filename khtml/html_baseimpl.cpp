@@ -672,7 +672,7 @@ bool HTMLFrameSetElementImpl::mouseEvent( int _x, int _y, int button, MouseEvent
 {
     _x-=_tx;
     _y-=_ty;
-    printf("mouseEvent\n");
+    //printf("mouseEvent\n");
 
     NodeImpl *child = _first;
     while(child)
@@ -686,7 +686,7 @@ bool HTMLFrameSetElementImpl::mouseEvent( int _x, int _y, int button, MouseEvent
 
     if(!resizing && type == MouseMove || type == MousePress)
     {
-	printf("mouseEvent:check\n");
+      //printf("mouseEvent:check\n");
 	
 	hSplit = -1;
 	vSplit = -1;
@@ -858,7 +858,7 @@ void HTMLHtmlElementImpl::layout(bool deep)
     QTime qt;
     qt.start();
     child->layout(deep);
-    printf("TIME: layout() dt=%d\n",qt.elapsed());
+    //printf("TIME: layout() dt=%d\n",qt.elapsed());
 
     ascent = 0;
     descent = child->getHeight() + 2*view->marginHeight();
