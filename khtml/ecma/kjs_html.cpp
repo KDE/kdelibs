@@ -1041,8 +1041,7 @@ void KJS::HTMLElement::tryPut(const UString &p, const KJSO& v)
       // read-only: index
       else if (p == "disabled")        { option.setDisabled(v.toBoolean().value()); return; }
       else if (p == "label")           { option.setLabel(str); return; }
-      // ### selected is read-only in DOM1, and hence khtml at the moment
-      // else if (p == "selected")        { option.setSelected(v.toBoolean().value()); return; }
+      else if (p == "selected")        { option.setSelected(v.toBoolean().value()); return; }
       else if (p == "value")           { option.setValue(str); return; }
     }
     break;

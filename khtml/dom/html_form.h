@@ -1202,6 +1202,9 @@ public:
 
     /**
      * see @ref index
+     *
+     * This function is obsolete - the index property is actually supposed to be read-only
+     * (http://www.w3.org/DOM/updates/REC-DOM-Level-1-19981001-errata.html)
      */
     void setIndex( long );
 
@@ -1238,6 +1241,11 @@ public:
      *
      */
     bool selected() const;
+
+    /**
+     * see @ref selected
+     */
+    void setSelected( bool );
 
     /**
      * The current form control value. See the <a

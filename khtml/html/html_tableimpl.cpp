@@ -28,6 +28,7 @@
 
 #include "dom_exception.h"
 #include "html_documentimpl.h"
+#include "dom_node.h"
 using namespace DOM;
 
 #include "htmlhashes.h"
@@ -39,6 +40,7 @@ using namespace DOM;
 using namespace khtml;
 
 #include <kdebug.h>
+#include <iostream.h>
 
 HTMLTableElementImpl::HTMLTableElementImpl(DocumentImpl *doc)
   : HTMLElementImpl(doc)
@@ -227,17 +229,25 @@ void HTMLTableElementImpl::parseAttribute(AttrImpl *attr)
     switch(attr->attrId)
     {
     case ATTR_WIDTH:
-	addCSSLength(CSS_PROP_WIDTH, attr->value(), false);
+	if (attr->val())
+	    addCSSLength(CSS_PROP_WIDTH, attr->value(), false);
+	else
+	    removeCSSProperty(CSS_PROP_WIDTH);
     	break;
     case ATTR_HEIGHT:
-	addCSSLength(CSS_PROP_HEIGHT, attr->value(), false);
+	if (attr->val())
+	    addCSSLength(CSS_PROP_HEIGHT, attr->value(), false);
+	else
+	    removeCSSProperty(CSS_PROP_HEIGHT);
     	break;
     case ATTR_BORDER:
     {
 	int border;
 	// ### this needs more work, as the border value is not only
 	//     the border of the box, but also between the cells
-	if(attr->val()->l == 0)
+	if(!attr->val())
+	    border = 0;
+	else if(attr->val()->l == 0)
 	    border = 1;
 	else
 	    border = attr->val()->toInt();
@@ -257,13 +267,20 @@ void HTMLTableElementImpl::parseAttribute(AttrImpl *attr)
 	break;
     }
     case ATTR_BGCOLOR:
-	addCSSProperty(CSS_PROP_BACKGROUND_COLOR, attr->value(), false );
+	if (attr->val())
+	    addCSSProperty(CSS_PROP_BACKGROUND_COLOR, attr->value(), false );
+	else
+	    removeCSSProperty(CSS_PROP_BACKGROUND);
 	break;
     case ATTR_BACKGROUND:
     {
-	HTMLDocumentImpl *doc = static_cast<HTMLDocumentImpl *>(document);
-	DOMString url(Cache::completeURL(attr->value(), doc->baseURL()).url());
-	addCSSProperty(CSS_PROP_BACKGROUND_IMAGE, url, false );
+	if (attr->val()) {
+	    HTMLDocumentImpl *doc = static_cast<HTMLDocumentImpl *>(document);
+	    DOMString url(Cache::completeURL(attr->value(), doc->baseURL()).url());
+	    addCSSProperty(CSS_PROP_BACKGROUND_IMAGE, url, false );
+	}
+	else
+	    removeCSSProperty(CSS_PROP_BACKGROUND_IMAGE);
 	break;
     }
     case ATTR_FRAME:
@@ -302,13 +319,24 @@ void HTMLTableElementImpl::parseAttribute(AttrImpl *attr)
 	    rules = All;
 #endif
     case ATTR_CELLSPACING:
-	addCSSLength(CSS_PROP_BORDER_SPACING, attr->value(), false);
+	if (attr->val())
+	    addCSSLength(CSS_PROP_BORDER_SPACING, attr->value(), false);
+	else
+	    removeCSSProperty(CSS_PROP_BORDER_SPACING);
 	break;
     case ATTR_CELLPADDING:
-	addCSSLength(CSS_PROP_PADDING_TOP, attr->value(), false);
-	addCSSLength(CSS_PROP_PADDING_LEFT, attr->value(), false);
-	addCSSLength(CSS_PROP_PADDING_BOTTOM, attr->value(), false);
-	addCSSLength(CSS_PROP_PADDING_RIGHT, attr->value(), false);
+	if (attr->val()) {
+	    addCSSLength(CSS_PROP_PADDING_TOP, attr->value(), false);
+	    addCSSLength(CSS_PROP_PADDING_LEFT, attr->value(), false);
+	    addCSSLength(CSS_PROP_PADDING_BOTTOM, attr->value(), false);
+	    addCSSLength(CSS_PROP_PADDING_RIGHT, attr->value(), false);
+	}
+	else {
+	    removeCSSProperty(CSS_PROP_PADDING_TOP);
+	    removeCSSProperty(CSS_PROP_PADDING_LEFT);
+	    removeCSSProperty(CSS_PROP_PADDING_BOTTOM);
+	    removeCSSProperty(CSS_PROP_PADDING_RIGHT);
+	}
 	break;
     case ATTR_COLS:
     {
@@ -321,10 +349,16 @@ void HTMLTableElementImpl::parseAttribute(AttrImpl *attr)
 #endif
     }
     case ATTR_ALIGN:
-	addCSSProperty(CSS_PROP_FLOAT, attr->value(), false);
+	if (attr->val())
+	    addCSSProperty(CSS_PROP_FLOAT, attr->value(), false);
+	else
+	    removeCSSProperty(CSS_PROP_FLOAT);
 	break;
     case ATTR_VALIGN:
-	addCSSProperty(CSS_PROP_VERTICAL_ALIGN, attr->value(), false);
+	if (attr->val())
+	    addCSSProperty(CSS_PROP_VERTICAL_ALIGN, attr->value(), false);
+	else
+	    removeCSSProperty(CSS_PROP_VERTICAL_ALIGN);
 	break;
     default:
 	HTMLElementImpl::parseAttribute(attr);
@@ -344,13 +378,20 @@ void HTMLTablePartElementImpl::parseAttribute(AttrImpl *attr)
     switch(attr->attrId)
     {
     case ATTR_BGCOLOR:
-	addCSSProperty(CSS_PROP_BACKGROUND_COLOR, attr->value(), false );
+	if (attr->val())
+	    addCSSProperty(CSS_PROP_BACKGROUND_COLOR, attr->value(), false );
+	else
+	    removeCSSProperty(CSS_PROP_BACKGROUND_COLOR);
 	break;
     case ATTR_BACKGROUND:
     {
-	HTMLDocumentImpl *doc = static_cast<HTMLDocumentImpl *>(document);
-	DOMString url(Cache::completeURL(attr->value(), doc->baseURL()).url());
-	addCSSProperty(CSS_PROP_BACKGROUND_IMAGE, url, false );
+	if (attr->val()) {
+	    HTMLDocumentImpl *doc = static_cast<HTMLDocumentImpl *>(document);
+	    DOMString url(Cache::completeURL(attr->value(), doc->baseURL()).url());
+	    addCSSProperty(CSS_PROP_BACKGROUND_IMAGE, url, false );
+	}
+	else
+	    removeCSSProperty(CSS_PROP_BACKGROUND_IMAGE);
 	break;
     }
     default:
@@ -427,7 +468,6 @@ void HTMLTableSectionElementImpl::deleteRow( long index )
 HTMLTableRowElementImpl::HTMLTableRowElementImpl(DocumentImpl *doc)
   : HTMLTablePartElementImpl(doc)
 {
-  rIndex = -1;
 }
 
 HTMLTableRowElementImpl::~HTMLTableRowElementImpl()
@@ -446,17 +486,40 @@ ushort HTMLTableRowElementImpl::id() const
 
 long HTMLTableRowElementImpl::rowIndex() const
 {
-    // ###
-    return 0;
+    // some complex traversal stuff here to take into account that some rows may be in different sections
+    int rIndex = 0;
+    NodeImpl *n = this;
+    do {
+	while (!n->previousSibling() && !(n->isElementNode() && n->id() == ID_TABLE))
+	    n = n->parentNode();
+	if (n->isElementNode() && n->id() == ID_TABLE)
+	    n = 0;
+	if (n) {
+	    n = n->previousSibling();
+	    while (!(n->isElementNode() && n->id() == ID_TR) && n->lastChild())
+		n = n->lastChild();
+	}
+
+	if (n && n->isElementNode() && n->id() == ID_TR)
+	    rIndex++;
+    }
+    while (n && n->isElementNode() && n->id() == ID_TR);
+
+    return rIndex;
 }
 
-void HTMLTableRowElementImpl::setRowIndex( long  )
+long HTMLTableRowElementImpl::sectionRowIndex() const
 {
-    // ###
-}
+    int rIndex = 0;
+    NodeImpl *n = this;
+    do {
+	n = n->previousSibling();
+	if (n && n->isElementNode() && n->id() == ID_TR)
+	    rIndex++;
+    }
+    while (n);
 
-void HTMLTableRowElementImpl::setCells( const HTMLCollection & )
-{
+    return rIndex;
 }
 
 HTMLElementImpl *HTMLTableRowElementImpl::insertCell( long index )
@@ -503,10 +566,16 @@ void HTMLTableRowElementImpl::parseAttribute(AttrImpl *attr)
     switch(attr->attrId)
     {
     case ATTR_ALIGN:
-	addCSSProperty(CSS_PROP_TEXT_ALIGN, attr->value(), false);
+	if (attr->val())
+	    addCSSProperty(CSS_PROP_TEXT_ALIGN, attr->value(), false);
+	else
+	    removeCSSProperty(CSS_PROP_TEXT_ALIGN);
 	break;
     case ATTR_VALIGN:
-	addCSSProperty(CSS_PROP_VERTICAL_ALIGN, attr->value(), false);
+	if (attr->val())
+	    addCSSProperty(CSS_PROP_VERTICAL_ALIGN, attr->value(), false);
+	else
+	    removeCSSProperty(CSS_PROP_VERTICAL_ALIGN);
     default:
 	HTMLTablePartElementImpl::parseAttribute(attr);
     }
@@ -541,35 +610,47 @@ void HTMLTableCellElementImpl::parseAttribute(AttrImpl *attr)
     case ATTR_BORDER:
     {
 	int border;
-	border = attr->val()->toInt();
+	border = attr->val() ? attr->val()->toInt() : 0;
 	QString str;
 	str.sprintf("%dpx solid black", border);
 	addCSSProperty(CSS_PROP_BORDER, str, false);
     }
     case ATTR_ROWSPAN:
 	// ###
-	rSpan = attr->val()->toInt();
+	rSpan = attr->val() ? attr->val()->toInt() : 1;
 	if(rSpan < 1) rSpan = 1; // fix for GNOME websites... ;-)
 	break;
     case ATTR_COLSPAN:
 	// ###
-	cSpan = attr->val()->toInt();
+	cSpan = attr->val() ? attr->val()->toInt() : 1;
 	if(cSpan < 1) cSpan = 1; // fix for GNOME websites... ;-)
 	break;
     case ATTR_NOWRAP:
-	nWrap = true;
+	nWrap = (attr->val() != 0);
 	break;
     case ATTR_WIDTH:
-	addCSSLength(CSS_PROP_WIDTH, attr->value(), false);
+	if (attr->val())
+	    addCSSLength(CSS_PROP_WIDTH, attr->value(), false);
+	else
+	    removeCSSProperty(CSS_PROP_WIDTH);
 	break;
     case ATTR_HEIGHT:
-	addCSSLength(CSS_PROP_HEIGHT, attr->value(), false);
+	if (attr->val())
+	    addCSSLength(CSS_PROP_HEIGHT, attr->value(), false);
+	else
+	    removeCSSProperty(CSS_PROP_HEIGHT);
 	break;
     case ATTR_ALIGN:
-	addCSSProperty(CSS_PROP_TEXT_ALIGN, attr->value(), false);
+	if (attr->val())
+	    addCSSProperty(CSS_PROP_TEXT_ALIGN, attr->value(), false);
+	else
+	    removeCSSProperty(CSS_PROP_TEXT_ALIGN);
 	break;
     case ATTR_VALIGN:
-	addCSSProperty(CSS_PROP_VERTICAL_ALIGN, attr->value(), false);
+	if (attr->val())
+	    addCSSProperty(CSS_PROP_VERTICAL_ALIGN, attr->value(), false);
+	else
+	    removeCSSProperty(CSS_PROP_VERTICAL_ALIGN);
 	break;
     default:
 	HTMLTablePartElementImpl::parseAttribute(attr);
@@ -654,16 +735,25 @@ void HTMLTableColElementImpl::parseAttribute(AttrImpl *attr)
     switch(attr->attrId)
     {
     case ATTR_SPAN:
-	_span = attr->val()->toInt();
+	_span = attr->val() ? attr->val()->toInt() : 1;
 	break;
     case ATTR_WIDTH:
-	addCSSLength(CSS_PROP_WIDTH, attr->value(), false);
+	if (attr->val())
+	    addCSSLength(CSS_PROP_WIDTH, attr->value(), false);
+	else
+	    removeCSSProperty(CSS_PROP_WIDTH);
 	break;
     case ATTR_ALIGN:
-	addCSSProperty(CSS_PROP_TEXT_ALIGN, attr->value(), false);
+	if (attr->val())
+	    addCSSProperty(CSS_PROP_TEXT_ALIGN, attr->value(), false);
+	else
+	    removeCSSProperty(CSS_PROP_TEXT_ALIGN);
 	break;
     case ATTR_VALIGN:
-	addCSSProperty(CSS_PROP_VERTICAL_ALIGN, attr->value(), false);
+	if (attr->val())
+	    addCSSProperty(CSS_PROP_VERTICAL_ALIGN, attr->value(), false);
+	else
+	    removeCSSProperty(CSS_PROP_VERTICAL_ALIGN);
 	break;
     default:
 	HTMLElementImpl::parseAttribute(attr);

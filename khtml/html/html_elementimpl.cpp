@@ -255,6 +255,15 @@ void HTMLElementImpl::addCSSProperty(const DOMString &property)
     m_styleDecls->setProperty(property);
 }
 
+void HTMLElementImpl::removeCSSProperty(int id)
+{
+    if(!m_styleDecls)
+	return;
+    HTMLDocumentImpl *doc = static_cast<HTMLDocumentImpl *>(document);
+    m_styleDecls->setParent(doc->elementSheet());
+    m_styleDecls->removeProperty(id);
+}
+
 // -------------------------------------------------------------------------
 HTMLGenericElementImpl::HTMLGenericElementImpl(DocumentImpl *doc, ushort i)
     : HTMLElementImpl(doc)

@@ -170,12 +170,7 @@ public:
     virtual tagStatus endTag() { return TREndTag; }
 
     long rowIndex() const;
-    void setRowIndex( long );
-
-    long sectionRowIndex() const { return rIndex; }
-    void setSectionRowIndex( long i ) { rIndex = i; }
-
-    void setCells( const HTMLCollection & );
+    long sectionRowIndex() const;
 
     HTMLElementImpl *insertCell ( long index );
     void deleteCell ( long index );
@@ -185,8 +180,6 @@ public:
     virtual void parseAttribute(AttrImpl *attr);
 
 protected:
-    // relative to the current section!
-    int rIndex;
     int ncols;
 };
 
@@ -207,7 +200,6 @@ public:
 
     // ### FIX these two...
     long cellIndex() const { return 0; }
-    void setCellIndex( long ) { }
 
     int col() { return _col; }
     void setCol(int col) { _col = col; }

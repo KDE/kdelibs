@@ -107,6 +107,9 @@ public:
 
     /**
      * see @ref cellIndex
+     *
+     * This function is obsolete - the cellIndex property is actually supposed to be read-only
+     * (http://www.w3.org/DOM/updates/REC-DOM-Level-1-19981001-errata.html)
      */
     void setCellIndex( long  );
 
@@ -722,12 +725,14 @@ public:
 
     /**
      * The index of this row, relative to the entire table.
-     *
      */
     long rowIndex() const;
 
     /**
      * see @ref rowIndex
+     *
+     * This function is obsolete - the rowIndex property is actually supposed to be read-only
+     * (http://www.w3.org/DOM/updates/REC-DOM-Level-1-19981001-errata.html)
      */
     void setRowIndex( long  );
 
@@ -741,6 +746,9 @@ public:
 
     /**
      * see @ref sectionRowIndex
+     *
+     * This function is obsolete - the sectionRowIndex property is actually supposed to be read-only
+     * (http://www.w3.org/DOM/updates/REC-DOM-Level-1-19981001-errata.html)
      */
     void setSectionRowIndex( long  );
 
@@ -752,6 +760,9 @@ public:
 
     /**
      * see @ref cells
+     *
+     * This function is obsolete - the cells property is actually supposed to be read-only
+     * (http://www.w3.org/DOM/updates/REC-DOM-Level-1-19981001-errata.html)
      */
     void setCells( const HTMLCollection & );
 

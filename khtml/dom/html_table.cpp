@@ -29,6 +29,7 @@
 
 #include "html_table.h"
 #include "html_tableimpl.h"
+#include "dom_exception.h"
 using namespace DOM;
 
 #include "htmlhashes.h"
@@ -121,9 +122,7 @@ long HTMLTableCellElement::cellIndex() const
 
 void HTMLTableCellElement::setCellIndex( long _cellIndex )
 {
-
-    if(impl)
-        ((HTMLTableCellElementImpl *)impl)->setCellIndex( _cellIndex );
+    throw DOMException(DOMException::NO_MODIFICATION_ALLOWED_ERR);
 }
 
 DOMString HTMLTableCellElement::abbr() const
@@ -671,9 +670,7 @@ long HTMLTableRowElement::rowIndex() const
 
 void HTMLTableRowElement::setRowIndex( long _rowIndex )
 {
-
-    if(impl)
-        ((HTMLTableRowElementImpl *)impl)->setRowIndex( _rowIndex );
+    throw DOMException(DOMException::NO_MODIFICATION_ALLOWED_ERR);
 }
 
 long HTMLTableRowElement::sectionRowIndex() const
@@ -684,9 +681,7 @@ long HTMLTableRowElement::sectionRowIndex() const
 
 void HTMLTableRowElement::setSectionRowIndex( long _sectionRowIndex )
 {
-
-    if(impl)
-        ((HTMLTableRowElementImpl *)impl)->setSectionRowIndex( _sectionRowIndex );
+    throw DOMException(DOMException::NO_MODIFICATION_ALLOWED_ERR);
 }
 
 HTMLCollection HTMLTableRowElement::cells() const
@@ -697,8 +692,7 @@ HTMLCollection HTMLTableRowElement::cells() const
 
 void HTMLTableRowElement::setCells( const HTMLCollection &_cells )
 {
-    if(impl)
-        ((HTMLTableRowElementImpl *)impl)->setCells( _cells );
+    throw DOMException(DOMException::NO_MODIFICATION_ALLOWED_ERR);
 }
 
 DOMString HTMLTableRowElement::align() const

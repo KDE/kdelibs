@@ -26,6 +26,7 @@
 #include "html_formimpl.h"
 #include "dom_string.h"
 #include "html_miscimpl.h"
+#include "dom_exception.h"
 using namespace DOM;
 
 #include "htmlhashes.h"
@@ -1159,8 +1160,7 @@ long HTMLOptionElement::index() const
 
 void HTMLOptionElement::setIndex( long _index )
 {
-    if(impl)
-        ((HTMLOptionElementImpl *)impl)->setIndex( _index );
+    throw DOMException(DOMException::NO_MODIFICATION_ALLOWED_ERR);
 }
 
 bool HTMLOptionElement::disabled() const
@@ -1189,6 +1189,11 @@ bool HTMLOptionElement::selected() const
 {
     if(!impl) return 0;
     return ((HTMLOptionElementImpl *)impl)->selected();
+}
+
+void HTMLOptionElement::setSelected(bool _selected) {
+    if(!impl) return;
+    return ((HTMLOptionElementImpl *)impl)->setSelected(_selected);
 }
 
 DOMString HTMLOptionElement::value() const

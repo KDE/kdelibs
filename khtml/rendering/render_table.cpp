@@ -1558,23 +1558,10 @@ void RenderTableSection::addChild(RenderObject *child, RenderObject *beforeChild
 RenderTableRow::RenderTableRow()
   : RenderObject()
 {
-  rIndex = -1;
 }
 
 RenderTableRow::~RenderTableRow()
 {
-}
-
-
-long RenderTableRow::rowIndex() const
-{
-    // ###
-    return 0;
-}
-
-void RenderTableRow::setRowIndex( long  )
-{
-    // ###
 }
 
 void RenderTableRow::addChild(RenderObject *child, RenderObject *beforeChild)

@@ -302,12 +302,6 @@ public:
 
     virtual const char *renderName() const { return "RenderTableRow"; }
 
-    long rowIndex() const;
-    void setRowIndex( long );
-
-    long sectionRowIndex() const { return rIndex; }
-    void setSectionRowIndex( long i ) { rIndex = i; }
-
     virtual bool isTableRow() const { return true; }
 
     // overrides
@@ -325,9 +319,6 @@ public:
 
 protected:
     RenderTable *table;
-
-    // relative to the current section!
-    int rIndex;
     int ncols;
 };
 
