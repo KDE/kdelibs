@@ -23,6 +23,12 @@ int main(int argc, char **argv)
     kdDebug() << "config " << (*it).ascii() << endl;
   }
 
+  list = t.findAllResources("config", "kcmdisplayrc", false, true);
+  for (QStringList::ConstIterator it = list.begin(); it != list.end(); it++) {
+    kdDebug() << "config2 " << (*it).ascii() << endl;
+  }
+
+
   list = t.findAllResources("html", "en/*/index.html", true);
   for (QStringList::ConstIterator it = list.begin(); it != list.end(); it++) {
     kdDebug() << "docs " << (*it).ascii() << endl;
@@ -32,4 +38,6 @@ int main(int argc, char **argv)
   for (QStringList::ConstIterator it = list.begin(); it != list.end(); it++) {
     kdDebug() << "kwin dirs " << (*it).ascii() << endl;
   }
+
+  kdDebug() << "hit " << t.findResourceDir("config", "kcmdisplayrc") << endl;
 }
