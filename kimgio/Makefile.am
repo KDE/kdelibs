@@ -2,14 +2,10 @@
 LDFLAGS = $(all_libraries)
 
 lib_LTLIBRARIES= libkimgio.la kimg_eps.la kimg_xview.la kimg_krl.la \
-	$(JPEG_MODULE) $(PNG_MODULE) $(TIFF_MODULE)
+	$(JPEG_MODULE) $(TIFF_MODULE)
 
 if HAVE_LIBJPEG
 JPEG_MODULE = kimg_jpeg.la
-endif
-
-if HAVE_LIBPNG
-PNG_MODULE = kimg_png.la
 endif
 
 if HAVE_LIBTIFF
@@ -19,10 +15,6 @@ endif
 kimg_jpeg_la_SOURCES = jpeg.cpp
 kimg_jpeg_la_LDFLAGS = -module -avoid-version
 kimg_jpeg_la_LIBADD = $(LIBJPEG) 
-
-kimg_png_la_SOURCES = pngr.cpp
-kimg_png_la_LDFLAGS = -module -avoid-version
-kimg_png_la_LIBADD = $(LIBPNG) 
 
 kimg_tiff_la_SOURCES = tiffr.cpp
 kimg_tiff_la_LDFLAGS = -module -avoid-version
@@ -42,11 +34,11 @@ kimg_eps_la_LIBADD =
 
 kimgio-config.h: staticmodules
 
-staticmodules: $(PNG_MODULE) $(JPEG_MODULE) $(TIFF_MODULE)
+staticmodules: $(JPEG_MODULE) $(TIFF_MODULE)
 	@rm -f kimgio-config.h staticmodules ;\
 	touch kimgio-config.h ;\
 	touch staticmodules ;\
-	for mod in png jpeg tiff; do \
+	for mod in jpeg tiff; do \
 	if test -f kimg_$$mod.la; then \
 	  dlname=`grep -E '^dlname=' kimg_$$mod.la | sed -e 's#^dlname=.\(.*\).#\1#'` ;\
 	  if test -z "$$dlname"; then \
@@ -54,8 +46,6 @@ staticmodules: $(PNG_MODULE) $(JPEG_MODULE) $(TIFF_MODULE)
 		case $$mod in \
 		jpeg) \
 		  echo jpeg.lo $(LIBJPEG) >> staticmodules ;;\
-		png) \
-		  echo pngr.lo $(LIBPNG) >> staticmodules ;;\
 		tiff) \
 		  echo tiffr.lo $(LIBTIFF) >> staticmodules ;;\
 		esac ;\
@@ -79,7 +69,7 @@ libkimgio_la_SOURCES = kimgio.cpp
 $(srcdir)/kimgio.cpp: kimgio-config.h
 include_HEADERS = kimgio.h
 
-noinst_HEADERS= jpeg.h xview.h eps.h tiffr.h pngr.h krl.h
+noinst_HEADERS= jpeg.h xview.h eps.h tiffr.h krl.h
 
 INCLUDES = -I$(top_srcdir)/libltdl $(all_includes)
 
