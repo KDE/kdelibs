@@ -28,7 +28,48 @@ class QString;
 	*	This class is used for allowing feedback to the main system.
 	*	@author Ian Reinhart Geiser <geiseri@kde.org>
 	*
+	*	To implement KScript in your application you would use this class to interface with the scripting engine.
+	*	There are currently a few implementations of script managers around but developers can implement their own custom
+	*	interfaces with this class.
+	* @code
+	*	class MyScript : public QObject, public KScriptClientInterface {
+	*	Q_OBJECT
+	*	public:
+	*
+	*	MyScript(QObject *parent)
+	*	{
+	*		// Create your @ref KScriptInterface here.
+	*		m_interface = KParts::ComponentFactory::createInstanceFromQuery<KScriptInterface>( 
+	*			"KScriptRunner/KScriptRunner", "([X-KDE-Script-Runner] == 'bash/shell')", this );
+	*	}
+	*
+	*	virtual ~KScriptAction()
+	*	{
+	*		delete m_interface;
+	*	}
+	*
+	*	signals:
+	*	void error ( const QString &msg );
+	*	void warning ( const QString &msg );
+	*	void output ( const QString &msg );
+	*	void progress ( int percent );
+	*	void done ( KScriptClientInterface::Result result, const QVariant &returned );
+	*
+	*	public slots:
+	*	void activate(const QVariant &args)
+	*	{
+	*		m_interface->run(parent(), args);
+	*	}
+	*
+	*	private:
+	*
+	*	KScriptInterface *m_interface;
+	*	};
+	* @endcode
+	*	Things to note about this example are that it only handles a single script type and instance.  You may wish to
+	*	extend this.  
 	**/
+
 	class KScriptClientInterface
 	{
 	public:
@@ -36,33 +77,45 @@ class QString;
 		/**
 		*	This function will allow the main application of any errors
 		*	that have occurred during processing of the script.
+		*	For script clients its best to implement this as a signal so feedback
+		*	can be sent to the main application.
 		*/
 		virtual void error( const QString &msg ) =0;
 		/**
 		*	This function will allow the main application of any warnings
 		*	that have occurred during the processing of the script.
+		*	For script clients its best to implement this as a signal so feedback
+		*	can be sent to the main application.
 		*/
 		virtual void warning( const QString &msg ) =0;
 		/**
 		*	This function will allow the main application of any normal
 		*	output that has occurred during the processing of the script.
+		*	For script clients its best to implement this as a signal so feedback
+		*	can be sent to the main application.
 		*/
 		virtual void output( const QString &msg ) =0;
 		/**
 		*	This function will allow feedback to any progress bars in the main
 		*	application as to how far along the script is.  This is very useful when
 		*	a script is processing files or doing some long operation that is of a
-		*	known duration.
+		*	known duration.]
+		*	For script clients its best to implement this as a signal so feedback
+		*	can be sent to the main application.
 		*/
 		virtual void progress( int percent ) =0;
 		/**
 		*	This function will allow feedback on completion of the script.
 		*	It turns the result as a KScriptInteface::Result, and a return
 		*	value as a QVariant
+		*	For script clients its best to implement this as a signal so feedback
+		*	can be sent to the main application.
 		*/
 		virtual void done( KScriptClientInterface::Result result, const QVariant &returned )  =0;
 		/**
-		*	Check to see if the script is still running
+		*	Returned when the script has finished running.
+		*	For script clients its best to implement this as a signal so feedback
+		*	can be sent to the main application.
 		**/
 		//virtual bool isRunning() =0;
 	};
