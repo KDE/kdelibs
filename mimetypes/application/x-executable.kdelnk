@@ -1,7 +1,8 @@
+# KDE Config File
 [KDE Desktop Entry]
-Type=MimeType
-Icon=exec.xpm
-Patterns=;
-MimeType=application/x-executable
 Comment=Executable
 Comment[de]=Programm
+Icon=exec.xpm
+Type=MimeType
+MimeType=application/x-executable
+Patterns=;

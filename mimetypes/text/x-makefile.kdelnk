@@ -1,8 +1,9 @@
 # KDE Config File
 [KDE Desktop Entry]
+MimeType=text/x-makefile
 Comment=Makefile
-Comment[de]=Makefile
+DefaultApp=Kemacs
 Icon=unknown.xpm
 Type=MimeType
-MimeType=text/x-makefile
 Patterns=Makefile*;
+Comment[de]=Makefile

@@ -1,0 +1,8 @@
+# KDE Config File
+[KDE Desktop Entry]
+Comment=Unknown
+Comment[de]=Unbekannt
+Icon=unknown.xpm
+Type=MimeType
+MimeType=application/octet-stream
+Patterns=;

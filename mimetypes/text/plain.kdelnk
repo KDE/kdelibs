@@ -1,9 +1,9 @@
 # KDE Config File
 [KDE Desktop Entry]
-Type=MimeType
 MimeType=text/plain
+Comment=einfacher Text
+DefaultApp=Kedit
 Icon=txt.xpm
+Type=MimeType
 Patterns=README*;INSTALL*;CHANGE*;*.txt;Readme*;
-DefaultApp=KEdit
-Comment=Plain Text
 Comment[de]=einfacher Text

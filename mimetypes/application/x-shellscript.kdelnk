@@ -1,7 +1,8 @@
+# KDE Config File
 [KDE Desktop Entry]
+Comment=shell script
+Comment[de]=Skript
+Icon=terminal.xpm
 Type=MimeType
-Icon=UNIX.xpm
-Patterns=;
 MimeType=application/x-shellscript
-Comment=Shell Script
-Comment[de]=Shell Script
+Patterns=;
