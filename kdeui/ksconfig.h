@@ -67,7 +67,7 @@ enum KSpellClients {
  * the user change the settings. This way an application that uses
  * KSpell can either rely on the default settings (in the simplest
  * case), offer a dialog to configure KSpell, or offer a dialog to
- * configure KSpell _for_this_app_only_ (in which case, the application
+ * configure KSpell <em>for this app only</em> (in which case, the application
  * should save the settings for use next time it is run).
  * This last option might be useful in an email program, for example, where
  * people may be writing in a language different from that used for
@@ -145,7 +145,7 @@ class KSpellConfig : public QWidget
 
     /**
      * The @p _replaceAllList contains word you like that replace
-     * word. Becarefull this list contains word which is replaced
+     * word. Be careful that this list contains word which is replaced
      * and new word.
      */
     void setReplaceAllList( QStringList _replaceAllList );
@@ -203,13 +203,17 @@ class KSpellConfig : public QWidget
     void fillInDialog();
 
     /**
-     * This takes a dictionary file name (fname) and returns a language
-     * abbreviation (lname; like de for German), appropriate for the
-     * @p $LANG variable, and a human-readble name (hname; like "Deutsch").
+     * This takes a dictionary file name and provides both a language
+     * abbreviation appropriate for the $LANG variable, and a
+     * human-readable name.
      *
      * It also truncates ".aff" at the end of fname.
      *
-     * @return @p true if <pre>lname.data()==$LANG</pre>
+     * @param fname the dictionary name file (input)
+     * @param lname the language abbreviation, such as de for German (output)
+     * @param hname the human-readable name, such as Deutsch (output)
+     *
+     * @return true if <pre>lname.data()==$LANG</pre>
      */
     bool interpret( QString &fname, QString &lname, QString &hname );
 
