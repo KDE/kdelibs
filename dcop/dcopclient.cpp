@@ -1477,10 +1477,14 @@ bool DCOPClient::callInternal(const QCString &remApp, const QCString &remObjId,
 
 void DCOPClient::processSocketData(int)
 {
-
     if ( d->non_blocking_call_lock ) {
 	qApp->exit_loop();
 	return;
+    }
+
+    if (!d->iceConn) {
+        qWarning("received an error processing data from the DCOP server!");
+        return;
     }
 
     IceProcessMessagesStatus s =  IceProcessMessages(d->iceConn, 0, 0);
