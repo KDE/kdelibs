@@ -22,6 +22,9 @@
 // $Id$
 //
 // $Log$
+// Revision 1.27  1999/05/31 17:59:07  porten
+// ';' -> ',' as default for lists in order not to break everything
+//
 // Revision 1.26  1999/05/30 13:22:27  porten
 // switched back to old list delimiter ','
 //
@@ -75,8 +78,7 @@
  * can avoid this feature by having two consecutive $ characters in
  * your config file which get expanded to one.
  *
- * @author Preston Brown <pbrown@kde.org>
- * @author Kalle Dalheimer <kalle@kde.org>
+ * @author Kalle Dalheimer <kalle@kde.org>, Preston Brown <pbrown@kde.org>
  * @version $Id$
  * @see KApplication::getConfig KConfig KSimpleConfig
  * @short KDE Configuration Management abstract base class 

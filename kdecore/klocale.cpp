@@ -28,6 +28,9 @@
 // Let application use them
 #ifdef HAVE_LOCALE_H 
 #include <locale.h>
+#endif
+
+#ifdef HAVE_MONETARY_H
 #include <monetary.h>
 #endif
 
@@ -436,7 +439,7 @@ KLocale::SignPosition KLocale::negativeMonetarySignPosition() const
 
 QString KLocale::formatMoney(double num) const
 {
-#ifdef HAVE_SETLOCALE
+#if defined(HAVE_SETLOCALE) && defined(HAVE_STRFMON)
   if (numeric_enabled) {
     char s[256];
     
