@@ -905,6 +905,7 @@ QCString KMD5::hexDigest()
 
 void KMD5::hexDigest(QCString& s)
 {
+    finalize();
     s.resize(33);
     sprintf(s.data(), "%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x",
             m_digest[0], m_digest[1], m_digest[2], m_digest[3], m_digest[4], m_digest[5],
