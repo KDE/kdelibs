@@ -31,6 +31,7 @@
 #include <kapp.h>
 #include <kurl.h>
 #include <kdebug.h>
+#include <kmimetype.h>
 
 #include <qdir.h>
 #include <qfileinfo.h>
@@ -40,16 +41,34 @@
 #include <sys/types.h>
 #include <utime.h>
 
-void KRecentDocument::add(const KURL& url)
+QString KRecentDocument::recentDocumentDirectory()
 {
-    if ( url.isLocalFile() )
-        add( url.path(-1) );
-    else
-        add( url.url(-1), true );
+    // need to change this path, not sure where
+    return locateLocal("data", QString::fromLatin1("RecentDocuments/"));
 }
 
-void KRecentDocument::add(const QString &openStr, bool isUrl)
+QStringList KRecentDocument::recentDocuments()
 {
+    QDir d(recentDocumentDirectory(), "*.desktop", QDir::Time | QDir::Reversed,
+           QDir::Files | QDir::Readable | QDir::Hidden);
+
+    if (!d.exists())
+        d.mkdir(recentDocumentDirectory());
+
+    QStringList list = d.entryList();
+    QStringList fullList;
+
+    for (QStringList::ConstIterator it = list.begin(); it != list.end(); ++it) {
+        fullList.append( d.absFilePath( *it ) );
+    }
+
+    return fullList;
+}
+
+void KRecentDocument::add(const KURL& url)
+{
+    QString openStr = url.url();
+
     kdDebug(250) << "KRecentDocument::add for " << openStr << endl;
     KConfig *config = KGlobal::config();
     QString oldGrp = config->group();
@@ -61,17 +80,9 @@ void KRecentDocument::add(const QString &openStr, bool isUrl)
     if(!useRecent)
         return;
 
-    // need to change this path, not sure where
-    QString path = locateLocal("data", QString::fromLatin1("RecentDocuments/"));
+    QString path = recentDocumentDirectory();
 
-    QString dStr;
-    QFileInfo fi(openStr);
-    if(!isUrl)
-        dStr = path + fi.fileName();
-    else{
-        KURL url(openStr);
-        dStr = path + url.fileName();
-    }
+    QString dStr = path + url.fileName();
 
     QString ddesktop = dStr + QString::fromLatin1(".desktop");
 
@@ -114,14 +125,24 @@ void KRecentDocument::add(const QString &openStr, bool isUrl)
     conf.writeEntry( QString::fromLatin1("Type"), QString::fromLatin1("Application") );
     conf.writeEntry( QString::fromLatin1("URL"), openStr );
     conf.writeEntry( QString::fromLatin1("Exec"), QString::fromLatin1(kapp->argv()[0]) + QString::fromLatin1(" \"") + openStr + '"' );
-    conf.writeEntry( QString::fromLatin1("Name"), isUrl ? openStr : fi.fileName() );
-    conf.writeEntry( QString::fromLatin1("Icon"), QString::fromLatin1("document") );
+    conf.writeEntry( QString::fromLatin1("Name"), url.fileName() );
+    conf.writeEntry( QString::fromLatin1("Icon"), KMimeType::iconForURL( url ) );
+}
+
+void KRecentDocument::add(const QString &openStr, bool isUrl)
+{
+    if( isUrl ) {
+        add( KURL( openStr ) );
+    } else {
+        KURL url;
+        url.setPath( openStr );
+        add( url );
+    }
 }
 
 void KRecentDocument::clear()
 {
-  // we remove all we can access. There shouldn't be any more than in $HOME
-  QStringList list = KGlobal::dirs()->findAllResources("data", QString::fromLatin1("RecentDocuments/*"));
+  QStringList list = recentDocuments();
   QDir dir;
   for(QStringList::Iterator it = list.begin(); it != list.end() ; ++it)
     dir.remove(*it);

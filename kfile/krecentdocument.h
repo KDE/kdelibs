@@ -50,30 +50,47 @@
 class KRecentDocument
 {
 public:
+
+    /**
+     *
+     * Return a list of absolute paths to recent document .desktop files,
+     * sorted by date.
+     *
+     */
+    static QStringList recentDocuments();
+    
     /**
      * Add a new item to the Recent Document menu.
      *
-     * @param documentStr The full path to the document or URL to add.
-     *
-     * @param isURL Local files and URL .desktop files are encoded differently
-     * in order for the filename to be easier for Konqueror users to read. Set
-     * to @p true if @p documentStr is an URL and not a local file path.
-     */
-    static void add(const QString &documentStr, bool isURL = false);
-
-    /**
-     * Overloaded for convenience.
+     * @param url The url to add.
      */
     static void add(const KURL& url);
+
+    /**
+     *
+     * Add a new item to the Recent Document menu. Calls add( url ).
+     *
+     * @param documentStr The full path to the document or URL to add.
+     *
+     * @param Set to @p true if @p documentStr is an URL and not a local file path.
+     */
+    static void add(const QString &documentStr, bool isURL = false);
 
     /**
      * Clear the recent document menu of all entries.
      */
     static void clear();
+
     /**
      * Retrieve the maximum amount of recent document entries allowed.
      */
     static int maximumItems();
+
+    /**
+     * Returns the path to the directory where recent document .desktop files
+     * are stored.
+     */
+    static QString recentDocumentDirectory();
 };
 
 #endif
