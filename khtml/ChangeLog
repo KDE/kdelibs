@@ -1,5 +1,9 @@
 2004-02-25  Dirk Mueller  <mueller@kde.org>
 
+	* rendering/render_text.h (class InlineTextBox): rename width(int)
+	to widthFromStart(int), since it otherwise clashes with upcoming
+	Safari merges.
+
 	* rendering/render_image.cpp (notifyFinished): forward the
 	notifyFinished call to the inherited class.
 

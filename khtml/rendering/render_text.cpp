@@ -364,7 +364,7 @@ int InlineTextBox::offsetForPoint(int _x, int &ax) const
     if (end - start == 1) start = end;
 
     offset = (start + end) / 2;
-    ax = m_x + width(offset);
+    ax = m_x + widthFromStart(offset);
     if (ax > _x) end = offset;
     else if (ax < _x) start = offset;
     else break;
@@ -372,7 +372,7 @@ int InlineTextBox::offsetForPoint(int _x, int &ax) const
   return m_start + offset;
 }
 
-int InlineTextBox::width(int pos) const
+int InlineTextBox::widthFromStart(int pos) const
 {
   // gasp! sometimes pos is i < 0 which crashes Font::width
   pos = kMax(pos, 0);
@@ -415,10 +415,11 @@ int InlineTextBox::width(int pos) const
         current++;
 
       // check run without spaces
-      w += f->width(t->str->s + m_start, m_len, start, current - start);
-      start = current;
-
-    }/*wend*/
+      if ( current > start ) {
+          w += f->width(t->str->s + m_start, m_len, start, current - start);
+          start = current;
+      }
+    }
 
     return w;
 
@@ -735,7 +736,7 @@ void RenderText::caretPos(int offset, bool override, int &_x, int &_y, int &widt
   const QFontMetrics &fm = t->metrics( s->m_firstLine );
   height = fm.height(); // s->m_height;
 
-  _x = s->m_x + s->width(pos);
+  _x = s->m_x + s->widthFromStart(pos);
   _y = s->m_y + s->baseline() - fm.ascent();
   width = 1;
   if (override) {

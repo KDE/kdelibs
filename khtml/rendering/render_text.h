@@ -77,11 +77,6 @@ public:
     // Return before, after (offset set to max), or inside the text, at @p offset
     FindSelectionResult checkSelectionPoint(int _x, int _y, int _tx, int _ty, const Font *f, RenderText *text, int & offset, short lineheight);
 
-    /**
-     * if this text box was rendered _ty pixels below the upper edge
-     * of a view, would the _y -coordinate be inside the vertical range
-     * of this object's representation?
-     */
     bool checkVerticalPoint(int _y, int _ty, int _h, int height)
     { if((_ty + m_y > _y + _h) || (_ty + m_y + m_baseline + height < _y)) return false; return true; }
 
@@ -102,7 +97,7 @@ public:
      *	the width is to be determined
      * @return the width in pixels
      */
-    int width(int pos) const;
+    int widthFromStart(int pos) const;
 
     /** returns the lowest possible value the caret offset may have to
      * still point to a valid position.
