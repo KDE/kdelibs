@@ -1516,6 +1516,11 @@ bool HTTPProtocol::httpOpenConnection()
 
     if ( !connectToHost(proxy_host, proxy_port, false) )
     {
+      if (userAborted()) {
+        error(ERR_NO_CONTENT, "");
+        return false;
+      }
+
       switch ( connectResult() )
       {
         case IO_LookupError:
@@ -1540,6 +1545,11 @@ bool HTTPProtocol::httpOpenConnection()
     setConnectTimeout(m_remoteConnTimeout);
     if ( !connectToHost(m_state.hostname, m_state.port, false ) )
     {
+      if (userAborted()) {
+        error(ERR_NO_CONTENT, "");
+        return false;
+      }
+
       switch ( connectResult() )
       {
         case IO_LookupError:
