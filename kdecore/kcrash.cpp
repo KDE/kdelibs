@@ -16,7 +16,6 @@
  * along with this library; see the file COPYING.LIB.  If not, write to
  * the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
  * Boston, MA 02111-1307, USA.
- *
  */
 
 /*
@@ -24,7 +23,6 @@
  * crash the application (like segmentation fault, floating
  * point exception and such).
  */
-
 
 #include <string.h>
 #include <signal.h>
@@ -41,13 +39,12 @@ void (*emergencySaveFunction)(int);
 // application is asked to try to save its data.
 void setEmergencySaveFunction (void (*saveFunction)(int))
 {
+	if (saveFunction == KDE_SAVE_NONE)
+	{
+  		emergencySaveFunction = KDE_SAVE_NONE;
+	}
 
-  if (saveFunction == KDE_SAVE_NONE)
-  {
-  	emergencySaveFunction = KDE_SAVE_NONE;
-  }
-
-  emergencySaveFunction = saveFunction;
+	emergencySaveFunction = saveFunction;
 }
 
 
@@ -56,45 +53,42 @@ void setEmergencySaveFunction (void (*saveFunction)(int))
 
 void setCrashHandler (void (*crashHandler)(int))
 {
-printf("Trying to install kcrash handler...\n");
+	printf("Trying to install kcrash handler...\n");
 
- if (crashHandler == KDE_CRASH_DEFAULT)
- {
-	 printf("Installing the system's default bug handler...");
-	  signal (SIGSEGV, SIG_DFL);		
-printf("done.\n");
-	  return;
- }
+	if (crashHandler == KDE_CRASH_DEFAULT)
+	{
+		printf("Installing the system's default bug handler...");
+		signal (SIGSEGV, SIG_DFL);		
+		printf("done.\n");
+		return;
+	}
 
- if (crashHandler == KDE_CRASH_INTERNAL)
- {
-printf("Installing the KDE internal crash handler...");
-   signal (SIGSEGV, defaultCrashHandler);
-print("done\n");
-   return;
- }
+	if (crashHandler == KDE_CRASH_INTERNAL)
+	{
+		printf("Installing the KDE internal crash handler...");
+		signal (SIGSEGV, defaultCrashHandler);
+		printf("done\n");
+		return;
+	}
 
-printf("Installing the application's crash handler...");
- signal (SIGSEGV, crashHandler);
-printf("done.\n");
-
-
+	printf("Installing the application's crash handler...");
+	signal (SIGSEGV, crashHandler);
+	printf("done.\n");
 }
 
 void resetCrashRecursion (void)
 {
-printf("Crash recursion set to zero.\n");
-  CrashRecursionCounter = 0;
+	printf("Crash recursion set to zero.\n");
+	CrashRecursionCounter = 0;
 }
 
 void defaultCrashHandler (int signal)
 {
-	
 	// TODO: Add a nice function to collect all arguments
 	
 	struct kcrashargs *arguments;
 	
-  CrashRecursionCounter++;
+	CrashRecursionCounter++;
 	
 	if (CrashRecursionCounter < 2)
 	{
@@ -106,26 +100,24 @@ void defaultCrashHandler (int signal)
 	
 	if (CrashRecursionCounter < 3)
 	{
-		
-  arguments = new kcrashargs[2];
+		arguments = new kcrashargs[2];
 
-	// At first, we need to get out the path and name of this executable
-	arguments[0].argname = new char(strlen("Application path"));
-	arguments[0].argvalue = new char(strlen("/usr/bin/test"));
-	arguments[1].argname = new char(strlen("Other data"));
-	arguments[1].argvalue = new char(strlen("Testdata"));
+		// At first, we need to get out the path and name of this executable
+		arguments[0].argname = new char(strlen("Application path"));
+		arguments[0].argvalue = new char(strlen("/usr/bin/test"));
+		arguments[1].argname = new char(strlen("Other data"));
+		arguments[1].argvalue = new char(strlen("Testdata"));
 	
-	strcpy(arguments[0].argname, "Application path");
-  strcpy(arguments[0].argname, "/usr/bin/test");	
-	strcpy(arguments[1].argname, "Other data");
-  strcpy(arguments[1].argname, "Testdata");	
+		strcpy(arguments[0].argname, "Application path");
+		strcpy(arguments[0].argname, "/usr/bin/test");	
+		strcpy(arguments[1].argname, "Other data");
+		strcpy(arguments[1].argname, "Testdata");	
 
-  printf("would start dr. konqi here\n");
+		printf("Would start dr. konqi here\n");
 
-	execlp("drkonqi","drkonqi","--fclass=SEGFAULT","--messages=Application path\t/usr/bin/test\tOther data\ttestdata", NULL);
-
+		execlp("drkonqi", "drkonqi", "--fclass=SEGFAULT", "--messages=Application path\t/usr/bin/test\tOther data\ttestdata", NULL);
 	}
 	
+	printf("Unable to start dr. konqi\n");
 	exit(1);
-
 }
