@@ -22,7 +22,7 @@
 
 #include <stdlib.h>
 #include <stdio.h>
-#include <iostream.h>
+#include <ctype.h>
 #ifdef HAVE_STRING_H
 #include <string.h>
 #endif
@@ -210,6 +210,18 @@ void UString::append(const UString &t)
   s = n;
 }
 
+CString UString::cstring() const
+{
+  char *c = new char[l+1];
+  for(unsigned int i = 0; i < l; i++)
+    c[i] = s[i].lo;
+  c[l] = '\0';
+  CString cstr(c);
+  delete [] c;
+
+  return cstr;
+}
+
 UString &UString::operator=(const char *c)
 {
   if (s)
@@ -245,14 +257,14 @@ const UnicodeChar* UString::unicode() const
   return s;
 }
 
-const char* UString::ascii() const
+bool UString::is8Bit() const
 {
-  char *memoryLeak = new char[l+1];
-  for(unsigned int i = 0; i < l; i++)
-    memoryLeak[i] = s[i].lo;
-  memoryLeak[l] = '\0';
+  UnicodeChar *u = s;
+  for(unsigned int i = 0; i < l; i++, u++)
+    if (u->hi)
+      return false;
 
-  return memoryLeak;
+  return true;
 }
 
 UnicodeChar UString::operator[](unsigned int pos) const
@@ -261,6 +273,68 @@ UnicodeChar UString::operator[](unsigned int pos) const
     return UnicodeChar();
 
   return s[pos];
+}
+
+double UString::toDouble() const
+{
+  double d;
+
+  if (!is8Bit())
+    return NaN;
+
+  CString str = cstring();
+  const char *c = str.ascii();
+  printf("ascii = %s\n", c);
+
+  // skip leading white space
+  while (isspace(*c))
+    c++;
+
+  // empty string ?
+  if (*c == '\0')
+    return 0.0;
+
+  // hex number ?
+  if (*c == '0' && (*(c+1) == 'x' || *(c+1) == 'X')) {
+    c++;
+    d = 0.0;
+    while (*(++c)) {
+      if (*c >= '0' && *c <= '9')
+	d = d * 16.0 + *c - '0';
+      else if ((*c >= 'A' && *c <= 'F') || (*c >= 'a' && *c <= 'f')) 
+	d = d * 16.0 + (*c & 0xdf) - 'A' + 10.0;
+      else
+	break;
+    }
+  } else {
+    // regular number ?
+    char *end;
+    d = strtod(c, &end);
+    if (d != 0.0 || end != c) {
+      c = end;
+    } else {
+      // infinity ?
+      d = 1.0;
+      if (*c == '+')
+	c++;
+      else if (*c == '-') {
+	d = -1.0;
+	c++;
+      }
+      if (strncmp(c, "Infinity", 8) != 0)
+	return NaN;
+      d = d * Inf;
+      c += 8;
+    }
+  }
+
+  // allow trailing white space
+  while (isspace(*c))
+    c++;
+  if (*c != '\0')
+    d = NaN;
+  
+  return d;
 }
 
 bool KJS::operator==(const UString& s1, const UString& s2)

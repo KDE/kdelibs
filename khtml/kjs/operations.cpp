@@ -93,9 +93,7 @@ KJSO *KJS::toNumber(KJSO *obj)
     case Number:
       return obj->ref();
     case String:
-      /* TODO */
-      if (sscanf(obj->sVal().ascii(), "%lf", &d) == 0)
-	d = NaN;
+      d = obj->sVal().toDouble();
       break;
     case Object:
       tmp = toPrimitive(obj, Number);
@@ -228,7 +226,7 @@ KJSO *KJS::toObject(KJSO *obj)
       o = new KJSNumber(obj->dVal());
       break;
     case String:
-      o = new KJSString(obj->sVal().ascii());
+      o = new KJSString(obj->sVal());
       break;
     case Object:
     case Host:

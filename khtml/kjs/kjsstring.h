@@ -70,7 +70,8 @@ namespace KJS {
 
     void append(const UString &);
 
-    // to be implemented when needed, e.g. in a module
+    // conversions to other string types
+    CString cstring() const;
     DOM::DOMString string() const;
     QString qstring() const;
 
@@ -78,9 +79,11 @@ namespace KJS {
     UString &operator=(const UString &);
 
     const UnicodeChar* unicode() const;
-    const char* ascii() const;
+    bool is8Bit() const;
     int length() const;
     UnicodeChar operator[](unsigned int pos) const;
+
+    double toDouble() const;
   private:
     UnicodeChar *s;
     unsigned int l;

@@ -136,7 +136,7 @@ KJSO *AccessorNode1::evaluate()
   Ptr v2 = e2->getValue();
   Ptr o = toObject(v1);
   Ptr s = toString(v2);
-  KJSReference *ref = new KJSReference(o, s->sVal().ascii());
+  KJSReference *ref = new KJSReference(o, s->sVal().cstring());
 
   return ref;
 }
@@ -889,7 +889,7 @@ KJSO *DebugNode::evaluate()
   Ptr v = e->getValue();
   Ptr s = toString(v);
 
-  cout << "---> " << s->sVal().ascii() << endl;
+  cout << "---> " << s->sVal().cstring().ascii() << endl;
 
   return new KJSCompletion(Normal);
 }
