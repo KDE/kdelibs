@@ -20,6 +20,12 @@
  * $Id$
  * 
  * $Log$
+ * Revision 1.18  1998/01/18 14:38:28  kulow
+ * reverted the changes, Jacek commited.
+ * Only the RCS comments were affected, but to keep them consistent, I
+ * thought, it's better to revert them.
+ * I checked twice, that only comments are affected ;)
+ *
  * Revision 1.16  1997/11/04 11:00:30  kulow
  * fixed some free mismatch errors
  *
@@ -202,7 +208,8 @@ void KDNDDropZone::leave()
 
 KDNDDropZone::~KDNDDropZone()
 {
-  kapp->removeDropZone( this );
+  if (kapp)
+     kapp->removeDropZone( this );
 }
 
 void KDNDWidget::startDrag( KDNDIcon *_icon, char *_data, int _size, int _type, int _dx, int _dy )
