@@ -1171,6 +1171,8 @@ bool HTTPProtocol::http_open()
   {
     kdDebug(7113) << "(" << getpid() << ")  Checking for Authentication info in cache..." << endl;
     QString user, passwd, realm, extra;
+    if( !m_request.user.isEmpty() )
+      user = m_request.user;
     if( checkCachedAuthentication( m_request.url, user, passwd, realm, extra, true ) )
     {
       kdDebug(7113) << "(" << getpid() << ") Found a matching Authentication entry..." << endl;
@@ -1757,17 +1759,13 @@ bool HTTPProtocol::readHeader()
       if( messageBox(QuestionYesNo, msg, i18n("Authentication")) != 3  )
       {
         kdDebug(7103) << "User rejected Authentication retry!!" << endl;
-        /*
-        if( code == 401 )
-            msg = QString("%1").arg(m_state.hostname);
-        else if( code == 407 )
-            msg = QString("%1").arg(m_proxyURL.host());
-        error(ERR_ACCESS_DENIED, msg);
-        */
         error(ERR_USER_CANCELED, QString::null);
         return false;
       }
     }
+
+    bool result = false;
+
     if( code == 401 )
     {
       // For cases where the user does http://foo@www.foo.org
@@ -1777,21 +1775,6 @@ bool HTTPProtocol::readHeader()
       if( m_strRealm.isEmpty() )
         m_strRealm = m_state.hostname;
 
-      msg = i18n( "<center>Authentication required to access<br/>"
-                    "<b>%1</b> at <b>%2</b></center>" ).arg( m_strRealm ).arg( m_request.hostname );
-    }
-    else if( code == 407 )
-    {
-      if( m_strProxyRealm.isEmpty() )
-        m_strProxyRealm = m_state.hostname;
-
-      msg = i18n( "<b>Proxy Authentication</b> required to access this site.<br/>"
-                  "Enter your Authentication information below:" );
-    }
-
-    bool result = false;
-    if( code == 401 )
-    {
       // Here we check the cache after obtaining the "Relam" value to see if
       // we have a cached authentication for the gievn protection space so
       // that we won't unnecessarily prompt the user for that info.
@@ -1806,6 +1789,19 @@ bool HTTPProtocol::readHeader()
         if( Authentication == AUTH_Digest )
           m_strAuthString = extra;
       }
+      else
+      {
+        msg = i18n( "<center>Authentication required to access<br/>"
+                    "<b>%1</b> at <b>%2</b></center>" ).arg( m_strRealm ).arg( m_request.hostname );
+      }
+    }
+    else if( code == 407 )
+    {
+      if( m_strProxyRealm.isEmpty() )
+        m_strProxyRealm = m_state.hostname;
+
+      msg = i18n( "<b>Proxy Authentication</b> required to access this site.<br/>"
+                  "Enter your Authentication information below:" );
     }
 
     // If no matching realm value was found for the host in the
