@@ -214,40 +214,40 @@ void KFileInfo::parsePermissions(uint perm)
 static const char *months[12] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 
 QString KFileInfo::dateTime(time_t _time) {
-  if (!months[0]) {
-    months[ 0] = i18n("Jan");
-    months[ 1] = i18n("Feb");
-    months[ 2] = i18n("Mar");
-    months[ 3] = i18n("Apr");
-    months[ 4] = i18n("May");
-    months[ 5] = i18n("Jun");
-    months[ 6] = i18n("Jul");
-    months[ 7] = i18n("Aug");
-    months[ 8] = i18n("Sep");
-    months[ 9] = i18n("Oct");
-    months[10] = i18n("Nov");
-    months[11] = i18n("Dec");
-  }
-
-  QDateTime t;
-  time_t now = time(0);
-  t.setTime_t(_time);
-
-  /* isn't there a sprintf modifier for this? */
-  QString number;
-  number.sprintf("%d",t.date().day());
-  if (number.length() < 2)
-    number = " " + number;
-
-  QString sTime;
-  if (_time > now || now - _time >= 365 * 24 * 60 * 60)
-    sTime.sprintf(" %04d", t.date().year());
-  else
-    sTime.sprintf("%02d:%02d", t.time().hour(), t.time().minute());
-  
-  QString text;
-  text.sprintf("% 3s %s %s", months[t.date().month() - 1], number.data(), 
-	       sTime.data());
-	       
-  return text;
+    if (!months[0]) {
+	months[ 0] = i18n("Jan");
+	months[ 1] = i18n("Feb");
+	months[ 2] = i18n("Mar");
+	months[ 3] = i18n("Apr");
+	months[ 4] = i18n("May");
+	months[ 5] = i18n("Jun");
+	months[ 6] = i18n("Jul");
+	months[ 7] = i18n("Aug");
+	months[ 8] = i18n("Sep");
+	months[ 9] = i18n("Oct");
+	months[10] = i18n("Nov");
+	months[11] = i18n("Dec");
+    }
+    
+    QDateTime t;
+    time_t now = time(0);
+    t.setTime_t(_time);
+    
+    /* isn't there a sprintf modifier for this? */
+    QString number;
+    number.sprintf("%d",t.date().day());
+    if (number.length() < 2)
+	number = " " + number;
+    
+    QString sTime;
+    if (_time > now || now - _time >= 365 * 24 * 60 * 60)
+	sTime.sprintf(" %04d", t.date().year());
+    else
+	sTime.sprintf("%02d:%02d", t.time().hour(), t.time().minute());
+    
+    QString text;
+    text.sprintf("% 3s %s %s", months[t.date().month() - 1], number.data(), 
+		 sTime.data());
+    
+    return text;
 }

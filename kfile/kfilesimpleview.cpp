@@ -34,7 +34,7 @@ KFileSimpleView::KFileSimpleView(bool s, QDir::SortSpec sorting,
     width_max = 100;
     width_length = 0;
     width_array = new uint[width_max];
-
+    
     setLineWidth( 2 );
     setFrameStyle( Panel | Sunken );
     cellWidths = new int[1];
@@ -253,7 +253,7 @@ bool KFileSimpleView::insertItem(const KFileInfo *i, int index)
 
 int KFileSimpleView::cellWidth ( int col )
 {
-  if (cellWidths[col] == -1) {
+    if (cellWidths[col] == -1) {
 	// debugC("not cached %d", col);
 	int offset = col * rowsVisible;
 	int width = 100;
@@ -264,7 +264,7 @@ int KFileSimpleView::cellWidth ( int col )
 	}
 	cellWidths[col] = width + file_pixmap->width() + 9; 
     }
-  // debugC("cellWidth %d %d", col, cellWidths[col]);
+    // debugC("cellWidth %d %d", col, cellWidths[col]);
     return cellWidths[col];
 }
 
@@ -301,7 +301,7 @@ void KFileSimpleView::mousePressEvent( QMouseEvent* e )
         updateCell( oldRow, oldCol );           // erase previous marking
         updateCell( curRow, curCol );           // show new current cell
     }
-
+    
     if ( useSingle() && isDir(index)) 
 	select( index );
     else
@@ -350,7 +350,7 @@ void KFileSimpleView::focusOutEvent ( QFocusEvent * )
 
 void KFileSimpleView::insertArray(uint item, uint pos)
 {
-   //  debug("insert %s %d", item->fileName(), pos);
+    //  debug("insert %s %d", item->fileName(), pos);
     if (width_length == width_max) {
 	width_max *= 2;
 	uint *newArray = new uint[width_max];
