@@ -1680,7 +1680,7 @@ void KHTMLPart::scheduleRedirection( int delay, const QString &url, bool doLockH
        d->m_redirectLockHistory = doLockHistory;
        if ( d->m_bComplete ) {
          d->m_redirectionTimer.stop();
-         d->m_redirectionTimer.start( 1000 * d->m_delayRedirect, true );
+         d->m_redirectionTimer.start( kMax(0, 1000 * d->m_delayRedirect), true );
        }
     }
 }
@@ -2305,7 +2305,7 @@ QString KHTMLPart::selectedText() const
 
       n = next;
     }
-    
+
     if(text.isEmpty())
         return QString::null;
 
