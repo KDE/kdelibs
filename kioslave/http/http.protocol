@@ -8,3 +8,4 @@ defaultMimetype=application/octet-stream
 determineMimetypeFromExtension=false
 Icon=www
 maxInstances=3
+DocPath=kioslave/http.html
