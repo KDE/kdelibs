@@ -748,7 +748,7 @@ NodeImpl *KHTMLParser::getElement(Token *t)
 	break;
     case ID_FRAMESET:
 	popBlock(ID_HEAD);
-	if ( haveFrameSet && current->id() == ID_HTML ) 
+	if ( haveFrameSet && current->id() == ID_HTML )
 	    break;
 	n = new HTMLFrameSetElementImpl(document);
 	haveFrameSet = true;
@@ -1030,7 +1030,9 @@ void KHTMLParser::processCloseTag(Token *t)
 	document->createSelector();
 	break;
     case ID_TITLE+ID_CLOSE_TAG:
-	static_cast<HTMLTitleElementImpl *>(current)->setTitle();
+        // This crashes with http://lists.kde.org/?t=95871288200004&w=2&r=1
+        // i.e. when a title contains <pre>. (David)
+        // static_cast<HTMLTitleElementImpl *>(current)->setTitle();
 	break;
     default:
 	break;
