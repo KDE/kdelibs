@@ -148,6 +148,9 @@ static class hdate * hdate(int y, int m, int d)
 #define M(h,p) ((h)*HOUR+p)
 #define MONTH (DAY+M(12,793))
 
+/* other macros */
+#define LEAP_YR_HEB(x) ((1L + (long)(x)* 7L) % 19L < 7L ? 1 : 0)
+
 /**
  * @internal
  * no. of days in y years
@@ -174,6 +177,24 @@ static int dysiz(int y)
   if (dw == 1 || dw == 4 || dw == 6)
     s++;
   return s;
+}
+
+/**
+ * @internal
+ * true if long Cheshvan
+ */
+static int long_cheshvan(int year)
+{
+  return ((dysiz(year) % 10) == 5);
+}
+
+/**
+ * @internal
+ * true if short Kislev
+ */
+static int short_kislev(int year)
+{
+  return ((dysiz(year) % 10) == 3);
 }
 
 // Ok
@@ -334,10 +355,18 @@ int KCalendarSystemHebrew::daysInMonth(const QDate& date) const
     return 30;
 }
 
-// ### Fixme
+// ### CFM check. Fix Adar1 and Adar
 int KCalendarSystemHebrew::hndays(int mon, int year) const
 {
-  return 29;
+  if( mon == 8 /*IYYAR*/ || month == 10 /*TAMUZ*/ ||
+    month == 12 /*ELUL*/ || month == 4 /*TEVET*/ || 
+    month == 14 /*ADAR 2*/||
+    ( month == 13 /*ADAR 1*/ && !LEAP_YR_HEB (year)) ||
+    (month ==  2 /*CHESHVAN*/ && !long_cheshvan(year)) ||
+    (month == 3 /*KISLEV*/ && short_kislev(year)))
+    return 29;
+  else
+    return 30;
 }
 
 // Ok
