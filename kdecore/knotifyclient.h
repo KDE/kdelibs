@@ -170,7 +170,7 @@ namespace KNotifyClient
 	 **/
 	bool startDaemon();
 
-#ifndef KDE_NO_COMPAT
+//#ifndef KDE_NO_COMPAT
 	/**
 	 * @deprecated
 	 * @param message The name of the event
@@ -202,7 +202,7 @@ namespace KNotifyClient
 	bool userEvent(const QString &text=QString::null, int present=Default, int level=Default,
 	                      const QString &sound=QString::null, const QString &file=QString::null);
 	
-#endif
+//#endif
     
 	/**
 	 * This should be the most used method in here.
