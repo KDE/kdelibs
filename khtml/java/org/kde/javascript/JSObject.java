@@ -93,23 +93,22 @@ public class JSObject extends netscape.javascript.JSObject {
         /* Is it an applet? */
         if (value.startsWith("[object APPLET ref=")) {
             int p1 = value.indexOf('=');
-            int p2 = value.indexOf(',', p1+1);
-            int p3 = value.indexOf(']', p2+1);
-            String appletid = value.substring(p2+1, p3);
-            //FIXME: get the correct context, not our own
-            //int contextid = Integer.parseInt(value.substring(p1+1, p2));
-            return kc.getAppletById(appletid);
+            int p2 = value.indexOf(']', p1+1);
+            int applethashcode = Integer.parseInt(value.substring(p1+1, p2));
+            java.util.Enumeration e = kc.getApplets();
+            while (e.hasMoreElements()) {
+                Applet applet = (Applet) e.nextElement();
+                if (applet.hashCode() == applethashcode)
+                    return applet;
+            }
+            return null;
         }
         /* Is it a Java object then? */
-        if (value.startsWith("[[embed ")) {
+        if (value.startsWith("[object ")) {
             int p1 = value.indexOf("ref=");
-            int p2 = value.indexOf(',', p1+1);
-            int p3 = value.indexOf(',', p2+1);
-            int p4 = value.indexOf(']', p3+1);
-            //int contextid = Integer.parseInt(value.substring(p1+1, p2));
-            String appletid = value.substring(p2+1, p3);
-            int objindex = Integer.parseInt(value.substring(p3+1, p4));
-            return kc.getJSReferencedObject(objindex);
+            int p2 = value.indexOf(']', p1+4);
+            int objecthashcode = Integer.parseInt(value.substring(p1+4, p2));
+            return kc.getJSReferencedObject(objecthashcode);
         }
         /* Ok, make it a JSObject */
         return new JSObject(applet, value, Integer.parseInt(type));

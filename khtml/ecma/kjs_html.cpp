@@ -1169,17 +1169,7 @@ public:
     virtual UString toString(ExecState *) const {
         QString str;
         const char *type = objtype == KParts::LiveConnectExtension::TypeFunction ? "Function" : "Object";
-        if (element.elementId() == ID_APPLET) {
-            DOM::HTMLAppletElementImpl * elm = static_cast<DOM::HTMLAppletElementImpl*>(element.handle());
-            if (elm) {
-                KJavaApplet* applet = elm->applet();
-                if (applet) {
-                    str.sprintf("[embed %s ref=%d,%d,%d]", type, applet->getContext()->contextId(), applet->appletId(), (int) objid);
-                    return UString(str);
-                }
-            }
-        }
-        str.sprintf("[embed %s ref=%d]", type, (int) objid);
+        str.sprintf("[object %s ref=%d]", type, (int) objid);
         return UString(str);
     }
 private:
@@ -2005,16 +1995,14 @@ UString KJS::HTMLElement::toString(ExecState *exec) const
     return UString(static_cast<const DOM::HTMLAnchorElement&>(node).href());
   if (node.elementId() == ID_APPLET)
   {
-    DOM::HTMLElement element = static_cast<DOM::HTMLElement>(node);
-    DOM::HTMLAppletElementImpl * elm = static_cast<DOM::HTMLAppletElementImpl*>(element.handle());
-    if (elm) {
-      KJavaApplet* applet = elm->applet();
-      if (applet) {
-        QString str;
-        str.sprintf("[object APPLET ref=%d,%d]",
-                    applet->getContext()->contextId(), applet->appletId());
-        return UString(str);
-      }
+    DOM::LiveConnectElementImpl * elm = static_cast<DOM::LiveConnectElementImpl*>(node.handle());
+    QStringList qargs;
+    QString retvalue;
+    KParts::LiveConnectExtension::Type rettype;
+    unsigned long retobjid;
+    if (elm && elm->call(0, "hashCode", qargs, rettype, retobjid, retvalue)) {
+        QString str("[object APPLET ref=");
+        return UString(str + retvalue + QString("]"));
     }
   }
   return DOMElement::toString(exec);

@@ -23,7 +23,6 @@ public class KJASAppletContext implements AppletContext
     private String myID;
     private KJASAppletClassLoader loader;
     private boolean active;
-    private int refcounter = 0;
     // a mapping JS referenced Java objects
     private Hashtable jsReferencedObjects;
     private JSObject jsobject = null;
@@ -72,8 +71,8 @@ public class KJASAppletContext implements AppletContext
         return ((KJASAppletStub) stubs.get( appletId )).getApplet();
     }
 
-    public Object getJSReferencedObject(int index) {
-        return jsReferencedObjects.get(new Integer(index));
+    public Object getJSReferencedObject(int objid) {
+        return jsReferencedObjects.get(new Integer(objid));
     }
 
     public String getAppletName(String appletID) {
@@ -389,8 +388,8 @@ public class KJASAppletContext implements AppletContext
             rettype[0] = JString;
         else {
             rettype[0] = JObject;
-            rettype[1] = ++refcounter;
-            jsReferencedObjects.put(new Integer(refcounter), obj);
+            rettype[1] = obj.hashCode();
+            jsReferencedObjects.put(new Integer(rettype[1]), obj);
         }
         value.insert(0, val);
         return rettype;
