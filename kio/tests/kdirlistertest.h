@@ -65,7 +65,7 @@ public slots:
    {
       cout << "*** newItems: " << endl;
       for ( KFileItemListIterator it( items ) ; it.current() ; ++it )
-          cout << it.current()->name().local8Bit() << endl;
+          cout << it.current() << " " << it.current()->name().local8Bit() << endl;
    }
    void deleteItem( KFileItem* item )
    {
@@ -81,8 +81,6 @@ public slots:
       cout << "*** refreshItems: " << endl;
       // TODO
    }
-   void closeView() { cout << "*** closeView()" << endl; }
-
    void infoMessage( const QString& msg )
    { cout << "*** infoMessage: " << msg.local8Bit() << endl; }
 
@@ -107,8 +105,10 @@ public:
    ~KDirListerTest();
 
 public slots:
-   void start();
+   void startRoot();
+   void startHome();
    void test();
+   void completed();
 
 private:
    KDirLister *lister;

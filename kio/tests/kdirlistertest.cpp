@@ -38,14 +38,17 @@ KDirListerTest::KDirListerTest( QWidget *parent, const char *name )
 
   QVBoxLayout* layout = new QVBoxLayout( this );
 
-  QPushButton* start = new QPushButton( "Start listing", this );
+  QPushButton* startH = new QPushButton( "Start listing $HOME", this );
+  QPushButton* startR= new QPushButton( "Start listing /", this );
   QPushButton* test = new QPushButton( "Many", this );
 
-  layout->addWidget( start );
+  layout->addWidget( startH );
+  layout->addWidget( startR );
   layout->addWidget( test );
   resize( layout->sizeHint() );
 
-  connect( start, SIGNAL( clicked() ), SLOT( start() ) );
+  connect( startR, SIGNAL( clicked() ), SLOT( startRoot() ) );
+  connect( startH, SIGNAL( clicked() ), SLOT( startHome() ) );
   connect( test, SIGNAL( clicked() ), SLOT( test() ) );
 
   connect( lister, SIGNAL( started( const KURL & ) ),
@@ -72,8 +75,6 @@ KDirListerTest::KDirListerTest( QWidget *parent, const char *name )
            debug,  SLOT( deleteItem( KFileItem * ) ) );
   connect( lister, SIGNAL( refreshItems( const KFileItemList & ) ),
            debug,  SLOT( refreshItems( const KFileItemList & ) ) );
-  connect( lister, SIGNAL( closeView() ),
-           debug,  SLOT( closeView() ) );
   connect( lister, SIGNAL( infoMessage( const QString& ) ),
            debug,  SLOT( infoMessage( const QString& ) ) );
   connect( lister, SIGNAL( percent( int ) ),
@@ -84,6 +85,9 @@ KDirListerTest::KDirListerTest( QWidget *parent, const char *name )
            debug,  SLOT( processedSize( KIO::filesize_t ) ) );
   connect( lister, SIGNAL( speed( int ) ),
            debug,  SLOT( speed( int ) ) );
+
+  connect( lister, SIGNAL( completed() ),
+           this,  SLOT( completed() ) );
 }
 
 KDirListerTest::~KDirListerTest()
@@ -91,15 +95,18 @@ KDirListerTest::~KDirListerTest()
   delete lister;
 }
 
-void KDirListerTest::start()
+void KDirListerTest::startHome()
 {
   KURL home( getenv( "HOME" ) );
-  KURL root( "file:/" );
-
   lister->openURL( home, false, false );
-//  lister->openURL( root, true, true );
 //  lister->stop();
-//  lister->stop( root );
+}
+
+void KDirListerTest::startRoot()
+{
+  KURL root( "file:/" );
+  lister->openURL( root, true, true );
+// lister->stop( root );
 }
 
 void KDirListerTest::test()
@@ -118,6 +125,18 @@ void KDirListerTest::test()
   lister->openURL( KURL("file:/usr/"), true, true );
 */
   lister->openURL( KURL("file:/dev"), true, true );
+}
+
+void KDirListerTest::completed()
+{
+    if ( lister->url().path() == "/")
+    {
+        KFileItem* item = lister->findByURL( "/tmp" );
+        if ( item )
+            kdDebug() << "Found /tmp: " << item << endl;
+        else
+            kdWarning() << "/tmp not found! Bug in findByURL?" << endl;
+    }
 }
 
 int main ( int argc, char *argv[] )
