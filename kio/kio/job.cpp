@@ -55,6 +55,7 @@ extern "C" {
 #include "scheduler.h"
 #include "kmimemagic.h"
 #include "kprotocolinfo.h"
+#include "kprotocolmanager.h"
 
 #include "kio/observer.h"
 
@@ -1266,19 +1267,24 @@ void FileCopyJob::slotCanResume( KIO::Job* job, KIO::filesize_t offset )
     if ( job == m_putJob )
     {
         kdDebug(7007) << "FileCopyJob::slotCanResume from PUT job. offset=" << KIO::number(offset) << endl;
-
         if (offset)
         {
-            QString newPath;
-            // Ask confirmation about resuming previous transfer
-            RenameDlg_Result res = Observer::self()->open_RenameDlg(
-                this, i18n("File already exists"),
-                m_src.prettyURL(), m_dest.prettyURL(),
-                (RenameDlg_Mode) (M_OVERWRITE | M_RESUME | M_NORENAME), newPath,
-                d->m_sourceSize, offset );
+            KProtocolManager p;
+            RenameDlg_Result res = R_RESUME;
+
+            if (!p.autoResume())
+            {
+                QString newPath;
+                // Ask confirmation about resuming previous transfer
+                res = Observer::self()->open_RenameDlg(
+                      this, i18n("File already exists"),
+                      m_src.prettyURL(), m_dest.prettyURL(),
+                      (RenameDlg_Mode) (M_OVERWRITE | M_RESUME | M_NORENAME), newPath,
+                      d->m_sourceSize, offset );
+            }
 
             if ( res == R_OVERWRITE )
-                offset = 0;
+              offset = 0;
             else if ( res == R_CANCEL )
             {
                 m_putJob->kill(true);
@@ -1303,7 +1309,7 @@ void FileCopyJob::slotCanResume( KIO::Job* job, KIO::filesize_t offset )
             connect( m_getJob, SIGNAL(canResume(KIO::Job *, KIO::filesize_t)),
                      SLOT( slotCanResume(KIO::Job *, KIO::filesize_t)));
         }
-	m_putJob->slave()->setOffset( offset );
+  m_putJob->slave()->setOffset( offset );
 
         m_putJob->suspend();
         addSubjob( m_getJob );
@@ -1319,7 +1325,7 @@ void FileCopyJob::slotCanResume( KIO::Job* job, KIO::filesize_t offset )
         m_canResume = true;
         kdDebug(7007) << "FileCopyJob::slotCanResume from the GET job -> we can resume" << endl;
 
-	m_getJob->slave()->setOffset( m_putJob->slave()->offset() );
+  m_getJob->slave()->setOffset( m_putJob->slave()->offset() );
     }
     else
         kdWarning(7007) << "FileCopyJob::slotCanResume from unknown job=" << job
@@ -1969,8 +1975,8 @@ void CopyJob::statNextSrc()
         // First make sure that the totals were correctly emitted
         state = STATE_STATING;
         slotReport();
-	// Check if we are copying a single file
-	m_bSingleFileCopy = ( files.count() == 1 && dirs.isEmpty() );
+  // Check if we are copying a single file
+  m_bSingleFileCopy = ( files.count() == 1 && dirs.isEmpty() );
         // Then start copying things
         state = STATE_CREATING_DIRS;
         createNextDir();
@@ -2031,7 +2037,7 @@ void CopyJob::slotResultCreatingDirs( Job * job )
                 // We need to stat the existing dir, to get its last-modification time
                 KURL existingDest( (*it).uDest );
                 SimpleJob * newJob = KIO::stat( existingDest, false, 2, false );
-		Scheduler::scheduleJob(newJob);
+    Scheduler::scheduleJob(newJob);
                 kdDebug(7007) << "KIO::stat for resolving conflict on " << existingDest.prettyURL() << endl;
                 state = STATE_CONFLICT_CREATING_DIRS;
                 addSubjob(newJob);
