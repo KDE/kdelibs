@@ -24,7 +24,7 @@
  */
 
 #undef FORMS_DEBUG
-#define FORMS_DEBUG
+//#define FORMS_DEBUG
 
 #include "html_formimpl.h"
 
@@ -1064,10 +1064,7 @@ bool HTMLInputElementImpl::encoding(const QTextCodec* codec, khtml::encodingList
 
         case RADIO:
 
-            if( checked() )
-            {
-                qDebug( "ischecked" );
-
+            if( checked() ) {
                 encoding += fixUpfromUnicode(codec, m_value.string());
                 return true;
             }
@@ -1192,8 +1189,6 @@ void HTMLInputElementImpl::reset()
 
 void HTMLInputElementImpl::setChecked(bool _checked)
 {
-    qDebug( "setChecked( %d )..",_checked );
-
     m_checked = _checked;
     if (m_type == RADIO && m_form && m_checked)
         m_form->radioClicked(this);
