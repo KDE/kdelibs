@@ -906,7 +906,9 @@ void KHTMLView::print()
         p->setClipRect(0,0, pageWidth, pageHeight);
         if(root->docWidth() > metrics.width()) {
             double scale = ((double) metrics.width())/((double) root->docWidth());
+#ifndef QT_NO_TRANSFORMATIONS
             p->scale(scale, scale);
+#endif
             pageHeight = (int) (pageHeight/scale);
             pageWidth = (int) (pageWidth/scale);
             overlap = (int) (overlap/scale);
@@ -967,7 +969,9 @@ void KHTMLView::paint(QPainter *p, const QRect &rc, int yOff, bool *more)
     p->translate(rc.left(), rc.top());
     double scale = ((double) rc.width()/(double) root->docWidth());
     int height = (int) ((double) rc.height() / scale);
+#ifndef QT_NO_TRANSFORMATIONS
     p->scale(scale, scale);
+#endif
 
     root->print(p, 0, yOff, root->docWidth(), height, 0, 0);
     if (more)
