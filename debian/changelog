@@ -1,8 +1,9 @@
-kdelibs (4:2.1-beta2-2) unstable; urgency=low
+kdelibs (4:2.1-beta2-3) unstable; urgency=low
  
    * Lots of little fixes
+   * Fixing -dev dependencies...(allowing for -alsa packages)
  
- -- Ivan E. Moore II <rkrusty@debian.org>  Wed, 24 Jan 2001 12:36:00 -0700
+ -- Ivan E. Moore II <rkrusty@debian.org>  Wed, 24 Jan 2001 14:46:00 -0700
 
 kdelibs (4:2.1-beta2-2) unstable; urgency=low
  
