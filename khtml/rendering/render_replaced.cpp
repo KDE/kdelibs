@@ -153,7 +153,6 @@ void RenderWidget::detach()
 RenderWidget::~RenderWidget()
 {
     KHTMLAssert( refCount() <= 0 );
-    assert(!m_view);
 
     if(m_widget) {
         m_widget->hide();
