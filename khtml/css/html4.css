@@ -246,7 +246,7 @@ CAPTION {
  * constructs as <td align=left><ul><li>...
  * Hope the next ones cover all relevant cases. Lars 
  */ 
-TD[align="center"] > TABLE { margin-left: auto; margin-right: auto; text-align: justify; }
+TD[align="center"] > TABLE { margin-left: auto; margin-right: auto; text-align: center; }
 TD[align="right"] > TABLE { margin-left: auto; margin-right: 0px; text-align: right; }
 TD[align="left"] > TABLE { margin-left: 0px; margin-right: auto; text-align: left; }
 TD[align="center"] > DIV { margin-left: auto; margin-right: auto; text-align: justify; }
