@@ -43,6 +43,11 @@ static void KIDNA_load_lib()
    KIDNA_lib = lt_dlopen("/usr/local/lib/libidn.so");
    if (!KIDNA_lib) 
    {
+      KIDNA_lib = lt_dlopen("/usr/lib/libidn.so");
+   }
+   
+   if (!KIDNA_lib) 
+   {
       kdWarning() << "Could not load libidn.so" << endl;
       return; // Error
    }
