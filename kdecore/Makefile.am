@@ -18,8 +18,7 @@
 #    Boston, MA 02111-1307, USA.
 
 INCLUDES = $(all_includes)
-EXTRA_DIST = generate_keys.sh charsets.config $(kdebug_DATA) kdebugareas.txt \
-	kstddirs.h kstddirs.cpp
+
 lib_LTLIBRARIES = libkdecore.la
 
 include_HEADERS = kconfig.h kconfigdata.h ksimpleconfig.h kconfigbase.h \
@@ -30,17 +29,17 @@ include_HEADERS = kconfig.h kconfigdata.h ksimpleconfig.h kconfigbase.h \
 	kaccel.h kglobalaccel.h kclipboard.h krect.h ksize.h \
 	kpoint.h 
 
-noinst_HEADERS = kdebugdialog.h kcharsetsdata.h kckey.h
+noinst_HEADERS = kdebugdialog.h kcharsetsdata.h kurl.tab.h kurl.parse.h kckey.h
 
 libkdecore_la_SOURCES = kconfig.cpp kconfigbase.cpp ksimpleconfig.cpp \
-	kcolorgroup.cpp kapp.cpp kurl.cpp ksock.cpp drag.cpp \
+	kcolorgroup.cpp kapp.cpp ksock.cpp drag.cpp \
 	kprocess.cpp kprocctrl.cpp klocale.cpp \
 	libintl.cpp fakes.cpp kiconloader.cpp kdebug.cpp \
 	kstdaccel.cpp kwm.cpp krootprop.cpp kcharsets.cpp kcharsetsdata.cpp \
 	kchartables.cpp kpixmap.cpp dither.cpp \
 	kckey.cpp kaccel.cpp kglobalaccel.cpp kclipboard.cpp \
-	krect.cpp ksize.cpp kpoint.cpp
-
+	krect.cpp ksize.cpp kpoint.cpp \
+	lex.kurl.c kurl.tab.c kurl.parse.cpp kurl.cpp
 
 libkdecore_la_LDFLAGS = $(QT_LDFLAGS) $(X_LDFLAGS) $(USER_LDFLAGS) -version-info 3:0
 libkdecore_la_LIBADD = $(LIB_QT)
@@ -55,6 +54,13 @@ SRCDOC_DEST=$(kde_htmldir)/en/kdelibs/kdecore
 kdebugdir = $(kde_confdir)
 kdebug_DATA = kdebug.areas
 
+## not called by the compilation process
+parser: $(parserfiles)
+	flex -Pkurl lex.kurl.l
+	bison -p kurl -b kurl -d yacc.kurl.y
+
+parserfiles = lex.kurl.l yacc.kurl.y
+
 ## generate lib documentation
 srcdoc:
 	$(mkinstalldirs) $(SRCDOC_DEST)
@@ -66,7 +72,10 @@ kckey.h : generate_keys.sh $(QNAMESPACE_H)
 
 install-data-local: charsets.config 
 	$(mkinstalldirs) $(kde_confdir)
-	$(INSTALL_DATA) $(srcdir)/charsets.config $(kde_confdir)/charsets   
+	$(INSTALL_DATA) $(srcdir)/charsets.config $(kde_confdir)/charsets
 
 uninstall-local:
 	-rm -f $(kde_confdir)/charsets
+
+EXTRA_DIST = generate_keys.sh charsets.config $(kdebug_DATA) kdebugareas.txt \
+	kstddirs.h kstddirs.cpp $(parserfiles)

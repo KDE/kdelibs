@@ -1,406 +1,271 @@
 /* This file is part of the KDE libraries
-    Copyright (C) 1997 Steffen Hansen (stefh@dit.ou.dk)
-
+    Copyright (C) 1999 Torben Weis <weis@kde.org>
+ 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
     License as published by the Free Software Foundation; either
     version 2 of the License, or (at your option) any later version.
-
+ 
     This library is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
     Library General Public License for more details.
-
+ 
     You should have received a copy of the GNU Library General Public License
     along with this library; see the file COPYING.LIB.  If not, write to
     the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
     Boston, MA 02111-1307, USA.
 */
 
-#ifndef KURL_H
-#define KURL_H
-
-// -*-C++-*-
-// KURL header
-//
-
-#ifdef HAVE_CONFIG_H
-#include <config.h>
-#endif
+#ifndef __kurl_h__
+#define __kurl_h__
 
 #include <qstring.h>
-#include <qstrlist.h>
+#include <qlist.h>
 
-/** 
-* A class for URL processing.
-*
-* The KURL class deals with uniform resource locators in a 
-* protocol independent way. It works on file:-type URLs
-* much like @ref QDir does on normal directories; but KURL extends 
-* the directory operations to work on general URLs. In fact, the 
-* part of KURL that only deals with syntax doesn't care about 
-* the protocol at all, so feel free to use it to format any 
-* URL-like string. 
-* 
-* NOTE: KURL doesn't support URL's that don't look like files 
-* (for example mailto:someone@somewhere). [If URL's like this were OK, 
-* there would be no reason for isMalformed() since any string with a 
-* ":" would be a valid URL.  Comments please.] 
-*
-* First version by Torben Weis, redesigned by Steffen Hansen (stefh@mip.ou.dk),
-* maintained by Torben Weis (weis@kde.org). Endcoding/Decoding done by
-* Stephan Kulow (coolo@kde.org).
-*
-* @author Torben Weis (weis@kde.org)
-*
-* @version $Id$
-* @short A class for URL processing.
-*/
-
+/**
+ * Mention that KURL has some restrictions regarding the path 
+ * encoding. KURL works intern with the decoded path and
+ * and encoded query. For example in
+ * <pre>
+ * http://localhost/cgi-bin/test%20me.pl?cmd=Hello%20you
+ * </pre>
+ * would result in a decoded path "/cgi-bin/test me.pl"
+ * and in the encoded query "cmd=Hello%20you".
+ * Since path is internally always encoded you may NOT use
+ * "%00" in tha path while this is ok for the query.
+ */
 class KURL
-{ 
+{
+  typedef QList<KURL> List;
 public:
+  /**
+   * @param _url is considered to be encoded. You can pass strings like
+   *             "/home/weis", in this case the protocol "file" is assumed.
+   *             This is dangerous since even this simple path is assumed to be
+   *             encoded. For example "/home/Torben%20Weis" will be decoded to
+   *             "/home/Torben Weis". This means: If you have a usual UNIX like
+   *             path, you have to use @ref encode first before you pass it to KURL.
+   */
+  KURL();
+  KURL( const char *_url );
+  KURL( QString& _url );
+  KURL( const KURL& _u );
+  /**
+   * @param _rel_url is considered to be encoded.
+   */
+  KURL( const KURL& _u, const char *_rel_url );
+  
+  const char* protocol() const { return m_strProtocol.data(); }
+  void setProtocol( const char *_txt ) { m_strProtocol = _txt; }
 
-    /** 
-     * Construct a KURL object.
-     */
-    KURL();
-    
-    /** 
-     * Construct a KURL object from _url. 
-     *
-     * A KURL object is always constructed, but if you plan to use it, 
-     * you should check it with isMalformed().
-     *
-     * if the parameter is an absolute filename, it adds a file: prefix 
-     * and encodes the path.
-     */
-    KURL( const QString& _url);
+  const char* user() const { return m_strUser.data(); }
+  void setUser( const char *_txt ) { m_strUser = _txt; }
+  bool hasUser() const { return !m_strUser.isEmpty(); }
 
-    ~KURL();
+  const char* pass() const { return m_strPass.data(); }
+  void setPass( const char *_txt ) { m_strPass = _txt; }
+  bool hasPass() const { return !m_strPass.isEmpty(); }
 
-    /** 
-     * Construct a KURL object from its components. 
-     */
-    KURL( const QString& _protocol, const QString& _host, 
-	  const QString _path, const QString& _ref);
-    
-    /**
-     * Constructs a URL.
-     *
-     * The second argument may be a relative URL, like '/home/weis/test.txt'.
-     * If for example the first parameter is 'http://uni-frankfurt/pub/incoming' 
-     * then the result will be 'http://uni-frankfurt/home/weis/test.txt'. 
-     *
-     * Of course the second argument may be a complete URL, too.
-     */
-    KURL( KURL & _base_url, const QString& _rel_url );
-    
-    /** 
-     * Returns true if the URL is not a valid URL. This is only syntax-checking;
-     * whether the resource to which the URL points exists is not checked.
-     *       
-     * NOTE: Syntax checking is only done when constructing a KURL from a string. 
-     */
-    bool isMalformed() const { return malformed; }
-    
-    /**
-     * Escapes some reserved characters within URLs (e.g. '#', '%').
-     *
-     * Some characters in filenames or directory names make troubles
-     * For example '#' or '%' makes problem, if they are interpreted
-     * and not ment to be interpreted. This why we must encode them.
-     * This functions encodes the given URL and returns a reference
-     * to the result for convidence.
-     */
-    static void encodeURL( QString& url );
-    
-    /**
-     * Decodes escaped characters within URLs.
-     *
-     * This function looks for '%' within the URL and replaces this character 
-     * with hexcode of the next two characters. If the next characters are not 
-     * hex chararcters, 0 will be used and the character will be skipped.
-     */
-    static void decodeURL( QString& url );
-    
-    /** 
-     * Returns the URL as a QString.
-     */
-    QString url() const;
-    
-    /** 
-     * The function returns the protocolname up to, but not including the ":".
-     */
-    const QString protocol() const;
-    
-    /** 
-     * This function returns the host. If there is no host (i.e.
-     * the URL refers to a local file) this function returns "".
-     */
-    const QString host() const;
-    
-    /** 
-     * This function returns the path-part of the URL.
-     *
-     * For example, path() on "tar://ftp.foo.org/bar/stuff.tar.gz#tex/doc.tex" 
-     * returns "/bar/stuff.tar.gz".
-     */
-    const QString path() const;
-    
-    /** 
-     * This function returns the path-part of an URL and leaves it as is.
-     *
-     * For example, path() on "http://www.foo.org/bar/cgi%2Dbin?value=blue%3f" 
-     * returns "/bar/cgi%2Dbin".
-     */
-    const QString httpPath() const;
-    
-    /**
-     * If we parse for example ftp://weis@localhost then we dont have a path.
-     * The URL means: enter the home directory of user weis, while
-     * ftp://weis@localhost/ means, login as user weis and enter the
-     * root directory. KURL returns "/" as path in both cases. This function
-     * lets you distinguish both URLs. It returns true in the first case.
-     *
-     * @see #bNoPath
-     */
-    bool hasPath() const { return !bNoPath; }
-    
-    /**
-     * The search-part.
-     *
-     * @return the search-part, or NULL if no search-part was specified.
-     */
-    const QString searchPart() const;
+  const char* host() const { return m_strHost.data(); }
+  void setHost( const char *_txt ) { m_strHost = _txt; }
+  bool hasHost() const { return !m_strHost.isEmpty(); }
 
-    /** 
-     * This function returns the reference. 
-     *
-     * If the URL is "http://www.nowhere/path/file.html#toc", this function 
-     * will return "toc". If there is no reference it returns "".
-     * If we have some subprotocol in the URL like in 
-     * file:/tmp/kde.tgz#tar:/kfm.rpm#rpm:/doc/index.html#section
-     * then only the last reference is going to be returned, in this case
-     * "section". A URL like
-     * file:/tmp/kde.tgz#tar:/kfm.rpm#rpm:/doc/index.html
-     * would return "" since there is no reference. The stuff behind
-     * the '#' is a subprotocol!
-     */
-    const QString reference() const;
-    
-    /**
-     * This function returns the user name or an empty string if
-     * no user has been specified.
-     */
-    const QString user() const;
-    
-    /**
-     * The password.
-     *
-     * @return the password, or an empty string if no password was specified.
-     */
-    const QString passwd() const;
-    
-    /**
-     * The port number.
-     *
-     * @return the port number, or 0 if none was specified.
-     */
-    unsigned int port() const;
-    
-    /**
-     * Returns the directory only.
-     *
-     * If for example the URL is "file:/tmp/weis/file.html", then this call
-     * will return "/tmp/weis/". If you pass "file:/tmp/weis/" to this
-     * function, you will get "/tmp/weis/", because you already passed a directory.
-     * Turning the '_trailing' flag off, causes the trailing '/' to be ignored.
-     * "file:/tmp/weis/file.html" will result in "/tmp/weis/", too, but
-     * "file:/tmp/weis/" will lead to "/tmp/". As you see, this is
-     * a smart method to get the parent directory of a file/directory.
-     *
-     * This function is supplied for convenience only.
-     */
-    const QString directory( bool _trailing = TRUE );
-    
-    /**
-     * Returns the URL with the directory only.
-     *
-     * If for example the URL is "file:/tmp/weis/file.html", then this call
-     * will return "file:/tmp/weis/". For more details look at 'directory(...)'
-     */
-    const QString directoryURL( bool _trailing = TRUE );
-    
-    /**
-     * @return TRUE if the URL has a sub protocol. For example file:/tmp/kde.tgz#tar:/kfm/main.cpp
-     *         is a URL with subprotocol. Use this function to check wether some URL really
-     *         references a complete file on your local hard disk and not some special data
-     *         inside the file, like the example shows.
-     */
-    bool hasSubProtocol();
+  int port() const { return m_iPort; }
+  void setPort( int _p ) { m_iPort = _p; }
+  
+  /**
+   * @return the current decoded path. This does NOT include the query.
+   *
+   */
+  const char* path() const  { return m_strPath.data(); }
+  /**
+   * @param _trailing may be ( -1, 0 +1 ). -1 strips a trailing '/', +1 adds
+   *                  a trailing '/' if there is none yet and 0 returns the
+   *                  path unchanged. If the URL has no path, then no '/' is added
+   *                  anyways. And on the other side: If the path is "/", then this
+   *                  character wont be stripped. Reason: "ftp://weis@host" means something
+   *                  completly different than "ftp://weis@host/". So adding or stripping
+   *                  the '/' would really alter the URL, while "ftp://host/path" and
+   *                  "ftp://host/path/" mean the same directory.
+   *
+   * @return the current decoded path. This does NOT include the query.
+   */
+  QString path( int _trailing ) const;
+  /**
+   * _txt is considered to be decoded. This means: %3f does not become decoded
+   *      and the ? does not indicate the start of the query part.
+   *      The query is not changed by this function.
+   */
+  void setPath( const char *_txt ) { m_strPath = _txt; }  
+  bool hasPath() const { return !m_strPath.isEmpty(); }
 
-    /**
-     * If the URL has no subprotocol, parentURL behaves like a call to @ref #url.
-     * Otherwise the part of the URL left to the last subprotocol is returned.
-     * For example file:/tmp/kde.tgz#tar:/kfm.rpm#rpm:/doc/index.html#section will return
-     * file:/tmp/kde.tgz#tar:/kfm.rpm. As you can see, the last subprotocol is stripped.
-     * If the original URL is for example file:/httpd/index.html#section
-     * then exact this string is going to be returned.
-     */
-    QString parentURL();
+  /**
+   * This is useful for HTTP. It looks first for '?' and decodes then.
+   * The encoded path is the concatenation of the current path and the query.
+   */
+  void setEncodedPathAndQuery( const char *_txt );
+  /**
+   * @return the concatenation if the encoded path , '?' and the encoded query.
+   *
+   * @param _no_empty_path If set to true then an empty path is substituted by "/".
+   */
+  QString encodedPathAndQuery( int _trailing = 0, bool _no_empty_path = false );
 
-    /**
-     * This call returnes the other part of the URL, the part that is stripped by @ref #parentURL.
-     * It returns always the right most subprotocol. If there is no subprotocol, the call
-     * to this function returns an empty string. For example a URL 
-     * file:/tmp/kde.tgz#tar:/kfm.rpm#rpm:/doc/index.html#section
-     * would return rpm:/doc/index.html#section.
-     */
-    QString childURL();
+  /**
+   * @param _txt is considered to be encoded. This has a good reason: The query may contain the 0 character.
+   */
+  void setQuery( const char *_txt ) { m_strQuery_encoded = _txt; }
+  /**
+   * @return the encoded query. This has a good reason: The query may contain the 0 character.
+   */
+  const char* query() { return m_strQuery_encoded.data(); }
+  
+  /**
+   * The reference is NEVER decoded automatically.
+   */
+  const char* ref() { return m_strRef_encoded.data(); }
+  /**
+   * Set the reference part (everything after '#')
+   * @param _txt is considered encoded.
+   */
+  void setRef( const char *_txt ) { m_strRef_encoded = _txt; }
+  bool hasRef() const { return !m_strRef_encoded.isEmpty(); }
+  
+  bool isMalformed() const  { return m_bIsMalformed; }
 
-    /**
-     * This function behaves like @ref #childURL, but if there is no subprotocol,
-     * this function returns the same @ref #url returns instead of an empty string.
-     */
-    QString nestedURL();
+  /* @return true if the file is a plain local file (no sub protocol) */
+  bool isLocalFile();
+  /* @return true if the file has at least one sub URL.
+     Use @ref split to get the sub URLs. */
+  bool hasSubURL() const;
 
-    /**
-     * Parse a string.
-     */
-    void parse( const QString& _url );
-    
-    /** 
-     * Sets the protocol to newProto. Useful for example if an app hits
-     * "file:/tmp/interesting.zip", then it might do setProtocol( "zip").
-     */ 
-    void setProtocol( const QString& newProto) ;
+  /**
+   * Assumes that the current path is a directory. '_txt' is appended to the
+   * current path. The function adds '/' if needed while concatenating.
+   * This means it does not matter wether the current path has a trailing
+   * '/' or not. If there is none, it becomes appended. If '_txt'
+   * has a leading '/' then this one is stripped.
+   *
+   * @param _txt is considered to be decoded
+   */
+  void addPath( const char *_txt );
+  /**
+   * In comparison to @ref addPath this function does not assume that the current path
+   * is a directory. This is only assumed if the current path ends with '/'.
+   *
+   * @param _txt is considered to be decoded. If the current path ends with '/'
+   *             then '_txt' ist just appended, otherwise all text behind the last '/'
+   *             in the current path is erased and '_txt' is appended then. It does
+   *             not matter wether '_txt' starts with '/' or not.
+   */
+  void setFileName( const char *_txt );
 
-   /** 
-    * Sets the path to newPath.
-    */ 
-    void setPath( const QString& newPath) ;   
+  /**
+   * @return the filename of the current path. The returned string is decoded.
+   *
+   * @ref _ignore_trailing_slash_in_path tells wether a trailing '/' should be ignored.
+   *                                     This means that the function would return "torben" for
+   *                                     <tt>file:/hallo/torben/</tt> and <tt>file:/hallo/torben</tt>.
+   *                                     If the flag is set to false, then everything behind the last '/'
+   *                                     is considered to be the filename.
+   */
+  QString filename( bool _ignore_trailing_slash_in_path = true );
+  /**
+   * @return the directory part of the current path. Everything between the last and the second last '/'
+   *         is returned. For example <tt>file:/hallo/torben/</tt> would return "/hallo/torben/" while
+   *         <tt>file:/hallo/torben</tt> would return "hallo/". The returned string is decoded.
+   *
+   * @param _strip_trailing_slash_from_result tells wether the returned result should end with '/' or not.
+   *                                          If the path is empty or just "/" then this flag has no effect.
+   * @param _ignore_trailing_slash_in_path means that <tt>file:/hallo/torben</tt> and 
+   *                                       <tt>file:/hallo/torben/"</tt> would both return <tt>/hallo/torben/</tt>
+   *                                       or <tt>/hallo/torben</tt> depending on the other flag
+   */
+  QString directory( bool _strip_trailing_slash_from_result = true, bool _ignore_trailing_slash_in_path = true );
+  
+  /**
+   * @return the complete encoded URL.
+   */
+  QString url() const;
+  /**
+   * @return the complete encoded URL.
+   *
+   * @param _trailing may be ( -1, 0 +1 ). -1 strips a trailing '/' from the path, +1 adds
+   *                  a trailing '/' if there is none yet and 0 returns the
+   *                  path unchanged.
+   */
+  QString url( int _trailing ) const;
 
-   /** 
-    * Sets the host
-    */ 
-    void setHost( const QString& host) ;   
+  KURL& KURL::operator=( const KURL& _u );
+  KURL& KURL::operator=( const char* _url );
+  KURL& KURL::operator=( QString& _url );
 
-    /**
-     * Set the password.
-     */
-    void setPassword( const QString& password );
+  bool KURL::operator==( const KURL& _u ) const;
+  bool KURL::operator==( const char* _u ) const;
+  /**
+   * This function should be used if you want to ignore trailing '/' characters.
+   *
+   * @see path
+   */
+  bool cmp( KURL &_u, bool _ignore_trailing = false );
+  
+  /**
+   * Splits nested URLs like file:/home/weis/kde.gz#gzip:/decompress#tar:/kdebase.
+   *
+   * @return false on parse error and true otherwise.
+   *
+   * @param _list holds all URLs after the call. The URLs are just appended, so you have
+   *              to clean the list usually before calling this function.
+   */
+  static bool split( const char *_url, List& _list );
+  /**
+   * Reverses @ref #split.
+   */
+  static void join( List& _list, QString& _dest );
+  
+  /**
+   * Decode the string, this means decoding "%20" into a space for example. Note that "%00" is
+   * not handled correctly here.
+   */
+  static void decode( QString& _url );
+  /**
+   * Reverse of @ref decode
+   */
+  static void encode( QString& _url );
 
-    /**
-     * Set the user.
-     */
-    void setUser( const QString& user );
-
-    /**
-     * Set the port.
-     */
-    void setPort( const unsigned int newPort );
-
-    /**
-     * Set the search-part.
-     *
-     * The search part of an URL is the part behind the '?'.
-     * Example the URL "http://www.yahoo.com/search.cgi?country=netherland"
-     * has "country=netherland" as search-part
-     *
-     * If NULL is specified, the search-part is cleared.
-     */
-    void setSearchPart( const QString& _searchPart );
-    
-    /** 
-     * Set reference. 
-     *
-     * A reference may be removed with setRef( ""). The function returns false 
-     * if it could not make a reference (if there were no path to reference 
-     * from) and true on succes.
-     */
-    bool setReference( const QString& _ref);
-
-    /** 
-     * Changes directory by descending into the given directory. 
-     * If dir starts with a "/" the 
-     * current URL will be "protocol://host/dir" otherwise dir will 
-     * be appended to the path.
-     * If 'zapRef' is true, the reference will be deleted.
-     */   
-    bool cd( const QString& _dir, bool zapRef = true);
-    
-    /** 
-     * Go to parent dir. If zapRef is true, the reference is removed, 
-     * otherwise it stays, but normally no one would want that. 
-     */
-    bool cdUp( bool zapRef = true);
-    
-    /**
-     * Returns the filename or directory name of the URL.
-     *
-     * If 'file:/home/weis/test.txt' is the URL, the result will be 'test.txt'
-     * If the URL us 'tar:/home/weis/test.tgz#foo/myfile' and isReference is TRUE,
-     * the function will return 'myfile'
-     */
-    const QString filename();
-    
-    /**
-     * Makes a copy of a URL.
-     */
-    KURL &operator=( const KURL &);
-    
-    /** 
-     * Initialize the URL with the given string.
-     * '_url' must be a valid URL.
-     */
-    KURL &operator=( const QString& _url );
-    
-    /** 
-     * Compare URL's.
-     *
-     * @return true if the URLs are equal, false otherwise.
-     */
-    bool operator==( const KURL &_url) const ;
-
-
-    /**
-      * Checks, if the URL refers to a usual file, that
-      * can be openend with usual methods.
-      *
-      * Note: It doesn't check, if the file exist
-      *
-      * @return true, if the URL is a file, that can be opened
-      **/
-    bool isLocalFile();
-
+  /**
+   * Changes directory by descending into the given directory.
+   * If dir starts with a "/" the
+   * current URL will be "protocol://host/dir" otherwise dir will
+   * be appended to the path.
+   * If 'zapRef' is true, the reference will be deleted.
+   * Provided for compatibility with the previous KURL class.
+   */
+  bool cd( const QString& _dir, bool zapRef = true);
+  
 protected:
-    void cleanPath();
-    
-    bool malformed;
-    /**
-     * If we parse for example ftp://weis@localhost then we dont have a path.
-     * The URL means: enter the home directory of user weis, while
-     * ftp://weis@localhost/ means, login as user weis and enter the
-     * root directory. KURL returns "/" as path in both cases. This variable
-     * is used to distinguish both URLs. It is true in the first case.
-     *
-     * @see #hasPath
-     */
-    bool bNoPath;
-    int port_number; 
+  void reset();
+  void parse( const char* _url );
+  
+  static char hex2int( char _char );
 
-    QString protocol_part;
-    QString host_part;
-    QString path_part;
-    QString path_part_decoded;
-    QString search_part;
-    QString ref_part;
-    // This variable is only valid after calling 'directory'.
-    QString dir_part;
-    QString user_part;
-    QString passwd_part;
-    
+  QString m_strProtocol;
+  QString m_strUser;
+  QString m_strPass;
+  QString m_strHost;
+  QString m_strPath;
+  QString m_strRef_encoded;
+  QString m_strQuery_encoded;
+  
+  bool m_bIsMalformed;
+  int m_iPort;
 };
+
+typedef KURL::List KURLList;
+
+bool urlcmp( KURLList& _url1, KURLList& _url2 );
+bool urlcmp( const char *_url1, const char *_url2 );
+bool urlcmp( const char *_url1, const char *_url2, bool _ignore_trailing, bool _ignore_ref );
 
 #endif
