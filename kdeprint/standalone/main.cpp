@@ -39,7 +39,7 @@ char tempFile[1024];
 bool fromStdin = false;
 char job_output = 0;	// 0: dialog, 1: console, 2: none
 
-void showmsgdialog(const char *msg, int type = 0)
+void showmsgdialog(const QString &msg, int type = 0)
 {
 	switch (type)
 	{
@@ -49,12 +49,12 @@ void showmsgdialog(const char *msg, int type = 0)
 	}
 }
 
-void showmsgconsole(const char *msg, int type = 0)
+void showmsgconsole(const QString &msg, int type = 0)
 {
-	debug(type == 0 ? "Print info: %s" : (type == 1 ? "Print warning: %s" : "Print error: %s"),msg);
+	qDebug(type == 0 ? "Print info: %s" : (type == 1 ? "Print warning: %s" : "Print error: %s"),msg.local8Bit().data());
 }
 
-void showmsg(const char *msg, int type = 0)
+void showmsg(const QString &msg, int type = 0)
 {
 	switch (job_output) {
 	   case 0: showmsgdialog(msg,type); break;
@@ -63,7 +63,7 @@ void showmsg(const char *msg, int type = 0)
 	}
 }
 
-void errormsg(const char *msg)
+void errormsg(const QString &msg)
 {
 	showmsg(msg,2);
 	exit(1);
@@ -109,7 +109,7 @@ int main(int argc, char *argv[])
 		QStringList	l = QStringList::split('=',QString(*it),false);
 		if (l.count() >= 1) opts[l[0]] = (l.count() == 2 ? l[1] : QString::fromLatin1(""));
 	}
-debug("parse options:");
+qDebug("parse options:");
 opts.dump();
 
 	// read file list
@@ -132,7 +132,7 @@ opts.dump();
 		if (!KIO::NetAccess::download(*it,target))
 		{
        			QString	msg = i18n("\"%1\": file not found").arg((*it).prettyURL());
-       			showmsg(msg.local8Bit(),2);
+       			showmsg(msg,2);
 		}
 		else
 			filestoprint.append(target);
@@ -183,7 +183,7 @@ opts.dump();
 
 			filestoprint.append(locateLocal("tmp",QString::fromLatin1("kprinter_%1").arg(getpid())));
 			fromStdin = true;
-			FILE	*fout = fopen(filestoprint[0],"w");
+			FILE	*fout = fopen(QFile::encodeName(filestoprint[0]),"w");
 			if (!fout) errormsg(i18n("Unable to open temporary file"));
 			char	buffer[8192];
 			int	s;
@@ -208,7 +208,7 @@ opts.dump();
 		}
 
 		// if printing from stdin, remove temporary file
-		if (fromStdin) ::unlink(filestoprint[0]);
+		if (fromStdin) ::unlink(QFile::encodeName(filestoprint[0]));
 	}
 
 	return (0);

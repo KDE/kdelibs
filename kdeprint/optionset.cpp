@@ -13,7 +13,7 @@ void OptionSet::setOption(const QString& opt, const QString& val)
 void OptionSet::dump() const
 {
 	for (QMap<QString,QString>::ConstIterator it=begin(); it != end(); ++it)
-		debug("%s = %s",it.key().latin1(),it.data().latin1());
+		qDebug("%s = %s",it.key().latin1(),it.data().latin1());
 }
 
 void OptionSet::merge(const OptionSet& o)

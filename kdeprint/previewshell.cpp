@@ -1,13 +1,14 @@
 #include "previewshell.h"
 #include "kprinter.h"
 
+#include <qfile.h>
+#include <qmessagebox.h>
 #include <klibloader.h>
 #include <ktrader.h>
 #include <ktrader.h>
 #include <kapp.h>
 #include <kstddirs.h>
 #include <klocale.h>
-#include <qmessagebox.h>
 
 PreviewShell::PreviewShell(QWidget *parent)
 : KParts::MainWindow(parent,"previewshell",WType_Modal|WType_TopLevel|WStyle_Dialog)
@@ -26,7 +27,7 @@ PreviewShell::PreviewShell(QWidget *parent)
 	for (KTrader::OfferList::ConstIterator it = offers.begin(); it != offers.end(); ++it)
 	{
 		KService::Ptr	service = *it;
-		KLibFactory	*factory = KLibLoader::self()->factory(service->library());
+		KLibFactory	*factory = KLibLoader::self()->factory(QFile::encodeName(service->library()));
 		if (factory)
 		{
 			gvpart_ = (KParts::ReadOnlyPart*)factory->create(this,"gvpart","KParts::ReadOnlyPart");

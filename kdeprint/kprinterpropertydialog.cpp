@@ -38,8 +38,8 @@ void KPrinterPropertyDialog::setPrinter(KPrinterItem *printer)
 {
 	printer_ = printer;
 	options_ = (printer_->isEdited() ? printer_->editedOptions() : printer_->defaultOptions());
-debug("**********************");
-debug("starting options...");
+qDebug("**********************");
+qDebug("starting options...");
 options_.dump();
 	QListIterator<KPrintDialogPage>	it(pages_);
 	for (;it.current();++it)
@@ -56,8 +56,8 @@ void KPrinterPropertyDialog::done(int result)
 		{
 			printer_->setEditedOptions(opts);
 			printer_->setEdited(true);
-debug("**********************");
-debug("ending options...");
+qDebug("**********************");
+qDebug("ending options...");
 opts.dump();
 			QTabDialog::done(result);
 		}

@@ -80,7 +80,7 @@ KPrinter::KPrinter()
 KPrinter::~KPrinter()
 {
 	// remove temporary file
-debug("removing tmpfile: %s",tmpbuffer_.latin1());
+qDebug("removing tmpfile: %s",tmpbuffer_.latin1());
 	::unlink(tmpbuffer_.latin1());
 
 	// delete Wrapper object
