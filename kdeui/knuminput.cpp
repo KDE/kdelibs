@@ -466,10 +466,8 @@ KIntNumInput::~KIntNumInput()
 
 void KIntNumInput::setValue(int val)
 {
-    if(m_slider)
-        m_slider->setValue(val);
-
     m_spin->setValue(val);
+    // slider value is changed by spinValueChanged
 }
 
 
@@ -741,6 +739,7 @@ void KDoubleNumInput::doLayout()
 
 void KDoubleNumInput::setValue(double val)
 {
+    double prevVal = m_value;
     m_value = val;
 
     if(m_value < m_lower) m_value = m_lower;
@@ -751,10 +750,11 @@ void KDoubleNumInput::setValue(double val)
                             * (m_value - m_lower)/(m_upper - m_lower));
         m_slider->blockSignals(true);
         m_slider->setValue(slvalue);
-        m_slider->blockSignals(true);
+        m_slider->blockSignals(false);
     }
 
     resetEditBox();
+    if ( prevVal!=m_value) emit valueChanged(m_value);
 }
 
 
@@ -763,6 +763,7 @@ void KDoubleNumInput::setValue(double val)
 void KDoubleNumInput::setRange(double lower, double upper, double step,
                                                            bool slider)
 {
+    double prevVal = m_value;
     m_lower = lower;
     m_upper = upper;
     m_step  = step;
@@ -797,6 +798,7 @@ void KDoubleNumInput::setRange(double lower, double upper, double step,
 
     resetEditBox();
     layout(true);
+    if ( prevVal!=m_value ) emit valueChanged(m_value);
 }
 
 
