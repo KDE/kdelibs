@@ -498,15 +498,9 @@ SUP {
 	font-size: smaller;
 }
 
-/* ### not supported at the moment
 ABBR, ACRONYM {
 	font-variant: small-caps;
 	letter-spacing: 0.1em
-}
-*/
-abbr,
-acronym {
-	font-style: italic;
 }
 
 :focus          { outline: 1px dotted invert }
