@@ -568,25 +568,15 @@ void KURL::parse( const QString& _url, int encoding_hint )
   // Node 2: Accept any amount of (alpha|digit|'+'|'-')
   // '.' is not currently accepted, because current KURL may be confused.
   // Proceed with :// :/ or :
-  while( (isalpha((int)buf[pos]) || isdigit((int)buf[pos]) ||
-          buf[pos] == '+' || buf[pos] == '-') &&
-         pos < len ) pos++;
-  if ( pos == len - 1 ) // Need to always compare length()-1 otherwise KURL passes "http:" as legal!!! (DA)
-    goto NodeErr;
-  if (buf[pos] == ':' && buf[pos+1] == '/' && buf[pos+2] == '/' )
+  while( pos < len && (isalpha((int)buf[pos]) || isdigit((int)buf[pos]) ||
+          buf[pos] == '+' || buf[pos] == '-')) pos++;
+
+  if ( pos+2 < len && buf[pos] == ':' && buf[pos+1] == '/' && buf[pos+2] == '/' )
     {
       m_strProtocol = QString( orig, pos ).lower();
       pos += 3;
     }
-  else if (buf[pos] == ':' && buf[pos+1] == '/' )
-    {
-      m_strProtocol = QString( orig, pos ).lower();
-      //kdDebug(126)<<"setting protocol to "<<m_strProtocol<<endl;
-      pos++;
-      start = pos;
-      goto Node9;
-    }
-  else if ( buf[pos] == ':' )
+  else if (pos+1 < len && buf[pos] == ':' ) // Need to always compare length()-1 otherwise KURL passes "http:" as legal!!
     {
       m_strProtocol = QString( orig, pos ).lower();
       //kdDebug(126)<<"setting protocol to "<<m_strProtocol<<endl;
@@ -607,11 +597,13 @@ void KURL::parse( const QString& _url, int encoding_hint )
       goto Node8;
   // Terminate on / or @ or ? or # or " or ; or <
   x = buf[pos];
-  while( (x != ':') && (x != '@') && (x != '/') && (x != '?') && (x != '#') &&  (pos < len) )
+  while( (x != ':') && (x != '@') && (x != '/') && (x != '?') && (x != '#') )
   {
      if ((x == '\"') || (x == ';') || (x == '<'))
         badHostName = true;
-     x = buf[++pos];
+     if (++pos == len)
+        break;
+     x = buf[pos];
   }
   if ( pos == len )
     {
@@ -691,14 +683,24 @@ void KURL::parse( const QString& _url, int encoding_hint )
     // IPv6 address
     start = ++pos; // Skip '['
 
+    if (pos == len)
+    {
+       badHostName = true;
+       goto NodeErr;
+    }
     // Node 8b: Read everything until ] or terminate
     badHostName = false;
     x = buf[pos];
-    while( (x != ']') &&  (pos < len) )
+    while( (x != ']') )
     {
        if ((x == '\"') || (x == ';') || (x == '<'))
           badHostName = true;
-       x = buf[++pos];
+       if (++pos == len)
+       {
+          badHostName = true;
+          break;
+       }
+       x = buf[pos];
     }
     if (badHostName)
        goto NodeErr;
@@ -710,16 +712,18 @@ void KURL::parse( const QString& _url, int encoding_hint )
   else
   {
     // Non IPv6 address
-    start = pos++;
+    start = pos;
 
     // Node 8b: Read everything until / : or terminate
     badHostName = false;
     x = buf[pos];
-    while( (x != ':') && (x != '@') && (x != '/') && (x != '?') && (x != '#') &&  (pos < len) )
+    while( (x != ':') && (x != '@') && (x != '/') && (x != '?') && (x != '#') )
     {
        if ((x == '\"') || (x == ';') || (x == '<'))
           badHostName = true;
-       x = buf[++pos];
+       if (++pos == len)
+          break;
+       x = buf[pos];
     }
     if (badHostName)
        goto NodeErr;
@@ -748,7 +752,7 @@ void KURL::parse( const QString& _url, int encoding_hint )
     goto NodeErr;
 
   // Node 8b: Accept any amount of digits
-  while( isdigit( buf[pos] ) && pos < len ) pos++;
+  while( pos < len && isdigit( buf[pos] ) ) pos++;
   port = QString( buf + start, pos - start );
   m_iPort = port.toUShort();
   if ( pos == len )
@@ -757,7 +761,7 @@ void KURL::parse( const QString& _url, int encoding_hint )
 
  Node9: // parse path until query or reference reached
 
-  while( buf[pos] != '#' && buf[pos]!='?' && pos < len ) pos++;
+  while( pos < len && buf[pos] != '#' && buf[pos]!='?' ) pos++;
 
   tmp = QString( buf + start, pos - start );
   //kdDebug(126)<<" setting encoded path&query to:"<<tmp<<endl;
@@ -771,7 +775,7 @@ void KURL::parse( const QString& _url, int encoding_hint )
 
   start = pos;
 
-  while(buf[pos]!=delim && pos < len) pos++;
+  while(pos < len && buf[pos]!=delim ) pos++;
 
   tmp = QString(buf + start, pos - start);
   if (delim=='#')
