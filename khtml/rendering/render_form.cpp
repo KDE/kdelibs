@@ -42,6 +42,7 @@
 #include "khtmlview.h"
 #include "khtml_ext.h"
 #include "xml/dom_docimpl.h"
+//include "xml/dom_nodeimpl.h"
 
 #include <kdebug.h>
 
@@ -513,11 +514,161 @@ void RenderLineEdit::select()
 // ---------------------------------------------------------------------------
 
 RenderFieldset::RenderFieldset(HTMLGenericFormElementImpl *element)
-    : RenderFormElement(element)
+    : RenderFlow(element)
 {
 }
 
-// -------------------------------------------------------------------------
+bool RenderFieldset::findLegend( int &lx, int &ly, int &lw, int &lh)
+{
+    RenderObject *r = this, *ref = 0;
+    int minx = 0, curx = 0, maxw = 0;
+    if( r->firstChild() && r->firstChild()->element() && 
+        r->firstChild()->element()->id() == ID_LEGEND)
+            r = r->firstChild();
+    else 
+        return false;
+    if(!r->firstChild() || r->isSpecial())
+        return false;
+    ly = r->yPos();
+    minx = r->width();
+    curx = r->xPos();
+    lh = r->height();
+    ref = r;
+ 
+    while(r) {
+        if(r->firstChild())
+            r = r->firstChild();
+        else if(r->nextSibling())
+            r = r->nextSibling();
+        else {
+            RenderObject *next = 0;
+            while(!next) {
+                r = r->parent();
+                if(!r || r == (RenderObject *)ref ) goto end;
+                next = r->nextSibling();
+            }
+            r = next;
+        }
+        if(r->isSpecial())
+            continue;
+        curx += r->xPos();
+        if(r->width() && curx<minx)
+             minx = curx;
+        if(curx-minx+r->width() > maxw) {
+                maxw = curx-minx+r->width();
+        }
+        if(!r->childrenInline())
+            curx -= r->xPos();
+    }  
+    end:
+        lx = minx - ref->paddingLeft();
+        lw = maxw + ref->paddingLeft() + ref->paddingRight();
+        if(lx < 0 || lx+lw > width())
+            return false; 
+        return !!maxw;
+}
+
+void RenderFieldset::printBoxDecorations(QPainter *p,int, int _y,                                                                      
+                                       int, int _h, int _tx, int _ty)
+{
+    //kdDebug( 6040 ) << renderName() << "::printDecorations()" << endl;
+
+    int w = width();
+    int h = height() + borderTopExtra() + borderBottomExtra();
+    int lx = 0, ly = 0, lw = 0, lh = 0; 
+    bool legend = findLegend(lx, ly, lw, lh);
+   
+    if(legend) {
+        int yOff = ly + lh/2 - borderTop()/2;
+        h -= yOff;
+        _ty += yOff;
+    }
+    _ty -= borderTopExtra();
+
+    int my = QMAX(_ty,_y);
+    int mh;
+    if (_ty<_y)
+        mh= QMAX(0,h-(_y-_ty));
+    else
+        mh = QMIN(_h,h);
+
+    printBackground(p, style()->backgroundColor(), style()->backgroundImage(), my, mh, _tx, _ty, w, h);
+
+    if(legend && style()->hasBorder())
+        printBorderMinusLegend(p, _tx, _ty, w, h, style(), lx, lw);
+    else if(style()->hasBorder())
+        printBorder(p, _tx, _ty, w, h, style());
+}
+
+void RenderFieldset::printBorderMinusLegend(QPainter *p, int _tx, int _ty, int w, int h,
+                                            const RenderStyle* style, int lx, int lw)
+{    
+    
+    const QColor& tc = style->borderTopColor();
+    const QColor& bc = style->borderBottomColor();
+
+    EBorderStyle ts = style->borderTopStyle();
+    EBorderStyle bs = style->borderBottomStyle();
+    EBorderStyle ls = style->borderLeftStyle();
+    EBorderStyle rs = style->borderRightStyle();
+
+    bool render_t = ts > BHIDDEN;
+    bool render_l = ls > BHIDDEN;
+    bool render_r = rs > BHIDDEN;
+    bool render_b = bs > BHIDDEN;
+
+    if(render_t) {
+        drawBorder(p, _tx, _ty, _tx + lx, _ty +  style->borderTopWidth(), BSTop, tc, style->color(), ts,
+                   (render_l && ls<=DOUBLE?style->borderLeftWidth():0), 0);
+        drawBorder(p, _tx+lx+lw, _ty, _tx + w, _ty +  style->borderTopWidth(), BSTop, tc, style->color(), ts,
+                   0, (render_r && rs<=DOUBLE?style->borderRightWidth():0));
+    }
+    
+    if(render_b)
+        drawBorder(p, _tx, _ty + h - style->borderBottomWidth(), _tx + w, _ty + h, BSBottom, bc, style->color(), bs,
+                   (render_l && ls<=DOUBLE?style->borderLeftWidth():0),
+		   (render_r && rs<=DOUBLE?style->borderRightWidth():0));
+
+    if(render_l)
+    {
+	const QColor& lc = style->borderLeftColor();
+
+	bool ignore_top =
+	  (tc == lc) &&
+	  (ls <= OUTSET) &&
+	  (ts == DOTTED || ts == DASHED || ts == SOLID || ts == OUTSET);
+
+	bool ignore_bottom =
+	  (bc == lc) &&
+	  (ls <= OUTSET) &&
+	  (bs == DOTTED || bs == DASHED || bs == SOLID || bs == INSET);
+
+        drawBorder(p, _tx, _ty, _tx + style->borderLeftWidth(), _ty + h, BSLeft, lc, style->color(), ls,
+		   ignore_top?0:style->borderTopWidth(),
+		   ignore_bottom?0:style->borderBottomWidth());
+    }
+
+    if(render_r)
+    {
+	const QColor& rc = style->borderRightColor();
+
+	bool ignore_top =
+	  (tc == rc) &&
+	  (rs <= SOLID || rs == INSET) &&
+	  (ts == DOTTED || ts == DASHED || ts == SOLID || ts == OUTSET);
+
+	bool ignore_bottom =
+	  (bc == rc) &&
+	  (rs <= SOLID || rs == INSET) &&
+	  (bs == DOTTED || bs == DASHED || bs == SOLID || bs == INSET);
+
+        drawBorder(p, _tx + w - style->borderRightWidth(), _ty, _tx + w, _ty + h, BSRight, rc, style->color(), rs,
+		   ignore_top?0:style->borderTopWidth(),
+		   ignore_bottom?0:style->borderBottomWidth());
+    }
+}
+
+// ------------------------parent()->borderTop()-------------------------------------------------
 
 RenderFileButton::RenderFileButton(HTMLInputElementImpl *element)
     : RenderFormElement(element)
@@ -620,8 +771,9 @@ RenderLabel::RenderLabel(HTMLGenericFormElementImpl *element)
 // -------------------------------------------------------------------------
 
 RenderLegend::RenderLegend(HTMLGenericFormElementImpl *element)
-    : RenderFormElement(element)
+    : RenderFlow(element)
 {
+    setInline(false);
 }
 
 // -------------------------------------------------------------------------------
