@@ -268,7 +268,7 @@ QByteArray HTMLFormElementImpl::formData(bool& ok)
                         if (path.length()) fileUploads << path;
                         QString onlyfilename = path.mid(path.findRev('/')+1);
 
-                        hstr += ("; filename=\"" + onlyfilename + "\"").ascii();
+                        hstr += fixUpfromUnicode(codec, "; filename=\"" + onlyfilename + "\"");
                         if(!static_cast<HTMLInputElementImpl*>(current)->value().isEmpty()) {
                             KMimeType::Ptr ptr = KMimeType::findByURL(KURL(path));
                             if (!ptr->name().isEmpty()) {
