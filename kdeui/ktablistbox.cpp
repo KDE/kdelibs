@@ -482,10 +482,15 @@ const QString& KTabListBox::text(int row, int col) const
 void KTabListBox::insertItem(const char* aStr, int row)
 {
   KTabListBoxItemPtr it;
-  int i;
+  int i, newSize;
 
   if (row < 0) row = numRows();
-  if (row >= maxItems) resizeList();
+  if (numRows() >= maxItems) 
+  {
+    newSize = (maxItems << 1);
+    if (newSize <= row) newSize = row+2;
+    resizeList(newSize);
+  }
 
   it = itemList[numRows()];
   for (i=numRows()-1; i>=row; i--)
@@ -634,26 +639,27 @@ void KTabListBox::setSeparator(char sep)
 void KTabListBox::resizeList(int newNumItems)
 {
   KTabListBoxItemPtr* newItemList;
-  int i, ih, nc;
+  int i, ih, nc, oldNum;
 
-  if (newNumItems < 0) newNumItems =(maxItems << 1);
+  if (newNumItems < 0) newNumItems = (maxItems << 1);
   if (newNumItems < INIT_MAX_ITEMS) newNumItems = INIT_MAX_ITEMS;
 
-  newItemList = new KTabListBoxItemPtr[newNumItems];
   nc = numCols();
+  oldNum = numRows();
+  newItemList = new KTabListBoxItemPtr[newNumItems];
   
-  ih = newNumItems < numRows() ? newNumItems : numRows();
+  ih = newNumItems < oldNum ? newNumItems : oldNum;
   for (i = ih-1; i>=0; i--)
     newItemList[i] = itemList[i];
 
-  if (newNumItems > numRows())
+  if (newNumItems > oldNum)
   {
-    for (i = numRows(); i < newNumItems; i++)
+    for (i = oldNum; i < newNumItems; i++)
       newItemList[i] = new KTabListBoxItem(nc);
   }
   else
   {
-    for (i = newNumItems; i < numRows(); i++)
+    for (i = newNumItems; i < oldNum; i++)
       delete itemList[i];
   }
 
