@@ -80,6 +80,7 @@ class BrowserExtensionPrivate;
  /**
   * The following standard actions are defined by the host of the view :
   *
+  * [selection-dependent actions]
   * cut : copy selected items to clipboard and notifies that a cut has been done, using DCOP
   * copy : copy selected items to clipboard (and notifies it's not a cut)
   * pastecut : called when doing a paste after a cut
@@ -87,18 +88,25 @@ class BrowserExtensionPrivate;
   * trash : move selected items to trash
   * del : delete selected items (couldn't call it delete!)
   * shred : shred selected items (secure deletion)
+  *      <P>
+  * [normal actions]
   * print : print :-)
-  *
-  * reparseConfiguration : re-read configuration and apply it
   * saveLocalProperties : save current configuration into .directory
   * savePropertiesAsDefault : save current configuration as default
+  * reparseConfiguration : re-read configuration and apply it
   * refreshMimeTypes : if the view uses mimetypes it should re-determine them
   *
-  *
-  * The view should emit enableAction when an action should be enabled/disabled,
-  * and should define a slot with the name of the action in order to implement the action.
+  * The view defines a slot with the name of the action in order to implement the action.
   * The browser will detect the slot automatically and connect its action to it when
   * appropriate (i.e. when the view is active)
+  *
+  *
+  * The selection-dependent actions are disabled by default and the view should
+  * enable them when the selection changes, emitting @ref enableAction.
+  *
+  * The normal actions does not depend on the selection. For each slot that is
+  * defined in the second list, the action is automatically enabled.
+  *
   */
 class BrowserExtension : public QObject
 {
