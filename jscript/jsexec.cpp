@@ -1,6 +1,7 @@
 #include "jsexec.h"
 #include "jstree.h"
 #include "builtin.h"
+#include <stdio.h>
 
 /**********************************************************
  *

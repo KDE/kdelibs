@@ -2,6 +2,7 @@
 #include "jsexec.h"
 #include "jserror.h"
 #include "bison2cpp.h"
+#include <stdio.h>
 
 /**********************************************************
  *
@@ -443,7 +444,7 @@ int JSIdentifier::rightValue( JSScopeStack *_scopes, JSValue *_rv )
 	return ERROR_JSUnknownIdentifier;
     
     _rv->setObject( var->getValue() );
-    if ( var->isDynamic )
+    if ( var->isDynamic() )
 	_rv->setAutoDelete( TRUE );
     else
 	_rv->setAutoDelete( FALSE );

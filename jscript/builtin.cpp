@@ -1,6 +1,7 @@
 #include "builtin.h"
 
 #include <stdlib.h>
+#include <stdio.h>
 
 JSPrintFunction *jsPrint = 0L;
 

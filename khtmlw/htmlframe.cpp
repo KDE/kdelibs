@@ -236,10 +236,10 @@ int HTMLFrameSet::calcSize( const char *_str, int *size, int _max )
     }
     
     printf("s1 = %i\n", s1);
-    
+    int k;
     if ( s1 <= _max && !joker )
     {
-	for ( int k = 0; k < i; k++ )
+	for ( k = 0; k < i; k++ )
 	{
 	    size[k] = ( value[k] * _max ) / s1;
 	    printf("%i %i %i -> %i\n",value[k],_max,s1,size[k] );
@@ -247,7 +247,7 @@ int HTMLFrameSet::calcSize( const char *_str, int *size, int _max )
 
 	// Calculate the error
 	int s2 = 0;
-	for ( int k = 0; k < i; k++ )
+	for ( k = 0; k < i; k++ )
 	{
 	    s2 += size[k];
 	}
@@ -259,7 +259,7 @@ int HTMLFrameSet::calcSize( const char *_str, int *size, int _max )
     {
 	int s2 = 0;
 	int s3 = 0;
-	for ( int k = 0; k < i; k++ )
+	for ( k = 0; k < i; k++ )
 	{
 	    if ( mode[k] == 0 || mode[k] == 1 )
 	    {
@@ -269,7 +269,7 @@ int HTMLFrameSet::calcSize( const char *_str, int *size, int _max )
 	    else
 		s3 += value[k];
 	}
-	for ( int k = 0; k < i; k++ )
+	for ( k = 0; k < i; k++ )
 	{
 	    if ( mode[k] == 2 )
 		size[k] = ( _max - s2 ) * value[k] / s3;
@@ -277,7 +277,7 @@ int HTMLFrameSet::calcSize( const char *_str, int *size, int _max )
     }
     else
     {
-	for ( int k = 0; k < i; k++ )
+	for ( k = 0; k < i; k++ )
 	{
 	    if ( mode[k] == 0 || mode[k] == 1 )
 	    {
@@ -289,7 +289,7 @@ int HTMLFrameSet::calcSize( const char *_str, int *size, int _max )
 
 	// Calculate the error
 	int s2 = 0;
-	for ( int k = 0; k < i; k++ )
+	for ( k = 0; k < i; k++ )
 	{
 	    if ( mode[k] == 0 || mode[k] == 1 )
 		s2 += size[k];
@@ -299,7 +299,7 @@ int HTMLFrameSet::calcSize( const char *_str, int *size, int _max )
 	size[ i - 1 ] += _max - s2;	
     }
 
-    for ( int k = 0; k < i; k++ )
+    for ( k = 0; k < i; k++ )
 	printf("SIZE=%i\n",size[k]);
 	
     return i;
