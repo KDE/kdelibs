@@ -555,7 +555,7 @@ bool CupsdConf::parseOption(const QString& line)
 	else if (keyword == "port") listenaddresses_.append("Listen *:"+value);
 	else if (keyword == "preservejobhistory") keepjobhistory_ = (value != "off");
 	else if (keyword == "preservejobfiles") keepjobfiles_ = (value == "on");
-	else if (keyword == "printcap") printcap_ = (value.isEmpty() ? "/etc/printcap" : value);
+	else if (keyword == "printcap") printcap_ = value;
 	else if (keyword == "printcapformat") printcapformat_ = (value.lower() == "solaris" ? PRINTCAP_SOLARIS : PRINTCAP_BSD);
 	else if (keyword == "requestroot") requestdir_ = value;
 	else if (keyword == "remoteroot") remoteroot_ = value;
