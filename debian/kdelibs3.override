@@ -82,9 +82,9 @@ kdelibs3: extra-license-file usr/share/doc/kde/HTML/en/common/mieterra-artistic-
 kdelibs3: extra-license-file usr/share/doc/kde/HTML/en/common/fdl-license.gz
 kdelibs3: extra-license-file usr/share/doc/kde/HTML/en/common/gpl-license.gz
 kdelibs3: extra-license-file usr/share/doc/kde/HTML/en/common/lgpl-license.gz
-
-# this is a hack in order to provide ssl support via a seperate package
-# and without having to build 2 totally seperate kdelibs packages
+kdelibs3: extra-license-file usr/share/apps/ksgmltools/zh-TW/entities/underArtisticLicense.docbook
+kdelibs3: extra-license-file usr/share/apps/ksgmltools/zh-TW/entities/underBSDLicense.docbook
+kdelibs3: extra-license-file usr/share/apps/ksgmltools/zh-TW/entities/underX11License.docbook
 
 # these are modules
 kdelibs3: ldconfig-symlink-referencing-wrong-file usr/lib/libkssl.so.2 -> libkssl.so.2.0.0 instead of libkssl-nossl.so.2.0.0
@@ -119,3 +119,9 @@ kdelibs3: shlib-missing-in-control-file kimg_xview usr/lib/kde2/kimg_xview.so
 kdelibs3: shlib-missing-in-control-file kded usr/lib/kded.so
 kdelibs3: ldconfig-symlink-missing-for-shlib usr/lib/kde2/kio_https.so usr/lib/kde2/kio_https-nossl.so kio_https.so
 kdelibs3: shlib-missing-in-control-file libkpac usr/lib/kde2/libkpac.so
+kdelibs3: non-dev-pkg-with-shlib-symlink usr/lib/libksasl.so.3.0.0 usr/lib/libksasl.so
+kdelibs3: shlib-missing-in-control-file libksasl usr/lib/libksasl.so.3.0.0
+kdelibs3: shlib-missing-in-control-file ksasl_auth_cram usr/lib/ksasl_auth_cram.so
+kdelibs3: shlib-missing-in-control-file ksasl_auth_plain usr/lib/ksasl_auth_plain.so
+kdelibs3: shlib-missing-in-control-file kbzip2filter usr/lib/kde2/kbzip2filter.so
+kdelibs3: shlib-missing-in-control-file kgzipfilter usr/lib/kde2/kgzipfilter.so

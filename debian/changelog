@@ -1,3 +1,13 @@
+kdelibs (4:2.1-20010106-2) unstable; urgency=low
+ 
+   * more upstream bug fixes
+   * More dependency/build-depend fixes
+   * This was definatly built with the same dpkg that kdelibs-crypto was so
+     I'm assuming this just squeaked by dinstall...so just to be sure...
+   * Java should work again
+ 
+ -- Ivan E. Moore II <rkrusty@debian.org>  Mon, 08 Jan 2001 12:00:00 -0700
+
 kdelibs (4:2.1-20010106-1) unstable; urgency=low
  
    * more upstream bug fixes
