@@ -83,7 +83,7 @@ protected slots:
   void updateURL();
 
 protected:
-  QString text();
+  QString text() const;
   bool sendBugReport();
 
   KProcess * m_process;

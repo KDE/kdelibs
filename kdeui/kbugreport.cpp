@@ -458,7 +458,7 @@ void KBugReport::slotCancel()
 }
 
 
-QString KBugReport::text()
+QString KBugReport::text() const
 {
     kdDebug() << m_bgSeverity->selected()->name() << endl;
     // Prepend the pseudo-headers to the contents of the mail

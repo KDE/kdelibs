@@ -558,7 +558,7 @@ KPaletteTable::~KPaletteTable()
 }
 
 QString
-KPaletteTable::palette()
+KPaletteTable::palette() const
 {
   return combo->currentText();
 }

@@ -190,7 +190,7 @@ public:
   ~KPaletteTable();
   void addToCustomColors( const QColor &);
   void addToRecentColors( const QColor &);
-  QString palette();
+  QString palette() const;
 public slots:
   void setPalette(const QString &paletteName);
 signals:
