@@ -1183,6 +1183,9 @@ void KSelectAction::setItems( const QStringList &lst )
   int len = containerCount();
   for( int i = 0; i < len; ++i )
     setItems( i, lst );
+
+  // Disable if empty and not editable
+  setEnabled ( lst.count() > 0 || d->m_edit );
 }
 
 QStringList KSelectAction::items() const
