@@ -320,6 +320,9 @@ void AudioSubSystem::handleIO(int type)
 
 	if(type & ioWrite)
 	{
+		/*
+		 * make sure that we have a fragment full of data at least
+		 */
 		while(wBuffer.size() < fragment_size)
 		{
 			long wbsz = wBuffer.size();
@@ -337,13 +340,24 @@ void AudioSubSystem::handleIO(int type)
 				return;
 			}
 		}
-		int rSize = wBuffer.read(fragment_size,fragment_buffer);
-		assert(rSize == fragment_size);
+		/*
+		 * look how much we really can write without blocking
+		 */
+		audio_buf_info info;
+		ioctl(audio_fd, SNDCTL_DSP_GETOSPACE, &info);
 
-		int len = ::write(audio_fd,fragment_buffer,fragment_size);
-		assert(len == fragment_size);
-		// TODO: find out why the assertion len == fragment_size fails on
-		// SBLive! is this an invalid assumption?
+		int can_write = min(info.bytes, fragment_size);
+
+		/*
+		 * ok, so write it (as we checked that our buffer has enough data
+		 * to do so and the soundcardbuffer has enough data to handle this
+		 * write, nothing can go wrong here)
+		 */
+		int rSize = wBuffer.read(can_write,fragment_buffer);
+		assert(rSize == can_write);
+
+		int len = ::write(audio_fd,fragment_buffer,can_write);
+		assert(len == can_write);
 	}
 
 	assert((type & ioExcept) == 0);
