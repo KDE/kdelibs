@@ -1238,26 +1238,6 @@ static void kdeinit_library_path()
    strcpy(sock_file, socketName.data());
 }
 
-/*
-static void output_kmapnotify_path()
-{
-   QStringList candidates = instance.dirs()->resourceDirs("lib");
-
-   QCString output;
-
-   for (QStringList::ConstIterator it = candidates.begin();
-        it != candidates.end();
-        it++)
-   {
-      QString path(*it + "libkmapnotify.so");
-      if (QFile::exists(path) && !output)
-         output = QFile::encodeName(path);
-   }
-
-   printf("%s\n", (const char *)output);
-}
-*/
-
 int kdeinit_xio_errhandler( Display * )
 {
     qWarning( "kdeinit: Fatal IO error: client killed" );
@@ -1348,7 +1328,6 @@ int main(int argc, char **argv, char **envp)
    int launch_kded = 1;
    int keep_running = 1;
    int suicide = 0;
-   //int libkmapnotify = 0;
 
    /** Save arguments first... **/
    char **safe_argv = (char **) malloc( sizeof(char *) * argc);
@@ -1365,15 +1344,7 @@ int main(int argc, char **argv, char **envp)
          suicide = 1;
       if (strcmp(safe_argv[i], "--exit") == 0)
          keep_running = 0;
-      //if (strcmp(safe_argv[i], "--libkmapnotify") == 0)
-      //   libkmapnotify = 1;
    }
-
-   /** Output path to stdout if libkmapnotify was specified **/
-   /*if (libkmapnotify) {
-      output_kmapnotify_path();
-      return 0;
-   }*/
 
    pipe(init_pipe);
 
