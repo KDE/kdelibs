@@ -551,7 +551,7 @@ public:
     * signals are automatically actiavted.  Only call this
     * functions if you disbaled them manually.
     */
-    void enableSignals()  { if( !m_bEmitSignals ) m_bEmitSignals = true; }
+    void enableSignals()  { m_bEmitSignals = true; }
 
     /**
     * Returns true if the object handles the signals
@@ -676,9 +676,10 @@ public:
     /**
     * Returns the key-binding used for rotating down in a list.
     *
-    * This methods returns the key used to iterate through a
-    * list in the "DOWN" direction.  This is opposite to what
-    * the @ref rotateDown key does.
+    * This methods returns the key used to match the previous
+    * item in a list.  Everytime this key is pressed most
+    * widgets that inherit from it emit a signal that indicates
+    * this action.
     *
     * If the key binding contains modifier key(s), the SUM of
     * their values is returned.  See also @ref setRotateDownKey.
