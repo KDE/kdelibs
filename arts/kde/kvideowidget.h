@@ -41,7 +41,6 @@ public:
     virtual int heightForWidth ( int w ) const;
 
 protected:
-    virtual void focusInEvent ( QFocusEvent * );
     virtual void mousePressEvent( QMouseEvent *event );
     virtual void resizeEvent( QResizeEvent *event );
     virtual bool x11Event( XEvent *event );

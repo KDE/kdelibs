@@ -343,11 +343,6 @@ int KVideoWidget::heightForWidth( int w ) const
 		return int( double(w)*double(videoHeight)/double(videoWidth) );
 }
 
-void KVideoWidget::focusInEvent( QFocusEvent * )
-{
-    sendEvent( winId(), VPO_ENABLE_WINDOW );
-}
-
 void KVideoWidget::mousePressEvent( QMouseEvent *event )
 {
     if (event->button() == RightButton)
