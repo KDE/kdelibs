@@ -116,7 +116,7 @@ signals:
 
 protected:
    bool checkVersion(bool abortOnError=true);
-   bool openDatabase(bool ignoreErrors=true);
+   bool openDatabase(bool openDummyIfNotFound=true);
    void closeDatabase();
    KSycocaFactoryList *m_lstFactories;
    QDataStream *m_str;
