@@ -244,6 +244,9 @@ void KDirSelectDialog::saveConfig( KConfig *config, const QString& group )
     conf.writeEntry( "History Items", d->urlCombo->historyItems(), ',',
                      true, true);
     conf.writeEntry( "DirSelectDialog Size", size(), true, true );
+
+    d->speedBar->save( config );
+    
     config->sync();
 }
 
@@ -336,13 +339,13 @@ void KDirSelectDialog::slotComboTextChanged( const QString& text )
             return;
         }
     }
-    
+
     QListViewItem *item = view()->currentItem();
     if ( item )
     {
         item->setSelected( false );
         // 2002/12/27, deselected item is not repainted, so force it
-        item->repaint(); 
+        item->repaint();
     }
 }
 
