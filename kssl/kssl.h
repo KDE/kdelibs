@@ -79,6 +79,14 @@ public:
    */
   bool setClientCertificate(KSSLPKCS12 *pkcs);
 
+  /**
+   * Set the status of the connection with respect to proxies.
+   * realIP is the IP address of the host you're connecting to
+   * realPort is the port of the host you're connecting to
+   * proxy is the IP or hostname of the proxy server
+   */
+  void setProxyUse(bool active, QString realIP = QString::null, int realPort = 0, QString proxy = QString::null);
+
   int connect(int sock);
 
   int read(void *buf, int len);

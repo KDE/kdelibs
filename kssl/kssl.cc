@@ -60,6 +60,11 @@ public:
 
   bool lastInitTLS;
   KSSLCertificate::KSSLValidation m_cert_vfy_res;
+  bool proxying;
+  QString proxy;
+  QString proxyPeerIP;
+  int proxyPeerPort;
+
 #ifdef HAVE_SSL
     SSL *m_ssl;
     SSL_CTX *m_ctx;
@@ -74,6 +79,7 @@ KSSL::KSSL(bool init) {
   m_bInit = false;
   m_bAutoReconfig = true;
   m_cfg = new KSSLSettings();
+  d->proxying = false;
 #ifdef HAVE_SSL  
   d->m_ssl = NULL;
 #endif  
@@ -348,15 +354,18 @@ void KSSL::setConnectionInfo() {
 
 void KSSL::setPeerInfo(int sock) {
 #ifdef HAVE_SSL
-// FIXME: Set the right value here
-//                          d->m_cert_vfy_res);
-  ksockaddr_in sa;
-  socklen_t nl = sizeof(ksockaddr_in);
-  int rc = getpeername(sock, (sockaddr *)&sa, &nl);
+  if (!d->proxying) {
+    ksockaddr_in sa;
+    socklen_t nl = sizeof(ksockaddr_in);
+    int rc = getpeername(sock, (sockaddr *)&sa, &nl);
 
-  if (rc != -1) {
-    QString haddr;
-    KInetSocketAddress x(&sa, nl);
+    if (rc != -1) {
+      QString haddr;
+      KInetSocketAddress x(&sa, nl);
+      m_pi.setPeerAddress(x);
+    }
+  } else {
+    KInetSocketAddress x(d->proxyPeerIP, d->proxyPeerPort);
     m_pi.setPeerAddress(x);
   }
   m_pi.m_cert.setCert(d->kossl->SSL_get_peer_certificate(d->m_ssl));
@@ -366,6 +375,14 @@ void KSSL::setPeerInfo(int sock) {
 
 KSSLConnectionInfo& KSSL::connectionInfo() {
   return m_ci;
+}
+
+
+void KSSL::setProxyUse(bool active, QString realIP, int realPort, QString proxy) {
+   d->proxying = active;
+   d->proxy = proxy;
+   d->proxyPeerIP = realIP;
+   d->proxyPeerPort = realPort;
 }
 
 
