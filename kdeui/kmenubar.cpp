@@ -40,6 +40,9 @@
 // $Id$
 // $Log$
 //
+// Revision 1.38  1998/11/06 15:08:49  radej
+// sven: finished handles. Comments?
+//
 // Revision 1.37  1998/11/06 12:55:53  radej
 // sven: handle changed again (still not perfect)
 //
@@ -412,7 +415,7 @@ void KMenuBar::leaveEvent (QEvent *e){
         }
         qDrawPlainRect ( &paint, 0, 0, 9, handle->height(),
          return true;
-        
+
                          g.mid(), 0, &b);
         w=6;
         paint.setClipRect(0, 2, w, h-4);

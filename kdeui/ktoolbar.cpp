@@ -22,6 +22,9 @@
 
 // $Id$
 // $Log$
+// Revision 1.84  1998/11/06 12:54:52  radej
+// Revision 1.86  1998/11/06 16:48:20  radej
+// sven: nicer docking, some bugfixes
 // Revision 1.83  1998/11/05 18:23:31  radej
 // sven: new look for *Bar handles (unfinished)
 //
@@ -1270,7 +1273,7 @@ void KToolBar::paintEvent(QPaintEvent *)
       {
         int w = 9;
         int h = toolbarHeight;
-        paint->setClipRect(0, 0, w, h);
+        paint->setClipRect(0, 2, w, h-4);
         
         qDrawPlainRect ( paint, 0, 0, 9, toolbarHeight,
                          g.mid(), 0, &b);
@@ -1321,27 +1324,29 @@ void KToolBar::paintEvent(QPaintEvent *)
       {
         qDrawPlainRect( paint, 0, 0, toolbarWidth, 9,
                         g.mid(), 0, &b);
+        
         int w = toolbarWidth;
-        int h = 9;
-        paint->setClipRect(0, 0, w, h);
+        int h = 15;
+
+        paint->setClipRect(2, 0, w-4, 9);
 
         qDrawPlainRect ( paint, 0, 0, 9, toolbarHeight,
                          g.mid(), 0, &b);
 
         paint->setPen( g.light() );
-        int a=0-h;
-        while (a <= w+5)
+        int a = 0-h;
+        while (a <= w+h)
         {
-          paint->drawLine(w-a, h, h-a, 0);
-          paint->drawLine(w-a+1, h, h-a+1, 0);
+          paint->drawLine(w-a, h, w-a+h, 0);
+          paint->drawLine(w-a+1, h, w-a+1+h, 0);
           a +=6;
         }
-        a=0-h;
+        a = 0-h;
         paint->setPen( g.dark() );
-        while (a <= w+5)
+        while (a <= w+h)
         {
-          paint->drawLine(w-a+2, h, h-a+2, 0);
-          paint->drawLine(w-a+3, h, h-a+3, 0);
+          paint->drawLine(w-a+2, h, w-a+2+h, 0);
+          paint->drawLine(w-a+3, h, w-a+3+h, 0);
           a +=6;
         }
       }
