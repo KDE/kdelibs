@@ -31,7 +31,7 @@ if test "x$with_gssapi" = "xCHECK" ; then
     gssapi_incdir="$GSSAPI_INCS"
     gssapi_libdir="$GSSAPI_LIBS"
     with_gssapi=FOUND
-    if "$KRB5_CONFIG --vendor" | grep "Massachusetts" > /dev/null; then
+    if $KRB5_CONFIG --vendor | grep "Massachusetts" > /dev/null; then
       gssapi_flavor=MIT
     else
       gssapi_flavor=HEIMDAL
