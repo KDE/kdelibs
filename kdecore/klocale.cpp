@@ -133,7 +133,7 @@ KLocale::KLocale( const char *catalogue )
 	else
 	    languages = "C";
     } else 
-	languages += ":C";
+	languages = languages + ":C";
 
     QString directory = KApplication::kde_localedir();
     QString ln,ct,chrset;
@@ -206,6 +206,7 @@ KLocale::KLocale( const char *catalogue )
 
     insertCatalogue( catalogue );
     insertCatalogue( SYSTEM_MESSAGES );
+    if (chset.isEmpty() || !KCharset(chset).ok()) chset="us-ascii";
 }
 
 void KLocale::insertCatalogue( const char *catalogue )
