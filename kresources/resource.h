@@ -325,10 +325,10 @@ protected:
    */
   virtual void doClose() {}
 
-private:
   void setIdentifier( const QString& identifier ) { mIdentifier = identifier; }
   void setType( const QString& type ) { mType = type; }
 
+private:
   QMutex mMutex;
   int mOpenCount;
   QString mType;

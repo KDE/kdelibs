@@ -140,7 +140,14 @@ Resource *ResourceFactory::resource( const QString& type, const KConfig *config 
   if ( type.isEmpty() )
     return 0;
 
-  QString libName = mResourceList[ type ]->library;
+  ResourceInfo *info = mResourceList.find( type );
+  if ( !info ) {
+    kdDebug() << "ResourceFactory::resource(): No info for type '" << type
+              << "'" << endl;
+    return 0;
+  }
+
+  QString libName = info->library;
 
   KLibrary *library = openLibrary( libName );
   if ( !library )
