@@ -468,7 +468,7 @@ NamedAttrMapImpl* ElementImpl::defaultMap() const
     return 0;
 }
 
-RenderStyle *ElementImpl::styleForRenderer(RenderObject *parentRenderer)
+RenderStyle *ElementImpl::styleForRenderer(RenderObject * /*parentRenderer*/)
 {
     return getDocument()->styleSelector()->styleForElement(this);
 }
@@ -709,7 +709,7 @@ DOMString ElementImpl::selectionToString(NodeImpl *selectionStart, NodeImpl *sel
 
 	for (NodeImpl *child = firstChild(); child != NULL; child = child->nextSibling()) {
 	    result += child->selectionToString(selectionStart, selectionEnd, startOffset, endOffset, found); // this might set found to true
-	    if(child == selectionEnd) 
+	    if(child == selectionEnd)
 	        found = true;
 	    if(found) break;
 	}
