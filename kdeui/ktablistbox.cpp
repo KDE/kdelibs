@@ -746,6 +746,7 @@ void KTabListBox::mouseMoveEvent(QMouseEvent* e)
 	      ex > (mMouseColLeft+mMouseColWidth)))
       doMouseMoveCol(e);
 
+    KTabListBoxInherited::mouseMoveEvent(e);
     return;
   }
 
@@ -794,6 +795,7 @@ void KTabListBox::mousePressEvent(QMouseEvent* e)
     colXPos(mMouseCol, &mMouseColLeft);
     repaint();
   }
+  KTabListBoxInherited::mousePressEvent(e);
 }
 
 
@@ -812,6 +814,7 @@ void KTabListBox::mouseReleaseEvent(QMouseEvent* e)
     mMouseAction = FALSE;
     repaint();
   }
+  KTabListBoxInherited::mouseReleaseEvent(e);
 }
 
 
@@ -859,9 +862,8 @@ bool KTabListBox::startDrag(int aCol, int aRow, const QPoint& p)
 
 
 //-----------------------------------------------------------------------------
-bool KTabListBox::prepareForDrag(int /*aCol*/, int /*aRow*/, 
-				 char** /*data*/, int* /*size*/,
-				 int* /*type*/)
+bool KTabListBox::prepareForDrag(int /*aCol*/, int /*aRow*/, char** /*data*/,
+				 int* /*size*/, int* /*type*/)
 {
   return FALSE;
 }
