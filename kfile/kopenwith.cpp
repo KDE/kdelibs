@@ -363,14 +363,14 @@ void KOpenWithDlg::init( const QString& _text, const QString& _value )
   connect( m_pTree, SIGNAL( doubleClicked(QListViewItem*) ),
            this, SLOT( slotDbClick() ) );
 
-  terminal = new QCheckBox( i18n("&Run in terminal"), this );
+  terminal = new QCheckBox( i18n("Run in &terminal"), this );
   connect(terminal, SIGNAL(toggled(bool)), this, SLOT(slotTerminalToggled(bool)));
 
   topLayout->addWidget(terminal);
 
   if (!qServiceType.isNull())
   {
-    remember = new QCheckBox(i18n("Remember application association for this type of file"), this);
+    remember = new QCheckBox(i18n("&Remember application association for this type of file"), this);
     //    remember->setChecked(true);
     topLayout->addWidget(remember);
   }
