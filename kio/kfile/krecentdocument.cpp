@@ -67,7 +67,7 @@ QStringList KRecentDocument::recentDocuments()
 
 void KRecentDocument::add(const KURL& url)
 {
-    KRecentDocument::add(url, kapp->argv()[0]); // ### argv[0] might not match the service filename!
+    KRecentDocument::add(url, qApp->argv()[0]); // ### argv[0] might not match the service filename!
 }
 
 void KRecentDocument::add(const KURL& url, const QString& desktopEntryName)
