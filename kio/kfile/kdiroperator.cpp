@@ -406,7 +406,7 @@ bool KDirOperator::mkdir( const QString& directory, bool enterDirectory )
     {
         url.addPath( *it );
         exists = KIO::NetAccess::exists( url, false, 0 );
-        writeOk = !exists && KIO::NetAccess::mkdir( url, kapp->mainWidget() );
+        writeOk = !exists && KIO::NetAccess::mkdir( url, topLevelWidget() );
     }
 
     if ( exists ) // url was already existant
@@ -477,7 +477,7 @@ KIO::DeleteJob * KDirOperator::del( const KFileItemList& items,
 
     if ( doIt ) {
         KIO::DeleteJob *job = KIO::del( urls, false, showProgress );
-        job->setWindow (kapp->mainWidget());
+        job->setWindow (topLevelWidget());
         job->setAutoErrorHandlingEnabled( true, parent );
         return job;
     }
@@ -1033,9 +1033,9 @@ void KDirOperator::setDirLister( KDirLister *lister )
 
     dir->setAutoUpdate( true );
 
-    QWidget* mainWidget = kapp->mainWidget();
+    QWidget* mainWidget = topLevelWidget();
     dir->setMainWindow (mainWidget);
-    kdDebug (kfile_area) << "Has main widget ? " << (mainWidget == 0) << endl;
+    kdDebug (kfile_area) << "mainWidget=" << mainWidget << endl;
 
     connect( dir, SIGNAL( percent( int )),
              SLOT( slotProgress( int ) ));
