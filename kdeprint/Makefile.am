@@ -2,7 +2,7 @@ CUPSSUBDIR = @CUPSSUBDIR@
 
 SUBDIRS = . management $(CUPSSUBDIR) lpd
 
-INCLUDES= -I$(top_srcdir)/kio -I$(top_srcdir)/kfile $(all_includes) 
+INCLUDES= -I$(top_srcdir)/kio -I$(top_srcdir)/kfile -I$(top_srcdir) $(all_includes) 
 
 lib_LTLIBRARIES = libkdeprint.la
 
