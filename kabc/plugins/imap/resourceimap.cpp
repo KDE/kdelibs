@@ -23,6 +23,7 @@
 
 #include <kabc/formatfactory.h>
 #include <kapp.h>
+#include <kdcopservicestarter.h>
 #include <kdebug.h>
 #include <kglobal.h>
 #include <klocale.h>
@@ -31,7 +32,7 @@
 #include <qstring.h>
 
 #include "resourceimap.h"
-
+#include <kmessagebox.h>
 using namespace KABC;
 
 extern "C"
@@ -63,9 +64,10 @@ void ResourceIMAP::writeConfig( KConfig *config )
 bool ResourceIMAP::doOpen()
 {
   // Ensure that there is a kmail running
-  return kapp->dcopClient()->isApplicationRegistered( "kmail" )
-         ? true
-         : ( kapp->startServiceByDesktopName( "kmail" ) == 0 );
+  QString error;
+  int result = KDCOPServiceStarter::self()->findServiceFor( "kmail", QString::null, QString::null, &error, &mAppId );
+  KMessageBox::sorry( 0, mAppId );
+  return ( result == 0 );
 }
 
 void ResourceIMAP::doClose()
@@ -78,7 +80,7 @@ Ticket * ResourceIMAP::requestSaveTicket()
   DCOPClient* dcopClient = kapp->dcopClient();
   QByteArray returnData;
   QCString returnType;
-  if ( !dcopClient->call( "kmail", "KMailIface",
+  if ( !dcopClient->call( mAppId, "KMailIface",
                           "lockContactsFolder()", QByteArray(),
                           returnType, returnData, true ) ) {
     return 0;
@@ -107,7 +109,7 @@ bool ResourceIMAP::load()
   QCString returnType;
   // Important; we need the synchronous call, even though we don't
   // expect a return value.
-  if ( !dcopClient->call( "kmail", "KMailIface",
+  if ( !dcopClient->call( mAppId, "KMailIface",
                           "requestAddresses(QString)", outgoingData,
                           returnType, returnData, true ) ) {
     qDebug( "DCOP call failed" );
@@ -150,7 +152,7 @@ bool ResourceIMAP::save( Ticket* )
   QDataStream paramStream( paramData, IO_WriteOnly );
   paramStream << tempFile.name();
   paramStream << mDeletedAdressees;
-  if ( !dcopClient->call( "kmail", "KMailIface",
+  if ( !dcopClient->call( mAppId, "KMailIface",
                           "storeAddresses(QString,QStringList)", paramData,
                           returnType, returnData, true ) )
     return false; // No need to continue in this case.
@@ -162,7 +164,7 @@ bool ResourceIMAP::save( Ticket* )
   tempFile.unlink();
     
   // Always try to unlock
-  if ( !dcopClient->call( "kmail", "KMailIface",
+  if ( !dcopClient->call( mAppId, "KMailIface",
                           "unlockContactsFolder()", QByteArray(),
                           returnType, returnData, true ) ) {
     return false;

@@ -95,6 +95,7 @@ public:
 private:
     FormatPlugin* mFormat;
     QStringList mDeletedAdressees;
+    QCString mAppId;
 };
 
 }
