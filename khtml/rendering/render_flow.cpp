@@ -260,6 +260,11 @@ void RenderFlow::layout()
             assert(!m_next->isInline());
             m_next->setLayouted(false);
         }
+    }    
+    else if (isTableCell() && m_last && m_last->hasOverhangingFloats()) 
+    {
+        m_height = m_last->yPos() + static_cast<RenderFlow*>(m_last)->floatBottom();
+        m_height += borderBottom() + paddingBottom();       
     }
     
     layoutSpecialObjects();
@@ -722,7 +727,7 @@ RenderFlow::lineWidth(int y) const
 }
 
 int
-RenderFlow::floatBottom()
+RenderFlow::floatBottom() const
 {
     if (!specialObjects) return 0;
     int bottom=0;

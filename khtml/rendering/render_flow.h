@@ -99,7 +99,7 @@ protected:
     void layoutSpecialObjects();
 
 public:
-    int floatBottom();
+    int floatBottom() const;
     inline int leftBottom();
     inline int rightBottom();
     bool checkClear(RenderObject *child);
