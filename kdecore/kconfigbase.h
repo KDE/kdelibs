@@ -64,7 +64,7 @@ class KConfigGroup;
  *
  * @author Kalle Dalheimer <kalle@kde.org>, Preston Brown <pbrown@kde.org>
  * @version $Id$
- * @see  KGlobal::config()  KConfig  KSimpleConfig
+ * @see  KGlobal#config()  KConfig  KSimpleConfig
  * @short KDE Configuration Management abstract base class
  */
 class KConfigBase : public QObject
@@ -116,14 +116,14 @@ public:
    * Returns true if the specified group is known about.
    *
    * @param group The group to search for.
-   * @returns Whether the group exists.
+   * @return Whether the group exists.
    */
   bool hasGroup(const QString &group) const;
 
   /**
    * Returns a list of groups that are known about.
    *
-   * @returns The list of groups.
+   * @return The list of groups.
    **/
   virtual QStringList groupList() const = 0;
 
@@ -706,6 +706,25 @@ public:
   void writeEntry( const QString& pKey, const QVariant& rValue,
                     bool bPersistent = true, bool bGlobal = false,
                     bool bNLS = false );
+  /**
+   * @ref writeEntry() Overridden to accept a property.
+   *
+   * Note: Unlike the other @ref writeEntry() functions, the old value is
+   * _not_ returned here!
+   *
+   * @param pKey The key to write
+   * @param rValue The property to write
+   * @param bPersistent If @p bPersistent is false, the entry's dirty flag
+   *                    will not be set and thus the entry will not be
+   *                    written to disk at deletion time.
+   * @param bGlobal     If @p bGlobal is true, the pair is not saved to the
+   *                    application specific config file, but to the
+   *                    global KDE config file.
+   * @param bNLS If @p bNLS is true, the locale tag is added to the key
+   *             when writing it back.
+   *
+   * @see  writeEntry()
+   */
   void writeEntry( const char *pKey, const QVariant& rValue,
                     bool bPersistent = true, bool bGlobal = false,
                     bool bNLS = false );
@@ -731,6 +750,25 @@ public:
    */
   void writeEntry( const QString& pKey, const QStrList &rValue,
 		   char sep = ',', bool bPersistent = true, bool bGlobal = false, bool bNLS = false );
+  /**
+   * @ref writeEntry() overridden to accept a list of strings.
+   *
+   * Note: Unlike the other @ref writeEntry() functions, the old value is
+   * _not_ returned here!
+   *
+   * @param pKey The key to write
+   * @param rValue The list to write
+   * @param bPersistent If @p bPersistent is false, the entry's dirty flag
+   *                    will not be set and thus the entry will not be
+   *                    written to disk at deletion time.
+   * @param bGlobal If @p bGlobal is true, the pair is not saved to the
+   *                application specific config file, but to the
+   *                global KDE config file.
+   * @param bNLS If @p bNLS is true, the locale tag is added to the key
+   *             when writing it back.
+   *
+   * @see  writeEntry()
+   */
   void writeEntry( const char *pKey, const QStrList &rValue,
 		   char sep = ',', bool bPersistent = true, bool bGlobal = false, bool bNLS = false );
 
@@ -755,6 +793,25 @@ public:
    */
   void writeEntry( const QString& pKey, const QStringList &rValue,
 		   char sep = ',', bool bPersistent = true, bool bGlobal = false, bool bNLS = false );
+  /**
+   * @ref writeEntry() overridden to accept a list of strings.
+   *
+   * Note: Unlike the other @ref writeEntry() functions, the old value is
+   * _not_ returned here!
+   *
+   * @param pKey The key to write
+   * @param rValue The list to write
+   * @param bPersistent If @p bPersistent is false, the entry's dirty flag
+   *                    will not be set and thus the entry will not be
+   *                    written to disk at deletion time.
+   * @param bGlobal If @p bGlobal is true, the pair is not saved to the
+   *                application specific config file, but to the
+   *                global KDE config file.
+   * @param bNLS If @p bNLS is true, the locale tag is added to the key
+   *             when writing it back.
+   *
+   * @see  writeEntry()
+   */
   void writeEntry( const char *pKey, const QStringList &rValue,
 		   char sep = ',', bool bPersistent = true, bool bGlobal = false, bool bNLS = false );
 
@@ -780,6 +837,25 @@ public:
    */
   void writeEntry( const QString& pKey, const QValueList<int>& rValue,
 		   bool bPersistent = true, bool bGlobal = false, bool bNLS = false );
+ /**
+   * @ref writeEntry() overridden to accept a list of Integers.
+   *
+   * Note: Unlike the other @ref writeEntry() functions, the old value is
+   * _not_ returned here!
+   *
+   * @param pKey The key to write
+   * @param rValue The list to write
+   * @param bPersistent If @p bPersistent is false, the entry's dirty flag
+   *                    will not be set and thus the entry will not be
+   *                    written to disk at deletion time.
+   * @param bGlobal If @p bGlobal is true, the pair is not saved to the
+   *                application specific config file, but to the
+   *                global KDE config file.
+   * @param bNLS If @p bNLS is true, the locale tag is added to the key
+   *             when writing it back.
+   *
+   * @see  writeEntry()
+   */
   void writeEntry( const char *pKey, const QValueList<int>& rValue,
 		   bool bPersistent = true, bool bGlobal = false, bool bNLS = false );
 
@@ -804,6 +880,23 @@ public:
                       bool bPersistent = true, bool bGlobal = false,
                       bool bNLS = false )
     { writeEntry(pKey, QString::fromLatin1(pValue), bPersistent, bGlobal, bNLS); }
+  /**
+   * Write a (key/value) pair.
+   *
+   * This is stored to the most specific config file when destroying the
+   * config object or when calling @ref sync().
+   *
+   *  @param pKey               The key to write.
+   *  @param pValue     The value to write.
+   *  @param bPersistent        If @p bPersistent is false, the entry's dirty
+   *                    flag will not be set and thus the entry will
+   *                    not be written to disk at deletion time.
+   *  @param bGlobal    If @p bGlobal is true, the pair is not saved to the
+   *                    application specific config file, but to the
+   *                    global KDE config file.
+   *  @param bNLS       If @p bNLS is true, the locale tag is added to the key
+   *                    when writing it back.
+   */
   void writeEntry( const char *pKey, const char *pValue,
                       bool bPersistent = true, bool bGlobal = false,
                       bool bNLS = false )
@@ -827,6 +920,21 @@ public:
   void writeEntry( const QString& pKey, int nValue,
                       bool bPersistent = true, bool bGlobal = false,
                       bool bNLS = false );
+  /**
+   * Write a (key/value) pair.
+   * Same as above, but writes a numerical value.
+   *
+   * @param pKey The key to write.
+   * @param nValue The value to write.
+   * @param bPersistent If @p bPersistent is false, the entry's dirty
+   * flag will not be set and thus the entry will not be written to
+   * disk at deletion time.
+   * @param bGlobal     If @p bGlobal is true, the pair is not saved to the
+   *                    application specific config file, but to the
+   *                    global KDE config file.
+   * @param bNLS        If @p bNLS is true, the locale tag is added to the key
+   *                    when writing it back.
+   */
   void writeEntry( const char *pKey, int nValue,
                       bool bPersistent = true, bool bGlobal = false,
                       bool bNLS = false );
@@ -849,6 +957,21 @@ public:
   void writeEntry( const QString& pKey, unsigned int nValue,
                       bool bPersistent = true, bool bGlobal = false,
                       bool bNLS = false );
+  /**
+   * Writes a (key/value) pair.
+   * Same as above, but writes an unsigned numerical value.
+   *
+   * @param pKey The key to write.
+   * @param nValue The value to write.
+   * @param bPersistent If @p bPersistent is false, the entry's dirty
+   * flag will not be set and thus the entry will not be written to
+   * disk at deletion time.
+   * @param bGlobal     If @p bGlobal is true, the pair is not saved to the
+   *                    application specific config file, but to the
+   *                    global KDE config file.
+   * @param bNLS        If @p bNLS is true, the locale tag is added to the key
+   *                    when writing it back.
+   */
   void writeEntry( const char *pKey, unsigned int nValue,
                       bool bPersistent = true, bool bGlobal = false,
                       bool bNLS = false );
@@ -870,6 +993,20 @@ public:
   void writeEntry( const QString& pKey, long nValue,
                       bool bPersistent = true, bool bGlobal = false,
                       bool bNLS = false );
+  /**
+   * Writes a (key/value) pair.
+   * Same as above, but write a long numerical value.
+   *
+   * @param pKey The key to write.
+   * @param nValue The value to write.
+   * @param bPersistent If @p bPersistent is false, the entry's dirty
+   * flag will not be set and thus the entry will not be written to
+   * disk at deletion time.
+   * @param bGlobal     If @p bGlobal is true, the pair is not saved to the
+   *  application specific config file, but to the global KDE config file.
+   * @param bNLS        If @p bNLS is true, the locale tag is added to the key
+   *  when writing it back.
+   */
   void writeEntry( const char *pKey, long nValue,
                       bool bPersistent = true, bool bGlobal = false,
                       bool bNLS = false );
@@ -891,6 +1028,20 @@ public:
   void writeEntry( const QString& pKey, unsigned long nValue,
                       bool bPersistent = true, bool bGlobal = false,
                       bool bNLS = false );
+  /**
+   * Writes a (key/value) pair.
+   * Same as above, but writes an unsigned long numerical value.
+   *
+   * @param pKey The key to write.
+   * @param nValue The value to write.
+   * @param bPersistent If @p bPersistent is false, the entry's dirty
+   * flag will not be set and thus the entry will not be written to
+   * disk at deletion time.
+   * @param bGlobal     If @p bGlobal is true, the pair is not saved to the
+   *  application specific config file, but to the global KDE config file.
+   * @param bNLS        If @p bNLS is true, the locale tag is added to the key
+   *  when writing it back.
+   */
   void writeEntry( const char *pKey, unsigned long nValue,
                       bool bPersistent = true, bool bGlobal = false,
                       bool bNLS = false );
@@ -916,6 +1067,23 @@ public:
                       bool bPersistent = true, bool bGlobal = false,
                       char format = 'g', int precision = 6,
                       bool bNLS = false );
+  /**
+   * Writes a (key/value) pair.
+   * Same as above, but writes a floating-point value.
+   * @param pKey The key to write.
+   * @param nValue The value to write.
+   * @param bPersistent If @p bPersistent is false, the entry's dirty
+   * flag will not be set and thus the entry will not be written to
+   * disk at deletion time.
+   * @param bGlobal     If @p bGlobal is true, the pair is not saved to the
+   *  application specific config file, but to the global KDE config file.
+   * @param format      @p format determines the format to which the value
+   *  is converted. Default is 'g'.
+   * @param precision   @p precision sets the precision with which the
+   *  value is converted. Default is 6 as in QString.
+   * @param bNLS        If @p bNLS is true, the locale tag is added to the key
+   *  when writing it back.
+   */
   void writeEntry( const char *pKey, double nValue,
                       bool bPersistent = true, bool bGlobal = false,
                       char format = 'g', int precision = 6,
@@ -938,6 +1106,20 @@ public:
   void writeEntry( const QString& pKey, bool bValue,
                       bool bPersistent = true, bool bGlobal = false,
                       bool bNLS = false );
+  /**
+   * Writes a (key/value) pair.
+   * Same as above, but writes a boolean value.
+   *
+   * @param pKey The key to write.
+   * @param bValue The value to write.
+   * @param bPersistent If @p bPersistent is false, the entry's dirty
+   * flag will not be set and thus the entry will not be written to
+   * disk at deletion time.
+   * @param bGlobal     If @p bGlobal is true, the pair is not saved to the
+   *  application specific config file, but to the global KDE config file.
+   * @param bNLS        If @p bNLS is true, the locale tag is added to the key
+   *  when writing it back.
+   */
   void writeEntry( const char *pKey, bool bValue,
                       bool bPersistent = true, bool bGlobal = false,
                       bool bNLS = false );
@@ -959,6 +1141,20 @@ public:
   void writeEntry( const QString& pKey, const QFont& rFont,
                       bool bPersistent = true, bool bGlobal = false,
                       bool bNLS = false );
+  /**
+   * Writes a (key/value) pair.
+   * Same as above, but writes a font value.
+   *
+   * @param pKey The key to write.
+   * @param rFont The font value to write.
+   * @param bPersistent If @p bPersistent is false, the entry's dirty
+   * flag will not be set and thus the entry will not be written to
+   * disk at deletion time.
+   * @param bGlobal     If @p bGlobal is true, the pair is not saved to the
+   *  application specific config file, but to the global KDE config file.
+   * @param bNLS        If @p bNLS is true, the locale tag is added to the key
+   *  when writing it back.
+   */
   void writeEntry( const char *pKey, const QFont& rFont,
                       bool bPersistent = true, bool bGlobal = false,
                       bool bNLS = false );
@@ -983,6 +1179,23 @@ public:
   void writeEntry( const QString& pKey, const QColor& rColor,
                    bool bPersistent = true, bool bGlobal = false,
                    bool bNLS = false );
+  /**
+   * Writes a (key/value) pair.
+   * Same as above, but write a color entry.
+   *
+   * Note: Unlike the other @ref writeEntry() functions, the old value is
+   * _not_ returned here!
+   *
+   * @param pKey The key to write.
+   * @param rValue The color value to write.
+   * @param bPersistent If @p bPersistent is false, the entry's dirty
+   * flag will not be set and thus the entry will not be written to
+   * disk at deletion time.
+   * @param bGlobal     If @p bGlobal is true, the pair is not saved to the
+   *  application specific config file, but to the global KDE config file.
+   * @param bNLS        If @p bNLS is true, the locale tag is added to the key
+   *  when writing it back.
+   */
   void writeEntry( const char *pKey, const QColor& rColor,
                    bool bPersistent = true, bool bGlobal = false,
                    bool bNLS = false );
@@ -1007,6 +1220,23 @@ public:
   void writeEntry( const QString& pKey, const QDateTime& rDateTime,
                    bool bPersistent = true, bool bGlobal = false,
                    bool bNLS = false );
+  /**
+   * Writes a (key/value) pair.
+   * Same as above, but writes a date and time entry.
+   *
+   * Note: Unlike the other @ref writeEntry() functions, the old value is
+   * @em not returned here!
+   *
+   * @param pKey The key to write.
+   * @param rValue The date and time value to write.
+   * @param bPersistent If @p bPersistent is false, the entry's dirty
+   * flag will not be set and thus the entry will not be written to
+   * disk at deletion time.
+   * @param bGlobal     If @p bGlobal is true, the pair is not saved to the
+   *  application specific config file, but to the global KDE config file.
+   * @param bNLS        If @p bNLS is true, the locale tag is added to the key
+   *  when writing it back.
+   */
   void writeEntry( const char *pKey, const QDateTime& rDateTime,
                    bool bPersistent = true, bool bGlobal = false,
                    bool bNLS = false );
@@ -1032,6 +1262,23 @@ public:
   void writeEntry( const QString& pKey, const QRect& rValue,
                    bool bPersistent = true, bool bGlobal = false,
                    bool bNLS = false );
+  /**
+   * Writes a (key/value) pair.
+   * Same as above, but writes a rectangle.
+   *
+   * Note: Unlike the other @ref writeEntry() functions, the old value is
+   * _not_ returned here!
+   *
+   * @param pKey The key to write.
+   * @param rValue The rectangle value to write.
+   * @param bPersistent If @p bPersistent is false, the entry's dirty
+   * flag will not be set and thus the entry will not be written to
+   * disk at deletion time.
+   * @param bGlobal     If @p bGlobal is true, the pair is not saved to the
+   *  application specific config file, but to the global KDE config file.
+   * @param bNLS        If @p bNLS is true, the locale tag is added to the key
+   *  when writing it back.
+   */
   void writeEntry( const char *pKey, const QRect& rValue,
                    bool bPersistent = true, bool bGlobal = false,
                    bool bNLS = false );
@@ -1056,6 +1303,23 @@ public:
   void writeEntry( const QString& pKey, const QPoint& rValue,
                    bool bPersistent = true, bool bGlobal = false,
                    bool bNLS = false );
+  /**
+   * Writes a (key/value) pair.
+   * Same as above, but writes a point.
+   *
+   * Note: Unlike the other @ref writeEntry() functions, the old value is
+   * _not_ returned here!
+   *
+   * @param pKey The key to write.
+   * @param rValue The point value to write.
+   * @param bPersistent If @p bPersistent is false, the entry's dirty
+   * flag will not be set and thus the entry will not be written to
+   * disk at deletion time.
+   * @param bGlobal     If @p bGlobal is true, the pair is not saved to the
+   *  application specific config file, but to the global KDE config file.
+   * @param bNLS        If @p bNLS is true, the locale tag is added to the key
+   *  when writing it back.
+   */
   void writeEntry( const char *pKey, const QPoint& rValue,
                    bool bPersistent = true, bool bGlobal = false,
                    bool bNLS = false );
@@ -1080,6 +1344,23 @@ public:
   void writeEntry( const QString& pKey, const QSize& rValue,
                    bool bPersistent = true, bool bGlobal = false,
                    bool bNLS = false );
+  /**
+   * Writes a (key/value) pair.
+   * Same as above, but writes a size.
+   *
+   * Note: Unlike the other @ref writeEntry() functions, the old value is
+   * _not_ returned here!
+   *
+   * @param pKey The key to write.
+   * @param rValue The size value to write.
+   * @param bPersistent If @p bPersistent is false, the entry's dirty
+   * flag will not be set and thus the entry will not be written to
+   * disk at deletion time.
+   * @param bGlobal     If @p bGlobal is true, the pair is not saved to the
+   *  application specific config file, but to the global KDE config file.
+   * @param bNLS        If @p bNLS is true, the locale tag is added to the key
+   *  when writing it back.
+   */
   void writeEntry( const char *pKey, const QSize& rValue,
                    bool bPersistent = true, bool bGlobal = false,
                    bool bNLS = false );
@@ -1104,6 +1385,23 @@ public:
   void writePathEntry( const QString& pKey, const QString & path,
                        bool bPersistent = true, bool bGlobal = false,
                        bool bNLS = false );
+  /**
+   * Writes a file path.
+   *
+   * It is checked whether the path is located under $HOME. If so the
+   * path is written out with the user's home-directory replaced with
+   * $HOME. The path should be read back with @ref readPathEntry()
+   *
+   * @param pKey The key to write.
+   * @param path The path to write.
+   * @param bPersistent If @p bPersistent is false, the entry's dirty
+   * flag will not be set and thus the entry will not be written to
+   * disk at deletion time.
+   * @param bGlobal     If @p bGlobal is true, the pair is not saved to the
+   *  application specific config file, but to the global KDE config file.
+   * @param bNLS        If @p bNLS is true, the locale tag is added to the key
+   *  when writing it back.
+   */
   void writePathEntry( const char *pKey, const QString & path,
                        bool bPersistent = true, bool bGlobal = false,
                        bool bNLS = false );
@@ -1119,6 +1417,14 @@ public:
    */
    void deleteEntry( const QString& pKey,
                    bool bNLS = false, bool bGlobal = false);
+  /**
+   * Deletes the entry specified by @p pKey in the current group.
+   *
+   * @param pKey The key to delete.
+   * @param bGlobal     If @p bGlobal is true, the pair is not removed from the
+   *  application specific config file, but to the global KDE config file.
+   * @param bNLS        If @p bNLS is true, the key with the locale tag is removed.
+   */
    void deleteEntry( const char *pKey,
                    bool bNLS = false, bool bGlobal = false);
 
@@ -1185,12 +1491,13 @@ public:
    *
    * You should call this from your destructor in derivative classes.
    *
-   * @see  rollback(),  isReadOnly()
+   * @see #rollback(), #isReadOnly()
    */
   virtual void sync();
 
   /**
-   * @returns @p true if the config file has any dirty (modified) entries.
+   * Checks whether the config file has any dirty (modified) entries.
+   * @return @p true if the config file has any dirty (modified) entries.
    */
   bool isDirty() const { return bDirty; }
 
@@ -1248,17 +1555,22 @@ public:
   virtual void reparseConfiguration() = 0;
 
   /**
+   * Checks whether this configuration file can be modified.
    * @return whether changes may be made to this configuration file.
    */
   bool isImmutable() const;
 
   /**
+   * Checks whether it is possible to change the given group.
+   * @param group the group to check
    * @return whether changes may be made to @p group in this configuration
    * file.
    */
   bool groupIsImmutable(const QString &group) const;
 
   /**
+   * Checks whether it is possible to change the given entry.
+   * @param the key to check
    * @return whether the entry @p key may be changed in the current group
    * in this configuration file.
    */
@@ -1282,6 +1594,7 @@ public:
    * file is opened read-write).
    *
    * @see  ConfigState()
+   * @return the state of the app-config object
    */
   ConfigState getConfigState() const;
 
