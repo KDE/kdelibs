@@ -335,11 +335,6 @@ public:
     QString charset() const { return chset; }
 
     /**
-      * @return The instance used to decode translations.
-      */
-    QTextCodec *codec() const { return _codec; }
-    
-    /**
      * adds anther catalogue to search for translation lookup.
      * This function is useful for extern libraries and/or code,
      * that provides it's own messages.
