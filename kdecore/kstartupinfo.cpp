@@ -825,7 +825,8 @@ void KStartupInfoId::initId( const QCString& id_P )
     gettimeofday( &tm, NULL );
     char hostname[ 256 ];
     hostname[ 0 ] = '\0';
-    gethostname( hostname, 255 );
+    if (!gethostname( hostname, 255 ))
+	hostname[sizeof(hostname)-1] = '\0';
     d->id = QString( "%1;%2;%3;%4" ).arg( hostname ).arg( tm.tv_sec )
         .arg( tm.tv_usec ).arg( getpid()).latin1();
 #ifdef KSTARTUPINFO_ALL_DEBUG
@@ -1102,7 +1103,8 @@ void KStartupInfoData::setHostname( const QCString& hostname_P )
         {
         char tmp[ 256 ];
         tmp[ 0 ] = '\0';
-        gethostname( tmp, 255 );
+        if (!gethostname( tmp, 255 ))
+	    tmp[sizeof(tmp)-1] = '\0';
         d->hostname = tmp;
         }
     }
