@@ -309,6 +309,10 @@ bool DCOPClient::isAttached() const
     return false;
 }
 
+void DCOPClient::processSocketData( int )
+{
+}
+
 #include <qapplication.h>
 #include <qpalette.h>
 
@@ -316,6 +320,12 @@ void QApplication::setPalette( const QPalette &palette, bool informWidgets,
                                const char* className )
 {
       qDebug("QApplication::setPalette");
+}
+
+#include <kapplication.h>
+void KApplication::dcopFailure( const QString & )
+{
+    qDebug( "KApplication::dcopFailure" );
 }
 
 #include <kparts/historyprovider.h>

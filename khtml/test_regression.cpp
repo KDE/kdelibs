@@ -355,6 +355,7 @@ int main(int argc, char *argv[])
     KCmdLineArgs::addCmdLineOptions(options);
 
     KApplication a;
+    a.disableAutoDcopRegistration();
     a.setStyle( "windows" );
     KSimpleConfig sc1( "cryptodefaults" );
     sc1.setGroup( "Warnings" );
