@@ -130,52 +130,52 @@ public:
    *
    * The toolbar will read in various global config settings for
    * things like icon size and text position, etc.  However, some of
-   * the settings will be honored only if _honor_mode is set to
+   * the settings will be honored only if @p honorStyle is set to
    * true.  All other toolbars will be IconOnly and use Medium icons.
    *
    * @param parent      The standard toolbar parent (usually a
    * KMainWindow)
    * @param name        The standard internal name
-   * @param honor_style If true, then global settings for IconSize and IconText will be honored
+   * @param honorStyle  If true, then global settings for IconSize and IconText will be honored
    * @param readConfig  whether to apply the configuration (global and application-specific)
    */
-    KToolBar( QWidget *parent, const char *name = 0, bool honor_style = false, bool readConfig = true );
+    KToolBar( QWidget *parent, const char *name = 0, bool honorStyle = false, bool readConfig = true );
 
   /**
    * Constructor for non-XML-GUI applications.
    *
    * The toolbar will read in various global config settings for
    * things like icon size and text position, etc.  However, some of
-   * the settings will be honored only if _honor_mode is set to
+   * the settings will be honored only if @p honorStyle is set to
    * true.  All other toolbars will be IconOnly and use Medium icons.
    *
    * @param parentWindow The window that should be the parent of this toolbar
    * @param dock        The position of the toolbar. Usually QMainWindow::Top.
    * @param newLine     If true, start a new line in the dock for this toolbar.
    * @param name        The standard internal name
-   * @param honor_style If true, then global settings for IconSize and IconText will be honored
+   * @param honorStyle  If true, then global settings for IconSize and IconText will be honored
    * @param readConfig  whether to apply the configuration (global and application-specific)
    */
     KToolBar( QMainWindow *parentWindow, QMainWindow::ToolBarDock dock /*= QMainWindow::Top*/, bool newLine = false,
-              const char *name = 0, bool honor_style = false, bool readConfig = true );
+              const char *name = 0, bool honorStyle = false, bool readConfig = true );
 
   /**
    * Constructor for non-XML-GUI applications.
    *
    * The toolbar will read in various global config settings for
    * things like icon size and text position, etc.  However, some of
-   * the settings will be honored only if _honor_mode is set to
+   * the settings will be honored only if @p honorStyle is set to
    * true.  All other toolbars will be IconOnly and use Medium icons.
    *
    * @param parentWindow The window that should be the parent of this toolbar
    * @param dock        Another widget than the mainwindow to dock toolbar to.
    * @param newLine     If true, start a new line in the dock for this toolbar.
    * @param name        The standard internal name
-   * @param honor_style If true, then global settings for IconSize and IconText will be honored
+   * @param honorStyle  If true, then global settings for IconSize and IconText will be honored
    * @param readConfig  whether to apply the configuration (global and application-specific)
    */
     KToolBar( QMainWindow *parentWindow, QWidget *dock, bool newLine = false,
-              const char *name = 0, bool honor_style = false, bool readConfig = true );
+              const char *name = 0, bool honorStyle = false, bool readConfig = true );
 
   /**
    * Destructor
@@ -248,7 +248,7 @@ public:
    * @param id      The id of this button
    * @param enabled Enable or disable the button at startup
    * @param text    The tooltip or toolbar text (depending on state)
-   * @param index The position of the button. (-1 = at end).
+   * @param index   The position of the button. (-1 = at end).
    *
    * @return The item index.
    */
@@ -522,8 +522,8 @@ public:
     void setButton (int id, bool flag);
 
   /**
-   * Returns @p true iff button is on and is a toggle button
-   * @return @p true iff button is on and is a toggle button
+   * Returns @p true if button is on and is a toggle button
+   * @return @p true if button is on and is a toggle button
    * @see setToggle()
    */
     bool isButtonOn (int id) const;
@@ -721,7 +721,7 @@ public:
 
     /**
    * Returns the full-size mode enabled flag.
-   * @return @p true iff the full-size mode is enabled.
+   * @return @p true if the full-size mode is enabled.
    */
     bool fullSize() const;
 
@@ -862,7 +862,7 @@ public:
 
   /**
    * Returns the context menu enabled flag
-   * @return true iff the context menu is disabled
+   * @return true if the context menu is disabled
    */
     bool contextMenuEnabled() const;
 
