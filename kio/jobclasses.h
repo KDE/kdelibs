@@ -445,6 +445,11 @@ namespace KIO {
         void resume();
 
         /**
+         * Flow control. Returns true if the job is suspended.
+         */
+	bool isSuspended() const { return m_suspended; }
+
+        /**
          * Set meta data to be sent to the slave.
          */
         void setMetaData( const KIO::MetaData &);
