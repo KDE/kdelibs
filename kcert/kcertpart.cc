@@ -20,7 +20,7 @@
 
 
 #include "kcertpart.h"
-#include <kparts/factory.h>
+#include <kparts/genericfactory.h>
 #include <kinstance.h>
 #include <kaboutdata.h>
 #include <qframe.h>
