@@ -664,10 +664,13 @@ public:
     //for saving and restoring pages
     SavedPage *saveYourself(SavedPage *p = 0);
     void restore(SavedPage *);
+    void restorePosition( int x, int y );
 
 protected:
     void buildFrameSet(SavedPage *p, QString *s);
     void buildFrameTree(SavedPage *p, HTMLFrameSet *f);
+    int initialXPos;
+    int initialYPos;
 
 public:
   

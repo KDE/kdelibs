@@ -188,6 +188,8 @@ KHTMLWidget::KHTMLWidget( QWidget *parent, const char *name, const char * )
     blockStack = 0;
     memPoolMax = 0;
     currentKeySeq = "";
+    initialXPos = 0;
+    initialYPos = 0;
 
     mapPendingFiles.setAutoDelete( true );
     framesetStack.setAutoDelete( false );
@@ -1477,9 +1479,16 @@ void KHTMLWidget::begin( const char *_url, int _x_offset, int _y_offset )
     x_offset = _x_offset;
     y_offset = _y_offset;
 
+    // small hack to get positioning of pages working with restore()
+    if( initialXPos )
+	x_offset = initialXPos;
+    if( initialYPos )
+	y_offset = initialYPos;
+    initialXPos = initialYPos = 0;
+
     emit scrollHorz( x_offset );
     emit scrollVert( y_offset );
-    
+
     bgPixmapURL = 0;
     
     stopParser();
@@ -1946,6 +1955,7 @@ void KHTMLWidget::timerEvent( QTimerEvent * )
 	// Is y_offset too big ?
 	if ( docHeight() - y_offset < height() )
 	{
+	    printf("isFrameSet=%d, docHeight=%d\n",bIsFrameSet, docHeight());
 	    y_offset = docHeight() - height();
 	    if ( y_offset < 0 )
 		y_offset = 0;
@@ -3108,6 +3118,9 @@ void KHTMLWidget::parseF( HTMLClueV * _clue, const char *str )
 	      bool noresize = FALSE;
 	      // -1 = default ( 5 )
 	      int frameborder = -1;
+	      // needed for restoring frames.
+	      int initialx = 0;
+	      int initialy = 0;
 	      
 	      stringTok->tokenize( str + 6, " >" );
 	      while ( stringTok->hasMoreTokens() )
@@ -3146,6 +3159,14 @@ void KHTMLWidget::parseF( HTMLClueV * _clue, const char *str )
 		      if ( strncasecmp( token + 10, "auto", 4 ) == 0 )
 			scrolling = -1;
 		    }
+		  else if ( strncasecmp( token, "INITIALX=", 9 ) == 0 )
+		    {
+		      initialx = atoi( token + 9 );
+		    }
+		  else if ( strncasecmp( token, "INITIALY=", 9 ) == 0 )
+		    {
+		      initialy = atoi( token + 9 );
+		    }
 		}	      
 
 	      // Determine the parent for the frame
@@ -3160,6 +3181,8 @@ void KHTMLWidget::parseF( HTMLClueV * _clue, const char *str )
 	      html->setFrameBorder( frameborder );
 	      html->setMarginWidth( marginwidth );
 	      html->setMarginHeight( marginheight );
+	      if( initialx || initialy )
+		  html->restorePosition(initialx, initialy );
 	      if ( src.isEmpty() )
 	      {
 		  framesetStack.getLast()->append( html );
@@ -4947,6 +4970,10 @@ void KHTMLWidget::slotScrollVert( int _val )
     int ofs = 0;
     int diff = y_offset - _val;
     
+    // otherwise, it might reset the initially given positin to
+    // something smaller...
+    if( parsing && _val < y_offset ) return;
+
     if ( !isUpdatesEnabled() )
 	return;
 
@@ -5000,6 +5027,10 @@ void KHTMLWidget::slotScrollHorz( int _val )
 {
     int ofs = 0;
     int diff = x_offset - _val;
+
+    // otherwise, it might reset the initially given positin to
+    // something smaller...
+    if( parsing && _val < y_offset ) return;
 
     if ( !isUpdatesEnabled() )
 	return;
@@ -6094,6 +6125,7 @@ KHTMLWidget::saveYourself(SavedPage *p)
     p->url = getDocumentURL().url();
     p->xOffset = x_offset;
     p->yOffset = y_offset;
+    printf("xoffset = %d, yoffset = %d\n",p->xOffset,p->yOffset);
 
     if(isFrameSet() && !parsing)
 	buildFrameTree(p, frameSet);
@@ -6145,6 +6177,8 @@ KHTMLWidget::restore(SavedPage *p)
 	    printf("restoring view\n");
 	    printf("framename = %s\n",p->frameName.data());
 	    printf("url = %s\n",p->url.data());
+	    htmlView->restorePosition(p->xOffset, p->yOffset);
+	    printf("xoffset = %d, yoffset = %d\n",p->xOffset,p->yOffset);
 	    htmlView->openURL( p->url );
 	    htmlView->setIsFrame( p->isFrame );
 	    if( p->isFrame )
@@ -6156,7 +6190,6 @@ KHTMLWidget::restore(SavedPage *p)
 		htmlView->setMarginWidth( p->marginwidth );
 		htmlView->setMarginHeight( p->marginheight );
 	    }
-	    htmlView->restorePosition(p->xOffset, p->yOffset);
 	}
 	else
 	{
@@ -6240,13 +6273,29 @@ KHTMLWidget::buildFrameSet(SavedPage *p, QString *s)
 		tmp.sprintf(" marginheight=%d", sp->marginheight);
 		aStr += tmp;
 	    }
+	    if( sp->xOffset )
+	    {
+		tmp.sprintf(" initialx=%d", sp->xOffset);
+		aStr += tmp;
+	    }
+	    if( sp->yOffset )
+	    {
+		tmp.sprintf(" initialy=%d", sp->yOffset);
+		aStr += tmp;
+	    }
 	    aStr += ">";
-	    // FIXME: other options...
 	    aStr += "\n";
 	    *s += aStr;
 	}
     }    
     *s += "</frameset>";
+}
+
+void 
+KHTMLWidget::restorePosition( int x, int y )
+{
+    initialXPos = x;
+    initialYPos = y;
 }
 
 SavedPage::SavedPage()
@@ -6278,9 +6327,3 @@ void KHTMLWidget::registerFormats()
 }
 
 #include "html.moc"
-
-
-
-
-
-

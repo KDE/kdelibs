@@ -313,15 +313,23 @@ void KHTMLView::calcScrollBars()
     if ( displayVScroll && displayHScroll )
     {
 	horz->setRange( 0, view->docWidth() + 16 - view->width() );
+	if(horz->value() != view->xOffset())
+	    horz->setValue( view->xOffset() );
 	vert->setRange( 0, view->docHeight() - height() + 16 );
+	if(vert->value() != view->yOffset())
+	    vert->setValue( view->yOffset() );
     }
     else if ( displayHScroll )
     {
 	horz->setRange( 0, view->docWidth() - view->width() );
+	if(horz->value() != view->xOffset())
+	    horz->setValue( view->xOffset() );
     }
     else if ( displayVScroll )
     {
 	vert->setRange( 0, view->docHeight() - height() );
+	if(vert->value() != view->yOffset())
+	    vert->setValue( view->yOffset() );
     }    
 
     int right = 0;
@@ -777,8 +785,7 @@ void KHTMLView::restore(SavedPage *p)
 
 void KHTMLView::restorePosition( int x, int y )
 {
-	scrollToX = x;
-	scrollToY = y;
+    view->restorePosition( x, y );
 }
 
 #include "htmlview.moc"
