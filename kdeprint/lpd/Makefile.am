@@ -12,7 +12,6 @@ noinst_HEADERS = kmlpdfactory.h kmlpdmanager.h klpdprinterimpl.h kmlpduimanager.
 
 bin_PROGRAMS = make_driver_db_lpd
 make_driver_db_lpd_SOURCES = make_driver_db_lpd.c
-make_driver_db_lpd_LDADD =
 
 entry_DATA = lpd.print
 entrydir = $(kde_datadir)/kdeprint/plugins

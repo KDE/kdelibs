@@ -26,8 +26,6 @@ kded_kssld_la_SOURCES = kssld.cpp kssld.skel
 
 METASOURCES = AUTO
 
-include_HEADERS = 
-
 noinst_HEADERS = kssld.h
 
 services_DATA = kssld.desktop

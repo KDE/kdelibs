@@ -4,8 +4,6 @@ LDFLAGS = $(QT_LDFLAGS) $(X_LDFLAGS) $(KDE_RPATH)
 
 check_PROGRAMS = backendtest
 
-noinst_HEADERS =
-
 METASOURCES = AUTO
 
 LDADD = ../libkwalletbackend.la ../../client/libkwalletclient.la

@@ -26,8 +26,6 @@ libkded_kardsvc_la_SOURCES = kardsvc.cpp kardsvc.skel
 
 METASOURCES = AUTO
 
-include_HEADERS = 
-
 noinst_HEADERS = kardsvc.h
 
 services_DATA = kardsvc.desktop
