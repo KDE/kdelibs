@@ -134,7 +134,7 @@ bool CSSStyleDeclarationImpl::getPropertyPriority( int propertyID )
 	QPtrListIterator<CSSProperty> lstValuesIt(*m_lstValues);
 	CSSProperty *current;
 	for ( lstValuesIt.toFirst(); (current = lstValuesIt.current()); ++lstValuesIt ) {
-	    if( propertyID == current->m_id ) 
+	    if( propertyID == current->m_id )
 		return current->m_bImportant;
 	}
     }
@@ -185,7 +185,6 @@ void CSSStyleDeclarationImpl::setProperty ( const DOMString &propertyString)
 
     props->setAutoDelete(false);
 
-    unsigned int i = 0;
     if(!m_lstValues) {
 	m_lstValues = new QPtrList<CSSProperty>;
 	m_lstValues->setAutoDelete( true );
