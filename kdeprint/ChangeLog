@@ -17,6 +17,8 @@ Since 2.2 release, Michael Goffioul <goffioul@imec.be>
 	- added missing options in server configuration tool
   * Possibility to use an external preview program (still need a GUI to
     configure this).
+  * print dialog: possibility to select the files to print in standalone
+    mode (like XPP).
 
 27/08/2001 Michael Goffioul <goffioul@imec.be>
   * implementation of "Schedule" tab in print dialog for the CUPS plugin
@@ -31,3 +33,24 @@ Since 2.2 release, Michael Goffioul <goffioul@imec.be>
   * implementation of KPrintAction, which provides a quick access to
     a class of printers (special, regular or both). An application just
     needs to create a KPrintAction anc connect to print(KPrinter*).
+
+31/08/2001 Michael Goffioul <goffioul@imec.be>
+  * CUPS plugin: fix crash for Qt3 port, must check if attr->name is NULL
+    before comparing it with strcmp or strncmp.
+
+12/09/2001 Michael Goffioul <goffioul@imec.be>
+  * Management library: set all toolbars non movable to avoid move handles
+
+13/09/2001 Michael Goffioul <goffioul@imec.be>
+  * CUPS plugin: fix multiple showing of password dialog for password-
+    protected printers (timer is now blocked when the password dialog is
+    shown)
+
+14/09/2001 Michael Goffioul <goffioul@imec.be>
+  * CUPS plugin: configuration wizard rewritten using the structure of
+    ESP PrintPro: more consistent, less pages and widgets. Not used as
+    default config wizard yet.
+  * QList -> QPtrList
+
+25/09/2001 Michael Goffioul <goffioul@imec.be>
+  * CUPS plugin: made the new configuration wizard as default one.
