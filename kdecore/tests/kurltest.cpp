@@ -207,6 +207,16 @@ int main(int argc, char *argv[])
   QString dir = lastUrl.directory( true, true );
   check( "KURL::directory(true,true)", dir, "/dir1/dir2");
 
+  /// Comparisons
+  QString ucmp1 = "ftp://ftp.de.kde.org/dir";
+  QString ucmp2 = "ftp://ftp.de.kde.org/dir/";
+  check("urlcmp(only slash difference)", urlcmp(ucmp1,ucmp2)?"ko":"ok","ok");
+  check("urlcmp(only slash difference, ignore_trailing)", urlcmp(ucmp1,ucmp2,true,false)?"ok":"ko","ok");
+  QString ucmp3 = "ftp://ftp.de.kde.org/dir/#";
+  check("urlcmp(only hash difference)", urlcmp(ucmp2,ucmp3)?"ko":"ok","ok");
+  check("urlcmp(only hash difference, ignore_ref)", urlcmp(ucmp2,ucmp3,false,true)?"ok":"ko","ok");
+  check("urlcmp(slash and hash difference, ignore_trailing, ignore_ref)", urlcmp(ucmp2,ucmp3,true,true)?"ok":"ko","ok");
+
   KURL ftpUrl ( "ftp://ftp.de.kde.org" );
   printf("\n* URL is %s\n",ftpUrl.url().latin1());
   check("KURL::path()", ftpUrl.path(), QString::null);
