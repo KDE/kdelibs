@@ -1598,6 +1598,9 @@ private:
   khtml::Decoder *createDecoder();
   QString defaultEncoding() const;
 
+  /** .html, .xhtml or .xml */
+  QString defaultExtension() const;
+
   /** @internal
    * generic zoom in
    */

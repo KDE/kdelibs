@@ -3792,7 +3792,7 @@ void KHTMLPart::slotViewDocumentSource()
   bool isTempFile = false;
   if (!(url.isLocalFile()) && KHTMLPageCache::self()->isComplete(d->m_cacheId))
   {
-     KTempFile sourceFile(QString::null, QString::fromLatin1(".html"));
+     KTempFile sourceFile(QString::null, defaultExtension());
      if (sourceFile.status() == 0)
      {
         KHTMLPageCache::self()->saveData(d->m_cacheId, sourceFile.dataStream());
@@ -3872,7 +3872,7 @@ void KHTMLPart::slotViewFrameSource()
 
        if (KHTMLPageCache::self()->isComplete(cacheId))
        {
-           KTempFile sourceFile(QString::null, QString::fromLatin1(".html"));
+           KTempFile sourceFile(QString::null, defaultExtension());
            if (sourceFile.status() == 0)
            {
                KHTMLPageCache::self()->saveData(cacheId, sourceFile.dataStream());
@@ -3909,7 +3909,7 @@ void KHTMLPart::slotSaveDocument()
   KURL srcURL( m_url );
 
   if ( srcURL.fileName(false).isEmpty() )
-    srcURL.setFileName( "index.html" );
+    srcURL.setFileName( "index" + defaultExtension() );
 
   KIO::MetaData metaData;
   // Referre unknown?
@@ -3984,7 +3984,7 @@ void KHTMLPart::slotSaveFrame()
     KURL srcURL( frame->url() );
 
     if ( srcURL.fileName(false).isEmpty() )
-        srcURL.setFileName( "index.html" );
+        srcURL.setFileName( "index" + defaultExtension() );
 
     KIO::MetaData metaData;
     // Referrer unknown?
@@ -7086,6 +7086,17 @@ void KHTMLPart::setSuppressedPopupIndicator( bool enable )
         delete d->m_statusBarPopupLabel;
         d->m_statusBarPopupLabel = 0L;
     }
+}
+
+// Extension to use for "view document source", "save as" etc.
+// Using the right extension can help the viewer get into the right mode (#40496)
+QString KHTMLPart::defaultExtension() const
+{
+    if ( !d->m_doc )
+        return ".html";
+    if ( !d->m_doc->isHTMLDocument() )
+        return ".xml";
+    return d->m_doc->htmlMode() == DOM::DocumentImpl::XHtml ? ".xhtml" : ".html";
 }
 
 using namespace KParts;
