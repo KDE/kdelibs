@@ -568,20 +568,10 @@ QString KFileItem::getToolTipText(int maxcount)
 {
   // we can return QString::null if no tool tip should be shown
   QString tip;
-  KFileMetaInfo info;
   
-  if ( m_url.isLocalFile() ) 
-  {
-    if ( !d->metaInfo.isValid() )
-    {
-        info = KFileMetaInfo( m_url.path() );
-        d->metaInfo = info;
-    }
-    else
-      info = d->metaInfo;
-  }
-
   QStringList keys;
+  
+  KFileMetaInfo info = d->metaInfo;
 
   tip = "<table cellspacing=0 cellpadding=0>"
          "<tr>"
@@ -597,7 +587,11 @@ QString KFileItem::getToolTipText(int maxcount)
 
     tip += QStyleSheet::escape(m_url.fileName()) + 
            
-           "</nobr></b></center></th></tr>";
+             "</nobr>"
+            "</b>"
+           "</center>
+          "</th>"
+         "</tr>";
 
     tip += "<tr><td><nobr>" + i18n("Type:") + "</nobr></td><td><nobr>";
         
@@ -625,7 +619,8 @@ QString KFileItem::getToolTipText(int maxcount)
     
     // if we don't find a title, show the file name instead
     if (! (item = info.item("Title")).isValid() &&
-        ! (item = info.item("Name")).isValid())
+        ! (item = info.item("Name")).isValid() &&
+        ! (item.value().toString().isEmpty()))
       tip += QStyleSheet::escape(m_url.fileName());
     else
       tip += QStyleSheet::escape(item.value().toString());
@@ -672,9 +667,7 @@ QString KFileItem::getToolTipText(int maxcount)
           tip += "<tr><td><nobr>" +
                  QStyleSheet::escape( item.translatedKey() ) +
                  ":</nobr></td><td><nobr>" +
-                 item.prefix() +
-                 QStyleSheet::escape( s ) +
-                 item.suffix() +
+                 QStyleSheet::escape( item.prefix() + s + item.suffix() ) +
                  "</nobr></td></tr>";
         }
 
@@ -815,6 +808,8 @@ void KFileItem::setMetaInfo( const KFileMetaInfo & info )
 
 const KFileMetaInfo & KFileItem::metaInfo() const
 {
+    if ( m_url.isLocalFile() && !d->metaInfo.isValid() )
+        d->metaInfo = KFileMetaInfo( m_url.path() );
+
     return d->metaInfo;
 }
-
