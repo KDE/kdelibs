@@ -121,9 +121,9 @@ binary-arch:  build install
 	dh_testroot
 	dh_installdirs -a
 	-rm -f debian/kdelibs4/usr/share/doc/kde/HTML/default
-	debianrc=debian/kdelibs4/etc/kde2/system.kdeglobals ;\
+	debianrc=debian/kdelibs4/etc/kde3/system.kdeglobals ;\
 	echo "[Directories]" > $$debianrc ;\
-	echo "dir_config=/etc/kde2" >> $$debianrc ;\
+	echo "dir_config=/etc/kde3" >> $$debianrc ;\
 	echo "dir_html=/usr/share/doc/kde/HTML" >> $$debianrc ;\
 	echo "dir_cgi=/usr/lib/cgi-bin" >> $$debianrc ;\
 	echo "dir_apps=/usr/share/applnk" >> $$debianrc ;\
@@ -132,10 +132,10 @@ binary-arch:  build install
 	echo "dir_servicetypes=/usr/share/servicetypes" >> $$debianrc ;\
 	echo "[General]" >> $$debianrc ;\
 	echo "TerminalApplication=x-terminal-emulator" >> $$debianrc
-	cp debian/kde.pamd debian/kdelibs4/etc/pam.d/kde
+	cp debian/kde.pamd debian/kdelibs4/etc/pam.d/kde3
 	dh_installdocs -a
-	-cp debian/dh-make/* debian/kdelibs-dev/usr/share/doc/kdelibs-dev/dh-make/
-	-cp admin/debianrules debian/kdelibs-dev/usr/share/doc/kdelibs-dev/dh-make/
+	-cp debian/dh-make/* debian/kdelibs4-dev/usr/share/doc/kdelibs4-dev/dh-make/
+	-cp admin/debianrules debian/kdelibs4-dev/usr/share/doc/kdelibs4-dev/dh-make/
 	dh_undocumented
 	dh_installman -a
 	dh_installmenu -a
