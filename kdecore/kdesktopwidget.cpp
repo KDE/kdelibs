@@ -70,7 +70,7 @@ KDesktopWidgetPrivate::KDesktopWidgetPrivate()
 	defaultScreen = 0;
     } else
 #endif
-#if _WS_X11_
+#ifdef _WS_X11_
     {
 	defaultScreen = DefaultScreen(QPaintDevice::x11AppDisplay());
 	screenCount = ScreenCount(QPaintDevice::x11AppDisplay());
