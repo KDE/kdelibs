@@ -364,14 +364,14 @@
 	(let* ((msg (string-append "&ListofUnknown;\U-00A0;: " name))
 	       (err (node-list-error msg (current-node))))
 	  msg))))
+                                                                   ; &nbsp;
+(define %gentext-fr-start-quote%  (string-append (dingbat "laquo") "\U-00A0;"))
 
-(define %gentext-fr-start-quote%  (dingbat "ldquo"))
+(define %gentext-fr-end-quote%  (string-append (dingbat "raquo") "\U-00A0;"))
 
-(define %gentext-fr-end-quote%  (dingbat "rdquo"))
+(define %gentext-fr-start-nested-quote%  (string-append (dingbat "lsaquo") "\U-00A0;"))
 
-(define %gentext-fr-start-nested-quote%  (dingbat "lsquo"))
-
-(define %gentext-fr-end-nested-quote%  (dingbat "rsquo"))
+(define %gentext-fr-end-nested-quote%  (string-append (dingbat "rsaquo") "\U-00A0;"))
 
 (define %gentext-fr-by% "&by;") ;; e.g. Copyright 1997 "by" A. Nonymous
                            ;; Authored "by" Jane Doe
