@@ -201,11 +201,11 @@ BidiContext *RenderFlow::bidiReorderLine(BidiStatus &status, const BidiIterator 
 
     BidiIterator current = start;
     BidiIterator last = current;
-    while(current != end) {
+    while( 1 ) {
 
         QChar::Direction dirCurrent;
         if(current.atEnd()) {
-            //kdDebug(6041) << "atEnd" << endl;
+            kdDebug(6041) << "atEnd" << endl;
             BidiContext *c = context;
             while ( c->parent )
                 c = c->parent;
@@ -596,6 +596,8 @@ BidiContext *RenderFlow::bidiReorderLine(BidiStatus &status, const BidiIterator 
 #endif
 
         last = current;
+	if ( current == end )
+	    break;
         ++current;
     }
 
