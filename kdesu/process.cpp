@@ -51,7 +51,7 @@
 #include <kstddirs.h>
 
 #include "process.h"
-#include "pty.h"
+#include "kdesu_pty.h"
 #include "kcookie.h"
 
 

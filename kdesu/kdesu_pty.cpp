@@ -44,7 +44,7 @@
 
 #include <kdebug.h>
 #include <kstddirs.h>
-#include "pty.h"
+#include "kdesu_pty.h"
 
 // stdlib.h is meant to declare the prototypes but doesn't :(
 #ifdef HAVE_GRANTPT
@@ -59,6 +59,7 @@ extern "C" char * ptsname(int fd);
 extern "C" int unlockpt(int fd);
 #endif
 
+#include <pty.h>
 #include <termios.h>
 #ifdef HAVE_LIBUTIL_H
 #include <libutil.h>
