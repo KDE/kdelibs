@@ -38,8 +38,10 @@ public:
     }
     virtual ~KGenericFactoryBase()
     {
+        /*
         if ( s_instance )
             KGlobal::locale()->removeCatalogue( s_instance->instanceName() );
+        */
         delete s_instance;
         s_instance = 0;
         s_self = 0;
