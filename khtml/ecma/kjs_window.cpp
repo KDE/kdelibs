@@ -624,20 +624,20 @@ KJSO Location::get(const UString &p) const
   KURL url = part->url();
   QString str;
 
-  if (p == "hash"){
-      if (!url.hasPath())
-         str = url.ref()+"/";
-      else
-          str = url.ref();
-  }
+  if (p == "hash")
+    str = url.ref();
   else if (p == "host") {
     str = url.host();
     if (url.port())
       str += ":" + QString::number(url.port());
   } else if (p == "hostname")
     str = url.host();
-  else if (p == "href")
-    str = url.prettyURL();
+  else if (p == "href"){
+      if (!url.hasPath())
+          str = url.prettyURL()+"/";
+      else
+          str = url.prettyURL();
+  }
   else if (p == "pathname")
     str = url.path().isEmpty() ? QString("/") : url.path();
   else if (p == "port")
