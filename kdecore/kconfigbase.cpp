@@ -120,7 +120,7 @@ KConfigBase::KConfigBase()
   : backEnd(0L), bDirty(false), bLocaleInitialized(false),
     bReadOnly(false), bExpand(false)
 {
-    mGroup = "<default>";
+    setGroup(QString::null);
 }
 
 KConfigBase::~KConfigBase()
@@ -150,6 +150,7 @@ void KConfigBase::setGroup( const QString& pGroup )
     mGroup = "<default>";
   else
     mGroup = pGroup.utf8();
+  bCheckGroup = true;
 }
 
 void KConfigBase::setGroup( const char *pGroup )
@@ -163,6 +164,7 @@ void KConfigBase::setGroup( const QCString &pGroup )
     mGroup = "<default>";
   else
     mGroup = pGroup;
+  bCheckGroup = true;
 }
 
 QString KConfigBase::group() const {
@@ -950,7 +952,8 @@ void KConfigBase::writeEntry( const char *pKey, const QString& value,
     aEntryData.bDirty = true;
 
   // rewrite the new value
-  putData(entryKey, aEntryData);
+  putData(entryKey, aEntryData, bCheckGroup);
+  bCheckGroup = false;
 }
 
 void KConfigBase::writePathEntry( const QString& pKey, const QString & path,
@@ -1005,7 +1008,8 @@ void KConfigBase::deleteEntry( const char *pKey,
   aEntryData.bDeleted = true;
 
   // rewrite the new value
-  putData(entryKey, aEntryData);
+  putData(entryKey, aEntryData, bCheckGroup);
+  bCheckGroup = false;
 }
 
 bool KConfigBase::deleteGroup( const QString& pGroup, bool bDeep )
@@ -1027,7 +1031,8 @@ qWarning("Deleting key = %s", aIt.key().mKey.data());
       (*aIt).bDeleted = true;
       (*aIt).bDirty = true;
       (*aIt).mValue = 0;
-      putData(aIt.key(), *aIt);
+      putData(aIt.key(), *aIt, bCheckGroup);
+      bCheckGroup = false;
       bDirty = true;
     }
   }

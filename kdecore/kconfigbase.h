@@ -1036,9 +1036,10 @@ protected:
    *        the group of the key and the key itself. If the key already
    *        exists, the old value will be replaced.
    * @param _data the KEntry that is to be stored.
+   * @param _checkGroup When false, assume that the group already exists.
    * @internal
    */
-  virtual void putData(const KEntryKey &_key, const KEntry &_data) = 0;
+  virtual void putData(const KEntryKey &_key, const KEntry &_data, bool _checkGroup = true) = 0;
 
   /**
    * Look up an entry in the config object's internal structure.
@@ -1089,6 +1090,7 @@ protected:
   bool bLocaleInitialized;
   bool bReadOnly;           // currently only used by KSimpleConfig
   bool bExpand;             // whether dollar expansion is used
+  bool bCheckGroup;         // Flag whether to check group status
 
   KConfigBasePrivate *d;
 };

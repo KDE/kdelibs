@@ -42,7 +42,7 @@
 
 KConfig::KConfig( const QString& fileName,
                  bool bReadOnly, bool bUseKderc, const char *resType )
-  : KConfigBase()
+  : KConfigBase(), bGroupImmutable(false)
 {
   // set the object's read-only status.
   setReadOnly(bReadOnly);
@@ -187,14 +187,18 @@ KEntryMap KConfig::internalEntryMap(const QString &pGroup) const
   return tmpEntryMap;
 }
 
-void KConfig::putData(const KEntryKey &_key, const KEntry &_data)
+void KConfig::putData(const KEntryKey &_key, const KEntry &_data, bool _checkGroup)
 {
   // check to see if the special group key is present,
   // and if not, put it in.
-  if (!hasGroup(_key.mGroup)) {
+  if (_checkGroup) 
+  {
     KEntryKey groupKey( _key.mGroup, 0);
-    aEntryMap.insert(groupKey, KEntry());
+    KEntry &entry = aEntryMap[groupKey];
+    bGroupImmutable = entry.bImmutable;
   }
+  if (bGroupImmutable)
+    return;
 
   // now either add or replace the data
   KEntry &entry = aEntryMap[_key];

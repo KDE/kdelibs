@@ -281,6 +281,9 @@ void KConfigINIBackEnd::parseSingleConfigFile(QFile &rFile,
       eof = s + data.size();
    }
 
+   bool groupOptionImmutable = false;
+   bool groupSkip = false;
+
    int line = 0;
    for(; s < eof; s++)
    {
@@ -301,10 +304,10 @@ void KConfigINIBackEnd::parseSingleConfigFile(QFile &rFile,
 
       if (*s == '[')  //group
       {
+         while ((s < eof) && (*s != '\n') && (*s != ']')) s++; // Search till end of group
+         const char *e = s;
          while ((s < eof) && (*s != '\n')) s++; // Search till end of line / end of file
-         const char *e = s - 1;
-         while ((e > startLine) && isspace(*e)) e--;
-         if (*e != ']')
+         if ((e >= eof) || (*e != ']')) 
          {
             fprintf(stderr, "Invalid group header at %s:%d\n", rFile.name().latin1(), line);
             continue;
@@ -318,17 +321,39 @@ void KConfigINIBackEnd::parseSingleConfigFile(QFile &rFile,
          if (aCurrentGroup == "KDE Desktop Entry")
             aCurrentGroup = "Desktop Entry";
 
+         groupOptionImmutable = false;
+
+         e++;
+         if ((e+2 < eof) && (*e++ == '[') && (*e++ == '$')) // Option follows
+         {
+            if (*e == 'i')
+            {
+               groupOptionImmutable = true;
+            }
+         }
+
+         KEntryKey groupKey(aCurrentGroup, 0);
+         KEntry entry = pConfig->lookupData(groupKey);
+         groupSkip = entry.bImmutable;
+
+         if (groupSkip)
+            continue;
+
+         entry.bImmutable = groupOptionImmutable;
+         pConfig->putData(groupKey, entry, false);
+
          if (pWriteBackMap)
          {
             // add the special group key indicator
-            KEntryKey groupKey(aCurrentGroup, 0);
-            pWriteBackMap->insert(groupKey, KEntry());
+            (*pWriteBackMap)[groupKey] = entry;
          }
 
          continue;
       }
+      if (groupSkip)
+        goto sktoeol; // Skip entry
 
-      bool optionImmutable = false;
+      bool optionImmutable = groupOptionImmutable;
       bool optionDeleted = false;
       const char *endOfKey = 0, *locale = 0, *elocale = 0;
       for (; (s < eof) && (*s != '\n'); s++)
@@ -436,7 +461,7 @@ void KConfigINIBackEnd::parseSingleConfigFile(QFile &rFile,
          // directly insert value into config object
          // no need to specify localization; if the key we just
          // retrieved was localized already, no need to localize it again.
-        pConfig->putData(aEntryKey, aEntry);
+         pConfig->putData(aEntryKey, aEntry, false);
       }
    }
 #ifdef HAVE_MMAP
