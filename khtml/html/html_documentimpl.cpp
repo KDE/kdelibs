@@ -30,6 +30,7 @@
 
 #include "khtmlview.h"
 #include "khtml_part.h"
+#include "khtmlpart_p.h"
 #include "khtml_settings.h"
 #include "misc/htmlattrs.h"
 #include "misc/htmlhashes.h"
@@ -144,7 +145,7 @@ DOMString HTMLDocumentImpl::cookie() const
     stream << URL() << windowId;
     if (!kapp->dcopClient()->call("kcookiejar", "kcookiejar",
                                   "findDOMCookies(QString,long int)", params,
-                                  replyType, reply)) 
+                                  replyType, reply))
     {
        kdWarning(6010) << "Can't communicate with cookiejar!" << endl;
        return DOMString();
@@ -303,7 +304,10 @@ void HTMLDocumentImpl::close()
         if (b && b->id() == ID_FRAMESET)
             getDocument()->dispatchWindowEvent(EventImpl::LOAD_EVENT, false, false);
 
-        updateRendering();
+        // don't update rendering if we're going to redirect anyway
+        if ( view() && ( view()->part()->d->m_redirectURL.isNull() ||
+                         view()->part()->d->m_delayRedirect > 1 ) )
+            updateRendering();
     }
 }
 
