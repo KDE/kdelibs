@@ -22,6 +22,9 @@
 
 // $Id$
 // $Log$
+// Revision 1.92  1998/11/21 19:27:19  radej
+// Revision 1.94  1998/12/09 13:44:30  radej
+// sven: iconify() -> hide() even when floating. Commented out debug output.
 // Revision 1.91  1998/11/18 01:00:02  radej
 // sven: set*BarPos(Flat) works now (I hope)
 //
@@ -2306,8 +2309,8 @@ void KToolBar::setFlat (bool flag)
     position = Flat;
     horizontal = false;
     resize(30, 10);
-    if (items.first())                // Nasty hack: if we have items...
-      items.first()->move (100, 100); // ...move first Out of Sight.
+    for (KToolBarItem *b = items.first(); b; b=items.next()) // Nasty hack:
+      b->move(100,100);       // move items out of sight
     enableFloating(false);
     emit moved(Flat); // KTM will block this->updateRects
   }
