@@ -105,7 +105,7 @@ void Test::createFields()
 
 int main( int argc, char ** argv )
 {
-  KApplication a( argc, argv );
+  KApplication a( argc, argv, "klocaletest" );
   Test m;
 
   a.setMainWidget( &m );

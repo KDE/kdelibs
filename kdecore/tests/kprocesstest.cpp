@@ -34,7 +34,7 @@ int main(int argc, char *argv[])
 {
  KProcess p1, p2, p3, p4;
  Dummy dummy; 
- KApplication app(argc, argv);
+ KApplication app(argc, argv, "kprocesstest");
 
 
  printf("Welcome to the KProcess Demo Application!\n");
