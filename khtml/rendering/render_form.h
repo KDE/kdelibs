@@ -401,6 +401,7 @@ public:
 protected:
     virtual bool event (QEvent *e );
     virtual QPopupMenu *createPopupMenu(const QPoint &pos);
+    void posToRowCol(unsigned int pos, unsigned int &line, unsigned int &col);
 
 protected slots:
     void slotCheckSpelling();

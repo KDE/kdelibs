@@ -1286,30 +1286,36 @@ void TextAreaWidget::slotCheckSpelling()
 
 }
 
+//code from kedit.
 void TextAreaWidget::spellCheckerMisspelling( const QString &text, const QStringList &, unsigned int pos)
 {
-#if 0
-    kdDebug()<<" spellCheckerMisspelling( const QString &, const QStringList &, unsigned int )*****************\n";
-    removeSelection();
-    kdDebug()<<" pos :"<<pos<<endl;
-    int parag = 0;
-    int paragNbChar = paragraphLength( parag);
-    while ( pos > paragNbChar && parag < paragraphs())
-    {
-        parag++;
-        paragNbChar = paragraphLength( parag );
-        pos -= paragraphLength( parag );
-    }
-    kdDebug()<<" pos :"<<pos <<" parag :"<<parag<<endl;
-    setSelection( parag, pos, parag, pos +text.length());
-#endif
+    unsigned int l = 0;
+    unsigned int cnt = 0;
+    posToRowCol (pos, l, cnt);
+    setSelection(l, cnt, l, cnt+text.length());
 }
 
-void TextAreaWidget::spellCheckerCorrected( const QString &, const QString &, unsigned int )
+void TextAreaWidget::spellCheckerCorrected( const QString &oldWord, const QString &newWord, unsigned int pos)
 {
-#if 0
-    kdDebug()<<"void TextAreaWidget::spellCheckerCorrected( const QString &, const QString &, unsigned int )***************\n";
-#endif
+    unsigned int l = 0;
+    unsigned int cnt = 0;
+    if( oldWord != newWord )
+    {
+        posToRowCol (pos, l, cnt);
+        setSelection(l, cnt, l, cnt+oldWord.length());
+        removeSelectedText();
+        insert(newWord);
+    }
+}
+
+void  TextAreaWidget::posToRowCol(unsigned int pos, unsigned int &line, unsigned int &col)
+{
+  for (line = 0; line < static_cast<uint>(lines()) && col <= pos; line++)
+  {
+    col += paragraphLength(line)+1;
+  }
+  line--;
+  col = pos - col + paragraphLength(line) + 1;
 }
 
 void TextAreaWidget::spellCheckerFinished()
