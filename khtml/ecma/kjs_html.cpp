@@ -321,7 +321,11 @@ Value KJS::HTMLDocument::tryGet(ExecState *exec, const Identifier &propertyName)
       // Disable document.all when we try to be Netscape-compatible
       if ( exec->interpreter()->compatMode() == Interpreter::NetscapeCompat )
         return Undefined();
-      return getHTMLCollection(exec,doc.all());
+      else
+      if ( exec->interpreter()->compatMode() == Interpreter::IECompat )
+        return getHTMLCollection(exec,doc.all());
+      else // enabled but hidden
+        return getHTMLCollection(exec,doc.all(), true);
     case Clear:
     case Open:
     case Close:
@@ -1910,7 +1914,11 @@ Value KJS::HTMLElement::getValueProperty(ExecState *exec, int token) const
     // Disable element.all when we try to be Netscape-compatible
     if ( exec->interpreter()->compatMode() == Interpreter::NetscapeCompat )
       return Undefined();
-    return getHTMLCollection(exec,element.all());
+    else
+    if ( exec->interpreter()->compatMode() == Interpreter::IECompat )
+      return getHTMLCollection(exec,element.all());
+    else // Enabled but hidden by default
+      return getHTMLCollection(exec,element.all(), true);
   // ### what about style? or is this used instead for DOM2 stylesheets?
   }
   kdError() << "HTMLElement::getValueProperty unhandled token " << token << endl;
