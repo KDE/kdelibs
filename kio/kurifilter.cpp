@@ -26,7 +26,7 @@
 
 #include "kurifilter.h"
 
-template class QList<KURIFilterPlugin>;
+template class QPtrList<KURIFilterPlugin>;
 
 KURIFilterPlugin::KURIFilterPlugin( QObject *parent, const char *name, double pri )
                  :QObject( parent, name )
@@ -196,7 +196,7 @@ bool KURIFilter::filterURI( KURIFilterData& data, const QStringList& filters )
         //kdDebug() << "Named plugins requested..."  << endl;
         for( QStringList::ConstIterator lst = filters.begin(); lst != filters.end(); ++lst )
         {
-            QListIterator<KURIFilterPlugin> it( m_lstPlugins );
+            QPtrListIterator<KURIFilterPlugin> it( m_lstPlugins );
             for( ; it.current() ; ++it )
             {
                 if( (*lst) == it.current()->name() )
@@ -209,7 +209,7 @@ bool KURIFilter::filterURI( KURIFilterData& data, const QStringList& filters )
         }
     }
 
-    QListIterator<KURIFilterPlugin> it( use_plugins );
+    QPtrListIterator<KURIFilterPlugin> it( use_plugins );
     //kdDebug() << "Using " << use_plugins.count() << " out of the "
     //          << m_lstPlugins.count() << " avaliable plugins" << endl;
     for (; it.current() && !filtered; ++it)
@@ -251,9 +251,9 @@ QString KURIFilter::filteredURI( const QString &uri, const QStringList& filters 
     return data.uri().url();
 }
 
-QListIterator<KURIFilterPlugin> KURIFilter::pluginsIterator() const
+QPtrListIterator<KURIFilterPlugin> KURIFilter::pluginsIterator() const
 {
-    return QListIterator<KURIFilterPlugin>(m_lstPlugins);
+    return QPtrListIterator<KURIFilterPlugin>(m_lstPlugins);
 };
 
 void KURIFilter::loadPlugins()

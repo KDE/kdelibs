@@ -24,7 +24,7 @@
 #include "kdirnotify.h"
 
 #include <qstringlist.h>
-#include <qlist.h>
+#include <qptrlist.h>
 #include <qregexp.h>
 
 #include <kurl.h>
@@ -186,7 +186,7 @@ public:
    * @returns the list of file items. The list may be incomplete if
    * @ref isFinished() is false, i.e. it is still loading items.
    */
-  QList<KFileItem> & items() { return m_lstFileItems; }
+  QPtrList<KFileItem> & items() { return m_lstFileItems; }
 
   /**
    * @return the file item for url() itself (".")
@@ -468,7 +468,7 @@ protected:
   /**
    * The internal storage of file items
    */
-  QList<KFileItem> m_lstFileItems;
+  QPtrList<KFileItem> m_lstFileItems;
 
   /**
    * File Item for m_url itself (".")
@@ -497,7 +497,7 @@ protected:
   bool m_bDelayedMimeTypes;
 
   /** a list of file-filters */
-  QList<QRegExp> m_lstFilters;
+  QPtrList<QRegExp> m_lstFilters;
 
   class KDirListerPrivate;
   KDirListerPrivate * d;

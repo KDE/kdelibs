@@ -80,6 +80,19 @@ public:
   void writeFile( const QString& name, const QString& user, const QString& group, uint size, const char* data );
 
   /**
+   * Here's another way of writing a file into a tar archive:
+   * Call @ref prepareWriting, then call write as many times as wanted,
+   * then call @ref doneWriting( totalSize )
+   * You need to know the size before hand, it is needed in the header!
+   */
+  bool prepareWriting( const QString& name, const QString& user, const QString& group, uint size );
+
+  /**
+   * Call @ref doneWriting after writing the data, @see prepareWriting
+   */
+  void doneWriting( uint size );
+
+  /**
    * If a tar file is opened for reading, then the contents
    * of the file can be accessed via this function.
    */

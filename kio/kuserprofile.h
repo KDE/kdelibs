@@ -22,7 +22,7 @@
 
 #include <qmap.h>
 #include <qstring.h>
-#include <qlist.h>
+#include <qptrlist.h>
 #include <qvaluelist.h>
 
 #include <kservice.h>
@@ -135,7 +135,7 @@ public:
 
   //BCI : merge both offers methods, and genericServiceType = QString::null
 
-  static const QList<KServiceTypeProfile>& serviceTypeProfiles() { return *s_lstProfiles; }
+  static const QPtrList<KServiceTypeProfile>& serviceTypeProfiles() { return *s_lstProfiles; }
 
   /**
    * Clear all cached information
@@ -194,7 +194,7 @@ private:
   ///BCI: d pointer
 
   static void initStatic();
-  static QList<KServiceTypeProfile>* s_lstProfiles;
+  static QPtrList<KServiceTypeProfile>* s_lstProfiles;
   static bool s_configurationMode;
 };
 

@@ -25,7 +25,7 @@
 #include <kurl.h>
 
 #include <qobject.h>
-#include <qlist.h>
+#include <qptrlist.h>
 #include <qstring.h>
 #include <qstringlist.h>
 #include <qguardedptr.h>
@@ -245,7 +245,7 @@ namespace KIO {
          */
         void emitResult();
 
-        QList<Job> subjobs;
+        QPtrList<Job> subjobs;
         int m_error;
         QString m_errorText;
         unsigned long m_percent;

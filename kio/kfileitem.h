@@ -24,7 +24,7 @@
 #include <qstringlist.h>
 #include <sys/stat.h>
 
-#include <qlist.h>
+#include <qptrlist.h>
 #include <kio/global.h>
 #include <kurl.h>
 #include <kmimetype.h>
@@ -363,11 +363,11 @@ private:
 /**
  * List of KFileItems
  */
-typedef QList<KFileItem> KFileItemList;
+typedef QPtrList<KFileItem> KFileItemList;
 
 /**
  * Iterator for KFileItemList
  */
-typedef QListIterator<KFileItem> KFileItemListIterator;
+typedef QPtrListIterator<KFileItem> KFileItemListIterator;
 
 #endif

@@ -21,7 +21,7 @@
 #ifndef __kurifilter_h__
 #define __kurifilter_h__ "$Id$"
 
-#include <qlist.h>
+#include <qptrlist.h>
 #include <qobject.h>
 
 #include <kurl.h>
@@ -387,7 +387,7 @@ private:
 };
 
 
-class KURIFilterPluginList : public QList<KURIFilterPlugin>
+class KURIFilterPluginList : public QPtrList<KURIFilterPlugin>
 {
 public:
     virtual int compareItems(Item a, Item b)
@@ -554,7 +554,7 @@ public:
      *
      * @return a plugin iterator.
      */
-    QListIterator<KURIFilterPlugin> pluginsIterator() const;
+    QPtrListIterator<KURIFilterPlugin> pluginsIterator() const;
 
 protected:
 

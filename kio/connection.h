@@ -106,7 +106,7 @@ namespace KIO {
 	QSocketNotifier *notifier;
 	QObject *receiver;
 	const char *member;
-	QList<Task> tasks;
+	QPtrList<Task> tasks;
 	int unqueuedTasks;
         bool m_suspended;
     };

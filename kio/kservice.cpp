@@ -143,6 +143,7 @@ KService::init( KDesktopFile *config )
   m_strExec = config->readEntry( "Exec" );
   entryMap.remove("Exec");
   m_strName = config->readEntry( "Name" );
+  kdDebug() << "parsing " << entryPath() << " Name=" << m_strName << endl;
   entryMap.remove("Name");
   if ( m_strName.isEmpty() )
   {

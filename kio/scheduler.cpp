@@ -22,7 +22,7 @@
 #include "kio/scheduler.h"
 #include "kio/authinfo.h"
 #include "kio/slave.h"
-#include <qlist.h>
+#include <qptrlist.h>
 #include <qdict.h>
 #include <kdebug.h>
 #include <kglobal.h>
@@ -42,7 +42,7 @@ template class QDict<KIO::Scheduler::ProtocolInfo>;
 
 Scheduler *Scheduler::instance = 0;
 
-class KIO::SlaveList: public QList<Slave>
+class KIO::SlaveList: public QPtrList<Slave>
 {
    public:
       SlaveList() { }
@@ -82,7 +82,7 @@ public:
     ProtocolInfo() : maxSlaves(3), skipCount(0)
     { joblist.setAutoDelete(false); }
 
-    QList<SimpleJob> joblist;
+    QPtrList<SimpleJob> joblist;
     SlaveList activeSlaves;
     int maxSlaves;
     int skipCount;
@@ -749,7 +749,7 @@ Scheduler::_getConnectedSlave(const KURL &url, const KIO::MetaData &config )
     connect(slave, SIGNAL(error(int, const QString &)),
                 SLOT(slotSlaveError(int, const QString &)));
 
-    coSlaves.insert(slave, new QList<SimpleJob>());
+    coSlaves.insert(slave, new QPtrList<SimpleJob>());
 //    kdDebug(7006) << "_getConnectedSlave( " << slave << ")" << endl;
     return slave;
 }

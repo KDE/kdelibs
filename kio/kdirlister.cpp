@@ -36,7 +36,7 @@
 #include <kurl.h>
 #include <kglobalsettings.h>
 
-template class QList<QRegExp>;
+template class QPtrList<QRegExp>;
 
 class KDirLister::KDirListerPrivate
 {
@@ -749,7 +749,7 @@ bool KDirLister::matchesMimeFilter( const KFileItem *item ) const
 bool KDirLister::matchesFilter(const QString& name) const
 {
     bool matched = false;
-    for (QListIterator<QRegExp> it(m_lstFilters); it.current(); ++it)
+    for (QPtrListIterator<QRegExp> it(m_lstFilters); it.current(); ++it)
         if ( it.current()->match( name ) != -1 ) {
             matched = true;
             break;
