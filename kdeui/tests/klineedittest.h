@@ -21,6 +21,7 @@ public:
 private slots:
    void quitApp();
    void readOnly (bool);
+   void setEnable (bool);
    void slotReturnPressed();
    void slotReturnPressed(const QString&);
    void resultOutput( const QString& );
@@ -28,7 +29,8 @@ private slots:
 protected:
    QGuardedPtr<KLineEdit> m_lineedit;
    QPushButton* m_btnExit;
-   QPushButton* m_btnReadOnly;   
+   QPushButton* m_btnReadOnly;
+   QPushButton* m_btnEnable;
 };
 
 #endif

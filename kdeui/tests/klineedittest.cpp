@@ -1,6 +1,7 @@
 #include <qstring.h>
 #include <qpushbutton.h>
 #include <qlayout.h>
+#include <qhbox.h>
 
 #include <kapplication.h>
 #include <kdebug.h>
@@ -31,18 +32,24 @@ KLineEditTest::KLineEditTest (QWidget* widget, const char* name )
     connect( m_lineedit, SIGNAL( returnPressed(const QString&) ), 
              SLOT( slotReturnPressed(const QString&) ) );
 
-    m_btnExit = new QPushButton( "E&xit", this );
+    QHBox *hbox = new QHBox (this);
+    m_btnExit = new QPushButton( "E&xit", hbox );
     m_btnExit->setFixedSize(100,30);
     connect( m_btnExit, SIGNAL( clicked() ), SLOT( quitApp() ) );
     
-    m_btnReadOnly = new QPushButton( "&ReadOnly", this );
+    m_btnReadOnly = new QPushButton( "&ReadOnly", hbox );
     m_btnReadOnly->setToggleButton (true);
     m_btnReadOnly->setFixedSize(100,30);
     connect( m_btnReadOnly, SIGNAL( toggled(bool) ), SLOT( readOnly(bool) ) );
+    
+    m_btnEnable = new QPushButton( "Dis&able", hbox );
+    m_btnEnable->setToggleButton (true);
+    m_btnEnable->setFixedSize(100,30);
+    connect( m_btnEnable, SIGNAL( toggled(bool) ), SLOT( setEnable(bool) ) );
+    
 
     layout->addWidget( m_lineedit );
-    layout->addWidget( m_btnExit );
-    layout->addWidget( m_btnReadOnly );
+    layout->addWidget( hbox );
     setCaption( "KLineEdit Unit Test" );
 }
 
@@ -74,6 +81,17 @@ void KLineEditTest::readOnly (bool ro)
     else
       m_btnReadOnly->setText ("&Read Only");
 }
+
+void KLineEditTest::setEnable (bool enable)
+{
+    m_lineedit->setEnabled (!enable);
+    
+    if (!enable)
+      m_btnEnable->setText ("Dis&able");
+    else
+      m_btnEnable->setText ("En&able");
+}
+
 
 KLineEditTest::~KLineEditTest()
 {
