@@ -3,4 +3,15 @@ Type=Service
 Name=kio_uiserver
 Exec=kio_uiserver
 Comment=KDE's Progress Info UI server
+Comment[ca]=Servidor d'informació de progrés KDE
+Comment[de]=Ein UI-Server, der Fortschrittsinformationen darstellt
+Comment[fi]=KDE:n edistymispalkin käyttöliittymäpalvelin
+Comment[he]=KDE לש תומדקתהה עדימ שמתשמ קשממ תרש
+Comment[hu]=KDE folyamat információs FI kiszolgáló
+Comment[no]=KDEs Progressinformasjonstjener for UI
+Comment[no_NY]=KDE UI-tenar for framgongsinfo
+Comment[pt]=Servidor de informações sobre progresso de operações
+Comment[sl]=Strežnik KDE's Progress Info UI
 ServiceTypes=
+# It is a server
+X-KDE-ServiceType=Unique
