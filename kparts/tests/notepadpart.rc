@@ -1,5 +1,5 @@
 <!DOCTYPE kpartgui>
-<kpartgui>
+<kpartgui name="NotepadPart">
 <MenuBar>
  <Menu name="File">
   <Menu name="NodepadSubMenu"><text>Nodepad Stuff</text>
