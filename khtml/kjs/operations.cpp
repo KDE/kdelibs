@@ -134,6 +134,8 @@ KJSO *KJS::toUInt16(KJSO *obj)
 KJSO *KJS::toString(KJSO *obj)
 {
   const char *c;
+  double d;
+  char buffer[40];
   KJSO *res, *tmp;
 
   switch (obj->type())
@@ -148,9 +150,13 @@ KJSO *KJS::toString(KJSO *obj)
       c = obj->bVal() ? "true" : "false";
       break;
     case Number:
-      /* TODO */
-      c = new char[50];
-      sprintf((char*) c, "%f", obj->dVal());
+      d = obj->dVal();
+      // truncate decimal digits on round values
+      if (d != (double)((int)d))
+	sprintf(buffer, "%f", d);
+      else
+	sprintf(buffer, "%d", (int)d);
+      c = buffer;
       break;
     case String:
       return obj;
