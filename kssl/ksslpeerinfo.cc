@@ -65,7 +65,6 @@ void KSSLPeerInfo::setPeerAddress(KInetSocketAddress& addr) {
 bool KSSLPeerInfo::certMatchesAddress() {
 #ifdef HAVE_SSL
   KSSLX509Map certinfo(m_cert.getSubject());
-  int err;
   QString cn = certinfo.getValue("CN");
 
   if (cn.startsWith("*")) {   // stupid wildcard cn
@@ -80,6 +79,7 @@ bool KSSLPeerInfo::certMatchesAddress() {
      if (cnre.exactMatch(host)) return true;
 #endif
   } else {
+     int err = 0;
 #if QT_VERSION < 300
      QList<KAddressInfo> cns = KExtendedSocket::lookup(cn.latin1(), 0, 0, &err);
 #else
