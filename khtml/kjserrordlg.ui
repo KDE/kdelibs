@@ -14,7 +14,7 @@
         </rect>
     </property>
     <property name="caption">
-        <string>Javascript Errors</string>
+        <string>JavaScript Errors</string>
     </property>
     <grid>
         <property name="name">

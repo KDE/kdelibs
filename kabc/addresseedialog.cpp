@@ -90,7 +90,7 @@ AddresseeDialog::AddresseeDialog( QWidget *parent, bool multiple ) :
     topLayout->setSpacing( spacingHint() );
 //    selectedLayout->addSpacing( spacingHint() );
 
-    QGroupBox *selectedGroup = new QGroupBox( 1, Horizontal, i18n("Selected: "),
+    QGroupBox *selectedGroup = new QGroupBox( 1, Horizontal, i18n("Selected"),
                                               topWidget );
     selectedLayout->addWidget( selectedGroup );
 
