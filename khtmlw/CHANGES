@@ -1,6 +1,12 @@
 KHTMLW CHANGES
 ==============
 
+Version 0.13.1  - 26 Sep 1998 (Martin Jones)
+--------------
+
+Fixed redraw of background during selection.
+
+
 Version 0.13.0  - 20 Sep 1998 (Martin Jones)
 --------------
 

@@ -24,6 +24,7 @@
 #include <kurl.h>
 #include <kapp.h>
 
+#include "htmlchain.h"
 #include "htmlobj.h"
 #include "html.h"
 
@@ -73,7 +74,8 @@ HTMLObject* HTMLObject::checkPoint( int _x, int _y )
     return 0L;
 }
 
-void HTMLObject::select( QPainter *_painter, QRect &_rect, int _tx, int _ty )
+void HTMLObject::select( KHTMLWidget *_htmlw, HTMLChain *_chain, QRect &_rect,
+    int _tx, int _ty )
 {
     QRect r( x + _tx, y - ascent + _ty, width, ascent + descent );
 
@@ -86,14 +88,13 @@ void HTMLObject::select( QPainter *_painter, QRect &_rect, int _tx, int _ty )
 	s2 = FALSE;
 
     if ( s != s2 )
-	select( _painter, s2, _tx, _ty );
+	select( _htmlw, _chain, s2, _tx, _ty );
 }
 
 void HTMLObject::getSelected( QStrList &_list )
 {
     if ( &_list == 0L )
     {
-	debugM( "HTMLObject::getSelected(): _list is null\n" );
 	return;
     }
 
@@ -111,7 +112,8 @@ void HTMLObject::getSelected( QStrList &_list )
     }
 }
 
-void HTMLObject::selectByURL( QPainter *_painter, const char *_url, bool _select, int _tx, int _ty )
+void HTMLObject::selectByURL( KHTMLWidget *_htmlw, HTMLChain *_chain,
+    const char *_url, bool _select, int _tx, int _ty )
 {
     const char *u = getURL();
 
@@ -119,10 +121,11 @@ void HTMLObject::selectByURL( QPainter *_painter, const char *_url, bool _select
 	return;
 
     if ( strcmp( _url, u ) == 0 )
-	select( _painter, _select, _tx, _ty );
+	select( _htmlw, _chain, _select, _tx, _ty );
 }
 
-void HTMLObject::select( QPainter *_painter, QRegExp& _pattern, bool _select, int _tx, int _ty )
+void HTMLObject::select( KHTMLWidget *_htmlw, HTMLChain *_chain,
+    QRegExp& _pattern, bool _select, int _tx, int _ty )
 {
     const char *u = getURL();
 
@@ -133,10 +136,11 @@ void HTMLObject::select( QPainter *_painter, QRegExp& _pattern, bool _select, in
     QString filename = ku.filename();
     
     if ( filename.find( _pattern ) != -1 )
-	select( _painter, _select, _tx, _ty );
+	select( _htmlw, _chain, _select, _tx, _ty );
 }
 
-void HTMLObject::select( QPainter *_painter, bool _select, int _tx, int _ty )
+void HTMLObject::select( KHTMLWidget *_htmlw, HTMLChain *_chain,
+    bool _select, int _tx, int _ty )
 {
     const char *u = getURL();
     if ( u == 0 || *u == '\0' || _select == isSelected() )
@@ -144,12 +148,13 @@ void HTMLObject::select( QPainter *_painter, bool _select, int _tx, int _ty )
 	
     setSelected( _select );
 
-    _painter->eraseRect( x + _tx, y - ascent + _ty, width, ascent+descent );
-    print( _painter, _tx, _ty );
+    _chain->push( this );
+    _htmlw->paint(_chain, x + _tx, y - ascent + _ty, width, ascent+descent);
+    _chain->pop();
 }
 
-bool HTMLObject::selectText( QPainter *_painter, int _x1, int _y1,
-	int _x2, int _y2, int _tx, int _ty )
+bool HTMLObject::selectText( KHTMLWidget *_htmlw, HTMLChain *_chain, int _x1,
+	int _y1, int _x2, int _y2, int _tx, int _ty )
 {
     bool selectIt = false;
 
@@ -188,8 +193,9 @@ bool HTMLObject::selectText( QPainter *_painter, int _x1, int _y1,
     if ( selectIt != isSelected() )
     {
 	setSelected( selectIt );
-	_painter->eraseRect( x + _tx, y - ascent + _ty, width, ascent+descent );
-	print( _painter, _tx, _ty );
+	_chain->push( this );
+	_htmlw->paint(_chain, x + _tx, y - ascent + _ty, width, ascent+descent);
+	_chain->pop();
     }
 
     return selectIt;
@@ -261,8 +267,8 @@ HTMLText::HTMLText( const HTMLFont *_font, QPainter *_painter ) : HTMLObject()
     selEnd = 0;
 }
 
-bool HTMLText::selectText( QPainter *_painter, int _x1, int _y1,
-	int _x2, int _y2, int _tx, int _ty )
+bool HTMLText::selectText( KHTMLWidget *_htmlw, HTMLChain *_chain, int _x1,
+	int _y1, int _x2, int _y2, int _tx, int _ty )
 {
     bool selectIt = false;
     int oldSelStart = selStart;
@@ -284,10 +290,10 @@ bool HTMLText::selectText( QPainter *_painter, int _x1, int _y1,
 	    selectIt = true;
 	    selStart = 0;
 	    if ( _x1 > x )
-		selStart = getCharIndex( _painter, _x1 - x );
+		selStart = getCharIndex( _x1 - x );
 	    selEnd = strlen( text );
 	    if ( _x2 < x + width )
-		selEnd = getCharIndex( _painter, _x2 - x );
+		selEnd = getCharIndex( _x2 - x );
 	}
     }
     // starts on this line and extends past it.
@@ -298,7 +304,7 @@ bool HTMLText::selectText( QPainter *_painter, int _x1, int _y1,
 	    selectIt = true;
 	    selStart = 0;
 	    if ( _x1 > x )
-		selStart = getCharIndex( _painter, _x1 - x );
+		selStart = getCharIndex( _x1 - x );
 	    selEnd = strlen( text );
 	}
     }
@@ -311,7 +317,7 @@ bool HTMLText::selectText( QPainter *_painter, int _x1, int _y1,
 	    selStart = 0;
 	    selEnd = strlen( text );
 	    if ( _x2 < x + width )
-		selEnd = getCharIndex( _painter, _x2 - x );
+		selEnd = getCharIndex( _x2 - x );
 	}
     }
     // starts before and ends after this line
@@ -329,8 +335,11 @@ bool HTMLText::selectText( QPainter *_painter, int _x1, int _y1,
 	oldSelEnd != selEnd )
     {
 	setSelected( selectIt );
-	_painter->eraseRect( x + _tx, y - ascent + _ty, width, ascent+descent );
-	print( _painter, _tx, _ty );
+	_chain->push( this );
+	_htmlw->paint(_chain, x + _tx, y - ascent + _ty, width, ascent+descent);
+	_chain->pop();
+//	_painter->eraseRect( x + _tx, y - ascent + _ty, width, ascent+descent );
+//	print( _painter, _tx, _ty );
     }
 
     return selectIt;
@@ -353,15 +362,15 @@ bool HTMLText::selectText( const QRegExp &exp )
 
 // get the index of the character at _xpos.
 //
-int HTMLText::getCharIndex( QPainter *_painter, int _xpos )
+int HTMLText::getCharIndex( int _xpos )
 {
     int charWidth, index = 0, xp = 0, len = strlen( text );
 
-    _painter->setFont( *font );
+    QFontMetrics fm( *font );
 
     while ( index < len )
     {
-	charWidth = _painter->fontMetrics().width( text[ index ] );
+	charWidth = fm.width( text[ index ] );
 	if ( xp + charWidth/2 >= _xpos )
 	    break;
 	xp += charWidth;
@@ -856,18 +865,6 @@ void HTMLImage::setMaxWidth( int _max_width )
 	    ascent = pixmap->height() * width / pixmap->width() + border * 2;
 	width += border * 2;
     }
-}
-
-void HTMLImage::select( QPainter *_painter, bool _select, int _tx, int _ty )
-{
-    const char *u = getURL();
-    if ( u == 0 || *u == '\0' || _select == isSelected() )
-	return;
-	
-    setSelected( _select );
-
-//    _painter->eraseRect( x + _tx, y - ascent + _ty, width, ascent+descent );
-    print( _painter, _tx, _ty );
 }
 
 bool HTMLImage::print( QPainter *_painter, int, int _y, int, int _height, int _tx, int _ty, bool toPrinter )

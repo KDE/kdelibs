@@ -71,6 +71,8 @@ public:
     virtual int  calcMinWidth();
     virtual bool print( QPainter *_painter, int _x, int _y, int _width,
 		int _height, int _tx, int _ty, bool toPrinter );
+    virtual void print( QPainter *_painter, HTMLChain *_chain, int _x,
+	int _y, int _width, int _height, int _tx, int _ty );
     virtual void print( QPainter *_painter, HTMLObject *_obj, int _x, int _y,
 		int _width, int _height, int _tx, int _ty )
 	{ HTMLClueV::print(_painter,_obj,_x,_y,_width,_height,_tx,_ty); }
@@ -107,18 +109,18 @@ public:
     virtual void setMaxAscent( int );
     virtual HTMLObject *checkPoint( int, int );
     virtual HTMLObject *mouseEvent( int, int, int, int );
-    virtual void selectByURL( QPainter *,const char *, bool, int _tx, int _ty );
-    virtual void select( QPainter *_painter, QRegExp& _pattern, bool _select,
+    virtual void selectByURL( KHTMLWidget *, HTMLChain *, const char *, bool, int _tx, int _ty );
+    virtual void select( KHTMLWidget *, HTMLChain *, QRegExp& _pattern, bool _select,
 	    int _tx, int _ty );
-    virtual void select( QPainter *, bool, int _tx, int _ty );
+    virtual void select( KHTMLWidget *, HTMLChain *,  bool, int _tx, int _ty );
     /**
      * Selects every object in this table if it is inside the rectangle
      * and deselects it otherwise.
      */
-    virtual void select( QPainter *, QRect &_rect, int _tx, int _ty );
+    virtual void select( KHTMLWidget *, HTMLChain *,  QRect &_rect, int _tx, int _ty );
     virtual void select( bool );
-    virtual bool selectText( QPainter *_painter, int _x1, int _y1,
-	    int _x2, int _y2, int _tx, int _ty );
+    virtual bool selectText( KHTMLWidget *_htmlw, HTMLChain *_chain, int _x1,
+	int _y1, int _x2, int _y2, int _tx, int _ty );
     virtual void getSelected( QStrList & );
     virtual void getSelectedText( QString & );
 
@@ -133,6 +135,8 @@ public:
     virtual int  findPageBreak( int _y );
     virtual bool print( QPainter *_painter, int _x, int _y, int _width,
     	    int _height, int _tx, int _ty, bool toPrinter );
+    virtual void print( QPainter *_painter, HTMLChain *_chain, int _x,
+	    int _y, int _width, int _height, int _tx, int _ty );
     virtual void print( QPainter *_painter, HTMLObject *_obj, int _x, int _y,
 	    int _width, int _height, int _tx, int _ty );
     virtual void print( QPainter *, int _tx, int _ty );

@@ -25,7 +25,7 @@
 #ifndef HTML_H
 #define HTML_H
 
-#define KHTMLW_VERSION  1300		// 00.13.00
+#define KHTMLW_VERSION  1301		// 00.13.00
 
 #include <qpainter.h>
 #include <qstrlist.h>
@@ -37,18 +37,17 @@
 #include <kurl.h>
 
 class KHTMLWidget;
+class HTMLIterator;
 
 
 #include "drag.h"
 #include "htmldata.h"
 #include "htmlobj.h"
 #include "htmlclue.h"
-#include "htmltable.h"
 #include "htmlform.h"
 #include "htmltoken.h"
 #include "htmlframe.h"
 #include "htmlview.h"
-#include "htmliter.h"
 #include "jscript.h"
 
 // Default borders between widgets frame and displayed text
@@ -210,8 +209,7 @@ public:
      * Selects all text between ( _x1, _y1 ) and ( _x2, y2 ).  The selection
      * area selects text line by line, NOT by bounding rectangle.
      */
-    virtual void selectText( QPainter *_painter, int _x1, int _y1,
-		int _x2, int _y2 );
+    virtual void selectText( int _x1, int _y1, int _x2, int _y2 );
 
     /**
      * Get the text the user has marked.
@@ -514,6 +512,11 @@ public:
      * web.
      */
     void paintSingleObject( HTMLObject *_obj );
+
+    /*
+     * Internal function to paint a single object with a known chain.
+     */
+    void paint( HTMLChain *_chain, int x, int y, int w, int h );
 
     /*
      * Schedule a paint event.  This is used internally to force a paint

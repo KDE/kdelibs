@@ -45,6 +45,7 @@ class KHTMLWidget;
 
 #include "htmlfont.h"
 #include "htmlobj.h"
+#include "htmliter.h"
 
 // The border around an aligned object
 #define ALIGN_BORDER 0
@@ -76,6 +77,8 @@ public:
     virtual int  findPageBreak( int _y );
     virtual bool print( QPainter *_painter, int _x, int _y, int _width,
 	    int _height, int _tx, int _ty, bool toPrinter );
+    virtual void print( QPainter *_p, HTMLChain *, int _x, int _h, int _w,
+	    int _h, int _tx, int _ty);
     /// Prints a special object only
     /**
      * This function is for example used to redraw an image that had to be
@@ -95,19 +98,19 @@ public:
     virtual void setMaxDescent( int );
     virtual HTMLObject *checkPoint( int, int );
     virtual HTMLObject *mouseEvent( int, int, int, int );
-    virtual void selectByURL( QPainter *,const char *,bool, int _tx, int _ty );
-    virtual void select( QPainter *_painter, QRegExp& _pattern, bool _select,
+    virtual void selectByURL( KHTMLWidget *, HTMLChain *,const char *,bool, int _tx, int _ty );
+    virtual void select( KHTMLWidget *, HTMLChain *, QRegExp& _pattern, bool _select,
 	    int _tx, int _ty );
-    virtual void select( QPainter *, bool, int _tx, int _ty );
+    virtual void select( KHTMLWidget *, HTMLChain *, bool, int _tx, int _ty );
     /*
      * Selects every objectsin this clue if it is inside the rectangle
      * and deselects it otherwise.
      */
-    virtual void select( QPainter *, QRect &_rect, int _tx, int _ty );
+    virtual void select( KHTMLWidget *, HTMLChain *, QRect &_rect, int _tx, int _ty );
     virtual void select( bool );
     virtual void getSelected( QStrList & );
-    virtual bool selectText( QPainter *_painter, int _x1, int _y1,
-			     int _x2, int _y2, int _tx, int _ty );
+    virtual bool selectText( KHTMLWidget *_htmlw, HTMLChain *_chain, int _x1,
+	int _y1, int _x2, int _y2, int _tx, int _ty );
     virtual void getSelectedText( QString & );
 
     virtual void calcAbsolutePos( int _x, int _y );
@@ -221,8 +224,8 @@ public:
 		: HTMLClue( _x, _y, _max_width, _percent ) { indent = 0; }
     virtual ~HTMLClueFlow() { }
     
-    virtual bool selectText( QPainter *_painter, int _x1, int _y1,
-	    int _x2, int _y2, int _tx, int _ty );
+    virtual bool selectText( KHTMLWidget *_htmlw, HTMLChain *_chain, int _x1,
+	int _y1, int _x2, int _y2, int _tx, int _ty );
     virtual void getSelectedText( QString & );
     virtual void calcSize( HTMLClue *parent = 0L );
 	virtual int  findPageBreak( int _y );
@@ -295,7 +298,7 @@ public:
   virtual const char* getURL() const { return url; }
   virtual const char* getTarget() const { return target; }
 
-  virtual void select( QPainter *, QRect &_rect, int _tx, int _ty );
+  virtual void select( KHTMLWidget *, HTMLChain *, QRect &_rect, int _tx, int _ty );
 
   virtual bool print( QPainter *_painter, int _x, int _y, int _width,
 		      int _height, int _tx, int _ty, bool toPrinter );
@@ -324,8 +327,8 @@ public:
 	    : HTMLClue( _x, _y, _max_width, _percent ) { indent = 0; }
     virtual ~HTMLClueH() { }
 	
-    virtual bool selectText( QPainter *_painter, int _x1, int _y1,
-	    int _x2, int _y2, int _tx, int _ty );
+    virtual bool selectText( KHTMLWidget *_htmlw, HTMLChain *_chain, int _x1,
+	int _y1, int _x2, int _y2, int _tx, int _ty );
     virtual void setMaxWidth( int );
     virtual void calcSize( HTMLClue *parent = 0L );
     virtual int  calcMinWidth();

@@ -46,10 +46,11 @@ class HTMLImage;
 class HTMLClue;
 class HTMLClueFlow;
 class HTMLClueAligned;
+class HTMLChain;
+class HTMLIterator;
 class KHTMLWidget;
 
 #include "htmlfont.h"
-#include "htmliter.h"
 
 class HTMLCell;
 
@@ -121,6 +122,10 @@ public:
 
     virtual void print( QPainter *, HTMLObject *, int, int, int, int, int, int )
 	{}
+
+    virtual void print( QPainter *_p, HTMLChain *, int _x, int _y, int _w,
+	    int _h, int _tx, int _ty)
+	{ print( _p, _x, _y, _w, _h, _tx, _ty, false ); }
     /*
      * Print the object.
      */
@@ -128,24 +133,26 @@ public:
 
     virtual HTMLObject *checkPoint( int, int );
     virtual HTMLObject *mouseEvent( int, int, int, int ) { return 0; }
-    virtual void selectByURL(QPainter *, const char *, bool, int _tx, int _ty);
-    virtual void select( QPainter *, bool, int _tx, int _ty );
+    virtual void selectByURL(KHTMLWidget *, HTMLChain *, const char *, bool,
+	int _tx, int _ty);
+    virtual void select( KHTMLWidget *, HTMLChain *, bool, int _tx, int _ty );
 
     /*
      * Selects the object if it is inside the rectangle and deselects it
      * otherwise.
      */
-    virtual void select( QPainter *, QRect &_rect, int _tx, int _ty );
+    virtual void select( KHTMLWidget *, HTMLChain *, QRect &_rect, int _tx,
+	int _ty );
 
     // Select all objects matching the regular expression.
-    virtual void select( QPainter *_painter, QRegExp& _pattern, bool _select,
-	int _tx, int _ty );
+    virtual void select( KHTMLWidget *, HTMLChain *, QRegExp& _pattern,
+	bool _select, int _tx, int _ty );
 
     virtual void select( bool _s ) { setSelected( _s ); }
 
     // select text.  returns whether any text was selected.
-    virtual bool selectText( QPainter *_painter, int _x1, int _y1,
-	int _x2, int _y2, int _tx, int _ty );
+    virtual bool selectText( KHTMLWidget *_htmlw, HTMLChain *_chain, int _x1,
+	int _y1, int _x2, int _y2, int _tx, int _ty );
 
     virtual void getSelected( QStrList & );
     virtual void getSelectedText( QString & ) {}
@@ -287,8 +294,8 @@ public:
     HTMLText( const HTMLFont *, QPainter * );
     virtual ~HTMLText() { if (autoDelete) delete [] text; }
 
-    virtual bool selectText( QPainter *_painter, int _x1, int _y1,
-	int _x2, int _y2, int _tx, int _ty );
+    virtual bool selectText( KHTMLWidget *_htmlw, HTMLChain *_chain, int _x1,
+	int _y1, int _x2, int _y2, int _tx, int _ty );
     virtual void getSelectedText( QString & );
     virtual void recalcBaseSize( QPainter *_painter );
     virtual bool print( QPainter *_painter, int _x, int _y, int _width,
@@ -298,7 +305,7 @@ public:
     virtual bool selectText( const QRegExp &exp );
 
 protected:
-    int getCharIndex( QPainter *_painter, int _xpos );
+    int getCharIndex( int _xpos );
 
 protected:
     const char* text;
@@ -435,7 +442,6 @@ public:
     virtual int  calcMinWidth();
     virtual int  calcPreferredWidth();
     virtual void setMaxWidth( int );
-    virtual void select( QPainter *, bool, int _tx, int _ty );
     virtual bool print( QPainter *_painter, int _x, int _y, int _width,
 	int _height, int _tx, int _ty, bool toPrinter );
     virtual void print( QPainter *, int _tx, int _ty );

@@ -33,6 +33,8 @@
 #undef Color
 #endif
 
+#include "htmlchain.h"
+#include "htmltable.h"
 #include "html.h"
 
 #include <stdio.h>
@@ -256,7 +258,7 @@ void KHTMLWidget::slotFileLoaded( const char *_url, const char *_filename )
     del.setAutoDelete( FALSE );
 
     HTMLObject *p;    
-    for ( p = waitingFileList.first(); p != 0L; p = waitingFileList.next() )
+    for ( p = waitingFileList.first(); p != 0; p = waitingFileList.next() )
     {
 	if ( strcmp( _url, p->requestedFile() ) == 0 )
 	{
@@ -272,12 +274,12 @@ void KHTMLWidget::slotFileLoaded( const char *_url, const char *_filename )
 	if ( strcmp( bgPixmapURL, _url ) == 0 )
 	{
 	    bgPixmap.load( _filename );					
-	    bgPixmapURL = 0L;
+	    bgPixmapURL = 0;
 	    scheduleUpdate( true );
 	}
     }    
 
-    for ( p = del.first(); p != 0L; p = del.next() )
+    for ( p = del.first(); p != 0; p = del.next() )
 	waitingFileList.removeRef( p );
 
     if ( waitingFileList.count() == 0 )
@@ -296,7 +298,7 @@ void KHTMLWidget::slotFormSubmitted( const char *_method, const char *_url, cons
 
 void KHTMLWidget::mousePressEvent( QMouseEvent *_mouse )
 {
-    if ( clue == 0L )
+    if ( clue == 0 )
 	return;
 
     // Make this frame the active one
@@ -315,7 +317,7 @@ void KHTMLWidget::mousePressEvent( QMouseEvent *_mouse )
 	if ( bIsTextSelected )
 	{
 	    bIsTextSelected = false;
-	    selectText( 0, 0, 0, 0, 0 );	// deselect all text
+	    selectText( 0, 0, 0, 0 );	// deselect all text
 	    emit textSelected( false );
 	}
 	// start point for text selection
@@ -333,7 +335,7 @@ void KHTMLWidget::mousePressEvent( QMouseEvent *_mouse )
     pressedURL = "";
     pressedTarget = "";
 
-    if ( obj != 0L)
+    if ( obj != 0)
     {
 	if ( obj->getURL() != 0 )
 	{
@@ -367,15 +369,15 @@ void KHTMLWidget::mousePressEvent( QMouseEvent *_mouse )
     }
     
     if ( htmlView )	
-      if ( htmlView->mousePressedHook( 0L, 0L, _mouse, FALSE ) )
+      if ( htmlView->mousePressedHook( 0, 0L, _mouse, FALSE ) )
 	return;
     if ( _mouse->button() == RightButton )
-	emit popupMenu( 0L, mapToGlobal( _mouse->pos() ) );    
+	emit popupMenu( 0, mapToGlobal( _mouse->pos() ) );    
 }
 
 void KHTMLWidget::mouseDoubleClickEvent( QMouseEvent *_mouse )
 {
-    if ( clue == 0L )
+    if ( clue == 0 )
 	return;
     
     HTMLObject *obj;
@@ -383,7 +385,7 @@ void KHTMLWidget::mouseDoubleClickEvent( QMouseEvent *_mouse )
     obj = clue->checkPoint( _mouse->pos().x() + x_offset - leftBorder,
 	_mouse->pos().y() + y_offset - topBorder );
     
-    if ( obj != 0L)
+    if ( obj != 0)
 	if ( obj->getURL() != 0 )
 	    if (obj->getURL()[0] != 0)
 		emit doubleClick( obj->getURL(), _mouse->button() );
@@ -447,12 +449,12 @@ void KHTMLWidget::dndMouseMoveEvent( QMouseEvent * _mouse )
 	selectPt2.setY( point.y() + y_offset - topBorder );
 	if ( selectPt2.y() < selectPt1.y() )
 	{
-	    selectText( 0, selectPt2.x(), selectPt2.y(),
+	    selectText( selectPt2.x(), selectPt2.y(),
 		selectPt1.x(), selectPt1.y() );
 	}
 	else
 	{
-	    selectText( 0, selectPt1.x(), selectPt1.y(),
+	    selectText( selectPt1.x(), selectPt1.y(),
 		selectPt2.x(), selectPt2.y() );
 	}
 
@@ -549,7 +551,7 @@ void KHTMLWidget::dndMouseReleaseEvent( QMouseEvent * _mouse )
 	}
     }
 
-    if ( clue == 0L )
+    if ( clue == 0 )
 	return;
     if ( pressedURL.isEmpty() )
 	return;
@@ -583,99 +585,57 @@ bool KHTMLWidget::URLVisited( const char *_url )
 
 /*
  * Checks out wether there is a URL under the point p and returns a pointer
- * to this URL or 0L if there is none.
+ * to this URL or 0 if there is none.
  */
 const char* KHTMLWidget::getURL( QPoint &p )
 {
-    if ( clue == 0L )
-	return 0L;
+    if ( clue == 0 )
+	return 0;
     
     HTMLObject *obj;
     
     obj = clue->checkPoint( p.x() + x_offset, p.y() + y_offset );
     
-    if ( obj != 0L)
+    if ( obj != 0)
 	if ( obj->getURL() && obj->getURL()[0] != 0 )
 	    return obj->getURL();
     
-    return 0L;
+    return 0;
 }
 
 void KHTMLWidget::select( QPainter * _painter, QRect &_rect )
 {
-    if ( clue == 0L )
+    if ( clue == 0 )
 	return;
     
-    bool newPainter = FALSE;
-
     QRect r = _rect;
-    // r.setTop( r.top() + y_offset );
-    // r.setLeft( r.left() + x_offset );
 
     r.moveBy( -x_offset, -y_offset );
     
     int tx = -x_offset + leftBorder;
     int ty = -y_offset + topBorder;
 
-    if ( _painter == 0L )
-    {
-	if ( painter == 0 )
-	{
-	    // debugT("New Painter for painting\n");
-	    painter = new QPainter();
-	    painter->begin( this );
-	    newPainter = TRUE;
-	}
-    
-	clue->select( painter, r, tx, ty );
+    HTMLChain chain;
 
-	if ( newPainter )
-	{
-	    painter->end();
-	    delete painter;
-	    painter = 0;
-	}
-    }
-    else
-      clue->select( _painter, r, tx, ty );    
+    clue->select( this, &chain, r, tx, ty );
 }
 
-void KHTMLWidget::selectText( QPainter * _painter, int _x1, int _y1,
-	int _x2, int _y2 )
+void KHTMLWidget::selectText( int _x1, int _y1, int _x2, int _y2 )
 {
-    if ( clue == 0L )
+    if ( clue == 0 )
 	return;
-
-    bool newPainter = FALSE;
 
     int tx = -x_offset + leftBorder;
     int ty = -y_offset + topBorder;
 
-    if ( _painter == 0L )
-    {
-	if ( painter == 0 )
-	{
-	    painter = new QPainter();
-	    painter->begin( this );
-	    newPainter = TRUE;
-	}
-    
-	bIsTextSelected = clue->selectText( painter, _x1, _y1, _x2, _y2, tx, ty );
+    HTMLChain chain;
 
-	if ( newPainter )
-	{
-	    painter->end();
-	    delete painter;
-	    painter = 0;
-	}
-    }
-    else
-	bIsTextSelected = clue->selectText( _painter, _x1, _y1, _x2, _y2, tx, ty );
+    bIsTextSelected = clue->selectText(this,&chain,_x1, _y1, _x2, _y2, tx, ty);
 }
 
 void KHTMLWidget::findTextBegin()
 {
-    if ( clue == 0L )
+    if ( clue == 0 )
 	return;
 
     findTextEnd();
@@ -685,7 +645,7 @@ void KHTMLWidget::findTextBegin()
 
 bool KHTMLWidget::findTextNext( const QRegExp &exp )
 {
-    if ( clue == 0L )
+    if ( clue == 0 )
 	return false;
 
     HTMLObject *obj;
@@ -693,7 +653,7 @@ bool KHTMLWidget::findTextNext( const QRegExp &exp )
     if ( !textFindIter )
 	findTextBegin();
     
-    selectText( 0, 0, 0, 0, 0 );	// deselect all text
+    selectText( 0, 0, 0, 0 );	// deselect all text
 
     // loop until we match the regexp, or reach the end of the document.
     do
@@ -730,7 +690,7 @@ void KHTMLWidget::findTextEnd()
     {
 	delete textFindIter;
 	textFindIter = 0;
-	selectText( 0, 0, 0, 0, 0 );	// deselect all text
+	selectText( 0, 0, 0, 0 );	// deselect all text
     }
 }
 
@@ -738,7 +698,7 @@ void KHTMLWidget::paintEvent( QPaintEvent* _pe )
 {
     bool newPainter = FALSE;
 
-    if ( clue == 0L )
+    if ( clue == 0 )
 	return;
 
     if ( painter == 0 )
@@ -785,7 +745,7 @@ void KHTMLWidget::paintEvent( QPaintEvent* _pe )
 
 void KHTMLWidget::resizeEvent( QResizeEvent* _re )
 {
-	if ( clue == 0L )
+	if ( clue == 0 )
 	    return;
 
 	if ( isFrameSet() )
@@ -960,7 +920,7 @@ void KHTMLWidget::paintSingleObject( HTMLObject *_obj )
 //    if ( parsing )
 //	return;
     
-    if ( clue == 0L )
+    if ( clue == 0 )
 	return;
 
     if ( painter == 0 )
@@ -1001,6 +961,44 @@ void KHTMLWidget::paintSingleObject( HTMLObject *_obj )
     }
 }
 
+void KHTMLWidget::paint( HTMLChain *_chain, int x, int y, int w, int h )
+{
+    bool newPainter = FALSE;
+
+    if ( clue == 0 )
+	return;
+
+    _chain->first();
+
+    if ( _chain->current() )
+    {
+	if ( painter == 0 )
+	{
+	    painter = new QPainter;
+	    painter->begin( this );
+	    newPainter = TRUE;
+	}
+
+	int tx = -x_offset + leftBorder;
+	int ty = -y_offset + topBorder;
+
+	bool db = bDrawBackground;
+	bDrawBackground = true;
+	drawBackground( x_offset, y_offset, x, y, w, h );
+	bDrawBackground = db;
+
+	_chain->current()->print( painter, _chain, x - x_offset - leftBorder,
+		y + y_offset - topBorder, w, h, tx, ty );
+    
+	if ( newPainter )
+	{
+	    painter->end();
+	    delete painter;
+	    painter = 0;
+	}
+    }
+}
+
 void KHTMLWidget::scheduleUpdate( bool clear )
 {
     if ( clear )
@@ -1031,7 +1029,7 @@ void KHTMLWidget::calcAbsolutePos()
 
 void KHTMLWidget::getSelected( QStrList &_list )
 {
-    if ( clue == 0L )
+    if ( clue == 0 )
 	return;
     
     clue->getSelected( _list );
@@ -1039,7 +1037,7 @@ void KHTMLWidget::getSelected( QStrList &_list )
 
 void KHTMLWidget::getSelectedText( QString &_str )
 {
-    if ( clue == 0L )
+    if ( clue == 0 )
 	return;
     
     clue->getSelectedText( _str );
@@ -1196,7 +1194,7 @@ void KHTMLWidget::begin( const char *_url, int _x_offset, int _y_offset )
     if ( frameSet )
     {
 	delete frameSet;
-	frameSet = 0L;
+	frameSet = 0;
     }
 
     x_offset = _x_offset;
@@ -1211,7 +1209,7 @@ void KHTMLWidget::begin( const char *_url, int _x_offset, int _y_offset )
     
     reference = 0;
     
-    if ( _url != 0L )
+    if ( _url != 0 )
     {
       actualURL = _url;
       baseURL = _url;
@@ -1248,7 +1246,7 @@ void KHTMLWidget::begin( const char *_url, int _x_offset, int _y_offset )
 
 void KHTMLWidget::write( const char *_str)
 {
-    if ( _str == 0L )
+    if ( _str == 0 )
 	return;
     
     ht->write( _str );
@@ -1585,7 +1583,7 @@ void KHTMLWidget::timerEvent( QTimerEvent * )
 	// Now it is time to tell all frames what they should do
 	KHTMLView *v;
 	KHTMLWidget *w;
-	for ( w = frameList.first(); w != 0L; w = frameList.next() )
+	for ( w = frameList.first(); w != 0; w = frameList.next() )
 	{
 	    v = w->getView();
 	    if ( v->getCookie() )
@@ -1594,7 +1592,7 @@ void KHTMLWidget::timerEvent( QTimerEvent * )
 	}
 
 	HTMLFrameSet *s;
-	for ( s = framesetList.first(); s != 0L; s = framesetList.next() )
+	for ( s = framesetList.first(); s != 0; s = framesetList.next() )
 	{
 	    s->show();
 	}
@@ -1652,8 +1650,8 @@ const char* KHTMLWidget::parseBody( HTMLClueV *_clue, const char *_end[], bool t
     
     // Before one can write any objects in the body he usually adds a FlowBox
     // to _clue. Then put all texts, images etc. in the FlowBox.
-    // If f == 0L, you have to create a new FlowBox, otherwise you can
-    // use the one stored in f. Setting f to 0L means closing the FlowBox.
+    // If f == 0, you have to create a new FlowBox, otherwise you can
+    // use the one stored in f. Setting f to 0 means closing the FlowBox.
 
     while ( ht->hasMoreTokens() && parsing )
     {
@@ -1828,7 +1826,7 @@ const char* KHTMLWidget::parseBody( HTMLClueV *_clue, const char *_end[], bool t
 	if ( toplevel )
 	{
 	    if ( parseCount <= 0 )
-		return 0L;
+		return 0;
 	}
 	parseCount--;
     }
@@ -1836,7 +1834,7 @@ const char* KHTMLWidget::parseBody( HTMLClueV *_clue, const char *_end[], bool t
     if ( !ht->hasMoreTokens() && toplevel && !writing )
 	stopParser();
     
-    return 0L;
+    return 0;
 }
 
 const char *KHTMLWidget::parseOneToken( HTMLClueV *_clue, const char *str )
@@ -2280,7 +2278,7 @@ void KHTMLWidget::parseC( HTMLClueV *_clue, const char *str )
 	else if (strncmp( str, "cell", 4 ) == 0)
 	{
 	    HTMLClue *f = flow;
-	    if ( flow == 0L )
+	    if ( flow == 0 )
 	    {
 		flow = new HTMLClueFlow( 0, 0, _clue->getMaxWidth() );
 		flow->setHAlign( divAlign );
@@ -2689,7 +2687,7 @@ void KHTMLWidget::parseG( HTMLClueV *, const char * )
     /* if ( strncmp( str, "grid", 4 ) == 0 )
     {
 	vspace_inserted = insertVSpace( _clue, vspace_inserted );
-	flow = 0L;
+	flow = 0;
 	parseGrid( _clue, _clue->getMaxWidth(), str + 6 );
     } */
 }
@@ -2906,7 +2904,7 @@ void KHTMLWidget::parseI( HTMLClueV *_clue, const char *str )
 	    }
 	}
 	// if we have a file name do it...
-	if ( filename != 0L )
+	if ( filename != 0 )
 	{
 	    KURL kurl( baseURL, filename );
 	    // Do we need a new FlowBox ?
@@ -4057,7 +4055,7 @@ const char *KHTMLWidget::parseInput( const char *attr )
     bool checked = false;
     int size = 20;
     int maxLen = -1;
-    QList<JSEventHandler> *handlers = 0L;
+    QList<JSEventHandler> *handlers = 0;
 
     stringTok->tokenize( attr, " >" );
     while ( stringTok->hasMoreTokens() )
@@ -4126,7 +4124,7 @@ const char *KHTMLWidget::parseInput( const char *attr )
 	    code = p;
 	    if ( code[ code.length() - 1 ] == '"' )
 		code.truncate( value.length() - 1 );
-	    if ( handlers == 0L )
+	    if ( handlers == 0 )
 	    {
 		handlers = new QList<JSEventHandler>;
 		handlers->setAutoDelete( TRUE );
@@ -4294,7 +4292,7 @@ void KHTMLWidget::slotScrollHorz( int _val )
     if ( !isUpdatesEnabled() )
 	return;
 
-    if ( clue == 0L )
+    if ( clue == 0 )
 	return;
 
     if ( diff == 0)
@@ -4402,13 +4400,13 @@ void KHTMLWidget::drawBackground( int _xval, int _yval, int _x, int _y,
 
 bool KHTMLWidget::gotoAnchor( )
 {
-    if ( clue == 0L )
+    if ( clue == 0 )
 	return FALSE;
 
     QPoint p( 0, 0 );
     
     HTMLAnchor *anchor = clue->findAnchor( reference.data(), &p );
-    if ( anchor == 0L )
+    if ( anchor == 0 )
 	return FALSE;
 
     // Is there more HTML to be expected?
@@ -4430,7 +4428,7 @@ bool KHTMLWidget::gotoAnchor( )
 
 bool KHTMLWidget::gotoXY( int _x_offset, int _y_offset )
 {
-    if ( clue == 0L )
+    if ( clue == 0 )
 	return FALSE;
 
     emit scrollVert( _y_offset );
@@ -4509,12 +4507,12 @@ void KHTMLWidget::slotUpdateSelectText( int )
 		selectPt2.setY( point.y() + y_offset - topBorder );
 		if ( selectPt2.y() < selectPt1.y() )
 		{
-			selectText( 0, selectPt2.x(), selectPt2.y(),
+			selectText( selectPt2.x(), selectPt2.y(),
 				selectPt1.x(), selectPt1.y() );
 		}
 		else
 		{
-			selectText( 0, selectPt1.x(), selectPt1.y(),
+			selectText( selectPt1.x(), selectPt1.y(),
 				selectPt2.x(), selectPt2.y() );
 		}
 	}
@@ -4522,99 +4520,41 @@ void KHTMLWidget::slotUpdateSelectText( int )
 
 void KHTMLWidget::select( QPainter *_painter, bool _select )
 {
+    if ( clue == 0 )
+	return;
+    
     int tx = -x_offset + leftBorder;
     int ty = -y_offset + topBorder;
 
-    if ( clue == 0L )
-	return;
-    
-    bool newPainter = FALSE;
+    HTMLChain chain;
 
-    if ( clue == 0L )
-	return;
-
-    if ( _painter == 0L )
-    {
-	if ( painter == 0 )
-	{
-		painter = new QPainter();
-		painter->begin( this );
-		newPainter = TRUE;
-	}
-
-	clue->select( painter, _select, tx, ty );
-
-	if ( newPainter )
-	{
-		painter->end();
-		delete painter;
-		painter = 0;
-	}
-    }
-    else    
-      clue->select( _painter, _select, tx, ty );
+    clue->select( this, &chain, _select, tx, ty );
 }
 
 void KHTMLWidget::selectByURL( QPainter *_painter, const char *_url, bool _select )
 {
-    int tx = -x_offset + leftBorder;
-    int ty = -y_offset + topBorder;
-    bool newPainter = FALSE;
-
-    if ( clue == 0L )
+    if ( clue == 0 )
 	return;
 
-    if ( _painter == 0L )
-    {
-	if ( painter == 0 )
-	{
-		painter = new QPainter();
-		painter->begin( this );
-		newPainter = TRUE;
-	}
+    int tx = -x_offset + leftBorder;
+    int ty = -y_offset + topBorder;
 
-	clue->selectByURL( painter, _url, _select, tx, ty );
+    HTMLChain chain;
 
-	if ( newPainter )
-	{
-		painter->end();
-		delete painter;
-		painter = 0;
-	}
-    }
-    else    
-      clue->selectByURL( _painter, _url, _select, tx, ty );
+    clue->selectByURL( this, &chain, _url, _select, tx, ty );
 }
 
 void KHTMLWidget::select( QPainter *_painter, QRegExp& _pattern, bool _select )
 {
-    int tx = -x_offset + leftBorder;
-    int ty = -y_offset + topBorder;
-    bool newPainter = FALSE;
-
-    if ( clue == 0L )
+    if ( clue == 0 )
 	return;
 
-    if ( _painter == 0L )
-    {
-	if ( painter == 0 )
-	{
-		painter = new QPainter();
-		painter->begin( this );
-		newPainter = TRUE;
-	}
-    
-	clue->select( painter, _pattern, _select, tx, ty );
+    int tx = -x_offset + leftBorder;
+    int ty = -y_offset + topBorder;
 
-	if ( newPainter )
-	{
-		painter->end();
-		delete painter;
-		painter = 0;
-	}
-    }
-    else
-	clue->select( _painter, _pattern, _select, tx, ty );
+    HTMLChain chain;
+
+    clue->select( this, &chain, _pattern, _select, tx, ty );
 }
 
 int KHTMLWidget::docWidth() const
@@ -4666,7 +4606,7 @@ void KHTMLWidget::setSelected( bool _active )
       {	  
 	  painter->end();
 	  delete painter;
-	  painter = 0L;
+	  painter = 0;
       }
   }
   else
@@ -4698,7 +4638,7 @@ KHTMLView* KHTMLWidget::getSelectedFrame()
   if ( isFrameSet() )
   {
     HTMLFrameSet *f;
-    for ( f = framesetList.first(); f != 0L; f = framesetList.next() )
+    for ( f = framesetList.first(); f != 0; f = framesetList.next() )
     {
       KHTMLView *v = f->getSelectedFrame();
       if ( v )
@@ -4706,12 +4646,12 @@ KHTMLView* KHTMLWidget::getSelectedFrame()
     }
   }
     
-  return 0L;
+  return 0;
 }
 
 JSEnvironment* KHTMLWidget::getJSEnvironment()
 {
-    if ( jsEnvironment == 0L )
+    if ( jsEnvironment == 0 )
 	jsEnvironment = new JSEnvironment( this );
     
     return jsEnvironment;
@@ -4817,7 +4757,7 @@ bool KHTMLWidget::setCharset(const char *name){
 
 bool KHTMLWidget::cellUp()
 {
-  if ( clue == 0L || parsing )
+  if ( clue == 0 || parsing )
     return true;
   
   QList<HTMLCellInfo> list;
@@ -4829,12 +4769,12 @@ bool KHTMLWidget::cellUp()
   if ( list.isEmpty() )
     return false;
   
-  HTMLCellInfo *curr = 0L;
-  HTMLCellInfo *next = 0L;
+  HTMLCellInfo *curr = 0;
+  HTMLCellInfo *next = 0;
   
   // Find current marker
   HTMLCellInfo *info;
-  for ( info = list.first(); info != 0L; info = list.next() )
+  for ( info = list.first(); info != 0; info = list.next() )
   {
     if ( info->pCell->isMarked() )
     {
@@ -4843,7 +4783,7 @@ bool KHTMLWidget::cellUp()
     }
   }
 
-  if ( curr == 0L )
+  if ( curr == 0 )
     next = list.first();
   else
   { 
@@ -4854,12 +4794,12 @@ bool KHTMLWidget::cellUp()
       list.prev();
     }
 
-    if ( list.current() == 0L )
+    if ( list.current() == 0 )
       return true;
     
     HTMLCellInfo *inf; 
     int diff = 0xFFFFFFF;
-    for ( inf = list.current(); inf != 0L; inf = list.prev() )
+    for ( inf = list.current(); inf != 0; inf = list.prev() )
     {
       int i = curr->xAbs - inf->xAbs;
       if ( i < 0 ) i *= -1;
@@ -4871,11 +4811,11 @@ bool KHTMLWidget::cellUp()
     }
   }
   
-  if ( next == 0L )
+  if ( next == 0 )
     return false;
   
   bool new_painter = false;
-  if ( painter == 0L )
+  if ( painter == 0 )
   {
     new_painter = true;
     painter = new QPainter;
@@ -4890,7 +4830,7 @@ bool KHTMLWidget::cellUp()
   {
     painter->end();
     delete painter;
-    painter = 0L;
+    painter = 0;
   }
 
   if ( next->ty + next->pCell->getYPos() - next->pCell->getAscent() < 0 )
@@ -4903,7 +4843,7 @@ bool KHTMLWidget::cellUp()
 
 bool KHTMLWidget::cellDown()
 {
-  if ( clue == 0L || parsing )
+  if ( clue == 0 || parsing )
     return true;
   
   QList<HTMLCellInfo> list;
@@ -4915,12 +4855,12 @@ bool KHTMLWidget::cellDown()
   if ( list.isEmpty() )
     return false;
   
-  HTMLCellInfo *curr = 0L;
-  HTMLCellInfo *next = 0L;
+  HTMLCellInfo *curr = 0;
+  HTMLCellInfo *next = 0;
   
   // Find current marker
   HTMLCellInfo *info;
-  for ( info = list.first(); info != 0L; info = list.next() )
+  for ( info = list.first(); info != 0; info = list.next() )
   {
     if ( info->pCell->isMarked() )
     {
@@ -4929,7 +4869,7 @@ bool KHTMLWidget::cellDown()
     }
   }
 
-  if ( curr == 0L )
+  if ( curr == 0 )
     next = list.first();
   else
   { 
@@ -4940,12 +4880,12 @@ bool KHTMLWidget::cellDown()
       list.next();
     }
 
-    if ( list.current() == 0L )
+    if ( list.current() == 0 )
       return false;
     
     HTMLCellInfo *inf; 
     int diff = 0xFFFFFFF;
-    for ( inf = list.current(); inf != 0L; inf = list.next() )
+    for ( inf = list.current(); inf != 0; inf = list.next() )
     {
       int i = curr->xAbs - inf->xAbs;
       if ( i < 0 ) i *= -1;
@@ -4957,11 +4897,11 @@ bool KHTMLWidget::cellDown()
     }
   }
   
-  if ( next == 0L )
+  if ( next == 0 )
     return false;
   
   bool new_painter = false;
-  if ( painter == 0L )
+  if ( painter == 0 )
   {
     new_painter = true;
     painter = new QPainter;
@@ -4976,7 +4916,7 @@ bool KHTMLWidget::cellDown()
   {
     painter->end();
     delete painter;
-    painter = 0L;
+    painter = 0;
   }
 
   if ( next->ty + next->pCell->getYPos() + next->pCell->getDescent() > height() )
@@ -4989,7 +4929,7 @@ bool KHTMLWidget::cellDown()
 
 bool KHTMLWidget::cellLeft()
 {
-  if ( clue == 0L || parsing )
+  if ( clue == 0 || parsing )
     return true;
   
   QList<HTMLCellInfo> list;
@@ -5000,12 +4940,12 @@ bool KHTMLWidget::cellLeft()
   if ( list.isEmpty() )
     return false;
   
-  HTMLCellInfo *curr = 0L;
-  HTMLCellInfo *next = 0L;
+  HTMLCellInfo *curr = 0;
+  HTMLCellInfo *next = 0;
   
   // Find current marker
   HTMLCellInfo *info;
-  for ( info = list.first(); info != 0L; info = list.next() )
+  for ( info = list.first(); info != 0; info = list.next() )
   {
     if ( info->pCell->isMarked() )
     {
@@ -5014,16 +4954,16 @@ bool KHTMLWidget::cellLeft()
     }
   }
 
-  if ( curr == 0L )
+  if ( curr == 0 )
     next = list.first();
   else
     next = list.prev();
   
-  if ( next == 0L )
+  if ( next == 0 )
     return false;
   
   bool new_painter = false;
-  if ( painter == 0L )
+  if ( painter == 0 )
   {
     new_painter = true;
     painter = new QPainter;
@@ -5038,7 +4978,7 @@ bool KHTMLWidget::cellLeft()
   {
     painter->end();
     delete painter;
-    painter = 0L;
+    painter = 0;
   }
 
   if ( next->ty + next->pCell->getYPos() - next->pCell->getAscent() < 0 )
@@ -5051,7 +4991,7 @@ bool KHTMLWidget::cellLeft()
 
 bool KHTMLWidget::cellRight()
 {
-  if ( clue == 0L || parsing )
+  if ( clue == 0 || parsing )
     return true;
   
   QList<HTMLCellInfo> list;
@@ -5062,12 +5002,12 @@ bool KHTMLWidget::cellRight()
   if ( list.isEmpty() )
     return false;
   
-  HTMLCellInfo *curr = 0L;
-  HTMLCellInfo *next = 0L;
+  HTMLCellInfo *curr = 0;
+  HTMLCellInfo *next = 0;
   
   // Find current marker
   HTMLCellInfo *info;
-  for ( info = list.first(); info != 0L; info = list.next() )
+  for ( info = list.first(); info != 0; info = list.next() )
   {
     if ( info->pCell->isMarked() )
     {
@@ -5076,16 +5016,16 @@ bool KHTMLWidget::cellRight()
     }
   }
 
-  if ( curr == 0L )
+  if ( curr == 0 )
     next = list.first();
   else
     next = list.next();
   
-  if ( next == 0L )
+  if ( next == 0 )
     return false;
   
   bool new_painter = false;
-  if ( painter == 0L )
+  if ( painter == 0 )
   {
     new_painter = true;
     painter = new QPainter;
@@ -5100,7 +5040,7 @@ bool KHTMLWidget::cellRight()
   {
     painter->end();
     delete painter;
-    painter = 0L;
+    painter = 0;
   }
 
   emit onURL( next->pCell->getURL() );
@@ -5113,7 +5053,7 @@ bool KHTMLWidget::cellRight()
 
 void KHTMLWidget::cellSelected()
 {
-  if ( clue == 0L || parsing )
+  if ( clue == 0 || parsing )
     return;
   
   QList<HTMLCellInfo> list;
@@ -5124,11 +5064,11 @@ void KHTMLWidget::cellSelected()
   if ( list.isEmpty() )
     return;
   
-  HTMLCellInfo *curr = 0L;
+  HTMLCellInfo *curr = 0;
   
   // Find current marker
   HTMLCellInfo *info;
-  for ( info = list.first(); info != 0L; info = list.next() )
+  for ( info = list.first(); info != 0; info = list.next() )
   {
     if ( info->pCell->isMarked() )
     {
@@ -5137,9 +5077,9 @@ void KHTMLWidget::cellSelected()
     }
   }
 
-  if ( curr == 0L )
+  if ( curr == 0 )
     return;
-  if ( curr->pCell->getURL() == 0L )
+  if ( curr->pCell->getURL() == 0 )
     return;
   
   QStrList urllist;
@@ -5149,12 +5089,12 @@ void KHTMLWidget::cellSelected()
   if ( urllist.find( curr->pCell->getURL() ) != -1 )
     mode = false;
   
-  selectByURL( 0L, curr->pCell->getURL(), mode );
+  selectByURL( 0, curr->pCell->getURL(), mode );
 }
 
 void KHTMLWidget::cellActivated()
 {
-  if ( clue == 0L || parsing )
+  if ( clue == 0 || parsing )
     return;
   
   QList<HTMLCellInfo> list;
@@ -5165,11 +5105,11 @@ void KHTMLWidget::cellActivated()
   if ( list.isEmpty() )
     return;
   
-  HTMLCellInfo *curr = 0L;
+  HTMLCellInfo *curr = 0;
   
   // Find current marker
   HTMLCellInfo *info;
-  for ( info = list.first(); info != 0L; info = list.next() )
+  for ( info = list.first(); info != 0; info = list.next() )
   {
     if ( info->pCell->isMarked() )
     {
@@ -5178,9 +5118,9 @@ void KHTMLWidget::cellActivated()
     }
   }
 
-  if ( curr == 0L )
+  if ( curr == 0 )
     return;
-  if ( curr->pCell->getURL() == 0L )
+  if ( curr->pCell->getURL() == 0 )
     return;
 
   emit URLSelected( curr->pCell->getURL(), LeftButton, curr->pCell->getTarget() );
@@ -5188,7 +5128,7 @@ void KHTMLWidget::cellActivated()
 
 void KHTMLWidget::cellContextMenu()
 {
-  if ( clue == 0L || parsing )
+  if ( clue == 0 || parsing )
     return;
   
   QList<HTMLCellInfo> list;
@@ -5199,11 +5139,11 @@ void KHTMLWidget::cellContextMenu()
   if ( list.isEmpty() )
     return;
   
-  HTMLCellInfo *curr = 0L;
+  HTMLCellInfo *curr = 0;
   
   // Find current marker
   HTMLCellInfo *info;
-  for ( info = list.first(); info != 0L; info = list.next() )
+  for ( info = list.first(); info != 0; info = list.next() )
   {
     if ( info->pCell->isMarked() )
     {
@@ -5212,11 +5152,11 @@ void KHTMLWidget::cellContextMenu()
     }
   }
 
-  if ( curr == 0L )
+  if ( curr == 0 )
     return;
   printf("curr->url='%s'\n",curr->pCell->getURL());
   
-  if ( curr->pCell->getURL() == 0L )
+  if ( curr->pCell->getURL() == 0 )
     return;
 
   QPoint p( curr->tx, curr->ty );

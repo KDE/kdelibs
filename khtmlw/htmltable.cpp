@@ -23,6 +23,7 @@
 
 #include <kurl.h>
 
+#include "htmlchain.h"
 #include "htmlobj.h"
 #include "htmlclue.h"
 #include "htmltable.h"
@@ -112,6 +113,32 @@ bool HTMLTableCell::print( QPainter *_painter, int _x, int _y, int _width,
 	return HTMLClueV::print( _painter, _x, _y, _width, _height, _tx, _ty, toPrinter );
 }
 
+void HTMLTableCell::print( QPainter *_painter, HTMLChain *_chain, int _x,
+	int _y, int _width, int _height, int _tx, int _ty )
+{
+    if ( bg.isValid() )
+    {
+	    int top = _y - ( y - getAscent() );
+	    int bottom = top + _height;
+	    if ( top < -padding )
+		    top = -padding;
+	    if ( bottom > getAscent() + padding )
+		    bottom = getAscent() + padding;
+
+	    int left = _x - x;
+	    int right = left + _width;
+	    if ( left < -padding )
+		left = -padding;
+	    if ( right > width + padding )
+		right = width + padding;
+
+	    QBrush brush( bg );
+	    _painter->fillRect( _tx + x + left, _ty + y - ascent + top,
+		    right - left, bottom - top, brush );
+    }
+
+    HTMLClue::print( _painter, _chain, _x, _y, _width, _height, _tx, _ty );
+}
 //-----------------------------------------------------------------------------
 
 HTMLTable::HTMLTable( int _x, int _y, int _max_width, int _width, int _percent,
@@ -1249,14 +1276,16 @@ HTMLObject *HTMLTable::mouseEvent( int _x, int _y, int button, int state )
     return 0;
 }
 
-void HTMLTable::selectByURL( QPainter *_painter, const char *_url, bool _select,
-int _tx, int _ty )
+void HTMLTable::selectByURL( KHTMLWidget *_htmlw, HTMLChain *_chain,
+    const char *_url, bool _select, int _tx, int _ty )
 {
     unsigned int r, c;
     HTMLTableCell *cell;
 
     _tx += x;
     _ty += y - ascent;
+
+    _chain->push( this );
 
     for ( r = 0; r < totalRows; r++ )
     {
@@ -1270,19 +1299,23 @@ int _tx, int _ty )
 	    if ( r < totalRows - 1 && cells[r+1][c] == cell )
 		continue;
 
-	    cell->selectByURL( _painter, _url, _select, _tx, _ty );
+	    cell->selectByURL( _htmlw, _chain, _url, _select, _tx, _ty );
 	}
     }
+
+    _chain->pop();
 }
 
-void HTMLTable::select( QPainter *_painter, QRegExp& _pattern, bool _select, int
-_tx, int _ty )
+void HTMLTable::select( KHTMLWidget *_htmlw, HTMLChain *_chain,
+    QRegExp& _pattern, bool _select, int _tx, int _ty )
 {
     unsigned int r, c;
     HTMLTableCell *cell;
 
     _tx += x;
     _ty += y - ascent;
+
+    _chain->push( this );
 
     for ( r = 0; r < totalRows; r++ )
     {
@@ -1296,18 +1329,23 @@ _tx, int _ty )
 	    if ( r < totalRows - 1 && cells[r+1][c] == cell )
 		continue;
 
-	    cell->select( _painter, _pattern, _select, _tx, _ty );
+	    cell->select( _htmlw, _chain, _pattern, _select, _tx, _ty );
 	}
     }
+
+    _chain->pop();
 }
 
-void HTMLTable::select( QPainter *_painter, bool _select, int _tx, int _ty )
+void HTMLTable::select( KHTMLWidget *_htmlw, HTMLChain *_chain,
+    bool _select, int _tx, int _ty )
 {
     unsigned int r, c;
     HTMLTableCell *cell;
 
     _tx += x;
     _ty += y - ascent;
+
+    _chain->push( this );
 
     for ( r = 0; r < totalRows; r++ )
     {
@@ -1321,18 +1359,23 @@ void HTMLTable::select( QPainter *_painter, bool _select, int _tx, int _ty )
 	    if ( r < totalRows - 1 && cells[r+1][c] == cell )
 		continue;
 
-	    cell->select( _painter, _select, _tx, _ty );
+	    cell->select( _htmlw, _chain, _select, _tx, _ty );
 	}
     }
+
+    _chain->pop();
 }
 
-void HTMLTable::select( QPainter *_painter, QRect & _rect, int _tx, int _ty )
+void HTMLTable::select( KHTMLWidget *_htmlw, HTMLChain *_chain,
+    QRect & _rect, int _tx, int _ty )
 {
     unsigned int r, c;
     HTMLTableCell *cell;
 
     _tx += x;
     _ty += y - ascent;
+
+    _chain->push( this );
 
     for ( r = 0; r < totalRows; r++ )
     {
@@ -1346,9 +1389,11 @@ void HTMLTable::select( QPainter *_painter, QRect & _rect, int _tx, int _ty )
 	    if ( r < totalRows - 1 && cells[r+1][c] == cell )
 		continue;
 
-	    cell->select( _painter, _rect, _tx, _ty );
+	    cell->select( _htmlw, _chain, _rect, _tx, _ty );
 	}
     }
+
+    _chain->pop();
 }
 
 void HTMLTable::select( bool _select )
@@ -1373,8 +1418,8 @@ void HTMLTable::select( bool _select )
     }
 }
 
-bool HTMLTable::selectText( QPainter *_painter, int _x1, int _y1,
-	int _x2, int _y2, int _tx, int _ty )
+bool HTMLTable::selectText( KHTMLWidget *_htmlw, HTMLChain *_chain,
+	int _x1, int _y1, int _x2, int _y2, int _tx, int _ty )
 {
     bool isSel = false;
     unsigned int r, c;
@@ -1382,6 +1427,8 @@ bool HTMLTable::selectText( QPainter *_painter, int _x1, int _y1,
 
     _tx += x;
     _ty += y - ascent;
+
+    _chain->push( this );
 
     for ( r = 0; r < totalRows; r++ )
     {
@@ -1397,33 +1444,35 @@ bool HTMLTable::selectText( QPainter *_painter, int _x1, int _y1,
 
 	    if ( _y1 < y - ascent && _y2 > y )
 	    {
-		isSel = cell->selectText( _painter, 0, _y1 - ( y - ascent ),
+		isSel = cell->selectText( _htmlw, _chain, 0, _y1 - ( y - ascent ),
 			width + 1, _y2 - ( y - ascent ), _tx, _ty ) || isSel;
 	    }
 	    else if ( _y1 < y - ascent )
 	    {
-		isSel = cell->selectText( _painter, 0, _y1 - ( y - ascent ),
+		isSel = cell->selectText( _htmlw, _chain, 0, _y1 - ( y - ascent ),
 			_x2 - x, _y2 - ( y - ascent ), _tx, _ty ) || isSel;
 	    }
 	    else if ( _y2 > y )
 	    {
-		isSel = cell->selectText( _painter, _x1 - x,
+		isSel = cell->selectText( _htmlw, _chain, _x1 - x,
 			_y1 - ( y - ascent ), width + 1, _y2 - ( y - ascent ),
 			_tx, _ty ) || isSel;
 	    }
 	    else if ( (_x1 - x < cell->getXPos() + cell->getWidth() &&
 			_x2 - x > cell->getXPos() ) )
 	    {
-		isSel = cell->selectText( _painter, _x1 - x,
+		isSel = cell->selectText( _htmlw, _chain, _x1 - x,
 			_y1 - ( y - ascent ), _x2 - x, _y2 - ( y - ascent ),
 			_tx, _ty ) || isSel;
 	    }
 	    else
 	    {
-		cell->selectText( _painter, 0, 0, 0, 0, _tx, _ty );
+		cell->selectText( _htmlw, _chain, 0, 0, 0, 0, _tx, _ty );
 	    }
 	}
     }
+
+    _chain->pop();
 
     return isSel;
 }
@@ -1620,6 +1669,21 @@ bool HTMLTable::print( QPainter *_painter, int _x, int _y, int _width, int _heig
 
     return false;
 }
+
+void HTMLTable::print( QPainter *_painter, HTMLChain *_chain,int _x,
+	int _y, int _width, int _height, int _tx, int _ty )
+{
+    _tx += x;
+    _ty += y - ascent;
+
+    _chain->next();
+
+    if ( _chain->current() )
+    {
+	_chain->current()->print( _painter, _chain, _x - x,
+	    _y - (y - getHeight()), _width, _height, _tx, _ty );
+    }
+} 
 
 void HTMLTable::print( QPainter *_painter, HTMLObject *_obj, int _x, int _y, int _width, int _height, int _tx, int _ty )
 {

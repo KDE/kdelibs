@@ -23,6 +23,7 @@
 
 #include <kurl.h>
 
+#include "htmlchain.h"
 #include "htmlobj.h"
 #include "htmlclue.h"
 #include "html.h"
@@ -162,33 +163,40 @@ void HTMLClue::select( bool _select )
     }
 }
 
-void HTMLClue::select( QPainter *_painter, QRegExp& _pattern, bool _select, int _tx, int _ty )
+void HTMLClue::select( KHTMLWidget *_htmlw, HTMLChain *_chain,
+    QRegExp& _pattern, bool _select, int _tx, int _ty )
 {
-    HTMLObject *obj;
-
     _tx += x;
     _ty += y - ascent;
 
-    for ( obj = head; obj != 0; obj = obj->next() )
+    _chain->push( this );
+
+    for ( HTMLObject *obj = head; obj != 0; obj = obj->next() )
     {
-	obj->select( _painter, _pattern, _select, _tx, _ty );
+	obj->select( _htmlw, _chain, _pattern, _select, _tx, _ty );
     }
+
+    _chain->pop();
 }
 
-void HTMLClue::select( QPainter *_painter, bool _select, int _tx, int _ty )
+void HTMLClue::select( KHTMLWidget *_htmlw, HTMLChain *_chain,
+    bool _select, int _tx, int _ty )
 {
-    HTMLObject *obj;
-
     _tx += x;
     _ty += y - ascent;
 
-    for ( obj = head; obj != 0; obj = obj->next() )
+    _chain->push( this );
+
+    for ( HTMLObject *obj = head; obj != 0; obj = obj->next() )
     {
-	obj->select( _painter, _select, _tx, _ty );
+	obj->select( _htmlw, _chain, _select, _tx, _ty );
     }
+
+    _chain->pop();
 }
 
-void HTMLClue::select( QPainter *_painter, QRect & _rect, int _tx, int _ty )
+void HTMLClue::select( KHTMLWidget *_htmlw, HTMLChain *_chain,
+    QRect & _rect, int _tx, int _ty )
 {
     HTMLObject *obj;
 
@@ -197,32 +205,41 @@ void HTMLClue::select( QPainter *_painter, QRect & _rect, int _tx, int _ty )
     _tx += x;
     _ty += y - ascent;
 
+    _chain->push( this );
+
     if ( _rect.contains( r ) )
     {
 	for ( obj = head; obj != 0; obj = obj->next() )
-	    obj->select( _painter, TRUE, _tx, _ty );
+	    obj->select( _htmlw, _chain, TRUE, _tx, _ty );
     }
     else if ( !_rect.intersects( r ) )
     {
 	for ( obj = head; obj != 0; obj = obj->next() )
-	    obj->select( _painter, FALSE, _tx, _ty );
+	    obj->select( _htmlw, _chain, FALSE, _tx, _ty );
     }
     else
     {
 	for ( obj = head; obj != 0; obj = obj->next() )
-	    obj->select( _painter, _rect, _tx, _ty );
+	    obj->select( _htmlw, _chain, _rect, _tx, _ty );
     }
+
+    _chain->pop();
 }
 
-void HTMLClue::selectByURL( QPainter *_painter, const char *_url, bool _select, int _tx, int _ty )
+void HTMLClue::selectByURL( KHTMLWidget *_htmlw, HTMLChain *_chain,
+    const char *_url, bool _select, int _tx, int _ty )
 {
     HTMLObject *obj;
 
     _tx += x;
     _ty += y - ascent;
 
+    _chain->push( this );
+
     for ( obj = head; obj != 0; obj = obj->next() )
-	obj->selectByURL( _painter, _url, _select, _tx, _ty );
+	obj->selectByURL( _htmlw, _chain, _url, _select, _tx, _ty );
+
+    _chain->pop();
 }
 
 void HTMLClue::findCells( int _tx, int _ty, QList<HTMLCellInfo> &_list )
@@ -236,8 +253,8 @@ void HTMLClue::findCells( int _tx, int _ty, QList<HTMLCellInfo> &_list )
 	obj->findCells( _tx, _ty, _list );
 }
 
-bool HTMLClue::selectText( QPainter *_painter, int _x1, int _y1,
-	int _x2, int _y2, int _tx, int _ty )
+bool HTMLClue::selectText( KHTMLWidget *_htmlw, HTMLChain *_chain, int _x1,
+	int _y1, int _x2, int _y2, int _tx, int _ty )
 {
     HTMLObject *obj;
     bool isSel = false;
@@ -245,11 +262,15 @@ bool HTMLClue::selectText( QPainter *_painter, int _x1, int _y1,
     _tx += x;
     _ty += y - ascent;
 
+    _chain->push( this );
+
     for ( obj = head; obj != 0; obj = obj->next() )
     {
-	isSel = obj->selectText( _painter, _x1 - x, _y1 - ( y - ascent ),
+	isSel = obj->selectText( _htmlw, _chain, _x1 - x, _y1 - ( y - ascent ),
 		_x2 - x, _y2 - ( y - ascent ), _tx, _ty ) || isSel;
     }
+
+    _chain->pop();
 
     return isSel;
 }
@@ -450,6 +471,21 @@ bool HTMLClue::print( QPainter *_painter, int _x, int _y, int _width, int _heigh
     }
 
     return false;
+}
+
+void HTMLClue::print( QPainter *_painter, HTMLChain *_chain, int _x, int _y,
+    int _width, int _height, int _tx, int _ty )
+{
+    _tx += x;
+    _ty += y - ascent;
+
+    _chain->next();
+
+    if ( _chain->current() )
+    {
+	_chain->current()->print( _painter, _chain, _x - x,
+		_y - (y - getHeight()), _width, _height, _tx, _ty );
+    }
 }
 
 void HTMLClue::print( QPainter *_painter, int _tx, int _ty )
@@ -1090,7 +1126,7 @@ HTMLCell::HTMLCell( int _x, int _y, int _max_width, int _percent, const char *_u
   bIsMarked = false;
 }
 
-void HTMLCell::select( QPainter *_painter, QRect & _rect, int _tx, int _ty )
+void HTMLCell::select( KHTMLWidget *_htmlw, HTMLChain *_chain, QRect & _rect, int _tx, int _ty )
 {
     HTMLObject *obj;
 
@@ -1116,8 +1152,12 @@ void HTMLCell::select( QPainter *_painter, QRect & _rect, int _tx, int _ty )
 	    sel = true;
     }
 
+    _chain->push( this );
+
     for ( obj = head; obj != 0; obj = obj->next() )
-	obj->select( _painter, sel, _tx, _ty );
+	obj->select( _htmlw, _chain, sel, _tx, _ty );
+
+    _chain->pop();
 }
 
 bool HTMLCell::print( QPainter *_painter, int _x, int _y, int _width, int _height, int _tx, int _ty, bool toPrinter )
@@ -1182,8 +1222,8 @@ void HTMLCell::setMarker( QPainter *_painter, int _tx, int _ty, bool _mode )
 
 //-----------------------------------------------------------------------------
 
-bool HTMLClueH::selectText( QPainter *_painter, int _x1, int _y1,
-	int _x2, int _y2, int _tx, int _ty )
+bool HTMLClueH::selectText( KHTMLWidget *_htmlw, HTMLChain *_chain,
+	int _x1, int _y1, int _x2, int _y2, int _tx, int _ty )
 {
     HTMLObject *obj;
     bool isSel = false;
@@ -1214,16 +1254,20 @@ bool HTMLClueH::selectText( QPainter *_painter, int _x1, int _y1,
     if ( rely2 > ypos - a && rely2 < ypos + d )
 	rely2 = ypos;
 
+    _chain->push( this );
+
     // (de)select objects
     for ( obj = head; obj != 0; obj = obj->next() )
     {
 	if ( obj->getObjectType() == Clue )
-	    isSel = obj->selectText( _painter, _x1 - x, _y1 - (y-ascent),
+	    isSel = obj->selectText( _htmlw, _chain, _x1 - x, _y1 - (y-ascent),
 		    _x2 - x, _y2 - ( y - ascent ), _tx, _ty ) || isSel;
 	else
-	    isSel = obj->selectText( _painter, _x1 - x, rely1,
+	    isSel = obj->selectText( _htmlw, _chain, _x1 - x, rely1,
 		    _x2 - x, rely2, _tx, _ty ) || isSel;
     }
+
+    _chain->pop();
 
     return isSel;
 }
@@ -1323,8 +1367,8 @@ int HTMLClueH::calcPreferredWidth()
 // are able to be selected if the cursor is within the maximum
 // ascent and descent of the line.
 //
-bool HTMLClueFlow::selectText( QPainter *_painter, int _x1, int _y1,
-	int _x2, int _y2, int _tx, int _ty )
+bool HTMLClueFlow::selectText( KHTMLWidget *_htmlw, HTMLChain *_chain,
+	int _x1, int _y1, int _x2, int _y2, int _tx, int _ty )
 {
     HTMLObject *lineEnd = head, *obj = head;
     bool isSel = false;
@@ -1332,6 +1376,8 @@ bool HTMLClueFlow::selectText( QPainter *_painter, int _x1, int _y1,
 
     _tx += x;
     _ty += y - ascent;
+
+    _chain->push( this );
 
     while ( lineEnd )
     {
@@ -1360,14 +1406,16 @@ bool HTMLClueFlow::selectText( QPainter *_painter, int _x1, int _y1,
 	while ( obj != lineEnd )
 	{
 	    if ( obj->getObjectType() == Clue )
-		isSel = obj->selectText( _painter, _x1 - x, _y1 - (y-ascent),
+		isSel = obj->selectText(_htmlw,_chain,_x1 - x, _y1 - (y-ascent),
 			_x2 - x, _y2 - ( y - ascent ), _tx, _ty ) || isSel;
 	    else
-		isSel = obj->selectText( _painter, _x1 - x, rely1,
+		isSel = obj->selectText(_htmlw,_chain,_x1 - x, rely1,
 			_x2 - x, rely2, _tx, _ty ) || isSel;
 	    obj = obj->next();
 	}
     }
+
+    _chain->pop();
 
     return isSel;
 }
