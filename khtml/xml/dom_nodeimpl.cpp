@@ -1215,7 +1215,7 @@ void NodeBaseImpl::removeChildren()
         if( !n->refCount() )
             delete n;
         else
-            for ( NodeImpl* c = n; c = c->traverseNextNode( n ) )
+            for ( NodeImpl* c = n; c; c = c->traverseNextNode( n ) )
                 c->removedFromDocument();
     }
     _first = _last = 0;
