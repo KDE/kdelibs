@@ -91,12 +91,12 @@ public:
     /**
      * @return the text the user entered
      */
-    QString text();
+    QString text() const;
     /**
      * @return the chosen service in the application tree
      * Can be null, if the user typed some text and didn't select a service.
      */
-    KService::Ptr service() { return m_pService; }
+    KService::Ptr service() const { return m_pService; }
 
 public slots:
     /**

@@ -419,7 +419,7 @@ char* BookmarkTokenizer::nextToken()
     return t;
 }
 
-bool BookmarkTokenizer::hasMoreTokens()
+bool BookmarkTokenizer::hasMoreTokens() const
 {
     return ( curr != 0 );
 }

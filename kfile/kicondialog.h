@@ -47,7 +47,7 @@ public:
     void loadFiles(QStringList files);
 
     /** Returns the current icon. */
-    QString getCurrent();
+    QString getCurrent() const;
 
 public slots:
     void stopLoading();
@@ -176,7 +176,7 @@ public:
     void resetIcon();
 
     /** Returns the selected icon name. */
-    const QString icon() { return mIcon; }
+    QString icon() const { return mIcon; }
 
 signals:
     /** Emitted when the icon has changed. */

@@ -44,9 +44,9 @@ public:
 	void setURL( const QString& _url )	{	url = _url; }
 	void setType( int _type )	{	type = _type; }
 
-	const QString getText()	{	return text; }
-	const QString getURL()	{	return url; }
-	int getType()	{	return type; }
+	QString getText() const {	return text; }
+	QString getURL() const {	return url; }
+	int getType() const {	return type; }
 
 	QList<KFileBookmark> &getChildren() 	{ return children; }
 

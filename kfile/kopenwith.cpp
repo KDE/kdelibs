@@ -605,7 +605,7 @@ void KOpenWithDlg::slotOK()
   accept();
 }
 
-QString KOpenWithDlg::text()
+QString KOpenWithDlg::text() const
 {
     if (!m_command.isEmpty())
         return m_command;

@@ -57,10 +57,10 @@ public:
 	delete [] tok;
     }
 
-    char *token()
+    char *token() const
 	{ return tok; }
 
-    BMToken *next()
+    BMToken *next() const
 	{ return nextToken; }
     void setNext( BMToken *n )
 	{ nextToken = n; }
@@ -86,7 +86,7 @@ public:
     void end();
 
     char* nextToken();
-    bool hasMoreTokens();
+    bool hasMoreTokens() const;
 
     void first()
 	{ curr = head; }

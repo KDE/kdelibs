@@ -150,7 +150,7 @@ void KIconCanvas::slotLoadFiles()
     setResizeMode(Adjust);
 }
 
-QString KIconCanvas::getCurrent()
+QString KIconCanvas::getCurrent() const
 {
     if (!currentItem())
 	return QString::null;

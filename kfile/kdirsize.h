@@ -39,12 +39,12 @@ public:
   /**
    * @return the size we found
    */
-  unsigned long totalSize() { return m_totalSize; }
+  unsigned long totalSize() const { return m_totalSize; }
 
   /**
    * @return the size we found
    */
-  long long totalSize64() { return m_totalSize; }
+  long long totalSize64() const { return m_totalSize; }
 
   /**
    * Asynchronous method. Connect to the result signal.
