@@ -94,7 +94,7 @@ void Font::drawText( QPainter *p, int x, int y, QChar *str, int slen, int pos, i
 }
 
 
-int Font::width( QChar *chs, int slen, int pos, int len ) const
+int Font::width( QChar *chs, int, int pos, int len ) const
 {
     QConstString cstr(chs+pos, len);
     int w;
