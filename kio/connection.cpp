@@ -72,7 +72,7 @@ void Connection::close()
 void Connection::send(int cmd, const QByteArray& data)
 {
     if (!inited() || queueonly || tasks.count() > 0) {
-	kDebugInfo( 7007, "pending queue %d", cmd);
+	kDebugInfo( 7017, "pending queue %d", cmd);
 	Task *task = new Task();
 	task->cmd = cmd;
 	task->data = data;
@@ -87,7 +87,7 @@ void Connection::send(int cmd, const QByteArray& data)
 
 void Connection::queueOnly(bool queue) {
     unqueuedTasks = tasks.count();
-    kDebugInfo( 7007, "setting queueOnly to %d", queue);
+    kDebugInfo( 7017, "setting queueOnly to %d", queue);
     queueonly = queue;
     dequeue();
 }
