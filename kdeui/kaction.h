@@ -350,6 +350,7 @@ protected:
     virtual void setText(int i, const QString &text);
     virtual void setEnabled(int i, bool enable);
     virtual void setIconSet(int i, const QIconSet &iconSet);
+    virtual void setIcon( int i, const QString& icon );
 
 private:
 	KAccel  *kaccel;

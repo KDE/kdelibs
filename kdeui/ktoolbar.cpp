@@ -1833,6 +1833,16 @@ void KToolBar::setButtonPixmap( int id, const QPixmap& _pixmap )
     }
 }
 
+void KToolBar::setButtonIcon( int id, const QString& _icon )
+{
+  for (KToolBarItem *b = d->m_items->first(); b; b=d->m_items->next())
+    if (b->ID() == id )
+    {
+      if ( b->getItem()->inherits("KToolBarButton") )
+        ((KToolBarButton *) b->getItem())->setIcon( _icon );
+      break;
+    }
+}
 
 void KToolBar::setDelayedPopup (int id , QPopupMenu *_popup, bool toggle )
 {

@@ -384,6 +384,13 @@ public:
   void setButtonPixmap( int id, const QPixmap& _pixmap );
 
   /**
+   * Set button icon.
+   *
+   * Can be used while button is visible.
+   */
+  void setButtonIcon( int id, const QString& _icon );
+
+  /**
    * Set delayed popup for a button.
    *
    * Delayed popup is what you see in
