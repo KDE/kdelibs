@@ -273,7 +273,7 @@ QString whatstr;
 
 #ifdef HAVE_SSL
   SSLv2Box = new QListView(tabSSL, "v2ciphers");
-  (void) SSLv2Box->addColumn(i18n("SSLv2 Ciphers To Use:"));
+  (void) SSLv2Box->addColumn(i18n("SSLv2 Ciphers to Use"));
   whatstr = i18n("Select the ciphers you wish to enable when using the"
                 " SSL v2 protocol. The actual protocol used will be"
                 " negotiated with the server at connection time.");
@@ -299,7 +299,7 @@ QString whatstr;
 
 #ifdef HAVE_SSL
   SSLv3Box = new QListView(tabSSL, "v3ciphers");
-  (void) SSLv3Box->addColumn(i18n("SSLv3 Ciphers To Use:"));
+  (void) SSLv3Box->addColumn(i18n("SSLv3 Ciphers to Use"));
   whatstr = i18n("Select the ciphers you wish to enable when using the"
                 " SSL v3 protocol. The actual protocol used will be"
                 " negotiated with the server at connection time.");
