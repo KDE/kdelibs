@@ -666,7 +666,7 @@ QString KFileItem::getToolTipText()
             break;
         }
       
-        if ( (s != QString::null) && !s.isEmpty() )
+        if ( !s.isEmpty() )
         {
           count++;
           tip += "<tr><td>" +
