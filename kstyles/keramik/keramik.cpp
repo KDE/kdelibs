@@ -710,13 +710,15 @@ void KeramikStyle::drawPrimitive( PrimitiveElement pe,
 			// MENU / TOOLBAR PANEL
 			// -------------------------------------------------------------------
 		case PE_PanelMenuBar: 			// Menu
-			renderGradient( p, QRect(x, y, x + w, y + h + 2 ),
+		case PE_PanelDockWindow:		// Toolbar
+/*			renderGradient( p, QRect(x, y, x + w, y + h + 2 ),
 			                cg.button(), false, 0, 0, -1, -1, true );
 			p->setPen( cg.light() );
-			p->drawLine( x, y, x + w, y );
+			p->drawLine( x, y, x + w, y );*/
+			Keramik::RectTilePainter( "toolbar", false ).draw( p, r );
 			break;
 
-		case PE_PanelDockWindow:		// Toolbar
+/*		case PE_PanelDockWindow:		// Toolbar
 		{
 			int x2 = r.x()+r.width()-1;
 			int y2 = r.y()+r.height()-1;
@@ -740,7 +742,7 @@ void KeramikStyle::drawPrimitive( PrimitiveElement pe,
 						cg.button(), (w < h) && (pe != PE_PanelMenuBar) );
 			}
 			break;
-		}
+		}*/
 
 
 
@@ -1065,8 +1067,9 @@ void KeramikStyle::drawControl( ControlElement element,
 				qDrawShadePanel(p, r.x(), r.y(), r.width(), r.height(),
 								cg, true, 1, &cg.brush(QColorGroup::Midlight));
 			else
-				renderGradient( p, r, cg.button(), false,
-								r.x(), r.y()-1, pr.width()-2, pr.height()-2, true);
+				Keramik::RectTilePainter( "toolbar", false ).draw( p, pr );
+//				renderGradient( p, r, cg.button(), false,
+//								r.x(), r.y()-1, pr.width()-2, pr.height()-2, true);
 
 			drawItem( p, r, AlignCenter | AlignVCenter | ShowPrefix
 					| DontClip | SingleLine, cg, flags & Style_Enabled,
@@ -1463,14 +1466,16 @@ void KeramikStyle::drawComplexControl( ComplexControl control,
 					QPixmap pixmap = *(toolbutton->parentWidget()->backgroundPixmap());
 					p->drawTiledPixmap( r, pixmap, toolbutton->pos() );
 				}
-				else if (widget->parent() && widget->parent()->inherits("QToolBar"))
+				else if (onToolbar)
 				{
 					QToolBar* parent = (QToolBar*)widget->parent();
 					QRect pr = parent->rect();
 
-					renderGradient( p, r, cg.button(),
+					Keramik::RectTilePainter( "toolbar", false )
+						.draw( p, pr.x() - toolbutton->x(), pr.y() - toolbutton->y(), pr.width(), pr.height(), disabled );
+/*					renderGradient( p, r, cg.button(),
 									parent->orientation() == Qt::Vertical,
-									r.x(), r.y(), pr.width()-2, pr.height()-2);
+									r.x(), r.y(), pr.width()-2, pr.height()-2);*/
 				}
 			}
 
