@@ -317,19 +317,33 @@ KDateTable::contentsMousePressEvent(QMouseEvent *e)
     { // the user clicked on the frame of the table
       return;
     }
-  pos=7*(row-1)+col+1;
-  if(pos+dayoff<=firstday)
+
+  // Rows and columns are zero indexed.  The (row - 1) below is to avoid counting 
+  // the row with the days of the week in the calculation.  We however want pos
+  // to be "1 indexed", hence the "+ 1" at the end of the sum.
+
+  pos = (7 * (row - 1)) + col + 1;
+
+  // This gets pretty nasty below.  firstday is a locale independant index for 
+  // the first day of the week.  dayoff is the day of the week that the week
+  // starts with for the selected locale.  Monday = 1 .. Sunday = 7
+  // Strangely, in some cases dayoff is in fact set to 8, hence all of the
+  // "dayoff % 7" sections below.
+  
+  if(pos + dayoff % 7 <= firstday)
     { // this day is in the previous month
-      setDate(date.addDays(-1 * (date.day() + firstday - pos - dayoff)));
+      setDate(date.addDays(-1 * (date.day() + firstday - pos - dayoff % 7)));
       return;
     }
-  if(firstday+numdays<pos+dayoff)
+  if(firstday + numdays < pos + dayoff % 7)
     { // this date is in the next month
-      setDate(date.addDays(pos - firstday - date.day() + dayoff));
+      setDate(date.addDays(pos - firstday - date.day() + dayoff % 7));
       return;
     }
-  temp=firstday+date.day()-dayoff-1;
-  setDate(QDate(date.year(), date.month(), pos-firstday+dayoff));
+  temp = firstday + date.day() - dayoff % 7 - 1;
+
+  setDate(QDate(date.year(), date.month(), pos - firstday + dayoff % 7));
+
   updateCell(temp/7+1, temp%7); // Update the previously selected cell
   updateCell(row, col); // Update the selected cell
   // assert(QDate(date.year(), date.month(), pos-firstday+dayoff).isValid());
