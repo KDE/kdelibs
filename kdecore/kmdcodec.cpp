@@ -506,6 +506,87 @@ static int rikFindChar(register const char * _s, const char c)
   return s - _s;
 }
 
+QCString KCodecs::quotedPrintableEncodeUNIXLineEnds(const QByteArray & in)
+{
+  const char *data = in.data();
+  const unsigned int length = in.size();
+
+  // Reasonable guess for output size when we're encoding mostly-ASCII
+  // data. It doesn't really matter, because the underlying allocation
+  // routines are quite efficient, but it's nice to have 0 allocations
+  // in many cases.
+
+  QCString output(length * 1.2);
+
+  const unsigned int end = length - 1;
+  unsigned int lineLength = 0;
+
+  for (unsigned int i = 0; i < length; i++)
+  {
+    unsigned char c(data[i]);
+
+    // Plain ASCII chars just go straight out.
+
+    if ((c >= 33) && (c <= 126) && ('=' != c))
+    {
+      output += c;
+
+      ++lineLength;
+    }
+
+    // Spaces need some thought. We have to encode them at eol (or eof).
+
+    else if (' ' == c)
+    {
+      if
+        (
+         (i >= length)
+         ||
+         ((i < end) && ('\r' == data[i + 1]) && ('\n' == data[i + 2]))
+        )
+      {
+        output += "=20";
+        lineLength += 3;
+      }
+      else
+      {
+        output += ' ';
+        ++lineLength;
+      }
+    }
+
+    else if ('\n' == c)
+    {
+      // If we find \n, do a line break without encoding.
+      output += "\r\n";
+      lineLength = 0;
+    }
+
+    // Anything else is converted to =XX.
+
+    else
+    {
+      output += '=';
+      output += hexChars[c / 16];
+      output += hexChars[c % 16];
+
+      lineLength += 3;
+    }
+
+    // If we're approaching the maximum line length, do a soft line break.
+
+    if ((lineLength > maxQPLineLength) && (i < end))
+    {
+      output += "=\r\n";
+
+      lineLength = 0;
+    }
+
+  }
+
+  return output;
+}
+
 QCString KCodecs::quotedPrintableEncode(const QByteArray & in)
 {
   const char *data = in.data();

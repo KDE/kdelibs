@@ -155,6 +155,15 @@ public:
   static QCString quotedPrintableEncode(const QByteArray & in);
 
  /**
+  * Encodes the given data using the quoted-printable algorithm.
+  * Use this if your data has UNIX line ends instead of \r\n.
+  *
+  * @param in   data to be encoded.
+  * @return     quoted-printable encoded data.
+  */
+  static QCString quotedPrintableEncodeUNIXLineEnds(const QByteArray &);
+
+ /**
   * Decodes a quoted-printable encoded string.
   *
   * @param in  the data to be decoded.
