@@ -400,7 +400,7 @@ Value Window::get(ExecState *exec, const UString &p) const
 
   else if (p == "event") {
     if (m_evt)
-      return getDOMEvent(*m_evt);
+      return getDOMEvent(exec,*m_evt);
     else
       return Undefined();
   }

@@ -743,7 +743,7 @@ Value DOMDocumentProtoFunc::tryCall(ExecState *exec, Object &thisObj, const List
              toNodeFilter(args[2]),args[3].toBoolean(exec)));
     break;
   case DOMDocument::CreateEvent:
-    result = getDOMEvent(doc.createEvent(s));
+    result = getDOMEvent(exec,doc.createEvent(s));
     break;
   case DOMDocument::GetOverrideStyle: {
       DOM::Node arg0 = toNode(args[0]);

@@ -44,64 +44,58 @@ namespace KJS {
 
   Value getNodeEventListener(DOM::Node n, int eventId);
 
-  // Prototype object Event
-  class EventPrototype : public DOMObject {
+  // Constructor for Event - currently only used for some global vars
+  class EventConstructor : public DOMObject {
   public:
-    EventPrototype() { }
+    EventConstructor(ExecState *) { }
     virtual Value tryGet(ExecState *exec,const UString &p) const;
+    Value getValue(ExecState *, int token) const;
     // no put - all read-only
     virtual const ClassInfo* classInfo() const { return &info; }
     static const ClassInfo info;
   };
 
-  Value getEventPrototype(ExecState *exec);
+  Value getEventConstructor(ExecState *exec);
 
   class DOMEvent : public DOMObject {
   public:
-    DOMEvent(DOM::Event e) : event(e) {}
+    DOMEvent(ExecState *exec, DOM::Event e);
     ~DOMEvent();
     virtual Value tryGet(ExecState *exec,const UString &p) const;
+    Value getValue(ExecState *, int token) const;
     // no put - all read-only
     virtual const ClassInfo* classInfo() const { return &info; }
     static const ClassInfo info;
-    virtual DOM::Event toEvent() const { return event; }
+    enum { Type, Target, CurrentTarget, ToElement, EventPhase, Bubbles,
+           Cancelable, TimeStamp,
+           StopPropagation, PreventDefault, InitEvent };
+    DOM::Event toEvent() const { return event; }
   protected:
     DOM::Event event;
   };
 
-  class DOMEventFunc : public DOMFunction {
-    friend class DOMNode;
-  public:
-    DOMEventFunc(DOM::Event e, int i) : DOMFunction(), event(e), id(i) { }
-    virtual Value tryCall(ExecState *exec, Object &thisObj, const List&args);
-    enum { StopPropagation, PreventDefault, InitEvent };
-  private:
-    DOM::Event event;
-    int id;
-  };
-
-  Value getDOMEvent(DOM::Event e);
+  Value getDOMEvent(ExecState *exec, DOM::Event e);
 
   /**
    * Convert an object to an Event. Returns a null Event if not possible.
    */
   DOM::Event toEvent(const Value&);
 
-  // Prototype object EventException
-  class EventExceptionPrototype : public DOMObject {
+  // Constructor object EventException
+  class EventExceptionConstructor : public DOMObject {
   public:
-    EventExceptionPrototype() { }
+    EventExceptionConstructor(ExecState *) { }
     virtual Value tryGet(ExecState *exec,const UString &p) const;
     // no put - all read-only
     virtual const ClassInfo* classInfo() const { return &info; }
     static const ClassInfo info;
   };
 
-  Value getEventExceptionPrototype(ExecState *exec);
+  Value getEventExceptionConstructor(ExecState *exec);
 
   class DOMUIEvent : public DOMEvent {
   public:
-    DOMUIEvent(DOM::UIEvent ue) : DOMEvent(ue) {}
+    DOMUIEvent(ExecState *exec, DOM::UIEvent ue) : DOMEvent(exec, ue) {}
     ~DOMUIEvent();
     virtual Value tryGet(ExecState *exec,const UString &p) const;
     // no put - all read-only
@@ -122,7 +116,7 @@ namespace KJS {
 
   class DOMMouseEvent : public DOMUIEvent {
   public:
-    DOMMouseEvent(DOM::MouseEvent me) : DOMUIEvent(me) {}
+    DOMMouseEvent(ExecState *exec, DOM::MouseEvent me) : DOMUIEvent(exec, me) {}
     ~DOMMouseEvent();
     virtual Value tryGet(ExecState *exec,const UString &p) const;
     // no put - all read-only
@@ -141,21 +135,21 @@ namespace KJS {
     int id;
   };
 
-  // Prototype object MutationEvent
-  class MutationEventPrototype : public DOMObject {
+  // Constructor object MutationEvent
+  class MutationEventConstructor : public DOMObject {
   public:
-    MutationEventPrototype() { }
+    MutationEventConstructor(ExecState *) { }
     virtual Value tryGet(ExecState *exec,const UString &p) const;
     // no put - all read-only
     virtual const ClassInfo* classInfo() const { return &info; }
     static const ClassInfo info;
   };
 
-  Value getMutationEventPrototype(ExecState *exec);
+  Value getMutationEventConstructor(ExecState *exec);
 
   class DOMMutationEvent : public DOMEvent {
   public:
-    DOMMutationEvent(DOM::MutationEvent me) : DOMEvent(me) {}
+    DOMMutationEvent(ExecState *exec, DOM::MutationEvent me) : DOMEvent(exec, me) {}
     ~DOMMutationEvent();
     virtual Value tryGet(ExecState *exec,const UString &p) const;
     // no put - all read-only
