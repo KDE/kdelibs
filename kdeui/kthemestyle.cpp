@@ -367,7 +367,7 @@ void KThemeStyle::drawKToolBarButton(QPainter *p, int x, int y, int w, int h,
 }
 
 void KThemeStyle::drawKBarHandle(QPainter *p, int x, int y, int w, int h,
-                                 const QColorGroup &g, bool, QBrush *)
+                                 const QColorGroup &g, KToolBarPos, QBrush *)
 {
     if(w > h)
         drawBaseButton(p, x, y, w, h, *colorGroup(g, HBarHandle), false, false,
@@ -378,7 +378,7 @@ void KThemeStyle::drawKBarHandle(QPainter *p, int x, int y, int w, int h,
 }
 
 void KThemeStyle::drawKToolBar(QPainter *p, int x, int y, int w, int h,
-                             const QColorGroup &g, bool)
+                             const QColorGroup &g, KToolBarPos, QBrush *)
 {
     drawBaseButton(p, x, y, w, h, *colorGroup(g, ToolBar), false, false,
                    ToolBar);
@@ -1231,7 +1231,7 @@ void KThemeStyle::drawFocusRect(QPainter *p, const QRect &r,
 }
 
 void KThemeStyle::drawKMenuBar(QPainter *p, int x, int y, int w, int h,
-                               const QColorGroup &g, QBrush *)
+                               const QColorGroup &g, bool, QBrush *)
 {
     drawBaseButton(p, x, y, w, h, *colorGroup(g, MenuBar), false, false,
                    MenuBar);

@@ -113,16 +113,19 @@ public:
                                     const QPixmap *icon=NULL,
                                     QFont *font=NULL, QWidget *btn=NULL);
     /**
-     * Draws the handle used in menu and toolbars.
+     * Draws the handle used in toolbars.
      */
-    virtual void drawKBarHandle(QPainter *p, int x, int y, int w, int h,
-                                const QColorGroup &g, bool horizontal = false,
-                                QBrush *fill = NULL);
+    void drawKBarHandle(QPainter *p, int x, int y, int w, int h,
+                        const QColorGroup &g,
+                        KToolBarPos type, QBrush *fill=NULL);
+
     /**
      * Draws a toolbar.
      */
-    virtual void drawKToolBar(QPainter *p, int x, int y, int w, int h,
-                              const QColorGroup &g, bool floating = false);
+    void drawKToolBar(QPainter *p, int x, int y, int w, int h,
+                      const QColorGroup &g, KToolBarPos type,
+                      QBrush *fill=NULL);
+
     /**
      * Returns the space available in a pushbutton, taking configurable
      * borders and highlights into account.
@@ -276,8 +279,9 @@ public:
     /**
      * Draws a menubar.
      */
-    virtual void drawKMenuBar(QPainter *p, int x, int y, int w, int h,
-                              const QColorGroup &g, QBrush *fill=NULL);
+    void drawKMenuBar(QPainter *p, int x, int y, int w, int h,
+                      const QColorGroup &g, bool macMode,
+                      QBrush *fill=NULL);
     /**
      * Draws a menubar item.
      */
