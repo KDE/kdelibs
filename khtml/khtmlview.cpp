@@ -60,6 +60,7 @@
 #endif
 
 #include <kcursor.h>
+#include <kiconloader.h>
 #include <knotifyclient.h>
 #include <ksimpleconfig.h>
 #include <kstringhandler.h>
@@ -82,13 +83,17 @@
 #include <qtimer.h>
 #include <kdialogbase.h>
 #include <qptrdict.h>
-
+#include <qstring.h>
 
 //#define DEBUG_NO_PAINT_BUFFER
 
 //#define DEBUG_FLICKER
 
 //#define DEBUG_PIXEL
+
+#include <X11/Xlib.h>
+#undef KeyPress
+#undef KeyRelease
 
 #define PAINT_BUFFER_HEIGHT 128
 
@@ -157,6 +162,7 @@ public:
 	tooltip = 0;
         possibleTripleClick = false;
         emitCompletedAfterRepaint = CSNone;
+	cursor_icon_widget = NULL;
     }
     ~KHTMLViewPrivate()
     {
@@ -174,6 +180,7 @@ public:
 	delete m_caretViewContext;
 	delete m_editorContext;
 #endif // KHTML_NO_CARET
+        delete cursor_icon_widget;
     }
     void reset()
     {
@@ -359,6 +366,8 @@ public:
     bool accessKeysActivated;
     bool accessKeysPreActivate;
     CompletedState emitCompletedAfterRepaint;
+    
+    QWidget* cursor_icon_widget;
 };
 
 #ifndef QT_NO_TOOLTIP
@@ -517,6 +526,9 @@ void KHTMLView::clear()
         findTimeout();
     if (d->accessKeysActivated)
         accessKeysTimeout();
+    viewport()->unsetCursor();
+    if ( d->cursor_icon_widget )
+        d->cursor_icon_widget->hide();
     d->reset();
     killTimers();
     emit cleared();
@@ -927,7 +939,7 @@ void KHTMLView::viewportMouseMoveEvent( QMouseEvent * _mouse )
 
     if(!m_part->xmlDocImpl()) return;
 
-    int xm, ym;
+    int xm, ym;    
     viewportToContents(_mouse->x(), _mouse->y(), xm, ym);
 
     DOM::NodeImpl::MouseEvent mev( _mouse->stateAfter(), DOM::NodeImpl::MouseMove );
@@ -958,13 +970,16 @@ void KHTMLView::viewportMouseMoveEvent( QMouseEvent * _mouse )
     khtml::RenderObject* r = mev.innerNode.handle() ? mev.innerNode.handle()->renderer() : 0;
     khtml::RenderStyle* style = (r && r->style()) ? r->style() : 0;
     QCursor c;
+    bool mailtoCursor = false;
     switch ( style ? style->cursor() : CURSOR_AUTO) {
     case CURSOR_AUTO:
         if ( r && r->isText() )
             c = KCursor::ibeamCursor();
-
-        if ( mev.url.length() && m_part->settings()->changeCursor() )
+        if ( mev.url.length() && m_part->settings()->changeCursor() ) {
             c = m_part->urlCursor();
+            if (mev.url.string().startsWith("mailto:"))
+                mailtoCursor = true;
+        }
 
         if (r && r->isFrameSet() && !static_cast<RenderFrameSet*>(r)->noResize())
             c = QCursor(static_cast<RenderFrameSet*>(r)->cursorShape());
@@ -975,6 +990,8 @@ void KHTMLView::viewportMouseMoveEvent( QMouseEvent * _mouse )
         break;
     case CURSOR_POINTER:
         c = m_part->urlCursor();
+        if (mev.url.string().startsWith("mailto:"))
+            mailtoCursor = true;
         break;
     case CURSOR_PROGRESS:
         c = KCursor::workingCursor();
@@ -1018,8 +1035,33 @@ void KHTMLView::viewportMouseMoveEvent( QMouseEvent * _mouse )
         }
         else {
             viewport()->setCursor( c );
-	}
+        }
     }
+    
+    if ( mailtoCursor && isVisible() && hasFocus() ) {
+        if( !d->cursor_icon_widget ) {
+            QPixmap icon_pixmap = KGlobal::iconLoader()->loadIcon( "mail_generic", KIcon::Small, 0, KIcon::DefaultState, 0, true );
+            d->cursor_icon_widget = new QWidget( NULL, NULL, WX11BypassWM );
+            XSetWindowAttributes attr;
+            attr.save_under = True;
+            XChangeWindowAttributes( qt_xdisplay(), d->cursor_icon_widget->winId(), CWSaveUnder, &attr );
+            d->cursor_icon_widget->resize( icon_pixmap.width(), icon_pixmap.height());
+            if( icon_pixmap.mask() )
+                d->cursor_icon_widget->setMask( *icon_pixmap.mask());
+            else
+                d->cursor_icon_widget->clearMask();
+            d->cursor_icon_widget->setBackgroundPixmap( icon_pixmap );
+            d->cursor_icon_widget->erase();
+        }
+        QPoint c_pos = QCursor::pos();
+        d->cursor_icon_widget->move( c_pos.x() + 15, c_pos.y() + 15 );
+        XRaiseWindow( qt_xdisplay(), d->cursor_icon_widget->winId());
+        QApplication::flushX();
+        d->cursor_icon_widget->show();
+    }
+    else if ( d->cursor_icon_widget )
+        d->cursor_icon_widget->hide();
+            
     if (r && r->isWidget()) {
 	_mouse->ignore();
     }
@@ -2695,6 +2737,10 @@ void KHTMLView::focusOutEvent( QFocusEvent *e )
 	}/*end switch*/
     }/*end if*/
 #endif // KHTML_NO_CARET
+    
+    if ( d->cursor_icon_widget )
+        d->cursor_icon_widget->hide();
+
     QScrollView::focusOutEvent( e );
 }
 
@@ -2929,7 +2975,7 @@ void KHTMLView::complete( bool pendingAction )
     if (!d->emitCompletedAfterRepaint)
     {
         if (!pendingAction)
-            emit m_part->completed();
+	    emit m_part->completed();
         else
             emit m_part->completed(true);
     }
