@@ -394,7 +394,7 @@ void KFileIconView::updateView( bool b )
 {
     if ( !b )
         return; // eh?
-        
+
     KFileIconViewItem *item = static_cast<KFileIconViewItem*>(QIconView::firstItem());
     if ( item ) {
         if ( d->previews->isChecked() ) {
@@ -467,10 +467,10 @@ void KFileIconView::slotSelectionChanged()
 
 void KFileIconView::slotSmallColumns()
 {
-    // setItemTextPos(), setArrangement(), setWordWrapIconText() and 
+    // setItemTextPos(), setArrangement(), setWordWrapIconText() and
     // setIconSize() all call arrangeItemsInGrid() :( Prevent this.
     d->noArrangement = true; // stop arrangeItemsInGrid()!
-    
+
     // Make sure to uncheck previews if selected
     if ( d->previews->isChecked() )
     {
@@ -481,22 +481,24 @@ void KFileIconView::slotSmallColumns()
     setItemTextPos( Right );
     setArrangement( TopToBottom );
     setWordWrapIconText( false );
-    
+    setSpacing( 0 );
+
     d->noArrangement = false; // now we can arrange
     setIconSize( KIcon::SizeSmall );
 }
 
 void KFileIconView::slotLargeRows()
 {
-    // setItemTextPos(), setArrangement(), setWordWrapIconText() and 
+    // setItemTextPos(), setArrangement(), setWordWrapIconText() and
     // setIconSize() all call arrangeItemsInGrid() :( Prevent this.
     d->noArrangement = true; // stop arrangeItemsInGrid()!
-    
+
     setGridX( KGlobal::iconLoader()->currentSize( KIcon::Desktop ) + 50 );
     setItemTextPos( Bottom );
     setArrangement( LeftToRight );
     setWordWrapIconText( true );
-    
+    setSpacing( 5 ); // default in QIconView
+
     d->noArrangement = false; // now we can arrange
     setIconSize( KIcon::SizeMedium );
 }
@@ -722,7 +724,7 @@ void KFileIconView::arrangeItemsInGrid( bool update )
 {
     if ( d->noArrangement )
         return;
-    
+
     KIconView::arrangeItemsInGrid( update );
 }
 
