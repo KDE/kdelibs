@@ -520,7 +520,7 @@ public:
    *
    * @param numStr the string we want to convert.
    * @param ok the boolean that is set to false if it's not a number.
-   *           If @ok is 0, it will be ignored
+   *           If @p ok is 0, it will be ignored
    *
    * @return The string converted to a double
    */
@@ -531,7 +531,7 @@ public:
    *
    * @param numStr the string we want to convert.
    * @param ok the boolean that is set to false if it's not a number.
-   *           If @ok is 0, it will be ignored
+   *           If @p ok is 0, it will be ignored
    *
    * @return The string converted to a double
    */
@@ -543,7 +543,7 @@ public:
    *
    * @param str the string we want to convert.
    * @param ok the boolean that is set to false if it's not a valid date.
-   *           If @ok is 0, it will be ignored
+   *           If @p ok is 0, it will be ignored
    *
    * @return The string converted to a QDate
    */
@@ -561,7 +561,7 @@ public:
    *
    * @param str the string we want to convert.
    * @param ok the boolean that is set to false if it's not a valid time.
-   *           If @ok is 0, it will be ignored
+   *           If @p ok is 0, it will be ignored
    *
    * @return The string converted to a QTime
    */
