@@ -18,38 +18,20 @@
     Boston, MA 02111-1307, USA.
 */
 
-#define NOFORK
+/*
+ * To debug add "--nofork" to the commandline!
+ */
 
 #include "kcookieserver.h"
-#include <kuniqueapp.h>
-#include <dcopclient.h>
-#include <unistd.h>
 #include <stdio.h>
 
 int main(int argc, char *argv[])
 {
-   KUniqueApplication k(argc, argv, "kcookiejar", true /* has a GUI */);
- 
-   kapp->dcopClient()->attach();
-   kapp->dcopClient()->registerAs( kapp->name()) ;
-
-   KCookieServer server;
-
-#ifndef NOFORK     // define NOFORK to debug kcookiejar in gdb
-     QApplication::flushX();	
-     switch(fork()) {
-     case -1:
-	  fprintf(stderr, "kcookiejar: fork() failed!\n");
-	  break;
-     case 0:
-	  // ignore in child
-	  break;
-     default:
-	  // parent: exit immediatly
-          fprintf(stdout, "kcookiejar now running in the background\n");
-	  _exit(0);
-     }
-#endif
-
-     return k.exec(); // keep running
+   if (!KCookieServer::start(argc, argv, "kcookiejar"))
+   {
+      printf("KCookieJar already running.\n");
+      exit(0);
+   }
+   KCookieServer server(argc, argv);
+   return server.exec(); // keep running
 }

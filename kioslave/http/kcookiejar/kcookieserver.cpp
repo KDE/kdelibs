@@ -34,7 +34,8 @@
 #include <qtimer.h>
 #include <unistd.h>
 
-KCookieServer::KCookieServer() : DCOPObject( "kcookiejar" )
+KCookieServer::KCookieServer(int argc, char *argv[]) 
+  : KUniqueApplication( argc, argv, "kcookiejar" )
 {
    mCookieJar = new KCookieJar;
    mPendingCookies = new KCookieList;
@@ -93,6 +94,10 @@ KCookieServer::process(const QCString &fun, const QByteArray &data,
         kdebug(KDEBUG_INFO, 7104, "got addCookies(%s, %s)", arg1.ascii(), arg2.data());
         addCookies(arg1, arg2); 
         replyType = "void";
+        return true;
+    }
+    else if (KUniqueApplication::process(fun, data, replyType, replyData))
+    {
         return true;
     }
     kdebug(KDEBUG_INFO, 7104, "Ignoring unknown DCOP function \"%s\"", fun.data());

@@ -26,17 +26,18 @@
 #define KCOOKIESERVER_H
 
 #include <dcopobject.h>
+#include <kuniqueapp.h>
 
 class KCookieList;
 class KCookieJar;
 class KCookie;
 class QTimer;
 
-class KCookieServer : public QObject, public DCOPObject
+class KCookieServer : public KUniqueApplication
 {
   Q_OBJECT 
 public:
-  KCookieServer();
+  KCookieServer(int argc, char *argv[]);
   ~KCookieServer();
 
   virtual bool process(const QCString &fun, const QByteArray &data,
