@@ -43,7 +43,7 @@ Section: libs
 Replaces: libarts1-alsa, libarts, libarts-alsa
 Depends: ${shlibs:Depends}
 Recommends: libarts-bin
-Suggests: kdelibs4, artsbuilder-cvs
+Suggests: kdelibs4, artsbuilder3
 Conflicts: suidmanager (<< 0.50), libarts1-alsa
 Description: aRts Sound system
  aRts is a short form for "analog realtime synthesizer". The idea of the whole
@@ -95,7 +95,7 @@ Section: libs
 Priority: extra
 Replaces: libarts1, libarts, libarts-alsa
 Depends: ${shlibs:Depends}
-Suggests: kdelibs4, artsbuilder-cvs
+Suggests: kdelibs4, artsbuilder3
 Recommends: libarts-bin
 Conflicts: suidmanager (<< 0.50), libarts1
 Description: aRts Sound system (built with alsa support)
