@@ -44,7 +44,7 @@
 KSplitListItem::KSplitListItem( const char *s, int _id )
 	:  QListBoxItem()
 {
-	id = _id;  
+	id = _id;
 	setText( s );
 	
 	QString str( s );
@@ -181,7 +181,7 @@ void KKeyButton::paint( QPainter *painter )
 
 	painter->setClipping( FALSE );
 	if( width() > 12 && height() > 8 )
-	qDrawShadePanel( painter, 6, 4, width() - 12, height() - 8, 
+	qDrawShadePanel( painter, 6, 4, width() - 12, height() - 8,
 								colorGroup(), TRUE, 1, 0L );
 	if ( editing ) {
 		painter->setPen( colorGroup().base() );
@@ -191,7 +191,7 @@ void KKeyButton::paint( QPainter *painter )
 		painter->setBrush( backgroundColor() );
 	}
 	if( width() > 14 && height() > 10 )
-	painter->drawRect( 7, 5, width() - 14, height() - 10 ); 
+	painter->drawRect( 7, 5, width() - 14, height() - 10 );
 
 	drawButtonLabel( painter );
 	
@@ -219,7 +219,7 @@ KKeyDialog::KKeyDialog( QDict<KKeyEntry> *aKeyDict, QWidget *parent,
 	setCaption("Configure key bindings");
 	setFocusPolicy( QWidget::StrongFocus );
 	
-	QBoxLayout *topLayout = new QVBoxLayout( this, 10 ); 
+	QBoxLayout *topLayout = new QVBoxLayout( this, 10 );
 	
 	KKeyChooser *kc =  new KKeyChooser( aKeyDict, this, check_against_std_keys );
 	
@@ -256,7 +256,7 @@ KKeyDialog::KKeyDialog( QDict<KKeyEntry> *aKeyDict, QWidget *parent,
 int KKeyDialog::configureKeys( KAccel *keys, bool save_settings )
 {
 	QDict<KKeyEntry> dict = keys->keyDict();
-   
+
     KKeyDialog *kd = new KKeyDialog( &dict );
     CHECK_PTR( kd );
 	int retcode = kd->exec();
@@ -273,7 +273,7 @@ int KKeyDialog::configureKeys( KAccel *keys, bool save_settings )
 int KKeyDialog::configureKeys( KGlobalAccel *keys, bool save_settings )
 {
 	QDict<KKeyEntry> dict = keys->keyDict();
-   
+
     KKeyDialog *kd = new KKeyDialog( &dict );
     CHECK_PTR( kd );
 	int retcode = kd->exec();
@@ -306,7 +306,7 @@ KKeyChooser::KKeyChooser( QDict<KKeyEntry> *aKeyDict, QWidget *parent ,
 	//		BUTTONS LAYOUT
 	// Items are added to topLayout as they are created.
 	
-	QBoxLayout *topLayout = new QVBoxLayout( this, 0, 10 ); 
+	QBoxLayout *topLayout = new QVBoxLayout( this, 0, 10 );
 	
 	// CREATE LIST LABELS
 	
@@ -485,10 +485,10 @@ KKeyChooser::KKeyChooser( QDict<KKeyEntry> *aKeyDict, QWidget *parent ,
 	wList->update();
 	
 	globalDict = new QDict<int> ( 100, false );
-	globalDict->setAutoDelete( true );
+	//globalDict->setAutoDelete( true );
 	readGlobalKeys();
 	stdDict = new QDict<int> ( 100, false );
-	stdDict->setAutoDelete( true );
+	//stdDict->setAutoDelete( true );
 	if (check_against_std_keys)
 	  readStdKeys();
 	topLayout->activate();
@@ -771,7 +771,7 @@ void KKeyChooser::allDefault()
 
 		connect( wList, SIGNAL( newWidth( int ) ),
 				 sli, SLOT( setWidth( int ) ) );
-				 
+				
 		sli->setWidth( wList->width() );
 		
 		wList->inSort( sli );
@@ -803,7 +803,7 @@ void KKeyChooser::listSync()
 
 		connect( wList, SIGNAL( newWidth( int ) ),
 				 sli, SLOT( setWidth( int ) ) );
-				 
+				
 		sli->setWidth( wList->width() );
 		
 		wList->inSort( sli );
@@ -826,7 +826,7 @@ const QString KKeyChooser::item( uint keyCode, const QString& entryKey )
 	str = str.leftJustify(MAX_FCTN_LENGTH, ' ', TRUE);
 	str += " : ";
 	str += keyToString(keyCode, true);
-	str = str.leftJustify( MAX_FCTN_LENGTH + 3 + 
+	str = str.leftJustify( MAX_FCTN_LENGTH + 3 +
 						   MAX_KEY_LENGTH+MAX_KEY_MODIFIER_LENGTH, ' ', TRUE );
 	return str;
 }
@@ -849,7 +849,7 @@ void KKeyChooser::shiftClicked()
 		
 		connect( wList, SIGNAL( newWidth( int ) ),
 				 sli, SLOT( setWidth( int ) ) );
-				 
+				
 					
 		sli->setWidth( wList->width() );
 		
@@ -876,7 +876,7 @@ void KKeyChooser::ctrlClicked()
 		
 		connect( wList, SIGNAL( newWidth( int ) ),
 				 sli, SLOT( setWidth( int ) ) );
-				 
+				
 					
 		sli->setWidth( wList->width() );
 		
@@ -903,7 +903,7 @@ void KKeyChooser::altClicked()
 		
 		connect( wList, SIGNAL( newWidth( int ) ),
 				 sli, SLOT( setWidth( int ) ) );
-				 
+				
 					
 		sli->setWidth( wList->width() );
 			
@@ -976,7 +976,7 @@ void KKeyChooser::setKey( uint kCode)
 		
 	connect( wList, SIGNAL( newWidth( int ) ),
 			 sli, SLOT( setWidth( int ) ) );
-				 
+				
 				
 	sli->setWidth( wList->width() );
 	
@@ -986,7 +986,7 @@ void KKeyChooser::setKey( uint kCode)
 
 void KKeyChooser::editKey()
 {
-	bChange->setEnabled( FALSE ); //eKey->setEnabled( TRUE ); 
+	bChange->setEnabled( FALSE ); //eKey->setEnabled( TRUE );
 	lInfo->setText("Return to end edition");
 }
 
@@ -1088,4 +1088,4 @@ bool KKeyChooser::isKeyPresent()
 	emit keyChange();
 	
 	return FALSE;
-}   
+}
