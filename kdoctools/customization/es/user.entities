@@ -19,6 +19,7 @@
 <!ENTITY Shift "<keycap>Mayúsculas</keycap>">
 <!ENTITY Esc "<keycap>Esc</keycap>">
 <!ENTITY Backspace "<keycap>Retroceso</keycap>">
+<!ENTITY OS "<keycap>Sistema operativo</keycap>">
 <!ENTITY X-Windows      '<trademark class="registered">Sistema de ventanas X</trademark>'>
 <!ENTITY FAQ    '<acronym>PFs</acronym>'>
 <!ENTITY RMB    "<mousebutton>botón derecho</mousebutton>">
