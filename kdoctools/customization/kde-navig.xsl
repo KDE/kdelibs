@@ -1,6 +1,38 @@
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
             	version="1.0">
 
+<xsl:template match="email">
+  <xsl:call-template name="inline.monoseq">
+    <xsl:with-param name="content">
+      <xsl:text>(</xsl:text>
+                <xsl:call-template name="replaceCharsInString">
+                        <xsl:with-param name="stringIn" select="."/>
+                        <xsl:with-param name="charsIn" select="'@'"/>
+                        <xsl:with-param name="charsOut" select="' AT '"/>
+                </xsl:call-template>
+      <xsl:text>)</xsl:text>
+    </xsl:with-param>
+  </xsl:call-template>
+</xsl:template>
+<xsl:template name="replaceCharsInString">
+  <xsl:param name="stringIn"/>
+  <xsl:param name="charsIn"/>
+  <xsl:param name="charsOut"/>
+  <xsl:choose>
+    <xsl:when test="contains($stringIn,$charsIn)">
+      <xsl:value-of select="concat(substring-before($stringIn,$charsIn),$charsOut)"/>
+      <xsl:call-template name="replaceCharsInString">
+        <xsl:with-param name="stringIn" select="substring-after($stringIn,$charsIn)"/>
+        <xsl:with-param name="charsIn" select="$charsIn"/>
+        <xsl:with-param name="charsOut" select="$charsOut"/>
+      </xsl:call-template>
+    </xsl:when>
+    <xsl:otherwise>
+      <xsl:value-of select="$stringIn"/>
+    </xsl:otherwise>
+  </xsl:choose>
+</xsl:template>
+
 
 <xsl:template name="header.navigation">
   <xsl:param name="prev" select="/foo"/>
