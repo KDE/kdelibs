@@ -1501,6 +1501,18 @@ bool HTTPProtocol::readHeader()
         m_strMimeType = QString::fromLatin1("application/x-gzip");
      }
   }
+
+  // We can't handle "bzip2" encoding (yet). So if we get something with
+  // bzip2 encoding, we change the mimetype to "application/x-bzip2".
+  // Note for future changes: some web-servers send both "bzip2" as 
+  //   encoding and "application/x-bzip2" as mimetype. That is wrong.
+  //   currently that doesn't bother us, because we remove the encoding
+  //   and set the mimetype to x-bzip2 anyway.
+  if (m_qContentEncodings.last() == "bzip2")
+  {
+     m_qContentEncodings.remove(m_qContentEncodings.fromLast());
+     m_strMimeType = QString::fromLatin1("application/x-bzip2");
+  }
  
   // Convert some common mimetypes to standard KDE mimetypes
   if (m_strMimeType == "application/x-targz")
@@ -1565,6 +1577,8 @@ void HTTPProtocol::addEncoding(QString encoding, QStringList &encs)
       m_iSize = -1;
   } else if ((encoding == "x-gzip") || (encoding == "gzip")) {
     encs.append(QString::fromLatin1("gzip"));
+  } else if ((encoding == "x-bzip2") || (encoding == "bzip2")) {
+    encs.append(QString::fromLatin1("bzip2")); // Not yet supported!
   } else if ((encoding == "x-deflate") || (encoding == "deflate")) {
     encs.append(QString::fromLatin1("deflate"));
     // kdDebug(7103) << "Deflate not implemented.  Please write code. Pid = " << getpid() << " Encoding = \"" << encoding << "\"" << endl;
