@@ -2,7 +2,7 @@
 #define _KGLOBALACCEL_EMB_H
 
 #include "kaccelbase.h"
-#include "kkeysequence.h"
+#include "kshortcut.h"
 
 class KGlobalAccelPrivate
 {

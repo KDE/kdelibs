@@ -2,7 +2,7 @@
 #define _KSHORTCUTS_H
 
 #include <qstring.h>
-#include <kkeysequence.h>
+#include <kshortcut.h>
 
 class KAccelShortcuts;
 
