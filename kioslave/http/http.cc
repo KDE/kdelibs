@@ -2692,7 +2692,11 @@ bool HTTPProtocol::readHeader()
         if (*pos)
         {
           mediaAttribute = QString::fromLatin1(start, pos-start).stripWhiteSpace().lower();
-          mediaValue = QString::fromLatin1(++pos).stripWhiteSpace().lower();
+          mediaValue = QString::fromLatin1(++pos).stripWhiteSpace();
+          if (mediaValue.length() && 
+              (mediaValue[0] == '"') &&
+              (mediaValue[mediaValue.length()-1] == '"'))
+             mediaValue = mediaValue.mid(1, mediaValue.length()-2);
 
           kdDebug (7113) << "(" << m_pid << ") Media-Parameter Attribute: "
                          << mediaAttribute << endl;
@@ -2700,7 +2704,15 @@ bool HTTPProtocol::readHeader()
                          << mediaValue << endl;
 
           if ( mediaAttribute.lower() == "charset")
+          {
+            mediaValue = mediaValue.lower();
+            setMetaData("charset", mediaValue);
             m_request.strCharset = mediaValue;
+          }
+          else
+          {
+            setMetaData("media-"+mediaAttribute.lower(), mediaValue);
+          }
         }
       }
     }
@@ -3276,11 +3288,6 @@ bool HTTPProtocol::readHeader()
      m_iSize = -1;
   }
 #endif
-
-  // Set charset. Maybe charset should be a class member, since
-  // this method is somewhat recursive....
-  if ( !mediaAttribute.isEmpty() )
-    setMetaData(mediaAttribute, mediaValue);
 
   if( !disposition.isEmpty() )
   {
