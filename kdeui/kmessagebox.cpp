@@ -107,7 +107,7 @@ static int createKMessageBox(KDialogBase *dialog, QMessageBox::Icon icon, const 
     {
        int new_width = (pref_width * 9) / 10;
        if (new_width < min_width)
-          min_width = min_width;
+          new_width = min_width;
        int new_height = label2->heightForWidth(new_width);
        if (new_height > pref_height)
           break;
