@@ -149,10 +149,9 @@ KHTMLParser::~KHTMLParser()
     kdDebug( ) << "TIME: parsing time was = " << qt.elapsed() << endl;
 #endif
 
+    freeBlock();
 
     document->deref();
-
-    freeBlock();
 
     delete [] forbiddenTag;
     delete isindex;
