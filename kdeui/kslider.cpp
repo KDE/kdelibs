@@ -85,12 +85,16 @@ void KSlider::drawShadeLine( QPainter *painter )
 
 void KSlider::drawFocusBar(QPainter *painter, const QRect & )
 {
+/*
    if ( isFocussed )
      painter->setPen(colorGroup().dark() );
    else
      painter->setPen(colorGroup().background() );
-
-   painter->drawRect(0,0,width()-1,height()-1);
+*/
+   if ( isFocussed )
+     qDrawPlainRect(painter,0,0,width(),height(), colorGroup().dark(),1,0);
+   else
+     qDrawPlainRect(painter,0,0,width(),height(), colorGroup().background(),1,0);
 }
 
 
@@ -98,13 +102,15 @@ void KSlider::paintSlider(QPainter *painter, const QRect &re )
 {
   QPoint pos;
 
-  drawFocusBar(painter, re);
-
+  // erase old arrow
   pos = calcArrowPos( prevValue() );
   drawArrow( painter, false, pos );
 
+  // show, if focussed
+  drawFocusBar(painter, re);
   drawShadeLine(painter);
 
+  // draw new arrow
   pos = calcArrowPos( value() );
   drawArrow( painter, true, pos );
 }
