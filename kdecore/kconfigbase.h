@@ -795,7 +795,7 @@ public:
    *
    * It is checked whether the path is located under $HOME. If so the
    * path is written out with the user's home-directory replaced with
-   * $HOME. The path should be read back with @see readPathEntry()
+   * $HOME. The path should be read back with @ref readPathEntry()
    *
    * @param pKey The key to write.
    * @param path The path to write.
