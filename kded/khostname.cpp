@@ -75,7 +75,7 @@ KHostName::KHostName()
    home = ::getenv("HOME");
    if (home.isEmpty())
    {
-      fprintf(stderr, i18n("Error: HOME environment variable not set.\n").local8Bit());
+      fprintf(stderr, "%s", i18n("Error: HOME environment variable not set.\n").local8Bit().data());
       exit(1);
    }
 
@@ -84,7 +84,7 @@ KHostName::KHostName()
    display.replace(QRegExp("\\.[0-9]+$"), "");
    if (display.isEmpty())
    {
-      fprintf(stderr, i18n("Error: DISPLAY environment variable not set.\n").local8Bit());
+      fprintf(stderr, "%s", i18n("Error: DISPLAY environment variable not set.\n").local8Bit().data());
       exit(1);
    }
 }
