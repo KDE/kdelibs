@@ -1,6 +1,6 @@
 /* This file is part of the KDE project
  *
- * Copyright (C) 2000 George Staikos <staikos@kde.org>
+ * Copyright (C) 2000,2001 George Staikos <staikos@kde.org>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -38,6 +38,7 @@ class QDateTime;
 // This functionality is missing in OpenSSL
 QString ASN1_UTCTIME_QString(ASN1_UTCTIME *tm);
 QDateTime ASN1_UTCTIME_QDateTime(ASN1_UTCTIME *tm, int *isGmt);
+QString ASN1_INTEGER_QString(ASN1_INTEGER *aint);
 #endif
 
 

@@ -98,6 +98,10 @@ static char* (*K_sk_value) (STACK*, int) = NULL;
 static STACK* (*K_sk_new) (int (*)()) = NULL;
 static int (*K_sk_push) (STACK*, char*) = NULL;
 static STACK* (*K_sk_dup) (STACK *) = NULL;
+static char * (*K_i2s_ASN1_INTEGER) (X509V3_EXT_METHOD *, ASN1_INTEGER *) =NULL;
+static ASN1_INTEGER * (*K_X509_get_serialNumber) (X509 *) = NULL;
+static EVP_PKEY *(*K_X509_get_pubkey)(X509 *) = NULL;
+static int (*K_i2d_PublicKey)(EVP_PKEY *, unsigned char **) = NULL;
 #endif    
 };
 
@@ -145,10 +149,12 @@ KConfig *cfg;
 // FIXME: #define here for the various OS types to optimize
    libnamess << "libssl.so.0"
              << "libssl.so"
+	     << "libssl.so.0.9.6"
              << "libssl.sl";
 
    libnamesc << "libcrypto.so.0"
              << "libcrypto.so"
+	     << "libcrypto.so.0.9.6"
              << "libcrypto.sl";
 
    for (QStringList::Iterator it = libpaths.begin();
@@ -207,6 +213,10 @@ KConfig *cfg;
       K_sk_new = (STACK* (*) (int (*)())) _cryptoLib->symbol("sk_new");
       K_sk_push = (int (*) (STACK*, char*)) _cryptoLib->symbol("sk_push");
       K_sk_dup = (STACK* (*) (STACK *)) _cryptoLib->symbol("sk_dup");
+      K_i2s_ASN1_INTEGER = (char *(*) (X509V3_EXT_METHOD *, ASN1_INTEGER *)) _cryptoLib->symbol("i2s_ASN1_INTEGER");
+      K_X509_get_serialNumber = (ASN1_INTEGER * (*) (X509 *)) _cryptoLib->symbol("X509_get_serialNumber");
+      K_X509_get_pubkey = (EVP_PKEY *(*)(X509 *)) _cryptoLib->symbol("X509_get_pubkey");
+      K_i2d_PublicKey = (int (*)(EVP_PKEY *, unsigned char **)) _cryptoLib->symbol("i2d_PublicKey");
 #endif
    }
 
@@ -701,6 +711,29 @@ int KOpenSSLProxy::sk_push(STACK* s, char* d) {
    else return -1;
 }
 
+
+char *KOpenSSLProxy::i2s_ASN1_INTEGER(X509V3_EXT_METHOD *meth, ASN1_INTEGER *aint) {
+   if (K_i2s_ASN1_INTEGER) return (K_i2s_ASN1_INTEGER)(meth, aint);
+   else return NULL;
+}
+
+
+ASN1_INTEGER *KOpenSSLProxy::X509_get_serialNumber(X509 *x) {
+   if (K_X509_get_serialNumber) return (K_X509_get_serialNumber)(x);
+   else return NULL;
+}
+
+
+EVP_PKEY *KOpenSSLProxy::X509_get_pubkey(X509 *x) {
+   if (K_X509_get_pubkey) return (K_X509_get_pubkey)(x);
+   else return NULL;
+}
+
+
+int KOpenSSLProxy::i2d_PublicKey(EVP_PKEY *a, unsigned char **pp) {
+   if (K_i2d_PublicKey) return (K_i2d_PublicKey)(a,pp);
+   else return 0;
+}
 
 #endif
 

@@ -1,6 +1,6 @@
 /* This file is part of the KDE project
  *
- * Copyright (C) 2000 George Staikos <staikos@kde.org>
+ * Copyright (C) 2000,2001 George Staikos <staikos@kde.org>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -133,6 +133,38 @@ return rc;
 }
 
 
+QString KSSLCertificate::getSerialNumber() const {
+QString rc = "";
+
+#ifdef HAVE_SSL
+  ASN1_INTEGER *aint = d->kossl->X509_get_serialNumber(d->m_cert);
+  if (aint) {
+    rc = ASN1_INTEGER_QString(aint);
+    d->kossl->OPENSSL_free(aint);
+  }
+#endif
+return rc;
+}
+
+
+QString KSSLCertificate::getPublicKey() const {
+QString rc = "unimplemented";
+
+#ifdef HAVE_SSL
+  EVP_PKEY *pkey = d->kossl->X509_get_pubkey(d->m_cert);
+  if (pkey) {
+     unsigned char *ptr;
+     int cnt = d->kossl->i2d_PublicKey(pkey, &ptr);
+     if (cnt > 0) {
+     }
+     d->kossl->OPENSSL_free(ptr);
+     d->kossl->OPENSSL_free(pkey);
+  }
+#endif
+return rc;
+}
+
+
 QString KSSLCertificate::getIssuer() const {
 QString rc = "";
 
@@ -259,9 +291,12 @@ KSSLCertificate::KSSLValidation KSSLCertificate::validate() {
     if (d->_chain.isValid())
       d->kossl->X509_STORE_CTX_set_chain(certStoreCTX, (STACK_OF(X509)*)d->_chain.rawChain());
 
-    // FIXME: do all the X509_STORE_CTX_set_flags(); here
-    //   +----->  Note that this is for 0.9.6 or better ONLY!
-
+    //kdDebug(7029) << "KSSL setting CRL.............." << endl;
+    // int X509_STORE_add_crl(X509_STORE *ctx, X509_CRL *x); 
+    //
+    
+    // int X509_STORE_CTX_set_purpose(X509_STORE_CTX *ctx, int purpose);
+    
     //kdDebug(7029) << "KSSL verifying.............." << endl;
     certStoreCTX->error = X509_V_OK;
     rc = d->kossl->X509_verify_cert(certStoreCTX);
@@ -273,6 +308,7 @@ KSSLCertificate::KSSLValidation KSSLCertificate::validate() {
     //
 
     ksslv = processError(errcode);
+
     //kdDebug(7029) << "KSSL Validation procedure RC: " << rc << endl;
     //kdDebug(7029) << "KSSL Validation procedure errcode: " << errcode << endl;
     //kdDebug(7029) << "KSSL Validation procedure RESULTS: " << ksslv << endl;

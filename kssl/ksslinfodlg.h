@@ -1,6 +1,6 @@
 /* This file is part of the KDE project
  *
- * Copyright (C) 2000 George Staikos <staikos@kde.org>
+ * Copyright (C) 2000,2001 George Staikos <staikos@kde.org>
  * Copyright (C) 2000 Malte Starostik <malte.starostik@t-online.de>
  *
  * This library is free software; you can redistribute it and/or
@@ -32,6 +32,9 @@
 class QWidget;
 class KSSLCertBox;
 
+//  NO GUARANTEES THAT KSSLInfoDlg:: will remain BC
+//  Contact staikos@kde.org for details if needed
+
 class KSSLInfoDlg : public KDialog {
 
   Q_OBJECT
@@ -45,15 +48,16 @@ public:
              const QString& cipher, const QString& cipherdesc,
              const QString& sslversion, int usedbits, int bits,
              KSSLCertificate::KSSLValidation certState,
-             const QString& goodFrom, const QString& goodUntil);
+             const QString& goodFrom, const QString& goodUntil,
+	     const QString& serialNum);
 
+public:
   void setup( KSSL & ssl, const QString & ip, const QString & url );
   static KSSLCertBox *certInfoWidget(QWidget *parent, const QString &certName, QWidget *mailCatcher=0);
 
 private:
   QScrollView *buildCertInfo(const QString &certName);
 
-private:
   class KSSLInfoDlgPrivate;
   KSSLInfoDlgPrivate *d;
 

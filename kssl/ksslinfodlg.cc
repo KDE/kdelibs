@@ -1,6 +1,6 @@
 /* This file is part of the KDE project
  *
- * Copyright (C) 2000 George Staikos <staikos@kde.org>
+ * Copyright (C) 2000,2001 George Staikos <staikos@kde.org>
  * Copyright (C) 2000 Malte Starostik <malte.starostik@t-online.de>
  *
  * This library is free software; you can redistribute it and/or
@@ -113,7 +113,8 @@ void KSSLInfoDlg::setup( KSSL & ssl, const QString & ip, const QString & url )
         ssl.connectionInfo().getCipherBits(),
         ssl.peerInfo().getPeerCertificate().validate(),
         ssl.peerInfo().getPeerCertificate().getNotBefore(),
-        ssl.peerInfo().getPeerCertificate().getNotAfter()
+        ssl.peerInfo().getPeerCertificate().getNotAfter(),
+        ssl.peerInfo().getPeerCertificate().getSerialNumber()
         );
 }
 
@@ -122,7 +123,8 @@ void KSSLInfoDlg::setup(const QString& peername, const QString& issuer,
                         const QString& cipher, const QString& cipherdesc,
                         const QString& sslversion, int usedbits, int bits,
                         KSSLCertificate::KSSLValidation certState,
-                        const QString& goodFrom, const QString& goodUntil) {
+                        const QString& goodFrom, const QString& goodUntil,
+			const QString& serialNum) {
 // Needed to put the GUI stuff here to get the layouting right
     QGridLayout *layout = new QGridLayout(2, 2, KDialog::spacingHint());
     layout->addWidget(new QLabel(i18n("Peer Certificate:"), this), 0, 0);
@@ -131,7 +133,7 @@ void KSSLInfoDlg::setup(const QString& peername, const QString& issuer,
     layout->addWidget(buildCertInfo(issuer), 1, 1);
     d->m_layout->addMultiCell(layout, 1, 1, 0, 2);
 
-    layout = new QGridLayout(7, 2, KDialog::spacingHint());
+    layout = new QGridLayout(8, 2, KDialog::spacingHint());
     layout->setColStretch(1, 1);
     layout->addWidget(new QLabel(i18n("IP Address:"), this), 0, 0);
     layout->addWidget(new QLabel(ip, this), 0, 1);
@@ -164,14 +166,16 @@ void KSSLInfoDlg::setup(const QString& peername, const QString& issuer,
     }
     update();
 
-    layout->addWidget(new QLabel(i18n("Cipher in Use:"), this), 3, 0);
-    layout->addWidget(new QLabel(cipher, this), 3, 1);
-    layout->addWidget(new QLabel(i18n("Details:"), this), 4, 0);
-    layout->addWidget(new QLabel(cipherdesc.simplifyWhiteSpace(), this), 4, 1);
-    layout->addWidget(new QLabel(i18n("SSL Version:"), this), 5, 0);
-    layout->addWidget(new QLabel(sslversion, this), 5, 1);
-    layout->addWidget(new QLabel(i18n("Cipher Strength:"), this), 6, 0);
-    layout->addWidget(new QLabel(i18n("%1 bits used of a %2 bit cipher").arg(usedbits).arg(bits), this), 6, 1);
+    layout->addWidget(new QLabel(i18n("Serial Number:"), this), 3, 0);
+    layout->addWidget(new QLabel(serialNum, this), 3, 1);
+    layout->addWidget(new QLabel(i18n("Cipher in Use:"), this), 4, 0);
+    layout->addWidget(new QLabel(cipher, this), 4, 1);
+    layout->addWidget(new QLabel(i18n("Details:"), this), 5, 0);
+    layout->addWidget(new QLabel(cipherdesc.simplifyWhiteSpace(), this), 5, 1);
+    layout->addWidget(new QLabel(i18n("SSL Version:"), this), 6, 0);
+    layout->addWidget(new QLabel(sslversion, this), 6, 1);
+    layout->addWidget(new QLabel(i18n("Cipher Strength:"), this), 7, 0);
+    layout->addWidget(new QLabel(i18n("%1 bits used of a %2 bit cipher").arg(usedbits).arg(bits), this), 7, 1);
     d->m_layout->addMultiCell(layout, 2, 2, 0, 2);
 }
 

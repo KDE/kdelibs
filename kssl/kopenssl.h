@@ -464,6 +464,30 @@ public:
     */
    STACK *sk_dup(STACK *s);
 
+
+   /*
+    *  Convert an ASN1_INTEGER to it's text form
+    */
+   char *i2s_ASN1_INTEGER(X509V3_EXT_METHOD *meth, ASN1_INTEGER *aint);
+
+
+   /*
+    *  Get the certificate's serial number
+    */
+   ASN1_INTEGER *X509_get_serialNumber(X509 *x);
+
+
+   /*
+    *  Get the certificate's public key
+    */
+   EVP_PKEY *X509_get_pubkey(X509 *x);
+
+
+   /*
+    *  Convert the public key to a decimal form
+    */
+   int i2d_PublicKey(EVP_PKEY *a, unsigned char **pp); 
+
 #endif
 
 private:

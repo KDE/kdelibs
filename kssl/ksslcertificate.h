@@ -1,6 +1,6 @@
 /* This file is part of the KDE project
  *
- * Copyright (C) 2000 George Staikos <staikos@kde.org>
+ * Copyright (C) 2000,2001 George Staikos <staikos@kde.org>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -94,9 +94,9 @@ public:
   QByteArray toNetscape();
   QString    toText();
 
-  // getSerialNumber() const;
+  QString getSerialNumber() const;
   // getSignatureType() const;
-  // get public key ??
+  QString getPublicKey() const;
 
   bool isValid();
   KSSLValidation validate();

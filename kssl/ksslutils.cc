@@ -1,6 +1,6 @@
 /* This file is part of the KDE project
  *
- * Copyright (C) 2000 George Staikos <staikos@kde.org>
+ * Copyright (C) 2000,2001 George Staikos <staikos@kde.org>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -25,6 +25,8 @@
 #include <kglobal.h>
 #include <klocale.h>
 #include <qdatetime.h>
+
+#include "kopenssl.h"
 
 #ifdef HAVE_SSL
 // This code is mostly taken from OpenSSL v0.9.5a
@@ -74,9 +76,19 @@ QString ASN1_UTCTIME_QString(ASN1_UTCTIME *tm) {
   qstr = KGlobal::locale()->formatDateTime(qdt, false, true);
   if (gmt) { 
     qstr += " ";
-    qstr += /*TODO? i18n*/ ("GMT");
+    qstr += i18n("GMT");
   }
   return qstr;
 }
+
+
+QString ASN1_INTEGER_QString(ASN1_INTEGER *aint) {
+char *rep = KOSSL::self()->i2s_ASN1_INTEGER(NULL, aint);
+QString yy = rep;
+free(rep);
+return yy;
+}
+
+
 #endif
 
