@@ -269,24 +269,26 @@ KListView::~KListView()
 
 bool KListView::isExecuteArea( const QPoint& point )
 {
-   if ( itemAt( point ) )
-   {
-     if( allColumnsShowFocus() )
-       return true;
-     else {
+  if ( itemAt( point ) )
+    return isExecuteArea( point.x() );
 
-      int x = point.x();
-      int offset = 0;
-      int width = columnWidth( 0 );
-      int pos = header()->mapToIndex( 0 );
+  return false;
+}
 
-      for ( int index = 0; index < pos; index++ )
-         offset += columnWidth( header()->mapToSection( index ) );
+bool KListView::isExecuteArea( int x )
+{
+  if( allColumnsShowFocus() )
+    return true;
+  else {
+    int offset = 0;
+    int width = columnWidth( 0 );
+    int pos = header()->mapToIndex( 0 );
 
-      return ( x > offset && x < ( offset + width ) );
-     }
-   }
-   return false;
+    for ( int index = 0; index < pos; index++ )
+      offset += columnWidth( header()->mapToSection( index ) );
+
+    return ( x > offset && x < ( offset + width ) );
+  }
 }
 
 void KListView::slotOnItem( QListViewItem *item )

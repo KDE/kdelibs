@@ -121,7 +121,14 @@ public:
    * @return true if point is inside execute area of an item, false in all
    * other cases including the case that it is over the viewport.
    */
-  virtual bool isExecuteArea( const QPoint& point);
+  virtual bool isExecuteArea( const QPoint& point );
+
+  /**
+   * Same thing, but from an x coordinate only. This only checks if x is in
+   * the first column (if all columns don't show focus), without testing if
+   * the y coordinate is over an item or not.
+   */
+  bool isExecuteArea( int x );
 
   /**
    * @return a list containing the currently selected items.
