@@ -176,7 +176,7 @@ int SuProcess::ConverseSU(const char *password)
 	line = readLine(); 
 	if (line.isNull())
 	    return ( state == HandleStub ? notauthorized : error);
-	// kdDebug(900) << k_lineinfo << "Read line <" << line << ">" << endl;
+	kdDebug(900) << k_lineinfo << "Read line <" << line << ">" << endl;
 
 	switch (state) 
 	{
@@ -188,6 +188,18 @@ int SuProcess::ConverseSU(const char *password)
 		return ok;
 	    }
 
+            while(waitMS(m_Fd,100)>0)
+            {
+		// There is more output available, so the previous line
+		// couldn't have been a password prompt (the definition
+		// of prompt being that  there's a line of output followed 
+		// by a colon, and then the process waits).
+		QCString more = readLine();
+		if (more.isEmpty()) break;
+		line = more;
+		kdDebug(900) << k_lineinfo << "Read line <" << more << ">" << endl;
+            }
+            
 	    // Match "Password: " with the regex ^[^:]+:[\w]*$.
 	    for (i=0,j=0,colon=0; i<line.length(); i++) 
 	    {
@@ -203,7 +215,6 @@ int SuProcess::ConverseSU(const char *password)
 	    {
 		if (password == 0L)
 		    return killme;
-		waitMS(m_Fd,100);
 		if (!checkPid(m_Pid))
 		{
 		    kdError(900) << "su has exited while waiting for pwd." << endl;
