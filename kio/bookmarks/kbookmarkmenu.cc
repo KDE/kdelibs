@@ -786,19 +786,16 @@ void KBookmarkMenuNSImporter::openNSBookmarks()
   openBookmarks( KNSBookmarkImporter::netscapeBookmarksFile(), "netscape" );
 }
 
-KXBELBookmarkImporter::KXBELBookmarkImporter( const QString & fileName ) 
-   : m_fileName(fileName)
+void KXBELBookmarkImporterImpl::parse() 
 {
-   m_manager = KBookmarkManager::managerForFile(m_fileName);
+  KBookmarkManager *manager = KBookmarkManager::managerForFile(m_fileName);
+  KBookmarkGroup root = manager->root();
+  traverse(root);
+  // FIXME erm. this well, crashes!!!
+  // delete manager;
 }
 
-void KXBELBookmarkImporter::parse() 
-{
-   KBookmarkGroup root = m_manager->root();
-   traverse(root);
-}
-
-void KXBELBookmarkImporter::visit(const KBookmark &bk) 
+void KXBELBookmarkImporterImpl::visit(const KBookmark &bk) 
 {
   if (bk.isSeparator()) 
     emit newSeparator();
@@ -806,12 +803,12 @@ void KXBELBookmarkImporter::visit(const KBookmark &bk)
     emit newBookmark(bk.text(), bk.url().url().utf8(), "");
 }
 
-void KXBELBookmarkImporter::visitEnter(const KBookmarkGroup &grp)
+void KXBELBookmarkImporterImpl::visitEnter(const KBookmarkGroup &grp)
 {
   emit newFolder(grp.text(), false, "");
 }
    
-void KXBELBookmarkImporter::visitLeave(const KBookmarkGroup &)
+void KXBELBookmarkImporterImpl::visitLeave(const KBookmarkGroup &)
 {
   emit endFolder();
 }
@@ -819,36 +816,34 @@ void KXBELBookmarkImporter::visitLeave(const KBookmarkGroup &)
 void KBookmarkMenuNSImporter::openBookmarks( const QString location, const QString &type )
 {
   mstack.push(m_menu);
+
+  KBookmarkImporterBase *importer;
+
   if (type == "netscape")
   {
-    KNSBookmarkImporter importer( location );
-    connectToImporter(importer);
-    importer.parseNSBookmarks(false);
+    KNSBookmarkImporterImpl *myimporter = new KNSBookmarkImporterImpl;
+    myimporter->setUtf8(false);
+    importer = myimporter;
   } 
   else if (type == "mozilla")
   {
-    KNSBookmarkImporter importer( location );
-    connectToImporter(importer);
-    importer.parseNSBookmarks(true);
+    KNSBookmarkImporterImpl *myimporter = new KNSBookmarkImporterImpl;
+    myimporter->setUtf8(true);
+    importer = myimporter;
   }
   else if (type == "xbel")
-  {
-    KXBELBookmarkImporter importer( location );
-    connectToImporter(importer);
-    importer.parse();
-  }
+    importer = new KXBELBookmarkImporterImpl;
   else if (type == "ie")
-  {
-    KIEBookmarkImporter importer( location );
-    connectToImporter(importer);
-    importer.parseIEBookmarks();
-  }
+    importer = new KIEBookmarkImporterImpl;
   else if (type == "opera")
-  {
-    KOperaBookmarkImporter importer( location );
-    connectToImporter(importer);
-    importer.parseOperaBookmarks();
-  }
+    importer = new KOperaBookmarkImporterImpl;
+  else return;
+
+  importer->setFilename(location);
+  connectToImporter(*importer);
+  importer->parse();
+
+  delete importer;
 }
 
 void KBookmarkMenuNSImporter::connectToImporter(const QObject &importer)

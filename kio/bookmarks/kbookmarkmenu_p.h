@@ -32,6 +32,7 @@
 #include <kaction.h>
 
 #include "kbookmark.h"
+#include "kbookmarkimporter.h"
 #include "kbookmarkmanager.h"
 
 class QString;
@@ -156,25 +157,20 @@ public:
   static QString selectedAddress( QListView* );
 };
 
-class KXBELBookmarkImporter : public QObject, private KBookmarkGroupTraverser
+/**
+ * A class with the sole purpose of importing XBEL files for use in the bookmark menu
+ */
+class KXBELBookmarkImporterImpl : public KBookmarkImporterBase, private KBookmarkGroupTraverser
 {
     Q_OBJECT
 public:
-    KXBELBookmarkImporter( const QString & fileName );
-    ~KXBELBookmarkImporter() {}
-    void parse();
-signals:
-    void newBookmark( const QString & text, const QCString & url, const QString & additionalInfo );
-    void newFolder( const QString & text, bool open, const QString & additionalInfo );
-    void newSeparator();
-    void endFolder();
+    KXBELBookmarkImporterImpl() {}
+    virtual void parse();
+    virtual QString findDefaultLocation(bool = false) const { return QString::null; }
 private:
     virtual void visit(const KBookmark &);
     virtual void visitEnter(const KBookmarkGroup &);
     virtual void visitLeave(const KBookmarkGroup &);
-protected:
-    QString m_fileName;
-    KBookmarkManager *m_manager;
 };
 
 #endif
