@@ -1,3 +1,3 @@
 
-SUBDIRS=basicplugin stepplugin pillbox utils pics themes
+SUBDIRS=basicplugin stepplugin pillbox coldions utils pics themes
 
