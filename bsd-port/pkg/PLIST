@@ -155,6 +155,8 @@ share/toolbar/configure.xpm
 @dirrm share/locale/zh_TW_Big5
 @dirrm share/locale/sv/LC_MESSAGES
 @dirrm share/locale/sv
+@dirrm share/locale/sl/LC_MESSAGES
+@dirrm share/locale/sl
 @dirrm share/locale/sk/LC_MESSAGES
 @dirrm share/locale/sk
 @dirrm share/locale/ru/LC_MESSAGES
@@ -181,6 +183,8 @@ share/toolbar/configure.xpm
 @dirrm share/locale/fi
 @dirrm share/locale/es/LC_MESSAGES
 @dirrm share/locale/es
+@dirrm share/locale/en_UK/LC_MESSAGES
+@dirrm share/locale/en_UK
 @dirrm share/locale/el/LC_MESSAGES
 @dirrm share/locale/el
 @dirrm share/locale/de/LC_MESSAGES
@@ -197,5 +201,7 @@ share/toolbar/configure.xpm
 @dirrm share/doc/HTML
 @dirrm share/config
 @dirrm share/apps/khtmlw/pics
+@dirrm share/apps/khtmlw
 @dirrm share/apps/kde/pics
+@dirrm share/apps/kde
 @unexec /sbin/ldconfig -R
