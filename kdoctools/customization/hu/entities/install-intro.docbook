@@ -1,7 +1,6 @@
 <!-- requires that packagename is defined in the documentation prologue -->
-<para>A program a &kde; projekt (<ulink
-url="&kde-http;">&kde-http;</ulink>) része,</para>
+<para>A program a &kde; projekt (&kde-http;) része,</para>
 
-<para>a(z) &package; csomagban található, mely letölthető erről a címről: <ulink
-url="&kde-ftp;">&kde-ftp;</ulink>, a &kde; projekt központi &FTP;-kiszolgálójáról.
+<para>a(z) &package; csomagban található, mely letölthető erről a címről: 
+&kde-ftp;, a &kde; projekt központi &FTP;-kiszolgálójáról.
 </para>

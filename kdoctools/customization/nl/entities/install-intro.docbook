@@ -1,7 +1,5 @@
 <!-- requires that packagename is defined in the documentation prologue -->
-<para>&kappname; is een onderdeel van het &kde;-projekt <ulink
-url="&kde-http;">&kde-http;</ulink>.</para>
+<para>&kappname; is een onderdeel van het &kde;-projekt &kde-http;.</para>
 
-<para>U kan &kappname; vinden in de &package;-module op <ulink
-url="&kde-ftp;">&kde-ftp;</ulink>, the hoofd-&FTP;-site vand het
-&kde;-projekt.</para>
+<para>U kan &kappname; vinden in de &package;-module op 
+&kde-ftp;, the hoofd-&FTP;-site vand het &kde;-projekt.</para>

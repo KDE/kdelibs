@@ -1,7 +1,6 @@
 <!-- requires that packagename is defined in the documentation prologue -->
-<para>&kappname; forma parte del proyecto &kde; <ulink
-url="&kde-http;">&kde-http;</ulink>.</para>
+<para>&kappname; forma parte del proyecto &kde; &kde-http;.</para>
 
-<para>&kappname; está incluido en el paquete &package; en <ulink
-url="&kde-ftp;">&kde-ftp;</ulink>, el servidor &FTP; del proyecto &kde;.
+<para>&kappname; está incluido en el paquete &package; en &kde-ftp;, 
+el servidor &FTP; del proyecto &kde;.
 </para>
