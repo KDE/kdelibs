@@ -101,12 +101,39 @@ public:
     */
    KFileTreeBranch *branch( int branchno );
 
-   /*
+   KFileTreeBranch *branch( const QString& searchName );
+   /**
+    *  @returns a pointer to the @ref KFileTreeBranch in the KFileTreeView or zero on failiure.
+    *  @param searchName is a string with the branch name to search for.
+    */
+   
+   /**
     *  set the directory mode for branches. If true is passed, only directories will be loaded.
     */
    void setDirOnlyMode( int branchno, bool );
 
 
+   /**
+    * searches a branch for a @ref KFileTreeViewItem identified by the relative url given as
+    * second parameter. The method adds the branches base url to the relative path and finds
+    * the item.
+    * @returns a pointer to the item or zero if the item does not exist.
+    * @param branchNo is the index number of the branch in the kfiletreeview
+    * @param relUrl is the branch relativ url
+    */
+   KFileTreeViewItem *findItem( int branchNo, const QString& relUrl );
+
+   /**
+    * see method above, differs only in the first parameter. Finds the branch by its name.
+    */
+   KFileTreeViewItem *findItem( const QString& branchName, const QString& relUrl );
+   
+   /**
+    * see method above, differs only in the first parameter.
+    */
+   KFileTreeViewItem *findItem( KFileTreeBranch* brnch, const QString& relUrl );
+
+   
 public slots:
    void populateBranch( int );
 

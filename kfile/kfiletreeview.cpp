@@ -398,6 +398,23 @@ KFileTreeBranch *KFileTreeView::branch( int branchno )
    return( branch );
 }
 
+KFileTreeBranch *KFileTreeView::branch( const QString& searchName )
+{
+   KFileTreeBranch *branch = 0;
+   QPtrListIterator<KFileTreeBranch> it( m_branches );
+   
+   while ( (branch = it.current()) != 0 ) {
+      ++it;
+      QString bname = branch->name();
+      kdDebug(1201) << "This is the branches name: " << bname << endl;
+      if( bname == searchName )
+      {
+	 kdDebug(1201) << "Found branch " << bname << " and return ptr" << endl;
+	 return( branch );
+      }
+   }
+   return ( 0L ); 
+}
 
 bool KFileTreeView::removeBranch( int branchno )
 {
@@ -545,6 +562,50 @@ void KFileTreeView::slotItemRenamed(QListViewItem* item, const QString &name, in
 {
 }
 
+KFileTreeViewItem *KFileTreeView::findItem( int branchNo, const QString& relUrl )
+{
+   KFileTreeBranch *br = branch( branchNo );
+   return( findItem( br, relUrl ));
+}
+
+KFileTreeViewItem *KFileTreeView::findItem( const QString& branchName, const QString& relUrl )
+{
+   KFileTreeBranch *br = branch( branchName );
+   return( findItem( br, relUrl ));
+}
+
+KFileTreeViewItem *KFileTreeView::findItem( KFileTreeBranch* brnch, const QString& relUrl )
+{
+   KFileTreeViewItem *ret = 0;
+   if( brnch )
+   {
+      KURL url = brnch->rootUrl();
+      
+      if( ! relUrl.isEmpty() && relUrl != QString::fromLatin1("/") )
+      {
+	 QString partUrl( relUrl );
+      
+	 if( partUrl.endsWith("/"))
+	    partUrl.truncate( relUrl.length()-1 );
+      
+	 url.addPath( partUrl );
+      
+	 kdDebug(1201) << "assembled complete dir string " << url.prettyURL() << endl;
+
+	 KFileItem *fi = brnch->find( url );
+	 if( fi )
+	 {
+	    ret = static_cast<KFileTreeViewItem*>( fi->extraData( brnch ));
+	    kdDebug(1201) << "Found item !" <<ret << endl;
+	 }
+      }
+      else
+      {
+	 ret = brnch->root();
+      }
+   }
+   return( ret );
+}
 
 ///////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////
