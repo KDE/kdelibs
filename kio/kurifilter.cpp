@@ -121,9 +121,7 @@ QString KURIFilterData::iconName()
             case KURIFilterData::LOCAL_DIR:
             case KURIFilterData::NET_PROTOCOL:
             {
-                KMimeType::Ptr mimetype = KMimeType::findByURL( m_pURI );
-                if (mimetype)
-                    m_strIconName = mimetype->icon( m_pURI, false );
+                m_strIconName = KMimeType::iconForURL( m_pURI );
                 break;
             }
             case KURIFilterData::EXECUTABLE:
