@@ -478,6 +478,14 @@ noframes {
 	display: none;
 }
 
+frameset {
+	display: block;
+}
+
+frame { 
+	display: block;
+}
+
 /* noscript is handled internally, as it depends on the html settings */
 
 /* media rules are commented out for the moment. We'll have to add
