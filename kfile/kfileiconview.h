@@ -35,13 +35,13 @@ class QLabel;
  * An item for the iconview, that has a reference to its corresponding
  * @ref KFileItem.
  */
-class KFileIconViewItem : public QIconViewItem
+class KFileIconViewItem : public KIconViewItem
 {
 public:
     KFileIconViewItem( QIconView *parent, const QString &text,
 		       const QPixmap &pixmap,
 		       KFileItem *fi )
-	: QIconViewItem( parent, text, pixmap ), inf( fi ) {}
+	: KIconViewItem( parent, text, pixmap ), inf( fi ) {}
 
     virtual ~KFileIconViewItem();
 

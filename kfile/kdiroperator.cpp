@@ -918,7 +918,6 @@ void KDirOperator::setView(KFileView *view)
 
     setFocusProxy(view->widget());
     view->setSorting( mySorting );
-    qDebug("*** setSorting!");
     view->setOnlyDoubleClickSelectsFiles( d->onlyDoubleClickSelectsFiles );
     connectView(view); // also deletes the old view
 
