@@ -167,23 +167,6 @@ public:
     void cursorAtEnd() { end( false ); }
 
     /**
-    * Re-implemented from @ref KCompletionBase.
-    *
-    * This is a re-implementation of
-    * @ref KCompletionBase::setCompletionObject for
-    * internal reasons.
-    *
-    * NOTE: Letting this widget handle the completion
-    * and rotation signals internally does not stop
-    * external application from receiving @ref completion,
-    * @ref rotateUp and @ref rotateDown signals.
-    *
-    * @param compObj a @ref KCompletion or a derived child object.
-    * @param hsig if false do not handle signals internally
-    */
-    virtual void setCompletionObject( KCompletion* compObj, bool hsig = true );
-
-    /**
     * Re-implemented from @ref KCompletionBase for internal reasons.
     *
     * This function is re-implemented in order to make sure that
@@ -209,38 +192,11 @@ public:
     virtual void setEnableContextMenu( bool showMenu = true );
 
     /**
-    * Makes the completion mode changer visible in the context
-    * menu.
-    *
-    * Note that the mode changer item is a sub menu, that allows
-    * the user to select from one of the standard completion modes
-    * described at @ref KCompletionBase::setCompletionMode.
-    * Additionally, if the user changes the completion mode to
-    * something other than the global setting, a "Default" entry
-    * is added at the bottom to allow the user to revert his/her
-    * changes back to the global setting.
-    */
-    void showModeChanger();
-
-    /**
-    * Hides the completion mode changer in the context menu.
-    */
-    void hideModeChanger();
-
-    /**
     * Returns true when the context menu is enabled.
     *
     * @return @p true if context menu is enabled.
     */
     bool isContextMenuEnabled() const { return m_bEnableMenu; }
-
-    /**
-    * Returns true if the mode changer item is visible in
-    * the context menu.
-    *
-    * @return @p true if the mode changer is visible in context menu.
-    */
-    bool isModeChangerVisible() const { return m_bShowModeChanger; }
 
 signals:
 
@@ -280,6 +236,13 @@ signals:
 public slots:
 
     /*
+    * Re-implemented from QLineEdit for internal reasons.
+    *
+    * See @ref QLineEdit::setText.
+    */
+    virtual void setText ( const QString & );
+
+    /*
     * Iterates in the up (previous match) direction through
     * the completion list if it is available.
     *
@@ -306,60 +269,24 @@ public slots:
 protected slots:
 
     /**
-    * Copies the marked text to the clipboard, if there is any,
-    * and echoMode() is Normal. See also @ref QLineEdit::copy.
+    * Accepts the "aboutToShow" signal from the completion
+    * sub-menu.
+    *
+    * This implementation allows this widget to handle
+    * the requests for changing the completion mode on
+    * the fly by the user. See @ref showCompletionMenu().
     */
-    virtual void slotCopy()       { copy(); }
+    virtual void selectedItem( int itemID );
 
     /**
-    * Copies the marked text to the clipboard and deletes it
-    * if there is any.  See also @ref QLineEdit::cut.
+    * Populates the sub menu before it is displayed.
     */
-    virtual void slotCut()        { cut(); }
-
-    /**
-    * Inserts the text in the clipboard at the current cursor
-    * position, deleting any previously marked text. See also
-    * @ref QLineEdit::paste.
-    */
-    virtual void slotPaste()      { paste(); }
-
-    /**
-    * Sets the comepltion mode to KGlobalSettings::CompletionNone
-    */
-    virtual void modeNone()   { setCompletionMode( KGlobalSettings::CompletionNone ); }
-
-    /**
-    * Sets the comepltion mode to KGlobalSettings::CompletionManual
-    */
-    virtual void modeManual() { setCompletionMode( KGlobalSettings::CompletionMan );  }
-
-    /**
-    * Sets the comepltion mode to KGlobalSettings::CompletionAuto
-    */
-    virtual void modeAuto()   { setCompletionMode( KGlobalSettings::CompletionAuto ); }
-
-    /**
-    * Sets the comepltion mode to KGlobalSettings::CompletionShell
-    */
-    virtual void modeShell()  { setCompletionMode( KGlobalSettings::CompletionShell );}
-
-    /**
-    * Sets the comepltion mode to the global default setting
-    * defined by @ref KGlobalSettings::completionMode().
-    */
-    virtual void modeDefault()  { setCompletionMode( KGlobalSettings::completionMode() ); }
+    virtual void showCompletionMenu() { insertCompletionItems( this, SLOT( selectedItem( int ) ) ); }
 
     /**
     * Populates the context menu before it is displayed.
     */
     virtual void aboutToShowMenu();
-
-    /**
-    * Populates the sub menu before it is displayed.  Needed
-    * to put the "check mark" before displaying.
-    */
-    virtual void aboutToShowSubMenu( int );
 
     /**
     * Deals with text changes in auto completion mode.
@@ -371,17 +298,6 @@ protected slots:
     * a given list.
     */
     virtual void makeCompletion( const QString& );
-
-    /**
-    * Resets the completion object if it is deleted externally.
-    */
-    void completionDestroyed() { setCompletionObject( 0 , false ); }
-
-    /**
-    * Re-emitts the returnPressed signal with the current
-    * text as its argument.
-    */
-    void slotReturnPressed();
 
 protected:
 
@@ -415,13 +331,10 @@ protected:
     */
     virtual void mousePressEvent( QMouseEvent * );
 
-    // Pointers to the context & sub menus.
-    QPopupMenu *m_pContextMenu, *m_pSubMenu;
-
 private :
-    // Holds the location where the Mode
-    // switcher item was inserted.
-    int m_iCompletionID;
+    // Pointers to the context & sub menus.
+    QPopupMenu *m_pContextMenu;
+
     // Holds the length of the entry.
     int m_iPrevlen;
     // Holds the current cursor position.
@@ -430,9 +343,6 @@ private :
     // Indicates whether the context menu is enabled
     // or disabled
     bool m_bEnableMenu;
-    // Indicates whether the mode switcher item will be
-    // available in the context (popup) menu.
-    bool m_bShowModeChanger;
 };
 
 #endif

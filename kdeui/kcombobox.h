@@ -1,4 +1,5 @@
 /* This file is part of the KDE libraries
+
    Copyright (c) 2000 Dawit Alemayehu <adawit@earthlink.net>
 
    This library is free software; you can redistribute it and/or
@@ -99,9 +100,10 @@
  * combo->setCompletionObject( comp );
  * // Connect to the return pressed signal - optional
  * connect(combo,SIGNAL(returnPressed(const QString&)),comp,SLOT(addItem(const QString&));
- * <pre>
+ * </pre>
  *
  * Other miscelanous functions :
+ *
  * <pre>
  * // Tell the widget not to handle completion and rotation
  * combo->setHandleSignals( false );
@@ -161,19 +163,6 @@ public:
     /**
     * Re-implemented from QComboBox.
     *
-    * This function now always returns 0.  All the
-    * functions needed to manipulate the line edit
-    * with the execption of echomode are supplied
-    * here.  Methods that affect the funcationality
-    * of this widget are not made available.
-    *
-    * @return always a NULL pointer.
-    */
-    QLineEdit* lineEdit() const { return 0; }
-
-    /**
-    * Re-implemented from QComboBox.
-    *
     * If true, the completion mode will be set to automatic.
     * Otherwise, it is defaulted to the gloabl setting.  This
     * methods has been replaced by the more comprehensive @ref
@@ -195,22 +184,17 @@ public:
     bool autoCompletion() const { return m_iCompletionMode == KGlobalSettings::CompletionAuto; }
 
     /**
-    * Re-implemented from @ref KCompletionBase.
+    * Re-implemented from QComboBox.
     *
-    * This is a re-implementation of
-    * @ref KCompletionBase::setCompletionObject for
-    * internal reasons.
+    * This function now always returns 0.  All the
+    * functions needed to manipulate the line edit
+    * with the execption of echomode are supplied
+    * here.  Methods that affect the funcationality
+    * of this widget are not made available.
     *
-    * NOTE: Letting this widget handle the completion
-    * and rotation signals internally does not stop
-    * external application from receiving @ref completion,
-    * @ref rotateUp and @ref rotateDown signals.
-    *
-    * @param compObj a @ref KCompletion or a derived child object.
-    * @param hsig if false do not handle signals internally
+    * @return always a NULL pointer.
     */
-    virtual void setCompletionObject( KCompletion* compObj, bool hsig = true );
-
+    QLineEdit* lineEdit() const { return 0; }
 
     /**
     * Enables or disables the popup (context) menu.
@@ -228,22 +212,39 @@ public:
     virtual void setEnableContextMenu( bool showMenu = true );
 
     /**
-    * Shows the mode changer item in the popup menu.
+    * Marks the text in the line edit beginning
+    * from @p start for @p length characters long.
     *
-    * Note that the mode changer item is a sub menu, that allows
-    * the user to select from one of the standard completion modes
-    * described at @ref KCompletionBase::setCompletionMode.
-    * Additionally, if the user changes the completion mode to
-    * something other than the global setting, a "Default" entry
-    * is added at the bottom to allow the user to revert his/her
-    * changes back to the global setting.
+    * Note that this method is only valid if the
+    * combo-box is editable, i.e. read-write mode.
+    *
+    * @param start  begin selection fron this point.
+    * @param length select this many characters.
     */
-    void showModeChanger();
+    virtual void setSelection( int start, int length );
 
     /**
-    * Hides the mode changer item in the popup menu.
+    * Sets the cursor position.
+    *
+    * Note that this method is only valid if the
+    * combo-box is editable, i.e. read-write mode.
+    *
+    * @param pos places cursor at this position.
     */
-    void hideModeChanger();
+    virtual void setCursorPosition( int pos ) { if( m_pEdit != 0 ) m_pEdit->setCursorPosition( pos ); }
+
+    /**
+    * Places the cursor at a new postion and marks
+    * the caracters between the indicated positions.
+    *
+    * Note that this method is only valid if the
+    * combo-box is editable, i.e. read-write mode.
+    *
+    * @param newPos place cursor at this position.
+    * @param bMark begin selection at this point.
+    * @param eMark end selection at this point.
+    */
+    virtual void setSelection( int newPos, int bMark, int eMark );
 
     /**
     * Returns true when the context menu is enabled.
@@ -252,35 +253,43 @@ public:
     */
     bool isContextMenuEnabled() const { return m_bEnableMenu; }
 
-    /**
-    * Returns true if the mode changer item is visible in
-    * the context menu.
-    *
-    * @return true if the mode changer is visible in context menu.
-    */
-    bool isModeChangerVisible() const { return m_bShowModeChanger; }
-
 signals:
 
     /**
-    * This signal is emitted when the user presses the return key.  It
-    * is emitted if and only if the widget is editable (read-write).
+    * This signal is emitted when the user presses
+    * the return key.  It is emitted if and only if
+    * the widget is editable (read-write).
+    *
+    * Note that this widget consumes the RETURN key
+    * event.  If you need to process this event be
+    * sure to connect to this signal or its cousin
+    * signal below.
     */
     void returnPressed();
 
     /**
-    * This signal is emitted when the user presses the return key.  The
-    * argument is the current text being edited.  This signal, just like
-    * @ref returnPressed(), is only emitted if this widget is editable.
+    * This signal is emitted when the user presses
+    * the return key.  The argument is the current
+    * text being edited.  This signal is just like
+    * @ref returnPressed() except it contains the
+    * current text as its argument.
+    *
+    * Note that this signal is only emitted if this
+    * widget is editable.  Also this widget consumes
+    * the RETURN/ENTER key event.  If you need to
+    * process this event, be sure to connect to this
+    * signal or its cousin signal above.
     */
     void returnPressed( const QString& );
 
     /**
-    * This signal is emitted when the completion key is pressed.  The
-    * argument is the current text being edited.
+    * This signal is emitted when the completion key
+    * is pressed.  The argument is the current text
+    * being edited.
     *
-    * Note that this signal is NOT available if this widget is non-editable
-    * or the completion mode is set to KGlobalSettings::CompletionNone.
+    * Note that this signal is NOT available if this
+    * widget is non-editable or the completion mode is
+    * set to KGlobalSettings::CompletionNone.
     */
     void completion( const QString& );
 
@@ -303,11 +312,10 @@ signals:
 
 public slots:
 
-    /**
-    * This slot is a re-implemention of @ref QComboBox::setEditText.
-    * It is re-implemeted to provide a consitent look when items are
-    * completed as well as selected from the list box.  The argument
-    * is the text to set in the line edit box.
+    /*
+    * Re-implemented from QComboBox for internal reasons.
+    *
+    * See @ref QComobBox::setEditText.
     */
     virtual void setEditText( const QString& );
 
@@ -350,30 +358,19 @@ public slots:
 protected slots:
 
     /**
-    * Sets the comepltion mode to KGlobalSettings::CompletionNone.
+    * Accepts the "aboutToShow" signal from the completion
+    * sub-menu.
+    *
+    * This implementation allows this widget to handle
+    * the requests for changing the completion mode on
+    * the fly by the user. See @ref showCompletionMenu().
     */
-    virtual void modeNone() { setCompletionMode( KGlobalSettings::CompletionNone ); }
+    virtual void selectedItem( int itemID );
 
     /**
-    * Sets the comepltion mode to KGlobalSettings::CompletionManual
+    * Populates the sub menu before it is displayed.
     */
-    virtual void modeManual() { setCompletionMode( KGlobalSettings::CompletionMan );  }
-
-    /**
-    * Sets the comepltion mode to KGlobalSettings::CompletionAuto
-    */
-    virtual void modeAuto() { setCompletionMode( KGlobalSettings::CompletionAuto ); }
-
-    /**
-    * Sets the comepltion mode to KGlobalSettings::CompletionShell
-    */
-    virtual void modeShell() { setCompletionMode( KGlobalSettings::CompletionShell );}
-
-    /**
-    * Sets the comepltion mode to the global default setting
-    * defined by @ref KGlobalSettings::completionMode().
-    */
-    virtual void modeDefault() { setCompletionMode( KGlobalSettings::completionMode() ); }
+    virtual void showCompletionMenu() { insertCompletionItems( this, SLOT( selectedItem( int ) ) ); }
 
     /**
     * Deals with text changing in the line edit in
@@ -393,26 +390,10 @@ protected slots:
     virtual void makeCompletion( const QString& );
 
     /**
-    * Emits a returnPressed signal with a QString parameter
-    * that contains the current display text.
-    */
-    virtual void returnKeyPressed();
-
-    /**
-    * Populates the context menu before it is displayed.
+    * Correctly populates the context menu with the
+    * completion entry before it is displayed.
     */
     virtual void aboutToShowMenu();
-
-    /**
-    * Populates the sub menu before it is displayed.
-    */
-    virtual void aboutToShowSubMenu( int );
-
-    /**
-    * Resets the completion object pointer when it is destroyed
-    */
-    void completionDestroyed() { setCompletionObject( 0, false ); }
-
 
 protected:
     /**
@@ -447,10 +428,6 @@ private :
     int m_iPrevlen;
     // Holds the current cursor position.
     int m_iPrevpos;
-    // Holds the completion sub-menu id once created.
-    // This is needed to put check marks along the
-    // selected items.
-    int m_iCompletionID;
 
     // Flag that indicates whether we enable/disable
     // the context (popup) menu.
@@ -462,12 +439,9 @@ private :
     // Pointer to the line editor.
     QLineEdit* m_pEdit;
     // Context Menu items.
-    QPopupMenu *m_pContextMenu, *m_pSubMenu;
+    QPopupMenu *m_pContextMenu;
     // Event Filter to trap events
     virtual bool eventFilter( QObject* o, QEvent* e );
-
-    class KComboBoxPrivate;
-    KComboBoxPrivate *d;
 };
 
 #endif

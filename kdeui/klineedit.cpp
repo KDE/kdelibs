@@ -21,7 +21,7 @@
    Boston, MA 02111-1307, USA.
 */
 
-#include <qclipboard.h>
+#include <qobjcoll.h>
 
 #include <klocale.h>
 #include <kstdaccel.h>
@@ -44,8 +44,7 @@ KLineEdit::KLineEdit( QWidget *parent, const char *name )
 
 KLineEdit::~KLineEdit ()
 {
-    delete m_pContextMenu;
-    delete m_pSubMenu;
+    m_pContextMenu = 0; // Reset the pointer to NULL;
 }
 
 void KLineEdit::init()
@@ -57,71 +56,32 @@ void KLineEdit::init()
     m_iPrevpos = 0; // keeps cursor position whenever it changes.
     m_iPrevlen = 0; // keeps length of text as it changes.
 
-    // Initialize the context Menu.  By default the popup
-    // menu as well as the mode switching entry are disabled.
-    m_pContextMenu = 0;
-    m_pSubMenu = 0;
+    // Hack and recover the built-in popup-menu to add
+    // your own item to it.  What a piece of work :))
+    QObjectList *list = queryList( "QPopupMenu" );
+    QObjectListIt it ( *list );
+    m_pContextMenu = (QPopupMenu*) it.current();
+    delete list;
+
     m_bEnableMenu = false;
-    m_iCompletionID = -1;
 
     // Connect the signals and slots.
     connect( this, SIGNAL( textChanged( const QString& ) ), this, SLOT( entryChanged( const QString& ) ) );
-    connect( this, SIGNAL( returnPressed() ), this, SLOT( slotReturnPressed() ) );
-}
-
-void KLineEdit::setCompletionObject( KCompletion* compObj, bool hsig )
-{
-    if( m_pCompObj != 0 )
-        disconnect( m_pCompObj, SIGNAL( destroyed() ), this, SLOT( completionDestroyed() ) );
-
-    KCompletionBase::setCompletionObject( compObj, hsig );
-
-    if( m_pCompObj != 0 )
-        connect( m_pCompObj, SIGNAL( destroyed() ), this, SLOT( completionDestroyed() ) );
 }
 
 void KLineEdit::setEnableContextMenu( bool showMenu )
 {
-    if( showMenu )
+    if( !m_bEnableMenu && showMenu )
     {
-        if ( m_pContextMenu == 0 )
-        {
-            m_pContextMenu = new QPopupMenu();
-            connect( m_pContextMenu, SIGNAL(aboutToShow()), this, SLOT( aboutToShowMenu() ) );
-            showModeChanger();
-        }
+        connect ( m_pContextMenu, SIGNAL( aboutToShow() ), this, SLOT( aboutToShowMenu() ) );
+        showModeChanger();
     }
-    else
+    else if( m_bEnableMenu && !showMenu )
     {
-        if ( m_pContextMenu != 0 )
-        {
-            disconnect( m_pContextMenu, SIGNAL(aboutToShow()), this, SLOT( aboutToShowMenu() ) );
-            delete m_pContextMenu;
-            m_pContextMenu = 0;
-        }
-        if( m_pSubMenu != 0 )
-            hideModeChanger();
+        disconnect ( m_pContextMenu, SIGNAL( aboutToShow() ), this, SLOT( aboutToShowMenu() ) );
+        hideModeChanger();
     }
     m_bEnableMenu = showMenu;
-}
-
-void KLineEdit::hideModeChanger()
-{
-    if( m_pSubMenu != 0 )
-    {
-        delete m_pSubMenu;
-        m_pSubMenu = 0;
-    }
-    m_bShowModeChanger = false;
-}
-
-void KLineEdit::showModeChanger()
-{
-    if( m_pSubMenu == 0 )
-    {
-        m_pSubMenu = new QPopupMenu();
-        m_bShowModeChanger = true;
-    }
 }
 
 void KLineEdit::setCompletionMode( KGlobalSettings::Completion mode )
@@ -134,53 +94,12 @@ void KLineEdit::setCompletionMode( KGlobalSettings::Completion mode )
     KCompletionBase::setCompletionMode( mode );
 }
 
-void KLineEdit::aboutToShowSubMenu( int itemID )
-{
-    if( itemID == m_iCompletionID )
-    {
-        m_pSubMenu->clear();
-        int id = m_pSubMenu->insertItem( i18n("None"), this, SLOT( modeNone()) );
-        m_pSubMenu->setItemChecked(id, m_iCompletionMode == KGlobalSettings::CompletionNone );
-        id = m_pSubMenu->insertItem( i18n("Manual"), this, SLOT( modeShell()) );
-        m_pSubMenu->setItemChecked(id, m_iCompletionMode == KGlobalSettings::CompletionShell );
-        id = m_pSubMenu->insertItem( i18n("Automatic"), this, SLOT( modeAuto()) );
-        m_pSubMenu->setItemChecked(id, m_iCompletionMode == KGlobalSettings::CompletionAuto );
-        id = m_pSubMenu->insertItem( i18n("Semi-Automatic"), this, SLOT( modeManual()) );
-        m_pSubMenu->setItemChecked(id, m_iCompletionMode == KGlobalSettings::CompletionMan );
-        if( m_iCompletionMode != KGlobalSettings::completionMode() )
-        {
-            m_pSubMenu->insertSeparator();
-            m_pSubMenu->insertItem( i18n("Default"), this, SLOT( modeDefault()) );
-        }
-    }
-}
-
 void KLineEdit::aboutToShowMenu()
 {
-    bool isNotEmpty = ( text().length() != 0 );
-    bool isNormal = (echoMode() == QLineEdit::Normal);
-    m_pContextMenu->clear();
-    int id = m_pContextMenu->insertItem( i18n("Cut"), this, SLOT(slotCut()) );
-    m_pContextMenu->setItemEnabled( id, hasMarkedText() && isNormal );
-    id = m_pContextMenu->insertItem( i18n("Copy"), this, SLOT(slotCopy()) );
-    m_pContextMenu->setItemEnabled( id, hasMarkedText() && isNormal );
-    id = m_pContextMenu->insertItem( i18n("Paste"), this, SLOT(slotPaste()) );
-    m_pContextMenu->setItemEnabled( id, QApplication::clipboard()->text().length() != 0 );
-    id = m_pContextMenu->insertItem( i18n("Clear"), this, SLOT(clear()) );
-    m_pContextMenu->setItemEnabled( id, isNotEmpty );
-    m_pContextMenu->insertSeparator();
-    if( m_bShowModeChanger && m_pCompObj != 0 && m_pSubMenu != 0 )
+    if( m_bShowModeChanger && m_pCompObj != 0 && m_iCompletionID == -1 )
     {
-        // Dummy place holder so that "-->" is shown !!!
-        m_pSubMenu->insertItem( QString::null );
-        m_iCompletionID = m_pContextMenu->insertItem( i18n("Completion"), m_pSubMenu );
-        connect( m_pContextMenu, SIGNAL( highlighted( int ) ), this, SLOT( aboutToShowSubMenu( int ) ) );
-        m_pContextMenu->insertSeparator();
+        insertCompletionMenu( this, SLOT( showCompletionMenu() ), m_pContextMenu, m_pContextMenu->count()-1 );
     }
-    id = m_pContextMenu->insertItem( i18n("Select All"), this, SLOT( selectAll() ) );
-    m_pContextMenu->setItemEnabled( id, isNotEmpty );
-    id = m_pContextMenu->insertItem( i18n("Unselect"), this, SLOT( deselect() ) );
-    m_pContextMenu->setItemEnabled( id, hasMarkedText() );
 }
 
 void KLineEdit::rotateText( const QString& input )
@@ -196,13 +115,20 @@ void KLineEdit::rotateText( const QString& input )
         }
         else
         {
-            int pos = cursorPosition();
-            int len = input.length();
-            validateAndSet( input, pos, pos, len );
-            m_iPrevlen = len;
-            m_iPrevpos = pos;
+            m_iPrevlen = input.length();
+            m_iPrevpos = cursorPosition();
+            validateAndSet( input, m_iPrevpos, m_iPrevpos, m_iPrevlen );
         }
     }
+}
+
+void KLineEdit::setText( const QString& text )
+{
+    // Stops signals from being handles by completion while
+    // the text is manually set.
+    disconnect( this, SIGNAL( textChanged( const QString& ) ), this, SLOT( entryChanged( const QString& ) ) );
+    QLineEdit::setText( text );
+    connect( this, SIGNAL( textChanged( const QString& ) ), this, SLOT( entryChanged( const QString& ) ) );
 }
 
 void KLineEdit::iterateUpInList()
@@ -265,7 +191,7 @@ void KLineEdit::makeCompletion( const QString& text )
         if( match.length() == 0 || match == text )
             return;
 
-        if ( m_iCompletionMode == KGlobalSettings::CompletionShell )
+        if( m_iCompletionMode == KGlobalSettings::CompletionShell )
         {
             setText( match );
         }
@@ -276,14 +202,6 @@ void KLineEdit::makeCompletion( const QString& text )
             validateAndSet( match, m_iPrevpos, m_iPrevpos, m_iPrevlen );
         }
     }
-}
-
-void KLineEdit::slotReturnPressed()
-{
-    // No need to emit this if the echo mode
-    // is not QLineEdit::Normal
-    if( echoMode() == QLineEdit::Normal )
-        emit returnPressed( text() );
 }
 
 void KLineEdit::connectSignals( bool handle ) const
@@ -302,10 +220,32 @@ void KLineEdit::connectSignals( bool handle ) const
     }
 }
 
+
+
+void KLineEdit::selectedItem( int itemID )
+{
+    if( itemID == 0 )
+        setCompletionMode( KGlobalSettings::completionMode() );
+    else
+        setCompletionMode( (KGlobalSettings::Completion)itemID );
+}
+
 void KLineEdit::keyPressEvent( QKeyEvent *ev )
 {
+    // Trap RETURN/ENTER events.  Let people connect to
+    // returnPressed() and returnPressed( const QString& )
+    // as needed if they were relying on this event being
+    // propagated up-stream.  This is also consistent with
+    // KLineEdit.
+    if( ev->key() == Qt::Key_Return || ev->key() == Qt::Key_Enter )
+    {
+        emit QLineEdit::returnPressed();
+        emit returnPressed( displayText() );
+        return;
+    }
     // Filter key-events if EchoMode is normal
-    if( echoMode() == QLineEdit::Normal )
+    if( echoMode() == QLineEdit::Normal &&
+        m_iCompletionMode != KGlobalSettings::CompletionNone )
     {
         // Handles completion.
         int len = text().length();
@@ -319,7 +259,6 @@ void KLineEdit::keyPressEvent( QKeyEvent *ev )
             // CompletionAuto and if the mode is CompletionShell,
             // the cursor is at the end of the string.
             emit completion( text() );
-            ev->accept(); // oh how I hate event filtering!!! Remove at your own risk!!!
             return;
         }
         // Handles rotateUp.
@@ -327,7 +266,6 @@ void KLineEdit::keyPressEvent( QKeyEvent *ev )
         if( KStdAccel::isEqual( ev, key ) && m_bEmitSignals )
         {
             emit rotateUp ();
-            ev->accept(); // oh how I hate event filtering!!! Remove at your own risk!!!
             return;
         }
         // Handles rotateDown.
@@ -335,14 +273,11 @@ void KLineEdit::keyPressEvent( QKeyEvent *ev )
         if( KStdAccel::isEqual( ev, key ) && m_bEmitSignals)
         {
             emit rotateDown();
-            ev->accept();
             return;
         }
     }
-    // Let QLineEdit handle the other keys events.
-    QLineEdit::keyPressEvent ( ev );
     // Always update the position variable in auto completion
-    // mode whenu user moes the cursor to EOL using the END key.
+    // mode whenu user moves the cursor to EOL using the END key.
     if( m_iCompletionMode == KGlobalSettings::CompletionAuto )
     {
         int pos = cursorPosition();
@@ -350,15 +285,16 @@ void KLineEdit::keyPressEvent( QKeyEvent *ev )
         if( m_iPrevpos != pos && pos == len )
             m_iPrevpos = pos;
     }
+    // Let QLineEdit handle any other keys events.
+    QLineEdit::keyPressEvent ( ev );
 }
 
 void KLineEdit::mousePressEvent( QMouseEvent *ev )
 {
     if( ev->button() == Qt::RightButton )
     {
-        if( m_bEnableMenu )
-            m_pContextMenu->popup( QCursor::pos() );
-        return;
+        if( !m_bEnableMenu )
+            return;
     }
     QLineEdit::mousePressEvent( ev );
 }
