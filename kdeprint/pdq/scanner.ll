@@ -11,7 +11,9 @@ EX	(send|status|cancel|convert|filter|verify|filetype)
 
 %{
 #include "pdq.h"
+#ifndef KDE_USE_FINAL
 #include "parser.cpp.h"
+#endif
 #include <glob.h>
 #include <qvaluestack.h>
 
