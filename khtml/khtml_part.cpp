@@ -2279,7 +2279,7 @@ void KHTMLPart::setCaretMode(bool enable)
   // FIXME: this won't work on frames as expected
   if (!isEditable()) {
     if (enable)
-      view()->initCaret();
+      view()->initCaret(true);
     else
       view()->caretOff();
   }/*end if*/
@@ -2299,7 +2299,7 @@ void KHTMLPart::setEditable(bool enable)
   // FIXME: this won't work on frames as expected
   if (!isCaretMode()) {
     if (enable)
-      view()->initCaret();
+      view()->initCaret(true);
     else
       view()->caretOff();
   }/*end if*/
