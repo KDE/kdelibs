@@ -340,7 +340,7 @@ QRect KFormula::getCursorPos(charinfo i)
 }
 
 //--------------------------------SIZE------------------------------
-QSize KFormula::size()
+QSize KFormula::size() const
 {
   if(boxes.size() == 0) return QSize(0, 0);
 

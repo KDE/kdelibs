@@ -106,7 +106,7 @@ public:
      */
     double evaluate(QStrList &vars, const QArray<double> &vals,
 		    int *error = NULL, box *b = NULL);
-    QSize size();
+    QSize size() const;
     void makeDirty();
     
     void setFont( const QFont &f ) {
