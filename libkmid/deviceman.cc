@@ -146,6 +146,8 @@ DeviceManager::~DeviceManager(void)
     delete device;
     device=0L;
   }
+  delete[] midiinfo;
+  delete[] synthinfo;
 }
 
 int DeviceManager::ok(void)

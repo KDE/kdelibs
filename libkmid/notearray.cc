@@ -31,7 +31,7 @@ NoteArray::NoteArray(void)
 {
   totalAllocated=50;
   data=new noteCmd[totalAllocated];
-  lastAdded=NULL;
+  lastAdded=0L;
 }
 
 NoteArray::~NoteArray()

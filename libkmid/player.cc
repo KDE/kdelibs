@@ -246,6 +246,7 @@ void MidiPlayer::removeSpecialEvents(void)
     delete spev;
     spev=ev;
   }
+  delete na;
 }
 
 void MidiPlayer::parseSpecialEvents(void)
@@ -259,9 +260,9 @@ void MidiPlayer::parseSpecialEvents(void)
   SpecialEvent *pspev=spev;
   pspev->type=0;
   pspev->ticks=0;
-  if (na!=NULL) delete na;
+  if (na) delete na;
   na=new NoteArray();
-  if (na==NULL) {delete spev;spev=NULL;return;};
+  if (!na) { delete spev; spev=0L; return; };
   int trk;
   int minTrk;
   double minTime=0;
