@@ -172,7 +172,7 @@ bool RenderFormElement::eventFilter(QObject* o, QEvent* e)
     bool deleted = hasOneRef();
     deref();
 
-    return deleted ? true : RenderWidget::eventFilter( o, e );
+    return deleted;
 }
 
 void RenderFormElement::slotClicked()
@@ -931,7 +931,7 @@ void RenderSelect::updateSelection()
 // -------------------------------------------------------------------------
 
 TextAreaWidget::TextAreaWidget(int wrap, QWidget* parent)
-    : QMultiLineEdit(parent)
+    : KEdit(parent)
 {
     if(wrap != DOM::HTMLTextAreaElementImpl::ta_NoWrap) {
         setWordWrap(QMultiLineEdit::WidgetWidth);
@@ -965,7 +965,7 @@ bool TextAreaWidget::event( QEvent *e )
             }
         }
     }
-    return QMultiLineEdit::event( e );
+    return KEdit::event( e );
 }
 
 // -------------------------------------------------------------------------
@@ -978,7 +978,6 @@ RenderTextArea::RenderTextArea(QScrollView *view, HTMLTextAreaElementImpl *eleme
 {
     TextAreaWidget *edit = new TextAreaWidget(element->wrap(), view);
     setQWidget(edit, false);
-    edit->setMouseTracking(true);
     edit->installEventFilter(this);
     connect(edit,SIGNAL(textChanged()),this,SLOT(slotTextChanged()));
 }
@@ -1042,6 +1041,7 @@ QString RenderTextArea::text()
     QString txt;
     HTMLTextAreaElementImpl* e = static_cast<HTMLTextAreaElementImpl*>(m_element);
     TextAreaWidget* w = static_cast<TextAreaWidget*>(m_widget);
+
     if(e->wrap() == DOM::HTMLTextAreaElementImpl::ta_Physical) {
         for(int i=0; i < w->numLines(); i++)
             txt += w->textLine(i) + QString::fromLatin1("\n");
@@ -1049,7 +1049,7 @@ QString RenderTextArea::text()
     else
         txt = w->text();
 
-    return static_cast<TextAreaWidget *>(m_widget)->text();
+    return txt;
 }
 
 void RenderTextArea::slotTextChanged()

@@ -30,12 +30,11 @@
 #include "render_flow.h"
 
 class QWidget;
-class QMultiLineEdit;
 class QScrollView;
 class QLineEdit;
 class QListboxItem;
 
-#include <qmultilineedit.h>
+#include <keditcl.h>
 #include <klineedit.h>
 #include <qcheckbox.h>
 #include <qradiobutton.h>
@@ -342,7 +341,7 @@ protected slots:
 
 // -------------------------------------------------------------------------
 
-class TextAreaWidget : public QMultiLineEdit
+class TextAreaWidget : public KEdit
 {
 public:
     TextAreaWidget(int wrap, QWidget* parent);
