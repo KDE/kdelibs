@@ -200,7 +200,7 @@ void RenderFlow::printObject(QPainter *p, int _x, int _y,
             p->setClipRegion(oldClip);
     }
 
-    if(!isInline() && style()->outlineWidth())
+    if(!isInline() && !childrenInline() && style()->outlineWidth())
         printOutline(p, _tx, _ty, width(), height(), style());
 
 #ifdef BOX_DEBUG
