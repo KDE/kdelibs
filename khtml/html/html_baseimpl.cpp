@@ -79,8 +79,10 @@ void HTMLBodyElementImpl::parseAttribute(AttributeImpl *attr)
             addCSSProperty(CSS_PROP_BACKGROUND_IMAGE, "url('"+url+"')" );
             m_bgSet = true;
         }
-        else
-            m_bgSet = false;
+        else {
+             removeCSSProperty(CSS_PROP_BACKGROUND_IMAGE);
+             m_bgSet = false;
+         }
         break;
     }
     case ATTR_MARGINWIDTH: {

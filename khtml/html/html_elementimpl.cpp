@@ -400,7 +400,7 @@ void HTMLElementImpl::removeCSSProperty(int id)
     if(!m_styleDecls)
         return;
     m_styleDecls->setParent(getDocument()->elementSheet());
-    m_styleDecls->removeProperty(id);
+    m_styleDecls->removeProperty(id, true /*nonCSSHint */);
     setChanged();
 }
 
