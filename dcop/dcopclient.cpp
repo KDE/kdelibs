@@ -1512,7 +1512,7 @@ DCOPClient::connectDCOPSignal( const QCString &sender, const QCString &senderObj
   args << sender << senderObj << normalizeFunctionSignature(signal) << receiverObj << normalizeFunctionSignature(slot) << iVolatile;
 
   if (!call("DCOPServer", 0,
-	"connectSignal(QCString,QCString,QCString,QCString,QCSQtring,bool)",
+	"connectSignal(QCString,QCString,QCString,QCString,QCString,bool)",
 	data, replyType, replyData))
      return false;
 
@@ -1544,7 +1544,7 @@ DCOPClient::disconnectDCOPSignal( const QCString &sender, const QCString &sender
   args << sender << senderObj << normalizeFunctionSignature(signal) << receiverObj << normalizeFunctionSignature(slot);
 
   if (!call("DCOPServer", 0,
-	"disconnectSignal(QCString,QCString,QCString,QCString,QCSQtring)",
+	"disconnectSignal(QCString,QCString,QCString,QCString,QCString)",
 	data, replyType, replyData))
      return false;
 

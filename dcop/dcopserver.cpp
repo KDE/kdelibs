@@ -1001,7 +1001,7 @@ bool DCOPServer::receive(const QCString &/*app*/, const QCString &obj,
 	    replyType = "void";
 	    return TRUE;
 	}
-    } else if ( fun == "connectSignal(QCString,QCString,QCString,QCString,QCSQtring,bool)") {
+    } else if ( fun == "connectSignal(QCString,QCString,QCString,QCString,QCString,bool)") {
         DCOPConnection* conn = clients.find( iceConn );
         if (!conn) return false;
         QCString sender, senderObj, signal, receiverObj, slot;
@@ -1015,7 +1015,7 @@ bool DCOPServer::receive(const QCString &/*app*/, const QCString &obj,
         QDataStream reply( replyData, IO_WriteOnly );
         reply << (Q_INT8) (b?1:0);
         return TRUE;
-    } else if ( fun == "disconnectSignal(QCString,QCString,QCString,QCString,QCSQtring)") {
+    } else if ( fun == "disconnectSignal(QCString,QCString,QCString,QCString,QCString)") {
         DCOPConnection* conn = clients.find( iceConn );
         if (!conn) return false;
         QCString sender, senderObj, signal, receiverObj, slot;
