@@ -180,6 +180,16 @@ public:
     QPaintDevice *paintDevice() const { return m_paintDevice; }
     void setPaintDevice( QPaintDevice *dev );
 
+    enum ParseMode {
+	Unknown,
+	Compat,
+	Transitional,
+	Strict
+    };
+    void determineParseMode( const QString &str );
+    void setParseMode( ParseMode m ) { pMode = m; }
+    ParseMode parseMode() const { return pMode; }
+    
 signals:
     virtual void finishedParsing();
 
@@ -205,6 +215,7 @@ protected:
 
     QPaintDevice *m_paintDevice;
     QPaintDeviceMetrics *m_paintDeviceMetrics;
+    ParseMode pMode;
 };
 
 class DocumentFragmentImpl : public NodeBaseImpl

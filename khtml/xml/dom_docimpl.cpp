@@ -105,6 +105,7 @@ DocumentImpl::DocumentImpl() : NodeBaseImpl(0)
     tokenizer = 0;
     m_paintDevice = 0;
     m_paintDeviceMetrics = 0;
+    pMode = Strict;
 }
 
 DocumentImpl::DocumentImpl(KHTMLView *v) : NodeBaseImpl(0)
@@ -120,6 +121,7 @@ DocumentImpl::DocumentImpl(KHTMLView *v) : NodeBaseImpl(0)
     tokenizer = 0;
     m_paintDeviceMetrics = 0;
     setPaintDevice( m_view );
+    pMode = Strict;
 }
 
 DocumentImpl::~DocumentImpl()
@@ -747,6 +749,117 @@ CSSStyleSheetImpl* DocumentImpl::elementSheet()
     }
     return m_elemSheet;
 }
+
+static bool isTransitional(const QString &spec, int start)
+{
+    if((spec.find("TRANSITIONAL", start, false ) != -1 ) ||
+       (spec.find("LOOSE", start, false ) != -1 ) ||
+       (spec.find("FRAMESET", start, false ) != -1 ) ||
+       (spec.find("LATIN1", start, false ) != -1 ) ||
+       (spec.find("SYMBOLS", start, false ) != -1 ) ||
+       (spec.find("SPECIAL", start, false ) != -1 ) )
+	return true;
+    return false;
+}
+
+enum HTMLMode {
+    Html3,
+    Html4,
+    XHtml
+};
+
+void DocumentImpl::determineParseMode( const QString &str )
+{
+    // determines the parse mode for HTML
+    // quite some hints here are taken from the mozilla code.
+
+    // default parsing mode is Loose
+    pMode = Compat;
+
+    ParseMode systemId = Unknown;
+    ParseMode publicId = Unknown;
+    HTMLMode htmlMode = Html3;
+    
+    int pos = 0;
+    int doctype = str.find("!doctype", 0, false);
+    if( doctype > 2 )
+	pos = doctype - 2;
+    
+    // get the first tag (or the doctype tag
+    int start = str.find('<', pos);
+    int stop = str.find('>', pos);
+    if( start != -1 && stop != -1 ) {
+	QString spec = str.mid( start + 1, stop - start - 2 );
+	start = 0;
+	int quote = -1;
+	if( doctype != -1 ) {
+	    while( (quote = spec.find( "\"", start )) != -1 ) {
+		int quote2 = spec.find( "\"", quote+1 );
+		QString val = spec.mid( quote, quote2 - quote );
+		// find system id
+		pos = val.find("http://www.w3.org/tr/", 0, false);
+		if ( pos != -1 ) {
+		    // loose or strict dtd?
+		    if(val.find("strict.dtd", pos, false))
+			systemId = Strict;
+		    else if (isTransitional(val, pos))
+			systemId = Transitional;
+		    
+		}
+		// find public id
+		pos = val.find("//dtd", 0, false );
+		if ( pos != -1 ) {
+		    if( val.find( "xhtml", 6, false ) ) {
+			htmlMode = XHtml;
+			if( isTransitional( val, pos ) )
+			    publicId = Transitional;
+			else
+			    publicId = Strict;
+		    } if ( val.find( "15445:1999", 6 ) ) {
+			htmlMode = Html4;
+			publicId = Strict;
+		    } else {
+			int tagPos = val.find( "html", 6, false );
+			if( tagPos == -1 )
+			    tagPos = val.find( "hypertext markup", 6, false );
+			if ( tagPos != -1 ) {
+			    tagPos = val.find(QRegExp("[0-9]"), tagPos );
+			    int version = val.mid( tagPos ).toInt();
+			    
+			    if( version > 3 ) {
+				htmlMode = Html4;
+				if( isTransitional( val, tagPos ) )
+				    publicId = Transitional;
+				else
+				    publicId = Strict;
+			    }
+			}
+		    }
+		}
+		start = quote2 + 1;
+	    }
+	}
+	
+	if( systemId == publicId )
+	    pMode = publicId;
+	else if ( systemId == Unknown ) {
+	    pMode = publicId;
+	    if ( publicId == Transitional && htmlMode == Html4 )
+		pMode = Compat;
+	} else if ( publicId == Transitional && systemId == Strict ) {
+	    if ( htmlMode == Html3 )
+		pMode = Compat;
+	    else 
+		pMode = Strict;
+	} else
+	    pMode = Compat;
+	
+	if ( htmlMode == XHtml )
+	    pMode = Strict;
+	
+    }
+}
+
 
 // ----------------------------------------------------------------------------
 

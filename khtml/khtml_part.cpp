@@ -161,6 +161,8 @@ public:
     m_bJavaForce = false;
     m_bJavaOverride = false;
 
+    m_bFirstData = true;
+    
     // inherit security settings from parent
     if(parent && parent->inherits("KHTMLPart"))
     {
@@ -284,7 +286,8 @@ public:
   bool m_startBeforeEnd;
   QString m_overURL;
   bool m_bDnd;
-
+    bool m_bFirstData;
+    
   QPoint m_dragStartPos;
 
   QCursor m_linkCursor;
@@ -1146,6 +1149,12 @@ void KHTMLPart::write( const char *str, int len )
 
   if(decoded.isEmpty()) return;
 
+  if(d->m_bFirstData) {
+      // determine the parse mode
+      d->m_doc->determineParseMode( decoded );
+      d->m_bFirstData = false;
+  }
+  
   //kdDebug() << "KHTMLPart::write haveEnc = " << d->m_haveEncoding << endl;
   if(!d->m_haveEncoding) {
       // ### this is still quite hacky, but should work a lot better than the old solution
@@ -1170,6 +1179,11 @@ void KHTMLPart::write( const QString &str )
   if ( str.isNull() )
     return;
 
+  if(d->m_bFirstData) {
+      // determine the parse mode
+      d->m_doc->setParseMode( DocumentImpl::Strict );
+      d->m_bFirstData = false;
+  }
   d->m_doc->write( str );
 }
 
@@ -1202,6 +1216,7 @@ void KHTMLPart::slotFinishedParsing()
     d->m_view->setContentsPos( d->m_extension->urlArgs().xOffset, d->m_extension->urlArgs().yOffset );
   }
 
+#if 0
   HTMLCollectionImpl imgColl( d->m_doc, HTMLCollectionImpl::DOC_IMAGES );
 
   d->m_totalImageCount = 0;
@@ -1228,7 +1243,8 @@ void KHTMLPart::slotFinishedParsing()
       imageURLs.append( url );
     }
   }
-
+#endif
+  
   checkCompleted();
 }
 
