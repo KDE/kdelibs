@@ -23,12 +23,14 @@
 
 #include <kaction.h>
 #include <kbookmarkmenu.h>
+#include <kdebug.h>
 
 #include <ktoolbar.h>
 
 #include <kconfig.h>
 #include <kpopupmenu.h>
 
+#include "kbookmarkmenu_p.h"
 #include <qptrdict.h>
 
 template<class KBookmarkBar, class KBookmarkBarPrivate>
@@ -60,6 +62,14 @@ private:
     static QPtrDict<KBookmarkBarPrivate>* d_ptr;
 };
 
+class KBookmarkBarPrivate : public Private<KBookmarkBar, KBookmarkBarPrivate> {
+public:
+    QPtrList<KAction> m_actions;
+};
+QPtrDict<KBookmarkBarPrivate>* Private<KBookmarkBar, KBookmarkBarPrivate>::d_ptr = 0;
+
+#define d() KBookmarkBarPrivate::d(this)
+
 KBookmarkBar::KBookmarkBar( KBookmarkManager* mgr,
                             KBookmarkOwner *_owner, KToolBar *_toolBar,
                             KActionCollection *coll,
@@ -68,6 +78,8 @@ KBookmarkBar::KBookmarkBar( KBookmarkManager* mgr,
       m_actionCollection( coll ), m_pManager(mgr)
 {
     m_lstSubMenus.setAutoDelete( true );
+
+    d()->m_actions.setAutoDelete( true );
 
     connect( mgr, SIGNAL( changed(const QString &, const QString &) ),
              SLOT( slotBookmarksChanged(const QString &) ) );
@@ -86,6 +98,12 @@ void KBookmarkBar::clear()
     m_lstSubMenus.clear();
     if ( m_toolBar )
         m_toolBar->clear();
+
+    QPtrListIterator<KAction> it( d()->m_actions );
+    for (; it.current(); ++it )
+        it.current()->unplugAll();
+
+    d()->m_actions.clear();
 }
 
 void KBookmarkBar::slotBookmarksChanged( const QString & group )
@@ -116,7 +134,7 @@ void KBookmarkBar::fillBookmarkBar(KBookmarkGroup & parent)
 
     for (KBookmark bm = parent.first(); !bm.isNull(); bm = parent.next(bm))
     {
-		QString text = bm.text();
+        QString text = bm.text();
         text.replace( '&', "&&" );
         if (!bm.isGroup())
         {
@@ -124,19 +142,28 @@ void KBookmarkBar::fillBookmarkBar(KBookmarkGroup & parent)
                 m_toolBar->insertLineSeparator();
             else
             {
-                KAction *action;
                 // create a normal URL item, with ID as a name
-                action = new KAction(text, bm.icon(), 0,
-                                     this, SLOT(slotBookmarkSelected()),
-                                     m_actionCollection,
-                                     bm.url().url().utf8());
+                KAction *action = new KBookmarkAction( text, bm.icon(), 0,
+                                                       this, SLOT(slotBookmarkSelected()),
+                                                       m_actionCollection, 0 );
+
+                action->setProperty( "url", bm.url().url() );
+                action->setProperty( "address", bm.address() );
+
+                // ummm.... this doesn't appear do anything...
+                action->setToolTip( bm.url().prettyURL() );
+
                 action->plug(m_toolBar);
+
+                d()->m_actions.append( action );
             }
         }
         else
         {
-            KActionMenu *action = new KActionMenu(text, bm.icon(),
-                                                  m_actionCollection, "bookmarkbar-actionmenu");
+            KActionMenu *action = new KBookmarkActionMenu( text, bm.icon(),
+                                                           m_actionCollection, 
+                                                           "bookmarkbar-actionmenu");
+            action->setProperty( "address", bm.address() );
             action->setDelayed(false);
 
             // this flag doesn't have any UI yet
@@ -149,6 +176,8 @@ void KBookmarkBar::fillBookmarkBar(KBookmarkGroup & parent)
             menu->fillBookmarkMenu();
             action->plug(m_toolBar);
             m_lstSubMenus.append( menu );
+
+            d()->m_actions.append( action );
         }
     }
 }
@@ -156,8 +185,7 @@ void KBookmarkBar::fillBookmarkBar(KBookmarkGroup & parent)
 void KBookmarkBar::slotBookmarkSelected()
 {
     if (!m_pOwner) return; // this view doesn't handle bookmarks...
-
-    m_pOwner->openBookmarkURL(QString::fromUtf8(sender()->name()));
+    m_pOwner->openBookmarkURL( sender()->property("url").toString() );
 }
 
 #include "kbookmarkbar.moc"
