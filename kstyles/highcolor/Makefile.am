@@ -18,12 +18,13 @@
 #    the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
 #    Boston, MA 02111-1307, USA.
 
+AM_CXXFLAGS += -DQT_PLUGIN
 
-INCLUDES= $(all_includes)
-noinst_HEADERS = hcstyle.h 
-lib_LTLIBRARIES = hcstyle.la
-hcstyle_la_LDFLAGS =  $(all_libraries) -module  -avoid-version -no-undefined 
-hcstyle_la_LIBADD = $(LIB_KDEUI)
-hcstyle_la_SOURCES = hcstyle.cpp plugin.cpp
-hcstyle_la_METASOURCES = AUTO  
+INCLUDES = $(all_includes)
+noinst_HEADERS = highcolor.h 
+kde_style_LTLIBRARIES = highcolor.la
+highcolor_la_LDFLAGS = $(all_libraries) $(KDE_PLUGIN) -module
+highcolor_la_LIBADD = $(LIB_KDEUI)
+highcolor_la_SOURCES = highcolor.cpp
+highcolor_la_METASOURCES = AUTO
 
