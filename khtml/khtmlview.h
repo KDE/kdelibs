@@ -145,6 +145,11 @@ public:
      */
     void print();
 
+    /**
+     * ensure the display is up to date
+     */
+    void layout();
+
 signals:
     void cleared();
 
@@ -212,7 +217,6 @@ private:
     void focusNextPrevNode(bool next);
 
     void useSlowRepaints();
-    void layout();
 
     void setIgnoreWheelEvents(bool e);
 
