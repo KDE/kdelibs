@@ -69,7 +69,7 @@ include_HEADERS = kprogress.h kcolordlg.h \
 		kdatetimewidget.h ktimewidget.h kpreferencesdialog.h \
 		kpreferencesmodule.h kpluginselector.h \
 		kspell.h ksconfig.h kspelldlg.h ksyntaxhighlighter.h \
-		ktabbar.h ktabwidget.h
+		ktabbar.h ktabwidget.h ksplashscreen.h
 		
 # the order of the sources isn't randomly (at least not completely).
 # the order is predictated by the use of X11 header files
@@ -114,7 +114,8 @@ libkdeui_la_SOURCES = \
 		ktoolbarhandler.cpp kdatetimewidget.cpp ktimewidget.cpp \
 		kpreferencesdialog.cpp kpreferencesmodule.cpp \
 		kpluginselector.cpp ksconfig.cpp kspelldlg.cpp \
-		kspell.cpp ksyntaxhighlighter.cpp ktabbar.cpp ktabwidget.cpp
+		kspell.cpp ksyntaxhighlighter.cpp ktabbar.cpp ktabwidget.cpp \
+		ksplashscreen.cpp
 
 noinst_HEADERS = kdockwidget_private.h klistviewlineedit.h \
 		kdialogbase_priv.h kaboutdialog_private.h kcursor_private.h \
