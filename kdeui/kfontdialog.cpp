@@ -23,6 +23,9 @@
     Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
   
     $Log$
+    Revision 1.21  1998/06/01 09:13:34  kalle
+    Added static getFontAndText()
+
     Revision 1.20  1998/06/01 08:42:41  kalle
     KFontDialog:
     - you can now enter your own example string
@@ -141,6 +144,7 @@
 #define SIZE_Y 280
 #define X1 20
 #define X2 100
+#define X2_L 120
 #define COMBOWIDTH 150
 #define X3 270
 #define X4 335
@@ -174,10 +178,10 @@ KFontDialog::KFontDialog( QWidget *parent, const char *name,
 
   actual_family_label = new QLabel(this,"afamily");
   actual_family_label->setText(klocale->translate("Family:"));
-  actual_family_label->setGeometry(X1,200,50,LABLE_HEIGHT);
+  actual_family_label->setGeometry(X1,200,95,LABLE_HEIGHT);
 
   actual_family_label_data = new QLabel(this,"afamilyd");
-  actual_family_label_data->setGeometry(X2 ,200,110,LABLE_HEIGHT);
+  actual_family_label_data->setGeometry(X2_L ,200,110,LABLE_HEIGHT);
 
   charset_label = new QLabel(this,"charset");
   charset_label->setText(klocale->translate("Charset:"));
@@ -187,10 +191,10 @@ KFontDialog::KFontDialog( QWidget *parent, const char *name,
 
   actual_charset_label = new QLabel(this,"acharset");
   actual_charset_label->setText(klocale->translate("Charset:"));
-  actual_charset_label->setGeometry(X1,200 - LABLE_HEIGHT,50,LABLE_HEIGHT);
+  actual_charset_label->setGeometry(X1,200 - LABLE_HEIGHT,95,LABLE_HEIGHT);
 
   actual_charset_label_data = new QLabel(this,"acharsetd");
-  actual_charset_label_data->setGeometry(X2 ,200 - LABLE_HEIGHT,110,LABLE_HEIGHT);
+  actual_charset_label_data->setGeometry(X2_L ,200 - LABLE_HEIGHT,110,LABLE_HEIGHT);
 
   size_label = new QLabel(this,"size");
   size_label->setText(klocale->translate("Size:"));
@@ -199,11 +203,10 @@ KFontDialog::KFontDialog( QWidget *parent, const char *name,
 
   actual_size_label = new QLabel(this,"asize");
   actual_size_label->setText(klocale->translate("Size:"));
-  actual_size_label->setGeometry(X1,200 + LABLE_HEIGHT,
-				 LABLE_LENGTH +10,LABLE_HEIGHT);
+  actual_size_label->setGeometry(X1,200 + LABLE_HEIGHT,95,LABLE_HEIGHT);
 
   actual_size_label_data = new QLabel(this,"asized");
-  actual_size_label_data->setGeometry(X2, 200 + LABLE_HEIGHT ,110,LABLE_HEIGHT);
+  actual_size_label_data->setGeometry(X2_L, 200 + LABLE_HEIGHT ,110,LABLE_HEIGHT);
 
   weight_label = new QLabel(this,"weight");
   weight_label->setText(klocale->translate("Weight:"));
@@ -212,11 +215,10 @@ KFontDialog::KFontDialog( QWidget *parent, const char *name,
 
   actual_weight_label = new QLabel(this,"aweight");
   actual_weight_label->setText(klocale->translate("Weight:"));
-  actual_weight_label->setGeometry(X1 , 200 + 2*LABLE_HEIGHT,
-				 LABLE_LENGTH +10,LABLE_HEIGHT);
+  actual_weight_label->setGeometry(X1 , 200 + 2*LABLE_HEIGHT, 95, LABLE_HEIGHT);
 
   actual_weight_label_data = new QLabel(this,"aweightd");
-  actual_weight_label_data->setGeometry(X2,200 + 2*LABLE_HEIGHT
+  actual_weight_label_data->setGeometry(X2_L,200 + 2*LABLE_HEIGHT
 				      ,110,LABLE_HEIGHT);
 
   style_label = new QLabel(this,"style");
@@ -228,11 +230,10 @@ KFontDialog::KFontDialog( QWidget *parent, const char *name,
 
   actual_style_label = new QLabel(this,"astyle");
   actual_style_label->setText(klocale->translate("Style:"));
-  actual_style_label->setGeometry(X1 ,200 + 3*LABLE_HEIGHT,
-				 LABLE_LENGTH +10,LABLE_HEIGHT);
+  actual_style_label->setGeometry(X1 ,200 + 3*LABLE_HEIGHT, 95,LABLE_HEIGHT);
 
   actual_style_label_data = new QLabel(this,"astyled");
-  actual_style_label_data->setGeometry(X2,200 + 3*LABLE_HEIGHT
+  actual_style_label_data->setGeometry(X2_L,200 + 3*LABLE_HEIGHT
 				      ,110,LABLE_HEIGHT);
 
 

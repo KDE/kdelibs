@@ -327,7 +327,7 @@ bool KCharsets::setDefault(KCharset ch){
      data->setDefaultCharset(ch.entry);
      return TRUE; 
   }   
-  warning("Wrong charset! Setting to default (us-ascii)");
+  warning("Wrong charset (%s)! Setting to default (us-ascii)", ch.name());
   const KCharsetEntry *ce=data->charsetEntry("us-ascii");
   data->setDefaultCharset(ce);
   return FALSE;  

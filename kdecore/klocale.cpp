@@ -271,11 +271,11 @@ void KLocale::splitLocale(const QString& aStr,
 	QString directory = KApplication::kde_localedir();
 	QString dir=directory+"/"+lang+"_"+country;
 	QDir d(dir);
-	if (!d.exists("charsets")){
+	if (!d.exists("charset")){
 	    dir=directory+"/"+lang;
 	    d=QDir(dir);
 	}  
-	if (d.exists("charsets")){
+	if (d.exists("charset")){
 	    QFile f(dir+"/charset");   
 	    if (f.exists() && f.open(IO_ReadOnly)){
 		char *buf=new char[256];
