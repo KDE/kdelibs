@@ -65,7 +65,7 @@ KServiceType * KServiceTypeFactory::findServiceTypeByName(const QString &_name)
    int offset = m_sycocaDict->find_string( _name );
    if (!offset) return 0; // Not found
    KServiceType * newServiceType = createServiceType(offset);
-   
+
    // Check whether the dictionary was right.
    if (newServiceType && (newServiceType->name() != _name))
    {
@@ -84,12 +84,12 @@ bool KServiceTypeFactory::matchFilename( const QString& _filename, const QString
   int pattern_len = _pattern.length();
   if (!pattern_len)
      return false;
-  
+
   // Patterns like "Makefile*"
   if ( s[ pattern_len - 1 ] == '*' && len + 1 >= pattern_len )
      if ( strncasecmp( _filename.ascii(), s, pattern_len - 1 ) == 0 )
 	return true;
-  
+
   // Patterns like "*~", "*.extension"
   if ( s[ 0 ] == '*' && len + 1 >= pattern_len )
   {
@@ -120,6 +120,7 @@ KMimeType * KServiceTypeFactory::findFromPattern(const QString &_filename)
 
    QString pattern;
    Q_INT32 mimetypeOffset;
+   KServiceType * newServiceType = 0L;
 
    // Let's go for a binary search in the "fast" pattern index
    Q_INT32 left = 0;
@@ -132,7 +133,7 @@ KMimeType * KServiceTypeFactory::findFromPattern(const QString &_filename)
       QString extension = _filename.right( _filename.length() - _filename.findRev('.') - 1 );
       extension = extension.leftJustify(4);
       //kdDebug(7011) << QString("extension is '%1'").arg(extension) << endl;
-      
+
       while (left <= right) {
          middle = (left + right) / 2;
          //kdDebug(7011) << QString("the situation is left=%1 middle=%2 right=%3")         //       .arg(left).arg(middle).arg(right) << endl;
@@ -145,28 +146,33 @@ KMimeType * KServiceTypeFactory::findFromPattern(const QString &_filename)
             left = middle + 1;
          else if (cmp == 0) // found
          {
+            assert( newServiceType == 0L );
             (*str) >> mimetypeOffset;
-            KServiceType * newServiceType = createServiceType(mimetypeOffset);
+            newServiceType = createServiceType(mimetypeOffset);
             assert (newServiceType && newServiceType->isType( KST_KMimeType ));
-            return (KMimeType *) newServiceType;
+            // don't return newServiceType - there may be an "other" pattern that
+            // matches best this file, like *.tar.bz
+            break; // but get out of the fast patterns
          }
          else
             right = middle - 1;
       }
    }
-      
-   // Not found or no extension, try the "other" Pattern table
+
+   // Now try the "other" Pattern table
    str->device()->at( m_otherPatternOffset );
 
    while (true)
    {
       (*str) >> pattern;
       if (pattern.isEmpty()) // end of list
-         return 0L;
+          return (KMimeType *) newServiceType; // return what we got (0L or real one)
       (*str) >> mimetypeOffset;
       if ( matchFilename( _filename, pattern ) )
       {
-         KServiceType * newServiceType = createServiceType(mimetypeOffset);
+         if (newServiceType) // we got one, but it's not good enough (like *.bz for a tar.bz file)
+             delete newServiceType;
+         newServiceType = createServiceType(mimetypeOffset);
          assert (newServiceType && newServiceType->isType( KST_KMimeType ));
          return (KMimeType *) newServiceType;
       }
@@ -223,14 +229,14 @@ bool KServiceTypeFactory::checkMimeTypes()
    QDataStream *str = KSycoca::self()->findFactory( factoryId() );
    if (!str) return false;
 
-   // check if there are mimetypes/servicetypes 
+   // check if there are mimetypes/servicetypes
    return (m_beginEntryOffset != m_endEntryOffset);
 }
 
 KServiceType * KServiceTypeFactory::createServiceType(int offset)
 {
    KServiceType *newEntry = 0;
-   KSycocaType type; 
+   KSycocaType type;
    QDataStream *str = KSycoca::self()->findEntry(offset, type);
    if (!str) return 0;
 
@@ -255,13 +261,13 @@ KServiceType * KServiceTypeFactory::createServiceType(int offset)
      default:
         kdError(7011) << QString("KServiceTypeFactory: unexpected object entry in KSycoca database (type = %1)").arg((int)type) << endl;
         break;
-   } 
+   }
    if (!newEntry->isValid())
    {
       kdError(7011) << "KServiceTypeFactory: corrupt object in KSycoca database!\n" << endl;
       delete newEntry;
       newEntry = 0;
-   }   
+   }
    return newEntry;
 }
 
