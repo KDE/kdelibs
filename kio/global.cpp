@@ -38,6 +38,10 @@
 #include <klocale.h>
 #include <kglobal.h>
 
+#ifdef HAVE_VOLMGT
+#include <volmgt.h>
+#endif
+
 QString KIO::convertSize( unsigned long size )
 {
     float fsize;
@@ -456,6 +460,64 @@ extern "C" void endvfsent( );
 QString KIO::findDeviceMountPoint( const QString& filename )
 {
     //kdDebug( 7007 ) << "findDeviceMountPoint " << filename << endl;
+    QString result;
+
+#ifdef HAVE_VOLMGT
+	/*
+	 *  support for Solaris volume management
+	 */
+	char *volpath;
+	FILE *mnttab;
+	struct mnttab mnt;
+	int len;
+	QCString devname;
+
+	if( (volpath = volmgt_root()) == NULL ) {
+		kdDebug( 7007 ) << "findDeviceMountPoint: "
+			<< "VOLMGT: can't find volmgt root dir" << endl;
+		return QString::null;
+	}
+
+	if( (mnttab = fopen( MNTTAB, "r" )) == NULL ) {
+		kdDebug( 7007 ) << "findDeviceMountPoint: "
+			<< "VOLMGT: can't open mnttab" << endl;
+		return QString::null;
+	}
+
+	devname = volpath;
+	devname += QFile::encodeName( filename.local8Bit() );
+	devname += '/';
+	len = devname.length();
+//	kdDebug( 7007 ) << "findDeviceMountPoint: "
+//		<< "VOLMGT: searching mountpoint for \"" << devname << "\""
+//		<< endl;
+
+	/*
+	 *  find the mountpoint
+	 *  floppies:
+	 *	/dev/disketteN    => <volpath>/dev/disketteN
+	 *  CDROM, ZIP, and other media:
+	 *	/dev/dsk/cXtYdZs2 => <volpath>/dev/dsk/cXtYdZ  (without slice#)
+	 */
+	rewind( mnttab );
+	result = QString::null;
+	while( getmntent( mnttab, &mnt ) == 0 ) {
+		/*
+		 *  either match the exact device name (floppies),
+		 *  or the device name without the slice#
+		 */
+		if( strncmp( devname.data(), mnt.mnt_special, len ) == 0 
+			|| (strncmp( devname.data(),
+				mnt.mnt_special, len - 3 ) == 0
+				&& mnt.mnt_special[len - 3] == '/' )) {
+			result = mnt.mnt_mountp;
+			break;
+		}
+	}
+	fclose( mnttab );
+	devname.~QCString();
+#else
+
     char    realpath_buffer[MAXPATHLEN];
     QCString realname;
 
@@ -464,8 +526,6 @@ QString KIO::findDeviceMountPoint( const QString& filename )
     if (realpath(realname, realpath_buffer) != 0)
       // succes, use result from realpath
       realname = realpath_buffer;
-
-    QString result;
 
 #ifdef HAVE_GETMNTINFO
 
@@ -610,6 +670,7 @@ QString KIO::findDeviceMountPoint( const QString& filename )
     ENDMNTENT(mtab);
 
 #endif /* GET_MNTINFO */
+#endif /* HAVE_VOLMGT */
 
     //kdDebug( 7007 ) << "Returning result " << result << endl;
     return result;

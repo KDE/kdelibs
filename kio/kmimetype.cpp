@@ -18,6 +18,8 @@
  **/
 // $Id$
 
+#include <config.h>
+
 #include <sys/types.h>
 #include <sys/stat.h>
 
@@ -692,7 +694,14 @@ QValueList<KDEDesktopMimeType::Service> KDEDesktopMimeType::builtinServices( con
       else
       {
 	Service unmount;
+#ifdef HAVE_VOLMGT
+	/*
+	 *  Solaris' volume management can only umount+eject
+	 */
+	unmount.m_strName = i18n("Eject");
+#else
 	unmount.m_strName = i18n("Unmount");
+#endif
 	unmount.m_type = ST_UNMOUNT;
 	result.append( unmount );
       }

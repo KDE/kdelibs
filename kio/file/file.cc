@@ -50,6 +50,11 @@
 #include "file.h"
 #include <limits.h>
 
+#ifdef HAVE_VOLMGT
+#include <volmgt.h>
+#include <sys/mnttab.h>
+#endif
+
 using namespace KIO;
 
 #define MAX_IPC_SIZE (1024*32)
@@ -1000,6 +1005,7 @@ void FileProtocol::slotInfoMessage( const QString & msg )
   infoMessage( msg );
 }
 
+#ifndef HAVE_VOLMGT
 static QString shellQuote( const QString &_str )
 {
     // Credits to Walter, says Bernd G. :)
@@ -1007,12 +1013,41 @@ static QString shellQuote( const QString &_str )
     str.replace(QRegExp(QString::fromLatin1("'")), QString::fromLatin1("'\"'\"'"));
     return QString::fromLatin1("'")+str+'\'';
 }
+#endif /* ! HAVE_VOLMGT */
 
 void FileProtocol::mount( bool _ro, const char *_fstype, const QString& _dev, const QString& _point )
 {
     kdDebug(7101) << "FileProtocol::mount _fstype=" << _fstype << endl;
     QString buffer;
 
+#ifdef HAVE_VOLMGT
+	/*
+	 *  support for Solaris volume management
+	 */
+	QString err;
+	QCString devname = QFile::encodeName( _dev );
+
+	if( volmgt_running() ) {
+//		kdDebug(7101) << "VOLMGT: vold ok." << endl;
+		if( volmgt_check( devname.data() ) == 0 ) {
+			kdDebug(7101) << "VOLMGT: no media in "
+					<< devname.data() << endl;
+			err = "No Media inserted or Media not recognized.";
+			error( KIO::ERR_COULD_NOT_MOUNT, err );
+			return;
+		} else {
+			kdDebug(7101) << "VOLMGT: " << devname.data()
+				<< ": media ok" << endl;
+			finished();
+			return;
+		}
+	} else {
+		err = "\"vold\" is not running.";
+		kdDebug(7101) << "VOLMGT: " << err << endl;
+		error( KIO::ERR_COULD_NOT_MOUNT, err );
+		return;
+	}
+#else
     KTempFile tmpFile;
     QCString tmpFileC = QFile::encodeName(tmpFile.name());
     const char *tmp = tmpFileC.data();
@@ -1087,6 +1122,7 @@ void FileProtocol::mount( bool _ro, const char *_fstype, const QString& _dev, co
             }
         }
     }
+#endif /* ! HAVE_VOLMGT */
 }
 
 
@@ -1096,12 +1132,95 @@ void FileProtocol::unmount( const QString& _point )
 
     KTempFile tmpFile;
     QCString tmpFileC = QFile::encodeName(tmpFile.name());
+    QString err;
     const char *tmp = tmpFileC.data();
 
+#ifdef HAVE_VOLMGT
+	/*
+	 *  support for Solaris volume management
+	 */
+	char *devname;
+	char *ptr;
+	FILE *mnttab;
+	struct mnttab mnt;
+
+	if( volmgt_running() ) {
+		kdDebug(7101) << "VOLMGT: looking for "
+			<< _point.local8Bit() << endl;
+
+		if( (mnttab = fopen( MNTTAB, "r" )) == NULL ) {
+			err = "couldn't open mnttab";
+			kdDebug(7101) << "VOLMGT: " << err << endl;
+			error( KIO::ERR_COULD_NOT_UNMOUNT, err );
+			return;
+		}
+
+		/*
+		 *  since there's no way to derive the device name from
+		 *  the mount point through the volmgt library (and
+		 *  media_findname() won't work in this case), we have to
+		 *  look ourselves...
+		 */
+		devname = NULL;
+		rewind( mnttab );
+		while( getmntent( mnttab, &mnt ) == 0 ) {
+			if( strcmp( _point.local8Bit(), mnt.mnt_mountp ) == 0 ){
+				devname = mnt.mnt_special;
+				break;
+			}
+		}
+		fclose( mnttab );
+
+		if( devname == NULL ) {
+			err = "not in mnttab";
+			kdDebug(7101) << "VOLMGT: "
+				<< QFile::encodeName(_point).data()
+				<< ": " << err << endl;
+			error( KIO::ERR_COULD_NOT_UNMOUNT, err );
+			return;
+		}
+
+		/*
+		 *  strip off the directory name (volume name)
+		 *  the eject(1) command will handle unmounting and
+		 *  physically eject the media (if possible)
+		 */
+		ptr = strrchr( devname, '/' );
+		*ptr = '\0';
+		buffer.sprintf( "/usr/bin/eject %s 2>%s", devname, tmp );
+		kdDebug(7101) << "VOLMGT: eject " << devname << endl;
+
+		/*
+		 *  from eject(1): exit status == 0 => need to manually eject
+		 *                 exit status == 4 => media was ejected
+		 */
+		if( WEXITSTATUS( system( buffer.local8Bit() )) == 4 ) {
+			/*
+			 *  this is not an error, so skip "testLogFile()"
+			 *  to avoid wrong/confusing error popup
+			 */
+			unlink( tmp );
+			finished();
+			return;
+		}
+	} else {
+		/*
+		 *  eject(1) should do its job without vold(1M) running,
+		 *  so we probably could call eject anyway, but since the
+		 *  media is mounted now, vold must've died for some reason
+		 *  during the user's session, so it should be restarted...
+		 */
+		err = "\"vold\" is not running.";
+		kdDebug(7101) << "VOLMGT: " << err << endl;
+		error( KIO::ERR_COULD_NOT_UNMOUNT, err );
+		return;
+	}
+#else
     buffer.sprintf( "umount %s 2>%s", QFile::encodeName(_point).data(), tmp );
     system( buffer.ascii() );
+#endif /* HAVE_VOLMGT */
 
-    QString err = testLogFile( tmp );
+    err = testLogFile( tmp );
     if ( err.isEmpty() )
 	finished();
     else
