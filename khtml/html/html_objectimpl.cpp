@@ -327,7 +327,7 @@ void HTMLObjectElementImpl::attach()
     KHTMLView* w = getDocument()->view();
     bool loadplugin = w->part()->pluginsEnabled();
     KURL u = getDocument()->completeURL(url);
-    for (KHTMLPart* part = w->part(); part; part = part->parentPart())
+    for (KHTMLPart* part = w->part()->parentPart(); part; part = part->parentPart())
         if (part->url() == u) {
             loadplugin = false;
             break;
