@@ -77,6 +77,7 @@ public:
   Orientation orientation(){return m_orientation;}
 
 protected:
+  friend class  KDockContainer;
   int checkValue( int ) const;
   virtual void resizeEvent(QResizeEvent *);
 /*
@@ -165,7 +166,6 @@ public:
   QPoint resizePos;
   bool resizing;
   KDockWidgetResize resizeMode;
-
 };
 
 class KDockWidgetHeaderPrivate
@@ -183,6 +183,8 @@ public:
 
   bool showToDesktopButton;
   bool topLevel;
+  QPtrList<KDockButton_Private> btns;
+
 };
 
 #endif

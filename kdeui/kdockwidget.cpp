@@ -1,5 +1,7 @@
+
 /* This file is part of the KDE libraries
    Copyright (C) 2000 Max Judin <novaprint@mtu-net.ru>
+   Copyright (C) 2002,2003 Joseph Wenninger <jowenn@kde.org>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -299,10 +301,49 @@ void KDockWidgetHeader::setDragPanel( KDockWidgetHeaderDrag* nd )
   layout->addWidget( dockbackButton );
   layout->addWidget( d->toDesktopButton );
   layout->addWidget( stayButton );
+  for (QPtrListIterator<KDockButton_Private> it( d->btns );it.current()!=0;++it) {
+      layout->addWidget(it.current());
+  }
+
   layout->addWidget( closeButton );
   layout->activate();
   drag->setFixedHeight( layout->minimumSize().height() );
 }
+
+void KDockWidgetHeader::addButton(KDockButton_Private* btn) {
+	if (!btn) return;
+
+	if (btn->parentWidget()!=this) {
+		btn->reparent(this,QPoint(0,0));
+	}
+	btn->setFixedSize(closeButton->pixmap()->width(),closeButton->pixmap()->height());
+	if (!d->btns.containsRef(btn)) d->btns.append(btn);
+	
+	btn->show();
+
+	delete layout;
+	layout = new QHBoxLayout( this );
+	layout->setResizeMode( QLayout::Minimum );
+
+	layout->addWidget( drag );
+ 	layout->addWidget( dockbackButton );	
+	layout->addWidget( d->toDesktopButton );
+	layout->addWidget( stayButton );
+	for (QPtrListIterator<KDockButton_Private> it( d->btns );it.current()!=0;++it) {
+		layout->addWidget(it.current());
+	}
+	layout->addWidget( closeButton );
+	layout->activate();
+	drag->setFixedHeight( layout->minimumSize().height() );
+}
+
+void KDockWidgetHeader::removeButton(KDockButton_Private* btn) {
+	if (btn->parentWidget()==this) {
+		if (d->btns.containsRef(btn)) d->btns.removeRef(btn);
+		delete btn;
+	}
+}
+
 
 void KDockWidgetHeader::slotStayClicked()
 {
@@ -617,6 +658,10 @@ QWidget* KDockWidget::latestKDockContainer()
 }
 
 
+
+KDockWidgetAbstractHeader *KDockWidget::getHeader() {
+	return header;
+}
 
 void KDockWidget::setHeader( KDockWidgetAbstractHeader* h )
 {
@@ -2683,7 +2728,7 @@ void KDockArea::setMainDockWidget( KDockWidget* mdw )
 
 
 // KDOCKCONTAINER - AN ABSTRACTION OF THE KDOCKTABWIDGET
-KDockContainer::KDockContainer(){m_childrenListBegin=0; m_childrenListEnd=0;}
+KDockContainer::KDockContainer(){m_overlapMode=false; m_childrenListBegin=0; m_childrenListEnd=0;}
 KDockContainer::~KDockContainer(){
 
 	if (m_childrenListBegin!=0)
@@ -2700,6 +2745,34 @@ KDockContainer::~KDockContainer(){
 		m_childrenListEnd=0;
 	}
 
+}
+
+void KDockContainer::activateOverlapMode(int nonOverlapSize) {
+	m_nonOverlapSize=nonOverlapSize;
+	m_overlapMode=true;
+	if (parentDockWidget()) {
+		if (parentDockWidget()->parent()) {
+			KDockSplitter *sp= static_cast<KDockSplitter*>(parentDockWidget()->
+				parent()->qt_cast("KDockSplitter"));
+			if (sp) sp->resizeEvent(0);
+		}
+	}
+}
+
+void KDockContainer::deactivateOverlapMode() {
+	m_overlapMode=false;
+	if (parentDockWidget()) {
+		if (parentDockWidget()->parent()) {
+			KDockSplitter *sp= static_cast<KDockSplitter*>(parentDockWidget()->
+				parent()->qt_cast("KDockSplitter"));
+			if (sp) sp->resizeEvent(0);
+		}
+	}
+
+}
+
+bool KDockContainer::isOverlapMode() {
+	return m_overlapMode;
 }
 
 KDockWidget *KDockContainer::parentDockWidget(){return 0;}

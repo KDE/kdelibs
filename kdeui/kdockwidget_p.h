@@ -1,5 +1,5 @@
 /* This file is part of the KDE libraries
-   Copyright (C) 2002 Joseph Wenninger <jowenn@kde.org
+   Copyright (C) 2002,2003 Joseph Wenninger <jowenn@kde.org
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -51,7 +51,11 @@ public:
   virtual void setToolTip (KDockWidget *, QString &);
 protected:
   friend class KDockManager;
+  friend class KDockSplitter;
   void prepareSave(QStringList &names);
+  void activateOverlapMode(int nonOverlapSize);
+  void deactivateOverlapMode();
+  bool isOverlapMode();
 private:
 
 	struct ListItem {
@@ -67,5 +71,7 @@ private:
 
   class KDockContainerPrivate;
   KDockContainerPrivate *d;
+  bool m_overlapMode;
+  int m_nonOverlapSize;
 };
 

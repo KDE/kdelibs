@@ -16,6 +16,7 @@
    Boston, MA 02111-1307, USA.
 */
 #include "kdockwidget.h"
+#include "kdockwidget_p.h"
 #include "kdockwidget_private.h"
 
 #include <qpainter.h>
@@ -245,16 +246,64 @@ void KDockSplitter::resizeEvent(QResizeEvent *ev)
 //	else kdDebug()<<"Something else happened"<<endl;
    }
 
-    int position = checkValue( (m_orientation == Vertical ? width() : height()) * xpos/factor );
-    if (m_orientation == Horizontal){
-      child0->setGeometry(0, 0, width(), position);
-      child1->setGeometry(0, position+4, width(), height()-position-4);
-      divider->setGeometry(0, position, width(), 4);
-    } else {
-      child0->setGeometry(0, 0, position, height());
-      child1->setGeometry(position+4, 0, width()-position-4, height());
-      divider->setGeometry(position, 0, 4, height());
-    }
+    KDockContainer *dc;
+    KDockWidget *c0=(KDockWidget*)child0;
+    KDockWidget *c1=(KDockWidget*)child1;
+    bool stdHandling=false;
+    if ((fixedWidth0==-1) && (fixedWidth1==-1)) {
+	    if ((c0->getWidget()) && (dc=static_cast<KDockContainer*>(c0->getWidget()->qt_cast("KDockContainer")))
+		 && (dc->m_overlapMode)) {
+			child0->raise();
+			divider->raise();
+			int position= (m_orientation == Vertical ? width() : height()) * xpos/factor;
+	        	      if (m_orientation == Horizontal){
+        	        	child0->setGeometry(0, 0, width(), position);
+	                	child1->setGeometry(0, dc->m_nonOverlapSize+4, width(), 
+						height()-dc->m_nonOverlapSize-4);
+	        	        divider->setGeometry(0, position, width(), 4);
+	        	      } else {
+        	        	child0->setGeometry(0, 0, position, height());
+		                child1->setGeometry(dc->m_nonOverlapSize+4, 0, 
+						width()-dc->m_nonOverlapSize-4, height());
+        		        divider->setGeometry(position, 0, 4, height());
+		              }
+	    } else {
+		 if ((c1->getWidget()) && (dc=static_cast<KDockContainer*>(c1->getWidget()->qt_cast("KDockContainer")))
+        	 && (dc->m_overlapMode)) {
+	                child1->raise();
+        	        divider->raise();
+                	int position= (m_orientation == Vertical ? width() : height()) * xpos/factor;
+	                      if (m_orientation == Horizontal){
+        	                child0->setGeometry(0, 0, width(), height()-dc->m_nonOverlapSize-4);
+                	        child1->setGeometry(0, position+4, width(),
+	                                        height()-position-4);
+        	                divider->setGeometry(0, position, width(), 4);
+                	      } else {
+                        	child0->setGeometry(0, 0, width()-dc->m_nonOverlapSize-4, height());
+	                        child1->setGeometry(position+4, 0,
+        	                                width()-position-4, height());
+                	        divider->setGeometry(position, 0, 4, height());
+	                      }
+		}
+		else stdHandling=true;
+	      }
+            }
+	 else stdHandling=true;
+
+	if (stdHandling) {
+		      int position = checkValue( (m_orientation == Vertical ? width() : height()) * xpos/factor );
+		      if (m_orientation == Horizontal){
+        		child0->setGeometry(0, 0, width(), position);
+		        child1->setGeometry(0, position+4, width(), height()-position-4);
+        		divider->setGeometry(0, position, width(), 4);
+		      } else {
+        		child0->setGeometry(0, 0, position, height());
+	        	child1->setGeometry(position+4, 0, width()-position-4, height());
+	        	divider->setGeometry(position, 0, 4, height());
+	}
+
+	}
+	
   }
 }
 

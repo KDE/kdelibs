@@ -1,6 +1,7 @@
 /* This file is part of the KDE libraries
    Copyright (C) 2000 Max Judin <novaprint@mtu-net.ru>
    Copyright (C) 2000 Falk Brettschneider <falk@kdevelop.org>
+   Copyright (C) 2002,2003 Joseph Wenninger <jowenn@kde.org>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -283,6 +284,22 @@ public:
   virtual void loadConfig( KConfig* );
 #endif
 
+   /*@since 3.2
+    * add an arbitrary button to the dockwidget header
+    * NOT PART OF THE PUBLIC API (you don't have access the class defintion anyways, without special
+    * header file copying. (don't do it))
+    */
+    void addButton(KDockButton_Private*);
+
+   /*@since 3.2
+    * remove an arbtrary button from the dockwidget header
+    * NOT PART OF THE PUBLIC API (you don't have access the class defintion anyways, without special
+    * header file copying. (don't do it))
+    */
+    void removeButton(KDockButton_Private*);
+    
+
+
 protected slots:
   /**
    * Sets dragging the dockwidget off when the stay button is pressed down and vice versa.
@@ -509,6 +526,11 @@ public:
    * @param ah A base class pointer to the dockwidget header
    */
   void setHeader( KDockWidgetAbstractHeader* ah);
+ 
+  /**@since 3.2
+   * get the pointer to the header widget
+   */
+  KDockWidgetAbstractHeader *getHeader();
 
   /**
    * Normally it simply shows the dockwidget.
