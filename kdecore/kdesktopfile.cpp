@@ -81,7 +81,7 @@ bool KDesktopFile::isAuthorizedDesktopFile(const QString& path)
      return true;
   if (dirs->relativeLocation("services", path)[0] != '/')
      return true;
-  if (dirs->relativeLocation("appdata", path).startsWith("kdesktop/Desktop"))
+  if (dirs->relativeLocation("data", path).startsWith("kdesktop/Desktop"))
      return true;
   return false;
 }
