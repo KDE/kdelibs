@@ -692,8 +692,8 @@ void RenderTable::calcColMinMax()
     bool hasRel=false;
     bool hasVar=false;
 
-    m_minWidth= spacing;
-    m_maxWidth= spacing;
+    m_minWidth = spacing;
+    m_maxWidth = spacing;
 
     for(int i = 0; i < (int)totalCols; i++)
     {
@@ -808,6 +808,10 @@ void RenderTable::calcColMinMax()
     	for(int i = 0; i < (int)totalCols; i++)
 	    m_maxWidth += colMaxWidth[i] + spacing;
     }
+    
+    m_minWidth += borderLeft() + borderRight();
+    m_maxWidth += borderLeft() + borderRight();
+    m_width += borderLeft() + borderRight();
 
     setMinMaxKnown(true);
 
@@ -838,7 +842,7 @@ void RenderTable::calcColWidth(void)
      * Collect same statistics for future use.
      */
 
-    int actWidth = spacing;
+    int actWidth = spacing + borderLeft() + borderRight();
 
     int minFixed = 0;
     int minPercent = 0;
@@ -1061,7 +1065,7 @@ void RenderTable::calcRowHeight(int r)
 
     rowHeights.resize( totalRows+1 );
     rowBaselines.resize( totalRows );
-    rowHeights[0] =  spacing ;
+    rowHeights[0] =  spacing + borderTop();
 
   //int oldheight = rowHeights[r+1] - rowHeights[r];
     rowHeights[r+1] = 0;
@@ -1191,6 +1195,7 @@ void RenderTable::layout(bool deep)
     }
 
     m_height += rowHeights[totalRows];
+    m_height += borderBottom();
 
     setLayouted();
 
@@ -1270,11 +1275,12 @@ void RenderTable::layoutRow(int r)
 
     	if (style()->direction()==RTL)
     	{
-	    cell->setPos( columnPos[(int)totalCols]-columnPos[(int)(indx+cell->colSpan())],
+	    cell->setPos( columnPos[(int)totalCols]
+	    	- columnPos[(int)(indx+cell->colSpan())] + borderLeft(),
 	    	rowHeights[rindx] );
 	}
 	else
-	    cell->setPos( columnPos[indx] , rowHeights[rindx] );
+	    cell->setPos( columnPos[indx] + borderLeft(), rowHeights[rindx] );
 	
 	cell->setRowHeight(rHeight);
 	// ###

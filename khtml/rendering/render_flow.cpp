@@ -409,7 +409,7 @@ void RenderFlow::layoutBlockChildren(bool deep)
 
     	// html blocks flow around floats	
     	if (style()->htmlHacks() && child->style()->flowAroundFloats() ) 	
-	    child->setXPos(xPos + leftMargin(m_height) + getIndent(child));
+	    child->setXPos(leftMargin(m_height) + getIndent(child));
 	else
 	    child->setXPos(xPos + getIndent(child));
 
