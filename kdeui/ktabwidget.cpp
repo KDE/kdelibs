@@ -78,6 +78,11 @@ void KTabWidget::insertTab( QWidget *child, const QString &label, int index )
     QTabWidget::insertTab( child, label, index );
 }
 
+void KTabWidget::insertTab( QWidget *child, const QIconSet& iconset, const QString &label, int index )
+{
+    QTabWidget::insertTab( child, iconset, label, index );
+}
+
 void KTabWidget::insertTab( QWidget *child, QTab *tab, int index )
 {
     QTabWidget::insertTab( child, tab, index);

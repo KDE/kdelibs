@@ -106,6 +106,11 @@ public:
 
     /*!
       Reimplemented for internal reasons.
+     */
+    virtual void insertTab( QWidget *child, const QIconSet& iconset,
+                            const QString &label, int index = -1 );
+    /*!
+      Reimplemented for internal reasons.
     */
     virtual void insertTab( QWidget *, QTab *, int index = -1 );
 

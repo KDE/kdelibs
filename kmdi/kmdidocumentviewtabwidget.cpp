@@ -61,7 +61,7 @@ void KMdiDocumentViewTabWidget::insertTab ( QWidget * child, const QString & lab
 
 void KMdiDocumentViewTabWidget::insertTab ( QWidget * child, const QIconSet & iconset, const QString & label, int index )
 {
-	QTabWidget::insertTab( child, iconset, label, index );
+	KTabWidget::insertTab( child, iconset, label, index );
 	showPage( child );
 	maybeShow();
 	tabBar() ->repaint();
