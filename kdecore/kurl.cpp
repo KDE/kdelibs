@@ -37,17 +37,7 @@
 
 #include <qtextcodec.h>
 
-// WARNING
-// This function CHANGES the argument even though it is const!!!
-static const QString &QString_lower(const QString &s)
-{
-    uint l = s.length();
-    const_cast<QString &>(s).setLength(l); // Force a detach
-    QChar *u = const_cast<QChar *>(s.unicode());
-    for(;l--;u++)
-       *u = u->lower();
-    return s;
-}
+static const QString fileProt = "file";
 
 static QTextCodec * codecForHint( int encoding_hint /* not 0 ! */ )
 {
@@ -585,12 +575,12 @@ void KURL::parse( const QString& _url, int encoding_hint )
     goto NodeErr;
   if (buf[pos] == ':' && buf[pos+1] == '/' && buf[pos+2] == '/' )
     {
-      m_strProtocol = QString_lower(QString( orig, pos ));
+      m_strProtocol = QString( orig, pos ).lower();
       pos += 3;
     }
   else if (buf[pos] == ':' && buf[pos+1] == '/' )
     {
-      m_strProtocol = QString_lower(QString( orig, pos ));
+      m_strProtocol = QString( orig, pos ).lower();
       //kdDebug(126)<<"setting protocol to "<<m_strProtocol<<endl;
       pos++;
       start = pos;
@@ -598,7 +588,7 @@ void KURL::parse( const QString& _url, int encoding_hint )
     }
   else if ( buf[pos] == ':' )
     {
-      m_strProtocol = QString_lower(QString( orig, pos ));
+      m_strProtocol = QString( orig, pos ).lower();
       //kdDebug(126)<<"setting protocol to "<<m_strProtocol<<endl;
       pos++;
       start = pos;
@@ -628,7 +618,7 @@ void KURL::parse( const QString& _url, int encoding_hint )
       if (badHostName)
          goto NodeErr;
 
-      m_strHost = QString_lower(decode(QString( buf + start, pos - start ), encoding_hint));
+      m_strHost = decode(QString( buf + start, pos - start ), encoding_hint).lower();
       goto NodeOk;
     }
   if ( x == '@' )
@@ -639,7 +629,7 @@ void KURL::parse( const QString& _url, int encoding_hint )
     }
   /* else if ( x == ':' )
      {
-     m_strHost = QString_lower(decode(QString( buf + start, pos - start ), encoding_hint));
+     m_strHost = decode(QString( buf + start, pos - start ), encoding_hint).lower();
      pos++;
      goto Node8a;
      } */
@@ -648,7 +638,7 @@ void KURL::parse( const QString& _url, int encoding_hint )
       if (badHostName)
          goto NodeErr;
 
-      m_strHost = QString_lower(decode(QString( buf + start, pos - start ), encoding_hint));
+      m_strHost = decode(QString( buf + start, pos - start ), encoding_hint).lower();
       start = pos;
       goto Node9;
     }
@@ -712,7 +702,7 @@ void KURL::parse( const QString& _url, int encoding_hint )
     }
     if (badHostName)
        goto NodeErr;
-    m_strHost = QString_lower(decode(QString( buf + start, pos - start ), encoding_hint));
+    m_strHost = decode(QString( buf + start, pos - start ), encoding_hint).lower();
     if (pos < len) pos++; // Skip ']'
     if (pos == len)
        goto NodeOk;
@@ -735,10 +725,10 @@ void KURL::parse( const QString& _url, int encoding_hint )
        goto NodeErr;
     if ( pos == len )
     {
-       m_strHost = QString_lower(decode(QString( buf + start, pos - start ), encoding_hint));
+       m_strHost = decode(QString( buf + start, pos - start ), encoding_hint).lower();
        goto NodeOk;
     }
-    m_strHost = QString_lower(decode(QString( buf + start, pos - start ), encoding_hint));
+    m_strHost = decode(QString( buf + start, pos - start ), encoding_hint).lower();
   }
   x = buf[pos];
   if ( x == '/' )
@@ -804,13 +794,8 @@ void KURL::parse( const QString& _url, int encoding_hint )
   m_bIsMalformed = false; // Valid URL
 
   //kdDebug()<<"Prot="<<m_strProtocol<<"\nUser="<<m_strUser<<"\nPass="<<m_strPass<<"\nHost="<<m_strHost<<"\nPath="<<m_strPath<<"\nQuery="<<m_strQuery_encoded<<"\nRef="<<m_strRef_encoded<<"\nPort="<<m_iPort<<endl;
-  if (m_strProtocol.isEmpty() || (m_strProtocol == "file"))
+  if (m_strProtocol.isEmpty() || (m_strProtocol == fileProt))
   {
-#ifdef KDE_QT_ONLY
-    QString fileProt = "file";
-#else
-    static const QString & fileProt = KGlobal::staticQString( "file" );
-#endif
     m_strProtocol = fileProt;
     if (!m_strHost.isEmpty())
     {
@@ -1092,7 +1077,7 @@ void KURL::setEncodedPath( const QString& _txt, int encoding_hint )
 
   decode( m_strPath_encoded, m_strPath, m_strPath_encoded, encoding_hint );
   // Throw away encoding for local files, makes file-operations faster.
-  if (m_strProtocol == "file")
+  if (m_strProtocol == fileProt)
      m_strPath_encoded = QString::null;
 }
 
@@ -1119,7 +1104,7 @@ QString KURL::path( int _trailing ) const
 
 bool KURL::isLocalFile() const
 {
-  return ( ( m_strProtocol == "file" ) && ( m_strHost.isEmpty()) && !hasSubURL() );
+  return ( ( m_strProtocol == fileProt ) && ( m_strHost.isEmpty()) && !hasSubURL() );
 }
 
 void KURL::setFileEncoding(const QString &encoding)
@@ -1518,7 +1503,7 @@ bool KURL::cd( const QString& _dir )
   }
 
   // Users home directory on the local disk ?
-  if ( ( _dir[0] == '~' ) && ( m_strProtocol == "file" ))
+  if ( ( _dir[0] == '~' ) && ( m_strProtocol == fileProt ))
   {
     m_strPath_encoded = QString::null;
     m_strPath = QDir::homeDirPath();
@@ -1664,11 +1649,6 @@ void KURL::setPath( const QString & path )
     m_bIsMalformed = false;
   if (m_strProtocol.isEmpty())
   {
-#ifdef KDE_QT_ONLY
-    QString fileProt = "file";
-#else
-    static const QString & fileProt = KGlobal::staticQString( "file" );
-#endif
     m_strProtocol = fileProt;
   }
   m_strPath = path;
