@@ -34,6 +34,9 @@
 
 1400	khelpcenter (kdebase)
 
+1420	kikbd
+1421	ki18b_keys (kcmodule)
+
 # kdeutils
 1501	khexedit (kdeutils)
 1511	kdessh (kdeutils)
