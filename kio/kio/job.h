@@ -26,52 +26,6 @@
 
 namespace KIO {
 
-#ifdef CACHE_INFO
-    class CacheInfo
-    {
-    public:
-	/**
-	 * @param url
-	 */
-	CacheInfo(const KURL& url);
-
-	/**
-	 * Null if not cached
-	 */
-	QFile *cachedFile();
-
-	/**
-	 * Null if not cached
-	 */
-	QString &cachedFileName();
-
-	/**
-	 * delete the Cache file
-	 */
-	void flush();
-
-	/**
-	 *
-	 */
-	int creationDate();
-
-	// set creation date to current local machine time
-	void touch();
-
-	// the local machine time when the cache entry will be / was expired
-	int expireDate();
-	void setExpireDate(int);
-
-	bool expired() { return difftime(time(0),expireDate())>=0; };
-
-	// the duration the cache entry is/was valid.
-	int expireTimeout();
-	void setExpireTimeout();
-
-    private:
-	QFile *cef;
-    }
-#endif
 
     /**
      * Creates a single directory.
@@ -175,13 +129,6 @@ namespace KIO {
      * supposed to expire.
      */
     SimpleJob *http_update_cache( const KURL& url, bool no_cache, time_t expireDate);
-
-#ifdef CACHE_INFO
-    /**
-     * @param url Url to be checked.
-     */
-    CacheInfo* getCacheInfo(const KURL& url);
-#endif
 
     /**
      * Find all details for one file or directory.
