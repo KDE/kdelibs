@@ -89,6 +89,9 @@ private slots:
 
 	/** Close the tab specified by w */
 	void closeTab( QWidget* w );
+	
+	/** Moves a tab. Reimplemented for internal reasons. */
+	void moveTab( int from, int to );
 
 public slots:
 
@@ -108,6 +111,9 @@ private:
 	void maybeShow();
 
 	KMdi::TabWidgetVisibility m_visibility;
+	
+signals:
+	void initiateTabMove(int, int);	
 };
 
 

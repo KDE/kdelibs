@@ -64,7 +64,7 @@ KMdiToolViewAccessor::KMdiToolViewAccessor( KMdiMainFrm *parent, QWidget *widget
 		if ( tabToolTip != 0 )
 		{
 			d->widgetContainer->setToolTipString( tabToolTip );
-		}
+		} 
 	}
 	//mdiMainFrm->m_pToolViews->insert(d->widget,this);
 	if ( mdiMainFrm->m_mdiGUIClient )

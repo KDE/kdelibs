@@ -132,10 +132,17 @@ void KMdiDocumentViewTabWidget::setTabWidgetVisibility( KMdi::TabWidgetVisibilit
 	maybeShow();
 }
 
+void KMdiDocumentViewTabWidget::moveTab( int from, int to )
+{
+  emit initiateTabMove( from, to );
+  KTabWidget::moveTab( from, to );
+}
+
 KMdi::TabWidgetVisibility KMdiDocumentViewTabWidget::tabWidgetVisibility( )
 {
 	return m_visibility;
 }
+
 
 #ifndef NO_INCLUDE_MOCFILES
 #include "kmdidocumentviewtabwidget.moc"
