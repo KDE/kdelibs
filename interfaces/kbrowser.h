@@ -26,6 +26,7 @@
 #include <qdatastream.h>
 
 #include <kaction.h>
+#include <kpart.h>
 
 class KFileItem;
 typedef QList<KFileItem> KFileItemList;
@@ -76,53 +77,27 @@ signals:
 
 };
 
-class BrowserView : public QWidget
+class BrowserView : public QObject
 {
   Q_OBJECT
 public:
-  BrowserView( QWidget *parent = 0L, const char *name = 0L ) : QWidget( parent, name ) {}
+  BrowserView( KParts::ReadOnlyPart *parent = 0L, const char *name = 0L ) : QObject( parent, name ) { m_part = parent; }
 
   virtual ~BrowserView() { }
 
-  enum ActionFlags
-  {
-    MenuView  = 0x01,
-    MenuEdit  = 0x02,
-    ToolBar   = 0x04
-  };
-
-  struct ViewAction
-  {
-    ViewAction() : m_action( 0L ) { }
-    ViewAction( QAction *action, int flags )
-    : m_action( action ), m_flags( flags ) { }
-
-    QAction *m_action;
-    int m_flags;
-  };
-
-  virtual void openURL( const QString &url, bool reload = false,
-                        int xOffset = 0, int yOffset = 0 ) = 0;
-
-  virtual QString url() = 0;
+  virtual void setXYOffset( int x, int y ) = 0;
   virtual int xOffset() = 0;
   virtual int yOffset() = 0;
-  virtual void stop() = 0;
 
   virtual void saveState( QDataStream &stream )
-  { stream << url() << (Q_INT32)xOffset() << (Q_INT32)yOffset(); }
+  { stream << m_part->url() << (Q_INT32)xOffset() << (Q_INT32)yOffset(); }
 
   virtual void restoreState( QDataStream &stream )
-  { QString u; Q_INT32 xOfs, yOfs; stream >> u >> xOfs >> yOfs;
-    openURL( u, false, xOfs, yOfs ); }
-
-  QValueList<ViewAction> *actions() { return &m_actionCollection; }
+  { KURL u; Q_INT32 xOfs, yOfs; stream >> u >> xOfs >> yOfs;
+    m_part->openURL( u ); setXYOffset( xOfs, yOfs ); }
 
 signals:
   void openURLRequest( const QString &url, bool reload, int xOffset, int yOffset, const QString &serviceType = QString::null );
-  void started();
-  void completed();
-  void canceled();
   void setStatusBarText( const QString &text );
   void setLocationBarURL( const QString &url );
   void createNewWindow( const QString &url );
@@ -131,7 +106,7 @@ signals:
   void popupMenu( const QPoint &_global, const KFileItemList &_items );
 
 private:
-  QValueList<ViewAction> m_actionCollection;
+  KParts::ReadOnlyPart *m_part;
 };
 
 #endif
