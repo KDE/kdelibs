@@ -235,7 +235,7 @@ bool KAutoConfig::hasChanged() const {
 bool KAutoConfig::isDefault() const {
 #ifndef NDEBUG
   if(!d->retrievedSettings){
-      kdDebug() << "This should NEVER happen.  Function KAutoConfig::hasChanged() called before retrieveSettings. Please Fix." << endl;
+      kdDebug() << "This should NEVER happen.  Function KAutoConfig::isDefault() called before retrieveSettings. Please Fix." << endl;
     return false;
   }
 #endif
