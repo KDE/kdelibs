@@ -442,6 +442,7 @@ khtml::RenderStyle* ElementImpl::activeStyle()
 
 void ElementImpl::normalize()
 {
+    // ### not sure if CDATA nodes are supposed to be merged or not
     NodeImpl *child = _first;
     while(1)
     {
@@ -613,12 +614,25 @@ XMLElementImpl::XMLElementImpl(DocumentImpl *doc, DOMStringImpl *_name) : Elemen
     m_name = _name;
     if (m_name)
 	m_name->ref();
+    m_namespaceURI = 0;
+}
+
+XMLElementImpl::XMLElementImpl(DocumentImpl *doc, DOMStringImpl *_name, DOMStringImpl *_namespaceURI) : ElementImpl(doc)
+{
+    m_name = _name;
+    if (m_name)
+	m_name->ref();
+    m_namespaceURI = _namespaceURI;
+    if (m_namespaceURI)
+	m_namespaceURI->ref();
 }
 
 XMLElementImpl::~XMLElementImpl()
 {
     if (m_name)
 	m_name->deref();
+    if (m_namespaceURI)
+	m_namespaceURI->deref();
 }
 
 const DOMString XMLElementImpl::nodeName() const
@@ -626,6 +640,10 @@ const DOMString XMLElementImpl::nodeName() const
     return m_name;
 }
 
+DOMString XMLElementImpl::namespaceURI() const
+{
+    return m_namespaceURI;
+}
 
 // -------------------------------------------------------------------------
 

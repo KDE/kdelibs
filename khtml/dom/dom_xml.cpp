@@ -24,6 +24,8 @@
 
 #include "dom_xml.h"
 #include "dom_string.h"
+#include "dom_textimpl.h"
+#include "dom_xmlimpl.h"
 using namespace DOM;
 
 
@@ -53,6 +55,10 @@ CDATASection &CDATASection::operator = (const CDATASection &other)
 }
 
 CDATASection::~CDATASection()
+{
+}
+
+CDATASection::CDATASection(CDATASectionImpl *i) : Text(i)
 {
 }
 
@@ -101,6 +107,11 @@ DOMString Entity::notationName() const
     return 0;
 }
 
+Entity::Entity(EntityImpl *i) : Node(i)
+{
+}
+
+// ----------------------------------------------------------------------------
 
 EntityReference::EntityReference()
 {
@@ -131,7 +142,11 @@ EntityReference::~EntityReference()
 {
 }
 
+EntityReference::EntityReference(EntityReferenceImpl *i) : Node(i)
+{
+}
 
+// ----------------------------------------------------------------------------
 
 Notation::Notation()
 {
@@ -172,6 +187,12 @@ DOMString Notation::systemId() const
     return 0;
 }
 
+Notation::Notation(NotationImpl *i) : Node(i)
+{
+}
+
+
+// ----------------------------------------------------------------------------
 
 ProcessingInstruction::ProcessingInstruction()
 {
@@ -216,4 +237,10 @@ DOMString ProcessingInstruction::data() const
 void ProcessingInstruction::setData( const DOMString & )
 {
 }
+
+ProcessingInstruction::ProcessingInstruction(ProcessingInstructionImpl *i) : Node(i)
+{
+}
+
+
 

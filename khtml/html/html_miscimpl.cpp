@@ -25,6 +25,7 @@
 #include "html_miscimpl.h"
 
 #include "htmlhashes.h"
+#include "dom_node.h"
 using namespace DOM;
 
 #include <kdebug.h>
@@ -66,7 +67,7 @@ unsigned long HTMLCollectionImpl::calcLength(NodeImpl *current) const
     unsigned long len = 0;
     while(current)
     {
-	if(!current->isTextNode())
+	if(current->nodeType() == Node::ELEMENT_NODE)
 	{
 	    bool deep = true;
 	    HTMLElementImpl *e = static_cast<HTMLElementImpl *>(current);
@@ -161,7 +162,7 @@ NodeImpl *HTMLCollectionImpl::getItem(NodeImpl *current, int index, int &len) co
 {
     while(current)
     {
-	if(!current->isTextNode())
+	if(current->nodeType() == Node::ELEMENT_NODE)
 	{
 	    bool deep = true;
 	    HTMLElementImpl *e = static_cast<HTMLElementImpl *>(current);
@@ -262,7 +263,7 @@ NodeImpl *HTMLCollectionImpl::getNamedItem( NodeImpl *current, int attr_id,
 
     while(current)
     {
-	if(!current->isTextNode())
+	if(current->nodeType() == Node::ELEMENT_NODE)
 	{
 	    bool deep = true;
 	    bool check = false;

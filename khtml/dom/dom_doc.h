@@ -55,6 +55,7 @@ class NodeIterator;
 class TreeWalker;
 class NodeFilter;
 class DOMImplementationImpl;
+class DocumentTypeImpl;
  
 /**
  * The <code> DOMImplementation </code> interface provides a number of
@@ -530,6 +531,8 @@ public:
      *
      */
     NamedNodeMap notations() const;
+protected:
+    DocumentType(DocumentTypeImpl *impl);
 };
 
 }; //namespace

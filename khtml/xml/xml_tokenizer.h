@@ -26,10 +26,12 @@
 
 #include "html/htmltokenizer.h"
 #include <qxml.h>
+#include <qlist.h>
 
 namespace DOM {
     class DocumentImpl;
     class NodeImpl;
+    class HTMLScriptElementImpl;
 }
 
 
@@ -45,11 +47,15 @@ public:
 
     // overloaded handler functions
     bool startDocument();
-    bool startElement( const QString& namespaceURI, const QString& localName, const QString& qName, const QXmlAttributes& atts );
-    bool endElement( const QString& namespaceURI, const QString& localName, const QString& qName );
-    bool characters( const QString& ch );
+    bool startElement(const QString& namespaceURI, const QString& localName, const QString& qName, const QXmlAttributes& atts);
+    bool endElement(const QString& namespaceURI, const QString& localName, const QString& qName);
+    bool startCDATA();
+    bool endCDATA();
+    bool characters(const QString& ch);
+    bool comment(const QString & ch);
 
-    void enterText();
+
+    bool enterText();
     void exitText();
 
     QString errorString();
@@ -62,7 +68,6 @@ private:
     KHTMLView *m_view;
     DOM::NodeImpl *m_currentNode;
     DOM::NodeImpl *m_rootNode;
-
 
     enum State {
 	StateInit,
@@ -79,7 +84,7 @@ private:
 
 
 
-class XMLTokenizer : public Tokenizer
+class XMLTokenizer : public Tokenizer, public khtml::CachedObjectClient
 {
     Q_OBJECT
 public:
@@ -90,11 +95,21 @@ public:
     virtual void end();
     virtual void finish();
 
+    // from CachedObjectClient
+    void notifyFinished(khtml::CachedObject *finishedObj);
+
 protected:
     DocumentImpl *m_doc;
     KHTMLView *m_view;
 
-    QString xmlCode;
+    void executeScripts();
+    void addScripts(DOM::NodeImpl *n);
+
+    QString m_xmlCode;
+    QList<HTMLScriptElementImpl> m_scripts;
+    QListIterator<HTMLScriptElementImpl> *m_scriptsIt;
+    khtml::CachedScript *m_cachedScript;
+
 
 };
 

@@ -1129,6 +1129,8 @@ void KHTMLPart::begin( const KURL &url, int xOffset, int yOffset )
   // ### proper detection of html or xml
   if (m_url.filename().right(4).lower() == ".xml")
     d->m_doc = new DocumentImpl( d->m_view );
+  else if (m_url.url().right(6).lower() == ".xhtml")
+    d->m_doc = new XHTMLDocumentImpl( d->m_view );
   else
     d->m_doc = new HTMLDocumentImpl( d->m_view );
   d->m_doc->ref();

@@ -28,6 +28,7 @@
 #include <qlist.h>
 #include <qstringlist.h>
 #include <qobject.h>
+#include <qdict.h>
 
 class QPaintDevice;
 class QPaintDeviceMetrics;
@@ -44,6 +45,7 @@ namespace DOM {
     class ElementImpl;
     class DocumentFragmentImpl;
     class TextImpl;
+    class CDATASectionImpl;
     class CommentImpl;
     class AttrImpl;
     class NodeListImpl;
@@ -52,6 +54,9 @@ namespace DOM {
     class NodeIteratorImpl;
     class TreeWalkerImpl;
     class NodeFilterImpl;
+    class DocumentTypeImpl;
+    class NamedEntityMapImpl;
+    class ProcessingInstructionImpl;
 
     class StyleSheetImpl;
     class StyleSheetListImpl;
@@ -89,13 +94,14 @@ public:
 
     virtual void applyChanges(bool top=true, bool force=true);
 
-    //DocumentType doctype() const;
+    DocumentTypeImpl *doctype() const;
 
     //DOMImplementation implementation() const;
 
     ElementImpl *documentElement() const;
 
-    ElementImpl *createElement ( const DOMString &tagName );
+    virtual ElementImpl *createElement ( const DOMString &tagName );
+    virtual ElementImpl *createElementNS ( const DOMString &_namespaceURI, const DOMString &_qualifiedName );
 
     DocumentFragmentImpl *createDocumentFragment ();
 
@@ -103,9 +109,9 @@ public:
 
     CommentImpl *createComment ( const DOMString &data );
 
-    //CDATASection createCDATASection ( const DOMString &data );
+    CDATASectionImpl *createCDATASection ( const DOMString &data );
 
-    //ProcessingInstruction createProcessingInstruction ( const DOMString &target, const DOMString &data );
+    ProcessingInstructionImpl *createProcessingInstruction ( const DOMString &target, const DOMString &data );
 
     AttrImpl *createAttribute ( const DOMString &name );
 
@@ -207,6 +213,7 @@ protected:
     bool visuallyOrdered;
     Tokenizer *tokenizer;
     DOMString url;
+    DocumentTypeImpl *m_doctype;
 
     StyleSheetImpl *m_sheet;
     bool m_loadingSheet;
@@ -229,6 +236,36 @@ public:
 
 protected:
     virtual bool childAllowed( NodeImpl *newChild );
+};
+
+
+class DocumentTypeImpl : public NodeImpl
+{
+public:
+    DocumentTypeImpl(DocumentImpl *doc);
+    ~DocumentTypeImpl();
+
+    virtual const DOMString name() const;
+    virtual NamedNodeMapImpl *entities() const;
+    virtual NamedNodeMapImpl *notations() const;
+    virtual const DOMString nodeName() const;
+
+    NamedEntityMapImpl *m_entities;
+/*    QDict<EntityImpl> m_dict;
+    QDict<NotationImpl> m_dict;*/
+};
+
+class NamedEntityMapImpl : public NamedNodeMapImpl
+{
+public:
+    NamedEntityMapImpl();
+    virtual ~NamedEntityMapImpl();
+    virtual unsigned long length() const;
+    virtual NodeImpl *getNamedItem ( const DOMString &name ) const;
+    virtual NodeImpl *setNamedItem ( const Node &arg );
+    virtual NodeImpl *removeNamedItem ( const DOMString &name );
+    virtual NodeImpl *item ( unsigned long index ) const;
+
 };
 
 }; //namespace

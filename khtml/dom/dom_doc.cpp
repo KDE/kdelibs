@@ -84,6 +84,7 @@ bool DOMImplementation::isNull() const
 }
 
 // ----------------------------------------------------------------------------
+// ### put if (impl) in functions
 
 Document::Document() : Node()
 {
@@ -172,14 +173,15 @@ Comment Document::createComment( const DOMString &data )
     return ((DocumentImpl *)impl)->createComment( data );
 }
 
-CDATASection Document::createCDATASection( const DOMString & )
+CDATASection Document::createCDATASection( const DOMString &data )
 {
-    return CDATASection();
+    // ### DOM1 spec says raise exception if html documents - what about XHTML documents?
+    return ((DocumentImpl *)impl)->createCDATASection( data );
 }
 
-ProcessingInstruction Document::createProcessingInstruction( const DOMString &, const DOMString & )
+ProcessingInstruction Document::createProcessingInstruction( const DOMString &target, const DOMString &data )
 {
-    return ProcessingInstruction();
+    return ((DocumentImpl *)impl)->createProcessingInstruction( target, data );
 }
 
 Attr Document::createAttribute( const DOMString &name )
@@ -337,18 +339,27 @@ DocumentType::~DocumentType()
 
 DOMString DocumentType::name() const
 {
-    // ###
+    if (impl)
+	return static_cast<DocumentTypeImpl*>(impl)->name();
     return 0;
 }
 
 NamedNodeMap DocumentType::entities() const
 {
-    return NamedNodeMap();
-    // ###
+    if (impl)
+	return static_cast<DocumentTypeImpl*>(impl)->entities();
+    return 0;
 }
 
 NamedNodeMap DocumentType::notations() const
 {
-    return NamedNodeMap();
-    // ###
+    if (impl)
+	return static_cast<DocumentTypeImpl*>(impl)->notations();
+    return 0;
 }
+
+DocumentType::DocumentType(DocumentTypeImpl *impl) : Node(impl)
+{
+}
+
+

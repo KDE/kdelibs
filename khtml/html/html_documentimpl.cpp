@@ -29,9 +29,21 @@
 #include "misc/htmlattrs.h"
 
 #include "htmltokenizer.h"
+#include "xml_tokenizer.h"
 #include "htmlhashes.h"
 
+#include "html_baseimpl.h"
+#include "html_blockimpl.h"
+#include "html_documentimpl.h"
+#include "html_elementimpl.h"
+#include "html_formimpl.h"
+#include "html_headimpl.h"
 #include "html_imageimpl.h"
+#include "html_inlineimpl.h"
+#include "html_listimpl.h"
+#include "html_miscimpl.h"
+#include "html_tableimpl.h"
+#include "html_objectimpl.h"
 
 #include <kdebug.h>
 #include <kurl.h>
@@ -349,5 +361,301 @@ bool HTMLDocumentImpl::childAllowed( NodeImpl *newChild )
 {
     return (newChild->id() == ID_HTML || newChild->id() == ID_COMMENT);
 }
+
+
+ElementImpl *HTMLDocumentImpl::createElement( const DOMString &name )
+{
+    uint id = khtml::getTagID( name.string().lower().latin1(), name.string().length() );
+
+    ElementImpl *n = 0;
+    switch(id)
+    {
+    case ID_HTML:
+	n = new HTMLHtmlElementImpl(this);
+	break;
+    case ID_HEAD:
+	n = new HTMLHeadElementImpl(this);
+	break;
+    case ID_BODY:
+	n = new HTMLBodyElementImpl(this);
+	break;
+
+// head elements
+    case ID_BASE:
+	n = new HTMLBaseElementImpl(this);
+	break;
+    case ID_LINK:
+	n = new HTMLLinkElementImpl(this);
+	break;
+    case ID_META:
+	n = new HTMLMetaElementImpl(this);
+	break;
+    case ID_STYLE:
+	n = new HTMLStyleElementImpl(this);
+	break;
+    case ID_TITLE:
+	n = new HTMLTitleElementImpl(this);
+	break;
+
+// frames
+    case ID_FRAME:
+	n = new HTMLFrameElementImpl(this);
+	break;
+    case ID_FRAMESET:
+	n = new HTMLFrameSetElementImpl(this);
+	break;
+    case ID_IFRAME:
+	n = new HTMLIFrameElementImpl(this);
+	break;
+
+// form elements
+// ### FIXME: we need a way to set form dependency after we have made the form elements
+    case ID_FORM:
+	    n = new HTMLFormElementImpl(this);
+	break;
+    case ID_BUTTON:
+            n = new HTMLButtonElementImpl(this);
+	break;
+    case ID_FIELDSET:
+            n = new HTMLFieldSetElementImpl(this);
+	break;
+    case ID_INPUT:
+            n = new HTMLInputElementImpl(this);
+	break;
+    case ID_ISINDEX:
+	    n = new HTMLIsIndexElementImpl(this);
+	break;
+    case ID_LABEL:
+            n = new HTMLLabelElementImpl(this);
+	break;
+    case ID_LEGEND:
+            n = new HTMLLegendElementImpl(this);
+	break;
+    case ID_OPTGROUP:
+            n = new HTMLOptGroupElementImpl(this);
+	break;
+    case ID_OPTION:
+            n = new HTMLOptionElementImpl(this);
+	break;
+    case ID_SELECT:
+            n = new HTMLSelectElementImpl(this);
+	break;
+    case ID_TEXTAREA:
+            n = new HTMLTextAreaElementImpl(this);
+	break;
+
+// lists
+    case ID_DL:
+	n = new HTMLDListElementImpl(this);
+	break;
+    case ID_DD:
+	n = new HTMLGenericElementImpl(this, id);
+	break;
+    case ID_DT:
+	n = new HTMLGenericElementImpl(this, id);
+	break;
+    case ID_UL:
+	n = new HTMLUListElementImpl(this);
+	break;
+    case ID_OL:
+	n = new HTMLOListElementImpl(this);
+	break;
+    case ID_DIR:
+	n = new HTMLDirectoryElementImpl(this);
+	break;
+    case ID_MENU:
+	n = new HTMLMenuElementImpl(this);
+	break;
+    case ID_LI:
+	n = new HTMLLIElementImpl(this);
+	break;
+
+// formatting elements (block)
+    case ID_BLOCKQUOTE:
+	n = new HTMLBlockquoteElementImpl(this);
+	break;
+    case ID_DIV:
+	n = new HTMLDivElementImpl(this);
+	break;
+    case ID_H1:
+    case ID_H2:
+    case ID_H3:
+    case ID_H4:
+    case ID_H5:
+    case ID_H6:
+	n = new HTMLHeadingElementImpl(this, id);
+	break;
+    case ID_HR:
+	n = new HTMLHRElementImpl(this);
+	break;
+    case ID_P:
+	n = new HTMLParagraphElementImpl(this);
+	break;
+    case ID_PRE:
+	n = new HTMLPreElementImpl(this);
+	break;
+
+// font stuff
+    case ID_BASEFONT:
+	n = new HTMLBaseFontElementImpl(this);
+	break;
+    case ID_FONT:
+	n = new HTMLFontElementImpl(this);
+	break;
+
+// ins/del
+    case ID_DEL:
+    case ID_INS:
+	n = new HTMLModElementImpl(this, id);
+	break;
+
+// anchor
+    case ID_A:
+	n = new HTMLAnchorElementImpl(this);
+	break;
+
+// images
+    case ID_IMG:
+	n = new HTMLImageElementImpl(this);
+	break;
+    case ID_MAP:
+	n = new HTMLMapElementImpl(this);
+	/*n = map;*/
+	break;
+    case ID_AREA:
+	n = new HTMLAreaElementImpl(this);
+	break;
+
+// objects, applets and scripts
+    case ID_APPLET:
+	n = new HTMLAppletElementImpl(this);
+	break;
+    case ID_OBJECT:
+	n = new HTMLObjectElementImpl(this);
+	break;
+    case ID_PARAM:
+	n = new HTMLParamElementImpl(this);
+	break;
+    case ID_SCRIPT:
+	n = new HTMLScriptElementImpl(this);
+	break;
+
+// tables
+    case ID_TABLE:
+	n = new HTMLTableElementImpl(this);
+	break;
+    case ID_CAPTION:
+	n = new HTMLTableCaptionElementImpl(this);
+	break;
+    case ID_COLGROUP:
+    case ID_COL:
+	n = new HTMLTableColElementImpl(this, id);
+	break;
+    case ID_TR:
+	n = new HTMLTableRowElementImpl(this);
+	break;
+    case ID_TD:
+    case ID_TH:
+	n = new HTMLTableCellElementImpl(this, id);
+	break;
+    case ID_THEAD:
+    case ID_TBODY:
+    case ID_TFOOT:
+	n = new HTMLTableSectionElementImpl(this, id);
+	break;
+
+// inline elements
+    case ID_BR:
+	n = new HTMLBRElementImpl(this);
+	break;
+    case ID_Q:
+	n = new HTMLQuoteElementImpl(this);
+	break;
+
+// elements with no special representation in the DOM
+
+// block:
+    case ID_ADDRESS:
+    case ID_CENTER:
+	n = new HTMLGenericElementImpl(this, id);
+	break;
+// inline
+	// %fontstyle
+    case ID_TT:
+    case ID_U:
+    case ID_B:
+    case ID_I:
+    case ID_S:
+    case ID_STRIKE:
+    case ID_BIG:
+    case ID_SMALL:
+
+	// %phrase
+    case ID_EM:
+    case ID_STRONG:
+    case ID_DFN:
+    case ID_CODE:
+    case ID_SAMP:
+    case ID_KBD:
+    case ID_VAR:
+    case ID_CITE:
+    case ID_ABBR:
+    case ID_ACRONYM:
+
+	// %special
+    case ID_SUB:
+    case ID_SUP:
+    case ID_SPAN:
+	n = new HTMLGenericElementImpl(this, id);
+	break;
+
+    case ID_BDO:
+	break;
+
+// text
+    case ID_TEXT:
+        kdDebug( 6020 ) << "Use document->createTextNode()" << endl;
+	break;
+
+    default:
+	// ### don't allow this for normal HTML documents
+	n = DocumentImpl::createElement(name);
+    }
+    return n;
+}
+
+ElementImpl *HTMLDocumentImpl::createElementNS ( const DOMString &_namespaceURI, const DOMString &_qualifiedName )
+{
+    // ### somehow set the namespace for html elements to http://www.w3.org/1999/xhtml ?
+    if (_namespaceURI == "http://www.w3.org/1999/xhtml") {
+	QString qName = _qualifiedName.string();
+	int colonPos = qName.find(':',0);
+	return createElement(colonPos ? qName.mid(colonPos+1) : qName);
+    }
+    else
+	return DocumentImpl::createElementNS(_namespaceURI,_qualifiedName);
+}
+
+//------------------------------------------------------------------------------
+
+
+XHTMLDocumentImpl::XHTMLDocumentImpl() : HTMLDocumentImpl()
+{
+}
+
+XHTMLDocumentImpl::XHTMLDocumentImpl(KHTMLView *v) : HTMLDocumentImpl(v)
+{
+}
+
+XHTMLDocumentImpl::~XHTMLDocumentImpl()
+{
+}
+
+Tokenizer *XHTMLDocumentImpl::createTokenizer()
+{
+    return new XMLTokenizer(this,m_view);
+}
+
+
 
 #include "html_documentimpl.moc"

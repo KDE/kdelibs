@@ -347,6 +347,12 @@ void NodeImpl::setChanged(bool b)
     m_changed = b;
 }
 
+DOMString NodeImpl::namespaceURI() const
+{
+    return 0;
+}
+
+
 void NodeImpl::printTree(int indent) const
 {
     QString ind;
@@ -810,6 +816,9 @@ bool NodeBaseImpl::childAllowed( NodeImpl *newChild )
     // ### check xml element allowedness according to DTD
     if (id() && newChild->id()) // if one if these is 0 then it is an xml element and we allow it anyway
 	return checkChild(id(), newChild->id());
+    // ### check types that are allowed as children as in DOM1 spec section 1.1.1
+    else if (newChild->nodeType() == Node::ATTRIBUTE_NODE)
+	return false;
     else
 	return true;
 }

@@ -45,6 +45,7 @@ CharacterDataImpl::CharacterDataImpl(DocumentImpl *doc) : NodeWParentImpl(doc)
 CharacterDataImpl::CharacterDataImpl(DocumentImpl *doc, const DOMString &_text)
     : NodeWParentImpl(doc)
 {
+//    str = new DOMStringImpl(_text.impl->s,_text.impl->l);
     str = _text.impl;
     str->ref();
 }
@@ -78,7 +79,7 @@ unsigned long CharacterDataImpl::length() const
 DOMString CharacterDataImpl::substringData( const unsigned long offset, const unsigned long count, int &exceptioncode )
 {
     exceptioncode = 0;
-    if (offset > str->l) {
+    if (offset > str->l || (long)offset < 0 || (long)count < 0) {
 	exceptioncode = DOMException::INDEX_SIZE_ERR;
 	return DOMString();
     }
@@ -87,6 +88,7 @@ DOMString CharacterDataImpl::substringData( const unsigned long offset, const un
 
 void CharacterDataImpl::appendData( const DOMString &arg )
 {
+    detachString();
     str->append(arg.impl);
     if (m_render)
       (static_cast<RenderText*>(m_render))->setText(str);
@@ -96,6 +98,7 @@ void CharacterDataImpl::appendData( const DOMString &arg )
 
 void CharacterDataImpl::insertData( const unsigned long offset, const DOMString &arg, int &exceptioncode )
 {
+    detachString();
     exceptioncode = 0;
     if (offset > str->l) {
 	exceptioncode = DOMException::INDEX_SIZE_ERR;
@@ -109,6 +112,8 @@ void CharacterDataImpl::insertData( const unsigned long offset, const DOMString 
 
 void CharacterDataImpl::deleteData( const unsigned long offset, const unsigned long count, int &exceptioncode )
 {
+    detachString();
+    exceptioncode = 0;
     if (offset > str->l) {
 	exceptioncode = DOMException::INDEX_SIZE_ERR;
 	return;
@@ -122,6 +127,8 @@ void CharacterDataImpl::deleteData( const unsigned long offset, const unsigned l
 
 void CharacterDataImpl::replaceData( const unsigned long offset, const unsigned long count, const DOMString &arg, int &exceptioncode )
 {
+    detachString();
+    exceptioncode = 0;
     if (offset > str->l) {
 	exceptioncode = DOMException::INDEX_SIZE_ERR;
 	return;
@@ -138,6 +145,16 @@ void CharacterDataImpl::replaceData( const unsigned long offset, const unsigned 
     if (m_render)
       (static_cast<RenderText*>(m_render))->setText(str);
     setChanged(true);
+}
+
+
+void CharacterDataImpl::detachString()
+{
+    // make a copy of our string so as not to interfere with other texts that use it
+    DOMStringImpl *newStr = str->copy();
+    newStr->ref();
+    str->deref();
+    str = newStr;
 }
 
 // ---------------------------------------------------------------------------
@@ -190,6 +207,8 @@ NodeImpl *CommentImpl::cloneNode(bool /*deep*/)
 
 // ---------------------------------------------------------------------------
 
+// ### allow having children in text nodes for entities, comments etc.
+
 TextImpl::TextImpl(DocumentImpl *doc, const DOMString &_text)
     : CharacterDataImpl(doc, _text)
 {
@@ -211,18 +230,26 @@ TextImpl::~TextImpl()
 TextImpl *TextImpl::splitText( const unsigned long offset, int &exceptioncode )
 {
     exceptioncode = 0;
-    if (offset > str->l)
+    if (offset > str->l || (long)offset < 0)
 	exceptioncode = DOMException::INDEX_SIZE_ERR;
 
-    if (!_parent)
+    if (!_parent) // ### should	we still return the splitted text, and just not insert it into the tree?
 	exceptioncode = DOMException::HIERARCHY_REQUEST_ERR;
 
     if ( exceptioncode ) 
 	return 0;
-    TextImpl *newText = new TextImpl(document, str->split(offset));
-    _parent->insertBefore(newText,_next, exceptioncode );
-    if ( exceptioncode ) 
+	
+    TextImpl *newText = static_cast<TextImpl*>(cloneNode(true));
+    newText->deleteData(0,offset,exceptioncode);
+    if ( exceptioncode )
 	return 0;
+    deleteData(offset,str->l-offset,exceptioncode);
+    if ( exceptioncode )
+	return 0;
+    _parent->insertBefore(newText,_next, exceptioncode );
+    if ( exceptioncode )
+	return 0;
+
     if (m_render)
 	(static_cast<RenderText*>(m_render))->setText(str);
     setChanged(true);
@@ -317,4 +344,39 @@ void TextImpl::recalcStyle()
 	return;
     m_style = parentNode()->activeStyle();
     if(m_render) m_render->setStyle(m_style);
+}
+
+// ---------------------------------------------------------------------------
+
+CDATASectionImpl::CDATASectionImpl(DocumentImpl *impl, const DOMString &_text) : TextImpl(impl,_text)
+{
+}
+
+CDATASectionImpl::CDATASectionImpl(DocumentImpl *impl) : TextImpl(impl)
+{
+}
+
+CDATASectionImpl::~CDATASectionImpl()
+{
+}
+
+const DOMString CDATASectionImpl::nodeName() const
+{
+  return "#cdata-section";
+}
+
+unsigned short CDATASectionImpl::nodeType() const
+{
+    return Node::CDATA_SECTION_NODE;
+}
+
+NodeImpl *CDATASectionImpl::cloneNode(bool /*deep*/)
+{
+    TextImpl *newImpl = document->createCDATASection(str);
+
+    newImpl->setParent(0);
+    newImpl->setFirstChild(0);
+    newImpl->setLastChild(0);
+
+    return newImpl;
 }

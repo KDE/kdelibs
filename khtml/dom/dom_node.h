@@ -159,6 +159,7 @@ protected:
     NamedNodeMapImpl *impl;
 
     friend class Node;
+    friend class DocumentType;
 };
 
 class NamedNodeMap;

@@ -180,12 +180,15 @@ class XMLElementImpl : public ElementImpl
 
 public:
     XMLElementImpl(DocumentImpl *doc, DOMStringImpl *_name);
+    XMLElementImpl(DocumentImpl *doc, DOMStringImpl *_name, DOMStringImpl *_namespaceURI);
     ~XMLElementImpl();
 
     virtual const DOMString nodeName() const;
+    virtual DOMString namespaceURI() const;
 
 protected:
     DOMStringImpl *m_name;
+    DOMStringImpl *m_namespaceURI;
 
 };
 

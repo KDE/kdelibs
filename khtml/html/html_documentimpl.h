@@ -88,6 +88,8 @@ public:
 
     void setOnload( const QString &script ) { onloadScript = script; }
     void setOnunload( const QString &script ) { onUnloadScript = script; }
+    virtual ElementImpl *createElement ( const DOMString &tagName );
+    virtual ElementImpl *createElementNS ( const DOMString &_namespaceURI, const DOMString &_qualifiedName );
 
 signals:
     void finishedParsing();
@@ -103,6 +105,22 @@ protected:
     QString onUnloadScript;
 
 };
+
+// ###  this is a temporary class just to get us going with XHTML
+// eventually HTMLTokenizer will be able to detect if the document is XHTML or HTML
+class XHTMLDocumentImpl : public HTMLDocumentImpl
+{
+    Q_OBJECT
+public:
+
+    XHTMLDocumentImpl();
+    XHTMLDocumentImpl(KHTMLView *v);
+    ~XHTMLDocumentImpl();
+
+    virtual Tokenizer *createTokenizer();
+
+};
+
 
 }; //namespace
 

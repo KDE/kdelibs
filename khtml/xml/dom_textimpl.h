@@ -61,6 +61,7 @@ public:
     DOMStringImpl *string() { return str; }
 protected:
     DOMStringImpl *str;
+    void detachString();
 };
 
 // ----------------------------------------------------------------------------
@@ -112,6 +113,21 @@ public:
 
     khtml::RenderStyle *m_style;
 };
+
+// ----------------------------------------------------------------------------
+
+class CDATASectionImpl : public TextImpl
+{
+public:
+    CDATASectionImpl(DocumentImpl *impl, const DOMString &_text);
+    CDATASectionImpl(DocumentImpl *impl);
+    virtual ~CDATASectionImpl();
+    virtual const DOMString nodeName() const;
+    virtual unsigned short nodeType() const;
+    virtual NodeImpl *cloneNode(bool deep);
+};
+
+
 
 }; //namespace
 #endif

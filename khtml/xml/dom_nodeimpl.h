@@ -203,6 +203,8 @@ public:
     void setKeyboardFocus(ActivationState b=ActivationPassive);
     virtual void recalcStyle() {}
 
+    virtual DOMString namespaceURI() const;
+
 protected:
     DocumentImpl *document;
     khtml::RenderObject *m_render;

@@ -232,7 +232,7 @@ Document Node::ownerDocument() const
 Node Node::insertBefore( const Node &newChild, const Node &refChild )
 {
     int code = DOMException::NO_MODIFICATION_ALLOWED_ERR;
-    DOM::NodeImpl *newNode;
+    DOM::NodeImpl *newNode = 0;
     if(impl)
 	newNode = impl->insertBefore( newChild.impl, refChild.impl, code );
     if ( code )
@@ -243,7 +243,7 @@ Node Node::insertBefore( const Node &newChild, const Node &refChild )
 Node Node::replaceChild( const Node &newChild, const Node &oldChild )
 {
     int code = DOMException::NO_MODIFICATION_ALLOWED_ERR;
-    DOM::NodeImpl *newNode;
+    DOM::NodeImpl *newNode = 0;
     if(impl) 
 	newNode = impl->replaceChild( newChild.impl, oldChild.impl, code );
     if ( code )
@@ -254,7 +254,7 @@ Node Node::replaceChild( const Node &newChild, const Node &oldChild )
 Node Node::removeChild( const Node &oldChild )
 {
     int exceptioncode = DOMException::NOT_FOUND_ERR; 
-    DOM::NodeImpl *n;
+    DOM::NodeImpl *n = 0;
     if(impl) n = impl->removeChild( oldChild.impl, exceptioncode );
     if( exceptioncode )
 	throw DOMException( exceptioncode );
@@ -264,11 +264,12 @@ Node Node::removeChild( const Node &oldChild )
 Node Node::appendChild( const Node &newChild )
 {
     int exceptioncode = DOMException::NO_MODIFICATION_ALLOWED_ERR;
-    DOM::NodeImpl *n;
-    if(impl) 
+    DOM::NodeImpl *n = 0;
+    if(impl)
 	n = impl->appendChild( newChild.impl, exceptioncode );
     if ( exceptioncode )
 	throw DOMException( exceptioncode );
+
     return n;
 }
 

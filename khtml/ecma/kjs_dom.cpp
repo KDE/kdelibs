@@ -31,6 +31,7 @@
 #include "kjs_dom.h"
 #include "kjs_html.h"
 #include "kjs_css.h"
+#include "dom/dom_exception.h"
 
 using namespace KJS;
 

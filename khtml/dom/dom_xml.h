@@ -34,6 +34,13 @@
 
 namespace DOM {
 
+class CDATASectionImpl;
+class EntityImpl;
+class EntityReferenceImpl;
+class NotationImpl;
+class ProcessingInstructionImpl;
+
+
 
 /**
  * CDATA sections are used to escape blocks of text containing
@@ -58,6 +65,7 @@ namespace DOM {
  */
 class CDATASection : public Text
 {
+    friend class Document;
 public:
     CDATASection();
     CDATASection(const CDATASection &other);
@@ -68,6 +76,8 @@ public:
     CDATASection & operator = (const CDATASection &other);
 
     ~CDATASection();
+protected:
+    CDATASection(CDATASectionImpl *i);
 };
 
 class DOMString;
@@ -146,6 +156,8 @@ public:
      *
      */
     DOMString notationName() const;
+protected:
+    Entity(EntityImpl *i);
 };
 
 
@@ -187,6 +199,8 @@ public:
     EntityReference & operator = (const EntityReference &other);
 
     ~EntityReference();
+protected:
+    EntityReference(EntityReferenceImpl *i);
 };
 
 class DOMString;
@@ -232,6 +246,8 @@ public:
      *
      */
     DOMString systemId() const;
+protected:
+    Notation(NotationImpl *i);
 };
 
 
@@ -243,6 +259,7 @@ public:
  */
 class ProcessingInstruction : public Node
 {
+    friend class Document;
 public:
     ProcessingInstruction();
     ProcessingInstruction(const ProcessingInstruction &other);
@@ -277,6 +294,8 @@ public:
      *
      */
     void setData( const DOMString & );
+protected:
+    ProcessingInstruction(ProcessingInstructionImpl *i);
 };
 
 }; //namespace
