@@ -142,7 +142,7 @@ signals:
 private:
   bool		ServerContacted;
   bool		autosync;
-  string	wavName;
+  std::string	wavName;
 
   long execID, clientID;
 

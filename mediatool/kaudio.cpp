@@ -14,8 +14,9 @@
 #include <fcntl.h>
 #include <stdio.h>
 #include <unistd.h>
-
+#include <iostream.h>
 #include "kaudio.h"
+
 
 KAudio::KAudio()
 {
