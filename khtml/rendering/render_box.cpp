@@ -857,8 +857,8 @@ void RenderBox::calcAbsoluteHorizontal()
     }
 
     m_width = w + pab;
-    m_marginLeft = ml+l;
-    m_marginRight = mr+r;
+    m_marginLeft = ml;
+    m_marginRight = mr;
     m_x = l + ml + containingBlock()->borderLeft();
 
 //    printf("h: w=%d, l=%d, r=%d, ml=%d, mr=%d\n",w,l,r,ml,mr);
@@ -947,12 +947,8 @@ void RenderBox::calcAbsoluteVertical()
     if (m_height<h+pab)
         m_height = h+pab;
 
-    // add the top and bottom distance to the value of margin.
-    // in principle this is incorrect, but no one (except
-    // the document height code, where it is useful) should
-    // care about it anyway
-    m_marginTop = mt+t;
-    m_marginBottom = mb+b;
+    m_marginTop = mt;
+    m_marginBottom = mb;
     m_y = t + mt + containingBlock()->borderTop();
 
 //    printf("v: h=%d, t=%d, b=%d, mt=%d, mb=%d, m_y=%d\n",h,t,b,mt,mb,m_y);
@@ -963,6 +959,11 @@ void RenderBox::calcAbsoluteVertical()
 int RenderBox::lowestPosition() const
 {
     return m_height + marginBottom();
+}
+
+int RenderBox::rightmostPosition() const
+{
+    return m_width + marginLeft();
 }
 
 #undef DEBUG_LAYOUT

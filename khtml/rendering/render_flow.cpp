@@ -784,7 +784,7 @@ RenderFlow::floatBottom() const
 int
 RenderFlow::lowestPosition() const
 {
-    int bottom = m_height + marginBottom();
+    int bottom = RenderBox::lowestPosition();
     int lp = 0;
     if ( !m_childrenInline ) {
         RenderObject *last = lastChild();
@@ -804,10 +804,10 @@ RenderFlow::lowestPosition() const
         QListIterator<SpecialObject> it(*specialObjects);
         for ( ; (r = it.current()); ++it ) {
             lp = 0;
-            if ( r->type < SpecialObject::Positioned ) {
+            if ( r->type == SpecialObject::FloatLeft || r->type == SpecialObject::FloatRight ){
                 lp = r->startY + r->node->lowestPosition();
                 //kdDebug(0) << r->node->renderName() << " lp = " << lp << "startY=" << r->startY << endl;
-            } else if ( r->type <= SpecialObject::Positioned ) {
+            } else if ( r->type == SpecialObject::Positioned ) {
                 lp = r->node->yPos() + r->node->lowestPosition();
             }
             if( lp > bottom)
@@ -817,6 +817,37 @@ RenderFlow::lowestPosition() const
     //kdDebug(0) << renderName() << " bottom = " << bottom << endl;
     return bottom;
 }
+
+int RenderFlow::rightmostPosition() const
+{
+    int right = RenderBox::rightmostPosition();
+
+    if ( !m_childrenInline ) {
+        RenderObject *c;
+        for (c = firstChild(); c; c = c->nextSibling()) {
+	    if (!c->isPositioned() && !c->isFloating()) {
+		int childRight = xPos() + c->rightmostPosition();
+		if (childRight > right)
+		    right = childRight;
+	    }
+	}
+    }
+
+    if (specialObjects) {
+        SpecialObject* r;
+        QListIterator<SpecialObject> it(*specialObjects);
+        for ( ; (r = it.current()); ++it ) {
+            if ( r->type == SpecialObject::Positioned ) {
+                int specialRight = r->node->xPos() + r->node->rightmostPosition();
+                if (specialRight > right)
+		    right = specialRight;
+            }
+        }
+    }
+
+    return right;
+}
+
 
 int
 RenderFlow::leftBottom()

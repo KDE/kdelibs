@@ -441,6 +441,10 @@ public:
      * absolute lowest position (highest y-value) the object covers
      */
     virtual int lowestPosition() const {return 0;}
+    /**
+     * absolute rightmost position (highest x-value) the object covers
+     */
+    virtual int rightmostPosition() const {return 0;}
 
     CachedImage *backgroundImage() const { return m_bgImage; }
 

@@ -352,10 +352,12 @@ int RenderRoot::docHeight() const
     else
         h = m_view->visibleHeight();
 
-    if(firstChild()) {
-        int dh = firstChild()->height() + firstChild()->marginTop() + firstChild()->marginBottom();
-        if( firstChild()->lowestPosition() > dh )
-            dh = firstChild()->lowestPosition();
+    RenderObject *fc = firstChild();
+    if(fc) {
+        int dh = fc->height() + fc->marginTop() + fc->marginBottom();
+        int lowestPos = firstChild()->lowestPosition();
+        if( lowestPos > dh )
+            dh = lowestPos;
         if( dh > h )
             h = dh;
     }
@@ -370,9 +372,12 @@ int RenderRoot::docWidth() const
     else
         w = m_view->visibleWidth();
 
-    RenderObject* h = firstChild();
-    if(h) {
-        int dw = h->width() + h->marginLeft() + h->marginRight();
+    RenderObject *fc = firstChild();
+    if(fc) {
+        int dw = fc->width() + fc->marginLeft() + fc->marginRight();
+        int rightmostPos = firstChild()->rightmostPosition();
+        if( rightmostPos > dw )
+            dw = rightmostPos;
         if( dw > w )
             w = dw;
     }

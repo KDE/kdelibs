@@ -92,6 +92,7 @@ public:
     virtual unsigned int width( int, int) const { return width(); }
 
     virtual int lowestPosition() const;
+    virtual int rightmostPosition() const;
 
     void repaint();
 

@@ -82,6 +82,7 @@ public:
     virtual unsigned short lineWidth(int y) const;
 
     virtual int lowestPosition() const;
+    virtual int rightmostPosition() const;
 
     int rightOffset() const;
     int rightRelOffset(int y, int fixedOffset, int *heightRemaining = 0) const;
