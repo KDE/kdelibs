@@ -28,19 +28,17 @@ static bool sendNotifyEvent(const QString &message, const QString &text,
                  int present, int level, const QString &sound, 
                  const QString &file)
 {
-  static bool triedItOnceAlready=false;
-  if (!triedItOnceAlready)
-  {
-    triedItOnceAlready=true;
-    KNotifyClient::startDaemon();
-  }
-     
   DCOPClient *client=kapp->dcopClient();
   if (!client->isAttached())
     client->attach();
   if (!client->isAttached())
     return false;
 
+  if (!kapp->dcopClient()->isApplicationRegistered("knotify"))
+  {
+    KNotifyClient::startDaemon();
+  }
+     
   QByteArray data;
   QDataStream ds(data, IO_WriteOnly);
   QString appname = kapp->name();
