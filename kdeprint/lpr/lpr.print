@@ -18,5 +18,6 @@ Comment[pt_BR]=Sistema de Impressão LPR/LPRng
 Comment[ro]=Sistem de tipărire LPR/LPRng
 Comment[sk]=Tlačový systém LPR/LPRng
 Comment[sv]=LPR/LPRNG-skrivarsystem
+Comment[zh_TW]=LPR/LPRng 列印系統
 DetectUris=service:/printer
 DetectPrecedence=0

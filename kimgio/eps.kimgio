@@ -25,6 +25,7 @@ Name[ro]=Imagini Encapsulated Postscript
 Name[sk]=Zapúzdrený PostScript obrázok
 Name[sl]=Slike v enkapsuliranem PostScriptu
 Name[sv]=Inkapslade Postscript-bilder
+Name[zh_TW]=封裝後的 Postscript 影像
 Read=true
 Write=true
 Suffices=eps,EPS
