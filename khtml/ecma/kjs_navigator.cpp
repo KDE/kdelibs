@@ -160,7 +160,6 @@ KJSO Navigator::get(const UString &p) const
 {
   KURL url = part->url();
   QString userAgent = KProtocolManager::userAgentForHost(url.host());
-  kdDebug() << "userAgent=" << userAgent << endl;
 
   if (p == "javaEnabled")
      return Function (new NavigatorFunc(part));
@@ -204,7 +203,6 @@ KJSO Navigator::get(const UString &p) const
     else
       return String(QString::fromLatin1("X11"));
   } else if (p == "plugins") {
-      kdDebug(6070) << "navigator.plugins" << endl;
       return KJSO(new Plugins());
   } else if (p == "mimeTypes") {
       return KJSO(new MimeTypes());
@@ -226,7 +224,6 @@ PluginBase::PluginBase()
         // read configuration
         KConfig c(KGlobal::dirs()->saveLocation("data","nsplugins")+"/pluginsinfo");
         unsigned num = (unsigned int)c.readNumEntry("number");
-        kdDebug(6070) << "plugins.length = " << num << endl;
         for ( unsigned n=0; n<num; n++ ) {
 
             c.setGroup( QString::number(n) );

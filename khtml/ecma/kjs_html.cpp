@@ -1,3 +1,4 @@
+// -*- c-basic-offset: 2 -*-
 /*
  *  This file is part of the KDE libraries
  *  Copyright (C) 1999-2000 Harri Porten (porten@kde.org)
@@ -1078,6 +1079,7 @@ void KJS::HTMLElement::tryPut(const UString &p, const KJSO& v)
       else if (p == "disabled")        { option.setDisabled(v.toBoolean().value()); return; }
       else if (p == "label")           { option.setLabel(str); return; }
       else if (p == "selected")        { option.setSelected(v.toBoolean().value()); return; }
+      // despide its name, it doesn't seem to modify the value, but the text!
       else if (p == "value")           { option.setValue(str); return; }
     }
     break;
@@ -1547,6 +1549,7 @@ void KJS::HTMLCollection::tryPut(const UString &p, const KJSO& v)
   DOM::Node node = KJS::toNode(v);
   if (node.isNull() || node.elementId() != ID_OPTION)
       return;
+
   DOM::HTMLOptionElement option = static_cast<DOM::HTMLOptionElement>(node);
   // an index ?
   bool ok;
@@ -1560,6 +1563,7 @@ void KJS::HTMLCollection::tryPut(const UString &p, const KJSO& v)
       node = node.parentNode();
   }
   DOM::HTMLSelectElement sel = static_cast<DOM::HTMLSelectElement>(node);
+  sel.add(option, DOM::HTMLElement());
 }
 
 Completion KJS::HTMLCollectionFunc::tryExecute(const List &args)
@@ -1592,7 +1596,12 @@ Object OptionConstructor::construct(const List &args)
 {
   DOM::Element el = doc.createElement("OPTION");
   DOM::HTMLOptionElement opt = static_cast<DOM::HTMLOptionElement>(el);
-  opt.setValue(args[0].toString().value().string());
+  DOM::Text t = doc.createTextNode(args[0].toString().value().string());
+  try { opt.appendChild(t); }
+  catch(DOM::DOMException& e) {
+      // oh well
+  }
+
   return Object(getDOMNode(opt).imp());
 }
 
