@@ -2916,6 +2916,42 @@ void KHTMLPart::submitForm( const char *action, const QString &url, const QByteA
     return;
   }
 
+    // Form security checks
+  //
+
+  /* This is separate for a reason.  It has to be _before_ all script, etc,
+   * AND I don't want to break anything that uses checkLinkSecurity() in
+   * other places.
+   */
+
+  if (u.protocol().left(5) != "https") {
+        if (d->m_ssl_in_use) {    // Going from SSL -> nonSSL
+		QString msg = i18n("Your data submission is redirected to\n"
+                        "an insecure site. The data is sent unencrypted.\n\n"
+                        "Do you want to continue?");
+                QString title = i18n("KDE Web Browser");
+                int rc = KMessageBox::warningContinueCancel((QWidget *)NULL, msg, title, QString::null);
+                if (rc == KMessageBox::Cancel)
+                        return;
+        } else {                  // Going from nonSSL -> nonSSL
+		QString msg = i18n( "You're about to send data to the Internet\n"
+                         "via an unencrypted connection.\nIt might be possible "                         "for others to see this information.\n\n"
+                         "Do you want to continue?");
+
+		QString thename = "WarnOnUnencryptedFormxx";
+                QString title = i18n("KDE Web Browser");
+                int rc = KMessageBox::warningContinueCancel((QWidget *)NULL, msg,
+                                        title, QString::null,
+                                        thename, true);
+                if (rc == KMessageBox::Cancel)
+                                return;
+        }
+  }
+
+  // End form security checks
+  //
+
+
   QString urlstring = u.url();
 
   if ( urlstring.find( QString::fromLatin1( "javascript:" ), 0, false ) == 0 ) {
