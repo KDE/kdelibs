@@ -534,11 +534,14 @@ void KEditToolbarWidget::loadToolbarCombo()
     ToolbarList::Iterator it = (*xit).m_barList.begin();
     for ( ; it != (*xit).m_barList.end(); ++it)
     {
-      QString name( i18n( (*it).namedItem( tagText ).toElement().text().utf8() ) );
-      if ( name.isEmpty() )
-          name = i18n( (*it).namedItem( tagText2 ).toElement().text().utf8() );
-      if ( name.isEmpty() )
+      QString name;
+      QCString txt( (*it).namedItem( tagText ).toElement().text().utf8() );
+      if ( txt.isEmpty() )
+          txt = (*it).namedItem( tagText2 ).toElement().text().utf8();
+      if ( txt.isEmpty() )
           name = (*it).attribute( attrName );
+      else
+          name = i18n( txt );
 
       // the name of the toolbar might depend on whether or not
       // it is in kparts
@@ -756,11 +759,14 @@ void KEditToolbarWidget::slotToolbarSelected(const QString& _text)
     ToolbarList::Iterator it = (*xit).m_barList.begin();
     for ( ; it != (*xit).m_barList.end(); ++it)
     {
-      QString name( i18n( (*it).namedItem( tagText ).toElement().text().utf8() ) );
-      if ( name.isEmpty() )
-          name = i18n( (*it).namedItem( tagText2 ).toElement().text().utf8() );
-      if ( name.isEmpty() )
+      QString name;
+      QCString txt( (*it).namedItem( tagText ).toElement().text().utf8() );
+      if ( txt.isEmpty() )
+          txt = (*it).namedItem( tagText2 ).toElement().text().utf8();
+      if ( txt.isEmpty() )
           name = (*it).attribute( attrName );
+      else
+          name = i18n( txt );
 
       // the name of the toolbar might depend on whether or not
       // it is in kparts
