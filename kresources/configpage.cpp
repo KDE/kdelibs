@@ -54,8 +54,8 @@ public:
     mIsStandard = value;
   }
 
-  bool standard() { return mIsStandard; }
-  bool readOnly() { return mResource->readOnly(); }
+  bool standard() const { return mIsStandard; }
+  bool readOnly() const { return mResource->readOnly(); }
 
   Resource* mResource;
 
