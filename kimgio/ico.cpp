@@ -137,7 +137,7 @@ namespace
     {
         BMP_INFOHDR header;
         stream >> header;
-        if ( header.biSize != BMP_INFOHDR::Size ||
+        if ( stream.atEnd() || header.biSize != BMP_INFOHDR::Size ||
              header.biSize > rec.size ||
              header.biCompression != BMP_INFOHDR::RGB ||
              ( header.biBitCount != 1 && header.biBitCount != 4 &&
@@ -165,7 +165,7 @@ namespace
         unsigned bpl = ( rec.width * header.biBitCount + 31 ) / 32 * 4;
         unsigned char* buf = new unsigned char[ bpl ];
         unsigned char** lines = icon.jumpTable();
-        for ( unsigned y = rec.height; y--; )
+        for ( unsigned y = rec.height; !stream.atEnd() && y--; )
         {
             stream.readRawBytes( reinterpret_cast< char* >( buf ), bpl );
             unsigned char* pixel = buf;
@@ -230,7 +230,7 @@ extern "C" void kimgio_ico_read( QImageIO* io )
     stream.setByteOrder( QDataStream::LittleEndian );
     IcoHeader header;
     stream >> header;
-    if ( !header.count ||
+    if ( stream.atEnd() || !header.count ||
          ( header.type != IcoHeader::Icon && header.type != IcoHeader::Cursor) )
         return;
 
@@ -270,7 +270,7 @@ extern "C" void kimgio_ico_read( QImageIO* io )
         std::min( icons.begin() + requestedIndex, icons.end() ) :
         std::min_element( icons.begin(), icons.end(),
                           LessDifference( requestedSize, requestedColors ) );
-    if ( selected == icons.end() ||
+    if ( stream.atEnd() || selected == icons.end() ||
          offset + selected->offset > io->ioDevice()->size() )
         return;
 

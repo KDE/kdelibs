@@ -13,6 +13,7 @@
 
 void kimgio_g3_read( QImageIO *io )
 {
+    // This won't work if io is not a QFile !
   TIFF *tiff = TIFFOpen(QFile::encodeName(io->fileName()), "r");  
   if (!tiff)
     return;
@@ -20,8 +21,9 @@ void kimgio_g3_read( QImageIO *io )
   uint32 width, height;
   tsize_t scanlength;
 
-  TIFFGetField( tiff, TIFFTAG_IMAGEWIDTH, &width );
-  TIFFGetField( tiff, TIFFTAG_IMAGELENGTH, &height );
+  if( TIFFGetField( tiff, TIFFTAG_IMAGEWIDTH, &width ) != 1
+      || TIFFGetField( tiff, TIFFTAG_IMAGELENGTH, &height ) != 1 )
+      return;
   scanlength = TIFFScanlineSize(tiff);
 
   QImage image(width, height, 1, 0, QImage::BigEndian);

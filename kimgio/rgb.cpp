@@ -237,6 +237,9 @@ bool SGIImage::readImage(QImage& img)
 		return false;
 	}
 
+	if( m_stream.atEnd())
+		return false;
+
 	m_numrows = m_ysize * m_zsize;
 
 	if (!img.create(m_xsize, m_ysize, 32)) {
@@ -252,7 +255,7 @@ bool SGIImage::readImage(QImage& img)
 	if (m_rle) {
 		uint l;
 		m_starttab = new Q_UINT32[m_numrows];
-		for (l = 0; l < m_numrows; l++) {
+		for (l = 0; !m_stream.atEnd() && l < m_numrows; l++) {
 			m_stream >> m_starttab[l];
 			m_starttab[l] -= 512 + m_numrows * 2 * sizeof(Q_UINT32);
 		}

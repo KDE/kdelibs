@@ -110,6 +110,11 @@ bool checky( int y, int h, int m )
 
       for( int i = 0; i < 6; i++ )
 	  s >> header[i];
+      if( s.atEnd()) {
+	  io->setImage( 0 );
+	  io->setStatus( -1 );            
+	  return;
+      }
 
       int width  = header[1] * 256 + header[0];
       int height = header[3] * 256 + header[2];
@@ -179,13 +184,13 @@ bool checky( int y, int h, int m )
      */
     int oldx = x;
     if( !compressed ) {
-	for( ; checky( y, height, mode ); y += addy )
+	for( ; !s.atEnd() && checky( y, height, mode ); y += addy )
 	    for( x = oldx; checkx( x, width, mode ); x += addx  ) {
 		img.setPixel( x, y, getData( &s, bytesPerPixel ) );
 	    }
     } else {
         unsigned char cur;
-        while( checky( y, height, mode ) ) {
+        while( !s.atEnd() && checky( y, height, mode ) ) {
             while( checkx( x, width, mode ) ) {
                 s >> cur;
                 if( (cur & 128) == 128 ) {

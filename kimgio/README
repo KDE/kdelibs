@@ -56,6 +56,10 @@ Therefore,
 	of the image data is pointing to a file on the local filesystem.
 	Use the IODevice methods to read and write image data.
 
+	- Check for file corruption or premature end of the image,
+	especially before using values read from the file
+	e.g. for memory allocations.
+
 3. If you only have either a reader or the writer for a particular
 format, don't use NULL in QImageIO::defineIOHandler. Instead, write
 a stub function for the unimplemented handler which displays a message

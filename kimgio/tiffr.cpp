@@ -78,8 +78,9 @@ void kimgio_tiff_read( QImageIO *io )
 	}
 
 	// create image with loaded dimensions
-	TIFFGetField( tiff, TIFFTAG_IMAGEWIDTH,	&width );
-	TIFFGetField( tiff, TIFFTAG_IMAGELENGTH, &height );
+	if( TIFFGetField( tiff, TIFFTAG_IMAGEWIDTH, &width ) != 1
+            || TIFFGetField( tiff, TIFFTAG_IMAGELENGTH, &height ) != 1 )
+            return;
 
 	QImage image( width, height, 32 );
 	data = (uint32 *)image.bits();

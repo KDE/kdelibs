@@ -837,7 +837,7 @@ void kimgio_dds_read( QImageIO *io )
 	s >> header;
 
 	// Check image file format.
-	if( !IsValid( header ) ) {
+	if( s.atEnd() || !IsValid( header ) ) {
 		io->setImage( 0 );
 		io->setStatus( -1 );
 		return;

@@ -122,6 +122,7 @@ void kimgio_exr_read( QImageIO *io )
     {
 		int width, height;
 
+		// This won't work if io is not QFile !
 		RgbaInputFile file (QFile::encodeName(io->fileName()));
 		Imath::Box2i dw = file.dataWindow();
 
