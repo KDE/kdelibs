@@ -25,6 +25,7 @@
 #define KTOOLBAR_H
 
 #include <qtoolbar.h>
+#include <qmainwindow.h>
 #include <qcombobox.h>
 #include <qmap.h>
 #include <qlist.h>

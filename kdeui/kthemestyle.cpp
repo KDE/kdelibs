@@ -16,6 +16,10 @@
    Boston, MA 02111-1307, USA.
 */
 
+#include <qglobal.h>
+
+#if QT_VERSION < 300
+
 #include <kthemestyle.h>
 #include <kthemebase.h>
 #include <kapp.h>
@@ -1505,6 +1509,7 @@ void KThemeStyle::drawTabMask(QPainter* p,  const  QTabBar* tb, QTab* t,
 
 }
 
-
 #include "kthemestyle.moc"
+
+#endif // QT_VERSION < 300
 

@@ -18,6 +18,10 @@
 #ifndef __KTHEMESTYLE_H
 #define __KTHEMESTYLE_H
 
+#include <qglobal.h>
+
+#if QT_VERSION < 300
+
 #include <kthemebase.h>
 #include <qwindowdefs.h>
 #include <qobject.h>
@@ -354,5 +358,7 @@ protected:
     class KThemeStylePrivate;
     KThemeStylePrivate *d;
 };
+
+#endif // QT_VERSION < 300
 
 #endif

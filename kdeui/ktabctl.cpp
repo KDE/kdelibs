@@ -19,6 +19,9 @@
 /*
  *
  * $Log$
+ * Revision 1.25  2000/06/15 06:35:12  kalle
+ * Replaced #include "qtheader.h" with #include <qtheader.h> as it is supposed to be
+ *
  * Revision 1.24  2000/01/17 19:08:00  bieker
  * Made it more QT_NO_CAST_ASCII and QT_NO_ASCII_CAST safe (this is not 100 %
  * yet).
@@ -437,8 +440,13 @@ void KTabCtl::showTab(int i)
 void KTabCtl::addTab(QWidget *w, const QString& name)
 {
     QTab *t = new QTab();
+#if QT_VERSION < 300
     t->label = name;
     t->enabled = TRUE;
+#else
+    t->setText( name );
+    t->setEnabled( true );
+#endif
     int id = tabs->addTab(t);   /* add the tab itself to the tabbar */
     if (id == (int)pages.size()) {
 	pages.resize(id + 1);
