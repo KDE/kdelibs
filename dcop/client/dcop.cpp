@@ -33,12 +33,34 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 static DCOPClient* dcop = 0;
 
-void queryApplications()
+bool startsWith(const QCString &id, const char *str, int n)
 {
+  return !n || (strncmp(id.data(), str, n) == 0);
+}
+
+bool endsWith(QCString &id, char c)
+{
+   if (id.length() && (id[id.length()-1] == c))
+   {
+      id.truncate(id.length()-1);
+      return true;
+   }
+   return false;
+}
+
+void queryApplications(const QCString &filter)
+{
+    int filterLen = filter.length();        
     QCStringList apps = dcop->registeredApplications();
     for ( QCStringList::Iterator it = apps.begin(); it != apps.end(); ++it )
-	if ( (*it) != dcop->appId() && (*it).left(9) != "anonymous" )
-	    printf( "%s\n", (*it).data() );
+    {
+        QCString &clientId = *it;
+	if ( (clientId != dcop->appId()) && 
+             !startsWith(clientId, "anonymous",9) &&
+             startsWith(clientId, filter, filterLen)
+           )
+	    printf( "%s\n", clientId.data() );
+    }
 
     if ( !dcop->isAttached() )
     {
@@ -47,20 +69,38 @@ void queryApplications()
     }
 }
 
-void queryObjects( const char* app )
+void queryObjects( const QCString &app, const QCString &filter )
 {
+    int filterLen = filter.length();        
     bool ok = false;
+    bool isDefault = false;
     QCStringList objs = dcop->remoteObjects( app, &ok );
-    for ( QCStringList::Iterator it = objs.begin(); it != objs.end(); ++it ) {
-	if ( (*it) == "default" && ++it != objs.end() )
-	    printf( "%s (default)\n", (*it).data() );
-	else
-	    printf( "%s\n", (*it).data() );
+    for ( QCStringList::Iterator it = objs.begin(); it != objs.end(); ++it ) 
+    {
+        QCString &objId = *it;
+
+        if (objId == "default")
+        {
+           isDefault = true;
+           continue;
+        }
+
+        if (startsWith(objId, filter, filterLen))
+        {
+            if (isDefault)
+                printf( "%s (default)\n", objId.data() );
+            else
+                printf( "%s\n", objId.data() );
+        }
+        isDefault = false;
     }
     if ( !ok )
     {
-	qWarning( "application '%s' not accessible", app );
-	exit(1);
+        if (!dcop->isApplicationRegistered(app))
+            qWarning( "No such application: '%s'", app.data());
+        else
+            qWarning( "Application '%s' not accessible", app.data() );
+        exit(1);
     }
 }
 
@@ -282,13 +322,19 @@ int main( int argc, char** argv )
     switch ( argc ) {
     case 0:
     case 1:
-	queryApplications();
+	queryApplications("");
 	break;
     case 2:
-	queryObjects( app );
+        if (endsWith(app, '*'))
+           queryApplications(app);
+        else
+           queryObjects( app, "" );
 	break;
     case 3:
-	queryFunctions( app, objid );
+        if (endsWith(objid, '*'))
+           queryObjects(app, objid);
+        else
+           queryFunctions( app, objid );
 	break;
     case 4:
     default:
