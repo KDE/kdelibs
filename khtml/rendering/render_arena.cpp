@@ -84,7 +84,7 @@ void* RenderArena::allocate(size_t size)
     size = KHTML_ROUNDUP(size, sizeof(void*));
 
     // Check recyclers first
-    if (size < gMaxRecycledSize) {
+    if (size < KHTML_MAX_RECYCLED_SIZE) {
         const int   index = size >> 2;
 
         result = m_recyclers[index];
@@ -118,7 +118,7 @@ void RenderArena::free(size_t size, void* ptr)
     size = KHTML_ROUNDUP(size, sizeof(void*));
 
     // See if it's a size that we recycle
-    if (size < gMaxRecycledSize) {
+    if (size < KHTML_MAX_RECYCLED_SIZE) {
         const int   index = size >> 2;
         void*       currentTop = m_recyclers[index];
         m_recyclers[index] = ptr;
