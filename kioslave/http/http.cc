@@ -337,7 +337,7 @@ void HTTPProtocol::setHost( const QString& host, int port,
                             const QString& user, const QString& pass )
 {
   kdDebug(7113) << "(" << m_pid << ") Hostname is now: " << host << endl;
-  
+
   // Reset the webdav-capable flags for this host
   if ( m_request.hostname != host )
     m_davHostOk = m_davHostUnsupported = false;
@@ -716,7 +716,7 @@ void HTTPProtocol::davParsePropstats( const QDomNodeList& propstats, UDSEntry& e
 
     if ( code != 200 )
     {
-      kdDebug(7113) << "Error: status code " << code << endl;
+      kdDebug(7113) << "Warning: status code " << code << " (this may mean that some properties are unavailable" << endl;
       continue;
     }
 
@@ -786,21 +786,10 @@ void HTTPProtocol::davParsePropstats( const QDomNodeList& propstats, UDSEntry& e
         // (tested with Apache + mod_dav 1.0.3)
         if ( property.text() == "httpd/unix-directory" )
         {
-          if ( !isDirectory )
-          {
-            atom.m_uds = KIO::UDS_FILE_TYPE;
-            atom.m_long = S_IFDIR;
-            entry.append( atom );
-
-            isDirectory = true;
-          }
+          isDirectory = true;
         }
         else if ( property.text() != "" )
         {
-          atom.m_uds = KIO::UDS_FILE_TYPE;
-          atom.m_long = S_IFREG;
-          entry.append( atom );
-
           atom.m_uds = KIO::UDS_MIME_TYPE;
           atom.m_str = property.text();
           entry.append( atom );
@@ -863,13 +852,7 @@ void HTTPProtocol::davParsePropstats( const QDomNodeList& propstats, UDSEntry& e
         if ( !property.namedItem( "collection" ).toElement().isNull() )
         {
           // This is a collection (directory)
-          if ( !isDirectory )
-          {
-            atom.m_uds = KIO::UDS_FILE_TYPE;
-            atom.m_long = S_IFDIR;
-            entry.append( atom );
-            isDirectory = true;
-          }
+          isDirectory = true;
         }
       }
       else
@@ -881,6 +864,20 @@ void HTTPProtocol::davParsePropstats( const QDomNodeList& propstats, UDSEntry& e
 
   setMetaData( "davLockCount", QString("%1").arg(lockCount) );
   setMetaData( "davSupportedLockCount", QString("%1").arg(supportedLockCount) );
+
+  if ( isDirectory )
+  {
+    atom.m_uds = KIO::UDS_FILE_TYPE;
+    atom.m_long = S_IFDIR;
+    entry.append( atom );
+  }
+  else if ( !foundContentType )
+  {
+    // No type specified for this resource. Assume file.
+    atom.m_uds = KIO::UDS_FILE_TYPE;
+    atom.m_long = S_IFREG;
+    entry.append( atom );
+  }
 
   if ( foundExecutable || isDirectory )
   {
@@ -894,14 +891,6 @@ void HTTPProtocol::davParsePropstats( const QDomNodeList& propstats, UDSEntry& e
     atom.m_uds = KIO::UDS_ACCESS;
     atom.m_long = 0600;
     entry.append(atom);
-  }
-
-  if ( !foundContentType && !isDirectory )
-  {
-    // No type specified for this resource. Assume file.
-    atom.m_uds = KIO::UDS_FILE_TYPE;
-    atom.m_long = S_IFREG;
-    entry.append( atom );
   }
 }
 
@@ -1026,14 +1015,12 @@ bool HTTPProtocol::davHostOk()
   // cached?
   if ( m_davHostOk )
   {
-    // Call a HTTP OPTIONS to find out if we're good...
-    kdDebug(7113) << "(" << m_pid << ") HTTPProtocol::davHostOk: true" << endl;
+    kdDebug(7113) << "(" << m_pid << ") " << k_funcinfo << " true" << endl;
     return true;
   }
   else if ( m_davHostUnsupported )
   {
-    // Call a HTTP OPTIONS to find out if we're good...
-    kdDebug(7113) << "(" << m_pid << ") HTTPProtocol::davHostOk: false" << endl;
+    kdDebug(7113) << "(" << m_pid << ") " << k_funcinfo << " false" << endl;
     davError( -2 );
     return false;
   }
@@ -1047,17 +1034,17 @@ bool HTTPProtocol::davHostOk()
   m_request.doProxy = m_bUseProxy;
 
   // clear davVersions variable, which holds the response to the DAV: header
-  m_davVersions = QString::null;
+  m_davCapabilities.clear();
 
-  retrieveHeader( false );
+  retrieveHeader(false);
 
-  if ( m_davVersions != QString::null )
+  if (m_davCapabilities.count())
   {
-    QStringList vers = QStringList::split( ',', m_davVersions );
-    for (QStringList::iterator it = vers.begin(); it != vers.end(); it++)
+    for (uint i = 0; i < m_davCapabilities.count(); i++)
     {
-      uint verNo = (*it).toUInt();
-      if ( verNo > 0 && verNo < 3 )
+      bool ok;
+      uint verNo = m_davCapabilities[i].toUInt(&ok);
+      if (ok && verNo > 0 && verNo < 3)
       {
         m_davHostOk = true;
         kdDebug(7113) << "Server supports DAV version " << verNo << "." << endl;
@@ -1940,7 +1927,6 @@ bool HTTPProtocol::httpOpen()
   // Check the validity of the current connection, if one exists.
   httpCheckConnection();
 
-
   if ( !m_bIsTunneled && m_bNeedTunnel )
   {
     setEnableSSLTunnel( true );
@@ -2006,11 +1992,11 @@ bool HTTPProtocol::httpOpen()
         header = "PROPFIND ";
         davData = true;
         davHeader = "Depth: ";
-        if ( hasMetaData( "davDepth" ) ) 
+        if ( hasMetaData( "davDepth" ) )
         {
           kdDebug(7113) << "Reading DAV depth from metadata: " << metaData( "davDepth" ) << endl;
           davHeader += metaData( "davDepth" );
-        } 
+        }
         else
         {
           if ( m_request.davData.depth == 2 )
@@ -2522,7 +2508,7 @@ bool HTTPProtocol::readHeader()
       kdDebug(7103) << "(" << m_pid << ") --empty--" << endl;
       continue;
     }
-    
+
     headerSize += len;
 
     // We have a response header.  This flag is a work around for
@@ -3064,12 +3050,11 @@ bool HTTPProtocol::readHeader()
       // *** Responses to the HTTP OPTIONS method follow
       // WebDAV capabilities
       else if (strncasecmp(buf, "DAV:", 4) == 0) {
-        if (m_davVersions.isEmpty()) {
-          m_davVersions = QString::fromLatin1(trimLead(buf + 4));
+        if (m_davCapabilities.isEmpty()) {
+          m_davCapabilities << QString::fromLatin1(trimLead(buf + 4));
         }
         else {
-          m_davVersions += ',';
-          m_davVersions += QString::fromLatin1(trimLead(buf + 4));
+          m_davCapabilities << QString::fromLatin1(trimLead(buf + 4));
         }
       }
       // *** Responses to the HTTP OPTIONS method finished
@@ -4812,7 +4797,7 @@ bool HTTPProtocol::getAuthorization()
     // out if we have a cached version and avoid a re-prompt!
     // We also do not use verify path unlike the pre-emptive
     // requests because we already know the realm value...
-    
+
     if (m_bProxyAuthValid)
     {
       // Reset cached proxy auth
@@ -4821,7 +4806,7 @@ bool HTTPProtocol::getAuthorization()
       m_proxyURL.setUser(proxy.user());
       m_proxyURL.setPass(proxy.pass());
     }
-    
+
     info.verifyPath = false;
     if ( m_responseCode == 407 )
     {
@@ -5347,59 +5332,5 @@ QString HTTPProtocol::proxyAuthenticationHeader()
 
   return header;
 }
-
-/*
-
-The webDAV DTD cannot be used with Qt's DOM yet...
-
-static const char* webdavDTD =
-"<!DOCTYPE webdav-1.0 ["
-"  <!--============ XML Elements from Section 12 ==================-->"
-"  <!ELEMENT activelock (lockscope, locktype, depth, owner?, timeout?, locktoken?) >"
-"  <!ELEMENT lockentry (lockscope, locktype) >"
-"  <!ELEMENT lockinfo (lockscope, locktype, owner?) >"
-"  <!ELEMENT locktype (write) >"
-"  <!ELEMENT write EMPTY >"
-"  <!ELEMENT lockscope (exclusive | shared) >"
-"  <!ELEMENT exclusive EMPTY >"
-"  <!ELEMENT shared EMPTY >"
-"  <!ELEMENT depth (#PCDATA) >"
-"  <!ELEMENT owner ANY >"
-"  <!ELEMENT timeout (#PCDATA) >"
-"  <!ELEMENT locktoken (href+) >"
-"  <!ELEMENT href (#PCDATA) >"
-"  <!ELEMENT link (src+, dst+) >"
-"  <!ELEMENT dst (#PCDATA) >"
-"  <!ELEMENT src (#PCDATA) >"
-"  <!ELEMENT multistatus (response+, responsedescription?) >"
-"  <!ELEMENT response (href, ((href*, status)|(propstat+)), responsedescription?) >"
-"  <!ELEMENT status (#PCDATA) >"
-"  <!ELEMENT propstat (prop, status, responsedescription?) >"
-"  <!ELEMENT responsedescription (#PCDATA) >"
-"  <!ELEMENT prop ANY >"
-"  <!ELEMENT propertybehavior (omit | keepalive) >"
-"  <!ELEMENT omit EMPTY >"
-"  <!ELEMENT keepalive (#PCDATA | href+) >"
-"  <!ELEMENT propertyupdate (remove | set)+ >"
-"  <!ELEMENT remove (prop) >"
-"  <!ELEMENT set (prop) >"
-"  <!ELEMENT propfind (allprop | propname | prop) >"
-"  <!ELEMENT allprop EMPTY >"
-"  <!ELEMENT propname EMPTY >"
-"  <!ELEMENT collection EMPTY >"
-"  <!--=========== Property Elements from Section 13 ===============-->"
-"  <!ELEMENT creationdate (#PCDATA) >"
-"  <!ELEMENT displayname (#PCDATA) >"
-"  <!ELEMENT getcontentlanguage (#PCDATA) >"
-"  <!ELEMENT getcontentlength (#PCDATA) >"
-"  <!ELEMENT getcontenttype (#PCDATA) >"
-"  <!ELEMENT getetag (#PCDATA) >"
-"  <!ELEMENT getlastmodified (#PCDATA) >"
-"  <!ELEMENT lockdiscovery (activelock)* >"
-"  <!ELEMENT resourcetype ANY >"
-"  <!ELEMENT source (link)* >"
-"  <!ELEMENT supportedlock (lockentry)* >"
-"]>";
-*/
 
 #include "http.moc"

@@ -481,7 +481,7 @@ protected:
 //--- WebDAV
   // Data structure to hold data which will be passed to an internal func.
   QByteArray m_bufWebDavData;
-  QString m_davVersions;
+  QStringList m_davCapabilities;
 
   bool m_davHostOk;
   bool m_davHostUnsupported;
