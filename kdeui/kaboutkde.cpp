@@ -58,7 +58,7 @@ KAboutKDE::KAboutKDE( QWidget *parent, const char *name, bool modal )
     "improved documentation. You decide!"
     "<br><br>"
     "Visit "
-    "<A HREF=\"http://www.kde.org/jobs.html\">http://www.kde.org/jobs.html</A> "
+    "<A HREF=\"http://www.kde.org/jobs/\">http://www.kde.org/jobs/</A> "
     "for information on some projects in which you can participate."
     "<br><br>"
     "If you need more information or documentation, then a visit to "
@@ -69,14 +69,14 @@ KAboutKDE::KAboutKDE( QWidget *parent, const char *name, bool modal )
     "Thus, the KDE Team formed the KDE Association, a non-profit organization"
     " legally founded in Tuebingen, Germany. The KDE Association represents"
     " the KDE Project in legal and financial matters."
-    " See <a href=\"http://www.kde.org/kde-ev/\">http://www.kde.org/kde-ev/<a>"
+    " See <a href=\"http://www.kde.org/areas/kde-ev/\">http://www.kde.org/areas/kde-ev/<a>"
     " for information on the KDE Association.<br><br>"
     "The KDE Team does need financial support. Most of the money is used to "
     "reimburse members and others on expenses they experienced when "
     "contributing to KDE. You are encouraged to support KDE through a financial "
     "donation, using one of the ways described at "
-    "<a href=\"http://www.kde.org/support.html\">http://www.kde.org/support"
-    ".html</a>.<br><br>Thank you very much in advance for your support.");
+    "<a href=\"http://www.kde.org/support/\">http://www.kde.org/support/</a>."
+    "<br><br>Thank you very much in advance for your support.");
   setHelp( QString::fromLatin1("khelpcenter/main.html"), QString::null );
   setTitle(i18n("K Desktop Environment. Release %1").
 	   arg(QString::fromLatin1(KDE_VERSION_STRING)) );
