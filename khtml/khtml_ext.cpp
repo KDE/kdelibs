@@ -424,10 +424,18 @@ KHTMLPopupGUIClient::KHTMLPopupGUIClient( KHTMLPart *khtml, const QString &doc, 
 
   if ( !url.isEmpty() )
   {
-    new KAction( i18n( "&Save Link As..." ), 0, this, SLOT( slotSaveLinkAs() ),
-                 actionCollection(), "savelinkas" );
-    new KAction( i18n( "Copy Link Location" ), 0, this, SLOT( slotCopyLinkLocation() ),
+    if (url.protocol() == "mailto")
+    {
+      new KAction( i18n( "Copy Email Address" ), 0, this, SLOT( slotCopyLinkLocation() ),
                  actionCollection(), "copylinklocation" );
+    }
+    else
+    {
+      new KAction( i18n( "&Save Link As..." ), 0, this, SLOT( slotSaveLinkAs() ),
+                 actionCollection(), "savelinkas" );
+      new KAction( i18n( "Copy Link Location" ), 0, this, SLOT( slotCopyLinkLocation() ),
+                 actionCollection(), "copylinklocation" );
+    }
   }
 
   // frameset? -> add "Reload Frame" etc.
