@@ -291,11 +291,11 @@ template < typename T > class KConfigSkeletonGenericItem:public KConfigSkeletonI
    * MyPrefs()
    * {
    * setCurrentGroup("MyGroup");
-   * addItemBool("MySetting1", "MyKey1",mMyBool,false);
-   * addItemColor("MySetting2","MyKey2",mMyColor,QColor(1,2,3));
+   * addItemBool("MySetting1",mMyBool,false);
+   * addItemColor("MySetting2",mMyColor,QColor(1,2,3));
    * 
    * setCurrentGroup("MyOtherGroup");
-   * addItemFont("MySetting3", "MyKey1",mMyFont,QFont("helvetica",12));
+   * addItemFont("MySetting3",mMyFont,QFont("helvetica",12));
    * }
    * 
    * bool mMyBool;
@@ -319,6 +319,10 @@ template < typename T > class KConfigSkeletonGenericItem:public KConfigSkeletonI
    * Internally preferences settings are stored in instances of subclasses of
    * @ref KConfigSkeletonItem. You can also add KConfigSkeletonItem subclasses 
    * for your own types and call the generic @ref addItem() to register them.
+   *
+   * In many cases you don't have to write the specific KConfigSkeleton
+   * subclasses yourself, but you can use kconfig_compiler to automatically
+   * generate the C++ code from an XML description of the configuration options.
    */
 class KConfigSkeleton
 {
