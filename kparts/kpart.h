@@ -20,6 +20,19 @@ class PartManager;
 class Plugin;
 class PartPrivate;
 
+/**
+ * A "part" is a GUI component, featuring a widget embeddedable
+ * in any application but which also provides elements that will be merged in 
+ * the "host" user interface (menubars, toolbars... )
+ *
+ * Those elements trigger actions, defined by the part (@see action).
+ * The layout of the actions in the GUI is defined by an XML file (@see setXMLFile).
+ *
+ * This class is an abstract interface, you need to inherit from it.
+ * See also @ref PartReadOnly and @ref PartReadWrite, which define the
+ * framework for a "viewer" part and for an "editor"-like part.
+ * Use Part directly only if your part doesn't fit into those.
+ */
 class Part : public QObject
 {
   Q_OBJECT
@@ -41,11 +54,25 @@ public:
      * Note that the Part is still the holder
      * of the QWidget, meaning that if you delete the Part,
      * then the widget gets destroyed as well, and vice-versa.
+     * This method is deprecated since creating the widget with the correct
+     * parent is simpler anyway.
      */
     virtual void embed( QWidget * parentWidget );
 
+    /**
+     * @return the widget defined by this part, set by @ref setWidget
+     */
     virtual QWidget *widget() { return m_widget; }
 
+    /**
+     * @return the instance (@see KInstance) for this part
+     * This is a virtual method, so obviously you need to implement it.
+     * A typical implementation is, in the constructor :
+     *
+     * m_instance = new KInstance( "mypartname" );
+     *
+     * and return m_instance in @ref instance
+     */
     virtual KInstance *instance() = 0;
 
     virtual void updatePlugins();
@@ -61,7 +88,7 @@ public:
     virtual QValueList<QDomDocument> pluginDocuments();
 
     /**
-     * @return a (cached) list of @ref XMLGUIServant s, serving the plugin documents returned by
+     * @return a (cached) list of @ref XMLGUIServants, serving the plugin documents returned by
                @ref pluginDocuments()
      */
     virtual const QList<XMLGUIServant> *pluginServants();
@@ -122,7 +149,9 @@ class ReadOnlyPartPrivate;
 
 /**
  * Base class for any "viewer" part.
- * You need to implement openFile().
+ * This class takes care of network transparency for you.
+ * You only need to implement @ref openFile, not @ref openURL.
+ * Use the signals to show feedback while the URL is being loaded.
  */
 class ReadOnlyPart : public Part
 {
@@ -174,6 +203,7 @@ private:
 
 /**
  * Base class for an "editor" part.
+ * This class handles network transparency for you.
  * Anything that can open a URL, allow modifications, and save
  * (to the same URL or a different one)
  */
@@ -184,6 +214,9 @@ public:
   ReadWritePart( const char *name = 0 );
   virtual ~ReadWritePart();
 
+  /**
+   * @return true if the document has been modified
+   */
   virtual bool isModified() { return m_bModified; }
 
   /**
@@ -223,6 +256,8 @@ private:
 
 /**
  * @internal
+ * The @ref XMLGUIServant for a @ref Part, providing actions
+ * and XML for their layout to the merging engine.
  */
 class PartGUIServant : public QObject, public XMLGUIServant
 {
