@@ -1206,7 +1206,7 @@ void KToolBar::mousePressEvent ( QMouseEvent *m )
 void KToolBar::paintEvent(QPaintEvent *)
 {
     if ( widgets.isEmpty() ) {
-        hide();
+        //hide(); // don't hide! e.g. it breaks the taskbar mechanism in KDevelop
         return;
     }
     bool moving = FALSE;
