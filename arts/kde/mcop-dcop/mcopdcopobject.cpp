@@ -107,7 +107,7 @@ Arts::Buffer *MCOPDCOPObject::callFunction(MCOPEntryInfo *entry, QCString ifaceN
 
 				request->writeLong(arg);
 			}
-			else if(param == "QCString")
+			else if(param == "string")
 			{
 				QCString arg;
 				argStream >> arg;
