@@ -372,14 +372,14 @@ QPopupMenu* Shell::createMenu( const QDomElement& shell, const QDomElement& part
 	if ( e.tagName() == "Menu" )
         {
 	    first = FALSE;
-	    QPopupMenu* menu;
+	    QPopupMenu* menu2;
 	    if ( shellmenu )
-		menu = createMenu( e, QDomElement() );
+		menu2 = createMenu( e, QDomElement() );
 	    else
-		menu = createMenu( QDomElement(), e );
+		menu2 = createMenu( QDomElement(), e );
 	    QDomElement n = e.namedItem("text").toElement();
 	    QString name = n.text();
-	    menu->insertItem( name, menu );
+	    menu->insertItem( name, menu2 );
 	}
 	else if ( e.tagName() == "Action" )
         {
@@ -425,14 +425,14 @@ QPopupMenu* Shell::createMenu( const QDomElement& shell, const QDomElement& part
 			menu->insertSeparator();
 		    empty = FALSE;
 		
-		    QPopupMenu* menu;
+		    QPopupMenu* menu2;
 		    if ( shellmenu )
-			menu = createMenu( f, QDomElement() );
+			menu2 = createMenu( f, QDomElement() );
 		    else
-			menu = createMenu( QDomElement(), f );
+			menu2 = createMenu( QDomElement(), f );
 		    QDomElement n = f.namedItem("text").toElement();
 		    QString name = n.text();
-		    menu->insertItem( name, menu );
+		    menu->insertItem( name, menu2 );
 		}
 		else if ( f.tagName() == "Action" )
 	        {
