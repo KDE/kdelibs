@@ -1,5 +1,20 @@
 [Misc]
 Name=HighContrast
+Name[ca]=Contrast alt
+Name[cs]=Vysoký kontrast
+Name[nl]=Hoogcontrast
+Name[pt]=Alto Contraste
+Name[pt_BR]=Alto Contraste
+Name[sv]=Hög kontrast
+Name[zh_CN]=高对比度
 Comment=A style that works well with high contrast color schemes
+Comment[bg]=Стил за схеми с висок контраст
+Comment[ca]=Un estil que funciona bé amb esquemes de color de contrast alt
+Comment[en_GB]=A style that works well with high contrast colour schemes
+Comment[nl]=Een stijl die goed werkt met hoog contrast kleurenschema's
+Comment[pt]=Um estilo que funciona bem com esquemas de cores de alto contraste
+Comment[pt_BR]=Um estilo que funciona bem com esquemas de cores de alto contraste
+Comment[sv]=En stil som fungerar bra med färgscheman för hög kontrast
+Comment[zh_CN]=在高对比度配色方案中适用的样式
 [KDE]
 WidgetStyle=HighContrast
