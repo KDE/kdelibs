@@ -2177,7 +2177,7 @@ void KApplication::invokeMailer(const QString &to, const QString &cc, const QStr
 
    if (command.isEmpty() || command == QString::fromLatin1("kmail")
        || command.endsWith("/kmail"))
-     command = QString::fromLatin1("kmail --composer -s %s -c %c -b %b --body %B --attach %A %t");
+     command = QString::fromLatin1("kmail --composer -s %s -c %c -b %b --body %B --attach %A -- %t");
 
    // TODO: Take care of the preferred terminal app (instead of hardcoding
    // Konsole), this will probably require a rewrite of the configurable
