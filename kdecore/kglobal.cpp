@@ -249,5 +249,6 @@ int kasciistricmp( const char *str1, const char *str2 )
         if ((res = c1 - c2))
             break;
     }
-    return res;
+    return *s1 ? res : (*s2 ? -1 : 0);
 }
+
