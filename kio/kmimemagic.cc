@@ -11,6 +11,7 @@
 #include <ctype.h>
 #include <assert.h>
 #include <kapp.h>
+#include <kstddirs.h>
 
 KMimeMagic* KMimeMagic::s_pSelf = 0L;
 
@@ -24,8 +25,7 @@ KMimeMagic* KMimeMagic::self()
 void KMimeMagic::initStatic()
 {
   // Magic file detection init
-  QString mimefile = kapp->kde_mimedir().copy();
-  mimefile += "/magic";
+  QString mimefile = locate( "mime", "magic" );
   s_pSelf = new KMimeMagic( mimefile.ascii() );
   s_pSelf->setFollowLinks( TRUE );
 }
