@@ -2182,11 +2182,12 @@ bool KHTMLPart::isEditable() const
   return d->m_designMode;
 }
 
-void KHTMLPart::setCaretPosition(DOM::Node node, long offset)
+void KHTMLPart::setCaretPosition(DOM::Node node, long offset, bool extendSelection)
 {
-  d->caretNode() = node;
-  d->caretOffset() = offset;
-  view()->initCaret(true);
+#ifndef KHTML_NO_CARET
+  if (view()->moveCaretTo(node.handle(), offset, !extendSelection))
+    emitSelectionChanged();
+#endif // KHTML_NO_CARET
 }
 
 void KHTMLPart::findTextBegin()
@@ -4876,7 +4877,7 @@ void KHTMLPart::khtmlMousePressEvent( khtml::MousePressEvent *event )
 #ifndef KHTML_NO_SELECTION
     if ( _mouse->button() == LeftButton )
     {
-      if ( !d->m_strSelectedURL.isNull() )
+      if ( !d->m_strSelectedURL.isNull() && !isEditable() )
 	  return;
       if ( !innerNode.isNull()  && innerNode.handle()->renderer()) {
           int offset = 0;
@@ -5095,7 +5096,8 @@ void KHTMLPart::khtmlMouseMoveEvent( khtml::MouseMoveEvent *event )
   }
 #ifndef QT_NO_DRAGANDDROP
   if( d->m_bDnd && d->m_bMousePressed &&
-      (!d->m_strSelectedURL.isEmpty() || (!d->m_mousePressNode.isNull() && d->m_mousePressNode.elementId() == ID_IMG) ) ) {
+      ( (!d->m_strSelectedURL.isEmpty() && !isEditable())
+        || (!d->m_mousePressNode.isNull() && d->m_mousePressNode.elementId() == ID_IMG) ) ) {
     if ( ( d->m_dragStartPos - _mouse->pos() ).manhattanLength() <= KGlobalSettings::dndEventDelay() )
       return;
 

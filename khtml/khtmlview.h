@@ -343,8 +343,9 @@ private:
      * @param startOffset offset within the start node.
      * @param endNode ending node of selection
      * @param endOffset offset within the end node.
+     * @return @p true when the current selection has been changed
      */
-     void extendSelection(DOM::NodeImpl *startNode, long startOffset,
+     bool extendSelection(DOM::NodeImpl *startNode, long startOffset,
 				DOM::NodeImpl *endNode, long endOffset);
 
     /** updates the selection from the last to the current caret position.
@@ -377,7 +378,7 @@ private:
      * @param offset zero-based offset within this node
      * @param clearSelection @p true if any selection should be cleared
      *	as well.
-     * @return @p true if a previously existing selection has been cleared.
+     * @return @p true if a previously existing selection has been changed.
      */
     bool moveCaretTo(DOM::NodeImpl *node, long offset, bool clearSelection);
 

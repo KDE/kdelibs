@@ -369,6 +369,7 @@ static void sanitizeCaretState(NodeImpl *&caretNode, long &offset)
   // renderer.
   NodeImpl *tmpNode = caretNode;
   if (findRenderer(tmpNode)) caretNode = tmpNode;
+  if (!caretNode) return;
 
   long max = caretNode->maxOffset();
   long min = caretNode->minOffset();
@@ -4560,16 +4561,21 @@ inline bool isBeforePosition(NodeImpl *n1, long ofs1, NodeImpl *n2, long ofs2)
   return isBeforeNode(n1, n2);
 }
 
-void KHTMLView::extendSelection(NodeImpl *oldStartSel, long oldStartOfs,
+bool KHTMLView::extendSelection(NodeImpl *oldStartSel, long oldStartOfs,
 				NodeImpl *oldEndSel, long oldEndOfs)
 {
+  bool changed = false;
   if (m_part->d->m_selectionStart == m_part->d->m_selectionEnd
       && m_part->d->m_startOffset == m_part->d->m_endOffset) {
-    if (foldSelectionToCaret(oldStartSel, oldStartOfs, oldEndSel, oldEndOfs)) {
-      //m_part->emitSelectionChanged();
-    }/*end if*/
+    changed = foldSelectionToCaret(oldStartSel, oldStartOfs, oldEndSel, oldEndOfs);
     m_part->d->m_extendAtEnd = true;
-  } else {
+  } else do {
+    changed = m_part->d->m_selectionStart.handle() != oldStartSel
+    		|| m_part->d->m_startOffset != oldStartOfs
+		|| m_part->d->m_selectionEnd.handle() != oldEndSel
+		|| m_part->d->m_endOffset != oldEndOfs;
+    if (!changed) break;
+
     // determine start position -- caret position is always at end.
     NodeImpl *startNode;
     long startOffset;
@@ -4598,7 +4604,8 @@ void KHTMLView::extendSelection(NodeImpl *oldStartSel, long oldStartOfs,
 		m_part->d->m_startOffset, m_part->d->m_selectionEnd.handle(),
 		m_part->d->m_endOffset);
     }/*end if*/
-  }/*end if*/
+  } while(false);/*end if*/
+  return changed;
 }
 
 void KHTMLView::updateSelection(NodeImpl *oldStartSel, long oldStartOfs,
@@ -4717,9 +4724,9 @@ void KHTMLView::caretKeyPressEvent(QKeyEvent *_ke)
 
 bool KHTMLView::moveCaretTo(NodeImpl *node, long offset, bool clearSel)
 {
+  sanitizeCaretState(node, offset);
   if (!node) return false;
 
-  sanitizeCaretState(node, offset);
   // need to find out the node's inline box. If there is none, this function
   // will snap to the next node that has one. This is necessary to make the
   // caret visible in any case.
@@ -4749,16 +4756,16 @@ bool KHTMLView::moveCaretTo(NodeImpl *node, long offset, bool clearSel)
   // test for position change
   bool posChanged = m_part->d->caretNode().handle() != node
   		|| m_part->d->caretOffset() != offset;
-  bool folded = false;
+  bool selChanged = false;
 
   m_part->d->caretNode() = node;
   m_part->d->caretOffset() = offset;
-  if (clearSel) {
-    folded = foldSelectionToCaret(oldStartSel, oldStartOfs, oldEndSel, oldEndOfs);
+  if (clearSel || !oldStartSel || !oldEndSel) {
+    selChanged = foldSelectionToCaret(oldStartSel, oldStartOfs, oldEndSel, oldEndOfs);
   } else {
     //kdDebug(6200) << "moveToCaret: extendSelection: m_extendAtEnd " << m_part->d->m_extendAtEnd << endl;
     //kdDebug(6200) << "selection: start(" << m_part->d->m_selectionStart.handle() << "," << m_part->d->m_startOffset << "), end(" << m_part->d->m_selectionEnd.handle() << "," << m_part->d->m_endOffset << "), caret(" << m_part->d->caretNode().handle() << "," << m_part->d->caretOffset() << ")" << endl;
-    extendSelection(oldStartSel, oldStartOfs, oldEndSel, oldEndOfs);
+    selChanged = extendSelection(oldStartSel, oldStartOfs, oldEndSel, oldEndOfs);
     //kdDebug(6200) << "after extendSelection: m_extendAtEnd " << m_part->d->m_extendAtEnd << endl;
     //kdDebug(6200) << "selection: start(" << m_part->d->m_selectionStart.handle() << "," << m_part->d->m_startOffset << "), end(" << m_part->d->m_selectionEnd.handle() << "," << m_part->d->m_endOffset << "), caret(" << m_part->d->caretNode().handle() << "," << m_part->d->caretOffset() << ")" << endl;
   }/*end if*/
@@ -4774,7 +4781,7 @@ bool KHTMLView::moveCaretTo(NodeImpl *node, long offset, bool clearSel)
     m_part->emitCaretPositionChanged(visible_caret ? node : 0, offset);
   }/*end if*/
 
-  return folded;
+  return selChanged;
 }
 
 /** seeks the inline box which contains or is the nearest to @p x

@@ -402,9 +402,12 @@ public:
    * containing the effective position is emitted
    * @param node node to set to
    * @param offset zero-based offset within the node
+   * @param extendSelection If @p true, a selection will be spanned from the
+   *	last caret position to the given one. Otherwise, any existing selection
+   *	will be deselected.
    * @since 3.2
    */
-  void setCaretPosition(DOM::Node node, long offset);
+  void setCaretPosition(DOM::Node node, long offset, bool extendSelection = false);
 
 #ifndef KDE_NO_COMPAT
   void enableJScript( bool e ) { setJScriptEnabled(e); }
