@@ -146,7 +146,6 @@ bool TCPSlaveBase::ConnectToHost(const QCString &host, unsigned short int _port)
 	m_iSock = ks.fd();
 	ks.release();		// KExtendedSocket no longer applicable
 
-        setMetaData("ssl_in_use", "FALSE");
         if (m_bIsSSL) {
            d->kssl->reInitialize();
            int rc = d->kssl->connect(m_iSock);
@@ -154,13 +153,13 @@ bool TCPSlaveBase::ConnectToHost(const QCString &host, unsigned short int _port)
               CloseDescriptor();
               return false;
            }
-           setMetaData("ssl_in_use", "TRUE");
            rc = verifyCertificate();
            if (rc != 1) {
               CloseDescriptor();
               return false;
            }
-        }
+           setMetaData("ssl_in_use", "TRUE");
+        } else setMetaData("ssl_in_use", "FALSE");
 
 	// Since we want to use stdio on the socket,
 	// we must fdopen it to get a file pointer,
@@ -171,9 +170,8 @@ bool TCPSlaveBase::ConnectToHost(const QCString &host, unsigned short int _port)
 	}
 	m_iPort=port;
 
-        connected();    // tell the caller that we have connected
-                        // so it can read the metadata and do any preparation
-
+        connected();
+ 
 	return true;
 }
 
@@ -347,13 +345,17 @@ bool isChild = false;
            //      reject current session  - record a temp record
            //      reject always           - record a permarecord
            //        - pseudo response of "Display Info"
-           int result = messageBox( WarningYesNo,
+           int result = messageBox( WarningYesNoCancel,
                               i18n("Certificate verification failed (FIXME)"),
                               i18n("Server Authentication"),
-                              i18n("Continue"),
-                              i18n("Cancel") );
+                              i18n("Details..."),
+                              i18n("Continue") );
 
              if (result == KMessageBox::Yes) {
+                sendMetaData();
+                messageBox( SSLMessageBox, m_sServiceName );
+                // FIXME: we need to block here until the user makes a decision
+             } else if (result == KMessageBox::No) {
                 setMetaData("ssl_action", "accept");
                 rc = 1;
                 cp = KSSLCertificateCache::Accept;
@@ -365,7 +367,8 @@ bool isChild = false;
            }
           break;
          default:
-          kdDebug() << "TCPSlaveBase/SSL error in cert code.  Please report this to kfm-devel@kde.org." << endl;
+          kdDebug() << "TCPSlaveBase/SSL error in cert code."
+                    << "  Please report this to kfm-devel@kde.org." << endl;
           break;
          }
       }
@@ -375,9 +378,12 @@ bool isChild = false;
 
    } else {        // Child frame
       //  - Read from cache and see if there is a policy for this
-      KSSLCertificateCache::KSSLCertificatePolicy cp = d->cc->getPolicyByCertificate(pc);
+      KSSLCertificateCache::KSSLCertificatePolicy cp =  
+                                             d->cc->getPolicyByCertificate(pc);
       isChild = true;
    }
+
+
 
    // Things to check:
    //  - posting unencrypted data  -- elsewhere?
@@ -429,7 +435,7 @@ bool isChild = false;
    // and in non-SSL mode
    if (isChild && d->kssl->settings()->warnOnMixed() && 
                                        metaData("ssl_was_in_use") != "TRUE") {
-
+      // FIXME: do something!
    }
 
    }   // if ssl_activate_warnings
