@@ -23,6 +23,9 @@
 
 // $Id$
 // $Log$
+// Revision 1.130  1999/09/21 11:03:54  waba
+// WABA: Clean up interface
+//
 // Revision 1.129  1999/08/04 13:02:48  radej
 // sven: Proposed change from Carsten Pfeiffer for buttons with delayed popups:
 // When popup is visible, click on button will hide the popup and emit click.
@@ -80,7 +83,7 @@
 #include "ktoolbar.h"
 #include "klined.h"
 #include "kseparator.h"
-#include <ktopwidget.h>
+#include <ktmainwindow.h>
 #include <klocale.h>
 #include <kapp.h>
 #include <kglobal.h>
