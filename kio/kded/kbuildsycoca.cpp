@@ -284,11 +284,8 @@ void KBuildSycoca::recreate( KSycocaEntryListList *allEntries, QDict<Q_UINT32> *
   (void) new KBuildImageIOFactory();
   (void) new KBuildProtocolInfoFactory();
 
-  time_t Time1 = time(0);
   build(allEntries, ctimeDict); // Parse dirs
-  time_t Time2 = time(0);
   save(); // Save database
-  time_t Time3 = time(0);
 
   m_str = 0L;
   if (!database.close())
@@ -296,7 +293,6 @@ void KBuildSycoca::recreate( KSycocaEntryListList *allEntries, QDict<Q_UINT32> *
      kdError(7021) << "Error writing database to " << database.name() << endl;
      return;
   }
-  kdDebug(7021) << "Build = " << Time2-Time1 << "s Save = " << Time3-Time2 << "s" << endl;
 }
 
 void KBuildSycoca::save()
@@ -354,8 +350,6 @@ void KBuildSycoca::save()
    }
    (*m_str) << (Q_INT32) 0; // No more factories.
 
-   kdDebug(7021) << QString("endOfData : %1").arg(endOfData,8,16) << endl;
-
    // Jump to end of database
    m_str->device()->at(endOfData);
 }
@@ -372,7 +366,6 @@ static const char *appVersion = "1.0";
 int main(int argc, char **argv)
 {
    KLocale::setMainCatalogue("kdelibs");
-   //time_t Time1 = time(0);
    KAboutData d(appName, I18N_NOOP("KBuildSycoca"), appVersion,
                 I18N_NOOP("Rebuilds the system configuration cache."),
                 KAboutData::License_GPL, "(c) 1999,2000 David Faure");
