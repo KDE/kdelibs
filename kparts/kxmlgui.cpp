@@ -66,43 +66,24 @@ template class QList<XMLGUIContainerNode>;
  * a merging-index or not. A merging index is used to plug in child actions and child containers at a
  * specified index, in order to merge the GUI correctly.
  */
-class XMLGUIContainerNode
+struct XMLGUIContainerNode
 {
-public:
-  XMLGUIContainerNode( QObject *container, const QString &tagName, const QString &name, XMLGUIContainerNode *parent = 0L, XMLGUIServant *servant = 0L, bool merged = false );
+  XMLGUIContainerNode( QObject *_container, const QString &_tagName, const QString &_name, XMLGUIContainerNode *_parent = 0L, XMLGUIServant *_servant = 0L, bool _merged = false );
 
-  XMLGUIContainerNode *parent() const { return m_parent; }
+  XMLGUIContainerNode *parent;
+  XMLGUIServant *servant;
+  QObject *container;
 
-  void setServant( XMLGUIServant *servant ) { m_servant = servant; }
-  XMLGUIServant *servant() const { return m_servant; }
+  QString tagName;
+  QString name;
 
-  QObject *container() const { return m_container; }
+  QList<XMLGUIContainerClient> clients;
+  QList<XMLGUIContainerNode> children;
 
-  QString tagName() const { return m_tagName; }
-  QString name() const { return m_name; }
+  int index;
+  int mergingIndex;
 
-  QList<XMLGUIContainerClient> *clients() { return &m_clients; }
-
-  QList<XMLGUIContainerNode> *children() { return &m_children; }
-
-  int *index() { return &m_index; }
-
-  void setMergingIndex( int val ) { m_mergingIndex = val; }
-  int *mergingIndex() { return &m_mergingIndex; }
-
-  bool mergedContainer() const { return m_merged; }
-
-private:
-  QObject *m_container;
-  QString m_tagName;
-  QString m_name;
-  QList<XMLGUIContainerClient> m_clients;
-  QList<XMLGUIContainerNode> m_children;
-  XMLGUIContainerNode *m_parent;
-  int m_index;
-  int m_mergingIndex;
-  XMLGUIServant *m_servant;
-  bool m_merged;
+  bool mergedContainer;
 };
 
 class XMLGUIFactoryPrivate
@@ -165,21 +146,21 @@ XMLGUIFactory *XMLGUIServant::factory() const
   return d->m_factory;
 }
 
-XMLGUIContainerNode::XMLGUIContainerNode( QObject *container, const QString &tagName, const QString &name, XMLGUIContainerNode *parent, XMLGUIServant *servant, bool merge )
+XMLGUIContainerNode::XMLGUIContainerNode( QObject *_container, const QString &_tagName, const QString &_name, XMLGUIContainerNode *_parent, XMLGUIServant *_servant, bool _merged )
 {
-  m_container = container;
-  m_tagName = tagName;
-  m_name = name;
-  m_parent = parent;
-  m_children.setAutoDelete( true );
-  m_clients.setAutoDelete( true );
-  m_mergingIndex = -1;
-  m_index = 0;
-  m_servant = servant;
-  m_merged = merge;
+  container = _container;
+  parent = _parent;
+  servant = _servant;
+  tagName = _tagName;
+  name = _name;
+  children.setAutoDelete( true );
+  clients.setAutoDelete( true );
+  index = 0;
+  mergingIndex = -1;
+  mergedContainer = _merged;
 
-  if ( m_parent )
-    m_parent->children()->append( this );
+  if ( parent )
+    parent->children.append( this );
 }
 
 QString XMLGUIFactory::readConfigFile( const QString &filename )
@@ -227,7 +208,7 @@ void XMLGUIFactory::addServant( XMLGUIServant *servant )
 
   QDomElement docElement = servant->document().documentElement();
 
-  *d->m_rootNode->index() = -1;
+  d->m_rootNode->index = -1;
 
   buildRecursive( docElement, d->m_rootNode );
 
@@ -282,36 +263,36 @@ void XMLGUIFactory::buildRecursive( const QDomElement &element, XMLGUIContainerN
      */
     if ( e.tagName() == "Merge" )
     {
-      parentNode->setMergingIndex( *parentNode->index() );
+      parentNode->mergingIndex = parentNode->index;
       ignoreMergingIndex = true;
     }
     else if ( e.tagName() == "Action" )
     {
       QAction *action = m_servant->action( e );
 
-      if ( action && parentNode->container() && parentNode->container()->isWidgetType() )
+      if ( action && parentNode->container && parentNode->container->isWidgetType() )
       {
        	int idx;
 	bool merged = false;
 	
 	// ( a merging index with the value -1 means that no Merge tag was specified on the parent level )
-       	if ( *parentNode->mergingIndex() != -1 && !ignoreMergingIndex )
+       	if ( parentNode->mergingIndex != -1 && !ignoreMergingIndex )
 	{
-       	  idx = (*parentNode->mergingIndex())++;
+       	  idx = parentNode->mergingIndex++;
 	  merged = true;
 	}
 	else
-	  idx = (*parentNode->index())++;
+	  idx = parentNode->index++;
 
 	if ( !containerClient )
 	{
 	  containerClient = new XMLGUIContainerClient;
 	  containerClient->m_servant = m_servant;
 	  containerClient->m_mergedClient = merged;
-	  parentNode->clients()->append( containerClient );
+	  parentNode->clients.append( containerClient );
 	}
 	
-        action->plug( (QWidget *)parentNode->container(), idx );
+        action->plug( (QWidget *)parentNode->container, idx );
 
 	containerClient->m_actions.append( action );
       }
@@ -332,18 +313,17 @@ void XMLGUIFactory::buildRecursive( const QDomElement &element, XMLGUIContainerN
         buildRecursive( e, matchingContainer );
       else
       {	
-        if ( parentNode->container() && !parentNode->container()->isWidgetType() )
+        if ( parentNode->container && !parentNode->container->isWidgetType() )
         {
           kDebugWarning( 1000,"cannot create container widget with non-widget as parent!" );
     	  continue;
         }
 
-        int *idx = parentNode->index();
 	bool merged = false;
 
-	if ( *parentNode->mergingIndex() != -1 && !ignoreMergingIndex )
+	if ( parentNode->mergingIndex != -1 && !ignoreMergingIndex )
 	{
-	  idx = parentNode->mergingIndex();
+	  parentNode->index = parentNode->mergingIndex;
 	  merged = true;
 	}
 
@@ -356,13 +336,13 @@ void XMLGUIFactory::buildRecursive( const QDomElement &element, XMLGUIContainerN
 	 * we use QObject as container type), like with separators for example.
 	 */
 	
-        QObject *container = m_builder->createContainer( (QWidget *)parentNode->container(), *idx, e, stateBuffer );
+        QObject *container = m_builder->createContainer( (QWidget *)parentNode->container, parentNode->index, e, stateBuffer );
 	
 	// no container? (probably some <text> tag or so ;-)
 	if ( !container )
 	  continue;
 	
-        (*idx)++;
+        parentNode->index++;
 	
 	containerList.append( container );
 	
@@ -378,17 +358,17 @@ void XMLGUIFactory::buildRecursive( const QDomElement &element, XMLGUIContainerN
 bool XMLGUIFactory::removeRecursive( XMLGUIContainerNode *node )
 {
 
-  QListIterator<XMLGUIContainerNode> childIt( *node->children() );
+  QListIterator<XMLGUIContainerNode> childIt( node->children );
   while ( childIt.current() )
     // removeRecursive returns true in case the container really got deleted
     if ( removeRecursive( childIt.current() ) )
-      node->children()->removeRef( childIt.current() );
+      node->children.removeRef( childIt.current() );
     else
       ++childIt;
 
-  QListIterator<XMLGUIContainerClient> clientIt( *node->clients() );
+  QListIterator<XMLGUIContainerClient> clientIt( node->clients );
 
-  if ( node->container() && node->container()->isWidgetType() )
+  if ( node->container && node->container->isWidgetType() )
     while ( clientIt.current() )
       //only unplug the actions of the servant we want to remove, as the container might be owned
       //by a different servant
@@ -397,26 +377,25 @@ bool XMLGUIFactory::removeRecursive( XMLGUIContainerNode *node )
         QListIterator<QAction> actionIt( clientIt.current()->m_actions );
         for (; actionIt.current(); ++actionIt )
         {
-          kDebugInfo( 1002, "unplugging %s from %s", actionIt.current()->name(), (QWidget *)node->container()->name() );
-          actionIt.current()->unplug( (QWidget *)node->container() );
+          kDebugInfo( 1002, "unplugging %s from %s", actionIt.current()->name(), (QWidget *)node->container->name() );
+          actionIt.current()->unplug( (QWidget *)node->container );
         }
 	
 	//now we have to adjust/correct the index. We do it the fast'n'dirty way by just substracting
 	//the amount of actions we just unplugged ;-)
-	int *idx = node->index();
 	
 	if ( clientIt.current()->m_mergedClient )
-	  idx = node->mergingIndex();
+	  node->index = node->mergingIndex;
 	
-	(*idx) -= clientIt.current()->m_actions.count();
+	node->index -= clientIt.current()->m_actions.count();
 	
-	node->clients()->removeRef( clientIt.current() );
+	node->clients.removeRef( clientIt.current() );
       }
       else
         ++clientIt;
 
-  if ( node->clients()->count() == 0 && node->children()->count() == 0 && node->container() &&
-       node->servant() == m_servant )
+  if ( node->clients.count() == 0 && node->children.count() == 0 && node->container &&
+       node->servant == m_servant )
   {
     //if at this point the container still contains actions from other servants, then something is wrong
     //with the design of your xml documents ;-) . Anyway, the container was owned by the servant, and that
@@ -425,37 +404,37 @@ bool XMLGUIFactory::removeRecursive( XMLGUIContainerNode *node )
 
     QWidget *parentContainer = 0L;
 
-    if ( node->parent() && node->parent()->container() )
+    if ( node->parent && node->parent->container )
     {
-      parentContainer = (QWidget *)node->parent()->container();
+      parentContainer = (QWidget *)node->parent->container;
 
-      XMLGUIContainerNode *p = node->parent();
-      if ( node->mergedContainer() )
-        (*p->mergingIndex())--;
+      XMLGUIContainerNode *p = node->parent;
+      if ( node->mergedContainer )
+        p->mergingIndex--;
       else
-        (*p->index())--;
+        p->index--;
     }
 
     if ( node == d->m_rootNode ) kDebugInfo( 1002, "root node !" );
-    if ( !node->container() ) kDebugInfo( 1002, "no container !" );
-    kDebugInfo( 1002, "remove/kill stuff : node is %s, container is %s (%s), parent container is %s", node->name().ascii(), node->container()->name(), node->container()->className(), parentContainer ? parentContainer->name() : 0L );
+    if ( !node->container ) kDebugInfo( 1002, "no container !" );
+    kDebugInfo( 1002, "remove/kill stuff : node is %s, container is %s (%s), parent container is %s", node->name.ascii(), node->container->name(), node->container->className(), parentContainer ? parentContainer->name() : 0L );
     //remove/kill the container and give the builder a chance to store abitrary state information of
     //the container in a QByteArray. This information will be re-used for the creation of the same
     //container in case we add the same servant again later.
-    QByteArray containerStateBuffer = m_builder->removeContainer( node->container(), parentContainer );
+    QByteArray containerStateBuffer = m_builder->removeContainer( node->container, parentContainer );
 
     if ( containerStateBuffer.size() > 0 )
-      m_servant->storeContainerStateBuffer( node->tagName() + node->name(), containerStateBuffer );
+      m_servant->storeContainerStateBuffer( node->tagName + node->name, containerStateBuffer );
 
-    node->setServant( 0L );
+    node->servant = 0L;
 
     //indicate the caller that we successfully killed ourselves ;-) and want to be removed from the
     //parent's child list.
     return true;
   }
 
-  if ( node->servant() == m_servant )
-    node->setServant( 0L );
+  if ( node->servant == m_servant )
+    node->servant = 0L;
 
   return false;
 }
@@ -463,14 +442,14 @@ bool XMLGUIFactory::removeRecursive( XMLGUIContainerNode *node )
 XMLGUIContainerNode *XMLGUIFactory::findContainer( XMLGUIContainerNode *node, const QDomElement &element, const QList<QObject> &excludeList )
 {
   XMLGUIContainerNode *res = 0L;
-  QListIterator<XMLGUIContainerNode> nIt( *node->children() );
+  QListIterator<XMLGUIContainerNode> nIt( node->children );
 
   QString name = element.attribute( "name" );
 
   if ( !name.isEmpty() )
   {
     for (; nIt.current(); ++nIt )
-     if ( nIt.current()->name() == name && !excludeList.containsRef( nIt.current()->container() ) )
+     if ( nIt.current()->name == name && !excludeList.containsRef( nIt.current()->container ) )
      {
        res = nIt.current();
        break;
@@ -483,7 +462,7 @@ XMLGUIContainerNode *XMLGUIFactory::findContainer( XMLGUIContainerNode *node, co
 
   if ( !name.isEmpty() )
     for (; nIt.current(); ++nIt )
-      if ( nIt.current()->tagName() == name && !excludeList.containsRef( nIt.current()->container() ) )
+      if ( nIt.current()->tagName == name && !excludeList.containsRef( nIt.current()->container ) )
       {
         res = nIt.current();
 	break;
