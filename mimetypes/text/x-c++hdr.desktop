@@ -52,7 +52,7 @@ Comment[zu]=Ifayela Lenhloko le-C++
 Icon=source_h
 Type=MimeType
 MimeType=text/x-c++hdr
-Patterns=*.hh;*.hpp;
+Patterns=*.hh;*.hpp;*.H;
 
 [Property::X-KDE-text]
 Type=bool
