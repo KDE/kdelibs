@@ -525,6 +525,10 @@ class KDEUI_EXPORT KJanusWidget : public QWidget
     /*virtual*/ QWidget *pageWidget(int index) const;
 
   signals:
+    /**
+     * This signal is emitted whenever the current page changes.
+     * @param page the new page. 
+     */
     void aboutToShowPage(QWidget *page);
 
   public slots:
