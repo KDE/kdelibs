@@ -65,6 +65,13 @@ KAction* create( StdAction id, const char *name, const QObject *recvr, const cha
 		 case HelpContents:
 			{
 			const KAboutData *aboutData = KGlobal::instance()->aboutData();
+			/* TODO KDE4
+			const KAboutData *aboutData;
+			if ( parent )
+			    aboutData = parent->instance()->aboutData();
+			else
+			    aboutData = KGlobal::instance()->aboutData();
+			*/
 			QString appName = (aboutData) ? aboutData->programName() : QString::fromLatin1(qApp->name());
 			sLabel = i18n(pInfo->psLabel).arg(appName);
 			}
