@@ -138,7 +138,10 @@ int kdemain(int argc, char **argv)
                  0L,
                  i18n("During the previous startup, KNotify crashed while creating "
                       "Arts::Dispatcher. Do you want to try again or disable "
-                      "aRts sound output?"),
+                      "aRts sound output?\n\n"
+                      "If you choose to disable aRts output now, you can re-enable "
+                      "it later or select an alternate sound player "
+                      "in the System Notifications control panel."),
                  i18n("KNotify Problem"),
                  i18n("&Try Again"),
                  i18n("D&isable aRts Output"),
@@ -174,7 +177,10 @@ int kdemain(int argc, char **argv)
                  0L,
                  i18n("During the previous startup, KNotify crashed while instantiating "
                       "KNotify. Do you want to try again or disable "
-                      "aRts sound output?"),
+                      "aRts sound output?\n\n"
+                      "If you choose to disable aRts output now, you can re-enable "
+                      "it later or select an alternate sound player "
+                      "in the System Notifications control panel."),
                  i18n("KNotify Problem"),
                  i18n("&Try Again"),
                  i18n("D&isable aRts Output"),
