@@ -39,6 +39,9 @@
 // $Id$
 // $Log$
 //
+// Revision 1.29  1998/07/23 09:43:38  radej
+// sven: Improved look under diff styles. Winlook is beetter now.
+//
 // Revision 1.28  1998/06/18 08:58:14  radej
 // sven: removed debug output
 //
@@ -363,18 +366,23 @@ void KMenuBar::leaveEvent (QEvent *e){
                                       // the hardwired value used before!!
 	  else
 		b = QWidget::backgroundColor();
-      qDrawShadePanel( &paint, 0, 0, 9, handle->height(),
-                       g , FALSE, 1, &b );
+      if (style() == MotifStyle)
+        qDrawShadePanel( &paint, 0, 0, 9, handle->height(),
+                         g , FALSE, 1, &b );
+      else
+        qDrawPlainRect ( &paint, 0, 0, 9, handle->height(),
+                         g.mid(), 1, &b);
+
       paint.setPen( g.light() );
       stipple_height = 3;
-     while ( stipple_height < handle->height()-3 ) {
+     while ( stipple_height < handle->height()-4 ) {
 	paint.drawPoint( 1, stipple_height+1);
 	paint.drawPoint( 4, stipple_height);
 	stipple_height+=3;
           paint.drawLine(0, h-a+3, h, 0-a+3);
       paint.setPen( g.dark() );
       stipple_height = 4;
-      while ( stipple_height < handle->height()-3 ) {
+      while ( stipple_height < handle->height()-4 ) {
 	paint.drawPoint( 2, stipple_height+1);
 	paint.drawPoint( 5, stipple_height);
 	stipple_height+=3;
