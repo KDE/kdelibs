@@ -47,13 +47,13 @@ include_HEADERS = khtmlview.h khtml_part.h khtml_events.h khtml_settings.h khtml
 noinst_HEADERS = design.h testkhtml.h testrender.h khtml_find.h khtml_ext.h khtml_pagecache.h
 
 libkhtml_la_LDFLAGS = -version-info 3:0 -module -no-undefined
-libkhtml_la_LIBADD = ./xml/libkhtmlxml.la ./html/libkhtmlhtml.la ./rendering/libkhtmlrender.la ./css/libkhtmlcss.la ./misc/libkhtmlmisc.la ./dom/libkhtmldom.la ./java/libkjava.la ../kio/libkio.la $(top_builddir)/kparts/libkparts.la $(top_builddir)/kfile/libkfile.la
+libkhtml_la_LIBADD = ./xml/libkhtmlxml.la ./html/libkhtmlhtml.la ./rendering/libkhtmlrender.la ./css/libkhtmlcss.la ./misc/libkhtmlmisc.la ./dom/libkhtmldom.la ./java/libkjava.la ../kio/libkio.la $(top_builddir)/kparts/libkparts.la $(top_builddir)/kfile/libkfile.la $(top_builddir)/kssl/libkssl.la
 
 INCLUDES = -I$(top_srcdir)/kjs -I$(top_srcdir)/kimgio -I$(top_srcdir)/kio \
 	-I$(srcdir)/java -I$(top_srcdir)/dcop -I$(srcdir)/misc \
 	-I$(srcdir)/dom -I$(srcdir)/xml -I$(srcdir)/html -I$(srcdir)/css \
 	-I$(top_srcdir)/kfile -I$(top_srcdir)/libltdl \
-	-I$(top_srcdir) $(all_includes)
+	-I$(top_srcdir)/kssl -I$(top_srcdir) $(all_includes)
 
 servicedir = $(kde_servicesdir)
 service_DATA = khtml.desktop

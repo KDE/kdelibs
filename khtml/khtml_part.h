@@ -669,6 +669,10 @@ private slots:
   /**
    * @internal
    */
+  virtual void slotSecurity();
+  /**
+   * @internal
+   */
   virtual void slotSetEncoding();
 
   virtual void slotFind();

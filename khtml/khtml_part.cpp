@@ -71,6 +71,9 @@ using namespace DOM;
 #include <ktempfile.h>
 #include <kglobalsettings.h>
 
+#include <kssl.h>
+#include <ksslinfodlg.h>
+
 #include <qtextcodec.h>
 
 #include <qstring.h>
@@ -173,6 +176,16 @@ public:
 
   KIO::TransferJob * m_job;
 
+  // QStrings for SSL metadata
+  bool m_ssl_in_use;
+  QString m_ssl_peer_cert_subject,
+          m_ssl_peer_cert_issuer,
+          m_ssl_cipher,
+          m_ssl_cipher_desc,
+          m_ssl_cipher_version,
+          m_ssl_cipher_used_bits,
+          m_ssl_cipher_bits;
+
   bool m_bComplete;
   bool m_bParsing;
   bool m_bReloading;
@@ -191,6 +204,7 @@ public:
   KAction *m_paSaveBackground;
   KAction *m_paSaveDocument;
   KAction *m_paSaveFrame;
+  KAction *m_paSecurity;
   KSelectAction *m_paSetEncoding;
   KHTMLFontSizeAction *m_paIncFontSizes;
   KHTMLFontSizeAction *m_paDecFontSizes;
@@ -336,6 +350,7 @@ void KHTMLPart::init( KHTMLView *view, GUIProfile prof )
   d->m_paSaveBackground = new KAction( i18n( "Save &Background Image As.." ), 0, this, SLOT( slotSaveBackground() ), actionCollection(), "saveBackground" );
   d->m_paSaveDocument = new KAction( i18n( "&Save As.." ), 0, this, SLOT( slotSaveDocument() ), actionCollection(), "saveDocument" );
   d->m_paSaveFrame = new KAction( i18n( "Save &Frame As.." ), 0, this, SLOT( slotSaveFrame() ), actionCollection(), "saveFrame" );
+  d->m_paSecurity = new KAction( i18n( "Security..." ), 0, this, SLOT( slotSecurity() ), actionCollection(), "security" );
 
   d->m_paSetEncoding = new KSelectAction( i18n( "Set &Encoding.." ), 0, this, SLOT( slotSetEncoding() ), actionCollection(), "setEncoding" );
   QStringList encodings = KGlobal::charsets()->availableEncodingNames();
@@ -813,6 +828,15 @@ void KHTMLPart::slotRestoreData(const QByteArray &data )
 
 void KHTMLPart::slotFinished( KIO::Job * job )
 {
+  d->m_ssl_in_use = (d->m_job->queryMetaData("ssl_in_use") == "TRUE");
+  d->m_ssl_peer_cert_subject = d->m_job->queryMetaData("ssl_peer_cert_subject");
+  d->m_ssl_peer_cert_issuer = d->m_job->queryMetaData("ssl_peer_cert_issuer");
+  d->m_ssl_cipher = d->m_job->queryMetaData("ssl_cipher");
+  d->m_ssl_cipher_desc = d->m_job->queryMetaData("ssl_cipher_desc");
+  d->m_ssl_cipher_version = d->m_job->queryMetaData("ssl_cipher_version");
+  d->m_ssl_cipher_used_bits = d->m_job->queryMetaData("ssl_cipher_used_bits");
+  d->m_ssl_cipher_bits = d->m_job->queryMetaData("ssl_cipher_bits");
+
   if (job->error())
   {
     KHTMLPageCache::self()->cancelEntry(d->m_cacheId);
@@ -1597,6 +1621,36 @@ void KHTMLPart::slotSaveDocument()
     srcURL.setFileName( "index.html" );
 
   KHTMLPopupGUIClient::saveURL( d->m_view, i18n( "Save as" ), srcURL, i18n("HTML files|* *.html *.htm"), d->m_cacheId );
+}
+
+void KHTMLPart::slotSecurity()
+{
+  kdDebug( 6050 ) << "Meta Data:" << endl
+                  << d->m_ssl_peer_cert_subject
+                  << endl
+                  << d->m_ssl_peer_cert_issuer
+                  << endl
+                  << d->m_ssl_cipher
+                  << endl
+                  << d->m_ssl_cipher_desc
+                  << endl
+                  << d->m_ssl_cipher_version
+                  << endl;
+
+  KSSLInfoDlg *kid = new KSSLInfoDlg(d->m_ssl_in_use);
+  if (d->m_ssl_in_use) {
+    kid->setup(d->m_ssl_peer_cert_subject,
+               d->m_ssl_peer_cert_issuer,
+               // FIXME
+               "0.0.0.0", 
+               m_url.url(),
+               d->m_ssl_cipher, 
+               d->m_ssl_cipher_desc,
+               d->m_ssl_cipher_version,
+               d->m_ssl_cipher_used_bits.toInt(), 
+               d->m_ssl_cipher_bits.toInt());
+  }
+  kid->show();
 }
 
 void KHTMLPart::slotSaveFrame()

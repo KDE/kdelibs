@@ -12,6 +12,7 @@
   <Action name="saveBackground" />
   <Action name="saveDocument" />
   <Action name="saveFrame" />
+  <Action name="security" />
   <Action name="setEncoding" />
   <Action name="printFrame" group="print" />
  </Menu>
