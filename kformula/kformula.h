@@ -1,4 +1,4 @@
-// $Id:$
+// $Id$
 
 #ifndef KFORMULA_H_INCLUDED
 #define KFORMULA_H_INCLUDED
@@ -15,6 +15,7 @@ struct charinfo { // used to determine where each character gets
   box * where;    // points to box where it ends up
   int posinbox;   // where in that box is it
   int posinstr;   // where is it in the parsed string af parenthesize
+  bool left;      // whether it's to the left or right of its char
 };
 
 int operator==(struct charinfo a, struct charinfo b);
@@ -71,7 +72,7 @@ protected:
   int posx, posy;
 
 private:
-  void parenthesize(QString &temp, int i, QArray<charinfo> *info);
+  void parenthesize(QString &temp, int &i, QArray<charinfo> *info);
   box * makeBoxes(QString str, int offset, int maxlen, QArray<charinfo> *info);
 
 public:

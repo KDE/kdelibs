@@ -177,14 +177,15 @@ void box::calculate(QPainter &p, int setFontsize)
       b2->calculate(p, fontsize);
       rect = b1->getRect();
       tmp1 = fm.boundingRect( QChar( type ) );
-      relx += rect.right() + SPACE; //where the operator will be drawn
+      relx += rect.right() + 1; //where the operator will be drawn
       rely += -fm.boundingRect("+").center().y();
+      if(rect.width() == 1) relx -= tmp1.left() - rect.left();
       tmp1.moveBy(relx, rely);
       rect = rect.unite(tmp1);
-      b2x += -b2->getRect().left() + rect.right() + SPACE;
+      b2x += -b2->getRect().left() + rect.right() + SPACE - 1;
       tmp1 = b2->getRect();
       tmp1.moveBy(b2x, 0);
-      rect = rect.unite(tmp1);
+      if(tmp1.width() > 1) rect = rect.unite(tmp1);
 
       break;
 
@@ -256,20 +257,82 @@ void box::calculate(QPainter &p, int setFontsize)
 
       // for the superscript
     case POWER:
-      b1->calculate(p, fontsize);
-      b2->calculate(p, fontsize * 4 / 5);
-      if(b1->type == SUB) rect = b1->b1->getRect();
-      else rect = b1->getRect();
-      tmp1 = b2->getRect();
-      b2x += -tmp1.left() + rect.right() + SPACE;
-      b2y += rect.top() - tmp1.bottom() + QMIN(SPACE, rect.height() / 3);
-      tmp1.moveBy(b2x, b2y);
+    case SUB:
+    case LSUB:
+    case LSUP:
+      if(type == POWER || type == SUB) {
+	b1->calculate(p, fontsize);
+	b2->calculate(p, fontsize * 3 / 4);
+      }
+      else {
+	b2->calculate(p, fontsize);
+	b1->calculate(p, fontsize * 3 / 4);
+      }
+
+      {
+	box *tmp = b1;
+	if(type == LSUB || type == LSUP) tmp = b2;
+
+	while(tmp->type == POWER || tmp->type == SUB ||
+	      tmp->type == LSUB || tmp->type == LSUP) {
+
+	  if((tmp->type == POWER || tmp->type == SUB) &&
+	     tmp->b1 != NULL && tmp->type != type) {
+	    tmp = tmp->b1;
+	    continue;
+	  }
+
+	  if((tmp->type == LSUB || tmp->type == LSUP) &&
+	     tmp->b2 != NULL && tmp->type != type) {
+	    tmp = tmp->b2;
+	    continue;
+	  }
+
+	  break;
+	}
+
+	rect = tmp->getRect();
+      }
+
+      if(type == POWER) {
+	tmp1 = b2->getRect();
+	b2x += -tmp1.left() + rect.right() + SPACE;
+	b2y += rect.top() - tmp1.bottom() + QMIN(SPACE, rect.height() / 3);
+	tmp1.moveBy(b2x, b2y);
+      }
+
+      if(type == SUB) {
+	tmp1 = b2->getRect();
+	b2x += -tmp1.left() + rect.right() + SPACE;
+	b2y += rect.bottom() - tmp1.top() - QMIN(SPACE, rect.height() / 3);
+	tmp1.moveBy(b2x, b2y);
+      }
+
+      if(type == LSUP) {
+	tmp1 = b1->getRect();
+	b1x += rect.left() - tmp1.right() - SPACE;
+	b1y += rect.top() - tmp1.bottom() + QMIN(SPACE, rect.height() / 3);
+	tmp1.moveBy(b1x, b1y);
+      }
+
+      if(type == LSUB) {
+	tmp1 = b1->getRect();
+	b1x += rect.left() - tmp1.right() - SPACE;
+	b1y += rect.bottom() - tmp1.top() - QMIN(SPACE, rect.height() / 3);
+	tmp1.moveBy(b1x, b1y);
+      }
+
       rect = rect.unite(tmp1);
-      rect = rect.unite(b1->getRect());
+
+      if(type == LSUP || type == LSUB)
+	rect = rect.unite(b2->getRect());
+      else 
+	rect = rect.unite(b1->getRect());
+
       break;      
 
-      //just like power only upside down and the font is smaller
-    case SUB:
+      //just like power only upside down
+      /*    case SUB:
       b1->calculate(p, fontsize);
       b2->calculate(p, fontsize * 3 / 4);
       rect = b1->getRect();
@@ -278,7 +341,7 @@ void box::calculate(QPainter &p, int setFontsize)
       b2y += rect.bottom() - tmp1.top() - QMIN(SPACE, rect.height() / 3);
       tmp1.moveBy(b2x, b2y);
       rect = rect.unite(tmp1);
-      break;      
+      break;      */
 
     case ABOVE: // the smaller one above the normal one
       b1->calculate(p, fontsize);
@@ -472,6 +535,8 @@ void box::draw(QPainter &p, int x, int y)
 
   case POWER: //already children drawn
   case SUB:
+  case LSUB:
+  case LSUP:
   case ABOVE:
   case BELOW:
     break;
@@ -567,7 +632,7 @@ QRect box::getCursorPos(charinfo i, int x, int y)
   switch(type) {
   case TEXT: {//just the position in the text.
     //The assert should be returned when the posinstr bug is fixed.
-    //ASSERT(i.posinbox <= (int)text.length());
+    ASSERT(i.posinbox <= (int)text.length());
     if(i.posinbox > (int)text.length()) i.posinbox = (int)text.length();
     if(text.length() < 1) {
       tmp.setX(rect.center().x() + x - 1);
@@ -599,11 +664,8 @@ QRect box::getCursorPos(charinfo i, int x, int y)
               //of the operator.
     if(i.posinbox == 0) tmp.setX(relx + x - 1);
     else {
-      //uncomment the following and comment the line after when
-      //the bug with posinstr is fixed.  For now, a (partial) workaround.
-      //      if(b2 != NULL) tmp.setX(x + b2x + b2->rect.x() + 1);
-      //      else  tmp.setX(x + rect.right() + 1);
-      tmp.setX(x + rect.right() + 1);
+      if(b2 != NULL) tmp.setX(x + b2x + b2->rect.x() + 1);
+      else  tmp.setX(x + rect.right() + 1);
     }
     break;
 

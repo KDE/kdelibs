@@ -41,6 +41,7 @@ KFormulaEdit::KFormulaEdit(QWidget * parent, const char *name,
 {
   restricted = r;
   form = new KFormula(r);
+  setMinimumSize(QSize(200,80));
   pm.resize(width(), height());
   setBackgroundMode(PaletteBase);
   setFocusPolicy(StrongFocus);
@@ -154,7 +155,7 @@ void KFormulaEdit::redraw(int all)
 
   temp.insert(cursorPos, '$');
 
-  printf("\r%s       ", temp.ascii());*/
+  fprintf(stderr, "\r%s       ", temp.ascii()); */
 
   form->setPos(pm.width() / 2, pm.height() / 2);
   form->redraw(p);
@@ -322,12 +323,15 @@ int KFormulaEdit::isValidCursorPos(int pos)
      isInString(pos + 4, QChar(MATRIX))) return 0;
 
   if(formText[pos] == L_GROUP && isInString(pos - 1, KFormula::delim() +
-					    KFormula::loc() + QChar(SQRT) +
+					    QChar(ABOVE) + QChar(BELOW) +
+					    QChar(POWER) + QChar(SQRT) +
+					    QChar(SUB) +
 					    QChar(DIVIDE))) return 0;
   
   if(formText[pos - 1] == R_GROUP && isInString(pos, KFormula::delim() +
 						QChar(SQRT) + QChar(ABOVE) +
-						QChar(BELOW) +
+						QChar(BELOW) + QChar(LSUP) +
+						QChar(LSUB) +
 						QChar(DIVIDE))) return 0;
 
   if(formText[pos] == R_GROUP && isInString(pos + 1, KFormula::delim()))
@@ -372,12 +376,14 @@ int KFormulaEdit::deleteAtCursor()
   //"{}/{$}" to "{}$/{}" with $ representing ncpos.  Notice that
   //this may be an invalid cursor position but that doesn't matter.
   if(cursorPos > 1 && formText[cursorPos] == R_GROUP &&
-     isInString(cursorPos - 2, KFormula::delim() + KFormula::loc() +
+     isInString(cursorPos - 2, KFormula::delim() + QChar(ABOVE) +
+		     QChar(BELOW) + QChar(SUB) + QChar(POWER) +
 		QChar(SQRT) + QChar(DIVIDE)))
     ncpos -= 2;
   else if(cursorPos > 0 && cursorPos <= maxpos &&
 	  IS_LGROUP(formText[cursorPos]) &&
-	  isInString(cursorPos - 1, KFormula::delim() + KFormula::loc() +
+	  isInString(cursorPos - 1, KFormula::delim() + QChar(ABOVE) +
+		     QChar(BELOW) + QChar(SUB) + QChar(POWER) +
 		     QChar(SQRT) + QChar(DIVIDE)))
     ncpos--;
   //the else shifts from "{}/${}" to "{}$/{}".  Even though the
@@ -385,6 +391,14 @@ int KFormulaEdit::deleteAtCursor()
   //because the backspace key decrements cursorPos without checking
   //for validity
 
+  //the following shiftes from {$}%x and ${}%x to {}$%x:
+  if(cursorPos < maxpos && formText[cursorPos] == R_GROUP &&
+     (formText[cursorPos + 1] == QChar(LSUP) ||
+      formText[cursorPos + 1] == QChar(LSUB))) ncpos++;
+  else if(cursorPos < maxpos - 1 && formText[cursorPos] == L_GROUP &&
+     (formText[cursorPos + 2] == QChar(LSUP) ||
+      formText[cursorPos + 2] == QChar(LSUB))) ncpos += 2;
+  
   //The following handles the case where the operator has only
   //the right operand grouped (exponents and subscripts).
   //It also checks whether the group is empty before deleting.
@@ -393,6 +407,17 @@ int KFormulaEdit::deleteAtCursor()
      IS_LGROUP(formText[ncpos + 1]) && IS_RGROUP(formText[ncpos + 2])) {
     formText.remove(ncpos, 3);
     cursorPos = ncpos;
+    return 1;
+  }
+
+  //The following handles the case where the operator has only
+  //the left operand grouped (left superscripts and subscripts).
+  //It also checks whether the group is empty before deleting.
+  if(isInString(ncpos, QString(QChar(LSUP)) + QChar(LSUB)) &&
+     ncpos >= 2 &&
+     IS_RGROUP(formText[ncpos - 1]) && IS_LGROUP(formText[ncpos - 2])) {
+    formText.remove(ncpos - 2, 3);
+    cursorPos = ncpos - 2;
     return 1;
   }
 
@@ -406,6 +431,8 @@ int KFormulaEdit::deleteAtCursor()
 	  IS_RGROUP(formText[ncpos]) &&
 	  (formText[ncpos + 1] == QChar(ABOVE) ||
 	   formText[ncpos + 1] == QChar(BELOW) ||
+	   formText[ncpos + 1] == QChar(LSUP) ||
+	   formText[ncpos + 1] == QChar(LSUB) ||
 	   formText[ncpos + 1] == QChar(SQRT) ||
 	   formText[ncpos + 1] == QChar(DIVIDE)))
     ncpos++;
@@ -1035,6 +1062,8 @@ void KFormulaEdit::keyPressEvent(QKeyEvent *e)
 	redraw();
 	return;
       }
+
+      return;
     }
 
     //Paste: just insert it into cursorPos, deleting any selected text.
@@ -1137,6 +1166,14 @@ void KFormulaEdit::keyPressEvent(QKeyEvent *e)
       insertChar(QChar(POWER));
       break;
 
+    case Key_AsciiCircum:
+      insertChar(QChar(LSUP));
+      break;
+
+    case Key_Underscore:
+      insertChar(QChar(LSUB));
+      break;
+
     case Key_2:
       insertChar(QChar(SQRT));
       break;
@@ -1165,6 +1202,9 @@ void KFormulaEdit::keyPressEvent(QKeyEvent *e)
       insertChar(QChar(MATRIX));
       break;
       
+    default:
+      e->ignore();
+      return;
     }
 
     MODIFIED
@@ -1316,7 +1356,7 @@ void KFormulaEdit::insertChar(QChar c)
     }
     
     //these just need a pair of curly braces after the operator.
-    if(KFormula::loc().contains(c)) { // "x$" -> "x^{$}"
+    if(c == QChar(POWER) || c == QChar(SUB)) { // "x$" -> "x^{$}"
       if(textSelected) {
 	cursorPos = QMAX(cursorPos, selectStart);
       }
@@ -1326,6 +1366,23 @@ void KFormulaEdit::insertChar(QChar c)
       formText.insert(cursorPos, L_GROUP);
       cursorPos++;
       formText.insert(cursorPos, R_GROUP);
+
+      return;
+    }
+
+    //these just need a pair of curly braces before the operator.
+    if(c == QChar(LSUP) || c == QChar(LSUB)) { // "$x" -> "{$}%x"
+      if(textSelected) {
+	cursorPos = QMIN(cursorPos, selectStart);
+      }
+      textSelected = 0;
+      formText.insert(cursorPos, c);
+      formText.insert(cursorPos, R_GROUP);
+      formText.insert(cursorPos, L_GROUP);
+
+      cursorPos++;
+
+      return;
     }
     
     //these guys need an explicit group preceding, but it's

@@ -1,4 +1,4 @@
-// $Id:$
+// $Id$
 
 #include "kformula.h"
 #include "box.h"
@@ -35,6 +35,8 @@ void KFormula::initStrings(void)
   *SPECIAL += (QChar(SQRT));
   *SPECIAL += (QChar(ABS));
   *SPECIAL += (QChar(SUB));
+  *SPECIAL += (QChar(LSUB));
+  *SPECIAL += (QChar(LSUP));
   *SPECIAL += (QChar(PAREN));
   *SPECIAL += (QChar(EQUAL));
   *SPECIAL += (QChar(MORE));
@@ -58,6 +60,8 @@ void KFormula::initStrings(void)
 
   *LOC += (QChar(POWER));
   *LOC += (QChar(SUB));
+  *LOC += (QChar(LSUB));
+  *LOC += (QChar(LSUP));
   *LOC += (QChar(ABOVE));
   *LOC += (QChar(BELOW));
 
@@ -243,7 +247,8 @@ double KFormula::evaluate(QStrList &vars, const QArray<double> &vals,
     if(b->parent->type == SQRT && b->parent->b1 == b) return 2;
     if(b->parent->type == MINUS && b->parent->b1 == b) return 0;
     if(b->parent->type == PLUS && b->parent->b1 == b) return 0;
-    if(delim().contains(QChar(b->parent->type)) && b->parent->b1 == b) return 0;
+    if(delim().contains(QChar(b->parent->type)) && b->parent->b1 == b)
+      return 0;
 
     if(b->parent->type == CAT) return 1; // cat is multiplication
 
@@ -350,9 +355,10 @@ double KFormula::evaluate(QStrList &vars, const QArray<double> &vals,
 //for all the characters after the one that was inserted.
 
 #define INSERTED(xxi) { int tmpx; if(info) for(tmpx = 0; \
-						 tmpx < (int)info->size(); \
-						 tmpx++) \
-  if((*info)[tmpx].posinstr >= (xxi)) (*info)[tmpx].posinstr++; }
+					       tmpx < (int)info->size(); \
+					       tmpx++) \
+  if((*info)[tmpx].posinstr >= (xxi)) (*info)[tmpx].posinstr++; \
+}
 
 // The parser works by first fully parenthesizing (with {}) the string
 // and then removing the parentheses one by one in make_boxes,
@@ -363,6 +369,7 @@ void KFormula::parse(QString text, QArray<charinfo> *info)
 {
   int i, j;
 
+
   info->resize(text.length() + 1);
 
   if(info) { //initialize info
@@ -372,8 +379,54 @@ void KFormula::parse(QString text, QArray<charinfo> *info)
       inf.where = NULL;
       inf.posinbox = 0;
       inf.posinstr = i;
-      
+      inf.left = 0;
+
       info->at(i) = inf;
+    }
+
+    //make empty boxes and put cursor into them if necessary:
+    for(i = 0; i < (int)text.length(); i++) {
+      if(!special().contains(text[i]) || text[i] == L_GROUP ||
+	 text[i] == R_GROUP) continue;
+
+      if(i == 0 || (text[i - 1] == L_GROUP && i < (int)text.length() - 1 &&
+		    text[i + 1] != QChar(MATRIX))) {
+	text.insert(i, R_GROUP);
+	INSERTED(i);
+	text.insert(i, L_GROUP);
+	INSERTED(i + 1); //note! we don't move the current cursor over!
+	continue;
+      }
+
+      if(i == (int)text.length() - 1 ||
+	 (text[i + 1] == R_GROUP && text[i - 1] != QChar(MATRIX))) {
+	text.insert(i + 1, R_GROUP);
+	INSERTED(i + 1);
+	text.insert(i + 1, L_GROUP);
+	INSERTED(i + 2); //note! we don't move the current cursor over!
+	continue;
+      }
+
+    }
+
+    for(i = 0; i < (int)info->size(); i++) {
+      //decide whether to atach the cursor to the left or right character:
+
+      if((*info)[i].posinstr &&
+	 (!special().contains(text[(*info)[i].posinstr - 1]) ||
+	 intext().contains(text[(*info)[i].posinstr - 1])))
+	(*info)[i].posinstr--; //stick to a letter or an intext
+
+      else if((*info)[i].posinstr < (int)text.length() &&
+	      (!special().contains(text[(*info)[i].posinstr]) ||
+	      intext().contains(text[(*info)[i].posinstr])))
+	(*info)[i].left = 1; //stick to letter on the right
+
+      else if((*info)[i].posinstr &&
+	      text[(*info)[i].posinstr - 1] == R_GROUP)
+	(*info)[i].posinstr--; //stick to an rgroup if possible
+
+      else (*info)[i].left = 1;
     }
   }
 
@@ -385,8 +438,8 @@ void KFormula::parse(QString text, QArray<charinfo> *info)
 
   //make "unseen" braces into regular ones:
   for(i = 0; i < (int)text.length(); i++) {
-    if(text[i] == QChar(L_BRACE_UNSEEN)) text[i] = QChar(L_GROUP);
-    if(text[i] == QChar(R_BRACE_UNSEEN)) text[i] = QChar(R_GROUP);
+    if(text[i] == QChar(L_BRACE_UNSEEN)) text[i] = L_GROUP;
+    if(text[i] == QChar(R_BRACE_UNSEEN)) text[i] = R_GROUP;
   }
 
   if(restricted) {
@@ -425,6 +478,7 @@ void KFormula::parse(QString text, QArray<charinfo> *info)
       }
     }
 
+
   //search for implicit concatenation:
   //insert a CAT (#) symbol at every concatenation:
   //"a{b}/{c}d" -> "a#{b}/{c}#d".
@@ -433,8 +487,8 @@ void KFormula::parse(QString text, QArray<charinfo> *info)
     {
       j = i + 1;
       if(j > (int)text.length() - 1) continue;
-      if(text[j] != QChar(L_GROUP) && text[i] != QChar(R_GROUP)) continue;
-      if(text[i] == QChar(R_GROUP) && text[j] == QChar(L_GROUP)) {
+      if(text[j] != L_GROUP && text[i] != R_GROUP) continue;
+      if(text[i] == R_GROUP && text[j] == L_GROUP) {
 	text.insert(j, QChar(CAT));
 	INSERTED(j);
       }
@@ -453,36 +507,38 @@ void KFormula::parse(QString text, QArray<charinfo> *info)
     if(text[i] != QChar(LESS) && text[i] != QChar(MORE) &&
        text[i] != QChar(EQUAL)) continue;
     parenthesize(text, i, info);
-    i++;
   }
 
   //addition and subtraction
   for(i = (int)text.length() - 1; i >= 0; i--) {
     if(text[i] != QChar(PLUS) && text[i] != QChar(MINUS)) continue;
     parenthesize(text, i, info);
-    i++;
   }
 
   //slash and multiplication
   for(i = (int)text.length() - 1; i >= 0; i--) {
     if(text[i] != QChar(SLASH) && text[i] != QChar(TIMES)) continue;
     parenthesize(text, i, info);
-    i++;
   }
 
   //concatenation--backwards for evaluation
   for(i = 0; i < (int)text.length(); i++) {
     if(text[i] != QChar(CAT)) continue;
     parenthesize(text, i, info);
-    i += 3;
   }
 
-  //locational things: should not be reversed despite order of ops.
+  //locational things following operand:
+  //should not be reversed despite order of ops.
   for(i = (int)text.length() - 1; i >= 0; i--) {
     if(text[i] != QChar(POWER) && text[i] != QChar(SUB) &&
-       text[i] != QChar(ABOVE) && text[i] != QChar(BELOW)) continue;
+	  text[i] != QChar(ABOVE) && text[i] != QChar(BELOW)) continue;
     parenthesize(text, i, info);
-    i++;
+  }
+
+  //locational things preceding operand:
+  for(i = 0; i < (int)text.length(); i++) {
+    if(text[i] != QChar(LSUB) && text[i] != QChar(LSUP)) continue;
+    parenthesize(text, i, info);
   }
 
   //this is not in usual order of operations but it works:
@@ -494,7 +550,10 @@ void KFormula::parse(QString text, QArray<charinfo> *info)
     if(!delim().contains(text[i]) && text[i] != QChar(SQRT) &&
        text[i] != QChar(DIVIDE)) continue;
     parenthesize(text, i, info);
-    i += 3;
+  }
+
+  for(i = 0; i < (int)info->size(); i++) {
+    if(!(*info)[i].left) (*info)[i].posinstr++;
   }
 
   //Now just make the boxes.
@@ -507,54 +566,63 @@ void KFormula::parse(QString text, QArray<charinfo> *info)
 //curly braces around the two groups near the operator.  e.g.:
 // Before: "{x}+{y*3}".  Then parenthesize is called with
 // i = 6.  After: "{x}+{{y}*{3}}"
-void KFormula::parenthesize(QString &temp, int i, QArray<charinfo> *info)
+void KFormula::parenthesize(QString &temp, int &i, QArray<charinfo> *info)
 {
   int j;
   int level = 0;
+  int need_paren = 0;
+
+  if(i == 0 || temp[i - 1] != R_GROUP) need_paren = 1;
 
   //search for the left end of the left group
   for(j = i; j >= 0; j--) {
-    if(temp[j] == QChar(R_GROUP)) level++;
-    if(temp[j] == QChar(L_GROUP)) level--;
+    if(temp[j] == R_GROUP) level++;
+    if(temp[j] == L_GROUP) level--;
     if(level < 0) {
-      temp.insert(j + 1, QChar(L_GROUP));
-      INSERTED(j + 1);
-      i++;
+      j++;
       break;
     }
-    if(j == 0) {
-      temp.insert(j, QChar(L_GROUP));
-      INSERTED(j);
-      i++;
-      break;
-    }
+
+    if(j == 0) break;
+
+    if(j < i && level == 0 && temp[j - 1] != L_GROUP) need_paren = 1;
   }
-  //insert the right brace of the left group and the left brace of the
-  //right group:
-  temp.insert(i, QChar(R_GROUP));
-  INSERTED(i); i++;
-  temp.insert(i + 1, QChar(L_GROUP));
-  INSERTED(i + 1); i++;
+
+  //insert left brace of left group if necessary
+  if(need_paren) {
+    temp.insert(j, L_GROUP);
+    INSERTED(j);
+    i++;
+  //insert the right brace of the left group
+    temp.insert(i, R_GROUP);
+    INSERTED(i); i++;
+  }
+
   level = 0;
+
+  if(i + 1 < (int)temp.length() && temp[i + 1] == L_GROUP)
+    need_paren = 0;
+  else need_paren = 1;
 
   //now search for the right end of the right group
   for(j = i + 1; j <= (int)temp.length(); j++) {
-    if(j < (int)temp.length() && temp[j] == QChar(L_GROUP)) level++;
-    if(j < (int)temp.length() && temp[j] == QChar(R_GROUP)) level--;
+    if(j < (int)temp.length() && temp[j] == L_GROUP) level++;
+    if(j < (int)temp.length() && temp[j] == R_GROUP) level--;
 
-    if(level < 0) {
-      temp.insert(j, QChar(R_GROUP));
-      INSERTED(j);
-      i++;
-      break;
-    }
+    if(level < 0 || j == (int)temp.length()) break;
 
-    if(j == (int)temp.length()) {
-      temp.insert(j, QChar(R_GROUP));
-      INSERTED(j);
-      i++;
-      break;
-    }
+    if(level == 0 && j > i + 1 && (j < (int)temp.length() - 1 &&
+       temp[j + 1] != R_GROUP)) need_paren = 1;
+  }
+
+  if(need_paren) {
+    //insert right brace of left group:
+    temp.insert(j, R_GROUP);
+    INSERTED(j);
+
+    //insert the left brace of the right group:
+    temp.insert(i + 1, L_GROUP);
+    INSERTED(i + 1);
   }
 }
 
@@ -577,7 +645,7 @@ box * KFormula::makeBoxes(QString str, int offset,
     if(info) { //update the charinfo for all characters in this box
       for(i = 0; i < (int)info->size(); i++) {
 	if((*info)[i].posinstr >= offset &&
-	   (*info)[i].posinstr - offset <= maxlen + 1) {
+	   (*info)[i].posinstr - offset <= maxlen) {
 	  (*info)[i].where = boxes[boxes.size() - 1];
 	  (*info)[i].posinbox = 0;
 	}
@@ -587,7 +655,7 @@ box * KFormula::makeBoxes(QString str, int offset,
     return boxes[boxes.size() - 1];
   }
 
-  if(str[0] != QChar(L_GROUP)) { //we have a literal--make a
+  if(str[0] != L_GROUP) { //we have a literal--make a
                                  //TEXT or SYMBOL box:
     boxes.resize(boxes.size() + 1);
     if(str[0].unicode() < SYMBOL_ABOVE) {
@@ -601,9 +669,10 @@ box * KFormula::makeBoxes(QString str, int offset,
     if(info) {
       for(i = 0; i < (int)info->size(); i++) {
 	if((*info)[i].posinstr >= offset &&
-	   (*info)[i].posinstr - offset <= maxlen + 1) {
+	   (*info)[i].posinstr - offset <= maxlen) {
 	  (*info)[i].where = boxes[boxes.size() - 1];
 	  (*info)[i].posinbox = (*info)[i].posinstr - offset;
+	    //	    (1 - (*info)[i].left);
 	}
       }
     }
@@ -613,8 +682,8 @@ box * KFormula::makeBoxes(QString str, int offset,
 
   //find toplevel:  in "{{x}*{y}}+{3}" toplevel = 9, the +
   for(i = 0; i < maxlen; i++) {
-    if(str[i] == QChar(L_GROUP)) level++;
-    if(str[i] == QChar(R_GROUP)) level--;
+    if(str[i] == L_GROUP) level++;
+    if(str[i] == R_GROUP) level--;
 
     if(level == 0 && i < maxlen - 1) {
       toplevel = i + 1;
@@ -681,7 +750,7 @@ box * KFormula::makeBoxes(QString str, int offset,
       //if the character has been assigned nowhere else, assign it to
       //this box.
       if((*info)[i].where == NULL && (*info)[i].posinstr >= offset &&
-	 (*info)[i].posinstr - offset <= maxlen + 1) {
+	 (*info)[i].posinstr - offset <= maxlen) {
 	(*info)[i].where = boxes[boxes.size() - 1];
 	//for non-TEXT boxes, posinbox is 0 if the character is
 	//to the left of the box and 1 if it is to the right.

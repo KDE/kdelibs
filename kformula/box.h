@@ -24,21 +24,23 @@ enum BoxType {
   MINUS = '-',
   TIMES = '*',
   DIVIDE = '\\',
-  POWER = '^' + 200, //just a test to see if it works
-  SQRT = '@' + 200,
+  POWER = '^' + 000, //just a test to see if it works
+  SQRT = '@' + 000,
   TEXT = 't',
-  CAT = '#' + 200,
-  SUB = '_' + 200,
-  PAREN = '(',
+  CAT = '#' + 000,
+  SUB = '_' + 000,
+  LSUP = '6' + 000,
+  LSUB = '%' + 000,
+  PAREN = '(' + 000,
   EQUAL = '=',
   MORE = '>',
   LESS = '<',
-  ABS = '|',
+  ABS = '|' + 000,
   SLASH = '/',
-  MATRIX = 'm' + 200,
-  SEPARATOR = '&' + 200, // separator for matrices
-  ABOVE = 650, //something useless
-  BELOW = 651,
+  MATRIX = 'm' + 000,
+  SEPARATOR = '&' + 000, // separator for matrices
+  ABOVE = '[' + 000, //something useless
+  BELOW = ']' + 000,
   SYMBOL = 652,
   CURSOR = 653 // for keeping track of cursor position in undo/redo
 };
