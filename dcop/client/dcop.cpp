@@ -20,6 +20,12 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 ******************************************************************/
 
+// putenv() is not available on all platforms, so make sure the emulation
+// wrapper is available in those cases by loading config.h!
+#include <config.h>
+
+#include <sys/types.h>
+#include <pwd.h>
 #include <ctype.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -34,10 +40,6 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include <qstringlist.h>
 #include <qtextstream.h>
 #include <qvariant.h>
-
-// putenv() is not available on all platforms, so make sure the emulation
-// wrapper is available in those cases by loading config.h!
-#include <config.h>
 
 #include "../dcopclient.h"
 #include "../dcopref.h"
@@ -368,20 +370,9 @@ static UserList userList()
 {
     UserList result;
 
-    QFile f( "/etc/passwd" );
-
-    if( !f.open( IO_ReadOnly ) )
+    while( passwd* pstruct = getpwent() )
     {
-	cerr_ << "Can't open /etc/passwd for reading!" << endl;
-	return result;
-    }
-
-    QStringList l( QStringList::split( '\n', f.readAll() ) );
-
-    for( QStringList::ConstIterator it( l.begin() ); it != l.end(); ++it )
-    {
-	QStringList userInfo( QStringList::split( ':', *it, true ) );
-	result[ userInfo[ 0 ] ] = userInfo[ 5 ];
+        result[ QString::fromLocal8Bit(pstruct->pw_name) ] = QFile::decodeName(pstruct->pw_dir);
     }
 
     return result;
