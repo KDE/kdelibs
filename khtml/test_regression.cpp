@@ -315,11 +315,18 @@ static KCmdLineOptions options[] =
 
 int main(int argc, char *argv[])
 {
+    // forget about any settings
+    setenv( "KDE_HOME", "/var/tmp/non_existant", 1 );
+    setenv( "LC_ALL", "C", 1 );
+    setenv( "LANG", "C", 1 );
+
     KCmdLineArgs::init(argc, argv, "test_regression", "TestRegression",
                        "Regression tester for khtml", "1.0");
     KCmdLineArgs::addCmdLineOptions(options);
 
     KApplication a;
+    a.setStyle( "windows" );
+
     KCmdLineArgs *args = KCmdLineArgs::parsedArgs( );
     int rv = 1;
 
