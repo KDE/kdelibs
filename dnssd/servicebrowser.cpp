@@ -64,6 +64,18 @@ ServiceBrowser::ServiceBrowser(const QString& type,const QString& domain,bool au
 {
 	init(type,new DomainBrowser(domain,false,this),autoResolve);
 }
+
+const ServiceBrowser::State ServiceBrowser::isAvailable()
+{
+#ifdef HAVE_DNSSD
+	DNSServiceRef ref;
+	bool ok = (DNSServiceCreateConnection(&ref)==kDNSServiceErr_NoError);
+	if (ok) DNSServiceRefDeallocate(ref);
+	return (ok) ? Working : Stopped;
+#else
+	return Unsupported;
+#endif
+}
 ServiceBrowser::~ ServiceBrowser()
 {
 	delete d;

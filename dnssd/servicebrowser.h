@@ -56,6 +56,14 @@ class KDE_EXPORT ServiceBrowser : public QObject
 	Q_OBJECT
 public:
 	/**
+	Availability of DNS-SD services.
+	Working - available
+	Stopped - not available because mdnsd daemon is not running
+	Unsupported - not available because KDE was compiled without DNS-SD support
+	 */
+	enum State { Working, Stopped, Unsupported };
+
+	/**
 	ServiceBrowser constructor.
 	 
 	@param type  Type of services to browse for (example: "_http._tcp"). 
@@ -96,6 +104,11 @@ public:
 	parameter to ServiceBrowser constructor.
 	 */
 	static const QString AllServices;
+	
+	/**
+	Checks availability of DNS-SD services (this also covers publishing).
+	 */
+	static const State isAvailable();
 
 signals:
 	/**
