@@ -22,6 +22,9 @@
     Boston, MA 02111-1307, USA.
 
     $Log$
+    Revision 1.12  1999/11/21 20:58:27  ettrich
+    small internal fix for kicker
+
     Revision 1.11  1999/11/16 01:57:52  ettrich
     KWinModule shouldn't filter out ALL client messages
 
@@ -152,7 +155,7 @@ static void createAtoms() {
 	
 	// new stuff
 	net_client_list = XInternAtom(qt_xdisplay(), "_NET_CLIENT_LIST", False);
-	net_client_list_stacking = XInternAtom(qt_xdisplay(), "_NET_CLIENT_LIST_STACKIN", False);
+	net_client_list_stacking = XInternAtom(qt_xdisplay(), "_NET_CLIENT_LIST_STACKING", False);
 	net_active_window = XInternAtom(qt_xdisplay(), "_NET_ACTIVE_WINDOW", False);
 	net_current_desktop = XInternAtom(qt_xdisplay(), "_NET_CURRENT_DESKTOP", False);
 	net_kde_docking_windows = XInternAtom(qt_xdisplay(), "_NET_KDE_DOCKING_WINDOWS", False);
