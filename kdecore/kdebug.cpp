@@ -42,7 +42,6 @@
 #include <klocale.h>
 #include <qfile.h>
 #include <qintdict.h>
-#include <qlist.h>
 #include <qstring.h>
 #include <qtextstream.h>
 
@@ -57,7 +56,6 @@
 #include <config.h>
 
 class KDebugEntry;
-template class QList<KDebugEntry>;
 
 class KDebugEntry
 {
