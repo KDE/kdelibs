@@ -107,6 +107,9 @@ class KKeySequence
 
 	void calcKeyQt();
 	static int compare( const KKeySequence& a, const KKeySequence& b );
+
+ private:
+	class KKeySequencePrivate* d;
 };
 
 class KKeySequences : public QValueVector<KKeySequence>

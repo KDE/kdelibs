@@ -23,11 +23,8 @@
 #include "kaccelbase.h"
 
 #include <qkeycode.h>
-//#include <qlayout.h>
-//#include <qpainter.h>
-//#include <qdrawutil.h>
-//#include <qpopupmenu.h>
 
+#include <kaccel.h>
 #include <kconfig.h>
 #include <kckey.h>
 #include <kdebug.h>
@@ -536,6 +533,23 @@ bool KAccelAction::contains( KAccelShortcut& cut )
 
 //----------------------------------------------------
 
+class KAccelActionsPrivate
+{
+ public:
+	KAccel* m_pKAccel;
+};
+
+KAccelActions::KAccelActions()
+{
+	d = new KAccelActionsPrivate;
+	d->m_pKAccel = 0;
+}
+
+KAccelActions::~KAccelActions()
+{
+	delete d;
+}
+
 bool KAccelActions::init( KAccelActions& actions )
 {
 	*static_cast<QValueVector<KAccelAction>*>(this)
@@ -564,6 +578,8 @@ bool KAccelActions::init( KConfigBase& config, QString sGroup )
 void KAccelActions::updateShortcuts( KAccelActions& actions2 )
 {
 	kdDebug(125) << "KAccelActions::updateShortcuts()" << endl;
+	bool bChanged = false;
+
 	for( KAccelActions::iterator it = begin(); it != end(); ++it ) {
 		KAccelAction* pAction2 = actions2.actionPtr( (*it).m_sName );
 		if( pAction2 ) {
@@ -573,8 +589,12 @@ void KAccelActions::updateShortcuts( KAccelActions& actions2 )
 				<< " found: " << sOld
 				<< " => " << pAction2->m_rgShortcuts.toString()
 				<< " = " << (*it).m_rgShortcuts.toString() << endl;
+			bChanged = true;
 		}
 	}
+
+	if( bChanged )
+		emitKeycodeChanged();
 }
 
 KAccelActions::iterator KAccelActions::actionIterator( const QString& sAction )
@@ -699,6 +719,7 @@ void KAccelActions::readActions( const QString& sConfigGroup, KConfigBase* pConf
 		kdDebug(125) << "\t" << action.m_sName << " = '" << sEntry << "'" << endl;
 	}
 
+	emitKeycodeChanged();
 	kdDebug(125) << "readActions done" << endl;
 }
 
@@ -755,6 +776,17 @@ void KAccelActions::writeActions( const QString &sGroup, KConfig *config,
 	}
 
 	pConfig->sync();
+}
+
+void KAccelActions::setKAccel( class KAccel* pKAccel )
+{
+	d->m_pKAccel = pKAccel;
+}
+
+void KAccelActions::emitKeycodeChanged()
+{
+	if( d->m_pKAccel )
+		d->m_pKAccel->emitKeycodeChanged();
 }
 
 //----------------------------------------------------
@@ -1302,3 +1334,5 @@ void KAccelBase::writeSettings( KConfig* pConfig ) const
 {
 	m_rgActions.writeActions( m_sConfigGroup, pConfig, m_bConfigIsGlobal, m_bConfigIsGlobal );
 }
+
+#include "kaccelbase.h"

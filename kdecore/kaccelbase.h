@@ -23,9 +23,8 @@
 #include <qmap.h>
 #include <qstring.h>
 #include <qvaluevector.h>
-//#include <kstdaccel.h>
 
-#include "kkeysequence.h"
+#include <kkeysequence.h>
 
 class QObject;
 class QPopupMenu;
@@ -271,6 +270,8 @@ class KAccelAction
 class KAccelActions : public QValueVector<KAccelAction>
 {
  public:
+	KAccelActions();
+	virtual ~KAccelActions();
 
 	bool init( KAccelActions& );
 	bool init( KConfigBase& config, QString sGroup );
@@ -294,12 +295,16 @@ class KAccelActions : public QValueVector<KAccelAction>
 			 bool bConfigurable = true, bool bEnabled = true );
 	bool removeAction( const QString& sAction );
 
-
 	void readActions( const QString& sConfigGroup, KConfigBase* pConfig = 0 );
-
         void writeActions( const QString& sGroup, KConfig *config = 0,
 	                   bool bWriteAll = false, bool bGlobal = false ) const;
+
+	void setKAccel( class KAccel* );
+	void emitKeycodeChanged();
+
  private:
+	class KAccelActionsPrivate* d;
+
 	KAccelActions& operator =( KAccelActions& );
 };
 
@@ -436,81 +441,6 @@ class KAccelBase
 // Modify individual Action sub-items
 	bool setActionEnabled( const QString& sAction, bool bEnable );
 	void removeDeletedMenu( QPopupMenu *pMenu );
-
- 	/**
-	 * Remove the accelerator item with the action name action.
-	 */
-	//bool removeItem( const QString& action );
-
-	/**
-	 * Shortcuts should be visible in the menu
-	 * structure of an application.
-	 *
-	 * Use this function for that
-	 * purpose.  Note that the action must have been inserted
-	 * before!
-	 */
-	//void changeMenuAccel ( QPopupMenu *menu, int id,
-	//		       const QString& action );
-
-	/**
-	 * Same as @ref changeMenuAccel() but for standard accelerators.
-	 */
-	//void changeMenuAccel ( QPopupMenu *menu, int id,
-	//					  KStdAccel::StdAccel accel );
-
-	/**
-	 * Retrieve the name of the group in which accelerator
-	 * settings are stored.
-	 **/
-	//QString configGroup() const;
-
-	/**
-	 * Will KAccel write to the global configuration file (instead of
-	 *  the application configuration file)?
-	 **/
-	//bool configGlobal() const;
-
-	/**
-	 * Enable all accelerators if activate is true, or disable it if
-	 * activate is false.
-	 *
-	 * Individual keys can also be enabled or disabled.
-	 */
-	/**
-	 * Are accelerators enabled?
-	 **/
-
-	/**
-	 * Enable or disable an accelerator item.
-	 *
-	 * @param action The accelerator item action name.
-	 * @param activate Specifies whether the item should be enabled or
-	 *	disabled.
-	 */
-	/**
-	 * Check whether a specific accelerator, @p action, is enabled.
-	 **/
-	//bool isItemEnabled( const QString& action ) const;
-
-	/**
-	 * Returns @p true if keyentry can be modified.
-	 */
-	//bool isConfigurable( const QString &action ) const;
-
-	/**
-	 *  Change the keycode for an accelerator.
-	 */
-	//bool updateItem( const QString &action, int keyCode);
-
-	/**
-	 *  Remove the keycode for an accelerator.
-	 **/
-	//void clearItem(const QString &action);
-
-	/**
-	 *  Clear any pointers to a menu.
-	 **/
 
 	/**
 	 * Read all key associations from @p config, or (if @p config
