@@ -1219,6 +1219,7 @@ Value KJS::HTMLElement::tryGet(ExecState *exec, const UString &propertyName) con
     }
       break;
   case ID_APPLET:
+  case ID_OBJECT:
   case ID_EMBED: {
       DOM::LiveConnectElementImpl * elm = static_cast<DOM::LiveConnectElementImpl*>(element.handle());
       QString retvalue;
@@ -2212,6 +2213,7 @@ void KJS::HTMLElement::tryPut(ExecState *exec, const UString &propertyName, cons
       break;
     }
     case ID_APPLET:
+    case ID_OBJECT:
     case ID_EMBED: {
       DOM::LiveConnectElementImpl * elm = static_cast<DOM::LiveConnectElementImpl*>(element.handle());
       if (elm && elm->put(0, propertyName.qstring(),

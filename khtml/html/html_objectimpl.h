@@ -51,13 +51,12 @@ public:
     bool call(const unsigned long, const QString &, const QStringList &, KParts::LiveConnectExtension::Type &, unsigned long &, QString &);
     void unregister(const unsigned long);
 
+    void setLiveConnect(KParts::LiveConnectExtension * lc);
+
     virtual void detach();
 
 protected slots:
     void liveConnectEvent(const unsigned long, const QString&, const KParts::LiveConnectExtension::ArgList&);
-
-protected:
-    void setLiveConnect(KParts::LiveConnectExtension * lc);
 
 private slots:
     void timerDone();
@@ -108,7 +107,7 @@ public:
 
 // -------------------------------------------------------------------------
 
-class HTMLObjectElementImpl : public HTMLElementImpl
+class HTMLObjectElementImpl : public LiveConnectElementImpl
 {
 public:
     HTMLObjectElementImpl(DocumentPtr *doc);

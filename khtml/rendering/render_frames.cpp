@@ -699,6 +699,7 @@ void RenderPartObject::updateWidget()
           }
           part->requestObject( this, url, serviceType, params );
       }
+      o->setLiveConnect(part->liveConnectExtension(this));
   }
   else if ( element()->id() == ID_EMBED ) {
 
