@@ -884,7 +884,7 @@ void KThemeStyle::drawPrimitive ( PrimitiveElement pe, QPainter * p, const QRect
             {
                 if ( isPixmap( ( flags & Style_On || flags & Style_Down ) ? ExIndicatorOn : ExIndicatorOff ) )
                 {
-                    bitBlt( p->device(), x, y, uncached( ( flags & Style_On || flags & Style_Down ) ? ExIndicatorOn :
+                    p->drawPixmap( x, y, *uncached( ( flags & Style_On || flags & Style_Down ) ? ExIndicatorOn :
                                                          ExIndicatorOff ) );
                     handled = true;
                 }
@@ -930,7 +930,7 @@ void KThemeStyle::drawPrimitive ( PrimitiveElement pe, QPainter * p, const QRect
                 if ( isPixmap( ( flags & Style_On || flags & Style_Down ) ?
                                IndicatorOn : IndicatorOff ) )
                 {
-                    bitBlt( p->device(), x, y, uncached( ( flags & Style_On || flags & Style_Down ) ?
+                    p->drawPixmap( x, y, *uncached( ( flags & Style_On || flags & Style_Down ) ?
                                                          IndicatorOn : IndicatorOff ) );
                     handled = true;
                 }
