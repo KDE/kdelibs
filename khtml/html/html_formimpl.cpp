@@ -1207,7 +1207,7 @@ void HTMLInputElementImpl::defaultEventHandler(EventImpl *evt)
 
         // since we are not called from a RenderFormElement, the DOMActivate event will not get
         // sent so we have to do it here
-        if (me->detail() % 2 == 0) // single click
+        if (me->detail() % 2 == 0) // double click
             dispatchUIEvent(EventImpl::DOMACTIVATE_EVENT,2);
         else
             dispatchUIEvent(EventImpl::DOMACTIVATE_EVENT,1);
@@ -1215,6 +1215,7 @@ void HTMLInputElementImpl::defaultEventHandler(EventImpl *evt)
 
     if ((evt->id() == EventImpl::DOMACTIVATE_EVENT) &&
         (m_type == IMAGE || m_type == SUBMIT || m_type == RESET)){
+
         if (!m_form || !m_render)
             return;
 
@@ -1412,7 +1413,7 @@ DOMString HTMLSelectElementImpl::value( )
     return 0;
 }
 
-void HTMLSelectElementImpl::setValue(DOMStringImpl* value)
+void HTMLSelectElementImpl::setValue(DOMStringImpl* /*value*/)
 {
     // ### find the option with value() matching the given parameter
     // and make it the current selection.
@@ -1831,7 +1832,7 @@ HTMLTextAreaElementImpl::HTMLTextAreaElementImpl(DocumentPtr *doc)
     m_rows = 3;
     m_cols = 60;
     m_wrap = ta_Virtual;
-    m_value = 0;
+    m_value = QString::null;
 }
 
 
@@ -1842,7 +1843,7 @@ HTMLTextAreaElementImpl::HTMLTextAreaElementImpl(DocumentPtr *doc, HTMLFormEleme
     m_rows = 3;
     m_cols = 60;
     m_wrap = ta_Virtual;
-    m_value = 0;
+    m_value = QString::null;
 }
 
 ushort HTMLTextAreaElementImpl::id() const
@@ -1863,7 +1864,7 @@ QString HTMLTextAreaElementImpl::state( )
 
 void HTMLTextAreaElementImpl::restoreState(const QString &state)
 {
-    m_value = DOMString(state.left(state.length()-1));
+    m_value = state.left(state.length()-1);
     setChanged(true);
 }
 
@@ -1961,13 +1962,13 @@ void HTMLTextAreaElementImpl::reset()
 DOMString HTMLTextAreaElementImpl::value()
 {
     if (m_value.isNull())
-        m_value = defaultValue();
+        m_value = defaultValue().string();
     return m_value;
 }
 
 void HTMLTextAreaElementImpl::setValue(DOMString _value)
 {
-    m_value = _value;
+    m_value = _value.string();
     setChanged(true);
 }
 

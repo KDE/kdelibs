@@ -41,6 +41,7 @@ namespace khtml
     class RenderFormElement;
     class RenderTextArea;
     class RenderSelect;
+    class RenderLineEdit;
 
     typedef QValueList<QCString> encodingList;
 }
@@ -232,6 +233,8 @@ public:
 
 class HTMLInputElementImpl : public HTMLGenericFormElementImpl
 {
+    friend class khtml::RenderLineEdit;
+
 public:
     enum typeEnum {
         TEXT,
@@ -476,6 +479,8 @@ protected:
 
 class HTMLTextAreaElementImpl : public HTMLGenericFormElementImpl
 {
+    friend class khtml::RenderTextArea;
+
 public:
     enum WrapMethod {
         ta_NoWrap,
@@ -519,9 +524,7 @@ protected:
     int m_rows;
     int m_cols;
     WrapMethod m_wrap;
-    DOMString m_value;
-
-    friend class khtml::RenderTextArea;
+    QString m_value;
 };
 
 // -------------------------------------------------------------------------

@@ -467,11 +467,8 @@ void RenderLineEdit::layout()
 
 void RenderLineEdit::slotTextChanged(const QString &string)
 {
-    HTMLInputElementImpl * e = static_cast<HTMLInputElementImpl*>(m_element);
-    // No need to set changed to true, this change comes from the rendering widget
-    bool wasChanged = e->changed();
-    e->setValue(DOMString(string));
-    e->setChanged( wasChanged );
+    // don't use setValue here!
+    static_cast<HTMLInputElementImpl*>(m_element)->m_value = string;
 }
 
 void RenderLineEdit::select()
@@ -1047,10 +1044,7 @@ void RenderTextArea::slotTextChanged()
     else
         txt = w->text();
 
-    // No need to set changed to true, this change comes from the rendering widget
-    bool wasChanged = e->changed();
-    e->setValue(txt);
-    e->setChanged( wasChanged );
+    e->m_value = txt;
 }
 
 void RenderTextArea::select()
