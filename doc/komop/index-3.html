@@ -427,6 +427,25 @@ a function result by using <CODE>Q2C</CODE>, make sure not to use
   ...
   return Q2C( QString_here ); // RIGHT! because Q2C already allocates the string
 </PRE>
+<P>
+<H3><A NAME="ss3.9">3.9 Excluding widgets from the OpenParts focus handling</A>
+</H3>
+
+<P>Sometimes it is necessary to explicitly exclude a certain widget from the OpenParts 
+focus handling, mostly when dealing with part children.
+For example in the following situation:
+<P>Imagine you have one main widget, a parent part. This widget (part) embeds several 
+other child parts, separated by splitter widgets (QSplitter) . Now if the user
+clicks on one of the splitters in order to re-arrange the layout, OpenParts attempts 
+to deactivate any possible child part and activate with main widget (parent part),
+as the splitter widget is a child widget of the main widget (obviously) . This is
+a correct behaviour, but probably not very user-friendly ;-)
+<P>The right step to fix this is to explicitly exclude the splitter widgets from this 
+focus handling, and you can actually tell OpenParts about this. Since (in the example)
+the splitters belong to the main widget, the main widget class, which inherits OPPartIf,
+contains the API for that.
+<P>The three available methods are part of the OPPartIf class and are quite self-explaining:
+<CODE>addSeparatedWidget()</CODE>,<CODE>removeSeparatedWidget()</CODE>,<CODE>isSeparatedWidget()</CODE>
 <P>That's it! Have fun using KOM/OpenParts :-)
 <P>TODO:
 <UL>
