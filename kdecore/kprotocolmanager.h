@@ -6,18 +6,20 @@
 #include <qmap.h>
 
 /**
+ * Information about I/O (Internet, etc.) protocols supported by KDE.
+ *
  * This class is useful if you want to know which protocols
- * KDE supports. In addition you can query lots of informations
+ * KDE supports. In addition you can find out lots of information
  * about a certain protocol. KProtocolManager scans the *.desktop
  * files of all installed kioslaves to get this information.
  *
- * In addition KProtocolManager has a heap of static functions that
- * allow you to read an write IO related KDE settings. These contain
+ * In addition, KProtocolManager has a heap of static functions that
+ * allow you to read and write IO related KDE settings. These include
  * proxies, resuming, timeouts.
  *
- * However, please notice that these settings apply to all applications.
- * That means that the proxy, timeouts etc. are saved in the users config
- * file and NOT in the config file of the application.
+ * However, please note that these settings apply to all applications.
+ * This means that the proxy, timeouts etc. are saved in the users config
+ * file and @bf not in the config file of the application.
  *
  * @author: Torben Weis
  */
@@ -60,30 +62,33 @@ public:
   static int maxCacheSize(); // Maximum cache size in Kb.
 
   /**
-   * Sets timeout for read operations. This applies to ftp and http connections.
-   * If after this timeout read doesn't finish reading packet, read operation is
-   * stopped with alarm command and starts reading again.
-   * This value is used if remote server supports resuming.
-   * For opposite case see @ref #setReadTimeoutNoResume
-   *
+   * Sets timeout for read operations. 
+   * This applies to FTP and HTTP connections.
+   * If after a time @p timeout, the read operation doesn't finish
+   * reading a packet, the read operation is
+   * stopped with alarm command and the operation is restarted.
+   * This value is used if the remote server supports resuming.
+   * For the opposite case see @ref setReadTimeoutNoResume()
    */
   static void setReadTimeout( int _time );
 
   /**
-   * Set this flag if you want slaves to add extension .PART to all files during transfer.
-   * This extension will be removed when file is transfered.
+   * Set this flag if you want slaves to add the extension .PART
+   *  to all files during transfer.
+   * This extension will be removed when file is fully transferred.
    *
-   * This is a better way to discern finished transfers in case of transfer errors.
-   * Default value is false - don't add extension.
+   * This is a better way to discern finished transfers in case
+   *  of transfer errors.
+   * @param _mode Default value is @p false: Don't add the extension .PART.
    *
    */
   static void setMarkPartial( bool _mode );
 
   /**
-   * Set the minimum size for keepenig of interrupted transfer
+   * Set the minimum size for keeping an interrupted transfer.
    *
-   * Downloaded file will only be kept, if its size is bigger then this limit,
-   * Otherwise it will be deleted
+   * A downloaded file whose transfer was interrupted will only be kept if
+   * its size is bigger than @ _size, otherwise it will be deleted.
    *
    * Default value is 5000 bytes
    *
@@ -91,29 +96,29 @@ public:
   static void setMinimumKeepSize( int _size );
 
   /**
-   * Set this flag if you want slaves to automatically resume files without
-   * asking in rename dialog
+   * Set this flag if you want slaves to automatically resume
+   * downloading files without asking the user in the "rename" dialog.
    *
-   * Default value is false - don't resume automaticaly.
+   * @param _mode Default value is @p false: Don't resume automatically.
    *
    */
   static void setAutoResume( bool _mode );
 
   /**
-   * Set this flag if you want slaves to have persistent connections ( ftp )
+   * Set this flag if you want slaves to have persistent connections (FTP).
    *
-   * Default value is true - keep persistent connections
+   * @param _mode Default value is true: Keep persistent connections.
    *
    */
   static void setPersistentConnections( bool _mode );
 
   /**
-   * Set a protocol which should be used for remote "file"-URLs
+   * Set a protocol which should be used for remote @p file URLs.
    *
    * Default value is empty: Pass hostname as part of path.
    *
    * Example:
-   * With "setRemoteFileProtocol("smb"), the URL
+   * With setRemoteFileProtocol("smb"), the URL
    *    "file://atlas/dfaure"
    * will be converted to
    *    "smb://atlas/dfaure"
@@ -124,28 +129,28 @@ public:
   static void setRemoteFileProtocol( const QString &remoteFileProtocol );
 
   /**
-   * Set this flag if you want use proxies
+   * Set this flag if you want use proxies.
    *
-   * Default value is false - don't use proxies.
+   * @param Default value is false: Don't use proxies.
    *
    */
   static void setUseProxy( bool _mode );
 
   /**
-   * Set the proxy for ftp transfer
+   * Set the proxy for FTP transfer.
    *
    */
   static void setFtpProxy( const QString& _proxy );
 
   /**
-   * Set the proxy for http transfer
+   * Set the proxy for HTTP transfer
    *
    */
   static void setHttpProxy( const QString& _proxy );
 
 
   /**
-   * Set the URL's for which we should not use proxy
+   * Set the URLs for which we should not use the proxy.
    *
    */
   static void setNoProxyFor( const QString& _noproxy );

@@ -14,7 +14,7 @@ class QFont;
 class KInstance;
 
 /**
- * Accessors to KDE global objects.
+ * Access the KDE global objects.
  * 
  * @author Sirtaj Singh Kang (taj@kde.org)
  * @version $Id$
@@ -24,24 +24,24 @@ class KGlobal
 public:
 
     /**
-     * Retrieves the global instance - there is always at least
-     * one Instance of a component in one application (in most 
-     * cases the application itself)
+     * Retrieve the global instance.  There is always at least
+     * one instance of a component in one application (in most 
+     * cases the application itself).
      */
     static KInstance            *instance();
 
     /**
-     *  Retrieves the application standard dirs object.
+     *  Retrieve the application standard dirs object.
      */
     static KStandardDirs	*dirs();
     
     /**
-     *  Retrieves the general config object.
+     *  Retrieve the general config object.
      */
     static KConfig		*config();
     
     /**
-     *  Retrieves an iconloader object.
+     *  Retrieve an iconloader object.
      */
     static KIconLoader	        *iconLoader();
     
@@ -58,12 +58,15 @@ public:
      * be started. This prevents spurious drags when the user intended
      * to click on something but moved the mouse a bit while doing so.
      *
-     * For this to work you must save the position of the mouse (oldPos)
-     * in the mousePressEvent. When the position of the mouse (newPos) 
-     * in a  mouseMoveEvent exceeds this treshold you may start a drag 
-     * which should originate from 'oldPos'. 
+     * For this to work you must save the position of the mouse (@p oldPos)
+     * in the @ref QWidget::mousePressEvent(). 
+     * When the position of the mouse (@p newPos) 
+     * in a  @ref QWidget::mouseMoveEvent() exceeds this treshold
+     * you may start a drag 
+     * which should originate from @ref oldPos. 
      * 
      * Example code:
+     * <pre>
      * void KColorCells::mousePressEvent( QMouseEvent *e )
      * {
      *    mOldPos = e->pos();
@@ -87,7 +90,7 @@ public:
      *       }
      *    }
      * }
-     *
+     * </pre>
      *
      */
 
@@ -97,20 +100,19 @@ public:
      * Returns whether KDE runs in single (default) or double click
      * mode.
      *
-     * @return false means single click mode
-     *         true means double click mode
+     * @return @ false if single click mode, or @p true if double click mode.
      *
      * see @ref http://developer.kde.org/documentation/standards/kde/style/mouse/index.html
      **/
     static bool useDoubleClicks();
   
     /**
-     * Returns the configured completion mode
+     * Retrieve the configured completion mode.
      *
      * see @ref http://developer.kde.org/documentation/standards/kde/style/keys/completion.html
      *
-     * @return CompletionNone:  completion should be disabled
-     *         CompletionAuto:  automatic completion
+     * @return CompletionNone:  Completion should be disabled
+     *         CompletionAuto:  Automatic completion
      *         CompletionMan:   Like automatic completion except the user initiates
      *                          the completion using the completion key as in CompletionEOL
      *         CompletionShell: Attempts to mimic the completion feature found in
@@ -130,7 +132,7 @@ public:
     
 private:
     /**
-     * Allocates the static Instance variable;
+     * Allocate the static Instance variable;
      **/
     static void init();
     

@@ -57,23 +57,22 @@ public:
         enum GradientMode { Horizontal, Vertical, Diagonal, CrossDiagonal };
 
 	/**
-	 * Creates a null pixmap
+	 * Create a null pixmap.
 	 */
          KPixmap() : QPixmap() {};
 
 	/**
-	 * Destroys the pixmap.
+	 * Destroy the pixmap.
 	 */
 	~KPixmap() {};
 
 	/**
-	 * Copies the QPixmap pix
+	 * Copy the QPixmap @p pix.
          */
 	KPixmap(const QPixmap& pix);
 
 	/**
-	 * Converts an image and sets this pixmap. Returns true if
-	 * successful.
+	 * Convert an image and sets this pixmap. 
 	 *
 	 * The conversion_flags argument is a bitwise-OR from the
 	 * following choices. The options marked (default) are the
@@ -101,73 +100,76 @@ public:
 	 *
 	 * Dithering mode preference, for RGB channels
 	 *
-	 * @li DiffuseDither (default) - a high quality dither
-	 * @li OrderedDither - a faster more ordered dither
-	 * @li ThresholdDither - no dithering, closest color is used
+	 * @li DiffuseDither (default) - A high quality dither.
+	 * @li OrderedDither - A faster more ordered dither.
+	 * @li ThresholdDither - No dithering, closest color is used.
 	 *
 	 * Dithering mode preference, for alpha channel
 	 *
-	 * @li DiffuseAlphaDither - a high quality dither
-	 * @li OrderedAlphaDither - a faster more ordered dither
-	 * @li ThresholdAlphaDither (default) - no dithering
+	 * @li DiffuseAlphaDither - A high quality dither.
+	 * @li OrderedAlphaDither - A faster more ordered dither.
+	 * @li ThresholdAlphaDither (default) - No dithering.
 	 *
 	 * Color matching versus dithering preference
 	 *
-	 * @li PreferDither - always dither 32-bit images when the image
+	 * @li PreferDither - Always dither 32-bit images when the image
 	 * is being converted to 8-bits. This is the default when
 	 * converting to a pixmap.
-	 * @li AvoidDither - only dither 32-bit images if the image has
+	 * @li AvoidDither - Only dither 32-bit images if the image has
 	 * more than 256 colours and it is being converted to 8-bits.
 	 * This is the default when an image is converted for the
 	 * purpose of saving to a file.
 	 *
-	 * Passing 0 for conversion_flags gives all the default
+	 * Passing 0 for @p conversion_flags gives all the default
 	 * options.
-	 */
+	 * @return @p true if successful.
+	 **/
 	bool convertFromImage( const QImage &img, int conversion_flags );
 
-	/*
+	/**
 	 * This is an overloaded member function, provided for
 	 * convenience. It differs from the above function only in
 	 * what argument(s) it accepts.
-	 */
+	 **/
 	bool convertFromImage( const QImage &img, ColorMode mode = WebColor );
 
 	/**
-	 * Loads a pixmap from the file fileName. Returns true if
-	 * successful, or false if the pixmap could not be loaded.
+	 * Loads a pixmap from the file @p fileName.
 	 *
 	 * If format is specified, the loader attempts to read the
 	 * pixmap using the specified format. If format is not
 	 * specified (default), the loader reads a few bytes from the
 	 * header to guess the file format.
 	 *
-	 * See the convertFromImage() documentation for a description
+	 * See the @ref convertFromImage() documentation for a description
 	 * of the conversion_flags argument.
 	 *
-	 * The QImageIO documentation lists the supported image
+	 * The @ref QImageIO documentation lists the supported image
 	 * formats and explains how to add extra formats.
-	 */
+	 *
+	 * @return @p true if successful, or false if the pixmap
+	 *  could not be loaded.
+	 **/
 	bool load( const QString& fileName, const char *format,
 		int conversion_flags );
 
-	/*
+	/**
 	 * This is an overloaded member function, provided for
 	 * convenience. It differs from the above function only in
 	 * what argument(s) it accepts.
-	 */
+	 **/
 	bool load( const QString& fileName,
 		const char *format = 0,
 		ColorMode mode = WebColor );
 
-	/*
-	 * Returns true of the image is posessed of a color table that
+	/**
+	 * Returns true if the image posesses a color table that
 	 * matches the Icon palette or false otherwise.
-
+	 *
 	 * An image with one color not found in the Icon palette is
-	 * considered to make a match, since this extra color may be a
+	 * considered to be a match, since this extra color may be a
 	 * transparent background.
-	 */
+	 **/
 	bool checkColorTable(const QImage &image);	
 };
 

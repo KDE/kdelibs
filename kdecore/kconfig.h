@@ -37,7 +37,7 @@ class QTimer;
 * @author Kalle Dalheimer <kalle@kde.org>, Preston Brown <pbrown@kde.org>
 * @version $Id$
 * @see KGlobal::config KConfigBase KSimpleConfig
-* @short KDE Configuration Management  class
+* @short KDE Configuration Management class
 */
 class KConfig : public KConfigBase
 {
@@ -49,8 +49,8 @@ public:
    *
    * @param fileName A file to parse in addition to the
    *        system-wide file(s).  If it is not provided, only global
-   *        kde configuration data will be read (depending on the value of
-   *        bUseKDEGlobals).
+   *        KDE configuration data will be read (depending on the value of
+   *        @p bUseKDEGlobals).
    * @param bReadOnly Set the config object's read-only status.
    * @param bUseKDEGlobals Toggle reading the global KDE configuration file.
    */
@@ -66,11 +66,11 @@ public:
   virtual ~KConfig();
 
   /**
-   * clears all entries out of the dirtyEntryMap, so the
+   * Clears all entries out of the @p dirtyEntryMap, so the
    * values will not be written to disk on a later call to
-   * sync().
+   * @ref sync().
    *
-   * @param bDeep if true, the dirty map is actually emptied.
+   * @param bDeep If true, the dirty map is actually emptied.
    *        otherwise, the config object's global dirty flag is set to
    *        false, but the dirty entries remain in the dirty entry
    *        map.
@@ -80,31 +80,31 @@ public:
   virtual void rollback(bool bDeep = true);
 
   /**
-   * Returns true if the specified group is known about.
+   * Retrieve true if the specified group is known.
    *
-   * @param _pGroup the group to search for.
-   * @returns Whether or not the group exists.
+   * @param _pGroup The group to search for.
+   * @returns @p true if the group exists.
    */
   virtual bool hasGroup(const QString &_pGroup) const;
 
   /**
-   * Returns a list of groups that are known about.
-   * @returns the list of groups.
+   * Retrieve a list of groups that are known.
+   * @returns The list of groups.
    */
   virtual QStringList groupList() const;
 
   /*
    * Check if the key has an entry in the currently active group. Use
    * this to determine if a key is not specified for the current group
-   * (hasKey returns false). Keys with null data are considered
+   * (@p hasKey returns @p false). Keys with null data are considered
    * nonexistent.
    *
-   * @param pKey the key to search for.
+   * @param pKey The key to search for.
    */
   virtual bool hasKey(const QString &pKey) const;
 
   /**
-   * Return a map (tree) of entries for all entries in a particular
+   * Retrieve a map (tree) of entries for all entries in a particular
    * group.  Only the actual entry string is returned, none of the
    * other internal data should be included.
    *
@@ -115,7 +115,7 @@ public:
   virtual QMap<QString, QString> entryMap(const QString &pGroup) const;
 
   /**
-   * clears all internal data structures and then rereads
+   * Clear all internal data structures and then reread
    * configuration information from disk.
    */
   virtual void reparseConfiguration();

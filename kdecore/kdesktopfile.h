@@ -28,7 +28,7 @@
  *
  * @author Pietro Iglio <iglio@kde.org>
  * @version $Id$
- * @see KConfigBase KConfig
+ * @see  KConfigBase  KConfig
  * @short KDE Desktop File Management class
  */
 class KDesktopFile : public KConfig
@@ -43,8 +43,8 @@ public:
    * @param pFileName The file used for saving the data. The
    *                  full path must be specified.
    * @param bReadOnly Whether the object should be read-only.
-   * @param resType   allows you to change what sort of resource
-   *                  to search for if pFileName is not absolute.  For
+   * @param resType   Allows you to change what sort of resource
+   *                  to search for if @p pFileName is not absolute.  For
    *                  instance, you might want to specify "config".
    */
   KDesktopFile( const QString &pFileName, bool bReadOnly = false,
@@ -53,83 +53,83 @@ public:
   /** 
    * Destructor. 
    *
-   * Writes back any dirty configuration entries.
+   * Write back any dirty configuration entries.
    */
   virtual ~KDesktopFile();
 
   /**
-   * Returns true if the file appears to be a desktop file.
+   * Returns @p true if the file appears to be a desktop file.
    * The check is performed looking at the file extension (the file is not
-   * open).
+   * opened).
    * Currently, valid extensions are ".kdelnk" and ".desktop".
    * 
    */
   static bool isDesktopFile(const QString& path);
 
   /**
-   * Returns the value of the "Type=" entry.
+   * Retrieve the value of the "Type=" entry.
    */
   QString readType();
 
   /**
-   * Returns the value of the "Icon=" entry.
+   * Retrieve the value of the "Icon=" entry.
    */
   QString readIcon();
 
   /**
-   * Returns the value of the "Name=" entry.
+   * Retrieve the value of the "Name=" entry.
    */
   QString readName();
 
   /**
-   * Returns the value of the "Comment=" entry.
+   * Retrieve the value of the "Comment=" entry.
    */
   QString readComment();
 
   /**
-   * Returns the value of the "Path=" entry.
+   * Retrieve the value of the "Path=" entry.
    */
   QString readPath();
 
   /**
-   * Returns the value of the "URL=" entry.
+   * Retrieve the value of the "URL=" entry.
    */
   QString readURL();
 
   /**
-   * Returns true if there is an entry "Type=Link".
+   * Returns @p true if there is an entry "Type=Link".
    * The link points to the "URL=" entry.
    */
   bool hasLinkType();
 
   /**
-   * Returns true if there is an entry "Type=Application".
+   * Returns @p true if there is an entry "Type=Application".
    */
   bool hasApplicationType();
 
   /**
-   * Returns true if there is an entry "Type=MimeType".
+   * Returns @p true if there is an entry "Type=MimeType".
    */
   bool hasMimeTypeType(); // funny name :)
 
   /**
-   * Returns true if there is an entry "Type=FSDev".
+   * Returns @p true if there is an entry "Type=FSDev".
    */
   bool hasDeviceType();
 
   /**
-   * if the TryExec field contains a binary which is found on the
-   * system, return true, otherwise return false.
+   * Returns @p true f the TryExec field contains a binary
+   * which is found on the, otherwise returns false.
    */
   bool tryExec();
 
   /**
-   * @return the filename as passed to the constructor.
+   * @return The filename as passed to the constructor.
    */
   QString filename() const;
   
   /**
-   * @return the resource type as passed to the constructor.
+   * @return The resource type as passed to the constructor.
    */
   QString resource() const;
 

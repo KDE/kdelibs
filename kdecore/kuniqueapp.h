@@ -30,7 +30,7 @@
  * or a second instance.  If it is a second instance, it will forward on
  * the information to the first instance and then quit.
  *
- * @see KApplication, DCOPObject
+ * @see KApplication DCOPObject
  * @author Preston Brown <pbrown@kde.org>
  */
 class KUniqueApplication : public KApplication, DCOPObject
@@ -39,7 +39,7 @@ class KUniqueApplication : public KApplication, DCOPObject
 public:
   /**
    * Constructor. Parses command-line arguments.
-   * Parameters : See KApplication constructor.
+   * Parameters : See @ref KApplication constructor.
    */
   KUniqueApplication( int& argc, char** argv,
 		      const QCString& rAppName = 0, 
@@ -48,13 +48,13 @@ public:
 
   /**
    * Fork and register with dcop.
-   * The command line arguments are being sent via DCOP to newInstance()
+   * The command line arguments are being sent via DCOP to @ref newInstance()
    * and will be received once the application enters the event loop.
-   * @return True if registration is succesfull
-   *         False if another process was already running.
+   * @return @p true if registration is succesful.
+   *         @p false if another process was already running.
    *
    * Typically this is used like:
-   *
+   * <pre>
    * int main(int argc, char **argv) {
    *    if (!KUniqueApplication::start(argc, argv, "myAppName")) {
    *       fprintf(stderr, "myAppName is already running!\n");
@@ -63,21 +63,21 @@ public:
    *    KUniqueApplication a(argc, argv, "myAppName");
    *    a.exec();
    * }
-   *
+   * </pre>
    * or
-   *
+   * <pre>
    * int main(int argc, char **argv) {
    *    if (!KUniqueApplication::start(argc, argv, "myAppName"))
    *       exit(0);
    *    KUniqueApplication a(argc, argv, "myAppName");
    *    a.exec();
    * }
-   * 
-   * Although it is not necassery to call start() before creating a
-   * KUniqueApplication it is adviced to so because it is about
+   * </pre>
+   * Although it is not necassery to call @ref start() before creating a
+   * @ref KUniqueApplication it is adviced to so because it is about
    * 40% faster if the application was already running: 
-   * If you use start() the KApplication constructor will not be 
-   * called if this isn't necassery.
+   * If you use @ref start() the @ref KApplication constructor will not be 
+   * called if this isn't necessary.
    */
   static bool start(int& argc, char** argv, const QCString &rAppName);
    
@@ -85,24 +85,27 @@ public:
   /** Destructor */
   virtual ~KUniqueApplication();
 
+  /**
+   * Retrieve the DCOP client object.
+   **/
   virtual DCOPClient *dcopClient();
   
   /** 
-   * dispatch any incoming DCOP message for a new instance.  If
-   * it is not a request for a new instance, return false.
+   * Dispatch any incoming DCOP message for a new instance.  If
+   * it is not a request for a new instance, return @p false.
    */
   bool process(const QCString &fun, const QByteArray &data,
 	       QCString &replyType, QByteArray &replyData);
 
   /**
-   * create a new "instance" of the application.  Usually this
+   * Create a new "instance" of the application.  Usually this
    * will involve making some calls into the GUI portion of your
    * application asking for a new window to be created, possibly with
    * some data already loaded based on the arguments received.
    *
-   * @param params is the bundled up command line parameters that were passed
+   * @param params The bundled up command line parameters that were passed
    *               on the command line when the application request was initiated,
-   *               _after_ being processed by Qt's QApplication.
+   *               @bf after being processed by Qt's @ref QApplication.
    *
    * @return An exit value. The calling process will exit with this value.
    */

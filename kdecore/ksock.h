@@ -53,16 +53,18 @@ typedef sockaddr_in ksockaddr_in;
 #endif
 
 /** 
- * A TCP/IP client socket. You can connect this socket to any internet address. 
+ * A TCP/IP client socket. You can connect this socket to any Internet address. 
  *
- * The socket gives you three signals: When ready for reading/writing or 
- * if the connection is broken.  Using socket() you get a file descriptor
- * which you can use with usual unix commands like write(..) or read(...). 
+ * The socket gives you three signals: When ready for reading, 
+ * ready for writing or if the connection is broken.  
+ * Using @ref socket() you get a file descriptor
+ * which you can use with the usual UNIX function like @ref write(..) or
+ *  @ref read(...). 
  * If you have already such a socket identifier you can construct a KSocket
  * on this identifier. 
  *  
- * If socket() delivers a value of -1 or less, the connection 
- * had no success.
+ * If @ref socket() delivers a value of -1 or less, the connection 
+ * was not successful.
  *
  * @author Torben Weis <weis@uni-frankfurt.de>
  * @version $Id$
@@ -74,7 +76,7 @@ class KSocket : public QObject
 public:
     /** 
      * Create a KSocket with the provided file descriptor.
-     * @param _sock	the file descriptor to use.
+     * @param _sock	The file descriptor to use.
      */
     KSocket( int _sock )
 	: sock(_sock), domain(0), 
@@ -82,15 +84,15 @@ public:
     
     /** 
      * Create a socket and connect to a host.
-     * @param _host	the remote host to which to connect.
-     * @param _port	the port on the remote host.
-     * @param timeOut	the number of seconds waiting for connect (default 30)
+     * @param _host	The remote host to which to connect.
+     * @param _port	The port on the remote host.
+     * @param timeOut	The number of seconds waiting for connect (default 30).
      */
     KSocket( const char *_host, unsigned short int _port, int timeOut = 30);
     
     /** 
      * Connects to a UNIX domain socket.
-     * @param _path    the filename of the socket
+     * @param _path    The filename of the socket.
      */
     KSocket( const char * _path );
 
@@ -100,7 +102,7 @@ public:
     ~KSocket();
 
     /**
-      *  A small wrapper around gethostbyname and such
+      *  A small wrapper around gethostbyname() and such.
       */
     static bool initSockaddr(ksockaddr_in *server_name, const char *hostname, unsigned short int port, int domain = PF_INET);
     
@@ -113,7 +115,7 @@ public:
      * Enable the socket for reading.
      *
      * If you enable read mode, the socket will emit the signal
-     * readEvent whenever there is something to read out of this
+     * @ref readEvent() whenever there is something to read out of this
      * socket.
      */
     void enableRead( bool );
@@ -122,7 +124,7 @@ public:
      * Enable the socket for writing.
      *
      * If you enable write mode, the socket will emit the signal
-     * writeEvent whenever the socket is ready for writing.
+     * @ref writeEvent() whenever the socket is ready for writing.
      */
     void enableWrite( bool );
     
@@ -135,7 +137,7 @@ signals:
     /** 
      * Data has arrived for reading.
      *
-     * This signal will only be raised if enableRead( true ) was called
+     * This signal will only be raised if @ref enableRead( @p true ) was called
      * first.
      */
     void readEvent( KSocket * );
@@ -143,8 +145,8 @@ signals:
     /** 
      * Socket is ready for writing.
      *
-     * This signal will only be raised if enableWrite( true ) was called
-     * first.
+     * This signal will only be raised if @ref enableWrite( @p true ) was 
+     * called first.
      */
     void writeEvent( KSocket * );
     
@@ -155,12 +157,16 @@ signals:
     
 public slots:
     /** 
-     * Connected to the writeNotifier.
+     * Connected to the writeNotifier.  
+     * Called when
+     *  the socket is ready for writing.
      */
     void slotWrite( int );
     
     /** 
      * Connected to the readNotifier.
+     * Called when
+     *  the socket is ready for reading.
      */
     void slotRead( int );
     

@@ -4,8 +4,9 @@
 class KRegExpPrivate;
 
 /**
- * Regular expression matching with back-references. This was implemented
- * because @ref QRegExp does not support backrefs.
+ * Regular expression (regexp) matching with back-references. 
+ * This was implemented
+ * because @ref QRegExp does not support back-references.
  *
  * Back-references are parts of a regexp grouped with parentheses. If a
  * string matches the regexp, you can access the text that matched each
@@ -26,7 +27,7 @@ class KRegExpPrivate;
  *  Weis
  * </pre>
  *
- * Please notice that KRegExp does NOT support unicode.
+ * Please notice that KRegExp does @bf not support unicode.
  *
  * @author Torben Weis <weis@kde.org>
  * @version $Id$
@@ -59,35 +60,35 @@ public:
 
   /**
    * Match a string to the last supplied regexp.
-   * @return true on match, false otherwise.
+   * @return @p true on match, false otherwise.
    */
   bool match( const char *_string );
 
 
   /**
-   * @return a grouped substring. A substring may be empty
-   *         In this case 0 is returned. Otherwise you may NOT
+   * @return a grouped substring. A substring may be empty.
+   *         In this case 0 is returned. Otherwise you may @bf not
    *         delete or modify the returned value. In addition the
    *         returned value becomes invalid after the KRegExp instance
-   *         is deleted or after @ref #match was called again.
+   *         is deleted or after @ref @match() was called again.
    *
-   * @param _grp may be in the range [0..9]. If @p _grp is 0 then the complete
+   * @param _grp May be in the range [0..9]. If @p _grp is 0 then the complete
    *             matched string is returned.
    */
   const char *group( int _grp );
 
   /**
-   * @return the start offset of the grouped substring.
+   * @return The start offset of the grouped substring.
    *
-   * @param _grp may be in the range [0..9]. If @p _grp is 0 then the start offset
+   * @param _grp May be in the range [0..9]. If @p _grp is 0 then the start offset
    *             of the complete matched string is returned.
    */
   int groupStart( int _grp );
   /**
-   * @return the end offset of the grouped substring. The "end offset" is the first
+   * @return The end offset of the grouped substring. The "end offset" is the first
    *         character after the string.
    *
-   * @param _grp may be in the range [0..9]. If @p _grp is 0 then the end offset
+   * @param _grp May be in the range [0..9]. If @p _grp is 0 then the end offset
    *             of the complete matched string is returned.
    */
   int groupEnd( int _grp );

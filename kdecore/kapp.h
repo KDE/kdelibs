@@ -85,13 +85,13 @@ public:
    *
    * @param rAppName application name. Will be used for finding the
    * associated message files and icon files, and as the default
-   * registration name for DCOP. Now mandatory.
+   * registration name for DCOP. This is a mandatory parameter.
    *
    * @param allowStyles Set to false to disable the loading on plugin based
    * styles. This is only useful to applications that do not display a GUI
-   * normally. If you do create an application with allowStyles set to false
+   * normally. If you do create an application with @p allowStyles set to false
    * that normally runs in the background but under special circumstances
-   * displays widgets call enableStyles() before displaying any widgets.
+   * displays widgets call @ref enableStyles() before displaying any widgets.
    *
    * @param GUIenabled Set to false to disable all GUI stuff. This implies
    * no styles either.
@@ -100,87 +100,88 @@ public:
               const QCString& rAppName, bool allowStyles=true, bool GUIenabled=true);
 
   /**
-   * Constructor. Takes appname and command line arguments from KCmdLineArgs
-   *
-   * @param aboutData data about this instance (see @ref KAboutData)
-   * You should provide it for the "about" box and the bug report dialog to
-   * work properly.
+   * This constructor takes appname and command line 
+   *  arguments from @ref KCmdLineArgs.
    *
    * @param allowStyles Set to false to disable the loading on plugin based
    * styles. This is only useful to applications that do not display a GUI
-   * normally. If you do create an application with allowStyles set to false
-   * that normally runs in the background but under special circumstances
-   * displays widgets call enableStyles() before displaying any widgets.
+   * normally. If you do create an application with @p allowStyles set to false
+   * it normally runs in the background but under special circumstances
+   * displays widgets.  Call @ref enableStyles() before displaying any widgets.
    *
    * @param GUIenabled Set to false to disable all GUI stuff. This implies
    * no styles either.
    */
-  KApplication( const KAboutData * aboutData = 0L, bool allowStyles=true, bool GUIenabled=true);
-
+  KApplication( const KAboutData * aboutData = 0L, bool allowStyles=true,
+		bool GUIenabled=true);        
   /**
     * Add Qt and KDE command line options to KCmdLineArgs.
     */
   static void addCmdLineOptions();
-
+  
   virtual ~KApplication();
 
-  /** Returns the number of command line arguments, i. e. the length
-   *  of the array KApplication::argv(). In this array, the arguments
-   *  handled by KApplication itself (i. e. '-icon') are already removed
+  /** Retrieve the number of command line arguments, i. e. the length
+   *  of the array @ref KApplication::argv(). In this array, the arguments
+   *  handled by KApplication itself (eg. '-icon') are already removed
    */
   int argc() const { return pArgc; }
 
   /**
-	* Return the current application object.
-
-	* This is similar to the global QApplication pointer qApp. It
-	* allows access to the single global KApplication object, since
-	* more than one cannot be created in the same application. It
-	* saves the trouble of having to pass the pointer to it explicitly
-	* to every function that may require it.
-	*/
+   * Retrieve the current application object.
+   *
+   * This is similar to the global @ref QApplication pointer qApp. It
+   * allows access to the single global KApplication object, since
+   * more than one cannot be created in the same application. It
+   * saves you the trouble of having to pass the pointer explicitly
+   * to every function that may require it.
+   */
   static KApplication* kApplication() { return KApp; }
 
   /**
    * Retrieve the application session config object.
    *
    * @return A pointer to the application's instance specific
-   * 	KConfig object.
+   * 	@ref KConfig object.
    * @see KConfig
    */
   KConfig* sessionConfig();
 
   /**
-	* Is the application restored from the session manager?
-	*
-	* @return If true, this application was restored by the session manager.
-	*	Note that this may mean the config object returned by
-	*	sessionConfig() contains data saved by a session closedown.
-	* @see #sessionConfig
-	*/
+   * Is the application restored from the session manager?
+   *
+   * @return If true, this application was restored by the session manager.
+   *	Note that this may mean the config object returned by
+   *	sessionConfig() contains data saved by a session closedown.
+   * @see sessionConfig()
+   */
   bool isRestored() const { return QApplication::isSessionRestored(); }
 
   /**
-   * Disables session management for this application.
-   * Useful in case  your application is started by the inital "startkde" script.
+   * Disable session management for this application.
+   * Useful in case  your application is started by the
+   * inital "startkde" script.
    */
   void disableSessionManagement();
 
 
     /*
-      Reimplemented for internal purposes, mainly the highlevel
-      handling of session management with KSessionManaged.
+     * Reimplemented for internal purposes, mainly the highlevel
+     *  handling of session management with @ref KSessionManaged.
+     * @internal
      */
   void commitData( QSessionManager& sm );
+
     /*
-      Reimplemented for internal purposes, mainly the highlevel
-      handling of session management with KSessionManaged.
+     * Reimplemented for internal purposes, mainly the highlevel
+     *  handling of session management with KSessionManaged.
+     * @internal
      */
   void saveState( QSessionManager& sm );
 
 
   /**
-   * Returns a pointer to an DCOPClient for the application.
+   * Retrieve a pointer to a DCOPClient for the application.
    */
   virtual DCOPClient *dcopClient();
 
@@ -191,41 +192,41 @@ public:
   */
 							
   /**
-	* Get the application icon.
-	* @return a QPixmap with the icon.
-	* @see QPixmap
-	*/
+   * Get the application icon.
+   * @return a @ref QPixmap with the icon.
+   * @see QPixmap
+   */
   QPixmap icon() const;
 
   /**
-	* Get the mini-icon for the application.
-	* @return a QPixmap with the icon.
-	* @see QPixmap
+   * Get the mini-icon for the application.
+   * @return a @ref QPixmap with the icon.
+   * @see QPixmap
 	*/
   QPixmap miniIcon() const;
 
   /**
-      Sets the top widget of the application.
-
-      @param topWidget a top widget of the application.
-
-      This means bascially applying the right window caption and
-      icon. An application may have several top widgets. You don't
-      need to call this function manually when using KTMainWindow
-
-      @see #icon, #caption
-    */
+   *   Set the top widget of the application.
+   *   
+   *   @param topWidget A top widget of the application.
+   *
+   *  This means bascially applying the right window caption and
+   *  icon. An application may have several top widgets. You don't
+   *  need to call this function manually when using KTMainWindow.
+   *
+   *  @see icon(), caption()
+   **/
   void setTopWidget( QWidget *topWidget );
 
   /**
-   * Invoke the kdehelp HTML help viewer.
+   * Invoke the kehlpcenter HTML help viewer.
    *
    * @param aFilename	The filename that is to be loaded. Its
    *			location is computed automatically
-   *			according to the KFSSTND.  If aFilename
+   *			according to the KFSSTND.  If @p aFilename
    *			is empty, the logical appname with .html
    *			appended to it is used.
-   * @param aTopic		This allows context-sensitive help. Its
+   * @param aTopic	This allows context-sensitive help. Its
    *			value will be appended to the filename,
    *			prefixed with a "#" (hash) character.
    */
@@ -240,7 +241,7 @@ public:
   void invokeMailer( const QString &address, const QString &subject );
 
   /**
-   * Invoke the standard browser
+   * Invoke the standard browser.
    *
    * @param url The destination address
    */
@@ -248,8 +249,8 @@ public:
 
 
   /**
-   * Returns a KDE style object if a plugin is in use, or else NULL
-   * if a Qt internal style is being used.
+   * Retrieve the current KDE style object if a plugin is in use,
+   *  or else NULL if a Qt internal style is being used.
    *
    */
   KStyle* kstyle() const {return pKStyle;}
@@ -259,9 +260,9 @@ public:
    *
    * This method allows you to get the KDE font list which was
    * composed by the user with kfontmanager. Usually you should
-   * work only with those fonts in your kapplication.
+   * work only with those fonts in your KDE application.
    *
-   * @param fontlist a reference to a list to fill with fonts.
+   * @param fontlist A reference to a list to fill with fonts.
    * @return true on success.
    */
   bool kdeFonts(QStringList &fontlist) const;
@@ -269,7 +270,7 @@ public:
   /**
    * Return a text for the window caption.
    *
-   * This would be set either by
+   * This may be set by
    * "-caption", otherwise it will be equivalent to the name of the
    * executable.
    */
@@ -278,11 +279,11 @@ public:
   /**
    * Builds a caption that contains the application name along with the
    * userCaption using a standard layout. To make a compliant caption
-   * for your window, simply do: setCaption(kapp->makeStdCaption(yourCaption));
+   * for your window, simply do: @p setCaption(kapp->makeStdCaption(yourCaption));
    *
-   * @param userCaption is the caption string you want to display in the
+   * @param userCaption The caption string you want to display in the
    * window caption area. Do not include the application name!
-   * @param withAppName indicates that the method shall include or ignore
+   * @param withAppName Indicates that the method shall include or ignore
    * the application name when making the caption string. You are not
    * compliant if you set this to false.
    * @param modified If true, a 'modified' sign will be included in the
@@ -319,23 +320,24 @@ public:
 
   /**
    * Enable style plugins. This is useful only to applications that normally
-   * do not display a GUI and created the KApplication with allowStyles=false.
+   * do not display a GUI and create the KApplication with allowStyles=false.
    */
   void enableStyles();
-
-
-
-  /**
-      Installs widget \a filter as global x11 event filter. The widget
-      \a filter receives XEvents in its standard x11Event() function.
-
-      Warning: only do that when absolutely necessary. Installed x11 filter
-      can slow things down.
-   */
+    
+    
+    
+  /** 
+   *  Install widget filter as global X11 event filter. The widget
+   *  filter receives XEvents in its standard @ref QWidget::x11Event() function.
+   *  
+   *  Warning: Only do this when absolutely necessary. An installed X11 filter
+   *  can slow things down.
+   **/
   void installX11EventFilter( QWidget* filter );
 
   /**
-   * @return a truly unpredictable number in the range [0, MAX_RAND>
+   * Generate a uniform random number.
+   * @return A truly unpredictable number in the range [0, MAX_RAND)
    */
   static int random();
 

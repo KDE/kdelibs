@@ -31,21 +31,21 @@ class QTimer;
  * <pre>
  *     s_global = new KInstance( "kspread" );
  * </pre>
- * This KInstance is compareable to @ref KGlobal used by normal applications.
+ * This @ref KInstance is compareable to @ref KGlobal used by normal applications.
  * It allows you to find ressource files (images, XML, sound etc.) belonging
  * to the library.
  *
- * If you want to load a library, use @ref KLibLoader. You can query KLibLoader
+ * If you want to load a library, use @ref KLibLoader. You can query @ref KLibLoader
  * directly for a pointer to the libraries factory by using the @ref KLibLoader::factory
  * function.
  *
  * The KLibFactory is used to create the components, the library has to offer.
  * The factory of KSpread for example will create instances of KSpreadDoc,
  * while the Konqueror factory will create KonqView widgets.
- * All objects created by the factory must be derived from QObject, since QObject
+ * All objects created by the factory must be derived from @ref QObject, since @ref QObject
  * offers type safe casting.
  *
- * KLibFactory is an abstract class. You have to overloaed the @ref #create method.
+ * KLibFactory is an abstract class. You have to overloaed the @ref create() method.
  *
  * @author Torben Weis <weis@kde.org>
  */
@@ -62,13 +62,16 @@ public:
 
     QObject* create( ClassType type, QObject* parent = 0, const char* name = 0, const QStringList &args = QStringList() );
     /**
-     * Creates a new object. The returned object has to be derived from the requested classname.
+     * Create a new object. The returned object has to be derived from
+     * the requested classname.
      *
-     * It is valid behaviour to create different kinds of objects depending on the requested
-     * @p classname. For example a koffice library may usually return a pointer to @ref KoDocument.
-     * But if asked for a "QWidget", it could create a wrapper widget, that encapsulates the Koffice
-     * specific features.
-     */
+     * It is valid behavior to create different kinds of objects
+     * depending on the requested @p classname. For example a koffice
+     * library may usually return a pointer to @ref KoDocument.  But
+     * if asked for a "QWidget", it could create a wrapper widget,
+     * that encapsulates the Koffice specific features.  
+     **/
+
     virtual QObject* create( QObject* parent = 0, const char* name = 0, const char* classname = "QObject", const QStringList &args = QStringList() ) = 0;
 
 signals:
@@ -79,7 +82,7 @@ signals:
 /**
  * @short Represents a dynamically loaded library.
  *
- * KLibrary allows you to lookup symbols of the shared library.
+ * KLibrary allows you to look up symbols of the shared library.
  *
  * @author Torben Weis <weis@kde.org>
  */
@@ -91,16 +94,16 @@ public:
     ~KLibrary();
 
     /**
-     * @return the name of the library like "libkspread".
+     * @return The name of the library like "libkspread".
      */
     QString name() const;
     /**
-     * @return the filename of the library, for example "/opt/kde2&/lib/libkspread.la"
+     * @return The filename of the library, for example "/opt/kde2&/lib/libkspread.la"
      */
     QString fileName() const;
 
     /**
-     * @return the factory of the library if there is any.
+     * @return The factory of the library if there is any.
      */
     KLibFactory* factory();
     /**
@@ -113,7 +116,7 @@ private slots:
     void slotObjectCreated( QObject *obj );
     void slotObjectDestroyed();
     void slotTimeout();
-
+    
 private:
     QString m_libname;
     QString m_filename;
@@ -152,7 +155,7 @@ public:
      * @see #library
      */
     KLibFactory* factory( const char* libname );
-
+    
     /**
      * Loads and initializes a library. Loading a library multiple times is
      * handled gracefully.
@@ -168,9 +171,9 @@ public:
      * @see #factory
      */
     virtual KLibrary* library( const char* libname );
-
+  
     virtual void unloadLibrary( const char *libname );
-
+  
     /**
      * @return a pointer to the loader. If no loader exists until now
      *         then one is created.

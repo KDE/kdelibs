@@ -53,37 +53,39 @@ struct KKeyEntry {
 /**
  * The KAccel class handles keyboard accelerators, allowing a user to configure
  * key bindings through application configuration files or through the
- * KKeyChooser GUI.
+ * @ref KKeyChooser GUI.
  *
  * A KAccel contains a list of accelerator items. Each accelerator item
  * consists of an action name and a keyboard code combined with modifiers
- * (SHIFT, CTRL and ALT.)
+ * (Shift, Ctrl and Alt.)
  *
- * For example, "CTRL+P" could be a shortcut for printing a document. The key
+ * For example, "Ctrl+P" could be a shortcut for printing a document. The key
  * codes are listed in ckey.h. "Print" could be the action name for printing.
  * The action name indentifies the key binding in configuration files and the
- * KKeyChooser GUI.
+ * @ref KKeyChooser GUI.
  *
  * When pressed, an accelerator key calls the slot to which it has been
  * connected. Accelerator items can be connected so that a key will activate
  * two different slots.
  *
- * A KAccel object handles key events to its parent widget and all children
- * of this parent widget.
+ * A KAccel object handles key events sent to its parent widget and to all
+ * children of this parent widget.
  *
- * Key binding configuration during run time can be prevented by specifying
+ * Key binding reconfiguration during run time can be prevented by specifying
  * that an accelerator item is not configurable when it is inserted. A special
- * group of non-configurable key bindings are known as the standard accelerators.
+ * group of non-configurable key bindings are known as the
+ * standard accelerators.
  *
  * The standard accelerators appear repeatedly in applications for
  * standard document actions like printing and saving. Convenience methods are
  * available to insert and connect these accelerators which are configurable on
  * a desktop-wide basis.
  *
- * It is possible for a user to choose to have no key associated with an action.
+ * It is possible for a user to choose to have no key associated with
+ * an action.
  *
- * The translated first argument for insertItem is only used in the
- * configuration dialog.
+ * The translated first argument for @ref insertItem() is only used
+ * in the configuration dialog.
  *<pre>
  * KAccel *a = new KAccel( myWindow );
  * // Insert an action "Scroll Up" which is associated with the "Up" key:
@@ -92,8 +94,8 @@ struct KKeyEntry {
  * a->insertItem( i18n("Scroll down"), "Scroll Down", 0);
  * a->connectItem( "Scroll up", myWindow, SLOT( scrollUp() ) );
  * // a->insertStdItem( KAccel::Print ); //not necessary, since it
- 	// is done automatially with the
- 	// connect below!
+ *	// is done automatially with the
+ *	// connect below!
  * a->connectItem(KAccel::Print, myWindow, SLOT( printDoc() ) );
  *
  * a->readSettings();
@@ -101,12 +103,12 @@ struct KKeyEntry {
  *
  * If a shortcut has a menu entry as well, you could insert them like
  * this. The example is again the KAccel::Print from above.
-
- <pre>
+ *
+ * <pre>
  * int id;
  * id = popup->insertItem("&Print",this, SLOT(printDoc()));
  * a->changeMenuAccel(popup, id, KAccel::Print );
- </pre>
+ * </pre>
  *
  * If you want a somewhat "exotic" name for your standard print action, like
  *   id = popup->insertItem(i18n("Print &Document"),this, SLOT(printDoc()));
@@ -114,18 +116,18 @@ struct KKeyEntry {
  *          a->insertStdItem( KAccel::Print, i18n("Print Document") )
  * as well, so that the user can easily find the corresponding function.
  *
- * This technique works for other actions as well, your scroll up function
+ * This technique works for other actions as well.  Your "scroll up" function
  * in a menu could be done with
  *
- <pre>
+ * <pre>
  *    id = popup->insertItem(i18n"Scroll &up",this, SLOT(scrollUp()));
  *    a->changeMenuAccel(popup, id, "Scroll Up" );
- </pre>
+ * </pre>
  *
- * Please keep the order right: first insert all functions in the
+ * Please keep the order right:  First insert all functions in the
  * acceleratior, then call a->readSettings() and _then_ build your
  * menu structure.
-
+ *
  * @short Configurable key binding support.
  * @version $Id$
  */
@@ -137,17 +139,17 @@ class KAccel
 		Next, Help, FindNext, FindPrev, ZoomIn, ZoomOut, AddBookmark,
         TextCompletion, RotateUpInList, RotateDownInList };
 	/**
-	 * Creates a KAccel object with a parent widget and a name.
+	 * Create a KAccel object with a parent widget and a name.
 	 */
 	KAccel( QWidget * parent, const char *name = 0 );
 			
 	/**
-	 * Destroys the accelerator object.
+	 * Destroy the accelerator object.
 	 */
 	~KAccel();
 	
 	/**
-	 * Removes all accelerator items.
+	 * Remove all accelerator items.
 	 */
 	void clear();
 	
@@ -156,11 +158,11 @@ class KAccel
 	 *
 	 * Arguments:
 	 *
-	 *  @param action the accelerator item action name.
-	 *  @param receiver the object to receive a signal
-	 *  @param member a slot or signal in the receiver
-	 *  @param activate indicates whether the accelerator item should be
-	 *  enabled immediately
+	 *  @param action The accelerator item action name.
+	 *  @param receiver The object to receive a signal.
+	 *  @param member A slot or signal in the receiver.
+	 *  @param activate Indicates whether the accelerator item should be
+	 *  enabled immediately.
 	 */
 	void connectItem( const QString& action,
 			  const QObject* receiver, const char *member,
@@ -168,169 +170,166 @@ class KAccel
 
     
         /**
-	 * Same as connectItem from above, but for standard accelerators.
-	 * If the standard accelerator was not inserted so far, it will be inserted
-	 * automatically.
+	 * Same as @ref connectItem() from above, but for standard
+	 * accelerators.
+	 * If the standard accelerator was not inserted so far, it
+	 * will be inserted automatically.
 	 */
 	void connectItem( StdAccel accel,
 			  const QObject* receiver, const char *member,
 			  bool activate = true );
 
 	/**
-	* Returns the number of accelerator items.
+	* Retrieve the number of accelerator items.
 	*/					
 	uint count() const;
 	
 	/**
-	* Returns the key code of the accelerator item with the action name
-	* action, or zero if either the action name cannot be found or the current
-	* key is set to no key.
+	* Retrieve the key code of the accelerator item with the action name
+	* action, or zero if either the action name cannot be
+	* found or the current key is set to no key.
 	*/
 	uint currentKey( const QString& action ) const;
 
 	/**
-         * Returns the description  of the accelerator item with the action name
-         * action, or QString::null if the action name cannot be found. Useful for menus.
+         * Retrieve the description  of the accelerator item with the
+	 * action name @p action, or QString::null if the action name cannot
+	 * be found. Useful for menus.
          */
-        QString  description( const QString& action ) const;
+        QString description( const QString& action ) const;
 
 	/**
-	* Returns the default key code of the accelerator item with the action name
-	* action, or zero if the action name cannot be found.
+	* Retrieve the default key code of the accelerator item with
+	* the action name
+	* @p action, or zero if the action name cannot be found.
 	*/
 	uint defaultKey( const QString& action) const;
 	
 	/**
-	 * Disconnects an accelerator item from a function in another object.
+	 * Disconnect an accelerator item from a function in another object.
 	 */
 	void disconnectItem( const QString& action,
 			     const QObject* receiver, const char *member );
 	
 	/**
-	 * Returns that identifier of the accelerator item with the keycode key,
+	 * Rerieve the identifier of the accelerator item with the keycode @p key,
 	 * or QString::null if the item cannot be found.
 	 */
 	QString findKey( int key ) const;
 	
 	/**
-	 * Inserts an accelerator item
-	 *
-	 *  @param descr is the localized name of the action, useful in
-	 *  menus or the keybinding editor.
-	 *  @param action is the internal accelerator item action name. It
-	 *  is supposed to be the same for all language.
-	 *  @param defaultKeyCode is a key code to be used as the default
-	 *  for the action.  
-	 *  Set it to 0 for no default key (still allows to be configured later)
-	 *  @param configurable indicates whether a user can configure
-	 *  the key binding using the KKeyChooser GUI and whether the
-	 *  key will be written back to configuration files on calling
-	 *  writeSettings.
-	 *  @return true on success
+	 * Insert an accelerator item.
 	 *
 	 * If an action already exists the old association and connections
-	 * will be removed..
-
+	 * will be removed.
+	 *
+	 *  @param descr The localized name of the action, useful in
+	 *  menus or the keybinding editor.
+	 *  @param action The internal accelerator item action name. It
+	 *  is supposed to be the same for all languages.
+	 *  @param defaultKeyCode A key code to be used as the default
+	 *  for the action.  Set it to 0 for no default key (It still
+	 *  may be configured later.)
+	 *  @param configurable Indicates whether a user can configure
+	 *  the key binding using the @ref KKeyChooser GUI and whether the
+	 *  key will be written back to configuration files when
+	 *  @ref writeSettings() is called.
+	 *  @return true If successful.
 	 */
 	bool insertItem( const QString& descr, const QString& action, 
 			uint defaultKeyCode, bool configurable = true );
 	
 	/**
-	 * Inserts an accelerator item
-	 *
-	 *  @param descr is the localized name of the action, useful in
-	 *  menus or the keybinding editor.
-	 *  @param action is the internal accelerator item action name. It
-	 *  is supposed to be the same for all language.
-	 *  @param defaultKeyCode is a key code to be used as the default
-	 *  for the action.  
-	 *  Set it to 0 for no default key (still allows to be configured later)
-	 *  @param id menu index of menu item associated with this action
-	 *  @param qmenu menu containing item associated with this action
-	 *  @param configurable indicates whether a user can configure
-	 *  the key binding using the KKeyChooser GUI and whether the
-	 *  key will be written back to configuration files on calling
-	 *  writeSettings.
-	 *  @return true on success
+	 * Insert an accelerator item.
 	 *
 	 * If an action already exists the old association and connections
-	 * will be removed..
-
+	 * will be removed.
+	 *
+	 *  @param descr The localized name of the action, useful in
+	 *  menus or the keybinding editor.
+	 *  @param action The internal accelerator item action name. It
+	 *  is supposed to be the same for all languages.
+	 *  @param defaultKeyCode A key code to be used as the default
+	 *  for the action.  Set it to 0 for no default key (It still
+	 *  may be configured later.)
+	 *  @param id Menu index of menu item associated with this action.
+	 *  @param qmenu Menu containing item associated with this action.
+	 *  @param configurable Indicates whether a user can configure
+	 *  the key binding using the @ref KKeyChooser GUI and whether the
+	 *  key will be written back to configuration files when
+	 *  @ref writeSettings() is called.
+	 *  @return true If successful.
+	 *
 	 */
 	bool insertItem( const QString& descr, const QString& action, 
 			uint defaultKeyCode, int id, QPopupMenu *qmenu, 
 			bool configurable = true );
 	
 	 /**
-	 * Inserts an accelerator item
-	 *	
-	 * Arguments:
-	 *
-	 *  @param descr is the localized name of the action, useful in
-	 *  menus or the keybinding
-	 *	      editor.
-	 *  @param action is the internal accelerator item action name. It
-	 *  is supposed to be the same for all language.
-	 *  @param defaultKeyCode is a key plus a combination of SHIFT, CTRL
-	 *	and ALT to be used as the default for the action.
-	 *  @param id menu index of menu item associated with this action
-	 *  @param qmenu menu containing item associated with this action
-	 *  @param configurable indicates whether a user can configure
-	 *  the key
-	 *	binding using the KKeyChooser GUI and whether the key
-	 *	will be written back to configuration files on calling
-	 *	writeSettings.
-	 *  @return true on success
+	 * Insert an accelerator item.
 	 *
 	 * If an action already exists the old association and connections
-	 * will be removed..
+	 * will be removed.
+	 *	
+	 *  @param descr The localized name of the action, useful in
+	 *  menus or the keybinding editor.
+	 *  @param action The internal accelerator item action name. It
+	 *  is supposed to be the same for all languages.
+	 *  @param defaultKeyCode A key plus a combination of Shift, Ctrl
+	 *	and Alt to be used as the default for the action.
+	 *  @param id Menu index of menu item associated with this action.
+	 *  @param qmenu Menu containing item associated with this action.
+	 *  @param configurable Indicates whether a user can configure
+	 *  the key binding using the @ref KKeyChooser GUI and whether the
+	 *  key will be written back to configuration files when
+	 *  @ref writeSettings() is called.
+	 *  @return true If successful.
+	 *
 	 */
 	bool insertItem( const QString& descr, const QString& action,
 			 const QString& defaultKeyCode,
 			 bool configurable = true );
 	
 	 /**
-	 * Inserts an accelerator item
+	 * Insert an accelerator item.
 	 *	
-	 * Arguments:
-	 *
-	 *  @param descr is the localized name of the action, useful in
-	 *  menus or the keybinding
-	 *	      editor.
-	 *  @param action is the internal accelerator item action name. It
-	 *  is supposed to be the same for all language.
-	 *  @param defaultKeyCode is a key plus a combination of SHIFT, CTRL
-	 *	and ALT to be used as the default for the action.
-	 *  @param configurable indicates whether a user can configure
-	 *  the key
-	 *	binding using the KKeyChooser GUI and whether the key
-	 *	will be written back to configuration files on calling
-	 *	writeSettings.
-	 *  @return true on success
-	 *
 	 * If an action already exists the old association and connections
 	 * will be removed..
+	 *
+	 *  @param descr The localized name of the action, useful in
+	 *  menus or the keybinding editor.
+	 *  @param action The internal accelerator item action name. It
+	 *  is supposed to be the same for all languages.
+	 *  @param defaultKeyCode A key plus a combination of Shift, Ctrl
+	 *	and Alt to be used as the default for the action.
+	 *  @param configurable Indicates whether a user can configure
+	 *  the key binding using the @ref KKeyChooser GUI and whether the
+	 *  key will be written back to configuration files when
+	 *  @ref writeSettings() is called.
+	 *  @return true If successful.
+	 *
 	 */
         bool insertItem( const QString& descr, const QString& action,
                      const QString& defaultKeyCode,
 			 int id, QPopupMenu *qmenu, bool configurable = true );
 				
 	/**
-	 *	Inserts a standard accelerator item if id equal to Open,
+	 * Insert a standard accelerator item.
+	 *
+	 * If an action already exists the old association and connections
+	 * will be removed.
+	 * param id One of the following: Open,
 	 *	New, Close, Save, Print, Quit, Cut, Copy, Paste, Undo, Redo,
 	 *	Find, Replace, Insert, Home, End, Prior, Next, or Help.
-
-	 * If an action already exists the old association and connections
-	 * will be removed..
-
-	 * You can (optional) also assign a description to the standard
-	 * item which may be used a in a popup menu.
+	 * param descr You can optionally also assign a description to
+	 * the standard item which may be used a in a popup menu.
 	 */
 	bool insertStdItem( StdAccel id, const QString& descr = QString::null );
 
 
 	/**
-	 * Convenience function without the need to specify a localized
+	 * Convenience function form of @ref insertItem() 
+	 * without the need to specify a localized
 	 * function name for the user. This is useful if the accelerator
 	 * is only used internally, without appearing in a menu or a
 	 * keybinding editor.
@@ -339,7 +338,8 @@ class KAccel
 				 bool configurable = true );
 
 	/**
-	 * Convenience function without the need to specify a localized
+	 * Convenience function for of @ref insertItem() without the need
+	 * to specify a localized
 	 * function name for the user. This is useful if the accelerator
 	 * is only used internally, without appearing in a menu or a
 	 * keybinding editor.
@@ -349,12 +349,12 @@ class KAccel
 				 bool configurable = true );
 
  	/**
-	 * Removes the accelerator item with the action name action.
+	 * Remove the accelerator item with the action name action.
 	 */
 	void removeItem( const QString& action );
 
 	/**
-	 * Often (usually?) shortcuts should be visible in the menu
+	 * Shortcuts should be visible in the menu
 	 * structure of an application. Use this function for that
 	 * purpose.  Note that the action must have been inserted
 	 * before!
@@ -363,110 +363,134 @@ class KAccel
 	void changeMenuAccel ( QPopupMenu *menu, int id,
 			       const QString& action );
 	/**
-	 * Same as changeMenuAccel but for standard accelerators
+	 * Same as @ref changeMenuAccel() but for standard accelerators.
 	 */
 	void changeMenuAccel ( QPopupMenu *menu, int id,
 				 StdAccel accel );
 
 	/**
-         * Sets the dictionary of accelerator action names and KKeyEntry
-	 * objects to nKeyDict.. Note that only a shallow copy is made so
-	 * that items will be lost when the KKeyEntry objects are deleted.
+         * Set the dictionary of accelerator action names and @ref KKeyEntry
+	 * objects to @p nKeyDict. Note that only a shallow copy is made so
+	 * that items will be lost when the @ref KKeyEntry objects are deleted.
 	 */	
 	bool setKeyDict( QDict<KKeyEntry> nKeyDict );
 	
 	/**
-	 * Returns the dictionary of accelerator action names and KKeyEntry
+	 * Retrieve the dictionary of accelerator action names and 
+	 * @ref KKeyEntry
 	 * objects. Note that only a shallow copy is returned so that
-	 * items will be lost when the KKeyEntry objects are deleted.
+	 * items will be lost when the @ref KKeyEntry objects are deleted.
 	 */
 	QDict<KKeyEntry> keyDict();
 				
         /**
-	 * Reads all key associations from config, or (if config
+	 * Read all key associations from @p config, or (if @p config
          * is zero) from the application's configuration file
-         * KGlobal::config().
+         * @ref KGlobal::config().
 	 * The group in which the configuration is stored can be
-         * set with setConfigGroup().
+         * set with @ref setConfigGroup().
 	 */	
 	void readSettings(KConfig* config = 0);
+
 	/**
-	 * Writes the current configurable associations to config,
-         * or (if config is zero) to the application's
+	 * Write the current configurable associations to @p config,
+         * or (if @p config is zero) to the application's
 	 * configuration file.
 	 */	
 	void writeSettings(KConfig* config = 0);
 	
         /**
-         * Sets the group in the configuration file in which the
+         * Set the group in the configuration file in which the
          * accelerator settings are stored. By default, this is "Keys".
          */
 	void setConfigGroup( const QString& group );
+
+	/**
+	 * Retrieve the name of the group in which accelerator
+	 * settings are stored.
+	 **/
 	QString configGroup() const;
 
+	/**
+	 * If @global is @true, KAccel writes to the global
+	 *  configurtion file, instead of the application configuration file.
+	 **/
         void setConfigGlobal( bool global );
+	/**
+	 * Will KAccel write to the global configuration file (instead of
+	 *  the appliation configuration file)?
+	 **/
         bool configGlobal() const;
 	
 	/**
-	 * Enables the accelerator if activate is true, or disables it if
-	 * activate is false...
+	 * Enable all accelerators if activate is @p true, or disable it if
+	 * activate is @p false.
 	 *
 	 * Individual keys can also be enabled or disabled.
 	 */
 	void setEnabled( bool activate );
+	/**
+	 * Are accelerators enabled?
+	 **/
 	bool isEnabled() const;
 	
 	/**
-	 * Enables or disables an accelerator item.
+	 * Enable or disable an accelerator item.
 	 *
-	 * Arguments:
-	 *
-	 * @param action is the accelerator item action name.
-	 * @param activate specifies whether the item should be enabled or
+	 * @param action The accelerator item action name.
+	 * @param activate Specifies whether the item should be enabled or
 	 *	disabled.
 	 */
 	void setItemEnabled( const QString& action, bool activate );
+	/**
+	 * Check whether a specific accelerator, @p action, is enabled.
+	 **/
 	bool isItemEnabled( const QString& action ) const;
 				
 	/**
-	 *	Returns a standard action name if id equal to Open,
+	 *	Retrieve a standard action name if @p id is one of
+	 *      the following: Open,
 	 *	New, Close, Save, Print, Quit, Cut, Copy, Paste, Undo, Redo,
-	 *	Find, Replace, Insert, Home, End, Prior, Next, or Help
-	 *	and QString::null otherwise.
+	 *	Find, Replace, Insert, Home, End, Prior, Next, or Help.
+	 *	The method returns QString::null otherwise.
 	 */
 	static QString stdAction( StdAccel id );
 
 	/**
-	 * Returns true if keyentry can be modified
+	 * Returns @p true if keyentry can be modified.
 	 */
 	bool configurable( const char * action ) const;
 
 	/**
-	 *  Change the keycode for an accelerator
+	 *  Change the keycode for an accelerator.
 	 */
 	bool updateItem( const char * action, uint keyCode);
 
 	/**
-	 *  remove the keycode for an accelerator
+	 *  Remove the keycode for an accelerator.
 	 **/
 	void clearItem(const char *action);
 
 	/**
-	 *  clear any pointers to a menu
+	 *  Clear any pointers to a menu.
 	 **/
         void removeDeletedMenu(QPopupMenu *menu);
 	
         /**
-         * Returns the key code corresponding to the string sKey or zero if the string
-         * is not recognized. The string must be something like "SHIFT+A",
-         * "F1+CTRL+ALT" or "Backspace" for example. That is, a key plus a combination
-         * of SHIFT, CTRL and ALT.
-         * NB: sKey must *not* be i18ned !!
+         * Retrieve the key code corresponding to the string @p sKey or
+	 * zero if the string
+         * is not recognized. The string must be something like "Shift+A",
+         * "F1+Ctrl+Alt" or "Backspace" for example. That is, the string
+	 * must consist of a key name plus a combination of
+	 * the modifiers Shift, Ctrl and Alt.
+	 *
+         * N.B.: @p sKey must @bf not be @ref i18n()'d!
          */	
          static uint stringToKey( const QString& sKey );
          /**
-          * Returns a string corresponding to the key code keyCode, which is empty if
-          * keyCode is not recognized or zero.
+          * Retrieve a string corresponding to the key code @p keyCode,
+	  * which is empty if
+          * @p keyCode is not recognized or zero.
           */
          static QString keyToString( uint keyCode, bool i18_n = false );
 

@@ -27,11 +27,11 @@
 /** 
  * KDE Configuration entries
  *
- * This is a trivial extension of KConfig for applications that need
+ * This is a trivial extension of @ref KConfig for applications that need
  * only one configuration file and no default system.  It also adds
  * the ability to delete keys and/or groups.  Lastly, when the data in
- * memory is written back out at sync() time, it is not merged with
- * what is on disk -- whatever is in memory simply replaces what is on
+ * memory is written back out by @ref sync(), it is not merged with
+ * what is on disk.  Whatever is in memory simply replaces what is on
  * disk entirely.
  *
  * @author Kalle Dalheimer <kalle@kde.org>, Preston Brown <pbrown@kde.org>
@@ -83,7 +83,7 @@ public:
    * before the next operation on the configuration object.
    *
    * @param pGroup The name of the group
-   * @param bDeep Whether non-empty groups should be completely
+   * @param bDeep Specify whether non-empty groups should be completely
    *        deleted (including their entries).
    * @return If the group does not exist or is not empty and bDeep is
    *         false, deleteGroup returns false.

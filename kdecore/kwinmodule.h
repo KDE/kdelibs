@@ -30,14 +30,16 @@ class KWinModulePrivate;
 
 /**
 
-   THIS API ISN'T FINISHED YET: IT'S STILL VERY COMPATIBLE WITH THE OLD KWMMODULEAPPLICATION.
-   BE AWARE THAT IT MIGHT CHANGE A BIT BEFORE KDE-2.0 FREEZE
 
+ *   THIS API ISN'T FINISHED YET: IT'S STILL VERY COMPATIBLE WITH THE OLD KWMMODULEAPPLICATION.
+ * BE AWARE THAT IT MIGHT CHANGE A BIT BEFORE KDE-2.0 FREEZE
+ *
  *   The class KWinModule provides information about the window manager required by
  * windowmanager modules. It mainly informs a module about all
  * currently managed windows and changes to them (via Qt
  * signals). There are no methods to manipulate windows. These are
  * defined in the class KWM (see kwm.h).
+ *
  * @short Base class for KDE Window Manager modules.
  * @author Matthias Ettrich (ettrich@kde.org)
  * @version $Id$
@@ -49,57 +51,59 @@ class KWinModule : public QObject
 public:
 
     /**
-       Creates a win module object and connects to the window
-       manager. If @param dockModule is TRUE, the module will also
-       serve as docking module.
-     */
+     * Create a KWinModule object and connect to the window
+     * manager. If @param dockModule is TRUE, the module will also
+     * serve as docking module.
+     **/
     KWinModule( QObject* parent = 0, bool dockModule = FALSE );
 
     /**
-       Destructor. Internal cleanup, nothing fancy.
-    */
+     * Destructor. Internal cleanup, nothing fancy.
+     **/
     ~KWinModule();
 
   /**
-   * A list of all toplevel windows currently managed by the
+   * Retieve list of all toplevel windows currently managed by the
    * windowmanger in the order of creation. Please do not rely on
    * indexes of this list: Whenever you enter Qt's eventloop in your
-   * application it may happen, that entries are removed or added.
-   * your module should perhaps work on a copy of this list and verify a
-   * window with hasWindow() before any operations.
+   * application it may happen that entries are removed or added.
+   * Your module should perhaps work on a copy of this list and verify a
+   * window with @ref hasWindow() before any operations.
    *
-   * Iterateration over this list can be done easily with
-   QValueList<WId>::ConstIterator it;
-   for ( it = module->windows().begin(); it != modules->windows().end(); ++it ) {
-         ... do something here,  (*it) is the current WId.
-   }
-   *
+   * Iteration over this list can be done easily with
+   * <pre>
+   *  QValueList<WId>::ConstIterator it;
+   *  for ( it = module->windows().begin(); 
+   *        it != modules->windows().end(); ++it ) {
+   *     ... do something here,  (*it) is the current WId.
+   *       }
+   * </pre>
    */
     const QValueList<WId>& windows() const;
 
   /**
-   * A list of all toplevel windows currently managed by the
+   * Retrieve a list of all toplevel windows currently managed by the
    * windowmanger in the current stacking order (from lower to
    * higher). May be useful for pagers.
-   */
+   **/
     const QValueList<WId>& windowsSorted() const;
 
     /**
-   * Is <WId> still managed at present?
-   */
+     * Test to see if @p WId still managed at present.
+     **/
     bool hasWId(WId) const;
 
 
     /**
-    * The dock windows. Only valid if you are succesfully connected as
-    * docking module
-    */
+     * Retrieve a list of the dock windows. Only valid if you are
+     * succesfully connected as a docking module.
+     **/
     const QValueList<WId>& dockWindows() const;
 
 
     /*
-      A cached shortcut for KWM::currentDesktop()
-     */
+     * A cached shortcut for @ref KWM::currentDesktop()
+     **/
     int currentDesktop() const;
 
 signals:

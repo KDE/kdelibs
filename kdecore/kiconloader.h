@@ -39,7 +39,7 @@ class KInstance;
 /**
    Icon loader with caching.
 
-   Multiples loads of the same icons using this class will be cached
+   Multiple loads of the same icon using this class will be cached
    using @ref QPixmapCache, saving memory and loading time.
    
    Within KDE there are two distinct groups of Icons:
@@ -54,9 +54,9 @@ class KInstance;
    and 64x64 (Large). 
    
    Icons are searched for according to the KDE file system standard
-   using KStandardDirs. Look up the various methods for details how.
+   using @ref KStandardDirs. Look up the various methods for details how.
    
-   All keys used in QPixmapCache by this class have the "$kico_.." prefix.
+   All keys used in @ref QPixmapCache by this class have the "$kico_.." prefix.
    
    @author Christoph Neerfeld (chris@kde.org) and Stephan Kulow (coolo@kde.org)
    @version $Id$
@@ -77,12 +77,12 @@ public:
   /**
    * Constructor. Adds some application specific paths to lookup
    * toolbar icons. These are below the application's data dir 
-   * (@see KStandardDirs for details) and are namely pics/ and
-   * toolbar/
+   * (@see KStandardDirs for details) and are namely @p pics/ and
+   * @p toolbar/
    *
    * @param app_name specifies the name of the application to add
    * paths of. If the name is null (default) the name from 
-   * KGlobal::instance() is used.
+   * @ref KGlobal::instance() is used.
    * 
    */
   KIconLoader ( const QString &app_name = QString::null );
@@ -91,7 +91,7 @@ public:
    * Constructs an KIconLoader for a component stored in a shared library.
    * Objects constructed with this constructor access all instance related
    * data (search paths, application name) from the given library instead of
-   * KGlobal::instance()
+   * @ref KGlobal::instance().
    *
    */
   KIconLoader( const KInstance* library );
@@ -104,23 +104,23 @@ public:
 	one from the cache. The returned pixmap will be inserted in
 	the cache so you use loadIcon after that.
 
-	@see loadIcon
+	@see  loadIcon()
   */
   QPixmap reloadIcon( const QString& name);
 
   /**
-   * The loadIcon method should be used for loading most non-toolbar
-   * icons (it <em>will</em> load toolbar icons, but the recommended
-   * way is to use BarIcon).
+   * This method should be used for loading most non-toolbar
+   * icons (it @bf will load toolbar icons, but the recommended
+   * way is to use @ref BarIcon).
    *
-   * @param name icon name without extension. An example is "konqueror" or
-   *             "mimetypes/postscript"
-   * @param the prefered size to load. 
-   * @param path_store output parameter, will contain the full path to the icon
-   *                if not 0
-   * @param canReturnNull If this is false, this function will return
+   * @param name Icon name without extension. An example is @p "konqueror" or
+   *             @p "mimetypes/postscript"
+   * @param size The prefered size to load. 
+   * @param path_store This output parameter will contain the full path to the icon
+   *                if not 0.
+   * @param canReturnNull If this is @p false, this function will return
 		the "unknown" icon if the requested icon is not found.
-		The default is to return null.
+		The default is to return @p null.
    */
     QPixmap loadIcon( const QString& name, Size size = Medium,
                       QString *path_store = 0, bool can_return_null = true );
@@ -133,15 +133,15 @@ public:
                  "unknown" if the icon is not found. Note that it will
 		 return null if "unknown" was also not found.
      
-     @return the physical path to the named icon.
+     @return The physical path to the named icon.
   */
   QString iconPath( const QString& name,
 		    bool always_valid=false);
 
 
   /**
-   * sets the @see KStandardDirs type of icons loadIcon will load. 
-   * Default is "toolbar"
+   * Sets the @see KStandardDirs type of icons  loadIcon() will load. 
+   * The default is "toolbar".
    **/
   void setIconType(const QString &type) { iconType = type; }
 

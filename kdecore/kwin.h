@@ -33,10 +33,10 @@
 
    It implements the new NET-protocol, a common window manager
    specification designed by various authors of X11 window managers.
-   TODO: add more information here, links etc. once the spec is done
+   TODO: Add more information here, links etc. once the spec is done
    and fully implemented.
 
-   @short class for interaction with the windowmanager
+   @short Class for interaction with the windowmanager.
    @author Matthias Ettrich (ettrich@kde.org)
 */
 class KWin  {
@@ -44,16 +44,16 @@ class KWin  {
 public:
 
     /**
-       Returns the number of virtual desktops.
-    */
+     * Rerieve the number of virtual desktops.
+     **/
   static int numberOfDesktops();
 
     /**
-       Sets the number of virtual desktops.
-
-       This is a request to the window manager. It may or may not be
-       obeyed.
-    */
+     * Set the number of virtual desktops.
+     *
+     * This is a request to the window manager. It may or may not be
+     * obeyed.
+     */
     static void setNumberOfDesktops(int num);
 
     /**
@@ -66,55 +66,55 @@ public:
 
 
     /**
-       Sets the current virtual desktop
-
-       This is a request to the window manager. It may or may not be
-       obeyed.
-     */
+     * Set the current virtual desktop
+     *
+     * This is a request to the window manager. It may or may not be
+     * obeyed.
+     **/
     static void setCurrentDesktop( int desktop );
 
     /**
-       Returns the window which has the focus, or 0 if no window has the focus.
+     * Retrieve the window which has the focus, or 0 if no window has the focus.
     */
     static WId activeWindow();
 
 
     /**
-       Sets the active window.
-
-       This is a request to the window manager. It may or may not be
-       obeyed.
+     * Set the active window.
+     *
+     * This is a request to the window manager. It may or may not be
+     * obeyed.
     */
     static void setActiveWindow( WId win);
 
 
     /**
-       Registers the window @p dockWin as docking window for window
-       @p forWin.
-
-       This is a xlowlevel API. See @ref KDockWindow in libkdeui for
-       easier usage.
+     * Register the window @p dockWin as docking window for window
+     * @p forWin.
+     *
+     * This is a low-level API. See @ref KDockWindow in libkdeui for
+     * easier usage.
      */
     static void setDockWindow(WId dockWin, WId forWin  = 0 );
 
     /**
-       Returns whether the window @p dockWin is a docking window.  If
-       @p forWin is specified, forWin returns the window dockWin is
-       docking for.
+     * Tests whether the window @p dockWin is a docking window.  If
+     * @p forWin is specified, @p forWin returns the window @p dockWin is
+     * docking for.
      */
     static bool isDockWindow( WId dockWin, WId *forWin = 0 );
 
 
     enum WindowState { WithdrawnState = 0, NormalState = 1, IconicState = 3 };
     /**
-       Returns the state of the window @p win. Possible states are
-       NormalState, IconicState and WithdrawnState
+     * Retrieve the state of the window @p win. Possible states are
+     * @p NormalState, @p IconicState and @p WithdrawnState
      */
     static WindowState windowState( WId win );
     
     
     /**
-       Invokes interactive context help
+     * Invoke interactive context help.
      */
     static void invokeContextHelp();
 

@@ -31,15 +31,15 @@
  * Class for handling Palettes.
  *
  * This class makes it easy to handle palettes.
- * A palette is a set of colours. This class can read
- * and write palettes from and to file.
+ * A palette is a set of colors. This class can read
+ * and write palettes from and to a file.
  *
  * This class uses the "GIMP" palette file format.
  *
  * This class is totally unrelated to QPalette.
  *
  * @author Waldo Bastian (bastian@kde.org)
- * @version $Id:  $
+ * @version $Id$
  **/
 class KPalette {
 public:
@@ -53,7 +53,7 @@ public:
    /**
     * KPalette constructor. Creates a KPalette from a file
     * the filename is derived from the name.
-    * @param name The name of palette as returned by @ref #getPaletteList
+    * @param name The name of palette as returned by @ref getPaletteList()
     **/
    KPalette(const QString &name=QString::null);
 
@@ -91,7 +91,7 @@ public:
    	{ return mName; }
 
    /**
-    * Set the name of the palette
+    * Set the name of the palette.
     **/
    void setName(const QString &name)
    	{ mName = name; }
@@ -118,26 +118,26 @@ public:
 
    /**
     * Find color by index.
-    * @return the index-th color of the palette.
+    * @return The @p index -th color of the palette.
     **/
    QColor color(int index);
    
    /**
-    * Find index by color.
-    * @return the index of the color in the palette or -1 if the
+    * Find index by @p color.
+    * @return The index of the color in the palette or -1 if the
     * color is not found.
     **/
    int findColor(const QColor &color);
 
    /** 
-    * Find colorname by index.
-    * @return The name of the index-th color.
+    * Find colorname by @p index.
+    * @return The name of the @p index -th color.
     * Note that not all palettes have named the colors.
     **/
    QString colorName(int index);
    
    /**
-    * Find colorname by color.
+    * Find colorname by @p color.
     * @return The name of color according to this palette.
     * Note that not all palettes have named the colors.
     * Note also that each palette can give the same color
@@ -150,17 +150,17 @@ public:
     * Add a color.
     * @param newColor The color to add.
     * @param newColorName The name of the color.
-    * @return the index of the added color.
+    * @return The index of the added color.
     **/
    int addColor(const QColor &newColor, 
                 const QString &newColorName = QString::null);
 
    /**
-    * Change a color
+    * Change a color.
     * @param index Index of the color to change
     * @param newColor The new color.
     * @param newColorName The new color name.
-    * @return the index of the new color or -1 if the color couldn't
+    * @return The index of the new color or -1 if the color couldn't
     * be changed.
     **/
    int changeColor(int index, 
@@ -168,11 +168,11 @@ public:
                    const QString &newColorName = QString::null);
  
    /**
-    * Change a color
+    * Change a color.
     * @param oldColor The original color
     * @param newColor The new color.
     * @param newColorName The new color name.
-    * @return the index of the new color or -1 if the color couldn't
+    * @return The index of the new color or -1 if the color couldn't
     * be changed.
     **/
    int changeColor(const QColor &oldColor, 

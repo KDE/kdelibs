@@ -38,14 +38,13 @@ class KApplication;
 class KCmdLineParsedArgs;
 
 /**
- *  This is a class for simple access to the command-line arguments.
+ *  Simple access to the command-line arguments.
  *
  *  It takes into account Qt-specific options, KDE-specific options
  *  and application specific options.
  *
- *  You have to give two arguments to the constructor, a number and an
- *  array of char[]. The first represents the number of strings in the
- *  array and the second is the array itself.
+ *  This class is used in @ds main() via the static method
+ *   @ref init().
  *
  *  @short A class for command-line argument handling.
  *  @author Waldo Bastian
@@ -60,12 +59,13 @@ public:
   /**
    * Initialization function.
    *
-   * This function should be called as very first thing in your application.
-   * @param argc as passed to main(...)
-   * @param argv as passed to main(...)
+   * This function should be called as the very first thing in
+   *  your application.
+   * @param argc As passed to main(...).
+   * @param argv As passed to main(...).
    * @param appname The untranslated name of your application. This should
    *                match with argv[0].
-   * @param description A shot description of what your application is about.
+   * @param description A short description of what your application is about.
    * @param version A version and copyright message.
    */
   static void init(int _argc, char **_argv, 
@@ -82,12 +82,13 @@ public:
    * @param id A name with which these options can be identified.
    *          
    */
-  static void addCmdLineOptions( const KCmdLineOptions *options, const char *name=0, const char *id = 0);
+  static void addCmdLineOptions( const KCmdLineOptions *options, 
+				 const char *name=0, const char *id = 0);
 
   /**
    * Access parsed arguments
    *
-   * This function returns you all command line arguments which your code
+   * This function returns all command line arguments which your code
    * handles. If unknown command line arguments are encountered the program
    * is aborted and usage information is shown. 
    *
@@ -96,14 +97,14 @@ public:
   static KCmdLineArgs *parsedArgs(const char *id=0);
 
   /**
-   * Print the usage help to stdout and exit.
+   * Print the usage help to @ds stdout and exit.
    *
    * @param complete If true, print all available options.
    **/
   static void usage(const char *id = 0);
 
   /**
-   * Print an error to stderr and the usage help to stdout and exit.
+   * Print an error to @ds stderr and the usage help to @ds stdout and exit.
    *
    **/
   static void usage(const QString &error);
@@ -111,8 +112,8 @@ public:
   /**
    * Enable i18n to be able to print a translated error message.
    * 
-   * This function leaks memory so you are expected to exit 
-   * afterwards. E.g. by calling usage().
+   * N.B.: This function leaks memory so you are expected to exit 
+   * afterwards, e.g. by calling usage().
    **/
   static void enable_i18n();
 
@@ -127,17 +128,17 @@ public:
   /**
    *  Read out a string option.
    *  
-   *  @param option the name of the option without '-'.
+   *  @param option The name of the option without '-'.
    *
    *  @return The value of the option. If the option was not
-   *          present on the cmdline the default is returned.
+   *          present on the command line the default is returned.
    */
   const char *getOption(const char *option);
 
   /**
-   *  Read out a boolean option / Check presence of string option.
+   *  Read out a boolean option or check for the presence of string option.
    *  
-   *  @param option the name of the option without '-' or '-no'.
+   *  @param option The name of the option without '-' or '-no'.
    *
    *  @return The value of the option. If the option was not
    *          present on the cmdline the default is returned.
@@ -176,7 +177,8 @@ protected:
    * @internal
    *  Constructor.
    */
-  KCmdLineArgs( const KCmdLineOptions *_options, const char *_id, const char *_name);
+  KCmdLineArgs( const KCmdLineOptions *_options, const char *_id,
+		const char *_name);
 
   /**
    * @internal
