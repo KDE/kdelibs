@@ -121,7 +121,8 @@ QString KXMLGUIClient::xmlFile() const
 
 void KXMLGUIClient::reloadXML()
 {
-  setXMLFile( d->m_xmlFile );
+  if ( !d->m_xmlFile.isNull() )
+    setXMLFile( d->m_xmlFile );
 }
 
 void KXMLGUIClient::setInstance( KInstance *instance )
