@@ -104,6 +104,7 @@ void KHTMLWidget::init()
   m_bEnableImages      = true;
   _javaEnabled = false;
   _jScriptEnabled = false;
+  _followLinks = true;
   jscript = 0;
 
     if ( lstViews == 0L )
@@ -589,6 +590,8 @@ void KHTMLWidget::urlSelected( const QString &_url, int _button, const QString &
     return;
 
   QString url = completeURL( _url );
+
+  printf("urlSelected: url=%s\n", url.latin1());
 
   if(!_followLinks)
   {

@@ -28,6 +28,7 @@ int main(int argc, char *argv[])
     doc->resize(800,500);
     doc->enableJScript(true);
     doc->enableJava(true);
+    //doc->setFollowsLinks(false);
 
     a.setTopWidget(doc);
     doc->openURL(argv[1]);
