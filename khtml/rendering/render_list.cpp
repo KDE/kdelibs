@@ -333,7 +333,7 @@ void RenderListMarker::calcMinMaxWidth()
 
     if(listImage) {
 	if(m_style->listStylePosition() == INSIDE)
-	    m_width = listImage->pixmap().width();
+	    m_width = listImage->pixmap().width() + 5;
 	return;
     }
 
@@ -361,31 +361,27 @@ void RenderListMarker::calcMinMaxWidth()
 	// ### unsupported, we use decimal instead
     case LDECIMAL:
 	item.sprintf( "%2ld", val );
-	item += '.';
 	break;
     case LOWER_ROMAN:
 	item = toRoman( val, false );
-	item += '.';
 	break;
     case UPPER_ROMAN:
 	item = toRoman( val, true );
-	item += '.';
 	break;
     case LOWER_GREEK:
 	// ### unsupported, use low-alpha instead
     case LOWER_ALPHA:
     case LOWER_LATIN:
 	item = (QChar) ((int)('a' + val - 1));
-	item += '.';
 	break;
     case UPPER_ALPHA:
     case UPPER_LATIN:
 	item = (QChar) ((int)('A' + val - 1));
-	item += '.';
 	break;
     case LNONE:
 	break;
     }
+    item += QString::fromLatin1(". ");
     if(m_style->listStylePosition() != INSIDE)
 	m_width = 0;
     else {
@@ -406,4 +402,8 @@ short RenderListMarker::baselineOffset() const
 short RenderListMarker::verticalPositionHint() const
 {
     return QFontMetrics(m_style->font()).ascent();
+}
+
+void RenderListMarker::calcWidth()
+{
 }

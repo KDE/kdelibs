@@ -689,7 +689,7 @@ BidiContext *RenderFlow::bidiReorderLine(BidiStatus &status, const BidiIterator 
 	    levelHigh--;
 	}
     }
-    
+
 #if BIDI_DEBUG > 0
     kdDebug(6041) << "visual order is:" << endl;
     QListIterator<BidiRun> it3(runs);
@@ -731,11 +731,10 @@ BidiContext *RenderFlow::bidiReorderLine(BidiStatus &status, const BidiIterator 
 	    r->yOffset += maxAscent + m_height;
 	if(r->obj->isText())
 	    r->width = static_cast<RenderText *>(r->obj)->width(r->start, r->stop-r->start);
-	else
-        {
-            r->obj->calcWidth();
+	else {
+	    r->obj->calcWidth();
 	    r->width = r->obj->width()+r->obj->marginLeft()+r->obj->marginRight();
-        }
+	}
 	totWidth += r->width;
 	r = runs.next();
     }

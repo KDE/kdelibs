@@ -58,6 +58,8 @@ namespace khtml
 	virtual short verticalPositionHint() const;
 
 	virtual void setPixmap( const QPixmap &, const QRect&, CachedImage *, bool *manualUpdate=0);	
+	
+	virtual void calcWidth();
 
 	long int val;
 	QString item;
@@ -82,7 +84,7 @@ public:
     void setValue( long v ) { predefVal = v; }
     void calcListValue();
     bool checkChildren() const;
-    
+
     virtual void print(QPainter *p, int x, int y, int w, int h,
 		       int xoff, int yoff);
     virtual void printObject(QPainter *p, int x, int y, int w, int h,
