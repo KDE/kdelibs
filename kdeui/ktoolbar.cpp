@@ -512,6 +512,8 @@ void KToolBar::mousePressEvent ( QMouseEvent *m )
   pointerOffset = m->pos();
   if ( moving && m->button() != LeftButton)
     context->popup( mapToGlobal( m->pos() ), 0 );
+  else
+    grabMouse(sizeAllCursor);
 }
 
 void KToolBar::resizeEvent( QResizeEvent *e )
@@ -1302,7 +1304,15 @@ void KToolBar::setBarPos(BarPosition bpos)
                  p, TRUE);
 	XSetTransientForHint( qt_xdisplay(), winId(), Parent->topLevelWidget()->winId());
 	KWM::setDecoration(winId(), FALSE);
-	setCaption("toolbar");
+	setCaption(""); // this triggers a qt bug
+	if (title){
+	  setCaption(title);
+	}
+	else {
+	  QString s = Parent->caption();
+	  s.append(" [tools]");
+	  setCaption(s);
+	}
         updateRects (TRUE);
         //show();
         context->changeItem (klocale->translate("UnFloat"), CONTEXT_FLOAT);
@@ -1378,8 +1388,8 @@ void KToolBar::setItemPixmap( int _id, const QPixmap& _pixmap )
   this->setButtonPixmap (_id, _pixmap);
 }
 
-void KToolBar::mouseMoveEvent(QMouseEvent* m){
-  if (!moving || !m->state() & MouseButtonMask)
+void KToolBar::mouseMoveEvent(QMouseEvent* /* m */){
+  if (!moving || mouseGrabber() != this)
     return;
   if (position != Floating){
     QPoint p = mapFromGlobal(QCursor::pos()) - pointerOffset;
@@ -1393,8 +1403,9 @@ void KToolBar::mouseMoveEvent(QMouseEvent* m){
 			ButtonPressMask | ButtonReleaseMask |
 			PointerMotionMask | EnterWindowMask | LeaveWindowMask,
 			GrabModeAsync, GrabModeAsync,
-			None, None, CurrentTime ) != GrabSuccess);
-    grabMouse();
+			None, sizeAllCursor.handle(), 
+			CurrentTime ) != GrabSuccess);
+    grabMouse(sizeAllCursor);
   }
   move(QCursor::pos() - pointerOffset);    
   QPoint p = QCursor::pos() - pointerOffset - (Parent->mapToGlobal(QPoint(0,0)) + parentOffset);
@@ -1407,8 +1418,9 @@ void KToolBar::mouseMoveEvent(QMouseEvent* m){
 			ButtonPressMask | ButtonReleaseMask |
 			PointerMotionMask | EnterWindowMask | LeaveWindowMask,
 			GrabModeAsync, GrabModeAsync,
-			None, None, CurrentTime ) != GrabSuccess);
-    grabMouse();
+			None, sizeAllCursor.handle(), 
+			CurrentTime ) != GrabSuccess);
+    grabMouse(sizeAllCursor);
     pointerOffset = mapFromGlobal(QCursor::pos());
   }
 }

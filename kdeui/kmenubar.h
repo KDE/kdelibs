@@ -120,9 +120,6 @@ private:
    menuPosition position;
    menuPosition lastPosition;
    menuPosition movePosition;
-   QFrame *handle;
-   QPoint pointerOffset;
-   QPoint parentOffset;
      
    QPopupMenu *context;
    QMenuBar *menu;
@@ -139,7 +136,13 @@ signals:
      */
     void highlighted(int id);
 
-    
+    /**
+ private:
+     */
+    void activated(int id);
+
+private:
+
    KToolBoxManager *mgr;
    bool highlight;
    bool transparent;

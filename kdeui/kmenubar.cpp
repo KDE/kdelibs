@@ -20,16 +20,6 @@
 
 #define MENUBAR_IS_RAISED
 
-// Sven -
-// But beware that it looks ugly when toolbar is raised
-// I cannot draw shaded panel around menubar, cause it would
-// totaly #§%$*% resizing
-// If kde comunity wants to have raised menubar do the
-// resizing things properly or just uncoment this and suffer uglyness
-
-// Mark Donohoe (17-9-97) -
-// With a little reworking of the menubar style one can get round the ugly
-// look
 // Moving with KToolBoxManager
 _menuBar::_menuBar (QWidget *parent, const char *name)
   : QMenuBar (parent, name)
@@ -38,8 +28,8 @@ _menuBar::_menuBar (QWidget *parent, const char *name)
    setFrameStyle(NoFrame);
 #endif
 	
-	//MD (17-9-97)
-	setLineWidth(1);
+   //MD (17-9-97)
+   setLineWidth(1);
  }
 
 _menuBar::~_menuBar ()
@@ -57,6 +47,16 @@ static QPixmap* miniGo = 0;
   Parent = parent;        // our father
   oldWFlags = getWFlags();
   menu = new _menuBar (frame);
+  frame = new QFrame (this);
+  frame->setFrameStyle(NoFrame);
+
+  // WARNING: this is a hack for qt-1.3
+  // Real qt-1.3 support should use heightFromWidth() in 
+  // resizeEvent. But this will not work for qt-1.2.
+  // Let us wait until qt-1.3 is released.  Matthias
+  frame->installEventFilter(menu);
+
+
   menu = new QMenuBar (frame);
   menu->setLineWidth( 1 );
   oldMenuFrameStyle = menu->frameStyle();
@@ -76,15 +76,15 @@ int KMenuBar::idAt( int index )
      // Khm... I'm resized from kwm
      // menu bar installs eventFilter on parent, so we don't have
      // to bother with resizing her
-     frame->setGeometry( 11, 2, width()-9-4, height()-4);
+     frame->setGeometry( 9, 0, width()-9, height());
      frame->resize(menu->width(), menu->height());
-     if (height() != frame->height()+4 ||
-         width() != frame->width()+9+4)
+     if (height() != frame->height() ||
+         width() != frame->width()+9)
       {
         //warning ("resize");
-        resize(frame->width()+9+4, frame->height()+4);
+        resize(frame->width()+9, frame->height());
       }
-     handle->setGeometry(2,2,9,height()-4);
+     handle->setGeometry(0,0,9,height());
    }
   else
    {
@@ -134,7 +134,7 @@ void KMenuBar::ContextCallback( int index )
   
   context->insertItem( i18n("Bottom"), CONTEXT_BOTTOM );
   context->insertItem( i18n("Floating"), CONTEXT_FLOAT );
-  //setFrameStyle( QFrame::Panel | QFrame::Raised );
+  position = Top;
   moving = TRUE;
   transparent = false;
 
@@ -159,17 +159,6 @@ void KMenuBar::mousePressEvent ( QMouseEvent * )
     }
 void KMenuBar::paintEvent(QPaintEvent *)
 }
-
-#ifdef MENUBAR_IS_RAISED
-  QColorGroup g = QWidget::colorGroup();
-  QPainter *paint = new QPainter();
-  paint->begin(this);
-	// MD (17-9-97) Change panel shadow from 2 pixels to 1
-	qDrawShadePanel(paint, 0, 0, width(), height(), g , FALSE, 1);
-  paint->end();
-  delete paint;
-  
-#endif
 void KMenuBar::paintEvent(QPaintEvent *)
 {
   //QApplication::sendEvent(menu, e);
@@ -198,13 +187,15 @@ void KMenuBar::leaveEvent (QEvent *e){
       pointerOffset = mapFromGlobal(handle->mapToGlobal(((QMouseEvent*)ev)->pos()));
       if ( moving && ((QMouseEvent*)ev)->button() != LeftButton)
 	context->popup( handle->mapToGlobal(((QMouseEvent*)ev)->pos()), 0 );
+      else
+	handle->grabMouse(sizeAllCursor);
       return TRUE;
     }
     if (ev->type() == Event_MouseButtonRelease){
       handle->releaseMouse();
     }
     if (ev->type() == Event_MouseMove){
-      if (!moving || !((QMouseEvent*)ev)->state() & MouseButtonMask)
+      if (!moving || mouseGrabber() != handle)
 	return TRUE;
       if (position != Floating){
 	p = mapFromGlobal(QCursor::pos()) - pointerOffset;
@@ -217,8 +208,9 @@ void KMenuBar::leaveEvent (QEvent *e){
 			    ButtonPressMask | ButtonReleaseMask |
 			    PointerMotionMask | EnterWindowMask | LeaveWindowMask,
 			    GrabModeAsync, GrabModeAsync,
-			    None, None, CurrentTime ) != GrabSuccess);
-	handle->grabMouse();
+			    None, sizeAllCursor.handle(), 
+			    CurrentTime ) != GrabSuccess);
+	handle->grabMouse(sizeAllCursor);
       }
       move(QCursor::pos() - pointerOffset);    
       p = QCursor::pos() - pointerOffset - (Parent->mapToGlobal(QPoint(0,0)) + parentOffset);
@@ -230,8 +222,9 @@ void KMenuBar::leaveEvent (QEvent *e){
 			    ButtonPressMask | ButtonReleaseMask |
 			    PointerMotionMask | EnterWindowMask | LeaveWindowMask,
 			    GrabModeAsync, GrabModeAsync,
-			    None, None, CurrentTime ) != GrabSuccess);
-	handle->grabMouse();
+			    None, sizeAllCursor.handle(),
+			    CurrentTime ) != GrabSuccess);
+	handle->grabMouse(sizeAllCursor);
 	pointerOffset = mapFromGlobal(QCursor::pos());
       }
       return TRUE;
@@ -287,10 +280,17 @@ void KMenuBar::enableMoving(bool flag)
                  p, TRUE);
  	XSetTransientForHint( qt_xdisplay(), winId(), Parent->topLevelWidget()->winId());
 	KWM::setDecoration(winId(), FALSE);
-	setCaption("menubar");
+	setCaption(""); // this triggers a qt bug
+	if (title){
+	  setCaption(title);
+	}
+	else {
+	  QString s = Parent->caption();
+	  s.append(" [menu]");
+	  setCaption(s);
+	}
 	setFrameStyle( QFrame::Panel | QFrame::Raised );
-        //updateRects (TRUE);
-        //show();
+	menu->setFrameStyle( QFrame::Panel | QFrame::Raised );
         context->changeItem (klocale->translate("UnFloat"), CONTEXT_FLOAT);
 		*miniGo = px;
           connect( Parent, SIGNAL(destroyed()), obj, SLOT(tlwDestroyed()));
@@ -300,8 +300,8 @@ void KMenuBar::enableMoving(bool flag)
         return;
       }
      else if (position == Floating || position == FloatingSystem) // was floating
+      {
         position = mpos;
-        //updateRects (TRUE);
         context->changeItem (klocale->translate("Float"), CONTEXT_FLOAT);
 	menu->setFrameStyle(oldMenuFrameStyle);
 //          menu->setMouseTracking(true);
