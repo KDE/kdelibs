@@ -46,7 +46,7 @@ include_HEADERS = kconfig.h kconfigdata.h ksimpleconfig.h kconfigbase.h \
 	kurldrag.h kmimesourcefactory.h kmdcodec.h ksocks.h \
 	ksycoca.h ksycocaentry.h ksycocatype.h kxmessages.h kstartupinfo.h \
 	klargefile.h kmultipledrag.h kgenericfactory.h kgenericfactory.tcc ktypelist.h \
-	ksortablevaluelist.h kdebugclasses.h
+	ksortablevaluelist.h kdebugclasses.h kclipboard.h
 
 libkdefakes_la_SOURCES = fakes.c vsnprintf.c
 libkdefakes_la_LDFLAGS = -version-info 4:0
@@ -75,10 +75,10 @@ libkdecore_la_SOURCES = libintl.cpp kapplication.cpp kdebug.cpp netwm.cpp  \
 	kaudioplayer.cpp kdcoppropertyproxy.cpp \
 	kextsock.cpp ksockaddr.cpp netsupp.cpp kprocio.cpp kbufferedio.cpp \
 	kpixmapprovider.cpp kurldrag.cpp \
-        kmdcodec.cpp ksocks.cpp fakes.c vsnprintf.c \
+	kmdcodec.cpp ksocks.cpp fakes.c vsnprintf.c \
 	ksycoca.cpp ksycocadict.cpp ksycocafactory.cpp ksycoca.skel \
 	kxmessages.cpp kstartupinfo.cpp kcatalogue.cpp kasyncio.cpp \
-	kmultipledrag.cpp kstaticdeleter.cpp kappdcopiface.cpp kappdcopiface.skel
+	kmultipledrag.cpp kstaticdeleter.cpp kappdcopiface.cpp kappdcopiface.skel kclipboard.cpp
 
 libkdecore_la_LDFLAGS = $(QT_LDFLAGS) $(KDE_RPATH) $(KDE_MT_LDFLAGS) $(X_LDFLAGS) $(USER_LDFLAGS) -version-info 4:0 -no-undefined
 libkdecore_la_LIBADD = malloc/libklmalloc.la $(LIB_DCOP) ../libltdl/libltdlc.la $(LIB_XEXT) $(LIBRESOLV) $(LIBXINERAMA) $(LIB_DMALLOC) $(LIBART_LIBS) $(SVGICON_LIBS)
