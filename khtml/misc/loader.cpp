@@ -471,7 +471,7 @@ const QPixmap &CachedImage::tiled_pixmap(const QColor& newc)
     QSize s(pixmap_size());
     int w = r.width();
     int h = r.height();
-    if ( w*h < 8192 ) 
+    if ( w*h < 8192 )
     {
         if ( r.width() < BGMINWIDTH )
             w = ((BGMINWIDTH  / s.width())+1) * s.width();
@@ -1058,7 +1058,8 @@ void Loader::cancelRequests( DocLoader* dl )
     {
         if ( pIt.current()->m_docLoader == dl )
         {
-            //kdDebug( 6060 ) << "cancelling pending request for " << pIt.current()->object->url().string() << endl;
+            kdDebug( 6060 ) << "cancelling pending request for " << pIt.current()->object->url().string() << endl;
+            //emit requestFailed( dl, pIt.current()->object );
             Cache::removeCacheEntry( pIt.current()->object );
             m_requestsPending.remove( pIt );
         }
@@ -1078,6 +1079,7 @@ void Loader::cancelRequests( DocLoader* dl )
             Cache::removeCacheEntry( lIt.current()->object );
             m_requestsLoading.remove( lIt.currentKey() );
             job->kill();
+            //emit requestFailed( dl, pIt.current()->object );
         }
         else
             ++lIt;
@@ -1179,7 +1181,7 @@ CachedImage *Cache::requestImage( DocLoader* dl, const DOMString & url, bool rel
         CachedImage *im = new CachedImage(dl, kurl.url(), reload, _expireDate);
         if ( dl && dl->autoloadImages() ) Cache::loader()->load(dl, im, true);
         cache->insert( kurl.url(), im );
-        lru->append( kurl.url() );
+        lru->prepend( kurl.url() );
         flush();
         o = im;
     }
@@ -1232,7 +1234,7 @@ CachedCSSStyleSheet *Cache::requestStyleSheet( DocLoader* dl, const DOMString & 
 #endif
         CachedCSSStyleSheet *sheet = new CachedCSSStyleSheet(dl, kurl.url(), reload, _expireDate, charset);
         cache->insert( kurl.url(), sheet );
-        lru->append( kurl.url() );
+        lru->prepend( kurl.url() );
         flush();
         o = sheet;
     }
@@ -1285,7 +1287,7 @@ CachedScript *Cache::requestScript( DocLoader* dl, const DOM::DOMString &url, bo
 #endif
         CachedScript *script = new CachedScript(dl, kurl.url(), reload, _expireDate, charset);
         cache->insert( kurl.url(), script );
-        lru->append( kurl.url() );
+        lru->prepend( kurl.url() );
         flush();
         o = script;
     }

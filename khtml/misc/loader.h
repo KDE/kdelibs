@@ -469,7 +469,7 @@ namespace khtml
 	    void touch( const QString &url )
 	    {
 		remove( url );
-		append( url );
+		prepend( url );
 	    }
 	};
 
