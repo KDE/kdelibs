@@ -500,6 +500,7 @@ void KWM::setWindowRegion(int desk, const QRect &region){
 		       0,0,0,0,0,0,0,0,
 		       0,0,0,0,0,0,0,0,
 		       0,0,0,0,0,0,0,0};
+  static Atom ac = 0;
   if (desk < 1 || desk > 32){
     kwm_error = TRUE;
     return;
@@ -511,6 +512,9 @@ void KWM::setWindowRegion(int desk, const QRect &region){
     a[desk-1] = XInternAtom(qt_xdisplay(), n.data(), False);
   }
   setQRectProperty(qt_xrootwin(), a[desk-1], region);
+  if (!ac)
+      ac = XInternAtom(qt_xdisplay(), "KWM_WINDOW_REGION_CHANGED", False);
+  sendClientMessage(qt_xrootwin(), ac, (long) desk); // inform the window manager
 }
 
 QRect KWM::getWindowRegion(int desk){
@@ -960,7 +964,7 @@ void KWM::setMaximize(Window w, bool value){
     a = XInternAtom(qt_xdisplay(), "KWM_WIN_MAXIMIZED", False);
   setSimpleProperty(w, a, value?1:0);
 }
-void KWM::doMaximize(Window w, bool value) { 
+void KWM::doMaximize(Window w, bool value) {
   static Atom a = 0;
   if (!a)
     a = XInternAtom(qt_xdisplay(), "KWM_MAXIMIZE_WINDOW", False);
