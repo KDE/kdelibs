@@ -169,7 +169,7 @@ void KCheckAccelerators::checkAccelerators( bool automatic )
     QString a, c, r;
     KAcceleratorManager::last_manage(a, c,  r);
 
-    if (!automatic) // for now we only show dialogs on F12 checks
+    if (automatic) // for now we only show dialogs on F12 checks
         return;
 
     if (c.isEmpty() && r.isEmpty() && (automatic || a.isEmpty()))
