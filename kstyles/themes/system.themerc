@@ -8,11 +8,8 @@ XShift=1
 YShift=1
 
 [PushButtonDown]
-Background=224,212,201
-Gradient=Diagonal
-BackGround=214,192,181
-GradientLow=214,192,181
-GradientHigh=244,232,221
+Background=147,165,198
+Foreground=255,255,255
 
 [HScrollGroove]
 Pixmap=darkgraytexture.png
@@ -39,8 +36,9 @@ GradientLow=171,171,171
 #GradientHigh=170,196,234
 #GradientLow=123,139,162
 #Gradient=Vertical
-Background=214,192,181
+Background=200,200,200
 Foreground=0,0,0
+Pixmap=graytexture.png
 Border=0
 Highlight=0
 
@@ -58,10 +56,8 @@ GradientHigh=233,233,233
 GradientLow=171,171,171
 
 [ComboBoxDown]
-Background=219,219,219
-Gradient=Diagonal
-GradientHigh=233,233,253
-GradientLow=171,171,191
+Background=147,165,198
+Foreground=255,255,255
 
 [VSBarSlider]
 Background=219,219,219
@@ -85,11 +81,11 @@ GradientLow=171,171,171
 
 [ToolButton]
 Border=0
-Background=206,172,148
+Background=147,165,198
 
 [ToolButtonDown]
 Border=0
-Background=226,192,168
+Background=167,185,218
 
 [ScrollButton]
 Border=0
@@ -110,9 +106,10 @@ Highlight=1
 
 [ToolBar]
 Border=0
-Highlight=0
 Background=219,219,219
-Pixmap=graytexture.png
+Gradient=Vertical
+GradientHigh=233,233,233
+GradientLow=190,190,190
 
 [MenuBar]
 CopyWidget=ToolBar
@@ -128,26 +125,18 @@ GradientLow=0,0,128
 Background=200,200,200
 
 [Tab]
-Background=206,172,148
-Gradient=Vertical
-GradientHigh=186,152,108
-GradientLow=206,172,148
+Border=0
+Pixmap=darkgraytexture.png
 BottomLine=true
 
 [TabDown]
-Background=201,201,201
-Gradient=Vertical
-GradientLow=162,162,162
-GradientHigh=240,240,240
-BottomLine=true
+Pixmap=graytexture.png
+Border=0
+BottomLine=false
 
 [MenuBarItem]
-Background=206,172,148
-GradientHigh=186,152,128
-GradientLow=226,192,168
-Gradient=Vertical
+Background=147,165,198
 Border=0
-Highlight=1
 
 [Slider]
 Pixmap=elec_slider.png
@@ -166,10 +155,10 @@ Pixmap=switch_off.png
 Pixmap=switch_on.png
 
 [Radio]
-Pixmap=elec_off.xpm
+Pixmap=elec_off.png
 
 [RadioDown]
-Pixmap=elec_on.xpm
+Pixmap=elec_on.png
 
 [HScrollDeco]
 Pixmap=sbdeco_elec.png
