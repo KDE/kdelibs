@@ -585,7 +585,7 @@ QString KProtocolManager::defaultUserAgent( const QString &_modifiers )
      
   QString supp;
   struct utsname nam;
-  if( uname(&nam) == 0 )
+  if( uname(&nam) >= 0 )
   {
     if( modifiers.contains('o') )
     {
