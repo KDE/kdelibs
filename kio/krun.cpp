@@ -534,7 +534,11 @@ void KRun::foundMimeType( const QString& type )
 {
   kdDebug(7010) << "Resulting mime type is " << debugString(type) << endl;
 
+/*
   // Automatically unzip stuff
+
+  // Disabled since the new KIO doesn't have filters yet.
+
   if ( type == "application/x-gzip"  ||
        type == "application/x-bzip"  ||
        type == "application/x-bzip2"  )
@@ -581,6 +585,7 @@ void KRun::foundMimeType( const QString& type )
 
     return;
   }
+*/
 
   if (KRun::runURL( m_strURL, type )){
     m_bFinished = true;
