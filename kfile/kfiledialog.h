@@ -80,8 +80,8 @@ public:
       * files on the local filesystem.
       */
     KFileBaseDialog(const QString& dirName, const QString& filter,
-		QWidget *parent, const char *name,
-		bool modal, bool acceptURLs);
+		    QWidget *parent, const char *name,
+		    bool modal, bool acceptURLs);
 
 
     /**
@@ -92,12 +92,22 @@ public:
     /**
       * Returns the fully qualified filename.
       */
-    QString selectedFile();
+    QString selectedFile() const;
+    
+    /**
+      * Returns the url of the selected filename
+      */
+    QString selectedFileURL() const;
+    
+    /**
+     * Return the list of filenames.
+     **/
+    QStringList selectedFiles() const; 
 
     /**
       * Return the path of the selected directory.
       */
-    QString dirPath();
+    QString dirPath() const;
 
     /**
       * Rereads the currently selected directory.
@@ -130,24 +140,14 @@ public:
     bool dirIsLocal() const { return !acceptUrls; }
 
     /**
-      * Returns the url of the selected filename
-      */
-    QString selectedFileURL();
-
-    /**
-      * Returns the URLs of the selected files.
-      */
-    QStrList selectedFileURLList();
-
-    /**
       * If the argument is true the dialog will accept multiple selections.
       */
-    void setMultiSelection(bool multi= true);
+    void setMultiSelection(bool multi = true);
 
     /**
       * Returns true if multiple selections are enabled.
       */
-    bool isMultiSelection() const { return false; }
+    bool isMultiSelection() const { return _multi; }
 
     /**
       * This method creates a modal directory dialog and returns the selected
@@ -161,21 +161,6 @@ public:
     static QString getDirectory(const QString& url = QString::null,
 				QWidget *parent = 0,
 				const char *name = 0);
-
-    /**
-      * This a multiple selection version of getOpenFileURL().
-      */
-    QStrList getOpenFileURLList(const QString& url= QString::null,
-				const QString& filter= QString::null,
-				QWidget *parent= 0,
-				const char *name= 0);
-
-    /**
-      * This a multiple selection version of getSaveFileURL().
-      */
-    QStrList getSaveFileURLList(const QString& url= QString::null, 
-				const QString& filter= QString::null,
-				QWidget *parent= 0, const char *name= 0);
 
     /**
       * Sets the directory to view
@@ -356,12 +341,6 @@ protected slots:
     virtual void okPressed();
 
     /**
-      * You should override this method if you change the user interface of
-      * this dialog in a subclass in order to invoke your updated user help.
-      */
-    virtual void help();
-
-    /**
       * Add the current location to the global bookmarks list
       */
     void addToBookmarks();
@@ -396,9 +375,9 @@ protected:
 
     QPushButton *bOk;
     QPushButton *bCancel;
-    QPushButton *bHelp;
     QLabel *locationLabel;
     QLabel *filterLabel;
+    bool _multi;
 
 private:
 
@@ -452,7 +431,12 @@ public:
 				   const QString& filter= QString::null,
 				   QWidget *parent= 0, 
 				   const char *name= 0);
-
+    
+    static QStringList getOpenFileNames(const QString& dir= QString::null, 
+					const QString& filter= QString::null,
+					QWidget *parent = 0, 
+					const char *name = 0);
+    
     /**
      * This method creates a modal file dialog and returns the selected
      * filename or an empty string if none was chosen. Note that with this

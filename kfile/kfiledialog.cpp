@@ -44,7 +44,6 @@
 #include <kio_job.h>
 #include <kconfig.h>
 #include <kglobal.h>
-#include <kdebug.h>
 
 enum Buttons { BACK_BUTTON= 1000, FORWARD_BUTTON, PARENT_BUTTON,
 	       HOME_BUTTON, RELOAD_BUTTON, HOTLIST_BUTTON,
@@ -244,12 +243,6 @@ void KFileBaseDialog::init()
     } else
 	myStatusLine = 0L;
 
-    bHelp= new QPushButton(i18n("Help"), this, "_help");
-    bHelp->adjustSize();
-    bHelp->setMinimumWidth(bHelp->width());
-    bHelp->setFixedHeight(bHelp->height());
-    connect(bHelp, SIGNAL(clicked()), SLOT(help()));
-
     bOk= new QPushButton(i18n("OK"), this, "_ok");
     bOk->adjustSize();
     bOk->setMinimumWidth(bOk->width());
@@ -344,7 +337,6 @@ void KFileBaseDialog::initGUI()
     boxLayout->addSpacing(3);
     btngroup= new QHBoxLayout(10);
     boxLayout->addLayout(btngroup, 0);
-    btngroup->addWidget(bHelp, 1);
     btngroup->addStretch(2);
     btngroup->addWidget(bOk, 1);
     btngroup->addWidget(bCancel, 1);
@@ -363,17 +355,10 @@ KFileBaseDialog::~KFileBaseDialog()
     delete visitedDirs;
     delete dir;
     KConfig *c = KGlobal::config();
-    QString oldgroup= c->group();
-    c->setGroup("KFileDialog Settings");
+    KConfigGroupSaver(c, "KFileDialog Settings");
     c->writeEntry("Width", width(), true, true);
     c->writeEntry("Height", height(), true, true);
-    c->setGroup(oldgroup);
     c->sync();
-}
-
-void KFileBaseDialog::help() // SLOT
-{
-    kapp->invokeHTMLHelp("kfiledialog/index.html", "");
 }
 
 bool KFileDialog::getShowFilter()
@@ -459,18 +444,17 @@ void KFileBaseDialog::checkPath(const QString&_txt, bool takeFiles) // SLOT
 }
 
 
-QString KFileBaseDialog::selectedFile()
+QString KFileBaseDialog::selectedFile() const
 {
     if (filename_.isNull())
       return QString();
 
     KURL u(filename_);
     QString path = u.path();
-//    KURL::decodeURL(path); should be decoded already
     return path;
 }
 
-QString KFileBaseDialog::dirPath()
+QString KFileBaseDialog::dirPath() const
 {
     return dir->path();
 }
@@ -1027,25 +1011,19 @@ void KFileBaseDialog::dirActivated(KFileInfo *item)
 {
     KURL tmp ( dir->url() );
     tmp.cd(item->fileName());
-    kdebug(KDEBUG_INFO, 250, "dirActivated %s", (const char *)tmp.path().local8Bit());
     setDir(tmp.path(), true);
 }
 
 void KFileBaseDialog::fileActivated(KFileInfo *item)
 {
-    kdebug(KDEBUG_INFO, 250, "KFileBaseDialog::fileActivated(...)");
     KURL tmp ( dir->url() );
-    kdebug(KDEBUG_INFO, 250, "tmp = %s",tmp.url().data());
     tmp.setFileName(item->fileName());
-    kdebug(KDEBUG_INFO, 250, "tmp with filename = %s",tmp.url().data());
 
-    kdebug(KDEBUG_INFO, 250, "acceptUrls = %d", acceptUrls);
     if (acceptUrls)
 	filename_ = tmp.url();
     else
 	filename_ = tmp.path();
 
-    kdebug(KDEBUG_INFO, 250, "emit fileSelected(%s)", filename_.data() );
     emit fileSelected(filename_);
 
     if (!finished)
@@ -1205,7 +1183,7 @@ void KFileBaseDialog::completion() // SLOT
 /**
  * Returns the url for the selected filename
  */
-QString KFileBaseDialog::selectedFileURL()
+QString KFileBaseDialog::selectedFileURL() const
 {
     if (filename_.isNull())
 	return QString();
@@ -1284,35 +1262,36 @@ QString KFileDialog::getSaveFileURL(const QString& url, const QString& filter,
     return retval;
 }
 
-/**
- * Returns the selected files
-
-QStrList KFileDialog::selectedFileURLList()
+QStringList KFileDialog::getOpenFileNames(const QString& dir, 
+					  const QString& filter,
+					  QWidget *parent, 
+					  const char *name)
 {
-  // TODO
+    KFileDialog *dlg = new KFileDialog(dir, filter, parent, name, true, false);
+    dlg->setMultiSelection(true);
+
+    dlg->setCaption(i18n("Open"));
+
+    QStringList filenames;
+    if (dlg->exec() == QDialog::Accepted)
+	filenames = dlg->selectedFiles();
+
+    delete dlg;
+
+    return filenames;
 }
 
-QStrList KFileDialog::getOpenFileURLList(const QString& ,
-					 const QString& ,
-					 QWidget *,
-					 const char *)
+QStringList KFileBaseDialog::selectedFiles(void) const
 {
-  // TODO
+    return QStringList();
 }
-
-QStrList KFileDialog::getSaveFileURLList(const QString& , const QString& ,
-		       QWidget *, const char *)
-{
-  // TODO
-}
-*/
 
 /**
  * If the argument is true the dialog will accept multiple selections.
  */
-void KFileBaseDialog::setMultiSelection(bool)
+void KFileBaseDialog::setMultiSelection(bool multi)
 {
-    warning("WARNING: Multi Select is not supported yet");
+    _multi = multi;
     // fileList->setMultiSelection(isMulti);
 }
 
