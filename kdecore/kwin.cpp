@@ -58,6 +58,7 @@ static Atom net_current_desktop;
 static Atom net_active_window;
 static Atom net_wm_context_help;
 static Atom net_kde_docking_window_for;
+static Atom net_avoid_spec;
 static Atom kwm_dock_window;
 
 extern Atom qt_wm_state;
@@ -68,6 +69,7 @@ static void createAtoms() {
 	net_current_desktop = XInternAtom(qt_xdisplay(), "_NET_CURRENT_DESKTOP", False);
 	net_active_window = XInternAtom(qt_xdisplay(), "_NET_ACTIVE_WINDOW", False);
 	net_kde_docking_window_for = XInternAtom(qt_xdisplay(), "_NET_KDE_DOCKING_WINDOW_FOR", False);
+	net_avoid_spec = XInternAtom(qt_xdisplay(), "_NET_AVOID_SPEC", False);
 	kwm_dock_window = XInternAtom(qt_xdisplay(), "KWM_DOCKWINDOW", False);
 
 	const int max = 20;
@@ -93,6 +95,9 @@ static void createAtoms() {
 
 	atoms[n] = &net_kde_docking_window_for;
 	names[n++] = "_NET_KDE_DOCKING_WINDOW_FOR";
+	
+  atoms[n] = &net_avoid_spec;
+	names[n++] = "_NET_AVOID_SPEC";
 
 	// we need a const_cast for the shitty X API
 	XInternAtoms( qt_xdisplay(), const_cast<char**>(names), n, FALSE, atoms_return );
@@ -465,3 +470,27 @@ void KWin::updateClientArea()
   }
 }
 
+bool KWin::avoid(WId win)
+{
+  XTextProperty avoidProp;
+
+  if (0 == XGetTextProperty(qt_xdisplay(), win, &avoidProp, net_avoid_spec))
+    return false;
+
+  char ** avoidList;
+  int avoidListCount;
+
+  if (0 == XTextPropertyToStringList(&avoidProp, &avoidList, &avoidListCount))
+    return false;
+
+  if (avoidListCount != 1) {
+    qDebug("KWin::avoid(): avoid list count != 1");
+    return false;
+  }
+
+  bool avoid = (avoidList[0][0] != '\0');
+
+  XFreeStringList(avoidList);
+
+  return avoid;
+}

@@ -140,6 +140,12 @@ public:
     static void avoid(WId win, AnchorEdge edge);
 
     /**
+     * Query whether a window with WId @p win should be avoided.
+     * Ugh, better naming required.
+     */
+    static bool avoid(WId win);
+
+    /**
      * Remove the window @p win from the list of those that should be avoided.
      *
      * This is useful if your window can be hidden in some way, e.g.
