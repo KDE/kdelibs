@@ -28,6 +28,9 @@
 
     $Id$     
 */  
+
+#include <string.h>
+
 struct entity {
     const char *name;
     int code;
