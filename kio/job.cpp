@@ -666,6 +666,11 @@ FileCopyJob::FileCopyJob( const KURL& src, const KURL& dest, int permissions,
       m_permissions(permissions), m_move(move), m_overwrite(overwrite), m_resume(resume),
       m_totalSize(0)
 {
+    if (showProgressInfo && !move)
+      Observer::self()->slotCopying( this, src, dest );
+    if (showProgressInfo && move)
+      Observer::self()->slotMoving( this, src, dest );
+
     kdDebug(7007) << "FileCopyJob::FileCopyJob()" << endl;
     m_moveJob = 0;
     m_copyJob = 0;
@@ -1172,10 +1177,6 @@ CopyJob::CopyJob( const KURL::List& src, const KURL& dest, bool move, bool asMet
     connect( this, SIGNAL( processedDirs( KIO::Job*, unsigned long ) ),
 	     Observer::self(), SLOT( slotProcessedDirs( KIO::Job*, unsigned long ) ) );
 
-    connect( this, SIGNAL( copying( KIO::Job*, const KURL& , const KURL& ) ),
-	     Observer::self(), SLOT( slotCopying( KIO::Job*, const KURL&, const KURL& ) ) );
-    connect( this, SIGNAL( moving( KIO::Job*, const KURL& , const KURL& ) ),
-	     Observer::self(), SLOT( slotMoving( KIO::Job*, const KURL&, const KURL& ) ) );
     connect( this, SIGNAL( creatingDir( KIO::Job*, const KURL& ) ),
 	     Observer::self(), SLOT( slotCreatingDir( KIO::Job*, const KURL& ) ) );
 
