@@ -138,7 +138,7 @@ class KWalletD : public KDEDModule {
 		void timedOut(int);
 
 	private:
-		int internalOpen(const QString& wallet, bool isPath = false, WId w = 0);
+		int internalOpen(const QCString& appid, const QString& wallet, bool isPath = false, WId w = 0);
 		// This also validates the handle.  May return NULL.
 		KWallet::Backend* getWallet(int handle);
 		// Generate a new unique handle.

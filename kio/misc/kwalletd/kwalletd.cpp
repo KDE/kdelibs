@@ -106,7 +106,7 @@ int KWalletD::openPath(const QString& path, uint wId) {
 		return -1;
 	}
 
-	return internalOpen(path, true, wId);
+	return internalOpen(friendlyDCOPPeerName(), path, true, wId);
 }
 
 
@@ -118,6 +118,8 @@ int KWalletD::open(const QString& wallet, uint wId) {
 	if (!QRegExp("^[A-Za-z0-9]+[A-Za-z0-9\\s\\-_]*$").exactMatch(wallet)) {
 		return -1;
 	}
+
+	QCString appid = friendlyDCOPPeerName();
 
 	if (_firstUse && !wallets().contains(KWallet::Wallet::LocalWallet())) {
 	       	// First use wizard
@@ -163,15 +165,14 @@ int KWalletD::open(const QString& wallet, uint wId) {
 		cfg.sync();
 	}
 
-	return internalOpen(wallet, false, wId);
+	return internalOpen(appid, wallet, false, wId);
 }
 
 
-int KWalletD::internalOpen(const QString& wallet, bool isPath, WId w) {
+int KWalletD::internalOpen(const QCString& appid, const QString& wallet, bool isPath, WId w) {
 	int rc = -1;
 	bool brandNew = false;
 
-	QCString appid = friendlyDCOPPeerName();
 	for (QIntDictIterator<KWallet::Backend> i(_wallets); i.current(); ++i) {
 		if (i.current()->walletName() == wallet) {
 			rc = i.currentKey();
