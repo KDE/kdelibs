@@ -1,74 +1,81 @@
-DCOP: Desktop COmmunications Protocol
+		DCOP: Desktop COmmunications Protocol
+
+		    Preston Brown <pbrown@kde.org>
+
+			   October 14, 1999
+
 
 Motivation and Background:
 
-The motivation behind building a protocol like DCOP was simple.  For the past
-year, we have been attempting to enable interprocess communication between KDE
-applications. KDE already has an extremely simple IPC mechanism called KWMcom,
-which is used for communicating between the panel and the window manager for
-instance.  It is about as simple as it gets, passing messages via X Atoms.
-For this reason it is limited in the size and complexity of the data that can
-be passed (X atoms must be small to remain efficient) and it also makes it so
+The motivation behind building a protocol like DCOP was simple.  For
+the past year, we have been attempting to enable interprocess
+communication between KDE applications. KDE already has an extremely
+simple IPC mechanism called KWMcom, which is used for communicating
+between the panel and the window manager for instance.  It is about as
+simple as it gets, passing messages via X Atoms.  For this reason it
+is limited in the size and complexity of the data that can be passed
+(X atoms must be small to remain efficient) and it also makes it so
 that X is required.  CORBA was thought to be a more effective IPC/RPC
-solution.  However, after a year of attempting to make heavy use of CORBA in
-KDE, we have realized that it is a bit slow and memory intensive for simple
-use.  It also has no authentication available.
+solution.  However, after a year of attempting to make heavy use of
+CORBA in KDE, we have realized that it is a bit slow and memory
+intensive for simple use.  It also has no authentication available.
 
 What we really needed was an extremely simple protocol with basic
-authorization, along the lines of MIT-MAGIC-COOKIE, as used by X.  It would
-not be able to do NEARLY was CORBA was able to do, but for the simple tasks
-required it would be sufficient. Some examples of such tasks might be an
-application sending a message to the panel saying, "I have started, stop
-displaying the 'application starting' wait state," or having a new application
-that starts query to see if any other applications of the same name are
-running.  If they are, simply call a function on the remote application to
-create a new window, rather than starting a new process.
+authorization, along the lines of MIT-MAGIC-COOKIE, as used by X.  It
+would not be able to do NEARLY was CORBA was able to do, but for the
+simple tasks required it would be sufficient. Some examples of such
+tasks might be an application sending a message to the panel saying,
+"I have started, stop displaying the 'application starting' wait
+state," or having a new application that starts query to see if any
+other applications of the same name are running.  If they are, simply
+call a function on the remote application to create a new window,
+rather than starting a new process.
 
 Implementation:
 
-DCOP is a simple IPC/RPC mechanism built to operate over sockets.  Either unix
-domain sockets or tcp/ip sockets are supported. DCOP is built on top of the
-Inter Client Exchange (ICE) protocol, which comes standard as a part of X11R6
-and later. It also depends on Qt, but beyond that it does not require any
-other libraries. Because of this, it is extremely lightweight, enabling it to
-be linked into all KDE applications with low overhead.
+DCOP is a simple IPC/RPC mechanism built to operate over sockets.
+Either unix domain sockets or tcp/ip sockets are supported. DCOP is
+built on top of the Inter Client Exchange (ICE) protocol, which comes
+standard as a part of X11R6 and later. It also depends on Qt, but
+beyond that it does not require any other libraries. Because of this,
+it is extremely lightweight, enabling it to be linked into all KDE
+applications with low overhead.
 
 Model:
 
 The model is simple.  Each application using DCOP is a client.  They
-communicate to each other through a DCOP server, which functions like a
-traffic director, dispatching messages/calls to the proper destinations.  All
-clients are peers of each other.
+communicate to each other through a DCOP server, which functions like
+a traffic director, dispatching messages/calls to the proper
+destinations.  All clients are peers of each other.
 
-Two types of actions are possible with DCOP: "send and forget" messages, which
-do not block, and "calls," which block waiting for some data to be returned.
+Two types of actions are possible with DCOP: "send and forget"
+messages, which do not block, and "calls," which block waiting for
+some data to be returned.
 
-Any data that will be sent is serialized (marshalled, for you CORBA types)
-with the built in QDataStream operators available in all of the Qt classes.
-This is fast and easy.  Currently, there is no type-checking or parameter
-checking available for RPC, but this may be provided at some time in the
-future in the form of a simple IDL-like compiler.  Until that is available,
-you will have to code some things by hand that normally the compiler or CORBA
-take care of automatically, but it is not a lot of work.
+Any data that will be sent is serialized (marshalled, for you CORBA
+types) with the built in QDataStream operators available in all of the
+Qt classes.  This is fast and easy.  Currently, there is no
+type-checking or parameter checking available for RPC, but this may be
+provided at some time in the future in the form of a simple IDL-like
+compiler.  Until that is available, you will have to code some things
+by hand that normally the compiler or CORBA take care of
+automatically, but it is not a lot of work.
 
-Usage:
+Establishing the Connection:
 
-KApplication has gained a method called "KApplication::dcopClient()" which
-returns a pointer to a DCOPClient instance.  The first time this method is
-called, the client class will be created.  DCOPClients have unique (hopefully)
-identifiers attached to them which are exactly the same as
-KApplication::name() returns.  If you never call the
-KApplication::dcopClient() method in your application, the client will not be
-created, and thus if you aren't interested in IPC/RPC, you will not see any
-memory overhead.  Even if you do instantiate the client, the overhead is
-extremely small, on the order of approximately 160k of data.
+KApplication has gained a method called "KApplication::dcopClient()"
+which returns a pointer to a DCOPClient instance.  The first time this
+method is called, the client class will be created.  DCOPClients have
+unique identifiers attached to them which are based on what
+KApplication::name() returns.  In fact, if there is only a single
+instance of the program running, the appId will be equal to
+KApplication::name().
 
 To actually enable DCOP communication to begin, you must use
-DCOPClient::attach().  This will attempt to attach to the DCOP server.  If no
-server is found or there is any other type of error, attach() will return
-false.  Also note that until you are attached, other applications wishing to
-communicate with you will not see that you exist.  Most applications which are
-DCOP-enabled should probably do something like this at startup time:
+DCOPClient::attach().  This will attempt to attach to the DCOP server.
+If no server is found or there is any other type of error, attach()
+will return false.  Applications which are DCOP-enabled should
+probably do something like this at startup time:
 
 client = kApp->dcopClient();
 if (!client->attach()) {
@@ -80,12 +87,116 @@ if (!client->attach()) {
   exit(1);
 }
 
-You may also detach and deregister an application from the DCOP server by
-simply calling DCOPClient::detach().
 
-To actually communicate, you have one of two choices.  You may either call
-the "send" or the "call" method.  Both methods require three
+After connecting with the server via DCOPClient::attach(), you need to
+register this appId with the server so it knows about you.  Otherwise,
+you are communicating anonymously.  Use the
+DCOPClient::registerAs(const QCString &name) to do so.  In the simple
+case:
+
+/*
+ * returns the appId that is actually registered, which _may_ be
+ * different from what you passed
+ */
+appId = client->registerAs(kApp->name());
+
+If you never retrieve the DCOPClient pointer from KApplication, the
+object will not be created and thus there will be no memory overhead.
+
+You may also detach from the server by calling DCOPClient::detach().
+If you wish to attach again you will need to re-register as well.  If
+you only wish to change the ID under which you are registered, simply
+call DCOPClient::registerAs() with the new name.
+
+
+Sending Data to a Remote Application:
+
+To actually communicate, you have one of two choices.  You may either
+call the "send" or the "call" method.  Both methods require three
 parameters: an application identifier, a remote object, a remote
-function, Sending is asynchronous (i.e. it returns immediately) and may or may
-not result in your own application being sent a message at some point in the
-future.
+function, Sending is asynchronous (i.e. it returns immediately) and
+may or may not result in your own application being sent a message at
+some point in the future.
+
+The remote object must be specified as an object hierarchy.  That is,
+if the toplevel object is called "fooObject" and has the child
+"barObject", you would reference this object as "fooObject/barObject".
+Functions must be described by a full function signature.  If the
+remote function is clled "doIt", it returns a QString, and it takes an
+int, it would be described as "QString doIt(int)".
+
+In order to actually get the data to the remote client, it must be
+"serialized" via a QDataStream operating on a QByteArray.  A few
+examples will make how this works clear.
+
+Say you want to call "doIt" as described above, and not block (or wait
+for a response).  You will not receive the return value, but you will
+not hang while the RPC is processed either.
+
+QByteArray params;
+QDataStream stream(params, IO_WriteOnly);
+params << 5;
+if (!client->send("someAppId", "fooObject/barObject", "QString doIt(int)",
+	          params))
+  qDebug("there was some error using DCOP.");
+
+OK, now let's say we wanted to get the data back.  You have to execute
+a call() instead of a send().  The actual return value of call() is
+still whether or not DCOP communication was successful.
+
+QByteArray params, reply;
+QDataStream stream(params, IO_WriteOnly);
+params << 5;
+if (!client->call("someAppId", "fooObject/barObject", "QString doIt(int)",
+                  params, reply))
+  qDebug("there was some error using DCOP.");
+else {
+  QDataStream stream2(reply, IO_ReadOnly);
+  QString result;
+  stream2 >> result;
+  print("the result is: %s",result.latin1());
+}
+
+
+Receiving Data via DCOP:
+
+(this section subject to change)
+
+Currently the only real way to receive data from DCOP is to multiply
+inherit from the normal class that you are inheriting (usually some
+sort of QWidget subclass or QObject) as well as the DCOPObject class.
+DCOPObject provides one very important method: DCOPObject::process().
+This is a pure virtual method that you must implement in order to
+process DCOP messages that you receive.  It takes a function
+signature, QByteArray of parameters, and a reference to a QByteArray
+for the reply data that you must fill in.
+
+Think of DCOPObject::process() as a sort of dispatch agent.  In the
+future, there will probably be a precompiler for your sources to write
+this method for you.  However, until that point you need to examine
+the incoming function signature and take action accordingly.  Here is
+an example implementation.
+
+bool BarObject::process(const QCString &fun, const QByteArray &data,
+		       QByteArray &replyData)
+{
+  if (fun == "QString doIt(int)") {
+    QDataStream stream(data, IO_ReadOnly);
+    int arg;
+    QString res;
+    stream >> arg;
+    res = self->doIt(arg);
+    QDataStream stream2(replyData, IO_WriteOnly);
+    stream2 << res;
+    return true;
+  } else {
+    qDebug("unknown function call to BarObject::process()");
+    return false;
+  }
+}
+
+
+Hopefully this document will get you well on your way into the world
+of inter-process communication with KDE!  Please direct all comments
+and/or suggestions to Preston Brown <pbrown@kde.org>.
+
