@@ -114,6 +114,12 @@ protected:
     void appendStringBuffer( int min_size);
     
     void addListing(const char *list);
+
+    void parseComment(const char * &str);
+    void parseStyle(const char * &str);
+    void parseScript(const char * &str);
+    void parseListing(const char * &str);
+    void parseTag(const char * &str);
     
 protected:
     // Internal buffers

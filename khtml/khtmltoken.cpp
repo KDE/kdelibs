@@ -148,68 +148,6 @@ void HTMLTokenizer::begin()
     charEntity = false;
 }
 
-void HTMLTokenizer::addPending()
-{
-    if ( tag || select)     
-    {
-    	*dest++ = ' ';
-    }
-    else if ( textarea )
-    {
-	if (pending == LFPending)
-	    *dest++ = '\n';
-	else
-	    *dest++ = ' ';    	
-    }
-    else if ( pre )
-    {
-    	int p;
-
-	switch (pending)
-	{
-	  case SpacePending:
-		// Insert a non-breaking space
-		*(unsigned char *)dest++ = 0xa0; 
-	  	prePos++;
-	  	break;
-
-	  case LFPending:
-		if ( dest > buffer )
-		{
-		    *dest = 0;
-		    appendToken( buffer, dest-buffer );
-		}
-		dest = buffer;
-		*dest = TAG_ESCAPE;
-		*(dest+1) = '\n';
-		*(dest+2) = 0;
-		appendToken( buffer, 2 );
-		dest = buffer;
-		prePos = 0; 
-	  	break;
-	  	
-	  case TabPending:
-		p = TAB_SIZE - ( prePos % TAB_SIZE );
-		for ( int x = 0; x < p; x++ )
-		{
-		    *dest = ' ';
-		    dest++;
-		}
-		prePos += p;
-	  	break;
-	  	
-	  default:
-	  	printf("Assertion failed: pending = %d\n", (int) pending);
-	  	break;
-	}
-    }
-    else
-    {
-    	*dest++ = ' ';
-    }
-
-    pending = NonePending;
-}
 
 void HTMLTokenizer::addListing(const char *list)
 {
@@ -315,6 +253,433 @@ void HTMLTokenizer::addListing(const char *list)
     pre = old_pre;    
 }
 
+void HTMLTokenizer::parseListing( const char * &src)
+{
+    // We are inside of the <script> or <style> tag. Look for the end tag
+    // which is either </script> or </style>,
+    // otherwise print out every received character
+
+    while ( *src != 0 )
+    {
+	// do we need to enlarge the buffer?
+	if ( (dest - buffer) > size )
+	{
+	    char *newbuf = new char [ size + 1024 + 20 ];
+	    memcpy( newbuf, buffer, dest - buffer + 1 );
+	    dest = newbuf + ( dest - buffer );
+	    delete [] buffer;
+	    buffer = newbuf;
+	    size += 1024;
+	}
+        // Allocate memory to store the script. We will write maximal
+        // 10 characers.
+        if ( scriptCodeSize + 11 > scriptCodeMaxSize )
+        {
+            char *newbuf = new char [ scriptCodeSize + 1024 ];
+	    memcpy( newbuf, scriptCode, scriptCodeSize );
+	    delete [] scriptCode;
+	    scriptCode = newbuf;
+	    scriptCodeMaxSize += 1024;
+        }
+
+        if ( ( *src == '>' ) && ( searchFor[ searchCount ] == '>'))
+        {
+	    src++;
+	    scriptCode[ scriptCodeSize ] = 0;
+	    scriptCode[ scriptCodeSize + 1 ] = 0;
+	    if (script) 
+	    {
+	        /* Parse scriptCode containing <script> info */
+	        /* Not implemented */
+	    }
+	    else if (style)
+	    {
+	        /* Parse scriptCode containing <style> info */
+	        /* Not implemented */
+	    }
+	    else
+	    {
+	        //
+	        // Add scriptcode to the buffer
+	        addListing(scriptCode);
+	    }
+            script = style = listing = false;
+	    delete [] scriptCode;
+	    scriptCode = 0;
+	    return; // Finished parsing script/style/listing	    
+        }
+        // Find out wether we see a </script> tag without looking at
+        // any other then the current character, since further characters
+        // may still be on their way thru the web!
+        else if ( searchCount > 0 )
+        {
+	    if ( tolower(*src) == searchFor[ searchCount ] )
+	    {
+	        searchBuffer[ searchCount ] = *src;
+	        searchCount++;
+	        src++;
+	    }
+	    // We were wrong => print all buffered characters and the current one;
+	    else
+	    {
+	        searchBuffer[ searchCount ] = 0;
+	        char *p = searchBuffer;
+	        while ( *p ) scriptCode[ scriptCodeSize++ ] = *p++;
+	        scriptCode[ scriptCodeSize++ ] = *src++;
+	        searchCount = 0;
+	    }
+        }
+        // Is this perhaps the start of the </script> or </style> tag?
+        else if ( *src == '<' )
+        {
+	    searchCount = 1;
+	    searchBuffer[ 0 ] = '<';
+	    src++;
+        }
+        else
+        {
+	    scriptCode[ scriptCodeSize++ ] = *src++;
+	}
+    }
+}
+
+void HTMLTokenizer::parseScript( const char * &src)
+{
+    parseListing(src);
+}
+void HTMLTokenizer::parseStyle( const char * &src)
+{
+    parseListing(src);
+}
+
+void HTMLTokenizer::parseComment( const char * &src)
+{
+    while ( *src != 0 )
+    {
+	// do we need to enlarge the buffer?
+	if ( (dest - buffer) > size )
+	{
+	    char *newbuf = new char [ size + 1024 + 20 ];
+	    memcpy( newbuf, buffer, dest - buffer + 1 );
+	    dest = newbuf + ( dest - buffer );
+	    delete [] buffer;
+	    buffer = newbuf;
+	    size += 1024;
+	}
+
+	// Look for '-->'
+	if (*src == '-') 
+	{
+	    if (searchCount < 2)	// Watch out for '--->'
+	        searchCount++;
+	}
+	else if ((searchCount == 2) && (*src == '>'))
+	{
+	    // We got a '-->' sequence
+	    comment = false;
+	    src++;
+	    return; // Finished parsing comment!
+	}
+	else
+	{
+	    searchCount = 0;
+	}
+        src++;
+    }
+}
+
+void HTMLTokenizer::parseTag( const char * &src)
+{
+    while ( *src != 0 )
+    {
+	// do we need to enlarge the buffer?
+	if ( (dest - buffer) > size )
+	{
+	    char *newbuf = new char [ size + 1024 + 20 ];
+	    memcpy( newbuf, buffer, dest - buffer + 1 );
+	    dest = newbuf + ( dest - buffer );
+	    delete [] buffer;
+	    buffer = newbuf;
+	    size += 1024;
+	}
+
+	if (skipLF && (*src != '\n'))
+	{
+	    skipLF = false;
+	}
+	if (skipLF)
+	{
+	    src++;
+	} 
+	else if ( *src == '>' && !tquote )
+	{
+            searchCount = 0; // Stop looking for '<!--' sequence
+
+	    *dest = '>';
+	    *(dest+1) = 0;
+
+	    // make the tag lower case
+	    char *ptr = buffer+2;
+	    if (*ptr == '/')
+	    { 
+	    	// End Tag
+	    	discard = NoneDiscard;
+	    }
+	    else
+	    {
+	    	// Start Tag
+	    	// Ignore CR/LF's after a start tag
+	    	discard = LFDiscard;
+	    }
+	    while ( *ptr && *ptr != ' ' )
+	    {
+		*ptr = tolower( *ptr );
+		ptr++;
+	    }
+
+	    appendToken( buffer, dest-buffer+1 );
+	    dest = buffer;
+
+	    tag = false;
+	    pending = NonePending; // Ignore pending spaces
+	    src++;
+
+	    if ( strncmp( buffer+2, "pre", 3 ) == 0 )
+	    {
+		prePos = 0;
+		pre = true;
+	    }
+	    else if ( strncmp( buffer+2, "/pre", 4 ) == 0 )
+	    {
+		pre = false;
+	    }
+	    else if ( strncmp( buffer+2, "textarea", 8 ) == 0 )
+	    {
+		textarea = true;
+	    }
+	    else if ( strncmp( buffer+2, "/textarea", 9 ) == 0 )
+	    {
+		textarea = false;
+	    }
+	    else if ( strncmp( buffer+2, "title", 5 ) == 0 )
+	    {
+		title = true;
+	    }
+	    else if ( strncmp( buffer+2, "/title", 6 ) == 0 )
+	    {
+		title = false;
+	    }
+	    else if ( strncmp( buffer+2, "script", 6 ) == 0 )
+	    {
+		script = true;
+                searchCount = 0;
+                searchFor = scriptEnd;		
+		scriptCode = new char[ 1024 ];
+		scriptCodeSize = 0;
+		scriptCodeMaxSize = 1024;
+		parseScript(src);
+	    }
+	    else if ( strncmp( buffer+2, "style", 5 ) == 0 )
+	    {
+		style = true;
+                searchCount = 0;		
+                searchFor = styleEnd;		
+		scriptCode = new char[ 1024 ];
+		scriptCodeSize = 0;
+		scriptCodeMaxSize = 1024;
+		parseStyle(src);
+	    }
+	    else if ( strncmp( buffer+2, "listing", 7 ) == 0 )
+	    {
+		listing = true;
+                searchCount = 0;		
+                searchFor = listingEnd;		
+		scriptCode = new char[ 1024 ];
+		scriptCodeSize = 0;
+		scriptCodeMaxSize = 1024;
+		parseListing(src);
+	    }
+	    else if ( strncmp( buffer+2, "select", 6 ) == 0 )
+	    {
+		select = true;
+	    }
+	    else if ( strncmp( buffer+2, "/select", 7 ) == 0 )
+	    {
+		select = false;
+	    }
+	    else if ( strncmp( buffer+2, "frameset", 8 ) == 0 )
+	    {
+		blocking.append( new BlockingToken( BlockingToken::FrameSet,
+				last ) );
+	    }
+	    else if ( strncmp( buffer+2, "cell", 4 ) == 0 )
+	    {
+		blocking.append( new BlockingToken(BlockingToken::Cell, last) );
+	    }
+	    else if ( strncmp( buffer+2, "table", 5 ) == 0 )
+	    {
+		blocking.append( new BlockingToken( BlockingToken::Table,
+				last ) );
+	    }
+	    else if ( !blocking.isEmpty() && 
+		    strncasecmp( buffer+1, blocking.getLast()->tokenName(),
+			strlen( blocking.getLast()->tokenName() ) ) == 0 )
+	    {
+		blocking.removeLast();
+	    }
+	    return; // Finished parsing tag!
+	}
+	else if (( *src == '\n' ) || ( *src == '\r' ))
+	{
+            searchCount = 0; // Stop looking for '<!--' sequence
+	    if (discard == NoneDiscard)
+	        pending = SpacePending; // Treat LFs inside tags as spaces
+
+	    /* Check for MS-DOS CRLF sequence */
+	    if (*src == '\r')
+	    {
+		skipLF = true;
+	    }
+	    src++;
+	}
+	else if (( *src == ' ' ) || ( *src == '\t'))
+	{
+            searchCount = 0; // Stop looking for '<!--' sequence
+            if (discard == NoneDiscard)
+                pending = SpacePending;
+	    src++;
+	}
+	else if ( *src == '\"' || *src == '\'')
+	{ // we treat " & ' the same in tags
+    	    discard = NoneDiscard;
+            src++;
+	    if ( *(dest-1) == '=' && !tquote )
+	    {
+                // according to HTML4 DTD, we can simplify
+		// strings like "  my \nstring " to "my string"
+		discard = SpaceDiscard; // ignore leading spaces
+		pending = NonePending;
+ 		tquote = true;
+		*dest++ = '\"';
+	    }
+	    else if ( tquote )
+	    {
+                tquote = false;
+		*dest++ = '\"';
+		pending = SpacePending; // Add space automatically
+	    }
+	    else
+	    {
+	        // Ignore stray "\'"
+	    }
+	}
+	else if ( *src == '=' )
+	{
+	    src++;
+	    discard = NoneDiscard;
+            searchCount = 0; // Stop looking for '<!--' sequence
+            *dest++ = '=';
+	    if ( !tquote )
+	    {
+	        pending = NonePending; // Discard spaces before '='
+	        discard = SpaceDiscard; // Ignore following spaces
+	    }
+	}
+	else
+	{
+	    discard = NoneDiscard;
+	    if (pending)
+	    	addPending();
+
+	    if (searchCount > 0)
+	    {
+	        if (*src == commentStart[searchCount])
+	        {
+	            searchCount++;
+	    	    if (searchCount == 4)
+	    	    {
+	    	        // Found '<!--' sequence
+	    	        comment = true;
+		        dest = buffer; // ignore the previous part of this tag
+		        tag = false;
+		        searchCount = 0;
+		        parseComment(src);
+                        return; // Finished parsing tag!
+	    	    }
+	    	}
+	    	else
+	    	{
+	            searchCount = 0; // Stop looking for '<!--' sequence
+                }  
+            }
+	    *dest++ = *src++;
+	}
+    }
+}
+
+void HTMLTokenizer::addPending()
+{
+    if ( tag || select)     
+    {
+    	*dest++ = ' ';
+    }
+    else if ( textarea )
+    {
+	if (pending == LFPending)
+	    *dest++ = '\n';
+	else
+	    *dest++ = ' ';    	
+    }
+    else if ( pre )
+    {
+    	int p;
+
+	switch (pending)
+	{
+	  case SpacePending:
+		// Insert a non-breaking space
+		*(unsigned char *)dest++ = 0xa0; 
+	  	prePos++;
+	  	break;
+
+	  case LFPending:
+		if ( dest > buffer )
+		{
+		    *dest = 0;
+		    appendToken( buffer, dest-buffer );
+		}
+		dest = buffer;
+		*dest = TAG_ESCAPE;
+		*(dest+1) = '\n';
+		*(dest+2) = 0;
+		appendToken( buffer, 2 );
+		dest = buffer;
+		prePos = 0; 
+	  	break;
+	  	
+	  case TabPending:
+		p = TAB_SIZE - ( prePos % TAB_SIZE );
+		for ( int x = 0; x < p; x++ )
+		{
+		    *dest = ' ';
+		    dest++;
+		}
+		prePos += p;
+	  	break;
+	  	
+	  default:
+	  	printf("Assertion failed: pending = %d\n", (int) pending);
+	  	break;
+	}
+    }
+    else
+    {
+    	*dest++ = ' ';
+    }
+
+    pending = NonePending;
+}
+
 void HTMLTokenizer::write( const char *str )
 {
     // If this pointer is not 0L then we allocated some memory to store HTML
@@ -331,6 +696,17 @@ void HTMLTokenizer::write( const char *str )
 	return;
     
     const char *src = str;
+
+    if (comment)
+        parseComment(src);
+    else if (script)
+        parseScript(src);
+    else if (style)
+        parseStyle(src);
+    else if (listing)
+        parseListing(src);
+    else if (tag)
+        parseTag(src);
 
     while ( *src != 0 )
     {
@@ -353,98 +729,6 @@ void HTMLTokenizer::write( const char *str )
 	{
 	    src++;
 	} 
-	else if ( comment )
-	{
-	    // Look for '-->'
-	    if (*src == '-') 
-	    {
-	        if (searchCount < 2)	// Watch out for '--->'
-	            searchCount++;
-	    }
-	    else if ((searchCount == 2) && (*src == '>'))
-	    {
-	    	// We got a '-->' sequence
-	    	comment = false;
-	    }
-	    else
-	    {
-	    	searchCount = 0;
-	    }
-            src++;
-	}
-	// We are inside of the <script> or <style> tag. Look for the end tag
-	// which is either </script> or </style>,
-	// otherwise print out every received character
-	else if ( script || style || listing)
-	{
-	    // Allocate memory to store the script. We will write maximal
-	    // 10 characers.
-	    if ( scriptCodeSize + 11 > scriptCodeMaxSize )
-	    {
-		char *newbuf = new char [ scriptCodeSize + 1024 ];
-		memcpy( newbuf, scriptCode, scriptCodeSize );
-		delete [] scriptCode;
-		scriptCode = newbuf;
-		scriptCodeMaxSize += 1024;
-	    }
-
-	    if ( ( *src == '>' ) && ( searchFor[ searchCount ] == '>'))
-	    {
-		src++;
-		scriptCode[ scriptCodeSize ] = 0;
-		scriptCode[ scriptCodeSize + 1 ] = 0;
-		if (script) 
-		{
-		    /* Parse scriptCode containing <script> info */
-		    /* Not implemented */
-		}
-		else if (style)
-		{
-		    /* Parse scriptCode containing <style> info */
-		    /* Not implemented */
-		}
-		else
-		{
-		    //
-		    // Add scriptcode to the buffer
-		    addListing(scriptCode);
-		}
-		script = style = listing = false;
-		delete [] scriptCode;
-		scriptCode = 0;
-		    
-	    }
-	    // Find out wether we see a </script> tag without looking at
-	    // any other then the current character, since further characters
-	    // may still be on their way thru the web!
-	    else if ( searchCount > 0 )
-	    {
-		if ( tolower(*src) == searchFor[ searchCount ] )
-		{
-		    searchBuffer[ searchCount ] = *src;
-		    searchCount++;
-		    src++;
-		}
-		// We were wrong => print all buffered characters and the current one;
-		else
-		{
-		    searchBuffer[ searchCount ] = 0;
-		    char *p = searchBuffer;
-		    while ( *p ) scriptCode[ scriptCodeSize++ ] = *p++;
-		    scriptCode[ scriptCodeSize++ ] = *src++;
-		    searchCount = 0;
-		}
-	    }
-	    // Is this perhaps the start of the </script> or </style> tag?
-	    else if ( *src == '<' )
-	    {
-		searchCount = 1;
-		searchBuffer[ 0 ] = '<';
-		src++;
-	    }
-	    else
-		scriptCode[ scriptCodeSize++ ] = *src++;
-	}
 	else if (charEntity)
 	{
             unsigned long entityValue = 0;
@@ -629,6 +913,7 @@ void HTMLTokenizer::write( const char *str )
 	    tag = true;
 	    searchCount = 1; // Look for '<!--' sequence to start comment
 	    // No 'src++' add '*src' in a second pass with 'startTag=false'
+	    parseTag(src);
 	}
 	else if ( *src == '&' ) 
 	{
@@ -643,140 +928,15 @@ void HTMLTokenizer::write( const char *str )
             searchBuffer[1] = '&';
             searchCount = 1;
 	}
-	else if ( *src == '<' && !tag)
+	else if ( *src == '<')
 	{
 	    src++;
 	    startTag = true;
 	    discard = NoneDiscard;
 	}
-	else if ( *src == '>' && tag && !tquote )
-	{
-            searchCount = 0; // Stop looking for '<!--' sequence
-
-	    *dest = '>';
-	    *(dest+1) = 0;
-
-	    // make the tag lower case
-	    char *ptr = buffer+2;
-	    if (*ptr == '/')
-	    { 
-	    	// End Tag
-	    	discard = NoneDiscard;
-	    }
-	    else
-	    {
-	    	// Start Tag
-	    	// Ignore CR/LF's after a start tag
-	    	discard = LFDiscard;
-	    }
-	    while ( *ptr && *ptr != ' ' )
-	    {
-		*ptr = tolower( *ptr );
-		ptr++;
-	    }
-
-	    appendToken( buffer, dest-buffer+1 );
-	    dest = buffer;
-
-	    tag = false;
-	    pending = NonePending; // Ignore pending spaces
-	    src++;
-
-	    if ( strncmp( buffer+2, "pre", 3 ) == 0 )
-	    {
-		prePos = 0;
-		pre = true;
-	    }
-	    else if ( strncmp( buffer+2, "/pre", 4 ) == 0 )
-	    {
-		pre = false;
-	    }
-	    else if ( strncmp( buffer+2, "textarea", 8 ) == 0 )
-	    {
-		textarea = true;
-	    }
-	    else if ( strncmp( buffer+2, "/textarea", 9 ) == 0 )
-	    {
-		textarea = false;
-	    }
-	    else if ( strncmp( buffer+2, "title", 5 ) == 0 )
-	    {
-		title = true;
-	    }
-	    else if ( strncmp( buffer+2, "/title", 6 ) == 0 )
-	    {
-		title = false;
-	    }
-	    else if ( strncmp( buffer+2, "script", 6 ) == 0 )
-	    {
-		script = true;
-                searchCount = 0;
-                searchFor = scriptEnd;		
-		scriptCode = new char[ 1024 ];
-		scriptCodeSize = 0;
-		scriptCodeMaxSize = 1024;
-	    }
-	    else if ( strncmp( buffer+2, "style", 5 ) == 0 )
-	    {
-		style = true;
-                searchCount = 0;		
-                searchFor = styleEnd;		
-		scriptCode = new char[ 1024 ];
-		scriptCodeSize = 0;
-		scriptCodeMaxSize = 1024;
-	    }
-	    else if ( strncmp( buffer+2, "listing", 7 ) == 0 )
-	    {
-		listing = true;
-                searchCount = 0;		
-                searchFor = listingEnd;		
-		scriptCode = new char[ 1024 ];
-		scriptCodeSize = 0;
-		scriptCodeMaxSize = 1024;
-	    }
-	    else if ( strncmp( buffer+2, "select", 6 ) == 0 )
-	    {
-		select = true;
-	    }
-	    else if ( strncmp( buffer+2, "/select", 7 ) == 0 )
-	    {
-		select = false;
-	    }
-	    else if ( strncmp( buffer+2, "frameset", 8 ) == 0 )
-	    {
-		blocking.append( new BlockingToken( BlockingToken::FrameSet,
-				last ) );
-	    }
-	    else if ( strncmp( buffer+2, "cell", 4 ) == 0 )
-	    {
-		blocking.append( new BlockingToken(BlockingToken::Cell, last) );
-	    }
-	    else if ( strncmp( buffer+2, "table", 5 ) == 0 )
-	    {
-		blocking.append( new BlockingToken( BlockingToken::Table,
-				last ) );
-	    }
-	    else if ( !blocking.isEmpty() && 
-		    strncasecmp( buffer+1, blocking.getLast()->tokenName(),
-			strlen( blocking.getLast()->tokenName() ) ) == 0 )
-	    {
-		blocking.removeLast();
-	    }
-	}
 	else if (( *src == '\n' ) || ( *src == '\r' ))
 	{
-	    if ( tquote)
-	    {
-	        if (discard == NoneDiscard)
-	            pending = SpacePending;
-	    }
-	    else if ( tag )
-	    {
-                searchCount = 0; // Stop looking for '<!--' sequence
-		if (discard == NoneDiscard)
-		    pending = SpacePending; // Treat LFs inside tags as spaces
-	    }
-	    else if ( pre || textarea)
+	    if ( pre || textarea)
 	    {
 	    	if (discard == LFDiscard) 
 	    	{
@@ -814,18 +974,7 @@ void HTMLTokenizer::write( const char *str )
 	}
 	else if (( *src == ' ' ) || ( *src == '\t'))
 	{
-	    if ( tquote)
-	    {
-	        if (discard == NoneDiscard)
-	            pending = SpacePending;
-	    }
-	    else if ( tag )
-	    {
-                searchCount = 0; // Stop looking for '<!--' sequence
-		if (discard == NoneDiscard)
-		    pending = SpacePending;
-	    }
-	    else if ( pre || textarea)
+	    if ( pre || textarea)
 	    {
 	    	if (pending)
 	    	    addPending();
@@ -840,99 +989,13 @@ void HTMLTokenizer::write( const char *str )
 	    }
 	    src++;
 	}
-	else if ( *src == '\"' || *src == '\'')
-	{ // we treat " & ' the same in tags
-    	    discard = NoneDiscard;
-	    if ( tag )
-	    {
-	        searchCount = 0; // Stop looking for '<!--' sequence
-		src++;
-		if ( *(dest-1) == '=' && !tquote )
-		{
-		    // according to HTML4 DTD, we can simplify
-		    // strings like "  my \nstring " to "my string"
-		    discard = SpaceDiscard; // ignore leading spaces
-		    pending = NonePending;
- 		    tquote = true;
-		    *dest++ = '\"';
-		}
-		else if ( tquote )
-		{
-		    tquote = false;
-		    *dest++ = '\"';
-		    pending = SpacePending; // Add space automatically
-		}
-		else
-		{
-		    // Ignore stray "\'"
-		}
-	    }
-	    else
-	    {
-	    	if (pending)
-	    	    addPending();
-
-		if ( pre )
-		    prePos++;
-
-		*dest++ = *src++;
-	    }
-	}
-	else if ( *src == '=' )
-	{
-	    src++;
-	    discard = NoneDiscard;
-	    if ( tag )
-	    {
-	        searchCount = 0; // Stop looking for '<!--' sequence
-                *dest++ = '=';
-		if ( !tquote )
-		{
-		    pending = NonePending; // Discard spaces before '='
-		    discard = SpaceDiscard; // Ignore following spaces
-		}
-	    }
-	    else
-	    {
-	    	if (pending)
-	    	    addPending();
-
-		if ( pre )
-		    prePos++;
-
-		*dest++ = '=';
-	    }
-	}
 	else
 	{
 	    discard = NoneDiscard;
 	    if (pending)
 	    	addPending();
 
-	    if (tag)
-	    {
-	      if (searchCount > 0)
-	      {
-	    	if (*src == commentStart[searchCount])
-	    	{
-	    	    searchCount++;
-	    	    if (searchCount == 4)
-	    	    {
-	    	    	// Found '<!--' sequence
-	    	        comment = true;
-		        dest = buffer; // ignore the previous part of this tag
-		        tag = false;
-		        searchCount = 0;
-		        continue;
-	    	    }
-	    	}
-	    	else
-	    	{
-	            searchCount = 0; // Stop looking for '<!--' sequence
-                }  
-              }
-	    } 
-	    else if ( pre )
+	    if ( pre )
 	    {
 		prePos++;
 	    }
