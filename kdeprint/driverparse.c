@@ -148,29 +148,49 @@ void readComment(FILE *f, char *comment, int len)
 		readValue(f, comment, len);
 }
 
-int getMaticPrinterInfos(const char *base, const char *id, char *make, char *model, char *recomm, char *comment)
+int getMaticPrinterInfos(const char *base, const char *id, char *make, char *model, char *recomm, char *comment, char *pnpmake, char *pnpmodel)
 {
 	char	filePath[256];
 	FILE	*xmlFile;
 	char	tag[32] = {0};
 	int	n = 0;
+	int in_autodetect = 0;
 
 	snprintf(filePath, 256, "%s/%s.xml", base, id);
 	xmlFile = fopen(filePath, "r");
 	if (xmlFile == NULL)
 		return 0;
-	while (!feof(xmlFile) && n < 4)
+	while (!feof(xmlFile) && n < 6)
 	{
 		tag[0] = 0;
 		nextTag(xmlFile, tag, 32);
 		if (tag[0])
 		{
 			char	*c;
-
-			if (!make[0] && strcmp(tag, "make") == 0)
+			
+			if ( strcmp( tag, "autodetect" ) == 0 )
+			{
+				in_autodetect = 1;
+				continue;
+			}
+			else if ( strcmp( tag, "/autodetect" ) == 0 )
+			{
+				in_autodetect = 0;
+				continue;
+			}
+			else if (!make[0] && strcmp(tag, "make") == 0)
 				c = make;
-			else if (!model[0] && strcmp(tag, "model") == 0)
-				c = model;
+			else if (strcmp(tag, "model") == 0)
+			{
+				if ( in_autodetect && !pnpmodel[ 0 ] )
+					c = pnpmodel;
+				else if ( !in_autodetect && !model[ 0 ] )
+					c = model;
+				else
+					continue;
+			}
+			else if ( !pnpmake[0] && in_autodetect && strcmp( tag, "manufacturer" ) == 0 )
+				c = pnpmake;
 			else if (!recomm[0] && strcmp(tag, "driver") == 0)
 				c = recomm;
 			else if (comment && !comment[0] && strcmp(tag, "comments") == 0)
@@ -192,7 +212,15 @@ int getMaticPrinterInfos(const char *base, const char *id, char *make, char *mod
 int parseMaticFile(const char *driver, FILE *output)
 {
 	FILE	*drFile;
-	char	name[32] = {0}, make[64] = {0}, model[64] = {0}, tag[32] = {0}, recomm[64] = {0}, comment[4096] = {0}, comment2[4096] = {0};
+	char	name[32] = {0},
+			make[64] = {0},
+			model[64] = {0},
+			tag[32] = {0},
+			recomm[64] = {0},
+			comment[4096] = {0},
+			comment2[4096] = {0},
+			pnpmake[64] = {0},
+			pnpmodel[64] = {0};
 	char	id[128];
 	char	path[256], *c;
 
@@ -228,7 +256,9 @@ int parseMaticFile(const char *driver, FILE *output)
 				make[0] = 0;
 				model[0] = 0;
 				recomm[0] = 0;
-				getMaticPrinterInfos(path, id, make, model, recomm, NULL);
+				pnpmake[0] = 0;
+				pnpmodel[0] = 0;
+				getMaticPrinterInfos(path, id, make, model, recomm, NULL, pnpmake, pnpmodel);
 				fprintf(output, "MANUFACTURER=%s\n", make);
 				fprintf(output, "MODELNAME=%s\n", model);
 				fprintf(output, "MODEL=%s\n", model);
@@ -246,6 +276,10 @@ int parseMaticFile(const char *driver, FILE *output)
 						fprintf(output, "&lt;h3&gt;General driver note&lt;/h3&gt;%s", comment);
 					fprintf(output, "\n");
 				}
+				if ( pnpmake[0] )
+					fprintf( output, "PNPMANUFACTURER=%s\n", pnpmake );
+				if ( pnpmodel[0] )
+					fprintf( output, "PNPMODEL=%s\n", pnpmodel );
 				fprintf(output, "\n");
 			}
 			else if (strcmp(tag, "/printers") == 0)
