@@ -1709,6 +1709,7 @@ KMimeMagic::ascmagic(unsigned char *buf, int nbytes)
 	cppcomm = 0;
 	ccomm = 0;
 	tokencount = 0;
+        bool foundClass = false; // mandatory for java
 	// first collect all possible types and count matches
 	while ((token = strtok((char *) s, " \t\n\r\f,;")) != NULL) {
 		s = NULL;       /* make strtok() keep on tokin' */
@@ -1725,8 +1726,11 @@ KMimeMagic::ascmagic(unsigned char *buf, int nbytes)
 				if (p->type == L_JAVA)
 					jonly++;
 				if ((p->type & (L_C|L_CPP|L_JAVA))
-				    == (L_CPP|L_JAVA))
+				    == (L_CPP|L_JAVA)) {
 					jconly++;
+                                        if ( !foundClass && STREQ("class", token) )
+                                            foundClass = true;
+                                }
 				if ((p->type & (L_C|L_CPP|L_JAVA))
 				    == (L_C|L_CPP))
 					conly++;
@@ -1744,14 +1748,17 @@ KMimeMagic::ascmagic(unsigned char *buf, int nbytes)
 	if (typeset & (L_C|L_CPP|L_JAVA)) {
 		accuracy = 40;
 	        if (!(typeset & ~(L_C|L_CPP|L_JAVA))) {
+#ifdef DEBUG_MIMEMAGIC
+                        kdDebug(7018) << "C/C++/Java: jonly=" << jonly << " conly=" << conly << " jconly=" << jconly << " ccomm=" << ccomm << endl;
+#endif
 			if (jonly && conly)
                             // Take the biggest
                             if ( jonly > conly )
                                 conly = 0;
                             else
                                 jonly = 0;
-			if (jonly > 1) {
-				// At least two java-only tokens have matched
+			if (jonly > 1 && foundClass) {
+				// At least two java-only tokens have matched, including "class"
 				resultBuf = QString(types[P_JAVA].type);
 				return 1;
 			}
@@ -1795,15 +1802,18 @@ KMimeMagic::ascmagic(unsigned char *buf, int nbytes)
 		    mostaccurate = i;
 		  }
 #ifdef DEBUG_MIMEMAGIC
-		  //kdDebug(7018) << "" << types[i].type << " has " << typecount[i] << " hits, " << types[i].kwords << " kw, weight " << types[i].weight << ", " << pct << " -> max = " << maxpct << "\n" << endl;
+		  kdDebug(7018) << "" << types[i].type << " has " << typecount[i] << " hits, " << types[i].kwords << " kw, weight " << types[i].weight << ", " << pct << " -> max = " << maxpct << "\n" << endl;
 #endif
 	  }
 	}
-	if (mostaccurate >= 0 && pcts[mostaccurate] > 0.1) { // a single java word shouldn't be enough
+	if (mostaccurate >= 0) {
+            if ( mostaccurate != P_JAVA || foundClass ) // class mandatory for java
+            {
 		accuracy = (int)(pcts[mostaccurate] / pctsum * 60);
                 //kdDebug(7018) << "mostaccurate=" << mostaccurate << " pcts=" << pcts[mostaccurate] << " pctsum=" << pctsum << " accuracy=" << accuracy << endl;
 		resultBuf = QString(types[mostaccurate].type);
 		return 1;
+            }
 	}
 
 	switch (is_tar(buf, nbytes)) {
