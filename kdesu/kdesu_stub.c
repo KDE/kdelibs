@@ -182,8 +182,8 @@ char **xstrsep(char *str)
 int main()
 {
     char buf[BUFSIZE+1];
-    char command[200], xauthority[200], iceauthority[200];
-    char **host, **auth, fname[24];
+    char xauthority[200], iceauthority[200];
+    char **host, **auth;
     int i/*, res, sycoca*/, prio;
     pid_t pid;
     FILE *fout;
@@ -279,10 +279,12 @@ fprintf(stderr, "PATH :%s\n", params[P_PATH].value);
 	if (params[P_DISPLAY_AUTH].value[0]) 
 	{
            int	fd2;
-	   // save umask and set to 077, so we create those files only
-	   // readable for root. (if someone else could read them, we
-	   // are in deep shit).
-	   int	oldumask = umask(077);
+           /*
+           ** save umask and set to 077, so we create those files only
+	   ** readable for root. (if someone else could read them, we
+	   ** are in deep shit).
+           */
+	   int oldumask = umask(077);
 
            strcpy(xauthority, "/tmp/xauth.XXXXXXXXXX");
 	   fd2 = mkstemp(xauthority);
@@ -317,17 +319,17 @@ fprintf(stderr, "PATH :%s\n", params[P_PATH].value);
 	auth = xstrsep(params[P_ICE_AUTH].value);
 	if (host[0]) 
 	{
-            int fd, fd2;
+            int fd;
 	    int	oldumask = umask(077);
 
             strcpy(iceauthority, "/tmp/iceauth.XXXXXXXXXX");
-            fd2 = mkstemp(iceauthority);
+            fd = mkstemp(iceauthority);
 	    umask(oldumask);
-            if (fd2 == -1) {
+            if (fd == -1) {
                 perror("kdesu_stub: mkstemp()");
                 exit(1);
             } else
-                close(fd2);
+                close(fd);
 	    xsetenv("ICEAUTHORITY", iceauthority);
 
 	    fout = popen("iceauth >/dev/null 2>&1", "w");
