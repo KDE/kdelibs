@@ -160,7 +160,6 @@ void KURL::reset()
   m_strHost = QString::null;
   m_strPath = QString::null;
   m_strRef_encoded = QString::null;
-  m_strMalformed = QString::null;
   m_bIsMalformed = true;
   m_iPort = 0;
 }
@@ -403,7 +402,7 @@ void KURL::parse( const QString& _url )
   kDebugError( 126, "Error in parsing \"%s\"",_url.ascii());
   delete []orig;
   reset();
-  m_strMalformed = _url;
+  m_strProtocol = _url;
 }
 
 KURL& KURL::operator=( const QString& _url )
@@ -627,9 +626,10 @@ QString KURL::url() const
 QString KURL::url( int _trailing ) const
 {
    if( m_bIsMalformed )
-      // For now return empty string so that many wrongly
-      // coded apps won't SEGFAULT. (DA)
-      return "";
+      // Return the whole url even when the url is
+      // malformed.  Under such conditions the url
+      // is stored in m_strProtocol.
+      return m_strProtocol;
 
   // HACK encode parts here!
 

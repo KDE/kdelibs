@@ -90,7 +90,7 @@ public:
   /**
    * Retrieve the protocol for the URL (i.e., file, http, etc.).
    **/
-  QString protocol() const { return m_strProtocol; }
+  QString protocol() const { return m_bIsMalformed ? QString::null : m_strProtocol; }
   /**
    * Set the protocol for the URL (i.e., file, http, etc.)
    **/
@@ -353,11 +353,6 @@ public:
    *                  path unchanged.
    */
   QString url( int _trailing ) const;
-
-  /**
-  *
-  */
-  QString malformedUrl() const { return m_strMalformed; }
 
   /**
    * Test to see if the @ref KURL is empty.
