@@ -35,6 +35,7 @@
 #include <kdebug.h>
 #include <kseparator.h>
 #include <kactivelabel.h>
+#include <qwhatsthis.h>
 
 #include <cups/cups.h>
 #include <ctype.h>
@@ -68,11 +69,35 @@ CupsAddSmb::CupsAddSmb(QWidget *parent, const char *name)
 	m_passwded->setEchoMode( QLineEdit::Password );
 	m_servered = new QLineEdit( this );
 	QLabel *m_loginlab = new QLabel( i18n( "&Username:" ), this );
-	QLabel *m_serverlab = new QLabel( i18n( "&Server:" ), this );
+	QLabel *m_serverlab = new QLabel( i18n( "&Samba Server:" ), this );
 	QLabel *m_passwdlab = new QLabel( i18n( "&Password:" ), this );
 	m_loginlab->setBuddy( m_logined );
 	m_serverlab->setBuddy( m_servered );
 	m_passwdlab->setBuddy( m_passwded );
+
+	QString txt = i18n( "<p><b>Samba server</b></p>"
+						"Adobe Windows PostScript driver files plus the CUPS printer PPD will be "
+						"exported to the <tt>[print$]</tt> special share of the Samba server (to change "
+						"source CUPS server, use the <nobr><i>Configure Manager --> CUPS server</i></nobr> first). "
+						"The <tt>[print$]</tt> share must exists on the Samba side prior to hitting the "
+						"<b>Export</b> button below." );
+	QWhatsThis::add( m_serverlab, txt );
+	QWhatsThis::add( m_servered, txt );
+
+	txt = i18n( "<p><b>Samba username</b></p>"
+				"User needs to have write access to the <tt>[print$]</tt> share on Samba server. "
+				"<tt>[print$]</tt> holds printer drivers prepared for download to Windows clients. "
+				"This dialog does not work for Samba servers configured with <tt>security = share</tt> "
+				"(but works f.e. with <tt>security = user</tt>)." );
+	QWhatsThis::add( m_loginlab, txt );
+	QWhatsThis::add( m_logined, txt );
+
+	txt = i18n( "<p><b>Samba password</b></p>"
+				"The Samba setting <tt>encrypt passwords = yes</tt> "
+				"(default) requires prior use of <tt>smbpasswd -a [username]</tt> command, "
+				"to create an encrypted Samba password and have Samba recognize it." );
+	QWhatsThis::add( m_passwdlab, txt );
+	QWhatsThis::add( m_passwded, txt );
 
 	QHBoxLayout	*l0 = new QHBoxLayout(this, 10, 10);
 	QVBoxLayout	*l1 = new QVBoxLayout(0, 0, 10);
