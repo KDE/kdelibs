@@ -278,6 +278,7 @@ const QString KConfigBase::readEntry( const char* pKey,
 										 nEndPos-nDollarPos-1 );
 	      char* pEnv = getenv( aVarName );
 	      if( pEnv )
+			aValue.replace( nDollarPos, nEndPos-nDollarPos, pEnv );
 	      else
 			aValue.remove( nDollarPos, nEndPos-nDollarPos );
 	    }

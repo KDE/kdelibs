@@ -66,9 +66,29 @@
 #include <stdlib.h>
 
 static char* aConfigFileName[] = 
-	data()->aGlobalAppFile = pGlobalAppFile;
+{ 
+  // !!! If you add/remove pathnames here, update CONFIGFILECOUNT a few lines
+  // below!!!
+  "/etc/kderc",
+  KDEDIR"/share/config/kderc",
+  "/usr/lib/KDE/system.kderc",
+  "/usr/local/lib/KDE/system.kderc",
+  "~/.kderc",
+};
 
-	data()->aLocalAppFile = pLocalAppFile;
+const int CONFIGFILECOUNT = 5; // number of entries in aConfigFileName[]
+
+KConfig::KConfig( const char* pGlobalAppFile, const char* pLocalAppFile )
+{
+  if( pGlobalAppFile )
+	{
+	  data()->aGlobalAppFile = pGlobalAppFile;
+	  // the file should exist in any case
+	  QFileInfo info( pGlobalAppFile );
+	  if( !info.exists() )
+		{
+		  QFile file( pGlobalAppFile );
+		  file.open( IO_WriteOnly );
 		  file.close();
 		}
 	}
@@ -119,6 +139,14 @@ void KConfig::parseConfigFiles()
       aConfigFile.open( IO_ReadOnly );
       parseOneConfigFile( aConfigFile, 0L, true ); 
 	  aConfigFile.close();
+    }
+  
+  // Parse app-specific config files if available
+  if( !data()->aGlobalAppFile.isEmpty() )
+ 	  if(aConfigFile.open( IO_ReadOnly)==0) {
+	  QFile aConfigFile( data()->aGlobalAppFile );
+	  // we can already be sure that this file exists
+	  aConfigFile.open( IO_ReadOnly );
 	  parseOneConfigFile( aConfigFile, 0L, false );
 	  aConfigFile.close();
 	}

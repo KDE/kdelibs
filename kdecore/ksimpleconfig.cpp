@@ -40,10 +40,25 @@
 // removed all NULLs and replaced it with 0L or "".
 // There are some left in mediatool, but this is not C++
 //
+// Revision 1.4  1997/10/16 11:15:02  torben
+// Kalle: Copyright headers
 // kdoctoolbar removed
 //
-  // we use the global app config file to save the filename 
-  data()->aGlobalAppFile = pFile;
+// Revision 1.3  1997/10/10 16:14:24  kulow
+// removed one more default value from the implementation
+//
+// Revision 1.2  1997/10/08 19:28:53  kalle
+// KSimpleConfig implemented
+//
+// Revision 1.1  1997/10/04 19:51:07  kalle
+// new KConfig
+//
+
+#include <ksimpleconfig.h>
+#include "ksimpleconfig.moc"
+
+#include <qfileinf.h>
+
 KSimpleConfig::KSimpleConfig( const char* pFile )
 {
   if( pFile )
