@@ -355,13 +355,12 @@ const char* KURL::directoryURL( bool _trailing )
     QString u = url();
     
     // Calculate only on demand
-    if ( u.right( 1 ) == "/" )
+    if ( u.right( 1 ) == "/" && ( _trailing || u.right(2) == ":/" ) )
 	dir_part = u.data();
     else
     {
-	if ( !_trailing )
-	    if ( u.right( 1 ) == "/" )
-		u = u.left( u.length() - 1 );
+	if ( !_trailing && u.right( 1 ) == "/" && u.right(2) != ":/" )
+	    u.truncate( u.length() -1 );
 	int i = u.findRev( "/" );
 	if ( i == -1 )
 	    // Should never happen

@@ -161,7 +161,7 @@ public:
 * If for example the URL is "file:/tmp/weis/file.html", then this call
 * will return "/tmp/weis/". If you pass "file:/tmp/weis/" to this
 * function, you will get "/tmp/weis/", because you already passed a directory.
-* Turning the '_traling' flag off, causes the traling '/' to be ignored.
+* Turning the '_trailing' flag off, causes the trailing '/' to be ignored.
 * "file:/tmp/weis/file.html" will result in "/tmp/weis/", too, but
 * "file:/tmp/weis/" will lead to "/tmp/". As you see, this is
 * a smart method to get the parent directory of a file/directory.
