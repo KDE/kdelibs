@@ -109,7 +109,6 @@ KIcon KIconThemeNode::findIcon(const QString& name, int size,
 			       int match) const
 {
     KIcon icon;
-    kdDebug(264) << myTheme->name() << " iconPath(" << name << ")\n";
     icon = myTheme->iconPath(name, size, match);
     if (icon.isValid())
       return icon;
@@ -187,7 +186,7 @@ KIconLoader::KIconLoader(const QString& _appname)
 
     // loading config and default sizes
     bool isnull = false;
-    for (int i = 0; i <= KIcon::LastGroup; i++) {
+    for (int i = 0; i < KIcon::LastGroup; i++) {
       if (!isnull) {
 	if (groups[i] == 0) {
 	  isnull = true;
