@@ -133,9 +133,9 @@ void KDirLister::openURL( const KURL& _url, bool _showDotFiles, bool _keep )
   connect( m_job, SIGNAL( entries( KIO::Job*, const KIO::UDSEntryList&)),
            SLOT( slotEntries( KIO::Job*, const KIO::UDSEntryList&)));
   connect( m_job, SIGNAL( result( KIO::Job * ) ),
-	   SLOT( slotResult( KIO::Job * ) ) );
+           SLOT( slotResult( KIO::Job * ) ) );
   connect( m_job, SIGNAL( redirection( KIO::Job *, const KURL & ) ),
-	   this, SLOT( slotRedirection( KIO::Job *, const KURL & ) ) );
+           this, SLOT( slotRedirection( KIO::Job *, const KURL & ) ) );
 
   emit started( m_url.url() );
   if ( !_keep )
@@ -246,7 +246,7 @@ void KDirLister::updateDirectory( const KURL& _dir )
   connect( m_job, SIGNAL( entries( KIO::Job*, const KIO::UDSEntryList&)),
            SLOT( slotUpdateEntries( KIO::Job*, const KIO::UDSEntryList&)));
   connect( m_job, SIGNAL( result( KIO::Job * ) ),
-	   SLOT( slotUpdateResult( KIO::Job * ) ) );
+           SLOT( slotUpdateResult( KIO::Job * ) ) );
 
   kdDebug(7003) << "update started in " << m_url.url() << endl;
 
@@ -327,12 +327,12 @@ void KDirLister::slotUpdateResult( KIO::Job * job )
       {
         kdDebug(7003) << "slotUpdateFinished : inserting " << name << endl;
         KFileItem* item = createFileItem( *it, m_url, m_bDelayedMimeTypes );
-	
-	if ( (m_bDirOnlyMode && !item->isDir()) || !matchesFilter( item ))
-	{
-	  delete item;
-	  continue;
-	}
+
+        if ( (m_bDirOnlyMode && !item->isDir()) || !matchesFilter( item ))
+        {
+          delete item;
+          continue;
+        }
 
         kdDebug(7003) << "slotUpdateFinished : URL= " << item->url().url() << endl;
         m_lstFileItems.append( item );
@@ -342,7 +342,8 @@ void KDirLister::slotUpdateResult( KIO::Job * job )
     }
   }
 
-  emit newItems( lstNewItems );
+  if ( !lstNewItems.isEmpty() )
+      emit newItems( lstNewItems );
 
   deleteUnmarkedItems();
 
@@ -438,11 +439,11 @@ void KDirLister::forgetDirs()
 }
 
 KFileItem * KDirLister::createFileItem( const KIO::UDSEntry& entry,
-					const KURL& url,
-					bool determineMimeTypeOnDemand )
+                                        const KURL& url,
+                                        bool determineMimeTypeOnDemand )
 {
     return new KFileItem( entry, url, determineMimeTypeOnDemand,
-			  true /* url is the directory */ );
+                          true /* url is the directory */ );
 }
 
 bool KDirLister::matchesFilter( const KFileItem *item )
@@ -451,13 +452,13 @@ bool KDirLister::matchesFilter( const KFileItem *item )
     static const QString& dotdot = KGlobal::staticQString("..");
 
     if ( item->text() == dotdot )
-	return false;
+        return false;
 
     if ( !m_isShowingDotFiles && item->text()[0] == '.' )
-	return false;
-	
+        return false;
+
     if (item->isDir() || m_lstFilters.isEmpty())
-	return true;
+        return true;
 
     return matchesFilter( item->text() );
 }
@@ -466,10 +467,10 @@ bool KDirLister::matchesFilter(const QString& name) const
 {
     bool matched = false;
     for (QListIterator<QRegExp> it(m_lstFilters); it.current(); ++it)
-	if ( it.current()->match( name ) != -1 ) {
-	    matched = true;
-	    break;
-	}
+        if ( it.current()->match( name ) != -1 ) {
+            matched = true;
+            break;
+        }
 
     return matched;
 }
@@ -542,18 +543,18 @@ void KDirLister::FilesRemoved( const KURL::List & fileList )
 void KDirLister::setAutoUpdate( bool enable )
 {
     if ( d->autoUpdate == enable )
-	return;
+        return;
 
     d->autoUpdate = enable;
 
     for ( KURL::List::Iterator it = m_lstDirs.begin(); it != m_lstDirs.end();
-	  ++it ) {
-	if ( (*it).isLocalFile() ) {
-	    if ( enable )
-		kdirwatch->addDir( (*it).path() );
-	    else
-		kdirwatch->removeDir( (*it).path() );
-	}
+          ++it ) {
+        if ( (*it).isLocalFile() ) {
+            if ( enable )
+                kdirwatch->addDir( (*it).path() );
+            else
+                kdirwatch->removeDir( (*it).path() );
+        }
     }
 
     if ( enable ) {
@@ -563,24 +564,24 @@ void KDirLister::setAutoUpdate( bool enable )
                this, SLOT( slotFileDirty( const QString& ) ) );
     }
     else
-	kdirwatch->disconnect( this );
+        kdirwatch->disconnect( this );
 }
 
 bool KDirLister::autoUpdate() const
-{	
+{
     return d->autoUpdate;
 }
 
 bool KDirLister::setURL( const KURL& url )
 {
     if ( !validURL( url ) )
-	return false;
+        return false;
 
     stop();
     forgetDirs();
     m_url = url;
     return true;
-}	
+}
 
 void KDirLister::listDirectory()
 {
