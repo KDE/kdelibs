@@ -117,7 +117,6 @@ signals:
 protected slots:
   void slotOnItem( QIconViewItem *item );
   void slotOnViewport();
-
   void slotSettingsChanged(int);
 
   /**
@@ -135,14 +134,6 @@ protected:
   virtual void contentsMouseDoubleClickEvent ( QMouseEvent * e );
   virtual void contentsMouseReleaseEvent( QMouseEvent *e );
 
-  bool m_bUseSingle;
-  bool m_bChangeCursorOverItem;
-
-  QIconViewItem* m_pCurrentItem;
-
-  QTimer* m_pAutoSelect;
-  int m_autoSelectDelay;
-
 private slots:
   void slotMouseButtonClicked( int btn, QIconViewItem *item, const QPoint &pos );
 
@@ -155,6 +146,14 @@ private:
    * @internal. For use by KIconViewItem.
    */
   QPixmap selectedIconPixmap( QPixmap *pix, const QColor &col ) const;
+
+  bool m_bUseSingle;
+  bool m_bChangeCursorOverItem;
+
+  QIconViewItem* m_pCurrentItem;
+
+  QTimer* m_pAutoSelect;
+  int m_autoSelectDelay;
 
   class KIconViewPrivate;
   KIconViewPrivate *d;
@@ -189,6 +188,7 @@ public:
     KIconViewItem( QIconView *parent, QIconViewItem *after, const QString &text, const QPicture &picture )
         : QIconViewItem( parent, after, text, picture ) { init(); }
     virtual ~KIconViewItem();
+
 protected:
     void init();
     virtual void calcRect( const QString& text_ = QString::null );
