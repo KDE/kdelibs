@@ -52,10 +52,14 @@ KLineEdit::~KLineEdit ()
 
 void KLineEdit::setCompletionObject( KCompletion* obj, bool autoDelete )
 {
+    if( m_pCompObj != 0 )
+        disconnect( m_pCompObj, SIGNAL( destroyed() ), this, SLOT( completionDestroyed() ) );
+
     m_pCompObj = obj;
+    m_bAutoDelCompObj = autoDelete;
+
     if( m_pCompObj != 0 )
     {
-        m_bAutoDelCompObj = autoDelete;
         setCompletionMode( m_iCompletionMode );
         connect( m_pCompObj, SIGNAL( destroyed() ), this, SLOT( completionDestroyed() ) );
     }
@@ -328,9 +332,9 @@ void KLineEdit::initialize()
     m_bHandleCompletionSignal = false;
 
     // By default emit completion signal
-    enableCompletionSignal();
+    setEnabledCompletionSignal( true );
     // By default emit rotation signals
-    enableRotationSignal();
+    setEnabledRotationSignal( true );
 
     // Initialize all key-bindings to 0 by default so that
     // the event filter will use the global settings.
