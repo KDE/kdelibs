@@ -32,7 +32,6 @@
 using namespace Arts;
 
 const unsigned int KIOInputStream_impl::PACKET_COUNT = 2;
-const unsigned int KIOInputStream_impl::PACKET_BUFFER = 10;
 const unsigned int KIOInputStream_impl::PACKET_SIZE = 1024;
 
 KIOInputStream_impl::KIOInputStream_impl()
@@ -40,6 +39,8 @@ KIOInputStream_impl::KIOInputStream_impl()
 	m_job = 0;
 	m_data = 0;
 	m_finished = false;
+	m_firstBuffer = false;
+	m_packetBuffer = 20;
 }
 
 KIOInputStream_impl::~KIOInputStream_impl()
@@ -141,10 +142,24 @@ void KIOInputStream_impl::processQueue()
 {
 	if(m_job != 0)
 	{
-		if(m_data.size() > ((m_sendqueue.size() + PACKET_BUFFER) * PACKET_SIZE) && !m_job->isSuspended())
+		if(m_data.size() > ((m_sendqueue.size() + m_packetBuffer) * PACKET_SIZE) && !m_job->isSuspended())
 	    	m_job->suspend();
-		else if(m_data.size() < ((m_sendqueue.size() + PACKET_BUFFER) * PACKET_SIZE) && m_job->isSuspended())
+		else if(m_data.size() < ((m_sendqueue.size() + m_packetBuffer) * PACKET_SIZE) && m_job->isSuspended())
 	    	m_job->resume();
+	}
+
+	if(m_data.size() < (m_packetBuffer * PACKET_SIZE) && !m_firstBuffer)
+	{
+		kdDebug() << "Buffering in progress... (Needed bytes before it starts to play: " << ((m_packetBuffer * PACKET_SIZE) - m_data.size()) << ")" << endl;
+		return;
+	}
+	else
+		m_firstBuffer = true;
+
+	if(m_data.size() <= PACKET_SIZE && m_firstBuffer)
+	{
+		m_firstBuffer = false;
+		return;
 	}
 
 	for(unsigned int i = 0; i < m_sendqueue.size(); i++)

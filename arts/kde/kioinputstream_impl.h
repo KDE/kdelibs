@@ -50,6 +50,9 @@ public:
 	void processQueue();
 	void request_outdata(DataPacket<mcopbyte> *packet);
 
+	long bufferPackets() { return m_packetBuffer; }
+	void setBufferPackets(long i) { m_packetBuffer = i; }
+
 private slots:
 	void slotData(KIO::Job *, const QByteArray &);
 	void slotResult(KIO::Job *);
@@ -60,9 +63,11 @@ private:
 	std::queue<DataPacket<mcopbyte> *> m_sendqueue;
 	QByteArray m_data;
 	bool m_finished;
+	bool m_firstBuffer;
+
+	unsigned int m_packetBuffer;
 
 	static const unsigned int PACKET_COUNT;
-	static const unsigned int PACKET_BUFFER;
 	static const unsigned int PACKET_SIZE;
 };
 
