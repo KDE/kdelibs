@@ -640,6 +640,7 @@ KURL& KURL::operator=( const KURL &u)
   protocol_part = u.protocol_part;
   host_part = u.host_part;
   path_part = u.path_part;
+  search_part = u.search_part;
   ref_part = u.ref_part;
   bNoPath = u.bNoPath;
   path_part_decoded = u.path_part_decoded;
