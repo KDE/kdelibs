@@ -63,7 +63,8 @@ void PixmapLoader::colorize( QImage &img )
 		QColor c( *data );
 		int h, s, v;
 		c.hsv( &h, &s, &v );
-		c.setHsv( ( h - 216 + newh ) % 360, s, v );
+		if ( h >= 0 ) h = ( h - 216 + newh ) % 360;
+		c.setHsv( h, QMIN( s * news / 14, 255 ), QMIN( v * newv / 90, 255 ) );
 		*data++ = ( c.rgb() & RGB_MASK ) | ( *data & ~RGB_MASK );
 	}
 }
