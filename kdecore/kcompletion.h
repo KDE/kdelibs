@@ -140,7 +140,10 @@ public:
      * Constants that represent the order in which KCompletion performs
      * completion-lookups.
      */
-    enum CompOrder { Sorted, Insertion, Weighted };
+    enum CompOrder { Sorted,    ///< Use order of insertion
+		     Insertion, ///< Use alphabetically sorted order
+		     Weighted   ///< Use weighted order
+    };
 
     /**
      * Constructor, nothing special here :)
@@ -170,7 +173,8 @@ public:
      * will be emitted via the signal #matches().
      * This happens only in shell-completion-mode.
      *
-     * @returns the matching item, or QString::null if there is no matching
+     * @param string the string to complete
+     * @return the matching item, or QString::null if there is no matching
      * item.
      * @see #slotMakeCompletion
      * @see #substringCompletion
@@ -178,7 +182,9 @@ public:
     virtual QString makeCompletion( const QString& string );
 
     /**
-     * @returns a list of items which all contain @p text as a substring,
+     * Returns a list of all completion items that contain the given @p string.
+     * @param string the string to complete
+     * @return a list of items which all contain @p text as a substring,
      * i.e. not necessarily at the beginning.
      *
      * @see #makeCompletion
@@ -186,9 +192,10 @@ public:
     QStringList substringCompletion( const QString& string ) const;
 
     /**
-     * @returns the next item from the matching-items-list.
+     * Returns the next item from the matching-items-list.
      * When reaching the beginning, the list is rotated so it will return the
      * last match and a sound is issued (depending on @ref isSoundsEnabled()).
+     * @return the next item from the matching-items-list.
      * When there is no match, QString::null is returned and
      * a sound is be issued.
      * @see #slotPreviousMatch
@@ -196,19 +203,21 @@ public:
     QString previousMatch();
 
     /**
-     * @returns the previous item from the matching-items-list
+     * Returns the next item from the matching-items-list.
      * When reaching the last item, the list is rotated, so it will return
      * the first match and a sound is issued (depending on
-     * @ref isSoundsEnabled()). When there is no match, QString::null is
-     * returned and a sound is issued.
+     * @ref isSoundsEnabled()).
+     * @return the next item from the matching-items-list.  When there is no 
+     * match, QString::null is returned and a sound is issued
      * @see #slotNextMatch
      */
     QString nextMatch();
 
     /**
-     * @returns the last match. Might be useful if you need to check whether
+     * Returns the last match. Might be useful if you need to check whether
      * a completion is different from the last one.
-     * QString::null is returned when there is no last match.
+     * @return the last match. QString::null is returned when there is no 
+     *         last match.
      */
     virtual const QString& lastMatch() const { return myLastMatch; }
 
@@ -227,7 +236,7 @@ public:
      * @ref setOrder( KCompletion::Insertion )
      * before calling items().
      *
-     * @returns a list of all items
+     * @return a list of all items
      * @see #setItems
      */
     QStringList items() const;
@@ -237,15 +246,17 @@ public:
      * If you don't set the mode explicitly, the global default value
      * KGlobalSettings::completionMode() is used.
      * @ref KGlobalSettings::CompletionNone disables completion.
+     * @param mode the completion mode
      * @see #completionMode
      * @see #KGlobalSettings::completionMode
      */
     virtual void setCompletionMode( KGlobalSettings::Completion mode );
 
     /**
-     * @returns the current completion mode.
+     * Return the current completion mode.
      * May be different from @ref KGlobalSettings::completionMode(), if you
      * explicitly called @ref setCompletionMode().
+     * @return the current completion mode
      * @see #setCompletionMode
      */
     KGlobalSettings::Completion completionMode() const {
@@ -268,13 +279,15 @@ public:
      * want to call setOrder( Sorted ) before inserting items, when you want
      * everything sorted.
      *
-     * Default is insertion order
+     * Default is insertion order.
+     * @param order the new order
      * @see #order
      */
     virtual void setOrder( CompOrder order );
 
     /**
-     * @returns the current completion order.
+     * Returns the completion order.
+     * @return the current completion order.
      * @see #setOrder
      */
     CompOrder order() const { return myOrder; }
@@ -283,45 +296,52 @@ public:
      * Setting this to true makes KCompletion behave case insensitively.
      * E.g. makeCompletion( "CA" ); might return "carp@cs.tu-berlin.de".
      * Default is false (case sensitive).
+     * @param ignoreCase true to ignore the case
      * @see #ignoreCase
      */
     virtual void setIgnoreCase( bool ignoreCase );
 
     /**
-     * @returns whether KCompletion acts case insensitively or not.
+     * Return whether KCompletion acts case insensitively or not.
      * Default is false (case sensitive).
+     * @return true if the case will be ignored
      * @see #setIgnoreCase
      */
     bool ignoreCase() const { return myIgnoreCase; }
 
     /**
-     * @returns a list of all items matching the last completed string.
+     * Returns a list of all items matching the last completed string.
      * Might take some time, when you have LOTS of items.
-     *
+     * @return a list of all matches for the last completed string.
      * @see #substringCompletion
      */
     QStringList allMatches();
 
     /**
-     * @returns a list of all items matching @p string.
+     * Returns a list of all items matching @p string.
+     * @param string the string to match
+     * @return the list of all matches
      */
     QStringList allMatches( const QString& string );
 
     /**
-     * @returns a list of all items matching the last completed string.
+     * Returns a list of all items matching the last completed string.
      * Might take some time, when you have LOTS of items.
      * The matches are returned as KCompletionMatches, which also
      * keeps the weight of the matches, allowing
      * you to modify some matches or merge them with matches
      * from another call to allWeightedMatches(), and sort the matches
-     * after that in order to have the matches ordered correctly
+     * after that in order to have the matches ordered correctly.
      *
+     * @return a list of all completion matches
      * @see #substringCompletion
      */
     KCompletionMatches allWeightedMatches();
 
     /**
-     * @returns a list of all items matching @p string.
+     * Returns a list of all items matching @p string.
+     * @param string the string to match
+     * @return a list of all matches
      */
     KCompletionMatches allWeightedMatches( const QString& string );
 
@@ -335,20 +355,23 @@ public:
      *
      * For playing the sounds, @ref KNotifyClient() is used.
      *
+     * @param enable true to enable sounds
      * @see #isSoundsEnabled
      */
     virtual void setEnableSounds( bool enable ) { myBeep = enable; }
 
     /**
      * Tells you whether KCompletion will play sounds on certain occasions.
-     * Default is enabled
+     * Default is enabled.
+     * @return true if sounds are enabled
      * @see #enableSounds
      * @see #disableSounds
      */
     bool isSoundsEnabled() const { return myBeep; }
 
     /**
-     * @returns true when more than one match is found
+     * Returns true when more than one match is found.
+     * @return true if there are more than one match
      * @see #multipleMatches
      */
     bool hasMultipleMatches() const { return myHasMultipleMatches; }
@@ -371,6 +394,7 @@ public slots:
     /**
      * Attempts to complete "string" and emits the completion via @ref match().
      * Same as @ref makeCompletion() (just as a slot).
+     * @param string the string to complete
      * @see #makeCompletion
      */
     void slotMakeCompletion( const QString& string ) {
@@ -398,6 +422,7 @@ public slots:
     /**
      * Inserts @p items into the list of possible completions.
      * Does the same as @ref setItems(), but does not call @ref clear() before.
+     * @param items the items to insert
      */
     void insertItems( const QStringList& items );
 
@@ -413,16 +438,18 @@ public slots:
      * setOrder( KCompletion::Insertion )
      * before calling setItems().
      *
+     * @param list the list of items that are available for completion
      * @see #items
      */
-    virtual void setItems( const QStringList& );
+    virtual void setItems( const QStringList& list);
 
     /**
      * Adds an item to the list of available completions.
      * Resets the current item-state (@ref previousMatch() and @ref nextMatch()
      * won't work anymore).
+     * @param item the item to add
      */
-    void addItem( const QString& );
+    void addItem( const QString& item);
 
     /**
      * Adds an item to the list of available completions.
@@ -432,15 +459,18 @@ public slots:
      * Sets the weighting of the item to @p weight or adds it to the current
      * weighting if the item is already available. The weight has to be greater
      * than 1 to take effect (default weight is 1).
+     * @param item the item to add
+     * @param weight the weight of the item, default is 1
      */
-    void addItem( const QString&, uint weight );
+    void addItem( const QString& item, uint weight );
 
     /**
      * Removes an item from the list of available completions.
      * Resets the current item-state (@ref previousMatch() and @ref nextMatch()
      * won't work anymore).
+     * @param item the item to remove
      */
-    void removeItem( const QString& );
+    void removeItem( const QString& item);
 
     /**
      * Removes all inserted items.
@@ -453,15 +483,17 @@ signals:
      * The matching item. Will be emitted by @ref makeCompletion(),
      * @ref previousMatch() or @ref nextMatch(). May be QString::null if there
      * is no matching item.
+     * @param item the match, or QString::null if there is none
      */
-    void match( const QString& );
+    void match( const QString& item);
 
     /**
      * All matching items. Will be emitted by @ref makeCompletion() in shell-
      * completion-mode, when the same string is passed to makeCompletion twice
      * or more often.
+     * @param matchlist the list of matches
      */
-    void matches( const QStringList& );
+    void matches( const QStringList& matchlist);
 
     /**
      * This signal is emitted, when calling @ref makeCompletion() and more than
@@ -481,9 +513,10 @@ protected:
      * Never delete that pointer!
      *
      * Default implementation does nothing.
+     * @param match the match to process
      * @see #postProcessMatches
      */
-    virtual void postProcessMatch( QString * /*match*/ ) const {}
+    virtual void postProcessMatch( QString *match ) const {}
 
     /**
      * This method is called before a list of all available completions is
@@ -492,9 +525,10 @@ protected:
      * Never delete that pointer!
      *
      * Default implementation does nothing.
+     * @param matches the matches to process
      * @see #postProcessMatch
      */
-    virtual void postProcessMatches( QStringList * /*matches*/ ) const {}
+    virtual void postProcessMatches( QStringList * matches ) const {}
 
     /**
      * This method is called before a list of all available completions is
@@ -503,9 +537,10 @@ protected:
      * Never delete that pointer!
      *
      * Default implementation does nothing.
+     * @param matches the matches to process
      * @see #postProcessMatch
      */
-    virtual void postProcessMatches( KCompletionMatches * /*matches*/ ) const {}
+    virtual void postProcessMatches( KCompletionMatches * matches ) const {}
 
 private:
     void 		addWeightedItem( const QString& );
@@ -587,11 +622,13 @@ public:
      * Returns the matches as a QStringList.
      * @param sort if false, the matches won't be sorted before the conversion,
      *             use only if you're sure the sorting is not needed
+     * @return the list of matches
      */
     QStringList list( bool sort = true ) const;
     /**
      * If sorting() returns false, the matches aren't sorted by their weight,
      * even if true is passed to list().
+     * @return true if the matches won't be sorted
      */
     bool sorting() const {
         return _sorting;
@@ -726,7 +763,8 @@ public:
      * See @ref setCompletionObject() and @ref enableCompletion()
      * for details.
      *
-     * @return true if the completion object
+     * @return true if the completion object will be deleted 
+     *              automatically
      */
     bool isCompletionObjectAutoDeleted() const {
         return m_delegate ? m_delegate->isCompletionObjectAutoDeleted() : m_bAutoDelCompObj;
@@ -845,14 +883,11 @@ public:
      * function.
      *
      * @param item the feature whose key-binding needs to be set:
-     *
-     * @li TextCompletion	the manual completion key-binding.
-     * @li PrevCompletionMatch	the previous match key for multiple completion.
-     * @li NextCompletionMatch	the next match key for for multiple completion.
-     * @li SubstringCompletion  the key for substring completion
-     *
+     *   @li TextCompletion	the manual completion key-binding.
+     *   @li PrevCompletionMatch	the previous match key for multiple completion.
+     *   @li NextCompletionMatch	the next match key for for multiple completion.
+     *   @li SubstringCompletion  the key for substring completion
      * @param key key-binding used to rotate down in a list.
-     *
      * @return  true if key-binding can successfully be set.
      * @see #getKeyBinding
      */
@@ -866,6 +901,7 @@ public:
      * contains modifier key(s), the SUM of the modifier key
      * and the actual key code are returned.
      *
+     * @param item the item to check
      * @return the key-binding used for the feature given by @p item.
      * @see #setKeyBinding
      */
@@ -905,7 +941,7 @@ public:
     /**
      * A pure virtual function that must be implemented by
      * all inheriting classes.
-     *
+     * @param items the list of completed items
      */
     virtual void setCompletedItems( const QStringList& items ) = 0;
 
@@ -918,7 +954,7 @@ public:
      * pointer to a completion object when inheriting so that you
      * won't inadvertently create it!!
      *
-     * @returns the completion object or NULL if one does not exist.
+     * @return the completion object or NULL if one does not exist.
      */
     KCompletion* compObj() const { return m_delegate ? m_delegate->compObj() : (KCompletion*) m_pCompObj; }
 
@@ -933,7 +969,18 @@ protected:
      */
     KeyBindingMap getKeyBindings() const { return m_delegate ? m_delegate->getKeyBindings() : m_keyMap; }
 
+    /**
+     * Sets or removes the delegation object. If a delegation object is
+     * set, all function calls will be forwarded to the delegation object.
+     * @param delegate the delegation object, or 0 to remove it
+     */
     void setDelegate( KCompletionBase *delegate );
+
+    /**
+     * Returns the delegation object.
+     * @return the delegation object, or 0 if there is none
+     * @see setDelegate()
+     */
     KCompletionBase *delegate() const { return m_delegate; }
 
 private:
