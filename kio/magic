@@ -427,6 +427,9 @@
 # JPEG images
 0	beshort		0xffd8		image/jpeg
 
+# JPEG2000 images
+0 	beshort		0x0101010C6A50  image/jp2
+
 # PNG images
 0       string          \x89PNG         image/png
 
