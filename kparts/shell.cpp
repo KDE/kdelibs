@@ -23,7 +23,7 @@ Shell::Shell( QWidget* parent, const char* name )
     m_statusBar = 0;
     m_bDoPartActivation = TRUE;
 
-    resize( 600, 400 );
+    resize( 650, 480 );
     
     qApp->installEventFilter( this );
 }
@@ -264,6 +264,20 @@ void Shell::createToolBars( const QDomElement& element )
 		bar->setFullWidth( TRUE );
 	    else
 		bar->setFullWidth( FALSE );
+	    if ( !e.attribute( "position" ).isEmpty() ) {
+		if ( e.attribute( "position" ).lower() == "top" )
+		    bar->setBarPos( KToolBar::Top );
+		else if ( e.attribute( "position" ).lower() == "left" )
+		    bar->setBarPos( KToolBar::Left );
+		else if ( e.attribute( "position" ).lower() == "right" )
+		    bar->setBarPos( KToolBar::Right );
+		else if ( e.attribute( "position" ).lower() == "bottom" )
+		    bar->setBarPos( KToolBar::Bottom );
+		else if ( e.attribute( "position" ).lower() == "floating" )
+		    bar->setBarPos( KToolBar::Floating );
+		else if ( e.attribute( "position" ).lower() == "flat" )
+		    bar->setBarPos( KToolBar::Flat );
+	    }
 		
 	    QDomElement f = e.firstChild().toElement();
 	    for( ; !f.isNull(); f = f.nextSibling().toElement() )
