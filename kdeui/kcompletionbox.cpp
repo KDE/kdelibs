@@ -35,7 +35,7 @@ public:
 };
 
 KCompletionBox::KCompletionBox( QWidget *parent, const char *name )
-               :KListBox( 0L, name, WStyle_Customize | WStyle_Tool )
+    : KListBox( 0L, name, WStyle_Customize | WStyle_Tool )
 {
     d = new KCompletionBoxPrivate;
     d->m_parent = parent;
@@ -181,10 +181,10 @@ void KCompletionBox::popup()
 
 QSize KCompletionBox::sizeHint() const
 {
-    int cnt = count();
     int ih = itemHeight();
     int h = QMIN( 10 * ih, (int) count() * ih ) +1;
     h = QMAX( h, KListBox::minimumSizeHint().height() );
+
     int w = (d->m_parent) ? d->m_parent->width() : KListBox::minimumSizeHint().width();
     w = QMAX( KListBox::sizeHint().width(), w );
     return QSize( w, h );
