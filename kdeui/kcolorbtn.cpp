@@ -48,21 +48,22 @@ void KColorButton::setColor( const QColor &c )
 
 void KColorButton::drawButtonLabel( QPainter *painter )
 {
-  int w = ( style() == WindowsStyle ) ? 11 : 10;
+  int w = 5;
+  int e = 0;
   
   QColor lnCol = colorGroup().text();
   QColor fillCol = isEnabled() ? col : backgroundColor();
   
-  if ( style() == WindowsStyle && isDown() ) {
-    qDrawPlainRect( painter, w/2+1, w/2+1, width()-w, height()-w,
+  if ( isDown() ) {
+    qDrawPlainRect( painter, w+1, w+1, width()-w*2-e, height()-w*2-e,
 		    lnCol, 1, 0 );
-    w += 2;
-    painter->fillRect( w/2+1, w/2+1, width()-w, height()-w, fillCol );
+    w++;
+    painter->fillRect( w+1, w+1, width()-w*2-e, height()-w*2-e, fillCol );
   } else {
-    qDrawPlainRect( painter, w/2, w/2, width()-w, height()-w,
+    qDrawPlainRect( painter, w, w, width()-w*2-e, height()-w*2-e,
 		    lnCol, 1, 0 );
-    w += 2;
-    painter->fillRect( w/2, w/2, width() - w, height() - w, fillCol );
+    w++;
+    painter->fillRect( w, w, width() - w*2-e, height() - w*2-e, fillCol );
   }
 }
 
