@@ -20,11 +20,9 @@
 #    the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
 #    Boston, MA 02111-1307, USA.
 
-INCLUDES = $(all_includes)
+INCLUDES = $(LIBART_CFLAGS) $(all_includes)
 
-CPPFLAGS = -DLIBART_COMPILATION
-
-SUBDIRS = malloc svgicons . tests
+SUBDIRS = malloc $(SVGICONS) . tests
 
 lib_LTLIBRARIES = libkdefakes.la libkdecore.la
 
@@ -83,7 +81,7 @@ libkdecore_la_SOURCES = libintl.cpp kapplication.cpp kdebug.cpp netwm.cpp  \
 	kmultipledrag.cpp kstaticdeleter.cpp kappdcopiface.cpp kappdcopiface.skel
 
 libkdecore_la_LDFLAGS = $(QT_LDFLAGS) $(KDE_RPATH) $(KDE_MT_LDFLAGS) $(X_LDFLAGS) $(USER_LDFLAGS) -version-info 4:0 -no-undefined
-libkdecore_la_LIBADD = malloc/libklmalloc.la $(LIB_DCOP) ../libltdl/libltdlc.la $(LIB_XEXT) $(LIBRESOLV) $(LIBXINERAMA) $(LIB_DMALLOC) svgicons/libkdesvgicons.la
+libkdecore_la_LIBADD = malloc/libklmalloc.la $(LIB_DCOP) ../libltdl/libltdlc.la $(LIB_XEXT) $(LIBRESOLV) $(LIBXINERAMA) $(LIB_DMALLOC) $(LIBART_LIBS) $(SVGICON_LIBS)
 
 libkdecore_la_METASOURCES = AUTO
 

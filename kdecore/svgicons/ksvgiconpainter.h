@@ -21,8 +21,8 @@
 #ifndef KSVGIconPainter_H
 #define KSVGIconPainter_H
 
-#include "art_render.h"
-#include "art_render_gradient.h"
+#include <libart_lgpl/art_render.h>
+#include <libart_lgpl/art_render_gradient.h>
 
 class QImage;
 class QColor;

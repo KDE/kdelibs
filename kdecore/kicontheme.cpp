@@ -16,6 +16,7 @@
 #include <sys/stat.h>
 #include <unistd.h>
 #include <stdlib.h>
+#include <config.h>
 
 #include <qstring.h>
 #include <qstringlist.h>
@@ -482,7 +483,11 @@ QString KIconThemeDir::iconPath(const QString& name) const
 QStringList KIconThemeDir::iconList() const
 {
     QDir dir(mDir);
-    QStringList lst = dir.entryList("*.svg;*.png;*.xpm", QDir::Files);
+#ifdef HAVE_LIBART
+    QStringList lst = dir.entryList("*.png;*.svg;*.xpm", QDir::Files);
+#else
+    QStringList lst = dir.entryList("*.png;*.xpm", QDir::Files);
+#endif
     QStringList result;
     QStringList::ConstIterator it;
     for (it=lst.begin(); it!=lst.end(); it++)

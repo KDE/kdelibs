@@ -1,0 +1,3 @@
+if test -z "$LIBART_LIBS"; then
+	DO_NOT_COMPILE="$DO_NOT_COMPILE svgicons"
+fi
