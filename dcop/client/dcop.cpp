@@ -460,7 +460,7 @@ void runDCOP( QCStringList args, UserList users, Session session,
 //    char *dcopStr = 0L;
     QString dcopServer;
 
-    for( it = users.begin(); it != users.end() || firstRun; it++ )
+    for( it = users.begin(); it != users.end() || firstRun; ++it )
     {
 	firstRun = false;
 
@@ -486,8 +486,8 @@ void runDCOP( QCStringList args, UserList users, Session session,
 		    cout_ << "for user " << *it << " ";
 		cout_ << ":" << endl;
 
-		QStringList::Iterator sIt;
-		for( sIt = sessions.begin(); sIt != sessions.end(); sIt++ )
+		QStringList::Iterator sIt = sessions.begin();
+		for( ; sIt != sessions.end(); ++sIt )
 		    cout_ << "  " << *sIt << endl;
 
 		cout_ << endl;
@@ -589,7 +589,7 @@ void runDCOP( QCStringList args, UserList users, Session session,
 	// in user. In this case we don't have a session, but still want
 	// to iterate the loop once.
 	QStringList::Iterator sIt = sessions.begin();
-	for( ; sIt != sessions.end() || users.isEmpty(); sIt++ )
+	for( ; sIt != sessions.end() || users.isEmpty(); ++sIt )
 	{
 	    if( !presetDCOPServer && !users.isEmpty() )
 	    {
@@ -655,8 +655,8 @@ void runDCOP( QCStringList args, UserList users, Session session,
 		{
 		    QCStringList::Iterator replaceArg = params.end();
 
-		    QCStringList::Iterator it;
-		    for( it = params.begin(); it != params.end(); it++ )
+		    QCStringList::Iterator it = params.begin();
+		    for( ; it != params.end(); ++it )
 			if( *it == "%1" )
 			    replaceArg = it;
 
