@@ -76,6 +76,7 @@ void Global::init()
 
 Global Global::current()
 {
+  assert(KJScriptImp::current());
   return KJScriptImp::current()->glob;
 }
 
