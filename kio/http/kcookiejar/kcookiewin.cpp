@@ -152,11 +152,6 @@ KCookieWin::KCookieWin( QWidget *parent, KHttpCookie* cookie,
     QWidget* bbox = new QWidget( this );
     QBoxLayout* bbLay = new QHBoxLayout( bbox );
     bbLay->setSpacing( KDialog::spacingHint() );
-    m_button = new QPushButton( bbox );
-    m_button->setText( m_showDetails ? i18n("&Details <<"):i18n("&Details >>") );
-    connect( m_button, SIGNAL(clicked()), SLOT(slotCookieDetails()) );
-    bbLay->addWidget( m_button );
-    bbLay->addStretch( 1 );    
     QPushButton* btn = new QPushButton( i18n("&Accept"), bbox );
     btn->setDefault( true );
     connect( btn, SIGNAL(clicked()), SLOT(accept()) );
@@ -164,6 +159,11 @@ KCookieWin::KCookieWin( QWidget *parent, KHttpCookie* cookie,
     btn = new QPushButton( i18n("&Reject"), bbox );
     connect( btn, SIGNAL(clicked()), SLOT(reject()) );
     bbLay->addWidget( btn );
+    bbLay->addStretch( 1 );    
+    m_button = new QPushButton( bbox );
+    m_button->setText( m_showDetails ? i18n("&Details <<"):i18n("&Details >>") );
+    connect( m_button, SIGNAL(clicked()), SLOT(slotCookieDetails()) );
+    bbLay->addWidget( m_button );
 #ifndef QT_NO_ACCEL
     QAccel* a = new QAccel( this );
     a->connectItem( a->insertItem(Qt::Key_Escape), btn, SLOT(animateClick()) );
