@@ -102,14 +102,17 @@ void Job::removeSubjob( Job *job )
     }
 }
 
-void Job::kill()
+void Job::kill( bool quietly )
 {
   // kill all subjobs
   QListIterator<Job> it( subjobs );
   for ( ; it.current() ; ++it )
      (*it)->kill();
 
-  emit canceled( this );
+  if ( ! quietly ) {
+    emit canceled( this );
+  }
+
   delete this;
 }
 
@@ -151,11 +154,11 @@ SimpleJob::SimpleJob(const KURL& url, int command, const QByteArray &packedArgs,
         Scheduler::doJob(this);
 }
 
-void SimpleJob::kill()
+void SimpleJob::kill( bool quietly )
 {
     Scheduler::cancelJob( this ); // deletes the slave if not 0
     m_slave = 0; // -> set to 0
-    Job::kill();
+    Job::kill( quietly );
 }
 
 SimpleJob::~SimpleJob()

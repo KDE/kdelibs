@@ -69,8 +69,9 @@ namespace KIO {
         /**
         * Abort job
         * This kills all subjobs and deletes the job
+         * @param quietly if true, Job will not emit signal @ref canceled
         */
-        virtual void kill();
+        virtual void kill( bool quietly = false );
 
         /**
          * @return the error code for this job, 0 if no error
@@ -184,8 +185,9 @@ namespace KIO {
         /**
          * Abort job
          * Reimplemented (to cancel the job in the scheduler as well)
+         * @param quietly if true, Job will not emit signal @ref canceled
          */
-        virtual void kill();
+        virtual void kill( bool quietly = false );
 
         /**
          * @internal
