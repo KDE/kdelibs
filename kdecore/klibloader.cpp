@@ -148,15 +148,15 @@ KLibFactory* KLibrary::factory()
     if ( m_factory )
         return m_factory;
 
-        QCString symname;
-        symname.sprintf("init_%s", name().latin1() );
+    QCString symname;
+    symname.sprintf("init_%s", name().latin1() );
 
     void* sym = symbol( symname );
-        if ( !sym )
-        {
-            KLibLoader::self()->d->errorMessage = i18n( "The library %1 does not offer an %2 function." ).arg( name() ).arg( "init_" + name() );
-            kdWarning(150) << KLibLoader::self()->d->errorMessage << endl;
-            return 0;
+    if ( !sym )
+    {
+        KLibLoader::self()->d->errorMessage = i18n( "The library %1 does not offer an %2 function." ).arg( name(), "init_" + name() );
+        kdWarning(150) << KLibLoader::self()->d->errorMessage << endl;
+        return 0;
     }
 
     typedef KLibFactory* (*t_func)();
