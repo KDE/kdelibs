@@ -295,7 +295,7 @@ QByteArray HTMLFormElementImpl::formData(bool& ok)
                         KURL path;
                         QString val = static_cast<HTMLInputElementImpl*>(current)->value().string().stripWhiteSpace();
                         if (!val.isEmpty() &&
-                            QDir::isRelativePath(val) && 
+                            QDir::isRelativePath(val) &&
                             QFile::exists(KGlobalSettings::documentPath() + val)) {
                             path.setPath(KGlobalSettings::documentPath() + val);
                         } else {
@@ -1232,12 +1232,12 @@ void HTMLInputElementImpl::parseAttribute(AttributeImpl *attr)
     case ATTR_ACCESSKEY:
         break;
     case ATTR_WIDTH:
-        // ignore this attribute,  do _not_ add
-        // a CSS_PROP_WIDTH here!
-        // webdesigner are stupid - and IE/NS behave the same ( Dirk )
+        if ( m_type == IMAGE )
+            addCSSLength(CSS_PROP_WIDTH, attr->value() );
         break;
     case ATTR_HEIGHT:
-        addCSSLength(CSS_PROP_HEIGHT, attr->value() );
+        if ( m_type == IMAGE )
+            addCSSLength(CSS_PROP_HEIGHT, attr->value() );
         break;
     case ATTR_ONSELECT:
         setHTMLEventListener(EventImpl::SELECT_EVENT,

@@ -1,3 +1,8 @@
+2004-10-30  Stephan Kulow  <coolo@kde.org>
+
+        * html/html_formimpl.cpp (parseAttribute): ignore height element
+        for input elements that are not image
+
 2004-10-28  Stephan Kulow  <coolo@kde.org>
 
         * html/html_documentimpl.cpp (determineParseMode): adding a fixed list of
