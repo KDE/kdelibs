@@ -140,7 +140,6 @@ void KHTMLPartBrowserExtension::cut()
         return;
     }
 
-    assert( m_editableFormWidget );
     if ( !m_editableFormWidget )
         return; // shouldn't happen
 
@@ -185,7 +184,6 @@ void KHTMLPartBrowserExtension::paste()
         return;
     }
 
-    assert( m_editableFormWidget );
     if ( !m_editableFormWidget )
         return; // shouldn't happen
 
