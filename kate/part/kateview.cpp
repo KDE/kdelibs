@@ -691,17 +691,22 @@ void KateViewInternal::tagLines(int start, int end, int x1, int x2) {
   if (x2 > width() + xPos) x2 = width() + xPos;
   if (x1 >= x2) return;
 
-  r = &lineRanges[start];
-  uint rpos = start;
-  for (z = start; z <= end; z++) {
+  if (start < numLines)
+  {
+    r = &lineRanges[start];
+    uint rpos = start;
+    for (z = start; z <= end; z++)
+    {
+      if (rpos >= numLines) break;
 
-    if (rpos >= numLines) break;
-
-    if (x1 < r->start) r->start = x1;
-    if (x2 > r->end) r->end = x2;
-    r++;
-    rpos++;
-    updateState |= 1;
+      if (x1 < r->start) r->start = x1;
+      if (x2 > r->end) r->end = x2;
+      
+      r++;
+      rpos++;
+      
+      updateState |= 1;
+    }
   }
 }
 
