@@ -1356,7 +1356,7 @@ int KExtendedSocket::connect()
       d->status = created;
 
       // check if we have to do timeout
-      if (doingtimeout)
+      if (doingtimeout && KSocks::self()->hasWorkingAsyncConnect())
 	{
 	  fd_set rd, wr;
 
@@ -2186,7 +2186,8 @@ void KExtendedSocket::connectionEvent()
 	  cleanError();
 	}
 
-      setBlockingMode(false);
+      if (KSocks::self()->hasWorkingAsyncConnect())
+        setBlockingMode(false);
       if (KSocks::self()->connect(sockfd, p->ai_addr, p->ai_addrlen) == -1)
 	{
 	  if (errno != EWOULDBLOCK && errno != EINPROGRESS)
