@@ -54,8 +54,8 @@ int KMLprJobManager::actions()
 	if (LprSettings::self()->mode() == LprSettings::LPR)
 		return KMJob::Remove;
 	else
-		// FIXME
-		return 0;
+		// some additional actions to be added here
+		return (KMJob::Remove | KMJob::Hold | KMJob::Resume);
 }
 
 bool KMLprJobManager::sendCommandSystemJob(const QPtrList<KMJob>& jobs, int action, const QString& arg)
@@ -63,12 +63,20 @@ bool KMLprJobManager::sendCommandSystemJob(const QPtrList<KMJob>& jobs, int acti
 	QString	msg;
 	QPtrListIterator<KMJob>	it(jobs);
 	bool	status(true);
+	LpcHelper	*helper = lpcHelper();
+
 	for (; it.current() && status; ++it)
 	{
 		switch (action)
 		{
 			case KMJob::Remove:
-				status = lpcHelper()->removeJob(it.current(), msg);
+				status = helper->removeJob(it.current(), msg);
+				break;
+			case KMJob::Hold:
+				status = helper->changeJobState(it.current(), KMJob::Held, msg);
+				break;
+			case KMJob::Resume:
+				status = helper->changeJobState(it.current(), KMJob::Queued, msg);
 				break;
 			default:
 				status = false;

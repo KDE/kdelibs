@@ -51,7 +51,7 @@ void LprSettings::init()
 	// LPR/LPRng mode
 	KConfig	*conf = KMFactory::self()->printConfig();
 	conf->setGroup("LPR");
-	QString	modestr = conf->readEntry("Mode", "LPR");
+	QString	modestr = conf->readEntry("Mode");
 	if (modestr == "LPRng")
 		m_mode = LPRng;
 	else if (modestr == "LPR")

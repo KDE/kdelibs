@@ -35,6 +35,7 @@ public:
 
 protected:
 	KMJob* parseLineLpr(const QString&);
+	KMJob* parseLineLPRng(const QString&);
 
 private:
 	QString		m_exepath;

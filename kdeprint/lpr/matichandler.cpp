@@ -26,11 +26,13 @@
 #include "kpipeprocess.h"
 #include "kmmanager.h"
 #include "kprinter.h"
+#include "lprsettings.h"
 
 #include <klocale.h>
 #include <kstandarddirs.h>
 #include <kapplication.h>
 #include <kdebug.h>
+#include <kprocess.h>
 #include <qfile.h>
 #include <qtextstream.h>
 #include <qregexp.h>
@@ -277,7 +279,7 @@ DrMain* MaticHandler::loadDriver(KMPrinter*, PrintcapEntry *entry)
 	// changing printer name), the template would be also removed
 	QString	origfilename = maticFile(entry);
 	QString	filename = locateLocal("tmp", "foomatic_" + kapp->randomString(8));
-	::system(QFile::encodeName("cp " + origfilename + " " + filename));
+	::system(QFile::encodeName("cp " + KShellProcess::quote(origfilename) + " " + KShellProcess::quote(filename)));
 	DrMain	*driver = loadMaticDriver(filename);
 	if (driver)
 	{
@@ -376,7 +378,7 @@ bool MaticHandler::savePrinterDriver(KMPrinter *prt, PrintcapEntry *entry, DrMai
 		inFile.close();
 		tmpFile.close();
 
-		QString	cmd = "mv " + tmpFile.name() + " " + outFile;
+		QString	cmd = "mv " + KShellProcess::quote(tmpFile.name()) + " " + KShellProcess::quote(outFile);
 		int	status = ::system(QFile::encodeName(cmd).data());
 		QFile::remove(tmpFile.name());
 		result = (status != -1 && WEXITSTATUS(status) == 0);
@@ -412,7 +414,13 @@ PrintcapEntry* MaticHandler::createEntry(KMPrinter *prt)
 	entry->addField("lf", Field::String, "/var/log/lp-errs");
 	entry->addField("lp", Field::String, (prot != "parallel" ? "/dev/null" : prt->device().path()));
 	entry->addField("if", Field::String, m_exematicpath);
-	entry->addField("af", Field::String, "/etc/foomatic/lpd/"+prt->printerName()+".lom");
+	if (LprSettings::self()->mode() == LprSettings::LPRng)
+	{
+		entry->addField("filter_options", Field::String, " --lprng $Z /etc/foomatic/lpd/"+prt->printerName()+".lom");
+		entry->addField("force_localhost", Field::Boolean);
+	}
+	else
+		entry->addField("af", Field::String, "/etc/foomatic/lpd/"+prt->printerName()+".lom");
 	if (!prt->description().isEmpty())
 		entry->aliases << prt->description();
 	return entry;

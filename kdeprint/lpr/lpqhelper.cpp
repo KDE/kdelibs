@@ -20,8 +20,10 @@
 #include "lpqhelper.h"
 #include "kmjob.h"
 #include "kpipeprocess.h"
+#include "lprsettings.h"
 
 #include <kstandarddirs.h>
+#include <kprocess.h>
 #include <kdebug.h>
 
 LpqHelper::LpqHelper(QObject *parent, const char *name)
@@ -52,23 +54,51 @@ KMJob* LpqHelper::parseLineLpr(const QString& line)
 	return job;
 }
 
+KMJob* LpqHelper::parseLineLPRng(const QString& line)
+{
+	QString	rank = line.left(7).stripWhiteSpace();
+	if (!rank[0].isDigit() && rank != "active" && rank != "hold")
+		return NULL;
+	KMJob	*job = new KMJob;
+	job->setState((rank[0].isDigit() ? KMJob::Queued : (rank == "hold" ? KMJob::Held : KMJob::Printing)));
+	int	p = line.find('@', 7), q = line.find(' ', 7);
+	job->setOwner(line.mid(7, QMIN(p,q)-7));
+	while (line[q].isSpace())
+		q++;
+	q++;
+	while (line[q].isSpace())
+		q++;
+	p = line.find(' ', q);
+	job->setId(line.mid(q, p-q).toInt());
+	while (line[p].isSpace())
+		p++;
+	q = p+25;
+	while (line[q].isDigit())
+		q--;
+	job->setName(line.mid(p, q-p).stripWhiteSpace());
+	job->setSize(line.mid(q+1, p+26-q).toInt() / 1000);
+	return job;
+}
+
 void LpqHelper::listJobs(QPtrList<KMJob>& jobs, const QString& prname)
 {
 	KPipeProcess	proc;
-	if (!m_exepath.isEmpty() && proc.open(m_exepath + " -P" + prname))
+	if (!m_exepath.isEmpty() && proc.open(m_exepath + " -P " + KShellProcess::quote(prname)))
 	{
 		QTextStream	t(&proc);
 		QString		line;
+		bool	lprng = (LprSettings::self()->mode() == LprSettings::LPRng);
+
 		while (!t.atEnd())
 		{
-			line = t.readLine();
+			line = t.readLine().stripWhiteSpace();
 			if (line.startsWith("Rank"))
 				break;
 		}
 		while (!t.atEnd())
 		{
 			line = t.readLine();
-			KMJob	*job = parseLineLpr(line);
+			KMJob	*job = (lprng ? parseLineLPRng(line) : parseLineLpr(line));
 			if (job)
 			{
 				job->setPrinter(prname);

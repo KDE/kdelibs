@@ -31,6 +31,7 @@
 #include <kstandarddirs.h>
 #include <kdebug.h>
 #include <kprinter.h>
+#include <kprocess.h>
 
 #include <stdlib.h>
 #include <unistd.h>
@@ -44,7 +45,7 @@ KMLprManager::KMLprManager(QObject *parent, const char *name)
 
 	m_lpchelper = new LpcHelper(this);
 
-	setHasManagement(/*getuid() == 0*/true);
+	setHasManagement(getuid() == 0);
 	setPrinterOperationMask(
 		KMManager::PrinterEnabling |
 		KMManager::PrinterConfigure |
@@ -320,6 +321,18 @@ bool KMLprManager::createPrinter(KMPrinter *prt)
 		{
 			result = handler->savePrinterDriver(prt, entry, prt->driver());
 		}
+		
+		// in case of LPRng, we need to tell the daemon about new printer
+		if (LprSettings::self()->mode() == LprSettings::LPRng)
+		{
+			QString	msg;
+			if (!m_lpchelper->restart(msg))
+			{
+				setErrorMsg(i18n("The printer has been created but the print daemon "
+				                 "could not be restarted. %1").arg(msg));
+				return false;
+			}
+		}
 	}
 	return result;
 }
@@ -341,7 +354,7 @@ bool KMLprManager::removePrinter(KMPrinter *prt)
 			{
 				// printcap file saved, entry can be deleted now
 				delete entry;
-				status =  (::system(QFile::encodeName("rm -rf " + sd)) == 0);
+				status =  (::system(QFile::encodeName("rm -rf " + KShellProcess::quote(sd))) == 0);
 				if (!status)
 					setErrorMsg(i18n("Unable to remove spool directory %1. "
 					                 "Check that you have write permissions "

@@ -22,6 +22,7 @@
 
 #include <qobject.h>
 #include <qmap.h>
+#include <qtextstream.h>
 #include "kmprinter.h"
 
 class KMJob;
@@ -39,13 +40,20 @@ public:
 	bool enable(KMPrinter*, QString&);
 	bool disable(KMPrinter*, QString&);
 	bool removeJob(KMJob*, QString&);
+	bool changeJobState(KMJob*, int, QString&);
+	
+	bool restart(QString&);
 
 protected:
 	bool changeState(const QString&, bool, QString&);
+	void parseStatusLPR(QTextStream&);
+	void parseStatusLPRng(QTextStream&);
+	int parseStateChangeLPR(const QString&, const QString&);
+	int parseStateChangeLPRng(const QString&, const QString&);
 
 private:
 	QMap<QString, KMPrinter::PrinterState>	m_state;
-	QString	m_exepath, m_lprmpath;
+	QString	m_exepath, m_lprmpath, m_checkpcpath;
 };
 
 #endif
