@@ -125,6 +125,7 @@ public:
 };
 
 SlaveBase *globalSlave=0;
+long SlaveBase::s_seqNr = 0;
 
 static volatile bool slaveWriteError = false;
 
@@ -752,12 +753,11 @@ bool SlaveBase::openPassDlg( AuthInfo& info, const QString &errorMsg )
     QByteArray reply;
     AuthInfo authResult;
     long windowId = metaData("window-id").toLong();
-    static long seqNr = 0;
 
     (void) dcopClient(); // Make sure to have a dcop client.
             
     QDataStream stream(params, IO_WriteOnly);
-    stream << info << errorMsg << windowId << seqNr;
+    stream << info << errorMsg << windowId << s_seqNr;
             
     if (!d->dcopClient->call( "kded", "kpasswdserver", "queryAuthInfo(KIO::AuthInfo, QString, long int, long int)",
                                params, replyType, reply ) )
@@ -769,7 +769,7 @@ bool SlaveBase::openPassDlg( AuthInfo& info, const QString &errorMsg )
     if ( replyType == "KIO::AuthInfo" )
     {
        QDataStream stream2( reply, IO_ReadOnly );
-       stream2 >> authResult >> seqNr;
+       stream2 >> authResult >> s_seqNr;
     }
     else
     {
@@ -880,6 +880,8 @@ void SlaveBase::dispatch( int command, const QByteArray &data )
 
     switch( command ) {
     case CMD_HOST: {
+        // Reset s_seqNr, see kpasswdserver/DESIGN
+        s_seqNr = 0;
         QString passwd;
         QString host, user;
         stream >> host >> i >> user >> passwd;

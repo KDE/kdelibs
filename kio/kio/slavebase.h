@@ -783,6 +783,7 @@ private:
     QString mPoolSocket;
     QString mAppSocket;
     bool mConnectedToApp;
+    static long s_seqNr;
 protected:
     virtual void virtual_hook( int id, void* data );
 private:
