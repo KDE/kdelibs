@@ -80,10 +80,10 @@ class ManagerImpl : virtual public ManagerIface
 
   private:
     void createStandardConfig();
-    
+
     Resource *readResourceConfig( const QString& identifier, bool checkActive );
     void writeResourceConfig( Resource *resource, bool checkActive );
-    
+
     void removeResource( Resource *resource );
     Resource *getResource( Resource *resource );
     Resource *getResource( const QString& identifier );
@@ -96,6 +96,10 @@ class ManagerImpl : virtual public ManagerIface
     Factory *mFactory;
     Resource::List mResources;
     QString mId;
+    bool mConfigRead;
+
+    class ManagerImplPrivate;
+    ManagerImplPrivate *d;
 };
 
 }

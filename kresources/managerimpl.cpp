@@ -41,7 +41,7 @@ ManagerImpl::ManagerImpl( ManagerNotifier *notifier, const QString &family )
   : DCOPObject( "ManagerIface_" + family.utf8() ),
     mNotifier( notifier ),
     mFamily( family ), mConfig( 0 ), mStdConfig( 0 ), mStandard( 0 ),
-    mFactory( 0 )
+    mFactory( 0 ), mConfigRead( false )
 {
   kdDebug(5650) << "ManagerImpl::ManagerImpl()" << endl;
 
@@ -119,6 +119,8 @@ void ManagerImpl::readConfig( KConfig *cfg )
   for ( QStringList::Iterator it = keys.begin(); it != keys.end(); ++it ) {
     readResourceConfig( *it, false );
   }
+
+  mConfigRead = true;
 }
 
 void ManagerImpl::writeConfig( KConfig *cfg )
@@ -171,7 +173,8 @@ void ManagerImpl::add( Resource *resource )
 
   mResources.append( resource );
 
-  writeResourceConfig( resource, true );
+  if ( mConfigRead )
+    writeResourceConfig( resource, true );
 
   signalKResourceAdded( mId, resource->identifier() );
 }
