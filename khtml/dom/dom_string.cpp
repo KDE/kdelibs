@@ -26,11 +26,6 @@
 using namespace DOM;
 
 
-DOMString::DOMString()
-{
-    impl = 0;
-}
-
 DOMString::DOMString(const QChar *str, uint len)
 {
     impl = new DOMStringImpl( str, len );
