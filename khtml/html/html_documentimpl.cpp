@@ -35,6 +35,10 @@
 #include "html_headimpl.h"
 #include "html/html_baseimpl.h"
 
+#include "khtml_factory.h"
+#include "html_miscimpl.h"
+#include "rendering/render_object.h"
+
 #include <kdebug.h>
 #include <kurl.h>
 #include <kglobal.h>
@@ -57,6 +61,13 @@ HTMLDocumentImpl::HTMLDocumentImpl() : DocumentImpl()
 //    kdDebug( 6090 ) << "HTMLDocumentImpl constructor this = " << this << endl;
     bodyElement = 0;
     htmlElement = 0;
+
+    connect( KHTMLFactory::vLinks(), SIGNAL( inserted( const QString& )),
+	     SLOT( slotHistoryChanged() ));
+    connect( KHTMLFactory::vLinks(), SIGNAL( removed( const QString& )),
+	     SLOT( slotHistoryChanged() ));
+    connect( KHTMLFactory::vLinks(), SIGNAL( cleared()),
+	     SLOT( slotHistoryChanged() ));
 }
 
 HTMLDocumentImpl::HTMLDocumentImpl(KHTMLView *v)
@@ -67,6 +78,13 @@ HTMLDocumentImpl::HTMLDocumentImpl(KHTMLView *v)
     htmlElement = 0;
 
     m_styleSelector = new CSSStyleSelector(this);
+
+    connect( KHTMLFactory::vLinks(), SIGNAL( inserted( const QString& )),
+	     SLOT( slotHistoryChanged() ));
+    connect( KHTMLFactory::vLinks(), SIGNAL( removed( const QString& )),
+	     SLOT( slotHistoryChanged() ));
+    connect( KHTMLFactory::vLinks(), SIGNAL( cleared()),
+	     SLOT( slotHistoryChanged() ));
 }
 
 HTMLDocumentImpl::~HTMLDocumentImpl()
@@ -172,7 +190,17 @@ QList<StyleSheetImpl> HTMLDocumentImpl::authorStyleSheets()
     return htmlAuthorStyleSheets();
 }
 
-//------------------------------------------------------------------------------
+void HTMLDocumentImpl::slotHistoryChanged()
+{
+    if ( !m_render )
+	return;
+    
+    recalcStyle();
+    m_render->updateSize();
+    m_render->repaint();
+}
+
+//-----------------------------------------------------------------------------
 
 
 XHTMLDocumentImpl::XHTMLDocumentImpl() : HTMLDocumentImpl()

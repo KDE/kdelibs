@@ -89,6 +89,11 @@ protected:
     QString onloadScript;
     QString onUnloadScript;
 
+protected slots:
+    /**
+     * Repaints, so that all links get the proper color
+     */
+    void slotHistoryChanged();
 };
 
 // ###  this is a temporary class just to get us going with XHTML

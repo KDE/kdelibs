@@ -526,7 +526,7 @@ bool KHTMLView::focusNextPrevChild( bool next )
 	return false;
     if (focusWidget()==viewport())
 	return QWidget::focusNextPrevChild( next );
-    kdDebug()<<"KHTMLView: QScrollview set new FocusWidget to:"<<focusWidget()->name()<<endl;
+    kdDebug(6000)<<"KHTMLView: QScrollview set new FocusWidget to:"<<focusWidget()->name()<<endl;
     return true;
 }
 

@@ -553,8 +553,6 @@ public:
    * Save the @ref KHTMLPart's complete state (including child frame
    * objects) to the provided @ref QDataStream.
    *
-   * You can use this method to provide history functionality.
-   *
    * This is called from the @ref saveState() method of the
    *  @ref browserExtension().
    */
