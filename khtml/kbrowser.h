@@ -107,12 +107,12 @@ signals:
   /**
    * Emitted if a link is pressed which has an invalid target, or the target <tt>_blank</tt>.
    */
-  void newWindow( QString _url );
+  void newWindow( const QString &_url );
 
-  void started( const char *_url );
+  void started( const QString &_url );
   void completed();
   void canceled();
-  void mousePressed( const char* _url, const QPoint& _point, int _button);
+  void mousePressed( const QString &_url, const QPoint& _point, int _button);
 
   void frameInserted( KBrowser *frame );
   void urlClicked( QString url );
