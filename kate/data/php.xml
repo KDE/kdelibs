@@ -2703,7 +2703,7 @@
 				<StringDetect attribute="Keyword" context="#pop" String="?&gt;" />
 				<DetectChar attribute="Comment" context="php_onelinecomment" char="#" />
 				<Detect2Chars attribute="Comment" context="php_onelinecomment" char="/" char1="/" />
-				<Detect2Chars attribute="Comment" context="twolinecomment" char="/" char1="&#42;" />
+				<Detect2Chars attribute="Comment" context="twolinecomment" char="/" char1="&#42;" beginRegion="Comment"/>
 				<keyword attribute="Control Structures" context="#stay" String="control structures" />
 				<keyword attribute="Keyword" context="#stay" String="keywords" />
 				<keyword attribute="Function" context="#stay" String="functions" />
@@ -2726,7 +2726,7 @@
 				<StringDetect attribute="Keyword" context="#pop#pop" String="?&gt;" />
 			</context>
 			<context name="twolinecomment" attribute="Comment" lineEndContext="#stay">
-				<Detect2Chars attribute="Comment" context="#pop" char="*" char1="/" />
+				<Detect2Chars attribute="Comment" context="#pop" char="*" char1="/" endRegion="Comment" />
 			</context>
 			<context name="doblequotestring" attribute="String" lineEndContext="#stay">
 				<Detect2Chars attribute="Backslash Code" context="#stay" char="\" char1="&quot;" />
