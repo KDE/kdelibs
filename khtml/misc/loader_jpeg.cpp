@@ -280,6 +280,8 @@ int KJPEGFormat::decode(QImage& image, QImageConsumer* consumer, const uchar* bu
 #endif
         int skipbytes = QMIN((unsigned) jsrc.valid_buffer_len, jsrc.skip_input_bytes);
 
+	// ### FIXME: buffers overlap:  (triggered with http://www.kde.org/)
+	// Source and destination overlap in memcpy(0x50503278, 0x50503b61, 5911)
         if(skipbytes < jsrc.valid_buffer_len)
             memcpy(jsrc.buffer, jsrc.buffer+skipbytes, jsrc.valid_buffer_len - skipbytes);
 
