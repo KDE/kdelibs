@@ -68,6 +68,18 @@ KFileList::KFileList(QWidget *parent, const char *name)
 	QToolTip::add(m_open, i18n("Open File"));
 	m_open->setEnabled(false);
 
+	m_up = new QPushButton(this);
+	m_up->setPixmap(SmallIcon("up"));
+	connect(m_up, SIGNAL(clicked()), SLOT(slotUp()));
+	QToolTip::add(m_up, i18n("Move Up"));
+	m_up->setEnabled(false);
+
+	m_down = new QPushButton(this);
+	m_down->setPixmap(SmallIcon("down"));
+	connect(m_down, SIGNAL(clicked()), SLOT(slotDown()));
+	QToolTip::add(m_down, i18n("Move Down"));
+	m_down->setEnabled(false);
+
 	setAcceptDrops(true);
 
 	QToolTip::add(m_files, i18n(
@@ -81,6 +93,9 @@ KFileList::KFileList(QWidget *parent, const char *name)
 	l1->addWidget(m_add);
 	l1->addWidget(m_remove);
 	l1->addWidget(m_open);
+	l1->addSpacing(10);
+	l1->addWidget(m_up);
+	l1->addWidget(m_down);
 	l1->addStretch(1);
 }
 
@@ -122,6 +137,8 @@ void KFileList::addFiles(const QStringList& files)
 				item->setPixmap(0, mime->pixmap(url, KIcon::Small));
 			}
 
+		slotSelectionChanged();
+		/*
 		if (m_files->childCount() > 0)
 		{
 			m_remove->setEnabled(true);
@@ -129,6 +146,7 @@ void KFileList::addFiles(const QStringList& files)
 			if (m_files->currentItem() == 0)
 				m_files->setSelected(m_files->firstChild(), true);
 		}
+		*/
 	}
 }
 
@@ -203,6 +221,38 @@ void KFileList::slotSelectionChanged()
 	selection(l);
 	m_remove->setEnabled(l.count() > 0);
 	m_open->setEnabled(l.count() == 1);
+	m_up->setEnabled(l.count() == 1 && l.first()->itemAbove());
+	m_down->setEnabled(l.count() == 1 && l.first()->itemBelow());
+}
+
+void KFileList::slotUp()
+{
+	QPtrList<QListViewItem>	l;
+	selection(l);
+	if (l.count() == 1 && l.first()->itemAbove())
+	{
+		QListViewItem	*item(l.first()), *clone(0);
+		clone = new QListViewItem(m_files, item->itemAbove()->itemAbove(), item->text(0), item->text(1), item->text(2));
+		clone->setPixmap(0, *(item->pixmap(0)));
+		delete item;
+		m_files->setCurrentItem(clone);
+		m_files->setSelected(clone, true);
+	}
+}
+
+void KFileList::slotDown()
+{
+	QPtrList<QListViewItem>	l;
+	selection(l);
+	if (l.count() == 1 && l.first()->itemBelow())
+	{
+		QListViewItem	*item(l.first()), *clone(0);
+		clone = new QListViewItem(m_files, item->itemBelow(), item->text(0), item->text(1), item->text(2));
+		clone->setPixmap(0, *(item->pixmap(0)));
+		delete item;
+		m_files->setCurrentItem(clone);
+		m_files->setSelected(clone, true);
+	}
 }
 
 #include "kfilelist.moc"

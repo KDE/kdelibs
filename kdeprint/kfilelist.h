@@ -43,6 +43,8 @@ protected slots:
 	void slotRemoveFile();
 	void slotOpenFile();
 	void slotSelectionChanged();
+	void slotUp();
+	void slotDown();
 
 protected:
 	void dragEnterEvent(QDragEnterEvent*);
@@ -52,7 +54,7 @@ protected:
 
 private:
 	KListView	*m_files;
-	QPushButton	*m_add, *m_remove, *m_open;
+	QPushButton	*m_add, *m_remove, *m_open, *m_up, *m_down;
 	bool		m_block;
 };
 

@@ -546,3 +546,4 @@ Since 2.2 release, Michael Goffioul <goffioul@imec.be>
   	. fixed various conflicting shortcuts
 	. made KMVirtualManager inherit from KPReloadObject to force instance
 	  reloading when something has changed
+  * print dialog: added buttons to move files up and down
