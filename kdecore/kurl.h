@@ -39,8 +39,8 @@ class QUrl;
  */
 class KURL
 {
-  typedef QValueList<KURL> List;
 public:
+  typedef QValueList<KURL> List;
   /**
    * Construct an empty url
    */
