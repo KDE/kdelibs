@@ -432,3 +432,5 @@ Since 2.2 release, Michael Goffioul <goffioul@imec.be>
 21/02/2002 Michael Goffioul <goffioul@imec.be>
   * general: splitted the printer state into enable/disable and start/stop
     and modified the GUI to reflect this
+  * general: removed the KMManager::configure(), obsoleted by the complete
+    options dialog being shown

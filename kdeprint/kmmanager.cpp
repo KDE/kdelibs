@@ -377,11 +377,6 @@ void KMManager::setSoftDefault(KMPrinter *p)
         }
 }
 
-bool KMManager::configure(QWidget*)
-{
-	return notImplemented();
-}
-
 bool KMManager::restartServer()
 {
 	return notImplemented();

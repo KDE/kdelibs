@@ -44,7 +44,6 @@ public:
 		Default        = 0x0002,
 		Preview        = 0x0004,
 		OutputToFile   = 0x0008,
-		Options        = 0x0010,
 		PrintCommand   = 0x0020,
 		Persistent     = 0x0040,
 		PrintDialogAll = 0x001F

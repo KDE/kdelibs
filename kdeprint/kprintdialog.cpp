@@ -214,7 +214,6 @@ void KPrintDialog::setFlags(int f)
 	SHOWHIDE(d->m_properties, (f & KMUiManager::Properties))
 	SHOWHIDE(d->m_default, (f & KMUiManager::Default))
 	SHOWHIDE(d->m_preview, (f & KMUiManager::Preview))
-	//SHOWHIDE(d->m_options, (f & KMUiManager::Options))
 	bool	on = (f & KMUiManager::OutputToFile);
 	SHOWHIDE(d->m_filelabel, on)
 	SHOWHIDE(d->m_file, on)
@@ -483,8 +482,6 @@ void KPrintDialog::slotOptions()
 {
 	if (KMManager::self()->invokeOptionsDialog(this))
 		initialize(d->m_printer);
-	//if (KMFactory::self()->manager()->configure(this))
-	//	initialize(d->m_printer);
 }
 
 void KPrintDialog::enableOutputFile(bool on)

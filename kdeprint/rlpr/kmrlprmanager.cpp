@@ -19,7 +19,6 @@
 
 #include "kmrlprmanager.h"
 #include "kmprinter.h"
-#include "kmproxydialog.h"
 
 #include <qfile.h>
 #include <qfileinfo.h>
@@ -156,9 +155,4 @@ void KMRlprManager::savePrintersConf(const QString& filename)
 QString KMRlprManager::printerFile()
 {
 	return locateLocal("data","kdeprint/printers.conf");
-}
-
-bool KMRlprManager::configure(QWidget *parent)
-{
-	return KMProxyDialog::configure(parent);
 }

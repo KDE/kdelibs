@@ -33,7 +33,6 @@ public:
 	bool createPrinter(KMPrinter*);
 	bool removePrinter(KMPrinter*);
 	bool testPrinter(KMPrinter*);
-	bool configure(QWidget *parent = 0);
 
 protected:
 	void listPrinters();

@@ -40,7 +40,7 @@
 KMUiManager::KMUiManager(QObject *parent, const char *name)
 : QObject(parent,name)
 {
-	m_printdialogflags = (KMUiManager::PrintDialogAll & ~KMUiManager::Options);
+	m_printdialogflags = KMUiManager::PrintDialogAll;
 	m_printdialogpages.setAutoDelete(false);
 }
 

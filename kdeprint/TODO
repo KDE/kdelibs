@@ -9,8 +9,6 @@ BUGS
 - Allow to view a set of specified printers in the job viewer
   (instead of "one or all").
 
-- remove KMManager::configure() (obsolete now)
-
 
 WISHES
 ------

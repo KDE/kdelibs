@@ -56,8 +56,6 @@ public:
 	DrMain* loadFileDriver(const QString& filename);
 	bool savePrinterDriver(KMPrinter *p, DrMain *d);
 
-	bool configure(QWidget *parent = 0);
-
 	bool restartServer();
 	bool configureServer(QWidget *parent = 0);
 	QStringList detectLocalPrinters();

@@ -8,7 +8,7 @@ kde_module_LTLIBRARIES = kdeprint_cups.la
 
 kdeprint_cups_la_SOURCES = cupsinfos.cpp ipprequest.cpp kmcupsfactory.cpp kmcupsjobmanager.cpp \
 			      kmcupsmanager.cpp kmcupsuimanager.cpp kmpropbanners.cpp kmwbanners.cpp kmwipp.cpp \
-			      kmwippselect.cpp kcupsprinterimpl.cpp kmcupsconfig.cpp kmcupsconfigwidget.cpp \
+			      kmwippselect.cpp kcupsprinterimpl.cpp kmcupsconfigwidget.cpp \
 			      kmconfigcups.cpp kmconfigcupsdir.cpp kmwippprinter.cpp kmwfax.cpp kmwquota.cpp \
 			      kmpropquota.cpp kmwusers.cpp kmpropusers.cpp kpschedulepage.cpp image.cpp \
 				  imagepreview.cpp imageposition.cpp marginpreview.cpp kpimagepage.cpp marginwidget.cpp \
@@ -18,7 +18,7 @@ kdeprint_cups_la_LIBADD = $(top_builddir)/kdeprint/management/libkdeprint_manage
 kdeprint_cups_la_METASOURCES = AUTO
 
 noinst_HEADERS = cupsinfos.h ipprequest.h kmcupsfactory.h kmcupsjobmanager.h kmcupsmanager.h kmcupsuimanager.h \
-		 kmpropbanners.h kmwbanners.h kmwipp.h kmwippselect.h kcupsprinterimpl.h kmcupsconfig.h \
+		 kmpropbanners.h kmwbanners.h kmwipp.h kmwippselect.h kcupsprinterimpl.h \
 		 kmcupsconfigwidget.h kmconfigcups.h kmconfigcupsdir.h kmwippprinter.h kmwfax.h kmwquota.h \
 		 kmpropquota.h kmwusers.h kmpropusers.h kpschedulepage.h imagepreview.h imageposition.h \
 		 marginpreview.h kpimagepage.h marginwidget.h kptextpage.h kphpgl2page.h cupsaddsmb2.h \

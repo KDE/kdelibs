@@ -27,7 +27,6 @@
 #include "cupsinfos.h"
 #include "driver.h"
 #include "matic.h"
-#include "kmcupsconfig.h"
 #include "kmfactory.h"
 #include "kmdbentry.h"
 #include "cupsaddsmb2.h"
@@ -788,11 +787,6 @@ bool KMCupsManager::savePrinterDriver(KMPrinter *p, DrMain *d)
 	if (!result)
 		reportIppError(&req);
 	return result;
-}
-
-bool KMCupsManager::configure(QWidget *parent)
-{
-	return KMCupsConfig::configure(parent);
 }
 
 void* KMCupsManager::loadCupsdConfFunction(const char *name)

@@ -31,7 +31,6 @@
 KMRlprUiManager::KMRlprUiManager(QObject *parent, const char *name)
 : KMUiManager(parent,name)
 {
-	m_printdialogflags |= KMUiManager::Options;
 }
 
 KMRlprUiManager::~KMRlprUiManager()
