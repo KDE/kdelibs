@@ -212,7 +212,7 @@ void ResourceFile::unlock( const QString &fileName )
   QString fn = fileName;
   fn.replace( QRegExp( "/" ), "_" );
 
-  QString lockName = locate( "data", "kabc/lock/" + fn + ".lock" );
+  QString lockName = locateLocal( "data", "kabc/lock/" + fn + ".lock" );
   QFile::remove( lockName );
   QFile::remove( mLockUniqueName );
   addressBook()->emitAddressBookUnlocked();
