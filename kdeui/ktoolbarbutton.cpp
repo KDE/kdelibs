@@ -695,13 +695,13 @@ void KToolBarButton::showMenu()
   // calculate that position carefully!!
   d->m_isRaised = true;
   repaint (false);
-  QPoint p (d->m_parent->mapToGlobal(pos()));
-  if (p.y() + height() + d->m_popup->height() > KApplication::desktop()->height())
-    p.setY(p.y() - d->m_popup->height());
+  QPoint p ( mapToGlobal( QPoint( 0, 0 ) ) );
+  if ( p.y() + height() + d->m_popup->height() > KApplication::desktop()->height() )
+      p.setY( p.y() - d->m_popup->height() );
   else
-    p.setY(p.y()+height());
-  if( d->m_isToggle )
-    setToggle( true ); // Turns the button into a ToggleButton ...
+      p.setY( p.y() + height( ));
+  if ( d->m_isToggle )
+      setToggle( true ); // Turns the button into a ToggleButton ...
   d->m_popup->popup(p);
 }
 
