@@ -19,11 +19,25 @@
  */
 
 
+#include <kpassdlg.h>
+#include <klocale.h>
 #include "ksslpemcallback.h"
 
 int KSSLPemCallback(char *buf, int size, int rwflag, void *userdata) {
 #ifdef HAVE_SSL
+	QCString pass;
 
+	if (!buf) return -1;
+	int rc = KPasswordDialog::getPassword(pass, i18n("Certificate password"));
+	if (rc != KPasswordDialog::Accepted) return -1;
+
+	if (pass.length() > (unsigned int)size-1)
+		pass.truncate((unsigned int)size-1);
+
+	qstrncpy(buf, pass.data(), size-1);
+	return (int)pass.length();
+#else
+	return -1;
 #endif
 }
 
