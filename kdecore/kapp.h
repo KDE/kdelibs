@@ -162,14 +162,11 @@ public:
    */
   DCOPClient *dcopClient();
 
-  /**
-   * Get the standard help menu.
-   *
-   * @param bAboutQtMenu If true, there is a menu entry for About Qt
-   * @return a standard help menu
-   */
+  // See kapp.cpp for explanation
+  /*
   QPopupMenu* helpMenu( bool bAboutQtMenu,
 			   const QString& appAboutText );
+  */
 							
   /**
 	* Get the application icon.
@@ -317,12 +314,14 @@ protected:
   int pArgc;
 
 public slots:
-  void aboutKDE();
-  void aboutApp();
-  void aboutQt();
+    // See kapp.cpp for explanation
+    //void aboutKDE();
+    //void aboutApp();
+    //void aboutQt();
 
 protected slots:
-  void appHelpActivated();
+    // See kapp.cpp for explanation
+    //void appHelpActivated();
 
 private slots:
   void dcopFailure(const QString &);
@@ -492,6 +491,9 @@ public:
 #endif
 
 // $Log$
+// Revision 1.114  1999/10/20 14:30:11  pbrown
+// kuniqueapp moved to its own file.
+//
 // Revision 1.113  1999/10/19 18:51:09  pbrown
 // KUniqueApplication class utilizing KApplication and a DCOPObject is
 // available.  It works. :)

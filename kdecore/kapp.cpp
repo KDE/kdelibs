@@ -354,6 +354,16 @@ void KApplication::saveState( QSessionManager& sm )
 	sm.cancel();
 }
 
+#if 0
+//
+// 1999-10-21 Espen Sand: 
+// The functionality is moved to ktmainwindow. I have decided that I will 
+// not remove the code from kapp yet. You should only uncomment this is you 
+// really need to do so. In 99% of the cases it is simpler to modify the 
+// code that depend on this See KDE2PORTING
+//
+// This code WILL be delected quite soon.
+//
 QPopupMenu* KApplication::helpMenu( bool /*bAboutQtMenu*/,
 	   const QString& aboutAppText )
 {
@@ -425,6 +435,8 @@ void KApplication::aboutQt(){
    //  QWidget* w = activeWindow();
   //  QMessageBox::aboutQt( w, caption() );
 }
+#endif
+
 
 void KApplication::dcopFailure(const QString &msg)
 {
