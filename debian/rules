@@ -13,11 +13,6 @@ QTDOCDIR  = usr/share/doc/qt-doc/doc/html
 KDEDOCDIR = usr/share/doc/kdelibs3-doc/html
 export KDB2HTML_UNINSTALLED=$(BUILDDIR)/ksgmltools/customization/
 ARCH = $(shell dpkg-architecture -qDEB_BUILD_ARCH)
-ifeq ($(ARCH),alpha)
-  COMPILER_FLAGS=CXX=g++-3.0 CC=gcc-3.0 CFLAGS=-mieee CXXFLAGS=-mieee
-else
-  COMPILER_FLAGS=CXX=g++ CC=gcc
-endif
 ifeq ($(ARCH),i386)
   OBJPRELINK=--enable-objprelink
 endif
@@ -38,7 +33,6 @@ build-stamp:
 	  $(MAKE) -f admin/Makefile.common ;\
 	fi
 	version=`head -1 debian/changelog | sed -e "s#.*(\([^)]*\)).*#Debian Package \1#"` ;\
-	$(COMPILER_FLAGS) \
 	./configure $(configkde) --with-distribution="$$version (`cat /etc/debian_version`)" \
 	--includedir=/usr/include/kde --without-ssl --without-alsa \
 	--disable-cups $(OBJPRELINK)
@@ -53,7 +47,6 @@ alsa-stamp:
 	-$(MAKE) -C arts/ clean
 	-$(MAKE) -C libkmid/ clean
 	-$(MAKE) -C kdeprint/cups clean
-	$(COMPILER_FLAGS) \
 	./configure $(configkde) --with-alsa --without-ssl --enable-cups \
 		--includedir=/usr/include/kde $(OBJPRELINK)
 	$(MAKE) -C libkmid/ 

@@ -6,6 +6,7 @@ kdelibs (4:2.2.1-1) unstable; urgency=low
   * Do NOT build with Xinerama support due to the library being static
     and that whole PIC/non-PIC so thing. 
   * Fix ctrl+s (Closes: #110694)
+  * Don't need to build with gcc3 for alpha anymore
  
  -- Ivan E. Moore II <rkrusty@debian.org>  Sat, 25 Aug 2001 05:40:00 -0700
 
