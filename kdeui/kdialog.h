@@ -29,6 +29,9 @@ class QLayoutItem;
  * Dialog with extended nonmodal support and methods for KDE standard
  * compliance.
  *
+ * Generally, you should not use this class directly, but @ref KDialogBase
+ * which inherits KDialog.
+ *
  * If the dialog is non-modal and has a parent, the default keybindings
  * (@p escape = @p reject(), @p enter = @p accept(), etc.) are disabled.
  *
@@ -41,6 +44,7 @@ class QLayoutItem;
  * @ref marginHint() between the buttons and the separator and a
  * @ref marginHint() above the separator as well.
  *
+ * @see KDialogBase
  * @author Thomas Tanghus <tanghus@earthling.net>, Espen Sand <espensa@online.no>
  * @version 0.1.2
 */
