@@ -101,7 +101,7 @@ parser:
 	bash scripts/makeprop
 
 ## test program
-bin_PROGRAMS 	= testkhtml
+check_PROGRAMS 	= testkhtml
 testkhtml_SOURCES = testkhtml.cpp $(libkhtml_la_SOURCES)
 testkhtml_LDADD = $(LIB_KDEUI) $(libkhtml_la_LIBADD)
 
