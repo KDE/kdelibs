@@ -30,7 +30,7 @@ int main()
 
   KURL u2("/home/dfaure/");
   u2.cd("..");
-  printf("\n* URL is %s",u2.url().data());
+  printf("\n* URL is %s\n",u2.url().data());
   check("KURL::cd(\"..\")", u2.url(), "file:/home");
   u2.cd("thomas");
   check("KURL::cd(\"thomas\")", u2.url(), "file:/home/thomas");
@@ -41,6 +41,15 @@ int main()
   printf("\n* URL is %s\n",u3);
   check("KURL::hasSubProtocol()", KURL(u3).hasSubProtocol() ? "yes" : "no", "no");
 
+  char * u4 = "http://www.yahoo.com/index?q=kfm&start=10&num=10&sa=N";
+  KURL url4(u4);
+  printf("\n* URL is %s\n",url4.url().data());
+  check("Query : decoded URL", url4.url().data(), u4);
+  QString s(url4.url());
+  KURL::decodeURL(s);
+  printf("%s\n",s.data());
+  
+  printf("\n");
   KURL umail1 ( "mailto:faure@kde.org" );
   check("mailto: URL, small form", umail1.protocol(), "mailto");
   check("mailto: URL, small form", umail1.path(), "faure@kde.org");
