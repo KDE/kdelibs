@@ -484,20 +484,20 @@ void testWindow::slotClearCombo()
 
 void testWindow::slotInsertListInCombo()
 {
-  QStrList *list = new QStrList;
-  list->append("ListOne");
-  list->append("ListTwo");
-  list->append("ListThree");
-  list->append("ListFour");
-  list->append("ListFive");
-  list->append("ListSix");
-  list->append("ListSeven");
-  list->append("ListEight");
-  list->append("ListNine");
-  list->append("ListTen");
-  list->append("ListEleven");
-  list->append("ListAndSoOn");
-  toolBar->getCombo(4)->insertStrList (list,0);
+  QStringList list;
+  list.append("ListOne");
+  list.append("ListTwo");
+  list.append("ListThree");
+  list.append("ListFour");
+  list.append("ListFive");
+  list.append("ListSix");
+  list.append("ListSeven");
+  list.append("ListEight");
+  list.append("ListNine");
+  list.append("ListTen");
+  list.append("ListEleven");
+  list.append("ListAndSoOn");
+  toolBar->getCombo(4)->insertStringList (list,0);
 }
 
 void testWindow::slotMakeItem3Current()

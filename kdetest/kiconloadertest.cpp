@@ -27,7 +27,6 @@
 #include <qpushbutton.h>
 
 #include <kapp.h>
-#include <drag.h>
 
 #include <kiconloader.h>
 #include "kiconloadertestmain.h"
@@ -35,12 +34,11 @@
 
 int main( int argc, char **argv )
 {
-debug ( "[kiconloader demo] started-------------------------" );
+  debug ( "[kiconloader demo] started-------------------------" );
 
   KApplication a( argc, argv, "kiconloaderdemo" );
   MyMain demo;
   a.setMainWidget( (QWidget *) &demo );
-  a.setRootDropZone( new KDNDDropZone( (QWidget *) &demo, DndNotDnd ) );
   demo.show();
   return a.exec();
 }
