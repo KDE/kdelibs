@@ -9,7 +9,7 @@
 #endif
 
 #ifdef HAVE_SSL_H
-#define DO_SSL
+#define DO_SSL 1
 #endif
 
 #include <sys/types.h>
@@ -45,6 +45,7 @@
 #include <kprotocolmanager.h>
 #include <kio_rename_dlg.h>
 #include <kio_skip_dlg.h>
+#include <klocale.h>
 
 bool open_CriticalDlg( const char *_titel, const char *_message, const char *_but1, const char *_but2 = 0L );
 bool open_PassDlg( const QString& _head, QString& _user, QString& _pass );
@@ -419,7 +420,7 @@ bool HTTPProtocol::http_open( KURL &_url, const char* _post_data, int _post_data
       port = DEFAULT_HTTPS_PORT;
     else
 #endif
-    if ( (_url.protocol()=="http") || ((_url.protocol() == "httpf") )
+    if ( (_url.protocol()=="http") || (_url.protocol() == "httpf") )
 	    port = DEFAULT_HTTP_PORT;
 
     else {
@@ -433,7 +434,7 @@ bool HTTPProtocol::http_open( KURL &_url, const char* _post_data, int _post_data
 #ifdef DO_SSL
     m_bUseSSL=true;
 #else
-    error(ERR_UNSUPPORTED_PROTOCOL, i18n("You do not have OpenSSL/SSLeay installed, or you have not compiled kio_http with SSL support));
+    error(ERR_UNSUPPORTED_PROTOCOL, i18n("You do not have OpenSSL/SSLeay installed, or you have not compiled kio_http with SSL support"));
 #endif
   }
   m_sock = ::socket(PF_INET,SOCK_STREAM,0);
@@ -800,7 +801,7 @@ void HTTPProtocol::slotGetSize( const char *_url )
 
 const char *HTTPProtocol::getUserAgentString ()
 {
-  QString user_agent("Konqueror/1.9.040599");
+  QString user_agent("Konqueror/1.9.040599.2");
 #ifdef DO_MD5
   user_agent+="; Supports MD5-Digest";
 #endif
