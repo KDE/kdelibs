@@ -28,24 +28,29 @@ dnl libkmid's specific checks
 #*) AC_MSG_ERROR(bad value ${enableval} for --enable-alsa) ;; 
 #esac],[alsa=false]) 
 
-AC_DEFUN(AC_CHECK_LIBASOUND,
-[
-  ac_ldflags_save="$LDFLAGS"
-  LDFLAGS="$all_libraries $LDFLAGS"
-  AC_CHECK_HEADER(sys/asoundlib.h,
-  [
-    AC_CHECK_LIB(asound,snd_seq_create_simple_port,[
-      alsa=true
-      LIBASOUND="-lasound"
-      AC_DEFINE(HAVE_LIBASOUND, 1,
-        [Define if you have libasound (required for alsa support)])
-    ], [
-      alsa=false
-    ])
-  ])
-  AC_SUBST(LIBASOUND)
-  LDFLAGS="$ac_ldflags_save"
-])
+#if test "$arts_with_alsa" = "yes"; then
+#AC_DEFUN(AC_CHECK_LIBASOUND,
+#[
+#  ac_ldflags_save="$LDFLAGS"
+#  LDFLAGS="$all_libraries $LDFLAGS"
+#  AC_CHECK_HEADER(sys/asoundlib.h,
+#  [
+#    AC_CHECK_LIB(asound,snd_seq_create_simple_port,[
+#      alsa=true
+#      LIBASOUND="-lasound"
+#      AC_DEFINE(HAVE_LIBASOUND, 1,
+#        [Define if you have libasound (required for alsa support)])
+#    ], [
+#      alsa=false
+#    ])
+#  ])
+#  AC_SUBST(LIBASOUND)
+#  LDFLAGS="$ac_ldflags_save"
+#])
+#AC_CHECK_LIBASOUND
+
+#fi
+#AC_SUBST(LIBASOUND)
 
 #AC_MSG_CHECKING([for OSS support])
 #AC_CACHE_VAL(ac_cv_header_soundcard_h,
@@ -70,5 +75,4 @@ AC_DEFUN(AC_CHECK_LIBASOUND,
 
 AC_CHECK_HEADERS(sys/soundcard.h machine/soundcard.h linux/awe_voice.h awe_voice.h /usr/src/sys/i386/isa/sound/awe_voice.h /usr/src/sys/gnu/i386/isa/sound/awe_voice.h)  
 
-AC_CHECK_LIBASOUND
 
