@@ -102,6 +102,7 @@ void KDockMainWindow::setMainDockWidget( KDockWidget* mdw )
 {
   if ( mainDockWidget == mdw ) return;
   mainDockWidget = mdw;
+  dockManager->setMainDockWidget2(mdw);
 }
 
 void KDockMainWindow::setView( QWidget *view )
@@ -325,6 +326,7 @@ KDockWidget::KDockWidget( KDockManager* dockManager, const char* name, const QPi
   ,formerBrotherDockWidget(0L)
   ,currentDockPos(DockNone)
   ,formerDockPos(DockNone)
+  ,widget(0L)    
   ,pix(new QPixmap(pixmap))
   ,prevSideDockPosBeforeDrag(DockNone)
 {
@@ -409,6 +411,7 @@ void KDockWidget::updateHeader()
       header->hide();
     } else {
       header->setTopLevel( false );
+      if (widget && (widget->qt_cast("KDockContainer"))) header->hide(); else
       header->show();
     }
   } else {
@@ -531,23 +534,29 @@ KDockWidget* KDockWidget::manualDock( KDockWidget* target, DockPosition dockPos,
 {
   if (this == target)
     return 0L;  // docking to itself not possible
-
+  kdDebug()<<"manualDock called "<<endl;
   bool succes = true; // tested flag
 
   // check allowed this dock submit this operations
   if ( !(eDocking & (int)dockPos) ){
     succes = false;
+  kdDebug()<<"KDockWidget::manualDock(): success = false (1)"<<endl;  
   }
 
   // check allowed target submit this operations
   if ( target && !(target->sDocking & (int)dockPos) ){
     succes = false;
+  kdDebug()<<"KDockWidget::manualDock(): success = false (2)"<<endl;      
   }
 
-  if ( parent() && !parent()->inherits("KDockSplitter") && !parentDockTabGroup() ){
+  if ( parent() && !parent()->inherits("KDockSplitter") && !parentDockTabGroup() &&
+  	!(parent()->qt_cast("KDockContainer")) && !parentDockContainer()){
+  kdDebug()<<"KDockWidget::manualDock(): success = false (3)"<<endl;  	
+  kdDebug()<<parent()->name()<<endl;
     succes = false;
   }
 
+  kdDebug()<<"KDockWidget::manualDock(): success == false "<<endl;
   if ( !succes ){
     // try to make another manualDock
     KDockWidget* dock_result = 0L;
@@ -577,6 +586,7 @@ KDockWidget* KDockWidget::manualDock( KDockWidget* target, DockPosition dockPos,
     return this;
   }
 
+  kdDebug()<<"Looking for  KDockTabGroup"<<endl;
   KDockTabGroup* parentTab = target->parentDockTabGroup();
   if ( parentTab ){
     // add to existing TabGroup
@@ -590,6 +600,31 @@ KDockWidget* KDockWidget::manualDock( KDockWidget* target, DockPosition dockPos,
     currentDockPos = KDockWidget::DockCenter;
     emit manager->change();
     return (KDockWidget*)parentTab->parent();
+  }
+  else
+  {
+  	kdDebug()<<"Looking for  KDockContainer"<<endl;
+  	QWidget *contWid=target->parentDockContainer();
+	  if (!contWid) contWid=target->widget;
+	  if (contWid)
+	  {
+	  	KDockContainer *cont=(KDockContainer*)contWid->qt_cast("KDockContainer");
+		  if (cont)
+		  {
+			kdDebug()<<"KDockContainerFound"<<endl;
+			applyToWidget( contWid );
+			cont->insertWidget( this, icon() ? *icon() : QPixmap(),
+						tabPageLabel(), tabIndex );
+//			setDockTabName( parentTab );
+			if( !toolTipStr.isEmpty())
+			cont->setToolTip( this, toolTipStr);
+
+			currentDockPos = KDockWidget::DockCenter;
+			emit manager->change();
+			return (KDockWidget*)(cont->parentDockWidget());
+
+		  }
+	  }
   }
 
   // create a new dockwidget that will contain the target and this
@@ -623,8 +658,10 @@ KDockWidget* KDockWidget::manualDock( KDockWidget* target, DockPosition dockPos,
     }
   newDock->formerDockPos = target->formerDockPos;
 
+  
+ // HERE SOMETING CREATING CONTAINERS SHOULD BE ADDED !!!!! 
   if ( dockPos == KDockWidget::DockCenter )
-  {
+  {    
     KDockTabGroup* tab = new KDockTabGroup( newDock, "_dock_tab");
     QObject::connect(tab, SIGNAL(currentChanged(QWidget*)), d, SLOT(slotFocusEmbeddedWidget(QWidget*)));
     newDock->setWidget( tab );
@@ -716,8 +753,18 @@ KDockTabGroup* KDockWidget::parentDockTabGroup() const
   return 0L;
 }
 
+QWidget *KDockWidget::parentDockContainer() const
+{
+  if (!parent()) return 0L;
+  QWidget* candidate = parentWidget()->parentWidget();
+  if (candidate && candidate->qt_cast("KDockContainer")) return candidate;
+  return 0L;
+}
+
+
 void KDockWidget::undock()
 {
+  kdDebug()<<"KDockWidget::undock()"<<endl;
   QWidget* parentW = parentWidget();
   if ( !parentW ){
     hide();
@@ -734,6 +781,7 @@ void KDockWidget::undock()
 
   bool isV = parentW->isVisibleToTLW();
 
+  //UNDOCK HAS TO BE IMPLEMENTED CORRECTLY :)
   KDockTabGroup* parentTab = parentDockTabGroup();
   if ( parentTab ){
     d->index = parentTab->indexOf( this); // memorize the page position in the tab widget
@@ -792,6 +840,19 @@ void KDockWidget::undock()
       setDockTabName( parentTab );
     }
   } else {
+ /*********************************************************************************************/  
+  QWidget* containerWidget = (QWidget*)parent();
+  bool undockedFromContainer=false;
+  if (containerWidget)
+  {
+  	if (containerWidget->qt_cast("KDockContainer"))
+	  {
+	  	kdDebug()<<"KDockWidget::undock() for A Widget Contained within a KDockContainer"<<endl;
+	  	undockedFromContainer=true;
+		  applyToWidget( 0L );
+	  }
+  }
+   if (!undockedFromContainer) {
 /*********************************************************************************************/
     if ( parentW->inherits("KDockSplitter") ){
       KDockSplitter* parentSplitterOfDockWidget = (KDockSplitter*)parentW;
@@ -841,6 +902,7 @@ void KDockWidget::undock()
     }
 /*********************************************************************************************/
   }
+  }
   manager->blockSignals(false);
   if (!d->blockHasUndockedSignal)
     emit manager->change();
@@ -864,8 +926,19 @@ void KDockWidget::setWidget( QWidget* mw )
   layout = new QVBoxLayout( this );
   layout->setResizeMode( QLayout::Minimum );
 
-  layout->addWidget( header );
-  layout->addWidget( widget,1 );
+//  if (widget->qt_cast("KDockContainer"))
+
+//  {
+//    header->hide();
+//    layout->addWidget( widget);
+//  }
+//  else
+  {
+     header->show();
+     layout->addWidget( header );
+     layout->addWidget( widget,1 );
+  }
+  updateHeader();
 }
 
 void KDockWidget::setDockTabName( KDockTabGroup* tab )
@@ -1015,6 +1088,8 @@ public:
   bool splitterOpaqueResize;
   bool splitterKeepSize;
   bool splitterHighResolution;
+
+  QGuardedPtr<KDockWidget> mainDockWidget;
 };
 
 KDockManager::KDockManager( QWidget* mainWindow , const char* name )
@@ -1031,6 +1106,7 @@ KDockManager::KDockManager( QWidget* mainWindow , const char* name )
   ,dropCancel(true)
 {
   d = new KDockManagerPrivate;
+  d->mainDockWidget=0;
   d->splitterOpaqueResize = false;
   d->splitterKeepSize = false;
   d->splitterHighResolution = false;
@@ -1054,6 +1130,12 @@ KDockManager::KDockManager( QWidget* mainWindow , const char* name )
 
   childDock = new QObjectList();
   childDock->setAutoDelete( false );
+}
+
+
+void KDockManager::setMainDockWidget2(KDockWidget *w)
+{
+  d->mainDockWidget=w;
 }
 
 KDockManager::~KDockManager()
@@ -1088,24 +1170,6 @@ void KDockManager::activate()
 
 bool KDockManager::eventFilter( QObject *obj, QEvent *event )
 {
-/* This doesn't seem to fullfill any sense, other than breaking
-   QMainWindow's layout all over the place
-   The first child of the mainwindow is not necessarily a meaningful
-   content widget but in Qt3's QMainWindow it can easily be a QToolBar.
-   In short: QMainWindow knows how to layout its children, no need to
-   mess that up.
-
-   >>>>>I need this in the KDockArea at the moment (JoWenn)
-
-  if ( obj == main && event->type() == QEvent::Resize && dynamic_cast<KDockArea*>(main) && main->children() ){
-#ifndef NO_KDE2
-    kdDebug()<<"KDockManager::eventFilter(): main is a KDockArea and there are children"<<endl;
-#endif
-    QWidget* fc = (QWidget*)main->children()->getFirst();
-    if ( fc )
-      fc->setGeometry( QRect(QPoint(0,0), main->geometry().size()) );
-  }
-*/
 
   if ( obj->inherits("KDockWidgetAbstractHeaderDrag") ){
     KDockWidget* pDockWdgAtCursor = 0L;
@@ -1159,11 +1223,19 @@ bool KDockManager::eventFilter( QObject *obj, QEvent *event )
         }
         break;
       case QEvent::MouseMove:
-        if ( draging ) {
-          pDockWdgAtCursor = findDockWidgetAt( QCursor::pos() );
+        if ( draging ) {	  
+	  pDockWdgAtCursor = findDockWidgetAt( QCursor::pos() );
           KDockWidget* oldMoveWidget = currentMoveWidget;
-          if ( currentMoveWidget  && pDockWdgAtCursor == currentMoveWidget ) { //move
-            dragMove( currentMoveWidget, currentMoveWidget->mapFromGlobal( QCursor::pos() ) );
+#if 0
+//BEGIN TEST       
+	  if (curdw->parent()==0)
+	  {
+	  	curdw->move(QCursor::pos());
+	  }
+//END TEST
+#endif
+	  if ( currentMoveWidget  && pDockWdgAtCursor == currentMoveWidget ) { //move
+            dragMove( currentMoveWidget, currentMoveWidget->mapFromGlobal( QCursor::pos() ) );	    
             break;
           } else {
             if (dropCancel && curdw) {
@@ -1198,9 +1270,9 @@ bool KDockManager::eventFilter( QObject *obj, QEvent *event )
           if ( (((QMouseEvent*)event)->state() == LeftButton) &&
                (curdw->eDocking != (int)KDockWidget::DockNone) ) {
             startDrag( curdw);
-          }
-        }
-        break;
+          }	  
+        }        
+	break;
       default:
         break;
     }
@@ -1235,6 +1307,8 @@ KDockWidget* KDockManager::findDockWidgetAt( const QPoint& pos )
   }
   if ( qt_find_obj_child( w, "KDockSplitter", "_dock_split_" ) ) return 0L;
   if ( qt_find_obj_child( w, "KDockTabGroup", "_dock_tab" ) ) return 0L;
+  if (w->qt_cast("KDockContainer")) return 0L;
+  
   if (!childDockWidgetList) return 0L;
   if ( childDockWidgetList->find(w) != -1 ) return 0L;
   if ( currentDragWidget->isGroup && ((KDockWidget*)w)->parentDockTabGroup() ) return 0L;
@@ -2261,6 +2335,14 @@ void KDockArea::setMainDockWidget( KDockWidget* mdw )
 
 
 #endif
+
+// KDOCKCONTAINER - AN ABSTRACTION OF THE KDOCKTABWIDGET
+KDockContainer::KDockContainer(){;}
+KDockContainer::~KDockContainer(){;}
+KDockWidget *KDockContainer::parentDockWidget(){return 0;}
+void KDockContainer::insertWidget (KDockWidget *, QPixmap, const QString &, int &){;}
+void KDockContainer::setToolTip (KDockWidget *, QString &){;}
+
 
 void KDockWidgetAbstractHeader::virtual_hook( int, void* )
 { /*BASE::virtual_hook( id, data );*/ }

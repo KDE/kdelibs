@@ -20,6 +20,7 @@
 #include <kstatusbar.h>
 #include <kmenubar.h>
 #include <ktoolbar.h>
+#include <qvbox.h>
 
 static const char*folder[]={
 "16 16 9 1",
@@ -48,6 +49,7 @@ static const char*folder[]={
 ".......##fff#b##",
 ".........##f#b##",
 "...........####."};
+
 
 DockApplication::DockApplication( const char* name )
 : KDockMainWindow( 0L, name )
@@ -90,6 +92,29 @@ DockApplication::DockApplication( const char* name )
   l2->setBackgroundColor(yellow);
   dock2->setWidget( l2 );
   /*****************************************************/
+
+  /*****************************************************/
+  dock5 = createDockWidget( "Container Widget", p );
+  dock5->setCaption("Container");
+  dock5->setGeometry(50, 50, 100, 100);
+  l = new CTW(dock5);
+  l->setBackgroundColor(white);
+  l->setMinimumSize(100,100);
+  dock5->setWidget(l);
+  if (l->qt_cast("KDockContainer")) qDebug("KDockContainer created for dock 5");
+  /*****************************************************/
+
+  /*****************************************************/
+  dock6 = createDockWidget( "Container Widget2", p );
+  dock6->setCaption("Container2");
+  dock6->setGeometry(50, 50, 100, 100);
+  l = new CTW(dock6);
+  l->setBackgroundColor(white);
+  l->setMinimumSize(100,100);
+  dock6->setWidget(l);
+  if (l->qt_cast("KDockContainer")) qDebug("KDockContainer created for dock 6");
+  /*****************************************************/
+
 
 
   QPushButton* b1 = new QPushButton(mainW);

@@ -16,7 +16,8 @@
 #define KDOCKWIDGETTEST_H
 
 #include <kdockwidget.h>
-
+#include <qtabwidget.h>
+#include <qlabel.h>
 class QPushButton;
 
 class DockApplication : public KDockMainWindow
@@ -43,10 +44,25 @@ private:
   KDockWidget* dock;
   KDockWidget* dock1;
 	KDockWidget* dock4;
+	KDockWidget* dock5;
+	KDockWidget* dock6;
+
   QWidget* mainW;
   QWidget* l;
   QPushButton* m_bname;
 };
+
+class CTW:public QTabWidget,public KDockContainer
+{
+        Q_OBJECT
+public:
+        CTW(QWidget *parent):QTabWidget(parent,"MyDockContainer"),KDockContainer(){insertTab(new QLabel("BLAH",this),"BLUP");}
+        virtual ~CTW(){;}
+        KDockWidget *parentDockWidget(){return ((KDockWidget*)parent());}
+        void insertWidget (KDockWidget *w, QPixmap, const QString &, int &){qDebug("widget inserted"); insertTab(w,"NO");}
+        void setToolTip (KDockWidget *, QString &){qDebug("Tooltip set");}
+};
+
 
 #endif
 

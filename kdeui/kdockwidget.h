@@ -350,6 +350,21 @@ private:
   KDockTabGroupPrivate *d;
 };
 
+
+// Add some describing comment !!
+class EXPORT_DOCKCLASS KDockContainer
+{
+public:
+  KDockContainer();
+  virtual ~KDockContainer();
+  virtual KDockWidget *parentDockWidget();
+  virtual void insertWidget (KDockWidget *, QPixmap, const QString &, int &);
+  virtual void setToolTip (KDockWidget *, QString &);
+
+};
+
+
+
 /**
  * Floatable widget that can be dragged around with the mouse and
  * encapsulate the actual widgets (and member of the dockwidget class
@@ -430,7 +445,7 @@ public:
     DockBottom = 0x0008,
     DockCenter = 0x0010,
     DockDesktop= 0x0020,
-
+    DockToSpecialSites=0x0040,
     DockCorner = DockTop | DockLeft | DockRight | DockBottom,
     DockFullSite = DockCorner | DockCenter,
     DockFullDocking = DockFullSite | DockDesktop
@@ -585,7 +600,9 @@ public:
    * @return the parent widget of this if it inherits class KDockTabGroup
    */
   KDockTabGroup* parentDockTabGroup() const;
-
+  
+  QWidget *parentDockContainer() const;
+  
 #ifndef NO_KDE2
 
   /**
@@ -833,6 +850,8 @@ public:
    */
   void readConfig ( KConfig* c = 0L, QString group = QString::null );
 #endif
+
+  void setMainDockWidget2(KDockWidget *);
 
   /**
    * Saves the current dock window layout into a DOM tree below the given element.
