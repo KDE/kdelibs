@@ -33,6 +33,9 @@
 
  // $Id$
  // $Log$
+ // Revision 1.2  1998/05/04 16:39:34  radej
+ // Docs update.
+ //
  // Revision 1.1  1998/04/28 09:16:41  radej
  // Initial checkin
  //
@@ -70,8 +73,7 @@
   * receive signals, and Qt-engine will operate normally. Halting does not
   * hog CPU (it's not an empty for(;;) loop).
   *
-  * You will receive mouseRelease event when mouse is released. You don't
-  * have to do anything (but you can, if you want).
+  * You will NOT receive mouseRelease event when mouse is released.
   *
   * @short Class for own window management.
   * @author Sven Radej <sven@lisa.exp.univie.ac.at>
