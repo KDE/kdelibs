@@ -25,15 +25,15 @@ in the khtml sourcecode.
 # dom
 ===========================================================================
 
-- dom2_events.cpp / .h: layer and page extensions to event interface. 
-  to be merged with changes in rendering, ecma and xml
-
 - dom2_range.cpp / .h: createContextualFragment, requires merging of the
   changes xml / html
 
 - dom_doc.cpp / .h: preferred Stylesheet stuff. how does this correlate
   to the changes in css_stylesheet.h / cpp ? <- It's independent (lars).
   requires merging of the impl in xml/html first
+
+- css_stylesheet.cpp / .h addition of preferredStyleSheet et all, but
+  appears to be unused
 
 - weird change in dom_doc.cpp: doctype()
 
