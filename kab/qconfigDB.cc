@@ -1647,7 +1647,7 @@ Section::readSection(QTextStream& file, bool finish)
 		{
 		  if(!keys.insertLine(line, false, true, false))
 		    {
-		      cerr << "Attention: unable to parse key-value-pair "
+		      kdWarning() << "Attention: unable to parse key-value-pair "
 			   << endl << "\t\"" << line << "\"," << endl
 			   << "ignoring and continuing (maybe duplicate "
 			   << "declaration of the key)."
@@ -1679,7 +1679,7 @@ Section::readSection(QTextStream& file, bool finish)
 	} else { // ----- it has to be a key-value-pair:
 	  if(!keys.insertLine(line, false, true, false))
 	    {
-	      cerr << "Attention: unable to parse key-value-pair " << endl
+	      kdWarning() << "Attention: unable to parse key-value-pair " << endl
 		   << "\t\"" << line << "\"," << endl
 		   << "ignoring and continuing (maybe duplicate declaration of"
 		   << " the key)."
