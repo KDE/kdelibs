@@ -48,6 +48,7 @@ QPtrDict<KBookmarkManagerPrivate>* dPtrTemplate<KBookmarkManager, KBookmarkManag
 
 #define dptr() KBookmarkManagerPrivate::d(this)
 
+// TODO - clean this stuff up by just using the above dptrtemplate?
 QPtrList<KBookmarkManager>* KBookmarkManager::s_pSelf;
 static KStaticDeleter<QPtrList<KBookmarkManager> > sdbm;
 
