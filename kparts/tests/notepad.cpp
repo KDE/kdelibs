@@ -1,7 +1,7 @@
 
 #include "notepad.h"
-#include <kpartmanager.h>
-#include <kpartsmainwindow.h>
+#include <partmanager.h>
+#include <mainwindow.h>
 
 #include <qsplitter.h>
 #include <qfile.h>

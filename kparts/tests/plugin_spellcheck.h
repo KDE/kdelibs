@@ -1,7 +1,7 @@
 #ifndef __plugin_spellcheck_h
 #define __plugin_spellcheck_h
 
-#include <kplugin.h>
+#include <plugin.h>
 #include <klibloader.h>
 
 class PluginSpellCheck : public KParts::Plugin

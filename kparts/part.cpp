@@ -73,6 +73,14 @@ QDomDocument Part::document() const
   return d->m_doc;
 }
 
+Part *Part::hitTest( QWidget *widget, const QPoint & )
+{
+  if ( (QWidget *)m_widget != widget )
+    return 0L;
+    
+  return this;
+} 
+
 void Part::setWidget( QWidget *widget )
 {
   assert ( !m_widget ); // otherwise we get two connects
@@ -150,19 +158,19 @@ bool Part::event( QEvent *event )
 {
   if ( QObject::event( event ) )
     return true;
-  
+
   if ( PartActivateEvent::test( event ) )
   {
     partActivateEvent( (PartActivateEvent *)event );
     return true;
   }
-  
+
   if ( GUIActivateEvent::test( event ) )
   {
     guiActivateEvent( (GUIActivateEvent *)event );
     return true;
   }
-  
+
   return false;
 }
 
@@ -172,7 +180,7 @@ void Part::partActivateEvent( PartActivateEvent * )
 
 void Part::guiActivateEvent( GUIActivateEvent * )
 {
-} 
+}
 
 void Part::slotWidgetDestroyed()
 {
@@ -314,7 +322,7 @@ void ReadWritePart::setModified()
   if ( !m_bReadWrite )
   {
       kDebugError( 1000, "Can't set a read-only document to 'modified' !" );
-      return; 
+      return;
   }
   m_bModified = true;
 }
@@ -326,9 +334,9 @@ bool ReadWritePart::closeURL()
   {
     int res = KMessageBox::warningYesNoCancel( 0L,
             i18n( "The document has been modified\nDo you want to save it ?" ));
- 
+
     switch(res) {
-    case KMessageBox::Yes : 
+    case KMessageBox::Yes :
       return save(); // TODO : wait for upload to finish, and clean up temp file !
     case KMessageBox::No :
       return true;

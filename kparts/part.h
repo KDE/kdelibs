@@ -97,6 +97,11 @@ public:
      */
     virtual QDomDocument document() const;
 
+    /**
+     * @internal
+     */
+    virtual Part *hitTest( QWidget *widget, const QPoint & );
+
 protected:
     /**
      * Set the instance (@ref KInstance) for this part.
@@ -258,9 +263,9 @@ private:
  * Anything that can open a URL, allow modifications, and save
  * (to the same URL or a different one).
  *
- * The part acts read-only by default, because a ReadWritePart could 
+ * The part acts read-only by default, because a ReadWritePart could
  * be used as a ReadOnlyPart without knowing it.
- * Applications should call @ref setReadWrite to enable the part's 
+ * Applications should call @ref setReadWrite to enable the part's
  * read-write mode.
  *
  * Part writers :

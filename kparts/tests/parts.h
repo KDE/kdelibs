@@ -2,7 +2,7 @@
 #ifndef __parts_h__
 #define __parts_h__
 
-#include <kpart.h>
+#include <part.h>
 
 class QMultiLineEdit;
 

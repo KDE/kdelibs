@@ -15,16 +15,38 @@ class Part;
 class PartActivateEvent : public Event
 {
 public:
-  PartActivateEvent( bool activated ) : Event( s_strPartActivateEvent ), m_bActivated( activated ) {}
+  PartActivateEvent( bool activated, QWidget *widget ) : Event( s_strPartActivateEvent ), m_bActivated( activated ), m_widget( widget ) {}
 
   bool activated() const { return m_bActivated; }
+
+  QWidget *widget() const { return m_widget; }
 
   static bool test( const QEvent *event ) { return Event::test( event, s_strPartActivateEvent ); }
 
 private:
   static const char *s_strPartActivateEvent;
   bool m_bActivated;
+  QWidget *m_widget;
 };
+
+class PartSelectEvent : public Event
+{
+public:
+  PartSelectEvent( bool selected, QWidget *widget ) : Event( s_strPartSelectEvent ), m_bSelected( selected ), m_widget( widget ) {}
+
+  bool selected() const { return m_bSelected; }
+
+  QWidget *widget() const { return m_widget; }
+
+  static bool test( const QEvent *event ) { return Event::test( event, s_strPartSelectEvent ); }
+
+private:
+  static const char *s_strPartSelectEvent;
+  bool m_bSelected;
+  QWidget *m_widget;
+};
+
+class PartManagerPrivate;
 
 /**
  * The part manager is an object which knows about all parts
@@ -41,6 +63,9 @@ class PartManager : public QObject
 {
   Q_OBJECT
 public:
+  // the default policy of a PartManager is Direct!
+  enum SelectionPolicy { Direct, TriState };
+
   /**
    * Create a part manager.
    *
@@ -48,6 +73,9 @@ public:
    */
   PartManager( QWidget * parent, const char * name = 0L );
   virtual ~PartManager();
+
+  void setSelectionPolicy( SelectionPolicy policy );
+  SelectionPolicy selectionPolicy() const;
 
   virtual bool eventFilter( QObject *obj, QEvent *ev );
 
@@ -69,11 +97,19 @@ public:
    *
    * The active part receives events.
    **/
-  virtual void setActivePart( Part *part );
+  virtual void setActivePart( Part *part, QWidget *widget = 0L );
   /**
    * Retrieve the active part.
    **/
-  Part *activePart() { return m_activePart; }
+  virtual Part *activePart() const;
+
+  virtual QWidget *activeWidget() const;
+
+  virtual void setSelectedPart( Part *part, QWidget *widget = 0L );
+  
+  virtual Part *selectedPart() const;
+
+  virtual QWidget *selectedWidget() const;
 
   /**
    * Set the window caption.
@@ -84,7 +120,7 @@ public:
   /**
    * Retrieve a list of parts managed being managed.
    **/
-  const QList<Part> *parts() const { return &m_parts; }
+  const QList<Part> *parts() const;
 
 signals:
   /**
@@ -110,9 +146,9 @@ protected slots:
   void slotObjectDestroyed();
 
 private:
-  Part * findPartFromWidget( QWidget * widget );
-  Part * m_activePart;
-  QList<Part> m_parts;
+  Part * findPartFromWidget( QWidget * widget, const QPoint &pos );
+
+  PartManagerPrivate *d;
 };
 
 };

@@ -2,8 +2,8 @@
 #ifndef __example_h__
 #define __example_h__
 
-#include <kpartmanager.h>
-#include <kpartsmainwindow.h>
+#include <partmanager.h>
+#include <mainwindow.h>
 
 class KAction;
 class QWidget;

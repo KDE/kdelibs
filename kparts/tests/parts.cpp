@@ -1,6 +1,6 @@
 #include "parts.h"
 
-#include <kpartmanager.h>
+#include <partmanager.h>
 
 #include <qlayout.h>
 #include <qcheckbox.h>
