@@ -201,7 +201,7 @@ void KHTMLParser::parseToken(Token *t)
 #ifdef PARSER_DEBUG
     kdDebug( 6035 ) << "\n\n==> parser: processing token " << getTagName(t->id).string() << "(" << t->id << ")"
                     << " current = " << getTagName(current->id()).string() << "(" << current->id() << ")" << endl;
-    kdDebug(6035) << "inline=" << m_inline << " inBody=" << inBody << " haveFrameSet=" << haveFrameSet << endl;
+    kdDebug(6035) << "inline=" << m_inline << " inBody=" << inBody << " haveFrameSet=" << haveFrameSet << " haveContent=" << haveContent << endl;
 #endif
 
     // holy shit. apparently some sites use </br> instead of <br>
@@ -217,7 +217,10 @@ void KHTMLParser::parseToken(Token *t)
 
     // ignore spaces, if we're not inside a paragraph or other inline code
     if( t->id == ID_TEXT && t->text ) {
-        if(inBody && !skipMode() && t->text->l > 2) haveContent = true;
+        if(inBody && !skipMode() &&
+           current->id() != ID_STYLE && current->id() != ID_TITLE &&
+           current->id() != ID_SCRIPT &&
+           t->text->l > 2) haveContent = true;
 #ifdef PARSER_DEBUG
         kdDebug(6035) << "length="<< t->text->l << " text='" << QConstString(t->text->s, t->text->l).string() << "'" << endl;
 #endif
@@ -396,7 +399,7 @@ bool KHTMLParser::insertNode(NodeImpl *n, bool flat)
                 }
                 return true;
             } else if(inBody) {
-                discard_until = ID_STYLE + ID_CLOSE_TAG;
+                discard_until = id + ID_CLOSE_TAG;
                 return false;
             }
             break;
