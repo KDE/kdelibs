@@ -1374,17 +1374,13 @@ DOMString HTMLSelectElementImpl::type() const
 long HTMLSelectElementImpl::selectedIndex() const
 {
     uint i;
-    bool hasOption = false;
     QMemArray<HTMLGenericFormElementImpl*> items = listItems();
     for (i = 0; i < items.size(); i++) {
-        if (items[i]->id() == ID_OPTION)
-            hasOption = true;
-
         if (items[i]->id() == ID_OPTION
             && static_cast<HTMLOptionElementImpl*>(items[i])->selected())
             return listToOptionIndex(int(i)); // selectedIndex is the *first* selected item; there may be others
     }
-    return hasOption ? 0 : -1;
+    return -1;
 }
 
 void HTMLSelectElementImpl::setSelectedIndex( long  index )
