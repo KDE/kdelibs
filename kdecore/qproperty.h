@@ -73,38 +73,38 @@ public:
       ImageType,
       IntType,
       BoolType,
-      DoubleType, 
+      DoubleType,
       // MovieType,
-      NTypes, 
+      NTypes,
       CustomType = 0x1000
     };
-  
+
     QProperty();
     QProperty( const QProperty& );
     QProperty( QDataStream& s );
     virtual ~QProperty();
-  
-    QProperty( const QString& _v ) { setValue( _v ); }
-    QProperty( const QStringList& _v ) { setValue( _v ); }
-    QProperty( const QValueList<int>& _v ) { setValue( _v ); }
-    QProperty( const QValueList<double>& _v ) { setValue( _v ); }
-    QProperty( const QFont& _v ) { setValue( _v ); }
-    QProperty( const QPixmap& _v ) { setValue( _v ); }
-    QProperty( const QImage& _v ) { setValue( _v ); }
+
+    QProperty( const QString& _v ) { typ = Empty; setValue( _v ); }
+    QProperty( const QStringList& _v ) { typ = Empty; setValue( _v ); }
+    QProperty( const QValueList<int>& _v ) { typ = Empty; setValue( _v ); }
+    QProperty( const QValueList<double>& _v ) { typ = Empty; setValue( _v ); }
+    QProperty( const QFont& _v ) { typ = Empty; setValue( _v ); }
+    QProperty( const QPixmap& _v ) { typ = Empty; setValue( _v ); }
+    QProperty( const QImage& _v ) { typ = Empty; setValue( _v ); }
   // QProperty( const QMovie& _v ) { setValue( _v ); }
-    QProperty( const QBrush& _v ) { setValue( _v ); }
-    QProperty( const QPoint& _v ) { setValue( _v ); }
-    QProperty( const QRect& _v ) { setValue( _v ); }
-    QProperty( const QSize& _v ) { setValue( _v ); }
-    QProperty( const QColor& _v ) { setValue( _v ); }
-    QProperty( const QPalette& _v ) { setValue( _v ); }
-    QProperty( const QColorGroup& _v ) { setValue( _v ); }
-    QProperty( int _v ) { setValue( _v ); }
-    QProperty( bool _v ) { setValue( _v ); }
-    QProperty( double _v ) { setValue( _v ); }
-    
+    QProperty( const QBrush& _v ) { typ = Empty; setValue( _v ); }
+    QProperty( const QPoint& _v ) { typ = Empty; setValue( _v ); }
+    QProperty( const QRect& _v ) { typ = Empty; setValue( _v ); }
+    QProperty( const QSize& _v ) { typ = Empty; setValue( _v ); }
+    QProperty( const QColor& _v ) { typ = Empty; setValue( _v ); }
+    QProperty( const QPalette& _v ) { typ = Empty; setValue( _v ); }
+    QProperty( const QColorGroup& _v ) { typ = Empty; setValue( _v ); }
+    QProperty( int _v ) { typ = Empty; setValue( _v ); }
+    QProperty( bool _v ) { typ = Empty; setValue( _v ); }
+    QProperty( double _v ) { typ = Empty; setValue( _v ); }
+
     QProperty& operator= ( const QProperty& );
-    
+
     void setValue( const QString& );
     void setValue( const QStringList& );
     void setValue( const QValueList<int>& );
@@ -126,9 +126,9 @@ public:
 
     Type type() const { return typ; }
     virtual QString typeName() const;
-  
+
     bool isEmpty() const { return ( typ == Empty ); }
-  
+
     const QString& stringValue() const { ASSERT( typ == StringType ); return *((QString*)val.ptr); }
     const QStringList& stringListValue() const { ASSERT( typ == StringListType );
                                                  return *((QStringList*)val.ptr); }
@@ -160,10 +160,10 @@ public:
      * @return QProperty::Empty if the given name is empty or unknown.
      */
     static Type nameToType( const QString& _name );
-  
+
 protected:
     virtual void clear();
-  
+
     Type typ;
     union
     {

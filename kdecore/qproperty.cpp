@@ -91,7 +91,7 @@ QProperty::QProperty( QDataStream& s )
 QProperty& QProperty::operator= ( const QProperty& p )
 {
   clear();
-  
+
   switch( p.type() )
     {
     case Empty:
@@ -155,7 +155,7 @@ QProperty& QProperty::operator= ( const QProperty& p )
     }
 
   typ = p.type();
-  
+
   return *this;
 }
 
@@ -411,7 +411,7 @@ void QProperty::clear()
       break;
     default:
       ASSERT( 0 );
-    }  
+    }
 
   typ = Empty;
 }
@@ -461,6 +461,7 @@ QString QProperty::typeToName( QProperty::Type _typ )
 */
 QProperty::Type QProperty::nameToType( const QString& _name )
 {
+    initTypeNameMap();
     int t = (int)NTypes;
     while ( t > (int)Empty && typ_to_name[(int)--t] != _name )
 	;
@@ -476,7 +477,7 @@ void QProperty::load( QDataStream& s )
   Q_UINT32 u;
   s >> u;
   Type t = (Type)u;
-  
+
   switch( t )
     {
     case Empty:
@@ -537,7 +538,7 @@ void QProperty::load( QDataStream& s )
       break;
     default:
       ASSERT( 0 );
-    }  
+    }
 }
 
 /*!
@@ -608,7 +609,7 @@ void QProperty::save( QDataStream& s ) const
       break;
     default:
       ASSERT( 0 );
-    }  
+    }
 }
 
 /*!
@@ -637,7 +638,7 @@ QDataStream& operator>> ( QDataStream& s, QProperty::Type& p )
   Q_UINT32 u;
   s >> u;
   p = (QProperty::Type) u;
-  
+
   return s;
 }
 
@@ -647,7 +648,7 @@ QDataStream& operator>> ( QDataStream& s, QProperty::Type& p )
 QDataStream& operator<< ( QDataStream& s, const QProperty::Type p )
 {
   s << (Q_UINT32)p;
-  
+
   return s;
 }
 
@@ -729,7 +730,7 @@ QDataStream& operator<< ( QDataStream& s, const QProperty::Type p )
   Returns TRUE if the storage type of this property is QProperty::Empty.
 */
 
-/*! \fn const QString& QProperty::stringValue() const 
+/*! \fn const QString& QProperty::stringValue() const
   Returns the value stored in the property. If the properties
   value does not match the return type of this function then
   this function will abort your process. So check with type()
@@ -761,7 +762,7 @@ QDataStream& operator<< ( QDataStream& s, const QProperty::Type p )
   data type.
 */
 
-/*! \fn const QFont& QProperty::fontValue() const 
+/*! \fn const QFont& QProperty::fontValue() const
   Returns the value stored in the property. If the properties
   value does not match the return type of this function then
   this function will abort your process. So check with type()
@@ -769,7 +770,7 @@ QDataStream& operator<< ( QDataStream& s, const QProperty::Type p )
   data type.
 */
 
-/*! \fn const QPixmap& QProperty::pixmapValue() const 
+/*! \fn const QPixmap& QProperty::pixmapValue() const
   Returns the value stored in the property. If the properties
   value does not match the return type of this function then
   this function will abort your process. So check with type()
@@ -777,7 +778,7 @@ QDataStream& operator<< ( QDataStream& s, const QProperty::Type p )
   data type.
 */
 
-/*! \fn const QImage& QProperty::imageValue() const 
+/*! \fn const QImage& QProperty::imageValue() const
   Returns the value stored in the property. If the properties
   value does not match the return type of this function then
   this function will abort your process. So check with type()
@@ -785,7 +786,7 @@ QDataStream& operator<< ( QDataStream& s, const QProperty::Type p )
   data type.
 */
 
-/*! \fn const QBrush& QProperty::brushValue() const 
+/*! \fn const QBrush& QProperty::brushValue() const
   Returns the value stored in the property. If the properties
   value does not match the return type of this function then
   this function will abort your process. So check with type()
@@ -793,7 +794,7 @@ QDataStream& operator<< ( QDataStream& s, const QProperty::Type p )
   data type.
 */
 
-/*! \fn const QPoint& QProperty::pointValue() const 
+/*! \fn const QPoint& QProperty::pointValue() const
   Returns the value stored in the property. If the properties
   value does not match the return type of this function then
   this function will abort your process. So check with type()
@@ -801,7 +802,7 @@ QDataStream& operator<< ( QDataStream& s, const QProperty::Type p )
   data type.
 */
 
-/*! \fn const QRect& QProperty::rectValue() const 
+/*! \fn const QRect& QProperty::rectValue() const
   Returns the value stored in the property. If the properties
   value does not match the return type of this function then
   this function will abort your process. So check with type()
@@ -809,7 +810,7 @@ QDataStream& operator<< ( QDataStream& s, const QProperty::Type p )
   data type.
 */
 
-/*! \fn const QSize& QProperty::sizeValue() const 
+/*! \fn const QSize& QProperty::sizeValue() const
   Returns the value stored in the property. If the properties
   value does not match the return type of this function then
   this function will abort your process. So check with type()
@@ -817,7 +818,7 @@ QDataStream& operator<< ( QDataStream& s, const QProperty::Type p )
   data type.
 */
 
-/*! \fn const QColor& QProperty::colorValue() const 
+/*! \fn const QColor& QProperty::colorValue() const
   Returns the value stored in the property. If the properties
   value does not match the return type of this function then
   this function will abort your process. So check with type()
@@ -825,7 +826,7 @@ QDataStream& operator<< ( QDataStream& s, const QProperty::Type p )
   data type.
 */
 
-/*! \fn const QPalette& QProperty::paletteValue() const 
+/*! \fn const QPalette& QProperty::paletteValue() const
   Returns the value stored in the property. If the properties
   value does not match the return type of this function then
   this function will abort your process. So check with type()
@@ -841,7 +842,7 @@ QDataStream& operator<< ( QDataStream& s, const QProperty::Type p )
   data type.
 */
 
-/*! \fn int QProperty::intValue() const 
+/*! \fn int QProperty::intValue() const
   Returns the value stored in the property. If the properties
   value does not match the return type of this function then
   this function will abort your process. So check with type()
@@ -849,15 +850,15 @@ QDataStream& operator<< ( QDataStream& s, const QProperty::Type p )
   data type.
 */
 
-/*! \fn bool QProperty::boolValue() const 
+/*! \fn bool QProperty::boolValue() const
   Returns the value stored in the property. If the properties
   value does not match the return type of this function then
   this function will abort your process. So check with type()
   or typeName() first wether the property holds the correct
   data type.
 */
-  
-/*! \fn double QProperty::doubleValue() const 
+
+/*! \fn double QProperty::doubleValue() const
   Returns the value stored in the property. If the properties
   value does not match the return type of this function then
   this function will abort your process. So check with type()
