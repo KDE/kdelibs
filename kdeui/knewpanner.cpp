@@ -257,7 +257,7 @@ void KNewPanner::resizeEvent(QResizeEvent*)
       else {
 	 startHeight= 0;
       }
-      child0->setGeometry(0, startHeight, absSepqratorPos(), 
+      child0->setGeometry(0, startHeight, absSeparatorPos(), 
 			  (height())-startHeight);
       child1->setGeometry(absSeparatorPos()+4, startHeight,
 			  (width())-(absSeparatorPos()+4), 
