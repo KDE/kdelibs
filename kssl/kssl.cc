@@ -139,6 +139,7 @@ bool KSSL::reInitialize() {
 
 bool KSSL::setVerificationLogic() {
   kdDebug() << "KSSL verification logic" << endl;
+#if 0
 #ifdef HAVE_SSL
 // FIXME - check return code
 SSL_set_verify_result(d->m_ssl, X509_V_OK);
@@ -152,6 +153,8 @@ if (!SSL_CTX_load_verify_locations(d->m_ctx, NULL, "/home/kde/kde/kdelibs/kssl/c
 return true;
 #endif
 return false;
+#endif
+return true;
 }
 
 
