@@ -117,7 +117,7 @@ void Addressee::setNameFromString( const QString &str )
     QStringList nameParts = QStringList::split( " ", str );
     switch( nameParts.count() ) {
       case 1:
-       setFamilyName( nameParts[ 0 ] );
+       setGivenName( nameParts[ 0 ] );
        break;
       case 2:
        setGivenName( nameParts[ 0 ] );
@@ -127,6 +127,11 @@ void Addressee::setNameFromString( const QString &str )
        setGivenName( nameParts[ 0 ] );
        setAdditionalName( nameParts[ 1 ] );
        setFamilyName( nameParts[ 2 ] );
+       break;
+      case 4:
+       setGivenName( nameParts[ 0 ] );
+       setAdditionalName( nameParts[ 1 ] );
+       setFamilyName( nameParts[ 2 ] + " " + nameParts[ 3 ] );
        break;
       default:
        setFamilyName( str );
