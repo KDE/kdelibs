@@ -14,9 +14,15 @@ KDEDOCDIR = usr/share/doc/kdelibs3-doc/html
 export KDB2HTML_UNINSTALLED=$(BUILDDIR)/ksgmltools/customization/
 ARCH = $(shell dpkg-architecture -qDEB_BUILD_ARCH)
 ifeq ($(ARCH),alpha)
-  COMPILER_FLAGS=CFLAGS="-O0 -mieee" CXXFLAGS="-O0 -mieee"
-else
-  COMPILER_FLAGS=CXX=g++ CC=gcc
+  export CFLAGS=-O0 -mieee
+  export CXXFLAGS=-O0 -mieee
+endif
+
+ifeq ($(ARCH),i386)
+  # Uncomment the following 2 lines to enable i686 optimziation
+  #export CFLAGS=-march=i686 -ffast-math -finline-functions
+  #export CXXFLAGS=-march=i686 -ffast-math -finline-functions
+  XINERAMA=--with-xinerama
 endif
 
 tmp = $(shell pwd)/debian/kdelibs3
@@ -36,9 +42,8 @@ build-stamp:
 	fi
 	-chmod 755 configure
 	version=`head -1 debian/changelog | sed -e "s#.*(\([^)]*\)).*#Debian Package \1#"` ;\
-	$(COMPILER_FLAGS) \
 	./configure $(configkde) --with-distribution="$$version (`cat /etc/debian_version`)" \
-	--disable-cups --without-alsa
+	--disable-cups --without-alsa --without-ssl $(XINERAMA)
 
 	$(MAKE)
 	$(MAKE) DESTDIR=`pwd`/debian/install-tmp/ install
@@ -51,8 +56,7 @@ alsa-stamp:
 	-rm -f `find arts -name "*.mcoptype"`
 	-$(MAKE) -C libkmid/ clean
 	-$(MAKE) -C kdeprint/cups clean
-	$(COMPILER_FLAGS) \
-	./configure $(configkde) --with-alsa --enable-cups
+	./configure $(configkde) --with-alsa --enable-cups --without-ssl
 	$(MAKE) -C libkmid/ 
 	$(MAKE) -C arts/ 
 	$(MAKE) -C kdeprint/cups 
@@ -157,6 +161,7 @@ binary-arch:  build install
 	dh_movefiles -pkdelibs3-cups --sourcedir=debian/kdelibs3
 	dh_movefiles -plibarts-alsa --sourcedir=debian/alsa-tmp
 	dh_movefiles -plibkmid-alsa --sourcedir=debian/alsa-tmp
+	-rm -rf debian/kdelibs3/usr/share/apps/kssl
 	dh_installchangelogs -a 
 	dh_strip -a
 	dh_perl -a

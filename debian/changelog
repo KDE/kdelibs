@@ -1,9 +1,22 @@
+ikdelibs (4:2.2.2-4) unstable; urgency=low
+
+  * Build cleanup.  export CFLAGS/CXXFLAGS instead of the old method
+  * Build with Xinerama support for i386
+  * Add in bits in debian/rules to make it easier to build optimized binaries
+  * Include crypto in main
+
+ -- Ivan E. Moore II <rkrusty@debian.org>  Tue, 27 Nov 2001 15:45:00 -0700
+
 kdelibs (4:2.2.2-3) unstable; urgency=low
 
-  * Include crypto
+  * a couple upstream fixes
   * debianrules cleanup
+  * More lintian cleanup
+  * Remove stupid debug messages (Closes: #120647)
+  * More work on BTS stuff.  Give 2 options for Help/Report Bug, one to
+    check current reports and one to report.
 
- -- Ivan E. Moore II <rkrusty@debian.org>  Sat, 24 Nov 2001 02:46:00 -0700
+ -- Ivan E. Moore II <rkrusty@debian.org>  Sun, 25 Nov 2001 20:11:00 -0700
 
 kdelibs (4:2.2.2-2) unstable; urgency=low
 
