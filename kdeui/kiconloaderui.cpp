@@ -30,7 +30,6 @@
 #include "kiconloaderui.moc"
 
 #include <klocale.h>
-#define klocale KLocale::klocale()
 
 //----------------------------------------------------------------------
 //---------------  KICONLOADERCANVAS   ---------------------------------

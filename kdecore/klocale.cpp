@@ -167,16 +167,6 @@ void KLocale::alias(long index, const char* text)
 
 #endif /* ENABLE_NLS */
 
-KLocale *KLocale::klocale()
-{
-    if (pLocale != NULL)
-	return pLocale;
-
-    warning("A new KLocale instance will be created. This one may not be removed.");
-    KLocale *kl = new KLocale(); // the constructor will set pLocale!
-    kl->enabled = 0;
-    return kl;
-}
 
 const char *KLocale::getAlias(long key) const
 {

@@ -32,7 +32,6 @@
 KIconLoaderDialog* createKIconLoaderDialog();
 
 #include <klocale.h>
-#define klocale KLocale::klocale()
 }
 //----------------------------------------------------------------------
 //---------------  KICONLOADER   ---------------------------------------

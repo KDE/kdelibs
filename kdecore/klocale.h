@@ -51,17 +51,6 @@ public:
     const char *translate( const char *index );
     
     /**
-      * This function returns the first global instance of
-      * KLocale. It relies on you, that you have one and only
-      * one KLocale instance in your code. If no instance were
-      * created before, it will warn you and create a new instance
-      * for you. 
-      * NOTE: This instance may not be deleted, so it may cause
-      * memory leaks, if you use it in the wrong way.
-      **/
-    static KLocale *klocale();
-
-    /**
       * Creates an alias for the string text. It will be translated
       + and stored under the integer constant index.
       * This can help you to avoid repeated translation. 

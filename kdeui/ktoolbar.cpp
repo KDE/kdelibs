@@ -18,7 +18,7 @@
 
 #include "ktoolbar.moc"
 #include <klocale.h>
-#define klocale KLocale::klocale()
+#include <kapp.h>
   default:
 // Since I didn't get any answers about should
 // toolbar be raise or not, I leave it to

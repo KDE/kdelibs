@@ -23,6 +23,9 @@
   
     $Log$
 
+    Revision 1.12  1997/11/09 05:18:57  wuebben
+    Bernd: fix
+
     Revision 1.11  1997/11/09 04:41:44  wuebben
     Bernd: fixed the broken kfontdialog ...
 
@@ -73,7 +76,7 @@
     be displayed
 
     Revision 1.1  1997/04/20 00:18:15  wuebben
-#define klocale KLocale::klocale()
+    Initial revision
 
     Revision 1.1  1997/01/04 17:36:44  wuebben
     Initial revision

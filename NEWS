@@ -1,3 +1,10 @@
+31.08.97	lots of changes at KDE One:
+		made the interface more consistent (e.g. const char*
+		instead of char* and const QPixmap& instead of QPixmap&),
+		localization support changed
+		localized KConfig entries
+		included KProcess 0.23
+		heaps of other stuff that I have forgotten
 24.08.97	translated the most stuff in libkdeui
 			added a flag to KLocale to avoid translated dialogs in
 			not translated applications

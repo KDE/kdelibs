@@ -9,7 +9,7 @@
 #include "kmenubar.moc"
 
 #include <klocale.h>
-#define klocale KLocale::klocale()
+#include <kapp.h>
 
 #define CONTEXT_TOP 1
 #define CONTEXT_BOTTOM 2

@@ -1,6 +1,9 @@
 // $Id$
 // Revision 1.87  1998/01/27 20:17:01  kulow
 // $Log$
+// Revision 1.23  1997/08/31 16:30:42  kdecvs
+// Kalle: KProcess 0.23
+//
 // Revision 1.22  1997/08/30 18:57:11  kdecvs
 // Initialized pIconLoader
 //
@@ -164,6 +167,10 @@
 //
 #endif
 
+#ifndef _KLOCALE_H
+// Revision 1.68  1997/11/03 13:50:15  kulow
+#endif
+
 //   PseudoSessionManagement (this is the default when session management
 #include <stdlib.h> // getenv()
 //   Now KApplication should work as promised in kapp.h :-)
@@ -225,6 +232,7 @@
   KApp = this;
 
   pIconLoader = NULL;
+  pLocale = NULL;
 #include <qtstream.h>
   pConfigStream = NULL;
 
@@ -334,6 +342,15 @@ void KApplication::init()
   pSessionConfig = 0L;
   bIsRestored = False;
   bSessionManagement = False;
+    KWM::setWmCommand( topWidget()->winId(), aWmCommand);
+}
+
+  id = pMenu->insertItem( klocale->translate( "About " ) + aAppName );
+
+
+KIconLoader* KApplication::getIconLoader()
+  id = pMenu->insertItem( klocale->translate( "About KDE" ) );
+  if( !pIconLoader )
 void KApplication::restoreTopLevelGeometry() const
 {
   QWidget* mw = kapp->mainWidget();
@@ -378,6 +395,8 @@ void KApplication::restoreTopLevelGeometry() const
 		else
 		  aMiniIconPixmap = getIconLoader()->loadApplicationMiniIcon( argv[i+1] );
       }
+      aDummyString2 += parameter_strings[icon-1];
+      aDummyString2 += " ";
       aDummyString2 += argv[i+1];
       aDummyString2 += " ";
       break;

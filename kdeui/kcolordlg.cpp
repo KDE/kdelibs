@@ -12,7 +12,7 @@
 #include "dither.h"
 
 #include <klocale.h>
-#define klocale KLocale::klocale()
+#include <kapp.h>
 
 #define HSV_X 305
 #define RGB_X 385

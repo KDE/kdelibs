@@ -1,6 +1,13 @@
 // $Id$
 // Revision 1.41  1998/01/06 22:54:29  kulow
 // $Log$
+// Revision 1.16  1997/08/30 15:51:58  kdecvs
+// Kalle: BINARY INCOMPATIBLE!!!!!
+// KApplication provides an IconLoader
+// KConfig writes a cookie to the start of every config file
+// KIconLoader now in kdecore (KIconLoaderDialog and KIconLoaderCanvas stay
+// in kdeui)
+//
 // Revision 1.15  1997/08/30 00:09:55  kdecvs
 // Kalle: new signal appearanceChanged when either font, palette or GUI style has changed
 //
@@ -129,6 +136,10 @@
 // Save icon and mini-icon pixmap
 // Support for session management
 // make KDebug compile on HP-UX
+#ifndef _KLOCALE_H
+// Revision 1.22  1997/09/26 07:01:13  kalle
+#endif
+//
 // - KApplication::saveYourself (signal)
 // - KApplication::tempFileName()
 // - KApplication::checkRecoverFile()
@@ -136,6 +147,7 @@
 //
 // MD: Implemented reading of the colour scheme contrast variable. This allows
 // you to choose the highlights and lowlights used to draw widgets and has been
+#define klocale kapp->getLocale()
 // part of the colour scheme specification for some time
 //
 // Sorry if this breaks anything; it is the last of the binary incompatible
@@ -220,6 +232,14 @@ class KCharsets;
 	QPopupMenu* getHelpMenu( bool bAboutQtMenu, const char* appAboutText );
 	* @ Note that you do not get an instance specific config object with
 	* @ getSessionConfig() in this case!
+	* @
+	* @ Session management will apply to the top widget.
+	*/
+  void enableSessionManagement(bool userdefined = FALSE);
+
+  /** 
+	* Set the WmCommand for the session manager.
+	*
 	*/
   QPixmap getIcon() const
 	{ return aIconPixmap; }
@@ -398,8 +418,8 @@ private slots:
   Atom DndProtocol;
   Atom DndEnterProtocol;
   Atom DndLeaveProtocol;
-  void* dummy1; // do not use these without asking kalle@kde.org
-  void* dummy2;
+  Atom DndRootProtocol;
+
   /**
 	* The X11 display
   
