@@ -18,16 +18,17 @@
 
 #include <kdebug.h>
 
-#define protected public
-#include <object.h>
-#undef protected
-#include <soundserver.h>
+#include <core.h>
+//#include <object.h>
+//#include <reference.h>
+#include <dynamicrequest.h>
 
 #include <qmap.h>
 #include <qdatastream.h>
 
 using namespace std;
 
+#include "mcopdcoptools.h"
 #include "mcopdcopobject.h"
 
 class MCOPDCOPObjectPrivate
@@ -59,35 +60,9 @@ QCStringList MCOPDCOPObject::functionsDynamic()
 
 Arts::Buffer *MCOPDCOPObject::callFunction(MCOPEntryInfo *entry, QCString ifaceName, const QByteArray &data)
 {
-	long methodID = -1;
-	long requestID;
-	Arts::Buffer *request, *result;
-	
-	Arts::Object workingObject = Arts::SubClass(std::string(ifaceName));
-	Arts::InterfaceRepo ifaceRepo = Arts::Dispatcher::the()->interfaceRepo();
-	Arts::InterfaceDef ifaceDef = ifaceRepo.queryInterface(string(ifaceName));
-
-	vector<Arts::MethodDef> ifaceMethods = ifaceDef.methods;
-
-	vector<Arts::MethodDef>::iterator ifaceMethodsIterator;
-	for(ifaceMethodsIterator = ifaceMethods.begin(); ifaceMethodsIterator != ifaceMethods.end(); ifaceMethodsIterator++)
-	{
-		Arts::MethodDef currentMethod = *ifaceMethodsIterator;
-
-		if(currentMethod.name.c_str() == entry->functionName())
-		{		
-			
-			methodID = workingObject._lookupMethod(currentMethod);
-			break;
-		}
-	}
-
-	if(methodID == -1)
-		return 0;
-	
-	Arts::Object_base *obj = workingObject._get_pool()->base;
-	
-	request = Arts::Dispatcher::the()->createRequest(requestID, obj->_getObjectID(), methodID);
+	Arts::Object workingObject = Arts::SubClass(string(ifaceName));
+	Arts::DynamicRequest request(workingObject);
+	request.method(string(entry->functionName()));
 
 	if(entry->signatureList().size() > 0)
 	{
@@ -103,31 +78,20 @@ Arts::Buffer *MCOPDCOPObject::callFunction(MCOPEntryInfo *entry, QCString ifaceN
 			QDataStream argStream(data, IO_ReadOnly);
 
 			if(param == "long")
-			{
-				long arg;
-			    argStream >> arg;
-
-				request->writeLong(arg);
-			}
+				request.param(MCOPDCOPTools::getLong(argStream));
 			else if(param == "string")
-			{
-				QCString arg;
-				argStream >> arg;
-
-				request->writeString(std::string(arg));
-			}
+				request.param(MCOPDCOPTools::getString(argStream));
 		}
 	}
 
-	request->patchLength();
-	
-	(obj->_getConnection())->qSendBuffer(request);
-
-	result = Arts::Dispatcher::the()->waitForResult(requestID, obj->_getConnection());
-	if(!result)
+	Arts::AnyRef result;	
+	if(!request.invoke(result))
 		return 0;
 
-	return result;
+	Arts::Buffer *newBuffer = new Arts::Buffer();
+	result.write(newBuffer);
+
+	return newBuffer;
 }
 
 bool MCOPDCOPObject::processDynamic(const QCString &fun, const QByteArray &data, QCString &replyType, QByteArray &replyData)
