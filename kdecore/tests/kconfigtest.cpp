@@ -219,6 +219,8 @@ if (argc == 2)
 
   sc.setGroup("Hello");  
   sc.writeEntry( "Bua", "Brumm" );
+  sc.writeEntry( "boolEntry1", BOOLENTRY1 );
+  sc.writeEntry( "boolEntry2", BOOLENTRY2 );
   
   qWarning("Bua = %s", sc.readEntry("Bua").latin1());
   

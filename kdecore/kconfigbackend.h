@@ -126,7 +126,8 @@ protected:
 
   QString fileName;
   QCString resType;
-  bool useKDEGlobals;
+  bool useKDEGlobals : 1;
+  bool bFileImmutable : 1;
   QCString localeString;
   QString mLocalFileName;
   QString mGlobalFileName;

@@ -178,7 +178,7 @@ KConfigBackEnd::KConfigBackEnd(KConfigBase *_config,
 			       const QString &_fileName,
 			       const char * _resType,
 			       bool _useKDEGlobals)
-  : pConfig(_config), mConfigState(KConfigBase::NoAccess)
+  : pConfig(_config), bFileImmutable(false), mConfigState(KConfigBase::NoAccess)
 {
    changeFileName(_fileName, _resType, _useKDEGlobals);
 }
@@ -191,9 +191,10 @@ bool KConfigINIBackEnd::parseConfigFiles()
   else
      mConfigState = KConfigBase::ReadOnly;
 
+  bFileImmutable = false;
+
   // Parse the general config files
   if (useKDEGlobals) {
-
     QStringList kdercs = KGlobal::dirs()->
       findAllResources("config", QString::fromLatin1("kdeglobals"));
 
@@ -212,10 +213,13 @@ bool KConfigINIBackEnd::parseConfigFiles()
 	   continue;
       parseSingleConfigFile( aConfigFile, 0L, true, (*it != mGlobalFileName) );
       aConfigFile.close();
+      if (bFileImmutable)
+         break;
     }
   }
 
   if (!fileName.isEmpty()) {
+    bFileImmutable = false;
     QStringList list = KGlobal::dirs()->
       findAllResources(resType, fileName);
 
@@ -229,9 +233,13 @@ bool KConfigINIBackEnd::parseConfigFiles()
       if (aConfigFile.open( IO_ReadOnly )) {
          parseSingleConfigFile( aConfigFile, 0L, false, !bIsLocal );
          aConfigFile.close();
+         if (bFileImmutable)
+            break;
       }
     }
   }
+  if (bFileImmutable)
+     mConfigState = KConfigBase::ReadOnly;
 
   return true;
 }
@@ -269,8 +277,8 @@ void KConfigINIBackEnd::parseSingleConfigFile(QFile &rFile,
       eof = s + data.size();
    }
 
-   bool fileOptionImmutable = (mConfigState == KConfigBase::ReadOnly);
-   bool groupOptionImmutable = fileOptionImmutable;
+   bool fileOptionImmutable = false;
+   bool groupOptionImmutable = false;
    bool groupSkip = false;
 
    int line = 0;
@@ -462,7 +470,7 @@ void KConfigINIBackEnd::parseSingleConfigFile(QFile &rFile,
       }
    }
    if (fileOptionImmutable)
-      mConfigState = KConfigBase::ReadOnly;
+      bFileImmutable = true;
    
 #ifdef HAVE_MMAP
    if (map)
