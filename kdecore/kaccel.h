@@ -218,8 +218,7 @@ class KAccel
 	QString findKey( int key ) const;
 	
 	/**
-	 * Inserts an accelerator item and returns -1 if the key code
-	 *	defaultKeyCode is not valid.
+	 * Inserts an accelerator item
 	 *
 	 *  @param descr is the localized name of the action, useful in
 	 *  menus or the keybinding editor.
@@ -227,10 +226,13 @@ class KAccel
 	 *  is supposed to be the same for all language.
 	 *  @param defaultKeyCode is a key code to be used as the default
 	 *  for the action.  
+	 *  Set it to 0 for no default key (still allows to be configured later)
 	 *  @param configurable indicates whether a user can configure
 	 *  the key binding using the KKeyChooser GUI and whether the
 	 *  key will be written back to configuration files on calling
 	 *  writeSettings.
+	 *  @return true on success
+	 *
 	 * If an action already exists the old association and connections
 	 * will be removed..
 
@@ -242,8 +244,7 @@ class KAccel
 			bool configurable = true );
 	
 	 /**
-	 * Inserts an accelerator item and returns -1 if the key code
-	 * 	defaultKeyCode is not valid.
+	 * Inserts an accelerator item
 	 *	
 	 * Arguments:
 	 *
@@ -259,7 +260,8 @@ class KAccel
 	 *	binding using the KKeyChooser GUI and whether the key
 	 *	will be written back to configuration files on calling
 	 *	writeSettings.
-
+	 *  @return true on success
+	 *
 	 * If an action already exists the old association and connections
 	 * will be removed..
 	 */
