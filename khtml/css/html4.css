@@ -195,8 +195,6 @@ TABLE {
 	vertical-align: middle;
 	text-align: justify;
 	border-spacing: 2px;
-	border-style: outset;
-	border-width: 0px;
 	padding: 1px;
         -konq-flow-mode: -konq-around-floats;
 }
@@ -234,8 +232,7 @@ COLGROUP {
 TR { 
 	display: table-row;
 	vertical-align: inherit; 
-	border: inherit;
-        border-color: inherit;
+        border-color: inherit; 
 	padding: inherit; 
 }
       
@@ -244,9 +241,6 @@ TD, TH {
 	display: table-cell;
 	vertical-align: inherit;
 	padding: inherit;
-	border-style: inset;   /* overwritten by <table bordercolor> */
-	border-color: inherit;
-        border-width: 1px;     /* overwritten by <table border=0> */
 }
       
 TH { 
