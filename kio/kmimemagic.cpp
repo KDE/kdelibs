@@ -301,6 +301,12 @@ static struct names {
 		"<!DOCTYPE", L_HTML
 	},
 	{
+		"<div", L_HTML
+	},
+	{
+		"<DIV", L_HTML
+	},
+	{
 		"/*", L_C|L_CPP|L_JAVA
 	},                      /* must precede "The", "the", etc. */
 	{
