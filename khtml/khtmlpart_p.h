@@ -198,6 +198,7 @@ public:
     m_dcopobject = 0;
     m_jobspeed = 0;
     m_dcop_counter = ++khtml_part_dcop_counter;
+    m_statusBarWalletLabel = 0L;
   }
   ~KHTMLPartPrivate()
   {

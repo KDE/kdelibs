@@ -234,8 +234,6 @@ void KHTMLPart::init( KHTMLView *view, GUIProfile prof )
   //d->m_automaticDetection->insertItem( i18n( "Unicode" ), 13 );
   d->m_automaticDetection->insertItem( i18n( "Western European" ), 14 );
 
-  d->m_statusBarWalletLabel = 0L;
-
   connect( d->m_automaticDetection, SIGNAL( activated( int ) ), this, SLOT( slotAutomaticDetectionLanguage( int ) ) );
 
   d->m_paSetEncoding->popupMenu()->insertItem( i18n( "Automatic Detection" ), d->m_automaticDetection, 0 );
