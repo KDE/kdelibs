@@ -61,6 +61,8 @@ RenderBox::RenderBox(DOM::NodeImpl* node)
 
 void RenderBox::setStyle(RenderStyle *_style)
 {
+    bool oldpos = isPositioned();
+                    
     RenderObject::setStyle(_style);
 
     switch(_style->position())
@@ -70,6 +72,11 @@ void RenderBox::setStyle(RenderStyle *_style)
         setPositioned(true);
         break;
     default:
+        if (oldpos)
+            {
+            setPositioned(true);
+            removeFromSpecialObjects();
+            }
         setPositioned(false);
         if(!isTableCell() && _style->isFloating()) {
             setFloating(true);
