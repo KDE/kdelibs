@@ -576,9 +576,9 @@ void KToolBar::setButton (int id, bool flag)
 }
 
 
-bool KToolBar::isButtonOn (int id)
+bool KToolBar::isButtonOn (int id) const
 {
-    Id2WidgetMap::Iterator it = id2widget.find( id );
+    Id2WidgetMap::ConstIterator it = id2widget.find( id );
     if ( it == id2widget.end() )
         return false;
     KToolBarButton * button = dynamic_cast<KToolBarButton *>( *it );
@@ -597,9 +597,9 @@ void KToolBar::setLinedText (int id, const QString& text)
 }
 
 
-QString KToolBar::getLinedText (int id)
+QString KToolBar::getLinedText (int id) const
 {
-    Id2WidgetMap::Iterator it = id2widget.find( id );
+    Id2WidgetMap::ConstIterator it = id2widget.find( id );
     if ( it == id2widget.end() )
         return QString::null;
     QLineEdit * lineEdit = dynamic_cast<QLineEdit *>( *it );
@@ -684,9 +684,9 @@ void KToolBar::clearCombo (int id)
 }
 
 
-QString KToolBar::getComboItem (int id, int index)
+QString KToolBar::getComboItem (int id, int index) const
 {
-    Id2WidgetMap::Iterator it = id2widget.find( id );
+    Id2WidgetMap::ConstIterator it = id2widget.find( id );
     if ( it == id2widget.end() )
         return QString::null;
     QComboBox * comboBox = dynamic_cast<QComboBox *>( *it );
@@ -1022,7 +1022,7 @@ void KToolBar::saveState()
         // go down one level to get to the right tags
         QDomElement elem = d->m_xmlguiClient->domDocument().documentElement().toElement();
         elem = elem.firstChild().toElement();
-        QString barname(!strcmp(name(), "unnamed") ? "mainToolBar" : name());
+        QString barname(!::qstrcmp(name(), "unnamed") ? "mainToolBar" : name());
         QDomElement current;
         // now try to find our toolbar
         d->modified = false;
@@ -1083,7 +1083,7 @@ void KToolBar::saveState()
 QString KToolBar::settingsGroup() const
 {
     QString configGroup;
-    if (!strcmp(name(), "unnamed") || !strcmp(name(), "mainToolBar"))
+    if (!::qstrcmp(name(), "unnamed") || !::qstrcmp(name(), "mainToolBar"))
         configGroup = "Toolbar style";
     else
         configGroup = QString(name()) + " Toolbar style";
@@ -1250,8 +1250,7 @@ void KToolBar::childEvent( QChildEvent *e )
     if ( e->child()->isWidgetType() ) {
         QWidget * w = (QWidget*)e->child();
 	if ( e->type() == QEvent::ChildInserted ) {
-	    if ( !e->child()->inherits( "QPopupMenu" ) &&
-                 qstrcmp( "qt_dockwidget_internal", e->child()->name() ) != 0 ) {
+	    if ( !e->child()->inherits( "QPopupMenu" ) ) {
 
                 // prevent items that have been explicitly inserted by insert*() from
                 // being inserted again
@@ -1373,7 +1372,7 @@ void KToolBar::slotIconChanged(int group)
 {
     if ((group != KIcon::Toolbar) && (group != KIcon::MainToolbar))
         return;
-    if ((group == KIcon::MainToolbar) != !strcmp(name(), "mainToolBar"))
+    if ((group == KIcon::MainToolbar) != !::qstrcmp(name(), "mainToolBar"))
         return;
 
     emit modechange();
@@ -1868,7 +1867,7 @@ KPopupMenu *KToolBar::contextMenu()
   // Query the current theme for available sizes
   KIconTheme *theme = KGlobal::instance()->iconLoader()->theme();
   QValueList<int> avSizes;
-  if (!strcmp(QObject::name(), "mainToolBar"))
+  if (!::qstrcmp(QObject::name(), "mainToolBar"))
       avSizes = theme->querySizes( KIcon::MainToolbar);
   else
       avSizes = theme->querySizes( KIcon::Toolbar);

@@ -544,7 +544,7 @@ public:
    * button is not a toggle button.
    * @see setToggle()
    */
-    bool isButtonOn (int id);
+    bool isButtonOn (int id) const;
 
   /**
    * Sets the text of a line editor.
@@ -556,7 +556,7 @@ public:
   /**
    * Returns a line editor text.
    */
-    QString getLinedText (int id);
+    QString getLinedText (int id) const;
 
   /**
    * Inserts @p text in combobox @p id at position @p index.
@@ -603,7 +603,7 @@ public:
    * @p index = -1 refers to current item.
    */
 
-    QString getComboItem (int id, int index=-1);
+    QString getComboItem (int id, int index=-1) const;
 
     /**
    * Returns a pointer to the combobox.
