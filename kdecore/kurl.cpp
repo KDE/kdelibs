@@ -390,15 +390,19 @@ KURL::KURL( const KURL& _u, const QString& _rel_url, int encoding_hint )
   // URLS. ( RFC 2396 section 5.2 item # 3 )
   QString rUrl = _rel_url;
   int len = _u.m_strProtocol.length();
-  if ( _u.hasHost() && rUrl.length() != 0 &&
-       rUrl.left( len ).lower() == _u.m_strProtocol.lower() &&
+  if ( !_u.m_strHost.isEmpty() && !rUrl.isEmpty() &&
+       rUrl.find( _u.m_strProtocol, 0, false ) == 0 &&
        rUrl[len] == ':' && (rUrl[len+1] != '/' ||
        (rUrl[len+1] == '/' && rUrl[len+2] != '/')) )
   {
-                rUrl.remove( 0, rUrl.find( ':' ) + 1 );
+    rUrl.remove( 0, rUrl.find( ':' ) + 1 );
   }
 
-  if ( rUrl[0] == '#' )
+  if ( rUrl.isEmpty() )
+  {
+    *this = _u;
+  }
+  else if ( rUrl[0] == '#' )
   {
     *this = _u;
     setHTMLRef( decode(rUrl.mid(1), 0, encoding_hint) );
@@ -464,16 +468,11 @@ void KURL::parse( const QString& _url, int encoding_hint )
 {
   // Return immediately whenever the given url
   // is empty or null.
-  if ( _url.length() == 0  )
+  if ( _url.isEmpty() )
   {
     m_strProtocol = _url;
     return;
   }
-
-  // This is wrong!! All URLs should be deemed invalid until
-  // they have been correctly parsed. Specially now since ::url()
-  // returns the given url even if it is malformed. (DA)
-  // m_bIsMalformed = false;
 
   QString port;
   int start = 0;
