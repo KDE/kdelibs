@@ -86,11 +86,10 @@ bool SGIImage::getRow(uchar *dest)
 	int n, i;
 	if (!m_rle) {
 		for (i = 0; i < m_xsize; i++) {
-			*dest++ = uchar(*m_pos++);
-			if (m_bpc == 2)
-				*m_pos++;
+			*dest++ = uchar(*m_pos);
+			m_pos += m_bpc;
 		}
-		return true;			// FIXME
+		return true;
 	}
 
 	for (i = 0; i < m_xsize;) {
@@ -102,16 +101,14 @@ bool SGIImage::getRow(uchar *dest)
 
 		if (*m_pos++ & 0x80) {
 			for (; i < m_xsize && n--; i++) {
-				*dest++ = *m_pos++;
-				if (m_bpc == 2)
-					m_pos++;
+				*dest++ = *m_pos;
+				m_pos += m_bpc;
 			}
 		} else {
 			for (; i < m_xsize && n--; i++)
 				*dest++ = *m_pos;
-			m_pos++;
-			if (m_bpc == 2)
-				m_pos++;
+
+			m_pos += m_bpc;
 		}
 	}
 	return i == m_xsize;
@@ -356,10 +353,10 @@ bool SGIImage::writeData(QImage& img)
 			*length++ = len;
 			pos += len;
 		}
-	}
 
-	if (m_zsize == 3)
-		return true;
+		if (m_zsize == 3)
+			return true;
+	}
 
 	for (y = 0; y < m_ysize; y++) {
 		c = reinterpret_cast<QRgb*>(img.scanLine(m_ysize - y - 1));
