@@ -9,6 +9,7 @@
 #include "kmimemagic.h"
 #include <kdebug.h>
 #include <kapp.h>
+#include <qfile.h>
 #include <kstddirs.h>
 
 KMimeMagic* KMimeMagic::s_pSelf = 0L;
@@ -2113,17 +2114,17 @@ refineResult(KMimeMagicResult *r, const char * _filename)
 
 KMimeMagicResult *
 KMimeMagic::findBufferFileType( const QByteArray &data,
-				const char * fn)
+				const QString &fn)
 {
         KMimeMagicResult * r = findBufferType( data );
-	refineResult(r, fn);
+	refineResult(r, QFile::encodeName(fn).data());
         return r;
 }
 
 /*
  * Find the content-type of the given file.
  */
-KMimeMagicResult* KMimeMagic::findFileType(const char *fn)
+KMimeMagicResult* KMimeMagic::findFileType(const QString & fn)
 {
         resultBuf = QString::null;
 
@@ -2138,11 +2139,11 @@ KMimeMagicResult* KMimeMagic::findFileType(const char *fn)
 	accuracy = 100;
 
         /* process it based on the file contents */
-        process(fn);
+        process(QFile::encodeName(fn).data());
 
         /* if we have any results, put them in the request structure */
         finishResult();
 	magicResult->setAccuracy(accuracy);
-	refineResult(magicResult, fn);
+	refineResult(magicResult, QFile::encodeName(fn).data());
         return magicResult;
 }

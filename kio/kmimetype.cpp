@@ -215,7 +215,7 @@ KMimeType::Ptr KMimeType::findByURL( const KURL& _url, mode_t _mode,
   // Do some magic for local files
   QString path = _url.path( 0 );
   kDebugInfo( 7009, "%s", QString("Mime Type finding for '%1'").arg(path).ascii() );
-  KMimeMagicResult* result = KMimeMagic::self()->findFileType( path.ascii() );
+  KMimeMagicResult* result = KMimeMagic::self()->findFileType( path );
 
   // If we still did not find it, we must assume the default mime type
   if ( !result || !result->isValid() )  /* !result->mimeType() || result->mimeType()[0] == 0 ) */
@@ -427,7 +427,7 @@ QString KDEDesktopMimeType::icon( const KURL& _url, bool _is_local ) const
   cfg.setDesktopGroup();
   QString icon = cfg.readEntry( "Icon" );
   QString type = cfg.readEntry( "Type" );
-  
+
   if ( type == "FSDevice" || type == "FSDev") // need to provide FSDev for
                                               // backwards compatibility
   {

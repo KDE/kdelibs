@@ -64,8 +64,8 @@ public:
   /////////////////
   // Internal functions only
   /////////////////
-  void setMimeType( const char* _mime ) { m_strMimeType = _mime; }
-  void setEncoding( const char* _encoding) { m_strEncoding = _encoding;}
+  void setMimeType( const QString& _mime ) { m_strMimeType = _mime; }
+  void setEncoding( const QString& _encoding) { m_strEncoding = _encoding;}
   void setAccuracy( int _accuracy ) { m_iAccuracy = _accuracy; }
   void setInvalid() { m_strMimeType = ""; }
 
@@ -91,7 +91,7 @@ class KMimeMagic
 {
 public:
   /**
-   * Create a parser, initialize it with the give config file.
+   * Create a parser, initialize it with the given config file.
    */
   KMimeMagic( const char * );
 
@@ -132,7 +132,7 @@ public:
    *         the returned result object changes its value
    *         since it is reused by KMimeMagic.
    */
-  KMimeMagicResult* findFileType( const char *_filename );
+  KMimeMagicResult* findFileType( const QString & _filename );
 
   /**
    * Same functionality as above, except data is not
@@ -140,9 +140,10 @@ public:
    * is examined. The integer parameter supplies the lenght of
    * the buffer.
    *
-   * @return a pointer to the result. Do NOT delete the
+   * @return a pointer to the result object. Do NOT delete the
    *         result object. After another call to KMimeMagic
-   *         the returned result object changes its value.
+   *         the returned result object changes its value
+   *         since it is reused by KMimeMagic.
    */
   KMimeMagicResult* findBufferType( const QByteArray &p );
 
@@ -150,15 +151,15 @@ public:
    * Same functionality as @ref findBufferType but with
    * additional capability of distinguishing between
    * C-headers and C-Source. For this purpose this function looks
-   * at the extension of the filename. This means that '_filename'
+   * at the extension of the filename. This means that 'filename'
    * can be a filename on some ftp server, too.
    *
    * @return a pointer to the result object. Do NOT delete the
    *         result object. After another call to KMimeMagic
    *         the returned result object changes its value
-   *         since it is resued by KMimeMagic.
+   *         since it is reused by KMimeMagic.
    */
-  KMimeMagicResult * findBufferFileType( const QByteArray &, const char *_filename );
+  KMimeMagicResult * findBufferFileType( const QByteArray &, const QString & filename );
 
   /**
    * @return a pointer to the unique KMimeMagic instance in this process
