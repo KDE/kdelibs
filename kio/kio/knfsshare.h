@@ -27,6 +27,7 @@ class KNFSSharePrivate;
  * Similar functionality like KFileShare, 
  * but works only for NFS and do not need 
  * any suid script.
+ * It parses the /etc/exports file to get its information.
  * Singleton class, call instance() to get an instance.
  */
 class KNFSShare : public QObject 
@@ -58,6 +59,18 @@ public:
    * The instance is destroyed automatically!
    */ 
   virtual ~KNFSShare();
+  
+  /**
+   * Returns the path to the used exports file,
+   * or null if no exports file was found
+   */
+  QString exportsPath();
+  
+signals:
+  /**
+   * Emitted when the /etc/exports file has changed
+   */
+  void changed();  
   
 private:
   KNFSShare();

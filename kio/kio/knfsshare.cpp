@@ -71,7 +71,7 @@ bool KNFSSharePrivate::findExportsFile() {
 }
 
 /**
- * Reads all path= entries from the smb.conf file
+ * Reads all paths from the exports file
  * and fills the sharedPaths dict with the values
  */
 bool KNFSSharePrivate::readExportsFile() {
@@ -186,9 +186,17 @@ QStringList KNFSShare::sharedDirectories() {
   return result;       
 }
 
+QString KNFSShare::exportsPath() {
+  return d->exportsFile;
+}
+
+
+
 void KNFSShare::slotFileChange( const QString & path ) {
   if (path == d->exportsFile)
      d->readExportsFile();
+     
+  emit changed();     
 }
 
 KNFSShare* KNFSShare::_instance = 0L; 
