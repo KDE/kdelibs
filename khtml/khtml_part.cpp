@@ -326,9 +326,9 @@ public:
     QString submitContentType;
     QString submitBoundary;
   };
-  
+
   SubmitForm *m_submitForm;
-  
+
   bool m_bMousePressed;
   DOM::Node m_mousePressNode; //node under the mouse when the mouse was pressed (set in the mouse handler)
 
@@ -1226,7 +1226,7 @@ void KHTMLPart::slotData( KIO::Job*, const QByteArray &data )
       {
         delay = qData.left(pos).toInt();
         QString refUrl = qData.mid(pos+1).stripWhiteSpace();
-        if ( refUrl.startsWith( "url=" ) )
+        if ((pos = refUrl.find( "url=", 0, false )) == 0)
           refUrl = refUrl.remove( 0, 4 ).stripWhiteSpace();
         refUrl = KURL( d->m_baseURL, refUrl ).url();
         scheduleRedirection( delay, refUrl );
