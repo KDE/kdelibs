@@ -19,47 +19,49 @@
 
 #include "kjs.h"
 #include "operations.h"
+#include "types.h"
 #include "string_object.h"
 
 using namespace KJS;
 
-KJSO *StringObject::get(const UString &p)
+KJSO StringObject::get(const UString &p) const
 {
   if (p == "fromCharCode")
-    return new StringObjectFunc();
+    return Function(new StringObjectFunc());
   else
-    return KJSO::get(p);
+    return Imp::get(p);
 }
 
 // ECMA 15.5.1
-KJSO* StringObject::execute(const List &args)
+Completion StringObject::execute(const List &args)
 {
-  Ptr v, s;
+  KJSO v;
+  String s;
 
   if (args.isEmpty())
-    s = newString("");
+    s = String("");
   else {
     v = args[0];
-    s = toString(v);
+    s = v.toString();
   }
 
-  return newCompletion(Normal, s);
+  return Completion(Normal, s);
 }
 
 // ECMA 15.5.2
-Object* StringObject::construct(const List &args)
+Object StringObject::construct(const List &args)
 {
-  Ptr s;
+  String s;
   if (args.size() > 0)
-    s = toString(args.begin());
+    s = args.begin()->toString();
   else
-    s = newString("");
+    s = String("");
 
   return Object::create(StringClass, s);
 }
 
 // ECMA 15.5.3.2 fromCharCode()
-KJSO *StringObjectFunc::execute(const List &args)
+Completion StringObjectFunc::execute(const List &args)
 {
   UString s;
   if (args.size()) {
@@ -67,7 +69,7 @@ KJSO *StringObjectFunc::execute(const List &args)
     UChar *p = buf;
     ListIterator it = args.begin();
     while (it != args.end()) {
-      unsigned short u = toUInt16(it);
+      unsigned short u = it->toUInt16();
       *p++ = UChar(u);
       it++;
     }
@@ -75,17 +77,17 @@ KJSO *StringObjectFunc::execute(const List &args)
   } else
     s = "";
   
-  return newCompletion(Normal, zeroRef(newString(s)));
+  return Completion(Normal, String(s));
 }
 
 // ECMA 15.5.4
-StringPrototype::StringPrototype(Object *proto)
-  : Object(StringClass, zeroRef(newString("")), proto)
+StringPrototype::StringPrototype(const Object& proto)
+  : ObjectImp(StringClass, String(""), proto)
 {
   // The constructor will be added later in StringObject's constructor
 }
 
-KJSO *StringPrototype::get(const UString &p)
+KJSO StringPrototype::get(const UString &p) const
 {
   int id;
 
@@ -106,114 +108,114 @@ KJSO *StringPrototype::get(const UString &p)
   else if (p == "substring")
     id = StringProtoFunc::Substring;
   else
-    return KJSO::get(p);
+    return Imp::get(p);
 
-  return new StringProtoFunc(id);
+  return Function(new StringProtoFunc(id));
 }
 
 StringProtoFunc::StringProtoFunc(int i)
   : id(i)
 {
-  setPrototype(KJScript::global()->funcProto);
+  setPrototype(Global::current().functionPrototype());
 }
 
 // ECMA 15.5.4.2 - 15.5.4.20
-KJSO *StringProtoFunc::execute(const List &args)
+Completion StringProtoFunc::execute(const List &args)
 {
-  Ptr result;
-  KJSO *thisVal = thisValue();
+  KJSO result;
 
-  Object *thisObj = static_cast<Object*>(thisVal);
+  Object thisObj = Object::dynamicCast(thisValue());
 
   // toString and valueOf are no generic function.
   if (id == ToString || id == ValueOf) {
-    if ((!thisVal->isA(ObjectType)) || (thisObj->getClass() != StringClass)) {
-      result = newError(TypeError);
-      return newCompletion(ReturnValue, result);
+    if (thisObj.isNull() || thisObj.getClass() != StringClass) {
+      result = Error::create(TypeError);
+      return Completion(ReturnValue, result);
     }
   }
 
-  Ptr n, m, s2;
+  String s2;
+  Number n, m;
   UString u;
   int pos;
   double d, d2;
-  Ptr v = thisObj->internalValue();
-  Ptr s = toString(v);
-  int len = (int) s->stringVal().size();
-  Ptr a0 = args[0];
-  Ptr a1 = args[1];
+  KJSO v = thisObj.internalValue();
+  String s = v.toString();
+  int len = (int) s.value().size();
+  KJSO a0 = args[0];
+  KJSO a1 = args[1];
 
   switch (id) {
   case ToString:
   case ValueOf:
-    result = v->ref();
+    result = v.toString();
     break;
   case CharAt:
-    n = toInteger(a0);
-    pos = (int) n->doubleVal();
+    n = a0.toInteger();
+    pos = (int) n.value();
     if (pos < 0 || pos >= len)
       u = "";
     else
-      u = s->stringVal().substr(pos, 1);
-    result = newString(u);
+      u = s.value().substr(pos, 1);
+    result = String(u);
     break;
   case CharCodeAt:
-    n = toInteger(a0);
-    pos = (int) n->doubleVal();
+    n = a0.toInteger();
+    pos = (int) n.value();
     if (pos < 0 || pos >= len)
       d = NaN;
     else {
-      UChar c = s->stringVal()[pos];
+      UChar c = s.value()[pos];
       d = (c.hi << 8) + c.lo;
     }
-    result = newNumber(d);
+    result = Number(d);
     break;
   case IndexOf:
-    s2 = toString(a0);
-    n = toInteger(a1);
-    if (n->isA(UndefinedType))
+    s2 = a0.toString();
+    n = a1.toInteger();
+    if (n.isA(UndefinedType))
       pos = 0;
     else
-      pos = n->intVal();
-    d = s->stringVal().find(s2->stringVal(), pos);
-    result = newNumber(d);
+      pos = n.intValue();
+    d = s.value().find(s2.value(), pos);
+    result = Number(d);
     break;
   case LastIndexOf:
-    s2 = toString(a0);
-    n = toInteger(a1);
-    if (n->isA(UndefinedType))
+    s2 = a0.toString();
+    n = a1.toInteger();
+    if (n.isA(UndefinedType))
       pos = len;
     else
-      pos = n->intVal();
-    d = s->stringVal().rfind(s2->stringVal(), pos);
-    result = newNumber(d);
+      pos = n.intValue();
+    d = s.value().rfind(s2.value(), pos);
+    result = Number(d);
     break;
   case Substr:
-    n = toInteger(a0);
-    m = toInteger(a1);
-    if (n->doubleVal() >= 0)
-      d = n->doubleVal();
+    n = a0.toInteger();
+    m = a1.toInteger();
+    if (n.value() >= 0)
+      d = n.value();
     else
-      d = max(len + n->doubleVal(), 0);
-    if (a1->isA(UndefinedType))
+      d = max(len + n.value(), 0);
+    if (a1.isA(UndefinedType))
       d2 = len - d;
     else
-      d2 = min(max(m->doubleVal(), 0), len - d);
-    result = newString(s->stringVal().substr((int)d, (int)d2));
+      d2 = min(max(m.value(), 0), len - d);
+    result = String(s.value().substr((int)d, (int)d2));
     break;
   case Substring:
-    n = toInteger(a0);
-    m = toInteger(a1);
-    d = min(max(n->doubleVal(), 0), len);
-    if (a1->isA(UndefinedType))
+    n = a0.toInteger();
+    m = a1.toInteger();
+    d = min(max(n.value(), 0), len);
+    if (a1.isA(UndefinedType))
       d2 = len - d;
     else {
-      d2 = min(max(m->doubleVal(), 0), len);
+      d2 = min(max(m.value(), 0), len);
       d2 = max(d2-d, 0);
     }
-    result = newString(s->stringVal().substr((int)d, (int)d2));
+    result = String(s.value().substr((int)d, (int)d2));
     break;
   }
 
-  return newCompletion(Normal, result);
+  return Completion(Normal, result);
 }

@@ -21,6 +21,7 @@
 #include <stdlib.h>
 
 #include "kjs.h"
+#include "types.h"
 #include "operations.h"
 #include "math_object.h"
 #include "lookup.h"
@@ -29,12 +30,12 @@
 
 using namespace KJS;
 
-KJSO *Math::get(const UString &p)
+KJSO Math::get(const UString &p) const
 {
   int token = Lookup::find(&mathTable, p);
 
   if (token < 0)
-    return KJSO::get(p);
+    return Imp::get(p);
 
   double d;
   switch (token) {
@@ -63,21 +64,21 @@ KJSO *Math::get(const UString &p)
     d = sqrt(2);
     break;
   default:
-    return new MathFunc(token);
+    return Function(new MathFunc(token));
   };
 
-  return newNumber(d);
+  return Number(d);
 }
 
-KJSO* MathFunc::execute(const List &args)
+Completion MathFunc::execute(const List &args)
 {
-  Ptr v = args[0];
-  Ptr n = toNumber(v);
-  double arg = n->doubleVal();
+  KJSO v = args[0];
+  Number n = v.toNumber();
+  double arg = n.value();
 
-  Ptr v2 = args[1];
-  Ptr n2 = toNumber(v2);
-  double arg2 = n2->doubleVal();
+  KJSO v2 = args[1];
+  Number n2 = v2.toNumber();
+  double arg2 = n2.value();
   double result;
   int temp;
 
@@ -140,5 +141,5 @@ KJSO* MathFunc::execute(const List &args)
     assert((result = 0));
   }
 
-  return newCompletion(Normal, (zeroRef(newNumber(result))));
+  return Completion(Normal, Number(result));
 }

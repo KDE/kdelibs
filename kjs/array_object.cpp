@@ -19,45 +19,46 @@
 
 #include "kjs.h"
 #include "operations.h"
+#include "types.h"
 #include "array_object.h"
 
 using namespace KJS;
 
 // ECMA 15.6.1
-KJSO* ArrayObject::execute(const List &args)
+Completion ArrayObject::execute(const List &args)
 {
   // equivalent to 'new Array(....)'
-  Ptr result = construct(args);
+  KJSO result = construct(args);
 
-  return newCompletion(Normal, result);
+  return Completion(Normal, result);
 }
 
 // ECMA 15.6.2
-Object* ArrayObject::construct(const List &args)
+Object ArrayObject::construct(const List &args)
 {
-  Object *result = Object::create(ArrayClass);
+  Object result = Object::create(ArrayClass);
 
   unsigned int len;
   ListIterator it = args.begin();
   // a single argument might denote the array size
   if (args.size() == 1 && it->isA(NumberType))
-    len = toUInt32(it);
+    len = it->toUInt32();
   else {
     // initialize array
     len = args.size();
     for (unsigned int u = 0; it != args.end(); it++, u++)
-      result->put(UString::from(u), it);
+      result.put(UString::from(u), *it);
   }
 
   // array size
-  result->put("length", len, DontEnum | DontDelete);
+  result.put("length", len, DontEnum | DontDelete);
 
   return result;
 }
 
 // ECMA 15.6.4
-ArrayPrototype::ArrayPrototype(Object *proto)
-  : Object(ArrayClass, 0, proto)
+ArrayPrototype::ArrayPrototype(const Object& proto)
+  : ObjectImp(ArrayClass, Null(), proto)
 {
   // The constructor will be added later in ArrayObject's constructor
 
@@ -67,14 +68,14 @@ ArrayPrototype::ArrayPrototype(Object *proto)
 }
 
 #if 0
-ArrayProtoFunc::ArrayProtoFunc(int i, Global *global)
+ArrayProtoFunc::ArrayProtoFunc(int i, const Global& global)
   : id(i)
 {
   setPrototype(global->funcProto);
 }
 
 // ECMA 15.4.4
-KJSO *ArrayProtoFunc::execute(const List &args)
+Completion ArrayProtoFunc::execute(const List &args)
 {
   /* TODO */
 }

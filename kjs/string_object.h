@@ -25,29 +25,29 @@
 
 namespace KJS {
 
-  class StringObject : public Constructor {
+  class StringObject : public ConstructorImp {
   public:
-    StringObject(Object *proto) : Constructor(proto, 1) { }
-    KJSO *get(const UString &p);
-    KJSO* execute(const List &);
-    Object* construct(const List &);
+    StringObject(const Object& proto) : ConstructorImp(proto, 1) { }
+    KJSO get(const UString &p) const;
+    Completion execute(const List &);
+    Object construct(const List &);
   };
 
-  class StringObjectFunc : public InternalFunction {
+  class StringObjectFunc : public InternalFunctionImp {
   public:
-    KJSO *execute(const List &);
+    Completion execute(const List &);
   };
 
-  class StringPrototype : public Object {
+  class StringPrototype : public ObjectImp {
   public:
-    StringPrototype(Object *proto);
-    KJSO *get(const UString &p);
+    StringPrototype(const Object& proto);
+    KJSO get(const UString &p) const;
   };
 
-  class StringProtoFunc : public InternalFunction {
+  class StringProtoFunc : public InternalFunctionImp {
   public:
     StringProtoFunc(int i);
-    KJSO *execute(const List &);
+    Completion execute(const List &);
 
     enum { ToString, ValueOf, CharAt, CharCodeAt, IndexOf, LastIndexOf,
 	   Substr, Substring, FromCharCode };

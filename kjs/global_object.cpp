@@ -23,9 +23,11 @@
 #include "kjs.h"
 #include "object.h"
 #include "operations.h"
+#include "internal.h"
 #include "types.h"
 #include "lexer.h"
 #include "nodes.h"
+
 #include "object_object.h"
 #include "function_object.h"
 #include "array_object.h"
@@ -40,36 +42,64 @@
 extern int kjsyyparse();
 
 using namespace KJS;
-class GlobalFunc : public InternalFunction {
+
+class GlobalFunc : public InternalFunctionImp {
 public:
   GlobalFunc(int i) : id(i) { }
-  KJSO *execute(const List &c);
+  Completion execute(const List &c);
   enum { Eval, ParseInt, ParseFloat };
 private:
   int id;
 };
 
 Global::Global()
+  : Object(new GlobalImp())
+{
+}
+
+Global::~Global()
+{
+}
+
+Global Global::current()
+{
+  return KJScriptImp::current()->glob;
+}
+
+KJSO Global::objectPrototype() const
+{
+  assert(rep);
+  return ((GlobalImp*)rep)->objProto;
+}
+
+KJSO Global::functionPrototype() const
+{
+  assert(rep);
+  return ((GlobalImp*)rep)->funcProto;
+}
+
+GlobalImp::GlobalImp()
+  : ObjectImp(ObjectClass)
 {
   // constructor properties. prototypes as Global's member variables first.
-  objProto = new ObjectPrototype();
-  funcProto = new FunctionPrototype();
-  arrayProto = new ArrayPrototype(objProto);
-  stringProto = new StringPrototype(objProto);
-  booleanProto = new BooleanPrototype(objProto);
-  numberProto = new NumberPrototype(objProto);
-  dateProto = new DatePrototype(objProto);
-  regexpProto = new RegExpPrototype(objProto);
-  errorProto = new ErrorPrototype(objProto);
+  objProto = Object(new ObjectPrototype());
+  funcProto = Object(new FunctionPrototype());
+  arrayProto = Object(new ArrayPrototype(objProto));
+  stringProto = Object(new StringPrototype(objProto));
+  booleanProto = Object(new BooleanPrototype(objProto));
+  numberProto = Object(new NumberPrototype(objProto));
+  dateProto = Object(new DatePrototype(objProto));
+  regexpProto = Object(new RegExpPrototype(objProto));
+  errorProto = Object(new ErrorPrototype(objProto));
 
-  Ptr objectObj = new ObjectObject(objProto);
-  Ptr arrayObj = new ArrayObject(funcProto);
-  Ptr boolObj = new BooleanObject(funcProto);
-  Ptr stringObj = new StringObject(funcProto);
-  Ptr numObj = new NumberObject(funcProto);
-  Ptr dateObj = new DateObject(dateProto);
-  Ptr regObj = new RegExpObject(regexpProto);
-  Ptr errObj = new ErrorObject(errorProto);
+  Object objectObj(new ObjectObject(objProto));
+  Object arrayObj(new ArrayObject(funcProto));
+  Object boolObj(new BooleanObject(funcProto));
+  Object stringObj(new StringObject(funcProto));
+  Object numObj(new NumberObject(funcProto));
+  Object dateObj(new DateObject(dateProto));
+  Object regObj(new RegExpObject(regexpProto));
+  Object errObj(new ErrorObject(errorProto));
 
   put("Object", objectObj, DontEnum);
   put("Array", arrayObj, DontEnum);
@@ -80,81 +110,76 @@ Global::Global()
   put("RegExp", regObj, DontEnum);
   put("Error", errObj, DontEnum);
 
-  objProto->setConstructor(objectObj);
-  arrayProto->setConstructor(arrayObj);
-  booleanProto->setConstructor(boolObj);
-  stringProto->setConstructor(stringObj);
-  numberProto->setConstructor(numObj);
-  dateProto->setConstructor(dateObj);
-  regexpProto->setConstructor(regObj);
-  errorProto->setConstructor(errObj);
-
-#if 0
-  objProto->deref();
-  funcProto->deref();
-  arrayProto->deref();
-  stringProto->deref();
-  boolProto->deref();
-  numProto->deref();
-#endif
+  objProto.setConstructor(objectObj);
+  arrayProto.setConstructor(arrayObj);
+  booleanProto.setConstructor(boolObj);
+  stringProto.setConstructor(stringObj);
+  numberProto.setConstructor(numObj);
+  dateProto.setConstructor(dateObj);
+  regexpProto.setConstructor(regObj);
+  errorProto.setConstructor(errObj);
 
   // value properties
-  put("NaN", NaN, DontEnum | DontDelete);
-  put("Infinity", Inf, DontEnum | DontDelete);
-  put("undefined", zeroRef(newUndefined()), DontEnum | DontDelete);
-  put("eval", zeroRef(new GlobalFunc(GlobalFunc::Eval)));
-  put("parseInt", zeroRef(new GlobalFunc(GlobalFunc::ParseInt)));
-  put("parseFloat", zeroRef(new GlobalFunc(GlobalFunc::ParseFloat)));
+  put("NaN", Number(NaN), DontEnum | DontDelete);
+  put("Infinity", Number(Inf), DontEnum | DontDelete);
+  put("undefined", Undefined(), DontEnum | DontDelete);
+  put("eval", Function(new GlobalFunc(GlobalFunc::Eval)));
+  put("parseInt", Function(new GlobalFunc(GlobalFunc::ParseInt)));
+  put("parseFloat", Function(new GlobalFunc(GlobalFunc::ParseFloat)));
 
   // other properties
-  put("Math", zeroRef(new Math()), DontEnum);
+  put("Math", Object(new Math()), DontEnum);
 }
 
-KJSO *GlobalFunc::execute(const List &args)
+GlobalImp::~GlobalImp() { }
+
+Completion GlobalFunc::execute(const List &args)
 {
-  Ptr res;
+  KJSO res;
 
   if (id == Eval) { // eval()
-    Ptr x = args[0];
-    if (x->type() != StringType)
+    KJSO x = args[0];
+    if (x.type() != StringType)
       res = x;
     else {
-      Lexer::curr()->setCode(x->stringVal().data(), x->stringVal().size());
+      String s = x.toString();
+      Lexer::curr()->setCode(s.value().data(), s.value().size());
       if (kjsyyparse()) {
 	KJS::Node::deleteAllNodes();
-	return newCompletion(Normal, newError(SyntaxError)); /* TODO: zeroRef */
+	return Completion(Normal, Error::create(SyntaxError));
       }
 
       res = KJS::Node::progNode()->evaluate();
       /* TODO: analyse completion value */
-      res.release();
-      if (error())
-	error()->deref();
+
+//       if (error())
+// 	error()->deref();
 
       //      if (KJS::Node::progNode())
       //	KJS::Node::progNode()->deleteStatements();
 
-      res = newUndefined();
+      res = Undefined();
     }
   } else if (id == ParseInt) {
-    Ptr str = toString(args[0]);
-    int radix = toInt32(args[1]);
+    String str = args[0].toString();
+    int radix = args[1].toInt32();
     if (radix == 0)
       radix = 10;
     else if (radix < 2 || radix > 36) {
-      res = newNumber(NaN);
-      return newCompletion(Normal, res);
+      res = Number(NaN);
+      return Completion(Normal, res);
     }
     /* TODO: use radix */
     int i = 0;
-    sscanf(str->stringVal().ascii(), "%d", &i);
-    res = newNumber(i);
+    sscanf(str.value().ascii(), "%d", &i);
+    res = Number(i);
   } else if (id == ParseFloat) {
-    Ptr str = toString(args[0]);
+    String str = args[0].toString();
     double d = 0.0;
-    sscanf(str->stringVal().ascii(), "%lf", &d);
-    res = newNumber(d);
+    sscanf(str.value().ascii(), "%lf", &d);
+    res = Number(d);
   }
 
-  return newCompletion(Normal, res);
+  return Completion(Normal, res);
 }
+

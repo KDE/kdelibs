@@ -25,22 +25,22 @@
 
 namespace KJS {
 
-  class ArrayObject : public Constructor {
+  class ArrayObject : public ConstructorImp {
   public:
-    ArrayObject(Object *p) : Constructor(p, 1) { }
-    KJSO* execute(const List &);
-    Object* construct(const List &);
+    ArrayObject(const Object& p) : ConstructorImp(p, 1) { }
+    Completion execute(const List &);
+    Object construct(const List &);
   };
 
-  class ArrayPrototype : public Object {
+  class ArrayPrototype : public ObjectImp {
   public:
-    ArrayPrototype(Object *proto);
+    ArrayPrototype(const Object& proto);
   };
 
-  class ArrayProtoFunc : public InternalFunction {
+  class ArrayProtoFunc : public InternalFunctionImp {
   public:
-    ArrayProtoFunc(int i, Global *global);
-    KJSO *execute(const List &);
+    ArrayProtoFunc(int i, const Global& global);
+    Completion execute(const List &);
   private:
     int id;
   };

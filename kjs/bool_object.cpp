@@ -19,80 +19,79 @@
 
 #include "kjs.h"
 #include "operations.h"
+#include "types.h"
 #include "bool_object.h"
+#include "error_object.h"
 
 using namespace KJS;
 
 // ECMA 15.6.1
-KJSO* BooleanObject::execute(const List &args)
+Completion BooleanObject::execute(const List &args)
 {
-  Ptr v, b;
+  Boolean b;
 
   if (args.isEmpty())
-    b = newBoolean(false);
-  else {
-    v = args[0];
-    b = toBoolean(v);
-  }
+    b = Boolean(false);
+  else
+    b = args[0].toBoolean();
 
-  return newCompletion(Normal, b);
+  return Completion(Normal, b);
 }
 
 // ECMA 15.6.2
-Object* BooleanObject::construct(const List &args)
+Object BooleanObject::construct(const List &args)
 {
-  Ptr b;
+  Boolean b;
   if (args.size() > 0)
-    b = toBoolean(args.begin());
+    b = args.begin()->toBoolean();
   else
-    b = newBoolean(false);
+    b = Boolean(false);
 
   return Object::create(BooleanClass, b);
 }
 
 // ECMA 15.6.4
-BooleanPrototype::BooleanPrototype(Object *proto)
-  : Object(BooleanClass, zeroRef(newBoolean(false)), proto)
+BooleanPrototype::BooleanPrototype(const Object& proto)
+  : ObjectImp(BooleanClass, Boolean(false), proto)
 {
   // The constructor will be added later in BooleanObject's constructor
 }
 
-KJSO *BooleanPrototype::get(const UString &p)
+KJSO BooleanPrototype::get(const UString &p) const
 {
   if (p == "toString")
-    return new BooleanProtoFunc(ToString);
+    return Function(new BooleanProtoFunc(ToString));
   else if (p == "valueOf")
-    return new BooleanProtoFunc(ValueOf);
+    return Function(new BooleanProtoFunc(ValueOf));
   else
-    return KJSO::get(p);
+    return Imp::get(p);
 }
 
 BooleanProtoFunc::BooleanProtoFunc(int i)
   : id(i)
 {
-  setPrototype(KJScript::global()->funcProto);
+  setPrototype(Global::current().functionPrototype());
 }
 
 // ECMA 15.6.4.2 + 15.6.4.3
-KJSO *BooleanProtoFunc::execute(const List &)
+Completion BooleanProtoFunc::execute(const List &)
 {
-  Ptr result;
-  KJSO *thisVal = thisValue();
+  KJSO result;
 
-  Object *thisObj = static_cast<Object*>(thisVal);
+  Object thisObj = Object::dynamicCast(thisValue());
 
   // no generic function. "this" has to be a Boolean object
-  if ((!thisVal->isA(ObjectType)) || (thisObj->getClass() != BooleanClass)) {
-    result = newError(TypeError);
-    return newCompletion(ReturnValue, result);
+  if (thisObj.isNull() || thisObj.getClass() != BooleanClass) {
+    result = Error::create(TypeError);
+    return Completion(ReturnValue, result);
   }
 
   // execute "toString()" or "valueOf()", respectively
-  Ptr v = thisObj->internalValue();
+  KJSO v = thisObj.internalValue();
   if (id == BooleanPrototype::ToString)
-    result = toString(v);
+    result = v.toString();
   else
-    result = v->ref();
+    result = v.toBoolean();
 
-  return newCompletion(Normal, result);
+  return Completion(Normal, result);
 }

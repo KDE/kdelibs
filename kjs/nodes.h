@@ -23,11 +23,11 @@
 
 #include "ustring.h"
 #include "object.h"
+#include "types.h"
 
 namespace KJS {
 
   class KJSO;
-  class KJSArgList;
   class RegExp;
   class ProgramNode;
 
@@ -66,12 +66,12 @@ namespace KJS {
   public:
     Node();
     virtual ~Node();
-    virtual KJSO *evaluate() = 0;
+    virtual KJSO evaluate() = 0;
     int lineNo() const { return line; }
     static ProgramNode *progNode() { return prog; }
     static void deleteAllNodes();
   protected:
-    KJSO *throwError(ErrorType e, const char *msg);
+    KJSO throwError(ErrorType e, const char *msg);
     static ProgramNode *prog;
   private:
     // disallow assignment and copy-construction
@@ -85,18 +85,20 @@ namespace KJS {
 
   class StatementNode : public Node {
   public:
-    KJSO *evaluate() = 0;
+    virtual Completion execute() = 0;
+  private:
+    KJSO evaluate() { return Undefined(); }
   };
 
   class NullNode : public Node {
   public:
-    KJSO *evaluate();
+    KJSO evaluate();
   };
 
   class BooleanNode : public Node {
   public:
     BooleanNode(bool v) : value(v) {}
-    KJSO *evaluate();
+    KJSO evaluate();
   private:
     bool value;
   };
@@ -105,7 +107,7 @@ namespace KJS {
   public:
     NumberNode(int v) : value((double)v) { }
     NumberNode(double v) : value(v) { }
-    KJSO *evaluate();
+    KJSO evaluate();
   private:
     double value;
   };
@@ -113,7 +115,7 @@ namespace KJS {
   class StringNode : public Node {
   public:
     StringNode(const UString *v) { value = *v; }
-    KJSO *evaluate();
+    KJSO evaluate();
   private:
     UString value;
   };
@@ -122,20 +124,20 @@ namespace KJS {
   public:
     RegExpNode(const UString &p, const UString &f)
       : pattern(p), flags(f) { }
-    KJSO *evaluate();
+    KJSO evaluate();
   private:
     UString pattern, flags;
   };
   
   class ThisNode : public Node {
   public:
-    KJSO *evaluate();
+    KJSO evaluate();
   };
 
   class ResolveNode : public Node {
   public:
     ResolveNode(const UString *s) : ident(*s) { }
-    KJSO *evaluate();
+    KJSO evaluate();
   private:
     UString ident;
   };
@@ -143,7 +145,7 @@ namespace KJS {
   class GroupNode : public Node {
   public:
     GroupNode(Node *g) : group(g) { }
-    KJSO *evaluate();
+    KJSO evaluate();
   private:
     Node *group;
   };
@@ -151,27 +153,27 @@ namespace KJS {
   class ElisionNode : public Node {
   public:
     ElisionNode(ElisionNode *) { /* TODO */ }
-    KJSO *evaluate() { /* TODO */ return 0L; }
+    KJSO evaluate() { /* TODO */ return KJSO(); }
   };
 
   class ElementNode : public Node {
   public:
     ElementNode(ElisionNode *, Node *) { /* TODO */ }
     ElementNode *append(ElisionNode *, Node *) { /* TODO */ return 0L; }
-    KJSO *evaluate() { /* TODO */ return 0L; }
+    KJSO evaluate() { /* TODO */ return KJSO(); }
   };
 
   class ArrayNode : public Node {
   public:
     ArrayNode(ElisionNode *) { /* TODO */ }
     ArrayNode(ElementNode *, ElisionNode *) { /* TODO */ }
-    KJSO *evaluate() { /* TODO */ return 0L; }
+    KJSO evaluate() { /* TODO */ return KJSO(); }
   };
 
   class ObjectLiteralNode : public Node {
   public:
     ObjectLiteralNode(Node *l) : list(l) { }
-    KJSO *evaluate();
+    KJSO evaluate();
   private:
     Node *list;
   };
@@ -180,7 +182,7 @@ namespace KJS {
   public:
     PropertyValueNode(Node *n, Node *a, Node *l = 0L)
       : name(n), assign(a), list(l) { }
-    KJSO *evaluate();
+    KJSO evaluate();
   private:
     Node *name, *assign, *list;
   };
@@ -189,7 +191,7 @@ namespace KJS {
   public:
     PropertyNode(double d) : numeric(d) { }
     PropertyNode(const UString *s) : str(*s) { }
-    KJSO *evaluate();
+    KJSO evaluate();
   private:
     double numeric;
     UString str;
@@ -198,7 +200,7 @@ namespace KJS {
   class AccessorNode1 : public Node {
   public:
     AccessorNode1(Node *e1, Node *e2) : expr1(e1), expr2(e2) {}
-    KJSO *evaluate();
+    KJSO evaluate();
   private:
     Node *expr1;
     Node *expr2;
@@ -207,7 +209,7 @@ namespace KJS {
   class AccessorNode2 : public Node {
   public:
     AccessorNode2(Node *e, const UString *s) : expr(e), ident(*s) { }
-    KJSO *evaluate();
+    KJSO evaluate();
   private:
     Node *expr;
     UString ident;
@@ -217,7 +219,8 @@ namespace KJS {
   public:
     ArgumentListNode(Node *e);
     ArgumentListNode(ArgumentListNode *l, Node *e);
-    KJSO *evaluate();
+    KJSO evaluate();
+    List *evaluateList();
   private:
     ArgumentListNode *list;
     Node *expr;
@@ -226,8 +229,8 @@ namespace KJS {
   class ArgumentsNode : public Node {
   public:
     ArgumentsNode(ArgumentListNode *l);
-    KJSO *evaluate();
-    KJSArgList *evaluateList();
+    KJSO evaluate();
+    List *evaluateList();
   private:
     ArgumentListNode *list;
   };
@@ -236,7 +239,7 @@ namespace KJS {
   public:
     NewExprNode(Node *e) : expr(e), args(0L) {}
     NewExprNode(Node *e, ArgumentsNode *a) : expr(e), args(a) {}
-    KJSO *evaluate();
+    KJSO evaluate();
   private:
     Node *expr;
     ArgumentsNode *args;
@@ -245,7 +248,7 @@ namespace KJS {
   class FunctionCallNode : public Node {
   public:
     FunctionCallNode(Node *e, ArgumentsNode *a) : expr(e), args(a) {}
-    KJSO *evaluate();
+    KJSO evaluate();
   private:
     Node *expr;
     ArgumentsNode *args;
@@ -254,7 +257,7 @@ namespace KJS {
   class PostfixNode : public Node {
   public:
     PostfixNode(Node *e, Operator o) : expr(e), oper(o) {}
-    KJSO *evaluate();
+    KJSO evaluate();
   private:
     Node *expr;
     Operator oper;
@@ -263,7 +266,7 @@ namespace KJS {
   class DeleteNode : public Node {
   public:
     DeleteNode(Node *e) : expr(e) {}
-    KJSO *evaluate();
+    KJSO evaluate();
   private:
     Node *expr;
   };
@@ -271,7 +274,7 @@ namespace KJS {
   class VoidNode : public Node {
   public:
     VoidNode(Node *e) : expr(e) {}
-    KJSO *evaluate();
+    KJSO evaluate();
   private:
     Node *expr;
   };
@@ -279,7 +282,7 @@ namespace KJS {
   class TypeOfNode : public Node {
   public:
     TypeOfNode(Node *e) : expr(e) {}
-    KJSO *evaluate();
+    KJSO evaluate();
   private:
     Node *expr;
   };
@@ -287,7 +290,7 @@ namespace KJS {
   class PrefixNode : public Node {
   public:
     PrefixNode(Operator o, Node *e) : oper(o), expr(e) {}
-    KJSO *evaluate();
+    KJSO evaluate();
   private:
     Operator oper;
     Node *expr;
@@ -296,7 +299,7 @@ namespace KJS {
   class UnaryPlusNode : public Node {
   public:
     UnaryPlusNode(Node *e) : expr(e) {}
-    KJSO *evaluate();
+    KJSO evaluate();
   private:
     Node *expr;
   };
@@ -304,7 +307,7 @@ namespace KJS {
   class NegateNode : public Node {
   public:
     NegateNode(Node *e) : expr(e) {}
-    KJSO *evaluate();
+    KJSO evaluate();
   private:
     Node *expr;
   };
@@ -312,7 +315,7 @@ namespace KJS {
   class BitwiseNotNode : public Node {
   public:
     BitwiseNotNode(Node *e) : expr(e) {}
-    KJSO *evaluate();
+    KJSO evaluate();
   private:
     Node *expr;
   };
@@ -320,7 +323,7 @@ namespace KJS {
   class LogicalNotNode : public Node {
   public:
     LogicalNotNode(Node *e) : expr(e) {}
-    KJSO *evaluate();
+    KJSO evaluate();
   private:
     Node *expr;
   };
@@ -328,7 +331,7 @@ namespace KJS {
   class MultNode : public Node {
   public:
     MultNode(Node *t1, Node *t2, int op) : term1(t1), term2(t2), oper(op) {}
-    KJSO *evaluate();
+    KJSO evaluate();
   private:
     Node *term1, *term2;
     int oper;
@@ -337,7 +340,7 @@ namespace KJS {
   class AddNode : public Node {
   public:
     AddNode(Node *t1, Node *t2, int op) : term1(t1), term2(t2), oper(op) {}
-    KJSO *evaluate();
+    KJSO evaluate();
   private:
     Node *term1, *term2;
     int oper;
@@ -347,7 +350,7 @@ namespace KJS {
   public:
     ShiftNode(Node *t1, Operator o, Node *t2)
       : term1(t1), term2(t2), oper(o) {}
-    KJSO *evaluate();
+    KJSO evaluate();
   private:
     Node *term1, *term2;
     Operator oper;
@@ -357,7 +360,7 @@ namespace KJS {
   public:
     RelationalNode(Node *e1, Operator o, Node *e2) :
       expr1(e1), expr2(e2), oper(o) {}
-    KJSO *evaluate();
+    KJSO evaluate();
   private:
     Node *expr1, *expr2;
     Operator oper;
@@ -367,7 +370,7 @@ namespace KJS {
   public:
     EqualNode(Node *e1, Operator o, Node *e2)
       : expr1(e1), expr2(e2), oper(o) {}
-    KJSO *evaluate();
+    KJSO evaluate();
   private:
     Node *expr1, *expr2;
     Operator oper;
@@ -377,7 +380,7 @@ namespace KJS {
   public:
     BitOperNode(Node *e1, Operator o, Node *e2) :
       expr1(e1), expr2(e2), oper(o) {}
-    KJSO *evaluate();
+    KJSO evaluate();
   private:
     Node *expr1, *expr2;
     Operator oper;
@@ -387,7 +390,7 @@ namespace KJS {
   public:
     BinaryLogicalNode(Node *e1, Operator o, Node *e2) :
       expr1(e1), expr2(e2), oper(o) {}
-    KJSO *evaluate();
+    KJSO evaluate();
   private:
     Node *expr1, *expr2;
     Operator oper;
@@ -397,7 +400,7 @@ namespace KJS {
   public:
     ConditionalNode(Node *l, Node *e1, Node *e2) :
       logical(l), expr1(e1), expr2(e2) {}
-    KJSO *evaluate();
+    KJSO evaluate();
   private:
     Node *logical, *expr1, *expr2;
   };
@@ -405,7 +408,7 @@ namespace KJS {
   class AssignNode : public Node {
   public:
     AssignNode(Node *l, Operator o, Node *e) : left(l), oper(o), expr(e) {}
-    KJSO *evaluate();
+    KJSO evaluate();
   private:
     Node *left;
     Operator oper;
@@ -415,7 +418,7 @@ namespace KJS {
   class CommaNode : public Node {
   public:
     CommaNode(Node *e1, Node *e2) : expr1(e1), expr2(e2) {}
-    KJSO *evaluate();
+    KJSO evaluate();
   private:
     Node *expr1, *expr2;
   };
@@ -424,8 +427,9 @@ namespace KJS {
   public:
     StatListNode(StatementNode *s) : statement(s), list(0L) { }
     StatListNode(StatListNode *l, StatementNode *s) : statement(s), list(l) { }
-    KJSO *evaluate();
+    Completion execute();
   private:
+    KJSO evaluate() { return Null(); }
     StatementNode *statement;
     StatListNode *list;
   };
@@ -433,7 +437,7 @@ namespace KJS {
   class AssignExprNode : public Node {
   public:
     AssignExprNode(Node *e) : expr(e) {}
-    KJSO *evaluate();
+    KJSO evaluate();
   private:
     Node *expr;
   };
@@ -441,7 +445,7 @@ namespace KJS {
   class VarDeclNode : public Node {
   public:
     VarDeclNode(const UString *id, AssignExprNode *in);
-    KJSO *evaluate();
+    KJSO evaluate();
   private:
     UString ident;
     AssignExprNode *init;
@@ -451,7 +455,7 @@ namespace KJS {
   public:
     VarDeclListNode(VarDeclNode *v) : list(0L), var(v) {}
     VarDeclListNode(Node *l, VarDeclNode *v) : list(l), var(v) {}
-    KJSO *evaluate();
+    KJSO evaluate();
   private:
     Node *list;
     VarDeclNode *var;
@@ -460,7 +464,7 @@ namespace KJS {
   class VarStatementNode : public StatementNode {
   public:
     VarStatementNode(VarDeclListNode *l) : list(l) {}
-    KJSO *evaluate();
+    Completion execute();
   private:
     VarDeclListNode *list;
   };
@@ -468,7 +472,7 @@ namespace KJS {
   class BlockNode : public StatementNode {
   public:
     BlockNode(StatListNode *s) : statlist(s) {}
-    KJSO *evaluate();
+    Completion execute();
   private:
     StatListNode *statlist;
   };
@@ -476,14 +480,13 @@ namespace KJS {
   class EmptyStatementNode : public StatementNode {
   public:
     EmptyStatementNode() { } // debug
-  public:
-    KJSO *evaluate();
+    Completion execute();
   };
 
   class ExprStatementNode : public StatementNode {
   public:
     ExprStatementNode(Node *e) : expr(e) { }
-    KJSO *evaluate();
+    Completion execute();
   private:
     Node *expr;
   };
@@ -492,7 +495,7 @@ namespace KJS {
   public:
     IfNode(Node *e, StatementNode *s1, StatementNode *s2)
       : expr(e), statement1(s1), statement2(s2) {}
-    KJSO *evaluate();
+    Completion execute();
   private:
     Node *expr;
     StatementNode *statement1, *statement2;
@@ -501,7 +504,7 @@ namespace KJS {
   class DoWhileNode : public StatementNode {
   public:
     DoWhileNode(StatementNode *s, Node *e) : statement(s), expr(e) {}
-    KJSO *evaluate();
+    Completion execute();
   private:
     StatementNode *statement;
     Node *expr;
@@ -510,7 +513,7 @@ namespace KJS {
   class WhileNode : public StatementNode {
   public:
     WhileNode(Node *e, StatementNode *s) : expr(e), statement(s) {}
-    KJSO *evaluate();
+    Completion execute();
   private:
     Node *expr;
     StatementNode *statement;
@@ -520,7 +523,7 @@ namespace KJS {
   public:
     ForNode(Node *e1, Node *e2, Node *e3, StatementNode *s) :
       expr1(e1), expr2(e2), expr3(e3), stat(s) {}
-    KJSO *evaluate();
+    Completion execute();
   private:
     Node *expr1, *expr2, *expr3;
     StatementNode *stat;
@@ -532,7 +535,7 @@ namespace KJS {
       init(0L), lexpr(l), expr(e), stat(s) {}
     ForInNode(const UString *i, AssignExprNode *in, Node *e, StatementNode *s)
       : ident(*i), init(in), lexpr(0L), expr(e), stat(s) {}
-    KJSO *evaluate();
+    Completion execute();
   private:
     UString ident;
     AssignExprNode *init;
@@ -544,7 +547,7 @@ namespace KJS {
   public:
     ContinueNode() { }
     ContinueNode(const UString *i) : ident(*i) { }
-    KJSO *evaluate();
+    Completion execute();
   private:
     UString ident;
   };
@@ -553,7 +556,7 @@ namespace KJS {
   public:
     BreakNode() { }
     BreakNode(const UString *i) : ident(*i) { }
-    KJSO *evaluate();
+    Completion execute();
   private:
     UString ident;
   };
@@ -561,7 +564,7 @@ namespace KJS {
   class ReturnNode : public StatementNode {
   public:
     ReturnNode(Node *v) : value(v) {}
-    KJSO *evaluate();
+    Completion execute();
   private:
     Node *value;
   };
@@ -569,7 +572,7 @@ namespace KJS {
   class WithNode : public StatementNode {
   public:
     WithNode(Node *e, StatementNode *s) : expr(e), stat(s) {}
-    KJSO *evaluate();
+    Completion execute();
   private:
     Node *expr;
     StatementNode *stat;
@@ -578,8 +581,8 @@ namespace KJS {
   class CaseClauseNode: public Node {
   public:
     CaseClauseNode(Node *e, StatListNode *l) : expr(e), list(l) { }
-    KJSO *evaluate();
-    KJSO *evalStatements();
+    KJSO evaluate();
+    Completion evalStatements();
   private:
     Node *expr;
     StatListNode *list;
@@ -589,7 +592,7 @@ namespace KJS {
   public:
     ClauseListNode(CaseClauseNode *c) : cl(c), nx(0L) { }
     ClauseListNode* append(CaseClauseNode *c);
-    KJSO *evaluate() { /* should never be called */ return 0L; }
+    KJSO evaluate() { /* should never be called */ return KJSO(); }
     CaseClauseNode *clause() const { return cl; }
     ClauseListNode *next() const { return nx; }
   private:
@@ -601,8 +604,8 @@ namespace KJS {
   public:
     CaseBlockNode(ClauseListNode *l1, CaseClauseNode *d, ClauseListNode *l2)
       : list1(l1), def(d), list2(l2) { }
-    KJSO *evaluate() { /* should never be called */ return 0L; }
-    KJSO *evalBlock(KJSO *input);
+    KJSO evaluate() { /* should never be called */ return KJSO(); }
+    Completion evalBlock(const KJSO& input);
   private:
     ClauseListNode *list1;
     CaseClauseNode *def;
@@ -612,7 +615,7 @@ namespace KJS {
   class SwitchNode : public StatementNode {
   public:
     SwitchNode(Node *e, CaseBlockNode *b) : expr(e), block(b) { }
-    KJSO *evaluate();
+    Completion execute();
   private:
     Node *expr;
     CaseBlockNode *block;
@@ -621,7 +624,7 @@ namespace KJS {
   class LabelNode : public StatementNode {
   public:
     LabelNode(const UString *l, StatementNode *s) : label(*l), stat(s) { }
-    KJSO *evaluate();
+    Completion execute();
   private:
     UString label;
     StatementNode *stat;
@@ -630,21 +633,21 @@ namespace KJS {
   class ThrowNode : public StatementNode {
   public:
     ThrowNode(Node *e) : expr(e) {}
-    KJSO *evaluate();
+    Completion execute();
   private:
     Node *expr;
   };
 
-  class CatchNode : public Node {
+  class CatchNode : public StatementNode {
   public:
     CatchNode() {}
-    KJSO *evaluate();
+    Completion execute();
   };
 
-  class FinallyNode : public Node {
+  class FinallyNode : public StatementNode {
   public:
     FinallyNode(StatementNode *b) : block(b) {}
-    KJSO *evaluate();
+    Completion execute();
   private:
     StatementNode *block;
   };
@@ -652,14 +655,14 @@ namespace KJS {
   class TryNode : public StatementNode {
   public:
     TryNode() {}
-    KJSO *evaluate();
+    Completion execute();
   };
 
   class ParameterNode : public Node {
   public:
     ParameterNode(const UString *i) : id(*i), next(0L) { }
     ParameterNode(ParameterNode *l, const UString *i) : id(*i), next(l) { }
-    KJSO *evaluate();
+    KJSO evaluate();
     UString ident() { return id; }
     ParameterNode *nextParam() { return next; }
   private:
@@ -671,7 +674,7 @@ namespace KJS {
   public:
     FuncDeclNode(const UString *i, ParameterNode *p, StatementNode *b)
       : ident(*i), param(p), block(b) { }
-    KJSO *evaluate() { /* empty */ return 0L; }
+    Completion execute() { /* empty */ return Completion(); }
     void processFuncDecl();
   private:
     UString ident;
@@ -683,7 +686,7 @@ namespace KJS {
   public:
     SourceElementNode(StatementNode *s) { statement = s; function = 0L; }
     SourceElementNode(FuncDeclNode *f) { function = f; statement = 0L;}
-    KJSO *evaluate();
+    KJSO evaluate();
     virtual void processFuncDecl();
     void deleteStatements();
   private:
@@ -696,7 +699,7 @@ namespace KJS {
     SourceElementsNode(SourceElementNode *s1) { element = s1; elements = 0L; }
     SourceElementsNode(SourceElementsNode *s1, SourceElementNode *s2)
       { elements = s1; element = s2; }
-    KJSO *evaluate();
+    KJSO evaluate();
     virtual void processFuncDecl();
     void deleteStatements();
   private:
@@ -707,7 +710,7 @@ namespace KJS {
   class ProgramNode : public Node {
   public:
     ProgramNode(SourceElementsNode *s) : source(s) { Node::prog = this; }
-    KJSO *evaluate();
+    KJSO evaluate();
     void deleteStatements();
   private:
     SourceElementsNode *source;

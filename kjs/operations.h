@@ -25,18 +25,7 @@
 
 namespace KJS {
 
-  KJSO *toPrimitive(KJSO *obj, Type preferred = UndefinedType);
-  KJSO *toBoolean(KJSO *obj);
-  KJSO *toNumber(KJSO *obj);
-  double round(KJSO *obj);
-  KJSO *toInteger(KJSO *obj);
-  int toInt32(KJSO *obj);
-  unsigned int toUInt32(KJSO *obj);
-  unsigned short toUInt16(KJSO *obj);
-  KJSO *toString(KJSO *obj);
-  KJSO *toObject(KJSO *obj);
-
-  bool equal(KJSO *v1, KJSO *v2);
+  bool equal(const KJSO& v1, const KJSO& v2);
   double max(double d1, double d2);
   double min(double d1, double d2);
 

@@ -22,6 +22,10 @@
 
 #include "kjs.h"
 
+#include "object.h"
+#include "types.h"
+#include "internal.h"
+
 int main(int argc, char **argv)
 {
   // expecting a filename
@@ -51,9 +55,18 @@ int main(int argc, char **argv)
   kjs->enableDebug();
 
   // run
-  kjs->evaluate(code);
+  bool ret = kjs->evaluate(code);
+  if (!ret)
+    printf("error %d\n", kjs->errorType());
 
   delete kjs;
+
+#ifdef KJS_DEBUG_MEM
+  printf("List::count = %d\n", KJS::List::count);
+  assert(KJS::List::count == 0);
+  printf("Imp::count = %d\n", KJS::Imp::count);
+  assert(KJS::Imp::count == 0);
+#endif
 
   fprintf(stderr, "OK.\n");
 }

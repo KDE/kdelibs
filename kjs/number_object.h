@@ -25,17 +25,17 @@
 
 namespace KJS {
 
-  class NumberObject : public Constructor {
+  class NumberObject : public ConstructorImp {
   public:
-    NumberObject(Object *proto) : Constructor(proto, 1) { }
-    KJSO *get(const UString &p);
-    KJSO* execute(const List &);
-    Object* construct(const List &);
+    NumberObject(const Object& proto) : ConstructorImp(proto, 1) { }
+    virtual KJSO get(const UString &p) const;
+    Completion execute(const List &);
+    Object construct(const List &);
   };
 
-  class NumberPrototype : public Object {
+  class NumberPrototype : public ObjectImp {
   public:
-    NumberPrototype(Object *proto);
+    NumberPrototype(const Object& proto);
   };
 
 }; // namespace

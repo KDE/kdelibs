@@ -29,6 +29,7 @@
 #include "lexer.h"
 #include "ustring.h"
 #include "lookup.h"
+#include "internal.h"
 
 // we can't specify the namespace in yacc's C output, so do it here
 using namespace KJS;
@@ -66,12 +67,7 @@ Lexer::~Lexer()
 
 Lexer *Lexer::curr()
 {
-  return KJScript::current()->lex;
-}
-
-void Lexer::setCurrent(Lexer *l)
-{
-  KJScript::current()->lex = l;
+  return KJScriptImp::current()->lex;
 }
 
 void Lexer::setCode(const UChar *c, unsigned int len)

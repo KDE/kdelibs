@@ -25,24 +25,24 @@
 
 namespace KJS {
 
-  class ObjectObject : public Constructor {
+  class ObjectObject : public ConstructorImp {
   public:
-    ObjectObject(Object *proto) : Constructor(proto, 1) { }
-    KJSO* execute(const List &);
-    Object* construct(const List &);
+    ObjectObject(const Object& proto) : ConstructorImp(proto, 1) { }
+    Completion execute(const List &);
+    Object construct(const List &);
   };
 
-  class ObjectPrototype : public Object {
+  class ObjectPrototype : public ObjectImp {
   public:
     ObjectPrototype();
-    KJSO *get(const UString &p);
+    KJSO get(const UString &p) const;
     enum { ToString, ValueOf };
   };
 
-  class ObjectProtoFunc : public InternalFunction {
+  class ObjectProtoFunc : public InternalFunctionImp {
   public:
     ObjectProtoFunc(int i);
-    KJSO *execute(const List &);
+    Completion execute(const List &);
   private:
     int id;
   };

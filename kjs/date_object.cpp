@@ -23,25 +23,25 @@
 using namespace KJS;
 
 // ECMA 15.9.2
-KJSO* DateObject::execute(const List &)
+Completion DateObject::execute(const List &)
 {
-  return newCompletion(Normal, zeroRef(newUndefined()));
+  return Completion(Normal, Undefined());
 }
 
 // ECMA 15.9.3
-Object* DateObject::construct(const List &)
+Object DateObject::construct(const List &)
 {
-  return Object::create(DateClass, zeroRef(newUndefined()));
+  return Object::create(DateClass, Undefined());
 }
 
 // ECMA 15.9.4
-DatePrototype::DatePrototype(Object *proto)
-  : Object(DateClass, zeroRef(newString("")), proto)
+DatePrototype::DatePrototype(const Object& proto)
+  : ObjectImp(DateClass, KJSO(), proto)
 {
   // The constructor will be added later in DateObject's constructor
 }
 
-KJSO *DatePrototype::get(const UString &)
+KJSO DatePrototype::get(const UString &) const
 {
-  return newUndefined();
+  return Undefined();
 }

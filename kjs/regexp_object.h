@@ -25,23 +25,23 @@
 
 namespace KJS {
 
-  class RegExpObject : public Constructor {
+  class RegExpObject : public ConstructorImp {
   public:
-    RegExpObject(Object *proto) : Constructor(proto, 2) { }
-    KJSO* execute(const List &);
-    Object* construct(const List &);
+    RegExpObject(const Object& proto) : ConstructorImp(proto, 2) { }
+    Completion execute(const List &);
+    Object construct(const List &);
   };
 
-  class RegExpPrototype : public Object {
+  class RegExpPrototype : public ObjectImp {
   public:
-    RegExpPrototype(Object *proto);
-    KJSO *get(const UString &p);
+    RegExpPrototype(const Object& proto);
+    KJSO get(const UString &p) const;
   };
 
-  class RegExpProtoFunc : public InternalFunction {
+  class RegExpProtoFunc : public InternalFunctionImp {
   public:
     RegExpProtoFunc(int i) : id(i) { }
-    KJSO* execute(const List &);
+    Completion execute(const List &);
     enum { Exec, Test, ToString };
   private:
     int id;

@@ -24,9 +24,9 @@
 
 namespace KJS {
 
-  class FunctionPrototype : public Object {
+  class FunctionPrototype : public ObjectImp {
   public:
-    FunctionPrototype() {}
+    FunctionPrototype() : /* TODO */ ObjectImp(ObjectClass) { }
   };
 
 }; // namespace

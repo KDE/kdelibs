@@ -24,9 +24,10 @@
 using namespace KJS;
 
 // ECMA 15.7.3
-KJSO *NumberObject::get(const UString &p)
+KJSO NumberObject::get(const UString &p) const
 {
   double d;
+
   if (p == "NaN")
     d = NaN;
   else if (p == "NEGATIVE_INFINITY")
@@ -34,28 +35,28 @@ KJSO *NumberObject::get(const UString &p)
   else if (p == "POSITIVE_INFINITY")
     d = Inf;
   else
-    return KJSO::get(p);
+    return Imp::get(p);
 
-  return newNumber(d);
+  return Number(d);
 }
 
 // ECMA 15.7.1
-KJSO* NumberObject::execute(const List & /*context*/)
+Completion NumberObject::execute(const List & /*context*/)
 {
   /* TODO */
-  return newCompletion(Normal, zeroRef(newUndefined()));
+  return Completion(Normal, Undefined());
 }
 
 // ECMA 15.7.2
-Object* NumberObject::construct(const List & /*args*/)
+Object NumberObject::construct(const List & /*args*/)
 {
   /* TODO */
-  return Object::create(NumberClass, zeroRef(newUndefined()));
+  return Object::create(NumberClass, Undefined());
 }
 
 // ECMA 15.7.4
-NumberPrototype::NumberPrototype(Object *proto)
-  : Object(NumberClass, zeroRef(newNumber(0)), proto)
+NumberPrototype::NumberPrototype(const Object& proto)
+  : ObjectImp(NumberClass, Number(0), proto)
 {
   // The constructor will be added later in BooleanObject's constructor
 }

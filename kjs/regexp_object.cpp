@@ -21,52 +21,57 @@
 
 #include "kjs.h"
 #include "operations.h"
+#include "types.h"
+#include "internal.h"
 #include "regexp.h"
 #include "regexp_object.h"
 
 using namespace KJS;
 
 // ECMA 15.9.2
-KJSO* RegExpObject::execute(const List &)
+Completion RegExpObject::execute(const List &)
 {
-  return newCompletion(Normal, zeroRef(newUndefined()));
+  return Completion(Normal, Undefined());
 }
 
 // ECMA 15.9.3
-Object* RegExpObject::construct(const List &args)
+Object RegExpObject::construct(const List &args)
 {
   /* TODO: regexp arguments */
-  Ptr p = toString(args[0]);
-  Ptr f = toString(args[1]);
-  UString flags = f->stringVal();
+  String p = args[0].toString();
+  String f = args[1].toString();
+  UString flags = f.value();
 
-  Object *obj = Object::create(RegExpClass);
+  RegExpImp *dat = new RegExpImp();
 
   bool global = (flags.find("g") >= 0);
   bool ignoreCase = (flags.find("i") >= 0);
   bool multiline = (flags.find("m") >= 0);
   /* TODO: throw an error on invalid flags */
 
-  obj->put("global", zeroRef(newBoolean(global)));
-  obj->put("ignoreCase", zeroRef(newBoolean(ignoreCase)));
-  obj->put("multiline", zeroRef(newBoolean(multiline)));
+  dat->put("global", Boolean(global));
+  dat->put("ignoreCase", Boolean(ignoreCase));
+  dat->put("multiline", Boolean(multiline));
 
-  obj->put("source", zeroRef(newString(p->stringVal())));
-  obj->put("lastIndex", 0, DontDelete | DontEnum);
+  dat->put("source", String(p.value()));
+  dat->put("lastIndex", 0, DontDelete | DontEnum);
 
-  obj->setRegExp(new RegExp(p->stringVal() /* TODO flags */));
+  dat->setRegExp(new RegExp(p.value() /* TODO flags */));
+  Object obj(dat);
+  obj.setClass(RegExpClass);
+  obj.setPrototype(((GlobalImp*)Global::current().imp())->regexpProto);
 
   return obj;
 }
 
 // ECMA 15.9.4
-RegExpPrototype::RegExpPrototype(Object *proto)
-  : Object(RegExpClass, zeroRef(newString("")), proto)
+RegExpPrototype::RegExpPrototype(const Object& proto)
+  : ObjectImp(RegExpClass, String(""), proto)
 {
   // The constructor will be added later in RegExpObject's constructor
 }
 
-KJSO *RegExpPrototype::get(const UString &p)
+KJSO RegExpPrototype::get(const UString &p) const
 {
   int id = -1;
   if (p == "exec")
@@ -77,56 +82,58 @@ KJSO *RegExpPrototype::get(const UString &p)
     id = RegExpProtoFunc::ToString;
 
   if (id >= 0)
-    return new RegExpProtoFunc(id);
+    return Function(new RegExpProtoFunc(id));
   else
-    return KJSO::get(p);
+    return Imp::get(p);
 }
 
-KJSO* RegExpProtoFunc::execute(const List &args)
+Completion RegExpProtoFunc::execute(const List &args)
 {
-  Ptr result;
+  KJSO result;
 
-  if (!thisValue()->isClass(RegExpClass)) {
-    result = newError(TypeError);
-    return newCompletion(ReturnValue, result);
+  Object thisObj = Object::dynamicCast(thisValue());
+
+  if (thisObj.getClass() != RegExpClass) {
+    result = Error::create(TypeError);
+    return Completion(ReturnValue, result);
   }
 
-  Object *thisObj = static_cast<Object*>(thisValue());
-
-  Ptr s, lastIndex, tmp;
+  RegExp *re = static_cast<RegExpImp*>(thisObj.imp())->regExp();
+  String s;
+  KJSO lastIndex, tmp;
   UString str;
   int length, i;
   switch (id) {
   case Exec:
   case Test:
-    s = toString(args[0]);
-    length = s->stringVal().size();
-    lastIndex = thisObj->get("lastIndex");
-    i = toInt32(lastIndex);
-    tmp = thisObj->get("global");
-    if (tmp->boolVal() == false)
+    s = args[0].toString();
+    length = s.value().size();
+    lastIndex = thisObj.get("lastIndex");
+    i = lastIndex.toInt32();
+    tmp = thisObj.get("global");
+    if (tmp.toBoolean().value() == false)
       i = 0;
     if (i < 0 || i > length) {
-      thisObj->put("lastIndex", 0);
-      result = newNull();
+      thisObj.put("lastIndex", 0);
+      result = Null();
       break;
     }
-    str = thisObj->regExp()->match(s->stringVal(), i);
+    str = re->match(s.value(), i);
     if (id == Test) {
-      result = newBoolean(!(str == ""));
+      result = Boolean(!(str == ""));
       break;
     }
     /* TODO complete */
-    result = newString(str);
+    result = String(str);
     break;
   case ToString:
-    s = thisObj->get("source");
+    s = thisObj.get("source").toString();
     str = "/";
-    str += s->stringVal();
+    str += s.value();
     str += "/";
-    result = newString(str);
+    result = String(str);
     break;
   }
 
-  return newCompletion(Normal, result);
+  return Completion(Normal, result);
 }

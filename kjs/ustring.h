@@ -29,6 +29,7 @@ namespace DOM {
 };
 class KJScript;
 class QString;
+class QConstString;
 
 namespace KJS {
 
@@ -106,16 +107,16 @@ namespace KJS {
     struct Rep {
       friend UString;
       friend bool operator==(const UString&, const UString&);
-      static Rep *create(UChar *d, unsigned int l);
+      static Rep *create(UChar *d, int l);
       inline UChar *data() const { return dat; }
-      inline unsigned int size() const { return len; }
+      inline int size() const { return len; }
 
       inline void ref() { rc++; }
-      inline unsigned int deref() { return --rc; }
+      inline int deref() { return --rc; }
 
       UChar *dat;
-      unsigned int len;
-      unsigned int rc;
+      int len;
+      int rc;
       static Rep null;
     };
 
@@ -124,8 +125,8 @@ namespace KJS {
     UString(char c);
     UString(int i);
     UString(const char *c);
-    UString(const UChar *c, unsigned int length);
-    UString(UChar *c, unsigned int length, bool copy);
+    UString(const UChar *c, int length);
+    UString(UChar *c, int length, bool copy);
     UString(const UString &);
     UString(const UString *);
     UString(const DOM::DOMString &);
@@ -143,6 +144,7 @@ namespace KJS {
     char *ascii() const;
     DOM::DOMString string() const;
     QString qstring() const;
+    QConstString qconststring() const;
 
     UString &operator=(const char *c);
     UString &operator=(const UString &);
@@ -152,8 +154,8 @@ namespace KJS {
     bool isNull() const { return (rep == &Rep::null); }
     bool isEmpty() const { return (!rep->len); }
     bool is8Bit() const;
-    unsigned int size() const { return rep->size(); }
-    UChar &operator[](unsigned int pos) const;
+    int size() const { return rep->size(); }
+    UChar &operator[](int pos) const;
 
     double toDouble() const;
     int find(const UString &f, int pos = 0) const;
@@ -164,7 +166,6 @@ namespace KJS {
     void attach(Rep *r);
     void release();
     Rep *rep;
-    static char *statBuffer;
   };
 
   bool operator==(const UChar &c1, const UChar &c2);

@@ -24,6 +24,7 @@
 #include <assert.h>
 
 #include "object.h"
+#include "types.h"
 
 namespace KJS {
 
@@ -35,21 +36,22 @@ namespace KJS {
 
   enum FunctionAttribute { ImplicitNone, ImplicitThis, ImplicitParents };
 
-  class Context;
+  class Function;
   class ParamList;
 
-  /**
-   * @short Base class for Function objects.
-   */
-  class Function : public KJSO {
+  class FunctionImp : public ObjectImp {
+    friend Function;
   public:
-    Function() { attr = ImplicitNone; }
+    FunctionImp(ParamList *p);
+    virtual ~FunctionImp() { }
+    virtual const TypeInfo* typeInfo() const { return &info; }
     static const TypeInfo info;
-    void processParameters(const List *);
-    virtual KJSO* execute(const List &) = 0;
-    virtual bool hasAttribute(FunctionAttribute a) const { return (attr & a); }
+    virtual Completion execute(const List &) = 0;
+    bool hasAttribute(FunctionAttribute a) const { return (attr & a); }
     virtual CodeType codeType() const = 0;
-    KJSO *thisValue() const;
+    KJSO thisValue() const;
+    void processParameters(const List *);
+    KJSO executeCall(Imp *thisV, const List *args);
   protected:
     FunctionAttribute attr;
     ParamList *param;
@@ -58,35 +60,54 @@ namespace KJS {
   /**
    * @short Abstract base class for internal functions.
    */
-  class InternalFunction : public Function {
+  class InternalFunctionImp : public FunctionImp {
   public:
-    InternalFunction() { param = 0L; }
-    /**
-     * @return @ref InternalFunctionType
-     */
+    InternalFunctionImp();
+    virtual ~InternalFunctionImp() { }
     virtual const TypeInfo* typeInfo() const { return &info; }
     static const TypeInfo info;
-    virtual KJSO* execute(const List &) = 0;
-    /**
-     * @return @ref HostCode
-     */
-    CodeType codeType() const { return HostCode; }
+    virtual Completion execute(const List &);
+    virtual CodeType codeType() const { return HostCode; }
   };
 
   /**
-   * @short Constructor object for use with the 'new' operator
+   * @short Base class for Function objects.
    */
-  class Constructor : public InternalFunction {
+  class Function : public KJSO {
   public:
-    Constructor();
-    Constructor(Object *proto, int len);
+    Function(Imp *);
+    virtual ~Function() { }
+    Completion execute(const List &);
+    bool hasAttribute(FunctionAttribute a) const;
+    CodeType codeType() const { return HostCode; }
+    KJSO thisValue() const;
+  };
+
+  class ConstructorImp : public InternalFunctionImp {
+  public:
+    ConstructorImp();
+    ConstructorImp(const KJSO &, int);
+    virtual ~ConstructorImp();
+    virtual const TypeInfo* typeInfo() const { return &info; }
+    static const TypeInfo info;
+    virtual Completion execute(const List &);
+    virtual Object construct(const List &) = 0;
+  };
+
+  /**
+    * @short Constructor object for use with the 'new' operator
+    */
+  class Constructor : public Function {
+  public:
+    Constructor(Imp *);
+    virtual ~Constructor();
+    //    Constructor(const Object& proto, int len);
     /**
      * @return @ref ConstructorType
      */
-    virtual const TypeInfo* typeInfo() const { return &info; }
-    static const TypeInfo info;
-    virtual KJSO* execute(const List &);
-    virtual Object* construct(const List &args) = 0;
+    Completion execute(const List &);
+    Object construct(const List &args);
+    static Constructor dynamicCast(const KJSO &obj);
   };
 
 }; // namespace

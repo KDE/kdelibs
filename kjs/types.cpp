@@ -23,44 +23,110 @@
 #include "kjs.h"
 #include "object.h"
 #include "types.h"
+#include "internal.h"
 #include "nodes.h"
 
 using namespace KJS;
 
-const TypeInfo Null::info = { "Null", NullType, 0, 0, 0 };
-const TypeInfo Number::info = { "Number", NumberType, 0, 0,0  };
-const TypeInfo String::info = { "String", StringType, 0, 0, 0 };
-const TypeInfo Undefined::info = { "Undefined", UndefinedType, 0, 0, 0 };
-const TypeInfo Boolean::info = { "Boolean", BooleanType, 0, 0, 0 };
-const TypeInfo Completion::info = { "Completion", CompletionType, 0, 0, 0 };
-const TypeInfo Reference::info = { "Reference", ReferenceType, 0, 0, 0 };
-const TypeInfo Activation::info = { "Activation", ActivationType, 0, 0, 0 };
-const TypeInfo List::info = { "List", ListType, 0, 0, 0 };
-const TypeInfo Object::info = { "Object", ObjectType, 0, 0, 0 };
+Undefined::Undefined() : KJSO(new UndefinedImp) { }
 
-Property::Property(const UString &n, KJSO *o, int attr)
+Undefined::~Undefined() { }
+
+Null::Null() : KJSO(new NullImp) { }
+
+Null::~Null() { }
+
+Boolean::Boolean(bool b) : KJSO(new BooleanImp(b)) { }
+
+Boolean::Boolean(BooleanImp *d) : KJSO(d->ref()) { }
+
+Boolean::~Boolean() { }
+
+bool Boolean::value() const
 {
-  name = n;
-  object = o->ref();
-  attribute = attr;
+  assert(rep);
+  return ((BooleanImp*)rep)->value();
 }
 
-Completion::Completion(Compl c, KJSO *v, const UString &t)
+Number::Number(int i)
+  : KJSO(new NumberImp(static_cast<double>(i))) { }
+
+Number::Number(unsigned int u)
+  : KJSO(new NumberImp(static_cast<double>(u))) { }
+
+Number::Number(double d)
+  : KJSO(new NumberImp(d)) { }
+
+Number::Number(long unsigned int l)
+  : KJSO(new NumberImp(static_cast<double>(l))) { }
+
+Number::Number(NumberImp *d) : KJSO(d->ref()) { }
+
+Number::~Number() { }
+
+double Number::value() const
 {
-  value.c = c;
-  complVal = v ? v->ref() : 0L;
-  strVal = t;
+  assert(rep);
+  return ((NumberImp*)rep)->value();
 }
 
-Reference::Reference(KJSO *b, const UString &s)
+int Number::intValue() const
 {
-  value.base = b->ref();
-  strVal = s;
+  assert(rep);
+  return (int)((NumberImp*)rep)->value();
+}
+
+String::String(const UString &s) : KJSO(new StringImp(UString(s))) { }
+
+String::String(StringImp *d) : KJSO(d->ref()) { }
+
+String::~String() { }
+
+UString String::value() const
+{
+  assert(rep);
+  return ((StringImp*)rep)->value();
+}
+
+Reference::Reference(const KJSO& b, const UString &p)
+  : KJSO(new ReferenceImp(b, p))
+{
 }
 
 Reference::~Reference()
 {
-  value.base->deref();
+}
+
+Completion::Completion(Imp *d) : KJSO(d) { }
+
+Completion::Completion(Compl c)
+  : KJSO(new CompletionImp(c, KJSO(), UString::null))
+{
+}
+
+Completion::Completion(Compl c, const KJSO& v, const UString &t)
+  : KJSO(new CompletionImp(c, v, t))
+{
+}
+
+Completion::~Completion() { }
+
+Compl Completion::complType() const
+{
+  assert(rep);
+  return ((CompletionImp*)rep)->completion();
+}
+
+bool Completion::isValueCompletion() const
+{
+  assert(rep);
+  return !((CompletionImp*)rep)->value().isNull();
+}
+
+KJSO Completion::value() const
+{
+  assert(isA(CompletionType));
+  return ((CompletionImp*)rep)->value();
 }
 
 ListIterator::ListIterator(const List &l)
@@ -70,27 +136,37 @@ ListIterator::ListIterator(const List &l)
 
 List::List()
 {
-  hook = new ListNode(0L, 0L, 0L);
+#ifdef KJS_DEBUG_MEM
+  count++;
+#endif
+
+  static KJSO null = KJSO();
+
+  hook = new ListNode(null, 0L, 0L);
   hook->next = hook;
   hook->prev = hook;
 }
 
 List::~List()
 {
+#ifdef KJS_DEBUG_MEM
+  count--;
+#endif
+
   clear();
   delete hook;
 }
 
-void List::append(KJSO *obj)
+void List::append(const KJSO& obj)
 {
-  ListNode *n = new ListNode(obj->ref(), hook->prev, hook);
+  ListNode *n = new ListNode(obj, hook->prev, hook);
   hook->prev->next = n;
   hook->prev = n;
 }
 
-void List::prepend(KJSO *obj)
+void List::prepend(const KJSO& obj)
 {
-  ListNode *n = new ListNode(obj->ref(), hook, hook->next);
+  ListNode *n = new ListNode(obj, hook, hook->next);
   hook->next->prev = n;
   hook->next = n;
 }
@@ -136,17 +212,17 @@ int List::size() const
   return s;
 }
 
-KJSO *List::at(int i) const
+KJSO List::at(int i) const
 {
   if (i < 0 || i >= size())
-    return newUndefined();
+    return Undefined();
 
   ListIterator it = begin();
   int j = 0;
   while ((j++ < i))
     it++;
 
-  return it->ref();
+  return *it;
 }
 
 List *List::emptyList = 0L;

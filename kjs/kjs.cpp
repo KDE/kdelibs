@@ -23,144 +23,71 @@
 
 #include "kjs.h"
 #include "types.h"
-#include "operations.h"
-#include "error_object.h"
-#include "nodes.h"
-#include "lexer.h"
-
-extern int kjsyyparse();
-
-#ifdef KJS_DEBUG_MEM
-extern const char* typeName[];
-#endif
+#include "internal.h"
 
 using namespace KJS;
 
-KJScript* KJScript::curr = 0L;
-
-class KJScriptLock {
-  friend KJScript;
-  KJScriptLock(KJScript *s) { s->setCurrent(s); }
-  ~KJScriptLock() { /* KJScript::current()->setCurrent(0L); */ }
-};
-
 KJScript::KJScript()
-  : initialized(false)
+  : rep(new KJScriptImp())
 {
-  KJScriptLock lock(this);
-  Lexer::setCurrent(new Lexer());
-  init();
+  rep->init();
 }
 
 KJScript::~KJScript()
 {
-  clear();
-
-  KJScriptLock lock(this);
-
-  delete Lexer::curr();
-  Lexer::setCurrent(0L);
-
-#ifdef KJS_DEBUG_MEM
-  if (KJSO::count != 0) {
-    fprintf(stderr, "MEMORY LEAK: %d unfreed objects\n", KJS::KJSO::count);
-    KJSO *o = KJS::KJSO::firstObject;
-    while (o) {
-      fprintf(stderr, "id = %d type = %d %s refCount = %d\n",
-	      o->objId, o->type(), typeName[o->type()], o->refCount);
-      o = o->nextObject;
-    }
-  }
-#endif
+  delete rep;
 }
 
 bool KJScript::evaluate(const char *code)
 {
-  return evaluate((QChar*)UString(code).data(), strlen(code));
+  return rep->evaluate((QChar*)UString(code).data(), strlen(code));
 }
 
 bool KJScript::evaluate(const UString &code)
 {
-  return evaluate((QChar*)code.data(), code.size());
+  return rep->evaluate((QChar*)code.data(), code.size());
 }
 
 bool KJScript::evaluate(const QChar *code, unsigned int length)
 {
-  init();
-
-  // maintain lock on global "current" pointer while running
-  KJScriptLock lock(this);
-
-  Lexer::curr()->setCode((UChar*)code, length);
-  int parseError = kjsyyparse();
-
-  if (parseError) {
-    fprintf(stderr, "JavaScript parse error.\n");
-    KJS::Node::deleteAllNodes();
-    return false;
-  }
-
-  // leak ?
-  KJSO::setError(0L);
-
-  Ptr res = KJS::Node::progNode()->evaluate();
-  res.release();
-
-  if (KJSO::error()) {
-    /* TODO */
-    errType = 99;
-    errMsg = "Error";
-    //    KJSO::error()->deref();
-    KJSO::setError(0L);
-  }
-
-  if (KJS::Node::progNode())
-    KJS::Node::progNode()->deleteStatements();
-
-  return true;
+  return rep->evaluate(code, length);
 }
 
 void KJScript::clear()
 {
-  if (initialized) {
-    KJScriptLock lock(this);
+  rep->clear();
+}
 
-    KJS::Node::deleteAllNodes();
+int KJScript::errorType() const
+{
+  return rep->errType;
+}
 
-    delete Context::current();
-    global()->deref();
-
-    initialized = false;
-  }
+const char* KJScript::errorMsg() const
+{
+  return rep->errMsg;
 }
 
 /**
  * @short Print to stderr for debugging purposes.
  */
-class DebugPrint : public InternalFunction {
-public:
-  KJSO* execute(const List &args)
-    {
-      Ptr v = args[0];
-      Ptr s = toString(v);
-      fprintf(stderr, "---> %s\n", s->stringVal().cstring().c_str());
+namespace KJS {
+  class DebugPrint : public InternalFunctionImp {
+  public:
+    Completion execute(const List &args)
+      {
+	KJSO v = args[0];
+	String s = v.toString();
+	fprintf(stderr, "---> %s\n", s.value().cstring().c_str());
 
-      return newCompletion(Normal);
-    }
+	return Completion(Normal);
+      }
+  };
 };
 
 void KJScript::enableDebug()
 {
-  KJScriptLock lock(this);
-  global()->put("debug", zeroRef(new DebugPrint()));
-}
-
-void KJScript::init()
-{
-  if (!initialized) {
-    KJScriptLock lock(this);
-    setGlobal(new Global());
-    Context::setCurrent(new Context());
-    initialized = true;
-  }
+  //  KJScriptLock lock(this);
+  rep->curr = rep;
+  Global::current().put("debug", Function(new DebugPrint()));
 }

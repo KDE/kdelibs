@@ -25,24 +25,24 @@
 
 namespace KJS {
 
-  class BooleanObject : public Constructor {
+  class BooleanObject : public ConstructorImp {
   public:
-    BooleanObject(Object *p) : Constructor(p, 1) { }
-    KJSO* execute(const List &);
-    Object* construct(const List &);
+    BooleanObject(const KJSO& p) : ConstructorImp(p, 1) { }
+    Completion execute(const List &);
+    Object construct(const List &);
   };
 
-  class BooleanPrototype : public Object {
+  class BooleanPrototype : public ObjectImp {
   public:
-    BooleanPrototype(Object *proto);
-    KJSO *get(const UString &p);
+    BooleanPrototype(const Object& proto);
+    virtual KJSO get(const UString &p) const;
     enum { ToString, ValueOf };
   };
 
-  class BooleanProtoFunc : public InternalFunction {
+  class BooleanProtoFunc : public InternalFunctionImp {
   public:
     BooleanProtoFunc(int i);
-    KJSO *execute(const List &);
+    Completion execute(const List &);
   private:
     int id;
   };

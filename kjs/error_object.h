@@ -25,26 +25,27 @@
 
 namespace KJS {
 
-  class ErrorObject : public Constructor {
+  class ErrorObject : public ConstructorImp {
   public:
-    ErrorObject(Object *proto, ErrorType t = GeneralError);
-    KJSO* execute(const List &);
-    Object* construct(const List &);
+    ErrorObject(const Object& proto, ErrorType t = GeneralError);
+    Completion execute(const List &);
+    Object construct(const List &);
+    static Object create(ErrorType e, const char *m, int ln);
   private:
     ErrorType errType;
     static const char *errName[];
   };
 
-  class ErrorPrototype : public Object {
+  class ErrorPrototype : public ObjectImp {
   public:
-    ErrorPrototype(Object *proto);
-    KJSO *get(const UString &p);
+    ErrorPrototype(const Object& proto);
+    virtual KJSO get(const UString &p) const;
   };
 
-  class ErrorProtoFunc : public InternalFunction {
+  class ErrorProtoFunc : public InternalFunctionImp {
   public:
     ErrorProtoFunc() { }
-    KJSO *execute(const List &);
+    Completion execute(const List &);
   };
 
 }; // namespace

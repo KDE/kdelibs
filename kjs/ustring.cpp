@@ -112,9 +112,9 @@ bool KJS::operator==(const KJS::CString& c1, const KJS::CString& c2)
 UChar UChar::null;
 UString::Rep UString::Rep::null = { 0, 0, 1 };
 UString UString::null;
-char* UString::statBuffer = 0L;
+static char *statBuffer = 0L;
 
-UString::Rep *UString::Rep::create(UChar *d, unsigned int l)
+UString::Rep *UString::Rep::create(UChar *d, int l)
 {
   Rep *r = new Rep;
   r->dat = d;
@@ -149,14 +149,14 @@ UString::UString(const char *c)
   operator=(c);
 }
 
-UString::UString(const UChar *c, unsigned int length)
+UString::UString(const UChar *c, int length)
 {
   UChar *d = new UChar[length];
   memcpy(d, c, length * sizeof(UChar));
   rep = Rep::create(d, length);
 }
 
-UString::UString(UChar *c, unsigned int length, bool copy)
+UString::UString(UChar *c, int length, bool copy)
 {
   UChar *d;
   if (copy) {
@@ -215,7 +215,7 @@ UString UString::from(double d)
 
 UString &UString::append(const UString &t)
 {
-  unsigned l = size();
+  int l = size();
   UChar *n = new UChar[l+t.size()];
   memcpy(n, data(), l * sizeof(UChar));
   memcpy(n+l, t.data(), t.size() * sizeof(UChar));
@@ -236,7 +236,7 @@ char *UString::ascii() const
     delete [] statBuffer;
 
   statBuffer = new char[size()+1];
-  for(unsigned int i = 0; i < size(); i++)
+  for(int i = 0; i < size(); i++)
     statBuffer[i] = data()[i].lo;
   statBuffer[size()] = '\0';
 
@@ -246,9 +246,9 @@ char *UString::ascii() const
 UString &UString::operator=(const char *c)
 {
   release();
-  unsigned int l = strlen(c);
+  int l = strlen(c);
   UChar *d = new UChar[l];
-  for (unsigned int i = 0; i < l; i++)
+  for (int i = 0; i < l; i++)
     d[i].lo = c[i];
   rep = Rep::create(d, l);
 
@@ -271,14 +271,14 @@ UString &UString::operator+=(const UString &s)
 bool UString::is8Bit() const
 {
   const UChar *u = data();
-  for(unsigned int i = 0; i < size(); i++, u++)
+  for(int i = 0; i < size(); i++, u++)
     if (u->hi)
       return false;
 
   return true;
 }
 
-UChar &UString::operator[](unsigned int pos) const
+UChar &UString::operator[](int pos) const
 {
   if (pos >= size())
     return UChar::null;

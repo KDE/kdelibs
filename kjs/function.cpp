@@ -18,169 +18,39 @@
  *  Boston, MA 02111-1307, USA.
  */
 
-#include <stdio.h>
+#include "function.h"
 
 #include "kjs.h"
 #include "types.h"
+#include "internal.h"
 #include "operations.h"
 #include "nodes.h"
 
 using namespace KJS;
 
-const TypeInfo Function::info = { "Function", FunctionType, 0, 0, 0 };
-const TypeInfo DeclaredFunction::info= { "DeclaredFunction",
-					  DeclaredFunctionType,
-					  &Function::info, 0, 0 };
-const TypeInfo InternalFunction::info = { "InternalFunction",
-					  InternalFunctionType,
-					  &Function::info, 0, 0 };
-const TypeInfo Constructor::info = { "Constructor", ConstructorType,
-				     &InternalFunction::info, 0, 0 };
+const TypeInfo FunctionImp::info = { "Function", FunctionType,
+				      &ObjectImp::info, 0, 0 };
+const TypeInfo InternalFunctionImp::info = { "InternalFunction",
+					      InternalFunctionType,
+					      &FunctionImp::info, 0, 0 };
+const TypeInfo ConstructorImp::info = { "Constructor", ConstructorType,
+					 &InternalFunctionImp::info, 0, 0 };
 
-Constructor::Constructor()
+FunctionImp::FunctionImp(ParamList *p)
+  : ObjectImp(/*TODO*/BooleanClass), param(p)
 {
-  setPrototype(KJScript::global()->funcProto);
-  put("constructor", this);
-  put("length", 1, DontEnum);
 }
 
-Constructor::Constructor(Object *proto, int len)
+KJSO FunctionImp::thisValue() const
 {
-  setPrototype(proto);
-  put("constructor", this);
-  put("length", len, DontEnum);
+  return KJSO(Context::current()->thisValue());
 }
 
-KJSO* Constructor::execute(const List &)
-{
-  /* TODO: call construct instead ? */
-  return newUndefined();
-}
-
-// ECMA 10.1.7 (draft April 98, 10.1.6 previously)
-Activation::Activation(Function *f, const List *args)
-{
-  func = f;
-
-  /* TODO: solve deleting problem due to circular reference */
-  // put("arguments", this, DontDelete | DontEnum);
-  if (func->hasProperty("arguments"))
-    put("OldArguments", func->get("arguments"));
-  put("callee", func, DontEnum);
-  if (args) {
-    put("length", args->size(), DontEnum);
-    ListIterator arg = args->begin();
-    for (int i = 0; arg != args->end(); arg++, i++) {
-      put(UString::from(i), arg);
-    }
-  }
-  /* TODO: solve deleting problem due to circular reference */
-  //  func->put("arguments", this);
-}
-
-// ECMA 10.1.6
-Activation::~Activation()
-{
-  if (!hasProperty("OldArguments"))
-    func->deleteProperty("arguments");
-  else
-    func->put("arguments", get("OldArguments")); /* TODO: deep copy ? */
-}
-
-// ECMA 10.2
-Context::Context(CodeType type, Context *callingContext,
-		       Function *func, const List *args, KJSO *thisV)
-{
-  Global *glob = KJScript::global();
-  assert(glob);
-
-  // create and initialize activation object (ECMA 10.1.6)
-  if (type == FunctionCode || type == AnonymousCode || type == HostCode) {
-    activation = new Activation(func, args);
-    variable = activation;
-  } else {
-    activation = 0L;
-    variable = glob;
-  }
-
-  // ECMA 10.2
-  switch(type) {
-    case EvalCode:
-      if (callingContext) {
-	scopeChain = callingContext->copyOfChain();
-	variable = callingContext->variableObject();
-	thisVal = callingContext->thisValue();
-	break;
-      } // else same as GlobalCode
-    case GlobalCode:
-      scopeChain = new List();
-      scopeChain->append(glob);
-      variable = glob;
-      thisVal = glob;
-      break;
-    case FunctionCode:
-    case AnonymousCode:
-      scopeChain = new List();
-      scopeChain->append(activation);
-      scopeChain->append(glob);
-      variable = activation; /* TODO: DontDelete ? (ECMA 10.2.3) */
-      if (thisV->isA(ObjectType)) {
-	thisVal = thisV;
-      }
-      else
-	thisVal = glob;
-      break;
-    case HostCode:
-      if (thisV->isA(ObjectType))
-	thisVal = thisV;
-      else
-	thisVal = glob;
-      variable = activation; /* TODO: DontDelete (ECMA 10.2.4) */
-      scopeChain = new List();
-      scopeChain->append(activation);
-      if (func->hasAttribute(ImplicitThis))
-	scopeChain->append(thisVal);
-      if (func->hasAttribute(ImplicitParents)) {
-	/* TODO ??? */
-      }
-      scopeChain->append(glob);
-      break;
-    }
-}
-
-Context::~Context()
-{
-  scopeChain->deref();
-
-  if (activation)
-    activation->deref();
-    // delete activation;
-}
-
-Context *Context::current()
-{
-  return KJScript::current()->con;
-}
-
-void Context::setCurrent(Context *c)
-{
-  KJScript::current()->con = c;
-}
-
-void Context::pushScope(KJSO *s)
-{
-  scopeChain->prepend(s);
-}
-
-void Context::popScope()
-{
-  scopeChain->removeFirst();
-}
 
 // ECMA 10.1.3
-void Function::processParameters(const List *args)
+void FunctionImp::processParameters(const List *args)
 {
-  KJSO *variable = Context::current()->variableObject();
+  KJSO variable = Context::current()->variableObject();
 
   assert(args);
 
@@ -188,32 +58,141 @@ void Function::processParameters(const List *args)
     ListIterator it = args->begin();
     for(int i = 0; i < param->count() && i < 100; i++)
       if (it != args->end()) {
-	variable->put(param->at(i), it);
+	variable.put(param->at(i), *it);
 	it++;
       } else
-	variable->put(param->at(i), zeroRef(newUndefined()));
+	variable.put(param->at(i), Undefined());
   }
 }
 
-KJSO *Function::thisValue() const
+KJSO FunctionImp::executeCall(Imp *thisV, const List *args)
 {
-  return Context::current()->thisValue();
+  if (!args)
+    args = List::empty();
+
+  Context *save = Context::current();
+
+  Context::setCurrent(new Context(codeType(), save, this, args, thisV));
+
+  // assign user supplied arguments to parameters
+  processParameters(args);
+
+  Completion comp = execute(*args);
+
+  delete Context::current();
+  Context::setCurrent(save);
+
+  if (comp.isValueCompletion())
+    return comp.value();
+  else
+    return Undefined();
 }
 
-DeclaredFunction::DeclaredFunction(ParamList *p, StatementNode *b)
-  : block(b)
+InternalFunctionImp::InternalFunctionImp()
+  : FunctionImp(0)
 {
-  param = p;
 }
 
-KJSO* DeclaredFunction::execute(const List &)
+Completion InternalFunctionImp::execute(const List &)
 {
- /* TODO */
-  return block->evaluate();
+  return Completion(Normal, Undefined());
 }
 
-KJSO* AnonymousFunction::execute(const List &)
+ConstructorImp::ConstructorImp() {
+  //  setPrototype(KJScript::global().functionPrototype());
+  // TODO ???  put("constructor", this);
+  put("length", Number(1), DontEnum);
+}
+
+ConstructorImp::ConstructorImp(const KJSO &p, int len)
 {
- /* TODO */
-  return 0L;
+  setPrototype(p);
+  // TODO ???  put("constructor", *this);
+  put("length", Number(len), DontEnum);
+}
+
+ConstructorImp::~ConstructorImp() { }
+
+Completion ConstructorImp::execute(const List &)
+{
+  /* TODO */
+  return Completion(Normal, Null());
+}
+
+Function::Function(Imp *d)
+  : KJSO(d)
+{
+  static_cast<FunctionImp*>(rep)->attr = ImplicitNone;
+}
+
+Completion Function::execute(const List &args)
+{
+  assert(rep);
+  return static_cast<FunctionImp*>(rep)->execute(args);
+}
+
+bool Function::hasAttribute(FunctionAttribute a) const
+{
+  assert(rep);
+  FunctionImp* fdata = static_cast<FunctionImp*>(rep);
+  return (fdata->attr & a);
+}
+
+#if 0
+InternalFunction::InternalFunction(Imp *d)
+  : Function(d)
+{
+  param = 0L;
+}
+
+InternalFunction::~InternalFunction()
+{
+}
+#endif
+
+Constructor::Constructor(Imp *d)
+  : Function(d)
+{
+  setPrototype(((GlobalImp*)Global::current().imp())->funcProto);
+  put("constructor", *this);
+  put("length", 1, DontEnum);
+}
+
+#if 0
+Constructor::Constructor(const Object& proto, int len)
+{
+  setPrototype(proto);
+  put("constructor", *this);
+  put("length", len, DontEnum);
+}
+#endif
+
+Constructor::~Constructor()
+{
+}
+
+Completion Constructor::execute(const List &)
+{
+  /* TODO: call construct instead ? */
+  return Completion(Normal, Undefined());
+}
+
+Object Constructor::construct(const List &args)
+{
+  assert(rep->type() == ConstructorType);
+  return ((ConstructorImp*)rep)->construct(args);
+}
+
+Constructor Constructor::dynamicCast(const KJSO &obj)
+{
+  // return null object on type mismatch
+  if (!obj.isA(ConstructorType))
+    return Constructor(0L);
+
+  return Constructor(obj.imp());
+}
+
+KJSO Function::thisValue() const
+{
+  return KJSO(Context::current()->thisValue());
 }

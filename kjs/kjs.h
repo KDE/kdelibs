@@ -22,7 +22,6 @@
 #define _KJS_H_
 
 class QChar;
-class KJScriptLock;
 
 namespace KJS {
   class UChar;
@@ -30,8 +29,8 @@ namespace KJS {
   class Lexer;
   class Context;
   class Global;
-  class ProgramNode;
   class KJSO;
+  class KJScriptImp;
 };
 
 /**
@@ -45,14 +44,15 @@ namespace KJS {
  * @short ECMAScript interpreter
  */
 class KJScript {
-  friend KJScriptLock;
+  friend KJS::KJScriptImp;
   friend KJS::KJSO;
   friend KJS::Context;
   friend KJS::Lexer;
+  friend KJS::Global;
 public:
   /**
    * Create a new ECMAScript interpreter. You can later ask it to interprete
-   * code by pass it via @ref #evaluate.
+   * code by passing it via @ref #evaluate.
    */
   KJScript();
   /**
@@ -85,8 +85,8 @@ public:
    * @ref KJScript::evaluate.
    */
   void clear();
-  int errorType() const { return errType; }
-  const char *errorMsg() const { return errMsg; }
+  int errorType() const;
+  const char *errorMsg() const;
   /**
    * Adds a debug() function to the set of pre-defined properties.
    * debug(arg) tries to convert 'arg' to a string and prints the result
@@ -95,27 +95,10 @@ public:
    */
   void enableDebug();
 private:
-  /**
-   * Initialize global object and context. For internal use only.
-   */
-  void init();
-  void setGlobal(KJS::Global *g) { current()->glob = g; }
-  void setCurrent(KJScript *c) { curr = c; }
-public:
-  static KJScript *current() { return curr; }
-
-  static KJS::Global *global() { return current()->glob; }
-private:
-  bool initialized;
-  static KJScript *curr;
-  KJS::Lexer *lex;
-  KJS::Context *con;
-  KJS::Global *glob;
-  int errType;
-  const char *errMsg;
-  // for future extensions
-  class KJScriptInternal;
-  KJScriptInternal *internal;
+  KJS::KJScriptImp *rep;
+  // not implemented
+  KJScript(const KJScript&);
+  KJScript operator=(const KJScript&);
 };
 
 // callback functions for KJSProxy

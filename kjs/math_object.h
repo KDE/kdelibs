@@ -25,18 +25,19 @@
 
 namespace KJS {
 
-  class Math : public Object {
+  class Math : public ObjectImp {
   public:
-    virtual KJSO *get(const UString &p);
+    Math() : ObjectImp(BooleanClass) { }
+    virtual KJSO get(const UString &p) const;
     enum { Euler, Ln2, Ln10, Log2E, Log10E, Pi, Sqrt1_2, Sqrt2,
 	   Abs, ACos, ASin, ATan, ATan2, Ceil, Cos,
 	   Exp, Floor, Log, Max, Min, Random, Round, Sin, Sqrt, Tan };
   };
 
-  class MathFunc : public InternalFunction {
+  class MathFunc : public InternalFunctionImp {
   public:
     MathFunc(int i) : id(i) { }
-    KJSO *execute(const List &);
+    Completion execute(const List &);
   private:
     int id;
   };

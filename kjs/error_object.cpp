@@ -19,6 +19,8 @@
 
 #include "kjs.h"
 #include "operations.h"
+#include "types.h"
+#include "internal.h"
 #include "error_object.h"
 
 using namespace KJS;
@@ -34,40 +36,48 @@ const char *ErrorObject::errName[] = {
   "URIError"
 };
 
-ErrorObject::ErrorObject(Object *proto, ErrorType t)
-  : Constructor(proto, 1), errType(t)
+ErrorObject::ErrorObject(const Object& proto, ErrorType t)
+  : ConstructorImp(proto, 1), errType(t)
 {
   const char *n = errName[errType];
 
-  put("name", zeroRef(newString(n)));
-  put("message", zeroRef(newString("bla bla")));
+  put("name", String(n));
+  put("message", String("bla bla"));
 }
       
 // ECMA 15.9.2
-KJSO* ErrorObject::execute(const List &args)
+Completion ErrorObject::execute(const List &args)
 {
   // "Error()" gives the sames result as "new Error()"
-  return newCompletion(Normal, construct(args));
+  return Completion(Normal, construct(args));
 }
 
 // ECMA 15.9.3
-Object* ErrorObject::construct(const List &args)
+Object ErrorObject::construct(const List &args)
 {
-  if (args.isEmpty() == 1 || args[0]->isA(UndefinedType))
-    return Object::create(ErrorClass, zeroRef(newUndefined()));
+  if (args.isEmpty() == 1 || args[0].isA(UndefinedType))
+    return Object::create(ErrorClass, Undefined());
 
-  Ptr message = toString(args[0]);
+  String message = args[0].toString();
   return Object::create(ErrorClass, message);
 }
 
+Object ErrorObject::create(ErrorType e, const char *, int)
+{
+  const Object proto = ((GlobalImp*)Global::current().imp())->errorProto;
+  Imp *d = new ErrorObject(proto, e);
+
+  return Object(d);
+}
+
 // ECMA 15.9.4
-ErrorPrototype::ErrorPrototype(Object *proto)
-  : Object(ErrorClass, zeroRef(newUndefined()), proto)
+ErrorPrototype::ErrorPrototype(const Object& proto)
+  : ObjectImp(ErrorClass, Undefined(), proto)
 {
   // The constructor will be added later in ErrorObject's constructor
 }
 
-KJSO *ErrorPrototype::get(const UString &p)
+KJSO ErrorPrototype::get(const UString &p) const
 {
   const char *s;
 
@@ -77,18 +87,18 @@ KJSO *ErrorPrototype::get(const UString &p)
   else if (p == "message")
     s = "Error message.";
   else if (p == "toString")
-    return new ErrorProtoFunc();
+    return Function(new ErrorProtoFunc());
   else
-    return KJSO::get(p);
+    return Imp::get(p);
 
-  return newString(s);
+  return String(s);
 }
 
-KJSO *ErrorProtoFunc::execute(const List &)
+Completion ErrorProtoFunc::execute(const List &)
 {
   // toString()
   const char *s = "Error message.";
   
-  return newCompletion(Normal, zeroRef(newString(s)));
+  return Completion(Normal, String(s));
 }
 

@@ -27,6 +27,7 @@
 #include "lexer.h"
 #include "nodes.h"
 #include "types.h"
+#include "internal.h"
 #include "operations.h"
 #include "regexp_object.h"
 
@@ -75,79 +76,81 @@ void Node::deleteAllNodes()
   assert(nodeCount == 0);
 }
 
-KJSO *Node::throwError(ErrorType e, const char *msg)
+KJSO Node::throwError(ErrorType e, const char *msg)
 {
-  return KJSO::newError(e, msg, lineNo());
+  return Error::create(e, msg, lineNo());
 }
 
-KJSO *NullNode::evaluate()
+KJSO NullNode::evaluate()
 {
-  return KJSO::newNull();
+  return Null();
 }
 
-KJSO *BooleanNode::evaluate()
+KJSO BooleanNode::evaluate()
 {
-  return KJSO::newBoolean(value);
+  return Boolean(value);
 }
 
-KJSO *NumberNode::evaluate()
+KJSO NumberNode::evaluate()
 {
-  return KJSO::newNumber(value);
+  return Number(value);
 }
 
-KJSO *StringNode::evaluate()
+KJSO StringNode::evaluate()
 {
-  return KJSO::newString(value);
+  return String(value);
 }
 
-KJSO *RegExpNode::evaluate()
+KJSO RegExpNode::evaluate()
 {
   List list;
-  Ptr p = KJSO::newString(pattern);
-  Ptr f = KJSO::newString(flags);
+  String p(pattern);
+  String f(flags);
   list.append(p);
   list.append(f);
 
   // very ugly
-  Ptr r = KJScript::global()->get("RegExp");
-  RegExpObject *r2 = (RegExpObject*)(KJSO*) r;
+  KJSO r = Global::current().get("RegExp");
+  RegExpObject *r2 = (RegExpObject*)r.imp();
   return r2->construct(list);
 }
 
 // ECMA 11.1.1
-KJSO *ThisNode::evaluate()
+KJSO ThisNode::evaluate()
 {
-  return Context::current()->thisValue();
+  return KJSO(const_cast<Imp*>(Context::current()->thisValue()));
 }
 
 // ECMA 11.1.2 & 10.1.4
-KJSO *ResolveNode::evaluate()
+KJSO ResolveNode::evaluate()
 {
   assert(Context::current());
   const List *chain = Context::current()->pScopeChain();
+  assert(chain);
   ListIterator scope = chain->begin();
 
   while (scope != chain->end()) {
     if (scope->hasProperty(ident)) {
-      //      cout << "Resolve: found '" << ident.ascii() << "'" << endl;
-      return KJSO::newReference(scope, ident);
+//        cout << "Resolve: found '" << ident.ascii() << "'"
+// 	    << " type " << scope->get(ident).imp()->typeInfo()->name << endl;
+      return Reference(*scope, ident);
     }
     scope++;
   }
 
   // identifier not found
-  //  cout << "Resolve: didn't find '" << ident.ascii() << "'" << endl;
-  return KJSO::newReference(zeroRef(KJSO::newNull()), ident); // TODO: use a global Null
+//  cout << "Resolve: didn't find '" << ident.ascii() << "'" << endl;
+  return Reference(Null(), ident);
 }
 
 // ECMA 11.1.4
-KJSO *GroupNode::evaluate()
+KJSO GroupNode::evaluate()
 {
   return group->evaluate();
 }
 
 // ECMA 11.1.5
-KJSO *ObjectLiteralNode::evaluate()
+KJSO ObjectLiteralNode::evaluate()
 {
   if (list)
     return list->evaluate();
@@ -156,138 +159,139 @@ KJSO *ObjectLiteralNode::evaluate()
 }
 
 // ECMA 11.1.5
-KJSO *PropertyValueNode::evaluate()
+KJSO PropertyValueNode::evaluate()
 {
-  Ptr obj;
+  KJSO obj;
   if (list)
     obj = list->evaluate();
   else
     obj = Object::create(ObjectClass);
-  Ptr n = name->evaluate();
-  Ptr a = assign->evaluate();
-  Ptr v = a->getValue();
+  KJSO n = name->evaluate();
+  KJSO a = assign->evaluate();
+  KJSO v = a.getValue();
 
-  obj->put(n->stringVal(), v);
+  obj.put(n.toString().value(), v);
 
-  return obj->ref();
+  return obj;
 }
 
 // ECMA 11.1.5
-KJSO *PropertyNode::evaluate()
+KJSO PropertyNode::evaluate()
 {
-  Ptr s;
+  KJSO s;
 
   if (str.isNull()) {
-    s = KJSO::newString(UString::from(numeric));
+    s = String(UString::from(numeric));
   } else
-    s = KJSO::newString(str);
+    s = String(str);
 
-  return s->ref();
+  return s;
 }
 
 // ECMA 11.2.1a
-KJSO *AccessorNode1::evaluate()
+KJSO AccessorNode1::evaluate()
 {
-  Ptr e1 = expr1->evaluate();
-  Ptr v1 = e1->getValue();
-  Ptr e2 = expr2->evaluate();
-  Ptr v2 = e2->getValue();
-  Ptr o = toObject(v1);
-  Ptr s = toString(v2);
-  KJSO *ref = KJSO::newReference(o, s->stringVal());
-
-  return ref;
+  KJSO e1 = expr1->evaluate();
+  KJSO v1 = e1.getValue();
+  KJSO e2 = expr2->evaluate();
+  KJSO v2 = e2.getValue();
+  Object o = v1.toObject();
+  String s = v2.toString();
+  return Reference(o, s.value());
 }
 
 // ECMA 11.2.1b
-KJSO *AccessorNode2::evaluate()
+KJSO AccessorNode2::evaluate()
 {
-  Ptr e = expr->evaluate();
-  Ptr v = e->getValue();
-  Ptr o = toObject(v);
-  KJSO *ref = KJSO::newReference(o, ident);
-
-  return ref;
+  KJSO e = expr->evaluate();
+  KJSO v = e.getValue();
+  KJSO o = v.toObject();
+  return Reference(o, ident);
 }
 
 // ECMA 11.2.2
-KJSO *NewExprNode::evaluate()
+KJSO NewExprNode::evaluate()
 {
-  Ptr e = expr->evaluate();
-  Ptr v = e->getValue();
+  KJSO e = expr->evaluate();
+  KJSO v = e.getValue();
 
-  Ptr argList;
-  if (args)
-    argList = args->evaluate();
+  List *argList = args ? args->evaluateList() : 0;
 
-  if (!v->isObject()) {
+  if (!v.isObject()) {
     return throwError(TypeError, "Expression is no object.");
   }
-  if (!v->implementsConstruct()) {
+  Constructor constr = Constructor::dynamicCast(v);
+  if (constr.isNull())
     return throwError(TypeError, "Expression is no constructor.");
-  }
-  Constructor *constr = dynamic_cast<Constructor*>((KJSO*)v);
-  assert(constr);
 
-  List *tmp2;
   List nullList;
-  if (args)
-    tmp2 = static_cast<List*>((KJSO*)argList);
-  else
-    tmp2 = &nullList;
-
-  KJSO *res = constr->construct(*tmp2);
+  if (!argList)
+    argList = &nullList;
+  
+  KJSO res = constr.construct(*argList);
 
   return res;
 }
 
 // ECMA 11.2.3
-KJSO *FunctionCallNode::evaluate()
+KJSO FunctionCallNode::evaluate()
 {
-  Ptr e = expr->evaluate();
+  KJSO e = expr->evaluate();
 
-  Ptr argList = args->evaluate();
+  List *argList = args->evaluateList();
 
-  Ptr v = e->getValue();
+  KJSO v = e.getValue();
 
-  if (!v->isObject()) {
+  if (!v.isObject()) {
     return throwError(TypeError, "Expression is no object.");
   }
 
-  if (!v->implementsCall()) {
+  if (!v.implementsCall()) {
     return throwError(TypeError, "Expression does not allow calls.");
   }
 
-  Ptr o;
-  if (e->isA(ReferenceType))
-    o = e->getBase();
+  KJSO o;
+  if (e.isA(ReferenceType))
+    o = e.getBase();
   else
-    o = KJSO::newNull();
+    o = Null();
 
-  if (o->isA(ActivationType))
-    o = KJSO::newNull();
+  if (o.isA(ActivationType))
+    o = Null();
 
-  KJSO *tmp = argList;
-  List *list = static_cast<List*>(tmp);
-  KJSO *result = v->executeCall(o, list);
+  KJSO result = v.executeCall(o, argList);
+
+  delete argList;
 
   return result;
 }
 
+KJSO ArgumentsNode::evaluate()
+{
+  assert(0);
+  return KJSO(); // dummy, see evaluateList()
+}
+
 // ECMA 11.2.4
-KJSO *ArgumentsNode::evaluate()
+List* ArgumentsNode::evaluateList()
 {
   if (!list)
     return new List();
 
-  return list->evaluate();
+  return list->evaluateList();
+}
+
+KJSO ArgumentListNode::evaluate()
+{
+  assert(0);
+  return KJSO(); // dummy, see evaluateList()
 }
 
 // ECMA 11.2.4
-KJSO *ArgumentListNode::evaluate()
+List* ArgumentListNode::evaluateList()
 {
-  Ptr e = expr->evaluate();
-  Ptr v = e->getValue();
+  KJSO e = expr->evaluate();
+  KJSO v = e.getValue();
 
   if (!list) {
     List *l = new List();
@@ -295,45 +299,45 @@ KJSO *ArgumentListNode::evaluate()
     return l;
   }
 
-  List *l = static_cast<List*>(list->evaluate());
+  List *l = list->evaluateList();
   l->append(v);
 
   return l;
 }
 
 // ECMA 11.8
-KJSO *RelationalNode::evaluate()
+KJSO RelationalNode::evaluate()
 {
-  Ptr e1 = expr1->evaluate();
-  Ptr v1 = e1->getValue();
-  Ptr e2 = expr2->evaluate();
-  Ptr v2 = e2->getValue();
+  KJSO e1 = expr1->evaluate();
+  KJSO v1 = e1.getValue();
+  KJSO e2 = expr2->evaluate();
+  KJSO v2 = e2.getValue();
   /* TODO: abstract relational comparison */
-  return KJSO::newBoolean(true);
+  return Boolean(true);
 }
 
 // ECMA 11.9
-KJSO *EqualNode::evaluate()
+KJSO EqualNode::evaluate()
 {
-  Ptr e1 = expr1->evaluate();
-  Ptr e2 = expr2->evaluate();
-  Ptr v1 = e1->getValue();
-  Ptr v2 = e2->getValue();
+  KJSO e1 = expr1->evaluate();
+  KJSO e2 = expr2->evaluate();
+  KJSO v1 = e1.getValue();
+  KJSO v2 = e2.getValue();
 
   bool eq = equal(v1, v2);
 
-  return KJSO::newBoolean(oper == OpEqEq ? eq : !eq);
+  return Boolean(oper == OpEqEq ? eq : !eq);
 }
 
 // ECMA 11.10
-KJSO *BitOperNode::evaluate()
+KJSO BitOperNode::evaluate()
 {
-  Ptr e1 = expr1->evaluate();
-  Ptr v1 = e1->getValue();
-  Ptr e2 = expr2->evaluate();
-  Ptr v2 = e2->getValue();
-  int i1 = toInt32(v1);
-  int i2 = toInt32(v2);
+  KJSO e1 = expr1->evaluate();
+  KJSO v1 = e1.getValue();
+  KJSO e2 = expr2->evaluate();
+  KJSO v2 = e2.getValue();
+  int i1 = v1.toInt32();
+  int i2 = v2.toInt32();
   int result;
   if (oper == OpBitAnd)
     result = i1 & i2;
@@ -342,110 +346,111 @@ KJSO *BitOperNode::evaluate()
   else
     result = i1 | i2;
 
-  return KJSO::newNumber(result);
+  return Number(result);
 }
 
 // ECMA 11.11
-KJSO *BinaryLogicalNode::evaluate()
+KJSO BinaryLogicalNode::evaluate()
 {
-  Ptr e1 = expr1->evaluate();
-  Ptr v1 = e1->getValue();
-  Ptr b1 = toBoolean(v1);
-  if ((!b1->boolVal() && oper == OpAnd) || (b1->boolVal() && oper == OpOr))
-    return v1->ref();
+  KJSO e1 = expr1->evaluate();
+  KJSO v1 = e1.getValue();
+  Boolean b1 = v1.toBoolean();
+  if ((!b1.value() && oper == OpAnd) || (b1.value() && oper == OpOr))
+    return v1;
 
-  Ptr e2 = expr2->evaluate();
-  Ptr v2 = e2->getValue();
+  KJSO e2 = expr2->evaluate();
+  KJSO v2 = e2.getValue();
 
-  return v2->ref();
+  return v2;
 }
 
 // ECMA 11.12
-KJSO *ConditionalNode::evaluate()
+KJSO ConditionalNode::evaluate()
 {
-  Ptr e = logical->evaluate();
-  Ptr v = e->getValue();
-  Ptr b = toBoolean(v);
+  KJSO e = logical->evaluate();
+  KJSO v = e.getValue();
+  Boolean b = e.toBoolean();
 
-  if (b->boolVal())
+  if (b.value())
     e = expr1->evaluate();
   else
     e = expr2->evaluate();
 
-  return e->getValue();
+  return e.getValue();
 }
 
 // ECMA 11.13
-KJSO *AssignNode::evaluate()
+KJSO AssignNode::evaluate()
 {
-  Ptr l, e, v;
+  KJSO l, e, v;
   ErrorType err;
   switch (oper)
     {
     case OpEqual:
       l = left->evaluate();
       e = expr->evaluate();
-      v = e->getValue();
-      err = l->putValue(v);
+      v = e.getValue();
+      //      printf("value: %f\n", v.toNumber().value());
+      err = l.putValue(v);
       if (err == NoError)
-	return v.ref();
+	return v;
       else
 	return throwError(err, "Invalid reference.");
       break;
     default:
       assert(!"AssignNode: unhandled switch case");
-      return 0L;
+      return Undefined();
     };
 }
 
 // ECMA 11.3
-KJSO *PostfixNode::evaluate()
+KJSO PostfixNode::evaluate()
 {
-  Ptr e = expr->evaluate();
-  Ptr v = e->getValue();
-  Ptr n = toNumber(v);
+  KJSO e = expr->evaluate();
+  KJSO v = e.getValue();
+  Number n = v.toNumber();
 
-  double newValue = (oper == OpPlusPlus) ? n->doubleVal() + 1 : n->doubleVal() - 1;
-  Ptr n2 = KJSO::newNumber(newValue);
+  double newValue = (oper == OpPlusPlus) ? n.value() + 1 : n.value() - 1;
+  KJSO n2 = Number(newValue);
 
-  e->putValue(n2);
+  e.putValue(n2);
 
-  return n->ref();
+  return n;
 }
 
 // ECMA 11.4.1
-KJSO *DeleteNode::evaluate()
+KJSO DeleteNode::evaluate()
 {
-  Ptr e = expr->evaluate();
-  Ptr b = e->getBase();
-  UString n = e->getPropertyName(); /* TODO: runtime err if no ref */
-  if (!b->isA(ObjectType))
-    return KJSO::newBoolean(true);
+  KJSO e = expr->evaluate();
+  KJSO b = e.getBase();
+  UString n = e.getPropertyName(); /* TODO: runtime err if no ref */
+  if (!b.isA(ObjectType))
+    return Boolean(true);
   /* TODO [delete] */
-  return KJSO::newBoolean(!b->hasProperty(n));
+  return Boolean(!b.hasProperty(n));
 }
 
 // ECMA 11.4.2
-KJSO *VoidNode::evaluate()
+KJSO VoidNode::evaluate()
 {
-  Ptr dummy1 = expr->evaluate();
-  Ptr dummy2 = dummy1->getValue();
+  KJSO dummy1 = expr->evaluate();
+  KJSO dummy2 = dummy1.getValue();
 
-  return KJSO::newUndefined();
+  return Undefined();
 }
 
 // ECMA 11.4.3
-KJSO *TypeOfNode::evaluate()
+KJSO TypeOfNode::evaluate()
 {
   const char *s = 0L;
-  Ptr e = expr->evaluate();
-  if (e->isA(ReferenceType)) {
-    Ptr b = e->getBase();
-    if (b->isA(NullType))
-      return KJSO::newUndefined();
+  KJSO e = expr->evaluate();
+  if (e.isA(ReferenceType)) {
+    KJSO b = e.getBase();
+    if (b.isA(NullType))
+      return Undefined();
   }
-  Ptr v = e->getValue();
-  switch (v->type())
+  KJSO v = e.getValue();
+  switch (v.type())
     {
     case UndefinedType:
       s = "undefined";
@@ -463,402 +468,397 @@ KJSO *TypeOfNode::evaluate()
       s = "string";
       break;
     default:
-      if (v->implementsCall())
+      if (v.implementsCall())
 	s = "function";
       else
 	s = "object";
       break;
     }
 
-  return KJSO::newString(s);
+  return String(s);
 }
 
 // ECMA 11.4.4 and 11.4.5
-KJSO *PrefixNode::evaluate()
+KJSO PrefixNode::evaluate()
 {
-  Ptr e = expr->evaluate();
-  Ptr v = e->getValue();
-  Ptr n = toNumber(v);
+  KJSO e = expr->evaluate();
+  KJSO v = e.getValue();
+  Number n = v.toNumber();
 
-  double newValue = (oper == OpPlusPlus) ? n->doubleVal() + 1 : n->doubleVal() - 1;
-  Ptr n2 = KJSO::newNumber(newValue);
+  double newValue = (oper == OpPlusPlus) ? n.value() + 1 : n.value() - 1;
+  KJSO n2 = Number(newValue);
 
-  e->putValue(n2);
+  e.putValue(n2);
 
-  return n2->ref();
+  return n2;
 }
 
 // ECMA 11.4.6
-KJSO *UnaryPlusNode::evaluate()
+KJSO UnaryPlusNode::evaluate()
 {
-  Ptr e = expr->evaluate();
-  Ptr v = e->getValue();
+  KJSO e = expr->evaluate();
+  KJSO v = e.getValue();
 
-  return toNumber(v);
+  return v.toNumber();
 }
 
 // ECMA 11.4.7
-KJSO *NegateNode::evaluate()
+KJSO NegateNode::evaluate()
 {
-  Ptr e = expr->evaluate();
-  Ptr v = e->getValue();
-  Ptr n = toNumber(v);
+  KJSO e = expr->evaluate();
+  KJSO v = e.getValue();
+  Number n = v.toNumber();
 
-  double d = -n->doubleVal();
+  double d = -n.value();
 
-  return KJSO::newNumber(d);
+  return Number(d);
 }
 
 // ECMA 11.4.8
-KJSO *BitwiseNotNode::evaluate()
+KJSO BitwiseNotNode::evaluate()
 {
-  Ptr e = expr->evaluate();
-  Ptr v = e->getValue();
-  int i32 = toInt32(v);
+  KJSO e = expr->evaluate();
+  KJSO v = e.getValue();
+  int i32 = v.toInt32();
 
-  return KJSO::newNumber(~i32);
+  return Number(~i32);
 }
 
 // ECMA 11.4.9
-KJSO *LogicalNotNode::evaluate()
+KJSO LogicalNotNode::evaluate()
 {
-  Ptr e = expr->evaluate();
-  Ptr v = e->getValue();
-  Ptr b = toBoolean(v);
+  KJSO e = expr->evaluate();
+  KJSO v = e.getValue();
+  Boolean b = v.toBoolean();
 
-  return KJSO::newBoolean(!b->boolVal());
+  return Boolean(!b.value());
 }
 
 // ECMA 11.5
-KJSO *MultNode::evaluate()
+KJSO MultNode::evaluate()
 {
-  Ptr t1 = term1->evaluate();
-  Ptr v1 = t1->getValue();
+  KJSO t1 = term1->evaluate();
+  KJSO v1 = t1.getValue();
 
-  Ptr t2 = term2->evaluate();
-  Ptr v2 = t2->getValue();
+  KJSO t2 = term2->evaluate();
+  KJSO v2 = t2.getValue();
 
-  Ptr n1 = toNumber(v1);
-  Ptr n2 = toNumber(v2);
+  Number n1 = v1.toNumber();
+  Number n2 = v2.toNumber();
 
   double result;
 
   if (oper == '*')
-    result = n1->doubleVal() * n2->doubleVal();
+    result = n1.value() * n2.value();
   else if (oper == '/')
-    result = n1->doubleVal() / n2->doubleVal();
+    result = n1.value() / n2.value();
   else
-    result = fmod(n1->doubleVal(), n2->doubleVal());
+    result = fmod(n1.value(), n2.value());
 
-  return KJSO::newNumber(result);
+  return Number(result);
 }
 
 // ECMA 11.7
-KJSO *ShiftNode::evaluate()
+KJSO ShiftNode::evaluate()
 {
-  Ptr t1 = term1->evaluate();
-  Ptr v1 = t1->getValue();
-  Ptr t2 = term2->evaluate();
-  Ptr v2 = t2->getValue();
-  unsigned int i2 = toUInt32(v2);
+  KJSO t1 = term1->evaluate();
+  KJSO v1 = t1.getValue();
+  KJSO t2 = term2->evaluate();
+  KJSO v2 = t2.getValue();
+  unsigned int i2 = v2.toUInt32();
   i2 &= 0x1f;
 
   long result;
   switch (oper) {
   case OpLShift:
-    result = toInt32(v1) << i2;
+    result = v1.toInt32() << i2;
     break;
   case OpRShift:
-    result = toInt32(v1) >> i2;
+    result = v1.toInt32() >> i2;
     break;
   case OpURShift:
-    result = toUInt32(v1) >> i2;
+    result = v1.toUInt32() >> i2;
     break;
   default:
     assert(!"ShiftNode: unhandled switch case");
-    result = 0;
+    result = 0L;
   }
 
-  return KJSO::newNumber(static_cast<double>(result));
+  return Number(static_cast<double>(result));
 }
 
 // ECMA 11.6
-KJSO *AddNode::evaluate()
+KJSO AddNode::evaluate()
 {
-  Ptr t1 = term1->evaluate();
-  Ptr v1 = t1->getValue();
+  KJSO t1 = term1->evaluate();
+  KJSO v1 = t1.getValue();
 
-  Ptr t2 = term2->evaluate();
-  Ptr v2 = t2->getValue();
+  KJSO t2 = term2->evaluate();
+  KJSO v2 = t2.getValue();
 
-  Ptr p1 = toPrimitive(v1);
-  Ptr p2 = toPrimitive(v2);
+  KJSO p1 = v1.toPrimitive();
+  KJSO p2 = v2.toPrimitive();
 
-  if ((p1->isA(StringType) || p2->isA(StringType)) && oper == '+') {
-    Ptr s1 = toString(p1);
-    Ptr s2 = toString(p2);
+  if ((p1.isA(StringType) || p2.isA(StringType)) && oper == '+') {
+    String s1 = p1.toString();
+    String s2 = p2.toString();
 
-    UString s = s1->stringVal() + s2->stringVal();
+    UString s = s1.value() + s2.value();
 
-    KJSO *res = KJSO::newString(s);
-
-    return res;
+    return String(s);
   }
 
-  Ptr n1 = toNumber(p1);
-  Ptr n2 = toNumber(p2);
+  Number n1 = p1.toNumber();
+  Number n2 = p2.toNumber();
 
-  KJSO *result;
   if (oper == '+')
-    result = KJSO::newNumber(n1->doubleVal() + n2->doubleVal());
+    return Number(n1.value() + n2.value());
   else
-    result = KJSO::newNumber(n1->doubleVal() - n2->doubleVal());
-
-  return result;
+    return Number(n1.value() - n2.value());
 }
 
 // ECMA 11.14
-KJSO *CommaNode::evaluate()
+KJSO CommaNode::evaluate()
 {
-  Ptr e = expr1->evaluate();
-  Ptr dummy = e->getValue(); // ignore return value
+  KJSO e = expr1->evaluate();
+  KJSO dummy = e.getValue(); // ignore return value
   e = expr2->evaluate();
 
-  return e->getValue();
+  return e.getValue();
 }
 
 // ECMA 12.1
-KJSO *BlockNode::evaluate()
+Completion BlockNode::execute()
 {
   if (!statlist)
-    return KJSO::newCompletion(Normal);
+    return Completion(Normal);
 
-  return statlist->evaluate();
+  return statlist->execute();
 }
 
 // ECMA 12.1
-KJSO *StatListNode::evaluate()
+Completion StatListNode::execute()
 {
   if (!list)
-    return statement->evaluate();
+    return statement->execute();
 
-  Ptr l = list->evaluate();
+  Completion l = list->execute();
+  if (l.complType() != Normal) // Completion check needed ?
+    return l;
+  Completion e = statement->execute();
+  if (e.isValueCompletion())
+    return e;
+  if (!l.isValueCompletion())
+    return e;
+  KJSO v = l.getValue();
+  if (e.isA(CompletionType) && e.complType() == Break)
+    return Completion(Break, v);
+  if (e.isA(CompletionType) && e.complType() == Continue)
+    return Completion(Continue, v);
 
-  if (l->isA(CompletionType) && l->complType() != Normal) // Completion check needed ?
-    return l->ref();
-  Ptr e = statement->evaluate();
-  if (e->isValueCompletion())
-    return e->ref();
-  if (!l->isValueCompletion())
-    return e->ref();
-  Ptr v = l->getValue();
-  if (e->isA(CompletionType) && e->complType() == Break)
-    return KJSO::newCompletion(Break, v);
-  if (e->isA(CompletionType) && e->complType() == Continue)
-    return KJSO::newCompletion(Continue, v);
-
-  return KJSO::newCompletion(Normal, v);
+  return Completion(Normal, v);
 }
 
 // ECMA 12.2
-KJSO *VarStatementNode::evaluate()
+Completion VarStatementNode::execute()
 {
   (void) list->evaluate(); // returns 0L
 
-  return KJSO::newCompletion(Normal);
+  return Completion(Normal);
 }
 
 // ECMA 12.2
-KJSO *VarDeclNode::evaluate()
+KJSO VarDeclNode::evaluate()
 {
-  KJSO *variable = Context::current()->variableObject();
+  KJSO variable = Context::current()->variableObject();
 
   // TODO: coded with help of 10.1.3. Correct ?
-  if (!variable->hasProperty(ident)) {
-    Ptr val, tmp;
+  if (!variable.hasProperty(ident)) {
+    KJSO val, tmp;
     if (init) {
       tmp = init->evaluate();
-      val = tmp->getValue();
+      val = tmp.getValue();
     } else
-      val = KJSO::newUndefined();
-    variable->put(ident, val);
+      val = Undefined();
+    variable.put(ident, val);
   }
-  // TODO: I added this return to make it compile (Stephan)
-  return 0L;
+
+  return Undefined();
 }
 
 // ECMA 12.2
-KJSO *VarDeclListNode::evaluate()
+KJSO VarDeclListNode::evaluate()
 {
   if (list)
     list->evaluate();
 
   var->evaluate();
 
-  return 0L;
+  return Undefined();
 }
 
 // ECMA 12.2
-KJSO *AssignExprNode::evaluate()
+KJSO AssignExprNode::evaluate()
 {
   return expr->evaluate();
 }
 
 // ECMA 12.3
-KJSO *EmptyStatementNode::evaluate()
+Completion EmptyStatementNode::execute()
 {
-  return KJSO::newCompletion(Normal);
+  return Completion(Normal);
 }
 
 // ECMA 12.6.2
-KJSO *ForNode::evaluate()
+Completion ForNode::execute()
 {
-  Ptr e, v, b, cval;
+  KJSO e, v, cval;
+  Boolean b;
   if (expr1) {
     e = expr1->evaluate();
-    if (e)
-      v = e->getValue();
+    v = e.getValue();
   }
   while (1) {
     if (expr2) {
       e = expr2->evaluate();
-      v = e->getValue();
-      b = toBoolean(v);
-      if (b->boolVal() == false)
-	return KJSO::newCompletion(Normal);
+      v = e.getValue();
+      b = v.toBoolean();
+      if (b.value() == false)
+	return Completion(Normal);
     }
-    e = stat->evaluate();
-    if (e->isValueCompletion())
-      cval = e->complValue();
-    if (e->complType() == Break)
-      return KJSO::newCompletion(Normal, cval);
-    if (e->complType() == ReturnValue)
-      return e->ref();
+    Completion c = stat->execute();
+    if (c.isValueCompletion())
+      cval = c.value();
+    if (c.complType() == Break)
+      return Completion(Normal, cval);
+    if (c.complType() == ReturnValue)
+      return c;
     if (expr3) {
       e = expr3->evaluate();
-      v = e->getValue();
+      v = e.getValue();
     }
   }
 }
 
 // ECMA 12.6.3
-KJSO *ForInNode::evaluate()
+Completion ForInNode::execute()
 {
   /* TODO */
-  return KJSO::newCompletion(Normal);
+  return Completion(Normal);
 }
 
 // ECMA 12.4
-KJSO *ExprStatementNode::evaluate()
+Completion ExprStatementNode::execute()
 {
-  Ptr e = expr->evaluate();
-  Ptr v = e->getValue();
+  KJSO e = expr->evaluate();
+  KJSO v = e.getValue();
 
-  return KJSO::newCompletion(Normal, v);
+  return Completion(Normal, v);
 }
 
 // ECMA 12.5
-KJSO *IfNode::evaluate()
+Completion IfNode::execute()
 {
-  Ptr e = expr->evaluate();
-  Ptr v = e->getValue();
-  Ptr b = toBoolean(v);
+  KJSO e = expr->evaluate();
+  KJSO v = e.getValue();
+  Boolean b = v.toBoolean();
 
   // if ... then
-  if (b->boolVal())
-    return statement1->evaluate();
+  if (b.value())
+    return statement1->execute();
 
   // no else
   if (!statement2)
-    return KJSO::newCompletion(Normal);
+    return Completion(Normal);
 
   // else
-  return statement2->evaluate();
+  return statement2->execute();
 }
 
 // ECMA 12.6.1
-KJSO *DoWhileNode::evaluate()
+Completion DoWhileNode::execute()
 {
-  Ptr b, be, bv, s;
-  KJSO *value = 0L;
+  KJSO be, bv;
+  Completion c;
+  Boolean b(false);
+  KJSO value;
 
   do {
-    s = statement->evaluate();
-    assert(s->isA(CompletionType));
+    c = statement->execute();
     /* TODO */
     be = expr->evaluate();
-    bv = be->getValue();
-    b = toBoolean(bv);
-  } while (b->boolVal());
+    bv = be.getValue();
+    b = bv.toBoolean();
+  } while (b.value());
 
-  return KJSO::newCompletion(Normal, value);
+  return Completion(Normal, value);
 }
 
 // ECMA 12.6.2
-KJSO *WhileNode::evaluate()
+Completion WhileNode::execute()
 {
-  Ptr b, be, bv, e;
-  KJSO *value = 0L;
+  KJSO be, bv;
+  Completion c;
+  Boolean b(false);
+  KJSO value;
 
   while (1) {
     be = expr->evaluate();
-    bv = be->getValue();
-    b = toBoolean(bv);
+    bv = be.getValue();
+    b = bv.toBoolean();
 
-    if (!b->boolVal())
+    if (!b.value())
       break;
 
-    e = statement->evaluate();
-    if (e->isA(CompletionType)) { // really needed ? are all stat's completions ?
-      if (e->isValueCompletion())
-	value = e;
-      if (e->complType() == Break)
-	break;
-      if (e->complType() == Continue)
-	continue;
-      if (e->complType() == ReturnValue)
-	return e->ref();
-    }
+    c = statement->execute();
+    if (c.isValueCompletion())
+      value = c.value();
+    if (c.complType() == Break)
+      break;
+    if (c.complType() == Continue)
+      continue;
+    if (c.complType() == ReturnValue)
+      return c;
   }
 
-  return KJSO::newCompletion(Normal, value);
+  return Completion(Normal, value);
 }
 
 // ECMA 12.7
-KJSO *ContinueNode::evaluate()
+Completion ContinueNode::execute()
 {
-  return KJSO::newCompletion(Continue);
+  return Completion(Continue);
 }
 
 // ECMA 12.8
-KJSO *BreakNode::evaluate()
+Completion BreakNode::execute()
 {
-  return KJSO::newCompletion(Break);
+  return Completion(Break);
 }
 
 // ECMA 12.9
-KJSO *ReturnNode::evaluate()
+Completion ReturnNode::execute()
 {
   if (!value)
-    return KJSO::newCompletion(ReturnValue, zeroRef(KJSO::newUndefined()));
+    return Completion(ReturnValue, Undefined());
 
-  Ptr e = value->evaluate();
-  Ptr v = e->getValue();
+  KJSO e = value->evaluate();
+  KJSO v = e.getValue();
 
-  return KJSO::newCompletion(ReturnValue, v);
+  return Completion(ReturnValue, v);
 }
 
 // ECMA 12.10
-KJSO *WithNode::evaluate()
+Completion WithNode::execute()
 {
-  Ptr e = expr->evaluate();
-  Ptr v = e->getValue();
-  Ptr o = toObject(v);
-  Context::current()->pushScope(o);
-  Ptr res = stat->evaluate();
+  KJSO e = expr->evaluate();
+  KJSO v = e.getValue();
+  Object o = v.toObject();
+  Context::current()->pushScope(&o);
+  Completion res = stat->execute();
   Context::current()->popScope();
 
-  return res->ref();
+  return res;
 }
 
 // ECMA 12.11
@@ -873,19 +873,20 @@ ClauseListNode* ClauseListNode::append(CaseClauseNode *c)
 }
 
 // ECMA 12.11
-KJSO *SwitchNode::evaluate()
+Completion SwitchNode::execute()
 {
-  Ptr e = expr->evaluate();
-  Ptr v = e->getValue();
-  Ptr res = block->evalBlock(v);
+  KJSO e = expr->evaluate();
+  KJSO v = e.getValue();
+  Completion res = block->evalBlock(v);
 
-  return res->ref();
+  return res;
 }
 
 // ECMA 12.11
-KJSO *CaseBlockNode::evalBlock(KJSO *input)
+Completion CaseBlockNode::evalBlock(const KJSO& input)
 {
-  Ptr v, res;
+  KJSO v;
+  Completion res;
   ClauseListNode *a = list1, *b = list2;
   CaseClauseNode *clause;
 
@@ -896,12 +897,12 @@ KJSO *CaseBlockNode::evalBlock(KJSO *input)
       v = clause->evaluate();
       if (equal(input, v)) {
 	res = clause->evalStatements();
-	if (res->complType() != Normal)
-	  return res->ref();
+	if (res.complType() != Normal)
+	  return res;
 	if (a) {
 	  res = a->clause()->evalStatements();
-	  if (res->complType() != Normal)
-	    return res->ref();
+	  if (res.complType() != Normal)
+	    return res;
 	}
 	break;
       }
@@ -912,8 +913,8 @@ KJSO *CaseBlockNode::evalBlock(KJSO *input)
       v = clause->evaluate();
       if (equal(input, v)) {
 	res = clause->evalStatements();
-	if (res->complType() != Normal)
-	  return res->ref();
+	if (res.complType() != Normal)
+	  return res;
 	break;
       }
       b = b->next();
@@ -922,8 +923,8 @@ KJSO *CaseBlockNode::evalBlock(KJSO *input)
   // default clause
   if (def) {
     res = def->evalStatements();
-    if (res->complType() != Normal)
-      return res->ref();
+    if (res.complType() != Normal)
+      return res;
   }
 
   while (b) {
@@ -931,74 +932,70 @@ KJSO *CaseBlockNode::evalBlock(KJSO *input)
     v = clause->evaluate();
     if (equal(input, v)) {
       res = clause->evalStatements();
-      if (res->complType() != Normal)
-	return res->ref();
+      if (res.complType() != Normal)
+	return res;
       break;
     }
     b = b->next();
   }
 
-  return KJSO::newCompletion(Normal);
+  return Completion(Normal);
 }
 
 // ECMA 12.11
-KJSO *CaseClauseNode::evaluate()
+KJSO CaseClauseNode::evaluate()
 {
-  Ptr e = expr->evaluate();
-  Ptr v = e->getValue();
+  KJSO e = expr->evaluate();
+  KJSO v = e.getValue();
 
-  return v->ref();
+  return v;
 }
 
 // ECMA 12.11
-KJSO *CaseClauseNode::evalStatements()
+Completion CaseClauseNode::evalStatements()
 {
-  KJSO *res;
-
   if (list)
-    res = list->evaluate();
+    return list->execute();
   else
-    res = KJSO::newUndefined();
-
-  return res;
+    return Completion(Normal, Undefined());
 }
 
 // ECMA 12.12
-KJSO *LabelNode::evaluate()
+Completion LabelNode::execute()
 {
-  Ptr e;
+  KJSO e;
 
-  e = stat->evaluate();
+  e = stat->execute();
   /* TODO */
 
-  return KJSO::newCompletion(Normal);
+  return Completion(Normal);
 }
 
 // ECMA 12.13
-KJSO *ThrowNode::evaluate()
+Completion ThrowNode::execute()
 {
   /* TODO */
-  return 0L;
+  return Completion(Normal);
 }
 
 // ECMA 12.14
-KJSO *TryNode::evaluate()
+Completion TryNode::execute()
 {
   /* TODO */
-  return 0L;
+  return Completion(Normal);
 }
 
 // ECMA 12.14
-KJSO *CatchNode::evaluate()
+Completion CatchNode::execute()
 {
   /* TODO */
-  return 0L;
+  return Completion(Normal);
 }
 
 // ECMA 12.14
-KJSO *FinallyNode::evaluate()
+Completion FinallyNode::execute()
 {
-  return block->evaluate();
+  return block->execute();
 }
 
 // ECMA 13
@@ -1015,21 +1012,21 @@ void FuncDeclNode::processFuncDecl()
   for(int i = 0; i < num; i++, p = p->nextParam())
     plist->insert(num - i - 1, p->ident());
 
-  Ptr f = new DeclaredFunction(plist, block);
+  Function f(new DeclaredFunctionImp(plist, block));
 
   /* TODO: decide between global and activation object */
-  KJScript::global()->put(ident, f);
+  Global::current().put(ident, f);
 }
 
 // ECMA 13
-KJSO *ParameterNode::evaluate()
+KJSO ParameterNode::evaluate()
 {
   /* TODO */
-  return 0L;
+  return Undefined();
 }
 
 // ECMA 14
-KJSO *ProgramNode::evaluate()
+KJSO ProgramNode::evaluate()
 {
   source->processFuncDecl();
 
@@ -1042,26 +1039,28 @@ void ProgramNode::deleteStatements()
 }
 
 // ECMA 14
-KJSO *SourceElementsNode::evaluate()
+KJSO SourceElementsNode::evaluate()
 {
-  if (KJSO::error())
-    return KJSO::newCompletion(ReturnValue, KJSO::error());
+  Context *context = Context::current();
+
+  if (context->hadError())
+    return Completion(ReturnValue, context->error());
 
   if (!elements)
     return element->evaluate();
 
-  Ptr res1 = elements->evaluate();
-  if (KJSO::error())
-    return KJSO::newCompletion(ReturnValue, KJSO::error());
+  KJSO res1 = elements->evaluate();
+  if (context->hadError())
+    return Completion(ReturnValue, context->error());
 
-  Ptr res2 = element->evaluate();
-  if (KJSO::error())
-    return KJSO::newCompletion(ReturnValue, KJSO::error());
+  KJSO res2 = element->evaluate();
+  if (context->hadError())
+    return Completion(ReturnValue, context->error());
 
-  if (res2->isA(CompletionType))
-    return res2.ref();
+  if (res2.isA(CompletionType))
+    return res2;
 
-  return res1.ref();
+  return res1;
 }
 
 // ECMA 14
@@ -1082,12 +1081,12 @@ void SourceElementsNode::deleteStatements()
 }
 
 // ECMA 14
-KJSO *SourceElementNode::evaluate()
+KJSO SourceElementNode::evaluate()
 {
   if (statement)
-    return statement->evaluate();
+    return statement->execute();
 
-  return KJSO::newCompletion(Normal);
+  return Completion(Normal);
 }
 
 // ECMA 14

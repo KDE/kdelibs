@@ -21,8 +21,6 @@
 #ifndef _KJS_OBJECT_H_
 #define _KJS_OBJECT_H_
 
-#include <assert.h>
-
 #include "ustring.h"
 
 /**
@@ -43,7 +41,6 @@ namespace KJS {
 	      ObjectType,
 	      HostType,
 	      ReferenceType,
-	      ListType,
               CompletionType,
 	      // extended types
 	      FunctionType,
@@ -91,12 +88,13 @@ namespace KJS {
   extern const double Inf;
 
   // forward declarations
+  class Imp;
+  class Boolean;
+  class Number;
+  class String;
   class Object;
-  class ErrorObject;
   class Property;
   class List;
-  class RegExp;
-  class Node;
 
   /**
    * @short Type information.
@@ -128,8 +126,6 @@ namespace KJS {
   /**
    * @short Main base class for every KJS object.
    */
-  // this is class is a terrible mess. Dynamic casts might
-  // allow some simplifications.
   class KJSO {
   public:
     /**
@@ -137,17 +133,30 @@ namespace KJS {
      */
     KJSO();
     /**
+     * @internal
+     */
+    KJSO(Imp *d);
+    /**
+     * Copy constructor.
+     */
+    KJSO(const KJSO &);
+    /*
+     * Assignment operator
+     */
+    KJSO& operator=(const KJSO &);
+    /**
      * Destructor.
      */
     virtual ~KJSO();
     /**
+     * @return True if this object is null, i.e. if there is no data attached
+     * to this object. Don't confuse this with the Null object.
+     */
+    bool isNull() const;
+    /**
      * @return the type of the object. One of the @ref KJS::Type enums.
      */
     Type type() const;
-    /**
-     * @return The TypeInfo struct describing this object.
-     */
-    virtual const TypeInfo* typeInfo() const = 0;
     /**
      * Check whether object is of a certain type
      * @param t type to check for
@@ -163,13 +172,7 @@ namespace KJS {
      * Use this method when checking for objects. It's safer than checking
      * for a single object type with @ref isA().
      */
-    bool isObject() const { return (type() >= ObjectType); }
-    /**
-     * Check whether this is an object of a specified class.
-     * @param c is one of @ref KJS::Class.
-     * @return True if this object is of class c. False otherwise.
-     */
-    bool isClass(Class c) const;
+    bool isObject() const;
     /**
      * Examine the inheritance structure of this object.
      * @param t Name of the base class.
@@ -177,43 +180,32 @@ namespace KJS {
      */
     bool derivedFrom(const char *s) const;
 
-#ifdef KJS_DEBUG_MEM
-    static int count;
-    static KJSO* firstObject;
-    KJSO* nextObject, *prevObject;
-    int objId;
-    static int lastId;
-#endif
-
-    // factories
-    static KJSO *newNull();
-    static KJSO *newUndefined();
-    static KJSO *newBoolean(bool b);
-    static KJSO *newString(const UString &s);
-    static KJSO *newNumber(double d);
-    static KJSO *newNumber(int i);
-    static KJSO *newNumber(unsigned int u);
-    static KJSO *newNumber(long unsigned int l);
-    static KJSO *newCompletion(Compl c, KJSO *v = 0L,
-			       const UString &t = UString::null);
-    static KJSO *newReference(KJSO *b, const UString &s);
-    static KJSO *newError(ErrorType e, const char *m = 0L, int ln = -1);
-
+    KJSO toPrimitive(Type preferred = UndefinedType) const; // ECMA 9.1
+    Boolean toBoolean() const; // ECMA 9.2
+    Number toNumber() const; // ECMA 9.3
+    double round() const;
+    Number toInteger() const; // ECMA 9.4
+    int toInt32() const; // ECMA 9.5
+    unsigned int toUInt32() const; // ECMA 9.6
+    unsigned short toUInt16() const; // ECMA 9.7
+    String toString() const; // ECMA 9.8
+    Object toObject() const; // ECMA 9.9
+    
     // Properties
     /**
      * Set the internal [[prototype]] property of this object.
      * @param p A prototype object.
      */
-    void setPrototype(Object *p);
+    void setPrototype(const KJSO& p);
     /**
      * @return The internal [[prototype]] property.
      */
-    Object *prototype() const { return pprototype; }
+    KJSO prototype() const;
     /**
      * The internal [[Get]] method.
      * @return The value of property p.
      */
-    virtual KJSO *get(const UString &p);
+    KJSO get(const UString &p) const;
     /**
      * The internal [[HasProperty]] method.
      * @param p Property name.
@@ -221,295 +213,127 @@ namespace KJS {
      * @return Boolean value indicating whether the object already has a
      * member with the given name p.
      */
-    virtual bool hasProperty(const UString &p, bool recursive = true) const;
+    bool hasProperty(const UString &p, bool recursive = true) const;
     /**
      * The internal [[Put]] method. Sets the specified property to the value v.
      * @param p Property name.
      * @param v Value.
      */
-    virtual void put(const UString &p, KJSO *v);
+    void put(const UString &p, const KJSO& v);
     /**
      * The internal [[CanPut]] method.
      * @param p Property name.
      * @return A boolean value indicating whether a [[Put]] operation with
      * p succeed.
      */
-    virtual bool canPut(const UString &p) const;
+    bool canPut(const UString &p) const;
     /**
      * The internal [[Delete]] method. Removes the specified property from
      * the object.
      * @param p Property name.
      */
-    virtual void deleteProperty(const UString &p);
+    void deleteProperty(const UString &p);
 
-    void put(const UString &p, KJSO *v, int attr);
+    void put(const UString &p, const KJSO& v, int attr);
     void put(const UString &p, double d, int attr = None);
     void put(const UString &p, int i, int attr = None);
     void put(const UString &p, unsigned int u, int attr = None);
 
-    KJSO *defaultValue(Type hint = UndefinedType);
-    void dump(int level = 0);
-
     // Reference
-    KJSO *getBase();
-    UString getPropertyName();
-    KJSO *getValue();
-    ErrorType putValue(KJSO *v);
-
-    // internal value
-    bool boolVal() { assert(isA(BooleanType)); return value.b; }
-    double doubleVal()  { assert(isA(NumberType)); return value.d; }
-    int intVal() const { assert(isA(NumberType)); return (int) value.d; }
-    const UString stringVal()  { assert(isA(StringType)); return *(value.s); }
-    Compl complType() { assert(isA(CompletionType)); return value.c; }
-    bool isValueCompletion() { assert(isA(CompletionType)); return complVal; }
-    KJSO *complValue() { assert(isA(CompletionType)); return complVal->ref(); }
+    KJSO getBase() const;
+    UString getPropertyName() const;
+    KJSO getValue();
+    ErrorType putValue(const KJSO& v);
 
     // function call
     bool implementsCall() const;
-    KJSO *executeCall(KJSO *thisV, const List *args);
+    KJSO executeCall(const KJSO &thisV, const List *args);
 
     // constructor
-    void setConstructor(KJSO *c);
-    bool implementsConstruct() const { return isA(ConstructorType); }
+    void setConstructor(KJSO c);
 
-    void setRegExp(RegExp *r) { value.regexp = r; }
-    RegExp *regExp() const { return value.regexp; }
+    Imp *imp() const { return rep; }
 
-    // reference counting
-    KJSO *ref() { refCount++; return this; }
-    void deref() { assert(refCount > 0); if(!--refCount) delete this; }
-
-    static KJSO *error() { return currentErr; }
-    static void setError(ErrorObject *e);
+    //    static int count;
   protected:
-    /**
-     * @internal
-     */
-    // multi purpose
-    union Value {
-      bool b;
-      double d;
-      UString *s;
-      Compl c;
-      KJSO *base;
-      RegExp *regexp;
-    };
-    Value value;
-    // for references and completion target
-    UString strVal;
-    // completion value
-    KJSO *complVal;
+    Imp *rep;
 
   private:
-    friend KJSO *zeroRef(KJSO *obj);
-    static const TypeInfo info;
-    // disallow copy constructor and assignment operator
-    KJSO(const KJSO &);
-    KJSO& operator=(const KJSO &);
-    void init();
-    void putArrayElement(const UString &p, KJSO *v);
-    int refCount;
-    Object *pprototype;
-    Property *prop;
-    static KJSO *currentErr;
-    
-    // for future extensions
-    class KJSOInternal;
-    KJSOInternal *internal;
+    void putArrayElement(const UString &p, const KJSO &v);
   }; // end of KJSO
 
   /**
-   * @short Smart pointer holding references to @ref KJS::KJSO.
+   * @short Base for all implementation classes.
    */
-  class Ptr {
+  class Imp {
+    friend KJSO;
   public:
-    Ptr() : obj(0L) { }
-    Ptr(KJSO *o) { assert(o); obj = o; }
-    Ptr(const Ptr &p) { /* TODO */ obj = p.obj->ref(); }
-    Ptr& operator=(const Ptr &p) { if (obj) obj->deref(); obj = p.obj->ref();
-                                   return *this;}
-    ~Ptr() { if (obj) obj->deref(); }
-    Ptr *operator=(KJSO *o) { if (obj) obj->deref(); obj = o; return this; }
-    KJSO* operator->() const { return obj; }
+    Imp();
+    virtual ~Imp();
+    virtual KJSO toPrimitive(Type preferred = UndefinedType) const; // ECMA 9.1
+    virtual Boolean toBoolean() const; // ECMA 9.2
+    virtual Number toNumber() const; // ECMA 9.3
+    virtual String toString() const; // ECMA 9.8
+    virtual Object toObject() const; // ECMA 9.9
 
-    operator KJSO*() const { return obj; }
-    void release() { obj->deref(); obj = 0L; }
-    KJSO *ref() { obj->ref(); return obj; }
-  private:
-    KJSO *obj;
-  };
+    // properties
+    virtual KJSO get(const UString &p) const;
+    virtual bool hasProperty(const UString &p, bool recursive = true) const;
+    virtual void put(const UString &p, const KJSO& v);
+    void put(const UString &p, const KJSO& v, int attr);
+    virtual bool canPut(const UString &p) const;
+    virtual void deleteProperty(const UString &p);
+    virtual KJSO defaultValue(Type hint) const;
 
-  KJSO *zeroRef(KJSO *obj);
+    bool implementsCall() const;
 
-  class List;
-  class ListIterator;
+    // reference counting mechanism
+    inline Imp* ref() { refcount++; return this; }
+    inline bool deref() { return (!--refcount); }
+    unsigned int refcount;
 
-  /**
-   * @internal
-   */
-  class ListNode {
-    friend List;
-    friend ListIterator;
-    ListNode(KJSO *obj, ListNode *p, ListNode *n)
-      : member(obj), prev(p), next(n) {};
-    ~ListNode() { if (member) member->deref(); }
-
-    KJSO *member;
-    ListNode *prev, *next;
-  };
-
-  /**
-   * @short Iterator for @ref KJS::List objects.
-   */
-  class ListIterator {
-    friend List;
-    ListIterator();
-    ListIterator(const ListNode *n) : node(n) { }
-  public:
+    Type type() const { return typeInfo()->type; }
     /**
-     * Construct an iterator that points to the first element of the list.
-     * @param l The list the iterator will operate on.
-     */
-    ListIterator(const List &list);
-    /**
-     * Assignment constructor.
-     */
-    ListIterator& operator=(const ListIterator &iterator)
-      { node=iterator.node; return *this; }
-    /**
-     * Copy constructor.
-     */
-    ListIterator(const ListIterator &i) : node(i.node) { }
-    /**
-     * Dereference the iterator.
-     * @return A pointer to the element the iterator operates on.
-     */
-    KJSO* operator->() const { return node->member; }
-    /**
-     * Conversion to @ref KJS::KJSO*
-     * @return A pointer to the element the iterator operates on.
-     */
-    operator KJSO*() const { return node->member; }
-    /**
-     * Postfix increment operator.
-     * @return The element after the increment.
-     */
-    KJSO* operator++() { node = node->next; return node->member; }
-    /**
-     * Prefix increment operator.
-     */
-    KJSO* operator++(int) { const ListNode *n = node; ++*this; return n->member; }
-    /**
-     * Postfix decrement operator.
-     */
-    KJSO* operator--() { node = node->prev; return node->member; }
-    /**
-     * Prefix decrement operator.
-     */
-    KJSO* operator--(int) { const ListNode *n = node; --*this; return n->member; }
-    /**
-     * Compare the iterator with another one.
-     * @return True if the two iterators operate on the same list element.
-     * False otherwise.
-     */
-    bool operator==(const ListIterator &it) const { return (node==it.node); }
-    /**
-     * Check for inequality with another iterator.
-     * @return True if the two iterators operate on different list elements.
-     */
-    bool operator!=(const ListIterator &it) const { return (node!=it.node); }
-  private:
-    const ListNode *node;
-  };
-
-  /**
-   * @short Native list type.
-   *
-   * List is a native ECMAScript type. List values are only used for
-   * intermediate results of expression evaluation and cannot be stored
-   * as properties of objects.
-   *
-   * The class takes care of memory management via reference counting.
-   */
-  class List : public KJSO {
-    friend ListIterator;
-  public:
-    /**
-     * Constructor.
-     */
-    List();
-    /**
-     * Destructor.
-     */
-    ~List();
-    /**
-     * @return KJS::ListType
+     * @return The TypeInfo struct describing this object.
      */
     virtual const TypeInfo* typeInfo() const { return &info; }
-    static const TypeInfo info;
-    /**
-     * Append an object to the end of the list.
-     *
-     * @param obj Pointer to object.
-     */
-    void append(KJSO *obj);
-    /**
-     * Insert an object at the beginning of the list.
-     *
-     * @param obj Pointer to object.
-     */
-    void prepend(KJSO *obj);
-    /**
-     * Remove the element at the beginning of the list.
-     */
-    void removeFirst();
-    /**
-     * Remove the element at the end of the list.
-     */
-    void removeLast();
-    /**
-     * Remove all elements from the list.
-     */
-    void clear();
-    /**
-     * @return A @ref KJS::ListIterator pointing to the first element.
-     */
-    ListIterator begin() const { return ListIterator(hook->next); }
-    /**
-     * @return A @ref KJS::ListIterator pointing to the last element.
-     */
-    ListIterator end() const { return ListIterator(hook); }
-    /**
-     * @return true if the list is empty. false otherwise.
-     */
-    bool isEmpty() const { return (hook->prev == hook); }
-    /**
-     * @return the current size of the list.
-     */
-    int size() const;
-    /**
-     * Retrieve an element at an indexed position. If you want to iterate
-     * trough the whole list using @ref KJS::ListIterator will be faster.
-     *
-     * @param i List index.
-     * @return Pointer to the element at position i. @ref KJS::Undefined if the
-     * index is out of range.
-     */
-    KJSO *at(int i) const;
-    /**
-     * Equivalent to @ref at.
-     */
-    KJSO *operator[](int i) const { return at(i); }
-    /**
-     * Returns a pointer to a static instance of an empty list. Useful if a
-     * function has a @ref KJS::List parameter.
-     */
-    static const List *empty();
+    
+    void setPrototype(const KJSO& p);
+    void setConstructor(const KJSO& c);
+
+    //    static int count;
   private:
-    void erase(ListNode *n);
-    ListNode *hook;
-    static List *emptyList;
+    Imp(const Imp&);
+    Imp& operator=(const Imp&);
+    void putArrayElement(const UString &p, const KJSO& v);
+
+    Property *prop;
+    KJSO proto;
+    static const TypeInfo info;
+    
+    // for future extensions
+    class ImpInternal;
+    ImpInternal *internal;
+  };
+
+  class ObjectImp : public Imp {
+    friend Object;
+  public:
+    ObjectImp(Class c);
+    ObjectImp(Class c, const KJSO &v);
+    ObjectImp(Class c, const KJSO &v, const KJSO &p);
+    virtual ~ObjectImp();
+    virtual KJSO toPrimitive(Type preferred = UndefinedType) const;
+    virtual Boolean toBoolean() const;
+    virtual Number toNumber() const;
+    virtual String toString() const;
+    virtual Object toObject() const;
+
+    virtual const TypeInfo* typeInfo() const { return &info; }
+    static const TypeInfo info;
+  private:
+    Class cl;
+    KJSO val;
   };
 
   /**
@@ -517,30 +341,26 @@ namespace KJS {
    */
   class Object : public KJSO {
   public:
-    Object(Class c = UndefClass, KJSO *v = 0L, Object *p = 0L);
-    ~Object() { if (objValue) objValue->deref(); }
-    virtual const TypeInfo* typeInfo() const { return &info; }
-    static const TypeInfo info;
-    void setClass(Class c) { classType = c; }
-    Class getClass() const { return classType; }
-    void setInternalValue(KJSO *v) { objValue = v ? v->ref() : 0L; }
-    KJSO *internalValue() { return objValue->ref(); }
-    static Object *create(Class c, KJSO *val = 0L, Object *p = 0L);
-  private:
-    Class classType;
-    KJSO* objValue;
+    Object(Imp *d);
+    Object(Class c = UndefClass);
+    Object(Class c, const KJSO& v);
+    Object(Class c, const KJSO& v, const Object& p);
+    virtual ~Object();
+    void setClass(Class c);
+    Class getClass() const;
+    void setInternalValue(const KJSO& v);
+    KJSO internalValue();
+    static Object create(Class c);
+    static Object create(Class c, const KJSO& val);
+    static Object create(Class c, const KJSO& val, const Object &p);
+    static Object dynamicCast(const KJSO &obj);
   };
 
-  /**
-   * @short Base class for language extensions.
-   */
-  class HostObject : public KJSO {
-    friend KJSO;
+  class HostImp : public Imp {
   public:
-    virtual KJSO *get(const UString &p);
-    virtual void put(const UString &p, KJSO *v);
-    virtual const TypeInfo* typeInfo() const;
-    static TypeInfo info;
+    virtual ~HostImp();
+    virtual const TypeInfo* typeInfo() const { return &info; }
+    static const TypeInfo info;
   };
 
   /**
@@ -549,24 +369,16 @@ namespace KJS {
   class Global : public Object {
   public:
     Global();
-    Object *objProto;
-    Object *funcProto;
-    Object *arrayProto;
-    Object *stringProto;
-    Object *booleanProto;
-    Object *numberProto;
-    Object *dateProto;
-    Object *regexpProto;
-    Object *errorProto;
-    Object *evalErrorProto;
-    Object *rangeErrorProto;
-    Object *refErrorProto;
-    Object *syntaxErrorProto;
-    Object *typeErrorProto;
-    Object *uriErrorProto;
-  private:
-    class GlobalInternal;
-    GlobalInternal *internal;
+    virtual ~Global();
+    static Global current();
+    KJSO objectPrototype() const;
+    KJSO functionPrototype() const;
+  };
+
+  class Error {
+  public:
+    static KJSO create(ErrorType e, const char *m = 0, int l = -1);
+    static Object createObject(ErrorType e, const char *m = 0, int l = -1);
   };
 
 }; // namespace

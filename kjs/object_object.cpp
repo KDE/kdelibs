@@ -20,48 +20,47 @@
 #include "kjs.h"
 #include "operations.h"
 #include "object_object.h"
+#include "types.h"
 
 using namespace KJS;
 
-KJSO *ObjectObject::execute(const List &args)
+Completion ObjectObject::execute(const List &args)
 {
-  Ptr result;
+  KJSO result;
 
   List argList;
   if (args.isEmpty()) {
     result = construct(argList);
   } else {
-    Ptr arg = args[0];
-    if (arg->isA(NullType) || arg->isA(UndefinedType)) {
+    KJSO arg = args[0];
+    if (arg.isA(NullType) || arg.isA(UndefinedType)) {
       argList.append(arg);
       result = construct(argList);
     } else
-      result = toObject(arg);
+      result = arg.toObject();
   }
-  return newCompletion(Normal, result);
+  return Completion(Normal, result);
 }
 
 // ECMA 15.2.2
-Object* ObjectObject::construct(const List &args)
+Object ObjectObject::construct(const List &args)
 {
   // if no arguments have been passed ...
   if (args.isEmpty())
     return Object::create(ObjectClass);
 
-  KJSO *arg = args.begin();
-  if (arg->isA(ObjectType)) {
+  KJSO arg = *args.begin();
+  Object obj = Object::dynamicCast(arg);
+  if (!obj.isNull()) {
     /* TODO: handle host objects */
-    Object *obj = static_cast<Object*>(arg->ref());
     return obj;
   }
 
-  switch (arg->type()) {
+  switch (arg.type()) {
   case StringType:
-    return Object::create(StringClass, arg);
   case BooleanType:
-    return Object::create(BooleanClass, arg);
   case NumberType:
-    return Object::create(NumberClass, arg);
+    return arg.toObject();
   default:
     assert(!"unhandled switch case in ObjectConstructor");
   case NullType:
@@ -71,50 +70,47 @@ Object* ObjectObject::construct(const List &args)
 }
 
 ObjectPrototype::ObjectPrototype()
-  : Object(ObjectClass)
+  : ObjectImp(ObjectClass)
 {
   // the spec says that [[Property]] should be `null'.
   // Not sure if Null or C's NULL is needed.
 }
 
-KJSO *ObjectPrototype::get(const UString &p)
+KJSO ObjectPrototype::get(const UString &p) const
 {
   if (p == "toString")
-    return new ObjectProtoFunc(ToString);
+    return Function(new ObjectProtoFunc(ToString));
   else if (p == "valueOf")
-    return new ObjectProtoFunc(ValueOf);
+    return Function(new ObjectProtoFunc(ValueOf));
   else
-    return KJSO::get(p);
+    return Imp::get(p);
 }
 
 ObjectProtoFunc::ObjectProtoFunc(int i)
   : id(i)
 {
-  setPrototype(KJScript::global()->funcProto);
+  setPrototype(Global::current().functionPrototype());
 }
 
 // ECMA 15.2.4.2 + 15.2.4.3
-KJSO *ObjectProtoFunc::execute(const List &)
+Completion ObjectProtoFunc::execute(const List &)
 {
-  Ptr result;
-  KJSO *thisVal = thisValue();
+  KJSO result;
+
+  Object thisObj = Object::dynamicCast(thisValue());
 
   /* TODO: what to do with non-objects. Is this possible at all ? */
-  if (!thisVal->isA(ObjectType)) {
-    result = newString("[no object]");
-    return newCompletion(ReturnValue, result);
-  }
-
-  Object *thisObj = static_cast<Object*>(thisVal);
+  if (thisObj.isNull())
+    return Completion(ReturnValue, String("[No Object]"));
 
   // valueOf()
   if (id == ObjectPrototype::ValueOf)
     /* TODO: host objects*/
-    return newCompletion(Normal, thisObj);
+    return Completion(Normal, thisObj);
 
   // toString()
   UString str;
-  switch(thisObj->getClass()) {
+  switch(thisObj.getClass()) {
   case StringClass:
     str = "[object String]";
     break;
@@ -130,7 +126,6 @@ KJSO *ObjectProtoFunc::execute(const List &)
   default:
     str = "[undefined object]";
   }
-  result = newString(str);
 
-  return newCompletion(Normal, result);
+  return Completion(Normal, String(str));
 }

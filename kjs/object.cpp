@@ -18,15 +18,18 @@
  *  Boston, MA 02111-1307, USA.
  */
 
+#include "object.h"
+
 #ifdef HAVE_CONFIG_H
 #include <config.h>
 #endif
 #include <stdio.h>
 #include <string.h>
+#include <math.h>
 
 #include "kjs.h"
-#include "object.h"
 #include "types.h"
+#include "internal.h"
 #include "operations.h"
 #include "error_object.h"
 
@@ -42,103 +45,93 @@ namespace KJS {
 
   const double NaN = *(const double*) NaN_Bytes;
   const double Inf = *(const double*) Inf_Bytes;
-  // TODO: -0
+  const double D16 = 65536.0;
+  const double D31 = 2147483648.0;
+  const double D32 = 4294967296.0;
 
-#ifdef KJS_DEBUG_MEM
-  int KJSO::count = 0;
-  KJSO* KJSO::firstObject = 0L;
-  int KJSO::lastId = 0;
-#endif
+  // TODO: -0
 };
 
 using namespace KJS;
 
-#ifdef KJS_DEBUG_MEM
-const char *typeName[] = {
-  "Undefined",
-  "Null",
-  "Boolean",
-  "Number",
-  "String",
-  "Object",
-  "Host",
-  "Reference",
-  "List",
-  "Completion",
-  "Property",
-  "Scope",
-  "InternalFunction",
-  "DeclaredFunction",
-  "AnonymousFunction",
-  "Constructor",
-  "Activation",
-  "Error"
-};
-#endif
+const TypeInfo Imp::info = { "Imp", AbstractType, 0, 0, 0 };
 
-const TypeInfo KJSO::info = { "KJSO", AbstractType, 0, 0, 0 };
-
-KJSO *KJS::zeroRef(KJSO *obj)
-{
-  obj->refCount = 0;
-  return obj;
+namespace KJS {
+  struct Property {
+    UString name;
+    KJSO object;
+    int attribute;
+    Property *next;
+  };
 }
-
-KJSO *KJSO::currentErr = 0L;
 
 KJSO::KJSO()
+  : rep(0)
 {
-  init();
-}
-
-void KJSO::init()
-{
-  pprototype = 0L; prop = 0L;
-  refCount = 1;
-
 #ifdef KJS_DEBUG_MEM
   count++;
-  if (firstObject)
-    firstObject->prevObject = this;
-  nextObject = firstObject;
-  prevObject = 0L;
-  firstObject = this;
-  objId = ++lastId;
-  printf("++ count: %d id: %d\n", count, objId);
 #endif
+}
+
+KJSO::KJSO(Imp *d)
+  : rep(d)
+{
+#ifdef KJS_DEBUG_MEM
+  count++;
+#endif
+}
+
+KJSO::KJSO(const KJSO &o)
+{
+#ifdef KJS_DEBUG_MEM
+  count++;
+#endif
+  rep = o.rep ? o.rep->ref() : 0L;
+}
+
+KJSO& KJSO::operator=(const KJSO &o)
+{
+  if (rep && rep->deref())
+    delete rep;
+  rep = o.rep ? o.rep->ref() : 0L;
+
+  return *this;
 }
 
 KJSO::~KJSO()
-{ /* TODO: delete String object ???*/
-  Property *tmp, *p = prop;
-  while (p) {
-    tmp = p;
-    p = p->next;
-    delete tmp;
-  }
-
-  if (pprototype)
-    pprototype->deref();
-
+{
 #ifdef KJS_DEBUG_MEM
-  if (prevObject)
-    prevObject->nextObject = nextObject;
-  if (nextObject)
-    nextObject->prevObject = prevObject;
-  if (firstObject == this)
-    firstObject = nextObject;
-  --count;
+  count--;
 #endif
+  // TODO: debug & activate
+//   if (rep && rep->deref())
+//     delete rep;
+}
+
+bool KJSO::isNull() const
+{
+  return !rep;
 }
 
 Type KJSO::type() const
 {
-  return typeInfo()->type;
+#ifdef KJS_VERBOSE
+  if (!rep)
+    fprintf(stderr, "requesting type of null object\n");
+#endif
+
+  return rep ? rep->typeInfo()->type : UndefinedType;
+}
+
+bool KJSO::isObject() const
+{
+  return (type() >= ObjectType);
 }
 
 bool KJSO::isA(const char *s) const
 {
-  const TypeInfo *info = typeInfo();
+  assert(rep);
+  const TypeInfo *info = rep->typeInfo();
 
   if (!s || !info || !info->name)
     return false;
@@ -149,20 +142,13 @@ bool KJSO::isA(const char *s) const
   return (strcmp(s, info->name) == 0);
 }
 
-bool KJSO::isClass(Class c) const
-{
-  if (!isA(ObjectType))
-    return false;
-
-  return (static_cast<const Object*>(this)->getClass() == c);
-}
-
 bool KJSO::derivedFrom(const char *s) const
 {
   if (!s)
     return false;
 
-  const TypeInfo *info = typeInfo();
+  assert(rep);
+  const TypeInfo *info = rep->typeInfo();
   while (info) {
     if (info->name && strcmp(s, info->name) == 0)
       return true;
@@ -172,121 +158,123 @@ bool KJSO::derivedFrom(const char *s) const
   return false;
 }
 
-KJSO *KJSO::newNull()
+KJSO KJSO::toPrimitive(Type preferred) const
 {
-  return new Null();
+  assert(rep);
+  return rep->toPrimitive(preferred);
 }
 
-KJSO *KJSO::newUndefined()
+Boolean KJSO::toBoolean() const
 {
-  return new Undefined();
+  assert(rep);
+  return rep->toBoolean();
 }
 
-KJSO *KJSO::newBoolean(bool b)
+Number KJSO::toNumber() const
 {
-  return new Boolean(b);
+  assert(rep);
+  return rep->toNumber();
 }
 
-KJSO *KJSO::newString(const UString &s)
+// helper function for toInteger, toInt32, toUInt32 and toUInt16
+double KJSO::round() const
 {
-  return new String(s);
+  if (isA(UndefinedType)) /* TODO: see below */
+    return 0.0;       
+  Number n = toNumber();
+  if (n.value() == 0.0)   /* TODO: -0, NaN, Inf */
+    return 0.0;
+  double d = floor(fabs(n.value()));
+  if (n.value() < 0)
+    d *= -1;
+
+  return d;
 }
 
-KJSO *KJSO::newNumber(double d)
+// ECMA 9.4
+Number KJSO::toInteger() const
 {
-  return new Number(d);
+  return Number(round());
 }
 
-KJSO *KJSO::newNumber(int i)
+// ECMA 9.5
+int KJSO::toInt32() const
 {
-  return new Number(i);
+  double d = round();
+  double d32 = fmod(d, D32);
+
+  if (d32 >= D16)
+    d32 -= D32;
+
+  return static_cast<int>(d32);
 }
 
-KJSO *KJSO::newNumber(unsigned int u)
+// ECMA 9.6
+unsigned int KJSO::toUInt32() const
 {
-  return new Number(u);
+  double d = round();
+  double d32 = fmod(d, D32);
+
+  return static_cast<unsigned int>(d32);
 }
 
-KJSO *KJSO::newNumber(long unsigned int l)
+// ECMA 9.7
+unsigned short KJSO::toUInt16() const
 {
-  return new Number(l);
+  double d = round();
+  double d16 = fmod(d, D16);
+
+  return static_cast<unsigned short>(d16);
 }
 
-KJSO *KJSO::newCompletion(Compl c, KJSO *v, const UString &t)
+String KJSO::toString() const
 {
-  return new Completion(c, v, t);
+  assert(rep);
+  return rep->toString();
 }
 
-KJSO *KJSO::newReference(KJSO *b, const UString &s)
+Object KJSO::toObject() const
 {
-  return new Reference(b, s);
-}
+  assert(rep);
+  if (isObject())
+    return Object(rep);
 
-KJSO *KJSO::newError(ErrorType e, const char * /*m*/, int /*ln*/)
-{
-  //  Ptr s = newString(m);
-
-  ErrorObject *err = new ErrorObject(KJScript::global()->errorProto, e);
-
-  if (!error()) {
-    setError(err);
-  }
-
-  return err;
+  return rep->toObject();
 }
 
 bool KJSO::implementsCall() const
 {
-  return (type() == InternalFunctionType ||
+  return (type() == FunctionType ||
+	  type() == InternalFunctionType ||
 	  type() == ConstructorType ||
 	  type() == DeclaredFunctionType ||
 	  type() == AnonymousFunctionType);
 }
 
 // [[call]]
-KJSO *KJSO::executeCall(KJSO *thisV, const List *args)
+KJSO KJSO::executeCall(const KJSO &thisV, const List *args)
 {
-  if (!args)
-    args = List::empty();
-
-  Function *func = static_cast<Function*>(this);
-
-  Context *save = Context::current();
-
-  CodeType ctype = func->codeType();
-  Context::setCurrent(new Context(ctype, save, func, args, thisV));
-
-  // assign user supplied arguments to parameters
-  func->processParameters(args);
-
-  Ptr comp = func->execute(*args);
-
-  delete Context::current();
-  Context::setCurrent(save);
-
-  if (comp->isValueCompletion())
-    return comp->complValue();
-  else
-    return newUndefined();
+  assert(rep);
+  assert(implementsCall());
+  return (static_cast<FunctionImp*>(rep))->executeCall(thisV.imp(), args);
 }
 
-void KJSO::setConstructor(KJSO *c)
+void KJSO::setConstructor(KJSO c)
 {
-  assert(c);
   put("constructor", c, DontEnum | DontDelete | ReadOnly);
 }
 
 // ECMA 8.7.1
-KJSO *KJSO::getBase()
+KJSO KJSO::getBase() const
 {
   if (!isA(ReferenceType))
-    return newError(ReferenceError);
+    return Error::create(ReferenceError);
 
-  return value.base->ref();
+  return ((ReferenceImp*)rep)->getBase();
 }
 
 // ECMA 8.7.2
-UString KJSO::getPropertyName()
+UString KJSO::getPropertyName() const
 {
   if (!isA(ReferenceType))
     // the spec wants a runtime error here. But getValue() and putValue()
@@ -294,70 +282,313 @@ UString KJSO::getPropertyName()
     // string we should be on the safe side.
     return UString();
 
-  return strVal;
+  return ((ReferenceImp*)rep)->getPropertyName();
 }
 
 // ECMA 8.7.1
-KJSO *KJSO::getValue()
+KJSO KJSO::getValue()
 {
   if (!isA(ReferenceType)) {
-    return this->ref();
+    return *this;
   }
-  Ptr o = getBase();
-  if (o->isA(NullType))
-    return newError(ReferenceError);
+  KJSO o = getBase();
+  if (o.isNull() || o.isA(NullType))
+    return Error::create(ReferenceError);
 
-  return o->get(getPropertyName());
+  return o.get(getPropertyName());
 }
 
 // ECMA 8.7.2
-ErrorType KJSO::putValue(KJSO *v)
+ErrorType KJSO::putValue(const KJSO& v)
 {
   if (!isA(ReferenceType))
     return ReferenceError;
 
-  Ptr o = getBase();
-  if (o->isA(NullType)) {
-    KJScript::global()->put(getPropertyName(), v);
-  } else {
+  KJSO o = getBase();
+  if (o.isA(NullType))
+    Global::current().put(getPropertyName(), v);
+  else {
     // are we writing into an array ?
-    if (o->isA(ObjectType) && (((Object*)(KJSO*)o)->getClass() == ArrayClass))
-      o->putArrayElement(getPropertyName(), v);
+    if (o.isA(ObjectType) && (o.toObject().getClass() == ArrayClass))
+      o.putArrayElement(getPropertyName(), v);
     else
-      o->put(getPropertyName(), v);
+      o.put(getPropertyName(), v);
   }
 
   return NoError;
 }
 
-void KJSO::setPrototype(Object *p)
+void KJSO::setPrototype(const KJSO& p)
 {
-  assert(p);
-  p->ref();
-  pprototype = p;
+  assert(rep);
+  rep->proto = p;
   put("prototype", p, DontEnum | DontDelete | ReadOnly);
 }
 
-// ECMA 8.6.2.1
-KJSO *KJSO::get(const UString &p)
+KJSO KJSO::prototype() const
 {
-  if (prop) {
-    Property *pr = prop;
-    while (pr) {
-      if (pr->name == p)
-	return pr->object->ref();
-      pr = pr->next;
-    }
-  }
-  if (!prototype())
-    return newUndefined();
-
-  return prototype()->get(p);
+  if (rep)
+    return rep->proto;
+  else
+    return KJSO();
 }
 
-// ECMA 8.6.2.2 (may be overriden)
-void KJSO::put(const UString &p, KJSO *v)
+// ECMA 8.6.2.1
+KJSO KJSO::get(const UString &p) const
 {
+  assert(rep);
+  return rep->get(p);
+}
+
+// ECMA 8.6.2.2
+void KJSO::put(const UString &p, const KJSO& v)
+{
+  assert(rep);
+  rep->put(p, v);
+}
+
+// ECMA 8.6.2.2
+void KJSO::put(const UString &p, const KJSO& v, int attr)
+{
+  static_cast<Imp*>(rep)->put(p, v, attr);
+}
+
+// provided for convenience.
+void KJSO::put(const UString &p, double d, int attr)
+{
+  put(p, Number(d), attr);
+}
+
+// provided for convenience.
+void KJSO::put(const UString &p, int i, int attr)
+{
+  put(p, Number(i), attr);
+}
+
+// provided for convenience.
+void KJSO::put(const UString &p, unsigned int u, int attr)
+{
+  put(p, Number(u), attr);
+}
+
+// ECMA 15.4.5.1
+void KJSO::putArrayElement(const UString &p, const KJSO& v)
+{
+  assert(rep);
+  rep->putArrayElement(p, v);
+}
+
+// ECMA 8.6.2.3
+bool KJSO::canPut(const UString &p) const
+{
+  assert(rep);
+  return rep->canPut(p);
+}
+
+// ECMA 8.6.2.4
+bool KJSO::hasProperty(const UString &p, bool recursive) const
+{
+  assert(rep);
+  return rep->hasProperty(p, recursive);
+}
+
+// ECMA 8.6.2.5
+void KJSO::deleteProperty(const UString &p)
+{
+  assert(rep);
+  rep->deleteProperty(p);
+}
+
+Object::Object(Imp *d) : KJSO(d) { }
+
+Object::Object(Class c) : KJSO(new ObjectImp(c)) { }
+
+Object::Object(Class c, const KJSO& v) : KJSO(new ObjectImp(c, v)) { }
+
+Object::Object(Class c, const KJSO& v, const Object& p)
+  : KJSO(new ObjectImp(c, v))
+{
+  setPrototype(p);
+}
+
+Object::~Object() { }
+
+void Object::setClass(Class c)
+{
+  static_cast<ObjectImp*>(rep)->cl = c;
+}
+
+Class Object::getClass() const
+{
+  assert(rep);
+  return static_cast<ObjectImp*>(rep)->cl;
+}
+
+void Object::setInternalValue(const KJSO& v)
+{
+  assert(rep);
+  static_cast<ObjectImp*>(rep)->val = v;
+}
+
+KJSO Object::internalValue()
+{
+  assert(rep);
+  return static_cast<ObjectImp*>(rep)->val;
+}
+
+Object Object::create(Class c)
+{
+  Object obj = Object();
+  obj.setClass(c);
+
+  return obj;
+}
+
+// factory
+Object Object::create(Class c, const KJSO& val)
+{
+  Global global(Global::current());
+  Object obj = Object();
+  Object prot;
+  obj.setClass(c);
+  obj.setInternalValue(val);
+
+  GlobalImp *g = (GlobalImp*)global.imp();
+  
+  switch (c) {
+  case UndefClass:
+  case ObjectClass:
+    prot = g->objProto;
+    break;
+  case ArrayClass:
+    prot = g->arrayProto;
+    break;
+  case StringClass:
+    prot = g->stringProto;
+    break;
+  case BooleanClass:
+    prot = g->booleanProto;
+    break;
+  case NumberClass:
+    prot = g->numberProto;
+    break;
+  case DateClass:
+    prot = g->dateProto;
+    break;
+  case RegExpClass:
+    prot = g->regexpProto;
+    break;
+  case ErrorClass:
+    prot = g->errorProto;
+    break;
+  }
+
+  obj.setPrototype(prot);
+  return obj;
+}
+
+Object Object::create(Class c, const KJSO& val, const Object& p)
+{
+  Global global(Global::current());
+  Object obj = Object();
+  Object prot;
+  obj.setClass(c);
+  obj.setInternalValue(val);
+
+  prot = p;
+  obj.setPrototype(prot);
+  return obj;
+}
+
+Object Object::dynamicCast(const KJSO &obj)
+{
+  // return null object on type mismatch
+  if (!obj.isA(ObjectType))
+    return Object(0L);
+
+  return Object(obj.imp());
+
+}
+
+#ifdef KJS_DEBUG_MEM
+unsigned int KJSO::count = 0;
+unsigned int Imp::count = 0;
+unsigned int List::count = 0;
+#endif
+
+Imp::Imp()
+  : refcount(1), prop(0)
+{
+#ifdef KJS_DEBUG_MEM
+  count++;
+#endif
+}
+
+Imp::~Imp()
+{
+#ifdef KJS_DEBUG_MEM
+  count--;
+#endif
+
+  // delete attached properties
+  Property *tmp, *p = prop;
+  while (p) {
+    tmp = p;
+    p = p->next;
+    delete tmp;
+  }
+}
+
+KJSO Imp::toPrimitive(Type) const
+{
+  return Undefined();
+}
+
+Boolean Imp::toBoolean() const
+{
+  return Boolean();
+}
+
+Number Imp::toNumber() const
+{
+  return Number();
+}
+
+String Imp::toString() const
+{
+  return String();
+}
+
+Object Imp::toObject() const
+{
+  return Object(Error::create(TypeError).imp());
+}
+
+KJSO Imp::get(const UString &p) const
+{
+  Property *pr = prop;
+  while (pr) {
+    if (pr->name == p)
+      return pr->object;
+    pr = pr->next;
+  }
+
+  if (proto.isNull())
+    return Undefined();
+
+  return proto.get(p);
+}
+
+// may be overriden
+void Imp::put(const UString &p, const KJSO& v)
+{
+  put(p, v, None);
+}
+
+// ECMA 8.6.2.2
+void Imp::put(const UString &p, const KJSO& v, int attr)
+{
+  /* TODO: check for write permissions directly w/o this call */
   if (!canPut(p))
     return;
 
@@ -368,7 +599,7 @@ void KJSO::put(const UString &p, KJSO *v)
     while (pr) {
       if (pr->name == p) {
 	// replace old value
-	pr->object = v->ref();
+	pr->object = v;
 	return;
       }
       pr = pr->next;
@@ -376,113 +607,52 @@ void KJSO::put(const UString &p, KJSO *v)
   }
 
   // add new property
-  pr = new Property(p, v);
+  pr = new Property;
+  pr->name = p;
+  pr->object = v;
+  pr->attribute = attr;
   pr->next = prop;
   prop = pr;
 }
 
-// ECMA 8.6.2.2
-void KJSO::put(const UString &p, KJSO *v, int /*attr*/)
-{
-  put(p, v);
-  /* TODO: set attributes */
-}
-
-// provided for convenience.
-void KJSO::put(const UString &p, double d, int attr)
-{
-  put(p, zeroRef(newNumber(d)), attr);
-}
-
-// provided for convenience.
-void KJSO::put(const UString &p, int i, int attr)
-{
-  put(p, zeroRef(newNumber(i)), attr);
-}
-
-// provided for convenience.
-void KJSO::put(const UString &p, unsigned int u, int attr)
-{
-  put(p, zeroRef(newNumber(u)), attr);
-}
-
-// ECMA 15.4.5.1
-void KJSO::putArrayElement(const UString &p, KJSO *v)
-{
-  if (!canPut(p))
-    return;
-
-  if (hasProperty(p)) {
-    if (p == "length") {
-      Ptr len = get("length");
-      unsigned int oldLen = toUInt32(len);
-      unsigned int newLen = toUInt32(v);
-      // shrink array
-      for (unsigned int u = newLen; u < oldLen; u++) {
-	UString p = UString::from(u);
-	if (hasProperty(p, false))
-	  deleteProperty(p);
-      }
-      put("length", newLen);
-      return;
-    }
-    //    put(p, v);
-    } //  } else
-    put(p, v);
-
-  // array index ?
-  unsigned int idx;
-  if (!sscanf(p.cstring().c_str(), "%u", &idx)) /* TODO */
-    return;
-
-  // do we need to update/create the length property ?
-  if (hasProperty("length", false)) {
-    Ptr len = get("length");
-    if (idx < toUInt32(len))
-      return;
-  }
-
-  put("length", idx+1);
-}
-
 // ECMA 8.6.2.3
-bool KJSO::canPut(const UString &p) const
+bool Imp::canPut(const UString &p) const
 {
   if (prop) {
-    Property *pr = prop;
+    const Property *pr = prop;
     while (pr) {
       if (pr->name == p)
 	return !(pr->attribute & ReadOnly);
       pr = pr->next;
     }
   }
-  if (!prototype())
+  if (proto.isNull())
     return true;
 
-  return prototype()->canPut(p);
+  return proto.canPut(p);
 }
 
 // ECMA 8.6.2.4
-bool KJSO::hasProperty(const UString &p, bool recursive) const
+bool Imp::hasProperty(const UString &p, bool recursive) const
 {
   if (!prop)
     return false;
 
-  Property *pr = prop;
+  const Property *pr = prop;
   while (pr) {
     if (pr->name == p)
       return true;
     pr = pr->next;
   }
 
-  if (!prototype() || !recursive)
+  if (proto.isNull() || !recursive)
     return false;
 
-  return prototype()->hasProperty(p);
+  return proto.hasProperty(p);
 }
 
 // ECMA 8.6.2.5
-void KJSO::deleteProperty(const UString &p)
+void Imp::deleteProperty(const UString &p)
 {
   if (prop) {
     Property *pr = prop;
@@ -499,12 +669,61 @@ void KJSO::deleteProperty(const UString &p)
   }
 }
 
-// ECMA 8.6.2.6 (new draft)
-KJSO* KJSO::defaultValue(Type hint)
+// ECMA 15.4.5.1
+void Imp::putArrayElement(const UString &p, const KJSO& v)
 {
-  Ptr o, s;
+  if (!canPut(p))
+    return;
 
-  if (hint == UndefinedType)
+  if (hasProperty(p)) {
+    if (p == "length") {
+      KJSO len = get("length");
+      unsigned int oldLen = len.toUInt32();
+      unsigned int newLen = v.toUInt32();
+      // shrink array
+      for (unsigned int u = newLen; u < oldLen; u++) {
+	UString p = UString::from(u);
+	if (hasProperty(p, false))
+	  deleteProperty(p);
+      }
+      put("length", Number(newLen));
+      return;
+    }
+    //    put(p, v);
+    } //  } else
+    put(p, v);
+
+  // array index ?
+  unsigned int idx;
+  if (!sscanf(p.cstring().c_str(), "%u", &idx)) /* TODO */
+    return;
+
+  // do we need to update/create the length property ?
+  if (hasProperty("length", false)) {
+    KJSO len = get("length");
+    if (idx < len.toUInt32())
+      return;
+  }
+
+  put("length", Number(idx+1));
+}
+
+bool Imp::implementsCall() const
+{
+  return (type() == FunctionType ||
+	  type() == InternalFunctionType ||
+	  type() == ConstructorType ||
+	  type() == DeclaredFunctionType ||
+	  type() == AnonymousFunctionType);
+}
+
+// ECMA 8.6.2.6 (new draft)
+KJSO Imp::defaultValue(Type hint) const
+{
+  KJSO o;
+
+  /* TODO String on Date object */
+  if (hint != StringType && hint != NumberType)
     hint = NumberType;
 
   if (hint == StringType)
@@ -512,10 +731,12 @@ KJSO* KJSO::defaultValue(Type hint)
   else
     o = get("valueOf");
 
-  if (o->implementsCall()) { // spec says "not primitive type" but ...
-    s = o->executeCall(this, 0L);
-    if (!s->isObject())
-      return s->ref();
+  Imp *that = const_cast<Imp*>(this);
+  if (o.implementsCall()) { // spec says "not primitive type" but ...
+    FunctionImp *f = static_cast<FunctionImp*>(o.imp());
+    KJSO s = f->executeCall(that, 0L);
+    if (!s.isObject())
+      return s;
   }
 
   if (hint == StringType)
@@ -523,119 +744,100 @@ KJSO* KJSO::defaultValue(Type hint)
   else
     o = get("toString");
 
-  if (o->implementsCall()) {
-    s = o->executeCall(this, 0L);
-    if (!s->isObject())
-      return s->ref();
+  if (o.implementsCall()) {
+    FunctionImp *f = static_cast<FunctionImp*>(o.imp());
+    KJSO s = f->executeCall(that, 0L);
+    if (!s.isObject())
+      return s;
   }
 
-  return newError(TypeError);
+  return Error::create(TypeError);
 }
 
-void KJSO::setError(ErrorObject *e)
+void Imp::setPrototype(const KJSO& p)
 {
-  if (e)
-    currentErr = e->ref();
+  proto = p;
+  put("prototype", p, DontEnum | DontDelete | ReadOnly);
 }
 
-Object::Object(Class c, KJSO *v, Object *p)
-  : classType(c), objValue(v)
+void Imp::setConstructor(const KJSO& c)
 {
-  if (p)
-    setPrototype(p);
+  put("constructor", c, DontEnum | DontDelete | ReadOnly);
 }
 
-// factory
-Object* Object::create(Class c, KJSO *val, Object *p)
+ObjectImp::ObjectImp(Class c) : cl(c) { }
+
+ObjectImp::ObjectImp(Class c, const KJSO &v) : cl(c), val(v) { }
+
+ObjectImp::ObjectImp(Class c, const KJSO &v, const KJSO &p)
+  : cl(c), val(v)
 {
-  Global *global = KJScript::global();
-  Object *obj = new Object();
-  Object *prot;
-  obj->setClass(c);
-  obj->setInternalValue(val);
-
-  if (p)
-    prot = p;
-  else
-    switch (c) {
-    case ObjectClass:
-      prot = global->objProto;
-      break;
-    case ArrayClass:
-      prot = global->arrayProto;
-      break;
-    case StringClass:
-      prot = global->stringProto;
-      break;
-    case BooleanClass:
-      prot = global->booleanProto;
-      break;
-    case NumberClass:
-      prot = global->numberProto;
-      break;
-    case DateClass:
-      prot = global->dateProto;
-      break;
-    case RegExpClass:
-      prot = global->regexpProto;
-      break;
-    case ErrorClass:
-      prot = global->errorProto;
-      break;
-    default:
-      prot = 0L;
-      break;
-    }
-
-  obj->setPrototype(prot);
-  return obj;
+  setPrototype(p);
 }
 
-// debugging info
-void KJSO::dump(int level)
+ObjectImp::~ObjectImp() { }
+
+KJSO ObjectImp::toPrimitive(Type preferred) const
 {
-  if (level == 0) {
-    printf("-------------------------\n");
-    printf("Properties:\n");
-    printf("-------------------------\n");
+  return defaultValue(preferred);
+  /* TODO: is there still any need to throw a runtime error _here_ ? */
+}
+
+Boolean ObjectImp::toBoolean() const
+{
+  return Boolean(true);
+}
+
+Number ObjectImp::toNumber() const
+{
+  return toPrimitive(NumberType).toNumber();
+}
+
+String ObjectImp::toString() const
+{
+  KJSO tmp;
+  String res;
+
+  if (hasProperty("toString")) {
+    tmp = get("toString");
+    // TODO: check for implementsCall() ?
+    assert(tmp.implementsCall());
+    // TODO live w/o hack
+    res = tmp.executeCall(KJSO(const_cast<ObjectImp*>(this)), 0L).toString();
+  } else {
+    tmp = toPrimitive(StringType);
+    res = tmp.toString();
   }
-  if (prop) {
-    Property *pr = prop;
-    while (pr) {
-      for (int i = 0; i < level; i++)
-	printf("  ");
-      printf("%s\n", pr->name.cstring().c_str());
-      if (pr->object->prop && !(pr->name == "callee")) {
-	pr->object->dump(level+1);
-      }
-      pr = pr->next;
-    }
-  } else
-    printf("   None.\n");
 
-#if 0
-   if(prototype()) {
-    printf("from prototype:\n");
-    prototype()->dump();
-  }
-#endif
- if (level == 0)
-    printf("-------------------------\n");
+  return res;
 }
 
-TypeInfo HostObject::info = { "HostObject", HostType, &Object::info, 0, 0 };
+const TypeInfo ObjectImp::info = { "Object", ObjectType, 0, 0, 0 };
 
-KJSO *HostObject::get(const UString &)
+Object ObjectImp::toObject() const
 {
-  return newUndefined();
+  return Object(const_cast<ObjectImp*>(this));
 }
 
-void HostObject::put(const UString &, KJSO *)
+HostImp::~HostImp() { }
+
+const TypeInfo HostImp::info = { "HostObject", HostType, 0, 0, 0 };
+
+Object Error::createObject(ErrorType e, const char *m, int l)
 {
-  //  cout << "Ignoring put() in HostObject" << endl;
+  Context *context = Context::current();
+  if (!context)
+    return Object();
+
+  Object err = ErrorObject::create(e, m, l);
+
+  if (!context->hadError())
+    context->setError(err);
+
+  return err;
 }
 
-const TypeInfo* HostObject::typeInfo() const
+KJSO Error::create(ErrorType e, const char *m, int l)
 {
-  return &info;
+  return KJSO(createObject(e, m, l).imp());
 }

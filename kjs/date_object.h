@@ -25,17 +25,17 @@
 
 namespace KJS {
 
-  class DateObject : public Constructor {
+  class DateObject : public ConstructorImp {
   public:
-    DateObject(Object *proto) : Constructor(proto, 7) { }
-    KJSO* execute(const List &);
-    Object* construct(const List &);
+    DateObject(const Object& proto) : ConstructorImp(proto, 7) { }
+    Completion execute(const List &);
+    Object construct(const List &);
   };
 
-  class DatePrototype : public Object {
+  class DatePrototype : public ObjectImp {
   public:
-    DatePrototype(Object *proto);
-    KJSO *get(const UString &p);
+    DatePrototype(const Object& proto);
+    virtual KJSO get(const UString &p) const;
   };
 
 }; // namespace
