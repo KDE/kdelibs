@@ -67,7 +67,7 @@ libkiocore_la_SOURCES = authinfo.cpp \
 	connection.cpp \
 	job.cpp global.cpp \
 	slaveconfig.cpp kurlpixmapprovider.cpp \
-	netaccess.cpp paste.cpp \
+	netaccess.cpp paste.cpp pastedialog.cpp \
 	kmimemagic.cpp \
 	tcpslavebase.cpp slavebase.cpp passdlg.cpp \
 	forwardingslavebase.cpp \
