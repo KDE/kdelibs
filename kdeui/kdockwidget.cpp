@@ -1732,7 +1732,8 @@ void KDockManager::readConfig(QDomElement &base)
     }
 
     QRect mr = rectEntry(base, "geometry");
-    main->setGeometry(mr);
+    main->move(mr.topLeft());
+    main->resize(mr.size());
     if (isMainVisible)
         main->show();
 
@@ -1996,7 +1997,8 @@ void KDockManager::readConfig( KConfig* c, QString group )
 
   c->setGroup( group );
   QRect mr = c->readRectEntry("Main:Geometry");
-  main->setGeometry(mr);
+  main->move(mr.topLeft());
+  main->resize(mr.size());
   if ( isMainVisible ) main->show();
 }
 #endif
