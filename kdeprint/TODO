@@ -1,9 +1,6 @@
 BUGS
 ----
 
-- move print manager module from "Peripherals" back to "System"
-  in KControl
-
 - Administration of remote printers: driver settings
 
 - Allow to view a set of specified printers in the job viewer
@@ -23,9 +20,6 @@ BUGS
 	  the -a <time> flag
 	. add the possibility to add fax numbers to the ab instead of
 	  simply saying there's no fax number
-
-- CUPS: RIPCache: Unlimited should be changed into 8m. Also add a combo
-  for the suffix such that any size can be set: [1,100] {k,m,g,t}
 
 - Help buttons for "kprinter" and the wizard
 

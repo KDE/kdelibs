@@ -443,3 +443,4 @@ Since 2.2 release, Michael Goffioul <goffioul@imec.be>
 26/02/2002 Michael Goffioul <goffioul@imec.be>
   * general: printer filtering specs are now ORed instead of ANDed
   * general: changed "Advanced" to "Driver Settings"
+  * CUPS: fixed RIPCache problem, added support for possible suffixes
