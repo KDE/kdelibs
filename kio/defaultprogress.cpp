@@ -81,6 +81,7 @@ DefaultProgress::DefaultProgress()
   hBox->addWidget( pb );
 
   resize( sizeHint() );
+  show();
 }
 
 
