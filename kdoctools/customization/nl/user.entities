@@ -29,6 +29,7 @@
 <!ENTITY Claire.Lotion      '<othercredit role="translator"><firstname>Claire</firstname><surname>Lotion</surname><affiliation><address><email>cmlotion@wanadoo.nl</email></address></affiliation><contrib>Vertaler/Nalezer</contrib></othercredit>'>
 <!ENTITY Rijk.van.Wel      '<othercredit role="translator"><firstname>Rijk</firstname><surname>van Wel</surname><affiliation><address><email>hotmail@ridge.nl</email></address></affiliation><contrib>Vertaler/Nalezer</contrib></othercredit>'>
 <!ENTITY Jonas.Drieghe      '<othercredit role="translator"><firstname>Jonas</firstname><surname>Drieghe</surname><affiliation><address><email>jonas_drieghe@skynet.be</email></address></affiliation><contrib>Vertaler/Nalezer</contrib></othercredit>'>
+<!ENTITY Pieter.Hoekstra    '<othercredit role="translator"><firstname>Pieter</firstname><surname>Hoekstra</surname><affiliation><address><email>pieterhoekstra@tiscali.nl</email></address></affiliation><contrib>Vertaler/Nalezer</contrib></othercredit>'>
 <!ENTITY kde.nl.groep       "<email>i18n@kde.nl</email>">
 
 <!-- Tekstschema's -->
@@ -56,6 +57,7 @@
 <!ENTITY vertaling.claire  "<para>Dit document is vertaald in het Nederlands door &Claire.Lotion;.</para>">
 <!ENTITY vertaling.rijk    "<para>Dit document is vertaald in het Nederlands door &Rijk.van.Wel;.</para>">
 <!ENTITY vertaling.jonas   "<para>Dit document is vertaald in het Nederlands door &Jonas.Drieghe;.</para>">
+<!ENTITY vertaling.pieter  "<para>Dit document is vertaald in het Nederlands door &Pieter.Hoekstra;.</para>">
 
 <!-- Gebruiken als template voor nieuwe vertalers/nalezers
 <!ENTITY xxx '<othercredit role="translator"><firstname>xx</firstname><surname>xxx</surname><affiliation><address><email>xxx@xxx.xxx</email></address></affiliation><contrib>Vertaler/Nalezer</contrib></othercredit>'>
@@ -85,6 +87,7 @@
 <!ENTITY nagelezen.claire  "<para>De vertaling werd nagelezen door &Claire.Lotion;.</para>">
 <!ENTITY nagelezen.rijk    "<para>De vertaling werd nagelezen door &Rijk.van.Wel;.</para>">
 <!ENTITY nagelezen.jonas   "<para>De vertaling werd nagelezen door &Jonas.Drieghe;.</para>">
+<!ENTITY nagelezen.pieter  "<para>De vertaling werd nagelezen door &Pieter.Hoekstra;.</para>">
 
 <!-- Algemene afkortingen -->
 <!ENTITY Alt     "<keycap>Alt</keycap>">
