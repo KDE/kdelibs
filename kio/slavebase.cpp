@@ -734,141 +734,207 @@ bool SlaveBase::checkCachedAuthentication( const KURL& url,
         return false;
 
     if( !pingCacheDaemon() )
-    	return false;
+        return false;
 
     KDEsuClient client;
 
-    // Always check to see if we have a username entry that is not empty
-    // for a given key.  If it is, we then already know that the supplied
-    // URL has no cached password and simply return false. This should speed
-    // things up for URLs that do not have cached passwords since there will
-    // effectively be only one trip to the daemon.
-    QString u = QString::fromUtf8(client.getVar((auth_key + "-user").utf8()));
-    if( !u.isEmpty() )
+    // We always check to make sure that we have an entry for the given
+    // URL first. We accomplish this by checking the "refcount" entry which is
+    // gets created everytime a password is cached for any given URL.  The
+    // intention is to speed up things by avoiding the round trip to the kdesud
+    // daemon for non-password protected URLs, which is the case 99.9% of the time:).
+    bool ok, found = false;
+    client.getVar((auth_key + "-refcount").utf8()).toInt( &ok );
+    if( ok )
     {
+        kdDebug(7019) << "Found entry for supplied key: " << auth_key << endl
+                      << "Looking for matching authentication entry..." << endl;
+
         // Deal with protection space based authentications, namely HTTP.
-	    // It has by far the most complex scheme in terms of password
-    	// caching requirements. (DA)
-	    if( verify_path )
-    	{
-	        bool found = false;
-    	    QString new_path = url.path(); // The new path...
-        	if( new_path.isEmpty() )
-        		new_path = '/';
+        // It has by far the most complex scheme in terms of password
+        // caching requirements. (DA)
+        if( verify_path )
+        {
+            QString new_path = url.path(); // The new path...
+            if( new_path.isEmpty() )
+                new_path = '/';
 
-			// Get all stored_paths for the specified key...
-    	    QStringList stored_path;
-        	stored_path << QString::fromUtf8( client.getVar((auth_key + "-path").utf8()));
-	        int count = QString::fromUtf8( client.getVar((auth_key + "-dupcount").utf8() )).toInt();
-    	    if( count > 0 )
-        	{
-                bool realmNotEmpty = !realm.isEmpty();
-				for( int i=1; i <= count; i++ )
-				{
-				 	stored_path << QString::fromUtf8( client.getVar((auth_key + QString(":%1").arg( i ) + "-path").utf8()));
-				 	if( realmNotEmpty )
-				 		stored_path << QString::fromUtf8( client.getVar((auth_key + QString(":%1").arg( i ) + "-realm").utf8()));
-				}
-	    	}
+            // Get all stored_paths for the specified key...
+            QStringList stored_path;
+            bool realmNotEmpty = !realm.isEmpty();
+            // Now get the duplicate value and see if we need to check for more than one entry.
+            int count = client.getVar((auth_key + "-dupcount").utf8()).toInt(&ok);
+            if( !ok ) { count = 0; }
+            for( int i=0; i <= count; i++ )
+            {
+                if( i == 0 )
+                {
+                    stored_path << QString::fromUtf8( client.getVar((auth_key + "-path").utf8()));
+                    if( realmNotEmpty )
+                        stored_path << QString::fromUtf8( client.getVar((auth_key + "-realm").utf8()));
+                }
+                else
+                {
+                    stored_path << QString::fromUtf8( client.getVar((auth_key + QString(":%1").arg( i ) + "-path").utf8()));
+                    if( realmNotEmpty )
+                        stored_path << QString::fromUtf8( client.getVar((auth_key + QString(":%1").arg( i ) + "-realm").utf8()));
+                }
+            }
 
-			// Tests for exact path (filename included) match first.
-			// If it fails, then simply try the less stricter directory
-			// prefix match. (DA)
-			count = 0;
-    		for( QStringList::Iterator it = stored_path.begin();
-    			 it != stored_path.end(); ++it )
-	    	{
-    			if( new_path == (*it) )
-    			{
-    				if( !realm.isEmpty() )
-    				{
-		            	if( (*(++it)) == realm )
-        		    	{
-    						if( count > 0 )
-	    						auth_key += QString("%1").arg(count);	// Update the Authentication key...
-				  			kdDebug(7019) << "STRICT MATCH: Relam check passed: " << (*it) << endl;
-		                	found = true;          // Realm value mis-match!!
-		                	break;
-        		      	}
-    				}
-    				else
-    				{
-    					if( count > 0 )
-    						auth_key += QString("%1").arg(count);	// Update the Authentication key...
-	    				found = true;
-	    				break;
-    				}
-    			}
-    			count++;
-    		}
+            // Tests for exact path (filename included) match first.
+            // If it fails, then simply try the less stricter directory
+            // prefix match. (DA)
+            count = 0;
+            kdDebug(7019) << "Performing absolute path match test (strict test)..." << endl;
+            for( QStringList::Iterator it = stored_path.begin();
+                 it != stored_path.end(); ++it )
+            {
+                if( new_path == (*it) )
+                {
+                    if( !realm.isEmpty() )
+                    {
+                        kdDebug(7019) << "Using the \"Realm\" in the match search..." << endl;
+                        if( (*(++it)) == realm )
+                        {
+                            if( count > 0 )
+                                auth_key += QString("%1").arg(count);	// Update the Authentication key...
+                            kdDebug(7019) << "Found a match!" << endl
+                                          << "STORED ::" << (*it) << "::  "
+                                          << "REQUESTED ::" << new_path << "::"
+                                          << endl;
+                            found = true;          // Realm value mis-match!!
+                            break;
+                        }
+                    }
+                    else
+                    {
+                        if( count > 0 )
+                            auth_key += QString("%1").arg(count);	// Update the Authentication key...
+                        kdDebug(7019) << "Found a match!" << endl
+                                      << "STORED ::" << (*it) << "::  "
+                                      << "REQUESTED ::" << new_path << "::"
+                                      << endl;
+                        found = true;
+                        break;
+                    }
+                }
+                count++;
+            }
 
-	    	if( !found )
-    		{
-    			// Now we can attempt the directory prefix match, i.e.
-    			// testing whether the directiory of the new URL contains
-    			// the stored_one.  If it does, then we have a match...
+            if( !found )
+            {
+                kdDebug(7019) << "Absolute path match test (strict test) Failed!" << endl;
+                // Now we can attempt the directory prefix match, i.e.
+                // testing whether the directiory of the new URL contains
+                // the stored_one.  If it does, then we have a match...
                 // Also, we make a best effort attempt not to fall for a
                 // match b/n "/me" with "/me_and_you".
-	            int last_slash = new_path.findRev( '/' );
-				if( last_slash > 0 )
-					new_path.truncate( last_slash+1 );
+                int last_slash = new_path.findRev( '/' );
+                if( last_slash > 0 )
+                    new_path.truncate( last_slash+1 );
 
-  	    	    count = 0;
-	    		for( QStringList::Iterator it = stored_path.begin();
-    				 it != stored_path.end(); ++it )
-	    		{
-					QString str = (*it);
-					last_slash = str.findRev( '/' );
-					if( last_slash > 0 )
-						str.truncate( last_slash+1 );
-   					if(new_path.startsWith(str))
-		      		{
-	    				if( !realm.isEmpty() )
-    					{
-		    	        	if( (*(++it)) == realm )
-        			    	{
-    							if( count > 0 )
-	    							auth_key += QString("%1").arg(count);	// Update the Authentication key...
-			                	found = true;          // Realm value mis-match!!
-			                	break;
-        			      	}
-        				}
-						else
-						{
-							if( count > 0 )
-								auth_key += QString(":%1").arg( count );  // Update the auth_key.
-		      				found = true;
-							break;
-						}
-					}
-					 count++;
-				}
-			}
+                kdDebug(7019) << "Performing directory match test (less strict test)..." << endl;
 
-	   	    if( !found )
-        	{
-            	kdDebug(7019) << "Cached Authentication NOT found!" << endl;
-	            return false;
-    	    }
-    	}
+                count = 0;
+                QString str;
+                for( QStringList::Iterator it = stored_path.begin();
+                     it != stored_path.end(); ++it )
+                {
+                    str = (*it);
+                    last_slash = str.findRev( '/' );
+                    if( last_slash > 0 )
+                        str.truncate( last_slash+1 );
+                    if( new_path.find(str, 0, false) == 0 )
+                    {
+                        if( !realm.isEmpty() )
+                        {
+                            kdDebug(7019) << "Using the \"Realm\" in the match search..." << endl;
+                            if( (*(++it)) == realm )
+                            {
+                                if( count > 0 )
+                                    auth_key += QString("%1").arg(count);	// Update the Authentication key...
+                                kdDebug(7019) << "Found a match!" << endl
+                                              << "STORED ::" << str << "::  "
+                                              << "REQUESTED ::" << new_path
+                                              << "::" << endl;
+                                found = true;          // Realm value match!!
+                                break;
+                            }
+                        }
+                        else
+                        {
+                            if( count > 0 )
+                                auth_key += QString(":%1").arg( count );  // Update the auth_key.
+                            kdDebug(7019) << "Found a match!" << endl
+                                          << "STORED ::" << str << "::  "
+                                          << "REQUESTED ::" << new_path
+                                          << "::" << endl;
+                            found = true;
+                            break;
+                        }
+                    }
+                    count++;
+                }
+            }
+        }
+        else
+        {
+            // Attempt to find a match by only using the "Realm" value.
+            // Path verification is only necessary whenever we do not
+            // know what the "Realm" value to allow protocols like HTTP
+            // to preemptively send the authorization string.
+            kdDebug(7019) << "Given \"Relam\" value is: " << realm << endl;
+            if( !realm.isEmpty() )
+            {
+                kdDebug (7019) << "Performing \"Realm\" value only match for: " << realm << endl;
+                int count = client.getVar((auth_key + "-dupcount").utf8()).toInt(&ok);
+                if( !ok ) { count = 0; }
+                QString stored_realm;
+                for( int i=0; i<=count; i++ )
+                {
+                    if( i == 0 )
+                        stored_realm = QString::fromUtf8(client.getVar((auth_key + "-realm").utf8()));
+                    else
+                        stored_realm = QString::fromUtf8(client.getVar((auth_key + QString(":%1").arg( i ) + "-realm").utf8()));
+                    if( realm == stored_realm )
+                    {
+                        if( i > 0 )
+                            auth_key +=  QString(":%1").arg( i );
+                        found = true;
+                        kdDebug(7019) << "Found a \"Realm\" match!" << endl
+                                      << "STORED ::" << stored_realm << "::  "
+                                      << "CURRENT ::" << realm << "::" << endl;
+                        break;
+                    }
+                }
+            }
+        }
 
-    	// Now we obtain the cached Authentication if the user
-    	// name is empty or there is a match b/n the stored
-    	// and the supplied one.
-    	if( ( user.isEmpty() || (!user.isEmpty() && u == user)) )
-	    {
-    	    if( user.isEmpty() ) { user = u; }
-        	passwd = QString::fromUtf8(client.getVar((auth_key + "-pass").utf8()));
-	        if( realm.isEmpty() ) { realm = QString::fromUtf8( client.getVar((auth_key + "-realm").utf8())); }
-    	    extra = QString::fromUtf8( client.getVar((auth_key + "-extra").utf8()));
-        	kdDebug(7019) << "Found cached authentication entry: " << endl
-	                      << "  User= " << user << endl
-    	                  << "  Password= [hidden]" << endl
-        	              << "  Key = " << auth_key << endl
-	                      << "  Extra= " << extra << endl;
-    	    return true;
-	    }
-	}
+        // If we have no match then return false!!
+        if( !found )
+        {
+            kdDebug(7019) << "NO cached Authentication entry found!" << endl;
+            return false;
+        }
+
+        // Now we obtain the cached Authentication if the user
+        // name is empty or there is a match b/n the stored
+        // and the supplied one.
+        QString u = QString::fromUtf8(client.getVar((auth_key + "-user").utf8()));
+        if( ( user.isEmpty() || (!user.isEmpty() && u == user)) )
+        {
+            if( user.isEmpty() ) { user = u; }
+            passwd = QString::fromUtf8(client.getVar((auth_key + "-pass").utf8()));
+            if( realm.isEmpty() ) { realm = QString::fromUtf8( client.getVar((auth_key + "-realm").utf8())); }
+            extra = QString::fromUtf8( client.getVar((auth_key + "-extra").utf8()));
+            kdDebug(7019) << "Found cached authentication entry: " << endl
+                          << "  User= " << user << endl
+                          << "  Password= [hidden]" << endl
+                          << "  Key = " << auth_key << endl
+                          << "  Extra= " << extra << endl;
+            return true;
+        }
+    }
     return false;
 }
 
@@ -881,58 +947,54 @@ bool SlaveBase::cacheAuthentication( const KURL& url,
     // Do not allow caching if: URL is malformed or user name is
     // empty or the password is null!!  Empty password is acceptable
     // but not a NULL one. This is mainly intended as a partial defense
-    // against incorrect or incorrect use of this function...
+    // against incorrect use (read:abuse) of calling this function.
     QString auth_key = createAuthCacheKey( url );
     if( auth_key.isNull() || user.isEmpty() || passwd.isNull() )
         return false;
 
     if( !pingCacheDaemon() )
-    	return false;
+        return false;
 
-    kdDebug(7019) << "Attempting to cache Authentication for: " << auth_key << endl;
     KDEsuClient client;
     bool isCached = false;
+
+    kdDebug(7019) << "Attempting to cache Authentication for: " << auth_key << endl;
     if( !realm.isEmpty() )
     {
-        QString stored_realm = QString::fromUtf8(client.getVar((auth_key + "-realm").utf8()));
-        if( stored_realm == realm )
-            isCached = true;
-
-        if( !isCached )
+        bool hasDuplicates;
+        QString stored_realm;
+        int count = client.getVar((auth_key + "-dupcount").utf8()).toInt( &hasDuplicates );
+        if( !hasDuplicates ) { count = 0; }
+        for( int i=0; i<=count; i++ )
         {
-            bool hasDuplicateEntry = false;
-            int count = QString::fromUtf8( client.getVar((auth_key + "-dupcount").utf8() )).toInt( &hasDuplicateEntry );
-            if( hasDuplicateEntry )
-            {
-                for( int i=1; i <= count; i++ )
-                {
-                    stored_realm = QString::fromUtf8( client.getVar((auth_key + QString(":%1").arg( i ) + "-relam").utf8()));
-                    if( stored_realm == realm )
-                    {
-                        auth_key += QString(":%1").arg( i );  // Update the auth_key.
-                        isCached = true;                      // Indicate that the auth_key was found
-                        i = count+1;                          // Break out of loop gracefully.
-                    }
-                }
-                // Hey, this must be a new protection space in a
-                // multiple protection space scheme.  Updating accordingly...
-                if( !isCached )
-                {
-                    client.setVar( (auth_key+"-dupcount").utf8(), QString("%1").arg( count+1 ).utf8(), 0, auth_key.utf8() );
-                    auth_key += QString(":%1").arg( count+1 );  // Update
-                }
-            }
+            if( i == 0 )
+                stored_realm = QString::fromUtf8(client.getVar((auth_key + "-realm").utf8()));
             else
+                stored_realm = QString::fromUtf8( client.getVar((auth_key + QString(":%1").arg( i ) + "-relam").utf8()));
+
+            if( stored_realm == realm )
             {
-                // The first new protection space on the same server!!
-                // Updating auth_key accordingly...
-                if( !stored_realm.isEmpty() )
-                {
-                    client.setVar( (auth_key+"-dupcount").utf8(), QString("%1").arg( 1 ).utf8(), 0, auth_key.utf8() );
-                    auth_key += QString(":%1").arg( 1 );
-                    kdDebug(7019) << "New protection space for a known host!!  Creating new entry labled: " << auth_key << endl;
-                }
+                if( i > 0 )
+                    auth_key += QString(":%1").arg( i );
+                isCached = true;
+                break;
             }
+        }
+
+        // If there is no cached entry that matches but there is another
+        // value stored with the same key, we increment the duplicate
+        // counter as well as the key so that the entry can safely be
+        // stored under its own entry.  NOTE: this is very important for
+        // protocols that support "Protection space" based authentications.
+        // HTTP is one such protocol.  It supports both Baisc and Digest
+        // authentication as specified by RFC 2617. (DA)
+        if( !isCached && !stored_realm.isEmpty() )
+        {
+            client.setVar( (auth_key+"-dupcount").utf8(), QString("%1").arg( count+1 ).utf8(), 0, auth_key.utf8() );
+            auth_key += QString(":%1").arg( count+1 );
+            kdDebug(7019) << "New Protection space for an exisiting key!"
+                          << endl << "Creating new entry: " << auth_key
+                          << endl;
         }
     }
     else
@@ -942,27 +1004,28 @@ bool SlaveBase::cacheAuthentication( const KURL& url,
             isCached = true;
     }
 
-    // If Authentication has already been cached, simply increment the ref-counter
+    // Increment the ref-counter, if the authentication is already stored!!
     if( isCached )
     {
         QString strRefCount = QString("%1").arg( client.getVar((auth_key + "-refcount").utf8()).toInt() + 1 );
-        kdDebug(7019) << "Found an exisitng Authentication entry for: " << auth_key << endl
-                      << ". Incrementing reference count to : " << strRefCount << endl;
+        kdDebug(7019) << "Found an exisitng Authentication entry for: " << auth_key << "!" << endl
+                      << "Incrementing reference count to: " << strRefCount << endl;
         client.setVar( (auth_key + "-refcount").utf8(), strRefCount.utf8(), 0, auth_key.utf8() );
-        // BTW, we need to update the extra field just in case it is different.
-        // Important in "Digest authentication" for HTTP where the server can
-        // change the "nonce" values from connection to connection :))
+        // We update the extra field because it's possible for it to have been
+        // modified.  This is for example important in "Digest authentication"
+        // for the HTTP protocol where the server can change change the "nonce"
+        // value from connection to connection to provide better security.
         if( !extra.isEmpty() )
         {
             QString e = QString::fromUtf8(client.getVar( (auth_key + "-extra").utf8() ));
             if( e != extra )
             {
-                kdDebug(7019) << "Updating the \"extra\" auth_key: " << extra << endl;
+                kdDebug(7019) << "Updating the \"extra\" value: " << extra << endl;
                 client.setVar( (auth_key + "-extra").utf8(), extra.utf8(), 0, auth_key.utf8() );
             }
         }
     }
-    // Add new Authentication entry...
+    // Add a new Authentication entry...
     else
     {
         client.setVar( (auth_key+"-user").utf8(), user.utf8(), 0, auth_key.utf8() );
@@ -973,7 +1036,7 @@ bool SlaveBase::cacheAuthentication( const KURL& url,
             client.setVar( (auth_key + "-realm").utf8(), realm.utf8(), 0, auth_key.utf8() );
             QString new_path = url.path();
             if( new_path.isEmpty() )
-            	new_path = '/';
+                new_path = '/';
             client.setVar( (auth_key+"-path").utf8(), new_path.utf8(), 0, auth_key.utf8() );
         }
         if( !extra.isEmpty() )
@@ -999,14 +1062,14 @@ bool SlaveBase::cacheAuthentication( const KURL& url,
 
 void SlaveBase::delCachedAuthentication( const QString& grpname )
 {
-	if( !pingCacheDaemon() )
-		return;
+    if( !pingCacheDaemon() )
+        return;
 
     bool ok;
     KDEsuClient client;
     int count = client.getVar( (grpname + "-refcount").utf8() ).toInt( &ok );
     // Test point though I know that this value is going to be an integer
-	kdDebug(7019) << "Attempting to delete cached Authentication for: " << grpname << endl;
+    kdDebug(7019) << "Attempting to delete cached Authentication for: " << grpname << endl;
     if( ok )
     {
         kdDebug(7019) << "Deleting cached Authentication for: " << grpname << endl;

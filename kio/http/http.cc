@@ -1173,7 +1173,7 @@ bool HTTPProtocol::http_open()
     QString user, passwd, realm, extra;
     if( checkCachedAuthentication( m_request.url, user, passwd, realm, extra, true ) )
     {
-      kdDebug(7103) << "(" << getpid() << ") Found a matching Authentication entry..." << endl;
+      kdDebug(7113) << "(" << getpid() << ") Found a matching Authentication entry..." << endl;
       Authentication = extra.isEmpty() ? AUTH_Basic : AUTH_Digest ;
       m_state.user   = user;
       m_state.passwd = passwd;
@@ -1212,8 +1212,8 @@ bool HTTPProtocol::http_open()
   if( m_state.do_proxy )
   {
     // We keep proxy authentication locally until they are
-    // changed.  Thus, no need to check with kdesud for it
-    // when they are available...
+    // changed.  Thus, no need to check with kdesud on every
+    // connection!!
     kdDebug(7113) << "Proxy Setting HOST: " << m_proxyURL.host() << endl
                   << "Proxy Setting PORT: " << m_proxyURL.port() << endl
                   << "Proxy Setting USER: " << m_proxyURL.user() << endl
@@ -1743,7 +1743,7 @@ bool HTTPProtocol::readHeader()
   else if( unauthorized )
   {
     http_closeConnection();  // Close the connection first
-    QString msg, user, passwd;
+    QString msg, user, passwd, extra;
 
     if( m_iAuthFailed > 1 || (!user.isEmpty() && !passwd.isEmpty()) )
     {
@@ -1789,28 +1789,52 @@ bool HTTPProtocol::readHeader()
                   "Enter your Authentication information below:" );
     }
 
-    // kdDebug(7103) << "(" << getpid() << ") Request URI's user: "<< m_request.url.user() << endl;
-    bool result = openPassDlg( msg, user, passwd, (!m_request.url.user().isEmpty()) );
-    if( result )
+    bool result = false;
+    if( code == 401 )
     {
-      // Note that a single io-slave cannot be doing
-      // both authentications at the same time sine
-      // these requests come sequentially...
-      if( code == 401 )  // Request-Authentication
+      // Here we check the cache after obtaining the "Relam" value to see if
+      // we have a cached authentication for the gievn protection space so
+      // that we won't unnecessarily prompt the user for that info.
+      // NOTE: there is no need to do this for proxy authentication since the
+      // exact same check is done before sending the header and thus means that
+      // it already failed it!
+      if ((result=checkCachedAuthentication( m_request.url, user, passwd, m_strRealm, extra, false)))
       {
         m_request.user = user;
         m_request.passwd = passwd;
-      }
-      else if( code == 407 )  // Proxy-Authentication
-      {
-        m_proxyURL.setUser( user );
-        m_proxyURL.setPass( passwd );
+        Authentication = extra.isEmpty() ? AUTH_Basic:AUTH_Digest;
+        if( Authentication == AUTH_Digest )
+          m_strAuthString = extra;
       }
     }
-    else
+
+    // If no matching realm value was found for the host in the
+    // cache, prompt the user.
+    if ( !result )
     {
-      error( ERR_USER_CANCELED, "" ); // Ignore the user then!!
-      return false;
+      result = openPassDlg( msg, user, passwd, (!m_request.url.user().isEmpty()) );
+
+      if( result )
+      {
+        // Note that a single io-slave cannot be doing
+        // both authentications at the same time sine
+        // these requests come sequentially...
+        if ( code == 401 )  // Request-Authentication
+        {
+          m_request.user = user;
+          m_request.passwd = passwd;
+        }
+        else if( code == 407 )  // Proxy-Authentication
+        {
+          m_proxyURL.setUser( user );
+          m_proxyURL.setPass( passwd );
+        }
+      }
+      else
+      {
+        error( ERR_USER_CANCELED, "" ); // Ignore the user then!!
+        return false;
+      }
     }
 
     if( !http_open() )
