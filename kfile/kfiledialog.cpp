@@ -941,8 +941,8 @@ void KFileBaseDialog::mkdir()
 				     i18n("Dismiss"),
 				     this, "mkdirerrormsg");
 	    } else {
-		tmp.sprintf(i18n("directory < %s > already exists!"),
-			    dir->url().data());
+		tmp = i18n("directory < %1 > already exists!")
+ 			    .arg(dir->url());
 		QMessageBox::message(i18n("Error: directory already exists"),
 				     tmp,
 				     i18n("Dismiss"),

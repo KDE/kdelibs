@@ -1025,7 +1025,7 @@ bool KKeyChooser::isKeyPresent()
 			QString str =
 			    i18n("The %1 key combination has already been "
 				 "allocated\n"
-				 "to the global %s action.\n\n"
+				 "to the global %2 action.\n\n"
 				 "Please choose a unique key combination.").
 			    arg(keyName).arg(actionName);
 				
@@ -1079,7 +1079,7 @@ bool KKeyChooser::isKeyPresent()
 			QString str = 
 			    i18n("The %1 key combination has already "
 				 "been allocated\n"
-				 "to the %s action.\n"
+				 "to the %2 action.\n"
 				 "\n"
 				 "Please choose a unique key combination.").
 			    arg(keyName).arg(actionName);
