@@ -309,9 +309,9 @@ void HTMLFrameElementImpl::attach()
 
 void HTMLFrameElementImpl::detach()
 {
+    HTMLElementImpl::detach();
     delete view;
     parentWidget = 0;
-    HTMLElementImpl::detach();
 }
 
 bool HTMLFrameElementImpl::isSelectable() const

@@ -186,11 +186,11 @@ void HTMLElementImpl::removeCSSProperty( const DOMString &id )
     m_styleDecls->removeProperty(id);
 }
 
-DOMString HTMLElementImpl::getCSSProperty( const DOM::DOMString &prop )
+DOMString HTMLElementImpl::getCSSProperty( int id )
 {
     if(!m_styleDecls)
         return 0;
-    return m_styleDecls->getPropertyValue( prop );
+    return m_styleDecls->getPropertyValue( id );
 }
 
 DOMString HTMLElementImpl::innerHTML() const
