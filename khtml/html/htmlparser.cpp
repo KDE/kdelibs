@@ -189,24 +189,18 @@ public:
     HTMLStackElem( int _id,
                    int _level,
                    DOM::NodeImpl *_node,
-                   blockFunc _exitFunc,
-                   int _miscData1,
                    HTMLStackElem * _next
         )
         :
         id(_id),
         level(_level),
         node(_node),
-        exitFunc(_exitFunc),
-        miscData1(_miscData1),
         next(_next)
         { }
 
     int       id;
     int       level;
     NodeImpl *node;
-    blockFunc exitFunc;
-    int       miscData1;
     HTMLStackElem *next;
 };
 
@@ -306,7 +300,7 @@ void KHTMLParser::parseToken(Token *t)
     }
 
     // ignore spaces, if we're not inside a paragraph or other inline code
-    if(t->id == ID_TEXT && (!_inline ))
+    if( (t->id == ID_TEXT && !_inline ) || !inBody )
 //      || ( current && current->renderer() && !current->renderer()->isInline())))
     {
         if(t->text.length() == 1 && t->text[0] == QChar(' '))
@@ -382,7 +376,7 @@ void KHTMLParser::insertNode(NodeImpl *n)
         // don't push elements without end tag on the stack
         if(tagPriority[id] != 0)
         {
-            pushBlock(id, tagPriority[id], exitFunc, exitFuncData);
+            pushBlock(id, tagPriority[id]);
             current = newNode;
             n->attach(HTMLWidget);
             // ### HACK!!!
@@ -493,7 +487,7 @@ void KHTMLParser::insertNode(NodeImpl *n)
                     parent->insertBefore(n, node);
                     if(tagPriority[id] != 0)
                     {
-                        pushBlock(id, tagPriority[id], exitFunc, exitFuncData);
+                        pushBlock(id, tagPriority[id]);
                     }
                     n->attach(HTMLWidget);
                     if(tagPriority[id] == 0 && n->renderer())
@@ -727,9 +721,6 @@ void KHTMLParser::insertNode(NodeImpl *n)
 
 NodeImpl *KHTMLParser::getElement(Token *t)
 {
-    exitFunc = 0;
-    exitFuncData = 0;
-
     NodeImpl *n = 0;
 
     switch(t->id)
@@ -1077,12 +1068,9 @@ void KHTMLParser::processCloseTag(Token *t)
 }
 
 
-void KHTMLParser::pushBlock(int _id, int _level,
-                            blockFunc _exitFunc,
-                            int _miscData1)
+void KHTMLParser::pushBlock(int _id, int _level)
 {
-    HTMLStackElem *Elem = new HTMLStackElem(_id, _level, current, _exitFunc, _miscData1,
-                                            blockStack);
+    HTMLStackElem *Elem = new HTMLStackElem(_id, _level, current, blockStack);
 
     blockStack = Elem;
     addForbidden(_id, forbiddenTag);
@@ -1135,15 +1123,14 @@ void KHTMLParser::popOneBlock()
     if(Elem->node != current)
         if(current->renderer()) current->renderer()->close();
 
-    if (Elem->exitFunc != 0)
-        (this->*(Elem->exitFunc))( Elem );
-
     removeForbidden(Elem->id, forbiddenTag);
 
     blockStack = Elem->next;
-    current = Elem->node;
+    // we only set inline to false, if the element we close is a block level element.
+    // This helps getting cases as <p><b>bla</b> <b>bla</b> right.
     if(!current->isInline())
         _inline = false;
+    current = Elem->node;
 
     delete Elem;
 }

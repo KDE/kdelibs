@@ -47,7 +47,6 @@ namespace khtml {
 };
 
 class KHTMLParser;
-typedef void (KHTMLParser::*blockFunc)(HTMLStackElem *stackElem);
 
 /**
  * The parser for html. It receives a stream of tokens from the HTMLTokenizer, and
@@ -95,17 +94,11 @@ protected:
 
     HTMLStackElem *blockStack;
 
-    void pushBlock( int _id, int _level,
-                    blockFunc _exitFunc = 0,
-                    int _miscData1 = 0);
+    void pushBlock( int _id, int _level);
 
     void popBlock( int _id );
     void popOneBlock();
     void popInlineBlocks();
-
-    // used for passing the data in the parser
-    blockFunc exitFunc;
-    int exitFuncData;
 
     void freeBlock( void);
 
