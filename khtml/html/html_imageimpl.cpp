@@ -151,8 +151,9 @@ void HTMLImageElementImpl::parseAttribute(AttrImpl *attr)
 	}
 	else
 	{
-	    //KURL u( HTMLWidget->getBaseURL(), attr->value() );
-	    //usemap = u.url();
+	    // ### we remove the part before the anchor and hope the map is on the same html page.... 
+	    KURL u( static_cast<HTMLDocumentImpl *>(document)->baseURL().string(), attr->value().string() );
+	    usemap = DOMString(u.url());
 	}
     case ATTR_ISMAP:
 	ismap = true;
@@ -282,11 +283,13 @@ HTMLMapElementImpl::mapMouseEvent(int x_, int y_, int width_, int height_,
 HTMLMapElementImpl*
 HTMLMapElementImpl::getMap(const DOMString& _url)
 {
+    // ### should we allow maps from other urls too???
+    QString url = _url.string();
     QString s;
-    if(*_url.unicode() == '#')
-	s = QString(_url.unicode()+1, _url.length()-1);
-    else
-	s = _url.string();
+    int pos = url.find('#');
+    //kdDebug(0) << "map pos of #:" << pos << endl;
+    s = QString(_url.unicode() + pos + 1, _url.length() - pos - 1);
+
     if (mapMap && mapMap->contains(s))
 	return (*mapMap)[s];
     else
