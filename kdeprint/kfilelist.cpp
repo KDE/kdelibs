@@ -38,8 +38,9 @@
 KFileList::KFileList(QWidget *parent, const char *name)
 : QWidget(parent, name)
 {
+	//WhatsThis strings.... (added by pfeifle@kde.org)
 	QString whatsThisAddFileButton = i18n(  " <qt> <b>Add File button</b>"
-                                                " <p>This button calls the \"File Open\" dialog to let you"
+						" <p>This button calls the <em>'File Open'</em> dialog to let you"
 						" select a file for printing. Note, that "
 						" <ul><li>you can select ASCII or International Text, PDF,"
 						" PostScript, JPEG, TIFF, PNG, GIF and many other graphic"
