@@ -78,7 +78,7 @@ KInstance *KGlobal::instance()
 }
 
 KLocale	*KGlobal::locale()
-{	
+{
     if( _locale == 0 ) {
 	if (!_instance)
 	   return 0;
@@ -165,7 +165,23 @@ KGlobal::unregisterStaticDeleter(KStaticDeleterBase *obj)
    if (_staticDeleters)
       _staticDeleters->removeRef(obj);
 }
-	
+
+void
+KGlobal::deleteStaticDeleters()
+{
+    if (!KGlobal::_staticDeleters)
+        return;
+
+    for(KStaticDeleterBase *ptr = KGlobal::_staticDeleters->first();
+	ptr;
+	ptr = KGlobal::_staticDeleters->next())
+    {
+        ptr->destructObject();
+    }
+    delete KGlobal::_staticDeleters;
+    KGlobal::_staticDeleters = 0;
+}
+
 // The Variables
 
 KStringDict     *KGlobal::_stringDict   = 0;
@@ -176,21 +192,14 @@ KCharsets       *KGlobal::_charsets	= 0;
 KStaticDeleterList *KGlobal::_staticDeleters = 0;
 
 static void kglobal_freeAll()
-{	
+{
     delete KGlobal::_locale;
     KGlobal::_locale = 0;
     delete KGlobal::_charsets;
     KGlobal::_charsets = 0;
     delete KGlobal::_stringDict;
     KGlobal::_stringDict = 0;
-    for(KStaticDeleterBase *ptr = KGlobal::_staticDeleters->first();
-	ptr;
-	ptr = KGlobal::_staticDeleters->next())
-    {
-        ptr->destructObject();
-    }
-    delete KGlobal::_staticDeleters;
-    KGlobal::_staticDeleters = 0;
+    KGlobal::deleteStaticDeleters();
     // so that we don't hold a reference and see memory leaks :/
     KGlobal::_activeInstance = 0;
 }

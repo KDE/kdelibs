@@ -96,6 +96,8 @@ public:
     static void registerStaticDeleter(KStaticDeleterBase *);
     static void unregisterStaticDeleter(KStaticDeleterBase *);
 
+    static void deleteStaticDeleters();
+
     //private:
     static  KStringDict         *_stringDict;
     static  KInstance           *_instance;
@@ -116,7 +118,7 @@ public:
  */
 #define KMIN(a,b)	kMin(a,b)
 
-/** 
+/**
  * A typesafe function to find the maximum of the two arguments.
  */
 #define KMAX(a,b)	kMax(a,b)

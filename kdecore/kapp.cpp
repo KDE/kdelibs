@@ -1093,6 +1093,7 @@ KApplication::~KApplication()
 {
   // cleanup in the library loader: destruct all factories and unload the libraries (Simon)
   KLibLoader::cleanUp();
+  KGlobal::deleteStaticDeleters();
 
   delete smw;
 
@@ -1418,7 +1419,7 @@ QString KApplication::makeStdCaption( const QString &userCaption,
   // If the document is modified, add '[modified]'.
   if (modified)
       s += QString::fromUtf8(" [") + i18n("modified") + QString::fromUtf8("]");
-  
+
   if ( !userCaption.isEmpty() ) {
       // Add the application name if:
       // User asked for it, it's not a duplication  and the app name (caption()) is not empty
