@@ -42,8 +42,10 @@ static const char *widgetEntries[] = { // unsunken widgets (see header)
 // (mosfet)
 struct kthemeKeyData{
     unsigned int id          :6;
-    unsigned int width       :13;
-    unsigned int height      :13;
+    unsigned int width       :12;
+    unsigned int height      :12;
+    unsigned int border      :1;
+    unsigned int mask        :1;
 };
 
 union kthemeKey{
@@ -497,6 +499,120 @@ KThemePixmap* KThemeBase::scale(int w, int h, WidgetType widget)
     }
     return(pixmaps[widget]);
 }
+
+KThemePixmap* KThemeBase::scaleBorder(int w, int h, WidgetType widget)
+{
+    KThemePixmap *pixmap = NULL;
+    if(!pbPixmaps[widget] && !pbWidth[widget])
+        return(NULL);
+    pixmap = cache->pixmap(w, h, widget, true);
+    if(pixmap){
+        pixmap = new KThemePixmap(*pixmap);
+    }
+    else{
+        pixmap = new KThemePixmap();
+        pixmap->resize(w, h);
+        QBitmap mask;
+        mask.resize(w, h);
+        QPainter mPainter;
+        mPainter.begin(&mask);
+
+        QPixmap *tmp = borderPixmap(widget)->border(KThemePixmap::TopLeft);
+        const QBitmap *srcMask = tmp->mask();
+        int bdWidth = tmp->width();
+
+        bitBlt(pixmap, 0, 0, tmp, 0, 0, bdWidth, bdWidth,
+               Qt::CopyROP, false);
+        if(srcMask)
+            bitBlt(&mask, 0, 0, srcMask, 0, 0, bdWidth, bdWidth,
+                   Qt::CopyROP, false);
+        else
+            mPainter.fillRect(0, 0, bdWidth, bdWidth, color1);
+            
+        
+        tmp = borderPixmap(widget)->border(KThemePixmap::TopRight);
+        srcMask = tmp->mask();
+        bitBlt(pixmap, w-bdWidth, 0, tmp, 0, 0, bdWidth,
+               bdWidth, Qt::CopyROP, false);
+        if(srcMask)
+            bitBlt(&mask, w-bdWidth, 0, srcMask, 0, 0, bdWidth,
+                   bdWidth, Qt::CopyROP, false);
+        else
+            mPainter.fillRect(w-bdWidth, 0, bdWidth, bdWidth, color1);
+            
+        tmp = borderPixmap(widget)->border(KThemePixmap::BottomLeft);
+        srcMask = tmp->mask();
+        bitBlt(pixmap, 0, h-bdWidth, tmp, 0, 0, bdWidth,
+               bdWidth, Qt::CopyROP, false);
+        if(srcMask)
+            bitBlt(&mask, 0, h-bdWidth, srcMask, 0, 0, bdWidth,
+                   bdWidth, Qt::CopyROP, false);
+        else
+            mPainter.fillRect(0, h-bdWidth, bdWidth, bdWidth, color1);
+
+        tmp = borderPixmap(widget)->border(KThemePixmap::BottomRight);
+        srcMask = tmp->mask();
+        bitBlt(pixmap, w-bdWidth, h-bdWidth, tmp, 0, 0,
+               bdWidth, bdWidth, Qt::CopyROP, false);
+        if(srcMask)
+            bitBlt(&mask, w-bdWidth, h-bdWidth, srcMask, 0, 0,
+                   bdWidth, bdWidth, Qt::CopyROP, false);
+        else
+            mPainter.fillRect(w-bdWidth, h-bdWidth, bdWidth, bdWidth, color1);
+            
+        QPainter p;
+        p.begin(pixmap);
+        if(w-bdWidth*2 > 0){
+            tmp = borderPixmap(widget)->border(KThemePixmap::Top);
+            srcMask = tmp->mask();
+            p.drawTiledPixmap(bdWidth, 0, w-bdWidth*2, bdWidth, *tmp);
+            if(srcMask)
+                bitBlt(&mask, bdWidth, 0, srcMask, 0, 0,
+                       w-bdWidth*2, bdWidth, Qt::CopyROP, false);
+            else
+                mPainter.fillRect(bdWidth, 0, w-bdWidth*2, bdWidth, color1);
+            
+            tmp = borderPixmap(widget)->border(KThemePixmap::Bottom);
+            srcMask = tmp->mask();
+            p.drawTiledPixmap(bdWidth, h-bdWidth, w-bdWidth*2, bdWidth,
+                               *tmp);
+            if(srcMask)
+                bitBlt(&mask, bdWidth, h-bdWidth, srcMask, 0, 0,
+                       w-bdWidth*2, bdWidth, Qt::CopyROP, false);
+            else
+                mPainter.fillRect(bdWidth, h-bdWidth, w-bdWidth*2, bdWidth,
+                                  color1);
+        }
+        if(h-bdWidth*2 > 0){
+            tmp = borderPixmap(widget)->border(KThemePixmap::Left);
+            srcMask = tmp->mask();
+            p.drawTiledPixmap(0, bdWidth, bdWidth, h-bdWidth*2, *tmp);
+            if(srcMask)
+                bitBlt(&mask, 0, bdWidth, srcMask, 0, 0,
+                       bdWidth, h-bdWidth*2, Qt::CopyROP, false);
+            else
+                mPainter.fillRect(0, bdWidth, bdWidth, h-bdWidth*2, color1);
+
+            tmp = borderPixmap(widget)->border(KThemePixmap::Right);
+            srcMask = tmp->mask();
+            p.drawTiledPixmap(w-bdWidth, bdWidth, bdWidth, h-bdWidth*2,
+                               *tmp);
+            if(srcMask)
+                bitBlt(&mask, w-bdWidth, bdWidth, srcMask, 0, 0,
+                       bdWidth, h-bdWidth*2, Qt::CopyROP, false);
+            else
+                mPainter.fillRect(w-bdWidth, bdWidth, bdWidth, h-bdWidth*2, color1);
+        }
+        p.end();
+        mPainter.end();
+        pixmap->setMask(mask);
+        cache->insert(pixmap, KThemeCache::FullScale, widget, true);
+        if(!pixmap->mask())
+            warning("No mask for border pixmap!");
+    }
+    return(pixmap);
+}
+
 
 KThemePixmap* KThemeBase::blend(WidgetType widget)
 {
@@ -1120,13 +1236,17 @@ void KThemeCache::flushTimeout()
     }
 }
 
-KThemePixmap* KThemeCache::pixmap(int w, int h, int widgetID)
+KThemePixmap* KThemeCache::pixmap(int w, int h, int widgetID, bool border,
+                                  bool mask)
 {
 
     kthemeKey key;
     key.data.id = widgetID;
     key.data.width = w;
     key.data.height = h;
+    key.data.border = border;
+    key.data.mask = mask;
+    
     KThemePixmap *pix = cache.find((unsigned long)key.cacheKey);
     if(pix)
         pix->updateAccessed();
@@ -1139,6 +1259,8 @@ KThemePixmap* KThemeCache::horizontalPixmap(int w, int widgetID)
     key.data.id = widgetID;
     key.data.width = w;
     key.data.height = 0;
+    key.data.border = false;
+    key.data.mask = false;
     KThemePixmap *pix = cache.find((unsigned long)key.cacheKey);
     if(pix)
         pix->updateAccessed();
@@ -1151,13 +1273,16 @@ KThemePixmap* KThemeCache::verticalPixmap(int h, int widgetID)
     key.data.id = widgetID;
     key.data.width = 0;
     key.data.height = h;
+    key.data.border = false;
+    key.data.mask = false;
     KThemePixmap *pix = cache.find((unsigned long)key.cacheKey);
     if(pix)
         pix->updateAccessed();
     return(pix);
 }
 
-bool KThemeCache::insert(KThemePixmap *pixmap, ScaleHint scale, int widgetID)
+bool KThemeCache::insert(KThemePixmap *pixmap, ScaleHint scale, int widgetID,
+                         bool border, bool mask)
 {
     kthemeKey key;
     key.data.id = widgetID;
@@ -1165,6 +1290,8 @@ bool KThemeCache::insert(KThemePixmap *pixmap, ScaleHint scale, int widgetID)
         pixmap->width() : 0;
     key.data.height = (scale == FullScale || scale == VerticalScale) ?
         pixmap->height() : 0;
+    key.data.border = border;
+    key.data.mask = mask;
 
     if(cache.find((unsigned long)key.cacheKey, true) != NULL){
         return(true); // a pixmap of this scale is already in there

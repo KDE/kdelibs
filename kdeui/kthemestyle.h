@@ -76,11 +76,6 @@ public:
      */
     virtual void drawBaseMask(QPainter *p, int x, int y, int w, int h,
                               bool rounded);
-    virtual void drawBorderMask(QPainter *p, WidgetType type, int x, int y,
-                                int w, int h);
-    virtual void drawBorderPixmap(QPainter *p, WidgetType type, int x, int y,
-                                  int w, int h);
-
     /**
      * Draws a pushbutton. This calls drawBaseButton with PushButton as the
      * widget type.
@@ -266,10 +261,24 @@ public:
     virtual void getKProgressBackground(const QColorGroup &g, QBrush &bg);
     virtual void tabbarMetrics(const QTabBar*, int&, int&, int&);
     virtual void drawTab(QPainter*, const QTabBar*, QTab*, bool selected);    
-	virtual void drawTabMask(QPainter*, const QTabBar*, QTab*, bool selected);
+    virtual void drawTabMask(QPainter*, const QTabBar*, QTab*, bool selected);
+    /**
+     * Provided for compatibility with with QToolBar for use with the new
+     * KDE Parts mechanism. This should not be reimplemented,
+     * drawKToolBarButton should be used instead.
+     */
+    virtual void drawToolButton(QPainter *p, int x, int y, int w, int h,
+                                const QColorGroup &g, bool sunken=false,
+								const QBrush *fill=0);
+    /**
+     * Provided for compatibility with with QToolBar for use with the new
+     * KDE Parts mechanism. This should not be reimplemented,
+     * drawKToolBar should be used instead.
+     */
+    virtual void drawOPToolBar(QPainter *p, int x, int y, int w, int h,
+                               const QColorGroup &g, QBrush *fill=NULL);
 protected:
-    QPalette oldPalette;
-	QPalette popupPalette;
+    QPalette oldPalette, popupPalette, indiPalette, exIndiPalette;
 };
 
 #endif

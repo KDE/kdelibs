@@ -126,7 +126,8 @@ public:
      *
      * @return True if the insert was successful, false otherwise.
      */
-    bool insert(KThemePixmap *pixmap, ScaleHint scale, int widgetID);
+    bool insert(KThemePixmap *pixmap, ScaleHint scale, int widgetID,
+               bool border=false, bool mask=false);
     /**
      * Returns a fully scaled pixmap.
      *
@@ -137,7 +138,8 @@ public:
      * @return True if a pixmap matching the width, height, and widget ID of
      * the pixmap exists, NULL otherwise.
      */
-    KThemePixmap* pixmap(int w, int h, int widgetID);
+    KThemePixmap* pixmap(int w, int h, int widgetID, bool border=false,
+                         bool mask=false);
     /**
      * Returns a horizontally scaled pixmap.
      *
@@ -436,6 +438,7 @@ protected:
     QColorGroup* makeColorGroup(QColor &fg, QColor &bg,
                                 Qt::GUIStyle style = Qt::WindowsStyle);
     KThemePixmap* scale(int w, int h, WidgetType widget);
+    KThemePixmap* scaleBorder(int w, int h, WidgetType type);
     KThemePixmap* gradient(int w, int h, WidgetType widget);
     KThemePixmap* blend(WidgetType widget);
     void generateBorderPix(int i);
