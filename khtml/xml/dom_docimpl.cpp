@@ -1409,7 +1409,7 @@ NodeImpl *DocumentImpl::cloneNode ( bool /*deep*/, int &exceptioncode )
 
 NodeImpl::Id DocumentImpl::tagId(DOMStringImpl* _namespaceURI, DOMStringImpl *_name, bool readonly)
 {
-    if (!name) return NodeImpl::IdIllegal;
+    if (!_name) return NodeImpl::IdIllegal;
     // Each document maintains a mapping of tag name -> id for every tag name encountered
     // in the document.
     NodeImpl::Id id = 0;
@@ -1458,8 +1458,11 @@ NodeImpl::Id DocumentImpl::tagId(DOMStringImpl* _namespaceURI, DOMStringImpl *_n
 
     // Look in the m_elementNames array for the name
     // ### yeah, this is lame. use a dictionary / map instead
+    DOMString nme(n.string());
+    // compatibility mode has to store upper case
+    if (htmlMode() != XHtml) nme = nme.upper();
     for (id = 0; id < m_elementNameCount; id++)
-        if (DOMString(m_elementNames[id]) == DOMString(_name))
+        if (DOMString(m_elementNames[id]) == nme)
             return ID_LAST_TAG+id;
 
     if (readonly)
@@ -1479,8 +1482,8 @@ NodeImpl::Id DocumentImpl::tagId(DOMStringImpl* _namespaceURI, DOMStringImpl *_n
     }
 
     id = m_elementNameCount++;
-    m_elementNames[id] = _name;
-    _name->ref();
+    m_elementNames[id] = nme.implementation();
+    m_elementNames[id]->ref();
 
     return ID_LAST_TAG+id;
 }
