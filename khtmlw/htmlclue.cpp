@@ -1272,6 +1272,19 @@ bool HTMLClueH::selectText( KHTMLWidget *_htmlw, HTMLChain *_chain,
     return isSel;
 }
 
+void HTMLClueH::getSelectedText( QString &_str )
+{
+    HTMLObject *obj;
+
+    for ( obj = head; obj != 0; obj = obj->next() )
+    {
+	    obj->getSelectedText( _str );
+    }
+
+    if ( tail && tail->isSelected() )
+        _str += '\n';
+}
+
 void HTMLClueH::setMaxWidth( int _w )
 {
     HTMLObject *obj;
@@ -1431,7 +1444,7 @@ void HTMLClueFlow::getSelectedText( QString &_str )
 	    obj->getSelectedText( _str );
     }
 
-    if ( tail && tail->isSelected() )
+    if ( tail && tail->isSelected() && !tail->isNewline() )
 	_str += '\n';
 }
 
