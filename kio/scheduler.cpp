@@ -312,10 +312,7 @@ bool Scheduler::startStep(ProtocolInfo *protInfo)
        }
        job->start(slave);
 kdDebug(7006) << "PROTOCOL = " << protocol << " idle = " << protInfo->idleSlaves << endl;
-       if (protInfo->idleSlaves)
-          mytimer.start(20, true);
-       else
-          mytimer.start(100, true);
+       mytimer.start(0, true);
        return true;
     }
     return false;
