@@ -529,6 +529,7 @@ void KHTMLWidget::mouseMoveEvent( QMouseEvent * _mouse )
 	QUriDrag *ud = new QUriDrag(uris, this);
 	ud->setPixmap(dndDefaultPixmap);
 	ud->dragCopy();
+	pressed = false;
     }
 }
 
