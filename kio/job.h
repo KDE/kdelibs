@@ -158,6 +158,11 @@ namespace KIO {
     SimpleJob *file_delete( const KURL& src, bool showProgressInfo = true);
 
     /**
+     * Create a local symlink
+     * Mostly a wrapper around symlink(2)
+     */
+    bool link( const QString & linkDest, const KURL & dest, bool overwriteExistingFiles, bool & overwriteAll );
+    /**
      * Create a link
      * This not yet a job, and will become only if at least one other
      * protocol than file has support for it :)

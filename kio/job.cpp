@@ -743,6 +743,49 @@ SimpleJob *KIO::file_delete( const KURL& src, bool showProgressInfo)
 
 //////////
 
+bool KIO::link( const QString & linkDest, const KURL & destUrl, bool overwriteExistingFiles, bool & overwriteAll )
+{
+    kdDebug(7007) << "linking " << destUrl.path() << " -> " << linkDest << endl;
+    if ( !destUrl.isLocalFile() )
+    {
+        KMessageBox::error( 0L, i18n( "Can't create a remote symlink!" ) );
+        return false;
+    }
+    if ( symlink( linkDest.local8Bit(), destUrl.path().local8Bit() ) == -1 )
+    {
+        // Does the destination already exist ?
+        if ( errno == EEXIST )
+        {
+            // Are we allowed to overwrite the files ?
+            if ( overwriteExistingFiles || overwriteAll )
+            {
+                // Try to delete the destination
+                if ( unlink( destUrl.path().local8Bit() ) != 0 )
+                {
+                    KMessageBox::sorry( 0L, i18n( "Could not overwrite\n%1"), destUrl.path() );
+                    return false;
+                }
+            }
+            else
+            {
+                // Ask the user what to do
+                // TODO
+                KMessageBox::sorry( 0L, i18n( "Destination exists (real dialog box not implemented yet)\n%1"), destUrl.path() );
+                // and change overwriteAll if chosen so
+                return false;
+            }
+        }
+        else
+        {
+            // Some error occured while we tried to symlink
+            KMessageBox::sorry( 0L, i18n( "Failed to make symlink from \n%1\nto\n%2\n" ).
+                                arg(linkDest).arg(destUrl.url()) );
+            return false;
+        }
+    }
+    return true;
+}
+
 bool KIO::link( const KURL::List &srcUrls, const KURL & destDir )
 {
     kdDebug(1202) << "destDir = " << destDir.url() << endl;
@@ -776,37 +819,7 @@ bool KIO::link( const KURL::List &srcUrls, const KURL & destDir )
 	if ( srcUrl.isLocalFile() )
 	{
 	    // Make a symlink
-	    if ( symlink( srcUrl.path().local8Bit(), destUrl.path().local8Bit() ) == -1 )
-	    {
-		// Does the destination already exist ?
-		if ( errno == EEXIST )
-		{
-		    // Are we allowed to overwrite the files ?
-		    if ( overwriteExistingFiles )
-		    {
-			// Try to delete the destination
-			if ( unlink( destUrl.path().local8Bit() ) != 0 )
-			{
-			    KMessageBox::sorry( 0L, i18n( "Could not overwrite\n%1"), destUrl.path() );
-			    return false;
-			}
-		    }
-		    else
-		    {
-			// Ask the user what to do
-			// TODO
-			KMessageBox::sorry( 0L, i18n( "Destination exists (real dialog box not implemented yet)\n%1"), destUrl.path() );
-			return false;
-		    }
-		}
-		else
-		{
-		    // Some error occured while we tried to symlink
-		    KMessageBox::sorry( 0L, i18n( "Failed to make symlink from \n%1\nto\n%2\n" ).
-					arg(srcUrl.url()).arg(destUrl.url()) );
-		    return false;
-		}
-	    } // else : no problem
+            KIO::link( srcUrl.path(), destUrl, false, overwriteExistingFiles );
 	}
 	// Make a link from a file in a tar archive, ftp, http or what ever
 	else
@@ -1053,12 +1066,10 @@ void CopyJob::slotEntries(KIO::Job* job, const UDSEntryList& list)
             if ( m_bCurrentSrcIsDir ) // Only if src is a directory. Otherwise uSource is fine as is
                 info.uSource.addPath( relName );
             info.uDest = m_currentDest;
-            // Append filename or dirname to destination URL, except for links
-            // (This is due to the way ::link is written. Alternatively,
-            // we could change that...)
-            if ( info.linkDest.isEmpty() && destinationState == DEST_IS_DIR )
+            // Append filename or dirname to destination URL
+            if ( destinationState == DEST_IS_DIR )
                 info.uDest.addPath( relName );
-            if ( info.linkDest.isEmpty() && (S_ISDIR(info.type)) )
+            if ( info.linkDest.isEmpty() && (S_ISDIR(info.type)) ) // Dir
             {
                 dirs.append( info ); // Directories
                 if (m_move)
@@ -1569,10 +1580,8 @@ void CopyJob::copyNextFile()
         KIO::Job * newjob;
         if ( !(*it).linkDest.isEmpty() ) // Copying a symlink
         {
-            KURL::List srcList;
             // The "source" is in fact what the existing link points to
-            srcList.append( KURL( /*(*it).uDest, */(*it).linkDest ) ); // TODO support for relative links
-            if ( KIO::link( srcList, (*it).uDest ) )
+            if ( KIO::link( (*it).linkDest, (*it).uDest, bOverwrite, m_bOverwriteAll ) )
             {
                 if (m_move)
                 {
