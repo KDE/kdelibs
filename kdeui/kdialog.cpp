@@ -97,10 +97,10 @@ void KDialog::polish()
 }
 
 
-void KDialog::setCaption( const QString &caption )
+void KDialog::setCaption( const QString &_caption )
 {
-  if (kapp)
-    QDialog::setCaption( kapp->makeStdCaption( caption ) );
+  QString caption = kapp ? kapp->makeStdCaption( _caption ) : _caption;
+  QDialog::setCaption( caption );
 
 #ifdef Q_WS_X11 //FIXME(E) Implement for Qt/E
   NETWinInfo info( qt_xdisplay(), winId(), qt_xrootwin(), 0 );
