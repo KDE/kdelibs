@@ -27,6 +27,7 @@
 #define _K_FONT_DIALOG_H_
 
 #include <qlineedit.h>
+#include <qcheckbox.h>
 #include <kdialogbase.h>
 
 class QComboBox;
@@ -59,6 +60,8 @@ public:
   enum FontColumn { FamilyList=0x01, StyleList=0x02, SizeList=0x04,
     CharsetList=0x08 };
 
+  enum FontDiff { FontDiffFamily=0x01, FontDiffStyle=0x02, FontDiffSize=0x04 };
+
   /**
    * Constructs a font picker widget.
    *
@@ -76,7 +79,7 @@ public:
   KFontChooser(QWidget *parent = 0L, const char *name = 0L,
 	       bool onlyFixed = false,
 	       const QStringList &fontList = QStringList(),
-	       bool makeFrame = true, int visibleListSize=8 );
+	       bool makeFrame = true, bool diff = false, int visibleListSize=8);
 
   /**
    * Destructs the font chooser.
@@ -104,6 +107,8 @@ public:
    *        width fonts if @p true, or vice-versa.
    */
   void setFont( const QFont &font, bool onlyFixed = false );
+
+  int fontDiffFlags();
 
   /**
    * @return The currently selected font in the chooser.
@@ -190,6 +195,7 @@ signals:
   void fontSelected( const QFont &font );
 
 private slots:
+  void toggled_checkbox();
   void family_chosen_slot(const QString&);
   void size_chosen_slot(const QString&);
   void style_chosen_slot(const QString&);
@@ -216,6 +222,9 @@ private:
 
   QLabel       *familyLabel;
   QLabel       *styleLabel;
+  QCheckBox    *familyCheckbox;
+  QCheckBox    *styleCheckbox;
+  QCheckBox    *sizeCheckbox;
   QLabel       *sizeLabel;
   KListBox     *familyListBox;
   KListBox     *styleListBox;
@@ -275,7 +284,7 @@ public:
   KFontDialog( QWidget *parent = 0L, const char *name = 0,
 	       bool onlyFixed = false, bool modal = false,
 	       const QStringList &fontlist = QStringList(),
-	       bool makeFrame = true );
+	       bool makeFrame = true, bool diff = false );
 
   /**
    * Sets the currently selected font in the dialog.
@@ -319,6 +328,9 @@ public:
    * @returns @ref QDialog::result().
    */
   static int getFont( QFont &theFont, bool onlyFixed = false,
+		      QWidget *parent = 0L, bool makeFrame = true );
+
+  static int getFontDiff( QFont &theFont, int &diffFlags, bool onlyFixed = false,
 		      QWidget *parent = 0L, bool makeFrame = true );
 
   /**

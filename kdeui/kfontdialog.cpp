@@ -30,6 +30,7 @@
 #include <stdlib.h>
 
 #include <qcombobox.h>
+#include <qcheckbox.h>
 #include <qfile.h>
 #include <qfont.h>
 #include <qgroupbox.h>
@@ -91,7 +92,7 @@ public:
 
 KFontChooser::KFontChooser(QWidget *parent, const char *name,
 			   bool onlyFixed, const QStringList &fontList,
-			   bool makeFrame, int visibleListSize )
+			   bool makeFrame, bool diff, int visibleListSize )
   : QWidget(parent, name), usingFixed(onlyFixed)
 {
   d = new KFontChooserPrivate;
@@ -118,12 +119,41 @@ KFontChooser::KFontChooser(QWidget *parent, const char *name,
   //
   // first, create the labels across the top
   //
+  QHBoxLayout *familyLayout = new QHBoxLayout(page);
+  if (diff) {
+     familyCheckbox = new QCheckBox(page);
+     connect(familyCheckbox, SIGNAL(toggled(bool)), SLOT(toggled_checkbox()));
+     familyLayout->addWidget(familyCheckbox, 0);
+  }
   familyLabel = new QLabel( i18n("Font"), page, "familyLabel" );
-  gridLayout->addWidget(familyLabel, row, 0, AlignLeft );
+  familyLabel->setEnabled( !diff );
+  familyLayout->addSpacing(5);
+  familyLayout->addWidget(familyLabel, 1);
+  gridLayout->addLayout(familyLayout, row, 0 );
+
+  QHBoxLayout *styleLayout = new QHBoxLayout(page);
+  if (diff) {
+     styleCheckbox = new QCheckBox(page);
+     connect(styleCheckbox, SIGNAL(toggled(bool)), SLOT(toggled_checkbox()));
+     styleLayout->addWidget(styleCheckbox, 0);
+  }
   styleLabel = new QLabel( i18n("Font style"), page, "styleLabel");
-  gridLayout->addWidget(styleLabel, row, 1, AlignLeft);
+  styleLabel->setEnabled( !diff );
+  styleLayout->addSpacing(5);
+  styleLayout->addWidget(styleLabel, 0);
+  gridLayout->addLayout(styleLayout, row, 1 );
+
+  QHBoxLayout *sizeLayout = new QHBoxLayout(page);
+  if (diff) {
+     sizeCheckbox = new QCheckBox(page);
+     connect(sizeCheckbox, SIGNAL(toggled(bool)), SLOT(toggled_checkbox()));
+     sizeLayout->addWidget(sizeCheckbox, 0);
+  }
   sizeLabel = new QLabel( i18n("Size"), page, "sizeLabel");
-  gridLayout->addWidget(sizeLabel, row, 2, AlignLeft);
+  sizeLabel->setEnabled( !diff );
+  sizeLayout->addSpacing(5);
+  sizeLayout->addWidget(sizeLabel, 0);
+  gridLayout->addLayout(sizeLayout, row, 2 );
 
   row ++;
 
@@ -131,6 +161,7 @@ KFontChooser::KFontChooser(QWidget *parent, const char *name,
   // now create the actual boxes that hold the info
   //
   familyListBox = new KListBox( page, "familyListBox");
+  familyListBox->setEnabled( !diff );
   gridLayout->addWidget( familyListBox, row, 0 );
   connect(familyListBox, SIGNAL(highlighted(const QString &)),
 	  SLOT(family_chosen_slot(const QString &)));
@@ -148,6 +179,7 @@ KFontChooser::KFontChooser(QWidget *parent, const char *name,
     minimumListHeight( familyListBox, visibleListSize  ) );
 
   styleListBox = new KListBox( page, "styleListBox");
+  styleListBox->setEnabled( !diff );
   gridLayout->addWidget(styleListBox, row, 1);
   styleListBox->insertItem(i18n("Regular"));
   styleListBox->insertItem(i18n("Italic"));
@@ -162,6 +194,7 @@ KFontChooser::KFontChooser(QWidget *parent, const char *name,
 
 
   sizeListBox = new KListBox( page, "sizeListBox");
+  sizeListBox->setEnabled( !diff );
   gridLayout->addWidget(sizeListBox, row, 2);
 
   static const int c[] =
@@ -341,6 +374,16 @@ QString KFontChooser::charset() const
 
 #endif
 
+int KFontChooser::fontDiffFlags() {
+   int diffFlags = 0;
+   if (familyCheckbox && styleCheckbox && sizeCheckbox) {
+      diffFlags = familyCheckbox->isChecked() ? FontDiffFamily : 0
+                |  styleCheckbox->isChecked() ? FontDiffStyle  : 0
+                |   sizeCheckbox->isChecked() ? FontDiffSize   : 0;
+   }
+   return diffFlags;
+}
+
 void KFontChooser::fillCharsetsCombo()
 {
 #if QT_VERSION < 300
@@ -363,6 +406,16 @@ void KFontChooser::fillCharsetsCombo()
     }
   }
 #endif
+}
+
+void KFontChooser::toggled_checkbox() 
+{
+  familyLabel->setEnabled( familyCheckbox->isChecked() );
+  familyListBox->setEnabled( familyCheckbox->isChecked() );
+  styleLabel->setEnabled( styleCheckbox->isChecked() );
+  styleListBox->setEnabled( styleCheckbox->isChecked() );
+  sizeLabel->setEnabled( sizeCheckbox->isChecked() );
+  sizeListBox->setEnabled( sizeCheckbox->isChecked() );
 }
 
 void KFontChooser::family_chosen_slot(const QString& family)
@@ -559,13 +612,28 @@ void KFontChooser::showXLFDArea(bool show)
 
 KFontDialog::KFontDialog( QWidget *parent, const char* name,
 			  bool onlyFixed, bool modal,
-			  const QStringList &fontList, bool makeFrame )
+			  const QStringList &fontList, bool makeFrame, bool diff )
   : KDialogBase( parent, name, modal, i18n("Select Font"), Ok|Cancel, Ok )
 {
-  chooser = new KFontChooser(this,"fontChooser",onlyFixed,fontList,makeFrame);
+  chooser = new KFontChooser(this,"fontChooser",onlyFixed,fontList,makeFrame,diff);
   setMainWidget(chooser);
 }
 
+int KFontDialog::getFontDiff( QFont &theFont, int &diffFlags, bool onlyFixed, 
+               QWidget *parent, bool makeFrame )
+{
+  KFontDialog dlg( parent, "Font Selector", onlyFixed, true, QStringList(),
+		   makeFrame, true );
+  dlg.setFont( theFont, onlyFixed );
+
+  int result = dlg.exec();
+  if( result == Accepted )
+  {
+    theFont = dlg.chooser->font();
+    diffFlags = dlg.chooser->fontDiffFlags();
+  }
+  return( result );
+}
 
 int KFontDialog::getFont( QFont &theFont, bool onlyFixed, QWidget *parent,
 			  bool makeFrame )
@@ -605,6 +673,9 @@ int KFontDialog::getFontAndText( QFont &theFont, QString &theString,
 ****************************************************************************
 *
 * $Log$
+* Revision 1.71  2001/10/10 17:40:39  mueller
+* CVS_SILENT: fixincludes
+*
 * Revision 1.70  2001/10/06 11:40:22  adrian
 * According to bug #22745 Bold _and_ Italic fonts did not get a right preview.
 * This depends on the language which is used. (I think these i18n() statements
