@@ -83,6 +83,11 @@ class StdAddressBook : public AddressBook
       Returns the default directory name for vcard-based addressbook
     */
     static QString directoryName();
+    
+    /**
+      Close the Addressbook. It does not save it before
+    */
+    static void close();
 
   protected:
     StdAddressBook();
