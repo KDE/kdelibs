@@ -36,8 +36,18 @@ namespace ThreadWeaver {
     {
     }
 
+    Job::Job (Job *dep, QObject* parent, const char* name)
+        : QObject (parent, name),
+          m_finished (false),
+	  m_mutex (new QMutex (true) ),
+	  m_thread (0)
+    {
+        addDependancy (dep);
+    }
+
     Job::~Job()
     {
+        resolveDependancies();
     }
 
     void Job::lock()
@@ -59,6 +69,7 @@ namespace ThreadWeaver {
         run ();
 
 	m_mutex->lock();
+        resolveDependancies();
         setFinished (true);
 	m_thread = 0;
 	m_mutex->unlock();
@@ -139,6 +150,55 @@ namespace ThreadWeaver {
 	    delete m_wc;
 	    m_wc = 0;
 	}
+    }
+// maybe use protected members for auto-add logic? :
+    void Job::addDependancy (Job* dep, bool internal_auto)
+    {
+        QMutexLocker l(m_mutex);
+        if (m_dependancies.contains (dep) == 0)
+        {
+            m_dependancies.append (dep);
+        }
+        if (internal_auto==false) dep->addDependant (this, true);
+    }
+
+    void Job::addDependant (Job* dep, bool internal_auto)
+    {
+        QMutexLocker l(m_mutex);
+        if (m_dependants.contains (dep) == 0)
+        {
+            m_dependants.append (dep);
+        }
+        if (internal_auto==false) dep->addDependancy (this, true);
+    }
+
+    bool Job::removeDependancy (Job* dep, bool internal_auto)
+    {
+        QMutexLocker l(m_mutex);
+        if (internal_auto==false) dep->removeDependant (this, true);
+        return m_dependancies.remove (dep);
+    }
+
+    bool Job::removeDependant (Job* dep, bool internal_auto)
+    {
+        QMutexLocker l(m_mutex);
+        if (internal_auto==false) dep->removeDependancy (this, true);
+        return m_dependants.remove (dep);
+    }
+
+    bool Job::hasUnresolvedDependancies ()
+    {
+        QMutexLocker l(m_mutex);
+        return m_dependancies.isEmpty() == false;
+    }
+
+    void Job::resolveDependancies ()
+    {
+        QMutexLocker l(m_mutex);
+        while (!m_dependants.isEmpty())
+        {
+            removeDependant (m_dependants.first());
+        }
     }
 
     const int Event::Type = QEvent::User + 1000;
@@ -456,13 +516,24 @@ namespace ThreadWeaver {
 
     Job* Weaver::applyForWork(Thread *th, Job* previous)
     {
-        Job *rc = 0;
+        Job *next = 0;
         bool lastjob = false;
         bool suspended = false;
 
         while (true)
         {
             lock();
+
+            // find the first job without unresolved dependancies, which
+            // is the next one to execute:
+            for (next = m_assignments.first(); next;
+                 next = m_assignments.next() )
+            {
+                if ( next->hasUnresolvedDependancies() == false )
+                {
+                    break;
+                }
+            }
 
             if (previous != 0)
             {   // cleanup and send events:
@@ -477,7 +548,8 @@ namespace ThreadWeaver {
                     lastjob = true;
                     m_running = false;
                     post (Event::Finished);
-                    debug ( 3, "Weaver::applyForWork: last job.\n" );
+                    debug ( 3, "Weaver::applyForWork: no more jobs without"
+                            " dependancies, idling.\n" );
                 }
 
                 if (m_active == 0 && m_suspend == true)
@@ -489,19 +561,17 @@ namespace ThreadWeaver {
 
                 m_jobFinished.wakeOne();
             }
-
+            // ... still locked ...
             previous = 0;
 
             if (m_shuttingDown == true)
             {
                 unlock();
-
                 return 0;
             } else {
-                if ( !isEmpty() && m_suspend == false )
+                if ( next !=0 && m_suspend == false )
                 {
-                    rc = m_assignments.getFirst();
-                    m_assignments.removeFirst ();
+                    m_assignments.remove (next);
                     ++m_active;
 
 		    debug ( 3, "Weaver::applyForWork: job assigned, "
@@ -511,10 +581,9 @@ namespace ThreadWeaver {
 
 		    post (Event::ThreadBusy, th);
 
-                    return rc;
+                    return next;
                 } else {
                     unlock();
-
 		    post (Event::ThreadSuspended, th);
                     m_jobAvailable.wait();
                 }
@@ -546,4 +615,4 @@ namespace ThreadWeaver {
 
 }
 
-#include "weaver.moc"
+// #include "weaver.moc"

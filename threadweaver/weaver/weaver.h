@@ -100,16 +100,26 @@ namespace ThreadWeaver {
     public:
 	enum Action {
 	    NoAction = 0,
-	    Finished, /// All jobs in the queue are done.
-            Suspended, /// Thread queueing halted.
+            /// All jobs in the queue are done.
+	    Finished,
+            /// Thread queueing halted.
+            Suspended,
+            /// A thread started.
 	    ThreadStarted,
+            /// A thread exited.
 	    ThreadExiting,
+            /// A thread executes a job.
 	    ThreadBusy,
+            /// A thread has beend suspended.
 	    ThreadSuspended,
+            ///  A job has been started.
 	    JobStarted,
+            /// A job has been finished.
 	    JobFinished,
-	    JobSPR, /// Synchronous Process Request
-	    JobAPR  /// Asynchronous Process Request
+            /// Synchronous Process Request
+	    JobSPR,
+            /// Asynchronous Process Request
+	    JobAPR
 	};
 	Event ( Action = NoAction, Thread * = 0, Job *job = 0);
 	/** Return the (custom defined) event type. */
@@ -164,7 +174,10 @@ namespace ThreadWeaver {
         Q_OBJECT
     public:
 	/** Construct a Job object. */
-        Job(QObject* parent=0, const char* name=0);
+        Job (QObject* parent=0, const char* name=0);
+
+        /** Construct a Job object which depends on dep. */
+        Job (Job* dep, QObject* parent=0, const char* name=0);
 
 	/** Destructor. */
         virtual ~Job();
@@ -184,6 +197,55 @@ namespace ThreadWeaver {
 	/** Process events related to this job (created by the processing
 	    thread or the weaver or whoever). */
 	virtual void processEvent ( Event* );
+
+        /** Add a dependancy.
+            The object given will be added as a dependancy. The Job will not
+            be executed until all dependancies have been processed.
+            The job is automatically added to the dependancy as a dependant.
+
+            Note: Adding the same dependancy more than once will be ignored.
+
+            Note: Ignore internal_auto.
+        */
+        void addDependancy (Job*, bool internal_auto = false);
+
+        /** Add a depandant.
+            The object given will be added as a dependant. When the execution
+            of the job finished, the dependants will be notified.
+            The job is automatically added to the dependant as a dependancy.
+
+            Note: Adding the same dependant more than once will be ignored.
+
+            Note: Ignore internal_auto.
+        */
+        void addDependant (Job*, bool internal_auto = false);
+
+        /** Remove dependancy.
+            The given dependancy will be removed. If none are left, the job
+            will be executed as soon as a waiting thread is available.
+            The job will automatically be removed as a dependant of dep.
+
+            Returns false if the given object is not dependancy of this job.
+
+            Note: Ignore internal_auto.
+        */
+        bool removeDependancy (Job *dep, bool internal_auto = false);
+
+        /** Remove dependant.
+            The given dependant will be removed. This might happen if a job
+            object is deleted before it is executed.
+            The job will automatically be removed as a dependancy of dep.
+
+            Returns false if the given object is not dependant of this job.
+
+            Note: Ignore internal_auto.
+        */
+        bool removeDependant (Job* dep, bool internal_auto = false);
+
+        /** Query whether the job has an unresolved dependancy.
+            In case it does, it will not be processed by a thread trying to
+            request a job. */
+        bool hasUnresolvedDependancies();
 
     signals:
 	/** This signal is emitted when a thread starts to process a job. */
@@ -231,6 +293,15 @@ namespace ThreadWeaver {
 	    operation is done. */
 	void triggerAPR ();
 
+        /** Resolve all dependancies.
+            This method needs to be called after the Job has been finished, or
+            when it is deleted without being executed (performed by the
+            destructor.
+            The method will notify all dependants that the job has
+            finished.
+        */
+        void resolveDependancies();
+
         bool m_finished;
 
 	QMutex *m_mutex;
@@ -238,6 +309,12 @@ namespace ThreadWeaver {
 	Thread * m_thread;
 
 	QWaitCondition *m_wc;
+
+        /** A list of Job objects which DEPEND ON THIS job. */
+        QPtrList<Job> m_dependants;
+
+        /** A list of Job object which THIS job DEPENDS on. */
+        QPtrList<Job> m_dependancies;
     };
 
     class Weaver;

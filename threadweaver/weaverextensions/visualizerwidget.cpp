@@ -50,11 +50,15 @@ namespace ThreadWeaver {
 
     void VisualizerWidget::add (ThreadWeaver::Thread *thread)
     {
+        const int LEDsPerRow = 8;
+        int row, col;
         KLed *led = new KLed (Qt::green, KLed::Off, KLed::Flat, KLed::Rectangular,
                               this);
         led->show();
         led->setFixedSize (16, 4);
-        mLayout->addWidget (led, 0, mThreads.size());
+        row = (mThreads.size()-1) / LEDsPerRow;
+        col = (mThreads.size()-1) % LEDsPerRow;
+        mLayout->addWidget (led, row, col);
         mThreads[thread] = led;
     }
 

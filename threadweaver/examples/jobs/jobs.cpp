@@ -29,7 +29,7 @@ int main()
 {
     const int NoOfThreads = 16 ;
     const int NoOfJobs = NoOfThreads * 64  ; // 64 jobs for every thread
-    const int Multiplier = 100; // [0..9]* Multiplier sleep time for each job
+    const int Multiplier = 10; // [0..9]* Multiplier sleep time for each job
 
     Weaver weaver(0, 0, NoOfThreads);
     DummyJob *dummies[ NoOfJobs];

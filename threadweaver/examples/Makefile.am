@@ -1,2 +1,1 @@
-SUBDIRS = jobs jobs-gui processrequests
-
+SUBDIRS = jobs jobs-gui processrequests fileloader

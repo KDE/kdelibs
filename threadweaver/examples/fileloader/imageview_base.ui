@@ -1,0 +1,81 @@
+<!DOCTYPE UI><UI version="3.3" stdsetdef="1">
+<class>ImageViewBase</class>
+<widget class="QWidget">
+    <property name="name">
+        <cstring>ImageViewBase</cstring>
+    </property>
+    <property name="geometry">
+        <rect>
+            <x>0</x>
+            <y>0</y>
+            <width>600</width>
+            <height>480</height>
+        </rect>
+    </property>
+    <property name="caption">
+        <string>Simple Multithreaded Image Viewer</string>
+    </property>
+    <grid>
+        <property name="name">
+            <cstring>unnamed</cstring>
+        </property>
+        <widget class="QIconView" row="0" column="0" rowspan="1" colspan="3">
+            <property name="name">
+                <cstring>ivThumbs</cstring>
+            </property>
+        </widget>
+        <widget class="QPushButton" row="1" column="0">
+            <property name="name">
+                <cstring>pbSelectFiles</cstring>
+            </property>
+            <property name="text">
+                <string>Select Files...</string>
+            </property>
+        </widget>
+        <widget class="QPushButton" row="1" column="2">
+            <property name="name">
+                <cstring>pbQuit</cstring>
+            </property>
+            <property name="text">
+                <string>Quit</string>
+            </property>
+        </widget>
+        <spacer row="1" column="1">
+            <property name="name">
+                <cstring>spacer1</cstring>
+            </property>
+            <property name="orientation">
+                <enum>Horizontal</enum>
+            </property>
+            <property name="sizeType">
+                <enum>Expanding</enum>
+            </property>
+            <property name="sizeHint">
+                <size>
+                    <width>40</width>
+                    <height>20</height>
+                </size>
+            </property>
+        </spacer>
+    </grid>
+</widget>
+<connections>
+    <connection>
+        <sender>pbQuit</sender>
+        <signal>clicked()</signal>
+        <receiver>ImageViewBase</receiver>
+        <slot>slotQuit()</slot>
+    </connection>
+    <connection>
+        <sender>pbSelectFiles</sender>
+        <signal>clicked()</signal>
+        <receiver>ImageViewBase</receiver>
+        <slot>slotSelectFiles()</slot>
+    </connection>
+</connections>
+<slots>
+    <slot>slotQuit()</slot>
+    <slot>slotSelectFiles()</slot>
+</slots>
+<layoutdefaults spacing="6" margin="11"/>
+</UI>

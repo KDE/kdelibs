@@ -58,4 +58,4 @@ namespace ThreadWeaver {
 
 }
 
-#include "weaverextension.moc"
+// #include "weaverextension.moc"

@@ -1,10 +1,4 @@
-extern "C" {
-#include <stdlib.h>
-#include <unistd.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <fcntl.h>
-}
+#include <errno.h>
 
 #include "fileloaderjob.h"
 
@@ -16,9 +10,9 @@ namespace ThreadWeaver {
         : Job (parent, name),
           m_filename (filename),
           m_data (0),
-          m_finished (false)
+          m_finished (false),
+          m_error (0)
     {
-
     }
 
     FileLoaderJob::~FileLoaderJob()
@@ -29,8 +23,14 @@ namespace ThreadWeaver {
         }
     }
 
-    const char* FileLoaderJob::data ()
+    const int FileLoaderJob::error() const
     {
+        return m_error;
+    }
+
+    const char* FileLoaderJob::data () const
+    {   // we make sure data cannot be accesses until the file is completely
+        // loaded, this way we do not need to mutex it:
         if (m_finished)
         {
             return m_data;
@@ -42,46 +42,72 @@ namespace ThreadWeaver {
     void FileLoaderJob::run()
     {
         int handle;
-        struct stat info;
-        // stat the file:
-        if ( stat ( m_filename.local8Bit(), &info) == 0
-            && info.st_size > 0)
-        {   // stat successful:
-            // create memory buffer:
-            m_data = (char*) malloc (info.st_size);
-            if (m_data != 0)
-            {   // malloc successful:
-                // open the file:
-                handle = open (m_filename.local8Bit(), O_RDONLY);
-                if (handle != 0)
-                {
-                    int bytesread = 0;
-                    int chunksize;
-                    bool eof = false;
-                    // read until EOF:
-                    while (bytesread < info.st_size && eof == false)
-                    {
-                        chunksize = read (handle,
-                                          m_data + bytesread,
-                                          info.st_size - bytesread);
-                        if (chunksize == 0)
-                        {
-                            eof = true;
-                        } else {
-                            bytesread += chunksize;
-                        }
-                    }
-                    // close the file:
-                    ::close (handle);
-                } else {
-                    free (m_data);
-                    m_data = 0;
-                }
 
+        // stat the file:
+        if ( stat ( m_filename.local8Bit(), &m_statinfo) == -1)
+        {
+            m_error = errno;
+        } else {
+            if (m_statinfo.st_size > 0)
+            {   // stat successful:
+                // create memory buffer:
+                m_data = (char*) malloc (m_statinfo.st_size);
+                if (m_data != 0)
+                {   // malloc successful:
+                    // open the file:
+                    handle = open (m_filename.local8Bit(), O_RDONLY);
+                    if (handle == -1)
+                    {
+                        m_error = errno;
+                    } else {
+                        int bytesread = 0;
+                        int chunksize = 1;
+                        // read until EOF:
+                        while (bytesread < m_statinfo.st_size && chunksize != 0)
+                        {
+                            chunksize = read (handle,
+                                              m_data + bytesread,
+                                              m_statinfo.st_size - bytesread);
+                            if (chunksize == -1)
+                            {
+                                m_error = errno;
+                                break;
+                            } else {
+                                if (chunksize > 0)
+                                {
+                                    bytesread += chunksize;
+                                }
+                            }
+                        }
+                        // close the file:
+                        ::close (handle);
+                    }
+                }
             }
+        }
+
+        if (m_error != 0)
+        {
+            free (m_data);
+            m_data = 0;
         }
         // set m_finished and return:
         m_finished = true;
+    }
+
+    const int FileLoaderJob::size () const
+    {
+        if (m_finished)
+        {
+            return m_statinfo.st_size;
+        } else {
+            return 0;
+        }
+    }
+
+    const QString& FileLoaderJob::filename() const
+    {
+        return m_filename;
     }
 }
 
