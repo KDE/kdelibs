@@ -28,6 +28,7 @@
 #include <qstring.h>
 #include <qvaluevector.h>
 #include <kdeprint/kmobject.h>
+#include <kdelibs_export.h>
 
 /**
  * @internal
@@ -36,7 +37,7 @@
  * if you're a KDEPrint developer. The API might change in the
  * future and binary compatibility might be broken.
  */
-class KMJob : public KMObject
+class KDEPRINT_EXPORT KMJob : public KMObject
 {
 public:
 	enum JobAction {

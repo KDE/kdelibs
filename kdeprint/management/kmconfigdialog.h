@@ -25,7 +25,7 @@
 
 #include "kmconfigpage.h"
 
-class KMConfigDialog : public KDialogBase
+class KDEPRINT_EXPORT KMConfigDialog : public KDialogBase
 {
 	Q_OBJECT
 public:

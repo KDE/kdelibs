@@ -24,6 +24,8 @@
 #include <qintdict.h>
 #include <qvaluestack.h>
 
+#include <kdelibs_export.h>
+
 class QWidgetStack;
 class QLabel;
 class QPushButton;
@@ -32,7 +34,7 @@ class KMPrinter;
 class KMWBackend;
 class SidePixmap;
 
-class KMWizard : public QDialog
+class KDEPRINT_EXPORT KMWizard : public QDialog
 {
 	Q_OBJECT
 public:

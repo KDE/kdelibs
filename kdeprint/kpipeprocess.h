@@ -23,7 +23,9 @@
 #include <qfile.h>
 #include <stdio.h>
 
-class KPipeProcess : public QFile
+#include <kdelibs_export.h>
+
+class KDEPRINT_EXPORT KPipeProcess : public QFile
 {
 public:
 	KPipeProcess(const QString& cmd = QString::null, int mode = IO_ReadOnly);

@@ -22,12 +22,14 @@
 
 #include "kprintdialogpage.h"
 
+#include <kdelibs_export.h>
+
 class QButtonGroup;
 class QComboBox;
 class QLabel;
 class DrMain;
 
-class KPQtPage : public KPrintDialogPage
+class KDEPRINT_EXPORT KPQtPage : public KPrintDialogPage
 {
 	Q_OBJECT
 public:

@@ -84,7 +84,7 @@ class DrPageSize;
  * @author Michael Goffioul
  * @see QPrinter, KPrintDialogPage
  */
-class KPrinter : public QPaintDevice, public KPReloadObject
+class KDEPRINT_EXPORT KPrinter : public QPaintDevice, public KPReloadObject
 {
 friend class KPrinterWrapper;
 friend class KPrinterImpl;
@@ -768,8 +768,8 @@ protected:
 
 // Utility functions
 
-KPrinter::PageSize pageNameToPageSize(const QString& name);
-const char* pageSizeToPageName(KPrinter::PageSize s);
+KDEPRINT_EXPORT KPrinter::PageSize pageNameToPageSize(const QString& name);
+KDEPRINT_EXPORT const char* pageSizeToPageName(KPrinter::PageSize s);
 /**
  * DO NOT USE, WILL BE REMOVED.
  * @obsolete

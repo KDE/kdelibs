@@ -21,12 +21,13 @@
 #define KMWBACKEND_H
 
 #include "kmwizardpage.h"
+#include <kdelibs_export.h>
 #include <qmap.h>
 
 class QButtonGroup;
 class QVBoxLayout;
 
-class KMWBackend : public KMWizardPage
+class KDEPRINT_EXPORT KMWBackend : public KMWizardPage
 {
 public:
 	KMWBackend(QWidget *parent = 0, const char *name = 0);

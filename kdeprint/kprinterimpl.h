@@ -26,10 +26,12 @@
 #include <qmap.h>
 #include <qptrlist.h>
 
+#include <kdelibs_export.h>
+
 class KPrinter;
 class KMPrinter;
 
-class KPrinterImpl : public QObject
+class KDEPRINT_EXPORT KPrinterImpl : public QObject
 {
 	Q_OBJECT
 public:

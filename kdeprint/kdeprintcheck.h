@@ -25,7 +25,7 @@
 #include <kconfig.h>
 #include <kurl.h>
 
-class KdeprintChecker
+class KDEPRINT_EXPORT KdeprintChecker
 {
 public:
 	static bool check(KConfig *conf, const QString& group = QString::null);

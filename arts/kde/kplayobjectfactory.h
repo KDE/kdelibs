@@ -23,12 +23,14 @@
 #define KPLAYOBJECTFACTORY_H
 
 #include <kurl.h>
+#include <kdelibs_export.h>
+
 #include "soundserver.h"
 #include "kplayobject.h"
 
 class KArtsServer;
 
-class KPlayObjectFactory
+class KDE_EXPORT KPlayObjectFactory
 {
 public:
 	/**
@@ -74,7 +76,7 @@ class POFHelper;
 	 * use the KDE multimedia framework can be found in the documentation
 	 * for KDE::PlayObject.
 	 */
-class PlayObjectFactory// : public QObject ### for KDE4 make it a QObject to be able to receive signals
+class KDE_EXPORT PlayObjectFactory// : public QObject ### for KDE4 make it a QObject to be able to receive signals
 {
 public:
 	/**

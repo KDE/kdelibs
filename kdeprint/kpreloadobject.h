@@ -20,7 +20,9 @@
 #ifndef KPRELOADOBJECT_H
 #define KPRELOADOBJECT_H
 
-class KPReloadObject
+#include <kdelibs_export.h>
+
+class KDEPRINT_EXPORT KPReloadObject
 {
 friend class KMFactory;
 public:

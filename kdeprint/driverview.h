@@ -25,16 +25,18 @@
 #include <klistview.h>
 #include <qmap.h>
 
+#include <kdelibs_export.h>
+
 class DrOptionView;
 class DrMain;
 
-class DrListView : public KListView
+class KDEPRINT_EXPORT DrListView : public KListView
 {
 public:
 	DrListView(QWidget *parent = 0, const char *name = 0);
 };
 
-class DriverView : public QWidget
+class KDEPRINT_EXPORT DriverView : public QWidget
 {
 	Q_OBJECT
 public:

@@ -26,6 +26,8 @@
 #include <qstringlist.h>
 #include <qstring.h>
 
+#include <kdelibs_export.h>
+
 /**
  * The fact that this class inherits from QObject makes me
  * hugely unhappy. The reason for as of writting is that
@@ -36,7 +38,7 @@ namespace KSpell2
 {
     class Dictionary;
 
-    class Client : public QObject
+    class KDE_EXPORT Client : public QObject
     {
         Q_OBJECT
     public:

@@ -22,9 +22,11 @@
 
 #include "kmpropwidget.h"
 
+#include <kdelibs_export.h>
+
 class QLabel;
 
-class KMPropBackend : public KMPropWidget
+class KDEPRINT_EXPORT KMPropBackend : public KMPropWidget
 {
 public:
 	KMPropBackend(QWidget *parent = 0, const char *name = 0);

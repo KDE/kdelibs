@@ -24,13 +24,15 @@
 #include <qptrlist.h>
 #include <qdatetime.h>
 
+#include <kdelibs_export.h>
+
 #include "kpreloadobject.h"
 
 class KMPrinter;
 class KMManager;
 class QWidget;
 
-class KMVirtualManager : public QObject, public KPReloadObject
+class KDEPRINT_EXPORT KMVirtualManager : public QObject, public KPReloadObject
 {
 public:
 	KMVirtualManager(KMManager *parent = 0, const char *name = 0);

@@ -30,7 +30,7 @@ class KPrintDialogPage;
 class DrMain;
 class QTabWidget;
 
-class KPrinterPropertyDialog : public KDialogBase
+class KDEPRINT_EXPORT KPrinterPropertyDialog : public KDialogBase
 {
 	Q_OBJECT
 public:

@@ -22,10 +22,12 @@
 
 #include <qwidget.h>
 
+#include <kdelibs_export.h>
+
 class KMPrinter;
 class KMWizard;
 
-class KMPropWidget : public QWidget
+class KDEPRINT_EXPORT KMPropWidget : public QWidget
 {
 	Q_OBJECT
 public:

@@ -23,9 +23,11 @@
 #include <qwidget.h>
 #include <qptrdict.h>
 
+#include <kdelibs_export.h>
+
 class QLabel;
 
-class MessageWindow : public QWidget
+class KDEPRINT_EXPORT MessageWindow : public QWidget
 {
 	Q_OBJECT
 

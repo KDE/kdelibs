@@ -275,7 +275,7 @@ private:
     KURLRequesterPrivate *d;
 };
 
-class KURLComboRequester : public KURLRequester // For use in Qt Designer
+class KIO_EXPORT KURLComboRequester : public KURLRequester // For use in Qt Designer
 {
     Q_OBJECT
 public:

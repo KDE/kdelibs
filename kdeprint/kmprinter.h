@@ -43,7 +43,7 @@ class QWidget;
  * if you're a KDEPrint developer. The API might change in the
  * future and binary compatibility might be broken.
  */
-class KMPrinter : public KMObject
+class KDEPRINT_EXPORT KMPrinter : public KMObject
 {
 public:
 	enum PrinterType {

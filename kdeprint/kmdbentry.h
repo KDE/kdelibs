@@ -23,7 +23,9 @@
 #include <qstring.h>
 #include <qptrlist.h>
 
-struct KMDBEntry
+#include <kdelibs_export.h>
+
+struct KDEPRINT_EXPORT KMDBEntry
 {
 	// the file location of the driver
 	QString	file;

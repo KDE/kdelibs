@@ -28,7 +28,7 @@
 class QComboBox;
 class QLabel;
 
-class PluginComboBox : public QWidget, public KPReloadObject
+class KDEPRINT_EXPORT PluginComboBox : public QWidget, public KPReloadObject
 {
 	Q_OBJECT
 public:

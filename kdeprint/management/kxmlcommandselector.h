@@ -23,6 +23,8 @@
 #include <qwidget.h>
 #include <qstringlist.h>
 
+#include <kdelibs_export.h>
+
 class QComboBox;
 class QLineEdit;
 class QCheckBox;
@@ -30,7 +32,7 @@ class QLabel;
 class QPushButton;
 class KDialogBase;
 
-class KXmlCommandSelector : public QWidget
+class KDEPRINT_EXPORT KXmlCommandSelector : public QWidget
 {
 	Q_OBJECT
 public:

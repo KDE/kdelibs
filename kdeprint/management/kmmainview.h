@@ -127,6 +127,6 @@ private:
 	KToolBar *m_menubar;
 };
 
-int kdeprint_management_add_printer_wizard( QWidget* parent );
+KDEPRINT_EXPORT int kdeprint_management_add_printer_wizard( QWidget* parent );
 
 #endif

@@ -34,9 +34,9 @@ void urlToSmb(const KURL& url, QString& work, QString& server, QString& printer)
 // KDEPrint, but without encoding outside KDEPrint (shoudl fix bug #38733)
 KURL smbToUrl(const QString& s);
 QString urlToSmb(const KURL& url);
-QString buildSmbURI( const QString& work, const QString& server, const QString& printer, const QString& user, const QString& passwd );
-bool splitSmbURI( const QString& uri, QString& work, QString& server, QString& printer, QString& user, QString& passwd );
-QString shadowPassword( const QString& uri );
+KDEPRINT_EXPORT QString buildSmbURI( const QString& work, const QString& server, const QString& printer, const QString& user, const QString& passwd );
+KDEPRINT_EXPORT bool splitSmbURI( const QString& uri, QString& work, QString& server, QString& printer, QString& user, QString& passwd );
+KDEPRINT_EXPORT QString shadowPassword( const QString& uri );
 
 static const struct pagesizestruct
 {

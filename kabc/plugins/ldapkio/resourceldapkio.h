@@ -30,7 +30,7 @@ class KConfig;
 
 namespace KABC {
 
-class ResourceLDAPKIO : public Resource
+class KABC_EXPORT ResourceLDAPKIO : public Resource
 {
   Q_OBJECT
 

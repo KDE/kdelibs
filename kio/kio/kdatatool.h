@@ -191,7 +191,7 @@ private:
  * The slot defined for step 2 is called when the action is activated, and
  * that's where the tool should be created and run.
  */
-class KDataToolAction : public KAction
+class KIO_EXPORT KDataToolAction : public KAction
 {
     Q_OBJECT
 public:

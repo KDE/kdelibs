@@ -37,7 +37,7 @@
 
 template class QPtrList<KHTMLPart>;
 
-extern "C" void *init_libkhtml()
+extern "C" KDE_EXPORT void *init_libkhtml()
 {
     // We can't use a plain self() here, because that would
     // return the global factory, which might already exist

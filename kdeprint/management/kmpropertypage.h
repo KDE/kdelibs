@@ -23,13 +23,13 @@
 #include "cjanuswidget.h"
 #include "kmprinterpage.h"
 #include <kdeprint/kpreloadobject.h>
-
+#include <kdelibs_export.h>
 #include <qptrlist.h>
 
 class KMPropWidget;
 class KMPrinter;
 
-class KMPropertyPage : public CJanusWidget, public KMPrinterPage, public KPReloadObject
+class KDEPRINT_EXPORT KMPropertyPage : public CJanusWidget, public KMPrinterPage, public KPReloadObject
 {
 	Q_OBJECT
 public:

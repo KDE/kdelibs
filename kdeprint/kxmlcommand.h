@@ -24,11 +24,13 @@
 #include <qmap.h>
 #include <qobject.h>
 
+#include <kdelibs_export.h>
+
 class DrMain;
 class DrGroup;
 class DrBase;
 
-class KXmlCommand : public QObject
+class KDEPRINT_EXPORT KXmlCommand : public QObject
 {
 	friend class KXmlCommandManager;
 
@@ -84,7 +86,7 @@ private:
 	KXmlCommandPrivate	*d;
 };
 
-class KXmlCommandManager : public QObject
+class KDEPRINT_EXPORT KXmlCommandManager : public QObject
 {
 public:
 	enum IO_CheckType	{ None = 0, Basic, Advanced };

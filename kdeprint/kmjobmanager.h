@@ -29,6 +29,8 @@
 #include <qdict.h>
 #include <qvaluelist.h>
 
+#include <kdelibs_export.h>
+
 class KMJob;
 class KMThreadJob;
 class KActionCollection;
@@ -41,7 +43,7 @@ class KAction;
  * if you're a KDEPrint developer. The API might change in the
  * future and binary compatibility might be broken.
  */
-class KMJobManager : public QObject
+class KDEPRINT_EXPORT KMJobManager : public QObject
 {
 	Q_OBJECT
 

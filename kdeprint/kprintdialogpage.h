@@ -24,6 +24,8 @@
 #include <qwidget.h>
 #include <qmap.h>
 
+#include <kdelibs_export.h>
+
 class KMPrinter;
 class DrMain;
 
@@ -85,7 +87,7 @@ class DrMain;
  * @short Base class for customized print dialog pages.
  * @see KPrinter
  */
-class KPrintDialogPage : public QWidget
+class KDEPRINT_EXPORT KPrintDialogPage : public QWidget
 {
 	Q_OBJECT
 public:

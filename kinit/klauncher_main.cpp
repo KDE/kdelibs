@@ -44,7 +44,7 @@ fprintf(stderr, "klauncher: Exiting on signal %d\n", sig_num);
    KLauncher::destruct(255);
 }
 
-extern "C" int kdemain( int argc, char**argv )
+extern "C" KDE_EXPORT int kdemain( int argc, char**argv )
 {
    // Started via kdeinit.
    if (fcntl(LAUNCHER_FD, F_GETFD) == -1)

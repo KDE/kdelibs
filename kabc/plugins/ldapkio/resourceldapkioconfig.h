@@ -42,7 +42,7 @@ class KLineEdit;
 
 namespace KABC {
 
-class ResourceLDAPKIOConfig : public KRES::ConfigWidget
+class KABC_EXPORT ResourceLDAPKIOConfig : public KRES::ConfigWidget
 { 
   Q_OBJECT
 

@@ -32,6 +32,8 @@
 #include <qrect.h>
 #include <qsize.h>
 
+#include <kdelibs_export.h>
+
 class DriverItem;
 class QListView;
 
@@ -56,7 +58,7 @@ class DrPageSize;
  * if you're a KDEPrint developer. The API might change in the
  * future and binary compatibility might be broken.
  */
-class DrBase
+class KDEPRINT_EXPORT DrBase
 {
 public:
 	enum Type { Base = 0, Main, ChoiceGroup, Group, String, Integer, Float, List, Boolean };
@@ -101,7 +103,7 @@ protected:
  * if you're a KDEPrint developer. The API might change in the
  * future and binary compatibility might be broken.
  */
-class DrGroup : public DrBase
+class KDEPRINT_EXPORT DrGroup : public DrBase
 {
 public:
 	DrGroup();
@@ -148,7 +150,7 @@ protected:
  * if you're a KDEPrint developer. The API might change in the
  * future and binary compatibility might be broken.
  */
-class DrMain : public DrGroup
+class KDEPRINT_EXPORT DrMain : public DrGroup
 {
 public:
 	DrMain();
@@ -200,7 +202,7 @@ public:
  * if you're a KDEPrint developer. The API might change in the
  * future and binary compatibility might be broken.
  */
-class DrStringOption : public DrBase
+class KDEPRINT_EXPORT DrStringOption : public DrBase
 {
 public:
 	DrStringOption();
@@ -224,7 +226,7 @@ protected:
  * if you're a KDEPrint developer. The API might change in the
  * future and binary compatibility might be broken.
  */
-class DrIntegerOption : public DrBase
+class KDEPRINT_EXPORT DrIntegerOption : public DrBase
 {
 public:
 	DrIntegerOption();
@@ -249,7 +251,7 @@ protected:
  * if you're a KDEPrint developer. The API might change in the
  * future and binary compatibility might be broken.
  */
-class DrFloatOption : public DrBase
+class KDEPRINT_EXPORT DrFloatOption : public DrBase
 {
 public:
 	DrFloatOption();
@@ -274,7 +276,7 @@ protected:
  * if you're a KDEPrint developer. The API might change in the
  * future and binary compatibility might be broken.
  */
-class DrListOption : public DrBase
+class KDEPRINT_EXPORT DrListOption : public DrBase
 {
 public:
 	DrListOption();
@@ -306,7 +308,7 @@ protected:
  * if you're a KDEPrint developer. The API might change in the
  * future and binary compatibility might be broken.
  */
-class DrBooleanOption : public DrListOption
+class KDEPRINT_EXPORT DrBooleanOption : public DrListOption
 {
 	/* just an overloaded class, with different type */
 public:

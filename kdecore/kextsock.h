@@ -1019,7 +1019,7 @@ private:
  * Contains information about an internet address. It wraps addrinfo,
  * see getaddrinfo(3) for more information.
  */
-class KDE_DEPRECATED KAddressInfo
+class KDECORE_EXPORT KAddressInfo
 {
 private:
   addrinfo *ai;
@@ -1039,20 +1039,20 @@ public:
    * Returns the KAddressInfo's KSocketAddress.
    * Only valid as long as the KAddressInfo exists.
    */
-  inline operator const ::KSocketAddress*() const
+  inline operator const ::KSocketAddress*() const KDE_DEPRECATED
   { return addr; }
 
   /**
    * Returns the KAddressInfo's addrinfo.
    */
-  inline operator const addrinfo&() const
+  inline operator const addrinfo&() const KDE_DEPRECATED
   { return *ai; }
 
   /**
    * Returns a pointer to KAddressInfo's addrinfo.
    * Only valid as long as the KAddressInfo exists.
    */
-  inline operator const addrinfo*() const
+  inline operator const addrinfo*() const KDE_DEPRECATED
   { return ai; }
 
   /**
@@ -1060,32 +1060,32 @@ public:
    * Only valid as long as the KAddressInfo exists.
    * @return the KAddressInfo's KSocketAddress.
    */
-  inline const ::KSocketAddress* address() const
+  inline const ::KSocketAddress* address() const KDE_DEPRECATED
   { return addr; }
 
   /**
    * Returns the flags of the address info (see getaddrinfo(3)).
    * @return the flags of the addres info.
    */
-  int flags() const;
+  int flags() const KDE_DEPRECATED;
 
   /**
    * Returns the family of the address info (see getaddrinfo(3)).
    * @return the family of the addres info.
    */
-  int family() const;
+  int family() const KDE_DEPRECATED;
 
   /**
    * Returns the socket type of the address info (see getaddrinfo(3)).
    * @return the socket type of the addres info.
    */
-  int socktype() const;
+  int socktype() const KDE_DEPRECATED;
 
   /**
    * Returns the protocol of the address info (see getaddrinfo(3)).
    * @return the protocol of the addres info.
    */
-  int protocol() const;
+  int protocol() const KDE_DEPRECATED;
 
 
   /**
@@ -1093,7 +1093,7 @@ public:
    * Only valid as long as the KAddressInfo exists.
    * @return the official name of the host
    */
-  const char* canonname() const;
+  const char* canonname() const KDE_DEPRECATED;
 
   /**
    * Returns the length of the KSocketAddress.

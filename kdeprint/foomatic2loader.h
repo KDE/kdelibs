@@ -22,10 +22,12 @@
 
 #include <qvariant.h>
 
+#include <kdelibs_export.h>
+
 class DrBase;
 class DrMain;
 
-class Foomatic2Loader
+class KDEPRINT_EXPORT Foomatic2Loader
 {
 public:
 	Foomatic2Loader();
