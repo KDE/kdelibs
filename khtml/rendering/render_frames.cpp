@@ -821,7 +821,7 @@ void RenderPartObject::slotPartLoadingErrorNotify()
             QString shortURL = pluginPageURL.protocol() == "http" ? pluginPageURL.host() : pluginPageURL.prettyURL();
             int res = KMessageBox::questionYesNo( m_view,
                                                   i18n("No plugin found for '%1'.\nDo you want to download one from %2?").arg(mimeName).arg(shortURL),
-                                                  i18n("Missing plugin"), QString::null, QString::null, QString("plugin-")+serviceType);
+                                                  i18n("Missing Plugin"), QString::null, QString::null, QString("plugin-")+serviceType);
             if ( res == KMessageBox::Yes )
             {
                 // Display vendor download page
