@@ -551,11 +551,15 @@ bool KNotify::notifyByPassivePopup( const QString &text,
                                     WId senderWinId )
 {
     KIconLoader iconLoader( appName );
-    KConfigGroup config( d->events[ appName ], "!Global!" );
-    QString iconName = config.readEntry( "IconName", appName );
-    QPixmap icon = iconLoader.loadIcon( iconName, KIcon::Small );
-    QString title = config.readEntry( "Comment", appName );
-    KPassivePopup::message(title, text, icon, senderWinId);
+    if ( d->events.find( appName ) != d->events.end() ) {
+        KConfigGroup config( d->events[ appName ], "!Global!" );
+        QString iconName = config.readEntry( "IconName", appName );
+        QPixmap icon = iconLoader.loadIcon( iconName, KIcon::Small );
+        QString title = config.readEntry( "Comment", appName );
+        KPassivePopup::message(title, text, icon, senderWinId);
+    } else
+        kdError() << "No events for app " << appName << "defined!" <<endl;
+
     return true;
 }
 
