@@ -56,7 +56,7 @@ extern "C" {
 
 template class QList<DCOPObjectProxy>;
 template class QList<DCOPClientTransaction>;
-
+template class QList<_IceConn>;
 
 class DCOPClientPrivate
 {

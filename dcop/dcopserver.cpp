@@ -49,7 +49,6 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include <dcopglobal.h>
 
 template class QDict<DCOPConnection>;
-template class QList<_IceConn>;
 template class QPtrDict<DCOPConnection>;
 template class QList<DCOPListener>;
 
@@ -109,8 +108,8 @@ public:
     IceConn iceConn;
     bool notifyRegister;
     CARD32 time;
-    QList < _IceConn> waitingForReply;
-    QList < _IceConn> waitingForDelayedReply;
+    QList <_IceConn> waitingForReply;
+    QList <_IceConn> waitingForDelayedReply;
 };
 
 IceAuthDataEntry *authDataEntries = 0;
