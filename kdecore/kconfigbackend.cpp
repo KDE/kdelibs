@@ -636,7 +636,7 @@ void KConfigINIBackEnd::sync(bool bMerge)
       if (mergeLocalFile)
       {
          QFileInfo info(mLocalFileName);
-         if ((d->localLastSize == info.size()) ||
+         if ((d->localLastSize == info.size()) &&
              (d->localLastModified == info.lastModified()))
          {
             // Not changed, don't merge.
@@ -681,7 +681,7 @@ void KConfigINIBackEnd::sync(bool bMerge)
       if (mergeGlobalFile)
       {
          QFileInfo info(mGlobalFileName);
-         if ((d->globalLastSize == info.size()) ||
+         if ((d->globalLastSize == info.size()) &&
              (d->globalLastModified == info.lastModified()))
          {
             // Not changed, don't merge.
