@@ -36,6 +36,8 @@ private:
 
 /**
  *  class View
+ *
+ *  A view paints the data of a part object.
  */
 class View : public QWidget
 {
@@ -43,13 +45,33 @@ class View : public QWidget
 
 public:
 
+    /**
+     *  Initializes a view with a part.
+     */
     View( Part* part, QWidget* parent = 0, const char* name = 0 );
+
     ~View();
 
+    /**
+     *  Retrieves the part object of this view.
+     */
     Part* part();
+
+    /**
+     *  Retrieves the shell object of this view.
+     */
     Shell* shell();
 
+    /**
+     *  Retrieves an action with a given name.
+     *
+     *  @return The retrieved action, may be NULL.
+     */
     QAction* action( const char* name );
+    
+    /**
+     *  Retrieves all possible actions of the view.
+     */
     QActionCollection* actionCollection();
 
     virtual int leftBorder() const;
@@ -61,6 +83,9 @@ public:
     double xScaling() const;
     double yScaling() const;
 
+    /**
+     *  Retrieves the part that is hit. This can be an embedded part.
+     */
     virtual Part* hitTest( const QPoint& pos );
 
     /**

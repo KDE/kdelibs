@@ -29,7 +29,7 @@ public:
      *  @param parent Parent widget of the shell.
      *  @param name   Name of the shell widget.
      *
-     *  @ref initShell
+     *  @see initShell
      */
     Shell( QWidget* parent = 0, const char* name = 0 );
 
@@ -48,7 +48,7 @@ public:
     /**
      *  Retrieves the action collection of the shell.
      *
-     *  @ref action
+     *  @see action
      */
     QActionCollection* actionCollection();
 
@@ -60,15 +60,14 @@ public:
     /**
      *  Retrieves the main part of this shell
      *
-     *  @ref setRootPart
-     *  @ref rootView
+     *  @see setRootPart rootView
      */
     Part* rootPart();
 
     /**
      *  Retrieves the main view of this shell.
      *
-     *  @ref rootPart
+     *  @see rootPart
      */
     View* rootView();
 
@@ -77,18 +76,22 @@ public:
      * the shell, otherwise the menus and toolbars of the
      * view will be shown, too.
      *
-     * @ref #createToolBars
-     * @ref #createMenuBar
+     * @see createToolBars createMenuBar
      */
     void setActiveView( View* view, Part* part = 0 );
+    
     View* activeView();
+    
     Part* activePart();
 
     void setSelectedView( View* view, Part* part = 0 );
+    
     View* selectedView();
+    
     Part* selectedPart();
 
     void setSelectionPolicy( SelectionPolicy );
+    
     SelectionPolicy selectionPolicy();
 
     /**
@@ -97,18 +100,25 @@ public:
     KStatusBar *createStatusBar();
 
     KToolBar *viewToolBar( const char *name );
+    
     KMenuBar *viewMenuBar( const char *name );
 
-    virtual void setDoPartActivation( bool b ) {
+    virtual void setDoPartActivation( bool b )
+    {
 	m_bDoPartActivation = b;
     }
-    bool doPartActivation() const {
+    
+    bool doPartActivation() const
+    {
 	return m_bDoPartActivation;
     }
 
 protected:
+
     void createToolBars( const QDomElement& element );
+
     void createMenuBar( const QDomElement& shell, const QDomElement& part );
+
     QPopupMenu* createMenu( const QDomElement& shell, const QDomElement& part );
 
     /**
@@ -148,6 +158,7 @@ protected:
     QAction* action( const char* name, bool shell = FALSE );
 
 private:
+
     View* m_activeView;
     Part* m_activePart;
 

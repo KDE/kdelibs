@@ -26,6 +26,7 @@ class ContainerView;
 class ContainerPart : public Part
 {
     Q_OBJECT
+
 public:
 
     /**
@@ -61,12 +62,38 @@ public:
      */
     PartChild* child( Part* part );
 
+    /**
+     *  Paints the whole part and all its children into the given painter object.
+     *
+     *  @see #paintChild #paintChildren #paintContent
+     */
     virtual void paintEverything( QPainter& painter, const QRect& rect,
 				  bool transparent = FALSE, View* view = 0 );
+
+    /**
+     *  Paints all children. Normally called by @ref paintEverything.
+     *
+     *  @see #paintEverything #paintChild
+     */
     virtual void paintChildren( QPainter& painter, const QRect& rect, View* view = 0 );
+
+    /**
+     *  Paint a special child. Normally called by @ref paintChildren.
+     *
+     *  @see #paintEverything #paintChildren
+     */
     virtual void paintChild( PartChild* child, QPainter& painter, View* view = 0 );
+
+    /**
+     *  Paints the data itself. Normally called by @ref paintEverthing
+     *
+     *  @see #paintEverything
+     */
     virtual void paintContent( QPainter& painter, const QRect& rect, bool transparent = FALSE ) = 0;
 
+    /**
+     *  Retrieve a part that is hit.
+     */
     virtual Part* hitTest( const QPoint& p, const QWMatrix& matrix );
 
 signals:
@@ -98,6 +125,7 @@ class ContainerView : public View
 public:
 
     ContainerView( Part* part, QWidget* parent = 0, const char* name = 0 );
+
     ~ContainerView();
 
     virtual void paintEverything( QPainter& painter, const QRect& rect, bool transparent = FALSE );
@@ -109,21 +137,27 @@ public:
     virtual bool hasPartInWindow( Part* );
 
     ViewChild* child( Part* part );
+
     ViewChild* child( View* view );
 
 signals:
 
     void childSelected( PartChild* );
+
     void childUnselected( PartChild* );
+
     void childActivated( PartChild* );
+
     void childDeactivated( PartChild* );
 
     void regionInvalidated( const QRegion&, bool erase );
+
     void invalidated();
 
 protected:
 
     void viewSelectEvent( ViewSelectEvent* );
+
     void viewActivateEvent( ViewActivateEvent* );
 
     virtual QWMatrix matrix() const;
@@ -133,6 +167,7 @@ protected:
      *         no direct child is currently selected.
      */
     PartChild* selectedChild();
+
     /**
      * @return the active child. The function returns 0 if
      *         no direct child is currently active.
@@ -142,6 +177,7 @@ protected:
 protected slots:
 
     virtual void slotChildChanged( PartChild* );
+
     virtual void slotChildActivated( bool );
 
 private:
