@@ -17,13 +17,13 @@
 <!ENTITY % l10n-no "INCLUDE">
 <!ENTITY % l10n-pl "INCLUDE">
 <!ENTITY % l10n-pt "INCLUDE">
-<!ENTITY % l10n-ptbr "INCLUDE">
+<!ENTITY % l10n-pt-BR "INCLUDE">
 <!ENTITY % l10n-ro "INCLUDE">
 <!ENTITY % l10n-ru "INCLUDE">
 <!ENTITY % l10n-sk "INCLUDE">
 <!ENTITY % l10n-sl "INCLUDE">
 <!ENTITY % l10n-sv "INCLUDE">
-<!ENTITY % l10n-zhcn "INCLUDE">
+<!ENTITY % l10n-zh-CN "INCLUDE">
 
 <![%l10n-ca;[
 <!ENTITY dbl1ca
@@ -187,12 +187,12 @@
   PUBLIC "-//Norman Walsh//DOCUMENT DocBook Stylesheet Null Localization//EN"
          "../common/dbl1null.dsl" CDATA DSSSL>
 
-<![%l10n-ptbr;[
-<!ENTITY dbl1ptbr
+<![%l10n-pt-BR;[
+<!ENTITY dbl1pt-BR
   PUBLIC "-//Norman Walsh//DOCUMENT DocBook Stylesheet Localization//PTBR"
-         "../common/dbl1ptbr.dsl" CDATA DSSSL>
+         "../common/dbl1pt-BR.dsl" CDATA DSSSL>
 ]]>
-<!ENTITY dbl1ptbr
+<!ENTITY dbl1pt-BR
   PUBLIC "-//Norman Walsh//DOCUMENT DocBook Stylesheet Null Localization//EN"
          "../common/dbl1null.dsl" CDATA DSSSL>
 
@@ -241,12 +241,12 @@
   PUBLIC "-//Norman Walsh//DOCUMENT DocBook Stylesheet Null Localization//EN"
          "../common/dbl1null.dsl" CDATA DSSSL>
 
-<![%l10n-zhcn;[
-<!ENTITY dbl1zhcn
+<![%l10n-zh-CN;[
+<!ENTITY dbl1zh-CN
   PUBLIC "-//Norman Walsh//DOCUMENT DocBook Stylesheet Localization//ZHCN"
-         "../common/dbl1zhcn.dsl" CDATA DSSSL>
+         "../common/dbl1zh-CN.dsl" CDATA DSSSL>
 ]]>
-<!ENTITY dbl1zhcn
+<!ENTITY dbl1zh-CN
   PUBLIC "-//Norman Walsh//DOCUMENT DocBook Stylesheet Null Localization//EN"
          "../common/dbl1null.dsl" CDATA DSSSL>
 
@@ -298,7 +298,7 @@
 
 <style-sheet>
 <style-specification id="docbook"
-   use="ca cs da de el en es et fi fr hu id it ja nl no pl pt ptbr ro ru sk sl sv zhcn param dblib">
+   use="ca cs da de el en es et fi fr hu id it ja nl no pl pt pt-BR ro ru sk sl sv zh-CN param dblib">
 
 <style-specification-body>
 
@@ -417,12 +417,12 @@
 <external-specification id="no" document="dbl1no">
 <external-specification id="pl" document="dbl1pl">
 <external-specification id="pt" document="dbl1pt">
-<external-specification id="ptbr" document="dbl1ptbr">
+<external-specification id="pt-BR" document="dbl1pt-BR">
 <external-specification id="ro" document="dbl1ro">
 <external-specification id="ru" document="dbl1ru">
 <external-specification id="sk" document="dbl1sk">
 <external-specification id="sl" document="dbl1sl">
 <external-specification id="sv" document="dbl1sv">
-<external-specification id="zhcn" document="dbl1zhcn">
+<external-specification id="zh-CN" document="dbl1zh-CN">
 
 </style-sheet>
