@@ -1,24 +1,24 @@
 /* This file is part of the KDE libraries
-    Copyright (C) 1999 Torben Weis <weis@kde.org>
- 
-    This library is free software; you can redistribute it and/or
-    modify it under the terms of the GNU Library General Public
-    License as published by the Free Software Foundation; either
-    version 2 of the License, or (at your option) any later version.
- 
-    This library is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-    Library General Public License for more details.
- 
-    You should have received a copy of the GNU Library General Public License
-    along with this library; see the file COPYING.LIB.  If not, write to
-    the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
-    Boston, MA 02111-1307, USA.
-*/
+ *  Copyright (C) 1999 Torben Weis <weis@kde.org>
+ *
+ *  This library is free software; you can redistribute it and/or
+ *  modify it under the terms of the GNU Library General Public
+ *  License as published by the Free Software Foundation; either
+ *  version 2 of the License, or (at your option) any later version.
+ *
+ *  This library is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ *  Library General Public License for more details.
+ *
+ *  You should have received a copy of the GNU Library General Public License
+ *  along with this library; see the file COPYING.LIB.  If not, write to
+ *  the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+ *  Boston, MA 02111-1307, USA.
+ **/
 
 #ifndef __kurl_h__
-#define __kurl_h__
+#define __kurl_h__ "$Id$"
 
 #include <qstring.h>
 #include <qvaluelist.h>
@@ -72,12 +72,13 @@ public:
 
   unsigned short int port() const { return m_iPort; }
   void setPort( unsigned short int _p ) { m_iPort = _p; }
-  
+
   /**
    * @return the current decoded path. This does NOT include the query.
    *
    */
   QString path() const  { return m_strPath; }
+
   /**
    * @param _trailing may be ( -1, 0 +1 ). -1 strips a trailing '/', +1 adds
    *                  a trailing '/' if there is none yet and 0 returns the
@@ -91,6 +92,7 @@ public:
    * @return the current decoded path. This does NOT include the query.
    */
   QString path( int _trailing ) const;
+
   /**
    * _txt is considered to be decoded. This means: %3f does not become decoded
    *      and the ? does not indicate the start of the query part.
@@ -110,6 +112,7 @@ public:
    * The encoded path is the concatenation of the current path and the query.
    */
   void setEncodedPathAndQuery( const QString& _txt );
+
   /**
    * @return the concatenation if the encoded path , '?' and the encoded query.
    *
@@ -122,6 +125,7 @@ public:
    * The query may contain the 0 character.
    */
   void setQuery( const QString& _txt ) { m_strQuery_encoded = _txt; }
+
   /**
    * @return the encoded query. This has a good reason: The query may contain the 0 character.
    */
@@ -131,11 +135,13 @@ public:
    * The reference is NEVER decoded automatically.
    */
   QString ref() const { return m_strRef_encoded; }
+
   /**
    * Set the reference part (everything after '#')
    * @param _txt is considered encoded.
    */
   void setRef( const QString& _txt ) { m_strRef_encoded = _txt; }
+
   /**
    * @return true of the reference part of the URL is not empty. In an URL like
    *         tar:/kde/README#http://www.kde.org/kdebase.tgz it would return true, too.
@@ -151,6 +157,7 @@ public:
    *         protocol gzip. The returned string is, in contrast to @ref #ref already decoded.
    */
   QString htmlRef() const;
+
   /**
    * Sets the HTML style reference.
    *
@@ -159,6 +166,7 @@ public:
    * @see #htmlRef
    */
   void setHTMLRef( const QString& _ref );
+
   /**
    * @return true if the URL has a HTML style reference.
    *
@@ -177,6 +185,7 @@ public:
    *         attached to it.
    */
   bool isLocalFile() const;
+
   /**
    * @return true if the file has at least one sub URL.
    *         Use @ref split to get the sub URLs.
@@ -199,6 +208,7 @@ public:
    * @param _txt is considered to be decoded
    */
   void addPath( const QString& _txt );
+
   /**
    * In comparison to @ref addPath this function does not assume that the current path
    * is a directory. This is only assumed if the current path ends with '/'.
@@ -220,6 +230,7 @@ public:
    *                                     is considered to be the filename.
    */
   QString filename( bool _ignore_trailing_slash_in_path = true ) const;
+
   /**
    * @return the directory part of the current path. Everything between the last and the second last '/'
    *         is returned. For example <tt>file:/hallo/torben/</tt> would return "/hallo/torben/" while
@@ -252,6 +263,7 @@ public:
    * @return the complete encoded URL.
    */
   QString url() const;
+
   /*
    * convenience method
    * @return the complete decoded URL, for instance to be displayed to the user.
@@ -312,10 +324,12 @@ public:
    * @param _url is the URL that has to be split.
    */
   static List split( const QString& _url );
+
   /**
    * A convenience function
    */
   static List split( const KURL& _url );
+
   /**
    * Reverses @ref #split. Only the first URL may have a reference. This reference
    * is considered to be HTML like and is appended at the end of the resulting
@@ -328,6 +342,7 @@ public:
    * not handled correctly here.
    */
   static void decode( QString& _url );
+
   /**
    * Reverse of @ref decode
    */
@@ -336,9 +351,9 @@ public:
 protected:
   void reset();
   void parse( const QString& _url );
-  
+
   static char hex2int( unsigned int  _char );
-  
+
 private:
   QString m_strProtocol;
   QString m_strUser;
@@ -358,6 +373,7 @@ private:
  * unequal. That means no malformed URL equals anything else.
  */
 bool urlcmp( const QString& _url1, const QString& _url2 );
+
 /**
  * Compares both URLs. They are parsed, splitted and compared. Two malformed URLs
  * with the same string representation are nevertheless considered to be
@@ -369,13 +385,3 @@ bool urlcmp( const QString& _url1, const QString& _url2 );
 bool urlcmp( const QString& _url1, const QString& _url2, bool _ignore_trailing, bool _ignore_ref );
 
 #endif
-
-
-
-
-
-
-
-
-
-
