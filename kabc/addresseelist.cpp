@@ -235,8 +235,8 @@ void AddresseeList::sortByField( Field *field )
     iterator j2 = j1;
     ++j2;
     while( j1 != i2 ) {
-      if ( !mReverseSorting && ( QString::localeAwareCompare( mActiveSortingField->value( *j2 ), mActiveSortingField->value( *j1 ) ) < 0 )
-           || mReverseSorting && ( QString::localeAwareCompare( mActiveSortingField->value( *j1 ), mActiveSortingField->value( *j2 ) ) < 0 ) ) {
+      if ( !mReverseSorting && ( QString::localeAwareCompare( mActiveSortingField->value( *j2 ).upper(), mActiveSortingField->value( *j1 ).upper() ) < 0 )
+           || mReverseSorting && ( QString::localeAwareCompare( mActiveSortingField->value( *j1 ).upper(), mActiveSortingField->value( *j2 ).upper() ) < 0 ) ) {
         qSwap( *j1, *j2 );
       }
       ++j1;
