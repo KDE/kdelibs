@@ -21,11 +21,10 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 ******************************************************************/
 
-#include <kapp.h>
-#include <kconfig.h>
-
 #include "kpanelapplet.h"
 #include "kpanelapplet.moc"
+#include <kapp.h>
+#include <kconfig.h>
 
 class KPanelApplet::KPanelAppletPrivate
 {
