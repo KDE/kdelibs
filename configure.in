@@ -225,6 +225,7 @@ AC_OUTPUT(Makefile \
 	jscript/Makefile \
 	corba/Makefile \
 	corba/kom/Makefile \
+	corba/kded/Makefile \
 	corba/partsui/Makefile \
 	corba/parts/Makefile \
 	corba/python/Makefile \
