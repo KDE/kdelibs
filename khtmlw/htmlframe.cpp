@@ -130,6 +130,11 @@ void HTMLFrameSet::append( QWidget *_w )
 	panner->show();
 	lastPanner = panner;
     }
+    else
+    {
+	show();
+	resizeEvent( 0 );
+    }
     
     _w->show();
 }

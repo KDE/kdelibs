@@ -1,6 +1,14 @@
 KHTMLW CHANGES
 ==============
 
+Version 0.12.16 - 29 Mar 1998 (Martin)
+---------------
+
+Display and calc size of framesets when all frames have been defined.
+
+Connect documentStarted & documentDone signals to toplevel view so that
+  KFM knows when all frames are done.
+
 Version 0.12.16 - 28 Mar 1998 (Martin)
 ---------------
 

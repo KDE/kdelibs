@@ -1283,12 +1283,13 @@ void KHTMLWidget::parse()
     // If parse is called two times after begin() then
     // the second call is ususally done because the widget
     // has been resized.
+/*
     if ( bIsFrameSet && frameSet )
     {
 	frameSet->resize( width(), height() );
 	return;
     }
-  
+*/
     // if there is no tokenizer then no html has been added
     if ( !ht )
 	return;
@@ -1382,6 +1383,8 @@ void KHTMLWidget::parse()
 
     flow = 0;
 
+    debug( "Parsing : %s", getDocumentURL().url().data() );
+
     // this will call timerEvent which in turn calls parseBody
     timerId = startTimer( TIMER_INTERVAL );
 }
@@ -1452,6 +1455,7 @@ void KHTMLWidget::timerEvent( QTimerEvent * )
     if ( !parsing )
     {
         debugM("Yes\n");
+	debug( "Parsing done" );
 	// Is y_offset too big ?
 	if ( docHeight() - y_offset < height() )
 	{
@@ -2509,6 +2513,15 @@ void KHTMLWidget::parseF( HTMLClueV *, const char *str )
 		  // Tell the new widget what it should show
 		  // html->openURL( u.url().data() );
 		  html->setCookie( u.url().data() );   
+
+		  KHTMLView *top = html->findView( "_top" );
+		  if ( top )
+		  {
+		      connect( html, SIGNAL( documentStarted( KHTMLView * ) ),
+			  top, SLOT( slotDocumentStarted( KHTMLView * ) ) );
+		      connect( html, SIGNAL( documentDone( KHTMLView * ) ),
+			  top, SLOT( slotDocumentDone( KHTMLView * ) ) );
+		  }
 	      }
 	      // html->show();
 	      // Add frame to list
