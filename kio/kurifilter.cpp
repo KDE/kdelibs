@@ -51,7 +51,7 @@ KURIFilterData::KURIFilterData( const KURIFilterData& data )
     m_strIconName = data.m_strIconName;
     m_bFiltered = data.m_bFiltered;
     m_bChanged = data.m_bChanged;
-    
+
 }
 
 void KURIFilterData::init( const KURL& url )
@@ -59,7 +59,7 @@ void KURIFilterData::init( const KURL& url )
     m_iType = KURIFilterData::UNKNOWN;
     m_pURI = url;
     m_strErrMsg = QString::null;
-    m_strIconName = QString::null;    
+    m_strIconName = QString::null;
     m_bFiltered = false;
     m_bChanged = true;
 }
@@ -67,37 +67,37 @@ void KURIFilterData::init( const KURL& url )
 QString KURIFilterData::iconName()
 {
     if( m_bChanged )
-    {      
+    {
         switch ( m_iType )
         {
     	    case KURIFilterData::LOCAL_FILE:
-        	case KURIFilterData::LOCAL_DIR:
-        	case KURIFilterData::NET_PROTOCOL:
-        	{
-	            KMimeType::Ptr mimetype = KMimeType::findByURL( m_pURI );
-        	    if (mimetype)
-            		m_strIconName = mimetype->icon( m_pURI, false );
+            case KURIFilterData::LOCAL_DIR:
+            case KURIFilterData::NET_PROTOCOL:
+            {
+                KMimeType::Ptr mimetype = KMimeType::findByURL( m_pURI );
+                if (mimetype)
+                    m_strIconName = mimetype->icon( m_pURI, false );
                 break;
-        	}
-        	case KURIFilterData::EXECUTABLE:
-        	{
-	            KService::Ptr service = KService::serviceByDesktopName( m_pURI.url() );
-        	    if (service)
-            		m_strIconName = service->icon();
-        	    else 
-            		m_strIconName = QString::fromLatin1("exec");
+            }
+            case KURIFilterData::EXECUTABLE:
+            {
+                KService::Ptr service = KService::serviceByDesktopName( m_pURI.url() );
+                if (service)
+                    m_strIconName = service->icon();
+                else
+                    m_strIconName = QString::fromLatin1("exec");
                 break;
             }
             case KURIFilterData::HELP:
             {
                 m_strIconName = QString::fromLatin1("khelpcenter");
-        	    break;
+                break;
             }
             case KURIFilterData::SHELL:
             {
                 m_strIconName = QString::fromLatin1("konsole");
-        	    break;
-            }            
+                break;
+            }
             case KURIFilterData::ERROR:
             case KURIFilterData::BLOCKED:
             {
@@ -108,7 +108,7 @@ QString KURIFilterData::iconName()
                 m_strIconName = QString::null;
                 break;
         }
-        m_bChanged = false;   
+        m_bChanged = false;
     }
     return m_strIconName;
 }
