@@ -45,7 +45,7 @@ KURLLabel::KURLLabel(QWidget *parent, const char* name, WFlags f)
 	m_url       = 0;
 	m_inRegion  = false;
 	m_textAlign = Bottom;
-
+	transparent = false;
 	setUseCursor(true);
 	setMouseTracking(true);
 
@@ -820,3 +820,25 @@ void KURLLabel::drawContents(QPainter* p)
 	}
 }
 
+void KURLLabel::setTransparentMode(bool state)
+{
+  transparent=state;
+  setBackgroundMode(state ? NoBackground : PaletteBackground); 
+}
+
+void KURLLabel::paintEvent(QPaintEvent*)
+{ // Mirko Sucker, 1998/11/16:
+  QPen pen;
+  QPainter paint(this);
+  // -----
+  if(transparent && parentWidget()!=0)
+    {
+      QPixmap bg(width(), height());
+      // -----
+      bg.fill(parentWidget(), mapToParent(QPoint(0, 0)));
+      paint.drawPixmap(0, 0, bg);
+    }
+  drawFrame(&paint);
+  drawContents(&paint);
+  paint.end();
+}

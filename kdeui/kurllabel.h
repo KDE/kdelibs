@@ -20,6 +20,11 @@
  * $Id$
  *
  * $Log$
+ * Revision 1.2  1998/09/15 00:58:24  granroth
+ * Changed method so that it compiles under egcs.  'moc' doesn't like default
+ * args in declarations and generates invalid code if it encounters more than
+ * one in any given function.
+ *
  * Revision 1.1  1998/07/28 01:09:28  granroth
  * Added KURLLabel class
  *
@@ -119,7 +124,19 @@ public:
 	 * Returns the recommended size for this label
 	 */
 	QSize sizeHint() const;
-
+  
+        /**
+	 * Enables or disables "transparent mode". If transparent mode 
+	 * is enabled, the label copies its own background from its 
+	 * parent widget so that it seems to be transparent.
+	 * Transparent mode is disabled by default.
+	 * Please note that the method does not repaint the widget, 
+	 * changes take effect on the next repainting.
+	 * Transparent widgets do (currently) not work if there is another 
+	 * widget (a frame, for example) layered between this widget and its
+	 * parent in Z-order.
+	 */
+         void setTransparentMode(bool state);
 public slots:
 	/**
 	 * Turn on or off the "glow" feature.  When this is on, the
@@ -363,6 +380,14 @@ protected:
 	 */
 	void mousePressEvent(QMouseEvent *);
 
+        /**
+	 * An overloaded repaint event that handles the background in 
+	 * transparent mode. It sets a background pixmap that is obtained 
+	 * from the widgets parent and calls the QLabel repaint handler 
+	 * after that.
+	 */
+         void paintEvent(QPaintEvent*);
+
 private:
 	QRect m_textRect() const;
 	QRect m_pixmapRect() const;
@@ -395,6 +420,7 @@ private:
 	bool m_underline;
 	bool m_inRegion;
 	bool m_haveCursor;
+        bool transparent; // true when transparent mode is enabled
 };
 
 #endif // _KURLLABEL_H
