@@ -72,16 +72,16 @@ KTar::KTar( const QString& filename, const QString & _mimetype )
             QFile file( filename );
             if ( file.open( IO_ReadOnly ) )
             {
-                char firstByte = file.getch();
-                char secondByte = file.getch();
-                char thirdByte = file.getch();
+                unsigned char firstByte = file.getch();
+                unsigned char secondByte = file.getch();
+                unsigned char thirdByte = file.getch();
                 if ( firstByte == 0037 && secondByte == 0213 )
                     mimetype = "application/x-gzip";
                 else if ( firstByte == 'B' && secondByte == 'Z' && thirdByte == 'h' )
                     mimetype = "application/x-bzip2";
                 else if ( firstByte == 'P' && secondByte == 'K' && thirdByte == 3 )
                 {
-                    char fourthByte = file.getch();
+                    unsigned char fourthByte = file.getch();
                     if ( fourthByte == 4 )
                         mimetype = "application/x-zip";
                 }
