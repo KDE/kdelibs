@@ -9,7 +9,8 @@ static const char *description = I18N_NOOP("This is a test program.");
 
 static KCmdLineOptions options[] =
 {
- { "test",		I18N_NOOP("do a short test only"), 0 },
+ { "test",		I18N_NOOP("do a short test only, note that\n"
+				  "this is rather long comment"), 0 },
  { "baud <baudrate>",	I18N_NOOP("set baudrate"), "9600" },
  { "+file(s)",		I18N_NOOP("Files to load"), 0 },
  { 0,0,0 }
