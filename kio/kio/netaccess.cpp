@@ -105,6 +105,8 @@ bool NetAccess::dircopy( const KURL & src, const KURL & target )
 
 bool NetAccess::exists( const KURL & url )
 {
+  if ( url.isLocalFile() )
+    return QFile::exists( url.path() );
   NetAccess kioNet;
   return kioNet.statInternal( url );
 }
