@@ -46,7 +46,7 @@ namespace KIO {
  * so a KRun instance must be created. It will determine the mimetype by itself.
  * If the mimetype is known, or if you even know the service (application) to
  * use for this file, use one of the static methods.
- * 
+ *
  * @short Opens files with their associated applications in KDE
  */
 class KRun : public QObject
@@ -125,7 +125,7 @@ public:
   static pid_t run( const QString& _exec, const KURL::List& _urls,
 		   const QString& _name = QString::null,
 		   const QString& _icon = QString::null,
-		   const QString& _obsolete1 = QString::null, 
+		   const QString& _obsolete1 = QString::null,
 		   const QString& _obsolete2 = QString::null );
 
   /**
@@ -175,11 +175,11 @@ public:
    * Processes a Exec= line as found in .desktop files.
    * @param _service the service to extract information from.
    * @param _urls The urls the service should open.
-   * @param has_shell If true, the arguments are going to be fed into a 
-   *        shell e.g by using system(). 
-   *        If false, the arguments are going to be fed into a exec() kind 
-   *        call. 
-   *        If the arguments are intended for an exec() kind of call and 
+   * @param has_shell If true, the arguments are going to be fed into a
+   *        shell e.g by using system().
+   *        If false, the arguments are going to be fed into a exec() kind
+   *        call.
+   *        If the arguments are intended for an exec() kind of call and
    *        the Exec line contains shell commands then "/bin/sh -c" is added.
    * @return a list of arguments suitable for either system() or exec().
    */
@@ -193,7 +193,7 @@ protected slots:
   void slotTimeout();
   void slotScanFinished( KIO::Job * );
   void slotScanMimeType( KIO::Job *, const QString &type );
-  void slotStatResult( KIO::Job * );
+  virtual void slotStatResult( KIO::Job * );
 
 protected:
   virtual void init();

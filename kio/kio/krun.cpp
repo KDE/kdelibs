@@ -193,7 +193,7 @@ static QStringList breakup(const QString &exec, bool *need_shell = 0)
      if (result[0].contains('='))
         *need_shell = true;
   }
-  return result;          
+  return result;
 }
 
 static QString conditionalQuote(const QString &s, bool quote)
@@ -236,7 +236,7 @@ static QStringList substitution(int option, const KService &_service, bool quote
       result << "-miniicon" << conditionalQuote(_service.icon(), quote);
    else if (option == 'k')
       result << conditionalQuote(_service.desktopEntryPath(), quote);
-      
+
    if (result.isEmpty())
       result << QString::null;
    return result;
@@ -271,7 +271,7 @@ static void substitute(QStringList &_list, QStringList::Iterator &it, const KSer
              return;
           subs = substitution(option, _urls, quote);
           break;
-          
+
         case 'u':
         case 'f':
         case 'd':
@@ -368,7 +368,7 @@ static void substitute(QStringList &_list, QStringList::Iterator &it, const KSer
             if (!subs.isEmpty())
                sub = subs[0];
             break;
-        }        
+        }
 
         arg.replace(p-1, 2, sub);
         p += sub.length()-2;
@@ -404,12 +404,12 @@ QStringList KRun::processDesktopExec(const KService &_service, const KURL::List&
       terminal_su = true;
     else
       kdesu = true;
-  } 
+  }
   else if (_service.terminal())
   {
     terminal_sh = true;
   }
-    
+
   // Check if we need kfmexec.
   bool b_local_app = ( exec.find( "%u" ) == -1 && exec.find( "%U" ) == -1 );
   bool b_local_files = true;
@@ -422,7 +422,7 @@ QStringList KRun::processDesktopExec(const KService &_service, const KURL::List&
   {
      // We need to run the app through kfmexec
      QStringList result = breakup(exec);
-     
+
      // Substitute everything that isn't file-related.
      for(QStringList::Iterator it = result.begin();
          it != result.end(); ++it)
@@ -446,11 +446,11 @@ QStringList KRun::processDesktopExec(const KService &_service, const KURL::List&
   }
 
 qWarning("Exec = '%s'", exec.latin1());
-  
+
   // Move args to result
   bool need_shell = false;
   QStringList result = breakup(exec, &need_shell);
-     
+
   for(QStringList::Iterator it = result.begin();
       it != result.end(); ++it)
   {
@@ -463,7 +463,7 @@ qWarning("Exec = '%s'", exec.latin1());
      QString cmd = result.join(" ");
      result.clear();
      result << "/bin/sh" << "-c" << cmd;
-  }  
+  }
 
   if (terminal_su)
   {
@@ -475,7 +475,7 @@ qWarning("Exec = '%s'", exec.latin1());
         substitute(result, it, _service, _urls, has_shell);
     }
     result.append(cmd);
-  } 
+  }
   else if (terminal_sh)
   {
      QStringList cmd = result;
@@ -807,7 +807,7 @@ void KRun::scanFile()
   }
 
   // No mimetype found, and the URL is not local  (or fast mode not allowed).
-  // We need to apply the 'KIO' method, i.e. either asking the server ot
+  // We need to apply the 'KIO' method, i.e. either asking the server or
   // getting some data out of the file, to know what mimetype it is.
 
   if ( !KProtocolInfo::supportsReading( m_strURL ) )
