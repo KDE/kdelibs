@@ -92,7 +92,8 @@ public:
 protected:
     void drawSBDeco(QPainter *p, const QRect &r, const QColorGroup &g,
                    bool horiz);
-    void drawSBButton(QPainter *p, const QRect &r, const QColorGroup &g);
+    void drawSBButton(QPainter *p, const QRect &r, const QColorGroup &g,
+                     bool down=false);
 private:
     QColorGroup sliderGrp, sliderGrooveGrp, radioOnGrp;
 };
