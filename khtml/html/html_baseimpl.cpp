@@ -105,37 +105,31 @@ void HTMLBodyElementImpl::parseAttribute(AttrImpl *attr)
     case ATTR_TEXT:
         addCSSProperty(CSS_PROP_COLOR, attr->value());
         break;
-    case ATTR_LINK:
-    {
-        //kdDebug() << "HTMLBodyElementImpl::parseAttribute" << endl;
-        if(!m_styleSheet) {
-            m_styleSheet = new CSSStyleSheetImpl(this,0,true);
-            m_styleSheet->ref();
-            getDocument()->registerStyleSheet(m_styleSheet);
-        }
-        QString aStr = "a:link { color: " + attr->value().string() + "; }";
-        m_styleSheet->parseString(aStr);
-        m_styleSheet->setNonCSSHints();
-        break;
-    }
     case ATTR_BGPROPERTIES:
         if ( strcasecmp( attr->value(), "fixed" ) == 0)
             addCSSProperty(CSS_PROP_BACKGROUND_ATTACHMENT, CSS_VAL_FIXED);
         break;
     case ATTR_VLINK:
+    case ATTR_ALINK:
+    case ATTR_LINK:
     {
         if(!m_styleSheet) {
             m_styleSheet = new CSSStyleSheetImpl(this,0,true);
             m_styleSheet->ref();
             getDocument()->registerStyleSheet(m_styleSheet);
         }
-        QString aStr = "a:visited { color: " + attr->value().string() + "; }";
+        QString aStr;
+	if ( attr->attrId == ATTR_LINK )
+	    aStr = "a:link";
+	else if ( attr->attrId == ATTR_VLINK )
+	    aStr = "a:visited";
+	else if ( attr->attrId == ATTR_ALINK )
+	    aStr = "a:active";
+	aStr += " { color: " + attr->value().string() + "; }";
         m_styleSheet->parseString(aStr);
         m_styleSheet->setNonCSSHints();
         break;
     }
-    case ATTR_ALINK:
-        break;
     case ATTR_ONLOAD:
         removeHTMLEventListener(EventImpl::LOAD_EVENT);
         addEventListener(EventImpl::LOAD_EVENT,new HTMLEventListener(ownerDocument()->view()->part(),DOMString(attr->value()).string()),false);
