@@ -117,6 +117,11 @@ Group=Buttons (KDE)
 ToolTip=Line Edit for restricted input (KDE)
 Group=Input (KDE)
 
+[KIconButton]
+IncludeFile=kicondialog.h
+ToolTip=Button for selecting an icon (KDE)
+Group=Buttons (KDE)
+
 [KIntSpinBox]
 IncludeFile=knuminput.h
 ToolTip=Enhanced Spinbox for Integer Values (KDE)
