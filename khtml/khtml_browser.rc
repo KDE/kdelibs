@@ -1,5 +1,5 @@
 <!DOCTYPE kpartgui SYSTEM "kpartgui.dtd">
-<kpartgui name="khtmlpart" version="4">
+<kpartgui name="khtmlpart" version="5">
 <MenuBar>
  <Menu name="edit">
   <Action name="selectAll" />
@@ -15,6 +15,9 @@
   <Action name="security" />
   <Action name="setEncoding" />
   <Action name="printFrame" group="print" />
+  <Separator />
+  <Action name="debugRenderTree" />
+  <Action name="debugDOMTree" />
  </Menu>
 </MenuBar>
 <ToolBar name="mainToolBar"><text>Main Toolbar</text>
