@@ -1,3 +1,5 @@
+// -*- c-basic-offset: 2 -*-
+
 /* This file is part of the KDE libraries
    Copyright (C) 2000 Kurt Granroth <granroth@kde.org>
 
@@ -34,6 +36,7 @@ public:
   QStringList            icons;
   QTimer                 timer;
   int                    size;
+  bool                   loadingCompleted;
   QPixmap                pixmap;
 
   QValueList<QPixmap>           pixmaps;
@@ -50,6 +53,7 @@ KAnimWidget::KAnimWidget( const QStringList& icons, int size,
   if (parent->inherits( "KToolBar" ))
     connect(parent, SIGNAL(modechange()), this, SLOT(updateIcons()));
 
+  d->loadingCompleted = false;
   d->size = size;
   setIcons( icons );
   setFrameStyle( StyledPanel | Sunken );
@@ -64,6 +68,9 @@ KAnimWidget::~KAnimWidget()
 
 void KAnimWidget::start()
 {
+  if(!isVisible())
+    return;
+
   d->iter   = d->pixmaps.begin();
   d->pixmap = *d->iter;
   d->timer.start( 50 );
@@ -95,6 +102,12 @@ void KAnimWidget::setIcons( const QStringList& icons )
   updateIcons();
 }
 
+void KAnimWidget::hideEvent(QHideEvent* e)
+{
+  stop();
+  QFrame::hideEvent(e);
+}
+
 void KAnimWidget::enterEvent( QEvent *e )
 {
   setFrameStyle( WinPanel | Raised );
@@ -118,6 +131,12 @@ void KAnimWidget::mousePressEvent( QMouseEvent *e )
 
 void KAnimWidget::slotTimerUpdate()
 {
+  if(!isVisible())
+    return;
+
+  if(!d->loadingCompleted)
+    loadRemainingIcons();
+
   if ( d->iter == d->pixmaps.end() )
     d->iter = d->pixmaps.begin();
 
@@ -160,19 +179,29 @@ void KAnimWidget::updateIcons()
     d->size = ((KToolBar*)parent())->iconSize();
 
   d->pixmaps.clear();
+  d->pixmaps.append( MainBarIcon( *d->icons.begin(), d->size ) );
+  d->loadingCompleted = false;
+  d->iter   = d->pixmaps.begin();
+  d->pixmap = *d->iter;
 
+  if ( d->pixmap.width() != (width()+2) || d->pixmap.height() != (height()+2) ) {
+    setFixedSize( d->pixmap.width()+2, d->pixmap.height()+2);
+    resize(d->pixmap.width()+2, d->pixmap.height()+2);
+  }
+
+  if( d->timer.isActive())
+    loadRemainingIcons();
+}
+
+void KAnimWidget::loadRemainingIcons()
+{
   QStringList::Iterator it = d->icons.begin();
-  for( ; it != d->icons.end(); ++it)
+  for( it++; it != d->icons.end(); ++it)
   {
     d->pixmaps.append( MainBarIcon( *it, d->size ) );
   }
 
-  d->iter   = d->pixmaps.begin();
-  d->pixmap = *d->iter;
-  if ( d->pixmap.width() != (width()+2) || d->pixmap.height() != (height()+2) ) {
-      setFixedSize( d->pixmap.width()+2, d->pixmap.height()+2);
-      resize(d->pixmap.width()+2, d->pixmap.height()+2);
-  }
+  d->loadingCompleted = true;
 }
 
 #include "kanimwidget.moc"

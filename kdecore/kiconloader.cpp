@@ -31,7 +31,9 @@
 #include <kicontheme.h>
 #include <kiconloader.h>
 #include <kiconeffect.h>
-#include <cassert>
+
+#include <sys/types.h>
+#include <dirent.h>
 
 /*
  * A node in the icon theme dependancy tree.
@@ -479,7 +481,7 @@ QPixmap KIconLoader::loadIcon(const QString& _name, int group, int size,
     }
     else
         img = pix.convertToImage();
-    
+
     // Scale the icon and apply effects if necessary
     if ((icon.type == KIcon::Scalable) && (size != img.width()))
     {
@@ -524,19 +526,26 @@ QStringList KIconLoader::loadAnimated(const QString& name, int group, int size) 
 	    size = d->mpGroups[group].size;
 	KIcon icon = findMatchingIcon(file, size);
 	file = icon.isValid() ? icon.path : QString::null;
+
     }
     if (file.isEmpty())
 	return lst;
-    lst += (name + file.right(file.length() - file.findRev('/')));
 
-    int i=1;
-    QString fmt = file.left(file.length() - 8) + "%04d.png";
-    file.sprintf(fmt.utf8(), i);
-    while (KStandardDirs::exists(file))
+    QString path = file.left(file.length()-8);
+    DIR* dp = opendir( QFile::encodeName(path) );
+    if(!dp)
+        return lst;
+
+    struct dirent* ep;
+    while( ( ep = readdir( dp ) ) != 0L )
     {
-        lst += (name + file.right(file.length() - file.findRev('/')));
-	file.sprintf(fmt.utf8(), ++i);
+        QString fn(QFile::decodeName(ep->d_name));
+        if(!(fn.left(4)).toUInt())
+            continue;
+
+        lst += path + fn;
     }
+    closedir ( dp );
     return lst;
 }
 

@@ -120,6 +120,7 @@ protected:
   virtual void drawContents( QPainter *p );
   virtual void leaveEvent( QEvent *e );
   virtual void enterEvent( QEvent *e );
+  virtual void hideEvent( QHideEvent *e);
   virtual void mousePressEvent( QMouseEvent *e );
 
 protected slots:
@@ -127,6 +128,8 @@ protected slots:
   void updateIcons();
 
 private:
+  void loadRemainingIcons();
+
   class KAnimWidgetPrivate;
   KAnimWidgetPrivate *d;
 };
