@@ -230,25 +230,25 @@ private:
 
     ~DirItem()
     {
-      if ( autoUpdates) 
+      if ( autoUpdates )
       {
         if ( KDirWatch::exists() )
-	  kdirwatch->removeDir( url.path() );
-	sendSignal(false, url );
+          kdirwatch->removeDir( url.path() );
+        sendSignal( false, url );
       }
       delete rootItem;
       delete lstItems;
     }
     
-    void sendSignal(bool entering,const KURL& url) 
+    void sendSignal( bool entering, const KURL& url )
     {
-      DCOPClient* client = DCOPClient::mainClient();
-      if (!client)
+      DCOPClient *client = DCOPClient::mainClient();
+      if ( !client )
         return;
       QByteArray data;
       QDataStream arg( data, IO_WriteOnly );
       arg << url;
-      client->emitDCOPSignal("KDirNotify", entering ? "enteredDirectory(KURL)" : "leftDirectory(KURL)", data );
+      client->emitDCOPSignal( "KDirNotify", entering ? "enteredDirectory(KURL)" : "leftDirectory(KURL)", data );
     }
 
     void redirect( const KURL& newUrl )
@@ -257,11 +257,11 @@ private:
       {
         if ( url.isLocalFile() )
           kdirwatch->removeDir( url.path() );
-	sendSignal(false, url );
+        sendSignal( false, url );
 
         if ( newUrl.isLocalFile() )
           kdirwatch->addDir( newUrl.path() );
-	sendSignal(true, url );
+        sendSignal( true, newUrl );
       }
 
       url = newUrl;
@@ -272,21 +272,21 @@ private:
 
     void incAutoUpdate()
     {
-      if ( autoUpdates++ == 0) 
+      if ( autoUpdates++ == 0 )
       { 
         if ( url.isLocalFile() )
           kdirwatch->addDir( url.path() );
-        sendSignal(true, url );
+        sendSignal( true, url );
       }
     }
 
     void decAutoUpdate()
     {
-      if ( --autoUpdates == 0 ) 
-      { 
-        if ( url.isLocalFile() ) 
+      if ( --autoUpdates == 0 )
+      {
+        if ( url.isLocalFile() )
           kdirwatch->removeDir( url.path() );
-	sendSignal(false, url );
+        sendSignal( false, url );
       }
 
       else if ( autoUpdates < 0 )
