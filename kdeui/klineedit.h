@@ -146,14 +146,18 @@ public:
     *
     * The completion object assigned using method is by default NOT deleted when
     * this widget is destroyed.  If you want KLineEdit to delete this object in
-    * its destructor, be sure to to set the autoDelete boolean parameter to "true".
+    * its destructor, be sure to set the boolean parameter, autoDelete, to "true".
     * This is especially usefully if you want to share the same completion object
     * across mulitple widgets.  You can also use the member functions
     * @ref setDeleteCompletionOnExit and @ref deleteCompletionOnExit to change the
     * status of whether the completion object gets deleted in KLineEdit's destructor.
     *
+    * You can also reset this widget's reference to a completion object by either
+    * deleting the object manually yourself or calling this function with the first
+    * argument set to null - setCompletionObject( 0 ).
+    *
     * @param a @ref KCompletion or a derived child object.
-    * @param @p autoDelete if set to true, KLineEdit deletes completion object.
+    * @param @p autoDelete if true, the completion object is deleted in the destructor.
     */
     void setCompletionObject( KCompletion*,  bool autoDelete = false );
 
@@ -188,8 +192,12 @@ public:
     *
     * Note that if you invoke this function, no completion signals
     * are emitted.  Thus, this widget will not be able to handle
-    * the completion signals even if invoke @ref setHandleRotation.
-    * See also @see setCompletionObject.
+    * the completion signals even if setHandleCompletion has been
+    * or is called.  See also @see setHandleCompletion.
+    *
+    * Note that disabling the emition of the completion signals does
+    * not mean the deletion of the comlpetion object if one has already
+    * been created.
     */
     void disableCompletionSignal() { m_bEmitCompletion = false; }
 
@@ -204,9 +212,9 @@ public:
     * Disables this widgets ability to emit rotation signals.
     *
     * Note that if you invoke this function, no rotation signals
-    * are emitted.  Thus, this widget will not be able to handle
-    * the rotation signals even if invoke @ref setHandleRotation.
-    * See also @see setHandleRotation.
+    * are emitted.   Thus, this widget will not be able to handle
+    * the completion signals even if @ref setHandleRotation has been
+    * or is called.  See also @see setHandleRotation.
     */
     void disableRotationSignal() { m_bEmitRotation = false; }
 
