@@ -572,10 +572,10 @@ void KIconViewItem::paintItem( QPainter *p, const QColorGroup &cg )
 	} else if ( view->itemTextBackground() != NoBrush )
 	    p->fillRect( textRect( FALSE ), view->itemTextBackground() );
 
-	//int align = view->itemTextPos() == QIconView::Bottom ? AlignHCenter : AlignAuto;
+	int align = view->itemTextPos() == QIconView::Bottom ? AlignHCenter : AlignAuto;
         //align |= WordBreak /*| BreakAnywhere*/;
 	//p->drawText( textRect( FALSE ), align, text() );
-        m_wordWrap->drawText( p, textX, textY );
+        m_wordWrap->drawText( p, textX, textY, align );
 	p->restore();
 	return;
     }
@@ -614,7 +614,7 @@ void KIconViewItem::paintItem( QPainter *p, const QColorGroup &cg )
 
 	//int align = AlignHCenter | WordBreak /*| BreakAnywhere*/;
 	//p->drawText( textRect( FALSE ), align, text() );
-        m_wordWrap->drawText( p, textX, textY );
+        m_wordWrap->drawText( p, textX, textY, AlignHCenter );
 
 	p->restore();
     } else {
@@ -650,7 +650,7 @@ void KIconViewItem::paintItem( QPainter *p, const QColorGroup &cg )
 
 	//int align = AlignAuto | WordBreak /*| BreakAnywhere*/;
 	//p->drawText( textRect( FALSE ), align, text() );
-        m_wordWrap->drawText( p, textX, textY );
+        m_wordWrap->drawText( p, textX, textY, AlignAuto );
 
 	p->restore();
     }
@@ -665,7 +665,6 @@ KWordWrap* KWordWrap::formatText( QFontMetrics &fm, const QRect & r, int /*flags
     // The wordwrap algorithm
     // The variable names and the global shape of the algorithm are inspired
     // from QTextFormatterBreakWords::format().
-    // ###### TODO handle flags, AlignHCenter in particular.
     //kdDebug() << "KWordWrap::formatText " << str << " r=" << r.x() << "," << r.y() << " " << r.width() << "x" << r.height() << endl;
     KWordWrap* kw = new KWordWrap;
     if ( len == -1 )
@@ -689,11 +688,16 @@ KWordWrap* KWordWrap::formatText( QFontMetrics &fm, const QRect & r, int /*flags
         /*kdDebug() << "c='" << QString(c) << "' i=" << i << "/" << len
                   << " x=" << x << " ww=" << ww << " w=" << w
                   << " lastBreak=" << lastBreak << " isBreakable=" << isBreakable << endl;*/
-        if ( ( x + ww > w && lastBreak != -1 ) || // time to break and we know where
-             ( x + ww > w - 4 && lastBreak == -1 ) ) // time to break but found nowhere [-> break here]
+        int breakAt = -1;
+        if ( x + ww > w && lastBreak != -1 ) // time to break and we know where
+            breakAt = lastBreak;
+        if ( x + ww > w - 4 && lastBreak == -1 ) // time to break but found nowhere [-> break here]
+            breakAt = i;
+        if ( i == len - 2 && x + ww + fm.charWidth( str, i+1 ) > w ) // don't leave the last char alone
+            breakAt = lastBreak == -1 ? i - 1 : lastBreak;
+        if ( breakAt != -1 )
         {
-            int breakAt = ( lastBreak == -1 ) ? i : lastBreak;
-            //kdDebug() << "KWordWrap::formatText breaking at " << breakAt << endl;
+            //kdDebug() << "KWordWrap::formatText breaking after " << breakAt << endl;
             kw->m_breakPositions.append( breakAt );
             int thisLineWidth = lastBreak == -1 ? x + ww : lineWidth;
             kw->m_lineWidths.append( thisLineWidth );
@@ -738,7 +742,7 @@ QString KWordWrap::wrappedString() const
     return ws;
 }
 
-void KWordWrap::drawText( QPainter *painter, int textX, int textY ) const
+void KWordWrap::drawText( QPainter *painter, int textX, int textY, int flags ) const
 {
     //kdDebug() << "KWordWrap::drawText text=" << wrappedString() << " x=" << textX << " y=" << textY << endl;
     // We use the calculated break positions to draw the text line by line using QPainter
@@ -753,12 +757,22 @@ void KWordWrap::drawText( QPainter *painter, int textX, int textY ) const
     for ( ; it != m_breakPositions.end() ; ++it, ++itw )
     {
         int end = (*it);
-        painter->drawText( textX + ( maxwidth - *itw ) / 2, textY + y + ascent, m_text.mid( start, end - start + 1 ) );
+        int x = textX;
+        if ( flags & Qt::AlignHCenter )
+            x += ( maxwidth - *itw ) / 2;
+        else if ( flags & Qt::AlignRight )
+            x += maxwidth - *itw;
+        painter->drawText( x, textY + y + ascent, m_text.mid( start, end - start + 1 ) );
         y += height;
         start = end + 1;
     }
     // Draw the last line
-    painter->drawText( textX + ( maxwidth - *itw ) / 2, textY + y + ascent, m_text.mid( start ) );
+    int x = textX;
+    if ( flags & Qt::AlignHCenter )
+        x += ( maxwidth - *itw ) / 2;
+    else if ( flags & Qt::AlignRight )
+        x += maxwidth - *itw;
+    painter->drawText( x, textY + y + ascent, m_text.mid( start ) );
 }
 
 #include "kiconview.moc"

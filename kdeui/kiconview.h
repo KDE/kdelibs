@@ -226,7 +226,7 @@ public:
      *
      * @param fm Font metrics, for the chosen font. Better cache it, creating a QFontMetrics is expensive.
      * @param r Constraining rectangle. Only the width and height matter.
-     * @param flags Alignment flags - not supported yet.
+     * @param flags - currently unused.
      * @param str The text to be wrapped.
      * @param len Length of text to wrap (default is -1 for all).
      * @return a KWordWrap instance. The caller is responsible for storing and deleting the result.
@@ -246,8 +246,9 @@ public:
 
     /**
      * Draw the text that has been previously wrapped, at position x,y.
+     * Flags are for alignment, e.g. AlignHCenter. Default is AlignAuto.
      */
-    void drawText( QPainter *painter, int x, int y ) const;
+    void drawText( QPainter *painter, int x, int y, int flags = Qt::AlignAuto ) const;
 
 private:
     QValueList<int> m_breakPositions;
