@@ -808,6 +808,9 @@ Connection *Dispatcher::connectObjectRemote(ObjectReference& reference)
 	if(reference.serverID == "null")		// null reference?
 		return 0;
 
+	if(reference.serverID == serverID)
+		return loopbackConnection();
+
 	list<Connection *>::iterator i;
 
 	for(i=connections.begin(); i != connections.end();i++)

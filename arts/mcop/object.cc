@@ -40,8 +40,12 @@ namespace Arts {
 class Arts::ObjectInternalData {
 public:
 	struct MethodTableEntry {
-		DispatchFunction dispatcher;
-		OnewayDispatchFunction onewayDispatcher;
+		union {
+			DispatchFunction dispatcher;
+			OnewayDispatchFunction onewayDispatcher;
+			DynamicDispatchFunction dynamicDispatcher;
+		};
+		enum { dfNormal, dfOneway, dfDynamic } dispatchStyle;
 		void *object;
 		MethodDef methodDef;
 	};
@@ -201,7 +205,8 @@ void Object_skel::_defaultNotify(const Notification& notification)
 				_internalData->methodTableInit = true;
 			}
 		
-			vector<Arts::ObjectInternalData::MethodTableEntry>::iterator mti;
+			typedef ObjectInternalData::MethodTableEntry MTE;
+			vector<MTE>::iterator mti;
 
 			for(mti = _internalData->methodTable.begin();
 				mti != _internalData->methodTable.end(); mti++)
@@ -213,7 +218,21 @@ void Object_skel::_defaultNotify(const Notification& notification)
 					long count = params.readLong();
 					while(params.remaining())
 					{
-						mti->dispatcher(mti->object, &params, &result);
+						if(mti->dispatchStyle == MTE::dfNormal)
+						{
+							mti->dispatcher(mti->object, &params, &result);
+						}
+						else if(mti->dispatchStyle == MTE::dfDynamic)
+						{
+							long methodID;
+							methodID = mti - _internalData->methodTable.begin();
+							mti->dynamicDispatcher(mti->object, methodID,
+												   &params, &result);
+						}
+						else
+						{
+							arts_assert(0);
+						}
 						count--;
 					}
 					arts_assert(count == 0);
@@ -701,8 +720,9 @@ string Object_skel::_interfaceName()
 
 string Object_skel::_interfaceNameSkel()
 {
-	assert(0); // derived classes *must* override this
-	return "";
+	// derived classes *must* override this, but we return a sane value here
+	// anyway, because DynamicSkeleton depends on this
+	return "Arts::Object";
 }
 
 bool Object_skel::_isCompatibleWith(const std::string& interfacename)
@@ -756,6 +776,7 @@ void Object_skel::_addMethod(DispatchFunction disp, void *obj,
 {
 	Arts::ObjectInternalData::MethodTableEntry me;
 	me.dispatcher = disp;
+	me.dispatchStyle = ObjectInternalData::MethodTableEntry::dfNormal;
 	me.object = obj;
 	me.methodDef = md;
 	_internalData->methodTable.push_back(me);
@@ -766,10 +787,23 @@ void Object_skel::_addMethod(OnewayDispatchFunction disp, void *obj,
 {
 	Arts::ObjectInternalData::MethodTableEntry me;
 	me.onewayDispatcher = disp;
+	me.dispatchStyle = ObjectInternalData::MethodTableEntry::dfOneway;
 	me.object = obj;
 	me.methodDef = md;
 	_internalData->methodTable.push_back(me);
 }
+
+void Object_skel::_addMethod(DynamicDispatchFunction disp, void *obj,
+                                               const MethodDef& md)
+{
+	Arts::ObjectInternalData::MethodTableEntry me;
+	me.dynamicDispatcher = disp;
+	me.dispatchStyle = ObjectInternalData::MethodTableEntry::dfDynamic;
+	me.object = obj;
+	me.methodDef = md;
+	_internalData->methodTable.push_back(me);
+}
+
 
 long Object_skel::_addCustomMessageHandler(OnewayDispatchFunction handler,
 																	void *obj)
@@ -783,6 +817,7 @@ long Object_skel::_addCustomMessageHandler(OnewayDispatchFunction handler,
 	}
 	Arts::ObjectInternalData::MethodTableEntry me;
 	me.onewayDispatcher = handler;
+	me.dispatchStyle = ObjectInternalData::MethodTableEntry::dfOneway;
 	me.object = obj;
 	me.methodDef.name = "_userdefined_customdatahandler";
 	_internalData->methodTable.push_back(me);
@@ -798,8 +833,18 @@ void Object_skel::_dispatch(Buffer *request, Buffer *result,long methodID)
 		_buildMethodTable();
 		_internalData->methodTableInit = true;
 	}
-	_internalData->methodTable[methodID].dispatcher(_internalData->methodTable[methodID].object,
-														request,result);
+
+	const ObjectInternalData::MethodTableEntry& me
+				= _internalData->methodTable[methodID];
+	
+	if(me.dispatchStyle == ObjectInternalData::MethodTableEntry::dfNormal)
+		me.dispatcher(me.object, request, result);
+	else if(me.dispatchStyle == ObjectInternalData::MethodTableEntry::dfDynamic)
+		me.dynamicDispatcher(me.object, methodID, request, result);
+	else
+	{
+		arts_assert(0);
+	}
 }
 
 void Object_skel::_dispatch(Buffer *request,long methodID)
@@ -811,8 +856,17 @@ void Object_skel::_dispatch(Buffer *request,long methodID)
 		_buildMethodTable();
 		_internalData->methodTableInit = true;
 	}
-	_internalData->methodTable[methodID].onewayDispatcher(_internalData->methodTable[methodID].object,
-																	request);
+	const ObjectInternalData::MethodTableEntry& me
+				= _internalData->methodTable[methodID];
+
+	if(me.dispatchStyle == ObjectInternalData::MethodTableEntry::dfOneway)
+		me.onewayDispatcher(me.object, request);
+	else if(me.dispatchStyle == ObjectInternalData::MethodTableEntry::dfDynamic)
+		me.dynamicDispatcher(me.object, methodID, request, 0);
+	else
+	{
+		arts_assert(0);
+	}
 }
 
 long Object_skel::_lookupMethod(const MethodDef& md)
@@ -853,6 +907,18 @@ long Object_skel::_lookupMethod(const MethodDef& md)
 	             "incompatible IDL files and is likely to result in crashes",
 				 md.type.c_str(),md.name.c_str());
 	return -1;
+}
+
+const MethodDef& Object_skel::_dsGetMethodDef(long methodID)
+{
+	if(!_internalData->methodTableInit)
+	{
+		// take care that the object base methods are at the beginning
+		Object_skel::_buildMethodTable();
+		_buildMethodTable();
+		_internalData->methodTableInit = true;
+	}
+	return _internalData->methodTable[methodID].methodDef;
 }
 
 // _lookupMethod

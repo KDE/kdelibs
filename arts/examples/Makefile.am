@@ -9,11 +9,12 @@ FLOWLIBS = $(LDFLAGS) $(top_builddir)/arts/flow/libartsflow.la
 
 check_PROGRAMS = helloserver helloclient referenceinfo \
   irdemo x11commtest streamsound hellomain flow artsctest \
-  dcasttest hellodynamic testasubsys testaggregation \
+  dcasttest hellodynamic hellodynamic2 testasubsys testaggregation \
   playtofile tradercheck testthreads testnothreads
 helloserver_SOURCES = hello.cc helloserver.cc hello_impl.cc
 helloclient_SOURCES = hello.cc helloclient.cc
 hellodynamic_SOURCES = hello.cc hellodynamic.cc hello_impl.cc
+hellodynamic2_SOURCES = hello.cc hellodynamic2.cc
 referenceinfo_SOURCES = referenceinfo.cc
 tradercheck_SOURCES = tradercheck.cc
 irdemo_SOURCES = irdemo.cc

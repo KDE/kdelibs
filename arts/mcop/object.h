@@ -46,6 +46,7 @@ namespace Arts {
 
 typedef void (*DispatchFunction)(void *object, Buffer *request, Buffer *result);
 typedef void (*OnewayDispatchFunction)(void *object, Buffer *request);
+typedef void (*DynamicDispatchFunction)(void *object, long methodID, Buffer *request, Buffer *result);
 
 class ScheduleNode;
 class Object_skel;
@@ -55,6 +56,8 @@ class MethodDef;
 class ObjectReference;
 class WeakReferenceBase;
 class Object;
+class DynamicSkeletonData;
+class DynamicSkeletonBase;
 
 class Object_base : public NotificationClient {
 private:
@@ -211,6 +214,9 @@ class AttributeDef;
 class Object_skel : virtual public Object_base {
 private:
 	friend class Object_base;
+	friend class DynamicSkeletonData;
+	friend class DynamicSkeletonBase;
+
 	Object_skel_private *_d_skel;// do not use until there is a very big problem
 
 	long _objectID;
@@ -225,12 +231,17 @@ protected:
 	void _addMethod(DispatchFunction disp, void *object, const MethodDef& md);
 	void _addMethod(OnewayDispatchFunction disp, void *object,
 														const MethodDef& md);
+	void _addMethod(DynamicDispatchFunction disp, void *object,
+														const MethodDef& md);
 	void _initStream(std::string name, void *ptr, long flags);
 
 	/** stuff relative to attribute notifications **/
 	bool _initAttribute(const Arts::AttributeDef& attribute);
 	static bool _QueryInitStreamFunc(Object_skel *skel,const std::string& name);
 	bool _generateSlots(const std::string& name, const std::string& interface);
+
+	/** for DynamicSkeleton: **/
+	const MethodDef& _dsGetMethodDef(long methodID);
 
 protected:
 	void _defaultNotify(const Notification& notification);
