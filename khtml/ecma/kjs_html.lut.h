@@ -7,7 +7,7 @@ namespace KJS {
 const struct HashEntry HTMLDocumentTableEntries[] = {
    { "open", HTMLDocument::Open, DontDelete|Function, 0, 0 },
    { "scripts", HTMLDocument::Scripts, DontDelete|ReadOnly, 0, 0 },
-   { 0, 0, 0, 0, 0 },
+   { "releaseEvents", HTMLDocument::ReleaseEvents, DontDelete|Function, 0, 0 },
    { "all", HTMLDocument::All, DontDelete|ReadOnly, 0, &HTMLDocumentTableEntries[32] },
    { 0, 0, 0, 0, 0 },
    { "vlinkColor", HTMLDocument::VlinkColor, DontDelete, 0, 0 },
@@ -26,7 +26,7 @@ const struct HashEntry HTMLDocumentTableEntries[] = {
    { "links", HTMLDocument::Links, DontDelete|ReadOnly, 0, &HTMLDocumentTableEntries[35] },
    { "title", HTMLDocument::Title, DontDelete, 0, 0 },
    { "location", HTMLDocument::Location, DontDelete, 0, 0 },
-   { 0, 0, 0, 0, 0 },
+   { "captureEvents", HTMLDocument::CaptureEvents, DontDelete|Function, 0, 0 },
    { 0, 0, 0, 0, 0 },
    { "clear", HTMLDocument::Clear, DontDelete|Function, 0, 0 },
    { "referrer", HTMLDocument::Referrer, DontDelete|ReadOnly, 0, &HTMLDocumentTableEntries[31] },
@@ -703,27 +703,29 @@ using namespace KJS;
 namespace KJS {
 
 const struct HashEntry HTMLImageElementTableEntries[] = {
-   { "x", KJS::HTMLElement::ImageX, DontDelete|ReadOnly, 0, 0 },
-   { "y", KJS::HTMLElement::ImageY, DontDelete|ReadOnly, 0, 0 },
-   { "border", KJS::HTMLElement::ImageBorder, DontDelete, 0, &HTMLImageElementTableEntries[14] },
    { 0, 0, 0, 0, 0 },
-   { "hspace", KJS::HTMLElement::ImageHspace, DontDelete, 0, &HTMLImageElementTableEntries[15] },
-   { "complete", KJS::HTMLElement::ImageComplete, DontDelete|ReadOnly, 0, 0 },
-   { "vspace", KJS::HTMLElement::ImageVspace, DontDelete, 0, 0 },
-   { "align", KJS::HTMLElement::ImageAlign, DontDelete, 0, &HTMLImageElementTableEntries[16] },
    { 0, 0, 0, 0, 0 },
-   { "name", KJS::HTMLElement::ImageName, DontDelete, 0, &HTMLImageElementTableEntries[12] },
-   { 0, 0, 0, 0, 0 },
-   { "longDesc", KJS::HTMLElement::ImageLongDesc, DontDelete, 0, 0 },
-   { "alt", KJS::HTMLElement::ImageAlt, DontDelete, 0, &HTMLImageElementTableEntries[13] },
-   { "height", KJS::HTMLElement::ImageHeight, DontDelete, 0, 0 },
    { "isMap", KJS::HTMLElement::ImageIsMap, DontDelete, 0, 0 },
-   { "src", KJS::HTMLElement::ImageSrc, DontDelete, 0, &HTMLImageElementTableEntries[17] },
+   { "complete", KJS::HTMLElement::ImageComplete, DontDelete|ReadOnly, 0, &HTMLImageElementTableEntries[14] },
+   { 0, 0, 0, 0, 0 },
+   { "align", KJS::HTMLElement::ImageAlign, DontDelete, 0, 0 },
+   { "src", KJS::HTMLElement::ImageSrc, DontDelete, 0, 0 },
+   { 0, 0, 0, 0, 0 },
+   { "border", KJS::HTMLElement::ImageBorder, DontDelete, 0, &HTMLImageElementTableEntries[19] },
+   { "y", KJS::HTMLElement::ImageY, DontDelete|ReadOnly, 0, 0 },
+   { 0, 0, 0, 0, 0 },
+   { "name", KJS::HTMLElement::ImageName, DontDelete, 0, 0 },
+   { "hspace", KJS::HTMLElement::ImageHspace, DontDelete, 0, &HTMLImageElementTableEntries[17] },
+   { "alt", KJS::HTMLElement::ImageAlt, DontDelete, 0, 0 },
+   { "height", KJS::HTMLElement::ImageHeight, DontDelete, 0, &HTMLImageElementTableEntries[15] },
+   { "longDesc", KJS::HTMLElement::ImageLongDesc, DontDelete, 0, &HTMLImageElementTableEntries[16] },
    { "useMap", KJS::HTMLElement::ImageUseMap, DontDelete, 0, 0 },
-   { "width", KJS::HTMLElement::ImageWidth, DontDelete, 0, 0 }
+   { "vspace", KJS::HTMLElement::ImageVspace, DontDelete, 0, &HTMLImageElementTableEntries[18] },
+   { "width", KJS::HTMLElement::ImageWidth, DontDelete, 0, 0 },
+   { "x", KJS::HTMLElement::ImageX, DontDelete|ReadOnly, 0, 0 }
 };
 
-const struct HashTable HTMLImageElementTable = { 2, 18, HTMLImageElementTableEntries, 12 };
+const struct HashTable HTMLImageElementTable = { 2, 20, HTMLImageElementTableEntries, 14 };
 
 }; // namespace
 

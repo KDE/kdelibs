@@ -65,10 +65,6 @@ Value KJS::HTMLDocFunction::tryCall(ExecState *exec, Object &thisObj, const List
   KJS_CHECK_THIS( HTMLDocument, thisObj );
 
   DOM::HTMLDocument doc = static_cast<KJS::HTMLDocument *>(thisObj.imp())->toDocument();
-  String s;
-  DOM::HTMLElement element;
-
-  Value v = args[0];
 
   switch (id) {
   case HTMLDocument::Clear: // even IE doesn't support that one...
@@ -95,8 +91,9 @@ Value KJS::HTMLDocFunction::tryCall(ExecState *exec, Object &thisObj, const List
   case HTMLDocument::Write:
   case HTMLDocument::WriteLn: {
     // DOM only specifies single string argument, but NS & IE allow multiple
-    UString str = v.toString(exec);
-    for (int i = 1; i < args.size(); i++)
+    // or no arguments
+    UString str = "";
+    for (int i = 0; i < args.size(); i++)
       str += args[i].toString(exec);
     if (id == HTMLDocument::WriteLn)
       str += "\n";
@@ -107,7 +104,11 @@ Value KJS::HTMLDocFunction::tryCall(ExecState *exec, Object &thisObj, const List
     return Undefined();
   }
   case HTMLDocument::GetElementsByName:
-    return getDOMNodeList(exec,doc.getElementsByName(v.toString(exec).string()));
+    return getDOMNodeList(exec,doc.getElementsByName(args[0].toString(exec).string()));
+  case HTMLDocument::CaptureEvents:
+  case HTMLDocument::ReleaseEvents:
+    // Do nothing for now. These are NS-specific legacy calls.
+    break;
   }
 
   return Undefined();
@@ -137,6 +138,8 @@ const ClassInfo KJS::HTMLDocument::info =
   write			HTMLDocument::Write		DontDelete|Function 1
   writeln		HTMLDocument::WriteLn		DontDelete|Function 1
   getElementsByName	HTMLDocument::GetElementsByName	DontDelete|Function 1
+  captureEvents		HTMLDocument::CaptureEvents	DontDelete|Function 0
+  releaseEvents		HTMLDocument::ReleaseEvents	DontDelete|Function 0
   bgColor		HTMLDocument::BgColor		DontDelete
   fgColor		HTMLDocument::FgColor		DontDelete
   alinkColor		HTMLDocument::AlinkColor	DontDelete
@@ -323,6 +326,8 @@ Value KJS::HTMLDocument::tryGet(ExecState *exec, const UString &propertyName) co
     case Write:
     case WriteLn:
     case GetElementsByName:
+    case CaptureEvents:
+    case ReleaseEvents:
       return lookupOrCreateFunction<HTMLDocFunction>( exec, propertyName, this, entry->value, entry->params, entry->attr );
     }
   }
@@ -346,10 +351,10 @@ Value KJS::HTMLDocument::tryGet(ExecState *exec, const UString &propertyName) co
       return String(body.vLink());
     case LastModified:
       return String(doc.lastModified());
-    case Height:
-      return Number(view ? view->visibleHeight() : 0);
-    case Width:
-      return Number(view ? view->visibleWidth() : 0);
+    case Height: // NS-only, not available in IE
+      return Number(view ? view->contentsHeight() : 0);
+    case Width: // NS-only, not available in IE
+      return Number(view ? view->contentsWidth() : 0);
     case Dir:
       return String(body.dir());
     case Frames:
@@ -393,9 +398,13 @@ void KJS::HTMLDocument::putValueProperty(ExecState *exec, int token, const Value
   case Title:
     if (doc.title() != val) doc.setTitle(val);
     break;
-  case Body:
-    doc.setBody((new DOMNode(exec, KJS::toNode(value)))->toNode());
+  case Body: {
+    DOMNode *node = new DOMNode(exec, KJS::toNode(value));
+    // This is required to avoid leaking the node.
+    Value nodeValue(node);
+    doc.setBody(node->toNode());
     break;
+  }
   case Domain: { // not part of the DOM
     DOM::HTMLDocumentImpl* docimpl = static_cast<DOM::HTMLDocumentImpl*>(doc.handle());
     if (docimpl)
@@ -879,7 +888,7 @@ const ClassInfo* KJS::HTMLElement::classInfo() const
   blur		KJS::HTMLElement::AnchorBlur		DontDelete|Function 0
   focus		KJS::HTMLElement::AnchorFocus		DontDelete|Function 0
 @end
-@begin HTMLImageElementTable 12
+@begin HTMLImageElementTable 14
   name		KJS::HTMLElement::ImageName		DontDelete
   align		KJS::HTMLElement::ImageAlign		DontDelete
   alt		KJS::HTMLElement::ImageAlt		DontDelete
@@ -2220,7 +2229,10 @@ void KJS::HTMLElement::tryPut(ExecState *exec, const UString &propertyName, cons
 void KJS::HTMLElement::putValueProperty(ExecState *exec, int token, const Value& value, int)
 {
   DOM::DOMString str = value.isA(NullType) ? DOM::DOMString() : value.toString(exec).string();
-  DOM::Node n = (new DOMNode(exec, KJS::toNode(value)))->toNode();
+  DOMNode *kjsNode = new DOMNode(exec, KJS::toNode(value));
+  // Need to create a Value wrapper to avoid leaking the KJS::DOMNode
+  Value nodeValue(kjsNode);
+  DOM::Node n = kjsNode->toNode();
   DOM::HTMLElement element = static_cast<DOM::HTMLElement>(node);
 #ifdef KJS_VERBOSE
   kdDebug(6070) << "KJS::HTMLElement::putValueProperty "

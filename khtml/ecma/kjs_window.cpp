@@ -228,7 +228,10 @@ const ClassInfo Window::info = { "Window", 0, &WindowTable, 0 };
   setInterval	Window::SetInterval	DontDelete|Function 2
   clearInterval	Window::ClearInterval	DontDelete|Function 1
   captureEvents	Window::CaptureEvents	DontDelete|Function 0
+  releaseEvents	Window::ReleaseEvents	DontDelete|Function 0
   print		Window::Print		DontDelete|Function 0
+  addEventListener	Window::AddEventListener	DontDelete|Function 3
+  removeEventListener	Window::RemoveEventListener	DontDelete|Function 3
 # Warning, when adding a function to this object you need to add a case in Window::get
 # Event handlers
 # IE also has: onactivate, onbefore/afterprint, onbeforedeactivate/unload, oncontrolselect,
@@ -450,8 +453,12 @@ Value Window::get(ExecState *exec, const UString &p) const
         return Undefined();
       }
     case InnerHeight:
+      if (!m_part->view())
+        return Undefined();
       return Number(m_part->view()->visibleHeight());
     case InnerWidth:
+      if (!m_part->view())
+        return Undefined();
       return Number(m_part->view()->visibleWidth());
     case Length:
       return Number(m_part->frames().count());
@@ -461,11 +468,19 @@ Value Window::get(ExecState *exec, const UString &p) const
     case Name:
       return String(m_part->name());
     case _Navigator:
-    case ClientInformation:
-      return Value(new Navigator(exec, m_part));
+    case ClientInformation: {
+      // Store the navigator in the object so we get the same one each time.
+      Value nav( new Navigator(exec, m_part) );
+      const_cast<Window *>(this)->put(exec, "navigator", nav, DontDelete|ReadOnly|Internal);
+      const_cast<Window *>(this)->put(exec, "clientInformation", nav, DontDelete|ReadOnly|Internal);
+      return nav;
+    }
 #ifdef Q_WS_QWS
-    case _Konqueror:
-      return Value(new Konqueror(m_part));
+    case _Konqueror: {
+      Value k( new Konqueror(exec, m_part) );
+      const_cast<Window *>(this)->put(exec, "konqueror", k, DontDelete|ReadOnly|Internal);
+      return k;
+    }
 #endif
     case OffscreenBuffering:
       return Boolean(true);
@@ -491,13 +506,29 @@ Value Window::get(ExecState *exec, const UString &p) const
       return retrieve(m_part->parentPart() ? m_part->parentPart() : (KHTMLPart*)m_part);
     case Personalbar:
       return Undefined(); // ###
+    case ScreenLeft:
     case ScreenX: {
-	  QRect sg = QApplication::desktop()->screenGeometry(QApplication::desktop()->screenNumber(m_part->view()));
+      if (!m_part->view())
+        return Undefined();
+      QRect sg = QApplication::desktop()->screenGeometry(QApplication::desktop()->screenNumber(m_part->view()));
       return Number(m_part->view()->mapToGlobal(QPoint(0,0)).x() + sg.x());
     }
+    case ScreenTop:
     case ScreenY: {
-	  QRect sg = QApplication::desktop()->screenGeometry(QApplication::desktop()->screenNumber(m_part->view()));
+      if (!m_part->view())
+        return Undefined();
+      QRect sg = QApplication::desktop()->screenGeometry(QApplication::desktop()->screenNumber(m_part->view()));
       return Number(m_part->view()->mapToGlobal(QPoint(0,0)).y() + sg.y());
+    }
+    case ScrollX: {
+      if (!m_part->view())
+        return Undefined();
+      return Number(m_part->view()->contentsX());
+    }
+    case ScrollY: {
+      if (!m_part->view())
+        return Undefined();
+      return Number(m_part->view()->contentsY());
     }
     case Scrollbars:
       return Undefined(); // ###
@@ -532,6 +563,9 @@ Value Window::get(ExecState *exec, const UString &p) const
     case ResizeBy:
     case ResizeTo:
     case CaptureEvents:
+    case ReleaseEvents:
+    case AddEventListener:
+    case RemoveEventListener:
       return lookupOrCreateFunction<WindowFunc>(exec,p,this,entry->value,entry->params,entry->attr);
     case SetTimeout:
     case ClearTimeout:
@@ -967,18 +1001,18 @@ Value Window::getListener(ExecState *exec, int eventId) const
 
 JSEventListener *Window::getJSEventListener(const Value& val, bool html)
 {
-  Object obj = Object::dynamicCast(val);
-  if (obj.isNull())
+  // This function is so hot that it's worth coding it directly with imps.
+  if (val.type() != ObjectType)
     return 0;
+  ObjectImp *listenerObject = static_cast<ObjectImp *>(val.imp());
 
   QPtrListIterator<JSEventListener> it(jsEventListeners);
-
   for (; it.current(); ++it)
-    if (it.current()->listenerObj().imp() == obj.imp())
+    if (it.current()->listenerObjImp() == listenerObject)
       return it.current();
 
   // Note that the JSEventListener constructor adds it to our jsEventListeners list
-  return new JSEventListener(obj,Object(this),html);
+  return new JSEventListener(Object(listenerObject), Object(this), html);
 }
 
 void Window::clear( ExecState *exec )
@@ -1443,14 +1477,37 @@ Value WindowFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
     }
     return Undefined();
   }
-  case Window::CaptureEvents:
-    // Do nothing. This is a NS-specific call that isn't needed in Konqueror.
-    break;
   case Window::Print:
     if ( widget ) {
       // ### TODO emit onbeforeprint event
       widget->print();
       // ### TODO emit onafterprint event
+    }
+  case Window::CaptureEvents:
+  case Window::ReleaseEvents:
+    // Do nothing for now. These are NS-specific legacy calls.
+    break;
+  case Window::AddEventListener: {
+        JSEventListener *listener = Window::retrieveActive(exec)->getJSEventListener(args[1]);
+        DOM::Document doc = part->document();
+        if (doc.isHTMLDocument()) {
+            DOM::HTMLDocument htmlDoc = doc;
+            htmlDoc.body().addEventListener(args[0].toString(exec).string(),listener,args[2].toBoolean(exec));
+        }
+        else
+            doc.addEventListener(args[0].toString(exec).string(),listener,args[2].toBoolean(exec));
+        return Undefined();
+    }
+  case Window::RemoveEventListener: {
+        JSEventListener *listener = Window::retrieveActive(exec)->getJSEventListener(args[1]);
+        DOM::Document doc = part->document();
+        if (doc.isHTMLDocument()) {
+            DOM::HTMLDocument htmlDoc = doc;
+            htmlDoc.body().removeEventListener(args[0].toString(exec).string(),listener,args[2].toBoolean(exec));
+        }
+        else
+            doc.removeEventListener(args[0].toString(exec).string(),listener,args[2].toBoolean(exec));
+        return Undefined();
     }
     break;
   }
@@ -1480,6 +1537,10 @@ ScheduledAction::ScheduledAction(QString _code, bool _singleShot)
 
 void ScheduledAction::execute(Window *window)
 {
+  ScriptInterpreter *interpreter = static_cast<ScriptInterpreter *>(KJSProxy::proxy(window->m_part)->interpreter());
+
+  interpreter->setProcessingTimerCallback(true);
+
   //kdDebug(6070) << "ScheduledAction::execute " << this << endl;
   if (isFunction) {
     if (func.implementsCall()) {
@@ -1498,6 +1559,8 @@ void ScheduledAction::execute(Window *window)
   else {
     window->m_part->executeScript(code);
   }
+
+  interpreter->setProcessingTimerCallback(false);
 }
 
 ScheduledAction::~ScheduledAction()
@@ -1877,7 +1940,7 @@ Value History::getValueProperty(ExecState *, int token) const
   }
   default:
     kdWarning(6070) << "Unhandled token in History::getValueProperty : " << token << endl;
-    return Value();
+    return Undefined();
   }
 }
 
