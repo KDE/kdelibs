@@ -202,7 +202,7 @@ static KStaticDeleter<KURIFilter> kurifiltersd;
 KURIFilter *KURIFilter::self()
 {
     if (!m_self)
-        m_self = kurifiltersd.setObject(new KURIFilter);
+        m_self = kurifiltersd.setObject(m_self, new KURIFilter);
     return m_self;
 }
 
