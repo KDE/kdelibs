@@ -37,7 +37,8 @@
 #include "rendering/render_layer.h"
 #include "rendering/render_line.h"
 #include "rendering/render_table.h"
-#define protected public // FIXME: remove that after the debugging phase
+// removeme
+#define protected public
 #include "rendering/render_text.h"
 #undef protected
 #include "xml/dom2_eventsimpl.h"
@@ -429,15 +430,9 @@ void KHTMLToolTip::maybeTip(const QPoint& p)
     while ( node ) {
         if ( node->isElementNode() ) {
             QString s = static_cast<DOM::ElementImpl*>( node )->getAttribute( ATTR_TITLE ).string();
-            qDebug("found title: %s",  s.latin1());
             region |= QRect( m_view->contentsToViewport( node->getRect().topLeft() ), node->getRect().size() );
             if ( !s.isEmpty() ) {
-                QRect r(m_view->rect());
-                qDebug("setting total rectangle: %d/%d - %d/%d",
-                       r.x(), r.y(), r.width(), r.height());
-                r.moveTopLeft(p + QPoint(2, 16));
-                r.setWidth(-1);
-                tip( region, s, r );
+                tip( region, s );
                 break;
             }
         }
