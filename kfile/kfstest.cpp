@@ -92,7 +92,6 @@ int main(int argc, char **argv)
 					    "*.lo *.o *.la|All libtool files"),
 			0, 0, true);
 	dlg.setMode( (KFile::Mode) (KFile::Files | KFile::Directory | KFile::ExistingOnly | KFile::LocalOnly) );
-	dlg.setSelection(QString::fromLatin1("kfiledialog.cpp"));
 	if ( dlg.exec() == QDialog::Accepted ) {
 	    KURL::List list = dlg.selectedURLs();
 	    KURL::List::ConstIterator it = list.begin();
@@ -120,7 +119,6 @@ while ( it2 != l.end() ) {
 					    "*.lo *.o *.la|All libtool files"),
 			0, 0, true);
 	dlg.setMode( (KFile::Mode) (KFile::Files | KFile::Directory | KFile::ExistingOnly | KFile::LocalOnly) );
-	dlg.setSelection(QString::fromLatin1("kfiledialog.cpp"));
 	dlg.exec();
 
     
