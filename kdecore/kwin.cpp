@@ -544,12 +544,12 @@ void KWin::clearState( WId win, unsigned long state )
 
 void KWin::setOpacity( WId win, uint percent )
 {
-#ifdef Q_QS_X11
+#ifdef Q_WS_X11
     if (percent > 99)
         XDeleteProperty (qt_xdisplay(), win, kde_wm_window_opacity);
     else
     {
-        long opacity = 0xFFFFFFFF/100.0*percent;
+        long opacity = long(0xFFFFFFFF/100.0*percent);
         XChangeProperty(qt_xdisplay(), win, kde_wm_window_opacity, XA_CARDINAL, 32, PropModeReplace, (unsigned char *) &opacity, 1L);
     }
 #endif
@@ -557,8 +557,8 @@ void KWin::setOpacity( WId win, uint percent )
 
 void KWin::setShadowSize( WId win, uint percent )
 {
-#ifdef Q_QS_X11
-    long shadowSize = 0xFFFFFFFF/100.0*percent;
+#ifdef Q_WS_X11
+    long shadowSize = long(0xFFFFFFFF/100.0*percent);
     XChangeProperty(qt_xdisplay(), win, kde_wm_window_shadow, XA_CARDINAL, 32, PropModeReplace, (unsigned char *) &shadowSize, 1L);
 #endif
 }
