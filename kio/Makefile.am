@@ -42,7 +42,7 @@ libkio_la_SOURCES = \
 
 libkio_la_METASOURCES = AUTO
 
-include_HEADERS = ksycocaentry.h ksycocatype.h \
+include_HEADERS = ksycoca.h ksycocaentry.h ksycocatype.h \
 	kservicetype.h kmimetype.h kmimemagic.h kservice.h \
         krun.h kdirwatch.h \
 	kio_connection.h kio_base.h kio_rename_dlg.h \
@@ -56,7 +56,7 @@ include_HEADERS = ksycocaentry.h ksycocatype.h \
 
 # Internal
 noinst_HEADERS = ksycocafactory.h kservicetypefactory.h kservicefactory.h \
-	ksycocadict.h ksycoca.h kmessageboxwrapper.h \
+	ksycocadict.h kmessageboxwrapper.h \
 	ktraderparse.h ktraderparsetree.h yacc.h
 
 magic_DATA = magic
