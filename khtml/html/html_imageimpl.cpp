@@ -282,7 +282,7 @@ HTMLMapElementImpl::getMap(const DOMString& _url)
 	s = QString(_url.unicode()+1, _url.length()-1);
     else
 	s = _url.string();
-    if (mapMap->contains(s))
+    if (mapMap && mapMap->contains(s))
 	return (*mapMap)[s];
     else
 	return 0;
