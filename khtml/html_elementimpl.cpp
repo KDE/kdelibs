@@ -924,8 +924,12 @@ NodeImpl *HTMLBlockElementImpl::calcParagraph(NodeImpl *_start, bool pre)
     HAlign elemPAlign=HNone;
 
     QFontMetrics fm(*getFont());
-    int defTextHeight=fm.ascent()+fm.descent();
+    int defAscent=fm.ascent();
+    int defDescent=fm.descent();
 
+    int lineAscent = 0;
+    int lineDescent = 0;    
+    
     TextSlave *slave = 0;
 
     while(endNode.current())
@@ -935,8 +939,9 @@ NodeImpl *HTMLBlockElementImpl::calcParagraph(NodeImpl *_start, bool pre)
 	startNode = endNode;
 	startPos = endPos;
 
-	int lineAscent = 0;
-	int lineDescent = 0;
+	lineAscent = 0;
+	lineDescent = 0;
+	
 	int currentAscent = 0;
 	int currentDescent = 0;
     	int secondaryAscent = 0;
@@ -1175,7 +1180,7 @@ NodeImpl *HTMLBlockElementImpl::calcParagraph(NodeImpl *_start, bool pre)
 #ifdef PAR_DEBUG
 	    printf("set end to test\n");
 #endif
-	    endNode = testNode;
+	    endNode=testNode;
 	    endPos = 0;
 	}
 	
@@ -1300,7 +1305,7 @@ NodeImpl *HTMLBlockElementImpl::calcParagraph(NodeImpl *_start, bool pre)
  		case ID_P + ID_CLOSE_TAG:				
 		    lineDescent += 8;
 		    if (lineAscent==0)
-		    	lineAscent=defTextHeight;
+		    	lineAscent=defAscent;
 		    endOfLine = true;
 		    nextNode = true;
 		    break;		
@@ -1310,7 +1315,7 @@ NodeImpl *HTMLBlockElementImpl::calcParagraph(NodeImpl *_start, bool pre)
 		    	static_cast<HTMLBRElementImpl*>(current);
 			
 		    if (lineAscent==0)
-		    	lineAscent=defTextHeight;			
+		    	lineAscent=defAscent;			
 			
 		    switch(br->clear())
 		    {
@@ -1368,6 +1373,7 @@ NodeImpl *HTMLBlockElementImpl::calcParagraph(NodeImpl *_start, bool pre)
 	}
 	else
 	    descent += lineAscent + lineDescent;
+
 #ifdef PAR_DEBUG
 	printf("descent = %d\n", descent);
 #endif
@@ -1383,10 +1389,12 @@ NodeImpl *HTMLBlockElementImpl::calcParagraph(NodeImpl *_start, bool pre)
 	    }
 	}
     }
+    if (lineDescent)
+    	descent+=defDescent;	
+    
 #ifdef PAR_DEBUG
     printf("calcParagraph end\n");
 #endif
-//    descent += 4;
     return retval;
 }
 
