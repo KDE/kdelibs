@@ -1146,7 +1146,7 @@ bool HTTPProtocol::readHeader()
   // and that we do indeed have a header
   // Do this only if there is no redirection. Buggy server implementations
   // incorrectly send Content-Type with a redirection response. (DA)
-  debug( "Location field's text is : %s", locationStr.latin1() );
+  kdDebug(7103) << "Location field's text is : " << locationStr << endl;
   if( locationStr.length() == 0 )
      mimeType(m_strMimeType);
 
