@@ -60,6 +60,7 @@
     <Action name="view_fit_to_width"/>
     <Action name="view_fit_to_height"/>
     <Separator/>
+    <MergeLocal name="view_zoom_merge"/>
     <Action name="view_zoom_in"/>
     <Action name="view_zoom_out"/>
     <Action name="view_zoom"/>
