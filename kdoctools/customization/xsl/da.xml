@@ -9,9 +9,9 @@
  -->
 <gentext key="Danish" text="Dansk"/>
 <gentext key="Default" text="Standard"/>
-<gentext key="Documentation.by" text="Documentation by"/>
+<gentext key="Documentation.by" text="Dokumentation ved"/>
 <gentext key="LastUpdated" text="Sidst opdateret"/>
-<gentext key="Version" text="Version"/>
+<gentext key="Version" text="Udgave"/>
 <gentext key="home-url" text="http://www.kde.org/"/>
-<gentext key="logo-alt" text="The K Desktop Environment Logo"/>
+<gentext key="logo-alt" text="K skrivebordsmilj&oslash;-logo"/>
 </localization>
