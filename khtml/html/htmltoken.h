@@ -111,6 +111,7 @@ public:
     DOMString name() const;
     void setName(const DOMString &name);
     void setName(const DOMStringImpl *name);
+    void setName(QChar *_s, int _l);
 
     unsigned char id;
 protected:

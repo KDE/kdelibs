@@ -29,9 +29,7 @@ color
 cols
 colspan
 compact
-console
 content
-controls
 coords
 data
 datetime
@@ -118,6 +116,7 @@ target
 text
 title
 type
+unknown
 usemap
 valign
 value

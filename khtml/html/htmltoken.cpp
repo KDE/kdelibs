@@ -80,6 +80,20 @@ void Attribute::setName(const DOMStringImpl *name)
     }
 }
 
+void Attribute::setName(QChar *_s, int _l)
+{
+   if(n) v->deref();
+   n = 0;
+
+   if (_s)
+   {
+      QChar *c = new QChar[_l];
+      memcpy(c, _s, _l*sizeof(QChar));
+      n = new DOMStringImpl(c, _l);
+      n->ref();
+   }
+}
+
 //-----------------------------------------------------------------------------
 
 AttributeList::AttributeList()
@@ -100,9 +114,8 @@ AttributeList::AttributeList( const AttributeList &other)
     int i = 0;
     while(i < (int)_len)
     {
-	_list[i].setValue(other._list[i].val());
-	_list[i].id = other._list[i].id;
-	i++;
+       _list[i] = other._list[i];
+       i++;
     }
 }
 
@@ -157,10 +170,10 @@ DOMString AttributeList::value(uint index) const
 }
 
 void AttributeList::add(const Attribute &a)
-{
+{   
     int index = find(a.id);
 
-    if(index == -1)
+    if( index==-1 || a.id==0 )
     {
 	Attribute *nList = new Attribute [ _len+1 ];
 	if(_list)
@@ -168,15 +181,13 @@ void AttributeList::add(const Attribute &a)
 	    int i = 0;
 	    while(i < (int)_len)
 	    {
-		nList[i].setValue(_list[i].val());
-		nList[i].id = _list[i].id;
-		i++;
+	       nList[i] = _list[i];	
+	       i++;
 	    }
 	    delete [] _list;
-	}
+	}	
 	_list = nList;
-	_list[_len].id = a.id;
-	_list[_len].setValue(a.val());
+	_list[_len] = a;       
 	_len++;
     }
     else
@@ -245,18 +256,16 @@ void AttributeList::remove(uint index)
     uint i = 0;
     while(i < index)
     {
-	nList[i].setValue(_list[i].val());
-	nList[i].id = _list[i].id;
-	i++;
+       nList[i] = _list[i];     
+       i++;
     }
     while(i < _len-1)
     {
-	nList[i].setValue(_list[i+1].val());
-	nList[i].id = _list[i+1].id;
-	i++;
+       nList[i] = _list[i+1];
+       i++;
     }
 
-    delete [] _list;
+    delete [] _list; 
     _list = nList;
     _len--;
 }

@@ -40,9 +40,7 @@ color, ATTR_COLOR
 cols, ATTR_COLS
 colspan, ATTR_COLSPAN
 compact, ATTR_COMPACT
-console, ATTR_CONSOLE
 content, ATTR_CONTENT
-controls, ATTR_CONTROLS
 coords, ATTR_COORDS
 data, ATTR_DATA
 datetime, ATTR_DATETIME
@@ -129,6 +127,7 @@ target, ATTR_TARGET
 text, ATTR_TEXT
 title, ATTR_TITLE
 type, ATTR_TYPE
+unknown, ATTR_UNKNOWN
 usemap, ATTR_USEMAP
 valign, ATTR_VALIGN
 value, ATTR_VALUE

@@ -201,7 +201,8 @@ void HTMLEmbedElementImpl::parseAttribute(AttrImpl *attr)
   QString val = QConstString( stringImpl->s, stringImpl->l ).string();  
 
   // export parameter
-  param.append( attr->name().string() + "=\"" + val + "\"" );
+  QString attrStr = attr->name().string() + "=\"" + val + "\"";
+  param.append( attrStr );
 
   switch ( attr->attrId )
   {

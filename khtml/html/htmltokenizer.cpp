@@ -713,24 +713,22 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
 		{
 		    // beginning of name
 		    QChar *ptr = buffer;
-		    QConstString tmp(ptr, dest-buffer);
-		    uint a = khtml::getAttrID(tmp.string().ascii(),
-						     dest-buffer);
+		    attrName = QString(ptr, dest-buffer);
+		    uint a = khtml::getAttrID(attrName.ascii(), dest-buffer);
 		    dest = buffer;
+		    *dest++ = a;
+
 		    if (!a) {
-			// unknown attribute, ignore
 #ifdef TOKEN_DEBUG
-			kdDebug( 6036 ) << "Unknown attribute: \"" << tmp.string() << "\"" << endl;
-#endif
-                        *dest++ = 0x0; /* ignore */
-		    }
-		    else
+		       kdDebug( 6036 ) << "Unknown attribute: \"" << attrName << "\"" << endl;
+#endif						
+		    } else
 		    {
-#ifdef TOKEN_DEBUG
-			kdDebug( 6036 ) << "Known attribute: \"" << tmp.string() << "\"" << endl;
-#endif
-			*dest++ = a;
-		    }		
+#ifdef TOKEN_DEBUG		    
+		       kdDebug( 6036 ) << "Known attribute: \"" << attrName << "\"" << endl;
+#endif		       
+		    }
+		   
 		    tag = SearchEqual;
 		    discard = SpaceDiscard; // discard spaces before '='
 		}
@@ -749,11 +747,10 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
 		
 		      Attribute a;
 		      a.id = *buffer;
-		      if(a.id)
-		      {
-			  a.setValue(0, 0);
-			  currToken->attrs.add(a);
-		      }
+		      if(a.id==0) a.setName( attrName );
+		      a.setValue(0, 0);
+		      currToken->attrs.add(a);
+	      
 		      dest = buffer;
 		      tag = SearchAttribute;
 		      discard = SpaceDiscard;
@@ -772,11 +769,10 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
 		{
 		    Attribute a;
 		    a.id = *buffer;
-		    if(a.id)
-		    {
-			a.setValue(0, 0);
-			currToken->attrs.add(a);
-		    }
+		    if(a.id==0) a.setName( attrName );
+		    a.setValue(0, 0);
+		    currToken->attrs.add(a);
+	    
 		    dest = buffer;
 		    tag = SearchAttribute;
 		    discard = SpaceDiscard;
@@ -817,13 +813,12 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
 		{
 		    // end of attribute
 		    Attribute a;
-		    a.id = *buffer;
-		    // remove trailing spaces
-		    while(*(dest-1) == ' ' && dest>buffer+1) dest--;
-		    if(a.id)		    {
-			a.setValue(buffer+1, dest-buffer-1);
-			currToken->attrs.add(a);
-		    }
+		    a.id = *buffer;		    
+		    if(a.id==0) a.setName( attrName );
+		    while(*(dest-1) == ' ' && dest>buffer+1) dest--; // remove trailing spaces  
+		    a.setValue(buffer+1, dest-buffer-1);
+		    currToken->attrs.add(a);
+	    
 		    dest = buffer;
 		    tag = SearchAttribute;
 		    discard = SpaceDiscard;
@@ -854,11 +849,10 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
 		    // no quotes. Every space means end of value
 		    Attribute a;
 		    a.id = *buffer;
-		    if(a.id)
-		    {
-			a.setValue(buffer+1, dest-buffer-1);
-			currToken->attrs.add(a);
-		    }
+		    if(a.id==0) a.setName( attrName );
+		    a.setValue(buffer+1, dest-buffer-1);
+		    currToken->attrs.add(a);
+		    
 		    dest = buffer;
 		    tag = SearchAttribute;
 		    discard = SpaceDiscard;
@@ -894,10 +888,9 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
 		    // add the last attribute
 		    Attribute a;
 		    a.id = *buffer;
-		    if(a.id)		    {
-			a.setValue(buffer+1, dest-buffer-1);
-			currToken->attrs.add(a);
-		    }
+		    if(a.id==0) a.setName( attrName );
+		    a.setValue(buffer+1, dest-buffer-1);
+		    currToken->attrs.add(a);		    
 		    dest = buffer;
 		}
 		uint tagID = currToken->id;
