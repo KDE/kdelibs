@@ -38,6 +38,7 @@
 #include <qpoint.h>
 #include <qregion.h>
 #include <qstack.h>
+#include <qimage.h>
 
 using namespace DOM;
 using namespace khtml;
