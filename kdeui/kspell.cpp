@@ -930,7 +930,7 @@ void KSpell::check2( KProcIO * )
 
   do
   {
-    tempe = proc->readln( line ); //get ispell's response
+    tempe = proc->readln( line, false ); //get ispell's response
     //kdDebug(750) << "KSpell::check2 (" << tempe << "b)" << endl;
 
     if ( tempe>0 )
