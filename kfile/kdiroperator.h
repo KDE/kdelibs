@@ -369,8 +369,12 @@ class KDirOperator : public QWidget
      * Reads the default settings for a view, i.e. the default KFile::FileView.
      * Also reads the sorting and whether hidden files should be shown.
      * Note: the default view will not be set - you have to call
-     * <pre>@ref setView( KFile::Default )</pre> to apply it.
+     * <pre>
+     * setView( KFile::Default )
+     * </pre>
+     * to apply it.
      *
+     * @see setView
      * @see #saveConfig
      */
     virtual void readConfig( KConfig *, const QString& group = QString::null );
