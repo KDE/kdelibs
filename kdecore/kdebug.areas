@@ -289,6 +289,10 @@
 20011        KDB (Connection)
 20012        KDB (plugin)
 
+
+# Quanta
+24000        Quanta
+
 # kafka
 25000        Kafka (kafkapp)
 25001        Kafka (kafkaeditpart)
