@@ -309,7 +309,7 @@ private:
   QPtrList<KPropsDlgPlugin> m_pageList;
 
 private slots:
-  void slotStatResult( KIO::Job * job );
+  void slotStatResult( KIO::Job * ); // No longer used
 protected:
   virtual void virtual_hook( int id, void* data );
 private:
@@ -536,59 +536,6 @@ private:
   KFilePermissionsPropsPluginPrivate *d;
 };
 
-/**
- * Used to edit the files containing
- * [Desktop Entry]
- * Type=Application
- *
- * Such files are used to represent a program in kicker and konqueror.
- * @internal
- */
-class KExecPropsPlugin : public KPropsDlgPlugin
-{
-  Q_OBJECT
-public:
-  /**
-   * Constructor
-   */
-  KExecPropsPlugin( KPropertiesDialog *_props );
-  virtual ~KExecPropsPlugin();
-
-  virtual void applyChanges();
-
-  static bool supports( KFileItemList _items );
-
-public slots:
-  void slotBrowseExec();
-
-private slots:
-  void enableCheckedEdit();
-  void enableSuidEdit();
-
-private:
-
-    QLabel *terminalLabel;
-    QLabel *suidLabel;
-    KLineEdit *execEdit;
-    QCheckBox *terminalCheck;
-    QCheckBox *suidCheck;
-    KLineEdit *terminalEdit;
-    KLineEdit *suidEdit;
-    KLineEdit *swallowExecEdit;
-    KLineEdit *swallowTitleEdit;
-    QButton *execBrowse;
-
-    QString execStr;
-    QString swallowExecStr;
-    QString swallowTitleStr;
-    QString termOptionsStr;
-    bool termBool;
-    bool suidBool;
-    QString suidUserStr;
-
-    class KExecPropsPluginPrivate;
-    KExecPropsPluginPrivate *d;
-};
 
 /**
  * Used to edit the files containing
@@ -626,49 +573,6 @@ private:
   KURLPropsPluginPrivate *d;
 };
 
-/**
- * Used to edit the files containing
- * [Desktop Entry]
- * Type=Application
- *
- * Such files are used to represent a program in kicker and konqueror.
- * @internal
- */
-class KApplicationPropsPlugin : public KPropsDlgPlugin
-{
-  Q_OBJECT
-public:
-  /**
-   * Constructor
-   */
-  KApplicationPropsPlugin( KPropertiesDialog *_props );
-  virtual ~KApplicationPropsPlugin();
-
-  virtual void applyChanges();
-
-  static bool supports( KFileItemList _items );
-
-public slots:
-  void slotDelExtension();
-  void slotAddExtension();
-
-private slots:
-  void updateButton();
-
-private:
-  void addMimeType( const QString & name );
-
-  QLineEdit *commentEdit;
-  QLineEdit *genNameEdit;
-  QLineEdit *nameEdit;
-  QListBox  *extensionsList;
-  QListBox  *availableExtensionsList;
-  QPushButton *addExtensionButton;
-  QPushButton *delExtensionButton;
-
-  class KApplicationPropsPluginPrivate;
-  KApplicationPropsPluginPrivate *d;
-};
 
 /**
  * Used to edit the files containing
@@ -738,6 +642,155 @@ private:
 
   class KDevicePropsPluginPrivate;
   KDevicePropsPluginPrivate *d;
+};
+
+class KPropertiesDesktopBase;
+
+/**
+ * Used to edit the files containing
+ * [Desktop Entry]
+ * Type=Application
+ *
+ * Such files are used to represent a program in kicker and konqueror.
+ * @internal
+ */
+class KDesktopPropsPlugin : public KPropsDlgPlugin
+{
+  Q_OBJECT
+public:
+  /**
+   * Constructor
+   */
+  KDesktopPropsPlugin( KPropertiesDialog *_props );
+  virtual ~KDesktopPropsPlugin();
+
+  virtual void applyChanges();
+
+  static bool supports( KFileItemList _items );
+
+public slots:
+  void slotAddFiletype();
+  void slotDelFiletype();
+  void slotBrowseExec();
+  void slotAdvanced();
+  void slotSelectMimetype();
+
+private:
+  void checkCommandChanged();
+
+private:
+  KPropertiesDesktopBase* w;
+
+  QString m_origCommandStr;
+  QStringList m_serviceTypes;
+  QString m_terminalOptionStr;
+  QString m_suidUserStr;
+  QString m_dcopServiceType;
+  bool m_terminalBool;
+  bool m_terminalCloseBool;
+  bool m_suidBool;
+  bool m_startupBool;
+
+  class KDesktopPropsPluginPrivate;
+  KDesktopPropsPluginPrivate *d;
+};
+
+/**
+ * Used to edit the files containing
+ * [Desktop Entry]
+ * Type=Application
+ *
+ * Such files are used to represent a program in kicker and konqueror.
+ * @internal
+ */
+class KExecPropsPlugin : public KPropsDlgPlugin
+{
+  Q_OBJECT
+public:
+  /**
+   * Constructor
+   */
+  KExecPropsPlugin( KPropertiesDialog *_props );
+  virtual ~KExecPropsPlugin();
+
+  virtual void applyChanges();
+
+  static bool supports( KFileItemList _items );
+
+public slots:
+  void slotBrowseExec();
+
+private slots:
+  void enableCheckedEdit();
+  void enableSuidEdit();
+
+private:
+
+    QLabel *terminalLabel;
+    QLabel *suidLabel;
+    KLineEdit *execEdit;
+    QCheckBox *terminalCheck;
+    QCheckBox *suidCheck;
+    KLineEdit *terminalEdit;
+    KLineEdit *suidEdit;
+    KLineEdit *swallowExecEdit;
+    KLineEdit *swallowTitleEdit;
+    QButton *execBrowse;
+
+    QString execStr;
+    QString swallowExecStr;
+    QString swallowTitleStr;
+    QString termOptionsStr;
+    bool termBool;
+    bool suidBool;
+    QString suidUserStr;
+
+    class KExecPropsPluginPrivate;
+    KExecPropsPluginPrivate *d;
+};
+
+/**
+ * Used to edit the files containing
+ * [Desktop Entry]
+ * Type=Application
+ *
+ * Such files are used to represent a program in kicker and konqueror.
+ * @internal
+ */
+class KApplicationPropsPlugin : public KPropsDlgPlugin
+{
+  Q_OBJECT
+public:
+  /**
+   * Constructor
+   */
+  KApplicationPropsPlugin( KPropertiesDialog *_props );
+  virtual ~KApplicationPropsPlugin();
+
+  virtual void applyChanges();
+
+  static bool supports( KFileItemList _items );
+
+public slots:
+  void slotDelExtension();
+  void slotAddExtension();
+
+private slots:
+  void updateButton();
+
+private:
+  void addMimeType( const QString & name );
+
+  QLineEdit *commentEdit;
+  QLineEdit *genNameEdit;
+  QLineEdit *nameEdit;
+  QListBox  *extensionsList;
+  QListBox  *availableExtensionsList;
+  QPushButton *addExtensionButton;
+  QPushButton *delExtensionButton;
+
+  class KApplicationPropsPluginPrivate;
+  KApplicationPropsPluginPrivate *d;
 };
 
 #endif

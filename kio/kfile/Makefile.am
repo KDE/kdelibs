@@ -43,18 +43,20 @@ noinst_HEADERS = config-kfile.h krecentdirs.h kmetaprops.h \
 
 libkfile_la_SOURCES = \
 	kfilefiltercombo.cpp \
-	kfileview.cpp kfileiconview.cpp  \
+	kfileview.cpp kfileiconview.cpp \
 	krecentdocument.cpp kfiledialog.cpp kdiroperator.cpp \
 	kfiledetailview.cpp kcombiview.cpp kurlrequester.cpp \
 	kfilepreview.cpp kurlcombobox.cpp kurlrequesterdlg.cpp \
 	kopenwith.cpp kpropertiesdialog.cpp kicondialog.cpp kdirsize.cpp \
 	krecentdirs.cpp kdiskfreesp.cpp kimagefilepreview.cpp kfilesharedlg.cpp \
-	kurlbar.cpp kmetaprops.cpp\
+	kurlbar.cpp kmetaprops.cpp \
 	kfiletreeview.cpp kfiletreeviewitem.cpp kfiletreebranch.cpp \
 	kdirselectdialog.cpp kfilebookmarkhandler.cpp \
 	kfilemetainfowidget.cpp kcustommenueditor.cpp knotifywidgetbase.ui \
 	knotifydialog.cpp kfilespeedbar.cpp kpreviewwidgetbase.cpp \
-	kfilemetapreview.cpp
+	kfilemetapreview.cpp kpropertiesdesktopbase.ui \
+	kpropertiesdesktopadvbase.ui kpropertiesmimetypebase.ui
+
 libkfile_la_COMPILE_FIRST = ../kio/kdirnotify_stub.h
 
 EXTRA_DIST = NOTES
