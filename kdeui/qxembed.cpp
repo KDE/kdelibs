@@ -512,6 +512,12 @@ QXEmbed::~QXEmbed()
         XFlush( qt_xdisplay() );
      }
   window = 0;
+  
+  Window focus;
+  int revert;
+  XGetInputFocus( qt_xdisplay(), &focus, &revert );
+  if( focus == d->focusProxy->winId())
+      XSetInputFocus( qt_xdisplay(), topLevelWidget()->winId(), RevertToParent, qt_x_time );
 
   delete d;
 }
