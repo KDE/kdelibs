@@ -9,7 +9,7 @@ if test "$ac_use_cups" = "yes"; then
   ac_LDFLAGS_save="$LDFLAGS"
   LDFLAGS="$LDFLAGS $all_libraries"
   ac_cups_libs=0
-  AC_CHECK_LIB(cups,cupsServer,[ac_cups_libs=1],[ac_cups_libs=0],$LIBDL)
+  AC_CHECK_LIB(cups,cupsServer,[ac_cups_libs=1],[ac_cups_libs=0],$LIBDL $LIBSOCKET)
   if test "$ac_cups_libs" = "0"; then
     AC_MSG_WARN(CUPS library not found. CUPS support disabled)
     ac_use_cups="no"
@@ -25,7 +25,7 @@ if test "$ac_use_cups" = "yes"; then
 fi
 if test "$ac_use_cups" = "yes"; then
   CUPSSUBDIR="cups"
-  LIB_CUPS="-lcups"
+  LIB_CUPS="-lcups $LIBDL $LIBSOCKET"
   AC_DEFINE(HAVE_CUPS, 1, [Defines if you have CUPS (Common UNIX Printing System)])
 fi
 AC_SUBST(CUPSSUBDIR)
