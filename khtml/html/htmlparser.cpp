@@ -282,7 +282,7 @@ void KHTMLParser::reset()
     end = false;
     isindex = 0;
     flat = false;
-    
+
     discard_until = 0;
 }
 
@@ -413,24 +413,24 @@ bool KHTMLParser::insertNode(NodeImpl *n)
         HTMLElementImpl *e;
         bool handled = false;
 
-        
+
         // things that appear in tables before <tr> or <td> must be
         // moved before the table. lets test this first...
         if(current->id() == ID_TABLE)
         {
             // scripts, styles, etc are handled later, for now...
-            if(id!=ID_TD && id!=ID_TR && id!=ID_TH && id!=ID_SCRIPT && 
+            if(id!=ID_TD && id!=ID_TR && id!=ID_TH && id!=ID_SCRIPT &&
                     id!=ID_STYLE && id!=ID_MAP && id!=ID_FORM)
             {
                 NodeImpl *node = current;
                 NodeImpl *parent = node->parentNode();
-                
-                if (id == ID_TABLE) // <table><table> switches order, but 
+
+                if (id == ID_TABLE) // <table><table> switches order, but
                                     // but also closes the first table. weird...
                 {
                     popBlock(ID_TABLE);
                 }
-                                
+
                 int exceptioncode = 0;
                 parent->insertBefore(n, node, exceptioncode );
                 if ( exceptioncode ) {
@@ -438,8 +438,8 @@ bool KHTMLParser::insertNode(NodeImpl *n)
                     kdDebug( 6035 ) << "adding element before table failed!!!!" << endl;
     #endif
                     return false;
-                }                
-                
+                }
+
                 if(tagPriority[id] != 0 && id != ID_FORM && id != ID_INPUT ) {
                     pushBlock(id, tagPriority[id]);
                     current = n;
@@ -449,8 +449,8 @@ bool KHTMLParser::insertNode(NodeImpl *n)
                     n->renderer()->close();
                 return true;
             }
-        }        
-        
+        }
+
         // switch according to the element to insert
         switch(id)
         {
@@ -525,9 +525,12 @@ bool KHTMLParser::insertNode(NodeImpl *n)
             e = new HTMLUListElementImpl(document);
             e->addCSSProperty(CSS_PROP_MARGIN_LEFT, DOMString("0pt") );
             e->addCSSProperty(CSS_PROP_LIST_STYLE_POSITION, DOMString("inside") );
-            insertNode(e);
-            insertNode(n);
-            return true;
+            // only try to insert <LI> when <UL> succeeds.
+            // helps for <html><head><ul><li></html>
+            if(insertNode(e)) {
+                insertNode(n);
+                return true;
+            }
             break;
 
             // the following is a hack to move non rendered elements
@@ -1319,16 +1322,16 @@ NodeImpl *KHTMLParser::handleIsindex( Token *t )
     n->addChild( child );
     child = new HTMLHRElementImpl( document );
     n->addChild( child );
-    
+
     return n;
 }
 
 void KHTMLParser::startBody()
 {
     if(inBody) return;
-    
+
     inBody = true;
-    
+
     if( isindex ) {
 	flat = true; // don't decend into this node
 	insertNode( isindex );
