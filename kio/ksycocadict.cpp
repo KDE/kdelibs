@@ -56,10 +56,6 @@ KSycocaDict::KSycocaDict(QDataStream *str, int offset)
    (*str) >> mHashTableSize;
    (*str) >> mHashList;
    mOffset = str->device()->at(); // Start of hashtable
-   if (mHashTableSize == 0)
-   {
-      kdWarning(7011) << QString("KSycocaDict : mHashTableSize is 0 !") << endl;
-   }
 }
 
 KSycocaDict::~KSycocaDict()
