@@ -835,10 +835,10 @@ void KHTMLPart::overURL( const QString &url )
     QString decodedName( u.filename( true ) );
 	
     struct stat buff;
-    stat( decodedPath, &buff );
+    stat( decodedPath.latin1(), &buff );
 
     struct stat lbuff;
-    lstat( decodedPath, &lbuff );
+    lstat( decodedPath.latin1(), &lbuff );
 
     QString text = u.url();
     QString text2 = text;
@@ -852,7 +852,7 @@ void KHTMLPart::overURL( const QString &url )
 	tmp = i18n("%1 (Link)").arg(com);
       char buff_two[1024];
       text += " -> ";
-      int n = readlink ( decodedPath, buff_two, 1022);
+      int n = readlink ( decodedPath.latin1(), buff_two, 1022);
       if (n == -1)
       {
         text2 += "  ";
@@ -906,8 +906,9 @@ void KHTMLPart::urlSelected( const QString &url, int button, const QString &_tar
   KURL u( url );
 
   // Security
-  if ( ::strcmp( u.protocol(), "cgi" ) == 0 &&
-       ::strcmp( m_url.protocol(), "file" ) != 0 && ::strcmp( m_url.protocol(), "cgi" ) != 0 )
+  if ( ::strcmp( u.protocol().latin1(), "cgi" ) == 0 &&
+       ::strcmp( m_url.protocol().latin1(), "file" ) != 0 &&
+       ::strcmp( m_url.protocol().latin1(), "cgi" ) != 0 )
   {
     KMessageBox::error( 0,
 			i18n( "This page is untrusted\nbut it contains a link to your local file system."),
@@ -1129,7 +1130,7 @@ KParts::ReadOnlyPart *KHTMLPart::createFrame( QWidget *parentWidget, const char 
 
   KService::Ptr service = *offers.begin();
 
-  KLibFactory *factory = KLibLoader::self()->factory( service->library() );
+  KLibFactory *factory = KLibLoader::self()->factory( service->library().latin1() );
 
   if ( !factory )
     return 0L;

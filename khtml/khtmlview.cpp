@@ -531,7 +531,7 @@ void KHTMLView::viewportMouseReleaseEvent( QMouseEvent * _mouse )
 	    m_strSelectedURL = u.ref();
 	    pressedTarget = u.host();
 	}	
-	printf("m_strSelectedURL='%s' target=%s\n",m_strSelectedURL.data(), pressedTarget.latin1());
+	printf("m_strSelectedURL='%s' target=%s\n",m_strSelectedURL.latin1(), pressedTarget.latin1());
 
 	m_part->urlSelected( m_strSelectedURL, _mouse->button(), pressedTarget );
    }

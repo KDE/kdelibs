@@ -65,7 +65,8 @@ void RenderImage::setPixmap( const QPixmap &p )
     else
     {
     	pixmap = p;
-    	repaintObject(this, 0, 0);
+    	//repaintObject(this, 0, 0);
+	repaintRectangle(0, 0, m_width, m_height);
     }
 }
 
