@@ -877,6 +877,7 @@ void KStandardDirs::addKDEDefaults()
     QString dir = QString("%1tmp-%2/").arg(localKdeDir).arg(hostname);
     addResourceDir("tmp", dir);
 
+    addResourceDir("home", QDir::homeDirPath());
 }
 
 void KStandardDirs::checkConfig() const
