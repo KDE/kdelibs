@@ -29,7 +29,7 @@
 #include <qfont.h>
 
 KInstance::KInstance( const QCString& name)
-  : _name( name ), _aboutData( 0 )
+  : _name( name ), _aboutData( new KAboutData( name, "", 0 ) )
 {
     ASSERT(!name.isEmpty());
     if (!KGlobal::_instance)
@@ -56,7 +56,7 @@ KInstance::KInstance( const KAboutData * aboutData )
 }
 
 KInstance::~KInstance()
-{	
+{
     delete _iconLoader;
     _iconLoader = 0;
     delete _config;
