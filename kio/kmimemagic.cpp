@@ -1962,7 +1962,7 @@ KMimeMagic::KMimeMagic(const QString & _configfile)
 	result = apprentice();
 	if (result == -1)
 		return;
-#if (MIME_MAGIC_DEBUG > 1)
+#if (MIME_MAGIC_DEBUG_TABLE > 1)
 	test_table();
 #endif
 }
@@ -2003,7 +2003,7 @@ KMimeMagic::mergeConfig(const QString & _configfile)
 		conf->magicfile = old_magicfile;
 		return false;
 	}
-#if (MIME_MAGIC_DEBUG > 1)
+#if (MIME_MAGIC_DEBUG_TABLE > 1)
 	test_table();
 #endif
 	return true;
@@ -2018,7 +2018,7 @@ KMimeMagic::mergeBufConfig(char * _configbuf)
 		result = buff_apprentice(_configbuf);
 		if (result == -1)
 			return false;
-#if (MIME_MAGIC_DEBUG > 1)
+#if (MIME_MAGIC_DEBUG_TABLE > 1)
 		test_table();
 #endif
 		return true;
