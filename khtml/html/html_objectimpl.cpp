@@ -101,8 +101,13 @@ void HTMLObjectBaseElementImpl::recalcStyle( StyleChange ch )
 
 void HTMLObjectBaseElementImpl::renderAlternative()
 {
-    // an unbelievable hack. FIXME!!
+    if ( m_renderAlternative ) return;
+    QTimer::singleShot( 0, this, SLOT( slotRenderAlternative() ) );
+}
 
+void HTMLObjectBaseElementImpl::slotRenderAlternative()
+{
+    // an unbelievable hack. FIXME!!
     if ( m_renderAlternative ) return;
 
     // ### there can be a m_render if this is called from our attach indirectly
