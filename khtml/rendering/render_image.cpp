@@ -114,7 +114,7 @@ void RenderImage::setPixmap( const QPixmap &p, const QRect& r, CachedImage *o)
             setIntrinsicHeight( ih );
             iwchanged = true;
         }
-        if ( element()->id() == ID_OBJECT ) {
+        if ( element() && element()->id() == ID_OBJECT ) {
             static_cast<HTMLObjectElementImpl*>(  element() )->renderAlternative();
             return;
         }
