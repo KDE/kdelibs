@@ -670,10 +670,13 @@ void KDirListerCache::FilesRemoved( const KURL::List &fileList )
 
 void KDirListerCache::FilesChanged( const KURL::List &fileList )
 {
+  KURL::List dirsToUpdate;
   kdDebug(7004) << k_funcinfo << "only half implemented" << endl;
   KURL::List::ConstIterator it = fileList.begin();
   for ( ; it != fileList.end() ; ++it )
   {
+    if ( ( *it ).isLocalFile() )
+    {
       kdDebug(7004) << "KDirListerCache::FilesChanged " << *it << endl;
       KFileItem* fileitem = findByURL( 0, *it );
       if ( fileitem )
@@ -684,7 +687,19 @@ void KDirListerCache::FilesChanged( const KURL::List &fileList )
       }
       else
           kdDebug(7004) << "item not found" << endl;
+    } else {
+      // For remote files, refresh() won't be able to figure out the new information.
+      // Let's update the dir.
+      KURL dir( *it );
+      dir.setPath( dir.directory(-1) );
+      if ( dirsToUpdate.find( dir ) == dirsToUpdate.end() )
+        dirsToUpdate.prepend( dir );
+    }
   }
+
+  KURL::List::ConstIterator itdir = dirsToUpdate.begin();
+  for ( ; itdir != dirsToUpdate.end() ; ++itdir )
+    updateDirectory( *itdir );
   // ## TODO problems with current jobs listing/updating that dir
   // ( see kde-2.2.2's kdirlister )
 }
