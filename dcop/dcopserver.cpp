@@ -293,7 +293,7 @@ DCOPServer::DCOPServer()
   if (( majorOpcode = IceRegisterForProtocolReply ("DCOP",
 					      DCOPVendorString, DCOPReleaseString,
 					      1, DCOPVersions,
-					      1, DCOPAuthNames, DCOPServerAuthProcs, HostBasedAuthProc,
+					      1, (char **) DCOPAuthNames, DCOPServerAuthProcs, HostBasedAuthProc,
 						 DCOPServerProtocolSetupProc,
 						 NULL,	/* IceProtocolActivateProc - we don't care about
 							   when the Protocol Reply is sent, because the
