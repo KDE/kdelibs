@@ -31,7 +31,8 @@ namespace KParts
 class Part;
 
 /**
- * A generic factory object to create a Part. @see_also KLibFactory.
+ * A generic factory object to create a Part.
+ * @see KLibFactory.
  */
 class Factory : public KLibFactory
 {

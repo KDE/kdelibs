@@ -252,7 +252,8 @@ signals:
    * Ask the hosting browser to open a new window for the given @url.
    *
    * The @p args argument is optional additionnal information for the
-   * browser, @see KParts::URLArgs
+   * browser,
+   * @see KParts::URLArgs
    */
   void createNewWindow( const KURL &url, const KParts::URLArgs &args = KParts::URLArgs() );
 
