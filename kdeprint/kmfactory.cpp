@@ -98,8 +98,8 @@ KMFactory::KMFactory()
 	KGlobal::iconLoader()->addAppDir("kdeprint");
 
 	// create DCOP signal connection
-	connectDCOPSignal(0, 0, "pluginChanged(pid_t)", "pluginChanged(pid_t)", false);
-	connectDCOPSignal(0, 0, "configChanged()", "configChanged()", false);
+	connectDCOPSignal(0, 0, "pluginChanged(pid_t)", "slot_pluginChanged(pid_t)", false);
+	connectDCOPSignal(0, 0, "configChanged()", "slot_configChanged()", false);
 }
 
 KMFactory::~KMFactory()
@@ -261,19 +261,7 @@ void KMFactory::reload(const QString& syst, bool saveSyst)
 		conf->sync();
 
 		// notify all other apps using DCOP signal
-		DCOPClient	*client = kapp->dcopClient();
-		if (client)
-		{
-			// init DCOP
-			if (!client->isAttached())
-				client->attach();
-
-			// emit DCOP signal
-			QByteArray	params;
-			QDataStream	stream(params, IO_WriteOnly);
-			stream << getpid();
-			emitDCOPSignal("pluginChanged(pid_t)", params);
-		}
+		emit pluginChanged(getpid());
 	}
 
 	// reload the factory
@@ -357,7 +345,7 @@ QString KMFactory::autoDetect()
 	return (pluginIndex == -1 ? QString::fromLatin1("lpdunix") : plugins[pluginIndex].name);
 }
 
-void KMFactory::pluginChanged(pid_t pid)
+void KMFactory::slot_pluginChanged(pid_t pid)
 {
 	// only do something if the notification comes from another process
 	if (pid != getpid())
@@ -372,7 +360,7 @@ void KMFactory::pluginChanged(pid_t pid)
 	}
 }
 
-void KMFactory::configChanged()
+void KMFactory::slot_configChanged()
 {
 	kdDebug() << "KMFactory (" << getpid() << ") receiving DCOP signal configChanged()" << endl;
 	// unload/reload config object (make it non dirty to
@@ -392,8 +380,7 @@ void KMFactory::saveConfig()
 	KConfig	*conf = printConfig();
 	conf->sync();
 	kdDebug() << "KMFactory (" << getpid() << ") emitting DCOP signal configChanged()" << endl;
-	QByteArray	params;
-	emitDCOPSignal("configChanged()", params);
+	emit configChanged();
 	// normally, the self application should also receive the signal,
 	// anyway the config object has been updated "locally", so ne real
 	// need to reload the config file.

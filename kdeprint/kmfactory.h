@@ -92,8 +92,12 @@ public:
 	Settings* settings() const	{ return m_settings; }
 
 k_dcop:
-	ASYNC pluginChanged(pid_t);
-	ASYNC configChanged();
+	ASYNC slot_pluginChanged(pid_t);
+	ASYNC slot_configChanged();
+
+k_dcop_signals:
+	void pluginChanged(pid_t);
+	void configChanged();
 
 private:
 	void createManager();
