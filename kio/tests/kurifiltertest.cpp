@@ -78,8 +78,8 @@ int main(int argc, char **argv) {
     filter( "smb:/", "smb:/", "kshorturifilter" ); // use specific filter.
 
     // IKWS test
-    filter( "KDE", "http://navigation.realnames.com/resolver.dll?realname=KDE&charset=utf-8&providerid=180" );
-    filter( "GNOME", "http://navigation.realnames.com/resolver.dll?realname=GNOME&charset=utf-8&providerid=180" );
+    filter( "KDE", "http://navigation.realnames.com/resolver.dll?action=navigation&realname=KDE&charset=utf-8&providerid=180&fallbackuri=http%3A//google.com/search%3Fq%3D%5C1" );
+    filter( "GNOME", "http://navigation.realnames.com/resolver.dll?action=navigation&realname=GNOME&charset=utf-8&providerid=180&fallbackuri=http%3A//google.com/search%3Fq%3D%5C1" );
 
     // Executable tests
     filter( "kppp", "kppp", minicliFilters );
