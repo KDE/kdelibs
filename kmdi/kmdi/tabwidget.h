@@ -96,6 +96,7 @@ class TabWidget : public KTabWidget
 
   private:
     void maybeShow();
+    void setCornerWidgetVisibility(bool visible);
 
   private:
     KMDI::TabWidgetVisibility m_visibility;

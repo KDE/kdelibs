@@ -224,31 +224,47 @@ void TabWidget::maybeShow()
     case KMDI::AlwaysShowTabs:
       tabBar()->show();
 
-      if (cornerWidget())
-      {
-        if (count() == 0)
-          cornerWidget()->hide();
-        else
-          cornerWidget()->show();
-      }
+      // show/hide corner widgets
+      if (count() == 0)
+        setCornerWidgetVisibility(false);
+      else
+        setCornerWidgetVisibility(true);
+
       break;
 
     case KMDI::ShowWhenMoreThanOneTab:
       if (count()<2) tabBar()->hide();
       else tabBar()->show();
 
-      if (cornerWidget())
-      {
-        if (count() < 2)
-          cornerWidget()->hide();
-        else
-          cornerWidget()->show();
-      }
+      // show/hide corner widgets
+      if (count() < 2)
+        setCornerWidgetVisibility(false);
+      else
+        setCornerWidgetVisibility(true);
+
       break;
 
     case KMDI::NeverShowTabs:
       tabBar()->hide();
       break;
+  }
+}
+
+void TabWidget::setCornerWidgetVisibility(bool visible) {
+  // there are two corner widgets: on TopLeft and on TopTight!
+
+  if (cornerWidget(Qt::TopLeft) ) {
+    if (visible)
+      cornerWidget(Qt::TopLeft)->show();
+    else
+      cornerWidget(Qt::TopLeft)->hide();
+  }
+
+  if (cornerWidget(Qt::TopRight) ) {
+    if (visible)
+      cornerWidget(Qt::TopRight)->show();
+    else
+      cornerWidget(Qt::TopRight)->hide();
   }
 }
 
