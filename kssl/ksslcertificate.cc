@@ -196,12 +196,13 @@ int n, i;
         rc = i18n("Signature Algorithm: ");
         rc += (i == NID_undef)?i18n("Unknown"):d->kossl->OBJ_nid2ln(i);
 
-        rc += i18n("\nSignature Contents:");
+	rc += "\n";
+        rc += i18n("Signature Contents:");
         n = d->m_cert->signature->length;
         s = (char *)d->m_cert->signature->data;
         for (i = 0; i < n; i++) {
            if (i%20 != 0) rc += ":";
-           else rc += "\n       ";
+           else rc += "\n";
            rc.append(hv[(s[i]&0xf0)>>4]);
            rc.append(hv[s[i]&0x0f]);
         }
@@ -279,7 +280,7 @@ char *x = NULL;
       rc = rc.arg(strlen(x)*4);
       for (unsigned int i = 0; i < strlen(x); i++) {
         if (i%40 != 0 && i%2 == 0) rc += ":";
-        else if (i%40 == 0) rc += "\n        ";
+        else if (i%40 == 0) rc += "\n";
         rc += x[i];
       }
       rc += "\n";
@@ -299,7 +300,7 @@ char *x = NULL;
       rc = rc.arg(strlen(x)*4);  // hack - this may not be always accurate
       for (unsigned int i = 0; i < strlen(x); i++) {
         if (i%40 != 0 && i%2 == 0) rc += ":";
-        else if (i%40 == 0) rc += "\n        ";
+        else if (i%40 == 0) rc += "\n";
         rc += x[i];
       }
       rc += "\n";
@@ -309,7 +310,7 @@ char *x = NULL;
       rc += i18n("160 bit Prime Factor: ");
       for (unsigned int i = 0; i < strlen(x); i++) {
         if (i%40 != 0 && i%2 == 0) rc += ":";
-        else if (i%40 == 0) rc += "\n        ";
+        else if (i%40 == 0) rc += "\n";
         rc += x[i];
       }
       rc += "\n";
@@ -319,7 +320,7 @@ char *x = NULL;
       rc += QString("g: ");
       for (unsigned int i = 0; i < strlen(x); i++) {
         if (i%40 != 0 && i%2 == 0) rc += ":";
-        else if (i%40 == 0) rc += "\n        ";
+        else if (i%40 == 0) rc += "\n";
         rc += x[i];
       }
       rc += "\n";
@@ -329,7 +330,7 @@ char *x = NULL;
       rc += i18n("Public Key: ");
       for (unsigned int i = 0; i < strlen(x); i++) {
         if (i%40 != 0 && i%2 == 0) rc += ":";
-        else if (i%40 == 0) rc += "\n        ";
+        else if (i%40 == 0) rc += "\n";
         rc += x[i];
       }
       rc += "\n";
