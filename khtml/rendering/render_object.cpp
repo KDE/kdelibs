@@ -1600,7 +1600,7 @@ short RenderObject::getVerticalPosition( bool firstLine ) const
         } else if ( va == LENGTH ) {
             vpos = -style()->verticalAlignLength().width( lineHeight( firstLine ) );
         } else {
-            bool checkParent = parent()->isInline() && parent()->isReplacedBlock();
+            bool checkParent = parent()->isInline() && !parent()->isReplacedBlock();
             vpos = checkParent ? parent()->verticalPositionHint( firstLine ) : 0;
             // don't allow elements nested inside text-top to have a different valignment.
             if ( va == BASELINE )
@@ -1643,7 +1643,8 @@ short RenderObject::lineHeight( bool firstLine ) const
     // the base class.  If we're being queried as though we're the root line
     // box, then the fact that we're an inline-block is irrelevant, and we behave
     // just like a block.
-    if (isReplaced())
+
+    if (isReplaced() && (!isInlineBlockOrInlineTable() || layouted()))
         return height()+marginTop()+marginBottom();
 
     Length lh;
@@ -1672,7 +1673,8 @@ short RenderObject::baselinePosition( bool firstLine ) const
     // the base class.  If we're being queried as though we're the root line
     // box, then the fact that we're an inline-block is irrelevant, and we behave
     // just like a block.
-    if (isReplaced())
+
+    if (isReplaced() && (!isInlineBlockOrInlineTable() || layouted()))
         return height()+marginTop()+marginBottom();
 
     const QFontMetrics &fm = fontMetrics( firstLine );

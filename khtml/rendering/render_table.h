@@ -113,8 +113,6 @@ public:
 
     virtual void setCellWidths( );
 
-    virtual void position(InlineBox *, int, int, bool) {}
-
     virtual void calcWidth();
 
     virtual int borderTopExtra();

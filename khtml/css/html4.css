@@ -181,7 +181,6 @@ H6 {
 TABLE {
 	display: table;
 	border-collapse: separate;
-	vertical-align: middle;
 	text-align: -khtml-auto;
 	border-spacing: 2px;
         -khtml-flow-mode: -khtml-around-floats;
@@ -195,17 +194,19 @@ TABLE[align="center"] {
 THEAD {
 	display: table-header-group;
         border-color: inherit;
+	vertical-align: middle;
 }
 
 TBODY {
 	display: table-row-group;
-	vertical-align: inherit;
         border-color: inherit;
+	vertical-align: middle;
 }
 
 TFOOT {
 	display: table-footer-group;
         border-color: inherit;
+	vertical-align: middle;
 }
 
 COL {
