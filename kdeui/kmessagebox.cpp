@@ -68,7 +68,7 @@ KMessageBox::questionYesNoList(QWidget *parent, const QString &text,
 {
     KDialogBase dialog(caption.isEmpty() ? i18n("Question") : caption,
                        KDialogBase::Yes | KDialogBase::No,
-                       KDialogBase::Yes, KDialogBase::Yes,
+                       KDialogBase::Yes, KDialogBase::No,
                        parent, "questionYesNo", true, true,
                        buttonYes, buttonNo);
 
