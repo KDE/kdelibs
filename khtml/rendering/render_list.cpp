@@ -186,8 +186,9 @@ void RenderListItem::layout( )
         //kdDebug(0) << "empty item" << endl;
         return;
     }
+    if (m_marker && !m_marker->layouted())
+        m_marker->layout();
     RenderFlow::layout();
-    assert(!m_marker || m_marker->layouted());
 }
 
 // this function checks if there is other rendered contents in the list item than a marker. If not, the whole
