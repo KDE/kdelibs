@@ -1,0 +1,6 @@
+2000-12-10  Harri Porten  <harri@trolltech.com>
+
+	* lexer.cpp: parsing != was broken, added \v escape in strings
+	* nodes.cpp: implemented <<=, >>=, >>>=, &=, ^=, |= and %=
+
+

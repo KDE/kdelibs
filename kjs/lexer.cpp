@@ -531,7 +531,7 @@ int Lexer::matchPunctuator(unsigned short c1, unsigned short c2,
   } else if (c1 == '%' && c2 == '=') {
     shift(2);
     return MODEQUAL;
-  } else if (c1 == '<' && c2 == '=') {
+  } else if (c1 == '|' && c2 == '=') {
     shift(2);
     return OREQUAL;
   } else if (c1 == '<' && c2 == '<') {
@@ -591,6 +591,9 @@ unsigned short Lexer::singleEscape(unsigned short c) const
     break;
   case 'n':
     return 0x0A;
+    break;
+  case 'v':
+    return 0x0B;
     break;
   case 'f':
     return 0x0C;

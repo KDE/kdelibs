@@ -472,6 +472,8 @@ KJSO AssignNode::evaluate()
     KJSO v1 = l.getValue();
     e = expr->evaluate();
     KJSO v2 = e.getValue();
+    int i1 = v1.toInt32();
+    int i2 = v2.toInt32();
     switch (oper) {
     case OpMultEq:
       v = mult(v1, v2, '*');
@@ -485,7 +487,28 @@ KJSO AssignNode::evaluate()
     case OpMinusEq:
       v = add(v1, v2, '-');
       break;
-      /* TODO */
+    case OpLShift:
+      v = Number(i1 <<= i2);
+      break;
+    case OpRShift:
+      v = Number(i1 >>= i2);
+      break;
+    case OpURShift:
+      i1 = v1.toUInt32();
+      v = Number(i1 >>= i2);
+      break;
+    case OpAndEq:
+      v = Number(i1 &= i2);
+      break;
+    case OpXOrEq:
+      v = Number(i1 ^= i2);
+      break;
+    case OpOrEq:
+      v = Number(i1 |= i2);
+      break;
+    case OpModEq:
+      v = Number(i1 %= i2);
+      break;
     default:
       v = Undefined();
     }
