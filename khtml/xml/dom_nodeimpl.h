@@ -138,17 +138,15 @@ public:
     struct MouseEvent
     {
         MouseEvent( int _button, MouseEventType _type,
-                    const DOMString &_url = DOMString(),
-                    NodeImpl *_innerNode = 0, long _offset = 0, bool _urlHandling = true )
+                    const DOMString &_url = DOMString(), NodeImpl *_innerNode = 0, bool _urlHandling = true )
             { button = _button; type = _type;
             url = _url;
-            innerNode = _innerNode; offset = _offset; urlHandling = _urlHandling; }
+            innerNode = _innerNode; urlHandling = _urlHandling; }
 
         int button;
         MouseEventType type;
         DOMString url; // url under mouse or empty
         NodeImpl *innerNode;
-        long offset;
         bool urlHandling; // specify whether the part should handle the url or not
         int nodeAbsX, nodeAbsY; // temporary hack for selection stuff
     };

@@ -346,41 +346,14 @@ TextSlave * RenderText::findTextSlave( int offset, int &pos )
     return s;
 }
 
-bool RenderText::checkPoint(int _x, int _y, int _tx, int _ty, int &offset)
+bool RenderText::checkPoint(int _x, int _y, int _tx, int _ty)
 {
-    // #### TODO get rid of offset, we won't need it anymore now that
-    // selection is handled separately.
-
     TextSlave *s = m_lines.count() ? m_lines[0] : 0;
     int si = 0;
     while(s)
     {
         if( s->checkPoint(_x, _y, _tx, _ty) )
-        {
-// Disabled, we don't need this anymore, offset isn't used (we have checkSelectionPoint instead)
-#if 0
-            // now we need to get the exact position
-            int delta = _x - _tx - s->m_x;
-            int pos = 0;
-            while(pos < s->m_len)
-            {
-                // ### this will produce wrong results for RTL text!!!
-                int w = fm->width(*(s->m_text+pos));
-                int w2 = w/2;
-                w = w - w2;
-                delta -= w2;
-                if(delta <= 0) break;
-                pos++;
-                delta -= w;
-            }
-            if ( s->m_reversed )
-                return false; // Abort if RTL (TODO)
-            // ### only for visuallyOrdered !
-            offset = s->m_text - str->s + pos;
-            //kdDebug( 6040 ) << " Text  --> inside at position " << offset << endl;
-#endif
             return true;
-        }
         // ### this might be wrong, if combining chars are used ( eg arabic )
         s = si < (int)m_lines.count()-1 ? m_lines[++si] : 0;
     }

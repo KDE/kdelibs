@@ -318,9 +318,8 @@ bool TextImpl::mouseEvent( int _x, int _y,
     }
 
     int off = 0;
-    if( static_cast<RenderText *>(m_render)->checkPoint(_x, _y, _tx, _ty, off) )
+    if( static_cast<RenderText *>(m_render)->checkPoint(_x, _y, _tx, _ty) )
     {
-	ev->offset = off;
 	ev->innerNode = this;
         ev->nodeAbsX = _tx;
         ev->nodeAbsY = _ty;

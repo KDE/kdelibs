@@ -139,7 +139,7 @@ public:
 
     virtual void layout() {assert(false);}
 
-    bool checkPoint(int _x, int _y, int _tx, int _ty, int &off);
+    bool checkPoint(int _x, int _y, int _tx, int _ty);
 
     // Return -2 = before, -1 = after, 0 = inside the text, at @p offset
     virtual int checkSelectionPoint( int _x, int _y, int _tx, int _ty, int & offset );

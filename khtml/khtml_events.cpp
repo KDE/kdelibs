@@ -37,9 +37,9 @@ public:
 };
 
 MouseEvent::MouseEvent( const char *name, QMouseEvent *qmouseEvent, int x, int y, const DOM::DOMString &url,
-	                const DOM::Node &innerNode, long offset )
+	                const DOM::Node &innerNode )
 : KParts::Event( name ), m_qmouseEvent( qmouseEvent ), m_x( x ), m_y( y ),
-  m_url( url ), m_innerNode( innerNode ), m_offset( offset )
+  m_url( url ), m_innerNode( innerNode )
 {
   d = new MouseEventPrivate();
 }

@@ -31,7 +31,7 @@ class MouseEvent : public KParts::Event
 {
 public:
   MouseEvent( const char *name, QMouseEvent *qmouseEvent, int x, int y, const DOM::DOMString &url,
-		   const DOM::Node &innerNode, long offset );
+		   const DOM::Node &innerNode );
   virtual ~MouseEvent();
 
   QMouseEvent *qmouseEvent() const { return m_qmouseEvent; }
@@ -39,7 +39,6 @@ public:
   int y() const { return m_y; }
   DOM::DOMString url() const { return m_url; }
   DOM::Node innerNode() const { return m_innerNode; }
-  long offset() const { return m_offset; } // ## remove
 
   // Temporary, for text selection only. To be removed when findSelectionNode determines
   // this by itself.
@@ -59,7 +58,7 @@ private:
   int m_y;
   DOM::DOMString m_url;
   DOM::Node m_innerNode;
-  long m_offset;
+  long m_offset; // ##remove
   class MouseEventPrivate;
   MouseEventPrivate *d;
 };
@@ -68,8 +67,8 @@ class MousePressEvent : public MouseEvent
 {
 public:
   MousePressEvent( QMouseEvent *mouseEvent, int x, int y, const DOM::DOMString &url,
-		   const DOM::Node &innerNode, long offset )
-  : MouseEvent( s_strMousePressEvent, mouseEvent, x, y, url, innerNode, offset )
+		   const DOM::Node &innerNode )
+  : MouseEvent( s_strMousePressEvent, mouseEvent, x, y, url, innerNode )
   {}
 
   static bool test( const QEvent *event ) { return KParts::Event::test( event, s_strMousePressEvent ); }
@@ -82,8 +81,8 @@ class MouseDoubleClickEvent : public MouseEvent
 {
 public:
   MouseDoubleClickEvent( QMouseEvent *mouseEvent, int x, int y, const DOM::DOMString &url,
-		         const DOM::Node &innerNode, long offset )
-  : MouseEvent( s_strMouseDoubleClickEvent, mouseEvent, x, y, url, innerNode, offset )
+		         const DOM::Node &innerNode )
+  : MouseEvent( s_strMouseDoubleClickEvent, mouseEvent, x, y, url, innerNode )
   {}
 
   static bool test( const QEvent *event )
@@ -97,8 +96,8 @@ class MouseMoveEvent : public MouseEvent
 {
 public:
   MouseMoveEvent( QMouseEvent *mouseEvent, int x, int y, const DOM::DOMString &url,
-		   const DOM::Node &innerNode, long offset )
-  : MouseEvent( s_strMouseMoveEvent, mouseEvent, x, y, url, innerNode, offset )
+		   const DOM::Node &innerNode )
+  : MouseEvent( s_strMouseMoveEvent, mouseEvent, x, y, url, innerNode )
   {}
 
   static bool test( const QEvent *event ) { return KParts::Event::test( event, s_strMouseMoveEvent ); }
@@ -111,8 +110,8 @@ class MouseReleaseEvent : public MouseEvent
 {
 public:
   MouseReleaseEvent( QMouseEvent *mouseEvent, int x, int y, const DOM::DOMString &url,
-		     const DOM::Node &innerNode, long offset )
-  : MouseEvent( s_strMouseReleaseEvent, mouseEvent, x, y, url, innerNode, offset )
+		     const DOM::Node &innerNode )
+  : MouseEvent( s_strMouseReleaseEvent, mouseEvent, x, y, url, innerNode )
   {}
 
   static bool test( const QEvent *event ) { return KParts::Event::test( event, s_strMouseReleaseEvent ); }
