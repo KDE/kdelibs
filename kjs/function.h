@@ -135,7 +135,8 @@ namespace KJS {
     virtual bool implementsCall() const;
     virtual Value call(ExecState *exec, Object &thisObj, const List &args);
     virtual CodeType codeType() const;
-    enum { Eval, ParseInt, ParseFloat, IsNaN, IsFinite, Escape, UnEscape, KJSPrint };
+    enum { Eval, ParseInt, ParseFloat, IsNaN, IsFinite, DecodeURI, DecodeURIComponent,
+	   EncodeURI, EncodeURIComponent, Escape, UnEscape, KJSPrint };
   private:
     int id;
   };

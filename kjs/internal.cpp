@@ -689,23 +689,35 @@ void InterpreterImp::initGlobalObject()
   // built-in functions
 #ifdef KJS_PURE_ECMA // otherwise as deprecated Object.prototype property
   global.put(globExec,"eval",
-	     Object(new GlobalFuncImp(globExec,funcProto,GlobalFuncImp::Eval,       1,"eval")), DontEnum);
+	     Object(new GlobalFuncImp(globExec,funcProto,GlobalFuncImp::Eval,1,"eval")), DontEnum);
 #endif
   global.put(globExec,"parseInt",
-	     Object(new GlobalFuncImp(globExec,funcProto,GlobalFuncImp::ParseInt,   2,"parseInt")), DontEnum);
+	     Object(new GlobalFuncImp(globExec,funcProto,GlobalFuncImp::ParseInt,2,"parseInt")), DontEnum);
   global.put(globExec,"parseFloat",
-	     Object(new GlobalFuncImp(globExec,funcProto,GlobalFuncImp::ParseFloat, 1,"parseFloat")), DontEnum);
+	     Object(new GlobalFuncImp(globExec,funcProto,GlobalFuncImp::ParseFloat,1,"parseFloat")), DontEnum);
   global.put(globExec,"isNaN",
-	     Object(new GlobalFuncImp(globExec,funcProto,GlobalFuncImp::IsNaN,      1,"isNaN")), DontEnum);
+	     Object(new GlobalFuncImp(globExec,funcProto,GlobalFuncImp::IsNaN,1,"isNaN")), DontEnum);
   global.put(globExec,"isFinite",
-	     Object(new GlobalFuncImp(globExec,funcProto,GlobalFuncImp::IsFinite,   1,"isFinite")), DontEnum);
+	     Object(new GlobalFuncImp(globExec,funcProto,GlobalFuncImp::IsFinite,1,"isFinite")), DontEnum);
+  global.put(globExec,"decodeURI",
+	     Object(new GlobalFuncImp(globExec,funcProto,GlobalFuncImp::DecodeURI,1,"decodeURI")),
+	     DontEnum);
+  global.put(globExec,"decodeURIComponent",
+	     Object(new GlobalFuncImp(globExec,funcProto,GlobalFuncImp::DecodeURIComponent,1,"decodeURIComponent")),
+	     DontEnum);
+  global.put(globExec,"encodeURI",
+	     Object(new GlobalFuncImp(globExec,funcProto,GlobalFuncImp::EncodeURI,1,"encodeURI")),
+	     DontEnum);
+  global.put(globExec,"encodeURIComponent",
+	     Object(new GlobalFuncImp(globExec,funcProto,GlobalFuncImp::EncodeURIComponent,1,"encodeURIComponent")),
+	     DontEnum);
   global.put(globExec,"escape",
-	     Object(new GlobalFuncImp(globExec,funcProto,GlobalFuncImp::Escape,     1,"escape")), DontEnum);
+	     Object(new GlobalFuncImp(globExec,funcProto,GlobalFuncImp::Escape,1,"escape")), DontEnum);
   global.put(globExec,"unescape",
-	     Object(new GlobalFuncImp(globExec,funcProto,GlobalFuncImp::UnEscape,   1,"unescape")), DontEnum);
+	     Object(new GlobalFuncImp(globExec,funcProto,GlobalFuncImp::UnEscape,1,"unescape")), DontEnum);
 #ifndef NDEBUG
   global.put(globExec,"kjsprint",
-	     Object(new GlobalFuncImp(globExec,funcProto,GlobalFuncImp::KJSPrint,   1,"kjsprint")), DontEnum);
+	     Object(new GlobalFuncImp(globExec,funcProto,GlobalFuncImp::KJSPrint,1,"kjsprint")), DontEnum);
 #endif
 
   // built-in objects

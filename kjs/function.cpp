@@ -2,7 +2,7 @@
 /*
  *  This file is part of the KDE libraries
  *  Copyright (C) 1999-2002 Harri Porten (porten@kde.org)
- *  Copyright (C) 2001 Peter Kelly (pmk@post.com)
+ *  Copyright (C) 2001,2003 Peter Kelly (pmk@post.com)
  *  Copyright (C) 2003 Apple Computer, Inc.
  *
  *  This library is free software; you can redistribute it and/or
@@ -41,6 +41,257 @@
 #include <ctype.h>
 
 using namespace KJS;
+
+// ------------------------- URI handling functions ---------------------------
+
+// ECMA 15.1.3
+UString encodeURI(ExecState *exec, UString string, UString unescapedSet)
+{
+  char hexdigits[] = "0123456789ABCDEF";
+  int encbufAlloc = 2;
+  UChar *encbuf = (UChar*)malloc(encbufAlloc*sizeof(UChar));
+  int encbufLen = 0;
+
+  for (int k = 0; k < string.size(); k++) {
+
+    UChar C = string[k];
+    if (unescapedSet.find(C) >= 0) {
+      if (encbufLen+1 >= encbufAlloc)
+	encbuf = (UChar*)realloc(encbuf,(encbufAlloc *= 2)*sizeof(UChar));
+      encbuf[encbufLen++] = C;
+    }
+    else {
+      unsigned char octets[4];
+      int octets_len = 0;
+      if (C.uc <= 0x007F) {
+	unsigned short zzzzzzz = C.uc;
+	octets[0] = zzzzzzz;
+	octets_len = 1;
+      }
+      else if (C.uc <= 0x07FF) {
+	unsigned short zzzzzz = C.uc & 0x3F;
+	unsigned short yyyyy = (C.uc >> 6) & 0x1F;
+	octets[0] = 0xC0 | yyyyy;
+	octets[1] = 0x80 | zzzzzz;
+	octets_len = 2;
+      }
+      else if (C.uc >= 0xD800 && C.uc <= 0xDBFF) {
+    
+	if (k == string.size()) {
+	  Object err = Error::create(exec,URIError);
+	  exec->setException(err);
+	  free(encbuf);
+	  return UString();
+	}
+
+	unsigned short Cnext = UChar(string[++k]).uc;
+
+	if (Cnext < 0xDC00 || Cnext > 0xDFFF) {
+	  Object err = Error::create(exec,URIError);
+	  exec->setException(err);
+	  free(encbuf);
+	  return UString();
+	}
+
+	unsigned short zzzzzz = Cnext & 0x3F;
+	unsigned short yyyy = (Cnext >> 6) & 0x0F;
+	unsigned short xx = C.uc & 0x03;
+	unsigned short wwww = (C.uc >> 2) & 0x0F;
+	unsigned short vvvv = (C.uc >> 6) & 0x0F;
+	unsigned short uuuuu = vvvv+1;
+	octets[0] = 0xF0 | (uuuuu >> 2);
+	octets[1] = 0x80 | ((uuuuu & 0x03) << 4) | wwww;
+	octets[2] = 0x80 | (xx << 4) | yyyy;
+	octets[3] = 0x80 | zzzzzz;
+	octets_len = 4;
+      }
+      else if (C.uc >= 0xDC00 && C.uc <= 0xDFFF) {
+	Object err = Error::create(exec,URIError);
+	exec->setException(err);
+	free(encbuf);
+	return UString();
+      }
+      else {
+	// 0x0800 - 0xD7FF or 0xE000 - 0xFFFF
+	unsigned short zzzzzz = C.uc & 0x3F;
+	unsigned short yyyyyy = (C.uc >> 6) & 0x3F;
+	unsigned short xxxx = (C.uc >> 12) & 0x0F;
+	octets[0] = 0xE0 | xxxx;
+	octets[1] = 0x80 | yyyyyy;
+	octets[2] = 0x80 | zzzzzz;
+	octets_len = 3;
+      }
+
+      while (encbufLen+3*octets_len >= encbufAlloc)
+	encbuf = (UChar*)realloc(encbuf,(encbufAlloc *= 2)*sizeof(UChar));
+
+      for (int j = 0; j < octets_len; j++) {
+	encbuf[encbufLen++] = '%';
+	encbuf[encbufLen++] = hexdigits[octets[j] >> 4];
+	encbuf[encbufLen++] = hexdigits[octets[j] & 0x0F];
+      }
+    }
+  }
+
+  UString encoded(encbuf,encbufLen);
+  free(encbuf);
+  return encoded;
+}
+
+bool decodeHex(UChar hi, UChar lo, unsigned short *val)
+{
+  *val = 0;
+  if (hi.uc >= '0' && hi.uc <= '9')
+    *val = (hi.uc-'0') << 4;
+  else if (hi.uc >= 'a' && hi.uc <= 'f')
+    *val = 10+(hi.uc-'a') << 4;
+  else if (hi.uc >= 'A' && hi.uc <= 'F')
+    *val = 10+(hi.uc-'A') << 4;
+  else
+    return false;
+
+  if (lo.uc >= '0' && lo.uc <= '9')
+    *val |= (lo.uc-'0');
+  else if (lo.uc >= 'a' && lo.uc <= 'f')
+    *val |= 10+(lo.uc-'a');
+  else if (lo.uc >= 'A' && lo.uc <= 'F')
+    *val |= 10+(lo.uc-'A');
+  else
+    return false;
+
+  return true;
+}
+
+UString decodeURI(ExecState *exec, UString string, UString reservedSet)
+{
+  int decbufAlloc = 2;
+  UChar *decbuf = (UChar*)malloc(decbufAlloc*sizeof(UChar));
+  int decbufLen = 0;
+
+  for (int k = 0; k < string.size(); k++) {
+    UChar C = string[k];
+
+    if (C != UChar('%')) {
+      // Normal unescaped character
+      if (decbufLen+1 >= decbufAlloc)
+	decbuf = (UChar*)realloc(decbuf,(decbufAlloc *= 2)*sizeof(UChar));
+      decbuf[decbufLen++] = C;
+      continue;
+    }
+
+    // We have % escape sequence... expect at least 2 more characters
+    int start = k;
+    if (k+2 >= string.size()) {
+      Object err = Error::create(exec,URIError);
+      exec->setException(err);
+      free(decbuf);
+      return UString();
+    }
+
+    unsigned short B;
+    if (!decodeHex(string[k+1],string[k+2],&B)) {
+      Object err = Error::create(exec,URIError);
+      exec->setException(err);
+      free(decbuf);
+      return UString();
+    }
+
+    k += 2;
+    if ((B & 0x80) == 0) {
+      // Single-byte character
+      C = B;
+    }
+    else {
+      // Multi-byte character
+      int n = 0;
+      while (((B << n) & 0x80) != 0)
+	n++;
+
+      if (n < 2 || n > 4) {
+	Object err = Error::create(exec,URIError);
+	exec->setException(err);
+	free(decbuf);
+	return UString();
+      }
+
+      if (k+3*(n-1) >= string.size()) {
+	Object err = Error::create(exec,URIError);
+	exec->setException(err);
+	free(decbuf);
+	return UString();
+      }
+
+      unsigned short octets[4];
+      octets[0] = B;
+      for (int j = 1; j < n; j++) {
+	k++;
+	if ((UChar(string[k]) != UChar('%')) ||
+	    !decodeHex(string[k+1],string[k+2],&B) ||
+	    ((B & 0xC0) != 0x80)) {
+	  Object err = Error::create(exec,URIError);
+	  exec->setException(err);
+	  free(decbuf);
+	  return UString();
+	}
+
+	k += 2;
+	octets[j] = B;
+      }
+
+      // UTF-8 transform
+      unsigned long V;
+      if (n == 2) {
+	unsigned long yyyyy = octets[0] & 0x1F;
+	unsigned long zzzzzz = octets[1] & 0x3F;
+	V = (yyyyy << 6) | zzzzzz;
+	C = UChar((unsigned short)V);
+      }
+      else if (n == 3) {
+	unsigned long xxxx = octets[0] & 0x0F;
+	unsigned long yyyyyy = octets[1] & 0x3F;
+	unsigned long zzzzzz = octets[2] & 0x3F;
+	V = (xxxx << 12) | (yyyyyy << 6) | zzzzzz;
+	C = UChar((unsigned short)V);
+      }
+      else {
+	assert(n == 4);
+	unsigned long uuuuu = ((octets[0] & 0x07) << 2) | ((octets[1] >> 4) & 0x03);
+	unsigned long vvvv = uuuuu-1;
+	unsigned long wwww = octets[1] & 0x0F;
+	unsigned long xx = (octets[2] >> 4) & 0x03;
+	unsigned long yyyy = octets[2] & 0x0F;
+	unsigned long zzzzzz = octets[3] & 0x3F;
+	unsigned short H = 0xD800 | (vvvv << 6) | (wwww << 2) | xx;
+	unsigned short L = 0xDC00 | (yyyy << 6) | zzzzzz;
+	decbuf[decbufLen++] = UChar(H);
+	decbuf[decbufLen++] = UChar(L);
+	continue;
+      }
+    }
+
+    if (reservedSet.find(C) < 0) {
+      if (decbufLen+1 >= decbufAlloc)
+	decbuf = (UChar*)realloc(decbuf,(decbufAlloc *= 2)*sizeof(UChar));
+      decbuf[decbufLen++] = C;
+    }
+    else {
+      while (decbufLen+k-start >= decbufAlloc)
+	decbuf = (UChar*)realloc(decbuf,(decbufAlloc *= 2)*sizeof(UChar));
+      for (int p = start; p < k; p++)
+	decbuf[decbufLen++] = string[p];
+    }
+  }
+
+  UString decoded(decbuf,decbufLen);
+  free(decbuf);
+  return decoded;
+}
+
+static UString uriReserved = ";/?:@&=+$,";
+static UString uriAlpha = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+static UString DecimalDigit = "0123456789";
+static UString uriMark = "-_.!~*'()";
+static UString uriUnescaped = uriAlpha+DecimalDigit+uriMark;
 
 // ----------------------------- FunctionImp ----------------------------------
 
@@ -667,6 +918,18 @@ Value GlobalFuncImp::call(ExecState *exec, Object &thisObj, const List &args)
     res = Boolean(!isNaN(n) && !isInf(n));
     break;
   }
+  case DecodeURI:
+    res = String(decodeURI(exec,args[0].toString(exec),uriReserved+"#"));
+    break;
+  case DecodeURIComponent:
+    res = String(decodeURI(exec,args[0].toString(exec),""));
+    break;
+  case EncodeURI:
+    res = String(encodeURI(exec,args[0].toString(exec),uriReserved+uriUnescaped+"#"));
+    break;
+  case EncodeURIComponent:
+    res = String(encodeURI(exec,args[0].toString(exec),uriUnescaped));
+    break;
   case Escape: {
     UString r = "", s, str = args[0].toString(exec);
     const UChar *c = str.data();
