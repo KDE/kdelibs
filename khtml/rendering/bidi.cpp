@@ -164,7 +164,7 @@ void RenderFlow::appendRun(QList<BidiRun> &runs, BidiIterator &sor, BidiIterator
 #if BIDI_DEBUG > 1
     kdDebug(6041) << "appendRun: dir="<<(int)dir<<endl;
 #endif
-    
+
     int start = sor.pos;
     RenderObject *obj = sor.obj;
     while( obj && obj != eor.obj ) {
@@ -426,7 +426,7 @@ BidiContext *RenderFlow::bidiReorderLine(BidiStatus &status, const BidiIterator 
                     case QChar::DirET:
 			if ( status.lastStrong == QChar::DirR || status.lastStrong == QChar::DirAL ) {
 			    appendRun(runs, sor, eor, context, dir);
-			    ++eor; sor = eor; 
+			    ++eor; sor = eor;
 			    dir = QChar::DirAN;
 			}
 			// fall through
@@ -603,11 +603,11 @@ BidiContext *RenderFlow::bidiReorderLine(BidiStatus &status, const BidiIterator 
 #endif
     eor = last;
 
-    
+
 #else
     eor = end;
 #endif
-    
+
     appendRun(runs, sor, eor, context, dir);
 
     BidiContext *endEmbed = context;
@@ -662,7 +662,7 @@ BidiContext *RenderFlow::bidiReorderLine(BidiStatus &status, const BidiIterator 
                 int end = i-1;
 
                 if(start != end) {
-                                //kdDebug(6041) << "reversing from " << start << " to " << end << endl;
+                    //kdDebug(6041) << "reversing from " << start << " to " << end << endl;
                     for(int j = 0; j < (end-start+1)/2; j++)
                         {
                             BidiRun *first = runs.take(start+j);
@@ -700,7 +700,7 @@ BidiContext *RenderFlow::bidiReorderLine(BidiStatus &status, const BidiIterator 
         if(r->vertical == PositionTop || r->vertical == PositionBottom ) {
             if(maxHeight < r->height) maxHeight = r->height;
         } else {
-	    int ascent = r->baseline - r->vertical;
+            int ascent = r->baseline - r->vertical;
             int descent = r->height - ascent;
             if(maxAscent < ascent) maxAscent = ascent;
             if(maxDescent < descent) maxDescent = descent;
@@ -718,6 +718,7 @@ BidiContext *RenderFlow::bidiReorderLine(BidiStatus &status, const BidiIterator 
             r->vertical = m_height + maxHeight - r->height;
         else
             r->vertical += m_height + maxAscent - r->baseline;
+
 	//kdDebug(6041) << "object="<< r->obj << " placing at vertical=" << r->vertical <<endl;
         if(r->obj->isText())
             r->width = static_cast<RenderText *>(r->obj)->width(r->start, r->stop-r->start);
@@ -752,7 +753,7 @@ BidiContext *RenderFlow::bidiReorderLine(BidiStatus &status, const BidiIterator 
         break;
     }
     while ( r ) {
-        //kdDebug(6040) << "positioning " << r->obj << " start=" << r->start << " stop" << r->stop << " yPos=" << r->vertical << endl;
+        //kdDebug(6040) << "positioning " << r->obj << " start=" << r->start << " stop=" << r->stop << " yPos=" << r->vertical << endl;
         r->obj->position(x, r->vertical, r->start, r->stop - r->start, r->width, r->level%2, firstLine);
         x += r->width;
         r = runs.next();
@@ -771,14 +772,9 @@ void RenderFlow::layoutInlineChildren()
     qt.start();
     kdDebug( 6040 ) << renderName() << " layoutInlineChildren( " << this <<" )" << endl;
 #endif
-    int toAdd = 0;
-    m_height = 0;
+    int toAdd = style()->borderBottomWidth();
+    m_height = style()->borderTopWidth();
 
-    if(style()->hasBorder())
-    {
-        m_height = borderTop();
-        toAdd = borderBottom();
-    }
     if(style()->hasPadding())
     {
         m_height += paddingTop();
@@ -843,8 +839,8 @@ void RenderFlow::layoutInlineChildren()
     }
     m_height += toAdd;
 
-    
-    //kdDebug() << "RenderFlow::layoutInlineChildren time used " << qt.elapsed() << endl; 
+
+    //kdDebug() << "RenderFlow::layoutInlineChildren time used " << qt.elapsed() << endl;
     //kdDebug(6040) << "height = " << m_height <<endl;
 }
 
@@ -902,7 +898,7 @@ BidiIterator RenderFlow::findNextLineBreak(const BidiIterator &start)
 	    if ( ( !firstLine || !t->firstLine() ) && !t->hasReturn() && t->maxWidth() + w + tmpW < width ) {
 		// the rest of the object fits completely
 // 		kdDebug() << "RenderFlow::findNextLineBreak object fits completely, max=" << t->maxWidth()
-// 			  << " width =" << w << " avail = " << width <<" tmp=" << tmpW << endl; 
+// 			  << " width =" << w << " avail = " << width <<" tmp=" << tmpW << endl;
 		//search backwards for last possible linebreak
 		int lastSpace = strlen-1;
 		while( lastSpace >= pos && !isBreakable( str, lastSpace, strlen ) )
@@ -915,10 +911,10 @@ BidiIterator RenderFlow::findNextLineBreak(const BidiIterator &start)
 		    lBreak.pos = lastSpace;
 		}
 		tmpW += t->width( lastSpace, strlen-lastSpace, firstLine);
-// 		kdDebug() << "--> width=" << t->width( pos, strlen-pos, firstLine)	
+// 		kdDebug() << "--> width=" << t->width( pos, strlen-pos, firstLine)
 // 			  <<" first=" << t->width( pos, lastSpace-pos, firstLine)
 // 			  <<" end=" << t->width( lastSpace, strlen-lastSpace, firstLine)
-// 			  << endl; 
+// 			  << endl;
 	    } else {
 #endif
 	    QFontMetrics fm = t->metrics( firstLine );
@@ -935,10 +931,12 @@ BidiIterator RenderFlow::findNextLineBreak(const BidiIterator &start)
 			if(!w && m_height < fb && width < lineWidth(fb)) {
 			    m_height = fb;
 			    width = lineWidth(m_height);
-			    //kdDebug() << "RenderFlow::findNextLineBreak new position at " << m_height << " newWidth " << width << endl; 
+#ifdef DEBUG_LINEBREAKS
+			    kdDebug() << "RenderFlow::findNextLineBreak new position at " << m_height << " newWidth " << width << endl;
+#endif
 			}
 		    }
-		    if ( w + tmpW > width ) 
+		    if ( w + tmpW > width )
 			goto end;
 
 		    lBreak.obj = o;
@@ -957,8 +955,7 @@ BidiIterator RenderFlow::findNextLineBreak(const BidiIterator &start)
 		pos++;
 		len--;
 	    }
-	    tmpW += t->width(lastSpace, pos - lastSpace, &fm);
-//	    }
+            tmpW += t->width(lastSpace, pos - lastSpace, &fm);
         } else
             assert( false );
 
@@ -970,23 +967,26 @@ BidiIterator RenderFlow::findNextLineBreak(const BidiIterator &start)
             if(!w && m_height < fb && width < lineWidth(fb)) {
                 m_height = fb;
                 width = lineWidth(m_height);
-		//kdDebug() << "RenderFlow::findNextLineBreak new position at " << m_height << " newWidth " << width << endl; 
+		//kdDebug() << "RenderFlow::findNextLineBreak new position at " << m_height << " newWidth " << width << endl;
             }
 	    if( !w && w + tmpW > width+1 && (o != start.obj || (unsigned) pos != start.pos) ) {
 		// getting below floats wasn't enough...
 		//kdDebug() << "still too wide w=" << w << " tmpW = " << tmpW << " width = " << width << endl;
 		lBreak.obj = o;
-	    if(last != o) {
-		//kdDebug() << " using last " << last << endl;
-		//lBreak.obj = last;
-		lBreak.pos = 0;//last->length() - 1;
-	    } else {
-		lBreak.pos = pos;
-	    }
-                return lBreak;
-            } else {
-                return lBreak;
+                if(last != o) {
+                    //kdDebug() << " using last " << last << endl;
+                    //lBreak.obj = last;
+                    lBreak.pos = 0;//last->length() - 1;
+                }
+                else if ( pos >= o->length() ) {
+                    lBreak.obj = start.par->next(o);
+                    lBreak.pos = 0;
+                }
+                else
+                    lBreak.pos = pos;
             }
+
+            return lBreak;
         }
 
         last = o;
@@ -1096,3 +1096,5 @@ RenderObject *RenderFlow::nextObject(RenderObject *current)
 
 // For --enable-final
 #undef BIDI_DEBUG
+#undef DEBUG_LINEBREAKS
+#undef DEBUG_LAYOUT
