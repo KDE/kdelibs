@@ -348,7 +348,7 @@ int KWalletD::internalOpen(const QCString& appid, const QString& wallet, bool is
 
 		KWallet::Backend *b = new KWallet::Backend(wallet, isPath);
 		KPasswordDialog *kpd;
-		if ((isPath || QFile::exists(wallet)) || KWallet::Backend::exists(wallet)) {
+		if ((isPath && QFile::exists(wallet)) || (!isPath && KWallet::Backend::exists(wallet))) {
 			kpd = new KPasswordDialog(KPasswordDialog::Password, false, 0);
 			if (appid.isEmpty()) {
 				kpd->setPrompt(i18n("<qt>KDE has requested to open the wallet '<b>%1</b>'. Please enter the password for this wallet below.").arg(QStyleSheet::escape(wallet)));
