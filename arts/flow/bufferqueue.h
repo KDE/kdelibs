@@ -99,7 +99,7 @@ public:
 
 	bool isEmpty() const       { return sema_produced->getValue() == 0; }
 	int bufferedChunks() const { return sema_produced->getValue(); }
-	int freeChunks() const     { return _MAX_CHUNKS - sema_produced->getValue(); }
+	int freeChunks() const     { return sema_consumed->getValue(); }
 	int maxChunks() const      { return _MAX_CHUNKS; }
 	int chunkSize() const      { return bufs[0].maxSize(); }
 	void clear()               { rp = wp = 0; semaReinit(); }
