@@ -155,6 +155,7 @@ static const char * const languages[] = {
 	I18N_NOOP( "Thai" ),
 	I18N_NOOP( "Turkish" ),
 	I18N_NOOP( "Western European" ),
+	I18N_NOOP( "Tamil" ),
 	I18N_NOOP( "Unicode" )
 };
 	
