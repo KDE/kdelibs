@@ -57,7 +57,7 @@ class KPasswordDialog::KPasswordDialogPrivate
 	QString iconName;
 };
 
-const int KPasswordEdit::PassLen = 100;
+const int KPasswordEdit::PassLen = 200;
 
 KPasswordEdit::KPasswordEdit(QWidget *parent, const char *name)
     : QLineEdit(parent, name)
