@@ -588,6 +588,9 @@ void QXEmbed::focusInEvent( QFocusEvent * e ){
     if (!window)
         return;
     XUngrabButton( qt_xdisplay(), AnyButton, AnyModifier, window );
+    XFocusInEvent inev = { XFocusIn, 0, TRUE, qt_xdisplay(), window, 
+                           NotifyNormal, NotifyPointer };
+    XSendEvent(qt_xdisplay(), window, TRUE, FocusChangeMask, (XEvent*) &inev);
     int detail = XEMBED_FOCUS_CURRENT;
     if ( e->reason() == QFocusEvent::Tab )
         detail = tabForward?XEMBED_FOCUS_FIRST:XEMBED_FOCUS_LAST;
@@ -599,6 +602,9 @@ void QXEmbed::focusInEvent( QFocusEvent * e ){
 void QXEmbed::focusOutEvent( QFocusEvent * ){
     if (!window)
         return;
+    XFocusOutEvent outev = { XFocusOut, 0, TRUE, qt_xdisplay(), window, 
+                             NotifyNormal, NotifyPointer };
+    XSendEvent(qt_xdisplay(), window, TRUE, FocusChangeMask, (XEvent*) &outev);
     send_xembed_message( window, XEMBED_FOCUS_OUT );
 }
 
