@@ -59,6 +59,10 @@ Reference::Reference(const Reference &v) : Value(v)
 {
 }
 
+Reference::Reference(const Value& v) : Value(v)
+{
+}
+
 Reference::~Reference()
 {
 }

@@ -77,7 +77,7 @@ namespace KJS {
     /**
      * Evaluate this node and return the result, possibly a reference.
      */
-    virtual Value evaluate(ExecState *exec) const;
+    virtual Reference evaluate(ExecState *exec) const;
     /**
      * Returns the value represented by this node. Always dereferenced.
      */
@@ -132,7 +132,7 @@ namespace KJS {
   protected:
     LabelStack ls;
   private:
-    Value evaluate(ExecState */*exec*/) const { return Undefined(); }
+    Reference evaluate(ExecState */*exec*/) const { return Reference(0L); }
     int l0, l1;
     int sid;
     bool breakPoint;
@@ -192,7 +192,7 @@ namespace KJS {
   class ResolveNode : public Node {
   public:
     ResolveNode(const UString *s) : ident(*s) { }
-    Value evaluate(ExecState *exec) const;
+    Reference evaluate(ExecState *exec) const;
     virtual Value value(ExecState *exec) const;
     virtual void streamTo(SourceStream &s) const;
   private:
@@ -299,7 +299,7 @@ namespace KJS {
     virtual void ref();
     virtual bool deref();
     virtual ~AccessorNode1();
-    Value evaluate(ExecState *exec) const;
+    Reference evaluate(ExecState *exec) const;
     virtual void streamTo(SourceStream &s) const;
   private:
     Node *expr1;
@@ -312,7 +312,7 @@ namespace KJS {
     virtual void ref();
     virtual bool deref();
     virtual ~AccessorNode2();
-    Value evaluate(ExecState *exec) const;
+    Reference evaluate(ExecState *exec) const;
     virtual void streamTo(SourceStream &s) const;
   private:
     Node *expr;

@@ -96,7 +96,7 @@ Node::~Node()
 }
 
 // fallback for nodes without an evaluate() reimplementation
-Value Node::evaluate(ExecState *exec) const
+Reference Node::evaluate(ExecState *exec) const
 {
   //  fprintf(stderr, "%s::evaluate()\n", typeid(*this).name());
   return value(exec);
@@ -222,7 +222,7 @@ Value ThisNode::value(ExecState *exec) const
 // ----------------------------- ResolveNode ----------------------------------
 
 // ECMA 11.1.2 & 10.1.4
-Value ResolveNode::evaluate(ExecState *exec) const
+Reference ResolveNode::evaluate(ExecState *exec) const
 {
   const List chain = exec->context().scopeChain();
   ListIterator scope = chain.begin();
@@ -538,7 +538,7 @@ bool AccessorNode1::deref()
 }
 
 // ECMA 11.2.1a
-Value AccessorNode1::evaluate(ExecState *exec) const
+Reference AccessorNode1::evaluate(ExecState *exec) const
 {
   Value v1 = expr1->value(exec);
   KJS_CHECKEXCEPTIONVALUE
@@ -570,7 +570,7 @@ bool AccessorNode2::deref()
 }
 
 // ECMA 11.2.1b
-Value AccessorNode2::evaluate(ExecState *exec) const
+Reference AccessorNode2::evaluate(ExecState *exec) const
 {
   Value v = expr->value(exec);
   KJS_CHECKEXCEPTIONVALUE
