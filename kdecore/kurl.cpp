@@ -82,7 +82,7 @@ KURL::KURL( const KURL& _u, const QString& _rel_url )
   else if ( _rel_url[0] == '#' )
   {
     *this = _u;
-    QString tmp = _rel_url.right(tmp.length() - 1);
+    QString tmp = _rel_url.mid(1);
     decode( tmp );
     setHTMLRef( tmp );
   }
