@@ -609,7 +609,11 @@ KDockWidget *KDockWidget::findNearestDockWidget(DockPosition pos)
 
 			if (neighbour==this)
 			return (static_cast<KDockWidget*>(parent()->parent())->findNearestDockWidget(pos));
-			else return neighbour;
+			else
+			if (neighbour->getWidget() && (neighbour->getWidget()->qt_cast("KDockTabGroup")))
+				return (KDockWidget*)(((KDockTabGroup*)neighbour->getWidget())->page(0));
+			else
+			return neighbour;
 		}
 		else
 		return (static_cast<KDockWidget*>(parent()->parent())->findNearestDockWidget(pos));			
