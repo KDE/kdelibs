@@ -21,16 +21,16 @@
 
 /*
     Useful links:
-	- http://tldp.org/HOWTO/LDAP-Implementation-HOWTO/schemas.html
-	- http://www.faqs.org/rfcs/rfc2849.html
+        - http://tldp.org/HOWTO/LDAP-Implementation-HOWTO/schemas.html
+        - http://www.faqs.org/rfcs/rfc2849.html
 
     Not yet handled items:
-	- objectclass microsoftaddressbook
-		- info,
-		- initials,
-		- otherfacsimiletelephonenumber,
-		- otherpager,
-		- physicaldeliveryofficename,
+        - objectclass microsoftaddressbook
+                - info,
+                - initials,
+                - otherfacsimiletelephonenumber,
+                - otherpager,
+                - physicaldeliveryofficename,
 */
 
 #include <qstring.h>
@@ -69,7 +69,7 @@ QString LDIFConverter::makeLDIFfieldString( QString formatStr, QString value, bo
   // append format if not given
   if (formatStr.find(':') == -1)
     formatStr.append(": %1\n");
- 
+
   // check if base64-encoding is needed 
   bool printable = true;
   unsigned int i, len;
@@ -77,19 +77,19 @@ QString LDIFConverter::makeLDIFfieldString( QString formatStr, QString value, bo
   for (i = 0; i<len; ++i ) {
      if (!value[i].isPrint()) {
         printable = false;
-	break;
+        break;
      }
   }
-  
+
   if (printable) // always encode if we find special chars...
     printable = (value.find('\n') == -1);
 
   if (!printable && allowEncode) { 
-     // encode to base64
-     value = KCodecs::base64Encode( value.utf8() );
-     int p = formatStr.find(':');
-     if (p>=0)
-	formatStr.insert(p, ':');
+    // encode to base64
+    value = KCodecs::base64Encode( value.utf8() );
+    int p = formatStr.find(':');
+    if (p>=0)
+      formatStr.insert(p, ':');
   }
 
   // generate the new string and split it to 72 chars/line
@@ -222,24 +222,24 @@ bool LDIFConverter::LDIFToAddressee( const QString &str, AddresseeList &addrList
   QStringList::Iterator last = lines.end();
   for ( QStringList::Iterator it = lines.begin(); it != lines.end(); ++it ) {
     if ( (*it).startsWith("#") ) { // comment ?
-	lines.remove(it);
-	continue;
+      lines.remove(it);
+      continue;
     }
     if ( last == lines.end() ) {
-	last = it;
-	continue;
+      last = it;
+      continue;
     }
     if ((*last).find("::")!=-1 && (*it).find(":")==-1) { // this is a multi-line BASE64
-	*last += (*it);
-	lines.remove(it);
-	it = last;
-	continue;
+      *last += (*it);
+      lines.remove(it);
+      it = last;
+      continue;
     }
     if ((*last).find(":")!=-1 && (*it).startsWith(" ")) { // this is a folded item
-	*last += (*it).mid(1);
-        lines.remove(it);
-	it = last;
-	continue;
+      *last += (*it).mid(1);
+      lines.remove(it);
+      it = last;
+      continue;
     }
     last = it;
   }
@@ -273,7 +273,7 @@ bool LDIFConverter::LDIFToAddressee( const QString &str, AddresseeList &addrList
     do {
       cont = parseSingleLine( a, homeAddr, workAddr, *it );
       if (cont && it!=lines.end()) {
-	++it;
+        ++it;
       }
     } while (cont && it!=lines.end());
 
@@ -289,21 +289,21 @@ bool LDIFConverter::LDIFToAddressee( const QString &str, AddresseeList &addrList
 
     // did we reached the end of the list
     if ( it == lines.end() )
-	break;
+      break;
 
     // we found the "dn: cn=.." entry (e.g. "n: cn=Engelhardt Gerald,l=Frankfurt,ou=BKG,o=Bund,c=DE").
     // Split it now and parse it later.
     dnEntry = (*it).replace( '=', ": " );
     dnList = QStringList::split( ',', dnEntry, false );
     dnList.pop_front();
-    
+
   } // for()...
 
   return true;
 }
 
-bool LDIFConverter::parseSingleLine( Addressee &a, 
-	Address &homeAddr, Address &workAddr, QString &line )
+bool LDIFConverter::parseSingleLine( Addressee &a, Address &homeAddr,
+                                     Address &workAddr, QString &line )
 {
   if ( line.isEmpty() )
     return true;
@@ -337,7 +337,7 @@ bool LDIFConverter::splitLine( QString &line, QString &fieldname, QString &value
     value = QString::fromUtf8( line.mid( position + 2, line.length() - position - 2 ).latin1() );
     return true;
   }
-  
+
   // strange: we did not find a fieldname
   fieldname = "";
   value = line;
@@ -345,9 +345,9 @@ bool LDIFConverter::splitLine( QString &line, QString &fieldname, QString &value
 }
 
 
-bool LDIFConverter::evaluatePair( Addressee &a, 
-	Address &homeAddr, Address &workAddr, 
-        QString &fieldname, QString &value )
+bool LDIFConverter::evaluatePair( Addressee &a, Address &homeAddr,
+                                  Address &workAddr,
+                                  QString &fieldname, QString &value )
 {
   if ( fieldname == QString::fromLatin1( "dn" ) ) // ignore & return false!
     return false;
@@ -475,7 +475,8 @@ addComment:
     return true;
   }
 
-  if ( fieldname == QString::fromLatin1( "streethomeaddress" ) ) {
+  if ( fieldname == QString::fromLatin1( "street" ) ||
+       fieldname == QString::fromLatin1( "streethomeaddress" ) ) {
     homeAddr.setStreet( value );
     return true;
   }
@@ -527,7 +528,7 @@ addComment:
 
   if ( fieldname == QString::fromLatin1( "mozillahomecountryname" ) ) { // mozilla
     if ( value.length() <= 2 )
-	value = Address::ISOtoCountry(value);
+      value = Address::ISOtoCountry(value);
     homeAddr.setCountry( value );
     return true;
   }
@@ -541,11 +542,11 @@ addComment:
     workAddr.setStreet( value );
     return true;
   }
-  
+
   if ( fieldname == QString::fromLatin1( "countryname" ) ||
        fieldname == QString::fromLatin1( "c" ) ) {  // mozilla
     if ( value.length() <= 2 )
-	value = Address::ISOtoCountry(value);
+      value = Address::ISOtoCountry(value);
     workAddr.setCountry( value );
     return true;
   }
@@ -591,11 +592,11 @@ addComment:
 
   if ( fieldname == QString::fromLatin1( "modifytimestamp" ) ) {
     if (value == QString::fromLatin1("0Z")) // ignore
-        return true;
+      return true;
     QDateTime dt = VCardStringToDate( value );
     if ( dt.isValid() ) {
-        a.setRevision(dt);
-        return true;
+      a.setRevision(dt);
+      return true;
     }
   }
 
@@ -603,7 +604,7 @@ addComment:
     return true;
 
   kdWarning() << QString("LDIFConverter: Unknown field for '%1': '%2=%3'\n")
-	.arg(a.formattedName()).arg(fieldname).arg(value);
+                             .arg(a.formattedName()).arg(fieldname).arg(value);
 
   return true;
 }
