@@ -1195,8 +1195,10 @@ void HTMLInputElementImpl::setOwnerDocument(DocumentImpl *_document)
 
 void HTMLInputElementImpl::defaultEventHandler(EventImpl *evt)
 {
-    if (evt->id() == EventImpl::DOMACTIVATE_EVENT &&
-        (m_type == IMAGE || m_type == SUBMIT || m_type == RESET)) {
+    // ### shouldn't we emit a DOMACTIVATE event for type=Image as well?
+    if (((evt->id() == EventImpl::DOMACTIVATE_EVENT) ||
+        (m_type == IMAGE && evt->id() == EventImpl::CLICK_EVENT)) &&
+        (m_type == IMAGE || m_type == SUBMIT || m_type == RESET)){
 	if (!m_form || !m_render)
 	    return;
 
