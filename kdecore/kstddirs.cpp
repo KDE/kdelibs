@@ -606,9 +606,8 @@ void KStandardDirs::addKDEDefaults()
 	QString kdedir = getenv("KDEDIR");
 	if (!kdedir.isEmpty())
 	  kdedirList.append(kdedir);
-        addPrefix(QDir::homeDirPath() + "/.kde/");
+        kdedirList.append(QDir::homeDirPath() + "/.kde/");
     }
-    kdedirList.append(KDEDIR);  // Location of kdelibs.
 
     for (QStringList::ConstIterator it = kdedirList.begin();
 	 it != kdedirList.end(); it++)
@@ -666,8 +665,8 @@ bool KStandardDirs::addCustomized(KConfig *config)
 
 QString KStandardDirs::localkdedir() const
 {
-    // The last dir in KDEDIRS is the local dir.
-    return prefixes.last();
+    // The first dir in KDEDIRS is the local dir.
+    return prefixes.first();
 }
 
 // just to make code more readable without macros
