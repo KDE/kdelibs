@@ -849,61 +849,63 @@ Value GlobalFuncImp::call(ExecState *exec, Object &thisObj, const List &args)
     const char* startptr = cstr.c_str();
     while ( *startptr && isspace( *startptr ) ) // first, skip leading spaces
       ++startptr;
-    char* endptr;
-    errno = 0;
-    //fprintf( stderr, "ParseInt: parsing string %s\n", startptr );
+
     int base = 0;
-    // Figure out the base
-    if ( args.size() > 1 )
-      base = args[ 1 ].toInt32( exec );
-    if ( base == 0 ) {
-      // default base is 10, unless the number starts with 0x or 0X
-      if ( *startptr == '0' && toupper( *(startptr+1) ) == 'X' )
-        base = 16;
-      else
-        base = 10;
+    if (args.size() > 1)
+      base = args[1].toInt32(exec);
+
+    double sign = 1;
+    if (*startptr == '-') {
+      sign = -1;
+      startptr++;
     }
-    //fprintf( stderr, "base=%d\n",base );
-    if ( base != 10 )
-    {
-      // We can't use strtod if a non-decimal base was specified...
-#ifdef HAVE_FUNC_STRTOLL
-      long long llValue = strtoll(startptr, &endptr, base);
-      double value = llValue;
-#else
-      long value = strtol(startptr, &endptr, base);
-#endif
-      if (errno || endptr == startptr)
-        res = Number(NaN);
-      else
-        res = Number(value);
-    } else {
-      // Parse into a double, not an int or long. We must be able to parse
-      // huge integers like 16-digits ones (credit card numbers ;)
-      // But first, check that it only has digits (after the +/- sign if there's one).
-      // That's because strtod will accept .5, but parseInt shouldn't.
-      // Also, strtod will parse 0x7, but it should fail here (base==10)
-      bool foundSign = false;
-      bool foundDot = false;
-      bool ok = false;
-      for ( const char* ptr = startptr; *ptr; ++ptr ) {
-        if ( *ptr >= '0' && *ptr <= '9' )
-          ok = true;
-        else if ( !foundSign && ( *ptr == '-' || *ptr == '+' ) )
-          foundSign = true;
-        else if ( ok && !foundDot && *ptr == '.' ) // only accept one dot, and after a digit
-          foundDot = true;
-        else {
-          *const_cast<char *>(ptr) = '\0';   // this will prevent parseInt('0x7',10) from returning 7.
-          break; // something else -> stop here.
-        }
+    else if (*startptr == '+') {
+      sign = -1;
+      startptr++;
+    }
+
+    bool leading0 = false;
+    if ((base == 0 || base == 16) &&
+	(*startptr == '0' && (startptr[1] == 'x' || startptr[1] == 'X'))) {
+      startptr += 2;
+      base = 16;
+    }
+    else if (base == 0 && *startptr == '0') {
+      base = 8;
+      leading0 = true;
+      startptr++;
+    }
+    else if (base == 0) {
+      base = 10;
+    }
+
+    if (base < 2 || base > 36) {
+      res = Number(NaN);
+    }
+    else {
+      double val = 0;
+      int index = 0;
+      for (; *startptr; startptr++) {
+	int thisval = -1;
+	if (*startptr >= '0' && *startptr <= '9')
+	  thisval = *startptr - '0';
+	else if (*startptr >= 'a' && *startptr <= 'z')
+	  thisval = 10 + *startptr - 'a';
+	else if (*startptr >= 'A' && *startptr <= 'Z')
+	  thisval = 10 + *startptr - 'A';
+
+	if (thisval < 0 || thisval >= base)
+	  break;
+
+	val *= base;
+	val += thisval;
+	index++;
       }
 
-      double value = strtod(startptr, &endptr);
-      if (!ok || errno || endptr == startptr)
-        res = Number(NaN);
+      if (index == 0 && !leading0)
+	res = Number(NaN);
       else
-        res = Number(floor(value));
+	res = Number(val*sign);
     }
     break;
   }
