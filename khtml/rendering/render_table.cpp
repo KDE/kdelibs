@@ -667,6 +667,8 @@ void RenderTable::calcColMinMax()
     int availableWidth = containingBlockWidth();
 
     int margin=0;
+    
+    int realMaxWidth=spacing;
 
     Length ml = style()->marginLeft();
     Length mr = style()->marginRight();
@@ -699,6 +701,9 @@ void RenderTable::calcColMinMax()
 #ifdef TABLE_DEBUG
     	    kdDebug( 6040 ) << " s=" << s << " c=" << c << " min=" << col->min << " value=" << col->value << endl;
 #endif	
+            
+            if (s==0)
+                realMaxWidth += col->max + spacing;
 
     	    col->update();
 	    	    	
@@ -839,6 +844,10 @@ void RenderTable::calcColMinMax()
 
     if(m_style->width().type == Fixed)
     	m_minWidth = m_maxWidth = m_width;
+    else if (m_style->width().type == Percent)
+    {
+        m_maxWidth = realMaxWidth;    
+    } 
     else
     {
         m_maxWidth = spacing;
