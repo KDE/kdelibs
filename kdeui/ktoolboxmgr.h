@@ -33,6 +33,10 @@
 
  // $Id$
  // $Log$
+ // Revision 1.6  1998/09/01 20:22:26  kulow
+ // I renamed all old qt header files to the new versions. I think, this looks
+ // nicer (and gives the change in configure a sense :)
+ //
  // Revision 1.5  1998/08/10 13:33:55  radej
  // sven: Added X-only and Y-only resizing.
  //
@@ -180,6 +184,12 @@ public:
    * @see #removeHotSpot
    */
   int addHotSpot(int x, int y, int w, int h);
+
+  /**
+   * This is an overloaded function which takes rectangle as parameter.
+   * if mapToGlobal = true, rect will be converted to global coords.
+   */
+  int addHotSpot(const QRect &r, bool mapToGlobal=false);
 
   /**
    * Removes hot spot index.

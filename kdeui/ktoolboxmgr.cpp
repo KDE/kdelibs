@@ -32,6 +32,10 @@
 
  // $Id$
  // $Log$
+ // Revision 1.12  1998/09/01 20:22:25  kulow
+ // I renamed all old qt header files to the new versions. I think, this looks
+ // nicer (and gives the change in configure a sense :)
+ //
  // Revision 1.11  1998/08/10 13:33:54  radej
  // sven: Added X-only and Y-only resizing.
  //
@@ -110,6 +114,16 @@ int KToolBoxManager::addHotSpot(int rx, int ry, int rw, int rh)
   hotspots.append(r);
   return hotspots.at();
 }
+
+int KToolBoxManager::addHotSpot (const QRect& _r, bool mapToGlobal)
+{
+  QRect *r = new QRect (_r.x(), _r.y(), _r.width(), _r.height());
+  if (mapToGlobal)
+    r->moveTopLeft(widget->parentWidget()->mapToGlobal(r->topLeft()));
+  hotspots.append(r);
+  return hotspots.at();
+}
+
 
 void KToolBoxManager::removeHotSpot(int index)
 {
