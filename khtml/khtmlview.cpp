@@ -93,8 +93,13 @@ public:
         useSlowRepaints = false;
         originalNode = 0;
 	borderTouched = false;
+#ifndef KHTML_NO_SCROLLBARS
         vmode = QScrollView::Auto;
         hmode = QScrollView::Auto;
+#else
+        vmode = QScrollView::AlwaysOff;
+        hmode = QScrollView::AlwaysOff;
+#endif
 	borderX = 30;
 	borderY = 30;
 	clickX = -1;
@@ -921,6 +926,7 @@ void KHTMLView::print()
         }
         kdDebug(6000) << "printing: scaled html width = " << pageWidth
                       << " height = " << pageHeight << endl;
+#endif
         int top = 0;
         while(top < root->docHeight()) {
             if(top > 0) printer->newPage();
@@ -999,14 +1005,22 @@ void KHTMLView::useSlowRepaints()
 
 void KHTMLView::setVScrollBarMode ( ScrollBarMode mode )
 {
+#ifndef KHTML_NO_SCROLLBARS
     d->vmode = mode;
     QScrollView::setVScrollBarMode(mode);
+#else
+    Q_UNUSED( mode );
+#endif
 }
 
 void KHTMLView::setHScrollBarMode ( ScrollBarMode mode )
 {
+#ifndef KHTML_NO_SCROLLBARS
     d->hmode = mode;
     QScrollView::setHScrollBarMode(mode);
+#else
+    Q_UNUSED( mode );
+#endif
 }
 
 void KHTMLView::restoreScrollBar ( )
@@ -1016,7 +1030,7 @@ void KHTMLView::restoreScrollBar ( )
     if (visibleWidth() != ow)
     {
         layout();
-        updateContents(contentsX(),contentsY(),visibleWidth(),visibleHeight());        
+        updateContents(contentsX(),contentsY(),visibleWidth(),visibleHeight());
     }
     d->prevScrollbarVisible = verticalScrollBar()->isVisible();
 }
