@@ -30,14 +30,30 @@
 
 using namespace KParts;
 
+namespace KParts
+{
+class Plugin::PluginPrivate
+{
+public:
+  PluginPrivate()
+  {
+  }
+  ~PluginPrivate()
+  {
+  }
+};
+};
+
 Plugin::Plugin( QObject* parent, const char* name )
     : QObject( parent, name )
 {
   qDebug( className() );
+  d = new PluginPrivate();
 }
 
 Plugin::~Plugin()
 {
+  delete d; 
 }
 
 void Plugin::setDocument( QDomDocument doc )
