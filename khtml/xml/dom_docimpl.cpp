@@ -2074,7 +2074,10 @@ void DocumentImpl::setFocusNode(NodeImpl *newFocusNode)
                 if (!m_focusNode->renderer() || !m_focusNode->renderer()->isWidget())
                     view()->setFocus();
                 else if (static_cast<RenderWidget*>(m_focusNode->renderer())->widget())
-                    static_cast<RenderWidget*>(m_focusNode->renderer())->widget()->setFocus();
+                {
+                    if (view()->isVisible())
+                        static_cast<RenderWidget*>(m_focusNode->renderer())->widget()->setFocus();
+                }
             }
         }
 

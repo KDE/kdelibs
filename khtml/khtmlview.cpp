@@ -2827,17 +2827,21 @@ void KHTMLView::dropEvent( QDropEvent *ev )
 
 void KHTMLView::focusInEvent( QFocusEvent *e )
 {
+    DOM::NodeImpl* fn = m_part->xmlDocImpl() ? m_part->xmlDocImpl()->focusNode() : 0;
+    if (fn && fn->renderer() && fn->renderer()->isWidget() && 
+        (e->reason() != QFocusEvent::Mouse) &&
+        static_cast<khtml::RenderWidget*>(fn->renderer())->widget())
+        static_cast<khtml::RenderWidget*>(fn->renderer())->widget()->setFocus();
 #ifndef KHTML_NO_CARET
     // Restart blink frequency timer if it has been killed, but only on
     // editable nodes
     if (d->m_caretViewContext &&
         d->m_caretViewContext->freqTimerId == -1 &&
-        m_part->xmlDocImpl()) {
-        NodeImpl *caretNode = m_part->xmlDocImpl()->focusNode();
+        fn) {
         if (m_part->isCaretMode()
 		|| m_part->isEditable()
-     		|| (caretNode && caretNode->renderer()
-			&& caretNode->renderer()->style()->userInput()
+     		|| (fn && fn->renderer()
+			&& fn->renderer()->style()->userInput()
 				== UI_ENABLED)) {
             d->m_caretViewContext->freqTimerId = startTimer(500);
 	    d->m_caretViewContext->visible = true;
