@@ -1037,7 +1037,7 @@ void KHTMLWidget::keyPressEvent( QKeyEvent *_ke )
 	case Key_Down:
 	    {
 	        // KFM Extension
-	        if ( !cellDown() )
+	        if ( !cellDown( _ke->state() & ShiftButton ? true : false ) )
 		{    
 		  if ( docHeight() < height() ) break;
 		  int newY = y_offset + 20;
@@ -1072,7 +1072,7 @@ void KHTMLWidget::keyPressEvent( QKeyEvent *_ke )
 		emit goUp();
               }
 	      // KFM Extension
-	      else if ( !cellUp() )
+	      else if ( !cellUp( _ke->state() & ShiftButton ? true : false ) )
 	      {  
 		if ( docHeight() < height() ) break;
 		int newY = y_offset - 20;
@@ -1107,7 +1107,7 @@ void KHTMLWidget::keyPressEvent( QKeyEvent *_ke )
 		  emit goRight();
                 }
 		// KFM Extension
-		else if ( !cellRight() )
+		else if ( !cellRight( _ke->state() & ShiftButton ? true : false ) )
 		{  
 		  if ( docWidth() < width() ) break;
 		  int newX = x_offset + 20;
@@ -1129,7 +1129,7 @@ void KHTMLWidget::keyPressEvent( QKeyEvent *_ke )
 		emit goLeft();
 	      }
 	      // KFM Extension
-	      else if ( !cellLeft() )
+	      else if ( !cellLeft( _ke->state() & ShiftButton ? true : false ) )
 	      {  
 		if ( docWidth() < width() ) break;
 		int newX = x_offset - 20;
@@ -5502,7 +5502,7 @@ KHTMLWidget::setOverrideCharset(const char *name)
 // FUNCTIONS used for KFM Extension
 //-----------------------------------------------------------
 
-bool KHTMLWidget::cellUp()
+bool KHTMLWidget::cellUp( bool select )
 {
   if ( clue == 0 || parsing )
     return true;
@@ -5534,26 +5534,58 @@ bool KHTMLWidget::cellUp()
     next = list.first();
   else
   { 
+    QStrList urllist;
+    if ( select )
+      getSelected( urllist );
+
     while( list.current() )
     {
       if ( list.current()->baseAbs < curr->baseAbs )
-	break;
+        break;
       list.prev();
+      if ( select && list.current() )
+      {
+        if ( list.current()->pCell->getURL() )
+        {
+          bool mode = ( urllist.find( list.current()->pCell->getURL() ) == -1 );
+          selectByURL( 0, list.current()->pCell->getURL(), mode );
+        }
+      }
     }
 
     if ( list.current() == 0 )
       return true;
     
-    HTMLCellInfo *inf; 
+    HTMLCellInfo *start = list.current(); 
     int diff = 0xFFFFFFF;
-    for ( inf = list.current(); inf != 0; inf = list.prev() )
+    for ( HTMLCellInfo *inf = list.current(); inf != 0; inf = list.prev() )
     {
       int i = curr->xAbs - inf->xAbs;
       if ( i < 0 ) i *= -1;
       if ( i < diff )
       {
-	diff = i;
-	next = inf;
+        diff = i;
+        next = inf;
+      }
+    }
+
+    if ( select )
+    {
+      list.findRef( start );
+      while ( start != next )
+      {
+        if ( list.current()->pCell->getURL() )
+        {
+          bool mode = (urllist.find( list.current()->pCell->getURL() ) == -1);
+          selectByURL( 0, list.current()->pCell->getURL(), mode );
+        }
+        start = list.prev();
+      }
+
+      if ( list.current()->pCell->getURL() )
+      {
+        bool mode = (urllist.find( list.current()->pCell->getURL() ) == -1);
+        selectByURL( 0, list.current()->pCell->getURL(), mode );
       }
     }
   }
@@ -5578,7 +5610,7 @@ bool KHTMLWidget::cellUp()
   return true;
 }
 
-bool KHTMLWidget::cellDown()
+bool KHTMLWidget::cellDown( bool select )
 {
   if ( clue == 0 || parsing )
     return true;
@@ -5610,26 +5642,52 @@ bool KHTMLWidget::cellDown()
     next = list.first();
   else
   { 
+    QStrList urllist;
+    if ( select )
+      getSelected( urllist );
+
     while( list.current() )
     {
       if ( list.current()->baseAbs > curr->baseAbs )
-	break;
+        break;
+      if ( select )
+      {
+        if ( list.current()->pCell->getURL() )
+        {
+          bool mode = ( urllist.find( list.current()->pCell->getURL() ) == -1 );
+          selectByURL( 0, list.current()->pCell->getURL(), mode );
+        }
+      }
       list.next();
     }
 
     if ( list.current() == 0 )
       return false;
     
-    HTMLCellInfo *inf; 
+    HTMLCellInfo *start = list.current(); 
     int diff = 0xFFFFFFF;
-    for ( inf = list.current(); inf != 0; inf = list.next() )
+    for ( HTMLCellInfo *inf = list.current(); inf != 0; inf = list.next() )
     {
       int i = curr->xAbs - inf->xAbs;
       if ( i < 0 ) i *= -1;
       if ( i < diff )
       {
-	diff = i;
-	next = inf;
+        diff = i;
+        next = inf;
+      }
+    }
+
+    if ( select )
+    {
+      list.findRef( start );
+      while ( start != next )
+      {
+        if ( list.current()->pCell->getURL() )
+        {
+          bool mode = (urllist.find( list.current()->pCell->getURL() ) == -1);
+          selectByURL( 0, list.current()->pCell->getURL(), mode );
+        }
+        start = list.next();
       }
     }
   }
@@ -5654,7 +5712,7 @@ bool KHTMLWidget::cellDown()
   return true;
 }
 
-bool KHTMLWidget::cellLeft()
+bool KHTMLWidget::cellLeft( bool select )
 {
   if ( clue == 0 || parsing )
     return true;
@@ -5685,7 +5743,7 @@ bool KHTMLWidget::cellLeft()
     next = list.first();
   else
     next = list.prev();
-  
+
   if ( next == 0 )
     return false;
 
@@ -5696,6 +5754,8 @@ bool KHTMLWidget::cellLeft()
   }
 
   next->pCell->setMarker( true );
+  if ( select )
+    cellSelected();
   paint( next );
 
   if ( next->ty + next->pCell->getYPos() - next->pCell->getAscent() < 0 )
@@ -5706,7 +5766,7 @@ bool KHTMLWidget::cellLeft()
   return true;
 }
 
-bool KHTMLWidget::cellRight()
+bool KHTMLWidget::cellRight( bool select )
 {
   if ( clue == 0 || parsing )
     return true;
@@ -5737,6 +5797,9 @@ bool KHTMLWidget::cellRight()
     next = list.first();
   else
     next = list.next();
+
+  if ( curr && select )
+    cellSelected();
   
   if ( next == 0 )
     return false;
@@ -5867,7 +5930,10 @@ void KHTMLWidget::cellContextMenu()
   if ( curr->pCell->getURL() == 0 )
     return;
 
-  QPoint p( curr->tx, curr->ty );
+  HTMLCell *cell = curr->pCell;
+
+  QPoint p( curr->tx + cell->getXPos() + cell->getWidth()-10,
+            curr->ty + cell->getYPos() - cell->getAscent() + 3 );
   
   emit popupMenu( curr->pCell->getURL(), mapToGlobal( p ) );
 }

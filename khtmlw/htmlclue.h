@@ -285,6 +285,7 @@ protected:
     // clue.  Child objects must wrap their contents around these.
     HTMLClueAligned *alignLeftList;
     HTMLClueAligned *alignRightList;
+    unsigned short padding;
 };
 
 /**

@@ -642,10 +642,10 @@ public:
     //-----------------------------------------------------------
     // FUNCTIONS used for KFM Extension
     // -----------------------------------------------------------
-    bool cellDown();
-    bool cellUp();
-    bool cellLeft();
-    bool cellRight();
+    bool cellDown( bool select );
+    bool cellUp( bool select );
+    bool cellLeft( bool select );
+    bool cellRight( bool select );
     void cellSelected();
     void cellActivated();
     void cellContextMenu();

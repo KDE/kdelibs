@@ -540,6 +540,8 @@ HTMLClueV::HTMLClueV( int _x, int _y, int _max_width, int _percent )
 {
     alignLeftList  = 0;
     alignRightList = 0;
+
+    padding = 0;
 }
 
 void HTMLClueV::reset()
@@ -627,13 +629,13 @@ HTMLObject* HTMLClueV::mouseEvent( int _x, int _y, int button, int state )
 
 void HTMLClueV::calcSize( HTMLClue *parent )
 {
-	int lmargin = parent ? parent->getLeftMargin( getYPos() ) : 0;
+	int lmargin = parent ? parent->getLeftMargin( getYPos() ) + padding : padding;
 
 	// If we have already called calcSize for the children, then just
 	// continue from the last object done in previous call.
 	if ( curr )
 	{
-	    ascent = 0;
+	    ascent = padding;
 	    // get the current ascent not including curr
 	    HTMLObject *obj = head;
 	    while ( obj != curr )
@@ -647,7 +649,8 @@ void HTMLClueV::calcSize( HTMLClue *parent )
 	}
 	else
 	{
-	    ascent = descent = 0;
+	    ascent = padding;
+        descent = 0;
 	    curr = head;
 	}
 
@@ -657,12 +660,14 @@ void HTMLClueV::calcSize( HTMLClue *parent )
 	    // the top of this object is
 	    curr->setYPos( ascent );
 	    curr->calcSize( this );
-	    if ( curr->getWidth() > width )
-		    width = curr->getWidth();
+	    if ( curr->getWidth() > width - ( padding << 1) )
+		    width = curr->getWidth() + ( padding << 1 );
 	    ascent += curr->getHeight();
 	    curr->setPos( lmargin, ascent - curr->getDescent() );
 	    curr = curr->next();
 	}
+
+    ascent += padding;
 
 	// remember the last object so that we can start from here next time
 	// we are called.
@@ -1140,6 +1145,7 @@ HTMLCell::HTMLCell( int _x, int _y, int _max_width, int _percent, const char *_u
   url = _url;
   target = _target;
   bIsMarked = false;
+  padding = 1;      // leave a little room for the selection rectangle.
 }
 
 void HTMLCell::select( KHTMLWidget *_htmlw, HTMLChain *_chain, QRect & _rect, int _tx, int _ty )
