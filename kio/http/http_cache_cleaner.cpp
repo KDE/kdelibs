@@ -76,7 +76,7 @@ public:
 
 // !START OF SYNC!
 // Keep the following in sync with the cache code in http.cc
-#define CACHE_REVISION "2\n"
+#define CACHE_REVISION "3\n"
 
 FileInfo *readEntry( const QString &filename)
 {
@@ -85,21 +85,25 @@ FileInfo *readEntry( const QString &filename)
    if (!fs)
       return 0;
 
-   char buffer[41];
+   char buffer[401];
    bool ok = true;
 
   // CacheRevision 
-  if (ok && (!fgets(buffer, 40, fs)))
+  if (ok && (!fgets(buffer, 400, fs)))
       ok = false;  
    if (ok && (strcmp(buffer, CACHE_REVISION) != 0))
       ok = false;
+
+   // Full URL
+   if (ok && (!fgets(buffer, 400, fs)))
+      ok = false;  
 
    time_t creationDate;
    time_t expireDate;
    int age;
 
    // Creation Date
-   if (ok && (!fgets(buffer, 40, fs)))
+   if (ok && (!fgets(buffer, 400, fs)))
       ok = false;  
    if (ok)
    {
@@ -112,7 +116,7 @@ FileInfo *readEntry( const QString &filename)
    }
 
    // Expiration Date
-   if (ok && (!fgets(buffer, 40, fs)))
+   if (ok && (!fgets(buffer, 400, fs)))
       ok = false;  
    if (ok)
    {

@@ -2351,7 +2351,7 @@ HTTPProtocol::findCookies( const QString &url)
 // The following code should be kept in sync
 // with the code in http_cache_cleaner.cpp
 
-#define CACHE_REVISION "2\n"
+#define CACHE_REVISION "3\n"
 
 FILE *
 HTTPProtocol::checkCacheEntry( QString &CEF)
@@ -2405,11 +2405,11 @@ HTTPProtocol::checkCacheEntry( QString &CEF)
    if (!fs)
       return 0;
 
-   char buffer[40];
+   char buffer[401];
    bool ok = true;
 
   // CacheRevision
-  if (ok && (!fgets(buffer, 40, fs)))
+  if (ok && (!fgets(buffer, 400, fs)))
       ok = false;
    if (ok && (strcmp(buffer, CACHE_REVISION) != 0))
       ok = false;
@@ -2417,8 +2417,22 @@ HTTPProtocol::checkCacheEntry( QString &CEF)
    time_t date;
    time_t currentDate = time(0);
 
+   // URL
+   if (ok && (!fgets(buffer, 400, fs)))
+      ok = false;
+   if (ok)
+   {
+      int l = strlen(buffer);
+      if (l>0)
+         buffer[l-1] = 0; // Strip newline
+      if (m_request.url.url() != buffer)
+      {
+         ok = false; // Hash collision
+      }
+   }
+
    // Creation Date
-   if (ok && (!fgets(buffer, 40, fs)))
+   if (ok && (!fgets(buffer, 400, fs)))
       ok = false;
    if (ok)
    {
@@ -2428,7 +2442,7 @@ HTTPProtocol::checkCacheEntry( QString &CEF)
    }
 
    // Expiration Date
-   if (ok && (!fgets(buffer, 40, fs)))
+   if (ok && (!fgets(buffer, 400, fs)))
       ok = false;
    if (ok)
    {
@@ -2436,6 +2450,7 @@ HTTPProtocol::checkCacheEntry( QString &CEF)
       if (date && (date < currentDate))
          ok = false; // Expired
    }
+
 
    if (ok)
       return fs;
@@ -2466,6 +2481,9 @@ HTTPProtocol::createCacheEntry( const QString &mimetype, time_t expireDate)
    }
 
    fputs(CACHE_REVISION, m_fcache);    // Revision
+
+   fputs(m_request.url.url().ascii(), m_fcache);  // Url
+   fputc('\n', m_fcache);
 
    QString date;
    date.setNum( time(0) );
