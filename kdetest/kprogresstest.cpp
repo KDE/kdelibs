@@ -1,4 +1,4 @@
-#include <qapp.h>
+#include <kapp.h>
 #include <qwidget.h>
 #include "kprogress.h"
 
@@ -48,7 +48,7 @@ void MyWidget::timerEvent(QTimerEvent *)
 
 int main(int argc, char *argv[])
 {
-	QApplication app(argc, argv);
+	KApplication app(argc, argv);
 	MyWidget w;
 	
 	app.setMainWidget(&w);

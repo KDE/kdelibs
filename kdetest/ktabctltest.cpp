@@ -2,6 +2,9 @@
  * $Id$
  *
  * $Log$
+ * Revision 1.1  1997/04/13 17:49:44  kulow
+ * Sources imported
+ *
  * Revision 1.1  1997/03/15 21:40:24  kalle
  * Initial revision
  *
@@ -17,7 +20,7 @@
  *
  */
 
-#include <qapp.h>
+#include <kapp.h>
 #include <qpushbt.h>
 #include <qlabel.h>
 #include <qobject.h>
@@ -46,7 +49,7 @@
 
 QFont default_font("Helvetica", 12);
 
-QApplication *a;
+KApplication *a;
 
 TopLevel::TopLevel(QWidget *parent, const char *name)
     : QWidget(parent, name)
@@ -106,7 +109,7 @@ void TopLevel::okPressed()
 
 int main( int argc, char ** argv )
 {
-    a = new QApplication ( argc, argv );
+    a = new KApplication ( argc, argv );
 
     a->setFont(default_font);
 

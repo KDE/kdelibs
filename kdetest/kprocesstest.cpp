@@ -13,7 +13,7 @@
 
 #include <stdio.h>
 #include <string.h>
-#include <qapp.h>
+#include <kapp.h>
 
 #include <signal.h>
 
@@ -34,7 +34,7 @@ void main(int argc, char *argv[])
 {
  KProcess p1, p2, p3, p4;
  Dummy dummy; 
- QApplication app(argc, argv);
+ KApplication app(argc, argv);
 
 
  printf("Welcome to the KProcess Demo Application!\n");

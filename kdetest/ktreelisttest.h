@@ -26,7 +26,7 @@ Cambridge, MA 02139, USA.
 #ifndef OUTLINE_H
 #define OUTLINE_H
 
-#include <qapp.h>
+#include <kapp.h>
 #include <qchkbox.h>
 #include <qgrpbox.h>
 #include <qlabel.h>

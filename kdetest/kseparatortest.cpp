@@ -18,7 +18,7 @@
  */
 
 
-#include <qapp.h>
+#include <kapp.h>
 #include <qlayout.h>
 #include <qwidget.h>
 

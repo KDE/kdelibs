@@ -8,7 +8,7 @@
 #include <stdlib.h>
 
 #include "klinetest.h"
-#include <qapp.h>
+#include <kapp.h>
 
 #include "klinetest.moc"
 
@@ -80,7 +80,7 @@ void Test::createFields()
 
 int main( int argc, char ** argv )
 {
-  QApplication a( argc, argv );
+  KApplication a( argc, argv );
   Test m;
 
   a.setMainWidget( &m );

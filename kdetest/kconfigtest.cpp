@@ -1,6 +1,26 @@
 // $Id$
 
 /* $Log$
+ *
+ * Revision 1.4  1997/09/10 13:53:11  kdecvs
+ * Kalle: Use KApplication instead of QApplication
+ *
+ * Revision 1.3  1997/07/08 21:21:06  kulow
+ * Coolo:
+ *    finally, I found the problem with automake-1.2!
+ *
+ *    The GNU people haven't the time to help me (I believe in this version :-),
+ *    so I took all my time between my exams and fidelt with the Makefiles and
+ *    now I've got the problem.
+ *    The solution was that near, that I could smell it, but I couldn't find it
+ *    till now.
+ *    The problem was, that the moc files are created after the depency tracking
+ *    and this went wrong with automake-1.2, because make stopped after this
+ *    errors. The problem was, that I couldn't find the part, where the depencies
+ *    are created, but now I have the solution:
+ *    lines like: "ksock.cpp: ksock.moc" in the Makefile solved the whole problem.
+ *
+ *    OK, now I'm my own hero and I can sleep very well now and you can update your
  *    automake to 1.2 (untested).
  *
  *    BTW: Martin, could you do it for me? Please!
@@ -69,7 +89,7 @@
 // configtest.cpp: libKDEcore example
 //
 // demonstrates use of KConfig class
-#include <qapp.h>
+//
 // adapted from Qt widgets demo
 
 
@@ -245,7 +265,7 @@ void KConfigTestView::keyEditReturnPressed()
 
 //
 // Create and display our KConfigTestView.
-    QApplication  a( argc, argv );
+    KApplication  a( argc, argv );
     KConfigTestView   *w = new KConfigTestView;
     a.setMainWidget( w );
     w->show();

@@ -1,11 +1,11 @@
-#include <qapp.h>
+#include <kapp.h>
 #include <qpixmap.h>
 #include "kdatepicktestdlg.h"
 #include "kdatepik.h"
 
 int main(int argc, char **argv)
 {
-   QApplication a(argc, argv);
+   KApplication a(argc, argv);
 //   a.setStyle(WindowsStyle); // comment out for Motif
    
 //   CMainDlg *w = new CMainDlg;

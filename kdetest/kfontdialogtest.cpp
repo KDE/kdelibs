@@ -22,6 +22,9 @@
     Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
   
     $Log$
+    Revision 1.2  1997/04/15 20:01:58  kalle
+    Kalles changes for 0.8
+
     Revision 1.1  1997/04/13 17:49:41  kulow
     Sources imported
 
@@ -35,7 +38,7 @@
 */
 
 
-#include <qapp.h>
+#include <kapp.h>
 #include "kfontdialog.h"
 #include <Kconfig.h>
 
@@ -45,7 +48,7 @@
   KConfig aConfig;
   aConfig.setGroup( "KFontDialog-test" );
 
-  QApplication app( argc, argv );
+  KApplication app( argc, argv );
   app.setFont(QFont("Helvetica",12));
 
   //  QFont font = QFont("Times",18,QFont::Bold);

@@ -3,7 +3,7 @@
  */
 
 
-#include <qapp.h>
+#include <kapp.h>
 #include <qpushbt.h>
 #include <qobject.h>
 #include <qlistbox.h>
@@ -65,7 +65,7 @@ void TopLevel::resizeEvent( QResizeEvent * )
 
 int main( int argc, char ** argv )
 {
-    a = new QApplication ( argc, argv );
+    a = new KApplication ( argc, argv );
 
     a->setFont(default_font);
     TopLevel *toplevel = new TopLevel(0, "test");

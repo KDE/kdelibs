@@ -2,7 +2,7 @@
 // started: 970607 afo
 // [Last modified: 970717 09:51:29 by afo@fh-zwickau.de (Andre Fornacon)]
 
-#include <qapp.h>
+#include <kapp.h>
 #include <qlabel.h>
 
 #include <kspinbox.h>
@@ -68,7 +68,7 @@ void StringTest::catchDecr()
 
 int main(int argc,char *argv[])
 {
-	QApplication app(argc,argv);
+	KApplication app(argc,argv);
 
 	QWidget top;
 	top.resize(400,350);

@@ -2,6 +2,9 @@
  * $Id$
  *
  * $Log$
+ * Revision 1.1  1997/04/13 17:49:42  kulow
+ * Sources imported
+ *
  * Revision 1.1  1997/03/15 21:40:24  kalle
  * Initial revision
  *
@@ -22,7 +25,7 @@
  *
  */
 
-#include <qapp.h>
+#include <kapp.h>
 #include <qpushbt.h>
 #include <qlabel.h>
 #include <qobject.h>
@@ -124,7 +127,7 @@ void TopLevel::showMsgBox(int item)
         
 int main( int argc, char ** argv )
 {
-    a = new QApplication ( argc, argv );
+    a = new KApplication ( argc, argv );
 
     a->setFont(default_font);
 

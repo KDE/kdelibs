@@ -275,7 +275,7 @@ void OutlineWidget::removeItem()
 
 int main(int argc, char **argv)
 {
-  QApplication app(argc, argv);
+  KApplication app(argc, argv);
   OutlineWidget outline;
   app.setMainWidget(&outline);
   outline.show();

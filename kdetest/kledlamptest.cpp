@@ -1,5 +1,5 @@
 
-#include <qapp.h>
+#include <kapp.h>
 #include <qwidget.h>
 #include <qtimer.h>
 #include <stdlib.h>
@@ -8,7 +8,7 @@
 
 int main( int argc, char **argv )
 {
-    QApplication a( argc, argv );
+    KApplication a( argc, argv );
 	QWidget qw;
     QTimer t;
     KLedLamp l(&qw);				// create lamp
