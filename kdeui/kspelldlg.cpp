@@ -99,6 +99,11 @@ KSpellDlg::KSpellDlg( QWidget * parent, const char * name, bool _progressbar, bo
   emit ready( false );
 }
 
+KSpellDlg::~KSpellDlg()
+{
+  delete d;
+}
+
 void
 KSpellDlg::init( const QString & _word, QStringList * _sugg )
 {

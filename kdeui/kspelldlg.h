@@ -61,6 +61,7 @@ class KSpellDlg : public KDialogBase
 public:
   KSpellDlg( QWidget *parent, const char *name,
 	     bool _progressbar = FALSE, bool _modal = FALSE );
+  ~KSpellDlg();
 
   QString replacement() const
     { return newword; }
