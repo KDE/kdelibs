@@ -23,8 +23,6 @@
 //----------------------------------------------------------------------------
 //
 // KDE HTML Widget -- HTML Parser
-// $Id$
-
 //#define PARSER_DEBUG
 //#define COMMENTS_IN_DOM
 
@@ -397,6 +395,44 @@ bool KHTMLParser::insertNode(NodeImpl *n)
         HTMLElementImpl *e;
         bool handled = false;
 
+        
+        // things that appear in tables before <tr> or <td> must be
+        // moved before the table. lets test this first...
+        if(current->id() == ID_TABLE)
+        {
+            // scripts, styles, etc are handled later, for now...
+            if(id!=ID_TD && id!=ID_TR && id!=ID_TH && id!=ID_SCRIPT && 
+                    id!=ID_STYLE && id!=ID_MAP && id!=ID_FORM)
+            {
+                NodeImpl *node = current;
+                NodeImpl *parent = node->parentNode();
+                
+                if (id == ID_TABLE) // <table><table> switches order, but 
+                                    // but also closes the first table. weird...
+                {
+                    popBlock(ID_TABLE);
+                }
+                                
+                int exceptioncode = 0;
+                parent->insertBefore(n, node, exceptioncode );
+                if ( exceptioncode ) {
+    #ifdef PARSER_DEBUG
+                    kdDebug( 6035 ) << "adding element before table failed!!!!" << endl;
+    #endif
+                    return false;
+                }                
+                
+                if(tagPriority[id] != 0 && id != ID_FORM && id != ID_INPUT ) {
+                    pushBlock(id, tagPriority[id]);
+                    current = n;
+                }
+                if(!n->attached())  n->attach(HTMLWidget);
+                if(tagPriority[id] == 0 && n->renderer())
+                    n->renderer()->close();
+                return true;
+            }
+        }        
+        
         // switch according to the element to insert
         switch(id)
         {
@@ -749,6 +785,8 @@ bool KHTMLParser::insertNode(NodeImpl *n)
             handled = true;
             break;
         case ID_FONT:
+            popBlock(ID_FONT);
+            handled = true;
             break;
         default:
             if(current->isDocumentNode())
