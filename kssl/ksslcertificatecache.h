@@ -60,9 +60,10 @@ enum KSSLCertificatePolicy { Unknown, Reject, Accept, Prompt, Ambiguous };
   bool seenCN(QString& cn);
   bool seenCertificate(KSSLCertificate& cert);
 
-  // This needs to deal with the permanent flag
   bool removeByCN(QString& cn);
   bool removeByCertificate(KSSLCertificate& cert);
+
+  bool isPermanent(KSSLCertificate& cert);
 
   // You shouldn't need to call this but in some weird circumstances
   // it might be necessary.

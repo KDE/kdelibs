@@ -340,6 +340,25 @@ bool KSSLCertificateCache::seenCertificate(KSSLCertificate& cert) {
 }
 
 
+bool KSSLCertificateCache::isPermanent(KSSLCertificate& cert) {
+  KSSLCNode *node;
+
+  for (node = d->certList.first(); node; node = d->certList.next()) {
+    if (cert == *(node->cert)) {
+      if (!node->permanent && node->expires > QDateTime::currentDateTime()) {
+        d->certList.remove(node);
+        delete node;
+        continue;
+      }
+      d->certList.remove(node);
+      d->certList.prepend(node);
+      return node->permanent;
+    }
+  }
+  return false;
+}
+
+
 bool KSSLCertificateCache::removeByCN(QString& cn) {
   KSSLCNode *node;
   bool gotOne = false;
