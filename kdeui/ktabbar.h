@@ -62,12 +62,18 @@ signals:
     void receivedDropEvent( int, QDropEvent * );
     void moveTab( int, int );
     void closeRequest( int );
+#ifndef QT_NO_WHEELEVENT
+    void wheelDelta( int );
+#endif
 
 protected:
     virtual void mouseDoubleClickEvent( QMouseEvent *e );
     virtual void mousePressEvent( QMouseEvent *e );
     virtual void mouseMoveEvent( QMouseEvent *e );
     virtual void mouseReleaseEvent( QMouseEvent *e );
+#ifndef QT_NO_WHEELEVENT
+    virtual void wheelEvent( QWheelEvent *e );
+#endif
 
     virtual void dragMoveEvent( QDragMoveEvent *e );
     virtual void dropEvent( QDropEvent *e );

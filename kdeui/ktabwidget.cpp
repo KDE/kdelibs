@@ -37,6 +37,9 @@ KTabWidget::KTabWidget( QWidget *parent, const char *name, WFlags f )
     connect(tabBar(), SIGNAL(receivedDropEvent( int, QDropEvent * )), SLOT(receivedDropEvent( int, QDropEvent * )));
     connect(tabBar(), SIGNAL(moveTab( int, int )), SLOT(moveTab( int, int )));
     connect(tabBar(), SIGNAL(closeRequest( int )), SLOT(closeRequest( int )));
+#ifndef QT_NO_WHEELEVENT
+    connect(tabBar(), SIGNAL(wheelDelta( int )), SLOT(wheelDelta( int )));
+#endif
 }
 
 KTabWidget::~KTabWidget()
@@ -95,6 +98,29 @@ void KTabWidget::dropEvent( QDropEvent *e )
     }
     QTabWidget::dropEvent( e );
 }
+
+#ifndef QT_NO_WHEELEVENT
+void KTabWidget::wheelEvent( QWheelEvent *e )
+{
+    wheelDelta( e->delta() );
+}
+
+void KTabWidget::wheelDelta( int delta )
+{
+   if ( count() < 2 )
+       return;
+
+   int page = currentPageIndex();
+   if ( delta < 0 )
+       page = (page + 1) % count();
+   else {
+       page--;
+       if ( page < 0 )
+           page = count() - 1;
+   }
+   setCurrentPage( page );
+}
+#endif
 
 void KTabWidget::mouseDoubleClickEvent( QMouseEvent *e )
 {

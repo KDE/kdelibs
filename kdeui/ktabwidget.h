@@ -169,6 +169,9 @@ protected:
     virtual void mousePressEvent( QMouseEvent * );
     virtual void dragMoveEvent( QDragMoveEvent * );
     virtual void dropEvent( QDropEvent * );
+#ifndef QT_NO_WHEELEVENT
+    virtual void wheelEvent( QWheelEvent *e );
+#endif
 
 protected slots:
     virtual void receivedDropEvent( int, QDropEvent * );
@@ -177,6 +180,9 @@ protected slots:
     virtual void mouseDoubleClick( int );
     virtual void mouseMiddleClick( int );
     virtual void closeRequest( int );
+#ifndef QT_NO_WHEELEVENT
+    virtual void wheelDelta( int );
+#endif
 
 private:
     bool isEmptyTabbarSpace( const QPoint & )  const;

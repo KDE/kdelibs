@@ -287,6 +287,13 @@ void KTabBar::dropEvent( QDropEvent *e )
     QTabBar::dropEvent( e );
 }
 
+#ifndef QT_NO_WHEELEVENT
+void KTabBar::wheelEvent( QWheelEvent *e )
+{
+    emit( wheelDelta( e->delta() ) );
+}
+#endif
+
 void KTabBar::setTabColor( int id, const QColor& color )
 {
     QTab *t = tab( id );
