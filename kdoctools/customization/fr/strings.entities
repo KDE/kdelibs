@@ -10,14 +10,14 @@
 <!ENTITY FDLISTitles "LISTE DE LEURS TITRES"><!-- keep capitals -->
 <!ENTITY FDLInvariantSections "les sections invariantes étant &FDLISTitles;">
  ]]>
-<!ENTITY FDLInvariantSections "aucune section invariante">
+<!ENTITY FDLInvariantSections "section invariante">
 <![%FDLFCT;[
 <!ENTITY FDLFCTTitles "LISTE"><!-- keep capitals -->
-<!ENTITY FDLFrontCoverText "les textes de devant de couverture étant &FDLFCTTitles;">
+<!ENTITY FDLFrontCoverText "les textes de première de couverture étant &FDLFCTTitles;">
  ]]>
-<!ENTITY FDLFrontCoverText "aucun texte de devant de couverture">
+<!ENTITY FDLFrontCoverText "texte de première de couverture">
 <![%FDLBCT;[
 <!ENTITY FDLBCTTitles "LISTE DE LEURS TITRES"><!-- keep capitals -->
-<!ENTITY FDLBackCoverText "les textes d'arrière de couverture étant &FDLBCTTitles;">
+<!ENTITY FDLBackCoverText "les textes de quatrième de couverture étant &FDLBCTTitles;">
  ]]>
-<!ENTITY FDLBackCoverText "aucun texte d'arrière de couverture">
+<!ENTITY FDLBackCoverText "texte de quatrième de couverture">
