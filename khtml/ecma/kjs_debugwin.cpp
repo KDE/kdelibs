@@ -51,6 +51,7 @@
 #include <kmenubar.h>
 #include <kaction.h>
 #include <kactioncollection.h>
+#include <kglobalsettings.h>
 #include <kshortcut.h>
 #include <kconfig.h>
 #include <kconfigbase.h>
@@ -73,7 +74,8 @@ using namespace KJS;
 using namespace khtml;
 
 SourceDisplay::SourceDisplay(KJSDebugWin *debugWin, QWidget *parent, const char *name)
-  : QScrollView(parent,name), m_currentLine(-1), m_sourceFile(0), m_debugWin(debugWin), m_font("fixed",10)
+  : QScrollView(parent,name), m_currentLine(-1), m_sourceFile(0), m_debugWin(debugWin), 
+    m_font(KGlobalSettings::fixedFont().family(),10)
 {
   verticalScrollBar()->setLineStep(QFontMetrics(m_font).height());
 }
@@ -335,7 +337,7 @@ KJSDebugWin::KJSDebugWin(QWidget *parent, const char *name)
   // frame list & code
   QSplitter *hsplitter = new QSplitter(Qt::Vertical,mainWidget);
   QSplitter *vsplitter = new QSplitter(hsplitter);
-  QFont font("fixed",12);
+  QFont font(KGlobalSettings::fixedFont());
 
   QWidget *contextContainer = new QWidget(vsplitter);
 
