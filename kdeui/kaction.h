@@ -306,11 +306,12 @@ public:
     virtual ~KAction();
 
     // DOCUMENT ME!
+    // better REMOVE ME! It's unused. (Simon)
     virtual void update();
 
     /**
      * "Plug" or insert this action into a given widget.
-
+     *
      * This will
      * typically be a menu or a toolbar.  From this point on, you will
      * never need to directly manipulate the item in the menu or
@@ -322,18 +323,18 @@ public:
     virtual int plug( QWidget *w, int index = -1 );
 	
     /**
-	 * "Plug" or insert this action into a given KAccel.
-	 *
-	 * It is sometimes useful to use the action paradigm for
-	 * actions that are not associated with some widget (ie actions
-	 * that are only activated by keyboard).
-	 *
-	 * @param accel The KAccel which activates this action
-	 * @param configurable If the accelerator is configurable via
-	 * the KAccel configuration dialog (this is somehow deprecated since
-	 * there is now a KAction key configuration dialog).
-	 */
-	virtual void plugAccel(KAccel *accel, bool configurable = true);
+     * "Plug" or insert this action into a given KAccel.
+     *
+     * It is sometimes useful to use the action paradigm for
+     * actions that are not associated with some widget (ie actions
+     * that are only activated by keyboard).
+     *
+     * @param accel The KAccel which activates this action
+     * @param configurable If the accelerator is configurable via
+     * the KAccel configuration dialog (this is somehow deprecated since
+     * there is now a KAction key configuration dialog).
+     */
+    virtual void plugAccel(KAccel *accel, bool configurable = true);
 
     /**
      * "Unplug" or remove this action from a given widget.
@@ -350,8 +351,8 @@ public:
     virtual void unplug( QWidget *w );
 	
     /**
-	 * Disconnect this action from the KAccel.
-	 */
+     * Disconnect this action from the KAccel.
+     */
     virtual void unplugAccel();
 	
     /**
@@ -1239,6 +1240,8 @@ private:
     class KActionSeparatorPrivate;
     KActionSeparatorPrivate *d;
 };
+
+
 
 class KActionCollection : public QObject
 {

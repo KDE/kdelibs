@@ -31,13 +31,6 @@
 #include <kdebug.h>
 #include <kaction.h>
 
-static void dump_xml(const QDomElement& elem)
-{
-  // ##### why not use kdDebug here? That would make it possible to turn it on/off via kdebugdialog (Simon)
-  // ##### (and why a separate static method? ;-)
-  kdDebug() << KXMLGUIFactory::elementToXML(elem) << endl;
-}
-
 class KXMLGUIClientPrivate
 {
 public:
@@ -193,8 +186,6 @@ void KXMLGUIClient::setDOMDocument( const QDomDocument &document, bool merge )
     // reassign our pointer as mergeXML might have done something
     // strange to it
     base = d->m_doc.documentElement();
-
-    //    dump_xml(base.toElement());
 
     // we want some sort of failsafe.. just in case
     if ( base.isNull() )
@@ -575,7 +566,6 @@ public:
   }
   virtual ~InternalXMLConsumer() {}
 
-//  virtual bool startElement( const QString& name )
   virtual bool startElement( const QString &, const QString &, const QString &qName, const QSAXAttributes &atts )
   {
     static QString attrVersion = QString::fromLatin1( "version" );
@@ -589,7 +579,7 @@ public:
         version = atts.value(i);
 	return false;
       }
-    
+
     return false;
   }
   virtual bool endElement( const QString &, const QString &, const QString & )
@@ -623,17 +613,17 @@ QString KXMLGUIClient::findMostRecentXMLFile( const QString &fileName, QString &
   for (; docIt != docEnd; ++docIt )
   {
     InternalXMLConsumer consumer;
-    
+
     QXMLSimpleReader reader;
-    
+
     QSAXInputSource source;
     source.setData( docIt.data() );
-    
+
     reader.setContentHandler( &consumer );
     reader.setErrorHandler( &consumer );
     reader.setFeature( "http://xml.org/sax/features/namespaces", FALSE );
     reader.setFeature( "http://xml.org/sax/features/namespace-prefixes", TRUE );
-    
+
     QXMLSimpleReader parser;
     reader.parse( source );
     QString versionStr = consumer.version;
