@@ -21,6 +21,7 @@
  *
  * $Id$
  */
+
 //#define DEBUG_LAYOUT
 //#define BIDI_DEBUG
 
@@ -583,9 +584,9 @@ void RenderText::printObject( QPainter *p, int /*x*/, int y, int /*w*/, int h,
             {
                 int h = lineHeight( false ) + paddingTop() + paddingBottom() + borderTop() + borderBottom();
                 QColor c2 = QColor("#0000ff");
-                drawBorder(p, tx, ty, tx+1, ty + h,
+                drawBorder(p, tx + s->m_x, ty + s->m_y, tx + s->m_x + 1, ty + s->m_y + h,
                               RenderObject::BSLeft, c2, c2, SOLID, 1, 1);
-                drawBorder(p, tx + s->m_width, ty, tx + s->m_width + 1, ty + h,
+                drawBorder(p, tx + s->m_x + s->m_width, ty + s->m_y, tx + s->m_x + s->m_width + 1, ty + s->m_y + h,
                               RenderObject::BSRight, c2, c2, SOLID, 1, 1);
             }
 #endif
