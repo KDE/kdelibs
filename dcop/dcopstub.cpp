@@ -43,6 +43,11 @@ void DCOPStub::setStatus( Status status )
     m_status = status;
 }
 
+bool DCOPStub::ok() const
+{
+    return m_status != CallFailed;
+}
+
 void DCOPStub::callFailed()
 {
     setStatus( CallFailed );

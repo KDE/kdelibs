@@ -158,7 +158,7 @@ void generateStubImpl( const QString& idl, const QString& header, const QString&
 				str << "    arg << " << *it << ";" << endl;
 			    }
 			}
-			str << "    kapp->dcopClient()->send( DCOPStub::app(), DCOPStub::obj(), \"" << funcName << "\", data );" << endl;
+			str << "    kapp->dcopClient()->send( app(), obj(), \"" << funcName << "\", data );" << endl;
 			str << "    setStatus( CallSucceeded );" << endl;
 		    } else {
 		
@@ -174,7 +174,7 @@ void generateStubImpl( const QString& idl, const QString& header, const QString&
 				str << "    arg << " << *it << ";" << endl;
 			    }
 			}
-			str << "    if ( kapp->dcopClient()->call( DCOPStub::app(), DCOPStub::obj(), \"" << funcName << "\",";
+			str << "    if ( kapp->dcopClient()->call( app(), obj(), \"" << funcName << "\",";
 			str << " data, replyType, replyData ) ) {" << endl;
 			if ( result != "void" ) {
 			    str << "\tif ( replyType == \"" << result << "\" ) {" << endl;

@@ -25,8 +25,8 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 #include <qstring.h>
 
-/** 
-* Abstract base class for dcop stubs as created by the 
+/**
+* Abstract base class for dcop stubs as created by the
 * dcopidl2cpp compiler
 *
 */
@@ -45,26 +45,36 @@ public:
        Returns the object  id.
      */
     QCString obj() const;
-    
+
     enum Status{ CallSucceeded, CallFailed };
     /**
       Returns the status of the last call, either 'CallSucceeded' or 'CallFailed'
+
+      See @ref ok();
      */
     Status status() const;
+    
+    
+    /**
+       Returns whether no error occured
+       
+       See @ref status();
+     */
+    bool ok()  const;
 
 protected:
-    
+
     /**
        Sets the status to status. Possible values are 'CallSucceeded' and 'CallFailed'
      */
     void setStatus( Status status );
-    
+
     /**
       Invoked whenever a call fails.  The default implementation
       sets the status to CallFailed.
      */
     virtual void callFailed();
-    
+
 private:
     QCString m_app;
     QCString m_obj;
