@@ -123,7 +123,7 @@ void KPFilterPage::slotAddClicked()
 		return;
 	}
 	bool	ok;
-	QString	choice = QInputDialog::getItem(i18n("Add Filter"),i18n("Select the filter to add"),l,0,false,&ok,this);
+	QString	choice = QInputDialog::getItem(i18n("Add Filter"),i18n("Select the filter to add:"),l,0,false,&ok,this);
 	if (ok)
 	{
 		int		index = m_filters.findIndex(choice)-1;
