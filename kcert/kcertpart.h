@@ -35,6 +35,7 @@ class QLabel;
 class KCertPartPrivate;
 class QComboBox;
 class QButton;
+class KSSLSigners;
 class KSSLPKCS12;
 class KSSLCertificate;
 class QTabWidget;
@@ -84,7 +85,8 @@ protected:
   virtual bool openFile();
   virtual bool saveFile();
 
-  void displayCert(KSSLCertificate *c);
+  void displayPKCS12Cert(KSSLCertificate *c);
+  void displayCACert(KSSLCertificate *c);
 
   KListView *_sideList;
   KListViewItem *_parentCA, *_parentP12;
@@ -99,6 +101,12 @@ protected:
   KSSLCertBox *_p12_subject, *_p12_issuer;
 
   // for the CA widget
+  QLabel *_ca_filenameLabel, *_ca_validFrom, *_ca_validUntil, 
+         *_ca_serialNum, *_ca_certState;
+  QLabel *_ca_digest;
+  QMultiLineEdit *_ca_pubkey, *_ca_sig;
+  KSSLCertBox *_ca_subject, *_ca_issuer;
+
 
   // The rest
   KInstance *_instance;
@@ -108,6 +116,7 @@ protected:
   KSSLCertificate *_ca;
   QTabWidget *_tabs;
   QGridLayout *_baseGrid;
+  KSSLSigners *_signers;
 
 private:
   KCertPartPrivate *d;

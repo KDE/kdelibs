@@ -1,9 +1,19 @@
 [Desktop Entry]
 Type=Service
 Comment=Embeddable Personal Certificate Manager
-MimeType=application/x-pkcs12;
+Comment[ara]=مددير شهادات اعتماد شخصي قابل للدمج
+Comment[az]=Hopdurulabilən Şəxsi Vəsiqə İdarəçisi
+Comment[da]=Indlejrbar personlig certifikathåndtering
+Comment[eu]=Ziurtagirien Kudeatzaile Pertsonal Txertagarria
+Comment[he]=מנהל תעודות אישי בר-הטבעה
+Comment[hu]=Beágyazható személyes tanúsítványkezelő
+Comment[sv]=Inbäddningsbar personlig certifikatshanterare
+Comment[xxx]=xx
+Comment[zh_TW.Big5]=可嵌入的個人認證管理工具
+MimeType=application/x-pkcs12;application/x-x509-ca-cert;
 Icon=lock
 Name=KCertPart
+Name[xxx]=xx
 ServiceTypes=KParts/ReadWritePart
 X-KDE-Library=libkcertpart
 InitialPreference=15

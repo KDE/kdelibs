@@ -34,6 +34,8 @@
 #include <kmessagebox.h>
 #include <kpassdlg.h>
 #include <ksslall.h>
+#include <kopenssl.h>
+#include <ksslpemcallback.h>
 #include <kfiledialog.h>
 #include <kprocess.h>
 #include <qtabwidget.h>
@@ -99,6 +101,8 @@ KCertPart::KCertPart(QWidget *parentWidget, const char *widgetName,
  QGridLayout *grid;
  setInstance(instance);
 
+
+ _signers = new KSSLSigners;
  // This is a bit confusing now.  Here's now it works:
  //    We create an _frame and split it left/right
  //    Then we add the ListView to the left and create
@@ -220,6 +224,90 @@ KCertPart::KCertPart(QWidget *parentWidget, const char *widgetName,
 //------------------------------------------------------------------------
 //   The X509 widget
 //------------------------------------------------------------------------
+//   Note: this is almost identical to the above, but I duplicate it for
+//   the simple reason that the above has potential to display much
+//   more information, and this one has potential to display different
+//   information.
+ _x509Frame = new QFrame(_frame);
+
+ grid = new QGridLayout(_x509Frame, 12, 6, KDialog::marginHint(),
+                                       KDialog::spacingHint() );
+ grid->addMultiCellWidget(new QLabel(i18n("KDE Secure Certificate Import"), _x509Frame), 0, 0, 0, 5);
+
+ grid->addWidget(new QLabel(i18n("Subject:"), _x509Frame), 1, 0);
+ grid->addWidget(new QLabel(i18n("Issued by:"), _x509Frame), 1, 3);
+ _ca_subject = KSSLInfoDlg::certInfoWidget(_x509Frame, QString(""));
+ _ca_issuer = KSSLInfoDlg::certInfoWidget(_x509Frame, QString(""));
+ grid->addMultiCellWidget(_ca_subject, 2, 5, 0, 2);
+ grid->addMultiCellWidget(_ca_issuer, 2, 5, 3, 5);
+
+ grid->addWidget(new QLabel(i18n("File:"), _x509Frame), 6, 0);
+ _ca_filenameLabel = new QLabel("", _x509Frame);
+ grid->addWidget(_ca_filenameLabel, 6, 1);
+ grid->addWidget(new QLabel(i18n("File Format:"), _x509Frame), 6, 3);
+ grid->addWidget(new QLabel("PEM Encoded X.509", _x509Frame), 6, 4);
+
+
+ //
+ //  Make the first tab
+ //
+ _tabs = new QTabWidget(_x509Frame);
+ grid->addMultiCellWidget(_tabs, 7, 11, 0, 5);
+
+ tab = new QFrame(_x509Frame);
+ tabGrid = new QGridLayout(tab, 4, 5, KDialog::marginHint(),
+                                      KDialog::spacingHint() );
+ tabGrid->addWidget(new QLabel(i18n("State:"), tab), 0, 0);
+ _ca_certState = new QLabel("", tab);
+ tabGrid->addMultiCellWidget(_ca_certState, 0, 0, 1, 4);
+
+ tabGrid->addWidget(new QLabel(i18n("Valid From:"), tab), 1, 0);
+ _ca_validFrom = new QLabel("", tab);
+ tabGrid->addMultiCellWidget(_ca_validFrom, 1, 1, 1, 4);
+
+ tabGrid->addWidget(new QLabel(i18n("Valid Until:"), tab), 2, 0);
+ _ca_validUntil = new QLabel("", tab);
+ tabGrid->addMultiCellWidget(_ca_validUntil, 2, 2, 1, 4);
+
+ tabGrid->addWidget(new QLabel(i18n("Serial Number:"), tab), 3, 0);
+ _ca_serialNum = new QLabel("", tab);
+ tabGrid->addWidget(_ca_serialNum, 3, 1);
+ _tabs->addTab(tab, i18n("State"));
+
+
+ //
+ // Make the second tab
+ //
+ tab = new QFrame(_x509Frame);
+ tabGrid = new QGridLayout(tab, 4, 5, KDialog::marginHint(),
+                                      KDialog::spacingHint() );
+ tabGrid->addWidget(new QLabel(i18n("MD5 Digest:"), tab), 0, 0);
+ _ca_digest = new QLabel(tab);
+ tabGrid->addMultiCellWidget(_ca_digest, 0, 0, 1, 4);
+ tabGrid->addWidget(new QLabel(i18n("Signature:"), tab), 1, 0);
+ _ca_sig = new QMultiLineEdit(tab);
+ tabGrid->addMultiCellWidget(_ca_sig, 1, 3, 1, 4);
+ _ca_sig->setReadOnly(true);
+
+ _tabs->addTab(tab, i18n("Signature"));
+
+
+ //
+ // Make the third tab
+ //
+ tab = new QFrame(_x509Frame);
+ tabGrid = new QGridLayout(tab, 4, 5, KDialog::marginHint(),
+                                      KDialog::spacingHint() );
+ tabGrid->addWidget(new QLabel(i18n("Public Key:"), tab), 0, 0);
+ _ca_pubkey = new QMultiLineEdit(tab);
+ tabGrid->addMultiCellWidget(_ca_pubkey, 0, 3, 1, 4);
+ _ca_pubkey->setReadOnly(true);
+ 
+
+ _tabs->addTab(tab, i18n("Public Key"));
+
+ _x509Frame->hide();
+
 
 
 
@@ -256,6 +344,7 @@ KCertPart::KCertPart(QWidget *parentWidget, const char *widgetName,
 
 
  _baseGrid->addMultiCellWidget(_pkcsFrame, 0, 12, 2, 8);
+ _baseGrid->addMultiCellWidget(_x509Frame, 0, 12, 2, 8);
  _baseGrid->addMultiCellWidget(_blankFrame, 0, 12, 2, 8);
 
  connect(_sideList, SIGNAL(selectionChanged(QListViewItem*)),
@@ -265,6 +354,7 @@ KCertPart::KCertPart(QWidget *parentWidget, const char *widgetName,
 
 
 KCertPart::~KCertPart() {
+ delete _signers;
  delete d->browserExtension;
  delete d;
 }
@@ -304,13 +394,16 @@ bool KCertPart::openFile() {
   KMessageBox::sorry(_frame, i18n("You don't seem to have compiled KDE with SSL support."), i18n("Certificate Import"));
  return false;
 #else
-QCString pass;
 
   emit completed();
 
   QString whatType = KMimeType::findByURL(m_url)->name();
 
+/////////////////////////////////////////////////////////////////////////////
+//       x-pkcs12 loading
+/////////////////////////////////////////////////////////////////////////////
 if (whatType == "application/x-pkcs12") {
+QCString pass;
   _p12 = KSSLPKCS12::loadCertFile(m_file);
 
   while (!_p12) {
@@ -332,6 +425,9 @@ if (whatType == "application/x-pkcs12") {
   new KPKCS12Item(_parentP12, _p12);
   _p12 = NULL;
  return true;
+/////////////////////////////////////////////////////////////////////////////
+//       x-509-ca-cert loading
+/////////////////////////////////////////////////////////////////////////////
 } else if (whatType == "application/x-x509-ca-cert") {
  QFile qf(m_file);
  FILE *fp; 
@@ -346,10 +442,44 @@ if (whatType == "application/x-pkcs12") {
     return false;
  }
 
-// STACK_OF(X509_INFO) *sx5i = KOSSL::self()->PEM_X509_INFO_read(fp, NULL, , NULL);
+#define sk_free KOSSL::self()->sk_free
+#define sk_num KOSSL::self()->sk_num
+#define sk_value KOSSL::self()->sk_value
+ STACK_OF(X509_INFO) *sx5i = KOSSL::self()->PEM_X509_INFO_read(fp, NULL, KSSLPemCallback, NULL);
+
+ if (!sx5i) {
+    KMessageBox::sorry(_frame, i18n("This file cannot be opened."), i18n("Certificate Import"));
+    return false;
+ }
+
+ _ca_filenameLabel->setText(m_file);
+ for (int i = 0; i < sk_X509_INFO_num(sx5i); i++) {
+	X509_INFO* x5i = sk_X509_INFO_value(sx5i, i);
+	if (x5i->x_pkey && x5i->x509) {   // a personal cert (like PKCS12)
+		kdDebug() << "Found a personal certificate..." << endl;
+	} else if (x5i->x509) {   // something else - maybe a CA file
+		KSSLCertificate *xc = KSSLCertificate::fromX509(x5i->x509);
+		if (xc->x509V3Extensions().certTypeCA())
+			new KX509Item(_parentCA, xc);
+		else delete xc;     // dunno what to do with it?
+	} else if (x5i->crl) {   // a crl
+		kdDebug() << "Found a CRL..." << endl;
+	}
+ }
+
+ sk_X509_INFO_free(sx5i);
+
+#undef sk_free
+#undef sk_num
+#undef sk_value
+
  return true;
+/////////////////////////////////////////////////////////////////////////////
+//       Dunno how to load this
+/////////////////////////////////////////////////////////////////////////////
 } else {
-  KMessageBox::sorry(_frame, i18n("I don't know how to handle this type of file."), i18n("Certificate Import"));
+  QString emsg = i18n("I don't know how to handle this type of file.") + "\n" + whatType;
+  KMessageBox::sorry(_frame, emsg, i18n("Certificate Import"));
  return false;
 }
 #endif
@@ -359,7 +489,7 @@ if (whatType == "application/x-pkcs12") {
 void KCertPart::displayPKCS12() {
   KSSLCertificate *xc = _p12->getCertificate();
   _p12_filenameLabel->setText(m_file);
-  displayCert(xc);
+  displayPKCS12Cert(xc);
   _p12_certState->setText(KSSLCertificate::verifyText(_p12->validate()));
 
   // Set the chain if it's there
@@ -381,7 +511,48 @@ void KCertPart::displayPKCS12() {
 }
 
 
-void KCertPart::displayCert(KSSLCertificate *c) {
+void KCertPart::displayCACert(KSSLCertificate *c) {
+  // We have the file, lets work with it.
+  _ca_subject->setValues(c->getSubject());
+  _ca_issuer->setValues(c->getIssuer());
+
+  // Set the valid period
+         QPalette cspl = _ca_validFrom->palette();
+         if (QDateTime::currentDateTime() < c->getQDTNotBefore()) {
+            cspl.setColor(QColorGroup::Foreground, QColor(196,33,21));
+         } else {
+            cspl.setColor(QColorGroup::Foreground, QColor(42,153,59));
+         }
+         _ca_validFrom->setPalette(cspl);
+         _ca_validFrom->setText(c->getNotBefore());
+
+         cspl = _ca_validUntil->palette();
+         if (QDateTime::currentDateTime() > c->getQDTNotAfter()) {
+            cspl.setColor(QColorGroup::Foreground, QColor(196,33,21));
+         } else {
+            cspl.setColor(QColorGroup::Foreground, QColor(42,153,59));
+         }
+         _ca_validUntil->setPalette(cspl);
+         _ca_validUntil->setText(c->getNotAfter());
+
+  _ca_serialNum->setText(c->getSerialNumber());
+         cspl = _ca_certState->palette();
+         if (!c->isValid()) {
+            cspl.setColor(QColorGroup::Foreground, QColor(196,33,21));
+         } else {
+            cspl.setColor(QColorGroup::Foreground, QColor(42,153,59));
+         }
+         _ca_certState->setPalette(cspl);
+  _ca_certState->setText(KSSLCertificate::verifyText(c->validate()));
+
+  _ca_pubkey->setText(c->getPublicKeyText());
+  _ca_digest->setText(c->getMD5DigestText());
+  _ca_sig->setText(c->getSignatureText());
+}
+
+
+
+void KCertPart::displayPKCS12Cert(KSSLCertificate *c) {
   // We have the file, lets work with it.
   _p12_subject->setValues(c->getSubject());
   _p12_issuer->setValues(c->getIssuer());
@@ -425,10 +596,10 @@ void KCertPart::displayCert(KSSLCertificate *c) {
 void KCertPart::slotChain(int c) {
 
   if (c == 0) {
-     displayCert(_p12->getCertificate());
+     displayPKCS12Cert(_p12->getCertificate());
      _p12_certState->setText(KSSLCertificate::verifyText(_p12->validate()));
   } else {
-     displayCert(_p12->getCertificate()->chain().getChain().at(c-1));
+     displayPKCS12Cert(_p12->getCertificate()->chain().getChain().at(c-1));
   }
 }
 
@@ -450,6 +621,10 @@ if (_p12) {
   cfg.sync();
   KMessageBox::information(_frame, i18n("Certificate has been successfully imported into KDE.\nYou can manage your certificate settings from the KDE Control Center."), i18n("Certificate Import"));
 } else if (_ca) {
+  _signers->addCA(_ca->toString(),
+		  _ca->x509V3Extensions().certTypeSSLCA(),
+		  _ca->x509V3Extensions().certTypeEmailCA(),
+		  _ca->x509V3Extensions().certTypeCodeCA());
 }
 }
 
@@ -476,12 +651,14 @@ void KCertPart::slotSelectionChanged(QListViewItem *x) {
   _p12 = NULL;
   _ca = NULL;
   _blankFrame->hide();
+  _x509Frame->hide();
   _pkcsFrame->hide();
   if (x && x->parent() == _parentCA) {
 	_x509Frame->show();
 	_ca = dynamic_cast<KX509Item*>(x)->cert;
 	_import->setEnabled(isReadWrite());
 	_save->setEnabled(isReadWrite());
+	displayCACert(_ca);
   } else if (x && x->parent() == _parentP12) {
 	_pkcsFrame->show();
 	_p12 = dynamic_cast<KPKCS12Item*>(x)->cert;
