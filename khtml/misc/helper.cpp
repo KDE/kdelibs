@@ -41,8 +41,8 @@ struct HTMLColors {
 };
 
 struct colorMap {
-    const char * const name;
-    const char * const value;
+    const char * name;
+    const char * value;
 };
 
 static const colorMap cmap[] = {
@@ -155,7 +155,7 @@ HTMLColors::HTMLColors()
 
     KConfig *globalConfig = KGlobal::config();
     const QPalette &pal = kapp->palette();
-    
+
     const uiColors *uicol = uimap;
     const char *lastConfigGroup = 0;
     while( uicol->name ) {
