@@ -534,7 +534,7 @@ void KKeyChooser::readGlobalKeys()
   // Insert all global keys into d->globalDict
   int *keyCode;
   KConfig pConfig;
-  QMap<QString, QString> tmpMap = pConfig.entryMap(i18n("Global Keys"));
+  QMap<QString, QString> tmpMap = pConfig.entryMap(QString::fromLatin1("Global Keys"));
   QMap<QString, QString>::Iterator gIt(tmpMap.begin());
   for (; gIt != tmpMap.end(); ++gIt) {
     keyCode = new int;
@@ -559,7 +559,7 @@ void KKeyChooser::readStdKeys()
   // Insert all standard keys into d->globalDict
   int *keyCode;
   KConfig pConfig;
-  QMap<QString, QString> tmpMap = pConfig.entryMap(i18n("Keys"));
+  QMap<QString, QString> tmpMap = pConfig.entryMap(QString::fromLatin1("Keys"));
   QMap<QString, QString>::Iterator sIt(tmpMap.begin());
   for (; sIt != tmpMap.end(); ++sIt) {
     keyCode = new int;
