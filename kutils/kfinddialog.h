@@ -86,6 +86,7 @@ public:
         CaseSensitive = 8,      // Consider case when matching.
         FindBackwards = 16,     // Go backwards.
         RegularExpression = 32, // Interpret the pattern as a regular expression.
+        // Note that KReplaceDialog uses 256 and 512
         // User extensions can use boolean options above this value.
         MinimumUserOption = 65536
     };
