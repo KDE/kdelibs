@@ -35,7 +35,7 @@ namespace KJS {
     ReferenceListNode *next;
   };
 
-  class ReferenceListHeadNode : ReferenceListNode {
+  class ReferenceListHeadNode : private ReferenceListNode {
     friend class ReferenceList;
     friend class ReferenceListIterator;
 
