@@ -552,7 +552,6 @@ bool CSSStyleSelector::checkOneSelector(DOM::CSSSelector *sel, DOM::ElementImpl 
             break;
         case CSSSelector::List:
         {
-            //kdDebug( 6080 ) << "checking for list match" << endl;
             QString str = value.string();
             QString selStr = sel->value.string();
             int pos = str.find(selStr, 0, strictParsing);
@@ -2244,7 +2243,7 @@ void CSSStyleSelector::applyRule( DOM::CSSProperty *prop )
     }
 
 // rect
-	case CSS_PROP__KONQ_JS_CLIP:
+    case CSS_PROP__KONQ_JS_CLIP:
     case CSS_PROP_CLIP:
     {
 	Length top;

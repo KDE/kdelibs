@@ -48,8 +48,9 @@ class CSSStyleDeclarationImpl : public StyleBaseImpl
 public:
     CSSStyleDeclarationImpl(CSSRuleImpl *parentRule);
     CSSStyleDeclarationImpl(CSSRuleImpl *parentRule, QPtrList<CSSProperty> *lstValues);
-
     virtual ~CSSStyleDeclarationImpl();
+
+    CSSStyleDeclarationImpl& operator=( const CSSStyleDeclarationImpl&);
 
     unsigned long length() const;
     CSSRuleImpl *parentRule() const;
@@ -80,6 +81,10 @@ public:
 protected:
     QPtrList<CSSProperty> *m_lstValues;
     NodeImpl *m_node;
+
+private:
+    // currently not needed - make sure its not used
+    CSSStyleDeclarationImpl(const CSSStyleDeclarationImpl& o);
 };
 
 class CSSValueImpl : public StyleBaseImpl
@@ -278,9 +283,17 @@ public:
     CSSProperty()
     {
 	m_id = -1;
-	m_value = 0;
 	m_bImportant = false;
 	nonCSSHint = false;
+        m_value = 0;
+    }
+    CSSProperty(const CSSProperty& o)
+    {
+        m_id = o.m_id;
+        m_bImportant = o.m_bImportant;
+        nonCSSHint = o.nonCSSHint;
+        m_value = o.m_value;
+        if (m_value) m_value->ref();
     }
     ~CSSProperty() {
 	if(m_value) m_value->deref();

@@ -60,6 +60,22 @@ CSSStyleDeclarationImpl::CSSStyleDeclarationImpl(CSSRuleImpl *parent, QPtrList<C
     m_node = 0;
 }
 
+CSSStyleDeclarationImpl&  CSSStyleDeclarationImpl::operator= (const CSSStyleDeclarationImpl& o)
+{
+    // don't attach it to the same node
+    m_node = 0;
+    delete m_lstValues;
+    m_lstValues = 0;
+    if (o.m_lstValues) {
+        m_lstValues = new QPtrList<CSSProperty>;
+        m_lstValues->setAutoDelete( true );
+
+        QPtrListIterator<CSSProperty> lstValuesIt(*o.m_lstValues);
+        for (lstValuesIt.toFirst(); lstValuesIt.current(); ++lstValuesIt)
+            m_lstValues->append(new CSSProperty(*lstValuesIt.current()));
+    }
+}
+
 CSSStyleDeclarationImpl::~CSSStyleDeclarationImpl()
 {
     delete m_lstValues;
