@@ -2054,6 +2054,14 @@ bool HTTPProtocol::httpOpen()
       else
          u.setProtocol( m_protocol );
 
+			// For all protocols other than the once handled by this io-slave
+			// append the username.  This fixes a long standing bug of ftp io-slave
+			// logging in anonymously in proxied connections even when the username
+			// is explicitly specified.
+			if (m_protocol != "http" && m_protocol != "https" &&
+					!m_state.user.isEmpty())
+				u.setUser (m_state.user);				
+
       u.setHost( m_state.hostname );
       if (m_state.port != m_iDefaultPort)
          u.setPort( m_state.port );
