@@ -64,6 +64,8 @@ class HighColorStyle : public QCommonStyle
 		void polish( QWidget* widget );
 		void unPolish( QWidget* widget );
 
+		virtual void polishPopupMenu( QPopupMenu* );
+		
 		void drawPrimitive( PrimitiveElement pe,
 					QPainter *p,
 					const QRect &r,
@@ -79,6 +81,12 @@ class HighColorStyle : public QCommonStyle
 					SFlags flags = Style_Default,
 					const QStyleOption& = QStyleOption::Default ) const;
 
+		void drawControlMask( ControlElement element,
+					QPainter *p,
+					const QWidget *widget,
+					const QRect &r,
+					const QStyleOption& = QStyleOption::Default ) const;
+		
 		void drawComplexControl( ComplexControl control,
 					QPainter *p,
 					const QWidget *widget,
@@ -89,6 +97,12 @@ class HighColorStyle : public QCommonStyle
 					SCFlags active = SC_None,
 					const QStyleOption& = QStyleOption::Default ) const;
 
+		void drawComplexControlMask( ComplexControl control,
+					QPainter *p,
+					const QWidget *widget,
+					const QRect &r,
+					const QStyleOption& = QStyleOption::Default ) const;
+		
 		SubControl querySubControl( ComplexControl control,
 					const QWidget *widget,
 					const QPoint &pos,
@@ -102,6 +116,11 @@ class HighColorStyle : public QCommonStyle
 		int pixelMetric( PixelMetric m, 
 					const QWidget *widget = 0 ) const;
 		
+		QSize sizeFromContents( ContentsType contents,
+					const QWidget *widget,
+					const QSize &contentSize,
+					const QStyleOption& opt ) const;
+
 		QRect subRect( SubRect r, 
 					const QWidget *widget ) const;
 
@@ -115,20 +134,9 @@ class HighColorStyle : public QCommonStyle
 					const QStyleOption &opt = QStyleOption::Default,
 					QStyleHintReturn* shr = 0 ) const;
 
-		// Pass virtual functions on to QWindowsStyle, since we can't inherit
-		// it directly (might be a plugin)
-		void polishPopupMenu(QPopupMenu *m)
-				{ winstyle->polishPopupMenu(m); }
-
-		void drawControlMask(QStyle::ControlElement e, QPainter *p, const QWidget *w, const QRect &r, const QStyleOption &o=QStyleOption::Default) const
-				{ winstyle->drawControlMask(e, p, w, r, o); }
-
-		void drawComplexControlMask(QStyle::ComplexControl c, QPainter *p, const QWidget *w, const QRect &r, const QStyleOption &o=QStyleOption::Default) const
-				{ winstyle->drawComplexControlMask(c, p, w, r, o); }
-
-		QSize sizeFromContents(QStyle::ContentsType t, const QWidget *w, const QSize &s, const QStyleOption &o) const
-				{ return winstyle->sizeFromContents(t, w, s, o); }
 	protected:
+		bool eventFilter( QObject *object, QEvent *event );
+		
 		void renderGradient( QPainter* p, 
 					const QRect& r, 
 					QColor clr,
@@ -138,7 +146,8 @@ class HighColorStyle : public QCommonStyle
 					int pwidth=-1,
 					int pheight=-1 ) const;
 
-		bool highcolor;
+		QWidget *hoverWidget;
+		bool     highcolor;
 
 	private:
 		// Disable copy constructor and = operator

@@ -132,7 +132,7 @@ KPixmap* GradientSet::gradient(GradientType type)
 		case VLarge: {
 				gradients[VLarge] = new KPixmap;
 				gradients[VLarge]->resize(18, 64);
-            KPixmapEffect::gradient(*gradients[VLarge], c.light(110), c.dark(110),
+				KPixmapEffect::gradient(*gradients[VLarge], c.light(110), c.dark(110),
 												KPixmapEffect::VerticalGradient);
 			}
 			break;
@@ -183,10 +183,12 @@ HighColorStyle::~HighColorStyle()
 
 void HighColorStyle::polish(QWidget* widget)
 {
-	QCommonStyle::polish(widget);
-
 	if (widget->inherits("QMenuBar")) {
 		widget->setBackgroundMode(QWidget::NoBackground);
+	}
+	
+	else if (widget->inherits("QPushButton")) {
+		widget->installEventFilter(this);
 	}
 }
 
@@ -197,7 +199,9 @@ void HighColorStyle::unPolish(QWidget* widget)
 		widget->setBackgroundMode(QWidget::PaletteBackground);
 	}
 
-	QCommonStyle::unPolish(widget);
+	else if (widget->inherits("QPushButton")) {
+		widget->removeEventFilter(this);
+	}
 }
 
 
@@ -254,12 +258,18 @@ void HighColorStyle::drawPrimitive( PrimitiveElement pe,
 			int  x, y, w, h;
 			r.rect(&x, &y, &w, &h);
 
-			if (sunken)
-				kDrawBeButton(p, x, y, w, h, cg, true,
-							  &cg.brush(QColorGroup::Mid));
+			if ( sunken )
+				kDrawBeButton( p, x, y, w, h, cg, true,
+						&cg.brush(QColorGroup::Mid) );
+			
+			else if ( flags & Style_MouseOver )
+				kDrawBeButton( p, x, y, w, h, cg, false,
+						&cg.brush(QColorGroup::Midlight) );
+			
 			else if (!(flags & (Style_Raised | Style_Sunken)))
 				p->fillRect(r, cg.button());
-			else if(highcolor)
+			
+			else if( highcolor )
 			{
 				int x2 = x+w-1;
 				int y2 = y+h-1;
@@ -269,34 +279,25 @@ void HighColorStyle::drawPrimitive( PrimitiveElement pe,
 				p->drawLine(x, y+1, x, y2-1);
 				p->drawLine(x2, y+1, x2, y2-1);
 
-				if(!sunken) {
-					p->setPen(cg.light());
-					p->drawLine(x+2, y+2, x2-1, y+2);
-					p->drawLine(x+2, y+3, x2-2, y+3);
-					p->drawLine(x+2, y+4, x+2, y2-1);
-					p->drawLine(x+3, y+4, x+3, y2-2);
-				} else {
-					p->setPen(cg.mid());
-					p->drawLine(x+2, y+2, x2-1, y+2);
-					p->drawLine(x+2, y+3, x2-2, y+3);
-					p->drawLine(x+2, y+4, x+2, y2-1);
-					p->drawLine(x+3, y+4, x+3, y2-2);
-				}
+				p->setPen(cg.light());
+				p->drawLine(x+2, y+2, x2-1, y+2);
+				p->drawLine(x+2, y+3, x2-2, y+3);
+				p->drawLine(x+2, y+4, x+2, y2-1);
+				p->drawLine(x+3, y+4, x+3, y2-2);
 
-				p->setPen(sunken? cg.light() : cg.mid());
+				p->setPen(cg.mid());
 				p->drawLine(x2-1, y+2, x2-1, y2-1);
 				p->drawLine(x+2, y2-1, x2-1, y2-1);
 
-				p->setPen(cg.mid());
 				p->drawLine(x+1, y+1, x2-1, y+1);
 				p->drawLine(x+1, y+2, x+1, y2-1);
 				p->drawLine(x2-2, y+3, x2-2, y2-2);
 
 				renderGradient(p, QRect(x+4, y+4, w-6, h-6),
-							   cg.button(), false);
-            } else
+								cg.button(), false);
+			} else
 				kDrawBeButton(p, x, y, w, h, cg, false,
-						  		&cg.brush(QColorGroup::Mid));
+								&cg.brush(QColorGroup::Mid));
 			break;
 		}
 
@@ -337,7 +338,7 @@ void HighColorStyle::drawPrimitive( PrimitiveElement pe,
 			p->drawWinFocusRect( r );
 			break;
 		}
-						
+
 
 		// HEADER SECTION
 		// -------------------------------------------------------------------
@@ -437,23 +438,23 @@ void HighColorStyle::drawPrimitive( PrimitiveElement pe,
 		case PE_ScrollBarAddLine: {
 			drawPrimitive( PE_ButtonBevel, p, r, cg, (flags & Style_Enabled) |
 					((flags & Style_Down) ? Style_Down : Style_Raised) );
-			
+
 			drawPrimitive( ((flags & Style_Horizontal) ? PE_ArrowRight : PE_ArrowDown),
 					p, r, cg, flags );
-			break;	
+			break;
 		}
-		
-		
+
+
 		case PE_ScrollBarSubLine: {
 			drawPrimitive( PE_ButtonBevel, p, r, cg, (flags & Style_Enabled) |
 					((flags & Style_Down) ? Style_Down : Style_Raised) );
-			
+
 			drawPrimitive( ((flags & Style_Horizontal) ? PE_ArrowLeft : PE_ArrowUp),
 					p, r, cg, flags );
-			break;	
+			break;
 		}
 
-		
+
 		// CHECKBOX (indicator)
 		// -------------------------------------------------------------------
 		case PE_Indicator: {
@@ -556,6 +557,7 @@ void HighColorStyle::drawPrimitive( PrimitiveElement pe,
 			// ### KDE 3.0 - Make KDE2-style smooth gradient slider
 //			break;
 //		}
+
 
 		// SPLITTER PANEL
 		// -------------------------------------------------------------------
@@ -764,7 +766,7 @@ void HighColorStyle::drawPrimitive( PrimitiveElement pe,
 				p->restore();
 
 			} else
-		        winstyle->drawPrimitive( pe, p, r, cg, flags, opt );
+				winstyle->drawPrimitive( pe, p, r, cg, flags, opt );
 		}
 	}
 }
@@ -780,6 +782,99 @@ void HighColorStyle::drawControl( ControlElement element,
 {
 	switch (element)
 	{
+		// PUSHBUTTON
+		// ----------------------------------------------------------------------------------
+		case CE_PushButton: {
+			if ( widget == hoverWidget )
+				flags |= Style_MouseOver;
+
+			drawPrimitive( PE_ButtonCommand, p, r, cg, flags );
+			break;
+		}
+
+							   
+		// PUSHBUTTON LABEL
+		// ----------------------------------------------------------------------------------
+		case CE_PushButtonLabel: {
+			const QPushButton *button = (const QPushButton *)widget;
+			bool active = button->isOn() || button->isDown();
+			int x, y, w, h;
+			r.rect( &x, &y, &w, &h );
+
+			if ( active )
+				x++, y++;
+
+			// Does the button have a popup menu?
+			if ( button->isMenuButton() ) {
+				int dx = pixelMetric( PM_MenuButtonIndicator, widget );
+				int xx = x + w - dx - 4;
+				int yy = y - 3;
+				int hh = h + 6;
+				SFlags flags = Style_Default;
+
+				// Draw an arrow on the button
+				if ( ! active ) {
+					p->setPen( cg.light() );
+					p->drawLine( xx + 1, yy + 5, xx + 1, yy + hh - 6 );
+					p->setPen( cg.mid() );
+					p->drawLine( xx, yy + 6, xx, yy + hh - 6 );
+				}
+				else {
+					p->setPen( cg.button() );
+					p->drawLine( xx, yy + 4, xx, yy + hh - 4 );
+				}
+				drawPrimitive( PE_ArrowDown, p, QRect(x + w - dx - 2, y + 2, dx, h - 4),
+						cg, flags, opt );
+				w -= dx;
+			}
+
+			// Draw the icon if there is one
+			if ( button->iconSet() && ! button->iconSet()->isNull() ) {
+				QIconSet::Mode mode = button->isEnabled() ?
+					QIconSet::Normal : QIconSet::Disabled;
+
+				if ( mode == QIconSet::Normal && button->hasFocus() )
+					mode = QIconSet::Active;
+
+				QPixmap pixmap = button->iconSet()->pixmap( QIconSet::Small, mode );
+				int pixw = pixmap.width();
+				int pixh = pixmap.height();
+
+				p->drawPixmap( x + 6, y + h / 2 - pixh / 2, pixmap );
+				x += pixw + 8;
+				w -= pixw + 8;
+			}
+
+			// Make the label indicate if the button is a default button or not
+			if ( active || button->isDefault() ) {
+				QFont font = button->font();
+				font.setBold( true );
+				p->setFont( font );
+
+				drawItem( p, QRect(x+1, y+1, w, h), AlignCenter | ShowPrefix, button->colorGroup(),
+						button->isEnabled(), button->pixmap(), button->text(), -1,
+						active ? &button->colorGroup().dark() : &button->colorGroup().mid() );
+
+				drawItem( p, QRect(x, y, w, h), AlignCenter | ShowPrefix, button->colorGroup(),
+						button->isEnabled(), button->pixmap(), button->text(), -1,
+						active ? &button->colorGroup().light() : &button->colorGroup().text() );
+			}
+			else {
+				drawItem( p, QRect(x + ( active ? 1 : 0 ), y + ( active ? 1 : 0 ), w, h),
+						AlignCenter | ShowPrefix, button->colorGroup(), button->isEnabled(),
+						button->pixmap(), button->text(), -1, active ? &button->colorGroup().light() :
+						&button->colorGroup().buttonText() );
+			}
+
+			// Draw a focus rect if the button has focus
+			if ( flags & Style_HasFocus )
+				drawPrimitive( PE_FocusRect, p,
+						QStyle::visualRect(subRect(SR_PushButtonFocusRect, widget), widget),
+						cg, flags );
+			break;
+		}
+
+
 		// TABS
 		// -------------------------------------------------------------------
 		case CE_TabBarTab: {
@@ -837,6 +932,7 @@ void HighColorStyle::drawControl( ControlElement element,
 			break;
 		}
 
+
 		// MENUBAR ITEM (sunken panel on mouse over)
 		// -------------------------------------------------------------------
 		case CE_MenuBarItem:
@@ -854,11 +950,12 @@ void HighColorStyle::drawControl( ControlElement element,
 				renderGradient( p, r, cg.background(), false,
 								r.x(), r.y()-1, pr.width()-2, pr.height()-2);
 
-		    QCommonStyle::drawControl(element, p, widget, r, cg, flags, opt);
+			QCommonStyle::drawControl(element, p, widget, r, cg, flags, opt);
 			break;
 		}
 
-		// POPUP MENU ITEM
+
+		// POPUPMENU ITEM
 		// -------------------------------------------------------------------
 		case CE_PopupMenuItem: {
 			int x, y, w, h;
@@ -874,6 +971,7 @@ void HighColorStyle::drawControl( ControlElement element,
 			bool enabled    = mi->isEnabled();
 			bool checkable  = popupmenu->isCheckable();
 			bool active     = flags & Style_Active;
+			bool reverse	= QApplication::reverseLayout();
 
 			// Are we a menu item separator?
 			if ( mi->isSeparator() ) {
@@ -882,10 +980,10 @@ void HighColorStyle::drawControl( ControlElement element,
 				p->setPen( cg.light() );
 				p->drawLine( x, y+1, x+w, y+1 );
 				break;
-	    	}
+			}
 
 			// Draw the menu item background
-       		if ( active )
+			if ( active )
 				qDrawShadePanel( p, x, y, w, h, cg, true, 1,
 						         &cg.brush(QColorGroup::Midlight) );
 			else
@@ -893,6 +991,7 @@ void HighColorStyle::drawControl( ControlElement element,
 
 			// Do we have an icon?
 			if ( mi->iconSet() ) {
+				QRect cr( reverse ? x+w - checkcol : x, y, checkcol, h );
 				QIconSet::Mode mode;
 
 				// Select the correct icon from the iconset
@@ -904,42 +1003,47 @@ void HighColorStyle::drawControl( ControlElement element,
 				// Do we have an icon and are checked at the same time?
 				// Then draw a "pressed" background behind the icon
 				if ( checkable && !active && mi->isChecked() )
-					qDrawShadePanel( p, x, y, checkcol, h, cg, true, 1, 
-					                 &cg.brush(QColorGroup::Midlight) );
-					
+					qDrawShadePanel( p, cr.x(), cr.y(), cr.width(), cr.height(),
+									 cg, true, 1, &cg.brush(QColorGroup::Midlight) );
+
 				// Draw the icon
 				QPixmap pixmap = mi->iconSet()->pixmap( QIconSet::Small, mode );
 				int pixw = pixmap.width();
 				int pixh = pixmap.height();
-				QRect cr( x, y, checkcol, h );
 				QRect pmr( 0, 0, pixw, pixh );
 				pmr.moveCenter( cr.center() );
 				p->setPen( cg.highlightedText() );
 				p->drawPixmap( pmr.topLeft(), pixmap );
-       		}
+			}
 
 			// Are we checked? (This time without an icon)
 			else if ( checkable && mi->isChecked() ) {
+				int cx = reverse ? x+w - checkcol : x;
+
 				// We only have to draw the background if the menu item is inactive -
 				// if it's active the "pressed" background is already drawn
 				if ( ! active )
-					qDrawShadePanel( p, x, y, checkcol, h, cg, true, 1,
+					qDrawShadePanel( p, cx, y, checkcol, h, cg, true, 1,
 					                 &cg.brush(QColorGroup::Midlight) );
-					
+
 				// Draw the checkmark
 				SFlags cflags = Style_Default;
 				cflags |= active ? Style_Enabled : Style_On;
 
-				drawPrimitive( PE_CheckMark, p, QRect( x + motifItemFrame, y + motifItemFrame,
+				drawPrimitive( PE_CheckMark, p, QRect( cx + motifItemFrame, y + motifItemFrame,
 								checkcol - motifItemFrame*2, h - motifItemFrame*2), cg, cflags );
 			}
 
 			// Time to draw the menu item label...
-			int xm = motifItemFrame + checkcol + motifItemHMargin;
+			int xm = motifItemFrame + checkcol + motifItemHMargin; // X position margin
+			int xp = reverse ?
+					x + tab + windowsRightBorder + motifItemHMargin + motifItemFrame :
+					x + xm;
+			int offset = reverse ? -1 : 1;	// Shadow offset for etched text
 
 			// Set the color for enabled and disabled text (used for both active and inactive menu items)
 			p->setPen( enabled ? cg.buttonText() : cg.mid() );
-			
+
 			// This color will be used instead of the above if the menu item
 			// is active and disabled at the same time. (etched text)
 			QColor discol = cg.mid();
@@ -953,15 +1057,15 @@ void HighColorStyle::drawControl( ControlElement element,
 
 				// Draw etched text if we're inactive and the menu item is disabled
 				if ( !enabled && !active ) {
-		   			p->setPen( cg.light() );
-		   			mi->custom()->paint( p, cg, active, enabled, x+xm+1, y+m+1, w-xm-tab+1, h-2*m );
-		   			p->setPen( discol );
+					p->setPen( cg.light() );
+					mi->custom()->paint( p, cg, active, enabled, xp+offset, y+m+1, w-xm-tab+1, h-2*m );
+					p->setPen( discol );
 				}
-				mi->custom()->paint( p, cg, active, enabled, x+xm, y+m, w-xm-tab+1, h-2*m );
+				mi->custom()->paint( p, cg, active, enabled, xp, y+m, w-xm-tab+1, h-2*m );
 				p->restore();
 			}
 			else {
-				// The menu item doesn't draw it's own label 
+				// The menu item doesn't draw it's own label
 				QString s = mi->text();
 
 				// Does the menu item have a text label?
@@ -972,153 +1076,103 @@ void HighColorStyle::drawControl( ControlElement element,
 
 					// Does the menu item have a tabstop? (for the accelerator text)
 					if ( t >= 0 ) {
-						int xp = x+w-tab-windowsRightBorder-motifItemHMargin-motifItemFrame;
+						int tabx = reverse ? x + windowsRightBorder + motifItemFrame :
+							x + w - tab - windowsRightBorder - motifItemHMargin - motifItemFrame;
 
 						// Draw the right part of the label (accelerator text)
 						if ( !enabled && !active ) {
 							// Draw etched text if we're inactive and the menu item is disabled
 							p->setPen( cg.light() );
-							p->drawText( xp, y+m+1, tab, h-2*m, text_flags, s.mid( t+1 ) );
+							p->drawText( tabx+offset, y+m+1, tab, h-2*m, text_flags, s.mid( t+1 ) );
 							p->setPen( discol );
 						}
-						p->drawText( xp, y+m, tab, h-2*m, text_flags, s.mid( t+1 ) );
-					    s = s.left( t );
+						p->drawText( tabx, y+m, tab, h-2*m, text_flags, s.mid( t+1 ) );
+						s = s.left( t );
 					}
 
 					// Draw the left part of the label (or the whole label if there's no accelerator)
 					if ( !enabled && !active ) {
 						// Etched text again for inactive disabled menu items...
 						p->setPen( cg.light() );
-						p->drawText( x+xm+1, y+m+1, w-xm-tab+1, h-2*m, text_flags, s, t );
+						p->drawText( xp+offset, y+m+1, w-xm-tab+1, h-2*m, text_flags, s, t );
 						p->setPen( discol );
 					}
 
-					p->drawText( x+xm, y+m, w-xm-tab+1, h-2*m, text_flags, s, t );
+					p->drawText( xp, y+m, w-xm-tab+1, h-2*m, text_flags, s, t );
 
 				}
-				
+
 				// The menu item doesn't have a text label
 				// Check if it has a pixmap instead
 				else if ( mi->pixmap() ) {
-           			QPixmap *pixmap = mi->pixmap();
+					QPixmap *pixmap = mi->pixmap();
 
 					// Draw the pixmap
-                                        if ( pixmap->depth() == 1 )
-                                                p->setBackgroundMode( OpaqueMode );
+					if ( pixmap->depth() == 1 )
+						p->setBackgroundMode( OpaqueMode );
 
-                                        int diffw = ( ( w - pixmap->size().width() ) / 2 )
-                                                  + ( ( w - pixmap->size().width() ) % 2 );
-                                        p->drawPixmap( x+diffw, y+motifItemFrame, *pixmap );
-
-                                        if ( pixmap->depth() == 1 )
-                                                p->setBackgroundMode( TransparentMode );
+					int diffw = ( ( w - pixmap->width() ) / 2 )
+									+ ( ( w - pixmap->width() ) % 2 );
+					p->drawPixmap( x+diffw, y+motifItemFrame, *pixmap );
+					
+					if ( pixmap->depth() == 1 )
+						p->setBackgroundMode( TransparentMode );
 				}
 			}
 
 			// Does the menu item have a popup menu?
 			if ( mi->popup() ) {
-				int dim = (h-2*motifItemFrame) / 2; // Vertical position
+				PrimitiveElement arrow = reverse ? PE_ArrowLeft : PE_ArrowRight;
+				int dim = (h-2*motifItemFrame) / 2;
+				int xp  = reverse ? x + motifArrowHMargin + motifItemFrame :
+					x + w - motifArrowHMargin - motifItemFrame - dim;
 
-				// Draw a right arrow at the far end of the menu item
+				// Draw an arrow at the far end of the menu item
 				if ( active ) {
-		    		if ( enabled )
+					if ( enabled )
 						discol = cg.buttonText();
 
 					QColorGroup g2( discol, cg.highlight(), white, white,
 									enabled ? white : discol, discol, white );
 
-		    		drawPrimitive( PE_ArrowRight, p, QRect(x+w - motifArrowHMargin - motifItemFrame - dim,
-									y + h / 2 - dim / 2, dim, dim), g2, Style_Enabled );
+					drawPrimitive( arrow, p, QRect(xp, y + h / 2 - dim / 2,dim, dim),
+									g2, Style_Enabled );
 				} else
-		    		drawPrimitive( PE_ArrowRight, p, QRect(x+w - motifArrowHMargin - motifItemFrame - dim,
-									y + h / 2 - dim / 2, dim, dim), cg,
-									enabled ? Style_Enabled : Style_Default );
+					drawPrimitive( arrow, p, QRect(xp, y + h / 2 - dim / 2, dim, dim),
+									cg, enabled ? Style_Enabled : Style_Default );
 			}
- 			break;
+			break;
 		}
 
-		case CE_PushButtonLabel: {
-			const QPushButton *button = (const QPushButton *)widget;
-			bool active = button->isOn() || button->isDown();
-			int x, y, w, h;
-			r.rect( &x, &y, &w, &h );
-			
-			if ( active )
-				x++, y++;
-			
-			// Does the button have a popup menu?
-			if ( button->isMenuButton() ) {
-				int dx = pixelMetric( PM_MenuButtonIndicator, widget );
-				int xx = x + w - dx - 4;
-				int yy = y - 3;
-				int hh = h + 6;
-				SFlags flags = Style_Default;
-				
-				// Draw an arrow on the button
-				if ( ! active ) {
-					p->setPen( cg.light() );
-					p->drawLine( xx + 1, yy + 5, xx + 1, yy + hh - 6 );
-					p->setPen( cg.mid() );
-					p->drawLine( xx, yy + 6, xx, yy + hh - 6 );
-				}
-				else {
-					p->setPen( cg.button() );
-					p->drawLine( xx, yy + 4, xx, yy + hh - 4 );
-				}
-				drawPrimitive( PE_ArrowDown, p, QRect(x + w - dx - 2, y + 2, dx, h - 4),
-						cg, flags, opt );
-				w -= dx;
-			}
-
-			// Draw the icon if there is one
-			if ( button->iconSet() && ! button->iconSet()->isNull() ) {
-				QIconSet::Mode mode = button->isEnabled() ?
-					QIconSet::Normal : QIconSet::Disabled;
-
-				if ( mode == QIconSet::Normal && button->hasFocus() )
-					mode = QIconSet::Active;
-
-				QPixmap pixmap = button->iconSet()->pixmap( QIconSet::Small, mode );
-				int pixw = pixmap.width();
-				int pixh = pixmap.height();
-
-				p->drawPixmap( x + 6, y + h / 2 - pixh / 2, pixmap );
-				x += pixw + 8;
-				w -= pixw + 8;
-			}
-			
-			// Make the label indicate if the button is a default button or not
-			if ( active || button->isDefault() ) {
-				QFont font = button->font();
-				font.setBold( true );
-				p->setFont( font );
-
-				drawItem( p, QRect(x+1, y+1, w, h), AlignCenter | ShowPrefix, button->colorGroup(),
-						button->isEnabled(), button->pixmap(), button->text(), -1,
-						active ? &button->colorGroup().dark() : &button->colorGroup().mid() );
-				
-				drawItem( p, QRect(x, y, w, h), AlignCenter | ShowPrefix, button->colorGroup(),
-						button->isEnabled(), button->pixmap(), button->text(), -1,
-						active ? &button->colorGroup().light() : &button->colorGroup().text() );
-			}
-			else {
-				drawItem( p, QRect(x + ( active ? 1 : 0 ), y + ( active ? 1 : 0 ), w, h),
-						AlignCenter | ShowPrefix, button->colorGroup(), button->isEnabled(),
-						button->pixmap(), button->text(), -1, active ? &button->colorGroup().light() :
-						&button->colorGroup().buttonText() );
-			}
-			
-			// Draw a focus rect if the button has focus
-			if ( flags & Style_HasFocus )
-				drawPrimitive( PE_FocusRect, p,
-						QStyle::visualRect(subRect(SR_PushButtonFocusRect, widget), widget),
-						cg, flags );
-			break;	 
-		}
-		
 
 		default:
 			QCommonStyle::drawControl(element, p, widget, r, cg, flags, opt);
+	}
+}
+
+
+void HighColorStyle::drawControlMask( ControlElement element,
+								  	  QPainter *p,
+								  	  const QWidget *widget,
+								  	  const QRect &r,
+								  	  const QStyleOption& opt ) const
+{
+	switch (element)
+	{
+		// PUSHBUTTON MASK
+		// ----------------------------------------------------------------------
+		case CE_PushButton: {
+			int x1, y1, x2, y2;
+			r.coords( &x1, &y1, &x2, &y2 );
+			QCOORD corners[] = { x1,y1, x2,y1, x1,y2, x2,y2 };
+			p->fillRect( r, color1 );
+			p->setPen( color0 );
+			p->drawPoints( QPointArray(4, corners) );
+			break;
+		}
+
+		default:
+			QCommonStyle::drawControlMask(element, p, widget, r, opt);
 	}
 }
 
@@ -1129,7 +1183,7 @@ void HighColorStyle::drawComplexControl( ComplexControl control,
                                          const QRect &r,
                                          const QColorGroup &cg,
                                          SFlags flags,
-					   				     SCFlags controls,
+									     SCFlags controls,
 									     SCFlags active,
                                          const QStyleOption& opt ) const
 {
@@ -1219,7 +1273,7 @@ void HighColorStyle::drawComplexControl( ComplexControl control,
 								 cg.brush( QColorGroup::Highlight ) );
 
 					QRect re =
-                    QStyle::visualRect(subRect(SR_ComboBoxFocusRect, cb), widget);
+						QStyle::visualRect(subRect(SR_ComboBoxFocusRect, cb), widget);
 
 					drawPrimitive( PE_FocusRect, p, re, cg,
 								   Style_FocusAtBorder, QStyleOption(cg.highlight()));
@@ -1249,50 +1303,50 @@ void HighColorStyle::drawComplexControl( ComplexControl control,
 			subline2 = addline;
 
 			if (horizontal)
-                subline2.moveBy(-addline.width(), 0);
-            else
-                subline2.moveBy(0, -addline.height());
+				subline2.moveBy(-addline.width(), 0);
+			else
+				subline2.moveBy(0, -addline.height());
 
 			// Draw the up/left button set
-            if ((controls & SC_ScrollBarSubLine) && subline.isValid()) {
-                drawPrimitive(PE_ScrollBarSubLine, p, subline, cg,
-                              sflags | (active == SC_ScrollBarSubLine ?
-									   	Style_Down : Style_Default));
+			if ((controls & SC_ScrollBarSubLine) && subline.isValid()) {
+				drawPrimitive(PE_ScrollBarSubLine, p, subline, cg,
+							sflags | (active == SC_ScrollBarSubLine ?
+								Style_Down : Style_Default));
 
 				if (subline2.isValid())
 					drawPrimitive(PE_ScrollBarSubLine, p, subline2, cg,
-                              sflags | (active == SC_ScrollBarSubLine ?
-									   Style_Down : Style_Default));
-            }
+							sflags | (active == SC_ScrollBarSubLine ?
+								Style_Down : Style_Default));
+			}
 
 			if ((controls & SC_ScrollBarAddLine) && addline.isValid())
 				drawPrimitive(PE_ScrollBarAddLine, p, addline, cg,
-							  sflags | ((active == SC_ScrollBarAddLine) ?
+							sflags | ((active == SC_ScrollBarAddLine) ?
 										Style_Down : Style_Default));
 
 			if ((controls & SC_ScrollBarSubPage) && subpage.isValid())
 				drawPrimitive(PE_ScrollBarSubPage, p, subpage, cg,
-							  sflags | ((active == SC_ScrollBarSubPage) ?
+							sflags | ((active == SC_ScrollBarSubPage) ?
 										Style_Down : Style_Default));
 
 			if ((controls & SC_ScrollBarAddPage) && addpage.isValid())
 				drawPrimitive(PE_ScrollBarAddPage, p, addpage, cg,
-                              sflags | ((active == SC_ScrollBarAddPage) ?
+							sflags | ((active == SC_ScrollBarAddPage) ?
 										Style_Down : Style_Default));
 
 			if ((controls & SC_ScrollBarFirst) && first.isValid())
 				drawPrimitive(PE_ScrollBarFirst, p, first, cg,
-							  sflags | ((active == SC_ScrollBarFirst) ?
+							sflags | ((active == SC_ScrollBarFirst) ?
 										Style_Down : Style_Default));
 
 			if ((controls & SC_ScrollBarLast) && last.isValid())
 				drawPrimitive(PE_ScrollBarLast, p, last, cg,
-							  sflags | ((active == SC_ScrollBarLast) ?
+							sflags | ((active == SC_ScrollBarLast) ?
 										Style_Down : Style_Default));
 
 			if ((controls & SC_ScrollBarSlider) && slider.isValid()) {
 				drawPrimitive(PE_ScrollBarSlider, p, slider, cg,
-							  sflags | ((active == SC_ScrollBarSlider) ?
+							sflags | ((active == SC_ScrollBarSlider) ?
 										Style_Down : Style_Default));
 				// Draw focus rect
 				if (sb->hasFocus()) {
@@ -1300,8 +1354,8 @@ void HighColorStyle::drawComplexControl( ComplexControl control,
 							 slider.width() - 5, slider.height() - 5);
 					drawPrimitive(PE_FocusRect, p, fr, cg, Style_Default);
 				}
-            }
-            break;
+			}
+			break;
 		}
 
 		// TOOLBUTTON
@@ -1376,6 +1430,32 @@ void HighColorStyle::drawComplexControl( ComplexControl control,
 }
 
 
+void HighColorStyle::drawComplexControlMask( ComplexControl control,
+											 QPainter *p,
+											 const QWidget *widget,
+											 const QRect &r,
+											 const QStyleOption& opt ) const
+{
+	switch (control)
+	{
+		// COMBOBOX MASK
+		// -------------------------------------------------------------------
+		case CC_ComboBox: {
+			int x1, y1, x2, y2;
+			r.coords( &x1, &y1, &x2, &y2 );
+			QCOORD corners[] = { x1,y1, x2,y1, x1,y2, x2,y2 };
+			p->fillRect( r, color1 );
+			p->setPen( color0 );
+			p->drawPoints( QPointArray(4, corners) );
+			break;
+		}
+
+		default:
+			QCommonStyle::drawComplexControlMask(control, p, widget, r, opt);
+	}
+}
+
+
 QRect HighColorStyle::subRect(SubRect r, const QWidget *widget) const
 {
 	switch(r)
@@ -1400,7 +1480,8 @@ QRect HighColorStyle::subRect(SubRect r, const QWidget *widget) const
 						 wrect.y()      + dfw1 + dbw1 + 1,
 						 wrect.width()  - dfw2 - dbw2 - 1,
 						 wrect.height() - dfw2 - dbw2 - 1);
-        }
+		}
+
 
 		default:
 			return QCommonStyle::subRect(r, widget);
@@ -1437,7 +1518,7 @@ int HighColorStyle::pixelMetric(PixelMetric m, const QWidget *widget) const
 		// BUTTONS
 		// -------------------------------------------------------------------
 		case PM_ButtonMargin:				// Space btw. frame and label
-			return 6;
+			return 4;
 
 		case PM_ButtonDefaultIndicator:
 			return 0;						// No indicator
@@ -1460,6 +1541,11 @@ int HighColorStyle::pixelMetric(PixelMetric m, const QWidget *widget) const
 		case PM_SliderLength:
 			return 18;
 
+		// PROGRESSBAR
+		// -------------------------------------------------------------------
+		case PM_ProgressBarChunkWidth:
+			return 1;
+
 		// MENU FRAME
 		// -------------------------------------------------------------------
 		case PM_MenuBarFrameWidth:
@@ -1471,20 +1557,113 @@ int HighColorStyle::pixelMetric(PixelMetric m, const QWidget *widget) const
 }
 
 
+QSize HighColorStyle::sizeFromContents( ContentsType contents,
+										const QWidget *widget,
+										const QSize &contentSize,
+										const QStyleOption& opt ) const
+{
+	switch (contents)
+	{
+		// PUSHBUTTON SIZE
+		// ------------------------------------------------------------------
+		case CT_PushButton: {
+			const QPushButton *button = (const QPushButton *) widget;
+			int w  = contentSize.width(), h = contentSize.height();
+			int bm = pixelMetric( PM_ButtonMargin, widget );
+			int fw = pixelMetric( PM_DefaultFrameWidth, widget ) * 2;
+
+			w += bm + fw;
+			h += bm + fw;
+
+			if ( button->isDefault() || button->autoDefault() ) {
+				if ( w < 85 && ! button->pixmap() )
+					w = 80;
+				if ( h < 22 )
+					h = 22;
+			}
+			else {
+				w += 4;
+				if ( h < 22 )
+					h = 22;
+			}
+
+			return QSize( w, h );
+		}
+
+
+		// POPUPMENU ITEM SIZE
+		// -----------------------------------------------------------------
+		case CT_PopupMenuItem: {
+			if ( ! widget || opt.isDefault() )
+				return contentSize;
+
+			const QPopupMenu *popup = (const QPopupMenu *) widget;
+			bool checkable = popup->isCheckable();
+			QMenuItem *mi = opt.menuItem();
+			int maxpmw = opt.maxIconWidth();
+			int w = contentSize.width(), h = contentSize.height();
+
+			if ( mi->custom() ) {
+				w = mi->custom()->sizeHint().width();
+				h = mi->custom()->sizeHint().height();
+				if ( ! mi->custom()->fullSpan() )
+					h += 2*motifItemVMargin + 2*motifItemFrame;
+			}
+			else if ( mi->isSeparator() ) {
+				w = 10; // Arbitrary
+				h = 2;
+			}
+			else {
+				if ( mi->pixmap() )
+					h = QMAX( h, mi->pixmap()->height() + 2*motifItemFrame );
+				else
+					h = QMAX( h, popup->fontMetrics().height()
+							+ 2*motifItemVMargin + 2*motifItemFrame );
+
+				if ( mi->iconSet() )
+					h = QMAX( h, mi->iconSet()->pixmap(
+								QIconSet::Small, QIconSet::Normal).height() +
+								2 * motifItemFrame );
+			}
+
+			if ( ! mi->text().isNull() && mi->text().find('\t') >= 0 )
+				w += 12;
+			else if ( mi->popup() )
+				w += 2 * motifArrowHMargin;
+
+			if ( maxpmw )
+				w += maxpmw + 6;
+			if ( checkable && maxpmw < 20 )
+				w += 20 - maxpmw;
+			if ( checkable || maxpmw > 0 )
+				w += 12;
+
+			w += windowsRightBorder;
+
+			return QSize( w, h );
+		}
+
+
+		default:
+			return QCommonStyle::sizeFromContents( contents, widget, contentSize, opt );
+	}
+}
+
+
 QStyle::SubControl HighColorStyle::querySubControl( ComplexControl control,
                                                     const QWidget *widget,
                                                     const QPoint &pos,
                                                     const QStyleOption& opt ) const
 {
-    QStyle::SubControl ret = 
+	QStyle::SubControl ret =
 		QCommonStyle::querySubControl(control, widget, pos, opt);
 
 	// Enable third button
-    if (control == CC_ScrollBar &&
-        ret == SC_None)
-        ret = SC_ScrollBarSubLine;
+	if (control == CC_ScrollBar &&
+		ret == SC_None)
+		ret = SC_ScrollBarSubLine;
 
-    return ret;
+	return ret;
 }
 
 
@@ -1530,10 +1709,10 @@ QRect HighColorStyle::querySubControlMetrics( ComplexControl control,
 				case SC_ScrollBarAddLine:
 					// bottom/right button
 					if (horizontal)
-					ret.setRect(sb->width() - sbextent, 0, sbextent, sbextent);
-				else
-					ret.setRect(0, sb->height() - sbextent, sbextent, sbextent);
-                break;
+						ret.setRect(sb->width() - sbextent, 0, sbextent, sbextent);
+					else
+						ret.setRect(0, sb->height() - sbextent, sbextent, sbextent);
+					break;
 
 				case SC_ScrollBarSubPage:
 					// between top/left button and slider
@@ -1569,9 +1748,9 @@ QRect HighColorStyle::querySubControlMetrics( ComplexControl control,
 
 				default:
 					break;
-            }
-            break;
-        }
+			}
+			break;
+		}
 
 		default:
 			ret = winstyle->querySubControlMetrics(control, widget, sc, opt);
@@ -1587,14 +1766,14 @@ QPixmap HighColorStyle::stylePixmap(StylePixmap stylepixmap,
 									const QWidget *widget,
 									const QStyleOption& opt) const
 {
-    switch (stylepixmap) {
-    case SP_TitleBarMinButton:
-        return QPixmap((const char **)hc_minimize_xpm);
-    case SP_TitleBarCloseButton:
-        return QPixmap((const char **)hc_close_xpm);
-    default:
-		break;
-    }
+	switch (stylepixmap) {
+		case SP_TitleBarMinButton:
+			return QPixmap((const char **)hc_minimize_xpm);
+		case SP_TitleBarCloseButton:
+			return QPixmap((const char **)hc_close_xpm);
+		default:
+			break;
+	}
 	return winstyle->stylePixmap(stylepixmap, widget, opt);
 }
 
@@ -1618,10 +1797,45 @@ int HighColorStyle::styleHint( StyleHint sh, const QWidget *w, const QStyleOptio
 		case SH_ComboBox_ListMouseTracking:
 		case SH_ItemView_ChangeHighlightOnFocus:
 			return 1;
-	
+
 		default:
 			return QCommonStyle::styleHint(sh, w, opt, shr);
 	}
+}
+
+
+void HighColorStyle::polishPopupMenu(QPopupMenu *p)
+{
+	if ( !p->testWState( WState_Polished ) )
+		p->setCheckable( true );
+}
+
+
+bool HighColorStyle::eventFilter( QObject *object, QEvent *event )
+{
+	// For the sake of performance we're going to assume here that
+	// the object is a widget, and that the widget is a QPushButton.
+	// This should be safe since we only install event filters
+	// for those widgets.
+	
+	if ( event->type() == QEvent::Enter ) {
+		QPushButton *button = (QPushButton*) object;
+
+		if ( button->isEnabled() ) {
+			hoverWidget = button;
+			button->repaint( false );
+		}
+	}
+	else if ( event->type() == QEvent::Leave ) {
+		QPushButton *button = (QPushButton*) object;
+
+		if ( button->isEnabled() ) {
+			hoverWidget = 0L;
+			button->repaint( false );
+		}
+	}
+	
+	return false;
 }
 
 
