@@ -38,12 +38,16 @@ namespace Arts {
  * field is provided. Set it to ZERO currently when sending notifications.
  */
 
+struct Notification;
+typedef void (*NotificationDestroyFunction)(const Notification& n);
 
 struct Notification {
 	class NotificationClient *receiver;
 	int ID;
 	void *data;
 	void *internal;		/* handle with care, equivalent to private d ptr */
+
+	void setDestroy(NotificationDestroyFunction destroy);
 };
 
 class NotificationClient {
@@ -71,22 +75,13 @@ public:
 	{
 		todo.push(wm);
 	}
-	inline bool run()
-	{
-		if(todo.empty()) return false;
-
-		while(!todo.empty())
-		{
-			const Notification& wm = todo.front();
-			wm.receiver->notify(wm);
-			todo.pop();
-		}
-		return true;
-	}
 	inline bool pending()
 	{
 		return !todo.empty();
 	}
+	bool run();
+	void removeClient(NotificationClient *client);
+
 };
 
 };

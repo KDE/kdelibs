@@ -1,5 +1,5 @@
 check_PROGRAMS = testbuffer testifacerepo testanyref testwrapper \
-   testchangenotify testflowsystem testdispatcher
+   testchangenotify testflowsystem testdispatcher testnotification
 
 TESTS = $(check_PROGRAMS)
 
@@ -14,6 +14,7 @@ testbuffer_SOURCES = testbuffer.cc
 testifacerepo_SOURCES = testifacerepo.cc
 testanyref_SOURCES = testanyref.cc
 testdispatcher_SOURCES = testdispatcher.cc
+testnotification_SOURCES = testnotification.cc
 
 testwrapper_SOURCES = wrapper.cc testwrapper.cc
 

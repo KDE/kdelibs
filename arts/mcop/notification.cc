@@ -1,7 +1,7 @@
     /*
 
-    Copyright (C) 2000 Stefan Westerfeld
-                       stefan@space.twc.de
+    Copyright (C) 2000-2001 Stefan Westerfeld
+                            stefan@space.twc.de
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -21,7 +21,7 @@
     */
 
 #include "notification.h"
-#include <assert.h>
+#include "debug.h"
 
 using namespace Arts;
 
@@ -31,14 +31,59 @@ void NotificationClient::notify(const Notification&)
 
 NotificationManager::NotificationManager()
 {
-	assert(!instance);
+	arts_assert(!instance);
 	instance = this;
 }
 
 NotificationManager::~NotificationManager()
 {
-	assert(instance);
+	arts_assert(instance);
 	instance = 0;
+}
+
+bool NotificationManager::run()
+{
+	if(todo.empty()) return false;
+
+	while(!todo.empty())
+	{
+		Notification wm = todo.front();
+		todo.pop();
+
+		/*
+		 * we'll copy and remove the notification first, to be sure that
+		 * nothing bad happens to it if we rebuild "todo" (for instance in
+		 * removeClient) 
+		 */
+		wm.receiver->notify(wm);
+	}
+	return true;
+}
+
+void NotificationManager::removeClient(NotificationClient *client)
+{
+	std::queue<Notification> newTodo;
+
+	while(!todo.empty())
+	{
+		const Notification& n = todo.front();
+		if(n.receiver != client)
+			newTodo.push(n);
+		else
+		{
+			arts_debug("NotificationManager: removing one notification");
+			NotificationDestroyFunction destroy = 
+				(NotificationDestroyFunction)n.internal;
+			if(destroy) destroy(n);
+		}
+		todo.pop();
+	}
+	todo = newTodo;
+}
+
+void Notification::setDestroy(NotificationDestroyFunction destroy)
+{
+	internal = destroy;
 }
 
 NotificationManager *NotificationManager::instance = 0;

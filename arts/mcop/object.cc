@@ -376,6 +376,9 @@ Object_base::~Object_base()
 	while(!_internalData->weakReferences.empty())
 		_internalData->weakReferences.front()->release();
 
+	/* inform notification manager that we don't exist any longer */
+	NotificationManager::the()->removeClient(this);
+
 	delete _internalData;
 	_staticObjectCount--;
 }
