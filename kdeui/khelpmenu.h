@@ -26,7 +26,7 @@
 #include <qstring.h>
 
 class KActionCollection;
-class QPopupMenu;
+class KPopupMenu;
 class QWidget;
 
 class KAboutData;
@@ -60,7 +60,7 @@ class KHelpMenuPrivate;
  * </pre>
  *
  * IMPORTANT:
- * The first time you use mHelpMenu->menu(), a @ref QPopupMenu object is
+ * The first time you use mHelpMenu->menu(), a @ref KPopupMenu object is
  * allocated. Only one object is created by the class so if you call
  * @ref mHelpMenu->menu() twice or more, the same pointer is returned. The class
  * will destroy the popupmenu in the destructor so do not delete this
@@ -111,7 +111,7 @@ class KHelpMenuPrivate;
  * void MyClass::myFunc()
  * {
  *   KHelpMenu *helpMenu = new KHelpMenu( this );
- *   QPopupMenu *help = mHelpMenu->menu();
+ *   KPopupMenu *help = mHelpMenu->menu();
  *   help->connectItem( KHelpMenu::menuAboutApp, this, SLOT(myDialogSlot()) );
  * }
  *
@@ -183,7 +183,7 @@ class KHelpMenu : public QObject
      * Note: This method will only create one instance of the menu. If
      * you call this method twice or more the same pointer is returned
      */
-    QPopupMenu *menu();
+    KPopupMenu *menu();
 
   public slots:
     /**
@@ -247,7 +247,7 @@ class KHelpMenu : public QObject
     void showAboutApplication();
     
   private:
-    QPopupMenu   *mMenu;
+    KPopupMenu   *mMenu;
     KDialogBase  *mAboutApp;
     KAboutKDE    *mAboutKDE;
     KBugReport   *mBugReport;

@@ -28,7 +28,7 @@
 #include <qmap.h>
 #include <kstatusbar.h>
 #include <ktoolbar.h>
-#include <qpopupmenu.h>
+#include <kpopupmenu.h>
 
 
 class KXMLGUIFactory;
@@ -137,7 +137,7 @@ public:
      *
      * Example (adding a standard help menu to your application):
      * <pre>
-     * QPopupMenu *help = helpMenu( <myTextString> );
+     * KPopupMenu *help = helpMenu( <myTextString> );
      * menuBar()->insertItem( i18n("&Help"), help );
      * </pre>
      *
@@ -151,7 +151,7 @@ public:
      *
      * @return A standard help menu.
      */
-    QPopupMenu* helpMenu( const QString &aboutAppText = QString::null,
+    KPopupMenu* helpMenu( const QString &aboutAppText = QString::null,
 			  bool showWhatsThis = TRUE );
 
     /**
@@ -174,7 +174,7 @@ public:
      *
      * @return A standard help menu.
      */
-    QPopupMenu* customHelpMenu( bool showWhatsThis = TRUE );
+    KPopupMenu* customHelpMenu( bool showWhatsThis = TRUE );
 
     /**
      * @sect Session Management

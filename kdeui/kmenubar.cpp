@@ -118,8 +118,6 @@ void KMenuBar::slotReadConfig()
   KConfig *config = KGlobal::config();
   KConfigGroupSaver saver( config, grpKDE );
   setTopLevelMenu( config->readBoolEntry( keyMac, false ) );
-
-  setFont(KGlobalSettings::menuFont());
 }
 
 void KMenuBar::drawContents(QPainter *p)

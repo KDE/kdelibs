@@ -1787,7 +1787,7 @@ KPopupMenu *KToolBar::contextMenu()
   context = new KPopupMenu( 0, "context" );
   context->insertTitle(i18n("Toolbar Menu"));
 
-  QPopupMenu *orient = new QPopupMenu( context, "orient" );
+  KPopupMenu *orient = new KPopupMenu( context, "orient" );
   orient->insertItem( i18n("toolbar position string","Top"),  CONTEXT_TOP );
   orient->insertItem( i18n("toolbar position string","Left"), CONTEXT_LEFT );
   orient->insertItem( i18n("toolbar position string","Right"), CONTEXT_RIGHT );
@@ -1796,13 +1796,13 @@ KPopupMenu *KToolBar::contextMenu()
   //orient->insertItem( i18n("toolbar position string","Floating"), CONTEXT_FLOAT );
   orient->insertItem( i18n("min toolbar", "Flat"), CONTEXT_FLAT );
 
-  QPopupMenu *mode = new QPopupMenu( context, "mode" );
+  KPopupMenu *mode = new KPopupMenu( context, "mode" );
   mode->insertItem( i18n("Icons only"), CONTEXT_ICONS );
   mode->insertItem( i18n("Text only"), CONTEXT_TEXT );
   mode->insertItem( i18n("Text aside icons"), CONTEXT_TEXTRIGHT );
   mode->insertItem( i18n("Text under icons"), CONTEXT_TEXTUNDER );
 
-  QPopupMenu *size = new QPopupMenu( context, "size" );
+  KPopupMenu *size = new KPopupMenu( context, "size" );
   size->insertItem( i18n("Default"), CONTEXT_ICONSIZES );
   // Query the current theme for available sizes
   KIconTheme *theme = KGlobal::instance()->iconLoader()->theme();
@@ -1826,8 +1826,6 @@ KPopupMenu *KToolBar::contextMenu()
       //we use the size as an id, with an offset
       size->insertItem( text, CONTEXT_ICONSIZES + *it );
   }
-
-  context->setFont(KGlobalSettings::menuFont());
 
   context->insertItem( i18n("Orientation"), orient );
   orient->setItemChecked(CONTEXT_TOP, true);

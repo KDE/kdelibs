@@ -904,7 +904,6 @@ int KToggleAction::plug( QWidget* widget, int index )
     int id = itemId( _index );
 
     popupMenu( _index )->setItemChecked( id, d->m_checked );
-    popupMenu( _index )->setFont(KGlobalSettings::menuFont());
   } else if ( widget->inherits( "KToolBar" ) ) {
     KToolBar *bar = static_cast<KToolBar *>( widget );
 
@@ -1170,7 +1169,7 @@ QPopupMenu* KSelectAction::popupMenu()
 {
   if ( !d->m_menu )
   {
-    d->m_menu = new QPopupMenu(0L, "KSelectAction::popupMenu()");
+    d->m_menu = new KPopupMenu(0L, "KSelectAction::popupMenu()");
     QStringList::ConstIterator it = d->m_list.begin();
     int id = 0;
     for( ; it != d->m_list.end(); ++it ) {
@@ -1304,7 +1303,6 @@ int KSelectAction::plug( QWidget *widget, int index )
   {
     // Create the PopupMenu and store it in m_menu
     (void)popupMenu();
-    popupMenu()->setFont(KGlobalSettings::menuFont());
 
     QPopupMenu* menu = static_cast<QPopupMenu*>( widget );
     int id;
@@ -2026,7 +2024,6 @@ public:
   KActionMenuPrivate()
   {
     m_popup = new KPopupMenu(0L,"KActionMenu::KActionMenuPrivate");
-    m_popup->setFont(KGlobalSettings::menuFont());
   }
   ~KActionMenuPrivate()
   {

@@ -140,9 +140,6 @@ public:
      */
     void setTitle(const QString &title);
 
-protected slots:
-    void kdisplayFontChanged();
-
 private:
     // For backwards compatibility
     QString lastTitle;

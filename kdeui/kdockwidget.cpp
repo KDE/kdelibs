@@ -19,7 +19,7 @@
 #include "kdockwidget_private.h"
 #include <kdocktabctl.h>
 
-#include <qpopupmenu.h>
+#include <kpopupmenu.h>
 #include <qlayout.h>
 #include <qpainter.h>
 #include <qobjcoll.h>
@@ -1239,7 +1239,7 @@ KDockManager::KDockManager( QWidget* mainWindow , const char* name )
   menuData->setAutoDelete( true );
   menuData->setAutoDelete( true );
 
-  menu = new QPopupMenu();
+  menu = new KPopupMenu();
 
   connect( menu, SIGNAL(aboutToShow()), SLOT(slotMenuPopup()) );
   connect( menu, SIGNAL(activated(int)), SLOT(slotMenuActivated(int)) );

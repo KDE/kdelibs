@@ -22,7 +22,6 @@
 // I (espen) prefer that header files are included alphabetically
 #include <qhbox.h>
 #include <qlabel.h>
-#include <qpopupmenu.h>
 #include <qtimer.h>
 #include <qtoolbutton.h>
 #include <qwhatsthis.h>
@@ -39,6 +38,7 @@
 #include <kiconloader.h>
 #include <klocale.h>
 #include <kmessagebox.h>
+#include <kpopupmenu.h>
 #include <kstdaccel.h>
 #include <kstdaction.h>
 
@@ -120,7 +120,7 @@ KHelpMenu::~KHelpMenu()
 }
 
 
-QPopupMenu* KHelpMenu::menu()
+KPopupMenu* KHelpMenu::menu()
 {
   if( mMenu == 0 )
   {
@@ -129,7 +129,7 @@ QPopupMenu* KHelpMenu::menu()
     // I use hardcoded menu id's here. Reason is to stay backward
     // compatible.
     //
-    mMenu = new QPopupMenu();
+    mMenu = new KPopupMenu();
     connect( mMenu, SIGNAL(destroyed()), this, SLOT(menuDestroyed()));
 
     mMenu->insertItem( BarIcon( "contents", KIcon::SizeSmall),

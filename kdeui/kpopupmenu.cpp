@@ -37,8 +37,6 @@ KPopupTitle::KPopupTitle(QWidget *parent, const char *name)
     QString oldGroup = config->group();
     QString tmpStr;
 
-    setFont(KGlobalSettings::menuFont());
-
     config->setGroup(QString::fromLatin1("PopupTitle"));
     bgColor = config->readColorEntry(QString::fromLatin1("Color"), &colorGroup().mid());
     grHigh = bgColor.light(150);
@@ -174,15 +172,8 @@ QSize KPopupTitle::sizeHint() const
 }
 
 KPopupMenu::KPopupMenu(QWidget *parent, const char *name)
-    : QPopupMenu(parent, name) {
-
-    connect( kapp, SIGNAL(kdisplayFontChanged()), this, SLOT(kdisplayFontChanged()));
-    kdisplayFontChanged();
-}
-
-void KPopupMenu::kdisplayFontChanged()
+    : QPopupMenu(parent, name) 
 {
-    setFont(KGlobalSettings::menuFont());
 }
 
 int KPopupMenu::insertTitle(const QString &text, int id, int index)

@@ -255,7 +255,7 @@ void KLineEdit::mousePressEvent( QMouseEvent* e )
         // a completion object is present.
         if( compObj() )
         {
-            QPopupMenu* subMenu = new QPopupMenu( popup );
+            KPopupMenu* subMenu = new KPopupMenu( popup );
             KGlobalSettings::Completion mode = completionMode();
             subMenu->insertItem( i18n("None"), NoCompletion );
             subMenu->setItemChecked( NoCompletion, mode == KGlobalSettings::CompletionNone );
