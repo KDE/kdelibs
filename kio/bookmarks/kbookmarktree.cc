@@ -63,18 +63,28 @@ QListView* KBookmarkFolderTree::createTree(
   KBookmarkManager* mgr, QWidget* parent, const char* name 
 ) {
   QListView *listview = new QListView( parent, name );
+
   listview->setRootIsDecorated( true );
-  listview->addColumn( i18n("Bookmark"), 300 );
-  listview->addColumn( i18n("URL"), 300 );
+  listview->addColumn( i18n("Bookmark"), 200 );
   listview->setSorting( -1, false );
-  // listview()->setSelectionModeExt(KListView::Extended);
+  listview->setSelectionMode( QListView::Single );
   listview->setAllColumnsShowFocus( true );
   listview->clear();
+
   KBookmarkGroup root = mgr->root();
   KBookmarkFolderTreeItem * rootItem = new KBookmarkFolderTreeItem( listview, root );
   fillGroup( rootItem, root );
+
   rootItem->QListViewItem::setOpen( true );
+  listview->setCurrentItem( rootItem );
+
   return listview;
+}
+
+QString KBookmarkFolderTree::selectedAddress( QListView *listview )
+{
+  KBookmarkFolderTreeItem *item = static_cast<KBookmarkFolderTreeItem*>(listview->currentItem());
+  return item ? item->m_bookmark.address() : QString::null;
 }
 
 // toplevel item
@@ -98,14 +108,13 @@ static void fillGroup( KBookmarkFolderTreeItem * parentItem, KBookmarkGroup grou
   KBookmarkFolderTreeItem * lastItem = 0L;
   for ( KBookmark bk = group.first() ; !bk.isNull() ; bk = group.next(bk) )
   {
-    kdDebug() << "KEBTopLevel::fillGroup group=" << group.text() << " bk=" << bk.text() << endl;
     if ( bk.isGroup() )
     {
       KBookmarkGroup grp = bk.toGroup();
       KBookmarkFolderTreeItem * item = new KBookmarkFolderTreeItem( parentItem, lastItem, grp );
       fillGroup( item, grp );
       if (grp.isOpen())
-        item->QListViewItem::setOpen(true); // no need to save it again :)
+        item->setOpen( true );
       lastItem = item;
     }
   }

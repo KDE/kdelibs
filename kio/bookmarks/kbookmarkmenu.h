@@ -191,28 +191,25 @@ protected:
     KBookmarkManager* m_pManager;
 };
 
-class BookmarkEditDialog
-    : public KDialogBase
+class BookmarkEditDialog : public KDialogBase
 {
     Q_OBJECT
 
 public:
     BookmarkEditDialog(QString, QString, KBookmarkManager *, QWidget * = 0, const char * = 0);
-    virtual ~BookmarkEditDialog();
-
-    KLineEdit *m_ed1;
-    KLineEdit *m_ed2;
+    QString finalUrl();
+    QString finalTitle();
+    QString finalAddress();
 
 protected slots:
     void slotOk();
     void slotCancel();
 
 private:
-    void drawRoot();
-
-    QGridLayout *m_pGrid;
-    QWidget *m_pMain;
-    QListView *m_folderTree;
+    QWidget * m_main;
+    QListView * m_folderTree;
+    KLineEdit * m_field1;
+    KLineEdit * m_field2;
 };
 
 #endif

@@ -48,6 +48,7 @@ class QListView;
 
 class KBookmarkFolderTreeItem : public QListViewItem
 {
+  friend class KBookmarkFolderTree;
 public:
   KBookmarkFolderTreeItem( QListView *, const KBookmark & );
   KBookmarkFolderTreeItem( KBookmarkFolderTreeItem *, QListViewItem *, const KBookmarkGroup & );
@@ -58,7 +59,8 @@ private:
 class KBookmarkFolderTree
 {
 public:
-   static QListView* createTree( KBookmarkManager *, QWidget * = 0, const char * = 0 );
+  static QListView* createTree( KBookmarkManager *, QWidget * = 0, const char * = 0 );
+  static QString selectedAddress( QListView* );
 };
 
 #endif

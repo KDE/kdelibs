@@ -394,13 +394,15 @@ void KBookmarkMenu::slotAddBookmark()
   if (title.isEmpty())
     title = url;
 
-  KBookmarkGroup parentBookmark = m_pManager->findByAddress( m_parentAddress ).toGroup();
-  Q_ASSERT(!parentBookmark.isNull());
+  KBookmarkGroup parentBookmark;
 
   bool autoPick = true;
 
   if (autoPick) 
   {
+    parentBookmark = m_pManager->findByAddress( m_parentAddress ).toGroup();
+    Q_ASSERT(!parentBookmark.isNull());
+
     // If this title is already used, we'll try to find something unused.
     KBookmark ch = parentBookmark.first();
     int count = 1;
@@ -438,8 +440,14 @@ void KBookmarkMenu::slotAddBookmark()
       delete dlg;
       return;
     }
+    kdDebug(1203) << "DEBUG! " << dlg->finalAddress() 
+                  << ", " << dlg->finalUrl() 
+                  << ", " << dlg->finalTitle() << endl;
 
-    parentBookmark.addBookmark( m_pManager, dlg->m_ed1->text(), dlg->m_ed2->text() );
+    parentBookmark = m_pManager->findByAddress( dlg->finalAddress() ).toGroup();
+    Q_ASSERT(!parentBookmark.isNull());
+
+    parentBookmark.addBookmark( m_pManager, dlg->finalUrl(), dlg->finalTitle() );
     delete dlg;
   }
 
@@ -536,40 +544,48 @@ void KBookmarkMenuNSImporter::endFolder()
   mstack.pop();
 }
 
-BookmarkEditDialog::BookmarkEditDialog(QString title, QString url, KBookmarkManager *mgr,
+BookmarkEditDialog::BookmarkEditDialog(QString title, QString url, KBookmarkManager * mgr,
                                        QWidget * parent, const char * name)
-    : KDialogBase(parent, name, true, "", Ok|Cancel, Ok, true)
+  : KDialogBase(parent, name, true, "", Ok|Cancel, Ok, true)
 {
-  m_pMain = new QWidget(this);
-  setMainWidget(m_pMain);
+  m_main = new QWidget(this);
+  setMainWidget(m_main);
 
-  QBoxLayout *vert = new QVBoxLayout(m_pMain);
+  QBoxLayout *vert = new QVBoxLayout(m_main);
 
-  m_ed1 = new KLineEdit(m_pMain);
-  m_ed1->setText(title);
-  vert->addWidget(m_ed1);
+  vert->addWidget(new QLabel("url", m_main));
 
-  m_ed2 = new KLineEdit(m_pMain);
-  m_ed2->setText(url);
-  vert->addWidget(m_ed2);
+  m_field1 = new KLineEdit(m_main);
+  m_field1->setText(title);
+  vert->addWidget(m_field1);
 
-  m_folderTree = KBookmarkFolderTree::createTree(mgr, m_pMain, name);
-  m_folderTree->setMinimumSize(100,100);
+  vert->addWidget(new QLabel("title", m_main));
+
+  m_field2 = new KLineEdit(m_main);
+  m_field2->setText(url);
+  vert->addWidget(m_field2);
+
+  m_folderTree = KBookmarkFolderTree::createTree(mgr, m_main, name);
+  m_folderTree->setMinimumSize(60,100);
   vert->addWidget(m_folderTree);
 }
 
-BookmarkEditDialog::~BookmarkEditDialog() 
-{ 
+void BookmarkEditDialog::slotOk() { accept(); }
+void BookmarkEditDialog::slotCancel() { reject(); } 
+
+QString BookmarkEditDialog::finalUrl()
+{
+  return m_field1->text();
 }
 
-void BookmarkEditDialog::slotOk()
-{ 
-  accept();
+QString BookmarkEditDialog::finalTitle()
+{
+  return m_field2->text();
 }
 
-void BookmarkEditDialog::slotCancel()
-{ 
-  reject();
-} 
+QString BookmarkEditDialog::finalAddress() 
+{
+  return KBookmarkFolderTree::selectedAddress( m_folderTree );
+}
 
 #include "kbookmarkmenu.moc"
