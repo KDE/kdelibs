@@ -632,17 +632,10 @@ void HTMLDocumentImpl::updateRendering()
 {
     QListIterator<NodeImpl> it(changedNodes);
     for (; it.current(); ++it) {
-        it.current()->recalcStyle();
-        if (it.current()->renderer())
-            it.current()->renderer()->setLayouted(false);
+	if( it.current()->changed() )
+	    it.current()->applyChanges( true, true );
     }
-    it.toFirst();
-    for (; it.current(); ++it) {
-        if (it.current()->renderer())
-                it.current()->renderer()->updateSize();
-        it.current()->setChanged(false);
-    }
-    changedNodes.clear();
+     changedNodes.clear();
 }
 
 

@@ -682,7 +682,6 @@ bool KHTMLPart::executeScript( const DOM::Node &n, const QString &script )
 
 bool KHTMLPart::scheduleScript( const QString &script )
 {
-    //kdDebug() << "KHTMLPart::scheduleScript "<< script << endl;
     d->scheduledScript = script;
     d->scheduledScriptNode = DOM::Node();
     return true;
@@ -690,6 +689,7 @@ bool KHTMLPart::scheduleScript( const QString &script )
 
 bool KHTMLPart::scheduleScript(const DOM::Node &n, const QString& script)
 {
+    //kdDebug() << "KHTMLPart::scheduleScript "<< script << endl;
 
     d->scheduledScript = script;
     d->scheduledScriptNode = n;
@@ -711,6 +711,7 @@ bool KHTMLPart::executeScheduledScript()
 
   bool ret = proxy->evaluate( d->scheduledScript.unicode(), d->scheduledScript.length(), d->scheduledScriptNode );
   d->scheduledScript = QString();
+  d->scheduledScriptNode = DOM::Node();
   d->m_doc->updateRendering();
   return ret;
 }
