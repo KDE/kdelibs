@@ -80,13 +80,13 @@ no-repeat
 # CSS_PROP_VERTICAL_ALIGN: 
 #
 baseline
+middle
 sub
 super
-top
 text-top
-middle
-bottom
 text-bottom
+top
+bottom
 #
 # CSS_PROP_TEXT_ALIGN: 
 #

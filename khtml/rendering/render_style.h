@@ -274,6 +274,8 @@ public:
     Length min_height;
     Length max_height;
 
+    Length vertical_align;
+    
     int z_index;
 };
 
@@ -286,8 +288,8 @@ enum EOverflow {
 };
 
 enum EVerticalAlign {
-    BASELINE, SUB, SUPER, TOP, TEXT_TOP, MIDDLE,
-    BOTTOM, TEXT_BOTTOM
+    BASELINE, MIDDLE, SUB, SUPER, TEXT_TOP, 
+    TEXT_BOTTOM, TOP, BOTTOM, LENGTH
 };
 
 enum EClear{
@@ -533,7 +535,7 @@ protected:
 // don't inherit
 
     EOverflow _overflow : 4 ;
-    EVerticalAlign _vertical_align : 8;
+    EVerticalAlign _vertical_align : 4;
     EClear _clear : 2;
     ETableLayout _table_layout : 1;
     EBackgroundRepeat _bg_repeat : 2;
@@ -649,7 +651,8 @@ public:
     EOverflow overflow() const { return _overflow; }
     EVisiblity visiblity() const { return _visiblity; }
     EVerticalAlign verticalAlign() const { return _vertical_align; }
-
+    Length verticalAlignLength() const { return box->vertical_align; }
+    
     Length clipLeft() const { return visual->clip.left; }
     Length clipRight() const { return visual->clip.right; }
     Length clipTop() const { return visual->clip.top; }
@@ -749,6 +752,7 @@ public:
     void setOverflow(EOverflow v) { _overflow = v; }
     void setVisiblity(EVisiblity v) { _visiblity = v; }
     void setVerticalAlign(EVerticalAlign v) { _vertical_align = v; }
+    void setVerticalAlignLength(Length l) { SET_VAR(box, vertical_align, l ) }
 
     void setClipLeft(Length v) { SET_VAR(visual,clip.left,v) }
     void setClipRight(Length v) { SET_VAR(visual,clip.right,v) }

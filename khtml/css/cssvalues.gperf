@@ -51,13 +51,13 @@ repeat-x, CSS_VAL_REPEAT_X
 repeat-y, CSS_VAL_REPEAT_Y
 no-repeat, CSS_VAL_NO_REPEAT
 baseline, CSS_VAL_BASELINE
+middle, CSS_VAL_MIDDLE
 sub, CSS_VAL_SUB
 super, CSS_VAL_SUPER
-top, CSS_VAL_TOP
 text-top, CSS_VAL_TEXT_TOP
-middle, CSS_VAL_MIDDLE
-bottom, CSS_VAL_BOTTOM
 text-bottom, CSS_VAL_TEXT_BOTTOM
+top, CSS_VAL_TOP
+bottom, CSS_VAL_BOTTOM
 left, CSS_VAL_LEFT
 right, CSS_VAL_RIGHT
 center, CSS_VAL_CENTER

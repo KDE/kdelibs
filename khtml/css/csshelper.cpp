@@ -36,7 +36,7 @@
 using namespace DOM;
 using namespace khtml;
 
-int khtml::computeLength(DOM::CSSPrimitiveValueImpl *val, RenderStyle *style, QPaintDeviceMetrics *devMetrics, Metrics m)
+int khtml::computeLength(DOM::CSSPrimitiveValueImpl *val, RenderStyle *style, QPaintDeviceMetrics *devMetrics )
 {
     unsigned short type = val->primitiveType();
 
@@ -60,35 +60,20 @@ int khtml::computeLength(DOM::CSSPrimitiveValueImpl *val, RenderStyle *style, QP
     case CSSPrimitiveValue::CSS_PX:
         break;
     case CSSPrimitiveValue::CSS_CM:
-        if(m == MetricScreen)
-            factor = dpiY/2.54; //72dpi/(2.54 cm/in)
-        else
-            factor = 300./2.54; //300dpi/(2.54 cm/in)
+	factor = dpiY/2.54; //72dpi/(2.54 cm/in)
         break;
     case CSSPrimitiveValue::CSS_MM:
-        if(m == MetricScreen)
-            factor = dpiY/25.4;
-        else
-            factor = 300./25.4;
+	factor = dpiY/25.4;
         break;
     case CSSPrimitiveValue::CSS_IN:
-        if(m == MetricScreen)
             factor = dpiY;
-        else
-            factor = 300.;
         break;
     case CSSPrimitiveValue::CSS_PT:
-        if(m == MetricScreen)
             factor = dpiY/72.;
-        else
-            factor = 300./72.;
         break;
     case CSSPrimitiveValue::CSS_PC:
         // 1 pc == 12 pt
-        if(m == MetricScreen)
             factor = dpiY*12./72.;
-        else
-            factor = 300./72.*12.;
         break;
     default:
         return -1;

@@ -38,12 +38,6 @@ namespace khtml
 {
     class RenderStyle;
 
-    enum Metrics
-    {
-	MetricScreen,
-	MetricPrinter
-    };
-
     /*
      * computes a length in pixels out of the given CSSValue. Need the RenderStyle to get
      * the fontinfo in case val is defined in em or ex.
@@ -54,7 +48,7 @@ namespace khtml
      * this is screen/printer dependent, so we probably need a config option for this,
      * and some tool to calibrate.
      */
-    int computeLength(DOM::CSSPrimitiveValueImpl *val, RenderStyle *style, QPaintDeviceMetrics *devMetrics, Metrics m = MetricScreen );
+    int computeLength(DOM::CSSPrimitiveValueImpl *val, RenderStyle *style, QPaintDeviceMetrics *devMetrics );
 
     /*
      * mostly just removes the url("...") brace

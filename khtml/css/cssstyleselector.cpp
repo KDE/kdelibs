@@ -1765,11 +1765,19 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
             return;
         }
         if(!primitiveValue) return;
-        if(primitiveValue->getIdent())
-        {
+        if(primitiveValue->getIdent()) {
             style->setVerticalAlign( (EVerticalAlign) (primitiveValue->getIdent() - CSS_VAL_BASELINE) );
             return;
-        }
+        } else {
+            int type = primitiveValue->primitiveType();
+	    Length l;
+            if(type > CSSPrimitiveValue::CSS_PERCENTAGE && type < CSSPrimitiveValue::CSS_DEG)
+                l = Length( computeLength(primitiveValue, style, paintDeviceMetrics), Fixed );
+            else if(type == CSSPrimitiveValue::CSS_PERCENTAGE)
+                l = Length( primitiveValue->getFloatValue(CSSPrimitiveValue::CSS_PERCENTAGE) , Percent );
+	    style->setVerticalAlign( LENGTH );
+	    style->setVerticalAlignLength( l );
+	}    
         break;
 
     case CSS_PROP_FONT_SIZE:
