@@ -2393,7 +2393,7 @@ void KToolBarPopupAction::unplug( QWidget *widget )
   KAction::unplug( widget );
 }
 
-QPopupMenu *KToolBarPopupAction::popupMenu()
+KPopupMenu *KToolBarPopupAction::popupMenu()
 {
   if ( !m_popup )
       m_popup = new KPopupMenu;

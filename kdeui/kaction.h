@@ -1388,7 +1388,7 @@ public:
      * button. You may want to plug items into it on creation, or connect to
      * aboutToShow for a more dynamic menu.
      */
-    QPopupMenu *popupMenu();
+    KPopupMenu *popupMenu();
 
     /**
      * Returns true if this action creates a delayed popup menu
@@ -1418,7 +1418,7 @@ public:
     void setStickyMenu(bool sticky);
 
 private:
-    QPopupMenu *m_popup;
+    KPopupMenu *m_popup;
     bool m_delayed:1;
     bool m_stickyMenu:1;
     class KToolBarPopupActionPrivate;
