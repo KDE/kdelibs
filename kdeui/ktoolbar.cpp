@@ -17,6 +17,8 @@
 #include "ktopwidget.h"
 
 #include "ktoolbar.moc"
+#include <klocale.h>
+#define klocale KLocale::klocale()
   default:
 // Since I didn't get any answers about should
 // toolbar be raise or not, I leave it to
@@ -82,7 +84,7 @@ KToolBarButton::KToolBarButton( QPixmap& pixmap, int ID,
     enabledPixmap = pixmap;
   else 
     {
-      warning("KToolBarButton: pixmap is empty, perhaps some missing file");
+      warning(klocale->translate("KToolBarButton: pixmap is empty, perhaps some missing file"));
       enabledPixmap.resize( 22, 22);
     };
   makeDisabledPixmap();
@@ -140,7 +142,7 @@ void KToolBarButton::setPixmap( QPixmap &pixmap )
     enabledPixmap = pixmap;
   else
     {
-      warning("KToolBarButton: pixmap is empty, perhaps some missing file");
+      warning(klocale->translate("KToolBarButton: pixmap is empty, perhaps some missing file"));
       enabledPixmap.resize( 22, 22);
     }
   // makeDisabledPixmap();
@@ -165,7 +167,7 @@ void KToolBarButton::makeDisabledPixmap()
     {
       pm.resize(22 , 22);
       enabledPixmap.fill(this, 0, 0);
-      warning("KToolBarButton::makeDisabledPixmap: mask is null.");
+      // warning("KToolBarButton::makeDisabledPixmap: mask is null.");
     };
   
   // Prepare the disabledPixmap for drawing
@@ -267,11 +269,11 @@ void KToolBar::ContextCallback( int index )
 void KToolBar::init()
 {
   context = new QPopupMenu( 0, "context" );
-  context->insertItem( "Left", CONTEXT_LEFT );
-  context->insertItem( "Top",  CONTEXT_TOP );
-  context->insertItem( "Right", CONTEXT_RIGHT );
-  context->insertItem( "Bottom", CONTEXT_BOTTOM );
-  context->insertItem( "Floating", CONTEXT_FLOAT );
+  context->insertItem( klocale->translate("Left"), CONTEXT_LEFT );
+  context->insertItem( klocale->translate("Top"),  CONTEXT_TOP );
+  context->insertItem( klocale->translate("Right"), CONTEXT_RIGHT );
+  context->insertItem( klocale->translate("Bottom"), CONTEXT_BOTTOM );
+  context->insertItem( klocale->translate("Floating"), CONTEXT_FLOAT );
   connect( context, SIGNAL( activated( int ) ), this,
 	   SLOT( ContextCallback( int ) ) );
   
@@ -694,7 +696,7 @@ void KToolBar::closeEvent (QCloseEvent *e)
    {
      position = lastPosition;
      recreate (Parent, oldWFlags, QPoint (oldX, oldY), TRUE);
-     context->changeItem ("Float", CONTEXT_FLOAT);
+     context->changeItem (klocale->translate("Float"), CONTEXT_FLOAT);
      emit moved (position);
      e->ignore();
      return;
@@ -1193,7 +1195,7 @@ void KToolBar::setBarPos(BarPosition pos)
         //show();
         if (title != 0)
           setCaption (title);
-        context->changeItem ("UnFloat", CONTEXT_FLOAT);
+        context->changeItem (klocale->translate("UnFloat"), CONTEXT_FLOAT);
         emit moved (pos);
         return;
       }
@@ -1203,7 +1205,7 @@ void KToolBar::setBarPos(BarPosition pos)
         hide();
         recreate(Parent, oldWFlags, QPoint(oldX, oldY), TRUE);
         updateRects (TRUE);
-        context->changeItem ("Float", CONTEXT_FLOAT);
+        context->changeItem (klocale->translate("Float"), CONTEXT_FLOAT);
         emit moved (pos);
         return;
       }

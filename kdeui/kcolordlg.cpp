@@ -11,6 +11,9 @@
 #include "kcolordlg.moc"
 #include "dither.h"
 
+#include <klocale.h>
+#define klocale KLocale::klocale()
+
 #define HSV_X 305
 #define RGB_X 385
 
@@ -233,12 +236,12 @@ KColorDialog::KColorDialog( QWidget *parent, const char *name, bool modal )
 	int h, s, v;
 	selColor.hsv( &h, &s, &v );
 
-	setCaption( "Select Color" );
+	setCaption( klocale->translate("Select Color") );
 
 	QLabel *label;
 	QPushButton *button;
 
-	label = new QLabel( "System Colors", this );
+	label = new QLabel( klocale->translate("System Colors"), this );
 	label->setGeometry( 15, 15, 150, 20 );
 
 	sysColorCells = new KColorCells( this, 3, 6 );
@@ -263,7 +266,7 @@ KColorDialog::KColorDialog( QWidget *parent, const char *name, bool modal )
 	connect( sysColorCells, SIGNAL( colorSelected( int ) ),
 			SLOT( slotSysColorSelected( int ) ) );
 
-	label = new QLabel( "Custom Colors", this );
+	label = new QLabel( klocale->translate("Custom Colors"), this );
 	label->setGeometry( 15, 105, 150, 20 );
 
 	custColorCells = new KColorCells( this, 3, 6 );
@@ -331,15 +334,16 @@ KColorDialog::KColorDialog( QWidget *parent, const char *name, bool modal )
 	connect( valuePal, SIGNAL( valueChanged( int ) ),
 			SLOT( slotVChanged( int ) ) );
 
-	button = new QPushButton( "Ok", this );
+	button = new QPushButton( klocale->translate("Ok"), this );
 	button->setGeometry( 300, 245, 50, 25 );
 	connect( button, SIGNAL( clicked() ), SLOT( slotOkPressed() ) );
 
-	button = new QPushButton( "Cancel", this );
+	button = new QPushButton( klocale->translate("Cancel"), this );
 	button->setGeometry( 375, 245, 50, 25 );
 	connect( button, SIGNAL( clicked() ), SLOT( reject() ) );
 
-	button = new QPushButton( "Add to Custom Colors", this );
+	button = new QPushButton( klocale->translate("Add to Custom Colors"),
+				  this );
 	button->setGeometry( 15, 200, 180, 25 );
 	connect( button, SIGNAL( clicked() ), SLOT( slotAddToCustom() ) );
 
@@ -641,7 +645,8 @@ void KColorCombo::slotActivated( int index )
 			QBrush brush( customColor );
 			painter.fillRect( rect, brush );
 			painter.setPen( pen );
-			painter.drawText( 2, 18, "Custom..." );
+			painter.drawText( 2, 18, 
+					  klocale->translate("Custom...") );
 			painter.end();
 
 			changeItem( pixmap, 0 );
@@ -691,7 +696,7 @@ void KColorCombo::addColors()
 	QBrush brush( customColor );
 	painter.fillRect( rect, brush );
 	painter.setPen( pen );
-	painter.drawText( 2, 18, "Custom..." );
+	painter.drawText( 2, 18, klocale->translate("Custom...") );
 	painter.end();
 
 	insertItem( pixmap );

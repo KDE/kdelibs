@@ -8,6 +8,9 @@
 
 #include "kmenubar.moc"
 
+#include <klocale.h>
+#define klocale KLocale::klocale()
+
 #define CONTEXT_TOP 1
 #define CONTEXT_BOTTOM 2
 #define CONTEXT_FLOAT 3
@@ -100,9 +103,9 @@ void KMenuBar::ContextCallback( int index )
 
   handle->repaint (false);
 }
-  context->insertItem( "Top",  CONTEXT_TOP );
-  context->insertItem( "Bottom", CONTEXT_BOTTOM );
-  context->insertItem( "Floating", CONTEXT_FLOAT );
+  context->insertItem( klocale->translate("Top"),  CONTEXT_TOP );
+  context->insertItem( klocale->translate("Bottom"), CONTEXT_BOTTOM );
+  context->insertItem( klocale->translate("Floating"), CONTEXT_FLOAT );
   connect( context, SIGNAL( activated( int ) ), this,
 	   SLOT( ContextCallback( int ) ) );
   
@@ -176,7 +179,7 @@ void KMenuBar::paintEvent(QPaintEvent *)
 
 void KMenuBar::closeEvent (QCloseEvent *e)
 {
-     context->changeItem ("Float", CONTEXT_FLOAT);
+     context->changeItem (klocale->translate("Float"), CONTEXT_FLOAT);
    {
      position = lastPosition;
      recreate (Parent, oldWFlags, QPoint (oldX, oldY), TRUE);
@@ -207,7 +210,7 @@ void KMenuBar::setMenuBarPos(menuPosition pos)
         //show();
         if (title != 0)
           setCaption (title);
-        context->changeItem ("UnFloat", CONTEXT_FLOAT);
+        context->changeItem (klocale->translate("UnFloat"), CONTEXT_FLOAT);
         emit moved (pos);
           connect( Parent, SIGNAL(destroyed()), obj, SLOT(tlwDestroyed()));
         }
@@ -217,7 +220,7 @@ void KMenuBar::setMenuBarPos(menuPosition pos)
       }
         position = mpos;
         //updateRects (TRUE);
-        context->changeItem ("Float", CONTEXT_FLOAT);
+        context->changeItem (klocale->translate("Float"), CONTEXT_FLOAT);
         emit moved (pos);
 //          menu->setMouseTracking(true);
           menu->setFrameStyle(NoFrame);

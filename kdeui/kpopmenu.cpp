@@ -1,11 +1,12 @@
 #include "kpopmenu.h"
 #include "kpopmenu.moc"
 #include <qpainter.h>
+#include <klocale.h>
 
 KPopupMenu::KPopupMenu(QWidget *parent, const char *name)
     : QPopupMenu(parent, name)
 {
-    initialize("Nameless");
+    initialize(KLocale::klocale()->translate("Untitled"));
 }
 
 KPopupMenu::KPopupMenu(const char *title, QWidget *parent, const char *name)

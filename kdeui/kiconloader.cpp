@@ -29,6 +29,9 @@
 #include "kiconloader.h"
 #include "kiconloader.moc"
 
+#include <klocale.h>
+#define klocale KLocale::klocale()
+
 //----------------------------------------------------------------------
 //---------------  KICONLOADERCANVAS   ---------------------------------
 //----------------------------------------------------------------------
@@ -173,13 +176,13 @@ void KIconLoaderCanvas::resizeEvent( QResizeEvent * e)
 KIconLoaderDialog::KIconLoaderDialog ( QWidget *parent, const char *name )
   : QDialog( parent, name, TRUE )
 {
-  setCaption("Select Icon");
+  setCaption(klocale->translate("Select Icon"));
   QFont font("Helvetica", 12, QFont::Bold);
   //---
   i_filter = new QLineEdit(this);
   i_filter->setGeometry(310, 8, 150, 24);
   //---
-  l_filter = new QLabel( "Filter:", this );
+  l_filter = new QLabel( klocale->translate("Filter:"), this );
   l_filter->setGeometry( 310 - 50, 8, 40, 24 );
   //---
   canvas = new KIconLoaderCanvas(this);
@@ -191,8 +194,8 @@ KIconLoaderDialog::KIconLoaderDialog ( QWidget *parent, const char *name )
   cb_dirs = new QComboBox(FALSE, this);
   cb_dirs->setGeometry(10, 8, 230, 24);
   //---
-  ok = new QPushButton( "Ok", this );
-  cancel = new QPushButton( "Cancel", this );
+  ok = new QPushButton( klocale->translate("Ok"), this );
+  cancel = new QPushButton( klocale->translate("Cancel"), this );
   ok->setFont(font);
   cancel->setFont(font);
   ok->setGeometry(65, 200, 80, 30);
@@ -334,7 +337,7 @@ QPixmap KIconLoader::loadIcon ( const QString &name )
       *pix = new_xpm;
       if( pix->isNull() )
 		{
-		  debug("ERROR: couldn't find icon: %s", (const char *) name);
+		  warning(klocale->translate("ERROR: couldn't find icon: %s"), (const char *) name);
 		}
       else
 		{
