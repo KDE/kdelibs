@@ -259,7 +259,7 @@ public:
    * e.g. when the mouse is over this item
    */
   QString getStatusBarInfo();
-  
+
   /**
    * @param maxcount the maximum number of entries shown
    *
@@ -281,20 +281,6 @@ public:
    * (e.g. when file is clicked or double-clicked or return is pressed)
    */
   void run();
-
-  /*
-   * Gives the file a "hidden" flag, so that a view doesn't show it.
-   * E.g. a filefilter sets this flag if this item matches *.cpp or not.
-   * @see #isHidden
-   */
-    //  void setHidden( bool b ) { m_bHidden = b; }
-
-  /*
-   * @returns this item's hidden flag. True if a view shall not show it, false
-   * otherwise.
-   * @see #setHidden
-   */
-    //  bool isHidden() const { return m_bHidden; }
 
   /**
    * Returns the UDS entry. Used by the tree view to access all details
@@ -391,6 +377,7 @@ protected:
    */
   QString parsePermissions( mode_t perm ) const;
 
+private:
   /**
    * We keep a copy of the UDSEntry since we need it for @ref #getStatusBarInfo
    */
@@ -399,20 +386,32 @@ protected:
    * The url of the file
    */
   KURL m_url;
-  /**
-   * True if local file
-   */
-  bool m_bIsLocalURL;
 
   /**
    * The text for this item, i.e. the file name without path,
    */
   QString m_strName;
 
-    /**
-   * The text for this item, i.e. the file name without path, encoded
+  /**
+   * The text for this item, i.e. the file name without path, decoded
+   * ('%%' becomes '%', '%2F' becomes '/')
    */
   QString m_strText;
+
+  /**
+   * the user and group assigned to the file.
+   */
+  mutable QString m_user, m_group;
+
+  /**
+   * The filename in lower case (to speed up sorting)
+   */
+  mutable QString m_strLowerCaseName;
+
+  /**
+   * The mimetype of the file
+   */
+  KMimeType::Ptr m_pMimeType;
 
   /**
    * The file mode
@@ -424,34 +423,19 @@ protected:
   mode_t m_permissions;
 
   /**
-   * the user and group assigned to the file.
+   * Marked : see @ref #mark()
    */
-  mutable QString m_user, m_group;
-
+  bool m_bMarked:1;
   /**
    * Whether the file is a link
    */
-  bool m_bLink;
+  bool m_bLink:1;
   /**
-   * The mimetype of the file
+   * True if local file
    */
-  KMimeType::Ptr m_pMimeType;
+  bool m_bIsLocalURL:1;
 
-  /**
-   * The filename in lower case (to speed up sorting)
-   */
-  mutable QString m_strLowerCaseName;
-
-private:
-  /**
-   * Marked : see @ref #mark()
-   */
-  bool m_bMarked;
-
-  /**
-   * Hidden : see @ref #setHidden(), @ref #isHidden()
-   */
-  // bool m_bHidden;
+  bool m_bMimeTypeKnown:1;
 
   class KFileItemPrivate;
   KFileItemPrivate * d;

@@ -47,14 +47,12 @@ class KFileItem::KFileItemPrivate
 {
 public:
   KFileItemPrivate() {
-    bMimeTypeKnown = false;
     refresh();
   }
 
   void operator=( const KFileItemPrivate& d ) {
       guessedMimeType   = d.guessedMimeType;
       access            = d.access;
-      bMimeTypeKnown    = d.bMimeTypeKnown;
       for ( int i = 0; i < NumFlags; i++ )
           time[i] = d.time[i];
       size              = d.size;
@@ -72,7 +70,6 @@ public:
    // For special case like link to dirs over FTP
   QString guessedMimeType;
   QString access;
-  bool bMimeTypeKnown;
   QMap<const void*, void*> extra;
   KFileMetaInfo metaInfo;
 
@@ -85,12 +82,13 @@ KFileItem::KFileItem( const KIO::UDSEntry& _entry, const KURL& _url,
                       bool _determineMimeTypeOnDemand, bool _urlIsDirectory ) :
   m_entry( _entry ),
   m_url( _url ),
-  m_bIsLocalURL( _url.isLocalFile() ),
+  m_pMimeType( 0 ),
   m_fileMode( (mode_t)-1 ),
   m_permissions( (mode_t)-1 ),
-  m_bLink( false ),
-  m_pMimeType( 0 ),
   m_bMarked( false ),
+  m_bLink( false ),
+  m_bIsLocalURL( _url.isLocalFile() ),
+  m_bMimeTypeKnown( false ),
   d(new KFileItemPrivate)
 {
   bool UDS_URL_seen = false;
@@ -127,7 +125,7 @@ KFileItem::KFileItem( const KIO::UDSEntry& _entry, const KURL& _url,
 
         case KIO::UDS_MIME_TYPE:
           m_pMimeType = KMimeType::mimeType((*it).m_str);
-          d->bMimeTypeKnown = true;
+          m_bMimeTypeKnown = true;
           break;
 
         case KIO::UDS_GUESSED_MIME_TYPE:
@@ -149,13 +147,14 @@ KFileItem::KFileItem( const KIO::UDSEntry& _entry, const KURL& _url,
 KFileItem::KFileItem( mode_t _mode, mode_t _permissions, const KURL& _url, bool _determineMimeTypeOnDemand ) :
   m_entry(), // warning !
   m_url( _url ),
-  m_bIsLocalURL( _url.isLocalFile() ),
   m_strName( _url.fileName() ),
   m_strText( KIO::decodeFileName( m_strName ) ),
   m_fileMode ( _mode ),
   m_permissions( _permissions ),
-  m_bLink( false ),
   m_bMarked( false ),
+  m_bLink( false ),
+  m_bIsLocalURL( _url.isLocalFile() ),
+  m_bMimeTypeKnown( false ),
   d(new KFileItemPrivate)
 {
   init( _determineMimeTypeOnDemand );
@@ -163,13 +162,14 @@ KFileItem::KFileItem( mode_t _mode, mode_t _permissions, const KURL& _url, bool 
 
 KFileItem::KFileItem( const KURL &url, const QString &mimeType, mode_t mode )
 :  m_url( url ),
-  m_bIsLocalURL( url.isLocalFile() ),
   m_strName( url.fileName() ),
   m_strText( KIO::decodeFileName( m_strName ) ),
   m_fileMode( mode ),
   m_permissions( 0 ),
-  m_bLink( false ),
   m_bMarked( false ),
+  m_bLink( false ),
+  m_bIsLocalURL( url.isLocalFile() ),
+  m_bMimeTypeKnown( false ),
   d(new KFileItemPrivate)
 {
   m_pMimeType = KMimeType::mimeType( mimeType );
@@ -231,7 +231,7 @@ void KFileItem::init( bool _determineMimeTypeOnDemand )
                                           _determineMimeTypeOnDemand );
       // if we didn't use fast mode, or if we got a result, then this is the mimetype
       // otherwise, determineMimeType will be able to do better.
-      d->bMimeTypeKnown = (!_determineMimeTypeOnDemand) || (m_pMimeType->name() != KMimeType::defaultMimeType());
+      m_bMimeTypeKnown = (!_determineMimeTypeOnDemand) || (m_pMimeType->name() != KMimeType::defaultMimeType());
   }
 
 }
@@ -391,11 +391,11 @@ QString KFileItem::mimetype() const
 
 KMimeType::Ptr KFileItem::determineMimeType()
 {
-  if ( !m_pMimeType || !d->bMimeTypeKnown )
+  if ( !m_pMimeType || !m_bMimeTypeKnown )
   {
-    //kdDebug(1203) << "finding mimetype for " << m_url.url() << endl;
     m_pMimeType = KMimeType::findByURL( m_url, m_fileMode, m_bIsLocalURL );
-    d->bMimeTypeKnown = true;
+    kdDebug(1203) << "finding mimetype for " << m_url.url() << ":" << m_pMimeType->name() << endl;
+    m_bMimeTypeKnown = true;
   }
 
   return m_pMimeType;
@@ -406,13 +406,13 @@ bool KFileItem::isMimeTypeKnown() const
   // The mimetype isn't known if determineMimeType was never called (on-demand determination)
   // or if this fileitem has a guessed mimetype (e.g. ftp symlink) - in which case
   // it always remains "not fully determined"
-  return d->bMimeTypeKnown && d->guessedMimeType.isEmpty();
+  return m_bMimeTypeKnown && d->guessedMimeType.isEmpty();
 }
 
 QString KFileItem::mimeComment()
 {
  KMimeType::Ptr mType = determineMimeType();
- QString comment = mType->comment( m_url, false );
+ QString comment = mType->comment( m_url, m_bIsLocalURL );
   if (!comment.isEmpty())
     return comment;
   else
@@ -421,7 +421,7 @@ QString KFileItem::mimeComment()
 
 QString KFileItem::iconName()
 {
-  return determineMimeType()->icon(m_url, false);
+  return determineMimeType()->icon(m_url, m_bIsLocalURL);
 }
 
 QPixmap KFileItem::pixmap( int _size, int _state ) const
@@ -448,7 +448,7 @@ QPixmap KFileItem::pixmap( int _size, int _state ) const
 
   KMimeType::Ptr mime;
   // Use guessed mimetype if the main one hasn't been determined for sure
-  if ( !d->bMimeTypeKnown && !d->guessedMimeType.isEmpty() )
+  if ( !m_bMimeTypeKnown && !d->guessedMimeType.isEmpty() )
       mime = KMimeType::mimeType( d->guessedMimeType );
   else
       mime = m_pMimeType;
@@ -492,7 +492,7 @@ bool KFileItem::isReadable() const
 
 bool KFileItem::isDir() const
 {
-  if ( !d->bMimeTypeKnown && !d->guessedMimeType.isEmpty() )
+  if ( !m_bMimeTypeKnown && !d->guessedMimeType.isEmpty() )
   {
     kdDebug() << " KFileItem::isDir can't say -> false " << endl;
     return false; // can't say for sure, so no
@@ -527,7 +527,7 @@ bool KFileItem::acceptsDrops()
 
 QString KFileItem::getStatusBarInfo()
 {
-  QString comment = determineMimeType()->comment( m_url, false );
+  QString comment = determineMimeType()->comment( m_url, m_bIsLocalURL );
   QString text = m_strText;
   // Extract from the KIO::UDSEntry the additional info we didn't get previously
   QString myLinkDest = linkDest();
@@ -582,7 +582,7 @@ QString KFileItem::getToolTipText(int maxcount)
   }
 
   QStringList keys;
-  
+
   tip = "<table cellspacing=0 cellpadding=0>"
          "<tr>"
           "<th colspan=2>"
@@ -665,7 +665,7 @@ QString KFileItem::getToolTipText(int maxcount)
             s = value.toString();
             break;
         }
-      
+
         if ( !s.isEmpty() )
         {
           count++;
@@ -724,6 +724,7 @@ void KFileItem::assign( const KFileItem & item )
     m_bLink = item.m_bLink;
     m_pMimeType = item.m_pMimeType;
     m_strLowerCaseName = item.m_strLowerCaseName;
+    m_bMimeTypeKnown = item.m_bMimeTypeKnown;
     *d = *item.d; // Note: d->extra is just a shallow copy...
     // We had a mimetype previously (probably), so we need to re-determine it
     determineMimeType();
