@@ -66,10 +66,10 @@ HTMLTableElementImpl::HTMLTableElementImpl(DocumentPtr *doc)
     // reset font color and sizes here, if we don't have strict parse mode.
     // this is 90% compatible to ie and mozilla, and the by way easiest solution...
     // only difference to 100% correct is that in strict mode <font> elements are propagated into tables.
-    if ( getDocument()->parseMode() != DocumentImpl::Strict ) {
+    if ( getDocument()->parseMode() < DocumentImpl::Transitional ) {
         addCSSProperty( CSS_PROP_FONT_SIZE, CSS_VAL_MEDIUM );
         addCSSProperty( CSS_PROP_COLOR, "-konq-text" );
-        addCSSProperty( CSS_PROP_FONT_FAMILY, "konq_default" );
+        addCSSProperty( CSS_PROP_FONT_FAMILY, "konq_body" );
     }
 }
 
