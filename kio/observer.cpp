@@ -42,15 +42,12 @@ Observer::Observer() : DCOPObject("KIO::Observer")
 
     if ( !kapp->dcopClient()->isApplicationRegistered( "kio_uiserver" ) )
     {
-        QCString dcopService;
         QString error;
         if ( KApplication::startServiceByDesktopPath( "kio_uiserver.desktop",
-               "", dcopService, error ) > 0 )
+               QStringList(), &error ) > 0 )
         {
             kdError() << "Couldn't start kio_uiserver from kio_uiserver.desktop: " << error << endl;
         }
-        // What to do with dcopServer ? Isn't it 'kio_uiserver' ? Let's see.
-        kdDebug() << "dcopService : " << dcopService << endl;
     }
     m_uiserver = new UIServer_stub( "kio_uiserver", "UIServer" );
 }
