@@ -17,11 +17,10 @@ artskdeinclude_HEADERS = kplayobject.h kplayobjectfactory.h kartsfloatwatch.h ar
 $(srcdir)/kioinputstream_impl.cpp: artskde.h
 $(srcdir)/kdatarequest_impl.cpp: artskde.h
 $(srcdir)/kartsfloatwatch.cpp: artskde.h
-artskde.cc: artskde.h
 artskde.mcoptype: artskde.h
 artskde.mcopclass: artskde.h
 MCOPINC = -I$(srcdir)
-artskde.h: $(top_srcdir)/arts/kde/artskde.idl $(MCOPIDL)
+artskde.cc artskde.h: $(top_srcdir)/arts/kde/artskde.idl $(MCOPIDL)
 	    $(MCOPIDL) -I$(includedir)/arts -I$(includedir)/arts -t $(MCOPINC) $(top_srcdir)/arts/kde/artskde.idl
 
 DISTCLEANFILES = artskde.cc artskde.h artskde.mcoptype artskde.mcopclass
