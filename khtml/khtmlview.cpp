@@ -3073,7 +3073,6 @@ bool KHTMLView::moveCaretTo(NodeImpl *node, long offset, bool clearSel)
   if (!node) return false;
   ElementImpl *baseElem = determineBaseElement(node);
   RenderFlow *base = static_cast<RenderFlow *>(baseElem ? baseElem->renderer() : 0);
-  sanitizeCaretState(node, offset, VisibleFlows, base);
   if (!node) return false;
 
   // need to find out the node's inline box. If there is none, this function
@@ -3083,8 +3082,7 @@ bool KHTMLView::moveCaretTo(NodeImpl *node, long offset, bool clearSel)
 //   RenderBlock *cb;
   long r_ofs;
   CaretBoxIterator cbit;
-  CaretBoxLine *cbl = findCaretBoxLine(node, offset, &cblDeleter, VisibleFlows,
-  			base, r_ofs, cbit);
+  CaretBoxLine *cbl = findCaretBoxLine(node, offset, &cblDeleter, base, r_ofs, cbit);
 #if DEBUG_CARETMODE > 3
   if (cbl) kdDebug(6200) << cbl->information() << endl;
 #endif

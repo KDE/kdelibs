@@ -101,68 +101,6 @@ struct EditorContext {
 
 class LinearDocument;
 
-#if 0
-/**
- * Stores objects of a certain type, and calls delete on each of them
- * when this data structure is destroyed.
- *
- * This is useful for caret mode related intermediate objects. As they are
- * only used within an event handler, they can be deallocated at mass when
- * the final caret coordinates and position have been calculated.
- *
- * The objects are stored in a vector. Therefore, they can be iterated in
- * a deterministic way.
- *
- * To use this mass deleter, its managed objects must fulfill the following
- * conditions:
- * @li No derived objects can be used.
- * @li The managed object must have an overloaded new operator, which makes
- *	use of MassDeleter::allocate
- * @li The managed object must have an overloaded delete operator, which does
- *	*nothing*
- *
- * @author Leo Savernik
- * @since 3.3
- * @internal
- */
-template<class T> class MassDeleter {
-  void *obj_arr;		// object array
-  size_t res;			// capacity in objects
-  size_t n_objs;		// current object count
-public:
-  /** Creates a new mass deleter with an initial capacity of \c res objects
-   */
-  MassDeleter(size_t res = 1) : obj_arr(0), res(res), n_objs(0)
-  {
-    obj_arr = malloc(res*sizeof(T));
-  }
-  /** Deletes the mass deleter by deleting all its objects stored in its
-   * object array
-   */
-  ~MassDeleter()
-  {
-    for (size_t i = 0; i < n_objs; i++)
-      // This delete mustn't do any actual deallocation
-      delete &base()[i];
-    free(obj_arr);
-  }
-
-  /** Allocates new space for an object whose deletion is to be scheduled by
-   * this mass deleter.
-   * @return address of new object
-   */
-  T *allocate();
-
-  /** Returns the base address of this mass deleter at which the allocation
-   * vector starts.
-   */
-  T *base() const { return reinterpret_cast<T *>(obj_arr); }
-
-  /** Returns the number of objects managed by this mass deleter.
-   */
-  int size() const { return (int)n_objs; }
-};
-#else
 /**
  * Stores objects of a certain type, and calls delete on each of them
  * when this data structure is destroyed.
@@ -184,7 +122,6 @@ public:
       delete *it;
   }
 };
-#endif
 
 class CaretBoxLine;
 
@@ -280,18 +217,6 @@ public:
    */
   long maxOffset() const { return _box && !isLineBreak() ? _box->maxOffset() : 0; }
 
-#if 0
-  // Overloaded new operator.
-  void *operator new(size_t sz, MassDeleter<CaretBox> *deleter) KDE_NO_EXPORT throw();
-
-  // Overridden to prevent the normal delete from being called.
-  void operator delete(void * /*ptr*/, size_t /*sz*/)
-  {
-    // don't do anything here. This constructor is only good for the compiler
-    // to emit proper destructor calls.
-  }
-#endif
-
 #if DEBUG_CARETMODE > 0
   void dump(QTextStream &ts, const QString &ind) const;
 #endif
@@ -301,7 +226,6 @@ public:
 
 typedef MassDeleter<CaretBox> CaretBoxDeleter;
 
-#if 1
 /**
  * Iterates over the elements of a caret box line.
  *
@@ -471,18 +395,6 @@ public:
   static CaretBoxLine *constructCaretBoxLine(MassDeleter<CaretBoxLine> *deleter,
   	RenderBox *cb, bool outside, bool outsideEnd, CaretBoxIterator &iter) /*KDE_NO_EXPORT*/;
 
-#if 0
-  // Overloaded new operator.
-  void* operator new(size_t sz, MassDeleter<CaretBoxLine> *deleter) KDE_NO_EXPORT throw();
-
-  // Overridden to prevent the normal delete from being called.
-  void operator delete(void* /*ptr*/, size_t /*sz*/)
-  {
-    // don't do anything here. This constructor is only good for the compiler
-    // to emit proper destructor calls.
-  }
-#endif
-
 #if DEBUG_CARETMODE > 0
   void dump(QTextStream &ts, const QString &ind) const;
   QString information() const
@@ -572,7 +484,6 @@ protected:
 typedef MassDeleter<CaretBoxLine> CaretBoxLineDeleter;
 
 inline CaretBox *CaretBoxIterator::data() const { return cbl->caret_boxes[index]; }
-#endif
 
 /**
  * Iterates through the lines of a document.
@@ -588,11 +499,6 @@ class LineIterator
 protected:
   LinearDocument *lines;	// associated document
   CaretBoxLine *cbl;		// current caret box line
-  // ### those two are redundant, they can be determined from the cbl state
-//   bool cb_outside:1;		// is this line iterator denoting the outside
-//   				// position of its containing block cb?
-//   bool cb_outside_end:1;	// is the containing block's outside position
-//   				// at the end?
 
   static CaretBoxIterator currentBox;	// current inline box
   static long currentOffset;
@@ -628,60 +534,12 @@ public:
    * Guaranteed to crash if beyond beginning/end of document.
    */
   LineIterator &operator ++() { advance(false); return *this; }
-#if 0		// not used
-  /** seek next line.
-   *
-   * Guaranteed to crash if beyond beginning/end of document.
-   *
-   * Note: The postfix operator is slow. Use the prefix operator whenever
-   * possible.
-   */
-  LineIterator operator ++(int);
-#endif
 
   /** seek previous line.
    *
    * Guaranteed to crash if beyond beginning/end of document.
    */
   LineIterator &operator --() { advance(true); return *this; }
-#if 0		// not used
-  /** seek previous line.
-   *
-   * Guaranteed to crash if beyond beginning/end of document.
-   *
-   * Note: The postfix operator is slow. Use the prefix operator whenever
-   * possible.
-   */
-  LineIterator operator --(int);
-#endif
-
-#if 0		// not used
-  /** does pointer arithmetic.
-   *
-   * This function is O(1) for values of +/-1, O(n) otherwise.
-   * @param summand add these many lines
-   */
-  LineIterator operator +(int summand) const;
-  /** does pointer arithmetic.
-   *
-   * This function is O(1) for values of +/-1, O(n) otherwise.
-   * @param summand add these many lines
-   */
-  LineIterator operator -(int summand) const;
-
-  /** does pointer arithmetic and assignment.
-   *
-   * This function is O(1) for values of +/-1, O(n) otherwise.
-   * @param summand add these many lines
-   */
-  LineIterator &operator +=(int summand);
-  /** does pointer arithmetic and assignment.
-   *
-   * This function is O(1) for values of +/-1, O(n) otherwise.
-   * @param summand add these many lines
-   */
-  LineIterator &operator -=(int summand);
-#endif
 
   /** compares two iterators. The comparator actually works only for
    * comparing arbitrary iterators to begin() and end().
@@ -748,8 +606,6 @@ protected:
   friend class CaretBoxIterator;
   friend class EditableLineIterator;
   friend class EditableCaretBoxIterator;
-  friend class InlineBoxIterator;
-  friend class EditableInlineBoxIterator;
   friend class EditableCharacterIterator;
   friend class LinearDocument;
 };
@@ -865,9 +721,6 @@ protected:
   void initEndIterator();
 
 protected:
-  // ### ditch arena, but leave for now to make the code compile
-  RenderArena *arena;		// We need an arena for intermediate render
-  				// objects that have no own inline box
   CaretBoxLineDeleter cblDeleter;	// mass deleter for caret box lines
   DOM::NodeImpl *node;
   long offset;
@@ -884,92 +737,8 @@ protected:
   friend class ErgonomicEditableLineIterator;
   friend class CaretBoxIterator;
   friend class EditableCaretBoxIterator;
-  friend class InlineBoxIterator;
-  friend class EditableInlineBoxIterator;
   friend class EditableCharacterIterator;
 };
-
-
-#if 0
-/**
- * Iterates over the inner elements of an inline flow box in terms of
- * caret boxes.
- *
- * @author Leo Savernik
- * @internal
- * @since 3.3
- */
-class CaretBoxIterator {
-  CaretBoxDeleter *cbdeleter;	// mass deleter for caret boxes
-  InlineFlowBox *fb;		// topmost inline flow box
-  CaretBox *box;		// currently traversed caret box
-
-public:
-  /** creates a new iterator, initialized with the given flow box.
-   * @param cbdeleter mass deleter for caret boxes
-   * @param flowBox inline flow box which this iterator is restricted to.
-   * @param cb containing block.
-   * @param cb_outside whether the outside of \c cb is meant or not. This is
-   *	only regarded when flowBox is 0.
-   * @param cb_outside_end whether the outside position at the end is meant
-   * @param fromEnd \c true to iterate the caret boxes from the end of the
-   *	line box, otherwise from the beginning.
-   */
-  CaretBoxIterator(CaretBoxDeleter *cbdeleter, InlineFlowBox *flowBox,
-    		   RenderBlock *cb, bool cb_outside, bool cb_outside_end,
-                   bool fromEnd = false)
- 	: cbdeleter(cbdeleter), fb(flowBox)
-  {
-    init(cb, cb_outside, cb_outside_end);
-  }
-
-
-  /** creates a new iterator, initialized with the given line iterator.
-   * @param lit given line iterator
-   * @param fromEnd \c true to iterate the caret boxes from the end of the
-   *	line box, otherwise from the beginning.
-   * @param initBox start iterating with this very caret box, thus effectively
-   *	ignoring \c fromEnd
-   * out_ofs and outside are tied to the given line iterator's.
-   */
-  CaretBoxIterator(LineIterator &lit, bool fromEnd = false, CaretBox *initBox = 0)
-	: cbdeleter(cbdeleter), fb(flowBox)
-  {
-    if (initBox) box = initBox;
-    else init(cb, cb_outside, cb_outside_end);
-  }
-
-  /** empty constructor.
-   */
-  CaretBoxIterator() {}
-
-  bool operator ==(const CaretBoxIterator &it) const
-  {
-    return fb == it.fb && box == it.box;
-  }
-
-  bool operator !=(const CaretBoxIterator &it) const
-  {
-    return !operator ==(it);
-  }
-
-  /** returns the current caret box.
-   * @return pointer to caret box, or 0 if the end of the line has been reached
-   */
-  CaretBox *operator *() { return box; }
-
-  /** increments the iterator to point to the next caret box on this line box.
-   */
-  CaretBoxIterator &operator ++();
-  /** increments the iterator to point to the previous inline box on this line box.
-   */
-  CaretBoxIterator &operator --();
-
-private:
-  /** initializes this iterator */
-  void init(RenderBlock *cb, bool cb_outside, bool cb_outside_end);
-};
-#endif
 
 /**
  * Iterates over the editable inner elements of a caret line box.
@@ -988,24 +757,6 @@ class EditableCaretBoxIterator : public CaretBoxIterator {
   CaretAdvancePolicy advpol;	// caret advance policy
 
 public:
-#if 0
-  /** creates a new iterator, initialized with the given caret line box.
-   * @param part khtml part within which all operations are taking place.
-   * @param cbl caret line box to be iterated
-   * @param advpol current caret advance policy
-   * @param fromEnd @p true, start with last box in line
-   */
-  EditableCaretBoxIterator(KHTMLPart *part, CaretBoxLine *cbl,
-  	CaretAdvancePolicy advpol, bool fromEnd = false)
-  	: m_part(part), adjacent(false), advpol(advpol)
-  {
-    *this = fromEnd ? cbl->preEnd() : cbl->begin();
-    if (!isEditable(*this, cbl->end(), fromEnd)) {
-      if (fromEnd) --*this; else ++*this;
-    }
-  }
-#endif
-
   /** initializes a new iterator from the given line iterator,
    * beginning with the given caret box iterator, if specified
    */
@@ -1015,12 +766,7 @@ public:
                 m_part(lit.lines->m_part), adjacent(false),
                 advpol(lit.lines->advancePolicy())
   {
-#if 0
-    if (*this != cbl->end() && *this != cbl->preBegin()
-    	&& !isEditable(*this, cbl->preBegin(), fromEnd)) {
-#else
     if (!it) {
-#endif
       if (fromEnd) --*this; else ++*this;
     }
   }
@@ -1057,157 +803,6 @@ protected:
 };
 
 /**
- * Iterates over the inner elements of an inline flow box.
- *
- * The given inline flow box must be a line box. The incrementor will
- * traverse all inline boxes according to the associated linear document's
- * caret advance policy. [It will also generate transient inline boxes
- * for those render objects that do not have one. (This is nonsense)]
- * @author Leo Savernik
- * @internal
- * @since 3.2
- */
-class InlineBoxIterator {
-protected:
-    RenderArena *arena;	// arena for allocating transient inline boxes
-    InlineBox *box;	// currently traversed inline box
-    CaretAdvancePolicy advpol;	// caret advance policy
-    long out_ofs;	// outside offset of the associated line box. Only
-    			// relevant when outside is true
-    bool outside:1;	// true when the associated line box represents an
-    			// outside position
-    bool fromEnd:1;	// true when advancing towards the beginning
-
-public:
-    /** creates a new iterator, initialized with the given flow box.
-   * @param outside whether the associated inline flow box represents an
-   *	outside position.
-     */
-    InlineBoxIterator(RenderArena *arena, InlineFlowBox *flowBox,
-    		      CaretAdvancePolicy advpol, long out_ofs, bool outside,
-		      bool fromEnd = false);
-
-    /** creates a new iterator, initialized with the given line iterator,
-     * using the given inline box, if specified.
-     * out_ofs and outside are tied to the given line iterator's.
-     */
-    InlineBoxIterator(LineIterator &lit, bool fromEnd = false,
-                      InlineBox *initBox = 0);
-
-  /** empty constructor.
-   */
-  InlineBoxIterator() {}
-
-  /** returns the current leaf inline box.
-   *
-   * @return the box or 0 if the end has been reached.
-   */
-    InlineBox *operator *() const { return box; }
-
-  /** increments the iterator to point to the next inline box on this line box.
-   */
-    InlineBoxIterator &operator ++();
-
-  /** decrements the iterator to point to the previous inline box on this
-   * line box.
-   */
-    InlineBoxIterator &operator --();
-};
-
-/**
- * Iterates over the editable inner elements of an inline flow box.
- *
- * The given inline flow box must be a line box. The incrementor will
- * traverse all inline boxes according to the associated linear document's
- * caret advance policy. In contrast to @p InlineBoxIterator this
- * iterator only regards inline boxes which are editable.
- *
- * @author Leo Savernik
- * @internal
- * @since 3.2
- */
-class EditableInlineBoxIterator : public InlineBoxIterator {
-protected:
-  KHTMLPart *m_part;
-  bool adjacent;
-
-public:
-  /** creates a new iterator, initialized with the given flow box.
-   * @param part part within which all actions are taking place.
-   * @param arena arena for transient allocations
-   * @param flowBox line box to be iterated
-   * @param out_ofs outside offset of the associated line (irrelevant if
-   *	outside is false).
-   * @param outside whether the associated inline flow box represents an
-   *	outside position.
-   * @param fromEnd @p true, start with last box in line
-   */
-  EditableInlineBoxIterator(LinearDocument *ld, RenderArena *arena,
-  		InlineFlowBox *flowBox, long out_ofs, bool outside,
-		bool fromEnd = false)
-  	: InlineBoxIterator(arena, flowBox, ld->advancePolicy(), out_ofs, outside, fromEnd),
-	m_part(ld->m_part), adjacent(true)
-  {
-    if (box && !isEditable(box)) {
-      if (fromEnd) --*this; else ++*this;
-    }
-  }
-
-  /** initializes a new iterator from the given line iterator,
-   * beginning with the given inline box, if specified.
-   */
-  EditableInlineBoxIterator(LineIterator &lit, bool fromEnd = false,
-  		InlineBox *initBox = 0)
-  		: InlineBoxIterator(lit, fromEnd, initBox),
-		m_part(lit.lines->m_part), adjacent(true)
-  {
-    if (box && !isEditable(box)) {
-      if (fromEnd) --*this; else ++*this;
-    }
-  }
-
-  /** empty constructor. Use only to copy another iterator into this one.
-   */
-  EditableInlineBoxIterator() {}
-
-  /** returns @p true when the current inline box is visually adjacent to the
-   * previous inline box, i. e. no intervening inline boxes.
-   */
-  bool isAdjacent() const { return adjacent; }
-
-  /** increments the iterator to point to the next editable inline box
-   * on this line box.
-   */
-  EditableInlineBoxIterator &operator ++()
-  {
-    adjacent = true;
-    do {
-      InlineBoxIterator::operator ++();
-    } while (box && !isEditable(box));
-    return *this;
-  }
-
-  /** decrements the iterator to point to the previous editable inline box
-   * on this line box.
-   */
-  EditableInlineBoxIterator &operator --()
-  {
-    adjacent = true;
-    do {
-      InlineBoxIterator::operator --();
-    } while (box && !isEditable(box));
-    return *this;
-  }
-
-protected:
-  /** finds out if the given box is editable.
-   * @param b given inline box
-   * @return @p true if box is editable
-   */
-  bool isEditable(InlineBox *b);
-};
-
-/**
  * Iterates through the editable lines of a document.
  *
  * This iterator, opposing to @p LineIterator, only regards editable lines.
@@ -1237,14 +832,6 @@ public:
   {
     if (!cbl) return;
     if (!isEditable(*this)) advance(fromEnd);
-#if 0
-    if (!flowBox || !cb) {
-#if DEBUG_CARETMODE > 0
-      kdDebug(6200) << "EditableLineIterator: findFlowBox failed" << endl;
-#endif
-      cb = 0;
-    }/*end if*/
-#endif
   }
 
   /** empty constructor.
@@ -1258,48 +845,12 @@ public:
    * Guaranteed to crash if beyond beginning/end of document.
    */
   EditableLineIterator &operator ++() { advance(false); return *this; }
-  /** seek next line.
-   *
-   * Guaranteed to crash if beyond beginning/end of document.
-   *
-   * Note: The postfix operator is slow. Use the prefix operator whenever
-   * possible.
-   */
-  //EditableLineIterator operator ++(int);
 
   /** seek previous line.
    *
    * Guaranteed to crash if beyond beginning/end of document.
    */
   EditableLineIterator &operator --() { advance(true); return *this; }
-  /** seek previous line.
-   *
-   * Guaranteed to crash if beyond beginning/end of document.
-   *
-   * Note: The postfix operator is slow. Use the prefix operator whenever
-   * possible.
-   */
-  //EditableLineIterator operator --(int);
-
-#if 0	// implement when it's needed
-  /** does pointer arithmetic.
-   * @param summand add these many lines
-   */
-  EditableLineIterator operator +(int summand) const;
-  /** does pointer arithmetic.
-   * @param summand add these many lines
-   */
-  EditableLineIterator operator -(int summand) const;
-
-  /** does pointer arithmetic and assignment.
-   * @param summand add these many lines
-   */
-  EditableLineIterator &operator +=(int summand);
-  /** does pointer arithmetic and assignment.
-   * @param summand add these many lines
-   */
-  EditableLineIterator &operator -=(int summand);
-#endif
 
   /** advances to the line to come.
    * @param toBegin true, move to previous line, false, move to next line.
@@ -1437,44 +988,6 @@ protected:
    */
   void calcAndStoreNewLine(RenderBlock *newBlock, bool toBegin);
 
-#if 0
-  /** compares whether two tables cells belong to the same table.
-   *
-   * If one or both cells are 0, @p false is returned.
-   */
-  static bool belongToSameTable(const RenderTableCell *t1, const RenderTableCell *t2)
-  {
-    return t1 && t2 && t1->table() == t2->table();
-  }
-
-  /** finds the cell corresponding to absolute x-coordinate @p x in the given
-   * table section.
-   *
-   * If there is not direct cell, or the cell is not accessible, the function
-   * will return the nearest suitable cell.
-   * @param part part containing the document
-   * @param x absolute x-coordinate
-   * @param section table section to be searched
-   * @param fromEnd @p true to begin search from end and work towards the
-   *	beginning
-   * @param startIndex start at this index (or < 0 to start with first/last row)
-   * @return the cell, or 0 if no editable cell was found.
-   */
-  static RenderTableCell *findNearestTableCellInSection(KHTMLPart *part, int x,
-  	RenderTableSection *section, bool fromEnd = false, int startIndex = -1);
-
-  /** finds a suitable object beyond the given table.
-   *
-   * This method is to be called whenever there is no more row left
-   * in the given table. It scans for a suitable line before/after the table,
-   * or searches a table cell if another table happens to follow directly.
-   * @param table table to start from
-   * @param toBegin @p true, seek towards beginning, @p false, seek towards end.
-   * @return a suitable, editable leaf render object, or 0 if the document
-   *	boundary was reached.
-   */
-  RenderObject *findObjectBeyond(RenderTable *table, bool toBegin);
-#endif
 };
 
 /**
@@ -1512,43 +1025,6 @@ public:
   {
     // ### temporary fix for illegal nodes
     if (_it == ld->end()) { _end = true; return; }
-
-#if 0
-    _r = ld->node->renderer();
-
-    // seeks the node's inline box
-    // ### redundant, implement means to get it from ld or _it
-    // ### if node is not there?
-    EditableInlineBoxIterator copy = ebit;
-    for (; *ebit; ++ebit) {
-      copy = ebit;
-      InlineBox *b = *ebit;
-
-      if (b == _it.currentInlineBox() || b->object() == _r) {
-        if (!_it.outside) _it._offset = kMin(kMax(_it._offset, b->minOffset()), b->maxOffset());
-        break;
-      }/*end if*/
-    }/*next ebit*/
-    // If no node is found, we take the last editable node. This is a very
-    // feeble approximation as it sometimes makes the caret get stuck, or
-    // iterate over the same element indefinitely,
-    // but this covers up a case that should never happen in theory.
-    if (!*ebit) {
-      // this is a really bad hack but solves the caret-gets-stuck issue
-      static long cache_offset = -1;
-      ebit = copy;
-      InlineBox *b = *ebit;
-      _r = b->object();
-      long max_ofs = b->maxOffset();
-      _it._offset = cache_offset == max_ofs ? b->minOffset() : max_ofs;
-      cache_offset = _it._offset;
-#if DEBUG_CARETMODE > 0
-      kdDebug(6200) << "There was no node! Fixup applied!" << endl;
-      if (cache_offset == max_ofs) kdDebug(6200) << "offset fixup applied as well" << endl;
-#endif
-    }/*end if*/
-#endif
-
     initFirstChar();
   }
 
@@ -1621,7 +1097,6 @@ protected:
   void peekPrev()
   {
     --ebit;
-//    _peekPrev = *ebit;
   }
 
 };
