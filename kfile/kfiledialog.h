@@ -4,6 +4,7 @@
                   1998 Stephan Kulow <coolo@kde.org>
                   1998 Daniel Grana <grana@ie.iwi.unibe.ch>
                   2000 Carsten Pfeiffer <pfeiffer@kde.org>
+                  2001 Frerich Raabe <raabe@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -48,6 +49,7 @@ class KFileFilter;
 class KFileView;
 class KFileViewItem;
 class KToolBar;
+class KPreviewWidgetBase;
 
 struct KFileDialogPrivate;
 
@@ -70,7 +72,7 @@ struct KFileDialogPrivate;
  *
  * @short A file selection dialog.
  *
- * @author Richard J. Moore <rich@kde.org>, Carsten Pfeiffer <pfeiffer@kde.org>
+ * @author Richard J. Moore <rich@kde.org>, Carsten Pfeiffer <pfeiffer@kde.org>, Frerich Raabe <raabe@kde.org>
  */
 class KFileDialog : public KDialogBase
 {
@@ -223,7 +225,7 @@ public:
     KMimeType::Ptr currentFilterMimeType();
 
     /**
-     * Add a preview widget and enter the preview mode.
+     * Add a preview widget and enter the preview mode. (deprecated)
      *
      * In this mode
      * the dialog is split and the right part contains your widget.
@@ -233,6 +235,16 @@ public:
      * koffice/lib/kofficecore/koFilterManager.cc for some hints :)
      */
     void setPreviewWidget(const QWidget *w);
+
+    /**
+     * Add a preview widget and enter the preview mode.
+     *
+     * In this mode the dialog is split and the right part contains your
+     * preview widget.
+     *
+     * @param w The widget to be used for the preview.
+     */
+   void setPreviewWidget(const KPreviewWidgetBase *w); 
 
     /**
      * Create a modal file dialog and return the selected

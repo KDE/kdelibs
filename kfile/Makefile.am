@@ -31,7 +31,7 @@ include_HEADERS = kfiledialog.h kfileviewitem.h kfilebookmark.h  \
 	kfileiconview.h kfilefilter.h krecentdocument.h kfileview.h \
 	kfiledialog.h kurlrequester.h kfilepreview.h kfile.h \
 	kurlcombobox.h kurlrequesterdlg.h kopenwith.h kpropsdlg.h \
-	kicondialog.h kdirsize.h
+	kicondialog.h kdirsize.h kpreviewwidgetbase.h kimagefilepreview.h
 
 noinst_HEADERS = kfiledialogconf.h kfilefilter.h config-kfile.h krecentdirs.h
 kfstest_SOURCES =  kfstest.cpp
@@ -42,7 +42,7 @@ libkfile_la_SOURCES = kfilebookmark.cpp kfiledialogconf.cpp \
 	kfiledetailview.cpp kcombiview.cpp kurlrequester.cpp \
 	kfilepreview.cpp kurlcombobox.cpp kurlrequesterdlg.cpp \
 	kopenwith.cpp kpropsdlg.cpp kicondialog.cpp kdirsize.cpp \
-	krecentdirs.cpp kdiskfreesp.cpp
+	krecentdirs.cpp kdiskfreesp.cpp kimagefilepreview.cpp
 
 EXTRA_DIST = NOTES
 

@@ -68,6 +68,7 @@
 #include <kurlcombobox.h>
 
 #include "config-kfile.h"
+#include "kpreviewwidgetbase.h"
 
 #include <kfileview.h>
 #include <krecentdocument.h>
@@ -408,6 +409,9 @@ void KFileDialog::setPreviewWidget(const QWidget *w) {
     ops->setPreviewWidget(w);
 }
 
+void KFileDialog::setPreviewWidget(const KPreviewWidgetBase *w) {
+    ops->setPreviewWidget(w);
+}
 
 // FIXME: check for "existing" flag here?
 void KFileDialog::slotOk()
