@@ -249,6 +249,8 @@ QString KCompletion::findCompletion( const QString& string )
 	    while ( (node = node->firstChild()) ) {
 		if ( !node->isNull() )
 		    completion += *node;
+		else
+		    break;
 	    }
 	}
 
