@@ -102,7 +102,7 @@ KConfig	*KInstance::config() const
 KIconLoader *KInstance::iconLoader() const
 {
     if( _iconLoader == 0 ) {
-	_iconLoader = new KIconLoader( _name );
+	_iconLoader = new KIconLoader( _name, dirs() );
     }
 
     return _iconLoader;
@@ -111,7 +111,7 @@ KIconLoader *KInstance::iconLoader() const
 void KInstance::newIconLoader() const
 {
     delete _iconLoader;
-    _iconLoader = 0L;
+    _iconLoader = 0;
 }
 
 const KAboutData * KInstance::aboutData() const

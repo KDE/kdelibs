@@ -71,8 +71,9 @@ public:
      * @param appname Add the data directories of this application to the
      * icon search path for the "User" group. The default argument adds the
      * directories of the current application.
+     * @param the KStandardDirs object to use. If null the global one is used
      */
-    KIconLoader(const QString& appname=QString::null);
+    KIconLoader(const QString& appname=QString::null, KStandardDirs *dirs = 0);
 
     /** Cleanup */
     ~KIconLoader();

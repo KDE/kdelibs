@@ -116,11 +116,14 @@ struct KIconLoaderPrivate
 };
 
 /*** KIconLoader: the icon loader ***/
-KIconLoader::KIconLoader(const QString& _appname)
+KIconLoader::KIconLoader(const QString& _appname, KStandardDirs *_dirs)
 {
     d = new KIconLoaderPrivate;
 
-    d->mpDirs = KGlobal::dirs();
+    if (_dirs)
+      d->mpDirs = _dirs;
+    else
+      d->mpDirs = KGlobal::dirs();
 
     // get a list of available theme dirs in /icons
     d->mThemeList = KIconTheme::list();
