@@ -5,6 +5,7 @@
               (C) 2000 Nicolas Hadacek <haadcek@kde.org>
               (C) 2000 Kurt Granroth <granroth@kde.org>
               (C) 2000 Michael Koch <koch@kde.org>
+	      (C) 2001 Holger Freyther <freyther@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public

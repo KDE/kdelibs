@@ -21,6 +21,9 @@
 
 #include <qstring.h>
 
+#include <kguiitem.h>
+#include <kstdguiitem.h>
+
 class QWidget;
 class QStringList;
 
@@ -69,8 +72,8 @@ public:
  static int questionYesNo(QWidget *parent,
                           const QString &text,
                           const QString &caption = QString::null,
-                          const QString &buttonYes = QString::null,
-                          const QString &buttonNo = QString::null,
+                          const KGuiItem &buttonYes = KStdGuiItem::yes(),
+                          const KGuiItem &buttonNo =  KStdGuiItem::no(),
                           const QString &dontAskAgainName = QString::null,
                           bool notify=true);
  /**
@@ -105,8 +108,8 @@ public:
   static int questionYesNoCancel(QWidget *parent,
                           const QString &text,
                           const QString &caption = QString::null,
-                          const QString &buttonYes = QString::null,
-                          const QString &buttonNo = QString::null,
+                          const KGuiItem &buttonYes = KStdGuiItem::yes(),
+                          const KGuiItem &buttonNo  = KStdGuiItem::no(),
                           const QString &dontAskAgainName = QString::null,
                           bool notify=true);
 
@@ -145,8 +148,8 @@ public:
                           const QString &text,
                           const QStringList &strlist,
                           const QString &caption = QString::null,
-                          const QString &buttonYes = QString::null,
-                          const QString &buttonNo = QString::null,
+                          const KGuiItem &buttonYes = KStdGuiItem::yes(),
+                          const KGuiItem &buttonNo = KStdGuiItem::no(),
                           const QString &dontAskAgainName = QString::null,
                           bool notify=true);
  /**
@@ -179,8 +182,8 @@ public:
  static int warningYesNo(QWidget *parent, 
                          const QString &text,
                          const QString &caption = QString::null,
-                         const QString &buttonYes = QString::null,  
-                         const QString &buttonNo = QString::null, 
+                         const KGuiItem &buttonYes = KStdGuiItem::yes(),  
+                         const KGuiItem &buttonNo = KStdGuiItem::no(), 
                          const QString &dontAskAgainName = QString::null,
                          bool notify=true);
 
@@ -294,8 +297,8 @@ public:
   static int warningYesNoCancel(QWidget *parent,
                                 const QString &text,
                                 const QString &caption = QString::null,
-                                const QString &buttonYes = QString::null,
-                                const QString &buttonNo = QString::null,
+                                const KGuiItem &buttonYes = KStdGuiItem::yes(),
+                                const KGuiItem &buttonNo = KStdGuiItem::no(),
                                 const QString &dontAskAgainName = QString::null,
                                 bool notify=true);
 
@@ -508,8 +511,8 @@ public:
      */
     static int messageBox( QWidget *parent, int type, const QString &text,
                     const QString &caption = QString::null,
-                    const QString &buttonYes = QString::null,
-                    const QString &buttonNo = QString::null);
+                    const KGuiItem &buttonYes = KStdGuiItem::yes(),
+                    const KGuiItem &buttonNo = KStdGuiItem::no() );
 
     /*
      * Like @ref messageBox

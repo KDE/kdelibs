@@ -33,6 +33,7 @@
 #include <kconfig.h>
 #include <kdebug.h>
 #include <kdialogbase.h>
+#include <kguiitem.h>
 #include <klistbox.h>
 #include <klocale.h>
 #include <kmessagebox.h>
@@ -121,8 +122,8 @@ static int createKMessageBox(KDialogBase *dialog, QMessageBox::Icon icon, const 
 int
 KMessageBox::questionYesNo(QWidget *parent, const QString &text,
                            const QString &caption,
-                           const QString &buttonYes,
-                           const QString &buttonNo,
+                           const KGuiItem &buttonYes,
+                           const KGuiItem &buttonNo,
                            const QString &dontAskAgainName,
                            bool notify)
 {
@@ -135,8 +136,8 @@ int
 KMessageBox::questionYesNoList(QWidget *parent, const QString &text,
                            const QStringList &strlist,
                            const QString &caption,
-                           const QString &buttonYes,
-                           const QString &buttonNo,
+                           const KGuiItem &buttonYes,
+                           const KGuiItem &buttonNo,
                            const QString &dontAskAgainName,
                            bool /*notify*/)
 {
@@ -205,8 +206,8 @@ int
 KMessageBox::questionYesNoCancel(QWidget *parent,
                           const QString &text,
                           const QString &caption,
-                          const QString &buttonYes,
-                          const QString &buttonNo,
+                          const KGuiItem &buttonYes,
+                          const KGuiItem &buttonNo,
                           const QString &dontAskAgainName,
                           bool /*notify*/)
 {
@@ -279,8 +280,8 @@ KMessageBox::questionYesNoCancel(QWidget *parent,
 int
 KMessageBox::warningYesNo(QWidget *parent, const QString &text,
                           const QString &caption,
-                          const QString &buttonYes,
-                          const QString &buttonNo,
+                          const KGuiItem &buttonYes,
+                          const KGuiItem &buttonNo,
                           const QString &dontAskAgainName,
                           bool /*notify*/)
 {
@@ -424,8 +425,8 @@ KMessageBox::warningContinueCancelList(QWidget *parent, const QString &text,
 int
 KMessageBox::warningYesNoCancel(QWidget *parent, const QString &text,
                                 const QString &caption,
-                                const QString &buttonYes,
-                                const QString &buttonNo,
+                                const KGuiItem &buttonYes,
+                                const KGuiItem &buttonNo,
                                 const QString &dontAskAgainName,
                                 bool /*notify*/)
 {
@@ -642,7 +643,7 @@ KMessageBox::about(QWidget *parent, const QString &text,
     return;
 }
 
-int KMessageBox::messageBox( QWidget *parent, int type, const QString &text, const QString &caption, const QString &buttonYes, const QString &buttonNo )
+int KMessageBox::messageBox( QWidget *parent, int type, const QString &text, const QString &caption, const KGuiItem &buttonYes, const KGuiItem &buttonNo )
 {
     switch (type) {
         case QuestionYesNo:
@@ -656,7 +657,7 @@ int KMessageBox::messageBox( QWidget *parent, int type, const QString &text, con
                                               text, caption, buttonYes, buttonNo );
         case WarningContinueCancel:
             return KMessageBox::warningContinueCancel( parent,
-                                              text, caption, buttonYes );
+                                              text, caption, buttonYes.text() );
         case WarningYesNoCancel:
             return KMessageBox::warningYesNoCancel( parent,
                                               text, caption, buttonYes, buttonNo );
