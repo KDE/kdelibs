@@ -110,7 +110,7 @@ void KDatePicker::init( const QDate &dt )
      fontsize = QFontInfo(KGlobalSettings::generalFont()).pointSize();
 
   fontsize++; // Make a little bigger
- 
+
   d->selectWeek = new QComboBox(false, this);  // read only week selection
   d->todayButton = new QToolButton(this);
   d->todayButton->setIconSet(SmallIconSet("today"));
@@ -128,10 +128,20 @@ void KDatePicker::init( const QDate &dt )
   setFontSize(fontsize);
   line->setValidator(val);
   line->installEventFilter( this );
-  yearForward->setIconSet(BarIconSet(QString::fromLatin1("2rightarrow")));
-  yearBackward->setIconSet(BarIconSet(QString::fromLatin1("2leftarrow")));
-  monthForward->setIconSet(BarIconSet(QString::fromLatin1("1rightarrow")));
-  monthBackward->setIconSet(BarIconSet(QString::fromLatin1("1leftarrow")));
+  if (  QApplication::reverseLayout() )
+  {
+      yearForward->setIconSet(BarIconSet(QString::fromLatin1("2leftarrow")));
+      yearBackward->setIconSet(BarIconSet(QString::fromLatin1("2rightarrow")));
+      monthForward->setIconSet(BarIconSet(QString::fromLatin1("1leftarrow")));
+      monthBackward->setIconSet(BarIconSet(QString::fromLatin1("1rightarrow")));
+  }
+  else
+  {
+      yearForward->setIconSet(BarIconSet(QString::fromLatin1("2rightarrow")));
+      yearBackward->setIconSet(BarIconSet(QString::fromLatin1("2leftarrow")));
+      monthForward->setIconSet(BarIconSet(QString::fromLatin1("1rightarrow")));
+      monthBackward->setIconSet(BarIconSet(QString::fromLatin1("1leftarrow")));
+  }
   setDate(dt); // set button texts
   connect(table, SIGNAL(dateChanged(QDate)), SLOT(dateChangedSlot(QDate)));
   connect(table, SIGNAL(tableClicked()), SLOT(tableClickedSlot()));
@@ -270,7 +280,7 @@ KDatePicker::yearForwardClicked()
 {
     QDate temp;
     temp = KGlobal::locale()->calendar()->addYears( table->getDate(), 1 );
-  
+
     setDate( temp );
 }
 
@@ -279,7 +289,7 @@ KDatePicker::yearBackwardClicked()
 {
     QDate temp;
     temp = KGlobal::locale()->calendar()->addYears( table->getDate(), -1 );
-  
+
     setDate( temp );
 }
 
@@ -438,7 +448,7 @@ KDatePicker::setFontSize(int s)
 
   for (int i = 1; ; ++i)
     {
-      QString str = KGlobal::locale()->calendar()->monthName(i, 
+      QString str = KGlobal::locale()->calendar()->monthName(i,
          KGlobal::locale()->calendar()->year(table->getDate()), false);
       if (str.isNull()) break;
       r=metrics.boundingRect(str);
@@ -472,7 +482,7 @@ KDatePicker::setCloseButton( bool enable )
         delete d->closeButton;
         d->closeButton = 0L;
     }
-    
+
     updateGeometry();
 }
 
