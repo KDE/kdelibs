@@ -3,6 +3,7 @@
  *
  * Copyright (C) 1999 Lars Knoll (knoll@kde.org)
  *           (C) 1999 Antti Koivisto (koivisto@kde.org)
+ *           (C) 2000 Dirk Mueller (mueller@kde.org)
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -150,7 +151,7 @@ void RenderImage::printReplaced(QPainter *p, int _tx, int _ty)
             //qDebug("qDrawShadePanel %d/%d/%d/%d", _tx + leftBorder, _ty + topBorder, cWidth, cHeight);
             qDrawShadePanel( p, _tx + leftBorder + leftPad, _ty + topBorder + topPad, cWidth, cHeight,
                              KApplication::palette().inactive(), true, 1 );
-            if(berrorPic && !pix.isNull())
+            if(berrorPic && !pix.isNull() && (cWidth >= pix.width()+4) && (cHeight >= pix.height()+4) )
             {
                 QRect r(pix.rect());
                 r = r.intersect(QRect(0, 0, cWidth-4, cHeight-4));
