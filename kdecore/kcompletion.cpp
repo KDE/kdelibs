@@ -137,7 +137,7 @@ QString KCompletion::makeCompletion( const QString& string )
     myCurrentMatch = completion;
 
     if ( !string.isEmpty() ) { // only emit match when string != ""
-	kdDebug(0) << "KCompletion: Match: " << completion;
+	kdDebug(0) << "KCompletion: Match: " << completion << endl;
 
 	postProcessMatch( &completion );
         emit match( completion );
