@@ -111,8 +111,8 @@ int Ftp::readline(char *buf,int max,netbuf *ctl)
 /*
  * read a response from the server
  *
- * return 0 if first char doesn't match
- * return 1 if first char matches
+ * return false if first char doesn't match
+ * return true if first char matches
  */
 bool Ftp::readresp(char c)
 {
@@ -918,7 +918,7 @@ FtpEntry* Ftp::ftpStat( KURL& _url )
   while( ( e = readdir() ) ) //&& !found ) !!! fix - when not at and, don't read any response
   {
     if ( m_error ) {
-      kdebug(KDEBUG_ERROR, 0, "FAILED: Read %s %s", error(), errorText().ascii());
+      kdebug(KDEBUG_ERROR, 0, "FAILED: Read %d %s", m_error, errorText().ascii());
       return 0L;
     }
 
@@ -970,7 +970,7 @@ bool Ftp::ftpOpenDir( KURL& _url )
   QString path( _url.path(-1) );
 
   if( !ftpOpenCommand( "list", path, 'A' ) ) {
-    kdebug(KDEBUG_ERROR, 0, "COULD NOT LIST %s %s", error(), errorText().ascii() );
+    kdebug(KDEBUG_ERROR, 0, "COULD NOT LIST %d %s", m_error, errorText().ascii() );
     return false;
   }
 
