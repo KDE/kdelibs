@@ -22,6 +22,7 @@
 #include <stdlib.h>
 #include <errno.h>
 #include <signal.h>
+#include <sys/time.h>
 
 #include <qfile.h>
 
