@@ -206,6 +206,7 @@ void HTMLTokenizer::begin()
     noMoreData = false;
     brokenComments = false;
     brokenServer = false;
+    brokenScript = false;
     lineno = 0;
     scriptStartLineno = 0;
     tagStartLineno = 0;
@@ -872,7 +873,7 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
                         break;
                     }
                 }
-                cBuffer[cBufferPos++] = 
+                cBuffer[cBufferPos++] =
                      (  curchar >= 'A' && curchar <= 'Z' ) ? curchar | 0x20 : curchar;
                 ++src;
             }
@@ -1045,7 +1046,7 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
 
             if(tagID >= ID_CLOSE_TAG)
                 tagID -= ID_CLOSE_TAG;
-            else if ( beginTag && tagID == ID_SCRIPT ) {
+            else if ( beginTag && !brokenServer && tagID == ID_SCRIPT ) {
                 DOMStringImpl* a = 0;
                 scriptSrc = scriptSrcCharset = QString::null;
                 if ( currToken.attrs && /* potentially have a ATTR_SRC ? */
@@ -1083,7 +1084,7 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
                 prePos = 0;
                 break;
             case ID_SCRIPT:
-                if (beginTag) {
+                if (!brokenServer && beginTag) {
                     searchStopper = scriptEnd;
                     searchStopperLen = 8;
                     script = true;
@@ -1460,19 +1461,22 @@ void HTMLTokenizer::end()
 void HTMLTokenizer::finish()
 {
     // do this as long as we don't find matching comment ends
-    while((comment || server) && scriptCode && scriptCodeSize)
+    while((script || comment || server) && scriptCode && scriptCodeSize)
     {
         // we've found an unmatched comment start
         if (comment)
             brokenComments = true;
-        else
+        else if (server)
             brokenServer = true;
+        else
+            brokenScript = true;
+
         checkScriptBuffer();
         scriptCode[ scriptCodeSize ] = 0;
         scriptCode[ scriptCodeSize + 1 ] = 0;
         int pos;
         QString food;
-        if (script || style) {
+        if (server || style || script) {
             food.setUnicode(scriptCode, scriptCodeSize);
         }
         else if (server) {
@@ -1486,7 +1490,10 @@ void HTMLTokenizer::finish()
         KHTML_DELETE_QCHAR_VEC(scriptCode);
         scriptCode = 0;
         scriptCodeSize = scriptCodeMaxSize = scriptCodeResync = 0;
-        comment = server = false;
+        if (script)
+            scriptHandler();
+
+        comment = server = script = false;
         if ( !food.isEmpty() )
             write(food, true);
     }
