@@ -261,11 +261,11 @@ void KBookmarkMenu::fillContextMenu( QPopupMenu* contextMenu, const QString & ad
   int id;
 
   if (bookmark.isGroup()) {
-    id = contextMenu->insertItem( i18n( "Open in Bookmark Editor" ), this, SLOT(slotRMBActionEditAt(int)) );
+    id = contextMenu->insertItem( i18n( "Add Bookmark Here" ), this, SLOT(slotRMBActionEditAt(int)) );
     contextMenu->setItemParameter( id, val );
     id = contextMenu->insertItem( i18n( "Delete Folder" ), this, SLOT(slotRMBActionRemove(int)) );
     contextMenu->setItemParameter( id, val );
-    id = contextMenu->insertItem( i18n( "Insert Bookmark" ), this, SLOT(slotRMBActionInsert(int)) );
+    id = contextMenu->insertItem( i18n( "Open Folder in Bookmark Editor" ), this, SLOT(slotRMBActionInsert(int)) );
     contextMenu->setItemParameter( id, val );
     // contextMenu->insertItem( i18n( "Properties" ), this, SLOT(slotRMBActionProperties(int)) );
     // contextMenu->setItemParameter( id, val );
@@ -278,7 +278,7 @@ void KBookmarkMenu::fillContextMenu( QPopupMenu* contextMenu, const QString & ad
     contextMenu->setItemParameter( id, val );
     id = contextMenu->insertItem( i18n( "Open Bookmark" ), this, SLOT(slotRMBActionOpen(int)) );
     contextMenu->setItemParameter( id, val );
-    id = contextMenu->insertItem( i18n( "Insert Bookmark Here" ), this, SLOT(slotRMBActionInsert(int)) );
+    id = contextMenu->insertItem( i18n( "Add Bookmark Here" ), this, SLOT(slotRMBActionInsert(int)) );
     contextMenu->setItemParameter( id, val );
   }
 
@@ -587,7 +587,7 @@ void KBookmarkMenu::fillBookmarkMenu()
 
     if (isAdvanced())
     {
-      KActionMenu * actionMenu = new KActionMenu( i18n("Actions"), m_actionCollection, 0L );
+      KActionMenu * actionMenu = new KActionMenu( i18n("Quick Actions"), m_actionCollection, 0L );
       fillContextMenu( actionMenu->popupMenu(), m_parentAddress, 1 );
       actionMenu->plug( m_parentMenu );
       m_actions.append( actionMenu );
