@@ -323,6 +323,7 @@ void KWM::setKWMModule(Window w){
   if (!a)
     a = XInternAtom(qt_xdisplay(), "KWM_MODULE", False);
   setSimpleProperty(w, a, 1);
+  sendClientMessage(qt_xrootwin(), a, (long) w);
 }
 
 void KWM::setKWMDockModule(Window w){
@@ -330,6 +331,7 @@ void KWM::setKWMDockModule(Window w){
   if (!a)
     a = XInternAtom(qt_xdisplay(), "KWM_MODULE", False);
   setSimpleProperty(w, a, 2);
+  sendClientMessage(qt_xrootwin(), a, (long) w);
 }
 
 bool KWM::isKWMModule(Window w){
