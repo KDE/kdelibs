@@ -66,7 +66,6 @@ public:
    */
   bool isOpened() const { return m_open; }
 
-
   /**
    * If a tar file is opened for writing then you can add new directories
    * using this function. KTar won't write one directory twice.
@@ -175,6 +174,13 @@ public:
    * Null if you used the QIODevice constructor.
    */
   QString fileName() { return m_filename; }
+
+  /**
+   * Special function for setting the "original file name" in the gzip header,
+   * when writing a tar.gz file. It appears when using in the "file" command,
+   * for instance. Should only be called if the underlying device is a KFilterDev!
+   */
+  void setOrigFileName( const QCString & fileName );
 
 private:
   /**

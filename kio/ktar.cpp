@@ -557,6 +557,16 @@ KTarGz::~KTarGz()
   delete d;
 }
 
+void KTarGz::setOrigFileName( const QCString & fileName )
+{
+  if ( !isOpened() || m_mode != IO_WriteOnly )
+  {
+    qWarning( "KTarBase::setOrigFileName: File must be opened for writing first.\n");
+    return;
+  }
+  static_cast<KFilterDev *>(device())->setOrigFileName( fileName );
+}
+
 int KTarGz::read( char * buffer, int len )
 {
   return device()->readBlock( buffer, len );
