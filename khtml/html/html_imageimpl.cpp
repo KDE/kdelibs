@@ -329,7 +329,7 @@ void HTMLAreaElementImpl::parseAttribute(AttributeImpl *attr)
             shape = Default;
         else if ( strcasecmp( attr->value(), "circle" ) == 0 )
             shape = Circle;
-        else if ( strcasecmp( attr->value(), "poly" ) == 0 )
+        else if ( strcasecmp( attr->value(), "poly" ) == 0 || strcasecmp( attr->value(),  "polygon" ) == 0 )
             shape = Poly;
         else if ( strcasecmp( attr->value(), "rect" ) == 0 )
             shape = Rect;
