@@ -1320,11 +1320,17 @@ QPixmap KApplication::miniIcon() const
   return aMiniIconPixmap;
 }
 
+extern void kDebugCleanup();
+
 KApplication::~KApplication()
 {
   delete d->m_KAppDCOPInterface;
-  KLibLoader::cleanUp();
+
+  // First call the static deleters and then call KLibLoader::cleanup()
+  // The static deleters may delete libraries for which they need KLibLoader. 
+  // KLibLoader will take care of the remaining ones.
   KGlobal::deleteStaticDeleters();
+  KLibLoader::cleanUp();
 
   delete smw;
 

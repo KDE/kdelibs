@@ -73,6 +73,8 @@ static QString getDescrFromNum(unsigned int _num)
 {
   if (!KDebugCache) {
     kdd.setObject(KDebugCache, new QIntDict<KDebugEntry>);
+    // Do not call this deleter from ~KApplication
+    KGlobal::unregisterStaticDeleter(&kdd);
     KDebugCache->setAutoDelete(true);
   }
 
@@ -158,6 +160,8 @@ static void kDebugBackend( unsigned short nLevel, unsigned int nArea, const char
   if ( !debug_Config && KGlobal::_instance )
   {
       pcd.setObject(debug_Config, new KConfig( "kdebugrc", false, false ));
+      // Do not call this deleter from ~KApplication
+      KGlobal::unregisterStaticDeleter(&pcd);
       debug_Config->setGroup("0");
   }
 
