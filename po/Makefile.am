@@ -1,47 +1,35 @@
 
-# This has to be set. The rest should be reusable
-DE_POFILES = de_kde.po 
-DE_GMFILES = de_kde.gmo
+GMOFILES = de.gmo fr.gmo sv.gmo cs.gmo es.gmo ru.gmo \
+	hu.gmo da.gmo it.gmo nl.gmo pt.gmo no.gmo pl.gmo \
+	el.gmo fi.gmo hr.gmo ro.gmo zh_TW.Big5.gmo zh_CN.GB2312.gmo \
+	sk.gmo ca.gmo sl.gmo en_UK.gmo mk.gmo pt_BR.gmo eo.gmo \
+	is.gmo ko.gmo tr.gmo he.gmo et.gmo br.gmo
 
-FR_POFILES = fr_kde.po
-FR_GMFILES = fr_kde.gmo
+POFILES = $(GMOFILES:.gmo=.po) 
 
-SV_POFILES = sv_kde.po
-SV_GMFILES = sv_kde.gmo
+CHARSETFILES = de.charset cs.charset pl.charset ru.charset fr.charset \
+               hu.charset ro.charset fi.charset da.charset pt.charset \
+               sk.charset es.charset sv.charset eo.charset no.charset \
+	       is.charset hr.charset sl.charset ca.charset he.charset \
+	       et.charset it.charset pt_BR.charset br.charset
 
-CZ_POFILES = cz_kde.po
-CZ_GMFILES = cz_kde.gmo
-
-ES_POFILES = es_kde.po
-ES_GMFILES = es_kde.gmo
-
-RU_POFILES = ru_kde.po
-RU_GMFILES = ru_kde.gmo
-
-POFILES = $(DE_POFILES) $(FR_POFILES) $(SV_POFILES) $(CZ_POFILES) $(ES_POFILES) $(RU_POFILES)
-GMOFILES= $(DE_GMFILES) $(FR_GMFILES) $(SV_GMFILES) $(CZ_GMFILES) $(ES_GMFILES) $(RU_GMFILES)
-
-localedir = $(prefix)/share/locale
+localedir = $(kde_locale)
 
 MAINTAINERCLEANFILES = $(GMOFILES)
 
-GMSGFMT = @GMSGFMT@
-MSGFMT = @MSGFMT@
-XGETTEXT = @XGETTEXT@
-DISTFILES = Makefile.in $(POFILES) $(GMOFILES)
+EXTRA_DIST = kde.pot kdelibs.pot $(CHARSETFILES) $(POFILES) texts.cpp
+# install this to make excluding of this messages possible
+include_HEADERS = kde.pot
 
-
-all: all-@USE_NLS@
-install-data-local: install-@USE_NLS@
+all: all-$(USE_NLS)
+install-data-local: install-$(USE_NLS)
 
 SUFFIXES = .po .gmo
 
-.po.mo:
-	$(MSGFMT) -o $@ $<
-
 .po.gmo:
-	file=$(srcdir)/`echo $* | sed 's,.*/,,'`.gmo \
-	&& rm -f $$file && $(GMSGFMT) -o $$file $< 
+	@file=`echo $* | sed 's,.*/,,'`.gmo; \
+	echo $(GMSGFMT) -o $$file $< ;\
+	rm -f $$file && $(GMSGFMT) -o $$file $< 
 
 all-yes: $(GMOFILES)
 all-no:
@@ -50,12 +38,22 @@ install-yes: all
 	@catalogs='$(GMOFILES)'; \
 	for cat in $$catalogs; do \
 	destdir=$(localedir); \
-	lang=`echo $$cat | sed 's/_.*$$//'`; \
-	name=`echo $$cat | sed -e 's/^.._//' | sed -e 's/\.gmo/\.mo/'` \
+	lang=`echo $$cat | sed 's/\.gmo//'`; \
+	name=kde.mo \
 	dir=$$destdir/$$lang/LC_MESSAGES; \
 	$(mkinstalldirs) $$dir; \
 	$(INSTALL_DATA) $$cat $$dir/$$name; \
 	  echo "installing $$cat as $$dir/$$name"; \
+	done;\
+	charsets='$(CHARSETFILES)'; \
+	for chset in $$charsets; do \
+	destdir=$(localedir); \
+	lang=`echo $$chset | sed 's/\.charset//'`; \
+	name=charset ; \
+	dir=$$destdir/$$lang; \
+	$(mkinstalldirs) $$dir; \
+	$(INSTALL_DATA) $(srcdir)/$$chset $$dir/$$name; \
+	  echo "installing $$chset as $$dir/$$name"; \
 	done
 
 install-no:
@@ -64,23 +62,38 @@ uninstall-local:
 	@catalogs='$(GMOFILES)'; \
 	for cat in $$catalogs; do \
 	destdir=$(localedir); \
-	lang=`echo $$cat | sed 's/_.*$$//'`; \
-	name=`echo $$cat | sed -e 's/^.._//' | sed -e 's/\.gmo/\.mo/'` \
+	lang=`echo $$cat | sed 's/\.gmo//'`; \
+	name=kde.mo; \
 	dir=$$destdir/$$lang/LC_MESSAGES; \
 	rm -f $$cat $$dir/$$name; \
 	echo "removing $$dir/$$name" ; \
+	done ;\
+	charsets='$(CHARSETFILES)'; \
+	for chset in $$charsets; do \
+	  destdir=$(localedir); \
+	  lang=`echo $$chset | sed 's/\.charset//'`; \
+	  name=charset; \
+	  dir=$$destdir/$$lang; \
+	  rm -f $$dir/$$name; \
+	  echo "removing $$dir/$$name" ; \
 	done
 
 merge:
 	@catalogs='$(POFILES)'; \
 	for cat in $$catalogs; do \
-	name=`echo $$cat | sed -e 's/^.._//' `; \
 	echo $$cat $$name; \
-	msgmerge $$cat $$name > $$cat.new ; \
-	if diff $$cat $$cat.new; then \
+	msgmerge -o $$cat.new $$cat $(PACKAGE).pot ; \
+	if test -s $$cat.new; then \
+	  grep -v "\"POT-Creation" $$cat.new > $$cat.new.2 ; \
+          grep -v "\"POT-Creation" $$cat >> $$cat.new.1; \
+	  if diff $$cat.new.1 $$cat.new.2; then \
 		rm $$cat.new;  \
-	else  \
+	  else  \
 		mv $$cat.new $$cat ; \
 	fi; \
+	rm -f $$cat.new.1 $$cat.new.2 ;\
+	fi ;\
 	done
 
+dist-hook: $(GMOFILES)
+	cp $(GMOFILES) $(distdir)
