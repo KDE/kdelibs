@@ -1802,17 +1802,17 @@ void DocumentImpl::setFocusNode(NodeImpl *newFocusNode)
         if (m_focusNode) {
             m_focusNode->ref();
             m_focusNode->dispatchHTMLEvent(EventImpl::FOCUS_EVENT,false,false);
+            if (m_focusNode != newFocusNode) return;
             m_focusNode->dispatchUIEvent(EventImpl::DOMFOCUSIN_EVENT);
-            if (m_focusNode == newFocusNode) {
-                m_focusNode->setFocus();
-                // eww, I suck. set the qt focus correctly
-                // ### find a better place in the code for this
-                if (getDocument()->view()) {
-                    if (!m_focusNode->renderer() || !m_focusNode->renderer()->isWidget())
-                        getDocument()->view()->setFocus();
-                    else if (static_cast<RenderWidget*>(m_focusNode->renderer())->widget())
-                            static_cast<RenderWidget*>(m_focusNode->renderer())->widget()->setFocus();
-                }
+            if (m_focusNode != newFocusNode) return;
+            m_focusNode->setFocus();
+            // eww, I suck. set the qt focus correctly
+            // ### find a better place in the code for this
+            if (getDocument()->view()) {
+                if (!m_focusNode->renderer() || !m_focusNode->renderer()->isWidget())
+                    getDocument()->view()->setFocus();
+                else if (static_cast<RenderWidget*>(m_focusNode->renderer())->widget())
+                    static_cast<RenderWidget*>(m_focusNode->renderer())->widget()->setFocus();
             }
         }
 
