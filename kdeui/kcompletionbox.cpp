@@ -216,17 +216,15 @@ void KCompletionBox::show()
     resize( sizeHint() );
 
     if ( d->m_parent ) {
-	QRect screen = QApplication::desktop()->
-                       screenGeometry( QApplication::desktop()->
-                                       screenNumber( this ) );
+	QDesktopWidget *screen = QApplication::desktop();
 
 	QPoint orig = d->m_parent->mapToGlobal( QPoint(0, d->m_parent->height()) );
        	int x = orig.x();
 	int y = orig.y();
 
-	if ( x + width() > screen.width() )
-	    x = screen.width() - width();
-	if (y + height() > screen.height() )
+	if ( x + width() > screen->width() )
+	    x = screen->width() - width();
+	if (y + height() > screen->height() )
 	    y = y - height() - d->m_parent->height();
 
         move( x, y);
