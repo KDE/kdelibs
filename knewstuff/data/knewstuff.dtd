@@ -1,12 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <!ELEMENT knewstuff (stuff*)>
-<!ELEMENT stuff (name,type,author,licence,summary*,version,release,releasedate,
+<!ELEMENT stuff (name,author,licence,summary*,version,release,releasedate,
                  preview*,payload*,rating?,downloads?)>
+  <!ATTLIST stuff type CDATA #IMPLIED>
 
 <!ELEMENT name (#PCDATA)>
-
-<!ELEMENT type (#PCDATA)>
 
 <!ELEMENT author (#PCDATA)>
   <!ATTLIST author email CDATA #REQUIRED>

@@ -6,6 +6,8 @@
   <!ATTLIST provider downloadurl CDATA #REQUIRED>
   <!ATTLIST provider uploadurl CDATA #REQUIRED>
   <!ATTLIST provider nouploadurl CDATA #IMPLIED>
+  <!ATTLIST provider icon CDATA #IMPLIED>
+  <!ATTLIST provider webaccess CDATA #IMPLIED>
 
 <!ELEMENT noupload EMPTY>
 

@@ -2,7 +2,9 @@
 <!DOCTYPE knewstuffproviders SYSTEM "knewstuffproviders.dtd">
 <knewstuffproviders>
   <provider downloadurl="http://korganizer.kde.org/knewstuff/korganizer/calendar/knewstuff.xml"
-            uploadurl="ftp://thereisnouploadserveryet">
+            uploadurl="ftp://some.upload.server"
+            icon="korganizer"
+            webaccess="http://some.webfrontend.server">
     <title>KOrganizer Home Page</title>
   </provider>
 </knewstuffproviders>
