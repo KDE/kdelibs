@@ -225,7 +225,7 @@ QPixmap BarIcon(const QString& pixmap , const KInstance* library )
     if (pixmap.at(0) == '/')
         return library->iconLoader()->loadIcon(pixmap);
     else
-        return library->iconLoader()->loadIcon("toolbar/" + pixmap,
+        return library->iconLoader()->loadIcon("toolbars/" + pixmap,
                                                KIconLoader::Medium);
 }
 
