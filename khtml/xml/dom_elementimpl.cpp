@@ -399,18 +399,6 @@ void ElementImpl::recalcStyle( StyleChange change )
     setHasChangedChild( false );
 }
 
-void ElementImpl::setFocus(bool received)
-{
-    NodeBaseImpl::setFocus(received);
-    recalcStyle( Inherit );
-}
-
-void ElementImpl::setActive(bool down)
-{
-    NodeBaseImpl::setActive(down);
-    recalcStyle( Inherit );
-}
-
 khtml::FindSelectionResult ElementImpl::findSelectionNode( int _x, int _y, int _tx, int _ty, DOM::Node & node, int & offset )
 {
     //kdDebug(6030) << "ElementImpl::findSelectionNode " << this << " _x=" << _x << " _y=" << _y

@@ -180,8 +180,6 @@ public:
     virtual void attach();
     virtual void recalcStyle( StyleChange = NoChange );
 
-    virtual void setFocus(bool = true);
-    virtual void setActive(bool = true);
     virtual void mouseEventHandler( MouseEvent */*ev*/, bool /*inside*/ ) {};
     virtual khtml::FindSelectionResult findSelectionNode( int _x, int _y, int _tx, int _ty,
                                                    DOM::Node & node, int & offset );

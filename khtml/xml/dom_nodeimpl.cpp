@@ -1644,16 +1644,27 @@ QRect NodeBaseImpl::getRect() const
 
 void NodeBaseImpl::setFocus(bool received)
 {
+    if (m_focused == received) return;
+
     NodeImpl::setFocus(received);
     for(NodeImpl *it=_first;it;it=it->nextSibling())
         it->setFocus(received);
+
+    // note that we need to recalc the style
+    setChanged();
 }
 
 void NodeBaseImpl::setActive(bool down)
 {
+    if (down == active()) return;
+
     NodeImpl::setActive(down);
     for(NodeImpl *it=_first;it;it=it->nextSibling())
         it->setActive(down);
+
+    // note that we need to recalc the style
+    if (m_render && m_render->style()->hasActive())
+        setChanged();
 }
 
 unsigned long NodeBaseImpl::childNodeCount()
