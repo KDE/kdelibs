@@ -2,7 +2,7 @@
   --
     This style sheet is an extension to the DocBook Modular Stylesheets.
 
-    Copyright (C) 1999-2000 Frederik Fouvry
+    Copyright (C) 1999-2001 Frederik Fouvry
 
     This program is free software; you can redistribute it and/or
     modify it under the terms of the GNU General Public License
@@ -21,7 +21,7 @@
     It has been taken over from the KDE style sheet of René Beutler
     <rbeutler@g26.ethz.ch>, but many modifications were made.  Send
     suggestions, comments, etc. to Frederik Fouvry
-    <fouvry@sfs.nphil.uni-tuebingen.de>.
+    <fouvry@coli.uni-sb.de>.
   -- [
   <!ENTITY % loc-ents PUBLIC "-//KDE//ENTITIES Localisation Style Sheet Entities//EN">
   %loc-ents;
@@ -86,7 +86,7 @@
 -->
 
 <STYLE-SHEET>
-  <STYLE-SPECIFICATION ID="KDE-DOCBOOK" USE="KDE-CA KDE-CS KDE-DA KDE-DE KDE-EL KDE-EN KDE-ES KDE-ET KDE-FI KDE-FR KDE-HU KDE-IT KDE-JA KDE-NL KDE-NO KDE-PL KDE-PT KDE-PTBR KDE-RO KDE-RU KDE-SK KDE-CA KDE-SL KDE-SR KDE-SV KDE-ZHCN KDE-ZHTW">
+  <STYLE-SPECIFICATION ID="KDE-DOCBOOK" USE="KDE-CA KDE-CS KDE-DA KDE-DE KDE-EL KDE-EN KDE-ES KDE-ET KDE-FI KDE-FR KDE-HU KDE-IT KDE-JA KDE-KO KDE-NL KDE-NO KDE-PL KDE-PT KDE-PTBR KDE-RO KDE-RU KDE-SK KDE-CA KDE-SL KDE-SR KDE-SV KDE-ZHCN KDE-ZHTW">
     <STYLE-SPECIFICATION-BODY>
 ;; ===================================================================
 ;; KDE Generic Parameters
@@ -610,6 +610,7 @@
   <EXTERNAL-SPECIFICATION ID="KDE-HU" DOCUMENT="kde-l1hu">
   <EXTERNAL-SPECIFICATION ID="KDE-IT" DOCUMENT="kde-l1it">
   <EXTERNAL-SPECIFICATION ID="KDE-JA" DOCUMENT="kde-l1ja">
+  <EXTERNAL-SPECIFICATION ID="KDE-KO" DOCUMENT="kde-l1ko">
   <EXTERNAL-SPECIFICATION ID="KDE-NL" DOCUMENT="kde-l1nl">
   <EXTERNAL-SPECIFICATION ID="KDE-NO" DOCUMENT="kde-l1no">
   <EXTERNAL-SPECIFICATION ID="KDE-PL" DOCUMENT="kde-l1pl">

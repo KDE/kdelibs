@@ -31,6 +31,7 @@
 ;; id - Indonesian                          1.55
 ;; it - Italian
 ;; ja - Japanese
+;; ko - Korean
 ;; nl - Dutch
 ;; no - Norwegian (previously bmno) ???
 ;; pl - Polish
@@ -108,6 +109,7 @@
       <![%l10n-id[ (("id") (gentext-id-xref-strings giname)) ]]>
       <![%l10n-it[ (("it") (gentext-it-xref-strings giname)) ]]>
       <![%l10n-ja[ (("ja") (gentext-ja-xref-strings giname)) ]]>
+      <![%l10n-ko[ (("ko") (gentext-ko-xref-strings giname)) ]]>
       <![%l10n-nl[ (("nl") (gentext-nl-xref-strings giname)) ]]>
       <![%l10n-no[ (("no") (gentext-no-xref-strings giname)) ]]>
       <![%l10n-pl[ (("pl") (gentext-pl-xref-strings giname)) ]]>
@@ -146,6 +148,7 @@
     <![%l10n-id[ (("id") (id-auto-xref-indirect-connector before)) ]]>
     <![%l10n-it[ (("it") (it-auto-xref-indirect-connector before)) ]]>
     <![%l10n-ja[ (("ja") (ja-auto-xref-indirect-connector before)) ]]>
+    <![%l10n-ko[ (("ko") (ko-auto-xref-indirect-connector before)) ]]>
     <![%l10n-nl[ (("nl") (nl-auto-xref-indirect-connector before)) ]]>
     <![%l10n-no[ (("no") (no-auto-xref-indirect-connector before)) ]]>
     <![%l10n-pl[ (("pl") (pl-auto-xref-indirect-connector before)) ]]>
@@ -182,6 +185,7 @@
     <![%l10n-id[ (("id") %generate-id-toc-in-front%) ]]>
     <![%l10n-it[ (("it") %generate-it-toc-in-front%) ]]>
     <![%l10n-ja[ (("ja") %generate-ja-toc-in-front%) ]]>
+    <![%l10n-ko[ (("ko") %generate-ko-toc-in-front%) ]]>
     <![%l10n-nl[ (("nl") %generate-nl-toc-in-front%) ]]>
     <![%l10n-no[ (("no") %generate-no-toc-in-front%) ]]>
     <![%l10n-pl[ (("pl") %generate-pl-toc-in-front%) ]]>
@@ -220,6 +224,7 @@
       <![%l10n-id[ (("id") (gentext-id-element-name giname)) ]]>
       <![%l10n-it[ (("it") (gentext-it-element-name giname)) ]]>
       <![%l10n-ja[ (("ja") (gentext-ja-element-name giname)) ]]>
+      <![%l10n-ko[ (("ko") (gentext-ko-element-name giname)) ]]>
       <![%l10n-nl[ (("nl") (gentext-nl-element-name giname)) ]]>
       <![%l10n-no[ (("no") (gentext-no-element-name giname)) ]]>
       <![%l10n-pl[ (("pl") (gentext-pl-element-name giname)) ]]>
@@ -259,6 +264,7 @@
       <![%l10n-id[ (("id") (gentext-id-element-name-space giname)) ]]>
       <![%l10n-it[ (("it") (gentext-it-element-name-space giname)) ]]>
       <![%l10n-ja[ (("ja") (gentext-ja-element-name-space giname)) ]]>
+      <![%l10n-ko[ (("ko") (gentext-ko-element-name-space giname)) ]]>
       <![%l10n-nl[ (("nl") (gentext-nl-element-name-space giname)) ]]>
       <![%l10n-no[ (("no") (gentext-no-element-name-space giname)) ]]>
       <![%l10n-pl[ (("pl") (gentext-pl-element-name-space giname)) ]]>
@@ -297,6 +303,7 @@
       <![%l10n-id[ (("id") (gentext-id-intra-label-sep giname)) ]]>
       <![%l10n-it[ (("it") (gentext-it-intra-label-sep giname)) ]]>
       <![%l10n-ja[ (("ja") (gentext-ja-intra-label-sep giname)) ]]>
+      <![%l10n-ko[ (("ko") (gentext-ko-intra-label-sep giname)) ]]>
       <![%l10n-nl[ (("nl") (gentext-nl-intra-label-sep giname)) ]]>
       <![%l10n-no[ (("no") (gentext-no-intra-label-sep giname)) ]]>
       <![%l10n-pl[ (("pl") (gentext-pl-intra-label-sep giname)) ]]>
@@ -335,6 +342,7 @@
       <![%l10n-id[ (("id") (gentext-id-label-title-sep giname)) ]]>
       <![%l10n-it[ (("it") (gentext-it-label-title-sep giname)) ]]>
       <![%l10n-ja[ (("ja") (gentext-ja-label-title-sep giname)) ]]>
+      <![%l10n-ko[ (("ko") (gentext-ko-label-title-sep giname)) ]]>
       <![%l10n-nl[ (("nl") (gentext-nl-label-title-sep giname)) ]]>
       <![%l10n-no[ (("no") (gentext-no-label-title-sep giname)) ]]>
       <![%l10n-pl[ (("pl") (gentext-pl-label-title-sep giname)) ]]>
@@ -373,6 +381,7 @@
       <![%l10n-id[ (("id") (id-label-number-format target)) ]]>
       <![%l10n-it[ (("it") (it-label-number-format target)) ]]>
       <![%l10n-ja[ (("ja") (ja-label-number-format target)) ]]>
+      <![%l10n-ko[ (("ko") (ko-label-number-format target)) ]]>
       <![%l10n-nl[ (("nl") (nl-label-number-format target)) ]]>
       <![%l10n-no[ (("no") (no-label-number-format target)) ]]>
       <![%l10n-pl[ (("pl") (pl-label-number-format target)) ]]>
@@ -409,6 +418,7 @@
     <![%l10n-id[ (("id") ($lot-title-id$ lotgi)) ]]>
     <![%l10n-it[ (("it") ($lot-title-it$ lotgi)) ]]>
     <![%l10n-ja[ (("ja") ($lot-title-ja$ lotgi)) ]]>
+    <![%l10n-ko[ (("ko") ($lot-title-ko$ lotgi)) ]]>
     <![%l10n-nl[ (("nl") ($lot-title-nl$ lotgi)) ]]>
     <![%l10n-no[ (("no") ($lot-title-no$ lotgi)) ]]>
     <![%l10n-pl[ (("pl") ($lot-title-pl$ lotgi)) ]]>
@@ -445,6 +455,7 @@
     <![%l10n-id[ (("id") %gentext-id-start-quote%) ]]>
     <![%l10n-it[ (("it") %gentext-it-start-quote%) ]]>
     <![%l10n-ja[ (("ja") %gentext-ja-start-quote%) ]]>
+    <![%l10n-ko[ (("ko") %gentext-ko-start-quote%) ]]>
     <![%l10n-nl[ (("nl") %gentext-nl-start-quote%) ]]>
     <![%l10n-no[ (("no") %gentext-no-start-quote%) ]]>
     <![%l10n-pl[ (("pl") %gentext-pl-start-quote%) ]]>
@@ -481,6 +492,7 @@
     <![%l10n-id[ (("id") %gentext-id-end-quote%) ]]>
     <![%l10n-it[ (("it") %gentext-it-end-quote%) ]]>
     <![%l10n-ja[ (("ja") %gentext-ja-end-quote%) ]]>
+    <![%l10n-ko[ (("ko") %gentext-ko-end-quote%) ]]>
     <![%l10n-nl[ (("nl") %gentext-nl-end-quote%) ]]>
     <![%l10n-no[ (("no") %gentext-no-end-quote%) ]]>
     <![%l10n-pl[ (("pl") %gentext-pl-end-quote%) ]]>
@@ -517,6 +529,7 @@
     <![%l10n-id[ (("id") %gentext-id-start-nested-quote%) ]]>
     <![%l10n-it[ (("it") %gentext-it-start-nested-quote%) ]]>
     <![%l10n-ja[ (("ja") %gentext-ja-start-nested-quote%) ]]>
+    <![%l10n-ko[ (("ko") %gentext-ko-start-nested-quote%) ]]>
     <![%l10n-nl[ (("nl") %gentext-nl-start-nested-quote%) ]]>
     <![%l10n-no[ (("no") %gentext-no-start-nested-quote%) ]]>
     <![%l10n-pl[ (("pl") %gentext-pl-start-nested-quote%) ]]>
@@ -547,6 +560,7 @@
     <![%l10n-id[ (("id") %gentext-id-end-nested-quote%) ]]>
     <![%l10n-it[ (("it") %gentext-it-end-nested-quote%) ]]>
     <![%l10n-ja[ (("ja") %gentext-ja-end-nested-quote%) ]]>
+    <![%l10n-ko[ (("ko") %gentext-ko-end-nested-quote%) ]]>
     <![%l10n-nl[ (("nl") %gentext-nl-end-nested-quote%) ]]>
     <![%l10n-no[ (("no") %gentext-no-end-nested-quote%) ]]>
     <![%l10n-pl[ (("pl") %gentext-pl-end-nested-quote%) ]]>
@@ -577,6 +591,7 @@
     <![%l10n-id[ (("id") %gentext-id-by%) ]]>
     <![%l10n-it[ (("it") %gentext-it-by%) ]]>
     <![%l10n-ja[ (("ja") %gentext-ja-by%) ]]>
+    <![%l10n-ko[ (("ko") %gentext-ko-by%) ]]>
     <![%l10n-nl[ (("nl") %gentext-nl-by%) ]]>
     <![%l10n-no[ (("no") %gentext-no-by%) ]]>
     <![%l10n-pl[ (("pl") %gentext-pl-by%) ]]>
@@ -613,6 +628,7 @@
     <![%l10n-id[ (("id") %gentext-id-edited-by%) ]]>
     <![%l10n-it[ (("it") %gentext-it-edited-by%) ]]>
     <![%l10n-ja[ (("ja") %gentext-ja-edited-by%) ]]>
+    <![%l10n-ko[ (("ko") %gentext-ko-edited-by%) ]]>
     <![%l10n-nl[ (("nl") %gentext-nl-edited-by%) ]]>
     <![%l10n-no[ (("no") %gentext-no-edited-by%) ]]>
     <![%l10n-pl[ (("pl") %gentext-pl-edited-by%) ]]>
@@ -649,6 +665,7 @@
     <![%l10n-id[ (("id") %gentext-id-revised-by%) ]]>
     <![%l10n-it[ (("it") %gentext-it-revised-by%) ]]>
     <![%l10n-ja[ (("ja") %gentext-ja-revised-by%) ]]>
+    <![%l10n-ko[ (("ko") %gentext-ko-revised-by%) ]]>
     <![%l10n-nl[ (("nl") %gentext-nl-revised-by%) ]]>
     <![%l10n-no[ (("no") %gentext-no-revised-by%) ]]>
     <![%l10n-pl[ (("pl") %gentext-pl-revised-by%) ]]>
@@ -685,6 +702,7 @@
     <![%l10n-id[ (("id") %gentext-id-page%) ]]>
     <![%l10n-it[ (("it") %gentext-it-page%) ]]>
     <![%l10n-ja[ (("ja") %gentext-ja-page%) ]]>
+    <![%l10n-ko[ (("ko") %gentext-ko-page%) ]]>
     <![%l10n-nl[ (("nl") %gentext-nl-page%) ]]>
     <![%l10n-no[ (("no") %gentext-no-page%) ]]>
     <![%l10n-pl[ (("pl") %gentext-pl-page%) ]]>
@@ -721,6 +739,7 @@
     <![%l10n-id[ (("id") %gentext-id-and%) ]]>
     <![%l10n-it[ (("it") %gentext-it-and%) ]]>
     <![%l10n-ja[ (("ja") %gentext-ja-and%) ]]>
+    <![%l10n-ko[ (("ko") %gentext-ko-and%) ]]>
     <![%l10n-nl[ (("nl") %gentext-nl-and%) ]]>
     <![%l10n-no[ (("no") %gentext-no-and%) ]]>
     <![%l10n-pl[ (("pl") %gentext-pl-and%) ]]>
@@ -757,6 +776,7 @@
     <![%l10n-id[ (("id") %gentext-id-bibl-pages%) ]]>
     <![%l10n-it[ (("it") %gentext-it-bibl-pages%) ]]>
     <![%l10n-ja[ (("ja") %gentext-ja-bibl-pages%) ]]>
+    <![%l10n-ko[ (("ko") %gentext-ko-bibl-pages%) ]]>
     <![%l10n-nl[ (("nl") %gentext-nl-bibl-pages%) ]]>
     <![%l10n-no[ (("no") %gentext-no-bibl-pages%) ]]>
     <![%l10n-pl[ (("pl") %gentext-pl-bibl-pages%) ]]>
@@ -793,6 +813,7 @@
     <![%l10n-id[ (("id") %gentext-id-endnotes%) ]]>
     <![%l10n-it[ (("it") %gentext-it-endnotes%) ]]>
     <![%l10n-ja[ (("ja") %gentext-ja-endnotes%) ]]>
+    <![%l10n-ko[ (("ko") %gentext-ko-endnotes%) ]]>
     <![%l10n-nl[ (("nl") %gentext-nl-endnotes%) ]]>
     <![%l10n-no[ (("no") %gentext-no-endnotes%) ]]>
     <![%l10n-pl[ (("pl") %gentext-pl-endnotes%) ]]>
@@ -829,6 +850,7 @@
     <![%l10n-id[ (("id") %gentext-id-table-endnotes%) ]]>
     <![%l10n-it[ (("it") %gentext-it-table-endnotes%) ]]>
     <![%l10n-ja[ (("ja") %gentext-ja-table-endnotes%) ]]>
+    <![%l10n-ko[ (("ko") %gentext-ko-table-endnotes%) ]]>
     <![%l10n-nl[ (("nl") %gentext-nl-table-endnotes%) ]]>
     <![%l10n-no[ (("no") %gentext-no-table-endnotes%) ]]>
     <![%l10n-pl[ (("pl") %gentext-pl-table-endnotes%) ]]>
@@ -865,6 +887,7 @@
     <![%l10n-id[ (("id") %gentext-id-index-see%) ]]>
     <![%l10n-it[ (("it") %gentext-it-index-see%) ]]>
     <![%l10n-ja[ (("ja") %gentext-ja-index-see%) ]]>
+    <![%l10n-ko[ (("ko") %gentext-ko-index-see%) ]]>
     <![%l10n-nl[ (("nl") %gentext-nl-index-see%) ]]>
     <![%l10n-no[ (("no") %gentext-no-index-see%) ]]>
     <![%l10n-pl[ (("pl") %gentext-pl-index-see%) ]]>
@@ -901,6 +924,7 @@
     <![%l10n-id[ (("id") %gentext-id-index-seealso%) ]]>
     <![%l10n-it[ (("it") %gentext-it-index-seealso%) ]]>
     <![%l10n-ja[ (("ja") %gentext-ja-index-seealso%) ]]>
+    <![%l10n-ko[ (("ko") %gentext-ko-index-seealso%) ]]>
     <![%l10n-nl[ (("nl") %gentext-nl-index-seealso%) ]]>
     <![%l10n-no[ (("no") %gentext-no-index-seealso%) ]]>
     <![%l10n-pl[ (("pl") %gentext-pl-index-seealso%) ]]>
@@ -937,6 +961,7 @@
     <![%l10n-id[ (("id") (gentext-id-nav-prev prev)) ]]>
     <![%l10n-it[ (("it") (gentext-it-nav-prev prev)) ]]>
     <![%l10n-ja[ (("ja") (gentext-ja-nav-prev prev)) ]]>
+    <![%l10n-ko[ (("ko") (gentext-ko-nav-prev prev)) ]]>
     <![%l10n-nl[ (("nl") (gentext-nl-nav-prev prev)) ]]>
     <![%l10n-no[ (("no") (gentext-no-nav-prev prev)) ]]>
     <![%l10n-pl[ (("pl") (gentext-pl-nav-prev prev)) ]]>
@@ -973,6 +998,7 @@
     <![%l10n-id[ (("id") (gentext-id-nav-prev-sibling prevsib)) ]]>
     <![%l10n-it[ (("it") (gentext-it-nav-prev-sibling prevsib)) ]]>
     <![%l10n-ja[ (("ja") (gentext-ja-nav-prev-sibling prevsib)) ]]>
+    <![%l10n-ko[ (("ko") (gentext-ko-nav-prev-sibling prevsib)) ]]>
     <![%l10n-nl[ (("nl") (gentext-nl-nav-prev-sibling prevsib)) ]]>
     <![%l10n-no[ (("no") (gentext-no-nav-prev-sibling prevsib)) ]]>
     <![%l10n-pl[ (("pl") (gentext-pl-nav-prev-sibling prevsib)) ]]>
@@ -1009,6 +1035,7 @@
     <![%l10n-id[ (("id") (gentext-id-nav-next-sibling nextsib)) ]]>
     <![%l10n-it[ (("it") (gentext-it-nav-next-sibling nextsib)) ]]>
     <![%l10n-ja[ (("ja") (gentext-ja-nav-next-sibling nextsib)) ]]>
+    <![%l10n-ko[ (("ko") (gentext-ko-nav-next-sibling nextsib)) ]]>
     <![%l10n-nl[ (("nl") (gentext-nl-nav-next-sibling nextsib)) ]]>
     <![%l10n-no[ (("no") (gentext-no-nav-next-sibling nextsib)) ]]>
     <![%l10n-pl[ (("pl") (gentext-pl-nav-next-sibling nextsib)) ]]>
@@ -1045,6 +1072,7 @@
     <![%l10n-id[ (("id") (gentext-id-nav-next next)) ]]>
     <![%l10n-it[ (("it") (gentext-it-nav-next next)) ]]>
     <![%l10n-ja[ (("ja") (gentext-ja-nav-next next)) ]]>
+    <![%l10n-ko[ (("ko") (gentext-ko-nav-next next)) ]]>
     <![%l10n-nl[ (("nl") (gentext-nl-nav-next next)) ]]>
     <![%l10n-no[ (("no") (gentext-no-nav-next next)) ]]>
     <![%l10n-pl[ (("pl") (gentext-pl-nav-next next)) ]]>
@@ -1081,6 +1109,7 @@
     <![%l10n-id[ (("id") (gentext-id-nav-up up)) ]]>
     <![%l10n-it[ (("it") (gentext-it-nav-up up)) ]]>
     <![%l10n-ja[ (("ja") (gentext-ja-nav-up up)) ]]>
+    <![%l10n-ko[ (("ko") (gentext-ko-nav-up up)) ]]>
     <![%l10n-nl[ (("nl") (gentext-nl-nav-up up)) ]]>
     <![%l10n-no[ (("no") (gentext-no-nav-up up)) ]]>
     <![%l10n-pl[ (("pl") (gentext-pl-nav-up up)) ]]>
@@ -1117,6 +1146,7 @@
     <![%l10n-id[ (("id") (gentext-id-nav-home home)) ]]>
     <![%l10n-it[ (("it") (gentext-it-nav-home home)) ]]>
     <![%l10n-ja[ (("ja") (gentext-ja-nav-home home)) ]]>
+    <![%l10n-ko[ (("ko") (gentext-ko-nav-home home)) ]]>
     <![%l10n-nl[ (("nl") (gentext-nl-nav-home home)) ]]>
     <![%l10n-no[ (("no") (gentext-no-nav-home home)) ]]>
     <![%l10n-pl[ (("pl") (gentext-pl-nav-home home)) ]]>

@@ -2,7 +2,7 @@
     This entities file lists the languages of the KDE documentation
     (and points to the localisations for each of them).
 
-    Copyright (C) 2000 Frederik Fouvry
+    Copyright (C) 2000-2001 Frederik Fouvry
 
     This program is free software; you can redistribute it and/or
     modify it under the terms of the GNU General Public License
@@ -19,7 +19,7 @@
     Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
     Send suggestions, comments, etc. to Frederik Fouvry 
-    <fouvry@sfs.nphil.uni-tuebingen.de>.
+    <fouvry@coli.uni-sb.de>.
 
     USAGE
 
@@ -58,6 +58,7 @@
 <!ENTITY % kde-l10n-hu "INCLUDE">
 <!ENTITY % kde-l10n-it "INCLUDE">
 <!ENTITY % kde-l10n-ja "INCLUDE">
+<!ENTITY % kde-l10n-ko "INCLUDE">
 <!ENTITY % kde-l10n-nl "INCLUDE">
 <!ENTITY % kde-l10n-no "INCLUDE">
 <!ENTITY % kde-l10n-pl "INCLUDE">
@@ -186,6 +187,15 @@
            "kde-l1ja.dsl" CDATA DSSSL>
 ]]>
 <!ENTITY kde-l1ja
+  PUBLIC "-//Norman Walsh//DOCUMENT DocBook Stylesheet Null Localization//EN"
+         CDATA DSSSL>
+
+<![%kde-l10n-ko;[
+  <!ENTITY kde-l1ko
+    PUBLIC "-//KDE//DOCUMENT DocBook Stylesheet Localisation//KO"
+           "kde-l1ko.dsl" CDATA DSSSL>
+]]>
+<!ENTITY kde-l1ko
   PUBLIC "-//Norman Walsh//DOCUMENT DocBook Stylesheet Null Localization//EN"
          CDATA DSSSL>
 

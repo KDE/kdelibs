@@ -182,6 +182,13 @@
 <!ENTITY % kde.i-default "IGNORE">
 ]]>
 
+<!ENTITY % Korean "IGNORE">
+<![%Korean;[
+<!ENTITY % kde.l10n.ents PUBLIC "-//KDE//ENTITIES Korean Documentation V1.0//KO">
+%kde.l10n.ents;
+<!ENTITY % kde.i-default "IGNORE">
+]]>
+
 <!ENTITY % Dutch "IGNORE">
 <![%Dutch;[
 <!ENTITY % kde.l10n.ents PUBLIC "-//KDE//ENTITIES Dutch Documentation V1.0//NL">

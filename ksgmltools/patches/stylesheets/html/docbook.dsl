@@ -13,6 +13,7 @@
 <!ENTITY % l10n-id "INCLUDE">
 <!ENTITY % l10n-it "INCLUDE">
 <!ENTITY % l10n-ja "INCLUDE">
+<!ENTITY % l10n-ko "INCLUDE">
 <!ENTITY % l10n-nl "INCLUDE">
 <!ENTITY % l10n-no "INCLUDE">
 <!ENTITY % l10n-pl "INCLUDE">
@@ -149,6 +150,15 @@
          "../common/dbl1ja.dsl" CDATA DSSSL>
 ]]>
 <!ENTITY dbl1ja
+  PUBLIC "-//Norman Walsh//DOCUMENT DocBook Stylesheet Null Localization//EN"
+         "../common/dbl1null.dsl" CDATA DSSSL>
+
+<![%l10n-ko;[
+<!ENTITY dbl1ko
+  PUBLIC "-//Norman Walsh//DOCUMENT DocBook Stylesheet Localization//KO"
+         "../common/dbl1ko.dsl" CDATA DSSSL>
+]]>
+<!ENTITY dbl1ko
   PUBLIC "-//Norman Walsh//DOCUMENT DocBook Stylesheet Null Localization//EN"
          "../common/dbl1null.dsl" CDATA DSSSL>
 
@@ -310,7 +320,7 @@
 
 <style-sheet>
 <style-specification id="docbook" 
-    use="ca cs da de el en es et fi fr hu id it ja nl no pl pt ptbr ro ru sk sl sv zhcn zhtw dbparam dblib">
+    use="ca cs da de el en es et fi fr hu id it ja ko nl no pl pt ptbr ro ru sk sl sv zhcn zhtw dbparam dblib">
 
 <style-specification-body>
 
@@ -454,6 +464,7 @@
 <external-specification id="id" document="dbl1id">
 <external-specification id="it" document="dbl1it">
 <external-specification id="ja" document="dbl1ja">
+<external-specification id="ko" document="dbl1ko">
 <external-specification id="nl" document="dbl1nl">
 <external-specification id="no" document="dbl1no">
 <external-specification id="pl" document="dbl1pl">
