@@ -31,6 +31,8 @@
 
 #include "ktrader.h"
 
+namespace KIO {
+
 class ParseTreeBase;
 
 struct PreferencesReturn
@@ -358,6 +360,6 @@ protected:
   QString m_strId;
 };
 
+}
+
 #endif
-
-

@@ -37,7 +37,7 @@
 
 void yyerror(char *s);
 int yylex();
-void initFlex( const char *s );
+void KTraderParse_initFlex( const char *s );
 
 
 #line 11 "yacc.y"
@@ -746,11 +746,11 @@ yyreduce:
 
 case 1:
 #line 55 "yacc.y"
-{ setParseTree( 0L ); ;
+{ KTraderParse_setParseTree( 0L ); ;
     break;}
 case 2:
 #line 56 "yacc.y"
-{ setParseTree( yyvsp[0].ptr ); ;
+{ KTraderParse_setParseTree( yyvsp[0].ptr ); ;
     break;}
 case 3:
 #line 59 "yacc.y"
@@ -758,7 +758,7 @@ case 3:
     break;}
 case 4:
 #line 62 "yacc.y"
-{ yyval.ptr = newOR( yyvsp[-2].ptr, yyvsp[0].ptr ); ;
+{ yyval.ptr = KTraderParse_newOR( yyvsp[-2].ptr, yyvsp[0].ptr ); ;
     break;}
 case 5:
 #line 63 "yacc.y"
@@ -766,7 +766,7 @@ case 5:
     break;}
 case 6:
 #line 66 "yacc.y"
-{ yyval.ptr = newAND( yyvsp[-2].ptr, yyvsp[0].ptr ); ;
+{ yyval.ptr = KTraderParse_newAND( yyvsp[-2].ptr, yyvsp[0].ptr ); ;
     break;}
 case 7:
 #line 67 "yacc.y"
@@ -774,27 +774,27 @@ case 7:
     break;}
 case 8:
 #line 70 "yacc.y"
-{ yyval.ptr = newCMP( yyvsp[-2].ptr, yyvsp[0].ptr, 1 ); ;
+{ yyval.ptr = KTraderParse_newCMP( yyvsp[-2].ptr, yyvsp[0].ptr, 1 ); ;
     break;}
 case 9:
 #line 71 "yacc.y"
-{ yyval.ptr = newCMP( yyvsp[-2].ptr, yyvsp[0].ptr, 2 ); ;
+{ yyval.ptr = KTraderParse_newCMP( yyvsp[-2].ptr, yyvsp[0].ptr, 2 ); ;
     break;}
 case 10:
 #line 72 "yacc.y"
-{ yyval.ptr = newCMP( yyvsp[-2].ptr, yyvsp[0].ptr, 3 ); ;
+{ yyval.ptr = KTraderParse_newCMP( yyvsp[-2].ptr, yyvsp[0].ptr, 3 ); ;
     break;}
 case 11:
 #line 73 "yacc.y"
-{ yyval.ptr = newCMP( yyvsp[-2].ptr, yyvsp[0].ptr, 4 ); ;
+{ yyval.ptr = KTraderParse_newCMP( yyvsp[-2].ptr, yyvsp[0].ptr, 4 ); ;
     break;}
 case 12:
 #line 74 "yacc.y"
-{ yyval.ptr = newCMP( yyvsp[-2].ptr, yyvsp[0].ptr, 5 ); ;
+{ yyval.ptr = KTraderParse_newCMP( yyvsp[-2].ptr, yyvsp[0].ptr, 5 ); ;
     break;}
 case 13:
 #line 75 "yacc.y"
-{ yyval.ptr = newCMP( yyvsp[-2].ptr, yyvsp[0].ptr, 6 ); ;
+{ yyval.ptr = KTraderParse_newCMP( yyvsp[-2].ptr, yyvsp[0].ptr, 6 ); ;
     break;}
 case 14:
 #line 76 "yacc.y"
@@ -802,7 +802,7 @@ case 14:
     break;}
 case 15:
 #line 79 "yacc.y"
-{ yyval.ptr = newIN( yyvsp[-2].ptr, newID( yyvsp[0].name ) ); ;
+{ yyval.ptr = KTraderParse_newIN( yyvsp[-2].ptr, KTraderParse_newID( yyvsp[0].name ) ); ;
     break;}
 case 16:
 #line 80 "yacc.y"
@@ -810,7 +810,7 @@ case 16:
     break;}
 case 17:
 #line 83 "yacc.y"
-{ yyval.ptr = newMATCH( yyvsp[-2].ptr, yyvsp[0].ptr ); ;
+{ yyval.ptr = KTraderParse_newMATCH( yyvsp[-2].ptr, yyvsp[0].ptr ); ;
     break;}
 case 18:
 #line 84 "yacc.y"
@@ -818,11 +818,11 @@ case 18:
     break;}
 case 19:
 #line 87 "yacc.y"
-{ yyval.ptr = newCALC( yyvsp[-2].ptr, yyvsp[0].ptr, 1 ); ;
+{ yyval.ptr = KTraderParse_newCALC( yyvsp[-2].ptr, yyvsp[0].ptr, 1 ); ;
     break;}
 case 20:
 #line 88 "yacc.y"
-{ yyval.ptr = newCALC( yyvsp[-2].ptr, yyvsp[0].ptr, 2 ); ;
+{ yyval.ptr = KTraderParse_newCALC( yyvsp[-2].ptr, yyvsp[0].ptr, 2 ); ;
     break;}
 case 21:
 #line 89 "yacc.y"
@@ -830,11 +830,11 @@ case 21:
     break;}
 case 22:
 #line 92 "yacc.y"
-{ yyval.ptr = newCALC( yyvsp[-2].ptr, yyvsp[0].ptr, 3 ); ;
+{ yyval.ptr = KTraderParse_newCALC( yyvsp[-2].ptr, yyvsp[0].ptr, 3 ); ;
     break;}
 case 23:
 #line 93 "yacc.y"
-{ yyval.ptr = newCALC( yyvsp[-2].ptr, yyvsp[0].ptr, 4 ); ;
+{ yyval.ptr = KTraderParse_newCALC( yyvsp[-2].ptr, yyvsp[0].ptr, 4 ); ;
     break;}
 case 24:
 #line 94 "yacc.y"
@@ -842,7 +842,7 @@ case 24:
     break;}
 case 25:
 #line 97 "yacc.y"
-{ yyval.ptr = newNOT( yyvsp[0].ptr ); ;
+{ yyval.ptr = KTraderParse_newNOT( yyvsp[0].ptr ); ;
     break;}
 case 26:
 #line 98 "yacc.y"
@@ -850,39 +850,39 @@ case 26:
     break;}
 case 27:
 #line 101 "yacc.y"
-{ yyval.ptr = newBRACKETS( yyvsp[-1].ptr ); ;
+{ yyval.ptr = KTraderParse_newBRACKETS( yyvsp[-1].ptr ); ;
     break;}
 case 28:
 #line 102 "yacc.y"
-{ yyval.ptr = newEXIST( yyvsp[0].name ); ;
+{ yyval.ptr = KTraderParse_newEXIST( yyvsp[0].name ); ;
     break;}
 case 29:
 #line 103 "yacc.y"
-{ yyval.ptr = newID( yyvsp[0].name ); ;
+{ yyval.ptr = KTraderParse_newID( yyvsp[0].name ); ;
     break;}
 case 30:
 #line 104 "yacc.y"
-{ yyval.ptr = newNUM( yyvsp[0].vali ); ;
+{ yyval.ptr = KTraderParse_newNUM( yyvsp[0].vali ); ;
     break;}
 case 31:
 #line 105 "yacc.y"
-{ yyval.ptr = newFLOAT( yyvsp[0].vald ); ;
+{ yyval.ptr = KTraderParse_newFLOAT( yyvsp[0].vald ); ;
     break;}
 case 32:
 #line 106 "yacc.y"
-{ yyval.ptr = newSTRING( yyvsp[0].name ); ;
+{ yyval.ptr = KTraderParse_newSTRING( yyvsp[0].name ); ;
     break;}
 case 33:
 #line 107 "yacc.y"
-{ yyval.ptr = newBOOL( yyvsp[0].valb ); ;
+{ yyval.ptr = KTraderParse_newBOOL( yyvsp[0].valb ); ;
     break;}
 case 34:
 #line 108 "yacc.y"
-{ yyval.ptr = newMAX2( yyvsp[0].name ); ;
+{ yyval.ptr = KTraderParse_newMAX2( yyvsp[0].name ); ;
     break;}
 case 35:
 #line 109 "yacc.y"
-{ yyval.ptr = newMIN2( yyvsp[0].name ); ;
+{ yyval.ptr = KTraderParse_newMIN2( yyvsp[0].name ); ;
     break;}
 }
    /* the action file gets copied in in place of this dollarsign */
@@ -1114,8 +1114,8 @@ void yyerror ( char *s )  /* Called by yyparse on error */
     printf ("ERROR: %s\n", s);
 }
 
-void mainParse( const char *_code )
+void KTraderParse_mainParse( const char *_code )
 {
-  initFlex( _code );
+  KTraderParse_initFlex( _code );
   yyparse();
 }

@@ -23,29 +23,29 @@
 /**
  * Functions definition for yacc
  */
-void setParseTree( void *_ptr1 );
-void* newOR( void *_ptr1, void *_ptr2 );
-void* newAND( void *_ptr1, void *_ptr2 );
-void* newCMP( void *_ptr1, void *_ptr2, int _i );
-void* newIN( void *_ptr1, void *_ptr2 );
-void* newMATCH( void *_ptr1, void *_ptr2 );
-void* newCALC( void *_ptr1, void *_ptr2, int _i );
-void* newBRACKETS( void *_ptr1 );
-void* newNOT( void *_ptr1 );
-void* newEXIST( char *_ptr1 );
-void* newID( char *_ptr1 );
-void* newSTRING( char *_ptr1 );
-void* newNUM( int _i );
-void* newFLOAT( float _f );
-void* newBOOL( char _b );
+void KTraderParse_setParseTree( void *_ptr1 );
+void* KTraderParse_newOR( void *_ptr1, void *_ptr2 );
+void* KTraderParse_newAND( void *_ptr1, void *_ptr2 );
+void* KTraderParse_newCMP( void *_ptr1, void *_ptr2, int _i );
+void* KTraderParse_newIN( void *_ptr1, void *_ptr2 );
+void* KTraderParse_newMATCH( void *_ptr1, void *_ptr2 );
+void* KTraderParse_newCALC( void *_ptr1, void *_ptr2, int _i );
+void* KTraderParse_newBRACKETS( void *_ptr1 );
+void* KTraderParse_newNOT( void *_ptr1 );
+void* KTraderParse_newEXIST( char *_ptr1 );
+void* KTraderParse_newID( char *_ptr1 );
+void* KTraderParse_newSTRING( char *_ptr1 );
+void* KTraderParse_newNUM( int _i );
+void* KTraderParse_newFLOAT( float _f );
+void* KTraderParse_newBOOL( char _b );
 
-void* newWITH( void *_ptr1 );
-void* newMAX( void *_ptr1 );
-void* newMIN( void *_ptr1 );
-void* newMAX2( char *_id );
-void* newMIN2( char *_id );
-void* newFIRST();
-void* newRANDOM();
+void* KTraderParse_newWITH( void *_ptr1 );
+void* KTraderParse_newMAX( void *_ptr1 );
+void* KTraderParse_newMIN( void *_ptr1 );
+void* KTraderParse_newMAX2( char *_id );
+void* KTraderParse_newMIN2( char *_id );
+void* KTraderParse_newFIRST();
+void* KTraderParse_newRANDOM();
 
 #endif
 

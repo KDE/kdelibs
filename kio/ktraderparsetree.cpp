@@ -19,7 +19,7 @@
 
 #include "ktraderparsetree.h"
 
-// #include <iostream>
+namespace KIO {
 
 bool ParseTreeOR::eval( ParseContext *_context ) const
 {
@@ -711,3 +711,4 @@ bool ParseContext::initMaxima( const QString& _prop )
 	   extrema.type == PreferencesMaxima::PM_INT );
 }
 
+}
