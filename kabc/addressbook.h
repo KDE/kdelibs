@@ -86,6 +86,7 @@ class AddressBook : public QObject
       public:
         ConstIterator();
         ConstIterator( const ConstIterator & );
+        ConstIterator( const Iterator & );
       	~ConstIterator();
       
       	ConstIterator &operator=( const ConstIterator & );

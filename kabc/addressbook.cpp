@@ -143,6 +143,12 @@ AddressBook::ConstIterator::ConstIterator( const AddressBook::ConstIterator &i )
   d->mIt = i.d->mIt;
 }
 
+AddressBook::ConstIterator::ConstIterator( const AddressBook::Iterator &i )
+{
+  d = new ConstIteratorData;
+  d->mIt = i.d->mIt;
+}
+
 AddressBook::ConstIterator &AddressBook::ConstIterator::operator=( const AddressBook::ConstIterator &i )
 {
   if( this  == &i ) return *this; // guard for self assignment
