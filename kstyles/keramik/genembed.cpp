@@ -33,8 +33,8 @@ DEALINGS IN THE SOFTWARE.
 #include <kimageeffect.h>
 
 #include <iostream>
-#include <cstring>
-#include <cmath>
+#include <string.h>
+#include <math.h>
 
 //Force-touch-embedded-revision: 1
 
