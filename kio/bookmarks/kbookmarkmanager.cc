@@ -409,10 +409,18 @@ void KBookmarkManager::setShowNSBookmarks( bool show )
     KBookmarkMenu::setDynamicBookmarks("netscape", info);
 }
 
+void KBookmarkManager::setCaption(QString caption)
+{
+    dptr()->m_caption = caption;
+}
+
 void KBookmarkManager::slotEditBookmarks()
 {
     KProcess proc;
-    proc << QString::fromLatin1("keditbookmarks") << m_bookmarksFile;
+    proc << QString::fromLatin1("keditbookmarks");
+    if (!dptr()->m_caption.isNull())
+       proc << QString::fromLatin1("--caption") << dptr()->m_caption;
+    proc << m_bookmarksFile;
     proc.start(KProcess::DontCare);
 }
 

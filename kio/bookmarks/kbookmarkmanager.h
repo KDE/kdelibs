@@ -160,6 +160,15 @@ public:
     void setShowNSBookmarks( bool show );
     
     /**
+     * Set a caption which slotEditBookmarks passes on to keditbookmarks
+     * this can be used to change the appearance of the keditbookmarks
+     * in order to provide a slightly differing outer shell depending
+     * on the bookmarks file / app which calls it.
+     * @param caption the caption string, for instance "Konsole"
+     */
+    void setCaption( QString caption );
+    
+    /**
      * This static function will return an instance of the
      * KBookmarkManager, responsible for the given @p bookmarksFile.
      * If you do not instantiate this class either
