@@ -183,6 +183,11 @@ public:
     Node();
     Node(const Node &other);
 
+    /**
+     * @internal
+     */
+    Node( NodeImpl *_impl);
+
     Node & operator = (const Node &other);
 
     bool operator == (const Node &other);
@@ -572,12 +577,10 @@ public:
      */
     unsigned long index() const;
     DOMString* toHTML(DOMString *_string);
-     
-    
+
+
 protected:
     NodeImpl *impl;
-
-    Node( NodeImpl *_impl);
 };
 
 

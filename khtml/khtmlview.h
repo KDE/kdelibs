@@ -47,6 +47,7 @@ namespace DOM {
     class HTMLDocumentImpl;
     class HTMLElementImpl;
     class HTMLTitleElementImpl;
+    class Range;
 };
 
 namespace khtml {
@@ -113,7 +114,7 @@ class KHTMLPart;
  *
  */
 #include <stdio.h>
- 
+
 class KHTMLView : public QScrollView
 {
     Q_OBJECT
@@ -144,7 +145,7 @@ protected:
     void clear();
 public:
 
-    int frameWidth() { return _width; }   
+    int frameWidth() { return _width; }
 
 
     /**
@@ -536,7 +537,7 @@ public:
     //    khtml::Settings *settings();
 
     //    void scheduleRedirection(int delay, const QString & url);
-    
+
 
 public slots:
     /**
@@ -882,6 +883,8 @@ private:
 
     static QPixmap* paintBuffer;
 
+    DOM::Range *selection;
+    
     //    int m_delayRedirect;
     //    QString m_strRedirectUrl;
 };

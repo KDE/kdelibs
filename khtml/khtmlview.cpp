@@ -62,6 +62,8 @@
 #include "dom_elementimpl.h"
 #include "dom_textimpl.h"
 
+#include "dom/dom2_range.h"
+
 #include "kjs.h"
 
 #include "rendering/render_object.h"
@@ -213,6 +215,8 @@ void KHTMLView::init()
   */
   resizeContents(clipper()->width(), clipper()->height());
 
+  selection = 0;
+  
   khtml::Cache::init();
 }
 
@@ -256,6 +260,8 @@ void KHTMLView::clear()
     setVScrollBarMode(Auto);
     setHScrollBarMode(Auto);
 
+    if(selection) delete selection;
+    selection = 0;
 }
 /*
 void KHTMLView::setFollowsLinks( bool follow )
@@ -984,7 +990,7 @@ void KHTMLView::viewportPaintEvent ( QPaintEvent* pe  )
 	p.fillRect(r.x(), r.y(), ew, eh, kapp->palette().normal().brush(QColorGroup::Background));
 	return;
     }
-    printf("viewportPaintEvent x=%d,y=%d,w=%d,h=%d\n",ex,ey,ew,eh);
+    //printf("viewportPaintEvent x=%d,y=%d,w=%d,h=%d\n",ex,ey,ew,eh);
 
     if ( paintBuffer->width() < width() )
     {
@@ -1020,6 +1026,11 @@ void KHTMLView::viewportPaintEvent ( QPaintEvent* pe  )
 	py += PAINT_BUFFER_HEIGHT;
     }
 
+    // ### print selection
+    
+    //if(selection) {
+    //}
+    
     //printf("TIME: print() dt=%d\n",qt.elapsed());
 }
 
@@ -1048,7 +1059,7 @@ void KHTMLView::layout()
 //	if(w < _width-5 || w > _width + 5)
     	if (w!=_width)
 	{
-	    printf("layouting document\n");
+	    //printf("layouting document\n");
 
 	    _width = w;
 
@@ -1119,7 +1130,7 @@ void KHTMLView::viewportMousePressEvent( QMouseEvent *_mouse )
 
     if(url != 0)
     {
-	printf("mouseEvent: overURL %s\n", url.string().latin1());
+	//printf("mouseEvent: overURL %s\n", url.string().latin1());
 	m_strSelectedURL = url.string();
     }
     else
@@ -1128,6 +1139,16 @@ void KHTMLView::viewportMousePressEvent( QMouseEvent *_mouse )
     if ( _mouse->button() == LeftButton || _mouse->button() == MidButton )
     {
     	pressed = TRUE;
+	if(_mouse->button() == LeftButton) {
+	    if(selection) delete selection;
+	    selection = 0;
+    	    if(innerNode) {
+	    selection = new Range;
+	    selection->setStart(innerNode, offset);
+	    selection->setEnd(innerNode, offset);
+	    }
+	    // ### emit some signal
+	}
     }
 
     if( _mouse->button() == RightButton )
@@ -1137,22 +1158,6 @@ void KHTMLView::viewportMousePressEvent( QMouseEvent *_mouse )
 	//	emit popupMenu(m_strSelectedURL,mapToGlobal(p));
 	m_part->popupMenu( m_strSelectedURL );
     }
-#if 0
-	// deselect all currently selected text
-	if ( bIsTextSelected )
-	{
-	    bIsTextSelected = false;
-	    selectText( 0, 0, 0, 0 );	// deselect all text
-	    emit textSelected( false );
-	}
-	// start point for text selection
-	selectPt1.setX( _mouse->pos().x() + contentsX());
-	selectPt1.setY( _mouse->pos().y() + contentsY());
-    }
-    press_x = _mouse->pos().x();
-    press_y = _mouse->pos().y();
-#endif
-
 }
 
 void KHTMLView::viewportMouseDoubleClickEvent( QMouseEvent *_mouse )
@@ -1232,6 +1237,11 @@ void KHTMLView::viewportMouseMoveEvent( QMouseEvent * _mouse )
 	m_part->overURL( QString::null );
 	overURL = "";
     }
+
+    // selection stuff
+    if( pressed ) {
+	selection->setEnd(innerNode, offset);
+    }
 }
 
 void KHTMLView::viewportMouseReleaseEvent( QMouseEvent * _mouse )
@@ -1278,13 +1288,16 @@ void KHTMLView::viewportMouseReleaseEvent( QMouseEvent * _mouse )
 	//	urlSelected( m_strSelectedURL.data(), _mouse->button(), pressedTarget.data() );
 	m_part->urlSelected( m_strSelectedURL, _mouse->button(), pressedTarget );
    }
+
+    selection->setEnd(innerNode, offset);
+    // ### delete selection in case start and end position are at the same point
 }
 
 void KHTMLView::keyPressEvent( QKeyEvent *_ke )
 {
     if(m_part->keyPressHook(_ke)) return;
 
-    
+
     int offs = (clipper()->height() < 30) ? clipper()->height() : 30;
     switch ( _ke->key() )
     {
