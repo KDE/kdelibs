@@ -338,6 +338,8 @@ bool KJavaAppletServer::createApplet( int contextId, int appletId,
     }
 
     process->send( KJAS_CREATE_APPLET, args );
+
+    return true;
 }
 
 void KJavaAppletServer::initApplet( int contextId, int appletId )
@@ -348,8 +350,6 @@ void KJavaAppletServer::initApplet( int contextId, int appletId )
     args.append( QString::number( appletId ) );
 
     process->send( KJAS_INIT_APPLET, args );
-
-    return true;
 }
 
 void KJavaAppletServer::destroyApplet( int contextId, int appletId )
