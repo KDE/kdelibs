@@ -172,3 +172,11 @@ KRandomSequence::getLong(unsigned long max)
 
   return (((unsigned long) m_lngShufflePos) % max);  
 }
+
+bool
+KRandomSequence::getBool()
+{
+  Draw();
+
+  return (((unsigned long) m_lngShufflePos) & 1);  
+}

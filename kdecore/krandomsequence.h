@@ -79,6 +79,13 @@ public:
    */
   unsigned long getLong(unsigned long max); 
 
+  /**
+   * Get a boolean from the pseudo-random sequence
+   *
+   * @return a boolean which is either true or false
+   */
+  bool getBool(); 
+
 	
 private:
   void Draw(); // Generate the random number
