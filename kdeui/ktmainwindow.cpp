@@ -720,6 +720,27 @@ KToolBar *KTMainWindow::toolBar( int ID )
   return result;
 }
 
+KToolBar *KTMainWindow::toolBar( const QString& name )
+{
+  KToolBar* result = 0L;
+
+  if ( factory() )
+  {
+    QWidget *widget = factory()->container( name, this );
+    if ( widget->inherits("KToolBar") )
+      result = (KToolBar*)widget;
+  }
+  return result;
+}
+
+void KTMainWindow::setEnableToolBar( KToolBar::BarStatus stat, const QString& name)
+{
+  KToolBar *t = toolBar( name );
+  if ( t )
+    t->enable( stat );
+  updateRects();
+}
+
 void KTMainWindow::enableToolBar( KToolBar::BarStatus stat, int ID )
 {
   KToolBar *t = toolbars.at( ID );

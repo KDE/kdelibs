@@ -199,6 +199,13 @@ public:
                         int id = 0 );
 
     /**
+     * Enable or disable the toolbar with the specified name (as
+     * determined by the XML UI framework).
+     */
+    void setEnableToolBar( KToolBar::BarStatus stat = KToolBar::Toggle,
+                           const QString& name = "mainToolBar" );
+
+    /**
      * Set the width of the view frame.
      *
      * If you request a frame around your view with @ref setView(...,TRUE),
@@ -234,6 +241,19 @@ public:
      * If there is no such tool bar yet, it will be generated.
      **/
     KToolBar *toolBar( int ID = 0 );
+
+    /**
+     * Retrieve a pointer to the toolbar with the specified name.
+     * This refers to toolbars created dynamically from the XML UI
+     * framework.  If the toolbar does not exist, then 0L will be
+     * returned.
+     *
+     * @param name The internal name of the toolbar ("mainToolBar",
+     *             for instance)
+     *
+     * @return A pointer to the toolbar or 0L if it doesn't exist
+     **/
+    KToolBar *toolBar( const QString& name );
 
     /**
      * Retrieve a pointer to the menu bar.
