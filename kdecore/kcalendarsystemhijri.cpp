@@ -194,57 +194,10 @@ static SDATE * gregorianToHijri(long day, long month, long year)
   return(&h);
 }
 
-/**
- * @internal
- * This algorithm is taken from "Numerical Recipes in C", 2nd ed, pp 14-15.
- * This algorithm only valid for non-negative gregorian year
- */
-static void getGregorianDay(long lJulianDay, long *pnDay,
-   long *pnMonth, long *pnYear)
-{
-  /* working variables */
-  long lFactorA, lFactorB, lFactorC, lFactorD, lFactorE;
-  long lAdjust;
-
-  /* test whether to adjust for the Gregorian calendar crossover */
-  if (lJulianDay >= GREGORIAN_CROSSOVER) {
-    /* calculate a small adjustment */
-    lAdjust = (long) (((float) (lJulianDay - 1867216) - 0.25) / 36524.25);
-
-    lFactorA = lJulianDay + 1 + lAdjust - ((long) (0.25 * lAdjust));
-
-  } else {
-    /* no adjustment needed */
-    lFactorA = lJulianDay;
-  }
-
-  lFactorB = lFactorA + 1524;
-  lFactorC = (long) (6680.0 + ((float) (lFactorB - 2439870) - 122.1) / 365.25);
-  lFactorD = (long) (365 * lFactorC + (0.25 * lFactorC));
-  lFactorE = (long) ((lFactorB - lFactorD) / 30.6001);
-
-  /* now, pull out the day number */
-  *pnDay = lFactorB - lFactorD - (long) (30.6001 * lFactorE);
-
-  /* ...and the month, adjusting it if necessary */
-  *pnMonth = lFactorE - 1;
-  if (*pnMonth > 12)
-    (*pnMonth) -= 12;
-
-  /* ...and similarly for the year */
-  *pnYear = lFactorC - 4715;
-  if (*pnMonth > 2)
-    (*pnYear)--;
-
-  // Negative year adjustments
-  if (*pnYear <= 0)
-    (*pnYear)--;
-}
-
 /*
  * compute general gregorian date structure from hijri date
  */
-static SDATE *hijriToGregorian(long *day, long *month, long *year)
+static SDATE *hijriToGregorian(int *day, int *month, int *year)
 {
   static SDATE h;
 
@@ -268,7 +221,7 @@ static SDATE *hijriToGregorian(long *day, long *month, long *year)
   jday = (double)((long)(jday + 0.5));
 
   // Use algorithm from "Numerical Recipes in C"
-  getGregorianDay((long)jday, day, month, year);
+  QDate::julianToGregorian((unsigned int)jday, *year, *month, *day);
 
   // Julian -> Gregorian only works for non-negative year
   if ( *year <= 0 )
@@ -517,7 +470,7 @@ bool KCalendarSystemHijri::setYMD(QDate & date, int y, int m, int d) const
   if ( d < 1 || d > hndays(m, y) )
     return false;
 
-  SDATE * gd = hijriToGregorian( (long *)&d, (long *)&m, (long *)&y );
+  SDATE * gd = hijriToGregorian( &d, &m, &y );
 
   return date.setYMD(gd->year, gd->mon, gd->day);
 }
