@@ -350,7 +350,7 @@ QString KStringHandler::cPixelSqueeze(const QString& s, const QFontMetrics& fm, 
     return s;
   }
 
-  const unsigned int maxWidth = width - fm.width( '.' ) * 3;
+  const int maxWidth = width - fm.width( '.' ) * 3;
   if ( maxWidth <= 0 ) {
     return "...";
   }
@@ -358,11 +358,11 @@ QString KStringHandler::cPixelSqueeze(const QString& s, const QFontMetrics& fm, 
   unsigned int leftIdx = 0, rightIdx = length;
   unsigned int leftWidth = fm.charWidth( s, leftIdx++ );
   unsigned int rightWidth = fm.charWidth( s, --rightIdx );
-  while ( leftWidth + rightWidth < maxWidth ) {
-    while ( leftWidth <= rightWidth && leftWidth + rightWidth < maxWidth ) {
+  while ( leftWidth + rightWidth < uint( maxWidth ) ) {
+    while ( leftWidth <= rightWidth && leftWidth + rightWidth < uint( maxWidth ) ) {
       leftWidth += fm.charWidth( s, leftIdx++ );
     }
-    while ( rightWidth <= leftWidth && leftWidth + rightWidth < maxWidth ) {
+    while ( rightWidth <= leftWidth && leftWidth + rightWidth < uint( maxWidth ) ) {
       rightWidth += fm.charWidth( s, --rightIdx );
     }
   }
