@@ -473,9 +473,9 @@ class KDialogBase : public KDialog
     /**
      * Set the page with @ref index to be displayed.
      *
-     *  This method will only 
-     * work when the dialog is using the predefined shape of TreeList or
-     * Tabbed.
+     * This method will only 
+     * work when the dialog is using the predefined shape of TreeList,
+     * IconList or Tabbed.
      *
      * @param index Index of the page to be shown.
      * @return @p true if the page is shown, @p false otherwise.
@@ -486,11 +486,31 @@ class KDialogBase : public KDialog
      * Retrieve the index of the active page.
      *
      * This method will only work when the dialog is using the 
-     * predefined shape of TreeList or Tabbed.
+     * predefined shape of Tabbed, TreeList or IconList.
      *
      * @return The page index or -1 if there is no active page.
      */
-    int  activePageIndex() const;
+    int activePageIndex() const;
+
+
+    /**
+     * Returns the index of a page created with @ref addPage ,
+     * @ref addVBoxPage , @ref addHBoxPage or @ref addGridPage .
+     * You can can compare this index with the value returned from 
+     * @ref activePageIndex if you need to do some page specific actions
+     * in your code.
+     *
+     * The returned index will never change so you can safely use this
+     * function once and save the value.
+     *
+     * @param widget The widget returned by @ref addPage , @ref addVBoxPage ,
+     *        @ref addHBoxPage or @ref addGridPage .
+     *
+     * @return The index or -1 if the face is not Tabbed, TreeList or 
+     *         IconList
+     */
+    int pageIndex( QWidget *widget ) const;
+
 
     /**
      * Set the main user definable widget.

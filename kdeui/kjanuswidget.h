@@ -138,7 +138,8 @@ class KJanusWidget : public QWidget
     /**
      * Retrieve the index of the page that are currently displayed.
      *
-     * @return The index or -1 of the face is not TreeList or Tabbed
+     * @return The index or -1 if the face is not Tabbed, TreeList or 
+     *         IconList.
      */
     int  activePageIndex() const;
 
@@ -265,6 +266,24 @@ class KJanusWidget : public QWidget
 			const QString &itemName, 
 			const QString &header=QString::null,
 			const QPixmap &pixmap=QPixmap() );
+
+    /**
+     * Returns the index of a page created with @ref addPage ,
+     * @ref addVBoxPage , @ref addHBoxPage or @ref addGridPage .
+     * You can can compare this index with the value returned from 
+     * @ref activePageIndex if you need to do some page specific actions
+     * in your code.
+     *
+     * The returned index will never change so you can safely use this
+     * function once and save the value.
+     *
+     * @param widget The widget returned by @ref addPage , @ref addVBoxPage ,
+     *        @ref addHBoxPage or @ref addGridPage .
+     *
+     * @return The index or -1 if the face is not Tabbed, TreeList or 
+     *         IconList
+     */
+    int pageIndex( QWidget *widget ) const;
 
     /**
      * Defines the widget to be swallowed. 

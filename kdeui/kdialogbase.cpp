@@ -981,6 +981,13 @@ int KDialogBase::activePageIndex() const
 }
 
 
+int KDialogBase::pageIndex( QWidget *widget ) const
+{
+  return( mJanus == 0 ? -1 : mJanus->pageIndex( widget) );
+}
+
+
+
 QRect KDialogBase::getContentsRect()
 {
   QRect r;

@@ -216,12 +216,12 @@ QFrame *KJanusWidget::addPage( const QString &itemName, const QString &header,
 
   if( mFace == Tabbed )
   {
-    QFrame *page = new QFrame( mTabControl, "page" );
+    QFrame *page = new QFrame( mTabControl, "pageXXX" );
     page->hide();
     addPageWidget( page, itemName, header, pixmap );
 
-    QVBoxLayout *vbox = new QVBoxLayout( page,KDialog:: spacingHint() );
-    QFrame *frame = new QFrame( page, "page" );
+    QVBoxLayout *vbox = new QVBoxLayout( page, KDialog::spacingHint() );
+    QFrame *frame = new QFrame( page, "pageYYY" );
     vbox->addWidget( frame, 10 );
     return( frame );
   }  
@@ -608,11 +608,54 @@ int KJanusWidget::activePageIndex() const
   {
     return( mActivePageIndex );
   }
+  else if( mFace == Tabbed )
+  {
+    QWidget *widget = mTabControl->currentPage();
+    return( widget == 0 ? -1 : mPageList->findRef( widget ) );
+  }
   else
   {
     return( -1 );
   }
 }
+
+
+int KJanusWidget::pageIndex( QWidget *widget ) const
+{
+  if( widget == 0 )
+  {
+    return( -1 );
+  }
+  else if( mFace == TreeList || mFace == IconList )
+  {
+    return( mPageList->findRef( widget ) );
+  }
+  else if( mFace == Tabbed )
+  {
+    //
+    // The user gets the real page widget with addVBoxPage(), addHBoxPage()
+    // and addGridPage() but not with addPage() which returns a child of
+    // the toplevel page. addPage() returns a QFrame so I check for that.
+    //
+    if( widget->isA("QFrame") )
+    {
+      return( mPageList->findRef( widget->parentWidget() ) );
+    }
+    else
+    {
+      return( mPageList->findRef( widget ) );
+    }
+  }    
+  else
+  {
+    return( -1 );
+  }
+}
+
+
+
+
+
 
 
 void KJanusWidget::slotFontChanged()
