@@ -72,10 +72,11 @@ ServiceBrowser::ServiceBrowser(const QString& type,const QString& domain,bool au
 const ServiceBrowser::State ServiceBrowser::isAvailable()
 {
 #ifdef HAVE_DNSSD
-	DNSServiceRef ref;
-	bool ok = (DNSServiceCreateConnection(&ref)==kDNSServiceErr_NoError);
-	if (ok) DNSServiceRefDeallocate(ref);
-	return (ok) ? Working : Stopped;
+//	DNSServiceRef ref;
+//	bool ok (DNSServiceCreateConnection(&ref)==kDNSServiceErr_NoError); 
+//	if (ok) DNSServiceRefDeallocate(ref);
+//	return (ok) ? Working : Stopped;
+	return Working;
 #else
 	return Unsupported;
 #endif
