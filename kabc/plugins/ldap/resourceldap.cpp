@@ -22,7 +22,7 @@
 #include <kglobal.h>
 #include <klineedit.h>
 #include <klocale.h>
-
+#include <kconfig.h>
 #include <stdlib.h>
 
 #include "resourceconfigwidget.h"
@@ -166,7 +166,7 @@ bool ResourceLDAP::load()
       values = ldap_get_values( mLdap, msg, names );
       for ( int i = 0; i < ldap_count_values( values ); ++i ) {
         QString name = QString::fromUtf8( names );
-        QString value = QString::fromUtf8( values[ i ] ); 
+        QString value = QString::fromUtf8( values[ i ] );
 
         if ( name == "cn" ) {
           if ( !addr.formattedName().isEmpty() ) {

@@ -21,13 +21,14 @@
 #ifndef KABC_RESOURCELDAP_H
 #define KABC_RESOURCELDAP_H
 
-#include <kconfig.h>
 
 #include <lber.h>
 #include <ldap.h>
 
 #include "addressbook.h"
 #include "resource.h"
+
+class KConfig;
 
 namespace KABC {
 
@@ -39,10 +40,10 @@ public:
   ResourceLDAP( AddressBook *ab, const QString &user, const QString &password,
       const QString &dn, const QString &host,
 	    const QString &port, const QString &filter, const bool anonymous );
-  
+
   bool open();
   void close();
-  
+
   Ticket *requestSaveTicket();
 
   bool load();
