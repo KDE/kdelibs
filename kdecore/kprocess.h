@@ -2,7 +2,7 @@
 //  KPROCESS -- A class for handling child processes in KDE without
 //  having to take care of Un*x specific implementation details
 //
-//  version 0.2, Aug 2nd 1997
+//  version 0.2.2, Aug 31st 1997
 //
 //  (C) Christian Czezatke
 //  e9025461@student.tuwien.ac.at

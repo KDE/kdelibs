@@ -1,7 +1,7 @@
 //
 //  KPROCESSCONTROLLER -- A helper class for KProcess
 //
-//  version 0.2.1, Aug 9th 1997
+//  version 0.2.2, Aug 31st 1997
 //
 //  (C) Christian Czezatke
 //  e9025461@student.tuwien.ac.at
@@ -10,12 +10,9 @@
 #ifndef __KPROCCTRL_H__
 #define __KPROCCTRL_H__
 
-#ifndef _MAY_INCLUDE_KPROCESSCONTROLLER_
-#error kprocesscontroller.h is a private class and should only be included by "kprocess.cpp"
-#endif
 
 #include <qsocknot.h>
-
+#include "kprocess.h"
 
 /**
   A class for internal use by KProcess only. -- Exactly one instance
@@ -34,7 +31,7 @@ public:
  public slots:
 
  void slotDoHousekeeping(int socket);
-  void slotNoteSocket(int socket);
+//  void slotNoteSocket(int socket);
 private:
 
   static void theSigCHLDHandler(int signal);

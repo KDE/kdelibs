@@ -1,6 +1,9 @@
 // $Id$
 // Revision 1.87  1998/01/27 20:17:01  kulow
 // $Log$
+// Revision 1.22  1997/08/30 18:57:11  kdecvs
+// Initialized pIconLoader
+//
 // Revision 1.21  1997/08/30 15:51:57  kdecvs
 // Kalle: BINARY INCOMPATIBLE!!!!!
 // KApplication provides an IconLoader
@@ -174,22 +177,11 @@
 // Revision 1.62  1997/10/17 15:46:22  stefan
 // compiler bug. I know - I should upgrade gcc, but for all the
 // poor folks that still have the old one ;-)
+//
+// Revision 1.61  1997/10/17 13:30:16  ettrich
 // Matthias: registerTopWidget/unregisterTopWidget are obsolete and empty now.
 //           Introduced new registration model
 
-// prevents children from going zombie
-void reaper(int) 
-{
-  
-  wait(0);
-
-  /* The signal handler may not be reinstalled before the call to wait
-   * because brain-dead System V systems then would call this signal
-   * handler continuously. (See Stevens: Advanced Programming in the
-   * Unix Environment, section 10.7. for details.)
-   */
-  (void)signal(SIGCHLD, reaper); 
-}
 // Revision 1.60  1997/10/16 11:35:24  kulow
 // I'm not sure, why this have been removed, but I'm sure, they are
 // needed.
@@ -223,8 +215,13 @@ void reaper(int)
 // Matthias: fixed an async reply problem with invokeHTMLHelp
 //
 // Revision 1.50  1997/10/10 22:09:17  ettrich
-  (void)signal(SIGCHLD, reaper);
+
+#include <kapp.h>
+
+  if (NULL == theKProcessController) 
+#include <kiconloader.h>
 #include "kwm.h"
+
   KApp = this;
 
   pIconLoader = NULL;

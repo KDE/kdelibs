@@ -1,7 +1,7 @@
 //
 //  KPROCESSCONTROLLER -- A helper class for KProcess
 //
-//  version 0.2.1, Aug 9th 1997
+//  version 0.2.2, Aug 31st 1997
 //
 //  (C) Christian Czezatke
 //  e9025461@student.tuwien.ac.at
@@ -24,7 +24,6 @@
 
 
 KProcessController *theKProcessController = NULL;
-static bool sigchld_occured = FALSE;
 
 KProcessController::KProcessController()
 {
@@ -48,9 +47,16 @@ KProcessController::KProcessController()
   act.sa_handler=theSigCHLDHandler;
   sigemptyset(&(act.sa_mask));
   sigaddset(&(act.sa_mask), SIGCHLD);
-  act.sa_flags = SA_NOCLDSTOP | SA_RESTART;
-  sigaction( SIGCHLD, &act, NULL);
- 
+  act.sa_flags = SA_NOCLDSTOP;
+
+  // CC: take care of SunOS which automatically restarts interrupted system
+  // calls (and thus does not have SA_RESTART)
+
+#ifdef SA_RESTART
+  act.sa_flags |= SA_RESTART;
+#endif
+
+  sigaction( SIGCHLD, &act, NULL); 
   act.sa_handler=SIG_IGN;
   sigemptyset(&(act.sa_mask));
   sigaddset(&(act.sa_mask), SIGPIPE);
@@ -58,7 +64,7 @@ KProcessController::KProcessController()
   sigaction( SIGPIPE, &act, NULL);
 }
 
-void KProcessController::theSigCHLDHandler(int signal)
+void KProcessController::theSigCHLDHandler(int )
 {
   int status;
   pid_t this_pid;
@@ -78,7 +84,7 @@ void KProcessController::theSigCHLDHandler(int signal)
 
 
 
-void KProcessController::slotDoHousekeeping(int socket)
+void KProcessController::slotDoHousekeeping(int )
 {
   KProcess *proc;
   int bytes_read;
@@ -100,17 +106,6 @@ void KProcessController::slotDoHousekeeping(int socket)
 	}
 	proc = processList->next();
   }
-}
-
-
-void KProcessController::slotNoteSocket(int socket)
-{
-  char buffer[1000];
-
-  if (-1 == ::read(fd[0], buffer, 1000))
-	printf(strerror(errno));
-  else
-	printf("Message: %s\n", buffer);
 }
 
 

@@ -2,7 +2,7 @@
 //  KPROCESS -- A class for handling child processes in KDE without
 //  having to take care of Un*x specific implementation details
 //
-//  version 0.2.1, Aug 9th 1997
+//  version 0.2.2, Aug 31st 1997
 //
 //  (C) Christian Czezatke
 //  e9025461@student.tuwien.ac.at
@@ -429,35 +429,27 @@ void KProcess::commClose()
   // not deleting this SockteNotifiers causes a (small)
   // memory leak, but prevents your app from segfaulting (mostly...)
 
-  bool haveQSNbug = !strcmp("1.2", qVersion());
-
   if (NoCommunication != communication) {
 
 	if (communication & Stdin)
-	  if (!haveQSNbug)
 		delete innot;
 
 	if (communication & Stdout) {
-	  if (!haveQSNbug)
 		delete outnot;   
 	  while(childOutput(out[0])> 0 )
 		;
 	}
 
 	if (communication & Stderr) {
-	  if (!haveQSNbug)
 		delete errnot;
 	  while(childError(err[0]) > 0)
 		;
 	}      
 	if (communication & Stdin)
-	  if (!haveQSNbug)
 	    close(in[1]);
 	if (communication & Stdout)
-	  if (!haveQSNbug)
 	    close(out[0]);
 	if (communication & Stderr)
-	  if (!haveQSNbug)
 	    close(err[0]);
   }
 }
