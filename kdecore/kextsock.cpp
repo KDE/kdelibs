@@ -1067,10 +1067,20 @@ QList<KAddressInfo> KExtendedSocket::lookup(const QString& host, const QString& 
     if (valid_family(p, flags))
       {
 	KAddressInfo *ai = new KAddressInfo;
+	if (ai == NULL)
+	  return l;
+
 	ai->ai = new addrinfo;
+	if (ai->ai == NULL)
+	  {
+	    delete ai;
+	    return l;
+	  }
+
 	memcpy(ai->ai, p, sizeof(*p));
 	ai->ai->ai_next = NULL;
 	ai->addr = KSocketAddress::newAddress(p->ai_addr, p->ai_addrlen);
+	ai->ai->ai_addr = const_cast<sockaddr*>(ai->addr->address());
 	kdDebug(170) << "Using socket " << pretty_sock(p) << endl;
 	l.append(ai);
       }
