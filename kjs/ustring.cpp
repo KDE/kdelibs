@@ -31,6 +31,7 @@
 #endif
 
 #include "ustring.h"
+#include "operations.h"
 
 namespace KJS {
   extern const double NaN;
@@ -376,6 +377,22 @@ double UString::toDouble() const
     d = NaN;
 
   return d;
+}
+
+unsigned long UString::toULong(bool *ok) const
+{
+  double d = toDouble();
+  bool b = true;
+  
+  if (isNaN(d) || d != static_cast<unsigned long>(d)) {
+    b = false;
+    d = 0;
+  }
+  
+  if (ok)
+    *ok = b;
+
+  return static_cast<unsigned long>(d);
 }
 
 int UString::find(const UString &f, int pos) const

@@ -337,8 +337,14 @@ namespace KJS {
      * Attempts an conversion to a number. Apart from floating point numbers,
      * the algorithm will recognize hexadecimal representations (as
      * indicated by a 0x or 0X prefix) and +/- Infinity.
+     * Returns NaN if the conversion failed.
      */
     double toDouble() const;
+    /**
+     * Attempts an conversion to an unsigned long integer. ok will be set
+     * according to the success.
+     */
+    unsigned long toULong(bool *ok = 0L) const;
     /**
      * @return Position of first occurence of f starting at position pos.
      * -1 if the search was not successful.
