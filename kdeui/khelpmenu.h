@@ -72,10 +72,10 @@ class KAboutDialog;
  * the help menu. Here are the steps you must follow:
  * 
  * 1. Make a help menu object with no text argument. If the text is missing
- *    the default dialog box will nor be displayed:
+ *    the default dialog box will not be displayed:
  *    mHelpMenu = new KHelpMenu( this );
  *
- * 2. Make a slot method that launches you dialog:
+ * 2. Make a slot method that launches your dialog:
  *    void slotShowAboutDialog( void )
  *
  * 3. Connect the slot to the help menu:
