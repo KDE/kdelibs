@@ -525,12 +525,20 @@ bool KApplication::notify(QObject *receiver, QEvent *event)
                 d->app_started_timer->start( 0, true );
         }
         if( w->isTopLevel() && ( w->icon() == NULL || w->icon()->isNull()))
+        {
+            // icon() cannot be null pixmap, it'll be the "unknown" icon - so check if there is this application icon
+            static QPixmap* ic = NULL;
+            if( ic == NULL )
+                ic = new QPixmap( KGlobal::iconLoader()->loadIcon( iconName(),
+                    KIcon::NoGroup, 0, KIcon::DefaultState, NULL, true ));
+            if( !ic->isNull())
             {
-            w->setIcon( icon());
+                w->setIcon( *ic );
 #if defined Q_WS_X11
-            KWin::setIcons( w->winId(), icon(), miniIcon());
+                KWin::setIcons( w->winId(), *ic, miniIcon());
 #endif
             }
+        }
     }
     return QApplication::notify(receiver, event);
 }
