@@ -20,6 +20,7 @@ B2Style::B2Style()
     KConfig *config = KGlobal::config();
     QString oldGrp = config->group();
     QPalette p = kapp->palette();
+    setButtonDefaultIndicatorWidth(0);
 }
 
 B2Style::~B2Style()

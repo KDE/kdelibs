@@ -42,6 +42,7 @@ PillBoxStyle::PillBoxStyle()
     checkOutline->setMask(*checkOutline);
     checkFill = new QBitmap(10, 12, checkfill_bits, true);
     checkFill->setMask(*checkFill);
+    setButtonDefaultIndicatorWidth(0);
 }
 
 PillBoxStyle::~PillBoxStyle()
@@ -695,3 +696,10 @@ static const int windowsRightBorder     = 12;
                                   enabled, x, y, w, h);
 }
 
+
+void PillBoxStyle::drawFocusRect(QPainter *p, const QRect &r,
+                                 const QColorGroup &g, const QColor *bg, bool f)
+{
+    QWindowsStyle::drawFocusRect(p, r, g, bg, f);
+}
+    

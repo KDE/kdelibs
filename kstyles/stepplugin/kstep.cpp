@@ -30,6 +30,7 @@ static unsigned char uparrow_bits[] = {
 KStepStyle::KStepStyle()
     :KStyle()
 {
+    setButtonDefaultIndicatorWidth(4);
 
 }
 
@@ -78,16 +79,16 @@ void KStepStyle::drawButton(QPainter *p, int x, int y, int w, int h,
 void KStepStyle::drawPushButton(QPushButton *btn, QPainter *p)
 {
     QRect r = btn->rect();
-    if(btn->isDefault() && r.width() > 20 && r.height() > 20){
-        qDrawShadePanel(p, r.x(), r.y(), r.width(), r.height(), nextGrp,
-                        true, 1);
-        r.setTop(r.top()+2);
-        r.setLeft(r.left()+2);
-        r.setBottom(r.bottom()-2);
-        r.setRight(r.right()-2);
+    if(btn->isDefault() || btn->autoDefault()){
+        if(btn->isDefault())
+            kDrawNextButton(p, r, nextGrp, true);
+        drawButton(p, r.x()+4, r.y()+4, r.width()-8, r.height()-8, nextGrp,
+                   btn->isOn() || btn->isDown());
+        
     }
-    drawButton(p, r.x(), r.y(), r.width(), r.height(), nextGrp,
-               btn->isOn() || btn->isDown());
+    else
+        drawButton(p, r.x(), r.y(), r.width(), r.height(), nextGrp,
+                   btn->isOn() || btn->isDown());
 
 }
 

@@ -64,6 +64,7 @@ ColdIonsStyle::ColdIonsStyle()
     checkOutline->setMask(*checkOutline);
     checkFill = new QBitmap(10, 12, checkfill_bits, true);
     checkFill->setMask(*checkFill);
+    setButtonDefaultIndicatorWidth(0);
 }
 
 ColdIonsStyle::~ColdIonsStyle()

@@ -73,6 +73,8 @@ public:
                             int h);
     void drawLightShadeRect(QPainter *p, int x, int y, int w, int h,
                             const QColorGroup &g, const QBrush *fill=NULL);
+    void drawFocusRect(QPainter *p, const QRect &r, const QColorGroup &g,
+                       const QColor *bg, bool f);
 protected:
     QBitmap *checkOutline, *checkFill;
 };
