@@ -212,7 +212,7 @@ public:
      * Return a string formatted to the current locale's conventions
      * regarding dates.
      */
-    QString formatDate(const QDate &pDate) const;
+    QString formatDate(const QDate &pDate, bool shortfmt = false) const;
 
     /**
      * Return a string formatted to the current locale's conventions
