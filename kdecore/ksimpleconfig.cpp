@@ -94,17 +94,22 @@ bool KSimpleConfig::deleteGroup( const QString& pGroup, bool bDeep )
   if (aIt != aEntryMap.end()) {
     // group found, remove it
     if (!bDeep) {
+      // Check if it empty
+      KEntryMapIterator deleteIt = aIt;
+      ++aIt;
+      if ((aIt != aEntryMap.end()) && (aIt.key().mGroup == pGroup_utf))
+         return false; // Not empty
       // just remove the special group entry
-      aEntryMap.remove(aIt);
+      aEntryMap.remove(deleteIt);
       setDirty(true);
-      return false;
+      return true;
     } else {
       // we have to build up a list of things to remove, because if you
       // remove things while traversing a QMap with an iterator,
       // the iterator gets confused.
       QValueList<KEntryKey> keyList;
       // we want to remove the group and all entries in the group
-      for (; aIt.key().mGroup == pGroup_utf && aIt != aEntryMap.end(); ++aIt)
+      for (; (aIt != aEntryMap.end()) && (aIt.key().mGroup == pGroup_utf); ++aIt)
 	keyList.append(aIt.key());
 
       QValueList<KEntryKey>::Iterator kIt(keyList.begin());
