@@ -612,9 +612,19 @@ void KPopupMenu::contextMenuEvent(QContextMenuEvent* e)
 
 void KPopupMenu::hideEvent(QHideEvent*)
 {
-    if (d->m_ctxMenu)
+    if (d->m_ctxMenu && d->m_ctxMenu->isVisible())
     {
+        // we need to block signals here when the ctxMenu is showing
+        // to prevent the QPopupMenu::activated(int) signal from emitting
+        // when hiding with a context menu, the user doesn't expect the
+        // menu to actually do anything.
+        // since hideEvent gets called very late in the process of hiding
+        // (deep within QWidget::hide) the activated(int) signal is the
+        // last signal to be emitted, even after things like aboutToHide()
+        // AJS
+        blockSignals(true);
         d->m_ctxMenu->hide();
+        blockSignals(false);
     }
 }
 /**
