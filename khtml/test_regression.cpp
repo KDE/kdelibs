@@ -2,6 +2,7 @@
  * This file is part of the KDE project
  *
  * (C) 2001,2003 Peter Kelly (pmk@post.com)
+ * (C) 2003 Stephan Kulow (coolo@kde.org)
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -188,7 +189,7 @@ Value KHTMLPartObject::get(ExecState *exec, const Identifier &propertyName) cons
     if (propertyName == "document")
         return getDOMNode(exec,m_part->document());
     else if (propertyName == "window")
-        return Object(Window::retrieveWindow(m_part));
+        return Object(KJS::Window::retrieveWindow(m_part));
     else
         return ObjectImp::get(exec,propertyName);
 }
@@ -813,12 +814,12 @@ const QString &KHTMLSettings::availableFamilies()
 
 int QPaintDevice::x11AppDpiY( int )
 {
-    return 96;
+    return 100;
 }
 
 int QPaintDevice::x11AppDpiX( int )
 {
-    return 90;
+    return 100;
 }
 
 #include "test_regression.moc"
