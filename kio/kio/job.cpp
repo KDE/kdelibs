@@ -2044,6 +2044,7 @@ class CopyJob::CopyJobPrivate
 public:
     CopyJobPrivate() {
         m_defaultPermissions = false;
+        m_bURLDirty = false;
     }
     // This is the dest URL that was initially given to CopyJob
     // It is copied into m_dest, which can be changed for a given src URL
@@ -2054,6 +2055,8 @@ public:
     CopyJob::DestinationState m_globalDestinationState;
     // See setDefaultPermissions
     bool m_defaultPermissions;
+    // Whether URLs changed (and need to be emitted by the next slotReport call)
+    bool m_bURLDirty;
 };
 
 CopyJob::CopyJob( const KURL::List& src, const KURL& dest, CopyMode mode, bool asMethod, bool showProgressInfo )
@@ -2255,43 +2258,50 @@ void CopyJob::slotReport()
     switch (state) {
         case STATE_COPYING_FILES:
             emit processedFiles( this, m_processedFiles );
-            if (observer) observer->slotProcessedFiles(this,m_processedFiles);
-            if (m_mode==Move)
+            if (observer) observer->slotProcessedFiles(this, m_processedFiles);
+            if (d->m_bURLDirty)
             {
-                if (observer) observer->slotMoving( this, m_currentSrcURL,m_currentDestURL);
-                emit moving( this, m_currentSrcURL, m_currentDestURL);
+                // Only emit urls when they changed. This saves time, and fixes #66281
+                d->m_bURLDirty = false;
+                if (m_mode==Move)
+                {
+                    if (observer) observer->slotMoving( this, m_currentSrcURL, m_currentDestURL);
+                    emit moving( this, m_currentSrcURL, m_currentDestURL);
+                }
+                else if (m_mode==Link)
+                {
+                    if (observer) observer->slotCopying( this, m_currentSrcURL, m_currentDestURL ); // we don't have a slotLinking
+                    emit linking( this, m_currentSrcURL.path(), m_currentDestURL );
+                }
+                else
+                {
+                    if (observer) observer->slotCopying( this, m_currentSrcURL, m_currentDestURL );
+                    emit copying( this, m_currentSrcURL, m_currentDestURL );
+                }
             }
-            else if (m_mode==Link)
-            {
-                if (observer) observer->slotCopying( this, m_currentSrcURL, m_currentDestURL ); // we don't have a slotLinking
-                emit linking( this, m_currentSrcURL.path(), m_currentDestURL );
-            }
-            else
-            {
-                if (observer) observer->slotCopying( this, m_currentSrcURL, m_currentDestURL );
-                emit copying( this, m_currentSrcURL, m_currentDestURL );
-            };
             break;
 
         case STATE_CREATING_DIRS:
-            if (observer) {
-                observer->slotProcessedDirs( this, m_processedDirs );
-                observer->slotCreatingDir( this,m_currentDestURL);
-            }
+            if (observer) observer->slotProcessedDirs( this, m_processedDirs );
             emit processedDirs( this, m_processedDirs );
-            emit creatingDir( this, m_currentDestURL );
+            if (d->m_bURLDirty)
+            {
+                d->m_bURLDirty = false;
+                emit creatingDir( this, m_currentDestURL );
+                if (observer) observer->slotCreatingDir( this, m_currentDestURL);
+            }
             break;
 
         case STATE_STATING:
         case STATE_LISTING:
-            if (observer) observer->slotCopying( this, m_currentSrcURL, m_currentDestURL );
+            if (d->m_bURLDirty)
+            {
+                d->m_bURLDirty = false;
+                if (observer) observer->slotCopying( this, m_currentSrcURL, m_currentDestURL );
+            }
             emit totalSize( this, m_totalSize );
             emit totalFiles( this, files.count() );
             emit totalDirs( this, dirs.count() );
-            if (!dirs.isEmpty())
-               emit aboutToCreate( this, dirs );
-            if (!files.isEmpty())
-               emit aboutToCreate( this, files );
             break;
 
         default:
@@ -2394,6 +2404,7 @@ void CopyJob::statCurrentSrc()
     if ( m_currentStatSrc != m_srcList.end() )
     {
         m_currentSrcURL = (*m_currentStatSrc);
+        d->m_bURLDirty = true;
         if ( m_mode == Link )
         {
             // Skip the "stating the source" stage, we don't need it for linking
@@ -2476,13 +2487,19 @@ void CopyJob::statCurrentSrc()
             addSubjob(job);
             m_currentDestURL=m_dest;
             m_bOnlyRenames = false;
+            d->m_bURLDirty = true;
         }
     } else
     {
         // Finished the stat'ing phase
         // First make sure that the totals were correctly emitted
         state = STATE_STATING;
+        d->m_bURLDirty = true;
         slotReport();
+        if (!dirs.isEmpty())
+           emit aboutToCreate( this, dirs );
+        if (!files.isEmpty())
+           emit aboutToCreate( this, files );
         // Check if we are copying a single file
         m_bSingleFileCopy = ( files.count() == 1 && dirs.isEmpty() );
         // Then start copying things
@@ -2495,6 +2512,7 @@ void CopyJob::statCurrentSrc()
 void CopyJob::startListing( const KURL & src )
 {
     state = STATE_LISTING;
+    d->m_bURLDirty = true;
     ListJob * newjob = listRecursive( src, false );
     newjob->setUnrestricted(true);
     connect(newjob, SIGNAL(entries( KIO::Job *,
@@ -2759,6 +2777,7 @@ void CopyJob::createNextDir()
         Scheduler::scheduleJob(newjob);
 
         m_currentDestURL = udir;
+        d->m_bURLDirty = true;
 
         addSubjob(newjob);
         return;
@@ -3049,6 +3068,7 @@ void CopyJob::copyNextFile()
                 m_bCurrentOperationIsLink = true;
                 m_currentSrcURL=(*it).uSource;
                 m_currentDestURL=(*it).uDest;
+                d->m_bURLDirty = true;
                 //Observer::self()->slotCopying( this, (*it).uSource, (*it).uDest ); // should be slotLinking perhaps
             } else {
                 //kdDebug(7007) << "CopyJob::copyNextFile : Linking URL=" << (*it).uSource << " link=" << (*it).uDest << endl;
@@ -3145,6 +3165,7 @@ void CopyJob::copyNextFile()
             //emit linking( this, (*it).linkDest, (*it).uDest );
             m_currentSrcURL=(*it).linkDest;
             m_currentDestURL=(*it).uDest;
+            d->m_bURLDirty = true;
             //Observer::self()->slotCopying( this, (*it).linkDest, (*it).uDest ); // should be slotLinking perhaps
             m_bCurrentOperationIsLink = true;
             // NOTE: if we are moving stuff, the deletion of the source will be done in slotResultCopyingFiles
@@ -3157,6 +3178,7 @@ void CopyJob::copyNextFile()
             //emit moving( this, (*it).uSource, (*it).uDest );
             m_currentSrcURL=(*it).uSource;
             m_currentDestURL=(*it).uDest;
+            d->m_bURLDirty = true;
             //Observer::self()->slotMoving( this, (*it).uSource, (*it).uDest );
         }
         else // Copying a file
@@ -3174,6 +3196,7 @@ void CopyJob::copyNextFile()
             //kdDebug(7007) << "CopyJob::copyNextFile : Copying " << (*it).uSource << " to " << (*it).uDest << endl;
             m_currentSrcURL=(*it).uSource;
             m_currentDestURL=(*it).uDest;
+            d->m_bURLDirty = true;
         }
         addSubjob(newjob);
         connect( newjob, SIGNAL( processedSize( KIO::Job*, KIO::filesize_t ) ),
@@ -3194,6 +3217,7 @@ void CopyJob::deleteNextDir()
     if ( m_mode == Move && !dirsToRemove.isEmpty() ) // some dirs to delete ?
     {
         state = STATE_DELETING_DIRS;
+        d->m_bURLDirty = true;
         // Take first dir to delete out of list - last ones first !
         KURL::List::Iterator it = dirsToRemove.fromLast();
         SimpleJob *job = KIO::rmdir( *it );
