@@ -7,7 +7,7 @@
 <!ENTITY CAUTION	"HOIATUS">
 <!ENTITY Caution	"Hoiatus">
 <!ENTITY Chapter	"Peatükk">
-<!ENTITY Colophon	"Kolofoon/lõppmärgis">
+<!ENTITY Colophon	"Kolofoon/lõppmärgis"> <!-- with the slash? -->
 <!ENTITY Copyright	"Autoriõigus">
 <!ENTITY Dedication	"Pühendus">
 <!ENTITY Edition	"Väljaanne">
@@ -54,7 +54,7 @@
 <!ENTITY appendix	"lisa">
 <!ENTITY chapter	"peatükk">
 <!ENTITY section	"sektsioon">
-<!ENTITY sidebar	"külgriba">
+<!ENTITY sidebar	"külgriba">  <!-- sidebar ~ excursion -->
 <!ENTITY step		"aste">
 <!ENTITY Seealso	"Vaata ka">
 
@@ -69,9 +69,9 @@
 <!ENTITY nonexistantelement	"Mitte eksisteeriv element">
 <!ENTITY Pgs 		"Lk.">
 <!ENTITY unsupported	"toetuseta">
-<!ENTITY xrefto		"xref to">
+<!ENTITY xrefto		"xref to"> <!-- ?? -->
 <!ENTITY unexpectedelementname	"Ootamatu elemendi nimi">
-<!ENTITY Revisedby      "Revised by: ">
+<!ENTITY Revisedby      "Revised by: "> <!-- ?? -->
 
 <!ENTITY ListofTables "Tabelite nimekiri">
 <!ENTITY ListofExamples "Näidiste nimekiri">
