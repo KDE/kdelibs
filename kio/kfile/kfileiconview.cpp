@@ -110,7 +110,7 @@ KFileIconView::KFileIconView(QWidget *parent, const char *name)
 
     toolTip = 0;
     setResizeMode( Adjust );
-    setGridX( 160 );
+    setMaxItemWidth( 300 );
     setWordWrapIconText( false );
     setArrangement( TopToBottom );
     setAutoArrange( true );
@@ -494,7 +494,8 @@ void KFileIconView::slotSmallColumns()
         stopPreview();
         d->previews->setChecked( false );
     }
-    setGridX( 160 );
+    setGridX( -1 );
+    setMaxItemWidth( 300 );
     setItemTextPos( Right );
     setArrangement( TopToBottom );
     setWordWrapIconText( false );
