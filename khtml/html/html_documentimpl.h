@@ -60,7 +60,7 @@ public:
     DOMString domain() const;
 
     HTMLElementImpl *body();
-    void setBody(const HTMLElement &_body);
+    void setBody(HTMLElementImpl *_body);
 
     virtual Tokenizer *createTokenizer();
     NodeListImpl *getElementsByName ( const DOMString &elementName );

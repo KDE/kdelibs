@@ -134,8 +134,16 @@ protected:
      * inserts the stupid isIndex element.
      */
     void startBody();
+
+    /*
+     * removes the body element with it's contents. Needed for broken stuff as <html><center><frameset>
+     */
+    void removeBody();
     
     bool inBody;
+    // in case we haven't found an explicit body element up to now, this is true.
+    // needed for broken HTML as: <center><frameset>... as the center element creates an implicit body
+    bool noRealBody;
     bool haveFrameSet;
     bool _inline;
     bool end;

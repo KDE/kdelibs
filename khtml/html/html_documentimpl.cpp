@@ -115,9 +115,16 @@ HTMLElementImpl *HTMLDocumentImpl::body()
     return static_cast<HTMLElementImpl *>(b);
 }
 
-void HTMLDocumentImpl::setBody(const HTMLElement &/*_body*/)
+void HTMLDocumentImpl::setBody(HTMLElementImpl *_body)
 {
-    // ###
+    int exceptioncode = 0;
+    HTMLElementImpl *b = body();
+    if ( !_body && !b ) return;
+    if ( !_body )
+	documentElement()->removeChild( body(), exceptioncode );
+    if ( !b )
+	documentElement()->appendChild( _body, exceptioncode );
+    documentElement()->replaceChild( _body, body(), exceptioncode );
 }
 
 Tokenizer *HTMLDocumentImpl::createTokenizer()

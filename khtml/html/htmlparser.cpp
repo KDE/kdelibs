@@ -273,6 +273,7 @@ void KHTMLParser::reset()
     memset(forbiddenTag, 0, (ID_CLOSE_TAG+1)*sizeof(ushort));
 
     inBody = false;
+    noRealBody = true;
     haveFrameSet = false;
     _inline = false;
 
@@ -317,13 +318,16 @@ void KHTMLParser::parseToken(Token *t)
     }
 
     // ignore spaces, if we're not inside a paragraph or other inline code
-    if( t->id == ID_TEXT && (!_inline  || !inBody) )
-    {
+    if( t->id == ID_TEXT ) {
 #ifdef PARSER_DEBUG
-        kdDebug(6035) << "length="<< t->text.length() << "text='" << t->text.string() << "'" << endl;
+	kdDebug(6035) << "length="<< t->text.length() << "text='" << t->text.string() << "'" << endl;
 #endif
-        if(t->text.length() == 1 && t->text[0].latin1() == ' ')
-            return;
+	if (!_inline  || !inBody)  {
+	    if(t->text.length() == 1 && t->text[0].latin1() == ' ')
+		return;
+	} else if ( inBody ) {
+	    noRealBody = false;
+	}
     }
 
 
@@ -517,6 +521,7 @@ bool KHTMLParser::insertNode(NodeImpl *n)
                     if(!bodymap->getNamedItem(static_cast<AttrImpl*>(map->item(attrNo))->name()))
                         document->body()->setAttributeNode(static_cast<AttrImpl*>(map->item(attrNo)->cloneNode(false,exceptioncode)), exceptioncode);
                 document->body()->applyChanges();
+		noRealBody = false;
             } else if ( current->isDocumentNode() )
                 break;
             return false;
@@ -864,6 +869,7 @@ NodeImpl *KHTMLParser::getElement(Token *t)
         popBlock(ID_HEAD);
         n = new HTMLBodyElementImpl(document);
         startBody();
+	noRealBody = false;
         break;
 
 // head elements
@@ -889,11 +895,14 @@ NodeImpl *KHTMLParser::getElement(Token *t)
         break;
     case ID_FRAMESET:
         popBlock(ID_HEAD);
+	if ( inBody && noRealBody )
+	    removeBody();
         if ( haveFrameSet && current->id() == ID_HTML )
             break;
         n = new HTMLFrameSetElementImpl(document);
         haveFrameSet = true;
         startBody();
+	noRealBody = false;
         break;
         // a bit a special case, since the frame is inlined...
     case ID_IFRAME:
@@ -1344,4 +1353,12 @@ void KHTMLParser::startBody()
 	insertNode( isindex );
 	isindex = 0;
     }
+}
+
+void KHTMLParser::removeBody()
+{
+    popBlock( ID_BODY );
+    document->setBody( 0 );
+    inBody = false;
+    noRealBody = true;
 }

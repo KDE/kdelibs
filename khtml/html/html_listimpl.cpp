@@ -128,7 +128,7 @@ void HTMLOListElementImpl::parseAttribute(AttrImpl *attr)
             addCSSProperty(CSS_PROP_LIST_STYLE_TYPE, "decimal");
         break;
     case ATTR_START:
-        // ###
+            _start = attr->val() ? attr->val()->toInt() : 1;
     default:
         HTMLUListElementImpl::parseAttribute(attr);
     }

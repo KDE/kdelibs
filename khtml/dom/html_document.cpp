@@ -137,7 +137,7 @@ HTMLElement HTMLDocument::body() const
 void HTMLDocument::setBody(const HTMLElement &_body)
 {
     if (!impl) return;
-    ((HTMLDocumentImpl *)impl)->setBody(_body);
+    ((HTMLDocumentImpl *)impl)->setBody(static_cast<HTMLElementImpl *>(_body.handle()));
     return;
 }
 

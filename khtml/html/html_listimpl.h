@@ -50,6 +50,7 @@ public:
     virtual void parseAttribute(AttrImpl *);
 
     virtual void attach(KHTMLView *);
+    virtual int start() const { return 1; }
 };
 
 // -------------------------------------------------------------------------
@@ -103,6 +104,10 @@ public:
     virtual void parseAttribute(AttrImpl *);
 
     virtual void attach(KHTMLView *);
+    
+    int start() const { return _start; }
+private:
+    int _start;
 };
 
 // -------------------------------------------------------------------------
