@@ -8,6 +8,22 @@ Name[it]=Ceramica
 Name[lv]=Keramika
 Name[nn]=Keramikk
 Name[th]=เครามิก - K
+Name[be/messages/kdebase/desktop_kdebase.po]=Кераміка
+Name[bg/messages/kdebase/desktop_kdebase.po]=Керамик
+Name[cs/messages/kdebase/desktop_kdebase.po]=Keramika
+Name[eo/messages/kdebase/desktop_kdebase.po]=Ceramiko
+Name[it/messages/kdebase/desktop_kdebase.po]=Ceramica
+Name[lv/messages/kdebase/desktop_kdebase.po]=Keramika
+Name[nn/messages/kdebase/desktop_kdebase.po]=Keramikk
+Name[th/messages/kdebase/desktop_kdebase.po]=เครามิก - K
+Name[be]=Кераміка
+Name[bg]=Керамик
+Name[cs]=Keramika
+Name[eo]=Ceramiko
+Name[it]=Ceramica
+Name[lv]=Keramika
+Name[nn]=Keramikk
+Name[th]=เครามิก - K
 Comment=A style using alphablending 
 
 [KDE]
