@@ -158,32 +158,31 @@ bool KHTMLSettings::hoverLink()
 void KHTMLSettings::init()
 {
   KConfig global( "khtmlrc", true, false );
-  global.setGroup( "HTML Settings" );
-  init( &global );
+  init( &global, true );
 
   KConfig *local = KGlobal::config();
   if ( !local )
     return;
 
-  if ( !local->hasGroup( "HTML Settings" ) )
-    return;
-
-  local->setGroup( "HTML Settings" );
   init( local, false );
 }
 
 void KHTMLSettings::init( KConfig * config, bool reset )
 {
+  QString group_save = config->group();
+  if (reset || config->hasGroup("HTML Settings"))
+  {
+    config->setGroup( "HTML Settings" );
     // Fonts and colors
     if( reset ) {
-	d->defaultFonts = QStringList();
-	d->defaultFonts.append( config->readEntry( "StandardFont", KGlobalSettings::generalFont().family() ) );
-	d->defaultFonts.append( config->readEntry( "FixedFont", KGlobalSettings::fixedFont().family() ) );
-	d->defaultFonts.append( config->readEntry( "SerifFont", HTML_DEFAULT_VIEW_SERIF_FONT ) );
-	d->defaultFonts.append( config->readEntry( "SansSerifFont", HTML_DEFAULT_VIEW_SANSSERIF_FONT ) );
-	d->defaultFonts.append( config->readEntry( "CursiveFont", HTML_DEFAULT_VIEW_CURSIVE_FONT ) );
-	d->defaultFonts.append( config->readEntry( "FantasyFont", HTML_DEFAULT_VIEW_FANTASY_FONT ) );
-	d->defaultFonts.append( QString( "0" ) ); // font size adjustment
+        d->defaultFonts = QStringList();
+        d->defaultFonts.append( config->readEntry( "StandardFont", KGlobalSettings::generalFont().family() ) );
+        d->defaultFonts.append( config->readEntry( "FixedFont", KGlobalSettings::fixedFont().family() ) );
+        d->defaultFonts.append( config->readEntry( "SerifFont", HTML_DEFAULT_VIEW_SERIF_FONT ) );
+        d->defaultFonts.append( config->readEntry( "SansSerifFont", HTML_DEFAULT_VIEW_SANSSERIF_FONT ) );
+        d->defaultFonts.append( config->readEntry( "CursiveFont", HTML_DEFAULT_VIEW_CURSIVE_FONT ) );
+        d->defaultFonts.append( config->readEntry( "FantasyFont", HTML_DEFAULT_VIEW_FANTASY_FONT ) );
+        d->defaultFonts.append( QString( "0" ) ); // font size adjustment
     }
 
     if ( reset || config->hasKey( "MinimumFontSize" ) )
@@ -205,17 +204,30 @@ void KHTMLSettings::init( KConfig * config, bool reset )
     if ( reset || config->hasKey( "EnforceDefaultCharset" ) )
         d->enforceCharset = config->readBoolEntry( "EnforceDefaultCharset", false );
 
-  // Behaviour
-  if ( reset || config->hasKey( "ChangeCursor" ) )
-      d->m_bChangeCursor = config->readBoolEntry( "ChangeCursor", KDE_DEFAULT_CHANGECURSOR );
+    // Behaviour
+    if ( reset || config->hasKey( "ChangeCursor" ) )
+        d->m_bChangeCursor = config->readBoolEntry( "ChangeCursor", KDE_DEFAULT_CHANGECURSOR );
 
-  if ( reset || config->hasKey("UnderlineLinks") )
-      d->m_underlineLink = config->readBoolEntry( "UnderlineLinks", true );
+    if ( reset || config->hasKey("UnderlineLinks") )
+        d->m_underlineLink = config->readBoolEntry( "UnderlineLinks", true );
 
-  if ( reset || config->hasKey( "HoverLinks" ) )
-  {
-    if ( ( d->m_hoverLink = config->readBoolEntry( "HoverLinks", false ) ) )
-        d->m_underlineLink = false;
+    if ( reset || config->hasKey( "HoverLinks" ) )
+    {
+        if ( ( d->m_hoverLink = config->readBoolEntry( "HoverLinks", false ) ) )
+            d->m_underlineLink = false;
+    }
+
+    // Other
+    if ( reset || config->hasKey( "AutoLoadImages" ) )
+      d->m_bAutoLoadImages = config->readBoolEntry( "AutoLoadImages", true );
+
+    if ( config->readBoolEntry( "UserStyleSheetEnabled", false ) == true ) {
+        if ( reset || config->hasKey( "UserStyleSheet" ) )
+            d->m_userSheet = config->readEntry( "UserStyleSheet", "" );
+    }
+
+    d->m_formCompletionEnabled = config->readBoolEntry("FormCompletion", true);
+    d->m_maxFormCompletionItems = config->readNumEntry("MaxFormCompletionItems", 10);
   }
 
   // Colors
@@ -232,111 +244,106 @@ void KHTMLSettings::init( KConfig * config, bool reset )
       d->m_vLinkColor = config->readColorEntry( "visitedLinkColor", &HTML_DEFAULT_VLNK_COLOR);
   }
 
-  // Other
 
-  if ( reset || config->hasGroup( "HTML Settings" ) )
+  if( reset || config->hasGroup( "Java/JavaScript Settings" ) ) 
   {
-    config->setGroup( "HTML Settings" ); // group will be restored by cgs anyway
+    config->setGroup( "Java/JavaScript Settings" );
 
-    if ( reset || config->hasKey( "AutoLoadImages" ) )
-      d->m_bAutoLoadImages = config->readBoolEntry( "AutoLoadImages", true );
-
-    if ( config->readBoolEntry( "UserStyleSheetEnabled", false ) == true ) {
-	if ( reset || config->hasKey( "UserStyleSheet" ) )
-	    d->m_userSheet = config->readEntry( "UserStyleSheet", "" );
-    }
-
-    d->m_formCompletionEnabled = config->readBoolEntry("FormCompletion", true);
-    d->m_maxFormCompletionItems = config->readNumEntry("MaxFormCompletionItems", 10);
-  }
-
-  if( reset || config->hasGroup( "Java/JavaScript Settings" ) ) {
-        config->setGroup( "Java/JavaScript Settings" );
-
-        // The global setting for Java
+    // The global setting for Java
     if ( reset || config->hasKey( "EnableJava" ) )
       d->m_bEnableJava = config->readBoolEntry( "EnableJava", false );
 
-        // The global setting for JavaScript
+    // The global setting for JavaScript
     if ( reset || config->hasKey( "EnableJavaScript" ) )
       d->m_bEnableJavaScript = config->readBoolEntry( "EnableJavaScript", true );
 
-        // The global setting for JavaScript debugging
+    // The global setting for JavaScript debugging
     if ( reset || config->hasKey( "EnableJavaScriptDebug" ) )
       d->m_bEnableJavaScriptDebug = config->readBoolEntry( "EnableJavaScriptDebug", false );
 
-        // The global setting for Plugins (there's no local setting yet)
+    // The global setting for Plugins (there's no local setting yet)
     if ( reset || config->hasKey( "EnablePlugins" ) )
       d->m_bEnablePlugins = config->readBoolEntry( "EnablePlugins", true );
 
     // The domain-specific settings.
     bool check_old_java = true;
-	if( reset || config->hasKey( "JavaDomainSettings" ) ){
-	  check_old_java = false;
-	  QStringList domainList = config->readListEntry( "JavaDomainSettings" );
+    if( reset || config->hasKey( "JavaDomainSettings" ) )
+    {
+      check_old_java = false;
+      QStringList domainList = config->readListEntry( "JavaDomainSettings" );
       for ( QStringList::ConstIterator it = domainList.begin();
-                it != domainList.end(); ++it) {
+                it != domainList.end(); ++it) 
+      {
         QString domain;
         KJavaScriptAdvice javaAdvice;
         KJavaScriptAdvice javaScriptAdvice;
         splitDomainAdvice(*it, domain, javaAdvice, javaScriptAdvice);
         d->javaDomainPolicy[domain] = javaAdvice;
       }
-	}
+    }
 
-	bool check_old_ecma = true;
-	if( reset || config->hasKey( "ECMADomainSettings" ) ){
- 	  check_old_ecma = false;
-	  QStringList domainList = config->readListEntry( "ECMADomainSettings" );
+    bool check_old_ecma = true;
+    if( reset || config->hasKey( "ECMADomainSettings" ) )
+    {
+      check_old_ecma = false;
+      QStringList domainList = config->readListEntry( "ECMADomainSettings" );
       for ( QStringList::ConstIterator it = domainList.begin();
-                it != domainList.end(); ++it) {
+                it != domainList.end(); ++it) 
+      {
         QString domain;
         KJavaScriptAdvice javaAdvice;
         KJavaScriptAdvice javaScriptAdvice;
         splitDomainAdvice(*it, domain, javaAdvice, javaScriptAdvice);
         d->javaScriptDomainPolicy[domain] = javaScriptAdvice;
       }
-	}
+    }
 
     if( reset || config->hasKey( "JavaScriptDomainAdvice" )
-	     && ( check_old_java || check_old_ecma ) ) {
+             && ( check_old_java || check_old_ecma ) ) 
+    {
       QStringList domainList = config->readListEntry( "JavaScriptDomainAdvice" );
       for ( QStringList::ConstIterator it = domainList.begin();
-                it != domainList.end(); ++it) {
+                it != domainList.end(); ++it) 
+      {
         QString domain;
         KJavaScriptAdvice javaAdvice;
         KJavaScriptAdvice javaScriptAdvice;
         splitDomainAdvice(*it, domain, javaAdvice, javaScriptAdvice);
-		if( check_old_java )
-		  d->javaDomainPolicy[domain] = javaAdvice;
-		if( check_old_ecma )
+        if( check_old_java )
+          d->javaDomainPolicy[domain] = javaAdvice;
+        if( check_old_ecma )
           d->javaScriptDomainPolicy[domain] = javaScriptAdvice;
       }
 
-	  //save all the settings into the new keywords if they don't exist
-	  if( check_old_java ){
-	    QStringList domainConfig;
-	  	PolicyMap::Iterator it;
-	  	for( it = d->javaDomainPolicy.begin(); it != d->javaDomainPolicy.end(); ++it ){
+      //save all the settings into the new keywords if they don't exist
+      if( check_old_java )
+      {
+        QStringList domainConfig;
+        PolicyMap::Iterator it;
+        for( it = d->javaDomainPolicy.begin(); it != d->javaDomainPolicy.end(); ++it )
+        {
           QCString javaPolicy = adviceToStr( it.data() );
           QCString javaScriptPolicy = adviceToStr( KJavaScriptDunno );
           domainConfig.append(QString::fromLatin1("%1:%2:%3").arg(it.key()).arg(javaPolicy).arg(javaScriptPolicy));
-	  	}
+        }
         config->writeEntry( "JavaDomainSettings", domainConfig );
-	  }
+      }
 
-	  if( check_old_ecma ){
-	    QStringList domainConfig;
-	    PolicyMap::Iterator it;
-	  	for( it = d->javaScriptDomainPolicy.begin(); it != d->javaScriptDomainPolicy.end(); ++it ){
+      if( check_old_ecma )
+      {
+        QStringList domainConfig;
+        PolicyMap::Iterator it;
+        for( it = d->javaScriptDomainPolicy.begin(); it != d->javaScriptDomainPolicy.end(); ++it )
+        {
           QCString javaPolicy = adviceToStr( KJavaScriptDunno );
           QCString javaScriptPolicy = adviceToStr( it.data() );
           domainConfig.append(QString::fromLatin1("%1:%2:%3").arg(it.key()).arg(javaPolicy).arg(javaScriptPolicy));
-	  	}
+        }
         config->writeEntry( "ECMADomainSettings", domainConfig );
-	  }
+      }
     }
   }
+  config->setGroup(group_save);
 }
 
 
@@ -409,14 +416,14 @@ void KHTMLSettings::resetFontSizes()
     d->m_fontSizes.clear();
     int sizeAdjust = d->m_fontSize + lookupFont(6).toInt() + 3;
     if ( sizeAdjust < 0 )
-	sizeAdjust = 0;
+        sizeAdjust = 0;
     if ( sizeAdjust > 9 )
-	sizeAdjust = 9;
+        sizeAdjust = 9;
     //kdDebug(6050) << "KHTMLSettings::resetFontSizes adjustment is " << sizeAdjust << endl;
     const float factor = 1.2;
     float scale = 1.0 / ( factor*factor*factor );
     for ( int i = 0; i < MAXFONTSIZES; i++ ) {
-      	d->m_fontSizes << ( KMAX( int( d->m_fontSize * scale + 0.5), d->m_minFontSize ) );
+              d->m_fontSizes << ( KMAX( int( d->m_fontSize * scale + 0.5), d->m_minFontSize ) );
         scale *= factor;
     }
 }
@@ -447,11 +454,11 @@ QString KHTMLSettings::settingsToCSS() const
     str += d->m_linkColor.name();
     str += ";";
     if(d->m_underlineLink)
-	str += "\ntext-decoration: underline;";
+        str += "\ntext-decoration: underline;";
 
     if( d->m_bChangeCursor )
     {
-	str += "\ncursor: pointer;";
+        str += "\ncursor: pointer;";
         str += "\n}\ninput[type=image] { cursor: pointer;";
     }
     str += "\n}\n";
@@ -459,10 +466,10 @@ QString KHTMLSettings::settingsToCSS() const
     str += d->m_vLinkColor.name();
     str += ";";
     if(d->m_underlineLink)
-	str += "\ntext-decoration: underline;";
+        str += "\ntext-decoration: underline;";
 
     if( d->m_bChangeCursor )
-	str += "\ncursor: pointer;";
+        str += "\ncursor: pointer;";
     str += "\n}\n";
 
     if(d->m_hoverLink)
