@@ -102,7 +102,7 @@ libkdecore_la_SOURCES = libintl.cpp kapplication.cpp kdebug.cpp netwm.cpp  \
 	kmultipledrag.cpp kstaticdeleter.cpp kappdcopiface.cpp \
 	kappdcopiface.skel kclipboard.cpp kcheckaccelerators.cpp \
 	kdeversion.cpp kdebugdcopiface.cpp kdebugdcopiface.skel \
-	hconv.cpp kcalendarsystem.cpp kcalendarsystemgregorian.cpp \
+	kcalendarsystem.cpp kcalendarsystemgregorian.cpp \
 	kcalendarsystemhijri.cpp kcalendarsystemhebrew.cpp \
 	kcalendarsystemfactory.cpp kmacroexpander.cpp kidna.cpp
 
