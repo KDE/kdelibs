@@ -177,7 +177,10 @@ void KFileTreeBranch::addItems( const KFileItemList& list )
 	 {
 	    int hardLinks = statBuf.st_nlink;  /* Count of dirs */
 	    kdDebug(250) << "stat succeeded, hardlinks: " << hardLinks << endl;
-	    if( hardLinks > 2 )
+        // If the link count is > 2, the directory likely has subdirs. If it's < 2
+        // it's something weird like a mounted SMB share. In that case we don't know
+        // if there are subdirs, thus show it as expandable.
+	    if( hardLinks != 2 )
 	    {
 	       newKFTVI->setExpandable(true);
 	    }
@@ -185,8 +188,11 @@ void KFileTreeBranch::addItems( const KFileItemList& list )
 	    {
 	       newKFTVI->setExpandable(false);
 	    }
-	    kdDebug(250) << "Emitting for " << url.prettyURL() << endl;
-	    emit( directoryChildCount( newKFTVI, hardLinks-2)); // parentItem, hardLinks-1 ));
+	    if( hardLinks >= 2 ) // "Normal" directory with subdirs
+	    {
+	       kdDebug(250) << "Emitting for " << url.prettyURL() << endl;
+	       emit( directoryChildCount( newKFTVI, hardLinks-2)); // parentItem, hardLinks-1 ));
+        }
 	 }
 	 else
 	 {
