@@ -321,7 +321,7 @@ void RenderBox::close()
 
 short RenderBox::containingBlockWidth() const
 {
-    if (style()->htmlHacks() && style()->flowAroundFloats() && containingBlock()->isFlow() 
+    if (style()->htmlHacks() && style()->flowAroundFloats() && containingBlock()->isFlow()
             && style()->width().isVariable())
         return static_cast<RenderFlow*>(containingBlock())->lineWidth(m_y);
     else
@@ -522,10 +522,24 @@ void RenderBox::calcWidth()
     }
     else
     {
-
         Length w = m_style->width();
-        if (isReplaced() && w.type==Variable)
-            w = Length(intrinsicWidth(), Fixed);
+        if (isReplaced())
+        {
+            if(w.isVariable())
+            {
+                Length h = m_style->height();
+                if(intrinsicHeight() > 0 && (h.isFixed() || h.isPercent()))
+                {
+                    int myh = h.width(containingBlockHeight());
+                    int iw = (int)((((double)(myh))/((double) intrinsicHeight()))*((double)intrinsicWidth()));
+                    w = Length(iw, Fixed);
+                }
+                else
+                    w = Length(intrinsicWidth(), Fixed);
+            }
+            else
+                w = Length(w.width(containingBlockWidth()), Fixed);
+        }
 
         Length ml = m_style->marginLeft();
         Length mr = m_style->marginRight();
@@ -639,11 +653,32 @@ void RenderBox::calcHeight()
         calcAbsoluteVertical();
     else
     {
-
         Length h = m_style->height();
+        if (isReplaced())
+        {
+            if(h.isVariable())
+            {
+                Length w = m_style->width();
+                if(intrinsicWidth() > 0 && (w.isFixed() || w.isPercent()))
+                {
+                    int myw = w.width(containingBlockWidth());
+                    int ih = (int) ((((double)(myw))/((double)intrinsicWidth()))*((double)intrinsicHeight()));
+                    h = Length(ih, Fixed);
+                }
+                else
+                    h = Length(intrinsicHeight(), Fixed);
 
-        if (isReplaced() && h.type == Variable)
-            h = Length(intrinsicHeight(), Fixed);
+            }
+            else
+            {
+                int cbh = containingBlockHeight();
+                // if height of containing block is known/defined
+                if(cbh > 0)
+                    h = Length(h.width(cbh), Fixed);
+                else
+                    h = Length(intrinsicHeight(), Fixed);
+            }
+        }
 
         Length tm = style()->marginTop();
         Length bm = style()->marginBottom();
@@ -884,3 +919,5 @@ int RenderBox::lowestPosition() const
 {
     return m_height + marginBottom();
 }
+
+#undef DEBUG_LAYOUT
