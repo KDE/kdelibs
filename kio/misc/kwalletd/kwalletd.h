@@ -57,6 +57,9 @@ class KWalletD : public KDEDModule {
 		virtual int close(const QString& wallet, bool force);
 		virtual int close(int handle, bool force);
 
+		// Save to disk but leave open
+		virtual ASYNC sync(int handle);
+
 		// Physically deletes the wallet from disk.
 		virtual int deleteWallet(const QString& wallet);
 

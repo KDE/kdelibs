@@ -388,7 +388,16 @@ return false;
 
 
 bool KWalletD::isOpen(int handle) const {
-return _wallets.find(handle) != 0;
+int rc = _wallets.find(handle);
+
+	if (rc == 0 && ++_failed > 5) {
+		KMessageBox::information(0, i18n("There have been repeated failed attempts to gain access to a wallet. An application may be misbehaving."), i18n("KDE Wallet Service"));
+		_failed = 0;
+	} else if (rc != 0) {
+		_failed = 0;
+	}
+
+return rc != 0;
 }
 
 
@@ -411,6 +420,19 @@ QStringList rc;
 		++it;
 	}
 return rc;
+}
+
+
+void KWalletD::sync(int handle) {
+KWallet::Backend *b;
+
+	if ((b = getWallet(handle))) {
+		QByteArray p;
+		QString wallet = b->walletName();
+		p.duplicate(_passwords[wallet].data(), _passwords[wallet].length());
+		b->sync(p);
+		p.fill(0);
+	}
 }
 
 
