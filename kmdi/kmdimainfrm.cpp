@@ -2510,9 +2510,7 @@ void KMdiMainFrm::setActiveToolDock(KMdiDockContainer* td) {
 void KMdiMainFrm::removeFromActiveDockList(KMdiDockContainer* td) {
   for (int i=0;i<4;i++) {
     if (d->activeDockPriority[i]==td) {
-      // FIXME: HUH??  i2 is never used here, and this for() loop modifies the
-      //        variable from the outer loop!!
-      for (int i2=i;i<3;i++)
+      for (;i<3;i++)
         d->activeDockPriority[i]=d->activeDockPriority[i+1];
       d->activeDockPriority[3]=0;
       break;
