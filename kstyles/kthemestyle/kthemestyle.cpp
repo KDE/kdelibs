@@ -1669,17 +1669,19 @@ void KThemeStyle::drawControl( ControlElement element,
                 if ( prog < 0 )
                     prog = 0;
                 //p2.end();
+                int wp = (int)(w * prog);
+
                 if ( !reverse )
-                    drawBaseButton( p, x, y, w * prog, h, *colorGroup( cg, ProgressBar ), false, false, ProgressBar );
+                    drawBaseButton( p, x, y, wp, h, *colorGroup( cg, ProgressBar ), false, false, ProgressBar );
                 else
                 {
                     //TODO:Optimize
-                    int wp = w * prog;
                     QPixmap buf( wp, h );
                     QPainter p2( &buf );
                     drawBaseButton( &p2, 0, 0, wp, h, *colorGroup( cg, ProgressBar ), false, false, ProgressBar );
                     p2.end();
-                    bitBlt( p->device(), x + ( w - wp ), y, &QPixmap( buf.convertToImage().mirror( true, false ) ) );
+		    QPixmap mirroredPix = QPixmap( buf.convertToImage().mirror( true, false ) );
+                    bitBlt( p->device(), x + ( w - wp ), y, &mirroredPix );
                 }
 
                 handled = true;
