@@ -491,17 +491,17 @@ void KPty::setXonXoff(bool useXonXoff)
   }
 }
 
-const char *KPty::ttyName()
+const char *KPty::ttyName() const
 {
     return d->ttyName.data();
 }
 
-int KPty::masterFd()
+int KPty::masterFd() const
 {
     return d->masterFd;
 }
 
-int KPty::slaveFd()
+int KPty::slaveFd() const
 {
     return d->slaveFd;
 }

@@ -30,6 +30,7 @@ struct KPtyPrivate;
  * utmp support.
  * ...
  *
+ * @since 3.2
  **/
 class KPty {
 
@@ -106,21 +107,21 @@ public:
    *
    * This function should be called only while the pty is open.
    */
-  const char *ttyName();
+  const char *ttyName() const;
 
   /**
    * @return the file descriptor of the master pty
    *
    * This function should be called only while the pty is open.
    */
-  int masterFd();
+  int masterFd() const;
 
   /**
    * @return the file descriptor of the slave pty
    *
    * This function should be called only while the pty is open.
    */
-  int slaveFd();
+  int slaveFd() const;
 
 private:
   bool chownpty(bool grant);
