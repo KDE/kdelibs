@@ -130,6 +130,7 @@ public:
     virtual bool isTableCell() const { return false; }
     virtual bool isTableRow() const { return false; }
     virtual bool isTableSection() const { return false; }
+    virtual bool isTableCol() const { return false; }
     virtual bool isTable() const { return false; }
     virtual bool isWidget() const { return false; }
     virtual bool isBody() const { return false; }
