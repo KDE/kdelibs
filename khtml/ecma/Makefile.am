@@ -84,3 +84,4 @@ CLEANFILES = $(LUT_FILES)
 #check_PROGRAMS = testecma
 #testecma_SOURCES = testecma.cpp
 #testecma_LDADD = ../libkhtml.la $(top_builddir)/kjs/libkjs.la 
+

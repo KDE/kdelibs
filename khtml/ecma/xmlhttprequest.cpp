@@ -133,7 +133,7 @@ Value XMLHttpRequest::getValueProperty(ExecState *exec, int token) const
     return getString(DOM::DOMString(response));
   case ResponseXML:
     if (state != Completed) {
-    return Undefined();
+      return Undefined();
     }
     if (!createdDocument) {
       QString mimeType = "text/xml";
@@ -152,7 +152,7 @@ Value XMLHttpRequest::getValueProperty(ExecState *exec, int token) const
 	docImpl->write(response);
 	docImpl->finishParsing();
 	docImpl->close();
-        kdDebug()<<"DOC IS of len = "<< docImpl->toString().length() <<endl;
+
 	typeIsXML = true;
       } else {
 	typeIsXML = false;
@@ -161,7 +161,7 @@ Value XMLHttpRequest::getValueProperty(ExecState *exec, int token) const
     }
 
     if (!typeIsXML) {
-    return Undefined();
+      return Undefined();
     }
 
     return getDOMNode(exec,responseXML);
@@ -225,6 +225,8 @@ XMLHttpRequest::XMLHttpRequest(ExecState *exec, const DOM::Document &d)
 
 XMLHttpRequest::~XMLHttpRequest()
 {
+  delete qObject;
+  qObject = 0;
   delete decoder;
   decoder = 0;
 }
@@ -605,7 +607,7 @@ Value XMLHttpRequestProtoFunc::tryCall(ExecState *exec, Object &thisObj, const L
   case XMLHttpRequest::Send:
     {
       if (args.size() > 1) {
-    return Undefined();
+        return Undefined();
       }
 
       if (request->state != Loading) {
@@ -652,3 +654,5 @@ Value XMLHttpRequestProtoFunc::tryCall(ExecState *exec, Object &thisObj, const L
 }
 
 }; // end namespace
+
+#include "xmlhttprequest.moc"
