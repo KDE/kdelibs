@@ -349,7 +349,7 @@ void KSSL::setPeerInfo(int sock) {
   if (rc != -1) {
     QString haddr;
     KInetSocketAddress x(&sa, nl);
-    m_pi.setPeerAddress(x.prettyHost());
+    m_pi.setPeerAddress(x);
   }
   m_pi.m_cert.setCert(d->kossl->SSL_get_peer_certificate(d->m_ssl));
 #endif

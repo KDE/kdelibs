@@ -27,19 +27,20 @@
 #include <kdebug.h>
 
 #include <ksockaddr.h>
+#include <kextsock.h>
 
 #include "ksslx509map.h"
 
 class KSSLPeerInfoPrivate {
 public:
-  QString host;
+  KInetSocketAddress *host;
 };
 
 
 
 KSSLPeerInfo::KSSLPeerInfo() {
   d = new KSSLPeerInfoPrivate;
-  d->host = "";
+  d->host = NULL;
 }
 
 KSSLPeerInfo::~KSSLPeerInfo() {
@@ -50,25 +51,27 @@ KSSLCertificate& KSSLPeerInfo::getPeerCertificate() {
   return m_cert;
 }
 
-void KSSLPeerInfo::setPeerAddress(QString addr) {
-  d->host = addr;
+void KSSLPeerInfo::setPeerAddress(KInetSocketAddress& addr) {
+  if (d->host) delete d->host;
+  d->host = new KInetSocketAddress(addr.addressV4(), addr.size());
 }
 
 
 bool KSSLPeerInfo::certMatchesAddress() {
 #ifdef HAVE_SSL
   KSSLX509Map certinfo(m_cert.getSubject());
-  KInetSocketAddress kisa1(d->host, 0, -1);
-  KInetSocketAddress kisa2(certinfo.getValue("CN").latin1(), 0, -1);
+  int err;
+  QList<KAddressInfo> cns = KExtendedSocket::lookup(certinfo.getValue("CN").latin1(), 0, 0, &err);
 
-  kdDebug() << "d->host is: " << kisa1.pretty()
-            << " while the CN is: " << kisa2.pretty()
-            << endl;
-  kdDebug() << "The original ones were: " << d->host
+  kdDebug() << "The original ones were: " << d->host->prettyHost()
             << " and: " << certinfo.getValue("CN").latin1()
             << endl;
 
-  if (kisa1.isCoreEqual(kisa2)) return true;
+  for (KAddressInfo *x = cns.first(); x; x = cns.next()) {
+     // kdDebug() << "Found address: " << (**x).pretty() << endl;
+     if ((**x).isCoreEqual(d->host))
+        return true;
+  }
 
 #endif
   return false;

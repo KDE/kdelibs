@@ -25,10 +25,10 @@ class KSSL;
 class QString;
 
 #include <qglobal.h>
-
 #include <ksslcertificate.h>
 
 class KSSLPeerInfoPrivate;
+class KInetSocketAddress;
 
 class KSSLPeerInfo {
 friend class KSSL;
@@ -44,7 +44,7 @@ protected:
   KSSLPeerInfo();
 
   KSSLCertificate m_cert;
-  void setPeerAddress(QString addr);
+  void setPeerAddress(KInetSocketAddress &x);
 
 private:
   KSSLPeerInfoPrivate *d;
