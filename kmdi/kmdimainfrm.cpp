@@ -991,6 +991,7 @@ void KMdiMainFrm::activateView(KMdiChildView* pWnd)
 
    if (m_documentTabWidget && m_mdiMode == KMdi::TabPageMode || m_mdiMode==KMdi::IDEAlMode) {
       m_documentTabWidget->showPage(pWnd);
+      pWnd->activate();
    }
 #if 0
    if (m_mdiMode == KMdi::TabPageMode) {
