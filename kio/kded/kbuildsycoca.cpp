@@ -30,6 +30,8 @@
 #include <qtimer.h>
 
 #include <assert.h>
+#include <kapp.h>
+#include <dcopclient.h>
 #include <kglobal.h>
 #include <kdebug.h>
 #include <kdirwatch.h>
@@ -104,7 +106,12 @@ void KBuildSycoca::recreate()
   save(); // Save database
   clear(); // save memory usage
 
-  // TODO notify applications using DCOP !
+  // TODO notify ALL applications that have a ksycoca object (a broadcast is needed!)
+  // HACK !!
+  QByteArray data;
+  debug("sending databaseChanged() signal !");
+  kapp->dcopClient()->send( "konqueror", "ksycoca", "databaseChanged()", data );
+  debug("done");
 }
 
 void KBuildSycoca::dirDeleted(const QString& /*path*/)

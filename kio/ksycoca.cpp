@@ -23,13 +23,15 @@
 #include <qdatastream.h>
 #include <qfile.h>
 
+#include <kapp.h>
+#include <dcopclient.h>
 #include <kglobal.h>
 #include <kdebug.h>
 #include <kstddirs.h>
 #include <assert.h>
 
 // Read-only constructor
-KSycoca::KSycoca()
+KSycoca::KSycoca() : DCOPObject("ksycoca")
 {
    QString path = KGlobal::dirs()->saveLocation("config") + "ksycoca";
    QFile *database = new QFile(path);
@@ -45,10 +47,18 @@ KSycoca::KSycoca()
    m_lstFactories = new KSycocaFactoryList();
    m_lstFactories->setAutoDelete( true );
    _self = this;
+
+   // Register app as able to receive DCOP messages
+   kapp->dcopClient()->attach();
+   if (!kapp->dcopClient()->isRegistered())
+   {
+     kapp->dcopClient()->registerAs( kapp->name() ); 
+     debug("registering as dcopclient...");
+   }
 }
 
 // Read-write constructor - only for KBuildSycoca
-KSycoca::KSycoca( bool /* dummy */ )
+KSycoca::KSycoca( bool /* dummy */ ) // and not really a dcop object
 {
    QString path = KGlobal::dirs()->saveLocation("config") + "ksycoca";
    QFile *database = new QFile(path);
@@ -72,6 +82,7 @@ KSycoca * KSycoca::self()
 
 KSycoca::~KSycoca()
 {
+  debug("KSycoca::~KSycoca()");
    QIODevice *device = 0;
    if (str)
       device = str->device();
@@ -82,6 +93,26 @@ KSycoca::~KSycoca()
    delete device;
    delete m_lstFactories;
    _self = 0L;
+}
+
+bool KSycoca::process(const QCString &fun, const QByteArray &/*data*/,
+                      QCString &replyType, QByteArray &/*replyData*/)
+{
+  debug(fun);
+  if (fun == "databaseChanged()") {
+    debug("got a databaseChanged signal !");
+    // kded tells us the database file changed
+    // Let's just delete everything
+    // The next call to any public method will recreate
+    // everything that's needed.
+    delete this;
+
+    replyType = "void";
+    return true;
+  } else {
+    kdebug(KDEBUG_WARN, 7011, QString("unknown function call to KSycoca::process() : %1").arg(fun));
+    return false;
+  }
 }
 
 QDataStream * KSycoca::findEntry(int offset, KSycocaType &type)

@@ -19,6 +19,7 @@
 #ifndef __ksycoca_h__
 #define __ksycoca_h__ "$Id$"
 
+#include <dcopobject.h>
 #include <qobject.h>
 #include "ksycocatype.h"
 
@@ -30,7 +31,7 @@ class KSycocaFactoryList;
  * @internal
  * Read-only SYstem COnfiguration CAche
  */
-class KSycoca : public QObject
+class KSycoca : public QObject, public DCOPObject
 {
   Q_OBJECT
 protected:
@@ -53,6 +54,12 @@ public:
    static KSycoca *self();
 
    virtual ~KSycoca();
+
+   /**
+    * slot for receiving kded's signal, when the sycoca file changes
+    */
+   bool process(const QCString &fun, const QByteArray &data,
+                QCString &replyType, QByteArray &replyData);
 
    /**
     * @internal - called by factories in read-only mode
