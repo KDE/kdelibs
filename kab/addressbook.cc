@@ -1293,7 +1293,7 @@ if(showAddress)
     {
       p.drawText(2*Grid, cy+p.fontMetrics().height(), address.role);
       cy+=p.fontMetrics().height();
-    }        
+    }
   if(!address.address.isEmpty())
     {
       p.drawText(2*Grid, cy+p.fontMetrics().height(), address.address);
@@ -1549,7 +1549,7 @@ AddressBook::makeAddressFromMap(KeyValueMap* keys, Entry::Address& address)
     "org",
     "orgunit",
     "orgsubunit",
-    "role",
+      // "role",
     "deliverylabel",
     "address",
     "zip",
@@ -1563,7 +1563,7 @@ AddressBook::makeAddressFromMap(KeyValueMap* keys, Entry::Address& address)
     &address.org,
     &address.orgUnit,
     &address.orgSubUnit,
-    &address.role,
+      // &address.role,
     &address.deliveryLabel,
     &address.address,
     &address.zip,
@@ -1643,7 +1643,7 @@ AddressBook::makeSectionFromEntry(const Entry& entry, Section& section)
 	 !keys->insert("org", (*addPos).org) ||
 	 !keys->insert("orgunit", (*addPos).orgUnit) ||
 	 !keys->insert("orgsubunit", (*addPos).orgSubUnit) ||
-	 !keys->insert("role", (*addPos).role) ||
+	 // !keys->insert("role", (*addPos).role) ||
 	 !keys->insert("deliverylabel", (*addPos).deliveryLabel) ||
 	 !keys->insert("address", (*addPos).address) ||
 	 !keys->insert("zip", (*addPos).zip) ||
