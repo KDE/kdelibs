@@ -88,6 +88,13 @@ of a kind like midi0, midi1, ..., then only the 0-version is listed here):
    does not yet fully support all features of the soundcard right now, so
    some apps might not work.
 <p>
+<b>I can't run artsdsp on any app, it always crashes?</b>
+<p>
+   You need a more or less modern version of the glibc library, so artsdsp
+   will not work reliable on older linux distributions. For instance, on
+   debian/slink it doesn't work, on debian/potatoe (which is glibc 2.1.3
+   based), it does.
+<p>
 <b>Are there theoretical limits which apps will never work with artsdsp?</b>
 <p>
    No. Of course artsdsp will have a little more latency and a little more
