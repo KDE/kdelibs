@@ -119,9 +119,10 @@ static QString toHebrew( int number ) {
 
 static QString toNumeric( int number, int base ) {
     QString letter = QString::number(number);
-    for(int i = 0; i < letter.length(); i++) {
+    for(unsigned int i = 0; i < letter.length(); i++) {
         letter[i] = QChar(letter[i].digitValue()+base);
     }
+    return letter;
 }
 
 inline static QString toArabicIndic( int number ) {
