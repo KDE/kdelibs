@@ -86,6 +86,7 @@ binary-arch:  build
 	install -d debian/tmp/usr/share/lintian/overrides
 	install -d debian/libarts-alsa/usr/share/lintian/overrides
 	install -d debian/libkmid-alsa/usr/share/lintian/overrides
+	install -d debian/libkmid/usr/share/lintian/overrides
 	install -d debian/libkmid-alsa/usr/bin
 	make DESTDIR=`pwd`/debian/tmp/ install
 	make -C arts/ clean
