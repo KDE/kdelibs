@@ -162,6 +162,7 @@ KLauncher::KLauncher(int _kdeinitSocket)
 #ifdef Q_WS_X11
    mCached_dpy = NULL;
 #endif
+   connect(&mAutoTimer, SIGNAL(timeout()), this, SLOT(slotAutoStart()));
    requestList.setAutoDelete(true);
    mSlaveWaitRequest.setAutoDelete(true);
    dcopClient()->setNotifications( true );
@@ -621,10 +622,11 @@ KLauncher::slotAppRegistered(const QCString &appId)
 void
 KLauncher::autoStart(int phase)
 {
+   if( mAutoStart.phase() >= phase )
+       return;
    mAutoStart.setPhase(phase);
    if (phase == 1)
       mAutoStart.loadAutoStartList();
-   connect(&mAutoTimer, SIGNAL(timeout()), this, SLOT(slotAutoStart()));
    mAutoTimer.start(0, true);
 }
 
