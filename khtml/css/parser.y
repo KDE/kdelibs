@@ -87,8 +87,9 @@ static inline int getValueID(const char *tagStr, int len)
     ParseString string;
     float val;
     int prop_id;
-    int attribute;
+    unsigned int attribute;
     unsigned int element;
+    unsigned int ns;
     CSSSelector::Relation relation;
     bool b;
     char tok;
@@ -189,7 +190,6 @@ static int cssyylex( YYSTYPE *yylval ) {
 %type <string> hexcolor
 %type <string> ns_prefix
 %type <string> maybe_ns_prefix
-%type <element> ns_selector
 
 %type <mediaList> media_list
 %type <mediaList> maybe_media_list
@@ -224,6 +224,7 @@ static int cssyylex( YYSTYPE *yylval ) {
 
 %type <element> element_name
 %type <element> ns_element
+%type <ns> ns_selector
 
 %type <attribute> attrib_id
 %type <attribute> ns_attrib_id
@@ -343,7 +344,7 @@ ns_prefix
 
 maybe_ns_prefix:
     /* empty */ { $$.string = 0; $$.length = 0; }
-  | ns_prefix S
+  | ns_prefix maybe_space
   ;
 
 rule_list:
@@ -553,18 +554,23 @@ simple_selector:
     }
     | specifier_list maybe_space {
 	$$ = $1;
-	$$->tag = 0xffff;
+	$$->tag = 0xffffffff;
     }
   ;
 
 ns_element:
     ns_selector element_name { $$ = ($1<<16) | $2; }
-  | element_name { $$ = $1; }
+  | element_name { 
+        /* according to the specs this one matches all namespaces if no
+	   default namespace has been specified otherwise the default namespace */
+	CSSParser *p = static_cast<CSSParser *>(parser);
+	$$ = (p->defaultNamespace<<16) | $1;
+    }
 ;
 
 ns_selector:
     '|' { $$ = 0; }
-  | IDENT '|' { $$ = 1; }
+  | IDENT '|' { $$ = 1; /* #### insert correct namespace id here */ }
   | '*' '|' { $$ = 0xffff; } 
 ;
 
@@ -629,7 +635,10 @@ class:
 
 ns_attrib_id:
     ns_selector attrib_id { $$ = ($1<<16) | $2; }
-  | attrib_id { $$ = $1; }
+  | attrib_id { 
+	/* opposed to elements, these only match for non namespaced attributes */
+	$$ = $1; 
+    }
 ;
 
 attrib_id: 
