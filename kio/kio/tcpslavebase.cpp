@@ -396,7 +396,7 @@ bool TCPSlaveBase::connectToHost( const QString &host,
     return true;
 #else //!Q_OS_UNIX
     return false;
-#endif Q_OS_UNIX
+#endif //Q_OS_UNIX
 }
 
 void TCPSlaveBase::closeDescriptor()
