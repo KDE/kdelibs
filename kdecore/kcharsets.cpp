@@ -179,7 +179,6 @@ int KCharset::bits()const{
 }
 
 QFont &KCharset::setQFont(QFont &fnt){
-
   if (!entry) {
     warning("KCharset: Wrong charset!\n");
     return fnt;
@@ -209,11 +208,18 @@ QFont &KCharset::setQFont(QFont &fnt){
     kchdebug("qtCharset: %i\n",(int)qtCharset());
     fnt.setCharSet(qtCharset());
     QString family=fnt.family();                        //
-    if (family=="times") fnt.setFamily("courier");	//  workaround for bug	
+    if (family=="times") fnt.setFamily("courier");	//  workaround for bug 
     else fnt.setFamily("times");			//  in Qt
     fnt.setFamily(family);                              //
     QFontInfo fi(fnt);
-    if (fi.charSet()!=qtCharset())
+    int ch = fi.charSet();
+#if QT_VERSION==142
+    if( ch == 0 ) ch = 1;
+    if( ch == 1 ) ch = 0;
+#endif
+    if (ch != qtCharset())
+    {
+      kchdebug("didn't get charset: %d <--> %d\n", ch, qtCharset());
       if (entry->good_family && !(entry->good_family->isEmpty())){
           fnt.setCharSet(qtCharset());
 	  fnt.setFamily(*(entry->good_family));
@@ -225,9 +231,11 @@ QFont &KCharset::setQFont(QFont &fnt){
          fnt.setCharSet(QFont::AnyCharSet);
          fnt.setFamily(faceStr);
       }
+    }
   }  
   kchdebug("New charset: \"%s\"\n",charsets->name(fnt));
   return fnt;
+#undef kchdebug
 }
 
 KCharset::operator const KCharsetEntry *()const{

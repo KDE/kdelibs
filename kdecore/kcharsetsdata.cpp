@@ -694,7 +694,6 @@ QString KCharsetsData::charsetFace(const KCharsetEntry *charset
 }
 
 bool KCharsetsData::charsetOfFace(const KCharsetEntry * charset,const QString &face){
-
   kchdebug("Testing if face %s is of charset %s...",(const char *)face,
                                                                charset->name);
   config->setGroup("faces");
@@ -782,12 +781,11 @@ Display *kde_display;
   for(int i = 0; i < numFonts; i++){
 
     qfontname = "";
-    qfontname = *fontNames;
+    qfontname = fontNames[i];
     int dash = qfontname.find ('-', 1, TRUE); // find next dash
 
     if (dash == -1) { // No such next dash -- this shouldn't happen.
                       // but what do I care -- lets skip it.
-      fontNames ++;
       continue;
     }
 
@@ -798,7 +796,6 @@ Display *kde_display;
 
     if (dash == -1) { // No such next dash -- this shouldn't happen.
                       // But what do I care -- lets skip it.
-      fontNames ++;
       continue;
     }
 
@@ -806,6 +803,7 @@ Display *kde_display;
     qfontname = qfontname.mid(dash +1, dash_two - dash -1);
     lst->append(qfontname);
   }
+  XFreeFontNames(fontNames);
 }
 
 bool KCharsetsData::isDisplayableHack(KCharsetEntry *charset){
