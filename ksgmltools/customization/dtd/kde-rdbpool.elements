@@ -146,7 +146,4 @@ zh      Chinese
                 %local.bibliocomponent.mix;">
 <!-- End of compulsory ReleaseInfo -->]]>
 
-<!--ENTITY % qandset.attlist "IGNORE"-->
-<!--ENTITY % qandadiv.attlist "IGNORE"-->
-
 <!-- End of kde.pool        -->]]>

@@ -46,9 +46,6 @@
      chunks.) -->
 <!ENTITY % section.attlist "IGNORE">
 
-<!-- Compulsory ID for qandaset and qandadiv must be declared 
-     via kde-rdbpool.elements -->
-
 <!-- End of compulsory id -->]]>
 
 

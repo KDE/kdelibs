@@ -1,17 +1,6 @@
 <!-- ONLY to supply declarations that were switched off earlier 
      Take _all_ care to make it only _more_ restrictive.  -->
 
-<!ATTLIST QandASet 
-                DefaultLabel (qanda|number|none) #IMPLIED 
-                %idreq.common.attrib; 	-- changed --
-                %qandset.role.attrib; 
-                %local.qandset.attrib;>
-
-<!ATTLIST QandADiv
-		%idreq.common.attrib;   -- changed --
-		%qandadiv.role.attrib;
-		%local.qandadiv.attrib;>
-
 <!ATTLIST Section
 		%label.attrib;
 		%status.attrib;
