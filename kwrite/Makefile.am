@@ -9,7 +9,7 @@ libkwrite_la_SOURCES = kwrite.cpp kwrite_view.cpp highlight.cpp \
 	kwrite_part.cpp kwrite_factory.cpp kwrite_doc.cpp \
 	kwdialog.cpp undohistory.cpp ktextprint.cpp prefdialog.cpp
 
-libkwrite_la_LIBADD = -L$(top_srcdir)/kparts -L$(top_srcdir)/kfile -L$(top_srcdir)/kspell $(LIB_KPARTS) $(LIB_KFILE) $(LIB_KSPELL)
+libkwrite_la_LIBADD = -L$(top_srcdir)/kparts -L$(top_srcdir)/kfile -L$(top_srcdir)/kspell ../kparts/libkparts.la ../kfile/libkfile.la ../kspell/libkspell.la
 libkwrite_la_LDFLAGS = $(all_libraries) -version-info 1:0:0 -module -no-undefined
 
 METASOURCES = AUTO
