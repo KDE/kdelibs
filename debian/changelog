@@ -5,6 +5,9 @@ kdelibs (4:2.1-20010109-1) unstable; urgency=low
    * This was definatly built with the same dpkg that kdelibs-crypto was so
      I'm assuming this just squeaked by dinstall...so just to be sure...
    * Java should work again
+   * Fix kdesud security by
+     a) Not creating the socket under /tmp
+     b) Verifying afterwards that it was our own socket
  
  -- Ivan E. Moore II <rkrusty@debian.org>  Tue, 09 Jan 2001 10:00:00 -0700
 
