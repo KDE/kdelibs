@@ -8,6 +8,7 @@ import java.awt.event.*;
 import java.io.*;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import org.kde.javascript.JSObject;
 
 /**
  * The context in which applets live.
@@ -25,6 +26,7 @@ public class KJASAppletContext implements AppletContext
     private int refcounter = 0;
     // a mapping JS referenced Java objects
     private Hashtable jsReferencedObjects;
+    private JSObject jsobject = null;
 
     private final static int JError    = 0;
     private final static int JArray    = 1;
@@ -55,6 +57,24 @@ public class KJASAppletContext implements AppletContext
         return myID;
     }
 
+    public String getAppletID(Applet applet) 
+    {
+        Enumeration e = stubs.keys();
+        while ( e.hasMoreElements() )
+        {
+            String appletID = (String) e.nextElement();
+            KJASAppletStub stub = (KJASAppletStub) stubs.get(appletID);
+            if (stub.getApplet() == applet)
+                return appletID;
+        }
+        return null;
+    }
+    public String getAppletName(String appletID) {
+        KJASAppletStub stub = (KJASAppletStub) stubs.get(appletID);
+        if (stub == null)
+            return null;
+        return stub.appletName;
+    }
     public void createApplet( String appletID, String name,
                               String className, String docBase,
                               String codeBase, String archives,
@@ -153,6 +173,10 @@ public class KJASAppletContext implements AppletContext
         else
         {
             stub.initApplet();
+            // keep types in sync with KPart::LiveConnectExtension::TypeString
+            int [] types = { 5 };
+            String [] arglist = { new String("initialized") };
+            Main.protocol.sendJavaScriptEventCmd(myID, appletID, 0, "__applet", types, arglist);
         }
     }
 
@@ -347,8 +371,9 @@ public class KJASAppletContext implements AppletContext
             Main.protocol.sendShowStatusCmd( myID, message );
         }
     }
-    public void evaluateJavaScript(String script, String appletID) {
+    public void evaluateJavaScript(String script, String appletID, JSObject jso) {
         if( active && (script != null) ) {
+            jsobject = jso;
             int [] types = new int[1];
             // keep in sync with KPart::LiveConnectExtension::TypeString
             types[0] = 5;
@@ -434,6 +459,16 @@ public class KJASAppletContext implements AppletContext
     }
     public boolean putMember(String appletID, String name, String value)
     {
+        if (jsobject != null && name.equals("__lc_ret")) {
+            // special case; return value of JS script evaluation
+            Main.debug("putValue: applet " + name + "=" + value);
+            jsobject.returnvalue = value;
+            try {
+                jsobject.thread.interrupt();
+            } catch (SecurityException ex) {}
+            jsobject = null;
+            return true;
+        }
         Object [] objs = getObjectField(appletID, name);
         if(objs == null) {
             Main.debug("Error in putValue: applet " + appletID + " not found");
