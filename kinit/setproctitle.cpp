@@ -76,7 +76,9 @@
 # endif
 # if SPT_TYPE == SPT_PSSTRINGS
 #  include <machine/vmparam.h>
-#  include <sys/exec.h>
+#  ifdef HAVE_SYS_EXEC_H
+#    include <sys/exec.h>
+#  endif
 #  ifndef PS_STRINGS	/* hmmmm....  apparently not available after all */
 #   undef SPT_TYPE
 #   define SPT_TYPE	SPT_REUSEARGV
