@@ -26,18 +26,21 @@
 #include <klocale.h>
 #include <kconfig.h>
 #include <dcopclient.h>
-
-#include <qmessagebox.h>
+#include <soundserver.h>
+#include <dispatcher.h>
 
 #include "knotify.h"
 #include "knotify.moc"
 
 #include <iostream.h>
 
+#include <qmessagebox.h>
+#include <qfileinfo.h>
 #include <qiomanager.h>
-#include <dispatcher.h>
+
 #include <qtextstream.h>
-#include <soundserver.h>
+
+
 
 int main(int argc, char **argv)
 {
@@ -102,12 +105,13 @@ void KNotify::notify(const QString &event, const QString &fromApp,
 		
 	}
 	
+	// Not sure if the QFile::is[[:alpha:]]{4,5}able() works yet!
 	eventRunning=true;
 	if ((present & KNotifyClient::Sound) /* && (QFile(sound).isReadable())*/)
 		notifyBySound(sound);
 	if (present & KNotifyClient::Messagebox)
 		notifyByMessagebox(text);
-	if (present & KNotifyClient::Logfile && (QFile(file).isReadable()))
+	if (present & KNotifyClient::Logfile/* && (QFile(file).isWriteable())*/)
 		notifyByLogfile(text, file);
 	if (present & KNotifyClient::Stderr)
 		notifyByStderr(text);
@@ -116,7 +120,12 @@ void KNotify::notify(const QString &event, const QString &fromApp,
 
 bool KNotify::notifyBySound(const QString &sound)
 {
-	if(server) server->play((const char *)sound);
+	QString f(sound);
+	if (QFileInfo(sound).isRelative())
+		f=locate("sounds", sound);
+
+	if(server) server->play((const char *)f);
+	
 	return true;
 }
 
@@ -136,7 +145,7 @@ bool KNotify::notifyByMessagebox(const QString &text)
 bool KNotify::notifyByLogfile(const QString &text, const QString &file)
 {
 	QFile f(file);
-	if (!f.open(IO_WriteOnly)) return false;
+	if (!f.open(IO_WriteOnly | IO_Append)) return false;
 	QTextStream t(&f);
 
 	t<< "=======================================\n";
