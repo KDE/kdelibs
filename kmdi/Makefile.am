@@ -8,6 +8,6 @@ libkmdi_la_SOURCES = kmdichildarea.cpp kmdichildfrm.cpp kmdichildfrmcaption.cpp 
 
 include_HEADERS = kmdichildarea.h kmdichildfrm.h kmdichildfrmcaption.h kmdidefines.h \
                   kmdiiterator.h kmdilistiterator.h kmdimainfrm.h kmdinulliterator.h \
-                  kmditaskbar.h kmdichildview.h
+                  kmditaskbar.h kmdichildview.h kmdidockwidget.h
 
 METASOURCES = AUTO

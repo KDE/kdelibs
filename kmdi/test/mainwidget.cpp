@@ -69,4 +69,4 @@ void MainWidget::resizeEvent( QResizeEvent *pRSE)
    setSysButtonsAtMenuPosition();
 }
 
-void KDockWidget_Compat::KDockMainWindow::virtual_hook(int,void*) {}
+//void KDockWidget_Compat::KDockMainWindow::virtual_hook(int,void*) {}
