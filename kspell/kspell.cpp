@@ -352,7 +352,7 @@ void KSpell::checkWord3 (void)
 char * KSpell::funnyWord (char *word)
 {
   QString qs;
-  unsigned int i;
+  unsigned int i=0;
 
   for (i=0; word [i]!='\0';i++)
     {

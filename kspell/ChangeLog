@@ -1,0 +1,4 @@
+1998-12-08  Alex Zepeda  <garbanzo@hooked.net>
+
+	* kspell.cpp (funnyWord): Initialize loop variable to zero.
+
