@@ -20,6 +20,10 @@
    Boston, MA 02111-1307, USA.
    
    $Log$
+   Revision 1.30  1999/03/09 06:47:13  antlarr
+   Added the getIconPath function that returns the full path to a icon filename and
+   changed loadInternal to use it.
+
    Revision 1.30  1999/03/09 07:40:26  antlarr
    Added the getIconPath function that returns the full path to a icon filename,
    it can be useful for many applications. Changed loadInternal to use it.
@@ -95,6 +99,22 @@
 #include <klocale.h>
 #include <kapp.h>
 }
+void KIconLoader::initPath()
+{
+  // order is important! -- Bernd
+  // higher priority at the end
+
+  addPath( KApplication::kde_toolbardir() );
+  addPath( KApplication::kde_icondir() );
+
+  addPath( KApplication::localkdedir() + "/share/toolbar" ); 
+  addPath( KApplication::localkdedir() + "/share/icons" ); 
+
+  addPath( KApplication::kde_datadir() + "/" + kapp->appName() + "/toolbar" );
+  addPath( KApplication::localkdedir() + "/share/apps/" + kapp->appName() + "/toolbar" ); 
+  addPath( KApplication::kde_datadir() + "/" + kapp->appName() + "/pics" );
+  addPath( KApplication::localkdedir() + "/share/apps/" + kapp->appName() + "/pics" ); 
+
 QPixmap KIconLoader::reloadIcon ( const QString& name, int w, int h ){
 KIconLoader::KIconLoader( KConfig *conf, 
 			  const QString &app_name, const QString &var_name ){
@@ -105,21 +125,10 @@ KIconLoader::KIconLoader( KConfig *conf,
   config->setGroup(app_name);
   config->readListEntry( var_name, list, ':' );
 
-  for (const char* it=list.first(); it; it = list.next())
+  for (const char *it=list.first(); it; it = list.next())
     addPath(it);
 QPixmap KIconLoader::loadMiniIcon ( const QString& name, int w, int h ){
-  // order is important! -- Bernd
-
-  addPath( KApplication::kde_toolbardir() );
-  addPath( KApplication::kde_icondir() );
-  addPath( KApplication::kde_datadir() + "/" + kapp->appName() + "/toolbar" );
-  addPath( KApplication::kde_datadir() + "/" + kapp->appName() + "/pics" );
-
-
-  addPath(KApplication::localkdedir() + "/share/toolbar" ); 
-  addPath(KApplication::localkdedir() + "/share/icons" ); 
-  addPath(KApplication::localkdedir() + "/share/apps/" + kapp->appName() + "/toolbar" ); 
-  addPath(KApplication::localkdedir() + "/share/apps/" + kapp->appName() + "/pics" ); 
+  initPath();
 
   name_list.setAutoDelete(TRUE);
   pixmap_dirs.setAutoDelete(TRUE);
@@ -141,21 +150,10 @@ Stephan: See above
   config->setGroup("KDE Setup");
   config->readListEntry( "IconPath", list, ':' );
 
-  for (const char* it=list.first(); it; it = list.next())
+  for (const char *it=list.first(); it; it = list.next())
     addPath(it);
 
-  // order is important! -- Bernd
-
-  addPath( KApplication::kde_toolbardir() );
-  addPath( KApplication::kde_icondir() );
-  addPath( KApplication::kde_datadir() + "/" + kapp->appName() + "/toolbar" );
-  addPath( KApplication::kde_datadir() + "/" + kapp->appName() + "/pics" );
-
-
-  addPath(KApplication::localkdedir() + "/share/toolbar" ); 
-  addPath(KApplication::localkdedir() + "/share/icons" ); 
-  addPath(KApplication::localkdedir() + "/share/apps/" + kapp->appName() + "/toolbar" ); 
-  addPath(KApplication::localkdedir() + "/share/apps/" + kapp->appName() + "/pics" ); 
+  initPath();
 
   name_list.setAutoDelete(TRUE);
   pixmap_dirs.setAutoDelete(TRUE);
@@ -283,12 +281,10 @@ QString KIconLoader::getIconPath( const QString &name, bool always_valid)
 	++it;
       }
       if ( (always_valid) && (!it.current()) ){
-  // Let's be recursive (but just once at most)
+        // Let's be recursive (but just once at most)
         full_path = getIconPath( "unknown.xpm" , false); 
       }
     }
-
-
     return full_path;
 }
 
@@ -317,7 +313,6 @@ QPixmap KIconLoader::loadInternal ( const QString &name, int w,  int h ){
     }
   }
   else{
-
     pix = pixmap_list.at(index);
   }
   
