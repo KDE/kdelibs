@@ -12,13 +12,13 @@ public class BadApplet extends JApplet {
     JPanel NetworkTests     = new JPanel();
     JPanel EnvironmentTests = new JPanel();
 
-    JButton writeFileButton              = new JButton("Write File");
-    JButton readFileButton                = new JButton("Read File");
-    JButton connectSocketButton    = new JButton("Connect Socket");
-    JButton frameButton                   = new JButton("Open Frame Without Warning Tag");
+    JButton writeFileButton      = new JButton("Write File");
+    JButton readFileButton       = new JButton("Read File");
+    JButton connectSocketButton  = new JButton("Connect Socket");
+    JButton frameButton          = new JButton("Open Frame Without Warning Tag");
     JButton readSystemPropButton = new JButton("Read System Property");
-    JButton printButton                     = new JButton("Print");
-    JButton clipBoardButton             = new JButton("Read Clipboard");
+    JButton printButton          = new JButton("Print");
+    JButton clipBoardButton      = new JButton("Read Clipboard");
 
     JTextField writePath         = new JTextField( "/amd/ns/root/home/sbarnes/test.txt" );
     JTextField readPath          = new JTextField("/amd/ns/root/home/sbarnes/test.txt");

@@ -49,7 +49,7 @@ public class KJASAppletStub extends Frame
         codeBase   = _codeBase;
         docBase    = _docBase;
         appletName = _appletName;
-        className  = _className;
+        className  = _className.replace( '/', '.' );
         appletSize = _appletSize;
         params     = _params;
         windowName = _windowName;
@@ -72,19 +72,22 @@ public class KJASAppletStub extends Frame
                 {
                     active = true;
             	    try
-                	{
-
+                    {
                         panel = new KJASAppletPanel( appletSize );
                         add( "Center", panel );
                         pack();
                 	
+                        synchronized( loader )
+                        {
                 	    appletClass = loader.loadClass( className );
+                        }
                 		
-                		if( appletClass != null )
-                		{
-                		    //this order is very important and took a long time
-                		    //to figure out- don't modify it unless there are
-                		    //real bug fixes
+                        if( appletClass != null )
+                        {
+                            Main.debug( "loaded class, creating applet" );
+                            //this order is very important and took a long time
+                            //to figure out- don't modify it unless there are
+                            //real bug fixes
                             app = (Applet) appletClass.newInstance();
                             app.setStub( me );
                             app.resize( appletSize );
@@ -104,8 +107,7 @@ public class KJASAppletStub extends Frame
                         {
                             panel.add( "Center", new Label( "Applet Failed", Label.CENTER ) );
                         }
-            		}
-            		catch( InstantiationException e )
+            	    }catch( InstantiationException e )
                     {
                         Main.kjas_err( "Could not instantiate applet", e );
                         panel.add( "Center", new Label( "Applet Failed", Label.CENTER ) );
@@ -151,6 +153,7 @@ public class KJASAppletStub extends Frame
          if( runThread.isAlive() )
             Main.debug( "runThread is active when stub is dying" );
 
+        loader.setInactive();
         active = false;
         dispose();
     }

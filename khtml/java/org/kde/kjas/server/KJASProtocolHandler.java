@@ -3,6 +3,7 @@ package org.kde.kjas.server;
 import java.io.*;
 import java.util.*;
 import java.awt.*;
+import java.net.*;
 
 /**
  * Encapsulates the KJAS protocol and manages the contexts
@@ -54,9 +55,18 @@ public class KJASProtocolHandler
                 try
                 {
                     int cmd_length = readPaddedLength( 8 );
+                    Main.debug( "PH: cmd_length = " + cmd_length );
 
+                    //We need to have this while loop since we're not guaranteed to get
+                    //all the bytes we want back, especially with large jars
                     byte[] cmd_data = new byte[cmd_length];
-                    commands.read( cmd_data, 0, cmd_length );
+                    int total_read = 0;
+                    while( total_read < cmd_length )
+                    {
+                        int numread = commands.read( cmd_data, total_read, cmd_length-total_read );
+                        Main.debug( "PH: read in " + numread + " bytes for command" );
+                        total_read += numread;
+                    }
 
                     //parse the rest of the command and execute it
                     processCommand( cmd_data );
@@ -148,7 +158,8 @@ public class KJASProtocolHandler
             Main.debug( "createApplet, context = " + contextID + ", applet = " + appletID );
             Main.debug( "              name = " + appletName + ", classname = " + className );
             Main.debug( "              baseURL = " + baseURL + ", codeBase = " + codeBase );
-            Main.debug( "              archives = " + archives + ", width = " + width + ", height = " + height );
+            Main.debug( "              archives = " + archives + ", width = " + width + 
+                        ", height = " + height );
 
             final KJASAppletContext context = (KJASAppletContext) contexts.get( contextID );
             if( context != null )
@@ -200,8 +211,12 @@ public class KJASProtocolHandler
         else
         if( cmd_code_value == URLDataCode )
         {
+            Main.debug( "URLData recieved" );
+            
             String loaderID = getArg( command );
             String requestedURL = getArg( command );
+            Main.debug( "data is for loader: " + loaderID );
+            Main.debug( "URL is " + requestedURL );
 
             //rest of the command should be the data...
             byte[] data = new byte[ cmd_length - cmd_index ];
@@ -210,7 +225,17 @@ public class KJASProtocolHandler
             KJASAppletClassLoader loader = KJASAppletClassLoader.getLoader( loaderID );
             if( loader != null )
             {
+                Main.debug( "this is a class loader request" );
                 loader.addResource( requestedURL, data );
+            }
+            else //see if there is a context with that ID, could be an image request
+            {
+                KJASAppletContext context = (KJASAppletContext) contexts.get( loaderID );
+                if( context != null )
+                {
+                    Main.debug( "this is  a context request for an image" );
+                    context.addImage( requestedURL, data );
+                }
             }
         }
         else
@@ -222,39 +247,54 @@ public class KJASProtocolHandler
     /**************************************************************
      *****  Methods for talking to the applet server **************
      **************************************************************/
-    public void sendGetURLDataCmd( String loaderID, String url )
+    public void sendGetURLDataCmd( String loaderID, String file )
     {
-        Main.debug( "sendGetURLCmd from loader: " + loaderID + " url = " + url );
-        //length  = length of args plus 1 for code, 2 for seps and 1 for end
-        int length = loaderID.length() + url.length() + 4;
-        char[] chars = new char[ length + 8 ];
-        char[] tmpchar = getPaddedLength( length );
-        int index = 0;
+        Main.debug( "sendGetURLCmd from loader: " + loaderID + " url = " + file );
+        String ID_str = null;
+        String file_str = null;
+        try
+        {
+            ID_str = loaderID;
+            file_str = new URL( new URL(loaderID), file ).toString();
+        } catch( MalformedURLException e ) 
+        {
+            //this is an image request, take the file argument as is
+            ID_str = loaderID;
+            file_str = file;
+        }
+        finally
+        {
+            //length  = length of args plus 1 for code, 2 for seps and 1 for end
+            int length = ID_str.length() + file_str.length() + 4;
+            char[] chars = new char[ length + 8 ];
+            char[] tmpchar = getPaddedLength( length );
+            int index = 0;
 
-        System.arraycopy( tmpchar, 0, chars, index, tmpchar.length );
-        index += tmpchar.length;
-        chars[index++] = (char) GetURLDataCode;
-        chars[index++] = sep;
+            System.arraycopy( tmpchar, 0, chars, index, tmpchar.length );
+            index += tmpchar.length;
+            chars[index++] = (char) GetURLDataCode;
+            chars[index++] = sep;
 
-        tmpchar = loaderID.toCharArray();
-        System.arraycopy( tmpchar, 0, chars, index, tmpchar.length );
-        index += tmpchar.length;
-        chars[index++] = sep;
+                tmpchar = ID_str.toCharArray();
+            System.arraycopy( tmpchar, 0, chars, index, tmpchar.length );
+            index += tmpchar.length;
+            chars[index++] = sep;
 
-        tmpchar = url.toCharArray();
-        System.arraycopy( tmpchar, 0, chars, index, tmpchar.length );
-        index += tmpchar.length;
-        chars[index++] = sep;
+                tmpchar = file_str.toCharArray();
+            System.arraycopy( tmpchar, 0, chars, index, tmpchar.length );
+            index += tmpchar.length;
+            chars[index++] = sep;
 
-        signals.print( chars );
+            signals.print( chars );
+        }
     }
 
-    public void sendShowDocumentCmd( String contextID, String url )
+    public void sendShowDocumentCmd( String loaderKey, String url )
     {
-        Main.debug( "sendShowDocumentCmd from context#" + contextID + " url = " + url );
+        Main.debug( "sendShowDocumentCmd from context#" + loaderKey + " url = " + url );
 
         //length = length of args + 2 for seps + 1 for end + 1 for code
-        int length = contextID.length() + url.length() + 4;
+        int length = loaderKey.length() + url.length() + 4;
         char[] chars = new char[ length + 8 ]; //8 for the length of this message
         char[] tmpchar = getPaddedLength( length );
         int index = 0;
@@ -264,7 +304,7 @@ public class KJASProtocolHandler
         chars[index++] = (char) ShowDocumentCode;
         chars[index++] = sep;
 
-        tmpchar = contextID.toCharArray();
+        tmpchar = loaderKey.toCharArray();
         System.arraycopy( tmpchar, 0, chars, index, tmpchar.length );
         index += tmpchar.length;
         chars[index++] = sep;
@@ -341,7 +381,8 @@ public class KJASProtocolHandler
     public void sendResizeAppletCmd( String contextID, String appletID,
                                      int width, int height )
     {
-        Main.debug( "sendResizeAppletCmd, contextID = " + contextID + ", appletID = " + appletID + ", width = " + width + ", height = " + height );
+        Main.debug( "sendResizeAppletCmd, contextID = " + contextID + ", appletID = " + 
+                    appletID + ", width = " + width + ", height = " + height );
 
         String width_str = String.valueOf( width );
         String height_str = String.valueOf( height );

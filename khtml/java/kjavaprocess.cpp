@@ -135,6 +135,7 @@ void KJavaProcess::storeSize( QByteArray* buff )
 {
     int size = buff->size() - 8;  //subtract out the length of the size_str
     QString size_str = QString("%1").arg( size, 8 );
+    kdDebug(6100) << "KJavaProcess::storeSize, size = " << size_str << endl;
 
     const char* size_ptr = size_str.latin1();
     for( int i = 0; i < 8; i++ )
@@ -165,11 +166,12 @@ void KJavaProcess::send( char cmd_code, const QStringList& args,
 {
     if( isRunning() )
     {
-        QByteArray* buff = addArgs( cmd_code, args );
+        kdDebug(6100) << "KJavaProcess::send, qbytearray is size = " << data.size() << endl;
 
+        QByteArray* buff = addArgs( cmd_code, args );
         int cur_size = buff->size();
-        int data_size = buff->size();
-        buff->resize( buff->size() + data_size );
+        int data_size = data.size();
+        buff->resize( cur_size + data_size );
         memcpy( buff->data() + cur_size, data.data(), data_size );
 
         storeSize( buff );

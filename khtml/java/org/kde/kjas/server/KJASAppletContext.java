@@ -13,6 +13,7 @@ import java.io.*;
 public class KJASAppletContext implements AppletContext
 {
     private Hashtable stubs;
+    private Hashtable images;
 
     private String myID;
     private KJASAppletClassLoader loader;
@@ -23,6 +24,7 @@ public class KJASAppletContext implements AppletContext
     public KJASAppletContext( String _contextID )
     {
         stubs  = new Hashtable();
+        images = new Hashtable();
         myID   = _contextID;
         active = true;
     }
@@ -76,7 +78,7 @@ public class KJASAppletContext implements AppletContext
                 while( parser.hasMoreTokens() )
                 {
                     String jar = parser.nextToken().trim();
-                    loader.addJar( jar );
+                    loader.addArchiveName( jar );
                 }
             }
             loader.paramsDone();
@@ -207,15 +209,40 @@ public class KJASAppletContext implements AppletContext
 
     public AudioClip getAudioClip( URL url )
     {
+        Main.debug( "getAudioClip, url = " + url );
+
         return new KJASSoundPlayer( url );
     }
 
+    public void addImage( String url, byte[] data )
+    {
+        Main.debug( "addImage for url = " + url );
+        images.put( url, data );
+    }
+    
     public Image getImage( URL url )
     {
-        if( active )
+        if( active && url != null )
         {
+            //check with the Web Server        
+            String str_url = url.toString();
+            Main.debug( "getImage, url = " + str_url );
+            Main.protocol.sendGetURLDataCmd( myID, str_url );
+
+            while( !images.containsKey( str_url ) && active )
+        {
+                try { Thread.sleep( 200 ); }
+                catch( InterruptedException e ){}
+            }
+            if( images.containsKey( str_url ) )
+            {
+                byte[] data = (byte[]) images.get( str_url );
+                if( data.length > 0 )
+                {
             Toolkit kit = Toolkit.getDefaultToolkit();
-            return kit.getImage( url );
+                    return kit.createImage( data );
+                } else return null;
+            }
         }
 
         return null;
@@ -223,6 +250,8 @@ public class KJASAppletContext implements AppletContext
 
     public void showDocument( URL url )
     {
+        Main.debug( "showDocument, url = " + url );
+
         if( active && (url != null) )
         {
             Main.protocol.sendShowDocumentCmd( myID, url.toString()  );
@@ -231,9 +260,10 @@ public class KJASAppletContext implements AppletContext
 
     public void showDocument( URL url, String targetFrame )
     {
-        if( active )
+        Main.debug( "showDocument, url = " + url + " targetFrame = " + targetFrame );
+
+        if( active && (url != null) && (targetFrame != null) )
         {
-            if ( ( url != null ) && ( targetFrame != null ) )
                 Main.protocol.sendShowDocumentCmd( myID, url.toString(), targetFrame );
         }
     }

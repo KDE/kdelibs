@@ -106,8 +106,7 @@ public class Main
         try  //Check for the JSSE packages, and install them
         {
             //set this property first
-            System.setProperty("java.protocol.handler.pkgs",
-                               "com.sun.net.ssl.internal.www.protocol");
+            System.setProperty("java.protocol.handler.pkgs", "com.sun.net.ssl.internal.www.protocol");
             if( Security.getProvider( "SunJSSE" ) == null )
             {
                 Class provider = Class.forName("com.sun.net.ssl.internal.ssl.Provider");

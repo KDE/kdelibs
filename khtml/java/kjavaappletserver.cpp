@@ -380,8 +380,8 @@ void KJavaAppletServer::slotJavaRequest( const QByteArray& qb )
 
         case KJAS_GET_URLDATA:
             //here we need to get some data for a class loader and send it back...
-            kdDebug(6100) << "GetURLData from classloader: "<< args[0]
-                          << " for url: " << args[1] << endl;
+            kdDebug(6100) << "GetURLData from classloader: "<< contextID
+                          << " for url: " << args[0] << endl;
             break;
 
         default:
@@ -391,7 +391,7 @@ void KJavaAppletServer::slotJavaRequest( const QByteArray& qb )
 
     if( cmd_code == KJAS_GET_URLDATA )
     {
-        new KJavaDownloader( args[0], args[1] );
+        new KJavaDownloader( contextID, args[0] );
     }
     else
     {

@@ -4,7 +4,9 @@ import java.net.*;
 import java.io.*;
 import java.util.*;
 import java.util.zip.*;
+import java.util.jar.*;
 import java.security.*;
+
 
 /**
  * ClassLoader used to download and instantiate Applets.
@@ -12,119 +14,72 @@ import java.security.*;
  * NOTE: The class loader extends Java 1.2 specific class.
  */
 public class KJASAppletClassLoader
-    extends URLClassLoader
+    extends SecureClassLoader
 {
     private static Hashtable loaders = new Hashtable();
     public static KJASAppletClassLoader getLoader( String docBase, String codeBase )
     {
-        String key = docBase + codeBase;
-        Main.debug( "CL: getLoader: key = " + key );
-
-        KJASAppletClassLoader loader = (KJASAppletClassLoader) loaders.get( key );
-        if( loader == null )
+        URL docBaseURL;
+        KJASAppletClassLoader loader = null;
+        try
         {
-            loader = new KJASAppletClassLoader( docBase, codeBase );
-            loaders.put( key, loader );
-        }
-        else
-        {
-            Main.debug( "CL: reusing classloader" );
-        }
+            docBaseURL = new URL( docBase );
+        
+            URL key = getCodeBaseURL( docBaseURL, codeBase );
+            Main.debug( "CL: getLoader: key = " + key );
 
+            loader = (KJASAppletClassLoader) loaders.get( key.toString() );
+            if( loader == null )
+            {
+                loader = new KJASAppletClassLoader( docBaseURL, key );
+                loaders.put( key.toString(), loader );
+            }
+            else
+            {
+                Main.debug( "CL: reusing classloader" );
+                loader.setActive();
+            }
+        } catch( MalformedURLException e ) { Main.kjas_err( "bad DocBase URL", e ); }
         return loader;
     }
 
-    public static KJASAppletClassLoader getLoader( String key )
+    public static URL getCodeBaseURL( URL docBaseURL, String codeBase )
     {
-        if( loaders.containsKey( key ) )
-        {
-            return (KJASAppletClassLoader) loaders.get( key );
-        }
-        else
-        {
-            return null;
-        }
-    }
-
-    private URL docBaseURL  = null;
-    private URL codeBaseURL = null;
-    private Vector archives = null;
-    private String key;
-    public KJASAppletClassLoader( String docBase, String codeBase )
-    {
-        super( new URL[0] );
-        key = docBase + codeBase;
-        archives = new Vector();
-        Main.debug( "CL: Creating classloader with docBase = " + docBase +
-                    " and codeBase = " + codeBase );
-
+        URL codeBaseURL = null;
         try
         {
             //first determine what the real codeBase is: 3 cases
             //#1. codeBase is absolute URL- use that
             //#2. codeBase is relative to docBase, create url from those
             //#3. last resort, use docBase as the codeBase
-            try
-            {
-                docBaseURL = new URL( docBase );
-            }
-            catch ( MalformedURLException mue )
-            {
-            	Main.kjas_err( "CL: Invalid Document Base = " + docBase, mue );
-                return;
-            }
-
             if(codeBase != null)
             {
                 //we need to do this since codeBase should be a directory
-                //and URLclassLoader assumes anything without a / on the end
-                //is a jar file
                 if( !codeBase.endsWith("/") )
                     codeBase = codeBase + "/";
 
                 try
                 {
                     codeBaseURL = new URL( codeBase );
-                    Main.debug( "CL: codeBaseURL is codeBase" );
                 } catch( MalformedURLException mue )
                 {
                     try
                     {
                         codeBaseURL = new URL( docBaseURL, codeBase );
-                        Main.debug( "CL: codeBaseURL is docBaseURL + codeBase" );
                     } catch( MalformedURLException mue2 ) {}
                 }
             }
 
             if(codeBaseURL == null)
             {
-                // codeBaseURL can not be null. This should not happen,
-                // but if it does we fall back to document base
-                // we do need to make sure that the docBaseURL is fixed if
-                // it is something like http://www.foo.com/foo.asp
-                // It's got to be a directory.....
+                //fall back to docBase but fix it up...
                 String file = docBaseURL.getFile();
-                if( file == null )
-                {
-                	Main.debug( "CL: codeBaseURL = docBaseURL with no modifications, no file part of URL" );
+                if( file == null || (file.length() == 0)  )
                     codeBaseURL = docBaseURL;
-                }
-                else
-                if( file.length() == 0 )
-                {
-	                Main.debug( "CL: codeBaseURL = docBaseURL with no modifications, no file part of URL" );
+                else if( file.endsWith( "/" ) )
                     codeBaseURL = docBaseURL;
-                }
-                else
-                if( file.endsWith( "/" ) )
-                {
-                	Main.debug( "CL: codeBaseURL = docBaseURL, with no modifications, file part ends with /" );
-                    codeBaseURL = docBaseURL;
-                }
                 else
                 {
-                	Main.debug( "CL: codeBaseURL = docBaseURL with modifications, deleting up to last /" );
-
                     //delete up to the ending '/'
                     String urlString = docBaseURL.toString();
                     int dot_index = urlString.lastIndexOf( '/' );
@@ -132,45 +87,156 @@ public class KJASAppletClassLoader
                     codeBaseURL = new URL( newfile );
                 }
             }
+        }catch( Exception e ) { Main.kjas_err( "CL: exception ", e ); }
+        return codeBaseURL;    
+    }
 
-            Main.debug( "CL: Finally, codeBaseURL = " + codeBaseURL );
-        }catch( Exception e )
-        {
-            Main.kjas_err( "CL: excpetion ", e );
-        }
+    public static KJASAppletClassLoader getLoader( String key )
+    {
+        if( loaders.containsKey( key ) )
+            return (KJASAppletClassLoader) loaders.get( key );
+        
+        return null;
+    }
+
+    /*********************************************************************************
+     ****************** KJASAppletClassLoader Implementation *************************
+     **********************************************************************************/
+    private URL docBaseURL;
+    private URL codeBaseURL;
+    private Vector archives;
+    private Hashtable rawdata;
+    private Hashtable certificates;
+    private boolean archives_loaded;
+    private int archive_count;
+    private String dbgID;
+    private boolean active;
+    
+    public KJASAppletClassLoader( URL _docBaseURL, URL _codeBaseURL )
+    {
+        docBaseURL   = _docBaseURL;
+        codeBaseURL  = _codeBaseURL;
+        archives     = new Vector();
+        rawdata      = new Hashtable();
+        certificates = new Hashtable();
+        
+        archives_loaded = false;
+        archive_count   = 0;
+        active          = true;
+        
+        dbgID = "CL(" + codeBaseURL.toString() + "): ";
+    }
+
+    public void setActive()
+    {
+        active = true;
+    }
+
+    public void setInactive()
+    {
+        active = false;
     }
 
     public void paramsDone()
     {
-        super.addURL( codeBaseURL );
+        //if we have archives, send download requests
+        if( archives.size() > 0 )
+        {
+            if( !archives_loaded )
+            {
+                for( int i = 0; i < archives.size(); ++i )
+                {
+                    String tmp = (String)archives.elementAt( i );
+                    Main.protocol.sendGetURLDataCmd( codeBaseURL.toString(), tmp );
+                }
+            }
+        }
+        else archives_loaded = true;
     }
 
-    public String getKey()
+    public void addArchiveName( String jarname )
     {
-        return key;
-    }
-
-    public void addJar( String jarname )
-    {
-        if( archives.contains( jarname ) )
-            return;
-        else
+        if( !archives.contains( jarname ) )
+        {
             archives.add( jarname );
-
-        try
-        {
-            URL newurl = new URL( codeBaseURL, jarname );
-            addURL( newurl );
-        }
-        catch ( MalformedURLException e )
-        {
-            Main.kjas_err( "CL: bad url creation: " + e, e );
+            archives_loaded = false;
         }
     }
-
+    
     public void addResource( String url, byte[] data )
     {
-        Main.debug( "CL: addResource for url: " + url );
+        Main.debug( dbgID + "addResource for url: " + url + ", size of data = " + data.length );
+        String res = url.substring( codeBaseURL.toString().length() ).replace( '/', '.' );
+
+        if( archives.size() > 0 && !res.endsWith( ".class" ) )
+        {   //if we have archives, it's an archive( i think )
+        try
+            {
+                JarInputStream jar = new JarInputStream( new ByteArrayInputStream( data ) );
+                JarEntry entry;
+                while( (entry = jar.getNextJarEntry()) != null )
+                {
+                    //skip directories...
+                    if( entry.isDirectory() )
+                        continue;
+
+                    String entryName = entry.getName().replace('/','.');
+                    int    entrySize = (int) entry.getSize();
+                    Main.debug( dbgID + "reading ZipEntry, name = " + entryName + ", size = " + entrySize );
+
+                    int numread = 0;
+                    int total = 0;
+                    byte[] entryData = new byte[0];
+                    while( numread > -1 )
+        {
+                        byte[] curr = new byte[1024];
+                        numread = jar.read( curr, 0, 1024 );
+                        if( numread == -1 )
+                            break;
+
+                        byte[] old = entryData;
+                        entryData = new byte[ old.length + numread];
+                       // Main.debug( "old.length = " + old.length );
+                        if( old.length > 0 )
+                            System.arraycopy( old, 0, entryData, 0, old.length );
+                        System.arraycopy( curr, 0, entryData, old.length, numread );
+
+                        total += numread;
+                    }
+
+                    byte[] old = entryData;
+                    entryData = new byte[ total ];
+                    System.arraycopy( old, 0, entryData, 0, total );
+                    rawdata.put( entryName, entryData );
+
+                    java.security.cert.Certificate[] c = entry.getCertificates();
+                    if( c == null )
+                    {
+                        c = new java.security.cert.Certificate[0];
+                        Main.debug( "making a dummy certificate array" );
+                    } else Main.debug( "got some real certificates with archive" );
+                    certificates.put( entryName, c );
+        }
+            }
+            catch( IOException e )
+        {
+                Main.kjas_err( "Problem reading resource", e );
+        }
+            finally
+            {
+                if( (++archive_count) == archives.size() )
+                {
+                    Main.debug( dbgID + "all archives loaded" );
+                    archives_loaded = true;
+    }
+            }
+        }
+        else
+    {
+            String resName = url.substring( codeBaseURL.toString().length() ).replace( '/', '.' );
+            Main.debug( dbgID + "resource isn't a jar, putting it straight in with name = " + resName );
+            rawdata.put( resName, data );
+    }
     }
 
     public URL getDocBase()
@@ -184,33 +250,115 @@ public class KJASAppletClassLoader
     }
 
     /***************************************************************************
-     * Class Loading Methods
+     **** Class Loading Methods
      **************************************************************************/
-    public Class loadClass( String name )
+    public Class findClass( String name )
     {
-        //We need to be able to handle foo.class, so strip off the suffix
-        if( name.endsWith( ".class" ) )
-        {
-            name = name.substring( 0, name.lastIndexOf( ".class" ) );
-        }
-
-        //try to load it with the parent first...
+        Class rval;
+        
         try
         {
-            return super.loadClass( name );
-        }
-        catch( ClassNotFoundException e )
+            //check for a system class
+            rval = findSystemClass( name );
+            if( rval != null )
+                return rval;
+        } catch (ClassNotFoundException e )
         {
-            Main.kjas_err( "CL: Couldn't load class: " + name, e );
-            return null;
+            //check the loaded classes 
+            rval = findLoadedClass( name );
+            if( rval != null )
+                return rval;
+
+            //check in the archives
+            String fixed_name = name + ".class";
+            while( !archives_loaded && active )
+            {
+                Main.debug( dbgID + "archives not loaded yet, sleeping" );
+                try { Thread.sleep( 200 ); }
+                catch( InterruptedException te ) {}
+            }
+            if( rawdata.containsKey( fixed_name ) )
+            {
+                Main.debug( dbgID + "class is in our rawdata table" );
+                byte[] data = (byte[]) rawdata.get( fixed_name );
+                if( data.length > 0 )
+                {
+                    java.security.cert.Certificate[] c = 
+                        (java.security.cert.Certificate[])certificates.get( fixed_name );
+                    CodeSource cs = new CodeSource( codeBaseURL, c );
+                    rval = defineClass( name, data, 0, data.length, cs );
+                    return rval;
+                } else return null;
+            }
+
+            //check from the webserver...
+            Main.debug( dbgID + "now checking the webserver" );
+            String new_name = name.replace( '.', '/' );
+            new_name += ".class";
+            Main.protocol.sendGetURLDataCmd( codeBaseURL.toString(), new_name );
+
+            //now wait until we get an answer
+            while( !rawdata.containsKey( fixed_name ) && active )
+            {
+                Main.debug( dbgID + "waiting for the webserver to answer for class: " + new_name );
+                try { Thread.sleep( 200 ); } 
+                catch( InterruptedException ie ) {}
+            }
+            if( rawdata.containsKey( fixed_name ) )
+            {
+                byte[] data = (byte[]) rawdata.get( fixed_name );
+                if( data.length > 0 )
+            {
+                    Main.debug( "we got the data" );
+                    CodeSource cs = new CodeSource( codeBaseURL, new java.security.cert.Certificate[0] );
+                    rval = defineClass( name, data, 0, data.length, cs );
+                    return rval;
+                } else return null;
+            }
         }
-        catch( ClassFormatError e )
+        
+        Main.debug( "CL: findClass returning null" );
+            return null;
+    }
+    
+    public Class loadClass( String name )
+    {
+        Main.debug( dbgID + "loadClass, class name = " + name );
+        //We need to be able to handle foo.class, so strip off the suffix
+        String fixed_name = name;
+        Class rval = null;
+        if( name.endsWith( ".class" ) )
         {
-            Main.kjas_err( "CL: Class format error for " + name, e );
-            return null;
+            fixed_name = name.substring( 0, name.lastIndexOf( ".class" ) );
         }
+
+        rval = findClass( fixed_name );
+        return rval;
     }
 
+    public InputStream getResourceAsStream( String name )
+    {
+        Main.debug( dbgID + "getResourceAsStream, name = " + name );
+        
+        String res = name.replace( '/', '.' );
+        if( rawdata.containsKey( res ) )
+        {
+            byte[] data = (byte[]) rawdata.get( res );
+            if( data.length > 0 )
+            {
+                return new ByteArrayInputStream( data );
+            } else return null;
+        }
+        
+        return super.getResourceAsStream( name );
+    }
+    
+    public URL getResource( String name )
+    {
+        Main.debug( dbgID + "getResource, name = " + name );
+        return super.getResource( name );
+    }
+    
     /***************************************************************************
      * Security Manager stuff
      **************************************************************************/
@@ -260,4 +408,14 @@ public class KJASAppletClassLoader
         return perms;
     }
 
+    private void dump2File( String filename, byte[] data )
+    {
+        Main.debug( "dump2File: " + filename );
+        try
+        {
+            FileOutputStream output = new FileOutputStream( filename );
+            output.write( data );
+            output.close();
+        }catch( IOException e ){}
+    }
 }

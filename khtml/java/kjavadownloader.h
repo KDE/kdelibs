@@ -46,7 +46,7 @@ public:
 
 protected slots:
     void slotData( KIO::Job*, const QByteArray& );
-    void slotFinished();
+    void slotResult( KIO::Job* );
 
 private:
     KJavaDownloaderPrivate* d;
