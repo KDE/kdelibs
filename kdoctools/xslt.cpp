@@ -79,9 +79,10 @@ int writeToQString(void * context, const char * buffer, int len)
     return len;
 }
 
-void closeQString(void * context) {
+int closeQString(void * context) {
     QString *t = (QString*)context;
     *t += QString::fromLatin1("\n");
+    return 0;
 }
 
 QString transform( const QString &pat, const QString& tss)
