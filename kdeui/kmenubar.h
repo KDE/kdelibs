@@ -72,24 +72,33 @@ public:
      */
     bool isTopLevelMenu() const;
 
-    virtual void setGeometry( const QRect &r ) { QMenuBar::setGeometry( r ); }
-    virtual void        setGeometry( int x, int y, int w, int h );
+    // TT are overloading virtuals :(
+    virtual void setGeometry( const QRect &r ) { setGeometry( r.x(), r.y(), r.width(), r.height()); }
+    virtual void setGeometry( int x, int y, int w, int h );
+    virtual void resize( int w, int h );
+    void resize( const QSize& s ) { resize( s.width(), s.height()); }
 
     virtual void show();
+    virtual void setFrameStyle( int );
+    virtual void setLineWidth( int );
+    virtual void setMargin( int );
 protected slots:
     void slotReadConfig();
-
 protected:
-    void showEvent( QShowEvent* );
-    void resizeEvent( QResizeEvent* );
-    bool eventFilter(QObject *, QEvent *);
-
+    virtual void showEvent( QShowEvent* );
+    virtual void resizeEvent( QResizeEvent* );
+    virtual bool eventFilter(QObject *, QEvent *);
+    virtual bool x11Event( XEvent* );
+private slots:
+    void updateFallbackSize();
+    void selectionTimeout();
+private:
+    void setTopLevelMenuInternal(bool top_level);
+    void checkResizingToParent( int& w, int& h );
+    static bool block_resize;
 protected:
     virtual void virtual_hook( int id, void* data );
-private slots:
-    void updateKMenubarSize();
 private:
-    void setTopLevelMenuInternal(bool top_level = true);
     class KMenuBarPrivate;
     KMenuBarPrivate *d;
 };
