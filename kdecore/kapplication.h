@@ -338,6 +338,25 @@ public:
 			ShutdownMode sdmode = ShutdownModeDefault );
 
   /**
+   * Execute a KDM remote control command.
+   * @param cmd the command to execute. FIXME: undocumented yet.
+   *  If NULL, close the socket passed in @p fd only.
+   * @param ret the result buffer. If NULL, a local buffer will be used.
+   * @param fd a pointer to the socket's file descriptor.
+   *  @li If NULL, a socket will be opened for this command only.
+   *  @li If *fd < 0, open a new socket and store it in *fd.
+   *  @li If *fd >= 0, use that socket.
+   * @return result:
+   *  @li If true, the command was successfully executed.
+   *   @p ret might contain addional results.
+   *  @li If false and @p ret is empty, a communication error occurred
+   *   (most probably KDM is not running).
+   *  @li If false and @p ret is non-empty, it contains the error message
+   *   from KDM.
+   */
+  static bool kdmExec( const char *cmd, QCString *ret = 0, int *fd = 0 );
+
+  /**
    * Propagates the network address of the session manager in the
    * SESSION_MANAGER environment variable so that child processes can
    * pick it up.

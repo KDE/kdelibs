@@ -86,6 +86,8 @@
 #include <sys/stat.h>
 #endif
 #include <sys/wait.h>
+#include <sys/socket.h>
+#include <sys/un.h>
 
 #include "kwin.h"
 
@@ -1064,6 +1066,73 @@ bool KApplication::requestShutDown(
     // FIXME(E): Implement for Qt Embedded
     return false;
 #endif
+}
+
+bool KApplication::kdmExec( const char *cmd, QCString *buf, int *fdp )
+{
+    static char *ctl, *dpy;
+    char *ptr;
+    int fd, tl;
+    unsigned len = 0;
+    bool ret = false;
+    struct sockaddr_un sa;
+    QCString lbuf;
+
+    if (!cmd) {
+        if (fdp && *fdp >= 0) {
+            ::close( *fdp );
+            *fdp = -1;
+        }
+        return true;
+    }
+    if (!buf)
+        buf = &lbuf;
+    if (!fdp || (fd = *fdp) < 0) {
+        if (!dpy && !(dpy = ::getenv( "DISPLAY" )))
+            return false;
+        if (!ctl && !(ctl = ::getenv( "DM_CONTROL" )))
+            return false;
+        if ((fd = ::socket( PF_UNIX, SOCK_STREAM, 0 )) < 0)
+            return false;
+        sa.sun_family = AF_UNIX;
+        if ((ptr = strchr( dpy, ':' )))
+            ptr = strchr( ptr, '.' );
+        snprintf( sa.sun_path, sizeof(sa.sun_path),
+                  "%s/dmctl-%.*s/socket", ctl, ptr ? ptr - dpy : 512, dpy );
+        if (::connect( fd, (struct sockaddr *)&sa, sizeof(sa) ))
+            goto bust;
+    }
+    if (::write( fd, cmd, (tl = strlen( cmd )) ) != tl) {
+      bust:
+        if (fdp)
+            *fdp = -1;
+        ::close( fd );
+        buf->resize( 0 );
+        return false;
+    }
+    for (;;) {
+        if (buf->size() < 128)
+            buf->resize( 128 );
+        else if (buf->size() < len * 2)
+            buf->resize( len * 2 );
+        if ((tl = ::read( fd, buf->data() + len, buf->size() - len)) <= 0) {
+            if (tl < 0 && errno == EINTR)
+                continue;
+            goto bust;
+        }
+        len += tl;
+        if ((*buf)[len - 1] == '\n') {
+            (*buf)[len - 1] = 0;
+            if (len > 2 && (*buf)[0] == 'o' && (*buf)[1] == 'k' && (*buf)[2] < 32)
+                ret = true;
+            break;
+        }
+    }
+    if (fdp)
+        *fdp = fd;
+    else
+        ::close( fd );
+    return ret;
 }
 
 void KApplication::propagateSessionManager()
