@@ -38,23 +38,33 @@ void kDrawBeButton(QPainter *p, int x, int y, int w, int h,
     p->setPen(g.dark());
     p->drawRect(x, y, w, h);
 
-    p->setPen(sunken? g.mid() : g.light());
-    p->drawLine(x+2, y+2, x2-1, y+2);
-    p->drawLine(x+2, y+3, x2-2, y+3);
-    p->drawLine(x+2, y+4, x+2, y2-1);
-    p->drawLine(x+3, y+4, x+3, y2-2);
+    if(!sunken){
+        p->setPen(g.light());
+        p->drawLine(x+2, y+2, x2-1, y+2);
+        p->drawLine(x+2, y+3, x2-2, y+3);
+        p->drawLine(x+2, y+4, x+2, y2-1);
+        p->drawLine(x+3, y+4, x+3, y2-2);
+    }
+    else{
+        p->setPen(g.mid());
+        p->drawLine(x+2, y+2, x2-1, y+2);
+        p->drawLine(x+2, y+3, x2-2, y+3);
+        p->drawLine(x+2, y+4, x+2, y2-1);
+        p->drawLine(x+3, y+4, x+3, y2-2);
+    }
+
 
     p->setPen(sunken? g.light() : g.mid());
     p->drawLine(x2-1, y+2, x2-1, y2-1);
     p->drawLine(x+2, y2-1, x2-1, y2-1);
-    
-    p->setPen(g.button());
+
+    p->setPen(g.mid());
     p->drawLine(x+1, y+1, x2-1, y+1);
     p->drawLine(x+1, y+2, x+1, y2-1);
     p->drawLine(x2-2, y+3, x2-2, y2-2);
 
-    p->fillRect(x+4, y+4, w-6, h-6, fill ? *fill :
-                g.brush(QColorGroup::Button));
+    if(fill)
+        p->fillRect(x+4, y+4, w-6, h-6, *fill);
     
     p->setPen(oldPen);
 }

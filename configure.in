@@ -238,6 +238,7 @@ AC_OUTPUT(Makefile \
 	kstyles/coldions/Makefile \
 	kstyles/stepplugin/Makefile \
 	kstyles/pillbox/Makefile \
+	kstyles/b2plugin/Makefile \
 	kstyles/utils/Makefile \
 	kstyles/utils/settheme/Makefile \
 	kstyles/themes/Makefile \
