@@ -43,7 +43,8 @@ Object_skel *ObjectManager::create(string name)
 	for(i = factories.begin();i != factories.end(); i++)
 	{
 		Factory *f = *i;
-		if(f->interfaceName() == name) return f->createInstance();
+		if(f->interfaceName() == name + "_base") return f->createInstance();
+		if(f->interfaceName() == name ) return f->createInstance();
 	}
 
 	/* second try: look if there is a suitable extension we could load */
@@ -60,10 +61,15 @@ Object_skel *ObjectManager::create(string name)
 			for(i = factories.begin();i != factories.end(); i++)
 			{
 				Factory *f = *i;
+//				cerr << "Found interfaceName: " << f->interfaceName() << endl;
+				if(f->interfaceName() == name + "_base") return f->createInstance();
 				if(f->interfaceName() == name) return f->createInstance();
 			}
 		}
-		else delete e;
+		else {
+			cerr << "MCOP ObjectManager: warning: Could not load extension " << library << endl;
+			delete e;
+		}
 	}
 	cerr << "MCOP ObjectManager: warning: can't find implementation for " << name << endl;
 	return 0;

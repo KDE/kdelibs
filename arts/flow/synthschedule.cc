@@ -330,7 +330,7 @@ void StdScheduleNode::accessModule()
 {
 	if(module) return;
 
-	module = (SynthModule *)_object->_cast("SynthModule");
+	module = (SynthModule_base *)_object->_cast("SynthModule_base");
 	if(!module)
 	{
 		cerr << "Only SynthModule derived classes should carry streams."
@@ -758,8 +758,8 @@ AttributeType StdFlowSystem::queryFlags(Object* node, const std::string& port)
 	return sn->queryFlags(port);
 }
 
-FlowSystemReceiver *StdFlowSystem::createReceiver(Object *object,
-							const string &port, FlowSystemSender *sender)
+FlowSystemReceiver_base *StdFlowSystem::createReceiver(Object *object,
+							const string &port, FlowSystemSender_base *sender)
 {
 	StdScheduleNode *sn =
 		(StdScheduleNode *)object->_node()->cast("StdScheduleNode");

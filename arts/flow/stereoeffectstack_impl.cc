@@ -91,7 +91,7 @@ public:
 		reconnect();
 	}
 
-	long insertTop(StereoEffect* effect, const string& name)
+	long insertTop(StereoEffect_base* effect, const string& name)
 	{
 		disconnect();
 		EffectEntry *e = new EffectEntry();
@@ -102,7 +102,7 @@ public:
 		reconnect();
 		return e->id;
 	}
-	long insertBottom(StereoEffect* effect, const string& name)
+	long insertBottom(StereoEffect_base* effect, const string& name)
 	{
 		disconnect();
 		EffectEntry *e = new EffectEntry();

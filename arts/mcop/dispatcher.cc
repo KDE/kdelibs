@@ -113,7 +113,7 @@ Dispatcher::Dispatcher(IOManager *ioManager, StartServer startServer)
 	string globalCommName
 			= MCOPUtils::readConfigEntry("GlobalComm","TmpGlobalComm");
 
-	_globalComm = GlobalComm::_create(globalCommName);
+	_globalComm = GlobalComm_base::_create(globalCommName+"_base");
 
 	// --- initialize MD5auth ---
 	/*
@@ -209,7 +209,7 @@ Dispatcher::~Dispatcher()
 	_instance = 0;
 }
 
-InterfaceRepo *Dispatcher::interfaceRepo()
+InterfaceRepo_base *Dispatcher::interfaceRepo()
 {
 	return _interfaceRepo;
 }
@@ -220,7 +220,7 @@ FlowSystem_impl *Dispatcher::flowSystem()
 	return _flowSystem;
 }
 
-GlobalComm *Dispatcher::globalComm()
+GlobalComm_base *Dispatcher::globalComm()
 {
 	assert(_globalComm);
 	return _globalComm;

@@ -1,8 +1,7 @@
     /*
 
-    Copyright (C) 1999 Stefan Westerfeld
-                       stefan@space.twc.de
-    Modified by Nicolas Brodu, nicolas.brodu@free.fr
+    Copyright (C) 1999 Stefan Westerfeld stefan@space.twc.de
+                       Nicolas Brodu, brodu@kde.org
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -24,22 +23,40 @@
 
     */
 
-#ifndef HELLO_IMPL_H
-#define HELLO_IMPL_H
-
 #include "hello.h"
+#include <iostream.h>
 
-class Hello_impl : virtual public Hello_skel {
-private:
-	long myvalue;
-public:
-	long myValue();
-	void myValue(long newValue);
-	void constructor(long i);
-	void hello(const string& s);
-	string concat(const string& s1, const string& s2);
-	long sum(long a);
-	long total();
-};
+int main()
+{
+	Dispatcher dispatcher;
+	
+	// Just use plain C++!
+	Hello server;
+	server.hello("server");
 
-#endif /* HELLO_IMPL_H */
+	// creation from MCOP reference
+	Hello client( Reference( server.toString() ) );
+	if (!client.isNull()) client.hello("local test");
+
+	// using a constructor	
+	Hello hint(3);
+	cout << hint.myValue() << endl;
+	
+	// Can copy (or here copy constructor) the objects
+	Hello hcopy = hint;
+	hcopy.sum(5);
+	hcopy.total();
+	
+	// dynamic creation is OK
+	Hello* dyn = new Hello;
+	cout << dyn->concat("I am"," a dynamic hello") << endl;
+	delete dyn;
+
+	// The old CORBA-like syntax is still accepted
+	Hello_var hh = Hello_base::_create();
+	hh->hello("created");
+
+//	dispatcher.run();
+	return 0;
+	
+}

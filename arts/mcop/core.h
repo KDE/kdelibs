@@ -277,13 +277,13 @@ public:
 	void writeType(Buffer& stream) const;
 };
 
-class InterfaceRepo : virtual public Object {
+class InterfaceRepo_base : virtual public Object {
 public:
-	static InterfaceRepo *_create(const std::string& subClass = "InterfaceRepo");
-	static InterfaceRepo *_fromString(std::string objectref);
-	static InterfaceRepo *_fromReference(ObjectReference ref, bool needcopy);
+	static InterfaceRepo_base *_create(const std::string& subClass = "InterfaceRepo_base");
+	static InterfaceRepo_base *_fromString(std::string objectref);
+	static InterfaceRepo_base *_fromReference(ObjectReference ref, bool needcopy);
 
-	inline InterfaceRepo *_copy() {
+	inline InterfaceRepo_base *_copy() {
 		assert(_refCnt > 0);
 		_refCnt++;
 		return this;
@@ -295,9 +295,9 @@ public:
 	virtual TypeDef* queryType(const std::string& name) = 0;
 };
 
-typedef ReferenceHelper<InterfaceRepo> InterfaceRepo_var;
+typedef ReferenceHelper<InterfaceRepo_base> InterfaceRepo_var;
 
-class InterfaceRepo_stub : virtual public InterfaceRepo, virtual public Object_stub {
+class InterfaceRepo_stub : virtual public InterfaceRepo_base, virtual public Object_stub {
 protected:
 	InterfaceRepo_stub();
 
@@ -310,7 +310,7 @@ public:
 	TypeDef* queryType(const std::string& name);
 };
 
-class InterfaceRepo_skel : virtual public InterfaceRepo, virtual public Object_skel {
+class InterfaceRepo_skel : virtual public InterfaceRepo_base, virtual public Object_skel {
 public:
 	InterfaceRepo_skel();
 
@@ -321,13 +321,38 @@ public:
 	void dispatch(Buffer *request, Buffer *result,long methodID);
 };
 
-class FlowSystemSender : virtual public Object {
-public:
-	static FlowSystemSender *_create(const std::string& subClass = "FlowSystemSender");
-	static FlowSystemSender *_fromString(std::string objectref);
-	static FlowSystemSender *_fromReference(ObjectReference ref, bool needcopy);
+#include "reference.h"
 
-	inline FlowSystemSender *_copy() {
+class InterfaceRepo  {
+protected:
+	inline InterfaceRepo(const InterfaceRepo*) {}
+	InterfaceRepo_var redirect;
+
+public:
+	inline InterfaceRepo() {redirect = InterfaceRepo_base::_create();}
+	inline InterfaceRepo(const SubClass &s) {redirect = InterfaceRepo_base::_create(s.string());}
+	inline InterfaceRepo(const Reference &r) {redirect = r.isString()?(InterfaceRepo_base::_fromString(r.string())):(InterfaceRepo_base::_fromReference(r.reference(),true));}
+	inline InterfaceRepo(const InterfaceRepo& target) {redirect = target.redirect->_copy();}
+	inline InterfaceRepo& operator=(const InterfaceRepo& target) {redirect = target.redirect->_copy(); return *this;}
+	inline InterfaceRepo(const InterfaceRepo_var& target) {redirect = target->_copy();}
+	inline InterfaceRepo& operator=(const InterfaceRepo_var& target) {redirect = target->_copy(); return *this;}
+	inline std::string toString() {return redirect->_toString();}
+	inline operator InterfaceRepo_var&() {return redirect;}
+	inline bool isNull() {return (InterfaceRepo_base*)redirect==0;}
+
+	inline long insertModule(const ModuleDef& newModule) {return redirect->insertModule(newModule);}
+	inline void removeModule(long moduleID) {return redirect->removeModule(moduleID);}
+	inline InterfaceDef* queryInterface(const std::string& name) {return redirect->queryInterface(name);}
+	inline TypeDef* queryType(const std::string& name) {return redirect->queryType(name);}
+};
+
+class FlowSystemSender_base : virtual public Object {
+public:
+	static FlowSystemSender_base *_create(const std::string& subClass = "FlowSystemSender_base");
+	static FlowSystemSender_base *_fromString(std::string objectref);
+	static FlowSystemSender_base *_fromReference(ObjectReference ref, bool needcopy);
+
+	inline FlowSystemSender_base *_copy() {
 		assert(_refCnt > 0);
 		_refCnt++;
 		return this;
@@ -336,9 +361,9 @@ public:
 	virtual void processed() = 0;
 };
 
-typedef ReferenceHelper<FlowSystemSender> FlowSystemSender_var;
+typedef ReferenceHelper<FlowSystemSender_base> FlowSystemSender_var;
 
-class FlowSystemSender_stub : virtual public FlowSystemSender, virtual public Object_stub {
+class FlowSystemSender_stub : virtual public FlowSystemSender_base, virtual public Object_stub {
 protected:
 	FlowSystemSender_stub();
 
@@ -348,7 +373,7 @@ public:
 	void processed();
 };
 
-class FlowSystemSender_skel : virtual public FlowSystemSender, virtual public Object_skel {
+class FlowSystemSender_skel : virtual public FlowSystemSender_base, virtual public Object_skel {
 public:
 	FlowSystemSender_skel();
 
@@ -359,13 +384,35 @@ public:
 	void dispatch(Buffer *request, Buffer *result,long methodID);
 };
 
-class FlowSystemReceiver : virtual public Object {
-public:
-	static FlowSystemReceiver *_create(const std::string& subClass = "FlowSystemReceiver");
-	static FlowSystemReceiver *_fromString(std::string objectref);
-	static FlowSystemReceiver *_fromReference(ObjectReference ref, bool needcopy);
+#include "reference.h"
 
-	inline FlowSystemReceiver *_copy() {
+class FlowSystemSender  {
+protected:
+	inline FlowSystemSender(const FlowSystemSender*) {}
+	FlowSystemSender_var redirect;
+
+public:
+	inline FlowSystemSender() {redirect = FlowSystemSender_base::_create();}
+	inline FlowSystemSender(const SubClass &s) {redirect = FlowSystemSender_base::_create(s.string());}
+	inline FlowSystemSender(const Reference &r) {redirect = r.isString()?(FlowSystemSender_base::_fromString(r.string())):(FlowSystemSender_base::_fromReference(r.reference(),true));}
+	inline FlowSystemSender(const FlowSystemSender& target) {redirect = target.redirect->_copy();}
+	inline FlowSystemSender& operator=(const FlowSystemSender& target) {redirect = target.redirect->_copy(); return *this;}
+	inline FlowSystemSender(const FlowSystemSender_var& target) {redirect = target->_copy();}
+	inline FlowSystemSender& operator=(const FlowSystemSender_var& target) {redirect = target->_copy(); return *this;}
+	inline std::string toString() {return redirect->_toString();}
+	inline operator FlowSystemSender_var&() {return redirect;}
+	inline bool isNull() {return (FlowSystemSender_base*)redirect==0;}
+
+	inline void processed() {return redirect->processed();}
+};
+
+class FlowSystemReceiver_base : virtual public Object {
+public:
+	static FlowSystemReceiver_base *_create(const std::string& subClass = "FlowSystemReceiver_base");
+	static FlowSystemReceiver_base *_fromString(std::string objectref);
+	static FlowSystemReceiver_base *_fromReference(ObjectReference ref, bool needcopy);
+
+	inline FlowSystemReceiver_base *_copy() {
 		assert(_refCnt > 0);
 		_refCnt++;
 		return this;
@@ -374,9 +421,9 @@ public:
 	virtual long receiveHandlerID() = 0;
 };
 
-typedef ReferenceHelper<FlowSystemReceiver> FlowSystemReceiver_var;
+typedef ReferenceHelper<FlowSystemReceiver_base> FlowSystemReceiver_var;
 
-class FlowSystemReceiver_stub : virtual public FlowSystemReceiver, virtual public Object_stub {
+class FlowSystemReceiver_stub : virtual public FlowSystemReceiver_base, virtual public Object_stub {
 protected:
 	FlowSystemReceiver_stub();
 
@@ -386,7 +433,7 @@ public:
 	long receiveHandlerID();
 };
 
-class FlowSystemReceiver_skel : virtual public FlowSystemReceiver, virtual public Object_skel {
+class FlowSystemReceiver_skel : virtual public FlowSystemReceiver_base, virtual public Object_skel {
 public:
 	FlowSystemReceiver_skel();
 
@@ -397,44 +444,66 @@ public:
 	void dispatch(Buffer *request, Buffer *result,long methodID);
 };
 
-class FlowSystem : virtual public Object {
-public:
-	static FlowSystem *_create(const std::string& subClass = "FlowSystem");
-	static FlowSystem *_fromString(std::string objectref);
-	static FlowSystem *_fromReference(ObjectReference ref, bool needcopy);
+#include "reference.h"
 
-	inline FlowSystem *_copy() {
+class FlowSystemReceiver  {
+protected:
+	inline FlowSystemReceiver(const FlowSystemReceiver*) {}
+	FlowSystemReceiver_var redirect;
+
+public:
+	inline FlowSystemReceiver() {redirect = FlowSystemReceiver_base::_create();}
+	inline FlowSystemReceiver(const SubClass &s) {redirect = FlowSystemReceiver_base::_create(s.string());}
+	inline FlowSystemReceiver(const Reference &r) {redirect = r.isString()?(FlowSystemReceiver_base::_fromString(r.string())):(FlowSystemReceiver_base::_fromReference(r.reference(),true));}
+	inline FlowSystemReceiver(const FlowSystemReceiver& target) {redirect = target.redirect->_copy();}
+	inline FlowSystemReceiver& operator=(const FlowSystemReceiver& target) {redirect = target.redirect->_copy(); return *this;}
+	inline FlowSystemReceiver(const FlowSystemReceiver_var& target) {redirect = target->_copy();}
+	inline FlowSystemReceiver& operator=(const FlowSystemReceiver_var& target) {redirect = target->_copy(); return *this;}
+	inline std::string toString() {return redirect->_toString();}
+	inline operator FlowSystemReceiver_var&() {return redirect;}
+	inline bool isNull() {return (FlowSystemReceiver_base*)redirect==0;}
+
+	long receiveHandlerID() {return redirect->receiveHandlerID();}
+};
+
+class FlowSystem_base : virtual public Object {
+public:
+	static FlowSystem_base *_create(const std::string& subClass = "FlowSystem_base");
+	static FlowSystem_base *_fromString(std::string objectref);
+	static FlowSystem_base *_fromReference(ObjectReference ref, bool needcopy);
+
+	inline FlowSystem_base *_copy() {
 		assert(_refCnt > 0);
 		_refCnt++;
 		return this;
 	}
 
-	virtual void startObject(Object * node) = 0;
-	virtual void stopObject(Object * node) = 0;
-	virtual void connectObject(Object * sourceObject, const std::string& sourcePort, Object * destObject, const std::string& destPort) = 0;
-	virtual void disconnectObject(Object * sourceObject, const std::string& sourcePort, Object * destObject, const std::string& destPort) = 0;
-	virtual AttributeType queryFlags(Object * node, const std::string& port) = 0;
-	virtual FlowSystemReceiver * createReceiver(Object * destObject, const std::string& destPort, FlowSystemSender * sender) = 0;
+	virtual void startObject(Object_base * node) = 0;
+	virtual void stopObject(Object_base * node) = 0;
+	virtual void connectObject(Object_base * sourceObject, const std::string& sourcePort, Object_base * destObject, const std::string& destPort) = 0;
+	virtual void disconnectObject(Object_base * sourceObject, const std::string& sourcePort, Object_base * destObject, const std::string& destPort) = 0;
+	virtual AttributeType queryFlags(Object_base * node, const std::string& port) = 0;
+	virtual FlowSystemReceiver_base * createReceiver(Object_base * destObject, const std::string& destPort, FlowSystemSender_base * sender) = 0;
 };
 
-typedef ReferenceHelper<FlowSystem> FlowSystem_var;
+typedef ReferenceHelper<FlowSystem_base> FlowSystem_var;
 
-class FlowSystem_stub : virtual public FlowSystem, virtual public Object_stub {
+class FlowSystem_stub : virtual public FlowSystem_base, virtual public Object_stub {
 protected:
 	FlowSystem_stub();
 
 public:
 	FlowSystem_stub(Connection *connection, long objectID);
 
-	void startObject(Object * node);
-	void stopObject(Object * node);
-	void connectObject(Object * sourceObject, const std::string& sourcePort, Object * destObject, const std::string& destPort);
-	void disconnectObject(Object * sourceObject, const std::string& sourcePort, Object * destObject, const std::string& destPort);
-	AttributeType queryFlags(Object * node, const std::string& port);
-	FlowSystemReceiver * createReceiver(Object * destObject, const std::string& destPort, FlowSystemSender * sender);
+	void startObject(Object_base * node);
+	void stopObject(Object_base * node);
+	void connectObject(Object_base * sourceObject, const std::string& sourcePort, Object_base * destObject, const std::string& destPort);
+	void disconnectObject(Object_base * sourceObject, const std::string& sourcePort, Object_base * destObject, const std::string& destPort);
+	AttributeType queryFlags(Object_base * node, const std::string& port);
+	FlowSystemReceiver_base * createReceiver(Object_base * destObject, const std::string& destPort, FlowSystemSender_base * sender);
 };
 
-class FlowSystem_skel : virtual public FlowSystem, virtual public Object_skel {
+class FlowSystem_skel : virtual public FlowSystem_base, virtual public Object_skel {
 public:
 	FlowSystem_skel();
 
@@ -445,13 +514,40 @@ public:
 	void dispatch(Buffer *request, Buffer *result,long methodID);
 };
 
-class GlobalComm : virtual public Object {
-public:
-	static GlobalComm *_create(const std::string& subClass = "GlobalComm");
-	static GlobalComm *_fromString(std::string objectref);
-	static GlobalComm *_fromReference(ObjectReference ref, bool needcopy);
+#include "reference.h"
 
-	inline GlobalComm *_copy() {
+class FlowSystem  {
+protected:
+	inline FlowSystem(const FlowSystem*) {}
+	FlowSystem_var redirect;
+
+public:
+	inline FlowSystem() {redirect = FlowSystem_base::_create();}
+	inline FlowSystem(const SubClass &s) {redirect = FlowSystem_base::_create(s.string());}
+	inline FlowSystem(const Reference &r) {redirect = r.isString()?(FlowSystem_base::_fromString(r.string())):(FlowSystem_base::_fromReference(r.reference(),true));}
+	inline FlowSystem(const FlowSystem& target) {redirect = target.redirect->_copy();}
+	inline FlowSystem& operator=(const FlowSystem& target) {redirect = target.redirect->_copy(); return *this;}
+	inline FlowSystem(const FlowSystem_var& target) {redirect = target->_copy();}
+	inline FlowSystem& operator=(const FlowSystem_var& target) {redirect = target->_copy(); return *this;}
+	inline std::string toString() {return redirect->_toString();}
+	inline operator FlowSystem_var&() {return redirect;}
+	inline bool isNull() {return (FlowSystem_base*)redirect==0;}
+
+	inline void startObject(Object_base * node) {return redirect->startObject(node);}
+	inline void stopObject(Object_base * node) {return redirect->stopObject(node);}
+	inline void connectObject(Object_base * sourceObject, const std::string& sourcePort, Object_base * destObject, const std::string& destPort) {return redirect->connectObject(sourceObject, sourcePort, destObject, destPort);}
+	inline void disconnectObject(Object_base * sourceObject, const std::string& sourcePort, Object_base * destObject, const std::string& destPort) {return redirect->disconnectObject(sourceObject, sourcePort, destObject, destPort);}
+	inline AttributeType queryFlags(Object_base * node, const std::string& port) {return redirect->queryFlags(node, port);}
+	inline FlowSystemReceiver_base * createReceiver(Object_base * destObject, const std::string& destPort, FlowSystemSender_base * sender) {return redirect->createReceiver(destObject, destPort, sender);}
+};
+
+class GlobalComm_base : virtual public Object {
+public:
+	static GlobalComm_base *_create(const std::string& subClass = "GlobalComm_base");
+	static GlobalComm_base *_fromString(std::string objectref);
+	static GlobalComm_base *_fromReference(ObjectReference ref, bool needcopy);
+
+	inline GlobalComm_base *_copy() {
 		assert(_refCnt > 0);
 		_refCnt++;
 		return this;
@@ -462,9 +558,9 @@ public:
 	virtual void erase(const std::string& variable) = 0;
 };
 
-typedef ReferenceHelper<GlobalComm> GlobalComm_var;
+typedef ReferenceHelper<GlobalComm_base> GlobalComm_var;
 
-class GlobalComm_stub : virtual public GlobalComm, virtual public Object_stub {
+class GlobalComm_stub : virtual public GlobalComm_base, virtual public Object_stub {
 protected:
 	GlobalComm_stub();
 
@@ -476,7 +572,7 @@ public:
 	void erase(const std::string& variable);
 };
 
-class GlobalComm_skel : virtual public GlobalComm, virtual public Object_skel {
+class GlobalComm_skel : virtual public GlobalComm_base, virtual public Object_skel {
 public:
 	GlobalComm_skel();
 
@@ -487,13 +583,37 @@ public:
 	void dispatch(Buffer *request, Buffer *result,long methodID);
 };
 
-class TmpGlobalComm : virtual public GlobalComm {
-public:
-	static TmpGlobalComm *_create(const std::string& subClass = "TmpGlobalComm");
-	static TmpGlobalComm *_fromString(std::string objectref);
-	static TmpGlobalComm *_fromReference(ObjectReference ref, bool needcopy);
+#include "reference.h"
 
-	inline TmpGlobalComm *_copy() {
+class GlobalComm  {
+protected:
+	inline GlobalComm(const GlobalComm*) {}
+	GlobalComm_var redirect;
+
+public:
+	inline GlobalComm() {redirect = GlobalComm_base::_create();}
+	inline GlobalComm(const SubClass &s) {redirect = GlobalComm_base::_create(s.string());}
+	inline GlobalComm(const Reference &r) {redirect = r.isString()?(GlobalComm_base::_fromString(r.string())):(GlobalComm_base::_fromReference(r.reference(),true));}
+	inline GlobalComm(const GlobalComm& target) {redirect = target.redirect->_copy();}
+	inline GlobalComm& operator=(const GlobalComm& target) {redirect = target.redirect->_copy(); return *this;}
+	inline GlobalComm(const GlobalComm_var& target) {redirect = target->_copy();}
+	inline GlobalComm& operator=(const GlobalComm_var& target) {redirect = target->_copy(); return *this;}
+	inline std::string toString() {return redirect->_toString();}
+	inline operator GlobalComm_var&() {return redirect;}
+	inline bool isNull() {return (GlobalComm_base*)redirect==0;}
+
+	inline bool put(const std::string& variable, const std::string& value) {return redirect->put(variable, value);}
+	inline std::string get(const std::string& variable) {return redirect->get(variable);}
+	inline void erase(const std::string& variable) {return redirect->erase(variable);}
+};
+
+class TmpGlobalComm_base : virtual public GlobalComm_base {
+public:
+	static TmpGlobalComm_base *_create(const std::string& subClass = "TmpGlobalComm_base");
+	static TmpGlobalComm_base *_fromString(std::string objectref);
+	static TmpGlobalComm_base *_fromReference(ObjectReference ref, bool needcopy);
+
+	inline TmpGlobalComm_base *_copy() {
 		assert(_refCnt > 0);
 		_refCnt++;
 		return this;
@@ -501,9 +621,9 @@ public:
 
 };
 
-typedef ReferenceHelper<TmpGlobalComm> TmpGlobalComm_var;
+typedef ReferenceHelper<TmpGlobalComm_base> TmpGlobalComm_var;
 
-class TmpGlobalComm_stub : virtual public TmpGlobalComm, virtual public GlobalComm_stub {
+class TmpGlobalComm_stub : virtual public TmpGlobalComm_base, virtual public GlobalComm_stub {
 protected:
 	TmpGlobalComm_stub();
 
@@ -512,7 +632,7 @@ public:
 
 };
 
-class TmpGlobalComm_skel : virtual public TmpGlobalComm, virtual public GlobalComm_skel {
+class TmpGlobalComm_skel : virtual public TmpGlobalComm_base, virtual public GlobalComm_skel {
 public:
 	TmpGlobalComm_skel();
 
@@ -521,6 +641,27 @@ public:
 	void _buildMethodTable();
 	void *_cast(std::string interface);
 	void dispatch(Buffer *request, Buffer *result,long methodID);
+};
+
+#include "reference.h"
+
+class TmpGlobalComm : virtual public GlobalComm {
+protected:
+	inline TmpGlobalComm(const TmpGlobalComm*) : GlobalComm(this) {}
+	TmpGlobalComm_var redirect;
+
+public:
+	inline TmpGlobalComm() : GlobalComm(this) {redirect = TmpGlobalComm_base::_create();}
+	inline TmpGlobalComm(const SubClass &s) : GlobalComm(this) {redirect = TmpGlobalComm_base::_create(s.string());}
+	inline TmpGlobalComm(const Reference &r) : GlobalComm(this) {redirect = r.isString()?(TmpGlobalComm_base::_fromString(r.string())):(TmpGlobalComm_base::_fromReference(r.reference(),true));}
+	inline TmpGlobalComm(const TmpGlobalComm& target) : GlobalComm(this) {redirect = target.redirect->_copy();}
+	inline TmpGlobalComm& operator=(const TmpGlobalComm& target) {redirect = target.redirect->_copy(); return *this;}
+	inline TmpGlobalComm(const TmpGlobalComm_var& target) : GlobalComm(this) {redirect = target->_copy();}
+	inline TmpGlobalComm& operator=(const TmpGlobalComm_var& target) {redirect = target->_copy(); return *this;}
+	inline std::string toString() {return redirect->_toString();}
+	inline operator TmpGlobalComm_var&() {return redirect;}
+	inline bool isNull() {return (TmpGlobalComm_base*)redirect==0;}
+
 };
 
 #endif /* CORE_H */

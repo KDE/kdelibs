@@ -1,7 +1,8 @@
-    /*
+/*
 
     Copyright (C) 1999 Stefan Westerfeld
                        stefan@space.twc.de
+    Modified by Nicolas Brodu, nicolas.brodu@free.fr
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -20,7 +21,7 @@
     Permission is also granted to link this program with the Qt
     library, treating Qt like a library that normally accompanies the
     operating system kernel, whether or not that is in fact the case.            
-    */
+*/
 
 #include "hello_impl.h"
 #include <stdio.h>
@@ -35,12 +36,29 @@ string Hello_impl::concat(const string& s1, const string& s2)
 	return s1+s2;
 }
 
-long Hello_impl::sum2(long a, long b)
+void Hello_impl::constructor(long i)
 {
-	return a+b;
+	myvalue=i;
 }
 
-long Hello_impl::sum3(long a, long b, long c)
+long Hello_impl::sum(long a)
 {
-	return a+b+c;
+	myvalue+=a;
 }
+
+long Hello_impl::total()
+{
+	printf("Total=%d\n",myvalue);
+}
+
+long Hello_impl::myValue()
+{
+	return myvalue;
+}
+
+void Hello_impl::myValue(long newValue)
+{
+	myvalue=newValue;
+}
+
+REGISTER_IMPLEMENTATION(Hello_impl);

@@ -40,9 +40,9 @@
 #include <list>
 
 class ObjectReference;
-class InterfaceRepo;
+class InterfaceRepo_base;
 class FlowSystem_impl;
-class GlobalComm;
+class GlobalComm_base;
 class ObjectManager;
 class Object_skel;
 class ReferenceClean;
@@ -67,9 +67,9 @@ protected:
 	TCPServer *tcpServer;
 	UnixServer *unixServer;
 	IOManager *_ioManager;
-	InterfaceRepo *_interfaceRepo;
+	InterfaceRepo_base *_interfaceRepo;
 	FlowSystem_impl *_flowSystem;
-	GlobalComm *_globalComm;
+	GlobalComm_base *_globalComm;
 	ObjectManager *objectManager;
 	ReferenceClean *referenceClean;
 	NotificationManager *notificationManager;
@@ -89,9 +89,9 @@ public:
 
 	static Dispatcher *the();
 	inline IOManager *ioManager() { return _ioManager; };
-	InterfaceRepo *interfaceRepo();
+	InterfaceRepo_base *interfaceRepo();
 	FlowSystem_impl *flowSystem();
-	GlobalComm *globalComm();
+	GlobalComm_base *globalComm();
 	void setFlowSystem(FlowSystem_impl *fs);
 
 	void refillRequestIDs();

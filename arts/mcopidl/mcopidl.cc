@@ -475,9 +475,9 @@ string createTypeCode(string type, const string& name, long model,
 
 		if(model==MODEL_MEMBER)		result = type+"_var";
 		//if(model==MODEL_MEMBER_SEQ) result = "std::vector<"+type+">";
-		if(model==MODEL_ARG)		result = type+" *";
+		if(model==MODEL_ARG)		result = type+"_base *";
 		//if(model==MODEL_ARG_SEQ)	result = "const std::vector<"+type+">&";
-		if(model==MODEL_RESULT)		result = type+" *";
+		if(model==MODEL_RESULT)		result = type+"_base *";
 		//if(model==MODEL_RESULT_SEQ)	result = "std::vector<"+type+"> *";
 		if(model==MODEL_READ)
 			result = "readObject(stream,"+name+")";
@@ -486,14 +486,14 @@ string createTypeCode(string type, const string& name, long model,
 		if(model==MODEL_RES_READ)
 		{
 			result = indent + "if(!result) return 0; // error occured\n";
-			result += indent + type+"* returnCode;\n";
+			result += indent + type+"_base* returnCode;\n";
 			result += indent + "readObject(*result,returnCode);\n";
 			result += indent + "delete result;\n";
 			result += indent + "return returnCode;\n";
 		}
 		if(model==MODEL_REQ_READ)
 		{
-			result = indent + type +"* _temp_"+name+";\n";
+			result = indent + type +"_base* _temp_"+name+";\n";
 			result += indent + "readObject(*request,_temp_"+name+");\n";
 			result += indent + type+"_var "+name+" = _temp_"+name+";\n";
 		}
@@ -503,7 +503,7 @@ string createTypeCode(string type, const string& name, long model,
 			result = "writeObject(*request,"+name+")";
 		if(model==MODEL_INVOKE)
 		{
-			result = indent + type+" *returnCode = "+name+";\n"
+			result = indent + type+"_base *returnCode = "+name+";\n"
 			       + indent + "writeObject(*result,returnCode);\n"
 			       + indent + "if(returnCode) returnCode->_release();\n";
 		}
@@ -811,6 +811,21 @@ string createParamList(MethodDef *md)
 	return result;
 }
 
+string createCallParamList(MethodDef *md)
+{
+	string result;
+	bool first = true;
+	vector<ParamDef *>::iterator pi;
+
+	for(pi = md->signature.begin(); pi != md->signature.end(); pi++)
+	{
+		if (!first) result += ", ";
+		first = false;
+		result += (*pi)->name;
+	}
+	return result;
+}
+
 void createStubCode(FILE *source, string iface, string method, MethodDef *md,
 	long mcount)
 {
@@ -949,20 +964,20 @@ void doInterfacesHeader(FILE *header)
 		if(fromInclude(d->name)) continue; // should come from the include
 
 		// create abstract interface
-		inherits = buildInheritanceList(*d,"");
+		inherits = buildInheritanceList(*d,"_base");
 		if(inherits == "") inherits = "virtual public Object";
 
-		fprintf(header,"class %s : %s {\n",d->name.c_str(),inherits.c_str());
+		fprintf(header,"class %s_base : %s {\n",d->name.c_str(),inherits.c_str());
 		fprintf(header,"public:\n");
-		fprintf(header,"\tstatic %s *_create(const std::string& subClass"
-						" = \"%s\");\n", d->name.c_str(),d->name.c_str());
-		fprintf(header,"\tstatic %s *_fromString(std::string objectref);\n",
+		fprintf(header,"\tstatic %s_base *_create(const std::string& subClass"
+						" = \"%s_base\");\n", d->name.c_str(),d->name.c_str());
+		fprintf(header,"\tstatic %s_base *_fromString(std::string objectref);\n",
 														d->name.c_str());
-		fprintf(header,"\tstatic %s *_fromReference(ObjectReference ref,"
+		fprintf(header,"\tstatic %s_base *_fromReference(ObjectReference ref,"
 		                                " bool needcopy);\n\n",d->name.c_str());
 
 			/* reference counting: _copy */
-		fprintf(header,"\tinline %s *_copy() {\n"
+		fprintf(header,"\tinline %s_base *_copy() {\n"
 					   "\t\tassert(_refCnt > 0);\n"
 				       "\t\t_refCnt++;\n"
 					   "\t\treturn this;\n"
@@ -1003,7 +1018,7 @@ void doInterfacesHeader(FILE *header)
 
 		// create var
 
-		fprintf(header,"typedef ReferenceHelper<%s> %s_var;\n\n",
+		fprintf(header,"typedef ReferenceHelper<%s_base> %s_var;\n\n",
 									d->name.c_str(),d->name.c_str());
 
 		// create stub
@@ -1011,7 +1026,7 @@ void doInterfacesHeader(FILE *header)
 		inherits = buildInheritanceList(*d,"_stub");
 		if(inherits == "") inherits = "virtual public Object_stub";
 
-		fprintf(header,"class %s_stub : virtual public %s, %s {\n",
+		fprintf(header,"class %s_stub : virtual public %s_base, %s {\n",
 			d->name.c_str(), d->name.c_str(),inherits.c_str());
 		fprintf(header,"protected:\n");
 		fprintf(header,"\t%s_stub();\n\n",d->name.c_str());
@@ -1057,7 +1072,7 @@ void doInterfacesHeader(FILE *header)
 		inherits = buildInheritanceList(*d,"_skel");
 		if(inherits == "") inherits = "virtual public Object_skel";
 
-		fprintf(header,"class %s_skel : virtual public %s,"
+		fprintf(header,"class %s_skel : virtual public %s_base,"
 			" %s {\n",d->name.c_str(),d->name.c_str(),inherits.c_str());
 
 		bool firstStream = true;
@@ -1150,7 +1165,125 @@ void doInterfacesHeader(FILE *header)
 		  fprintf(header,"\tvoid notify(const Notification& notification);\n");
 
 		fprintf(header,"};\n\n");
+		
+		
+		// Create object wrapper for easy C++ syntax
+		
+		fprintf(header,"#include \"reference.h\"\n");
+		
+		// Allow connect facility only if there is something to connect to!
+		if (haveStreams(d)) {
+			fprintf(header,"#include \"flowsystem.h\"\n");
+			fprintf(header,"#include \"component.h\"\n");
+		}
+		fprintf(header,"\n");
+		
+		inherits = buildInheritanceList(*d,"");
+		bool hasParent = (inherits != "");
+		if (haveStreams(d)) {
+			if (hasParent) inherits = ", " + inherits;
+			inherits = ": virtual public Component" + inherits;
+		} else {
+			if (hasParent) inherits = ": " + inherits;
+		}
+		// Now create the constructor init list
+		string parentConstructorsInit = "";
+		if (hasParent) {
+			vector<string>::const_iterator ii;
+			bool first = true;
+			for (ii = d->inheritedInterfaces.begin();
+				ii != d->inheritedInterfaces.end(); ii++)
+			{
+				if (!first) parentConstructorsInit += ", "; else first = false;
+				parentConstructorsInit += *ii + "(this)";
+			}
+			parentConstructorsInit = " : " + parentConstructorsInit;
+		}
+		fprintf(header,"class %s %s {\n",d->name.c_str(),inherits.c_str());
+		fprintf(header,"protected:\n");
+		// Constructor that does nothing, used when creating a child
+		// => do not create all the parent implementations!
+		fprintf(header,"\tinline %s(const %s*)%s {}\n",
+			d->name.c_str(), d->name.c_str(), parentConstructorsInit.c_str());
+		fprintf(header,"\t%s_var redirect;\n\n",d->name.c_str());
 
+		fprintf(header,"public:\n");
+		fprintf(header,"\tinline %s()%s {redirect = %s_base::_create();}\n",
+			d->name.c_str(), parentConstructorsInit.c_str(), d->name.c_str());
+		fprintf(header,"\tinline %s(const SubClass &s)%s {redirect"
+			" = %s_base::_create(s.string());}\n",
+			d->name.c_str(), parentConstructorsInit.c_str(), d->name.c_str());
+		fprintf(header,"\tinline %s(const Reference &r)%s {redirect = "
+			"r.isString()?(%s_base::_fromString(r.string())):"
+			"(%s_base::_fromReference(r.reference(),true));}\n",
+			d->name.c_str(), parentConstructorsInit.c_str(), d->name.c_str(), d->name.c_str());
+		fprintf(header,"\tinline %s(const %s& target)%s {redirect = "
+			"target.redirect->_copy();}\n",
+			d->name.c_str(), d->name.c_str(), parentConstructorsInit.c_str());
+		fprintf(header,"\tinline %s& operator=(const %s& target) {"
+			"redirect = target.redirect->_copy(); return *this;}\n",
+			d->name.c_str(), d->name.c_str());
+		fprintf(header,"\tinline %s(const %s_var& target)%s {redirect = "
+			"target->_copy();}\n",
+			d->name.c_str(), d->name.c_str(), parentConstructorsInit.c_str());
+		fprintf(header,"\tinline %s& operator=(const %s_var& target) {"
+			"redirect = target->_copy(); return *this;}\n",
+			d->name.c_str(), d->name.c_str());
+		fprintf(header,"\tinline std::string toString() {return redirect->_toString();}\n");
+		fprintf(header,"\tinline operator %s_var&() {return redirect;}\n", d->name.c_str());
+		fprintf(header,"\tinline bool isNull() {return (%s_base*)redirect==0;}\n", d->name.c_str());
+		
+		if (haveStreams(d)) {
+			fprintf(header,"\n");
+			fprintf(header,"\tinline void start() {redirect->_node()->start();}\n");
+			// Component virtual has to be coded in the cc
+			fprintf(header,"\tScheduleNode *node();\n");
+		}
+		fprintf(header,"\n");
+
+		/* attributes */
+		for(ai = d->attributes.begin();ai != d->attributes.end();ai++)
+		{
+			AttributeDef *ad = *ai;
+			string rc = createTypeCode(ad->type,"",MODEL_RESULT);
+			string pc = createTypeCode(ad->type,"newValue",MODEL_ARG);
+
+			if(ad->flags & attributeAttribute)
+			{
+				if(ad->flags & streamOut)  /* readable from outside */
+				{
+					fprintf(header,"\t%s %s() {return redirect->%s();}\n",
+						rc.c_str(), ad->name.c_str(), ad->name.c_str());
+				}
+				if(ad->flags & streamIn)  /* writeable from outside */
+				{
+					fprintf(header,"\tvoid %s(%s) {redirect->%s(newValue);}\n",
+						ad->name.c_str(), pc.c_str(), ad->name.c_str());
+				}
+			}
+		}
+
+		/* methods */
+		for(mi = d->methods.begin(); mi != d->methods.end(); mi++)
+		{
+			MethodDef *md = *mi;
+			string rc = createReturnCode(md);
+			string params = createParamList(md);
+			string callparams = createCallParamList(md);
+
+			// map constructor methods to the real things
+			if (md->name == "constructor") {
+				fprintf(header,"\tinline %s(%s)%s {redirect = %s_base::_create(); "
+					"redirect->constructor(%s);}\n",d->name.c_str(),
+					params.c_str(),	parentConstructorsInit.c_str(),
+					d->name.c_str(), callparams.c_str());
+			} else {
+				fprintf(header,"\tinline %s %s(%s) {return redirect->%s(%s);}\n",
+					rc.c_str(),	md->name.c_str(), params.c_str(),
+					md->name.c_str(), callparams.c_str());
+			}
+		}
+		fprintf(header,"};\n\n");
 	}
 }
 
@@ -1170,35 +1303,35 @@ void doInterfacesSource(FILE *source)
 
 		// create static functions
 
-		fprintf(source,"%s *%s::_create(const std::string& subClass)\n",
+		fprintf(source,"%s_base *%s_base::_create(const std::string& subClass)\n",
 											d->name.c_str(),d->name.c_str());
 		fprintf(source,"{\n");
 		fprintf(source,"\tObject_skel *skel = "
 							"ObjectManager::the()->create(subClass);\n");
 		fprintf(source,"\tassert(skel);\n");
-		fprintf(source,"\t%s *castedObject = (%s *)skel->_cast(\"%s\");\n",
+		fprintf(source,"\t%s_base *castedObject = (%s_base *)skel->_cast(\"%s_base\");\n",
 							d->name.c_str(),d->name.c_str(),d->name.c_str());
 		fprintf(source,"\tassert(castedObject);\n");
 		fprintf(source,"\treturn castedObject;\n");
 		fprintf(source,"}\n\n");
 
 	
-		fprintf(source,"%s *%s::_fromString(std::string objectref)\n",
+		fprintf(source,"%s_base *%s_base::_fromString(std::string objectref)\n",
 											d->name.c_str(),d->name.c_str());
 		fprintf(source,"{\n");
 		fprintf(source,"\tObjectReference r;\n\n");
 		fprintf(source,"\tif(Dispatcher::the()->stringToObjectReference(r,objectref))\n");
-		fprintf(source,"\t\treturn %s::_fromReference(r,true);\n",
+		fprintf(source,"\t\treturn %s_base::_fromReference(r,true);\n",
 															d->name.c_str());
 		fprintf(source,"\treturn 0;\n");
 		fprintf(source,"}\n\n");
 
-		fprintf(source,"%s *%s::_fromReference(ObjectReference r,"
+		fprintf(source,"%s_base *%s_base::_fromReference(ObjectReference r,"
 		               " bool needcopy)\n",d->name.c_str(),d->name.c_str());
 		fprintf(source,"{\n");
-		fprintf(source,"\t%s *result;\n",d->name.c_str());
+		fprintf(source,"\t%s_base *result;\n",d->name.c_str());
 		fprintf(source,
-		"\tresult = (%s *)Dispatcher::the()->connectObjectLocal(r,\"%s\");\n",
+		"\tresult = (%s_base *)Dispatcher::the()->connectObjectLocal(r,\"%s_base\");\n",
 										d->name.c_str(),d->name.c_str());
 		fprintf(source,"\tif(!result)\n");
 		fprintf(source,"\t{\n");
@@ -1278,20 +1411,20 @@ void doInterfacesSource(FILE *source)
 		fprintf(source,"std::string %s_skel::_interfaceName()\n",	
 													d->name.c_str());
 		fprintf(source,"{\n");
-		fprintf(source,"\treturn \"%s\";\n",d->name.c_str());
+		fprintf(source,"\treturn \"%s_base\";\n",d->name.c_str());
 		fprintf(source,"}\n\n");
 
 		fprintf(source,"std::string %s_skel::_interfaceNameSkel()\n",	
 													d->name.c_str());
 		fprintf(source,"{\n");
-		fprintf(source,"\treturn \"%s\";\n",d->name.c_str());
+		fprintf(source,"\treturn \"%s_base\";\n",d->name.c_str());
 		fprintf(source,"}\n\n");
 
 		/** _cast operation **/
 		fprintf(source,"void *%s_skel::_cast(std::string interface)\n",
 			d->name.c_str());
 		fprintf(source,"{\n");
-		fprintf(source,"\tif(interface == \"%s\") return (%s *)this;\n",
+		fprintf(source,"\tif(interface == \"%s_base\") return (%s_base *)this;\n",
 			d->name.c_str(),d->name.c_str());
 
 		if(d->inheritedInterfaces.size())
@@ -1441,6 +1574,12 @@ void doInterfacesSource(FILE *source)
 					fprintf(source,"}\n\n");
 				}
 			}
+		}
+		
+		if (haveStreams(d)) {
+			// Component virtual
+			fprintf(source,"ScheduleNode *%s::node()"
+				" {return redirect->_node();}\n\n",d->name.c_str());
 		}
 	}
 }

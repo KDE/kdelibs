@@ -2,6 +2,7 @@
 
     Copyright (C) 1999 Stefan Westerfeld
                        stefan@space.twc.de
+    Component subsystem added by Nicolas Brodu, nicolas.brodu@free.fr
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -24,56 +25,32 @@
     */
 
 #include "artsflow.h"
-#include "debug.h"
-#include "flowsystem.h"
-#include <stdio.h>
+#include "connect.h"
 
+//using namespace MCOP;
 
-// NB20000316: Now obsolete, look at the flow.cc for the final version.
-
-/*
- * After getting a comment back why that API looks so broken...: the API
- * used in testflow and testdynflow is not the API you'll use when programming
- * C++ with MCOP, the C++ API looks like that:
- */
-
-/* possible enhancements after Nicolas Brodu's mail */
-
-/* that code should go into MCOP or something similar */
-
-void connect(Object *from, string fromPort, Object *to, string toPort)
-{
-	from->_node()->connect(fromPort, to->_node(), toPort);
-}
-
-void start(Object *tostart)
-{
-	tostart->_node()->start();
-}
-
-/* enhancements end */
 int main()
 {
 	Dispatcher dispatcher;
 
 	// object creation
-	Synth_FREQUENCY_var freq = Synth_FREQUENCY_base::_create();
-	Synth_WAVE_SIN_var sin = Synth_WAVE_SIN_base::_create();
-	Synth_PLAY_var play = Synth_PLAY_base::_create();
+	Synth_FREQUENCY freq;
+	Synth_WAVE_SIN  sin;
+	Synth_PLAY      play;
 
 	// object initialization
-	freq->_node()->setFloatValue("frequency",440.0);
+	setValue(&freq,"frequency",440.0);
 
 	// object connection
-	connect(freq,"pos",sin,"pos");
-	connect(sin,"outvalue",play,"invalue_left");
-	connect(sin,"outvalue",play,"invalue_right");
+	connect(&freq,"pos",&sin,"pos");
+	connect(&sin,"outvalue",&play,"invalue_left");
+	connect(&sin,"outvalue",&play,"invalue_right");
 
 	// start all objects (maybe we should group objects like with QWidget
 	// parents and such?)
-	start(freq);
-	start(sin);
-	start(play);
+	freq.start();
+	sin.start();
+	play.start();
 
 	// go
 	dispatcher.run();

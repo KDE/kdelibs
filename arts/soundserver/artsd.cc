@@ -94,7 +94,7 @@ int main(int argc, char **argv)
 	if(cfgFragmentSize)  AudioSubSystem::the()->fragmentSize(cfgFragmentSize);
 
 	/* start sound server implementation */
-	SimpleSoundServer_var server = SimpleSoundServer::_create();
+	SimpleSoundServer_var server = SimpleSoundServer_base::_create();
 
 	bool result = ObjectManager::the()
 				->addGlobalReference(server,"Arts_SimpleSoundServer")

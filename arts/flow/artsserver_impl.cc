@@ -49,11 +49,11 @@ protected:
 	string _name;
 
 public:
-	SynthModule *module;
+	SynthModule_base *module;
 	list<SynthPortWrapper *> ports;
 
 	long ID, mID;
-	SynthExecNode(SynthModule *module)
+	SynthExecNode(SynthModule_base *module)
 	{
 		this->module = module;
 	}
@@ -133,7 +133,7 @@ bool ArtsServer_impl::createModule(long mid, const ModuleDesc& desc)
 	Object_skel *object = ObjectManager::the()->create(desc.Name);
 	assert(object);
 
-	SynthModule *NewModule = (SynthModule *)object->_cast("SynthModule");
+	SynthModule_base *NewModule = (SynthModule_base *)object->_cast("SynthModule_base");
 	assert(NewModule);
 
 	SynthExecNode *schedNode = new SynthExecNode(NewModule);

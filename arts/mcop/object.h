@@ -42,7 +42,7 @@ typedef void (*OnewayDispatchFunction)(void *object, Buffer *request);
 class ScheduleNode;
 class Object_skel;
 class Object_stub;
-class FlowSystem;
+class FlowSystem_base;
 
 class Object : public NotificationClient {
 private:
@@ -102,7 +102,7 @@ public:
 	 */
 	virtual void calculateBlock(unsigned long cycles);
 	ScheduleNode *_node();
-	virtual FlowSystem * _flowSystem() = 0;
+	virtual FlowSystem_base * _flowSystem() = 0;
 
 	/*
 	 * reference counting
@@ -144,6 +144,7 @@ public:
 template<class T> class ReferenceHelper;
 
 typedef ReferenceHelper<Object> Object_var;
+typedef Object Object_base;
 
 /*
  * Dispatching
@@ -213,7 +214,7 @@ public:
 	/*
 	 * streaming
 	 */
-	FlowSystem * _flowSystem();
+	FlowSystem_base * _flowSystem();
 
 	/*
 	 * to inspect the (remote) object interface
@@ -263,7 +264,7 @@ public:
 	/*
 	 * streaming
 	 */
-	FlowSystem * _flowSystem();
+	FlowSystem_base * _flowSystem();
 
 	/*
 	 * reference counting

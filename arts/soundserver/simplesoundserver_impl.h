@@ -36,9 +36,9 @@ protected:
 	ByteStreamToAudio_var _receiver;
 
 public:
-	AttachedProducer(ByteSoundProducer *sender, ByteStreamToAudio *receiver);
-	ByteSoundProducer *sender();
-	ByteStreamToAudio *receiver();
+	AttachedProducer(ByteSoundProducer_base *sender, ByteStreamToAudio_base *receiver);
+	ByteSoundProducer_base *sender();
+	ByteStreamToAudio_base *receiver();
 };
 
 class SimpleSoundServer_impl : virtual public SimpleSoundServer_skel,
@@ -47,8 +47,8 @@ class SimpleSoundServer_impl : virtual public SimpleSoundServer_skel,
 protected:
 	Synth_PLAY_var playSound;
 	Synth_MULTI_ADD_var addLeft, addRight;
-	std::list<Synth_PLAY_WAV *> activeWavs;
-	std::list<ByteStreamToAudio *> activeConverters;
+	std::list<Synth_PLAY_WAV_base *> activeWavs;
+	std::list<ByteStreamToAudio_base *> activeConverters;
 	std::list<AttachedProducer *> activeProducers;
 	StereoEffectStack_var _outstack;
 
@@ -59,15 +59,15 @@ public:
 	void notifyTime();
 
 	// streaming audio
-	void attach(ByteSoundProducer *bsp);
-	void detach(ByteSoundProducer *bsp);
+	void attach(ByteSoundProducer_base *bsp);
+	void detach(ByteSoundProducer_base *bsp);
 
 	// simple soundserver interface
 	long play(const std::string& s);
 
 	// kmedia2
-	PlayObject *createPlayObject(const std::string& filename);
-	StereoEffectStack *outstack();
+	PlayObject_base *createPlayObject(const std::string& filename);
+	StereoEffectStack_base *outstack();
 	Object *createObject(const std::string& name);
 };
 

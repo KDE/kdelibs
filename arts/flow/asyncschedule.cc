@@ -197,7 +197,7 @@ void ASyncNetSend::processed()
 	pqueue.pop();
 }
 
-void ASyncNetSend::setReceiver(FlowSystemReceiver *newReceiver)
+void ASyncNetSend::setReceiver(FlowSystemReceiver_base *newReceiver)
 {
 	receiver = newReceiver->_copy();
 	receiveHandlerID = newReceiver->receiveHandlerID();
@@ -210,7 +210,7 @@ static void _dispatch_ASyncNetReceive_receive(void *object, Buffer *buffer)
 	((ASyncNetReceive *)object)->receive(buffer);
 }
 
-ASyncNetReceive::ASyncNetReceive(ASyncPort *port, FlowSystemSender *sender)
+ASyncNetReceive::ASyncNetReceive(ASyncPort *port, FlowSystemSender_base *sender)
 {
 	stream = port->receiveNetCreateStream();
 	stream->channel = this;

@@ -222,9 +222,9 @@ Object_skel::~Object_skel()
 
 // flow system
 
-FlowSystem *Object_skel::_flowSystem()
+FlowSystem_base *Object_skel::_flowSystem()
 {
-	FlowSystem *fs = Dispatcher::the()->flowSystem();
+	FlowSystem_base *fs = Dispatcher::the()->flowSystem();
 	if(fs)
 		return fs->_copy();
 	else
@@ -515,7 +515,7 @@ static void _dispatch_Object_07(void *object, Buffer *, Buffer *)
 // _get__flowSystem
 static void _dispatch_Object_08(void *object, Buffer *, Buffer *result)
 {
-	FlowSystem *returnCode = ((Object_skel *)object)->_flowSystem();
+	FlowSystem_base *returnCode = ((Object_skel *)object)->_flowSystem();
 	writeObject(*result,returnCode);
 	if(returnCode) returnCode->_release();
 }
@@ -798,7 +798,7 @@ void Object_stub::_releaseRemote()
 	if(result) delete result;
 }
 
-FlowSystem *Object_stub::_flowSystem()
+FlowSystem_base *Object_stub::_flowSystem()
 {
 	long methodID = _lookupMethodFast("method:110000005f6765745f5f666c6f7753797374656d000b000000466c6f7753797374656d000000000000000000");
 	long requestID;
@@ -810,7 +810,7 @@ FlowSystem *Object_stub::_flowSystem()
 
 	result = Dispatcher::the()->waitForResult(requestID,_connection);
 	if(!result) return 0; // error
-	FlowSystem* returnCode;
+	FlowSystem_base* returnCode;
 	readObject(*result,returnCode);
 	delete result;
 	return returnCode;

@@ -28,7 +28,7 @@
 
 #include "artsflow.h"
 
-class StdSynthModule :virtual public SynthModule {
+class StdSynthModule :virtual public SynthModule_base {
 protected:
 	long samplingRate;
 	float samplingRateFloat;

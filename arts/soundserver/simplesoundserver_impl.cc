@@ -31,19 +31,19 @@
 
 using namespace std;
 
-AttachedProducer::AttachedProducer(ByteSoundProducer *sender,
-										ByteStreamToAudio *receiver)
+AttachedProducer::AttachedProducer(ByteSoundProducer_base *sender,
+										ByteStreamToAudio_base *receiver)
 {
 	_sender = sender->_copy();
 	_receiver = receiver->_copy();
 }
 
-ByteSoundProducer *AttachedProducer::sender()
+ByteSoundProducer_base *AttachedProducer::sender()
 {
 	return _sender;
 }
 
-ByteStreamToAudio *AttachedProducer::receiver()
+ByteStreamToAudio_base *AttachedProducer::receiver()
 {
 	return _receiver;
 }
@@ -66,11 +66,11 @@ ByteStreamToAudio *AttachedProducer::receiver()
  */
 SimpleSoundServer_impl::SimpleSoundServer_impl()
 {
-	playSound = Synth_PLAY::_create();
-	addLeft = Synth_MULTI_ADD::_create();
-	addRight = Synth_MULTI_ADD::_create();
+	playSound = Synth_PLAY_base::_create();
+	addLeft = Synth_MULTI_ADD_base::_create();
+	addRight = Synth_MULTI_ADD_base::_create();
 
-	_outstack = StereoEffectStack::_create();
+	_outstack = StereoEffectStack_base::_create();
 	_outstack->setInputs(addLeft,"outvalue",addRight,"outvalue");
 	_outstack->setOutputs(playSound,"invalue_left",playSound,"invalue_right");
 
@@ -95,7 +95,7 @@ long SimpleSoundServer_impl::play(const string& filename)
 {
 	printf("Play '%s'!\n",filename.c_str());
 
-	Synth_PLAY_WAV *playwav = Synth_PLAY_WAV::_create();
+	Synth_PLAY_WAV_base *playwav = Synth_PLAY_WAV_base::_create();
 	playwav->filename(filename);
 
 	addLeft->_node()->connect("invalue",playwav->_node(),"left");
@@ -107,11 +107,11 @@ long SimpleSoundServer_impl::play(const string& filename)
 	return 1;
 }
 
-void SimpleSoundServer_impl::attach(ByteSoundProducer *bsp)
+void SimpleSoundServer_impl::attach(ByteSoundProducer_base *bsp)
 {
 	printf("Attach ByteSoundProducer!\n");
 
-	ByteStreamToAudio_var convert = ByteStreamToAudio::_create();
+	ByteStreamToAudio_var convert = ByteStreamToAudio_base::_create();
 
 //	convert->samplingRate(bsp->samplingRate());
 //	convert->channels(bsp->channels());
@@ -126,7 +126,7 @@ void SimpleSoundServer_impl::attach(ByteSoundProducer *bsp)
 	activeProducers.push_back(new AttachedProducer(bsp,convert));
 }
 
-void SimpleSoundServer_impl::detach(ByteSoundProducer *bsp)
+void SimpleSoundServer_impl::detach(ByteSoundProducer_base *bsp)
 {
 	printf("Detach ByteSoundProducer!\n");
 	list<AttachedProducer *>::iterator p;
@@ -154,7 +154,7 @@ void SimpleSoundServer_impl::detach(ByteSoundProducer *bsp)
 	assert(false);		// you shouldn't detach things you never attached!
 }
 
-StereoEffectStack *SimpleSoundServer_impl::outstack()
+StereoEffectStack_base *SimpleSoundServer_impl::outstack()
 {
 	return _outstack->_copy();
 }
@@ -175,12 +175,12 @@ void SimpleSoundServer_impl::notifyTime()
 	 */
 
 	/* look for WAVs which may have terminated by now */
-	list<Synth_PLAY_WAV *>::iterator i;
+	list<Synth_PLAY_WAV_base *>::iterator i;
 
 	i = activeWavs.begin();
 	while(i != activeWavs.end())
 	{
-		Synth_PLAY_WAV *playwav = (*i);
+		Synth_PLAY_WAV_base *playwav = (*i);
 		if(playwav->finished())
 		{
 			activeWavs.erase(i);
@@ -214,12 +214,12 @@ void SimpleSoundServer_impl::notifyTime()
 	}
 
 	/* look for converters which are no longer running */
-	list<ByteStreamToAudio *>::iterator ci;
+	list<ByteStreamToAudio_base *>::iterator ci;
 
 	ci = activeConverters.begin();
 	while(ci != activeConverters.end())
 	{
-		ByteStreamToAudio *conv = (*ci);
+		ByteStreamToAudio_base *conv = (*ci);
 		if(!conv->running())
 		{
 			activeConverters.erase(ci);
@@ -234,7 +234,7 @@ void SimpleSoundServer_impl::notifyTime()
 	lock--;
 }
 
-PlayObject *SimpleSoundServer_impl::createPlayObject(const string& filename)
+PlayObject_base *SimpleSoundServer_impl::createPlayObject(const string& filename)
 {
 	string extension="", objectType = "";
 	if(filename.size()>4)
@@ -254,7 +254,7 @@ PlayObject *SimpleSoundServer_impl::createPlayObject(const string& filename)
 	if(objectType != "")
 	{
 		cout << "Creating " << objectType << " to play file." << endl;
-		PlayObject_var result = PlayObject::_create(objectType);
+		PlayObject_var result = PlayObject_base::_create(objectType);
 		if(result->loadMedia(filename))
 		{
 			// TODO: check for existence of left & right streams

@@ -2,6 +2,7 @@
 
     Copyright (C) 2000 Stefan Westerfeld
                        stefan@space.twc.de
+    Modified by Nicolas Brodu, brodu@kde.org
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -33,13 +34,18 @@
 int main(int argc, char **argv)
 {
 	Dispatcher dispatcher;
-	GlobalComm_var gcomm = GlobalComm::_create("X11GlobalComm");
+	GlobalComm gcomm( SubClass("X11GlobalComm") );
+	
+	if (gcomm.isNull()) {
+		cerr << "Cannot create a X11GlobalComm object" << endl;
+		return 2;
+	}
 
 	if(argc == 4)
 	{
 		if(string(argv[1]) == "put")
 		{
-			gcomm->put(argv[2],argv[3]);
+			gcomm.put(argv[2],argv[3]);
 			return 0;
 		}
 	}
@@ -47,12 +53,12 @@ int main(int argc, char **argv)
 	{
 		if(string(argv[1]) == "get")
 		{
-			cout << gcomm->get(argv[2]) << endl;
+			cout << gcomm.get(argv[2]) << endl;
 			return 0;
 		}
 		if(string(argv[1]) == "erase")
 		{
-			gcomm->erase(argv[2]);
+			gcomm.erase(argv[2]);
 			return 0;
 		}
 	}

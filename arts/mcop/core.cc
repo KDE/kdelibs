@@ -741,28 +741,28 @@ void ModuleDef::writeType(Buffer& stream) const
 	writeTypeSeq(stream,interfaces);
 }
 
-InterfaceRepo *InterfaceRepo::_create(const std::string& subClass)
+InterfaceRepo_base *InterfaceRepo_base::_create(const std::string& subClass)
 {
 	Object_skel *skel = ObjectManager::the()->create(subClass);
 	assert(skel);
-	InterfaceRepo *castedObject = (InterfaceRepo *)skel->_cast("InterfaceRepo");
+	InterfaceRepo_base *castedObject = (InterfaceRepo_base *)skel->_cast("InterfaceRepo_base");
 	assert(castedObject);
 	return castedObject;
 }
 
-InterfaceRepo *InterfaceRepo::_fromString(std::string objectref)
+InterfaceRepo_base *InterfaceRepo_base::_fromString(std::string objectref)
 {
 	ObjectReference r;
 
 	if(Dispatcher::the()->stringToObjectReference(r,objectref))
-		return InterfaceRepo::_fromReference(r,true);
+		return InterfaceRepo_base::_fromReference(r,true);
 	return 0;
 }
 
-InterfaceRepo *InterfaceRepo::_fromReference(ObjectReference r, bool needcopy)
+InterfaceRepo_base *InterfaceRepo_base::_fromReference(ObjectReference r, bool needcopy)
 {
-	InterfaceRepo *result;
-	result = (InterfaceRepo *)Dispatcher::the()->connectObjectLocal(r,"InterfaceRepo");
+	InterfaceRepo_base *result;
+	result = (InterfaceRepo_base *)Dispatcher::the()->connectObjectLocal(r,"InterfaceRepo_base");
 	if(!result)
 	{
 		Connection *conn = Dispatcher::the()->connectObjectRemote(r);
@@ -858,17 +858,17 @@ TypeDef* InterfaceRepo_stub::queryType(const std::string& name)
 
 std::string InterfaceRepo_skel::_interfaceName()
 {
-	return "InterfaceRepo";
+	return "InterfaceRepo_base";
 }
 
 std::string InterfaceRepo_skel::_interfaceNameSkel()
 {
-	return "InterfaceRepo";
+	return "InterfaceRepo_base";
 }
 
 void *InterfaceRepo_skel::_cast(std::string interface)
 {
-	if(interface == "InterfaceRepo") return (InterfaceRepo *)this;
+	if(interface == "InterfaceRepo_base") return (InterfaceRepo_base *)this;
 	if(interface == "Object") return (Object *)this;
 	return 0;
 }
@@ -921,28 +921,28 @@ InterfaceRepo_skel::InterfaceRepo_skel()
 {
 }
 
-FlowSystemSender *FlowSystemSender::_create(const std::string& subClass)
+FlowSystemSender_base *FlowSystemSender_base::_create(const std::string& subClass)
 {
 	Object_skel *skel = ObjectManager::the()->create(subClass);
 	assert(skel);
-	FlowSystemSender *castedObject = (FlowSystemSender *)skel->_cast("FlowSystemSender");
+	FlowSystemSender_base *castedObject = (FlowSystemSender_base *)skel->_cast("FlowSystemSender_base");
 	assert(castedObject);
 	return castedObject;
 }
 
-FlowSystemSender *FlowSystemSender::_fromString(std::string objectref)
+FlowSystemSender_base *FlowSystemSender_base::_fromString(std::string objectref)
 {
 	ObjectReference r;
 
 	if(Dispatcher::the()->stringToObjectReference(r,objectref))
-		return FlowSystemSender::_fromReference(r,true);
+		return FlowSystemSender_base::_fromReference(r,true);
 	return 0;
 }
 
-FlowSystemSender *FlowSystemSender::_fromReference(ObjectReference r, bool needcopy)
+FlowSystemSender_base *FlowSystemSender_base::_fromReference(ObjectReference r, bool needcopy)
 {
-	FlowSystemSender *result;
-	result = (FlowSystemSender *)Dispatcher::the()->connectObjectLocal(r,"FlowSystemSender");
+	FlowSystemSender_base *result;
+	result = (FlowSystemSender_base *)Dispatcher::the()->connectObjectLocal(r,"FlowSystemSender_base");
 	if(!result)
 	{
 		Connection *conn = Dispatcher::the()->connectObjectRemote(r);
@@ -979,17 +979,17 @@ void FlowSystemSender_stub::processed()
 
 std::string FlowSystemSender_skel::_interfaceName()
 {
-	return "FlowSystemSender";
+	return "FlowSystemSender_base";
 }
 
 std::string FlowSystemSender_skel::_interfaceNameSkel()
 {
-	return "FlowSystemSender";
+	return "FlowSystemSender_base";
 }
 
 void *FlowSystemSender_skel::_cast(std::string interface)
 {
-	if(interface == "FlowSystemSender") return (FlowSystemSender *)this;
+	if(interface == "FlowSystemSender_base") return (FlowSystemSender_base *)this;
 	if(interface == "Object") return (Object *)this;
 	return 0;
 }
@@ -1011,28 +1011,28 @@ FlowSystemSender_skel::FlowSystemSender_skel()
 {
 }
 
-FlowSystemReceiver *FlowSystemReceiver::_create(const std::string& subClass)
+FlowSystemReceiver_base *FlowSystemReceiver_base::_create(const std::string& subClass)
 {
 	Object_skel *skel = ObjectManager::the()->create(subClass);
 	assert(skel);
-	FlowSystemReceiver *castedObject = (FlowSystemReceiver *)skel->_cast("FlowSystemReceiver");
+	FlowSystemReceiver_base *castedObject = (FlowSystemReceiver_base *)skel->_cast("FlowSystemReceiver_base");
 	assert(castedObject);
 	return castedObject;
 }
 
-FlowSystemReceiver *FlowSystemReceiver::_fromString(std::string objectref)
+FlowSystemReceiver_base *FlowSystemReceiver_base::_fromString(std::string objectref)
 {
 	ObjectReference r;
 
 	if(Dispatcher::the()->stringToObjectReference(r,objectref))
-		return FlowSystemReceiver::_fromReference(r,true);
+		return FlowSystemReceiver_base::_fromReference(r,true);
 	return 0;
 }
 
-FlowSystemReceiver *FlowSystemReceiver::_fromReference(ObjectReference r, bool needcopy)
+FlowSystemReceiver_base *FlowSystemReceiver_base::_fromReference(ObjectReference r, bool needcopy)
 {
-	FlowSystemReceiver *result;
-	result = (FlowSystemReceiver *)Dispatcher::the()->connectObjectLocal(r,"FlowSystemReceiver");
+	FlowSystemReceiver_base *result;
+	result = (FlowSystemReceiver_base *)Dispatcher::the()->connectObjectLocal(r,"FlowSystemReceiver_base");
 	if(!result)
 	{
 		Connection *conn = Dispatcher::the()->connectObjectRemote(r);
@@ -1076,17 +1076,17 @@ long FlowSystemReceiver_stub::receiveHandlerID()
 
 std::string FlowSystemReceiver_skel::_interfaceName()
 {
-	return "FlowSystemReceiver";
+	return "FlowSystemReceiver_base";
 }
 
 std::string FlowSystemReceiver_skel::_interfaceNameSkel()
 {
-	return "FlowSystemReceiver";
+	return "FlowSystemReceiver_base";
 }
 
 void *FlowSystemReceiver_skel::_cast(std::string interface)
 {
-	if(interface == "FlowSystemReceiver") return (FlowSystemReceiver *)this;
+	if(interface == "FlowSystemReceiver_base") return (FlowSystemReceiver_base *)this;
 	if(interface == "Object") return (Object *)this;
 	return 0;
 }
@@ -1108,28 +1108,28 @@ FlowSystemReceiver_skel::FlowSystemReceiver_skel()
 {
 }
 
-FlowSystem *FlowSystem::_create(const std::string& subClass)
+FlowSystem_base *FlowSystem_base::_create(const std::string& subClass)
 {
 	Object_skel *skel = ObjectManager::the()->create(subClass);
 	assert(skel);
-	FlowSystem *castedObject = (FlowSystem *)skel->_cast("FlowSystem");
+	FlowSystem_base *castedObject = (FlowSystem_base *)skel->_cast("FlowSystem_base");
 	assert(castedObject);
 	return castedObject;
 }
 
-FlowSystem *FlowSystem::_fromString(std::string objectref)
+FlowSystem_base *FlowSystem_base::_fromString(std::string objectref)
 {
 	ObjectReference r;
 
 	if(Dispatcher::the()->stringToObjectReference(r,objectref))
-		return FlowSystem::_fromReference(r,true);
+		return FlowSystem_base::_fromReference(r,true);
 	return 0;
 }
 
-FlowSystem *FlowSystem::_fromReference(ObjectReference r, bool needcopy)
+FlowSystem_base *FlowSystem_base::_fromReference(ObjectReference r, bool needcopy)
 {
-	FlowSystem *result;
-	result = (FlowSystem *)Dispatcher::the()->connectObjectLocal(r,"FlowSystem");
+	FlowSystem_base *result;
+	result = (FlowSystem_base *)Dispatcher::the()->connectObjectLocal(r,"FlowSystem_base");
 	if(!result)
 	{
 		Connection *conn = Dispatcher::the()->connectObjectRemote(r);
@@ -1154,7 +1154,7 @@ FlowSystem_stub::FlowSystem_stub(Connection *connection, long objectID)
 	// constructor to create a stub for an object
 }
 
-void FlowSystem_stub::startObject(Object * node)
+void FlowSystem_stub::startObject(Object_base * node)
 {
 	long methodID = _lookupMethodFast("method:0c00000073746172744f626a6563740005000000766f6964000200000001000000070000006f626a65637400050000006e6f646500");
 	long requestID;
@@ -1169,7 +1169,7 @@ void FlowSystem_stub::startObject(Object * node)
 	if(result) delete result;
 }
 
-void FlowSystem_stub::stopObject(Object * node)
+void FlowSystem_stub::stopObject(Object_base * node)
 {
 	long methodID = _lookupMethodFast("method:0b00000073746f704f626a6563740005000000766f6964000200000001000000070000006f626a65637400050000006e6f646500");
 	long requestID;
@@ -1184,7 +1184,7 @@ void FlowSystem_stub::stopObject(Object * node)
 	if(result) delete result;
 }
 
-void FlowSystem_stub::connectObject(Object * sourceObject, const std::string& sourcePort, Object * destObject, const std::string& destPort)
+void FlowSystem_stub::connectObject(Object_base * sourceObject, const std::string& sourcePort, Object_base * destObject, const std::string& destPort)
 {
 	long methodID = _lookupMethodFast("method:0e000000636f6e6e6563744f626a6563740005000000766f6964000200000004000000070000006f626a656374000d000000736f757263654f626a6563740007000000737472696e67000b000000736f75726365506f727400070000006f626a656374000b000000646573744f626a6563740007000000737472696e67000900000064657374506f727400");
 	long requestID;
@@ -1202,7 +1202,7 @@ void FlowSystem_stub::connectObject(Object * sourceObject, const std::string& so
 	if(result) delete result;
 }
 
-void FlowSystem_stub::disconnectObject(Object * sourceObject, const std::string& sourcePort, Object * destObject, const std::string& destPort)
+void FlowSystem_stub::disconnectObject(Object_base * sourceObject, const std::string& sourcePort, Object_base * destObject, const std::string& destPort)
 {
 	long methodID = _lookupMethodFast("method:11000000646973636f6e6e6563744f626a6563740005000000766f6964000200000004000000070000006f626a656374000d000000736f757263654f626a6563740007000000737472696e67000b000000736f75726365506f727400070000006f626a656374000b000000646573744f626a6563740007000000737472696e67000900000064657374506f727400");
 	long requestID;
@@ -1220,7 +1220,7 @@ void FlowSystem_stub::disconnectObject(Object * sourceObject, const std::string&
 	if(result) delete result;
 }
 
-AttributeType FlowSystem_stub::queryFlags(Object * node, const std::string& port)
+AttributeType FlowSystem_stub::queryFlags(Object_base * node, const std::string& port)
 {
 	long methodID = _lookupMethodFast("method:0b0000007175657279466c616773000e00000041747472696275746554797065000200000002000000070000006f626a65637400050000006e6f64650007000000737472696e670005000000706f727400");
 	long requestID;
@@ -1239,7 +1239,7 @@ AttributeType FlowSystem_stub::queryFlags(Object * node, const std::string& port
 	return returnCode;
 }
 
-FlowSystemReceiver * FlowSystem_stub::createReceiver(Object * destObject, const std::string& destPort, FlowSystemSender * sender)
+FlowSystemReceiver_base * FlowSystem_stub::createReceiver(Object_base * destObject, const std::string& destPort, FlowSystemSender_base * sender)
 {
 	long methodID = _lookupMethodFast("method:0f00000063726561746552656365697665720013000000466c6f7753797374656d5265636569766572000200000003000000070000006f626a656374000b000000646573744f626a6563740007000000737472696e67000900000064657374506f72740011000000466c6f7753797374656d53656e646572000700000073656e64657200");
 	long requestID;
@@ -1254,7 +1254,7 @@ FlowSystemReceiver * FlowSystem_stub::createReceiver(Object * destObject, const 
 
 	result = Dispatcher::the()->waitForResult(requestID,_connection);
 	if(!result) return 0; // error occured
-	FlowSystemReceiver* returnCode;
+	FlowSystemReceiver_base* returnCode;
 	readObject(*result,returnCode);
 	delete result;
 	return returnCode;
@@ -1262,17 +1262,17 @@ FlowSystemReceiver * FlowSystem_stub::createReceiver(Object * destObject, const 
 
 std::string FlowSystem_skel::_interfaceName()
 {
-	return "FlowSystem";
+	return "FlowSystem_base";
 }
 
 std::string FlowSystem_skel::_interfaceNameSkel()
 {
-	return "FlowSystem";
+	return "FlowSystem_base";
 }
 
 void *FlowSystem_skel::_cast(std::string interface)
 {
-	if(interface == "FlowSystem") return (FlowSystem *)this;
+	if(interface == "FlowSystem_base") return (FlowSystem_base *)this;
 	if(interface == "Object") return (Object *)this;
 	return 0;
 }
@@ -1280,7 +1280,7 @@ void *FlowSystem_skel::_cast(std::string interface)
 // startObject
 static void _dispatch_FlowSystem_00(void *object, Buffer *request, Buffer *)
 {
-	Object* _temp_node;
+	Object_base* _temp_node;
 	readObject(*request,_temp_node);
 	Object_var node = _temp_node;
 	((FlowSystem_skel *)object)->startObject(node);
@@ -1289,7 +1289,7 @@ static void _dispatch_FlowSystem_00(void *object, Buffer *request, Buffer *)
 // stopObject
 static void _dispatch_FlowSystem_01(void *object, Buffer *request, Buffer *)
 {
-	Object* _temp_node;
+	Object_base* _temp_node;
 	readObject(*request,_temp_node);
 	Object_var node = _temp_node;
 	((FlowSystem_skel *)object)->stopObject(node);
@@ -1298,12 +1298,12 @@ static void _dispatch_FlowSystem_01(void *object, Buffer *request, Buffer *)
 // connectObject
 static void _dispatch_FlowSystem_02(void *object, Buffer *request, Buffer *)
 {
-	Object* _temp_sourceObject;
+	Object_base* _temp_sourceObject;
 	readObject(*request,_temp_sourceObject);
 	Object_var sourceObject = _temp_sourceObject;
 	std::string sourcePort;
 	request->readString(sourcePort);
-	Object* _temp_destObject;
+	Object_base* _temp_destObject;
 	readObject(*request,_temp_destObject);
 	Object_var destObject = _temp_destObject;
 	std::string destPort;
@@ -1314,12 +1314,12 @@ static void _dispatch_FlowSystem_02(void *object, Buffer *request, Buffer *)
 // disconnectObject
 static void _dispatch_FlowSystem_03(void *object, Buffer *request, Buffer *)
 {
-	Object* _temp_sourceObject;
+	Object_base* _temp_sourceObject;
 	readObject(*request,_temp_sourceObject);
 	Object_var sourceObject = _temp_sourceObject;
 	std::string sourcePort;
 	request->readString(sourcePort);
-	Object* _temp_destObject;
+	Object_base* _temp_destObject;
 	readObject(*request,_temp_destObject);
 	Object_var destObject = _temp_destObject;
 	std::string destPort;
@@ -1330,7 +1330,7 @@ static void _dispatch_FlowSystem_03(void *object, Buffer *request, Buffer *)
 // queryFlags
 static void _dispatch_FlowSystem_04(void *object, Buffer *request, Buffer *result)
 {
-	Object* _temp_node;
+	Object_base* _temp_node;
 	readObject(*request,_temp_node);
 	Object_var node = _temp_node;
 	std::string port;
@@ -1341,15 +1341,15 @@ static void _dispatch_FlowSystem_04(void *object, Buffer *request, Buffer *resul
 // createReceiver
 static void _dispatch_FlowSystem_05(void *object, Buffer *request, Buffer *result)
 {
-	Object* _temp_destObject;
+	Object_base* _temp_destObject;
 	readObject(*request,_temp_destObject);
 	Object_var destObject = _temp_destObject;
 	std::string destPort;
 	request->readString(destPort);
-	FlowSystemSender* _temp_sender;
+	FlowSystemSender_base* _temp_sender;
 	readObject(*request,_temp_sender);
 	FlowSystemSender_var sender = _temp_sender;
-	FlowSystemReceiver *returnCode = ((FlowSystem_skel *)object)->createReceiver(destObject,destPort,sender);
+	FlowSystemReceiver_base *returnCode = ((FlowSystem_skel *)object)->createReceiver(destObject,destPort,sender);
 	writeObject(*result,returnCode);
 	if(returnCode) returnCode->_release();
 }
@@ -1370,28 +1370,28 @@ FlowSystem_skel::FlowSystem_skel()
 {
 }
 
-GlobalComm *GlobalComm::_create(const std::string& subClass)
+GlobalComm_base *GlobalComm_base::_create(const std::string& subClass)
 {
 	Object_skel *skel = ObjectManager::the()->create(subClass);
 	assert(skel);
-	GlobalComm *castedObject = (GlobalComm *)skel->_cast("GlobalComm");
+	GlobalComm_base *castedObject = (GlobalComm_base *)skel->_cast("GlobalComm_base");
 	assert(castedObject);
 	return castedObject;
 }
 
-GlobalComm *GlobalComm::_fromString(std::string objectref)
+GlobalComm_base *GlobalComm_base::_fromString(std::string objectref)
 {
 	ObjectReference r;
 
 	if(Dispatcher::the()->stringToObjectReference(r,objectref))
-		return GlobalComm::_fromReference(r,true);
+		return GlobalComm_base::_fromReference(r,true);
 	return 0;
 }
 
-GlobalComm *GlobalComm::_fromReference(ObjectReference r, bool needcopy)
+GlobalComm_base *GlobalComm_base::_fromReference(ObjectReference r, bool needcopy)
 {
-	GlobalComm *result;
-	result = (GlobalComm *)Dispatcher::the()->connectObjectLocal(r,"GlobalComm");
+	GlobalComm_base *result;
+	result = (GlobalComm_base *)Dispatcher::the()->connectObjectLocal(r,"GlobalComm_base");
 	if(!result)
 	{
 		Connection *conn = Dispatcher::the()->connectObjectRemote(r);
@@ -1471,17 +1471,17 @@ void GlobalComm_stub::erase(const std::string& variable)
 
 std::string GlobalComm_skel::_interfaceName()
 {
-	return "GlobalComm";
+	return "GlobalComm_base";
 }
 
 std::string GlobalComm_skel::_interfaceNameSkel()
 {
-	return "GlobalComm";
+	return "GlobalComm_base";
 }
 
 void *GlobalComm_skel::_cast(std::string interface)
 {
-	if(interface == "GlobalComm") return (GlobalComm *)this;
+	if(interface == "GlobalComm_base") return (GlobalComm_base *)this;
 	if(interface == "Object") return (Object *)this;
 	return 0;
 }
@@ -1525,28 +1525,28 @@ GlobalComm_skel::GlobalComm_skel()
 {
 }
 
-TmpGlobalComm *TmpGlobalComm::_create(const std::string& subClass)
+TmpGlobalComm_base *TmpGlobalComm_base::_create(const std::string& subClass)
 {
 	Object_skel *skel = ObjectManager::the()->create(subClass);
 	assert(skel);
-	TmpGlobalComm *castedObject = (TmpGlobalComm *)skel->_cast("TmpGlobalComm");
+	TmpGlobalComm_base *castedObject = (TmpGlobalComm_base *)skel->_cast("TmpGlobalComm_base");
 	assert(castedObject);
 	return castedObject;
 }
 
-TmpGlobalComm *TmpGlobalComm::_fromString(std::string objectref)
+TmpGlobalComm_base *TmpGlobalComm_base::_fromString(std::string objectref)
 {
 	ObjectReference r;
 
 	if(Dispatcher::the()->stringToObjectReference(r,objectref))
-		return TmpGlobalComm::_fromReference(r,true);
+		return TmpGlobalComm_base::_fromReference(r,true);
 	return 0;
 }
 
-TmpGlobalComm *TmpGlobalComm::_fromReference(ObjectReference r, bool needcopy)
+TmpGlobalComm_base *TmpGlobalComm_base::_fromReference(ObjectReference r, bool needcopy)
 {
-	TmpGlobalComm *result;
-	result = (TmpGlobalComm *)Dispatcher::the()->connectObjectLocal(r,"TmpGlobalComm");
+	TmpGlobalComm_base *result;
+	result = (TmpGlobalComm_base *)Dispatcher::the()->connectObjectLocal(r,"TmpGlobalComm_base");
 	if(!result)
 	{
 		Connection *conn = Dispatcher::the()->connectObjectRemote(r);
@@ -1573,17 +1573,17 @@ TmpGlobalComm_stub::TmpGlobalComm_stub(Connection *connection, long objectID)
 
 std::string TmpGlobalComm_skel::_interfaceName()
 {
-	return "TmpGlobalComm";
+	return "TmpGlobalComm_base";
 }
 
 std::string TmpGlobalComm_skel::_interfaceNameSkel()
 {
-	return "TmpGlobalComm";
+	return "TmpGlobalComm_base";
 }
 
 void *TmpGlobalComm_skel::_cast(std::string interface)
 {
-	if(interface == "TmpGlobalComm") return (TmpGlobalComm *)this;
+	if(interface == "TmpGlobalComm_base") return (TmpGlobalComm_base *)this;
 
 	void *result;
 	result = GlobalComm_skel::_cast(interface);

@@ -42,7 +42,7 @@ public:
 	/* this overwrites the Object::notify function */
 	void notify(const Notification& notification);
 	void processed();
-	void setReceiver(FlowSystemReceiver *receiver);
+	void setReceiver(FlowSystemReceiver_base *receiver);
 };
 
 class ASyncNetReceive : public FlowSystemReceiver_skel,
@@ -55,7 +55,7 @@ protected:
 	long _receiveHandlerID;
 
 public:
-	ASyncNetReceive(ASyncPort *port, FlowSystemSender *sender);
+	ASyncNetReceive(ASyncPort *port, FlowSystemSender_base *sender);
 
 	// GenericDataChannel interface
 	void processedPacket(GenericDataPacket *packet);

@@ -38,7 +38,7 @@ int main()
 	string reference = server->_toString();
 	printf("%s\n",reference.c_str());
 
-	Hello_var h = Hello::_fromString(reference);
+	Hello_var h = Hello_base::_fromString(reference);
 	if(h)
 		h->hello("local test");
 	else

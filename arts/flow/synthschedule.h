@@ -189,7 +189,7 @@ class StdScheduleNode :public ScheduleNode
 	bool running;
 
 	Object_skel *_object;
-	SynthModule *module;
+	SynthModule_base *module;
 	FlowSystem_impl *flowSystem;
 	std::list<Port *> ports;
 	AudioPort **inConn;
@@ -248,8 +248,8 @@ public:
 						Object* destObject, const std::string& destPort);
 	AttributeType queryFlags(Object* node, const std::string& port);
 
-	FlowSystemReceiver *createReceiver(Object *object, const std::string &port,
-										FlowSystemSender *sender);
+	FlowSystemReceiver_base *createReceiver(Object *object, const std::string &port,
+										FlowSystemSender_base *sender);
 };
 
 #endif
