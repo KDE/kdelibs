@@ -5106,7 +5106,8 @@ bool isBeforeNode(DOM::Node start_sp, DOM::Node end_sp) {
     end_sp = end_sp.parentNode();
   }
   // Now we iterator through the parent's children until we find start_sp or end_sp
-  n = start_sp.parentNode().firstChild();
+  // ### parentNode is sometimes 0?? (LS)
+  n = start_sp.parentNode().isNull() ? 0 : start_sp.parentNode().firstChild();
   while( !n.isNull() ){
     if( n == start_sp ){
       result=true;
