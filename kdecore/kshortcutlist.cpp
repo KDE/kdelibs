@@ -91,6 +91,8 @@ bool KShortcutList::readSettings( const QString& sConfigGroup, KConfigBase* pCon
 				else
 					setShortcut( i, KShortcut(sEntry) );
 			}
+			else // default shortcut
+				setShortcut( i, shortcutDefault(i) );
 			kdDebug(125) << "\t" << name(i) << " = '" << sEntry << "'" << endl;
 		}
 	}
