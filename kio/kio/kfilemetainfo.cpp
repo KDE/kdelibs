@@ -136,7 +136,7 @@ const KFileMetaInfoItem& KFileMetaInfoItem::operator=
     return *this;
 }
 
-void KFileMetaInfoItem::setValue( const QVariant& value )
+bool KFileMetaInfoItem::setValue( const QVariant& value )
 {
     kdDebug(7033) << "KFileMetaInfoItem::setValue() of item " << d->key << endl;
 //    kdDebug(7033) << "isEditable: " << (d->editable ? "yes" : "no") << endl;
@@ -146,15 +146,17 @@ void KFileMetaInfoItem::setValue( const QVariant& value )
     // We don't call makeNull here since it isn't necassery:
     // If d is equal to null it means that null is initialized already.
     // null is 0L when it hasn't been initialized and d is never 0L.
-    if ( d == Data::null ) return;
+    if ( d == Data::null ) return false;
     
     if ( !d->editable ||
          (d->value.isValid() && value.type() != d->value.type()) &&
                                 value.type() != QVariant::Invalid)
-        return;
+        return false;
 
     d->dirty = true;
     d->value = value;
+
+    return true;
 }
 
 void KFileMetaInfoItem::remove()
@@ -477,7 +479,7 @@ QValidator * KFileMetaInfo::createValidator( const QString& key,
                                                    const QString& group) const
 {
     KFilePlugin* p = plugin();
-    if (p) return p->createValidator( item(key, group), parent, name );
+    if (p) return p->createValidator( key, parent, name, group );
     return 0;
 }
 

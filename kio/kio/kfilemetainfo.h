@@ -159,7 +159,7 @@ public:
     /**
      * changes the value of the item
      */
-    void setValue( const QVariant& value );
+    bool setValue( const QVariant& value );
 
     /**
      * convenience method. It does the same as value()->type()
@@ -674,9 +674,10 @@ public:
      * item if it's editable or return a null pointer if not. If you don't
      * have any editable items, you don't need this method
      **/
-    virtual QValidator* createValidator( const KFileMetaInfoItem& /*item*/,
+    virtual QValidator* createValidator( const QString& /* key */,
                                          QObject* /*parent*/,
-                                         const char* /*name*/ ) const
+                                         const char* /*name*/,
+                                         const QString& /* group */) const
     {
         return 0;
     }
