@@ -161,7 +161,7 @@ KFileDialog::KFileDialog(const QString& startDir, const QString& filter,
     d = new KFileDialogPrivate();
     d->boxLayout = 0;
     d->keepLocation = false;
-    d->operationMode = Other;
+    d->operationMode = Opening;
     d->hasDefaultFilter = false;
     d->hasView = false;
     d->mainWidget = new QWidget( this, "KFileDialog::mainWidget");
