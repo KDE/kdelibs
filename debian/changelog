@@ -2,7 +2,7 @@ kdelibs (4:2.2.2-1) unstable; urgency=low
 
   * New upstream version
   * Provide replace/etc bits for easier migration to/from kde3
-  * Update python deps 
+  * Update python deps (Closes: #118208)
   * Fix glib inclusion bits for gmcop stuff...however we are still
     not going to build with it until someone has a need for it.
   * Remove some other hacks
@@ -10,6 +10,7 @@ kdelibs (4:2.2.2-1) unstable; urgency=low
     so let's make sure we match up across the board.
   * Update shlibs for the same reason
   * Use libasound2
+  * Fix printing to files with spaces in the name (Closes: #117962)
 
  -- Ivan E. Moore II <rkrusty@debian.org>  Mon, 12 Nov 2001 00:30:00 -0700
 
