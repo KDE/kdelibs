@@ -397,6 +397,101 @@ QString KStringHandler::rsqueeze( const QString & str, uint maxlen )
   else return str;
 }
 
+QString KStringHandler::lEmSqueeze(QString name, const QFontMetrics& fontMetrics, uint maxlen)
+{
+  return lPixelSqueeze(name, fontMetrics, fontMetrics.maxWidth() * maxlen);
+}
+
+QString KStringHandler::lPixelSqueeze(QString name, const QFontMetrics& fontMetrics, uint maxPixels)
+{
+  uint nameWidth = fontMetrics.width(name);
+  
+  if (maxPixels < nameWidth)
+  {
+    maxPixels -= fontMetrics.width("...");
+    const uint em = fontMetrics.maxWidth();
+    while (maxPixels < nameWidth && !name.isEmpty())
+    {
+      int delta = (nameWidth - maxPixels) / em;
+
+      if (delta < 1) 
+      {
+        break;
+      }
+
+      name.remove(0, delta);
+      nameWidth = fontMetrics.width(name);
+    }
+    return ("..." + name);
+  }
+
+  return name;
+}
+
+QString KStringHandler::cEmSqueeze(QString name, const QFontMetrics& fontMetrics, uint maxlen)
+{
+  return cPixelSqueeze(name, fontMetrics, fontMetrics.maxWidth() * maxlen);
+}
+
+QString KStringHandler::cPixelSqueeze(QString name, const QFontMetrics& fontMetrics, uint maxPixels)
+{
+  uint nameWidth = fontMetrics.width(name);
+  
+  if (maxPixels < nameWidth)
+  {
+    maxPixels -= fontMetrics.width("...");
+    const uint em = fontMetrics.maxWidth();
+    while (maxPixels < nameWidth && !name.isEmpty())
+    {
+      int delta = (nameWidth - maxPixels) / em;
+
+      if (delta < 1) 
+      { 
+        break;
+      }
+
+      name.remove((name.length() / 2) - (delta / 2), delta);
+      nameWidth = fontMetrics.width(name);
+    }
+
+    name.insert((name.length() + 1) / 2, "...");
+  }
+
+  return name;
+}
+
+QString KStringHandler::rEmSqueeze(QString name, const QFontMetrics& fontMetrics, uint maxlen)
+{
+  return rPixelSqueeze(name, fontMetrics, fontMetrics.maxWidth() * maxlen);
+}
+
+QString KStringHandler::rPixelSqueeze(QString name, const QFontMetrics& fontMetrics, uint maxPixels)
+{
+  uint nameWidth = fontMetrics.width(name);
+
+  if (maxPixels < nameWidth)
+  {
+    maxPixels -= fontMetrics.width("...");
+    const uint em = fontMetrics.maxWidth();
+    while (maxPixels < nameWidth && !name.isEmpty())
+    {
+      int delta = (nameWidth - maxPixels) / em;
+
+      if (delta < 1)
+      {
+        break;
+      }
+
+      name.remove(name.length() - delta, delta);
+      nameWidth = fontMetrics.width(name);
+    }
+
+    return (name + "...");
+  }
+
+  return name;
+}
+
 ///// File name patterns (like *.txt)
 
 bool KStringHandler::matchFileName( const QString& filename, const QString& pattern  )

@@ -23,7 +23,7 @@
 #include <qstring.h>
 #include <qstringlist.h>
 #include <qregexp.h>            // for the word ranges
-
+#include <qfontmetrics.h>
 
 /**
  * This class is @em not a substitute for the @ref QString class. What
@@ -208,6 +208,33 @@ public:
      */
     static QString        lsqueeze( const QString & str, uint maxlen = 40 );
 
+    /** Substitute characters at the beginning of a string by "...". Similar to 
+     * method above, except that it truncates based on pixel width rather than
+     * the number of characters
+     * @param str is the string to modify
+     * @param str is the font metrics to use to calculate character sizes
+     * @param maxlen is the maximum length in ems the modified string will have
+     * If the original string is shorter than "maxlen", it is returned verbatim
+     * @return the modified string
+     * @since 3.2
+     */
+    static QString lEmSqueeze( QString name, 
+                               const QFontMetrics& fontMetrics, 
+                               uint maxlen = 30 );
+
+    /** Substitute characters at the beginning of a string by "...". Similar to 
+     * method above, except that maxlen is the width in pixels to truncate to
+     * @param str is the string to modify
+     * @param str is the font metrics to use to calculate character sizes
+     * @param maxlen is the maximum pixel length the modified string will have
+     * If the original string is shorter than "maxlen", it is returned verbatim
+     * @return the modified string
+     * @since 3.2
+     */
+    static QString lPixelSqueeze( QString name, 
+                                  const QFontMetrics& fontMetrics, 
+                                  uint maxPixels );
+
     /** Substitute characters at the middle of a string by "...".
      * @param str is the string to modify
      * @param maxlen is the maximum length the modified string will have
@@ -216,6 +243,33 @@ public:
      */
     static QString        csqueeze( const QString & str, uint maxlen = 40 );
 
+    /** Substitute characters in the middle of a string by "...". Similar to 
+     * method above, except that it truncates based on pixel width rather than
+     * the number of characters
+     * @param str is the string to modify
+     * @param str is the font metrics to use to calculate character sizes
+     * @param maxlen is the maximum length in ems the modified string will have
+     * If the original string is shorter than "maxlen", it is returned verbatim
+     * @return the modified string
+     * @since 3.2
+     */
+    static QString cEmSqueeze( QString name, 
+                               const QFontMetrics& fontMetrics, 
+                               uint maxlen = 30 );
+
+    /** Substitute characters in the middle of a string by "...". Similar to 
+     * method above, except that maxlen is the width in pixels to truncate to
+     * @param str is the string to modify
+     * @param str is the font metrics to use to calculate character sizes
+     * @param maxlen is the maximum pixel length the modified string will have
+     * If the original string is shorter than "maxlen", it is returned verbatim
+     * @return the modified string
+     * @since 3.2
+     */
+    static QString cPixelSqueeze( QString name,
+                                  const QFontMetrics& fontMetrics, 
+                                  uint maxPixels );
+
     /** Substitute characters at the end of a string by "...".
      * @param str is the string to modify
      * @param maxlen is the maximum length the modified string will have
@@ -223,6 +277,33 @@ public:
      * @return the modified string
      */
     static QString        rsqueeze( const QString & str, uint maxlen = 40 );
+
+    /** Substitute characters at the end of a string by "...". Similar to 
+     * method above, except that it truncates based on pixel width rather than
+     * the number of characters
+     * @param str is the string to modify
+     * @param str is the font metrics to use to calculate character sizes
+     * @param maxlen is the maximum length in ems the modified string will have
+     * If the original string is shorter than "maxlen", it is returned verbatim
+     * @return the modified string
+     * @since 3.2
+     */
+    static QString rEmSqueeze( QString name, 
+                               const QFontMetrics& fontMetrics, 
+                               uint maxlen = 30 );
+
+    /** Substitute characters at the end of a string by "...". Similar to 
+     * method above, except that maxlen is the width in pixels to truncate to
+     * @param str is the string to modify
+     * @param str is the font metrics to use to calculate character sizes
+     * @param maxlen is the maximum pixel length the modified string will have
+     * If the original string is shorter than "maxlen", it is returned verbatim
+     * @return the modified string
+     * @since 3.2
+     */
+    static QString rPixelSqueeze( QString name, 
+                                  const QFontMetrics& fontMetrics,
+                                  uint maxPixels );
 
     /**
      * Match a filename.
