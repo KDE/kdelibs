@@ -35,7 +35,6 @@
 // maximum number of files the loader will try to load in parallel
 #define MAX_REQUEST_JOBS 4
 
-
 #include <qtextstream.h>
 #include <qasyncio.h>
 #include <qasyncimageio.h>
@@ -569,7 +568,7 @@ void CachedImage::movieUpdated( const QRect& r )
 void CachedImage::movieStatus(int status)
 {
 #ifdef CACHE_DEBUG
-    //qDebug("movieStatus(%d)", status);
+    qDebug("movieStatus(%d)", status);
 #endif
     if((status == QMovie::EndOfFrame) || (status == QMovie::EndOfMovie))
     {
