@@ -24,6 +24,7 @@
 
 #include <qdialog.h>
 #include <klocale.h>
+#include <kglobal.h>
 #include <kdebug.h>
 #include <kcmdlineargs.h>
 #include <kapp.h>
@@ -80,12 +81,13 @@ protected:
 
 int main(int argc, char *argv[])
 {
-    KLocale::setMainCatalogue("klock");
+    KLocale::setMainCatalogue("libkscreensaver");
     KCmdLineArgs::init(argc, argv, kss_applicationName, kss_description, kss_version);
 
     KCmdLineArgs::addCmdLineOptions(options);
 
     KApplication app;
+    KGlobal::locale()->insertCatalogue("klock");
 
     DemoWindow *demoWidget = 0;
     Window saveWin = 0;
