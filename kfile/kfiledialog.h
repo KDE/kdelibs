@@ -295,6 +295,8 @@ public:
 signals:
   void returnPressed();
   void completion();
+  void next();
+  void previous();
 
 
 private:

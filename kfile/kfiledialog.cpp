@@ -196,6 +196,10 @@ KFileDialog::KFileDialog(const QString& dirName, const QString& filter,
     connect(locationEdit, SIGNAL(textChanged(const QString&)),
 	    SLOT(locationChanged(const QString&)));
     connect(locationEdit, SIGNAL(completion()), SLOT(completion()));
+    //    connect(locationEdit, SIGNAL( previous()),
+    //	    &(ops->myCompletion), SLOT( slotPreviousMatch() ) );
+    //    connect(locationEdit, SIGNAL( next()),
+    //	    &(ops->myCompletion), SLOT( slotNextMatch() ) );
 
 
     d->filterLabel = new QLabel(i18n("&Filter:"), d->mainWidget);
@@ -350,7 +354,7 @@ void KFileDialog::filterChanged() // SLOT
 
 void KFileDialog::locationChanged(const QString& txt)
 {
-    QString text = txt.stripWhiteSpace();
+    QString text = txt; //.stripWhiteSpace();
     QString newText = text.left(locationEdit->cursorPosition() -1);
 
     KURL url( text );
@@ -799,7 +803,7 @@ QString KFileDialog::selectedFile() const
        KURL url( d->filename_);
        if (url.isLocalFile())
           return url.path();
-    } 
+    }
     return QString::null;
 }
 
@@ -856,15 +860,33 @@ bool KFileComboBox::eventFilter( QObject *o, QEvent *ev )
 {
     if ( o == edit && ev->type() == QEvent::KeyPress ) {
         QKeyEvent *e = (QKeyEvent *) ev;
+
+	if ( e->key() == Qt::Key_Return || e->key() == Qt::Key_Enter ) {
+	    emit returnPressed();
+	    return true;
+	}
+	
+	bool ret = false;
 	if ( edit->cursorPosition() == (int) edit->text().length() ) {
 	    if ( e->key() == Qt::Key_End || e->key() == Qt::Key_Right ) {
 	        if ( KGlobal::completionMode() == KGlobal::CompletionEOL ) {
 		    edit->deselect();
 		    emit completion();
-		    return true; // don't pass the event any further
+		    ret = true; // don't pass the event any further
 		}
 	    }
 	}
+
+	if ( e->key() == Qt::Key_Next ) {
+	    emit next();
+	    ret = true;
+	}
+	else if ( e->key() == Qt::Key_Prior ) {
+	    emit previous();
+	    ret = true;
+	}
+	
+	return ret;
     }
 
     return false;
