@@ -22,6 +22,8 @@ Shell::Shell( QWidget* parent, const char* name )
     m_selectedPart = 0;
     m_statusBar = 0;
     m_bDoPartActivation = TRUE;
+
+    resize( 600, 400 );
     
     qApp->installEventFilter( this );
 }
