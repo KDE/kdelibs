@@ -61,6 +61,7 @@
 #include <qptrdict.h>
 #include <qfile.h>
 #include <qdir.h>
+#include <qregexp.h>
 
 #include <kurl.h>
 #include <krfcdate.h>
@@ -292,7 +293,6 @@ QString KCookieJar::findCookies(const QString &_url, bool useDOMFormat, long win
 
     if (!parseURL(_url, fqdn, path))
         return cookieStr;
-
 
     bool secureRequest = (_url.find( "https://", 0, false) == 0 ||
                           _url.find( "webdavs://", 0, false) == 0);
@@ -546,10 +546,12 @@ bool KCookieJar::parseURL(const QString &_url,
     _path = kurl.path();
     if (_path.isEmpty())
        _path = "/";
-    else if (_path[_path.length()-1] == '/')
-       _path = QDir::cleanDirPath(_path) + '/'; // Preserve trailing slash
-    else
-       _path = QDir::cleanDirPath(_path);
+
+    QRegExp exp("[\\/]..[\\/]");
+    // Weird path, cookie stealing attempt?
+    if (exp.search(_path) != -1)
+       return false; // Deny everything!!
+
     return true;
 }
 
