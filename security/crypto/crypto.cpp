@@ -311,10 +311,10 @@ QString whatstr;
   //  CipherWizards
   //
   QHButtonGroup *cwbg = new QHButtonGroup(i18n("Cipher Wizards..."), tabSSL);
-  mCWcompatible = new QPushButton(i18n("Most &Compatible"), cwbg);
+  mCWcompatible = new QPushButton(i18n("&Most Compatible"), cwbg);
   mCWus = new QPushButton(i18n("&US Ciphers Only"), cwbg);
   mCWexp = new QPushButton(i18n("E&xport Ciphers Only"), cwbg);
-  mCWall = new QPushButton(i18n("Enable &All"), cwbg);
+  mCWall = new QPushButton(i18n("E&nable All"), cwbg);
   connect(mCWcompatible, SIGNAL(clicked()), SLOT(slotCWcompatible()));
   connect(mCWus, SIGNAL(clicked()), SLOT(slotCWus()));
   connect(mCWexp, SIGNAL(clicked()), SLOT(slotCWexp()));
