@@ -55,8 +55,8 @@ class Resource {
 
   private:
     AddressBook *mAddressBook;
-	bool mReadOnly;
-	bool mFastResource;
+    bool mReadOnly;
+    bool mFastResource;
 };
 
 }

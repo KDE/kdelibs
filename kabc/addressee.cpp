@@ -23,9 +23,7 @@
 #include <kapplication.h>
 #include <klocale.h>
 
-#include "phonenumber.h"
 #include "resource.h"
-
 #include "addressee.h"
 
 using namespace KABC;
@@ -63,6 +61,7 @@ struct Addressee::AddresseeData : public KShared
   Resource *resource;
 
   bool empty;
+  bool changed;
 };
 
 Addressee::Addressee()
@@ -70,6 +69,7 @@ Addressee::Addressee()
   mData = new AddresseeData;
   mData->uid = KApplication::randomString( 10 );
   mData->empty = true;
+  mData->changed = false;
   mData->resource = 0;
 }
 
@@ -130,7 +130,6 @@ bool Addressee::operator==( const Addressee &a ) const
   if ( mData->emails != a.mData->emails ) return false;
   if ( mData->categories != a.mData->categories ) return false;
   if ( mData->custom != a.mData->custom ) return false;
-  // should we compare the resource pointer as well? Please Fix...
 
   return true;
 }
@@ -1088,6 +1087,16 @@ void Addressee::setResource( Resource *resource )
 Resource *Addressee::resource() const
 {
     return mData->resource;
+}
+
+void Addressee::setChanged()
+{
+	mData->changed = true;
+}
+
+bool Addressee::changed()
+{
+	return mData->changed;
 }
 
 QDataStream &KABC::operator<<( QDataStream &s, const Addressee &a )

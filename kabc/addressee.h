@@ -29,9 +29,9 @@
 #include <ksharedptr.h>
 #include <kurl.h>
 
-#include "phonenumber.h"
 #include "address.h"
 #include "geo.h"
+#include "phonenumber.h"
 #include "timezone.h"
 
 namespace KABC {
@@ -587,7 +587,6 @@ class Addressee
       Debug output.
     */
     void dump() const;
-  
 
     /**
       Set resource where the addressee is from
@@ -598,7 +597,16 @@ class Addressee
       Return pointer to resource
     */
     Resource *resource() const;
+  
+	/**
+	  Mark addressee as changed
+	 */
+	void setChanged();
 
+	/**
+	  Return whether the addressee is changed
+	 */
+	bool changed();
 
   private:
     Addressee copy();

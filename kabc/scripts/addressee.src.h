@@ -245,6 +245,16 @@ class Addressee
     */
     Resource *resource() const;
   
+	/**
+	  Mark addressee as changed
+	 */
+	void setChanged();
+
+	/**
+	  Return whether the addressee is changed
+	 */
+	bool changed();
+
   private:
     Addressee copy();
     void detach();

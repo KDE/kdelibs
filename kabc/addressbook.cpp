@@ -76,12 +76,12 @@ AddressBook::Iterator::~Iterator()
   delete d;
 }
 
-const Addressee AddressBook::Iterator::operator*() const
+const Addressee &AddressBook::Iterator::operator*() const
 {
   return *(d->mIt);
 }
 
-Addressee AddressBook::Iterator::operator*()
+Addressee &AddressBook::Iterator::operator*()
 {
   return *(d->mIt);
 }
@@ -144,7 +144,7 @@ AddressBook::ConstIterator::~ConstIterator()
   delete d;
 }
 
-const Addressee AddressBook::ConstIterator::operator*() const
+const Addressee &AddressBook::ConstIterator::operator*() const
 {
   return *(d->mIt);
 }
@@ -267,10 +267,17 @@ Ticket *AddressBook::requestSaveTicket( Resource *resource )
 
 void AddressBook::insertAddressee( const Addressee &a )
 {
-  Iterator it;
-  for ( it = begin(); it != end(); ++it ) {
+  Addressee::List::Iterator it;
+  for ( it = d->mAddressees.begin(); it != d->mAddressees.end(); ++it ) {
     if ( a.uid() == (*it).uid() ) {
+      bool changed = false;
+      if ( a != (*it) )
+        changed = true;
       (*it) = a;
+      if ( changed ) {
+        (*it).setRevision( QDateTime::currentDateTime() );
+        (*it).setChanged(); 
+      }
       return;
     }
   }
