@@ -113,7 +113,7 @@ public:
      * main window is a toplevel window, regardless of whether it has a
      * parent or not. DestructiveClose indicates that a main window is
      * automatically destroyed when its window is closed. Pass 0 if
-     * you do not want this behaviour.
+     * you do not want this behavior.
      *
      * KMainWindows must be created on the heap with 'new', like:
      *  <pre> KMainWindow *kmw = new KMainWindow (...</pre>
@@ -260,7 +260,7 @@ public:
      * (standard) XML file for the layout purposes.
      *
      * @param xmlfile The local xmlfile (relative or absolute)
-     * @param _conserveMemory Specifiy whether createGUI() should call
+     * @param _conserveMemory Specify whether createGUI() should call
      *     @ref KXMLGuiClient::conserveMemory() to free all memory
      *     allocated by the @ref QDomDocument .
      */
@@ -282,7 +282,7 @@ public:
     /**
      * Returns a pointer to the menu bar.
      *
-     * If there is no menu bar yet on will be created.
+     * If there is no menu bar yet one will be created.
      **/
     KMenuBar *menuBar();
 
@@ -383,7 +383,7 @@ public slots:
     /**
      * Makes a KDE compliant caption.
      *
-     * @param caption Your caption. @em Do @em notx include the application name
+     * @param caption Your caption. @em Do @em not include the application name
      * in this string. It will be added automatically according to the KDE
      * standard.
      */
@@ -395,7 +395,7 @@ public slots:
      * in this string. It will be added automatically according to the KDE
      * standard.
      * @param modified Specify whether the document is modified. This displays
-     * an additionnal sign in the title bar, usually "**".
+     * an additional sign in the title bar, usually "**".
      */
     virtual void setCaption( const QString &caption, bool modified );
 
@@ -456,7 +456,7 @@ protected:
     virtual void closeEvent ( QCloseEvent *);
     /**
        Called before the very last window is closed, either by the
-       user or indirectely by the session manager.
+       user or indirectly by the session manager.
 
        It is not recommended to do any user interaction in this
        function other than indicating severe errors. Better ask the
@@ -484,7 +484,7 @@ protected:
     virtual bool queryExit();
 
     /**
-       Called before the window is closed, either by the user or indirectely by
+       Called before the window is closed, either by the user or indirectly by
        the session manager.
 
        The purpose of this function is to prepare the window in a way that it is
