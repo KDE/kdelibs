@@ -61,7 +61,7 @@ public:
 	 * @param appName The name of the application, which will be
 	 *		used for searching the "apps" directory.
 	 */
-	KStandardDirs( const QString& appName );
+	KStandardDirs( const QString& appName = QString::null );
 
 	/**
 	 * KStandardDirs Destructor.
