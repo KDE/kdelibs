@@ -1,17 +1,16 @@
 #include "kdatepik.h"
 #include <qlineedit.h>
 #include <kapplication.h>
+#include <klocale.h>
 
 int main(int argc, char** argv)
 {
-  KApplication *app=new KApplication(argc, argv, "KDatePickertest");
+  KLocale::setMainCatalogue("kdelibs");
+  KApplication app(argc, argv, "KDatePickertest");
   KDatePicker picker;
-  app->setMainWidget(&picker);
-  picker.resize(picker.sizeHint().width(), 
-		 picker.sizeHint().height());
-  picker.setMinimumSize(picker.size());
+  app.setMainWidget(&picker);
   picker.show();
   // picker.setEnabled(false);
-  return app->exec();
+  return app.exec();
 }
 

@@ -45,8 +45,7 @@
 #include <qpen.h>
 #include <qpainter.h>
 #include <qdialog.h>
-
-#include "kdatetbl.moc"
+#include <assert.h>
 
 KDateValidator::KDateValidator(QWidget* parent, const char* name)
     : QValidator(parent, name)
@@ -65,7 +64,7 @@ QValidator::State
 KDateValidator::date(const QString& text, QDate& d) const
 {
   QDate tmp = KGlobal::locale()->readDate(text);
-  if (!tmp.isNull()) 
+  if (!tmp.isNull())
     {
       d = tmp;
       return Acceptable;
@@ -73,15 +72,14 @@ KDateValidator::date(const QString& text, QDate& d) const
       return Valid;
 }
 
-void 
+void
 KDateValidator::fixup( QString& ) const
 {
 
 }
 
 KDateTable::KDateTable(QWidget *parent, QDate date_, const char* name, WFlags f)
-  : QGridView(parent, name, f),
-    hasSelection(false)
+  : QGridView(parent, name, f)
 {
   setFontSize(10);
   if(!date_.isValid())
@@ -89,6 +87,7 @@ KDateTable::KDateTable(QWidget *parent, QDate date_, const char* name, WFlags f)
       kdDebug() << "KDateTable ctor: WARNING: Given date is invalid, using current date." << endl;
       date_=QDate::currentDate();
     }
+  setFocusPolicy( QWidget::StrongFocus );
   setNumRows(7); // 6 weeks max + headline
   setNumCols(7); // 7 days a week
   setHScrollBarMode(AlwaysOff);
@@ -117,7 +116,7 @@ KDateTable::paintCell(QPainter *painter, int row, int col)
       painter->setFont(font);
       bool normalday = true;
       QString daystr;
-      if (KGlobal::locale()->weekStartsMonday()) 
+      if (KGlobal::locale()->weekStartsMonday())
         {
           daystr = KGlobal::locale()->weekDayName(col+1, true);
           if (col == 5 || col == 6)
@@ -127,7 +126,7 @@ KDateTable::paintCell(QPainter *painter, int row, int col)
           if (col == 0 || col == 6)
               normalday = false;
         }
-      if (!normalday) 
+      if (!normalday)
         {
           painter->setPen(lightGray);
           painter->setBrush(brushLightblue);
@@ -165,11 +164,11 @@ KDateTable::paintCell(QPainter *painter, int row, int col)
           text.setNum(pos-firstday+1);
           painter->setPen(black);
         }
-      
+
       pen=painter->pen();
       if(firstday+date.day()-1==pos)
         {
-          if(hasSelection)
+          if(hasFocus())
             { // draw the currently selected date
               painter->setPen(red);
               painter->setBrush(darkRed);
@@ -189,6 +188,72 @@ KDateTable::paintCell(QPainter *painter, int row, int col)
     }
   if(rect.width()>maxCell.width()) maxCell.setWidth(rect.width());
   if(rect.height()>maxCell.height()) maxCell.setHeight(rect.height());
+}
+
+void
+KDateTable::keyPressEvent( QKeyEvent *e )
+{
+    if ( e->key() == Qt::Key_Prior ) {
+        if ( date.month() == 1 ) {
+            KNotifyClient::beep();
+            return;
+        }
+        int day = date.day();
+        if ( day > 27 )
+            while ( !QDate::isValid( date.year(), date.month()-1, day ) )
+                day--;
+        setDate(QDate(date.year(), date.month()-1, day));
+        return;
+    }
+    if ( e->key() == Qt::Key_Next ) {
+        if ( date.month() == 12 ) {
+            KNotifyClient::beep();
+            return;
+        }
+        int day = date.day();
+        if ( day > 27 )
+            while ( !QDate::isValid( date.year(), date.month()+1, day ) )
+                day--;
+        setDate(QDate(date.year(), date.month()+1, day));
+        return;
+    }
+
+    int dayoff = KGlobal::locale()->weekStartsMonday() ? 1 : 0;
+
+    int temp=firstday+date.day()-dayoff;
+    int pos = temp;
+
+    if ( e->key() == Qt::Key_Up ) {
+        pos -= 7;
+    }
+    if ( e->key() == Qt::Key_Down ) {
+        pos += 7;
+    }
+    if ( e->key() == Qt::Key_Left ) {
+        pos--;
+    }
+    if ( e->key() == Qt::Key_Right ) {
+        pos++;
+    }
+
+    if(pos+dayoff<=firstday)
+    { // this day is in the previous month
+        KNotifyClient::beep();
+        return;
+    }
+    if(firstday+numdays<pos+dayoff)
+    { // this date is in the next month
+        KNotifyClient::beep(i18n( "Month not long enough" ));
+        return;
+    }
+
+    if ( pos == temp )
+        return;
+
+    setDate(QDate(date.year(), date.month(), pos-firstday+dayoff));
+    updateCell(temp/7+1, temp%7); // Update the previously selected cell
+    updateCell(pos/7+1, pos%7); // Update the selected cell
+    assert(QDate(date.year(), date.month(), pos-firstday+dayoff).isValid());
 }
 
 void
@@ -262,7 +327,6 @@ KDateTable::contentsMousePressEvent(QMouseEvent *e)
   temp=firstday+date.day()-dayoff-1;
   setDate(QDate(date.year(), date.month(), pos-firstday+dayoff));
   updateCell(temp/7+1, temp%7); // Update the previously selected cell
-  hasSelection = true;
   updateCell(row, col); // Update the selected cell
   // assert(QDate(date.year(), date.month(), pos-firstday+dayoff).isValid());
   emit(tableClicked());
@@ -307,6 +371,18 @@ const QDate&
 KDateTable::getDate()
 {
   return date;
+}
+
+void KDateTable::focusInEvent( QFocusEvent *e )
+{
+    repaintContents(false);
+    QGridView::focusInEvent( e );
+}
+
+void KDateTable::focusOutEvent( QFocusEvent *e )
+{
+    repaintContents(false);
+    QGridView::focusOutEvent( e );
 }
 
 QSize
@@ -421,10 +497,10 @@ KDateInternalMonthPicker::contentsMousePressEvent(QMouseEvent *e)
   }
 }
 
-void 
+void
 KDateInternalMonthPicker::contentsMouseMoveEvent(QMouseEvent *e)
 {
-  if (e->state() & LeftButton) 
+  if (e->state() & LeftButton)
     {
       int row, col;
       QPoint mouseCoord;
@@ -433,9 +509,9 @@ KDateInternalMonthPicker::contentsMouseMoveEvent(QMouseEvent *e)
       row=rowAt(mouseCoord.y());
       col=columnAt(mouseCoord.x());
       int tmpRow = -1, tmpCol = -1;
-      if(row<0 || col<0) 
+      if(row<0 || col<0)
         { // the user clicked on the frame of the table
-          if ( activeCol > -1 ) 
+          if ( activeCol > -1 )
             {
               tmpRow = activeRow;
               tmpCol = activeCol;
@@ -444,12 +520,12 @@ KDateInternalMonthPicker::contentsMouseMoveEvent(QMouseEvent *e)
           activeRow = -1;
         } else {
           bool differentCell = (activeRow != row || activeCol != col);
-          if ( activeCol > -1 && differentCell) 
+          if ( activeCol > -1 && differentCell)
             {
               tmpRow = activeRow;
               tmpCol = activeCol;
             }
-          if ( differentCell) 
+          if ( differentCell)
             {
               activeRow = row;
               activeCol = col;
@@ -588,7 +664,7 @@ KPopupFrame::resizeEvent(QResizeEvent*)
     }
 }
 
-void 
+void
 KPopupFrame::popup(const QPoint &pos)
 {
   // Make sure the whole popup is visible.
@@ -629,3 +705,4 @@ KPopupFrame::exec(int x, int y)
   return exec(QPoint(x, y));
 }
 
+#include "kdatetbl.moc"

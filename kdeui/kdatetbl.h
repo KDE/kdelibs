@@ -59,13 +59,15 @@ protected:
   /** The resize event. */
   void viewportResizeEvent(QResizeEvent*);
   /** Paint a cell. This simply draws the month names in it. */
-  void paintCell(QPainter* painter, int row, int col);
+  virtual void paintCell(QPainter* painter, int row, int col);
   /** Catch mouse click and move events to paint a rectangle around the item.*/
   void contentsMousePressEvent(QMouseEvent *e);
   void contentsMouseMoveEvent(QMouseEvent *e);
   /** Emit monthSelected(int) when a cell has been released. */
   void contentsMouseReleaseEvent(QMouseEvent *e);
-    
+
+
+
 private:
   class KDateInternalMonthPrivate;
   KDateInternalMonthPrivate *d;
@@ -187,6 +189,8 @@ public:
     /** Select and display this date. */
     bool setDate(const QDate&);
     const QDate& getDate();
+
+
 protected:
     /** Paint a cell. */
     virtual void paintCell(QPainter*, int, int);
@@ -194,6 +198,9 @@ protected:
     virtual void viewportResizeEvent(QResizeEvent *);
     /** React on mouse clicks that select a date. */
     virtual void contentsMousePressEvent(QMouseEvent *);
+    virtual void keyPressEvent( QKeyEvent *e );
+    virtual void focusInEvent( QFocusEvent *e );
+    virtual void focusOutEvent( QFocusEvent *e );
     /** The font size of the displayed text. */
     int fontsize;
     /** The currently selected date. */
@@ -204,8 +211,8 @@ protected:
     int numdays;
     /** The number of days in the previous month. */
     int numDaysPrevMonth;
-    /** Whether something has been selected or not. */
-    bool hasSelection;
+    /* unused */
+    bool unused_hasSelection;
     /** Save the size of the largest used cell content. */
     QRect maxCell;
 signals:
