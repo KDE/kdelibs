@@ -23,8 +23,8 @@ Package: kdelibs-bin
 Section: libs
 Architecture: any
 Depends: ${shlibs:Depends}, netpbm, python
-Conflicts: kdelibs3 (<< 4:3.0.0), kdelibs3-bin (<< 4:3.0.0), kdelibs3-cups (<< 4:3.0.0), kdelibs-dev (<< 4:3.0.0), libkmid (<< 4:3.0.0), libkmid-alsa (<< 4:3.0.0)
-Replaces: kdelibs3 (<< 4:3.0.0), kdelibs3-bin (<< 4:3.0.0), kdelibs3-cups (<< 4:3.0.0), kdelibs-dev (<< 4:3.0.0), libkmid (<< 4:3.0.0), libkmid-alsa (<< 4:3.0.0)
+Conflicts: kdelibs3 (<< 4:3.0.0), kdelibs3-bin (<< 4:3.0.0), kdelibs3-cups (<< 4:3.0.0), kdelibs-dev (<< 4:3.0.0), libkmid (<< 4:3.0.0), libkmid-alsa (<< 4:3.0.0), konqueror (<< 4:3.1.94)
+Replaces: kdelibs3 (<< 4:3.0.0), kdelibs3-bin (<< 4:3.0.0), kdelibs3-cups (<< 4:3.0.0), kdelibs-dev (<< 4:3.0.0), libkmid (<< 4:3.0.0), libkmid-alsa (<< 4:3.0.0), konqueror (<< 4:3.1.94)
 Description: KDE core binaries
  KDE is a powerful Open Source graphical desktop environment 
  for Unix workstations. It combines ease of use, contemporary 
