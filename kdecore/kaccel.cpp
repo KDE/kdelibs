@@ -55,17 +55,11 @@ bool KAccelPrivate::emitSignal( KAccelBase::Signal signal )
 
 bool KAccelPrivate::connectKey( KAccelAction& action, const KKey& spec )
 {
-	//if( action.m_sName == "file_new" ) { char* c = 0; *c = 0; }
-	if( !action.getID() )
-		action.setID( m_nIDAccelNext++ );
-
 	uint keyQt = spec.keyCodeQt();
-	// FIXME: Each individual key needs it's own id; an action may have multiple
-	//  keys, so need to assign an id to each one.
-	int nID = ((QAccel*)m_pAccel)->insertItem( keyQt, action.getID() );
-	if( nID != action.getID() )
-		action.setID( nID );
-	if( nID && action.objSlotPtr() ) {
+	int nID = ((QAccel*)m_pAccel)->insertItem( keyQt );
+	m_mapIDToAction[nID] = &action;
+
+	if( action.objSlotPtr() ) {
 		((QAccel*)m_pAccel)->connectItem( nID, action.objSlotPtr(), action.methodSlotPtr() );
 		if( !action.isEnabled() )
 			((QAccel*)m_pAccel)->setItemEnabled( nID, false );
@@ -88,12 +82,17 @@ bool KAccelPrivate::connectKey( const KKey& spec )
 
 bool KAccelPrivate::disconnectKey( KAccelAction& action, const KKey& spec )
 {
-	kdDebug(125) << "KAccelPrivate::disconnectKey( \"" << action.name() << "\", " << spec.toStringInternal() << " ) : id = " << action.getID() << " m_pObjSlot = " << action.objSlotPtr() << endl;
-	if( action.getID() ) {
-		((QAccel*)m_pAccel)->removeItem( action.getID() );
-		action.setID( 0 );
+	QMap<int, KAccelAction*>::iterator it = m_mapIDToAction.begin();
+	for( ; it != m_mapIDToAction.end(); ++it ) {
+		if( *it == &action ) {
+			kdDebug(125) << "KAccelPrivate::disconnectKey( \"" << action.name() << "\", " << spec.toStringInternal() << " ) : id = " << it.key() << " m_pObjSlot = " << action.objSlotPtr() << endl;
+			((QAccel*)m_pAccel)->removeItem( it.key() );
+			m_mapIDToAction.remove( it );
+			return true;
+		}
 	}
-	return true;
+	kdWarning(125) << "Didn't find action in m_mapIDToAction." << endl;
+	return false;
 }
 
 bool KAccelPrivate::disconnectKey( const KKey& spec )
