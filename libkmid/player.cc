@@ -36,6 +36,7 @@
 
 #define MS2T(ms) (((ms)*(double)tempoToMetronomeTempo(tempo)*(double)info->ticksPerCuarterNote)/((double)60000L))
 
+#define REMOVEDUPSTRINGS
 
 player::player(DeviceManager *midi_,PlayerController *pctl)
 {
@@ -274,6 +275,12 @@ void player::parseSpecialEvents(void)
     int spev_id=1;
     int j;
     int parsing=1;
+#ifdef REMOVEDUPSTRINGS
+    char lasttext[1024];
+    ulong lasttexttime=0;
+    lasttext[0]=0;
+    int lasttexttype=0;
+#endif
     while (parsing)
     {
         prevms=minTime;
@@ -346,13 +353,23 @@ void player::parseSpecialEvents(void)
                                         (ev->length>1024)? (1023) : (ev->length) );
                                 pspev->text[(ev->length>1024)? (1023):(ev->length)]=0;
 #ifdef PLAYERDEBUG
-                                printf("(%s)\n",pspev->text);
+                                printf("(%s)(%s)\n",pspev->text,lasttext);
 #endif
-                                pspev->next=new SpecialEvent;
+#ifdef REMOVEDUPSTRINGS
+				if ((strcmp(pspev->text,lasttext)!=0)||(pspev->absmilliseconds!=lasttexttime)||(pspev->type!=lasttexttype))
+				{
+				   lasttexttime=pspev->absmilliseconds;
+				   lasttexttype=pspev->type;
+				   strcpy(lasttext,pspev->text);
+#endif
+                                   pspev->next=new SpecialEvent;
 #ifdef PLAYERDEBUG
-                                if (pspev->next==NULL) printf("pspev->next=NULL\n");
+                                   if (pspev->next==NULL) printf("pspev->next=NULL\n");
 #endif
-                                pspev=pspev->next;
+                                   pspev=pspev->next;
+#ifdef REMOVEDUPSTRINGS
+				}
+#endif
                             }
                         }
                         break;
