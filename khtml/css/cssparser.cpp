@@ -2109,9 +2109,6 @@ bool StyleBaseImpl::parseBackgroundPosition(const QChar *curP, const QChar *&nex
     // We first need to check if the property has two values.
     // if this fails we try one value only.
 
-    while (nextP->isSpace() && nextP < endP) {
-    	nextP++;
-    }
     bool dummy;
     const QChar *bckgrNextP = getNext(nextP, endP, dummy);
     //kdDebug(6080) << "BKCGR: 2: \"" << QString(curP, bckgrNextP - curP) << "\"" << endl;
