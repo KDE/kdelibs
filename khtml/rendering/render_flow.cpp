@@ -374,10 +374,10 @@ void RenderFlow::layoutBlockChildren( bool relayoutChildren )
                 child->setLayouted(false);
 	if ( child->style()->flowAroundFloats() && !child->isFloating() &&
 	     style()->width().isFixed() && child->minWidth() > lineWidth( m_height ) ) {
-	    m_height = floatBottom();
+	    m_height = QMAX( m_height, floatBottom() );
 	    prevMargin = 0;
 	}
-
+	
 //         kdDebug( 6040 ) << "   " << child->renderName() << " loop " << child << ", " << child->isInline() << ", " << child->layouted() << endl;
 //         kdDebug( 6040 ) << t.elapsed() << endl;
         // ### might be some layouts are done two times... FIX that.
