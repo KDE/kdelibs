@@ -106,17 +106,17 @@ namespace khtml
 	virtual RenderStyle *styleForElement(DOM::ElementImpl *e, int state = None );
 	
 	bool strictParsing;
+	struct Encodedurl {
+	    QString host; //also contains protocol
+	    QString path;
+	    QString file;
+	} encodedurl;
     protected:
 	static DOM::CSSStyleSheetImpl *defaultSheet;
 	static CSSStyleSelectorList *defaultStyle;
 	static DOM::CSSStyleSheetImpl *userSheet;
 	static CSSStyleSelectorList *userStyle;
 	CSSStyleSelectorList *authorStyle;
-	struct Encodedurl {
-	    QString host; //also contains protocol
-	    QString path;
-	    QString file;
-	} encodedurl;
     };
 
     /*
