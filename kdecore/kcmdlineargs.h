@@ -44,14 +44,14 @@ struct KCmdLineOptions
     * the name without the "no" and the result will be the inverse of what is
     * specified. i.e. if "nofoo" is the name of the option and
     * <i>myapp --nofoo</i> is called:
-    * 
+    *
     * \code
     * KCmdLineArgs::parsedArgs()->isSet("foo"); // false
     * \endcode
     */
    const char *name;
    /**
-    * The text description of the option as should appear in 
+    * The text description of the option as should appear in
     * <i>myapp --help</i>.  This value should be wrapped with I18N_NOOP().
     */
    const char *description;
@@ -284,7 +284,7 @@ public:
    *    { "o", 0, 0 },
    *    { "option2", I18N_NOOP("Description 2"), 0 },
    *    { "nooption3", I18N_NOOP("Description 3"), 0 },
-   *    { 0, 0, 0}
+   *    KCmdLineLastOption
    * }
    * \endcode
    *
