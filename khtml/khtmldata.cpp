@@ -34,7 +34,7 @@
 // most of these sizes are standard X font sizes, so all of our fonts
 // display nicely.
 
-const int defaultFontSizes[MAXFONTSIZES] = { 8, 10, 12, 14, 18, 24, 32 };
+const int defaultFontSizes[MAXFONTSIZES] = { 6, 8, 10, 12, 14, 18, 24 };
 
 HTMLSettings::HTMLSettings()
 {
