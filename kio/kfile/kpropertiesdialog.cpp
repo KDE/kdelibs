@@ -1968,9 +1968,15 @@ KApplicationPropsPlugin::KApplicationPropsPlugin( KPropertiesDialog *_props )
   d->m_frame = properties->dialog()->addPage(i18n("&Application"));
   QVBoxLayout *toplayout = new QVBoxLayout( d->m_frame, KDialog::spacingHint());
 
-  availableExtensionsList = new QListBox( d->m_frame );
-  addExtensionButton = new QPushButton( QString::fromLatin1("<<"), d->m_frame );
-  delExtensionButton = new QPushButton( QString::fromLatin1(">>"), d->m_frame );
+  addExtensionButton = new QPushButton( QString::null, d->m_frame );
+  addExtensionButton->setPixmap( BarIcon( "back", KIcon::SizeSmall ) );
+  connect( addExtensionButton, SIGNAL( clicked() ),
+            SLOT( slotAddExtension() ) );
+
+  delExtensionButton = new QPushButton( QString::null, d->m_frame );
+  delExtensionButton->setPixmap( BarIcon( "forward", KIcon::SizeSmall ) );
+  connect( delExtensionButton, SIGNAL( clicked() ),
+            SLOT( slotDelExtension() ) );
 
   QLabel *l;
 
@@ -1996,17 +2002,19 @@ KApplicationPropsPlugin::KApplicationPropsPlugin( KPropertiesDialog *_props )
   grid = new QGridLayout(4, 3);
   grid->setColStretch(0, 1);
   grid->setColStretch(2, 1);
+  grid->setRowStretch( 0, 1 );
+  grid->setRowStretch( 3, 1 );
   toplayout->addLayout(grid, 2);
 
   extensionsList = new QListBox( d->m_frame );
+  extensionsList->setSelectionMode( QListBox::Extended );
   grid->addMultiCellWidget(extensionsList, 0, 3, 0, 0);
 
   grid->addWidget(addExtensionButton, 1, 1);
-  connect( addExtensionButton, SIGNAL( clicked() ),
-           this, SLOT( slotAddExtension() ) );
   grid->addWidget(delExtensionButton, 2, 1);
-  connect( delExtensionButton, SIGNAL( clicked() ),
-           this, SLOT( slotDelExtension() ) );
+
+  availableExtensionsList = new QListBox( d->m_frame );
+  availableExtensionsList->setSelectionMode( QListBox::Extended );
   grid->addMultiCellWidget(availableExtensionsList, 0, 3, 2, 2);
 
   QString path = properties->kurl().path() ;
@@ -2143,27 +2151,45 @@ void KApplicationPropsPlugin::applyChanges()
 
 void KApplicationPropsPlugin::slotAddExtension()
 {
-  int pos = availableExtensionsList->currentItem();
+  QListBoxItem *item = availableExtensionsList->firstItem();
+  QListBoxItem *nextItem;
 
-  if ( pos == -1 )
-    return;
+  while ( item )
+  {
+    nextItem = item->next();
 
-  extensionsList->insertItem( availableExtensionsList->text( pos ) );
+    if ( item->isSelected() )
+    {
+      extensionsList->insertItem( item->text() );
+      availableExtensionsList->removeItem( availableExtensionsList->index( item ) );
+    }
+
+    item = nextItem;
+  }
+
   extensionsList->sort();
-  availableExtensionsList->removeItem( pos );
   updateButton();
 }
 
 void KApplicationPropsPlugin::slotDelExtension()
 {
-  int pos = extensionsList->currentItem();
+  QListBoxItem *item = extensionsList->firstItem();
+  QListBoxItem *nextItem;
 
-  if ( pos == -1 )
-    return;
+  while ( item )
+  {
+    nextItem = item->next();
 
-  availableExtensionsList->insertItem( extensionsList->text( pos ) );
+    if ( item->isSelected() )
+    {
+      availableExtensionsList->insertItem( item->text() );
+      extensionsList->removeItem( extensionsList->index( item ) );
+    }
+
+    item = nextItem;
+  }
+
   availableExtensionsList->sort();
-  extensionsList->removeItem( pos );
   updateButton();
 }
 
