@@ -572,12 +572,23 @@ void HTTPProtocol::davStatList( const KURL& url, bool stat )
      m_request.url.adjustPath(+1);
 
   retrieveContent( true );
+  
+  // Has a redirection already been called? If so, we're done.
+  if (m_bRedirect) {
+    finished();
+    return;
+  }
 
   QDomDocument multiResponse;
   multiResponse.setContent( m_intData, true );
 
-  for ( QDomElement thisResponse = multiResponse.documentElement().firstChild().toElement();
-        !thisResponse.isNull();
+  QDomElement thisResponse = multiResponse.documentElement().firstChild().toElement();
+  if (thisResponse.isNull()) {
+    error( ERR_DOES_NOT_EXIST, url.prettyURL() );
+    return;
+  }
+  
+  for ( ; !thisResponse.isNull();
         thisResponse = thisResponse.nextSibling().toElement() )
   {
     QDomElement href = thisResponse.namedItem( "href" ).toElement();
@@ -3170,6 +3181,10 @@ bool HTTPProtocol::readHeader()
     kdDebug(7113) << "(" << m_pid << ") Requesting redirection to: " << u.url()
                   << endl;
                   
+    // If we're redirected to a http:// url, remember that we're doing webdav...
+    if (m_protocol == "webdav" || m_protocol == "webdavs")
+      u.setProtocol(m_protocol);
+      
     redirection(u.url());
     m_request.bCachedWrite = false; // Turn off caching on re-direction (DA)
     mayCache = false;
