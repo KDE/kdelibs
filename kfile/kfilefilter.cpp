@@ -1,32 +1,36 @@
-#include "kfilefilter.h"
-#include <qevent.h>
-#include <qlineedit.h>
-#include <qobjectlist.h>
-#include <qstrlist.h>
-#include <kapp.h>
+/* This file is part of the KDE libraries
+    Copyright (C) Stephan Kulow <coolo@kde.org>
+
+    This library is free software; you can redistribute it and/or
+    modify it under the terms of the GNU Library General Public
+    License as published by the Free Software Foundation; either
+    version 2 of the License, or (at your option) any later version.
+
+    This library is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    Library General Public License for more details.
+
+    You should have received a copy of the GNU Library General Public License
+    along with this library; see the file COPYING.LIB.  If not, write to
+    the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+    Boston, MA 02111-1307, USA.
+*/
+
 #include <klocale.h>
 
+#include "kfilefilter.h"
+
 KFileFilter::KFileFilter( QWidget *parent, const char *name)
-    : QComboBox(true, parent, name)
+    : KComboBox(true, parent, name)
 {
     setInsertionPolicy(NoInsertion);
-    connect(this, SIGNAL(activated(const QString &)), SLOT(changed(const QString &)));
-
-    // FIXME change this when Qt 2.1beta is there
-    QObjectList *list = queryList( "QLineEdit" );
-    QObjectListIt it( *list );
-    edit = (QLineEdit*) it.current();
-    edit->installEventFilter( this );
-    delete list;
+    connect( this, SIGNAL( activated( int )), this, SIGNAL( filterChanged() ));
+    connect( this, SIGNAL( returnPressed() ), this, SIGNAL( filterChanged() ));
 }
 
 KFileFilter::~KFileFilter()
 {
-}
-
-void KFileFilter::changed( const QString & )
-{
-    emit filterChanged();
 }
 
 void KFileFilter::setFilter(const QString& filter)
@@ -54,33 +58,17 @@ void KFileFilter::setFilter(const QString& filter)
     }
 }
 
-QString KFileFilter::currentFilter() const
+const QString& KFileFilter::currentFilter() const
 {
-    QString filter = currentText();
-    if (filter == text(currentItem()))
-	filter = *filters.at(currentItem());
+    f = currentText();
+    if (f == text(currentItem()))
+	f = *filters.at(currentItem());
 
-    int tab = filter.find('|');
+    int tab = f.find('|');
     if (tab < 0)
-	return filter;
+	return f;
     else
-	return filter.left(tab);
-}
-
-bool KFileFilter::eventFilter( QObject *o, QEvent *e )
-{
-    QComboBox::eventFilter( o, e );
-    
-    if ( o == edit && e->type() == QEvent::KeyPress ) {
-	QKeyEvent *ev = static_cast<QKeyEvent *>( e );
-	if ( ev->key() == Key_Return || ev->key() == Key_Enter ) {
-	    emit filterChanged();
-	    return true; // stop the event from further processing
-	}
-    }
-    
-    return false;
+	return f.left(tab);
 }
 
 #include "kfilefilter.moc"
-

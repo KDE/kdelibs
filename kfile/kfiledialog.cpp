@@ -283,7 +283,7 @@ KFileDialog::KFileDialog(const QString& dirName, const QString& filter,
     filterWidget->setMinimumWidth(100);
     filterWidget->setFixedHeight(filterWidget->height());
     connect(filterWidget, SIGNAL(filterChanged()),
-	    SLOT(filterChanged()));
+	    SLOT(slotFilterChanged()));
     ops->setNameFilter(filterWidget->currentFilter());
 
     // Get the config object
@@ -326,6 +326,11 @@ void KFileDialog::setFilter(const QString& filter)
 {
     filterWidget->setFilter(filter);
     ops->setNameFilter(filterWidget->currentFilter());
+}
+
+const QString& KFileDialog::currentFilter() const 
+{
+    return filterWidget->currentFilter();
 }
 
 void KFileDialog::setPreviewWidget(const QWidget *w) {
@@ -584,9 +589,10 @@ KFileDialog::~KFileDialog()
     delete d;
 }
 
-void KFileDialog::filterChanged() // SLOT
+void KFileDialog::slotFilterChanged() // SLOT
 {
     ops->setNameFilter(filterWidget->currentFilter());
+    emit filterChanged(filterWidget->currentFilter());
 }
 
 
@@ -1249,7 +1255,7 @@ void KFileComboBox::setCompletion(const QString& completion)
     int pos = cursorPosition();
 
     if ( currentText() != completion ) {
-	//	edit->blockSignals( true );
+	//	edit->blockSignals( true ); // FIXME, to be determined
 	setEditText( completion );
 	//	edit->blockSignals( false );
     }

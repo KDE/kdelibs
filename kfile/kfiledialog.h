@@ -164,8 +164,20 @@ public:
      * Note: The text to display is not parsed in any way. So, if you
      * want to show the suffix to select by a specific filter, you must
      * repeat it.
+     * @see #setFilter
+     * @see #filterChanged
      */
     void setFilter(const QString& filter);
+
+    /**
+     * @returns the current filter, i.e. entered by the user or one of the
+     * predefined set via @ref setFilter().
+     * @param @p filter contains the new filter (only the extension part,
+     * not the explanation), i.e. "*.cpp" or "*.cpp *.cc".
+     * @see #setFilter
+     * @see #filterChanged
+     */
+    const QString& currentFilter() const;
 
     /**
      * Add a preview widget and enter the preview mode.
@@ -323,17 +335,17 @@ public:
      * the location is used for.
      */
     void setLocationLabel(const QString& text);
-    
+
     /**
      * @returns a pointer to the toolbar. You can use this to insert custom
      * items into it, e.g.:
-     * <pre>yourAction = new KAction( i18n("Your Action"), 0, 
+     * <pre>yourAction = new KAction( i18n("Your Action"), 0,
      *                                this, SLOT( yourSlot() ),
      *                                this, "action name" );
      *      yourAction->plug( kfileDialog->toolBar() );
      */
     KToolBar *toolBar() const { return toolbar; }
-    
+
 
 signals:
     /**
@@ -350,6 +362,16 @@ signals:
       * Emitted when the allowable history operations change.
       */
     void historyUpdate(bool, bool);
+
+    /**
+     * Emitted when the filter changed, i.e. the user entered an own filter
+     * or chose one of the predefined set via @ref setFilter().
+     * @param @p filter contains the new filter (only the extension part,
+     * not the explanation), i.e. "*.cpp" or "*.cpp *.cc".
+     * @see #setFilter
+     * @see #currentFilter
+     */
+    void filterChanged( const QString& filter );
 
 protected:
     KToolBar *toolbar;
@@ -418,7 +440,7 @@ protected slots:
     void locationActivated( const QString& url );
     void toolbarCallback(int);
     void toolbarPressedCallback(int);
-    void filterChanged();
+    void slotFilterChanged();
     void locationChanged(const QString&, KComboBox *);
     void locationComboChanged( const QString& );
     void pathComboChanged( const QString& );
