@@ -271,6 +271,10 @@
 >>18	string		application/x-kivio\004\006	application/x-kivio
 >>18	string		application/x-karbon\004\006	application/x-karbon
 
+# Rosegarden documents (like old KOffice documents, gzipped with id string in header)
+>10	string		audio/x-rosegarden\000      	   audio/x-rosegarden
+>10	string		audio/x-rosegarden-device\000      audio/x-rosegarden-device
+
 #KOffice documents post v1.1 (may 1 2002) using zip as a wrapper
 0    string   PK\003\004                  application/x-zip
 >30  string   mimetype
