@@ -209,20 +209,19 @@ void khtml::setNamedColor(QColor &color, const QString &_name)
         {
 	    // transparent in case of an invalid color.
             color = QColor();
-            delete l;
-            return;
-        }
-        int r = l->at(0)->isUndefined() ? 0 : l->at(0)->width(255);
-        if(r < 0) r = 0;
-        if(r > 255) r = 255;
-        int g = l->at(1)->isUndefined() ? 0 : l->at(1)->width(255);
-        if(g < 0) g = 0;
-        if(g > 255) g = 255;
-        int b = l->at(2)->isUndefined() ? 0 : l->at(2)->width(255);
-        if(b < 0) b = 0;
-        if(b > 255) b = 255;
+        } else {
+	    int r = l->at(0)->isUndefined() ? 0 : l->at(0)->width(255);
+	    if(r < 0) r = 0;
+	    if(r > 255) r = 255;
+	    int g = l->at(1)->isUndefined() ? 0 : l->at(1)->width(255);
+	    if(g < 0) g = 0;
+	    if(g > 255) g = 255;
+	    int b = l->at(2)->isUndefined() ? 0 : l->at(2)->width(255);
+	    if(b < 0) b = 0;
+	    if(b > 255) b = 255;
 
-        color.setRgb(r, g, b);
+	    color.setRgb(r, g, b);
+	}
         delete l;
     }
     else

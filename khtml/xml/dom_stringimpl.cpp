@@ -224,7 +224,7 @@ QList<Length> *DOMStringImpl::toLengthList() const
     QChar space(' ');
     for(unsigned int i=0; i < l; i++) {
         char cc = str[i].latin1();
-        if ( cc > '9' || ( cc < '0' && cc != '*' && cc != '%' && cc != '.') )
+        if ( cc > '9' || ( cc < '0' && cc != '-' && cc != '*' && cc != '%' && cc != '.') )
             str[i] = space;
     }
     str = str.simplifyWhiteSpace();
