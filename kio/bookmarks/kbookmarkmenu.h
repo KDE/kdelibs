@@ -114,7 +114,7 @@ public:
   void ensureUpToDate();
 
 public slots: // public for bookmark bar
-  void slotBookmarksChanged(const QString &);
+  void slotBookmarksChanged( const QString & );
 
 protected slots:
   void slotAboutToShow();
@@ -144,7 +144,7 @@ protected:
   bool m_bDirty:1;
   bool m_bNSBookmark:1;
 
-  KBookmarkManager* m_pManager;
+  KBookmarkManager * m_pManager;
   KBookmarkOwner *m_pOwner;
   /**
    * The menu in which we plug our actions.
@@ -167,55 +167,53 @@ protected:
 };
 
 
-// TODO fix indentation
-
 /**
  * A class connected to KNSBookmarkImporter, to fill KActionMenus.
  */
 class KBookmarkMenuNSImporter : public QObject
 {
-    Q_OBJECT
+  Q_OBJECT
 public:
-    KBookmarkMenuNSImporter( KBookmarkManager* mgr, KBookmarkMenu * menu, KActionCollection * act ) :
-        m_menu(menu), m_actionCollection(act), m_pManager(mgr) {}
+  KBookmarkMenuNSImporter( KBookmarkManager* mgr, KBookmarkMenu * menu, KActionCollection * act ) :
+     m_menu(menu), m_actionCollection(act), m_pManager(mgr) {}
 
-    void openNSBookmarks();
+  void openNSBookmarks();
 
 protected slots:
-    void newBookmark( const QString & text, const QCString & url, const QString & );
-    void newFolder( const QString & text, bool, const QString & );
-    void newSeparator();
-    void endFolder();
+  void newBookmark( const QString & text, const QCString & url, const QString & );
+  void newFolder( const QString & text, bool, const QString & );
+  void newSeparator();
+  void endFolder();
 
 protected:
-    QPtrStack<KBookmarkMenu> mstack;
-    KBookmarkMenu * m_menu;
-    KActionCollection * m_actionCollection;
-    KBookmarkManager* m_pManager;
+  QPtrStack<KBookmarkMenu> mstack;
+  KBookmarkMenu * m_menu;
+  KActionCollection * m_actionCollection;
+  KBookmarkManager* m_pManager;
 };
 
 class BookmarkEditDialog : public KDialogBase
 {
-    Q_OBJECT
+  Q_OBJECT
 
 public:
-    BookmarkEditDialog(QString, QString, KBookmarkManager *, QWidget * = 0, const char * = 0);
-    QString finalUrl();
-    QString finalTitle();
-    QString finalAddress();
+  BookmarkEditDialog( QString, QString, KBookmarkManager *, QWidget * = 0, const char * = 0 );
+  QString finalUrl();
+  QString finalTitle();
+  QString finalAddress();
 
 protected slots:
-    void slotOk();
-    void slotCancel();
-    void slotInsertFolder();
+  void slotOk();
+  void slotCancel();
+  void slotInsertFolder();
 
 private:
-    QWidget * m_main;
-    QListView * m_folderTree;
-    KLineEdit * m_url;
-    KLineEdit * m_title;
-    QPushButton * m_button;
-    KBookmarkManager * m_mgr;
+  QWidget * m_main;
+  QListView * m_folderTree;
+  KLineEdit * m_url;
+  KLineEdit * m_title;
+  QPushButton * m_button;
+  KBookmarkManager * m_mgr;
 };
 
 #endif
