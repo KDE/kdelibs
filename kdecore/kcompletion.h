@@ -528,7 +528,6 @@ public:
     */
     void setAutoDeleteCompletionObject( bool autoDelete ) { m_bAutoDelCompObj = autoDelete; }
 
-
     /**
     * Disables (temporarily) this widget's ability to emit
     * the rotation and completion signals.
@@ -559,6 +558,13 @@ public:
     * @return true if this signals are handled internally.
     */
     bool handleSignals() const { return m_bHandleSignals; }
+
+    /**
+    * Returns true if the object emits the signals
+    *
+    * @return true if signals are emitted
+    */
+    bool emitSignals() const { return m_bEmitSignals; }
 
     /**
     * Sets the type of completion to be used.
@@ -713,13 +719,12 @@ public:
     * setting, a "Default" entry is added at the bottom to allow the
     * user to revert his/her changes back to the global setting.
     */
-    void showModeChanger();
+    void showModeChanger()  { m_bShowModeChanger = true; }
 
     /**
     * Hides the completion mode changer in the context menu.
-    *
     */
-    void hideModeChanger();
+    void hideModeChanger() { m_bShowModeChanger = false; }
 
     /**
     * Returns true if the mode changer item is visible in
@@ -762,16 +767,16 @@ protected:
     /**
     * Adds a completion menu item to the given popup menu.
     *
-    * This function adds a completion menu item at the
-    * specified index position in the popup menu.  If
-    * index is a negative value, the menu item is inserted
-    * at the end of the parent popup menu.  This function
-    * should simply be invoked before showing your popup
-    * menu.
+    * This function adds/removes a completion menu item at the
+    * specified index position in the popup menu.  If index
+    * is a negative value, the menu item is inserted at the end
+    * of the parent popup menu.  Since this function manages the
+    * addition and removal of the completion menu item by itself,
+    * it is intended/designed to be invoked just before you display
+    * your popup menu.
     *
-    * See @ref KLineEdit::aboutToShowCompletionItems or @ref
-    * KComboBox::aboutToShowCompletionItems for an example
-    * implementation.
+    * See @ref KLineEdit::aboutToShow or @ref KComboBox::aboutToShow
+    * for an example implementation.
     *
     * @param receiver object that receives the activation of completion items.
     * @param member method invoked when completion sub-menu is about to be shown.
@@ -780,17 +785,25 @@ protected:
     */
     void insertCompletionMenu( QObject* receiver, const char* member, QPopupMenu* parent, int index = -1 );
 
+    /**
+    * Returns true if completion menu item has been
+    * inserted into the popup menu.
+    *
+    * @return true if completion menu is inserted into popup menu.
+    */
+    bool hasBeenInserted() { return m_iCompletionID != -1; }
 
+private :
+    // Stores the completion menu id - Use it
+    // to determine whether the completion menu
+    // has already been inserted or not!!
+    int m_iCompletionID;
     // Stores the completion key locally
     int m_iCompletionKey;
     // Stores the Rotate up key locally
     int m_iRotateUpKey;
     // Stores the Rotate down key locally
     int m_iRotateDnKey;
-    // Stores the completion menu id - Use it
-    // to determine whether the completion menu
-    // has already been inserted or not!!
-    int m_iCompletionID;
 
     // Flag that determined whether the completion object
     // should be deleted when this object is destroyed.
@@ -812,6 +825,7 @@ protected:
     QPopupMenu* m_pCompletionMenu;
     // Pointer for future binary compatabilty.
     KCompletionPrivate *d;
+
 };
 
 #endif // KCOMPLETION_H

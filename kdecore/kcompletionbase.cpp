@@ -35,8 +35,12 @@ KCompletionBase::KCompletionBase()
     // Initialize the popup menu
     m_pCompletionMenu = 0;
 
-    // set completion ID to -1 by default
+    // Set completion ID to -1 by default
     m_iCompletionID = -1;
+
+    // Do not show the mode changer item
+    // by default.
+    m_bShowModeChanger = false;
 
     // By default do not emit signals.  Should be
     // enabled through member functions...
@@ -58,7 +62,6 @@ KCompletionBase::KCompletionBase()
     m_iCompletionKey = 0;
     m_iRotateUpKey = 0;
     m_iRotateDnKey = 0;
-
 }
 
 KCompletionBase::~KCompletionBase()
@@ -166,30 +169,17 @@ void KCompletionBase::insertCompletionItems( QObject* parent, const char* member
 
 void KCompletionBase::insertCompletionMenu( QObject* receiver, const char* member, QPopupMenu* parent, int index )
 {
-    if( parent != 0 )
+    if( m_bShowModeChanger && m_iCompletionID == -1 && parent != 0 && m_pCompObj != 0 )
     {
+        if( m_pCompletionMenu == 0 )
+            m_pCompletionMenu = new QPopupMenu(); //Create the popup menu if not present
         parent->insertSeparator( index > 0 ? index - 1 : index );
         m_iCompletionID = parent->insertItem( i18n("Completion"), m_pCompletionMenu, -1, index );
         QObject::connect( m_pCompletionMenu, SIGNAL( aboutToShow() ), receiver, member );
     }
-}
-
-void KCompletionBase::hideModeChanger()
-{
-    if( m_pCompletionMenu != 0 )
+    else if( !m_bShowModeChanger && m_iCompletionID != -1 && parent != 0 )
     {
-        delete m_pCompletionMenu;
-        m_pCompletionMenu = 0;
-        m_bShowModeChanger = false;
+        parent->removeItem( m_iCompletionID );
         m_iCompletionID = -1;
-    }
-}
-
-void KCompletionBase::showModeChanger()
-{
-    if( m_pCompletionMenu == 0 )
-    {
-        m_pCompletionMenu = new QPopupMenu();
-        m_bShowModeChanger = true;
     }
 }
