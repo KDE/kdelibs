@@ -711,8 +711,14 @@ static const KCmdLineOptions qt_options[] =
    { "display <displayname>", I18N_NOOP("Use the X-server display 'displayname'"), 0},
    { "font <fontname>",  I18N_NOOP("Set default font to 'fontname'"), 0},
    { "session <sessionId>", I18N_NOOP("Restore the application for the given 'sessionId'"), 0},
+   { "cmap", I18N_NOOP("Causes the application to install a private color map on an 8-bit display"), 0},
+   { "ncols <count>", I18N_NOOP("Limits the number of colors allocated in the color cube on a 8-bit display,\nif the application is using the QApplication::ManyColor color specification"), 0},
    { 0, 0, 0 }
 };
+// NOTE: Other Qt options include (color options omitted) :
+// name, title, geometry, im, [no]xim, iconic, visual, inputstyle,
+// and in debug mode : sync, nograb, dograb
+// Shouldn't all of those be added ? (David)
 
 static const KCmdLineOptions kde_options[] =
 {
