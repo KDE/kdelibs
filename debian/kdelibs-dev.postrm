@@ -6,7 +6,7 @@
 set -e
 
 case "$1" in
-       purge|remove|upgrade|failed-upgrade|abort-install|abort-upgrade|disappear)
+       purge|remove|abort-install|disappear)
          rm -rf /usr/share/doc/kdelibs-dev
         ;;
 
