@@ -150,16 +150,11 @@ kdeinit_initsetproctitle(int argc, char **argv, char **envp)
 	for (i = 0; envp[i] != NULL; i++)
 		envpsize += strlen(envp[i]) + 1;
 	environ = (char **) malloc(sizeof (char *) * (i + 1));
-    if (environ == NULL)
-        return;
+	if (environ == NULL)
+        	return;
 
 	for (i = 0; envp[i] != NULL; i++)
-    {
-		environ[i] = malloc(strlen(envp[i]) + 1);
-        if (environ[i] == NULL)
-            break;
-        strcpy(environ[i], envp[i]);
-    }
+		environ[i] = strdup(envp[i]);
 	environ[i] = NULL;
 
 	/*
