@@ -3,6 +3,10 @@
 
 #include <qmetaobject.h>
 
+#if QT_VERSION >= 300
+#include <qucom.h>
+#endif
+
 using namespace KParts;
 
 BrowserInterface::BrowserInterface( QObject *parent, const char *name )
@@ -16,6 +20,7 @@ BrowserInterface::~BrowserInterface()
 
 void BrowserInterface::callMethod( const char *name, const QVariant &argument )
 {
+#if QT_VERSION < 300
     QMetaData *mdata = metaObject()->slot( name );
 
     if ( !mdata )
@@ -51,6 +56,42 @@ void BrowserInterface::callMethod( const char *name, const QVariant &argument )
             break;
         default: break;
     }
+#else
+    const QMetaData *mdata = metaObject()->slot( metaObject()->findSlot( name ) );
+
+    if ( !mdata )
+        return;
+
+    QUObject o[ 2 ];
+    QStringList strLst;
+    uint i;
+
+    switch ( argument.type() )
+    {
+        case QVariant::Invalid:
+            break;
+        case QVariant::String:
+	    pQUType_QString->set( o + 1, argument.toString() );
+            break;
+        case QVariant::StringList:
+	    strLst = argument.toStringList();
+	    pQUType_ptr->set( o + 1, &strLst );
+            break;
+        case QVariant::Int:
+	    pQUType_int->set( o + 1, argument.toInt() );
+            break;
+        case QVariant::UInt:
+	    i = argument.toUInt();
+	    pQUType_ptr->set( o + 1, &i );
+            break;
+        case QVariant::Bool:
+	    pQUType_bool->set( o + 1, argument.toBool() );
+            break;
+        default: return;
+    }
+  
+    qt_invoke( mdata->ptr, o );
+#endif
 }
 
 #include "browserinterface.moc"
