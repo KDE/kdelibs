@@ -269,18 +269,24 @@ void KFileDialog::slotOk()
 
     d->filename_ = locationEdit->currentText();
 
-    // TODO
-    if ( mode() == Directory ) {
-      //    KFileRea
-
-    }
-
     KURL u( d->filename_ );
+    QString thePath = u.path();
+
+    if ( mode() == Directory) {
+      if ( QFileInfo(thePath).isDir() ) {
+	accept();
+	return;
+      }
+      else {
+	return;
+      }
+    }   
+
     if ( u.isLocalFile() ) {
-	if ( QFileInfo( u.path() ).isDir() ) {
-	    setURL( QDir::cleanDirPath( u.path() ) );
-	    return;
-	}
+      if ( QFileInfo(thePath).isDir() ) {
+	setURL( QDir::cleanDirPath( thePath ) );
+	return;
+      }
     }
 
     debugC("filename %s", debugString(d->filename_));
