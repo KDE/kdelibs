@@ -26,14 +26,13 @@
 #include "midfile.h"
 #include <string.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <unistd.h>
 #include "sndcard.h"
 #include "midispec.h"
 #include "mt32togm.h"
 #include "sys/stat.h"
-#ifdef HAVE_CONFIG_H
 #include <config.h>
-#endif
 
 int fsearch(FILE *fh,const char *text,long *ptr);
 
@@ -59,15 +58,15 @@ int uncompressFile(const char *gzname, char *tmpname)
   {
     fprintf(stderr,"ERROR : popen failed : %s\n",cmd);
   }
-  char *tmp=tempnam(NULL,"KMid");
-  if (tmp==NULL) 
+  strcpy(tmpname, "/tmp/KMid.XXXXXXXXXX");
+  int fd = mkstemp(tmpname);
+  if (fd == -1)
   {
     pclose(infile);
     delete cmd;
     return 1;
   }
-  strcpy(tmpname,tmp);
-  FILE *outfile= fopen(tmpname,"wb");
+  FILE *outfile= fdopen(fd,"wb");
   if (outfile==NULL)
   {
     pclose(infile);
