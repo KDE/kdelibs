@@ -28,6 +28,7 @@
 #include "audiosubsys.h"
 #include "debug.h"
 #include "soundserverv2_impl.h"
+#include "artsversion.h"
 
 #include "config.h"
 
