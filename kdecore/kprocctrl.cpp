@@ -73,12 +73,12 @@ KProcessController::KProcessController()
   act.sa_flags |= SA_RESTART;
 #endif
 
-  sigaction( SIGCHLD, &act, NULL); 
+  sigaction( SIGCHLD, &act, 0L); 
   act.sa_handler=SIG_IGN;
   sigemptyset(&(act.sa_mask));
   sigaddset(&(act.sa_mask), SIGPIPE);
   act.sa_flags = 0;
-  sigaction( SIGPIPE, &act, NULL);
+  sigaction( SIGPIPE, &act, 0L);
 }
 
 void KProcessController::theSigCHLDHandler(int )
@@ -117,7 +117,7 @@ void KProcessController::slotDoHousekeeping(int )
  
   proc = processList->first();
 
-  while (NULL != proc) {
+  while (0L != proc) {
 	if (proc->pid == pid) {
 	  // process has exited, so do emit the respective events
 	  proc->processHasExited(status);
@@ -137,7 +137,7 @@ KProcessController::~KProcessController()
   sigemptyset(&(act.sa_mask));
   sigaddset(&(act.sa_mask), SIGCHLD);
   act.sa_flags = 0;
-  sigaction( SIGCHLD, &act, NULL);
+  sigaction( SIGCHLD, &act, 0L);
   
   close(fd[0]);
   close(fd[1]);

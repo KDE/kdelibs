@@ -633,14 +633,14 @@ uint stringToKey(const char * key )
 	strncpy(sKey, (const char *)key, 200);
 	next_tok = strtok(sKey,"+");
 	
-	if ( next_tok==NULL ) return 0;
+	if ( next_tok== 0L ) return 0;
 	
 	do {
 		toks[nb_toks] = next_tok;
 		nb_toks++;
 		if ( nb_toks==5 ) return 0;
-		next_tok = strtok(NULL, "+");
-	} while ( next_tok!=NULL );
+		next_tok = strtok(0L, "+");
+	} while ( next_tok!=0L );
 	
 	/* we test if there is one and only one key (the others tokens
 	   are accelerators) ; we also fill the keycode with infos */

@@ -428,7 +428,7 @@ const char* KURL::httpPath() const
 const char* KURL::searchPart() const
 { 
     if (search_part.isNull()) 
-	return NULL;
+	return 0L;
     else {
 	return search_part.data();
     }

@@ -89,17 +89,17 @@ int getdomainname(char *name, size_t len)
         struct hostent *hent;
         int rv = -1;
 
-        if (name == NULL)
+        if (name == 0L)
           errno = EINVAL;
         else
         {               
                 name[0] = '\0';
                 if (uname(&uts) >= 0)
                 {
-                        if ((hent = gethostbyname(uts.nodename)) != NULL)
+                        if ((hent = gethostbyname(uts.nodename)) != 0L)
                         {
                                 char *p = strchr(hent->h_name, '.');
-                                if (p != NULL)
+                                if (p != 0L)
                                 {
                                         ++p;
                                         if (strlen(p) > len-1)
