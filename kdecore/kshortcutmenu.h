@@ -29,6 +29,9 @@ class QLabel;
 
 class KAccelActions;
 
+/**
+ * @internal
+ */
 class KShortcutMenu : public QPopupMenu
 {
 	Q_OBJECT
