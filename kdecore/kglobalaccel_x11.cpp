@@ -68,7 +68,8 @@ static void calculateGrabMasks()
 	g_keyModMaskXOnOrOff =
 			KKeyServer::modXLock() |
 			KKeyServer::modXNumLock() |
-			KKeyServer::modXScrollLock();
+			KKeyServer::modXScrollLock() | 
+			KKeyServer::modXModeSwitch(); 
 	//kdDebug() << "g_keyModMaskXAccel = " << g_keyModMaskXAccel
 	//	<< "g_keyModMaskXOnOrOff = " << g_keyModMaskXOnOrOff << endl;
 }

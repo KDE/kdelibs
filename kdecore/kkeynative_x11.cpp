@@ -192,6 +192,7 @@ uint KKeyNative::accelModMaskX()               { return KKeyServer::accelModMask
 uint KKeyNative::modXNumLock()                 { return KKeyServer::modXNumLock(); }
 uint KKeyNative::modXLock()                    { return KKeyServer::modXLock(); }
 uint KKeyNative::modXScrollLock()              { return KKeyServer::modXScrollLock(); }
+uint KKeyNative::modXModeSwitch()              { return KKeyServer::modXModeSwitch(); }
 #endif
 
 #endif // Q_WS_X11

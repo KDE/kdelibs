@@ -240,6 +240,14 @@ class KDECORE_EXPORT KKeyNative
 	 * @see accelModMaskX()
 	 */
 	static uint modXScrollLock();
+
+	/** 
+	 * Returns the X11 Mode_switch modifier mask/flag. 
+	 * @return the X11 Mode_switch modifier mask/flag. 
+	 * @see accelModMaskX() 
+	 * @since 3.5
+	 */ 
+	static uint modXModeSwitch(); 
 #endif
 
  private:
