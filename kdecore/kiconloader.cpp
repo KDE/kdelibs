@@ -179,9 +179,9 @@ void KIconLoader::init( const QString& _appname, KStandardDirs *_dirs )
 
     // Check installed themes.
     d->mThemeList = KIconTheme::list();
-    if (!d->mThemeList.contains("hicolor") || !d->mThemeList.contains("locolor"))
+    if (!d->mThemeList.contains("hicolor"))
     {
-        kdError(264) << "Error: standard icon themes: \"locolor\" and "
+        kdError(264) << "Error: standard icon theme "
                      << "\"hicolor\" not found!\n";
         d->mpGroups=0L;
 
