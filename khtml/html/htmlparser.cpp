@@ -371,8 +371,24 @@ bool KHTMLParser::insertNode(NodeImpl *n)
             }
             break;
         case ID_HTML:
-            if (!current->isDocumentNode())
+            if (!current->isDocumentNode() ) {
+		if ( doc()->firstChild()->id() == ID_HTML) {
+		    // we have another <HTML> element.... apply attributes to existing one
+		    // make sure we don't overwrite already existing attributes
+		    NamedAttrMapImpl *map = static_cast<ElementImpl*>(n)->attributes(true);
+		    NamedAttrMapImpl *bmap = static_cast<ElementImpl*>(doc()->firstChild())->attributes(false);
+		    bool changed = false;
+		    for (unsigned long l = 0; map && l < map->length(); ++l) {
+			AttributeImpl* it = map->attributeItem(l);
+			changed = !bmap->getAttributeItem(it->id());
+			bmap->insertAttribute(new AttributeImpl(it->id(), it->val()));
+		    }
+		    if ( changed )
+			doc()->recalcStyle( NodeImpl::Inherit );
+		    noRealBody = false;
+		}
                 return false;
+	    }
             break;
         case ID_TITLE:
         case ID_STYLE:
