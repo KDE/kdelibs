@@ -71,9 +71,6 @@
 
 using namespace KIO;
 
-// Maximum chunk size is 256K
-#define MAX_CHUNK_SIZE (1024*256)
-
 #define MAX_IPC_SIZE (1024*8)
 
 // Default expire time in seconds: 1 min.
@@ -2432,84 +2429,63 @@ size_t HTTPProtocol::sendData( )
  */
 int HTTPProtocol::readChunked()
 {
-  m_iBytesLeft = 0; // Assume failure
-
-  m_bufReceive.resize(4096);
-
-  if (!gets(m_bufReceive.data(), m_bufReceive.size()-1))
+  if (m_iBytesLeft <= 0)
   {
-    kdDebug(7103) << "gets() failure on Chunk header" << endl;
-    return -1;
-  }
-  // We could have got the CRLF of the previous chunk.
-  // If so, try again.
-  if (m_bufReceive[0] == '\0')
-  {
+     m_bufReceive.resize(4096);
+
      if (!gets(m_bufReceive.data(), m_bufReceive.size()-1))
      {
-        kdDebug(7103) << "gets() failure on Chunk header" << endl;
+       kdDebug(7103) << "gets() failure on Chunk header" << endl;
+       return -1;
+     }
+     // We could have got the CRLF of the previous chunk.
+     // If so, try again.
+     if (m_bufReceive[0] == '\0')
+     {
+        if (!gets(m_bufReceive.data(), m_bufReceive.size()-1))
+        {
+           kdDebug(7103) << "gets() failure on Chunk header" << endl;
+           return -1;
+        }
+     }
+     if (eof())
+     {
+        kdDebug(7103) << "EOF on Chunk header" << endl;
         return -1;
      }
-  }
-  if (eof())
-  {
-     kdDebug(7103) << "EOF on Chunk header" << endl;
-     return -1;
-  }
 
-  int chunkSize = strtol(m_bufReceive.data(), 0, 16);
-  if ((chunkSize < 0) || (chunkSize > MAX_CHUNK_SIZE))
-     return -1;
-
-  kdDebug(7113) << "Chunk size = " << chunkSize << " bytes" << endl;
-
-  if (chunkSize == 0)
-  {
-    // Last chunk.
-    // Skip trailers.
-    do {
-      // Skip trailer of last chunk.
-      if (!gets(m_bufReceive.data(), m_bufReceive.size()-1))
-      {
-        kdDebug(7103) << "gets() failure on Chunk trailer" << endl;
+     m_iBytesLeft = strtol(m_bufReceive.data(), 0, 16);
+     if (m_iBytesLeft < 0)
+     {
+        kdDebug(7103) << "Negative chunk size" << endl;
         return -1;
-      }
-      kdDebug(7113) << "Chunk trailer = \"" << m_bufReceive.data() << "\"" << endl;
-    }
-    while (strlen(m_bufReceive.data()) != 0);
+     }
 
-    return 0;
+     kdDebug(7113) << "Chunk size = " << m_iBytesLeft << " bytes" << endl;
+  
+     if (m_iBytesLeft == 0)
+     {
+       // Last chunk.
+       // Skip trailers.
+       do {
+         // Skip trailer of last chunk.
+         if (!gets(m_bufReceive.data(), m_bufReceive.size()-1))
+         {
+           kdDebug(7103) << "gets() failure on Chunk trailer" << endl;
+           return -1;
+         }
+         kdDebug(7113) << "Chunk trailer = \"" << m_bufReceive.data() << "\"" << endl;
+       }
+       while (strlen(m_bufReceive.data()) != 0);
+
+       return 0;
+     }
   }
 
-  if (chunkSize > (int) m_bufReceive.size())
-  {
-     if (!m_bufReceive.resize(chunkSize))
-        return -1; // Failure
-  }
-
-  int totalBytesReceived = 0;
-  int bytesToReceive = chunkSize;
-
-  do
-  {
-     if (eof()) return -1; // Unexpected EOF.
-
-     int bytesReceived = read( m_bufReceive.data()+totalBytesReceived, bytesToReceive );
-
-     kdDebug(7113) << "Read from chunk got " << bytesReceived << " bytes" << endl;
-
-     if (bytesReceived == -1)
-        return -1; // Failure.
-
-     totalBytesReceived += bytesReceived;
-     bytesToReceive -= bytesReceived;
-
-     kdDebug(7113) << "Chunk has " << totalBytesReceived << " bytes, " << bytesToReceive << " bytes to go" << endl;
-  }
-  while(bytesToReceive > 0);
-
-  m_iBytesLeft = 1; // More to come.
-  return totalBytesReceived; // This is what we got.
+  int bytesReceived = readLimited();
+  if (!m_iBytesLeft)
+     m_iBytesLeft = -1; // Don't stop, continue with next chunk
+  return bytesReceived;
 }
 
 int HTTPProtocol::readLimited()
@@ -2606,7 +2582,10 @@ bool HTTPProtocol::readBody( )
   if (m_iSize > -1)
     m_iBytesLeft = m_iSize - sz;
   else
-    m_iBytesLeft = 1;
+    m_iBytesLeft = -1;
+    
+  if (m_bChunked)
+    m_iBytesLeft = -1;
 
   kdDebug(7113) << "HTTPProtocol::readBody m_iBytesLeft=" << m_iBytesLeft << endl;
 
