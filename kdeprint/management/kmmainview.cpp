@@ -524,7 +524,13 @@ void KMMainView::showErrorMsg(const QString& msg, bool usemgr)
 	if (usemgr)
 	{
 		s.append(" ");
-		s += i18n("Error message received from manager:<p>%1</p>").arg(m_manager->errorMsg());
+		s += i18n("Error message received from manager:<p>%1</p>");
+		if (m_manager->errorMsg().isEmpty())
+			s = s.arg(i18n("Internal error (no error message)."));
+		else
+			s = s.arg(m_manager->errorMsg());
+		// clean up error message
+		m_manager->setErrorMsg(QString::null);
 	}
 	KMTimer::self()->hold();
 	KMessageBox::error(this,s);
