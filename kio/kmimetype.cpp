@@ -293,21 +293,21 @@ KMimeType::~KMimeType()
 {
 }
 
-QPixmap KMimeType::pixmap( KIconLoader::Size _size, QString * _path ) const
+QPixmap KMimeType::pixmap( int _group_or_size, QString * _path ) const
 {
-  return KGlobal::iconLoader()->loadIcon( icon( QString::null, false ), _size, _path, false );
+  return KGlobal::iconLoader()->loadIcon( icon( QString::null, false ), _group_or_size, _path, false );
 }
 
-QPixmap KMimeType::pixmap( const KURL& _url, KIconLoader::Size _size, QString * _path ) const
+QPixmap KMimeType::pixmap( const KURL& _url, int _group_or_size, QString * _path ) const
 {
-  return KGlobal::iconLoader()->loadIcon( icon( _url, _url.isLocalFile() ), _size, _path, false );
+  return KGlobal::iconLoader()->loadIcon( icon( _url, _url.isLocalFile() ), _group_or_size, _path, false );
 }
 
 QPixmap KMimeType::pixmapForURL( const KURL & _url, mode_t _mode,
-                                 KIconLoader::Size _size, QString * _path )
+                                 int _group_or_size, QString * _path )
 {
   return KMimeType::findByURL( _url, _mode, _url.isLocalFile(), false /*HACK*/)->
-    pixmap( _url, _size, _path );
+    pixmap( _url, _group_or_size, _path );
 }
 
 /*******************************************************
@@ -439,10 +439,10 @@ QString KDEDesktopMimeType::icon( const KURL& _url, bool _is_local ) const
   return icon;
 }
 
-QPixmap KDEDesktopMimeType::pixmap( const KURL& _url, KIconLoader::Size _size, QString * _path ) const
+QPixmap KDEDesktopMimeType::pixmap( const KURL& _url, int _group_or_size, QString * _path ) const
 {
   QString _icon = icon( _url, _url.isLocalFile() );
-  QPixmap pix = KGlobal::iconLoader()->loadIcon( _icon, _size, _path, true );
+  QPixmap pix = KGlobal::iconLoader()->loadIcon( _icon, _group_or_size, _path, true );
   if (pix.isNull())
   {
     KSimpleConfig cfg( _url.path(), true );
@@ -452,9 +452,9 @@ QPixmap KDEDesktopMimeType::pixmap( const KURL& _url, KIconLoader::Size _size, Q
     {
       //kdDebug(7009) << "trying to load devices/" << _icon << endl;
       // KDE-1.x kdelnks contain "cdrom_mount.xpm" instead of "devices/cdrom_mount"
-      return KGlobal::iconLoader()->loadIcon( QString("devices/"+_icon), _size, _path, false );
+      return KGlobal::iconLoader()->loadIcon( QString("devices/"+_icon), _group_or_size, _path, false );
     }
-    return KGlobal::iconLoader()->loadIcon("unknown", _size, _path, false);
+    return KGlobal::iconLoader()->loadIcon("unknown", _group_or_size, _path, false);
   }
   return pix;
 }

@@ -257,7 +257,7 @@ QVariant KService::property( const QString& _name ) const
   else if ( _name == "Icon" )
     return QVariant( m_strIcon );
   else if ( _name == "Terminal" )
-    return QVariant( m_bTerminal );
+    return QVariant( static_cast<int>(m_bTerminal) );
   else if ( _name == "TerminalOptions" )
     return QVariant( m_strTerminalOptions );
   else if ( _name == "Path" )
@@ -267,7 +267,7 @@ QVariant KService::property( const QString& _name ) const
   else if ( _name == "ServiceTypes" )
     return QVariant( m_lstServiceTypes );
   else if ( _name == "AllowAsDefault" )
-    return QVariant( m_bAllowAsDefault );
+    return QVariant( static_cast<int>(m_bAllowAsDefault) );
   else if ( _name == "Library" )
     return QVariant( m_strLibrary );
   else if ( _name == "LibraryMajor" )
@@ -277,7 +277,7 @@ QVariant KService::property( const QString& _name ) const
   else if ( _name == "LibraryDependencies" )
     return QVariant( m_lstLibraryDeps );
   else if ( _name == "X-KDE-SubstituteUID" )
-    return QVariant( m_bSuid );
+    return QVariant( static_cast<int>(m_bSuid) );
   else if ( _name == "X-KDE-Username" )
     return QVariant( m_strUsername );
 
