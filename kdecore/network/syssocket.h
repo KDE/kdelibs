@@ -67,7 +67,7 @@ namespace {
   // connect
   inline int kde_connect(int fd, const struct sockaddr* sa, socklen_t len)
   {
-    return ::connect(fd, sa, len);
+    return ::connect(fd, (struct sockaddr*)sa, len);
   }
 
   // accept
