@@ -206,8 +206,8 @@ void RenderBox::printBoxDecorations(QPainter *p,int, int _y,
     QColor c = m_style->backgroundColor();
 
     int w = width();
-    int h = height() + cellTopExtra() + cellBottomExtra();	
-    _ty -= cellTopExtra();
+    int h = height() + borderTopExtra() + borderBottomExtra();	
+    _ty -= borderTopExtra();
 
     int my = MAX(_ty,_y);
     int mh;

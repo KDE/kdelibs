@@ -130,7 +130,9 @@ public:
     
     virtual void calcWidth();
 
-
+    virtual int borderTopExtra();
+    virtual int borderBottomExtra();
+    
 public:
     /*
      * For each table element with a different width a ColInfo struct is
@@ -398,8 +400,8 @@ protected:
     int _topExtra;
     int _bottomExtra;
 
-    virtual int cellTopExtra() { return _topExtra; }
-    virtual int cellBottomExtra() { return _bottomExtra; }
+    virtual int borderTopExtra() { return _topExtra; }
+    virtual int borderBottomExtra() { return _bottomExtra; }
 
 
     RenderTableRow *rowimpl;

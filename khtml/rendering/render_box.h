@@ -121,8 +121,8 @@ protected:
 				       int _w, int _h, int _tx, int _ty);
     void outlineBox(QPainter *p, int _tx, int _ty, const char *color = "red");
 
-    virtual int cellTopExtra() { return 0; }
-    virtual int cellBottomExtra() { return 0; }
+    virtual int borderTopExtra() { return 0; }
+    virtual int borderBottomExtra() { return 0; }
 
     void relativePositionOffset(int &tx, int &ty);
 

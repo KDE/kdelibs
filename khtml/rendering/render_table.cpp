@@ -1242,11 +1242,14 @@ void RenderTable::layout()
 
     setCellWidths();
 
-    if(tCaption && style()->captionSide()==CAPTOP)
+    
+    // ### collapse caption margin, left, right
+    if(tCaption && tCaption->style()->captionSide() != CAPBOTTOM)
     {
 	tCaption->setYPos(m_height);
+        tCaption->setXPos(tCaption->marginLeft());
 	tCaption->layout();
-	m_height += tCaption->height();
+	m_height += tCaption->height() + tCaption->marginTop() + tCaption->marginBottom();
     }
 
     // layout rows
@@ -1259,11 +1262,12 @@ void RenderTable::layout()
     m_height += rowHeights[totalRows];
     m_height += borderBottom();
 
-    if(tCaption && style()->captionSide()==CAPBOTTOM)
+    if(tCaption && tCaption->style()->captionSide()==CAPBOTTOM)
     {
 	tCaption->setYPos(m_height);
+        tCaption->setXPos(tCaption->marginLeft());
 	tCaption->layout();
-	m_height += tCaption->height();
+	m_height += tCaption->height() + tCaption->marginTop() + tCaption->marginBottom();
     }    
     
     //kdDebug(0) << "table height: " << m_height << endl;
@@ -1473,6 +1477,23 @@ void RenderTable::updateSize()
 //    setLayouted(false);
 //    parent()->updateSize();
      RenderBox::updateSize();
+}
+
+int RenderTable::borderTopExtra()
+{
+    if (tCaption && tCaption->style()->captionSide()!=CAPBOTTOM)
+        return -(tCaption->height() + tCaption->marginBottom() +  tCaption->marginTop());
+    else 
+        return 0;
+    
+}
+               
+int RenderTable::borderBottomExtra()
+{
+    if (tCaption && tCaption->style()->captionSide()==CAPBOTTOM)
+        return -(tCaption->height() + tCaption->marginBottom() +  tCaption->marginTop());
+    else 
+        return 0;        
 }
 
 
@@ -1693,7 +1714,7 @@ void RenderTableCell::print(QPainter *p, int _x, int _y,
 //  	return;
 
     _tx += m_x;
-    _ty += m_y + cellTopExtra();
+    _ty += m_y + _topExtra;
 
     // check if we need to do anything at all...
     if(!containsPositioned() && ((_ty-_topExtra > _y + _h)
