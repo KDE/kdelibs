@@ -47,7 +47,7 @@ ErrorObject::ErrorObject(Object *proto, ErrorType t)
 KJSO* ErrorObject::execute(const List &args)
 {
   // "Error()" gives the sames result as "new Error()"
-  return construct(args);
+  return newCompletion(Normal, construct(args));
 }
 
 // ECMA 15.9.3

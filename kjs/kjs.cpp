@@ -109,7 +109,7 @@ bool KJScript::evaluate(const QChar *code, unsigned int length)
     /* TODO */
     errType = 99;
     errMsg = "Error";
-    KJSO::error()->deref();
+    //    KJSO::error()->deref();
     KJSO::setError(0L);
   }
 

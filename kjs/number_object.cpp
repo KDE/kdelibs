@@ -43,7 +43,7 @@ KJSO *NumberObject::get(const UString &p)
 KJSO* NumberObject::execute(const List & /*context*/)
 {
   /* TODO */
-  return newUndefined();
+  return newCompletion(Normal, zeroRef(newUndefined()));
 }
 
 // ECMA 15.7.2
