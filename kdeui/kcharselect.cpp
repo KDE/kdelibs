@@ -150,7 +150,7 @@ KCharSelect::KCharSelect(QWidget *parent,const char *name,const QString &_font,c
   fillFontCombo();
   fontCombo->resize(fontCombo->sizeHint());
   
-  connect(fontCombo,SIGNAL(activated(const QString &)),this,SLOT(fontChanged(const QString &)));
+  connect(fontCombo,SIGNAL(activated(const QString &)),this,SLOT(fontSelected(const QString &)));
   
   QLabel *lTable = new QLabel(i18n("  Table:  "),bar);
   lTable->resize(lTable->sizeHint());
