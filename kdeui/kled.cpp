@@ -21,6 +21,10 @@
  * $Id$
  *
  * $Log$
+ * Revision 1.23  2002/03/04 00:51:49  lunakl
+ * Keep BC changes (the patch is almost 100KiB of boring stuff
+ * ... anybody willing to review? ;) ).
+ *
  * Revision 1.22  2002/02/27 23:15:45  pfeiffer
  * kapp--
  *
@@ -263,7 +267,7 @@ KLed::paintFlat() // paint a ROUND FLAT led lamp
 	brush.setColor( color );
 
 	pen.setWidth( 1 );
-	color.setRgb( 170, 170, 170 );		// This is a grey color value
+	color = colorGroup().dark();
 	pen.setColor( color );			// Set the pen accordingly
 
 	paint.setPen( pen );			// Select pen for drawing
@@ -349,7 +353,7 @@ KLed::paintRound() // paint a ROUND RAISED led lamp
     // avoid that the border can be erased by the bright spot of the LED
 
     pen.setWidth( 1 );
-    color.setRgb( 170, 170, 170 );		// This is a grey color value
+    color = colorGroup().dark();
     pen.setColor( color );			// Set the pen accordingly
     paint.setPen( pen );			// Select pen for drawing
     brush.setStyle( QBrush::NoBrush );		// Switch off the brush
@@ -436,32 +440,22 @@ KLed::paintSunken() // paint a ROUND SUNKEN led lamp
     // around the LED which resembles a shadow with light coming
     // from the upper left.
 
-    pen.setWidth( 3 );
+    pen.setWidth( 3 ); // ### shouldn't this value be smaller for smaller LEDs?
     brush.setStyle( QBrush::NoBrush );              // Switch off the brush
     paint.setBrush( brush );                        // This avoids filling of the ellipse
 
-    // Set the initial color value to 200 (bright) and start
+    // Set the initial color value to colorGroup().light() (bright) and start
     // drawing the shadow border at 45° (45*16 = 720).
 
-    int shadow_color = 200, angle;
+    int angle = -720;
+    color = colorGroup().light();
     
-    for ( angle = 720; angle < 6480; angle += 240 ) {
-      color.setRgb( shadow_color, shadow_color, shadow_color );
+    for ( int arc = 120; arc < 2880; arc += 240 ) {
       pen.setColor( color );
       paint.setPen( pen );
-      paint.drawArc( 1, 1, width, width, angle, 240 );
-      if ( angle < 2320 ) {
-	shadow_color -= 25;			// set color to a darker value
-	if ( shadow_color < 100 ) shadow_color = 100;
-      }
-      else if ( ( angle > 2320 ) && ( angle < 5760 ) ) {
-	shadow_color += 25;			// set color to a brighter value
-	if ( shadow_color > 255 ) shadow_color = 255;
-      }
-      else {
-	shadow_color -= 25;			// set color to a darker value again
-	if ( shadow_color < 100 ) shadow_color = 100;
-      }	// end if ( angle < 2320 )
+      paint.drawArc( 1, 1, width, width, angle + arc, 240 );
+      paint.drawArc( 1, 1, width, width, angle - arc, 240 );
+      color = color.dark( 110 ); //FIXME: this should somehow use the contrast value
     }	// end for ( angle = 720; angle < 6480; angle += 160 )
 
     paint.end();
