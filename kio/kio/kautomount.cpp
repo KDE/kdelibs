@@ -43,8 +43,10 @@ KAutoMount::KAutoMount( bool _readonly, const QString& _format, const QString& _
 
 void KAutoMount::slotResult( KIO::Job * job )
 {
-  if ( job->error() )
+  if ( job->error() ) {
+    emit error();
     job->showErrorDialog();
+  }
   else
   {
     KURL mountpoint;
@@ -57,9 +59,14 @@ void KAutoMount::slotResult( KIO::Job * job )
     KDirNotify_stub allDirNotify("*", "KDirNotify*");
     allDirNotify.FilesAdded( mountpoint );
 
-    // Update of window which contains the desktop entry which is used for mount/unmount
+    // Update the desktop file which is used for mount/unmount (icon change)
     kdDebug(7015) << " mount finished : updating " << m_desktopFile << endl;
-    KDirWatch::self()->setFileDirty( m_desktopFile );
+    KURL dfURL;
+    dfURL.setPath( m_desktopFile );
+    allDirNotify.FilesChanged( dfURL );
+    //KDirWatch::self()->setFileDirty( m_desktopFile );
+
+    emit finished();
   }
   delete this;
 }
@@ -73,21 +80,27 @@ KAutoUnmount::KAutoUnmount( const QString & _mountpoint, const QString & _deskto
 
 void KAutoUnmount::slotResult( KIO::Job * job )
 {
-  if ( job->error() )
+  if ( job->error() ) {
+    emit error();
     job->showErrorDialog();
+  }
   else
   {
-    // Update of window which contains the desktop entry which is used for mount/unmount
+    KDirNotify_stub allDirNotify("*", "KDirNotify*");
+    // Update the desktop file which is used for mount/unmount (icon change)
     kdDebug(7015) << "unmount finished : updating " << m_desktopFile << endl;
-    KDirWatch::self()->setFileDirty( m_desktopFile );
+    KURL dfURL;
+    dfURL.setPath( m_desktopFile );
+    allDirNotify.FilesChanged( dfURL );
+    //KDirWatch::self()->setFileDirty( m_desktopFile );
 
     // Notify about the new stuff in that dir, in case of opened windows showing it
     // You may think we removed files, but this may have also readded some
     // (if the mountpoint wasn't empty). The only possible behaviour on FilesAdded
     // is to relist the directory anyway.
-    KDirNotify_stub allDirNotify("*", "KDirNotify*");
     allDirNotify.FilesAdded( m_mountpoint );
 
+    emit finished();
   }
 
   delete this;

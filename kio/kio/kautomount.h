@@ -36,6 +36,7 @@ class Job;
 class KAutoMount : public QObject
 {
   Q_OBJECT
+  friend class gcc_gives_a_warning_without_this;
 public:
   /**
    * Mounts a device.
@@ -51,6 +52,12 @@ public:
   KAutoMount( bool readonly, const QString& format, const QString& device, const QString& mountpoint,
               const QString & desktopFile, bool show_filemanager_window = true );
 
+signals:
+  /** Emitted when the directory has been mounted */
+  void finished();
+  /** Emitted in case the directory could not been mounted */
+  void error();
+
 protected slots:
   void slotResult( KIO::Job * );
 
@@ -59,6 +66,8 @@ protected:
   bool m_bShowFilemanagerWindow;
   QString m_desktopFile;
 private:
+  /** KAutoMount deletes itself. Don't delete it manually. */
+  //~KAutoMount() {} // enable this in the next release (when kdebindings can be updated)
   class KAutoMountPrivate* d;
 };
 
@@ -72,6 +81,7 @@ private:
 class KAutoUnmount : public QObject
 {
   Q_OBJECT
+  friend class gcc_gives_a_warning_without_this;
 public:
   /**
    * Unmounts a device.
@@ -81,12 +91,20 @@ public:
    */
   KAutoUnmount( const QString & mountpoint, const QString & desktopFile );
 
+signals:
+  /** Emitted when the directory has been unmounted */
+  void finished();
+  /** Emitted in case the directory could not been unmounted */
+  void error();
+
 protected slots:
   void slotResult( KIO::Job * );
 private:
   QString m_desktopFile;
   QString m_mountpoint;
 private:
+  /** KAutoUnmount deletes itself. Don't delete it manually. */
+  //~KAutoUnmount() {} // enable this in the next release (when kdebindings can be updated)
   class KAutoUnmountPrivate* d;
 };
 
