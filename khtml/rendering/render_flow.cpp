@@ -810,11 +810,11 @@ RenderFlow::clearFloats()
 
     RenderObject *prev = m_previous;
     
-    while (prev && prev->style()->flowAroundFloats())
+    while (prev && prev->isTable())
 	    prev = prev->previousSibling();
-	    
+
     int offset = 0;
-    if(prev)
+    if(prev )
     {
 	if(prev->isTableCell()) return;
 	// ### FIXME

@@ -443,7 +443,7 @@ void RenderTable::spreadSpanMinMax(int col, int span, int distmin,
     int distmax, LengthType type)
 {
 #ifdef TABLE_DEBUG
-    kdDebug( 6040 ) << "RenderTable::spreadSpanMinMax() " << distmin << endl;
+    kdDebug( 6040 ) << "RenderTable::spreadSpanMinMax() " << type << " " << distmin << endl;
 #endif
 
     if (distmin<1 && distmax<1)
@@ -466,6 +466,7 @@ void RenderTable::spreadSpanMinMax(int col, int span, int distmin,
 
     if (hasUsableCols)
     {
+//    	kdDebug( 6040 ) << "hasUsableCols " << endl;
     	// spread span maxWidth evenly
 	c=col;	
 	while(tmax)
@@ -488,14 +489,14 @@ void RenderTable::spreadSpanMinMax(int col, int span, int distmin,
 	
     	// spread span minWidth
 
-    	LengthType tt = Variable;
+    	LengthType tt = Undefined;
 	bool out=false;
 	while (tt<=type && !out && tmin)
 	{
 	    tmin = distributeMinWidth(tmin,type,tt,col,span,true);
     	    switch (tt)
 	    {
-	    case Undefined:
+	    case Undefined: tt=Variable; break;	
     	    case Variable: tt=Relative; break;	
 	    case Relative: tt=Percent; break;
 	    case Percent: tt=Fixed; break;
@@ -505,14 +506,14 @@ void RenderTable::spreadSpanMinMax(int col, int span, int distmin,
 	
 	// force spread rest of the minWidth
 	
-    	tt = Variable;
+    	tt = Undefined;
     	out=false;
 	while (tt<=type && !out && tmin)
 	{
 	    tmin = distributeMinWidth(tmin,type,tt,col,span,false);
     	    switch (tt)
 	    {
-	    case Undefined:
+	    case Undefined: tt=Variable; break;	
     	    case Variable: tt=Relative; break;	
 	    case Relative: tt=Percent; break;
 	    case Percent: tt=Fixed; break;
@@ -981,7 +982,7 @@ int RenderTable::distributeWidth(int distrib, LengthType type, int typeCols )
     }
     return tdis;
 }
-
+ 
 
 int RenderTable::distributeRest(int distrib, LengthType type, int divider )
 {
