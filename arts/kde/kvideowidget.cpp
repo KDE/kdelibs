@@ -17,6 +17,7 @@
 #include <unistd.h>
 #endif
 #include <qaccel.h>
+#include <qcursor.h>
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
 #include <kaction.h>
@@ -93,6 +94,7 @@ KFullscreenVideoWidget::KFullscreenVideoWidget( KVideoWidget *parent, const char
 {
     this->videoWidget = parent;
     setEraseColor( black );
+    setCursor(QCursor(Qt::BlankCursor));
 }
 
 void KFullscreenVideoWidget::windowActivationChange( bool )
