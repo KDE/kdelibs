@@ -23,8 +23,10 @@
 class QChar;
 class QEvent;
 class KJScript;
+class KHTMLPart;
 
 // callback functions for KJSProxy
+typedef KJScript* (KJSCreateFunc)(KHTMLPart *);
 typedef bool (KJSEvalFunc)(KJScript *script, const QChar *, unsigned int);
 typedef void (KJSClearFunc)(KJScript *script);
 typedef bool (KJSEventFunc)(KJScript *script, QEvent *, void *);
@@ -32,6 +34,7 @@ typedef bool (KJSMaskFunc)(KJScript *script, int);
 typedef const char* (KJSSpecialFunc)(KJScript *script, const char *);
 typedef void (KJSDestroyFunc)(KJScript *script);
 extern "C" {
+  KJSCreateFunc kjs_create;
   KJSEvalFunc kjs_eval;
   KJSClearFunc kjs_clear;
   KJSSpecialFunc kjs_special;
@@ -45,27 +48,20 @@ extern "C" {
  */
 class KJSProxy {
 public:
-  KJSProxy(KJScript *s, KJSEvalFunc e, KJSClearFunc c,
+  KJSProxy(KJScript *s, KJSCreateFunc cr, KJSEvalFunc e, KJSClearFunc c,
 	   KJSEventFunc ev, KJSMaskFunc m,
 	   KJSSpecialFunc sp, KJSDestroyFunc d)
-    : script(s), eval(e), clr(c), event(ev), mask(m), spec(sp), destr(d) {};
+    : create(cr), script(s), eval(e), clr(c), event(ev),
+      mask(m), spec(sp), destr(d) { };
   ~KJSProxy() { (*destr)(script); }
-  bool evaluate(const QChar *c, unsigned int l) {
-    return (*eval)(script, c, l);
-  }
-  bool processEvent(QEvent *e, void *unknown) {
-    return (*event)(script, e, unknown);
-  }
-  bool eventMask(int e) {
-    return (*mask)(script, e);
-  }
-  const char *special(const char *c) {
-    return (*spec)(script, c);
-  }
-  void clear() {
-    (*clr)(script);
-  }
+  bool evaluate(const QChar *c, unsigned int l);
+  bool processEvent(QEvent *e, void *unknown);
+  bool eventMask(int e);
+  const char *special(const char *c);
+  void clear();
+  KHTMLPart *khtml;
 private:
+  KJSCreateFunc *create;
   KJScript *script;
   KJSEvalFunc *eval;
   KJSClearFunc *clr;
@@ -74,5 +70,30 @@ private:
   KJSSpecialFunc *spec;
   KJSDestroyFunc *destr;
 };
+
+inline bool KJSProxy::evaluate(const QChar *c, unsigned int l) {
+  if (!script)
+    script = (*create)(khtml);
+  return (*eval)(script, c, l);
+}
+
+inline bool KJSProxy::processEvent(QEvent *e, void *unknown) {
+  return (script ? (*event)(script, e, unknown) : false);
+}
+
+inline bool KJSProxy::eventMask(int e) {
+  return (script ? (*mask)(script, e) : false);
+}
+
+inline const char *KJSProxy::special(const char *c) {
+  return (script ? (*spec)(script, c) : "");
+}
+
+inline void KJSProxy::clear() {
+  if (script) {
+    (*clr)(script);
+    script = 0L;
+  }
+}
 
 #endif

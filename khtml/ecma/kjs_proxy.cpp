@@ -40,6 +40,20 @@ extern "C" {
   // initialize HTML module
   KJSProxy *kjs_html_init(KHTMLPart *khtml)
   {
+    KJScript *script = kjs_create(khtml);
+
+    // this is somewhat ugly. But the only way I found to control the
+    // dlopen'ed interpreter (*no* linking!) were callback functions.
+    KJSProxy *proxy = new KJSProxy(script, &kjs_create, &kjs_eval, &kjs_clear,
+				   &kjs_event, &kjs_mask,
+				   &kjs_special, &kjs_destroy);
+    proxy->khtml = khtml;
+
+    return proxy;
+  }
+  // init the interpreter
+  KJScript* kjs_create(KHTMLPart *khtml)
+  {
     KJScript *script = new KJScript();
     script->enableDebug();
 
@@ -51,12 +65,9 @@ extern "C" {
     global.put("navigator", KJSO(new Navigator()));
     global.put("Image", KJSO(new ImageObject(global)));
 
-    // this is somewhat ugly. But the only way I found to control the
-    // dlopen'ed interpreter (*no* linking!) were callback functions.
-    return new KJSProxy(script, &kjs_eval, &kjs_clear,
-			&kjs_event, &kjs_mask,
-			&kjs_special, &kjs_destroy);
+    return script;
   }
+
   // evaluate code
   bool kjs_eval(KJScript *script, const QChar *c, unsigned int len)
   {
@@ -65,7 +76,8 @@ extern "C" {
   // clear resources allocated by the interpreter
   void kjs_clear(KJScript *script)
   {
-    script->clear();
+    //    script->clear();
+    delete script;
   }
   // process an event
   bool kjs_event(KJScript *, QEvent *, void *)
