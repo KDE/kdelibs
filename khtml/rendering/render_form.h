@@ -302,6 +302,7 @@ public:
         { emit focused(); }
     virtual void focusOutEvent(QFocusEvent *)
         { emit blurred(); }
+    virtual bool event( QEvent *e );
 signals:
     void focused();
     void blurred();
@@ -458,7 +459,8 @@ public:
     virtual void focusOutEvent(QFocusEvent *)
         { emit blurred(); }
     // ### selected???
-
+    virtual bool event (QEvent *e );
+    
 signals:
     void focused();
     void blurred();

@@ -297,6 +297,28 @@ QString RenderPushButton::defaultLabel() {
 
 // -------------------------------------------------------------------------------
 
+bool LineEditWidget::event( QEvent *e )
+{
+        if ( e->type() == QEvent::AccelAvailable && isReadOnly() ) {
+	QKeyEvent* ke = (QKeyEvent*) e;
+	if ( ke->state() & ControlButton ) {
+	    switch ( ke->key() ) {
+		case Key_Left:
+		case Key_Right:
+		case Key_Up:
+		case Key_Down:
+		case Key_Home:
+		case Key_End:
+		    ke->accept();
+		default:
+		break;
+	    }
+	}
+    }
+    return QLineEdit::event( e );
+}
+
+
 
 RenderLineEdit::RenderLineEdit(QScrollView *view, HTMLInputElementImpl *element)
     : RenderFormElement(view, element)
@@ -900,7 +922,26 @@ TextAreaWidget::TextAreaWidget(int wrap, QWidget* parent)
     }
 }
 
-
+bool TextAreaWidget::event( QEvent *e )
+{
+    if ( e->type() == QEvent::AccelAvailable && isReadOnly() ) {
+	QKeyEvent* ke = (QKeyEvent*) e;
+	if ( ke->state() & ControlButton ) {
+	    switch ( ke->key() ) {
+		case Key_Left:
+		case Key_Right:
+		case Key_Up:
+		case Key_Down:
+		case Key_Home:
+		case Key_End:
+		    ke->accept();
+		default:
+		break;
+	    }
+	}
+    }
+    return QMultiLineEdit::event( e );
+}
 // -------------------------------------------------------------------------
 
 // ### allow contents to be manipulated via DOM - will require updating
