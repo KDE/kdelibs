@@ -1015,6 +1015,7 @@ void RenderFlow::calcMinMaxWidth()
     if(childrenInline())
     {
         int inlineMax=0;
+        int currentMin=0;
         int inlineMin=0;
         bool noBreak=false;
 	bool prevWasText = false;
@@ -1038,7 +1039,7 @@ void RenderFlow::calcMinMaxWidth()
                     RenderText* t = static_cast<RenderText *>(child);
                     if (t->data()[0] == nbsp && prevWasText) //inline starts with nbsp
                     {
-                        inlineMin += childMin;
+                        currentMin += childMin;
                         inlineMax += childMax;
                         hasNbsp = true;
                     }
@@ -1048,7 +1049,7 @@ void RenderFlow::calcMinMaxWidth()
                     }
                     else if (t->data()[t->length()-1] == nbsp && t->data()[0] != ' ')
                     {                           //inline only ends with nbsp
-                        if(inlineMin < childMin) inlineMin = childMin;
+                        if(currentMin < childMin) currentMin = childMin;
                         inlineMax += childMax;
                         noBreak = true;
                         hasNbsp = true;
@@ -1056,6 +1057,7 @@ void RenderFlow::calcMinMaxWidth()
 		    prevWasText = true;
                     if (hasNbsp)
                     {
+                        if(inlineMin < currentMin) inlineMin = currentMin;
                         child = next(child);
 	                prevchild = child;
                         hasNbsp = false;
@@ -1066,27 +1068,30 @@ void RenderFlow::calcMinMaxWidth()
                 if (noBreak ||
                         (prevchild && prevchild->isFloating() && child->isFloating()))
                 {
-                    inlineMin += childMin;
+                    currentMin += childMin;
+                    if(inlineMin < currentMin) inlineMin = currentMin;
                     inlineMax += childMax;
                     noBreak = false;
                 }
                 else
                 {
-                    if(inlineMin < childMin) inlineMin = childMin;
+                    currentMin = childMin;
+                    if(inlineMin < currentMin) inlineMin = currentMin;                    
                     inlineMax += childMax;
                 }
+
             }
             else
             {
                 if(m_minWidth < inlineMin) m_minWidth = inlineMin;
                 if(m_maxWidth < inlineMax) m_maxWidth = inlineMax;
-                inlineMin = inlineMax = 0;
+                inlineMin = currentMin = inlineMax = 0;
             }
 	    prevWasText = false;
             prevchild = child;
             child = next(child);
         }
-        if(m_minWidth < inlineMin) m_minWidth = inlineMin;
+        if(m_minWidth < currentMin) m_minWidth = currentMin;
         if(m_maxWidth < inlineMax) m_maxWidth = inlineMax;
 //        kdDebug( 6040 ) << "m_maxWidth=" << m_maxWidth << endl;
     }
