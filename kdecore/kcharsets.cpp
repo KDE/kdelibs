@@ -29,8 +29,8 @@
 #include <X11/Xlib.h>
 #include <stdio.h>
 
-template QList<KFontStruct>;
-template QList<QFont::CharSet>;
+template class QList<KFontStruct>;
+template class QList<QFont::CharSet>;
 
 #define CHARSETS_COUNT 23
 static const char *charsetsStr[CHARSETS_COUNT]={

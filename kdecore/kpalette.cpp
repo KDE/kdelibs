@@ -25,7 +25,7 @@
 #include <kstddirs.h>
 #include <kglobal.h>
 
-template QList<KPalette::kolor>;
+template class QList<KPalette::kolor>;
 
 QStringList
 KPalette::getPaletteList()

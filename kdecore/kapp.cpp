@@ -91,7 +91,7 @@
 KApplication* KApplication::KApp = 0L;
 //extern bool bAreaCalculated;
 
-template QList<KSessionManaged>;
+template class QList<KSessionManaged>;
 
 static int kde_xio_errhandler( Display * )
 {

@@ -2,7 +2,7 @@
 #include "kglobal.h"
 #include "kstddirs.h"
 
-template QAsciiDict<KLibrary>;
+template class QAsciiDict<KLibrary>;
 
 #include <qtimer.h>
 

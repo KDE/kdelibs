@@ -43,7 +43,7 @@
 #endif
 
 class KDebugEntry;
-template QList<KDebugEntry>;
+template class QList<KDebugEntry>;
 
 #ifdef kdebug
 #undef kdebug
