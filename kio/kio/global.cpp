@@ -368,6 +368,9 @@ QString KIO::buildErrorString(int errorCode, const QString &errorText)
     case KIO::ERR_SLAVE_DEFINED:
       result = errorText;
       break;
+    case KIO::ERR_UPGRADE_REQUIRED:
+      result = i18n( "%1 is required by the server, but is not available." ).arg(errorText);
+      break;
     default:
       result = i18n( "Unknown error code %1\n%2\nPlease send a full bug report at http://bugs.kde.org." ).arg( errorCode ).arg( errorText );
       break;

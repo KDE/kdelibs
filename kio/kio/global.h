@@ -159,12 +159,15 @@ namespace KIO
     ERR_NO_CONTENT = 60, // Action succeeded but no content will follow.
     ERR_DISK_FULL = 61,
     ERR_IDENTICAL_FILES = 62, // src==dest when moving/copying
-    ERR_SLAVE_DEFINED = 63 // for slave specified errors that can be
-                           // rich text.  Email links will be handled
-                           // by the standard email app and all hrefs
-                           // will be handled by the standard browser.
-                           // <a href="exec:/khelpcenter ?" will be
-                           // forked.
+    ERR_SLAVE_DEFINED = 63, // for slave specified errors that can be
+                            // rich text.  Email links will be handled
+                            // by the standard email app and all hrefs
+                            // will be handled by the standard browser.
+                            // <a href="exec:/khelpcenter ?" will be
+                            // forked.
+    ERR_UPGRADE_REQUIRED = 64  // A transport upgrade is required to access this
+                               // object.  For instance, TLS is demanded by
+                               // the server in order to continue.
   };
 
   /*
