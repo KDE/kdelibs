@@ -676,7 +676,7 @@ const ClassInfo DOMAttr::info = { "Attr", &DOMNode::info, &DOMAttrTable, 0 };
 Value DOMAttr::tryGet(ExecState *exec, const Identifier &propertyName) const
 {
 #ifdef KJS_VERBOSE
-  kdDebug(6070) << "DOMAttr::tryPut " << propertyName.qstring() << endl;
+  kdDebug(6070) << "DOMAttr::tryGet " << propertyName.qstring() << endl;
 #endif
   return DOMObjectLookupGetValue<DOMAttr,DOMNode>(exec, propertyName,
                                                   &DOMAttrTable, this );
@@ -1747,4 +1747,3 @@ Value DOMTextProtoFunc::tryCall(ExecState *exec, Object &thisObj, const List &ar
       return Undefined();
   }
 }
-
