@@ -135,8 +135,12 @@ void KURLComboBox::setDefaults()
     }
 }
 
-
 void KURLComboBox::setURLs( QStringList urls )
+{
+    setURLs( urls, RemoveBottom );
+}
+
+void KURLComboBox::setURLs( QStringList urls, OverLoadResolving remove )
 {
     setDefaults();
     itemList.clear();
@@ -159,7 +163,7 @@ void KURLComboBox::setURLs( QStringList urls )
     // limit to myMaximum items
     int overload = urls.count() - myMaximum + defaultList.count();
     while ( overload > 0 ) {
-        urls.remove( urls.fromLast() );
+        urls.remove((remove == RemoveBottom) ? urls.fromLast() : urls.begin());
         overload--;
     }
 

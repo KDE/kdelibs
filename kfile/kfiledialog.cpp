@@ -1165,7 +1165,9 @@ void KFileDialog::setSelection(const QString& url)
         QString filename = u.url();
         int sep = filename.findRev('/');
         if (sep >= 0) { // there is a / in it
+            if ( KProtocolInfo::supportsListing( u.protocol() ))
             setURL(filename.left(sep), true);
+            
             // filename must be decoded, or "name with space" would become
             // "name%20with%20space", so we use KURL::fileName()
             filename = u.fileName();
@@ -1633,7 +1635,8 @@ void KFileDialog::readRecentFiles( KConfig *kc )
 
     locationEdit->setMaxItems( kc->readNumEntry( RecentFilesNumber,
                                                  DefaultRecentURLsNumber ) );
-    locationEdit->setURLs( kc->readListEntry( RecentFiles ) );
+    locationEdit->setURLs( kc->readListEntry( RecentFiles ), 
+                           KURLComboBox::RemoveBottom );
     locationEdit->insertItem( QString::null, 0 ); // dummy item without pixmap
     locationEdit->setCurrentItem( 0 );
 
