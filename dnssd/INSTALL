@@ -1,9 +1,9 @@
 Installing Apple mDNSResponder:
 
 1) download mDNSResponder 
- - from CVS (see 	http://developer.apple.com/darwin/projects/rendezvous/).
- 
- - or you can get tarball from: http://helios.et.put.poznan.pl/~jstachow/pub/mDNSResponder-85.tar.bz2
+ - from Apple site (http://www.opensource.apple.com/darwinsource/tarballs/apsl/mDNSResponder-87.tar.gz)
+ - or you can get tarball from: http://helios.et.put.poznan.pl/~jstachow/pub/mDNSResponder-87.tar.gz
+    (for those who don't like registration)
 
 2) compile and install
  Build system for mDNSResponder is quite weird so here are instructions:
