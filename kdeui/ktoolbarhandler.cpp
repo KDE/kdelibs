@@ -19,6 +19,7 @@
 #include "ktoolbarhandler.h"
 
 #include <qpopupmenu.h>
+#include <kapplication.h>
 #include <ktoolbar.h>
 #include <kmainwindow.h>
 #include <klocale.h>
@@ -177,7 +178,8 @@ void ToolBarHandler::setupActions()
                  this, SLOT( setupActions() ) );
                  */
 
-    plugActionList( actionListName, m_actions );
+    if (kapp && kapp->authorizeKAction("options_show_toolbar"))
+	plugActionList( actionListName, m_actions );
 
     connectToActionContainers();
 }
