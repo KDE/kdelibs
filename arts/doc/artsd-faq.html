@@ -1,0 +1,132 @@
+<HTML>
+<TITLE>
+aRts sound server FAQ
+</TITLE>
+<BODY bgcolor="#EAEEEE">
+<h1>aRts sound server FAQ</h1>
+<hr>
+<p>
+<table width="100%"><tr bgcolor="#fafacb"><h2>general infos</h2></tr></table>
+<p>
+<b>Does KDE support my soundcard for audio output?</b>
+<p>
+   KDE uses aRts to play sounds. aRts bases on your normal Linux sound drivers,
+   either OSS or ALSA (using the OSS emulation). So if your soundcard is
+   supported by either ALSA or OSS (i.e. any other Linux app can output sound),
+   it will work.
+<p>
+<b>Is there sound support if I am not using Linux?</b>
+<p>
+   Only if there are OSS (compatible) drivers for your platform (i.e. FreeBSD).
+   Feel free to contribute. Simply rewrite audiosubsys.cc in kdelibs/arts/flow.
+<p>
+<b>I can't play wav files with artsd?</b>
+<p>
+   Check that artsd is linked to libaudiofile (ldd artsd), if it isn't,
+   download kdesupport, recompile everything and it will work.
+<p>
+<table width="100%"><tr bgcolor="#fafacb"><h2>non-aRts applications</h2></tr></table>
+<p>
+<b>As soon as KDE is running, no other application can access my sound device?</b>
+<p>
+   Yes, since the aRts sound server KDE uses is running, it is using the
+   sound device. If it is idle for 60 seconds, it will release it
+   automatically (auto-suspend).
+<p>
+<b>You said it suspends after 60 seconds, it doesn't for me?</b>
+<p>
+   Currently it doesn't suspend when using full duplex. Turn full duplex off
+   and it will suspend. Turning it off is a good idea anyway if you only use
+   aRts for playing things.
+<p>
+<b>What should I do to run old, non-aRts applications?</b>
+<p>
+   Start them with artsdsp. For instance, if you normally would run
+<p>
+     mpg123 foo.mp3
+<p>
+   use
+<p>
+     artsdsp mpg123 foo.mp3
+<p>
+   now - this will redirect the sound output to aRts. As you see this method
+   doesn't require changing existing apps. It is a bit hacky however, and
+   does not yet fully support all features of the soundcard right now, so
+   some apps might not work.
+<p>
+<b>Are there theoretical limits which apps will never work with artsdsp?</b>
+<p>
+   No. Of course artsdsp will have a little more latency and a little more
+   CPU usage. Other than that, consider every app that doesn't work with
+   artsdsp a bug in artsdsp. Basically the way artsdsp works should, if
+   implemented properly, make EVERY app work with it (including stuff
+   like quake3).
+<p>
+<b>What do I do if an app doesn't work with artsdsp?</b>
+<p>
+   Of course you can wait for artsd to suspend. Other than that, there is
+   currently no peaceful support for pausing artsd. A brutal but working
+   way to get rid of it is
+<p>
+     killall artsd ; killall artswrapper
+<p>
+     &lt;start app here&gt;
+<p>
+     kcminit arts
+<p>
+   Some aRts apps might crash, though, once you killed the server. Maybe
+   there will be a better way in the future, feel free to write one yourself
+   if you like.
+<p>
+<table width="100%"><tr bgcolor="#fafacb"><h2>latency</h2></tr></table>
+<p>
+<b>I sometimes get short pauses when listening to music, is this a bug?</b>
+<p>
+   This is no bug in aRts unfortunately, most likely your problem is
+   caused since the linux kernel is not really good at realtime scheduling.
+   There are situations where aRts will not be able to keep up with playback.
+   You can however enable realtime rights (via KControl), and use a large
+   latency setting (like 250ms or don't care), which should make it better.
+<p>
+<b>Whats the effect of the response time setting anyway?</b>
+<p>
+   A lower value means that aRts will take <b>less time to respond</b> to
+   external events (i.e. time time that it takes between closing a window and
+   hearing a sound played by artsd), will use <b>more cpu</b>, and <b>more
+   likely cause dropouts</b>.
+<p>
+   The help text (in kcontrol) is irritating.
+<p>
+<b>Why is artsd taking that much CPU time?</b>
+<p>
+   Check your response time settings. On the other hand, the KDE2.0 version
+   is not yet really optimized. This will improve, and until then no real
+   prediction can be made how fast artsd can or can't be.
+<p>
+<table width="100%"><tr bgcolor="#fafacb"><h2>network transparency</h2></tr></table>
+<p>
+<b>What do I need for network transparency?</b>
+<p>
+   Enable it in kcontrol (enable X11 server for security information and
+   network transparency). Then go and copy your .mcoprc to all machines
+   you plan to use network transparency from. Relogin. Make sure that
+   the hosts that interact know each other by name (i.e. make sure that
+   they have resolvable names or are in /etc/hosts).
+<p>
+<b>Can I debug it if it doesn't work?</b>
+<p>
+   Yes, if you have the source. go to kdelibs/arts/examples, make check
+   there, then run
+<p>
+     referenceinfo global:Arts_SimpleSoundServer
+<p>
+   there you'll see what hostname and port aRts. For instance tcp:orion:1698
+   would mean that any client trying to use artsd network transparent should
+   know how to reach "orion".
+<hr>
+<table width=100%>
+<tr><td><a href=index.html>Back to the index</a>
+<td align=right><a href=mailto:stw@kde.org>stw@kde.org</a></tr>
+</table>
+</BODY>
+</HTML>

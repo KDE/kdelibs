@@ -14,6 +14,7 @@ Index:
 
 - change text in the kcmarts module regarding latency, it's plain confusing
 
+- make artsd able to choose other device than /dev/dsp
 - ensure DynamicCast(<some null object>) == Object::null()
 - support multiple artsd instances on one computer (like multiple displays),
   and think of a clever way to register them
