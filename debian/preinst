@@ -7,31 +7,23 @@ set -e
 
 case "$1" in
     install)
-      if [ -e /usr/share/applnk -a ! -L /usr/share/applnk ]; then
-        if [ -e /etc/kde2/applnk -a ! -L /etc/kde2/applnk ]; then
+      if [ -e /etc/kde2/applnk -a ! -L /etc/kde2/applnk ]; then
+        if [ -e /usr/share/applnk -a ! -L /usr/share/applnk ]; then
           rm -rf /etc/kde2/applnk > /dev/null 2>&1
-          mv /usr/share/applnk /etc/kde2/applnk > /dev/null 2>&1
+        else
+          rm -rf /usr/share/applnk* >/dev/null 2>&1
+          mv /etc/kde2/applnk /usr/share/applnk
         fi
-        rm -rf /usr/share/applnk > /dev/null 2>&1
       fi
     ;;
     upgrade)
       if [ -e /etc/kde2/applnk -a ! -L /etc/kde2/applnk ]; then
         if [ -e /usr/share/applnk -a ! -L /usr/share/applnk ]; then
-          rm -rf /usr/share/applnk > /dev/null 2>&1
-          ln -s /etc/kde2/applnk /usr/share/applnk >/dev/null 2>&1
+          rm -rf /etc/kde2/applnk > /dev/null 2>&1
         else
-          mv /usr/share/applnk /etc/kde2/applnk >/dev/null 2>&1
-          ln -s /etc/kde2/applnk /usr/share/applnk >/dev/null 2>&1
+          rm -rf /usr/share/applnk* >/dev/null 2>&1
+          mv /etc/kde2/applnk /usr/share/applnk
         fi
-      else
-        if [ -e /usr/share/applnk -a ! -L /usr/share/applnk ]; then
-          mv /usr/share/applnk /etc/kde2/applnk >/dev/null 2>&1
-          ln -s /etc/kde2/applnk /usr/share/applnk >/dev/null 2>&1
-        fi
-      fi
-      if [ -e /usr/share/applnk/applnk ]; then
-          rm -rf /usr/share/applnk/applnk >/dev/null 2>&1
       fi
     ;;
 

@@ -39,9 +39,6 @@ case "$1" in
       else
         echo "Looks ok"
       fi
-      if [ -e /usr/share/applnk/applnk ]; then
-          rm -rf /usr/share/applnk/applnk >/dev/null 2>&1
-      fi
     ;;
 
     abort-upgrade|abort-remove|abort-deconfigure)
