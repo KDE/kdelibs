@@ -30,6 +30,7 @@ MainWidget::MainWidget(QDomElement& dockConfig,KMdi::MdiMode mode)
 : KMdiMainFrm(0L, "theMDIMainFrm",mode)
  ,m_dockConfig(dockConfig)
 {
+   setIDEAlModeStyle(1); // KDEV3
 
    dockManager->setReadDockConfigMode(KDockManager::RestoreAllDockwidgets);
    initMenu();
@@ -132,14 +133,13 @@ void RestartWidget::onStateChanged(int on)
         m_w->show();
     }
     else {
-	mdimode=m_w->mdiMode();
+        mdimode=m_w->mdiMode();
         m_w->close();
-	delete m_w;
+        delete m_w;
     }
 
 }
 
 void RestartWidget::setWindow(MainWidget *w) {
-	m_w=w;
+        m_w=w;
 }
-		
