@@ -291,6 +291,14 @@ void DCOPClient::processSocketData( int )
 void QApplication::setPalette( const QPalette &, bool ,
                                const char*  )
 {
+    static bool done = false;
+    if (done) return;
+    QString xlfd = "-misc-ahem-medium-r-normal--0-0-0-0-c-0-iso10646-1";
+    XFontStruct *xfs;
+    xfs = XLoadQueryFont(QPaintDevice::x11AppDisplay(), xlfd.latin1() );
+    if (!xfs) // as long as you don't do screenshots, it's maybe fine
+	qFatal("We will need some fonts. So make sure you have %s installed.", xlfd.latin1());
+    done = true;
 }
 
 #include <kapplication.h>
