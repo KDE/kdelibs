@@ -61,7 +61,7 @@ public:
      * @param type The type of gradient.
      * @param xfactor The x decay length. Use a value between -200 and 200.
      * @param yfactor The y decay length.
-     * @param ncols The number of colors. See @ref gradient.
+     * @param ncols The number of colors. See #gradient.
      * @return The generated pixmap, for convencience.
      */
     static KPixmap& unbalancedGradient(KPixmap& pixmap, const QColor &ca,

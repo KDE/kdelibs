@@ -68,7 +68,7 @@ public:
 
     /**
      * Sets the size of the items you want to get out of the given pixmap.
-     * The QRect of @ref coordinates will have the width and height of exactly
+     * The QRect of #coordinates(int) will have the width and height of exactly
      * this @p size.
      */
     void setItemSize( const QSize& size );

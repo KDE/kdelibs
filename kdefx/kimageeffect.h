@@ -192,7 +192,7 @@ public:
      * Blend an image into another one, using alpha in the expected way and
      * over coordinates @p x and @p y with respect to the lower image.
      * The output is painted in the own @p lower image. This is an optimization
-     * of the @ref blend method above provided by convenience.
+     * of the blend method above provided by convenience.
      */
     static bool blendOnLower(int x, int y, const QImage & upper, const QImage & lower);
 
