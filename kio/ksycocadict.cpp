@@ -319,7 +319,7 @@ KSycocaDict::save(QDataStream &str)
    }
 
 // fprintf(stderr, "Calculating minimum table size..\n");
-   mHashTableSize = 0;
+   mHashTableSize = count();
    int minDups = count();
    uint maxHashTableSize = count()*5;
    for(uint hashTableSize = count(); hashTableSize < maxHashTableSize; hashTableSize++)
