@@ -60,7 +60,7 @@ public:
    static time_t parseDateISO8601(const QString &date);
 
   /**
-   * Returns the local timezone offset to UTC in seconds
+   * Returns the local timezone offset to UTC in minutes
    *
    */
    static int localUTCOffset();
@@ -71,7 +71,7 @@ public:
    * in conformance to RFC2822.
    *
    * @param utcTime    a date and time in UTC
-   * @param utcOffset  the offset to UTC in seconds
+   * @param utcOffset  the offset to UTC in minutes
    *
    */
 
