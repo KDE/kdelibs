@@ -94,6 +94,7 @@ protected:
    void requestStart(KLaunchRequest *request);
    void requestDone(KLaunchRequest *request);
 
+   void setLaunchEnv(const QCString &name, const QCString &value);
    void exec_blind(const QCString &name, const QValueList<QCString> &arg_list);
    bool start_service(KService::Ptr service, const QString &filename);
    bool start_service_by_name(const QString &serviceName, const QString &filename);

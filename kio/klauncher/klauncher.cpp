@@ -216,12 +216,35 @@ KLauncher::process(const QCString &fun, const QByteArray &data,
       stream2 << pid << error;;
       return true;
    }
+   else if (fun == "setLaunchEnv(QCString,QCString)")
+   {
+      QDataStream stream(data, IO_ReadOnly);
+      QCString name;
+      QCString value;
+      stream >> name >> value;
+      kdDebug(7016) << "setLaunchEnv " << name << "="<< value << endl;
+      setLaunchEnv(name, value);
+      replyType = "void";
+      return true;
+   }
    if (KUniqueApplication::process(fun, data, replyType, replyData))
    {
       return true;
    }
    kdDebug(7016) << "Got unknown DCOP function: " << fun << endl;
    return false;
+}
+
+void KLauncher::setLaunchEnv(const QCString &name, const QCString &value)
+{
+   klauncher_header request_header;
+   QByteArray requestData(name.length()+value.length()+2);
+   memcpy(requestData.data(), name.data(), name.length()+1);
+   memcpy(requestData.data()+name.length()+1, value.data(), value.length()+1);
+   request_header.cmd = LAUNCHER_SETENV;
+   request_header.arg_length = requestData.size();
+   write(kdeinitSocket, &request_header, sizeof(request_header));
+   write(kdeinitSocket, requestData.data(), request_header.arg_length);
 }
 
 /*
