@@ -48,11 +48,6 @@ KFilterBase * KFilterBase::findFilterByFileName( const QString & fileName )
 
 KFilterBase * KFilterBase::findFilterByMimeType( const QString & mimeType )
 {
-    if ( mimeType == "text/plain" || mimeType == "application/octet-stream" )
-    {
-    	// That are mime types that do not need any filter, so do not search any
-    	return 0L;
-    }
     KTrader::OfferList offers = KTrader::self()->query( "KDECompressionFilter",
                                                         QString("'") + mimeType + "' in ServiceTypes" );
     KTrader::OfferList::ConstIterator it = offers.begin();
@@ -68,7 +63,8 @@ KFilterBase * KFilterBase::findFilterByMimeType( const QString & mimeType )
         if ( filter )
             return filter;
     }
-    kdWarning() << "KFilterBase::findFilterByExtension : no filter found for " << mimeType << endl;
+
+    kdDebug(7005) << "KFilterBase::findFilterByExtension : no filter found for " << mimeType << endl;
 
     return 0L;
 }
