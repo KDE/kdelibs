@@ -223,69 +223,77 @@ KSpellConfig::interpret (QString &fname, QString &lname,
 
   kdDebug(750) << "KSpellConfig::interpret [" << fname << "]" << endl;
 
+  QString dname(fname);
+
+  if(dname.right(1)=="+")
+    dname.remove(dname.length()-1, 1);
+
+  if(dname.right(3)=="sml" || dname.right(3)=="med" || dname.right(3)=="lrg" || dname.right(3)=="xlg")
+     dname.remove(dname.length()-3,3);
+
   //These are mostly the ispell-langpack defaults
-  if (fname=="english" || fname=="american" ||
-      fname=="british" || fname=="canadian") {
+  if (dname=="english" || dname=="american" ||
+      dname=="british" || dname=="canadian") {
     lname="en"; hname=i18n("English");
   }
-  else if (fname=="espa~nol" || fname=="espanol") {
+  else if (dname=="espa~nol" || dname=="espanol") {
     lname="es"; hname=i18n("Spanish");
   }
-  else if (fname=="dansk") {
+  else if (dname=="dansk") {
     lname="da"; hname=i18n("Danish");
   }
-  else if (fname=="deutsch") {
+  else if (dname=="deutsch") {
     lname="de"; hname=i18n("German");
   }
-  else if (fname=="german") {
+  else if (dname=="german") {
     lname="de"; hname=i18n("German (new orth.)");
   }
-  else if (fname=="portuguesb" || fname=="br") {
+  else if (dname=="portuguesb" || dname=="br") {
     lname="br"; hname=i18n("Brazilian Portuguese");
   }
-  else if (fname=="portugues") {
+  else if (dname=="portugues") {
     lname="pt"; hname=i18n("Portuguese");
   }
-  else if (fname=="esperanto") {
+  else if (dname=="esperanto") {
     lname="eo"; hname=i18n("Esperanto");
   }
-  else if (fname=="norsk") {
+  else if (dname=="norsk") {
     lname="no"; hname=i18n("Norwegian");
   }
-  else if (fname=="polish") {
+  else if (dname=="polish") {
     lname="pl"; hname=i18n("Polish"); sChangeEncoding(KS_E_LATIN2);
   }
-  else if (fname=="russian") {
+  else if (dname=="russian") {
     lname="ru"; hname=i18n("Russian");
   }
-  else if (fname=="slovensko") {
+  else if (dname=="slovensko") {
     lname="si"; hname=i18n("Slovenian"); sChangeEncoding(KS_E_LATIN2);
   }
-  else if (fname=="slovak"){
+  else if (dname=="slovak"){
     lname="sk"; hname=i18n("Slovak"); sChangeEncoding(KS_E_LATIN2);
   }
-  else if (fname=="czech") {
+  else if (dname=="czech") {
     lname="cs"; hname=i18n("Czech"); sChangeEncoding(KS_E_LATIN2);
   }
-  else if (fname=="svenska") {
+  else if (dname=="svenska") {
     lname="sv"; hname=i18n("Swedish");
   }
-  else if (fname=="swiss") {
+  else if (dname=="swiss") {
     lname="de"; hname=i18n("Swiss German");
   }
-  else if (fname=="ukrainian") {
+  else if (dname=="ukrainian") {
     lname="uk"; hname=i18n("Ukrainian");
   }
-  else if (fname=="lietuviu" || fname=="lithuanian") {
+  else if (dname=="lietuviu" || dname=="lithuanian") {
      lname="lt"; hname=i18n("Lithuanian");
   }
-  else if (fname=="francais" || fname=="french") {
+  else if (dname=="francais" || dname=="french") {
     lname="fr"; hname=i18n("French");
   }
-  else if (fname=="belarusian") {  // waiting for post 2.2 to not dissapoint translators
+  else if (dname=="belarusian") {  // waiting for post 2.2 to not dissapoint translators
     lname="be"; hname=i18n("Belarusian");
   }
-  else if( fname == "magyar" ) {
+  else if( dname == "magyar" ) {
     lname="hu"; hname=i18n("Hungarian");
     sChangeEncoding(KS_E_LATIN2);
   }
@@ -373,7 +381,7 @@ void KSpellConfig::getAvailDictsIspell () {
   kdDebug(750) << "KSpellConfig::getAvailDictsIspell "
 	       << dir.filePath() << " " << dir.dirPath() << endl;
 
-  QDir thedir (dir.filePath(),"*.aff");
+  QDir thedir (dir.filePath(),"*.hash");
 
   kdDebug(750) << "KSpellConfig" << thedir.path() << "\n" << endl;
   kdDebug(750) << "entryList().count()="
@@ -384,8 +392,8 @@ void KSpellConfig::getAvailDictsIspell () {
       QString fname, lname, hname;
       fname = thedir [i];
 
-      // remove .aff
-      if (fname.right(4) == ".aff") fname.remove (fname.length()-4,4);
+      // remove .hash
+      if (fname.right(5) == ".hash") fname.remove (fname.length()-5,5);
 
       if (interpret (fname, lname, hname) && langfnames[0].isEmpty())
 	{ // This one is the KDE default language
@@ -510,9 +518,9 @@ KSpellConfig::setDictionary (const QString s)
 {
   qsdict=s; //.copy();
 
-  if (qsdict.length()>4)
-    if ((signed)qsdict.find(".aff")==(signed)qsdict.length()-4)
-      qsdict.remove (qsdict.length()-4,4);
+  if (qsdict.length()>5)
+    if ((signed)qsdict.find(".hash")==(signed)qsdict.length()-5)
+      qsdict.remove (qsdict.length()-5,5);
 
 
   if(dictcombo)
