@@ -138,9 +138,6 @@ dcop_read_string(char * buf, char ** output)
   fprintf(stderr, "dcop_read_string: length == %d\n", length);
 
   *output = (char *)malloc(length);
-  if (*output == NULL)
-    return pos;
-
   memcpy(*output, pos, length);
   return pos + length;
 }
@@ -222,8 +219,6 @@ dcop_process_message(
 
       fprintf(stderr, "dcop_process_message(): length == %ld\n", length);
       buf = (char *)malloc(length);
-      if (buf == NULL)
-        return;
       status = IceReadData(dcop_ice_conn, length, buf);
       if (False == status) {
         fprintf(stderr, "dcop_process_message(): IceReadData failed\n");
@@ -262,9 +257,6 @@ dcop_process_message(
       fprintf(stderr, "dcop_process_message(): DCOPSend received\n");
 
       buf = (char *)malloc(length);
-      if (buf == NULL)
-        return;
-
       IceReadData(dcop_ice_conn, length, buf);
 
       pos = buf;
@@ -319,7 +311,7 @@ dcop_send_signal(
 
   struct DCOPMsg * pMsgPtr = 0;
 
-  static const char sAnonymous = "anonymous";
+  static const char* sAnonymous = "anonymous";
 
   if (0 == dcop_ice_conn) {
     fprintf(stderr, "Try running dcop_attach(), moron\n");
@@ -359,8 +351,6 @@ dcop_send_signal(
                  4*5;  /* 4 string lengths + 1 int */
 
   header = (char *)malloc(headerLength);
-  if (header == NULL)
-    return False;
 
   pos = header;
 
@@ -446,8 +436,6 @@ dcop_call(
   temp += 1024; /* Extra space for marshalling overhead */
 
   outputData = (char *)malloc(temp);
-  if (outputData == NULL)
-    return False;
 
   temp = 0;
 
@@ -581,15 +569,11 @@ dcop_register(const char * app_name, Bool add_pid)
     /* Leave room for "-pid" */
     int len = strlen(app_name) + 64;
     dcop_requested_name = (char *)malloc(len);
-    if (dcop_requested_name == NULL)
-      return NULL;
 
     snprintf(dcop_requested_name, len, "%s-%ld", app_name, (long)getpid());
   }
 
   data = (char *)malloc(strlen(dcop_requested_name) + 42);
-  if (data == NULL)
-    return NULL;
 
   pos = data;
   pos = dcop_write_string(pos, dcop_requested_name);
@@ -706,8 +690,6 @@ dcop_connect()
     }
 
     dcopServer = (char *)malloc(BUFFER_SIZE);
-    if (dcopServer == NULL)
-      return False;
 
     bytesRead = fread((void *)dcopServer, sizeof(char), BUFFER_SIZE, f);
     dcopServer[BUFFER_SIZE - 1] = 0;
