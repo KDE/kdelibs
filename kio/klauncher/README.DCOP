@@ -1,0 +1,28 @@
+"KLauncher" supports the following DCOP functions:
+
+/**
+ * Starts a program.
+ */
+void exec_blind(QCString name, QValueList<QCString> argList);
+
+/**
+ * Start a service.
+ *
+ * 'serviceName' refers to a desktop file describing the service.
+ * It may be of the form "korganizer", "korganizer.desktop" or
+ * "/opt/kde/share/applnk/Applications/korganizer.desktop".
+ *
+ * 'filename', if not empty, will be passed to the service as
+ * argument.
+ *
+ */
+serviceResult startService(QCString serviceName, QString filename)
+serviceResult startService(QCString serviceName, QString filename)
+
+struct serviceResult
+{
+  int errno;         // 0 means success.
+  QCString dcopName; // Contains DCOP name on success
+  QString error;     // Contains error description on failure.
+}
+
