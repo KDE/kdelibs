@@ -12,9 +12,14 @@ libartsflow_la_SOURCES = artsflow.cc synth_play_impl.cc artsserver_impl.cc \
   synth_multi_add_impl.cc synth_add_impl.cc synth_mul_impl.cc \
   synth_play_wav_impl.cc stdsynthmodule.cc cache.cc utils.c
 
+artsincludedir = $(includedir)/arts
+artsinclude_HEADERS = artsflow.h artsserver_impl.h audiosubsys.h cache.h \
+  convert.h debug.h execrequest.h pipebuffer.h stdsynthmodule.h \
+  synthschedule.h utils.h
+
 DISTCLEANFILES = $(SRCMETA) artsflow.cc artsflow.h
 
-####### Build rules
+######## Build rules
 
 artsflow.cc: artsflow.h
 artsflow.h: $(top_srcdir)/arts/flow/artsflow.idl $(MCOPIDL)
