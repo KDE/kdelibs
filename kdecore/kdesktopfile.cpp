@@ -33,7 +33,7 @@
 #include "kdesktopfile.moc"
 
 KDesktopFile::KDesktopFile(const QString &pFileName, bool bReadOnly,
-			   const QString &resType)
+			   const char * resType)
   : KConfig(QString::fromLatin1(""), bReadOnly, false)
 {
   // KConfigBackEnd will try to locate the filename that is provided

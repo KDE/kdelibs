@@ -62,7 +62,7 @@ public:
    *        the filename specified will be dealt with.
    */
   KConfigBackEnd(KConfigBase *_config, const QString &_fileName,
-		 const QString &_resType, bool _useKDEGlobals);
+		 const char * _resType, bool _useKDEGlobals);
   
   /**
    * Destructor.
@@ -98,7 +98,7 @@ public:
    * @param _useKDEGlobals specifies whether or not to also parse the
    *        global KDE configuration files.
    */
-  void changeFileName(const QString &_fileName, const QString &_resType,
+  void changeFileName(const QString &_fileName, const char * _resType,
 		      bool _useKDEGlobals)
       { 
 	fileName = _fileName; resType = _resType;
@@ -121,13 +121,13 @@ public:
   /**
    * @return the resource type as passed to the constructor.
    */
-  QString resource() const { return resType; }
+  const char * resource() const { return resType; }
 
 protected:
   KConfigBase *pConfig;
 
   QString fileName;
-  QString resType;
+  QCString resType;
   bool useKDEGlobals;
 
   KConfigBackEndPrivate *d;
@@ -162,7 +162,7 @@ public:
    *        the filename specified will be dealt with.
    */
   KConfigINIBackEnd(KConfigBase *_config, const QString &_fileName,
-		    const QString &_resType, bool _useKDEGlobals = true)
+		    const char * _resType, bool _useKDEGlobals = true)
     : KConfigBackEnd(_config, _fileName, _resType, _useKDEGlobals) {}
   
   /**

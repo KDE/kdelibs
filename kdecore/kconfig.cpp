@@ -53,7 +53,7 @@ KConfig::KConfig( const QString& fileName,
   // a object factory of some sorts.
   KConfigINIBackEnd *aBackEnd = new KConfigINIBackEnd(this,
 						      fileName,
-                                                     QString::fromLatin1(resType),
+                                                      resType,
 						      bUseKderc);
   // set the object's back end pointer to this new backend
   backEnd = aBackEnd;

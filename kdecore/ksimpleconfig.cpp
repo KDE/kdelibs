@@ -45,9 +45,9 @@ KSimpleConfig::KSimpleConfig(const QString &pFileName, bool bReadOnly)
   // for KSimpleConfig an absolute filename is guaranteed
   if (!pFileName.isNull() && pFileName[0] != '/') {
      backEnd->changeFileName( KGlobal::dirs()->
-	saveLocation("config")+pFileName, QString::fromLatin1("config"), false);
+	saveLocation("config")+pFileName, "config", false);
   } else {
-     backEnd->changeFileName(pFileName, QString::fromLatin1("config"), false);
+     backEnd->changeFileName(pFileName, "config", false);
   }
   parseConfigFiles();
 }

@@ -92,7 +92,7 @@ static QString stringToPrintable(const QString& s){
 
 KConfigBackEnd::KConfigBackEnd(KConfigBase *_config,
 			       const QString &_fileName,
-			       const QString &_resType,
+			       const char * _resType,
 			       bool _useKDEGlobals)
   : pConfig(_config), fileName(_fileName),
     resType(_resType), useKDEGlobals(_useKDEGlobals)
@@ -132,7 +132,7 @@ bool KConfigINIBackEnd::parseConfigFiles()
 //    QStringList list = KGlobal::dirs()->
 //      findAllResources(resType, fileName, true);
     QStringList list = KGlobal::dirs()->
-      findAllResources(resType.latin1(), fileName);
+      findAllResources(resType, fileName);
 
     QStringList::ConstIterator it;
 
@@ -251,7 +251,7 @@ void KConfigINIBackEnd::sync(bool bMerge)
     if (fileName[0] == '/') {
        aLocalFileName = fileName;
     } else {
-       aLocalFileName = KGlobal::dirs()->saveLocation(resType.latin1()) + fileName;
+       aLocalFileName = KGlobal::dirs()->saveLocation(resType) + fileName;
     }
 
     // Create the containing dir if needed
