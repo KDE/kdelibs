@@ -412,9 +412,15 @@ protected:
 	}
     }
 
+    /**
+     * You should probably never change this variable, but call setSorting().
+     * It's here for the combi-view, that needs to set the sorting without
+     * resorting (the childviews do that themselves).
+     */
+    QDir::SortSpec mySorting;
+    
 private:
     bool reversed;
-    QDir::SortSpec mySorting;
     static QDir::SortSpec defaultSortSpec;
     KFile::SortMode mySortMode;
     QString viewname;
