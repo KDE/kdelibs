@@ -277,7 +277,7 @@ public:
 		{
 			QDomNamedNodeMap attr = *map;
 
-			for(int i = 0; i < attr.count(); i++)
+			for(unsigned int i = 0; i < attr.count(); i++)
 			{
 				QString name, value;
 
@@ -296,7 +296,7 @@ public:
 		// Apply local attributes
 		QDomNamedNodeMap attr = node.attributes();
 
-		for(int i = 0; i < attr.count(); i++)
+		for(unsigned int i = 0; i < attr.count(); i++)
 		{
 			QDomNode current = attr.item(i);
 
@@ -311,6 +311,9 @@ public:
 
 	void handleTags(QDomElement element, bool paint)
 	{
+		if(!paint)
+			return;
+		
 		// TODO: Default attribute values
 		if(element.tagName() == "rect")
 		{

@@ -110,7 +110,7 @@ public:
 
 	void ensureSpace(QMemArray<ArtBpath> &vec, int index)
 	{
-		if(vec.size() == index)
+		if(vec.size() == (unsigned int) index)
 			vec.resize(index + 1);
 	}
 
@@ -194,7 +194,7 @@ public:
 
 		ArtSVP *fillSVP = 0, *strokeSVP = 0;
 
-		art_u32 fillColor, strokeColor;
+		art_u32 fillColor = 0, strokeColor = 0;
 
 		// Filling
 		{
@@ -1086,7 +1086,7 @@ void KSVGIconPainter::drawPolygon(QPointArray polyArray)
     polygon[0].x = polyArray.point(0).x();
     polygon[0].y = polyArray.point(0).y();
 
-	int index;
+	unsigned int index;
 	for(index = 1; index < polyArray.count(); index++)
 	{
 		QPoint point = polyArray.point(index);
@@ -1183,7 +1183,7 @@ void KSVGIconPainter::drawPath(const QString &data, bool filled)
 						
 						index++;
 
-						if(vec.size() == index)
+						if(vec.size() == (unsigned int) index)
 							vec.resize(index + 1);
 
 						vec[index].code = ART_END2;
@@ -1250,7 +1250,7 @@ void KSVGIconPainter::drawPath(const QString &data, bool filled)
 						
 						index++;
 
-						if(vec.size() == index)							
+						if(vec.size() == (unsigned int) index)							
 							vec.resize(index + 1);
 						
 						vec[index].code = ART_END2;
@@ -1776,7 +1776,7 @@ void KSVGIconPainter::drawPath(const QString &data, bool filled)
 		{
 			index++;
 
-			if(vec.size() == index)
+			if(vec.size() == (unsigned int) index)
 				vec.resize(index + 1);
 
 			vec[index].code = ART_LINETO;
@@ -1795,7 +1795,7 @@ void KSVGIconPainter::drawPath(const QString &data, bool filled)
 		{
 			index++;
 
-			if(vec.size() == index)
+			if(vec.size() == (unsigned int) index)
 				vec.resize(index + 1);
 
 			vec[index].code = ART_END2;
@@ -1810,7 +1810,7 @@ void KSVGIconPainter::drawPath(const QString &data, bool filled)
 	// Close
 	index++;
 
-	if(vec.size() == index)
+	if(vec.size() == (unsigned int) index)
 		vec.resize(index + 1);
 
 	vec[index].code = ART_END;
