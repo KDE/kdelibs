@@ -349,7 +349,8 @@ public:
                 QString *error, QCString *dcopService, int *pid, const QCString& startup_id );
   static int startServiceByName( const QString& _name, const QStringList &URLs,
                 QString *error, QCString *dcopService, int *pid, const QCString& startup_id );
-  // BCI merge with the above
+  // KDE 3.0: BCI merge with the above
+  // KDE 3.0: Add bool to process events while waiting for response.
   static int startServiceByName( const QString& _name, const QString &URL,
                 QString *error=0, QCString *dcopService=0, int *pid=0 );
   static int startServiceByName( const QString& _name, const QStringList &URLs=QStringList(),
@@ -374,7 +375,8 @@ public:
                 QString *error, QCString *dcopService, int *pid, const QCString& startup_id );
   static int startServiceByDesktopPath( const QString& _name, const QStringList &URLs,
                 QString *error, QCString *dcopService, int *pid, const QCString& startup_id );
-  // BCI merge with the above
+  // KDE 3.0: BCI merge with the above
+  // KDE 3.0: Add bool to process events while waiting for response.
   static int startServiceByDesktopPath( const QString& _name, const QString &URL,
                 QString *error=0, QCString *dcopService=0, int *pid = 0 );
   static int startServiceByDesktopPath( const QString& _name, const QStringList &URLs=QStringList(),
@@ -400,7 +402,8 @@ public:
                 QString *error, QCString *dcopService, int *pid, const QCString& startup_id );
   static int startServiceByDesktopName( const QString& _name, const QStringList &URLs,
                 QString *error, QCString *dcopService, int *pid, const QCString& startup_id );
-  // BCI merge with the above
+  // KDE 3.0: BCI merge with the above
+  // KDE 3.0: Add bool to process events while waiting for response.
   static int startServiceByDesktopName( const QString& _name, const QString &URL,
                 QString *error=0, QCString *dcopService=0, int *pid = 0 );
   static int startServiceByDesktopName( const QString& _name, const QStringList &URLs=QStringList(),
@@ -848,6 +851,10 @@ private:
 #endif
 
 // $Log$
+// Revision 1.225  2001/07/17 01:00:56  waba
+// * Single "start kdeinit" function.
+// * Show busy cursor to make the wait more pleasant :-]
+//
 // Revision 1.224  2001/07/08 19:05:59  faure
 // Committing patch by Lubos to fix startup notification for the kfmclient case.
 // Not that I can really review it, but who can ? :)
