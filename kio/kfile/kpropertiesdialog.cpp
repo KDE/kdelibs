@@ -894,7 +894,7 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
           grid->addWidget( l, curRow++, 2 );
       }
 
-      l = new QLabel(i18n("Disk usage:"), d->m_frame );
+      l = new QLabel(i18n("Free disk space:"), d->m_frame );
       grid->addWidget(l, curRow, 0);
 
       d->m_freeSpaceLabel = new QLabel( d->m_frame );
