@@ -238,6 +238,13 @@ public:
     QString wrappedString() const; // gift for Dirk :)
 
     /**
+     * @return the original string, truncated to the first line.
+     * If @p dots was set, '...' is appended in case the string was truncated.
+     * Bug: Note that the '...' come out of the bounding rect.
+     */
+    QString truncatedString( bool dots = true ) const;
+
+    /**
      * Draw the text that has been previously wrapped, at position x,y.
      * Flags are for alignment, e.g. AlignHCenter. Default is AlignAuto.
      */

@@ -39,8 +39,8 @@ class KIconView::KIconViewPrivate
 {
 public:
     KIconViewPrivate() {
-	mode = KIconView::Execute;
-	doAutoSelect = TRUE;
+        mode = KIconView::Execute;
+        doAutoSelect = TRUE;
         fm = 0L;
     }
     KIconView::Mode mode;
@@ -56,7 +56,7 @@ KIconView::KIconView( QWidget *parent, const char *name, WFlags f )
 
     oldCursor = viewport()->cursor();
     connect( this, SIGNAL( onViewport() ),
-	     this, SLOT( slotOnViewport() ) );
+             this, SLOT( slotOnViewport() ) );
     connect( this, SIGNAL( onItem( QIconViewItem * ) ),
              this, SLOT( slotOnItem( QIconViewItem * ) ) );
     slotSettingsChanged( KApplication::SETTINGS_MOUSE );
@@ -67,7 +67,7 @@ KIconView::KIconView( QWidget *parent, const char *name, WFlags f )
 
     m_pAutoSelect = new QTimer( this );
     connect( m_pAutoSelect, SIGNAL( timeout() ),
-    	     this, SLOT( slotAutoSelect() ) );
+             this, SLOT( slotAutoSelect() ) );
 }
 
 KIconView::~KIconView()
@@ -584,7 +584,13 @@ KWordWrap* KWordWrap::formatText( QFontMetrics &fm, const QRect & r, int /*flags
     {
         QChar c = str[i];
         int ww = fm.charWidth( str, i );
-        bool isBreakable = c.isSpace() || c.isPunct() || c.isSymbol();
+        // isBreakable is true when we can break _after_ this character.
+        bool isBreakable = ( c.isSpace() || c.isPunct() || c.isSymbol() )
+                           && ( c != '(' && c != '[' && c != '{' );
+        if ( !isBreakable && i < len-1 ) {
+            QChar nextc = str[i+1];
+            isBreakable = ( nextc == '(' || nextc == '[' || nextc == '{' );
+        }
         /*kdDebug() << "c='" << QString(c) << "' i=" << i << "/" << len
                   << " x=" << x << " ww=" << ww << " w=" << w
                   << " lastBreak=" << lastBreak << " isBreakable=" << isBreakable << endl;*/
@@ -613,16 +619,8 @@ KWordWrap* KWordWrap::formatText( QFontMetrics &fm, const QRect & r, int /*flags
             }
         } else if ( isBreakable )
         {
-            if ( ( c == '(' || c == '[' || c == '{' ) && i > 0 )
-            {
-                lastBreak = i - 1;
-                lineWidth = x;
-            }
-            else
-            {
-                lastBreak = i;
-                lineWidth = x + ww;
-            }
+            lastBreak = i;
+            lineWidth = x + ww;
         }
         x += ww;
     }
@@ -648,6 +646,21 @@ QString KWordWrap::wrappedString() const
     }
     ws += m_text.mid( start );
     return ws;
+}
+
+QString KWordWrap::truncatedString( bool dots ) const
+{
+    QString ts;
+    QValueList<int>::ConstIterator it = m_breakPositions.begin();
+    if ( it != m_breakPositions.end() )
+    {
+        ts = m_text.left( (*it) + 1 );
+        if ( dots )
+            ts += "...";
+    }
+    else
+        ts = m_text;
+    return ts;
 }
 
 void KWordWrap::drawText( QPainter *painter, int textX, int textY, int flags ) const
