@@ -70,16 +70,16 @@ enum ComplType {CTNone=0, CTEnv, CTUser, CTMan, CTExe, CTFile, CTUrl, CTInfo};
 class KURLCompletion::MyURL
 {
 public:
-	MyURL(const QString &url);
+	MyURL(const QString &url, const QString &cwd);
 	MyURL(const MyURL &url);
 	~MyURL();
 
 	KURL *kurl() const { return m_kurl; };
 
-	bool hasProtocol() { return m_has_protocol; };
-	QString protocol() const { return m_protocol; };
-	QString dir() const { return m_dir; };
-	QString file() const { return m_file; };
+	QString protocol() const { return m_kurl->protocol(); };
+	// The directory with a trailing '/'
+	QString dir() const { return m_kurl->directory(false, false); };
+	QString file() const { return m_kurl->fileName(false); };
 	
 	QString url() const { return m_url; };
 
@@ -87,21 +87,17 @@ public:
 	
 	void filter();
 
-protected:
-	void init(const QString &ul);
+private:
+	void init(const QString &url, const QString &cwd);
 
 	KURL *m_kurl;
-	bool m_has_protocol;
 	QString m_url;
 	QString m_orgUrlWithoutFile;
-	QString m_protocol;
-	QString m_dir;
-	QString m_file;
 };
 
-KURLCompletion::MyURL::MyURL(const QString &url)
+KURLCompletion::MyURL::MyURL(const QString &url, const QString &cwd)
 {
-	init(url);
+	init(url, cwd);
 }
 
 KURLCompletion::MyURL::MyURL(const MyURL &url)
@@ -109,12 +105,9 @@ KURLCompletion::MyURL::MyURL(const MyURL &url)
 	m_kurl = new KURL( *(url.m_kurl) );
 	m_url = url.m_url;
 	m_orgUrlWithoutFile = url.m_orgUrlWithoutFile;
-	m_protocol = url.m_protocol;
-	m_dir = url.m_dir;
-	m_file = url.m_file;
 }
 
-void KURLCompletion::MyURL::init(const QString &url)
+void KURLCompletion::MyURL::init(const QString &url, const QString &cwd)
 {
 	// Save the original text
 	m_url = url;
@@ -130,41 +123,36 @@ void KURLCompletion::MyURL::init(const QString &url)
 			url_copy.replace( 0, 1, QString("man:") );
 	}
 		
-	// Save a flag for protocol/no protocol
-	m_has_protocol = url_copy.contains( QRegExp("[^/\\s\\\\]*:") );
+	// Look for a protocol in 'url' 
+	QRegExp protocol_regex = QRegExp( "^[^/\\s\\\\]*:" );
 	
-	int colon_pos = -1;
-	
-	if ( m_has_protocol )
-		colon_pos = url_copy.find(':');
-
-	// Assume "file:" if there is no protocol
-	// (KURL does this only for absoute paths)
-	if ( m_has_protocol ) {
+	// Assume "file:" or whatever is given by 'cwd' if there is 
+	// no protocol.  (KURL does this only for absoute paths)
+	if ( protocol_regex.search( url_copy ) == 0 ) {
 		m_kurl = new KURL( url_copy );
 
 		// KURL doesn't parse only a protocol (like "smb:")
 		if ( m_kurl->protocol().isEmpty() ) {
-			m_protocol = url_copy.left( colon_pos );
-			m_kurl->setProtocol( m_protocol );
+			QString protocol = url_copy.left( protocol_regex.matchedLength() - 1 );
+			m_kurl->setProtocol( protocol );
 		}
-		else {
-			m_protocol = m_kurl->protocol();
-		}
+	}
+	else if ( protocol_regex.search( cwd ) == 0 
+			&& url_copy[0] != '/'
+			&& url_copy[0] != '~' )
+	{
+		// 'cwd' contains a protocol and url_copy is not absolute
+		// or a users home directory
+		QString protocol = cwd.left( protocol_regex.matchedLength() - 1 );
+		m_kurl = new KURL( protocol + ":" + url_copy );
 	}
 	else {
+		// Use 'file' as default protocol 
 		m_kurl = new KURL( QString("file:") + url_copy );
-		m_protocol = m_kurl->protocol();
 	}
 
-	// The directory with a trailing '/'
-	m_dir = m_kurl->directory(false, false);
-	m_file = m_kurl->fileName(false);
-	//kdDebug() << "m_dir=" << m_dir << endl;
-	//kdDebug() << "m_file=" << m_file << endl;
-
 	// URL with file stripped
-	m_orgUrlWithoutFile = m_url.left( m_url.length() - m_file.length() );
+	m_orgUrlWithoutFile = m_url.left( m_url.length() - file().length() );
         //kdDebug() << "m_orgUrlWithoutFile=" << m_orgUrlWithoutFile << endl;
 }	
 
@@ -175,10 +163,11 @@ KURLCompletion::MyURL::~MyURL()
 			
 void KURLCompletion::MyURL::filter()
 {
-	if ( !m_dir.isEmpty() ) {
-		expandTilde( m_dir );
-		expandEnv( m_dir );
-		m_kurl->setPath( m_dir );
+	if ( !dir().isEmpty() ) {
+		QString d = dir();
+		expandTilde( d );
+		expandEnv( d );
+		m_kurl->setPath( d + file() );
 	}
 }
 
@@ -493,9 +482,9 @@ void KURLCompletion::init()
  */
 QString KURLCompletion::makeCompletion(const QString &text)
 {
-//	kdDebug() << "KURLCompletion::makeCompletion: " << text << endl;
+	//kdDebug() << "KURLCompletion::makeCompletion: " << text << endl;
 
-	MyURL url(text);
+	MyURL url(text, m_cwd);
 
 	m_compl_text = text;
 	m_prepend = url.orgUrlWithoutFile();
@@ -514,11 +503,12 @@ QString KURLCompletion::makeCompletion(const QString &text)
 	
 	// Replace user directories and variables
 	url.filter();
-/*
-	kdDebug() << "Filtered: proto=" << url.protocol()
-	          << ", dir=" << url.dir()
-			  << ", file=" << url.file() << endl;
-*/
+
+	//kdDebug() << "Filtered: proto=" << url.protocol()
+	//          << ", dir=" << url.dir()
+	//          << ", file=" << url.file()
+	//          << ", kurl url=" << url.kurl()->url() << endl;
+
 	if ( m_mode == ExeCompletion ) {
 		// Executables
 		//
@@ -619,10 +609,12 @@ bool KURLCompletion::isListedURL( int complType,
                                   QString filter,
                                   bool no_hidden )
 {
-	return m_last_compl_type == complType &&
-	       m_last_path_listed == dir &&
-	       filter.startsWith(m_last_file_listed) &&
-	       m_last_no_hidden == (int)no_hidden;
+	return  m_last_compl_type == complType
+			&& ( m_last_path_listed == dir
+					|| (dir.isEmpty() && m_last_path_listed.isEmpty()) )
+			&& ( filter.startsWith(m_last_file_listed)
+					|| (filter.isEmpty() && m_last_file_listed.isEmpty()) )
+			&& m_last_no_hidden == (int)no_hidden;
 }
 
 /*
@@ -865,35 +857,37 @@ bool KURLCompletion::fileCompletion(const MyURL &url, QString *match)
 
 bool KURLCompletion::urlCompletion(const MyURL &url, QString *match)
 {
+	//kdDebug() << "urlCompletion " << url.kurl()->prettyURL() << endl;
+
+	// Use m_cwd as base url in case url is not absolute
+	KURL url_cwd = KURL( m_cwd ); 
+	
+	// Create an URL with the directory to be listed
+	KURL *url_dir = new KURL( url_cwd, url.kurl()->url() );
+	url_dir->setFileName(""); // not really nesseccary...
+
 	// Don't try url completion if
 	// 1. malformed url
 	// 2. protocol that doesn't have listDir()
 	// 3. there is no directory (e.g. "ftp://ftp.kd" shouldn't do anything)
 	// 4. auto or popup completion mode depending on settings
 
-	bool man_or_info = ( url.protocol() == QString("man")
-	                     || url.protocol() == QString("info") );
+	bool man_or_info = ( url_dir->protocol() == QString("man")
+	                     || url_dir->protocol() == QString("info") );
 
-	if ( url.kurl()->isMalformed()
-	     || !KProtocolInfo::supportsListing( *url.kurl() )
+	if ( url_dir->isMalformed()
+	     || !KProtocolInfo::supportsListing( *url_dir )
 	     || ( !man_or_info
-	          && ( url.dir().isEmpty()
+	          && ( url_dir->directory(false,false).isEmpty()
 	               || ( isAutoCompletion()
 	                    && !d->url_auto_completion ) ) ) )
 		return false;
 
-	// 1. remove the file name
-	// 2. replace environment variables
-	//
-	KURL *url_dir = new KURL( *url.kurl() );
 
-	url_dir->setFileName(""); // not really nesseccary...
-	
-	// Create an URL with the directory to be listed
-
+	// Remove escapes
 	QString dir = url_dir->directory( false, false );
 
-	dir = unescape( dir ); // remove escapes
+	dir = unescape( dir );
 
 	url_dir->setPath( dir );
 
@@ -1267,7 +1261,7 @@ void KURLCompletion::postProcessMatches( QStringList * /*matches*/ ) const
 
 QString KURLCompletion::replacedPath( const QString& text )
 {
-    MyURL url( text );
+    MyURL url( text, m_cwd );
     if ( !url.kurl()->isLocalFile() )
         return text;
 
