@@ -14,6 +14,7 @@ static const char *version = "v0.0.1";
 static KCmdLineOptions options[] =
 {
    { "+Theme", I18N_NOOP("Input file containing a theme."), 0 },
+   { "apply", I18N_NOOP("Apply to all apps immediately."), 0 },
    { 0, 0, 0 }
 };
 
@@ -28,15 +29,30 @@ int main(int argc, char **argv)
 
     KCmdLineArgs *args = KCmdLineArgs::parsedArgs();
 
-    if(args->count() < 1){
+    bool apply = false;
+
+    if (args->isSet("apply"))
+    {
+      apply = true;
+    }
+
+    if (args->count() < 1)
+    {
         KCmdLineArgs::usage(i18n("You must specify an input file!\n"));
     }
 
     QFileInfo fi(args->arg(0));
-    if(!fi.exists()){
+
+    if (!fi.exists())
+    {
         puts("settheme: The input file does not exist.");
         return(2);
     }
+
     KThemeBase::applyConfigFile(args->arg(0));
+
+    if (apply)
+      KIPC::sendMessageAll(KIPC::StyleChanged);
+
     return(0);
 }
