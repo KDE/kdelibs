@@ -43,20 +43,24 @@ KPCopiesPage::KPCopiesPage(KPrinter *prt, QWidget *parent, const char *name)
 : KPrintDialogPage(parent,name)
 {
 	//WhatsThis strings.... (added by pfeifle@kde.org)
-	QString whatsThisPageSelectionLabel = i18n(  " <qt>Here you can determine to print a certain selection only out of all"
-						" pages from the complete document.</qt>" );
-	QString whatsThisAllPagesLabel = i18n(  " <qt>Select \"All\" to print the complete document. Since this is the default,"
-						" it is pre-selected.</qt>" );
-	QString whatsThisCurrentPagesLabel = i18n(  " <qt><p>Select <em>\"Current\"</em> if you want to print the page currently visible"
-						" in your KDE application.</p>"
+	QString whatsThisPageSelectionLabel = i18n(  " <qt><b>Page Selection</b> "
+						" <p>Here you can control if you print a certain selection only out of all"
+						" the pages from the complete document.</qt>" );
+	QString whatsThisAllPagesLabel = i18n(  " <qt><b>All Pages:</b> Select \"All\" to print the complete document."
+						" Since this is the default, it is pre-selected.</qt>" );
+	QString whatsThisCurrentPagesLabel = i18n(  " <qt><b>Current Page:</b> Select <em>\"Current\"</em> if you want "
+						" to print the page currently visible in your KDE application.</p>"
 						" <p><b>Note:</b> this field is disabled if you print from"
 						" non-KDE applications like Mozilla or OpenOffice.org, since here KDEPrint has no"
 						" means to determine which document page you are currently viewing.</p></qt>" );
-	QString whatsThisPageRangeLabel = i18n(  " <qt><p>Choose a \"Page Range\" to select a subset of the complete document pages"
+	QString whatsThisPageRangeLabel = i18n(  " <qt><b>Page Range:</b> Choose a \"Page Range\" to select a subset of the"
+						" complete document pages"
 						" to be printed. The format is <em>\"n,m,o-p,q,r,s-t, u\"</em>.</p>"
 						" <p><b>Example:</b> <em>\"4,6,10-13,17,20,23-25\"</em> will print"
 						" the pages 4, 6, 10, 11, 12, 13, 17, 20, 23, 24, 25 of your document.</p></qt>" );
-	QString whatsThisPageSetLabel = i18n(  " <qt>Choose <em>\"All Pages\"</em>, <em>\"Even Pages\"</em> or <em>\"Odd Pages\"</em>"
+	QString whatsThisPageSetLabel = i18n(  " <qt><b>Page Set:</b>"
+						" <p>Choose <em>\"All Pages\"</em>, <em>\"Even Pages\"</em> or"
+						" <em>\"Odd Pages\"</em>"
 						" if you want to print a page selection matching one of these terms. The default"
 						" is <em>\"All Pages\"</em>.</p>"
 						" <p><b>Note:</b> If you combine a selection of a <em>\"Page Range\"</em> with a"
@@ -68,21 +72,25 @@ KPCopiesPage::KPCopiesPage(KPrinter *prt, QWidget *parent, const char *name)
 						" option. You may need to <em>\"Reverse\"</em> the output in one of the passes (depending"
 						" on your printer model).</p> "
 						" </qt>" );
-	QString whatsThisCopiesLabel = i18n(  " <qt>Here you can determine the number of copies, the output order and the collate"
-						" mode of your printjob.</qt>" );
-	QString whatsThisNumberOfCopiesLabel = i18n(  " <qt>Determine the number of requested copies here. You can increase or decrease"
-						" the number by clicking on the up and down arrows. You can also type the figure"
+	QString whatsThisCopiesLabel = i18n(  " <qt><b>Output Settings:</b>"
+						" Here you can determine the number of copies, the output order and the collate"
+						" mode for the pages of your printjob.</qt>" );
+	QString whatsThisNumberOfCopiesLabel = i18n(  " <qt><b>Number of Copies:</b> Determine the number of requested copies here."
+						" You can increase or decrease"
+						" the number of printed copies by clicking on the up and down arrows. You can also type the figure"
 						" directly into the box.</qt>" );
-	QString whatsThisCollateLabel = i18n(  " <qt><p>If the <em>\"Collate\"</em> checkbox is enabled (default), the output order of"
-						" a multi-page document will be \"1-2-3-..., 1-2-3-..., 1-2-3-...\".</p>"
-						" <p>If the <em>\"Collate\"</em> checkbox is disabled, the output order of"
-						" a multi-page document will be \"1-1-1-..., 2-2-2-..., 3-3-3-...\".</p></qt>" );
-	QString whatsThisReverseLabel = i18n(  " <qt><p>If the <em>\"Reverse\"</em> checkbox is enabled, the output order of"
-						" a multi-page document will be \"...-3-2-1, ...-3-2-1, ...-3-2-1\", if you"
+	QString whatsThisCollateLabel = i18n(  " <qt><b>Collate Copies</b>"
+						" <p>If the <em>\"Collate\"</em> checkbox is enabled (default), the output order for"
+						" multiple copies of a multi-page document will be \"1-2-3-..., 1-2-3-..., 1-2-3-...\".</p>"
+						" <p>If the <em>\"Collate\"</em> checkbox is disabled, the output order for"
+						" multiple copies of a multi-page document will be \"1-1-1-..., 2-2-2-..., 3-3-3-...\".</p></qt>" );
+	QString whatsThisReverseLabel = i18n(  " <qt><b>Reverse Order</b>"
+						" <p> If the <em>\"Reverse\"</em> checkbox is enabled, the output order for"
+						" multiple copies of a multi-page document will be \"...-3-2-1, ...-3-2-1, ...-3-2-1\", if you"
 						" also have <em>en</em>abled the <em>\"Collate\"</em> checkbox at the same time"
 						" (the usual usecase).</p>"
-						" <p>If the <em>\"Reverse\"</em> checkbox is enabled, the output order of"
-						" a multi-page document will be \"...-3-3-3, ...-2-2-2, ...-1-1-1\", if you"
+						" <p>If the <em>\"Reverse\"</em> checkbox is enabled, the output order for"
+						" multiple copies of a multi-page document will be \"...-3-3-3, ...-2-2-2, ...-1-1-1\", if you"
 						" have <em>dis</em>abled the <em>\"Collate\"</em> checkbox at the same time."
 						"</p></qt>" );
 	m_printer = prt;
@@ -107,7 +115,7 @@ KPCopiesPage::KPCopiesPage(KPrinter *prt, QWidget *parent, const char *name)
 //	QWhatsThis::add(m_rangeedit, i18n("<p>Enter pages or group of pages to print separated by commas (1,2-5,8).</p>"));
 	//QLabel	*m_rangeexpl = new QLabel(m_pagebox);
 	//m_rangeexpl->setText(i18n("<p>Enter pages or group of pages to print separated by commas (1,2-5,8).</p>"));
-	QGroupBox	*m_copybox = new QGroupBox(0, Qt::Vertical, i18n("Copies"), this);
+	QGroupBox	*m_copybox = new QGroupBox(0, Qt::Vertical, i18n("Output Settings"), this);
 	QWhatsThis::add(m_copybox, whatsThisCopiesLabel);
 	m_collate = new QCheckBox(i18n("Co&llate"), m_copybox);
 	QWhatsThis::add(m_collate, whatsThisCollateLabel);
