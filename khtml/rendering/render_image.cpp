@@ -149,6 +149,15 @@ void RenderImage::printReplaced(QPainter *p, int _tx, int _ty)
 	else
 	    p->drawPixmap( QPoint( _tx + leftBorder, _ty + topBorder ), pixmap, rect );
     }
+    if (hasKeyboardFocus!=DOM::ActivationOff)
+      {
+	if (hasKeyboardFocus==DOM::ActivationPassive)
+	  p->setPen(QColor("green"));
+	else
+	  p->setPen(QColor("blue"));
+	p->drawRect( _tx + leftBorder, _ty + topBorder, contentWidth, contentHeight);
+	p->drawRect( _tx + leftBorder+1, _ty + topBorder+1, contentWidth-2, contentHeight-2);
+      }
 }
 
 void RenderImage::calcMinMaxWidth()

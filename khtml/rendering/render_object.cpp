@@ -94,6 +94,7 @@ RenderObject *RenderObject::createObject(DOM::NodeImpl *node)
 RenderObject::RenderObject()
 {
     m_style = 0;
+    hasKeyboardFocus=DOM::ActivationOff;
 
     m_layouted = false;
     m_parsing = false;
@@ -374,4 +375,17 @@ void RenderObject::setContainsPositioned(bool p)
     	    	containingBlock()->setContainsPositioned(false);	
 	}
     }
+}
+
+void RenderObject::setKeyboardFocus(DOM::ActivationState b)
+{
+  RenderObject *actChild;
+  printTree(0);
+  if (actChild=firstChild())
+    while(actChild)
+      {
+	actChild->setKeyboardFocus(b);
+	actChild=actChild->nextSibling();
+      }
+  hasKeyboardFocus=b;
 }

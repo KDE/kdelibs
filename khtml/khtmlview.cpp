@@ -25,6 +25,8 @@
 
 #include "misc/loader.h"
 #include "html/html_documentimpl.h"
+#include "html/html_miscimpl.h"
+#include "html/html_inlineimpl.h"
 #include "dom/dom2_range.h"
 #include "rendering/render_object.h"
 #include "misc/htmlhashes.h"
@@ -73,6 +75,9 @@ public:
 	endOffset = 0;
 	startBeforeEnd = true;
 	underMouse = 0;
+	m_links=0L;
+	history=0L;
+	linkPressed=false;
     }
     NodeImpl *selectionStart;
     int startOffset;
@@ -80,6 +85,11 @@ public:
     int endOffset;
     bool startBeforeEnd;
     NodeImpl *underMouse;
+
+  QList <DOM::NodeImpl> *m_links;
+  bool linkPressed;
+
+  QList <KURL> *history;
 };
 
 
@@ -559,6 +569,7 @@ void KHTMLView::viewportMouseReleaseEvent( QMouseEvent * _mouse )
 
 	m_part->urlSelected( m_strSelectedURL, _mouse->button(), _mouse->state(), pressedTarget );
    }
+	//###: is this neccessary? m_part->openURL(u);
 
     if(innerNode && innerNode->isTextNode()) {
 	kdDebug( 6000 ) << "final range of selection to " << d->selectionStart << "/" << d->startOffset << " --> " << innerNode << "/" << offset << endl;
@@ -669,20 +680,37 @@ void KHTMLView::keyPressEvent( QKeyEvent *_ke )
 	break;
 
     case Key_Prior:
-    case Key_Backspace:
 	scrollBy( 0, -clipper()->height() + offs );
 	break;
-
+    case Key_Backspace:
+        goBack();
+        break;
+    case Key_Insert:
+        goForward();
+	break;
+    case Key_Home:
+        goForward();
+	break;
     case Key_Right:
+        gotoNextLink();
+        break;
     case Key_L:
 	scrollBy( 10, 0 );
-	break;	
-
+	break;
     case Key_Left:
+        gotoPrevLink();
+        break;
     case Key_H:
 	scrollBy( -10, 0 );
 	break;
-
+    case Key_Enter:
+        if (!d->linkPressed)
+	  {
+	    activateActLink();
+	  }
+        else
+	  keyReleaseEvent(_ke);
+        break;
     default:
 	QScrollView::keyPressEvent( _ke );
     }
@@ -690,8 +718,15 @@ void KHTMLView::keyPressEvent( QKeyEvent *_ke )
 
 void KHTMLView::keyReleaseEvent( QKeyEvent *_ke )
 {
-    if(m_part->keyReleaseHook(_ke)) return;
-    QScrollView::keyReleaseEvent( _ke);
+   switch(_ke->key())
+     {
+     case Key_Enter:
+ 	followLink();
+       break;
+     default:
+       if(m_part->keyReleaseHook(_ke)) return;
+       QScrollView::keyReleaseEvent( _ke);
+     }
 }
 
 bool KHTMLView::focusNextPrevChild( bool next )
@@ -715,5 +750,250 @@ DOM::NodeImpl *KHTMLView::nodeUnderMouse() const
 {
     return d->underMouse;
 }
+
+int KHTMLView::buildLinkList()
+{
+    HTMLAnchorElementImpl *a;
+    HTMLCollectionImpl *tmp;
+    QList <HTMLAnchorElementImpl> *mylinks;
+    int count;
+    int length, tmp_tab=0, max_tab=0;
+    if (d->m_links!=0L)
+      {
+	delete d->m_links;
+	printf("KHTMLView::buildLinkList: warning! link list exists. use rebuildLinkList instead.\n");
+      }
+
+    if (!m_part->docImpl())
+      return;
+
+    tmp = new HTMLCollectionImpl(m_part->docImpl(), HTMLCollectionImpl::DOC_LINKS);
+    tmp->ref();
+    
+    d->m_links=new QList<DOM::NodeImpl>;
+    mylinks=new QList<HTMLAnchorElementImpl>;
+    
+    printf("number of links found:%d\n", tmp->length());
+    
+    //hier muss die umsortierung erfolgen.
+    length=tmp->length();
+    //zwischenspeichern und groessten tabindex feststellen
+    for (count=0;count<length;count++)
+      {
+	a=new HTMLAnchorElementImpl(*(static_cast<HTMLAnchorElementImpl *>(tmp->item(count))));
+	tmp_tab=a->tabIndex();
+	mylinks->append(a);	  
+	if (max_tab<tmp_tab)
+	  max_tab=tmp_tab;
+      }
+    //tabindex-haltige tags zuerst
+    for (count=0;count<max_tab;count++)
+      {
+	mylinks->first();
+	while(a=mylinks->current())
+	  {
+	    tmp_tab=a->tabIndex();
+	    if (tmp_tab==count)
+	      {
+		d->m_links->append(a);
+		mylinks->remove(a);
+	      }
+	    mylinks->next();
+	  }
+      }
+    a=mylinks->first();
+    while(a=mylinks->current())
+      {
+	d->m_links->append(a);
+	mylinks->next();
+      }
+    d->m_links->first();
+    // ###: Memory Leak!
+    tmp->deref();
+    delete tmp;
+}
+
+bool KHTMLView::gotoLink()
+{
+  HTMLAnchorElementImpl *n=static_cast<HTMLAnchorElementImpl*>(d->m_links->current());
+  printf("current item:%s\n", n->areaHref().string().latin1());
+  //calculate x- and ypos
+  int x = 0, y = 0;
+  n->getAnchorPosition(x,y);
+  ensureVisible(x+50, y+50);
+  
+  if (d->linkPressed)
+    n->setKeyboardFocus(DOM::ActivationActive);
+  else
+    n->setKeyboardFocus(DOM::ActivationPassive);
+  
+  //overwrite old contents
+  // ###: only repaint widget area of no-more active widget.
+  QRect re(0,0,viewport()->width(),viewport()->height());
+  QPaintEvent *pe= new QPaintEvent(re, true);
+  viewportPaintEvent(pe);
+  return true;
+}
+
+bool KHTMLView::gotoNextLink()
+{
+  if (!d->m_links)
+    {
+      buildLinkList();
+      d->m_links->first();
+      printf("Created new link list\n");
+    }
+  else
+    {
+      d->m_links->current()->setKeyboardFocus(DOM::ActivationOff);
+      printf("actual link position: %d\n", d->m_links->at());
+      if (!d->m_links->next())
+	d->m_links->first();
+      printf("   new link position: %d\n", d->m_links->at());
+    }
+  return gotoLink();
+}
+
+bool KHTMLView::gotoPrevLink()
+{
+  if (!d->m_links)
+    {
+      buildLinkList();
+      d->m_links->first();
+      printf("GotoPrevLink: Created new link list\n");
+    }
+  else
+    {
+      d->m_links->current()->setKeyboardFocus(DOM::ActivationOff);
+      printf("actual link position: %d\n", d->m_links->at());
+      if (!d->m_links->prev())
+	d->m_links->last();
+      printf("   new link position: %d\n", d->m_links->at());
+    }
+  return gotoLink();
+}
+
+void KHTMLView::activateActLink()
+{
+  if ((d->m_links)&&(!d->linkPressed))
+    {
+ // ### zusammenfassen: setkeyboardfocus und viewportpaintevent.
+      d->m_links->current()->setKeyboardFocus(DOM::ActivationActive);
+      QRect re(0,0,viewport()->width(),viewport()->height());
+      QPaintEvent *pe= new QPaintEvent(re, true);
+      viewportPaintEvent(pe);
+      d->linkPressed=true;
+    }
+}
+
+void KHTMLView::followLink()
+{
+  NodeImpl *actNode;
+  HTMLAnchorElementImpl *actLink;
+  KURL *href;
+  int tempurl;
+
+  d->linkPressed=false;
+  if ((!d->m_links))
+    {
+      printf("warning: FollowLink called without list\n");
+      buildLinkList();
+      gotoLink(); //ersten Link anzeigen.
+    }
+  else
+    {
+      if (!d->history)
+	{
+	  d->history=new QList<KURL>;
+	}
+      if (!d->history->count())
+	{
+	  d->history->append(new KURL(m_part->url()));
+	  d->history->last();
+	}
+
+      actNode=d->m_links->current();
+ // ###:Keyboardfocus setzen sollte mit Repaint verbunden werden.
+      actNode->setKeyboardFocus(DOM::ActivationOff);
+      QRect re(0,0,viewport()->width(),viewport()->height());
+      QPaintEvent *pe= new QPaintEvent(re, true);
+      viewportPaintEvent(pe);
+
+      //retrieve url
+      actLink=static_cast<HTMLAnchorElementImpl *>(actNode);
+      href=new KURL(m_part->url(),actLink->areaHref().string());
+
+      printf("\nLenght of History: %d items.\n", d->history->count());
+
+      if (d->history->at()+1<d->history->count())
+	{  //loesche alle eintraege nach dem aktuellen.
+	  tempurl=d->history->at()+1;
+	  if (!tempurl) tempurl++;
+	  while(d->history->remove(tempurl++));
+	  printf("list truncated to length of %d", d->history->count());
+	  if (!d->history->last())
+	    printf("warning! empty list after truncate\n");
+	}
+
+      if (!d->history->last()->cmp(*href))
+	  d->history->append(href);
+
+      if (!href->cmp(m_part->url()))
+	{
+	  delete d->m_links;
+	  d->m_links=0L;
+	  m_part->openURL(*href);
+	}
+    }
+}
+
+void KHTMLView::goBack()
+{
+  if (!d->history)
+    printf("\n\n\nERROR: no history at all\n");
+  else
+    printf("\ngoing back from history item #%d of #%d\n", d->history->at(), d->history->count());
+
+  if ((d->history)&&(d->history->at()>0))
+    {
+      printf("current item : %p", d->history->current());
+      delete d->m_links;
+      d->m_links=0L;
+      m_part->openURL(*(d->history->prev()));
+    }
+}
+
+void KHTMLView::goForward()
+{
+  if ((d->history)&&(d->history->next()))
+    {
+      delete d->m_links;
+      d->m_links=0L;
+      m_part->openURL(*(d->history->prev())); 
+    }
+}
+
+void KHTMLView::goHome()
+{
+  if (!d->history)
+    printf("\n\n\nERROR: no history at all\n");
+  else
+    printf("\ngoing home from history item #%d of #%d\n", d->history->at(), d->history->count());
+
+  if ((d->history)&&
+      (d->history->current())&&
+      (!(d->history->current()->cmp(*(d->history->getFirst())))))
+    { 
+      if (!(d->history->getFirst()->cmp(*(d->history->getLast()))))
+	d->history->append(new KURL(*(d->history->getFirst())));
+      d->history->last();
+      printf("going home to %s in list of %d elements\n", d->history->current()->url().latin1(), d->history->count());
+      delete d->m_links;
+      d->m_links=0L;
+      m_part->openURL(*(d->history->current()));
+    }
+}
+
+
 
 

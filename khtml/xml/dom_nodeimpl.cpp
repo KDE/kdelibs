@@ -321,6 +321,18 @@ void NodeImpl::getCursor(int offset, int &_x, int &_y, int &height)
     if(m_render) m_render->cursorPos(offset, _x, _y, height);
 }
 
+void NodeImpl::setKeyboardFocus(ActivationState b)
+{
+  if (m_render)
+    {
+      m_render->setKeyboardFocus(b);
+      /*if (b!=ActivationOff)
+	m_render->repaintObject(m_render, 0, 0);
+	else
+	m_render->repaintRectangle(0,0, m_render->width(), m_render->height()); 
+      */
+    }
+}
 
 //--------------------------------------------------------------------
 

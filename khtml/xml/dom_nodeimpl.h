@@ -44,6 +44,12 @@ class NodeListImpl;
 class DocumentImpl;
 class CSSStyleDeclarationImpl;
 
+//enumerator for the keyboardfocus-state of an object.
+enum ActivationState { ActivationOff,
+		       ActivationOffbutVisited,
+		       ActivationPassive,
+		       ActivationActive };
+
 // Skeleton of a node. No children and no parents are allowed.
 // We use this class as a basic Node Implementatin, and derive all other
 // Node classes from it. This is done to reduce memory overhead.
@@ -214,6 +220,8 @@ public:
 
     virtual void applyChanges(bool top = true);
     virtual void getCursor(int offset, int &_x, int &_y, int &height);
+
+    void setKeyboardFocus(ActivationState b=ActivationPassive);
 
 protected:
     DocumentImpl *document;

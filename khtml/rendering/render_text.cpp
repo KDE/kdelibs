@@ -392,7 +392,15 @@ void RenderText::printObject( QPainter *p, int /*x*/, int y, int /*w*/, int h,
 	    s=s->next();	
 	}
     }
-
+    if (hasKeyboardFocus!=DOM::ActivationOff)
+      {
+	if (hasKeyboardFocus==DOM::ActivationPassive)
+	  p->setPen(QColor("green"));
+	else
+	  p->setPen(QColor("blue"));
+	p->drawRect(tx+xPos(),ty+yPos(),width(0,length()), height());
+	p->drawRect(tx+xPos()+1,ty+yPos()+1,width(0,length())-2, height()-2);
+      }
 }
 
 void RenderText::print( QPainter *p, int x, int y, int w, int h,

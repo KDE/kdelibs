@@ -69,7 +69,10 @@ ushort HTMLAnchorElementImpl::id() const
 
 long HTMLAnchorElementImpl::tabIndex() const
 {
-    // ###
+  DOMString indexstring=((HTMLElementImpl*)this)->getAttribute(ATTR_TABINDEX);
+  if (indexstring.length())
+    return atoi(indexstring.string().latin1());
+  else
     return 0;
 }
 

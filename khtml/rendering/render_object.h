@@ -25,6 +25,7 @@
 #define render_object_h
 
 #include "dom_misc.h"
+#include "dom_nodeimpl.h"
 
 #include "qcolor.h"
 #include "qsize.h"
@@ -46,6 +47,7 @@ class KHTMLView;
 namespace DOM {
     class DOMString;
     class NodeImpl;
+    enum ActivationState;
 };
 
 namespace khtml {
@@ -62,6 +64,8 @@ public:
     static RenderObject *createObject(DOM::NodeImpl *node);
 
     virtual bool deleteMe();
+
+    DOM::ActivationState hasKeyboardFocus;
 
     virtual const char *renderName() const { return "RenderObject"; }
     virtual void printTree(int indent=0) const;
@@ -330,6 +334,8 @@ public:
     virtual void setSelectionState(SelectionState) {}
 
     virtual void cursorPos(int /*offset*/, int &/*_x*/, int &/*_y*/, int &/*height*/){}    
+
+    virtual void setKeyboardFocus(DOM::ActivationState b=DOM::ActivationPassive);// { hasKeyboardFocus=b; };
 
 protected:
     virtual void selectionStartEnd(int& spos, int& epos);

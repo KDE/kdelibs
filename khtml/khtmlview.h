@@ -30,6 +30,8 @@
 #include <qstring.h>
 #include <qlist.h>
 
+#include <kurl.h>
+
 class QPainter;
 
 namespace DOM {
@@ -79,6 +81,21 @@ public:
 
     int frameWidth() const { return _width; }
 
+    // implements keyboard traversal. sets the view's position so that the actual link
+    // is visible.
+    bool gotoNextLink();
+    bool gotoPrevLink();
+    void activateActLink();
+
+    //history functions
+    void followLink();
+    void goBack();
+    void goForward();
+    void goHome();
+protected:
+    int buildLinkList();
+public:
+ 
 
     /*
      * @return the width of the parsed HTML code. Remember that
@@ -155,6 +172,8 @@ protected:
     virtual void viewportPaintEvent ( QPaintEvent* pe  );
     virtual bool focusNextPrevChild( bool next );
     virtual void drawContents ( QPainter * p, int clipx, int clipy, int clipw, int cliph );
+
+    bool gotoLink();
 
 public:
     void layout(bool force = false);
