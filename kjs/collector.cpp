@@ -162,7 +162,7 @@ void Collector::collect()
     Imp **r = (Imp**)block->mem;
     assert(r);
     for (int i = 0; i < block->size; i++, r++)
-      if (*r && ((*r)->refcount || !(*r)->gcAllowed()) && !(*r)->marked())
+      if (*r && (*r)->created() && ((*r)->refcount || !(*r)->gcAllowed()) && !(*r)->marked())
         (*r)->mark();
     block = block->next;
   }

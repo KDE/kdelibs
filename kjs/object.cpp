@@ -567,6 +567,7 @@ int List::count = 0;
 Imp::Imp()
   : refcount(0), prop(0), proto(0)
 {
+  setCreated(true);
 #ifdef KJS_DEBUG_MEM
   count++;
 #endif
@@ -895,12 +896,24 @@ void Imp::setMarked(bool m)
 
 void Imp::setGcAllowed(bool a)
 {
-  next = a ? this : 0L;
+  next = this;
+  if (a)
+    next++;
 }
 
 bool Imp::gcAllowed() const
 {
-    return next;
+  return (next && next != this);
+}
+
+void Imp::setCreated(bool c)
+{
+  next = c ? this : 0L;
+}
+
+bool Imp::created() const
+{
+  return next;
 }
 
 ObjectImp::ObjectImp(Class c) : cl(c), val(0L) { }
