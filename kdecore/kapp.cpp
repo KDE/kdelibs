@@ -299,6 +299,32 @@ void KApplication::init(bool GUIenabled)
   captionLayout = CaptionAppLast;
 }
 
+static int my_system (const char *command) {
+   int pid, status;
+
+   QApplication::flushX();
+   pid = fork();
+   if (pid == -1)
+      return -1;
+   if (pid == 0) {
+      setuid( getuid() ); // Make sure a set-user-id prog. is not root anymore
+      setgid( getgid() );
+      const char* shell = "/bin/sh";
+      if (getenv("SHELL"))
+         shell = getenv("SHELL");
+      execl(shell, shell, "-c", command, 0L);
+      exit(127);
+   }
+   do {
+      if (waitpid(pid, &status, 0) == -1) {
+         if (errno != EINTR)
+            return -1;
+       } else
+            return status;
+   } while(1);
+}
+
+
 DCOPClient *KApplication::dcopClient()
 {
   if (pDCOPClient)
@@ -312,14 +338,8 @@ DCOPClient *KApplication::dcopClient()
     fName = ::getenv("HOME");
     fName += "/.DCOPserver";
     if (::access(fName.data(), R_OK) == -1) {
-      QString srv = KStandardDirs::findExe(QString::fromLatin1("dcopserver"));
-      QApplication::flushX();
-      if (fork() == 0) {
-	execl(srv.latin1(), srv.latin1(), 0);
-	_exit(1);
-      } else {
-	sleep(1); // give server some startup time. Race condition, I know...
-      }
+      QString srv = KStandardDirs::findExe(QString::fromLatin1("kdeinit"));
+      my_system(srv.latin1());
     }
   }
 
@@ -1205,131 +1225,60 @@ void KApplication::kdisplaySetStyle()
 
 void KApplication::invokeHTMLHelp( QString filename, QString topic ) const
 {
-  QApplication::flushX();
-  if ( fork() == 0 )
-    {
-	  if( filename.isEmpty() )
-	    filename = QString(name()) + "/index.html";
+   if( filename.isEmpty() )
+      filename = QString(name()) + "/index.html";
 
-         // first try the locale setting
-         QString file = locate("html", KGlobal::locale()->language() + '/' + filename);
-	 if (file.isNull())
-	     file = locate("html", "default/" + filename);
+   // first try the locale setting
+   QString file = locate("html", KGlobal::locale()->language() + '/' + filename);
+   if (file.isEmpty())
+      file = locate("html", "default/" + filename);
 
-	 if (file.isNull()) {
-	     warning("no help file %s found\n", filename.local8Bit().data());
-	     _exit( 1 );
-	 }
+   if (file.isEmpty()) 
+   {
+      warning("no help file %s found\n", filename.local8Bit().data());
+      return;
+   }
 
-	 if( !topic.isEmpty() ) {
-	     file.append( "#" );
-	     file.append(topic);
-	 }
+   KURL url("file:/");
 
-	  /* Since this is a library, we must conside the possibilty that
-	   * we are being used by a suid root program. These next two
-	   * lines drop all privileges.
-	   */
-	  setuid( getuid() );
-	  setgid( getgid() );
-	  const char* shell = "/bin/sh";
-	  if (getenv("SHELL"))
-		shell = getenv("SHELL");
-         file.prepend("khelpcenter ");
-         execl(shell, shell, "-c", QFile::encodeName(file).data(), 0L);
-	  _exit( 1 );
-    }
+   url.setPath(file);         
+   url.setRef(topic);
+
+   QCString dcopService;
+   QString error;
+
+   if (startServiceByDesktopName("khelpcenter", url.url(), dcopService, error))
+   {
+      warning("Could not launch help:\n%s\n", error.local8Bit().data());
+      return;
+   }
 }
 
 
 void KApplication::invokeMailer(const QString &address,const QString &subject )
 {
-  QApplication::flushX();
-  if( fork() == 0 )
-  {
-    QString mailClient( "kmail");
-    QString exec = QString("%1 %2 -s %3").arg(mailClient).arg(address).
-      arg(subject);
-
-    setuid( getuid() ); // Make sure a set-user-id prog. is not root anymore
-    setgid( getgid() );
-
-    const char* shell = "/bin/sh";
-    if( getenv("SHELL") )
-    {
-      shell = getenv("SHELL");
-    }
-    execl( shell, shell, "-c", QFile::encodeName(exec).data(), 0L );
-    _exit( 1 );
-  }
+   QCString dcopService;
+   QString error;
+   QString mailClient( "kmail");
+   //TODO: subject needs to be passed as well!! 
+   if (startServiceByDesktopName(mailClient, address, dcopService, error))
+   {
+      warning("Could not launch mail client:\n%s\n", error.local8Bit().data());
+      return;
+   }
 }
 
 
 void KApplication::invokeBrowser( const QString &url )
 {
+   QCString dcopService;
+   QString error;
 
-  QApplication::flushX();
-  if( fork() == 0 )
-  {
-    setuid( getuid() ); // Make sure a set-user-id prog. is not root anymore
-    setgid( getgid() );
-    QString browser, exec;
-
-    //
-    // 1999-10-05 Espen Sand
-    //
-    // The code below is inspired by the work of Markus Goetz <guruz@gmx.de>
-    // It should not be here at all. We should rather just use a method
-    // that returns the correct browser exec string:
-    // exec = KSomeGlobalObject::browser( url ):
-    // and it must be done before the fork() above I'll guess. Is that OK
-    // with Qt/QString?
-    //
-    #if 0
-    if( 0 )
-    {
-      browser = "lynx";
-      exec = QString("konsole -e %1 %2").arg(browser).arg(url);
-    }
-    else if(0)
-    {
-      browser = "netscape";
-      QString lockFile = QString("%1/.netscape/lock").arg(getenv("HOME"));
-
-      struct stat statInfo;
-      if( lstat(QFile::encodeName(lockFile), &statInfo) != -1 )
-      {
-	exec = QString("%1 -remote 'openURL(%2,new-window)'").arg(browser).
-	  arg(url);
-      }
-      else
-      {
-	exec = QString("%1 %2").arg(browser).arg(url);
-      }
-    }
-    else
-    {
-      browser = "kfmclient";
-      exec = QString("%1 openURL %2").arg(browser).arg(url);
-    }
-    #endif
-
-
-    //
-    // This is what we use now.
-    //
-    browser = "kfmclient";
-    exec = QString("%1 openURL %2").arg(browser).arg(url);
-
-    const char* shell = "/bin/sh";
-    if( getenv("SHELL") )
-    {
-      shell = getenv("SHELL");
-    }
-    execl( shell, shell, "-c", QFile::encodeName(exec).data(), 0L );
-    _exit( 1 );
-  }
-
+   if (startServiceByDesktopName("kfmclient", url, dcopService, error))
+   {
+      warning("Could not launch browser:\n%s\n", error.local8Bit().data());
+      return;
+   }
 }
 
 QCString
