@@ -1,7 +1,7 @@
 Begin3
 Title:          kdelibs
-Version:        2.0-prealpha
-Entered-date:   130699
+Version:        2.2alpha1
+Entered-date:   14Apr01
 Description:    libraries for the K Desktop Environment (KDE)
 Keywords:       KDE X11 desktop Qt 
 Author:         submit@bugs.kde.org (KDE Bugtracking System)
