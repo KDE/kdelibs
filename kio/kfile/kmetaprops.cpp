@@ -139,8 +139,6 @@ void KFileMetaPropsPlugin::createLayout()
     {
         kdDebug(7033) << *git << endl;
         
-        // we don't add the group headings now because the strings were
-        // too late for translation
         QLabel* groupLabel = new QLabel(QString("<b><u>" + QStyleSheet::escape(*git)) + "</b></u>", d->m_frame);
         toplayout->addMultiCellWidget( groupLabel, count, count, 0, 1);
         count++;
