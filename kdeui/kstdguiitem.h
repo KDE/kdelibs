@@ -48,7 +48,8 @@ public:
     {
         Ok=1, Cancel, Yes, No, Discard, Save, DontSave, SaveAs,
         Apply, Clear, Help, Defaults, Close, Back, Forward, Print,
-        Continue, Open, Quit, AdminMode, Reset, Delete, Insert
+        Continue, Open, Quit, AdminMode, Reset, Delete, Insert, 
+	Find, Stop, Add, Remove, Test
     };
     static KGuiItem guiItem ( StdItem ui_enum );
     static QString  stdItem ( StdItem ui_enum );
@@ -122,6 +123,37 @@ public:
     static QPair<KGuiItem, KGuiItem> backAndForward();
 
     static KGuiItem quit();
+
+    /**
+    * Returns a "find" item.
+    * @since 3.4
+    */
+    static KGuiItem find();
+
+    /**
+    * Returns a "stop" item.
+    * @since 3.4
+    */
+    static KGuiItem stop();
+
+    /**
+    * Returns a "add" item.
+    * @since 3.4
+    */
+    static KGuiItem add();
+
+    /**
+    * Returns a "remove" item.
+    * @since 3.4
+    */
+    static KGuiItem remove();
+
+    /**
+    * Returns a "test" item.
+    * @since 3.4
+    */
+    static KGuiItem test();
+
 };
 
 #endif

@@ -48,6 +48,11 @@ KGuiItem KStdGuiItem::guiItem ( StdItem ui_enum )
   case Reset    : return reset();
   case Delete   : return del();
   case Insert   : return insert();
+  case Find	: return find();
+  case Stop	: return stop();
+  case Add	: return add();
+  case Remove	: return remove();
+  case Test	: return test();
   default       : return KGuiItem();
   };
 }
@@ -76,6 +81,11 @@ QString KStdGuiItem::stdItem( StdItem ui_enum )
   case AdminMode: return QString::fromLatin1("adminMode");
   case Delete   : return QString::fromLatin1("delete");
   case Insert   : return QString::fromLatin1("insert");
+  case Find	: return QString::fromLatin1("find");
+  case Stop	: return QString::fromLatin1("stop");
+  case Add	: return QString::fromLatin1("add");
+  case Remove	: return QString::fromLatin1("remove");
+  case Test	: return QString::fromLatin1("test");
   default       : return QString::null;
   };
 }
@@ -228,6 +238,31 @@ KGuiItem KStdGuiItem::reset()
 KGuiItem KStdGuiItem::insert()
 {
   return KGuiItem( i18n( "&Insert"));
+}
+
+KGuiItem KStdGuiItem::find()
+{
+  return KGuiItem(i18n("&Find"), "find");
+}
+
+KGuiItem KStdGuiItem::stop()
+{
+  return KGuiItem(i18n("Stop"), "stop");
+}
+
+KGuiItem KStdGuiItem::add()
+{
+  return KGuiItem(i18n("Add"), "edit_add");
+}
+
+KGuiItem KStdGuiItem::remove()
+{
+  return KGuiItem(i18n("Remove"), "edit_remove");
+}
+
+KGuiItem KStdGuiItem::test()
+{
+  return KGuiItem(i18n("Test"));
 }
 
 // vim: set ts=2 sts=2 sw=2 et:

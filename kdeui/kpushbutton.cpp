@@ -33,6 +33,7 @@ class KPushButton::KPushButtonPrivate
 {
 public:
     KGuiItem item;
+    KStdGuiItem::StdItem itemType;
 };
 
 bool KPushButton::s_useIcons = false;
@@ -81,6 +82,7 @@ void KPushButton::init( const KGuiItem &item )
 {
     d = new KPushButtonPrivate;
     d->item = item;
+    d->itemType = (KStdGuiItem::StdItem) 0;
 
     // call QPushButton's implementation since we don't need to 
     // set the GUI items text or check the state of the icon set
@@ -117,6 +119,17 @@ void KPushButton::setGuiItem( const KGuiItem& item )
     // set the GUI items text or check the state of the icon set
     QPushButton::setText( d->item.text() );
     setIconSet( d->item.iconSet() );
+}
+
+void KPushButton::setGuiItem( KStdGuiItem::StdItem item )
+{
+	setGuiItem( KStdGuiItem::guiItem(item) );
+	d->itemType = item;
+}
+
+KStdGuiItem::StdItem KPushButton::guiItem() const
+{
+	return d->itemType;
 }
 
 void KPushButton::setText( const QString &text )

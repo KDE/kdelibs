@@ -23,9 +23,9 @@
 #include <qpoint.h>
 #include <qpushbutton.h>
 #include <kguiitem.h>
+#include <kstdguiitem.h> 
 
 class QDragObject;
-
 /**
  * This is nothing but a QPushButton with drag-support and KGuiItem support. You have to call
  * setDragEnabled( true ) and override the virtual method
@@ -37,8 +37,11 @@ class QDragObject;
 class KDEUI_EXPORT KPushButton : public QPushButton
 {
     Q_OBJECT
+    Q_PROPERTY(int stdItem READ guiItm WRITE setGuiItm )
+    Q_PROPERTY(bool isDragEnabled READ isDragEnabled WRITE setDragEnabled)
 
 public:
+
     /**
      * Default constructor.
      */
@@ -80,6 +83,22 @@ public:
      * Sets the KGuiItem for this button.
      */
     void setGuiItem( const KGuiItem& item );
+
+    /** 
+    * Sets the standard KGuiItem for this button.
+    * @since 3.4
+    */
+    void setGuiItem( KStdGuiItem::StdItem item );
+
+    /**
+    * Reads the standard KGuiItem for this button. 
+    * @since 3.4
+    */
+    KStdGuiItem::StdItem guiItem() const;
+
+    // Hack for Qt designer
+    void setGuiItm(int itm ) { setGuiItem( (KStdGuiItem::StdItem)itm );}
+    int guiItm() const { return (int)guiItem(); }
 
     /**
      * Sets the Icon Set for this button. It also takes into account hte
