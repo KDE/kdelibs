@@ -7,7 +7,7 @@
 /**
  * @internal
  */
-class KAccelPrivate : public QObject, public KAccelBase
+class KDECORE_EXPORT KAccelPrivate : public QObject, public KAccelBase
 {
 	Q_OBJECT
  public:

@@ -881,7 +881,7 @@ class KShellProcessPrivate;
 *   @author Christian Czezatke <e9025461@student.tuwien.ac.at>
 *   @version $Id$
 */
-class KShellProcess: public KProcess
+class KDECORE_EXPORT KShellProcess: public KProcess
 {
   Q_OBJECT
 
