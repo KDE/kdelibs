@@ -1471,6 +1471,7 @@ void CopyJob::slotEntries(KIO::Job* job, const UDSEntryList& list)
         info.permissions = (mode_t) -1;
         info.mtime = (time_t) -1;
         info.ctime = (time_t) -1;
+        info.size = (off_t)-1;
         QString relName;
         for( ; it2 != (*it).end(); it2++ ) {
             switch ((*it2).m_uds) {
@@ -1547,7 +1548,7 @@ void CopyJob::startNextJob()
             info.permissions = (mode_t) -1;
             info.mtime = (time_t) -1;
             info.ctime = (time_t) -1;
-            info.size = (off_t)0;
+            info.size = (off_t)-1;
             info.uSource = *it;
             info.uDest = m_currentDest;
             // Append filename or dirname to destination URL, if allowed
@@ -2220,6 +2221,7 @@ void CopyJob::copyNextFile()
                     }
                     else
                     {
+                        kdDebug(7007) << "CopyJob::copyNextFile ERR_CANNOT_OPEN_FOR_WRITING" << endl;
                         m_error = ERR_CANNOT_OPEN_FOR_WRITING;
                         m_errorText = (*it).uDest.path();
                         emitResult();
@@ -2754,7 +2756,7 @@ void DeleteJob::slotResult( Job *job )
          UDSEntry entry = ((StatJob*)job)->statResult();
          bool bDir = false;
          bool bLink = false;
-         unsigned long size = 0L;
+         unsigned long size = (unsigned long)-1;
          UDSEntry::ConstIterator it2 = entry.begin();
          int atomsFound(0);
          for( ; it2 != entry.end(); it2++ )
@@ -2807,7 +2809,7 @@ void DeleteJob::slotResult( Job *job )
 
             m_currentURL=url;
             //emit deleting( this, url );
-            m_totalSize = size;
+            m_totalSize = size == (unsigned long)-1 ? 0 : size;
             m_totalFilesDirs = 1;
             emit totalSize( this, size );
             state = STATE_DELETING_FILES;
