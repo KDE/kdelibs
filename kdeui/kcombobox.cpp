@@ -581,11 +581,11 @@ void KComboBox::setCompletedItems( const QStringList& items )
     if ( completionMode() == KGlobalSettings::CompletionPopup ||
          completionMode() == KGlobalSettings::CompletionShell )
     {
-        if ( !d->completionBox )
-            makeCompletionBox();
-
         if ( !items.isEmpty() )
         {
+            if ( !d->completionBox )
+                makeCompletionBox();
+
             d->origCursorPos = cursorPosition();
             d->completionBox->setCancelledText( currentText() );
             d->completionBox->clear();
