@@ -126,7 +126,7 @@ public:
     virtual void applyChanges(bool = true, bool = true);
 
     virtual NodeImpl *cloneNode ( bool deep, int &exceptioncode );
-    virtual NamedNodeMapImpl *attributes();
+    virtual NamedNodeMapImpl *attributes() const;
 
     /**
      * override this in subclasses if you need to parse
