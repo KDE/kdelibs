@@ -434,7 +434,7 @@ void RenderText::printObject( QPainter *p, int /*x*/, int y, int /*w*/, int h,
     }
 
     int d = m_style->textDecoration();
-    if(d != TDNONE)
+    if(d != TDNONE && hasKeyboardFocus==DOM::ActivationOff)
     {
         p->setPen( m_style->textDecorationColor() );
         s = m_first;
@@ -503,8 +503,9 @@ void RenderText::printObject( QPainter *p, int /*x*/, int y, int /*w*/, int h,
     {
         bool clip = p->hasClipping();
 	p->setClipping(false);
+	p->setRasterOp(Qt::XorROP);
         if (hasKeyboardFocus==DOM::ActivationPassive)
-          p->setPen(QColor("green"));
+          p->setPen(QColor("white"));
         else
           p->setPen(QColor("blue"));
 
@@ -526,6 +527,7 @@ void RenderText::printObject( QPainter *p, int /*x*/, int y, int /*w*/, int h,
                 diff = s->len;
             s=s->next();
         }
+	p->setRasterOp(Qt::CopyROP);
 	p->setClipping(clip);
     }
 #ifdef BIDI_DEBUG
