@@ -22,7 +22,7 @@
 
 #include <kconfig.h>
 #include <kapp.h>
-#include <kimgio.h>
+//#include <kimgio.h>
 #include <stdlib.h>
 
 static const char *dir_tree_xpm[] = {
@@ -235,7 +235,7 @@ void SFileDialog::showEvent( QShowEvent *e )
 PixmapView::PixmapView( QWidget *parent )
 :QScrollView( parent )
 {
-  kimgioRegister();
+//  kimgioRegister();
   viewport()->setBackgroundMode( PaletteBase );
 }
 
