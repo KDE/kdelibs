@@ -211,5 +211,19 @@ public slots:
   // ############################################################################
 };
 
+/**
+ * @libdoc The KDE Addressbook Library
+ *
+ * This library provides access to an application-central addressbook.
+ *
+ * @sect Usage
+ *
+ * A client application need only use the @ref KabAPI class and link with
+ * the libkab library.
+ * 
+ * @author Mirko Sucker <mirko.sucker@hamburg.netsurf.de>
+ * @version $Id$
+ */
+
 #endif // KABAPI_H
 
