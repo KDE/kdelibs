@@ -696,7 +696,7 @@ void KApplication::init(bool GUIenabled)
 
   dcopAutoRegistration();
   dcopClientPostInit();
-  
+
   smw = 0;
 
   // Initial KIPC event mask.
@@ -2118,6 +2118,8 @@ bool checkAccess(const QString& pathname, int mode)
   int pos = dirName.findRev('/');
   if ( pos == -1 )
     return false;   // No path in argument. This is evil, we won't allow this
+  else if ( pos == 0 ) // don't turn e.g. /root into an empty string
+      pos = 1;
 
   dirName.truncate(pos); // strip everything starting from the last '/'
 
