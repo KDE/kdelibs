@@ -96,7 +96,7 @@ KHTMLPageCacheEntry::endData()
 {
   m_valid = true;
   QDataStream* d;
-  if ( ( d = m_file->dataStream() ) ) {
+  if ( m_file->status() == 0 && ( d = m_file->dataStream() ) ) {
     d->device()->flush();
     d->device()->at(0);
   }
