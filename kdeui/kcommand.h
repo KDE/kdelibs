@@ -114,6 +114,7 @@ protected:
     QList<KCommand> m_commands;
 };
 
+
 /**
  * The command history stores a (user) configurable amount of
  * Commands. It keeps track of its size and deletes commands
@@ -189,6 +190,15 @@ public slots:
      * Call this if you don't use the builtin KActions.
      */
     virtual void redo();
+    /**
+     * Remember when you saved the document.
+     * Call this right after saving the document. As soon as
+     * the history reaches the current index again (via some
+     * undo/redo operations) it will emit @ref documentRestored
+     * If you implemented undo/redo properly the document is
+     * the same you saved before.
+     */
+    void documentSaved();   // ### virtual in 3.0 (Werner)
 
 protected slots:
     void slotUndoAboutToShow();
@@ -203,12 +213,18 @@ signals:
      * You can use this to update the GUI, for instance.
      */
     void commandExecuted();
+    /**
+     * This is emitted everytime we reach the index where you
+     * saved the document for the last time. See @ref documentSaved
+     */
+    void documentRestored();
 
 private:
     void clipCommands();  // ensures that the limits are kept
 
     QList<KCommand> m_commands;
-    KCommand *m_present;
+    class KCommandHistoryPrivate;
+    KCommandHistoryPrivate *d;
     KAction *m_undo, *m_redo;
     QPopupMenu *m_undoPopup, *m_redoPopup;
     int m_undoLimit, m_redoLimit;

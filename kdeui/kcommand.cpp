@@ -51,18 +51,31 @@ void KMacroCommand::unexecute()
 }
 
 
+class KCommandHistory::KCommandHistoryPrivate {
+public:
+    KCommandHistoryPrivate() {
+        m_savedAt=-1;
+        m_present=0;
+    }
+    ~KCommandHistoryPrivate() {}
+    int m_savedAt;
+    KCommand *m_present;
+};
+
 ////////////
 
 KCommandHistory::KCommandHistory() :
-    m_present(0L), m_undoLimit(50), m_redoLimit(30), m_first(false)
+    m_undoLimit(50), m_redoLimit(30), m_first(false)
 {
+    d=new KCommandHistoryPrivate();
     m_commands.setAutoDelete(true);
     clear();
 }
 
 KCommandHistory::KCommandHistory(KActionCollection * actionCollection, bool withMenus) :
-    m_present(0L), m_undoLimit(50), m_redoLimit(30), m_first(false)
+    m_undoLimit(50), m_redoLimit(30), m_first(false)
 {
+    d=new KCommandHistoryPrivate();
     if (withMenus)
     {
         KToolBarPopupAction * undo = new KToolBarPopupAction( i18n("Und&o"), "undo",
@@ -93,14 +106,16 @@ KCommandHistory::KCommandHistory(KActionCollection * actionCollection, bool with
 }
 
 KCommandHistory::~KCommandHistory() {
+    delete d;
 }
 
 void KCommandHistory::clear() {
     m_undo->setEnabled(false);
-    m_undo->setText(i18n("No Undo Possible"));
+    m_undo->setText(i18n("Nothing to Undo"));
     m_redo->setEnabled(false);
-    m_redo->setText(i18n("No Redo Possible"));
-    m_present = 0L;
+    m_redo->setText(i18n("Nothing to Redo"));
+    d->m_present = 0L;
+    d->m_savedAt=-1;
 }
 
 void KCommandHistory::addCommand(KCommand *command, bool execute) {
@@ -109,30 +124,34 @@ void KCommandHistory::addCommand(KCommand *command, bool execute) {
         return;
 
     int index;
-    if(m_present!=0L && (index=m_commands.findRef(m_present))!=-1) {
+    if(d->m_present!=0L && (index=m_commands.findRef(d->m_present))!=-1) {
         m_commands.insert(index+1, command);
         // truncate history
-        while (m_commands.next())
-            m_commands.remove();
-        m_present=command;
+        unsigned int count=m_commands.count();
+        for(unsigned int i=index+2; i<count; ++i)
+            m_commands.removeLast();
+        // check whether we still can reach savedAt
+        if(index<d->m_savedAt)
+            d->m_savedAt=-1;
+        d->m_present=command;
         m_first=false;
         m_undo->setEnabled(true);
-        m_undo->setText(i18n("Und&o: %1").arg(m_present->name()));
+        m_undo->setText(i18n("Und&o: %1").arg(d->m_present->name()));
         if(m_redo->isEnabled()) {
             m_redo->setEnabled(false);
-            m_redo->setText(i18n("No Redo Possible"));
+            m_redo->setText(i18n("Nothing to Redo"));
         }
         clipCommands();
     }
     else { // either this is the first time we add a Command or something has gone wrong
-        kdDebug() << "Initializing the Command History" << endl;
+        kdDebug(230) << "Initializing the Command History" << endl;
         m_commands.clear();
         m_commands.append(command);
-        m_present=command;
+        d->m_present=command;
         m_undo->setEnabled(true);
-        m_undo->setText(i18n("Und&o: %1").arg(m_present->name()));
+        m_undo->setText(i18n("Und&o: %1").arg(d->m_present->name()));
         m_redo->setEnabled(false);
-        m_redo->setText(i18n("No Redo Possible"));
+        m_redo->setText(i18n("Nothing to Redo"));
         m_first=true;
     }
     if ( execute )
@@ -144,50 +163,71 @@ void KCommandHistory::addCommand(KCommand *command, bool execute) {
 
 void KCommandHistory::undo() {
 
-    m_present->unexecute();
+    d->m_present->unexecute();
     m_redo->setEnabled(true);
-    m_redo->setText(i18n("Re&do: %1").arg(m_present->name()));
-    if(m_commands.findRef(m_present)!=-1 && m_commands.prev()!=0) {
-        m_present=m_commands.current();
+    m_redo->setText(i18n("Re&do: %1").arg(d->m_present->name()));
+    int index;
+    if((index=m_commands.findRef(d->m_present))!=-1 && m_commands.prev()!=0) {
+        d->m_present=m_commands.current();
         m_undo->setEnabled(true);
-        m_undo->setText(i18n("Und&o: %1").arg(m_present->name()));
+        m_undo->setText(i18n("Und&o: %1").arg(d->m_present->name()));
+        --index;
+        if(index==d->m_savedAt)
+            emit documentRestored();
     }
     else {
         m_undo->setEnabled(false);
-        m_undo->setText(i18n("No Undo Possible"));
+        m_undo->setText(i18n("Nothing to Undo"));
+        if(d->m_savedAt==-42)
+            emit documentRestored();
         m_first=true;
     }
+    clipCommands(); // only needed here and in addCommand, NOT in redo
     emit commandExecuted();
 }
 
 void KCommandHistory::redo() {
 
+    int index;
     if(m_first) {
-        m_present->execute();
+        d->m_present->execute();
         m_first=false;
         m_commands.first();
+        if(d->m_savedAt==0)
+            emit documentRestored();
     }
-    else if(m_commands.findRef(m_present)!=-1 && m_commands.next()!=0) {
-        m_present=m_commands.current();
-        m_present->execute();
+    else if((index=m_commands.findRef(d->m_present))!=-1 && m_commands.next()!=0) {
+        d->m_present=m_commands.current();
+        d->m_present->execute();
+        ++index;
+        if(index==d->m_savedAt)
+            emit documentRestored();
     }
 
     m_undo->setEnabled(true);
-    m_undo->setText(i18n("Und&o: %1").arg(m_present->name()));
+    m_undo->setText(i18n("Und&o: %1").arg(d->m_present->name()));
 
     if(m_commands.next()!=0) {
-        KCommand *tmp=m_commands.current();
         m_redo->setEnabled(true);
-        m_redo->setText(i18n("Re&do: %1").arg(tmp->name()));
+        m_redo->setText(i18n("Re&do: %1").arg(m_commands.current()->name()));
     }
     else {
         if(m_redo->isEnabled()) {
             m_redo->setEnabled(false);
-            m_redo->setText(i18n("No Redo Possible"));
+            m_redo->setText(i18n("Nothing to Redo"));
         }
     }
-
     emit commandExecuted();
+}
+
+void KCommandHistory::documentSaved() {
+    if(d->m_present!=0 && !m_first)
+        d->m_savedAt=m_commands.findRef(d->m_present);
+    else if(d->m_present==0 && !m_first)
+        d->m_savedAt=-42;  // this value signals that the document has
+                        // been saved with an empty history.
+    else if(m_first)
+        d->m_savedAt=-42;
 }
 
 void KCommandHistory::setUndoLimit(const int &limit) {
@@ -209,18 +249,30 @@ void KCommandHistory::setRedoLimit(const int &limit) {
 void KCommandHistory::clipCommands() {
 
     int count=m_commands.count();
-    if(count<m_undoLimit && count<m_redoLimit)
+    if(count<=m_undoLimit && count<=m_redoLimit)
         return;
 
-    int index=m_commands.findRef(m_present);
+    int index=m_commands.findRef(d->m_present);
     if(index>=m_undoLimit) {
-        for(int i=0; i<=(index-m_undoLimit); ++i)
+        for(int i=0; i<=(index-m_undoLimit); ++i) {
             m_commands.removeFirst();
-        index=m_commands.findRef(m_present); // calculate the new
+            --d->m_savedAt;
+            if(d->m_savedAt==-1)
+                d->m_savedAt=-42;
+        }
+        index=m_commands.findRef(d->m_present); // calculate the new
         count=m_commands.count();            // values (for the redo-branch :)
+        // make it easier for us... d->m_savedAt==-1 -> invalid
+        if(d->m_savedAt!=-42 && d->m_savedAt<-1)
+            d->m_savedAt=-1;
     }
-    if((index+m_redoLimit)<count) {
-        for(int i=0; i<(count-(index+m_redoLimit)); ++i)
+    // adjust the index if it's the first command
+    if(m_first)
+        index=-1;
+    if((index+m_redoLimit+1)<count) {
+        if(d->m_savedAt>(index+m_redoLimit))
+            d->m_savedAt=-1;
+        for(int i=0; i<(count-(index+m_redoLimit+1)); ++i)
             m_commands.removeLast();
     }
 }
@@ -229,7 +281,7 @@ void KCommandHistory::slotUndoAboutToShow()
 {
     m_undoPopup->clear();
     int i = 0;
-    if (m_commands.findRef(m_present)!=-1)
+    if (m_commands.findRef(d->m_present)!=-1)
         while ( m_commands.current() && i<10 ) // TODO make number of items configurable ?
         {
             m_undoPopup->insertItem( i18n("Undo: %1").arg(m_commands.current()->name()), i++ );
@@ -239,7 +291,7 @@ void KCommandHistory::slotUndoAboutToShow()
 
 void KCommandHistory::slotUndoActivated( int pos )
 {
-    kdDebug() << "KCommandHistory::slotUndoActivated " << pos << endl;
+    kdDebug(230) << "KCommandHistory::slotUndoActivated " << pos << endl;
     for ( int i = 0 ; i < pos+1; ++i )
         undo();
 }
@@ -250,10 +302,10 @@ void KCommandHistory::slotRedoAboutToShow()
     int i = 0;
     if (m_first)
     {
-        m_present = m_commands.first();
-        m_redoPopup->insertItem( i18n("Redo: %1").arg(m_present->name()), i++ );
+        d->m_present = m_commands.first();
+        m_redoPopup->insertItem( i18n("Redo: %1").arg(d->m_present->name()), i++ );
     }
-    if (m_commands.findRef(m_present)!=-1 && m_commands.next())
+    if (m_commands.findRef(d->m_present)!=-1 && m_commands.next())
         while ( m_commands.current() && i<10 ) // TODO make number of items configurable ?
         {
             m_redoPopup->insertItem( i18n("Redo: %1").arg(m_commands.current()->name()), i++ );
@@ -263,7 +315,7 @@ void KCommandHistory::slotRedoAboutToShow()
 
 void KCommandHistory::slotRedoActivated( int pos )
 {
-    kdDebug() << "KCommandHistory::slotRedoActivated " << pos << endl;
+    kdDebug(230) << "KCommandHistory::slotRedoActivated " << pos << endl;
     for ( int i = 0 ; i < pos+1; ++i )
         redo();
 }
