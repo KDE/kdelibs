@@ -663,7 +663,7 @@ bool Ftp::ftpOpenPASVDataConnection()
   m_bPasv = true;
 
   /* Let's PASsiVe*/
-  if (!(ftpSendCmd("PASV") || rspbuf[0] != '2'))
+  if (!ftpSendCmd("PASV") || rspbuf[0] != '2')
   {
     kdDebug(7102) << "PASV attempt failed" << endl;
     // unknown command?
