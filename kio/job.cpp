@@ -137,6 +137,8 @@ SimpleJob::SimpleJob(const KURL& url, int command, const QByteArray &packedArgs,
   : Job(showProgressInfo), m_slave(0), m_packedArgs(packedArgs),
     m_url(url), m_command(command), m_totalSize(0)
 {
+    m_speedTimer = new QTimer();
+
     if (m_url.isMalformed())
     {
         m_error = ERR_MALFORMED_URL;
@@ -155,6 +157,8 @@ void SimpleJob::kill()
 
 SimpleJob::~SimpleJob()
 {
+    delete m_speedTimer;
+
     if (m_slave) // was running
     {
         m_slave->kill();
@@ -234,13 +238,22 @@ void SimpleJob::slotProcessedSize( unsigned long size )
 void SimpleJob::slotSpeed( unsigned long bytes_per_second )
 {
   emit speed( this, bytes_per_second );
+  m_speedTimer->start( 5000 );   // 5 seconds interval should be enough
+}
+
+void SimpleJob::slotSpeedTimeout()
+{
+  // send 0 and stop the timer
+  // timer will be restarted only when we receive another speed event
+  emit speed( this, 0 );
+  m_speedTimer->stop();
 }
 
 SimpleJob *KIO::mkdir( const KURL& url, int permissions )
 {
     kdDebug(7007) << "mkdir " << debugString(url.url()) << endl;
     KIO_ARGS << url.path() << permissions;
-    SimpleJob * job = new SimpleJob(url, CMD_MKDIR, packedArgs);
+    SimpleJob * job = new SimpleJob(url, CMD_MKDIR, packedArgs, false);
     return job;
 }
 
@@ -248,21 +261,21 @@ SimpleJob *KIO::rmdir( const KURL& url )
 {
     kdDebug(7007) << "rmdir " << debugString(url.url()) << endl;
     KIO_ARGS << url.path() << Q_INT8(false); // isFile is false
-    return new SimpleJob(url, CMD_DEL, packedArgs);
+    return new SimpleJob(url, CMD_DEL, packedArgs, false);
 }
 
 SimpleJob *KIO::chmod( const KURL& url, int permissions )
 {
     kdDebug(7007) << "chmod " << debugString(url.url()) << endl;
     KIO_ARGS << url.path() << permissions;
-    SimpleJob * job = new SimpleJob(url, CMD_CHMOD, packedArgs);
+    SimpleJob * job = new SimpleJob(url, CMD_CHMOD, packedArgs, false);
     return job;
 }
 
 SimpleJob *KIO::special(const KURL& url, const QByteArray & data)
 {
     kdDebug(7007) << "special " << debugString(url.url()) << endl;
-    SimpleJob * job = new SimpleJob(url, CMD_SPECIAL, data);
+    SimpleJob * job = new SimpleJob(url, CMD_SPECIAL, data, false);
     return job;
 }
 
@@ -283,7 +296,7 @@ SimpleJob *KIO::unmount( const QString& point )
 
 StatJob::StatJob( const KURL& url, int command,
                   const QByteArray &packedArgs )
-    : SimpleJob(url, command, packedArgs)
+    : SimpleJob(url, command, packedArgs, false)
 {
 }
 
@@ -537,8 +550,8 @@ MimetypeJob *KIO::mimetype(const KURL& url )
  * and sending it away.
  */
 FileCopyJob::FileCopyJob( const KURL& src, const KURL& dest, int permissions,
-                          bool move, bool overwrite, bool resume)
-    : Job(), m_src(src), m_dest(dest),
+                          bool move, bool overwrite, bool resume, bool showProgressInfo)
+    : Job(showProgressInfo), m_src(src), m_dest(dest),
       m_permissions(permissions), m_move(move), m_overwrite(overwrite), m_resume(resume)
 {
     kdDebug(7007) << "FileCopyJob::FileCopyJob()" << endl;
@@ -556,7 +569,7 @@ FileCopyJob::FileCopyJob( const KURL& src, const KURL& dest, int permissions,
        if (m_move)
        {
           KIO_ARGS << src.path() << dest.path() << (Q_INT8) m_overwrite;
-          m_moveJob = new SimpleJob(src, CMD_RENAME, packedArgs);
+          m_moveJob = new SimpleJob(src, CMD_RENAME, packedArgs, false);
           addSubjob( m_moveJob );
        }
        else
@@ -575,7 +588,7 @@ void FileCopyJob::startCopyJob()
 {
     kdDebug(7007) << "FileCopyJob::startCopyJob()" << endl;
     KIO_ARGS << m_src.path() << m_dest.path() << m_permissions << (Q_INT8) m_overwrite;
-    m_copyJob = new SimpleJob(m_src, CMD_COPY, packedArgs);
+    m_copyJob = new SimpleJob(m_src, CMD_COPY, packedArgs, false);
     addSubjob( m_copyJob );
 
     connect( m_copyJob, SIGNAL(totalSize( KIO::Job*, unsigned long )),
@@ -586,6 +599,9 @@ void FileCopyJob::startCopyJob()
 
     connect( m_copyJob, SIGNAL(percent( KIO::Job*, unsigned long )),
              this, SIGNAL( percent(KIO::Job*, unsigned long)) );
+
+    connect( m_copyJob, SIGNAL(speed( KIO::Job*, unsigned long )),
+             this, SIGNAL( speed(KIO::Job*, unsigned long)) );
 }
 
 void FileCopyJob::startDataPump()
@@ -704,19 +720,19 @@ void FileCopyJob::slotResult( KIO::Job *job)
 FileCopyJob *KIO::file_copy( const KURL& src, const KURL& dest, int permissions,
                              bool overwrite, bool resume)
 {
-   return new FileCopyJob( src, dest, permissions, false, overwrite, resume );
+   return new FileCopyJob( src, dest, permissions, false, overwrite, resume, false );
 }
 
 FileCopyJob *KIO::file_move( const KURL& src, const KURL& dest, int permissions,
                              bool overwrite, bool resume)
 {
-   return new FileCopyJob( src, dest, permissions, true, overwrite, resume );
+   return new FileCopyJob( src, dest, permissions, true, overwrite, resume, false );
 }
 
 SimpleJob *KIO::file_delete( const KURL& src)
 {
     KIO_ARGS << src.path() << Q_INT8(true); // isFile
-    return new SimpleJob(src, CMD_DEL, packedArgs);
+    return new SimpleJob(src, CMD_DEL, packedArgs, false );
 }
 
 //////////
@@ -944,7 +960,7 @@ void ListJob::start(Slave *slave)
 
 
 CopyJob::CopyJob( const KURL::List& src, const KURL& dest, bool move, bool showProgressInfo )
-  : Job(), m_move(move),
+  : Job(showProgressInfo), m_move(move),
     destinationState(DEST_NOT_STATED), state(STATE_STATING),
       m_totalSize(0), m_processedSize(0), m_fileProcessedSize(0), m_srcList(src), m_dest(dest),
       m_bAutoSkip( false ), m_bOverwriteAll( false )
@@ -1577,6 +1593,8 @@ void CopyJob::copyNextFile()
         addSubjob(newjob);
 	connect( newjob, SIGNAL( processedSize( KIO::Job*, unsigned long ) ),
 		 this, SLOT( slotProcessedSize( KIO::Job*, unsigned long ) ) );
+	connect( newjob, SIGNAL( speed( KIO::Job*, unsigned long ) ),
+		 this, SLOT( slotSpeed( KIO::Job*, unsigned long ) ) );
     }
     else
     {
@@ -1732,7 +1750,7 @@ CopyJob *KIO::move( const KURL::List& src, const KURL& dest, bool showProgressIn
 }
 
 DeleteJob::DeleteJob( const KURL::List& src, bool shred, bool showProgressInfo )
-    : Job(), m_totalSize(0), m_processedSize(0), m_fileProcessedSize(0), m_srcList(src), m_shred(shred)
+    : Job(showProgressInfo), m_totalSize(0), m_processedSize(0), m_fileProcessedSize(0), m_srcList(src), m_shred(shred)
 {
   if ( showProgressInfo ) {
     connect( this, SIGNAL( totalSize( KIO::Job*, unsigned long ) ),

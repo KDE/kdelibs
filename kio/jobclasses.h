@@ -34,6 +34,8 @@
 
 #include <kio/global.h>
 
+class QTimer;
+
 namespace KIO {
 
     class Slave;
@@ -217,6 +219,7 @@ namespace KIO {
          * as finished.
          */
         virtual void slotFinished( );
+        void slotSpeedTimeout();
 
     public slots:
         /**
@@ -236,6 +239,8 @@ namespace KIO {
         KURL m_url;
         int m_command;
         unsigned long m_totalSize;
+
+        QTimer *m_speedTimer;
     };
 
     // Stat Job
@@ -363,7 +368,7 @@ namespace KIO {
 
     public:
         FileCopyJob( const KURL& src, const KURL& dest, int permissions,
-                     bool move, bool overwrite, bool resume);
+                     bool move, bool overwrite, bool resume, bool showProgressInfo = true);
 
     public slots:
         void slotData( KIO::Job *, const QByteArray &data);
