@@ -1,0 +1,19 @@
+all: 
+	@echo "This Makefile is only for the CVS repository"
+	@echo "I will delete it before making the distribution"
+	@echo ""
+	@echo "If you have installed libtool-1.0, make have"
+	@echo "If you haven't, make havent"
+
+have:
+	aclocal 
+	autoheader
+	automake
+	autoconf
+
+havent:
+	aclocal -I .
+	autoheader
+	automake
+	autoconf
+
