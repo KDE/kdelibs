@@ -145,10 +145,6 @@ protected:
     bool prepareWriting_impl(const QString& name, const QString& user,
     			const QString& group, uint size, mode_t perm,
     			time_t atime, time_t mtime, time_t ctime);
-    bool writeFile_impl(const QString& name, const QString& user,
-    			const QString& group, uint size, mode_t perm,
-    			time_t atime, time_t mtime, time_t ctime,
-       			const char* data);
     bool writeDir_impl(const QString& name, const QString& user,
     			const QString& group, mode_t perm,
     			time_t atime, time_t mtime, time_t ctime );
