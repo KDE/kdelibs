@@ -221,6 +221,7 @@ BidiContext *RenderFlow::bidiReorderLine(BidiStatus &status, const BidiIterator 
     BidiIterator sor = start;
     BidiIterator eor = start;
 
+#if 1
     BidiIterator current = start;
     BidiIterator last = current;
     while(current < end) {
@@ -621,7 +622,10 @@ BidiContext *RenderFlow::bidiReorderLine(BidiStatus &status, const BidiIterator 
     else
 	eor = current;
     if(!(current < sor))
-       appendRun(runs, sor, eor, context, dir);
+#else
+    eor = end;
+#endif
+        appendRun(runs, sor, eor, context, dir);
 
     BidiContext *endEmbed = context;
     // both commands below together give a noop...

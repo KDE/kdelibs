@@ -642,6 +642,7 @@ void RenderPartObject::setSize( int w, int h )
 
 void RenderPartObject::layout( )
 {
+    // ### shouldn't this be relative to the containingBlock?????
   setSize( m_style->width().minWidth( m_view->visibleWidth() ),
            m_style->height().minWidth( m_view->visibleHeight() ) );
   calcHorizontalMargins(style()->marginLeft(),style()->marginRight(),

@@ -255,10 +255,10 @@ void KHTMLView::layout(bool)
         _height = visibleHeight();
         _width = visibleWidth();
 
-            //      QTime qt;
-            //      qt.start();
+	QTime qt;
+	qt.start();
             root->layout();
-            //      kdDebug( 6000 ) << "TIME: layout() dt=" << qt.elapsed() << endl;
+                  kdDebug( 6000 ) << "TIME: layout() dt=" << qt.elapsed() << endl;
     } else {
         _width = visibleWidth();
     }

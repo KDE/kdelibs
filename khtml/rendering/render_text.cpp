@@ -22,7 +22,6 @@
  */
 //#define DEBUG_LAYOUT
 //#define BIDI_DEBUG
-//#define NO_COMPOSE
 
 #if 0
 // #### for debugging Qt
@@ -572,9 +571,6 @@ void RenderText::position(int x, int y, int from, int len, int width, bool rever
         deleteChar = true;
         // reverse String
         QString aStr = QConstString(str->s+from, len).string();
-#ifndef NO_COMPOSE
-        aStr.compose();
-#endif
 #ifdef DEBUG_LAYOUT
         kdDebug( 6040 ) << "reversing '" << (const char *)aStr.utf8() << "' len=" << aStr.length() << " oldlen=" << len << endl;
 #endif
@@ -640,13 +636,15 @@ void RenderText::position(int x, int y, int from, int len, int width, bool rever
 unsigned int RenderText::width( int from, int len) const
 {
     if(!str->s) return 0;
-    QString s = QConstString(str->s+from, len).string();
-    // take care of most non spacing marks
-#ifndef NO_COMPOSE
-    s.compose();
-#endif
-    assert(fm);
-    int w = fm->width(s);
+
+    int w;
+    if( len == 1)
+	w = fm->width( *(str->s+from) );
+    else {
+	QString s = QConstString(str->s+from, len).string();
+	w = fm->width(s);
+    }
+
     // ### add margins and support for RTL
 
     if(m_parent->isInline())

@@ -1322,7 +1322,11 @@ void HTMLTokenizer::processToken()
 	    return;
 	}
 */
-        currToken->text = DOMString( buffer, dest-buffer);
+	// ### we do too much QString copying here, but better here than in RenderText...
+	// anyway have to find a better solution in the long run (lars)
+	QString s = QConstString(buffer, dest-buffer).string();
+	s.compose();
+        currToken->text = DOMString( s );
         if (currToken->id != ID_COMMENT)
 	    currToken->id = ID_TEXT;
     }
