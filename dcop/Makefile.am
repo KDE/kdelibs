@@ -34,7 +34,7 @@ lib_LTLIBRARIES  = libDCOP.la dcopserver.la
 libDCOP_la_LIBADD = KDE-ICE/libkICE.la $(LIB_QT)
 libDCOP_la_LDFLAGS = -version-info 4:0 -no-undefined
 
-include_HEADERS = dcopclient.h dcopobject.h dcopstub.h dcopref.h
+include_HEADERS = dcopclient.h dcopobject.h dcopstub.h dcopref.h kdatastream.h
 noinst_HEADERS = version.h dcopglobal.h dcopserver.h dcop-doc.h testdcop.h dcopsignals.h
 
 # we don't use AUTO here, because dcop-doc.h would be mocified (it contains

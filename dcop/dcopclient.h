@@ -27,6 +27,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include <qcstring.h>
 #include <qvaluelist.h>
 #include <qstring.h>
+#include <kdatastream.h> // needed for proper bool marshalling
 
 class DCOPObjectProxy;
 class DCOPClientPrivate;

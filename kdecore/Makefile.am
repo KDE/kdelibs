@@ -38,7 +38,7 @@ include_HEADERS = kconfig.h kconfigdata.h ksimpleconfig.h kconfigbase.h \
 	kde_dmalloc.h kallocator.h kcrash.h krfcdate.h \
 	kinstance.h kpalette.h kipc.h klibloader.h ktempfile.h ksavefile.h \
 	krandomsequence.h kstringhandler.h knotifyclient.h kiconeffect.h \
-	kaudioplayer.h kdestyle.h kdcoppropertyproxy.h kdatastream.h  netwm.h \
+	kaudioplayer.h kdestyle.h kdcoppropertyproxy.h netwm.h \
 	netwm_def.h netwm_p.h kpixmapprovider.h kunload.h kstaticdeleter.h \
 	kextsock.h ksockaddr.h kprocio.h kasyncio.h kbufferedio.h \
 	kurldrag.h kmimesourcefactory.h kpixmapsplitter.h kmdcodec.h ksocks.h \
