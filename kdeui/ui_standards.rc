@@ -39,15 +39,18 @@
   <Menu name="edit"><text>&amp;Edit</text>
     <Action name="edit_undo"/>
     <Action name="edit_redo"/>
+    <MergeLocal name="edit_undo_merge"/>
     <Separator/>
     <Action name="edit_cut"/>
     <Action name="edit_copy"/>
     <Action name="edit_paste"/>
     <Action name="edit_select_all"/>
+    <MergeLocal name="edit_select_merge"/>
     <Separator/>
     <Action name="edit_find"/>
     <Action name="edit_find_next"/>
     <Action name="edit_replace"/>
+    <MergeLocal name="edit_find_merge"/>
     <Separator/>
     <MergeLocal/>
   </Menu>
