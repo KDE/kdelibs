@@ -125,6 +125,7 @@ public:
         prevScrollbarVisible = true;
 	tooltip = 0;
         possibleTripleClick = false;
+        filter_next_autorepeat_press = false;
     }
     ~KHTMLViewPrivate()
     {
@@ -243,6 +244,7 @@ public:
     bool borderTouched:1;
     bool borderStart:1;
     bool scrollBarMoved:1;
+    bool filter_next_autorepeat_press:1;
 
     QScrollView::ScrollBarMode vmode;
     QScrollView::ScrollBarMode hmode;
@@ -904,12 +906,11 @@ bool KHTMLView::dispatchKeyEvent( QKeyEvent *_ke )
     // Qt autorepeat press is filtered out if the release was filtered out.
     // Moreover, first Qt (non-autorepeat) keypress should generate DOM keydown followed
     // by DOM keypress.
-    static bool filter_next_autorepeat_press = false;
     if( _ke->type() == QEvent::KeyPress )
     {
         if( _ke->isAutoRepeat())
         { // ignore autorepeat press and filter out if necessary
-            return filter_next_autorepeat_press;
+            return d->filter_next_autorepeat_press;
         }
         bool ret = dispatchKeyEventHelper( _ke, false ); // keydown
         if( dispatchKeyEventHelper( _ke, true )) // keypress
@@ -921,7 +922,7 @@ bool KHTMLView::dispatchKeyEvent( QKeyEvent *_ke )
         if( _ke->isAutoRepeat())
         {
             bool ret = dispatchKeyEventHelper( _ke, true ); // keypress
-            filter_next_autorepeat_press = ret;
+            d->filter_next_autorepeat_press = ret;
             return ret;
         }
         else
