@@ -662,7 +662,7 @@ bool NodeImpl::dispatchSubtreeModifiedEvent()
 bool NodeImpl::dispatchKeyEvent(QKeyEvent *key)
 {
     int exceptioncode;
-    kdDebug(6010) << "DOM::NodeImpl: dispatching keyboard event" << endl;
+    //kdDebug(6010) << "DOM::NodeImpl: dispatching keyboard event" << endl;
     KeyEventImpl *keyEventImpl = new KeyEventImpl(key, getDocument()->defaultView());
     keyEventImpl->ref();
     bool r = dispatchEvent(keyEventImpl, exceptioncode);
