@@ -64,6 +64,7 @@ protected:
   QLabel* progressLabel;
   QLabel* sourceLabel;
   QLabel* destLabel;
+  QLabel* destInvite;
   QLabel* speedLabel;
   QLabel* sizeLabel;
   QLabel* resumeLabel;
@@ -80,6 +81,9 @@ protected:
 
   enum ModeType { Copy, Move, Delete, Create };
   ModeType mode;
+
+  class DefaultProgressPrivate;
+  DefaultProgressPrivate* d;
 };
 
 #endif // __defaultprogress_h__

@@ -47,7 +47,9 @@ DefaultProgress::DefaultProgress( bool showNow )
   sourceLabel = new QLabel(this);
   grid->addWidget(sourceLabel, 0, 2);
 
-  grid->addWidget(new QLabel(i18n("Destination:"), this), 1, 0);
+  destInvite = new QLabel(i18n("Destination:"), this);
+  grid->addWidget(destInvite, 1, 0);
+  destInvite->hide();
 
   destLabel = new QLabel(this);
   grid->addWidget(destLabel, 1, 2);
@@ -190,6 +192,7 @@ void DefaultProgress::slotCopying( KIO::Job*, const KURL& from, const KURL& to )
   sourceLabel->setText( from.url() );
   destLabel->setText( to.url() );
   destLabel->show();
+  destInvite->show();
 }
 
 
@@ -200,6 +203,7 @@ void DefaultProgress::slotMoving( KIO::Job*, const KURL& from, const KURL& to )
   sourceLabel->setText( from.url() );
   destLabel->setText( to.url() );
   destLabel->show();
+  destInvite->show();
 }
 
 
@@ -209,6 +213,7 @@ void DefaultProgress::slotCreatingDir( KIO::Job*, const KURL& dir )
   mode = Create;
   sourceLabel->setText( dir.url() );
   destLabel->hide();
+  destInvite->hide();
 }
 
 
@@ -218,6 +223,7 @@ void DefaultProgress::slotDeleting( KIO::Job*, const KURL& url )
   mode = Delete;
   sourceLabel->setText( url.url() );
   destLabel->hide();
+  destInvite->hide();
 }
 
 void DefaultProgress::slotStating( KIO::Job*, const KURL& url )
@@ -225,6 +231,7 @@ void DefaultProgress::slotStating( KIO::Job*, const KURL& url )
   setCaption(i18n("Examining file progress"));
   sourceLabel->setText( url.url() );
   destLabel->hide();
+  destInvite->hide();
 }
 
 void DefaultProgress::slotMounting( KIO::Job*, const QString & dev, const QString & point )
@@ -232,6 +239,7 @@ void DefaultProgress::slotMounting( KIO::Job*, const QString & dev, const QStrin
   setCaption(i18n("Mounting %1").arg(dev));
   sourceLabel->setText( point );
   destLabel->hide();
+  destInvite->hide();
 }
 
 void DefaultProgress::slotUnmounting( KIO::Job*, const QString & point )
@@ -239,6 +247,7 @@ void DefaultProgress::slotUnmounting( KIO::Job*, const QString & point )
   setCaption(i18n("Unmounting"));
   sourceLabel->setText( point );
   destLabel->hide();
+  destInvite->hide();
 }
 
 void DefaultProgress::slotCanResume( KIO::Job*, bool resume )
