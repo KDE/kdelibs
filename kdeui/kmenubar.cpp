@@ -50,7 +50,7 @@ static const int motifBarHMargin        = 2;    // menu bar hor margin to item
 static const int motifBarVMargin        = 1;    // menu bar ver margin to item
 static const int motifItemFrame         = 2;    // menu item frame width
 
-static const int motifItemHMargin       = 5;    // menu item hor text marginstatic const int motifItemVMargin       = 4;    // menu item ver text margin
+static const int motifItemHMargin       = 5;    // menu item hor text margin
 static const int motifItemVMargin       = 4;    // menu item ver text margin
 
 #define KTHEMESTYLE_CONSTANTS
@@ -95,7 +95,7 @@ void KMenuBar::setTopLevelMenu(bool top_level)
       KWin::setType( winId(), NET::Menu );
       KWin::setOnAllDesktops( winId(), true );
       KWin::setState( winId(), NET::StaysOnTop );
-      
+
       if ( wasVisible )
           show();
   } else {
