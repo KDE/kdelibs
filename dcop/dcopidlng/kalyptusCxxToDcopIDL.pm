@@ -167,8 +167,6 @@ sub writeDoc
 	# Preparse everything, to prepare some additional data in the classes and methods
 	Iter::LocalCompounds( $rootnode, sub { preParseClass( shift ); } );
 
-	print STDERR "Writing smokedata.cpp...\n";
-
 	# Write out smokedata.cpp
 	writeSmokeDataFile($rootnode);
 
@@ -876,9 +874,6 @@ sub writeSmokeDataFile($) {
 
     my %classidx = do { my $i = 0; map { $_ => $i++ } @classlist };
 
-    my $file = "$outputdir/smokedata.cpp";
-    open OUT, ">$file" or die "Couldn't create $file\n";
-
     # Prepare descendants information for each class
     my %descendants; # classname -> list of descendant nodes
     Iter::LocalCompounds( $rootnode, sub {
@@ -903,23 +898,14 @@ sub writeSmokeDataFile($) {
 	    push @super, @{$descendants{$className}};
 	}
 	my $cur = $classidx{$className};
-	print OUT "      case $cur:\t//$className\n";
-	print OUT "\tswitch(to) {\n";
 	$cur = -1;
 	for my $s (@super) {
 	    my $superClassName = join( "::", kdocAstUtil::heritage($s) );
 	    next if !defined $classidx{$superClassName}; # inherits from unknown class, see below
 	    next if $classidx{$superClassName} == $cur;    # shouldn't happen in Qt
 	    $cur = $classidx{$superClassName};
-	    print OUT "\t  case $cur: return (void*)($superClassName*)($className*)xptr;\n";
 	}
-	print OUT "\t  default: return xptr;\n";
-	print OUT "\t}\n";
     } );
-    print OUT "      default: return xptr;\n";
-    print OUT "    }\n";
-    print OUT "}\n\n";
-
 
     # Write inheritance array
     # Imagine you have "Class : public super1, super2"
@@ -930,10 +916,6 @@ sub writeSmokeDataFile($) {
     # directly to the file. We only need to remember its current size.
     my $inheritlistsize = 1;
 
-    print OUT "// Group of class IDs (0 separated) used as super class lists.\n";
-    print OUT "// Classes with super classes have an index into this array.\n";
-    print OUT "static short ${libname}_inheritanceList[] = {\n";
-    print OUT "\t0,\t// 0: (no super class)\n";
     Iter::LocalCompounds( $rootnode, sub {
 	my $classNode = shift;
 	my $className = join( "__", kdocAstUtil::heritage($classNode) );
@@ -955,17 +937,14 @@ sub writeSmokeDataFile($) {
 	}
 	if ( $key ne '' ) {
 	    if ( !defined $inheritfinder{$key} ) {
-		print OUT "\t";
 		my $index = $inheritlistsize; # Index of first entry (for this group) in inheritlist
 		foreach my $superClass( @super ) {
 		    if (defined $classidx{$superClass}) {
-			print OUT "$classidx{$superClass}, ";
 			$inheritlistsize++;
 		    }
 		}
 		$inheritlistsize++;
 		my $comment = join( ", ", @super );
-		print OUT "0,\t// $index: $comment\n";
 		$inheritfinder{$key} = $index;
 	    }
 	    $classinherit{$className} = $inheritfinder{$key};
@@ -973,17 +952,11 @@ sub writeSmokeDataFile($) {
 	    $classinherit{$className} = 0;
 	}
     } );
-    print OUT "};\n\n";
 
-
-    print OUT "// These are the xenum functions for manipulating enum pointers\n";
     for my $className (keys %enumclasslist) {
 	my $c = $className;
 	$c =~ s/::/__/g;
-	print OUT "void xenum_$c\(Smoke::EnumOperation, Smoke::Index, void*&, long&);\n";
     }
-    print OUT "\n";
-    print OUT "// Those are the xcall functions defined in each x_*.cpp file, for dispatching method calls\n";
     my $firstClass = 1;
     for my $className (@classlist) {
 	if ($firstClass) {
@@ -992,14 +965,9 @@ sub writeSmokeDataFile($) {
 	}
 	my $c = $className;   # make a copy
 	$c =~ s/::/__/g;
-	print OUT "void xcall_$c\(Smoke::Index, void*, Smoke::Stack);\n";
     }
-    print OUT "\n";
 
     # Write class list afterwards because it needs offsets to the inheritance array.
-    print OUT "// List of all classes\n";
-    print OUT "// Name, index into inheritanceList, method dispatcher, enum dispatcher, class flags\n";
-    print OUT "static Smoke::Class ${libname}_classes[] = {\n";
     my $firstClass = 1;
     Iter::LocalCompounds( $rootnode, sub {
 	my $classNode = shift;
@@ -1007,7 +975,6 @@ sub writeSmokeDataFile($) {
 
 	if ($firstClass) {
 	    $firstClass = 0;
-	    print OUT "\t{ 0L, 0, 0, 0, 0 }, \t// 0 (no class)\n";
 	}
 	my $c = $className;
 	$c =~ s/::/__/g;
@@ -1019,20 +986,14 @@ sub writeSmokeDataFile($) {
 
 	my $xClassFlags = 0;
 	$xClassFlags =~ s/0\|//; # beautify
-	print OUT "\t{ \"$className\", $classinherit{$c}, $xcallFunc, $xenumFunc, $xClassFlags }, \t//$classidx{$className}\n";
     } );
-    print OUT "};\n\n";
 
 
-    print OUT "// List of all types needed by the methods (arguments and return values)\n";
-    print OUT "// Name, class ID if arg is a class, and TypeId\n";
-    print OUT "static Smoke::Type ${libname}_types[] = {\n";
     my $typeCount = 0;
     $allTypes{''}{index} = 0; # We need an "item 0"
     for my $type (sort keys %allTypes) {
 	$allTypes{$type}{index} = $typeCount;      # Register proper index in allTypes
 	if ( $typeCount == 0 ) {
-	    print OUT "\t{ 0, 0, 0 },\t//0 (no type)\n";
 	    $typeCount++;
 	    next;
 	}
@@ -1043,27 +1004,17 @@ sub writeSmokeDataFile($) {
 	die "$type" if !defined $typeFlags;
 	die "$realType" if $realType =~ /\(/;
 	# First write the name
-	print OUT "\t{ \"$type\", ";
 	# Then write the classId (and find out the typeid at the same time)
 	if(exists $classidx{$realType}) { # this one first, we want t_class for QBlah*
 	    $typeId = 't_class';
-	    print OUT "$classidx{$realType}, ";
 	}
 	elsif($type =~ /&$/ || $type =~ /\*$/) {
 	    $typeId = 't_voidp';
-	    print OUT "0, "; # no classId
 	}
 	elsif($isEnum || $allTypes{$realType}{isEnum}) {
 	    $typeId = 't_enum';
 	    if($realType =~ /(.*)::/) {
 		my $c = $1;
-		if($classidx{$c}) {
-		    print OUT "$classidx{$c}, ";
-		} else {
-		    print OUT "0 /* unknown class $c */, ";
-		}
-	    } else {
-		print OUT "0 /* unknown $realType */, "; # no classId
 	    }
 	}
 	else {
@@ -1083,18 +1034,13 @@ sub writeSmokeDataFile($) {
 		}
 		$typeId = 't_voidp'; # Unknown -> map to a void *
 	    }
-	    print OUT "0, "; # no classId
 	}
 	# Then write the flags
 	die "$type" if !defined $typeId;
-	print OUT "Smoke::$typeId | $typeFlags },";
-	print OUT "\t//$typeCount\n";
 	$typeCount++;
 	# Remember it for coerce_type
 	$allTypes{$type}{typeId} = $typeId;
     }
-
-    close OUT;
 }
 
 1;
