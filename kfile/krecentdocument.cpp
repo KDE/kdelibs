@@ -42,7 +42,7 @@
 
 void KRecentDocument::add(const QString &openStr, bool isUrl)
 {
-    kdWarning() << "KRecentDocument::add for " << openStr << endl;
+    kdDebug() << "KRecentDocument::add for " << openStr << endl;
     KConfig *config = KGlobal::config();
     QString oldGrp = config->group();
     config->setGroup(QString::fromLatin1("RecentDocuments"));
@@ -67,9 +67,9 @@ void KRecentDocument::add(const QString &openStr, bool isUrl)
     
     QString ddesktop = dStr + QString::fromLatin1(".desktop");
 
-    int i;
+    int i=1;
     // check for duplicates
-    if(QFile::exists(ddesktop)){
+    while(QFile::exists(ddesktop)){
         // see if it points to the same file and application
         KSimpleConfig tmp(ddesktop);
         tmp.setDesktopGroup();
@@ -77,18 +77,15 @@ void KRecentDocument::add(const QString &openStr, bool isUrl)
 	   == QString::fromLatin1(kapp->argv()[0]) + 
 	   QString::fromLatin1(" ") + openStr) 
 	{
-            kdWarning() << "Touching" << endl;
             utime(QFile::encodeName(ddesktop), NULL);
             return;
         }
         // if not append a (num) to it
-        for(i=2; i < maxEntries+1 && QFile::exists(dStr + QString::fromLatin1(".desktop")); ++i)
-#ifdef __GNUC__
-#warning HPB: this looks buggy
-#endif
-            dStr.sprintf("%s[%d]", dStr.utf8().data(), i);
+        ++i;
+        if ( i > maxEntries )
+            break;
+        ddesktop = dStr + QString::fromLatin1("[%1].desktop").arg(i);
     }
-    dStr += QString::fromLatin1(".desktop");
 
     QDir dir(path);
     // check for max entries, delete oldest files if exceeded
@@ -104,19 +101,13 @@ void KRecentDocument::add(const QString &openStr, bool isUrl)
     }
 
     // create the applnk
-    QFile dFile(dStr);
-    dFile.open(IO_ReadWrite);
-    QTextStream stream(&dFile);
-    stream << "[Desktop Entry]\n";
-    stream << "Type=Application\n";
-    stream << "URL=" << openStr << "\n";
-    stream << "Exec=" << kapp->argv()[0] << " " << openStr << "\n";
-    if(!isUrl)
-        stream << "Name=" << fi.fileName() << "\n";
-    else
-        stream << "Name=" << openStr << "\n";
-    stream << "Icon=document"  << "\n";
-    dFile.close();
+    KSimpleConfig conf(ddesktop);
+    conf.setDesktopGroup();
+    conf.writeEntry( QString::fromLatin1("Type"), QString::fromLatin1("Application") );
+    conf.writeEntry( QString::fromLatin1("URL"), openStr );
+    conf.writeEntry( QString::fromLatin1("Exec"), QString::fromLatin1(kapp->argv()[0]) + ' ' + openStr );
+    conf.writeEntry( QString::fromLatin1("Name"), isUrl ? openStr : fi.fileName() );
+    conf.writeEntry( QString::fromLatin1("Icon"), QString::fromLatin1("document") );
 }
 
 void KRecentDocument::clear()
