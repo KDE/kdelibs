@@ -61,7 +61,7 @@ void KColorWidget::doIntensityLoop()
 	       Qt::CopyROP, true);
       }
       stop = t.elapsed();
-      warning ("Total fullscreen %s dim time for %d steps : %f s",
+      qDebug ("Total fullscreen %s dim time for %d steps : %f s",
 	       oldway?"(antonio)":"(intensity)", count, (stop - start)*1e-3);
 
       if (intvsfade) {
@@ -75,14 +75,14 @@ void KColorWidget::doIntensityLoop()
 	}
       }
       stop = t.elapsed();
-      warning ("Total fullscreen (fade) dim time for %d steps : %f s",
+      qDebug ("Total fullscreen (fade) dim time for %d steps : %f s",
 	       count, (stop - start)*1e-3);
 
     }
 
     else {
       image = original; image.detach();
-      warning("Intensity test");
+      qDebug("Intensity test");
       for(count=0; count < max; ++count){
         KImageEffect::intensity(image, 1./max);
         pixmap.convertFromImage(image);
@@ -98,7 +98,7 @@ void KColorWidget::doIntensityLoop()
       }
 
       image = original; image.detach();
-      warning("Red channel intensity test");
+      qDebug("Red channel intensity test");
       for(count=0; count < max; ++count){
         KImageEffect::channelIntensity(image, -1./max, KImageEffect::Red);
         pixmap.convertFromImage(image);
@@ -113,7 +113,7 @@ void KColorWidget::doIntensityLoop()
       }
 
       image = original; image.detach();
-      warning("Green channel intensity test");
+      qDebug("Green channel intensity test");
       for(count=0; count < max; ++count){
         KImageEffect::channelIntensity(image, -1./max, KImageEffect::Green);
         pixmap.convertFromImage(image);
@@ -128,7 +128,7 @@ void KColorWidget::doIntensityLoop()
       }
 
       image = original; image.detach();
-      warning("Blue channel intensity test");
+      qDebug("Blue channel intensity test");
       for(count=0; count < max; ++count){
         KImageEffect::channelIntensity(image, -1./max, KImageEffect::Blue);
         pixmap.convertFromImage(image);

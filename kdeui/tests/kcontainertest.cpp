@@ -90,7 +90,7 @@ void TestWidget::addButton()
 void TestWidget::showComplexLayout()
 {
     TopLevelTest *test = new TopLevelTest();
-    warning("test->show()");
+    qDebug("test->show()");
     test->exec();
 }
 
