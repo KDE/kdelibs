@@ -21,6 +21,7 @@ post-install:
 		${MAKE} PREFIX=${PREFIX} make-plist
 		cp -Rp ${INSTALL_ROOT}/* /
 		rm -rf ${INSTALL_ROOT}
+		ldconfig -m ${INSTALL_ROOT}
 
 # This should finally work somewhat decently now
 make-plist:
