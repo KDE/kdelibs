@@ -650,16 +650,18 @@ static QString pickUnusedTitle( KBookmarkGroup parentBookmark,
   return uniqueTitle;
 }
 
-void KBookmarkMenu::slotAddBookmark()
+KBookmarkGroup blah( KBookmarkManager *m_pManager, 
+                     const QString & _url, const QString & _title,
+                     const QString & _parentBookmarkAddress )
 {
-  QString url = m_pOwner->currentURL();
-  QString title = m_pOwner->currentTitle();
-  QString parentBookmarkAddress = m_parentAddress;
+  QString url = _url;
+  QString title = _title;
+  QString parentBookmarkAddress = _parentBookmarkAddress;
 
   if (url.isEmpty())
   {
     KMessageBox::error( 0L, i18n("Can't add bookmark with empty URL"));
-    return;
+    return KBookmarkGroup();
   }
 
   if (title.isEmpty())
@@ -669,7 +671,7 @@ void KBookmarkMenu::slotAddBookmark()
   {
     KBookmarkEditDialog dlg( title, url, m_pManager );
     if ( dlg.exec() != KDialogBase::Accepted )
-      return;
+      return KBookmarkGroup();
     title = dlg.finalTitle();
     url = dlg.finalUrl();
     parentBookmarkAddress = dlg.finalAddress();
@@ -683,7 +685,15 @@ void KBookmarkMenu::slotAddBookmark()
   if ( !uniqueTitle.isNull() )
     parentBookmark.addBookmark( m_pManager, uniqueTitle, url );
 
-  m_pManager->emitChanged( parentBookmark );
+  return parentBookmark;
+}
+
+void KBookmarkMenu::slotAddBookmark()
+{
+  KBookmarkGroup parentBookmark;
+  parentBookmark = blah(m_pManager, m_pOwner->currentURL(), m_pOwner->currentTitle(), m_parentAddress);
+  if (!parentBookmark.isNull())
+    m_pManager->emitChanged( parentBookmark );
 }
 
 void KBookmarkMenu::slotNewFolder()
