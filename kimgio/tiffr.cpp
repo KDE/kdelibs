@@ -34,7 +34,7 @@ void kimgio_tiff_read( QImageIO *io )
 
 	//Sven: changed to %ld for 64bit machines
 	debug( "unsigned size: %ld, uint32 size: %ld",
-		sizeof(unsigned), sizeof(uint32) );
+		(long)sizeof(unsigned), (long)sizeof(uint32) );
 
 	// read data
 	bool stat =TIFFReadRGBAImage( tiff, width, height, data );
