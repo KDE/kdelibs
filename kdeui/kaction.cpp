@@ -368,8 +368,8 @@ QString KAction::shortText() const
 
 void KAction::setStatusText( const QString &text )
 {
-  d->m_statusText = text; 
-  
+  d->m_statusText = text;
+
   int len = containerCount();
   for( int i = 0; i < len; ++i )
     setStatusText( i, text );
@@ -377,13 +377,13 @@ void KAction::setStatusText( const QString &text )
 
 void KAction::setStatusText( int, const QString & )
 {
-  // ### 
-} 
+  // ###
+}
 
 QString KAction::statusText() const
 {
-  return d->m_statusText; 
-} 
+  return d->m_statusText;
+}
 
 int KAction::plug( QWidget *w, int index )
 {
@@ -2365,6 +2365,7 @@ public:
   KActionCollectionPrivate()
   {
     m_dctHighlightContainers.setAutoDelete( true );
+    m_keyDict.setAutoDelete( true );
     m_highlight = false;
   }
   ~KActionCollectionPrivate()
