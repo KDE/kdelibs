@@ -352,7 +352,7 @@ void ElementImpl::recalcStyle( StyleChange change )
     if ( m_style ) {
 	// ### should go away and be done in renderobject
 	bool needsUpdate = false;
-//  	qDebug("recalcStyle(%p: %s)", this, tagName().string().latin1());
+  	qDebug("recalcStyle(%p: %s)", this, tagName().string().latin1());
 	if ( change >= Inherit || changed() ) {
 	    EDisplay oldDisplay = m_style ? m_style->display() : INLINE;
 

@@ -1164,7 +1164,7 @@ bool HTMLInputElementImpl::encoding(const QTextCodec* codec, khtml::encodingList
         {
             // can't submit file on GET
             // don't submit if display: none or display: hidden
-            if(!multipart || !renderer() || !renderer()->isVisible())
+            if(!multipart || !renderer() || style()->visibility() != khtml::VISIBLE)
                 return false;
 
             QString local;

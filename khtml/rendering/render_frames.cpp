@@ -101,7 +101,7 @@ RenderFrameSet::~RenderFrameSet()
 void RenderFrameSet::layout( )
 {
     assert( !layouted() );
-    
+
     if ( !parent()->isFrameSet() ) {
         m_width = m_view->visibleWidth();
         m_height = m_view->visibleHeight();
@@ -406,11 +406,14 @@ void RenderFrameSet::positionFrames()
 #ifdef DEBUG_LAYOUT
       kdDebug(6040) << "child frame at (" << xPos << "/" << yPos << ") size (" << m_colWidth[c] << "/" << m_rowHeight[r] << ")" << endl;
 #endif
+      bool relayout = (m_colWidth[c] != child->width()) || (m_rowHeight[r] != child->height());
       child->setWidth( m_colWidth[c] );
       child->setHeight( m_rowHeight[r] );
-      child->setVisible( true );
-      if ( !child->layouted() )
-	  child->layout( );
+      // has to be resized and itself resize its contents
+      if (relayout || !layouted()) {
+          child->setLayouted(false);
+          child->layout( );
+      }
 
       xPos += m_colWidth[c] + m_element->border();
       child = child->nextSibling();
@@ -428,7 +431,6 @@ void RenderFrameSet::positionFrames()
   while ( child ) {
       child->setWidth( 0 );
       child->setHeight( 0 );
-      child->setVisible( false );
       child->setLayouted();
 
       child = child->nextSibling();
@@ -815,8 +817,8 @@ void RenderPartObject::updateWidget()
       KHTMLView *v = static_cast<KHTMLView *>(m_view);
       v->part()->requestFrame( this, url, o->name.string(), QStringList(), true );
   }
+  setMinMaxKnown(false);
   setLayouted(false);
-
 }
 
 // ugly..

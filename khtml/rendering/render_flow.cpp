@@ -121,7 +121,7 @@ void RenderFlow::print(QPainter *p, int _x, int _y, int _w, int _h,
     }
 
     // check if we need to do anything at all...
-    if(!isInline() && !containsPositioned() && !isRelPositioned() && !isPositioned() )
+    if(!isInline() && !overhangingContents() && !isRelPositioned() && !isPositioned() )
     {
         int h = m_height;
         if(specialObjects && floatBottom() > h) h = floatBottom();
@@ -148,7 +148,7 @@ void RenderFlow::printObject(QPainter *p, int _x, int _y,
 
 
     // 1. print background, borders etc
-    if(hasSpecialObjects() && !isInline() && isVisible())
+    if(hasSpecialObjects() && !isInline() && style()->visibility() == VISIBLE )
         printBoxDecorations(p, _x, _y, _w, _h, _tx, _ty);
 
 
@@ -223,7 +223,7 @@ void RenderFlow::layout()
 //    kdDebug( 6040 ) << renderName() << " " << this << "::layout() start" << endl;
 //     QTime t;
 //     t.start();
-    
+
     assert( !layouted() );
 
     assert(!isInline());
@@ -231,18 +231,18 @@ void RenderFlow::layout()
     int oldWidth = m_width;
 
     calcWidth();
-    
+
     bool relayoutChildren = false;
     if ( oldWidth != m_width )
 	relayoutChildren = true;
-    
+
     // need a small hack here, as tables are done a bit differently
     if ( isTableCell() && static_cast<RenderTableCell *>(this)->widthChanged() )
 	relayoutChildren = true;
 
 //     kdDebug( 6040 ) << specialObjects << "," << oldWidth << ","
 //                     << m_width << ","<< layouted() << "," << isAnonymousBox() << ","
-//                     << containsPositioned() << "," << isPositioned() << endl;
+//                     << overhangingContents() << "," << isPositioned() << endl;
 
 #ifdef DEBUG_LAYOUT
     kdDebug( 6040 ) << renderName() << "(RenderFlow) " << this << " ::layout() width=" << m_width << ", layouted=" << layouted() << endl;
@@ -250,7 +250,7 @@ void RenderFlow::layout()
         kdDebug( 6040 ) << renderName() << ": containingBlock == this" << endl;
 #endif
 
-    if(m_width<=0 && !isPositioned() && !containsPositioned()) {
+    if(m_width<=0 && !isPositioned() && !overhangingContents()) {
         if(m_y < 0) m_y = 0;
         setLayouted();
         return;
@@ -369,7 +369,7 @@ void RenderFlow::layoutBlockChildren( bool relayoutChildren )
 	// make sure we relayout children if we need it.
 	if ( relayoutChildren )
 	    child->setLayouted( false );
-	
+
 //         kdDebug( 6040 ) << "   " << child->renderName() << " loop " << child << ", " << child->isInline() << ", " << child->layouted() << endl;
 //         kdDebug( 6040 ) << t.elapsed() << endl;
         // ### might be some layouts are done two times... FIX that.
@@ -505,8 +505,7 @@ void RenderFlow::insertSpecialObject(RenderObject *o)
     if (o->isPositioned()) {
 	// positioned object
 	newObj = new SpecialObject(SpecialObject::Positioned);
-
-	setContainsPositioned(true);
+        setOverhangingContents();
     }
     else if (o->isFloating()) {
 	// floating object
@@ -869,7 +868,7 @@ RenderFlow::clearFloats()
     //kdDebug( 6040 ) << this <<" clearFloats" << endl;
 
     if (specialObjects) {
-	if( containsPositioned() ) {
+	if( overhangingContents() ) {
             specialObjects->first();
             while ( specialObjects->current()) {
 		if ( specialObjects->current()->type != SpecialObject::Positioned )
@@ -1269,7 +1268,7 @@ void RenderFlow::addChild(RenderObject *newChild, RenderObject *beforeChild)
     if (!newChild->isText())
     {
         if (newChild->style()->position() != STATIC)
-                setContainsPositioned(true);
+            setOverhangingContents();
     }
 
     // RenderFlow has to either have all of it's children inline, or all of it's children as blocks.

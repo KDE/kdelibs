@@ -517,7 +517,7 @@ enum EListStyleType {
 
 enum EListStylePosition { OUTSIDE, INSIDE };
 
-enum EVisiblity { VISIBLE, HIDDEN, COLLAPSE };
+enum EVisibility { VISIBLE, HIDDEN, COLLAPSE };
 
 enum ECursor {
     CURSOR_AUTO, CURSOR_CROSS, CURSOR_DEFAULT, CURSOR_POINTER, CURSOR_MOVE,
@@ -567,7 +567,7 @@ protected:
 	ECaptionSide _caption_side : 2;
 	EListStyleType _list_style_type : 5 ;
 	EListStylePosition _list_style_position :1;
-	EVisiblity _visiblity : 2;
+	EVisibility _visibility : 2;
 	ETextAlign _text_align : 3;
 	ETextTransform _text_transform : 2;
 	EDirection _direction : 1;
@@ -698,7 +698,7 @@ public:
     const QColor &  	    outlineColor() const {  return surround->outline.color; }
 
     EOverflow overflow() const { return  _overflow; }
-    EVisiblity visiblity() const { return inherited_flags._visiblity; }
+    EVisibility visibility() const { return inherited_flags._visibility; }
     EVerticalAlign verticalAlign() const { return  _vertical_align; }
     Length verticalAlignLength() const { return box->vertical_align; }
 
@@ -801,7 +801,7 @@ public:
     void setOutlineColor(const QColor & v) {  SET_VAR(surround,outline.color,v) }
 
     void setOverflow(EOverflow v) {  _overflow = v; }
-    void setVisiblity(EVisiblity v) { inherited_flags._visiblity = v; }
+    void setVisibility(EVisibility v) { inherited_flags._visibility = v; }
     void setVerticalAlign(EVerticalAlign v) { _vertical_align = v; }
     void setVerticalAlignLength(Length l) { SET_VAR(box, vertical_align, l ) }
 

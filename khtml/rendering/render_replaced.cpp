@@ -52,8 +52,7 @@ RenderReplaced::RenderReplaced()
 void RenderReplaced::print( QPainter *p, int _x, int _y, int _w, int _h,
                             int _tx, int _ty)
 {
-    if ( !isVisible() )
-        return;
+    if (style()->visibility() != VISIBLE) return;
 
     _tx += m_x;
     _ty += m_y;
@@ -188,7 +187,7 @@ void RenderWidget::setStyle(RenderStyle *_style)
     if(m_widget)
     {
 	m_widget->setFont(style()->font());
-	if (!isVisible()) {
+        if (style()->visibility() != VISIBLE) {
 	    m_widget->hide();
 	    m_widgetShown = false;
 	}
@@ -200,7 +199,7 @@ void RenderWidget::printObject(QPainter *p, int, int, int, int, int _tx, int _ty
     if (!m_widget || !m_view)
 	return;
 
-    if (!isVisible()) {
+    if (style()->visibility() != VISIBLE) {
 	m_widget->hide();
 	m_widgetShown = false;
 	return;

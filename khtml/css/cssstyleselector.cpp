@@ -1459,19 +1459,19 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
     {
         if(value->cssValueType() == CSSValue::CSS_INHERIT) {
             if(!e->parentNode()) return;
-            style->setVisiblity(e->parentNode()->style()->visiblity());
+            style->setVisibility(e->parentNode()->style()->visibility());
             return;
         }
 
         switch( primitiveValue->getIdent() ) {
         case CSS_VAL_HIDDEN:
-            style->setVisiblity( HIDDEN );
+            style->setVisibility( HIDDEN );
             break;
         case CSS_VAL_VISIBLE:
-            style->setVisiblity( VISIBLE );
+            style->setVisibility( VISIBLE );
             break;
         case CSS_VAL_COLLAPSE:
-            style->setVisiblity( COLLAPSE );
+            style->setVisibility( COLLAPSE );
         default:
             break;
         }

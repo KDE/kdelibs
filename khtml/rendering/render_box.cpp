@@ -558,11 +558,8 @@ void RenderBox::calcHeight()
             }
             if (fh!=-1)
             {
-                //containsPositioned needs a less misleading name
-                if (fh<m_height && !containsPositioned() && style()->overflow()==OVISIBLE)
-                {
-                    setContainsPositioned(true);
-                }
+                if (fh<m_height && !overhangingContents() && style()->overflow()==OVISIBLE)
+                    setOverhangingContents();
 
                 m_height = fh;
             }

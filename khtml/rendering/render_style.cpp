@@ -111,7 +111,7 @@ RenderStyle::setBitDefaults()
     inherited_flags._caption_side = CAPTOP;
     inherited_flags._list_style_type = DISC;
     inherited_flags._list_style_position = OUTSIDE;
-    inherited_flags._visiblity = VISIBLE;
+    inherited_flags._visibility = VISIBLE;
     inherited_flags._text_align = JUSTIFY;
     inherited_flags._text_transform = TTNONE;
     inherited_flags._direction = LTR;
@@ -430,13 +430,13 @@ RenderStyle::Diff RenderStyle::diff( const RenderStyle *other ) const
 
 
     // Visible:
-// 	EVisiblity _visiblity : 2;
+// 	EVisibility _visibility : 2;
 //     EOverflow _overflow : 4 ;
 //     EBackgroundRepeat _bg_repeat : 2;
 //     bool _bg_attachment : 1;
 // 	int _text_decoration : 4;
 //     DataRef<StyleBackgroundData> background;
-    if ( !(inherited_flags._visiblity == other->inherited_flags._visiblity) ||
+    if ( !(inherited_flags._visibility == other->inherited_flags._visibility) ||
 	 !(_overflow == other->_overflow) ||
 	 !(_bg_repeat == other->_bg_repeat) ||
 	 !(_bg_attachment == other->_bg_attachment) ||

@@ -400,7 +400,6 @@ bool KHTMLParser::insertNode(NodeImpl *n)
                 // some sites use <body bgcolor=rightcolor>...<body bgcolor=wrongcolor>
                 NamedAttrMapImpl *map = static_cast<ElementImpl*>(n)->attributes(true);
                 NamedAttrMapImpl *bmap = doc()->body()->attributes(false);
-                int exceptioncode = 0;
                 bool changed = false;
                 for (unsigned long l = 0; map && l < map->length(); ++l) {
                     AttributeImpl* it = map->attributeItem(l);

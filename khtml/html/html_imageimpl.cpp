@@ -75,7 +75,7 @@ bool HTMLImageElementImpl::prepareMouseEvent( int _x, int _y,
     //kdDebug( 6030 ) << "_x=" << _x << " _tx=" << _tx << " _y=" << _y << ", _ty=" << _ty << endl;
     bool inside = HTMLElementImpl::prepareMouseEvent(_x, _y, _tx, _ty, ev);
     if ( inside && usemap.length() > 0 &&
-         ( ! (m_render && m_render->style() && m_render->style()->visiblity() == HIDDEN) ) )
+         ( ! (m_render && style() && style()->visibility() == HIDDEN) ) )
     {
         RenderObject* p = m_render->parent();
         while( p && p->isAnonymousBox() )

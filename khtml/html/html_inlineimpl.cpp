@@ -65,7 +65,7 @@ bool HTMLAnchorElementImpl::prepareMouseEvent( int _x, int _y,
 
     // ### ev->noHref obsolete now ? ( Dirk )
     if ( inside && ev->url.isNull() && !ev->noHref
-         && m_render && m_render->style() && m_render->style()->visiblity() != HIDDEN )
+         && m_render && style()->visibility() != HIDDEN )
     {
         //kdDebug() << "HTMLAnchorElementImpl::prepareMouseEvent" << _tx << "/" << _ty <<endl;
         // set the url

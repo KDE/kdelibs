@@ -122,11 +122,10 @@ public:
     bool isInline() const { return m_inline; }  // inline object
     bool isReplaced() const { return m_replaced; } // a "replaced" element (see CSS)
     bool hasSpecialObjects() const { return m_printSpecial; }
-    bool isVisible() const  { return m_visible; }
     bool layouted() const   { return m_layouted; }
     bool parsing() const    { return m_parsing;     }
     bool minMaxKnown() const{ return m_minMaxKnown; }
-    bool containsPositioned() const { return m_containsPositioned; }
+    bool overhangingContents() const { return m_overhangingContents; }
     bool hasFirstLine() const { return m_hasFirstLine; }
     bool isSelectionBorder() const { return m_isSelectionBorder; }
     bool recalcMinMax() const { return m_recalcMinMax; }
@@ -138,8 +137,8 @@ public:
      */
     RenderObject *container() const;
 
-    void setContainsPositioned(bool p);
-    void setLayouted(bool b=true) { 
+    void setOverhangingContents(bool p=true);
+    void setLayouted(bool b=true) {
 	m_layouted = b;
 	if(!b) {
 	    RenderObject *o = m_parent;
@@ -153,28 +152,27 @@ public:
 	}
     }
     void setParsing(bool b=true) { m_parsing = b; }
-    void setMinMaxKnown(bool b=true) { 
-	m_minMaxKnown = b; 
+    void setMinMaxKnown(bool b=true) {
+	m_minMaxKnown = b;
 	if ( !b ) {
 	    RenderObject *o = m_parent;
 	    while( o ) { // ### && !o->m_recalcMinMax ) {
 		o->m_recalcMinMax = true;
 		o = o->m_parent;
 	    }
-	}	    
+	}
     }
     void setPositioned(bool b=true)  { m_positioned = b;  }
     void setRelPositioned(bool b=true) { m_relPositioned = b; }
     void setFloating(bool b=true) { m_floating = b; }
     void setInline(bool b=true) { m_inline = b; }
     void setSpecialObjects(bool b=true) { m_printSpecial = b; }
-    void setVisible(bool b=true) { m_visible = b; }
     void setRenderText() { m_isText = true; }
     void setReplaced(bool b=true) { m_replaced = b; }
     void setIsSelectionBorder(bool b=true) { m_isSelectionBorder = b; }
 
     void scheduleRelayout();
-    
+
     // for discussion of lineHeight see CSS2 spec
     virtual int lineHeight( bool firstLine ) const;
     // for the vertical-align property of inline elements
@@ -209,7 +207,7 @@ public:
      * assumes calcMinMaxWidth has already been called for all children.
      */
     virtual void calcMinMaxWidth() { }
-    
+
     /*
      * Does the min max width recalculations after changes.
      */
@@ -380,13 +378,14 @@ private:
     bool m_parsing                   : 1;
     bool m_minMaxKnown               : 1;
     bool m_floating                  : 1;
+
     bool m_positioned                : 1;
-    bool m_containsPositioned        : 1;
+    bool m_overhangingContents : 1;
     bool m_relPositioned             : 1;
     bool m_printSpecial              : 1; // if the box has something special to print (background, border, etc)
 
     bool m_isAnonymous               : 1;
-    bool m_visible                   : 1;
+    bool m_recalcMinMax 	     : 1;
     bool m_isText                    : 1;
     bool m_inline                    : 1;
 
@@ -396,9 +395,6 @@ private:
     bool m_isSelectionBorder          : 1;
 
     // note: do not add unnecessary bitflags, we have 32 bit already!
-    // ### fixme and remove some other flag
-    bool m_recalcMinMax 	     : 1;
-    
     friend class RenderContainer;
     friend class RenderRoot;
 };

@@ -177,7 +177,7 @@ void RenderListItem::calcListValue()
 void RenderListItem::layout( )
 {
     assert( !layouted() );
-    
+
     if ( !checkChildren() ) {
         m_height = 0;
         //kdDebug(0) << "empty item" << endl;
@@ -282,8 +282,7 @@ void RenderListMarker::print(QPainter *p, int _x, int _y, int _w, int _h,
 void RenderListMarker::printObject(QPainter *p, int, int,
                                     int, int, int _tx, int _ty)
 {
-    if( !isVisible() )
-        return;
+    if (style()->visibility() != VISIBLE) return;
 
 #ifdef DEBUG_LAYOUT
     kdDebug( 6040 ) << nodeName().string() << "(ListMarker)::printObject(" << _tx << ", " << _ty << ")" << endl;
@@ -368,7 +367,7 @@ void RenderListMarker::setPixmap( const QPixmap &p, const QRect& r, CachedImage 
         return;
     }
 #endif
-    
+
     if(m_width != m_listImage->pixmap_size().width() || m_height != m_listImage->pixmap_size().height())
     {
         setLayouted(false);
@@ -384,7 +383,7 @@ void RenderListMarker::setPixmap( const QPixmap &p, const QRect& r, CachedImage 
 void RenderListMarker::calcMinMaxWidth()
 {
     assert( !minMaxKnown() );
-    
+
     m_width = 0;
 
     if(m_listImage) {
@@ -460,7 +459,7 @@ end:
 
     m_minWidth = m_width;
     m_maxWidth = m_width;
-    
+
     setMinMaxKnown();
 }
 

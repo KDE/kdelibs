@@ -105,12 +105,11 @@ RenderObject::RenderObject()
     m_positioned = false;
     m_relPositioned = false;
     m_printSpecial = false;
-    m_containsPositioned = false;
+    m_overhangingContents = false;
     m_isAnonymous = false;
     m_isText = false;
     m_inline = true;
     m_replaced = false;
-    m_visible = true;
     m_containsOverhangingFloats = false;
     m_hasFirstLine = false;
     m_verticalPosition = PositionUndefined;
@@ -532,9 +531,9 @@ void RenderObject::printTree(int indent) const
                      : QString::null)
                  << "(" << (style() ? style()->refCount() : 0) << ")"
                  << ": " << (void*)this
-//                  << " il=" << (int)isInline() 
+//                  << " il=" << (int)isInline()
 // 		 << " ci=" << (int) childrenInline()
-//                  << " fl=" << (int)isFloating() 
+//                  << " fl=" << (int)isFloating()
 // 		 << " rp=" << (int)isReplaced()
 //                  << " an=" << (int)isAnonymousBox()
 //                  << " ps=" << (int)isPositioned()
@@ -543,7 +542,7 @@ void RenderObject::printTree(int indent) const
                  << " mmk=" << (int)minMaxKnown()
                  << " rmm=" << (int)m_recalcMinMax
 //                  << " pa=" << (int)parsing()
-//                  << " (" << xPos() << "," << yPos() << "," << width() << "," << height() << ")" 
+//                  << " (" << xPos() << "," << yPos() << "," << width() << "," << height() << ")"
 		 << endl;
     RenderObject *child = firstChild();
     while( child != 0 )
@@ -563,11 +562,10 @@ void RenderObject::dump(QTextStream *stream, QString ind) const
     if (isInline()) { *stream << " inline"; }
     if (isReplaced()) { *stream << " replaced"; }
     if (hasSpecialObjects()) { *stream << " specialObjects"; }
-    if (isVisible()) { *stream << " visible"; }
     if (layouted()) { *stream << " layouted"; }
     if (parsing()) { *stream << " parsing"; }
     if (minMaxKnown()) { *stream << " minMaxKnown"; }
-    if (containsPositioned()) { *stream << " containsPositioned"; }
+    if (overhangingContents()) { *stream << " overhangingContents"; }
     if (hasFirstLine()) { *stream << " hasFirstLine"; }
     *stream << endl;
 
@@ -601,7 +599,6 @@ void RenderObject::setStyle(RenderStyle *style)
     // no support for changing the display type dynamically... object must be
     // detached and re-attached as a different type
     //m_inline = true;
-    m_visible = true;
 
     RenderStyle *oldStyle = m_style;
     m_style = style;
@@ -630,9 +627,6 @@ void RenderObject::setStyle(RenderStyle *style)
     else
         setSpecialObjects(false);
 
-    if( m_style->visiblity() == HIDDEN || m_style->visiblity() == COLLAPSE )
-	m_visible = false;
-
     m_hasFirstLine = (style->getPseudoStyle(RenderStyle::FIRST_LINE) != 0);
 
     if ( d >= RenderStyle::Position && m_parent ) {
@@ -641,17 +635,17 @@ void RenderObject::setStyle(RenderStyle *style)
     }
 }
 
-void RenderObject::setContainsPositioned(bool p)
+void RenderObject::setOverhangingContents(bool p)
 {
-    if (m_containsPositioned == p)
+    if (m_overhangingContents == p)
 	return;
 
     RenderObject *cb = containingBlock();
     if (p)
     {
-        m_containsPositioned = true;
+        m_overhangingContents = true;
         if (cb!=this)
-            cb->setContainsPositioned(true);
+            cb->setOverhangingContents();
     }
     else
     {
@@ -660,7 +654,7 @@ void RenderObject::setContainsPositioned(bool p)
 
         for( n = firstChild(); n != 0; n = n->nextSibling() )
         {
-            if (n->isPositioned() || n->containsPositioned())
+            if (n->isPositioned() || n->overhangingContents())
                 c=true;
         }
 
@@ -668,9 +662,9 @@ void RenderObject::setContainsPositioned(bool p)
             return;
         else
         {
-            m_containsPositioned = false;
+            m_overhangingContents = false;
             if (cb!=this)
-                cb->setContainsPositioned(false);
+                cb->setOverhangingContents(false);
         }
     }
 }
@@ -898,7 +892,7 @@ void RenderObject::invalidateVerticalPositions()
 void RenderObject::recalcMinMaxWidths()
 {
     assert( m_recalcMinMax );
-    
+
 #ifdef DEBUG_LAYOUT
     kdDebug( 6040 ) << renderName() << " recalcMinMaxWidths()" <<endl;
 #endif

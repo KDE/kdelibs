@@ -923,7 +923,7 @@ NodeImpl::StyleChange NodeImpl::diff( khtml::RenderStyle *s1, khtml::RenderStyle
     if ( !s1 || !s2 )
 	ch = Inherit;
     else if ( *s1 == *s2 )
-	ch = NoChange;
+ 	ch = NoChange;
     else if ( s1->inheritedNotEqual( s2 ) )
 	ch = Inherit;
     return ch;
@@ -1065,10 +1065,10 @@ bool NodeImpl::prepareMouseEvent( int _x, int _y,
         //kdDebug() << "ElementImpl::prepareMouseEvent storing currentZIndex=" << ev->currentZIndex << endl;
     }
 
-    if(!m_render->isInline() || m_render->isReplaced() || m_render->isText()/*|| m_render->isFloating()*/ ) {
-        bool known = m_render->absolutePosition(_tx, _ty);
-	if (known && m_render->containsPoint(_x,_y,_tx,_ty)) {
-            if  ( m_render->style() && !m_render->style()->visiblity() == HIDDEN ) {
+    if(!m_render->isInline() || m_render->isReplaced() ||
+       (m_render->isText() && !m_render->isBR())) {
+	if (m_render->absolutePosition(_tx, _ty) && m_render->containsPoint(_x,_y,_tx,_ty)) {
+            if  ( m_render->style() && !m_render->style()->visibility() == HIDDEN ) {
                 //if ( positioned )
                 //    kdDebug(6030) << " currentZIndex=" << ev->currentZIndex << " ev->zIndex=" << ev->zIndex << endl;
                 if ( ev->currentZIndex >= ev->zIndex ) {

@@ -1281,7 +1281,7 @@ void RenderTable::layout()
     assert( !layouted() );
 
 //     kdDebug( 6040 ) << renderName() << "(Table)"<< this << " ::layout0() width=" << width() << ", layouted=" << layouted() << endl;
-    
+
     recalcCells();
 
     _lastParentWidth = containingBlockWidth();
@@ -1315,7 +1315,7 @@ void RenderTable::layout()
 	    child->layout();
 	child = child->nextSibling();
     }
-    
+
     // layout rows
     layoutRows(m_height);
 
@@ -1375,7 +1375,7 @@ void RenderTable::layoutRows(int yoff)
                 th = h.width(viewRect().height())-5;
                 // not really, but this way the view height change
                 // gets propagated correctly
-                setContainsPositioned(true);
+                setOverhangingContents();
             }
         }
     }
@@ -1506,7 +1506,7 @@ void RenderTable::print( QPainter *p, int _x, int _y,
 #ifdef TABLE_PRINT
     kdDebug( 6040 ) << "RenderTable::print() w/h = (" << width() << "/" << height() << ")" << endl;
 #endif
-    if (!containsPositioned() && !isRelPositioned() && !isPositioned())
+    if (!overhangingContents() && !isRelPositioned() && !isPositioned())
     {
         if((_ty > _y + _h) || (_ty + height() < _y)) return;
         if((_tx > _x + _w) || (_tx + width() < _x)) return;
@@ -1516,7 +1516,7 @@ void RenderTable::print( QPainter *p, int _x, int _y,
      kdDebug( 6040 ) << "RenderTable::print(2) " << _tx << "/" << _ty << " (" << _x << "/" << _y << ")" << endl;
 #endif
 
-     if(isVisible())
+     if(style()->visibility() == VISIBLE)
          printBoxDecorations(p, _x, _y, _w, _h, _tx, _ty);
 
     if ( tCaption )
@@ -1527,7 +1527,7 @@ void RenderTable::print( QPainter *p, int _x, int _y,
     int startrow = 0;
     int endrow = totalRows;
     for ( ; startrow < totalRows; startrow++ ) {
-	if ( _ty + rowHeights[startrow+1] > _y ) 
+	if ( _ty + rowHeights[startrow+1] > _y )
 	    break;
     }
     for ( ; endrow > 0; endrow-- ) {
@@ -1537,14 +1537,14 @@ void RenderTable::print( QPainter *p, int _x, int _y,
     int startcol = 0;
     int endcol = totalCols;
     for ( ; startcol < totalCols; startcol++ ) {
-	if ( _tx + columnPos[startcol+1] > _x ) 
+	if ( _tx + columnPos[startcol+1] > _x )
 	    break;
     }
     for ( ; endcol > 0; endcol-- ) {
 	if ( _tx + columnPos[endcol-1] < _x + _w )
 	    break;
     }
-    
+
     // draw the cells
     for ( unsigned int r = startrow; r < endrow; r++ ) {
         for ( unsigned int c = startcol; c < endcol; c++ ) {
@@ -1573,14 +1573,14 @@ void RenderTable::print( QPainter *p, int _x, int _y,
 void RenderTable::calcMinMaxWidth()
 {
     assert( !minMaxKnown() );
-    
+
     recalcCells();
 #ifdef DEBUG_LAYOUT
     kdDebug( 6040 ) << renderName() << "(Table)::calcMinMaxWidth() known=" << minMaxKnown() << endl;
 #endif
 
     calcColMinMax();
-    
+
     setMinMaxKnown();
 }
 
@@ -1872,7 +1872,7 @@ void RenderTableRow::dump(QTextStream *stream, QString ind) const
 void RenderTableRow::layout()
 {
     assert( !layouted() );
-    
+
     RenderObject *child = firstChild();
     while( child ) {
 	assert( child->isTableCell() );
@@ -1931,7 +1931,7 @@ void RenderTableCell::calcMinMaxWidth()
 
     if (m_minWidth!=oldMin || m_maxWidth!=oldMax)
         m_table->addColInfo(this);
-    
+
     setMinMaxKnown();
 }
 
@@ -2015,7 +2015,7 @@ void RenderTableCell::print(QPainter *p, int _x, int _y,
     _ty += m_y + _topExtra;
 
     // check if we need to do anything at all...
-    if(!containsPositioned() && ((_ty-_topExtra > _y + _h)
+    if(!overhangingContents() && ((_ty-_topExtra > _y + _h)
         || (_ty + m_height+_topExtra+_bottomExtra < _y))) return;
 
     printObject(p, _x, _y, _w, _h, _tx, _ty);
