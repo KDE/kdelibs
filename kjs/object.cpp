@@ -304,8 +304,19 @@ KJSO KJSO::getValue()
   }
   KJSO o = getBase();
   if (o.isNull() || o.isA(NullType)) {
-    UString m = I18N_NOOP("Can't find variable: ") + getPropertyName();
-    return Error::create(ReferenceError, m.ascii());
+    // Match behaviour of IE5 when using
+    // if (!foo)
+    //     var foo = true;
+    // the _standard_ construct is
+    // var foo;
+    // if (!foo)
+    //     foo = true;
+    // but IE lets that _incomplete_ construct work
+    // (as like as all other browsers)
+    return o;
+
+//    UString m = I18N_NOOP("Can't find variable: ") + getPropertyName();
+//    return Error::create(ReferenceError, m.ascii()); 
   }
 
   return o.get(getPropertyName());
