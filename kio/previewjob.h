@@ -24,6 +24,7 @@
 #ifndef __kio_previewjob_h__
 #define __kio_previewjob_h__
 
+#include <kfileitem.h>
 #include <kio/job.h>
 
 class QPixmap;
@@ -33,11 +34,29 @@ namespace KIO {
     {
         Q_OBJECT
     public:
-        PreviewJob( const KURL::List &items, int width, int height, int iconSize, int iconAlpha );
+        PreviewJob( const KFileItemList &items, int width, int height,
+            int iconSize, int iconAlpha, bool scale, bool save,
+            const QStringList *enabledPlugins, bool deleteItems = false );
         virtual ~PreviewJob();
+
+        /**
+         * Removes an item from preview processing. Use this if you passed
+         * an item to @ref filePreview and want to delete it now.
+         *
+         * @param item the item that should be removed from the preview queue
+         */
+        void removeItem( const KFileItem *item );
+
+        /**
+         * @return a list of all available preview plugins. The list
+         * contains the basenames of the plugins' .desktop files (no path,
+         * no .desktop).
+         */
+        static QStringList availablePlugins();
 
     signals:
         void gotPreview( const KURL &url, const QPixmap &preview );
+        void gotPreview( const KFileItem *item, const QPixmap &preview );
 
     protected:
         void getOrCreateThumbnail();
@@ -69,8 +88,19 @@ namespace KIO {
      * preview or zero to not overlay an icon. This has no effect if the
      * preview plugin that will be used doesn't use icon overlays.
      * @param iconAlpha transparency to use for the icon overlay
+     * @param scale if the image is to be scaled to the requested size or
+     * returned in its original size
+     * @param save if the image should be cached for later use
+     * @param enabledPlugins if non-zero, this points to a list containing
+     * the names of the plugins that may be used.
+     * see @ref PreviewJob::availablePlugins.
      */
-    PreviewJob *filePreview( const KURL::List &items, int width, int height = 0, int iconSize = 0, int iconAlpha = 70 );
+    PreviewJob *filePreview( const KFileItemList &items, int width, int height = 0, int iconSize = 0, int iconAlpha = 70, bool scale = true, bool save = true, const QStringList *enabledPlugins = 0 );
+
+    /**
+     * Same as above, but takes a URL list instead of KFileItemList
+     */
+    PreviewJob *filePreview( const KURL::List &items, int width, int height = 0, int iconSize = 0, int iconAlpha = 70, bool scale = true, bool save = true, const QStringList *enabledPlugins = 0 );
 };
 
 #endif
