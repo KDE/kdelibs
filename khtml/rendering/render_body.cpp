@@ -126,3 +126,7 @@ void RenderBody::printBoxDecorations(QPainter *p,int, int _y,
     }
 }
 
+void RenderBody::repaint()
+{
+    repaintContainingBlock();
+}

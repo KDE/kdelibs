@@ -780,32 +780,29 @@ RenderFlow::clearFloats()
 
 //    kdDebug( 6040 ) << "clearFloats" << endl;
     if (specialObjects)
-    {
 	specialObjects->clear();
-    }
+
+    if (isFloating()) return;
 
     RenderObject *prev = m_previous;
 
     while (prev && !prev->isFlow())
 	    prev = prev->previousSibling();
 
-    int offset = 0;
-    if(prev )
-    {
+    int offset = m_y;
+    int offsetX = 0;//m_x;
+    if(prev ) {
 	if(prev->isTableCell()) return;
 	// ### FIXME
 	//offset = m_previous->height() + collapseMargins(prev->marginBottom(), marginTop());
-	offset = m_y - prev->yPos();
-    }
-    else
-    {
+	offset -= prev->yPos();
+	//	offsetX -= prev->xPos();
+    } else {
 	prev = m_parent;
 	if(!prev) return;
-	offset = m_y;
     }
 
     // add overhanging special objects from the previous RenderFlow
-    if (isFloating()) return;
     if(!prev->isFlow()) return;
     RenderFlow * flow = static_cast<RenderFlow *>(prev);
     if(!flow->specialObjects) return;
@@ -836,8 +833,8 @@ RenderFlow::clearFloats()
 		special->count = specialObjects->count();
 		special->startY = r->startY - offset;
 		special->endY = r->endY - offset;
-		special->left = r->left; // ### the object might have different m,p&b
-		special->width = r->width;
+		special->left = r->left - offsetX; // ### the object might have different m,p&b
+		special->width = r->width - offsetX;
 		special->node = r->node;
 		special->type = r->type;
 		specialObjects->append(special);

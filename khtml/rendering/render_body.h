@@ -26,19 +26,20 @@
 #include "render_flow.h"
 
 namespace khtml {
-    
-    class RenderBody : public RenderFlow 
+
+    class RenderBody : public RenderFlow
     {
     public:
 	RenderBody();
 	virtual ~RenderBody();
 	
 	virtual const char *renderName() const { return "RenderBody"; }
+	virtual void repaint();
 	
     protected:
 	virtual void printBoxDecorations(QPainter *p,int _x, int _y,
 					 int _w, int _h, int _tx, int _ty);
- 
+
     };
 };
 #endif

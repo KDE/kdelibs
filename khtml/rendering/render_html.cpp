@@ -48,14 +48,14 @@ void RenderHtml::print(QPainter *p, int _x, int _y, int _w, int _h, int _tx, int
     _tx += m_x;
     _ty += m_y;
 
-    kdDebug(0) << "html:print " << _tx << "/" << _ty << endl;
+    //kdDebug(0) << "html:print " << _tx << "/" << _ty << endl;
     printObject(p, _x, _y, _w, _h, _tx, _ty);
 }
 
 void RenderHtml::printBoxDecorations(QPainter *p,int, int _y,
 				       int, int _h, int _tx, int _ty)
 {
-    //kdDebug( 6040 ) << renderName() << "::printDecorations()" << endl;
+    //kdDebug( 6040 ) << renderName() << "::printDecorations()" << _tx << "/" << _ty << endl;
 
     QColor c = m_style->backgroundColor();
     CachedImage *bg = m_bgImage;
@@ -69,6 +69,8 @@ void RenderHtml::printBoxDecorations(QPainter *p,int, int _y,
 
     int w = width();
     int h = height();
+
+    //kdDebug(0) << "width = " << w <<endl;
 
     int bx = _tx - marginLeft();
     int by = _ty - marginTop();
@@ -146,11 +148,14 @@ void RenderHtml::printBoxDecorations(QPainter *p,int, int _y,
 
 void RenderHtml::repaint()
 {
+    repaintContainingBlock();
+#if 0    
     int bx = - marginLeft();
     int by = - marginTop();
     int bw = m_width + marginLeft() + marginRight() + borderLeft() + borderRight();
     int bh = m_height + marginTop() + marginBottom() + borderTop() + borderBottom();
     repaintRectangle(bx, by, bw, bh);
+#endif
 }
 
 void RenderHtml::layout()
