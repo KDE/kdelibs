@@ -95,14 +95,14 @@ bool ResourceLDAP::open()
   if ( mPort.isEmpty() )
 	  mPort = "389";
 
-  mLdap = ldap_init( mHost.latin1(), mPort.toInt() );
+  mLdap = ldap_init( mHost.local8Bit(), mPort.toInt() );
   if ( !mLdap ) {
 	  addressBook()->error( i18n( "Unable to connect to server '%1' on port '%2'" ).arg( mHost ).arg( mPort ) );
 	  return false;
   }
 
   if ( !mUser.isEmpty() && !mAnonymous ) {
-	  if ( ldap_simple_bind_s( mLdap, mUser.latin1(), mPassword.latin1() ) != LDAP_SUCCESS ) {
+	  if ( ldap_simple_bind_s( mLdap, mUser.local8Bit(), mPassword.local8Bit() ) != LDAP_SUCCESS ) {
 	    addressBook()->error( i18n( "Unable to bind to server '%1'" ).arg( mHost ) );
       return false;
     }
@@ -153,7 +153,7 @@ bool ResourceLDAP::load()
     "uid",
     0 };
 
-  if ( ldap_search_s( mLdap, mDn.latin1(), LDAP_SCOPE_SUBTREE, QString( "(%1)" ).arg( mFilter ).latin1(),
+  if ( ldap_search_s( mLdap, mDn.local8Bit(), LDAP_SCOPE_SUBTREE, QString( "(%1)" ).arg( mFilter ).local8Bit(),
       (char **)LdapSearchAttr, 0, &res ) != LDAP_SUCCESS ) {
     addressBook()->error( i18n( "Unable to search on server '%1'" ).arg( mHost ) );
     return false;
@@ -223,7 +223,7 @@ bool ResourceLDAP::save( Ticket * )
   for ( it = addressBook()->begin(); it != addressBook()->end(); ++it ) {
     if ( (*it).resource() == this && (*it).changed() ) {
       LDAPMod **mods = NULL;
-	
+
       addModOp( &mods, "objectClass", "organizationalPerson" );
       addModOp( &mods, "objectClass", "person" );
       addModOp( &mods, "objectClass", "Top" );
@@ -250,7 +250,7 @@ bool ResourceLDAP::save( Ticket * )
       QString dn = "cn=" + (*it).assembledName() + "," + mDn;
 
       int retval;
-      if ( (retval = ldap_add_s( mLdap, dn.latin1(), mods )) != LDAP_SUCCESS )
+      if ( (retval = ldap_add_s( mLdap, dn.local8Bit(), mods )) != LDAP_SUCCESS )
          addressBook()->error( i18n( "Unable to modify '%1' on server '%2'" ).arg( (*it).uid() ).arg( mHost ) );
 
       ldap_mods_free( mods, 1 );
@@ -272,7 +272,7 @@ void ResourceLDAP::removeAddressee( const Addressee &addr )
 
   kdDebug(5700) << "ldap:removeAddressee" << filter << endl;
 
-  ldap_search_s( mLdap, mDn.latin1(), LDAP_SCOPE_SUBTREE, filter.latin1(),
+  ldap_search_s( mLdap, mDn.local8Bit(), LDAP_SCOPE_SUBTREE, filter.local8Bit(),
       0, 0, &res );
 
   for ( msg = ldap_first_entry( mLdap, res ); msg; msg = ldap_next_entry( mLdap, msg ) ) {
@@ -315,8 +315,8 @@ void addModOp( LDAPMod ***pmods, const QString &attr, const QString &value )
   mods[ i ] = new LDAPMod;
 
   mods[ i ]->mod_op = 0;
-  mods[ i ]->mod_type = strdup( attr.latin1() );
+  mods[ i ]->mod_type = strdup( attr.local8Bit() );
   mods[ i ]->mod_values = new char*[2];
-  mods[ i ]->mod_values[0] = strdup( value.latin1() );
+  mods[ i ]->mod_values[0] = strdup( value.local8Bit() );
   mods[ i ]->mod_values[1] = 0;
 }

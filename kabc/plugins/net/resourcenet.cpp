@@ -18,12 +18,12 @@ using namespace KABC;
 extern "C"
 {
   ResourceConfigWidget *config_widget( QWidget *parent ) {
-    KGlobal::locale()->insertCatalogue("kabc_dir");
+    KGlobal::locale()->insertCatalogue("kabc_net");
     return new ResourceNetConfig( parent, "ResourceDirConfig" );
   }
 
   Resource *resource( AddressBook *ab, const KConfig *config ) {
-    KGlobal::locale()->insertCatalogue("kabc_dir");
+    KGlobal::locale()->insertCatalogue("kabc_net");
     return new ResourceNet( ab, config );
   }
 }
@@ -104,7 +104,7 @@ bool ResourceNet::load()
   for ( it = files.begin(); it != files.end(); ++it ) {
     if ( (*it).endsWith( "/" ) ) // is a directory
       continue;
-    
+
     QString tmpFile;
     if ( KIO::NetAccess::download( mUrl.url() + "/" + (*it), tmpFile ) ) {
       QFile file( tmpFile );
@@ -129,7 +129,7 @@ bool ResourceNet::load()
 bool ResourceNet::save( Ticket *ticket )
 {
   kdDebug(5700) << "ResourceNet::save(): '" << mUrl.url() << "'" << endl;
-  
+
   AddressBook::Iterator it;
   bool ok = true;
 
