@@ -32,6 +32,7 @@
 #include "plugincombobox.h"
 #include "kfilelist.h"
 #include "kpcopiespage.h"
+#include "treecombobox.h"
 
 #include <qgroupbox.h>
 #include <qcheckbox.h>
@@ -70,7 +71,7 @@ KPrintDialog::KPrintDialog(QWidget *parent, const char *name)
 	m_state = new QLabel(m_pbox);
 	m_comment = new QLabel(m_pbox);
 	m_location = new QLabel(m_pbox);
-	m_printers = new QComboBox(m_pbox);
+	m_printers = new TreeComboBox(m_pbox);
 	m_printers->setMinimumHeight(25);
 	QLabel	*m_printerlabel = new QLabel(i18n("&Name:"), m_pbox);
 	QLabel	*m_statelabel = new QLabel(i18n("Status", "State:"), m_pbox);
@@ -275,9 +276,9 @@ void KPrintDialog::initialize(KPrinter *printer)
 			if (!sep && it.current()->isSpecial())
 			{
 				sep = true;
-				m_printers->insertItem(QString::fromLatin1("--------"));
+				m_printers->insertItem(QPixmap(), QString::fromLatin1("--------"));
 			}
-			m_printers->insertItem(SmallIcon(it.current()->pixmap(),0,(it.current()->isValid() ? (int)KIcon::DefaultState : (int)KIcon::LockOverlay)),it.current()->name());
+			m_printers->insertItem(SmallIcon(it.current()->pixmap(),0,(it.current()->isValid() ? (int)KIcon::DefaultState : (int)KIcon::LockOverlay)),it.current()->name(),sep);
 			if (it.current()->isSoftDefault())
 				defsoft = m_printers->count()-1;
 			if (it.current()->isHardDefault())

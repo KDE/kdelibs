@@ -36,6 +36,7 @@ class QLineEdit;
 class QVBox;
 class PluginComboBox;
 class KURLRequester;
+class TreeComboBox;
 
 class KPrintDialog : public KDialog, public KPReloadObject
 {
@@ -73,7 +74,7 @@ protected:
 	QPushButton	*m_properties, *m_default, *m_options, *m_ok, *m_wizard, *m_extbtn;
 	QCheckBox	*m_preview;
 	QLineEdit	*m_cmd;
-	QComboBox	*m_printers;
+	TreeComboBox	*m_printers;
 	QVBox		*m_dummy;
 	PluginComboBox	*m_plugin;
 	KURLRequester	*m_file;

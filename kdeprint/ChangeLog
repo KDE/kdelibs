@@ -167,3 +167,15 @@ Since 2.2 release, Michael Goffioul <goffioul@imec.be>
 	  the same level than "Copies"
 	. added hiding mechanism to make the dialog more compact
 	  (show/hide button can probably be improved)
+
+15/11/2001 Michael Goffioul <goffioul@imec.be>
+  * CUPS: drivers are now downloaded from the actual server for remote
+    printers. This allows to have access to all options set for any
+    printer (even remote ones). However remote printer's drivers are
+    kept read-only.
+
+16/11/2001 Michael Goffioul <goffioul@imec.be>
+  * print dialog: instances are now presented in a tree structure in
+    the combo box -> cleaner view.
+  * general: ported the use of a global instance file to 2.2 branch
+    (file is /etc/cups/lpoptions).
