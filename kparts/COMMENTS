@@ -1,9 +1,3 @@
-(David) FocusIn events -> works now, but only if part widget have a focus policy
-of ClickFocus or more (StrongFocus/WheelFocus). The problems with the dummy
-widget were that clicking activated it, but the focus remained on Part1...
-
---------------
-
 2) provide some way to save/restore the positions of the menu/toolbar(s)
    when changing the active part ( I remember Reggie asking for that :)
 
@@ -240,37 +234,12 @@ embedded and de-embedded, the notepadpart. That's why there is an addPart()
 call - to add the new part when the user asks for it. Not when the active part
 changes.
 
-(Torben) "mergedActionDOM" is a bad name. Someone an idea for something smarter ?
-         What about "guiDescription" ?
-
 (Torben) You guys are busting QDOM. You can NOT assign an element of document A to an element of document B.
          That means: There is no way to mix two documents. What you are doing is asking for trouble.
          The ownerDocument() function will not work as one might expect after the assignment: The element
          of B assigned to A will still claim to be a child of B :-(
          And there are few chances that this may change in the Qt implementation in the next few weeks.
 (to myself) I tro to fix that in QDom ....
-
-(Torben) mergeXML does NOT belong in kxmlgui.cpp. Currently it is referenced from KPart only. So it belongs
-         there until someone else needs to call it, too.
-(David) That's because we use it for plugins only currently. But can't a
-"shell" have plugins ? Why is it only for parts currently ?
-
-(Torben) "QWidget *KTMainWindowGUIBuilder::topLevelContainer( const QString &name )" looks like a hack to me.
-         Why should one want to access the parents containers? That can introduce dependencies between host
-         and part and that we dont like. I can see the use of accessing the StatusBar, but if the part plays
-         around in the menubar or the parents toolbars: That is not good IMHO.
-         Is that some konqueror specific hack ?
-(David) It is (View and Edit menu in konqy).
-        As we spotted on IRC, using XML instead would be cleaner. Simon ?
-
-(Torben) "class KTMainWindowGUIBuilder" is a bad name IMHO. What about "KPartsMainWindow" or something like that ?
-         The name "GUIBuilder" in common seems a bit misleading since people may expect something that allows
-         you to create GUIs interactively. Ok, I am nitpicking :-) But Arnt said: If you dont find a good name
-         for something then you design is bad.
-         In addition I think this KPartsMainWindow should inherit KTMainWindow directly. Currently KXMLGUIBuilder
-         is QObject since it has this single slot. I vote for dropping the slot.and let KPartManager call the function
-         of the builder. The builder pointer is passed to the managers constructor.
-
 
 <weis> Hi
 <dfaure> Hi !
@@ -285,6 +254,7 @@ changes.
 <weis> dfaure: I just checked in my CVS irc stuff :-)
 <dfaure> ok :-)
 <weis> dfaure: Can you have a look at kparts/COMMENTS ?
+--
 <dfaure> weis: you should have come before. coolo is talking about re-writing libkio.
 <dfaure> well in fact he started the rewrite
  dfaure having a look
@@ -306,12 +276,13 @@ changes.
 <weis> dfaure: unix io: open/read/write/opendir ...
 <dfaure> that would be great IMHO
 <dfaure> I think he didn't realise that - the fact that moving the code to a central place involves switching to a lowlevel unix-like aPI for the slaves
-<dfaure> weis : > I think this KPartsMainWindow should inherit KTMainWindow directly
-<dfaure> weis: I thought the whole idea was NOT to inherit KTM
 <weis> dfaure: If I have  a nested URL: Are we going to start two processes to get the URL from the net or one (with Coolos approach)
-<dfaure> so that one could use anything as a KTM child
 <weis> dfaure: Currently it is two processes. One for file and one for tar, for example.
 <dfaure> weis: we're not sure. would one be ok ? (like opening the two libs and connecting signals and slots..)
+--
+<dfaure> weis : > I think this KPartsMainWindow should inherit KTMainWindow directly
+<dfaure> weis: I thought the whole idea was NOT to inherit KTM
+<dfaure> so that one could use anything as a KTM child
 <weis> dfaure: But this KTMainWindowGUIBuilder is already KTMainWindow dependenat. So why not derive ?
 <dfaure> well we're back to the shell, then...
 <weis> dfaure: Of course. Excuse me!
@@ -335,11 +306,13 @@ changes.
 <weis> .... there was some problem .....
 <dfaure> :-))))))
 <weis> dfaure: What about mergeXML? Can it move ? .... still thinking about shell ....
+--
 <weis> dfaure: I know again! It may happen that the shell uses a widget which in turn uses a component. So the shell does not now that KParts are involved at all!
 <weis> s/now/know/
-<dfaure> ah - and then the widget would NOT use KPartsMAinWindow, right ?
+<dfaure> ah - and then the widget would NOT use KPartsMainWindow, right ?
 <weis> dfaure: Yep!
 <dfaure> ok
+--
 <weis> dfaure: Another problem are nested KPartManagers. Imagine Widget W1 has some Parts P1 ... Pn. Part Pn has in turn a widget W2 that uses Parts P1_2...Pm_2. Then W1 and W2 would feature a KPartManager ....
 <weis> dfaure: The general problem is: A widget may use parts internally but the one who uses the widget does (and should) not know that.
 <dfaure> yes - I guess we need to try that,
@@ -368,23 +341,8 @@ changes.
 <weis> dfaure: But that luckily voids my above example. If W1 wants that parts of W2 change the GUI then it has to tell W2 about the GUIBuilder. If W1 does not want that, then it does not tell W2 and no GUI merging will be done.
 <dfaure> yup
 <weis> dfaure: This way we stay with one KPartManager and GUIBuilder and W1 is responsible of propagating it  to W2 :-) Problem solved :-)
-<dfaure> hmmm... if you say :-) it's a bit late for me
- Signoff: dfaure (Read error to dfaure[du-019-0008.claranet.co.uk]: EOF from client)
-<weis> dfaure: For me, too. So I may talk rubbish here :-)Bye
- dfaure (dav@du-019-0008.claranet.co.uk) has joined channel #kde
-<weis> Bye
-<dfaure> oops
-<dfaure> coredump
-<weis> dfaure: back again ?
-<dfaure> weis :
-<dfaure> can you update COMMENTS ? I wanted to do it with our discussion, for Simon, but lost the log :(
-<weis> dfaure: Yep!
-<dfaure> and I probably forgot most of it, due to my state of awakeness
-<dfaure> thanks
 
 --------------------------
-
-KPartHost / KPartManager fusion --> done.
 
 David wondering about Status Bar
 --------------------------------
@@ -447,7 +405,7 @@ detail of the report generator. And it is in turn an implementation detail of KW
 that is allows KSpread to play around in the menu/toolbars if activated.
 
 What we learn from that is the following:
-Observation 1) Wether a part - that is the child of some other part - may do GUI merging or
+Observation 1) Whether a part - that is the child of some other part - may do GUI merging or
                not is determined by the parent part.
 
 
@@ -465,6 +423,8 @@ and sees no KGUIBilder or stuff like that. "KalenderMainWindow" constructs the G
 
 Observation 2) It should be possible to use a part just like a usual widget. So it must work without
                a KGUIBuilder and without being added to some KPartManager.
+
+** (David) : I'll try that now.
 
 Lets extend the example: KalenderWidget shows a very nice kalender. That means it puts images
 inside of KSpread by using KImage.
