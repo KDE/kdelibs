@@ -74,7 +74,7 @@ Document::~Document()
 {
   //one never knows...
   QListIterator<View> it( m_views );
-  if (it!=0)
+
   for (; it.current(); ++it )
     disconnect( it.current(), SIGNAL( destroyed() ),
 		this, SLOT( slotViewDestroyed() ) );
