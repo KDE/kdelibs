@@ -61,6 +61,8 @@
 #					IFF/8SVX audio data
 8	string		8SVX		audio/x-aiff	
 
+# MIDI
+0       string		MThd            audio/x-midi
 # Creative Labs AUDIO stuff
 #					Standard MIDI data
 0	string	MThd			audio/unknown	
@@ -191,6 +193,10 @@
 # gzip (GNU zip, not to be confused with [Info-ZIP/PKWARE] zip archiver)
 0       string          \037\213        application/x-gzip
 
+# BZIP2
+0	string          BZh             application/x-bzip2
+
+# PKZIP
 0		string			PK\003\004		application/x-zip
 
 # According to gzip.h, this is the correct byte order for packed data.
@@ -228,6 +234,8 @@
 257	string		ustar\040\040\0		application/x-tar	gnu
 
 0	short		070707		application/x-cpio
+0       string          070701          application/x-cpio
+0       string          070702          application/x-cpio
 0	short		0143561		application/x-cpio	swapped
 
 0	string		=<ar>		application/x-archive
@@ -297,6 +305,14 @@
 0	string		\<!doctype\ HTML	text/html
 0	string		\<!DOCTYPE\ HTML	text/html
 0	string		\<!doctype\ html	text/html
+
+#-----------------------------------------------------------------------------
+# troff stuff
+#
+0       string          .\\"            application/x-troff
+0       string          '\\"            application/x-troff
+0       string          '.\\"           application/x-troff
+0       string          \\"             application/x-troff
 
 #------------------------------------------------------------------------------
 # images:  file(1) magic for image formats (see also "c-lang" for XPM bitmaps)
@@ -468,7 +484,10 @@
 #
 # animation formats, originally from vax@ccwf.cc.utexas.edu (VaX#n8)
 #						MPEG file
-0	string		\000\000\001\263	video/mpeg
+0       belong          0x000001b3              video/mpeg
+0       belong          0x000001ba              video/mpeg
+0       beshort&0xfff0  0xfff0                  audio/mpeg
+
 # FLI animation format
 0	leshort		0xAF11				video/fli
 # FLC animation format
@@ -530,3 +549,11 @@
 # xmcd database file for kscd
 0		string	\#\ xmcd                text/xmcd
 
+# news and mail
+0       string          Return-Path:    message/rfc822
+0       string          Path:           message/news
+0       string          Xref:           message/news
+0       string          From:           message/rfc822
+0       string          Article         message/news
+0       string          BABYL           message/x-gnu-rmail
+0       string          Received:       message/rfc822
