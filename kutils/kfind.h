@@ -29,13 +29,13 @@
  *
  * @author S.R.Haque <srhaque@iee.org>, David Faure <faure@kde.org>
  *
- * \b Detail:\n
+ * \b Detail:
  *
  * This class includes prompt handling etc. Also provides some
  * static functions which can be used to create custom behavior
  * instead of using the class directly.
  *
- * \b Example:\n
+ * \b Example:
  *
  * To use the class to implement a complete find feature:
  *
@@ -88,7 +88,7 @@
  *  }
  * \endcode
  *
- *  Don't forget delete m_find in the destructor of your class,
+ *  Don't forget to delete m_find in the destructor of your class,
  *  unless you gave it a parent widget on construction.
  *
  *  This implementation allows to have a "Find Next" action, which resumes the
@@ -227,6 +227,7 @@ public:
      * @param pattern The pattern to look for.
      * @param index The starting index into the string.
      * @param options The options to use.
+     * @param matchedlength The length of the string that was matched
      * @return The index at which a match was found, or -1 if no match was found.
      */
     static int find( const QString &text, const QString &pattern, int index, long options, int *matchedlength );

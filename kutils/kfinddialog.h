@@ -35,13 +35,13 @@ class QCheckBox;
  *
  * @author S.R.Haque <srhaque@iee.org>
  *
- * \b Detail:\n
+ * \b Detail:
  *
  * This widget inherits from KDialogBase and implements
  * the following additional functionalities:  a find string
  * object and an area for a user-defined widget to extend the dialog.
  *
- * \b Example:\n
+ * \b Example:
  *
  * To use the basic modal find dialog, and then run the search:
  *

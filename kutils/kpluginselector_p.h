@@ -58,7 +58,7 @@ class KPluginSelectionWidget : public QWidget
          * @param category     The unstranslated category key name.
          * @param config       Set the KConfigGroup object that holds the
          *                     state of the plugins being enabled or not.
-         *
+         * @param name         The name of the widget (passed to QWidget)
          * @internal
          */
         KPluginSelectionWidget( const QString & instanceName, KPluginSelector * kps,
@@ -82,6 +82,7 @@ class KPluginSelectionWidget : public QWidget
          * @param category     The unstranslated category key name.
          * @param config       Set the KConfigGroup object that holds the
          *                     state of the plugins being enabled or not.
+         * @param name         The name of the widget (passed to QWidget)
          *
          * @internal
          */

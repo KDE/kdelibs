@@ -71,8 +71,8 @@ class KPluginInfo
          * For EnabledByDefault look at isPluginEnabledByDefault.
          *
          * @param filename  The filename of the .desktop file.
-         * If filename is relative, you need to specify a resource type
-         * (e.g. "service", "apps"... see KStandardDirs). Otherwise,
+         * @param resource  If filename is relative, you need to specify a resource type
+         * (e.g. "service", "apps"... @see KStandardDirs). Otherwise,
          * resource isn't used.
          */
         KPluginInfo( const QString & filename, const char* resource = 0 );

@@ -30,13 +30,13 @@ class KReplaceNextDialog;
  *
  * @author S.R.Haque <srhaque@iee.org>, David Faure <faure@kde.org>
  *
- * \b Detail:\n
+ * \b Detail:
  *
  * This class includes prompt handling etc. Also provides some
  * static functions which can be used to create custom behavior
  * instead of using the class directly.
  *
- * \b Example:\n
+ * \b Example:
  *
  * To use the class to implement a complete replace feature:
  *

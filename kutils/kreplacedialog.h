@@ -36,13 +36,13 @@ class QRect;
  *
  * @author S.R.Haque <srhaque@iee.org>
  *
- * \b Detail:\n
+ * \b Detail:
  *
  * This widget inherits from KFindDialog and implements
  * the following additional functionalities:  a replacement string
  * object and an area for a user-defined widget to extend the dialog.
  *
- * \b Example:\n
+ * \b Example:
  *
  * To use the basic replace dialog:
  *
@@ -77,11 +77,15 @@ public:
      * @param parent The parent object of this widget
      * @param name The name of this widget
      * @param options A bitfield of the Options to be enabled.
+     * @param findStrings A QStringList to insert in the combo box of text to find
+     * @param replaceStrings A QStringList to insert in the combo box of text to
+     *        replace with
      * @param hasSelection Whether a selection exists
      */
     KReplaceDialog( QWidget *parent = 0, const char *name = 0, long options = 0,
-                     const QStringList &findStrings = QStringList(), const QStringList &replaceStrings = QStringList(),
-                     bool hasSelection = true );
+		    const QStringList &findStrings = QStringList(),
+		    const QStringList &replaceStrings = QStringList(),
+		    bool hasSelection = true );
 
     /**
      * Destructor.

@@ -68,7 +68,7 @@ KMultiTabBarInternal::KMultiTabBarInternal(QWidget *parent, KMultiTabBar::KMulti
 	viewport()->setBackgroundMode(Qt::PaletteBackground);
 }
 
-void KMultiTabBarInternal::setStyle(KMultiTabBar::KMultiTabBarStyle style)
+void KMultiTabBarInternal::setStyle(enum KMultiTabBar::KMultiTabBarStyle style)
 {
 	m_style=style;
         for (uint i=0;i<m_tabs.count();i++)

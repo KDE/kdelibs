@@ -73,9 +73,9 @@ public:
    */
   const QStringList &keywords() const { return _keywords; };
 
-  // changed from name() to avoid abiguity with QObject::name() on multiple inheritance
+  // changed from name() to avoid ambiguity with QObject::name() on multiple inheritance
   /**
-   * @return the module's (translated) name
+   * @return the module\'s (translated) name
    */
   QString moduleName() const { return _name; };
 
