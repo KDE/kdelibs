@@ -86,7 +86,7 @@ public:
       * A convenience method for partInstance that takes care of retrieving
       * the factory for a given library name and calling partInstance on it.
       *
-      * @param name of the library to query the instance from
+      * @param libraryName name of the library to query the instance from
       */
      static const KInstance *partInstanceFromLibrary( const QCString &libraryName );
 
