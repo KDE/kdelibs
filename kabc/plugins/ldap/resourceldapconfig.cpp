@@ -151,8 +151,8 @@ AttributesDialog::AttributesDialog( const QMap<QString, QString> &attributes,
   mNameDict.insert( "formattedName", new QString( i18n( "Formatted Name" ) ) );
   mNameDict.insert( "familyName", new QString( i18n( "Family Name" ) ) );
   mNameDict.insert( "givenName", new QString( i18n( "Given name" ) ) );
-  mNameDict.insert( "mail", new QString( i18n( "E-Mail" ) ) );
-  mNameDict.insert( "mailAlias", new QString( i18n( "E-Mail alias" ) ) );
+  mNameDict.insert( "mail", new QString( i18n( "Email" ) ) );
+  mNameDict.insert( "mailAlias", new QString( i18n( "Email alias" ) ) );
   mNameDict.insert( "phoneNumber", new QString( i18n( "Telephone Number" ) ) );
   mNameDict.insert( "uid", new QString( i18n( "UID" ) ) );
 
