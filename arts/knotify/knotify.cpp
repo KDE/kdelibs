@@ -83,8 +83,8 @@ public:
 int main(int argc, char **argv)
 {
     KAboutData aboutdata("knotify", I18N_NOOP("KNotify"),
-                         "2.0pre", I18N_NOOP("KDE Notification Server"),
-                         KAboutData::License_GPL, "(C) 1997-2000, KDE Developers");
+                         "3.0", I18N_NOOP("KDE Notification Server"),
+                         KAboutData::License_GPL, "(C) 1997-2002, KDE Developers");
     aboutdata.addAuthor("Christian Esken",0,"esken@kde.org");
     aboutdata.addAuthor("Stefan Westerfeld",I18N_NOOP("Sound support"),"stefan@space.twc.de");
     aboutdata.addAuthor("Charles Samuels",I18N_NOOP("Current Maintainer"),"charles@kde.org");
