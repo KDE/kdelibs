@@ -166,6 +166,7 @@ public			return T_PUBLIC;
 "k_dcop"		return T_DCOP_AREA;
 typedef			return T_TYPEDEF;
 K_DCOP			return T_DCOP;
+Q_OBJECT		;
 "0"			return T_NULL;
 
 "private:"{KDCOP}"k_dcop"	return T_DCOP_AREA;
