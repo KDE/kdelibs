@@ -44,7 +44,6 @@ void TextSlave::printSelection(const Font *f, RenderText *text, QPainter *p, Ren
     if(startPos > m_len) return;
     if(startPos < 0) startPos = 0;
 
-    p->save();
     QColor c = style->color();
     p->setPen(QColor(0xff-c.red(),0xff-c.green(),0xff-c.blue()));
 
@@ -53,7 +52,6 @@ void TextSlave::printSelection(const Font *f, RenderText *text, QPainter *p, Ren
     //kdDebug( 6040 ) << "textSlave::printing(" << s.string() << ") at(" << x+_tx << "/" << y+_ty << ")" << endl;
     f->drawText(p, m_x + tx, m_y + ty, text->str->s, text->str->l, m_start, m_len,
 		m_toAdd, m_reversed ? QPainter::RTL : QPainter::LTR, startPos, endPos, c);
-    p->restore();
 }
 
 void TextSlave::printDecoration( QPainter *pt, RenderText* p, int _tx, int _ty, int deco, bool begin, bool end)

@@ -76,7 +76,7 @@ public:
     int m_y;
     unsigned short m_len;
     short m_x;
-    unsigned short m_baseline;
+    short m_baseline;
     unsigned short m_width;
 
     bool m_reversed : 1;
