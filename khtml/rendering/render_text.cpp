@@ -549,6 +549,7 @@ void RenderText::printObject( QPainter *p, int /*x*/, int y, int /*w*/, int h,
         int maxx = -1000000;
         int outlinebox_y = m_lines[si]->m_y;
 	QList <QRect> linerects;
+        linerects.setAutoDelete(true);
 	linerects.append(new QRect());
 
 	bool renderOutline = style()->outlineWidth()!=0;
