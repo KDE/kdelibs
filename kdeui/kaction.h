@@ -24,6 +24,7 @@
 
 #include <qobject.h>
 #include <kstdaccel.h>
+#include <qdict.h>
 
 class QMenuBar;
 class QPopupMenu;
@@ -38,6 +39,8 @@ class KURL;
 class KInstance;
 class KToolBar;
 class KActionCollection;
+
+struct KKeyEntry;
 
 /**
  * The KAction class (and derived and super classes) provide a way to
@@ -1218,6 +1221,9 @@ public:
   virtual void insert( KAction* );
   virtual void remove( KAction* );
   virtual KAction* take( KAction* );
+
+  virtual void setKeyDict( QDict<KKeyEntry> entry );
+  virtual QDict<KKeyEntry>* keyDict();
 
   virtual KAction* action( int index );
   virtual uint count() const;

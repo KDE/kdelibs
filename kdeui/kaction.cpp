@@ -269,6 +269,18 @@ void KAction::setAccel( int a )
 {
   d->m_accel = a;
 
+  KActionCollection *coll = parentCollection();
+  if (coll)
+  {
+    QDict<KKeyEntry> *keys = coll->keyDict();
+    KKeyEntry *entry = keys->find( name() );
+    if (entry)
+    {
+      entry->aCurrentKeyCode = a;
+      keys->replace( name(), entry );
+    }
+  }
+
   int len = containerCount();
   for( int i = 0; i < len; ++i )
     setAccel( i, a );
@@ -549,10 +561,15 @@ void KAction::setIcon( const QString &icon )
 
   // We load the "Small" icon as the main one (for menu items)
   // and we let setIcon( int, QString ) deal with toolbars
+
+  // We used to use SmallIcon for this, but that's wrong since the
+  // Small group may *not* be 16x16 and we *need* 16x16
+  KIconLoader *loader;
   if ( parent() && parent()->inherits( "KActionCollection" ) )
-    setIconSet( SmallIcon( icon, static_cast<KActionCollection*>(parent())->instance() ) );
+    loader = static_cast<KActionCollection*>(parent())->instance()->iconLoader();
   else
-    setIconSet( SmallIcon( icon ) );
+    loader = KGlobal::iconLoader();
+  setIconSet( loader->loadIcon( icon, KIcon::SizeSmall, -1 ) );
 
   // now handle any toolbars
   int len = containerCount();
@@ -2196,6 +2213,7 @@ public:
   QList<KAction> m_actions;
   QPtrDict< QList<KAction> > m_dctHighlightContainers;
   bool m_highlight;
+  QDict<KKeyEntry> m_keyDict;
 };
 
 KActionCollection::KActionCollection( QObject *parent, const char *name,
@@ -2241,6 +2259,22 @@ void KActionCollection::insert( KAction* action )
 
   d->m_actions.append( action );
   emit inserted( action );
+
+  KKeyEntry *entry = new KKeyEntry;
+
+  entry->aDefaultKeyCode = action->accel();
+  entry->aCurrentKeyCode = action->accel();
+  entry->aConfigKeyCode  = action->accel();
+  entry->bConfigurable   = true;
+  entry->descr           = action->plainText();
+
+  entry->aAccelId = 0;
+  entry->receiver = 0;
+  entry->member   = 0;
+  entry->menuId   = 0;
+  entry->menu     = 0;
+
+  d->m_keyDict.insert( action->name(), entry );
 }
 
 void KActionCollection::remove( KAction* action )
@@ -2293,6 +2327,26 @@ KAction* KActionCollection::action( const char* name, const char* classname,
 KAction* KActionCollection::action( int index )
 {
   return d->m_actions.at( index );
+}
+
+void KActionCollection::setKeyDict( QDict<KKeyEntry> entry )
+{
+  d->m_keyDict = entry;
+
+  QDictIterator<KKeyEntry> it( entry );
+  for( ; it.current(); ++it )
+  {
+    if (it.current()->aCurrentKeyCode != it.current()->aConfigKeyCode)
+    {
+      KAction *act = action( it.currentKey().latin1() );
+      act->setAccel( it.current()->aConfigKeyCode );
+    }
+  }
+}
+
+QDict<KKeyEntry>* KActionCollection::keyDict()
+{
+  return &d->m_keyDict;
 }
 
 uint KActionCollection::count() const
