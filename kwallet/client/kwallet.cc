@@ -21,6 +21,7 @@
 #include "kwallet.h"
 #include <kconfig.h>
 #include <kdebug.h>
+#include <kdeversion.h>
 #include <dcopclient.h>
 #include <dcopref.h>
 
@@ -162,7 +163,11 @@ Wallet *Wallet::openWallet(const QString& name, OpenType ot) {
 	}
 
 
+#if KDE_IS_VERSION(3,1,90)
 	DCOPReply r = DCOPRef("kded", "kwalletd").callExt("open", DCOPRef::UseEventLoop, -1, name);
+#else
+	DCOPReply r = DCOPRef("kded", "kwalletd").call("open", -1, name);
+#endif
 	if (r.isValid()) {
 		int drc = -1;
 		r.get(drc);
