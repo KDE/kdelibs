@@ -37,7 +37,7 @@ include_HEADERS = kfiledialog.h \
 	kdirselectdialog.h kurlbar.h kpropertiesdialog.h
 
 noinst_HEADERS = kfiledialogconf.h config-kfile.h krecentdirs.h kmetaprops.h \
-	kfilebookmarkhandler.h
+	kfilebookmarkhandler.h kfilemetainfowidget.h
 
 libkfile_la_SOURCES = kfiledialogconf.cpp \
 	booktoken.cpp kfilefiltercombo.cpp \
@@ -49,7 +49,8 @@ libkfile_la_SOURCES = kfiledialogconf.cpp \
 	krecentdirs.cpp kdiskfreesp.cpp kimagefilepreview.cpp \
 	kurlbar.cpp kmetaprops.cpp\
 	kfiletreeview.cpp kfiletreeviewitem.cpp kfiletreebranch.cpp \
-	kdirselectdialog.cpp kfilebookmarkhandler.cpp
+	kdirselectdialog.cpp kfilebookmarkhandler.cpp \
+	kfilemetainfowidget.cpp
 
 EXTRA_DIST = NOTES
 
