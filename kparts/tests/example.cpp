@@ -55,6 +55,7 @@ Shell::Shell()
 
 Shell::~Shell()
 {
+  disconnect( m_manager, 0, this, 0 );
 }
 
 void Shell::slotFileOpen()
