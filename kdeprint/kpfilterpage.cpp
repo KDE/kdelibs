@@ -26,12 +26,13 @@
 #include <qheader.h>
 #include <qtooltip.h>
 #include <qlayout.h>
-#include <qtextview.h>
 #include <klistview.h>
 #include <klocale.h>
 #include <kiconloader.h>
 #include <kmessagebox.h>
+#include <kactivelabel.h>
 #include <kdebug.h>
+#include <kapplication.h>
 
 KPFilterPage::KPFilterPage(QWidget *parent, const char *name)
 : KPrintDialogPage(parent,name)
@@ -70,8 +71,11 @@ KPFilterPage::KPFilterPage(QWidget *parent, const char *name)
 	connect(m_configure,SIGNAL(clicked()),SLOT(slotConfigureClicked()));
 	connect(m_view,SIGNAL(doubleClicked(QListViewItem*)),SLOT(slotConfigureClicked()));
 
-	m_info = new QTextView(this);
-	m_info->setPaper(colorGroup().background());
+	m_info = new KActiveLabel(this);
+	m_info->setVScrollBarMode( QScrollView::Auto );
+	m_info->setHScrollBarMode( QScrollView::Auto );
+	m_info->setFrameStyle( QFrame::Panel|QFrame::Sunken );
+	m_info->setMinimumSize( QSize( 240, 100 ) );
 
 	QGridLayout	*l1 = new QGridLayout(this, 2, 2, 0, 10);
 	l1->setColStretch(0, 1);
@@ -305,6 +309,8 @@ void KPFilterPage::updateInfo()
 		txt.append(templ.arg(i18n("Requirements")).arg(f->requirements().join(", ")));
 		txt.append(templ.arg(i18n("Input")).arg(f->inputMimeTypes().join(", ")));
 		txt.append(templ.arg(i18n("Output")).arg(f->mimeType()));
+		if ( !f->comment().isEmpty() )
+			txt.append( "<br>" ).append( f->comment() );
 	}
 	m_info->setText(txt);
 }
