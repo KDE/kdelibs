@@ -98,132 +98,148 @@ void KURL::reset()
 void KURL::parse( const QString& _url )
 {
   if ( _url.isEmpty() )
-  {
-    m_bIsMalformed = TRUE;
-    return;
-  }
-
+    {
+      m_bIsMalformed = TRUE;
+      return;
+    }
+  
   m_bIsMalformed = FALSE;
-
+  
   QString port;
   int start = 0;
   uint len = _url.length();
   QChar* buf = new QChar[ len + 1 ];
   QChar* orig = buf;
   memcpy( buf, _url.unicode(), len * sizeof( QChar ) );
-
+  
   uint pos = 0;
+
   // Node 1: Accept alpha or slash
   QChar x = buf[pos++];
   if ( x == '/' )
     goto Node9;
   if ( !isalpha( (char)x ) )
     goto NodeErr;
+
   // Node 2: Accept any amount of alphas
   // Proceed with :// :/ or :
   while( isalpha( buf[pos] ) && pos < len ) pos++;
   if ( pos == len )
     goto NodeErr;
   if (buf[pos] == ':' && buf[pos+1] == '/' && buf[pos+2] == '/' )
-  {
-    m_strProtocol = QString( orig, pos );
-    pos += 3;
-  }
+    {
+      m_strProtocol = QString( orig, pos );
+      pos += 3;
+    }
   else if (buf[pos] == ':' && buf[pos+1] == '/' )
-  {
-    m_strProtocol = QString( orig, pos );
-    pos++;
-    start = pos;
-    goto Node9;
-  }
+    {
+      m_strProtocol = QString( orig, pos );
+      pos++;
+      start = pos;
+      goto Node9;
+    }
   else if ( buf[pos] == ':' )
-  {
-    pos++;
-    goto Node11;
-  }
+    {
+      pos++;
+      goto Node11;
+    }
   else
     goto NodeErr;
+
   //Node 3: We need at least one character here
   if ( pos == len )
     goto NodeOk;
-//    goto NodeErr;
+  //    goto NodeErr;
   start = pos++;
+
   // Node 4: Accept any amount of characters.
   // Terminate or / or @
   while( buf[pos] != ':' && buf[pos] != '@' && buf[pos] != '/' && pos < len ) pos++;
   if ( pos == len )
-  {
-    m_strHost = QString( buf + start, pos - start );
-    goto NodeOk;
-  }
+    {
+      m_strHost = QString( buf + start, pos - start );
+      goto NodeOk;
+    }
   x = buf[pos];
   if ( x == '@' )
-  {
-    m_strUser = QString( buf + start, pos - start );
-    pos++;
-    goto Node7;
-  }
+    {
+      m_strUser = QString( buf + start, pos - start );
+      pos++;
+      goto Node7;
+    }
   /* else if ( x == ':' )
-  {
-    m_strHost = QString( buf + start, pos - start );
-    pos++;
-    goto Node8a;
-    } */
+     {
+     m_strHost = QString( buf + start, pos - start );
+     pos++;
+     goto Node8a;
+     } */
   else if ( x == '/' )
-  {
-    m_strHost = QString( buf + start, pos - start );
-    start = pos++;
-    goto Node9;
-  }
+    {
+      m_strHost = QString( buf + start, pos - start );
+      start = pos++;
+      goto Node9;
+    }
   else if ( x != ':' )
     goto NodeErr;
   m_strUser = QString( buf + start, pos - start );
   pos++;
+
   // Node 5: We need at least one character
   if ( pos == len )
     goto NodeErr;
   start = pos++;
+
   // Node 6: Read everything until @
   while( buf[pos] != '@' && pos < len ) pos++;
   if ( pos == len )
-  {
-    // Ok the : was used to separate host and port
-    m_strHost = m_strUser;
-    m_strUser = "";
-    QString tmp( buf + start, pos - start );
-    m_iPort = atoi( tmp.ascii() );
-    goto NodeOk;
-  }
-  m_strPass = QString( buf + start, pos - start );
+    {
+      // Ok the : was used to separate host and port
+      m_strHost = m_strUser;
+      m_strUser = "";
+      QString tmp( buf + start, pos - start );
+      char *endptr;
+      m_iPort = strtol(tmp.ascii(), &endptr, 10);
+      if ((pos == len) && (strlen(endptr) == 0))
+	goto NodeOk;
+      // there is more after the digits
+      pos -= strlen(endptr);
+      start = pos++;
+      goto Node9;
+    }
+  m_strPass = QString( buf + start, pos - start);
   pos++;
+
   // Node 7: We need at least one character
  Node7:
   if ( pos == len )
     goto NodeErr;
   start = pos++;
+
   // Node 8: Read everything until / : or terminate
   while( buf[pos] != '/' && buf[pos] != ':' && pos < len ) pos++;
   if ( pos == len )
-  {
-    m_strHost = QString( buf + start, pos - start );
-    goto NodeOk;
-  }
+    {
+      m_strHost = QString( buf + start, pos - start );
+      goto NodeOk;
+    }
   x = buf[pos];
   m_strHost = QString( buf + start, pos - start );
   if ( x == '/' )
-  {
-    start = pos++;
-    goto Node9;
-  }
+    {
+      start = pos++;
+      goto Node9;
+    }
   else if ( x != ':' )
     goto NodeErr;
   pos++;
+
   // Node 8a: Accept at least one digit
   if ( pos == len )
     goto NodeErr;
   start = pos;
   if ( !isdigit( buf[pos++] ) )
     goto NodeErr;
+
   // Node 8b: Accept any amount of digits
   while( isdigit( buf[pos] ) && pos < len ) pos++;
   port = QString( buf + start, pos - start );
@@ -231,32 +247,37 @@ void KURL::parse( const QString& _url )
   if ( pos == len )
     goto NodeOk;
   start = pos++;
+
   // Node 9: Accept any character and # or terminate
  Node9:
   while( buf[pos] != '#' && pos < len ) pos++;
   if ( pos == len )
-  {
-    QString tmp( buf + start, len - start );
-    setEncodedPathAndQuery( tmp );
-    // setEncodedPathAndQuery( QString( buf + start, pos - start ) );
-    goto NodeOk;
-  }
+    {
+      QString tmp( buf + start, len - start );
+      setEncodedPathAndQuery( tmp );
+      // setEncodedPathAndQuery( QString( buf + start, pos - start ) );
+      goto NodeOk;
+    }
   else if ( buf[pos] != '#' )
     goto NodeErr;
   setEncodedPathAndQuery( QString( buf + start, pos - start ) );
   pos++;
+
   // Node 10: Accept all the rest
   m_strRef_encoded = QString( buf + pos, len - pos );
   goto NodeOk;
+
   // Node 11 We need at least one character
  Node11:
   start = pos;
   if ( pos++ == len )
-  	goto NodeOk;
-//    goto NodeErr;
+    goto NodeOk;
+  //    goto NodeErr;
+
   // Node 12: Accept the res
   setEncodedPathAndQuery( QString( buf + start, len - start ) );
   goto NodeOk;
+
  NodeOk:
   delete []orig;
   //debug("Prot=%s\nUser=%s\nPass=%s\nHost=%s\nPath=%s\nQuery=%s\nRef=%s\nPort=%i\n",
@@ -264,11 +285,12 @@ void KURL::parse( const QString& _url )
   //m_strHost.ascii(), m_strPath.ascii(), m_strQuery_encoded.ascii(),
   //m_strRef_encoded.ascii(), m_iPort );
   if ( m_strProtocol != "file" && !KProtocolManager::self().isKnownProtocol( m_strProtocol ) )
-  {
-    debug("Unknown protocol %s", m_strProtocol.ascii() );
-    m_bIsMalformed = TRUE;
-  }
+    {
+      debug("Unknown protocol %s", m_strProtocol.data() );
+      m_bIsMalformed = TRUE;
+    }
   return;
+
  NodeErr:
   debug("Error in parsing\n");
   delete []orig;
