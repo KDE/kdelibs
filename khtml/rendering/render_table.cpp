@@ -551,7 +551,7 @@ void RenderTable::recalcSections()
 	case TABLE_COLUMN:
 	case TABLE_COLUMN_GROUP:
 	    has_col_elems = true;
-	    return;
+	    break;
 	case TABLE_HEADER_GROUP: {
 	    RenderTableSection *section = static_cast<RenderTableSection *>(child);
 	    if ( !head )
