@@ -482,11 +482,11 @@ public:
      * for these items are defined in @ref KStdAccel.
      */	
     enum KeyBindingType {
-	TextCompletion,
-	PrevCompletionMatch,
-	NextCompletionMatch,
-	RotateUp,
-	RotateDown
+       TextCompletion,
+       PrevCompletionMatch,
+       NextCompletionMatch,
+       RotateUp,
+       RotateDown
     };
 
     /**
@@ -494,17 +494,17 @@ public:
      * items that get inserted into the supplied QPopupMenu
      */			
     enum MenuID {
-        Default=0,
-	Cut,
-	Copy,
-	Paste,
-	Clear,
-        Unselect,
-	SelectAll,
-	NoCompletion,
-	AutoCompletion,
-        ShellCompletion,
-	SemiAutoCompletion	
+       Default=0,
+       Cut,
+       Copy,
+       Paste,
+       Clear,
+       Unselect,
+       SelectAll,
+       NoCompletion,
+       AutoCompletion,
+       ShellCompletion,
+       SemiAutoCompletion	
     };
 	
     // Map for the key binding types mentioned above.
@@ -750,7 +750,7 @@ protected:
      *	
      * @ref an instance of the completion object.
      */
-    KCompletion* compObj() const { return m_pCompObj; }
+    KCompletion* compObj() { return m_pCompObj; }
 
     /**
      * Returns a key-binding maps
