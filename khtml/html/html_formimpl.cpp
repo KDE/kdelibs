@@ -323,10 +323,12 @@ bool HTMLFormElementImpl::prepareSubmit()
 
 void HTMLFormElementImpl::submit(  )
 {
+    if(!view) return;
+    if ( view->part()->onlyLocalReferences() ) return;
+
 #ifdef FORMS_DEBUG
     kdDebug( 6030 ) << "submit pressed!" << endl;
 #endif
-    if(!view) return;
 
     for(HTMLGenericFormElementImpl *current = formElements.first(); current; current = formElements.next())
     {
