@@ -102,10 +102,7 @@ void RenderFrameSet::close()
 
     if(m_frameset->verifyLayout())
         setLayouted(false);
-
-    m_frameset->dispatchHTMLEvent(EventImpl::LOAD_EVENT,false,false);
 }
-
 
 void RenderFrameSet::layout( )
 {
