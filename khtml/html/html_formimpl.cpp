@@ -190,7 +190,11 @@ QByteArray HTMLFormElementImpl::formData()
 
         if (!current->disabled() && current->encoding(codec, lst, m_multipart))
         {
-            kdDebug(6030) << "adding name " << current->name().string() << endl;
+            //kdDebug(6030) << "adding name " << current->name().string() << endl;
+	    if ( lst.count() == 1 ) {
+		// hack for isindex element
+		enc_string += encodeCString(*lst.begin());
+	    } else {
             ASSERT(!(lst.count()&1));
 
             khtml::encodingList::Iterator it;
@@ -253,6 +257,7 @@ QByteArray HTMLFormElementImpl::formData()
                     form_data[form_data.size()-1] = '\n';
                 }
             }
+	    }
         }
     }
     if (m_multipart)
@@ -306,7 +311,6 @@ void HTMLFormElementImpl::submit(  )
     if(!view) return;
 
     QByteArray form_data = formData();
-
     if(m_post)
     {
         view->part()->submitForm( "post", m_url.string(), form_data,
@@ -802,6 +806,8 @@ void HTMLInputElementImpl::parseAttribute(AttrImpl *attr)
                 newType = IMAGE;
             else if ( strcasecmp( attr->value(), "button" ) == 0 )
                 newType = BUTTON;
+            else if ( strcasecmp( attr->value(), "khtml_isindex" ) == 0 )
+                newType = ISINDEX;
             else
                 newType = TEXT;
 
@@ -861,9 +867,8 @@ void HTMLInputElementImpl::attach(KHTMLView *_view)
         switch(m_type)
         {
         case TEXT:
-            m_render = new RenderLineEdit(view, this);
-            break;
         case PASSWORD:
+	    case ISINDEX:
             m_render = new RenderLineEdit(view, this);
             break;
         case CHECKBOX:
@@ -929,10 +934,10 @@ void HTMLInputElementImpl::attach(KHTMLView *_view)
 bool HTMLInputElementImpl::encoding(const QTextCodec* codec, khtml::encodingList& encoding, bool multipart)
 {
     // image generates its own name's
-    if (_name.isEmpty() && m_type != IMAGE) return false;
+    if (_name.isEmpty() && m_type != IMAGE && m_type != ISINDEX) return false;
 
     // IMAGE needs special handling later
-    if(m_type != IMAGE)
+    if(m_type != IMAGE && m_type != ISINDEX)
         encoding += fixUpfromUnicode(codec, _name.string().stripWhiteSpace());
 
     switch (m_type) {
@@ -1046,6 +1051,9 @@ bool HTMLInputElementImpl::encoding(const QTextCodec* codec, khtml::encodingList
             }
             break;
         }
+	case ISINDEX:
+	    encoding += fixUpfromUnicode(codec, m_value.string());
+	    return true;
     }
     return false;
 }

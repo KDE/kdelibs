@@ -236,7 +236,8 @@ public:
         FILE,
         HIDDEN,
         IMAGE,
-        BUTTON
+        BUTTON,
+	ISINDEX
     };
 
     HTMLInputElementImpl(DocumentImpl *doc);

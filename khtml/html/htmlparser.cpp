@@ -1305,29 +1305,17 @@ NodeImpl *KHTMLParser::handleIsindex( Token *t )
     if ( !myform ) {
 	myform = new HTMLFormElementImpl(document);
 	n = myform;
-	Attribute a;
-	a.id = ATTR_METHOD;
-	DOMString aStr = "get";
-	a.setValue( aStr );
-	t->attrs.add(a);
     } else
 	n = new HTMLDivElementImpl( document );
-
     NodeImpl *child = new HTMLHRElementImpl( document );
     n->addChild( child );
     DOMString text = t->attrs.valueForId( ATTR_PROMPT );
     if( text.isNull() )
-	text =  i18n("This is a searchable index. Enter search keywords:");
+	text =  i18n("This is a searchable index. Enter search keywords: ");
     child = new TextImpl(document, text);
     n->addChild( child );
     child = new HTMLInputElementImpl(document, myform);
-    AttributeList attrs;
-    Attribute a;
-    a.id = ATTR_TYPE;
-    DOMString aStr = "text";
-    a.setValue( aStr );
-    t->attrs.add( a );
-    static_cast<ElementImpl *>(child)->setAttribute(attrs);
+    static_cast<ElementImpl *>(child)->setAttribute(ATTR_TYPE, "khtml_isindex");
     n->addChild( child );
     child = new HTMLHRElementImpl( document );
     n->addChild( child );
