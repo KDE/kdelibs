@@ -205,7 +205,7 @@ void KProgress::drawText(QPainter *p)
 	//QColor c(bar_color.rgb() ^ backgroundColor().rgb());
 	QString s;
 	
-	s = QString("%1%%").arg( recalcValue(100));
+	s = QString("%1%").arg( recalcValue(100));
 	p->setPen(text_color);
 	//p->setRasterOp(XorROP);
 	p->drawText(r, AlignCenter, s);
