@@ -128,7 +128,9 @@ bool KCompletionBox::eventFilter( QObject *o, QEvent *e )
             }
 	
 	    // parent loses focus -> we hide
-	    else if ( type == QEvent::FocusOut ) {
+	    else if ( type == QEvent::FocusOut ||
+		      type == QEvent::Close ||
+		      type == QEvent::Hide ) {
 		hide();
 		return false;
 	    }
