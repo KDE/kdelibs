@@ -125,6 +125,38 @@ public:
   };
 
   /**
+   * Defines the type of URI we are processing.
+   */
+  enum URIMode
+  {
+    /**
+     * Automatically detected. Using this mode, an appropriate processing
+     * mode will be selected when the URI is first processed.
+     */
+    Auto,
+    /**
+     * Invalid URI. This is something that can't be parsed as a URI at all.
+     * The contents are accessible through the @ref protocol() method.
+     */
+    Invalid,
+    /**
+     * Raw URI. This type of URI should not be processed in any way.
+     * Contents are accessible through the @ref path() method.
+     */
+    RawURI,
+    /**
+     * Standards compliant URL. Process as a syntactically correct URL.
+     */
+    URL,
+    /**
+     * Mailto URI. path() contains an email address which should have its
+     * domain part processed as a DNS name. The email address is accessible
+     * through the @ref path() method.
+     */
+    Mailto
+  };
+
+  /**
    * KURL::List is a QValueList that contains KURLs with a few
    * convenience methods.
    * @see KURL
@@ -202,6 +234,7 @@ public:
    * @see QTextCodec::mibEnum()
    */
   KURL( const QCString& url, int encoding_hint = 0 );
+
   /**
    * Copy constructor.
    * @param u the KURL to copy
@@ -237,6 +270,13 @@ public:
    * @param _txt the new protocol of the URL (without colon)
    **/
   void setProtocol( const QString& _txt );
+
+  /**
+   * Returns the URI processing mode for the URL.
+   * @return the URI processing mode set for this URL.
+   * @since 3.2
+   **/
+  int uriMode() const;
 
   /**
    * Returns the decoded user name (login, user id, ...) included in the URL.
@@ -904,6 +944,13 @@ public:
    */
   static QString relativePath(const QString &base_dir, const QString &path, bool *isParent=0);
 
+  /**
+   * Determine which URI mode is suitable for processing URIs of a given protocol.
+   * @param protocol The protocol name.
+   * @since 3.2
+   */
+  static URIMode uriModeForProtocol(const QString& protocol);
+
 #ifdef KDE_NO_COMPAT
 private:
 #endif
@@ -914,7 +961,10 @@ private:
 
 protected:
   void reset();
-  void parse( const QString& _url, int encoding_hint = 0);
+  void parseURL( const QString& _url, int encoding_hint = 0 );
+  void parseRawURI( const QString& _url, int encoding_hint = 0 );
+  void parseMailto( const QString& _url, int encoding_hint = 0 );
+  void parse( const QString& _url, int encoding_hint = 0 );
 
 private:
   void _setQuery( const QString& _txt, int encoding_hint = 0);
@@ -927,7 +977,8 @@ private:
   QString m_strRef_encoded;
   QString m_strQuery_encoded;
   bool m_bIsMalformed : 1;
-  uint freeForUse     : 7;
+  enum URIMode m_iUriMode : 3;
+  uint freeForUse     : 4;
   unsigned short int m_iPort;
   QString m_strPath_encoded;
 

@@ -34,6 +34,7 @@ public:
   QString protClass;
   KProtocolInfo::ExtraFieldList extraFields;
   bool showPreviews;
+  KURL::URIMode uriMode;
 };
 
 //
@@ -101,6 +102,14 @@ KProtocolInfo::KProtocolInfo(const QString &path)
   }
 
   d->showPreviews = config.readBoolEntry( "ShowPreviews", d->protClass == ":local" );
+
+  tmp = config.readEntry( "URIMode", QString::null );
+  if (tmp == "rawuri")
+     d->uriMode = KURL::RawURI;
+  else if (tmp == "mailto")
+     d->uriMode = KURL::Mailto;
+  else 
+     d->uriMode = KURL::URL;
 }
 
 KProtocolInfo::KProtocolInfo( QDataStream& _str, int offset) :
@@ -124,7 +133,8 @@ KProtocolInfo::load( QDataStream& _str)
           i_supportsWriting, i_supportsMakeDir,
           i_supportsDeleting, i_supportsLinking,
           i_supportsMoving, i_determineMimetypeFromExtension,
-          i_canCopyFromFile, i_canCopyToFile, i_showPreviews;
+          i_canCopyFromFile, i_canCopyToFile, i_showPreviews,
+          i_uriMode;
    _str >> m_name >> m_exec >> m_listing >> m_defaultMimetype
         >> i_determineMimetypeFromExtension
         >> m_icon
@@ -135,7 +145,7 @@ KProtocolInfo::load( QDataStream& _str)
         >> i_supportsDeleting >> i_supportsLinking
         >> i_supportsMoving
         >> i_canCopyFromFile >> i_canCopyToFile
-        >> m_config >> m_maxSlaves >> d->docPath >> d->protClass >> d->extraFields >> i_showPreviews;
+        >> m_config >> m_maxSlaves >> d->docPath >> d->protClass >> d->extraFields >> i_showPreviews >> i_uriMode;
    m_inputType = (Type) i_inputType;
    m_outputType = (Type) i_outputType;
    m_isSourceProtocol = (i_isSourceProtocol != 0);
@@ -151,6 +161,7 @@ KProtocolInfo::load( QDataStream& _str)
    m_canCopyToFile = (i_canCopyToFile != 0);
    m_determineMimetypeFromExtension = (i_determineMimetypeFromExtension != 0);
    d->showPreviews = (i_showPreviews != 0);
+   d->uriMode = (KURL::URIMode) i_uriMode;
 }
 
 void
@@ -164,7 +175,8 @@ KProtocolInfo::save( QDataStream& _str)
           i_supportsWriting, i_supportsMakeDir,
           i_supportsDeleting, i_supportsLinking,
           i_supportsMoving, i_determineMimetypeFromExtension,
-          i_canCopyFromFile, i_canCopyToFile, i_showPreviews;
+          i_canCopyFromFile, i_canCopyToFile, i_showPreviews,
+          i_uriMode;
 
    i_inputType = (Q_INT32) m_inputType;
    i_outputType = (Q_INT32) m_outputType;
@@ -181,6 +193,7 @@ KProtocolInfo::save( QDataStream& _str)
    i_canCopyToFile = m_canCopyToFile ? 1 : 0;
    i_determineMimetypeFromExtension = m_determineMimetypeFromExtension ? 1 : 0;
    i_showPreviews = d->showPreviews ? 1 : 0;
+   i_uriMode = d->uriMode;
 
    _str << m_name << m_exec << m_listing << m_defaultMimetype
         << i_determineMimetypeFromExtension
@@ -192,7 +205,7 @@ KProtocolInfo::save( QDataStream& _str)
         << i_supportsDeleting << i_supportsLinking
         << i_supportsMoving
         << i_canCopyFromFile << i_canCopyToFile
-        << m_config << m_maxSlaves << d->docPath << d->protClass << d->extraFields << i_showPreviews;
+        << m_config << m_maxSlaves << d->docPath << d->protClass << d->extraFields << i_showPreviews << i_uriMode;
 }
 
 
@@ -435,6 +448,15 @@ bool KProtocolInfo::showFilePreview( const QString& _protocol )
     return false;
 
   return prot->d->showPreviews;
+}
+
+KURL::URIMode KProtocolInfo::uriParseMode( const QString& _protocol )
+{
+  KProtocolInfo::Ptr prot = KProtocolInfoFactory::self()->findProtocol(_protocol);
+  if ( !prot )
+    return KURL::Auto;
+
+  return prot->d->uriMode;
 }
 
 QDataStream& operator>>( QDataStream& s, KProtocolInfo::ExtraField& field )  {

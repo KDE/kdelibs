@@ -23,6 +23,7 @@
 #include <kdebug.h>
 #include <kglobal.h>
 #include <kidna.h>
+#include <kprotocolinfo.h>
 #endif
 
 #include <stdio.h>
@@ -38,6 +39,7 @@
 #include <qstylesheet.h>
 #include <qmap.h>
 #include <qtextcodec.h>
+#include <qmutex.h>
 
 static const QString fileProt = "file";
 
@@ -480,6 +482,8 @@ QDataStream & operator>> (QDataStream & s, KURL & a)
     else
       a.m_strQuery_encoded = QueryFromWire.mid(1);
 
+    a.m_iUriMode = KURL::uriModeForProtocol( a.m_strProtocol );
+
     return s;
 }
 
@@ -589,6 +593,7 @@ void KURL::reset()
   m_strRef_encoded = QString::null;
   m_bIsMalformed = true;
   m_iPort = 0;
+  m_iUriMode = Auto;
 }
 
 bool KURL::isEmpty() const
@@ -598,21 +603,125 @@ bool KURL::isEmpty() const
 
 void KURL::parse( const QString& _url, int encoding_hint )
 {
-  //kdDebug(126) << "parse " << _url << endl;
-  // Return immediately whenever the given url
-  // is empty or null.
-  if ( _url.isEmpty() )
-  {
-    m_strProtocol = _url;
-    return;
-  }
+    if ( _url.isEmpty() || m_iUriMode == Invalid )
+    {
+	m_strProtocol = _url;
+	m_iUriMode = Invalid;
+	return;
+    }
 
+    const QChar* buf = _url.unicode();
+    const QChar* orig = buf;
+    uint len = _url.length();
+    uint pos = 0;
+
+    // Node 1: Accept alpha or slash
+    QChar x = buf[pos++];
+    if ( x == '/' )
+    {
+	// A slash means we immediately proceed to parse it as a file URL.
+	m_iUriMode = URL;
+	m_strProtocol = fileProt;
+	parseURL( _url, encoding_hint );
+	return;
+    }
+    if ( !isalpha( (int)x ) )
+	goto NodeErr;
+
+    // Node 2: Accept any amount of (alpha|digit|'+'|'-')
+    // '.' is not currently accepted, because current KURL may be confused.
+    // Proceed with :// :/ or :
+    while( pos < len && (isalpha((int)buf[pos]) || isdigit((int)buf[pos]) ||
+			 buf[pos] == '+' || buf[pos] == '-')) pos++;
+
+    if (pos < len && buf[pos] == ':' )
+    {
+	m_strProtocol = QString( orig, pos ).lower();
+	if ( m_iUriMode == Auto )
+	    m_iUriMode = uriModeForProtocol( m_strProtocol );
+	// Proceed to correct parse function.
+	switch ( m_iUriMode )
+  {
+	case RawURI:
+	    parseRawURI( _url );
+	    return;
+	case Mailto:
+	    parseMailto( _url );
+	    return;
+	case URL:
+	    parseURL( _url, encoding_hint );
+	    return;
+	default:
+	    // Unknown URI mode results in an invalid URI.
+	    break;
+	}
+    }
+
+NodeErr:
+    reset();
+    m_strProtocol = _url;
+    m_iUriMode = Invalid;
+}
+
+void KURL::parseRawURI( const QString& _url, int encoding_hint )
+{
+    uint len = _url.length();
+    const QChar* buf = _url.unicode();
+
+    uint pos = 0;
+
+    // Accept any amount of (alpha|digit|'+'|'-')
+    // '.' is not currently accepted, because current KURL may be confused.
+    // Proceed with :
+    while( pos < len && (isalpha((int)buf[pos]) || isdigit((int)buf[pos]) ||
+			 buf[pos] == '+' || buf[pos] == '-')) pos++;
+
+    // Note that m_strProtocol is already set here, so we just skip over the protocol.
+    if (pos < len && buf[pos] == ':' )
+	pos++;
+    else {
+	reset();
+    m_strProtocol = _url;
+	m_iUriMode = Invalid;
+	return;
+    }
+
+    if ( pos == len )
+	m_strPath = QString::null;
+    else
+	m_strPath = decode( QString( buf + pos, len - pos ), encoding_hint );
+
+    m_bIsMalformed = false;
+
+    return;
+}
+
+void KURL::parseMailto( const QString& _url, int encoding_hint )
+{
+    parseURL( _url, encoding_hint);
+    if ( m_bIsMalformed )
+    return;
+    QRegExp mailre("(.+@)(.+)");
+    if ( mailre.exactMatch( m_strPath ) )
+    {
+#ifndef KDE_QT_ONLY
+	QString host = KIDNA::toUnicode( mailre.cap( 2 ) );
+	if (host.isEmpty())
+	    host = mailre.cap( 2 ).lower();
+#else
+	QString host = mailre.cap( 2 ).lower();
+#endif
+	m_strPath = mailre.cap( 1 ) + host;
+  }
+}
+
+void KURL::parseURL( const QString& _url, int encoding_hint )
+{
   QString port;
   bool badHostName = false;
   int start = 0;
   uint len = _url.length();
   const QChar* buf = _url.unicode();
-  const QChar* orig = buf;
 
   QChar delim;
   QString tmp;
@@ -632,15 +741,13 @@ void KURL::parse( const QString& _url, int encoding_hint )
   while( pos < len && (isalpha((int)buf[pos]) || isdigit((int)buf[pos]) ||
           buf[pos] == '+' || buf[pos] == '-')) pos++;
 
+  // Note that m_strProtocol is already set here, so we just skip over the protocol.
   if ( pos+2 < len && buf[pos] == ':' && buf[pos+1] == '/' && buf[pos+2] == '/' )
     {
-      m_strProtocol = QString( orig, pos ).lower();
       pos += 3;
     }
   else if (pos+1 < len && buf[pos] == ':' ) // Need to always compare length()-1 otherwise KURL passes "http:" as legal!!
     {
-      m_strProtocol = QString( orig, pos ).lower();
-      //kdDebug(126)<<"setting protocol to "<<m_strProtocol<<endl;
       pos++;
       start = pos;
       goto Node9;
@@ -861,6 +968,7 @@ void KURL::parse( const QString& _url, int encoding_hint )
   //kdDebug()<<"Prot="<<m_strProtocol<<"\nUser="<<m_strUser<<"\nPass="<<m_strPass<<"\nHost="<<m_strHost<<"\nPath="<<m_strPath<<"\nQuery="<<m_strQuery_encoded<<"\nRef="<<m_strRef_encoded<<"\nPort="<<m_iPort<<endl;
   if (m_strProtocol.isEmpty())
   {
+    m_iUriMode = URL;
     m_strProtocol = fileProt;
   }
   return;
@@ -869,6 +977,7 @@ void KURL::parse( const QString& _url, int encoding_hint )
 //  kdDebug(126) << "KURL couldn't parse URL \"" << _url << "\"" << endl;
   reset();
   m_strProtocol = _url;
+  m_iUriMode = Invalid;
 }
 
 KURL& KURL::operator=( const QString& _url )
@@ -891,6 +1000,7 @@ KURL& KURL::operator=( const char * _url )
 KURL& KURL::operator=( const QUrl & u )
 {
   m_strProtocol = u.protocol();
+  m_iUriMode = Auto;
   m_strUser = u.user();
   m_strPass = u.password();
   m_strHost = u.host();
@@ -917,6 +1027,7 @@ KURL& KURL::operator=( const KURL& _u )
   m_strRef_encoded = _u.m_strRef_encoded;
   m_bIsMalformed = _u.m_bIsMalformed;
   m_iPort = _u.m_iPort;
+  m_iUriMode = _u.m_iUriMode;
 
   return *this;
 }
@@ -1096,6 +1207,7 @@ void KURL::setFileName( const QString& _txt )
 
 void KURL::cleanPath( bool cleanDirSeparator ) // taken from the old KURL
 {
+  if (m_iUriMode != URL) return;
   m_strPath = cleanpath(m_strPath, cleanDirSeparator, false);
   // WABA: Is this safe when "/../" is encoded with %?
   m_strPath_encoded = cleanpath(m_strPath_encoded, cleanDirSeparator, true);
@@ -1316,6 +1428,8 @@ QString KURL::url( int _trailing, int encoding_hint ) const
       }
       u += "@";
     }
+    if ( m_iUriMode == URL )
+    {
     bool IPv6 = (m_strHost.find(':') != -1);
     if (IPv6)
        u += '[' + m_strHost + ']';
@@ -1327,8 +1441,16 @@ QString KURL::url( int _trailing, int encoding_hint ) const
       u += buffer;
     }
   }
+    else
+    {
+      u += m_strHost;
+    }
+  }
 
+  if ( m_iUriMode == URL )
   u += encodedPathAndQuery( _trailing, false, encoding_hint );
+  else
+    u += m_strPath;
 
   if ( hasRef() )
   {
@@ -1362,6 +1484,8 @@ QString KURL::prettyURL( int _trailing ) const
       // Don't show password!
       u += "@";
     }
+    if ( m_iUriMode == URL )
+    {
     bool IPv6 = (m_strHost.find(':') != -1);
     if (IPv6)
     {
@@ -1370,6 +1494,11 @@ QString KURL::prettyURL( int _trailing ) const
     else
     {
        u += lazy_encode(m_strHost);
+    }
+    }
+    else
+    {
+      u += lazy_encode(m_strHost);
     }
     if ( m_iPort != 0 ) {
       QString buffer;
@@ -1729,6 +1858,7 @@ void
 KURL::setProtocol( const QString& _txt )
 {
    m_strProtocol = _txt;
+   if ( m_iUriMode == Auto ) m_iUriMode = uriModeForProtocol( m_strProtocol );
    m_bIsMalformed = false;
 }
 
@@ -1747,6 +1877,9 @@ KURL::setPass( const QString& _txt )
 void
 KURL::setHost( const QString& _txt )
 {
+  switch ( m_iUriMode )
+  {
+  case URL:
 #ifndef KDE_QT_ONLY
    m_strHost = KIDNA::toUnicode(_txt);
    if (m_strHost.isEmpty())
@@ -1754,6 +1887,11 @@ KURL::setHost( const QString& _txt )
 #else
    m_strHost = _txt.lower();
 #endif
+    break;
+  default:
+    m_strHost = _txt;
+    break;
+  }
 }
 
 void
@@ -2100,4 +2238,26 @@ QString KURL::relativeURL(const KURL &base_url, const KURL &url, int encoding_hi
       return "./";
 
    return relURL;
+}
+
+int KURL::uriMode() const
+{
+  return m_iUriMode;
+}
+
+KURL::URIMode KURL::uriModeForProtocol(const QString& protocol)
+{
+#ifndef KDE_QT_ONLY
+    KURL::URIMode mode = KProtocolInfo::uriParseMode(protocol);
+    if (mode == Auto ) {
+#else
+        KURL::URIMode mode = Auto;
+#endif
+	if ( protocol == "ed2k" || protocol == "sig2dat" || protocol == "slsk" || protocol == "data" ) mode = RawURI;
+	else if ( protocol == "mailto" ) mode = Mailto;
+	else mode = URL;
+#ifndef KDE_QT_ONLY
+    }
+#endif
+    return mode;
 }

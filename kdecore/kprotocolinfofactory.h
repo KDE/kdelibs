@@ -22,6 +22,7 @@
 
 #include "../kio/kio/kprotocolinfo.h"
 
+#include <qmap.h>
 #include <qstring.h>
 #include <qstringlist.h>
 #include <kurl.h>
@@ -80,8 +81,7 @@ protected:
 protected:
   static KProtocolInfoFactory *_self;
   
-  QString m_lastProtocol;
-  KProtocolInfo::Ptr m_lastInfo;
+  QMap<QString,KProtocolInfo::Ptr> m_cache;
 protected:
   virtual void virtual_hook( int id, void* data );
 private:

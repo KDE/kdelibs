@@ -706,6 +706,17 @@ int main(int argc, char *argv[])
   check("query()?", ldap.query(), "??sub?(cn=Karl%20Marx)");
   check("url()?", ldap.url(), "ldap://host.com:6666/o=University%20of%20Michigan,c=US??sub?(cn=Karl%20Marx)");
 
+  // URI Mode tests
+  url1 = "http://www.foobar.com/";
+  check("KURL(\"http://www.foobar.com/\").uriMode()", QString::number(url1.uriMode()), QString::number(KURL::URL));
+  url1 = "mailto:user@host.com";
+  check("KURL(\"mailto:user@host.com\").uriMode()", QString::number(url1.uriMode()), QString::number(KURL::Mailto));
+  url1 = "data:text/plain,foobar?gazonk=flarp";
+  check("KURL(\"data:text/plain,foobar?gazonk=flarp\").uriMode()", QString::number(url1.uriMode()), QString::number(KURL::RawURI));
+  check("KURL(\"data:text/plain,foobar?gazonk=flarp\").path()", url1.path(), "text/plain,foobar?gazonk=flarp");
+  url1 = "mailto:User@Host.COM?subject=Hello";
+  check("KURL(\"mailto:User@Host.COM?subject=Hello\").path()", url1.path(), "User@host.com");
+
   printf("\nTest OK !\n");
 }
 
