@@ -20,7 +20,7 @@ if test -n "$XML_CONFIG"; then
  	       ;;
           esac
      done
-     LIBXML_RPATH=`echo $LIBXML_RPATH | sed -e "s/-L/-R/"`
+     LIBXML_RPATH=`echo $LIBXML_RPATH | sed -e "s/-L/-R/g"`
      LIBXML_CFLAGS="`$XML_CONFIG --cflags`"
 
      KDE_FIND_PATH(xmllint, XMLLINT, [${prefix}/bin ${exec_prefix}/bin /usr/local/bin /opt/local/bin], [XMLLINT=""])
@@ -50,7 +50,7 @@ if test -n "$HELP_SUBDIR"; then
  	       ;;
           esac
        done
-       LIBXSLT_RPATH=`echo $LIBXSLT_RPATH | sed -e "s/-L/-R/"`
+       LIBXSLT_RPATH=`echo $LIBXSLT_RPATH | sed -e "s/-L/-R/g"`
        LIBXSLT_CFLAGS="`$XSLT_CONFIG --cflags`"
 
      else
