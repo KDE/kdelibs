@@ -1873,11 +1873,14 @@ KFontAction::~KFontAction()
 
 void KFontAction::setFont( const QString &family )
 {
-  int i = d->m_fonts.findIndex( family.lower() );
-  if ( i != -1 )
-    setCurrentItem( i );
-  else
-    kdDebug() << "Font not found " << family.lower() << endl;
+  int i = 0;
+  for ( QStringList::Iterator it = d->m_fonts.begin(); it != d->m_fonts.end(); ++it, ++i )
+    if ( (*it).lower() == family.lower() )
+    {
+      setCurrentItem( i );
+      return;
+    }
+  kdDebug() << "Font not found " << family.lower() << endl;
 }
 
 int KFontAction::plug( QWidget *w, int index )
