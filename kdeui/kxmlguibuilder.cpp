@@ -438,8 +438,12 @@ void KXMLGUIBuilder::finalizeGUI( KXMLGUIClient * )
     for ( ; it.current(); ++it) {
 	toolbar= it.current();
 	QMap<KToolBar*, KXMLGUIBuilderPrivate::ToolBarInfo>::Iterator it = d->toolBarInfos.find( toolbar );
-	if ( it == d->toolBarInfos.end() )
+	if ( it == d->toolBarInfos.end() ) {
+	    mw->moveToolBar( toolbar, QMainWindow::Top, FALSE, 0, -1 );
+	    if ( toolbar->testWState( Qt::WState_ForceHide ) )
+		toolbar->hide();
 	    continue;
+	}
 	mw->moveToolBar( toolbar, (*it).dock, (*it).newline, (*it).index, (*it).offset );
 	if ( toolbar->testWState( Qt::WState_ForceHide ) )
 	    toolbar->hide();
