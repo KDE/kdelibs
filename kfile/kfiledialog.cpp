@@ -213,20 +213,26 @@ KFileDialog::KFileDialog(const QString& startDir, const QString& filter,
         lastDirectory = ldd.setObject(new KURL());
     }
 
-    if (startDir.isEmpty())
+    bool defaultStartDir = startDir.isEmpty();
+    if ( !defaultStartDir )
+        if (startDir[0] == ':')
+        {
+            d->fileClass = startDir;
+            d->url = KRecentDirs::dir(d->fileClass);
+        }
+        else
+        {
+            d->url = KCmdLineArgs::makeURL( QFile::encodeName(startDir) );
+            // If we won't be able to list it (e.g. http), then use default
+            if ( !KProtocolInfo::supportsListing( d->url.protocol() ) )
+                defaultStartDir = true;
+        }
+
+    if ( defaultStartDir )
     {
         if (lastDirectory->isEmpty())
             *lastDirectory = QDir::currentDirPath();
         d->url = *lastDirectory;
-    }
-    else if (startDir[0] == ':')
-    {
-        d->fileClass = startDir;
-        d->url = KRecentDirs::dir(d->fileClass);
-    }
-    else
-    {
-        d->url = KCmdLineArgs::makeURL( QFile::encodeName(startDir) );
     }
 
     ops = new KDirOperator(d->url, d->mainWidget, "KFileDialog::ops");
