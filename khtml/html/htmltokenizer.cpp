@@ -799,7 +799,16 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
             {
                 if( curchar == '>' )
                     tag = SearchEnd; // we reached the end
-                else {
+                else if(curchar == '\'' || curchar == '"')
+                {
+                    // something went wrong, lets assume it
+                    // is a value because only there we handle quotes
+                    tag = SearchValue;
+                    discard = NoneDiscard;
+                    pending = NonePending;
+                }
+                else
+                {
                     tag = AttributeName;
                     discard = NoneDiscard;
                 }
