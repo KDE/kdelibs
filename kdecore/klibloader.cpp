@@ -52,7 +52,7 @@ static LTList *pending_close = 0;
 static void add_pending(lt_dlhandle h)
 {
   if (pending_close == 0) {
-    pending_close = new LTList; 
+    pending_close = new LTList;
   }
   kdDebug(150) << "add pending close " << h << endl;
   pending_close->append(h);
@@ -130,7 +130,7 @@ KLibrary::KLibrary( const QString& libname, const QString& filename, lt_dlhandle
     d->do_not_unload = false;
     if (lt_dlsym(handle, "__kde_do_not_unload") != 0) {
         kdDebug(150) << "Will not unload " << libname << endl;
-	d->do_not_unload = true;
+        d->do_not_unload = true;
     }
 }
 
@@ -170,10 +170,10 @@ KLibrary::~KLibrary()
     kapp->clipboard()->setText(kapp->clipboard()->text());
 
     if (!d->do_not_unload && getenv("KDE_NOUNLOAD")==NULL) {
-        if (getenv("KDE_DLCLOSE") != NULL) 
+        if (getenv("KDE_DLCLOSE") != NULL)
             lt_dlclose( m_handle );
         else
-	    add_pending( m_handle );
+            add_pending( m_handle );
     }
 
     try_close();
@@ -193,14 +193,14 @@ QString KLibrary::fileName() const
 KLibFactory* KLibrary::factory()
 {
     if ( m_factory )
-	return m_factory;
+        return m_factory;
 
     QCString symname;
     symname.sprintf("init_%s", name().latin1() );
 
     void* sym = symbol( symname );
     if ( !sym )
-	return 0;
+        return 0;
 
     typedef KLibFactory* (*t_func)();
     t_func func = (t_func)sym;
@@ -208,8 +208,8 @@ KLibFactory* KLibrary::factory()
 
     if( !m_factory )
     {
-	kdDebug(150) << "KLibrary: The library does not offer a KDE compatible factory" << endl;
-	return 0;
+        kdDebug(150) << "KLibrary: The library does not offer a KDE compatible factory" << endl;
+        return 0;
     }
 
     connect( m_factory, SIGNAL( objectCreated( QObject * ) ),
@@ -223,8 +223,8 @@ void* KLibrary::symbol( const char* symname )
     void* sym = lt_dlsym( m_handle, symname );
     if ( !sym )
     {
-	kdDebug(150) << "KLibrary: " << lt_dlerror() << endl;
-	return 0;
+        kdDebug(150) << "KLibrary: " << lt_dlerror() << endl;
+        return 0;
     }
 
     return sym;
@@ -282,7 +282,7 @@ KLibLoader* KLibLoader::s_self = 0;
 KLibLoader* KLibLoader::self()
 {
     if ( !s_self )
-	s_self = new KLibLoader;
+        s_self = new KLibLoader;
     return s_self;
 }
 
@@ -300,6 +300,7 @@ KLibLoader::KLibLoader( QObject* parent, const char* name )
     : QObject( parent, name )
 {
     s_self = this;
+    lt_dlinit();
 }
 
 KLibLoader::~KLibLoader()
@@ -312,14 +313,14 @@ KLibLoader::~KLibLoader()
     {
       kdDebug(150) << "The KLibLoader contains the library " << it.current() << endl;
       disconnect( it.current(), SIGNAL( destroyed() ),
-	 	  this, SLOT( slotLibraryDestroyed() ) );
+                  this, SLOT( slotLibraryDestroyed() ) );
     }
 }
 
 KLibrary* KLibLoader::library( const char *name )
 {
     if (!name)
-	return 0;
+        return 0;
 
     QCString libname( name );
 
@@ -334,7 +335,7 @@ KLibrary* KLibLoader::library( const char *name )
 
     KLibrary* lib = m_libs[ name ];
     if ( lib )
-	return lib;
+        return lib;
 
     // only look up the file if it is not an absolute filename
     // (mhk, 20000228)
@@ -343,19 +344,19 @@ KLibrary* KLibLoader::library( const char *name )
       libfile = libname;
     else
       {
-	libfile = KGlobal::dirs()->findResource( "lib", libname );
-	if ( libfile.isEmpty() )
-	  {
-	    kdDebug(150) << "library=" << name << ": No file names " << libname.data() << " found in paths." << endl;
-	    return 0;
-	  }
+        libfile = KGlobal::dirs()->findResource( "lib", libname );
+        if ( libfile.isEmpty() )
+          {
+            kdDebug(150) << "library=" << name << ": No file names " << libname.data() << " found in paths." << endl;
+            return 0;
+          }
       }
 
     lt_dlhandle handle = lt_dlopen( libfile.latin1() );
     if ( !handle )
     {
-	kdDebug(150) << "library=" << name << ": file=" << libfile << ": " << lt_dlerror() << endl;
-	return 0;
+        kdDebug(150) << "library=" << name << ": file=" << libfile << ": " << lt_dlerror() << endl;
+        return 0;
     }
 
     lib = new KLibrary( name, libfile, handle );
@@ -364,7 +365,7 @@ KLibrary* KLibLoader::library( const char *name )
     add_loaded( handle );
 
     connect( lib, SIGNAL( destroyed() ),
-	     this, SLOT( slotLibraryDestroyed() ) );
+             this, SLOT( slotLibraryDestroyed() ) );
 
     return lib;
 }
@@ -381,7 +382,7 @@ void KLibLoader::unloadLibrary( const char *libname )
   m_libs.remove( libname );
 
   disconnect( lib, SIGNAL( destroyed() ),
-	      this, SLOT( slotLibraryDestroyed() ) );
+              this, SLOT( slotLibraryDestroyed() ) );
 
   delete lib;
 }
@@ -390,7 +391,7 @@ KLibFactory* KLibLoader::factory( const char* name )
 {
     KLibrary* lib = library( name );
     if ( !lib )
-	return 0;
+        return 0;
 
     return lib->factory();
 }
