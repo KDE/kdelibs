@@ -20,6 +20,7 @@
 #define __kio_uiserver_h__
 
 #include <qintdict.h>
+#include <qdatetime.h>
 #include <dcopobject.h>
 #include <kio/global.h>
 #include <kurl.h>
@@ -45,7 +46,8 @@ class ProgressItem : public QObject, public QListViewItem {
   Q_OBJECT
 
 public:
-  ProgressItem( ProgressListView* view, QListViewItem *after, QCString app_id, int job_id );
+  ProgressItem( ProgressListView* view, QListViewItem *after, QCString app_id, int job_id,
+		bool showDefault = true );
   ~ProgressItem();
 
   QCString appId() { return m_sAppId; }
@@ -56,24 +58,31 @@ public:
   void remove() { //m_pJob->kill();
   }
 
-  void totalSize( unsigned long bytes );
-  void totalFiles( unsigned long files );
-  void totalDirs( unsigned long dirs );
+  void setTotalSize( unsigned long bytes );
+  void setTotalFiles( unsigned long files );
+  void setTotalDirs( unsigned long dirs );
 
-  void processedSize( unsigned long size );
-  void processedFiles( unsigned long files );
-  void processedDirs( unsigned long dirs );
+  void setProcessedSize( unsigned long size );
+  void setProcessedFiles( unsigned long files );
+  void setProcessedDirs( unsigned long dirs );
 
-  void percent( unsigned long bytes );
-  void speed( unsigned long bytes_per_second );
+  void setPercent( unsigned long bytes );
+  void setSpeed( unsigned long bytes_per_second );
 
-  void copying( const KURL& from, const KURL& to );
-  void moving( const KURL& from, const KURL& to );
-  void deleting( const KURL& url );
-  void creatingDir( const KURL& dir );
-  void renaming( const KURL& old_name, const KURL& new_name );
+  void setCopying( const KURL& from, const KURL& to );
+  void setMoving( const KURL& from, const KURL& to );
+  void setDeleting( const KURL& url );
+  void setCreatingDir( const KURL& dir );
+  void setRenaming( const KURL& old_name, const KURL& new_name );
 
-  void canResume( bool );
+  void setCanResume( bool );
+
+  unsigned long totalSize() { return m_iTotalSize; }
+  unsigned long totalFiles() { return m_iTotalFiles; }
+  unsigned long processedSize() { return m_iProcessedSize; }
+  unsigned long processedFiles() { return m_iProcessedFiles; }
+  unsigned long speed() { return m_iSpeed; }
+  QTime remainingTime() { return m_remainingTime; }
 
 protected slots:
   void slotCanceled();
@@ -88,8 +97,14 @@ protected:
   DefaultProgress *defaultProgress;
 
   unsigned long m_iTotalSize;
-  unsigned int m_iTotalFiles;
-  unsigned int m_iTotalDirs;
+  unsigned long m_iTotalFiles;
+
+  unsigned long m_iProcessedSize;
+  unsigned long m_iProcessedFiles;
+
+  unsigned long m_iSpeed;
+
+  QTime m_remainingTime;
 
   ProgressListView *listView;
 };

@@ -64,7 +64,8 @@ static int defaultColumnWidth[] = { 70,  // SIZE_OPERATION
 
 #define NUM_COLS  9
 
-ProgressItem::ProgressItem( ProgressListView* view, QListViewItem *after, QCString app_id, int job_id )
+ProgressItem::ProgressItem( ProgressListView* view, QListViewItem *after, QCString app_id, int job_id,
+			    bool showDefault )
   : QListViewItem( view, after ) {
 
   listView = view;
@@ -72,7 +73,7 @@ ProgressItem::ProgressItem( ProgressListView* view, QListViewItem *after, QCStri
   m_sAppId = app_id;
   m_iJobId = job_id;
 
-  defaultProgress = new DefaultProgress();
+  defaultProgress = new DefaultProgress( showDefault );
   connect ( defaultProgress, SIGNAL( stopped() ), this, SLOT( slotCanceled() ) );
 }
 
@@ -83,7 +84,7 @@ ProgressItem::~ProgressItem()
 }
 
 
-void ProgressItem::totalSize( unsigned long size ) {
+void ProgressItem::setTotalSize( unsigned long size ) {
   m_iTotalSize = size;
   setText( listView->lv_total, KIO::convertSize( m_iTotalSize ) );
 
@@ -91,26 +92,28 @@ void ProgressItem::totalSize( unsigned long size ) {
 }
 
 
-void ProgressItem::totalFiles( unsigned long files ) {
+void ProgressItem::setTotalFiles( unsigned long files ) {
   m_iTotalFiles = files;
 
   defaultProgress->slotTotalFiles( 0, files );
 }
 
 
-void ProgressItem::totalDirs( unsigned long dirs ) {
-  m_iTotalDirs = dirs;
-
+void ProgressItem::setTotalDirs( unsigned long dirs ) {
   defaultProgress->slotTotalDirs( 0, dirs );
 }
 
 
-void ProgressItem::processedSize( unsigned long size ) {
+void ProgressItem::setProcessedSize( unsigned long size ) {
+  m_iProcessedSize = size;
+
   defaultProgress->slotProcessedSize( 0, size );
 }
 
 
-void ProgressItem::processedFiles( unsigned long files ) {
+void ProgressItem::setProcessedFiles( unsigned long files ) {
+  m_iProcessedFiles = files;
+
   QString tmps;
   tmps.sprintf( "%u / %u", files, m_iTotalFiles );
   setText( listView->lv_count, tmps );
@@ -119,12 +122,12 @@ void ProgressItem::processedFiles( unsigned long files ) {
 }
 
 
-void ProgressItem::processedDirs( unsigned long dirs ) {
+void ProgressItem::setProcessedDirs( unsigned long dirs ) {
   defaultProgress->slotProcessedDirs( 0, dirs );
 }
 
 
-void ProgressItem::percent( unsigned long ipercent ) {
+void ProgressItem::setPercent( unsigned long ipercent ) {
   QString tmps = i18n( "%1 % of %2 ").arg( ipercent ).arg( KIO::convertSize(m_iTotalSize));
 
   setText( listView->lv_progress, tmps );
@@ -133,7 +136,7 @@ void ProgressItem::percent( unsigned long ipercent ) {
 }
 
 
-void ProgressItem::speed( unsigned long bytes_per_second ) {
+void ProgressItem::setSpeed( unsigned long bytes_per_second ) {
   QString tmps, tmps2;
   if ( bytes_per_second == 0 ) {
     tmps = i18n( "Stalled");
@@ -146,11 +149,12 @@ void ProgressItem::speed( unsigned long bytes_per_second ) {
   setText( listView->lv_speed, tmps );
   setText( listView->lv_remaining, tmps2 );
 
+  m_remainingTime = KIO::calculateRemaining( m_iTotalSize, m_iProcessedSize, bytes_per_second );
   defaultProgress->slotSpeed( 0, bytes_per_second );
 }
 
 
-void ProgressItem::copying( const KURL& from, const KURL& to ) {
+void ProgressItem::setCopying( const KURL& from, const KURL& to ) {
   setText( listView->lv_operation, i18n("Copying") );
   setText( listView->lv_url, from.path() );
   setText( listView->lv_filename, to.filename() );
@@ -159,7 +163,7 @@ void ProgressItem::copying( const KURL& from, const KURL& to ) {
 }
 
 
-void ProgressItem::moving( const KURL& from, const KURL& to ) {
+void ProgressItem::setMoving( const KURL& from, const KURL& to ) {
   setText( listView->lv_operation, i18n("Moving") );
   setText( listView->lv_url, from.path() );
   setText( listView->lv_filename, to.filename() );
@@ -168,14 +172,14 @@ void ProgressItem::moving( const KURL& from, const KURL& to ) {
 }
 
 
-void ProgressItem::renaming( const KURL& old_name, const KURL& new_name ) {
+void ProgressItem::setRenaming( const KURL& old_name, const KURL& new_name ) {
   setText( listView->lv_filename, new_name.filename() );
 
   defaultProgress->slotRenaming( 0, old_name, new_name );
 }
 
 
-void ProgressItem::creatingDir( const KURL& dir ) {
+void ProgressItem::setCreatingDir( const KURL& dir ) {
   setText( listView->lv_operation, i18n("Creating") );
   setText( listView->lv_url, dir.path() );
   setText( listView->lv_filename, dir.filename() );
@@ -184,7 +188,7 @@ void ProgressItem::creatingDir( const KURL& dir ) {
 }
 
 
-void ProgressItem::deleting( const KURL& url ) {
+void ProgressItem::setDeleting( const KURL& url ) {
   setText( listView->lv_operation, i18n("Deleting") );
   setText( listView->lv_url, url.path() );
   setText( listView->lv_filename, url.filename() );
@@ -193,7 +197,7 @@ void ProgressItem::deleting( const KURL& url ) {
 }
 
 
-void ProgressItem::canResume( bool _resume ) {
+void ProgressItem::setCanResume( bool _resume ) {
   QString tmps;
   // set canResume
   if ( _resume ) {
@@ -342,7 +346,7 @@ int UIServer::newJob( QCString observerAppId )
   // increment counter
   s_jobId++;
 
-  ProgressItem *item = new ProgressItem( myListView, it.current(), observerAppId, s_jobId );
+  ProgressItem *item = new ProgressItem( myListView, it.current(), observerAppId, s_jobId, !m_bShowList );
   connect( item, SIGNAL( jobCanceled( ProgressItem* ) ),
  	   SLOT( slotJobCanceled( ProgressItem* ) ) );
 
@@ -384,7 +388,7 @@ void UIServer::totalSize( int id, unsigned long size )
 
   ProgressItem *item = findItem( id );
   if ( item ) {
-    item->totalSize( size );
+    item->setTotalSize( size );
   }
 }
 
@@ -394,7 +398,7 @@ void UIServer::totalFiles( int id, unsigned long files )
 
   ProgressItem *item = findItem( id );
   if ( item ) {
-    item->totalFiles( files );
+    item->setTotalFiles( files );
   }
 }
 
@@ -404,7 +408,7 @@ void UIServer::totalDirs( int id, unsigned long dirs )
 
   ProgressItem *item = findItem( id );
   if ( item ) {
-    item->totalDirs( dirs );
+    item->setTotalDirs( dirs );
   }
 }
 
@@ -414,7 +418,7 @@ void UIServer::processedSize( int id, unsigned long size )
 
   ProgressItem *item = findItem( id );
   if ( item ) {
-    item->processedSize( size );
+    item->setProcessedSize( size );
   }
 }
 
@@ -424,7 +428,7 @@ void UIServer::processedFiles( int id, unsigned long files )
 
   ProgressItem *item = findItem( id );
   if ( item ) {
-    item->processedFiles( files );
+    item->setProcessedFiles( files );
   }
 }
 
@@ -434,7 +438,7 @@ void UIServer::processedDirs( int id, unsigned long dirs )
 
   ProgressItem *item = findItem( id );
   if ( item ) {
-    item->processedDirs( dirs );
+    item->setProcessedDirs( dirs );
   }
 }
 
@@ -444,7 +448,7 @@ void UIServer::percent( int id, unsigned long ipercent )
 
   ProgressItem *item = findItem( id );
   if ( item ) {
-    item->percent( ipercent );
+    item->setPercent( ipercent );
   }
 }
 
@@ -454,7 +458,7 @@ void UIServer::speed( int id, unsigned long bytes_per_second )
 
   ProgressItem *item = findItem( id );
   if ( item ) {
-    item->speed( bytes_per_second );
+    item->setSpeed( bytes_per_second );
   }
 }
 
@@ -464,7 +468,7 @@ void UIServer::canResume( int id, unsigned int can_resume )
 
   ProgressItem *item = findItem( id );
   if ( item ) {
-    item->canResume( can_resume );
+    item->setCanResume( can_resume );
   }
 }
 
@@ -474,7 +478,7 @@ void UIServer::copying( int id, KURL from, KURL to )
 
   ProgressItem *item = findItem( id );
   if ( item ) {
-    item->copying( from, to );
+    item->setCopying( from, to );
   }
 }
 
@@ -484,7 +488,7 @@ void UIServer::moving( int id, KURL from, KURL to )
 
   ProgressItem *item = findItem( id );
   if ( item ) {
-    item->moving( from, to );
+    item->setMoving( from, to );
   }
 }
 
@@ -494,7 +498,7 @@ void UIServer::deleting( int id, KURL url )
 
   ProgressItem *item = findItem( id );
   if ( item ) {
-    item->deleting( url );
+    item->setDeleting( url );
   }
 }
 
@@ -504,7 +508,7 @@ void UIServer::renaming( int id, KURL old_name, KURL new_name )
 
   ProgressItem *item = findItem( id );
   if ( item ) {
-    item->renaming( old_name, new_name );
+    item->setRenaming( old_name, new_name );
   }
 }
 
@@ -514,7 +518,7 @@ void UIServer::creatingDir( int id, KURL dir )
 
   ProgressItem *item = findItem( id );
   if ( item ) {
-    item->creatingDir( dir );
+    item->setCreatingDir( dir );
   }
 }
 
@@ -541,26 +545,44 @@ void UIServer::slotJobCanceled( ProgressItem *item ) {
 
 
 void UIServer::slotUpdate() {
+  // don't do anything if we don't have any registered job
   if ( myListView->childCount() == 0 ) {
     hide();
     return;
   }
 
-  int totalFiles = 0;
-  int totalSize = 0;
-  int totalSpeed = 0;
+  int iTotalFiles = 0;
+  int iTotalSize = 0;
+  int iTotalSpeed = 0;
   QTime totalRemTime;
 
-  // TODO :  count totals, how ?
+  ProgressItem *item;
+
+  // count totals
+  QListViewItemIterator it( myListView );
+
+  for ( ; it.current(); ++it ) {
+    item = (ProgressItem*)it.current();
+    if ( item->totalSize() != 0 ) {
+      iTotalSize += ( item->totalSize() - item->processedSize() );
+    }
+    iTotalFiles += ( item->totalFiles() - item->processedFiles() );
+    iTotalSpeed += item->speed();
+    
+    if ( item->remainingTime() > totalRemTime ) {
+      totalRemTime = item->remainingTime();
+    }
+  }
 
   // update statusbar
-  statusBar()->changeItem( i18n( " Files : %1 ").arg( totalFiles ), ID_TOTAL_FILES);
-  statusBar()->changeItem( i18n( " Size : %1 ").arg( KIO::convertSize( totalSize ) ),
+  statusBar()->changeItem( i18n( " Files : %1 ").arg( iTotalFiles ), ID_TOTAL_FILES);
+  statusBar()->changeItem( i18n( " Size : %1 ").arg( KIO::convertSize( iTotalSize ) ),
 			   ID_TOTAL_SIZE);
   statusBar()->changeItem( i18n( " Time : %1 ").arg( totalRemTime.toString() ), ID_TOTAL_TIME);
-  statusBar()->changeItem( i18n( " %1/s ").arg( KIO::convertSize( totalSpeed ) ),
+  statusBar()->changeItem( i18n( " %1/s ").arg( KIO::convertSize( iTotalSpeed ) ),
 			   ID_TOTAL_SPEED);
 
+  // show only when desired
   if ( m_bShowList ) {
     show();
   }
