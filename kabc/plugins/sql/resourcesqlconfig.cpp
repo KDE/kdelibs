@@ -20,7 +20,10 @@
 
 #include <qlabel.h>
 #include <qlayout.h>
+#include <qspinbox.h>
+#include <qvbox.h>
 
+#include <klineedit.h>
 #include <klocale.h>
 
 #include "resource.h"
@@ -31,7 +34,7 @@ using namespace KABC;
 ResourceSqlConfig::ResourceSqlConfig( QWidget* parent,  const char* name )
     : ResourceConfigWidget( parent, name )
 {
-  resize( 285, 167 ); 
+  resize( 290, 170 ); 
 
   QGridLayout *mainLayout = new QGridLayout( this, 4, 2 );
 
@@ -54,11 +57,21 @@ ResourceSqlConfig::ResourceSqlConfig( QWidget* parent,  const char* name )
   mainLayout->addWidget( label, 2, 0 );
   mainLayout->addWidget( host, 2, 1 );
 
+  label = new QLabel( i18n( "Port:" ), this );
+  QVBox *box = new QVBox(this);
+  port = new QSpinBox(0, 65535, 1, box );
+  port->setSizePolicy(QSizePolicy(QSizePolicy::Maximum, QSizePolicy::Preferred));
+  port->setValue(389);
+  new QWidget(box, "dummy");
+
+  mainLayout->addWidget( label, 3, 0 );
+  mainLayout->addWidget( box, 3, 1 );
+
   label = new QLabel( i18n( "Database:" ), this );
   dbName = new KLineEdit( this );
 
-  mainLayout->addWidget( label, 3, 0 );
-  mainLayout->addWidget( dbName, 3, 1 );
+  mainLayout->addWidget( label, 4, 0 );
+  mainLayout->addWidget( dbName, 4, 1 );
 }
 
 void ResourceSqlConfig::loadSettings( KConfig *config )
@@ -67,6 +80,7 @@ void ResourceSqlConfig::loadSettings( KConfig *config )
   password->setText( KABC::Resource::cryptStr( config->readEntry( "SqlPassword" ) ) );
   dbName->setText( config->readEntry( "SqlName" ) );
   host->setText( config->readEntry( "SqlHost" ) );
+  port->setValue( config->readNumEntry( "SqlPort" ) );
 }
 
 void ResourceSqlConfig::saveSettings( KConfig *config )
@@ -75,6 +89,7 @@ void ResourceSqlConfig::saveSettings( KConfig *config )
   config->writeEntry( "SqlPassword", KABC::Resource::cryptStr( password->text() ) );
   config->writeEntry( "SqlName", dbName->text() );
   config->writeEntry( "SqlHost", host->text() );
+  config->writeEntry( "SqlPort", port->value() );
 }
 
 #include "resourcesqlconfig.moc"

@@ -117,6 +117,11 @@ class PhoneNumber
     int type() const;
 
     /**
+     * Returns a translated string of all types the address has.
+     */
+    QString typeLabel() const;
+
+    /**
      * Returns the translated label for phone number depending on its type.
      */
     QString label() const;

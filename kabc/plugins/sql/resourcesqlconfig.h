@@ -21,9 +21,10 @@
 #ifndef RESOURCESQLCONFIG_H
 #define RESOURCESQLCONFIG_H
 
-#include <klineedit.h>
-
 #include "resourceconfigwidget.h"
+
+class KLineEdit;
+class QSpinBox;
 
 namespace KABC {
 
@@ -34,14 +35,17 @@ class ResourceSqlConfig : public ResourceConfigWidget
 public:
   ResourceSqlConfig( QWidget* parent = 0, const char* name = 0 );
 
+public slots:
+  void loadSettings( KConfig *config );
+  void saveSettings( KConfig *config );
+
+private:
   KLineEdit* user;
   KLineEdit* dbName;
   KLineEdit* host;
   KLineEdit* password;
 
-public slots:
-  void loadSettings( KConfig *config );
-  void saveSettings( KConfig *config );
+  QSpinBox* port;
 };
 
 }

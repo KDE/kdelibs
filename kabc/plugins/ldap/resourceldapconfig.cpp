@@ -98,4 +98,5 @@ void ResourceLDAPConfig::saveSettings( KConfig *config )
   config->writeEntry( "LdapDn", dn->text() );
   config->writeEntry( "LdapFilter", filter->text() );
 }
+
 #include "resourceldapconfig.moc"

@@ -101,6 +101,25 @@ int Address::type() const
   return mType;
 }
 
+QString Address::typeLabel() const
+{
+  QString label;
+  bool first = true;
+
+  TypeList list = typeList();
+
+  TypeList::Iterator it;
+  for ( it = list.begin(); it != list.end(); ++it ) {
+    if ( type() & (*it) ) {
+      label.append( ( first ? "" : "/" ) + typeLabel( *it ) );
+      if ( first )
+        first = false;
+    }
+  }
+
+  return label;
+}
+
 void Address::setPostOfficeBox( const QString &s )
 {
   mEmpty = false;

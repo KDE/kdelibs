@@ -105,6 +105,11 @@ class Address
     int type() const;
 
     /**
+     * Returns a translated string of all types the address has.
+     */
+    QString typeLabel() const;
+
+    /**
      * Sets the post office box.
      */
     void setPostOfficeBox( const QString & );
