@@ -29,6 +29,7 @@
 #include <kdebug.h>
 #include <xml/dom_nodeimpl.h>
 #include <xml/dom_docimpl.h>
+#include <khtml_part.h>
 #include <rendering/render_object.h>
 
 using namespace KJS;
@@ -97,6 +98,9 @@ void JSEventListener::handleEvent(DOM::Event &evt)
         if (ret.type() == QVariant::Bool && ret.toBool() == false)
             evt.preventDefault();
     }
+    DOM::DocumentImpl* doc = part->xmlDocImpl();
+    if (doc)
+      doc->updateRendering();
   }
 }
 
