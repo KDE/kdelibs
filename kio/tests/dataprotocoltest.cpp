@@ -1,7 +1,8 @@
 // testing the data kioslave
 // (C) 2002, 2003 Leo Savernik
 //
-// invoke "make test" to generate the binary
+// invoke "make dataprotocoltest" to generate the binary inside KDE CVS
+// invoke "make test" to generate the binary outside KDE CVS
 
 // fix the symptoms, not the illness ;-)
 #ifdef QT_NO_ASCII_CAST
@@ -35,27 +36,44 @@ public:
   virtual void mimetype(const KURL &) = 0;
 
   void mimeType(const QString &type) {
-    cout << "mime type: " << type << endl;
+    testStrings("MIME Type: ",mime_type_expected,type);
   }
 
   void totalSize(KIO::filesize_t bytes) {
-    cout << "content size: " << bytes << " bytes" << endl;
+//    cout << "content size: " << bytes << " bytes" << endl;
   }
 
   void setMetaData(const QString &key, const QString &value) {
 //    meta_data[key] = value;
-    cout << "§ " << key << " = " << value << endl;
+//    cout << "§ " << key << " = " << value << endl;
+    QString prefix = "Metadata[\""+key+"\"]: ";
+    KIO::MetaData::Iterator it = attributes_expected.find(key);
+    if (it != attributes_expected.end()) {
+      testStrings(prefix,it.data(),value);
+      // remove key from map
+      attributes_expected.remove(it);
+    } else {
+      cout << endl << prefix << " no such key expected";
+      total++;
+    }
   }
 
   void sendMetaData() {
-    // noop
+    // check here if attributes_expected contains any excess keys
+    KIO::MetaData::ConstIterator it = attributes_expected.begin();
+    KIO::MetaData::ConstIterator end = attributes_expected.end();
+    for (; it != end; ++it) {
+      cout << endl << "Metadata[\"" << it.key()
+      		<< "\"] was expected but not defined";
+      total++;
+    }
   }
 
   void data(const QByteArray &a) {
     if (a.isEmpty())
-      cout << "<no more data>" << endl;
+/*      cout << "<no more data>" << endl*/;
     else {
-      cout << (const char *)a << endl;
+      testStrings("Content: ",content_expected,a);
     }/*end if*/
   }
 
@@ -65,33 +83,164 @@ public:
   void dispatchLoop() {
     // dummy to make kde_main happy
   }
+
+  // == stuff for regression testing
+private:
+  int testcaseno;	// number of testcase
+  bool failure;		// true if any testcase failed
+  QMap<int,bool> failed_testcases;
+
+  // -- testcase related members
+  QString mime_type_expected;	// expected mime type
+  /** contains all attributes and values the testcase has to set */
+  KIO::MetaData attributes_expected;
+  /** contains the content as it is expected to be returned */
+  QByteArray content_expected;
+  int passed;		// # of passed tests
+  int total;		// # of total tests
+
+  /**
+   * compares two strings, printing an error message if they don't match.
+   * @param prefix prefix string for output in case of mismatch
+   * @param templat template string
+   * @param s string to compare to template
+   * @param casesensitive true if case sensitive compare (currently not used)
+   */
+  void testStrings(const QString &prefix, const QString &templat,
+  		const QString &s, bool casesensitive = true) {
+    if (templat == s)
+      passed++;
+    else {
+      cout << endl << prefix << "expected \"" << templat << "\", found \""
+      		<< s << "\"";
+      failure = true;
+    }/*end if*/
+    total++;
+  }
+  
+public:
+  /** begins a testrun over all testcases */
+  void initTestrun() {
+    testcaseno = 0;
+    failure = false;
+  }
+
+  /** reuturns true if any testcase failed
+    */
+  bool hasFailedTestcases() const { return failure; }
+
+  /**
+   * sets up a new testcase
+   * @param name screen name for testcase
+   */
+  void beginTestcase(const char *name) {
+    passed = 0;
+    total = 0;
+    testcaseno++;
+    cout << "Testcase " << testcaseno << ": [" << name << "] ";
+  }
+
+  /**
+   * sets the mime type that this testcase is expected to return
+   */
+  void setExpectedMimeType(const QString &mime_type) {
+    mime_type_expected = mime_type;
+  }
+
+  /**
+   * sets all attribute-value pairs the testcase must deliver.
+   */
+  void setExpectedAttributes(const KIO::MetaData &attres) {
+    attributes_expected = attres;
+  }
+
+  /**
+   * sets content as expected to be delivered by the testcase.
+   */
+  void setExpectedContent(const QByteArray &content) {
+    content_expected = content;
+  }
+
+  /**
+   * closes testcase, printing out stats
+   */
+  void endTestcase() {
+    bool failed = passed < total;
+    if (failed) {
+      failure = true;
+      failed_testcases[testcaseno] = true;
+      cout << endl;
+    }
+    cout << "(" << passed << " of " << total << ") " << (failed ? "failed"
+    		: "passed") << endl;
+  }
+
+  void endTestrun() {
+    if (failure) {
+      QMap<int,bool>::ConstIterator it = failed_testcases.begin();
+      for (; it != failed_testcases.end(); ++it) {
+        cout << "Testcase " << it.key() << " failed" << endl;
+      }
+    }
+  }
 };
 
 #include "dataprotocol.cpp"	// we need access to static data & functions
 
 // == general functionality
-const char * const urls[] = {
-	// -------------------- escape resolving
-	"data:,blah%20blah",
-	// -------------------- mime type, escape resolving
+const struct {
+const char * const name;
+const char * const exp_mime_type; // 0 means "text/plain"
+const struct {
+	const char * const key;
+	const char * const value;
+} exp_attrs[10];	// ended with a key==0, value==0 pair
+const char * const exp_content;
+const char * const url;
+} testcases[] = {
+	// -----------------------------------------------------------------
+	{ "escape resolving", 0, {}, "blah blah", "data:,blah%20blah" },
+	// --------------------
+	{ "mime type, escape resolving", "text/html", {},
+	"<div style=\"border:thin orange solid;padding:1ex;background-color:"
+	"yellow;color:black\">Rich <b>text</b></div>",
 	"data:text/html,<div%20style=\"border:thin%20orange%20solid;"
-	"padding:1ex;background-color:yellow;color:black\">Rich%20<b>text</b></div>",
+	"padding:1ex;background-color:yellow;color:black\">Rich%20<b>text</b>"
+	"</div>" },
 	// -------------------- whitespace test I
+	{ "whitespace test I", "text/css", {
+		{ "charset", "iso-8859-15" }, { 0,0 } },
+	" body { color: yellow; background:darkblue; font-weight:bold }",
 	"data:text/css  ;  charset =  iso-8859-15 , body { color: yellow; "
-	"background:darkblue; font-weight:bold }",
+	"background:darkblue; font-weight:bold }" },
 	// -------------------- out of spec argument order, base64 decoding,
 	// whitespace test II
-	"data: ;  base64 ; charset =  \"iso-8859-1\" ,cGFhYWFhYWFhc2QhIQo=",
+	{ "out of spec argument order, base64 decoding, whitespace test II",
+	0, {
+		{ "charset", "iso-8859-1" }, { 0,0 } },
+	"paaaaaaaasd!!\n",
+	"data: ;  base64 ; charset =  \"iso-8859-1\" ,cGFhYWFhYWFhc2QhIQo=" },
 	// -------------------- arbitrary keys, reserved names as keys,
 	// whitespace test III
+	{ "arbitrary keys, reserved names as keys, whitespace test III", 0, {
+		{ "base64", "nospace" }, { "key", "onespaceinner" },
+		{ "key2", "onespaceouter" }, { "charset", "utf8" },
+		{ "<<empty>>", "" }, { 0,0 } },
+	"Die, Allied Schweinehund (C) 1990 Wolfenstein 3D",
 	"data: ;base64=nospace;key = onespaceinner; key2=onespaceouter ;"
 	" charset = utf8 ; <<empty>>= ,Die, Allied Schweinehund "
-	"(C) 1990 Wolfenstein 3D",
+	"(C) 1990 Wolfenstein 3D" },
 	// -------------------- string literal with escaped chars, testing
 	// delimiters within string
+	{ "string literal with escaped chars, testing delimiters within "
+	"string", 0, {
+		{ "fortune-cookie", "Master Leep say: \"Rabbit is humble, "
+		"Rabbit is gentle; follow the Rabbit\"" }, { 0,0 } },
+	"(C) 1997 Shadow Warrior ;-)",
 	"data:;fortune-cookie=\"Master Leep say: \\\"Rabbit is humble, "
-	"Rabbit is gentle; follow the Rabbit\\\"\",(C) 1997 Shadow Warrior ;-)",
-};      
+	"Rabbit is gentle; follow the Rabbit\\\"\",(C) 1997 Shadow Warrior "
+	";-)" },
+};
 
 #if 0
 // == charset tests
@@ -103,11 +252,36 @@ const QChar * const charset_urls[] = {
 int main(int /*argc*/,char */*argv*/[]) {
   DataProtocol kio_data;
 
-  for (uint i = 0; i < sizeof urls/sizeof urls[0]; i++) {
-    cout << "------------------------------------------------------------" << endl;
-    kio_data.get(urls[i]);
-  }/*next i*/
+  kio_data.initTestrun();
+  for (uint i = 0; i < sizeof testcases/sizeof testcases[0]; i++) {
+    kio_data.beginTestcase(testcases[i].name);
+    kio_data.setExpectedMimeType(testcases[i].exp_mime_type != 0
+    		? testcases[i].exp_mime_type : "text/plain");
 
-  return 0;
+    bool has_charset = false;
+    MetaData exp_attrs;
+    if (testcases[i].exp_attrs != 0) {
+      for (uint j = 0; testcases[i].exp_attrs[j].key != 0; j++) {
+        exp_attrs[testcases[i].exp_attrs[j].key] = testcases[i].exp_attrs[j].value;
+	if (strcmp(testcases[i].exp_attrs[j].key,"charset") == 0)
+	  has_charset = true;
+      }/*next j*/
+    }
+    if (!has_charset) exp_attrs["charset"] = "us-ascii";
+    kio_data.setExpectedAttributes(exp_attrs);
+
+    QByteArray exp_content;
+    uint exp_content_len = strlen(testcases[i].exp_content);
+    exp_content.setRawData(testcases[i].exp_content,exp_content_len);
+    kio_data.setExpectedContent(exp_content);
+
+    kio_data.get(testcases[i].url);
+
+    kio_data.endTestcase();
+    exp_content.resetRawData(testcases[i].exp_content,exp_content_len);
+  }/*next i*/
+  kio_data.endTestrun();
+
+  return kio_data.hasFailedTestcases() ? 1 : 0;
 }
 
