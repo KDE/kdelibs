@@ -3421,6 +3421,8 @@ void KHTMLPart::overURL( const QString &url, const QString &target, bool /*shift
   if (url.find( QString::fromLatin1( "javascript:" ),0, false ) == 0 ) {
     QString jscode = KURL::decode_string( url.mid( url.find( "javascript:", 0, false ) ) );
     jscode = KStringHandler::rsqueeze( jscode, 80 ); // truncate if too long
+    if (url.startsWith("javascript:window.open"))
+      jscode += i18n(" (In new window)");    
     setStatusBarText( QStyleSheet::escape( jscode ), BarHoverText );
     return;
   }
@@ -3514,7 +3516,11 @@ void KHTMLPart::overURL( const QString &url, const QString &target, bool /*shift
              (target.lower() != "_self") &&
              (target.lower() != "_parent"))
     {
-      extra = i18n(" (In other frame)");
+      KHTMLPart *destpart = findFrame(target);
+      if (!destpart)
+        extra = i18n(" (In new window)");
+      else
+        extra = i18n(" (In other frame)");
     }
 
     if (u.protocol() == QString::fromLatin1("mailto")) {
