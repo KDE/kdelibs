@@ -1567,8 +1567,9 @@ void KHTMLParser::parseF( HTMLClue * _clue, const char *str )
 			st.tokenize( token+5, " ," );
 			while ( st.hasMoreTokens() )
 			{
-			    const char *fname = st.nextToken();
-			    QFont tryFont( fname );
+			    QString fname(st.nextToken());
+			    fname = fname.lower();
+			    QFont tryFont( fname.data() );
 			    QFontInfo fi( tryFont );
 			    if ( strcmp( tryFont.family(), fi.family() ) == 0 )
 			    {
