@@ -765,14 +765,12 @@ void RenderText::caretPos(int offset, int flags, int &_x, int &_y, int &width, i
 #if 0
   kdDebug(6040) << "_x="<<_x << " s->m_x="<<s->m_x
   		<< " s->m_start"<<s->m_start
-		<< " s->m_len"<<s->m_len << endl;
+		<< " s->m_len" << s->m_len << " _y=" << _y << endl;
 #endif
 
   int absx, absy;
 
-  RenderObject *cb = containingBlock();
-
-  if (cb && cb != this && cb->absolutePosition(absx,absy))
+  if (absolutePosition(absx,absy))
   {
     //kdDebug(6040) << "absx=" << absx << " absy=" << absy << endl;
     _x += absx;
