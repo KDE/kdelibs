@@ -522,18 +522,18 @@ KLocale::SignPosition KLocale::negativeMonetarySignPosition() const
   return _negativeMonetarySignPosition;
 }
 
-QString KLocale::formatMoney(double num, const QString &symbol, int digits) const
+QString KLocale::formatMoney(double num, const QString &symbol, int precision) const
 {
     // some defaults
     QString currency = symbol.isNull()
         ? currencySymbol()
         : symbol;
-    if(digits < 0) digits = fracDigits();
-    else if(digits > 80) digits = 80; // do not crash Qt...
+    if (precision < 0) precision = fracDigits();
+    if (precision > 80) precision = 80; // do not crash Qt...
 
     // the number itself
     bool neg = num < 0;
-    QString res = QString::number(neg?-num:num, 'f', digits);
+    QString res = QString::number(neg?-num:num, 'f', precision);
     int pos = res.find('.');
     if (pos == -1) pos = res.length();
     else res.replace(pos, 1, monetaryDecimalSymbol());
@@ -586,7 +586,9 @@ QString KLocale::formatMoney(const QString &numStr) const
 QString KLocale::formatNumber(double num, int precision) const
 {
     bool neg = num < 0;
-    QString res = QString::number(neg?-num:num, 'f', (precision==-1) ? 2 : precision);
+    if (precision == -1) precision = 2;
+    if (precision > 80) precision = 80; // do not crash Qt...
+    QString res = QString::number(neg?-num:num, 'f', precision);
     int pos = res.find('.');
     if (pos == -1) pos = res.length();
     else res.replace(pos, 1, decimalSymbol());
