@@ -28,7 +28,10 @@
  * $Id$
 */
 
+#include <config.h>
+
 #include "sslio.h"
+#include "kopenssl.h"
 // #include "qdaemon.h"
 
 #include <qsocketnotifier.h>
@@ -48,6 +51,20 @@ extern "C" {
 
 using namespace KDESSL;
 
+
+class IODevice::Private {
+    public:
+        Private() : ctx(0), m_ssl(0) {}
+#ifdef KSSL_HAVE_SSL
+        SSL_CTX *ctx;
+        SSL *m_ssl;
+#else
+        void *ctx;
+        void *m_ssl;
+#endif
+        KOpenSSLProxy *ssl;
+};
+
 const int RBufDefaultSize = 16*1024;
 const int WBufDefaultSize = RBufDefaultSize;
 /** We do not set the buffers to start at zero because of the
@@ -61,83 +78,92 @@ const int WBufDefaultSize = RBufDefaultSize;
 */
 const int DefaultBufferOffset = 8;
 
-IODevice::IODevice(SSL_CTX *ctx_, Party p)
-    : QIODevice(),
-      party(p),
-      m_fd(0),
-      ctx(ctx_),
-      m_ssl(0),
-      snRead(0),
-      snWrite(0),
-      rbuf(new char[RBufDefaultSize]),
-      rbufSize(RBufDefaultSize),
-      rbufUsed(0),
-      rbufOffset(DefaultBufferOffset),
-      wbuf(new char[WBufDefaultSize]),
-      wbufSize(WBufDefaultSize),
-      wbufUsed(0),
-      wbufOffset(DefaultBufferOffset),
-      m_state(Idle),
-      dns(0),
-      mutex(new QMutex(true))
+IODevice::IODevice(void *ctx_, Party p)
+: QIODevice(),
+    party(p),
+    m_fd(0),
+    snRead(0),
+    snWrite(0),
+    rbuf(new char[RBufDefaultSize]),
+    rbufSize(RBufDefaultSize),
+    rbufUsed(0),
+    rbufOffset(DefaultBufferOffset),
+    wbuf(new char[WBufDefaultSize]),
+    wbufSize(WBufDefaultSize),
+    wbufUsed(0),
+    wbufOffset(DefaultBufferOffset),
+    m_state(Idle),
+    dns(0),
+    mutex(new QMutex(true)),
+    d(new Private)
 {
+#ifdef KSSL_HAVE_SSL
+    d->ctx = static_cast<SSL_CTX*>(ctx_);
+#endif
+    d->ssl = KOpenSSLProxy::self();
 }
 
 IODevice::~IODevice()
 {
     mutex->lock();
-    if(m_fd!=0) close();
-    if(rbuf!=0) { delete rbuf; rbuf=0; }
+    if (m_fd != 0)
+        close();
+    if (rbuf != 0) {
+        delete rbuf;
+        rbuf = 0;
+    }
     mutex->unlock();
     delete mutex;
+    mutex = 0;
 }
 
 IODevice::ErrorCode IODevice::setFd(int fd_)
 {
     int err;
-    IODevice::ErrorCode rc;
+    IODevice::ErrorCode rc = Failure;
+#ifdef KSSL_HAVE_SSL
     // -----
     mutex->lock();
-    m_ssl=SSL_new(ctx);
-    if(m_ssl==0)
-    {
-        rc=Failure;
-    } else {
-        SSL_set_fd(m_ssl, fd_);
-        if(party==Server)
+    d->m_ssl = d->ssl->SSL_new(d->ctx);
+    if (d->m_ssl != 0) {
+        d->ssl->SSL_set_fd(d->m_ssl, fd_);
+        if (party == Server)
         {
-            err=SSL_accept(m_ssl);
+            err = d->ssl->SSL_accept(d->m_ssl);
         } else {
-            err=SSL_connect(m_ssl);
+            err = d->ssl->SSL_connect(d->m_ssl);
         }
         // -----
-        switch(err)
+        switch (err)
         {
-        case 1: // successfully completed
-            m_fd=fd_;
-            // ----- make the fd non-blocking:
-            // setBlocking(false); // not by default
-            snRead=new QSocketNotifier(m_fd, QSocketNotifier::Read,
-                                       this, "ReadNotifier");
-            connect(snRead, SIGNAL(activated(int)),
-                    SLOT(slotReadNotification(int)));
-            snWrite=new QSocketNotifier(m_fd, QSocketNotifier::Write,
-                                        this, "WriteNotifier");
-            connect(snWrite, SIGNAL(activated(int)),
-                    SLOT(slotWriteNotification(int)));
-            setState(Connection);
-            rc=Success;
-            break;
-        case 0: // handshake ended properly but was not successful
-            ::close(fd_);
-        rc=Refused;
-        break;
-        default: // a real error occured, most probably an OpenSSL error
-            ::close(fd_);
-        rc=Failure;
+            case 1: // successfully completed
+                m_fd = fd_;
+                // ----- make the fd non-blocking:
+                // setBlocking(false); // not by default
+                snRead = new QSocketNotifier(m_fd, QSocketNotifier::Read,
+                        this, "ReadNotifier");
+                connect(snRead, SIGNAL(activated(int)),
+                        SLOT(slotReadNotification(int)));
+                snWrite = new QSocketNotifier(m_fd, QSocketNotifier::Write,
+                        this, "WriteNotifier");
+                connect(snWrite, SIGNAL(activated(int)),
+                        SLOT(slotWriteNotification(int)));
+                setState(Connection);
+                rc = Success;
+                break;
+            case 0: // handshake ended properly but was not successful
+                ::close(fd_);
+                rc = Refused;
+                break;
+            default: // a real error occured, most probably an OpenSSL error
+                ::close(fd_);
+                rc = Failure;
         };
     }
     mutex->unlock();
+#else
+    emit error(NoSSL);
+#endif
     return rc;
 }
 
@@ -147,15 +173,15 @@ IODevice::ErrorCode IODevice::setBlocking(bool yes)
     IODevice::ErrorCode rc;
     // -----
     mutex->lock();
-    if((state=::fcntl(m_fd, F_GETFL, 0)))
+    if((state = ::fcntl(m_fd, F_GETFL, 0)))
     {
-        if(::fcntl( m_fd, F_SETFL, yes ? (state&~O_NDELAY) : (state|O_NDELAY))<0)
+        if(::fcntl( m_fd, F_SETFL, yes ? (state&~O_NDELAY) : (state|O_NDELAY)) <0)
 	{
             switch(errno)
 	    {
 	    case EACCES:
 	    case EBADF:
-                rc=InternalError;
+                rc = InternalError;
                 break;
 	    case EFAULT:
 	    case EAGAIN:
@@ -169,14 +195,14 @@ IODevice::ErrorCode IODevice::setBlocking(bool yes)
 	    case ENOLCK:
 	    case EPERM:
 	    default:
-                rc=SysError;
+                rc = SysError;
 	    }
 	} else {
-            rc=Success;
+            rc = Success;
 	}
     } else {
         // our own FD is invalid?
-        rc=InternalError;
+        rc = InternalError;
     }
     mutex->unlock();
     return rc;
@@ -186,12 +212,12 @@ bool IODevice::blocking()
 {
     bool rc;
     mutex->lock();
-    int state=::fcntl(m_fd, F_GETFL, 0);
-    if(state<0)
+    int state = ::fcntl(m_fd, F_GETFL, 0);
+    if (state < 0)
     {
-        rc=(state & O_NONBLOCK)==0;
+        rc = (state & O_NONBLOCK) == 0;
     } else {
-        rc=false; // does not mean anything
+        rc = false; // does not mean anything
     }
     mutex->unlock();
     return rc;
@@ -201,48 +227,56 @@ void IODevice::close()
 {
     // WORK_TO_DO: handle close when there is data to be written
 
+#ifdef KSSL_HAVE_SSL
     // -----
     mutex->lock();
-    if(m_state!=Idle)
+    if (m_state != Idle)
     {
-        if(snRead!=0)
+        if (snRead != 0)
         {
-            delete snRead; snRead=0;
+            delete snRead;
+            snRead = 0;
         }
-        if(snWrite!=0)
-        {        delete snWrite; snWrite=0;
+        if (snWrite != 0)
+        {
+            delete snWrite;
+            snWrite = 0;
         }
-        SSL_shutdown(m_ssl);
-        SSL_free(m_ssl); m_ssl=0;
-        if(m_fd!=0)
+        d->ssl->SSL_shutdown(d->m_ssl);
+        d->ssl->SSL_free(d->m_ssl);
+        d->m_ssl = 0;
+        if (m_fd != 0)
         {
             ::close(m_fd);
-            m_fd=0;
+            m_fd = 0;
         }
-        rbufUsed=0;
-        rbufOffset=0;
-        wbufUsed=0;
-        wbufOffset=0;
+        rbufUsed = 0;
+        rbufOffset = 0;
+        wbufUsed = 0;
+        wbufOffset = 0;
     }
     mutex->unlock();
     if(m_state!=Idle)
     {
         setState(Idle);
-        emit(disconnected(this));
+        emit disconnected(this);
     }
+#else
+    emit error(NoSSL);
+#endif
 }
 
 bool IODevice::open(int m)
 {
     bool rc;
     mutex->lock();
-    if(isOpen())
+    if (isOpen())
     {
-        rc=false;
+        rc = false;
     } else {
         QIODevice::setMode(m & IO_ReadWrite);
         QIODevice::setState(IO_Open);
-        rc=true;
+        rc = true;
     }
     mutex->unlock();
     return rc;
@@ -258,7 +292,7 @@ QIODevice::Offset IODevice::size() const
     // the read buffer on read notifications
     QIODevice::Offset temp;
     mutex->lock();
-    temp=rbufUsed;
+    temp = rbufUsed;
     mutex->unlock();
     return temp;
 }
@@ -271,15 +305,15 @@ Q_LONG IODevice::readBlock(char *data, Q_ULONG maxlen)
     // to the data buffer when using this method
     mutex->lock();
     // -----
-    if(rbufUsed>0)
+    if (rbufUsed > 0)
     { // there is data available
-        num=QMIN(maxlen, (unsigned)rbufUsed);
+        num = QMIN(maxlen, (unsigned)rbufUsed);
         memcpy(data, rbuf+rbufOffset, num);
-        rbufUsed-=num;
-        rbufOffset+=num;
-        rc=num;
+        rbufUsed -= num;
+        rbufOffset += num;
+        rc = num;
     } else {
-        rc=-1;
+        rc = -1;
     }
     // -----
     mutex->unlock();
@@ -292,20 +326,20 @@ Q_LONG IODevice::writeBlock(const char* data, Q_ULONG len)
     unsigned num;
     // ----- add data to write buffer:
     mutex->lock();
-    if(len>(unsigned)wbufSize-wbufOffset-wbufUsed && wbufOffset>0)
+    if (len > (unsigned)wbufSize-wbufOffset-wbufUsed && wbufOffset>0)
     {
         // (this means a full memcpy of the bytes in data, but hey -
         // life's a bitch)
         cleanupWBufOffset();
     }
-    if(wbufOffset+wbufUsed<wbufSize)
+    if(wbufOffset+wbufUsed < wbufSize)
     { // there is space left in the write buffer
-        num=QMIN(len, (unsigned)wbufSize-wbufOffset-wbufUsed);
+        num=QMIN(len, (unsigned)wbufSize - wbufOffset - wbufUsed);
         memcpy(wbuf+wbufUsed+wbufOffset, data, num);
-        wbufUsed+=num;
-        rc=num;
+        wbufUsed += num;
+        rc = num;
     } else {
-        rc=-1;
+        rc = -1;
     }
     // -----
     mutex->unlock();
@@ -316,47 +350,53 @@ Q_LONG IODevice::writeBlock(const char* data, Q_ULONG len)
 
 void IODevice::writeToSocket()
 { // try to write the data available in the write buffer
-    int sslerror, rc=0;
-    bool syserror=false;
+#ifdef KSSL_HAVE_SSL
+    int sslerror, rc = 0;
+    bool syserror = false;
     snWrite->setEnabled(false);
     mutex->lock();
     // -----
     // make sure we ignore write events that do not handle user data
     // (remember SSL knows about other data types than user)
-    if(wbufUsed!=0)
+    if (wbufUsed != 0)
     {
-        rc=SSL_write(m_ssl, wbuf+wbufOffset, wbufUsed);
-        sslerror=SSL_get_error(m_ssl, rc);
-        switch(sslerror)
+        rc = d->ssl->SSL_write(d->m_ssl, wbuf+wbufOffset, wbufUsed);
+        sslerror = d->ssl->SSL_get_error(d->m_ssl, rc);
+        switch (sslerror)
         {
-        case SSL_ERROR_NONE:
-            // we expect rc to be leq than wbufUsed
-            wbufOffset+=rc;
-            wbufUsed-=rc;
-            if(wbufUsed==0)
-            { // the whole buffer has been written:
-                wbufOffset=0;
-            }
-            break;
-        case SSL_ERROR_WANT_WRITE:
-            snWrite->setEnabled(true);
-            // It is important not to increment wbufOffset here - OpenSSL
-            // expects us to use the same buffer start address at the next
-            // call to SSL_write!
-            rc=0;
-            break;
-        case SSL_ERROR_WANT_READ:
-        case SSL_ERROR_WANT_X509_LOOKUP:
-        case SSL_ERROR_WANT_CONNECT:
-        case SSL_ERROR_SYSCALL:
-        case SSL_ERROR_SSL:
-        default:
-            syserror=true;
+            case SSL_ERROR_NONE:
+                // we expect rc to be leq than wbufUsed
+                wbufOffset += rc;
+                wbufUsed -= rc;
+                if(wbufUsed == 0)
+                { // the whole buffer has been written:
+                    wbufOffset = 0;
+                }
+                break;
+            case SSL_ERROR_WANT_WRITE:
+                snWrite->setEnabled(true);
+                // It is important not to increment wbufOffset here - OpenSSL
+                // expects us to use the same buffer start address at the next
+                // call to SSL_write!
+                rc = 0;
+                break;
+            case SSL_ERROR_WANT_READ:
+            case SSL_ERROR_WANT_X509_LOOKUP:
+            case SSL_ERROR_WANT_CONNECT:
+            case SSL_ERROR_SYSCALL:
+            case SSL_ERROR_SSL:
+            default:
+                syserror = true;
         };
     }
     mutex->unlock();
-    if(syserror) emit(error(SysError));
-    if(rc>0) emit(bytesWritten(rc));
+    if (syserror)
+        emit error(SysError);
+    if (rc > 0)
+        emit bytesWritten(rc);
+#else
+        emit error(NoSSL);
+#endif
 }
 
 int IODevice::getch()
@@ -366,13 +406,13 @@ int IODevice::getch()
     // -----
     mutex->lock();
     // -----
-    if(rbufUsed>0)
+    if(rbufUsed > 0)
     {
-        r=rbuf[rbufOffset++];
-        rbufUsed-=1;
-        rc=r;
+        r = rbuf[rbufOffset++];
+        rbufUsed -= 1;
+        rc = r;
     } else {
-        rc=-1;
+        rc = -1;
     }
     // -----
     mutex->unlock();
@@ -382,15 +422,15 @@ int IODevice::getch()
 int IODevice::putch(int c)
 { // no need to be thread safe here, writeBlock(..) is
     char data[2];
-    data[0]=c; data[1]=0;
+    data[0] = c; data[1] = 0;
     return writeBlock(data, 2);
 }
 
 int IODevice::ungetch(int i)
 {
-    char c=(char)i;
+    char c = (char)i;
     mutex->lock();
-    if(rbufOffset==0)
+    if (rbufOffset == 0)
     {
         // this one is VERY inefficient - to bad QTextStream does a
         // lookup with a unget(..) for the first two chars (the logic
@@ -398,7 +438,7 @@ int IODevice::ungetch(int i)
         // in fact, this if(..) is academic) :
         cleanupRBufOffset();
     }
-    rbuf[--rbufOffset]=c;
+    rbuf[--rbufOffset] = c;
     ++rbufUsed;
     mutex->unlock();
     return i;
@@ -406,38 +446,39 @@ int IODevice::ungetch(int i)
 
 int IODevice::readLine(char *data, uint len)
 {
-    unsigned nl=0;
+    unsigned nl = 0;
     int count, rc;
     // -----
     mutex->lock();
     // -----
-    if(rbufUsed==0)
+    if (rbufUsed == 0)
     {
-        rc=-1; // no data available
+        rc = -1; // no data available
     } else {
-        for(count=rbufOffset; count<rbufOffset+rbufUsed; ++count)
-	{
-            if(rbuf[count]=='\n') break;
+        for (count = rbufOffset; count < rbufOffset+rbufUsed; ++count)
+        {
+            if (rbuf[count] == '\n')
+                break;
             ++nl;
-	}
+        }
         // now nl contains the number of bytes until nl is encountered
-        if(count!=rbufOffset+rbufUsed)
-	{
-            if(nl>=len-1)
-	    { // not enough space in data available
-                rc=-1;
-	    } else {
+        if (count != rbufOffset+rbufUsed)
+        {
+            if(nl >= len-1)
+            { // not enough space in data available
+                rc = -1;
+            } else {
                 nl++; // include the newline
                 memcpy(data, rbuf+rbufOffset, nl);
-                data[nl]=0;
-                rbufUsed-=nl;
-                rbufOffset+=nl;
-                rc=nl;
-	    }
-	} else {
+                data[nl] = 0;
+                rbufUsed -= nl;
+                rbufOffset += nl;
+                rc = nl;
+            }
+        } else {
             // no newline found
-            rc=-1;
-	}
+            rc = -1;
+        }
     }
     mutex->unlock();
     return rc;
@@ -455,6 +496,7 @@ void IODevice::slotWriteNotification(int /* socket */)
 
 IODevice::ErrorCode IODevice::fillReadBuffer()
 {
+#ifdef KSSL_HAVE_SSL
     int r;
     char* data; // current data pointer
     int len; // bytes remaining available in the read buffer
@@ -462,54 +504,57 @@ IODevice::ErrorCode IODevice::fillReadBuffer()
     // -----
     mutex->lock();
     // -----
-    do
-    {
-        if(rbufOffset+rbufUsed>=rbufSize)
-	{
-            if(rbufOffset>DefaultBufferOffset)
-	    {
+    do {
+        if (rbufOffset+rbufUsed >= rbufSize)
+        {
+            if (rbufOffset > DefaultBufferOffset)
+            {
                 cleanupRBufOffset();
-	    } else {
-                rc=BufferOverflow;
+            } else {
+                rc = BufferOverflow;
                 break;
-	    }
-	}
-        len=rbufSize-rbufOffset-rbufUsed;
-        data=rbuf+rbufOffset+rbufUsed;
-        r=SSL_read(m_ssl, data, len);
-        switch(SSL_get_error(m_ssl, r))
-	{
-	case SSL_ERROR_NONE:
-            rbufUsed+=r; // offset remains unchanged here
-            break;
-	case SSL_ERROR_ZERO_RETURN:
-            // this indicates a shutdown of the connection on the socket
-            snRead->setEnabled(false);
-            snWrite->setEnabled(false);
-            // we are done reading:
-            mutex->unlock();
-            emit(shutdown(this));
-            close();
-            rc=NoConnection;
-            goto leave;
-            break;
-	case SSL_ERROR_WANT_READ:
-            break;
-	default:
-            break;
-	};
-    } while(SSL_pending(m_ssl) && rbufOffset+rbufUsed<rbufSize);
-    if(rbufUsed>0)
+            }
+        }
+        len = rbufSize-rbufOffset-rbufUsed;
+        data = rbuf+rbufOffset+rbufUsed;
+        r = d->ssl->SSL_read(d->m_ssl, data, len);
+        switch (d->ssl->SSL_get_error(d->m_ssl, r))
+        {
+            case SSL_ERROR_NONE:
+                rbufUsed += r; // offset remains unchanged here
+                break;
+            case SSL_ERROR_ZERO_RETURN:
+                // this indicates a shutdown of the connection on the socket
+                snRead->setEnabled(false);
+                snWrite->setEnabled(false);
+                // we are done reading:
+                mutex->unlock();
+                emit shutdown(this);
+                close();
+                rc = NoConnection;
+                goto leave;
+                break;
+            case SSL_ERROR_WANT_READ:
+                break;
+            default:
+                break;
+        }
+    } while (d->ssl->SSL_pending(d->m_ssl) && rbufOffset+rbufUsed < rbufSize);
+    if (rbufUsed > 0)
     {
-        rc=NoError;
+        rc = NoError;
     } else {
-        rc=WouldBlock;
+        rc = WouldBlock;
     }
     mutex->unlock();
- leave:
-    if(rbufUsed>0) emit(readyRead(m_fd));
+leave:
+    if (rbufUsed > 0)
+        emit readyRead(m_fd);
     // if(rc==NoConnection) emit(shutdown(this));
     return rc;
+#else
+    return NoSSL;
+#endif
 }
 
 // most of the code in connectToHost and tryConnecting is a 1-on-1
@@ -519,24 +564,24 @@ void IODevice::connectToHost(const QString& host_, unsigned port_)
 {
     mutex->lock();
     // ----- immidiately close any open connection:
-    if(m_state==Connected)
+    if (m_state == Connected)
     {
         close();
     }
     // ----- look up the host name:
     //       cleanup dns first:
-    if(dns!=0)
+    if (dns != 0)
     {
         delete dns;
-        dns=0;
+        dns = 0;
     }
     //       fire up the connection process:
     setState(HostLookup);
-    host=host_;
-    port=port_;
-    dns=new QDns(host, QDns::A);
+    host = host_;
+    port = port_;
+    dns = new QDns(host, QDns::A);
     tryConnecting();
-    if(m_state==HostLookup)
+    if (m_state == HostLookup)
     {
         connect(dns, SIGNAL(resultsReady()), SLOT(tryConnecting()));
     }
@@ -550,16 +595,16 @@ void IODevice::tryConnecting()
     ErrorCode ec;
     // -----
     mutex->lock();
-    if(m_state==HostLookup)
+    if (m_state == HostLookup)
     { // dns is ready now:
-        l=dns->addresses();
-        if(l.isEmpty())
+        l = dns->addresses();
+        if (l.isEmpty())
         {
-            if(!dns->isWorking())
+            if (!dns->isWorking())
             {
                 setState(Idle);
-                emit(connectResult(HostNotFound));
-                emit(error(HostNotFound));
+                emit connectResult(HostNotFound);
+                emit error(HostNotFound);
             }
             mutex->unlock();
             return;
@@ -567,89 +612,88 @@ void IODevice::tryConnecting()
         emit(hostFound());
         setState(Connecting);
     }
-    if(m_state==Connecting)
+    if (m_state == Connecting)
     {
         int sd;
         struct sockaddr_in sa;
-        sd =socket(AF_INET, SOCK_STREAM, 0);
-        if(sd==-1)
+        sd = socket(AF_INET, SOCK_STREAM, 0);
+        if(sd == -1)
         {
             switch(errno)
             {
             case EINVAL:
             case EPROTONOSUPPORT:
-                emit(error(ProtocolNotSupported));
+                emit error(ProtocolNotSupported);
                 break;
             case ENFILE:
             case EMFILE:
             case ENOBUFS:
             case ENOMEM:
-                emit(error(InternalError));
+                emit error(InternalError);
                 break;
             default:
-                emit(error(InternalError));
+                emit error(InternalError);
             };
-            emit(connectResult(ProtocolNotSupported));
+            emit connectResult(ProtocolNotSupported);
             setState(Idle);
             mutex->unlock();
             return;
         }
         memset (&sa, '\0', sizeof(sa));
         sa.sin_family      = AF_INET;
-        sa.sin_addr.s_addr = inet_addr (l[0].toString().ascii()); // Server IP
-        sa.sin_port        = htons     (port); // Server Port number
-        err=::connect(sd, (struct sockaddr*) &sa,
-                      sizeof(sa));
-        if(err==-1)
+        sa.sin_addr.s_addr = inet_addr(l[0].toString().ascii()); // Server IP
+        sa.sin_port        = htons(port); // Server Port number
+        err = ::connect(sd, (struct sockaddr*) &sa, sizeof(sa));
+        if (err == -1)
         {
-            switch(errno)
+            switch (errno)
             {
             case EBADF:
             case EFAULT:
             case ENOTSOCK:
             case EADDRINUSE:
             case EISCONN: // these are all considered flaws in this code:
-                emit(error(InternalError));
+                emit error(InternalError);
                 break;
             case ECONNREFUSED:
             case ETIMEDOUT:
-                emit(error(ConnectionRefused));
+                emit error(ConnectionRefused);
                 break;
             case ENETUNREACH:
             case EAGAIN:
-                emit(error(SysError));
+                emit error(SysError);
                 break;
             case EAFNOSUPPORT:
-                emit(error(ProtocolNotSupported));
+                emit error(ProtocolNotSupported);
                 break;
             case EACCES:
             case EPERM:
-                emit(error(Refused));
+                emit error(Refused);
                 break;
             };
             mutex->unlock();
-            emit(connectResult(ConnectionRefused));
+            emit connectResult(ConnectionRefused);
             setState(Idle);
             return;
         }
-        ec=setFd(sd);
-        if(ec!=Success)
+        ec = setFd(sd);
+        if (ec != Success)
         {
             switch(ec)
             {
             case Refused:
-                emit(error(ConnectionRefused));
+                emit error(ConnectionRefused);
                 break;
             case Failure:
-                emit(error(Failure));
+                emit error(Failure);
                 break;
             default:
-                emit(error(InternalError));
+                emit error(InternalError);
             };
             setState(Idle);
-            emit(connectResult(Refused));
+            emit connectResult(Refused);
         } else {
-            emit(connectResult(Success));
+            emit connectResult(Success);
         }
     }
     mutex->unlock();
@@ -659,43 +703,44 @@ IODevice::State IODevice::state()
 {
     IODevice::State rc;
     mutex->lock();
-    rc=m_state;
+    rc = m_state;
     mutex->unlock();
     return rc;
 }
 
 void IODevice::setState(State s)
 {
-    bool change=false;
+    bool change = false;
     mutex->lock();
-    if(m_state!=s)
+    if (m_state != s)
     {
-        m_state=s;
-        change=true;
+        m_state = s;
+        change = true;
     }
     mutex->unlock();
-    if(change) emit(stateChanged(s));
+    if (change)
+        emit stateChanged(s);
 }
 
 void IODevice::cleanupRBufOffset()
 {
     mutex->lock();
-    rbuf=cleanupBufOffset(rbuf, rbufSize, rbufUsed, rbufOffset);
-    rbufOffset=DefaultBufferOffset;
+    rbuf = cleanupBufOffset(rbuf, rbufSize, rbufUsed, rbufOffset);
+    rbufOffset = DefaultBufferOffset;
     mutex->unlock();
 }
 
 void IODevice::cleanupWBufOffset()
 {
     mutex->lock();
-    wbuf=cleanupBufOffset(wbuf, wbufSize, wbufUsed, wbufOffset);
-    wbufOffset=DefaultBufferOffset;
+    wbuf = cleanupBufOffset(wbuf, wbufSize, wbufUsed, wbufOffset);
+    wbufOffset = DefaultBufferOffset;
     mutex->unlock();
 }
 
 char* IODevice::cleanupBufOffset(char* buffer, int size, int used, int offset)
 {
-    char *buf=new char[size];
+    char *buf = new char[size];
     // all buffers begin with an offset of DefaultBufferOffset, so
     // there will never be more than size-DefaultBufferOffset bytes in
     // the buffer:
@@ -704,19 +749,19 @@ char* IODevice::cleanupBufOffset(char* buffer, int size, int used, int offset)
     return buf;
 }
 
-int IODevice::fd()
+int IODevice::fd() const
 {
     return m_fd;
 }
 
-SSL_CTX *IODevice::sslCtx() const
+void *IODevice::sslCtx() const
 {
-    return ctx;
+    return d->ctx;
 }
 
-SSL *IODevice::ssl() const
+void *IODevice::ssl() const
 {
-    return m_ssl;
+    return d->m_ssl;
 }
 
 bool IODevice::takeOver(IODevice *other)
@@ -724,50 +769,52 @@ bool IODevice::takeOver(IODevice *other)
     bool rnEnable, wnEnable, rc=true;
     mutex->lock();
     other->mutex->lock();
-    if(other->m_state!=Connected)
+    if (other->m_state != Connected)
     {
-        rc=false;
+        rc = false;
     } else {
         // ----- we locked both devices, so lets copy all essential
         // connection settings:
-        m_fd=other->m_fd;
-        ctx=other->ctx;
-        m_ssl=other->m_ssl;
-        rnEnable=other->snRead->isEnabled();
-        wnEnable=other->snWrite->isEnabled();
-        delete other->snRead; other->snRead=0;
-        delete other->snWrite; other->snWrite=0;
-        snRead=new QSocketNotifier(m_fd, QSocketNotifier::Read,
-                                   this, "ReadNotifier");
+        m_fd = other->m_fd;
+        d->ctx = other->d->ctx;
+        d->m_ssl = other->d->m_ssl;
+        rnEnable = other->snRead->isEnabled();
+        wnEnable = other->snWrite->isEnabled();
+        delete other->snRead;
+        other->snRead = 0;
+        delete other->snWrite;
+        other->snWrite = 0;
+        snRead = new QSocketNotifier(m_fd, QSocketNotifier::Read,
+                this, "ReadNotifier");
         connect(snRead, SIGNAL(activated(int)),
                 SLOT(slotReadNotification(int)));
-        snWrite=new QSocketNotifier(m_fd, QSocketNotifier::Write,
-                                    this, "WriteNotifier");
+        snWrite = new QSocketNotifier(m_fd, QSocketNotifier::Write,
+                this, "WriteNotifier");
         connect(snWrite, SIGNAL(activated(int)),
                 SLOT(slotWriteNotification(int)));
         snRead->setEnabled(rnEnable);
         snWrite->setEnabled(wnEnable);
-        rbuf=other->rbuf;
-        rbufSize=other->rbufSize;
-        rbufUsed=other->rbufUsed;
-        rbufOffset=other->rbufOffset;
-        wbuf=other->wbuf;
-        wbufSize=other->wbufSize;
-        wbufUsed=other->wbufUsed;
-        wbufOffset=other->wbufOffset;
-        m_state=other->m_state;
-        host=other->host;
-        port=other->port;
+        rbuf = other->rbuf;
+        rbufSize = other->rbufSize;
+        rbufUsed = other->rbufUsed;
+        rbufOffset = other->rbufOffset;
+        wbuf = other->wbuf;
+        wbufSize = other->wbufSize;
+        wbufUsed = other->wbufUsed;
+        wbufOffset = other->wbufOffset;
+        m_state = other->m_state;
+        host = other->host;
+        port = other->port;
         // ----- now set the other device to think it is not connected to
         // anybody:
-        other->m_fd=0;
+        other->m_fd = 0;
         other->setState(Idle);
-        other->rbuf=0;
-        other->rbufOffset=0;
-        other->rbufUsed=0;
-        other->wbuf=0;
-        other->wbufOffset=0;
-        other->wbufUsed=0;
+        other->rbuf = 0;
+        other->rbufOffset = 0;
+        other->rbufUsed = 0;
+        other->wbuf = 0;
+        other->wbufOffset = 0;
+        other->wbufUsed = 0;
     }
     other->mutex->unlock();
     mutex->unlock();
@@ -775,3 +822,4 @@ bool IODevice::takeOver(IODevice *other)
 }
 
 #include "sslio.moc"
+// vim: sw=4 ts=4 et

@@ -6,7 +6,7 @@
 INCLUDES=$(all_includes) $(SSL_INCLUDES)
 
 noinst_LTLIBRARIES = libkssl.la
-KSSLVERSION=	2.9.8
+KSSLVERSION=	3.0.0
 KSSLPATCH=	0
 METASOURCES= AUTO
 
@@ -34,8 +34,9 @@ include_HEADERS = \
 		ksslconfig.h		 \
 		ksslsession.h		 \
 		ksslx509map.h		 \
-		ksmimecrypto.h		 \
-		sslio.h			 \
+		ksmimecrypto.h
+
+noinst_HEADERS = sslio.h			 \
 		sslserversocket.h
 
 
@@ -63,7 +64,10 @@ libkssl_la_SOURCES	= \
 			ksslsession.cc		  \
 			keygenwizard.ui		  \
 			keygenwizard2.ui	  \
-			ksmimecrypto.cc
+			ksmimecrypto.cc		  \
+			sslio.cc
+
+#			sslserversocket.cc
 
 SUBDIRS = kssl
 

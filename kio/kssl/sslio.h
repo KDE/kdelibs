@@ -33,7 +33,6 @@
 
 #include <qiodevice.h>
 #include <qobject.h>
-#include <openssl/ssl.h>
 
 class QSocketNotifier;
 class QMutex;
@@ -44,14 +43,16 @@ namespace KDESSL {
 class IODevice : public QObject, public QIODevice
 {
     Q_OBJECT
+
 public:
+
     enum ErrorCode {
         /** The respective method is not implemented. */
         NotImplemented,
         /** The method succeeded. */
         Success,
         /** Same as Success, for better reading. */
-        NoError=Success,
+        NoError = Success,
         /** The request was refused, think of a rejected login or so. */
         Refused,
         /** The request failed due to a protocol or network error, not due
@@ -86,37 +87,44 @@ public:
         /** An error occured that was most likely caused by a flaw in the
             own code (if that is decisable).
         */
-        InternalError
+        InternalError,
+	NoSSL
     };
+
     enum Party {
         /** This is the server side. */
         Server,
         /** This is the client side. */
         Client
     };
+
     enum State {
         /** Not connected. */
-        NotConnected=0,
-        Idle=NotConnected,
+        NotConnected = 0,
+        Idle = NotConnected,
         /** Looking up the host to connect to. */
         HostLookup,
         /** Connecting to the host. */
         Connecting,
         /** Connection is established. */
         Connection,
-        Connected=Connection,
+        Connected = Connection,
         /** Closing down the connection. */
         Closing
     };
+
     /** Create an IO device that uses SSL over TCP sockets. The SSL
         context (SSL_CTX) must have been created before.
         Party defines wether this SSLIO object acts as a server or
         client part of the SSL protocol.
     */
-    IODevice(SSL_CTX *ctx_, Party p=Client);
-    ~IODevice();
+    IODevice(void *ctx_, Party p=Client);
+
+    virtual ~IODevice();
+
     /** Get the connection state. */
     State state();
+    
     /** Establish a connection using the given file descriptor (that is
         supposed to be a TCP connection).
         @return Success Handshake ended successfully
@@ -124,45 +132,63 @@ public:
         @return Failure Handshake ended in failure
     */
     ErrorCode setFd(int fd);
+
     /** Return the file descriptor. */
-    int fd();
+    int fd() const;
+
     /** Connect to the host at the given port. */
     virtual void connectToHost(const QString& host, unsigned port);
+
     /** Set blocking read/write calls.
      */
     ErrorCode setBlocking(bool state);
+
     /** Return whether this IO device uses blocking socket calls or
         not. */
     bool blocking();
+    
     // methods reimplemented from QIODevice
     bool open(int mode);
+    
     void close();
+    
     void flush();
+    
     QIODevice::Offset size() const;
+
     Q_LONG readBlock(char* data, Q_ULONG maxlen);
+
     Q_LONG writeBlock(const char* data, Q_ULONG len);
+    
     /** Get the available data until the next newline character. Please
         note that there has to be a newline, EOD is not sufficient. The
         newline is contained in the returned text (which ends in a
         binary 0 byte).
     */
     int readLine(char* data, uint maxlen);
+    
     int getch();
+    
     int putch(int);
+    
     int ungetch(int); 
+    
     /** Return the SSL context associated with this object.
      */
-    SSL_CTX* sslCtx() const;
+    void* sslCtx() const;
+    
     /** Return the SSL object associated with this connection.
         You should know what you are doing when fiddling around with it.
      */
-    SSL *ssl() const;
+    void *ssl() const;
+    
     /** Take over the connection and make sure the other IO device
         does not use it anymore. Use this method if you want to delete
         an object that bears a connection you want to handle in this
         object in future.
     */
     bool takeOver(IODevice* theother);
+    
 protected:
     /** Define if we act as client or server. The SSL protocol
         requires us to act differently depending on wether we
@@ -170,18 +196,16 @@ protected:
         connecting to us (server).
     */
     const Party party;
+    
     /** The file descriptor. Zero before used. */
     int m_fd;
-    /** The SSL context used. This determines the SSL method (client or
-        server behaviour, basicly).
-    */
-    SSL_CTX *ctx;
-    /** Handle this SSL connection. */
-    SSL *m_ssl;
+    
     /** The socket notifier for reading. */
     QSocketNotifier *snRead;
+    
     /** The socket notifier for writing. */
     QSocketNotifier *snWrite;
+    
     // ----- members to implement the read buffer:
     /** The read buffer. We use a plain char array to be as performant
         as possible with the C style OpenSSL methods.
@@ -190,23 +214,28 @@ protected:
         Note that writes are not buffered.
     */
     char *rbuf;
+    
     /** Size (in bytes) of the currently used read buffer.
      */
     int rbufSize;
+    
     /** Bytes used (and available to the application) of the read
         buffer. rbufUsed+rbufOffset is the next available byte.
     */
     int rbufUsed;
+    
     /** Current offset of the read buffer. The bytes from the beginning
         to the byte at [Offset] are no more valid. If the next SSL_read
         would write over the buffers end, the bytes available will be
         moved to the beginning of the buffer and the offset set to
         zero. */
     int rbufOffset;
+    
     /** Clean up the space used in the read buffer offset. rbufOffset is
         zeroed afterwards.
     */
     void cleanupRBufOffset();
+    
     /** Fill the read buffer with bytes from the SSL connection as far
         as possible. Whether this method blocks or not depends on the
         behaviour set for your socket (@see setBlocking). If the socket
@@ -221,18 +250,25 @@ protected:
         @return Success if new data is available afterwards
     */
     ErrorCode fillReadBuffer();
+    
     // ----- members to implement the write buffer:
     /** The write buffer. */
     char* wbuf;
+    
     /** The write buffer size. */
     int wbufSize;
+    
     /** The bytes stored in the write buffer, */
     int wbufUsed;
+    
     /** Bytes used at the beginning of the write buffer that are no more valid. */
     int wbufOffset;
+
     /** Reset the write buffers offset. */
+
     void cleanupWBufOffset();
     // ^^^^^ end of write buffer parts
+ 
     /** A method to clean up the given buffer. The idea of the buffers
         (read and write buffer, here) is to just move an offset when bytes
         are consumed and only moving the beginning of the valid bytes to
@@ -247,35 +283,46 @@ protected:
         have been reallocated)
     */
     char* cleanupBufOffset(char* buffer, int size, int used, int offset);
+
     /** The connection state. */
     State m_state;
+    
     /** Used to do the host lookups. */
     QDns *dns;
+    
     /** Mutex to access the device. */
     QMutex *mutex;
+    
     /** The host we are supposed to connect to. */
     QString host;
+    
     /** The port we are supposed to be connected to. */
     unsigned port;
+    
     /** Set the connection state. */
     void setState(State);
+    
 signals:
     /** Connect to this signal to get notified on incoming data.
      */
     void readyRead(int socket);
+
     /** Connect to this signal to be notified when data has been sent
         and removed from the write buffer. */
     void bytesWritten(int);
+    
     /** Connect to this signal to get notified when the connection is
         able to accept more bytes to write (the bytes might be buffered,
         though, before they are written to the actual network
         connection.
     */
     // void readyWrite(int socket);
+
     /** Connect to this signal to get notified when a number of bytes
         have been written.
     */
     // void bytesWritten(int socket, int noOfBytes);
+
     /** Connect to this signal to get notified on connections shut down
         by the other side.
         Aware: this does not mean the connection has been closed
@@ -287,13 +334,17 @@ signals:
         a method of this object!
     */
     void shutdown(IODevice*);
+
     /** Announce error conditions on the SSL connection. See @see
         ErrorCode for  the different values. */
     void error(ErrorCode);
+
     /** The host given to a connectToHost call was found. */
     void hostFound();
+
     /** The handshake ended successfully. */
     void connected();
+
     /** For finer grained control over the result of a call to
         connectToHost, connect to this signal and evaluate the
         errorcode.
@@ -310,20 +361,30 @@ signals:
         one signal and a message on success, too.
     */
     void connectResult(IODevice::ErrorCode);
+
     /** The connection on the socket used has been closed (after the
         SSL_shutdown has been performed. */
     void disconnected(IODevice*);
+
     /** Connection state changed. */
     void stateChanged(IODevice::State);
+
 protected slots:
     /** Catch signals emitted by the read notifier.  */
     virtual void slotReadNotification(int socket);
+
     /** Catch signals emitted by the write notifier. */
     virtual void slotWriteNotification(int socket);
+
     /** Try to establish a connection. */
     void tryConnecting();
+    
     /** Try to write data to the write buffer. */
     virtual void writeToSocket();
+
+private:
+    class Private;
+    Private *d;
 };
 
 }
