@@ -205,5 +205,4 @@ void DefaultProgress::slotCanResume( int, bool _resume )
   }
 }
 
-
 #include "defaultprogress.moc"

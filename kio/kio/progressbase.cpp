@@ -1,6 +1,7 @@
 // $Id$
 
 #include <kwin.h>
+#include <kwm.h>
 
 #include "jobclasses.h"
 #include "progressbase.h"
@@ -116,9 +117,10 @@ void KIOProgressBase::closeEvent( QCloseEvent* ) {
       clean();
     } else {
       delete this;
-      if ( m_pJob ) {
-          //	m_pJob->m_pProgressDlg = 0L;
-      }
+      // code doesn't seem relevant anymore, correct if wrong - PGB
+      //if ( m_pJob ) {
+      //    m_pJob->m_pProgressDlg = 0L;
+      //}
     }
   }
 }

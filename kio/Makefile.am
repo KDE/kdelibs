@@ -43,7 +43,8 @@ libksycoca_la_SOURCES = \
 include_HEADERS = ksycoca.h ksycocaentry.h ksycocatype.h \
         kservicetype.h kmimetype.h kmimemagic.h kservice.h \
         krun.h kdirwatch.h kautomount.h kuserprofile.h kuserpaths.h \
-	kshred.h ktar.h ktrader.h kopenwith.h kurifilter.h
+	kshred.h ktar.h ktrader.h kopenwith.h kurifilter.h \
+	progressbase.h defaultprogress.h statusbarprogress.h
 
 libkio_la_LDFLAGS = -version-info 3:0 -no-undefined $(all_libraries)
 libkio_la_LIBADD = ../kdeui/libkdeui.la $(LIBZ)

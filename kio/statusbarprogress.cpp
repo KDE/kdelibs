@@ -132,5 +132,4 @@ bool StatusbarProgress::eventFilter( QObject *, QEvent *ev ) {
   return false;
 }
 
-
 #include "statusbarprogress.moc"
