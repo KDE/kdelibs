@@ -193,7 +193,7 @@ void KMenuBar::setTopLevelMenuInternal(bool top_level)
       d->margin = margin();
       d->fallback_mode = false;
       bool wasShown = !isHidden();
-      reparent( parentWidget(), WType_TopLevel | WStyle_Tool | WStyle_NoBorder, QPoint(0,0), false );
+      reparent( parentWidget(), WType_TopLevel | WStyle_Tool | WStyle_Customize | WStyle_NoBorder, QPoint(0,0), false );
 #if defined Q_WS_X11 && ! defined K_WS_QTONLY //FIXME
       KWin::setType( winId(), NET::TopMenu );
 #endif
@@ -440,6 +440,14 @@ void KMenuBar::setMargin( int margin )
 	d->margin = margin;
     else
 	QMenuBar::setMargin( margin );
+}
+
+void KMenuBar::closeEvent( QCloseEvent* e )
+{
+    if( d->topLevel )
+        e->ignore(); // mainly for the fallback mode 
+    else
+        QMenuBar::closeEvent( e );
 }
 
 void KMenuBar::virtual_hook( int, void* )
