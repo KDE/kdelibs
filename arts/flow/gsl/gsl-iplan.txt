@@ -1,0 +1,57 @@
+How to integrate the GSL engine into artsd?
+
+Open issues:
+ - adapting the driver model
+ - adapting main loop callbacks
+ - adapting the start()/stop() semantics
+ - multi streams
+ - midi/audio timing
+ - synchronization
+ - threadsafe module api
+ - how to live without the threading layer
+
+[*] adapting main loop callbacks
+
+the engine uses a three-state mainloop callback, which consists of
+
+1. prepare
+2. check
+3. dispatch
+
+with the following rules applying
+
+1. you always need to prepare, to obtain pollfds
+2. you check to see whether something needs to be done
+3. you dispatch to make the engine do something
+
+which will need to be treated in aRts as two state strategy, which is:
+================================================================================
+INIT:
+  prepare -> register fds with the IOManager
+--
+ON NOTIFY:
+  unregister fds with the IOManager
+
+  reselect all fds
+  check -> check if engine needs work
+  dispatch -> make engine do something
+
+  prepare -> reregister fds with the IOManager
+
+as temporary measure, we could eventually build an imaginary fd into the
+engine, which could be used for triggering calculations manually - we might
+also take the real fd, on the other hand, which would only lead to the
+IOManager sending out two notifications, which is not too critical
+================================================================================
+problem:
+
+iomanager reentrancy - the engine probably needs to be partially reentrant,
+if we are to expect that a synchronous destruction of a module (such as in
+a remote unref) transactionsynchronizes itself with the engine - but if we
+expect this, then we will need to register some fds reentrant with the engine
+
+well - we could - for a start - try to NOT reselect all fds to get a snapshot
+of the whole world in one piece - but try to 1:1 map iomanager callbacks to
+revents - this might or might not work
+
+

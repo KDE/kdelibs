@@ -20,6 +20,10 @@
 
     */
 
+#include "config.h"
+#ifdef HAVE_ARTS_GSL
+#include "gslschedule.h"
+#else
 #ifndef _SYNTHMODULE_H
 #define _SYNTHMODULE_H
 
@@ -299,4 +303,5 @@ public:
 
 };
 
+#endif
 #endif

@@ -60,6 +60,7 @@ public:
 	virtual bool isMainThread() = 0;
 
 	virtual Mutex_impl *createMutex_impl() = 0;
+	virtual Mutex_impl *createRecMutex_impl() = 0;
 	virtual Thread_impl *createThread_impl(Thread *thread) = 0;
 	virtual ThreadCondition_impl *createThreadCondition_impl() = 0;
 	virtual ~SystemThreads();
@@ -82,6 +83,7 @@ public:
 class Mutex_impl {
 public:
 	virtual void lock() = 0;
+	virtual bool tryLock() = 0;
 	virtual void unlock() = 0;
 	virtual ~Mutex_impl();
 };
@@ -181,9 +183,14 @@ private:
 public:
 	/**
 	 * constructor
+	 *
+	 * @param recursive whether to create a recursive mutex (may be locked by
+	 *                  the same thread more than once), or a normal mutex
 	 */
-	inline Mutex() {
-		impl = SystemThreads::the()->createMutex_impl();
+	inline Mutex(bool recursive = false)
+		: impl(recursive?SystemThreads::the()->createRecMutex_impl()
+						:SystemThreads::the()->createMutex_impl())
+	{
 	}
 
 	/**
@@ -196,6 +203,16 @@ public:
 	 */
 	inline void lock() {
 		impl->lock();
+	}
+
+	/**
+	 * tries to lock the mutex, returning immediately in any case (even if
+	 * mutex is locked by another thread)
+	 *
+	 * @returns true if successful (mutex locked), false otherwise
+	 */
+	inline bool tryLock() {
+		return impl->tryLock();
 	}
 
 	/**

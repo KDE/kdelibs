@@ -73,6 +73,24 @@ public:
 		owner = self;
 #endif
 	}
+	bool tryLock()
+	{
+#ifdef PTHREAD_DEBUG
+		pthread_t self = pthread_self();
+		arts_assert(owner != self);
+#endif
+
+		int result = pthread_mutex_trylock(&mutex);
+
+#ifdef PTHREAD_DEBUG
+		if(result == 0)
+		{
+			arts_assert(!owner);
+			owner = self;
+		}
+#endif
+		return(result == 0);
+	}
 	void unlock()
 	{
 #ifdef PTHREAD_DEBUG
@@ -83,6 +101,68 @@ public:
 		pthread_mutex_unlock(&mutex);
 	}
 };
+
+class RecMutex_impl : public Arts::Mutex_impl {
+protected:
+	friend class ThreadCondition_impl;
+	pthread_mutex_t mutex;
+	pthread_t owner;
+	int count;
+
+public:
+	RecMutex_impl()
+	{
+		pthread_mutex_init(&mutex, 0);
+		owner = 0;
+		count = 0;
+	}
+	void lock()
+	{
+		pthread_t self = pthread_self();
+		if(owner != self)
+		{
+			pthread_mutex_lock(&mutex);
+#ifdef PTHREAD_DEBUG
+			arts_assert(count == 0);
+			arts_assert(!owner);
+#endif
+			owner = self;
+		}
+		count++;
+	}
+	bool tryLock()
+	{
+		pthread_t self = pthread_self();
+		if(owner != self)
+		{
+			int result = pthread_mutex_trylock(&mutex);
+			if(result != 0)
+				return false;
+
+#ifdef PTHREAD_DEBUG
+			arts_assert(count == 0);
+			arts_assert(!owner);
+#endif
+			owner = self;
+		}
+		count++;
+	}
+	void unlock()
+	{
+#ifdef PTHREAD_DEBUG
+		arts_assert(owner == pthread_self());
+		arts_assert(count > 0);
+#endif
+
+		count--;
+		if(count == 0)
+		{
+			owner = 0;
+			pthread_mutex_unlock(&mutex);
+		}
+	}
+};
+
 
 static void *threadStartInternal(void *object)
 {
@@ -156,6 +236,9 @@ public:
 	}
 	Arts::Mutex_impl *createMutex_impl() {
 		return new Mutex_impl();
+	}
+	Arts::Mutex_impl *createRecMutex_impl() {
+		return new RecMutex_impl();
 	}
 	Arts::Thread_impl *createThread_impl(Arts::Thread *thread) {
 		return new Thread_impl(thread);

@@ -20,6 +20,8 @@
 
     */
 
+#include "config.h"
+#ifndef HAVE_ARTS_GSL
 #include "virtualports.h"
 #include "startupmanager.h"
 #include "synthschedule.h"
@@ -1033,3 +1035,4 @@ public:
 } sfs;
 
 };
+#endif

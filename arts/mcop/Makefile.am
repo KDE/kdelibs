@@ -17,7 +17,7 @@ libmcop_la_SOURCES = buffer.cc connection.cc core.cc dispatcher.cc \
 	 delayedreturn.cc thread.cc dynamicskeleton.cc
 
 libmcop_la_LIBADD = $(LIBSOCKET) $(top_builddir)/libltdl/libltdlc.la
-libmcop_la_LDFLAGS = -no-undefined 
+libmcop_la_LDFLAGS = -no-undefined -version-info 1:0
 
 artsincludedir = $(includedir)/arts
 artsinclude_HEADERS = buffer.h common.h connection.h core.h dispatcher.h \

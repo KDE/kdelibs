@@ -9,7 +9,7 @@ lib_LTLIBRARIES  	    =	libartskde.la
 libartskde_la_SOURCES	    =	artskde.cc kioinputstream_impl.cpp kplayobject.cc \
 				kplayobjectfactory.cc kartsfloatwatch.cpp kartsdispatcher.cc
 libartskde_la_LIBADD        =   $(LIB_KSYCOCA) $(top_builddir)/arts/qtmcop/libqtmcop.la $(top_builddir)/arts/soundserver/libsoundserver_idl.la
-libartskde_la_LDFLAGS       =   $(all_libraries) -avoid-version -no-undefined
+libartskde_la_LDFLAGS       =   $(all_libraries) -no-undefined -version-info 1:0
 libartskde_la_METASOURCES   =	AUTO
 
 artskdeincludedir	    =	$(includedir)/arts

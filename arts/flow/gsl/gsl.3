@@ -1,0 +1,228 @@
+.TH GSL-Functions 3 "05 Sep 2001" "GSL (BSE-0.4.0)" 
+.SH NAME
+GSL-Functions \- GSL Function Reference
+.SH SYNOPSIS
+\fBgsl_job_integrate\fP (\fImodule\fP);
+.br
+\fBgsl_job_discard\fP (\fImodule\fP);
+.br
+\fBgsl_job_connect\fP (\fIsrc_module\fP, \fIsrc_ostream\fP, \fIdest_module\fP, \fIdest_istream\fP);
+.br
+\fBgsl_job_disconnect\fP (\fIdest_module\fP, \fIdest_istream\fP);
+.br
+\fBGslAccessFunc\fP (\fImodule\fP, \fIdata\fP);
+.br
+\fBgsl_job_access\fP (\fImodule\fP, \fIaccess_func\fP, \fIdata\fP, \fIfree_func\fP);
+.br
+\fBGslPollFunc\fP (\fIdata\fP, \fIn_values\fP, \fItimeout_p\fP, \fIn_fds\fP, \fIfds\fP, \fIrevents_filled\fP);
+.br
+\fBgsl_job_add_poll\fP (\fIpoll_func\fP, \fIdata\fP, \fIfree_func\fP, \fIn_fds\fP, \fIfds\fP);
+.br
+\fBgsl_job_remove_poll\fP (\fIpoll_func\fP, \fIdata\fP);
+.br
+\fBgsl_job_debug\fP (\fIdebug\fP);
+.br
+\fBgsl_trans_open\fP ();
+.br
+\fBgsl_trans_add\fP (\fItrans\fP, \fIjob\fP);
+.br
+\fBgsl_trans_commit\fP (\fItrans\fP);
+.br
+\fBgsl_trans_dismiss\fP (\fItrans\fP);
+.br
+\fBgsl_transact\fP (\fIjob\fP, \fI...\fP);
+.br
+\fBgsl_engine_init\fP (\fIrun_threaded\fP, \fIblock_size\fP, \fIsample_freq\fP);
+.br
+.SH DESCRIPTION
+.SS \fBgsl_job_integrate\fP (\fImodule\fP);
+.PD 0
+.IP \fIGslModule*\ module\fP 19
+The module to integrate
+.IP \fIRETURNS:\fP 19
+New job suitable for \fBgsl_trans_add()\fP
+.PD 1
+.PP
+Create a new transaction job to integrate \fImodule\fP into the engine.  
+.PD
+.SS \fBgsl_job_discard\fP (\fImodule\fP);
+.PD 0
+.IP \fIGslModule*\ module\fP 19
+The module to discard
+.IP \fIRETURNS:\fP 19
+New job suitable for \fBgsl_trans_add()\fP
+.PD 1
+.PP
+Create a new transaction job which remove \fImodule\fP from the engine and destroys it.  
+.PD
+.SS \fBgsl_job_connect\fP (\fIsrc_module\fP, \fIsrc_ostream\fP, \fIdest_module\fP, \fIdest_istream\fP);
+.PD 0
+.IP \fIGslModule*\ src_module\fP 25
+Module with output stream
+.IP \fIguint\ \ \ \ \ \ src_ostream\fP 25
+Index of output stream of \fIsrc_module\fP
+.IP \fIGslModule*\ dest_module\fP 25
+Module with unconnected input stream
+.IP \fIguint\ \ \ \ \ \ dest_istream\fP 25
+Index of input stream of \fIdest_module\fP
+.IP \fIRETURNS:\fP 25
+New job suitable for \fBgsl_trans_add()\fP
+.PD 1
+.PP
+Create a new transaction job which connects the ouput stream \fIsrc_ostream\fP of module \fIsrc_module\fP to the input stream \fIdest_istream\fP of module \fIdest_module\fP (it is an error if the input stream is already connected by the time the job is executed).  
+.PD
+.SS \fBgsl_job_disconnect\fP (\fIdest_module\fP, \fIdest_istream\fP);
+.PD 0
+.IP \fIGslModule*\ dest_module\fP 25
+Module with connected input stream
+.IP \fIguint\ \ \ \ \ \ dest_istream\fP 25
+Index of input stream of \fIdest_module\fP
+.IP \fIRETURNS:\fP 25
+New job suitable for \fBgsl_trans_add()\fP
+.PD 1
+.PP
+Create a new transaction job which causes the input stream \fIdest_istream\fP of \fIdest_module\fP to be disconnected (it is an error if the input stream isn't connected by the time the job is executed).  
+.PD
+.SS \fBGslAccessFunc\fP (\fImodule\fP, \fIdata\fP);
+.PD 0
+.IP \fI\ module\fP 9
+Module to operate on
+.IP \fI\ data\fP 9
+Accessor data
+.PD 1
+.PP
+The GslAccessFunc is a user supplied callback function which can access a module in times it is not processing. Accessors are usually used to either read out a module's current state, or to modify its state. An accessor may only operate on the \fIdata\fP and the \fImodule\fP passed in to it.  
+.PD
+.SS \fBgsl_job_access\fP (\fImodule\fP, \fIaccess_func\fP, \fIdata\fP, \fIfree_func\fP);
+.PD 0
+.IP \fIGslModule*\ \ \ \ \ module\fP 28
+The module to access
+.IP \fIGslAccessFunc\ \ access_func\fP 28
+The accessor function
+.IP \fIgpointer\ \ \ \ \ \ \ data\fP 28
+Data passed in to the accessor
+.IP \fIGslFreeFunc\ \ \ \ free_func\fP 28
+Function to free \fIdata\fP
+.IP \fIRETURNS:\fP 28
+New job suitable for \fBgsl_trans_add()\fP
+.PD 1
+.PP
+Create a new transaction job which will invoke \fIaccess_func\fP on \fImodule\fP with \fIdata\fP when the transaction queue is processed to modify the module's state.  
+.PD
+.SS \fBGslPollFunc\fP (\fIdata\fP, \fIn_values\fP, \fItimeout_p\fP, \fIn_fds\fP, \fIfds\fP, \fIrevents_filled\fP);
+.PD 0
+.IP \fI\ data\fP 17
+Data of poll function
+.IP \fI\ n_values\fP 17
+Minimum number of values the engine wants to process
+.IP \fI\ timeout_p\fP 17
+Location of timeout value
+.IP \fI\ n_fds\fP 17
+Number of file descriptors used for polling
+.IP \fI\ fds\fP 17
+File descriptors to be used for polling
+.IP \fI\ revents_filled\fP 17
+Indicates whether \fIfds\fP actually have their ->revents field filled with valid data.
+.IP \fIRETURNS:\fP 17
+A boolean value indicating whether the engine should process data right now
+.PD 1
+.PP
+The GslPollFunc is a user supplied callback function which can be hooked into the GSL engine. The engine uses the poll functions to determine whether processing of \fIn_values\fP in its module network is necessary. In order for the poll functions to react to extern events, such as device driver status changes, the engine will \fBpoll(2)\fP the \fIfds\fP of the poll function and invoke the callback with \fIrevents_filled\fP==\fITRUE\fP if any of its \fIfds\fP changed state. The callback may also be invoked at other random times with \fIrevents_filled\fP=\fIFALSE\fP. It is supposed to return \fITRUE\fP if network processing is currently necessary, and \fIFALSE\fP if not. If \fIFALSE\fP is returned, \fItimeout_p\fP may be filled with the number of milliseconds the engine should use for polling at maximum.  
+.PD
+.SS \fBgsl_job_add_poll\fP (\fIpoll_func\fP, \fIdata\fP, \fIfree_func\fP, \fIn_fds\fP, \fIfds\fP);
+.PD 0
+.IP \fIGslPollFunc\ \ \ \ \ \ poll_func\fP 28
+Poll function to add
+.IP \fIgpointer\ \ \ \ \ \ \ \ \ data\fP 28
+Data of poll function
+.IP \fIGslFreeFunc\ \ \ \ \ \ free_func\fP 28
+Function to free \fIdata\fP
+.IP \fIguint\ \ \ \ \ \ \ \ \ \ \ \ n_fds\fP 28
+Number of poll file descriptors
+.IP \fIconst\ GslPollFD*\ fds\fP 28
+File descriptors to \fBselect(2)\fP or \fBpoll(2)\fP on
+.IP \fIRETURNS:\fP 28
+New job suitable for \fBgsl_trans_add()\fP
+.PD 1
+.PP
+Create a new transaction job which adds a poll function to the engine. The poll function is used by the engine to determine whether processing is currently necessary.  
+.PD
+.SS \fBgsl_job_remove_poll\fP (\fIpoll_func\fP, \fIdata\fP);
+.PD 0
+.IP \fIGslPollFunc\ \ poll_func\fP 24
+Poll function to remove
+.IP \fIgpointer\ \ \ \ \ data\fP 24
+Data of poll function
+.IP \fIRETURNS:\fP 24
+New job suitable for \fBgsl_trans_add()\fP
+.PD 1
+.PP
+Create a new transaction job which removes a previously inserted poll function from the engine.  
+.PD
+.SS \fBgsl_job_debug\fP (\fIdebug\fP);
+.PD 0
+.IP \fIconst\ gchar*\ debug\fP 20
+Debug message
+.IP \fIRETURNS:\fP 20
+New job suitable for \fBgsl_trans_add()\fP
+.PD 1
+.PP
+Create a new transaction job which issues \fIdebug\fP message when the job is executed. This function is meant for debugging purposes during development phase only and shouldn't be used in production code.  
+.PD
+.SS \fBgsl_trans_open\fP ();
+.PD 0
+.IP \fIRETURNS:\fP 11
+Newly opened empty transaction
+.PD 1
+.PP
+Open up a new transaction to commit jobs to the GSL engine.  
+.PD
+.SS \fBgsl_trans_add\fP (\fItrans\fP, \fIjob\fP);
+.PD 0
+.IP \fIGslTrans*\ trans\fP 17
+Opened transaction
+.IP \fIGslJob*\ \ \ job\fP 17
+Job to add
+.PD 1
+.PP
+Append a job to an opened transaction.  
+.PD
+.SS \fBgsl_trans_commit\fP (\fItrans\fP);
+.PD 0
+.IP \fIGslTrans*\ trans\fP 17
+Opened transaction
+.PD 1
+.PP
+Close the transaction and commit it to the engine. The engine will execute the jobs contained in this transaction as soon as it has completed its current processing cycle. The jobs will be executed in the exact order they were added to the transaction.  
+.PD
+.SS \fBgsl_trans_dismiss\fP (\fItrans\fP);
+.PD 0
+.IP \fIGslTrans*\ trans\fP 17
+Opened transaction
+.PD 1
+.PP
+Close and discard the transaction, destroy all jobs currently contained in it and do not execute them.  
+.PD
+.SS \fBgsl_transact\fP (\fIjob\fP, \fI...\fP);
+.PD 0
+.IP \fI\ job\fP 6
+First job
+.IP \fI\ ...\fP 6
+\fINULL\fP terminated job list
+.PD 1
+.PP
+Convenience function which openes up a new transaction, collects the \fINULL\fP terminated job list passed to the function, and commits the transaction.  
+.PD
+.SS \fBgsl_engine_init\fP (\fIrun_threaded\fP, \fIblock_size\fP, \fIsample_freq\fP);
+.PD 0
+.IP \fIgboolean\ \ run_threaded\fP 24
+
+.IP \fIguint\ \ \ \ \ block_size\fP 24
+
+.IP \fIguint\ \ \ \ \ sample_freq\fP 24
+
+.PD 1
+.PP
+Initialize the GSL engine, this function must be called prior to any other engine related function and can only be invoked once.  
+.PD
+

@@ -62,6 +62,7 @@ namespace Arts {
 class SystemThreadsNoMutex_impl : public Mutex_impl {
 public:
 	void lock() {};
+	bool tryLock() { return true; };
 	void unlock() {};
 };
 
@@ -93,6 +94,9 @@ public:
 		return (systemThreadsNoneLevel == 0);
 	}
 	Mutex_impl *createMutex_impl() {
+		return new SystemThreadsNoMutex_impl();
+	}
+	Mutex_impl *createRecMutex_impl() {
 		return new SystemThreadsNoMutex_impl();
 	}
 	Thread_impl *createThread_impl(Thread *thread) {
