@@ -22,7 +22,7 @@ void KServiceTypeProfile::initStatic()
 
   s_lstProfiles = new QList<KServiceTypeProfile>;
 
-  KConfig config( kapp->kde_configdir() + "/profilerc",
+  KConfig config( locate( "config", "profilerc" ),
 		  kapp->localconfigdir() + "/profilerc" );
 
   QStringList tmpList = config.groupList();
