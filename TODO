@@ -214,3 +214,4 @@ an alternative help->contents action)
   just a, b, c, and d. Probably not something that has to wait for KDE 4, but seems like a good idea
   to have here for later doing.
 
+- Move KRichTextLabel into kdeui if still required with Qt 4.
