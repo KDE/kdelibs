@@ -31,6 +31,8 @@
 class KArchiveDirectory;
 class KArchiveFile;
 
+class QDir;
+
 /**
  * @short generic class for reading/writing archives
  * @author David Faure <faure@kde.org>
