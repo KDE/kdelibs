@@ -338,6 +338,9 @@ print/system
           recommended to  disable this option once the correct printing 
           system has been configured.
 
+print/properties
+        - disables the button to change printer properties or to add a new printer.
+
 print/options
         - disables the button to select additional print options.
 
@@ -348,7 +351,8 @@ print/selection
         - disables the options that allows selecting a (pseudo) printer or 
           change any of the printer properties. Make sure that a proper
           default printer has been selected before disabling this option.
-          Disabling this option also disables print/system and print/options.
+          Disabling this option also disables print/system, print/options
+          and print/properties.
 
 print/dialog
         - disables the complete print dialog. Selecting the print option will
