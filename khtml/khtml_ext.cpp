@@ -276,6 +276,7 @@ public:
   KAction *m_paReloadFrame;
   KAction *m_paViewFrameSource;
   KAction *m_paViewFrameInfo;
+  KAction *m_paSendImage;
 };
 
 
@@ -332,6 +333,10 @@ KHTMLPopupGUIClient::KHTMLPopupGUIClient( KHTMLPart *khtml, const QString &doc, 
           d->m_imageURL = KURL( static_cast<DOM::HTMLInputElement>( e ).src().string() );
     d->m_paSaveImageAs = new KAction( i18n( "Save Image As..." ), 0, this, SLOT( slotSaveImageAs() ),
                                       actionCollection(), "saveimageas" );
+    d->m_paSendImage = new KAction( i18n( "Send Image" ), 0, this, SLOT( slotSendImage() ),
+                                      actionCollection(), "sendimage" );
+
+
     d->m_paCopyImageLocation = new KAction( i18n( "Copy Image Location" ), 0, this, SLOT( slotCopyImageLocation() ),
                                             actionCollection(), "copyimagelocation" );
     QString name = KStringHandler::csqueeze(d->m_imageURL.fileName()+d->m_imageURL.query(), 25);
@@ -358,6 +363,19 @@ void KHTMLPopupGUIClient::slotSaveLinkAs()
   KIO::MetaData metaData;
   metaData["referrer"] = d->m_khtml->referrer();
   saveURL( d->m_khtml->widget(), i18n( "Save Link As" ), d->m_url, metaData );
+}
+
+void KHTMLPopupGUIClient::slotSendImage()
+{
+    QStringList urls;
+    urls.append( d->m_imageURL.url());
+    QString subject = d->m_imageURL.url();
+    kapp->invokeMailer(QString::null, QString::null, QString::null, subject,
+                       QString::null, //body
+                       QString::null,
+                       urls); // attachments
+
+
 }
 
 void KHTMLPopupGUIClient::slotSaveImageAs()
