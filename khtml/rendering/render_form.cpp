@@ -721,6 +721,8 @@ RenderFileButton::RenderFileButton(HTMLInputElementImpl *element)
 {
     KURLRequester* w = new KURLRequester( view()->viewport(), "__khtml" );
 
+    w->setMode(KFile::File | KFile::ExistingOnly);
+
     connect(w->lineEdit(), SIGNAL(returnPressed()), this, SLOT(slotReturnPressed()));
     connect(w->lineEdit(), SIGNAL(textChanged(const QString &)),this,SLOT(slotTextChanged(const QString &)));
 
