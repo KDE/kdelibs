@@ -192,6 +192,7 @@ RenderStyle *CSSStyleSelector::styleForElement(ElementImpl *e, int state)
     ::dynamicState = state;
     ::usedDynamicStates = StyleSelector::None;
     ::encodedurl = &encodedurl;
+    ::pseudoState = PseudoUnknown;
     CSSOrderedPropertyList *propsToApply = new CSSOrderedPropertyList;
     CSSOrderedPropertyList *pseudoProps = new CSSOrderedPropertyList;
 
