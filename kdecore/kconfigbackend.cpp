@@ -548,7 +548,7 @@ void KConfigINIBackEnd::parseSingleConfigFile(QFile &rFile,
           if ((ll != cl) || memcmp(locale, localeString.data(), ll))
           {
               // backward compatibility. C == en_US
-              if ( cl != 1 || ll != 5 || memcmp(locale, "C", 1) || memcmp(localeString.data(), "en_US", 5)) {
+              if ( cl != 1 || ll != 5 || *locale != 'C' || memcmp(localeString.data(), "en_US", 5)) {
                   //cout<<"mismatched locale '"<<QCString(locale, elocale-locale +1)<<"'"<<endl;
                   // We can ignore this one
                   if (!pWriteBackMap)
