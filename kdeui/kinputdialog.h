@@ -39,6 +39,7 @@ class KInputDialogPrivate;
  * Four static convenience functions are provided: getText(), getInteger().
  * getFloat() and getItem().
  *
+ * @since 3.2
  * @author Nadeem Hasan <nhasan@kde.org>
  */
 class KInputDialog : public KDialogBase
