@@ -20,6 +20,9 @@
    Boston, MA 02111-1307, USA.
    
    $Log$
+   Revision 1.18  1999/03/09 16:39:50  dfaure
+   Merging with 1.1 branch : initPath(), and header doc update.
+
    Revision 1.17  1999/03/09 06:47:14  antlarr
    Added the getIconPath function that returns the full path to a icon filename and
    changed loadInternal to use it.
@@ -84,88 +87,89 @@
 #include <qstrlist.h>
 #include <qstring.h>
 
-/// Load icons from disk
 /**
-   KIconLoader is a derived class from QObject.
-   It supports loading of icons from disk. It puts the icon and its name
-   into a QList and if you call loadIcon() for a second time, the icon is taken
-   out of the list and not reread from disk.
-   So you can call loadIcon() as many times as you wish and you don't have
-   to take care about multiple copies of the icon in memory.
+	Icon loader with caching.
+
+	Multiples loads of the same icons using this class will be cached,
+	saving memory and loading time. 
+	
+	Icons are searched for according to the KDE file system standard.
+	Extra directories can be added, see @ref insertDirectory.
+
+	@author Christoph Neerfeld (chris@kde.org)
+	@version $Id$
 */
 class KIconLoader : public QObject
 {
   Q_OBJECT
 public:
-  /// Constructor
   /**
-	 config is the pointer to a KConfig object; 
-	 normally the global KConfig object.
-	 group is the name of a group in a config file.
-	 key is the name of an entry within this group.
-	 
-	 Normaly group == "KDE Setup" and key == "IconPath"
-	 Example for an entry in .kderc:
-	 [KDE Setup]
-	 IconPath=/usr/local/lib/kde/lib/pics:/usr/local/lib/kde/lib/pics/toolbar
-	 
-	 This gives KIconLoader the path to search the icons in.
-	 
-	 If you want to use another path in your application then write into
-	 your .my_application_rc:
+  	Constructor.
+
+	If you want to use another path in your application then write into
+	your .my_application_rc:
+
+<pre>
 	 [MyApplication]
 	 PixmapPath=/..../my_pixmap_path
-	 and call KIconLoader( config, "MyApplication", "PixmapPath" ).
+</pre>
+
+	and call KIconLoader( config, "MyApplication", "PixmapPath" ).
+
+	@param config	Pointer to a KConfig object which will be searched
+	 		for additional paths.
+	@param group	Group to search for paths. Normally "KDE Setup" is used.
+	@param key	Key to search for paths. Normally "IconPath" is used.
+	
   */
   KIconLoader ( KConfig *conf, const QString &app_name, const QString &var_name );
 
-  /**
-	 There now exists a simple-to-use version of KIconLoader. If you
- 	 create a KIconLoader without giving arguments, KIconLoader searches for 
-	 the path in [KDE Setup]:IconPath=... as a default.
-  */
+  /** Constructor. Searches for path in [KDE Setup]/IconPath.  */
   KIconLoader();
 
-  /// Destructor
+  /** Destructor. */
   ~KIconLoader ();
 
-  /// Load an icon from disk
-  /**
-	 This function searches for the icon called name 
-	 and returns a QPixmap object
-	 of this icon if it was found and 0 otherwise (if canReturnNull is true).
-         Returns pixmap from unknown.xpm if canReturnNull is false.
-	 If name starts with "/..." loadIcon treats it as an absolut pathname.
-	 LoadIcon() creates a list of all loaded icons, 
-	 so calling loadIcon() a second time
-	 with the same name argument won't load the icon again, but gets it out of
-	 its cache. By this you don't have to worry about multiple copies
-	 of one and the same icon in memory, and you can call loadIcon() 
-	 as often as you like.
+  /** 
+  	Load an icon from disk or cache.
 
-         If the icon is larger then the specified size, it is 
-         scaled down automatically. If the specified size is 
-         0, the icon is not scaled at all.
+	@param name	The name of the icon to load. Absolute pathnames are
+	 		allowed.
 
+  	@param w	The max width of the resulting pixmap. Larger icons
+			are scaled down. The default is no maximum.
+  	@param h	The max height of the resulting pixmap. Larger icons
+			are scaled down. The default is no maximum.
+	@param canReturnNull	If this is false, this function will return
+		the "unknown.xpm" icon if the requested icon is not found.
+		The default is to return null.
+
+	@return	The loaded icon.
   */
-  QPixmap loadIcon( const QString &name, int w = 0, int h = 0, bool canReturnNull = true);
+  QPixmap loadIcon( const QString &name, int w = 0, int h = 0, 
+  		bool canReturnNull = true );
 
 
-  /// Load an icon from disk without cache
-  /**
-      Same like loadIcon, except that cached icons will be reloaded.
-      This is useful if the icon has changed on the filesystem and you want to be
-      sure that you get the new version, not the old one from the cache.
+  /** 
+  	Load an icon from disk without cache.
+
+	This is useful if the icon has changed on the filesystem and
+	you want to be sure that you get the new version, not the old
+	one from the cache.
+
+	@see loadIcon
   */
   QPixmap reloadIcon( const QString &name, int w = 0, int h = 0);
   
-  /// Load an mini icon from disk
-  /**
-	 Same like loadIcon, but looks for "mini/name" first.
+  /** 
+  	Load a mini icon from disk or cache.
+	Like loadIcon, but looks for "mini/name" first.
+
+	@see loadIcon
   */
   QPixmap loadMiniIcon( const QString &name , int w = 0, int h = 0 );
 
-  /* 
+  /**
    * The loadApplication-Icon functions are similar to the 
    * usual loadIcon functions except that they look in
    * kdedir()/share/icon first.
@@ -174,30 +178,40 @@ public:
    * application icons. Normally KApplication does this for
    * you, but special programs like kpanel or kmenuedit
    * need to load the application icons of foreign applications.
+   *
+   * @see loadIcon
    */
   QPixmap loadApplicationIcon( const QString &name, int w = 0, int h = 0 );
+
+  /**
+  	Similar to loadMiniIcon, but searches for a mini icon.
+
+	@see loadMiniIcon, loadApplicationIcon
+  */
   QPixmap loadApplicationMiniIcon( const QString &name, int w = 0, int h = 0 );
 
 
-  /// Insert directory into searchpath
-  /**
-         This functions inserts a new directory into the searchpath at 
-	 position index.
-	 It returns TRUE if successful, or FALSE if index is out of range.
-	 Note that the default searchpath looks like this:
+  /** 
+  	Insert a directory into icon search path.
+	Note that the default searchpath looks like this:
 
-	       1: $HOME/.kde/share/apps/<appName>/pics
-	       2: $KDEDIR/share/apps/<appName>/pics
-	       3: $HOME/.kde/share/apps/<appName>/toolbar
-	       4: $KDEDIR/share/apps/<appName>/toolbar
+	@li $HOME/.kde/share/apps/<appName>/pics
+	@li $KDEDIR/share/apps/<appName>/pics
+	@li $HOME/.kde/share/apps/<appName>/toolbar
+	@li $KDEDIR/share/apps/<appName>/toolbar
 
-	       5: $HOME/.kde/share/icons
-	       6: $HOME/.kde/share/toolbar
+	@li $HOME/.kde/share/icons
+	@li $HOME/.kde/share/toolbar
 
-	       7: $KDEDIR/share/icons
-	       8: $KDEDIR/share/toolbar
+	@li $KDEDIR/share/icons
+	@li $KDEDIR/share/toolbar
 
-	     9-x: list of directories in [KDE Setup]:IconPath=...
+	@li list of directories in [KDE Setup]:IconPath=...
+
+	 @param index	The index in the search path at which to insert
+	 		the new directory.
+	@param dir_name	The directory to insert into the search path.
+	@return true on success, false on index out of range.
 
   */
 
@@ -205,19 +219,21 @@ public:
     return pixmap_dirs.insert( index, dir_name ); }
   QStrList* getDirList() { return &pixmap_dirs; }
 
-  /// Get the complete path for an icon filename
-  /**
-      Set always_valid to true if you want this function to return a valid
-      pixmap is your wishes cannot be satisfied (Be aware, that if unknown.xpm
-      is not found you will receive a null string)
+  /** 
+	Get the complete path for an icon name.
+
+	@param name	The name of the icon to search for.
+	@param always_valid If true, the function will return the path to
+		unknown.xpm if the icon is not found. Note that it will
+		return null if unknown.xpm was also not found.
+
+	@return the physical path to the named icon.
   */
-  QString KIconLoader::getIconPath( const QString &name, bool always_valid=false);
+  QString KIconLoader::getIconPath( const QString &name, 
+  		bool always_valid=false);
 
 
-  /// Flush cache
-  /**
-      Remove an icon from the cache given it's name
-  */
+  /** Remove an icon from the cache. */
   void flush( const QString &name ); 
 
 protected:
