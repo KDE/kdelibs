@@ -596,7 +596,12 @@ void RenderBox::close()
 short RenderBox::containingBlockWidth() const
 {
     if (isRoot() && canvas()->view())
-        return canvas()->view()->visibleWidth();
+    {
+        if (canvas()->printingMode())
+            return canvas()->width();
+        else
+            return canvas()->view()->visibleWidth();
+    }
 
     RenderBlock* cb = containingBlock();
     if (usesLineWidth())
