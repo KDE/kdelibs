@@ -629,7 +629,7 @@ void KIconViewItem::paintText( QPainter *p, const QColorGroup &cg )
     }
 }
 
-const QSize KIconViewItem::pixmapSize() const
+QSize KIconViewItem::pixmapSize() const
 {
     return d ? d->m_pixmapSize : QSize( 0, 0 );
 }
