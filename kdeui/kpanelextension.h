@@ -100,7 +100,7 @@ class KPanelExtension : public QFrame
 public:
 
     enum Type { Normal = 0, Stretch };
-    enum Action { About = 1, Help = 2, Preferences = 4 };
+    enum Action { About = 1, Help = 2, Preferences = 4, ReportBug =8 };
     enum Position { Left = 0, Right, Top, Bottom };
 
     /**

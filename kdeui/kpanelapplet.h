@@ -95,205 +95,205 @@ class KConfig;
  **/
 class KPanelApplet : public QFrame
 {
-  Q_OBJECT
+    Q_OBJECT
 
 public:
 
-  enum Type { Normal = 0, Stretch };
-  enum Action { About = 1, Help = 2, Preferences = 4 };
-  enum Direction { Up = 0, Down, Left, Right };
+    enum Type { Normal = 0, Stretch };
+    enum Action { About = 1, Help = 2, Preferences = 4, ReportBug = 8 };
+    enum Direction { Up = 0, Down, Left, Right };
 
-  /**
-   * Construct a @ref KPanelApplet just like any other widget.
-   *
-   * @param configFile The configFile handed over in the factory function.
-   * @param Type The applet @ref type().
-   * @param actions Standard RMB menu actions supported by the applet (see @ref action() ).
-   * @param parent The pointer to the parent widget handed over in the factory function.
-   * @param name A Qt object name for your applet.
-   **/
-  KPanelApplet(const QString& configFile, Type t = Normal,
-               int actions = 0, QWidget *parent = 0, const char *name = 0);
+    /**
+     * Construct a @ref KPanelApplet just like any other widget.
+     *
+     * @param configFile The configFile handed over in the factory function.
+     * @param Type The applet @ref type().
+     * @param actions Standard RMB menu actions supported by the applet (see @ref action() ).
+     * @param parent The pointer to the parent widget handed over in the factory function.
+     * @param name A Qt object name for your applet.
+     **/
+    KPanelApplet(const QString& configFile, Type t = Normal,
+                 int actions = 0, QWidget *parent = 0, const char *name = 0);
 
-  /**
-   * Destructor.
-   **/
-  ~KPanelApplet();
+    /**
+     * Destructor.
+     **/
+    ~KPanelApplet();
 
-  /**
-   * Retrieve a suggested width for a given height.
-   *
-   * Every applet should reimplement this function.
-   *
-   * Depending on the panel orientation the height (horizontal panel) or the
-   * width (vertical panel) of the applets is fixed.
-   * The exact values of the fixed size component depend on the panel size.
-   *
-   * On a horizontal panel the applet height is fixed, the panel will
-   * call @ref widthForHeight(int height) with @p height
-   * equal to 'the fixed applet height'
-   * when laying out the applets.
-   *
-   * The applet can now choose the other size component (width)
-   * based on the given height.
-   *
-   * The width you return is granted.
-   **/
-  virtual int widthForHeight(int height) const { return height; }
+    /**
+     * Retrieve a suggested width for a given height.
+     *
+     * Every applet should reimplement this function.
+     *
+     * Depending on the panel orientation the height (horizontal panel) or the
+     * width (vertical panel) of the applets is fixed.
+     * The exact values of the fixed size component depend on the panel size.
+     *
+     * On a horizontal panel the applet height is fixed, the panel will
+     * call @ref widthForHeight(int height) with @p height
+     * equal to 'the fixed applet height'
+     * when laying out the applets.
+     *
+     * The applet can now choose the other size component (width)
+     * based on the given height.
+     *
+     * The width you return is granted.
+     **/
+    virtual int widthForHeight(int height) const { return height; }
 
-  /**
-   * @return A suggested height for a given width.
-   *
-   * Every applet should reimplement this function.
-   *
-   * Depending on the panel orientation the height (horizontal panel) or the
-   * width (vertical panel) of the applets is fixed.
-   * The exact values of the fixed size component depend on the panel size.
-   *
-   * On a vertical panel the applet width is fixed, the panel will
-   * call @ref heightForWidth(int width) with @p width
-   * equal to 'the fixed applet width'
-   * when layint out the applets.
-   *
-   * The applet can now choose the other size component (height)
-   * based on the given width.
-   *
-   * The height you return is granted.
-   **/
-  virtual int heightForWidth(int width) const { return width; }
+    /**
+     * @return A suggested height for a given width.
+     *
+     * Every applet should reimplement this function.
+     *
+     * Depending on the panel orientation the height (horizontal panel) or the
+     * width (vertical panel) of the applets is fixed.
+     * The exact values of the fixed size component depend on the panel size.
+     *
+     * On a vertical panel the applet width is fixed, the panel will
+     * call @ref heightForWidth(int width) with @p width
+     * equal to 'the fixed applet width'
+     * when layint out the applets.
+     *
+     * The applet can now choose the other size component (height)
+     * based on the given width.
+     *
+     * The height you return is granted.
+     **/
+    virtual int heightForWidth(int width) const { return width; }
 
-  /**
-   * Always use this @ref KConfig object to save/load your applets configuration.
-   *
-   * For unique applets this config object will write to a config file called
-   * <appletname>rc in the users local KDE directory.
-   *
-   * For normal applets this config object will write to a instance specific config file
-   * called <appletmame><instanceid>rc in the users local KDE directory.
-   **/
-  KConfig* config() const { return _config; }
+    /**
+     * Always use this @ref KConfig object to save/load your applets configuration.
+     *
+     * For unique applets this config object will write to a config file called
+     * <appletname>rc in the users local KDE directory.
+     *
+     * For normal applets this config object will write to a instance specific config file
+     * called <appletmame><instanceid>rc in the users local KDE directory.
+     **/
+    KConfig* config() const { return _config; }
 
-  /**
-   * @return Type indicating the applet's type.
-   * @ref Type
-   **/
-  Type type() const { return _type; }
+    /**
+     * @return Type indicating the applet's type.
+     * @ref Type
+     **/
+    Type type() const { return _type; }
 
-  /**
-   * @return int indicating the supported RMB menu actions.
-   * @ref Action
-   **/
-  int actions() const { return _actions; }
+    /**
+     * @return int indicating the supported RMB menu actions.
+     * @ref Action
+     **/
+    int actions() const { return _actions; }
 
-  /**
-   * Generic action dispatcher. Called  when the user selects an item
-   * from the applets RMB menu.
-   *
-   * Reimplement this function to handle actions.
-   *
-   * For About, Help and Preferences, use the convenience handlers
-   * ref about(), help(), preferences()
-   *
-   **/
-   virtual void action( Action a );
+    /**
+     * Generic action dispatcher. Called  when the user selects an item
+     * from the applets RMB menu.
+     *
+     * Reimplement this function to handle actions.
+     *
+     * For About, Help and Preferences, use the convenience handlers
+     * ref about(), help(), preferences()
+     *
+     **/
+    virtual void action( Action a );
 
- signals:
-  /**
-   * Emit this signal to make the panel relayout all applets, when
-   * you want to change your width (horizontal panel) or
-   * height (vertical panel).
-   *
-   * The panel is going to relayout all applets based on their
-   * widthForHeight(int height) (horizontal panel) or
-   * heightForWidth(int width) (vertical panel).
-   *
-   * Please note that the panel may change the applets location
-   * if the new widthForHeight(int height) (horizontal panel) or
-   * heightForWidth(int width) (vertical panel) does not fit into the
-   * current panel layout.
-   **/
-  void updateLayout();
+signals:
+    /**
+     * Emit this signal to make the panel relayout all applets, when
+     * you want to change your width (horizontal panel) or
+     * height (vertical panel).
+     *
+     * The panel is going to relayout all applets based on their
+     * widthForHeight(int height) (horizontal panel) or
+     * heightForWidth(int width) (vertical panel).
+     *
+     * Please note that the panel may change the applets location
+     * if the new widthForHeight(int height) (horizontal panel) or
+     * heightForWidth(int width) (vertical panel) does not fit into the
+     * current panel layout.
+     **/
+    void updateLayout();
 
-  /**
-   * Request keyboard focus from the panel.
-   **/
-  void requestFocus();
+    /**
+     * Request keyboard focus from the panel.
+     **/
+    void requestFocus();
 
 
- public slots:
-  /**
-   * Don't reimplement, this is used internally
-   **/
-  void slotSetOrientation(Orientation o);
+public slots:
+    /**
+     * Don't reimplement, this is used internally
+     **/
+    void slotSetOrientation(Orientation o);
 
-  /**
-   * Don't reimplement, this is used internally
-   **/
-  void slotSetPopupDirection(Direction d);
+    /**
+     * Don't reimplement, this is used internally
+     **/
+    void slotSetPopupDirection(Direction d);
 
- protected:
+protected:
 
-  /**
-   * Is called when the user selects "About" from the applets RMB menu.
-   * Reimplement this function to launch a about dialog.
-   *
-   * Note that this is called only when your applet supports the About action.
-   * See @ref Action and @ref KPanelApplet().
-   **/
-  virtual void about() {}
+    /**
+     * Is called when the user selects "About" from the applets RMB menu.
+     * Reimplement this function to launch a about dialog.
+     *
+     * Note that this is called only when your applet supports the About action.
+     * See @ref Action and @ref KPanelApplet().
+     **/
+    virtual void about() {}
 
-  /**
-   * Is called when the user selects "Help" from the applets RMB menu.
-   * Reimplement this function to launch a manual or help page.
-   *
-   * Note that this is called only when your applet supports the Help action.
-   * See @ref Action and @ref KPanelApplet().
-   **/
-  virtual void help() {}
+    /**
+     * Is called when the user selects "Help" from the applets RMB menu.
+     * Reimplement this function to launch a manual or help page.
+     *
+     * Note that this is called only when your applet supports the Help action.
+     * See @ref Action and @ref KPanelApplet().
+     **/
+    virtual void help() {}
 
-  /**
-   * Is called when the user selects "Preferences" from the applets RMB menu.
-   * Reimplement this function to launch a preferences dialog or kcontrol module.
-   *
-   * Note that this is called only when your applet supports the preferences action.
-   * See @ref Action and @ref KPanelApplet().
-   **/
-  virtual void preferences() {}
+    /**
+     * Is called when the user selects "Preferences" from the applets RMB menu.
+     * Reimplement this function to launch a preferences dialog or kcontrol module.
+     *
+     * Note that this is called only when your applet supports the preferences action.
+     * See @ref Action and @ref KPanelApplet().
+     **/
+    virtual void preferences() {}
 
-  /**
-   * @return the applet's orientation. (horizontal or vertical)
-   **/
-  Orientation orientation() const { return _orient; }
+    /**
+     * @return the applet's orientation. (horizontal or vertical)
+     **/
+    Orientation orientation() const { return _orient; }
 
-    
-  /**
-    * The orientation changed to @p orientation. Reimplement this
-    * change handler in order to adjust the look of your applet.
-    **/
-  virtual void orientationChange( Orientation /* orientation*/) {}
 
-  /**
-   * You may need this if you want to popup menus at the right position.
-   *
-   * See @ref  popupDirectionChange()
-   **/
-  Direction popupDirection() const { return _dir; }
+    /**
+     * The orientation changed to @p orientation. Reimplement this
+     * change handler in order to adjust the look of your applet.
+     **/
+    virtual void orientationChange( Orientation /* orientation*/) {}
+
+    /**
+     * You may need this if you want to popup menus at the right position.
+     *
+     * See @ref  popupDirectionChange()
+     **/
+    Direction popupDirection() const { return _dir; }
 
 
     /**
      * The popup direction changed to @p direction. Reimplement this
      * change handler in order to adjust the look of your applet.
      **/
-  virtual void popupDirectionChange( Direction /*direction*/ ) {}
-    
+    virtual void popupDirectionChange( Direction /*direction*/ ) {}
 
 
- private:
-  Type         _type;
-  Orientation  _orient;
-  Direction    _dir;
-  KConfig*     _config;
-  int          _actions;
+
+private:
+    Type         _type;
+    Orientation  _orient;
+    Direction    _dir;
+    KConfig*     _config;
+    int          _actions;
 };
 
 #endif
