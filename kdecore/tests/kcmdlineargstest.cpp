@@ -4,15 +4,19 @@
 
 #include <stdio.h>
 
+// we use our own macro to not bother translators
+// but still demonstrate the use. You would use I18N_NOOP
+#define I18N_NOP(x) x
+
 static const char *version = "v0.0.2 1999 (c) Waldo Bastian";
-static const char *description = I18N_NOOP("This is a test program.");
+static const char *description = I18N_NOP("This is a test program.");
 
 static KCmdLineOptions options[] =
 {
- { "test",		I18N_NOOP("do a short test only, note that\n"
+ { "test",		I18N_NOP("do a short test only, note that\n"
 				  "this is rather long comment"), 0 },
- { "baud <baudrate>",	I18N_NOOP("set baudrate"), "9600" },
- { "+file(s)",		I18N_NOOP("Files to load"), 0 },
+ { "baud <baudrate>",	I18N_NOP("set baudrate"), "9600" },
+ { "+file(s)",		I18N_NOP("Files to load"), 0 },
  { 0,0,0 }
 };
 

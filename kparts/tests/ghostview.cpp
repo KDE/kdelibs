@@ -16,10 +16,10 @@ Shell::Shell()
 {
   setXMLFile( "ghostviewtest_shell.rc" );
 
-  KAction * paOpen = new KAction( i18n( "&Open file" ), "fileopen", 0, this,
+  KAction * paOpen = new KAction( "&Open file" , "fileopen", 0, this,
     SLOT( slotFileOpen() ), actionCollection(), "file_open" );
 
-  KAction * paQuit = new KAction( i18n( "&Quit" ), "exit", 0, this, SLOT( close() ), actionCollection(), "file_quit" );
+  KAction * paQuit = new KAction( "&Quit" , "exit", 0, this, SLOT( close() ), actionCollection(), "file_quit" );
 
   // Try to find libkghostview
   KLibFactory *factory = KLibLoader::self()->factory( "libkghostview" );
@@ -35,7 +35,7 @@ Shell::Shell()
   }
   else
   {
-     KMessageBox::error(this, i18n("No libkghostview found !"));
+     KMessageBox::error(this, "No libkghostview found !");
   }
   // Set a reasonable size
   resize( 600, 350 );
@@ -61,11 +61,11 @@ void Shell::slotFileOpen()
 
 static KCmdLineOptions options[] =
 {
- { "+file(s)",          I18N_NOOP("Files to load"), 0 },
+ { "+file(s)",          "Files to load", 0 },
  { 0,0,0 }
 };
 static const char *version = "v0.0.1 2000 (c) David Faure";
-static const char *description = I18N_NOOP("This is a test shell for the kghostview part.");
+static const char *description = "This is a test shell for the kghostview part.";
 
 int main( int argc, char **argv )
 {
