@@ -582,6 +582,7 @@ HTMLButtonElementImpl::HTMLButtonElementImpl(DocumentImpl *doc, HTMLFormElementI
     m_clicked = false;
     m_type = SUBMIT;
     m_dirty = true;
+    m_activeSubmit = false;
 }
 
 HTMLButtonElementImpl::HTMLButtonElementImpl(DocumentImpl *doc)
@@ -590,6 +591,7 @@ HTMLButtonElementImpl::HTMLButtonElementImpl(DocumentImpl *doc)
     m_clicked = false;
     m_type = BUTTON;
     m_dirty = true;
+    m_activeSubmit = false;
 }
 
 HTMLButtonElementImpl::~HTMLButtonElementImpl()
@@ -647,7 +649,11 @@ void HTMLButtonElementImpl::defaultEventHandler(EventImpl *evt)
     if (m_type != BUTTON && (evt->id() == EventImpl::CLICK_EVENT) || (evt->id() == EventImpl::MOUSEUP_EVENT)) {
         m_clicked = true;
 
-	if(m_form && m_type == SUBMIT) m_form->prepareSubmit();
+	if(m_form && m_type == SUBMIT) {
+	    m_activeSubmit = true;
+	    m_form->prepareSubmit();
+	    m_activeSubmit = false; // in case we were canceled
+	}
 	if(m_form && m_type == RESET) m_form->prepareReset();
     }
 }
@@ -656,6 +662,19 @@ void HTMLButtonElementImpl::attach(KHTMLView *_view)
 {
     HTMLElementImpl::attach(_view);
 }
+
+bool HTMLButtonElementImpl::encoding(const QTextCodec* codec, khtml::encodingList& encoding, bool /*multipart*/)
+{
+    if (m_type != SUBMIT || _name.isEmpty() || !m_activeSubmit)
+	return false;
+
+    encoding += fixUpfromUnicode(codec, _name.string().stripWhiteSpace());
+    QString enc_str = m_currValue.isNull() ? QString("") : m_currValue;
+    encoding += fixUpfromUnicode(codec, enc_str);
+
+    return true;
+}
+
 
 // -------------------------------------------------------------------------
 
@@ -708,6 +727,7 @@ void HTMLInputElementImpl::init()
     m_filename = "";
     m_haveType = false;
     m_firstAttach = true;
+    m_activeSubmit = false;
 
     view = 0;
 }
@@ -1038,7 +1058,8 @@ bool HTMLInputElementImpl::encoding(const QTextCodec* codec, khtml::encodingList
 
         case SUBMIT:
 
-            if (m_render && static_cast<RenderSubmitButton*>(m_render)->clicked())
+//            if (m_render && static_cast<RenderSubmitButton*>(m_render)->clicked())
+	    if (m_activeSubmit)
             {
                 QString enc_str = m_value.isNull() ?
                     static_cast<RenderSubmitButton*>(m_render)->defaultLabel() : value().string();
@@ -1179,8 +1200,11 @@ void HTMLInputElementImpl::defaultEventHandler(EventImpl *evt)
 	    return;
 	
 	// ### should this be done on click instead? what about keyboard activation of control?
-	if (m_type == SUBMIT)
+	if (m_type == SUBMIT) {
+	    m_activeSubmit = true;
 	    m_form->prepareSubmit();
+	    m_activeSubmit = false; // in case we were canceled
+	}
 	else if (m_type == RESET)
 	    m_form->prepareReset();
     }

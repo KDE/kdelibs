@@ -199,12 +199,15 @@ public:
 
     virtual void defaultEventHandler(EventImpl *evt);
 
+    virtual bool encoding(const QTextCodec*, khtml::encodingList&, bool);
+
 protected:
     DOMString m_value;
     QString   m_currValue;
     typeEnum  m_type : 2;
     bool      m_dirty : 1;
     bool      m_clicked : 1;
+    bool      m_activeSubmit : 1;
 };
 
 // -------------------------------------------------------------------------
@@ -303,6 +306,7 @@ protected:
     bool m_checked : 1;
     bool m_haveType : 1;
     bool m_firstAttach :1;
+    bool m_activeSubmit : 1;
 
 private:
     void init();
