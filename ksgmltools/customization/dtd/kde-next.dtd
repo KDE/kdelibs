@@ -76,7 +76,7 @@
 <!-- ============================================================= -->
 
 <!ENTITY % DocBookDTD	    PUBLIC
-  "-//OASIS//DTD DocBook V4.1//EN"				     
+  "-//OASIS//DTD DocBook V4.1//EN"
   "http://www.oasis-open.org/docbook/sgml/4.1/docbook.dtd"           >
 %DocBookDTD;
 
@@ -85,7 +85,7 @@
 <!--          Modifications to the original DocBook DTD            -->
 <!-- ============================================================= -->
 <!-- ONLY to supply declarations that were switched off in the 
-     first "Modifications" section -->
+     first "Modifications" section                                 -->
 
 <!ENTITY % kde.modifications SYSTEM "kde-modifications.elements">
 %kde.modifications;
