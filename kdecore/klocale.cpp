@@ -106,8 +106,16 @@ KLocale::KLocale( const char *_catalogue )
     QString directory = KApplication::kde_localedir();
     
     while (1) {
-	lang = languages.left(languages.find(':'));
-	languages = languages.right(languages.length() - lang.length() - 1);
+	int f = languages.find(':');
+	if (f > 0) {
+	    lang = languages.left(f);
+	    languages = languages.right(languages.length() - 
+					lang.length() - 1);
+	} else {
+	    lang = languages;
+	    languages = "";
+	}
+	
 	if (lang.isEmpty() || lang == "C")
 	    break;
 	
@@ -116,7 +124,7 @@ KLocale::KLocale( const char *_catalogue )
 	    if (d.exists(QString(catalogue) + ".mo") && 
 		d.exists(QString(SYSTEM_MESSAGES) + ".mo")) 
 		goto found; // my first time ;-)
-	    int f = lang.findRev('_');
+	    f = lang.findRev('_');
 	    if (f > 0)
 		lang = lang.left(lang.findRev('_'));
 	    else 
