@@ -1198,7 +1198,11 @@ QPtrList<QListViewItem> KListView::selectedItems() const
 {
   QPtrList<QListViewItem> list;
 
-  switch(selectionModeExt())
+  // Using selectiomMode() instead of selectionModeExt() since for the cases that
+  // we're interested in selectionMode() should work for either variety of the
+  // setSelectionMode().
+
+  switch(selectionMode())
   {
   case NoSelection:
       break;
