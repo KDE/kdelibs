@@ -1751,11 +1751,11 @@ ScheduledAction::ScheduledAction(QString _code, QTime _nextTime, int _interval, 
   timerId = _timerId;
 }
 
-void ScheduledAction::execute(Window *window)
+bool ScheduledAction::execute(Window *window)
 {
   KHTMLPart *part = ::qt_cast<KHTMLPart *>(window->m_frame->m_part);
-  if (!part)
-    return;
+  if (!part || !part->jScriptEnabled())
+    return false;
   ScriptInterpreter *interpreter = static_cast<ScriptInterpreter *>(part->jScript()->interpreter());
 
   interpreter->setProcessingTimerCallback(true);
@@ -1785,6 +1785,7 @@ void ScheduledAction::execute(Window *window)
   }
 
   interpreter->setProcessingTimerCallback(false);
+  return true;
 }
 
 void ScheduledAction::mark()
@@ -1910,8 +1911,11 @@ void WindowQObject::timerEvent(QTimerEvent *)
 
     if (action->singleShot)
       scheduledActions.removeRef(action);
-    if (parent->part())
-      action->execute(parent);
+    if (parent->part()) {
+      bool ok = action->execute(parent);
+      if ( !ok ) // e.g. JS disabled
+        scheduledActions.removeRef( action );
+    }
 
     action->executing = false;
 

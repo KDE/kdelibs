@@ -179,7 +179,7 @@ namespace KJS {
     ScheduledAction(Object _func, List _args, QTime _nextTime, int _interval, bool _singleShot, int _timerId);
     ScheduledAction(QString _code, QTime _nextTime, int _interval, bool _singleShot, int _timerId);
     ~ScheduledAction();
-    void execute(Window *window);
+    bool execute(Window *window);
     void mark();
 
     ObjectImp *func;
