@@ -56,7 +56,7 @@ void KURLComboBox::init( Mode mode )
     itemList.setAutoDelete( true );
     defaultList.setAutoDelete( true );
     setInsertionPolicy( NoInsertion );
-    setGrabReturnKeyEvents( true );
+    setTrapReturnKey( true );
 
     opendirPix = BarIcon(QString::fromLatin1("folder_open"));
 
