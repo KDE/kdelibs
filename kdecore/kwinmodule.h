@@ -131,6 +131,16 @@ public:
      **/
     void setDesktopName( int desktop, const QString& name );
 
+    /** 
+     * Informs kwin via dcop to not manage a window with the
+     * specified @p title.
+     *
+     * Useful for swallowing legacy applications, for example java
+     * applets.
+     *
+     */
+    void doNotManage( const QString& title );
+
 
 signals:
 
@@ -199,7 +209,7 @@ signals:
      */
     void windowChanged(WId );
 
-
+    
 private:
     KWinModulePrivate* d;
 

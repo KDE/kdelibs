@@ -28,6 +28,7 @@
 #include <qtl.h>
 #include <qlist.h>
 #include <klocale.h>
+#include <dcopclient.h>
 #include "netwm.h"
 
 extern Atom net_wm_context_help;
@@ -234,6 +235,19 @@ void KWinModule::setDesktopName( int desktop, const QString& name )
     if (desktop <= 0 || desktop > (int) d->numberOfDesktops() )
 	desktop = currentDesktop();
     d->setDesktopName( desktop, name.utf8().data() );
+}
+
+
+void KWinModule::doNotManage( const QString& title )
+{
+    if ( !kapp->dcopClient()->isAttached() )
+	kapp->dcopClient()->attach();
+    QByteArray data, replyData;
+    QCString replyType;
+    QDataStream arg(data, IO_WriteOnly);
+    arg << title;
+    kapp->dcopClient()->call("kwin", "", "doNotManage(QString)",
+			     data, replyType, replyData);
 }
 
 #include "kwinmodule.moc"
