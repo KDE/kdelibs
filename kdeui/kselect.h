@@ -292,7 +292,10 @@ private:
  * The KGradientSelector widget allows the user to choose
  * from a one-dimensional range of colors which is given as a
  * gradient between two colors provided by the programmer.
- */
+ *
+ * \image html kgradientselector.png "KDE Gradient Selector Widget"
+ *
+ **/
 class KGradientSelector : public KSelector
 {
   Q_OBJECT

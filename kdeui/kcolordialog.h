@@ -49,6 +49,8 @@ class KColorCells;
  * The actual values can be fetched using the inherited xValue and yValue
  * methods.
  *
+ * \image html khsselector.png "KDE Hue/Saturation Selection Widget"
+ *
  * @see KXYSelector, KValueSelector, KColorDialog
  * @author Martin Jones (mjones@kde.org)
  * @version $Id$

@@ -35,6 +35,9 @@ class KEditListBoxPrivate;
  * a listbox which is accompanied by a line edit to enter new
  * items into the listbox and pushbuttons to add and remove
  * items from the listbox and two buttons to move items up and down.
+ *
+ * \image html keditlistbox.png "KDE Edit List Box Widget"
+ *
  */
 class KEditListBox : public QGroupBox
 {

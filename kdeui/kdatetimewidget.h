@@ -27,6 +27,8 @@
  *
  * @see KDateWidget
  *
+ * \image html kdatetimewidget.png "KDE Date Time Widget"
+ *
  * @short A combination of a date and a time selection widget.
  * @author Hans Petter Bieker <bieker@kde.org>
  * @version $Id$

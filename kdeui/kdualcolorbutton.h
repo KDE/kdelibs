@@ -37,6 +37,8 @@ class QBitmap;
  * will be set, while when dragging a color it will use whatever color
  * rectangle the mouse was pressed inside.
  *
+ * \image html kdualcolorbutton.png "KDE Dual Color Button"
+ *
  * @short A widget for selecting two related colors.
  * @author Daniel M. Duley <mosfet@kde.org>
  */
