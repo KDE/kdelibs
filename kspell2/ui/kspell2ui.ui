@@ -26,9 +26,6 @@
             <height>300</height>
         </size>
     </property>
-    <property name="caption">
-        <string>KSpell2UI</string>
-    </property>
     <grid>
         <property name="name">
             <cstring>unnamed</cstring>
