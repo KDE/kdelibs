@@ -589,7 +589,7 @@ QPopupMenu* KApplication::helpMenu( bool /*bAboutQtMenu*/,
 
 void KApplication::appHelpActivated()
 {
-  invokeHTMLHelp( QString(name()) + "/" + "index.html", "" );
+  invokeHelp("", "");
 }
 
 
@@ -1278,9 +1278,9 @@ void KApplication::invokeHelp( const QString& anchor,
      appname = _appname;
 
    if (!anchor.isEmpty())
-     url = QString("help:/%1/%2").arg(appname).arg(anchor);
+     url = QString("help:/%1?anchor=%2").arg(appname).arg(anchor);
    else
-     url = QString("help:/%1").arg(appname);
+     url = QString("help:/%1/index.html").arg(appname);
 
    QString error;
 
