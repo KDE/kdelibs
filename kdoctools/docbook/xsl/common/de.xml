@@ -99,12 +99,12 @@
    <gentext key="Sidebar" text="Randnotiz"/>
    <gentext key="sidebar" text="randnotiz"/>
    <gentext key="Step" text="Schritt"/>
-   <gentext key="TIP" text="TIP"/>
-   <gentext key="tip" text="TIP"/>
+   <gentext key="TIP" text="TIPP"/>
+   <gentext key="tip" text="TIPP"/>
    <gentext key="Table" text="Tabelle"/>
    <gentext key="table" text="Tabelle"/>
-   <gentext key="Tip" text="Tip"/>
-   <gentext key="tip" text="Tip"/>
+   <gentext key="Tip" text="Tipp"/>
+   <gentext key="tip" text="Tipp"/>
    <gentext key="WARNING" text="WARNUNG"/>
    <gentext key="warning" text="WARNUNG"/>
    <gentext key="Warning" text="Warnung"/>
@@ -148,10 +148,10 @@
    <gentext key="listofunknown" text="???-Verzeichnis"/>
    <gentext key="nav-prev" text="Zur&#252;ck"/>
    <gentext key="nav-prev-sibling" text="Schnell zur&#252;ck"/>
-   <gentext key="nav-next-sibling" text="Schnell vor"/>
-   <gentext key="nav-next" text="Vor"/>
-   <gentext key="nav-up" text="Hoch"/>
-   <gentext key="nav-home" text="Anfang"/>
+   <gentext key="nav-next-sibling" text="Schnell nach vorne"/>
+   <gentext key="nav-next" text="Nach vorne"/>
+   <gentext key="nav-up" text="Nach oben"/>
+   <gentext key="nav-home" text="Zum Anfang"/>
    <dingbat key="startquote" text="&#8220;"/>
    <dingbat key="endquote" text="&#8221;"/>
    <dingbat key="nestedstartquote" text="&#8216;"/>
