@@ -224,6 +224,38 @@ QRect KWinModule::workArea( int desktop ) const
     return QRect( r.pos.x, r.pos.y, r.size.width, r.size.height );
 }
 
+QRect KWinModule::workArea( const QValueList<WId>& exclude, int desktop ) const
+{
+    QRect all = QApplication::desktop()->geometry();
+    QRect a = all;
+    
+    if (desktop == -1)
+	desktop = d->currentDesktop();
+    
+    QValueList<WId>::ConstIterator it;
+    for( it = d->windows.begin(); it != d->windows.end(); ++it ) {
+	
+	if(exclude.contains(*it) > 0) continue;
+	
+	NETWinInfo info( qt_xdisplay(), (*it), qt_xrootwin(), NET::WMStrut | NET::WMDesktop);
+	if(!(info.desktop() == desktop || info.desktop() == NETWinInfo::OnAllDesktops)) continue;
+	
+	QRect r = all;
+	NETStrut strut = info.strut();
+	if ( strut.left > 0 )
+	    r.setLeft( r.left() + (int) strut.left );
+	if ( strut.top > 0 )
+	    r.setTop( r.top() + (int) strut.top );
+	if ( strut.right > 0  )
+	    r.setRight( r.right() - (int) strut.right );
+	if ( strut.bottom > 0  )
+	    r.setBottom( r.bottom() - (int) strut.bottom );
+    
+	a = a.intersect(r);
+    }
+    return a;
+}
+
 
 QString KWinModule::desktopName( int desktop ) const
 {
@@ -254,3 +286,4 @@ void KWinModule::doNotManage( const QString& title )
 }
 
 #include "kwinmodule.moc"
+

@@ -121,6 +121,14 @@ public:
      **/
     QRect workArea( int desktop = - 1 ) const;
 
+    
+    /**
+     * Returns the workarea for the specified desktop, or the current
+     * work area if no desktop has been specified. Excludes struts of
+     * clients in the exclude List.
+     **/
+    QRect workArea( const QValueList<WId>&, int desktop = -1) const;
+    
     /**
      * Returns the name of the specified desktop
      **/
@@ -131,7 +139,7 @@ public:
      **/
     void setDesktopName( int desktop, const QString& name );
 
-    /** 
+    /**
      * Informs kwin via dcop to not manage a window with the
      * specified @p title.
      *
@@ -209,7 +217,7 @@ signals:
      */
     void windowChanged(WId );
 
-    
+
 private:
     KWinModulePrivate* d;
 
