@@ -31,10 +31,11 @@
 
  int main( int argc, char **argv )
 {
+  KApplication app( argc, argv, "KFontDialogTest" );
+
   KConfig aConfig;
   aConfig.setGroup( "KFontDialog-test" );
 
-  KApplication app( argc, argv, "KFontDialogtest" );
   app.setFont(QFont("Helvetica",12));
 
   //  QFont font = QFont("Times",18,QFont::Bold);
