@@ -91,7 +91,7 @@ int main(int argc, char **argv)
 			QString::fromLatin1("*|All files\n"
 					    "*.lo *.o *.la|All libtool files"),
 			0, 0, true);
-	dlg.setMode( (KFile::Mode) (KFile::Files) );
+	dlg.setMode( (KFile::Mode) (KFile::Files | KFile::Directory | KFile::ExistingOnly | KFile::LocalOnly) );
 	dlg.setSelection(QString::fromLatin1("kfiledialog.cpp"));
 	if ( dlg.exec() == QDialog::Accepted ) {
 	    KURL::List list = dlg.selectedURLs();
@@ -114,6 +114,16 @@ while ( it2 != l.end() ) {
 	}
     }
 
+
+    	KFileDialog dlg(QString::null,
+			QString::fromLatin1("*|All files\n"
+					    "*.lo *.o *.la|All libtool files"),
+			0, 0, true);
+	dlg.setMode( (KFile::Mode) (KFile::Files | KFile::Directory | KFile::ExistingOnly | KFile::LocalOnly) );
+	dlg.setSelection(QString::fromLatin1("kfiledialog.cpp"));
+	dlg.exec();
+
+    
     if (!(name1.isNull()))
 	KMessageBox::information(0, QString::fromLatin1("You selected the file " ) + name1,
 				 QString::fromLatin1("Your Choice"));
