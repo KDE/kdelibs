@@ -27,13 +27,12 @@ Ftp::Ftp()
 {
   dirfile = 0L;
   sControl = sData = sDatal = 0;
-  ftplib_debug = 9;
   m_error = 0;
   m_errorText = "";
   m_bLoggedOn = false;
   m_bFtpStarted = false;
   m_bPersistent = true;
-  kdebug(KDEBUG_INFO, 7102, "Ftp::Ftp()");
+  kDebugInfo( 7102, "Ftp::Ftp()");
 }
 
 
@@ -119,15 +118,13 @@ bool Ftp::readresp(char c)
   char match[5];
   if ( readline( rspbuf, 256, nControl ) == -1 )
   {
-    if ( ftplib_debug > 1)
-      kdebug( KDEBUG_ERROR, 0, "Could not read" );
+    kDebugError( 7102, "Could not read" );
 
     m_error = ERR_COULD_NOT_READ;
     m_errorText = "";
     return false;
   }
-  if ( ftplib_debug > 1)
-    kdebug(KDEBUG_INFO, 7102, "resp> %s",rspbuf);
+  kDebugInfo( 7102, "resp> %s",rspbuf);
   if ( rspbuf[3] == '-' )  {
     strncpy( match, rspbuf, 3 );
     match[3] = ' ';
@@ -138,8 +135,7 @@ bool Ftp::readresp(char c)
 	m_errorText = "";
 	return false;
       }
-      if ( ftplib_debug > 1)
-	kdebug(KDEBUG_INFO, 7102, "%s",rspbuf);
+      kDebugInfo( 7102, "%s",rspbuf);
     }
     while ( strncmp( rspbuf, match, 4 ) );
   }
@@ -234,16 +230,12 @@ bool Ftp::ftpConnect( const char *_host, unsigned short int _port, const char *_
     passwd = FTP_PASSWD;
   }
 
-  if ( ftplib_debug > 2 ) {
-    kdebug(KDEBUG_INFO, 7102, "Connected ...." );
-  }
+  kDebugInfo( 7102, "Connected ...." );
 
   QString redirect = "";
   m_bLoggedOn = ftpLogin( user, passwd, redirect );
   if ( !m_bLoggedOn ) {
-    if ( ftplib_debug > 2 ) {
-      kdebug(KDEBUG_INFO, 7102, "Could not login" );
-    }
+    kDebugInfo( 7102, "Could not login" );
 
     m_error = ERR_COULD_NOT_LOGIN;
     m_errorText = _host;
@@ -257,9 +249,7 @@ bool Ftp::ftpConnect( const char *_host, unsigned short int _port, const char *_
     }
     _path = redirect;
 
-    if ( ftplib_debug > 2 ) {
-      kdebug(KDEBUG_INFO, 7102, "REDIRECTION '%s'", redirect.ascii());
-    }
+    kDebugInfo( 7102, "REDIRECTION '%s'", redirect.ascii());
   }
 
   m_bLoggedOn = true;
@@ -356,11 +346,10 @@ bool Ftp::ftpLogin( const char *_user, const char *_pass, QString& _redirect )
     rspbuf[0] = '\0';
 
     if ( !ftpSendCmd( tempbuf, '3' ) ) {
-      if ( ftplib_debug > 2 )
-	kdebug(KDEBUG_INFO, 7102, "1> %s", rspbuf );
+      kDebugInfo( 7102, "1> %s", rspbuf );
 
       if ( rspbuf[0] == '2' )
-	return true; /* no password required */
+        return true; /* no password required */
       return false;
     }
 
@@ -373,39 +362,40 @@ bool Ftp::ftpLogin( const char *_user, const char *_pass, QString& _redirect )
       if ( !open_PassDlg( tmp, m_user, pass ) )
 	return false;
     }
-    kdebug( KDEBUG_INFO, 7102, "New pass is '%s'", pass.ascii());
+    kDebugInfo( 7102, "New pass is '%s'", pass.ascii());
 
     tempbuf = "pass ";
     tempbuf += pass;
 
     if ( !ftpSendCmd( tempbuf, '2' ) ) {
-      kdebug(0, KDEBUG_INFO, "Wrong password");
+      kDebugInfo( 7102, "Wrong password");
       return false;
     }
   }
 
-  kdebug( KDEBUG_INFO, 7102, "Login ok");
+  kDebugInfo( 7102, "Login ok");
 
   // Okay, we're logged in. If this is IIS 4, switch dir listing style to Unix:
   // Thanks to jk@soegaard.net (Jens Kristian Søgaard) for this hint
   if( ftpSendCmd( "syst", '2' ) )
+  {
     if( !strncmp( rspbuf, "215 Windows_NT version", 22 ) ) // should do for any version
       ftpSendCmd( "site dirstyle", '2' );
+  }
   else
-    kdebug(KDEBUG_WARN, 0, "syst failed");
+    kDebugWarning( 7102, "syst failed");
 
   // Not interested in the current working directory ? => return with success
   if ( _redirect.isEmpty() )
     return true;
 
-  kdebug( KDEBUG_INFO, 7102, "Searching for pwd");
+  kDebugInfo( 7102, "Searching for pwd");
 
   // Get the current working directory
   if ( !ftpSendCmd( "pwd", '2' ) )
     return false;
 
-  if ( ftplib_debug > 2 )
-    kdebug(KDEBUG_INFO, 7102, "2> %s", rspbuf );
+  kDebugInfo( 7102, "2> %s", rspbuf );
 
   char *p = rspbuf;
   while ( isdigit( *p ) ) p++;
@@ -433,8 +423,7 @@ bool Ftp::ftpSendCmd( const QCString& cmd, char expresp )
   QCString buf = cmd;
   buf += "\r\n";
 
-  if ( ftplib_debug > 2 )
-    kdebug(KDEBUG_INFO, 7102, "%s", cmd.data() );
+  kDebugInfo( 7102, "%s", cmd.data() );
 
   if ( ::write( sControl, buf.data(), buf.length() ) <= 0 )  {
     m_error = ERR_COULD_NOT_WRITE;
@@ -502,9 +491,9 @@ bool Ftp::ftpOpenPASVDataConnection()
   }
 
   if ( setsockopt(sDatal, SOL_SOCKET,SO_KEEPALIVE, (char *) &on, (int) sizeof(on)) < 0 )
-    if ( ftplib_debug > 1 ) debug("Keepalive not allowed");
+    kDebugArea(7102, "Keepalive not allowed");
   if ( setsockopt(sDatal, SOL_SOCKET,SO_LINGER, (char *) &lng,(int) sizeof (lng)) < 0 )
-    if ( ftplib_debug > 1 ) debug("Linger mode was not allowed.");
+    kDebugArea(7102, "Linger mode was not allowed.");
   return 1;
 }
 
@@ -878,7 +867,7 @@ FtpEntry* Ftp::ftpStat( const KURL& _url )
   static FtpEntry fe;
   m_error = 0;
 
-  kdebug( KDEBUG_INFO, 7102, "ftpStat : %s", _url.url().ascii());
+  kDebugInfo( 7102, "ftpStat : %s", _url.url().ascii());
 
   QString path = _url.path();
   if ( path.isEmpty() || path == "/" ) {
@@ -893,9 +882,28 @@ FtpEntry* Ftp::ftpStat( const KURL& _url )
     return &fe;
   }
 
-  QString directory = _url.directory();
-  if( !ftpOpenCommand( "list", directory, 'A' ) ) {
-    kdebug(KDEBUG_ERROR, 0, "COULD NOT LIST");
+  // Argument to the list command (defaults to the directory containing the file)
+  QString listarg = _url.directory();
+
+  // Try cwd into it, if it works it's a dir (and then we'll use dir in the parent directory)
+  // if it doesn't work, it's a file (and then we'll use dir filename)
+  QString tmp = "cwd " + path;
+  if ( !ftpSendCmd( tmp.data(), '2' ) )
+    {
+      if ( !m_error && rspbuf[0] == '5' )
+      {
+        // It is a file, use the name in the list command
+        listarg = path;
+      }
+      else if ( !m_error )
+      {
+        kDebugError( 7102, "DOES NOT EXIST" );
+        return 0L;
+      }
+    }
+
+  if( !ftpOpenCommand( "list", listarg, 'A' ) ) {
+    kDebugError( 7102, "COULD NOT LIST");
     return 0L;
   }
 
@@ -903,7 +911,7 @@ FtpEntry* Ftp::ftpStat( const KURL& _url )
   if( !dirfile )
     return 0L;
 
-  kdebug(KDEBUG_INFO, 7102, "Starting of list was ok");
+  kDebugInfo( 7102, "Starting of list was ok");
 
   QString search = _url.filename();
   assert( search != "" && search != "/" );
@@ -913,7 +921,7 @@ FtpEntry* Ftp::ftpStat( const KURL& _url )
   while( ( e = readdir() ) ) //&& !found ) !!! fix - when not at and, don't read any response
   {
     if ( m_error ) {
-      kdebug(KDEBUG_ERROR, 0, "FAILED: Read %d %s", m_error, errorText().ascii());
+      kDebugError( 7102, "FAILED: Read %d %s", m_error, errorText().ascii());
       return 0L;
     }
 
@@ -922,7 +930,7 @@ FtpEntry* Ftp::ftpStat( const KURL& _url )
       fe = *e;
     }
 
-    kdebug(KDEBUG_INFO, 7102, "%s", e->name.ascii());
+    kDebugInfo( 7102, "%s", e->name.ascii());
   }
 
   if ( !ftpCloseDir() )
@@ -951,7 +959,7 @@ bool Ftp::opendir( KURL& _url )
   else
     redirect = path;
 
-  kdebug(KDEBUG_INFO, 7102, "hunting for path '%s'", redirect.ascii());
+  kDebugInfo( 7102, "hunting for path '%s'", redirect.ascii());
 
   KURL url( _url );
   url.setPath( redirect );
@@ -965,7 +973,7 @@ bool Ftp::ftpOpenDir( KURL& _url )
   QString path( _url.path(-1) );
 
   if( !ftpOpenCommand( "list", path, 'A' ) ) {
-    kdebug(KDEBUG_ERROR, 0, "COULD NOT LIST %d %s", m_error, errorText().ascii() );
+    kDebugError( 7102, "COULD NOT LIST %d %s", m_error, errorText().ascii() );
     return false;
   }
 
@@ -973,7 +981,7 @@ bool Ftp::ftpOpenDir( KURL& _url )
   if( !dirfile )
     return false;
 
-  kdebug(KDEBUG_INFO, 7102, "Starting of list was ok");
+  kDebugInfo( 7102, "Starting of list was ok");
 
   return true;
 }
@@ -1079,7 +1087,7 @@ FtpEntry* Ftp::ftpParseDir( char* buffer )
                     time_t currentTime = time( 0L );
                     struct tm * tmptr = gmtime( &currentTime );
                     int currentMonth = tmptr->tm_mon;
-                    //kdebug( KDEBUG_INFO, 7102, "Current time :%s", asctime( tmptr ) );
+                    //kDebugInfo( 7102, "Current time :%s", asctime( tmptr ) );
                     // Reset time fields
                     tmptr->tm_sec = 0;
                     tmptr->tm_min = 0;
@@ -1121,10 +1129,10 @@ FtpEntry* Ftp::ftpParseDir( char* buffer )
                         tmptr->tm_hour = atoi( p_date_3 );
                       }
                       else
-                        kdebug( KDEBUG_WARN, 7102, "Can't parse third field %s", p_date_3 );
+                        kDebugWarning( 7102, "Can't parse third field %s", p_date_3 );
                     }
 
-                    //kdebug( KDEBUG_INFO, 7102, asctime( tmptr ) );
+                    //kDebugInfo( 7102, asctime( tmptr ) );
                     de.date = mktime( tmptr );
 		    return( &de );
 		  }
@@ -1175,7 +1183,7 @@ bool Ftp::ftpOpen( KURL& _url, Ftp::Mode mode, unsigned long offset )
     if ( !ftpOpenCommand( "retr", _url.path(), 'I', offset ) ) {
       if ( ! m_error )
 	{
-	  kdebug(KDEBUG_WARN, 0, "Can't open for reading");
+	  kDebugWarning( 7102, "Can't open for reading");
 	  m_error = ERR_CANNOT_OPEN_FOR_READING;
 	  m_errorText = _url.url();
 	}
@@ -1222,14 +1230,14 @@ bool Ftp::ftpOpen( KURL& _url, Ftp::Mode mode, unsigned long offset )
 
 bool Ftp::ftpClose()
 {
-  kdebug(KDEBUG_INFO, 7102, "... closing");
+  kDebugInfo( 7102, "... closing");
 
   // first close, then read response ( should be 226 )
 
   bool tmp = ftpCloseCommand();// returns always true :-)
 
   if ( !readresp( '2' ) ) {
-      kdebug(KDEBUG_INFO, 7102, "Did not get transfer complete message");
+      kDebugInfo( 7102, "Did not get transfer complete message");
       return false;
     }
 

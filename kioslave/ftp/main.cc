@@ -32,14 +32,14 @@ int main( int, char ** )
 
   KInstance instance( "kio_ftp" );
 
-  kdebug( KDEBUG_INFO, 7102, "Starting");
+  kDebugInfo( 7102, "Starting");
 
   KIOConnection parent( 0, 1 );
 
   FtpProtocol ftp( &parent );
   ftp.dispatchLoop();
 
-  kdebug( KDEBUG_INFO, 7102, "Done");
+  kDebugInfo( 7102, "Done");
 }
 
 /*
@@ -166,12 +166,12 @@ void FtpProtocol::doCopy( QStringList& _source, const char *_dest,
   if ( _rename )
     assert( _source.count() == 1 );
 
-  kdebug( KDEBUG_INFO, 7102, "Making copy to %s", _dest );
+  kDebugInfo( 7102, "Making copy to %s", _dest );
 
   // Check whether the URLs are wellformed
   QStringList::Iterator soit = _source.begin();
   for( ; soit != _source.end(); ++soit ) {
-    kdebug( KDEBUG_INFO, 7102, "Checking %s", (*soit).ascii() );
+    kDebugInfo( 7102, "Checking %s", (*soit).ascii() );
     KURL usrc( *soit );
     if ( usrc.isMalformed() ) {
       error( ERR_MALFORMED_URL, (*soit) );
@@ -190,7 +190,7 @@ void FtpProtocol::doCopy( QStringList& _source, const char *_dest,
     }
   }
 
-  kdebug( KDEBUG_INFO, 7102, "All URLs ok %s", _dest );
+  kDebugInfo( 7102, "All URLs ok %s", _dest );
 
   // Make a copy of the parameter. if we do IPC calls from here, then we overwrite
   // our argument. This is tricky! ( but saves memory and speeds things up )
@@ -204,7 +204,7 @@ void FtpProtocol::doCopy( QStringList& _source, const char *_dest,
     return;
   }
 
-  kdebug( KDEBUG_INFO, 7102, "Dest ok %s", dest.ascii() );
+  kDebugInfo( 7102, "Dest ok %s", dest.ascii() );
 
   // Find IO server for destination
   QString exec = KProtocolManager::self().executable( udest.protocol() );
@@ -223,7 +223,7 @@ void FtpProtocol::doCopy( QStringList& _source, const char *_dest,
     return;
   }
 
-  kdebug( KDEBUG_INFO, 7102, "IO server ok %s", dest.ascii() );
+  kDebugInfo( 7102, "IO server ok %s", dest.ascii() );
 
   // Connect to the ftp server
   KURL usrc( _source.first() );
@@ -234,7 +234,7 @@ void FtpProtocol::doCopy( QStringList& _source, const char *_dest,
     return;
   }
 
-  kdebug( KDEBUG_INFO, 7102, "connected to a server" );
+  kDebugInfo( 7102, "connected to a server" );
 
   // Find out, whether we are logged anonymously or not
   // Authorization has been already checked with ftp.ftpConnect( usrc )
@@ -247,14 +247,14 @@ void FtpProtocol::doCopy( QStringList& _source, const char *_dest,
   QValueList<Copy> files;
   QValueList<CopyDir> dirs;
   int size = 0;
-  kdebug( KDEBUG_INFO, 7102, "Iterating" );
+  kDebugInfo( 7102, "Iterating" );
 
   soit = _source.begin();
-  kdebug( KDEBUG_INFO, 7102, "Looping" );
+  kDebugInfo( 7102, "Looping" );
   for( ; soit != _source.end(); ++soit ) {
-    kdebug( KDEBUG_INFO, 7102, "Executing %s", (*soit).ascii() );
+    kDebugInfo( 7102, "Executing %s", (*soit).ascii() );
     KURL usrc( *soit );
-    kdebug( KDEBUG_INFO, 7102, "Parsed URL" );
+    kDebugInfo( 7102, "Parsed URL" );
     // Did an error occur ?
     int s;
     if ( ( s = listRecursive( usrc, files, dirs, _rename ) ) == -1 ) {
@@ -267,7 +267,7 @@ void FtpProtocol::doCopy( QStringList& _source, const char *_dest,
     size += s;
   }
 
-  kdebug( KDEBUG_INFO, 7102, "Recursive 1 %s", dest.ascii() );
+  kDebugInfo( 7102, "Recursive 1 %s", dest.ascii() );
 
   /*
   // Check whether we do not copy a directory in itself or one of its subdirectories
@@ -304,7 +304,7 @@ void FtpProtocol::doCopy( QStringList& _source, const char *_dest,
   }
   */
 
-  kdebug( KDEBUG_INFO, 7102, "Recursive ok %s", dest.ascii() );
+  kDebugInfo( 7102, "Recursive ok %s", dest.ascii() );
 
   m_cmd = CMD_GET;
 
@@ -320,7 +320,7 @@ void FtpProtocol::doCopy( QStringList& _source, const char *_dest,
   // Put a protocol on top of the job
   FtpIOJob job( &slave, this );
 
-  kdebug( KDEBUG_INFO, 7102, "Job started ok %s", dest.ascii() );
+  kDebugInfo( 7102, "Job started ok %s", dest.ascii() );
 
   // Tell our client what we 'r' gonna do
   totalSize( size );
@@ -356,7 +356,7 @@ void FtpProtocol::doCopy( QStringList& _source, const char *_dest,
     (*fit).m_strRelDest += tmp2;
   }
 
-  kdebug( KDEBUG_INFO, 7102, "Destinations ok %s", dest.data() );
+  kDebugInfo( 7102, "Destinations ok %s", dest.data() );
 
   /*****
    * Make directories
@@ -403,7 +403,7 @@ void FtpProtocol::doCopy( QStringList& _source, const char *_dest,
       // Tell what we are doing
       makingDir( d.data() );
 
-      // kdebug( KDEBUG_INFO, 7102, "Making remote dir %s", d );
+      // kDebugInfo( 7102, "Making remote dir %s", d );
       // Create the directory
       job.mkdir( d.data(), (*dit).m_access );
       while( !job.hasFinished() )
@@ -501,7 +501,7 @@ void FtpProtocol::doCopy( QStringList& _source, const char *_dest,
     processedDirs( ++processed_dirs );
   }
 
-  kdebug( KDEBUG_INFO, 7102, "Created directories %s", dest.data() );
+  kDebugInfo( 7102, "Created directories %s", dest.data() );
 
 
   /*****
@@ -552,7 +552,7 @@ void FtpProtocol::doCopy( QStringList& _source, const char *_dest,
       KURL realpath ( (*fit).m_strAbsSource );
       copyingFile( realpath.url().ascii(), d.ascii() );
 
-      // kdebug( KDEBUG_INFO, 7102, "Writing to %s", d );
+      // kDebugInfo( 7102, "Writing to %s", d );
 
       // Is this URL on the overwrite list ?
       QStringList::Iterator oit = overwrite_list.begin();
@@ -576,7 +576,7 @@ void FtpProtocol::doCopy( QStringList& _source, const char *_dest,
       if ( job.hasError() ) {
 	int currentError = job.errorId();
 
-	kdebug( KDEBUG_ERROR, 7102, "################# COULD NOT PUT %d",currentError);
+	kDebugError( 7102, "################# COULD NOT PUT %d",currentError);
 	// if ( /* m_bGUI && */ job.errorId() == ERR_WRITE_ACCESS_DENIED )
 	if ( /* m_bGUI && */  currentError != ERR_DOES_ALREADY_EXIST &&
 			      currentError != ERR_DOES_ALREADY_EXIST_FULL )
@@ -703,12 +703,12 @@ void FtpProtocol::doCopy( QStringList& _source, const char *_dest,
     // add the offset to processed size
     if ( offset > 0 ) {
       processed_size += offset;
-      kdebug( KDEBUG_INFO, 7102, "Offset = %ld", offset );
+      kDebugInfo( 7102, "Offset = %ld", offset );
     }
 
     KURL tmpurl ( (*fit).m_strAbsSource );
 
-    kdebug( KDEBUG_INFO, 7102, "Opening %s", tmpurl.url().ascii() );
+    kDebugInfo( 7102, "Opening %s", tmpurl.url().ascii() );
 
     if ( !ftp.ftpOpen( tmpurl, Ftp::READ, offset ) ) {
       error( ftp.error(), ftp.errorText() );
@@ -765,7 +765,7 @@ void FtpProtocol::doCopy( QStringList& _source, const char *_dest,
     // check whether file was fully copied
     int saved_size = read_size + offset;
     if ( saved_size< (*fit).m_size ) {
-      kdebug( KDEBUG_INFO, 7102, "Sizes don't match." );
+      kDebugInfo( 7102, "Sizes don't match." );
       ftp.ftpClose();
       error( ERR_UNKNOWN_INTERRUPT, (*fit).m_strRelDest ); // correct URL for message ?
       m_cmd = CMD_NONE;
@@ -790,7 +790,7 @@ void FtpProtocol::doCopy( QStringList& _source, const char *_dest,
     processedFiles( ++processed_files );
   }
 
-  kdebug( KDEBUG_INFO, 7102, "Copied files %s", dest.data() );
+  kDebugInfo( 7102, "Copied files %s", dest.data() );
 
   // slotDel() handles disconnecting by itself
   if ( _move ) {
@@ -901,7 +901,7 @@ void FtpProtocol::slotGetSize( const char* _url ) {
       return;
     }
 
-  kdebug( KDEBUG_INFO, 7102, "URL is ok " );
+  kDebugInfo( 7102, "URL is ok " );
 
   if ( !ftp.ftpConnect( usrc ) )
   {
@@ -915,7 +915,7 @@ void FtpProtocol::slotGetSize( const char* _url ) {
   QValueList<Copy> files;
   QValueList<CopyDir> dirs;
 
-  kdebug( KDEBUG_INFO, 7102, "Executing %s", _url );
+  kDebugInfo( 7102, "Executing %s", _url );
   // Did an error occur ?
   int s;
   if ( ( s = listRecursive( usrc, files, dirs, false ) ) == -1 )
@@ -1022,7 +1022,7 @@ void FtpProtocol::slotPut( const char *_url, int _mode, bool _overwrite, bool _r
 
   // if we are using marking of partial downloads -> add .part extension
   if ( m_bMarkPartial ) {
-    kdebug( KDEBUG_INFO, 7102, "Adding .part extension to %s", udest_orig.path().ascii() );
+    kDebugInfo( 7102, "Adding .part extension to %s", udest_orig.path().ascii() );
     udest = udest_part;
   } else
   udest = udest_orig;
@@ -1030,7 +1030,7 @@ void FtpProtocol::slotPut( const char *_url, int _mode, bool _overwrite, bool _r
 
   /* if ( access( udest.path(), W_OK ) == -1 )
   {
-    kdebug( KDEBUG_ERROR, 7102, "Write Access denied for '%s' %d",udest.path(), errno );
+    kDebugError( 7102, "Write Access denied for '%s' %d",udest.path(), errno );
 
     error( ERR_WRITE_ACCESS_DENIED, url );
     m_cmd = CMD_NONE;
@@ -1043,11 +1043,11 @@ void FtpProtocol::slotPut( const char *_url, int _mode, bool _overwrite, bool _r
   // set the mode according to offset
   if ( _resume ) {
     offset = e->size;
-    kdebug( KDEBUG_INFO, 7102, "Offset = %ld", offset );
+    kDebugInfo( 7102, "Offset = %ld", offset );
   }
 
   if ( !ftp.ftpOpen( udest, Ftp::WRITE, offset ) ) {
-    kdebug( KDEBUG_ERROR, 7102, "########## COULD NOT WRITE %s", udest.path().ascii() );
+    kDebugError( 7102, "########## COULD NOT WRITE %s", udest.path().ascii() );
 
     error( ftp.error(), ftp.errorText() );
     ftp.ftpDisconnect( true );
@@ -1111,7 +1111,7 @@ void FtpProtocol::slotDel( QStringList& _source )
   // Check whether the URLs are wellformed
   QStringList::Iterator soit = _source.begin();
   for( ; soit != _source.end(); ++soit ) {
-    kdebug( KDEBUG_INFO, 7102, "Checking %s", (*soit).ascii() );
+    kDebugInfo( 7102, "Checking %s", (*soit).ascii() );
     KURL usrc( *soit );
 
     if ( usrc.isMalformed() ) {
@@ -1127,20 +1127,20 @@ void FtpProtocol::slotDel( QStringList& _source )
     }
   }
 
-  kdebug( KDEBUG_INFO, 7102, "All URLs ok" );
+  kDebugInfo( 7102, "All URLs ok" );
 
   // Get a list of all source files and directories
   QValueList<Copy> fs;
   QValueList<CopyDir> ds;
   int size = 0;
-  kdebug( KDEBUG_INFO, 7102, "Iterating" );
+  kDebugInfo( 7102, "Iterating" );
 
   soit = _source.begin();
-  kdebug( KDEBUG_INFO, 7102, "Looping" );
+  kDebugInfo( 7102, "Looping" );
   for( ; soit != _source.end(); ++soit ) {
-    kdebug( KDEBUG_INFO, 7102, "Executing %s", (*soit).ascii() );
+    kDebugInfo( 7102, "Executing %s", (*soit).ascii() );
     KURL usrc(*soit);
-    kdebug( KDEBUG_INFO, 7102, "Parsed URL" );
+    kDebugInfo( 7102, "Parsed URL" );
 
     // Did an error occur ?
     int s;
@@ -1155,7 +1155,7 @@ void FtpProtocol::slotDel( QStringList& _source )
     size += s;
   }
 
-  kdebug( KDEBUG_INFO, 7102, "Recursive ok" );
+  kDebugInfo( 7102, "Recursive ok" );
 
   if ( fs.count() == 1 ) {
     m_cmd = CMD_DEL;
@@ -1176,7 +1176,7 @@ void FtpProtocol::slotDel( QStringList& _source )
   for( ; fit != fs.end(); fit++ ) {
 
     QString filename = (*fit).m_strAbsSource.path();
-    kdebug( KDEBUG_INFO, 7102, "Deleting file %s", filename.ascii() );
+    kDebugInfo( 7102, "Deleting file %s", filename.ascii() );
 
     deletingFile( filename );
 
@@ -1197,7 +1197,7 @@ void FtpProtocol::slotDel( QStringList& _source )
   for( ; dit != ds.end(); dit++ ) {
 
     QString dirname = (*dit).m_strAbsSource.path();
-    kdebug( KDEBUG_INFO, 7102, "Deleting directory %s", dirname.ascii() );
+    kDebugInfo( 7102, "Deleting directory %s", dirname.ascii() );
 
     deletingFile( dirname );
 
@@ -1260,7 +1260,7 @@ long FtpProtocol::listRecursive( const KURL & url, QValueList<Copy>&
     return listRecursive2( url2, c.m_strRelDest, _files, _dirs );
   }
 
-  kdebug( KDEBUG_INFO, 7102, "########## RECURSIVE LISTING %s", url.url().ascii() );
+  kDebugInfo( 7102, "########## RECURSIVE LISTING %s", url.url().ascii() );
 
   FtpEntry* e = ftp.ftpStat( url );
   if ( !e )  {
@@ -1270,7 +1270,7 @@ long FtpProtocol::listRecursive( const KURL & url, QValueList<Copy>&
 
   // Is the source not a directory ? => so just copy it and we are done.
   if ( !S_ISDIR( e->type ) ) {
-    kdebug( KDEBUG_INFO, 7102, "not a dir" );
+    kDebugInfo( 7102, "not a dir" );
     QString fname;
     if ( _rename )
       fname = "";
@@ -1311,7 +1311,7 @@ long FtpProtocol::listRecursive( const KURL & url, QValueList<Copy>&
   c.m_mtime = e->date;
   c.m_type = e->type;
   _dirs.append( c );
-  kdebug( KDEBUG_INFO, 7102, "########### STARTING RECURSION with %s and %s",tmp1.url().ascii(), tmp2.ascii() );
+  kDebugInfo( 7102, "########### STARTING RECURSION with %s and %s",tmp1.url().ascii(), tmp2.ascii() );
 
   return listRecursive2( tmp1, tmp2, _files, _dirs );
 }
@@ -1343,11 +1343,11 @@ long FtpProtocol::listRecursive2( const KURL & _abs_path, const char *_rel_path,
 
   QStringList recursion;
 
-  kdebug( KDEBUG_INFO, 7102, "##Listing" );
+  kDebugInfo( 7102, "##Listing" );
 
   FtpEntry *e;
   while ( ( e = ftp.readdir() ) != 0L ) {
-    kdebug( KDEBUG_INFO, 7102, "#%s", e->name.ascii() );
+    kDebugInfo( 7102, "#%s", e->name.ascii() );
 
     if ( e->name == "." || e->name == ".." )
       continue;
@@ -1362,7 +1362,7 @@ long FtpProtocol::listRecursive2( const KURL & _abs_path, const char *_rel_path,
     tmp += e->name;
 
     if ( !S_ISDIR( e->type ) ) {
-      kdebug( KDEBUG_INFO, 7102, "Appending '%s' '%s'", p2.ascii(), tmp.ascii() );
+      kDebugInfo( 7102, "Appending '%s' '%s'", p2.ascii(), tmp.ascii() );
       Copy c;
       c.m_strAbsSource = KURL(p2); //
       c.m_strRelDest = tmp;
@@ -1404,7 +1404,7 @@ long FtpProtocol::listRecursive2( const KURL & _abs_path, const char *_rel_path,
 
 void FtpProtocol::slotListDir( const char *_url )
 {
-  kdebug( KDEBUG_INFO, 7102, "=============== LIST %s ===============", _url  );
+  kDebugInfo( 7102, "=============== LIST %s ===============", _url  );
 
   KURL usrc( _url );
   if ( usrc.isMalformed() ) {
@@ -1448,7 +1448,7 @@ void FtpProtocol::slotListDir( const char *_url )
     //if ( e->name == "." || e->name == ".." )
     //  continue;
 
-    kdebug( KDEBUG_INFO, 7102, "Listing %s", e->name.ascii() );
+    kDebugInfo( 7102, "Listing %s", e->name.ascii() );
 
     KUDSEntry entry;
     KUDSAtom atom;
@@ -1495,7 +1495,7 @@ void FtpProtocol::slotListDir( const char *_url )
     listEntry( entry );
   }
 
-  kdebug( KDEBUG_INFO, 7102, "============= COMPLETED LIST ============" );
+  kDebugInfo( 7102, "============= COMPLETED LIST ============" );
 
   ftp.closedir();
 
@@ -1503,7 +1503,7 @@ void FtpProtocol::slotListDir( const char *_url )
 
   finished();
 
-  kdebug( KDEBUG_INFO, 7102, "=============== BYE ===========" );
+  kDebugInfo( 7102, "=============== BYE ===========" );
 }
 
 
@@ -1521,20 +1521,20 @@ void FtpProtocol::slotTestDir( const char *_url )
     m_cmd = CMD_NONE;
     return;
   }
-  kdebug( KDEBUG_INFO, 7102, "=============== slotTestDir ==============" );
+  kDebugInfo( 7102, "=============== slotTestDir ==============" );
   FtpEntry* e;
   if ( !( e = ftp.stat( usrc ) ) ) {
-    kdebug( KDEBUG_INFO, 7102, " =========== ERROR ========" );
+    kDebugInfo( 7102, " =========== ERROR ========" );
     error( ERR_DOES_NOT_EXIST, strdup(_url) );
     m_cmd = CMD_NONE;
     return;
   }
 
   if ( S_ISDIR( e->type ) ) {
-    kdebug( KDEBUG_INFO, 7102, "========== DONE DIR ========= %s", _url );
+    kDebugInfo( 7102, "========== DONE DIR ========= %s", _url );
     isDirectory();
   } else {
-    kdebug( KDEBUG_INFO, 7102, "========== DONE FILE ========= %s", _url );
+    kDebugInfo( 7102, "========== DONE FILE ========= %s", _url );
     isFile();
   }
 

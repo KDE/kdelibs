@@ -86,7 +86,6 @@ private:
 
   netbuf *nControl;
   char rspbuf[256];
-  int ftplib_debug;
 
   bool m_bLoggedOn;
   bool m_bFtpStarted;
