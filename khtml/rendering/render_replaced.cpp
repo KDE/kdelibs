@@ -745,7 +745,7 @@ bool RenderWidget::handleEvent(const DOM::EventImpl& ev)
     }
     case EventImpl::KEYDOWN_EVENT:
     case EventImpl::KEYUP_EVENT: {
-        QKeyEvent* const ke = static_cast<const TextEventImpl &>(ev).qKeyEvent;
+        QKeyEvent* const ke = static_cast<const TextEventImpl &>(ev).qKeyEvent();
         if (ke)
             static_cast<EventPropagator *>(m_widget)->sendEvent(ke);
         break;
@@ -762,7 +762,7 @@ bool RenderWidget::handleEvent(const DOM::EventImpl& ev)
         //  DOM:   Down     Press   |       Press                             |     Up
         //  Qt:    Press  (nothing) | Release(autorepeat) + Press(autorepeat) |   Release
 
-        QKeyEvent* const ke = static_cast<const TextEventImpl &>(ev).qKeyEvent;
+        QKeyEvent* const ke = static_cast<const TextEventImpl &>(ev).qKeyEvent();
         if (ke && ke->isAutoRepeat()) {
             QKeyEvent releaseEv( QEvent::KeyRelease, ke->key(), ke->ascii(), ke->state(),
                                ke->text(), ke->isAutoRepeat(), ke->count() );

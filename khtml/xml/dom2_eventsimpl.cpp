@@ -476,17 +476,17 @@ bool MouseEventImpl::isMouseEvent() const
 
 TextEventImpl::TextEventImpl()
 {
-  qKeyEvent = 0;
+    m_keyEvent = 0;
 }
 
 TextEventImpl::TextEventImpl(QKeyEvent *key, bool keypress, AbstractViewImpl *view)
   : UIEventImpl(KEYDOWN_EVENT,true,true,view,0)
 {
-  qKeyEvent = new QKeyEvent(key->type(), key->key(), key->ascii(), key->state(), key->text(), key->isAutoRepeat(), key->count() );
+  m_keyEvent = new QKeyEvent(key->type(), key->key(), key->ascii(), key->state(), key->text(), key->isAutoRepeat(), key->count() );
   // Events are supposed to be accepted by default in Qt!
   // This line made QLineEdit's keyevents be ignored, so they were sent to the khtmlview
   // (and e.g. space would make it scroll down)
-  //qKeyEvent->ignore();
+  //m_keyEvent->ignore();
 
   if( keypress )
     m_id = KHTML_KEYPRESS_EVENT;
@@ -677,7 +677,7 @@ TextEventImpl::TextEventImpl(EventId _id,
 			   bool numPadArg)
   : UIEventImpl(_id,canBubbleArg,cancelableArg,viewArg,detailArg)
 {
-  qKeyEvent = 0;
+  m_keyEvent = 0;
   m_keyVal = keyValArg;
   m_virtKeyVal = virtKeyValArg;
   m_inputGenerated = inputGeneratedArg;
@@ -688,7 +688,7 @@ TextEventImpl::TextEventImpl(EventId _id,
 
 TextEventImpl::~TextEventImpl()
 {
-    delete qKeyEvent;
+    delete m_keyEvent;
 }
 
 bool TextEventImpl::checkModifier(unsigned long modifierArg)
@@ -727,7 +727,7 @@ void TextEventImpl::initModifier(unsigned long modifierArg,
 
 int TextEventImpl::keyCode() const
 {
-    if (!qKeyEvent)
+    if (!m_keyEvent)
         return 0;
 
     switch(m_virtKeyVal) {
@@ -744,7 +744,7 @@ int TextEventImpl::keyCode() const
 
 int TextEventImpl::charCode() const
 {
-    if (!qKeyEvent)
+    if (!m_keyEvent)
         return 0;
 
     if (m_outputString.length() != 1)

@@ -348,11 +348,12 @@ public:
     int keyCode() const;
     int charCode() const;
 
+    QKeyEvent *qKeyEvent() const { return m_keyEvent; }
+
   virtual bool isTextEvent() const;
 
- QKeyEvent *qKeyEvent;
-
 private:
+  QKeyEvent *m_keyEvent;
   unsigned long m_keyVal;
   unsigned long m_virtKeyVal;
   DOMString m_outputString;

@@ -952,7 +952,7 @@ void HTMLGenericFormElementImpl::defaultEventHandler(EventImpl *evt)
 
 	if (evt->id() == EventImpl::KHTML_KEYPRESS_EVENT) {
 	    TextEventImpl* const k = static_cast<TextEventImpl *>(evt);
-	    const int key = k->qKeyEvent ? k->qKeyEvent->key() : 0;
+	    const int key = k->qKeyEvent() ? k->qKeyEvent()->key() : 0;
 	    if (m_render && (key == Qt::Key_Tab || key == Qt::Key_BackTab)) {
 		QWidget* const widget = static_cast<RenderWidget*>(m_render)->widget();
 		if (widget)
@@ -1036,7 +1036,7 @@ void HTMLButtonElementImpl::defaultEventHandler(EventImpl *evt)
     if (m_type != BUTTON && !m_disabled) {
 	bool act = (evt->id() == EventImpl::DOMACTIVATE_EVENT);
 	if (!act && evt->id()==EventImpl::KEYUP_EVENT) {
-	    QKeyEvent* const ke = static_cast<TextEventImpl *>(evt)->qKeyEvent;
+	    QKeyEvent* const ke = static_cast<TextEventImpl *>(evt)->qKeyEvent();
 	    if (ke && active() && (ke->key() == Qt::Key_Return || ke->key() == Qt::Key_Enter || ke->key() == Qt::Key_Space))
 		act = true;
 	}
@@ -1623,7 +1623,7 @@ void HTMLInputElementImpl::defaultEventHandler(EventImpl *evt)
         if (m_type == IMAGE || m_type == SUBMIT || m_type == RESET) {
 	    bool act = (evt->id() == EventImpl::DOMACTIVATE_EVENT);
 	    if (!act && evt->id() == EventImpl::KEYUP_EVENT) {
-		QKeyEvent* const ke = static_cast<TextEventImpl *>(evt)->qKeyEvent;
+		QKeyEvent* const ke = static_cast<TextEventImpl *>(evt)->qKeyEvent();
 		if (ke && active() && (ke->key() == Qt::Key_Return || ke->key() == Qt::Key_Enter || ke->key() == Qt::Key_Space))
 		    act = true;
 	    }
@@ -1709,7 +1709,7 @@ void HTMLLabelElementImpl::defaultEventHandler(EventImpl *evt)
 	}
 	else if ( evt->id() == EventImpl::KEYUP_EVENT ||
 	                      evt->id() == EventImpl::KHTML_KEYPRESS_EVENT ) {
-	    QKeyEvent* const ke = static_cast<TextEventImpl *>(evt)->qKeyEvent;
+	    QKeyEvent* const ke = static_cast<TextEventImpl *>(evt)->qKeyEvent();
 	    if (ke && active() && (ke->key() == Qt::Key_Return || ke->key() == Qt::Key_Enter || ke->key() == Qt::Key_Space))
 		act = true;
 	}

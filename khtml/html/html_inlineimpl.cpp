@@ -76,12 +76,12 @@ void HTMLAnchorElementImpl::defaultEventHandler(EventImpl *evt)
 
         if ( k ) {
             if (k->virtKeyVal() != TextEventImpl::DOM_VK_ENTER) {
-                if (k->qKeyEvent)
-                    k->qKeyEvent->ignore();
+                if (k->qKeyEvent())
+                    k->qKeyEvent()->ignore();
                 HTMLElementImpl::defaultEventHandler(evt);
                 return;
             }
-            if (k->qKeyEvent) k->qKeyEvent->accept();
+            if (k->qKeyEvent()) k->qKeyEvent()->accept();
         }
 
         url = khtml::parseURL(getAttribute(ATTR_HREF)).string();
